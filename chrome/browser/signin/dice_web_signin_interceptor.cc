@@ -309,7 +309,7 @@ void DiceWebSigninInterceptor::MaybeInterceptWebSignin(
   account_id_ = account_id;
   is_interception_in_progress_ = true;
   new_account_interception_ = is_new_account;
-  Observe(web_contents);
+  web_contents_ = web_contents->GetWeakPtr();
 
   if (heuristic_outcome) {
     RecordSigninInterceptionHeuristicOutcome(*heuristic_outcome);
@@ -374,7 +374,7 @@ void DiceWebSigninInterceptor::Shutdown() {
 }
 
 void DiceWebSigninInterceptor::Reset() {
-  Observe(/*web_contents=*/nullptr);
+  web_contents_ = nullptr;
   account_info_update_observation_.Reset();
   on_account_info_update_timeout_.Cancel();
   is_interception_in_progress_ = false;
@@ -574,7 +574,7 @@ void DiceWebSigninInterceptor::OnInterceptionReadyToBeProcessed(
       break;
   }
   interception_bubble_handle_ = delegate_->ShowSigninInterceptionBubble(
-      web_contents(), bubble_parameters, std::move(callback));
+      web_contents_.get(), bubble_parameters, std::move(callback));
 
   was_interception_ui_displayed_ = true;
 }
@@ -707,8 +707,8 @@ void DiceWebSigninInterceptor::OnNewSignedInProfileCreated(
   // DiceWebSigninInterceptor that is attached to the new profile.
   DiceWebSigninInterceptorFactory::GetForProfile(new_profile)
       ->CreateBrowserAfterSigninInterception(
-          account_id_, web_contents(), std::move(interception_bubble_handle_),
-          is_new_profile);
+          account_id_, web_contents_.get(),
+          std::move(interception_bubble_handle_), is_new_profile);
   Reset();
 }
 

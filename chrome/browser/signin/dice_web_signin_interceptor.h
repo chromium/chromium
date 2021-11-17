@@ -16,7 +16,6 @@
 #include "chrome/browser/ui/webui/signin/enterprise_profile_welcome_ui.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
-#include "content/public/browser/web_contents_observer.h"
 #include "google_apis/gaia/core_account_id.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -147,7 +146,6 @@ bool SigninInterceptionHeuristicOutcomeIsSuccess(
 //   - The interception bubble is closed by deleting the handle,
 //   - The profile customization bubble is shown.
 class DiceWebSigninInterceptor : public KeyedService,
-                                 public content::WebContentsObserver,
                                  public signin::IdentityManager::Observer {
  public:
   enum class SigninInterceptionType {
@@ -371,6 +369,7 @@ class DiceWebSigninInterceptor : public KeyedService,
   std::unique_ptr<DiceInterceptedSessionStartupHelper> session_startup_helper_;
 
   // Members below are related to the interception in progress.
+  base::WeakPtr<content::WebContents> web_contents_;
   bool is_interception_in_progress_ = false;
   CoreAccountId account_id_;
   bool new_account_interception_ = false;
