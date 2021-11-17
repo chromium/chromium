@@ -14,8 +14,6 @@ std::string ExecutionStatusToString(ExecutionStatus status) {
       return "Success";
     case ExecutionStatus::kPending:
       return "Pending";
-    case ExecutionStatus::kErrorInternalError:
-      return "ErrorInternalError";
     case ExecutionStatus::kErrorModelFileNotAvailable:
       return "ErrorModelFileNotAvailable";
     case ExecutionStatus::kErrorModelFileNotValid:

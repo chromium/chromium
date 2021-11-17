@@ -22,21 +22,17 @@ enum class ExecutionStatus {
   // Execution is still pending.
   kPending = 2,
 
-  // Execution failed for some reason internal to Opt Guide. These failures
-  // should not happen and result in a DCHECK in non-production builds.
-  kErrorInternalError = 3,
-
   // Execution failed because the model file is not available.
-  kErrorModelFileNotAvailable = 4,
+  kErrorModelFileNotAvailable = 3,
 
   // Execution failed because the model file could not be loaded into TFLite.
-  kErrorModelFileNotValid = 5,
+  kErrorModelFileNotValid = 4,
 
   // Execution failed because the input was empty or otherwise invalid.
-  kErrorEmptyOrInvalidInput = 6,
+  kErrorEmptyOrInvalidInput = 5,
 
   // Execution failed because of an unknown error.
-  kErrorUnknown = 7,
+  kErrorUnknown = 6,
 
   kMaxValue = kErrorUnknown,
 };
