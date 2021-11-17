@@ -33,6 +33,7 @@
 #include "extensions/common/api/messaging/message.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/cors_util.h"
+#include "extensions/common/event_filtering_info_type_converters.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_api.h"
 #include "extensions/common/extension_features.h"
@@ -760,16 +761,17 @@ void Dispatcher::RunScriptsAtDocumentIdle(content::RenderFrame* render_frame) {
   // |frame_helper| and |render_frame| might be dead by now.
 }
 
-void Dispatcher::DispatchEvent(const std::string& extension_id,
-                               const std::string& event_name,
-                               const base::ListValue& event_args,
-                               const EventFilteringInfo* filtering_info) const {
+void Dispatcher::DispatchEvent(
+    const std::string& extension_id,
+    const std::string& event_name,
+    const base::ListValue& event_args,
+    mojom::EventFilteringInfoPtr filtering_info) const {
   script_context_set_->ForEach(
       extension_id, nullptr,
       base::BindRepeating(
           &NativeExtensionBindingsSystem::DispatchEventInContext,
           base::Unretained(bindings_system_.get()), event_name, &event_args,
-          filtering_info));
+          base::OwnedRef(std::move(filtering_info))));
 }
 
 void Dispatcher::InvokeModuleSystemMethod(content::RenderFrame* render_frame,
@@ -1307,7 +1309,7 @@ void Dispatcher::OnDispatchEvent(const mojom::DispatchEventParams& params,
   }
 
   DispatchEvent(params.extension_id, params.event_name, event_args,
-                &params.filtering_info);
+                mojom::EventFilteringInfo::From(params.filtering_info));
 
   if (background_frame) {
     // Tell the browser process when an event has been dispatched with a lazy

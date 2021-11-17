@@ -74,12 +74,12 @@
 #include "extensions/common/api/web_request.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/error_utils.h"
-#include "extensions/common/event_filtering_info.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_features.h"
 #include "extensions/common/features/feature.h"
 #include "extensions/common/features/feature_provider.h"
 #include "extensions/common/identifiability_metrics.h"
+#include "extensions/common/mojom/event_dispatcher.mojom.h"
 #include "extensions/common/permissions/permissions_data.h"
 #include "extensions/common/url_pattern.h"
 #include "extensions/strings/grit/extensions_strings.h"
@@ -316,7 +316,8 @@ void SendOnMessageEventOnUI(
 
   EventRouter* event_router = EventRouter::Get(browser_context);
 
-  EventFilteringInfo event_filtering_info;
+  mojom::EventFilteringInfoPtr event_filtering_info =
+      mojom::EventFilteringInfo::New();
 
   events::HistogramValue histogram_value = events::UNKNOWN;
   std::string event_name;
@@ -324,7 +325,8 @@ void SendOnMessageEventOnUI(
   // process. We use a filter here so that only event listeners for a particular
   // <webview> will fire.
   if (is_web_view_guest) {
-    event_filtering_info.instance_id = web_view_instance_id;
+    event_filtering_info->has_instance_id = true;
+    event_filtering_info->instance_id = web_view_instance_id;
     histogram_value = events::WEB_VIEW_INTERNAL_ON_MESSAGE;
     event_name = webview::kEventMessage;
   } else {
@@ -335,7 +337,7 @@ void SendOnMessageEventOnUI(
   auto event = std::make_unique<Event>(
       histogram_value, event_name, std::move(*event_args).TakeList(),
       browser_context, GURL(), EventRouter::USER_GESTURE_UNKNOWN,
-      event_filtering_info);
+      std::move(event_filtering_info));
   event_router->DispatchEventToExtension(extension_id, std::move(event));
 }
 
@@ -1625,7 +1627,7 @@ void ExtensionWebRequestEventRouter::DispatchEventToListeners(
         listener->histogram_value, listener->id.sub_event_name,
         listener->id.render_process_id, listener->id.worker_thread_id,
         listener->id.service_worker_version_id, std::move(args_filtered),
-        EventFilteringInfo());
+        mojom::EventFilteringInfo::New());
   }
 }
 

@@ -12,8 +12,8 @@
 #include <vector>
 
 #include "components/url_matcher/url_matcher.h"
-#include "extensions/common/event_filtering_info.h"
 #include "extensions/common/event_matcher.h"
+#include "extensions/common/mojom/event_dispatcher.mojom-forward.h"
 
 namespace extensions {
 
@@ -50,7 +50,7 @@ class EventFilter {
   // event matchers that matched the event.
   // TODO(koz): Add a std::string* parameter for retrieving error messages.
   std::set<MatcherID> MatchEvent(const std::string& event_name,
-                                 const EventFilteringInfo& event_info,
+                                 const mojom::EventFilteringInfo& event_info,
                                  int routing_id) const;
 
   int GetMatcherCountForEventForTesting(const std::string& event_name) const;

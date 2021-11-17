@@ -4,6 +4,8 @@
 
 #include <stdint.h>
 
+#include <utility>
+
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/json/json_reader.h"
@@ -71,6 +73,7 @@
 #include "extensions/common/extensions_client.h"
 #include "extensions/common/features/feature_channel.h"
 #include "extensions/common/manifest_handlers/background_info.h"
+#include "extensions/common/mojom/event_dispatcher.mojom.h"
 #include "extensions/common/permissions/permissions_data.h"
 #include "extensions/common/value_builder.h"
 #include "extensions/common/verifier_formats.h"
@@ -913,9 +916,9 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBasedBackgroundTest,
       events::WEB_NAVIGATION_ON_COMMITTED, "webNavigation.onCommitted",
       api::web_navigation::OnCommitted::Create(details), profile());
   // The filter will match the listener filter registered from the extension.
-  EventFilteringInfo info;
-  info.url = GURL("http://foo.com/a.html");
-  on_committed_event->filter_info = info;
+  mojom::EventFilteringInfoPtr info = mojom::EventFilteringInfo::New();
+  info->url = GURL("http://foo.com/a.html");
+  on_committed_event->filter_info = std::move(info);
 
   EarlyWorkerMessageSender sender(profile(), kId,
                                   std::move(on_committed_event));

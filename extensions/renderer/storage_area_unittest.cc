@@ -10,6 +10,7 @@
 #include "components/version_info/channel.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/features/feature_channel.h"
+#include "extensions/common/mojom/event_dispatcher.mojom.h"
 #include "extensions/common/mojom/frame.mojom.h"
 #include "extensions/renderer/bindings/api_binding_test_util.h"
 #include "extensions/renderer/bindings/api_binding_util.h"

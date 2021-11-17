@@ -28,8 +28,8 @@
 #include "extensions/browser/extension_registry_observer.h"
 #include "extensions/browser/lazy_context_task_queue.h"
 #include "extensions/common/constants.h"
-#include "extensions/common/event_filtering_info.h"
 #include "extensions/common/features/feature.h"
+#include "extensions/common/mojom/event_dispatcher.mojom-forward.h"
 #include "extensions/common/mojom/event_router.mojom.h"
 #include "ipc/ipc_sender.h"
 #include "mojo/public/cpp/bindings/associated_receiver_set.h"
@@ -126,7 +126,7 @@ class EventRouter : public KeyedService,
                                     int worker_thread_id,
                                     int64_t service_worker_version_id,
                                     std::unique_ptr<base::ListValue> event_args,
-                                    const EventFilteringInfo& info);
+                                    mojom::EventFilteringInfoPtr info);
 
   // Returns false when the event is scoped to a context and the listening
   // extension does not have access to events from that context.
@@ -363,7 +363,7 @@ class EventRouter : public KeyedService,
       const std::string& event_name,
       base::ListValue* event_args,
       UserGestureState user_gesture,
-      const extensions::EventFilteringInfo& info);
+      extensions::mojom::EventFilteringInfoPtr info);
 
   // Adds an extension as an event listener for |event_name|.
   //
@@ -535,7 +535,7 @@ struct Event {
   EventRouter::UserGestureState user_gesture;
 
   // Extra information used to filter which events are sent to the listener.
-  EventFilteringInfo filter_info;
+  mojom::EventFilteringInfoPtr filter_info;
 
   // If specified, this is called before dispatching an event to each
   // extension. The third argument is a mutable reference to event_args,
@@ -567,7 +567,7 @@ struct Event {
         content::BrowserContext* restrict_to_browser_context,
         const GURL& event_url,
         EventRouter::UserGestureState user_gesture,
-        const EventFilteringInfo& info);
+        mojom::EventFilteringInfoPtr info);
 
   ~Event();
 

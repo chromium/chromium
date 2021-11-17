@@ -219,6 +219,8 @@ if (enable_extensions) {
       "event_filter.h",
       "event_filtering_info.cc",
       "event_filtering_info.h",
+      "event_filtering_info_type_converters.cc",
+      "event_filtering_info_type_converters.h",
       "event_matcher.cc",
       "event_matcher.h",
       "extension.cc",

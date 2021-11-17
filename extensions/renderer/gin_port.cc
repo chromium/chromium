@@ -9,6 +9,7 @@
 
 #include "base/bind.h"
 #include "extensions/common/api/messaging/message.h"
+#include "extensions/common/mojom/event_dispatcher.mojom.h"
 #include "extensions/renderer/bindings/api_binding_util.h"
 #include "extensions/renderer/bindings/api_event_handler.h"
 #include "extensions/renderer/bindings/event_emitter.h"

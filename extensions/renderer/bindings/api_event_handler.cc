@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <map>
 #include <memory>
+#include <utility>
 #include <vector>
 
 #include "base/bind.h"
@@ -17,6 +18,7 @@
 #include "base/supports_user_data.h"
 #include "base/values.h"
 #include "content/public/renderer/v8_value_converter.h"
+#include "extensions/common/mojom/event_dispatcher.mojom.h"
 #include "extensions/renderer/bindings/event_emitter.h"
 #include "extensions/renderer/bindings/get_per_context_data.h"
 #include "extensions/renderer/bindings/js_runner.h"
@@ -212,7 +214,7 @@ void APIEventHandler::InvalidateCustomEvent(v8::Local<v8::Context> context,
 void APIEventHandler::FireEventInContext(const std::string& event_name,
                                          v8::Local<v8::Context> context,
                                          const base::ListValue& args,
-                                         const EventFilteringInfo* filter) {
+                                         mojom::EventFilteringInfoPtr filter) {
   // Don't bother converting arguments if there are no listeners.
   // NOTE(devlin): This causes a double data and EventEmitter lookup, since
   // the v8 version below also checks for listeners. This should be very cheap,
@@ -231,7 +233,7 @@ void APIEventHandler::FireEventInContext(const std::string& event_name,
   for (const auto& arg : args.GetList())
     v8_args.push_back(converter->ToV8Value(&arg, context));
 
-  FireEventInContext(event_name, context, &v8_args, filter,
+  FireEventInContext(event_name, context, &v8_args, std::move(filter),
                      JSRunner::ResultCallback());
 }
 
@@ -239,7 +241,7 @@ void APIEventHandler::FireEventInContext(
     const std::string& event_name,
     v8::Local<v8::Context> context,
     std::vector<v8::Local<v8::Value>>* arguments,
-    const EventFilteringInfo* filter,
+    mojom::EventFilteringInfoPtr filter,
     JSRunner::ResultCallback callback) {
   APIEventPerContextData* data =
       APIEventPerContextData::GetFrom(context, kDontCreateIfMissing);
@@ -256,7 +258,7 @@ void APIEventHandler::FireEventInContext(
 
   auto massager_iter = data->massagers.find(event_name);
   if (massager_iter == data->massagers.end()) {
-    emitter->Fire(context, arguments, filter, std::move(callback));
+    emitter->Fire(context, arguments, std::move(filter), std::move(callback));
   } else {
     DCHECK(!callback) << "Can't use an event callback with argument massagers.";
 

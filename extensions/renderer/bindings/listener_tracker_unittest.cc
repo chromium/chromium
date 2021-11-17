@@ -5,8 +5,10 @@
 #include "extensions/renderer/bindings/listener_tracker.h"
 
 #include <memory>
+#include <utility>
 
 #include "base/values.h"
+#include "extensions/common/mojom/event_dispatcher.mojom.h"
 #include "extensions/renderer/bindings/api_binding_test_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -194,10 +196,11 @@ TEST(ListenerTrackerTest, GetMatchingFilters) {
       kOwner2, kEvent1, filter3->CreateDeepCopy(), kRoutingId);
   EXPECT_NE(-1, filter_id3);
 
-  EventFilteringInfo filtering_info;
-  filtering_info.url = GURL("https://example.com/foo");
-  std::set<int> matching_filters =
-      tracker.GetMatchingFilteredListeners(kEvent1, filtering_info, kRoutingId);
+  mojom::EventFilteringInfoPtr filtering_info =
+      mojom::EventFilteringInfo::New();
+  filtering_info->url = GURL("https://example.com/foo");
+  std::set<int> matching_filters = tracker.GetMatchingFilteredListeners(
+      kEvent1, std::move(filtering_info), kRoutingId);
   EXPECT_THAT(matching_filters,
               testing::UnorderedElementsAre(filter_id1, filter_id3));
 }

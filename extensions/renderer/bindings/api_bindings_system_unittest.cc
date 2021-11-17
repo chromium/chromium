@@ -10,7 +10,7 @@
 #include "base/cxx17_backports.h"
 #include "base/strings/stringprintf.h"
 #include "base/values.h"
-#include "extensions/common/event_filtering_info.h"
+#include "extensions/common/mojom/event_dispatcher.mojom.h"
 #include "extensions/renderer/bindings/api_binding.h"
 #include "extensions/renderer/bindings/api_binding_hooks.h"
 #include "extensions/renderer/bindings/api_binding_hooks_test_delegate.h"

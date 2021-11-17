@@ -318,9 +318,8 @@ std::set<const EventListener*> EventListenerMap::GetEventListeners(
   std::set<const EventListener*> interested_listeners;
   if (IsFilteredEvent(event)) {
     // Look up the interested listeners via the EventFilter.
-    std::set<MatcherID> ids =
-        event_filter_.MatchEvent(event.event_name, event.filter_info,
-            MSG_ROUTING_NONE);
+    std::set<MatcherID> ids = event_filter_.MatchEvent(
+        event.event_name, *event.filter_info, MSG_ROUTING_NONE);
     for (const MatcherID& id : ids) {
       EventListener* listener = listeners_by_matcher_id_[id];
       CHECK(listener);

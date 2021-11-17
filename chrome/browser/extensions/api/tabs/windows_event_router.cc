@@ -25,6 +25,7 @@
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/extension_util.h"
 #include "extensions/common/constants.h"
+#include "extensions/common/mojom/event_dispatcher.mojom.h"
 
 using content::BrowserContext;
 
@@ -75,13 +76,14 @@ bool WillDispatchWindowEvent(WindowController* window_controller,
   }
 
   // Cleanup previous values.
-  event->filter_info = EventFilteringInfo();
+  event->filter_info = mojom::EventFilteringInfo::New();
   // Only set the window type if the listener has set a filter.
   // Otherwise we set the window visibility relative to the extension.
   if (has_filter) {
-    event->filter_info.window_type = window_controller->GetWindowTypeText();
+    event->filter_info->window_type = window_controller->GetWindowTypeText();
   } else {
-    event->filter_info.window_exposed_by_default = true;
+    event->filter_info->has_window_exposed_by_default = true;
+    event->filter_info->window_exposed_by_default = true;
   }
   return true;
 }
@@ -107,17 +109,18 @@ bool WillDispatchWindowFocusedEvent(
   }
 
   // Cleanup previous values.
-  event->filter_info = EventFilteringInfo();
+  event->filter_info = mojom::EventFilteringInfo::New();
   // Only set the window type if the listener has set a filter,
   // otherwise set the visibility to true (if the window is not
   // supposed to be visible by the extension, we will clear out the
   // window id later).
   if (has_filter) {
-    event->filter_info.window_type =
+    event->filter_info->window_type =
         window_controller ? window_controller->GetWindowTypeText()
                           : extensions::tabs_constants::kWindowTypeValueNormal;
   } else {
-    event->filter_info.window_exposed_by_default = true;
+    event->filter_info->has_window_exposed_by_default = true;
+    event->filter_info->window_exposed_by_default = true;
   }
 
   // When switching between windows in the default and incognito profiles,

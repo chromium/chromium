@@ -28,6 +28,7 @@
 #include "extensions/common/constants.h"
 #include "extensions/common/features/feature.h"
 #include "extensions/common/features/feature_provider.h"
+#include "extensions/common/mojom/event_dispatcher.mojom.h"
 #include "extensions/common/mojom/view_type.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_object.mojom-forward.h"
 
@@ -55,8 +56,9 @@ void ExtensionsGuestViewManagerDelegate::DispatchEvent(
     std::unique_ptr<base::DictionaryValue> args,
     GuestViewBase* guest,
     int instance_id) {
-  EventFilteringInfo info;
-  info.instance_id = instance_id;
+  mojom::EventFilteringInfoPtr info = mojom::EventFilteringInfo::New();
+  info->has_instance_id = true;
+  info->instance_id = instance_id;
   std::unique_ptr<base::ListValue> event_args(new base::ListValue());
   event_args->Append(std::move(args));
 
@@ -78,7 +80,7 @@ void ExtensionsGuestViewManagerDelegate::DispatchEvent(
       guest->owner_host(), histogram_value, event_name,
       content::ChildProcessHost::kInvalidUniqueID, extensions::kMainThreadId,
       blink::mojom::kInvalidServiceWorkerVersionId, std::move(event_args),
-      info);
+      std::move(info));
 }
 
 bool ExtensionsGuestViewManagerDelegate::IsGuestAvailableToContext(

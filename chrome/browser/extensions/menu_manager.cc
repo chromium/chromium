@@ -33,6 +33,7 @@
 #include "extensions/browser/state_store.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/manifest_handlers/background_info.h"
+#include "extensions/common/mojom/event_dispatcher.mojom.h"
 #include "third_party/blink/public/mojom/context_menu/context_menu.mojom.h"
 #include "ui/gfx/favicon_size.h"
 #include "ui/gfx/text_elider.h"
@@ -761,8 +762,10 @@ void MenuManager::ExecuteCommand(content::BrowserContext* context,
                       : api::context_menus::OnClicked::kEventName,
         std::move(args), context);
     event->user_gesture = EventRouter::USER_GESTURE_ENABLED;
-    if (webview_guest)
-      event->filter_info.instance_id = webview_guest->view_instance_id();
+    if (webview_guest) {
+      event->filter_info->has_instance_id = true;
+      event->filter_info->instance_id = webview_guest->view_instance_id();
+    }
     event_router->DispatchEventToExtension(item->extension_id(),
                                            std::move(event));
   }

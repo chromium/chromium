@@ -11,7 +11,7 @@
 #include "base/test/bind.h"
 #include "base/test/mock_callback.h"
 #include "base/values.h"
-#include "extensions/common/event_filtering_info.h"
+#include "extensions/common/mojom/event_dispatcher.mojom.h"
 #include "extensions/renderer/bindings/api_binding_test.h"
 #include "extensions/renderer/bindings/api_binding_test_util.h"
 #include "extensions/renderer/bindings/exception_handler.h"

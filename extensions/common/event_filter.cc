@@ -10,6 +10,7 @@
 #include "base/logging.h"
 #include "base/notreached.h"
 #include "components/url_matcher/url_matcher_factory.h"
+#include "extensions/common/mojom/event_dispatcher.mojom.h"
 #include "ipc/ipc_message.h"
 
 using url_matcher::URLMatcher;
@@ -135,7 +136,7 @@ std::string EventFilter::RemoveEventMatcher(MatcherID id) {
 
 std::set<EventFilter::MatcherID> EventFilter::MatchEvent(
     const std::string& event_name,
-    const EventFilteringInfo& event_info,
+    const mojom::EventFilteringInfo& event_info,
     int routing_id) const {
   std::set<MatcherID> matchers;
 

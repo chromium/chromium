@@ -16,8 +16,10 @@
 #include "content/public/renderer/render_thread.h"
 #include "content/public/renderer/worker_thread.h"
 #include "extensions/common/constants.h"
+#include "extensions/common/event_filtering_info_type_converters.h"
 #include "extensions/common/extension_features.h"
 #include "extensions/common/extension_messages.h"
+#include "extensions/common/mojom/event_dispatcher.mojom.h"
 #include "extensions/renderer/dispatcher.h"
 #include "extensions/renderer/extension_interaction_provider.h"
 #include "extensions/renderer/extensions_renderer_client.h"
@@ -367,8 +369,10 @@ void WorkerThreadDispatcher::OnDispatchEvent(
         ExtensionInteractionProvider::Scope::ForWorker(
             script_context->v8_context());
   }
+  mojom::EventFilteringInfoPtr filtering_info =
+      mojom::EventFilteringInfo::From(params.filtering_info);
   data->bindings_system()->DispatchEventInContext(
-      params.event_name, &event_args, &params.filtering_info, data->context());
+      params.event_name, &event_args, filtering_info, data->context());
   const int worker_thread_id = content::WorkerThread::GetCurrentId();
   Send(new ExtensionHostMsg_EventAckWorker(data->context()->GetExtensionID(),
                                            data->service_worker_version_id(),

@@ -26,7 +26,7 @@
 #include "content/public/common/url_constants.h"
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/extension_api_frame_id_map.h"
-#include "extensions/common/event_filtering_info.h"
+#include "extensions/common/mojom/event_dispatcher.mojom.h"
 #include "net/base/net_errors.h"
 #include "ui/base/page_transition_types.h"
 
@@ -47,14 +47,13 @@ double MilliSecondsFromTime(const base::Time& time) {
 void DispatchEvent(content::BrowserContext* browser_context,
                    std::unique_ptr<Event> event,
                    const GURL& url) {
-  EventFilteringInfo info;
-  info.url = url;
-
   Profile* profile = Profile::FromBrowserContext(browser_context);
   EventRouter* event_router = EventRouter::Get(profile);
   if (profile && event_router) {
+    mojom::EventFilteringInfoPtr info = mojom::EventFilteringInfo::New();
+    info->url = url;
     DCHECK_EQ(profile, event->restrict_to_browser_context);
-    event->filter_info = info;
+    event->filter_info = std::move(info);
     event_router->BroadcastEvent(std::move(event));
   }
 }
@@ -82,9 +81,9 @@ std::unique_ptr<Event> CreateOnBeforeNavigateEvent(
       web_navigation::OnBeforeNavigate::Create(details),
       navigation_handle->GetWebContents()->GetBrowserContext());
 
-  EventFilteringInfo info;
-  info.url = navigation_handle->GetURL();
-  event->filter_info = info;
+  mojom::EventFilteringInfoPtr info = mojom::EventFilteringInfo::New();
+  info->url = navigation_handle->GetURL();
+  event->filter_info = std::move(info);
 
   return event;
 }

@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/memory/weak_ptr.h"
+#include "extensions/common/mojom/event_dispatcher.mojom-forward.h"
 #include "extensions/renderer/bindings/api_binding_types.h"
 #include "extensions/renderer/bindings/api_bindings_system.h"
 #include "extensions/renderer/bindings/event_emitter.h"
@@ -56,10 +57,11 @@ class NativeExtensionBindingsSystem {
 
   // Dispatches an event with the given |name|, |event_args|, and
   // |filtering_info| in the given |context|.
-  void DispatchEventInContext(const std::string& event_name,
-                              const base::ListValue* event_args,
-                              const EventFilteringInfo* filtering_info,
-                              ScriptContext* context);
+  void DispatchEventInContext(
+      const std::string& event_name,
+      const base::ListValue* event_args,
+      const mojom::EventFilteringInfoPtr& filtering_info,
+      ScriptContext* context);
 
   // Returns true if there is a listener for the given |event_name| in the
   // associated |context|.
