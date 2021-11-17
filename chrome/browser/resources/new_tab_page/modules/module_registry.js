@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {loadTimeData} from '../i18n_setup.js';
 import {NewTabPageProxy} from '../new_tab_page_proxy.js';
 
 import {Module, ModuleDescriptor} from './module_descriptor.js';
@@ -62,11 +63,13 @@ export class ModuleRegistry {
     const descriptors =
         this.descriptors_.filter(d => !disabledIds.includes(d.id));
 
-    const order = await NewTabPageProxy.getInstance().handler.getModulesOrder();
-    const orderedIds = order.moduleIds;
-    // Only conform to the persisted order if there exists one in the pref.
-    // |orderedIds| will be an empty array if the user has not reordered
-    // the modules before.
+    // Only conform to the persisted order if there exists one in the pref and
+    // the feature is enabled. |orderedIds| will be an empty array if the user
+    // has not reordered the modules before.
+    const orderedIds = loadTimeData.getBoolean('modulesDragAndDropEnabled') ?
+        (await NewTabPageProxy.getInstance().handler.getModulesOrder())
+            .moduleIds :
+        [];
     if (orderedIds.length > 0) {
       descriptors.sort((a, b) => {
         return orderedIds.indexOf(a.id) - orderedIds.indexOf(b.id);
