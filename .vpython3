@@ -387,19 +387,7 @@ wheel: <
 wheel: <
   name: "infra/python/wheels/pandas/${vpython_platform}"
   version: "version:1.3.2.chromium.1"
-  match_tag: <
-    platform: "win32"
-  >
-  match_tag: <
-    platform: "win_amd64"
-  >
-  match_tag: <
-    platform: "manylinux1_i686"
-  >
-  match_tag: <
-    platform: "manylinux1_x86_64"
-  >
-  match_tag: <
-    platform: "macosx_10_6_intel"
+  not_match_tag: <
+    platform: "linux_aarch64"
   >
 >
