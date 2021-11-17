@@ -2635,6 +2635,8 @@ static_library("ui") {
       "webui/chromeos/projector/selfie_cam_bubble_manager.h",
       "webui/chromeos/set_time_ui.cc",
       "webui/chromeos/set_time_ui.h",
+      "webui/chromeos/shimless_rma_dialog.cc",
+      "webui/chromeos/shimless_rma_dialog.h",
       "webui/chromeos/slow_trace_ui.cc",
       "webui/chromeos/slow_trace_ui.h",
       "webui/chromeos/slow_ui.cc",
