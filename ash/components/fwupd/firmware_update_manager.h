@@ -9,7 +9,6 @@
 #include "chromeos/dbus/fwupd/fwupd_client.h"
 #include "chromeos/dbus/fwupd/fwupd_device.h"
 #include "chromeos/dbus/fwupd/fwupd_update.h"
-#include "dbus/message.h"
 
 namespace ash {
 // FirmwareUpdateManager contains all logic that runs the firmware update SWA.
@@ -18,6 +17,7 @@ class COMPONENT_EXPORT(ASH_FIRMWARE_UPDATE_MANAGER) FirmwareUpdateManager
  public:
   // Query the fwupd DBus client for currently connected devices.
   void RequestDevices();
+
   // Query the fwupd DBus client for updates for a certain device.
   void RequestUpdates(const std::string& device_id);
 

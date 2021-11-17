@@ -12,7 +12,6 @@
 #include "chromeos/dbus/dbus_client.h"
 #include "chromeos/dbus/fwupd/fwupd_device.h"
 #include "chromeos/dbus/fwupd/fwupd_update.h"
-#include "dbus/message.h"
 
 namespace chromeos {
 // FwupdClient is used for handling signals from the fwupd daemon.
