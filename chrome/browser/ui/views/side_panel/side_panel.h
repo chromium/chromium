@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_VIEWS_SIDE_PANEL_H_
-#define CHROME_BROWSER_UI_VIEWS_SIDE_PANEL_H_
+#ifndef CHROME_BROWSER_UI_VIEWS_SIDE_PANEL_SIDE_PANEL_H_
+#define CHROME_BROWSER_UI_VIEWS_SIDE_PANEL_SIDE_PANEL_H_
 
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
@@ -35,4 +35,4 @@ class SidePanel : public views::View, public views::ViewObserver {
   View* const border_view_;
 };
 
-#endif  // CHROME_BROWSER_UI_VIEWS_SIDE_PANEL_H_
+#endif  // CHROME_BROWSER_UI_VIEWS_SIDE_PANEL_SIDE_PANEL_H_

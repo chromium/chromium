@@ -9,7 +9,7 @@
 #include "base/metrics/user_metrics_action.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/lens/lens_side_panel_view.h"
-#include "chrome/browser/ui/views/side_panel.h"
+#include "chrome/browser/ui/views/side_panel/side_panel.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "components/lens/lens_entrypoints.h"
 #include "content/public/browser/navigation_handle.h"
