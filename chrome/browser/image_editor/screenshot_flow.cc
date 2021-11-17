@@ -259,6 +259,9 @@ void ScreenshotFlow::RunScreenshotCompleteCallback(
     ScreenshotCaptureResultCode result_code,
     gfx::Rect bounds,
     gfx::Image image) {
+  if (flow_callback_.is_null())
+    return;
+
   ScreenshotCaptureResult result;
   result.result_code = result_code;
   result.image = image;
