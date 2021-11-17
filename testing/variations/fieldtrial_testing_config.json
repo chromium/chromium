@@ -8308,27 +8308,6 @@
             ]
         }
     ],
-    "V8PerFrameMemoryMonitoringStudy": [
-        {
-            "platforms": [
-                "android",
-                "android_webview",
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "V8PerFrameMemoryMonitoring"
-                    ]
-                }
-            ]
-        }
-    ],
     "V8ScriptAblation": [
         {
             "platforms": [
