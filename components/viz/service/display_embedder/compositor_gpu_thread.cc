@@ -10,6 +10,7 @@
 #include "base/feature_list.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/bind_post_task.h"
+#include "build/build_config.h"
 #include "components/viz/common/features.h"
 #include "components/viz/common/gpu/vulkan_context_provider.h"
 #include "components/viz/common/switches.h"
@@ -38,6 +39,15 @@ std::unique_ptr<CompositorGpuThread> CompositorGpuThread::Create(
     bool enable_watchdog) {
   if (!features::IsDrDcEnabled())
     return nullptr;
+
+#if defined(OS_ANDROID)
+  // When using angle via enabling passthrough command decoder on android, angle
+  // context virtualization group extension should be enabled. Also since angle
+  // currently always enables this extension, we are adding DCHECK() to ensure
+  // that instead of enabling/disabling DrDc based on the extension.
+  if (gl::GetGLImplementation() == gl::kGLImplementationEGLANGLE)
+    DCHECK(gl::GLSurfaceEGL::IsANGLEContextVirtualizationSupported());
+#endif
 
   scoped_refptr<VulkanContextProvider> vulkan_context_provider;
 #if BUILDFLAG(ENABLE_VULKAN)

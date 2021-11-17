@@ -325,12 +325,6 @@ bool IsDrDcEnabled() {
   if (!IsAImageReaderEnabled())
     return false;
 
-  // Do not enable DrDc if angle context virtualization group is not supported.
-  // Both gpu main thread and compositor gpu thread should be mapped to a
-  // different angle's backend context and hence different virtualization group.
-  if (!gl::GLSurfaceEGL::IsANGLEContextVirtualizationSupported())
-    return false;
-
   return base::FeatureList::IsEnabled(kEnableDrDc);
 #else
   return false;
