@@ -14,7 +14,6 @@
 #include "base/strings/stringprintf.h"
 #include "build/build_config.h"
 #include "build/chromecast_buildflags.h"
-#include "build/chromeos_buildflags.h"
 #include "media/audio/audio_source_parameters.h"
 #include "media/base/channel_layout.h"
 #include "media/base/sample_rates.h"
@@ -108,7 +107,7 @@ std::string GetAudioProcesingPropertiesLogString(
 // AEC is active. This is currently the default on at least MacOS but is not
 // allowed for ChromeOS setups.
 constexpr bool IsIndependentSystemNsAllowed() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if defined(OS_CHROMEOS)
   return false;
 #else
   return true;
