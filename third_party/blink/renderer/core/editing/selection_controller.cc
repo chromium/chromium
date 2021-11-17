@@ -1045,8 +1045,8 @@ void SelectionController::HandleMouseDraggedEvent(
 }
 
 void SelectionController::UpdateSelectionForMouseDrag(
-    const PhysicalOffset& drag_start_pos,
-    const PhysicalOffset& last_known_mouse_position) {
+    const PhysicalOffset& drag_start_pos_in_root_frame,
+    const PhysicalOffset& last_known_mouse_position_in_root_frame) {
   LocalFrameView* view = frame_->View();
   if (!view)
     return;
@@ -1057,11 +1057,11 @@ void SelectionController::UpdateSelectionForMouseDrag(
   HitTestRequest request(HitTestRequest::kReadOnly | HitTestRequest::kActive |
                          HitTestRequest::kMove |
                          HitTestRequest::kRetargetForInert);
-  HitTestLocation location(view->ViewportToFrame(last_known_mouse_position));
+  HitTestLocation location(last_known_mouse_position_in_root_frame);
   HitTestResult result(request, location);
   layout_view->HitTest(location, result);
-  UpdateSelectionForMouseDrag(result, drag_start_pos,
-                              last_known_mouse_position);
+  UpdateSelectionForMouseDrag(result, drag_start_pos_in_root_frame,
+                              last_known_mouse_position_in_root_frame);
 }
 
 bool SelectionController::HandleMouseReleaseEvent(
