@@ -64,6 +64,16 @@ public class FREMobileIdentityConsistencyFieldTrial {
      */
     @MainThread
     public static void createFirstRunTrial() {
+        synchronized (LOCK) {
+            // Don't create a new group if the user was already assigned a group. Can happen when
+            // the user dismisses FRE without finishing the flow and cold starts chrome again.
+            if (SharedPreferencesManager.getInstance().readString(
+                        ChromePreferenceKeys.FIRST_RUN_FIELD_TRIAL_GROUP, null)
+                    != null) {
+                return;
+            }
+        }
+
         // Tweak these values for different builds to create the percentage of enabled population.
         // For A/B testing enabled and disabled group should have the same percentages.
         int enabledPercent = 0;
