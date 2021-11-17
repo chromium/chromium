@@ -69,7 +69,7 @@ public class NetworkChangeNotifierTest {
         Os.listen(s, 0);
 
         // Make URL pointing at this local port, where requests will get stuck connecting.
-        String url = "http://127.0.0.1:" + ((InetSocketAddress) Os.getsockname(s)).getPort();
+        String url = "https://127.0.0.1:" + ((InetSocketAddress) Os.getsockname(s)).getPort();
 
         // Launch a few requests at this local port.  Four seems to be the magic number where
         // that request and any further request get stuck connecting.
