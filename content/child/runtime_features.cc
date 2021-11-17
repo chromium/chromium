@@ -405,6 +405,7 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
            blink::features::kAutoExpandDetailsElement},
           {"UserAgentClientHintFullVersionList",
            blink::features::kUserAgentClientHintFullVersionList},
+          {"UserAgentReduction", blink::features::kReduceUserAgent},
       };
   for (const auto& mapping : runtimeFeatureNameToChromiumFeatureMapping) {
     SetRuntimeFeatureFromChromiumFeature(

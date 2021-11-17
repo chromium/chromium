@@ -1544,7 +1544,6 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kWebSQLInThirdPartyContextEnabled,
     policy_prefs::kWebSQLInThirdPartyContextEnabled,
     base::Value::Type::BOOLEAN },
-
   { key::kCORSNonWildcardRequestHeadersSupport,
     prefs::kCorsNonWildcardRequestHeadersSupport,
     base::Value::Type::BOOLEAN },
@@ -1554,6 +1553,9 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kCopyPreventionSettings,
     policy_prefs::kCopyPreventionSettings,
     base::Value::Type::DICTIONARY},
+  { key::kUserAgentReduction,
+    prefs::kUserAgentReduction,
+    base::Value::Type::INTEGER},
 };
 // clang-format on
 
