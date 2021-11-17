@@ -17,6 +17,10 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/gfx/switches.h"
 
+#if defined(OS_LINUX)
+#include "ui/ozone/public/ozone_platform.h"
+#endif  // defined(OS_LINUX)
+
 namespace {
 const char kChrome[] = "chrome";
 }  // namespace
@@ -45,6 +49,14 @@ class HeadlessModeBrowserTest : public InProcessBrowserTest {
 
  private:
 };
+
+#if defined(OS_LINUX)
+IN_PROC_BROWSER_TEST_F(HeadlessModeBrowserTest, OzonePlatformHeadless) {
+  // On Linux, the Native Headless Chrome uses Ozone/Headless.
+  ASSERT_NE(ui::OzonePlatform::GetInstance(), nullptr);
+  EXPECT_EQ(ui::OzonePlatform::GetPlatformNameForTest(), "headless");
+}
+#endif  // defined(OS_LINUX)
 
 #if defined(OS_WIN)
 IN_PROC_BROWSER_TEST_F(HeadlessModeBrowserTest, BrowserDesktopWindowHidden) {
