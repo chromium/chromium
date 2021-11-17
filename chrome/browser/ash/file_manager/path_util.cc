@@ -85,7 +85,7 @@ constexpr base::FilePath::CharType kArcExternalFilesRoot[] =
 constexpr char kArcRemovableMediaContentUrlPrefix[] =
     "content://org.chromium.arc.volumeprovider/";
 // The dummy UUID of the MyFiles volume is taken from
-// components/arc/volume_mounter/arc_volume_mounter_bridge.cc.
+// ash/components/arc/volume_mounter/arc_volume_mounter_bridge.cc.
 // TODO(crbug.com/929031): Move MyFiles constants to a common place.
 constexpr char kArcMyFilesContentUrlPrefix[] =
     "content://org.chromium.arc.volumeprovider/"

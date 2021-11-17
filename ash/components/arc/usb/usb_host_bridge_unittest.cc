@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/arc/usb/usb_host_bridge.h"
+#include "ash/components/arc/usb/usb_host_bridge.h"
 
 #include "ash/components/arc/test/test_browser_context.h"
 #include "components/arc/session/arc_service_manager.h"

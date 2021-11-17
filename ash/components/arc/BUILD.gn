@@ -79,6 +79,15 @@ static_library("arc") {
     "sensor/arc_sensor_bridge.h",
     "storage_manager/arc_storage_manager.cc",
     "storage_manager/arc_storage_manager.h",
+    "timer/arc_timer_bridge.cc",
+    "timer/arc_timer_bridge.h",
+    "usb/usb_host_bridge.cc",
+    "usb/usb_host_bridge.h",
+    "usb/usb_host_ui_delegate.h",
+    "volume_mounter/arc_volume_mounter_bridge.cc",
+    "volume_mounter/arc_volume_mounter_bridge.h",
+    "wake_lock/arc_wake_lock_bridge.cc",
+    "wake_lock/arc_wake_lock_bridge.h",
   ]
 
   public_deps = [
@@ -424,6 +433,7 @@ source_set("unit_tests") {
     "wake_lock/arc_wake_lock_bridge_unittest.cc",
   ]
 
+  # TODO(b/129295708): Clean up unused deps. Update users of this target.
   deps = [
     "//ash/components/arc:arc_test_support",
     "//ash/constants",

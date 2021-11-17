@@ -5,6 +5,8 @@
 #include <set>
 
 #include "ash/components/arc/arc_browser_context_keyed_service_factory_base.h"
+#include "ash/components/arc/timer/arc_timer_bridge.h"
+#include "ash/components/arc/timer/arc_timer_mojom_traits.h"
 #include "base/bind.h"
 #include "base/containers/flat_set.h"
 #include "base/logging.h"
@@ -15,8 +17,6 @@
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "components/arc/session/arc_bridge_service.h"
 #include "components/arc/session/arc_service_manager.h"
-#include "components/arc/timer/arc_timer_bridge.h"
-#include "components/arc/timer/arc_timer_mojom_traits.h"
 #include "mojo/public/cpp/system/handle.h"
 #include "mojo/public/cpp/system/platform_handle.h"
 

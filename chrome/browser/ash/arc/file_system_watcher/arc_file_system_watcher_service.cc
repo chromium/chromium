@@ -55,7 +55,7 @@ constexpr base::FilePath::CharType kAndroidDownloadDir[] =
 // TODO(crbug.com/929031): Move this to arc_volume_mounter_bridge.h.
 // The MyFiles path inside ARC container. This will be the path that is used in
 // MediaScanner.scanFile request. UUID for the MyFiles volume is taken from
-// components/arc/volume_mounter/arc_volume_mounter_bridge.cc.
+// ash/components/arc/volume_mounter/arc_volume_mounter_bridge.cc.
 constexpr base::FilePath::CharType kAndroidMyFilesDir[] =
     FILE_PATH_LITERAL("/storage/0000000000000000000000000000CAFEF00D2019");
 

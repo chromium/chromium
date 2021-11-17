@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/arc/wake_lock/arc_wake_lock_bridge.h"
+#include "ash/components/arc/wake_lock/arc_wake_lock_bridge.h"
 
 #include <memory>
 #include <utility>

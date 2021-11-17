@@ -227,8 +227,10 @@ if (is_chromeos_ash) {
             cpp = "::clockid_t"
           },
         ]
-        traits_headers = [ "//components/arc/timer/arc_timer_mojom_traits.h" ]
-        traits_sources = [ "//components/arc/timer/arc_timer_mojom_traits.cc" ]
+        traits_headers =
+            [ "//ash/components/arc/timer/arc_timer_mojom_traits.h" ]
+        traits_sources =
+            [ "//ash/components/arc/timer/arc_timer_mojom_traits.cc" ]
       },
       {
         types = [
@@ -241,10 +243,12 @@ if (is_chromeos_ash) {
             cpp = "::chromeos::disks::DiskMountManager::MountEvent"
           },
         ]
-        traits_headers =
-            [ "//components/arc/volume_mounter/volume_mounter_mojom_traits.h" ]
-        traits_sources =
-            [ "//components/arc/volume_mounter/volume_mounter_mojom_traits.cc" ]
+        traits_headers = [
+          "//ash/components/arc/volume_mounter/volume_mounter_mojom_traits.h",
+        ]
+        traits_sources = [
+          "//ash/components/arc/volume_mounter/volume_mounter_mojom_traits.cc",
+        ]
       },
     ]
   }

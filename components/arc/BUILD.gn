@@ -50,17 +50,9 @@ static_library("arc") {
     "intent_helper/link_handler_model.cc",
     "intent_helper/link_handler_model.h",
     "intent_helper/open_url_delegate.h",
-    "timer/arc_timer_bridge.cc",
-    "timer/arc_timer_bridge.h",
-    "usb/usb_host_bridge.cc",
-    "usb/usb_host_bridge.h",
-    "usb/usb_host_ui_delegate.h",
-    "volume_mounter/arc_volume_mounter_bridge.cc",
-    "volume_mounter/arc_volume_mounter_bridge.h",
-    "wake_lock/arc_wake_lock_bridge.cc",
-    "wake_lock/arc_wake_lock_bridge.h",
   ]
 
+  # TODO(b/129295708): Remove these public_deps.
   public_deps = [
     "//ash/components/arc:arc",
     "//ash/components/arc:arc_base",
@@ -68,6 +60,7 @@ static_library("arc") {
     "//ash/components/arc:prefs",
   ]
 
+  # TODO(b/129295708): Clean up unused deps. Update users of this target.
   deps = [
     "//ash:ash",
     "//ash/components/audio",

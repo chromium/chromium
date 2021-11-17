@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_ARC_VOLUME_MOUNTER_VOLUME_MOUNTER_MOJOM_TRAITS_H_
-#define COMPONENTS_ARC_VOLUME_MOUNTER_VOLUME_MOUNTER_MOJOM_TRAITS_H_
+#ifndef ASH_COMPONENTS_ARC_VOLUME_MOUNTER_VOLUME_MOUNTER_MOJOM_TRAITS_H_
+#define ASH_COMPONENTS_ARC_VOLUME_MOUNTER_VOLUME_MOUNTER_MOJOM_TRAITS_H_
 
 #include "chromeos/disks/disk_mount_manager.h"
 #include "components/arc/mojom/volume_mounter.mojom-shared.h"
@@ -28,4 +28,4 @@ struct EnumTraits<arc::mojom::MountEvent,
 
 }  // namespace mojo
 
-#endif  // COMPONENTS_ARC_VOLUME_MOUNTER_VOLUME_MOUNTER_MOJOM_TRAITS_H_
+#endif  // ASH_COMPONENTS_ARC_VOLUME_MOUNTER_VOLUME_MOUNTER_MOJOM_TRAITS_H_

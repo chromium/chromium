@@ -32,7 +32,7 @@ namespace {
 
 constexpr char kAndroidEnabled[] = "androidEnabled";
 // Dummy UUID for testing. The UUID is taken from
-// components/arc/volume_mounter/arc_volume_mounter_bridge.cc.
+// ash/components/arc/volume_mounter/arc_volume_mounter_bridge.cc.
 constexpr char kDummyUuid[] = "00000000000000000000000000000000DEADBEEF";
 
 const char* CalculationTypeToEventName(

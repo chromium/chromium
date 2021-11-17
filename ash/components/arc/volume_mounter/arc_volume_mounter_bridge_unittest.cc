@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/arc/volume_mounter/arc_volume_mounter_bridge.h"
+#include "ash/components/arc/volume_mounter/arc_volume_mounter_bridge.h"
 
 #include "ash/components/arc/test/test_browser_context.h"
 #include "chromeos/disks/disk_mount_manager.h"
