@@ -32,6 +32,7 @@
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/policy/core/user_cloud_policy_manager_ash.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "components/account_id/account_id.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "components/user_manager/user.h"
@@ -78,6 +79,10 @@ constexpr char kFakeProfileClientId[] = "fake-profile-client-id";
 constexpr char kAffiliationId1[] = "affiliation-id-1";
 constexpr char kDomain1[] = "domain1.com";
 constexpr char kTestUrl[] = "https://foo.com";
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+constexpr char kTestGaiaId[] = "123";
+#endif
 
 }  // namespace
 
@@ -137,6 +142,11 @@ class ConnectorsServiceProfileBrowserTest
 
   void TearDownOnMainThread() override {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+    // Remove cached user from ProfileHelper so it does not interfere with other
+    // workflows
+    ash::ProfileHelper::Get()->RemoveUserFromListForTesting(
+        AccountId::FromUserEmailGaiaId(
+            browser()->profile()->GetProfileUserName(), kTestGaiaId));
     user_manager_enabler_.reset();
 #endif
   }
@@ -189,7 +199,7 @@ class ConnectorsServiceProfileBrowserTest
     user_manager_enabler_ = std::make_unique<user_manager::ScopedUserManager>(
         base::WrapUnique(fake_user_manager));
     AccountId account_id = AccountId::FromUserEmailGaiaId(
-        browser()->profile()->GetProfileUserName(), "123");
+        browser()->profile()->GetProfileUserName(), kTestGaiaId);
     fake_user_manager->AddUserWithAffiliationAndTypeAndProfile(
         account_id, management_status() == ManagementStatus::AFFILIATED,
         user_manager::USER_TYPE_REGULAR,

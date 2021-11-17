@@ -6,6 +6,8 @@
 
 #include "ash/components/settings/cros_settings_names.h"
 #include "base/bind.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/task/thread_pool.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/settings/scoped_testing_cros_settings.h"
@@ -13,6 +15,7 @@
 #include "components/account_id/account_id.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "components/reporting/client/mock_report_queue.h"
+#include "components/reporting/client/report_queue.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -281,8 +284,6 @@ class PrintJobReportingServiceTest : public ::testing::Test {
     user_manager->AddKioskAppUser(account_id);
     user_manager_enabler_ = std::make_unique<user_manager::ScopedUserManager>(
         std::move(user_manager));
-    print_job_reporting_service_ =
-        PrintJobReportingService::Create(/* dm_token_value= */ "");
   }
 
   void ChangeReportingSetting(bool should_report) {
@@ -290,8 +291,15 @@ class PrintJobReportingServiceTest : public ::testing::Test {
                                                     should_report);
   }
 
-  void SetReportQueue() {
-    auto report_queue = std::make_unique<::reporting::MockReportQueue>();
+  // Creates a new report queue that can be used by the PrintJobReportingService
+  // with the enqueue operation stubbed
+  std::unique_ptr<::reporting::ReportQueue, base::OnTaskRunnerDeleter>
+  CreateReportQueue() {
+    auto report_queue = std::unique_ptr<::reporting::MockReportQueue,
+                                        base::OnTaskRunnerDeleter>(
+        new ::reporting::MockReportQueue(),
+        base::OnTaskRunnerDeleter(
+            base::ThreadPool::CreateSequencedTaskRunner({})));
     EXPECT_CALL(*report_queue, AddRecord)
         .WillRepeatedly(
             [this](base::StringPiece record, ::reporting::Priority priority,
@@ -301,8 +309,7 @@ class PrintJobReportingServiceTest : public ::testing::Test {
               events_.push_back(event);
               priorities_.push_back(priority);
             });
-    print_job_reporting_service_->GetReportQueueSetter().Run(
-        std::move(report_queue));
+    return std::move(report_queue);
   }
 
  protected:
@@ -315,9 +322,9 @@ class PrintJobReportingServiceTest : public ::testing::Test {
 };
 
 TEST_F(PrintJobReportingServiceTest, ShouldReportPolicyDisabled) {
+  print_job_reporting_service_ =
+      PrintJobReportingService::CreateForTest(CreateReportQueue());
   ChangeReportingSetting(false);
-  SetReportQueue();
-
   print_job_reporting_service_->OnPrintJobFinished(JobInfo1());
   print_job_reporting_service_->OnPrintJobFinished(JobInfo2());
 
@@ -326,9 +333,9 @@ TEST_F(PrintJobReportingServiceTest, ShouldReportPolicyDisabled) {
 }
 
 TEST_F(PrintJobReportingServiceTest, Enqueue) {
+  print_job_reporting_service_ =
+      PrintJobReportingService::CreateForTest(CreateReportQueue());
   ChangeReportingSetting(true);
-  SetReportQueue();
-
   print_job_reporting_service_->OnPrintJobFinished(JobInfo1());
   print_job_reporting_service_->OnPrintJobFinished(JobInfo2());
 
@@ -337,38 +344,13 @@ TEST_F(PrintJobReportingServiceTest, Enqueue) {
   EXPECT_EQ(priorities_[0], ::reporting::Priority::SLOW_BATCH);
   EXPECT_THAT(events_[1], IsPrintJobEvent(JobEvent2()));
   EXPECT_EQ(priorities_[1], ::reporting::Priority::SLOW_BATCH);
-}
-
-TEST_F(PrintJobReportingServiceTest, PendingPrintJobsEnqueue) {
-  ChangeReportingSetting(true);
-
-  print_job_reporting_service_->OnPrintJobFinished(JobInfo1());
-  print_job_reporting_service_->OnPrintJobFinished(JobInfo2());
-
-  EXPECT_TRUE(events_.empty());
-  EXPECT_TRUE(priorities_.empty());
-
-  SetReportQueue();
-
-  ASSERT_EQ(events_.size(), 2u);
-  EXPECT_THAT(events_[0], IsPrintJobEvent(JobEvent1()));
-  EXPECT_EQ(priorities_[0], ::reporting::Priority::SLOW_BATCH);
-  EXPECT_THAT(events_[1], IsPrintJobEvent(JobEvent2()));
-  EXPECT_EQ(priorities_[1], ::reporting::Priority::SLOW_BATCH);
-
-  print_job_reporting_service_->OnPrintJobFinished(JobInfo3());
-
-  ASSERT_EQ(events_.size(), 3u);
-  EXPECT_THAT(events_[2], IsPrintJobEvent(JobEvent3()));
-  EXPECT_EQ(priorities_[2], ::reporting::Priority::SLOW_BATCH);
 }
 
 TEST_F(PrintJobReportingServiceTest, ShouldReportPolicyInitiallyEnabled) {
   ChangeReportingSetting(true);
   // Create the reporting service after setting the policy to true.
   print_job_reporting_service_ =
-      PrintJobReportingService::Create(/* dm_token_value= */ "");
-  SetReportQueue();
+      PrintJobReportingService::CreateForTest(CreateReportQueue());
 
   print_job_reporting_service_->OnPrintJobFinished(JobInfo1());
 
@@ -381,9 +363,7 @@ TEST_F(PrintJobReportingServiceTest, ShouldReportPolicyInitiallyDisabled) {
   ChangeReportingSetting(false);
   // Create the reporting service after setting the policy to false.
   print_job_reporting_service_ =
-      PrintJobReportingService::Create(/* dm_token_value= */ "");
-  SetReportQueue();
-
+      PrintJobReportingService::CreateForTest(CreateReportQueue());
   print_job_reporting_service_->OnPrintJobFinished(JobInfo1());
 
   EXPECT_TRUE(events_.empty());
