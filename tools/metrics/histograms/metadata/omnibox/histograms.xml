@@ -22,6 +22,20 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
+<histogram name="Omnibox.AcceptedKeywordSuggestion"
+    enum="OmniboxEnteredKeywordMode2" expires_after="2022-11-10">
+  <owner>yoangela@chromium.org</owner>
+  <owner>chrome-omnibox-team@google.com</owner>
+  <summary>
+    Records number of accepted keyword searches enumerated by how the user
+    entered the keyword mode. See also Omnibox.EnteredKeywordMode2 for the total
+    number of times a user enters keyword mode whether or not the keyword
+    suggestion was accepted. Note that this only records when a user accepts a
+    search suggestion for the keyword search engine and does not record for URL
+    suggestions even if the user is in keyword mode.
+  </summary>
+</histogram>
+
 <histogram name="Omnibox.AnswerParseSuccess" enum="BooleanSuccess"
     expires_after="2022-03-06">
   <owner>jdonnelly@chromium.org</owner>
