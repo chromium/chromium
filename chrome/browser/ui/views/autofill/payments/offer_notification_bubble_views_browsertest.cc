@@ -107,13 +107,12 @@ IN_PROC_BROWSER_TEST_F(OfferNotificationBubbleViewsBrowserTest,
   EXPECT_FALSE(GetOfferNotificationBubbleViews());
 }
 
-#if defined(OS_LINUX) || defined(OS_MAC)
+#if defined(OS_LINUX)
 #define MAYBE_BubbleNotShowingOnDuplicateTab \
   DISABLED_BubbleNotShowingOnDuplicateTab
 #else
 #define MAYBE_BubbleNotShowingOnDuplicateTab BubbleNotShowingOnDuplicateTab
 #endif
-// [Sheriff] (crbug.com/1271059) failing on Mac.
 // TODO(crbug.com/1270516): Disabled due to flakiness with linux-wayland-rel.
 // Tests that the offer notification bubble will not be shown if bubble has been
 // shown for kAutofillBubbleSurviveNavigationTime (5 seconds) and the user has
