@@ -98,7 +98,6 @@ void WaylandOutput::TriggerDelegateNotifications() {
         scale_factor_ = rect_in_physical_pixels_.height() /
                         static_cast<float>(logical_size.height());
       }
-      scale_factor_ = ceil(scale_factor_);
     }
   }
   delegate_->OnOutputHandleMetrics(output_id_, rect_in_physical_pixels_,
