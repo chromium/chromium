@@ -2439,6 +2439,10 @@ chrome_internal_verifier(
 )
 
 chrome_internal_verifier(
+    builder = "test-o-emulator",
+)
+
+chrome_internal_verifier(
     builder = "win-chrome",
     branch_selector = branches.DESKTOP_EXTENDED_STABLE_MILESTONE,
 )
