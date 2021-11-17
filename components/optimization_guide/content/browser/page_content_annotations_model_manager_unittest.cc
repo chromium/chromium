@@ -508,7 +508,6 @@ TEST_F(PageContentAnnotationsModelManagerTest, BatchAnnotate_PageTopics) {
   ASSERT_EQ(result.size(), 1U);
   EXPECT_EQ(result[0].input(), "input");
   EXPECT_EQ(result[0].type(), AnnotationType::kPageTopics);
-  EXPECT_EQ(result[0].status(), ExecutionStatus::kSuccess);
   EXPECT_EQ(result[0].topics(), absl::nullopt);
   EXPECT_EQ(result[0].entities(), absl::nullopt);
   EXPECT_EQ(result[0].visibility_score(), absl::nullopt);
@@ -537,7 +536,6 @@ TEST_F(PageContentAnnotationsModelManagerTest,
   ASSERT_EQ(result.size(), 1U);
   EXPECT_EQ(result[0].input(), "input");
   EXPECT_EQ(result[0].type(), AnnotationType::kPageTopics);
-  EXPECT_EQ(result[0].status(), ExecutionStatus::kErrorModelFileNotAvailable);
   EXPECT_EQ(result[0].topics(), absl::nullopt);
   EXPECT_EQ(result[0].entities(), absl::nullopt);
   EXPECT_EQ(result[0].visibility_score(), absl::nullopt);
@@ -563,7 +561,6 @@ TEST_F(PageContentAnnotationsModelManagerTest, BatchAnnotate_PageEntities) {
   // run.
   ASSERT_EQ(result.size(), 1U);
   EXPECT_EQ(result[0].input(), "input");
-  EXPECT_EQ(result[0].status(), ExecutionStatus::kErrorInternalError);
   EXPECT_EQ(result[0].topics(), absl::nullopt);
   EXPECT_EQ(result[0].entities(), absl::nullopt);
   EXPECT_EQ(result[0].visibility_score(), absl::nullopt);
@@ -590,7 +587,6 @@ TEST_F(PageContentAnnotationsModelManagerTest,
   // run.
   ASSERT_EQ(result.size(), 1U);
   EXPECT_EQ(result[0].input(), "input");
-  EXPECT_EQ(result[0].status(), ExecutionStatus::kErrorInternalError);
   EXPECT_EQ(result[0].topics(), absl::nullopt);
   EXPECT_EQ(result[0].entities(), absl::nullopt);
   EXPECT_EQ(result[0].visibility_score(), absl::nullopt);
@@ -645,13 +641,11 @@ TEST_F(PageContentAnnotationsModelManagerTest, BatchAnnotate_CalledTwice) {
   ASSERT_EQ(result1.size(), 1U);
   EXPECT_EQ(result1[0].input(), "input1");
   EXPECT_EQ(result1[0].type(), AnnotationType::kPageTopics);
-  EXPECT_EQ(result1[0].status(), ExecutionStatus::kSuccess);
   EXPECT_EQ(result1[0].topics(), absl::nullopt);
   EXPECT_EQ(result1[0].entities(), absl::nullopt);
   EXPECT_EQ(result1[0].visibility_score(), absl::nullopt);
   ASSERT_EQ(result2.size(), 1U);
   EXPECT_EQ(result2[0].input(), "input2");
-  EXPECT_EQ(result2[0].status(), ExecutionStatus::kErrorInternalError);
   EXPECT_EQ(result2[0].topics(), absl::nullopt);
   EXPECT_EQ(result2[0].entities(), absl::nullopt);
   EXPECT_EQ(result2[0].visibility_score(), absl::nullopt);

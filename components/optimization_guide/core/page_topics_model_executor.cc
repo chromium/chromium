@@ -50,16 +50,12 @@ void PageTopicsModelExecutor::PostprocessCategoriesToBatchAnnotationResult(
     const absl::optional<std::vector<tflite::task::core::Category>>& output) {
   DCHECK_EQ(annotation_type, AnnotationType::kPageTopics);
 
-  // TODO(crbug/1249632): Plumb out a status from the executor.
-  ExecutionStatus status = ExecutionStatus::kUnknown;
-
   absl::optional<std::vector<WeightedString>> categories;
   if (output) {
-    status = ExecutionStatus::kSuccess;
     categories = ExtractCategoriesFromModelOutput(*output);
   }
   std::move(callback).Run(
-      BatchAnnotationResult::CreatePageTopicsResult(input, status, categories));
+      BatchAnnotationResult::CreatePageTopicsResult(input, categories));
 }
 
 absl::optional<std::vector<WeightedString>>

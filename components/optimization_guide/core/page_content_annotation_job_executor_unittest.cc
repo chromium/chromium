@@ -14,6 +14,10 @@
 
 namespace optimization_guide {
 
+namespace {
+const std::vector<WeightedString> kOutput{WeightedString("output", 1.0)};
+}
+
 class TestJobExecutor : public PageContentAnnotationJobExecutor {
  public:
   TestJobExecutor() = default;
@@ -25,8 +29,8 @@ class TestJobExecutor : public PageContentAnnotationJobExecutor {
       const std::string& input,
       base::OnceCallback<void(const BatchAnnotationResult&)> callback)
       override {
-    std::move(callback).Run(BatchAnnotationResult::CreatePageTopicsResult(
-        input, ExecutionStatus::kSuccess, absl::nullopt));
+    std::move(callback).Run(
+        BatchAnnotationResult::CreatePageTopicsResult(input, kOutput));
   }
 };
 
@@ -71,9 +75,9 @@ TEST_F(PageContentAnnotationJobExecutorTest, FullFlow) {
 
   ASSERT_EQ(2U, results.size());
   EXPECT_EQ(results[0].input(), "input1");
-  EXPECT_EQ(results[0].status(), ExecutionStatus::kSuccess);
+  EXPECT_EQ(results[0].topics(), absl::make_optional(kOutput));
   EXPECT_EQ(results[1].input(), "input2");
-  EXPECT_EQ(results[1].status(), ExecutionStatus::kSuccess);
+  EXPECT_EQ(results[1].topics(), absl::make_optional(kOutput));
 }
 
 }  // namespace optimization_guide

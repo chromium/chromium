@@ -351,6 +351,19 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="OptimizationGuide.ModelExecutor.ExecutionStatus.{OptimizationTarget}"
+    enum="OptimizationGuideExecutionStatus" expires_after="M106">
+  <owner>robertogden@chromium.org</owner>
+  <owner>chrome-intelligence-core@google.com</owner>
+  <summary>
+    Records the result of attempting to execute a {OptimizationTarget} model,
+    including loading the file from disk. Recorded once per model execution
+    attempt for {OptimizationTarget}.
+  </summary>
+  <token key="OptimizationTarget" variants="OptimizationTarget"/>
+</histogram>
+
+<histogram
     name="OptimizationGuide.ModelExecutor.ModelAvailableToLoad.{OptimizationTarget}"
     enum="BooleanAvailable" expires_after="M106">
   <owner>robertogden@chromium.org</owner>
@@ -383,6 +396,9 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="OptimizationGuide.ModelExecutor.ModelLoadingResult.{OptimizationTarget}"
     enum="ModelExecutorLoadingState" expires_after="M106">
+  <obsolete>
+    Removed in favor of OptimizationGuide.ModelExecutor.ExecutionStatus in M98.
+  </obsolete>
   <owner>mcrouse@chromium.org</owner>
   <owner>chrome-intelligence-core@google.com</owner>
   <summary>

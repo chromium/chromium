@@ -20,25 +20,25 @@ PageContentAnnotationJob::PageContentAnnotationJob(
 
 PageContentAnnotationJob::~PageContentAnnotationJob() = default;
 
-void PageContentAnnotationJob::FillWithError(ExecutionStatus status) {
+void PageContentAnnotationJob::FillWithNullOutputs() {
   while (auto input = GetNextInput()) {
     switch (type()) {
       case AnnotationType::kPageTopics:
         PostNewResult(BatchAnnotationResult::CreatePageTopicsResult(
-            *input, status, absl::nullopt));
+            *input, absl::nullopt));
         break;
       case AnnotationType::kPageEntities:
         PostNewResult(BatchAnnotationResult::CreatePageEntitiesResult(
-            *input, status, absl::nullopt));
+            *input, absl::nullopt));
         break;
       case AnnotationType::kContentVisibility:
         PostNewResult(BatchAnnotationResult::CreateContentVisibilityResult(
-            *input, status, absl::nullopt));
+            *input, absl::nullopt));
         break;
       case AnnotationType::kUnknown:
         NOTREACHED();
-        PostNewResult(BatchAnnotationResult::CreateEmptyAnnotationsResult(
-            *input, status));
+        PostNewResult(
+            BatchAnnotationResult::CreateEmptyAnnotationsResult(*input));
         break;
     }
   }

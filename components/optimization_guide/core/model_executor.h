@@ -16,6 +16,7 @@
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
+#include "components/optimization_guide/core/execution_status.h"
 #include "components/optimization_guide/core/optimization_guide_enums.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -26,23 +27,21 @@ namespace optimization_guide {
 
 namespace {
 
-// Util class for recording the result of loading the detection model. The
-// result is recorded when it goes out of scope and its destructor is called.
-class ScopedModelExecutorLoadingResultRecorder {
+// Util class for recording the result of the model execution. The result is
+// recorded when it goes out of scope and its destructor is called.
+class ScopedExecutionStatusResultRecorder {
  public:
-  ScopedModelExecutorLoadingResultRecorder(
-      proto::OptimizationTarget optimization_target,
-      ModelExecutorLoadingState model_loading_state)
+  explicit ScopedExecutionStatusResultRecorder(
+      proto::OptimizationTarget optimization_target)
       : optimization_target_(optimization_target),
-        model_loading_state_(model_loading_state),
         start_time_(base::TimeTicks::Now()) {}
 
-  ~ScopedModelExecutorLoadingResultRecorder() {
+  ~ScopedExecutionStatusResultRecorder() {
     base::UmaHistogramEnumeration(
-        "OptimizationGuide.ModelExecutor.ModelLoadingResult." +
+        "OptimizationGuide.ModelExecutor.ExecutionStatus." +
             optimization_guide::GetStringNameForOptimizationTarget(
                 optimization_target_),
-        model_loading_state_);
+        status_);
 
     base::UmaHistogramTimes(
         "OptimizationGuide.ModelExecutor.ModelLoadingDuration." +
@@ -51,16 +50,20 @@ class ScopedModelExecutorLoadingResultRecorder {
         base::TimeTicks::Now() - start_time_);
   }
 
-  void set_model_loading_state(ModelExecutorLoadingState model_executor_state) {
-    model_loading_state_ = model_executor_state;
-  }
+  ExecutionStatus* mutable_status() { return &status_; }
+
+  ExecutionStatus status() const { return status_; }
+
+  void set_status(ExecutionStatus status) { status_ = status; }
 
  private:
-  proto::OptimizationTarget optimization_target_;
-  ModelExecutorLoadingState model_loading_state_;
+  // The OptimizationTarget of the model being executed.
+  const proto::OptimizationTarget optimization_target_;
 
   // The time at which this instance was constructed.
   const base::TimeTicks start_time_;
+
+  ExecutionStatus status_ = ExecutionStatus::kUnknown;
 };
 
 }  // namespace
@@ -144,12 +147,18 @@ class ModelExecutor {
                 optimization_target_),
         task_scheduling_latency);
 
+    ScopedExecutionStatusResultRecorder status_recorder(optimization_target_);
+
     // Attempt to load the model file if it isn't loaded yet, fail if loading is
     // unsuccessful or no model is available to load.
-    if (!loaded_model_ && !LoadModelFile()) {
+    if (!loaded_model_ && !LoadModelFile(status_recorder.mutable_status())) {
       reply_task_runner_->PostTask(
           FROM_HERE,
           base::BindOnce(std::move(ui_callback_on_complete), absl::nullopt));
+      // Some error status is expected, and derived classes should have set the
+      // status.
+      DCHECK_NE(status_recorder.status(), ExecutionStatus::kUnknown);
+      DCHECK_NE(status_recorder.status(), ExecutionStatus::kSuccess);
       return;
     }
 
@@ -171,7 +180,10 @@ class ModelExecutor {
                    optimization_guide::GetStringNameForOptimizationTarget(
                        optimization_target_));
       base::TimeTicks execute_start_time = base::TimeTicks::Now();
-      output = Execute(loaded_model_.get(), args...);
+      output = Execute(loaded_model_.get(), status_recorder.mutable_status(),
+                       args...);
+      DCHECK_NE(status_recorder.status(), ExecutionStatus::kUnknown);
+
       // The max of this histogram is 1 hour because we want to understand
       // tail behavior and catch long running model executions.
       base::UmaHistogramLongTimes(
@@ -213,13 +225,16 @@ class ModelExecutor {
   using ModelExecutionTask =
       tflite::task::core::BaseTaskApi<OutputType, InputTypes...>;
 
-  // Executes the model using |execution_task| on |args|.
+  // Executes the model using |execution_task| on |args|, returning the model
+  // output and setting |out_status| with the status of the execution attempt.
   virtual absl::optional<OutputType> Execute(ModelExecutionTask* execution_task,
+                                             ExecutionStatus* out_status,
                                              InputTypes... args) = 0;
 
   // Builds a model execution task using |model_file|.
   virtual std::unique_ptr<ModelExecutionTask> BuildModelExecutionTask(
-      base::MemoryMappedFile* model_file) = 0;
+      base::MemoryMappedFile* model_file,
+      ExecutionStatus* out_status) = 0;
 
   // This method is run as a PostTask after every execution. By default, it will
   // unload the model from memory by calling |ResetLoadedModel|, but this can be
@@ -234,16 +249,13 @@ class ModelExecutor {
  private:
   // A true return value indicates the model was loaded successfully, false
   // otherwise.
-  bool LoadModelFile() {
+  bool LoadModelFile(ExecutionStatus* out_status) {
     TRACE_EVENT1("browser", "OptGuideModelExecutor::LoadModelFile",
                  "OptimizationTarget",
                  optimization_guide::GetStringNameForOptimizationTarget(
                      optimization_target_));
     DCHECK(background_task_runner_->RunsTasksInCurrentSequence());
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-    ScopedModelExecutorLoadingResultRecorder scoped_model_loading_recorder(
-        optimization_target_, ModelExecutorLoadingState::kModelFileInvalid);
 
     ResetLoadedModel();
 
@@ -252,21 +264,20 @@ class ModelExecutor {
             GetStringNameForOptimizationTarget(optimization_target_),
         !!model_file_path_);
 
-    if (!model_file_path_)
+    if (!model_file_path_) {
+      *out_status = ExecutionStatus::kErrorModelFileNotAvailable;
       return false;
+    }
 
     std::unique_ptr<base::MemoryMappedFile> model_fb =
         std::make_unique<base::MemoryMappedFile>();
-    if (!model_fb->Initialize(*model_file_path_))
+    if (!model_fb->Initialize(*model_file_path_)) {
+      *out_status = ExecutionStatus::kErrorModelFileNotValid;
       return false;
+    }
     model_fb_ = std::move(model_fb);
 
-    loaded_model_ = BuildModelExecutionTask(model_fb_.get());
-    if (loaded_model_) {
-      scoped_model_loading_recorder.set_model_loading_state(
-          ModelExecutorLoadingState::kModelFileValidAndMemoryMapped);
-    }
-
+    loaded_model_ = BuildModelExecutionTask(model_fb_.get(), out_status);
     return !!loaded_model_;
   }
 

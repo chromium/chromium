@@ -63660,6 +63660,17 @@ Called by update_net_trust_anchors.py.-->
   <int value="1" label="Active other profiles."/>
 </enum>
 
+<enum name="OptimizationGuideExecutionStatus">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Success"/>
+  <int value="2" label="Pending"/>
+  <int value="3" label="ErrorInternalError"/>
+  <int value="4" label="ErrorModelFileNotAvailable"/>
+  <int value="5" label="ErrorModelFileNotValid"/>
+  <int value="6" label="ErrorEmptyOrInvalidInput"/>
+  <int value="7" label="ErrorUnknown"/>
+</enum>
+
 <enum name="OptimizationGuideHintCacheLevelDBStoreLoadMetadataResult">
   <int value="0" label="Success"/>
   <int value="1" label="LoadMetadataFailed"/>

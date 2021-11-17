@@ -13,25 +13,6 @@
 
 namespace optimization_guide {
 
-std::string ExecutionStatusToString(ExecutionStatus status) {
-  switch (status) {
-    case ExecutionStatus::kUnknown:
-      return "Unknown";
-    case ExecutionStatus::kSuccess:
-      return "Success";
-    case ExecutionStatus::kPending:
-      return "Pending";
-    case ExecutionStatus::kErrorInternalError:
-      return "ErrorInternalError";
-    case ExecutionStatus::kErrorModelFileNotAvailable:
-      return "ErrorModelFileNotAvailable";
-    case ExecutionStatus::kErrorModelFileNotValid:
-      return "ErrorModelFileNotValid";
-    case ExecutionStatus::kErrorEmptyOrInvalidInput:
-      return "ErrorEmptyOrInvalidInput";
-  }
-}
-
 std::string AnnotationTypeToString(AnnotationType type) {
   switch (type) {
     case AnnotationType::kUnknown:
@@ -94,11 +75,9 @@ std::string BatchAnnotationResult::ToString() const {
   return base::StringPrintf(
       "BatchAnnotationResult{"
       "\"<input with length %zu>\", "
-      "status: %s, "
       "type: %s, "
       "output: %s}",
-      input_.size(), ExecutionStatusToString(status_).c_str(),
-      AnnotationTypeToString(type_).c_str(), output.c_str());
+      input_.size(), AnnotationTypeToString(type_).c_str(), output.c_str());
 }
 
 std::ostream& operator<<(std::ostream& stream,
@@ -110,11 +89,9 @@ std::ostream& operator<<(std::ostream& stream,
 // static
 BatchAnnotationResult BatchAnnotationResult::CreatePageTopicsResult(
     const std::string& input,
-    ExecutionStatus status,
     absl::optional<std::vector<WeightedString>> topics) {
   BatchAnnotationResult result;
   result.input_ = input;
-  result.status_ = status;
   result.topics_ = topics;
   result.type_ = AnnotationType::kPageTopics;
 
@@ -132,11 +109,9 @@ BatchAnnotationResult BatchAnnotationResult::CreatePageTopicsResult(
 //  static
 BatchAnnotationResult BatchAnnotationResult::CreatePageEntitiesResult(
     const std::string& input,
-    ExecutionStatus status,
     absl::optional<std::vector<ScoredEntityMetadata>> entities) {
   BatchAnnotationResult result;
   result.input_ = input;
-  result.status_ = status;
   result.entities_ = entities;
   result.type_ = AnnotationType::kPageEntities;
 
@@ -154,11 +129,9 @@ BatchAnnotationResult BatchAnnotationResult::CreatePageEntitiesResult(
 //  static
 BatchAnnotationResult BatchAnnotationResult::CreateContentVisibilityResult(
     const std::string& input,
-    ExecutionStatus status,
     absl::optional<double> visibility_score) {
   BatchAnnotationResult result;
   result.input_ = input;
-  result.status_ = status;
   result.visibility_score_ = visibility_score;
   result.type_ = AnnotationType::kContentVisibility;
   return result;
@@ -166,30 +139,26 @@ BatchAnnotationResult BatchAnnotationResult::CreateContentVisibilityResult(
 
 // static
 BatchAnnotationResult BatchAnnotationResult::CreateEmptyAnnotationsResult(
-    const std::string& input,
-    ExecutionStatus status) {
+    const std::string& input) {
   BatchAnnotationResult result;
   result.input_ = input;
-  result.status_ = status;
   return result;
 }
 
 bool BatchAnnotationResult::operator==(
     const BatchAnnotationResult& other) const {
-  return this->input_ == other.input_ && this->status_ == other.status_ &&
-         this->type_ == other.type_ && this->topics_ == other.topics_ &&
-         this->entities_ == other.entities_ &&
+  return this->input_ == other.input_ && this->type_ == other.type_ &&
+         this->topics_ == other.topics_ && this->entities_ == other.entities_ &&
          this->visibility_score_ == other.visibility_score_;
 }
 
-std::vector<BatchAnnotationResult> CreateEmptyBatchAnnotationResultsWithStatus(
-    const std::vector<std::string>& inputs,
-    ExecutionStatus status) {
+std::vector<BatchAnnotationResult> CreateEmptyBatchAnnotationResults(
+    const std::vector<std::string>& inputs) {
   std::vector<BatchAnnotationResult> results;
   results.reserve(inputs.size());
   for (const std::string& input : inputs) {
     results.emplace_back(
-        BatchAnnotationResult::CreateEmptyAnnotationsResult(input, status));
+        BatchAnnotationResult::CreateEmptyAnnotationsResult(input));
   }
   return results;
 }

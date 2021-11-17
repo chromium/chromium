@@ -160,22 +160,6 @@ enum class PredictionModelDownloadStatus {
   kMaxValue = kCouldNotCreateDirectory,
 };
 
-// The state of the model file needed for execution.
-//
-// Keep in sync with ModelExecutorLoadingState in enums.xml.
-enum class ModelExecutorLoadingState {
-  // The model state is not known.
-  kUnknown = 0,
-  // The provided model file was not valid.
-  kModelFileInvalid = 1,
-  // The model is memory-mapped and available for
-  // use with TFLite.
-  kModelFileValidAndMemoryMapped = 2,
-
-  // New values above this line.
-  kMaxValue = kModelFileValidAndMemoryMapped,
-};
-
 // The status for the page content annotations being stored.
 //
 // Keep in sync with OptimizationGuidePageContentAnnotationsStorageStatus in

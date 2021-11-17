@@ -14,31 +14,6 @@
 
 namespace optimization_guide {
 
-// The status of a page content annotation execution.
-enum class ExecutionStatus {
-  // Status is unknown.
-  kUnknown = 0,
-
-  // Execution finished successfully.
-  kSuccess = 1,
-
-  // Execution is still pending.
-  kPending = 2,
-
-  // Execution failed for some reason internal to Opt Guide. These failures
-  // should not happen and result in a DCHECK in non-production builds.
-  kErrorInternalError = 3,
-
-  // Execution failed because the model file is not available.
-  kErrorModelFileNotAvailable = 4,
-
-  // Execution failed because the model file could not be loaded into TFLite.
-  kErrorModelFileNotValid = 5,
-
-  // Execution failed because the input was empty or otherwise invalid.
-  kErrorEmptyOrInvalidInput = 6,
-};
-
 // The type of annotation that is being done on the given input.
 enum class AnnotationType {
   kUnknown,
@@ -55,8 +30,6 @@ enum class AnnotationType {
   // human-readable strings, use `EntityMetadataProvider`.
   kPageEntities,
 };
-
-std::string ExecutionStatusToString(ExecutionStatus status);
 
 std::string AnnotationTypeToString(AnnotationType type);
 
@@ -90,32 +63,27 @@ class BatchAnnotationResult {
   // Creates a result for a page topics annotation.
   static BatchAnnotationResult CreatePageTopicsResult(
       const std::string& input,
-      ExecutionStatus status,
       absl::optional<std::vector<WeightedString>> topics);
 
   // Creates a result for a page entities annotation.
   static BatchAnnotationResult CreatePageEntitiesResult(
       const std::string& input,
-      ExecutionStatus status,
       absl::optional<std::vector<ScoredEntityMetadata>> entities);
 
   // Creates a result for a content visibility annotation.
   static BatchAnnotationResult CreateContentVisibilityResult(
       const std::string& input,
-      ExecutionStatus status,
       absl::optional<double> visibility_score);
 
   // Creates a result where the AnnotationType and output are not set.
   static BatchAnnotationResult CreateEmptyAnnotationsResult(
-      const std::string& input,
-      ExecutionStatus status);
+      const std::string& input);
 
   BatchAnnotationResult(const BatchAnnotationResult&);
   ~BatchAnnotationResult();
 
   std::string input() const { return input_; }
   AnnotationType type() const { return type_; }
-  ExecutionStatus status() const { return status_; }
   absl::optional<std::vector<WeightedString>> topics() const { return topics_; }
   absl::optional<std::vector<ScoredEntityMetadata>> entities() const {
     return entities_;
@@ -134,7 +102,6 @@ class BatchAnnotationResult {
 
   std::string input_;
   AnnotationType type_ = AnnotationType::kUnknown;
-  ExecutionStatus status_ = ExecutionStatus::kUnknown;
 
   // Output for page topics annotations, set only if the |type_| matches and the
   // execution was successful.
@@ -155,9 +122,8 @@ using BatchAnnotationCallback =
 // Creates a vector of |BatchAnnotationResult| from the given |inputs| where
 // each result's status is set to |status|. Useful for creating an Annotation
 // response with a single error.
-std::vector<BatchAnnotationResult> CreateEmptyBatchAnnotationResultsWithStatus(
-    const std::vector<std::string>& inputs,
-    ExecutionStatus status);
+std::vector<BatchAnnotationResult> CreateEmptyBatchAnnotationResults(
+    const std::vector<std::string>& inputs);
 
 }  // namespace optimization_guide
 

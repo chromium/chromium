@@ -116,11 +116,14 @@ TEST_F(ModelValidatorExecutorTest, ValidModel) {
                         .AppendASCII("simple_test.tflite");
   ValidateModel(model_file_path);
 
+  // |ModelValidatorExecutor::Preprocess| returns an unimplemented error,
+  // resulting in an unknown error in the final execution step.
   histogram_tester().ExpectUniqueSample(
-      "OptimizationGuide.ModelExecutor.ModelLoadingResult." +
+      "OptimizationGuide.ModelExecutor.ExecutionStatus." +
           GetStringNameForOptimizationTarget(
               proto::OptimizationTarget::OPTIMIZATION_TARGET_MODEL_VALIDATION),
-      ModelExecutorLoadingState::kModelFileValidAndMemoryMapped, 1);
+      ExecutionStatus::kErrorUnknown, 1);
+
   histogram_tester().ExpectTotalCount(
       "OptimizationGuide.ModelExecutor.ModelLoadingDuration." +
           GetStringNameForOptimizationTarget(
@@ -139,10 +142,10 @@ TEST_F(ModelValidatorExecutorTest, DISABLED_InvalidModel) {
   ValidateModel(invalid_model_file_path);
 
   histogram_tester().ExpectUniqueSample(
-      "OptimizationGuide.ModelExecutor.ModelLoadingResult." +
+      "OptimizationGuide.ModelExecutor.ExecutionStatus." +
           GetStringNameForOptimizationTarget(
               proto::OptimizationTarget::OPTIMIZATION_TARGET_MODEL_VALIDATION),
-      ModelExecutorLoadingState::kModelFileInvalid, 1);
+      ExecutionStatus::kErrorModelFileNotValid, 1);
   histogram_tester().ExpectTotalCount(
       "OptimizationGuide.ModelExecutor.ModelLoadingDuration." +
           GetStringNameForOptimizationTarget(

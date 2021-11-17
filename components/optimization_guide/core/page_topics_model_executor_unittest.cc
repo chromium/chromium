@@ -250,8 +250,7 @@ TEST_F(PageTopicsModelExecutorTest,
   };
 
   BatchAnnotationResult topics_result =
-      BatchAnnotationResult::CreateEmptyAnnotationsResult(
-          "", ExecutionStatus::kUnknown);
+      BatchAnnotationResult::CreateEmptyAnnotationsResult("");
   model_executor()->PostprocessCategoriesToBatchAnnotationResult(
       base::BindOnce(
           [](BatchAnnotationResult* out_result,
@@ -261,12 +260,11 @@ TEST_F(PageTopicsModelExecutorTest,
           &topics_result),
       AnnotationType::kPageTopics, "input", model_output);
   EXPECT_EQ(topics_result, BatchAnnotationResult::CreatePageTopicsResult(
-                               "input", ExecutionStatus::kSuccess,
-                               std::vector<WeightedString>{
-                                   WeightedString("0", 0.3),
-                                   WeightedString("1", 0.25),
-                                   WeightedString("2", 0.4),
-                               }));
+                               "input", std::vector<WeightedString>{
+                                            WeightedString("0", 0.3),
+                                            WeightedString("1", 0.25),
+                                            WeightedString("2", 0.4),
+                                        }));
 }
 
 TEST_F(PageTopicsModelExecutorTest,
@@ -281,8 +279,7 @@ TEST_F(PageTopicsModelExecutorTest,
   SendPageTopicsModelToExecutor(any_metadata);
 
   BatchAnnotationResult topics_result =
-      BatchAnnotationResult::CreateEmptyAnnotationsResult(
-          "", ExecutionStatus::kUnknown);
+      BatchAnnotationResult::CreateEmptyAnnotationsResult("");
   model_executor()->PostprocessCategoriesToBatchAnnotationResult(
       base::BindOnce(
           [](BatchAnnotationResult* out_result,
@@ -290,10 +287,9 @@ TEST_F(PageTopicsModelExecutorTest,
             *out_result = in_result;
           },
           &topics_result),
-      AnnotationType::kPageTopics, "input", absl::nullopt);
+      AnnotationType::kPageTopics, "", absl::nullopt);
   EXPECT_EQ(topics_result,
-            BatchAnnotationResult::CreatePageTopicsResult(
-                "input", ExecutionStatus::kUnknown, absl::nullopt));
+            BatchAnnotationResult::CreatePageTopicsResult("", absl::nullopt));
 }
 
 }  // namespace optimization_guide

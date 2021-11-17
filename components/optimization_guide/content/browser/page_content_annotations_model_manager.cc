@@ -50,8 +50,8 @@ GetOrCreateCurrentContentModelAnnotations(
 void PretendToExecuteJob(base::OnceClosure callback,
                          std::unique_ptr<PageContentAnnotationJob> job) {
   while (absl::optional<std::string> input = job->GetNextInput()) {
-    job->PostNewResult(BatchAnnotationResult::CreatePageTopicsResult(
-        *input, ExecutionStatus::kErrorInternalError, absl::nullopt));
+    job->PostNewResult(
+        BatchAnnotationResult::CreatePageTopicsResult(*input, absl::nullopt));
   }
   // Note to future self: The ordering of these callbacks being run will be
   // important once actually being run on an executor.
@@ -500,7 +500,7 @@ void PageContentAnnotationsModelManager::MaybeStartNextAnnotationJob() {
 
   if (job->type() == AnnotationType::kPageTopics) {
     if (!on_demand_page_topics_model_executor_) {
-      job->FillWithError(ExecutionStatus::kErrorModelFileNotAvailable);
+      job->FillWithNullOutputs();
       job->OnComplete();
       job.reset();
       std::move(on_job_complete_callback).Run();

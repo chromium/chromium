@@ -117,8 +117,7 @@ void PageContentAnnotationsService::BatchAnnotate(
     const std::vector<std::string>& inputs,
     AnnotationType annotation_type) {
   if (!annotator_) {
-    std::move(callback).Run(CreateEmptyBatchAnnotationResultsWithStatus(
-        inputs, ExecutionStatus::kErrorInternalError));
+    std::move(callback).Run(CreateEmptyBatchAnnotationResults(inputs));
     return;
   }
   annotator_->Annotate(std::move(callback), inputs, annotation_type);

@@ -38,6 +38,8 @@ static_library("core") {
     "command_line_top_host_provider.h",
     "decision_tree_prediction_model.cc",
     "decision_tree_prediction_model.h",
+    "execution_status.cc",
+    "execution_status.h",
     "hint_cache.cc",
     "hint_cache.h",
     "hints_component_info.h",

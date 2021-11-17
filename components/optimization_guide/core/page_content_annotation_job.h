@@ -28,9 +28,8 @@ class PageContentAnnotationJob {
                            AnnotationType type);
   ~PageContentAnnotationJob();
 
-  // Consumes every input, posting new results with the given error status and
-  // nullopt outputs.
-  void FillWithError(ExecutionStatus status);
+  // Consumes every input, posting new results with nullopt outputs.
+  void FillWithNullOutputs();
 
   // Called when the Job has finished executing to call |on_complete_callback_|.
   void OnComplete();
