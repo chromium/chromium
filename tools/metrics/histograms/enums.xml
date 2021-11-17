@@ -32482,10 +32482,12 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="1243" label="WebAnimationHyphenatedProperty"/>
   <int value="1244"
       label="FormControlsCollectionReturnsRadioNodeListForFieldSet"/>
-  <int value="1245" label="ApplicationCacheManifestSelectInsecureOrigin"/>
-  <int value="1246" label="ApplicationCacheManifestSelectSecureOrigin"/>
-  <int value="1247" label="ApplicationCacheAPIInsecureOrigin"/>
-  <int value="1248" label="ApplicationCacheAPISecureOrigin"/>
+  <int value="1245"
+      label="OBSOLETE_ApplicationCacheManifestSelectInsecureOrigin"/>
+  <int value="1246"
+      label="OBSOLETE_ApplicationCacheManifestSelectSecureOrigin"/>
+  <int value="1247" label="OBSOLETE_ApplicationCacheAPIInsecureOrigin"/>
+  <int value="1248" label="OBSOLETE_ApplicationCacheAPISecureOrigin"/>
   <int value="1249" label="CSSAtRuleApply"/>
   <int value="1250" label="CSSSelectorPseudoAny"/>
   <int value="1251" label="PannerNodeSetVelocity"/>
@@ -34081,7 +34083,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="2769" label="HTMLTemplateElement"/>
   <int value="2770" label="NoSysexWebMIDIWithoutPermission"/>
   <int value="2771" label="NoSysexWebMIDIOnInsecureOrigin"/>
-  <int value="2772" label="ApplicationCacheInstalledButNoManifest"/>
+  <int value="2772" label="OBSOLETE_ApplicationCacheInstalledButNoManifest"/>
   <int value="2773" label="PerMethodCanMakePaymentQuota"/>
   <int value="2774"
       label="OBSOLETE_CSSValueAppearanceButtonForNonButtonRendered"/>

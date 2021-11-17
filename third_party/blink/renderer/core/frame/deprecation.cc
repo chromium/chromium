@@ -389,25 +389,6 @@ const DeprecationInfo GetDeprecationInfo(const WebFeature feature) {
           "sourceBuffers, where newDuration < oldDuration.",
           "6107495151960064");
 
-    case WebFeature::kApplicationCacheAPIInsecureOrigin:
-    case WebFeature::kApplicationCacheManifestSelectInsecureOrigin:
-      return DeprecationInfo::WithDetails(
-          "ApplicationCacheAPIInsecureOrigin", kM70,
-          "Application Cache was previously restricted to secure origins only "
-          "from M70 on but now secure origin use is deprecated and will be "
-          "removed in M82.  Please shift your use case over to Service "
-          "Workers.");
-
-    case WebFeature::kApplicationCacheAPISecureOrigin:
-      return DeprecationInfo::WithFeatureAndChromeStatusID(
-          "ApplicationCacheAPISecureOrigin", kM85, "Application Cache API use",
-          "6192449487634432");
-
-    case WebFeature::kApplicationCacheManifestSelectSecureOrigin:
-      return DeprecationInfo::WithFeatureAndChromeStatusID(
-          "ApplicationCacheAPISecureOrigin", kM85,
-          "Application Cache API manifest selection", "6192449487634432");
-
     case WebFeature::kNotificationInsecureOrigin:
     case WebFeature::kNotificationAPIInsecureOriginIframe:
     case WebFeature::kNotificationPermissionRequestedInsecureOrigin:

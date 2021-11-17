@@ -832,10 +832,10 @@ enum WebFeature {
   kV8ForInInitializer = 1238,
   kV8Animation_Id_AttributeGetter = 1239,
   kV8Animation_Id_AttributeSetter = 1240,
-  kApplicationCacheManifestSelectInsecureOrigin = 1245,
-  kApplicationCacheManifestSelectSecureOrigin = 1246,
-  kApplicationCacheAPIInsecureOrigin = 1247,
-  kApplicationCacheAPISecureOrigin = 1248,
+  kOBSOLETE_ApplicationCacheManifestSelectInsecureOrigin = 1245,
+  kOBSOLETE_ApplicationCacheManifestSelectSecureOrigin = 1246,
+  kOBSOLETE_ApplicationCacheAPIInsecureOrigin = 1247,
+  kOBSOLETE_ApplicationCacheAPISecureOrigin = 1248,
   // The above items are available in M50 branch
 
   kCSSAtRuleApply = 1249,  // Removed
@@ -2119,7 +2119,7 @@ enum WebFeature {
   kHTMLTemplateElement = 2769,
   kNoSysexWebMIDIWithoutPermission = 2770,
   kNoSysexWebMIDIOnInsecureOrigin = 2771,
-  kApplicationCacheInstalledButNoManifest = 2772,
+  kOBSOLETE_ApplicationCacheInstalledButNoManifest = 2772,
   kCustomCursorIntersectsViewport = 2776,
   kOBSOLETE_ClientHintsLang = 2777,
   kLinkRelPreloadImageSrcset = 2778,
