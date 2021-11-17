@@ -46,8 +46,25 @@ CWV_EXPORT
 - (void)fetchPasswordsWithCompletionHandler:
     (void (^)(NSArray<CWVPassword*>* passwords))completionHandler;
 
+// Updates a |password| with a new username and password.
+// |password| The password to update.
+// |newUsername| The new username to set for |password|. Ignored if nil.
+// |newPassword| The new password to set for |password|. Ignored if nil.
+- (void)updatePassword:(CWVPassword*)password
+           newUsername:(nullable NSString*)newUsername
+           newPassword:(nullable NSString*)newPassword;
+
 // Deletes the password.
 - (void)deletePassword:(CWVPassword*)password;
+
+// Adds a new password.
+// |username| The desired username. For example an email address.
+// |password| The desired password.
+// |site| The website this password is used for. For example
+// "https://www.chromium.org/".
+- (void)addNewPasswordForUsername:(NSString*)username
+                         password:(NSString*)password
+                             site:(NSString*)site;
 
 // Adds a new password created from the iOS credential provider extension.
 // |username| The login username for this password.

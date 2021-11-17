@@ -423,24 +423,37 @@ NSString* const kWebViewShellJavaScriptDialogTextFieldAccessibilityIdentifier =
 }
 
 - (void)showPasswordData {
+  __weak ShellViewController* weakSelf = self;
   CWVAutofillDataManager* dataManager =
       _webView.configuration.autofillDataManager;
   [dataManager fetchPasswordsWithCompletionHandler:^(
                    NSArray<CWVPassword*>* _Nonnull passwords) {
-    NSMutableArray<NSString*>* descriptions = [passwords
-        valueForKey:NSStringFromSelector(@selector(debugDescription))];
+    NSMutableArray<NSString*>* descriptions = [NSMutableArray array];
+    for (CWVPassword* password in passwords) {
+      NSString* description = [NSString
+          stringWithFormat:@"%@:\n%@", @([passwords indexOfObject:password]),
+                           password.debugDescription];
+      [descriptions addObject:description];
+    }
     NSString* message = [descriptions componentsJoinedByString:@"\n\n"];
 
     UIAlertController* alertController = [self actionSheetWithTitle:@"Passwords"
                                                             message:message];
+    [alertController
+        addAction:[UIAlertAction actionWithTitle:@"Add new"
+                                           style:UIAlertActionStyleDefault
+                                         handler:^(UIAlertAction* action) {
+                                           [weakSelf showAddNewPasswordDialog];
+                                         }]];
+
     for (CWVPassword* password in passwords) {
       NSString* title = [NSString
-          stringWithFormat:@"Delete %@", @([passwords indexOfObject:password])];
+          stringWithFormat:@"Select %@", @([passwords indexOfObject:password])];
       UIAlertAction* action =
           [UIAlertAction actionWithTitle:title
                                    style:UIAlertActionStyleDefault
                                  handler:^(UIAlertAction* theAction) {
-                                   [dataManager deletePassword:password];
+                                   [weakSelf showMenuForPassword:password];
                                  }];
       [alertController addAction:action];
     }
@@ -450,6 +463,119 @@ NSString* const kWebViewShellJavaScriptDialogTextFieldAccessibilityIdentifier =
                                          handler:nil]];
     [self presentViewController:alertController animated:YES completion:nil];
   }];
+}
+
+- (void)showAddNewPasswordDialog {
+  CWVAutofillDataManager* dataManager =
+      _webView.configuration.autofillDataManager;
+  UIAlertController* alertController =
+      [UIAlertController alertControllerWithTitle:@"Add password"
+                                          message:nil
+                                   preferredStyle:UIAlertControllerStyleAlert];
+
+  [alertController
+      addTextFieldWithConfigurationHandler:^(UITextField* textField) {
+        textField.placeholder = @"Username";
+      }];
+  [alertController
+      addTextFieldWithConfigurationHandler:^(UITextField* textField) {
+        textField.placeholder = @"Password";
+      }];
+  [alertController
+      addTextFieldWithConfigurationHandler:^(UITextField* textField) {
+        textField.placeholder = @"Site";
+      }];
+  [alertController
+      addAction:[UIAlertAction actionWithTitle:@"Cancel"
+                                         style:UIAlertActionStyleCancel
+                                       handler:nil]];
+  __weak UIAlertController* weakAlertController = alertController;
+  [alertController
+      addAction:[UIAlertAction
+                    actionWithTitle:@"Done"
+                              style:UIAlertActionStyleDefault
+                            handler:^(UIAlertAction* action) {
+                              NSString* username =
+                                  weakAlertController.textFields[0].text;
+                              NSString* password =
+                                  weakAlertController.textFields[1].text;
+                              NSString* site =
+                                  weakAlertController.textFields[2].text;
+                              [dataManager addNewPasswordForUsername:username
+                                                            password:password
+                                                                site:site];
+                            }]];
+  [self presentViewController:alertController animated:YES completion:nil];
+}
+
+- (void)showMenuForPassword:(CWVPassword*)password {
+  UIAlertController* alertController =
+      [self actionSheetWithTitle:password.title
+                         message:password.debugDescription];
+  CWVAutofillDataManager* dataManager =
+      _webView.configuration.autofillDataManager;
+
+  __weak ShellViewController* weakSelf = self;
+  UIAlertAction* update =
+      [UIAlertAction actionWithTitle:@"Update"
+                               style:UIAlertActionStyleDefault
+                             handler:^(UIAlertAction* theAction) {
+                               [weakSelf showUpdateDialogForPassword:password];
+                             }];
+  [alertController addAction:update];
+
+  UIAlertAction* delete =
+      [UIAlertAction actionWithTitle:@"Delete"
+                               style:UIAlertActionStyleDefault
+                             handler:^(UIAlertAction* theAction) {
+                               [dataManager deletePassword:password];
+                             }];
+  [alertController addAction:delete];
+
+  [alertController
+      addAction:[UIAlertAction actionWithTitle:@"Done"
+                                         style:UIAlertActionStyleCancel
+                                       handler:nil]];
+  [self presentViewController:alertController animated:YES completion:nil];
+}
+
+- (void)showUpdateDialogForPassword:(CWVPassword*)password {
+  CWVAutofillDataManager* dataManager =
+      _webView.configuration.autofillDataManager;
+  UIAlertController* alertController =
+      [UIAlertController alertControllerWithTitle:password.title
+                                          message:password.debugDescription
+                                   preferredStyle:UIAlertControllerStyleAlert];
+
+  [alertController
+      addTextFieldWithConfigurationHandler:^(UITextField* textField) {
+        textField.placeholder = @"New username";
+      }];
+  [alertController
+      addTextFieldWithConfigurationHandler:^(UITextField* textField) {
+        textField.placeholder = @"New password";
+      }];
+  [alertController
+      addAction:[UIAlertAction actionWithTitle:@"Cancel"
+                                         style:UIAlertActionStyleCancel
+                                       handler:nil]];
+  __weak UIAlertController* weakAlertController = alertController;
+  [alertController
+      addAction:[UIAlertAction actionWithTitle:@"Done"
+                                         style:UIAlertActionStyleDefault
+                                       handler:^(UIAlertAction* action) {
+                                         NSString* newUsername =
+                                             weakAlertController.textFields
+                                                 .firstObject.text;
+                                         NSString* newPassword =
+                                             weakAlertController.textFields
+                                                 .lastObject.text;
+                                         [dataManager
+                                             updatePassword:password
+                                                newUsername:newUsername
+                                                newPassword:newPassword];
+                                       }]];
+  [self presentViewController:alertController animated:YES completion:nil];
 }
 
 - (void)showSyncMenu {

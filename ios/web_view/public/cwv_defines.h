@@ -46,4 +46,10 @@
 // Allows handling of legacy TLS warnings with CWVLegacyTLSWarningHandler.
 #define IOS_WEB_VIEW_SUPPORTS_CWV_LEGACY_TLS_WARNING_HANDLER 1
 
+// Supports -[CWVAutofillDataManager updatePassword:newUsername:newPassword:].
+#define IOS_WEB_VIEW_SUPPORTS_UPDATING_PASSWORDS 1
+
+// Supports -[CWVAutofillDataManager addPasswordWithUsername:password:site:].
+#define IOS_WEB_VIEW_SUPPORTS_ADDING_PASSWORDS 1
+
 #endif  // IOS_WEB_VIEW_PUBLIC_CWV_DEFINES_H_
