@@ -126,6 +126,7 @@ class SiteSettingsHandler
   FRIEND_TEST_ALL_PREFIXES(SiteSettingsHandlerTest, ZoomLevels);
   FRIEND_TEST_ALL_PREFIXES(SiteSettingsHandlerTest,
                            HandleClearEtldPlus1DataAndCookies);
+  FRIEND_TEST_ALL_PREFIXES(SiteSettingsHandlerTest, HandleClearUsage);
   FRIEND_TEST_ALL_PREFIXES(SiteSettingsHandlerTest, CookieSettingDescription);
   FRIEND_TEST_ALL_PREFIXES(SiteSettingsHandlerTest, HandleGetFormattedBytes);
   FRIEND_TEST_ALL_PREFIXES(SiteSettingsHandlerTest,

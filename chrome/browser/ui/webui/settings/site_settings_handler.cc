@@ -681,9 +681,19 @@ void SiteSettingsHandler::HandleClearUsage(const base::ListValue* args) {
   for (const auto& node : cookies_tree_model_->GetRoot()->children()) {
     if (origin == node->GetDetailedInfo().origin.GetURL().spec()) {
       cookies_tree_model_->DeleteCookieNode(node.get());
-      return;
+      break;
     }
   }
+
+  // TODO(crbug.com/1271155, crbug.com/1268626): This is a temporary hack while
+  // the CookiesTreeModel is deprecated. Currently cookies will fail to be
+  // deleted if only cookies exist and the origin's scheme is 'https'. The
+  // origin's scheme in the cookie node is `http` whereas the expected scheme
+  // for the origin is `https`, so we cannot use the cookie node origin to
+  // remove site client hints data before the issue is resolved.
+  HostContentSettingsMapFactory::GetForProfile(profile_)
+      ->SetWebsiteSettingDefaultScope(
+          url, GURL(), ContentSettingsType::CLIENT_HINTS, nullptr);
 }
 
 void SiteSettingsHandler::HandleSetDefaultValueForContentType(
@@ -1257,8 +1267,8 @@ void SiteSettingsHandler::HandleResetChooserExceptionForSite(
 
   permissions::ObjectPermissionContextBase* chooser_context =
       chooser_type->get_context(profile_);
-  chooser_context->RevokeObjectPermission(
-      url::Origin::Create(embedding_origin), args->GetList()[3]);
+  chooser_context->RevokeObjectPermission(url::Origin::Create(embedding_origin),
+                                          args->GetList()[3]);
 }
 
 void SiteSettingsHandler::HandleIsOriginValid(const base::ListValue* args) {

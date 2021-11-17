@@ -2436,6 +2436,58 @@ TEST_F(SiteSettingsHandlerTest, HandleClearEtldPlus1DataAndCookies) {
   EXPECT_EQ(0U, storage_and_cookie_list.size());
 }
 
+// TODO(crbug.com/1271155, crbug.com/1268626): Add Validation for cookies nodes
+// deleted correctly.
+TEST_F(SiteSettingsHandlerTest, HandleClearUsage) {
+  SetUpCookiesTreeModel();
+
+  EXPECT_EQ(22, handler()->cookies_tree_model_->GetRoot()->GetTotalNodeCount());
+
+  GURL hosts[] = {GURL("https://example.com/"), GURL("https://google.com/")};
+
+  HostContentSettingsMap* host_content_settings_map =
+      HostContentSettingsMapFactory::GetForProfile(profile());
+  ContentSettingsForOneType client_hints_settings;
+
+  // Add setting for the two hosts host[0], host[1].
+  base::Value expiration_time((base::Time::Now() + base::Days(1)).ToDoubleT());
+  base::Value client_hint_platform_version(14);
+  base::Value client_hint_bitness(16);
+
+  base::Value client_hints_list(base::Value::Type::LIST);
+  client_hints_list.Append(std::move(client_hint_platform_version));
+  client_hints_list.Append(std::move(client_hint_bitness));
+
+  base::Value expiration_times_dictionary(base::Value::Type::DICTIONARY);
+  expiration_times_dictionary.SetKey("client_hints",
+                                     std::move(client_hints_list));
+  expiration_times_dictionary.SetKey("expiration_time",
+                                     std::move(expiration_time));
+
+  // Add setting for the hosts.
+  for (const auto& host : hosts) {
+    host_content_settings_map->SetWebsiteSettingDefaultScope(
+        host, GURL(), ContentSettingsType::CLIENT_HINTS,
+        base::Value::ToUniquePtrValue(expiration_times_dictionary.Clone()));
+  }
+
+  // Clear usage data.
+  base::Value args(base::Value::Type::LIST);
+  args.Append("https://example.com/");
+  handler()->HandleClearUsage(&base::Value::AsListValue(args));
+
+  // Validate the client hint has been cleared.
+  host_content_settings_map->GetSettingsForOneType(
+      ContentSettingsType::CLIENT_HINTS, &client_hints_settings);
+  EXPECT_EQ(1U, client_hints_settings.size());
+  EXPECT_EQ(ContentSettingsPattern::FromURLNoWildcard(hosts[1]),
+            client_hints_settings.at(0).primary_pattern);
+  EXPECT_EQ(ContentSettingsPattern::Wildcard(),
+            client_hints_settings.at(0).secondary_pattern);
+  EXPECT_EQ(expiration_times_dictionary,
+            client_hints_settings.at(0).setting_value);
+}
+
 TEST_F(SiteSettingsHandlerTest, CookieSettingDescription) {
   const auto kBlocked = [](int num) {
     return l10n_util::GetPluralStringFUTF8(
