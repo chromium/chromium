@@ -70,6 +70,7 @@ source_set("tabs_internal") {
     "//ios/chrome/browser/infobars:badge",
     "//ios/chrome/browser/infobars/overlays",
     "//ios/chrome/browser/itunes_urls",
+    "//ios/chrome/browser/language",
     "//ios/chrome/browser/link_to_text",
     "//ios/chrome/browser/main",
     "//ios/chrome/browser/metrics",

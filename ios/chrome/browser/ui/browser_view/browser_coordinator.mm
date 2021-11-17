@@ -7,18 +7,21 @@
 #include <memory>
 
 #import "base/metrics/histogram_functions.h"
-#include "base/scoped_observation.h"
-#include "components/profile_metrics/browser_profile_type.h"
+#import "base/scoped_observation.h"
+#import "components/profile_metrics/browser_profile_type.h"
 #import "ios/chrome/browser/app_launcher/app_launcher_abuse_detector.h"
 #import "ios/chrome/browser/app_launcher/app_launcher_tab_helper.h"
 #import "ios/chrome/browser/autofill/autofill_tab_helper.h"
-#include "ios/chrome/browser/browser_state/chrome_browser_state.h"
-#include "ios/chrome/browser/chrome_url_constants.h"
-#include "ios/chrome/browser/download/download_directory_util.h"
+#import "ios/chrome/browser/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/chrome_url_constants.h"
+#import "ios/chrome/browser/download/download_directory_util.h"
 #import "ios/chrome/browser/download/external_app_util.h"
 #import "ios/chrome/browser/download/pass_kit_tab_helper.h"
 #import "ios/chrome/browser/find_in_page/find_tab_helper.h"
 #import "ios/chrome/browser/main/browser.h"
+#import "ios/chrome/browser/prerender/prerender_service.h"
+#import "ios/chrome/browser/prerender/prerender_service_factory.h"
+#import "ios/chrome/browser/signin/account_consistency_service_factory.h"
 #import "ios/chrome/browser/store_kit/store_kit_coordinator.h"
 #import "ios/chrome/browser/store_kit/store_kit_tab_helper.h"
 #import "ios/chrome/browser/tabs/tab_title_util.h"
@@ -31,9 +34,11 @@
 #import "ios/chrome/browser/ui/autofill/form_input_accessory/form_input_accessory_coordinator.h"
 #import "ios/chrome/browser/ui/badges/badge_popup_menu_coordinator.h"
 #import "ios/chrome/browser/ui/browser_container/browser_container_coordinator.h"
+#import "ios/chrome/browser/ui/browser_view/browser_view_controller+delegates.h"
 #import "ios/chrome/browser/ui/browser_view/browser_view_controller+private.h"
 #import "ios/chrome/browser/ui/browser_view/browser_view_controller.h"
 #import "ios/chrome/browser/ui/browser_view/browser_view_controller_dependency_factory.h"
+#import "ios/chrome/browser/ui/browser_view/tab_lifecycle_mediator.h"
 #import "ios/chrome/browser/ui/commands/activity_service_commands.h"
 #import "ios/chrome/browser/ui/commands/application_commands.h"
 #import "ios/chrome/browser/ui/commands/browser_coordinator_commands.h"
@@ -80,7 +85,7 @@
 #import "ios/chrome/browser/ui/text_zoom/text_zoom_coordinator.h"
 #import "ios/chrome/browser/ui/toolbar/accessory/toolbar_accessory_coordinator_delegate.h"
 #import "ios/chrome/browser/ui/toolbar/accessory/toolbar_accessory_presenter.h"
-#include "ios/chrome/browser/ui/ui_feature_flags.h"
+#import "ios/chrome/browser/ui/ui_feature_flags.h"
 #import "ios/chrome/browser/url_loading/url_loading_browser_agent.h"
 #import "ios/chrome/browser/url_loading/url_loading_params.h"
 #import "ios/chrome/browser/web/font_size/font_size_tab_helper.h"
@@ -90,11 +95,11 @@
 #import "ios/chrome/browser/web/web_navigation_browser_agent.h"
 #import "ios/chrome/browser/web/web_state_delegate_browser_agent.h"
 #import "ios/chrome/browser/web_state_list/view_source_browser_agent.h"
-#include "ios/chrome/browser/web_state_list/web_state_list.h"
+#import "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/web_state_list/web_state_list_observer_bridge.h"
-#include "ios/chrome/grit/ios_strings.h"
+#import "ios/chrome/grit/ios_strings.h"
 #import "ios/public/provider/chrome/browser/text_zoom/text_zoom_api.h"
-#include "ui/base/l10n/l10n_util.h"
+#import "ui/base/l10n/l10n_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -131,6 +136,9 @@
 
 // Mediator for incognito reauth.
 @property(nonatomic, strong) IncognitoReauthMediator* incognitoAuthMediator;
+
+// Mediator for tab lifecylce.
+@property(nonatomic, strong) TabLifecycleMediator* tabLifecycleMediator;
 
 // =================================================
 // Child Coordinators, listed in alphabetical order.
@@ -550,6 +558,25 @@
 
 // Starts mediators owned by this coordinator.
 - (void)startMediators {
+  // Cache frequently repeated property values to curb generated code bloat.
+  ChromeBrowserState* browserState = self.browser->GetBrowserState();
+  BrowserViewController* browserViewController = self.viewController;
+
+  TabLifecycleDependencies dependencies;
+  dependencies.prerenderService =
+      PrerenderServiceFactory::GetForBrowserState(browserState);
+  dependencies.sideSwipeController = browserViewController.sideSwipeController;
+  dependencies.sadTabCoordinator = browserViewController.sadTabCoordinator;
+  dependencies.downloadManagerCoordinator =
+      browserViewController.downloadManagerCoordinator;
+  dependencies.commandDispatcher = self.dispatcher;
+  dependencies.passwordBaseViewController = browserViewController;
+  dependencies.accountConsistencyService =
+      ios::AccountConsistencyServiceFactory::GetForBrowserState(browserState);
+  self.tabLifecycleMediator = [[TabLifecycleMediator alloc]
+      initWithWebStateList:self.browser->GetWebStateList()
+                  delegate:browserViewController
+              dependencies:dependencies];
   self.viewController.reauthHandler =
       HandlerForProtocol(self.dispatcher, IncognitoReauthCommands);
 
@@ -560,12 +587,12 @@
       [DefaultBrowserSceneAgent agentFromScene:sceneState].nonModalScheduler;
   self.viewController.nonModalPromoPresentationDelegate = self;
 
-  if (self.browser->GetBrowserState()->IsOffTheRecord()) {
+  if (browserState->IsOffTheRecord()) {
     IncognitoReauthSceneAgent* reauthAgent =
         [IncognitoReauthSceneAgent agentFromScene:sceneState];
 
     self.incognitoAuthMediator =
-        [[IncognitoReauthMediator alloc] initWithConsumer:self.viewController
+        [[IncognitoReauthMediator alloc] initWithConsumer:browserViewController
                                               reauthAgent:reauthAgent];
   }
 }
@@ -1050,6 +1077,7 @@
   [self.openInCoordinator stop];
   self.openInCoordinator = nil;
 
+  [self.tabLifecycleMediator disconnect];
   for (int i = 0; i < self.browser->GetWebStateList()->count(); i++) {
     web::WebState* webState = self.browser->GetWebStateList()->GetWebStateAt(i);
     [self uninstallDelegatesForWebState:webState];
