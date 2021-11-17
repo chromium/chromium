@@ -60,8 +60,11 @@ chromeos::secure_channel::mojom::PayloadFilesPtr DoCreatePayloadFiles(
 
 CameraRollDownloadManagerImpl::DownloadItem::DownloadItem(
     int64_t payload_id,
-    const base::FilePath& file_path)
-    : payload_id(payload_id), file_path(file_path) {}
+    const base::FilePath& file_path,
+    const std::string& holding_space_item_id)
+    : payload_id(payload_id),
+      file_path(file_path),
+      holding_space_item_id(holding_space_item_id) {}
 
 CameraRollDownloadManagerImpl::DownloadItem::DownloadItem(
     const CameraRollDownloadManagerImpl::DownloadItem&) = default;
@@ -106,12 +109,14 @@ void CameraRollDownloadManagerImpl::CreatePayloadFiles(
       base::BindOnce(&HasEnoughDiskSpace, download_path_, item_metadata),
       base::BindOnce(&CameraRollDownloadManagerImpl::OnDiskSpaceCheckComplete,
                      weak_ptr_factory_.GetWeakPtr(), base_name.value(),
-                     payload_id, std::move(payload_files_callback)));
+                     payload_id, item_metadata.file_size_bytes(),
+                     std::move(payload_files_callback)));
 }
 
 void CameraRollDownloadManagerImpl::OnDiskSpaceCheckComplete(
     const base::SafeBaseName& base_name,
     int64_t payload_id,
+    int64_t file_size_bytes,
     CreatePayloadFilesCallback payload_files_callback,
     bool has_enough_disk_space) {
   if (!has_enough_disk_space) {
@@ -126,25 +131,35 @@ void CameraRollDownloadManagerImpl::OnDiskSpaceCheckComplete(
                      download_path_.Append(base_name.path())),
       base::BindOnce(&CameraRollDownloadManagerImpl::OnUniquePathFetched,
                      weak_ptr_factory_.GetWeakPtr(), payload_id,
-                     std::move(payload_files_callback)));
+                     file_size_bytes, std::move(payload_files_callback)));
 }
 
 void CameraRollDownloadManagerImpl::OnUniquePathFetched(
     int64_t payload_id,
+    int64_t file_size_bytes,
     CreatePayloadFilesCallback payload_files_callback,
     const base::FilePath& unique_path) {
-  pending_downloads_.emplace(payload_id, DownloadItem(payload_id, unique_path));
-
   task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE, base::BindOnce(&DoCreatePayloadFiles, unique_path),
       base::BindOnce(&CameraRollDownloadManagerImpl::OnPayloadFilesCreated,
-                     weak_ptr_factory_.GetWeakPtr(),
-                     std::move(payload_files_callback)));
+                     weak_ptr_factory_.GetWeakPtr(), payload_id, unique_path,
+                     file_size_bytes, std::move(payload_files_callback)));
 }
 
 void CameraRollDownloadManagerImpl::OnPayloadFilesCreated(
+    int64_t payload_id,
+    const base::FilePath& file_path,
+    int64_t file_size_bytes,
     CreatePayloadFilesCallback payload_files_callback,
     chromeos::secure_channel::mojom::PayloadFilesPtr payload_files) {
+  const std::string& holding_space_item_id =
+      holding_space_keyed_service_->AddPhoneHubCameraRollItem(
+          file_path,
+          ash::HoldingSpaceProgress(/*current_bytes=*/0,
+                                    /*total_bytes=*/file_size_bytes));
+  pending_downloads_.emplace(
+      payload_id, DownloadItem(payload_id, file_path, holding_space_item_id));
+
   std::move(payload_files_callback)
       .Run(CreatePayloadFilesResult::kSuccess, std::move(payload_files));
 }
@@ -158,22 +173,12 @@ void CameraRollDownloadManagerImpl::UpdateDownloadProgress(
     return;
   }
 
-  DownloadItem& download_item = it->second;
-  if (download_item.holding_space_item_id.empty()) {
-    download_item.holding_space_item_id =
-        holding_space_keyed_service_->AddPhoneHubCameraRollItem(
-            download_item.file_path,
-            ash::HoldingSpaceProgress(update->bytes_transferred,
-                                      update->total_bytes));
-  } else {
-    holding_space_keyed_service_
-        ->UpdateItem(download_item.holding_space_item_id)
-        ->SetProgress(ash::HoldingSpaceProgress(update->bytes_transferred,
-                                                update->total_bytes))
-        .SetInvalidateImage(
-            update->status ==
-            chromeos::secure_channel::mojom::FileTransferStatus::kSuccess);
-  }
+  holding_space_keyed_service_->UpdateItem(it->second.holding_space_item_id)
+      ->SetProgress(ash::HoldingSpaceProgress(update->bytes_transferred,
+                                              update->total_bytes))
+      .SetInvalidateImage(
+          update->status ==
+          chromeos::secure_channel::mojom::FileTransferStatus::kSuccess);
 
   switch (update->status) {
     case chromeos::secure_channel::mojom::FileTransferStatus::kInProgress:

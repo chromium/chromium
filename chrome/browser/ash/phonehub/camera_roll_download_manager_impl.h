@@ -42,7 +42,9 @@ class CameraRollDownloadManagerImpl
  private:
   // Internal representation of an item being downloaded.
   struct DownloadItem {
-    DownloadItem(int64_t payload_id, const base::FilePath& file_path);
+    DownloadItem(int64_t payload_id,
+                 const base::FilePath& file_path,
+                 const std::string& holding_space_item_id);
     DownloadItem(const DownloadItem&);
     DownloadItem& operator=(const DownloadItem&);
     ~DownloadItem();
@@ -55,12 +57,17 @@ class CameraRollDownloadManagerImpl
   void OnDiskSpaceCheckComplete(
       const base::SafeBaseName& base_name,
       int64_t payload_id,
+      int64_t file_size_bytes,
       CreatePayloadFilesCallback payload_files_callback,
       bool has_enough_disk_space);
   void OnUniquePathFetched(int64_t payload_id,
+                           int64_t file_size_bytes,
                            CreatePayloadFilesCallback payload_files_callback,
                            const base::FilePath& unique_path);
   void OnPayloadFilesCreated(
+      int64_t payload_id,
+      const base::FilePath& file_path,
+      int64_t file_size_bytes,
       CreatePayloadFilesCallback payload_files_callback,
       chromeos::secure_channel::mojom::PayloadFilesPtr payload_files);
 

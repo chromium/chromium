@@ -148,6 +148,7 @@ class CameraRollDownloadManagerImplTest : public testing::Test {
 TEST_F(CameraRollDownloadManagerImplTest, CreatePayloadFiles) {
   proto::CameraRollItemMetadata item_metadata;
   item_metadata.set_file_name("IMG_0001.jpeg");
+  item_metadata.set_file_size_bytes(1000);
 
   chromeos::secure_channel::mojom::PayloadFilesPtr payload_files =
       CreatePayloadFiles(/*payload_id=*/1234, item_metadata);
@@ -156,6 +157,12 @@ TEST_F(CameraRollDownloadManagerImplTest, CreatePayloadFiles) {
   EXPECT_TRUE(payload_files->output_file.IsValid());
   EXPECT_TRUE(payload_files->output_file.created());
   EXPECT_TRUE(base::PathExists(GetDownloadPath().Append("IMG_0001.jpeg")));
+  const HoldingSpaceItem* holding_space_item = GetHoldingSpaceModel()->GetItem(
+      HoldingSpaceItem::Type::kPhoneHubCameraRoll,
+      GetDownloadPath().Append("IMG_0001.jpeg"));
+  EXPECT_TRUE(holding_space_item != nullptr);
+  EXPECT_FALSE(holding_space_item->progress().IsComplete());
+  EXPECT_EQ(0, holding_space_item->progress().GetValue());
 }
 
 TEST_F(CameraRollDownloadManagerImplTest,
@@ -163,18 +170,23 @@ TEST_F(CameraRollDownloadManagerImplTest,
   proto::CameraRollItemMetadata item_metadata;
   std::string invalid_file_name = "../../secret/IMG_0001.jpeg";
   item_metadata.set_file_name(invalid_file_name);
+  item_metadata.set_file_size_bytes(1000);
 
   CreatePayloadFilesResult error =
       CreatePayloadFilesAndGetError(/*payload_id=*/1234, item_metadata);
 
   EXPECT_EQ(CreatePayloadFilesResult::kInvalidFileName, error);
   EXPECT_FALSE(base::PathExists(GetDownloadPath().Append(invalid_file_name)));
+  EXPECT_FALSE(GetHoldingSpaceModel()->ContainsItem(
+      HoldingSpaceItem::Type::kPhoneHubCameraRoll,
+      GetDownloadPath().Append("IMG_0001.jpeg")));
 }
 
 TEST_F(CameraRollDownloadManagerImplTest,
        CreatePayloadFilesWithReusedPayloadId) {
   proto::CameraRollItemMetadata item_metadata;
   item_metadata.set_file_name("IMG_0001.jpeg");
+  item_metadata.set_file_size_bytes(1000);
   CreatePayloadFiles(/*payload_id=*/1234, item_metadata);
 
   CreatePayloadFilesResult error =
@@ -196,12 +208,16 @@ TEST_F(CameraRollDownloadManagerImplTest,
 
   EXPECT_EQ(CreatePayloadFilesResult::kInsufficientDiskSpace, error);
   EXPECT_FALSE(base::PathExists(GetDownloadPath().Append("IMG_0001.jpeg")));
+  EXPECT_FALSE(GetHoldingSpaceModel()->ContainsItem(
+      HoldingSpaceItem::Type::kPhoneHubCameraRoll,
+      GetDownloadPath().Append("IMG_0001.jpeg")));
 }
 
 TEST_F(CameraRollDownloadManagerImplTest,
        CreatePayloadFilesWithDuplicateNames) {
   proto::CameraRollItemMetadata item_metadata;
   item_metadata.set_file_name("IMG_0001.jpeg");
+  item_metadata.set_file_size_bytes(1000);
 
   // Simulat the same item being downloaded twice.
   CreatePayloadFiles(/*payload_id=*/1234, item_metadata);
@@ -209,11 +225,18 @@ TEST_F(CameraRollDownloadManagerImplTest,
 
   EXPECT_TRUE(base::PathExists(GetDownloadPath().Append("IMG_0001.jpeg")));
   EXPECT_TRUE(base::PathExists(GetDownloadPath().Append("IMG_0001 (1).jpeg")));
+  EXPECT_TRUE(GetHoldingSpaceModel()->ContainsItem(
+      HoldingSpaceItem::Type::kPhoneHubCameraRoll,
+      GetDownloadPath().Append("IMG_0001.jpeg")));
+  EXPECT_TRUE(GetHoldingSpaceModel()->ContainsItem(
+      HoldingSpaceItem::Type::kPhoneHubCameraRoll,
+      GetDownloadPath().Append("IMG_0001 (1).jpeg")));
 }
 
 TEST_F(CameraRollDownloadManagerImplTest, UpdateDownloadProgress) {
   proto::CameraRollItemMetadata item_metadata;
   item_metadata.set_file_name("IMG_0001.jpeg");
+  item_metadata.set_file_size_bytes(1000);
   CreatePayloadFiles(/*payload_id=*/1234, item_metadata);
 
   camera_roll_download_manager()->UpdateDownloadProgress(
@@ -245,9 +268,11 @@ TEST_F(CameraRollDownloadManagerImplTest,
        UpdateDownloadProgressWithMultiplePayloads) {
   proto::CameraRollItemMetadata item_metadata_1;
   item_metadata_1.set_file_name("IMG_0001.jpeg");
+  item_metadata_1.set_file_size_bytes(1000);
   CreatePayloadFiles(/*payload_id=*/1234, item_metadata_1);
   proto::CameraRollItemMetadata item_metadata_2;
   item_metadata_2.set_file_name("IMG_0002.jpeg");
+  item_metadata_2.set_file_size_bytes(2000);
   CreatePayloadFiles(/*payload_id=*/-5678, item_metadata_2);
 
   camera_roll_download_manager()->UpdateDownloadProgress(
@@ -281,6 +306,7 @@ TEST_F(CameraRollDownloadManagerImplTest,
        UpdateDownloadProgressForCompletedItem) {
   proto::CameraRollItemMetadata item_metadata;
   item_metadata.set_file_name("IMG_0001.jpeg");
+  item_metadata.set_file_size_bytes(1000);
   CreatePayloadFiles(/*payload_id=*/1234, item_metadata);
 
   camera_roll_download_manager()->UpdateDownloadProgress(
@@ -307,6 +333,7 @@ TEST_F(CameraRollDownloadManagerImplTest,
 TEST_F(CameraRollDownloadManagerImplTest, CleanupFailedItem) {
   proto::CameraRollItemMetadata item_metadata;
   item_metadata.set_file_name("IMG_0001.jpeg");
+  item_metadata.set_file_size_bytes(1000);
   CreatePayloadFiles(/*payload_id=*/1234, item_metadata);
 
   base::FilePath expected_path = GetDownloadPath().Append("IMG_0001.jpeg");
@@ -333,6 +360,7 @@ TEST_F(CameraRollDownloadManagerImplTest, CleanupFailedItem) {
 TEST_F(CameraRollDownloadManagerImplTest, DeleteFile) {
   proto::CameraRollItemMetadata item_metadata;
   item_metadata.set_file_name("IMG_0001.jpeg");
+  item_metadata.set_file_size_bytes(1000);
   CreatePayloadFiles(/*payload_id=*/1234, item_metadata);
 
   base::FilePath expected_path = GetDownloadPath().Append("IMG_0001.jpeg");
