@@ -66,9 +66,9 @@ class GEOMETRY_EXPORT SizeF {
   std::string ToString() const;
 
  private:
-  FRIEND_TEST_ALL_PREFIXES(SizeTest, TrivialDimensionTests);
-  FRIEND_TEST_ALL_PREFIXES(SizeTest, ClampsToZero);
-  FRIEND_TEST_ALL_PREFIXES(SizeTest, ConsistentClamping);
+  FRIEND_TEST_ALL_PREFIXES(SizeFTest, IsEmpty);
+  FRIEND_TEST_ALL_PREFIXES(SizeFTest, ClampsToZero);
+  FRIEND_TEST_ALL_PREFIXES(SizeFTest, ConsistentClamping);
 
   static constexpr float kTrivial = 8.f * std::numeric_limits<float>::epsilon();
 
