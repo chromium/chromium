@@ -90,6 +90,10 @@ class NET_EXPORT CookiePartitionKey {
 
   bool from_script() const { return from_script_; }
 
+  // Returns true if the current partition key can be serialized to a string.
+  // Cookie partition keys whose internal site is opaque cannot be serialized.
+  bool IsSerializeable() const;
+
  private:
   explicit CookiePartitionKey(const SchemefulSite& site);
   explicit CookiePartitionKey(const GURL& url);

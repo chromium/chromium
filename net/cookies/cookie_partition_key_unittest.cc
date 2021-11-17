@@ -141,6 +141,13 @@ TEST_P(CookiePartitionKeyTest, FromScript) {
   EXPECT_TRUE(key->site().opaque());
 }
 
+TEST_P(CookiePartitionKeyTest, IsSerializeable) {
+  EXPECT_FALSE(CookiePartitionKey::FromURLForTesting(GURL()).IsSerializeable());
+  EXPECT_EQ(PartitionedCookiesEnabled(), CookiePartitionKey::FromURLForTesting(
+                                             GURL("https://www.example.com"))
+                                             .IsSerializeable());
+}
+
 }  // namespace net
 
 #endif  // NET_COOKIES_COOKIE_PARTITION_KEY_UNITTEST_H_

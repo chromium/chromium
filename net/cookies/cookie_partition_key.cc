@@ -53,19 +53,11 @@ bool CookiePartitionKey::Serialize(const absl::optional<CookiePartitionKey>& in,
     out = kEmptyCookiePartitionKey;
     return true;
   }
-  if (!base::FeatureList::IsEnabled(features::kPartitionedCookies))
+  if (!in->IsSerializeable())
     return false;
-
-  // We should not try to serialize a partition key created by a renderer.
-  DCHECK(!in->from_script_);
-
-  if (in->site_.GetURL().SchemeIsFile()) {
-    out = in->site_.SerializeFileSiteWithHost();
-    return true;
-  }
-  if (in->site_.opaque())
-    return false;
-  out = in->site_.Serialize();
+  out = in->site_.GetURL().SchemeIsFile()
+            ? in->site_.SerializeFileSiteWithHost()
+            : in->site_.Serialize();
   return true;
 }
 
@@ -97,6 +89,14 @@ absl::optional<CookiePartitionKey> CookiePartitionKey::FromNetworkIsolationKey(
   if (!top_frame_site)
     return absl::nullopt;
   return absl::make_optional(net::CookiePartitionKey(top_frame_site.value()));
+}
+
+bool CookiePartitionKey::IsSerializeable() const {
+  if (!base::FeatureList::IsEnabled(features::kPartitionedCookies))
+    return false;
+  // We should not try to serialize a partition key created by a renderer.
+  DCHECK(!from_script_);
+  return !site_.opaque();
 }
 
 }  // namespace net
