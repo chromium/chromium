@@ -5,7 +5,6 @@
 #include "chrome/browser/ui/webui/connectors_internals/connectors_internals_ui.h"
 
 #include "base/bind.h"
-#include "base/feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/enterprise/connectors/device_trust/device_trust_features.h"
 #include "chrome/browser/profiles/profile.h"
@@ -29,9 +28,8 @@ ConnectorsInternalsUI::ConnectorsInternalsUI(content::WebUI* web_ui)
   Profile* profile = Profile::FromWebUI(web_ui);
 
   source->AddBoolean("isOtr", profile->IsOffTheRecord());
-  source->AddBoolean(
-      "zeroTrustConnectorEnabled",
-      base::FeatureList::IsEnabled(kDeviceTrustConnectorEnabled));
+  source->AddBoolean("zeroTrustConnectorEnabled",
+                     IsDeviceTrustConnectorFeatureEnabled());
 
   webui::SetupWebUIDataSource(
       source,

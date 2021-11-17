@@ -16,10 +16,6 @@ namespace enterprise_connectors {
 
 namespace {
 
-bool IsFeatureEnabled() {
-  return base::FeatureList::IsEnabled(kDeviceTrustConnectorEnabled);
-}
-
 const base::ListValue* GetPolicyUrlPatterns(PrefService* prefs) {
   return prefs->GetList(kContextAwareAccessSignalsAllowlistPref);
 }
@@ -34,7 +30,7 @@ bool ConnectorPolicyHasValues(PrefService* profile_prefs) {
 // static
 bool DeviceTrustConnectorService::IsConnectorEnabled(
     PrefService* profile_prefs) {
-  if (!IsFeatureEnabled() || !profile_prefs) {
+  if (!IsDeviceTrustConnectorFeatureEnabled() || !profile_prefs) {
     return false;
   }
 
@@ -46,7 +42,7 @@ DeviceTrustConnectorService::DeviceTrustConnectorService(
     : profile_prefs_(profile_prefs),
       matcher_(std::make_unique<url_matcher::URLMatcher>()) {
   DCHECK(profile_prefs_);
-  if (!IsFeatureEnabled()) {
+  if (!IsDeviceTrustConnectorFeatureEnabled()) {
     return;
   }
 
@@ -75,7 +71,7 @@ void DeviceTrustConnectorService::OnConnectorEnabled() {
 }
 
 void DeviceTrustConnectorService::OnPolicyUpdated() {
-  DCHECK(IsFeatureEnabled());
+  DCHECK(IsDeviceTrustConnectorFeatureEnabled());
 
   const base::ListValue* url_patterns = GetPolicyUrlPatterns(profile_prefs_);
 

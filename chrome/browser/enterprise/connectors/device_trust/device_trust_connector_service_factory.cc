@@ -5,10 +5,20 @@
 #include "chrome/browser/enterprise/connectors/device_trust/device_trust_connector_service_factory.h"
 
 #include "base/memory/singleton.h"
+#include "build/build_config.h"
 #include "chrome/browser/enterprise/connectors/device_trust/device_trust_connector_service.h"
+#include "chrome/browser/enterprise/connectors/device_trust/device_trust_features.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/keyed_service/core/keyed_service.h"
+
+#if defined(OS_LINUX) || defined(OS_WIN) || defined(OS_MAC)
+#include "chrome/browser/browser_process.h"
+#include "chrome/browser/enterprise/connectors/device_trust/browser/browser_device_trust_connector_service.h"
+#include "chrome/browser/policy/chrome_browser_policy_connector.h"
+#include "components/enterprise/browser/controller/chrome_browser_cloud_management_controller.h"
+#include "components/enterprise/browser/device_trust/device_trust_key_manager.h"
+#endif  // defined(OS_LINUX) || defined(OS_WIN) || defined(OS_MAC)
 
 namespace enterprise_connectors {
 
@@ -27,8 +37,11 @@ DeviceTrustConnectorService* DeviceTrustConnectorServiceFactory::GetForProfile(
 
 bool DeviceTrustConnectorServiceFactory::ServiceIsCreatedWithBrowserContext()
     const {
-  // TODO(b/204914180): Change this when ready to initialize the DT Key Manager.
+#if defined(OS_LINUX) || defined(OS_WIN) || defined(OS_MAC)
+  return IsDeviceTrustConnectorFeatureEnabled();
+#else
   return false;
+#endif  // defined(OS_LINUX) || defined(OS_WIN) || defined(OS_MAC)
 }
 
 DeviceTrustConnectorServiceFactory::DeviceTrustConnectorServiceFactory()
@@ -42,6 +55,16 @@ DeviceTrustConnectorServiceFactory::~DeviceTrustConnectorServiceFactory() =
 KeyedService* DeviceTrustConnectorServiceFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
   auto* profile = Profile::FromBrowserContext(context);
+
+#if defined(OS_LINUX) || defined(OS_WIN) || defined(OS_MAC)
+  if (IsDeviceTrustConnectorFeatureEnabled()) {
+    auto* key_manager = g_browser_process->browser_policy_connector()
+                            ->chrome_browser_cloud_management_controller()
+                            ->GetDeviceTrustKeyManager();
+    return new BrowserDeviceTrustConnectorService(key_manager,
+                                                  profile->GetPrefs());
+  }
+#endif  // defined(OS_LINUX) || defined(OS_WIN) || defined(OS_MAC)
   return new DeviceTrustConnectorService(profile->GetPrefs());
 }
 

@@ -5689,6 +5689,8 @@ static_library("browser") {
       "enterprise/connectors/device_trust/attestation/desktop/desktop_attestation_service.h",
       "enterprise/connectors/device_trust/attestation/desktop/google_keys.cc",
       "enterprise/connectors/device_trust/attestation/desktop/google_keys.h",
+      "enterprise/connectors/device_trust/browser/browser_device_trust_connector_service.cc",
+      "enterprise/connectors/device_trust/browser/browser_device_trust_connector_service.h",
       "enterprise/connectors/device_trust/signals/decorators/browser/browser_signals_decorator.cc",
       "enterprise/connectors/device_trust/signals/decorators/browser/browser_signals_decorator.h",
     ]

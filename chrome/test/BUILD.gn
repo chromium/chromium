@@ -2706,6 +2706,7 @@ if (!is_android && !is_fuchsia) {
 
         deps += [
           "//chrome/browser/enterprise/connectors/device_trust:features",
+          "//chrome/browser/enterprise/connectors/device_trust/key_management/browser/commands:test_support",
           "//chrome/browser/enterprise/connectors/device_trust/key_management/core/persistence:test_support",
         ]
       }

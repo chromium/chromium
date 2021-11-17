@@ -15,6 +15,7 @@
 #include "chrome/browser/enterprise/connectors/connectors_prefs.h"
 #include "chrome/browser/enterprise/connectors/connectors_service.h"
 #include "chrome/browser/enterprise/connectors/device_trust/device_trust_features.h"
+#include "chrome/browser/enterprise/connectors/device_trust/key_management/browser/commands/scoped_key_rotation_command_factory.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/core/persistence/scoped_key_persistence_delegate_factory.h"
 #include "chrome/browser/enterprise/signals/device_info_fetcher.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
@@ -100,6 +101,7 @@ class DeviceTrustBrowserTest : public InProcessBrowserTest,
     InProcessBrowserTest::SetUpOnMainThread();
 
     scoped_persistence_delegate_factory_.emplace();
+    scoped_rotation_command_factory_.emplace();
     enterprise_signals::DeviceInfoFetcher::SetForceStubForTesting(true);
 
     auto* browser_policy_manager =
@@ -208,6 +210,8 @@ class DeviceTrustBrowserTest : public InProcessBrowserTest,
       challenge_response_request_;
   absl::optional<test::ScopedKeyPersistenceDelegateFactory>
       scoped_persistence_delegate_factory_;
+  absl::optional<ScopedKeyRotationCommandFactory>
+      scoped_rotation_command_factory_;
 };
 
 // Tests that the whole attestation flow occurs when navigating to an allowed
