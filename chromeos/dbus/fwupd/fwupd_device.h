@@ -15,14 +15,15 @@ namespace chromeos {
 struct COMPONENT_EXPORT(CHROMEOS_DBUS_FWUPD) FwupdDevice {
   FwupdDevice();
   FwupdDevice(const std::string& id, const std::string& device_name);
-  FwupdDevice(const FwupdDevice& other);
+  FwupdDevice(FwupdDevice&& other);
+  FwupdDevice& operator=(FwupdDevice&& other);
   ~FwupdDevice();
 
   std::string id;
   std::string device_name;
 };
 
-typedef std::vector<FwupdDevice> FwupdDeviceList;
+using FwupdDeviceList = std::vector<FwupdDevice>;
 
 }  // namespace chromeos
 

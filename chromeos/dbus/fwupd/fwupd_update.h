@@ -11,13 +11,14 @@
 
 namespace chromeos {
 
-// Structure to hold FwupdUpdate data received from fwupd.
+// Structure to hold update details received from fwupd.
 struct COMPONENT_EXPORT(CHROMEOS_DBUS_FWUPD) FwupdUpdate {
   FwupdUpdate();
   FwupdUpdate(const std::string& version,
               const std::string& description,
               int priority);
-  FwupdUpdate(const FwupdUpdate& other);
+  FwupdUpdate(FwupdUpdate&& other);
+  FwupdUpdate& operator=(FwupdUpdate&& other);
   ~FwupdUpdate();
 
   std::string version;
@@ -25,7 +26,7 @@ struct COMPONENT_EXPORT(CHROMEOS_DBUS_FWUPD) FwupdUpdate {
   int priority;
 };
 
-typedef std::vector<FwupdUpdate> FwupdUpdateList;
+using FwupdUpdateList = std::vector<FwupdUpdate>;
 
 }  // namespace chromeos
 

@@ -13,8 +13,8 @@ FwupdUpdate::FwupdUpdate(const std::string& version,
                          int priority)
     : version(version), description(description), priority(priority) {}
 
-FwupdUpdate::FwupdUpdate(const FwupdUpdate& other) = default;
-
+FwupdUpdate::FwupdUpdate(FwupdUpdate&& other) = default;
+FwupdUpdate& FwupdUpdate::operator=(FwupdUpdate&& other) = default;
 FwupdUpdate::~FwupdUpdate() = default;
 
 }  // namespace chromeos

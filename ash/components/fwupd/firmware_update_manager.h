@@ -15,11 +15,13 @@ namespace ash {
 class COMPONENT_EXPORT(ASH_FIRMWARE_UPDATE_MANAGER) FirmwareUpdateManager
     : public chromeos::FwupdClient::Observer {
  public:
-  // Query the fwupd DBus client for currently connected devices.
-  void RequestDevices();
+  FirmwareUpdateManager();
+  FirmwareUpdateManager(const FirmwareUpdateManager&) = delete;
+  FirmwareUpdateManager& operator=(const FirmwareUpdateManager&) = delete;
+  ~FirmwareUpdateManager() override;
 
-  // Query the fwupd DBus client for updates for a certain device.
-  void RequestUpdates(const std::string& device_id);
+  // Gets the global instance pointer.
+  static FirmwareUpdateManager* Get();
 
   // FwupdClient::Observer:
   // When the fwupd DBus client gets a response with devices from fwupd,
@@ -30,13 +32,11 @@ class COMPONENT_EXPORT(ASH_FIRMWARE_UPDATE_MANAGER) FirmwareUpdateManager
   // it calls this function and passes the response.
   void OnUpdateListResponse(chromeos::FwupdUpdateList* updates) override;
 
-  FirmwareUpdateManager();
-  FirmwareUpdateManager(const FirmwareUpdateManager&) = delete;
-  FirmwareUpdateManager& operator=(const FirmwareUpdateManager&) = delete;
-  ~FirmwareUpdateManager() override;
+  // Query the fwupd DBus client for currently connected devices.
+  void RequestDevices();
 
-  // Gets the global instance pointer.
-  static FirmwareUpdateManager* Get();
+  // Query the fwupd DBus client for updates for a certain device.
+  void RequestUpdates(const std::string& device_id);
 
  protected:
   friend class FirmwareUpdateManagerTest;
