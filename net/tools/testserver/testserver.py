@@ -101,8 +101,7 @@ class HTTPSServer(tlslite.api.TLSSocketServerMixIn,
   client verification."""
 
   def __init__(self, server_address, request_hander_class, pem_cert_and_key,
-               ssl_client_auth, ssl_client_cas, simulate_tls13_downgrade,
-               simulate_tls12_downgrade, tls_max_version):
+               ssl_client_auth, ssl_client_cas):
     self.cert_chain = tlslite.api.X509CertChain()
     self.cert_chain.parsePemList(pem_cert_and_key)
     # Force using only python implementation - otherwise behavior is different
@@ -125,12 +124,6 @@ class HTTPSServer(tlslite.api.TLSSocketServerMixIn,
     self.ssl_handshake_settings = tlslite.api.HandshakeSettings()
     # Enable SSLv3 for testing purposes.
     self.ssl_handshake_settings.minVersion = (3, 0)
-    if simulate_tls13_downgrade:
-      self.ssl_handshake_settings.simulateTLS13Downgrade = True
-    if simulate_tls12_downgrade:
-      self.ssl_handshake_settings.simulateTLS12Downgrade = True
-    if tls_max_version != 0:
-      self.ssl_handshake_settings.maxVersion = (3, tls_max_version)
 
     self.session_cache = tlslite.api.SessionCache()
     testserver_base.StoppableHTTPServer.__init__(self,
@@ -394,11 +387,9 @@ class ServerRunner(testserver_base.TestServerRunner):
                 'specified trusted client CA file not found: ' + ca_cert +
                 ' exiting...')
 
-        server = HTTPSServer(
-            (host, port), TestPageHandler, pem_cert_and_key,
-            self.options.ssl_client_auth, self.options.ssl_client_ca,
-            self.options.simulate_tls13_downgrade,
-            self.options.simulate_tls12_downgrade, self.options.tls_max_version)
+        server = HTTPSServer((host, port), TestPageHandler, pem_cert_and_key,
+                             self.options.ssl_client_auth,
+                             self.options.ssl_client_ca)
         print('HTTPS server started on https://%s:%d...' %
               (host, server.server_port))
       else:
@@ -502,14 +493,6 @@ class ServerRunner(testserver_base.TestServerRunner):
     self.option_parser.add_option('--ws-basic-auth', action='store_true',
                                   dest='ws_basic_auth',
                                   help='Enable basic-auth for WebSocket')
-    self.option_parser.add_option('--simulate-tls13-downgrade',
-                                  action='store_true')
-    self.option_parser.add_option('--simulate-tls12-downgrade',
-                                  action='store_true')
-    self.option_parser.add_option('--tls-max-version', default='0', type='int',
-                                  help='If non-zero, the maximum TLS version '
-                                  'to support. 1 means TLS 1.0, 2 means '
-                                  'TLS 1.1, and 3 means TLS 1.2.')
     self.option_parser.add_option('--redirect-connect-to-localhost',
                                   dest='redirect_connect_to_localhost',
                                   default=False, action='store_true',

@@ -82,13 +82,6 @@ class BaseTestServer {
       CERT_TEST_NAMES,
     };
 
-    enum TLSMaxVersion {
-      TLS_MAX_VERSION_DEFAULT = 0,
-      TLS_MAX_VERSION_TLS1_0 = 1,
-      TLS_MAX_VERSION_TLS1_1 = 2,
-      TLS_MAX_VERSION_TLS1_2 = 3,
-    };
-
     // Initialize a new SSLOptions using CERT_OK as the certificate.
     SSLOptions();
 
@@ -115,17 +108,6 @@ class BaseTestServer {
     // from each certificate will be added to the certificate_authorities
     // field of the CertificateRequest.
     std::vector<base::FilePath> client_authorities;
-
-    // The maximum TLS version to support.
-    TLSMaxVersion tls_max_version = TLS_MAX_VERSION_DEFAULT;
-
-    // If true, sends the TLS 1.3 to TLS 1.2 downgrade signal in the ServerHello
-    // random.
-    bool simulate_tls13_downgrade = false;
-
-    // If true, sends the TLS 1.2 to TLS 1.1 downgrade signal in the ServerHello
-    // random.
-    bool simulate_tls12_downgrade = false;
   };
 
   // Initialize a TestServer.

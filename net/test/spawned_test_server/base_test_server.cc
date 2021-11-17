@@ -437,17 +437,6 @@ bool BaseTestServer::GenerateArguments(base::DictionaryValue* arguments) const {
 
   if (type_ == TYPE_HTTPS) {
     arguments->SetKey("https", base::Value());
-
-    if (ssl_options_.tls_max_version != SSLOptions::TLS_MAX_VERSION_DEFAULT) {
-      arguments->SetIntKey("tls-max-version", ssl_options_.tls_max_version);
-    }
-
-    if (ssl_options_.simulate_tls13_downgrade) {
-      arguments->SetKey("simulate-tls13-downgrade", base::Value());
-    }
-    if (ssl_options_.simulate_tls12_downgrade) {
-      arguments->SetKey("simulate-tls12-downgrade", base::Value());
-    }
   }
 
   return GenerateAdditionalArguments(arguments);

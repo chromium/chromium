@@ -88,7 +88,6 @@
 #include "net/test/embedded_test_server/http_response.h"
 #include "net/test/gtest_util.h"
 #include "net/test/key_util.h"
-#include "net/test/spawned_test_server/spawned_test_server.h"
 #include "net/test/test_data_directory.h"
 #include "net/test/test_with_task_environment.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
@@ -758,12 +757,10 @@ class SSLClientSocketTest : public PlatformTest, public WithTaskEnvironment {
   }
 
  protected:
-  // The address of the test server, after calling StartEmbeddedTestServer() or
-  // StartTestServer().
+  // The address of the test server, after calling StartEmbeddedTestServer().
   const AddressList& addr() const { return addr_; }
 
-  // The hostname of the test server, after calling StartEmbeddedTestServer() or
-  // StartTestServer().
+  // The hostname of the test server, after calling StartEmbeddedTestServer().
   const HostPortPair& host_port_pair() const { return host_port_pair_; }
 
   // The EmbeddedTestServer object, after calling StartEmbeddedTestServer().
@@ -771,16 +768,10 @@ class SSLClientSocketTest : public PlatformTest, public WithTaskEnvironment {
     return embedded_test_server_.get();
   }
 
-  // The SpawnedTestServer object, after calling StartTestServer().
-  const SpawnedTestServer* spawned_test_server() const {
-    return spawned_test_server_.get();
-  }
-
   // Starts the embedded test server with the specified parameters. Returns true
   // on success.
   bool StartEmbeddedTestServer(EmbeddedTestServer::ServerCertificate cert,
                                const SSLServerConfig& server_config) {
-    spawned_test_server_ = nullptr;
     embedded_test_server_ =
         std::make_unique<EmbeddedTestServer>(EmbeddedTestServer::TYPE_HTTPS);
     embedded_test_server_->SetSSLConfig(cert, server_config);
@@ -792,7 +783,6 @@ class SSLClientSocketTest : public PlatformTest, public WithTaskEnvironment {
   bool StartEmbeddedTestServer(
       const EmbeddedTestServer::ServerCertificateConfig& cert_config,
       const SSLServerConfig& server_config) {
-    spawned_test_server_ = nullptr;
     embedded_test_server_ =
         std::make_unique<EmbeddedTestServer>(EmbeddedTestServer::TYPE_HTTPS);
     embedded_test_server_->SetSSLConfig(cert_config, server_config);
@@ -823,25 +813,6 @@ class SSLClientSocketTest : public PlatformTest, public WithTaskEnvironment {
         base::BindRepeating(&HandleSSLInfoRequest, base::Unretained(this)));
   }
 
-  // Starts the spawned test server with SSL configuration |ssl_options|.
-  // Returns true on success. Prefer StartEmbeddedTestServer().
-  bool StartTestServer(const SpawnedTestServer::SSLOptions& ssl_options) {
-    embedded_test_server_ = nullptr;
-    spawned_test_server_ = std::make_unique<SpawnedTestServer>(
-        SpawnedTestServer::TYPE_HTTPS, ssl_options, base::FilePath());
-    if (!spawned_test_server_->Start()) {
-      LOG(ERROR) << "Could not start SpawnedTestServer";
-      return false;
-    }
-
-    if (!spawned_test_server_->GetAddressList(&addr_)) {
-      LOG(ERROR) << "Could not get SpawnedTestServer address list";
-      return false;
-    }
-    host_port_pair_ = spawned_test_server_->host_port_pair();
-    return true;
-  }
-
   std::unique_ptr<SSLClientSocket> CreateSSLClientSocket(
       std::unique_ptr<StreamSocket> transport_socket,
       const HostPortPair& host_and_port,
@@ -852,11 +823,11 @@ class SSLClientSocketTest : public PlatformTest, public WithTaskEnvironment {
 
   // Create an SSLClientSocket object and use it to connect to a test server,
   // then wait for connection results. This must be called after a successful
-  // StartEmbeddedTestServer() or StartTestServer() call.
+  // StartEmbeddedTestServer() call.
   //
   // |ssl_config| The SSL configuration to use.
   // |host_port_pair| The hostname and port to use at the SSL layer. (The
-  //     socket connection will still be made to |spawned_test_server_|.)
+  //     socket connection will still be made to |embedded_test_server_|.)
   // |result| will retrieve the ::Connect() result value.
   //
   // Returns true on success, false otherwise. Success means that the SSL
@@ -870,7 +841,7 @@ class SSLClientSocketTest : public PlatformTest, public WithTaskEnvironment {
         addr_, nullptr, nullptr, NetLog::Get(), NetLogSource()));
     int rv = callback_.GetResult(transport->Connect(callback_.callback()));
     if (rv != OK) {
-      LOG(ERROR) << "Could not connect to SpawnedTestServer";
+      LOG(ERROR) << "Could not connect to test server";
       return false;
     }
 
@@ -936,7 +907,6 @@ class SSLClientSocketTest : public PlatformTest, public WithTaskEnvironment {
     return std::make_unique<test_server::BasicHttpResponse>();
   }
 
-  std::unique_ptr<SpawnedTestServer> spawned_test_server_;
   std::unique_ptr<EmbeddedTestServer> embedded_test_server_;
   base::Lock server_ssl_info_lock_;
   absl::optional<SSLInfo> server_ssl_info_ GUARDED_BY(server_ssl_info_lock_);
@@ -2642,7 +2612,7 @@ TEST_P(SSLClientSocketVersionTest, VerifyServerChainProperlyOrdered) {
   EXPECT_THAT(rv, IsError(ERR_CERT_INVALID));
   EXPECT_FALSE(sock_->IsConnected());
 
-  // When given option CERT_CHAIN_WRONG_ROOT, SpawnedTestServer will present
+  // When given option CERT_CHAIN_WRONG_ROOT, EmbeddedTestServer will present
   // certs from redundant-server-chain.pem.
   CertificateList server_certs =
       CreateCertificateListFromFile(GetTestCertsDirectory(),
@@ -3522,9 +3492,8 @@ TEST_F(SSLClientSocketFalseStartTest, CompleteHandshakeWithoutRequest) {
       client_config, &callback, &raw_transport, &sock));
 
   // Wait for the server Finished to arrive, release it, and allow
-  // SSLClientSocket to process it. This should install a session.
-  // SpawnedTestServer, however, writes data in small chunks, so, even though it
-  // is only sending 51 bytes, it may take a few iterations to complete.
+  // SSLClientSocket to process it. This should install a session. It make take
+  // a few iterations to complete if the server writes in small chunks
   while (ssl_client_session_cache_->size() == 0) {
     raw_transport->WaitForReadResult();
     raw_transport->UnblockReadResult();
@@ -5477,70 +5446,6 @@ TEST_F(SSLClientSocketTest, ECHGreaseDisabled) {
   ASSERT_TRUE(CreateAndConnectSSLClientSocket(SSLConfig(), &rv));
   EXPECT_THAT(rv, IsOk());
   EXPECT_TRUE(ran_callback);
-}
-
-class TLS13DowngradeTest
-    : public SSLClientSocketTest,
-      public ::testing::WithParamInterface<
-          std::tuple<SpawnedTestServer::SSLOptions::TLSMaxVersion,
-                     /* simulate_tls13_downgrade */ bool,
-                     /* known_root */ bool>> {
- public:
-  TLS13DowngradeTest() {}
-  ~TLS13DowngradeTest() {}
-
-  SpawnedTestServer::SSLOptions::TLSMaxVersion tls_max_version() const {
-    return std::get<0>(GetParam());
-  }
-
-  bool simulate_tls13_downgrade() const { return std::get<1>(GetParam()); }
-  bool known_root() const { return std::get<2>(GetParam()); }
-};
-
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    TLS13DowngradeTest,
-    Combine(Values(SpawnedTestServer::SSLOptions::TLS_MAX_VERSION_TLS1_0,
-                   SpawnedTestServer::SSLOptions::TLS_MAX_VERSION_TLS1_1,
-                   SpawnedTestServer::SSLOptions::TLS_MAX_VERSION_TLS1_2),
-            Bool(),
-            Bool()));
-
-TEST_P(TLS13DowngradeTest, DowngradeEnforced) {
-  SpawnedTestServer::SSLOptions ssl_options;
-  ssl_options.simulate_tls13_downgrade = simulate_tls13_downgrade();
-  ssl_options.tls_max_version = tls_max_version();
-  ASSERT_TRUE(StartTestServer(ssl_options));
-  scoped_refptr<X509Certificate> server_cert =
-      spawned_test_server()->GetCertificate();
-
-  SSLContextConfig config;
-  config.version_max = SSL_PROTOCOL_VERSION_TLS1_3;
-  // If the test is using legacy TLS versions, explicitly disable warnings
-  // (e.g., to cover cases like post-interstitial or when legacy TLS is
-  // explicitly allowed via configuration).
-  if (tls_max_version() <
-      SpawnedTestServer::SSLOptions::TLS_MAX_VERSION_TLS1_2) {
-    config.version_min_warn = SSL_PROTOCOL_VERSION_TLS1;
-  }
-  ssl_config_service_->UpdateSSLConfigAndNotify(config);
-
-  CertVerifyResult verify_result;
-  verify_result.is_issued_by_known_root = known_root();
-  verify_result.verified_cert = server_cert;
-  cert_verifier_->ClearRules();
-  cert_verifier_->AddResultForCert(server_cert.get(), verify_result, OK);
-
-  ssl_client_session_cache_->Flush();
-  int rv;
-  ASSERT_TRUE(CreateAndConnectSSLClientSocket(SSLConfig(), &rv));
-  if (simulate_tls13_downgrade()) {
-    EXPECT_THAT(rv, IsError(ERR_TLS13_DOWNGRADE_DETECTED));
-    EXPECT_FALSE(sock_->IsConnected());
-  } else {
-    EXPECT_THAT(rv, IsOk());
-    EXPECT_TRUE(sock_->IsConnected());
-  }
 }
 
 struct SSLHandshakeDetailsParams {
