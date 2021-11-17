@@ -184,11 +184,11 @@ public class BookmarkFolderSelectActivity extends SynchronousInitializationActiv
     private void updateFolderList() {
         List<BookmarkId> folderList = new ArrayList<>();
         List<Integer> depthList = new ArrayList<>();
-        mModel.getMoveDestinations(folderList, depthList, mBookmarksToMove);
         if (ReadingListFeatures.shouldAllowBookmarkTypeSwapping()) {
             folderList.add(mModel.getReadingListFolder());
             depthList.add(0);
         }
+        mModel.getMoveDestinations(folderList, depthList, mBookmarksToMove);
         List<FolderListEntry> entryList = new ArrayList<>(folderList.size() + 3);
 
         if (!mIsCreatingFolder) {
