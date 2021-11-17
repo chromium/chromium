@@ -951,7 +951,7 @@ const base::Feature kProductivityLauncher{"ProductivityLauncher",
 
 // Enables animation in the productivity launcher.
 const base::Feature kProductivityLauncherAnimation{
-    "ProductivityLauncherAnimation", base::FEATURE_DISABLED_BY_DEFAULT};
+    "ProductivityLauncherAnimation", base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Controls whether to enable Projector.
 const base::Feature kProjector{"Projector", base::FEATURE_DISABLED_BY_DEFAULT};
