@@ -11,8 +11,8 @@
 #include <string>
 
 #include "base/callback_forward.h"
+#include "base/memory/weak_ptr.h"
 #include "components/signin/public/base/signin_metrics.h"
-#include "content/public/browser/web_contents_observer.h"
 
 namespace content {
 class WebContents;
@@ -21,8 +21,7 @@ class WebContents;
 class Profile;
 class SigninUIError;
 
-class ProcessDiceHeaderDelegateImpl : public ProcessDiceHeaderDelegate,
-                                      public content::WebContentsObserver {
+class ProcessDiceHeaderDelegateImpl : public ProcessDiceHeaderDelegate {
  public:
   // Callback starting Sync.
   using EnableSyncCallback =
@@ -61,6 +60,7 @@ class ProcessDiceHeaderDelegateImpl : public ProcessDiceHeaderDelegate,
   // Returns true if sync should be enabled after the user signs in.
   bool ShouldEnableSync();
 
+  const base::WeakPtr<content::WebContents> web_contents_;
   Profile* profile_;
   EnableSyncCallback enable_sync_callback_;
   ShowSigninErrorCallback show_signin_error_callback_;
