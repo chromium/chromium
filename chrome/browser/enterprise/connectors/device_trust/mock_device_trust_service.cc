@@ -7,8 +7,7 @@
 namespace enterprise_connectors {
 namespace test {
 
-MockDeviceTrustService::MockDeviceTrustService()
-    : DeviceTrustService(nullptr) {}
+MockDeviceTrustService::MockDeviceTrustService() = default;
 MockDeviceTrustService::~MockDeviceTrustService() = default;
 
 }  // namespace test

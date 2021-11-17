@@ -8,6 +8,8 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/enterprise/connectors/device_trust/attestation/common/attestation_service.h"
+#include "chrome/browser/enterprise/connectors/device_trust/device_trust_connector_service.h"
+#include "chrome/browser/enterprise/connectors/device_trust/device_trust_connector_service_factory.h"
 #include "chrome/browser/enterprise/connectors/device_trust/device_trust_service.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/core/persistence/key_persistence_delegate.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/core/persistence/key_persistence_delegate_factory.h"
@@ -44,6 +46,7 @@ DeviceTrustServiceFactory::DeviceTrustServiceFactory()
     : BrowserContextKeyedServiceFactory(
           "DeviceTrustService",
           BrowserContextDependencyManager::GetInstance()) {
+  DependsOn(DeviceTrustConnectorServiceFactory::GetInstance());
   DependsOn(PolicyBlocklistFactory::GetInstance());
 }
 
@@ -64,9 +67,10 @@ KeyedService* DeviceTrustServiceFactory::BuildServiceInstanceFor(
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   return new DeviceTrustService(
-      profile->GetPrefs(), std::move(attestation_service),
+      std::move(attestation_service),
       CreateSignalsService(
-          profile, PolicyBlocklistFactory::GetForBrowserContext(context)));
+          profile, PolicyBlocklistFactory::GetForBrowserContext(context)),
+      DeviceTrustConnectorServiceFactory::GetForProfile(profile));
 }
 
 }  // namespace enterprise_connectors

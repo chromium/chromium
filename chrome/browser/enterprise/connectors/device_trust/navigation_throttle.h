@@ -9,14 +9,6 @@
 #include "base/values.h"
 #include "content/public/browser/navigation_throttle.h"
 
-class GURL;
-
-namespace url_matcher {
-
-class URLMatcher;
-
-}
-
 namespace enterprise_connectors {
 
 class DeviceTrustService;
@@ -56,8 +48,6 @@ class DeviceTrustNavigationThrottle : public content::NavigationThrottle {
   const char* GetNameForLogging() override;
 
  private:
-  void OnTrustedUrlPatternsChanged(const base::ListValue& origins);
-
   content::NavigationThrottle::ThrottleCheckResult AddHeadersIfNeeded();
 
   // Whether this throttle is deferring the navigation. Only set to true in
@@ -71,12 +61,6 @@ class DeviceTrustNavigationThrottle : public content::NavigationThrottle {
   // `X-Verified-Access-Challenge-Response` of the redirection request to the
   // IdP and resume the navigation.
   void ReplyChallengeResponseAndResume(const std::string& challenge_response);
-
-  // The URL matcher created from the ContextAwareAccessSignalsAllowlist policy.
-  std::unique_ptr<url_matcher::URLMatcher> matcher_;
-
-  // Subscription for trusted URL pattern changes.
-  base::CallbackListSubscription subscription_;
 
   base::WeakPtrFactory<DeviceTrustNavigationThrottle> weak_ptr_factory_{this};
 };

@@ -7,12 +7,11 @@
 #include "base/memory/ptr_util.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/connectors/connectors_prefs.h"
+#include "chrome/browser/enterprise/connectors/device_trust/device_trust_connector_service.h"
 #include "chrome/browser/enterprise/connectors/device_trust/device_trust_service.h"
 #include "chrome/browser/enterprise/connectors/device_trust/device_trust_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "components/policy/core/browser/url_util.h"
 #include "components/prefs/pref_service.h"
-#include "components/url_matcher/url_matcher.h"
 #include "components/user_prefs/user_prefs.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/navigation_handle.h"
@@ -38,10 +37,9 @@ DeviceTrustNavigationThrottle::MaybeCreateThrottleFor(
           ->GetPrefs();
   // TODO(b/183690432): Check if the browser or device is being managed
   // to create the throttle.
-  if (!DeviceTrustService::IsEnabled(prefs))
+  if (!DeviceTrustConnectorService::IsConnectorEnabled(prefs))
     return nullptr;
 
-  DVLOG(1) << "DeviceTrustNavigationThrottle::MaybeCreateThrottleFor";
   return std::make_unique<DeviceTrustNavigationThrottle>(navigation_handle);
 }
 
@@ -57,36 +55,10 @@ DeviceTrustNavigationThrottle::DeviceTrustNavigationThrottle(
     content::NavigationHandle* navigation_handle)
     : content::NavigationThrottle(navigation_handle),
       device_trust_service_(device_trust_service) {
-  matcher_ = std::make_unique<url_matcher::URLMatcher>();
-
-  // Start listening for pref changes.
-  subscription_ =
-      device_trust_service_->RegisterTrustedUrlPatternsChangedCallback(
-          base::BindRepeating(
-              &DeviceTrustNavigationThrottle::OnTrustedUrlPatternsChanged,
-              base::Unretained(this)));
+  DCHECK(device_trust_service_);
 }
 
 DeviceTrustNavigationThrottle::~DeviceTrustNavigationThrottle() = default;
-
-void DeviceTrustNavigationThrottle::OnTrustedUrlPatternsChanged(
-    const base::ListValue& origins) {
-  DVLOG(1)
-      << "DeviceTrustNavigationThrottle::OnTrustedUrlPatternsChanged count="
-      << origins.GetList().size();
-
-  url_matcher::URLMatcherConditionSet::ID id(0);
-  if (!matcher_->IsEmpty()) {
-    // Clear old conditions in case they exist.
-    matcher_->RemoveConditionSets({id});
-  }
-
-  if (device_trust_service_ && device_trust_service_->IsEnabled()) {
-    // Add the new endpoints to the conditions.
-    policy::url_util::AddFilters(matcher_.get(), true /* allowed */, &id,
-                                 &origins);
-  }
-}
 
 content::NavigationThrottle::ThrottleCheckResult
 DeviceTrustNavigationThrottle::WillStartRequest() {
@@ -105,26 +77,17 @@ const char* DeviceTrustNavigationThrottle::GetNameForLogging() {
 content::NavigationThrottle::ThrottleCheckResult
 DeviceTrustNavigationThrottle::AddHeadersIfNeeded() {
   const GURL& url = navigation_handle()->GetURL();
-  DVLOG(1) << "DeviceTrustNavigationThrottle::AddHeadersIfNeeded url="
-           << url.spec().c_str();
-
   if (!url.is_valid() || !url.SchemeIsHTTPOrHTTPS())
     return PROCEED;
 
   if (!device_trust_service_ || !device_trust_service_->IsEnabled())
     return PROCEED;
 
-  DCHECK(matcher_);
-  auto matches = matcher_->MatchURL(url);
-  if (matches.empty())
+  if (!device_trust_service_->Watches(url))
     return PROCEED;
-
-  DVLOG(1) << "   DeviceTrustNavigationThrottle::AddHeadersIfNeeded matched";
 
   // If we are starting an attestation flow.
   if (navigation_handle()->GetResponseHeaders() == nullptr) {
-    DVLOG(1) << "   DeviceTrustNavigationThrottle::AddHeadersIfNeeded adding "
-                "x-device-trust";
     navigation_handle()->SetRequestHeader(kDeviceTrustHeader,
                                           kDeviceTrustHeaderValue);
     return PROCEED;
@@ -133,9 +96,6 @@ DeviceTrustNavigationThrottle::AddHeadersIfNeeded() {
   // If a challenge is coming from the Idp.
   if (navigation_handle()->GetResponseHeaders()->HasHeader(
           kVerifiedAccessChallengeHeader)) {
-    DVLOG(1) << "   DeviceTrustNavigationThrottle::HasHeader url="
-             << url.spec().c_str();
-
     // Remove request header since is not needed for challenge response.
     navigation_handle()->RemoveRequestHeader(kDeviceTrustHeader);
 
@@ -162,19 +122,13 @@ DeviceTrustNavigationThrottle::AddHeadersIfNeeded() {
       deferring_ = true;
       return DEFER;
     }
-  } else {
-    LOG(ERROR) << "No challenge in the response.";
   }
   return PROCEED;
 }
 
 void DeviceTrustNavigationThrottle::ReplyChallengeResponseAndResume(
     const std::string& challenge_response) {
-  DVLOG(1) << "DeviceTrustNavigationThrottle::ReplyChallengeResponseAndResume "
-              "challenge_response="
-           << challenge_response;
   if (!deferring_) {
-    DVLOG(1) << "No navigation was deferred.";
     return;
   }
   deferring_ = false;
