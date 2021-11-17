@@ -307,6 +307,12 @@ DisplayLockUtilities::ScopedForcedUpdate::Impl::Impl(
           .LockedDisplayLockCount() == 0)
     return;
 
+  // We can't do flat tree traversals on shadow roots - they aren't in the flat
+  // tree. However, they also can't be DisplayLocked, so just go to their host.
+  if (node->IsShadowRoot()) {
+    node = node->ParentOrShadowHostNode();
+  }
+
   // Get the right ancestor view. Only use inclusive ancestors if the node
   // itself is locked and it prevents self layout, or if |include_self| is true.
   // If self layout is not prevented, we don't need to force the subtree layout,
