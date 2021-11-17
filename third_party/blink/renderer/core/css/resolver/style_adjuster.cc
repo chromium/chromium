@@ -345,19 +345,6 @@ static void AdjustStyleForHTMLElement(ComputedStyle& style,
   if (IsA<HTMLDivElement>(element) || IsA<HTMLSpanElement>(element))
     return;
 
-  if (IsA<HTMLTableCellElement>(element)) {
-    if (style.WhiteSpace() == EWhiteSpace::kWebkitNowrap) {
-      // Figure out if we are really nowrapping or if we should just
-      // use normal instead. If the width of the cell is fixed, then
-      // we don't actually use NOWRAP.
-      if (style.Width().IsFixed())
-        style.SetWhiteSpace(EWhiteSpace::kNormal);
-      else
-        style.SetWhiteSpace(EWhiteSpace::kNowrap);
-    }
-    return;
-  }
-
   if (auto* image = DynamicTo<HTMLImageElement>(element)) {
     if (image->IsCollapsed() || style.Display() == EDisplay::kContents)
       style.SetDisplay(EDisplay::kNone);

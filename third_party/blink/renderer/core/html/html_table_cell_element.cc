@@ -99,7 +99,7 @@ void HTMLTableCellElement::CollectStyleForPresentationAttribute(
     MutableCSSPropertyValueSet* style) {
   if (name == html_names::kNowrapAttr) {
     AddPropertyToPresentationAttributeStyle(style, CSSPropertyID::kWhiteSpace,
-                                            CSSValueID::kWebkitNowrap);
+                                            CSSValueID::kNowrap);
   } else if (name == html_names::kWidthAttr) {
     if (!value.IsEmpty()) {
       int width_int = value.ToInt();
