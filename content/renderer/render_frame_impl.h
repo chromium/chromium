@@ -31,6 +31,7 @@
 #include "build/build_config.h"
 #include "cc/input/browser_controls_state.h"
 #include "content/common/buildflags.h"
+#include "content/common/content_export.h"
 #include "content/common/download/mhtml_file_writer.mojom.h"
 #include "content/common/frame.mojom.h"
 #include "content/common/navigation_client.mojom.h"

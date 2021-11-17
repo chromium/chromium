@@ -12,6 +12,7 @@
 #include "base/callback.h"
 #include "content/browser/service_worker/service_worker_single_script_update_checker.h"
 #include "content/browser/service_worker/service_worker_updated_script_loader.h"
+#include "content/common/content_export.h"
 
 namespace network {
 class SharedURLLoaderFactory;

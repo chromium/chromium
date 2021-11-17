@@ -8,6 +8,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/task/single_thread_task_runner.h"
 #include "content/browser/renderer_host/media/video_capture_provider.h"
+#include "content/common/content_export.h"
 #include "media/capture/video/video_capture_system.h"
 
 namespace content {

@@ -26,6 +26,7 @@
 #include "content/browser/renderer_host/render_widget_host_impl.h"
 #include "content/browser/renderer_host/render_widget_host_owner_delegate.h"
 #include "content/browser/site_instance_impl.h"
+#include "content/common/content_export.h"
 #include "content/common/render_message_filter.mojom.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/notification_observer.h"

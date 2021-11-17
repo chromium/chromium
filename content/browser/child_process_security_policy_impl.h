@@ -25,6 +25,7 @@
 #include "content/browser/isolation_context.h"
 #include "content/browser/origin_agent_cluster_isolation_state.h"
 #include "content/browser/site_instance_impl.h"
+#include "content/common/content_export.h"
 #include "content/public/browser/child_process_security_policy.h"
 #include "storage/common/file_system/file_system_types.h"
 #include "url/origin.h"

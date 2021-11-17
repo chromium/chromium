@@ -14,6 +14,7 @@
 
 #import "content/browser/accessibility/browser_accessibility_cocoa.h"
 #include "content/browser/accessibility/browser_accessibility_manager.h"
+#include "content/common/content_export.h"
 #include "content/public/browser/ax_event_notification_details.h"
 
 namespace content {

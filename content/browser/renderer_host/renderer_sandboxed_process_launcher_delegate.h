@@ -7,6 +7,7 @@
 
 #include "base/command_line.h"
 #include "build/build_config.h"
+#include "content/common/content_export.h"
 #include "content/public/common/sandboxed_process_launcher_delegate.h"
 #include "sandbox/policy/mojom/sandbox.mojom.h"
 

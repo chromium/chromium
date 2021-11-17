@@ -12,6 +12,7 @@
 #include "base/compiler_specific.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
 #include "content/browser/attribution_reporting/storable_source.h"
+#include "content/common/content_export.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {

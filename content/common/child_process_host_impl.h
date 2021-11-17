@@ -16,6 +16,7 @@
 #include "base/process/process.h"
 #include "build/build_config.h"
 #include "content/common/child_process.mojom.h"
+#include "content/common/content_export.h"
 #include "content/public/common/child_process_host.h"
 #include "ipc/ipc_listener.h"
 #include "mojo/public/cpp/bindings/receiver.h"

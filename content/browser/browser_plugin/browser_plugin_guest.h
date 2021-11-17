@@ -22,6 +22,7 @@
 
 #include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
+#include "content/common/content_export.h"
 #include "content/public/browser/browser_plugin_guest_delegate.h"
 #include "content/public/browser/guest_host.h"
 #include "content/public/browser/web_contents_observer.h"

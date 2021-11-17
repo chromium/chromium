@@ -7,6 +7,7 @@
 
 #include "base/containers/flat_map.h"
 #include "base/observer_list.h"
+#include "content/common/content_export.h"
 #include "content/public/browser/dedicated_worker_service.h"
 #include "url/gurl.h"
 

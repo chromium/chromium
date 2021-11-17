@@ -6,6 +6,7 @@
 #define CONTENT_BROWSER_RENDERER_HOST_INPUT_FLING_SCHEDULER_MAC_H_
 
 #include "content/browser/renderer_host/input/fling_scheduler.h"
+#include "content/common/content_export.h"
 
 namespace content {
 

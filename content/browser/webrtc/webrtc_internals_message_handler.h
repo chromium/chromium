@@ -7,6 +7,7 @@
 
 #include "base/memory/ref_counted.h"
 #include "content/browser/webrtc/webrtc_internals_ui_observer.h"
+#include "content/common/content_export.h"
 #include "content/public/browser/web_ui_message_handler.h"
 
 namespace base {

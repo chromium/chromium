@@ -4,6 +4,7 @@
 
 // no-include-guard-because-multiply-included
 
+#include "content/common/content_export.h"
 #include "content/public/common/webplugininfo.h"
 #include "ipc/ipc_message_macros.h"
 

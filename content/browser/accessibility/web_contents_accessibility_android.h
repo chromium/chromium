@@ -6,6 +6,7 @@
 #define CONTENT_BROWSER_ACCESSIBILITY_WEB_CONTENTS_ACCESSIBILITY_ANDROID_H_
 
 #include "content/browser/accessibility/web_contents_accessibility.h"
+#include "content/common/content_export.h"
 
 #include <unordered_map>
 

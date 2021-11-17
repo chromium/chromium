@@ -17,6 +17,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "build/build_config.h"
+#include "content/common/content_export.h"
 #include "content/public/common/content_client.h"
 #include "media/base/audio_parameters.h"
 #include "media/base/supported_types.h"

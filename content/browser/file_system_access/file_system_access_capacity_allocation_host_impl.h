@@ -8,6 +8,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/types/pass_key.h"
 #include "content/browser/file_system_access/file_system_access_manager_impl.h"
+#include "content/common/content_export.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "storage/browser/file_system/file_system_context.h"

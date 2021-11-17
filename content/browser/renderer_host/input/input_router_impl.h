@@ -21,6 +21,7 @@
 #include "content/browser/renderer_host/input/passthrough_touch_event_queue.h"
 #include "content/browser/renderer_host/input/touch_action_filter.h"
 #include "content/browser/renderer_host/input/touchpad_pinch_event_queue.h"
+#include "content/common/content_export.h"
 #include "content/common/input/input_event_stream_validator.h"
 #include "content/public/browser/native_web_keyboard_event.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"

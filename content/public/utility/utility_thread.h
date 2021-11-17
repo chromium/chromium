@@ -6,6 +6,7 @@
 #define CONTENT_PUBLIC_UTILITY_UTILITY_THREAD_H_
 
 #include "build/build_config.h"
+#include "content/common/content_export.h"
 #include "content/public/child/child_thread.h"
 
 namespace content {

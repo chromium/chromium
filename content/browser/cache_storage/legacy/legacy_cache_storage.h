@@ -23,6 +23,7 @@
 #include "content/browser/cache_storage/cache_storage_manager.h"
 #include "content/browser/cache_storage/cache_storage_scheduler_types.h"
 #include "content/browser/cache_storage/legacy/legacy_cache_storage_cache.h"
+#include "content/common/content_export.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 

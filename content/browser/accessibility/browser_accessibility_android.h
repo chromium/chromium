@@ -13,6 +13,7 @@
 
 #include "base/android/scoped_java_ref.h"
 #include "content/browser/accessibility/browser_accessibility.h"
+#include "content/common/content_export.h"
 #include "ui/accessibility/ax_node.h"
 #include "ui/accessibility/platform/ax_platform_node.h"
 

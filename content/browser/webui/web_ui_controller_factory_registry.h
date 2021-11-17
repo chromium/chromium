@@ -6,6 +6,7 @@
 #define CONTENT_BROWSER_WEBUI_WEB_UI_CONTROLLER_FACTORY_REGISTRY_H_
 
 #include "base/memory/singleton.h"
+#include "content/common/content_export.h"
 #include "content/public/browser/web_ui_controller_factory.h"
 
 namespace content {

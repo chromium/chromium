@@ -6,6 +6,7 @@
 #define CONTENT_BROWSER_ACCESSIBILITY_BROWSER_ACCESSIBILITY_MANAGER_FUCHSIA_H_
 
 #include "content/browser/accessibility/browser_accessibility_manager.h"
+#include "content/common/content_export.h"
 #include "ui/accessibility/platform/fuchsia/accessibility_bridge_fuchsia.h"
 
 namespace content {

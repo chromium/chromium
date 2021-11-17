@@ -22,6 +22,7 @@
 #include "content/browser/tracing/tracing_service_controller.h"
 #include "content/common/child_process.mojom.h"
 #include "content/common/child_process_host_impl.h"
+#include "content/common/content_export.h"
 #include "content/public/browser/browser_child_process_host.h"
 #include "content/public/browser/child_process_data.h"
 #include "content/public/common/child_process_host.h"

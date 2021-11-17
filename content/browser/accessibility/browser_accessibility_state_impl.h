@@ -10,6 +10,7 @@
 #include "base/compiler_specific.h"
 #include "build/build_config.h"
 #include "components/metrics/metrics_provider.h"
+#include "content/common/content_export.h"
 #include "content/public/browser/browser_accessibility_state.h"
 #include "ui/accessibility/ax_mode.h"
 #include "ui/accessibility/ax_mode_observer.h"

@@ -10,6 +10,7 @@
 #include "base/files/file.h"
 #include "base/memory/ref_counted.h"
 #include "content/browser/download/drag_download_file.h"
+#include "content/common/content_export.h"
 #include "ui/base/dragdrop/download_file_interface.h"
 
 class GURL;

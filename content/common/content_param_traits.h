@@ -16,6 +16,7 @@
 
 #include "base/memory/ref_counted.h"
 #include "cc/ipc/cc_param_traits_macros.h"
+#include "content/common/content_export.h"
 #include "content/common/content_param_traits_macros.h"
 #include "ipc/ipc_mojo_param_traits.h"
 #include "ui/accessibility/ax_mode.h"

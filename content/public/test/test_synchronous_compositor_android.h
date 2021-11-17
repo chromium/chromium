@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "components/viz/common/surfaces/frame_sink_id.h"
+#include "content/common/content_export.h"
 #include "content/public/browser/android/synchronous_compositor.h"
 #include "content/public/browser/android/synchronous_compositor_client.h"
 

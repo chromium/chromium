@@ -7,6 +7,7 @@
 
 #include "base/callback.h"
 #include "content/browser/navigation_subresource_loader_params.h"
+#include "content/common/content_export.h"
 #include "content/public/browser/service_worker_client_info.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"

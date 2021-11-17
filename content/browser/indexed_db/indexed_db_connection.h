@@ -14,6 +14,7 @@
 #include "base/memory/weak_ptr.h"
 #include "content/browser/indexed_db/indexed_db_database.h"
 #include "content/browser/indexed_db/indexed_db_storage_key_state_handle.h"
+#include "content/common/content_export.h"
 #include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom-forward.h"
 
 namespace content {

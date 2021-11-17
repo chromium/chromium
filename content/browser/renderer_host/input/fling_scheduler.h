@@ -7,6 +7,7 @@
 
 #include "content/browser/renderer_host/input/fling_controller.h"
 #include "content/browser/renderer_host/input/fling_scheduler_base.h"
+#include "content/common/content_export.h"
 #include "ui/compositor/compositor_animation_observer.h"
 
 namespace ui {

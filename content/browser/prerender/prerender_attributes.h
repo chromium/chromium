@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "content/common/content_export.h"
 #include "content/public/common/referrer.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "third_party/blink/public/mojom/navigation/navigation_params.mojom.h"

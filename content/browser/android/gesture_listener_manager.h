@@ -8,6 +8,7 @@
 #include "base/android/jni_weak_ref.h"
 #include "base/android/scoped_java_ref.h"
 #include "content/browser/android/render_widget_host_connector.h"
+#include "content/common/content_export.h"
 #include "third_party/blink/public/mojom/input/input_event_result.mojom-shared.h"
 
 namespace blink {

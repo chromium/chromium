@@ -9,6 +9,7 @@
 #define CONTENT_PUBLIC_COMMON_COMMON_PARAM_TRAITS_MACROS_H_
 
 #include "build/build_config.h"
+#include "content/common/content_export.h"
 #include "content/public/common/drop_data.h"
 #include "content/public/common/referrer.h"
 #include "content/public/common/webplugininfo_param_traits.h"

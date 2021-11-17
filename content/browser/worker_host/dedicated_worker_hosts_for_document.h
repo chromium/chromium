@@ -7,6 +7,7 @@
 
 #include "base/containers/flat_set.h"
 #include "base/memory/safe_ref.h"
+#include "content/common/content_export.h"
 #include "content/public/browser/document_user_data.h"
 #include "third_party/blink/public/common/scheduler/web_scheduler_tracked_feature.h"
 

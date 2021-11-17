@@ -7,6 +7,7 @@
 
 #include <vector>
 
+#include "content/common/content_export.h"
 #include "content/common/media/media_log_records.mojom.h"
 #include "content/renderer/media/batching_media_log.h"
 #include "mojo/public/cpp/bindings/remote.h"

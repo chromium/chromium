@@ -13,6 +13,7 @@
 #include "content/browser/speech/endpointer/endpointer.h"
 #include "content/browser/speech/speech_recognition_engine.h"
 #include "content/browser/speech/speech_recognizer.h"
+#include "content/common/content_export.h"
 #include "media/base/audio_capturer_source.h"
 #include "third_party/blink/public/mojom/speech/speech_recognition_error.mojom.h"
 #include "third_party/blink/public/mojom/speech/speech_recognition_result.mojom.h"

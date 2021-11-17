@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "content/common/content_export.h"
 #include "content/public/browser/client_hints_controller_delegate.h"
 #include "net/http/http_request_headers.h"
 #include "services/network/public/mojom/parsed_headers.mojom-forward.h"

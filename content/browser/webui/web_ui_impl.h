@@ -13,6 +13,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/memory/weak_ptr.h"
+#include "content/common/content_export.h"
 #include "content/common/web_ui.mojom.h"
 #include "content/public/browser/web_ui.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"

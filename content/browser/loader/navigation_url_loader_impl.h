@@ -10,6 +10,7 @@
 #include "content/browser/loader/navigation_url_loader.h"
 #include "content/browser/loader/single_request_url_loader_factory.h"
 #include "content/browser/navigation_subresource_loader_params.h"
+#include "content/common/content_export.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/global_request_id.h"
 #include "content/public/browser/ssl_status.h"

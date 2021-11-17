@@ -5,6 +5,7 @@
 #ifndef CONTENT_BROWSER_MEDIA_MEDIA_STREAM_WEB_CONTENTS_OBSERVER_H_
 #define CONTENT_BROWSER_MEDIA_MEDIA_STREAM_WEB_CONTENTS_OBSERVER_H_
 
+#include "content/common/content_export.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
 

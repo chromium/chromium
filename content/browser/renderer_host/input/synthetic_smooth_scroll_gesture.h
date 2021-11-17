@@ -6,6 +6,7 @@
 #define CONTENT_BROWSER_RENDERER_HOST_INPUT_SYNTHETIC_SMOOTH_SCROLL_GESTURE_H_
 
 #include "content/browser/renderer_host/input/synthetic_smooth_move_gesture.h"
+#include "content/common/content_export.h"
 
 #include "content/common/input/synthetic_smooth_scroll_gesture_params.h"
 

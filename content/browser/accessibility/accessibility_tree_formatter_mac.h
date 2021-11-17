@@ -6,6 +6,7 @@
 #define CONTENT_BROWSER_ACCESSIBILITY_ACCESSIBILITY_TREE_FORMATTER_MAC_H_
 
 #include "content/browser/accessibility/accessibility_tree_formatter_utils_mac.h"
+#include "content/common/content_export.h"
 #include "ui/accessibility/platform/inspect/ax_tree_formatter_base.h"
 
 @class BrowserAccessibilityCocoa;

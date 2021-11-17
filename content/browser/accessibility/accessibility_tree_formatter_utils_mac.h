@@ -7,6 +7,7 @@
 
 #include "content/browser/accessibility/accessibility_tools_utils_mac.h"
 #include "content/browser/accessibility/browser_accessibility_cocoa.h"
+#include "content/common/content_export.h"
 #include "ui/accessibility/platform/inspect/ax_tree_indexer.h"
 
 namespace ui {

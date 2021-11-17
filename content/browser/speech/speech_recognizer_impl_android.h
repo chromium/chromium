@@ -12,6 +12,7 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/memory/ref_counted.h"
 #include "content/browser/speech/speech_recognizer.h"
+#include "content/common/content_export.h"
 #include "third_party/blink/public/mojom/speech/speech_recognition_error.mojom.h"
 #include "third_party/blink/public/mojom/speech/speech_recognition_result.mojom.h"
 

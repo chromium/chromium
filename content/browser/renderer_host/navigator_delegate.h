@@ -5,6 +5,7 @@
 #ifndef CONTENT_BROWSER_RENDERER_HOST_NAVIGATOR_DELEGATE_H_
 #define CONTENT_BROWSER_RENDERER_HOST_NAVIGATOR_DELEGATE_H_
 
+#include "content/common/content_export.h"
 #include "content/common/navigation_client.mojom.h"
 #include "content/public/browser/allow_service_worker_result.h"
 #include "content/public/browser/cookie_access_details.h"

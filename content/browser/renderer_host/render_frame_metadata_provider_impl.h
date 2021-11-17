@@ -10,6 +10,7 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "cc/mojom/render_frame_metadata.mojom.h"
+#include "content/common/content_export.h"
 #include "content/public/browser/render_frame_metadata_provider.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"

@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/callback.h"
+#include "content/common/content_export.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/storage_partition.h"
 

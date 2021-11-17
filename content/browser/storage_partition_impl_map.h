@@ -14,6 +14,7 @@
 #include "base/gtest_prod_util.h"
 #include "base/supports_user_data.h"
 #include "content/browser/storage_partition_impl.h"
+#include "content/common/content_export.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/storage_partition_config.h"
 

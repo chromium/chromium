@@ -10,6 +10,7 @@
 #include "base/gtest_prod_util.h"
 #include "base/time/time.h"
 #include "content/browser/scheduler/responsiveness/metric_source.h"
+#include "content/common/content_export.h"
 
 namespace content {
 namespace responsiveness {

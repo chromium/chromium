@@ -5,6 +5,7 @@
 #ifndef CONTENT_PUBLIC_BROWSER_CLIENT_HINTS_H_
 #define CONTENT_PUBLIC_BROWSER_CLIENT_HINTS_H_
 
+#include "content/common/content_export.h"
 #include "content/public/browser/client_hints_controller_delegate.h"
 #include "net/http/http_request_headers.h"
 #include "services/network/public/mojom/parsed_headers.mojom-forward.h"

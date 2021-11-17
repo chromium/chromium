@@ -7,6 +7,7 @@
 
 #include <vector>
 
+#include "content/common/content_export.h"
 #include "content/renderer/media/batching_media_log.h"
 #include "third_party/blink/public/web/web_media_inspector.h"
 

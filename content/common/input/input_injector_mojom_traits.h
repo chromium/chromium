@@ -5,6 +5,7 @@
 #ifndef CONTENT_COMMON_INPUT_INPUT_INJECTOR_MOJOM_TRAITS_H_
 #define CONTENT_COMMON_INPUT_INPUT_INJECTOR_MOJOM_TRAITS_H_
 
+#include "content/common/content_export.h"
 #include "content/common/input/input_injector.mojom.h"
 #include "content/common/input/synthetic_pinch_gesture_params.h"
 #include "content/common/input/synthetic_pointer_action_list_params.h"

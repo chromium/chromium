@@ -10,6 +10,7 @@
 #include "base/callback.h"
 #include "base/containers/queue.h"
 #include "content/browser/renderer_host/input/touch_emulator_client.h"
+#include "content/common/content_export.h"
 #include "content/common/cursors/webcursor.h"
 #include "third_party/blink/public/common/input/web_touch_event.h"
 #include "third_party/blink/public/mojom/input/input_event_result.mojom-shared.h"

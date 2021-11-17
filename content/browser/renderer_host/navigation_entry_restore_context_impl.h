@@ -8,6 +8,7 @@
 #include <map>
 #include <string>
 
+#include "content/common/content_export.h"
 #include "content/public/browser/navigation_entry_restore_context.h"
 
 class GURL;

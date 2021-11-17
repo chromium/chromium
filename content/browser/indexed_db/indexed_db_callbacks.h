@@ -15,6 +15,7 @@
 #include "base/sequence_checker.h"
 #include "content/browser/indexed_db/indexed_db_database_error.h"
 #include "content/browser/indexed_db/indexed_db_dispatcher_host.h"
+#include "content/common/content_export.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "storage/browser/blob/blob_storage_context.h"

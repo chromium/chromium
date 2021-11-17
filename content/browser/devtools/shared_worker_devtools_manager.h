@@ -11,6 +11,7 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/singleton.h"
 #include "base/unguessable_token.h"
+#include "content/common/content_export.h"
 #include "content/public/browser/devtools_agent_host.h"
 #include "third_party/blink/public/mojom/devtools/devtools_agent.mojom.h"
 

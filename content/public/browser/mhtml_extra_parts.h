@@ -6,6 +6,7 @@
 #define CONTENT_PUBLIC_BROWSER_MHTML_EXTRA_PARTS_H_
 
 #include "base/supports_user_data.h"
+#include "content/common/content_export.h"
 #include "content/public/browser/web_contents.h"
 
 namespace content {

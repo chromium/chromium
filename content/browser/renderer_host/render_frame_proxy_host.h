@@ -11,6 +11,7 @@
 
 #include "base/callback_forward.h"
 #include "content/browser/site_instance_impl.h"
+#include "content/common/content_export.h"
 #include "content/common/frame.mojom.h"
 #include "ipc/ipc_listener.h"
 #include "ipc/ipc_sender.h"

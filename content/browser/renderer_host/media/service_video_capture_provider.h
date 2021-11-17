@@ -11,6 +11,7 @@
 #include "build/chromeos_buildflags.h"
 #include "content/browser/renderer_host/media/ref_counted_video_source_provider.h"
 #include "content/browser/renderer_host/media/video_capture_provider.h"
+#include "content/common/content_export.h"
 #include "content/public/browser/service_process_host.h"
 #include "services/video_capture/public/mojom/video_capture_service.mojom.h"
 
