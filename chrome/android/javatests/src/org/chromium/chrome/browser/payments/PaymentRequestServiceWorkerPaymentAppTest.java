@@ -158,11 +158,33 @@ public class PaymentRequestServiceWorkerPaymentAppTest {
     @Test
     @MediumTest
     @Feature({"Payments"})
-    public void testDoNotCallCanMakePayment() throws TimeoutException {
+    @CommandLineFlags.Add({"enable-features=PaymentRequestBasicCard"})
+    public void testDoNotCallCanMakePayment_WithBasicCardEnabled() throws TimeoutException {
         // Add a credit card to force showing payment sheet UI.
         addCreditCard();
         String[] supportedMethodNames = {"basic-card"};
         installMockServiceWorkerPaymentApp("https://bobpay.com", supportedMethodNames, true, true);
+
+        // Sets setCanMakePaymentForTesting(false) to return false for CanMakePayment since there is
+        // no real sw payment app, so if CanMakePayment is called then no payment apps will be
+        // available, otherwise CanMakePayment is not called.
+        PaymentAppServiceBridge.setCanMakePaymentForTesting(false);
+
+        mPaymentRequestTestRule.triggerUIAndWait(mPaymentRequestTestRule.getReadyForInput());
+        Assert.assertEquals(2, mPaymentRequestTestRule.getNumberOfPaymentApps());
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"Payments"})
+    @CommandLineFlags.Add({"disable-features=PaymentRequestBasicCard"})
+    public void testDoNotCallCanMakePayment() throws TimeoutException {
+        String[] supportedMethodNames1 = {"https://bobpay.com"};
+        installMockServiceWorkerPaymentApp("https://bobpay.com", supportedMethodNames1, true, true);
+
+        String[] supportedMethodNames2 = {"https://kylepay.com/webpay"};
+        installMockServiceWorkerPaymentApp(
+                "https://kylepay.com/webpay", supportedMethodNames2, true, true);
 
         // Sets setCanMakePaymentForTesting(false) to return false for CanMakePayment since there is
         // no real sw payment app, so if CanMakePayment is called then no payment apps will be
