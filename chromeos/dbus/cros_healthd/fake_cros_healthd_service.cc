@@ -491,6 +491,11 @@ void FakeCrosHealthdService::EmitAudioUnderrunEventForTesting() {
     observer->OnUnderrun();
 }
 
+void FakeCrosHealthdService::EmitAudioSevereUnderrunEventForTesting() {
+  for (auto& observer : audio_observers_)
+    observer->OnSevereUnderrun();
+}
+
 void FakeCrosHealthdService::EmitThunderboltAddEventForTesting() {
   for (auto& observer : thunderbolt_observers_)
     observer->OnAdd();

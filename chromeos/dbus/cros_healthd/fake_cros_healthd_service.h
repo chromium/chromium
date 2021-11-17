@@ -241,6 +241,9 @@ class FakeCrosHealthdService final
   // Calls the audio event OnUnderrun for all registered audio observers.
   void EmitAudioUnderrunEventForTesting();
 
+  // Calls the audio event OnSevereUnderrun for all registered audio observers.
+  void EmitAudioSevereUnderrunEventForTesting();
+
   // Calls the Thunderbolt event OnAdd on all registered Thunderbolt observers.
   void EmitThunderboltAddEventForTesting();
 
