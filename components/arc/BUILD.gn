@@ -7,10 +7,6 @@ import("//testing/test.gni")
 
 static_library("arc") {
   sources = [
-    "dark_theme/arc_dark_theme_bridge.cc",
-    "dark_theme/arc_dark_theme_bridge.h",
-    "disk_quota/arc_disk_quota_bridge.cc",
-    "disk_quota/arc_disk_quota_bridge.h",
     "ime/arc_ime_bridge.h",
     "ime/arc_ime_bridge_impl.cc",
     "ime/arc_ime_bridge_impl.h",

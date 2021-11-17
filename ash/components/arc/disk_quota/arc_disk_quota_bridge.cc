@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/arc/disk_quota/arc_disk_quota_bridge.h"
+#include "ash/components/arc/disk_quota/arc_disk_quota_bridge.h"
 
 #include <utility>
 

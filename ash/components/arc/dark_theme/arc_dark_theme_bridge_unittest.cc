@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/arc/dark_theme/arc_dark_theme_bridge.h"
+#include "ash/components/arc/dark_theme/arc_dark_theme_bridge.h"
 
 #include <memory>
 

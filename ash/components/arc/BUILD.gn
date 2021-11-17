@@ -39,6 +39,10 @@ static_library("arc") {
     "compat_mode/touch_mode_mouse_rewriter.h",
     "crash_collector/arc_crash_collector_bridge.cc",
     "crash_collector/arc_crash_collector_bridge.h",
+    "dark_theme/arc_dark_theme_bridge.cc",
+    "dark_theme/arc_dark_theme_bridge.h",
+    "disk_quota/arc_disk_quota_bridge.cc",
+    "disk_quota/arc_disk_quota_bridge.h",
   ]
 
   public_deps = [
