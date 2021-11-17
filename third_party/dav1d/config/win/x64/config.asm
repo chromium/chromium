@@ -7,8 +7,6 @@
 
 %define FORCE_VEX_ENCODING 0
 
-%define HAVE_AVX512ICL 1
-
 %define PIC 1
 
 ; %define STACK_ALIGNMENT 16 -- Stack alignment is controlled by Chromium
