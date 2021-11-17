@@ -69,6 +69,11 @@ CRYPTO_EXPORT void PrepareSystemSlotForTesting(ScopedPK11Slot slot);
 // initialization that depended on this previously-configured system slot.
 CRYPTO_EXPORT void ResetSystemSlotForTesting();
 
+// Reset the global ChromeOSTokenManager. This is used between tests, so
+// tests that run in the same process won't hit DCHECKS because they have
+// different BrowserIO threads.
+CRYPTO_EXPORT void ResetTokenManagerForTesting();
+
 // Prepare per-user NSS slot mapping. It is safe to call this function multiple
 // times. Returns true if the user was added, or false if it already existed.
 CRYPTO_EXPORT bool InitializeNSSForChromeOSUser(
