@@ -513,7 +513,8 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
                 getFullscreenManager(), mCompositorViewHolderSupplier,
                 getTabContentManagerSupplier(), getOverviewModeBehaviorSupplier(),
                 this::getSnackbarManager, getActivityType(), this::isInOverviewMode,
-                this::isWarmOnResume, /* appMenuDelegate= */ this,
+                this::shouldShowOverviewPageOnStart, this::isWarmOnResume,
+                /* appMenuDelegate= */ this,
                 /* statusBarColorProvider= */ this, getIntentRequestTracker(),
                 mTabReparentingControllerSupplier, false);
         // clang-format on
@@ -1771,6 +1772,13 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
      * @return Whether the activity is in overview mode.
      */
     public boolean isInOverviewMode() {
+        return false;
+    }
+
+    /**
+     * Returns whether grid Tab switcher or the Start surface should be shown at startup.
+     */
+    public boolean shouldShowOverviewPageOnStart() {
         return false;
     }
 

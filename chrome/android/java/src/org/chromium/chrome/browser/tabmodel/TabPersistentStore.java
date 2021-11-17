@@ -976,6 +976,11 @@ public class TabPersistentStore {
         stream.writeInt(standardInfo.index + incognitoCount);
         Log.i(TAG, "Serializing tab lists; counts: " + standardCount + ", " + incognitoCount);
 
+        SharedPreferencesManager.getInstance().writeInt(
+                ChromePreferenceKeys.REGULAR_TAB_COUNT, standardCount);
+        SharedPreferencesManager.getInstance().writeInt(
+                ChromePreferenceKeys.INCOGNITO_TAB_COUNT, incognitoCount);
+
         // Save incognito state first, so when we load, if the incognito files are unreadable
         // we can fall back easily onto the standard selected tab.
         for (int i = 0; i < incognitoCount; i++) {

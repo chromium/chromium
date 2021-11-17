@@ -848,20 +848,9 @@ public class InstantStartTest {
             "force-fieldtrials=Study/Group",
             IMMEDIATE_RETURN_PARAMS + "/start_surface_variation/single"})
     @DisabledTest(message = "https://crbug.com/1263928")
-    public void testShadowVisibility() {
+    public void testToolbarLayoutAndShadowVisibilityWithInstant() {
         // clang-format on
-        StartSurfaceTestUtils.startMainActivityFromLauncher(mActivityTestRule);
-        ChromeTabbedActivity cta = mActivityTestRule.getActivity();
-        StartSurfaceTestUtils.waitForOverviewVisible(cta);
-
-        onView(withId(R.id.toolbar_shadow))
-                .check(matches(withEffectiveVisibility(ViewMatchers.Visibility.INVISIBLE)));
-
-        startAndWaitNativeInitialization();
-        StartSurfaceTestUtils.waitForOverviewVisible(cta);
-
-        onView(withId(R.id.toolbar_shadow))
-                .check(matches(withEffectiveVisibility(ViewMatchers.Visibility.INVISIBLE)));
+        testToolbarLayoutAndShadowVisibility();
     }
 
     @Test
@@ -874,16 +863,9 @@ public class InstantStartTest {
     @CommandLineFlags.Add({ChromeSwitches.DISABLE_NATIVE_INITIALIZATION,
             "force-fieldtrials=Study/Group",
             IMMEDIATE_RETURN_PARAMS + "/start_surface_variation/single"})
-    public void testShadowVisibilityWithoutInstantStart() {
+    public void testToolbarLayoutAndShadowVisibilityWithoutInstant() {
         // clang-format on
-        StartSurfaceTestUtils.startMainActivityFromLauncher(mActivityTestRule);
-        onViewWaiting(withId(R.id.toolbar_shadow)).check(matches(isDisplayed()));
-
-        startAndWaitNativeInitialization();
-        StartSurfaceTestUtils.waitForOverviewVisible(mActivityTestRule.getActivity());
-
-        onView(withId(R.id.toolbar_shadow))
-                .check(matches(withEffectiveVisibility(ViewMatchers.Visibility.INVISIBLE)));
+        testToolbarLayoutAndShadowVisibility();
     }
 
     @Test
@@ -1495,6 +1477,28 @@ public class InstantStartTest {
                            isDescendantOfA(withId(R.id.tab_switcher_toolbar))))
                     .check(matches(withEffectiveVisibility(Visibility.INVISIBLE)));
         }
+    }
+
+    private void testToolbarLayoutAndShadowVisibility() {
+        StartSurfaceTestUtils.startMainActivityFromLauncher(mActivityTestRule);
+        ChromeTabbedActivity cta = mActivityTestRule.getActivity();
+
+        onView(withId(R.id.toolbar))
+                .check(matches(withEffectiveVisibility(ViewMatchers.Visibility.GONE)));
+        onView(withId(R.id.toolbar_shadow))
+                .check(matches(withEffectiveVisibility(ViewMatchers.Visibility.INVISIBLE)));
+
+        startAndWaitNativeInitialization();
+        StartSurfaceTestUtils.waitForOverviewVisible(cta);
+
+        onView(withId(R.id.toolbar))
+                .check(matches(withEffectiveVisibility(ViewMatchers.Visibility.GONE)));
+        onView(withId(R.id.toolbar_shadow))
+                .check(matches(withEffectiveVisibility(ViewMatchers.Visibility.INVISIBLE)));
+
+        StartSurfaceTestUtils.scrollToolbar(cta);
+        onView(withId(R.id.toolbar_shadow))
+                .check(matches(withEffectiveVisibility(Visibility.VISIBLE)));
     }
 
     private void startNewTabFromLauncherIcon(boolean incognito) {
