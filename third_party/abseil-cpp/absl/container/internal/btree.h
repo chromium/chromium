@@ -270,17 +270,17 @@ struct common_params {
   enum {
     kTargetNodeSize = TargetNodeSize,
 
-    // Upper bound for the available space for values. This is largest for leaf
+    // Upper bound for the available space for slots. This is largest for leaf
     // nodes, which have overhead of at least a pointer + 4 bytes (for storing
     // 3 field_types and an enum).
-    kNodeValueSpace =
+    kNodeSlotSpace =
         TargetNodeSize - /*minimum overhead=*/(sizeof(void *) + 4),
   };
 
-  // This is an integral type large enough to hold as many
-  // ValueSize-values as will fit a node of TargetNodeSize bytes.
+  // This is an integral type large enough to hold as many slots as will fit a
+  // node of TargetNodeSize bytes.
   using node_count_type =
-      absl::conditional_t<(kNodeValueSpace / sizeof(value_type) >
+      absl::conditional_t<(kNodeSlotSpace / sizeof(slot_type) >
                            (std::numeric_limits<uint8_t>::max)()),
                           uint16_t, uint8_t>;  // NOLINT
 
@@ -312,111 +312,6 @@ struct common_params {
   static void move(Alloc *alloc, slot_type *src, slot_type *dest) {
     slot_policy::move(alloc, src, dest);
   }
-};
-
-// A parameters structure for holding the type parameters for a btree_map.
-// Compare and Alloc should be nothrow copy-constructible.
-template <typename Key, typename Data, typename Compare, typename Alloc,
-          int TargetNodeSize, bool Multi>
-struct map_params : common_params<Key, Compare, Alloc, TargetNodeSize, Multi,
-                                  map_slot_policy<Key, Data>> {
-  using super_type = typename map_params::common_params;
-  using mapped_type = Data;
-  // This type allows us to move keys when it is safe to do so. It is safe
-  // for maps in which value_type and mutable_value_type are layout compatible.
-  using slot_policy = typename super_type::slot_policy;
-  using slot_type = typename super_type::slot_type;
-  using value_type = typename super_type::value_type;
-  using init_type = typename super_type::init_type;
-
-  using original_key_compare = typename super_type::original_key_compare;
-  // Reference: https://en.cppreference.com/w/cpp/container/map/value_compare
-  class value_compare {
-    template <typename Params>
-    friend class btree;
-
-   protected:
-    explicit value_compare(original_key_compare c) : comp(std::move(c)) {}
-
-    original_key_compare comp;  // NOLINT
-
-   public:
-    auto operator()(const value_type &lhs, const value_type &rhs) const
-        -> decltype(comp(lhs.first, rhs.first)) {
-      return comp(lhs.first, rhs.first);
-    }
-  };
-  using is_map_container = std::true_type;
-
-  template <typename V>
-  static auto key(const V &value) -> decltype(value.first) {
-    return value.first;
-  }
-  static const Key &key(const slot_type *s) { return slot_policy::key(s); }
-  static const Key &key(slot_type *s) { return slot_policy::key(s); }
-  // For use in node handle.
-  static auto mutable_key(slot_type *s)
-      -> decltype(slot_policy::mutable_key(s)) {
-    return slot_policy::mutable_key(s);
-  }
-  static mapped_type &value(value_type *value) { return value->second; }
-};
-
-// This type implements the necessary functions from the
-// absl::container_internal::slot_type interface.
-template <typename Key>
-struct set_slot_policy {
-  using slot_type = Key;
-  using value_type = Key;
-  using mutable_value_type = Key;
-
-  static value_type &element(slot_type *slot) { return *slot; }
-  static const value_type &element(const slot_type *slot) { return *slot; }
-
-  template <typename Alloc, class... Args>
-  static void construct(Alloc *alloc, slot_type *slot, Args &&... args) {
-    absl::allocator_traits<Alloc>::construct(*alloc, slot,
-                                             std::forward<Args>(args)...);
-  }
-
-  template <typename Alloc>
-  static void construct(Alloc *alloc, slot_type *slot, slot_type *other) {
-    absl::allocator_traits<Alloc>::construct(*alloc, slot, std::move(*other));
-  }
-
-  template <typename Alloc>
-  static void destroy(Alloc *alloc, slot_type *slot) {
-    absl::allocator_traits<Alloc>::destroy(*alloc, slot);
-  }
-
-  template <typename Alloc>
-  static void swap(Alloc * /*alloc*/, slot_type *a, slot_type *b) {
-    using std::swap;
-    swap(*a, *b);
-  }
-
-  template <typename Alloc>
-  static void move(Alloc * /*alloc*/, slot_type *src, slot_type *dest) {
-    *dest = std::move(*src);
-  }
-};
-
-// A parameters structure for holding the type parameters for a btree_set.
-// Compare and Alloc should be nothrow copy-constructible.
-template <typename Key, typename Compare, typename Alloc, int TargetNodeSize,
-          bool Multi>
-struct set_params : common_params<Key, Compare, Alloc, TargetNodeSize, Multi,
-                                  set_slot_policy<Key>> {
-  using value_type = Key;
-  using slot_type = typename set_params::common_params::slot_type;
-  using value_compare =
-      typename set_params::common_params::original_key_compare;
-  using is_map_container = std::false_type;
-
-  template <typename V>
-  static const V &key(const V &value) { return value; }
-  static const Key &key(const slot_type *slot) { return *slot; }
-  static const Key &key(slot_type *slot) { return *slot; }
 };
 
 // An adapter class that converts a lower-bound compare into an upper-bound
@@ -562,9 +457,9 @@ class btree_node {
                        /*children*/ 0)
         .AllocSize();
   }
-  // A lower bound for the overhead of fields other than values in a leaf node.
+  // A lower bound for the overhead of fields other than slots in a leaf node.
   constexpr static size_type MinimumOverhead() {
-    return SizeWithNSlots(1) - sizeof(value_type);
+    return SizeWithNSlots(1) - sizeof(slot_type);
   }
 
   // Compute how many values we can fit onto a leaf node taking into account
@@ -1397,6 +1292,7 @@ class btree {
   }
 
   // The total number of bytes used by the btree.
+  // TODO(b/169338300): update to support node_btree_*.
   size_type bytes_used() const {
     node_stats stats = internal_stats(root());
     if (stats.leaf_nodes == 1 && stats.internal_nodes == 0) {
@@ -1929,7 +1825,7 @@ constexpr bool btree<P>::static_assert_validation() {
       "key comparison function must return absl::{weak,strong}_ordering or "
       "bool.");
 
-  // Test the assumption made in setting kNodeValueSpace.
+  // Test the assumption made in setting kNodeSlotSpace.
   static_assert(node_type::MinimumOverhead() >= sizeof(void *) + 4,
                 "node space assumption incorrect");
 

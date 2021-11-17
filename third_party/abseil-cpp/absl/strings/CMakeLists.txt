@@ -851,6 +851,7 @@ absl_cc_library(
     absl::inlined_vector
     absl::optional
     absl::raw_logging_internal
+    absl::span
     absl::strings
     absl::type_traits
   PUBLIC
