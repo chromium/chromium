@@ -121,6 +121,84 @@ class HistogramWaiterOneShot {
   base::RunLoop run_loop_;
 };
 
+class TextMatchesWaiter {
+ public:
+  TextMatchesWaiter(const std::string& expected,
+                    base::RepeatingCallback<std::string()> checker)
+      : expected_(expected), checker_(std::move(checker)) {}
+  ~TextMatchesWaiter() = default;
+  TextMatchesWaiter(const TextMatchesWaiter&) = delete;
+  TextMatchesWaiter& operator=(const TextMatchesWaiter&) = delete;
+
+  void Wait() {
+    base::RepeatingTimer check_timer;
+    check_timer.Start(FROM_HERE, base::Milliseconds(10), this,
+                      &TextMatchesWaiter::OnTimer);
+    run_loop_.Run();
+  }
+
+ private:
+  void OnTimer() {
+    if (checker_.Run() == expected_)
+      run_loop_.Quit();
+  }
+
+  std::string expected_;
+  base::RepeatingCallback<std::string()> checker_;
+  base::RunLoop run_loop_;
+};
+
+class CaretBoundsChangedWaiter : public ui::InputMethodObserver {
+ public:
+  explicit CaretBoundsChangedWaiter(ui::InputMethod* input_method)
+      : input_method_(input_method) {
+    input_method_->AddObserver(this);
+  }
+  CaretBoundsChangedWaiter(const CaretBoundsChangedWaiter&) = delete;
+  CaretBoundsChangedWaiter& operator=(const CaretBoundsChangedWaiter&) = delete;
+  ~CaretBoundsChangedWaiter() override { input_method_->RemoveObserver(this); }
+
+  void Wait() { run_loop_.Run(); }
+
+ private:
+  // ui::InputMethodObserver:
+  void OnFocus() override {}
+  void OnBlur() override {}
+  void OnTextInputStateChanged(const ui::TextInputClient* client) override {}
+  void OnShowVirtualKeyboardIfEnabled() override {}
+  void OnInputMethodDestroyed(const ui::InputMethod* input_method) override {}
+  void OnCaretBoundsChanged(const ui::TextInputClient* client) override {
+    run_loop_.Quit();
+  }
+
+  ui::InputMethod* input_method_;
+  base::RunLoop run_loop_;
+};
+
+// Listens for changes to the clipboard. This class only allows `Wait()` to be
+// called once. If you need to call `Wait()` multiple times, create multiple
+// instances of this class.
+class ClipboardChangedWaiterOneShot : public ui::ClipboardObserver {
+ public:
+  ClipboardChangedWaiterOneShot() {
+    ui::ClipboardMonitor::GetInstance()->AddObserver(this);
+  }
+  ClipboardChangedWaiterOneShot(const ClipboardChangedWaiterOneShot&) = delete;
+  ClipboardChangedWaiterOneShot& operator=(
+      const ClipboardChangedWaiterOneShot&) = delete;
+  ~ClipboardChangedWaiterOneShot() override {
+    ui::ClipboardMonitor::GetInstance()->RemoveObserver(this);
+  }
+
+  void Wait() { run_loop_.Run(); }
+
+ private:
+  // ui::ClipboardObserver:
+  void OnClipboardDataChanged() override { run_loop_.Quit(); }
+
+  base::RunLoop run_loop_;
+};
+
 }  // namespace
 
 // This class performs common setup and teardown operations for Dictation tests,
@@ -573,33 +651,6 @@ IN_PROC_BROWSER_TEST_P(DictationTest, Metrics) {
   }
 }
 
-class TextMatchesWaiter {
- public:
-  TextMatchesWaiter(const std::string& expected,
-                    base::RepeatingCallback<std::string()> checker)
-      : expected_(expected), checker_(std::move(checker)) {}
-  ~TextMatchesWaiter() = default;
-  TextMatchesWaiter(const TextMatchesWaiter&) = delete;
-  TextMatchesWaiter& operator=(const TextMatchesWaiter&) = delete;
-
-  void Wait() {
-    base::RepeatingTimer check_timer;
-    check_timer.Start(FROM_HERE, base::Milliseconds(10), this,
-                      &TextMatchesWaiter::OnTimer);
-    run_loop_.Run();
-  }
-
- private:
-  void OnTimer() {
-    if (checker_.Run() == expected_)
-      run_loop_.Quit();
-  }
-
-  std::string expected_;
-  base::RepeatingCallback<std::string()> checker_;
-  base::RunLoop run_loop_;
-};
-
 // TODO(crbug.com/1216111): Use a MockIMEInputContextHandler to check
 // composition after supporting interim results.
 class DictationExtensionTest : public DictationBaseTest {
@@ -784,57 +835,6 @@ IN_PROC_BROWSER_TEST_P(DictationExtensionTest, Metrics) {
                   .size());
   }
 }
-
-class CaretBoundsChangedWaiter : public ui::InputMethodObserver {
- public:
-  explicit CaretBoundsChangedWaiter(ui::InputMethod* input_method)
-      : input_method_(input_method) {
-    input_method_->AddObserver(this);
-  }
-  CaretBoundsChangedWaiter(const CaretBoundsChangedWaiter&) = delete;
-  CaretBoundsChangedWaiter& operator=(const CaretBoundsChangedWaiter&) = delete;
-  ~CaretBoundsChangedWaiter() override { input_method_->RemoveObserver(this); }
-
-  void Wait() { run_loop_.Run(); }
-
- private:
-  // ui::InputMethodObserver:
-  void OnFocus() override {}
-  void OnBlur() override {}
-  void OnTextInputStateChanged(const ui::TextInputClient* client) override {}
-  void OnShowVirtualKeyboardIfEnabled() override {}
-  void OnInputMethodDestroyed(const ui::InputMethod* input_method) override {}
-  void OnCaretBoundsChanged(const ui::TextInputClient* client) override {
-    run_loop_.Quit();
-  }
-
-  ui::InputMethod* input_method_;
-  base::RunLoop run_loop_;
-};
-
-// Listens for changes to the clipboard. This class only allows `Wait()` to be
-// called once. If you need to call `Wait()` multiple times, create multiple
-// instances of this class.
-class ClipboardChangedWaiterOneShot : public ui::ClipboardObserver {
- public:
-  ClipboardChangedWaiterOneShot() {
-    ui::ClipboardMonitor::GetInstance()->AddObserver(this);
-  }
-  ClipboardChangedWaiterOneShot(const ClipboardChangedWaiterOneShot&) = delete;
-  ClipboardChangedWaiterOneShot& operator=(
-      const ClipboardChangedWaiterOneShot&) = delete;
-  ~ClipboardChangedWaiterOneShot() override {
-    ui::ClipboardMonitor::GetInstance()->RemoveObserver(this);
-  }
-
-  void Wait() { run_loop_.Run(); }
-
- private:
-  // ui::ClipboardObserver:
-  void OnClipboardDataChanged() override { run_loop_.Quit(); }
-
-  base::RunLoop run_loop_;
-};
 
 class DictationCommandsExtensionTest : public DictationExtensionTest {
  protected:
