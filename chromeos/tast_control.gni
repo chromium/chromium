@@ -83,4 +83,9 @@ tast_disabled_tests_from_lacros_all = [
   # crbug.com/1250036
   "a11y.Smoke.lacros",
   "a11y.Smoke.lacros_rootfs",
+
+  # crbug.com/1174896
+  "lacros.ShelfLaunch",
+  "lacros.ShelfLaunch.rootfs",
+  "lacros.AppLauncherLaunch",
 ]
