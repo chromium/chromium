@@ -207,6 +207,7 @@
   'wpt_internal/webgpu/cts.https.html?q=webgpu:api,operation,vertex_state,correctness:vertex_buffer_used_multiple_times_overlapped:format="uint8x2";*',
 
   'wpt_internal/webgpu/cts.https.html?q=webgpu:api,validation,image_copy,texture_related:format:method="WriteTexture";*',
+  'wpt_internal/webgpu/cts.https.html?q=webgpu:api,validation,image_copy,texture_related:origin_alignment:method="WriteTexture";*',
 
   'wpt_internal/webgpu/cts.https.html?q=webgpu:shader,execution,zero_init:compute,zero_init:storageClass="workgroup";workgroupSize=[1,1,1];batch__=0;*',
   'wpt_internal/webgpu/cts.https.html?q=webgpu:shader,execution,zero_init:compute,zero_init:storageClass="workgroup";workgroupSize=[1,32,1];batch__=0;*',
