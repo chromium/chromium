@@ -12,6 +12,8 @@ extern const char kCachePrefPath[];
 
 extern const char kRetryAfterPrefPath[];
 
+extern const char kPrefetchPagesState[];
+
 }  // namespace prefs
 }  // namespace prefetch
 

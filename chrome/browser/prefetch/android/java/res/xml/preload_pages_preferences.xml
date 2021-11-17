@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2021 The Chromium Authors. All rights reserved.
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file. -->
+
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <org.chromium.components.browser_ui.settings.TextMessagePreference
+        android:key="text_managed" />
+
+    <org.chromium.components.browser_ui.settings.TextMessagePreference
+        android:key="summary"
+        android:summary="@string/preload_pages_summary"
+        app:allowDividerBelow="false" />
+    <org.chromium.chrome.browser.prefetch.settings.RadioButtonGroupPreloadPagesSettings
+        android:key="preload_pages_radio_button_group"
+        android:selectable="false"
+        app:allowDividerAbove="false"
+        app:allowDividerBelow="false" />
+</PreferenceScreen>

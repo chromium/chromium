@@ -22,5 +22,10 @@ const char kCachePrefPath[] = "prefetch.search_prefetch.cache";
 const char kRetryAfterPrefPath[] =
     "chrome.prefetch_proxy.origin_decider.retry_after";
 
+// This pref contains an integer (enum of type PreloadPagesState), determining
+// which preload pages mode (specifying whether or how much we are allowed to
+// preload pages) has been selected by the user.
+const char kPrefetchPagesState[] = "chrome.prefetch.preload_pages_state";
+
 }  // namespace prefs
 }  // namespace prefetch

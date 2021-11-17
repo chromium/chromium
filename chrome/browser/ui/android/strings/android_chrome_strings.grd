@@ -330,11 +330,62 @@ CHAR_LIMIT guidelines:
       <message name ="IDS_SETTINGS_INCOGNITO_TAB_LOCK_SUMMARY_ANDROID_SETTING_OFF" desc = "Summary for the Incognito tab lock toggle in Settings which asks the user to turn on screen lock in Android settings if it's off. Clicking on the text takes the user to Android settings.">
         <ph name="BEGIN_LINK">&lt;link&gt;</ph>Turn on screen lock in Android settings<ph name="END_LINK">&lt;/link&gt;</ph>
       </message>
-      <message name="IDS_PRELOAD_PAGES_TITLE" desc="Title for a checkbox in Settings that controls pages preloading and informs the user about the data shared by this feature.">
-        Preload pages for faster browsing and searching
+      <message name="IDS_PREFS_SECTION_PRELOAD_PAGES_TITLE" desc="Title for the Preload Pages section. This section allows the user to control whether Chrome will preload pages that it thinks the user is likely to load in the future. [CHAR_LIMIT=32]">
+        Preload Pages
       </message>
-      <message name="IDS_PRELOAD_PAGES_SUMMARY" desc="Summary for a checkbox in Settings that controls pages preloading and informs the user about the data shared by this feature.">
-        Preloads pages that Chrome thinks you might visit. To do this, Chrome may use cookies, if you allow cookies, and may encrypt and send pages through Google to hide your identity from sites.
+      <message name="IDS_PRELOAD_PAGES_TITLE" desc="Title for a section in Settings that controls pages preloading and informs the user about the data shared by this feature.">
+        Preload pages
+      </message>
+      <message name="IDS_PRELOAD_PAGES_SUMMARY" desc="Summary for a section in Settings that controls pages preloading and informs the user about the data shared by this feature.">
+        You can browse and search faster when Chrome preloads pages that it thinks you might visit
+      </message>
+      <message name="IDS_PRELOAD_PAGES_NO_PRELOADING_TITLE" desc="Name of the no preloading option for the Preload Pages settings page. This option disables preloading pages that Chrome believes the user is likely to navigate to. [CHAR_LIMIT=32]">
+        No preloading
+      </message>
+      <message name="IDS_PRELOAD_PAGES_NO_PRELOADING_SUMMARY" desc="Short explanation of what the no preloading mode does in the Preload Pages setting.">
+        Pages load only after you open them.
+      </message>
+      <message name="IDS_PRELOAD_PAGES_STANDARD_PRELOADING_TITLE" desc="Name of the standard preloading option for the Preload Pages settings page. This option enables preloading pages that Chrome believes the user is likely to navigate to. [CHAR_LIMIT=32]">
+        Standard preloading
+      </message>
+      <message name="IDS_PRELOAD_PAGES_STANDARD_PRELOADING_SUBTITLE" desc="Subtitle for Preload Pages standard preloading mode. Informs the user about which preloading setting is being described on this page.">
+        Standard preloading:
+      </message>
+      <message name="IDS_PRELOAD_PAGES_STANDARD_PRELOADING_SUMMARY" desc="Short explanation of what the standard preloading mode does in the Preload Pages setting.">
+        Some of the pages you visit are preloaded. Pages may be preloaded through Google servers when linked from a Google site.
+      </message>
+      <message name="IDS_PRELOAD_PAGES_STANDARD_PRELOADING_BULLET_ONE" desc="First bullet point under the Preload Pages standard preloading mode. Informs the user about what the standard preloading setting does.">
+        Preloads pages that Chrome thinks you are likely to visit.
+      </message>
+      <message name="IDS_PRELOAD_PAGES_STANDARD_PRELOADING_BULLET_TWO" desc="Second bullet point under the Preload Pages standard preloading mode. Informs the user about what the standard preloading setting does.">
+        If you allow cookies, Chrome may use them for preloading.
+      </message>
+      <message name="IDS_PRELOAD_PAGES_STANDARD_PRELOADING_BULLET_THREE" desc="Third bullet point under the Preload Pages standard preloading mode. Informs the user about what the standard preloading setting does.">
+        When a Google site asks to privately preload links on their page, Chrome encrypts and preloads pages through Google servers without cookies. This hides your identity from the preloaded site.
+      </message>
+      <message name="IDS_PRELOAD_PAGES_STANDARD_PRELOADING_BULLET_FOUR" desc="Fourth bullet point under the Preload Pages standard preloading mode. Informs the user about what the standard preloading setting does.">
+        Because the preloaded pages are encrypted, and the site linking to the pages is a Google site, Google servers don’t receive new information when privately preloading these pages.
+      </message>
+      <message name="IDS_PRELOAD_PAGES_EXTENDED_PRELOADING_TITLE" desc="Name of the extended preloading option for the Preload Pages settings page. This option enables more extensive preloading of pages that Chrome believes the user is likely to navigate to. [CHAR_LIMIT=32]">
+        Extended preloading
+      </message>
+      <message name="IDS_PRELOAD_PAGES_EXTENDED_PRELOADING_SUBTITLE" desc="Subtitle for Preload Pages extended preloading mode. Informs the user about which preloading setting is being described on this page.">
+        Extended preloading:
+      </message>
+      <message name="IDS_PRELOAD_PAGES_EXTENDED_PRELOADING_SUMMARY" desc="Short explanation of what the extended preloading mode does in the Preload Pages setting.">
+        More pages are preloaded. Pages may be preloaded through Google servers when requested by other sites.
+      </message>
+      <message name="IDS_PRELOAD_PAGES_EXTENDED_PRELOADING_BULLET_ONE" desc="First bullet point under the Preload Pages extended preloading mode. Informs the user about what the extended preloading setting does.">
+        More frequently preloads pages that Chrome thinks you are likely to visit. This setting may result in increased data use.
+      </message>
+      <message name="IDS_PRELOAD_PAGES_EXTENDED_PRELOADING_BULLET_TWO" desc="Second bullet point under the Preload Pages extended preloading mode. Informs the user about what the extended preloading setting does.">
+        If you allow cookies, Chrome may use them for preloading.
+      </message>
+      <message name="IDS_PRELOAD_PAGES_EXTENDED_PRELOADING_BULLET_THREE" desc="Third bullet point under the Preload Pages extended preloading mode. Informs the user about what the extended preloading setting does.">
+        When a site asks to privately preload links on their page, Chrome encrypts and preloads pages through Google servers without cookies. This hides your identity from the preloaded site.
+      </message>
+      <message name="IDS_PRELOAD_PAGES_EXTENDED_PRELOADING_BULLET_FOUR" desc="Fourth bullet point under the Preload Pages extended preloading mode. Informs the user about what the extended preloading setting does.">
+        Because the preloaded pages are encrypted, Google will not learn anything about the preloaded page content. Google servers will learn which sites are privately preloaded. This information is only used to preload the pages, and is not linked to other information from your Google Account.
       </message>
       <message name="IDS_URL_KEYED_ANONYMIZED_DATA_TITLE" desc="Title for a checkbox in Settings that controls non-personalized URL collection and informs the user about the data shared by this feature.">
         Make searches and browsing better
@@ -3482,7 +3533,7 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
       </message>
       <message name="IDS_IPH_SHOPPING_LIST_SAVE_FLOW" desc="In-product help text that notifies a user that they can organize their saved products from a folder in bookmarks.">
         Organize your tracked products in Bookmarks
-      </message> 
+      </message>
       <message name="IDS_IPH_SHOPPING_LIST_SAVE_FLOW_ACCESSIBILITY" is_accessibility_with_no_ui="true" desc="In-product help accessibility text that notifies a user that they can organize their saved products from a folder in bookmarks.">
         Organize your tracked products in Bookmarks from the folder icon
       </message>
