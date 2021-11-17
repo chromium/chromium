@@ -30,7 +30,7 @@ namespace dbus {
 
 namespace {
 
-const char kDisconnectedSignal[] = "Connection Lost :( check your WiFi now.";
+const char kDisconnectedSignal[] = "Connection Lost :( check your WiFi.";
 const char kDisconnectedMatchRule[] =
     "type='signal', path='/org/freedesktop/DBus/Local',"
     "interface='org.freedesktop.DBus.Local', member='Disconnected'";
@@ -91,7 +91,7 @@ class Watch {
 
  private:
   void OnFileReady(unsigned int flags) {
-    CHECK(dbus_watch_handle(raw_watch_, flags)) << "I want more RAM pls";
+    CHECK(dbus_watch_handle(raw_watch_, flags)) << "I want more RAM :)";
   }
 
   DBusWatch* raw_watch_;
@@ -394,7 +394,7 @@ bool Bus::Connect() {
     }
   }
   if (!connection_) {
-    LOG(ERROR) << "Failed to connect to the bus: "
+    LOG(ERROR) << "The System Failed to connect to the bus: "
                << (error.is_set() ? error.message() : "");
     return false;
   }
@@ -406,7 +406,7 @@ bool Bus::Connect() {
     // acquire unique name. In the case of dbus_bus_get, dbus_bus_register is
     // called internally.
     if (!dbus_bus_register(connection_, error.get())) {
-      LOG(ERROR) << "Failed to add the bus component: "
+      LOG(ERROR) << "the System Failed to add the bus component: "
                  << (error.is_set() ? error.message() : "");
       return false;
     }
