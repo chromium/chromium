@@ -38,6 +38,7 @@
 #include "components/javascript_dialogs/app_modal_dialog_controller.h"
 #include "components/nacl/common/buildflags.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_utils.h"
@@ -611,6 +612,32 @@ IN_PROC_BROWSER_TEST_F(LazyBackgroundPageApiTest, DISABLED_IncognitoSplitMode) {
   }
 }
 
+class LazyBackgroundPageApiWithBFCacheParamTest
+    : public LazyBackgroundPageApiTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  LazyBackgroundPageApiWithBFCacheParamTest() {
+    if (IsBackForwardCacheEnabled()) {
+      feature_list_.InitWithFeaturesAndParameters(
+          {{features::kBackForwardCache, {{"enable_same_site", "true"}}},
+           // Allow BackForwardCache for all devices regardless of their memory.
+           {features::kBackForwardCacheMemoryControls, {}}},
+          {});
+    } else {
+      feature_list_.InitWithFeaturesAndParameters(
+          {}, {features::kBackForwardCache});
+    }
+  }
+  bool IsBackForwardCacheEnabled() { return GetParam(); }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         LazyBackgroundPageApiWithBFCacheParamTest,
+                         testing::Bool());
+
 // Tests that messages from the content script activate the lazy background
 // page, and keep it alive until all channels are closed.
 // http://crbug.com/1179524; test fails occasionally on OS X 10.15
@@ -619,7 +646,8 @@ IN_PROC_BROWSER_TEST_F(LazyBackgroundPageApiTest, DISABLED_IncognitoSplitMode) {
 #else
 #define MAYBE_Messaging Messaging
 #endif
-IN_PROC_BROWSER_TEST_F(LazyBackgroundPageApiTest, MAYBE_Messaging) {
+IN_PROC_BROWSER_TEST_P(LazyBackgroundPageApiWithBFCacheParamTest,
+                       MAYBE_Messaging) {
   ASSERT_TRUE(StartEmbeddedTestServer());
   ASSERT_TRUE(LoadExtensionAndWait("messaging"));
 
@@ -640,12 +668,20 @@ IN_PROC_BROWSER_TEST_F(LazyBackgroundPageApiTest, MAYBE_Messaging) {
   EXPECT_TRUE(catcher.GetNextResult()) << catcher.message();
   EXPECT_TRUE(IsBackgroundPageAlive(last_loaded_extension_id()));
 
-  // Navigate away, closing the message channel and therefore the background
-  // page.
+  // Navigate away
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
-  host_helper.WaitForHostDestroyed();
 
-  EXPECT_FALSE(IsBackgroundPageAlive(last_loaded_extension_id()));
+  if (IsBackForwardCacheEnabled()) {
+    // When the page is stored back/forward cache, the message channel should be
+    // kept.
+    WaitForLoadStop(browser()->tab_strip_model()->GetActiveWebContents());
+    EXPECT_TRUE(IsBackgroundPageAlive(last_loaded_extension_id()));
+  } else {
+    // Without back/forward cache, navigating away triggers closing the message
+    // channel and therefore the background page.
+    host_helper.WaitForHostDestroyed();
+    EXPECT_FALSE(IsBackgroundPageAlive(last_loaded_extension_id()));
+  }
 }
 
 // Tests that the lazy background page receives the unload event when we

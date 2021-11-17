@@ -88,7 +88,7 @@ bool AreAllExtensionsAllowedForBFCache() {
     return true;
 
   static base::FeatureParam<bool> all_extensions_allowed(
-      &features::kBackForwardCache, "all_extensions_allowed", false);
+      &features::kBackForwardCache, "all_extensions_allowed", true);
   return all_extensions_allowed.Get();
 }
 

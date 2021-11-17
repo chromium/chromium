@@ -98,7 +98,7 @@ bool IsContentInjectionSupported() {
   if (!IsBackForwardCacheEnabled())
     return false;
   static constexpr base::FeatureParam<bool> content_injection_supported(
-      &features::kBackForwardCache, "content_injection_supported", false);
+      &features::kBackForwardCache, "content_injection_supported", true);
   return content_injection_supported.Get();
 }
 

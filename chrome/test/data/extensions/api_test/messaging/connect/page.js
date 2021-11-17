@@ -25,6 +25,32 @@ chrome.runtime.onConnect.addListener(function onConnect(port) {
       chrome.runtime.onConnect.removeListener(onConnect);
       chrome.test.assertFalse(chrome.runtime.onConnect.hasListeners());
       testConnectChildFrameAndNavigateSetup();
+    } else if (msg.testNavigateAwayAndHistoryBack) {
+      // This tests the following scenario:
+      // 1. Open port to the background script (test.js).
+      // 2. The background script (test.js) sends a message
+      //    ("navigateAwayAndHistoryBack") to this page.
+      // 3. Attach a pageshow event handler on this page.
+      // 4. Navigate to history_back.html, and navigate away from the
+      //    current page.
+      // 5. The current page is stored in the back/forward cache.
+      // 6. history_back.html runs window.history.back().
+      // 7. The previous page is salvaged from the back/forward cache.
+      // 8. The pageshow event handler sends two messages to the
+      //    background script (test.js) to confirm that these ports
+      //    that are opened before navigating away are still
+      //    available.
+      let portFromTab = chrome.runtime.connect();
+      portFromTab.onMessage.addListener(function(msg) {
+        window.addEventListener('pageshow', function(event) {
+          if (event.persisted) {
+            port.postMessage({salvagedFromBackForwardCache1: true});
+            portFromTab.postMessage({salvagedFromBackForwardCache2: true});
+          }
+        });
+        chrome.test.assertEq('navigateAwayAndHistoryBack', msg);
+        window.location = 'api_test/messaging/connect/history_back.html';
+      });
     } else if (msg.testDisconnectOnClose) {
       chrome.runtime.connect().onMessage.addListener(function(msg) {
         chrome.test.assertEq('unloadTabContent', msg);

@@ -42,6 +42,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/storage_partition.h"
+#include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_utils.h"
@@ -125,21 +126,52 @@ class MessageSender : public ExtensionHostRegistry::Observer {
 
 class MessagingApiTest : public ExtensionApiTest {
  public:
-  MessagingApiTest() {}
+  MessagingApiTest() : MessagingApiTest(/*enable_back_forward_cache=*/true) {
+    // Enable back/forward cache.
+  }
+  explicit MessagingApiTest(bool enable_back_forward_cache) {
+    if (enable_back_forward_cache) {
+      feature_list_.InitWithFeaturesAndParameters(
+          {{features::kBackForwardCache,
+            // The tests does same-site navigation. So same site BFCache needs
+            // to be enabled.
+            {{"enable_same_site", "true"}}},
+           // Allow BackForwardCache for all devices regardless of their memory.
+           {features::kBackForwardCacheMemoryControls, {}}},
+          {});
+    } else {
+      feature_list_.InitWithFeaturesAndParameters(
+          {}, {features::kBackForwardCache});
+    }
+  }
 
   MessagingApiTest(const MessagingApiTest&) = delete;
   MessagingApiTest& operator=(const MessagingApiTest&) = delete;
 
-  ~MessagingApiTest() override {}
+  ~MessagingApiTest() override = default;
 
   void SetUpOnMainThread() override {
     ExtensionApiTest::SetUpOnMainThread();
     host_resolver()->AddRule("*", "127.0.0.1");
     ASSERT_TRUE(StartEmbeddedTestServer());
   }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+class MessagingApiWithoutBackForwardCacheTest : public MessagingApiTest {
+ public:
+  MessagingApiWithoutBackForwardCacheTest()
+      : MessagingApiTest(/*enable_back_forward_cache=*/false) {}
 };
 
 IN_PROC_BROWSER_TEST_F(MessagingApiTest, Messaging) {
+  ASSERT_TRUE(RunExtensionTest("messaging/connect", {.custom_arg = "bfcache"}))
+      << message_;
+}
+
+IN_PROC_BROWSER_TEST_F(MessagingApiWithoutBackForwardCacheTest, Messaging) {
   ASSERT_TRUE(RunExtensionTest("messaging/connect")) << message_;
 }
 

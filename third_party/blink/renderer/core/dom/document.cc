@@ -1759,6 +1759,16 @@ void Document::DidChangeVisibilityState() {
   if (interactive_detector) {
     interactive_detector->OnPageHiddenChanged(hidden());
   }
+
+  // Don't create a |ukm_recorder_| and |ukm_source_id_| unless necessary.
+  if (hidden() && IdentifiabilityStudySettings::Get()->IsActive()) {
+    // Flush UKM data here in addition to Document::Shutdown(). We want to flush
+    // the UKM data before this document becomes invisible (e.g. before entering
+    // back/forward cache) because we want to send the UKM data before the
+    // renderer process is killed.
+    IdentifiabilitySampleCollector::Get()->FlushSource(UkmRecorder(),
+                                                       UkmSourceID());
+  }
 }
 
 String Document::nodeName() const {

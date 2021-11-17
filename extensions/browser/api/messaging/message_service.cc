@@ -124,7 +124,7 @@ bool IsExtensionMessageSupportedInBackForwardCache() {
     return false;
   static const bool is_extension_message_supported =
       base::FeatureParam<bool>(&features::kBackForwardCache,
-                               "extension_message_supported", false)
+                               "extension_message_supported", true)
           .Get();
   return is_extension_message_supported;
 }
