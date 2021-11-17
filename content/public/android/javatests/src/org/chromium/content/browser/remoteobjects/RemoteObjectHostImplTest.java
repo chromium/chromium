@@ -95,7 +95,7 @@ public final class RemoteObjectHostImplTest {
      *
      * This verifies that it is working correctly.
      */
-    private static class HasMethodCapture implements RemoteObject.HasMethodResponse {
+    private static class HasMethodCapture implements RemoteObject.HasMethod_Response {
         public Boolean methodExists;
 
         @Override
