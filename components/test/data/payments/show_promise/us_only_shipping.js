@@ -6,14 +6,10 @@
 
 /**
  * Launch PaymentRequest with a show promise and US-only shipping.
- * @param {bool} useWindowUrlPaymentMethod - Whether the window URL is used as
- * the payment method name. If false, then 'basic-card' is used instead.
+ * @param {string} supportedMethods The payment method that is supported by this
+ *        request.
  */
-function buy(useWindowUrlPaymentMethod) { // eslint-disable-line no-unused-vars
-  supportedMethods = 'basic-card';
-  if (useWindowUrlPaymentMethod) {
-    supportedMethods = window.location.href;
-  }
+function buyWithMethods(supportedMethods) { // eslint-disable-line no-unused-vars, max-len
   var detailsForUSAddress = {
     shippingOptions: [{
       id: '1',

@@ -45,10 +45,11 @@ class PaymentRequestShowPromiseTest : public PaymentRequestBrowserTestBase {
                                  DialogEvent::SPEC_DONE_UPDATING,
                                  DialogEvent::PROCESSING_SPINNER_HIDDEN,
                                  DialogEvent::DIALOG_OPENED});
-    // The boolean "true" makes the payment method be the URL of the webpage,
+    // buyWithCurrentUrl() uses the URL of the webpage as the payment method,
     // which is necessary because service workers cannot use "basic-card"
     // payment method (the default payment method of the test page).
-    ASSERT_TRUE(content::ExecuteScript(GetActiveWebContents(), "buy(true);"));
+    ASSERT_TRUE(content::ExecuteScript(GetActiveWebContents(),
+                                       "buyWithCurrentUrlMethod();"));
     WaitForObservedEvent();
     EXPECT_TRUE(web_modal::WebContentsModalDialogManager::FromWebContents(
                     GetActiveWebContents())
