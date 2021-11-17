@@ -3,11 +3,19 @@
 # found in the LICENSE file.
 
 load("//lib/bootstrap.star", "register_bootstrappable_recipe")
+load("//lib/recipe_experiments.star", "register_recipe_experiments")
 
 _RECIPE_NAME_PREFIX = "recipe:"
 
 def _recipe_for_package(cipd_package):
-    def recipe(*, name, cipd_version = None, recipe = None, use_python3 = False, bootstrappable = False):
+    def recipe(
+            *,
+            name,
+            cipd_version = None,
+            recipe = None,
+            use_python3 = False,
+            bootstrappable = False,
+            experiments = None):
         """Declare a recipe for the given package.
 
         A wrapper around luci.recipe with a fixed cipd_package and some
@@ -21,6 +29,7 @@ def _recipe_for_package(cipd_package):
               information.
             cipd_version: See luci.recipe.
             recipe: See luci.recipe.
+            use_python3: See luci.recipe.
             bootstrappable: Whether or not the recipe supports the chromium
               bootstrapper. A recipe supports the bootstrapper if the following
               conditions are met:
@@ -32,6 +41,9 @@ def _recipe_for_package(cipd_package):
                 skips analysis and performs a full build if
                 chromium_bootstrap.skip_analysis_reasons is non-empty. This will
                 be true if calling chromium_tests.determine_compilation_targets.
+            experiments: Experiments to apply to a builder using the recipe. If
+              the builder specifies an experiment, the experiment value from the
+              recipe will be ignored.
         """
 
         # Force the caller to put the recipe prefix rather than adding it
@@ -52,6 +64,8 @@ def _recipe_for_package(cipd_package):
 
         if bootstrappable:
             register_bootstrappable_recipe(name)
+
+        register_recipe_experiments(name, experiments or {})
 
         return ret
 

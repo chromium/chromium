@@ -31,6 +31,7 @@ load("./branches.star", "branches")
 load("./bootstrap.star", "register_bootstrap")
 load("./builder_config.star", "builder_config", "register_builder_config")
 load("./listify.star", "listify")
+load("./recipe_experiments.star", "register_recipe_experiments_ref")
 
 ################################################################################
 # Constants for use with the builder function                                  #
@@ -777,6 +778,8 @@ def builder(
     # settings and the branch selector
     if builder == None:
         return None
+
+    register_recipe_experiments_ref(bucket, name, executable)
 
     register_builder_config(bucket, name, builder_group, builder_spec, mirrors)
 
