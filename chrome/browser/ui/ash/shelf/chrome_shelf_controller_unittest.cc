@@ -178,6 +178,7 @@ constexpr char kCrxAppPrefix[] = "_crx_";
 // Dummy app id is used to put at least one pin record to prevent initializing
 // pin model with preinstalled apps that can affect some tests.
 constexpr char kDummyAppId[] = "dummyappid_dummyappid_dummyappid";
+constexpr int kSizeInDip = extension_misc::EXTENSION_ICON_MEDIUM;
 
 std::unique_ptr<KeyedService> BuildTestSyncService(
     content::BrowserContext* context) {
@@ -193,6 +194,28 @@ std::vector<arc::mojom::AppInfoPtr> GetArcSettingsAppInfo() {
   app->sticky = true;
   apps.push_back(std::move(app));
   return apps;
+}
+
+bool ValidateImageIsFullyLoaded(const gfx::ImageSkia& image) {
+  if (kSizeInDip != image.width() || kSizeInDip != image.height())
+    return false;
+
+  const std::vector<ui::ResourceScaleFactor>& scale_factors =
+      ui::GetSupportedResourceScaleFactors();
+  for (auto& scale_factor : scale_factors) {
+    const float scale = ui::GetScaleForResourceScaleFactor(scale_factor);
+    if (!image.HasRepresentation(scale))
+      return false;
+
+    const gfx::ImageSkiaRep& representation = image.GetRepresentation(scale);
+    if (representation.is_null() ||
+        representation.pixel_width() != base::ClampCeil(kSizeInDip * scale) ||
+        representation.pixel_height() != base::ClampCeil(kSizeInDip * scale)) {
+      return false;
+    }
+  }
+
+  return true;
 }
 
 // Test implementation of AppIconLoader.
@@ -4351,10 +4374,6 @@ TEST_F(ChromeShelfControllerArcDefaultAppsTest, DefaultApps) {
   EXPECT_TRUE(shelf_controller_->GetShelfSpinnerController()->HasApp(app_id));
   // Initially, a default icon is set for the shelf item.
   EXPECT_FALSE(item_delegate->image_set_by_controller());
-  auto get_icon = [=]() {
-    return *shelf_controller_->GetItem(shelf_id)->image.bitmap();
-  };
-  const SkBitmap default_icon = get_icon();
 
   std::string window_app_id("org.chromium.arc.1");
   CreateArcWindow(window_app_id);
@@ -4366,11 +4385,18 @@ TEST_F(ChromeShelfControllerArcDefaultAppsTest, DefaultApps) {
   ASSERT_TRUE(item_delegate);
   EXPECT_FALSE(shelf_controller_->GetShelfSpinnerController()->HasApp(app_id));
   EXPECT_FALSE(item_delegate->image_set_by_controller());
-  EXPECT_TRUE(gfx::test::AreBitmapsEqual(default_icon, get_icon()));
 
   // Wait for the real app icon image to be decoded and set for the shelf item.
   base::RunLoop().RunUntilIdle();
-  EXPECT_FALSE(gfx::test::AreBitmapsEqual(default_icon, get_icon()));
+  const std::vector<ui::ResourceScaleFactor>& scale_factors =
+      ui::GetSupportedResourceScaleFactors();
+  for (auto& scale_factor : scale_factors) {
+    // Force the icon to be loaded.
+    shelf_controller_->GetItem(shelf_id)->image.GetRepresentation(
+        ui::GetScaleForResourceScaleFactor(scale_factor));
+  }
+  EXPECT_TRUE(
+      ValidateImageIsFullyLoaded(shelf_controller_->GetItem(shelf_id)->image));
 }
 
 TEST_F(ChromeShelfControllerArcDefaultAppsTest, PlayStoreDeferredLaunch) {
