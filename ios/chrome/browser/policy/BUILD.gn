@@ -37,6 +37,8 @@ source_set("policy") {
     "reporting/report_scheduler_ios.mm",
     "reporting/reporting_delegate_factory_ios.h",
     "reporting/reporting_delegate_factory_ios.mm",
+    "restrict_accounts_policy_handler.cc",
+    "restrict_accounts_policy_handler.h",
     "schema_registry_factory.h",
     "schema_registry_factory.mm",
   ]
@@ -172,6 +174,7 @@ source_set("unit_tests") {
     "reporting/profile_report_generator_ios_unittest.mm",
     "reporting/report_generator_ios_unittest.mm",
     "reporting/report_scheduler_ios_unittest.mm",
+    "restrict_accounts_policy_handler_unittest.cc",
   ]
   deps = [
     ":policy",
