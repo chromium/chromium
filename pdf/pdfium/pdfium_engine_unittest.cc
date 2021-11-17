@@ -16,6 +16,7 @@
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
 #include "pdf/document_attachment_info.h"
 #include "pdf/document_layout.h"
 #include "pdf/document_metadata.h"
@@ -650,6 +651,45 @@ TEST_F(PDFiumEngineTest, HandleInputEventRawKeyDown) {
       blink::WebInputEvent::GetStaticTimeStampForTests());
   raw_key_down_event.windows_key_code = ui::VKEY_TAB;
   EXPECT_TRUE(engine->HandleInputEvent(raw_key_down_event));
+}
+
+TEST_F(PDFiumEngineTest, SelectText) {
+  NiceMock<MockTestClient> client;
+  std::unique_ptr<PDFiumEngine> engine =
+      InitializeEngine(&client, FILE_PATH_LITERAL("hello_world2.pdf"));
+  ASSERT_TRUE(engine);
+
+  EXPECT_THAT(engine->GetSelectedText(), IsEmpty());
+
+  engine->SelectAll();
+#if defined(OS_WIN)
+  // TODO(crbug.com/1269974): Make line endings more consistent.
+  constexpr char kExpectedText[] =
+      "Hello, world!\r\nGoodbye, world!\nHello, world!\r\nGoodbye, world!";
+#else
+  constexpr char kExpectedText[] =
+      "Hello, world!\nGoodbye, world!\nHello, world!\nGoodbye, world!";
+#endif
+  EXPECT_EQ(kExpectedText, engine->GetSelectedText());
+}
+
+TEST_F(PDFiumEngineTest, SelectCroppedText) {
+  NiceMock<MockTestClient> client;
+  std::unique_ptr<PDFiumEngine> engine =
+      InitializeEngine(&client, FILE_PATH_LITERAL("hello_world_cropped.pdf"));
+  ASSERT_TRUE(engine);
+
+  EXPECT_THAT(engine->GetSelectedText(), IsEmpty());
+
+  engine->SelectAll();
+  // TODO(crbug.com/791426): This is incorrect, as parts of the text is outside
+  // the crop box.
+#if defined(OS_WIN)
+  constexpr char kExpectedText[] = "Hello, world!\r\nGoodbye, world!";
+#else
+  constexpr char kExpectedText[] = "Hello, world!\nGoodbye, world!";
+#endif
+  EXPECT_EQ(kExpectedText, engine->GetSelectedText());
 }
 
 using PDFiumEngineDeathTest = PDFiumEngineTest;
