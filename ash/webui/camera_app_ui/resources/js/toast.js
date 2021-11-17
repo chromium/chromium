@@ -22,7 +22,10 @@ function update(message, spoken) {
 
   element.classList.toggle('spoken', spoken);
   if (!spoken) {
-    animate.play(element);
+    element.setAttribute('aria-hidden', 'false');
+    animate.play(element).finally(() => {
+      element.setAttribute('aria-hidden', 'true');
+    });
   }
 }
 
