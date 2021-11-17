@@ -3841,129 +3841,129 @@
     Loading...
   </message>
 
-  <!-- Consolidated Consent OOBE screen. -->
-  <!-- TODO(crbug.com/1249479): Remove translateable tags when strings are finalized. -->
-  <message name="IDS_CONSOLIDATED_CONSENT_HEADER" desc="Title of the consolidated consent screen." translateable="false">
+  <message name="IDS_CONSOLIDATED_CONSENT_HEADER" desc="Title of the consolidated consent screen.">
     Review these terms and control your data
   </message>
-  <message name="IDS_CONSOLIDATED_CONSENT_HEADER_CHILD" desc="Title of the consolidated consent screen for child account." translateable="false">
+  <message name="IDS_CONSOLIDATED_CONSENT_HEADER_CHILD" desc="Title of the consolidated consent screen for child account.">
     Review these terms and control your child's data
   </message>
-  <message name="IDS_CONSOLIDATED_CONSENT_SUBHEADER" desc="Subtitle of the consolidated consent screen." translateable="false">
+  <message name="IDS_CONSOLIDATED_CONSENT_SUBHEADER" desc="Subtitle of the consolidated consent screen.">
     You can control what data is shared with Google. You can change this anytime in Settings. Data will be used according to Google's <ph name="BEGIN_LINK">&lt;a id="privacyPolicyLink"&gt;</ph>Privacy Policy<ph name="END_LINK">&lt;/a&gt;</ph>.
   </message>
-  <message name="IDS_CONSOLIDATED_CONSENT_TERMS_TITLE" desc="Title of the main terms and conditions to be accepted in the consolidated consent screen" translateable="false">
+  <message name="IDS_CONSOLIDATED_CONSENT_TERMS_TITLE" desc="Title of the main terms and conditions to be accepted in the consolidated consent screen">
     Terms and conditions
   </message>
-  <message name="IDS_CONSOLIDATED_CONSENT_TERMS" desc="Main terms to be accepted in the consolidated consent screen." translateable="false">
-    I have read and agree to the <ph name="BEGIN_LINK1">&lt;a id="googleEulaLink"&gt;</ph>Google Terms of Service<ph name="END_LINK1">&lt;/a&gt;</ph>, <ph name="BEGIN_LINK2">&lt;a id="crosEulaLink"&gt;</ph>Chrome and Chrome OS Additional Terms of Service<ph name="END_LINK2">&lt;/a&gt;</ph>, and <ph name="BEGIN_LINK3">&lt;a id="arcTosLink"&gt;</ph>Play Terms of Service<ph name="END_LINK3">&lt;/a&gt;</ph>.
+  <message name="IDS_CONSOLIDATED_CONSENT_TERMS" desc="Main terms to be accepted in the consolidated consent screen.">
+    I have read and agree to the <ph name="BEGIN_LINK1">&lt;a id="googleEulaLink"&gt;</ph>Google Terms of Service<ph name="END_LINK1">&lt;/a&gt;</ph>, <ph name="BEGIN_LINK2">&lt;a id="crosEulaLink"&gt;</ph>Chrome and ChromeOS Additional Terms of Service<ph name="END_LINK2">&lt;/a&gt;</ph> and <ph name="BEGIN_LINK3">&lt;a id="arcTosLink"&gt;</ph>Play Terms of Service<ph name="END_LINK3">&lt;/a&gt;</ph>.
   </message>
-  <message name="IDS_CONSOLIDATED_CONSENT_TERMS_ARC_DISABLED" desc="Main terms to be accepted in the consolidated consent screen when arc is disabled." translateable="false">
-    I have read and agree to the <ph name="BEGIN_LINK1">&lt;a id="googleEulaLinkArcDisabled"&gt;</ph>Google Terms of Service<ph name="END_LINK1">&lt;/a&gt;</ph> and <ph name="BEGIN_LINK2">&lt;a id="crosEulaLinkArcDisabled"&gt;</ph>Chrome and Chrome OS Additional Terms of Service<ph name="END_LINK2">&lt;/a&gt;</ph>.
+  <message name="IDS_CONSOLIDATED_CONSENT_TERMS_ARC_DISABLED" desc="Main terms to be accepted in the consolidated consent screen when arc is disabled.">
+    I have read and agree to the <ph name="BEGIN_LINK1">&lt;a id="googleEulaLinkArcDisabled"&gt;</ph>Google Terms of Service<ph name="END_LINK1">&lt;/a&gt;</ph> and <ph name="BEGIN_LINK2">&lt;a id="crosEulaLinkArcDisabled"&gt;</ph>Chrome and ChromeOS Additional Terms of Service<ph name="END_LINK2">&lt;/a&gt;</ph>.
   </message>
-  <message name="IDS_CONSOLIDATED_CONSENT_USAGE_OPT_IN_TITLE" desc="Title for the message in the consolidated consent screen to opt-in for metrics for accounts." translateable="false">
+  <message name="IDS_CONSOLIDATED_CONSENT_USAGE_OPT_IN_TITLE" desc="Title for the message in the consolidated consent screen to opt-in for metrics for accounts.">
     Send usage and diagnostic data.
   </message>
-  <message name="IDS_CONSOLIDATED_CONSENT_USAGE_OPT_IN" desc="Message in the consolidated consent screen to opt-in for metrics." translateable="false">
-    Help improve Chrome OS features and performance by automatically sending crash reports as well as diagnostic and usage data to Google. Some aggregate data will also help Android apps and Google partners. If the Web &amp; App Activity setting is turned on for your Google Account, your Android data may be saved to your Google Account.
+  <message name="IDS_CONSOLIDATED_CONSENT_USAGE_OPT_IN" desc="Message in the consolidated consent screen to opt-in for metrics.">
+    Help improve Chrome and ChromeOS features and performance by automatically sending crash reports as well as diagnostic and usage data to Google. Some aggregate data will also help Android apps and Google partners. If the Web &amp; App Activity setting is turned on for your Google Account, your Android data may be saved to your Google Account.
   </message>
-  <message name="IDS_CONSOLIDATED_CONSENT_USAGE_OPT_IN_CHILD" desc="Message in the consolidated consent screen to opt-in for metrics for a child account." translateable="false">
-    Help improve Chrome OS features and performance by automatically sending crash reports as well as diagnostic and usage data to Google. Some aggregate data will also help Android apps and Google partners. If the Web &amp; App Activity setting is turned on for your child's Google Account, your child's Android data may be saved to your child's Google Account.
+  <message name="IDS_CONSOLIDATED_CONSENT_USAGE_OPT_IN_CHILD" desc="Message in the consolidated consent screen to opt-in for metrics for a child account.">
+    Help improve Chrome and ChromeOS features and performance by automatically sending crash reports as well as diagnostic and usage data to Google. Some aggregate data will also help Android apps and Google partners. If the Web &amp; App Activity setting is turned on for your child's Google Account, your child's Android data may be saved to your child's Google Account. 
   </message>
-  <message name="IDS_CONSOLIDATED_CONSENT_USAGE_OPT_IN_ARC_DISABLED" desc="Message in the consolidated consent screen to opt-in for metrics when ARC is disabled." translateable="false">
-    Help improve Chrome OS features and performance by automatically sending crash reports as well as diagnostic and usage data to Google.
+  <message name="IDS_CONSOLIDATED_CONSENT_USAGE_OPT_IN_ARC_DISABLED" desc="Message in the consolidated consent screen to opt-in for metrics when ARC is disabled.">
+    Help improve Chrome and ChromeOS features and performance by automatically sending crash reports as well as diagnostic and usage data to Google.
   </message>
-  <message name="IDS_CONSOLIDATED_CONSENT_USAGE_OPT_IN_LEARN_MORE" desc="Text shown in a pop-up dialog in the consolidated consent screen when the user clicks on the learn more for metrics opt-in." translateable="false">
-    <ph name="BEGIN_PARAGRAPH1">&lt;p&gt;</ph>Allowing your Chrome OS devices to send automatic reports helps us prioritize what to fix and improve in Chrome OS. These reports can include things like when Chrome OS crashes, which features you use, how much memory you typically use, and Android app diagnostic and usage data. Some aggregate data will also help Google apps and partners, such as Android developers.<ph name="END_PARAGRAPH1">&lt;/p&gt;</ph>
-    <ph name="BEGIN_PARAGRAPH2">&lt;p&gt;</ph>You can start or stop allowing these reports any time in your Chrome OS device settings. If you’re a domain administrator, you can change this setting in the admin console.<ph name="END_PARAGRAPH2">&lt;/p&gt;</ph>
+  <message name="IDS_CONSOLIDATED_CONSENT_USAGE_OPT_IN_LEARN_MORE" desc="Text shown in a pop-up dialog in the consolidated consent screen when the user clicks on the learn more for metrics opt-in.">
+    <ph name="BEGIN_PARAGRAPH1">&lt;p&gt;</ph>Help improve Chrome and ChromeOS features and performance by automatically sending crash reports as well as diagnostic and usage data to Google.<ph name="END_PARAGRAPH1">&lt;/p&gt;</ph>
+    <ph name="BEGIN_PARAGRAPH2">&lt;p&gt;</ph>You can start or stop allowing these reports any time in your ChromeOS device settings. If you're a domain administrator, you can change this setting in the admin console.<ph name="END_PARAGRAPH2">&lt;/p&gt;</ph>
     <ph name="BEGIN_PARAGRAPH3">&lt;p&gt;</ph>Turning off this feature doesn't affect your device's ability to send the information needed for essential services such as system updates and security.<ph name="END_PARAGRAPH3">&lt;/p&gt;</ph>
     <ph name="BEGIN_PARAGRAPH4">&lt;p&gt;</ph>If the Web &amp; App Activity setting is turned on for your Google Account, your Android data may be saved to your Google Account. You can see your data, delete it, and change your account settings at account.google.com.<ph name="END_PARAGRAPH4">&lt;/p&gt;</ph>
   </message>
-  <message name="IDS_CONSOLIDATED_CONSENT_USAGE_OPT_IN_LEARN_MORE_CHILD" desc="Text shown in a pop-up dialog in the consolidated consent screen when the user clicks on the learn more for metrics opt-in for a child account." translateable="false">
-    <ph name="BEGIN_PARAGRAPH1">&lt;p&gt;</ph>Allowing Chrome OS devices to send automatic reports helps us prioritize what to fix and improve in Chrome OS. These reports can include things like when Chrome OS crashes, which features were used, how much memory was typically used, and Android app diagnostic and usage data. Some aggregate data will also help Google apps and partners, such as Android developers.<ph name="END_PARAGRAPH1">&lt;/p&gt;</ph>
-    <ph name="BEGIN_PARAGRAPH2">&lt;p&gt;</ph>You can start or stop allowing these reports any time in your child's Chrome OS device settings. If you're a domain administrator, you can change this setting in the admin console.<ph name="END_PARAGRAPH2">&lt;/p&gt;</ph>
+  <message name="IDS_CONSOLIDATED_CONSENT_USAGE_OPT_IN_LEARN_MORE_CHILD" desc="Text shown in a pop-up dialog in the consolidated consent screen when the user clicks on the learn more for metrics opt-in for a child account.">
+    <ph name="BEGIN_PARAGRAPH1">&lt;p&gt;</ph>Allowing ChromeOS devices to send automatic reports helps us prioritize what to fix and improve in ChromeOS. These reports can include things like when ChromeOS crashes, which features were used, how much memory was typically used, and Android app diagnostic and usage data. Some aggregate data will also help Google apps and partners, such as Android developers.<ph name="END_PARAGRAPH1">&lt;/p&gt;</ph>
+    <ph name="BEGIN_PARAGRAPH2">&lt;p&gt;</ph>You can start or stop allowing these reports any time in your child's ChromeOS device settings. If you're a domain administrator, you can change this setting in the admin console.<ph name="END_PARAGRAPH2">&lt;/p&gt;</ph>
     <ph name="BEGIN_PARAGRAPH3">&lt;p&gt;</ph>Turning off this feature doesn't affect this device's ability to send the information needed for essential services such as system updates and security.<ph name="END_PARAGRAPH3">&lt;/p&gt;</ph>
-    <ph name="BEGIN_PARAGRAPH4">&lt;p&gt;</ph>If the Web &amp; App Activity setting is turned on for your child’s Google Account, your child’s Android data may be saved to their Google Account. Learn more about these settings and how to adjust them at families.google.com.<ph name="END_PARAGRAPH4">&lt;/p&gt;</ph>
+    <ph name="BEGIN_PARAGRAPH4">&lt;p&gt;</ph>If the Web &amp; App Activity setting is turned on for your child's Google Account, your child's data may be saved to their Google Account. Learn more about these settings and how to adjust them at families.google.com.<ph name="END_PARAGRAPH4">&lt;/p&gt;</ph>
   </message>
-  <message name="IDS_CONSOLIDATED_CONSENT_USAGE_OPT_IN_LEARN_MORE_ARC_DISABLED" desc="Text shown in a pop-up dialog in the consolidated consent screen when the user clicks on the learn more for metrics opt-in when ARC is disabled." translateable="false">
-    <ph name="BEGIN_PARAGRAPH1">&lt;p&gt;</ph>Allowing Chrome OS devices to send automatic reports helps us prioritize what to fix and improve in Chrome OS. These reports can include things like when Chrome OS crashes, which features were used, how much memory was typically used.<ph name="END_PARAGRAPH1">&lt;/p&gt;</ph>
+  <message name="IDS_CONSOLIDATED_CONSENT_USAGE_OPT_IN_LEARN_MORE_ARC_DISABLED" desc="Text shown in a pop-up dialog in the consolidated consent screen when the user clicks on the learn more for metrics opt-in when ARC is disabled.">
+    <ph name="BEGIN_PARAGRAPH1">&lt;p&gt;</ph>Allowing ChromeOS devices to send automatic reports helps us prioritize what to fix and improve in ChromeOS. These reports can include things like when ChromeOS crashes, which features were used, and how much memory was typically used.<ph name="END_PARAGRAPH1">&lt;/p&gt;</ph>
     <ph name="BEGIN_PARAGRAPH2">&lt;p&gt;</ph>You can start or stop allowing these reports any time in your Chrome device settings. If you’re a domain administrator, you can change this setting in the admin console.<ph name="END_PARAGRAPH2">&lt;/p&gt;</ph>
+    <ph name="BEGIN_PARAGRAPH3">&lt;p&gt;</ph>Turning off this feature doesn't affect your device's ability to send the information needed for essential services such as system updates and security.<ph name="END_PARAGRAPH3">&lt;/p&gt;</ph>
   </message>
-  <message name="IDS_CONSOLIDATED_CONSENT_USAGE_OPT_IN_LEARN_MORE_ARC_DISABLED_CHILD" desc="Text shown in a pop-up dialog in the consolidated consent screen when the user clicks on the learn more for metrics opt-in when ARC is disabled in a child account." translateable="false">
-    <ph name="BEGIN_PARAGRAPH1">&lt;p&gt;</ph>Allowing Chrome OS devices to send automatic reports helps us prioritize what to fix and improve in Chrome OS. These reports can include things like when Chrome OS crashes, which features were used, how much memory was typically used, and Android app diagnostic and usage data. Some aggregate data will also help Google apps and partners, such as Android developers.<ph name="END_PARAGRAPH1">&lt;/p&gt;</ph>
-    <ph name="BEGIN_PARAGRAPH2">&lt;p&gt;</ph>You can start or stop allowing these reports any time in your child's Chrome OS device settings. If you're a domain administrator, you can change this setting in the admin console.<ph name="END_PARAGRAPH2">&lt;/p&gt;</ph>
+  <message name="IDS_CONSOLIDATED_CONSENT_USAGE_OPT_IN_LEARN_MORE_ARC_DISABLED_CHILD" desc="Text shown in a pop-up dialog in the consolidated consent screen when the user clicks on the learn more for metrics opt-in when ARC is disabled in a child account.">
+    <ph name="BEGIN_PARAGRAPH1">&lt;p&gt;</ph>Allowing ChromeOS devices to send automatic reports helps us prioritize what to fix and improve in ChromeOS. These reports can include things like when ChromeOS crashes, which features were used, and how much memory was typically used.<ph name="END_PARAGRAPH1">&lt;/p&gt;</ph>
+    <ph name="BEGIN_PARAGRAPH2">&lt;p&gt;</ph>You can start or stop allowing these reports any time in your child's ChromeOS device settings. If you're a domain administrator, you can change this setting in the admin console.<ph name="END_PARAGRAPH2">&lt;/p&gt;</ph>
+    <ph name="BEGIN_PARAGRAPH3">&lt;p&gt;</ph>Turning off this feature doesn't affect this device's ability to send the information needed for essential services such as system updates and security.<ph name="END_PARAGRAPH3">&lt;/p&gt;</ph>
   </message>
-  <message name="IDS_CONSOLIDATED_CONSENT_BACKUP_OPT_IN_TITLE" desc="Title for the message in the consolidated consent screen to opt-in for back-up." translateable="false">
+  <message name="IDS_CONSOLIDATED_CONSENT_BACKUP_OPT_IN_TITLE" desc="Title for the message in the consolidated consent screen to opt-in for back-up.">
     Back up Android apps to Google Drive.
   </message>
-  <message name="IDS_CONSOLIDATED_CONSENT_BACKUP_OPT_IN" desc="Message in the consolidated consent screen to opt-in for back-up." translateable="false">
-    Easily restore your data or switch device at any time. Your backups are uploaded to Google and encrypted using your Google Account password.
+  <message name="IDS_CONSOLIDATED_CONSENT_BACKUP_OPT_IN" desc="Message in the consolidated consent screen to opt-in for back-up.">
+    Easily restore your data or switch devices at any time. Your backups are uploaded to Google and encrypted using your Google Account password.
   </message>
-  <message name="IDS_CONSOLIDATED_CONSENT_BACKUP_OPT_IN_CHILD" desc="Message in the consolidated consent screen to opt-in for back-up for a child account." translateable="false">
-    Easily restore your data or switch devices at any time. Backups are uploaded to Google and encrypted using your child’s Google Account password
+  <message name="IDS_CONSOLIDATED_CONSENT_BACKUP_OPT_IN_CHILD" desc="Message in the consolidated consent screen to opt-in for back-up for a child account.">
+    Easily restore data or switch devices at any time. Backups are uploaded to Google and encrypted using your child's Google Account password.
   </message>
-    <message name="IDS_CONSOLIDATED_CONSENT_BACKUP_OPT_IN_LEARN_MORE" desc="Text shown in a pop-up dialog in the consolidated consent screen when the user clicks on the learn more for back-up opt-in." translateable="false">
+  <message name="IDS_CONSOLIDATED_CONSENT_BACKUP_OPT_IN_LEARN_MORE" desc="Text shown in a pop-up dialog in the consolidated consent screen when the user clicks on the learn more for back-up opt-in.">
     <ph name="BEGIN_PARAGRAPH1">&lt;p&gt;</ph>App data can be any data that an app has saved (based on developer settings), including data such as contacts, messages, and photos. Backup data will not count toward your Drive storage quota.<ph name="END_PARAGRAPH1">&lt;/p&gt;</ph>
     <ph name="BEGIN_PARAGRAPH2">&lt;p&gt;</ph>You can turn this service off in Settings.<ph name="END_PARAGRAPH2">&lt;/p&gt;</ph>
   </message>
-  <message name="IDS_CONSOLIDATED_CONSENT_BACKUP_OPT_IN_LEARN_MORE_CHILD" desc="Text shown in a pop-up dialog in the consolidated consent screen when the user clicks on the learn more for back-up opt-in for a child account." translateable="false">
+  <message name="IDS_CONSOLIDATED_CONSENT_BACKUP_OPT_IN_LEARN_MORE_CHILD" desc="Text shown in a pop-up dialog in the consolidated consent screen when the user clicks on the learn more for back-up opt-in for a child account.">
     <ph name="BEGIN_PARAGRAPH1">&lt;p&gt;</ph>App data can be any data that an app has saved (based on developer settings), including data such as contacts, messages, and photos. Backup data will not count toward your child's Drive storage quota.<ph name="END_PARAGRAPH1">&lt;/p&gt;</ph>
     <ph name="BEGIN_PARAGRAPH2">&lt;p&gt;</ph>You can turn this service off in Settings.<ph name="END_PARAGRAPH2">&lt;/p&gt;</ph>
   </message>
-  <message name="IDS_CONSOLIDATED_CONSENT_LOCATION_OPT_IN_TITLE" desc="Title for the message in the consolidated consent screen to opt-in for location services." translateable="false">
+  <message name="IDS_CONSOLIDATED_CONSENT_LOCATION_OPT_IN_TITLE" desc="Title for the message in the consolidated consent screen to opt-in for location services.">
     Use location for Android apps and services.
   </message>
-  <message name="IDS_CONSOLIDATED_CONSENT_LOCATION_OPT_IN" desc="Message in the consolidated consent screen to opt-in for location services." translateable="false">
+  <message name="IDS_CONSOLIDATED_CONSENT_LOCATION_OPT_IN" desc="Message in the consolidated consent screen to opt-in for location services.">
     Allow Android apps and services with location permission to use your device's location. Google may collect location data periodically and use this data in an anonymous way to improve location accuracy and location-based services.
   </message>
-  <message name="IDS_CONSOLIDATED_CONSENT_LOCATION_OPT_IN_CHILD" desc="Message in the consolidated consent screen to opt-in for location services for child accounts." translateable="false">
+  <message name="IDS_CONSOLIDATED_CONSENT_LOCATION_OPT_IN_CHILD" desc="Message in the consolidated consent screen to opt-in for location services for child accounts.">
     Allow Android apps and services with location permission to use this device's location. Google may collect location data periodically and use this data in an anonymous way to improve location accuracy and location-based services.
   </message>
-  <message name="IDS_CONSOLIDATED_CONSENT_LOCATION_OPT_IN_LEARN_MORE" desc="Text shown in a pop-up dialog in the consolidated consent screen when the user clicks on the learn more for location services opt-in." translateable="false">
-    <ph name="BEGIN_PARAGRAPH1">&lt;p&gt;</ph>Google's location service uses sources like Wi-Fi, mobile networks, and sensors to help estimate your device’s location.<ph name="END_PARAGRAPH1">&lt;/p&gt;</ph>
-    <ph name="BEGIN_PARAGRAPH2">&lt;p&gt;</ph>You can turn off Android location on your device at any time by going to Settings &gt; Apps &gt; Google Play Store &gt; Manage Android preferences &gt; Security &amp; location &gt; Location. You can also turn off the use of Wi-Fi, mobile networks, and sensors by turning off “Google Location Accuracy” in the same menu.<ph name="END_PARAGRAPH2">&lt;/p&gt;</ph>
+  <message name="IDS_CONSOLIDATED_CONSENT_LOCATION_OPT_IN_LEARN_MORE" desc="Text shown in a pop-up dialog in the consolidated consent screen when the user clicks on the learn more for location services opt-in.">
+    <ph name="BEGIN_PARAGRAPH1">&lt;p&gt;</ph>Google's location service uses sources like Wi-Fi, mobile networks, and sensors to help estimate your device's location.<ph name="END_PARAGRAPH1">&lt;/p&gt;</ph>
+    <ph name="BEGIN_PARAGRAPH2">&lt;p&gt;</ph>You can turn off Android location on your device at any time by going to Settings &gt; Apps &gt; Google Play Store &gt; Manage Android preferences &gt; Security &amp; location &gt; Location. You can also turn off the use of Wi-Fi, mobile networks, and sensors for Android location by turning off “Google Location Accuracy” in the same menu.<ph name="END_PARAGRAPH2">&lt;/p&gt;</ph>
   </message>
-  <message name="IDS_CONSOLIDATED_CONSENT_LOCATION_OPT_IN_LEARN_MORE_CHILD" desc="Text shown in a pop-up dialog in the consolidated consent screen when the user clicks on the learn more for location services opt-in. for a child account" translateable="false">
-    <ph name="BEGIN_PARAGRAPH1">&lt;p&gt;</ph>Google's location service uses sources like Wi-Fi, mobile networks, and sensors to help estimate this device’s location.<ph name="END_PARAGRAPH1">&lt;/p&gt;</ph>
-    <ph name="BEGIN_PARAGRAPH2">&lt;p&gt;</ph>You can turn off Android location on this device at any time by going to Settings &gt; Apps &gt; Google Play Store &gt; Manage Android preferences &gt; Security &amp; location &gt; Location. You can also turn off the use of Wi-Fi, mobile networks, and sensors by turning off “Google Location Accuracy” in the same menu.<ph name="END_PARAGRAPH2">&lt;/p&gt;</ph>
+  <message name="IDS_CONSOLIDATED_CONSENT_LOCATION_OPT_IN_LEARN_MORE_CHILD" desc="Text shown in a pop-up dialog in the consolidated consent screen when the user clicks on the learn more for location services opt-in. for a child account">
+    <ph name="BEGIN_PARAGRAPH1">&lt;p&gt;</ph>Google's location service uses sources like Wi-Fi, mobile networks, and sensors to help estimate this device's location.<ph name="END_PARAGRAPH1">&lt;/p&gt;</ph>
+    <ph name="BEGIN_PARAGRAPH2">&lt;p&gt;</ph>You can turn off Android location on this device at any time by going to Settings &gt; Apps &gt; Google Play Store &gt; Manage Android preferences &gt; Security &amp; location &gt; Location. You can also turn off the use of Wi-Fi, mobile networks, and sensors for Android location by turning off “Google Location Accuracy” in the same menu.<ph name="END_PARAGRAPH2">&lt;/p&gt;</ph>
   </message>
-  <message name="IDS_CONSOLIDATED_CONSENT_FOOTER" desc="Message in the footer of the consolidated consent screen." translateable="false">
+  <message name="IDS_CONSOLIDATED_CONSENT_FOOTER" desc="Message in the footer of the consolidated consent screen.">
     By continuing, you agree that this device may also automatically download and install updates and apps from Google, your carrier, and your device's manufacturer, possibly using cellular data. Some of these apps may offer in-app purchases.
   </message>
-  <message name="IDS_CONSOLIDATED_CONSENT_FOOTER_CHILD" desc="Message in the footer of the consolidated consent screen for a child account." translateable="false">
-    By continuing, you agree that this device may also automatically download and install updates and apps from Google, your child’s carrier, and this device's manufacturer, possibly using cellular data. Some of these apps may offer in-app purchases.
+  <message name="IDS_CONSOLIDATED_CONSENT_FOOTER_CHILD" desc="Message in the footer of the consolidated consent screen for a child account.">
+    By continuing, you agree that this device may also automatically download and install updates and apps from Google, your child's carrier, and this device's manufacturer, possibly using cellular data. Some of these apps may offer in-app purchases.
   </message>
-  <message name="IDS_CONSOLIDATED_CONSENT_FOOTER_LEARN_MORE" desc="Message shown in a pop-up dialog in the consolidated consent screen when the user clicks on the learn more in the footer." translateable="false">
+  <message name="IDS_CONSOLIDATED_CONSENT_FOOTER_LEARN_MORE" desc="Message shown in a pop-up dialog in the consolidated consent screen when the user clicks on the learn more in the footer.">
     To remove apps, go to Settings &gt; Apps &gt; Google Play Store &gt; Manage Android preferences &gt; Apps or Application manager. Then tap the app you want to uninstall (you may need to swipe right or left to find the app). Then tap Uninstall or Disable.
   </message>
-  <message name="IDS_CONSOLIDATED_CONSENT_LEARN_MORE" desc="Learn more link text in the consolidated consent screen." translateable="false">
+  <message name="IDS_CONSOLIDATED_CONSENT_LEARN_MORE" desc="Learn more link text in the consolidated consent screen.">
     Learn more
   </message>
-  <message name="IDS_CONSOLIDATED_CONSENT_ACCEPT_AND_CONTINUE" desc="Accept and continue button in the consolidated consent screen." translateable="false">
+  <message name="IDS_CONSOLIDATED_CONSENT_ACCEPT_AND_CONTINUE" desc="Accept and continue button in the consolidated consent screen.">
     Accept and continue
   </message>
-  <message name="IDS_CONSOLIDATED_CONSENT_OK" desc="Button for acknowledging in a dialog for terms of service." translateable="false">
+  <message name="IDS_CONSOLIDATED_CONSENT_OK" desc="Button for acknowledging in a dialog for terms of service.">
     OK
   </message>
-  <message name="IDS_CONSOLIDATED_CONSENT_LOADING" desc="Message shown while the terms of service are being downloaded." translateable="false">
+  <message name="IDS_CONSOLIDATED_CONSENT_LOADING" desc="Message shown while the terms of service are being downloaded.">
     Loading...
   </message>
-  <message name="IDS_CONSOLIDATED_CONSENT_TERMS_LOAD_ERROR" desc="Load error message of the consolidated consent dialog." translateable="false">
+  <message name="IDS_CONSOLIDATED_CONSENT_TERMS_LOAD_ERROR" desc="Load error message of the consolidated consent dialog.">
     Terms of Service cannot be loaded. Please check your network connection and retry.
   </message>
-  <message name="IDS_CONSOLIDATED_CONSENT_RETRY" desc="Retry button of the consolidated consent dialog that reloads terms of service." translateable="false">
+  <message name="IDS_CONSOLIDATED_CONSENT_RETRY" desc="Retry button of the consolidated consent dialog that reloads terms of service.">
     Retry
   </message>
-  <message name="IDS_CONSOLIDATED_CONSENT_GOOGLE_EULA_TITLE" desc="Title of Google terms of service screen" translateable="false">
+  <message name="IDS_CONSOLIDATED_CONSENT_GOOGLE_EULA_TITLE" desc="Title of Google terms of service screen">
     Google terms of service
   </message>
-  <message name="IDS_CONSOLIDATED_CONSENT_CROS_EULA_TITLE" desc="Title of Google Chrome and Chrome OS additional terms screen" translateable="false">
-    Google Chrome and Chrome OS Additional Terms
+  <message name="IDS_CONSOLIDATED_CONSENT_CROS_EULA_TITLE" desc="Title of Google Chrome and Chrome OS additional terms screen">
+    Google Chrome and ChromeOS Additional Terms
   </message>
-  <message name="IDS_CONSOLIDATED_CONSENT_ARC_TITLE" desc="Title of Goolge Play terms of service in opt-in screen" translateable="false">
+  <message name="IDS_CONSOLIDATED_CONSENT_ARC_TITLE" desc="Title of Goolge Play terms of service in opt-in screen">
     Google Play terms of service
   </message>
-  <message name="IDS_CONSOLIDATED_CONSENT_PRIVACY_POLICY_TITLE" desc="Text of the Link to Goolge Privacy Policy in opt-in screen" translateable="false">
+  <message name="IDS_CONSOLIDATED_CONSENT_PRIVACY_POLICY_TITLE" desc="Text of the Link to Goolge Privacy Policy in opt-in screen">
     Google privacy policy
   </message>
 
@@ -3975,7 +3975,7 @@
     Terms and conditions
   </message>
   <message name="IDS_GUEST_TOS_TERMS" desc="Terms and conditions to be accepted before starting a guest session">
-    I have read and agree to the <ph name="BEGIN_LINK1">&lt;a id="googleEulaLink"&gt;</ph>Google Terms of Service<ph name="END_LINK1">&lt;/a&gt;</ph>, <ph name="BEGIN_LINK2">&lt;a id="crosEulaLink"&gt;</ph>Chrome and Chrome OS Additional Terms of Service<ph name="END_LINK2">&lt;/a&gt;</ph>.
+    I have read and agree to the <ph name="BEGIN_LINK1">&lt;a id="googleEulaLink"&gt;</ph>Google Terms of Service<ph name="END_LINK1">&lt;/a&gt;</ph>, <ph name="BEGIN_LINK2">&lt;a id="crosEulaLink"&gt;</ph>Chrome and ChromeOS Additional Terms of Service<ph name="END_LINK2">&lt;/a&gt;</ph>.
   </message>
   <message name="IDS_GUEST_TOS_LOADING" desc="Message shown while the terms of service are being downloaded">
     Loading...
@@ -3990,21 +3990,20 @@
     Google terms of service
   </message>
   <message name="IDS_GUEST_TOS_CROS_EULA_TITLE" desc="Title of Google Chrome and Chrome OS additional terms screen">
-    Google Chrome and Chrome OS Additional Terms
+    Google Chrome and ChromeOS Additional Terms
   </message>
-  <!-- TODO(crbug.com/1241468): remove translateable="false" once the strings are finalized-->
-  <message name="IDS_GUEST_TOS_USAGE_OPT_IN_TITLE" desc="Title for the message in the guest terms of service screen to opt-in for metrics during the guest session." translateable="false">
+  <message name="IDS_GUEST_TOS_USAGE_OPT_IN_TITLE" desc="Title for the message in the guest terms of service screen to opt-in for metrics during the guest session.">
     Send usage and diagnostic data.
   </message>
-  <message name="IDS_GUEST_TOS_USAGE_OPT_IN" desc="Message in the guest terms of service screen to opt-in for metrics during the guest session." translateable="false">
-    Help improve Chrome and Chrome OS features and performance by automatically sending crash reports as well as diagnostic and usage data to Google. Some aggregate data will also help Android apps and Google partners. If the Web &amp; App Activity setting is turned on for your Google Account, your Android data may be saved to your Google Account.
+  <message name="IDS_GUEST_TOS_USAGE_OPT_IN" desc="Message in the guest terms of service screen to opt-in for metrics during the guest session.">
+    Help improve Chrome and ChromeOS features and performance by automatically sending crash reports as well as diagnostic and usage data to Google.
   </message>
-  <message name="IDS_GUEST_TOS_LEARN_MORE" desc="Learn more link text in guest terms of service screen." translateable="false">
+  <message name="IDS_GUEST_TOS_LEARN_MORE" desc="Learn more link text in guest terms of service screen.">
     Learn more
   </message>
-  <message name="IDS_GUEST_TOS_USAGE_OPT_IN_LEARN_MORE" desc="Text shown in a pop-up dialog in the guest terms of service screen when the user clicks on the learn more for metrics opt-in." translateable="false">
-    <ph name="BEGIN_PARAGRAPH1">&lt;p&gt;</ph>Allowing your Chrome OS devices to send automatic reports helps us prioritize what to fix and improve in Chrome OS. These reports can include things like when Chrome OS crashes, which features you use, how much memory you typically use, and Android app diagnostic and usage data. Some aggregate data will also help Google apps and partners, such as Android developers.<ph name="END_PARAGRAPH1">&lt;/p&gt;</ph>
-    <ph name="BEGIN_PARAGRAPH2">&lt;p&gt;</ph>You can start or stop allowing these reports any time in your Chrome OS device settings. If you’re a domain administrator, you can change this setting in the admin console.<ph name="END_PARAGRAPH2">&lt;/p&gt;</ph>
+  <message name="IDS_GUEST_TOS_USAGE_OPT_IN_LEARN_MORE" desc="Text shown in a pop-up dialog in the guest terms of service screen when the user clicks on the learn more for metrics opt-in.">
+    <ph name="BEGIN_PARAGRAPH1">&lt;p&gt;</ph>Allowing ChromeOS devices to send automatic reports helps us prioritize what to fix and improve in ChromeOS. These reports can include things like when ChromeOS crashes, which features were used, and how much memory was typically used.<ph name="END_PARAGRAPH1">&lt;/p&gt;</ph>
+    <ph name="BEGIN_PARAGRAPH2">&lt;p&gt;</ph>You can start or stop allowing these reports any time in your Chrome device settings. If you’re a domain administrator, you can change this setting in the admin console.<ph name="END_PARAGRAPH2">&lt;/p&gt;</ph>
     <ph name="BEGIN_PARAGRAPH3">&lt;p&gt;</ph>Turning off this feature doesn't affect your device's ability to send the information needed for essential services such as system updates and security.<ph name="END_PARAGRAPH3">&lt;/p&gt;</ph>
   </message>
 
