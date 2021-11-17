@@ -11,6 +11,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/content_creation/reactions/LightweightReactionsCoordinatorImpl.java",
     "java/src/org/chromium/chrome/browser/content_creation/reactions/LightweightReactionsDialog.java",
     "java/src/org/chromium/chrome/browser/content_creation/reactions/LightweightReactionsMediator.java",
+    "java/src/org/chromium/chrome/browser/content_creation/reactions/LightweightReactionsMetrics.java",
     "java/src/org/chromium/chrome/browser/content_creation/reactions/ReactionGifDrawable.java",
     "java/src/org/chromium/chrome/browser/content_creation/reactions/ReactionServiceFactory.java",
     "java/src/org/chromium/chrome/browser/content_creation/reactions/scene/ReactionLayout.java",

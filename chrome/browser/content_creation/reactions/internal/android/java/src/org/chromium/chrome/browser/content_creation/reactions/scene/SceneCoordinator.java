@@ -42,6 +42,13 @@ public class SceneCoordinator implements SceneEditorDelegate, ToolbarReactionsDe
     private ReactionLayout mActiveReaction;
     private RelativeLayout mSceneBackground;
 
+    private int mNbReactionsAdded;
+    private int mNbTypeChange;
+    private int mNbRotateScale;
+    private int mNbDuplicate;
+    private int mNbDelete;
+    private int mNbMove;
+
     /**
      * Constructs a new {@link SceneCoordinator}.
      *
@@ -51,6 +58,13 @@ public class SceneCoordinator implements SceneEditorDelegate, ToolbarReactionsDe
         mActivity = activity;
         mMediator = mediator;
         mReactionLayouts = new HashSet<>();
+
+        mNbReactionsAdded = 0;
+        mNbTypeChange = 0;
+        mNbRotateScale = 0;
+        mNbDuplicate = 0;
+        mNbDelete = 0;
+        mNbMove = 0;
     }
 
     public void setSceneBackground(RelativeLayout sceneBackground) {
@@ -59,6 +73,7 @@ public class SceneCoordinator implements SceneEditorDelegate, ToolbarReactionsDe
     }
 
     public void addReactionInDefaultLocation(ReactionMetadata reaction) {
+        ++mNbReactionsAdded;
         mMediator.getGifForUrl(reaction.assetUrl, (baseGifImage) -> {
             if (mSceneBackground == null) {
                 return;
@@ -161,6 +176,51 @@ public class SceneCoordinator implements SceneEditorDelegate, ToolbarReactionsDe
         markActiveStatus(mActiveReaction, false);
     }
 
+    /**
+     * Returns the total number of times (across all reactions) that the user added a new reaction
+     * to the scene.
+     */
+    public int getNbReactionsAdded() {
+        return mNbReactionsAdded;
+    }
+
+    /**
+     * Returns the total number of times (across all reactions) that the user changed an existing
+     * reaction's type.
+     */
+    public int getNbTypeChange() {
+        return mNbTypeChange;
+    }
+
+    /**
+     * Returns the total number of times (across all reactions) that the user scaled or rotated a
+     * reaction.
+     */
+    public int getNbRotateScale() {
+        return mNbRotateScale;
+    }
+
+    /**
+     * Returns the total number of times (across all reactions) that the user duplicated a reaction.
+     */
+    public int getNbDuplicate() {
+        return mNbDuplicate;
+    }
+
+    /**
+     * Returns the total number of times (across all reactions) that the user deleted a reaction.
+     */
+    public int getNbDelete() {
+        return mNbDelete;
+    }
+
+    /**
+     * Returns the total number of times (across all reactions) that the user moved a reaction.
+     */
+    public int getNbMove() {
+        return mNbMove;
+    }
+
     // SceneEditorDelegate implementation.
     @Override
     public boolean canAddReaction() {
@@ -169,6 +229,7 @@ public class SceneCoordinator implements SceneEditorDelegate, ToolbarReactionsDe
 
     @Override
     public void duplicateReaction(ReactionLayout reactionLayout) {
+        ++mNbDuplicate;
         ReactionMetadata reaction = reactionLayout.getReaction().getMetadata();
         mMediator.getGifForUrl(reaction.assetUrl, (baseGifImage) -> {
             ReactionLayout newReactionLayout = (ReactionLayout) LayoutInflaterUtils.inflate(
@@ -200,6 +261,7 @@ public class SceneCoordinator implements SceneEditorDelegate, ToolbarReactionsDe
 
     @Override
     public void removeReaction(ReactionLayout reactionLayout) {
+        ++mNbDelete;
         markActiveStatus(reactionLayout, false);
         mSceneBackground.removeView(reactionLayout);
         mReactionLayouts.remove(reactionLayout);
@@ -220,6 +282,16 @@ public class SceneCoordinator implements SceneEditorDelegate, ToolbarReactionsDe
         }
     }
 
+    @Override
+    public void reactionWasMoved() {
+        ++mNbMove;
+    }
+
+    @Override
+    public void reactionWasAdjusted() {
+        ++mNbRotateScale;
+    }
+
     // ToolbarReactionsDelegate implementation.
     @Override
     public void onToolbarReactionTapped(ReactionMetadata reaction) {
@@ -232,6 +304,7 @@ public class SceneCoordinator implements SceneEditorDelegate, ToolbarReactionsDe
 
     private void replaceActiveReaction(ReactionMetadata reaction) {
         assert mActiveReaction != null;
+        ++mNbTypeChange;
         mMediator.getGifForUrl(reaction.assetUrl, (baseGifImage) -> {
             mActiveReaction.setDrawable(
                     new ReactionGifDrawable(reaction, baseGifImage, Bitmap.Config.ARGB_8888));
