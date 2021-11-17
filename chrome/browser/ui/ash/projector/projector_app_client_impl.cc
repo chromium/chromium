@@ -46,7 +46,10 @@ void ProjectorAppClientImpl::RegisterProfilePrefs(
       user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
 }
 
-ProjectorAppClientImpl::ProjectorAppClientImpl() {
+ProjectorAppClientImpl::ProjectorAppClientImpl()
+    : pending_screencast_manager_(base::BindRepeating(
+          &ProjectorAppClientImpl::NotifyScreencastsPendingStatusChanged,
+          base::Unretained(this))) {
   if (!base::FeatureList::IsEnabled(
           ash::features::kOnDeviceSpeechRecognition)) {
     return;
@@ -88,11 +91,9 @@ void ProjectorAppClientImpl::OnNewScreencastPreconditionChanged(
     observer.OnNewScreencastPreconditionChanged(can_start);
 }
 
-// TODO(b/201468756): Implement a PendingScreencastManager to provide the set
-// of PendingScreencast.
 const std::set<ash::PendingScreencast>&
 ProjectorAppClientImpl::GetPendingScreencasts() const {
-  return pending_screencasts_;
+  return pending_screencast_manager_.GetPendingScreencasts();
 }
 
 void ProjectorAppClientImpl::NotifyScreencastsPendingStatusChanged(
