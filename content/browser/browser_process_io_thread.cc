@@ -14,6 +14,7 @@
 #include "base/threading/hang_watcher.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/trace_event/memory_dump_manager.h"
+#include "build/chromeos_buildflags.h"
 #include "content/browser/browser_child_process_host_impl.h"
 #include "content/browser/browser_thread_impl.h"
 #include "content/browser/notification_service_impl.h"
@@ -156,7 +157,7 @@ void BrowserProcessIOThread::ProcessHostCleanUp() {
 #if BUILDFLAG(CLANG_PROFILING)
       // On profiling build, browser_tests runs 10x slower.
       const int kMaxSecondsToWaitForNetworkProcess = 100;
-#elif defined(OS_CHROMEOS)
+#elif BUILDFLAG(IS_CHROMEOS_ASH)
       // ChromeOS will kill the browser process if it doesn't shut down within
       // 3 seconds, so make sure we wait for less than that.
       const int kMaxSecondsToWaitForNetworkProcess = 1;
