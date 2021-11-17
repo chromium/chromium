@@ -12,7 +12,9 @@
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/apps/app_service/app_icon/app_icon_factory.h"
 #include "chrome/browser/apps/app_service/app_icon/dip_px_util.h"
+#include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
+#include "chrome/browser/apps/app_service/launch_utils.h"
 #include "chrome/browser/apps/app_service/menu_util.h"
 #include "chrome/browser/ash/crostini/crostini_features.h"
 #include "chrome/browser/ash/crostini/crostini_package_service.h"
@@ -136,6 +138,23 @@ void CrostiniApps::LoadIcon(const std::string& app_id,
   registry_->LoadIcon(app_id, icon_key, icon_type, size_hint_in_dip,
                       allow_placeholder_icon, IDR_LOGO_CROSTINI_DEFAULT,
                       std::move(callback));
+}
+
+void CrostiniApps::LaunchAppWithParams(AppLaunchParams&& params,
+                                       LaunchCallback callback) {
+  auto event_flags = apps::GetEventFlags(params.container, params.disposition,
+                                         /*prefer_container=*/false);
+  auto window_info = apps::MakeWindowInfo(params.display_id);
+  if (params.intent) {
+    LaunchAppWithIntent(params.app_id, event_flags, std::move(params.intent),
+                        params.launch_source, std::move(window_info),
+                        base::DoNothing());
+  } else {
+    Launch(params.app_id, event_flags, params.launch_source,
+           std::move(window_info));
+  }
+  // TODO(crbug.com/1244506): Add launch return value.
+  std::move(callback).Run(LaunchResult());
 }
 
 void CrostiniApps::Connect(

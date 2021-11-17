@@ -15,6 +15,7 @@
 #include "base/scoped_observation.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/app_service/app_icon/app_icon_factory.h"
+#include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/extension_uninstaller.h"
@@ -371,6 +372,13 @@ void ExtensionAppsBase::LoadIcon(const std::string& app_id,
   LoadIconFromExtension(icon_type, size_hint_in_dip, profile_, app_id,
                         static_cast<IconEffects>(icon_key.icon_effects),
                         std::move(callback));
+}
+
+void ExtensionAppsBase::LaunchAppWithParams(AppLaunchParams&& params,
+                                            LaunchCallback callback) {
+  LaunchImpl(std::move(params));
+  // TODO(crbug.com/1244506): Add launch return value.
+  std::move(callback).Run(LaunchResult());
 }
 
 void ExtensionAppsBase::Connect(

@@ -13,7 +13,6 @@
 #include "base/scoped_observation.h"
 #include "chrome/browser/apps/app_service/app_icon/app_icon_factory.h"
 #include "chrome/browser/apps/app_service/app_icon/icon_key_util.h"
-#include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/apps/app_service/publishers/app_publisher.h"
 #include "components/services/app_service/public/cpp/publisher_base.h"
 #include "components/services/app_service/public/mojom/app_service.mojom.h"
@@ -38,6 +37,8 @@ class ExtensionSet;
 
 namespace apps {
 class ExtensionAppsEnableFlow;
+
+struct AppLaunchParams;
 
 // An app base publisher (in the App Service sense) of extension-backed apps,
 // including Chrome Apps (platform apps and legacy packaged apps) and hosted
@@ -138,6 +139,8 @@ class ExtensionAppsBase : public apps::PublisherBase,
                 int32_t size_hint_in_dip,
                 bool allow_placeholder_icon,
                 apps::LoadIconCallback callback) override;
+  void LaunchAppWithParams(AppLaunchParams&& params,
+                           LaunchCallback callback) override;
 
   // apps::mojom::Publisher overrides.
   void Connect(mojo::PendingRemote<apps::mojom::Subscriber> subscriber_remote,

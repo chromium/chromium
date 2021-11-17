@@ -28,6 +28,8 @@ namespace apps {
 
 class PublisherHost;
 
+struct AppLaunchParams;
+
 // An app publisher (in the App Service sense) of Borealis apps.
 // See components/services/app_service/README.md.
 //
@@ -72,6 +74,8 @@ class BorealisApps
                 int32_t size_hint_in_dip,
                 bool allow_placeholder_icon,
                 apps::LoadIconCallback callback) override;
+  void LaunchAppWithParams(AppLaunchParams&& params,
+                           LaunchCallback callback) override;
 
   // apps::PublisherBase overrides.
   void Connect(mojo::PendingRemote<apps::mojom::Subscriber> subscriber_remote,

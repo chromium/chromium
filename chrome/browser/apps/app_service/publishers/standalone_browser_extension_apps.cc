@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/callback_helpers.h"
+#include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/intent_util.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
@@ -64,6 +65,18 @@ void StandaloneBrowserExtensionApps::LoadIcon(const std::string& app_id,
 
   controller_->LoadIcon(app_id, ConvertIconKeyToMojomIconKey(icon_key),
                         icon_type, size_hint_in_dip, std::move(callback));
+}
+
+void StandaloneBrowserExtensionApps::LaunchAppWithParams(
+    AppLaunchParams&& params,
+    LaunchCallback callback) {
+  if (!controller_.is_bound()) {
+    std::move(callback).Run(LaunchResult());
+    return;
+  }
+
+  // TODO(crbug.com/1244506): Add params on crosapi and implement this.
+  std::move(callback).Run(LaunchResult());
 }
 
 void StandaloneBrowserExtensionApps::Connect(

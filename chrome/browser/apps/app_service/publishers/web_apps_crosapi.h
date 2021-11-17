@@ -30,6 +30,8 @@ namespace apps {
 
 class StandaloneBrowserPublisherTest;
 
+struct AppLaunchParams;
+
 // An app publisher for crosapi web apps. This is a proxy publisher that lives
 // in ash-chrome, and the apps will be published over crosapi. This proxy
 // publisher will also handle reconnection when the crosapi connection drops.
@@ -65,6 +67,8 @@ class WebAppsCrosapi : public KeyedService,
                 int32_t size_hint_in_dip,
                 bool allow_placeholder_icon,
                 apps::LoadIconCallback callback) override;
+  void LaunchAppWithParams(AppLaunchParams&& params,
+                           LaunchCallback callback) override;
 
   // apps::PublisherBase overrides.
   void Connect(mojo::PendingRemote<apps::mojom::Subscriber> subscriber_remote,

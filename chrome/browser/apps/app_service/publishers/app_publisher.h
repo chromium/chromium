@@ -15,6 +15,14 @@
 
 namespace apps {
 
+struct AppLaunchParams;
+
+struct LaunchResult {
+  base::UnguessableToken instance_id;
+};
+
+using LaunchCallback = base::OnceCallback<void(LaunchResult&&)>;
+
 // AppPublisher parent class (in the App Service sense) for all app publishers.
 // See components/services/app_service/README.md.
 //
@@ -61,6 +69,15 @@ class AppPublisher {
                         int32_t size_hint_in_dip,
                         bool allow_placeholder_icon,
                         LoadIconCallback callback) = 0;
+
+  // Launches an app with |params|.
+  //
+  // Publishers implementing this method should:
+  // - Launch the app represent by the |params.app_id|.
+  // - Launch the app with all the params that is applicable to the platform.
+  // - Return launch_result if applicable.
+  virtual void LaunchAppWithParams(AppLaunchParams&& params,
+                                   LaunchCallback callback) = 0;
 
  protected:
   // Publish one `app` to AppServiceProxy. Should be called whenever the app

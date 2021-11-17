@@ -13,6 +13,7 @@
 #include "ash/public/cpp/keyboard_shortcut_viewer.h"
 #include "base/time/time.h"
 #include "chrome/browser/apps/app_service/app_icon/app_icon_factory.h"
+#include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/menu_util.h"
 #include "chrome/browser/apps/app_service/metrics/app_service_metrics.h"
@@ -128,6 +129,14 @@ void BuiltInChromeOsApps::LoadIcon(const std::string& app_id,
   }
   // On failure, we still run the callback, with an empty IconValue.
   std::move(callback).Run(std::make_unique<IconValue>());
+}
+
+void BuiltInChromeOsApps::LaunchAppWithParams(AppLaunchParams&& params,
+                                              LaunchCallback callback) {
+  Launch(params.app_id, ui::EF_NONE, apps::mojom::LaunchSource::kUnknown,
+         nullptr);
+  // TODO(crbug.com/1244506): Add launch return value.
+  std::move(callback).Run(LaunchResult());
 }
 
 void BuiltInChromeOsApps::Connect(

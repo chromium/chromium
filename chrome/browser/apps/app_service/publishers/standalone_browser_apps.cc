@@ -10,6 +10,7 @@
 #include "base/bind.h"
 #include "build/branding_buildflags.h"
 #include "chrome/browser/apps/app_service/app_icon/app_icon_factory.h"
+#include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/browser_app_instance_registry.h"
 #include "chrome/browser/apps/app_service/menu_util.h"
@@ -124,6 +125,14 @@ void StandaloneBrowserApps::LoadIcon(const std::string& app_id,
                        /*is_placeholder_icon=*/false,
                        static_cast<IconEffects>(icon_key.icon_effects),
                        std::move(callback));
+}
+
+void StandaloneBrowserApps::LaunchAppWithParams(AppLaunchParams&& params,
+                                                LaunchCallback callback) {
+  Launch(params.app_id, ui::EF_NONE, apps::mojom::LaunchSource::kUnknown,
+         nullptr);
+  // TODO(crbug.com/1244506): Add launch return value.
+  std::move(callback).Run(LaunchResult());
 }
 
 void StandaloneBrowserApps::Connect(

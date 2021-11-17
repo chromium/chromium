@@ -13,6 +13,7 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "chrome/browser/apps/app_service/app_icon/app_icon_factory.h"
+#include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/browser_app_instance_registry.h"
@@ -75,6 +76,16 @@ void WebAppsCrosapi::LoadIcon(const std::string& app_id,
       size_hint_in_dip,
       base::BindOnce(&WebAppsCrosapi::OnLoadIcon, weak_factory_.GetWeakPtr(),
                      icon_effects, size_hint_in_dip, std::move(callback)));
+}
+
+void WebAppsCrosapi::LaunchAppWithParams(AppLaunchParams&& params,
+                                         LaunchCallback callback) {
+  if (!LogIfNotConnected(FROM_HERE)) {
+    std::move(callback).Run(LaunchResult());
+    return;
+  }
+  // TODO(crbug.com/1244506): Add params on crosapi and implement this.
+  std::move(callback).Run(LaunchResult());
 }
 
 void WebAppsCrosapi::Connect(

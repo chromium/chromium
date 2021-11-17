@@ -21,6 +21,7 @@
 #include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/apps/app_service/app_icon/dip_px_util.h"
+#include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/file_utils.h"
@@ -660,6 +661,23 @@ void ArcApps::LoadIcon(const std::string& app_id,
         base::BindOnce(&OnArcAppIconCompletelyLoaded, icon_type,
                        size_hint_in_dip, icon_effects, std::move(callback)));
   }
+}
+
+void ArcApps::LaunchAppWithParams(AppLaunchParams&& params,
+                                  LaunchCallback callback) {
+  auto event_flags = apps::GetEventFlags(params.container, params.disposition,
+                                         /*prefer_container=*/false);
+  auto window_info = apps::MakeWindowInfo(params.display_id);
+  if (params.intent) {
+    LaunchAppWithIntent(params.app_id, event_flags, std::move(params.intent),
+                        params.launch_source, std::move(window_info),
+                        base::DoNothing());
+  } else {
+    Launch(params.app_id, event_flags, params.launch_source,
+           std::move(window_info));
+  }
+  // TODO(crbug.com/1244506): Add launch return value.
+  std::move(callback).Run(LaunchResult());
 }
 
 void ArcApps::Connect(

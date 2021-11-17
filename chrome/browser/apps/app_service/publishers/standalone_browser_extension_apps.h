@@ -23,6 +23,7 @@
 class StandaloneBrowserPublisherTest;
 
 namespace apps {
+struct AppLaunchParams;
 
 // An app publisher (in the App Service sense) for extension-based apps [e.g.
 // packaged v2 apps] published by Lacros.
@@ -76,6 +77,8 @@ class StandaloneBrowserExtensionApps : public KeyedService,
                 int32_t size_hint_in_dip,
                 bool allow_placeholder_icon,
                 apps::LoadIconCallback callback) override;
+  void LaunchAppWithParams(AppLaunchParams&& params,
+                           LaunchCallback callback) override;
 
   // apps::PublisherBase:
   void Connect(mojo::PendingRemote<apps::mojom::Subscriber> subscriber_remote,

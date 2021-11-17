@@ -8,6 +8,7 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "chrome/browser/apps/app_service/app_icon/app_icon_factory.h"
+#include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/menu_util.h"
 #include "chrome/browser/ash/borealis/borealis_app_launcher.h"
@@ -248,6 +249,14 @@ void BorealisApps::LoadIcon(const std::string& app_id,
   Registry()->LoadIcon(app_id, icon_key, icon_type, size_hint_in_dip,
                        allow_placeholder_icon, IconKey::kInvalidResourceId,
                        std::move(callback));
+}
+
+void BorealisApps::LaunchAppWithParams(AppLaunchParams&& params,
+                                       LaunchCallback callback) {
+  Launch(params.app_id, ui::EF_NONE, apps::mojom::LaunchSource::kUnknown,
+         nullptr);
+  // TODO(crbug.com/1244506): Add launch return value.
+  std::move(callback).Run(LaunchResult());
 }
 
 void BorealisApps::Connect(

@@ -143,6 +143,13 @@ void WebApps::LoadIcon(const std::string& app_id,
                               std::move(callback));
 }
 
+void WebApps::LaunchAppWithParams(apps::AppLaunchParams&& params,
+                                  apps::LaunchCallback callback) {
+  publisher_helper().LaunchAppWithParams(std::move(params));
+  // TODO(crbug.com/1244506): Add launch return value.
+  std::move(callback).Run(apps::LaunchResult());
+}
+
 void WebApps::Connect(
     mojo::PendingRemote<apps::mojom::Subscriber> subscriber_remote,
     apps::mojom::ConnectOptionsPtr opts) {

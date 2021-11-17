@@ -12,6 +12,7 @@
 #include "base/metrics/user_metrics.h"
 #include "base/time/time.h"
 #include "chrome/browser/apps/app_service/app_icon/app_icon_factory.h"
+#include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/menu_util.h"
 #include "chrome/browser/apps/app_service/metrics/app_service_metrics.h"
@@ -242,6 +243,14 @@ void PluginVmApps::LoadIcon(const std::string& app_id,
                       size_hint_in_dip, allow_placeholder_icon,
                       apps::mojom::IconKey::kInvalidResourceId,
                       IconValueToMojomIconValueCallback(std::move(callback)));
+}
+
+void PluginVmApps::LaunchAppWithParams(AppLaunchParams&& params,
+                                       LaunchCallback callback) {
+  Launch(params.app_id, ui::EF_NONE, apps::mojom::LaunchSource::kUnknown,
+         nullptr);
+  // TODO(crbug.com/1244506): Add launch return value.
+  std::move(callback).Run(LaunchResult());
 }
 
 void PluginVmApps::Launch(const std::string& app_id,

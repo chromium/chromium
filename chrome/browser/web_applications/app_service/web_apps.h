@@ -35,6 +35,7 @@ enum class WebappUninstallSource;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 namespace apps {
 class InstanceRegistry;
+struct AppLaunchParams;
 }
 #endif
 
@@ -86,6 +87,8 @@ class WebApps : public apps::PublisherBase,
                 int32_t size_hint_in_dip,
                 bool allow_placeholder_icon,
                 apps::LoadIconCallback callback) override;
+  void LaunchAppWithParams(apps::AppLaunchParams&& params,
+                           apps::LaunchCallback callback) override;
 
   // apps::mojom::Publisher overrides.
   void Connect(mojo::PendingRemote<apps::mojom::Subscriber> subscriber_remote,

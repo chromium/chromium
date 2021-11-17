@@ -21,6 +21,8 @@ namespace apps {
 
 class PublisherHost;
 
+struct AppLaunchParams;
+
 // An app publisher (in the App Service sense) of built-in Chrome OS apps.
 //
 // See components/services/app_service/README.md.
@@ -47,6 +49,8 @@ class BuiltInChromeOsApps : public apps::PublisherBase, public AppPublisher {
                 int32_t size_hint_in_dip,
                 bool allow_placeholder_icon,
                 apps::LoadIconCallback callback) override;
+  void LaunchAppWithParams(AppLaunchParams&& params,
+                           LaunchCallback callback) override;
 
   // apps::mojom::Publisher overrides.
   void Connect(mojo::PendingRemote<apps::mojom::Subscriber> subscriber_remote,

@@ -8,6 +8,7 @@
 
 #include "base/callback.h"
 #include "chrome/browser/apps/app_service/app_icon/app_icon_factory.h"
+#include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "ui/gfx/image/image_skia.h"
 
@@ -118,6 +119,14 @@ void RemoteApps::LoadIcon(const std::string& app_id,
                                  : IconEffects::kResizeAndPad;
   ApplyIconEffects(icon_effects, size_hint_in_dip, std::move(icon),
                    std::move(callback));
+}
+
+void RemoteApps::LaunchAppWithParams(AppLaunchParams&& params,
+                                     LaunchCallback callback) {
+  Launch(params.app_id, ui::EF_NONE, apps::mojom::LaunchSource::kUnknown,
+         nullptr);
+  // TODO(crbug.com/1244506): Add launch return value.
+  std::move(callback).Run(LaunchResult());
 }
 
 void RemoteApps::Connect(
