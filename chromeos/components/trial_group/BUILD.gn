@@ -12,7 +12,6 @@ component("trial_group") {
 
   deps = [
     "//base",
-    "//content/public/browser",
     "//net",
     "//services/network/public/cpp",
     "//services/network/public/cpp:cpp_base",
@@ -31,7 +30,6 @@ source_set("unit_tests") {
   deps = [
     ":trial_group",
     "//base",
-    "//content/test:test_support",
     "//net:test_support",
     "//services/network:test_support",
     "//testing/gtest",

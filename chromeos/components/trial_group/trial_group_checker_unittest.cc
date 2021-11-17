@@ -4,7 +4,7 @@
 
 #include "chromeos/components/trial_group/trial_group_checker.h"
 
-#include "content/public/test/browser_task_environment.h"
+#include "base/test/task_environment.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
@@ -22,7 +22,7 @@ namespace trial_group {
 class TrialGroupCheckerTest : public testing::Test {
  public:
   TrialGroupCheckerTest()
-      : task_environment_(content::BrowserTaskEnvironment::IO_MAINLOOP),
+      : task_environment_(base::test::TaskEnvironment::MainThreadType::IO),
         test_shared_loader_factory_(
             base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
                 &test_url_loader_factory_)) {}
@@ -36,7 +36,7 @@ class TrialGroupCheckerTest : public testing::Test {
   }
 
   std::unique_ptr<net::test_server::EmbeddedTestServer> test_server_;
-  content::BrowserTaskEnvironment task_environment_;
+  base::test::TaskEnvironment task_environment_;
 
   network::TestURLLoaderFactory test_url_loader_factory_;
   scoped_refptr<network::SharedURLLoaderFactory> test_shared_loader_factory_;

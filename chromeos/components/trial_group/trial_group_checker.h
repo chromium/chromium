@@ -10,7 +10,6 @@
 #include "base/callback.h"
 #include "base/component_export.h"
 #include "base/memory/weak_ptr.h"
-#include "content/public/browser/browser_context.h"
 #include "url/gurl.h"
 
 namespace network {
