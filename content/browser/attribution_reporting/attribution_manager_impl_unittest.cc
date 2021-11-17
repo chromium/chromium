@@ -38,12 +38,17 @@ namespace content {
 
 namespace {
 
+using CreateReportResult = ::content::AttributionStorage::CreateReportResult;
 using CreateReportStatus =
     ::content::AttributionStorage::CreateReportResult::Status;
 using DeactivatedSource = ::content::AttributionStorage::DeactivatedSource;
 
 using ::testing::ElementsAre;
+using ::testing::Field;
 using ::testing::IsEmpty;
+using ::testing::Optional;
+using ::testing::Property;
+using ::testing::SizeIs;
 
 constexpr base::TimeDelta kExpiredReportOffset = base::Minutes(2);
 
@@ -215,7 +220,7 @@ class AttributionManagerImplTest : public testing::Test {
     base::RunLoop impression_loop;
     auto get_impressions_callback = base::BindLambdaForTesting(
         [&](std::vector<StorableSource> impressions) {
-          EXPECT_EQ(expected_num_impressions, impressions.size());
+          EXPECT_THAT(impressions, SizeIs(expected_num_impressions));
           impression_loop.Quit();
         });
     attribution_manager_->GetActiveSourcesForWebUI(
@@ -227,7 +232,7 @@ class AttributionManagerImplTest : public testing::Test {
     base::RunLoop report_loop;
     auto reports_callback =
         base::BindLambdaForTesting([&](std::vector<AttributionReport> reports) {
-          EXPECT_EQ(expected_num_reports, reports.size());
+          EXPECT_THAT(reports, SizeIs(expected_num_reports));
           report_loop.Quit();
         });
     attribution_manager_->GetPendingReportsForWebUI(
@@ -273,7 +278,7 @@ TEST_F(AttributionManagerImplTest, ExpiredImpression_NotReturnedToWebUI) {
   base::RunLoop run_loop;
   auto get_impressions_callback =
       base::BindLambdaForTesting([&](std::vector<StorableSource> impressions) {
-        EXPECT_TRUE(impressions.empty());
+        EXPECT_THAT(impressions, IsEmpty());
         run_loop.Quit();
       });
   attribution_manager_->GetActiveSourcesForWebUI(
@@ -547,10 +552,15 @@ TEST_F(AttributionManagerImplTest, QueuedReportSent_ObserversNotified) {
   task_environment_.FastForwardBy(kFirstReportingWindow -
                                   kAttributionManagerQueueReportsInterval);
 
-  const auto& sent_reports = observer.sent_reports();
-  EXPECT_EQ(2u, sent_reports.size());
-  EXPECT_EQ(1u, sent_reports[0].report.impression.source_event_id());
-  EXPECT_EQ(3u, sent_reports[1].report.impression.source_event_id());
+  EXPECT_THAT(
+      observer.sent_reports(),
+      ElementsAre(
+          Field(&SentReportInfo::report,
+                Field(&AttributionReport::impression,
+                      Property(&StorableSource::source_event_id, 1u))),
+          Field(&SentReportInfo::report,
+                Field(&AttributionReport::impression,
+                      Property(&StorableSource::source_event_id, 3u)))));
 
   // kSent = 0.
   histograms.ExpectBucketCount("Conversion.ReportSendOutcome", 0, 2);
@@ -576,7 +586,7 @@ TEST_F(AttributionManagerImplTest, DroppedReport_ObserversNotified) {
     attribution_manager_->HandleTrigger(
         TriggerBuilder().SetPriority(i).Build());
     ExpectNumStoredReports(i);
-    EXPECT_EQ(0u, observer.dropped_reports().size());
+    EXPECT_THAT(observer.dropped_reports(), IsEmpty());
   }
 
   {
@@ -584,11 +594,13 @@ TEST_F(AttributionManagerImplTest, DroppedReport_ObserversNotified) {
     attribution_manager_->HandleTrigger(
         TriggerBuilder().SetPriority(4).Build());
     ExpectNumStoredReports(3);
-    const auto& dropped_reports = observer.dropped_reports();
-    EXPECT_EQ(1u, dropped_reports.size());
-    EXPECT_EQ(1, dropped_reports[0].dropped_report()->priority);
-    EXPECT_EQ(CreateReportStatus::kSuccessDroppedLowerPriority,
-              dropped_reports[0].status());
+    EXPECT_THAT(
+        observer.dropped_reports(),
+        ElementsAre(
+            AllOf(Property(&CreateReportResult::dropped_report,
+                           Optional(Field(&AttributionReport::priority, 1))),
+                  Property(&CreateReportResult::status,
+                           CreateReportStatus::kSuccessDroppedLowerPriority))));
   }
 
   {
@@ -597,13 +609,17 @@ TEST_F(AttributionManagerImplTest, DroppedReport_ObserversNotified) {
     attribution_manager_->HandleTrigger(
         TriggerBuilder().SetPriority(-5).Build());
     ExpectNumStoredReports(3);
-    const auto& dropped_reports = observer.dropped_reports();
-    EXPECT_EQ(2u, dropped_reports.size());
-    EXPECT_EQ(1, dropped_reports[0].dropped_report()->priority);
-    EXPECT_EQ(CreateReportStatus::kSuccessDroppedLowerPriority,
-              dropped_reports[0].status());
-    EXPECT_EQ(-5, dropped_reports[1].dropped_report()->priority);
-    EXPECT_EQ(CreateReportStatus::kPriorityTooLow, dropped_reports[1].status());
+    EXPECT_THAT(
+        observer.dropped_reports(),
+        ElementsAre(
+            AllOf(Property(&CreateReportResult::dropped_report,
+                           Optional(Field(&AttributionReport::priority, 1))),
+                  Property(&CreateReportResult::status,
+                           CreateReportStatus::kSuccessDroppedLowerPriority)),
+            AllOf(Property(&CreateReportResult::dropped_report,
+                           Optional(Field(&AttributionReport::priority, -5))),
+                  Property(&CreateReportResult::status,
+                           CreateReportStatus::kPriorityTooLow))));
   }
 
   {
@@ -613,19 +629,25 @@ TEST_F(AttributionManagerImplTest, DroppedReport_ObserversNotified) {
     attribution_manager_->HandleTrigger(
         TriggerBuilder().SetPriority(6).Build());
     ExpectNumStoredReports(3);
-    const auto& dropped_reports = observer.dropped_reports();
-    EXPECT_EQ(4u, dropped_reports.size());
-    EXPECT_EQ(1, dropped_reports[0].dropped_report()->priority);
-    EXPECT_EQ(CreateReportStatus::kSuccessDroppedLowerPriority,
-              dropped_reports[0].status());
-    EXPECT_EQ(-5, dropped_reports[1].dropped_report()->priority);
-    EXPECT_EQ(CreateReportStatus::kPriorityTooLow, dropped_reports[1].status());
-    EXPECT_EQ(2, dropped_reports[2].dropped_report()->priority);
-    EXPECT_EQ(CreateReportStatus::kSuccessDroppedLowerPriority,
-              dropped_reports[2].status());
-    EXPECT_EQ(3, dropped_reports[3].dropped_report()->priority);
-    EXPECT_EQ(CreateReportStatus::kSuccessDroppedLowerPriority,
-              dropped_reports[3].status());
+    EXPECT_THAT(
+        observer.dropped_reports(),
+        ElementsAre(
+            AllOf(Property(&CreateReportResult::dropped_report,
+                           Optional(Field(&AttributionReport::priority, 1))),
+                  Property(&CreateReportResult::status,
+                           CreateReportStatus::kSuccessDroppedLowerPriority)),
+            AllOf(Property(&CreateReportResult::dropped_report,
+                           Optional(Field(&AttributionReport::priority, -5))),
+                  Property(&CreateReportResult::status,
+                           CreateReportStatus::kPriorityTooLow)),
+            AllOf(Property(&CreateReportResult::dropped_report,
+                           Optional(Field(&AttributionReport::priority, 2))),
+                  Property(&CreateReportResult::status,
+                           CreateReportStatus::kSuccessDroppedLowerPriority)),
+            AllOf(Property(&CreateReportResult::dropped_report,
+                           Optional(Field(&AttributionReport::priority, 3))),
+                  Property(&CreateReportResult::status,
+                           CreateReportStatus::kSuccessDroppedLowerPriority))));
   }
 }
 

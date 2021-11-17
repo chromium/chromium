@@ -5,7 +5,6 @@
 #include "content/browser/attribution_reporting/attribution_policy.h"
 
 #include <memory>
-#include <vector>
 
 #include "base/time/time.h"
 #include "content/browser/attribution_reporting/attribution_test_utils.h"

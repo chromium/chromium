@@ -33,12 +33,18 @@ namespace content {
 
 namespace {
 
+using CreateReportResult = ::content::AttributionStorage::CreateReportResult;
 using CreateReportStatus =
     ::content::AttributionStorage::CreateReportResult::Status;
 using DeactivatedSource = ::content::AttributionStorage::DeactivatedSource;
 
+using ::testing::AllOf;
 using ::testing::ElementsAre;
+using ::testing::Field;
 using ::testing::IsEmpty;
+using ::testing::IsTrue;
+using ::testing::Property;
+using ::testing::SizeIs;
 
 // Default max number of conversions for a single impression for testing.
 const int kMaxConversions = 3;
@@ -85,8 +91,8 @@ class AttributionStorageTest : public testing::Test {
     return storage_->MaybeCreateAndStoreReport(conversion).status();
   }
 
-  void DeleteReports(std::vector<AttributionReport> reports) {
-    for (auto report : reports) {
+  void DeleteReports(const std::vector<AttributionReport>& reports) {
+    for (const auto& report : reports) {
       EXPECT_TRUE(storage_->DeleteReport(*report.conversion_id));
     }
   }
@@ -124,8 +130,8 @@ TEST_F(AttributionStorageTest,
       storage->StoreSource(SourceBuilder(clock()->Now()).Build()));
   EXPECT_EQ(CreateReportStatus::kNoMatchingImpressions,
             storage->MaybeCreateAndStoreReport(DefaultTrigger()).status());
-  EXPECT_TRUE(storage->GetAttributionsToReport(clock()->Now()).empty());
-  EXPECT_TRUE(storage->GetActiveSources().empty());
+  EXPECT_THAT(storage->GetAttributionsToReport(clock()->Now()), IsEmpty());
+  EXPECT_THAT(storage->GetActiveSources(), IsEmpty());
   EXPECT_TRUE(storage->DeleteReport(AttributionReport::Id(0)));
   EXPECT_NO_FATAL_FAILURE(storage->ClearData(
       base::Time::Min(), base::Time::Max(), base::NullCallback()));
@@ -134,9 +140,7 @@ TEST_F(AttributionStorageTest,
 TEST_F(AttributionStorageTest, ImpressionStoredAndRetrieved_ValuesIdentical) {
   auto impression = SourceBuilder(clock()->Now()).Build();
   storage()->StoreSource(impression);
-  std::vector<StorableSource> stored_impressions =
-      storage()->GetActiveSources();
-  EXPECT_THAT(stored_impressions, ElementsAre(impression));
+  EXPECT_THAT(storage()->GetActiveSources(), ElementsAre(impression));
 }
 
 #if defined(OS_ANDROID)
@@ -149,11 +153,9 @@ TEST_F(AttributionStorageTest,
                             GURL("android-app:com.any.app")))
                         .Build();
   storage()->StoreSource(impression);
-  std::vector<StorableSource> stored_impressions =
-      storage()->GetActiveSources();
 
   // Verify that each field was stored as expected.
-  EXPECT_THAT(stored_impressions, ElementsAre(impression));
+  EXPECT_THAT(storage()->GetActiveSources(), ElementsAre(impression));
 }
 #endif
 
@@ -161,7 +163,7 @@ TEST_F(AttributionStorageTest,
        GetWithNoMatchingImpressions_NoImpressionsReturned) {
   EXPECT_EQ(CreateReportStatus::kNoMatchingImpressions,
             MaybeCreateAndStoreReport(DefaultTrigger()));
-  EXPECT_TRUE(storage()->GetAttributionsToReport(clock()->Now()).empty());
+  EXPECT_THAT(storage()->GetAttributionsToReport(clock()->Now()), IsEmpty());
 }
 
 TEST_F(AttributionStorageTest, GetWithMatchingImpression_ImpressionReturned) {
@@ -203,10 +205,8 @@ TEST_F(AttributionStorageTest, EventSourceImpressionsForConversion_Converts) {
 
   clock()->Advance(base::Milliseconds(kReportTime));
 
-  std::vector<AttributionReport> actual_reports =
-      storage()->GetAttributionsToReport(clock()->Now());
-  EXPECT_EQ(1u, actual_reports.size());
-  EXPECT_EQ(456u, actual_reports[0].trigger_data);
+  EXPECT_THAT(storage()->GetAttributionsToReport(clock()->Now()),
+              ElementsAre(Field(&AttributionReport::trigger_data, 456u)));
 }
 
 TEST_F(AttributionStorageTest, ImpressionExpired_NoConversionsStored) {
@@ -243,10 +243,12 @@ TEST_F(AttributionStorageTest,
   }
 
   // No additional conversion reports should be created.
-  auto result = storage()->MaybeCreateAndStoreReport(DefaultTrigger());
-  EXPECT_EQ(CreateReportStatus::kPriorityTooLow, result.status());
-  EXPECT_TRUE(result.dropped_report().has_value());
-  EXPECT_EQ(absl::nullopt, result.GetDeactivatedSource());
+  EXPECT_THAT(storage()->MaybeCreateAndStoreReport(DefaultTrigger()),
+              AllOf(Property(&CreateReportResult::status,
+                             CreateReportStatus::kPriorityTooLow),
+                    Property(&CreateReportResult::dropped_report, IsTrue()),
+                    Property(&CreateReportResult::GetDeactivatedSource,
+                             absl::nullopt)));
 }
 
 TEST_F(AttributionStorageTest, OneConversion_OneReportScheduled) {
@@ -261,9 +263,8 @@ TEST_F(AttributionStorageTest, OneConversion_OneReportScheduled) {
 
   clock()->Advance(base::Milliseconds(kReportTime));
 
-  std::vector<AttributionReport> actual_reports =
-      storage()->GetAttributionsToReport(clock()->Now());
-  EXPECT_THAT(actual_reports, ElementsAre(expected_report));
+  EXPECT_THAT(storage()->GetAttributionsToReport(clock()->Now()),
+              ElementsAre(expected_report));
 }
 
 TEST_F(AttributionStorageTest,
@@ -278,7 +279,7 @@ TEST_F(AttributionStorageTest,
 
   clock()->Advance(base::Milliseconds(kReportTime));
 
-  EXPECT_EQ(0u, storage()->GetAttributionsToReport(clock()->Now()).size());
+  EXPECT_THAT(storage()->GetAttributionsToReport(clock()->Now()), IsEmpty());
 }
 
 TEST_F(AttributionStorageTest,
@@ -293,7 +294,7 @@ TEST_F(AttributionStorageTest,
 
   clock()->Advance(base::Milliseconds(kReportTime));
 
-  EXPECT_EQ(0u, storage()->GetAttributionsToReport(clock()->Now()).size());
+  EXPECT_THAT(storage()->GetAttributionsToReport(clock()->Now()), IsEmpty());
 }
 
 TEST_F(AttributionStorageTest, ConversionReportDeleted_RemovedFromStorage) {
@@ -305,10 +306,10 @@ TEST_F(AttributionStorageTest, ConversionReportDeleted_RemovedFromStorage) {
 
   std::vector<AttributionReport> reports =
       storage()->GetAttributionsToReport(clock()->Now());
-  EXPECT_EQ(1u, reports.size());
+  EXPECT_THAT(reports, SizeIs(1));
   DeleteReports(reports);
 
-  EXPECT_TRUE(storage()->GetAttributionsToReport(clock()->Now()).empty());
+  EXPECT_THAT(storage()->GetAttributionsToReport(clock()->Now()), IsEmpty());
 }
 
 TEST_F(AttributionStorageTest,
@@ -343,10 +344,10 @@ TEST_F(AttributionStorageTest,
 
   // The first impression should be active because even though
   // <reporting_origin, conversion_origin> matches, it has not converted yet.
-  EXPECT_EQ(2u, storage()->GetActiveSources().size());
+  EXPECT_THAT(storage()->GetActiveSources(), SizeIs(2));
   EXPECT_EQ(CreateReportStatus::kSuccess,
             MaybeCreateAndStoreReport(DefaultTrigger()));
-  EXPECT_EQ(1u, storage()->GetActiveSources().size());
+  EXPECT_THAT(storage()->GetActiveSources(), SizeIs(1));
 }
 
 // This test makes sure that when a new click is received for a given
@@ -443,10 +444,8 @@ TEST_F(
 
   clock()->Advance(base::Milliseconds(kReportTime));
 
-  std::vector<AttributionReport> actual_reports =
-      storage()->GetAttributionsToReport(clock()->Now());
-
-  EXPECT_THAT(actual_reports, ElementsAre(third_expected_conversion));
+  EXPECT_THAT(storage()->GetAttributionsToReport(clock()->Now()),
+              ElementsAre(third_expected_conversion));
 }
 
 TEST_F(AttributionStorageTest,
@@ -467,13 +466,13 @@ TEST_F(AttributionStorageTest,
   // Advance to the first impression's report time and verify only its report is
   // available.
   clock()->Advance(base::Milliseconds(kReportTime - 6));
-  EXPECT_EQ(0u, storage()->GetAttributionsToReport(clock()->Now()).size());
+  EXPECT_THAT(storage()->GetAttributionsToReport(clock()->Now()), IsEmpty());
 
   clock()->Advance(base::Milliseconds(3));
-  EXPECT_EQ(0u, storage()->GetAttributionsToReport(clock()->Now()).size());
+  EXPECT_THAT(storage()->GetAttributionsToReport(clock()->Now()), IsEmpty());
 
   clock()->Advance(base::Milliseconds(3));
-  EXPECT_EQ(1u, storage()->GetAttributionsToReport(clock()->Now()).size());
+  EXPECT_THAT(storage()->GetAttributionsToReport(clock()->Now()), SizeIs(1));
 }
 
 TEST_F(AttributionStorageTest,
@@ -501,11 +500,9 @@ TEST_F(AttributionStorageTest, MaxImpressionsPerOrigin_LimitsStorage) {
   storage()->StoreSource(
       SourceBuilder(clock()->Now()).SetSourceEventId(7).Build());
 
-  std::vector<StorableSource> stored_impressions =
-      storage()->GetActiveSources();
-  EXPECT_EQ(2u, stored_impressions.size());
-  EXPECT_EQ(3u, stored_impressions[0].source_event_id());
-  EXPECT_EQ(5u, stored_impressions[1].source_event_id());
+  EXPECT_THAT(storage()->GetActiveSources(),
+              ElementsAre(Property(&StorableSource::source_event_id, 3u),
+                          Property(&StorableSource::source_event_id, 5u)));
 }
 
 TEST_F(AttributionStorageTest, MaxImpressionsPerOrigin_PerOriginNotSite) {
@@ -526,12 +523,10 @@ TEST_F(AttributionStorageTest, MaxImpressionsPerOrigin_PerOriginNotSite) {
                              .SetSourceEventId(7)
                              .Build());
 
-  std::vector<StorableSource> stored_impressions =
-      storage()->GetActiveSources();
-  EXPECT_EQ(3u, stored_impressions.size());
-  EXPECT_EQ(3u, stored_impressions[0].source_event_id());
-  EXPECT_EQ(5u, stored_impressions[1].source_event_id());
-  EXPECT_EQ(7u, stored_impressions[2].source_event_id());
+  EXPECT_THAT(storage()->GetActiveSources(),
+              ElementsAre(Property(&StorableSource::source_event_id, 3u),
+                          Property(&StorableSource::source_event_id, 5u),
+                          Property(&StorableSource::source_event_id, 7u)));
 
   // This impression shouldn't be stored, because its origin has already hit the
   // limit of 2.
@@ -548,12 +543,11 @@ TEST_F(AttributionStorageTest, MaxImpressionsPerOrigin_PerOriginNotSite) {
                              .SetSourceEventId(11)
                              .Build());
 
-  stored_impressions = storage()->GetActiveSources();
-  EXPECT_EQ(4u, stored_impressions.size());
-  EXPECT_EQ(3u, stored_impressions[0].source_event_id());
-  EXPECT_EQ(5u, stored_impressions[1].source_event_id());
-  EXPECT_EQ(7u, stored_impressions[2].source_event_id());
-  EXPECT_EQ(11u, stored_impressions[3].source_event_id());
+  EXPECT_THAT(storage()->GetActiveSources(),
+              ElementsAre(Property(&StorableSource::source_event_id, 3u),
+                          Property(&StorableSource::source_event_id, 5u),
+                          Property(&StorableSource::source_event_id, 7u),
+                          Property(&StorableSource::source_event_id, 11u)));
 }
 
 TEST_F(AttributionStorageTest, MaxConversionsPerOrigin) {
@@ -613,7 +607,7 @@ TEST_F(AttributionStorageTest, ClearDataImpressionConversion) {
   storage()->ClearData(now - base::Minutes(20), now + base::Minutes(20),
                        GetMatcher(impression.impression_origin()));
 
-  EXPECT_TRUE(storage()->GetAttributionsToReport(base::Time::Max()).empty());
+  EXPECT_THAT(storage()->GetAttributionsToReport(base::Time::Max()), IsEmpty());
 }
 
 // The null filter should match all origins.
@@ -657,7 +651,7 @@ TEST_F(AttributionStorageTest, ClearDataNullFilter) {
 
   auto null_filter = base::RepeatingCallback<bool(const url::Origin&)>();
   storage()->ClearData(clock()->Now(), clock()->Now(), null_filter);
-  EXPECT_EQ(5u, storage()->GetAttributionsToReport(base::Time::Max()).size());
+  EXPECT_THAT(storage()->GetAttributionsToReport(base::Time::Max()), SizeIs(5));
 }
 
 TEST_F(AttributionStorageTest, ClearDataWithImpressionOutsideRange) {
@@ -671,7 +665,7 @@ TEST_F(AttributionStorageTest, ClearDataWithImpressionOutsideRange) {
             MaybeCreateAndStoreReport(conversion));
   storage()->ClearData(clock()->Now(), clock()->Now(),
                        GetMatcher(impression.impression_origin()));
-  EXPECT_TRUE(storage()->GetAttributionsToReport(base::Time::Max()).empty());
+  EXPECT_THAT(storage()->GetAttributionsToReport(base::Time::Max()), IsEmpty());
 }
 
 // Deletions with time range between the impression and conversion should not
@@ -694,9 +688,8 @@ TEST_F(AttributionStorageTest, ClearDataRangeBetweenEvents) {
   storage()->ClearData(start + base::Minutes(1), start + base::Minutes(10),
                        GetMatcher(impression.impression_origin()));
 
-  std::vector<AttributionReport> actual_reports =
-      storage()->GetAttributionsToReport(base::Time::Max());
-  EXPECT_THAT(actual_reports, ElementsAre(expected_report));
+  EXPECT_THAT(storage()->GetAttributionsToReport(base::Time::Max()),
+              ElementsAre(expected_report));
 }
 // Test that only a subset of impressions / conversions are deleted with
 // multiple impressions per conversion, if only a subset of impressions match.
@@ -721,7 +714,7 @@ TEST_F(AttributionStorageTest, ClearDataWithMultiTouch) {
   // impressions should share the origin.
   storage()->ClearData(start, start,
                        GetMatcher(impression1.impression_origin()));
-  EXPECT_EQ(1u, storage()->GetAttributionsToReport(base::Time::Max()).size());
+  EXPECT_THAT(storage()->GetAttributionsToReport(base::Time::Max()), SizeIs(1));
 }
 
 // The max time range with a null filter should delete everything.
@@ -743,7 +736,7 @@ TEST_F(AttributionStorageTest, DeleteAll) {
   storage()->ClearData(base::Time::Min(), base::Time::Max(), null_filter);
 
   // Verify that everything is deleted.
-  EXPECT_TRUE(storage()->GetAttributionsToReport(base::Time::Max()).empty());
+  EXPECT_THAT(storage()->GetAttributionsToReport(base::Time::Max()), IsEmpty());
 }
 
 // Same as the above test, but uses base::Time() instead of base::Time::Min()
@@ -766,7 +759,7 @@ TEST_F(AttributionStorageTest, DeleteAllNullDeleteBegin) {
   storage()->ClearData(base::Time(), base::Time::Max(), null_filter);
 
   // Verify that everything is deleted.
-  EXPECT_TRUE(storage()->GetAttributionsToReport(base::Time::Max()).empty());
+  EXPECT_THAT(storage()->GetAttributionsToReport(base::Time::Max()), IsEmpty());
 }
 
 TEST_F(AttributionStorageTest, MaxAttributionReportsBetweenSites) {
@@ -789,9 +782,8 @@ TEST_F(AttributionStorageTest, MaxAttributionReportsBetweenSites) {
   const AttributionReport expected_report =
       GetExpectedReport(impression, conversion);
 
-  std::vector<AttributionReport> actual_reports =
-      storage()->GetAttributionsToReport(base::Time::Max());
-  EXPECT_THAT(actual_reports, ElementsAre(expected_report, expected_report));
+  EXPECT_THAT(storage()->GetAttributionsToReport(base::Time::Max()),
+              ElementsAre(expected_report, expected_report));
 }
 
 TEST_F(AttributionStorageTest,
@@ -842,9 +834,7 @@ TEST_F(AttributionStorageTest, NeverAttributeImpression_ReportNotStored) {
 
   clock()->Advance(base::Milliseconds(kReportTime));
 
-  std::vector<AttributionReport> actual_reports =
-      storage()->GetAttributionsToReport(clock()->Now());
-  EXPECT_THAT(actual_reports, IsEmpty());
+  EXPECT_THAT(storage()->GetAttributionsToReport(clock()->Now()), IsEmpty());
 }
 
 TEST_F(AttributionStorageTest, NeverAttributeImpression_Deactivates) {
@@ -867,11 +857,11 @@ TEST_F(AttributionStorageTest, NeverAttributeImpression_Deactivates) {
 
   clock()->Advance(base::Milliseconds(kReportTime));
 
-  std::vector<AttributionReport> actual_reports =
-      storage()->GetAttributionsToReport(clock()->Now());
-  EXPECT_EQ(1u, actual_reports.size());
-  EXPECT_EQ(5u, actual_reports[0].impression.source_event_id());
-  EXPECT_EQ(7u, actual_reports[0].trigger_data);
+  EXPECT_THAT(
+      storage()->GetAttributionsToReport(clock()->Now()),
+      ElementsAre(AllOf(Field(&AttributionReport::impression,
+                              Property(&StorableSource::source_event_id, 5u)),
+                        Field(&AttributionReport::trigger_data, 7u))));
 }
 
 TEST_F(AttributionStorageTest, NeverAttributeImpression_RateLimitsNotChanged) {
@@ -906,9 +896,8 @@ TEST_F(AttributionStorageTest, NeverAttributeImpression_RateLimitsNotChanged) {
 
   clock()->Advance(base::Milliseconds(kReportTime));
 
-  std::vector<AttributionReport> actual_reports =
-      storage()->GetAttributionsToReport(clock()->Now());
-  EXPECT_THAT(actual_reports, ElementsAre(expected_report));
+  EXPECT_THAT(storage()->GetAttributionsToReport(clock()->Now()),
+              ElementsAre(expected_report));
 }
 
 TEST_F(AttributionStorageTest,
@@ -930,9 +919,7 @@ TEST_F(AttributionStorageTest,
 
   clock()->Advance(base::Milliseconds(kReportTime));
 
-  std::vector<AttributionReport> actual_reports =
-      storage()->GetAttributionsToReport(clock()->Now());
-  EXPECT_THAT(actual_reports, IsEmpty());
+  EXPECT_THAT(storage()->GetAttributionsToReport(clock()->Now()), IsEmpty());
 }
 
 TEST_F(AttributionStorageTest,
@@ -950,7 +937,7 @@ TEST_F(AttributionStorageTest,
   // The second impression's |conversion_destination| matches the first's, so it
   // doesn't add to the number of distinct values for the |impression_site|,
   // and both impressions should be stored.
-  EXPECT_EQ(2u, storage()->GetActiveSources().size());
+  EXPECT_THAT(storage()->GetActiveSources(), SizeIs(2));
 }
 
 TEST_F(
@@ -975,7 +962,7 @@ TEST_F(
   // The two impressions together have 2 distinct |conversion_destination|
   // values, but they are independent because they vary by |impression_site|, so
   // both should be stored.
-  EXPECT_EQ(2u, storage()->GetActiveSources().size());
+  EXPECT_THAT(storage()->GetActiveSources(), SizeIs(2));
 }
 
 TEST_F(AttributionStorageTest,
@@ -993,7 +980,7 @@ TEST_F(AttributionStorageTest,
           .Build());
 
   // Both impressions should be stored because they are navigation source.
-  EXPECT_EQ(2u, storage()->GetActiveSources().size());
+  EXPECT_THAT(storage()->GetActiveSources(), SizeIs(2));
 }
 
 TEST_F(
@@ -1029,14 +1016,13 @@ TEST_F(
     clock()->Advance(base::Milliseconds(1));
   }
 
-  std::vector<StorableSource> stored_impressions =
-      storage()->GetActiveSources();
-  EXPECT_EQ(2u, stored_impressions.size());
-
-  EXPECT_EQ(url::Origin::Create(GURL("https://ghi.test.example")),
-            stored_impressions[0].impression_origin());
-  EXPECT_EQ(url::Origin::Create(GURL("https://qrs.test.example")),
-            stored_impressions[1].impression_origin());
+  EXPECT_THAT(
+      storage()->GetActiveSources(),
+      ElementsAre(
+          Property(&StorableSource::impression_origin,
+                   url::Origin::Create(GURL("https://ghi.test.example"))),
+          Property(&StorableSource::impression_origin,
+                   url::Origin::Create(GURL("https://qrs.test.example")))));
 }
 
 TEST_F(AttributionStorageTest,
@@ -1047,18 +1033,18 @@ TEST_F(AttributionStorageTest,
   storage()->StoreSource(SourceBuilder(clock()->Now())
                              .SetSourceType(StorableSource::SourceType::kEvent)
                              .Build());
-  EXPECT_EQ(1u, storage()->GetActiveSources().size());
+  EXPECT_THAT(storage()->GetActiveSources(), SizeIs(1));
 
   EXPECT_EQ(CreateReportStatus::kSuccess,
             MaybeCreateAndStoreReport(DefaultTrigger()));
-  EXPECT_EQ(1u, storage()->GetActiveSources().size());
+  EXPECT_THAT(storage()->GetActiveSources(), SizeIs(1));
 
   // Force the impression to be deactivated by ensuring that the next report is
   // in a different window.
   delegate()->set_report_time_ms(kReportTime + 1);
   EXPECT_EQ(CreateReportStatus::kPriorityTooLow,
             MaybeCreateAndStoreReport(DefaultTrigger()));
-  EXPECT_EQ(0u, storage()->GetActiveSources().size());
+  EXPECT_THAT(storage()->GetActiveSources(), IsEmpty());
 
   clock()->Advance(base::Milliseconds(1));
   storage()->StoreSource(
@@ -1066,7 +1052,7 @@ TEST_F(AttributionStorageTest,
           .SetConversionOrigin(url::Origin::Create(GURL("https://a.example")))
           .SetSourceType(StorableSource::SourceType::kEvent)
           .Build());
-  EXPECT_EQ(1u, storage()->GetActiveSources().size());
+  EXPECT_THAT(storage()->GetActiveSources(), SizeIs(1));
 
   delegate()->set_max_attribution_destinations_per_event_source(1);
   clock()->Advance(base::Milliseconds(1));
@@ -1078,18 +1064,17 @@ TEST_F(AttributionStorageTest,
 
   // The earliest active impression should be deleted to make room for this new
   // one.
-  std::vector<StorableSource> stored_impressions =
-      storage()->GetActiveSources();
-  EXPECT_EQ(1u, stored_impressions.size());
-  EXPECT_EQ(url::Origin::Create(GURL("https://b.example")),
-            stored_impressions[0].conversion_origin());
+  EXPECT_THAT(
+      storage()->GetActiveSources(),
+      ElementsAre(Property(&StorableSource::conversion_origin,
+                           url::Origin::Create(GURL("https://b.example")))));
 
   // Both the inactive impression and the new one for b.example should be
   // retained; a.example is the only one that should have been deleted. The
   // presence of 1 conversion to report implies that the inactive impression
   // remains in the DB.
   clock()->Advance(base::Milliseconds(kReportTime));
-  EXPECT_EQ(1u, storage()->GetAttributionsToReport(clock()->Now()).size());
+  EXPECT_THAT(storage()->GetAttributionsToReport(clock()->Now()), SizeIs(1));
 }
 
 TEST_F(AttributionStorageTest,
@@ -1105,16 +1090,16 @@ TEST_F(AttributionStorageTest,
   storage()->StoreSource(
       SourceBuilder(clock()->Now()).SetSourceEventId(5).Build());
 
-  EXPECT_EQ(3u, storage()->GetActiveSources().size());
+  EXPECT_THAT(storage()->GetActiveSources(), SizeIs(3));
   EXPECT_EQ(CreateReportStatus::kSuccess,
             MaybeCreateAndStoreReport(DefaultTrigger()));
 
   clock()->Advance(base::Milliseconds(kReportTime));
 
-  std::vector<AttributionReport> actual_reports =
-      storage()->GetAttributionsToReport(clock()->Now());
-  EXPECT_EQ(1u, actual_reports.size());
-  EXPECT_EQ(5u, actual_reports[0].impression.source_event_id());
+  EXPECT_THAT(
+      storage()->GetAttributionsToReport(clock()->Now()),
+      ElementsAre(Field(&AttributionReport::impression,
+                        Property(&StorableSource::source_event_id, 5u))));
 }
 
 TEST_F(AttributionStorageTest,
@@ -1136,16 +1121,16 @@ TEST_F(AttributionStorageTest,
                              .SetSourceEventId(7)
                              .Build());
 
-  EXPECT_EQ(3u, storage()->GetActiveSources().size());
+  EXPECT_THAT(storage()->GetActiveSources(), SizeIs(3));
   EXPECT_EQ(CreateReportStatus::kSuccess,
             MaybeCreateAndStoreReport(DefaultTrigger()));
 
   clock()->Advance(base::Milliseconds(kReportTime));
 
-  std::vector<AttributionReport> actual_reports =
-      storage()->GetAttributionsToReport(clock()->Now());
-  EXPECT_EQ(1u, actual_reports.size());
-  EXPECT_EQ(5u, actual_reports[0].impression.source_event_id());
+  EXPECT_THAT(
+      storage()->GetAttributionsToReport(clock()->Now()),
+      ElementsAre(Field(&AttributionReport::impression,
+                        Property(&StorableSource::source_event_id, 5u))));
 }
 
 TEST_F(AttributionStorageTest, MultipleImpressions_CorrectDeactivation) {
@@ -1153,7 +1138,7 @@ TEST_F(AttributionStorageTest, MultipleImpressions_CorrectDeactivation) {
       SourceBuilder(clock()->Now()).SetSourceEventId(3).SetPriority(0).Build());
   storage()->StoreSource(
       SourceBuilder(clock()->Now()).SetSourceEventId(5).SetPriority(1).Build());
-  EXPECT_EQ(2u, storage()->GetActiveSources().size());
+  EXPECT_THAT(storage()->GetActiveSources(), SizeIs(2));
 
   EXPECT_EQ(CreateReportStatus::kSuccess,
             MaybeCreateAndStoreReport(DefaultTrigger()));
@@ -1161,10 +1146,8 @@ TEST_F(AttributionStorageTest, MultipleImpressions_CorrectDeactivation) {
   // Because the impression with data 5 has the highest priority, it is selected
   // for attribution. The unselected impression with data 3 should be
   // deactivated, but the one with data 5 should remain active.
-  std::vector<StorableSource> active_impressions =
-      storage()->GetActiveSources();
-  EXPECT_EQ(1u, active_impressions.size());
-  EXPECT_EQ(5u, active_impressions[0].source_event_id());
+  EXPECT_THAT(storage()->GetActiveSources(),
+              ElementsAre(Property(&StorableSource::source_event_id, 5u)));
 }
 
 TEST_F(AttributionStorageTest, FalselyAttributeImpression_ReportStored) {
@@ -1189,19 +1172,18 @@ TEST_F(AttributionStorageTest, FalselyAttributeImpression_ReportStored) {
 
   clock()->Advance(base::Milliseconds(kReportTime));
 
-  std::vector<AttributionReport> actual_reports =
-      storage()->GetAttributionsToReport(clock()->Now());
-  EXPECT_THAT(actual_reports, ElementsAre(expected_report));
+  EXPECT_THAT(storage()->GetAttributionsToReport(clock()->Now()),
+              ElementsAre(expected_report));
 
-  EXPECT_TRUE(storage()->GetActiveSources().empty());
+  EXPECT_THAT(storage()->GetActiveSources(), IsEmpty());
 
   // The falsely attributed impression should not be eligible for further
   // attribution.
   EXPECT_EQ(CreateReportStatus::kNoMatchingImpressions,
             MaybeCreateAndStoreReport(DefaultTrigger()));
 
-  actual_reports = storage()->GetAttributionsToReport(clock()->Now());
-  EXPECT_THAT(actual_reports, ElementsAre(expected_report));
+  EXPECT_THAT(storage()->GetAttributionsToReport(clock()->Now()),
+              ElementsAre(expected_report));
 }
 
 TEST_F(AttributionStorageTest, TriggerPriority) {
@@ -1212,18 +1194,21 @@ TEST_F(AttributionStorageTest, TriggerPriority) {
   storage()->StoreSource(
       SourceBuilder(clock()->Now()).SetSourceEventId(5).SetPriority(1).Build());
 
-  auto result = storage()->MaybeCreateAndStoreReport(
-      TriggerBuilder().SetPriority(0).SetTriggerData(20).Build());
-  EXPECT_EQ(CreateReportStatus::kSuccess, result.status());
-  EXPECT_FALSE(result.dropped_report().has_value());
+  EXPECT_THAT(
+      storage()->MaybeCreateAndStoreReport(
+          TriggerBuilder().SetPriority(0).SetTriggerData(20).Build()),
+      AllOf(Property(&CreateReportResult::status, CreateReportStatus::kSuccess),
+            Property(&CreateReportResult::dropped_report, absl::nullopt)));
 
   // This conversion should replace the one above because it has a higher
   // priority.
-  result = storage()->MaybeCreateAndStoreReport(
-      TriggerBuilder().SetPriority(2).SetTriggerData(21).Build());
-  EXPECT_EQ(CreateReportStatus::kSuccessDroppedLowerPriority, result.status());
-  EXPECT_TRUE(result.dropped_report().has_value());
-  EXPECT_EQ(20u, result.dropped_report()->trigger_data);
+  EXPECT_THAT(
+      storage()->MaybeCreateAndStoreReport(
+          TriggerBuilder().SetPriority(2).SetTriggerData(21).Build()),
+      AllOf(Property(&CreateReportResult::status,
+                     CreateReportStatus::kSuccessDroppedLowerPriority),
+            Property(&CreateReportResult::dropped_report,
+                     Optional(Field(&AttributionReport::trigger_data, 20u)))));
 
   storage()->StoreSource(
       SourceBuilder(clock()->Now()).SetSourceEventId(7).SetPriority(2).Build());
@@ -1233,23 +1218,24 @@ TEST_F(AttributionStorageTest, TriggerPriority) {
                 TriggerBuilder().SetPriority(1).SetTriggerData(22).Build()));
   // This conversion should be dropped because it has a lower priority than the
   // one above.
-  result = storage()->MaybeCreateAndStoreReport(
-      TriggerBuilder().SetPriority(0).SetTriggerData(23).Build());
-  EXPECT_EQ(CreateReportStatus::kPriorityTooLow, result.status());
-  EXPECT_TRUE(result.dropped_report().has_value());
-  EXPECT_EQ(23u, result.dropped_report()->trigger_data);
+  EXPECT_THAT(
+      storage()->MaybeCreateAndStoreReport(
+          TriggerBuilder().SetPriority(0).SetTriggerData(23).Build()),
+      AllOf(Property(&CreateReportResult::status,
+                     CreateReportStatus::kPriorityTooLow),
+            Property(&CreateReportResult::dropped_report,
+                     Optional(Field(&AttributionReport::trigger_data, 23u)))));
 
   clock()->Advance(base::Milliseconds(kReportTime));
 
-  std::vector<AttributionReport> actual_reports =
-      storage()->GetAttributionsToReport(clock()->Now());
-  EXPECT_EQ(2u, actual_reports.size());
-
-  EXPECT_EQ(5u, actual_reports[0].impression.source_event_id());
-  EXPECT_EQ(21u, actual_reports[0].trigger_data);
-
-  EXPECT_EQ(7u, actual_reports[1].impression.source_event_id());
-  EXPECT_EQ(22u, actual_reports[1].trigger_data);
+  EXPECT_THAT(
+      storage()->GetAttributionsToReport(clock()->Now()),
+      ElementsAre(AllOf(Field(&AttributionReport::impression,
+                              Property(&StorableSource::source_event_id, 5u)),
+                        Field(&AttributionReport::trigger_data, 21u)),
+                  AllOf(Field(&AttributionReport::impression,
+                              Property(&StorableSource::source_event_id, 7u)),
+                        Field(&AttributionReport::trigger_data, 22u))));
 }
 
 TEST_F(AttributionStorageTest, TriggerPriority_Simple) {
@@ -1271,10 +1257,8 @@ TEST_F(AttributionStorageTest, TriggerPriority_Simple) {
 
   clock()->Advance(base::Milliseconds(kReportTime));
 
-  std::vector<AttributionReport> actual_reports =
-      storage()->GetAttributionsToReport(clock()->Now());
-  EXPECT_EQ(1u, actual_reports.size());
-  EXPECT_EQ(9u, actual_reports[0].trigger_data);
+  EXPECT_THAT(storage()->GetAttributionsToReport(clock()->Now()),
+              ElementsAre(Field(&AttributionReport::trigger_data, 9u)));
 }
 
 TEST_F(AttributionStorageTest, TriggerPriority_SamePriorityDeletesMostRecent) {
@@ -1305,11 +1289,9 @@ TEST_F(AttributionStorageTest, TriggerPriority_SamePriorityDeletesMostRecent) {
             MaybeCreateAndStoreReport(
                 TriggerBuilder().SetPriority(2).SetTriggerData(5).Build()));
 
-  std::vector<AttributionReport> actual_reports =
-      storage()->GetAttributionsToReport(base::Time::Max());
-  EXPECT_EQ(2u, actual_reports.size());
-  EXPECT_EQ(3u, actual_reports[0].trigger_data);
-  EXPECT_EQ(5u, actual_reports[1].trigger_data);
+  EXPECT_THAT(storage()->GetAttributionsToReport(base::Time::Max()),
+              ElementsAre(Field(&AttributionReport::trigger_data, 3u),
+                          Field(&AttributionReport::trigger_data, 5u)));
 }
 
 TEST_F(AttributionStorageTest, TriggerPriority_DeactivatesImpression) {
@@ -1319,7 +1301,7 @@ TEST_F(AttributionStorageTest, TriggerPriority_DeactivatesImpression) {
       SourceBuilder(clock()->Now()).SetSourceEventId(3).SetPriority(0).Build());
   storage()->StoreSource(
       SourceBuilder(clock()->Now()).SetSourceEventId(5).SetPriority(1).Build());
-  EXPECT_EQ(2u, storage()->GetActiveSources().size());
+  EXPECT_THAT(storage()->GetActiveSources(), SizeIs(2));
 
   EXPECT_EQ(CreateReportStatus::kSuccess,
             MaybeCreateAndStoreReport(DefaultTrigger()));
@@ -1327,10 +1309,8 @@ TEST_F(AttributionStorageTest, TriggerPriority_DeactivatesImpression) {
   // Because the impression with data 5 has the highest priority, it is selected
   // for attribution. The unselected impression with data 3 should be
   // deactivated, but the one with data 5 should remain active.
-  std::vector<StorableSource> active_impressions =
-      storage()->GetActiveSources();
-  EXPECT_EQ(1u, active_impressions.size());
-  EXPECT_EQ(5u, active_impressions[0].source_event_id());
+  EXPECT_THAT(storage()->GetActiveSources(),
+              ElementsAre(Property(&StorableSource::source_event_id, 5u)));
 
   // Ensure that the next report is in a different window.
   delegate()->set_report_time_ms(kReportTime + 1);
@@ -1341,7 +1321,7 @@ TEST_F(AttributionStorageTest, TriggerPriority_DeactivatesImpression) {
             MaybeCreateAndStoreReport(TriggerBuilder().SetPriority(2).Build()));
 
   // As a result, the impression with data 5 should also be deactivated.
-  EXPECT_TRUE(storage()->GetActiveSources().empty());
+  EXPECT_THAT(storage()->GetActiveSources(), IsEmpty());
 }
 
 TEST_F(AttributionStorageTest, DedupKey_Dedups) {
@@ -1355,10 +1335,9 @@ TEST_F(AttributionStorageTest, DedupKey_Dedups) {
           .SetSourceEventId(2)
           .SetConversionOrigin(url::Origin::Create(GURL("https://b.example")))
           .Build());
-  auto active_impressions = storage()->GetActiveSources();
-  EXPECT_EQ(2u, active_impressions.size());
-  EXPECT_THAT(active_impressions[0].dedup_keys(), IsEmpty());
-  EXPECT_THAT(active_impressions[1].dedup_keys(), IsEmpty());
+  EXPECT_THAT(storage()->GetActiveSources(),
+              ElementsAre(Property(&StorableSource::dedup_keys, IsEmpty()),
+                          Property(&StorableSource::dedup_keys, IsEmpty())));
 
   EXPECT_EQ(CreateReportStatus::kSuccess,
             MaybeCreateAndStoreReport(
@@ -1412,17 +1391,15 @@ TEST_F(AttributionStorageTest, DedupKey_Dedups) {
                     .Build()));
 
   clock()->Advance(base::Milliseconds(kReportTime));
-  std::vector<AttributionReport> actual_reports =
-      storage()->GetAttributionsToReport(clock()->Now());
-  EXPECT_EQ(3u, actual_reports.size());
-  EXPECT_EQ(71u, actual_reports[0].trigger_data);
-  EXPECT_EQ(72u, actual_reports[1].trigger_data);
-  EXPECT_EQ(73u, actual_reports[2].trigger_data);
+  EXPECT_THAT(storage()->GetAttributionsToReport(clock()->Now()),
+              ElementsAre(Field(&AttributionReport::trigger_data, 71u),
+                          Field(&AttributionReport::trigger_data, 72u),
+                          Field(&AttributionReport::trigger_data, 73u)));
 
-  active_impressions = storage()->GetActiveSources();
-  EXPECT_EQ(2u, active_impressions.size());
-  EXPECT_THAT(active_impressions[0].dedup_keys(), ElementsAre(11, 12));
-  EXPECT_THAT(active_impressions[1].dedup_keys(), ElementsAre(12));
+  EXPECT_THAT(
+      storage()->GetActiveSources(),
+      ElementsAre(Property(&StorableSource::dedup_keys, ElementsAre(11, 12)),
+                  Property(&StorableSource::dedup_keys, ElementsAre(12))));
 }
 
 TEST_F(AttributionStorageTest, DedupKey_DedupsAfterConversionDeletion) {
@@ -1431,7 +1408,7 @@ TEST_F(AttributionStorageTest, DedupKey_DedupsAfterConversionDeletion) {
           .SetSourceEventId(1)
           .SetConversionOrigin(url::Origin::Create(GURL("https://a.example")))
           .Build());
-  EXPECT_EQ(1u, storage()->GetActiveSources().size());
+  EXPECT_THAT(storage()->GetActiveSources(), SizeIs(1));
 
   clock()->Advance(base::Milliseconds(1));
 
@@ -1448,8 +1425,8 @@ TEST_F(AttributionStorageTest, DedupKey_DedupsAfterConversionDeletion) {
 
   std::vector<AttributionReport> actual_reports =
       storage()->GetAttributionsToReport(clock()->Now());
-  EXPECT_EQ(1u, actual_reports.size());
-  EXPECT_EQ(3u, actual_reports[0].trigger_data);
+  EXPECT_THAT(actual_reports,
+              ElementsAre(Field(&AttributionReport::trigger_data, 3u)));
 
   // Simulate the report being sent and deleted from storage.
   DeleteReports(actual_reports);
@@ -1479,28 +1456,26 @@ TEST_F(AttributionStorageTest, GetAttributionsToReport_SetsPriority) {
 
   clock()->Advance(base::Milliseconds(kReportTime));
 
-  std::vector<AttributionReport> actual_reports =
-      storage()->GetAttributionsToReport(clock()->Now());
-  EXPECT_EQ(1u, actual_reports.size());
-  EXPECT_EQ(13, actual_reports[0].priority);
+  EXPECT_THAT(storage()->GetAttributionsToReport(clock()->Now()),
+              ElementsAre(Field(&AttributionReport::priority, 13)));
 }
 
 TEST_F(AttributionStorageTest, NoIDReuse_Impression) {
   storage()->StoreSource(SourceBuilder(clock()->Now()).Build());
-  auto impressions = storage()->GetActiveSources();
-  EXPECT_EQ(1u, impressions.size());
-  EXPECT_TRUE(impressions[0].impression_id().has_value());
-  const StorableSource::Id id1 = *impressions[0].impression_id();
+  auto sources = storage()->GetActiveSources();
+  EXPECT_THAT(sources,
+              ElementsAre(Property(&StorableSource::impression_id, IsTrue())));
+  const StorableSource::Id id1 = *sources.front().impression_id();
 
   storage()->ClearData(base::Time::Min(), base::Time::Max(),
                        base::NullCallback());
-  EXPECT_TRUE(storage()->GetActiveSources().empty());
+  EXPECT_THAT(storage()->GetActiveSources(), IsEmpty());
 
   storage()->StoreSource(SourceBuilder(clock()->Now()).Build());
-  impressions = storage()->GetActiveSources();
-  EXPECT_EQ(1u, impressions.size());
-  EXPECT_TRUE(impressions[0].impression_id().has_value());
-  const StorableSource::Id id2 = *impressions[0].impression_id();
+  sources = storage()->GetActiveSources();
+  EXPECT_THAT(sources,
+              ElementsAre(Property(&StorableSource::impression_id, IsTrue())));
+  const StorableSource::Id id2 = *sources.front().impression_id();
 
   EXPECT_NE(id1, id2);
 }
@@ -1510,21 +1485,21 @@ TEST_F(AttributionStorageTest, NoIDReuse_Conversion) {
   EXPECT_EQ(CreateReportStatus::kSuccess,
             MaybeCreateAndStoreReport(DefaultTrigger()));
   auto reports = storage()->GetAttributionsToReport(base::Time::Max());
-  EXPECT_EQ(1u, reports.size());
-  EXPECT_TRUE(reports[0].conversion_id.has_value());
-  const AttributionReport::Id id1 = *reports[0].conversion_id;
+  EXPECT_THAT(reports,
+              ElementsAre(Field(&AttributionReport::conversion_id, IsTrue())));
+  const AttributionReport::Id id1 = *reports.front().conversion_id;
 
   storage()->ClearData(base::Time::Min(), base::Time::Max(),
                        base::NullCallback());
-  EXPECT_TRUE(storage()->GetAttributionsToReport(base::Time::Max()).empty());
+  EXPECT_THAT(storage()->GetAttributionsToReport(base::Time::Max()), IsEmpty());
 
   storage()->StoreSource(SourceBuilder(clock()->Now()).Build());
   EXPECT_EQ(CreateReportStatus::kSuccess,
             MaybeCreateAndStoreReport(DefaultTrigger()));
   reports = storage()->GetAttributionsToReport(base::Time::Max());
-  EXPECT_EQ(1u, reports.size());
-  EXPECT_TRUE(reports[0].conversion_id.has_value());
-  const AttributionReport::Id id2 = *reports[0].conversion_id;
+  EXPECT_THAT(reports,
+              ElementsAre(Field(&AttributionReport::conversion_id, IsTrue())));
+  const AttributionReport::Id id2 = *reports.front().conversion_id;
 
   EXPECT_NE(id1, id2);
 }
@@ -1538,8 +1513,8 @@ TEST_F(AttributionStorageTest, UpdateReportForSendFailure) {
 
   std::vector<AttributionReport> actual_reports =
       storage()->GetAttributionsToReport(clock()->Now());
-  EXPECT_EQ(1u, actual_reports.size());
-  EXPECT_EQ(0, actual_reports[0].failed_send_attempts);
+  EXPECT_THAT(actual_reports,
+              ElementsAre(Field(&AttributionReport::failed_send_attempts, 0)));
 
   const base::TimeDelta delay = base::Days(2);
   const base::Time new_report_time = actual_reports[0].report_time + delay;
@@ -1548,16 +1523,16 @@ TEST_F(AttributionStorageTest, UpdateReportForSendFailure) {
 
   clock()->Advance(delay);
 
-  actual_reports = storage()->GetAttributionsToReport(clock()->Now());
-  EXPECT_EQ(1u, actual_reports.size());
-  EXPECT_EQ(1, actual_reports[0].failed_send_attempts);
-  EXPECT_EQ(new_report_time, actual_reports[0].report_time);
+  EXPECT_THAT(storage()->GetAttributionsToReport(clock()->Now()),
+              ElementsAre(AllOf(
+                  Field(&AttributionReport::failed_send_attempts, 1),
+                  Field(&AttributionReport::report_time, new_report_time))));
 }
 
 TEST_F(AttributionStorageTest, StoreSource_ReturnsDeactivatedSources) {
   auto source1 = SourceBuilder(clock()->Now()).SetSourceEventId(7).Build();
-  EXPECT_TRUE(storage()->StoreSource(source1).empty());
-  EXPECT_EQ(1u, storage()->GetActiveSources().size());
+  EXPECT_THAT(storage()->StoreSource(source1), IsEmpty());
+  EXPECT_THAT(storage()->GetActiveSources(), SizeIs(1));
 
   clock()->Advance(base::Milliseconds(kReportTime));
 
@@ -1565,7 +1540,7 @@ TEST_F(AttributionStorageTest, StoreSource_ReturnsDeactivatedSources) {
   EXPECT_EQ(
       CreateReportStatus::kSuccess,
       MaybeCreateAndStoreReport(TriggerBuilder().SetDedupKey(13).Build()));
-  EXPECT_EQ(1u, storage()->GetAttributionsToReport(clock()->Now()).size());
+  EXPECT_THAT(storage()->GetAttributionsToReport(clock()->Now()), SizeIs(1));
 
   auto source2 = SourceBuilder(clock()->Now()).SetSourceEventId(9).Build();
 
@@ -1579,12 +1554,12 @@ TEST_F(AttributionStorageTest, StoreSource_ReturnsDeactivatedSources) {
 
 TEST_F(AttributionStorageTest, StoreSource_ReturnsDeactivatedSources_Limited) {
   auto source1 = SourceBuilder(clock()->Now()).SetSourceEventId(1).Build();
-  EXPECT_TRUE(storage()->StoreSource(source1).empty());
+  EXPECT_THAT(storage()->StoreSource(source1), IsEmpty());
 
   auto source2 = SourceBuilder(clock()->Now()).SetSourceEventId(2).Build();
-  EXPECT_TRUE(storage()->StoreSource(source1).empty());
+  EXPECT_THAT(storage()->StoreSource(source1), IsEmpty());
 
-  EXPECT_EQ(2u, storage()->GetActiveSources().size());
+  EXPECT_THAT(storage()->GetActiveSources(), SizeIs(2));
 
   clock()->Advance(base::Milliseconds(kReportTime));
 
@@ -1592,7 +1567,7 @@ TEST_F(AttributionStorageTest, StoreSource_ReturnsDeactivatedSources_Limited) {
             MaybeCreateAndStoreReport(DefaultTrigger()));
   EXPECT_EQ(CreateReportStatus::kSuccess,
             MaybeCreateAndStoreReport(DefaultTrigger()));
-  EXPECT_EQ(2u, storage()->GetAttributionsToReport(clock()->Now()).size());
+  EXPECT_THAT(storage()->GetAttributionsToReport(clock()->Now()), SizeIs(2));
 
   // 2 sources are deactivated, but only 1 should be returned.
   auto source3 = SourceBuilder(clock()->Now()).SetSourceEventId(3).Build();
@@ -1606,8 +1581,8 @@ TEST_F(AttributionStorageTest, StoreSource_ReturnsDeactivatedSources_Limited) {
 TEST_F(AttributionStorageTest,
        MaybeCreateAndStoreReport_ReturnsDeactivatedSources) {
   auto source1 = SourceBuilder(clock()->Now()).SetSourceEventId(7).Build();
-  EXPECT_TRUE(storage()->StoreSource(source1).empty());
-  EXPECT_EQ(1u, storage()->GetActiveSources().size());
+  EXPECT_THAT(storage()->StoreSource(source1), IsEmpty());
+  EXPECT_THAT(storage()->GetActiveSources(), SizeIs(1));
 
   // Store the maximum number of reports for the source.
   for (size_t i = 1; i <= kMaxConversions; i++) {
@@ -1617,23 +1592,25 @@ TEST_F(AttributionStorageTest,
 
   clock()->Advance(base::Milliseconds(kReportTime));
   auto reports = storage()->GetAttributionsToReport(clock()->Now());
-  EXPECT_EQ(3u, reports.size());
+  EXPECT_THAT(reports, SizeIs(3));
 
   // Simulate the reports being sent and removed from storage.
-  for (const auto& report : reports) {
-    EXPECT_TRUE(storage()->DeleteReport(*report.conversion_id));
-  }
+  DeleteReports(reports);
 
   // The next report should cause the source to be deactivated; the report
   // itself shouldn't be stored as we've already reached the maximum number of
   // conversions per source.
-  auto result = storage()->MaybeCreateAndStoreReport(DefaultTrigger());
-  EXPECT_EQ(CreateReportStatus::kPriorityTooLow, result.status());
-  EXPECT_TRUE(result.dropped_report().has_value());
-  EXPECT_EQ(source1, result.dropped_report()->impression);
-  EXPECT_EQ(DeactivatedSource(
-                source1, DeactivatedSource::Reason::kReachedAttributionLimit),
-            result.GetDeactivatedSource());
+  EXPECT_THAT(
+      storage()->MaybeCreateAndStoreReport(DefaultTrigger()),
+      AllOf(
+          Property(&CreateReportResult::status,
+                   CreateReportStatus::kPriorityTooLow),
+          Property(&CreateReportResult::dropped_report,
+                   Optional(Field(&AttributionReport::impression, source1))),
+          Property(&CreateReportResult::GetDeactivatedSource,
+                   DeactivatedSource(
+                       source1,
+                       DeactivatedSource::Reason::kReachedAttributionLimit))));
 }
 
 }  // namespace content

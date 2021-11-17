@@ -35,6 +35,7 @@ namespace {
 
 using ::testing::ElementsAre;
 using ::testing::IsEmpty;
+using ::testing::SizeIs;
 
 const char kReportUrl[] =
     "https://report.test/.well-known/attribution-reporting/report-attribution";
@@ -63,8 +64,6 @@ class AttributionNetworkSenderTest : public testing::Test {
   }
 
  protected:
-  size_t num_reports_sent() const { return sent_reports_.size(); }
-
   std::vector<SentReportInfo> sent_reports_;
 
   // |task_environment_| must be initialized first.
@@ -268,8 +267,9 @@ TEST_F(AttributionNetworkSenderTest, ReportRequestFailsWithHeaders_NotRetried) {
   // Ensure the request was replied to.
   EXPECT_EQ(0, test_url_loader_factory_.NumPending());
 
-  EXPECT_EQ(1u, num_reports_sent());
-  EXPECT_EQ(SentReportInfo::Status::kFailure, sent_reports_.back().status);
+  EXPECT_THAT(sent_reports_, ElementsAre(SentReportInfo(
+                                 report, SentReportInfo::Status::kFailure,
+                                 /*http_response_code=*/200)));
 }
 
 TEST_F(AttributionNetworkSenderTest,
@@ -281,8 +281,9 @@ TEST_F(AttributionNetworkSenderTest,
   EXPECT_TRUE(test_url_loader_factory_.SimulateResponseForPendingRequest(
       kReportUrl, "", net::HttpStatusCode::HTTP_BAD_REQUEST));
 
-  EXPECT_EQ(1u, num_reports_sent());
-  EXPECT_EQ(SentReportInfo::Status::kFailure, sent_reports_[0].status);
+  EXPECT_THAT(sent_reports_, ElementsAre(SentReportInfo(
+                                 report, SentReportInfo::Status::kFailure,
+                                 /*http_response_code=*/400)));
 }
 
 TEST_F(AttributionNetworkSenderTest,
@@ -313,7 +314,7 @@ TEST_F(AttributionNetworkSenderTest,
     // We should not retry again. Verify the report sent callback only gets
     // fired once.
     EXPECT_EQ(0, test_url_loader_factory_.NumPending());
-    EXPECT_EQ(1u, num_reports_sent());
+    EXPECT_THAT(sent_reports_, SizeIs(1));
 
     histograms.ExpectUniqueSample("Conversions.ReportRetrySucceed", false, 1);
   }
@@ -371,7 +372,7 @@ TEST_F(AttributionNetworkSenderTest, ManyReports_AllSentSuccessfully) {
     EXPECT_TRUE(test_url_loader_factory_.SimulateResponseForPendingRequest(
         kReportUrl, ""));
   }
-  EXPECT_EQ(10u, num_reports_sent());
+  EXPECT_THAT(sent_reports_, SizeIs(10));
   EXPECT_EQ(0, test_url_loader_factory_.NumPending());
 }
 
