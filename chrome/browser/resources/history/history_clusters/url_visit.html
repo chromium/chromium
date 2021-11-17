@@ -3,7 +3,7 @@
     align-items: center;
     cursor: pointer;
     display: flex;
-    height: 64px;
+    min-height: 64px;
   }
 
   :host(:hover) {
@@ -49,14 +49,17 @@
   }
 
   #title-and-annotations {
+    align-items: center;
     display: flex;
-    line-height: 28px;
+    line-height: 2;  /* 28px */
   }
 
   .annotation {
+    align-items: center;
     background-color: var(--annotation-background-color);
     border-radius: 4px;
     color: var(--annotation-text-color);
+    display: inline-flex;
     flex-shrink: 0;
     font-weight: 500;
     margin-inline-start: 12px;
@@ -80,7 +83,7 @@
 
   #hostname {
     color: var(--url-hostname-color);
-    line-height: 20px;
+    line-height: 1.5;  /* 21px */
   }
 
   #debug-info {
