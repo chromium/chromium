@@ -6,6 +6,7 @@
 
 #include "base/feature_list.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "components/password_manager/core/browser/fake_password_store_backend.h"
@@ -19,8 +20,9 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-using ::testing::ElementsAre;
-using ::testing::Pair;
+using ::testing::Eq;
+using ::testing::Pointee;
+using ::testing::UnorderedElementsAreArray;
 
 namespace password_manager {
 
@@ -54,7 +56,7 @@ class BuiltInBackendToAndroidBackendMigratorTest : public testing::Test {
   ~BuiltInBackendToAndroidBackendMigratorTest() override = default;
 
   PasswordStoreBackend& built_in_backend() { return built_in_backend_; }
-  FakePasswordStoreBackend& android_backend() { return android_backend_; }
+  PasswordStoreBackend& android_backend() { return android_backend_; }
 
   base::test::ScopedFeatureList& feature_list() { return feature_list_; }
   TestingPrefServiceSimple* prefs() { return prefs_.get(); }
@@ -95,28 +97,113 @@ TEST_F(BuiltInBackendToAndroidBackendMigratorTest,
                    prefs::kCurrentMigrationVersionToGoogleMobileServices));
 }
 
-TEST_F(BuiltInBackendToAndroidBackendMigratorTest,
-       InitialMigrationCompleted_NoMergeRequired) {
+// Holds the built in and android backend's logins and the expected result after
+// the migration.
+struct InitialMigrationParam {
+  struct Entry {
+    Entry(int index,
+          std::string password = "",
+          base::TimeDelta date_created = base::TimeDelta())
+        : index(index), password(password), date_created(date_created) {}
+
+    std::unique_ptr<PasswordForm> ToPasswordForm() const {
+      PasswordForm form = CreateTestPasswordForm(index);
+      form.password_value = base::ASCIIToUTF16(password);
+      form.date_created = base::Time() + date_created;
+      return std::make_unique<PasswordForm>(form);
+    }
+
+    int index;
+    std::string password;
+    base::TimeDelta date_created;
+  };
+
+  std::vector<std::unique_ptr<PasswordForm>> GetBuiltInLogins() const {
+    return EntriesToPasswordForms(built_in_logins);
+  }
+
+  std::vector<std::unique_ptr<PasswordForm>> GetAndroidLogins() const {
+    return EntriesToPasswordForms(android_logins);
+  }
+
+  std::vector<std::unique_ptr<PasswordForm>> GetMigratedLogins() const {
+    return EntriesToPasswordForms(migrated_logins);
+  }
+
+  std::vector<std::unique_ptr<PasswordForm>> EntriesToPasswordForms(
+      const std::vector<Entry>& entries) const {
+    std::vector<std::unique_ptr<PasswordForm>> v;
+    base::ranges::transform(entries, std::back_inserter(v),
+                            &Entry::ToPasswordForm);
+    return v;
+  }
+
+  std::vector<Entry> built_in_logins;
+  std::vector<Entry> android_logins;
+  std::vector<Entry> migrated_logins;
+};
+
+class BuiltInBackendToAndroidBackendMigratorTestWithMigrationParams
+    : public BuiltInBackendToAndroidBackendMigratorTest,
+      public testing::WithParamInterface<InitialMigrationParam> {};
+
+// Tests the initial migration result.
+TEST_P(BuiltInBackendToAndroidBackendMigratorTestWithMigrationParams,
+       InitialMigration) {
   feature_list().InitAndEnableFeatureWithParameters(
       features::kUnifiedPasswordManagerMigration, {{"migration_version", "1"}});
 
-  std::vector<PasswordForm> expected_logins = {CreateTestPasswordForm(0),
-                                               CreateTestPasswordForm(1)};
-  for (const auto& login : expected_logins) {
-    built_in_backend().AddLoginAsync(login, base::DoNothing());
+  const InitialMigrationParam& p = GetParam();
+
+  for (const auto& login : p.GetBuiltInLogins()) {
+    built_in_backend().AddLoginAsync(*login, base::DoNothing());
+  }
+  for (const auto& login : p.GetAndroidLogins()) {
+    android_backend().AddLoginAsync(*login, base::DoNothing());
   }
   RunUntilIdle();
 
   migrator()->StartMigrationIfNecessary();
   RunUntilIdle();
 
-  EXPECT_EQ(1, prefs()->GetInteger(
-                   prefs::kCurrentMigrationVersionToGoogleMobileServices));
-  EXPECT_THAT(android_backend().stored_passwords(),
-              ElementsAre(Pair(expected_logins[0].signon_realm,
-                               ElementsAre(expected_logins[0])),
-                          Pair(expected_logins[1].signon_realm,
-                               ElementsAre(expected_logins[1]))));
+  for (auto* const backend : {&android_backend(), &built_in_backend()}) {
+    base::MockCallback<LoginsReply> mock_reply;
+    auto expected_logins = p.GetMigratedLogins();
+    EXPECT_CALL(mock_reply,
+                Run(UnorderedPasswordFormElementsAre(&expected_logins)));
+    backend->GetAllLoginsAsync(mock_reply.Get());
+    RunUntilIdle();
+  }
 }
+
+INSTANTIATE_TEST_SUITE_P(
+    BuiltInBackendToAndroidBackendMigratorTest,
+    BuiltInBackendToAndroidBackendMigratorTestWithMigrationParams,
+    testing::Values(
+        InitialMigrationParam{.built_in_logins = {},
+                              .android_logins = {},
+                              .migrated_logins = {}},
+        InitialMigrationParam{.built_in_logins = {{1}, {2}},
+                              .android_logins = {},
+                              .migrated_logins = {{1}, {2}}},
+        InitialMigrationParam{.built_in_logins = {},
+                              .android_logins = {{1}, {2}},
+                              .migrated_logins = {{1}, {2}}},
+        InitialMigrationParam{.built_in_logins = {{1}, {2}},
+                              .android_logins = {{3}},
+                              .migrated_logins = {{1}, {2}, {3}}},
+        InitialMigrationParam{.built_in_logins = {{1}, {2}, {3}},
+                              .android_logins = {{1}, {2}, {3}},
+                              .migrated_logins = {{1}, {2}, {3}}},
+        InitialMigrationParam{
+            .built_in_logins = {{1, "old_password", base::Days(1)}, {2}},
+            .android_logins = {{1, "new_password", base::Days(2)}, {3}},
+            .migrated_logins = {{1, "new_password", base::Days(2)}, {2}, {3}}},
+        InitialMigrationParam{
+            .built_in_logins = {{1, "new_password", base::Days(2)}, {2}},
+            .android_logins = {{1, "old_password", base::Days(1)}, {3}},
+            .migrated_logins = {{1, "new_password", base::Days(2)},
+                                {2},
+                                {3}}}));
 
 }  // namespace password_manager

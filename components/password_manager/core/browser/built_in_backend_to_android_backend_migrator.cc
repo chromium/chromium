@@ -7,7 +7,10 @@
 #include "base/barrier_callback.h"
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/containers/contains.h"
+#include "base/containers/flat_set.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/ranges/algorithm.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_service.h"
@@ -95,23 +98,93 @@ void BuiltInBackendToAndroidBackendMigrator::
         std::vector<BackendAndLoginsResults> results) {
   DCHECK_EQ(2u, results.size());
 
-  LoginsResult local_logins = (results[0].backend == built_in_backend_)
-                                  ? std::move(results[0].logins_result)
-                                  : std::move(results[1].logins_result);
+  struct IsLess {
+    bool operator()(const PasswordForm* lhs, const PasswordForm* rhs) const {
+      return PasswordFormUniqueKey(*lhs) < PasswordFormUniqueKey(*rhs);
+    }
+  };
 
-  // After all operations are finished we should update prefs to mark the
-  // completion of the migration. Callbacks are chained in a LIFO way.
+  auto built_in_backend_logins = base::MakeFlatSet<const PasswordForm*, IsLess>(
+      (results[0].backend == built_in_backend_)
+          ? std::move(results[0].logins_result)
+          : std::move(results[1].logins_result),
+      {}, &std::unique_ptr<PasswordForm>::get);
+
+  auto android_logins = base::MakeFlatSet<const PasswordForm*, IsLess>(
+      (results[0].backend == android_backend_)
+          ? std::move(results[0].logins_result)
+          : std::move(results[1].logins_result),
+      {}, &std::unique_ptr<PasswordForm>::get);
+
+  // This method merges password from the built in backend and password from the
+  // android backend based on their primary keys. For a form |F|, there are
+  // three cases to handle:
+  // 1. |F| exists only in the built in backend --> |F| should be added to the
+  // 'android_backend'.
+  // 2. |F| exists only in the android backend --> |F| should be added to the
+  // 'built_in_backend'.
+  // 3. |F| exists in both the built in and android backends --> both versions
+  //    should be merged by accepting the most recently created one, and update
+  //    built in and android backends accordingly.
+  // In most of the cases there shouldn't be any passwords in 'android_backend'.
+
+  // After all operations are finished we should update preference to mark the
+  // completion of the migration. Callbacks are chained in a LIFO way. Callbacks
+  // are chained by passing 'callback_chain' as a completion for the next
+  // operation.
   base::OnceClosure callbacks_chain = base::BindOnce(
       &BuiltInBackendToAndroidBackendMigrator::UpdateMigrationVersionInPref,
       weak_ptr_factory_.GetWeakPtr());
-  for (const auto& login : local_logins) {
-    // Callbacks are chained by passing |callback_chain| as a completion to the
-    // current operation. Using base::Unretained is safe because backends will
-    // outlive migrator.
+  for (auto* const login : built_in_backend_logins) {
+    auto android_login_iter = android_logins.find(login);
+
+    if (android_login_iter == android_logins.end()) {
+      // Local password doesn't exist in the android backend, add it to the
+      // 'android_backend_'.
+      callbacks_chain = base::BindOnce(
+          &PasswordStoreBackend::AddLoginAsync, android_backend_->GetWeakPtr(),
+          *login, IgnoreChangeListAndRunCallback(std::move(callbacks_chain)));
+      continue;
+    }
+
+    // Local password exists in the android backend as well. A merge is
+    // required.
+    auto* const android_login = (*android_login_iter);
+
+    if (login->password_value == android_login->password_value) {
+      // Passwords are identical, nothing else to do.
+      continue;
+    }
+
+    // Passwords aren't identical, pick the most recently created one.
+    if (login->date_created > android_login->date_created) {
+      callbacks_chain = base::BindOnce(
+          &PasswordStoreBackend::AddLoginAsync, android_backend_->GetWeakPtr(),
+          *login, IgnoreChangeListAndRunCallback(std::move(callbacks_chain)));
+    } else {
+      callbacks_chain = base::BindOnce(
+          &PasswordStoreBackend::AddLoginAsync, built_in_backend_->GetWeakPtr(),
+          *android_login,
+          IgnoreChangeListAndRunCallback(std::move(callbacks_chain)));
+    }
+  }
+
+  // At this point, we have processed all passwords from the built in backend.
+  // In addition, we also have processed all passwords from 'android_backend_'
+  // that exist in the 'built_in_backend_'. What's remaining is to process
+  // passwords from 'android_backend_' that don't exist in the
+  // 'built_in_backend_'.
+  for (auto* const android_login : android_logins) {
+    if (built_in_backend_logins.contains(android_login)) {
+      continue;
+    }
+
+    // Add to 'built_in_backend_' any passwords from 'android_backend_' that
+    // doesn't exist in the 'built_in_backend_'
     callbacks_chain = base::BindOnce(
-        &PasswordStoreBackend::AddLoginAsync, android_backend_->GetWeakPtr(),
-        *login, IgnoreChangeListAndRunCallback(std::move(callbacks_chain)));
-    // TODO:(crbug.com/1252443) Implement merging logic.
+        &PasswordStoreBackend::AddLoginAsync, built_in_backend_->GetWeakPtr(),
+        *android_login,
+        IgnoreChangeListAndRunCallback(std::move(callbacks_chain)));
   }
 
   std::move(callbacks_chain).Run();
