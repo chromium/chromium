@@ -293,6 +293,8 @@ viz_component("common") {
     "surfaces/surface_info.h",
     "surfaces/surface_range.cc",
     "surfaces/surface_range.h",
+    "surfaces/video_capture_target.cc",
+    "surfaces/video_capture_target.h",
     "switches.cc",
     "switches.h",
     "traced_value.cc",

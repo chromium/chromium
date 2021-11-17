@@ -1632,8 +1632,8 @@ TEST_F(CompositorFrameSinkSupportTest, ForceFullFrameToActivateSurface) {
 
 TEST_F(CompositorFrameSinkSupportTest, GetCopyOutputRequestRegion) {
   // No surface with active frame.
-  EXPECT_EQ((gfx::Rect{}), support_->GetCopyOutputRequestRegion(
-                               CapturableFrameSink::RegionSpecifier()));
+  EXPECT_EQ((gfx::Rect{}),
+            support_->GetCopyOutputRequestRegion(VideoCaptureSubTarget()));
 
   // Surface with active frame but no capture identifier.
   ResourceId first_frame_ids[] = {ResourceId(1), ResourceId(2), ResourceId(3),
@@ -1641,8 +1641,7 @@ TEST_F(CompositorFrameSinkSupportTest, GetCopyOutputRequestRegion) {
   SubmitCompositorFrameWithResources(first_frame_ids,
                                      base::size(first_frame_ids));
   EXPECT_EQ((gfx::Rect{0, 0, 20, 20}),
-            (support_->GetCopyOutputRequestRegion(
-                CapturableFrameSink::RegionSpecifier())));
+            (support_->GetCopyOutputRequestRegion(VideoCaptureSubTarget())));
 
   // Render pass with subtree size.
   const SurfaceId surface_id(support_->frame_sink_id(), local_surface_id_);

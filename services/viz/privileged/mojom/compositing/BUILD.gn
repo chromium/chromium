@@ -29,7 +29,12 @@ mojom("compositing") {
     "//ui/latency/mojom",
   ]
 
-  traits_public_deps = [ "//ui/base:features" ]
+  parser_deps = [ "//components/viz/common" ]
+
+  traits_public_deps = [
+    "//components/viz/common",
+    "//ui/base:features",
+  ]
 
   enabled_features = []
   if (use_ozone) {

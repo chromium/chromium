@@ -20,6 +20,7 @@
 #include "components/viz/common/frame_sinks/copy_output_result.h"
 #include "components/viz/common/frame_sinks/copy_output_util.h"
 #include "components/viz/common/surfaces/subtree_capture_id.h"
+#include "components/viz/common/surfaces/video_capture_target.h"
 #include "components/viz/service/frame_sinks/video_capture/frame_sink_video_capturer_manager.h"
 #include "media/base/limits.h"
 #include "media/base/video_util.h"
@@ -258,17 +259,17 @@ class FakeCapturableFrameSink : public CapturableFrameSink {
   }
 
   gfx::Rect GetCopyOutputRequestRegion(
-      const CapturableFrameSink::RegionSpecifier& specifier) const override {
-    if (absl::holds_alternative<RegionCaptureCropId>(specifier)) {
+      const VideoCaptureSubTarget& sub_target) const override {
+    if (absl::holds_alternative<RegionCaptureCropId>(sub_target)) {
       current_capture_id_ = SubtreeCaptureId();
-      current_crop_id_ = absl::get<RegionCaptureCropId>(specifier);
+      current_crop_id_ = absl::get<RegionCaptureCropId>(sub_target);
       if (!current_crop_id_.is_zero()) {
         return crop_bounds_;
       }
       return {};
     }
-    if (absl::holds_alternative<SubtreeCaptureId>(specifier)) {
-      current_capture_id_ = absl::get<SubtreeCaptureId>(specifier);
+    if (absl::holds_alternative<SubtreeCaptureId>(sub_target)) {
+      current_capture_id_ = absl::get<SubtreeCaptureId>(sub_target);
       current_crop_id_ = RegionCaptureCropId();
       if (current_capture_id_.is_valid()) {
         return capture_bounds_;
@@ -582,9 +583,9 @@ TEST_F(FrameSinkVideoCapturerTest, ResolvesTargetImmediately) {
   EXPECT_CALL(frame_sink_manager_, FindCapturableFrameSink(kFrameSinkId))
       .WillRepeatedly(Return(&frame_sink_));
 
-  EXPECT_EQ(FrameSinkId(), capturer_->requested_target());
-  capturer_->ChangeTarget(kFrameSinkId, nullptr);
-  EXPECT_EQ(kFrameSinkId, capturer_->requested_target());
+  EXPECT_FALSE(capturer_->target());
+  capturer_->ChangeTarget(VideoCaptureTarget(kFrameSinkId));
+  EXPECT_EQ(kFrameSinkId, capturer_->target()->frame_sink_id);
   EXPECT_EQ(capturer_.get(), frame_sink_.attached_client());
 }
 
@@ -594,9 +595,9 @@ TEST_F(FrameSinkVideoCapturerTest, ResolvesTargetLater) {
   EXPECT_CALL(frame_sink_manager_, FindCapturableFrameSink(kFrameSinkId))
       .WillRepeatedly(Return(nullptr));
 
-  EXPECT_EQ(FrameSinkId(), capturer_->requested_target());
-  capturer_->ChangeTarget(kFrameSinkId, nullptr);
-  EXPECT_EQ(kFrameSinkId, capturer_->requested_target());
+  EXPECT_FALSE(capturer_->target());
+  capturer_->ChangeTarget(VideoCaptureTarget(kFrameSinkId));
+  EXPECT_EQ(kFrameSinkId, capturer_->target()->frame_sink_id);
   EXPECT_EQ(nullptr, frame_sink_.attached_client());
 
   capturer_->SetResolvedTarget(&frame_sink_);
@@ -630,7 +631,7 @@ TEST_F(FrameSinkVideoCapturerTest, PostponesCaptureWithoutATarget) {
 
   // Now, set the target. As it resolves, the capturer will immediately attempt
   // a refresh capture, which will cancel the timer and trigger a copy request.
-  capturer_->ChangeTarget(kFrameSinkId, nullptr);
+  capturer_->ChangeTarget(VideoCaptureTarget(kFrameSinkId));
   EXPECT_EQ(1, frame_sink_.num_copy_results());
   EXPECT_FALSE(IsRefreshRetryTimerRunning());
 
@@ -646,7 +647,7 @@ TEST_F(FrameSinkVideoCapturerTest, CapturesCompositedFrames) {
   EXPECT_CALL(frame_sink_manager_, FindCapturableFrameSink(kFrameSinkId))
       .WillRepeatedly(Return(&frame_sink_));
 
-  capturer_->ChangeTarget(kFrameSinkId, nullptr);
+  capturer_->ChangeTarget(VideoCaptureTarget(kFrameSinkId));
   EXPECT_FALSE(IsRefreshRetryTimerRunning());
 
   MockConsumer consumer;
@@ -741,7 +742,7 @@ TEST_F(FrameSinkVideoCapturerTest, HaltsWhenPipelineIsFull) {
   EXPECT_CALL(frame_sink_manager_, FindCapturableFrameSink(kFrameSinkId))
       .WillRepeatedly(Return(&frame_sink_));
 
-  capturer_->ChangeTarget(kFrameSinkId, nullptr);
+  capturer_->ChangeTarget(VideoCaptureTarget(kFrameSinkId));
 
   NiceMock<MockConsumer> consumer;
   StartCapture(&consumer);
@@ -839,7 +840,7 @@ TEST_F(FrameSinkVideoCapturerTest, DeliversFramesInOrder) {
   EXPECT_CALL(frame_sink_manager_, FindCapturableFrameSink(kFrameSinkId))
       .WillRepeatedly(Return(&frame_sink_));
 
-  capturer_->ChangeTarget(kFrameSinkId, nullptr);
+  capturer_->ChangeTarget(VideoCaptureTarget(kFrameSinkId));
 
   NiceMock<MockConsumer> consumer;
   StartCapture(&consumer);
@@ -896,7 +897,7 @@ TEST_F(FrameSinkVideoCapturerTest, CancelsInFlightCapturesOnStop) {
   EXPECT_CALL(frame_sink_manager_, FindCapturableFrameSink(kFrameSinkId))
       .WillRepeatedly(Return(&frame_sink_));
 
-  capturer_->ChangeTarget(kFrameSinkId, nullptr);
+  capturer_->ChangeTarget(VideoCaptureTarget(kFrameSinkId));
 
   // Start capturing to the first consumer.
   MockConsumer consumer;
@@ -983,7 +984,7 @@ TEST_F(FrameSinkVideoCapturerTest, EventuallySendsARefreshFrame) {
   EXPECT_CALL(frame_sink_manager_, FindCapturableFrameSink(kFrameSinkId))
       .WillRepeatedly(Return(&frame_sink_));
 
-  capturer_->ChangeTarget(kFrameSinkId, nullptr);
+  capturer_->ChangeTarget(VideoCaptureTarget(kFrameSinkId));
 
   MockConsumer consumer;
   const int num_refresh_frames = 2;  // Initial, plus later refresh.
@@ -1039,7 +1040,7 @@ TEST_F(FrameSinkVideoCapturerTest,
   EXPECT_CALL(frame_sink_manager_, FindCapturableFrameSink(kFrameSinkId))
       .WillRepeatedly(Return(&frame_sink_));
 
-  capturer_->ChangeTarget(kFrameSinkId, nullptr);
+  capturer_->ChangeTarget(VideoCaptureTarget(kFrameSinkId));
 
   MockConsumer consumer;
   constexpr int num_refresh_frames = 3;  // Initial, plus two refreshes after
@@ -1136,7 +1137,7 @@ TEST_F(FrameSinkVideoCapturerTest,
 TEST_F(FrameSinkVideoCapturerTest, CompositorFrameMetadataReachesConsumer) {
   EXPECT_CALL(frame_sink_manager_, FindCapturableFrameSink(kFrameSinkId))
       .WillRepeatedly(Return(&frame_sink_));
-  capturer_->ChangeTarget(kFrameSinkId, nullptr);
+  capturer_->ChangeTarget(VideoCaptureTarget(kFrameSinkId));
 
   MockConsumer consumer;
   // Initial refresh frame for starting capture, plus later refresh.
@@ -1196,7 +1197,7 @@ TEST_F(FrameSinkVideoCapturerTest, CompositorFrameMetadataReachesConsumer) {
 TEST_F(FrameSinkVideoCapturerTest, DeliversUpdateRectAndCaptureCounter) {
   EXPECT_CALL(frame_sink_manager_, FindCapturableFrameSink(kFrameSinkId))
       .WillRepeatedly(Return(&frame_sink_));
-  capturer_->ChangeTarget(kFrameSinkId, nullptr);
+  capturer_->ChangeTarget(VideoCaptureTarget(kFrameSinkId));
 
   MockConsumer consumer;
   StartCapture(&consumer);
@@ -1311,7 +1312,7 @@ TEST_F(FrameSinkVideoCapturerTest, DeliversUpdateRectAndCaptureCounter) {
 TEST_F(FrameSinkVideoCapturerTest, CaptureCounterSkipsWhenFramesAreDropped) {
   EXPECT_CALL(frame_sink_manager_, FindCapturableFrameSink(kFrameSinkId))
       .WillRepeatedly(Return(&frame_sink_));
-  capturer_->ChangeTarget(kFrameSinkId, nullptr);
+  capturer_->ChangeTarget(VideoCaptureTarget(kFrameSinkId));
 
   MockConsumer consumer;
   StartCapture(&consumer);
@@ -1363,7 +1364,7 @@ TEST_F(FrameSinkVideoCapturerTest, ClientCaptureStartsAndStops) {
   EXPECT_CALL(frame_sink_manager_, FindCapturableFrameSink(kFrameSinkId))
       .WillRepeatedly(Return(&frame_sink_));
 
-  capturer_->ChangeTarget(kFrameSinkId, nullptr);
+  capturer_->ChangeTarget(VideoCaptureTarget(kFrameSinkId));
   EXPECT_EQ(frame_sink_.number_clients_capturing(), 0);
 
   // Start capturing. frame_sink_ should now have one client capturing.
@@ -1380,14 +1381,13 @@ TEST_F(FrameSinkVideoCapturerTest, RegionCaptureCropId) {
   SwitchToSizeSet(kSizeSets[4]);
   EXPECT_CALL(frame_sink_manager_, FindCapturableFrameSink(kFrameSinkId))
       .WillRepeatedly(Return(&frame_sink_));
-  capturer_->ChangeTarget(kFrameSinkId, nullptr);
+  capturer_->ChangeTarget(VideoCaptureTarget(kFrameSinkId));
   EXPECT_EQ(frame_sink_.number_clients_capturing(), 0);
 
   static const auto kCropId = RegionCaptureCropId::CreateRandom();
   static const gfx::Rect kCropBounds{1, 2, 640, 478};
   frame_sink_.set_crop_bounds(kCropBounds);
-  capturer_->ChangeTarget(kFrameSinkId,
-                          mojom::SubTarget::NewRegionCaptureCropId(kCropId));
+  capturer_->ChangeTarget(VideoCaptureTarget(kFrameSinkId, kCropId));
 
   // Start capturing. frame_sink_ should now have one client capturing.
   NiceMock<MockConsumer> consumer;
@@ -1406,8 +1406,7 @@ TEST_F(FrameSinkVideoCapturerTest, HandlesSubtreeCaptureId) {
   static const gfx::Rect kCaptureBounds{1, 2, 1024, 768};
   static const SubtreeCaptureId kCaptureId{1234567u};
   frame_sink_.set_capture_bounds(kCaptureBounds);
-  capturer_->ChangeTarget(kFrameSinkId,
-                          mojom::SubTarget::NewSubtreeCaptureId(kCaptureId));
+  capturer_->ChangeTarget(VideoCaptureTarget(kFrameSinkId, kCaptureId));
 
   // Start capturing. frame_sink_ should now have one client capturing.
   NiceMock<MockConsumer> consumer;
@@ -1427,7 +1426,7 @@ TEST_F(FrameSinkVideoCapturerTest, HandlesNullSubTargetPtrCorrectly) {
   // The default cause is a target with no sub target, passed as nullptr. Since
   // the SubTarget is a mojom variant, the default SubTarget::New() is actually
   // a zero value subtree capture identifier.
-  capturer_->ChangeTarget(kFrameSinkId, nullptr);
+  capturer_->ChangeTarget(VideoCaptureTarget(kFrameSinkId));
   EXPECT_EQ(frame_sink_.number_clients_capturing(), 0);
 
   // Start capturing. frame_sink_ should now have one client capturing.

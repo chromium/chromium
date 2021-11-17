@@ -129,7 +129,7 @@ class CONTENT_EXPORT WebContentsFrameTracker final
 
   // We may not have a frame sink ID target at all times.
   std::unique_ptr<Context> context_;
-  absl::optional<viz::FrameSinkId> target_frame_sink_id_;
+  viz::FrameSinkId target_frame_sink_id_;
   base::Token crop_id_;
   gfx::NativeView target_native_view_ = gfx::NativeView();
 

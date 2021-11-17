@@ -21,7 +21,7 @@
 #include "base/unguessable_token.h"
 #include "components/viz/common/quads/compositor_frame_metadata.h"
 #include "components/viz/common/surfaces/frame_sink_id.h"
-#include "components/viz/common/surfaces/subtree_capture_id.h"
+#include "components/viz/common/surfaces/video_capture_target.h"
 #include "components/viz/service/frame_sinks/video_capture/capturable_frame_sink.h"
 #include "components/viz/service/frame_sinks/video_capture/in_flight_frame_delivery.h"
 #include "components/viz/service/frame_sinks/video_capture/shared_memory_video_frame_pool.h"
@@ -92,7 +92,7 @@ class VIZ_SERVICE_EXPORT FrameSinkVideoCapturerImpl final
   // The currently-requested frame sink for capture. The frame sink manager
   // calls this when it learns of a new CapturableFrameSink to see if the target
   // can be resolved.
-  const FrameSinkId& requested_target() const { return requested_target_; }
+  const absl::optional<VideoCaptureTarget>& target() const { return target_; }
 
   // Sets the resolved target, detaching this capturer from the previous target
   // (if any), and attaching to the new target. This is called by the frame sink
@@ -115,8 +115,7 @@ class VIZ_SERVICE_EXPORT FrameSinkVideoCapturerImpl final
                                 const gfx::Size& max_size,
                                 bool use_fixed_aspect_ratio) final;
   void SetAutoThrottlingEnabled(bool enabled) final;
-  void ChangeTarget(const absl::optional<FrameSinkId>& frame_sink_id,
-                    mojom::SubTargetPtr sub_target) final;
+  void ChangeTarget(const absl::optional<VideoCaptureTarget>& target) final;
   void Start(mojo::PendingRemote<mojom::FrameSinkVideoConsumer> consumer) final;
   void Stop() final;
   void RequestRefreshFrame() final;
@@ -261,13 +260,8 @@ class VIZ_SERVICE_EXPORT FrameSinkVideoCapturerImpl final
   const std::unique_ptr<media::VideoCaptureOracle> oracle_;
 
   // The target requested by the client, as provided in the last call to
-  // ChangeTarget().
-  FrameSinkId requested_target_;
-
-  // A specifier that indicates what region of the layer should be captured.
-  // If not valid, then the root render pass of the target frame sink should
-  // be captured.
-  CapturableFrameSink::RegionSpecifier region_specifier_;
+  // ChangeTarget(). May be nullopt if no target is currently set.
+  absl::optional<VideoCaptureTarget> target_;
 
   // The resolved target of video capture, or null if the requested target does
   // not yet exist (or no longer exists).

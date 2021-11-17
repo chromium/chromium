@@ -30,10 +30,15 @@ interface FrameSinkVideoConsumerFrameCallbacks {
 };
 
 // Provided with FrameSinkVideoConsumer::ChangeTarget() to indicate what
-// sub target specifier should be used, if any.
-union SubTarget {
+// target should be selected for capture.
+union VideoCaptureSubTarget {
   SubtreeCaptureId subtree_capture_id;
   mojo_base.mojom.Token region_capture_crop_id;
+};
+
+struct VideoCaptureTarget {
+  FrameSinkId frame_sink_id;
+  VideoCaptureSubTarget? sub_target;
 };
 
 // Interface for a consumer that receives frames and notifications related to
@@ -127,8 +132,9 @@ interface FrameSinkVideoCapturer {
   SetAutoThrottlingEnabled(bool enabled);
 
   // Targets a different compositor frame sink. This may be called anytime,
-  // before or after Start(). If |frame_sink_id| is null, capture will suspend
-  // until a new frame sink target is set.
+  // before or after Start(). If |target| is null, capture will suspend
+  // until a new frame sink target is set. If |target| is provided, the
+  // frame sink identifier associated with it must be valid.
   // If the |sub_target| is a valid subtree capture id, the capturer will
   // capture a render pass associated with a layer subtree under the target
   // frame sink, which is identifiable by that
@@ -136,7 +142,7 @@ interface FrameSinkVideoCapturer {
   // crop id, only the region associated with that crop id will be captured.
   // Otherwise, the capturer captures the root render pass of the target frame
   // sink.
-  ChangeTarget(FrameSinkId? frame_sink_id, SubTarget? sub_target);
+  ChangeTarget(VideoCaptureTarget? target);
 
   // Starts emitting video frames to the given |consumer|.
   Start(pending_remote<FrameSinkVideoConsumer> consumer);
@@ -150,7 +156,7 @@ interface FrameSinkVideoCapturer {
   // resolve occasional "picture loss" issues consumer-side.
   RequestRefreshFrame();
 
-  // Creates an overlay to be renderered within each captured video frame. The
+  // Creates an overlay to be rendered within each captured video frame. The
   // |stacking_index| is an arbitrary value that determines whether to render
   // this overlay before/after other overlays. Greater values mean "after" and
   // "on top of" those with lesser values. Specifying the same index as an

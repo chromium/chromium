@@ -86,11 +86,7 @@ void DevToolsVideoConsumer::SetFrameSinkId(
     const viz::FrameSinkId& frame_sink_id) {
   frame_sink_id_ = frame_sink_id;
   if (capturer_) {
-    capturer_->ChangeTarget(
-        frame_sink_id_.is_valid()
-            ? absl::make_optional<viz::FrameSinkId>(frame_sink_id_)
-            : absl::nullopt,
-        nullptr);
+    capturer_->ChangeTarget(viz::VideoCaptureTarget(frame_sink_id_));
   }
 }
 
@@ -132,7 +128,7 @@ void DevToolsVideoConsumer::InnerStartCapture(
                                       kDefaultUseFixedAspectRatio);
   capturer_->SetFormat(pixel_format_, color_space_);
   if (frame_sink_id_.is_valid())
-    capturer_->ChangeTarget(frame_sink_id_, nullptr);
+    capturer_->ChangeTarget(viz::VideoCaptureTarget(frame_sink_id_));
 
   capturer_->Start(this);
 }

@@ -303,7 +303,7 @@ std::unique_ptr<viz::ClientFrameSinkVideoCapturer>
 RenderWidgetHostViewBase::CreateVideoCapturer() {
   std::unique_ptr<viz::ClientFrameSinkVideoCapturer> video_capturer =
       GetHostFrameSinkManager()->CreateVideoCapturer();
-  video_capturer->ChangeTarget(GetFrameSinkId(), nullptr);
+  video_capturer->ChangeTarget(viz::VideoCaptureTarget(GetFrameSinkId()));
   return video_capturer;
 }
 

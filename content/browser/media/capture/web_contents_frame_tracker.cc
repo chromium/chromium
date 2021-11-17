@@ -212,14 +212,16 @@ void WebContentsFrameTracker::Crop(
 
   crop_id_ = crop_id;
 
-  const FrameSinkVideoCaptureDevice::VideoCaptureTarget target(
-      target_frame_sink_id_.value_or(viz::FrameSinkId()),
-      viz::SubtreeCaptureId(), crop_id_);
+  // If we don't have a target yet, we can store the crop ID but cannot actually
+  // crop yet.
+  if (!target_frame_sink_id_.is_valid())
+    return;
 
+  const viz::VideoCaptureTarget target(target_frame_sink_id_, crop_id_);
   device_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(
-          [](const FrameSinkVideoCaptureDevice::VideoCaptureTarget& target,
+          [](const viz::VideoCaptureTarget& target,
              base::OnceCallback<void(media::mojom::CropRequestResult)> callback,
              base::WeakPtr<WebContentsVideoCaptureDevice> device) {
             if (!device) {
@@ -252,20 +254,26 @@ void WebContentsFrameTracker::OnPossibleTargetChange() {
     return;
   }
 
-  // TODO(crbug.com/1247761): Clear |crop_id_| when share-this-tab-instead
-  // is clicked.
-
   viz::FrameSinkId frame_sink_id;
   if (context_) {
     frame_sink_id = context_->GetFrameSinkIdForCapture();
   }
+
+  // TODO(crbug.com/1247761): Clear |crop_id_| when share-this-tab-instead
+  // is clicked.
   if (frame_sink_id != target_frame_sink_id_) {
     target_frame_sink_id_ = frame_sink_id;
+    absl::optional<viz::VideoCaptureTarget> target;
+    if (frame_sink_id.is_valid()) {
+      target = viz::VideoCaptureTarget(frame_sink_id, crop_id_);
+    }
+
+    // The target may change to an invalid one, but we don't consider it
+    // permanently lost here yet.
     device_task_runner_->PostTask(
         FROM_HERE,
         base::BindOnce(&WebContentsVideoCaptureDevice::OnTargetChanged, device_,
-                       FrameSinkVideoCaptureDevice::VideoCaptureTarget(
-                           frame_sink_id, viz::SubtreeCaptureId(), crop_id_)));
+                       std::move(target)));
   }
 
   SetTargetView(web_contents()->GetNativeView());

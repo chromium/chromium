@@ -13,8 +13,7 @@
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "components/viz/common/surfaces/frame_sink_id.h"
-#include "components/viz/common/surfaces/region_capture_bounds.h"
-#include "components/viz/common/surfaces/subtree_capture_id.h"
+#include "components/viz/common/surfaces/video_capture_target.h"
 #include "components/viz/host/viz_host_export.h"
 #include "media/base/video_types.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -87,8 +86,7 @@ class VIZ_HOST_EXPORT ClientFrameSinkVideoCapturer
                                 const gfx::Size& max_size,
                                 bool use_fixed_aspect_ratio);
   void SetAutoThrottlingEnabled(bool enabled);
-  void ChangeTarget(const absl::optional<FrameSinkId>& frame_sink_id,
-                    mojom::SubTargetPtr sub_target);
+  void ChangeTarget(const absl::optional<VideoCaptureTarget>& target);
   void Stop();
   void RequestRefreshFrame();
 
@@ -155,8 +153,7 @@ class VIZ_HOST_EXPORT ClientFrameSinkVideoCapturer
   absl::optional<base::TimeDelta> min_size_change_period_;
   absl::optional<ResolutionConstraints> resolution_constraints_;
   absl::optional<bool> auto_throttling_enabled_;
-  absl::optional<FrameSinkId> target_;
-  mojom::SubTargetPtr sub_target_;
+  absl::optional<VideoCaptureTarget> target_;
   // Overlays are owned by the callers of CreateOverlay().
   std::vector<Overlay*> overlays_;
   bool is_started_ = false;

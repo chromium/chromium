@@ -403,7 +403,8 @@ void FrameSinkManagerImpl::RegisterCompositorFrameSinkSupport(
   support_map_[frame_sink_id] = support;
 
   for (auto& capturer : video_capturers_) {
-    if (capturer->requested_target() == frame_sink_id)
+    if (capturer->target() &&
+        capturer->target()->frame_sink_id == frame_sink_id)
       capturer->SetResolvedTarget(support);
   }
 
@@ -423,7 +424,8 @@ void FrameSinkManagerImpl::UnregisterCompositorFrameSinkSupport(
     observer.OnDestroyedCompositorFrameSink(frame_sink_id);
 
   for (auto& capturer : video_capturers_) {
-    if (capturer->requested_target() == frame_sink_id)
+    if (capturer->target() &&
+        capturer->target()->frame_sink_id == frame_sink_id)
       capturer->OnTargetWillGoAway();
   }
 

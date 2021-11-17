@@ -229,26 +229,16 @@ void FrameSinkVideoCapturerImpl::SetAutoThrottlingEnabled(bool enabled) {
 }
 
 void FrameSinkVideoCapturerImpl::ChangeTarget(
-    const absl::optional<FrameSinkId>& frame_sink_id,
-    mojom::SubTargetPtr sub_target) {
+    const absl::optional<VideoCaptureTarget>& target) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  target_ = target;
 
-  if (frame_sink_id) {
-    requested_target_ = *frame_sink_id;
-    region_specifier_ =
-        !sub_target ? CapturableFrameSink::RegionSpecifier()
-                    : sub_target->is_subtree_capture_id()
-                          ? sub_target->get_subtree_capture_id()
-                          : sub_target->is_region_capture_crop_id()
-                                ? sub_target->get_region_capture_crop_id()
-                                : CapturableFrameSink::RegionSpecifier();
-    SetResolvedTarget(
-        frame_sink_manager_->FindCapturableFrameSink(requested_target_));
-  } else {
-    requested_target_ = FrameSinkId();
-    region_specifier_ = CapturableFrameSink::RegionSpecifier();
-    SetResolvedTarget(nullptr);
+  CapturableFrameSink* resolved_target = nullptr;
+  if (target_) {
+    resolved_target =
+        frame_sink_manager_->FindCapturableFrameSink(target_->frame_sink_id);
   }
+  SetResolvedTarget(resolved_target);
 }
 
 void FrameSinkVideoCapturerImpl::Start(
@@ -360,8 +350,9 @@ void FrameSinkVideoCapturerImpl::RefreshSoon() {
   }
 
   // Detect whether the source size changed before attempting capture.
+  DCHECK(target_);
   const gfx::Rect capture_region =
-      resolved_target_->GetCopyOutputRequestRegion(region_specifier_);
+      resolved_target_->GetCopyOutputRequestRegion(target_->sub_target);
   if (capture_region.IsEmpty()) {
     // If the capture region is empty, it means one of two things: the first
     // frame has not been composited yet or the current region selected for
@@ -397,15 +388,16 @@ void FrameSinkVideoCapturerImpl::OnFrameDamaged(
   DCHECK(!damage_rect.IsEmpty());
   DCHECK(!expected_display_time.is_null());
   DCHECK(resolved_target_);
+  DCHECK(target_);
 
   const gfx::Rect capture_region =
-      resolved_target_->GetCopyOutputRequestRegion(region_specifier_);
+      resolved_target_->GetCopyOutputRequestRegion(target_->sub_target);
   if (capture_region.IsEmpty()) {
     return;
   }
 
   if (capture_region.size() == oracle_->source_size()) {
-    if (!absl::holds_alternative<absl::monostate>(region_specifier_)) {
+    if (!absl::holds_alternative<absl::monostate>(target_->sub_target)) {
       // The damage_rect may not be in the same coordinate space when we have
       // a valid request subtree identifier, so to be safe we just invalidate
       // the entire source.
@@ -485,6 +477,7 @@ void FrameSinkVideoCapturerImpl::MaybeCaptureFrame(
     const CompositorFrameMetadata& frame_metadata) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(resolved_target_);
+  DCHECK(target_);
 
   // Consult the oracle to determine whether this frame should be captured.
   if (oracle_->ObserveEventAndDecideCapture(event, damage_rect, event_time)) {
@@ -678,7 +671,7 @@ void FrameSinkVideoCapturerImpl::MaybeCaptureFrame(
   // size of the capture region. If the capture region is empty, we shouldn't
   // capture.
   const gfx::Rect capture_region =
-      resolved_target_->GetCopyOutputRequestRegion(region_specifier_);
+      resolved_target_->GetCopyOutputRequestRegion(target_->sub_target);
   if (capture_region.IsEmpty()) {
     return;
   }
@@ -724,8 +717,8 @@ void FrameSinkVideoCapturerImpl::MaybeCaptureFrame(
   }
 
   const SubtreeCaptureId subtree_id =
-      absl::holds_alternative<SubtreeCaptureId>(region_specifier_)
-          ? absl::get<SubtreeCaptureId>(region_specifier_)
+      absl::holds_alternative<SubtreeCaptureId>(target_->sub_target)
+          ? absl::get<SubtreeCaptureId>(target_->sub_target)
           : SubtreeCaptureId();
 
   resolved_target_->RequestCopyOfOutput(

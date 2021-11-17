@@ -110,20 +110,13 @@ class MockFrameSinkVideoCapturer : public viz::mojom::FrameSinkVideoCapturer {
                     const gfx::Size& max_size,
                     bool use_fixed_aspect_ratio));
   MOCK_METHOD1(SetAutoThrottlingEnabled, void(bool));
-  void ChangeTarget(const absl::optional<viz::FrameSinkId>& frame_sink_id,
-                    viz::mojom::SubTargetPtr sub_target) final {
+  void ChangeTarget(
+      const absl::optional<viz::VideoCaptureTarget>& target) final {
     DCHECK_NOT_ON_DEVICE_THREAD();
-    viz::SubtreeCaptureId subtree_id;
-    if (sub_target && sub_target->is_subtree_capture_id()) {
-      subtree_id = sub_target->get_subtree_capture_id();
-    }
-    MockChangeTarget(FrameSinkVideoCaptureDevice::VideoCaptureTarget(
-        frame_sink_id.value_or(viz::FrameSinkId{}), subtree_id,
-        /*crop_id=*/base::Token()));
+    MockChangeTarget(target);
   }
-  MOCK_METHOD1(
-      MockChangeTarget,
-      void(const FrameSinkVideoCaptureDevice::VideoCaptureTarget& target));
+  MOCK_METHOD1(MockChangeTarget,
+               void(const absl::optional<viz::VideoCaptureTarget>& target));
   void Start(
       mojo::PendingRemote<viz::mojom::FrameSinkVideoConsumer> consumer) final {
     DCHECK_NOT_ON_DEVICE_THREAD();
@@ -351,10 +344,10 @@ class FrameSinkVideoCaptureDeviceTest : public testing::Test {
     EXPECT_CALL(capturer_, SetMinCapturePeriod(kMinCapturePeriod));
     EXPECT_CALL(capturer_,
                 SetResolutionConstraints(kResolution, kResolution, _));
-    FrameSinkVideoCaptureDevice::VideoCaptureTarget target(
-        viz::FrameSinkId{1, 1}, viz::SubtreeCaptureId(),
-        /*crop_id=*/base::Token());
-    EXPECT_CALL(capturer_, MockChangeTarget(target));
+    const viz::VideoCaptureTarget target(viz::FrameSinkId{1, 1});
+    EXPECT_CALL(
+        capturer_,
+        MockChangeTarget(absl::optional<viz::VideoCaptureTarget>(target)));
     EXPECT_CALL(capturer_, MockStart(NotNull()));
 
     EXPECT_FALSE(capturer_.is_bound());
@@ -602,9 +595,8 @@ TEST_F(FrameSinkVideoCaptureDeviceTest, ShutsDownOnFatalError) {
   // consumption, unbind the capturer, log an error with the VideoFrameReceiver,
   // and destroy the VideoFrameReceiver.
   {
-    EXPECT_CALL(
-        capturer_,
-        MockChangeTarget(FrameSinkVideoCaptureDevice::VideoCaptureTarget()));
+    EXPECT_CALL(capturer_,
+                MockChangeTarget(absl::optional<viz::VideoCaptureTarget>()));
     EXPECT_CALL(capturer_, MockStop());
     POST_DEVICE_METHOD_CALL0(OnTargetPermanentlyLost);
     WAIT_FOR_DEVICE_TASKS();

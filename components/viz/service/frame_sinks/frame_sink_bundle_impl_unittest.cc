@@ -120,12 +120,12 @@ struct TestFrameSink {
   TestFrameSink(
       FrameSinkManagerImpl& manager,
       const FrameSinkId& id,
-      const absl::optional<FrameSinkId>& parent_id,
+      const FrameSinkId& parent_id,
       const absl::optional<FrameSinkBundleId>& bundle_id = absl::nullopt)
       : manager_(manager), id_(id) {
     manager_.RegisterFrameSinkId(id, /*report_activation=*/true);
-    if (parent_id) {
-      manager_.RegisterFrameSinkHierarchy(*parent_id, id);
+    if (parent_id.is_valid()) {
+      manager_.RegisterFrameSinkHierarchy(parent_id, id);
     }
     manager_.CreateCompositorFrameSink(
         id, bundle_id, frame_sink.BindNewPipeAndPassReceiver(),

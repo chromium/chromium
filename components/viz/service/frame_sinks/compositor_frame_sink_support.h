@@ -22,6 +22,7 @@
 #include "components/viz/common/surfaces/region_capture_bounds.h"
 #include "components/viz/common/surfaces/surface_info.h"
 #include "components/viz/common/surfaces/surface_range.h"
+#include "components/viz/common/surfaces/video_capture_target.h"
 #include "components/viz/service/frame_sinks/begin_frame_tracker.h"
 #include "components/viz/service/frame_sinks/surface_resource_holder.h"
 #include "components/viz/service/frame_sinks/surface_resource_holder_client.h"
@@ -199,7 +200,7 @@ class VIZ_SERVICE_EXPORT CompositorFrameSinkSupport
   void AttachCaptureClient(CapturableFrameSink::Client* client) override;
   void DetachCaptureClient(CapturableFrameSink::Client* client) override;
   gfx::Rect GetCopyOutputRequestRegion(
-      const CapturableFrameSink::RegionSpecifier& specifier) const override;
+      const VideoCaptureSubTarget& specifier) const override;
   void OnClientCaptureStarted() override;
   void OnClientCaptureStopped() override;
   void RequestCopyOfOutput(
