@@ -3,32 +3,31 @@
 // found in the LICENSE file.
 
 // clang-format off
-import {isChromeOS, isWindows, webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
-import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
+import {isChromeOS, webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
 import {listenOnce} from 'chrome://resources/js/util.m.js';
-import {flush,Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {ChooserType,ContentSetting,ContentSettingsTypes,SiteSettingSource,SiteSettingsPrefsBrowserProxyImpl,WebsiteUsageBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
-import {MetricsBrowserProxyImpl, PrivacyElementInteractions, Route,Router,routes} from 'chrome://settings/settings.js';
+import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {ChooserType, ContentSetting, ContentSettingsTypes, SiteDetailsElement, SiteSettingSource, SiteSettingsPrefsBrowserProxyImpl, WebsiteUsageBrowserProxy, WebsiteUsageBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
+import {MetricsBrowserProxyImpl, PrivacyElementInteractions, Router, routes} from 'chrome://settings/settings.js';
+import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
 import {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
 import {TestSiteSettingsPrefsBrowserProxy} from './test_site_settings_prefs_browser_proxy.js';
-import {createContentSettingTypeToValuePair,createRawChooserException,createRawSiteException,createSiteSettingsPrefs} from './test_util.js';
+import {createContentSettingTypeToValuePair, createRawChooserException, createRawSiteException, createSiteSettingsPrefs, SiteSettingsPref} from './test_util.js';
 
 // clang-format on
 
-class TestWebsiteUsageBrowserProxy extends TestBrowserProxy {
+class TestWebsiteUsageBrowserProxy extends TestBrowserProxy implements
+    WebsiteUsageBrowserProxy {
   constructor() {
     super(['clearUsage', 'fetchUsageTotal']);
   }
 
-  /** @override */
-  fetchUsageTotal(host) {
+  fetchUsageTotal(host: string) {
     this.methodCalled('fetchUsageTotal', host);
   }
 
-  /** @override */
-  clearUsage(origin) {
+  clearUsage(origin: string) {
     this.methodCalled('clearUsage', origin);
   }
 }
@@ -37,30 +36,25 @@ class TestWebsiteUsageBrowserProxy extends TestBrowserProxy {
 suite('SiteDetails', function() {
   /**
    * A site list element created before each test.
-   * @type {SiteDetails}
    */
-  let testElement;
+  let testElement: SiteDetailsElement;
 
   /**
    * An example pref with 1 pref in each category.
-   * @type {SiteSettingsPref}
    */
-  let prefs;
+  let prefs: SiteSettingsPref;
 
   /**
    * The mock site settings prefs proxy object to use during test.
-   * @type {TestSiteSettingsPrefsBrowserProxy}
    */
-  let browserProxy;
+  let browserProxy: TestSiteSettingsPrefsBrowserProxy;
 
-  /** @type {!TestMetricsBrowserProxy} */
-  let testMetricsBrowserProxy;
+  let testMetricsBrowserProxy: TestMetricsBrowserProxy;
 
   /**
    * The mock website usage proxy object to use during test.
-   * @type {TestWebsiteUsageBrowserProxy}
    */
-  let websiteUsageProxy;
+  let websiteUsageProxy: TestWebsiteUsageBrowserProxy;
 
   // Initialize a site-details before each test.
   setup(function() {
@@ -185,10 +179,10 @@ suite('SiteDetails', function() {
     websiteUsageProxy = new TestWebsiteUsageBrowserProxy();
     WebsiteUsageBrowserProxyImpl.setInstance(websiteUsageProxy);
 
-    PolymerTest.clearBody();
+    document.body.innerHTML = '';
   });
 
-  function createSiteDetails(origin) {
+  function createSiteDetails(origin: string) {
     const siteDetailsElement = document.createElement('site-details');
     document.body.appendChild(siteDetailsElement);
     Router.getInstance().navigateTo(
@@ -201,28 +195,24 @@ suite('SiteDetails', function() {
     browserProxy.setPrefs(prefs);
     testElement = createSiteDetails('https://foo.com:443');
     await websiteUsageProxy.whenCalled('fetchUsageTotal');
-    assertTrue(!!testElement.shadowRoot.querySelector('#usage'));
+    assertTrue(!!testElement.$.usage);
 
     // When there's no usage, there should be a string that says so.
     assertEquals(
         '',
-        testElement.shadowRoot.querySelector('#storedData').textContent.trim());
-    assertFalse(testElement.shadowRoot.querySelector('#noStorage').hidden);
-    assertTrue(testElement.shadowRoot.querySelector('#storage').hidden);
-    assertTrue(
-        testElement.shadowRoot.querySelector('#usage').innerText.indexOf(
-            'No usage data') !== -1);
+        testElement.shadowRoot!.querySelector(
+                                   '#storedData')!.textContent!.trim());
+    assertFalse(testElement.$.noStorage.hidden);
+    assertTrue(testElement.$.storage.hidden);
+    assertTrue(testElement.$.usage.textContent!.includes('No usage data'));
 
     // If there is, check the correct amount of usage is specified.
     const usage = '1 KB';
     webUIListenerCallback(
         'usage-total-changed', 'foo.com', usage, '10 cookies');
-    flush();
-    assertTrue(testElement.shadowRoot.querySelector('#noStorage').hidden);
-    assertFalse(testElement.shadowRoot.querySelector('#storage').hidden);
-    assertTrue(
-        testElement.shadowRoot.querySelector('#usage').innerText.indexOf(
-            usage) !== -1);
+    assertTrue(testElement.$.noStorage.hidden);
+    assertFalse(testElement.$.storage.hidden);
+    assertTrue(testElement.$.usage.textContent!.includes(usage));
   });
 
   test('storage gets trashed properly', function() {
@@ -232,8 +222,6 @@ suite('SiteDetails', function() {
 
     flush();
 
-    // Call onOriginChanged_() manually to simulate a new navigation.
-    testElement.currentRouteChanged(Route);
     return Promise
         .all([
           browserProxy.whenCalled('getOriginPermissions'),
@@ -246,14 +234,14 @@ suite('SiteDetails', function() {
               'usage-total-changed', hostRequested, '1 KB', '10 cookies');
           assertEquals(
               '1 KB',
-              testElement.shadowRoot.querySelector('#storedData')
-                  .textContent.trim());
-          assertTrue(testElement.shadowRoot.querySelector('#noStorage').hidden);
-          assertFalse(testElement.shadowRoot.querySelector('#storage').hidden);
+              testElement.shadowRoot!.querySelector(
+                                         '#storedData')!.textContent!.trim());
+          assertTrue(testElement.$.noStorage.hidden);
+          assertFalse(testElement.$.storage.hidden);
 
-          testElement.shadowRoot
-              .querySelector('#confirmClearStorage .action-button')
-              .click();
+          testElement.shadowRoot!
+              .querySelector<HTMLElement>(
+                  '#confirmClearStorage .action-button')!.click();
           return websiteUsageProxy.whenCalled('clearUsage');
         })
         .then(originCleared => {
@@ -266,8 +254,6 @@ suite('SiteDetails', function() {
     browserProxy.setPrefs(prefs);
     testElement = createSiteDetails(origin);
 
-    // Call onOriginChanged_() manually to simulate a new navigation.
-    testElement.currentRouteChanged(Route);
     return Promise
         .all([
           browserProxy.whenCalled('getOriginPermissions'),
@@ -282,14 +268,14 @@ suite('SiteDetails', function() {
               'usage-total-changed', hostRequested, '1 KB', '10 cookies');
           assertEquals(
               '10 cookies',
-              testElement.shadowRoot.querySelector('#numCookies')
-                  .textContent.trim());
-          assertTrue(testElement.shadowRoot.querySelector('#noStorage').hidden);
-          assertFalse(testElement.shadowRoot.querySelector('#storage').hidden);
+              testElement.shadowRoot!.querySelector(
+                                         '#numCookies')!.textContent!.trim());
+          assertTrue(testElement.$.noStorage.hidden);
+          assertFalse(testElement.$.storage.hidden);
 
-          testElement.shadowRoot
-              .querySelector('#confirmClearStorage .action-button')
-              .click();
+          testElement.shadowRoot!
+              .querySelector<HTMLElement>(
+                  '#confirmClearStorage .action-button')!.click();
           return websiteUsageProxy.whenCalled('clearUsage');
         })
         .then(originCleared => {
@@ -312,7 +298,7 @@ suite('SiteDetails', function() {
           return browserProxy.whenCalled('getOriginPermissions');
         })
         .then(() => {
-          testElement.root.querySelectorAll('site-details-permission')
+          testElement.shadowRoot!.querySelectorAll('site-details-permission')
               .forEach((siteDetailsPermission) => {
                 if (!isChromeOS &&
                     siteDetailsPermission.category ===
@@ -338,10 +324,10 @@ suite('SiteDetails', function() {
                     siteDetailsPermission.category ===
                         ContentSettingsTypes.FILE_SYSTEM_WRITE) {
                   expectedSetting =
-                      prefs.exceptions[siteDetailsPermission.category][0]
+                      prefs.exceptions[siteDetailsPermission.category][0]!
                           .setting;
                   expectedSource =
-                      prefs.exceptions[siteDetailsPermission.category][0]
+                      prefs.exceptions[siteDetailsPermission.category][0]!
                           .source;
                   expectedMenuValue =
                       (expectedSource === SiteSettingSource.DEFAULT) ?
@@ -370,7 +356,7 @@ suite('SiteDetails', function() {
           return browserProxy.whenCalled('getOriginPermissions');
         })
         .then(() => {
-          testElement.root.querySelectorAll('site-details-permission')
+          testElement.shadowRoot!.querySelectorAll('site-details-permission')
               .forEach((siteDetailsPermission) => {
                 const shouldBeVisible = siteDetailsPermission.category ===
                         ContentSettingsTypes.NOTIFICATIONS ||
@@ -391,12 +377,14 @@ suite('SiteDetails', function() {
 
     // Check both cancelling and accepting the dialog closes it.
     ['cancel-button', 'action-button'].forEach(buttonType => {
-      testElement.shadowRoot.querySelector('#resetSettingsButton').click();
+      testElement.shadowRoot!
+          .querySelector<HTMLElement>('#resetSettingsButton')!.click();
       assertTrue(testElement.$.confirmResetSettings.open);
       const actionButtonList =
-          testElement.$.confirmResetSettings.getElementsByClassName(buttonType);
+          testElement.shadowRoot!.querySelectorAll<HTMLElement>(
+              `#confirmResetSettings .${buttonType}`);
       assertEquals(1, actionButtonList.length);
-      actionButtonList[0].click();
+      actionButtonList[0]!.click();
       assertFalse(testElement.$.confirmResetSettings.open);
     });
 
@@ -415,12 +403,14 @@ suite('SiteDetails', function() {
 
     // Check both cancelling and accepting the dialog closes it.
     ['cancel-button', 'action-button'].forEach(buttonType => {
-      testElement.shadowRoot.querySelector('#usage cr-button').click();
+      testElement.shadowRoot!.querySelector<HTMLElement>(
+                                 '#usage cr-button')!.click();
       assertTrue(testElement.$.confirmClearStorage.open);
       const actionButtonList =
-          testElement.$.confirmClearStorage.getElementsByClassName(buttonType);
+          testElement.shadowRoot!.querySelectorAll<HTMLElement>(
+              `#confirmClearStorage .${buttonType}`);
       assertEquals(1, actionButtonList.length);
-      actionButtonList[0].click();
+      actionButtonList[0]!.click();
       assertFalse(testElement.$.confirmClearStorage.open);
     });
   });
@@ -430,9 +420,10 @@ suite('SiteDetails', function() {
     const origin = 'https://foo.com:443';
     testElement = createSiteDetails(origin);
 
-    const elems = testElement.root.querySelectorAll('site-details-permission');
+    const elems =
+        testElement.shadowRoot!.querySelectorAll('site-details-permission');
     const notificationPermission = Array.from(elems).find(
-        elem => elem.category === ContentSettingsTypes.NOTIFICATIONS);
+        elem => elem.category === ContentSettingsTypes.NOTIFICATIONS)!;
 
     // Wait for all the permissions to be populated initially.
     return browserProxy.whenCalled('isOriginValid')
@@ -448,12 +439,12 @@ suite('SiteDetails', function() {
               ContentSetting.ASK, notificationPermission.$.permission.value);
 
           // Set new prefs and make sure only that permission is updated.
-          const newException = {
+          const newException = createRawSiteException(origin, {
             embeddingOrigin: origin,
             origin: origin,
             setting: ContentSetting.BLOCK,
             source: SiteSettingSource.DEFAULT,
-          };
+          });
           browserProxy.resetResolver('getOriginPermissions');
           browserProxy.setSingleException(
               ContentSettingsTypes.NOTIFICATIONS, newException);

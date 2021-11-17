@@ -3,31 +3,29 @@
 // found in the LICENSE file.
 
 // clang-format off
-import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {ContentSetting,ContentSettingsTypes,SiteSettingSource,SiteSettingsPrefsBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
+import {ContentSetting, ContentSettingsTypes, SiteDetailsPermissionElement, SiteSettingSource, SiteSettingsPrefsBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
+import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+
 import {TestSiteSettingsPrefsBrowserProxy} from './test_site_settings_prefs_browser_proxy.js';
-import {createContentSettingTypeToValuePair,createDefaultContentSetting,createRawSiteException,createSiteSettingsPrefs} from './test_util.js';
+import {createContentSettingTypeToValuePair, createDefaultContentSetting, createRawSiteException, createSiteSettingsPrefs, SiteSettingsPref} from './test_util.js';
 // clang-format on
 
 /** @fileoverview Suite of tests for site-details. */
 suite('SiteDetailsPermission', function() {
   /**
    * A site list element created before each test.
-   * @type {SiteDetailsPermission}
    */
-  let testElement;
+  let testElement: SiteDetailsPermissionElement;
 
   /**
    * The mock proxy object to use during test.
-   * @type {TestSiteSettingsPrefsBrowserProxy}
    */
-  let browserProxy;
+  let browserProxy: TestSiteSettingsPrefsBrowserProxy;
 
   /**
    * An example pref with only camera allowed.
-   * @type {SiteSettingsPref}
    */
-  let prefs;
+  let prefs: SiteSettingsPref;
 
   // Initialize a site-details-permission before each test.
   setup(function() {
@@ -42,12 +40,13 @@ suite('SiteDetailsPermission', function() {
 
     browserProxy = new TestSiteSettingsPrefsBrowserProxy();
     SiteSettingsPrefsBrowserProxyImpl.setInstance(browserProxy);
-    PolymerTest.clearBody();
+    document.body.innerHTML = '';
     testElement = document.createElement('site-details-permission');
     document.body.appendChild(testElement);
   });
 
-  function validatePermissionFlipWorks(origin, expectedContentSetting) {
+  function validatePermissionFlipWorks(
+      origin: string, expectedContentSetting: ContentSetting) {
     browserProxy.resetResolver('setOriginPermissions');
 
     // Simulate permission change initiated by the user.
@@ -66,17 +65,18 @@ suite('SiteDetailsPermission', function() {
     browserProxy.setPrefs(prefs);
     testElement.category = ContentSettingsTypes.CAMERA;
     testElement.label = 'Camera';
-    testElement.site = {
+    testElement.site = createRawSiteException(origin, {
       origin: origin,
       embeddingOrigin: '',
       source: SiteSettingSource.PREFERENCE,
-    };
+    });
 
     assertFalse(testElement.$.details.hidden);
 
-    const header = testElement.$.details.querySelector('#permissionHeader');
+    const header =
+        testElement.$.details.querySelector<HTMLElement>('#permissionHeader')!;
     assertEquals(
-        'Camera', header.innerText.trim(),
+        'Camera', header.innerText!.trim(),
         'Widget should be labelled correctly');
 
     // Flip the permission and validate that prefs stay in sync.
@@ -97,12 +97,12 @@ suite('SiteDetailsPermission', function() {
     browserProxy.setPrefs(prefs);
     testElement.category = ContentSettingsTypes.CAMERA;
     testElement.label = 'Camera';
-    testElement.site = {
+    testElement.site = createRawSiteException(origin, {
       origin: origin,
       embeddingOrigin: '',
       setting: ContentSetting.ALLOW,
       source: SiteSettingSource.PREFERENCE,
-    };
+    });
 
     return browserProxy.whenCalled('getDefaultValueForContentType')
         .then((args) => {
@@ -111,7 +111,7 @@ suite('SiteDetailsPermission', function() {
 
           // The default option will always be the first in the menu.
           assertEquals(
-              'Allow (default)', testElement.$.permission.options[0].text,
+              'Allow (default)', testElement.$.permission.options[0]!.text,
               'Default setting string should match prefs');
           browserProxy.resetResolver('getDefaultValueForContentType');
           const defaultPrefs = createSiteSettingsPrefs(
@@ -126,7 +126,7 @@ suite('SiteDetailsPermission', function() {
         .then((args) => {
           assertEquals(ContentSettingsTypes.CAMERA, args);
           assertEquals(
-              'Block (default)', testElement.$.permission.options[0].text,
+              'Block (default)', testElement.$.permission.options[0]!.text,
               'Default setting string should match prefs');
           browserProxy.resetResolver('getDefaultValueForContentType');
           const defaultPrefs = createSiteSettingsPrefs(
@@ -139,7 +139,7 @@ suite('SiteDetailsPermission', function() {
         .then((args) => {
           assertEquals(ContentSettingsTypes.CAMERA, args);
           assertEquals(
-              'Ask (default)', testElement.$.permission.options[0].text,
+              'Ask (default)', testElement.$.permission.options[0]!.text,
               'Default setting string should match prefs');
         });
   });
@@ -150,36 +150,36 @@ suite('SiteDetailsPermission', function() {
 
     // Strings that should be shown for the permission sources that don't depend
     // on the ContentSetting value.
-    const permissionSourcesNoSetting = {};
-    permissionSourcesNoSetting[SiteSettingSource.DEFAULT] = '';
-    permissionSourcesNoSetting[SiteSettingSource.PREFERENCE] = '';
-    permissionSourcesNoSetting[SiteSettingSource.EMBARGO] =
-        'Automatically blocked';
-    permissionSourcesNoSetting[SiteSettingSource.INSECURE_ORIGIN] =
-        'Blocked to protect your privacy';
-    permissionSourcesNoSetting[SiteSettingSource.KILL_SWITCH] =
-        'Temporarily blocked to protect your security';
+    const permissionSourcesNoSetting: Map<SiteSettingSource, string> = new Map([
+      [SiteSettingSource.DEFAULT, ''],
+      [SiteSettingSource.EMBARGO, 'Automatically blocked'],
+      [SiteSettingSource.INSECURE_ORIGIN, 'Blocked to protect your privacy'],
+      [
+        SiteSettingSource.KILL_SWITCH,
+        'Temporarily blocked to protect your security'
+      ],
+      [SiteSettingSource.PREFERENCE, ''],
+    ]);
 
-    for (const testSource in permissionSourcesNoSetting) {
-      testElement.site = {
+    for (const [source, str] of permissionSourcesNoSetting) {
+      testElement.site = createRawSiteException(origin, {
         origin: origin,
         embeddingOrigin: origin,
         setting: ContentSetting.BLOCK,
-        source: testSource,
-      };
+        source,
+      });
       assertEquals(
-          permissionSourcesNoSetting[testSource] +
-              (permissionSourcesNoSetting[testSource].length === 0 ?
-                   'Block (default)\nAllow\nBlock\nAsk' :
-                   '\nBlock (default)\nAllow\nBlock\nAsk'),
+          str +
+              (str.length === 0 ? 'Block (default)\nAllow\nBlock\nAsk' :
+                                  '\nBlock (default)\nAllow\nBlock\nAsk'),
           testElement.$.permissionItem.innerText.trim());
       assertEquals(
-          permissionSourcesNoSetting[testSource] !== '',
+          str !== '',
           testElement.$.permissionItem.classList.contains('two-line'));
 
-      if (testSource !== SiteSettingSource.DEFAULT &&
-          testSource !== SiteSettingSource.PREFERENCE &&
-          testSource !== SiteSettingSource.EMBARGO) {
+      if (source !== SiteSettingSource.DEFAULT &&
+          source !== SiteSettingSource.PREFERENCE &&
+          source !== SiteSettingSource.EMBARGO) {
         assertTrue(testElement.$.permission.disabled);
       } else {
         assertFalse(testElement.$.permission.disabled);
@@ -187,59 +187,57 @@ suite('SiteDetailsPermission', function() {
     }
 
     // Permissions that have been set by extensions.
-    const extensionSourceStrings = {};
-    extensionSourceStrings[ContentSetting.ALLOW] = 'Allowed by an extension';
-    extensionSourceStrings[ContentSetting.BLOCK] = 'Blocked by an extension';
-    extensionSourceStrings[ContentSetting.ASK] =
-        'Setting controlled by an extension';
+    const extensionSourceStrings: Map<ContentSetting, string> = new Map([
+      [ContentSetting.ALLOW, 'Allowed by an extension'],
+      [ContentSetting.BLOCK, 'Blocked by an extension'],
+      [ContentSetting.ASK, 'Setting controlled by an extension'],
+    ]);
 
-    for (const testSetting in extensionSourceStrings) {
-      testElement.site = {
+    for (const [setting, str] of extensionSourceStrings) {
+      testElement.site = createRawSiteException(origin, {
         origin: origin,
         embeddingOrigin: origin,
-        setting: testSetting,
+        setting,
         source: SiteSettingSource.EXTENSION,
-      };
+      });
       assertEquals(
-          extensionSourceStrings[testSetting] +
-              '\nBlock (default)\nAllow\nBlock\nAsk',
+          str + '\nBlock (default)\nAllow\nBlock\nAsk',
           testElement.$.permissionItem.innerText.trim());
       assertTrue(testElement.$.permissionItem.classList.contains('two-line'));
       assertTrue(testElement.$.permission.disabled);
-      assertEquals(testSetting, testElement.$.permission.value);
+      assertEquals(setting, testElement.$.permission.value);
     }
 
     // Permissions that have been set by enterprise policy.
-    const policySourceStrings = {};
-    policySourceStrings[ContentSetting.ALLOW] = 'Allowed by your administrator';
-    policySourceStrings[ContentSetting.BLOCK] = 'Blocked by your administrator';
-    policySourceStrings[ContentSetting.ASK] =
-        'Setting controlled by your administrator';
+    const policySourceStrings: Map<ContentSetting, string> = new Map([
+      [ContentSetting.ALLOW, 'Allowed by your administrator'],
+      [ContentSetting.ASK, 'Setting controlled by your administrator'],
+      [ContentSetting.BLOCK, 'Blocked by your administrator'],
+    ]);
 
-    for (const testSetting in policySourceStrings) {
-      testElement.site = {
+    for (const [setting, str] of policySourceStrings) {
+      testElement.site = createRawSiteException(origin, {
         origin: origin,
         embeddingOrigin: origin,
-        setting: testSetting,
+        setting,
         source: SiteSettingSource.POLICY,
-      };
+      });
       assertEquals(
-          policySourceStrings[testSetting] +
-              '\nBlock (default)\nAllow\nBlock\nAsk',
+          str + '\nBlock (default)\nAllow\nBlock\nAsk',
           testElement.$.permissionItem.innerText.trim());
       assertTrue(testElement.$.permissionItem.classList.contains('two-line'));
       assertTrue(testElement.$.permission.disabled);
-      assertEquals(testSetting, testElement.$.permission.value);
+      assertEquals(setting, testElement.$.permission.value);
     }
 
     // Finally, check if changing the source from a non-user-controlled setting
     // (policy) back to a user-controlled one re-enables the control.
-    testElement.site = {
+    testElement.site = createRawSiteException(origin, {
       origin: origin,
       embeddingOrigin: origin,
       setting: ContentSetting.ASK,
       source: SiteSettingSource.DEFAULT,
-    };
+    });
     assertEquals(
         'Ask (default)\nAllow\nBlock\nAsk',
         testElement.$.permissionItem.innerText.trim());
@@ -250,12 +248,12 @@ suite('SiteDetailsPermission', function() {
   test('info string correct for ads', function() {
     const origin = 'https://www.example.com';
     testElement.category = ContentSettingsTypes.ADS;
-    testElement.site = {
+    testElement.site = createRawSiteException(origin, {
       origin: origin,
       embeddingOrigin: origin,
       setting: ContentSetting.BLOCK,
       source: SiteSettingSource.ADS_FILTER_BLACKLIST,
-    };
+    });
     assertEquals(
         'Site shows intrusive or misleading ads' +
             '\nAllow\nBlock\nAsk',
@@ -264,12 +262,12 @@ suite('SiteDetailsPermission', function() {
     assertFalse(testElement.$.permission.disabled);
 
     // Check the string that shows when ads is blocked but not blacklisted.
-    testElement.site = {
+    testElement.site = createRawSiteException(origin, {
       origin: origin,
       embeddingOrigin: origin,
       setting: ContentSetting.BLOCK,
       source: SiteSettingSource.PREFERENCE,
-    };
+    });
     assertEquals(
         'Block if site shows intrusive or misleading ads' +
             '\nAllow\nBlock\nAsk',
@@ -278,12 +276,12 @@ suite('SiteDetailsPermission', function() {
     assertFalse(testElement.$.permission.disabled);
 
     // Ditto for default block settings.
-    testElement.site = {
+    testElement.site = createRawSiteException(origin, {
       origin: origin,
       embeddingOrigin: origin,
       setting: ContentSetting.BLOCK,
       source: SiteSettingSource.DEFAULT,
-    };
+    });
     assertEquals(
         'Block if site shows intrusive or misleading ads' +
             '\nBlock (default)\nAllow\nBlock\nAsk',
@@ -292,12 +290,12 @@ suite('SiteDetailsPermission', function() {
     assertFalse(testElement.$.permission.disabled);
 
     // Allowing ads for unblacklisted sites shows nothing.
-    testElement.site = {
+    testElement.site = createRawSiteException(origin, {
       origin: origin,
       embeddingOrigin: origin,
       setting: ContentSetting.ALLOW,
       source: SiteSettingSource.PREFERENCE,
-    };
+    });
     assertEquals(
         'Block (default)\nAllow\nBlock\nAsk',
         testElement.$.permissionItem.innerText.trim());
@@ -309,12 +307,12 @@ suite('SiteDetailsPermission', function() {
     const origin = 'chrome://test';
     testElement.category = ContentSettingsTypes.NOTIFICATIONS;
     testElement.$.details.hidden = false;
-    testElement.site = {
+    testElement.site = createRawSiteException(origin, {
       origin: origin,
       embeddingOrigin: origin,
       setting: ContentSetting.ALLOW,
       source: SiteSettingSource.ALLOWLIST,
-    };
+    });
     assertEquals(
         'Allowlisted internally\nAllow\nBlock\nAsk',
         testElement.$.permissionItem.innerText.trim());
@@ -327,12 +325,12 @@ suite('SiteDetailsPermission', function() {
     browserProxy.setPrefs(prefs);
     testElement.category = ContentSettingsTypes.SOUND;
     testElement.label = 'Sound';
-    testElement.site = {
+    testElement.site = createRawSiteException(origin, {
       origin: origin,
       embeddingOrigin: '',
       setting: ContentSetting.ALLOW,
       source: SiteSettingSource.PREFERENCE,
-    };
+    });
 
     return browserProxy.whenCalled('getDefaultValueForContentType')
         .then((args) => {
@@ -341,7 +339,7 @@ suite('SiteDetailsPermission', function() {
 
           // The default option will always be the first in the menu.
           assertEquals(
-              'Allow (default)', testElement.$.permission.options[0].text,
+              'Allow (default)', testElement.$.permission.options[0]!.text,
               'Default setting string should match prefs');
           browserProxy.resetResolver('getDefaultValueForContentType');
           const defaultPrefs = createSiteSettingsPrefs(
@@ -356,7 +354,7 @@ suite('SiteDetailsPermission', function() {
         .then((args) => {
           assertEquals(ContentSettingsTypes.SOUND, args);
           assertEquals(
-              'Mute (default)', testElement.$.permission.options[0].text,
+              'Mute (default)', testElement.$.permission.options[0]!.text,
               'Default setting string should match prefs');
           browserProxy.resetResolver('getDefaultValueForContentType');
           testElement.useAutomaticLabel = true;
@@ -372,7 +370,7 @@ suite('SiteDetailsPermission', function() {
         .then((args) => {
           assertEquals(ContentSettingsTypes.SOUND, args);
           assertEquals(
-              'Automatic (default)', testElement.$.permission.options[0].text,
+              'Automatic (default)', testElement.$.permission.options[0]!.text,
               'Default setting string should match prefs');
         });
   });
@@ -382,12 +380,12 @@ suite('SiteDetailsPermission', function() {
     browserProxy.setPrefs(prefs);
     testElement.category = ContentSettingsTypes.SOUND;
     testElement.label = 'Sound';
-    testElement.site = {
+    testElement.site = createRawSiteException(origin, {
       origin: origin,
       embeddingOrigin: '',
       setting: ContentSetting.ALLOW,
       source: SiteSettingSource.PREFERENCE,
-    };
+    });
 
     return browserProxy.whenCalled('getDefaultValueForContentType')
         .then((args) => {
@@ -396,7 +394,7 @@ suite('SiteDetailsPermission', function() {
 
           // The block option will always be the third in the menu.
           assertEquals(
-              'Mute', testElement.$.permission.options[2].text,
+              'Mute', testElement.$.permission.options[2]!.text,
               'Block setting string should match prefs');
         });
   });
@@ -405,18 +403,19 @@ suite('SiteDetailsPermission', function() {
     const origin = 'https://www.example.com';
     testElement.category = ContentSettingsTypes.USB_DEVICES;
     testElement.label = 'USB';
-    testElement.site = {
+    testElement.site = createRawSiteException(origin, {
       origin: origin,
       embeddingOrigin: origin,
       setting: ContentSetting.ASK,
       source: SiteSettingSource.PREFERENCE,
-    };
+    });
 
     // In addition to the assertions below, the main goal of this test is to
     // ensure we do not hit any assertions when choosing ASK as a setting.
     assertEquals(testElement.$.permission.value, ContentSetting.ASK);
     assertFalse(testElement.$.permission.disabled);
-    assertFalse(testElement.$.permission.options.ask.hidden);
+    assertFalse(
+        testElement.$.permission.querySelector<HTMLElement>('#ask')!.hidden);
   });
 
   test(
@@ -425,31 +424,34 @@ suite('SiteDetailsPermission', function() {
         const origin = 'https://www.example.com';
         testElement.category = ContentSettingsTypes.BLUETOOTH_SCANNING;
         testElement.label = 'Bluetooth-scanning';
-        testElement.site = {
+        testElement.site = createRawSiteException(origin, {
           origin: origin,
           embeddingOrigin: origin,
           setting: ContentSetting.ASK,
           source: SiteSettingSource.PREFERENCE,
-        };
+        });
 
         // In addition to the assertions below, the main goal of this test is to
         // ensure we do not hit any assertions when choosing ASK as a setting.
         assertEquals(testElement.$.permission.value, ContentSetting.ASK);
         assertFalse(testElement.$.permission.disabled);
-        assertFalse(testElement.$.permission.options.ask.hidden);
+        assertFalse(testElement.$.permission.querySelector<HTMLElement>(
+                                                '#ask')!.hidden);
 
-        testElement.site = {
+        testElement.site = createRawSiteException(origin, {
           origin: origin,
           embeddingOrigin: origin,
           setting: ContentSetting.BLOCK,
           source: SiteSettingSource.PREFERENCE,
-        };
+        });
 
         // In addition to the assertions below, the main goal of this test is to
         // ensure we do not hit any assertions when choosing BLOCK as a setting.
         assertEquals(testElement.$.permission.value, ContentSetting.BLOCK);
         assertFalse(testElement.$.permission.disabled);
-        assertFalse(testElement.$.permission.options.block.hidden);
+        assertFalse(
+            testElement.$.permission.querySelector<HTMLElement>(
+                                        '#block')!.hidden);
       });
 
   test(
@@ -458,31 +460,34 @@ suite('SiteDetailsPermission', function() {
         const origin = 'https://www.example.com';
         testElement.category = ContentSettingsTypes.FILE_SYSTEM_WRITE;
         testElement.label = 'Save to original files';
-        testElement.site = {
+        testElement.site = createRawSiteException(origin, {
           origin: origin,
           embeddingOrigin: origin,
           setting: ContentSetting.ASK,
           source: SiteSettingSource.PREFERENCE,
-        };
+        });
 
         // In addition to the assertions below, the main goal of this test is to
         // ensure we do not hit any assertions when choosing ASK as a setting.
         assertEquals(testElement.$.permission.value, ContentSetting.ASK);
         assertFalse(testElement.$.permission.disabled);
-        assertFalse(testElement.$.permission.options.ask.hidden);
+        assertFalse(testElement.$.permission.querySelector<HTMLElement>(
+                                                '#ask')!.hidden);
 
-        testElement.site = {
+        testElement.site = createRawSiteException(origin, {
           origin: origin,
           embeddingOrigin: origin,
           setting: ContentSetting.BLOCK,
           source: SiteSettingSource.PREFERENCE,
-        };
+        });
 
         // In addition to the assertions below, the main goal of this test is to
         // ensure we do not hit any assertions when choosing BLOCK as a setting.
         assertEquals(testElement.$.permission.value, ContentSetting.BLOCK);
         assertFalse(testElement.$.permission.disabled);
-        assertFalse(testElement.$.permission.options.block.hidden);
+        assertFalse(
+            testElement.$.permission.querySelector<HTMLElement>(
+                                        '#block')!.hidden);
       });
 
   test('settingDetail string is respected', function() {
@@ -491,25 +496,25 @@ suite('SiteDetailsPermission', function() {
 
     testElement.category = ContentSettingsTypes.SOUND;
     testElement.label = 'Sound';
-    testElement.site = {
+    testElement.site = createRawSiteException(origin, {
       origin: origin,
       embeddingOrigin: '',
       setting: ContentSetting.ALLOW,
       source: SiteSettingSource.PREFERENCE,
-    };
+    });
 
     // Typically, the secondary text is hidden.
     assertTrue(testElement.$.permissionSecondary.hidden);
 
     testElement.category = ContentSettingsTypes.FILE_HANDLING;
     testElement.label = 'File handlers';
-    testElement.site = {
+    testElement.site = createRawSiteException(origin, {
       origin: origin,
       embeddingOrigin: '',
       setting: ContentSetting.ALLOW,
       source: SiteSettingSource.PREFERENCE,
       settingDetail: '.txt',
-    };
+    });
 
     // For file handlers with a `settingDetail`, the secondary text is shown.
     assertFalse(testElement.$.permissionSecondary.hidden);

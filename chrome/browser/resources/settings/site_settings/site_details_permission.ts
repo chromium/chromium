@@ -27,7 +27,10 @@ import {RawSiteException} from './site_settings_prefs_browser_proxy.js';
 
 export interface SiteDetailsPermissionElement {
   $: {
+    details: HTMLElement,
     permission: HTMLSelectElement,
+    permissionItem: HTMLElement,
+    permissionSecondary: HTMLElement,
   };
 }
 

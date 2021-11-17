@@ -40,10 +40,13 @@ import {SiteDetailsPermissionElement} from './site_details_permission.js';
 import {SiteSettingsMixin, SiteSettingsMixinInterface} from './site_settings_mixin.js';
 import {WebsiteUsageBrowserProxy, WebsiteUsageBrowserProxyImpl} from './website_usage_browser_proxy.js';
 
-interface SiteDetailsElement {
+export interface SiteDetailsElement {
   $: {
     confirmClearStorage: CrDialogElement,
     confirmResetSettings: CrDialogElement,
+    noStorage: HTMLElement,
+    storage: HTMLElement,
+    usage: HTMLElement,
   };
 }
 
@@ -55,7 +58,7 @@ const SiteDetailsElementBase =
       SiteSettingsMixinInterface & RouteObserverMixinInterface
     };
 
-class SiteDetailsElement extends SiteDetailsElementBase {
+export class SiteDetailsElement extends SiteDetailsElementBase {
   static get is() {
     return 'site-details';
   }
@@ -321,6 +324,12 @@ class SiteDetailsElement extends SiteDetailsElementBase {
 
   private onClearStorageDialogClosed_() {
     focusWithoutInk(assert(this.shadowRoot!.querySelector('#clearStorage')!));
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'site-details': SiteDetailsElement;
   }
 }
 
