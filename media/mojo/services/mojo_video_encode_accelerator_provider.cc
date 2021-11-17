@@ -7,11 +7,28 @@
 #include <memory>
 #include <utility>
 
+#include "base/no_destructor.h"
+#include "base/task/thread_pool.h"
 #include "media/base/bind_to_current_loop.h"
 #include "media/base/limits.h"
 #include "media/gpu/gpu_video_encode_accelerator_factory.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "mojo/public/cpp/system/platform_handle.h"
+
+namespace {
+void BindVEAProvider(
+    mojo::PendingReceiver<media::mojom::VideoEncodeAcceleratorProvider>
+        receiver,
+    media::MojoVideoEncodeAcceleratorProvider::
+        CreateAndInitializeVideoEncodeAcceleratorCallback create_vea_callback,
+    gpu::GpuPreferences gpu_preferences,
+    gpu::GpuDriverBugWorkarounds gpu_workarounds) {
+  auto vea_provider =
+      std::make_unique<media::MojoVideoEncodeAcceleratorProvider>(
+          std::move(create_vea_callback), gpu_preferences, gpu_workarounds);
+  mojo::MakeSelfOwnedReceiver(std::move(vea_provider), std::move(receiver));
+}
+}  // namespace
 
 namespace media {
 
@@ -21,10 +38,24 @@ void MojoVideoEncodeAcceleratorProvider::Create(
     CreateAndInitializeVideoEncodeAcceleratorCallback create_vea_callback,
     const gpu::GpuPreferences& gpu_preferences,
     const gpu::GpuDriverBugWorkarounds& gpu_workarounds) {
-  mojo::MakeSelfOwnedReceiver(
-      std::make_unique<MojoVideoEncodeAcceleratorProvider>(
-          std::move(create_vea_callback), gpu_preferences, gpu_workarounds),
-      std::move(receiver));
+  // Offload VEA providers to a dedicated runner. Things like loading profiles
+  // and creating encoder might take quite some time, and they might block
+  // processing of other mojo calls if executed on the current runner.
+  //
+  // This runner needs to use sync primitives (and be DEDICATED) because
+  // MediaFoundationVEA waits for the encoding thread to stop when
+  // destroyed. Since a dedicated runner is basically a separate thread, it's
+  // declared static to avoid creation of a new thread for each renderer with
+  // GPU factories.
+  static base::NoDestructor<scoped_refptr<base::SingleThreadTaskRunner>> runner(
+      base::ThreadPool::CreateSingleThreadTaskRunner(
+          {base::TaskPriority::USER_BLOCKING, base::WithBaseSyncPrimitives()},
+          base::SingleThreadTaskRunnerThreadMode::DEDICATED));
+
+  (*runner)->PostTask(
+      FROM_HERE, base::BindOnce(BindVEAProvider, std::move(receiver),
+                                std::move(create_vea_callback), gpu_preferences,
+                                gpu_workarounds));
 }
 
 MojoVideoEncodeAcceleratorProvider::MojoVideoEncodeAcceleratorProvider(
