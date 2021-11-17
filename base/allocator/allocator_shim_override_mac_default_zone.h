@@ -11,6 +11,8 @@
 #error This header must be included iff PartitionAlloc-Everywhere is enabled.
 #endif
 
+#include <string.h>
+
 #include "base/allocator/partition_allocator/partition_alloc_constants.h"
 #include "base/bits.h"
 #include "base/ignore_result.h"
@@ -186,6 +188,52 @@ malloc_zone_t g_mac_malloc_zone{};
 // receives an address allocated by the system allocator.
 __attribute__((constructor(0))) void
 InitializeDefaultMallocZoneWithPartitionAlloc() {
+  static constexpr const char* kZoneName = "PartitionAlloc";
+
+  // HACK: This should really only be called once, but it is not.
+  //
+  // This function is a static constructor of its binary. If it is included in a
+  // dynamic library, then the same process may end up executing this code
+  // multiple times, once per library. As a consequence, each new library will
+  // add its own allocator as the default zone. Aside from splitting the heap
+  // further, the main issue arises if/when the last library to be loaded
+  // (dlopen()-ed) gets dlclose()-ed.
+  //
+  // See crbug.com/1271139 for details.
+  //
+  // In this case, subsequent free() will be routed by libmalloc to the deleted
+  // zone (since its code has been unloaded from memory), and crash inside
+  // libsystem's free(). This in practice happens as soon as dlclose() is
+  // called, inside the dynamic linker (dyld).
+  //
+  // Since we are talking about different library, and issues inside the dynamic
+  // linker, we cannot use a global static variable (which would be
+  // per-library), or anything from pthread.
+  //
+  // The solution used here is to check whether the current default zone is
+  // already ours, in which case we are not the first dynamic library here, and
+  // should do nothing. This is racy, and hacky.
+  vm_address_t* zones = nullptr;
+  unsigned int zone_count = 0;
+  // *Not* using malloc_default_zone(), as it seems to be hardcoded to return
+  // something else than the default zone. See the difference between
+  // malloc_default_zone() and inline_malloc_default_zone() in Apple's malloc.c
+  // (in libmalloc).
+  kern_return_t result =
+      malloc_get_all_zones(mach_task_self(), nullptr, &zones, &zone_count);
+  MACH_CHECK(result == KERN_SUCCESS, result) << "malloc_get_all_zones";
+  malloc_zone_t* default_zone = reinterpret_cast<malloc_zone_t*>(zones[0]);
+
+  // strcmp() and not a pointer comparison, as the zone was registered from
+  // another library, the pointers don't match.
+  if (default_zone->zone_name &&
+      (strcmp(default_zone->zone_name, kZoneName) == 0)) {
+    // The default zone is already provided by PartitionAlloc, so this function
+    // has been called from another library (or the main executable), nothing to
+    // do.
+    return;
+  }
+
   // Instantiate the existing regular and purgeable zones in order to make the
   // existing purgeable zone use the existing regular zone since PartitionAlloc
   // doesn't support a purgeable zone.
@@ -226,7 +274,7 @@ InitializeDefaultMallocZoneWithPartitionAlloc() {
   //   version >= 11: introspect.print_task is supported
   //   version >= 12: introspect.task_statistics is supported
   g_mac_malloc_zone.version = 9;
-  g_mac_malloc_zone.zone_name = "PartitionAlloc";
+  g_mac_malloc_zone.zone_name = kZoneName;
   g_mac_malloc_zone.introspect = &g_mac_malloc_introspection;
   g_mac_malloc_zone.size = MallocZoneSize;
   g_mac_malloc_zone.malloc = MallocZoneMalloc;
@@ -243,10 +291,9 @@ InitializeDefaultMallocZoneWithPartitionAlloc() {
   g_mac_malloc_zone.claimed_address = nullptr;
 
   // Make our own zone the default zone.
-  vm_address_t* zones = nullptr;
-  unsigned int zone_count = 0;
-  kern_return_t result =
-      malloc_get_all_zones(mach_task_self(), nullptr, &zones, &zone_count);
+  zones = nullptr;
+  zone_count = 0;
+  result = malloc_get_all_zones(mach_task_self(), nullptr, &zones, &zone_count);
   MACH_CHECK(result == KERN_SUCCESS, result) << "malloc_get_all_zones";
   malloc_zone_t* system_default_zone =
       reinterpret_cast<malloc_zone_t*>(zones[0]);
