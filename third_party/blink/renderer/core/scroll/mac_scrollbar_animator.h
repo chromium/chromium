@@ -13,6 +13,20 @@ namespace blink {
 class ScrollableArea;
 class Scrollbar;
 
+// This class stores the state for an individual scrollbar (in contrast with
+// MacScrollbarAnimator which has state for the full ScrollableArea).
+class CORE_EXPORT MacScrollbar {
+ public:
+  static MacScrollbar* GetForScrollbar(const Scrollbar&);
+  virtual ~MacScrollbar() = default;
+
+  virtual void SetEnabled(bool) = 0;
+  virtual void SetOverlayColorTheme(ScrollbarOverlayColorTheme) = 0;
+  virtual float GetKnobAlpha() = 0;
+  virtual float GetTrackAlpha() = 0;
+  virtual int GetTrackBoxWidth() = 0;
+};
+
 // This is a base class for MacScrollbarAnimatorImpl. This is required because
 // mac_scrollbar_animator_impl.h has some #include that can't be included in
 // most platform-agnostic code.

@@ -52,7 +52,7 @@ void WebScrollbarTheme::UpdateScrollbarsWithNSDefaults(
     bool jump_on_track_click) {
   ScrollbarThemeMac::UpdateScrollbarsWithNSDefaults(
       initial_button_delay, autoscroll_button_delay,
-      static_cast<NSScrollerStyle>(preferred_scroller_style), redraw,
+      preferred_scroller_style == kScrollerStyleOverlay, redraw,
       jump_on_track_click);
 }
 

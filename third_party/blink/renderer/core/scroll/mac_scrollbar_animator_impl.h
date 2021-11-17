@@ -23,34 +23,26 @@
 typedef id ScrollbarPainterController;
 typedef id ScrollbarPainter;
 
-@interface BlinkScrollbarObserver : NSObject {
-  blink::Scrollbar* _scrollbar;
-  base::scoped_nsobject<ScrollbarPainter> _scrollbarPainter;
-  BOOL _suppressSetScrollbarsHidden;
-  CGFloat _saved_knob_alpha;
-}
-- (instancetype)
-    initWithScrollbar:(blink::Scrollbar*)scrollbar
-              painter:(const base::scoped_nsobject<ScrollbarPainter>&)painter;
-- (id)painter;
-- (void)setSuppressSetScrollbarsHidden:(BOOL)value;
-- (blink::Scrollbar*)scrollbar;
-@end
-
 namespace blink {
 
 class ScrollbarThemeMac;
 
-class PLATFORM_EXPORT MacScrollbarImpl {
+class PLATFORM_EXPORT MacScrollbarImpl : public MacScrollbar {
  public:
   MacScrollbarImpl(Scrollbar&,
                    base::scoped_nsobject<ScrollbarPainterController>,
                    scoped_refptr<base::SingleThreadTaskRunner>,
                    ScrollbarThemeMac*,
                    std::unique_ptr<MacScrollbarImpl> old_scrollbar);
-  ~MacScrollbarImpl();
+  ~MacScrollbarImpl() override;
 
   static MacScrollbarImpl* GetForScrollbar(const Scrollbar&);
+
+  void SetEnabled(bool) final;
+  void SetOverlayColorTheme(ScrollbarOverlayColorTheme) final;
+  float GetKnobAlpha() final;
+  float GetTrackAlpha() final;
+  int GetTrackBoxWidth() final;
 
   BlinkScrollbarPainterDelegate* painter_delegate() {
     return painter_delegate_.get();

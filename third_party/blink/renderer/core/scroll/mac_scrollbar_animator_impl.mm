@@ -82,6 +82,73 @@ ScrollbarPainter ScrollbarPainterForScrollbar(
 
 }  // namespace
 
+@interface BlinkScrollbarObserver : NSObject {
+  blink::Scrollbar* _scrollbar;
+  base::scoped_nsobject<ScrollbarPainter> _scrollbarPainter;
+  BOOL _suppressSetScrollbarsHidden;
+  CGFloat _saved_knob_alpha;
+}
+- (instancetype)
+    initWithScrollbar:(blink::Scrollbar*)scrollbar
+              painter:(const base::scoped_nsobject<ScrollbarPainter>&)painter;
+- (id)painter;
+- (void)setSuppressSetScrollbarsHidden:(BOOL)value;
+- (blink::Scrollbar*)scrollbar;
+@end
+
+@implementation BlinkScrollbarObserver
+
+- (instancetype)
+    initWithScrollbar:(blink::Scrollbar*)scrollbar
+              painter:(const base::scoped_nsobject<ScrollbarPainter>&)painter {
+  if (!(self = [super init]))
+    return nil;
+  _scrollbar = scrollbar;
+  _scrollbarPainter = painter;
+  [_scrollbarPainter addObserver:self
+                      forKeyPath:@"knobAlpha"
+                         options:0
+                         context:nil];
+  return self;
+}
+
+- (id)painter {
+  return _scrollbarPainter;
+}
+
+- (blink::Scrollbar*)scrollbar {
+  return _scrollbar;
+}
+
+- (void)setSuppressSetScrollbarsHidden:(BOOL)value {
+  _suppressSetScrollbarsHidden = value;
+  if (value) {
+    _saved_knob_alpha = [_scrollbarPainter knobAlpha];
+  } else {
+    [_scrollbarPainter setKnobAlpha:_saved_knob_alpha];
+    _scrollbar->SetScrollbarsHiddenFromExternalAnimator(_saved_knob_alpha == 0);
+  }
+}
+
+- (void)dealloc {
+  [_scrollbarPainter removeObserver:self forKeyPath:@"knobAlpha"];
+  [super dealloc];
+}
+
+- (void)observeValueForKeyPath:(NSString*)keyPath
+                      ofObject:(id)object
+                        change:(NSDictionary*)change
+                       context:(void*)context {
+  if ([keyPath isEqualToString:@"knobAlpha"]) {
+    if (!_suppressSetScrollbarsHidden) {
+      BOOL visible = [_scrollbarPainter knobAlpha] > 0;
+      _scrollbar->SetScrollbarsHiddenFromExternalAnimator(!visible);
+    }
+  }
+}
+
+@end
+
 // This class is a delegator of ScrollbarPainterController to ScrollableArea
 // that has the scrollbars of a ScrollbarPainter.
 @interface BlinkScrollbarPainterControllerDelegate : NSObject {
@@ -673,7 +740,7 @@ MacScrollbarImpl::MacScrollbarImpl(
 
   GetScrollbarToAnimatorMap().Set(&scrollbar, this);
 
-  mac_theme->SetNewPainterForScrollbar(scrollbar, painter());
+  mac_theme->SetNewPainterForScrollbar(scrollbar);
 }
 
 MacScrollbarImpl::~MacScrollbarImpl() {
@@ -708,6 +775,66 @@ MacScrollbarImpl* MacScrollbarImpl::GetForScrollbar(
   return nullptr;
 }
 
+void MacScrollbarImpl::SetEnabled(bool enabled) {
+  ScrollbarPainter painter = [observer_ painter];
+  [painter setEnabled:enabled];
+}
+
+void MacScrollbarImpl::SetOverlayColorTheme(ScrollbarOverlayColorTheme theme) {
+  ScrollbarPainter painter = [observer_ painter];
+  switch (theme) {
+    case kScrollbarOverlayColorThemeDark:
+      [painter setKnobStyle:NSScrollerKnobStyleDark];
+      break;
+    case kScrollbarOverlayColorThemeLight:
+      [painter setKnobStyle:NSScrollerKnobStyleLight];
+      break;
+  }
+}
+
+float MacScrollbarImpl::GetKnobAlpha() {
+  ScrollbarPainter painter = [observer_ painter];
+  return [painter knobAlpha];
+}
+
+float MacScrollbarImpl::GetTrackAlpha() {
+  // The following incantations are done to update the state of the
+  // ScrollbarPainter in ways that are unknown. It is important to leave
+  // these in place because we use ScrollbarPainter to populate |opacity|
+  // and because the ScrollAnimator doesn't animate correctly without them.
+  Scrollbar* scrollbar = [observer_ scrollbar];
+  ScrollbarPainter scrollbar_painter = [observer_ painter];
+  CGRect frame_rect = CGRect(scrollbar->FrameRect());
+  [scrollbar_painter setEnabled:scrollbar->Enabled()];
+  [scrollbar_painter setBoundsSize:NSSizeFromCGSize(frame_rect.size)];
+  return [scrollbar_painter trackAlpha];
+}
+
+int MacScrollbarImpl::GetTrackBoxWidth() {
+  // The following incantations are done to update the state of the
+  // ScrollbarPainter in ways that are unknown. It is important to leave
+  // these in place because we use ScrollbarPainter to populate |thumb_size|
+  // and because the ScrollAnimator doesn't animate correctly without them.
+  Scrollbar* scrollbar = [observer_ scrollbar];
+  ScrollbarPainter scrollbar_painter = [observer_ painter];
+
+  [scrollbar_painter setEnabled:scrollbar->Enabled()];
+
+  [scrollbar_painter setDoubleValue:0];
+  [scrollbar_painter setKnobProportion:1];
+  [observer_ setSuppressSetScrollbarsHidden:YES];
+  [scrollbar_painter setKnobAlpha:1];
+
+  // If this state is not set, then moving the cursor over the scrollbar area
+  // will only cause the scrollbar to engorge when moved over the top of the
+  // scrollbar area.
+  [scrollbar_painter
+      setBoundsSize:NSSizeFromCGSize(CGSize(scrollbar->FrameRect().size()))];
+  [observer_ setSuppressSetScrollbarsHidden:NO];
+
+  return [scrollbar_painter trackBoxWidth];
+}
+
 ScrollbarPainter MacScrollbarImpl::painter() {
   return [observer_ painter];
 }
@@ -726,7 +853,9 @@ MacScrollbarAnimatorImpl::MacScrollbarAnimatorImpl(
       performSelector:@selector(setDelegate:)
            withObject:scrollbar_painter_controller_delegate_];
   [scrollbar_painter_controller_
-      setScrollerStyle:ScrollbarThemeMac::RecommendedScrollerStyle()];
+      setScrollerStyle:ScrollbarThemeMac::PreferOverlayScrollerStyle()
+                           ? NSScrollerStyleOverlay
+                           : NSScrollerStyleLegacy];
 }
 
 void MacScrollbarAnimatorImpl::Dispose() {
@@ -931,9 +1060,19 @@ void MacScrollbarAnimatorImpl::SendContentAreaScrolledTask() {
     [scrollbar_painter_controller_ contentAreaScrolled];
 }
 
+// static
 MacScrollbarAnimator* MacScrollbarAnimator::Create(
     ScrollableArea* scrollable_area) {
   return MakeGarbageCollected<MacScrollbarAnimatorImpl>(
       const_cast<ScrollableArea*>(scrollable_area));
 }
+
+// static
+MacScrollbar* MacScrollbar::GetForScrollbar(const Scrollbar& scrollbar) {
+  auto it = GetScrollbarToAnimatorMap().find(&scrollbar);
+  if (it != GetScrollbarToAnimatorMap().end())
+    return it->value;
+  return nullptr;
+}
+
 }  // namespace blink
