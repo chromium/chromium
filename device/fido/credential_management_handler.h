@@ -86,12 +86,13 @@ class COMPONENT_EXPORT(DEVICE_FIDO) CredentialManagementHandler
                         DeleteCredentialCallback callback);
 
   // DeleteCredentials deletes a list of credentials. Each entry in
-  // |credential_ids| must be a CBOR-serialized PublicKeyCredentialDescriptor.
+  // |credential_ids| must be a CBOR-serialized credential_id.
   // If any individual deletion fails, |callback| is invoked with the
   // respective error, and deletion of the remaining credentials will be
   // aborted (but others may have been deleted successfully already).
-  void DeleteCredentials(std::vector<std::vector<uint8_t>> credential_ids,
-                         DeleteCredentialCallback callback);
+  void DeleteCredentials(
+      std::vector<PublicKeyCredentialDescriptor> credential_ids,
+      DeleteCredentialCallback callback);
 
   // UpdateUserInformation attempts to update the credential with the given
   // |credential_id|.
@@ -132,7 +133,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) CredentialManagementHandler
       absl::optional<std::vector<AggregatedEnumerateCredentialsResponse>>
           responses);
   void OnDeleteCredentials(
-      std::vector<std::vector<uint8_t>> remaining_credential_ids,
+      std::vector<PublicKeyCredentialDescriptor> remaining_credential_ids,
       CredentialManagementHandler::DeleteCredentialCallback callback,
       CtapDeviceResponseCode status,
       absl::optional<DeleteCredentialResponse> response);

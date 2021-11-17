@@ -732,7 +732,7 @@ void FidoDeviceAuthenticator::UpdateUserInformation(
   RunOperation<CredentialManagementRequest, UpdateUserInformationResponse>(
       CredentialManagementRequest::ForUpdateUserInformation(
           GetCredentialManagementRequestVersion(*Options()), pin_token,
-          std::move(credential_id), std::move(updated_user)),
+          credential_id, updated_user),
       std::move(callback),
       base::BindOnce(&UpdateUserInformationResponse::Parse),
       /*string_fixup_predicate=*/nullptr);

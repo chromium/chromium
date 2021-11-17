@@ -142,6 +142,8 @@ class SecurityKeysCredentialHandler : public SecurityKeysHandlerBase {
   explicit SecurityKeysCredentialHandler(
       std::unique_ptr<device::FidoDiscoveryFactory> discovery_factory);
   void HandleStart(const base::ListValue* args);
+  void HandlePIN(const base::ListValue* args);
+  void HandleUpdateUserInformation(const base::ListValue* args);
 
  private:
   enum class State {
@@ -151,12 +153,12 @@ class SecurityKeysCredentialHandler : public SecurityKeysHandlerBase {
     kReady,
     kGettingCredentials,
     kDeletingCredentials,
+    kUpdatingUserInformation,
   };
 
   void RegisterMessages() override;
   void Close() override;
 
-  void HandlePIN(const base::ListValue* args);
   void HandleEnumerate(const base::ListValue* args);
   void HandleDelete(const base::ListValue* args);
 
@@ -171,6 +173,7 @@ class SecurityKeysCredentialHandler : public SecurityKeysHandlerBase {
                    int64_t num_retries,
                    base::OnceCallback<void(std::string)>);
   void OnCredentialsDeleted(device::CtapDeviceResponseCode status);
+  void OnUserInformationUpdated(device::CtapDeviceResponseCode status);
   void OnFinished(device::CredentialManagementStatus status);
 
   State state_ = State::kNone;
@@ -216,9 +219,8 @@ class SecurityKeysBioEnrollmentHandler : public SecurityKeysHandlerBase {
   void OnReady(device::BioEnrollmentHandler::SensorInfo sensor_info);
   void OnError(device::BioEnrollmentHandler::Error error);
   void OnGatherPIN(uint32_t min_pin_length,
-                   int64_t retries,
+                   int64_t num_retries,
                    base::OnceCallback<void(std::string)>);
-
   void HandleGetSensorInfo(const base::ListValue* args);
 
   void HandleEnumerate(const base::ListValue* args);

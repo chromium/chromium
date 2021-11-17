@@ -191,10 +191,6 @@ struct EnumerateCredentialsResponse {
 
   PublicKeyCredentialUserEntity user;
   PublicKeyCredentialDescriptor credential_id;
-  // For convenience, also return the serialized |credential_id| so that the UI
-  // doesn't have to do CBOR serialization. (It only cares about the opaque byte
-  // string.)
-  std::vector<uint8_t> credential_id_cbor_bytes;
   size_t credential_count;
 
  private:

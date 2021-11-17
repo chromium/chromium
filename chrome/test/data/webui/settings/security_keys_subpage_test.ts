@@ -7,7 +7,7 @@ import {webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {BioEnrollDialogPage, CredentialManagementDialogPage, CrInputElement, Ctap2Status, ResetDialogPage, SampleStatus, SecurityKeysBioEnrollProxy, SecurityKeysBioEnrollProxyImpl, SecurityKeysCredentialBrowserProxy, SecurityKeysCredentialBrowserProxyImpl, SecurityKeysPINBrowserProxy, SecurityKeysPINBrowserProxyImpl, SecurityKeysResetBrowserProxy, SecurityKeysResetBrowserProxyImpl, SetPINDialogPage, SettingsSecurityKeysBioEnrollDialogElement, SettingsSecurityKeysCredentialManagementDialogElement, SettingsSecurityKeysResetDialogElement, SettingsSecurityKeysSetPinDialogElement} from 'chrome://settings/lazy_load.js';
+import {BioEnrollDialogPage, CredentialManagementDialogPage, CrIconButtonElement, CrInputElement, Ctap2Status, ResetDialogPage, SampleStatus, SecurityKeysBioEnrollProxy, SecurityKeysBioEnrollProxyImpl, SecurityKeysCredentialBrowserProxy, SecurityKeysCredentialBrowserProxyImpl, SecurityKeysPINBrowserProxy, SecurityKeysPINBrowserProxyImpl, SecurityKeysResetBrowserProxy, SecurityKeysResetBrowserProxyImpl, SetPINDialogPage, SettingsSecurityKeysBioEnrollDialogElement, SettingsSecurityKeysCredentialManagementDialogElement, SettingsSecurityKeysResetDialogElement, SettingsSecurityKeysSetPinDialogElement} from 'chrome://settings/lazy_load.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
@@ -107,6 +107,7 @@ class TestSecurityKeysCredentialBrowserProxy extends
       'providePIN',
       'enumerateCredentials',
       'deleteCredentials',
+      'updateUserInformation',
       'close',
     ]);
   }
@@ -125,6 +126,14 @@ class TestSecurityKeysCredentialBrowserProxy extends
 
   deleteCredentials(ids: Array<string>) {
     return this.handleMethod('deleteCredentials', ids);
+  }
+
+  updateUserInformation(
+      credentialId: string, userHandle: string, newUsername: string,
+      newDisplayname: string) {
+    return this.handleMethod(
+        'updateUserInformation',
+        {credentialId, userHandle, newUsername, newDisplayname});
   }
 
   close() {
@@ -620,7 +629,7 @@ suite('SecurityKeysCredentialManagement', function() {
     const error = 'foo bar baz';
     webUIListenerCallback(
         'security-keys-credential-management-finished', error);
-    assertShown(allDivs, dialog, 'error');
+    assertShown(allDivs, dialog, 'pinError');
     assertTrue(dialog.$.error.textContent!.trim().includes(error));
   });
 
@@ -638,10 +647,10 @@ suite('SecurityKeysCredentialManagement', function() {
     webUIListenerCallback(
         'security-keys-credential-management-finished', error,
         true /* requiresPINChange */);
-    assertShown(allDivs, dialog, 'error');
+    assertShown(allDivs, dialog, 'pinError');
     assertFalse(dialog.$.confirmButton.hidden);
     assertFalse(dialog.$.confirmButton.disabled);
-    assertTrue(dialog.$.error.textContent!.trim().includes(error));
+    assertTrue(dialog.$.pinError.textContent!.trim().includes(error));
 
     const setPinEvent = eventToPromise('credential-management-set-pin', dialog);
     dialog.$.confirmButton.click();
@@ -659,6 +668,9 @@ suite('SecurityKeysCredentialManagement', function() {
         'enumerateCredentials', enumerateResolver.promise);
     const deleteResolver = new PromiseResolver();
     browserProxy.setResponseFor('deleteCredentials', deleteResolver.promise);
+    const updateUserInformationResolver = new PromiseResolver();
+    browserProxy.setResponseFor(
+        'updateUserInformation', updateUserInformationResolver.promise);
 
     document.body.appendChild(dialog);
     await browserProxy.whenCalled('startCredentialManagement');
@@ -683,22 +695,25 @@ suite('SecurityKeysCredentialManagement', function() {
         'credential-management-dialog-ready-for-testing', dialog);
     const credentials = [
       {
-        id: 'aaaaaa',
+        credentialId: 'aaaaaa',
         relyingPartyId: 'acme.com',
+        userHandle: 'userausera',
         userName: 'userA@example.com',
         userDisplayName: 'User Aaa',
       },
       {
-        id: 'bbbbbb',
+        credentialId: 'bbbbbb',
         relyingPartyId: 'acme.com',
+        userHandle: 'userbuserb',
         userName: 'userB@example.com',
-        userDisplayName: 'User B',
+        userDisplayName: 'User Bbb',
       },
       {
-        id: 'cccccc',
+        credentialId: 'cccccc',
         relyingPartyId: 'acme.com',
+        userHandle: 'usercuserc',
         userName: 'userC@example.com',
-        userDisplayName: 'User C',
+        userDisplayName: 'User Ccc',
       },
     ];
     enumerateResolver.resolve(credentials);
@@ -706,26 +721,37 @@ suite('SecurityKeysCredentialManagement', function() {
     assertShown(allDivs, dialog, 'credentials');
     assertEquals(dialog.$.credentialList.items, credentials);
 
-    // Select two of the credentials and delete them.
+    // Update a credential
     flush();
-    assertTrue(dialog.$.confirmButton.disabled);
-    const checkboxes =
-        Array.from(dialog.$.credentialList.querySelectorAll('cr-checkbox'));
-    assertEquals(checkboxes.length, 3);
-    assertEquals(checkboxes.filter(el => el.checked).length, 0);
-    checkboxes[1]!.click();
-    checkboxes[2]!.click();
-    assertFalse(dialog.$.confirmButton.disabled);
+    const editButtons: Array<CrIconButtonElement> =
+        Array.from(dialog.$.credentialList.querySelectorAll('.edit-button'));
+    assertEquals(editButtons.length, 3);
+    editButtons[0]!.click();
+    assertShown(allDivs, dialog, 'edit');
+    dialog.$.displayNameInput.value = 'Bobby Example';
+    dialog.$.userNameInput.value = 'bobby@example.com';
+    dialog.$.confirmButton.click();
+    credentials[0]!.userDisplayName = 'Bobby Example';
+    credentials[0]!.userName = 'bobby@example.com';
+    updateUserInformationResolver.resolve({success: true, message: 'updated'});
+    assertShown(allDivs, dialog, 'credentials');
+    assertDeepEquals(dialog.$.credentialList.items, credentials);
 
+    // Delete a credential.
+    flush();
+    const deleteButtons: Array<CrIconButtonElement> =
+        Array.from(dialog.$.credentialList.querySelectorAll('.delete-button'));
+    assertEquals(deleteButtons.length, 3);
+    deleteButtons[0]!.click();
+    assertShown(allDivs, dialog, 'confirm');
     dialog.$.confirmButton.click();
     const credentialIds = await browserProxy.whenCalled('deleteCredentials');
-    assertDeepEquals(credentialIds, ['bbbbbb', 'cccccc']);
+    assertDeepEquals(credentialIds, ['aaaaaa']);
     uiReady = eventToPromise(
         'credential-management-dialog-ready-for-testing', dialog);
-    deleteResolver.resolve('foobar' /* localized response message */);
+    deleteResolver.resolve({success: true, message: 'foobar'});
     await uiReady;
-    assertShown(allDivs, dialog, 'error');
-    assertTrue(dialog.$.error.textContent!.trim().includes('foobar'));
+    assertShown(allDivs, dialog, 'credentials');
   });
 });
 

@@ -21,11 +21,12 @@ export enum Ctap2Status {
  * Credential represents a CTAP2 resident credential enumerated from a
  * security key.
  *
- * id: (required) The hex encoding of the CBOR-serialized
- *     PublicKeyCredentialDescriptor of the credential.
+ * credentialId: (required) The hex encoding of the credential ID.
  *
  * relyingPartyId: (required) The RP ID (i.e. the site that created the
  *     credential; eTLD+n)
+ *
+ * userHandle: userName: (required) The PublicKeyCredentialUserEntity.id
  *
  * userName: (required) The PublicKeyCredentialUserEntity.name
  *
@@ -34,8 +35,9 @@ export enum Ctap2Status {
  * @see chrome/browser/ui/webui/settings/settings_security_key_handler.cc
  */
 export type Credential = {
-  id: string,
+  credentialId: string,
   relyingPartyId: string,
+  userHandle: string,
   userName: string,
   userDisplayName: string,
 };
@@ -102,6 +104,17 @@ export type SetPINResponse = {
   retries?: number,
 };
 
+/**
+ * CredentialManagementResponse is the response to a deleteCredential or
+ * updateUserInfo suboperation.
+ *
+ * @see chrome/browser/ui/webui/settings/settings_security_key_handler.cc
+ */
+export type CredentialManagementResponse = {
+  success: boolean,
+  message: string,
+};
+
 export interface SecurityKeysPINBrowserProxy {
   /**
    * Starts a PIN set/change operation by flashing all security keys. Resolves
@@ -158,10 +171,20 @@ export interface SecurityKeysCredentialBrowserProxy {
 
   /**
    * Deletes the credentials with the given IDs from the security key.
-   * @return A localized response message to display to
-   *     the user (on either success or error)
+   * @return An object with a success boolean and a localized response
+   *     message to display to the user (on either success or error)
    */
-  deleteCredentials(ids: Array<string>): Promise<string>;
+  deleteCredentials(ids: Array<string>): Promise<CredentialManagementResponse>;
+
+  /**
+   * Updates the credentials with the given ID from the security key
+   * to a new username (and/or) displayname
+   * @return An object with a success boolean and a localized response
+   *     message to display to the user (on either success or error)
+   */
+  updateUserInformation(
+      credentialId: string, userHandle: string, newUsername: string,
+      newDisplayname: string): Promise<CredentialManagementResponse>;
 
   /** Cancels all outstanding operations. */
   close(): void;
@@ -302,6 +325,14 @@ export class SecurityKeysCredentialBrowserProxyImpl implements
 
   deleteCredentials(ids: Array<string>) {
     return sendWithPromise('securityKeyCredentialManagementDelete', ids);
+  }
+
+  updateUserInformation(
+      credentialId: string, userHandle: string, newUsername: string,
+      newDisplayname: string) {
+    return sendWithPromise(
+        'securityKeyCredentialManagementUpdate', credentialId, userHandle,
+        newUsername, newDisplayname);
   }
 
   close() {
