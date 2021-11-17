@@ -54,7 +54,6 @@
 #include "chromeos/services/assistant/public/cpp/assistant_prefs.h"
 #include "components/language/core/browser/pref_names.h"
 #include "components/live_caption/pref_names.h"
-#include "components/pref_registry/pref_registry_syncable.h"
 
 namespace ash {
 
@@ -108,15 +107,10 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry, bool for_test) {
   if (for_test) {
     chromeos::assistant::prefs::RegisterProfilePrefs(registry);
     quick_answers::prefs::RegisterProfilePrefs(registry);
-    registry->RegisterBooleanPref(
-        prefs::kMouseReverseScroll, false,
-        user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PRIORITY_PREF);
-    registry->RegisterBooleanPref(
-        chromeos::prefs::kSuggestedContentEnabled, true,
-        user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
-    registry->RegisterBooleanPref(
-        ::prefs::kLiveCaptionEnabled, false,
-        user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
+    registry->RegisterBooleanPref(prefs::kMouseReverseScroll, false);
+    registry->RegisterBooleanPref(chromeos::prefs::kSuggestedContentEnabled,
+                                  true);
+    registry->RegisterBooleanPref(::prefs::kLiveCaptionEnabled, false);
     registry->RegisterStringPref(language::prefs::kApplicationLocale,
                                  std::string());
   }
