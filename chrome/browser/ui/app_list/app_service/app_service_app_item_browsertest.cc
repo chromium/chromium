@@ -188,6 +188,7 @@ IN_PROC_BROWSER_TEST_P(AppServiceSystemWebAppItemBrowserTest, Activate) {
                              EmptyAccountId());
   AppServiceAppItem app_item(profile, /*model_updater=*/nullptr,
                              /*sync_item=*/nullptr, app_update);
+  app_item.SetChromePosition(app_item.CalculateDefaultPositionForTest());
 
   app_item.PerformActivate(ui::EF_NONE);
 

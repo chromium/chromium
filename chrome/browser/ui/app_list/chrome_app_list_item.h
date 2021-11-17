@@ -92,6 +92,10 @@ class ChromeAppListItem {
   // Call |Activate()| and dismiss launcher if necessary.
   void PerformActivate(int event_flags);
 
+  // Returns the default position if it exists; otherwise returns an empty
+  // value.
+  syncer::StringOrdinal CalculateDefaultPositionIfApplicable();
+
   // Activates (opens) the item. Does nothing by default.
   virtual void Activate(int event_flags);
 
@@ -115,10 +119,7 @@ class ChromeAppListItem {
 
   std::string ToDebugString() const;
 
-  // Returns the default position if it exists. Otherwise returns the position
-  // for a new item if |model_updater| is not null.
-  syncer::StringOrdinal CalculateDefaultPositionIfApplicable(
-      AppListModelUpdater* model_updater);
+  syncer::StringOrdinal CalculateDefaultPositionForTest();
 
   AppListModelUpdater* model_updater() { return model_updater_; }
 

@@ -365,6 +365,10 @@ class AppListSyncableService : public syncer::SyncableService,
   bool UpdateSyncItemFromAppItem(const ChromeAppListItem* app_item,
                                  AppListSyncableService::SyncItem* sync_item);
 
+  // Initializes `new_item`'s position. This function should be called before
+  // adding `new_item` to `model_updater_`.
+  void InitNewItemPosition(ChromeAppListItem* new_item);
+
   // Sets position, folder id and pin position for the app |app_id|. Attributes
   // are taken from the sync item |attributes|. This generates sync update and
   // notifies app models and Chrome shelf controller that are automatically

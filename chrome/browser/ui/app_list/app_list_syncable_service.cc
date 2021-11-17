@@ -654,6 +654,11 @@ bool AppListSyncableService::RemoveOnlyChildOutOfUserCreatedFolderIfNecessary(
 
 void AppListSyncableService::AddItem(
     std::unique_ptr<ChromeAppListItem> app_item) {
+  // Sets `app_item`'s position before adding the sync item so that the created
+  // sync item has the valid position.
+  if (!app_item->position().IsValid())
+    InitNewItemPosition(app_item.get());
+
   SyncItem* sync_item = FindOrAddSyncItem(app_item.get());
   if (!sync_item)
     return;  // Item is not valid.
@@ -1612,6 +1617,43 @@ bool AppListSyncableService::UpdateSyncItemFromAppItem(
   return changed;
 }
 
+void AppListSyncableService::InitNewItemPosition(ChromeAppListItem* new_item) {
+  DCHECK(!model_updater_->FindItem(new_item->id()));
+  DCHECK(!new_item->position().IsValid());
+
+  // TODO(https://crbug.com/1260875): handle the case that `new_item` is a
+  // folder.
+  if (!ash::features::IsLauncherAppSortEnabled() || new_item->is_folder() ||
+      new_item->is_page_break()) {
+    new_item->SetChromePosition(model_updater_->GetFirstAvailablePosition());
+    return;
+  }
+
+  // The code below initializes the app's position when the app list sort
+  // feature is enabled.
+
+  syncer::StringOrdinal position;
+  bool order_ignored = false;
+
+  // TODO(https://crbug.com/1260877): ideally we would not have to create a
+  // one-off vector of items using `GetItems()`.
+  reorder_delegate_->CalculateNewItemPosition(
+      static_cast<ash::AppListSortOrder>(
+          profile()->GetPrefs()->GetInteger(prefs::kAppListPreferredOrder)),
+      *new_item, model_updater_->GetItems(), &position, &order_ignored);
+
+  // Reset the sorting order if the order is ignored when calculating
+  // `new_item`'s target position.
+  if (order_ignored) {
+    profile()->GetPrefs()->SetInteger(
+        prefs::kAppListPreferredOrder,
+        static_cast<int>(ash::AppListSortOrder::kCustom));
+  }
+
+  DCHECK(position.IsValid());
+  new_item->SetChromePosition(position);
+}
+
 void AppListSyncableService::EnsureOemFolderExists() {
   const std::string folder_id = ash::kOemFolderId;
   if (model_updater_->FindItem(folder_id))
@@ -1660,12 +1702,15 @@ void AppListSyncableService::MaybeAddOrUpdateCrostiniFolderSyncData() {
   crostini_folder.SetChromeIsFolder(true);
 
   // Calculate the Crostini folder's position.
-  SyncItem* current_sync_data = FindSyncItem(crostini_folder_id);
-  syncer::StringOrdinal crostini_folder_position =
-      current_sync_data ? current_sync_data->item_ordinal
-                        : crostini_folder.CalculateDefaultPositionIfApplicable(
-                              model_updater_.get());
-  crostini_folder.SetChromePosition(crostini_folder_position);
+  const SyncItem* current_sync_data = GetSyncItem(crostini_folder_id);
+  if (current_sync_data) {
+    const syncer::StringOrdinal& item_position =
+        current_sync_data->item_ordinal;
+    DCHECK(item_position.IsValid());
+    crostini_folder.SetChromePosition(item_position);
+  } else {
+    InitNewItemPosition(&crostini_folder);
+  }
 
   // Add or update the Crostini folder's sync data.
   // Note that we cannot call `AddOrUpdateFromSyncItem()` here because

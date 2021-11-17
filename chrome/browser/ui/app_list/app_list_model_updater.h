@@ -40,9 +40,12 @@ class AppListModelUpdater {
     AppListModelUpdater* const model_updater_;
   };
 
-  virtual ~AppListModelUpdater() {}
+  virtual ~AppListModelUpdater();
 
   int model_id() const { return model_id_; }
+
+  // Returns the first available position in app list.
+  syncer::StringOrdinal GetFirstAvailablePosition() const;
 
   // Set whether this model updater is active.
   // When we have multiple user profiles, only the active one has access to the
@@ -103,13 +106,6 @@ class AppListModelUpdater {
       base::OnceCallback<void(const base::flat_map<std::string, uint16_t>&)>;
   virtual void GetIdToAppListIndexMap(GetIdToAppListIndexMapCallback callback) {
   }
-  // Calculates the default position of `new_item` that is not added to the
-  // model yet.
-  // TODO(https://crbug.com/1261899): This function cannot be const because
-  // during calculation the sort order saved in prefs could be reset. The
-  // function name is misleading. Replace it with a better function name.
-  virtual syncer::StringOrdinal CalculatePositionForNewItem(
-      const ChromeAppListItem& new_item) = 0;
   // Returns a position which is before the first item in the item list.
   virtual syncer::StringOrdinal GetPositionBeforeFirstItem() const = 0;
 
@@ -141,9 +137,6 @@ class AppListModelUpdater {
                            FirstAvailablePositionNotExist);
 
   AppListModelUpdater();
-
-  // Returns the first available position in app list.
-  syncer::StringOrdinal GetFirstAvailablePosition() const;
 
   // Returns a position which is before the first item in the app list. If
   // |top_level_items| is empty, creates an initial position instead.

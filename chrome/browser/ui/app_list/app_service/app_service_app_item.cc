@@ -42,14 +42,12 @@ AppServiceAppItem::AppServiceAppItem(
   if (sync_item && sync_item->item_ordinal.IsValid()) {
     InitFromSync(sync_item);
   } else {
-    syncer::StringOrdinal default_position;
-
+    // Handle the case that the app under construction is a remote app.
     if (app_type_ == apps::mojom::AppType::kRemote) {
-      // Handle the case that the app under construction is a remote app.
       ash::RemoteAppsManager* remote_manager =
           ash::RemoteAppsManagerFactory::GetForProfile(profile);
       if (remote_manager->ShouldAddToFront(app_update.AppId()))
-        default_position = model_updater->GetPositionBeforeFirstItem();
+        SetPosition(model_updater->GetPositionBeforeFirstItem());
 
       const ash::RemoteAppsModel::AppInfo* app_info =
           remote_manager->GetAppInfo(app_update.AppId());
@@ -57,10 +55,11 @@ AppServiceAppItem::AppServiceAppItem(
         SetChromeFolderId(app_info->folder_id);
     }
 
-    if (!default_position.IsValid()) {
-      default_position = CalculateDefaultPositionIfApplicable(model_updater);
+    if (!position().IsValid()) {
+      // If there is no default positions, the model builder will handle it when
+      // the item is inserted.
+      SetPosition(CalculateDefaultPositionIfApplicable());
     }
-    SetPosition(default_position);
 
     // Crostini apps and the Terminal System App start in the crostini folder.
     if (app_type_ == apps::mojom::AppType::kCrostini ||

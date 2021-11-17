@@ -121,6 +121,13 @@ constexpr size_t kMaxSimultaneousIconRequests = 250;
 
 constexpr int kDefaultIconUpdateCount = 1;
 
+void InitAppPosition(ChromeAppListItem* new_item) {
+  if (new_item->position().IsValid())
+    return;
+
+  new_item->SetChromePosition(new_item->CalculateDefaultPositionForTest());
+}
+
 class FakeAppIconLoaderDelegate : public AppIconLoaderDelegate {
  public:
   FakeAppIconLoaderDelegate() = default;
@@ -505,12 +512,16 @@ class ArcAppModelBuilderTest : public extensions::ExtensionServiceTestBase,
         /*profile=*/nullptr, /*reorder_delegate=*/nullptr);
     controller_ = std::make_unique<test::TestAppListControllerDelegate>();
     builder_ = std::make_unique<AppServiceAppModelBuilder>(controller_.get());
+    scoped_callback_ = std::make_unique<
+        AppServiceAppModelBuilder::ScopedAppPositionInitCallbackForTest>(
+        builder_.get(), base::BindRepeating(&InitAppPosition));
     builder_->Initialize(nullptr, profile_.get(), model_updater_.get());
     RemoveNonArcApps(profile_.get(), model_updater_.get(),
                      should_flush_for_app_service_);
   }
 
   void ResetBuilder() {
+    scoped_callback_.reset();
     builder_.reset();
     controller_.reset();
     model_updater_.reset();
@@ -837,6 +848,9 @@ class ArcAppModelBuilderTest : public extensions::ExtensionServiceTestBase,
   std::unique_ptr<FakeAppListModelUpdater> model_updater_;
   std::unique_ptr<test::TestAppListControllerDelegate> controller_;
   std::unique_ptr<AppServiceAppModelBuilder> builder_;
+  std::unique_ptr<
+      AppServiceAppModelBuilder::ScopedAppPositionInitCallbackForTest>
+      scoped_callback_;
   std::unique_ptr<ChromeShelfController> shelf_controller_;
   std::unique_ptr<ash::ShelfModel> model_;
   bool should_flush_for_app_service_ = true;

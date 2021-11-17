@@ -506,23 +506,27 @@ AppListReorderDelegate::GenerateReorderParamsForAppListItems(
   }
 }
 
-syncer::StringOrdinal AppListReorderDelegate::CalculatePositionForNewItem(
+void AppListReorderDelegate::CalculateNewItemPosition(
+    ash::AppListSortOrder order,
     const ChromeAppListItem& new_item,
-    const std::vector<const ChromeAppListItem*>& local_items) {
+    const std::vector<const ChromeAppListItem*>& local_items,
+    syncer::StringOrdinal* target_position,
+    bool* order_ignored) const {
   // TODO(https://crbug.com/1260875): handle the case that `new_item` is a
   // folder.
   DCHECK(!new_item.is_folder());
 
-  const ash::AppListSortOrder order = static_cast<ash::AppListSortOrder>(
-      GetPrefService()->GetInteger(prefs::kAppListPreferredOrder));
-
   switch (order) {
     case ash::AppListSortOrder::kCustom:
       // Insert `item` at the front when the sort order is kCustom.
-      return CalculateFrontPosition();
+      *target_position = CalculateFrontPosition();
+      *order_ignored = false;
+      break;
     case ash::AppListSortOrder::kNameAlphabetical:
     case ash::AppListSortOrder::kNameReverseAlphabetical:
-      return CalculatePositionInNameOrder(order, new_item, local_items);
+      CalculatePositionInNameOrder(order, new_item, local_items,
+                                   target_position, order_ignored);
+      break;
   }
 }
 
@@ -550,22 +554,28 @@ syncer::StringOrdinal AppListReorderDelegate::CalculateFrontPosition() const {
   return syncer::StringOrdinal::CreateInitialOrdinal();
 }
 
-syncer::StringOrdinal AppListReorderDelegate::CalculatePositionInNameOrder(
+void AppListReorderDelegate::CalculatePositionInNameOrder(
     ash::AppListSortOrder order,
     const ChromeAppListItem& new_item,
-    const std::vector<const ChromeAppListItem*>& local_items) {
+    const std::vector<const ChromeAppListItem*>& local_items,
+    syncer::StringOrdinal* target_position,
+    bool* order_ignored) const {
   DCHECK(order == ash::AppListSortOrder::kNameAlphabetical ||
          order == ash::AppListSortOrder::kNameReverseAlphabetical);
+
+  // Set the default value to be false.
+  *order_ignored = false;
 
   std::vector<reorder::SyncItemWrapper<std::string>> local_item_wrappers =
       reorder::GenerateStringWrappersFromAppListItems(local_items);
 
   if (local_item_wrappers.empty()) {
-    return CalculateNewAppPositionInGlobalScope(
+    *target_position = CalculateNewAppPositionInGlobalScope(
         order, reorder::ConvertAppListItemToStringWrapper(new_item),
         reorder::GenerateStringWrappersFromSyncItems(
             app_list_syncable_service_->sync_items()),
         /*local_prev=*/absl::nullopt, /*local_next=*/absl::nullopt);
+    return;
   }
 
   std::vector<reorder::SyncItemWrapper<std::string>> sorted_subsequence;
@@ -574,12 +584,10 @@ syncer::StringOrdinal AppListReorderDelegate::CalculatePositionInNameOrder(
                                           &sorted_subsequence);
 
   if (entropy > reorder::kOrderResetThreshold) {
-    // Reset the sort order when entropy is too high.
-    GetPrefService()->SetInteger(
-        prefs::kAppListPreferredOrder,
-        static_cast<int>(ash::AppListSortOrder::kCustom));
-
-    return CalculateFrontPosition();
+    // Ignore `order` and place `new_item` at front if entropy is too high.
+    *target_position = CalculateFrontPosition();
+    *order_ignored = true;
+    return;
   }
 
   absl::optional<syncer::StringOrdinal> prev_neighbor;
@@ -587,7 +595,7 @@ syncer::StringOrdinal AppListReorderDelegate::CalculatePositionInNameOrder(
   CalculateNeighbors(order, new_item.name(), sorted_subsequence, &prev_neighbor,
                      &next_neighbor);
 
-  return CalculateNewAppPositionInGlobalScope(
+  *target_position = CalculateNewAppPositionInGlobalScope(
       order, reorder::ConvertAppListItemToStringWrapper(new_item),
       reorder::GenerateStringWrappersFromSyncItems(
           app_list_syncable_service_->sync_items()),

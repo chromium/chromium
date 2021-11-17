@@ -173,16 +173,6 @@ void FakeAppListModelUpdater::GetContextMenuModel(
   std::move(callback).Run(nullptr);
 }
 
-syncer::StringOrdinal FakeAppListModelUpdater::CalculatePositionForNewItem(
-    const ChromeAppListItem& new_item) {
-  // TODO(https://crbug.com/1260875): handle the case that `new_item` is a
-  // folder.
-  if (!ash::features::IsLauncherAppSortEnabled() || new_item.is_folder())
-    return GetFirstAvailablePosition();
-
-  return order_delegate_->CalculatePositionForNewItem(new_item, GetItems());
-}
-
 void FakeAppListModelUpdater::ActivateChromeItem(const std::string& id,
                                                  int event_flags) {}
 

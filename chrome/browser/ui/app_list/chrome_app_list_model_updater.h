@@ -91,8 +91,6 @@ class ChromeAppListModelUpdater : public AppListModelUpdater,
   void GetContextMenuModel(const std::string& id,
                            bool add_sort_options,
                            GetMenuModelCallback callback) override;
-  syncer::StringOrdinal CalculatePositionForNewItem(
-      const ChromeAppListItem& new_item) override;
   syncer::StringOrdinal GetPositionBeforeFirstItem() const override;
 
   // Methods for AppListSyncableService:

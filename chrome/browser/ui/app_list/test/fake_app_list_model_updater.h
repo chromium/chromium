@@ -62,8 +62,6 @@ class FakeAppListModelUpdater : public AppListModelUpdater {
   void GetContextMenuModel(const std::string& id,
                            bool add_sort_options,
                            GetMenuModelCallback callback) override;
-  syncer::StringOrdinal CalculatePositionForNewItem(
-      const ChromeAppListItem& new_item) override;
   size_t BadgedItemCount() override;
 
   // For SearchModel:

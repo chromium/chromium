@@ -116,8 +116,11 @@ std::unique_ptr<AppServiceAppItem> GetAppListItem(Profile* profile,
   apps::AppServiceProxyFactory::GetForProfile(profile)
       ->AppRegistryCache()
       .ForOneApp(app_id, [profile, &item](const apps::AppUpdate& update) {
-        item = std::make_unique<AppServiceAppItem>(profile, nullptr, nullptr,
-                                                   update);
+        item = std::make_unique<AppServiceAppItem>(
+            profile, /*model_updater=*/nullptr, /*sync_item=*/nullptr, update);
+
+        // Because model updater is null, set position manually.
+        item->SetChromePosition(item->CalculateDefaultPositionForTest());
       });
   return item;
 }

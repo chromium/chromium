@@ -10,9 +10,31 @@
 #include "base/logging.h"
 #include "chrome/browser/ui/app_list/chrome_app_list_item.h"
 
+////////////////////////////////////////////////////////////////////////////////
+// AppListModelBuilder::ScopedAppPositionInitCallbackForTest
+
+AppListModelBuilder::ScopedAppPositionInitCallbackForTest::
+    ScopedAppPositionInitCallbackForTest(AppListModelBuilder* builder,
+                                         AppPositionInitCallback callback)
+    : builder_(builder), callback_(callback) {
+  DCHECK(!builder->position_setter_for_test_);
+  builder->position_setter_for_test_ = &callback_;
+}
+
+AppListModelBuilder::ScopedAppPositionInitCallbackForTest::
+    ~ScopedAppPositionInitCallbackForTest() {
+  DCHECK_EQ(builder_->position_setter_for_test_, &callback_);
+  builder_->position_setter_for_test_ = nullptr;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// AppListModelBuilder
+
 AppListModelBuilder::AppListModelBuilder(AppListControllerDelegate* controller,
                                          const char* item_type)
     : controller_(controller), item_type_(item_type) {}
+
+AppListModelBuilder::~AppListModelBuilder() = default;
 
 void AppListModelBuilder::Initialize(app_list::AppListSyncableService* service,
                                      Profile* profile,
@@ -30,6 +52,13 @@ void AppListModelBuilder::InsertApp(std::unique_ptr<ChromeAppListItem> app) {
     service_->AddItem(std::move(app));
     return;
   }
+
+  // Initialize the position before adding `app`. In the product code, a new
+  // app's position is initialized by `service_` if `app` does not have a
+  // default position. But in tests `service_` could be null.
+  DCHECK(position_setter_for_test_);
+  position_setter_for_test_->Run(app.get());
+
   model_updater_->AddItem(std::move(app));
 }
 
@@ -55,8 +84,8 @@ AppListModelBuilder::GetSyncItem(
 ChromeAppListItem* AppListModelBuilder::GetAppItem(const std::string& id) {
   ChromeAppListItem* item = model_updater_->FindItem(id);
   if (item && item->GetItemType() != item_type_) {
-    VLOG(2) << "App Item matching id: " << id
-            << " has incorrect type: '" << item->GetItemType() << "'";
+    VLOG(2) << "App Item matching id: " << id << " has incorrect type: '"
+            << item->GetItemType() << "'";
     return nullptr;
   }
   return item;

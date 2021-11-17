@@ -18,10 +18,7 @@ int g_next_unique_model_id = ash::kAppListProfileIdStartFrom;
 AppListModelUpdater::AppListModelUpdater()
     : model_id_(g_next_unique_model_id++) {}
 
-std::vector<ChromeSearchResult*>
-AppListModelUpdater::GetPublishedSearchResultsForTest() {
-  return std::vector<ChromeSearchResult*>();
-}
+AppListModelUpdater::~AppListModelUpdater() = default;
 
 syncer::StringOrdinal AppListModelUpdater::GetFirstAvailablePosition() const {
   const std::vector<ChromeAppListItem*>& top_level_items = GetTopLevelItems();
@@ -64,6 +61,11 @@ syncer::StringOrdinal AppListModelUpdater::GetFirstAvailablePosition() const {
   if (sorted_items.empty())
     return syncer::StringOrdinal::CreateInitialOrdinal();
   return sorted_items.back()->position().CreateAfter();
+}
+
+std::vector<ChromeSearchResult*>
+AppListModelUpdater::GetPublishedSearchResultsForTest() {
+  return std::vector<ChromeSearchResult*>();
 }
 
 // static

@@ -446,18 +446,6 @@ void ChromeAppListModelUpdater::GetContextMenuModel(
   item->GetContextMenuModel(add_sort_options, std::move(callback));
 }
 
-syncer::StringOrdinal ChromeAppListModelUpdater::CalculatePositionForNewItem(
-    const ChromeAppListItem& new_item) {
-  // TODO(https://crbug.com/1260875): handle the case that `new_item` is a
-  // folder.
-  if (!ash::features::IsLauncherAppSortEnabled() || new_item.is_folder())
-    return GetFirstAvailablePosition();
-
-  // TODO(https://crbug.com/1260877): ideally we would not have to create a
-  // one-off vector of items using `GetItems()`.
-  return order_delegate_->CalculatePositionForNewItem(new_item, GetItems());
-}
-
 syncer::StringOrdinal ChromeAppListModelUpdater::GetPositionBeforeFirstItem()
     const {
   return GetPositionBeforeFirstItemInternal(GetTopLevelItems());

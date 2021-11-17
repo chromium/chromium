@@ -212,9 +212,8 @@ void RemoteAppsManager::MaybeAddFolder(const std::string& folder_id) {
   remote_folder->SetIsPersistent(true);
   remote_folder->SetChromeIsFolder(true);
   syncer::StringOrdinal position =
-      info.add_to_front
-          ? model_updater_->GetPositionBeforeFirstItem()
-          : remote_folder->CalculateDefaultPositionIfApplicable(model_updater_);
+      info.add_to_front ? model_updater_->GetPositionBeforeFirstItem()
+                        : remote_folder->CalculateDefaultPositionIfApplicable();
   remote_folder->SetChromePosition(position);
 
   app_list_syncable_service_->AddItem(std::move(remote_folder));

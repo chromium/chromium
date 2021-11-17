@@ -92,6 +92,21 @@ void ChromeAppListItem::PerformActivate(int event_flags) {
   MaybeDismissAppList();
 }
 
+syncer::StringOrdinal
+ChromeAppListItem::CalculateDefaultPositionIfApplicable() {
+  syncer::StringOrdinal page_ordinal;
+  syncer::StringOrdinal launch_ordinal;
+  extensions::AppSorting* app_sorting = GetAppSorting();
+  if (app_sorting->GetDefaultOrdinals(id(), &page_ordinal, &launch_ordinal) &&
+      page_ordinal.IsValid() && launch_ordinal.IsValid()) {
+    // Set the default position if it exists.
+    return syncer::StringOrdinal(page_ordinal.ToInternalValue() +
+                                 launch_ordinal.ToInternalValue());
+  }
+
+  return syncer::StringOrdinal();
+}
+
 void ChromeAppListItem::Activate(int event_flags) {}
 
 const char* ChromeAppListItem::GetItemType() const {
@@ -138,29 +153,6 @@ void ChromeAppListItem::InitFromSync(
     SetName(sync_item->item_name);
 
   SetChromeFolderId(sync_item->parent_id);
-}
-
-syncer::StringOrdinal ChromeAppListItem::CalculateDefaultPositionIfApplicable(
-    AppListModelUpdater* model_updater) {
-  syncer::StringOrdinal page_ordinal;
-  syncer::StringOrdinal launch_ordinal;
-  extensions::AppSorting* app_sorting = GetAppSorting();
-  if (app_sorting->GetDefaultOrdinals(id(), &page_ordinal, &launch_ordinal) &&
-      page_ordinal.IsValid() && launch_ordinal.IsValid()) {
-    // Set the default position if it exists.
-    return syncer::StringOrdinal(page_ordinal.ToInternalValue() +
-                                 launch_ordinal.ToInternalValue());
-  }
-
-  if (model_updater)
-    return model_updater->CalculatePositionForNewItem(*this);
-
-  // Set the natural position.
-  app_sorting->EnsureValidOrdinals(id(), syncer::StringOrdinal());
-  page_ordinal = app_sorting->GetPageOrdinal(id());
-  launch_ordinal = app_sorting->GetAppLaunchOrdinal(id());
-  return syncer::StringOrdinal(page_ordinal.ToInternalValue() +
-                               launch_ordinal.ToInternalValue());
 }
 
 void ChromeAppListItem::LoadIcon() {
@@ -251,4 +243,15 @@ bool ChromeAppListItem::CompareForTest(const ChromeAppListItem* other) const {
 std::string ChromeAppListItem::ToDebugString() const {
   return id().substr(0, 8) + " '" + name() + "' (" + folder_id() + ") [" +
          position().ToDebugString() + "]";
+}
+
+syncer::StringOrdinal ChromeAppListItem::CalculateDefaultPositionForTest() {
+  syncer::StringOrdinal page_ordinal;
+  syncer::StringOrdinal launch_ordinal;
+  extensions::AppSorting* app_sorting = GetAppSorting();
+  app_sorting->EnsureValidOrdinals(id(), syncer::StringOrdinal());
+  page_ordinal = app_sorting->GetPageOrdinal(id());
+  launch_ordinal = app_sorting->GetAppLaunchOrdinal(id());
+  return syncer::StringOrdinal(page_ordinal.ToInternalValue() +
+                               launch_ordinal.ToInternalValue());
 }
