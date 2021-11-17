@@ -13,6 +13,7 @@ namespace ash {
 class AppListViewDelegate;
 class ProductivityLauncherSearchView;
 class SearchBoxView;
+class SearchResultPageDialogController;
 
 // The search results page for the app list bubble / clamshell launcher.
 // Contains a scrolling list of search results. Does not include the search box,
@@ -20,6 +21,7 @@ class SearchBoxView;
 class ASH_EXPORT AppListBubbleSearchPage : public views::View {
  public:
   AppListBubbleSearchPage(AppListViewDelegate* view_delegate,
+                          SearchResultPageDialogController* dialog_controller,
                           SearchBoxView* search_box_view);
   AppListBubbleSearchPage(const AppListBubbleSearchPage&) = delete;
   AppListBubbleSearchPage& operator=(const AppListBubbleSearchPage&) = delete;

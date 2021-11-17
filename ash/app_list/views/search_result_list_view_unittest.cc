@@ -57,7 +57,7 @@ class SearchResultListViewTest : public views::test::WidgetTest {
     views::test::WidgetTest::SetUp();
     widget_ = CreateTopLevelPlatformWidget();
     view_ = std::make_unique<SearchResultListView>(nullptr, &view_delegate_,
-                                                   absl::nullopt);
+                                                   nullptr, absl::nullopt);
     view_->SetListType(SearchResultListView::SearchResultListType::kUnified);
     widget_->SetBounds(gfx::Rect(0, 0, 700, 500));
     widget_->GetContentsView()->AddChildView(view_.get());
