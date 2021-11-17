@@ -921,11 +921,12 @@ ci.android_builder(
     name = "android-marshmallow-x86-rel",
     branch_selector = branches.STANDARD_MILESTONE,
     console_view_entry = consoles.console_view_entry(
-        category = "builder_tester|x86",
+        category = "on_cq|x86",
         short_name = "M",
     ),
     cq_mirrors_console_view = "mirrors",
     main_console_view = main_console_if_on_branch(),
+    tree_closing = True,
     os = os.LINUX_BIONIC_REMOVE,
 )
 
@@ -979,6 +980,7 @@ ci.android_builder(
         category = "builder_tester|x86",
         short_name = "11",
     ),
+    tree_closing = True,
     os = os.LINUX_BIONIC_REMOVE,
 )
 
