@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/arc/net/arc_net_host_impl.h"
+#include "ash/components/arc/net/arc_net_host_impl.h"
 
 #include <utility>
 
@@ -246,7 +246,8 @@ arc::mojom::NetworkConfigurationPtr TranslateNetworkProperties(
     mojo->wifi->security =
         TranslateWiFiSecurity(network_state->security_class());
     mojo->wifi->frequency = network_state->frequency();
-    mojo->wifi->hidden_ssid = shill_dict &&
+    mojo->wifi->hidden_ssid =
+        shill_dict &&
         shill_dict->FindBoolPath(shill::kWifiHiddenSsid).value_or(false);
     mojo->wifi->signal_strength = network_state->signal_strength();
   }

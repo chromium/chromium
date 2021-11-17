@@ -10,6 +10,7 @@
 
 #include "ash/components/arc/arc_features.h"
 #include "ash/components/arc/arc_prefs.h"
+#include "ash/components/arc/power/arc_power_bridge.h"
 #include "ash/components/arc/test/arc_util_test_support.h"
 #include "ash/components/arc/test/connection_holder_util.h"
 #include "ash/components/arc/test/fake_arc_session.h"
@@ -25,7 +26,6 @@
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "components/arc/mojom/power.mojom.h"
-#include "components/arc/power/arc_power_bridge.h"
 #include "components/arc/session/arc_bridge_service.h"
 #include "components/arc/session/arc_service_manager.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"

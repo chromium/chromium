@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_ARC_NET_ARC_NET_HOST_IMPL_H_
-#define COMPONENTS_ARC_NET_ARC_NET_HOST_IMPL_H_
+#ifndef ASH_COMPONENTS_ARC_NET_ARC_NET_HOST_IMPL_H_
+#define ASH_COMPONENTS_ARC_NET_ARC_NET_HOST_IMPL_H_
 
 #include <stdint.h>
 #include <map>
@@ -181,4 +181,4 @@ class ArcNetHostImpl : public KeyedService,
 
 }  // namespace arc
 
-#endif  // COMPONENTS_ARC_NET_ARC_NET_HOST_IMPL_H_
+#endif  // ASH_COMPONENTS_ARC_NET_ARC_NET_HOST_IMPL_H_

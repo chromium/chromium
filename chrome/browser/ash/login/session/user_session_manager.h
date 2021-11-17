@@ -12,6 +12,7 @@
 #include <string>
 #include <vector>
 
+#include "ash/components/arc/net/always_on_vpn_manager.h"
 #include "base/callback.h"
 #include "base/containers/flat_map.h"
 #include "base/memory/ref_counted.h"
@@ -45,7 +46,6 @@
 // TODO(https://crbug.com/1164001): move to forward declaration.
 #include "chromeos/login/auth/stub_authenticator_builder.h"
 #include "chromeos/login/auth/user_context.h"
-#include "components/arc/net/always_on_vpn_manager.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
 #include "services/network/public/cpp/network_connection_tracker.h"

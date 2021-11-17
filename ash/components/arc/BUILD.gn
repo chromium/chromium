@@ -57,6 +57,20 @@ static_library("arc") {
     "metrics/stability_metrics_manager.h",
     "midis/arc_midis_bridge.cc",
     "midis/arc_midis_bridge.h",
+    "net/always_on_vpn_manager.cc",
+    "net/always_on_vpn_manager.h",
+    "net/arc_net_host_impl.cc",
+    "net/arc_net_host_impl.h",
+    "obb_mounter/arc_obb_mounter_bridge.cc",
+    "obb_mounter/arc_obb_mounter_bridge.h",
+    "pay/arc_digital_goods_bridge.cc",
+    "pay/arc_digital_goods_bridge.h",
+    "pay/arc_payment_app_bridge.cc",
+    "pay/arc_payment_app_bridge.h",
+    "power/arc_power_bridge.cc",
+    "power/arc_power_bridge.h",
+    "property/arc_property_bridge.cc",
+    "property/arc_property_bridge.h",
   ]
 
   public_deps = [

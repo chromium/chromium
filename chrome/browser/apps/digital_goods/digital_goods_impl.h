@@ -8,7 +8,7 @@
 #include <string>
 #include <vector>
 
-#include "components/arc/pay/arc_digital_goods_bridge.h"
+#include "ash/components/arc/pay/arc_digital_goods_bridge.h"
 #include "content/public/browser/document_user_data.h"
 #include "content/public/browser/render_widget_host.h"
 #include "mojo/public/cpp/bindings/receiver.h"

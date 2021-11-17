@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/arc/net/arc_net_host_impl.h"
+#include "ash/components/arc/net/arc_net_host_impl.h"
 
 #include <string>
 

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_ARC_OBB_MOUNTER_ARC_OBB_MOUNTER_BRIDGE_H_
-#define COMPONENTS_ARC_OBB_MOUNTER_ARC_OBB_MOUNTER_BRIDGE_H_
+#ifndef ASH_COMPONENTS_ARC_OBB_MOUNTER_ARC_OBB_MOUNTER_BRIDGE_H_
+#define ASH_COMPONENTS_ARC_OBB_MOUNTER_ARC_OBB_MOUNTER_BRIDGE_H_
 
 #include <string>
 
@@ -19,9 +19,7 @@ namespace arc {
 class ArcBridgeService;
 
 // This class handles OBB mount/unmount requests from Android.
-class ArcObbMounterBridge
-    : public KeyedService,
-      public mojom::ObbMounterHost {
+class ArcObbMounterBridge : public KeyedService, public mojom::ObbMounterHost {
  public:
   // Returns singleton instance for the given BrowserContext,
   // or nullptr if the browser |context| is not allowed to use ARC.
@@ -50,4 +48,4 @@ class ArcObbMounterBridge
 
 }  // namespace arc
 
-#endif  // COMPONENTS_ARC_OBB_MOUNTER_ARC_OBB_MOUNTER_BRIDGE_H_
+#endif  // ASH_COMPONENTS_ARC_OBB_MOUNTER_ARC_OBB_MOUNTER_BRIDGE_H_
