@@ -10,7 +10,9 @@
 
 RequestDesktopSiteWebContentsObserverAndroid::
     RequestDesktopSiteWebContentsObserverAndroid(content::WebContents* contents)
-    : content::WebContentsObserver(contents) {
+    : content::WebContentsObserver(contents),
+      content::WebContentsUserData<
+          RequestDesktopSiteWebContentsObserverAndroid>(*contents) {
   Profile* profile =
       Profile::FromBrowserContext(web_contents()->GetBrowserContext());
   host_content_settings_map_ =

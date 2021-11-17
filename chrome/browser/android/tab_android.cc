@@ -92,7 +92,8 @@ class TabAndroidHelper : public content::WebContentsUserData<TabAndroidHelper> {
     return helper ? helper->tab_android_ : nullptr;
   }
 
-  explicit TabAndroidHelper(content::WebContents*) {}
+  explicit TabAndroidHelper(content::WebContents* web_contents)
+      : content::WebContentsUserData<TabAndroidHelper>(*web_contents) {}
 
  private:
   friend class content::WebContentsUserData<TabAndroidHelper>;

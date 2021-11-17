@@ -47,7 +47,9 @@ constexpr char kIphReplacesToolbar[] = "x_iph_replaces_toolbar";
 
 ChromeAppBannerManagerAndroid::ChromeAppBannerManagerAndroid(
     content::WebContents* web_contents)
-    : AppBannerManagerAndroid(web_contents) {}
+    : AppBannerManagerAndroid(web_contents),
+      content::WebContentsUserData<ChromeAppBannerManagerAndroid>(
+          *web_contents) {}
 
 ChromeAppBannerManagerAndroid::~ChromeAppBannerManagerAndroid() = default;
 

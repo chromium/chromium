@@ -19,14 +19,14 @@ void PermissionUpdateMessageController::ShowMessage(
     const std::vector<ContentSettingsType>& content_settings_types,
     PermissionUpdatedCallback callback) {
   DCHECK_EQ(permissions::ShouldRepromptUserForPermissions(
-                web_contents_, content_settings_types),
+                &GetWebContents(), content_settings_types),
             permissions::PermissionRepromptState::kShow)
       << "Caller should check ShouldShowRepromptUserForPermissions before "
          "creating the message ui.";
   std::vector<std::string> required_permissions;
   std::vector<std::string> optional_permissions;
   ui::WindowAndroid* window_android =
-      web_contents_->GetNativeView()->GetWindowAndroid();
+      GetWebContents().GetNativeView()->GetWindowAndroid();
   const std::vector<ContentSettingsType> filtered_types =
       GetContentSettingsWithMissingRequiredAndroidPermissions(
           content_settings_types, window_android);
@@ -62,9 +62,9 @@ void PermissionUpdateMessageController::ShowMessageInternal(
     int description_id,
     PermissionUpdatedCallback callback) {
   auto delegate = std::make_unique<PermissionUpdateMessageDelegate>(
-      web_contents_, required_android_permissions, optional_android_permissions,
-      content_settings_types, icon_id, title_id, description_id,
-      std::move(callback),
+      &GetWebContents(), required_android_permissions,
+      optional_android_permissions, content_settings_types, icon_id, title_id,
+      description_id, std::move(callback),
       base::BindOnce(&PermissionUpdateMessageController::DeleteMessage,
                      base::Unretained(this)));
   message_delegates_.push_back(std::move(delegate));
@@ -147,7 +147,8 @@ PermissionUpdateMessageController::GetPermissionUpdateUiResourcesId(
 
 PermissionUpdateMessageController::PermissionUpdateMessageController(
     content::WebContents* web_contents)
-    : web_contents_(web_contents) {}
+    : content::WebContentsUserData<PermissionUpdateMessageController>(
+          *web_contents) {}
 
 PermissionUpdateMessageController::~PermissionUpdateMessageController() {
   message_delegates_.clear();

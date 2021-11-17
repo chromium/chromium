@@ -37,7 +37,8 @@ uint32_t SaveDataToFd(int fd,
 }  // namespace
 
 AwPrintManager::AwPrintManager(content::WebContents* contents)
-    : PrintManager(contents) {}
+    : PrintManager(contents),
+      content::WebContentsUserData<AwPrintManager>(*contents) {}
 
 AwPrintManager::~AwPrintManager() = default;
 

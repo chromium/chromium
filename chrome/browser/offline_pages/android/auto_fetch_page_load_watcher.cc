@@ -79,7 +79,9 @@ class AutoFetchPageLoadWatcher::NavigationObserver
           AutoFetchPageLoadWatcher::NavigationObserver> {
  public:
   explicit NavigationObserver(content::WebContents* web_contents)
-      : content::WebContentsObserver(web_contents) {
+      : content::WebContentsObserver(web_contents),
+        content::WebContentsUserData<
+            AutoFetchPageLoadWatcher::NavigationObserver>(*web_contents) {
     page_load_watcher_ =
         OfflinePageAutoFetcherServiceFactory::GetForBrowserContext(
             web_contents->GetBrowserContext())

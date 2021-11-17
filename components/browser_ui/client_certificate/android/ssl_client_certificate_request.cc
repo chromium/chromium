@@ -80,7 +80,9 @@ class SSLClientCertPendingRequests
       public content::WebContentsObserver {
  public:
   explicit SSLClientCertPendingRequests(content::WebContents* web_contents)
-      : content::WebContentsObserver(web_contents) {}
+      : content::WebContentsUserData<SSLClientCertPendingRequests>(
+            *web_contents),
+        content::WebContentsObserver(web_contents) {}
   ~SSLClientCertPendingRequests() override {}
 
   void AddRequest(std::unique_ptr<ClientCertRequest> request);

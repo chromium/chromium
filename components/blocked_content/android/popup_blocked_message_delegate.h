@@ -42,7 +42,6 @@ class PopupBlockedMessageDelegate
   void HandleClick();
   void HandleDismissCallback(messages::DismissReason dismiss_reason);
 
-  content::WebContents* web_contents_ = nullptr;
   HostContentSettingsMap* map_ = nullptr;
 
   // TODO(crbug.com/1179462): considering grouping the following members into a

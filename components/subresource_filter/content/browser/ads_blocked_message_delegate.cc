@@ -94,7 +94,8 @@ AdsBlockedMessageDelegate::AdsBlockedMessageDelegate(
 AdsBlockedMessageDelegate::AdsBlockedMessageDelegate(
     content::WebContents* web_contents,
     AdsBlockedDialogFactory ads_blocked_dialog_factory)
-    : content::WebContentsObserver(web_contents),
+    : content::WebContentsUserData<AdsBlockedMessageDelegate>(*web_contents),
+      content::WebContentsObserver(web_contents),
       ads_blocked_dialog_factory_(std::move(ads_blocked_dialog_factory)) {}
 
 void AdsBlockedMessageDelegate::HandleMessageOkClicked() {}

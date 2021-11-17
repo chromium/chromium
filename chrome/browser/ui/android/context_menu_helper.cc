@@ -32,11 +32,11 @@ using base::android::JavaRef;
 using optimization_guide::proto::PerformanceClass;
 
 ContextMenuHelper::ContextMenuHelper(content::WebContents* web_contents)
-    : web_contents_(web_contents) {
+    : content::WebContentsUserData<ContextMenuHelper>(*web_contents) {
   JNIEnv* env = base::android::AttachCurrentThread();
   java_obj_.Reset(
       env, Java_ContextMenuHelper_create(env, reinterpret_cast<int64_t>(this),
-                                         web_contents_->GetJavaWebContents())
+                                         web_contents->GetJavaWebContents())
                .obj());
   DCHECK(!java_obj_.is_null());
 }
@@ -51,16 +51,16 @@ void ContextMenuHelper::ShowContextMenu(
     const content::ContextMenuParams& params) {
   // TODO(crbug.com/851495): support context menu in VR.
   if (vr::VrTabHelper::IsUiSuppressedInVr(
-          web_contents_, vr::UiSuppressedElement::kContextMenu)) {
-    web_contents_->NotifyContextMenuClosed(params.link_followed);
+          &GetWebContents(), vr::UiSuppressedElement::kContextMenu)) {
+    GetWebContents().NotifyContextMenuClosed(params.link_followed);
     return;
   }
   JNIEnv* env = base::android::AttachCurrentThread();
   context_menu_params_ = params;
-  gfx::NativeView view = web_contents_->GetNativeView();
+  gfx::NativeView view = GetWebContents().GetNativeView();
   if (!params.link_url.is_empty()) {
     performance_hints::PerformanceHintsObserver::RecordPerformanceUMAForURL(
-        web_contents_, params.link_url);
+        &GetWebContents(), params.link_url);
   }
   Java_ContextMenuHelper_showContextMenu(
       env, java_obj_,
@@ -72,7 +72,7 @@ void ContextMenuHelper::ShowContextMenu(
 void ContextMenuHelper::OnContextMenuClosed(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& obj) {
-  web_contents_->NotifyContextMenuClosed(context_menu_params_.link_followed);
+  GetWebContents().NotifyContextMenuClosed(context_menu_params_.link_followed);
 }
 
 void ContextMenuHelper::SetPopulatorFactory(

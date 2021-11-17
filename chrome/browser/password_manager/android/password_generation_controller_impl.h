@@ -63,8 +63,8 @@ class PasswordGenerationControllerImpl
       autofill::password_generation::PasswordGenerationType type) override;
   void GeneratedPasswordRejected(
       autofill::password_generation::PasswordGenerationType type) override;
-  gfx::NativeWindow top_level_native_window() const override;
-  content::WebContents* web_contents() const override;
+  gfx::NativeWindow top_level_native_window() override;
+  content::WebContents* web_contents() override;
 
   // Like |CreateForWebContents|, it creates the controller and attaches it to
   // the given |web_contents|. Additionally, it allows injecting mocks for
@@ -108,9 +108,6 @@ class PasswordGenerationControllerImpl
   // Resets the current active frame driver, as well as the dialog if shown
   // and the generation element data.
   void ResetState();
-
-  // The tab for which this class is scoped.
-  content::WebContents* web_contents_;
 
   // The PasswordManagerClient associated with the current |web_contents_|.
   // Used to tell the renderer that manual generation was requested.

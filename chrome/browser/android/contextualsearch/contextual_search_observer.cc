@@ -11,7 +11,7 @@ namespace contextual_search {
 
 ContextualSearchObserver::ContextualSearchObserver(
     content::WebContents* web_contents)
-    : content::WebContentsObserver(web_contents) {}
+    : content::WebContentsUserData<ContextualSearchObserver>(*web_contents) {}
 
 ContextualSearchObserver::~ContextualSearchObserver() = default;
 

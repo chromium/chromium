@@ -110,7 +110,7 @@ void PasswordGenerationControllerImpl::OnAutomaticGenerationAvailable(
 
   if (!manual_filling_controller_) {
     manual_filling_controller_ =
-        ManualFillingController::GetOrCreate(web_contents_);
+        ManualFillingController::GetOrCreate(&GetWebContents());
   }
 
   DCHECK(manual_filling_controller_);
@@ -166,13 +166,12 @@ void PasswordGenerationControllerImpl::GeneratedPasswordRejected(
       GenerationDialogChoice::kRejected, type);
 }
 
-gfx::NativeWindow PasswordGenerationControllerImpl::top_level_native_window()
-    const {
-  return web_contents_->GetTopLevelNativeWindow();
+gfx::NativeWindow PasswordGenerationControllerImpl::top_level_native_window() {
+  return GetWebContents().GetTopLevelNativeWindow();
 }
 
-content::WebContents* PasswordGenerationControllerImpl::web_contents() const {
-  return web_contents_;
+content::WebContents* PasswordGenerationControllerImpl::web_contents() {
+  return &GetWebContents();
 }
 
 // static
@@ -194,7 +193,8 @@ void PasswordGenerationControllerImpl::CreateForWebContentsForTesting(
 
 PasswordGenerationControllerImpl::PasswordGenerationControllerImpl(
     content::WebContents* web_contents)
-    : web_contents_(web_contents),
+    : content::WebContentsUserData<PasswordGenerationControllerImpl>(
+          *web_contents),
       client_(ChromePasswordManagerClient::FromWebContents(web_contents)),
       create_dialog_factory_(
           base::BindRepeating(&PasswordGenerationDialogViewInterface::Create)) {
@@ -205,7 +205,8 @@ PasswordGenerationControllerImpl::PasswordGenerationControllerImpl(
     password_manager::PasswordManagerClient* client,
     base::WeakPtr<ManualFillingController> manual_filling_controller,
     CreateDialogFactory create_dialog_factory)
-    : web_contents_(web_contents),
+    : content::WebContentsUserData<PasswordGenerationControllerImpl>(
+          *web_contents),
       client_(client),
       manual_filling_controller_(std::move(manual_filling_controller)),
       create_dialog_factory_(create_dialog_factory) {}
@@ -226,7 +227,7 @@ void PasswordGenerationControllerImpl::ShowDialog(PasswordGenerationType type) {
 
   std::u16string password =
       active_frame_driver_->GetPasswordGenerationHelper()->GeneratePassword(
-          web_contents_->GetLastCommittedURL().DeprecatedGetOriginAsURL(),
+          GetWebContents().GetLastCommittedURL().DeprecatedGetOriginAsURL(),
           generation_element_data_->form_signature,
           generation_element_data_->field_signature,
           generation_element_data_->max_password_length);

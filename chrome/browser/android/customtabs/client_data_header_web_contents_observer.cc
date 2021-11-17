@@ -15,7 +15,9 @@ ClientDataHeaderWebContentsObserver::~ClientDataHeaderWebContentsObserver() =
 
 ClientDataHeaderWebContentsObserver::ClientDataHeaderWebContentsObserver(
     content::WebContents* web_contents)
-    : WebContentsObserver(web_contents) {}
+    : WebContentsObserver(web_contents),
+      content::WebContentsUserData<ClientDataHeaderWebContentsObserver>(
+          *web_contents) {}
 
 void ClientDataHeaderWebContentsObserver::SetHeader(const std::string& header) {
   header_ = header;

@@ -14,7 +14,8 @@
 namespace printing {
 
 PrintViewManagerBasic::PrintViewManagerBasic(content::WebContents* web_contents)
-    : PrintViewManagerBase(web_contents) {
+    : PrintViewManagerBase(web_contents),
+      content::WebContentsUserData<PrintViewManagerBasic>(*web_contents) {
 #if defined(OS_ANDROID)
   set_pdf_writing_done_callback(
       base::BindRepeating(&PrintingContextAndroid::PdfWritingDone));

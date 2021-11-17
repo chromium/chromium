@@ -45,7 +45,6 @@ class DateTimeChooserAndroid
 
  private:
   friend class content::WebContentsUserData<DateTimeChooserAndroid>;
-  content::WebContents* web_contents_;
 
   OpenDateTimeDialogCallback open_date_time_response_callback_;
 

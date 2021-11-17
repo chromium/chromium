@@ -53,7 +53,9 @@ base::Time GetTimeNow() {
 
 SearchGeolocationDisclosureTabHelper::SearchGeolocationDisclosureTabHelper(
     content::WebContents* contents)
-    : content::WebContentsObserver(contents) {}
+    : content::WebContentsObserver(contents),
+      content::WebContentsUserData<SearchGeolocationDisclosureTabHelper>(
+          *contents) {}
 
 SearchGeolocationDisclosureTabHelper::~SearchGeolocationDisclosureTabHelper() {}
 

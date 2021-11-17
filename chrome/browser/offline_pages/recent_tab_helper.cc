@@ -97,6 +97,7 @@ struct RecentTabHelper::SnapshotProgressInfo {
 
 RecentTabHelper::RecentTabHelper(content::WebContents* web_contents)
     : content::WebContentsObserver(web_contents),
+      content::WebContentsUserData<RecentTabHelper>(*web_contents),
       delegate_(new DefaultRecentTabHelperDelegate()) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 }

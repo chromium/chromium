@@ -48,6 +48,7 @@ bool OomInterventionTabHelper::IsEnabled() {
 OomInterventionTabHelper::OomInterventionTabHelper(
     content::WebContents* web_contents)
     : content::WebContentsObserver(web_contents),
+      content::WebContentsUserData<OomInterventionTabHelper>(*web_contents),
       decider_(OomInterventionDecider::GetForBrowserContext(
           web_contents->GetBrowserContext())) {
   scoped_observation_.Observe(

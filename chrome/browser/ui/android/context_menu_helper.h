@@ -42,7 +42,6 @@ class ContextMenuHelper
   GetChromeRenderFrame() const;
 
   base::android::ScopedJavaGlobalRef<jobject> java_obj_;
-  content::WebContents* web_contents_;
 
   content::ContextMenuParams context_menu_params_;
 
