@@ -5621,26 +5621,6 @@
             ]
         }
     ],
-    "OptimizationHintsDesktopM91": [
-        {
-            "platforms": [
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_20210426",
-                    "enable_features": [
-                        "OptimizationHints",
-                        "OptimizationHintsFetching"
-                    ]
-                }
-            ]
-        }
-    ],
     "OptimizationHintsFieldTrials": [
         {
             "platforms": [
