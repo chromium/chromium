@@ -8,7 +8,6 @@
 
 #include "base/bind.h"
 #include "base/check.h"
-#import "base/ios/ns_error_util.h"
 #include "base/mac/bundle_locations.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/task/post_task.h"
@@ -18,14 +17,11 @@
 #import "components/password_manager/ios/password_manager_java_script_feature.h"
 #include "components/ssl_errors/error_info.h"
 #include "components/strings/grit/components_strings.h"
-#include "ios/components/security_interstitials/legacy_tls/legacy_tls_tab_allow_list.h"
 #include "ios/components/webui/web_ui_url_constants.h"
-#import "ios/net/protocol_handler_util.h"
 #include "ios/web/common/user_agent.h"
 #include "ios/web/public/security/ssl_status.h"
 #include "ios/web/public/thread/web_task_traits.h"
 #include "ios/web/public/thread/web_thread.h"
-#import "ios/web_view/internal/cwv_legacy_tls_warning_handler_internal.h"
 #import "ios/web_view/internal/cwv_ssl_error_handler_internal.h"
 #import "ios/web_view/internal/cwv_ssl_status_internal.h"
 #import "ios/web_view/internal/cwv_ssl_util.h"
@@ -36,7 +32,6 @@
 #import "ios/web_view/public/cwv_navigation_delegate.h"
 #import "ios/web_view/public/cwv_web_view.h"
 #import "net/base/mac/url_conversions.h"
-#include "net/base/net_errors.h"
 #include "net/cert/cert_status_flags.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
@@ -133,10 +128,9 @@ std::u16string WebViewWebClient::GetPluginNotSupportedText() const {
 
 bool WebViewWebClient::IsLegacyTLSAllowedForHost(web::WebState* web_state,
                                                  const std::string& hostname) {
-  auto* allowlist = LegacyTLSTabAllowList::FromWebState(web_state);
-  if (!allowlist)
-    return false;
-  return allowlist->IsDomainAllowed(hostname);
+  // TODO(crbug.com/1191799): Legacy TLS should be supported via an interstitial
+  // UI that allows the user to override if desired.
+  return true;
 }
 
 void WebViewWebClient::PrepareErrorPage(
@@ -150,47 +144,26 @@ void WebViewWebClient::PrepareErrorPage(
     base::OnceCallback<void(NSString*)> callback) {
   DCHECK(error);
 
+  // TODO(crbug.com/1191799): Add support for handling legacy TLS.
   CWVWebView* web_view = [CWVWebView webViewForWebState:web_state];
-  __block base::OnceCallback<void(NSString*)> html_callback =
-      std::move(callback);
-  NSError* final_underlying_error =
-      base::ios::GetFinalUnderlyingErrorFromError(error);
-  if ([final_underlying_error.domain isEqual:net::kNSErrorDomain] &&
-      final_underlying_error.code == net::ERR_SSL_OBSOLETE_VERSION) {
-    if ([web_view.navigationDelegate
-            respondsToSelector:@selector(webView:
-                                   handleLegacyTLSWarningWithHandler:)]) {
-      CWVLegacyTLSWarningHandler* handler = [[CWVLegacyTLSWarningHandler alloc]
-                 initWithWebState:web_state
-                              URL:net::NSURLWithGURL(url)
-                            error:error
-          warningPageHTMLCallback:^(NSString* HTML) {
-            std::move(html_callback).Run(HTML);
-          }];
-      [web_view.navigationDelegate webView:web_view
-          handleLegacyTLSWarningWithHandler:handler];
-      return;
-    }
-  } else if (info.has_value()) {
-    if ([web_view.navigationDelegate
-            respondsToSelector:@selector(webView:handleSSLErrorWithHandler:)]) {
-      CWVSSLErrorHandler* handler =
-          [[CWVSSLErrorHandler alloc] initWithWebState:web_state
-                                                   URL:net::NSURLWithGURL(url)
-                                                 error:error
-                                               SSLInfo:info.value()
-                                 errorPageHTMLCallback:^(NSString* HTML) {
-                                   std::move(html_callback).Run(HTML);
-                                 }];
-      [web_view.navigationDelegate webView:web_view
-                 handleSSLErrorWithHandler:handler];
-      return;
-    }
+  if (info.has_value() &&
+      [web_view.navigationDelegate
+          respondsToSelector:@selector(webView:handleSSLErrorWithHandler:)]) {
+    __block base::OnceCallback<void(NSString*)> error_html_callback =
+        std::move(callback);
+    CWVSSLErrorHandler* handler =
+        [[CWVSSLErrorHandler alloc] initWithWebState:web_state
+                                                 URL:net::NSURLWithGURL(url)
+                                               error:error
+                                             SSLInfo:info.value()
+                               errorPageHTMLCallback:^(NSString* HTML) {
+                                 std::move(error_html_callback).Run(HTML);
+                               }];
+    [web_view.navigationDelegate webView:web_view
+               handleSSLErrorWithHandler:handler];
+  } else {
+    std::move(callback).Run(error.localizedDescription);
   }
-
-  // If the error is still not handled by the client, just display the raw error
-  // description.
-  std::move(html_callback).Run(error.localizedDescription);
 }
 
 bool WebViewWebClient::EnableLongPressUIContextMenu() const {

@@ -43,9 +43,6 @@
 // Supports APIs used to implement the trusted vault for chrome sync.
 #define IOS_WEB_VIEW_SUPPORTS_TRUSTED_VAULT_APIS 1
 
-// Allows handling of legacy TLS warnings with CWVLegacyTLSWarningHandler.
-#define IOS_WEB_VIEW_SUPPORTS_CWV_LEGACY_TLS_WARNING_HANDLER 1
-
 // Supports -[CWVAutofillDataManager updatePassword:newUsername:newPassword:].
 #define IOS_WEB_VIEW_SUPPORTS_UPDATING_PASSWORDS 1
 

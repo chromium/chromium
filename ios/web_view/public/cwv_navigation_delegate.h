@@ -13,7 +13,6 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @class CWVDownloadTask;
-@class CWVLegacyTLSWarningHandler;
 @class CWVSSLErrorHandler;
 @class CWVWebView;
 
@@ -58,12 +57,6 @@ NS_ASSUME_NONNULL_BEGIN
 // potentially override and ignore it.
 - (void)webView:(CWVWebView*)webView
     handleSSLErrorWithHandler:(CWVSSLErrorHandler*)handler;
-
-// Notifies the delegate that page load was cancelled due to legacy TLS.
-// |handler| can be used to display a warning page and allow the user to
-// override the warning and proceed to the page.
-- (void)webView:(CWVWebView*)webView
-    handleLegacyTLSWarningWithHandler:(CWVLegacyTLSWarningHandler*)handler;
 
 // Called when the web view requests to start downloading a file.
 //
