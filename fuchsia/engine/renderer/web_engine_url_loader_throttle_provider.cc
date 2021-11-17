@@ -4,8 +4,10 @@
 
 #include "fuchsia/engine/renderer/web_engine_url_loader_throttle_provider.h"
 
+#include "components/url_rewrite/common/url_loader_throttle.h"
+#include "components/url_rewrite/mojom/url_request_rewrite.mojom.h"
 #include "content/public/renderer/render_frame.h"
-#include "fuchsia/engine/common/web_engine_url_loader_throttle.h"
+#include "fuchsia/engine/common/cors_exempt_headers.h"
 #include "fuchsia/engine/renderer/web_engine_content_renderer_client.h"
 
 WebEngineURLLoaderThrottleProvider::WebEngineURLLoaderThrottleProvider(
@@ -39,7 +41,8 @@ WebEngineURLLoaderThrottleProvider::CreateThrottles(
           ->url_request_rules_receiver()
           ->GetCachedRules();
   if (rules) {
-    throttles.emplace_back(std::make_unique<WebEngineURLLoaderThrottle>(rules));
+    throttles.emplace_back(std::make_unique<url_rewrite::URLLoaderThrottle>(
+        rules, base::BindRepeating(&IsHeaderCorsExempt)));
   }
   return throttles;
 }

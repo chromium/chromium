@@ -15,6 +15,8 @@
 #include "components/site_isolation/features.h"
 #include "components/site_isolation/preloaded_isolated_origins.h"
 #include "components/strings/grit/components_locale_settings.h"
+#include "components/url_rewrite/common/url_loader_throttle.h"
+#include "components/url_rewrite/common/url_request_rewrite_rules.h"
 #include "content/public/browser/client_certificate_delegate.h"
 #include "content/public/browser/devtools_manager_delegate.h"
 #include "content/public/browser/navigation_handle.h"
@@ -29,9 +31,8 @@
 #include "fuchsia/engine/browser/web_engine_browser_interface_binders.h"
 #include "fuchsia/engine/browser/web_engine_browser_main_parts.h"
 #include "fuchsia/engine/browser/web_engine_devtools_controller.h"
-#include "fuchsia/engine/common/url_request_rewrite_rules.h"
+#include "fuchsia/engine/common/cors_exempt_headers.h"
 #include "fuchsia/engine/common/web_engine_content_client.h"
-#include "fuchsia/engine/common/web_engine_url_loader_throttle.h"
 #include "fuchsia/engine/switches.h"
 #include "media/base/media_switches.h"
 #include "net/cert/x509_certificate.h"
@@ -274,7 +275,8 @@ WebEngineContentBrowserClient::CreateURLLoaderThrottles(
   scoped_refptr<url_rewrite::UrlRequestRewriteRules>& rules =
       frame_impl->url_request_rewrite_rules_manager()->GetCachedRules();
   if (rules) {
-    throttles.emplace_back(std::make_unique<WebEngineURLLoaderThrottle>(rules));
+    throttles.emplace_back(std::make_unique<url_rewrite::URLLoaderThrottle>(
+        rules, base::BindRepeating(&IsHeaderCorsExempt)));
   }
   return throttles;
 }

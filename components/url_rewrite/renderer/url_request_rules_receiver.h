@@ -2,22 +2,23 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef FUCHSIA_ENGINE_RENDERER_URL_REQUEST_RULES_RECEIVER_H_
-#define FUCHSIA_ENGINE_RENDERER_URL_REQUEST_RULES_RECEIVER_H_
+#ifndef COMPONENTS_URL_REWRITE_RENDERER_URL_REQUEST_RULES_RECEIVER_H_
+#define COMPONENTS_URL_REWRITE_RENDERER_URL_REQUEST_RULES_RECEIVER_H_
 
 #include "base/sequence_checker.h"
-#include "fuchsia/engine/common/url_request_rewrite_rules.h"
+#include "components/url_rewrite/common/url_request_rewrite_rules.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
-#include "services/service_manager/public/cpp/binder_registry.h"
 
 namespace content {
 class RenderFrame;
 }  // namespace content
 
-// Provides rewriting rules for network requests. Owned by
-// WebEngineRenderFrameObserver, this object will be destroyed on RenderFrame
-// destruction. This class should only be used on the IO thread.
+namespace url_rewrite {
+
+// Provides rewriting rules for network requests. This object must be
+// destroyed on RenderFrame destruction. This class should only be used on the
+// IO thread.
 class UrlRequestRulesReceiver : public mojom::UrlRequestRulesReceiver {
  public:
   explicit UrlRequestRulesReceiver(content::RenderFrame* render_frame);
@@ -42,4 +43,6 @@ class UrlRequestRulesReceiver : public mojom::UrlRequestRulesReceiver {
   SEQUENCE_CHECKER(sequence_checker_);
 };
 
-#endif  // FUCHSIA_ENGINE_RENDERER_URL_REQUEST_RULES_RECEIVER_H_
+}  // namespace url_rewrite
+
+#endif  // COMPONENTS_URL_REWRITE_RENDERER_URL_REQUEST_RULES_RECEIVER_H_

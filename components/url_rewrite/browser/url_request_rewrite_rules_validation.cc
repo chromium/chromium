@@ -2,11 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "fuchsia/engine/browser/url_request_rewrite_rules_validation.h"
+#include "components/url_rewrite/browser/url_request_rewrite_rules_validation.h"
 
 #include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "net/http/http_util.h"
+#include "url/url_constants.h"
 
 namespace url_rewrite {
 namespace {

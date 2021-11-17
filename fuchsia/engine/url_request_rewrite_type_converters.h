@@ -7,7 +7,7 @@
 
 #include <fuchsia/web/cpp/fidl.h>
 
-#include "fuchsia/engine/url_request_rewrite.mojom.h"
+#include "components/url_rewrite/mojom/url_request_rewrite.mojom.h"
 #include "mojo/public/cpp/bindings/type_converter.h"
 
 namespace mojo {
@@ -22,9 +22,9 @@ namespace mojo {
 // conversion is performed, the Mojo types are used as is to apply the rewrites
 // on URL requests.
 template <>
-struct TypeConverter<mojom::UrlRequestRewriteRulesPtr,
+struct TypeConverter<url_rewrite::mojom::UrlRequestRewriteRulesPtr,
                      std::vector<fuchsia::web::UrlRequestRewriteRule>> {
-  static mojom::UrlRequestRewriteRulesPtr Convert(
+  static url_rewrite::mojom::UrlRequestRewriteRulesPtr Convert(
       const std::vector<fuchsia::web::UrlRequestRewriteRule>& input);
 };
 

@@ -9,9 +9,9 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
+#include "components/url_rewrite/common/url_request_rewrite_rules.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/web_contents_observer.h"
-#include "fuchsia/engine/common/url_request_rewrite_rules.h"
 #include "fuchsia/engine/web_engine_export.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 
@@ -56,7 +56,7 @@ class WEB_ENGINE_EXPORT UrlRequestRewriteRulesManager final
 
   // Map of GlobalRoutingID to their current associated remote.
   std::map<content::GlobalRenderFrameHostId,
-           mojo::AssociatedRemote<mojom::UrlRequestRulesReceiver>>
+           mojo::AssociatedRemote<url_rewrite::mojom::UrlRequestRulesReceiver>>
       active_remotes_;
 
   SEQUENCE_CHECKER(sequence_checker_);

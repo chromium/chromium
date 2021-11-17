@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-module mojom;
+module url_rewrite.mojom;
 
 import "mojo/public/mojom/base/time.mojom";
 import "url/mojom/url.mojom";

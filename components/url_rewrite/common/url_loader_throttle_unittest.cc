@@ -2,18 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "fuchsia/engine/common/web_engine_url_loader_throttle.h"
+#include "components/url_rewrite/common/url_loader_throttle.h"
 
 #include <string>
 #include <utility>
 
 #include "base/strings/string_piece.h"
+#include "base/test/bind.h"
 #include "base/test/task_environment.h"
-#include "fuchsia/engine/common/cors_exempt_headers.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/loader/url_loader_throttle.h"
 
+namespace url_rewrite {
 namespace {
 
 constexpr char kMixedCaseCorsExemptHeader[] = "CoRs-ExEmPt";
@@ -24,20 +25,32 @@ constexpr char kRequiresCorsHeader[] = "requires-cors";
 
 }  // namespace
 
-class WebEngineURLLoaderThrottleTest : public testing::Test {
+class URLLoaderThrottleTest : public testing::Test {
  public:
-  WebEngineURLLoaderThrottleTest()
+  URLLoaderThrottleTest()
       : task_environment_(base::test::TaskEnvironment::MainThreadType::IO) {}
-  ~WebEngineURLLoaderThrottleTest() override = default;
+  ~URLLoaderThrottleTest() override = default;
 
-  void SetUp() override { SetCorsExemptHeaders({}); }
+  URLLoaderThrottle::IsHeaderCorsExemptCallback CreateCorsExemptHeadersCallback(
+      std::vector<std::string> cors_exempt_headers) {
+    return base::BindLambdaForTesting(
+        [cors_exempt_headers](base::StringPiece header) {
+          LOG(INFO) << "HEADER: " << header;
+          for (const auto& exempt_header : cors_exempt_headers) {
+            if (base::EqualsCaseInsensitiveASCII(header, exempt_header)) {
+              return true;
+            }
+          }
+          return false;
+        });
+  }
 
  protected:
   base::test::SingleThreadTaskEnvironment task_environment_;
 };
 
 // Tests rules are properly applied when wildcard-filtering is used on hosts.
-TEST_F(WebEngineURLLoaderThrottleTest, WildcardHosts) {
+TEST_F(URLLoaderThrottleTest, WildcardHosts) {
   mojom::UrlRequestRewriteAddHeadersPtr add_headers =
       mojom::UrlRequestRewriteAddHeaders::New();
   add_headers->headers.push_back(mojom::UrlHeader::New("Header", "Value"));
@@ -48,13 +61,13 @@ TEST_F(WebEngineURLLoaderThrottleTest, WildcardHosts) {
   mojom::UrlRequestRulePtr rule = mojom::UrlRequestRule::New();
   rule->hosts_filter = absl::optional<std::vector<std::string>>({"*.test.net"});
   rule->actions = std::move(actions);
-
   mojom::UrlRequestRewriteRulesPtr rules = mojom::UrlRequestRewriteRules::New();
   rules->rules.push_back(std::move(rule));
 
-  WebEngineURLLoaderThrottle throttle(
+  URLLoaderThrottle throttle(
       base::MakeRefCounted<url_rewrite::UrlRequestRewriteRules>(
-          std::move(rules)));
+          std::move(rules)),
+      CreateCorsExemptHeadersCallback({}));
   bool defer = false;
 
   network::ResourceRequest request1;
@@ -80,12 +93,7 @@ TEST_F(WebEngineURLLoaderThrottleTest, WildcardHosts) {
 
 // Verifies that injected headers are correctly exempted from CORS checks if
 // their names are registered as CORS exempt.
-TEST_F(WebEngineURLLoaderThrottleTest, CorsAwareHeaders) {
-  // Use the mixed case form for CORS exempt header #1, and the uppercased form
-  // of header #2.
-  SetCorsExemptHeaders(
-      {kMixedCaseCorsExemptHeader, kUpperCaseCorsExemptHeader2});
-
+TEST_F(URLLoaderThrottleTest, CorsAwareHeaders) {
   mojom::UrlRequestRewriteAddHeadersPtr add_headers =
       mojom::UrlRequestRewriteAddHeaders::New();
   add_headers->headers.push_back(
@@ -109,9 +117,13 @@ TEST_F(WebEngineURLLoaderThrottleTest, CorsAwareHeaders) {
   mojom::UrlRequestRewriteRulesPtr rules = mojom::UrlRequestRewriteRules::New();
   rules->rules.push_back(std::move(rule));
 
-  WebEngineURLLoaderThrottle throttle(
+  // Use the mixed case form for CORS exempt header #1, and the uppercased form
+  // of header #2.
+  URLLoaderThrottle throttle(
       base::MakeRefCounted<url_rewrite::UrlRequestRewriteRules>(
-          std::move(rules)));
+          std::move(rules)),
+      CreateCorsExemptHeadersCallback(
+          {kMixedCaseCorsExemptHeader, kUpperCaseCorsExemptHeader2}));
 
   network::ResourceRequest request;
   request.url = GURL("http://test.net");
@@ -135,7 +147,7 @@ TEST_F(WebEngineURLLoaderThrottleTest, CorsAwareHeaders) {
 
 // Tests URL replacement rules that replace to a data URL do not append query or
 // ref from the original URL.
-TEST_F(WebEngineURLLoaderThrottleTest, DataReplacementUrl) {
+TEST_F(URLLoaderThrottleTest, DataReplacementUrl) {
   const char kCssDataURI[] = "data:text/css,";
 
   mojom::UrlRequestRewriteReplaceUrlPtr replace_url =
@@ -153,9 +165,10 @@ TEST_F(WebEngineURLLoaderThrottleTest, DataReplacementUrl) {
   mojom::UrlRequestRewriteRulesPtr rules = mojom::UrlRequestRewriteRules::New();
   rules->rules.push_back(std::move(rule));
 
-  WebEngineURLLoaderThrottle throttle(
+  URLLoaderThrottle throttle(
       base::MakeRefCounted<url_rewrite::UrlRequestRewriteRules>(
-          std::move(rules)));
+          std::move(rules)),
+      CreateCorsExemptHeadersCallback({}));
   bool defer = false;
 
   network::ResourceRequest request;
@@ -192,7 +205,7 @@ class TestThrottleDelegate : public blink::URLLoaderThrottle::Delegate {
 
 // Tests that resource loads can be allowed or blocked based on the
 // UrlRequestAction policy.
-TEST_F(WebEngineURLLoaderThrottleTest, AllowAndDeny) {
+TEST_F(URLLoaderThrottleTest, AllowAndDeny) {
   mojom::UrlRequestRewriteRulesPtr rules = mojom::UrlRequestRewriteRules::New();
 
   {
@@ -209,9 +222,10 @@ TEST_F(WebEngineURLLoaderThrottleTest, AllowAndDeny) {
     rules->rules.push_back(std::move(rule));
   }
 
-  WebEngineURLLoaderThrottle throttle(
+  URLLoaderThrottle throttle(
       base::MakeRefCounted<url_rewrite::UrlRequestRewriteRules>(
-          std::move(rules)));
+          std::move(rules)),
+      CreateCorsExemptHeadersCallback({}));
   bool defer = false;
 
   TestThrottleDelegate delegate;
@@ -231,3 +245,5 @@ TEST_F(WebEngineURLLoaderThrottleTest, AllowAndDeny) {
   EXPECT_EQ(delegate.cancel_reason(),
             "Resource load blocked by embedder policy.");
 }
+
+}  // namespace url_rewrite

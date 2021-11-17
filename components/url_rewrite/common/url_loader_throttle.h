@@ -2,26 +2,34 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef FUCHSIA_ENGINE_COMMON_WEB_ENGINE_URL_LOADER_THROTTLE_H_
-#define FUCHSIA_ENGINE_COMMON_WEB_ENGINE_URL_LOADER_THROTTLE_H_
+#ifndef COMPONENTS_URL_REWRITE_COMMON_URL_LOADER_THROTTLE_H_
+#define COMPONENTS_URL_REWRITE_COMMON_URL_LOADER_THROTTLE_H_
 
-#include "base/memory/scoped_refptr.h"
-#include "fuchsia/engine/common/url_request_rewrite_rules.h"
-#include "fuchsia/engine/web_engine_export.h"
+#include "components/url_rewrite/common/url_request_rewrite_rules.h"
 #include "third_party/blink/public/common/loader/url_loader_throttle.h"
 
-// Implements a URLLoaderThrottle for the WebEngine. Applies network request
-// rewrites provided through the fuchsia.web.SetUrlRequestRewriteRules FIDL API.
-class WEB_ENGINE_EXPORT WebEngineURLLoaderThrottle
-    : public blink::URLLoaderThrottle {
- public:
-  explicit WebEngineURLLoaderThrottle(
-      scoped_refptr<url_rewrite::UrlRequestRewriteRules> rules);
-  ~WebEngineURLLoaderThrottle() override;
+namespace network {
+struct ResourceRequest;
+}
 
-  WebEngineURLLoaderThrottle(const WebEngineURLLoaderThrottle&) = delete;
-  WebEngineURLLoaderThrottle& operator=(const WebEngineURLLoaderThrottle&) =
-      delete;
+namespace url_rewrite {
+
+// Implements a URLLoaderThrottle that applies network request rewrites provided
+// through the |UrlRequestRewriteRules| rules.
+class URLLoaderThrottle : public blink::URLLoaderThrottle {
+ public:
+  // A callback that checks if provided header is CORS exempt. The
+  // implementation must be case-insensitive.
+  using IsHeaderCorsExemptCallback =
+      base::RepeatingCallback<bool(base::StringPiece)>;
+
+  URLLoaderThrottle(
+      scoped_refptr<url_rewrite::UrlRequestRewriteRules> rules,
+      IsHeaderCorsExemptCallback is_header_cors_exempt_callback);
+  ~URLLoaderThrottle() override;
+
+  URLLoaderThrottle(const URLLoaderThrottle&) = delete;
+  URLLoaderThrottle& operator=(const URLLoaderThrottle&) = delete;
 
   // blink::URLLoaderThrottle implementation.
   void DetachFromCurrentSequence() override;
@@ -45,6 +53,9 @@ class WEB_ENGINE_EXPORT WebEngineURLLoaderThrottle
       const mojom::UrlRequestRewriteAddHeadersPtr& add_headers);
 
   scoped_refptr<url_rewrite::UrlRequestRewriteRules> rules_;
+  IsHeaderCorsExemptCallback is_header_cors_exempt_callback_;
 };
 
-#endif  // FUCHSIA_ENGINE_COMMON_WEB_ENGINE_URL_LOADER_THROTTLE_H_
+}  // namespace url_rewrite
+
+#endif  // COMPONENTS_URL_REWRITE_COMMON_URL_LOADER_THROTTLE_H_

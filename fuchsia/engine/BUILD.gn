@@ -7,22 +7,12 @@ assert(is_fuchsia)
 import("//build/config/fuchsia/generate_runner_scripts.gni")
 import("//build/config/fuchsia/symbol_archive.gni")
 import("//build/config/locales.gni")
-import("//mojo/public/tools/bindings/mojom.gni")
 import("//testing/test.gni")
 import("//third_party/fuchsia-sdk/sdk/build/fidl_library.gni")
 import("//tools/grit/repack.gni")
 
 config("web_engine_implementation") {
   defines = [ "WEB_ENGINE_IMPLEMENTATION" ]
-  visibility = [ ":*" ]
-}
-
-mojom("mojom") {
-  sources = [ "url_request_rewrite.mojom" ]
-  public_deps = [
-    "//media/mojo/mojom",
-    "//mojo/public/mojom/base",
-  ]
   visibility = [ ":*" ]
 }
 
@@ -95,7 +85,6 @@ component("web_engine_core") {
   deps = [
     ":audio_device_factory",
     ":fidl",
-    ":mojom",
     ":switches",
     "//base",
     "//base:base_static",
@@ -120,6 +109,10 @@ component("web_engine_core") {
     "//components/profile_metrics",
     "//components/site_isolation",
     "//components/strings:components_locale_settings",
+    "//components/url_rewrite/browser",
+    "//components/url_rewrite/common",
+    "//components/url_rewrite/mojom",
+    "//components/url_rewrite/renderer",
     "//components/version_info",
     "//content/public/app",
     "//content/public/browser",
@@ -232,8 +225,6 @@ component("web_engine_core") {
     "browser/theme_manager.h",
     "browser/url_request_rewrite_rules_manager.cc",
     "browser/url_request_rewrite_rules_manager.h",
-    "browser/url_request_rewrite_rules_validation.cc",
-    "browser/url_request_rewrite_rules_validation.h",
     "browser/web_engine_browser_context.cc",
     "browser/web_engine_browser_context.h",
     "browser/web_engine_browser_interface_binders.cc",
@@ -256,17 +247,12 @@ component("web_engine_core") {
     "common/cast_streaming.h",
     "common/cors_exempt_headers.cc",
     "common/cors_exempt_headers.h",
-    "common/url_request_rewrite_rules.h",
     "common/web_engine_content_client.cc",
     "common/web_engine_content_client.h",
-    "common/web_engine_url_loader_throttle.cc",
-    "common/web_engine_url_loader_throttle.h",
     "context_provider_impl.cc",
     "context_provider_impl.h",
     "context_provider_main.cc",
     "context_provider_main.h",
-    "renderer/url_request_rules_receiver.cc",
-    "renderer/url_request_rules_receiver.h",
     "renderer/web_engine_audio_renderer.cc",
     "renderer/web_engine_audio_renderer.h",
     "renderer/web_engine_content_renderer_client.cc",
@@ -567,8 +553,6 @@ test("web_engine_unittests") {
     "browser/media_player_impl_unittest.cc",
     "browser/navigation_policy_throttle_unittest.cc",
     "browser/url_request_rewrite_rules_manager_unittest.cc",
-    "browser/url_request_rewrite_rules_validation_unittest.cc",
-    "common/web_engine_url_loader_throttle_unittest.cc",
     "context_provider_impl_unittest.cc",
     "fake_context.cc",
     "fake_context.h",
@@ -576,12 +560,14 @@ test("web_engine_unittests") {
     "test/run_all_unittests.cc",
   ]
   deps = [
-    ":mojom",
     ":switches",
     ":web_engine_core",
     ":web_engine_unittests_fake_instance_manifest",
     "//base/test:test_support",
     "//components/cast_streaming/public/mojom",
+    "//components/url_rewrite/browser",
+    "//components/url_rewrite/common",
+    "//components/url_rewrite/mojom",
     "//content/test:test_support",
     "//fuchsia/base/test:test_support",
     "//fuchsia/engine/web_instance_host",

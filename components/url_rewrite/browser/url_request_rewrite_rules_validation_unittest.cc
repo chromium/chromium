@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "fuchsia/engine/browser/url_request_rewrite_rules_validation.h"
+#include "components/url_rewrite/browser/url_request_rewrite_rules_validation.h"
 
 #include "base/run_loop.h"
 #include "base/strings/string_piece.h"
@@ -10,6 +10,7 @@
 
 namespace url_rewrite {
 namespace {
+
 mojom::UrlRequestActionPtr CreateRewriteAddHeaders(
     base::StringPiece header_name,
     base::StringPiece header_value) {

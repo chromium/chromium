@@ -2,20 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "fuchsia/engine/common/web_engine_url_loader_throttle.h"
+#include "components/url_rewrite/common/url_loader_throttle.h"
 
 #include <string>
 
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
-#include "fuchsia/engine/common/cors_exempt_headers.h"
 #include "net/base/net_errors.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "url/url_constants.h"
 
+namespace url_rewrite {
 namespace {
 
-// Returnns a string representing the URL stripped of query and ref.
+// Returns a string representing the URL stripped of query and ref.
 std::string ClearUrlQueryRef(const GURL& url) {
   GURL::Replacements replacements;
   replacements.ClearQuery();
@@ -169,19 +169,22 @@ bool IsRequestAllowed(network::ResourceRequest* request,
 
 }  // namespace
 
-WebEngineURLLoaderThrottle::WebEngineURLLoaderThrottle(
-    scoped_refptr<url_rewrite::UrlRequestRewriteRules> rules)
-    : rules_(rules) {
+URLLoaderThrottle::URLLoaderThrottle(
+    scoped_refptr<url_rewrite::UrlRequestRewriteRules> rules,
+    IsHeaderCorsExemptCallback is_header_cors_exempt_callback)
+    : rules_(std::move(rules)),
+      is_header_cors_exempt_callback_(
+          std::move(is_header_cors_exempt_callback)) {
   DCHECK(rules_);
+  DCHECK(is_header_cors_exempt_callback_);
 }
 
-WebEngineURLLoaderThrottle::~WebEngineURLLoaderThrottle() = default;
+URLLoaderThrottle::~URLLoaderThrottle() = default;
 
-void WebEngineURLLoaderThrottle::DetachFromCurrentSequence() {}
+void URLLoaderThrottle::DetachFromCurrentSequence() {}
 
-void WebEngineURLLoaderThrottle::WillStartRequest(
-    network::ResourceRequest* request,
-    bool* defer) {
+void URLLoaderThrottle::WillStartRequest(network::ResourceRequest* request,
+                                         bool* defer) {
   if (!IsRequestAllowed(request, rules_->data)) {
     delegate_->CancelWithError(net::ERR_ABORTED,
                                "Resource load blocked by embedder policy.");
@@ -193,14 +196,13 @@ void WebEngineURLLoaderThrottle::WillStartRequest(
   *defer = false;
 }
 
-bool WebEngineURLLoaderThrottle::makes_unsafe_redirect() {
+bool URLLoaderThrottle::makes_unsafe_redirect() {
   // WillStartRequest() does not make cross-scheme redirects.
   return false;
 }
 
-void WebEngineURLLoaderThrottle::ApplyRule(
-    network::ResourceRequest* request,
-    const mojom::UrlRequestRulePtr& rule) {
+void URLLoaderThrottle::ApplyRule(network::ResourceRequest* request,
+                                  const mojom::UrlRequestRulePtr& rule) {
   if (!RuleFiltersMatchRequest(request, rule))
     return;
 
@@ -208,7 +210,7 @@ void WebEngineURLLoaderThrottle::ApplyRule(
     ApplyRewrite(request, rewrite);
 }
 
-void WebEngineURLLoaderThrottle::ApplyRewrite(
+void URLLoaderThrottle::ApplyRewrite(
     network::ResourceRequest* request,
     const mojom::UrlRequestActionPtr& rewrite) {
   switch (rewrite->which()) {
@@ -235,7 +237,7 @@ void WebEngineURLLoaderThrottle::ApplyRewrite(
   NOTREACHED();  // Invalid enum value.
 }
 
-void WebEngineURLLoaderThrottle::ApplyAddHeaders(
+void URLLoaderThrottle::ApplyAddHeaders(
     network::ResourceRequest* request,
     const mojom::UrlRequestRewriteAddHeadersPtr& add_headers) {
   // Bucket each |header| into the regular/CORS-compliant header list or the
@@ -246,10 +248,12 @@ void WebEngineURLLoaderThrottle::ApplyAddHeaders(
       // Skip headers already present in the request at this point.
       continue;
     }
-    if (IsHeaderCorsExempt(header->name)) {
+    if (is_header_cors_exempt_callback_.Run(header->name)) {
       request->cors_exempt_headers.SetHeader(header->name, header->value);
     } else {
       request->headers.SetHeader(header->name, header->value);
     }
   }
 }
+
+}  // namespace url_rewrite

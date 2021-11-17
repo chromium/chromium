@@ -2,13 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "fuchsia/engine/renderer/url_request_rules_receiver.h"
+#include "components/url_rewrite/renderer/url_request_rules_receiver.h"
 
 #include "content/public/renderer/render_frame.h"
-#include "fuchsia/engine/renderer/web_engine_content_renderer_client.h"
-#include "fuchsia/engine/url_request_rewrite.mojom.h"
-#include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_registry.h"
+
+namespace url_rewrite {
 
 UrlRequestRulesReceiver::UrlRequestRulesReceiver(
     content::RenderFrame* render_frame) {
@@ -47,3 +46,5 @@ void UrlRequestRulesReceiver::OnRulesUpdated(
   cached_rules_ = base::MakeRefCounted<url_rewrite::UrlRequestRewriteRules>(
       std::move(rules));
 }
+
+}  // namespace url_rewrite

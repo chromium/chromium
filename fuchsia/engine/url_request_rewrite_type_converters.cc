@@ -21,19 +21,20 @@ std::string NormalizeHost(base::StringPiece host) {
 namespace mojo {
 
 template <>
-struct TypeConverter<mojom::UrlRequestRewriteAddHeadersPtr,
+struct TypeConverter<url_rewrite::mojom::UrlRequestRewriteAddHeadersPtr,
                      fuchsia::web::UrlRequestRewriteAddHeaders> {
-  static mojom::UrlRequestRewriteAddHeadersPtr Convert(
+  static url_rewrite::mojom::UrlRequestRewriteAddHeadersPtr Convert(
       const fuchsia::web::UrlRequestRewriteAddHeaders& input) {
-    mojom::UrlRequestRewriteAddHeadersPtr add_headers =
-        mojom::UrlRequestRewriteAddHeaders::New();
+    url_rewrite::mojom::UrlRequestRewriteAddHeadersPtr add_headers =
+        url_rewrite::mojom::UrlRequestRewriteAddHeaders::New();
     if (input.has_headers()) {
       for (const auto& header : input.headers()) {
         base::StringPiece header_name = cr_fuchsia::BytesAsString(header.name);
         base::StringPiece header_value =
             cr_fuchsia::BytesAsString(header.value);
-        mojom::UrlHeaderPtr url_header = mojom::UrlHeader::New(
-            std::string(header_name), std::string(header_value));
+        url_rewrite::mojom::UrlHeaderPtr url_header =
+            url_rewrite::mojom::UrlHeader::New(std::string(header_name),
+                                               std::string(header_value));
         add_headers->headers.push_back(std::move(url_header));
       }
     }
@@ -42,12 +43,12 @@ struct TypeConverter<mojom::UrlRequestRewriteAddHeadersPtr,
 };
 
 template <>
-struct TypeConverter<mojom::UrlRequestRewriteRemoveHeaderPtr,
+struct TypeConverter<url_rewrite::mojom::UrlRequestRewriteRemoveHeaderPtr,
                      fuchsia::web::UrlRequestRewriteRemoveHeader> {
-  static mojom::UrlRequestRewriteRemoveHeaderPtr Convert(
+  static url_rewrite::mojom::UrlRequestRewriteRemoveHeaderPtr Convert(
       const fuchsia::web::UrlRequestRewriteRemoveHeader& input) {
-    mojom::UrlRequestRewriteRemoveHeaderPtr remove_header =
-        mojom::UrlRequestRewriteRemoveHeader::New();
+    url_rewrite::mojom::UrlRequestRewriteRemoveHeaderPtr remove_header =
+        url_rewrite::mojom::UrlRequestRewriteRemoveHeader::New();
     if (input.has_query_pattern())
       remove_header->query_pattern = absl::make_optional(input.query_pattern());
     if (input.has_header_name()) {
@@ -59,12 +60,14 @@ struct TypeConverter<mojom::UrlRequestRewriteRemoveHeaderPtr,
 };
 
 template <>
-struct TypeConverter<mojom::UrlRequestRewriteSubstituteQueryPatternPtr,
-                     fuchsia::web::UrlRequestRewriteSubstituteQueryPattern> {
-  static mojom::UrlRequestRewriteSubstituteQueryPatternPtr Convert(
+struct TypeConverter<
+    url_rewrite::mojom::UrlRequestRewriteSubstituteQueryPatternPtr,
+    fuchsia::web::UrlRequestRewriteSubstituteQueryPattern> {
+  static url_rewrite::mojom::UrlRequestRewriteSubstituteQueryPatternPtr Convert(
       const fuchsia::web::UrlRequestRewriteSubstituteQueryPattern& input) {
-    mojom::UrlRequestRewriteSubstituteQueryPatternPtr substitute_query_pattern =
-        mojom::UrlRequestRewriteSubstituteQueryPattern::New();
+    url_rewrite::mojom::UrlRequestRewriteSubstituteQueryPatternPtr
+        substitute_query_pattern =
+            url_rewrite::mojom::UrlRequestRewriteSubstituteQueryPattern::New();
     if (input.has_pattern())
       substitute_query_pattern->pattern = input.pattern();
     if (input.has_substitution())
@@ -74,12 +77,12 @@ struct TypeConverter<mojom::UrlRequestRewriteSubstituteQueryPatternPtr,
 };
 
 template <>
-struct TypeConverter<mojom::UrlRequestRewriteReplaceUrlPtr,
+struct TypeConverter<url_rewrite::mojom::UrlRequestRewriteReplaceUrlPtr,
                      fuchsia::web::UrlRequestRewriteReplaceUrl> {
-  static mojom::UrlRequestRewriteReplaceUrlPtr Convert(
+  static url_rewrite::mojom::UrlRequestRewriteReplaceUrlPtr Convert(
       const fuchsia::web::UrlRequestRewriteReplaceUrl& input) {
-    mojom::UrlRequestRewriteReplaceUrlPtr replace_url =
-        mojom::UrlRequestRewriteReplaceUrl::New();
+    url_rewrite::mojom::UrlRequestRewriteReplaceUrlPtr replace_url =
+        url_rewrite::mojom::UrlRequestRewriteReplaceUrl::New();
     if (input.has_url_ends_with())
       replace_url->url_ends_with = input.url_ends_with();
     if (input.has_new_url())
@@ -89,12 +92,12 @@ struct TypeConverter<mojom::UrlRequestRewriteReplaceUrlPtr,
 };
 
 template <>
-struct TypeConverter<mojom::UrlRequestRewriteAppendToQueryPtr,
+struct TypeConverter<url_rewrite::mojom::UrlRequestRewriteAppendToQueryPtr,
                      fuchsia::web::UrlRequestRewriteAppendToQuery> {
-  static mojom::UrlRequestRewriteAppendToQueryPtr Convert(
+  static url_rewrite::mojom::UrlRequestRewriteAppendToQueryPtr Convert(
       const fuchsia::web::UrlRequestRewriteAppendToQuery& input) {
-    mojom::UrlRequestRewriteAppendToQueryPtr append_to_query =
-        mojom::UrlRequestRewriteAppendToQuery::New();
+    url_rewrite::mojom::UrlRequestRewriteAppendToQueryPtr append_to_query =
+        url_rewrite::mojom::UrlRequestRewriteAppendToQuery::New();
     if (input.has_query())
       append_to_query->query = input.query();
     return append_to_query;
@@ -102,44 +105,47 @@ struct TypeConverter<mojom::UrlRequestRewriteAppendToQueryPtr,
 };
 
 template <>
-struct TypeConverter<mojom::UrlRequestAccessPolicy,
+struct TypeConverter<url_rewrite::mojom::UrlRequestAccessPolicy,
                      fuchsia::web::UrlRequestAction> {
-  static mojom::UrlRequestAccessPolicy Convert(
+  static url_rewrite::mojom::UrlRequestAccessPolicy Convert(
       const fuchsia::web::UrlRequestAction& input) {
     switch (input) {
       case fuchsia::web::UrlRequestAction::ALLOW:
-        return mojom::UrlRequestAccessPolicy::kAllow;
+        return url_rewrite::mojom::UrlRequestAccessPolicy::kAllow;
       case fuchsia::web::UrlRequestAction::DENY:
-        return mojom::UrlRequestAccessPolicy::kDeny;
+        return url_rewrite::mojom::UrlRequestAccessPolicy::kDeny;
     }
   }
 };
 
 template <>
-struct TypeConverter<mojom::UrlRequestActionPtr,
+struct TypeConverter<url_rewrite::mojom::UrlRequestActionPtr,
                      fuchsia::web::UrlRequestRewrite> {
-  static mojom::UrlRequestActionPtr Convert(
+  static url_rewrite::mojom::UrlRequestActionPtr Convert(
       const fuchsia::web::UrlRequestRewrite& input) {
     switch (input.Which()) {
       case fuchsia::web::UrlRequestRewrite::Tag::kAddHeaders:
-        return mojom::UrlRequestAction::NewAddHeaders(
-            mojo::ConvertTo<mojom::UrlRequestRewriteAddHeadersPtr>(
+        return url_rewrite::mojom::UrlRequestAction::NewAddHeaders(
+            mojo::ConvertTo<url_rewrite::mojom::UrlRequestRewriteAddHeadersPtr>(
                 input.add_headers()));
       case fuchsia::web::UrlRequestRewrite::Tag::kRemoveHeader:
-        return mojom::UrlRequestAction::NewRemoveHeader(
-            mojo::ConvertTo<mojom::UrlRequestRewriteRemoveHeaderPtr>(
+        return url_rewrite::mojom::UrlRequestAction::NewRemoveHeader(
+            mojo::ConvertTo<
+                url_rewrite::mojom::UrlRequestRewriteRemoveHeaderPtr>(
                 input.remove_header()));
       case fuchsia::web::UrlRequestRewrite::Tag::kSubstituteQueryPattern:
-        return mojom::UrlRequestAction::NewSubstituteQueryPattern(
-            mojo::ConvertTo<mojom::UrlRequestRewriteSubstituteQueryPatternPtr>(
+        return url_rewrite::mojom::UrlRequestAction::NewSubstituteQueryPattern(
+            mojo::ConvertTo<
+                url_rewrite::mojom::UrlRequestRewriteSubstituteQueryPatternPtr>(
                 input.substitute_query_pattern()));
       case fuchsia::web::UrlRequestRewrite::Tag::kReplaceUrl:
-        return mojom::UrlRequestAction::NewReplaceUrl(
-            mojo::ConvertTo<mojom::UrlRequestRewriteReplaceUrlPtr>(
+        return url_rewrite::mojom::UrlRequestAction::NewReplaceUrl(
+            mojo::ConvertTo<url_rewrite::mojom::UrlRequestRewriteReplaceUrlPtr>(
                 input.replace_url()));
       case fuchsia::web::UrlRequestRewrite::Tag::kAppendToQuery:
-        return mojom::UrlRequestAction::NewAppendToQuery(
-            mojo::ConvertTo<mojom::UrlRequestRewriteAppendToQueryPtr>(
+        return url_rewrite::mojom::UrlRequestAction::NewAppendToQuery(
+            mojo::ConvertTo<
+                url_rewrite::mojom::UrlRequestRewriteAppendToQueryPtr>(
                 input.append_to_query()));
       default:
         return nullptr;
@@ -148,11 +154,12 @@ struct TypeConverter<mojom::UrlRequestActionPtr,
 };
 
 template <>
-struct TypeConverter<mojom::UrlRequestRulePtr,
+struct TypeConverter<url_rewrite::mojom::UrlRequestRulePtr,
                      fuchsia::web::UrlRequestRewriteRule> {
-  static mojom::UrlRequestRulePtr Convert(
+  static url_rewrite::mojom::UrlRequestRulePtr Convert(
       const fuchsia::web::UrlRequestRewriteRule& input) {
-    mojom::UrlRequestRulePtr rule = mojom::UrlRequestRule::New();
+    url_rewrite::mojom::UrlRequestRulePtr rule =
+        url_rewrite::mojom::UrlRequestRule::New();
 
     if (input.has_hosts_filter()) {
       // Convert host names in case they contain non-ASCII characters.
@@ -174,25 +181,29 @@ struct TypeConverter<mojom::UrlRequestRulePtr,
       rule->schemes_filter = absl::make_optional(input.schemes_filter());
 
     if (input.has_rewrites()) {
-      rule->actions = mojo::ConvertTo<std::vector<mojom::UrlRequestActionPtr>>(
-          input.rewrites());
+      rule->actions =
+          mojo::ConvertTo<std::vector<url_rewrite::mojom::UrlRequestActionPtr>>(
+              input.rewrites());
     } else if (input.has_action()) {
-      rule->actions = std::vector<mojom::UrlRequestActionPtr>();
-      rule->actions.push_back(mojom::UrlRequestAction::NewPolicy(
-          mojo::ConvertTo<mojom::UrlRequestAccessPolicy>(input.action())));
+      rule->actions = std::vector<url_rewrite::mojom::UrlRequestActionPtr>();
+      rule->actions.push_back(url_rewrite::mojom::UrlRequestAction::NewPolicy(
+          mojo::ConvertTo<url_rewrite::mojom::UrlRequestAccessPolicy>(
+              input.action())));
     }
 
     return rule;
   }
 };
 
-mojom::UrlRequestRewriteRulesPtr
-TypeConverter<mojom::UrlRequestRewriteRulesPtr,
+url_rewrite::mojom::UrlRequestRewriteRulesPtr
+TypeConverter<url_rewrite::mojom::UrlRequestRewriteRulesPtr,
               std::vector<fuchsia::web::UrlRequestRewriteRule>>::
     Convert(const std::vector<fuchsia::web::UrlRequestRewriteRule>& input) {
-  mojom::UrlRequestRewriteRulesPtr rules = mojom::UrlRequestRewriteRules::New();
+  url_rewrite::mojom::UrlRequestRewriteRulesPtr rules =
+      url_rewrite::mojom::UrlRequestRewriteRules::New();
   for (const auto& rule : input) {
-    rules->rules.push_back(mojo::ConvertTo<mojom::UrlRequestRulePtr>(rule));
+    rules->rules.push_back(
+        mojo::ConvertTo<url_rewrite::mojom::UrlRequestRulePtr>(rule));
   }
   return rules;
 }
