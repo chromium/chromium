@@ -6,6 +6,8 @@
 
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "build/buildflag.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_avatar_icon_util.h"
@@ -120,17 +122,30 @@ void SyncConfirmationUI::InitializeForSyncConfirmation(
     DesignVersion design,
     bool is_modal_dialog) {
   AddStringResource(source, "syncConfirmationTitle",
-                    IDS_SYNC_CONFIRMATION_TITLE);
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+                    IDS_SYNC_CONFIRMATION_TITLE_LACROS
+#else
+                    IDS_SYNC_CONFIRMATION_TITLE
+#endif
+  );
   AddStringResource(source, "syncConfirmationSyncInfoTitle",
-                    IDS_SYNC_CONFIRMATION_SYNC_INFO_TITLE);
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+                    IDS_SYNC_CONFIRMATION_SYNC_INFO_TITLE_LACROS
+#else
+                    IDS_SYNC_CONFIRMATION_SYNC_INFO_TITLE
+#endif
+  );
+  AddStringResource(source, "syncConfirmationConfirmLabel",
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+                    IDS_DONE
+#else
+                    IDS_SYNC_CONFIRMATION_CONFIRM_BUTTON_LABEL
+#endif
+  );
   AddStringResource(source, "syncConfirmationSyncInfoDesc",
                     IDS_SYNC_CONFIRMATION_SYNC_INFO_DESC);
   AddStringResource(source, "syncConfirmationSettingsInfo",
                     IDS_SYNC_CONFIRMATION_SETTINGS_INFO);
-  AddStringResource(source, "syncConfirmationSettingsLabel",
-                    IDS_SYNC_CONFIRMATION_SETTINGS_BUTTON_LABEL);
-  AddStringResource(source, "syncConfirmationConfirmLabel",
-                    IDS_SYNC_CONFIRMATION_CONFIRM_BUTTON_LABEL);
 
   source->AddResourcePath(
       "sync_confirmation_app.js",
@@ -147,6 +162,8 @@ void SyncConfirmationUI::InitializeForSyncConfirmation(
       source->AddString("accountPictureUrl",
                         profiles::GetPlaceholderAvatarIconUrl());
       AddStringResource(source, "syncConfirmationUndoLabel", IDS_CANCEL);
+      AddStringResource(source, "syncConfirmationSettingsLabel",
+                        IDS_SYNC_CONFIRMATION_SETTINGS_BUTTON_LABEL);
 
       source->AddResourcePath(
           "images/sync_confirmation_illustration.svg",
@@ -170,6 +187,8 @@ void SyncConfirmationUI::InitializeForSyncConfirmation(
       source->AddString("accountPictureUrl", avatar_picture_url);
 
       AddStringResource(source, "syncConfirmationUndoLabel", IDS_NO_THANKS);
+      AddStringResource(source, "syncConfirmationSettingsLabel",
+                        IDS_SYNC_CONFIRMATION_REFRESHED_SETTINGS_BUTTON_LABEL);
       source->AddString("highlightColor", color_utils::SkColorToRgbaString(
                                               colors.profile_highlight_color));
 

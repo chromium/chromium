@@ -8736,6 +8736,17 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_SYNC_CONFIRMATION_SETTINGS_BUTTON_LABEL" desc="Label of the button in the sync confirmation dialog of the tab modal signin flow to open settings">
         Settings
       </message>
+      <message name="IDS_SYNC_CONFIRMATION_REFRESHED_SETTINGS_BUTTON_LABEL" desc="Label of the button in the sync confirmation screen to open sync settings">
+        Sync settings
+      </message>
+      <if expr="lacros">
+        <message name="IDS_SYNC_CONFIRMATION_TITLE_LACROS" desc="Title of the sync confirmation dialog/screen on lacros.">
+          Chrome browser sync is on
+        </message>
+        <message name="IDS_SYNC_CONFIRMATION_SYNC_INFO_TITLE_LACROS" desc="Text in the information about sync on the sync confirmation dialog/screen on lacros.">
+          Your bookmarks, passwords, history, and more are synced on all your devices
+        </message>
+      </if>
 
       <!--- Sync Confirmation section of the tab modal signin flow when sync is disabled by policy -->
       <message name="IDS_SYNC_DISABLED_CONFIRMATION_CHROME_SYNC_TITLE" desc="Title of the chrome sync section of the sync confirmation dialog in the tab modal signin flow when sync is disabled by policy">
