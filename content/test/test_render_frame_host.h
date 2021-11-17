@@ -66,6 +66,9 @@ class TestRenderFrameHost : public RenderFrameHostImpl,
 
   ~TestRenderFrameHost() override;
 
+  // Flushes mojo messages on `local_frame_`.
+  void FlushLocalFrameMessages();
+
   // RenderFrameHostImpl overrides (same values, but in Test*/Mock* types)
   TestRenderViewHost* GetRenderViewHost() override;
   MockRenderProcessHost* GetProcess() override;

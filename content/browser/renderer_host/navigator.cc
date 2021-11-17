@@ -221,7 +221,6 @@ struct Navigator::NavigationMetricsData {
   GURL url_;
   ukm::SourceId ukm_source_id_;
   bool is_browser_initiated_before_unload_;
-  base::TimeDelta before_unload_delay_;
 
   // Timestamps before_unload_(start|end)_ give the time it took to run
   // beforeunloads dispatched from the browser process. For browser-initated
@@ -976,21 +975,18 @@ void Navigator::LogCommitNavigationSent() {
 void Navigator::LogBeforeUnloadTime(
     base::TimeTicks renderer_before_unload_start_time,
     base::TimeTicks renderer_before_unload_end_time,
-    base::TimeTicks before_unload_sent_time) {
+    base::TimeTicks before_unload_sent_time,
+    bool for_legacy) {
   if (!navigation_data_)
     return;
 
-  // Only stores the beforeunload delay if we're tracking a browser initiated
-  // navigation and it happened later than the navigation request.
-  if (navigation_data_->is_browser_initiated_before_unload_ &&
-      renderer_before_unload_start_time > navigation_data_->start_time_) {
-    navigation_data_->before_unload_delay_ =
-        renderer_before_unload_end_time - renderer_before_unload_start_time;
-  }
   // LogBeforeUnloadTime is called once for each cross-process frame. Once all
   // beforeunloads complete, the timestamps in navigation_data will be the
   // timestamps of the beforeunload that blocked the navigation the longest.
-  if (!base::TimeTicks::IsConsistentAcrossProcesses()) {
+  // `for_legacy` indicates this is being called as the result of a PostTask(),
+  // which did not go to the renderer so that the times do not need to be
+  // adjusted.
+  if (!base::TimeTicks::IsConsistentAcrossProcesses() && !for_legacy) {
     // These timestamps come directly from the renderer so they might need to be
     // converted to local time stamps.
     blink::InterProcessTimeTicksConverter converter(

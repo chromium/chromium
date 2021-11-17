@@ -1663,7 +1663,7 @@ RenderFrameHostImpl::~RenderFrameHostImpl() {
     beforeunload_initiator->ProcessBeforeUnloadCompletedFromFrame(
         /*proceed=*/true, /*treat_as_final_completion_callback=*/false, this,
         /*is_frame_being_destroyed=*/true, approx_renderer_start_time,
-        base::TimeTicks::Now());
+        base::TimeTicks::Now(), /*for_legacy=*/false);
   }
 
   if (prefetched_signed_exchange_cache_)
@@ -4380,7 +4380,8 @@ void RenderFrameHostImpl::ProcessBeforeUnloadCompleted(
     bool proceed,
     bool treat_as_final_completion_callback,
     const base::TimeTicks& renderer_before_unload_start_time,
-    const base::TimeTicks& renderer_before_unload_end_time) {
+    const base::TimeTicks& renderer_before_unload_end_time,
+    bool for_legacy) {
   TRACE_EVENT_NESTABLE_ASYNC_END1(
       "navigation", "RenderFrameHostImpl BeforeUnload", TRACE_ID_LOCAL(this),
       "render_frame_host", this);
@@ -4401,7 +4402,7 @@ void RenderFrameHostImpl::ProcessBeforeUnloadCompleted(
   initiator->ProcessBeforeUnloadCompletedFromFrame(
       proceed, treat_as_final_completion_callback, this,
       /*is_frame_being_destroyed=*/false, renderer_before_unload_start_time,
-      renderer_before_unload_end_time);
+      renderer_before_unload_end_time, for_legacy);
 }
 
 RenderFrameHostImpl* RenderFrameHostImpl::GetBeforeUnloadInitiator() {
@@ -4418,7 +4419,8 @@ void RenderFrameHostImpl::ProcessBeforeUnloadCompletedFromFrame(
     RenderFrameHostImpl* frame,
     bool is_frame_being_destroyed,
     const base::TimeTicks& renderer_before_unload_start_time,
-    const base::TimeTicks& renderer_before_unload_end_time) {
+    const base::TimeTicks& renderer_before_unload_end_time,
+    bool for_legacy) {
   // Check if we need to wait for more beforeunload completion callbacks. If
   // |proceed| is false, we know the navigation or window close will be aborted,
   // so we don't need to wait for beforeunload completion callbacks from any
@@ -4442,7 +4444,7 @@ void RenderFrameHostImpl::ProcessBeforeUnloadCompletedFromFrame(
       !renderer_before_unload_end_time.is_null()) {
     base::TimeTicks before_unload_completed_time = base::TimeTicks::Now();
 
-    if (!base::TimeTicks::IsConsistentAcrossProcesses()) {
+    if (!base::TimeTicks::IsConsistentAcrossProcesses() && !for_legacy) {
       // TimeTicks is not consistent across processes and we are passing
       // TimeTicks across process boundaries so we need to compensate for any
       // skew between the processes. Here we are converting the renderer's
@@ -4469,7 +4471,7 @@ void RenderFrameHostImpl::ProcessBeforeUnloadCompletedFromFrame(
 
     frame_tree_node_->navigator().LogBeforeUnloadTime(
         renderer_before_unload_start_time, renderer_before_unload_end_time,
-        send_before_unload_start_time_);
+        send_before_unload_start_time_, for_legacy);
   }
 
   // Resets beforeunload waiting state.
@@ -7483,6 +7485,7 @@ bool RenderFrameHostImpl::CheckOrDispatchBeforeUnloadForSubtree(
     bool send_ipc,
     bool is_reload) {
   bool found_beforeunload = false;
+  bool run_beforeunload_for_legacy = false;
   for (FrameTreeNode* node : frame_tree()->SubtreeNodes(frame_tree_node_)) {
     RenderFrameHostImpl* rfh = node->current_frame_host();
 
@@ -7497,12 +7500,12 @@ bool RenderFrameHostImpl::CheckOrDispatchBeforeUnloadForSubtree(
       continue;
 
     // Only run beforeunload in frames that have registered a beforeunload
-    // handler.
-    bool should_run_beforeunload = rfh->has_before_unload_handler_;
-    if (rfh == this && !base::FeatureList::IsEnabled(
-                           features::kAvoidUnnecessaryBeforeUnloadCheck)) {
-      should_run_beforeunload = true;
-    }
+    // handler. See description of SendBeforeUnload() for details on simulating
+    // beforeunload for legacy reasons.
+    const bool run_beforeunload_for_legacy_frame =
+        rfh == this && !rfh->has_before_unload_handler_;
+    const bool should_run_beforeunload =
+        rfh->has_before_unload_handler_ || run_beforeunload_for_legacy_frame;
 
     if (!should_run_beforeunload)
       continue;
@@ -7542,11 +7545,28 @@ bool RenderFrameHostImpl::CheckOrDispatchBeforeUnloadForSubtree(
     if (has_same_site_ancestor)
       continue;
 
+    if (run_beforeunload_for_legacy_frame &&
+        base::FeatureList::IsEnabled(
+            features::kAvoidUnnecessaryBeforeUnloadCheck)) {
+      // Wait to schedule until all frames have been processed. The legacy
+      // beforeunload is not needed if another frame has a beforeunload
+      // handler.
+      run_beforeunload_for_legacy = true;
+      continue;
+    }
+
+    run_beforeunload_for_legacy = false;
+
     // Add |rfh| to the list of frames that need to receive beforeunload
     // ACKs.
     beforeunload_pending_replies_.insert(rfh);
 
-    SendBeforeUnload(is_reload, rfh->GetWeakPtr());
+    SendBeforeUnload(is_reload, rfh->GetWeakPtr(), /*for_legacy=*/false);
+  }
+
+  if (run_beforeunload_for_legacy) {
+    beforeunload_pending_replies_.insert(this);
+    SendBeforeUnload(is_reload, GetWeakPtr(), /*for_legacy=*/true);
   }
 
   return found_beforeunload;
@@ -7562,7 +7582,8 @@ void RenderFrameHostImpl::SimulateBeforeUnloadCompleted(bool proceed) {
       base::BindOnce(&RenderFrameHostImpl::ProcessBeforeUnloadCompleted,
                      weak_ptr_factory_.GetWeakPtr(), proceed,
                      /*treat_as_final_completion_callback=*/true,
-                     approx_renderer_start_time, base::TimeTicks::Now()));
+                     approx_renderer_start_time, base::TimeTicks::Now(),
+                     /*for_legacy=*/false));
 }
 
 bool RenderFrameHostImpl::ShouldDispatchBeforeUnload(
@@ -10977,7 +10998,8 @@ void RenderFrameHostImpl::DidCommitNavigation(
     base::TimeTicks approx_renderer_start_time = send_before_unload_start_time_;
     ProcessBeforeUnloadCompleted(
         /*proceed=*/true, /*treat_as_final_completion_callback=*/true,
-        approx_renderer_start_time, base::TimeTicks::Now());
+        approx_renderer_start_time, base::TimeTicks::Now(),
+        /*for_legacy=*/false);
   }
 
   // When a frame enters pending deletion, it waits for itself and its children
@@ -11065,18 +11087,32 @@ RenderFrameHostImpl::BuildCommitFailedNavigationCallback(
 
 void RenderFrameHostImpl::SendBeforeUnload(
     bool is_reload,
-    base::WeakPtr<RenderFrameHostImpl> rfh) {
+    base::WeakPtr<RenderFrameHostImpl> rfh,
+    bool for_legacy) {
   auto before_unload_closure = base::BindOnce(
-      [](base::WeakPtr<RenderFrameHostImpl> impl, bool proceed,
+      [](base::WeakPtr<RenderFrameHostImpl> impl, bool for_legacy, bool proceed,
          base::TimeTicks renderer_before_unload_start_time,
          base::TimeTicks renderer_before_unload_end_time) {
         if (!impl)
           return;
         impl->ProcessBeforeUnloadCompleted(
             proceed, /*treat_as_final_completion_callback=*/false,
-            renderer_before_unload_start_time, renderer_before_unload_end_time);
+            renderer_before_unload_start_time, renderer_before_unload_end_time,
+            for_legacy);
       },
-      rfh);
+      rfh, for_legacy);
+  if (for_legacy) {
+    base::ThreadTaskRunnerHandle::Get()->PostTask(
+        FROM_HERE,
+        base::BindOnce(
+            [](blink::mojom::LocalFrame::BeforeUnloadCallback callback,
+               base::TimeTicks start_time) {
+              std::move(callback).Run(/*proceed=*/true, start_time,
+                                      base::TimeTicks::Now());
+            },
+            std::move(before_unload_closure), send_before_unload_start_time_));
+    return;
+  }
   // Experiment to run beforeunload handlers at a higher priority in the
   // renderer. See crubug.com/1042118.
   if (base::FeatureList::IsEnabled(features::kHighPriorityBeforeUnload)) {

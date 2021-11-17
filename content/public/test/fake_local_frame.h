@@ -34,6 +34,9 @@ class FakeLocalFrame : public blink::mojom::LocalFrame {
 
   void Init(blink::AssociatedInterfaceProvider* provider);
 
+  // Flushes mojo messages on `receiver_`.
+  void FlushMessages();
+
   // blink::mojom::LocalFrame:
   void GetTextSurroundingSelection(
       uint32_t max_length,

@@ -582,7 +582,8 @@ class RenderFrameHostImplForBeforeUnloadInterceptor
   using RenderFrameHostImpl::RenderFrameHostImpl;
 
   void SendBeforeUnload(bool is_reload,
-                        base::WeakPtr<RenderFrameHostImpl> rfh) override {
+                        base::WeakPtr<RenderFrameHostImpl> rfh,
+                        bool for_legacy) override {
     rfh->GetAssociatedLocalFrame()->BeforeUnload(is_reload, base::DoNothing());
   }
 
@@ -6537,6 +6538,47 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest, ErrorDocuments) {
   EXPECT_FALSE(web_contents()->GetMainFrame()->IsErrorDocument());
   EXPECT_FALSE(child_a->IsErrorDocument());
   EXPECT_TRUE(child_b->IsErrorDocument());
+}
+
+class RenderFrameHostImplAvoidUnnecessaryBeforeUnloadBrowserTest
+    : public RenderFrameHostImplBeforeUnloadBrowserTest {
+ public:
+  RenderFrameHostImplAvoidUnnecessaryBeforeUnloadBrowserTest() {
+    scoped_feature_list_.InitAndEnableFeature(
+        features::kAvoidUnnecessaryBeforeUnloadCheck);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// Ensure that navigating with a frame tree of A(B(A)) results in the right
+// number of beforeunload messages sent when the feature
+// `kAvoidUnnecessaryBeforeUnloadCheck` is set.
+IN_PROC_BROWSER_TEST_F(
+    RenderFrameHostImplAvoidUnnecessaryBeforeUnloadBrowserTest,
+    RendererInitiatedNavigationInABA) {
+  GURL main_url(embedded_test_server()->GetURL(
+      "a.com", "/cross_site_iframe_factory.html?a(b(a))"));
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+
+  // Install a beforeunload handler to send a ping from both a's.
+  FrameTreeNode* root = web_contents()->GetPrimaryFrameTree().root();
+  InstallBeforeUnloadHandler(root->child_at(0)->child_at(0), SEND_PING);
+
+  // Disable beforeunload timer to prevent flakiness.
+  PrepContentsForBeforeUnloadTest(web_contents());
+
+  // Navigate the main frame.
+  DOMMessageQueue msg_queue;
+  GURL new_url(embedded_test_server()->GetURL("c.com", "/title1.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), new_url));
+
+  // We should have received one pings (for the grandchild 'a').
+  EXPECT_EQ(1, RetrievePingsFromMessageQueue(&msg_queue));
+
+  // We shouldn't have seen any beforeunload dialogs.
+  EXPECT_EQ(0, dialog_manager()->num_beforeunload_dialogs_seen());
 }
 
 }  // namespace content

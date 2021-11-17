@@ -87,6 +87,12 @@ TestRenderFrameHost::TestRenderFrameHost(
 
 TestRenderFrameHost::~TestRenderFrameHost() = default;
 
+void TestRenderFrameHost::FlushLocalFrameMessages() {
+  // Force creation of `local_frame_`.
+  GetAssociatedLocalFrame();
+  local_frame_.FlushForTesting();
+}
+
 TestRenderViewHost* TestRenderFrameHost::GetRenderViewHost() {
   return static_cast<TestRenderViewHost*>(
       RenderFrameHostImpl::GetRenderViewHost());
@@ -194,7 +200,8 @@ void TestRenderFrameHost::SimulateRedirect(const GURL& new_url) {
 void TestRenderFrameHost::SimulateBeforeUnloadCompleted(bool proceed) {
   base::TimeTicks now = base::TimeTicks::Now();
   ProcessBeforeUnloadCompleted(
-      proceed, false /* treat_as_final_completion_callback */, now, now);
+      proceed, /* treat_as_final_completion_callback= */ false, now, now,
+      /*for_legacy=*/false);
 }
 
 void TestRenderFrameHost::SimulateUnloadACK() {

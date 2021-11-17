@@ -27,6 +27,10 @@ void FakeLocalFrame::Init(blink::AssociatedInterfaceProvider* provider) {
                           base::Unretained(this)));
 }
 
+void FakeLocalFrame::FlushMessages() {
+  receiver_.FlushForTesting();
+}
+
 void FakeLocalFrame::GetTextSurroundingSelection(
     uint32_t max_length,
     GetTextSurroundingSelectionCallback callback) {

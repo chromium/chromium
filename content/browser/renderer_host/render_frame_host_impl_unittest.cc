@@ -8,6 +8,7 @@
 #include "content/browser/renderer_host/navigation_controller_impl.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/public/common/content_features.h"
+#include "content/public/test/fake_local_frame.h"
 #include "content/public/test/test_utils.h"
 #include "content/test/navigation_simulator_impl.h"
 #include "content/test/test_render_view_host.h"
@@ -344,26 +345,78 @@ TEST_F(RenderFrameHostImplTest, ChildOfAnonymousIsAnonymous) {
             grandchild_frame->GetNetworkIsolationKey().GetNonce().value());
 }
 
-TEST_F(RenderFrameHostImplTest, NoBeforeUnloadCheckForBrowserInitiated) {
+// FakeLocalFrame implementation that records calls to BeforeUnload().
+class FakeLocalFrameWithBeforeUnload : public content::FakeLocalFrame {
+ public:
+  explicit FakeLocalFrameWithBeforeUnload(TestRenderFrameHost* test_host) {
+    Init(test_host->GetRemoteAssociatedInterfaces());
+  }
+
+  bool was_before_unload_called() const { return was_before_unload_called_; }
+
+  void RunBeforeUnloadCallback() {
+    ASSERT_TRUE(before_unload_callback_);
+    std::move(before_unload_callback_)
+        .Run(true, base::TimeTicks::Now(), base::TimeTicks::Now());
+  }
+
+  // FakeLocalFrame:
+  void BeforeUnload(bool is_reload, BeforeUnloadCallback callback) override {
+    was_before_unload_called_ = true;
+    before_unload_callback_ = std::move(callback);
+  }
+
+ private:
+  bool was_before_unload_called_ = false;
+  BeforeUnloadCallback before_unload_callback_;
+};
+
+// Verifies BeforeUnload() is not sent to renderer if there is no before
+// unload handler present.
+TEST_F(RenderFrameHostImplTest, BeforeUnloadNotSentToRenderer) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(
       features::kAvoidUnnecessaryBeforeUnloadCheck);
-  contents()->GetController().LoadURLWithParams(
-      NavigationController::LoadURLParams(
-          GURL("https://example.com/navigation.html")));
+  FakeLocalFrameWithBeforeUnload local_frame(contents()->GetMainFrame());
+  auto simulator = NavigationSimulatorImpl::CreateBrowserInitiated(
+      GURL("https://example.com/simple.html"), contents());
+  simulator->set_block_invoking_before_unload_completed_callback(true);
+  simulator->Start();
+  EXPECT_TRUE(
+      contents()->GetMainFrame()->is_waiting_for_beforeunload_completion());
+  EXPECT_FALSE(local_frame.was_before_unload_called());
+  // This is necessary to trigger FakeLocalFrameWithBeforeUnload to be bound.
+  contents()->GetMainFrame()->FlushLocalFrameMessages();
+  // This runs a MessageLoop, which also results in the PostTask() scheduled
+  // completing.
+  local_frame.FlushMessages();
+  EXPECT_FALSE(local_frame.was_before_unload_called());
+  // Because of the nested message loops run by the previous calls, the task
+  // that RenderFrameHostImpl will have also completed.
   EXPECT_FALSE(
       contents()->GetMainFrame()->is_waiting_for_beforeunload_completion());
 }
 
-TEST_F(RenderFrameHostImplTest, BeforeUnloadCheckForBrowserInitiated) {
+// Verifies BeforeUnloadNotSentToRenderer() is sent to renderer.
+TEST_F(RenderFrameHostImplTest, BeforeUnloadSentToRenderer) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndDisableFeature(
       features::kAvoidUnnecessaryBeforeUnloadCheck);
-  contents()->GetController().LoadURLWithParams(
-      NavigationController::LoadURLParams(
-          GURL("https://example.com/navigation.html")));
+  FakeLocalFrameWithBeforeUnload local_frame(contents()->GetMainFrame());
+  auto simulator = NavigationSimulatorImpl::CreateBrowserInitiated(
+      GURL("https://example.com/simple.html"), contents());
+  simulator->set_block_invoking_before_unload_completed_callback(true);
+  simulator->Start();
   EXPECT_TRUE(
       contents()->GetMainFrame()->is_waiting_for_beforeunload_completion());
+  // This is necessary to trigger FakeLocalFrameWithBeforeUnload to be bound.
+  contents()->GetMainFrame()->FlushLocalFrameMessages();
+  local_frame.FlushMessages();
+  EXPECT_TRUE(local_frame.was_before_unload_called());
+  EXPECT_TRUE(
+      contents()->GetMainFrame()->is_waiting_for_beforeunload_completion());
+  // Needed to avoid DCHECK in mojo if callback is not run.
+  local_frame.RunBeforeUnloadCallback();
 }
 
 }  // namespace content

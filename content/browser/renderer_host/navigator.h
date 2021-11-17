@@ -191,10 +191,12 @@ class CONTENT_EXPORT Navigator {
   void CancelNavigation(FrameTreeNode* frame_tree_node);
 
   // Called to record the time it took to execute the beforeunload hook for the
-  // current navigation.
+  // current navigation. See RenderFrameHostImpl::SendBeforeUnload() for details
+  // on `for_legacy`.
   void LogBeforeUnloadTime(base::TimeTicks renderer_before_unload_start_time,
                            base::TimeTicks renderer_before_unload_end_time,
-                           base::TimeTicks before_unload_sent_time);
+                           base::TimeTicks before_unload_sent_time,
+                           bool for_legacy);
 
   // Called to record the time that the RenderFrameHost told the renderer to
   // commit the current navigation.

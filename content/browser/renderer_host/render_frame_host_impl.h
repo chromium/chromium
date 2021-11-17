@@ -2459,8 +2459,16 @@ class CONTENT_EXPORT RenderFrameHostImpl
   BuildCommitFailedNavigationCallback(NavigationRequest* navigation_request);
 
   // Protected / virtual so it can be overridden by tests.
+  // If `for_legacy` is true, the beforeunload handler is not actually present,
+  // nor required to run. In this case the renderer is not notified, but
+  // PostTask() is used. PostTask() is used because synchronously proceeding
+  // with navigation could lead to reentrancy problems. In particular, there
+  // are tests and android WebView using NavigationThrottles to navigate from
+  // WillStartRequest(). If PostTask() is not used, then CHECKs would trigger
+  // in a NavigationController. See https://crbug.com/365039 for more details.
   virtual void SendBeforeUnload(bool is_reload,
-                                base::WeakPtr<RenderFrameHostImpl> impl);
+                                base::WeakPtr<RenderFrameHostImpl> impl,
+                                bool for_legacy);
 
  private:
   friend class RenderFrameHostPermissionsPolicyTest;
@@ -2897,12 +2905,14 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // |treat_as_final_completion_callback| is true, the frame should stop waiting
   // for any further completion callbacks from subframes. Completion callbacks
   // invoked from the renderer set |treat_as_final_completion_callback| to
-  // false, whereas a beforeunload timeout sets it to true.
+  // false, whereas a beforeunload timeout sets it to true. See
+  // SendBeforeUnload() for details on `for_legacy`.
   void ProcessBeforeUnloadCompleted(
       bool proceed,
       bool treat_as_final_completion_callback,
       const base::TimeTicks& renderer_before_unload_start_time,
-      const base::TimeTicks& renderer_before_unload_end_time);
+      const base::TimeTicks& renderer_before_unload_end_time,
+      bool for_legacy);
 
   // Find the frame that triggered the beforeunload handler to run in this
   // frame, which might be the frame itself or its ancestor.  This will
@@ -2918,14 +2928,15 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // been invoked on. If a beforeunload timeout occurred,
   // |treat_as_final_completion_callback| is set to true.
   // |is_frame_being_destroyed| is set to true if this was called as part of
-  // destroying |frame|.
+  // destroying |frame|. See SendBeforeUnload() for details on `for_legacy`.
   void ProcessBeforeUnloadCompletedFromFrame(
       bool proceed,
       bool treat_as_final_completion_callback,
       RenderFrameHostImpl* frame,
       bool is_frame_being_destroyed,
       const base::TimeTicks& renderer_before_unload_start_time,
-      const base::TimeTicks& renderer_before_unload_end_time);
+      const base::TimeTicks& renderer_before_unload_end_time,
+      bool for_legacy);
 
   // Helper function to check whether the current frame and its subframes need
   // to run beforeunload and, if |send_ipc| is true, send all the necessary
