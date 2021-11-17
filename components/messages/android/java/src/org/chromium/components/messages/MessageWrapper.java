@@ -6,6 +6,7 @@ package org.chromium.components.messages;
 
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 
 import androidx.annotation.DrawableRes;
 
@@ -157,6 +158,13 @@ public final class MessageWrapper {
     @CalledByNative
     void clearNativePtr() {
         mNativeMessageWrapper = 0;
+    }
+
+    @CalledByNative
+    Bitmap getIconBitmap() {
+        Drawable drawable = mMessageProperties.get(MessageBannerProperties.ICON);
+        assert drawable instanceof BitmapDrawable;
+        return ((BitmapDrawable) drawable).getBitmap();
     }
 
     private void handleActionClick() {

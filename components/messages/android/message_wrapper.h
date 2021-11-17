@@ -94,6 +94,8 @@ class MessageWrapper {
     return java_window_android_;
   }
 
+  const SkBitmap GetIconBitmap();
+
  private:
   base::android::ScopedJavaGlobalRef<jobject> java_message_wrapper_;
   base::OnceClosure action_callback_;

@@ -69,6 +69,7 @@ public class WebappsIconUtils {
     private static final float SHORTCUT_ICON_IDEAL_SIZE_DP = 48;
 
     @TargetApi(Build.VERSION_CODES.O)
+    @CalledByNative
     public static Bitmap generateAdaptiveIconBitmap(Bitmap bitmap) {
         Bitmap padded = createHomeScreenIconFromWebIcon(bitmap, true);
         Icon adaptiveIcon = Icon.createWithAdaptiveBitmap(padded);

@@ -214,4 +214,12 @@ void MessageWrapper::SetMessageEnqueued(
   java_window_android_ = java_window_android;
 }
 
+const SkBitmap MessageWrapper::GetIconBitmap() {
+  JNIEnv* env = base::android::AttachCurrentThread();
+  base::android::ScopedJavaLocalRef<jobject> bitmap =
+      Java_MessageWrapper_getIconBitmap(env, java_message_wrapper_);
+  gfx::JavaBitmap java_bitmap_lock(bitmap);
+  return gfx::CreateSkBitmapFromJavaBitmap(java_bitmap_lock);
+}
+
 }  // namespace messages

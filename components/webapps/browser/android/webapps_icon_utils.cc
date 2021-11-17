@@ -139,6 +139,20 @@ SkBitmap WebappsIconUtils::FinalizeLauncherIconInBackground(
              : SkBitmap();
 }
 
+SkBitmap WebappsIconUtils::GenerateAdaptiveIconBitmap(const SkBitmap& bitmap) {
+  JNIEnv* env = base::android::AttachCurrentThread();
+  ScopedJavaLocalRef<jobject> result;
+
+  if (!bitmap.isNull()) {
+    ScopedJavaLocalRef<jobject> java_bitmap = gfx::ConvertToJavaBitmap(bitmap);
+    result = Java_WebappsIconUtils_generateAdaptiveIconBitmap(env, java_bitmap);
+  }
+
+  return result.obj()
+             ? gfx::CreateSkBitmapFromJavaBitmap(gfx::JavaBitmap(result))
+             : SkBitmap();
+}
+
 int WebappsIconUtils::GetIdealIconCornerRadiusPxForPromptUI() {
   return Java_WebappsIconUtils_getIdealIconCornerRadiusPxForPromptUI(
       base::android::AttachCurrentThread());
