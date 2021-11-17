@@ -6,14 +6,12 @@
 
 #include "base/logging.h"
 #include "base/thread_annotations.h"
-#include "base/types/pass_key.h"
 #include "cc/paint/paint_op_buffer.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/service/shared_image_backing.h"
 #include "gpu/command_buffer/service/shared_image_representation.h"
 
 namespace gpu {
-namespace raster {
 
 class SharedImageBackingFactoryRawDraw;
 
@@ -21,8 +19,7 @@ namespace {
 
 class RawDrawBacking : public ClearTrackingSharedImageBacking {
  public:
-  RawDrawBacking(base::PassKey<SharedImageBackingFactoryRawDraw>,
-                 const Mailbox& mailbox,
+  RawDrawBacking(const Mailbox& mailbox,
                  viz::ResourceFormat format,
                  const gfx::Size& size,
                  const gfx::ColorSpace& color_space,
@@ -68,8 +65,6 @@ class RawDrawBacking : public ClearTrackingSharedImageBacking {
       MemoryTypeTracker* tracker) override;
 
  private:
-  friend class gpu::raster::SharedImageBackingFactoryRawDraw;
-  class RepresentationSkia;
   class RepresentationRaster;
 
   void ResetPaintOpBuffer() {
@@ -200,8 +195,8 @@ SharedImageBackingFactoryRawDraw::CreateSharedImage(
     bool is_thread_safe) {
   DCHECK(!is_thread_safe);
   auto texture = std::make_unique<RawDrawBacking>(
-      base::PassKey<SharedImageBackingFactoryRawDraw>(), mailbox, format, size,
-      color_space, surface_origin, alpha_type, usage, /*estimated_size=*/0);
+      mailbox, format, size, color_space, surface_origin, alpha_type, usage,
+      /*estimated_size=*/0);
   return texture;
 }
 
@@ -272,5 +267,4 @@ bool SharedImageBackingFactoryRawDraw::IsSupported(
   return true;
 }
 
-}  // namespace raster
 }  // namespace gpu

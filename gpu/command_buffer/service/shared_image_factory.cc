@@ -146,7 +146,7 @@ SharedImageFactory::SharedImageFactory(
   }
 
   if (features::IsUsingRawDraw() && context_state) {
-    auto factory = std::make_unique<raster::SharedImageBackingFactoryRawDraw>();
+    auto factory = std::make_unique<SharedImageBackingFactoryRawDraw>();
     factories_.push_back(std::move(factory));
   }
 
