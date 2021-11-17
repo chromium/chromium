@@ -903,7 +903,8 @@ IN_PROC_BROWSER_TEST_F(
     AssertPrerenderHistoryLength(host_id, prerender_frame_host);
     EXPECT_EQ("state1", EvalJs(prerender_frame_host, "history.state"));
 
-    EXPECT_EQ(NAVIGATION_TYPE_EXISTING_ENTRY, capturer.navigation_type());
+    EXPECT_EQ(NAVIGATION_TYPE_MAIN_FRAME_EXISTING_ENTRY,
+              capturer.navigation_type());
     EXPECT_TRUE(capturer.is_same_document());
     EXPECT_TRUE(capturer.did_replace_entry());
   }
@@ -921,7 +922,8 @@ IN_PROC_BROWSER_TEST_F(
     AssertPrerenderHistoryLength(host_id, prerender_frame_host);
     EXPECT_EQ("state2", EvalJs(prerender_frame_host, "history.state"));
 
-    EXPECT_EQ(NAVIGATION_TYPE_EXISTING_ENTRY, capturer.navigation_type());
+    EXPECT_EQ(NAVIGATION_TYPE_MAIN_FRAME_EXISTING_ENTRY,
+              capturer.navigation_type());
     EXPECT_TRUE(capturer.is_same_document());
     EXPECT_TRUE(capturer.did_replace_entry());
   }
@@ -942,7 +944,8 @@ IN_PROC_BROWSER_TEST_F(
     // history.state should be replaced with a fragment navigation.
     EXPECT_EQ(nullptr, EvalJs(prerender_frame_host, "history.state"));
 
-    EXPECT_EQ(NAVIGATION_TYPE_EXISTING_ENTRY, capturer.navigation_type());
+    EXPECT_EQ(NAVIGATION_TYPE_MAIN_FRAME_EXISTING_ENTRY,
+              capturer.navigation_type());
     EXPECT_TRUE(capturer.is_same_document());
     EXPECT_TRUE(capturer.did_replace_entry());
   }
@@ -1091,7 +1094,8 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, SessionHistoryAfterActivation) {
     TestNavigationHistory(k2ndUrl, 1, 3);
     EXPECT_EQ(nullptr, EvalJs(web_contents(), "history.state"));
 
-    EXPECT_EQ(NAVIGATION_TYPE_EXISTING_ENTRY, capturer.navigation_type());
+    EXPECT_EQ(NAVIGATION_TYPE_MAIN_FRAME_EXISTING_ENTRY,
+              capturer.navigation_type());
     EXPECT_FALSE(capturer.is_same_document());
   }
 
@@ -1103,7 +1107,8 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, SessionHistoryAfterActivation) {
     TestNavigationHistory(kPrerenderingUrl, 2, 3);
     EXPECT_EQ("teststate", EvalJs(web_contents(), "history.state"));
 
-    EXPECT_EQ(NAVIGATION_TYPE_EXISTING_ENTRY, capturer.navigation_type());
+    EXPECT_EQ(NAVIGATION_TYPE_MAIN_FRAME_EXISTING_ENTRY,
+              capturer.navigation_type());
     EXPECT_FALSE(capturer.is_same_document());
   }
 }

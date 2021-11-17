@@ -1779,7 +1779,7 @@ TEST_F(NavigationControllerTest, ImmediateRedirect) {
   EXPECT_EQ(1U, navigation_entry_committed_counter_);
   navigation_entry_committed_counter_ = 0;
 
-  EXPECT_EQ(NAVIGATION_TYPE_NEW_ENTRY, observer.navigation_type());
+  EXPECT_EQ(NAVIGATION_TYPE_MAIN_FRAME_NEW_ENTRY, observer.navigation_type());
   EXPECT_EQ(controller.GetEntryCount(), 1);
   EXPECT_EQ(controller.GetLastCommittedEntryIndex(), 0);
   EXPECT_TRUE(controller.GetLastCommittedEntry());
@@ -1831,7 +1831,8 @@ TEST_F(NavigationControllerTest,
   // ... and now the renderer sends a commit for the first navigation.
   LoadCommittedDetailsObserver observer(contents());
   navigation1->Commit();
-  EXPECT_EQ(NAVIGATION_TYPE_EXISTING_ENTRY, observer.navigation_type());
+  EXPECT_EQ(NAVIGATION_TYPE_MAIN_FRAME_EXISTING_ENTRY,
+            observer.navigation_type());
 }
 
 // Tests navigation via link click within a subframe. A new navigation entry

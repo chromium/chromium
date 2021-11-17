@@ -1283,18 +1283,18 @@ bool NavigationControllerImpl::RendererDidNavigate(
   // renderer.  Limit this to a very narrow set of conditions to avoid risks to
   // other navigation types. See https://crbug.com/900036.
   // TODO(crbug.com/926009): Handle history.pushState() as well.
-  bool keep_pending_entry = is_same_document_navigation &&
-                            details->type == NAVIGATION_TYPE_EXISTING_ENTRY &&
-                            pending_entry_ &&
-                            !PendingEntryMatchesRequest(navigation_request);
+  bool keep_pending_entry =
+      is_same_document_navigation &&
+      details->type == NAVIGATION_TYPE_MAIN_FRAME_EXISTING_ENTRY &&
+      pending_entry_ && !PendingEntryMatchesRequest(navigation_request);
 
   switch (details->type) {
-    case NAVIGATION_TYPE_NEW_ENTRY:
+    case NAVIGATION_TYPE_MAIN_FRAME_NEW_ENTRY:
       RendererDidNavigateToNewEntry(
           rfh, params, details->is_same_document, details->did_replace_entry,
           previous_document_was_activated, navigation_request);
       break;
-    case NAVIGATION_TYPE_EXISTING_ENTRY:
+    case NAVIGATION_TYPE_MAIN_FRAME_EXISTING_ENTRY:
       RendererDidNavigateToExistingEntry(rfh, params, details->is_same_document,
                                          was_restored, navigation_request,
                                          keep_pending_entry);
@@ -1443,7 +1443,7 @@ NavigationType NavigationControllerImpl::ClassifyNavigation(
     // this may or may not be the main frame.
     if (!rfh->GetParent()) {
       trace_return.set_return_reason("new entry, no parent, new entry");
-      return NAVIGATION_TYPE_NEW_ENTRY;
+      return NAVIGATION_TYPE_MAIN_FRAME_NEW_ENTRY;
     }
 
     // When this is a new subframe navigation, we should have a committed page
@@ -1502,7 +1502,7 @@ NavigationType NavigationControllerImpl::ClassifyNavigation(
     // as new with replacement.
     trace_return.set_return_reason(
         "nav entry 0, last committed, existing entry");
-    return NAVIGATION_TYPE_EXISTING_ENTRY;
+    return NAVIGATION_TYPE_MAIN_FRAME_EXISTING_ENTRY;
   }
 
   if (pending_entry_ && pending_entry_->GetUniqueID() == nav_entry_id) {
@@ -1514,7 +1514,7 @@ NavigationType NavigationControllerImpl::ClassifyNavigation(
     if (pending_entry_->site_instance() &&
         pending_entry_->site_instance() != rfh->GetSiteInstance()) {
       trace_return.set_return_reason("pending matching nav entry, new entry");
-      return NAVIGATION_TYPE_NEW_ENTRY;
+      return NAVIGATION_TYPE_MAIN_FRAME_NEW_ENTRY;
     }
 
     if (pending_entry_index_ == -1) {
@@ -1527,7 +1527,7 @@ NavigationType NavigationControllerImpl::ClassifyNavigation(
       if (!GetLastCommittedEntry() ||
           GetLastCommittedEntry()->site_instance() != rfh->GetSiteInstance()) {
         trace_return.set_return_reason("new pending, new entry");
-        return NAVIGATION_TYPE_NEW_ENTRY;
+        return NAVIGATION_TYPE_MAIN_FRAME_NEW_ENTRY;
       }
 
       // Otherwise, this happens when you press enter in the URL bar to reload.
@@ -1537,7 +1537,7 @@ NavigationType NavigationControllerImpl::ClassifyNavigation(
       // do this.) Therefore we want to just ignore the pending entry and go
       // back to where we were (the "existing entry").
       trace_return.set_return_reason("new pending, existing (same) entry");
-      return NAVIGATION_TYPE_EXISTING_ENTRY;
+      return NAVIGATION_TYPE_MAIN_FRAME_EXISTING_ENTRY;
     }
   }
 
@@ -1545,7 +1545,7 @@ NavigationType NavigationControllerImpl::ClassifyNavigation(
   // no last committed entry, we must consider it a new navigation instead.
   if (!GetLastCommittedEntry()) {
     trace_return.set_return_reason("no last committed, new entry");
-    return NAVIGATION_TYPE_NEW_ENTRY;
+    return NAVIGATION_TYPE_MAIN_FRAME_NEW_ENTRY;
   }
 
   if (navigation_request->commit_params().intended_as_new_entry) {
@@ -1553,7 +1553,7 @@ NavigationType NavigationControllerImpl::ClassifyNavigation(
     // got cleared in the meanwhile. Classify as EXISTING_ENTRY because we may
     // or may not have a pending entry.
     trace_return.set_return_reason("intended as new entry, existing entry");
-    return NAVIGATION_TYPE_EXISTING_ENTRY;
+    return NAVIGATION_TYPE_MAIN_FRAME_EXISTING_ENTRY;
   }
 
   if (navigation_request->DidEncounterError() &&
@@ -1565,7 +1565,7 @@ NavigationType NavigationControllerImpl::ClassifyNavigation(
     // have a pending entry.
     trace_return.set_return_reason(
         "unreachable, matching pending, existing entry");
-    return NAVIGATION_TYPE_EXISTING_ENTRY;
+    return NAVIGATION_TYPE_MAIN_FRAME_EXISTING_ENTRY;
   }
 
   // Now we know that the notification is for an existing entry; find it.
@@ -1576,13 +1576,13 @@ NavigationType NavigationControllerImpl::ClassifyNavigation(
     // The renderer has committed a navigation to an entry that no longer
     // exists. Because the renderer is showing that page, resurrect that entry.
     trace_return.set_return_reason("existing entry -1, new entry");
-    return NAVIGATION_TYPE_NEW_ENTRY;
+    return NAVIGATION_TYPE_MAIN_FRAME_NEW_ENTRY;
   }
 
   // Since we weeded out "new" navigations above, we know this is an existing
   // (back/forward) navigation.
   trace_return.set_return_reason("default return, existing entry");
-  return NAVIGATION_TYPE_EXISTING_ENTRY;
+  return NAVIGATION_TYPE_MAIN_FRAME_EXISTING_ENTRY;
 }
 
 void NavigationControllerImpl::UpdateNavigationEntryDetails(

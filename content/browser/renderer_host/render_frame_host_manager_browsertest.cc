@@ -4817,7 +4817,7 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest, ErrorPageNavigationReload) {
     // TODO(nasko): Investigate making a failing reload of a successful
     // navigation be classified as NEW_ENTRY instead, since with error page
     // isolation it involves a SiteInstance swap.
-    EXPECT_EQ(NavigationType::NAVIGATION_TYPE_EXISTING_ENTRY,
+    EXPECT_EQ(NavigationType::NAVIGATION_TYPE_MAIN_FRAME_EXISTING_ENTRY,
               reload_observer.last_navigation_type());
   }
   EXPECT_EQ(3, nav_controller.GetEntryCount());
@@ -4834,7 +4834,7 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest, ErrorPageNavigationReload) {
     shell()->web_contents()->GetController().Reload(ReloadType::NORMAL, false);
     reload_observer.Wait();
     EXPECT_FALSE(reload_observer.last_navigation_succeeded());
-    EXPECT_EQ(NavigationType::NAVIGATION_TYPE_EXISTING_ENTRY,
+    EXPECT_EQ(NavigationType::NAVIGATION_TYPE_MAIN_FRAME_EXISTING_ENTRY,
               reload_observer.last_navigation_type());
   }
   EXPECT_EQ(process_id,
@@ -4853,7 +4853,7 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest, ErrorPageNavigationReload) {
     // The successful reload should be classified as a NEW_ENTRY navigation
     // with replacement, since it needs to stay at the same entry in session
     // history, but needs a new entry because of the change in SiteInstance.
-    EXPECT_EQ(NavigationType::NAVIGATION_TYPE_NEW_ENTRY,
+    EXPECT_EQ(NavigationType::NAVIGATION_TYPE_MAIN_FRAME_NEW_ENTRY,
               reload_observer.last_navigation_type());
   }
   EXPECT_EQ(3, nav_controller.GetEntryCount());
@@ -4876,7 +4876,7 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest, ErrorPageNavigationReload) {
     // TODO(nasko): Investigate making a failing reload of a successful
     // navigation be classified as NEW_ENTRY instead, since with error page
     // isolation it involves a SiteInstance swap.
-    EXPECT_EQ(NavigationType::NAVIGATION_TYPE_EXISTING_ENTRY,
+    EXPECT_EQ(NavigationType::NAVIGATION_TYPE_MAIN_FRAME_EXISTING_ENTRY,
               reload_observer.last_navigation_type());
   }
   EXPECT_EQ(3, nav_controller.GetEntryCount());
@@ -4895,7 +4895,7 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest, ErrorPageNavigationReload) {
     EXPECT_TRUE(reload_observer.last_navigation_succeeded());
     // TODO(nasko): Investigate making renderer initiated reloads that change
     // SiteInstance be classified as NEW_ENTRY as well.
-    EXPECT_EQ(NavigationType::NAVIGATION_TYPE_EXISTING_ENTRY,
+    EXPECT_EQ(NavigationType::NAVIGATION_TYPE_MAIN_FRAME_EXISTING_ENTRY,
               reload_observer.last_navigation_type());
   }
   EXPECT_EQ(3, nav_controller.GetEntryCount());
@@ -5199,10 +5199,10 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest,
       // with replacement, since it needs to stay at the same entry in session
       // history, but needs a new entry because of the change in SiteInstance.
       // (the same as expectations in the ErrorPageNavigationReload test above).
-      EXPECT_EQ(NavigationType::NAVIGATION_TYPE_NEW_ENTRY,
+      EXPECT_EQ(NavigationType::NAVIGATION_TYPE_MAIN_FRAME_NEW_ENTRY,
                 reload_observer.last_navigation_type());
     } else {
-      EXPECT_EQ(NavigationType::NAVIGATION_TYPE_EXISTING_ENTRY,
+      EXPECT_EQ(NavigationType::NAVIGATION_TYPE_MAIN_FRAME_EXISTING_ENTRY,
                 reload_observer.last_navigation_type());
     }
   }
