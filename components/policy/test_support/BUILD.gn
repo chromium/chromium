@@ -5,10 +5,7 @@
 static_library("test_support") {
   testonly = true
 
-  data = [
-    "asn1der.py",
-    "policy_testserver.py",
-  ]
+  data = [ "policy_testserver.py" ]
 
   sources = [
     "client_storage.cc",

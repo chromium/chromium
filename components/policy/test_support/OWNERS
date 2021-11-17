@@ -1,4 +1,3 @@
 # policy_testserver.py is used in tast and autotest integration tests.
 
 per-file policy_testserver.py=ftirelo@chromium.org, pmarko@chromium.org, vsavu@google.com
-per-file asn1der.py=ftirelo@chromium.org, pmarko@chromium.org, vsavu@google.com
