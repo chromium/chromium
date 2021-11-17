@@ -148,6 +148,11 @@ class NET_EXPORT DedicatedWebTransportHttp3Client
   base::SequencedTaskRunner* task_runner_;  // Unowned.
 
   quic::ParsedQuicVersionVector supported_versions_;
+  // |original_supported_versions_| starts off empty. If a version negotiation
+  // packet is received, versions not supported by the server are removed from
+  // |supported_versions_| but the original list is saved in
+  // |original_supported_versions_|. This prevents version downgrade attacks.
+  quic::ParsedQuicVersionVector original_supported_versions_;
   // TODO(vasilvv): move some of those into QuicContext.
   std::unique_ptr<QuicChromiumAlarmFactory> alarm_factory_;
   quic::QuicCryptoClientConfig crypto_config_;

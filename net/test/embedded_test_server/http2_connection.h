@@ -93,7 +93,7 @@ class Http2Connection : public HttpConnection,
                   size_t length,
                   uint8_t flags,
                   uint32_t error_code) override;
-  bool OnInvalidFrame(StreamId stream_id, int error_code) override;
+  bool OnInvalidFrame(StreamId stream_id, InvalidFrameError error) override;
   void OnBeginMetadataForStream(StreamId stream_id,
                                 size_t payload_length) override {}
   bool OnMetadataForStream(StreamId stream_id,

@@ -435,7 +435,8 @@ int Http2Connection::OnFrameSent(uint8_t frame_type,
   return 0;
 }
 
-bool Http2Connection::OnInvalidFrame(StreamId stream_id, int error_code) {
+bool Http2Connection::OnInvalidFrame(StreamId stream_id,
+                                     InvalidFrameError error) {
   return true;
 }
 
