@@ -133,6 +133,9 @@ class ProfilePickerHandler : public content::WebUIMessageHandler,
   void SetProfilesOrder(const std::vector<ProfileAttributesEntry*>& entries);
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // Opens the Ash account settings page in a new window.
+  void HandleOpenAshAccountSettingsPage(base::Value::ConstListView args);
+
   // List of unassigned accounts used by the profile choice and the account
   // selection screens.
   // TODO(crbug.com/1226050): Rename this concept in code to available accounts.

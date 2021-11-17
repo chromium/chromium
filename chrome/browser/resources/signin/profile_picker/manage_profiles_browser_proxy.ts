@@ -159,6 +159,11 @@ export interface ManageProfilesBrowserProxy {
   // <if expr="lacros">
   /** Gets the unassigned accounts, through WebUIListener. */
   getUnassignedAccounts(): void;
+
+  /**
+   * Opens Ash Account settings page in a new window.
+   */
+  openAshAccountSettingsPage(): void;
   // </if>
 }
 
@@ -239,6 +244,10 @@ export class ManageProfilesBrowserProxyImpl {
   // <if expr="lacros">
   getUnassignedAccounts() {
     chrome.send('getUnassignedAccounts');
+  }
+
+  openAshAccountSettingsPage() {
+    chrome.send('openAshAccountSettingsPage');
   }
   // </if>
 

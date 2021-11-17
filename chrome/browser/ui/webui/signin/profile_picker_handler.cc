@@ -60,6 +60,8 @@
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chrome/browser/lacros/account_manager/account_manager_util.h"
 #include "chrome/browser/lacros/account_manager/account_profile_mapper.h"
+#include "chrome/browser/lacros/lacros_url_handling.h"
+#include "chrome/browser/ui/webui/settings/chromeos/constants/routes.mojom.h"
 #include "chrome/browser/ui/webui/signin/profile_picker_lacros_sign_in_provider.h"
 #include "components/account_manager_core/account.h"
 #endif
@@ -337,6 +339,11 @@ void ProfilePickerHandler::RegisterMessages() {
       "getUnassignedAccounts",
       base::BindRepeating(&ProfilePickerHandler::HandleGetUnassignedAccounts,
                           base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
+      "openAshAccountSettingsPage",
+      base::BindRepeating(
+          &ProfilePickerHandler::HandleOpenAshAccountSettingsPage,
+          base::Unretained(this)));
 #endif
   Profile* profile = Profile::FromWebUI(web_ui());
   content::URLDataSource::Add(profile, std::make_unique<ThemeSource>(profile));
@@ -1018,6 +1025,13 @@ void ProfilePickerHandler::OnVisibilityChanged(content::Visibility visibility) {
 }
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
+
+void ProfilePickerHandler::HandleOpenAshAccountSettingsPage(
+    base::Value::ConstListView args) {
+  std::string settings_url = chrome::kChromeUIOSSettingsURL;
+  settings_url.append(chromeos::settings::mojom::kMyAccountsSubpagePath);
+  lacros_url_handling::NavigateInAsh(GURL(settings_url));
+}
 
 void ProfilePickerHandler::HandleGetUnassignedAccounts(
     const base::ListValue* args) {

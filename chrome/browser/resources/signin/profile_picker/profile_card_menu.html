@@ -1,4 +1,4 @@
-<style include="profile-picker-shared cr-hidden-style">
+<style include="profile-picker-shared cr-hidden-style action-link">
   #moreActionsButton {
     --cr-icon-button-icon-size: 14px;
     --cr-icon-button-margin-end: 0;
@@ -161,12 +161,20 @@
   <div slot="title">
     [[removeWarningTitle_]]
   </div>
-  <div id="removeWarningHeader" slot="header" class="warning-message">
-    [[removeWarningText_]]
-    <span id="userName" hidden$="[[!profileState.isSyncing]]" class="key-text">
-      [[profileState.userName]]
-    </span>
-  </div>
+  <if expr="lacros">
+    <div id="removeWarningHeader" slot="header" class="warning-message"
+        inner-h-t-m-l="[[removeWarningText_]]">
+    </div>
+  </if>
+  <if expr="not lacros">
+    <div id="removeWarningHeader" slot="header" class="warning-message">
+      [[removeWarningText_]]
+      <span id="userName" hidden$="[[!profileState.isSyncing]]"
+          class="key-text">
+        [[profileState.userName]]
+      </span>
+    </div>
+  </if>
   <div slot="body">
     <div id="removeActionDialogBody">
       <div id="profileCardContainer">

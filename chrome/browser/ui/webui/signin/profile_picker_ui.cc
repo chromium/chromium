@@ -101,14 +101,15 @@ void AddStrings(content::WebUIDataSource* html_source) {
     {"profileMenuRemoveText", IDS_PROFILE_PICKER_PROFILE_MENU_REMOVE_TEXT},
     {"profileMenuCustomizeText",
      IDS_PROFILE_PICKER_PROFILE_MENU_CUSTOMIZE_TEXT},
-    {"removeWarningLocalProfile",
-     IDS_PROFILE_PICKER_REMOVE_WARNING_LOCAL_PROFILE},
     {"removeWarningLocalProfileTitle",
      IDS_PROFILE_PICKER_REMOVE_WARNING_LOCAL_PROFILE_TITLE},
-    {"removeWarningSignedInProfile",
-     IDS_PROFILE_PICKER_REMOVE_WARNING_SIGNED_IN_PROFILE},
     {"removeWarningSignedInProfileTitle",
-     IDS_PROFILE_PICKER_REMOVE_WARNING_SIGNED_IN_PROFILE_TITLE},
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+     IDS_PROFILE_PICKER_REMOVE_WARNING_SIGNED_IN_PROFILE_TITLE_LACROS
+#else
+     IDS_PROFILE_PICKER_REMOVE_WARNING_SIGNED_IN_PROFILE_TITLE
+#endif
+    },
     {"removeWarningHistory", IDS_PROFILE_PICKER_REMOVE_WARNING_HISTORY},
     {"removeWarningPasswords", IDS_PROFILE_PICKER_REMOVE_WARNING_PASSWORDS},
     {"removeWarningBookmarks", IDS_PROFILE_PICKER_REMOVE_WARNING_BOOKMARKS},
@@ -174,6 +175,11 @@ void AddStrings(content::WebUIDataSource* html_source) {
      IDS_PROFILE_PICKER_LACROS_PRIMARY_PROFILE_DELETION_WARNING},
     {"lacrosPrimaryProfileDeletionWarningConfirmation",
      IDS_PROFILE_PICKER_LACROS_PRIMARY_PROFILE_DELETION_WARNING_CONFIRMATION},
+#else
+    {"removeWarningLocalProfile",
+     IDS_PROFILE_PICKER_REMOVE_WARNING_LOCAL_PROFILE},
+    {"removeWarningSignedInProfile",
+     IDS_PROFILE_PICKER_REMOVE_WARNING_SIGNED_IN_PROFILE},
 #endif
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
@@ -209,6 +215,12 @@ void AddStrings(content::WebUIDataSource* html_source) {
                          GetManagedDeviceDisclaimer());
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
+  std::string remove_warning_profile = l10n_util::GetStringFUTF8(
+      IDS_PROFILE_PICKER_REMOVE_WARNING_SIGNED_IN_PROFILE_LACROS,
+      l10n_util::GetStringUTF16(IDS_SETTINGS_TITLE),
+      l10n_util::GetStringUTF16(IDS_OS_SETTINGS_PEOPLE_V2));
+  html_source->AddString("removeWarningProfileLacros", remove_warning_profile);
+
   html_source->AddBoolean(
       "isMultiProfileAccountConsistentcyLacrosEnabled",
       base::FeatureList::IsEnabled(kMultiProfileAccountConsistency));
