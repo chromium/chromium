@@ -259,6 +259,7 @@ source_set("browser") {
     "//ui/resources",
     "//ui/shell_dialogs",
     "//ui/snapshot",
+    "//ui/strings:ax_strings",
     "//ui/touch_selection",
     "//v8:v8_version",
   ]

@@ -60,6 +60,7 @@ include_rules = [
   "+sql",
   "+ui/aura_extra",
   "+components/vector_icons",
+  "+ui/strings/grit/ax_strings.h",
   "+ui/webui",
 
   # TODO(crbug.com/1079201): Consider removing "+serivces". Each service should

@@ -31,6 +31,7 @@ template("repack_one_locale_ash") {
       "$root_gen_dir/device/bluetooth/strings/bluetooth_strings_${locale}.pak",
       "$root_gen_dir/ui/chromeos/strings/ui_chromeos_strings_${locale}.pak",
       "$root_gen_dir/ui/strings/app_locale_settings_${locale}.pak",
+      "$root_gen_dir/ui/strings/ax_strings_${locale}.pak",
       "$root_gen_dir/ui/strings/ui_strings_${locale}.pak",
     ]
 
@@ -42,6 +43,7 @@ template("repack_one_locale_ash") {
       "//device/bluetooth/strings",
       "//ui/chromeos/strings",
       "//ui/strings:app_locale_settings",
+      "//ui/strings:ax_strings",
       "//ui/strings:ui_strings",
     ]
   }

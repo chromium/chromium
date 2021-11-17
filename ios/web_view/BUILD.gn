@@ -517,6 +517,7 @@ repack_locales("repack_locales") {
     "${root_gen_dir}/components/strings/components_strings_",
     "${root_gen_dir}/components/strings/components_locale_settings_",
     "${root_gen_dir}/ui/strings/app_locale_settings_",
+    "${root_gen_dir}/ui/strings/ax_strings_",
     "${root_gen_dir}/ui/strings/ui_strings_",
   ]
 
@@ -524,6 +525,7 @@ repack_locales("repack_locales") {
     "//components/strings:components_locale_settings",
     "//components/strings:components_strings",
     "//ui/strings:app_locale_settings",
+    "//ui/strings:ax_strings",
     "//ui/strings:ui_strings",
   ]
   input_locales = ios_packed_locales

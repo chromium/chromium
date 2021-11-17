@@ -15,7 +15,7 @@
 #include "ui/accessibility/platform/ax_private_attributes_mac.h"
 #include "ui/base/l10n/l10n_util.h"
 #import "ui/gfx/mac/coordinate_conversion.h"
-#include "ui/strings/grit/ui_strings.h"
+#include "ui/strings/grit/ax_strings.h"
 
 namespace ui {
 

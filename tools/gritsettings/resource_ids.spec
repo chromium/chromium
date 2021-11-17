@@ -857,8 +857,11 @@
   "ui/strings/app_locale_settings.grd": {
     "messages": [4780],
   },
-  "ui/strings/ui_strings.grd": {
+  "ui/strings/ax_strings.grd": {
     "messages": [4800],
+  },
+  "ui/strings/ui_strings.grd": {
+    "messages": [4810],
   },
   "ui/views/examples/views_examples_resources.grd": {
     "messages": [4820],

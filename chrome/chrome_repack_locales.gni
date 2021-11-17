@@ -35,6 +35,7 @@ template("chrome_repack_locales") {
       "${root_gen_dir}/services/strings/services_strings_",
       "${root_gen_dir}/third_party/libaddressinput/address_input_strings_",
       "${root_gen_dir}/ui/strings/app_locale_settings_",
+      "${root_gen_dir}/ui/strings/ax_strings_",
       "${root_gen_dir}/ui/strings/ui_strings_",
     ]
     if (!defined(deps)) {
@@ -52,6 +53,7 @@ template("chrome_repack_locales") {
       "//third_party/blink/public/strings",
       "//third_party/libaddressinput:strings",
       "//ui/strings:app_locale_settings",
+      "//ui/strings:ax_strings",
       "//ui/strings:ui_strings",
     ]
     if (defined(invoker.deps)) {

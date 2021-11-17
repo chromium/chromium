@@ -74,6 +74,7 @@
       "ui/accessibility/extensions/strings/accessibility_extensions_strings.grd",
       "ui/android/java/strings/android_ui_strings.grd",
       "ui/chromeos/ui_chromeos_strings.grd",
+      "ui/strings/ax_strings.grd",
       "ui/strings/ui_strings.grd",
       "weblayer/browser/java/weblayer_strings.grd",
     ],
