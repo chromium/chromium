@@ -12,6 +12,7 @@ import android.os.Build;
 import android.view.View;
 
 import androidx.fragment.app.FragmentActivity;
+import androidx.fragment.app.FragmentManager;
 
 import org.chromium.base.Callback;
 import org.chromium.chrome.browser.content_creation.reactions.LightweightReactionsMediator.GifGeneratorHost;
@@ -45,6 +46,7 @@ public class LightweightReactionsCoordinatorImpl extends BaseScreenshotCoordinat
         implements LightweightReactionsCoordinator, ToolbarControlsDelegate {
     private static final String GIF_MIME_TYPE = "image/gif";
 
+    private final FragmentManager mFragmentManager;
     private final ReactionService mReactionService;
     private final LightweightReactionsMediator mMediator;
     private final LightweightReactionsDialog mDialog;
@@ -78,6 +80,7 @@ public class LightweightReactionsCoordinatorImpl extends BaseScreenshotCoordinat
         super(activity, tab, shareUrl, chromeOptionShareCallback, sheetController);
         mDialogViewCreated = false;
         mAssetsFetched = false;
+        mFragmentManager = ((FragmentActivity) activity).getSupportFragmentManager();
         mReactionService = reactionService;
 
         Profile profile = Profile.fromWebContents(tab.getWebContents());
@@ -177,8 +180,7 @@ public class LightweightReactionsCoordinatorImpl extends BaseScreenshotCoordinat
         mDialogOpenedTime = System.currentTimeMillis();
         LightweightReactionsMetrics.recordDialogOpened();
 
-        FragmentActivity fragmentActivity = (FragmentActivity) mActivity;
-        mDialog.show(fragmentActivity.getSupportFragmentManager(), null);
+        mDialog.show(mFragmentManager, /*tag=*/null);
     }
 
     // BaseScreenshotCoordinator implementation.
@@ -221,8 +223,12 @@ public class LightweightReactionsCoordinatorImpl extends BaseScreenshotCoordinat
 
         mSceneCoordinator.clearSelection();
         mGenerationStartTime = System.currentTimeMillis();
-        mMediator.generateGif(gifHost, mSceneCoordinator.getFrameCount(),
-                mSceneCoordinator.getWidth(), mSceneCoordinator.getHeight(), (imageUri) -> {
+        LightweightReactionsProgressDialog progressDialog =
+                new LightweightReactionsProgressDialog();
+        progressDialog.show(mFragmentManager, /*tag=*/null);
+
+        mMediator.generateGif(
+                gifHost, mSceneCoordinator, progressDialog, (imageUri) -> {
                     LightweightReactionsMetrics.recordGifGenerated(getTimeSinceOpened(),
                             imageUri != null, System.currentTimeMillis() - mGenerationStartTime);
                     final String sheetTitle = getShareSheetTitle();
@@ -250,7 +256,8 @@ public class LightweightReactionsCoordinatorImpl extends BaseScreenshotCoordinat
                     ChromeShareExtras extras =
                             new ChromeShareExtras.Builder().setSkipPageSharingActions(true).build();
 
-                    // Dismiss current dialog before showing the share sheet.
+                    // Dismiss progress dialog and scene dialog before showing the share sheet.
+                    progressDialog.dismiss();
                     mDialog.dismiss();
                     mChromeOptionShareCallback.showShareSheet(params, extras, shareStartTime);
                 });
