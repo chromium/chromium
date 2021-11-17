@@ -23,12 +23,14 @@ ModelExecutionSchedulerImpl::ModelExecutionSchedulerImpl(
     SegmentInfoDatabase* segment_database,
     SignalStorageConfig* signal_storage_config,
     ModelExecutionManager* model_execution_manager,
+    base::flat_set<optimization_guide::proto::OptimizationTarget> segment_ids,
     base::Clock* clock,
     const PlatformOptions& platform_options)
     : observers_(observers),
       segment_database_(segment_database),
       signal_storage_config_(signal_storage_config),
       model_execution_manager_(model_execution_manager),
+      all_segment_ids_(segment_ids),
       clock_(clock),
       platform_options_(platform_options) {}
 
@@ -53,7 +55,10 @@ void ModelExecutionSchedulerImpl::OnNewModelInfoReady(
 
 void ModelExecutionSchedulerImpl::RequestModelExecutionForEligibleSegments(
     bool expired_only) {
-  segment_database_->GetAllSegmentInfo(
+  std::vector<OptimizationTarget> segment_ids(all_segment_ids_.begin(),
+                                              all_segment_ids_.end());
+  segment_database_->GetSegmentInfoForSegments(
+      segment_ids,
       base::BindOnce(&ModelExecutionSchedulerImpl::FilterEligibleSegments,
                      weak_ptr_factory_.GetWeakPtr(), expired_only));
 }
