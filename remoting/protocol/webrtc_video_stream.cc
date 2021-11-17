@@ -47,8 +47,7 @@ struct WebrtcVideoStream::FrameStats : public WebrtcVideoEncoder::FrameStats {
 };
 
 WebrtcVideoStream::WebrtcVideoStream(const SessionOptions& session_options)
-    : video_stats_dispatcher_(kStreamLabel),
-      session_options_(session_options) {}
+    : session_options_(session_options) {}
 
 WebrtcVideoStream::~WebrtcVideoStream() {
   DCHECK(thread_checker_.CalledOnValidThread());
@@ -94,10 +93,6 @@ void WebrtcVideoStream::Start(
   scheduler_ = std::make_unique<WebrtcFrameSchedulerSimple>(session_options_);
   scheduler_->Start(base::BindRepeating(&WebrtcVideoStream::CaptureNextFrame,
                                         base::Unretained(this)));
-
-  video_stats_dispatcher_.Init(webrtc_transport->CreateOutgoingChannel(
-                                   video_stats_dispatcher_.channel_name()),
-                               this);
 }
 
 void WebrtcVideoStream::SelectSource(int id) {
@@ -179,16 +174,6 @@ void WebrtcVideoStream::OnCaptureResult(
                                          std::move(current_frame_stats_));
 }
 
-void WebrtcVideoStream::OnChannelInitialized(
-    ChannelDispatcherBase* channel_dispatcher) {
-  DCHECK(&video_stats_dispatcher_ == channel_dispatcher);
-}
-void WebrtcVideoStream::OnChannelClosed(
-    ChannelDispatcherBase* channel_dispatcher) {
-  DCHECK(&video_stats_dispatcher_ == channel_dispatcher);
-  LOG(WARNING) << "video_stats channel was closed.";
-}
-
 void WebrtcVideoStream::CaptureNextFrame() {
   DCHECK(thread_checker_.CalledOnValidThread());
 
@@ -227,7 +212,7 @@ void WebrtcVideoStream::OnEncodedFrameSent(
   }
 
   // Send FrameStats message.
-  if (video_stats_dispatcher_.is_connected()) {
+  if (video_stats_dispatcher_ && video_stats_dispatcher_->is_connected()) {
     // The down-cast is safe, because the |stats| object was originally created
     // by this class and attached to the frame.
     const auto* current_frame_stats =
@@ -273,7 +258,7 @@ void WebrtcVideoStream::OnEncodedFrameSent(
     // interface, and move this logic to the encoders.
     stats.frame_quality = (63 - frame.quantizer) * 100 / 63;
 
-    video_stats_dispatcher_.OnVideoFrameStats(result.frame_id, stats);
+    video_stats_dispatcher_->OnVideoFrameStats(result.frame_id, stats);
   }
 }
 

@@ -33,6 +33,12 @@
 namespace remoting {
 namespace protocol {
 
+namespace {
+
+const char kVideoStatsStreamLabel[] = "screen_stream";
+
+}  // namespace
+
 // Currently the network thread is also used as worker thread for webrtc.
 //
 // TODO(sergeyu): Figure out if we would benefit from using a separate
@@ -42,6 +48,7 @@ WebrtcConnectionToClient::WebrtcConnectionToClient(
     scoped_refptr<protocol::TransportContext> transport_context,
     scoped_refptr<base::SingleThreadTaskRunner> audio_task_runner)
     : session_(std::move(session)),
+      video_stats_dispatcher_(kVideoStatsStreamLabel),
       audio_task_runner_(audio_task_runner),
       control_dispatcher_(new HostControlDispatcher()),
       event_dispatcher_(new HostEventDispatcher()) {
@@ -82,8 +89,8 @@ std::unique_ptr<VideoStream> WebrtcConnectionToClient::StartVideoStream(
   DCHECK(thread_checker_.CalledOnValidThread());
   DCHECK(transport_);
 
-  std::unique_ptr<WebrtcVideoStream> stream(
-      new WebrtcVideoStream(session_options_));
+  auto stream = std::make_unique<WebrtcVideoStream>(session_options_);
+  stream->set_video_stats_dispatcher(video_stats_dispatcher_.GetWeakPtr());
   stream->Start(std::move(desktop_capturer), transport_.get(),
                 video_encoder_factory_);
   stream->SetEventTimestampsSource(
@@ -184,6 +191,12 @@ void WebrtcConnectionToClient::OnWebrtcTransportConnecting() {
   control_dispatcher_->Init(
       transport_->CreateOutgoingChannel(control_dispatcher_->channel_name()),
       this);
+
+  // Create channel for sending per-frame statistics. The video-stream will
+  // only try to send any stats after this channel is connected.
+  video_stats_dispatcher_.Init(
+      transport_->CreateOutgoingChannel(video_stats_dispatcher_.channel_name()),
+      this);
 }
 
 void WebrtcConnectionToClient::OnWebrtcTransportConnected() {
@@ -265,6 +278,11 @@ void WebrtcConnectionToClient::OnChannelInitialized(
 void WebrtcConnectionToClient::OnChannelClosed(
     ChannelDispatcherBase* channel_dispatcher) {
   DCHECK(thread_checker_.CalledOnValidThread());
+
+  if (channel_dispatcher == &video_stats_dispatcher_) {
+    LOG(WARNING) << "video_stats channel was closed.";
+    return;
+  }
 
   LOG(ERROR) << "Channel " << channel_dispatcher->channel_name()
              << " was closed unexpectedly.";

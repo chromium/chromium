@@ -15,6 +15,7 @@
 #include "base/threading/thread_checker.h"
 #include "remoting/protocol/channel_dispatcher_base.h"
 #include "remoting/protocol/connection_to_client.h"
+#include "remoting/protocol/host_video_stats_dispatcher.h"
 #include "remoting/protocol/session.h"
 #include "remoting/protocol/webrtc_transport.h"
 
@@ -91,6 +92,8 @@ class WebrtcConnectionToClient : public ConnectionToClient,
   std::unique_ptr<Session> session_;
 
   WebrtcVideoEncoderFactory* video_encoder_factory_;
+
+  HostVideoStatsDispatcher video_stats_dispatcher_;
 
   scoped_refptr<base::SingleThreadTaskRunner> audio_task_runner_;
 
