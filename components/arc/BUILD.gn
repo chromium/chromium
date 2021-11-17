@@ -7,12 +7,6 @@ import("//testing/test.gni")
 
 static_library("arc") {
   sources = [
-    "appfuse/arc_appfuse_bridge.cc",
-    "appfuse/arc_appfuse_bridge.h",
-    "audio/arc_audio_bridge.cc",
-    "audio/arc_audio_bridge.h",
-    "bluetooth/bluetooth_type_converters.cc",
-    "bluetooth/bluetooth_type_converters.h",
     "camera/arc_camera_bridge.cc",
     "camera/arc_camera_bridge.h",
     "clipboard/arc_clipboard_bridge.cc",
@@ -137,6 +131,7 @@ static_library("arc") {
   ]
 
   public_deps = [
+    "//ash/components/arc:arc",
     "//ash/components/arc:arc_base",
     "//ash/components/arc:arc_metrics_constants",
     "//ash/components/arc:prefs",

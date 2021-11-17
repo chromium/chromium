@@ -2,6 +2,93 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+static_library("arc") {
+  sources = [
+    "appfuse/arc_appfuse_bridge.cc",
+    "appfuse/arc_appfuse_bridge.h",
+    "audio/arc_audio_bridge.cc",
+    "audio/arc_audio_bridge.h",
+    "bluetooth/bluetooth_type_converters.cc",
+    "bluetooth/bluetooth_type_converters.h",
+  ]
+
+  public_deps = [
+    ":arc_base",
+    ":arc_metrics_constants",
+    ":prefs",
+  ]
+
+  deps = [
+    "//ash",
+    "//ash/components/audio",
+    "//ash/constants",
+    "//ash/keyboard/ui",
+    "//ash/public/cpp",
+    "//base",
+    "//chromeos/components/sensors:sensors",
+    "//chromeos/cryptohome",
+    "//chromeos/dbus",
+    "//chromeos/dbus/cryptohome",
+    "//chromeos/dbus/permission_broker",
+    "//chromeos/dbus/power",
+    "//chromeos/dbus/power:power_manager_proto",
+    "//chromeos/dbus/resourced",
+    "//chromeos/dbus/session_manager",
+    "//chromeos/dbus/session_manager:login_manager_proto",
+    "//chromeos/dbus/upstart",
+    "//chromeos/dbus/userdataauth",
+    "//chromeos/dbus/userdataauth:userdataauth_proto",
+    "//chromeos/disks",
+    "//chromeos/login/login_state",
+    "//chromeos/network",
+    "//chromeos/ui/base",
+    "//chromeos/ui/frame",
+    "//components/account_id",
+    "//components/arc/enterprise",
+    "//components/arc/input_overlay/resources:resources_grit",
+    "//components/arc/vector_icons",
+    "//components/exo",
+    "//components/google/core/common",
+    "//components/guest_os",
+    "//components/keyed_service/core",
+    "//components/onc",
+    "//components/prefs",
+    "//components/strings:components_strings_grit",
+
+    # TODO(crbug.com/853604): After fully migrating the intent picker to query
+    # directly from App Service, we will deprecated the match functionality
+    # in intent_filter and this dependency will be removed.
+    "//components/services/app_service/public/cpp:intents",
+    "//components/session_manager/core",
+    "//components/url_formatter",
+    "//components/user_manager",
+    "//components/user_prefs",
+    "//components/vector_icons",
+    "//content/public/browser",
+    "//content/public/common",
+    "//device/bluetooth",
+    "//google_apis",
+    "//media/capture:capture_lib",
+    "//services/device/public/mojom",
+    "//skia",
+    "//third_party/re2",
+    "//ui/aura",
+    "//ui/base",
+    "//ui/base/clipboard",
+    "//ui/base/ime",
+    "//ui/base/ime/ash",
+    "//ui/chromeos/strings",
+    "//ui/chromeos/styles:cros_styles_views_generator",
+    "//ui/display/manager",
+    "//ui/events",
+    "//ui/events:dom_keycode_converter",
+    "//ui/events/ozone",
+    "//ui/gfx",
+    "//ui/wm/public",
+    "//url",
+  ]
+}
+
 static_library("prefs") {
   sources = [
     "arc_export.h",

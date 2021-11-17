@@ -133,9 +133,9 @@ if (is_chromeos_ash) {
           "//device/bluetooth/bluez/bluetooth_service_attribute_value_bluez.h",
         ]
         traits_private_headers =
-            [ "//components/arc/bluetooth/bluetooth_mojom_traits.h" ]
+            [ "//ash/components/arc/bluetooth/bluetooth_mojom_traits.h" ]
         traits_sources =
-            [ "//components/arc/bluetooth/bluetooth_mojom_traits.cc" ]
+            [ "//ash/components/arc/bluetooth/bluetooth_mojom_traits.cc" ]
         traits_public_deps = [
           "//device/bluetooth",
           "//device/bluetooth/public/cpp",

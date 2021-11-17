@@ -7,8 +7,10 @@
 #include <string>
 #include <utility>
 
+#include "ash/components/arc/appfuse/arc_appfuse_bridge.h"
 #include "ash/components/arc/arc_features.h"
 #include "ash/components/arc/arc_util.h"
+#include "ash/components/arc/audio/arc_audio_bridge.h"
 #include "ash/constants/ash_features.h"
 #include "base/bind.h"
 #include "base/check_op.h"
@@ -62,8 +64,6 @@
 #include "chrome/browser/ui/app_list/arc/arc_usb_host_permission_manager.h"
 #include "chrome/browser/ui/ash/multi_user/multi_user_util.h"
 #include "chrome/common/channel_info.h"
-#include "components/arc/appfuse/arc_appfuse_bridge.h"
-#include "components/arc/audio/arc_audio_bridge.h"
 #include "components/arc/camera/arc_camera_bridge.h"
 #include "components/arc/clipboard/arc_clipboard_bridge.h"
 #include "components/arc/compat_mode/arc_resize_lock_manager.h"

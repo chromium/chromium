@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_ARC_AUDIO_ARC_AUDIO_BRIDGE_H_
-#define COMPONENTS_ARC_AUDIO_ARC_AUDIO_BRIDGE_H_
+#ifndef ASH_COMPONENTS_ARC_AUDIO_ARC_AUDIO_BRIDGE_H_
+#define ASH_COMPONENTS_ARC_AUDIO_ARC_AUDIO_BRIDGE_H_
 
 #include "ash/components/audio/cras_audio_handler.h"
 #include "components/arc/mojom/audio.mojom.h"
@@ -68,4 +68,4 @@ class ArcAudioBridge : public KeyedService,
 
 }  // namespace arc
 
-#endif  // COMPONENTS_ARC_AUDIO_ARC_AUDIO_BRIDGE_H_
+#endif  // ASH_COMPONENTS_ARC_AUDIO_ARC_AUDIO_BRIDGE_H_

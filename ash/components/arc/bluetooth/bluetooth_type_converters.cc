@@ -10,10 +10,10 @@
 #include <string>
 #include <vector>
 
+#include "ash/components/arc/bluetooth/bluetooth_type_converters.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/strings/utf_string_conversions.h"
-#include "components/arc/bluetooth/bluetooth_type_converters.h"
 #include "device/bluetooth/bluetooth_device.h"
 #include "device/bluetooth/bluetooth_gatt_service.h"
 #include "device/bluetooth/public/cpp/bluetooth_address.h"
@@ -39,7 +39,6 @@ namespace mojo {
 arc::mojom::BluetoothAddressPtr
 TypeConverter<arc::mojom::BluetoothAddressPtr, std::string>::Convert(
     const std::string& address) {
-
   arc::mojom::BluetoothAddressPtr mojo_addr =
       arc::mojom::BluetoothAddress::New();
 
