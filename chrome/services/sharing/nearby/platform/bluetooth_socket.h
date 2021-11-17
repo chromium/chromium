@@ -6,6 +6,7 @@
 #define CHROME_SERVICES_SHARING_NEARBY_PLATFORM_BLUETOOTH_SOCKET_H_
 
 #include "base/memory/scoped_refptr.h"
+#include "base/synchronization/lock.h"
 #include "chrome/services/sharing/nearby/platform/bidirectional_stream.h"
 #include "chrome/services/sharing/nearby/platform/bluetooth_device.h"
 #include "device/bluetooth/public/mojom/adapter.mojom.h"
@@ -61,6 +62,11 @@ class BluetoothSocket : public api::BluetoothSocket {
   api::BluetoothDevice* GetRemoteDevice() override;
 
  private:
+  void CloseMojoSocketIfNecessary();
+
+  // Protects |socket_| while closing.
+  base::Lock lock_;
+
   // If this BluetoothSocket is created by connecting to a discovered device, a
   // reference to that device will be provided to set |remote_device_ref_|, and
   // |remote_device_| will be left unset.
