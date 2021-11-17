@@ -18,8 +18,8 @@ struct Segment {
 };
 
 // An "event" occurs when a rectangle starts intersecting the sweep line
-// (START), or when it ceases to intersect the sweep line (END).
-enum class EventType { START, END };
+// (kStart), or when it ceases to intersect the sweep line (kEnd).
+enum class EventType { kStart, kEnd };
 struct SweepEvent {
   // X-coordinate at which the event occurs.
   int x;
@@ -280,8 +280,8 @@ void Sweeper::InitEventQueue(Vector<SweepEvent>& events,
   events.ReserveInitialCapacity(rects_.size() << 1);
   for (const gfx::Rect& rect : rects_) {
     Segment segment = y_vals.SegmentFromEndpoints(rect.y(), rect.bottom());
-    events.push_back(SweepEvent{rect.x(), EventType::START, segment});
-    events.push_back(SweepEvent{rect.right(), EventType::END, segment});
+    events.push_back(SweepEvent{rect.x(), EventType::kStart, segment});
+    events.push_back(SweepEvent{rect.right(), EventType::kEnd, segment});
   }
   std::sort(events.begin(), events.end(),
             [](const SweepEvent& e1, const SweepEvent& e2) -> bool {
@@ -299,7 +299,7 @@ uint64_t Sweeper::SweepImpl(SegmentTree& tree,
       area += (uint64_t)(e.x - sweep_x) * (uint64_t)tree.ActiveLength();
       sweep_x = e.x;
     }
-    if (e.type == EventType::START)
+    if (e.type == EventType::kStart)
       tree.RefSegment(e.y_segment);
     else
       tree.DerefSegment(e.y_segment);

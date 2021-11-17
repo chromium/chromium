@@ -2140,8 +2140,8 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
 
   bool ColumnFlexItemHasStretchAlignment() const;
   bool IsStretchingColumnFlexItem() const;
-  enum class StretchingMode { Any, Explicit };
-  bool HasStretchedLogicalWidth(StretchingMode = StretchingMode::Any) const;
+  enum class StretchingMode { kAny, kExplicit };
+  bool HasStretchedLogicalWidth(StretchingMode = StretchingMode::kAny) const;
   bool HasStretchedLogicalHeight() const;
 
   void ExcludeScrollbars(

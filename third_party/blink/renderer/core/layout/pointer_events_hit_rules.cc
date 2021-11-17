@@ -41,7 +41,7 @@ PointerEventsHitRules::PointerEventsHitRules(EHitTesting hit_testing,
   if (request.SvgClipContent())
     pointer_events = EPointerEvents::kFill;
 
-  if (hit_testing == SVG_GEOMETRY_HITTESTING) {
+  if (hit_testing == kSvgGeometryHitTesting) {
     switch (pointer_events) {
       case EPointerEvents::kBoundingBox:
         can_hit_bounding_box = true;

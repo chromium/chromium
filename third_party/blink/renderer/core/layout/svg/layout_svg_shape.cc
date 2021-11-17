@@ -401,8 +401,8 @@ bool LayoutSVGShape::NodeAtPoint(HitTestResult& result,
     return false;
   const ComputedStyle& style = StyleRef();
   const PointerEventsHitRules hit_rules(
-      PointerEventsHitRules::SVG_GEOMETRY_HITTESTING,
-      result.GetHitTestRequest(), style.UsedPointerEvents());
+      PointerEventsHitRules::kSvgGeometryHitTesting, result.GetHitTestRequest(),
+      style.UsedPointerEvents());
   if (hit_rules.require_visible && style.Visibility() != EVisibility::kVisible)
     return false;
 

@@ -449,8 +449,8 @@ inline LayoutUnit BorderPaddingMarginEnd(LineLayoutInline child) {
 }
 
 enum CollapsibleWhiteSpace {
-  IgnoreCollapsibleWhiteSpace,
-  UseCollapsibleWhiteSpace
+  kIgnoreCollapsibleWhiteSpace,
+  kUseCollapsibleWhiteSpace
 };
 
 inline bool ShouldAddBorderPaddingMargin(LineLayoutItem child,
@@ -463,7 +463,7 @@ inline bool ShouldAddBorderPaddingMargin(LineLayoutItem child,
     // collapsible whitespace if they haven't already been added to the line's
     // width, such as when adding end-BPM when about to place a float after a
     // linebox.
-    if (white_space == UseCollapsibleWhiteSpace &&
+    if (white_space == kUseCollapsibleWhiteSpace &&
         LineLayoutText(child).IsAllCollapsibleWhitespace())
       return true;
     if (!LineLayoutText(child).TextLength())
@@ -477,7 +477,7 @@ inline LayoutUnit InlineLogicalWidthFromAncestorsIfNeeded(
     LineLayoutItem child,
     bool start = true,
     bool end = true,
-    CollapsibleWhiteSpace white_space = IgnoreCollapsibleWhiteSpace) {
+    CollapsibleWhiteSpace white_space = kIgnoreCollapsibleWhiteSpace) {
   unsigned line_depth = 1;
   LayoutUnit extra_width;
   LineLayoutItem parent = child.Parent();
@@ -561,7 +561,7 @@ inline void BreakingContext::HandleFloat() {
     // inline ancestors has been applied to the end of the previous inline box.
     float width_from_ancestors =
         InlineLogicalWidthFromAncestorsIfNeeded(float_box, false, true,
-                                                UseCollapsibleWhiteSpace)
+                                                kUseCollapsibleWhiteSpace)
             .ToFloat();
     width_.AddUncommittedWidth(width_from_ancestors);
     if (width_.FitsOnLine(

@@ -116,7 +116,7 @@ inline bool IsVisibleToHitTest(const NGFragmentItem& item,
 
   if (item.IsHiddenForPaint())
     return false;
-  PointerEventsHitRules hit_rules(PointerEventsHitRules::SVG_TEXT_HITTESTING,
+  PointerEventsHitRules hit_rules(PointerEventsHitRules::kSvgTextHitTesting,
                                   request, style.UsedPointerEvents());
   if (hit_rules.require_visible && style.Visibility() != EVisibility::kVisible)
     return false;

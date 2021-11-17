@@ -216,7 +216,7 @@ bool LayoutSVGImage::NodeAtPoint(HitTestResult& result,
     return false;
 
   const ComputedStyle& style = StyleRef();
-  PointerEventsHitRules hit_rules(PointerEventsHitRules::SVG_IMAGE_HITTESTING,
+  PointerEventsHitRules hit_rules(PointerEventsHitRules::kSvgImageHitTesting,
                                   result.GetHitTestRequest(),
                                   style.UsedPointerEvents());
   if (hit_rules.require_visible && style.Visibility() != EVisibility::kVisible)

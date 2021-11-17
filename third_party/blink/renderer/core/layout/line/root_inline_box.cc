@@ -137,7 +137,7 @@ LayoutUnit RootInlineBox::PlaceEllipsis(const AtomicString& ellipsis_str,
 
   // FIXME: Do we need an RTL version of this?
   LayoutUnit adjusted_logical_left = logical_left_offset + LogicalLeft();
-  if (force_ellipsis == ForceEllipsis && ltr &&
+  if (force_ellipsis == kForceEllipsis && ltr &&
       (adjusted_logical_left + LogicalWidth() + ellipsis_width) <=
           block_right_edge) {
     if (HasEllipsisBox())

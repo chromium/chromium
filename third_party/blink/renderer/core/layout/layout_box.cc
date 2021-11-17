@@ -4255,7 +4255,7 @@ bool LayoutBox::ShouldComputeLogicalWidthFromAspectRatio(
   if (StyleRef().AspectRatio().IsAuto())
     return false;
 
-  if (IsGridItem() && HasStretchedLogicalWidth(StretchingMode::Explicit))
+  if (IsGridItem() && HasStretchedLogicalWidth(StretchingMode::kExplicit))
     return false;
 
   if (!HasOverrideLogicalHeight() &&
@@ -4588,7 +4588,7 @@ bool LayoutBox::HasStretchedLogicalWidth(StretchingMode stretchingMode) const {
     // Flexbox Items, which obviously should have a container.
     return false;
   }
-  auto defaultItemPosition = stretchingMode == StretchingMode::Any
+  auto defaultItemPosition = stretchingMode == StretchingMode::kAny
                                  ? cb->SelfAlignmentNormalBehavior(this)
                                  : ItemPosition::kNormal;
   if (cb->IsHorizontalWritingMode() != IsHorizontalWritingMode()) {
