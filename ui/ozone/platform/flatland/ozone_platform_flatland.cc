@@ -95,6 +95,17 @@ class OzonePlatformFlatland : public OzonePlatform,
       PlatformWindowInitProperties properties) override {
     BindInMainProcessIfNecessary();
 
+    if (!properties.view_creation_token.value) {
+      ::fuchsia::ui::views::ViewportCreationToken parent_token;
+      ::fuchsia::ui::views::ViewCreationToken child_token;
+      auto status =
+          zx::channel::create(0, &parent_token.value, &child_token.value);
+      CHECK_EQ(ZX_OK, status) << "zx_channel_create";
+      properties.view_creation_token = std::move(child_token);
+      properties.view_ref_pair = scenic::ViewRefPair::New();
+      ::ui::fuchsia::GetFlatlandViewPresenter().Run(std::move(parent_token));
+    }
+
     // TODO(crbug.com/1230150): Add a hook for the RootPresenter equivalent of
     // Flatland to ui::fuchsia::InitializeViewTokenAndPresentView() create a
     // window.
@@ -107,7 +118,7 @@ class OzonePlatformFlatland : public OzonePlatform,
     static base::NoDestructor<OzonePlatform::PlatformProperties> properties;
     static bool initialised = false;
     if (!initialised) {
-      properties->needs_view_token = true;
+      properties->needs_view_token = false;
       properties->message_pump_type_for_gpu = base::MessagePumpType::IO;
       properties->supports_vulkan_swap_chain = true;
 

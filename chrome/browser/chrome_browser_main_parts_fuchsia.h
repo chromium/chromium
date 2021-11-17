@@ -31,7 +31,10 @@ class ChromeBrowserMainPartsFuchsia : public ChromeBrowserMainParts {
   void PostMainMessageLoopRun() override;
 
  private:
+  class ViewProviderRouter;
+
   std::unique_ptr<base::ProcessLifecycle> lifecycle_;
+  std::unique_ptr<ViewProviderRouter> view_provider_;
 };
 
 #endif  // CHROME_BROWSER_CHROME_BROWSER_MAIN_PARTS_FUCHSIA_H_

@@ -80,6 +80,11 @@ FlatlandWindow::~FlatlandWindow() {
 
 void FlatlandWindow::AttachSurfaceContent(
     fuchsia::ui::views::ViewportCreationToken token) {
+  if (surface_content_id_.value) {
+    flatland_.flatland()->ReleaseViewport(surface_content_id_, [](auto) {});
+    flatland_.flatland()->ReleaseTransform(surface_transform_id_);
+  }
+
   surface_transform_id_ = flatland_.NextTransformId();
   flatland_.flatland()->CreateTransform(surface_transform_id_);
   flatland_.flatland()->AddChild(root_transform_id_, surface_transform_id_);
@@ -93,8 +98,8 @@ void FlatlandWindow::AttachSurfaceContent(
   flatland_.flatland()->CreateViewport(surface_content_id_, std::move(token),
                                        std::move(properties),
                                        content_link.NewRequest());
-
   flatland_.flatland()->SetContent(surface_transform_id_, surface_content_id_);
+  flatland_.Present();
 
   // View is actually not attached but without it we dont get OutputPresenter
   // updates.
@@ -126,6 +131,7 @@ void FlatlandWindow::Show(bool inactive) {
   if (is_visible_)
     return;
 
+  is_visible_ = true;
   flatland_.flatland()->SetRootTransform(root_transform_id_);
   flatland_.Present();
 }
@@ -134,6 +140,7 @@ void FlatlandWindow::Hide() {
   if (!is_visible_)
     return;
 
+  is_visible_ = false;
   flatland_.flatland()->SetRootTransform({0});
   flatland_.Present();
 }
@@ -144,8 +151,7 @@ void FlatlandWindow::Close() {
 }
 
 bool FlatlandWindow::IsVisible() const {
-  NOTIMPLEMENTED_LOG_ONCE();
-  return true;
+  return is_visible_;
 }
 
 void FlatlandWindow::PrepareForShutdown() {
@@ -243,6 +249,15 @@ void FlatlandWindow::OnGetLayout(fuchsia::ui::composition::LayoutInfo info) {
 
   if (view_properties_ || device_pixel_ratio_ > 0.0)
     UpdateSize();
+
+  // Size update is sent via |delegate_| and SetViewportProperties().
+  if (surface_content_id_.value) {
+    fuchsia::ui::composition::ViewportProperties properties;
+    properties.set_logical_size(info.logical_size());
+    flatland_.flatland()->SetViewportProperties(surface_content_id_,
+                                                std::move(properties));
+    flatland_.Present();
+  }
 
   parent_viewport_watcher_->GetLayout(
       fit::bind_member(this, &FlatlandWindow::OnGetLayout));

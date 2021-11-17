@@ -107,6 +107,8 @@ void FlatlandSurface::Present(
     const fuchsia::math::SizeU size = {
         static_cast<uint32_t>(collection->size().width()),
         static_cast<uint32_t>(collection->size().height())};
+    DCHECK_EQ(size.width, layout_info_.logical_size().width);
+    DCHECK_EQ(size.height, layout_info_.logical_size().height);
     fuchsia::ui::composition::ImageProperties image_properties;
     image_properties.set_size(size);
     auto image_id = flatland_.NextContentId();

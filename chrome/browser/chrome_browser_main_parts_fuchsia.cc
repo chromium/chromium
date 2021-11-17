@@ -5,10 +5,17 @@
 #include "chrome/browser/chrome_browser_main_parts_fuchsia.h"
 
 #include <fuchsia/ui/app/cpp/fidl.h>
+#include <fuchsia/ui/composition/cpp/fidl.h>
+#include <fuchsia/ui/views/cpp/fidl.h>
 #include <lib/sys/cpp/component_context.h>
 #include <lib/ui/scenic/cpp/commands.h>
 #include <lib/ui/scenic/cpp/resources.h>
 #include <lib/ui/scenic/cpp/session.h>
+#include <lib/ui/scenic/cpp/view_identity.h>
+
+#include <memory>
+#include <utility>
+#include <vector>
 
 #include "base/bind.h"
 #include "base/check.h"
@@ -17,7 +24,9 @@
 #include "base/fuchsia/process_lifecycle.h"
 #include "base/fuchsia/scoped_service_binding.h"
 #include "base/notreached.h"
+#include "base/numerics/clamped_math.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
+#include "ui/gfx/geometry/size.h"
 #include "ui/platform_window/fuchsia/initialize_presenter_api_view.h"
 
 namespace {
@@ -31,21 +40,24 @@ fuchsia::ui::views::ViewRef CloneViewRef(
   return dup;
 }
 
-struct SubViewData {
-  scenic::ViewHolder view_holder;
-  fuchsia::ui::views::ViewRef view_ref;
-};
+// ViewProviderScenic ----------------------------------------------------------
 
 // ViewProvider implementation that provides a single view and exposes all
-// requested view from PlatformOzoneScenic inside it.
+// requested views from OzonePlatformScenic inside it. This class owns the top
+// level Scenic session.
+// TODO(crbug.com/1230150): Delete ViewProviderScenic after Flatland migration
+// is completed.
 class ViewProviderScenic : public fuchsia::ui::app::ViewProvider {
  public:
   ViewProviderScenic()
-      : binding_(base::ComponentContextForProcess()->outgoing().get(), this),
-        scenic_(base::ComponentContextForProcess()
+      : scenic_(base::ComponentContextForProcess()
                     ->svc()
                     ->Connect<fuchsia::ui::scenic::Scenic>()),
         scenic_session_(scenic_.get(), focuser_.NewRequest()) {
+    // This is safe since the callback is overwritten in dtor.
+    ui::fuchsia::SetScenicViewPresenter(base::BindRepeating(
+        &ViewProviderScenic::PresentView, base::Unretained(this)));
+
     scenic_.set_error_handler([](zx_status_t status) {
       ZX_LOG(ERROR, status) << " Scenic lost.";
       // Terminate here so that e.g. a Scenic crash results in the browser
@@ -55,7 +67,30 @@ class ViewProviderScenic : public fuchsia::ui::app::ViewProvider {
     scenic_session_.set_event_handler(
         fit::bind_member(this, &ViewProviderScenic::OnScenicEvents));
   }
-  ~ViewProviderScenic() override { scenic_.Unbind(); }
+  ViewProviderScenic(const ViewProviderScenic&) = delete;
+  ViewProviderScenic& operator=(const ViewProviderScenic&) = delete;
+  ~ViewProviderScenic() override {
+    ui::fuchsia::SetScenicViewPresenter(
+        ui::fuchsia::ScenicPresentViewCallback());
+    scenic_.Unbind();
+  }
+
+  void PresentView(fuchsia::ui::views::ViewHolderToken view_holder_token,
+                   fuchsia::ui::views::ViewRef view_ref) {
+    ScenicSubViewData subview = {
+        .view_holder = scenic::ViewHolder(&scenic_session_,
+                                          std::move(view_holder_token).value,
+                                          "subview-holder"),
+        .view_ref = std::move(view_ref)};
+    if (view_) {
+      if (view_properties_) {
+        subview.view_holder.SetViewProperties(*view_properties_);
+      }
+      node_->AddChild(subview.view_holder);
+      Present();
+    }
+    subviews_.push_back(std::move(subview));
+  }
 
   // fuchsia::ui::app::ViewProvider overrides.
   void CreateView(
@@ -69,7 +104,7 @@ class ViewProviderScenic : public fuchsia::ui::app::ViewProvider {
                              fuchsia::ui::views::ViewRefControl control_ref,
                              fuchsia::ui::views::ViewRef view_ref) override {
     if (view_) {
-      LOG(WARNING) << "Unexpected spurious call to |CreateViewWithViewRef|. "
+      LOG(WARNING) << "Unexpected spurious call to CreateViewWithViewRef(). "
                       "Deleting previously created view.";
       subviews_.clear();
       is_node_attached_ = false;
@@ -88,25 +123,18 @@ class ViewProviderScenic : public fuchsia::ui::app::ViewProvider {
     }
     Present();
   }
-
-  void PresentView(fuchsia::ui::views::ViewHolderToken view_holder_token,
-                   fuchsia::ui::views::ViewRef view_ref) {
-    SubViewData subview = {
-        .view_holder = scenic::ViewHolder(&scenic_session_,
-                                          std::move(view_holder_token).value,
-                                          "subview-holder"),
-        .view_ref = std::move(view_ref)};
-    if (view_) {
-      if (view_properties_) {
-        subview.view_holder.SetViewProperties(*view_properties_);
-      }
-      node_->AddChild(subview.view_holder);
-      Present();
-    }
-    subviews_.push_back(std::move(subview));
+  void CreateView2(fuchsia::ui::app::CreateView2Args view_args) override {
+    // Unexpected call to CreateView2(). OzonePlatformScenic cannot handle
+    // Flatland tokens. Make sure the correct Ozone platform is set.
+    NOTREACHED();
   }
 
  private:
+  struct ScenicSubViewData {
+    scenic::ViewHolder view_holder;
+    fuchsia::ui::views::ViewRef view_ref;
+  };
+
   void OnScenicEvents(std::vector<fuchsia::ui::scenic::Event> events) {
     for (const auto& event : events) {
       if (event.is_gfx() && event.gfx().is_view_properties_changed()) {
@@ -168,8 +196,6 @@ class ViewProviderScenic : public fuchsia::ui::app::ViewProvider {
         [this](fuchsia::images::PresentationInfo info) { FocusView(); });
   }
 
-  const base::ScopedServiceBinding<fuchsia::ui::app::ViewProvider> binding_;
-
   fuchsia::ui::scenic::ScenicPtr scenic_;
   fuchsia::ui::views::FocuserPtr focuser_;
   scenic::Session scenic_session_;
@@ -188,14 +214,318 @@ class ViewProviderScenic : public fuchsia::ui::app::ViewProvider {
   bool view_has_focus_ = false;
 
   // The holders for all the views that are presented.
-  std::vector<SubViewData> subviews_;
+  std::vector<ScenicSubViewData> subviews_;
 
   // The properties of the top level view. They are forwarded to the embedded
   // views.
   absl::optional<fuchsia::ui::gfx::ViewProperties> view_properties_;
 };
 
+// ViewProviderFlatland --------------------------------------------------------
+
+// ViewProvider implementation that provides a single view and exposes all
+// requested views from OzonePlatformFlatland inside it. This class owns the top
+// level Flatland session.
+class ViewProviderFlatland : public fuchsia::ui::app::ViewProvider {
+ public:
+  ViewProviderFlatland() {
+    // This is safe since the callback is overwritten in dtor.
+    ui::fuchsia::SetFlatlandViewPresenter(base::BindRepeating(
+        &ViewProviderFlatland::PresentView, base::Unretained(this)));
+
+    flatland_.set_error_handler([](zx_status_t status) {
+      ZX_LOG(ERROR, status) << " Flatland server disconnected.";
+      // Terminate here so that e.g. a Scenic crash results in the browser
+      // immediately terminating, without generating a cascading crash report.
+      base::Process::TerminateCurrentProcessImmediately(1);
+    });
+    flatland_->SetDebugName("ChromeBrowserMainPartsFuchsia");
+    flatland_.events().OnError =
+        [](fuchsia::ui::composition::FlatlandError error) {
+          LOG(ERROR) << "Flatland error: " << static_cast<int>(error);
+        };
+    flatland_.events().OnNextFrameBegin =
+        fit::bind_member(this, &ViewProviderFlatland::OnNextFrameBegin);
+
+    // Each Flatland session requires defining a root transform.
+    flatland_->CreateTransform(kRootTransformId);
+    flatland_->SetRootTransform(kRootTransformId);
+  }
+  ViewProviderFlatland(const ViewProviderFlatland&) = delete;
+  ViewProviderFlatland& operator=(const ViewProviderFlatland&) = delete;
+  ~ViewProviderFlatland() override {
+    ui::fuchsia::SetFlatlandViewPresenter(
+        ui::fuchsia::FlatlandPresentViewCallback());
+  }
+
+  // fuchsia::ui::app::ViewProvider overrides.
+  void CreateView(
+      zx::eventpair token,
+      fidl::InterfaceRequest<fuchsia::sys::ServiceProvider> incoming_services,
+      fidl::InterfaceHandle<fuchsia::sys::ServiceProvider> outgoing_services)
+      override {
+    // Unexpected call to CreateView(). OzonePlatformFlatland cannot handle Gfx
+    // tokens. Make sure the correct Ozone platform is set.
+    NOTREACHED();
+  }
+  void CreateViewWithViewRef(zx::eventpair token,
+                             fuchsia::ui::views::ViewRefControl control_ref,
+                             fuchsia::ui::views::ViewRef view_ref) override {
+    // Unexpected call to CreateViewWithViewRef(). OzonePlatformFlatland cannot
+    // handle Gfx tokens. Make sure the correct Ozone platform is set.
+    NOTREACHED();
+  }
+  void CreateView2(fuchsia::ui::app::CreateView2Args view_args) override {
+    if (parent_viewport_watcher_.is_bound()) {
+      LOG(ERROR) << "Unexpected spurious call to CreateView2().";
+      return;
+    }
+
+    auto view_identity = scenic::NewViewIdentityOnCreation();
+    fuchsia::ui::composition::ViewBoundProtocols flatland_view_protocols;
+    flatland_view_protocols.set_view_ref_focused(
+        view_ref_focused_.NewRequest());
+    flatland_view_protocols.set_view_focuser(focuser_.NewRequest());
+    flatland_->CreateView2(std::move(*view_args.mutable_view_creation_token()),
+                           std::move(view_identity),
+                           std::move(flatland_view_protocols),
+                           parent_viewport_watcher_.NewRequest());
+    for (auto& subview : subviews_) {
+      flatland_->AddChild(kRootTransformId, subview.transform_id);
+    }
+    // No need to call Present() because OnGetLayout() will trigger Present()
+    // after receiving the proper size.
+    parent_viewport_watcher_->GetLayout(
+        fit::bind_member(this, &ViewProviderFlatland::OnGetLayout));
+    view_ref_focused_->Watch(
+        fit::bind_member(this, &ViewProviderFlatland::OnViewRefFocused));
+  }
+
+  void PresentView(
+      fuchsia::ui::views::ViewportCreationToken viewport_creation_token) {
+    // Flatland requires a size to be set in CreateViewport() calls, so wait for
+    // receiving size before handling the presentation request. Flatland
+    // guarantees that the size returned in OnGetLayout() hanging get is
+    // non-zero. Size can be zero if we are running this code before
+    // OnGetLayout().
+    if (view_size_.IsZero()) {
+      pending_present_views_.push_back(std::move(viewport_creation_token));
+      return;
+    }
+
+    FlatlandSubViewData subview;
+    subview.transform_id = {next_id_++};
+    subview.content_id = {next_id_++};
+    flatland_->CreateTransform(subview.transform_id);
+    fuchsia::ui::composition::ViewportProperties properties;
+    properties.set_logical_size({static_cast<uint32_t>(view_size_.width()),
+                                 static_cast<uint32_t>(view_size_.height())});
+    flatland_->CreateViewport(
+        subview.content_id, std::move(viewport_creation_token),
+        std::move(properties), subview.child_view_watcher.NewRequest());
+    flatland_->SetContent(subview.transform_id, subview.content_id);
+    flatland_->AddChild(kRootTransformId, subview.transform_id);
+    subviews_.push_back(std::move(subview));
+
+    MaybePresent();
+    subviews_.back().child_view_watcher->GetViewRef(
+        [this, index = subviews_.size() - 1](fuchsia::ui::views::ViewRef ref) {
+          subviews_[index].child_view_ref = std::move(ref);
+          RequestFocus();
+        });
+  }
+
+ private:
+  struct FlatlandSubViewData {
+    fuchsia::ui::composition::TransformId transform_id;
+    fuchsia::ui::composition::ContentId content_id;
+    fuchsia::ui::composition::ChildViewWatcherPtr child_view_watcher;
+    fuchsia::ui::views::ViewRef child_view_ref;
+  };
+
+  void OnGetLayout(fuchsia::ui::composition::LayoutInfo info) {
+    const bool first_received_size = view_size_.IsZero();
+    view_size_.SetSize(info.logical_size().width, info.logical_size().height);
+
+    // If there were PresentView() calls before receiving OnGetLayout(), execute
+    // them.
+    if (first_received_size) {
+      for (auto& present_view : std::exchange(pending_present_views_, {})) {
+        PresentView(std::move(present_view));
+      }
+    } else {
+      for (const auto& subview : subviews_) {
+        fuchsia::ui::composition::ViewportProperties properties;
+        properties.set_logical_size(info.logical_size());
+        flatland_->SetViewportProperties(subview.content_id,
+                                         std::move(properties));
+      }
+      MaybePresent();
+    }
+
+    // Queue another hanging get in case the size changes.
+    parent_viewport_watcher_->GetLayout(
+        fit::bind_member(this, &ViewProviderFlatland::OnGetLayout));
+  }
+
+  void OnViewRefFocused(fuchsia::ui::views::FocusState focus_state) {
+    view_has_focus_ = focus_state.focused();
+    RequestFocus();
+
+    view_ref_focused_->Watch(
+        fit::bind_member(this, &ViewProviderFlatland::OnViewRefFocused));
+  }
+
+  void RequestFocus() {
+    if (!view_has_focus_ || subviews_.empty() ||
+        !subviews_.front().child_view_ref.reference.is_valid())
+      return;
+
+    focuser_->RequestFocus(
+        CloneViewRef(subviews_.front().child_view_ref),
+        [](fuchsia::ui::views::Focuser_RequestFocus_Result result) {
+          DCHECK(!result.is_err());
+        });
+  }
+
+  void MaybePresent() {
+    if (present_credits_ == 0) {
+      present_after_receiving_credits_ = true;
+      return;
+    }
+
+    present_after_receiving_credits_ = false;
+    --present_credits_;
+    Present();
+  }
+
+  void Present() {
+    fuchsia::ui::composition::PresentArgs present_args;
+    present_args.set_requested_presentation_time(0);
+    present_args.set_acquire_fences({});
+    present_args.set_release_fences({});
+    present_args.set_unsquashable(false);
+    flatland_->Present(std::move(present_args));
+  }
+
+  void OnNextFrameBegin(
+      fuchsia::ui::composition::OnNextFrameBeginValues values) {
+    present_credits_ =
+        base::ClampAdd(present_credits_, values.additional_present_credits());
+    if (present_after_receiving_credits_) {
+      MaybePresent();
+    }
+  }
+
+  fuchsia::ui::composition::FlatlandPtr flatland_ = {
+      base::ComponentContextForProcess()
+          ->svc()
+          ->Connect<fuchsia::ui::composition::Flatland>()};
+
+  // The counter used for limiting the number of Present calls to ensure that
+  // |flatland_|will not be shut down because if presenting more times than
+  // allowed.
+  uint32_t present_credits_ = 1;
+
+  // Root transform for |flatland_|. All |subviews_| are added as children.
+  static const fuchsia::ui::composition::TransformId kRootTransformId;
+
+  // Autoincrementing value of the next ID to use for |flatland_|.
+  uint64_t next_id_ = 2;
+
+  // True if we should queue Present() after receiving credits on
+  // OnNextFrameBegin().
+  bool present_after_receiving_credits_ = false;
+
+  // True if the top level view has focus.
+  bool view_has_focus_ = false;
+
+  // Protocol for watching focus changes.
+  fuchsia::ui::views::ViewRefFocusedPtr view_ref_focused_;
+
+  // Protocol for setting focus changes.
+  fuchsia::ui::views::FocuserPtr focuser_;
+
+  // Protocol for watching size changes.
+  fuchsia::ui::composition::ParentViewportWatcherPtr parent_viewport_watcher_;
+
+  // The layout size of the View occupied by |flatland_| in logical pixels.
+  gfx::Size view_size_;
+
+  // Pending ViewportCreationTokens to be processed and added as |subviews_|.
+  std::vector<fuchsia::ui::views::ViewportCreationToken> pending_present_views_;
+
+  // The holders for all the views that are presented.
+  std::vector<FlatlandSubViewData> subviews_;
+};
+
+// static
+constexpr fuchsia::ui::composition::TransformId
+    ViewProviderFlatland::kRootTransformId{1};
+
 }  // namespace
+
+// ViewProviderRouter ----------------------------------------------------------
+
+// ViewProvider implementation that delegates calls to the correct Ozone
+// platform's ViewProvider.
+// TODO(crbug.com/1230150): Delete ViewProviderRouter after moving |binding_|
+// to ViewProviderFlatland after migration is completed.
+class ChromeBrowserMainPartsFuchsia::ViewProviderRouter
+    : public fuchsia::ui::app::ViewProvider {
+ public:
+  ViewProviderRouter(std::unique_ptr<ViewProviderScenic> scenic,
+                     std::unique_ptr<ViewProviderFlatland> flatland)
+      : scenic_(std::move(scenic)), flatland_(std::move(flatland)) {
+    DCHECK(scenic_);
+    DCHECK(flatland_);
+  }
+  ViewProviderRouter(const ViewProviderRouter&) = delete;
+  ViewProviderRouter& operator=(const ViewProviderRouter&) = delete;
+  ~ViewProviderRouter() override = default;
+
+  // fuchsia::ui::app::ViewProvider overrides.
+  void CreateView(
+      zx::eventpair token,
+      fidl::InterfaceRequest<fuchsia::sys::ServiceProvider> incoming_services,
+      fidl::InterfaceHandle<fuchsia::sys::ServiceProvider> outgoing_services)
+      override {
+    // Chrome is initialized with either Scenic or flatland Ozone platform.
+    // Scenic and Flatland calls cannot be combined.
+    DCHECK(scenic_);
+    flatland_.reset();
+
+    scenic_->CreateView(std::move(token), std::move(incoming_services),
+                        std::move(outgoing_services));
+  }
+  void CreateViewWithViewRef(zx::eventpair token,
+                             fuchsia::ui::views::ViewRefControl control_ref,
+                             fuchsia::ui::views::ViewRef view_ref) override {
+    // Chrome is initialized with either Scenic or flatland Ozone platform.
+    // Scenic and Flatland calls cannot be combined.
+    DCHECK(scenic_);
+    flatland_.reset();
+
+    scenic_->CreateViewWithViewRef(std::move(token), std::move(control_ref),
+                                   std::move(view_ref));
+  }
+  void CreateView2(fuchsia::ui::app::CreateView2Args view_args) override {
+    // Chrome is initialized with either Scenic or flatland Ozone platform.
+    // Scenic and Flatland calls cannot be combined.
+    DCHECK(flatland_);
+    scenic_.reset();
+
+    flatland_->CreateView2(std::move(view_args));
+  }
+
+ private:
+  const base::ScopedServiceBinding<fuchsia::ui::app::ViewProvider> binding_ = {
+      base::ComponentContextForProcess()->outgoing().get(), this};
+  std::unique_ptr<ViewProviderScenic> scenic_;
+  std::unique_ptr<ViewProviderFlatland> flatland_;
+};
+
+// ChromeBrowserMainPartsFuchsia -----------------------------------------------
 
 ChromeBrowserMainPartsFuchsia::ChromeBrowserMainPartsFuchsia(
     content::MainFunctionParams parameters,
@@ -211,10 +541,10 @@ void ChromeBrowserMainPartsFuchsia::ShowMissingLocaleMessageBox() {
 }
 
 int ChromeBrowserMainPartsFuchsia::PreMainMessageLoopRun() {
-  // Register the ViewPresenter API.
-  ui::fuchsia::SetScenicViewPresenter(
-      base::BindRepeating(&ViewProviderScenic::PresentView,
-                          std::make_unique<ViewProviderScenic>()));
+  // Register the ViewProvider API.
+  view_provider_ = std::make_unique<ViewProviderRouter>(
+      std::make_unique<ViewProviderScenic>(),
+      std::make_unique<ViewProviderFlatland>());
 
   zx_status_t status =
       base::ComponentContextForProcess()->outgoing()->ServeFromStartupInfo();
@@ -232,9 +562,9 @@ int ChromeBrowserMainPartsFuchsia::PreMainMessageLoopRun() {
 }
 
 void ChromeBrowserMainPartsFuchsia::PostMainMessageLoopRun() {
-  // ViewProviderScenic owns the Scenic channel and its lifetime is bound
-  // to this callback so replacing it will unnbind the scenic channel.
-  ui::fuchsia::SetScenicViewPresenter(ui::fuchsia::PresentViewCallback());
+  // |view_provider_| owns ViewProviderScenic and ViewProviderFlatland. They own
+  // the Scenic channels so resetting here will unbind.
+  view_provider_.reset();
 
   ChromeBrowserMainParts::PostMainMessageLoopRun();
 }
