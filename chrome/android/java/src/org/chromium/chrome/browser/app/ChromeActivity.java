@@ -851,8 +851,7 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
     protected StartupTabPreloader getStartupTabPreloader() {
         if (mStartupTabPreloader == null) {
             mStartupTabPreloader = new StartupTabPreloader(this::getIntent,
-                    getLifecycleDispatcher(), getWindowAndroid(), this, mIntentHandler,
-                    getActivityTabStartupMetricsTracker());
+                    getLifecycleDispatcher(), getWindowAndroid(), this, mIntentHandler);
         }
         return mStartupTabPreloader;
     }

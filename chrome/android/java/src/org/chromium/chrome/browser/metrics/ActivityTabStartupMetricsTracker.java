@@ -25,42 +25,13 @@ import org.chromium.url.GURL;
 public class ActivityTabStartupMetricsTracker {
     private static final String UMA_HISTOGRAM_TABBED_SUFFIX = ".Tabbed";
 
-    private class PageLoadMetricsObserverImpl implements PageLoadMetrics.Observer {
-        private static final long NO_NAVIGATION_ID = -1;
-
-        private long mNavigationId = NO_NAVIGATION_ID;
-        private boolean mShouldRecordHistograms;
-
-        @Override
-        public void onNewNavigation(WebContents webContents, long navigationId,
-                boolean isFirstNavigationInWebContents) {
-            if (mNavigationId != NO_NAVIGATION_ID) return;
-
-            mNavigationId = navigationId;
-            mShouldRecordHistograms = mShouldTrackStartupMetrics;
-        }
-
-        @Override
-        public void onFirstContentfulPaint(WebContents webContents, long navigationId,
-                long navigationStartTick, long firstContentfulPaintMs) {
-            if (navigationId != mNavigationId || !mShouldRecordHistograms) return;
-
-            recordFirstContentfulPaint(navigationStartTick / 1000 + firstContentfulPaintMs);
-        }
-
-        void reset() {
-            mNavigationId = NO_NAVIGATION_ID;
-            mShouldRecordHistograms = false;
-        }
-    };
-
     private final long mActivityStartTimeMs;
 
     // Event duration recorded from the |mActivityStartTimeMs|.
     private long mFirstCommitTimeMs;
     private String mHistogramSuffix;
     private TabModelSelectorTabObserver mTabModelSelectorTabObserver;
-    private PageLoadMetricsObserverImpl mPageLoadMetricsObserver;
+    private PageLoadMetrics.Observer mPageLoadMetricsObserver;
     private boolean mShouldTrackStartupMetrics;
     private boolean mFirstVisibleContentRecorded;
     private boolean mVisibleContentRecorded;
@@ -98,7 +69,29 @@ public class ActivityTabStartupMetricsTracker {
                         registerFinishNavigation(isTrackedPage);
                     }
                 };
-        mPageLoadMetricsObserver = new PageLoadMetricsObserverImpl();
+        mPageLoadMetricsObserver = new PageLoadMetrics.Observer() {
+            private static final long NO_NAVIGATION_ID = -1;
+
+            private long mNavigationId = NO_NAVIGATION_ID;
+            private boolean mShouldRecordHistograms;
+
+            @Override
+            public void onNewNavigation(WebContents webContents, long navigationId,
+                    boolean isFirstNavigationInWebContents) {
+                if (mNavigationId != NO_NAVIGATION_ID) return;
+
+                mNavigationId = navigationId;
+                mShouldRecordHistograms = mShouldTrackStartupMetrics;
+            }
+
+            @Override
+            public void onFirstContentfulPaint(WebContents webContents, long navigationId,
+                    long navigationStartTick, long firstContentfulPaintMs) {
+                if (navigationId != mNavigationId || !mShouldRecordHistograms) return;
+
+                recordFirstContentfulPaint(navigationStartTick / 1000 + firstContentfulPaintMs);
+            }
+        };
         PageLoadMetrics.addObserver(mPageLoadMetricsObserver);
     }
 
@@ -114,21 +107,6 @@ public class ActivityTabStartupMetricsTracker {
                 recordVisibleContent(durationMs);
             }
         });
-    }
-
-    /**
-     * Invoked when a tab preloaded at startup is dropped rather than taken, meaning that a new tab
-     * will need to be created to do the initial navigation. Resets state related to observation of
-     * the initial navigation to ensure that loading startup metrics are properly recorded in this
-     * case. Note that it is not necessary to reset the state of |mTabModelSelectorTabObserver| in
-     * this case, as that observer tracks state starting only from the addition of a tab to the tab
-     * model, which by definition has not yet occurred at this point.
-     */
-    public void onStartupTabPreloadDropped() {
-        // Note that observers are not created in all contexts (e.g., CCT).
-        if (mPageLoadMetricsObserver == null) return;
-
-        mPageLoadMetricsObserver.reset();
     }
 
     /**

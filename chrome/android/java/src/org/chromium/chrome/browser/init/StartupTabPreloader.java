@@ -19,7 +19,6 @@ import org.chromium.chrome.browser.WebContentsFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.DestroyObserver;
-import org.chromium.chrome.browser.metrics.ActivityTabStartupMetricsTracker;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
@@ -42,7 +41,6 @@ import org.chromium.url.GURL;
 public class StartupTabPreloader implements ProfileManager.Observer, DestroyObserver {
     public static final String EXTRA_DISABLE_STARTUP_TAB_PRELOADER =
             "org.chromium.chrome.browser.init.DISABLE_STARTUP_TAB_PRELOADER";
-    private static boolean sFailNextTabMatchForTesting;
 
     private final Supplier<Intent> mIntentSupplier;
     private final ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
@@ -52,22 +50,15 @@ public class StartupTabPreloader implements ProfileManager.Observer, DestroyObse
     private LoadUrlParams mLoadUrlParams;
     private Tab mTab;
     private StartupTabObserver mObserver;
-    private ActivityTabStartupMetricsTracker mStartupMetricsTracker;
-
-    public static void failNextTabMatchForTesting() {
-        sFailNextTabMatchForTesting = true;
-    }
 
     public StartupTabPreloader(Supplier<Intent> intentSupplier,
             ActivityLifecycleDispatcher activityLifecycleDispatcher, WindowAndroid windowAndroid,
-            TabCreatorManager tabCreatorManager, IntentHandler intentHandler,
-            ActivityTabStartupMetricsTracker startupMetricsTracker) {
+            TabCreatorManager tabCreatorManager, IntentHandler intentHandler) {
         mIntentSupplier = intentSupplier;
         mActivityLifecycleDispatcher = activityLifecycleDispatcher;
         mWindowAndroid = windowAndroid;
         mTabCreatorManager = tabCreatorManager;
         mIntentHandler = intentHandler;
-        mStartupMetricsTracker = startupMetricsTracker;
 
         mActivityLifecycleDispatcher.register(this);
         ProfileManager.addObserver(this);
@@ -94,17 +85,12 @@ public class StartupTabPreloader implements ProfileManager.Observer, DestroyObse
         if (mTab == null) return null;
 
         boolean tabMatches = type == mTab.getLaunchType()
-                && doLoadUrlParamsMatchForWarmupManagerNavigation(mLoadUrlParams, loadUrlParams)
-                && !sFailNextTabMatchForTesting;
-
-        sFailNextTabMatchForTesting = false;
+                && doLoadUrlParamsMatchForWarmupManagerNavigation(mLoadUrlParams, loadUrlParams);
 
         RecordHistogram.recordBooleanHistogram(
                 "Startup.Android.StartupTabPreloader.TabTaken", tabMatches);
 
         if (!tabMatches) {
-            mStartupMetricsTracker.onStartupTabPreloadDropped();
-
             mTab.destroy();
             mTab = null;
             mLoadUrlParams = null;
