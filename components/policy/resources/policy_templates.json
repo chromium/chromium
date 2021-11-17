@@ -23172,8 +23172,7 @@
       'owners': ['mslus@chromium.org', 'rsorokin@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
-      'supported_on': ['chrome_os:76-'],
-      'future': True,
+      'supported_on': ['chrome_os:98-'],
       'tags': [],
       'features': {
         'dynamic_refresh': True,
@@ -23207,8 +23206,7 @@
       'owners': ['mslus@chromium.org', 'emaxx@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
-      'supported_on': ['chrome_os:85-'],
-      'future': True,
+      'supported_on': ['chrome_os:98-'],
       'tags': [],
       'features': {
         'dynamic_refresh': True,
@@ -23254,15 +23252,14 @@
     },
     {
       'name': 'SamlPasswordExpirationAdvanceWarningDays',
-      'owners': ['olsen@chromium.org', 'rsorokin@chromium.org'],
+      'owners': ['mslus@chromium.org', 'rsorokin@chromium.org'],
       'type': 'int',
       'schema': {
         'type': 'integer',
         'minimum': 0,
         'maximum': 90
       },
-      'supported_on': ['chrome_os:76-'],
-      'future': True,
+      'supported_on': ['chrome_os:98-'],
       'tags': [],
       'features': {
         'dynamic_refresh': True,
