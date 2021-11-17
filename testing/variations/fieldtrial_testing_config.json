@@ -6186,26 +6186,6 @@
             ]
         }
     ],
-    "PlzServiceWorker": [
-        {
-            "platforms": [
-                "windows",
-                "mac",
-                "linux",
-                "chromeos",
-                "chromeos_lacros",
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "PlzServiceWorker"
-                    ]
-                }
-            ]
-        }
-    ],
     "PowerScheduler2": [
         {
             "platforms": [
