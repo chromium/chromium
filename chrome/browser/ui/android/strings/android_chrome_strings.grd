@@ -2787,25 +2787,25 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
       </message>
 
       <!-- Signin First Run strings -->
-      <message name="IDS_SIGNIN_FRE_DISMISS_BUTTON" desc="Text for the dismiss button on the welcome sign-in screen. By clicking this button users will continue without signing in,">
+      <message name="IDS_SIGNIN_FRE_DISMISS_BUTTON" desc="Button on the very first screen of Chrome to continue without signing into Chrome. Ensure consistency with OneGoogle strings while still omitting “Chrome” (see e.g. TC ID 5336438894576002929).">
         Use without an account
       </message>
-      <message name="IDS_SIGNIN_FRE_FOOTER" desc="The text is displayed in a footer on the very first screen of Chrome. The link ‘Terms of Service’ opens the Google Terms of Service. Preferably, ensure consistency with the “Usage statistics and crash reports” section of the Chrome Privacy Policy (google.com/chrome/privacy). Separate the first and the second part through a line break.">
+      <message name="IDS_SIGNIN_FRE_FOOTER" desc="The text is displayed in a footer on the very first screen of Chrome. The link ‘Terms of Service’ opens the Google Terms of Service. Preferably, ensure consistency with the 'Usage statistics and crash reports' section of the Chrome Privacy Policy (google.com/chrome/privacy). Separate the first and the second part through a line break.">
         By continuing, you agree to the <ph name="BEGIN_LINK1">&lt;LINK1&gt;</ph>Terms of Service<ph name="END_LINK1">&lt;/LINK1&gt;</ph>.\nTo help improve the app, Chrome sends usage and crash data to Google. <ph name="BEGIN_LINK2">&lt;LINK2&gt;</ph>Manage<ph name="END_LINK2">&lt;/LINK2&gt;</ph>
       </message>
-      <message name="IDS_SIGNIN_FRE_UMA_DIALOG_TITLE" desc="Title for the FRE footer dialog">
+      <message name="IDS_SIGNIN_FRE_UMA_DIALOG_TITLE" desc="Title of the dialog where users can change their Chrome metric sharing settings, like usage data. This appears when they open the Chrome app for the first time on their phone.">
         Make Chrome better
       </message>
-      <message name="IDS_SIGNIN_FRE_UMA_DIALOG_FIRST_SECTION_HEADER" desc="Header for the first section in FRE uma dialog">
+      <message name="IDS_SIGNIN_FRE_UMA_DIALOG_FIRST_SECTION_HEADER" desc="Header of the section that shows the benefits for users if they turn on the metric sharing option. This header implies 'What you get from Google Chrome' but we have omitted 'from Google Chrome' for brevity.">
         What you get
       </message>
-      <message name="IDS_SIGNIN_FRE_UMA_DIALOG_FIRST_SECTION_BODY" desc="Body of the first section in FRE uma dialog">
+      <message name="IDS_SIGNIN_FRE_UMA_DIALOG_FIRST_SECTION_BODY" desc="Text that describes the concrete benefits users will get if they turn on the metrics sharing option.">
         New features and improved performance
       </message>
-      <message name="IDS_SIGNIN_FRE_UMA_DIALOG_SECOND_SECTION_HEADER" desc="Header for the second section in FRE uma dialog">
+      <message name="IDS_SIGNIN_FRE_UMA_DIALOG_SECOND_SECTION_HEADER" desc="Header of the section that shows the data that users share with Google if they turn on the metric sharing option.">
         What you share with Google
       </message>
-      <message name="IDS_SIGNIN_FRE_UMA_DIALOG_SECOND_SECTION_BODY" desc="Body of the second section in FRE uma dialog">
+      <message name="IDS_SIGNIN_FRE_UMA_DIALOG_SECOND_SECTION_BODY" desc="Text that describes the concrete data that users share with Google if they turn on the metric sharing option.">
         Info about your Chrome usage that can\u2019t be tied to you\n\nRelevant data from rare Chrome crashes, which may include some personal info\n\nIf you turn on sync, metrics may also include info about URLs you visit
       </message>
 
@@ -2871,8 +2871,8 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
       </message>
 
       <!-- Personalized Signin Promos Strings -->
-      <message name="IDS_SIGNIN_PROMO_CONTINUE_AS" desc="Button that the user can press to login without asking the password and continue using Chrome with this acccount.">
-        Continue as <ph name="USER_FULL_NAME">%1$s<ex>John Doe</ex></ph>
+      <message name="IDS_SIGNIN_PROMO_CONTINUE_AS" desc="Button to sign into Chrome with the displayed account and without having to reenter a password. ‘John’ is replaced with the user’s given name, or the user’s full name if the given name is not available. Ensure consistency with related OneGoogle sign-in buttons (see e.g. TC ID 5569230012177947065).">
+        Continue as <ph name="USER_FULL_NAME">%1$s<ex>John</ex></ph>
       </message>
       <message name="IDS_SIGNIN_PROMO_CHOOSE_ACCOUNT" desc="Button that the user can press if they are not the profile that Chrome found (opposite of 'Continue as Joe Doe').">
         Not <ph name="EMAIL">%1$s<ex>john.doe@example.com</ex></ph>?
