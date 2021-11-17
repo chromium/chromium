@@ -22,6 +22,9 @@ from unexpected_passes_common import result_output
 FINDER_DISABLE_COMMENT = 'finder:disable'
 FINDER_ENABLE_COMMENT = 'finder:enable'
 
+GIT_BLAME_REGEX = re.compile(
+    r'^[\w\s]+\(.+(?P<date>\d\d\d\d-\d\d-\d\d)[^\)]+\)(?P<content>.*)$',
+    re.DOTALL)
 EXPECTATION_LINE_REGEX = re.compile(r'^.*\[ .* \] .* \[ \w* \].*$', re.DOTALL)
 
 
@@ -100,26 +103,24 @@ class Expectations(object):
     num_days = datetime.timedelta(days=num_days)
     content = ''
     # `git blame` output is normally in the format:
-    # revision (author date time timezone lineno) line_content
+    # revision optional_filename (author date time timezone lineno) line_content
     # The --porcelain option is meant to be more machine readable, but is much
-    # more difficult to parse for what we need to do here. In order to be able
-    # to split by whitespace easily, use -e to display author email instead of
-    # author name, which is guaranteed to not have spaces.
-    cmd = ['git', 'blame', '-e', expectation_file_path]
+    # more difficult to parse for what we need to do here. In order to
+    # guarantee that the filename won't be included in the output (by default,
+    # it will be shown if there is content from a renamed file), pass -c to
+    # use the same format as `git annotate`, which is:
+    # revision (author date time timezone lineno)line_content
+    # (Note the lack of space between the ) and the content).
+    cmd = ['git', 'blame', '-c', expectation_file_path]
     with open(os.devnull, 'w') as devnull:
       blame_output = subprocess.check_output(cmd,
                                              stderr=devnull).decode('utf-8')
     for line in blame_output.splitlines(True):
-      if six.PY2:
-        split_line = line.split(None, 6)
-      else:
-        split_line = line.split(maxsplit=6)
-      # Handle blank lines.
-      if len(split_line) < 7:
-        content += '\n'
-        continue
-      _, _, date, _, _, _, line_content = split_line
-      if re.match(EXPECTATION_LINE_REGEX, line):
+      match = GIT_BLAME_REGEX.match(line)
+      assert match
+      date = match.groupdict()['date']
+      line_content = match.groupdict()['content']
+      if EXPECTATION_LINE_REGEX.match(line):
         if six.PY2:
           date_parts = date.split('-')
           date = datetime.date(year=int(date_parts[0]),

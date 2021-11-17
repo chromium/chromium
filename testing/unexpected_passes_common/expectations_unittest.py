@@ -157,13 +157,13 @@ class GetNonRecentExpectationContentUnittest(unittest.TestCase):
     older_str = older_date.isoformat()
     # pylint: disable=line-too-long
     blame_output = """\
-5f03bc04975c04 (<author@mail.com>    {today_date} 00:00:00 +0000  1) # tags: [ tag1 ]
-98637cd80f8c15 (<author@mail.com>    {yesterday_date} 00:00:00 +0000  2) # tags: [ tag2 ]
-3fcadac9d861d0 (<author@mail.com>    {older_date} 00:00:00 +0000  3) # results: [ Failure ]
-5f03bc04975c04 (<author@mail.com>    {today_date} 00:00:00 +0000  4) 
-5f03bc04975c04 (<author@mail.com>    {today_date} 00:00:00 +0000  5) crbug.com/1234 [ tag1 ] testname [ Failure ]
-98637cd80f8c15 (<author@mail.com>    {yesterday_date} 00:00:00 +0000  6) [ tag2 ] testname [ Failure ] # Comment
-3fcadac9d861d0 (<author@mail.com>    {older_date} 00:00:00 +0000  7) [ tag1 ] othertest [ Failure ]"""
+5f03bc04975c04 (Some R. Author    {today_date} 00:00:00 +0000  1)# tags: [ tag1 ]
+98637cd80f8c15 (Some R. Author    {yesterday_date} 00:00:00 +0000  2)# tags: [ tag2 ]
+3fcadac9d861d0 (Some R. Author    {older_date} 00:00:00 +0000  3)# results: [ Failure ]
+5f03bc04975c04 (Some R. Author    {today_date} 00:00:00 +0000  4)
+5f03bc04975c04 (Some R. Author    {today_date} 00:00:00 +0000  5)crbug.com/1234 [ tag1 ] testname [ Failure ]
+98637cd80f8c15 (Some R. Author    {yesterday_date} 00:00:00 +0000  6)[ tag2 ] testname [ Failure ] # Comment
+3fcadac9d861d0 (Some R. Author    {older_date} 00:00:00 +0000  7)[ tag1 ] othertest [ Failure ]"""
     # pylint: enable=line-too-long
     blame_output = blame_output.format(today_date=today_str,
                                        yesterday_date=yesterday_str,
@@ -189,13 +189,13 @@ class GetNonRecentExpectationContentUnittest(unittest.TestCase):
     older_str = older_date.isoformat()
     # pylint: disable=line-too-long
     blame_output = """\
-5f03bc04975c04 (<author@mail.com>    {today_date} 00:00:00 +0000  1) # tags: [ tag1 ]
-98637cd80f8c15 (<author@mail.com>    {yesterday_date} 00:00:00 +0000  2) # tags: [ tag2 ]
-3fcadac9d861d0 (<author@mail.com>    {older_date} 00:00:00 +0000  3) # results: [ Failure ]
-5f03bc04975c04 (<author@mail.com>    {today_date} 00:00:00 +0000  4) 
-5f03bc04975c04 (<author@mail.com>    {today_date} 00:00:00 +0000  5) crbug.com/1234 [ tag1 ] testname [ Failure ]
-98637cd80f8c15 (<author@mail.com>    {yesterday_date} 00:00:00 +0000  6) [ tag2 ] testname [ Failure ] # Comment
-3fcadac9d861d0 (<author@mail.com>    {older_date} 00:00:00 +0000  7) [ tag1 ] othertest [ Failure ]"""
+5f03bc04975c04 (Some R. Author    {today_date} 00:00:00 +0000  1)# tags: [ tag1 ]
+98637cd80f8c15 (Some R. Author    {yesterday_date} 00:00:00 +0000  2)# tags: [ tag2 ]
+3fcadac9d861d0 (Some R. Author    {older_date} 00:00:00 +0000  3)# results: [ Failure ]
+5f03bc04975c04 (Some R. Author    {today_date} 00:00:00 +0000  4)
+5f03bc04975c04 (Some R. Author    {today_date} 00:00:00 +0000  5)crbug.com/1234 [ tag1 ] testname [ Failure ]
+98637cd80f8c15 (Some R. Author    {yesterday_date} 00:00:00 +0000  6)[ tag2 ] testname [ Failure ] # Comment
+3fcadac9d861d0 (Some R. Author    {older_date} 00:00:00 +0000  7)[ tag1 ] othertest [ Failure ]"""
     # pylint: enable=line-too-long
     blame_output = blame_output.format(today_date=today_str,
                                        yesterday_date=yesterday_str,
