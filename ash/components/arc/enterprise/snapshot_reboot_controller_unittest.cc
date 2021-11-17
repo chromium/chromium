@@ -63,6 +63,7 @@ class SnapshotRebootControllerTest : public testing::Test {
   }
 
   user_manager::FakeUserManager* user_manager() { return fake_user_manager_; }
+
  private:
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};

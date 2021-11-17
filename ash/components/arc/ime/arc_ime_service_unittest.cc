@@ -40,8 +40,7 @@ class FakeArcImeBridge : public ArcImeBridge {
 
   void SendSetCompositionText(const ui::CompositionText& composition) override {
   }
-  void SendConfirmCompositionText() override {
-  }
+  void SendConfirmCompositionText() override {}
   void SendSelectionRange(const gfx::Range& selection_range) override {
     selection_range_ = selection_range;
   }
@@ -49,8 +48,7 @@ class FakeArcImeBridge : public ArcImeBridge {
                       int new_cursor_position) override {
     count_send_insert_text_++;
   }
-  void SendExtendSelectionAndDelete(size_t before, size_t after) override {
-  }
+  void SendExtendSelectionAndDelete(size_t before, size_t after) override {}
   void SendOnKeyboardAppearanceChanging(const gfx::Rect& new_bounds,
                                         bool is_available) override {
     last_keyboard_bounds_ = new_bounds;
@@ -94,9 +92,7 @@ class FakeInputMethod : public ui::DummyInputMethod {
     client_ = client;
   }
 
-  ui::TextInputClient* GetTextInputClient() const override {
-    return client_;
-  }
+  ui::TextInputClient* GetTextInputClient() const override { return client_; }
 
   void ShowVirtualKeyboardIfEnabled() override { count_show_ime_if_needed_++; }
 
@@ -123,13 +119,9 @@ class FakeInputMethod : public ui::DummyInputMethod {
     return ui::EventDispatchDetails();
   }
 
-  int count_show_ime_if_needed() const {
-    return count_show_ime_if_needed_;
-  }
+  int count_show_ime_if_needed() const { return count_show_ime_if_needed_; }
 
-  int count_cancel_composition() const {
-    return count_cancel_composition_;
-  }
+  int count_cancel_composition() const { return count_cancel_composition_; }
 
   int count_set_focused_text_input_client() const {
     return count_set_focused_text_input_client_;
