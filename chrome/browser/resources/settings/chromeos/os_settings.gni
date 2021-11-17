@@ -112,8 +112,6 @@ os_settings_namespace_rewrites = settings_namespace_rewrites +
                                    "settings.pageVisibility|pageVisibility",
                                    "settings.PeripheralDataAccessBrowserProxy|PeripheralDataAccessBrowserProxy",
                                    "settings.DataAccessPolicyState|DataAccessPolicyState",
-                                   "settings.MetricsConsentBrowserProxy|MetricsConsentBrowserProxy",
-                                   "settings.MetricsConsentState|MetricsConsentState",
                                    "settings.PhoneHubNotificationAccessStatus|PhoneHubNotificationAccessStatus",
                                    "settings.PowerSource|PowerSource",
                                    "settings.PowerManagementSettings|PowerManagementSettings",

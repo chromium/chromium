@@ -4581,7 +4581,6 @@ source_set("unit_tests") {
     "../ui/webui/settings/chromeos/device_name_handler_unittest.cc",
     "../ui/webui/settings/chromeos/device_storage_handler_unittest.cc",
     "../ui/webui/settings/chromeos/internet_handler_unittest.cc",
-    "../ui/webui/settings/chromeos/metrics_consent_handler_unittest.cc",
     "../ui/webui/settings/chromeos/multidevice_handler_unittest.cc",
     "../ui/webui/settings/chromeos/os_apps_page/app_notification_handler_unittest.cc",
     "../ui/webui/settings/chromeos/os_settings_manager_unittest.cc",
