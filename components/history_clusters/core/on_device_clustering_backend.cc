@@ -39,15 +39,16 @@ GURL GetNormalizedURLForVisit(const history::AnnotatedVisit& visit,
   if (!template_url_service)
     return visit.url_row.url();
 
-  const TemplateURL* default_search_provider =
-      template_url_service->GetDefaultSearchProvider();
+  const TemplateURL* template_url =
+      template_url_service->GetTemplateURLForHost(visit.url_row.url().host());
+
   const SearchTermsData& search_terms_data =
       template_url_service->search_terms_data();
 
   std::u16string search_terms;
   bool is_valid_search_url =
-      default_search_provider &&
-      default_search_provider->ExtractSearchTermsFromURL(
+      template_url &&
+      template_url->ExtractSearchTermsFromURL(
           visit.url_row.url(), search_terms_data, &search_terms) &&
       !search_terms.empty();
   if (!is_valid_search_url)
@@ -56,7 +57,7 @@ GURL GetNormalizedURLForVisit(const history::AnnotatedVisit& visit,
   const std::u16string& normalized_search_query =
       base::i18n::ToLower(base::CollapseWhitespace(search_terms, false));
   TemplateURLRef::SearchTermsArgs search_terms_args(normalized_search_query);
-  const TemplateURLRef& search_url_ref = default_search_provider->url_ref();
+  const TemplateURLRef& search_url_ref = template_url->url_ref();
   if (!search_url_ref.SupportsReplacement(search_terms_data))
     return visit.url_row.url();
 

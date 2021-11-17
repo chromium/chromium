@@ -514,11 +514,21 @@ TEST_F(OnDeviceClusteringWithAllTheBackendsTest,
   visit2.content_annotations.model_annotations.visibility_score = 0.5;
   visits.push_back(visit2);
 
+  history::AnnotatedVisit visit3 = testing::CreateDefaultAnnotatedVisit(
+      3, GURL("http://non-default-engine.com/?q=nometadata#whatever"));
+  visit2.content_annotations.model_annotations.entities = {
+      history::VisitContentModelAnnotations::Category("nometadata", 30),
+  };
+  visit3.content_annotations.model_annotations.page_topics_model_version = 127;
+  visit3.content_annotations.model_annotations.visibility_score = 0.5;
+  visits.push_back(visit3);
+
   std::vector<history::Cluster> result_clusters = ClusterVisits(visits);
-  ASSERT_EQ(result_clusters.size(), 1u);
+  ASSERT_EQ(result_clusters.size(), 2u);
   EXPECT_THAT(testing::ToVisitResults(result_clusters),
               ElementsAre(ElementsAre(testing::VisitResult(1, 0.0),
-                                      testing::VisitResult(2, 1.0, {1}))));
+                                      testing::VisitResult(2, 1.0, {1})),
+                          ElementsAre(testing::VisitResult(3, 1.0))));
   // Make sure visits are normalized.
   history::Cluster cluster = result_clusters.at(0);
   ASSERT_EQ(cluster.visits.size(), 2u);
@@ -548,12 +558,24 @@ TEST_F(OnDeviceClusteringWithAllTheBackendsTest,
                   .model_annotations.visibility_score,
               FloatEq(0.5));
 
+  history::Cluster cluster2 = result_clusters.at(1);
+  ASSERT_EQ(cluster2.visits.size(), 1u);
+  // The third visit should have its original URL as the normalized URL and
+  // also have its entities rewritten.
+  history::ClusterVisit third_result_visit = cluster2.visits.at(0);
+  EXPECT_EQ(third_result_visit.normalized_url,
+            GURL("http://non-default-engine.com/?q=nometadata"));
+  EXPECT_TRUE(third_result_visit.annotated_visit.content_annotations
+                  .model_annotations.entities.empty());
+  EXPECT_TRUE(third_result_visit.annotated_visit.content_annotations
+                  .model_annotations.categories.empty());
+
   histogram_tester.ExpectUniqueSample(
-      "History.Clusters.Backend.ClusterSize.Min", 2, 1);
+      "History.Clusters.Backend.ClusterSize.Min", 1, 1);
   histogram_tester.ExpectUniqueSample(
       "History.Clusters.Backend.ClusterSize.Max", 2, 1);
   histogram_tester.ExpectUniqueSample(
-      "History.Clusters.Backend.NumKeywordsPerCluster.Min", 2, 1);
+      "History.Clusters.Backend.NumKeywordsPerCluster.Min", 0, 1);
   histogram_tester.ExpectUniqueSample(
       "History.Clusters.Backend.NumKeywordsPerCluster.Max", 2, 1);
   histogram_tester.ExpectTotalCount(
