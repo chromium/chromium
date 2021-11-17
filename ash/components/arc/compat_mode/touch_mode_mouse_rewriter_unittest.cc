@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/arc/compat_mode/touch_mode_mouse_rewriter.h"
+#include "ash/components/arc/compat_mode/touch_mode_mouse_rewriter.h"
 
 #include "ash/components/arc/arc_features.h"
 #include "base/run_loop.h"

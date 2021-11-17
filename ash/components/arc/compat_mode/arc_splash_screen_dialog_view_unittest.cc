@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/arc/compat_mode/arc_splash_screen_dialog_view.h"
+#include "ash/components/arc/compat_mode/arc_splash_screen_dialog_view.h"
 
 #include <memory>
 

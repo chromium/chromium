@@ -4,10 +4,10 @@
 
 #include "ash/components/arc/compat_mode/test/compat_mode_test_base.h"
 
+#include "ash/components/arc/compat_mode/arc_window_property_util.h"
 #include "ash/constants/app_types.h"
 #include "ash/public/cpp/window_properties.h"
 #include "base/containers/flat_map.h"
-#include "components/arc/compat_mode/arc_window_property_util.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/test/event_generator.h"

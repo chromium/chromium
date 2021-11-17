@@ -8,7 +8,7 @@
 #include <memory>
 #include <string>
 
-#include "components/arc/compat_mode/arc_resize_lock_pref_delegate.h"
+#include "ash/components/arc/compat_mode/arc_resize_lock_pref_delegate.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/display/test/scoped_screen_override.h"
 #include "ui/display/test/test_screen.h"

@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/arc/compat_mode/resize_toggle_menu.h"
+#include "ash/components/arc/compat_mode/resize_toggle_menu.h"
 
 #include <memory>
 
+#include "ash/components/arc/compat_mode/arc_resize_lock_pref_delegate.h"
+#include "ash/components/arc/compat_mode/metrics.h"
 #include "ash/components/arc/compat_mode/test/compat_mode_test_base.h"
 #include "base/test/metrics/user_action_tester.h"
-#include "components/arc/compat_mode/arc_resize_lock_pref_delegate.h"
-#include "components/arc/compat_mode/metrics.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/views/controls/button/button.h"
 
