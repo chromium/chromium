@@ -64,11 +64,14 @@ class GpuIntegrationTest(
   # on assumptions about retries, etc. if possible.
   _flaky_test_tries = collections.Counter()
 
+  # Keeps track of the first test that is run on a shard for a flakiness
+  # workaround. See crbug.com/1079244.
+  _first_run_test = None
+
   def __init__(self, *args, **kwargs):
     super(GpuIntegrationTest, self).__init__(*args, **kwargs)
     if self.artifacts is None:
       self.set_artifacts(None)
-    self._first_run_test = None
 
   def set_artifacts(self, artifacts):
     # Instead of using the default logging artifact implementation, use the
@@ -318,9 +321,9 @@ class GpuIntegrationTest(
     # conformance tests in the first test run on a shard. This should not be
     # kept in long-term. See crbug.com/1079244.
     if self._ShouldForceRetryOnFailureFirstTest():
-      if self._first_run_test is None:
-        self._first_run_test = test_name
-      if self._first_run_test == test_name:
+      if GpuIntegrationTest._first_run_test is None:
+        GpuIntegrationTest._first_run_test = test_name
+      if GpuIntegrationTest._first_run_test == test_name:
         logging.warning('Forcing RetryOnFailure in test %s', test_name)
         should_retry_on_failure = True
     try:
