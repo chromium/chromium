@@ -18,6 +18,13 @@ const ParentalHandoffElementBase = Polymer.mixinBehaviors(
     [OobeI18nBehavior, OobeDialogHostBehavior, LoginScreenBehavior],
     Polymer.Element);
 
+/**
+ * @typedef {{
+ *   parentalHandoffDialog:  OobeAdaptiveDialogElement,
+ * }}
+ */
+ParentalHandoffElementBase.$;
+
 class ParentalHandoff extends ParentalHandoffElementBase {
   static get is() {
     return 'parental-handoff-element';
@@ -54,6 +61,7 @@ class ParentalHandoff extends ParentalHandoffElementBase {
     if ('username' in data) {
       this.username_ = data.username;
     }
+    this.$.parentalHandoffDialog.focus();
   }
 
   ready() {
