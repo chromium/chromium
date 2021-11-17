@@ -55,6 +55,13 @@ source_set("test_support") {
     "test/test_wake_lock_provider.h",
   ]
 
+  if (is_android) {
+    sources += [
+      "test/scoped_nfc_overrider.cc",
+      "test/scoped_nfc_overrider.h",
+    ]
+  }
+
   public_deps = [
     "//base",
     "//services/device/public/cpp/generic_sensor",

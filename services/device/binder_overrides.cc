@@ -14,5 +14,12 @@ GeolocationContextBinder& GetGeolocationContextBinderOverride() {
   return *binder;
 }
 
+#if defined(OS_ANDROID)
+NFCProviderBinder& GetNFCProviderBinderOverride() {
+  static base::NoDestructor<NFCProviderBinder> binder;
+  return *binder;
+}
+#endif
+
 }  // namespace internal
 }  // namespace device

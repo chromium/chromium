@@ -78,7 +78,7 @@ void NFCHost::GetNFC(RenderFrameHost* render_frame_host,
 void NFCHost::RenderFrameHostChanged(RenderFrameHost* old_host,
                                      RenderFrameHost* new_host) {
   // If the main frame has been replaced then close an old NFC connection.
-  if (!new_host->GetParent())
+  if (new_host->IsInPrimaryMainFrame())
     Close();
 }
 

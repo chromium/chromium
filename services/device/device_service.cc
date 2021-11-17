@@ -185,9 +185,19 @@ void DeviceService::BindBatteryMonitor(
 }
 
 #if defined(OS_ANDROID)
+// static
+void DeviceService::OverrideNFCProviderBinderForTesting(
+    NFCProviderBinder binder) {
+  internal::GetNFCProviderBinderOverride() = std::move(binder);
+}
+
 void DeviceService::BindNFCProvider(
     mojo::PendingReceiver<mojom::NFCProvider> receiver) {
-  GetJavaInterfaceProvider()->GetInterface(std::move(receiver));
+  const auto& binder_override = internal::GetNFCProviderBinderOverride();
+  if (binder_override)
+    binder_override.Run(std::move(receiver));
+  else
+    GetJavaInterfaceProvider()->GetInterface(std::move(receiver));
 }
 #endif
 

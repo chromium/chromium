@@ -131,6 +131,13 @@ class DeviceService : public mojom::DeviceService {
   static void OverrideGeolocationContextBinderForTesting(
       GeolocationContextBinder binder);
 
+#if defined(OS_ANDROID)
+  // Allows tests to override how frame hosts bind NFCProvider receivers.
+  using NFCProviderBinder = base::RepeatingCallback<void(
+      mojo::PendingReceiver<device::mojom::NFCProvider>)>;
+  static void OverrideNFCProviderBinderForTesting(NFCProviderBinder binder);
+#endif
+
  private:
   // mojom::DeviceService implementation:
   void BindFingerprint(
