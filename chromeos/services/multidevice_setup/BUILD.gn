@@ -21,6 +21,9 @@ static_library("multidevice_setup") {
     "feature_state_manager.h",
     "feature_state_manager_impl.cc",
     "feature_state_manager_impl.h",
+    "global_state_feature_manager.h",
+    "global_state_feature_manager_impl.cc",
+    "global_state_feature_manager_impl.h",
     "grandfathered_easy_unlock_host_disabler.cc",
     "grandfathered_easy_unlock_host_disabler.h",
     "host_backend_delegate.cc",
@@ -50,9 +53,8 @@ static_library("multidevice_setup") {
     "privileged_host_device_setter_base.h",
     "privileged_host_device_setter_impl.cc",
     "privileged_host_device_setter_impl.h",
-    "wifi_sync_feature_manager.h",
-    "wifi_sync_feature_manager_impl.cc",
-    "wifi_sync_feature_manager_impl.h",
+    "wifi_sync_notification_controller.cc",
+    "wifi_sync_notification_controller.h",
   ]
 
   deps = [
@@ -102,6 +104,8 @@ static_library("test_support") {
     "fake_feature_state_manager.h",
     "fake_feature_state_observer.cc",
     "fake_feature_state_observer.h",
+    "fake_global_state_feature_manager.cc",
+    "fake_global_state_feature_manager.h",
     "fake_host_backend_delegate.cc",
     "fake_host_backend_delegate.h",
     "fake_host_device_timestamp_manager.cc",
@@ -112,8 +116,6 @@ static_library("test_support") {
     "fake_host_status_provider.h",
     "fake_host_verifier.cc",
     "fake_host_verifier.h",
-    "fake_wifi_sync_feature_manager.cc",
-    "fake_wifi_sync_feature_manager.h",
   ]
 
   deps = [
@@ -134,6 +136,7 @@ source_set("unit_tests") {
     "android_sms_app_installing_status_observer_unittest.cc",
     "eligible_host_devices_provider_impl_unittest.cc",
     "feature_state_manager_impl_unittest.cc",
+    "global_state_feature_manager_impl_unittest.cc",
     "grandfathered_easy_unlock_host_disabler_unittest.cc",
     "host_backend_delegate_impl_unittest.cc",
     "host_device_timestamp_manager_impl_unittest.cc",
@@ -142,7 +145,7 @@ source_set("unit_tests") {
     "multidevice_setup_impl_unittest.cc",
     "multidevice_setup_service_unittest.cc",
     "privileged_host_device_setter_impl_unittest.cc",
-    "wifi_sync_feature_manager_impl_unittest.cc",
+    "wifi_sync_notification_controller_unittest.cc",
   ]
 
   deps = [

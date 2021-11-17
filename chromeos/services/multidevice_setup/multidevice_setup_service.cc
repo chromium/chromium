@@ -8,6 +8,7 @@
 #include "chromeos/components/multidevice/logging/logging.h"
 #include "chromeos/services/multidevice_setup/account_status_change_delegate_notifier_impl.h"
 #include "chromeos/services/multidevice_setup/android_sms_app_installing_status_observer.h"
+#include "chromeos/services/multidevice_setup/global_state_feature_manager_impl.h"
 #include "chromeos/services/multidevice_setup/grandfathered_easy_unlock_host_disabler.h"
 #include "chromeos/services/multidevice_setup/host_backend_delegate_impl.h"
 #include "chromeos/services/multidevice_setup/host_device_timestamp_manager_impl.h"
@@ -18,7 +19,7 @@
 #include "chromeos/services/multidevice_setup/public/cpp/android_sms_app_helper_delegate.h"
 #include "chromeos/services/multidevice_setup/public/cpp/android_sms_pairing_state_tracker.h"
 #include "chromeos/services/multidevice_setup/public/cpp/prefs.h"
-#include "chromeos/services/multidevice_setup/wifi_sync_feature_manager_impl.h"
+#include "chromeos/services/multidevice_setup/wifi_sync_notification_controller.h"
 
 namespace chromeos {
 
@@ -30,7 +31,8 @@ void MultiDeviceSetupService::RegisterProfilePrefs(
   HostDeviceTimestampManagerImpl::RegisterPrefs(registry);
   AccountStatusChangeDelegateNotifierImpl::RegisterPrefs(registry);
   HostBackendDelegateImpl::RegisterPrefs(registry);
-  WifiSyncFeatureManagerImpl::RegisterPrefs(registry);
+  GlobalStateFeatureManagerImpl::RegisterPrefs(registry);
+  WifiSyncNotificationController::RegisterPrefs(registry);
   HostVerifierImpl::RegisterPrefs(registry);
   GrandfatheredEasyUnlockHostDisabler::RegisterPrefs(registry);
   AndroidSmsAppInstallingStatusObserver::RegisterPrefs(registry);

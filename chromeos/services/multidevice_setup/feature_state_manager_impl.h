@@ -9,10 +9,10 @@
 #include "base/timer/timer.h"
 #include "chromeos/services/device_sync/public/cpp/device_sync_client.h"
 #include "chromeos/services/multidevice_setup/feature_state_manager.h"
+#include "chromeos/services/multidevice_setup/global_state_feature_manager.h"
 #include "chromeos/services/multidevice_setup/host_status_provider.h"
 #include "chromeos/services/multidevice_setup/public/cpp/android_sms_pairing_state_tracker.h"
 #include "chromeos/services/multidevice_setup/public/mojom/multidevice_setup.mojom.h"
-#include "chromeos/services/multidevice_setup/wifi_sync_feature_manager.h"
 #include "components/prefs/pref_change_registrar.h"
 
 class PrefService;
@@ -38,7 +38,8 @@ class FeatureStateManagerImpl : public FeatureStateManager,
         HostStatusProvider* host_status_provider,
         device_sync::DeviceSyncClient* device_sync_client,
         AndroidSmsPairingStateTracker* android_sms_pairing_state_tracker,
-        WifiSyncFeatureManager* wifi_sync_feature_manager,
+        const base::flat_map<mojom::Feature, GlobalStateFeatureManager*>&
+            global_state_feature_managers,
         bool is_secondary_user);
     static void SetFactoryForTesting(Factory* test_factory);
 
@@ -49,7 +50,8 @@ class FeatureStateManagerImpl : public FeatureStateManager,
         HostStatusProvider* host_status_provider,
         device_sync::DeviceSyncClient* device_sync_client,
         AndroidSmsPairingStateTracker* android_sms_pairing_state_tracker,
-        WifiSyncFeatureManager* wifi_sync_feature_manager,
+        const base::flat_map<mojom::Feature, GlobalStateFeatureManager*>&
+            global_state_feature_managers,
         bool is_secondary_user) = 0;
 
    private:
@@ -67,7 +69,8 @@ class FeatureStateManagerImpl : public FeatureStateManager,
       HostStatusProvider* host_status_provider,
       device_sync::DeviceSyncClient* device_sync_client,
       AndroidSmsPairingStateTracker* android_sms_pairing_state_tracker,
-      WifiSyncFeatureManager* wifi_sync_feature_manager,
+      const base::flat_map<mojom::Feature, GlobalStateFeatureManager*>&
+          global_state_feature_managers,
       bool is_secondary_user);
 
   // FeatureStateManager:
@@ -107,7 +110,8 @@ class FeatureStateManagerImpl : public FeatureStateManager,
   HostStatusProvider* host_status_provider_;
   device_sync::DeviceSyncClient* device_sync_client_;
   AndroidSmsPairingStateTracker* android_sms_pairing_state_tracker_;
-  WifiSyncFeatureManager* wifi_sync_feature_manager_;
+  const base::flat_map<mojom::Feature, GlobalStateFeatureManager*>
+      global_state_feature_managers_;
 
   // Certain features may be unavailable to secondary users logged into a
   // Chromebook. Currently, such features include PhoneHub and its subfeatures.

@@ -1,27 +1,27 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/services/multidevice_setup/wifi_sync_feature_manager_impl.h"
+#include "chromeos/services/multidevice_setup/global_state_feature_manager_impl.h"
 
 #include <memory>
+#include <utility>
+#include <vector>
 
 #include "ash/constants/ash_features.h"
-#include "base/containers/flat_map.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/timer/mock_timer.h"
-#include "base/unguessable_token.h"
+#include "chromeos/components/multidevice/remote_device_ref.h"
 #include "chromeos/components/multidevice/remote_device_test_util.h"
 #include "chromeos/components/multidevice/software_feature.h"
 #include "chromeos/components/multidevice/software_feature_state.h"
 #include "chromeos/services/device_sync/public/cpp/fake_device_sync_client.h"
-#include "chromeos/services/multidevice_setup/fake_account_status_change_delegate.h"
-#include "chromeos/services/multidevice_setup/fake_account_status_change_delegate_notifier.h"
 #include "chromeos/services/multidevice_setup/fake_host_status_provider.h"
+#include "chromeos/services/multidevice_setup/global_state_feature_manager.h"
 #include "chromeos/services/multidevice_setup/public/cpp/prefs.h"
 #include "chromeos/services/multidevice_setup/public/mojom/multidevice_setup.mojom.h"
-#include "components/session_manager/core/session_manager.h"
+#include "chromeos/services/multidevice_setup/wifi_sync_notification_controller.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -32,8 +32,16 @@ namespace multidevice_setup {
 
 namespace {
 
-const char kPendingWifiSyncRequestEnabledPrefName[] =
+const GlobalStateFeatureManagerImpl::Factory::Option kTestOption =
+    GlobalStateFeatureManagerImpl::Factory::Option::kWifiSync;
+const multidevice::SoftwareFeature kTestHostFeature =
+    multidevice::SoftwareFeature::kWifiSyncHost;
+const multidevice::SoftwareFeature kTestClientFeature =
+    multidevice::SoftwareFeature::kWifiSyncClient;
+const std::string& kFeatureAllowedPrefName = kWifiSyncAllowedPrefName;
+const char kPendingStatePrefName[] =
     "multidevice_setup.pending_set_wifi_sync_enabled_request";
+const base::Feature& kTestFeatureFlag = chromeos::features::kWifiSyncAndroid;
 
 enum PendingState {
   kPendingNone = 0,
@@ -46,19 +54,19 @@ const size_t kNumTestDevices = 4;
 
 }  // namespace
 
-class MultiDeviceSetupWifiSyncFeatureManagerImplTest
+class MultiDeviceSetupGlobalStateFeatureManagerImplTest
     : public ::testing::TestWithParam<bool> {
  public:
-  MultiDeviceSetupWifiSyncFeatureManagerImplTest(
-      const MultiDeviceSetupWifiSyncFeatureManagerImplTest&) = delete;
-  MultiDeviceSetupWifiSyncFeatureManagerImplTest& operator=(
-      const MultiDeviceSetupWifiSyncFeatureManagerImplTest&) = delete;
+  MultiDeviceSetupGlobalStateFeatureManagerImplTest(
+      const MultiDeviceSetupGlobalStateFeatureManagerImplTest&) = delete;
+  MultiDeviceSetupGlobalStateFeatureManagerImplTest& operator=(
+      const MultiDeviceSetupGlobalStateFeatureManagerImplTest&) = delete;
 
  protected:
-  MultiDeviceSetupWifiSyncFeatureManagerImplTest()
+  MultiDeviceSetupGlobalStateFeatureManagerImplTest()
       : test_devices_(
             multidevice::CreateRemoteDeviceRefListForTest(kNumTestDevices)) {}
-  ~MultiDeviceSetupWifiSyncFeatureManagerImplTest() override = default;
+  ~MultiDeviceSetupGlobalStateFeatureManagerImplTest() override = default;
 
   // testing::Test:
   void SetUp() override {
@@ -73,32 +81,25 @@ class MultiDeviceSetupWifiSyncFeatureManagerImplTest
         GetMutableRemoteDevice(device)->public_key.clear();
     }
 
-    SetWifiSyncSupportedInDeviceSyncClient();
+    SetFeatureSupportedInDeviceSyncClient();
 
     fake_host_status_provider_ = std::make_unique<FakeHostStatusProvider>();
 
     test_pref_service_ =
         std::make_unique<sync_preferences::TestingPrefServiceSyncable>();
-    WifiSyncFeatureManagerImpl::RegisterPrefs(test_pref_service_->registry());
-    // Allow Wifi Sync by policy
-    test_pref_service_->registry()->RegisterBooleanPref(
-        kWifiSyncAllowedPrefName, true);
-    session_manager_ = std::make_unique<session_manager::SessionManager>();
+    GlobalStateFeatureManagerImpl::RegisterPrefs(
+        test_pref_service_->registry());
+    WifiSyncNotificationController::RegisterPrefs(
+        test_pref_service_->registry());
+    test_pref_service_->registry()->RegisterBooleanPref(kFeatureAllowedPrefName,
+                                                        true);
     fake_device_sync_client_ =
         std::make_unique<device_sync::FakeDeviceSyncClient>();
     fake_device_sync_client_->set_synced_devices(test_devices_);
-    fake_account_status_change_delegate_ =
-        std::make_unique<FakeAccountStatusChangeDelegate>();
-    fake_account_status_change_delegate_notifier_ =
-        std::make_unique<FakeAccountStatusChangeDelegateNotifier>();
-    fake_account_status_change_delegate_notifier_
-        ->SetAccountStatusChangeDelegateRemote(
-            fake_account_status_change_delegate_->GenerateRemote());
-    fake_account_status_change_delegate_notifier_->FlushForTesting();
     multidevice::RemoteDeviceRef local_device =
         multidevice::CreateRemoteDeviceRefForTest();
     GetMutableRemoteDevice(local_device)
-        ->software_features[multidevice::SoftwareFeature::kWifiSyncClient] =
+        ->software_features[kTestClientFeature] =
         multidevice::SoftwareFeatureState::kSupported;
     fake_device_sync_client_->set_local_device_metadata(local_device);
   }
@@ -124,31 +125,29 @@ class MultiDeviceSetupWifiSyncFeatureManagerImplTest
     fake_device_sync_client_->NotifyNewDevicesSynced();
   }
 
-  void SetWifiSyncSupportedInDeviceSyncClient() {
+  void SetFeatureSupportedInDeviceSyncClient() {
     for (const auto& remote_device : test_devices_) {
       GetMutableRemoteDevice(remote_device)
-          ->software_features[multidevice::SoftwareFeature::kWifiSyncHost] =
+          ->software_features[kTestHostFeature] =
           multidevice::SoftwareFeatureState::kSupported;
     }
   }
 
   void CreateDelegate(
       const absl::optional<multidevice::RemoteDeviceRef>& initial_host,
-      int initial_pending_wifi_sync_request = kPendingNone) {
+      int initial_pending_state = kPendingNone) {
     SetHostInDeviceSyncClient(initial_host);
-    test_pref_service_->SetInteger(kPendingWifiSyncRequestEnabledPrefName,
-                                   initial_pending_wifi_sync_request);
+    test_pref_service_->SetInteger(kPendingStatePrefName,
+                                   initial_pending_state);
 
     auto mock_timer = std::make_unique<base::MockOneShotTimer>();
     mock_timer_ = mock_timer.get();
 
     SetHostWithStatus(initial_host);
 
-    delegate_ = WifiSyncFeatureManagerImpl::Factory::Create(
-        fake_host_status_provider_.get(), test_pref_service_.get(),
-        fake_device_sync_client_.get(),
-        fake_account_status_change_delegate_notifier_.get(),
-        std::move(mock_timer));
+    delegate_ = GlobalStateFeatureManagerImpl::Factory::Create(
+        kTestOption, fake_host_status_provider_.get(), test_pref_service_.get(),
+        fake_device_sync_client_.get(), std::move(mock_timer));
   }
 
   void SetHostWithStatus(
@@ -159,8 +158,8 @@ class MultiDeviceSetupWifiSyncFeatureManagerImplTest
     fake_host_status_provider_->SetHostWithStatus(host_status, host_device);
   }
 
-  void SetIsWifiSyncEnabled(bool enabled) {
-    delegate_->SetIsWifiSyncEnabled(enabled);
+  void SetIsFeatureEnabled(bool enabled) {
+    delegate_->SetIsFeatureEnabled(enabled);
 
     HostStatusProvider::HostStatusWithDevice host_with_status =
         fake_host_status_provider_->GetHostWithStatus();
@@ -171,8 +170,7 @@ class MultiDeviceSetupWifiSyncFeatureManagerImplTest
     multidevice::RemoteDeviceRef host_device = *host_with_status.host_device();
 
     bool enabled_on_backend =
-        (host_device.GetSoftwareFeatureState(
-             multidevice::SoftwareFeature::kWifiSyncHost) ==
+        (host_device.GetSoftwareFeatureState(kTestHostFeature) ==
          multidevice::SoftwareFeatureState::kEnabled);
     bool pending_request_state_same_as_backend =
         (enabled == enabled_on_backend);
@@ -181,10 +179,10 @@ class MultiDeviceSetupWifiSyncFeatureManagerImplTest
       return;
     }
 
-    VerifyLatestSetWifiSyncHostNetworkRequest(host_device, enabled);
+    VerifyLatestSetHostNetworkRequest(host_device, enabled);
   }
 
-  void VerifyLatestSetWifiSyncHostNetworkRequest(
+  void VerifyLatestSetHostNetworkRequest(
       const multidevice::RemoteDeviceRef expected_host,
       bool expected_should_enable) {
     if (features::ShouldUseV1DeviceSync()) {
@@ -196,8 +194,7 @@ class MultiDeviceSetupWifiSyncFeatureManagerImplTest
                        ->set_software_feature_state_inputs_queue()
                        .back();
       EXPECT_EQ(expected_host.public_key(), inputs.public_key);
-      EXPECT_EQ(multidevice::SoftwareFeature::kWifiSyncHost,
-                inputs.software_feature);
+      EXPECT_EQ(kTestHostFeature, inputs.software_feature);
       EXPECT_EQ(expected_should_enable, inputs.enabled);
       EXPECT_EQ(expected_should_enable, inputs.is_exclusive);
       return;
@@ -209,7 +206,7 @@ class MultiDeviceSetupWifiSyncFeatureManagerImplTest
     const device_sync::FakeDeviceSyncClient::SetFeatureStatusInputs& inputs =
         fake_device_sync_client_->set_feature_status_inputs_queue().back();
     EXPECT_EQ(expected_host.instance_id(), inputs.device_instance_id);
-    EXPECT_EQ(multidevice::SoftwareFeature::kWifiSyncHost, inputs.feature);
+    EXPECT_EQ(kTestHostFeature, inputs.feature);
     EXPECT_EQ(expected_should_enable
                   ? device_sync::FeatureStatusChange::kEnableExclusively
                   : device_sync::FeatureStatusChange::kDisable,
@@ -223,7 +220,7 @@ class MultiDeviceSetupWifiSyncFeatureManagerImplTest
                : fake_device_sync_client_->GetSetFeatureStatusInputsQueueSize();
   }
 
-  void InvokePendingSetWifiSyncHostNetworkRequestCallback(
+  void InvokePendingSetHostNetworkRequestCallback(
       device_sync::mojom::NetworkRequestResult result_code,
       bool expected_to_notify_observer_and_start_retry_timer) {
     if (features::ShouldUseV1DeviceSync()) {
@@ -238,21 +235,20 @@ class MultiDeviceSetupWifiSyncFeatureManagerImplTest
               mock_timer_->IsRunning());
   }
 
-  void SetWifiSyncHostInDeviceSyncClient(
+  void SetHostInDeviceSyncClient(
       const absl::optional<multidevice::RemoteDeviceRef>& host_device,
       bool enabled) {
-    GetMutableRemoteDevice(*host_device)
-        ->software_features[multidevice::SoftwareFeature::kWifiSyncHost] =
+    GetMutableRemoteDevice(*host_device)->software_features[kTestHostFeature] =
         (enabled ? multidevice::SoftwareFeatureState::kEnabled
                  : multidevice::SoftwareFeatureState::kSupported);
     fake_device_sync_client_->NotifyNewDevicesSynced();
   }
 
-  void SetFeatureFlags(bool use_v1_devicesync, bool enable_wifi_sync) {
+  void SetFeatureFlags(bool use_v1_devicesync, bool enable_feature_flag) {
     std::vector<base::Feature> enabled_features;
     std::vector<base::Feature> disabled_features;
 
-    // These flags have no direct effect of on the wifi sync feature manager;
+    // These flags have no direct effect of on the GlobalStateFeatureManager;
     // however, v2 Enrollment and DeviceSync must be enabled before v1
     // DeviceSync can be disabled.
     enabled_features.push_back(chromeos::features::kCryptAuthV2Enrollment);
@@ -266,10 +262,10 @@ class MultiDeviceSetupWifiSyncFeatureManagerImplTest
           chromeos::features::kDisableCryptAuthV1DeviceSync);
     }
 
-    if (enable_wifi_sync) {
-      enabled_features.push_back(chromeos::features::kWifiSyncAndroid);
+    if (enable_feature_flag) {
+      enabled_features.push_back(kTestFeatureFlag);
     } else {
-      disabled_features.push_back(chromeos::features::kWifiSyncAndroid);
+      disabled_features.push_back(kTestFeatureFlag);
     }
 
     scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
@@ -283,17 +279,9 @@ class MultiDeviceSetupWifiSyncFeatureManagerImplTest
     return fake_device_sync_client_.get();
   }
 
-  FakeAccountStatusChangeDelegate* fake_account_status_change_delegate() {
-    return fake_account_status_change_delegate_.get();
-  }
-
-  void FlushDelegateNotifier() {
-    fake_account_status_change_delegate_notifier_->FlushForTesting();
-  }
-
   base::MockOneShotTimer* mock_timer() { return mock_timer_; }
 
-  WifiSyncFeatureManager* delegate() { return delegate_.get(); }
+  GlobalStateFeatureManager* delegate() { return delegate_.get(); }
 
   sync_preferences::TestingPrefServiceSyncable* test_pref_service() {
     return test_pref_service_.get();
@@ -303,131 +291,110 @@ class MultiDeviceSetupWifiSyncFeatureManagerImplTest
     return test_devices_;
   }
 
-  session_manager::SessionManager* session_manager() {
-    return session_manager_.get();
-  }
-
  private:
   base::test::TaskEnvironment task_environment_;
   multidevice::RemoteDeviceRefList test_devices_;
 
-  std::unique_ptr<session_manager::SessionManager> session_manager_;
   std::unique_ptr<FakeHostStatusProvider> fake_host_status_provider_;
   std::unique_ptr<sync_preferences::TestingPrefServiceSyncable>
       test_pref_service_;
   std::unique_ptr<device_sync::FakeDeviceSyncClient> fake_device_sync_client_;
-  std::unique_ptr<FakeAccountStatusChangeDelegateNotifier>
-      fake_account_status_change_delegate_notifier_;
-  std::unique_ptr<FakeAccountStatusChangeDelegate>
-      fake_account_status_change_delegate_;
 
   base::MockOneShotTimer* mock_timer_;
 
-  std::unique_ptr<WifiSyncFeatureManager> delegate_;
+  std::unique_ptr<GlobalStateFeatureManager> delegate_;
 
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-TEST_P(MultiDeviceSetupWifiSyncFeatureManagerImplTest, Success) {
+TEST_P(MultiDeviceSetupGlobalStateFeatureManagerImplTest, Success) {
   SetFeatureFlags(GetParam() /* use_v1_devicesync */,
-                  true /* enable_wifi_sync */);
+                  true /* enable_feature_flag */);
   CreateDelegate(test_devices()[0] /* initial_host */);
 
-  // Attempt to enable wifi sync on host device and succeed
-  EXPECT_FALSE(delegate()->IsWifiSyncEnabled());
-  EXPECT_EQ(test_devices()[0].GetSoftwareFeatureState(
-                multidevice::SoftwareFeature::kWifiSyncHost),
+  // Attempt to enable the feature on host device and succeed
+  EXPECT_FALSE(delegate()->IsFeatureEnabled());
+  EXPECT_EQ(test_devices()[0].GetSoftwareFeatureState(kTestHostFeature),
             multidevice::SoftwareFeatureState::kSupported);
 
-  SetIsWifiSyncEnabled(true);
+  SetIsFeatureEnabled(true);
   EXPECT_EQ(1, GetSetHostNetworkRequestCallbackQueueSize());
-  EXPECT_TRUE(delegate()->IsWifiSyncEnabled());
-  EXPECT_EQ(test_devices()[0].GetSoftwareFeatureState(
-                multidevice::SoftwareFeature::kWifiSyncHost),
+  EXPECT_TRUE(delegate()->IsFeatureEnabled());
+  EXPECT_EQ(test_devices()[0].GetSoftwareFeatureState(kTestHostFeature),
             multidevice::SoftwareFeatureState::kSupported);
-  InvokePendingSetWifiSyncHostNetworkRequestCallback(
+  InvokePendingSetHostNetworkRequestCallback(
       device_sync::mojom::NetworkRequestResult::kSuccess,
       false /* expected_to_notify_observer_and_start_retry_timer */);
   EXPECT_EQ(0, GetSetHostNetworkRequestCallbackQueueSize());
-  SetWifiSyncHostInDeviceSyncClient(test_devices()[0], true /* enabled */);
-
-  EXPECT_EQ(test_devices()[0].GetSoftwareFeatureState(
-                multidevice::SoftwareFeature::kWifiSyncHost),
+  SetHostInDeviceSyncClient(test_devices()[0], true /* enabled */);
+  EXPECT_EQ(test_devices()[0].GetSoftwareFeatureState(kTestHostFeature),
             multidevice::SoftwareFeatureState::kEnabled);
 
-  // Attempt to disable wifi sync on host device and succeed
-  SetIsWifiSyncEnabled(false);
+  // Attempt to disable the feature on host device and succeed
+  SetIsFeatureEnabled(false);
   EXPECT_EQ(1, GetSetHostNetworkRequestCallbackQueueSize());
-  EXPECT_FALSE(delegate()->IsWifiSyncEnabled());
-  EXPECT_EQ(test_devices()[0].GetSoftwareFeatureState(
-                multidevice::SoftwareFeature::kWifiSyncHost),
+  EXPECT_FALSE(delegate()->IsFeatureEnabled());
+  EXPECT_EQ(test_devices()[0].GetSoftwareFeatureState(kTestHostFeature),
             multidevice::SoftwareFeatureState::kEnabled);
 
-  InvokePendingSetWifiSyncHostNetworkRequestCallback(
+  InvokePendingSetHostNetworkRequestCallback(
       device_sync::mojom::NetworkRequestResult::kSuccess,
       false /* expected_to_notify_observer_and_start_retry_timer */);
   EXPECT_EQ(0, GetSetHostNetworkRequestCallbackQueueSize());
-  SetWifiSyncHostInDeviceSyncClient(test_devices()[0], false /* enabled */);
-  EXPECT_EQ(test_devices()[0].GetSoftwareFeatureState(
-                multidevice::SoftwareFeature::kWifiSyncHost),
+  SetHostInDeviceSyncClient(test_devices()[0], false /* enabled */);
+  EXPECT_EQ(test_devices()[0].GetSoftwareFeatureState(kTestHostFeature),
             multidevice::SoftwareFeatureState::kSupported);
 }
 
-TEST_P(MultiDeviceSetupWifiSyncFeatureManagerImplTest,
+TEST_P(MultiDeviceSetupGlobalStateFeatureManagerImplTest,
        NewDevicesSyncedBeforeCallback) {
   SetFeatureFlags(GetParam() /* use_v1_devicesync */,
-                  true /* enable_wifi_sync */);
+                  true /* enable_feature_flag */);
   CreateDelegate(test_devices()[0] /* initial_host */);
 
-  // Attempt to enable wifi sync on host device and succeed
-  EXPECT_FALSE(delegate()->IsWifiSyncEnabled());
-  EXPECT_EQ(test_devices()[0].GetSoftwareFeatureState(
-                multidevice::SoftwareFeature::kWifiSyncHost),
+  // Attempt to enable the feature on host device and succeed
+  EXPECT_FALSE(delegate()->IsFeatureEnabled());
+  EXPECT_EQ(test_devices()[0].GetSoftwareFeatureState(kTestHostFeature),
             multidevice::SoftwareFeatureState::kSupported);
 
-  SetIsWifiSyncEnabled(true);
+  SetIsFeatureEnabled(true);
   EXPECT_EQ(1, GetSetHostNetworkRequestCallbackQueueSize());
-  EXPECT_TRUE(delegate()->IsWifiSyncEnabled());
-  EXPECT_EQ(test_devices()[0].GetSoftwareFeatureState(
-                multidevice::SoftwareFeature::kWifiSyncHost),
+  EXPECT_TRUE(delegate()->IsFeatureEnabled());
+  EXPECT_EQ(test_devices()[0].GetSoftwareFeatureState(kTestHostFeature),
             multidevice::SoftwareFeatureState::kSupported);
   // Triggers OnNewDevicesSynced
-  SetWifiSyncHostInDeviceSyncClient(test_devices()[0], true /* enabled */);
+  SetHostInDeviceSyncClient(test_devices()[0], true /* enabled */);
   // Triggers Success Callback
-  InvokePendingSetWifiSyncHostNetworkRequestCallback(
+  InvokePendingSetHostNetworkRequestCallback(
       device_sync::mojom::NetworkRequestResult::kSuccess,
       false /* expected_to_notify_observer_and_start_retry_timer */);
   EXPECT_EQ(0, GetSetHostNetworkRequestCallbackQueueSize());
 
-  EXPECT_EQ(test_devices()[0].GetSoftwareFeatureState(
-                multidevice::SoftwareFeature::kWifiSyncHost),
+  EXPECT_EQ(test_devices()[0].GetSoftwareFeatureState(kTestHostFeature),
             multidevice::SoftwareFeatureState::kEnabled);
 }
 
-TEST_P(MultiDeviceSetupWifiSyncFeatureManagerImplTest, Failure) {
+TEST_P(MultiDeviceSetupGlobalStateFeatureManagerImplTest, Failure) {
   SetFeatureFlags(GetParam() /* use_v1_devicesync */,
-                  true /* enable_wifi_sync */);
+                  true /* enable_feature_flag */);
   CreateDelegate(test_devices()[0] /* initial_host */);
 
-  // Attempt to enable wifi sync on host device and fail
-  EXPECT_FALSE(delegate()->IsWifiSyncEnabled());
-  EXPECT_EQ(test_devices()[0].GetSoftwareFeatureState(
-                multidevice::SoftwareFeature::kWifiSyncHost),
+  // Attempt to enable the feature on host device and fail
+  EXPECT_FALSE(delegate()->IsFeatureEnabled());
+  EXPECT_EQ(test_devices()[0].GetSoftwareFeatureState(kTestHostFeature),
             multidevice::SoftwareFeatureState::kSupported);
 
-  SetIsWifiSyncEnabled(true);
+  SetIsFeatureEnabled(true);
   EXPECT_EQ(1, GetSetHostNetworkRequestCallbackQueueSize());
-  EXPECT_TRUE(delegate()->IsWifiSyncEnabled());
-  EXPECT_EQ(test_devices()[0].GetSoftwareFeatureState(
-                multidevice::SoftwareFeature::kWifiSyncHost),
+  EXPECT_TRUE(delegate()->IsFeatureEnabled());
+  EXPECT_EQ(test_devices()[0].GetSoftwareFeatureState(kTestHostFeature),
             multidevice::SoftwareFeatureState::kSupported);
 
-  InvokePendingSetWifiSyncHostNetworkRequestCallback(
+  InvokePendingSetHostNetworkRequestCallback(
       device_sync::mojom::NetworkRequestResult::kOffline,
       true /* expected_to_notify_observer_and_start_retry_timer */);
   EXPECT_EQ(0, GetSetHostNetworkRequestCallbackQueueSize());
-  EXPECT_EQ(test_devices()[0].GetSoftwareFeatureState(
-                multidevice::SoftwareFeature::kWifiSyncHost),
+  EXPECT_EQ(test_devices()[0].GetSoftwareFeatureState(kTestHostFeature),
             multidevice::SoftwareFeatureState::kSupported);
 
   // A retry should have been scheduled, so fire the timer to start the retry.
@@ -435,87 +402,78 @@ TEST_P(MultiDeviceSetupWifiSyncFeatureManagerImplTest, Failure) {
 
   // Simulate another failure.
   EXPECT_EQ(1, GetSetHostNetworkRequestCallbackQueueSize());
-  EXPECT_TRUE(delegate()->IsWifiSyncEnabled());
-  EXPECT_EQ(test_devices()[0].GetSoftwareFeatureState(
-                multidevice::SoftwareFeature::kWifiSyncHost),
+  EXPECT_TRUE(delegate()->IsFeatureEnabled());
+  EXPECT_EQ(test_devices()[0].GetSoftwareFeatureState(kTestHostFeature),
             multidevice::SoftwareFeatureState::kSupported);
 
-  InvokePendingSetWifiSyncHostNetworkRequestCallback(
+  InvokePendingSetHostNetworkRequestCallback(
       device_sync::mojom::NetworkRequestResult::kOffline,
       true /* expected_to_notify_observer_and_start_retry_timer */);
   EXPECT_EQ(0, GetSetHostNetworkRequestCallbackQueueSize());
-  EXPECT_EQ(test_devices()[0].GetSoftwareFeatureState(
-                multidevice::SoftwareFeature::kWifiSyncHost),
+  EXPECT_EQ(test_devices()[0].GetSoftwareFeatureState(kTestHostFeature),
             multidevice::SoftwareFeatureState::kSupported);
 }
 
-TEST_P(MultiDeviceSetupWifiSyncFeatureManagerImplTest,
+TEST_P(MultiDeviceSetupGlobalStateFeatureManagerImplTest,
        MultipleRequests_FirstFail_ThenSucceed) {
   SetFeatureFlags(GetParam() /* use_v1_devicesync */,
-                  true /* enable_wifi_sync */);
+                  true /* enable_feature_flag */);
   CreateDelegate(test_devices()[0] /* initial_host */);
 
-  // Attempt to enable wifi sync on host device and fail
-  EXPECT_FALSE(delegate()->IsWifiSyncEnabled());
-  EXPECT_EQ(test_devices()[0].GetSoftwareFeatureState(
-                multidevice::SoftwareFeature::kWifiSyncHost),
+  // Attempt to enable the feature on host device and fail
+  EXPECT_FALSE(delegate()->IsFeatureEnabled());
+  EXPECT_EQ(test_devices()[0].GetSoftwareFeatureState(kTestHostFeature),
             multidevice::SoftwareFeatureState::kSupported);
 
-  SetIsWifiSyncEnabled(true);
+  SetIsFeatureEnabled(true);
   EXPECT_EQ(1, GetSetHostNetworkRequestCallbackQueueSize());
-  EXPECT_TRUE(delegate()->IsWifiSyncEnabled());
-  EXPECT_EQ(test_devices()[0].GetSoftwareFeatureState(
-                multidevice::SoftwareFeature::kWifiSyncHost),
+  EXPECT_TRUE(delegate()->IsFeatureEnabled());
+  EXPECT_EQ(test_devices()[0].GetSoftwareFeatureState(kTestHostFeature),
             multidevice::SoftwareFeatureState::kSupported);
 
-  InvokePendingSetWifiSyncHostNetworkRequestCallback(
+  InvokePendingSetHostNetworkRequestCallback(
       device_sync::mojom::NetworkRequestResult::kOffline,
       true /* expected_to_notify_observer_and_start_retry_timer */);
-  EXPECT_EQ(test_devices()[0].GetSoftwareFeatureState(
-                multidevice::SoftwareFeature::kWifiSyncHost),
+  EXPECT_EQ(test_devices()[0].GetSoftwareFeatureState(kTestHostFeature),
             multidevice::SoftwareFeatureState::kSupported);
 
   // The retry timer is running; however, instead of relying on that, call
-  // SetIsWifiSyncEnabled() again to trigger an immediate
+  // SetIsFeatureEnabled() again to trigger an immediate
   // retry without the timer.
-  SetIsWifiSyncEnabled(true);
+  SetIsFeatureEnabled(true);
   EXPECT_EQ(1, GetSetHostNetworkRequestCallbackQueueSize());
-  EXPECT_TRUE(delegate()->IsWifiSyncEnabled());
-  EXPECT_EQ(test_devices()[0].GetSoftwareFeatureState(
-                multidevice::SoftwareFeature::kWifiSyncHost),
+  EXPECT_TRUE(delegate()->IsFeatureEnabled());
+  EXPECT_EQ(test_devices()[0].GetSoftwareFeatureState(kTestHostFeature),
             multidevice::SoftwareFeatureState::kSupported);
 
-  InvokePendingSetWifiSyncHostNetworkRequestCallback(
+  InvokePendingSetHostNetworkRequestCallback(
       device_sync::mojom::NetworkRequestResult::kSuccess,
       false /* expected_to_notify_observer_and_start_retry_timer */);
-  SetWifiSyncHostInDeviceSyncClient(test_devices()[0], true /* enabled */);
+  SetHostInDeviceSyncClient(test_devices()[0], true /* enabled */);
   EXPECT_EQ(0, GetSetHostNetworkRequestCallbackQueueSize());
-  EXPECT_EQ(test_devices()[0].GetSoftwareFeatureState(
-                multidevice::SoftwareFeature::kWifiSyncHost),
+  EXPECT_EQ(test_devices()[0].GetSoftwareFeatureState(kTestHostFeature),
             multidevice::SoftwareFeatureState::kEnabled);
 }
 
-TEST_P(MultiDeviceSetupWifiSyncFeatureManagerImplTest,
+TEST_P(MultiDeviceSetupGlobalStateFeatureManagerImplTest,
        PendingRequest_NoSyncedHostDevice) {
   SetFeatureFlags(GetParam() /* use_v1_devicesync */,
-                  true /* enable_wifi_sync */);
+                  true /* enable_feature_flag */);
   CreateDelegate(test_devices()[0] /* initial_host */);
 
-  // Attempt to enable wifi sync on test_device 0
-  SetIsWifiSyncEnabled(true);
+  // Attempt to enable the feature on test_device 0
+  SetIsFeatureEnabled(true);
   EXPECT_EQ(1, GetSetHostNetworkRequestCallbackQueueSize());
-  EXPECT_TRUE(delegate()->IsWifiSyncEnabled());
-  EXPECT_EQ(test_devices()[0].GetSoftwareFeatureState(
-                multidevice::SoftwareFeature::kWifiSyncHost),
+  EXPECT_TRUE(delegate()->IsFeatureEnabled());
+  EXPECT_EQ(test_devices()[0].GetSoftwareFeatureState(kTestHostFeature),
             multidevice::SoftwareFeatureState::kSupported);
 
-  // Fail to set wifi sync on test_device 0
-  InvokePendingSetWifiSyncHostNetworkRequestCallback(
+  // Fail to set host enabled on test_device 0
+  InvokePendingSetHostNetworkRequestCallback(
       device_sync::mojom::NetworkRequestResult::kOffline,
       true /* expected_to_notify_observer_and_start_retry_timer */);
   EXPECT_EQ(0, GetSetHostNetworkRequestCallbackQueueSize());
-  EXPECT_EQ(test_devices()[0].GetSoftwareFeatureState(
-                multidevice::SoftwareFeature::kWifiSyncHost),
+  EXPECT_EQ(test_devices()[0].GetSoftwareFeatureState(kTestHostFeature),
             multidevice::SoftwareFeatureState::kSupported);
   EXPECT_TRUE(mock_timer()->IsRunning());
 
@@ -526,101 +484,93 @@ TEST_P(MultiDeviceSetupWifiSyncFeatureManagerImplTest,
   EXPECT_FALSE(mock_timer()->IsRunning());
 }
 
-TEST_P(MultiDeviceSetupWifiSyncFeatureManagerImplTest,
+TEST_P(MultiDeviceSetupGlobalStateFeatureManagerImplTest,
        InitialPendingEnableRequest_NoInitialDevice) {
   SetFeatureFlags(GetParam() /* use_v1_devicesync */,
-                  true /* enable_wifi_sync */);
+                  true /* enable_feature_flag */);
   CreateDelegate(absl::nullopt /* initial_host */,
-                 kPendingEnable /* initial_pending_wifi_sync_request*/);
+                 kPendingEnable /* initial_pending_state*/);
 
   EXPECT_EQ(0, GetSetHostNetworkRequestCallbackQueueSize());
-  EXPECT_EQ(test_devices()[0].GetSoftwareFeatureState(
-                multidevice::SoftwareFeature::kWifiSyncHost),
+  EXPECT_EQ(test_devices()[0].GetSoftwareFeatureState(kTestHostFeature),
             multidevice::SoftwareFeatureState::kSupported);
 }
 
-TEST_P(MultiDeviceSetupWifiSyncFeatureManagerImplTest,
+TEST_P(MultiDeviceSetupGlobalStateFeatureManagerImplTest,
        InitialPendingEnableRequest_Success) {
   SetFeatureFlags(GetParam() /* use_v1_devicesync */,
-                  true /* enable_wifi_sync */);
+                  true /* enable_feature_flag */);
   CreateDelegate(test_devices()[0] /* initial_host */,
-                 kPendingEnable /* initial_pending_wifi_sync_request*/);
+                 kPendingEnable /* initial_pending_state*/);
 
   EXPECT_EQ(1, GetSetHostNetworkRequestCallbackQueueSize());
-  EXPECT_TRUE(delegate()->IsWifiSyncEnabled());
-  EXPECT_EQ(test_devices()[0].GetSoftwareFeatureState(
-                multidevice::SoftwareFeature::kWifiSyncHost),
+  EXPECT_TRUE(delegate()->IsFeatureEnabled());
+  EXPECT_EQ(test_devices()[0].GetSoftwareFeatureState(kTestHostFeature),
             multidevice::SoftwareFeatureState::kSupported);
 
-  InvokePendingSetWifiSyncHostNetworkRequestCallback(
+  InvokePendingSetHostNetworkRequestCallback(
       device_sync::mojom::NetworkRequestResult::kSuccess,
       false /* expected_to_notify_observer_and_start_retry_timer */);
-  SetWifiSyncHostInDeviceSyncClient(test_devices()[0], true /* enabled */);
+  SetHostInDeviceSyncClient(test_devices()[0], true /* enabled */);
   EXPECT_EQ(0, GetSetHostNetworkRequestCallbackQueueSize());
-  EXPECT_EQ(test_devices()[0].GetSoftwareFeatureState(
-                multidevice::SoftwareFeature::kWifiSyncHost),
+  EXPECT_EQ(test_devices()[0].GetSoftwareFeatureState(kTestHostFeature),
             multidevice::SoftwareFeatureState::kEnabled);
 }
 
-TEST_P(MultiDeviceSetupWifiSyncFeatureManagerImplTest,
+TEST_P(MultiDeviceSetupGlobalStateFeatureManagerImplTest,
        MultiplePendingRequests_EnableDisable) {
   SetFeatureFlags(GetParam() /* use_v1_devicesync */,
-                  true /* enable_wifi_sync */);
+                  true /* enable_feature_flag */);
   CreateDelegate(test_devices()[0] /* initial_host */);
 
-  // Attempt to enable->disable->enable wifi sync without invoking any
+  // Attempt to enable->disable the feature without invoking any
   // callbacks.
-  EXPECT_FALSE(delegate()->IsWifiSyncEnabled());
-  EXPECT_EQ(test_devices()[0].GetSoftwareFeatureState(
-                multidevice::SoftwareFeature::kWifiSyncHost),
+  EXPECT_FALSE(delegate()->IsFeatureEnabled());
+  EXPECT_EQ(test_devices()[0].GetSoftwareFeatureState(kTestHostFeature),
             multidevice::SoftwareFeatureState::kSupported);
 
-  SetIsWifiSyncEnabled(true);
+  SetIsFeatureEnabled(true);
   EXPECT_EQ(1, GetSetHostNetworkRequestCallbackQueueSize());
-  EXPECT_TRUE(delegate()->IsWifiSyncEnabled());
-  EXPECT_EQ(test_devices()[0].GetSoftwareFeatureState(
-                multidevice::SoftwareFeature::kWifiSyncHost),
+  EXPECT_TRUE(delegate()->IsFeatureEnabled());
+  EXPECT_EQ(test_devices()[0].GetSoftwareFeatureState(kTestHostFeature),
             multidevice::SoftwareFeatureState::kSupported);
 
-  // Wifi sync is already disabled on back-end so there should be no new pending
-  // request
-  SetIsWifiSyncEnabled(false);
+  // The feature is already disabled on back-end so there should be no new
+  // pending request
+  SetIsFeatureEnabled(false);
   EXPECT_EQ(1, GetSetHostNetworkRequestCallbackQueueSize());
-  EXPECT_FALSE(delegate()->IsWifiSyncEnabled());
-  EXPECT_EQ(test_devices()[0].GetSoftwareFeatureState(
-                multidevice::SoftwareFeature::kWifiSyncHost),
+  EXPECT_FALSE(delegate()->IsFeatureEnabled());
+  EXPECT_EQ(test_devices()[0].GetSoftwareFeatureState(kTestHostFeature),
             multidevice::SoftwareFeatureState::kSupported);
 }
 
-TEST_P(MultiDeviceSetupWifiSyncFeatureManagerImplTest,
+TEST_P(MultiDeviceSetupGlobalStateFeatureManagerImplTest,
        PendingRequest_SyncedHostBecomesUnverified) {
   SetFeatureFlags(GetParam() /* use_v1_devicesync */,
-                  true /* enable_wifi_sync */);
+                  true /* enable_feature_flag */);
   CreateDelegate(test_devices()[0] /* initial_host */,
-                 kPendingEnable /* initial_pending_wifi_sync_request */);
+                 kPendingEnable /* initial_pending_state */);
 
   fake_host_status_provider()->SetHostWithStatus(
       mojom::HostStatus::kHostSetButNotYetVerified, test_devices()[0]);
 
-  EXPECT_EQ(
-      test_pref_service()->GetInteger(kPendingWifiSyncRequestEnabledPrefName),
-      kPendingNone);
+  EXPECT_EQ(test_pref_service()->GetInteger(kPendingStatePrefName),
+            kPendingNone);
 }
 
-TEST_P(MultiDeviceSetupWifiSyncFeatureManagerImplTest,
+TEST_P(MultiDeviceSetupGlobalStateFeatureManagerImplTest,
        Retrying_SyncedHostBecomesUnverified) {
   SetFeatureFlags(GetParam() /* use_v1_devicesync */,
-                  true /* enable_wifi_sync */);
+                  true /* enable_feature_flag */);
   CreateDelegate(test_devices()[0] /* initial_host */);
 
-  SetIsWifiSyncEnabled(true);
+  SetIsFeatureEnabled(true);
   EXPECT_EQ(1, GetSetHostNetworkRequestCallbackQueueSize());
-  EXPECT_TRUE(delegate()->IsWifiSyncEnabled());
-  EXPECT_EQ(test_devices()[0].GetSoftwareFeatureState(
-                multidevice::SoftwareFeature::kWifiSyncHost),
+  EXPECT_TRUE(delegate()->IsFeatureEnabled());
+  EXPECT_EQ(test_devices()[0].GetSoftwareFeatureState(kTestHostFeature),
             multidevice::SoftwareFeatureState::kSupported);
 
-  InvokePendingSetWifiSyncHostNetworkRequestCallback(
+  InvokePendingSetHostNetworkRequestCallback(
       device_sync::mojom::NetworkRequestResult::kOffline,
       true /* expected_to_notify_observer_and_start_retry_timer */);
   EXPECT_EQ(0, GetSetHostNetworkRequestCallbackQueueSize());
@@ -629,121 +579,113 @@ TEST_P(MultiDeviceSetupWifiSyncFeatureManagerImplTest,
   // Host becomes unverified, this should stop timer and clear pending request
   fake_host_status_provider()->SetHostWithStatus(
       mojom::HostStatus::kHostSetButNotYetVerified, test_devices()[0]);
-  EXPECT_EQ(
-      test_pref_service()->GetInteger(kPendingWifiSyncRequestEnabledPrefName),
-      kPendingNone);
+  EXPECT_EQ(test_pref_service()->GetInteger(kPendingStatePrefName),
+            kPendingNone);
   EXPECT_FALSE(mock_timer()->IsRunning());
-  EXPECT_FALSE(delegate()->IsWifiSyncEnabled());
+  EXPECT_FALSE(delegate()->IsFeatureEnabled());
 }
 
-TEST_P(MultiDeviceSetupWifiSyncFeatureManagerImplTest,
+TEST_P(MultiDeviceSetupGlobalStateFeatureManagerImplTest,
        FailureCallback_SyncedHostBecomesUnverified) {
   SetFeatureFlags(GetParam() /* use_v1_devicesync */,
-                  true /* enable_wifi_sync */);
+                  true /* enable_feature_flag */);
   CreateDelegate(test_devices()[0] /* initial_host */);
 
-  SetIsWifiSyncEnabled(true);
+  SetIsFeatureEnabled(true);
   EXPECT_EQ(1, GetSetHostNetworkRequestCallbackQueueSize());
-  EXPECT_TRUE(delegate()->IsWifiSyncEnabled());
-  EXPECT_EQ(test_devices()[0].GetSoftwareFeatureState(
-                multidevice::SoftwareFeature::kWifiSyncHost),
+  EXPECT_TRUE(delegate()->IsFeatureEnabled());
+  EXPECT_EQ(test_devices()[0].GetSoftwareFeatureState(kTestHostFeature),
             multidevice::SoftwareFeatureState::kSupported);
 
   // Set host unverified. This should reset pending request.
   fake_host_status_provider()->SetHostWithStatus(
       mojom::HostStatus::kHostSetButNotYetVerified, test_devices()[0]);
-  EXPECT_EQ(
-      test_pref_service()->GetInteger(kPendingWifiSyncRequestEnabledPrefName),
-      kPendingNone);
+  EXPECT_EQ(test_pref_service()->GetInteger(kPendingStatePrefName),
+            kPendingNone);
 
   // Invoke failure callback. No retry should be scheduled.
-  InvokePendingSetWifiSyncHostNetworkRequestCallback(
+  InvokePendingSetHostNetworkRequestCallback(
       device_sync::mojom::NetworkRequestResult::kOffline,
       false /* expected_to_notify_observer_and_start_retry_timer */);
   EXPECT_EQ(0, GetSetHostNetworkRequestCallbackQueueSize());
   EXPECT_FALSE(mock_timer()->IsRunning());
-  EXPECT_FALSE(delegate()->IsWifiSyncEnabled());
+  EXPECT_FALSE(delegate()->IsFeatureEnabled());
 }
 
-TEST_P(MultiDeviceSetupWifiSyncFeatureManagerImplTest,
+TEST_P(MultiDeviceSetupGlobalStateFeatureManagerImplTest,
        NoVerifiedHost_AttemptToEnable) {
   SetFeatureFlags(GetParam() /* use_v1_devicesync */,
-                  true /* enable_wifi_sync */);
+                  true /* enable_feature_flag */);
   CreateDelegate(test_devices()[0] /* initial_host */);
 
   fake_host_status_provider()->SetHostWithStatus(
       mojom::HostStatus::kHostSetButNotYetVerified, test_devices()[0]);
 
-  // Attempt to enable wifi sync on host device
-  EXPECT_FALSE(delegate()->IsWifiSyncEnabled());
-  EXPECT_EQ(test_devices()[0].GetSoftwareFeatureState(
-                multidevice::SoftwareFeature::kWifiSyncHost),
+  // Attempt to enable the feature on host device
+  EXPECT_FALSE(delegate()->IsFeatureEnabled());
+  EXPECT_EQ(test_devices()[0].GetSoftwareFeatureState(kTestHostFeature),
             multidevice::SoftwareFeatureState::kSupported);
 
-  SetIsWifiSyncEnabled(true);
+  SetIsFeatureEnabled(true);
   EXPECT_EQ(0, GetSetHostNetworkRequestCallbackQueueSize());
-  EXPECT_FALSE(delegate()->IsWifiSyncEnabled());
-  EXPECT_EQ(test_devices()[0].GetSoftwareFeatureState(
-                multidevice::SoftwareFeature::kWifiSyncHost),
+  EXPECT_FALSE(delegate()->IsFeatureEnabled());
+  EXPECT_EQ(test_devices()[0].GetSoftwareFeatureState(kTestHostFeature),
             multidevice::SoftwareFeatureState::kSupported);
 }
 
-TEST_P(MultiDeviceSetupWifiSyncFeatureManagerImplTest,
+TEST_P(MultiDeviceSetupGlobalStateFeatureManagerImplTest,
        StatusChangedOnRemoteDevice) {
   SetFeatureFlags(GetParam() /* use_v1_devicesync */,
-                  true /* enable_wifi_sync */);
+                  true /* enable_feature_flag */);
   CreateDelegate(test_devices()[0] /* initial_host */);
 
-  EXPECT_FALSE(delegate()->IsWifiSyncEnabled());
-  EXPECT_EQ(test_devices()[0].GetSoftwareFeatureState(
-                multidevice::SoftwareFeature::kWifiSyncHost),
+  EXPECT_FALSE(delegate()->IsFeatureEnabled());
+  EXPECT_EQ(test_devices()[0].GetSoftwareFeatureState(kTestHostFeature),
             multidevice::SoftwareFeatureState::kSupported);
 
   // Simulate enabled on a remote device.
-  SetWifiSyncHostInDeviceSyncClient(test_devices()[0], true /* enabled */);
-  EXPECT_TRUE(delegate()->IsWifiSyncEnabled());
+  SetHostInDeviceSyncClient(test_devices()[0], true /* enabled */);
+  EXPECT_TRUE(delegate()->IsFeatureEnabled());
 }
 
-TEST_P(MultiDeviceSetupWifiSyncFeatureManagerImplTest,
+TEST_P(MultiDeviceSetupGlobalStateFeatureManagerImplTest,
        SimultaneousRequests_StartOff_ToggleOnOff) {
   SetFeatureFlags(GetParam() /* use_v1_devicesync */,
-                  true /* enable_wifi_sync */);
+                  true /* enable_feature_flag */);
   CreateDelegate(test_devices()[0] /* initial_host */);
 
   // Attempt to enable
-  SetIsWifiSyncEnabled(true);
+  SetIsFeatureEnabled(true);
   // Attempt to disable
-  SetIsWifiSyncEnabled(false);
+  SetIsFeatureEnabled(false);
 
   // Only one network request should be in flight at a time
   EXPECT_EQ(1, GetSetHostNetworkRequestCallbackQueueSize());
 
   // Successfully enable on host
-  InvokePendingSetWifiSyncHostNetworkRequestCallback(
+  InvokePendingSetHostNetworkRequestCallback(
       device_sync::mojom::NetworkRequestResult::kSuccess,
       false /* expected_to_notify_observer_and_start_retry_timer */);
-  SetWifiSyncHostInDeviceSyncClient(test_devices()[0], true /* enabled */);
-  EXPECT_FALSE(delegate()->IsWifiSyncEnabled());
-  EXPECT_EQ(test_devices()[0].GetSoftwareFeatureState(
-                multidevice::SoftwareFeature::kWifiSyncHost),
+  SetHostInDeviceSyncClient(test_devices()[0], true /* enabled */);
+  EXPECT_FALSE(delegate()->IsFeatureEnabled());
+  EXPECT_EQ(test_devices()[0].GetSoftwareFeatureState(kTestHostFeature),
             multidevice::SoftwareFeatureState::kEnabled);
 
   // A new network request should be scheduled to disable
   EXPECT_EQ(1, GetSetHostNetworkRequestCallbackQueueSize());
-  InvokePendingSetWifiSyncHostNetworkRequestCallback(
+  InvokePendingSetHostNetworkRequestCallback(
       device_sync::mojom::NetworkRequestResult::kSuccess,
       false /* expected_to_notify_observer_and_start_retry_timer */);
-  SetWifiSyncHostInDeviceSyncClient(test_devices()[0], false /* enabled */);
-  EXPECT_FALSE(delegate()->IsWifiSyncEnabled());
-  EXPECT_EQ(test_devices()[0].GetSoftwareFeatureState(
-                multidevice::SoftwareFeature::kWifiSyncHost),
+  SetHostInDeviceSyncClient(test_devices()[0], false /* enabled */);
+  EXPECT_FALSE(delegate()->IsFeatureEnabled());
+  EXPECT_EQ(test_devices()[0].GetSoftwareFeatureState(kTestHostFeature),
             multidevice::SoftwareFeatureState::kSupported);
 }
 
-TEST_P(MultiDeviceSetupWifiSyncFeatureManagerImplTest,
+TEST_P(MultiDeviceSetupGlobalStateFeatureManagerImplTest,
        SetPendingEnableOnVerify_HostSetLocallyThenHostVerified) {
   SetFeatureFlags(GetParam() /* use_v1_devicesync */,
-                  true /* enable_wifi_sync */);
+                  true /* enable_feature_flag */);
   CreateDelegate(absl::nullopt /* initial_host */);
 
   // kHostSetLocallyButWaitingForBackendConfirmation is only possible if the
@@ -752,36 +694,32 @@ TEST_P(MultiDeviceSetupWifiSyncFeatureManagerImplTest,
   fake_host_status_provider()->SetHostWithStatus(
       mojom::HostStatus::kHostSetLocallyButWaitingForBackendConfirmation,
       test_devices()[0]);
-  EXPECT_EQ(
-      test_pref_service()->GetInteger(kPendingWifiSyncRequestEnabledPrefName),
-      kSetPendingEnableOnVerify);
-  EXPECT_FALSE(delegate()->IsWifiSyncEnabled());
+  EXPECT_EQ(test_pref_service()->GetInteger(kPendingStatePrefName),
+            kSetPendingEnableOnVerify);
+  EXPECT_FALSE(delegate()->IsFeatureEnabled());
 
   fake_host_status_provider()->SetHostWithStatus(
       mojom::HostStatus::kHostVerified, test_devices()[0]);
-  EXPECT_EQ(
-      test_pref_service()->GetInteger(kPendingWifiSyncRequestEnabledPrefName),
-      kPendingEnable);
-  EXPECT_TRUE(delegate()->IsWifiSyncEnabled());
-  EXPECT_EQ(test_devices()[0].GetSoftwareFeatureState(
-                multidevice::SoftwareFeature::kWifiSyncHost),
+  EXPECT_EQ(test_pref_service()->GetInteger(kPendingStatePrefName),
+            kPendingEnable);
+  EXPECT_TRUE(delegate()->IsFeatureEnabled());
+  EXPECT_EQ(test_devices()[0].GetSoftwareFeatureState(kTestHostFeature),
             multidevice::SoftwareFeatureState::kSupported);
-  InvokePendingSetWifiSyncHostNetworkRequestCallback(
+  InvokePendingSetHostNetworkRequestCallback(
       device_sync::mojom::NetworkRequestResult::kSuccess,
       false /* expected_to_notify_observer_and_start_retry_timer */);
   EXPECT_EQ(0, GetSetHostNetworkRequestCallbackQueueSize());
-  SetWifiSyncHostInDeviceSyncClient(test_devices()[0], true /* enabled */);
+  SetHostInDeviceSyncClient(test_devices()[0], true /* enabled */);
 
-  EXPECT_EQ(test_devices()[0].GetSoftwareFeatureState(
-                multidevice::SoftwareFeature::kWifiSyncHost),
+  EXPECT_EQ(test_devices()[0].GetSoftwareFeatureState(kTestHostFeature),
             multidevice::SoftwareFeatureState::kEnabled);
 }
 
 TEST_P(
-    MultiDeviceSetupWifiSyncFeatureManagerImplTest,
+    MultiDeviceSetupGlobalStateFeatureManagerImplTest,
     SetPendingEnableOnVerify_HostSetLocallyThenHostSetNotVerifiedThenHostVerified) {
   SetFeatureFlags(GetParam() /* use_v1_devicesync */,
-                  true /* enable_wifi_sync */);
+                  true /* enable_feature_flag */);
   CreateDelegate(absl::nullopt /* initial_host */);
 
   // kHostSetLocallyButWaitingForBackendConfirmation is only possible if the
@@ -790,42 +728,37 @@ TEST_P(
   fake_host_status_provider()->SetHostWithStatus(
       mojom::HostStatus::kHostSetLocallyButWaitingForBackendConfirmation,
       test_devices()[0]);
-  EXPECT_EQ(
-      test_pref_service()->GetInteger(kPendingWifiSyncRequestEnabledPrefName),
-      kSetPendingEnableOnVerify);
-  EXPECT_FALSE(delegate()->IsWifiSyncEnabled());
+  EXPECT_EQ(test_pref_service()->GetInteger(kPendingStatePrefName),
+            kSetPendingEnableOnVerify);
+  EXPECT_FALSE(delegate()->IsFeatureEnabled());
 
   fake_host_status_provider()->SetHostWithStatus(
       mojom::HostStatus::kHostSetButNotYetVerified, test_devices()[0]);
-  EXPECT_EQ(
-      test_pref_service()->GetInteger(kPendingWifiSyncRequestEnabledPrefName),
-      kSetPendingEnableOnVerify);
-  EXPECT_FALSE(delegate()->IsWifiSyncEnabled());
+  EXPECT_EQ(test_pref_service()->GetInteger(kPendingStatePrefName),
+            kSetPendingEnableOnVerify);
+  EXPECT_FALSE(delegate()->IsFeatureEnabled());
 
   fake_host_status_provider()->SetHostWithStatus(
       mojom::HostStatus::kHostVerified, test_devices()[0]);
-  EXPECT_EQ(
-      test_pref_service()->GetInteger(kPendingWifiSyncRequestEnabledPrefName),
-      kPendingEnable);
-  EXPECT_TRUE(delegate()->IsWifiSyncEnabled());
-  EXPECT_EQ(test_devices()[0].GetSoftwareFeatureState(
-                multidevice::SoftwareFeature::kWifiSyncHost),
+  EXPECT_EQ(test_pref_service()->GetInteger(kPendingStatePrefName),
+            kPendingEnable);
+  EXPECT_TRUE(delegate()->IsFeatureEnabled());
+  EXPECT_EQ(test_devices()[0].GetSoftwareFeatureState(kTestHostFeature),
             multidevice::SoftwareFeatureState::kSupported);
-  InvokePendingSetWifiSyncHostNetworkRequestCallback(
+  InvokePendingSetHostNetworkRequestCallback(
       device_sync::mojom::NetworkRequestResult::kSuccess,
       false /* expected_to_notify_observer_and_start_retry_timer */);
   EXPECT_EQ(0, GetSetHostNetworkRequestCallbackQueueSize());
-  SetWifiSyncHostInDeviceSyncClient(test_devices()[0], true /* enabled */);
+  SetHostInDeviceSyncClient(test_devices()[0], true /* enabled */);
 
-  EXPECT_EQ(test_devices()[0].GetSoftwareFeatureState(
-                multidevice::SoftwareFeature::kWifiSyncHost),
+  EXPECT_EQ(test_devices()[0].GetSoftwareFeatureState(kTestHostFeature),
             multidevice::SoftwareFeatureState::kEnabled);
 }
 
-TEST_P(MultiDeviceSetupWifiSyncFeatureManagerImplTest,
-       SetPendingEnableOnVerify_WifiSyncFlagOff) {
+TEST_P(MultiDeviceSetupGlobalStateFeatureManagerImplTest,
+       SetPendingEnableOnVerify_FeatureFlagOff) {
   SetFeatureFlags(GetParam() /* use_v1_devicesync */,
-                  false /* enable_wifi_sync */);
+                  false /* enable_feature_flag */);
   CreateDelegate(absl::nullopt /* initial_host */);
 
   // kHostSetLocallyButWaitingForBackendConfirmation is only possible if the
@@ -834,18 +767,17 @@ TEST_P(MultiDeviceSetupWifiSyncFeatureManagerImplTest,
   fake_host_status_provider()->SetHostWithStatus(
       mojom::HostStatus::kHostSetLocallyButWaitingForBackendConfirmation,
       test_devices()[0]);
-  EXPECT_EQ(
-      test_pref_service()->GetInteger(kPendingWifiSyncRequestEnabledPrefName),
-      kPendingNone);
-  EXPECT_FALSE(delegate()->IsWifiSyncEnabled());
+  EXPECT_EQ(test_pref_service()->GetInteger(kPendingStatePrefName),
+            kPendingNone);
+  EXPECT_FALSE(delegate()->IsFeatureEnabled());
 }
 
-TEST_P(MultiDeviceSetupWifiSyncFeatureManagerImplTest,
-       SetPendingEnableOnVerify_WifiSyncNotAllowedByPolicy) {
+TEST_P(MultiDeviceSetupGlobalStateFeatureManagerImplTest,
+       SetPendingEnableOnVerify_FeatureNotAllowedByPolicy) {
   SetFeatureFlags(GetParam() /* use_v1_devicesync */,
-                  true /* enable_wifi_sync */);
+                  true /* enable_feature_flag */);
   // Disable by policy
-  test_pref_service()->SetBoolean(kWifiSyncAllowedPrefName, false);
+  test_pref_service()->SetBoolean(kFeatureAllowedPrefName, false);
   CreateDelegate(absl::nullopt /* initial_host */);
 
   // kHostSetLocallyButWaitingForBackendConfirmation is only possible if the
@@ -854,19 +786,18 @@ TEST_P(MultiDeviceSetupWifiSyncFeatureManagerImplTest,
   fake_host_status_provider()->SetHostWithStatus(
       mojom::HostStatus::kHostSetLocallyButWaitingForBackendConfirmation,
       test_devices()[0]);
-  EXPECT_EQ(
-      test_pref_service()->GetInteger(kPendingWifiSyncRequestEnabledPrefName),
-      kPendingNone);
-  EXPECT_FALSE(delegate()->IsWifiSyncEnabled());
+  EXPECT_EQ(test_pref_service()->GetInteger(kPendingStatePrefName),
+            kPendingNone);
+  EXPECT_FALSE(delegate()->IsFeatureEnabled());
 }
 
-TEST_P(MultiDeviceSetupWifiSyncFeatureManagerImplTest,
-       SetPendingEnableOnVerify_WifiSyncNotSupportedOnHostDevice) {
+TEST_P(MultiDeviceSetupGlobalStateFeatureManagerImplTest,
+       SetPendingEnableOnVerify_FeatureNotSupportedOnHostDevice) {
   SetFeatureFlags(GetParam() /* use_v1_devicesync */,
-                  true /* enable_wifi_sync */);
+                  true /* enable_feature_flag */);
   CreateDelegate(absl::nullopt /* initial_host */);
   GetMutableRemoteDevice(test_devices()[0])
-      ->software_features[multidevice::SoftwareFeature::kWifiSyncHost] =
+      ->software_features[kTestHostFeature] =
       multidevice::SoftwareFeatureState::kNotSupported;
 
   // kHostSetLocallyButWaitingForBackendConfirmation is only possible if the
@@ -875,16 +806,15 @@ TEST_P(MultiDeviceSetupWifiSyncFeatureManagerImplTest,
   fake_host_status_provider()->SetHostWithStatus(
       mojom::HostStatus::kHostSetLocallyButWaitingForBackendConfirmation,
       test_devices()[0]);
-  EXPECT_EQ(
-      test_pref_service()->GetInteger(kPendingWifiSyncRequestEnabledPrefName),
-      kPendingNone);
-  EXPECT_FALSE(delegate()->IsWifiSyncEnabled());
+  EXPECT_EQ(test_pref_service()->GetInteger(kPendingStatePrefName),
+            kPendingNone);
+  EXPECT_FALSE(delegate()->IsFeatureEnabled());
 }
 
-TEST_P(MultiDeviceSetupWifiSyncFeatureManagerImplTest,
+TEST_P(MultiDeviceSetupGlobalStateFeatureManagerImplTest,
        SetPendingEnableOnVerify_HostRemoved) {
   SetFeatureFlags(GetParam() /* use_v1_devicesync */,
-                  true /* enable_wifi_sync */);
+                  true /* enable_feature_flag */);
   CreateDelegate(absl::nullopt /* initial_host */);
 
   // kHostSetLocallyButWaitingForBackendConfirmation is only possible if the
@@ -893,120 +823,55 @@ TEST_P(MultiDeviceSetupWifiSyncFeatureManagerImplTest,
   fake_host_status_provider()->SetHostWithStatus(
       mojom::HostStatus::kHostSetLocallyButWaitingForBackendConfirmation,
       test_devices()[0]);
-  EXPECT_EQ(
-      test_pref_service()->GetInteger(kPendingWifiSyncRequestEnabledPrefName),
-      kSetPendingEnableOnVerify);
-  EXPECT_FALSE(delegate()->IsWifiSyncEnabled());
+  EXPECT_EQ(test_pref_service()->GetInteger(kPendingStatePrefName),
+            kSetPendingEnableOnVerify);
+  EXPECT_FALSE(delegate()->IsFeatureEnabled());
 
   // Host is added but not verified.
   fake_host_status_provider()->SetHostWithStatus(
       mojom::HostStatus::kHostSetButNotYetVerified, test_devices()[0]);
-  EXPECT_EQ(
-      test_pref_service()->GetInteger(kPendingWifiSyncRequestEnabledPrefName),
-      kSetPendingEnableOnVerify);
-  EXPECT_FALSE(delegate()->IsWifiSyncEnabled());
+  EXPECT_EQ(test_pref_service()->GetInteger(kPendingStatePrefName),
+            kSetPendingEnableOnVerify);
+  EXPECT_FALSE(delegate()->IsFeatureEnabled());
 
   // Host is removed before it was verified. This simulates the user going
   // through the forget phone flow before the phone was able to be verified.
-  // Wifi Sync should stop the enable attempt because it requires a paired host
-  // device that transitions from unverified to verified.
+  // The feature manager should stop the enable attempt because it requires a
+  // paired host device that transitions from unverified to verified.
   fake_host_status_provider()->SetHostWithStatus(
       mojom::HostStatus::kEligibleHostExistsButNoHostSet, absl::nullopt);
-  EXPECT_EQ(
-      test_pref_service()->GetInteger(kPendingWifiSyncRequestEnabledPrefName),
-      kPendingNone);
-  EXPECT_FALSE(delegate()->IsWifiSyncEnabled());
+  EXPECT_EQ(test_pref_service()->GetInteger(kPendingStatePrefName),
+            kPendingNone);
+  EXPECT_FALSE(delegate()->IsFeatureEnabled());
 }
 
-TEST_P(MultiDeviceSetupWifiSyncFeatureManagerImplTest,
+TEST_P(MultiDeviceSetupGlobalStateFeatureManagerImplTest,
        SetPendingEnableOnVerify_InitialPendingRequest) {
   SetFeatureFlags(GetParam() /* use_v1_devicesync */,
-                  true /* enable_wifi_sync */);
+                  true /* enable_feature_flag */);
   fake_host_status_provider()->SetHostWithStatus(
       mojom::HostStatus::kHostVerified, test_devices()[0]);
-  CreateDelegate(
-      test_devices()[0] /* initial_host */,
-      kSetPendingEnableOnVerify /* initial_pending_wifi_sync_request */);
+  CreateDelegate(test_devices()[0] /* initial_host */,
+                 kSetPendingEnableOnVerify /* initial_pending_state */);
 
-  EXPECT_TRUE(delegate()->IsWifiSyncEnabled());
-  EXPECT_EQ(test_devices()[0].GetSoftwareFeatureState(
-                multidevice::SoftwareFeature::kWifiSyncHost),
+  EXPECT_TRUE(delegate()->IsFeatureEnabled());
+  EXPECT_EQ(test_devices()[0].GetSoftwareFeatureState(kTestHostFeature),
             multidevice::SoftwareFeatureState::kSupported);
-  InvokePendingSetWifiSyncHostNetworkRequestCallback(
+  InvokePendingSetHostNetworkRequestCallback(
       device_sync::mojom::NetworkRequestResult::kSuccess,
       false /* expected_to_notify_observer_and_start_retry_timer */);
   EXPECT_EQ(0, GetSetHostNetworkRequestCallbackQueueSize());
-  SetWifiSyncHostInDeviceSyncClient(test_devices()[0], true /* enabled */);
+  SetHostInDeviceSyncClient(test_devices()[0], true /* enabled */);
 
-  EXPECT_EQ(test_devices()[0].GetSoftwareFeatureState(
-                multidevice::SoftwareFeature::kWifiSyncHost),
+  EXPECT_EQ(test_devices()[0].GetSoftwareFeatureState(kTestHostFeature),
             multidevice::SoftwareFeatureState::kEnabled);
-}
-
-TEST_P(MultiDeviceSetupWifiSyncFeatureManagerImplTest,
-       Notification_ShownOnFirstUnlockAfterPhoneEnabled) {
-  SetFeatureFlags(GetParam() /* use_v1_devicesync */,
-                  true /* enable_wifi_sync */);
-  fake_host_status_provider()->SetHostWithStatus(
-      mojom::HostStatus::kHostVerified, test_devices()[0]);
-  CreateDelegate(test_devices()[0] /* initial_host */,
-                 kPendingNone /* initial_pending_wifi_sync_request */);
-
-  EXPECT_FALSE(delegate()->IsWifiSyncEnabled());
-  EXPECT_EQ(test_devices()[0].GetSoftwareFeatureState(
-                multidevice::SoftwareFeature::kWifiSyncHost),
-            multidevice::SoftwareFeatureState::kSupported);
-
-  // Simulate lock/unlock
-  session_manager()->SetSessionState(session_manager::SessionState::LOCKED);
-  session_manager()->SetSessionState(session_manager::SessionState::ACTIVE);
-
-  FlushDelegateNotifier();
-
-  // Shown on first unlock.
-  EXPECT_EQ(1u, fake_account_status_change_delegate()
-                    ->num_eligible_for_wifi_sync_events_handled());
-
-  session_manager()->SetSessionState(session_manager::SessionState::LOCKED);
-  session_manager()->SetSessionState(session_manager::SessionState::ACTIVE);
-
-  FlushDelegateNotifier();
-
-  // Not shown on second unlock.
-  EXPECT_EQ(1u, fake_account_status_change_delegate()
-                    ->num_eligible_for_wifi_sync_events_handled());
-}
-
-TEST_P(MultiDeviceSetupWifiSyncFeatureManagerImplTest,
-       Notification_NotShownIfAlreadyEnabled) {
-  SetFeatureFlags(GetParam() /* use_v1_devicesync */,
-                  true /* enable_wifi_sync */);
-  fake_host_status_provider()->SetHostWithStatus(
-      mojom::HostStatus::kHostVerified, test_devices()[0]);
-  CreateDelegate(test_devices()[0] /* initial_host */,
-                 kPendingNone /* initial_pending_wifi_sync_request */);
-  SetIsWifiSyncEnabled(true);
-
-  EXPECT_TRUE(delegate()->IsWifiSyncEnabled());
-  EXPECT_EQ(test_devices()[0].GetSoftwareFeatureState(
-                multidevice::SoftwareFeature::kWifiSyncHost),
-            multidevice::SoftwareFeatureState::kSupported);
-
-  // Simulate lock/unlock
-  session_manager()->SetSessionState(session_manager::SessionState::LOCKED);
-  session_manager()->SetSessionState(session_manager::SessionState::ACTIVE);
-
-  FlushDelegateNotifier();
-
-  EXPECT_EQ(0u, fake_account_status_change_delegate()
-                    ->num_eligible_for_wifi_sync_events_handled());
 }
 
 // Runs tests twice; once with v1 DeviceSync enabled and once with it disabled.
 // TODO(https://crbug.com/1019206): Remove when v1 DeviceSync is disabled,
 // when all devices should have an Instance ID.
 INSTANTIATE_TEST_SUITE_P(All,
-                         MultiDeviceSetupWifiSyncFeatureManagerImplTest,
+                         MultiDeviceSetupGlobalStateFeatureManagerImplTest,
                          ::testing::Bool());
 
 }  // namespace multidevice_setup

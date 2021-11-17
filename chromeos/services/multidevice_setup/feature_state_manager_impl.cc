@@ -9,6 +9,7 @@
 #include "ash/constants/ash_features.h"
 #include "base/bind.h"
 #include "base/containers/contains.h"
+#include "base/containers/flat_map.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
@@ -16,8 +17,8 @@
 #include "chromeos/components/multidevice/logging/logging.h"
 #include "chromeos/components/multidevice/remote_device_ref.h"
 #include "chromeos/components/multidevice/software_feature.h"
+#include "chromeos/services/multidevice_setup/global_state_feature_manager.h"
 #include "chromeos/services/multidevice_setup/public/cpp/prefs.h"
-#include "chromeos/services/multidevice_setup/wifi_sync_feature_manager.h"
 #include "components/prefs/pref_service.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -198,18 +199,19 @@ std::unique_ptr<FeatureStateManager> FeatureStateManagerImpl::Factory::Create(
     HostStatusProvider* host_status_provider,
     device_sync::DeviceSyncClient* device_sync_client,
     AndroidSmsPairingStateTracker* android_sms_pairing_state_tracker,
-    WifiSyncFeatureManager* wifi_sync_feature_manager,
+    const base::flat_map<mojom::Feature, GlobalStateFeatureManager*>&
+        global_state_feature_managers,
     bool is_secondary_user) {
   if (test_factory_) {
     return test_factory_->CreateInstance(
         pref_service, host_status_provider, device_sync_client,
-        android_sms_pairing_state_tracker, wifi_sync_feature_manager,
+        android_sms_pairing_state_tracker, global_state_feature_managers,
         is_secondary_user);
   }
 
   return base::WrapUnique(new FeatureStateManagerImpl(
       pref_service, host_status_provider, device_sync_client,
-      android_sms_pairing_state_tracker, wifi_sync_feature_manager,
+      android_sms_pairing_state_tracker, global_state_feature_managers,
       is_secondary_user));
 }
 
@@ -226,13 +228,14 @@ FeatureStateManagerImpl::FeatureStateManagerImpl(
     HostStatusProvider* host_status_provider,
     device_sync::DeviceSyncClient* device_sync_client,
     AndroidSmsPairingStateTracker* android_sms_pairing_state_tracker,
-    WifiSyncFeatureManager* wifi_sync_feature_manager,
+    const base::flat_map<mojom::Feature, GlobalStateFeatureManager*>&
+        global_state_feature_managers,
     bool is_secondary_user)
     : pref_service_(pref_service),
       host_status_provider_(host_status_provider),
       device_sync_client_(device_sync_client),
       android_sms_pairing_state_tracker_(android_sms_pairing_state_tracker),
-      wifi_sync_feature_manager_(wifi_sync_feature_manager),
+      global_state_feature_managers_(global_state_feature_managers),
       is_secondary_user_(is_secondary_user),
       feature_to_enabled_pref_name_map_(GenerateFeatureToEnabledPrefNameMap()),
       feature_to_allowed_pref_name_map_(GenerateFeatureToAllowedPrefNameMap()),
@@ -287,13 +290,11 @@ FeatureStateManagerImpl::GetFeatureStates() {
 void FeatureStateManagerImpl::PerformSetFeatureEnabledState(
     mojom::Feature feature,
     bool enabled) {
-  // Wifi sync enabled toggle acts as a global toggle which applies to all
-  // Chrome OS devices and a connected Android phone.
-  if (feature == mojom::Feature::kWifiSync) {
-    wifi_sync_feature_manager_->SetIsWifiSyncEnabled(enabled);
+  if (global_state_feature_managers_.contains(feature)) {
+    global_state_feature_managers_.at(feature)->SetIsFeatureEnabled(enabled);
     // Need to manually trigger UpdateFeatureStateCache since changes to
-    // wifi sync is not observed by |registrar_| and will not invoke
-    // OnPrefValueChanged
+    // this global feature state is not observed by |registrar_| and will not
+    // invoke OnPrefValueChanged
     UpdateFeatureStateCache(true /* notify_observers_of_changes */);
     return;
   }
@@ -502,10 +503,10 @@ bool FeatureStateManagerImpl::HasBeenActivatedByPhone(
                  multidevice::SoftwareFeatureState::kEnabled;
     }
 
-    // Edge Case: Wifi Sync is considered activated on host when the state is
-    // kSupported or kEnabled. kEnabled/kSupported correspond to on/off for Wifi
-    // Sync Host.
-    return (feature == mojom::Feature::kWifiSync &&
+    // Edge Case: features with global states are considered activated on host
+    // when the state is kSupported or kEnabled. kEnabled/kSupported correspond
+    // to on/off for the global host state.
+    return (global_state_feature_managers_.contains(feature) &&
             feature_state == multidevice::SoftwareFeatureState::kSupported);
   }
 
@@ -530,11 +531,8 @@ bool FeatureStateManagerImpl::RequiresFurtherSetup(mojom::Feature feature) {
 
 mojom::FeatureState FeatureStateManagerImpl::GetEnabledOrDisabledState(
     mojom::Feature feature) {
-  // WifiSyncFeatureManager is the source of truth for Wifi Sync enabled state.
-  // It is a global setting that applies to all synced Chrome OS devices and a
-  // connected Android phone.
-  if (feature == mojom::Feature::kWifiSync) {
-    return (wifi_sync_feature_manager_->IsWifiSyncEnabled()
+  if (global_state_feature_managers_.contains(feature)) {
+    return (global_state_feature_managers_.at(feature)->IsFeatureEnabled()
                 ? mojom::FeatureState::kEnabledByUser
                 : mojom::FeatureState::kDisabledByUser);
   }

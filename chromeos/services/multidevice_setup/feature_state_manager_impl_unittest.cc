@@ -14,8 +14,8 @@
 #include "chromeos/components/multidevice/remote_device_test_util.h"
 #include "chromeos/services/device_sync/public/cpp/fake_device_sync_client.h"
 #include "chromeos/services/multidevice_setup/fake_feature_state_manager.h"
+#include "chromeos/services/multidevice_setup/fake_global_state_feature_manager.h"
 #include "chromeos/services/multidevice_setup/fake_host_status_provider.h"
-#include "chromeos/services/multidevice_setup/fake_wifi_sync_feature_manager.h"
 #include "chromeos/services/multidevice_setup/public/cpp/fake_android_sms_pairing_state_tracker.h"
 #include "chromeos/services/multidevice_setup/public/cpp/prefs.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
@@ -121,14 +121,18 @@ class MultiDeviceSetupFeatureStateManagerImplTest : public testing::Test {
         std::make_unique<FakeAndroidSmsPairingStateTracker>();
     fake_android_sms_pairing_state_tracker_->SetPairingComplete(true);
 
-    fake_wifi_sync_feature_manager_ =
-        std::make_unique<FakeWifiSyncFeatureManager>();
+    fake_global_state_feature_managers_.emplace(
+        mojom::Feature::kWifiSync,
+        std::make_unique<FakeGlobalStateFeatureManager>());
 
     manager_ = FeatureStateManagerImpl::Factory::Create(
         test_pref_service_.get(), fake_host_status_provider_.get(),
         fake_device_sync_client_.get(),
         fake_android_sms_pairing_state_tracker_.get(),
-        fake_wifi_sync_feature_manager_.get(), is_secondary_user);
+        {{mojom::Feature::kWifiSync,
+          fake_global_state_feature_managers_.at(mojom::Feature::kWifiSync)
+              .get()}},
+        is_secondary_user);
 
     fake_observer_ = std::make_unique<FakeFeatureStateManagerObserver>();
     manager_->AddObserver(fake_observer_.get());
@@ -247,8 +251,11 @@ class MultiDeviceSetupFeatureStateManagerImplTest : public testing::Test {
   }
 
   FeatureStateManager* manager() { return manager_.get(); }
-  FakeWifiSyncFeatureManager* wifi_sync_manager() {
-    return fake_wifi_sync_feature_manager_.get();
+
+  base::flat_map<mojom::Feature,
+                 std::unique_ptr<FakeGlobalStateFeatureManager>>&
+  global_state_feature_managers() {
+    return fake_global_state_feature_managers_;
   }
 
  private:
@@ -263,7 +270,8 @@ class MultiDeviceSetupFeatureStateManagerImplTest : public testing::Test {
   std::unique_ptr<device_sync::FakeDeviceSyncClient> fake_device_sync_client_;
   std::unique_ptr<FakeAndroidSmsPairingStateTracker>
       fake_android_sms_pairing_state_tracker_;
-  std::unique_ptr<FakeWifiSyncFeatureManager> fake_wifi_sync_feature_manager_;
+  base::flat_map<mojom::Feature, std::unique_ptr<FakeGlobalStateFeatureManager>>
+      fake_global_state_feature_managers_;
 
   std::unique_ptr<FakeFeatureStateManagerObserver> fake_observer_;
 
@@ -879,7 +887,11 @@ TEST_F(MultiDeviceSetupFeatureStateManagerImplTest, CameraRoll) {
 
 TEST_F(MultiDeviceSetupFeatureStateManagerImplTest, WifiSync) {
   SetupFeatureStateManager();
-
+  // Set the initial global state to disabled, so that the wifi sync feature
+  // state will be |kDisabledByUser| when it becomes supported on both the host
+  // and client devices.
+  global_state_feature_managers()[mojom::Feature::kWifiSync]
+      ->SetIsFeatureEnabled(false);
   TryAllUnverifiedHostStatesAndVerifyFeatureState(mojom::Feature::kWifiSync);
 
   SetVerifiedHost();
@@ -889,32 +901,40 @@ TEST_F(MultiDeviceSetupFeatureStateManagerImplTest, WifiSync) {
   SetSoftwareFeatureState(true /* use_local_device */,
                           multidevice::SoftwareFeature::kWifiSyncClient,
                           multidevice::SoftwareFeatureState::kSupported);
-  wifi_sync_manager()->SetIsWifiSyncEnabled(true);
   VerifyFeatureState(mojom::FeatureState::kDisabledByUser,
                      mojom::Feature::kWifiSync);
   VerifyFeatureStateChange(1u /* expected_index */, mojom::Feature::kWifiSync,
                            mojom::FeatureState::kDisabledByUser);
 
+  // The GlobalStateFeatureManager should be updated when the host state changes
+  // to |kEnabled|. It will then update the feature state to |kEnabledByUser|.
+  global_state_feature_managers()[mojom::Feature::kWifiSync]
+      ->SetIsFeatureEnabled(true);
   SetSoftwareFeatureState(false /* use_local_device */,
                           multidevice::SoftwareFeature::kWifiSyncHost,
                           multidevice::SoftwareFeatureState::kEnabled);
-  wifi_sync_manager()->SetIsWifiSyncEnabled(false);
   VerifyFeatureState(mojom::FeatureState::kEnabledByUser,
                      mojom::Feature::kWifiSync);
   VerifyFeatureStateChange(2u /* expected_index */, mojom::Feature::kWifiSync,
                            mojom::FeatureState::kEnabledByUser);
 
+  // Simulate user toggling the wifi sync state, and verify that the
+  // GlobalStateFeatureManager was updated accordingly.
   manager()->SetFeatureEnabledState(mojom::Feature::kWifiSync, false);
   VerifyFeatureState(mojom::FeatureState::kDisabledByUser,
                      mojom::Feature::kWifiSync);
   VerifyFeatureStateChange(3u /* expected_index */, mojom::Feature::kWifiSync,
                            mojom::FeatureState::kDisabledByUser);
+  EXPECT_FALSE(global_state_feature_managers()[mojom::Feature::kWifiSync]
+                   ->IsFeatureEnabled());
 
   manager()->SetFeatureEnabledState(mojom::Feature::kWifiSync, true);
   VerifyFeatureState(mojom::FeatureState::kEnabledByUser,
                      mojom::Feature::kWifiSync);
   VerifyFeatureStateChange(4u /* expected_index */, mojom::Feature::kWifiSync,
                            mojom::FeatureState::kEnabledByUser);
+  EXPECT_TRUE(global_state_feature_managers()[mojom::Feature::kWifiSync]
+                  ->IsFeatureEnabled());
 
   MakeBetterTogetherSuiteDisabledByUser();
   VerifyFeatureState(mojom::FeatureState::kUnavailableSuiteDisabled,
