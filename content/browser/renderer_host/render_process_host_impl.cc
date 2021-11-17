@@ -5031,8 +5031,7 @@ void RenderProcessHostImpl::OnProcessLaunched() {
 
   // Pass bits of global renderer state to the renderer.
   GetRendererInterface()->SetUserAgent(
-      GetContentClient()->browser()->GetUserAgentBasedOnPolicy(
-          browser_context_));
+      GetContentClient()->browser()->GetUserAgent());
   GetRendererInterface()->SetReducedUserAgent(
       GetContentClient()->browser()->GetReducedUserAgent());
   GetRendererInterface()->SetUserAgentMetadata(

@@ -242,16 +242,6 @@ std::string GetProduct() {
   return version_info::GetProductNameAndVersionForUserAgent();
 }
 
-std::string GetFullUserAgent() {
-  std::string product = GetProduct();
-#if defined(OS_ANDROID)
-  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kUseMobileUserAgent))
-    product += " Mobile";
-#endif
-  return content::BuildUserAgentFromProduct(product);
-}
-
 std::string GetUserAgent() {
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
   if (command_line->HasSwitch(kUserAgent)) {
@@ -264,7 +254,12 @@ std::string GetUserAgent() {
   if (base::FeatureList::IsEnabled(blink::features::kReduceUserAgent))
     return GetReducedUserAgent();
 
-  return GetFullUserAgent();
+  std::string product = GetProduct();
+#if defined(OS_ANDROID)
+  if (command_line->HasSwitch(switches::kUseMobileUserAgent))
+    product += " Mobile";
+#endif
+  return content::BuildUserAgentFromProduct(product);
 }
 
 std::string GetReducedUserAgent() {

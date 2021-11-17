@@ -1185,8 +1185,6 @@ extern const char kFetchKeepaliveDurationOnShutdown[];
 
 extern const char kSuppressDifferentOriginSubframeJSDialogs[];
 
-extern const char kUserAgentReduction[];
-
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 extern const char kPdfAnnotationsEnabled[];
 #endif
