@@ -25,14 +25,16 @@ BucketContext::~BucketContext() {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
 }
 
-void BucketContext::Initialize() {
+void BucketContext::Initialize(
+    scoped_refptr<storage::QuotaManagerProxy> quota_manager_proxy) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 #if DCHECK_IS_ON()
   DCHECK(!initialize_called_) << __func__ << " called twice";
   initialize_called_ = true;
 #endif  // DCHECK_IS_ON()
   content::GetIOThreadTaskRunner({})->PostTask(
-      FROM_HERE, base::BindOnce(&BucketContext::InitializeOnIOThread, this));
+      FROM_HERE, base::BindOnce(&BucketContext::InitializeOnIOThread, this,
+                                std::move(quota_manager_proxy)));
 }
 
 void BucketContext::BindBucketManagerHost(
@@ -50,11 +52,13 @@ void BucketContext::BindBucketManagerHost(
                      std::move(receiver), mojo::GetBadMessageCallback()));
 }
 
-void BucketContext::InitializeOnIOThread() {
+void BucketContext::InitializeOnIOThread(
+    scoped_refptr<storage::QuotaManagerProxy> quota_manager_proxy) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   DCHECK(!bucket_manager_) << __func__ << "  called more than once";
 
-  bucket_manager_ = std::make_unique<BucketManager>();
+  bucket_manager_ =
+      std::make_unique<BucketManager>(std::move(quota_manager_proxy));
 }
 
 void BucketContext::BindBucketManagerHostOnIOThread(

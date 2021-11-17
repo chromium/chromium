@@ -67,9 +67,10 @@ interface BucketHost {
 interface BucketManagerHost {
   // Open or create or bucket with the specified name and policies.
   // On success, it will return a mojo data pipe to the BucketHost in the
-  // browser process.
+  // browser process. Returns a null remote on error, e.g. if the storage bucket
+  // failed to be created or retrieved due to a database error.
   OpenBucket(string name, BucketPolicies policy)
-      => (pending_remote<BucketHost> remote);
+      => (pending_remote<BucketHost>? remote);
 
   // Returns a list of stored bucket names in alphabetical order.
   Keys() => (array<string> buckets, bool success);

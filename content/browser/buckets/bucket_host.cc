@@ -5,15 +5,17 @@
 #include "content/browser/buckets/bucket_host.h"
 
 #include "base/bind.h"
+#include "base/threading/sequenced_task_runner_handle.h"
+#include "content/browser/buckets/bucket_manager.h"
 #include "content/browser/buckets/bucket_manager_host.h"
 
 namespace content {
 
 BucketHost::BucketHost(BucketManagerHost* bucket_manager_host,
-                       std::string name,
+                       const storage::BucketInfo& bucket_info,
                        blink::mojom::BucketPoliciesPtr policies)
     : bucket_manager_host_(bucket_manager_host),
-      bucket_name_(std::move(name)),
+      bucket_info_(bucket_info),
       policies_(std::move(policies)) {
   receivers_.set_disconnect_handler(base::BindRepeating(
       &BucketHost::OnReceiverDisconnected, base::Unretained(this)));
@@ -64,7 +66,7 @@ void BucketHost::OnReceiverDisconnected() {
   if (!receivers_.empty())
     return;
   // Destroys `this`.
-  bucket_manager_host_->RemoveBucketHost(bucket_name_);
+  bucket_manager_host_->RemoveBucketHost(bucket_info_.name);
 }
 
 }  // namespace content

@@ -1298,7 +1298,7 @@ void StoragePartitionImpl::Initialize(
   cookie_store_manager_->LoadAllSubscriptions(base::DoNothing());
 
   bucket_context_ = base::MakeRefCounted<BucketContext>();
-  bucket_context_->Initialize();
+  bucket_context_->Initialize(quota_manager_proxy);
 
   // The Conversion Measurement API is not available in Incognito mode.
   if (!is_in_memory() &&

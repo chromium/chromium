@@ -83,6 +83,13 @@ class MockQuotaManager : public QuotaManager {
                         QuotaClientTypes quota_client_types,
                         StatusCallback callback) override;
 
+  // Finds and removes a bucket from the canned list of buckets, but doesn't
+  // touch anything on disk. Will remove bucket data from all QuotaClientTypes.
+  // Will return kOk if deletion is successful or there is no bucket to delete.
+  void FindAndDeleteBucketData(const blink::StorageKey& storage_key,
+                               const std::string& bucket_name,
+                               StatusCallback callback) override;
+
   // Overrides QuotaManager's implementation so that tests can observe
   // calls to this function.
   void NotifyWriteFailed(const blink::StorageKey& storage_key) override;
@@ -179,8 +186,8 @@ class MockQuotaManager : public QuotaManager {
       GetBucketsCallback callback,
       std::unique_ptr<std::set<BucketLocator>> buckets,
       blink::mojom::StorageType storage_type);
-  void DidDeleteStorageKeyData(StatusCallback callback,
-                               blink::mojom::QuotaStatusCode status);
+  void DidDeleteBucketData(StatusCallback callback,
+                           blink::mojom::QuotaStatusCode status);
 
   BucketId::Generator bucket_id_generator_;
 
