@@ -9,6 +9,7 @@ import os
 import subprocess
 
 from flake_suppressor import results as results_module
+from flake_suppressor import tag_utils
 
 from unexpected_passes_common import queries as upc_queries
 
@@ -132,12 +133,13 @@ def GetResultCounts(sample_period, billing_project):
 
   json_results = json.loads(completed_process.stdout)
 
-  result_counts = collections.defaultdict(dict)
+  # A default dict of default dicts of ints.
+  result_counts = collections.defaultdict(lambda: collections.defaultdict(int))
   for r in json_results:
-    typ_tags = tuple(r['typ_tags'])
+    typ_tags = tuple(tag_utils.RemoveMostIgnoredTags(r['typ_tags']))
     test_name = r['test_name']
     _, test_name = results_module.GetTestSuiteAndNameFromResultDbName(test_name)
     count = int(r['result_count'])
-    result_counts[typ_tags][test_name] = count
+    result_counts[typ_tags][test_name] += count
 
   return result_counts

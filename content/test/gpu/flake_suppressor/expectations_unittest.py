@@ -6,6 +6,7 @@
 import base64
 import os
 import sys
+import tempfile
 import unittest
 
 import six
@@ -78,7 +79,7 @@ class IterateThroughResultsForUserUnittest(fake_filesystem_unittest.TestCase):
   def testIterateThroughResultsForUserIgnoreNoGroupByTags(self):
     """Tests that everything appears to function with ignore and no group."""
     self._input_mock.return_value = (None, None)
-    expectations.IterateThroughResultsForUser(self.result_map, False)
+    expectations.IterateThroughResultsForUser(self.result_map, False, True)
     expected_contents = validate_tag_consistency.TAG_HEADER + """\
 [ win ] some_test [ Failure ]
 [ mac ] some_test [ Failure ]
@@ -90,7 +91,7 @@ class IterateThroughResultsForUserUnittest(fake_filesystem_unittest.TestCase):
   def testIterateThroughResultsForUserIgnoreGroupByTags(self):
     """Tests that everything appears to function with ignore and grouping."""
     self._input_mock.return_value = (None, None)
-    expectations.IterateThroughResultsForUser(self.result_map, True)
+    expectations.IterateThroughResultsForUser(self.result_map, True, True)
     expected_contents = validate_tag_consistency.TAG_HEADER + """\
 [ win ] some_test [ Failure ]
 [ mac ] some_test [ Failure ]
@@ -102,7 +103,7 @@ class IterateThroughResultsForUserUnittest(fake_filesystem_unittest.TestCase):
   def testIterateThroughResultsForUserRetryNoGroupByTags(self):
     """Tests that everything appears to function with retry and no group."""
     self._input_mock.return_value = ('RetryOnFailure', '')
-    expectations.IterateThroughResultsForUser(self.result_map, False)
+    expectations.IterateThroughResultsForUser(self.result_map, False, True)
     expected_contents = validate_tag_consistency.TAG_HEADER + """\
 [ win ] some_test [ Failure ]
 [ mac ] some_test [ Failure ]
@@ -117,7 +118,7 @@ class IterateThroughResultsForUserUnittest(fake_filesystem_unittest.TestCase):
   def testIterateThroughResultsForUserRetryGroupByTags(self):
     """Tests that everything appears to function with retry and grouping."""
     self._input_mock.return_value = ('RetryOnFailure', 'crbug.com/1')
-    expectations.IterateThroughResultsForUser(self.result_map, True)
+    expectations.IterateThroughResultsForUser(self.result_map, True, True)
     expected_contents = validate_tag_consistency.TAG_HEADER + """\
 [ win ] some_test [ Failure ]
 crbug.com/1 [ win ] foo_test [ RetryOnFailure ]
@@ -132,7 +133,7 @@ crbug.com/1 [ mac ] foo_test [ RetryOnFailure ]
   def testIterateThroughResultsForUserFailNoGroupByTags(self):
     """Tests that everything appears to function with failure and no group."""
     self._input_mock.return_value = ('Failure', 'crbug.com/1')
-    expectations.IterateThroughResultsForUser(self.result_map, False)
+    expectations.IterateThroughResultsForUser(self.result_map, False, True)
     expected_contents = validate_tag_consistency.TAG_HEADER + """\
 [ win ] some_test [ Failure ]
 [ mac ] some_test [ Failure ]
@@ -147,7 +148,7 @@ crbug.com/1 [ win ] bar_test [ Failure ]
   def testIterateThroughResultsForUserFailGroupByTags(self):
     """Tests that everything appears to function with failure and grouping."""
     self._input_mock.return_value = ('Failure', '')
-    expectations.IterateThroughResultsForUser(self.result_map, True)
+    expectations.IterateThroughResultsForUser(self.result_map, True, True)
     expected_contents = validate_tag_consistency.TAG_HEADER + """\
 [ win ] some_test [ Failure ]
 [ win ] foo_test [ Failure ]
@@ -155,6 +156,32 @@ crbug.com/1 [ win ] bar_test [ Failure ]
 [ mac ] some_test [ Failure ]
 [ mac ] foo_test [ Failure ]
 [ android ] some_test [ Failure ]
+"""
+    with open(self.expectation_file) as infile:
+      self.assertEqual(infile.read(), expected_contents)
+
+  def testIterateThroughResultsForUserNoIncludeAllTags(self):
+    """Tests that everything appears to function without including all tags"""
+    self.result_map = {
+        'pixel_integration_test': {
+            'foo_test': {
+                tuple(['win', 'win10']): ['a'],
+                tuple(['mac']): ['b'],
+            },
+            'bar_test': {
+                tuple(['win']): ['c'],
+            },
+        },
+    }
+    self._input_mock.return_value = ('RetryOnFailure', '')
+    expectations.IterateThroughResultsForUser(self.result_map, False, False)
+    expected_contents = validate_tag_consistency.TAG_HEADER + """\
+[ win ] some_test [ Failure ]
+[ mac ] some_test [ Failure ]
+[ android ] some_test [ Failure ]
+[ win10 ] foo_test [ RetryOnFailure ]
+[ mac ] foo_test [ RetryOnFailure ]
+[ win ] bar_test [ RetryOnFailure ]
 """
     with open(self.expectation_file) as infile:
       self.assertEqual(infile.read(), expected_contents)
@@ -205,7 +232,8 @@ class IterateThroughResultsWithThresholdsUnittest(
         }
     }
     expectations.IterateThroughResultsWithThresholds(self.result_map, True,
-                                                     result_counts, 0.02, 0.5)
+                                                     result_counts, 0.02, 0.5,
+                                                     True)
     expected_contents = validate_tag_consistency.TAG_HEADER + """\
 [ win ] some_test [ Failure ]
 [ win ] bar_test [ RetryOnFailure ]
@@ -231,13 +259,53 @@ class IterateThroughResultsWithThresholdsUnittest(
         }
     }
     expectations.IterateThroughResultsWithThresholds(self.result_map, False,
-                                                     result_counts, 0.02, 0.5)
+                                                     result_counts, 0.02, 0.5,
+                                                     True)
     expected_contents = validate_tag_consistency.TAG_HEADER + """\
 [ win ] some_test [ Failure ]
 [ mac ] some_test [ Failure ]
 [ android ] some_test [ Failure ]
 [ mac ] foo_test [ Failure ]
 [ win ] bar_test [ RetryOnFailure ]
+"""
+    with open(self.expectation_file) as infile:
+      self.assertEqual(infile.read(), expected_contents)
+
+  def testNoIncludeAllTags(self):
+    """Tests that threshold-based expectations work when filtering tags."""
+    self.result_map = {
+        'pixel_integration_test': {
+            'foo_test': {
+                tuple(['win', 'win10']): ['a'],
+                tuple(['mac']): ['b'],
+            },
+            'bar_test': {
+                tuple(['win', 'win10']): ['c'],
+            },
+        },
+    }
+
+    result_counts = {
+        tuple(['win', 'win10']): {
+            # We expect this to be ignored since it has a 1% flake rate.
+            'foo_test': 100,
+            # We expect this to be RetryOnFailure since it has a 25% flake rate.
+            'bar_test': 4,
+        },
+        tuple(['mac']): {
+            # We expect this to be Failure since it has a 50% flake rate.
+            'foo_test': 2
+        }
+    }
+    expectations.IterateThroughResultsWithThresholds(self.result_map, False,
+                                                     result_counts, 0.02, 0.5,
+                                                     False)
+    expected_contents = validate_tag_consistency.TAG_HEADER + """\
+[ win ] some_test [ Failure ]
+[ mac ] some_test [ Failure ]
+[ android ] some_test [ Failure ]
+[ mac ] foo_test [ Failure ]
+[ win10 ] bar_test [ RetryOnFailure ]
 """
     with open(self.expectation_file) as infile:
       self.assertEqual(infile.read(), expected_contents)
@@ -312,7 +380,7 @@ class ModifyFileForResultUnittest(fake_filesystem_unittest.TestCase):
     with open(self.expectation_file, 'w') as outfile:
       outfile.write(expectation_file_contents)
     expectations.ModifyFileForResult(None, 'some_test', ['win', 'win10'], '',
-                                     'Failure', False)
+                                     'Failure', False, True)
     expected_contents = validate_tag_consistency.TAG_HEADER + """\
 [ win ] some_test [ Failure ]
 
@@ -330,7 +398,7 @@ class ModifyFileForResultUnittest(fake_filesystem_unittest.TestCase):
     with open(self.expectation_file, 'w') as outfile:
       outfile.write(expectation_file_contents)
     expectations.ModifyFileForResult(None, 'some_test', ['win', 'win10'], '',
-                                     'Failure', True)
+                                     'Failure', True, True)
     expected_contents = validate_tag_consistency.TAG_HEADER + """\
 [ mac ] some_test [ Failure ]
 [ win win10 ] some_test [ Failure ]
@@ -348,7 +416,7 @@ class ModifyFileForResultUnittest(fake_filesystem_unittest.TestCase):
     with open(self.expectation_file, 'w') as outfile:
       outfile.write(expectation_file_contents)
     expectations.ModifyFileForResult(None, 'foo_test', ['win', 'win10'], '',
-                                     'Failure', True)
+                                     'Failure', True, True)
     expected_contents = validate_tag_consistency.TAG_HEADER + """\
 [ win ] some_test [ Failure ]
 [ win ] foo_test [ Failure ]
@@ -357,6 +425,97 @@ class ModifyFileForResultUnittest(fake_filesystem_unittest.TestCase):
 """
     with open(self.expectation_file) as infile:
       self.assertEqual(infile.read(), expected_contents)
+
+
+@unittest.skipIf(sys.version_info[0] != 3, 'Python 3-only')
+class FilterToMostSpecificTagTypeUnittest(fake_filesystem_unittest.TestCase):
+  def setUp(self):
+    self.setUpPyfakefs()
+    with tempfile.NamedTemporaryFile(delete=False) as tf:
+      self.expectation_file = tf.name
+
+  def testBasic(self):
+    """Tests that only the most specific tags are kept."""
+    expectation_file_contents = """\
+# tags: [ tag1_least_specific tag1_middle_specific tag1_most_specific ]
+# tags: [ tag2_least_specific tag2_middle_specific tag2_most_specific ]"""
+    with open(self.expectation_file, 'w') as outfile:
+      outfile.write(expectation_file_contents)
+
+    tags = [
+        'tag1_least_specific', 'tag1_most_specific', 'tag2_middle_specific',
+        'tag2_least_specific'
+    ]
+    filtered_tags = expectations.FilterToMostSpecificTypTags(
+        tags, self.expectation_file)
+    self.assertEqual(filtered_tags,
+                     ['tag1_most_specific', 'tag2_middle_specific'])
+
+  def testSingleTags(self):
+    """Tests that functionality works as expected with single tags."""
+    expectation_file_contents = """\
+# tags: [ tag1_most_specific ]
+# tags: [ tag2_most_specific ]"""
+    with open(self.expectation_file, 'w') as outfile:
+      outfile.write(expectation_file_contents)
+
+    tags = ['tag1_most_specific', 'tag2_most_specific']
+    filtered_tags = expectations.FilterToMostSpecificTypTags(
+        tags, self.expectation_file)
+    self.assertEqual(filtered_tags, tags)
+
+  def testUnusedTags(self):
+    """Tests that functionality works as expected with extra/unused tags."""
+    expectation_file_contents = """\
+# tags: [ tag1_least_specific tag1_middle_specific tag1_most_specific ]
+# tags: [ tag2_least_specific tag2_middle_specific tag2_most_specific ]
+# tags: [ some_unused_tag ]"""
+    with open(self.expectation_file, 'w') as outfile:
+      outfile.write(expectation_file_contents)
+
+    tags = [
+        'tag1_least_specific', 'tag1_most_specific', 'tag2_middle_specific',
+        'tag2_least_specific'
+    ]
+    filtered_tags = expectations.FilterToMostSpecificTypTags(
+        tags, self.expectation_file)
+    self.assertEqual(filtered_tags,
+                     ['tag1_most_specific', 'tag2_middle_specific'])
+
+  def testMultiline(self):
+    """Tests that functionality works when tags cover multiple lines."""
+    expectation_file_contents = """\
+# tags: [ tag1_least_specific
+#         tag1_middle_specific
+#         tag1_most_specific ]
+# tags: [ tag2_least_specific
+#         tag2_middle_specific tag2_most_specific ]"""
+    with open(self.expectation_file, 'w') as outfile:
+      outfile.write(expectation_file_contents)
+
+    tags = [
+        'tag1_least_specific', 'tag1_middle_specific', 'tag1_most_specific',
+        'tag2_middle_specific', 'tag2_least_specific'
+    ]
+    filtered_tags = expectations.FilterToMostSpecificTypTags(
+        tags, self.expectation_file)
+    self.assertEqual(filtered_tags,
+                     ['tag1_most_specific', 'tag2_middle_specific'])
+
+  def testMissingTags(self):
+    """Tests that a file not having all tags is an error."""
+    expectation_file_contents = """\
+# tags: [ tag1_least_specific tag1_middle_specific ]
+# tags: [ tag2_least_specific tag2_middle_specific tag2_most_specific ]"""
+    with open(self.expectation_file, 'w') as outfile:
+      outfile.write(expectation_file_contents)
+
+    tags = [
+        'tag1_least_specific', 'tag1_most_specific', 'tag2_middle_specific',
+        'tag2_least_specific'
+    ]
+    with self.assertRaises(RuntimeError):
+      expectations.FilterToMostSpecificTypTags(tags, self.expectation_file)
 
 
 @unittest.skipIf(sys.version_info[0] != 3, 'Python 3-only')

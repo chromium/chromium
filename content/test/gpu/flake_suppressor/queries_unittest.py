@@ -53,6 +53,39 @@ class GetResultCountsUnittest(unittest.TestCase):
     self.assertEqual(result_counts, expected_result_counts)
     self._subprocess_mock.assert_called_once()
 
+  def testIgnoredTags(self):
+    """Tests that ignored tags are removed and their counts merged."""
+    query_result = [
+        {
+            'typ_tags': ['win', 'win-laptop'],
+            'test_name': 'garbage.suite.garbage.windows',
+            'result_count': '100',
+        },
+        {
+            'typ_tags': ['win'],
+            'test_name': 'garbage.suite.garbage.windows',
+            'result_count': '50',
+        },
+        {
+            'typ_tags': ['mac', 'exact'],
+            'test_name': 'garbage.suite.garbage.mac',
+            'result_count': '200',
+        },
+    ]
+    fake_process = uu.FakeProcess(stdout=json.dumps(query_result))
+    self._subprocess_mock.return_value = fake_process
+    result_counts = queries.GetResultCounts(1, 'project')
+    expected_result_counts = {
+        tuple(['win']): {
+            'windows': 150,
+        },
+        tuple(['mac']): {
+            'mac': 200,
+        },
+    }
+    self.assertEqual(result_counts, expected_result_counts)
+    self._subprocess_mock.assert_called_once()
+
 
 if __name__ == '__main__':
   unittest.main(verbosity=2)

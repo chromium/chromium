@@ -49,7 +49,9 @@ class AggregateResultsUnittest(BaseResultsUnittest):
                      'conformance/textures/misc/video-rotation.html'),
             'id':
             'build-1111',
-            'typ_tags': ['win', 'nvidia'],
+            # The win-laptop tag is ignored, and thus should be removed in the
+            # output.
+            'typ_tags': ['win', 'nvidia', 'win-laptop'],
         },
         {
             'name': ('gpu_tests.webgl_conformance_integration_test.'
@@ -182,7 +184,9 @@ class ConvertJsonResultsToResultObjectsUnittest(BaseResultsUnittest):
                      'conformance/textures/misc/video-rotation.html'),
             'id':
             'build-1111',
-            'typ_tags': ['win', 'nvidia'],
+            # The win-laptop tag is ignored, and thus should be removed in the
+            # output.
+            'typ_tags': ['win', 'nvidia', 'win-laptop'],
         },
         {
             'name': ('gpu_tests.webgl_conformance_integration_test.'

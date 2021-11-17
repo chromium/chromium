@@ -8,6 +8,7 @@ import sys
 from gpu_tests import path_util
 
 path_util.SetupTypPath()
+path_util.SetupTelemetryPaths()
 
 CHROMIUM_SRC_DIR = os.path.realpath(
     os.path.join(os.path.dirname(__file__), '..', '..', '..', '..'))
