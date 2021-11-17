@@ -541,6 +541,16 @@ bool GpuInit::InitializeAndStartSandbox(base::CommandLine* command_line,
     // happens, we will exit_on_context_lost to ensure there are no leaks.
     gpu_feature_info_.enabled_gpu_driver_bug_workarounds.push_back(
         EXIT_ON_CONTEXT_LOST);
+
+    // Disable RGB format because ExternalVkImageBacking doesn't handle it
+    // correctly (see https://crbug.com/1269826). This workaround is not
+    // necessary on Android because it uses SharedImageBackingFactoryAHB.
+    // TODO(https://crbug.com/1269826): Remove once RGBX support is fixed in
+    // ExternalVkImageBacking.
+#if !defined(OS_ANDROID)
+    gpu_feature_info_.enabled_gpu_driver_bug_workarounds.push_back(
+        DISABLE_GL_RGB_FORMAT);
+#endif
   }
 
   // Collect GPU process info
