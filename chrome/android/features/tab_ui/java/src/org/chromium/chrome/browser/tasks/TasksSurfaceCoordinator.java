@@ -67,7 +67,7 @@ public class TasksSurfaceCoordinator implements TasksSurface {
     public TasksSurfaceCoordinator(@NonNull Activity activity,
             @NonNull ScrimCoordinator scrimCoordinator, @NonNull PropertyModel propertyModel,
             @TabSwitcherType int tabSwitcherType, @NonNull Supplier<Tab> parentTabSupplier,
-            boolean hasMVTiles, @NonNull WindowAndroid windowAndroid,
+            boolean hasMVTiles, boolean hasQueryTiles, @NonNull WindowAndroid windowAndroid,
             @NonNull ActivityLifecycleDispatcher activityLifecycleDispatcher,
             @NonNull TabModelSelector tabModelSelector, @NonNull SnackbarManager snackbarManager,
             @NonNull Supplier<DynamicResourceLoader> dynamicResourceLoaderSupplier,
@@ -130,6 +130,9 @@ public class TasksSurfaceCoordinator implements TasksSurface {
             mMostVisitedList = new MostVisitedListCoordinator(activity, mvTilesLayout,
                     mPropertyModel, parentTabSupplier, snackbarManager, windowAndroid);
             mMostVisitedList.initialize();
+        }
+        if (hasQueryTiles) {
+            // TODO(qinmin): show QueryTiles.
         }
     }
 

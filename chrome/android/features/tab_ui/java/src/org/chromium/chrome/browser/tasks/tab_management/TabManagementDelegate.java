@@ -97,7 +97,7 @@ public interface TabManagementDelegate {
     TasksSurface createTasksSurface(@NonNull Activity activity,
             @NonNull ScrimCoordinator scrimCoordinator, @NonNull PropertyModel propertyModel,
             @TabSwitcherType int tabSwitcherType, @NonNull Supplier<Tab> parentTabSupplier,
-            boolean hasMVTiles, @NonNull WindowAndroid windowAndroid,
+            boolean hasMVTiles, boolean hasQueryTiles, @NonNull WindowAndroid windowAndroid,
             @NonNull ActivityLifecycleDispatcher activityLifecycleDispatcher,
             @NonNull TabModelSelector tabModelSelector, @NonNull SnackbarManager snackbarManager,
             @NonNull Supplier<DynamicResourceLoader> dynamicResourceLoaderSupplier,
