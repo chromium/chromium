@@ -5,6 +5,7 @@
 import {InputController} from './input_controller.js';
 import {Macro} from './macros/macro.js';
 import {MacroName} from './macros/macro_names.js';
+import {MetricsUtils} from './metrics_utils.js';
 import {SpeechParser} from './speech_parser.js';
 
 const ErrorEvent = chrome.speechRecognitionPrivate.SpeechRecognitionErrorEvent;
@@ -12,14 +13,14 @@ const ResultEvent =
     chrome.speechRecognitionPrivate.SpeechRecognitionResultEvent;
 const StartOptions = chrome.speechRecognitionPrivate.StartOptions;
 const StopEvent = chrome.speechRecognitionPrivate.SpeechRecognitionStopEvent;
+const SpeechRecognitionType =
+    chrome.speechRecognitionPrivate.SpeechRecognitionType;
 
 /**
  * Main class for the Chrome OS dictation feature.
  * Please note: this is being developed behind the flag
  * --enable-experimental-accessibility-dictation-extension
  */
-// TODO(crbug.com/1216111): Metrics and offline speech recognition
-// functionality.
 export class Dictation {
   constructor() {
     /** @private {InputController} */
@@ -63,6 +64,9 @@ export class Dictation {
 
     /** @private {?StartOptions} */
     this.speechRecognitionOptions_ = null;
+
+    /** @private {?MetricsUtils} */
+    this.metricsUtils_ = null;
 
     this.initialize_();
   }
@@ -147,7 +151,7 @@ export class Dictation {
     if (this.state_ === Dictation.DictationState.STARTING) {
       chrome.speechRecognitionPrivate.start(
           /** @type {!StartOptions} */ (this.speechRecognitionOptions_),
-          () => this.onSpeechRecognitionStarted_());
+          (type) => this.onSpeechRecognitionStarted_(type));
       this.setStopTimeout_(Dictation.Timeouts.NO_SPEECH_MS);
     } else {
       // We are no longer starting up - perhaps a stop came
@@ -272,9 +276,10 @@ export class Dictation {
   /**
    * Called when Speech Recognition starts up and begins listening. Passed as
    * a callback to speechRecognitionPrivate.start().
+   * @param {SpeechRecognitionType} type The type of speech recognition used.
    * @private
    */
-  onSpeechRecognitionStarted_() {
+  onSpeechRecognitionStarted_(type) {
     if (chrome.runtime.lastError) {
       // chrome.runtime.lastError will be set if the call to
       // speechRecognitionPrivate.start() caused an error. When this happens,
@@ -288,9 +293,14 @@ export class Dictation {
       // We tried to stop during speech shutdown.
       return;
     }
+
     this.state_ = Dictation.DictationState.LISTENING;
     // Display the "....".
     this.clearInterimText_();
+
+    // Record metrics.
+    this.metricsUtils_ = new MetricsUtils(type, this.localePref_);
+    this.metricsUtils_.recordSpeechRecognitionStarted();
   }
 
   /**
@@ -300,6 +310,11 @@ export class Dictation {
    * @private
    */
   onSpeechRecognitionStopped_(event) {
+    if (this.metricsUtils_ !== null) {
+      this.metricsUtils_.recordSpeechRecognitionStopped();
+    }
+    this.metricsUtils_ = null;
+
     // Stop dictation if it wasn't already stopped.
     this.stopDictation_();
   }

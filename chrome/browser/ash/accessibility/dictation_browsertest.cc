@@ -10,7 +10,11 @@
 #include "ash/constants/ash_pref_names.h"
 #include "ash/shell.h"
 #include "base/bind.h"
+#include "base/hash/hash.h"
+#include "base/metrics/metrics_hashes.h"
+#include "base/metrics/statistics_recorder.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #include "chrome/browser/ash/accessibility/accessibility_test_utils.h"
@@ -24,9 +28,11 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/metrics/content/subprocess_metrics_provider.h"
 #include "components/prefs/pref_service.h"
 #include "components/soda/soda_installer.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "content/public/test/fake_speech_recognition_manager.h"
 #include "extensions/browser/extension_host_test_helper.h"
 #include "media/mojo/mojom/speech_recognition_service.mojom.h"
@@ -54,6 +60,13 @@ const char16_t kSecondSpeechResult16[] = u"help oh";
 const char kFinalSpeechResult[] = "hello world";
 const char16_t kFinalSpeechResult16[] = u"hello world";
 const int kNoSpeechTimeoutInSeconds = 10;
+const char* kOnDeviceListeningDurationMetric =
+    "Accessibility.CrosDictation.ListeningDuration.OnDeviceRecognition";
+const char* kNetworkListeningDurationMetric =
+    "Accessibility.CrosDictation.ListeningDuration.NetworkRecognition";
+const char* kLocaleMetric = "Accessibility.CrosDictation.Language";
+const char* kOnDeviceSpeechMetric =
+    "Accessibility.CrosDictation.UsedOnDeviceSpeech";
 
 static const char* kEnglishDictationCommands[] = {
     "delete",
@@ -74,6 +87,39 @@ static const char* kEnglishDictationCommands[] = {
 PrefService* GetActiveUserPrefs() {
   return ProfileManager::GetActiveUserProfile()->GetPrefs();
 }
+
+// Listens for changes to the histogram provided at construction. This class
+// only allows `Wait()` to be called once. If you need to call `Wait()` multiple
+// times, create multiple instances of this class.
+class HistogramWaiterOneShot {
+ public:
+  explicit HistogramWaiterOneShot(const char* metric_name) {
+    histogram_observer_ = std::make_unique<
+        base::StatisticsRecorder::ScopedHistogramSampleObserver>(
+        metric_name,
+        base::BindRepeating(&HistogramWaiterOneShot::OnHistogramCallback,
+                            base::Unretained(this)));
+  }
+  ~HistogramWaiterOneShot() { histogram_observer_.reset(); }
+
+  HistogramWaiterOneShot(const HistogramWaiterOneShot&) = delete;
+  HistogramWaiterOneShot& operator=(const HistogramWaiterOneShot&) = delete;
+
+  // Waits for the next update to the observed histogram.
+  void Wait() { run_loop_.Run(); }
+
+  void OnHistogramCallback(const char* metric_name,
+                           uint64_t name_hash,
+                           base::HistogramBase::Sample sample) {
+    run_loop_.Quit();
+    histogram_observer_.reset();
+  }
+
+ private:
+  std::unique_ptr<base::StatisticsRecorder::ScopedHistogramSampleObserver>
+      histogram_observer_;
+  base::RunLoop run_loop_;
+};
 
 }  // namespace
 
@@ -480,6 +526,53 @@ IN_PROC_BROWSER_TEST_P(DictationTest, GetAllSupportedLocales) {
   }
 }
 
+// Ensures that the correct metrics are recorded when Dictation is toggled.
+IN_PROC_BROWSER_TEST_P(DictationTest, Metrics) {
+  base::HistogramTester histogram_tester_;
+  bool on_device = GetParam() == speech::SpeechRecognitionType::kOnDevice;
+  const char* metric_name = on_device ? kOnDeviceListeningDurationMetric
+                                      : kNetworkListeningDurationMetric;
+  HistogramWaiterOneShot waiter(metric_name);
+  ToggleDictation();
+  WaitForRecognitionStarted();
+  ToggleDictation();
+  WaitForRecognitionStopped();
+  waiter.Wait();
+  content::FetchHistogramsFromChildProcesses();
+  metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
+
+  // Ensure that we recorded the correct locale.
+  const std::string locale = on_device ? "en-US" : "en";
+  histogram_tester_.ExpectUniqueSample(/*name=*/kLocaleMetric,
+                                       /*sample=*/base::HashMetricName(locale),
+                                       /*expected_bucket_count=*/1);
+  // Ensure that we recorded the type of speech recognition and listening
+  // duration.
+  if (on_device) {
+    histogram_tester_.ExpectUniqueSample(/*name=*/kOnDeviceSpeechMetric,
+                                         /*sample=*/true,
+                                         /*expected_bucket_count=*/1);
+    ASSERT_EQ(1,
+              histogram_tester_.GetAllSamples(kOnDeviceListeningDurationMetric)
+                  .size());
+    // Ensure there are no metrics for the other type of speech recognition.
+    ASSERT_EQ(0,
+              histogram_tester_.GetAllSamples(kNetworkListeningDurationMetric)
+                  .size());
+  } else {
+    histogram_tester_.ExpectUniqueSample(/*name=*/kOnDeviceSpeechMetric,
+                                         /*sample=*/false,
+                                         /*expected_bucket_count=*/1);
+    ASSERT_EQ(1,
+              histogram_tester_.GetAllSamples(kNetworkListeningDurationMetric)
+                  .size());
+    // Ensure there are no metrics for the other type of speech recognition.
+    ASSERT_EQ(0,
+              histogram_tester_.GetAllSamples(kOnDeviceListeningDurationMetric)
+                  .size());
+  }
+}
+
 class TextMatchesWaiter {
  public:
   TextMatchesWaiter(const std::string& expected,
@@ -644,6 +737,52 @@ IN_PROC_BROWSER_TEST_P(DictationExtensionTest, IgnoresCommands) {
   }
   ToggleDictationWithKeystroke();
   WaitForRecognitionStopped();
+}
+
+// Ensures that the correct metrics are recorded when Dictation is toggled.
+IN_PROC_BROWSER_TEST_P(DictationExtensionTest, Metrics) {
+  base::HistogramTester histogram_tester_;
+  bool on_device = GetParam() == speech::SpeechRecognitionType::kOnDevice;
+  const char* metric_name = on_device ? kOnDeviceListeningDurationMetric
+                                      : kNetworkListeningDurationMetric;
+  HistogramWaiterOneShot waiter(metric_name);
+  ToggleDictationWithKeystroke();
+  WaitForRecognitionStarted();
+  ToggleDictationWithKeystroke();
+  WaitForRecognitionStopped();
+  waiter.Wait();
+  content::FetchHistogramsFromChildProcesses();
+  metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
+
+  // Ensure that we recorded the correct locale.
+  histogram_tester_.ExpectUniqueSample(/*name=*/kLocaleMetric,
+                                       /*sample=*/base::PersistentHash("en-US"),
+                                       /*expected_bucket_count=*/1);
+  // Ensure that we recorded the type of speech recognition and listening
+  // duration.
+  if (on_device) {
+    histogram_tester_.ExpectUniqueSample(/*name=*/kOnDeviceSpeechMetric,
+                                         /*sample=*/true,
+                                         /*expected_bucket_count=*/1);
+    ASSERT_EQ(1,
+              histogram_tester_.GetAllSamples(kOnDeviceListeningDurationMetric)
+                  .size());
+    // Ensure there are no metrics for the other type of speech recognition.
+    ASSERT_EQ(0,
+              histogram_tester_.GetAllSamples(kNetworkListeningDurationMetric)
+                  .size());
+  } else {
+    histogram_tester_.ExpectUniqueSample(/*name=*/kOnDeviceSpeechMetric,
+                                         /*sample=*/false,
+                                         /*expected_bucket_count=*/1);
+    ASSERT_EQ(1,
+              histogram_tester_.GetAllSamples(kNetworkListeningDurationMetric)
+                  .size());
+    // Ensure there are no metrics for the other type of speech recognition.
+    ASSERT_EQ(0,
+              histogram_tester_.GetAllSamples(kOnDeviceListeningDurationMetric)
+                  .size());
+  }
 }
 
 class CaretBoundsChangedWaiter : public ui::InputMethodObserver {
