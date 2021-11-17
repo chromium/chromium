@@ -176,6 +176,9 @@ const char kFeedLearnMoreURL[] = "https://support.google.com/chrome/"
 - (void)shutdown {
   _searchEngineObserver.reset();
   if (_webState && _webStateObserver) {
+    if (!IsSingleNtpEnabled()) {
+      [self saveContentOffsetForWebState:_webState];
+    }
     _webState->RemoveObserver(_webStateObserver.get());
     _webStateObserver.reset();
   }
@@ -200,12 +203,16 @@ const char kFeedLearnMoreURL[] = "https://support.google.com/chrome/"
 
 - (void)setWebState:(web::WebState*)webState {
   if (_webState && _webStateObserver) {
-    [self saveContentOffsetForWebState:_webState];
+    if (IsSingleNtpEnabled()) {
+      [self saveContentOffsetForWebState:_webState];
+    }
     _webState->RemoveObserver(_webStateObserver.get());
   }
   _webState = webState;
   if (_webState && _webStateObserver) {
-    [self setContentOffsetForWebState:webState];
+    if (IsSingleNtpEnabled()) {
+      [self setContentOffsetForWebState:webState];
+    }
     _webState->AddObserver(_webStateObserver.get());
   }
 }
@@ -552,6 +559,12 @@ const char kFeedLearnMoreURL[] = "https://support.google.com/chrome/"
 // Save the NTP scroll offset into the last committed navigation item for the
 // before we navigate away.
 - (void)saveContentOffsetForWebState:(web::WebState*)webState {
+  if (!IsSingleNtpEnabled() &&
+      webState->GetLastCommittedURL().DeprecatedGetOriginAsURL() !=
+          kChromeUINewTabURL) {
+    return;
+  }
+
   web::NavigationManager* manager = webState->GetNavigationManager();
   web::NavigationItem* item =
       webState->GetLastCommittedURL() == kChromeUINewTabURL
