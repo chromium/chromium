@@ -7603,29 +7603,6 @@
             ]
         }
     ],
-    "SyncRefreshDeviceInfo": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_1_hour",
-                    "params": {
-                        "PulseIntervalMinutes": "60"
-                    },
-                    "enable_features": [
-                        "PulseInterval"
-                    ]
-                }
-            ]
-        }
-    ],
     "SyncTrustedVaultPassphraseRecovery": [
         {
             "platforms": [
