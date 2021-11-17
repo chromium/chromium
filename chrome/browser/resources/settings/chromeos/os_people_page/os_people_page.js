@@ -434,11 +434,6 @@ Polymer({
 
   /** @private */
   onSyncTap_() {
-    if (this.syncSettingsCategorizationEnabled_) {
-      settings.Router.getInstance().navigateTo(settings.routes.OS_SYNC);
-      return;
-    }
-
     // Users can go to sync subpage regardless of sync status.
     settings.Router.getInstance().navigateTo(settings.routes.SYNC);
   },
