@@ -20,8 +20,10 @@ class NGGridPlacement;
 struct GridItemOffsets;
 struct NGGridProperties;
 
-enum class AxisEdge : uint8_t { kStart, kCenter, kEnd, kBaseline };
-enum class ItemType : uint8_t { kInGridFlow, kOutOfFlow };
+enum class AxisEdge { kStart, kCenter, kEnd, kBaseline };
+enum class BaselineType { kMajor, kMinor };
+enum class ItemType { kInGridFlow, kOutOfFlow };
+enum class SizingConstraint { kLayout, kMinContent, kMaxContent };
 
 // This enum corresponds to each step used to accommodate grid items across
 // intrinsic tracks according to their min and max track sizing functions, as
@@ -33,11 +35,6 @@ enum class GridItemContributionType {
   kForIntrinsicMaximums,
   kForMaxContentMaximums,
   kForFreeSpace,
-};
-
-enum class BaselineType : uint8_t {
-  kMajor,
-  kMinor,
 };
 
 struct GridItemIndices {
@@ -246,8 +243,6 @@ struct GridItemIndices {
    private:
     friend class NGGridLayoutAlgorithmTest;
 
-    enum class SizingConstraint { kLayout, kMinContent, kMaxContent };
-
     LayoutUnit Baseline(const NGGridGeometry& grid_geometry,
                         const GridItemData& grid_item,
                         const GridTrackSizingDirection track_direction) const;
@@ -303,16 +298,11 @@ struct GridItemIndices {
         const NGGridLayoutAlgorithmTrackCollection& track_collection,
         GridItems* grid_items) const;
 
-    // Returns 'true' if it's possible to layout a grid item.
-    bool CanLayoutGridItem(
-        const GridItemData& grid_item,
-        const NGConstraintSpace& space,
-        const GridTrackSizingDirection track_direction) const;
-
     // Determines the major/minor alignment baselines for each row/column based
     // on each item in |grid_items|, and stores the results in |grid_geometry|.
     void CalculateAlignmentBaselines(
         const GridTrackSizingDirection track_direction,
+        const SizingConstraint sizing_constraint,
         NGGridGeometry* grid_geometry,
         GridItems* grid_items,
         bool* needs_additional_pass = nullptr) const;
