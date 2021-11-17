@@ -41,6 +41,10 @@ namespace ash {
 
 namespace {
 
+// The duration for the animation which changes the search icon.
+constexpr base::TimeDelta kSearchIconAnimationDuration =
+    base::Milliseconds(250);
+
 constexpr int kInnerPadding = 16;
 
 // Preferred width of search box.
@@ -251,6 +255,73 @@ class SearchBoxTextfield : public views::Textfield {
   SearchBoxViewBase* const search_box_view_;
 };
 
+// Used to animate the transition between icon images. When a new icon is set,
+// this view will temporarily store the layer of the previous icon and animate
+// its opacity to fade out, while keeping the correct bounds for the fading out
+// layer. At the same time the new icon will fade in.
+class SearchIconImageView : public views::ImageView {
+ public:
+  SearchIconImageView() = default;
+
+  SearchIconImageView(const SearchIconImageView&) = delete;
+  SearchIconImageView& operator=(const SearchIconImageView&) = delete;
+
+  ~SearchIconImageView() override = default;
+
+  // views::View:
+  void OnBoundsChanged(const gfx::Rect& previous_bounds) override {
+    if (old_icon_layer_)
+      old_icon_layer_->SetBounds(layer()->bounds());
+
+    views::ImageView::OnBoundsChanged(previous_bounds);
+  }
+
+  void SetSearchIconImage(gfx::ImageSkia image) {
+    if (GetImage().isNull() || !animation_enabled_) {
+      SetImage(image);
+      return;
+    }
+
+    if (old_icon_layer_ && old_icon_layer_->GetAnimator()->is_animating())
+      old_icon_layer_->GetAnimator()->StopAnimating();
+
+    old_icon_layer_ = RecreateLayer();
+    SetImage(image);
+
+    // Animate the old layer to fade out.
+    views::AnimationBuilder()
+        .SetPreemptionStrategy(
+            ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET)
+        .OnEnded(base::BindOnce(&SearchIconImageView::ResetOldIconLayer,
+                                weak_factory_.GetWeakPtr()))
+        .OnAborted(base::BindOnce(&SearchIconImageView::ResetOldIconLayer,
+                                  weak_factory_.GetWeakPtr()))
+        .Once()
+        .SetDuration(kSearchIconAnimationDuration)
+        .SetOpacity(old_icon_layer_.get(), 0.0f, gfx::Tween::EASE_OUT_3);
+
+    // Animate the newly set icon image to fade in.
+    layer()->SetOpacity(0.0f);
+    views::AnimationBuilder()
+        .SetPreemptionStrategy(
+            ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET)
+        .Once()
+        .SetDuration(kSearchIconAnimationDuration)
+        .SetOpacity(layer(), 1.0f, gfx::Tween::EASE_OUT_3);
+  }
+
+  void ResetOldIconLayer() { old_icon_layer_.reset(); }
+
+  void set_animation_enabled(bool enabled) { animation_enabled_ = enabled; }
+
+ private:
+  std::unique_ptr<ui::Layer> old_icon_layer_;
+
+  bool animation_enabled_ = false;
+
+  base::WeakPtrFactory<SearchIconImageView> weak_factory_{this};
+};
+
 SearchBoxViewBase::SearchBoxViewBase(SearchBoxViewDelegate* delegate)
     : delegate_(delegate),
       content_container_(new views::View),
@@ -285,7 +356,9 @@ SearchBoxViewBase::SearchBoxViewBase(SearchBoxViewDelegate* delegate)
                               base::Unretained(delegate_))));
 
   search_icon_ =
-      content_container_->AddChildView(std::make_unique<views::ImageView>());
+      content_container_->AddChildView(std::make_unique<SearchIconImageView>());
+  search_icon_->SetPaintToLayer();
+  search_icon_->layer()->SetFillsBoundsOpaquely(false);
 
   content_container_->AddChildView(search_box_);
   box_layout_->SetFlexForView(search_box_, 1);
@@ -315,6 +388,7 @@ SearchBoxViewBase::~SearchBoxViewBase() = default;
 
 void SearchBoxViewBase::Init(const InitParams& params) {
   show_close_button_when_active_ = params.show_close_button_when_active;
+  search_icon_->set_animation_enabled(params.animate_changing_search_icon);
   SetPaintToLayer();
   layer()->SetFillsBoundsOpaquely(false);
   layer()->SetMasksToBounds(true);
@@ -351,6 +425,10 @@ views::ImageButton* SearchBoxViewBase::back_button() {
 
 views::ImageButton* SearchBoxViewBase::close_button() {
   return static_cast<views::ImageButton*>(close_button_);
+}
+
+views::ImageView* SearchBoxViewBase::search_icon() {
+  return search_icon_;
 }
 
 void SearchBoxViewBase::ShowBackOrGoogleIcon(bool show_back_button) {
@@ -562,7 +640,7 @@ void SearchBoxViewBase::SetSearchBoxBackgroundCornerRadius(int corner_radius) {
 }
 
 void SearchBoxViewBase::SetSearchIconImage(gfx::ImageSkia image) {
-  search_icon_->SetImage(image);
+  search_icon_->SetSearchIconImage(image);
 }
 
 void SearchBoxViewBase::SetShowAssistantButton(bool show) {

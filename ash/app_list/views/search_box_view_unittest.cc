@@ -274,8 +274,7 @@ TEST_F(SearchBoxViewTest, SearchBoxInactiveSearchBoxGoogle) {
   const gfx::ImageSkia expected_icon = gfx::CreateVectorIcon(
       kGoogleBlackIcon, kSearchBoxIconSize, kDefaultSearchboxColor);
 
-  const gfx::ImageSkia actual_icon =
-      view()->get_search_icon_for_test()->GetImage();
+  const gfx::ImageSkia actual_icon = view()->search_icon()->GetImage();
 
   EXPECT_TRUE(gfx::test::AreBitmapsEqual(*expected_icon.bitmap(),
                                          *actual_icon.bitmap()));
@@ -288,8 +287,7 @@ TEST_F(SearchBoxViewTest, SearchBoxActiveSearchEngineGoogle) {
   const gfx::ImageSkia expected_icon = gfx::CreateVectorIcon(
       kGoogleColorIcon, kSearchBoxIconSize, kDefaultSearchboxColor);
 
-  const gfx::ImageSkia actual_icon =
-      view()->get_search_icon_for_test()->GetImage();
+  const gfx::ImageSkia actual_icon = view()->search_icon()->GetImage();
 
   EXPECT_TRUE(gfx::test::AreBitmapsEqual(*expected_icon.bitmap(),
                                          *actual_icon.bitmap()));
@@ -302,8 +300,7 @@ TEST_F(SearchBoxViewTest, SearchBoxInactiveSearchEngineNotGoogle) {
   const gfx::ImageSkia expected_icon = gfx::CreateVectorIcon(
       kSearchEngineNotGoogleIcon, kSearchBoxIconSize, kDefaultSearchboxColor);
 
-  const gfx::ImageSkia actual_icon =
-      view()->get_search_icon_for_test()->GetImage();
+  const gfx::ImageSkia actual_icon = view()->search_icon()->GetImage();
 
   EXPECT_TRUE(gfx::test::AreBitmapsEqual(*expected_icon.bitmap(),
                                          *actual_icon.bitmap()));
@@ -316,8 +313,7 @@ TEST_F(SearchBoxViewTest, SearchBoxActiveSearchEngineNotGoogle) {
   const gfx::ImageSkia expected_icon = gfx::CreateVectorIcon(
       kSearchEngineNotGoogleIcon, kSearchBoxIconSize, kDefaultSearchboxColor);
 
-  const gfx::ImageSkia actual_icon =
-      view()->get_search_icon_for_test()->GetImage();
+  const gfx::ImageSkia actual_icon = view()->search_icon()->GetImage();
 
   EXPECT_TRUE(gfx::test::AreBitmapsEqual(*expected_icon.bitmap(),
                                          *actual_icon.bitmap()));
@@ -1282,6 +1278,41 @@ TEST_F(SearchBoxViewAnimationTest, SearchBoxImageButtonAnimations) {
   EXPECT_TRUE(assistant_animator->IsAnimatingProperty(
       ui::LayerAnimationElement::AnimatableProperty::OPACITY));
   EXPECT_EQ(assistant_animator->GetTargetOpacity(), 1.0f);
+}
+
+// Test that activating and deactivating the search box causes the search icon
+// to animate.
+TEST_F(SearchBoxViewAnimationTest, SearchBoxIconImageViewAnimation) {
+  auto* search_box = GetAppListTestHelper()->GetSearchBoxView();
+
+  // Keep track of the animator for the icon layer which will animate out.
+  auto* old_animator = search_box->search_icon()->layer()->GetAnimator();
+
+  // Set search box to active state.
+  search_box->SetSearchBoxActive(true, ui::ET_MOUSE_PRESSED);
+
+  // Check that the old layer is fading out and the new animator is fading in.
+  auto* animator = search_box->search_icon()->layer()->GetAnimator();
+  EXPECT_TRUE(animator->IsAnimatingProperty(
+      ui::LayerAnimationElement::AnimatableProperty::OPACITY));
+  EXPECT_EQ(animator->GetTargetOpacity(), 1.0f);
+  EXPECT_TRUE(old_animator->IsAnimatingProperty(
+      ui::LayerAnimationElement::AnimatableProperty::OPACITY));
+  EXPECT_EQ(old_animator->GetTargetOpacity(), 0.0f);
+
+  // Set search box to inactive state.
+  search_box->SetSearchBoxActive(false, ui::ET_MOUSE_PRESSED);
+
+  old_animator = animator;
+  animator = search_box->search_icon()->layer()->GetAnimator();
+
+  // Check that the old layer is fading out and the new layer is fading in.
+  EXPECT_TRUE(animator->IsAnimatingProperty(
+      ui::LayerAnimationElement::AnimatableProperty::OPACITY));
+  EXPECT_EQ(animator->GetTargetOpacity(), 1.0f);
+  EXPECT_TRUE(old_animator->IsAnimatingProperty(
+      ui::LayerAnimationElement::AnimatableProperty::OPACITY));
+  EXPECT_EQ(old_animator->GetTargetOpacity(), 0.0f);
 }
 
 }  // namespace

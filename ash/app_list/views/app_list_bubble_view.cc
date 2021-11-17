@@ -160,6 +160,7 @@ void AppListBubbleView::InitContentsView(
   // Show the assistant button until the user types text.
   params.show_close_button_when_active = false;
   params.create_background = false;
+  params.animate_changing_search_icon = false;
   search_box_view_->Init(params);
 
   // The main view has a solid color layer, so the separator needs its own
