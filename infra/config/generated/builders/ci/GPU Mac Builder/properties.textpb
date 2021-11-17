@@ -16,5 +16,9 @@
       "v.test_suite"
     ]
   },
-  "recipe": "chromium"
+  "builder_group": "chromium.gpu",
+  "recipe": "chromium",
+  "sheriff_rotations": [
+    "chrome_browser_release"
+  ]
 }

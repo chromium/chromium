@@ -16,5 +16,9 @@
       "v.test_suite"
     ]
   },
-  "recipe": "chromium"
+  "builder_group": "chromium.mac",
+  "recipe": "chromium",
+  "sheriff_rotations": [
+    "chrome_browser_release"
+  ]
 }

@@ -12,5 +12,6 @@
       "v.test_suite"
     ]
   },
+  "builder_group": "tryserver.chromium.mac",
   "recipe": "chromium_trybot"
 }

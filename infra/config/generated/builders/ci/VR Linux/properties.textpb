@@ -17,5 +17,9 @@
       "v.test_suite"
     ]
   },
-  "recipe": "chromium"
+  "builder_group": "chromium.fyi",
+  "recipe": "chromium",
+  "sheriff_rotations": [
+    "chrome_browser_release"
+  ]
 }
