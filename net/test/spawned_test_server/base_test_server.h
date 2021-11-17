@@ -20,7 +20,6 @@
 #include "base/memory/ref_counted.h"
 #include "base/values.h"
 #include "net/base/host_port_pair.h"
-#include "net/ssl/ssl_client_cert_type.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 class GURL;
@@ -116,11 +115,6 @@ class BaseTestServer {
     // from each certificate will be added to the certificate_authorities
     // field of the CertificateRequest.
     std::vector<base::FilePath> client_authorities;
-
-    // If |request_client_certificate| is true, an optional list of
-    // SSLClientCertType values to populate the certificate_types field of the
-    // CertificateRequest.
-    std::vector<SSLClientCertType> client_cert_types;
 
     // The maximum TLS version to support.
     TLSMaxVersion tls_max_version = TLS_MAX_VERSION_DEFAULT;

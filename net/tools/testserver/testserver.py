@@ -101,9 +101,8 @@ class HTTPSServer(tlslite.api.TLSSocketServerMixIn,
   client verification."""
 
   def __init__(self, server_address, request_hander_class, pem_cert_and_key,
-               ssl_client_auth, ssl_client_cas, ssl_client_cert_types,
-               simulate_tls13_downgrade, simulate_tls12_downgrade,
-               tls_max_version):
+               ssl_client_auth, ssl_client_cas, simulate_tls13_downgrade,
+               simulate_tls12_downgrade, tls_max_version):
     self.cert_chain = tlslite.api.X509CertChain()
     self.cert_chain.parsePemList(pem_cert_and_key)
     # Force using only python implementation - otherwise behavior is different
@@ -115,7 +114,6 @@ class HTTPSServer(tlslite.api.TLSSocketServerMixIn,
                                                implementations=['python'])
     self.ssl_client_auth = ssl_client_auth
     self.ssl_client_cas = []
-    self.ssl_client_cert_types = []
 
     if ssl_client_auth:
       for ca_file in ssl_client_cas:
@@ -123,12 +121,6 @@ class HTTPSServer(tlslite.api.TLSSocketServerMixIn,
         x509 = tlslite.api.X509()
         x509.parse(s)
         self.ssl_client_cas.append(x509.subject)
-
-      for cert_type in ssl_client_cert_types:
-        self.ssl_client_cert_types.append({
-            "rsa_sign": tlslite.api.ClientCertificateType.rsa_sign,
-            "ecdsa_sign": tlslite.api.ClientCertificateType.ecdsa_sign,
-            }[cert_type])
 
     self.ssl_handshake_settings = tlslite.api.HandshakeSettings()
     # Enable SSLv3 for testing purposes.
@@ -155,8 +147,7 @@ class HTTPSServer(tlslite.api.TLSSocketServerMixIn,
                                     sessionCache=self.session_cache,
                                     reqCert=self.ssl_client_auth,
                                     settings=self.ssl_handshake_settings,
-                                    reqCAs=self.ssl_client_cas,
-                                    reqCertTypes=self.ssl_client_cert_types)
+                                    reqCAs=self.ssl_client_cas)
       tlsConnection.ignoreAbruptClose = True
       return True
     except tlslite.api.TLSAbruptCloseError:
@@ -406,7 +397,6 @@ class ServerRunner(testserver_base.TestServerRunner):
         server = HTTPSServer(
             (host, port), TestPageHandler, pem_cert_and_key,
             self.options.ssl_client_auth, self.options.ssl_client_ca,
-            self.options.ssl_client_cert_type,
             self.options.simulate_tls13_downgrade,
             self.options.simulate_tls12_downgrade, self.options.tls_max_version)
         print('HTTPS server started on https://%s:%d...' %
@@ -506,15 +496,6 @@ class ServerRunner(testserver_base.TestServerRunner):
                                   'file. This option may appear multiple '
                                   'times, indicating multiple CA names should '
                                   'be sent in the request.')
-    self.option_parser.add_option('--ssl-client-cert-type', action='append',
-                                  default=[], help='Specify that the client '
-                                  'certificate request should include the '
-                                  'specified certificate_type value. This '
-                                  'option may appear multiple times, '
-                                  'indicating multiple values should be send '
-                                  'in the request. Valid values are '
-                                  '"rsa_sign", "dss_sign", and "ecdsa_sign". '
-                                  'If omitted, "rsa_sign" will be used.')
     self.option_parser.add_option('--file-root-url', default='/files/',
                                   help='Specify a root URL for files served.')
     # TODO(ricea): Generalize this to support basic auth for HTTP too.

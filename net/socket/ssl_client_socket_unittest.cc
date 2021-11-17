@@ -1034,24 +1034,6 @@ std::vector<uint16_t> GetTLSVersions() {
           SSL_PROTOCOL_VERSION_TLS1_2, SSL_PROTOCOL_VERSION_TLS1_3};
 }
 
-absl::optional<SpawnedTestServer::SSLOptions::TLSMaxVersion>
-ProtocolVersionToSpawnedTestServer(uint16_t version) {
-  switch (version) {
-    case SSL_PROTOCOL_VERSION_TLS1:
-      return SpawnedTestServer::SSLOptions::TLS_MAX_VERSION_TLS1_0;
-    case SSL_PROTOCOL_VERSION_TLS1_1:
-      return SpawnedTestServer::SSLOptions::TLS_MAX_VERSION_TLS1_1;
-    case SSL_PROTOCOL_VERSION_TLS1_2:
-      return SpawnedTestServer::SSLOptions::TLS_MAX_VERSION_TLS1_2;
-    case SSL_PROTOCOL_VERSION_TLS1_3:
-      // SpawnedTestServer does not support TLS 1.3.
-      return absl::nullopt;
-    default:
-      ADD_FAILURE() << "Unknown version " << version;
-      return absl::nullopt;
-  }
-}
-
 class SSLClientSocketVersionTest
     : public SSLClientSocketTest,
       public ::testing::WithParamInterface<uint16_t> {
@@ -2850,21 +2832,22 @@ TEST_P(SSLClientSocketCertRequestInfoTest, TwoAuthorities) {
 }
 
 TEST_P(SSLClientSocketCertRequestInfoTest, CertKeyTypes) {
-  SpawnedTestServer::SSLOptions ssl_options;
-  auto tls_max_version = ProtocolVersionToSpawnedTestServer(version());
-  if (!tls_max_version) {
-    return;
-  }
-  ssl_options.tls_max_version = *tls_max_version;
-  ssl_options.request_client_certificate = true;
-  ssl_options.client_cert_types.push_back(CLIENT_CERT_RSA_SIGN);
-  ssl_options.client_cert_types.push_back(CLIENT_CERT_ECDSA_SIGN);
-  ASSERT_TRUE(StartTestServer(ssl_options));
+  SSLServerConfig config = GetServerConfig();
+  config.client_cert_type = SSLServerConfig::OPTIONAL_CLIENT_CERT;
+  ASSERT_TRUE(StartEmbeddedTestServer(EmbeddedTestServer::CERT_OK, config));
   scoped_refptr<SSLCertRequestInfo> request_info = GetCertRequest();
   ASSERT_TRUE(request_info.get());
-  ASSERT_EQ(2u, request_info->cert_key_types.size());
-  EXPECT_EQ(CLIENT_CERT_RSA_SIGN, request_info->cert_key_types[0]);
-  EXPECT_EQ(CLIENT_CERT_ECDSA_SIGN, request_info->cert_key_types[1]);
+  if (version() >= SSL_PROTOCOL_VERSION_TLS1_3) {
+    // TLS 1.3 does not use cert_key_types, only signature algorithms. This
+    // should be migrated to a more modern mechanism. See
+    // https://crbug.com/1270530.
+    EXPECT_EQ(0u, request_info->cert_key_types.size());
+  } else {
+    // BoringSSL always sends rsa_sign and ecdsa_sign.
+    ASSERT_EQ(2u, request_info->cert_key_types.size());
+    EXPECT_EQ(CLIENT_CERT_RSA_SIGN, request_info->cert_key_types[0]);
+    EXPECT_EQ(CLIENT_CERT_ECDSA_SIGN, request_info->cert_key_types[1]);
+  }
 }
 
 // Tests that the Certificate Transparency (RFC 6962) TLS extension is

@@ -54,18 +54,6 @@ std::string GetHostname(BaseTestServer::Type type,
   return "127.0.0.1";
 }
 
-std::string GetClientCertType(SSLClientCertType type) {
-  switch (type) {
-    case CLIENT_CERT_RSA_SIGN:
-      return "rsa_sign";
-    case CLIENT_CERT_ECDSA_SIGN:
-      return "ecdsa_sign";
-    default:
-      NOTREACHED();
-      return "";
-  }
-}
-
 bool GetLocalCertificatesDir(const base::FilePath& certificates_dir,
                              base::FilePath* local_certificates_dir) {
   if (certificates_dir.IsAbsolute()) {
@@ -444,16 +432,6 @@ bool BaseTestServer::GenerateArguments(base::DictionaryValue* arguments) const {
     if (ssl_client_certs.size()) {
       arguments->SetKey("ssl-client-ca",
                         base::Value(std::move(ssl_client_certs)));
-    }
-
-    std::vector<base::Value> client_cert_types;
-    for (size_t i = 0; i < ssl_options_.client_cert_types.size(); i++) {
-      client_cert_types.emplace_back(
-          GetClientCertType(ssl_options_.client_cert_types[i]));
-    }
-    if (client_cert_types.size()) {
-      arguments->SetKey("ssl-client-cert-type",
-                        base::Value(std::move(client_cert_types)));
     }
   }
 
