@@ -31,7 +31,7 @@ bool PointF::IsWithinDistance(const PointF& rhs,
 }
 
 std::string PointF::ToString() const {
-  return base::StringPrintf("%f,%f", x(), y());
+  return base::StringPrintf("%g,%g", x(), y());
 }
 
 PointF ScalePoint(const PointF& p, float x_scale, float y_scale) {

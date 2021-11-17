@@ -12,7 +12,7 @@
 namespace gfx {
 
 std::string Vector2dF::ToString() const {
-  return base::StringPrintf("[%f %f]", x_, y_);
+  return base::StringPrintf("[%g %g]", x_, y_);
 }
 
 bool Vector2dF::IsZero() const {

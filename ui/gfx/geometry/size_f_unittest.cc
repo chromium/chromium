@@ -177,4 +177,9 @@ TEST(SizeFTest, ConsistentClamping) {
   EXPECT_EQ(SizeF(0.f, SizeF::kTrivial), resized);
 }
 
+TEST(SizeFTest, ToString) {
+  EXPECT_EQ("1x2", SizeF(1, 2).ToString());
+  EXPECT_EQ("1.03125x2.5", SizeF(1.03125, 2.5).ToString());
+}
+
 }  // namespace gfx

@@ -139,4 +139,9 @@ TEST(Vector2dFTest, SlopeAngleRadians) {
   EXPECT_NEAR(-kPi / 4, Vector2dF(1, -1).SlopeAngleRadians(), kTolerance);
 }
 
+TEST(Vector2dFTest, ToString) {
+  EXPECT_EQ("[1 2]", Vector2dF(1, 2).ToString());
+  EXPECT_EQ("[1.03125 2.5]", Vector2dF(1.03125, 2.5).ToString());
+}
+
 }  // namespace gfx

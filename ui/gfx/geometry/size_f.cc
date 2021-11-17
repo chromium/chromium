@@ -27,7 +27,7 @@ void SizeF::SetToMax(const SizeF& other) {
 }
 
 std::string SizeF::ToString() const {
-  return base::StringPrintf("%fx%f", width(), height());
+  return base::StringPrintf("%gx%g", width(), height());
 }
 
 SizeF ScaleSize(const SizeF& s, float x_scale, float y_scale) {

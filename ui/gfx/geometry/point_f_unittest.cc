@@ -109,4 +109,9 @@ TEST(PointFTest, IsWithinDistance) {
                                    100.f));
 }
 
+TEST(PointFTest, ToString) {
+  EXPECT_EQ("1,2", PointF(1, 2).ToString());
+  EXPECT_EQ("1.03125,2.5", PointF(1.03125, 2.5).ToString());
+}
+
 }  // namespace gfx
