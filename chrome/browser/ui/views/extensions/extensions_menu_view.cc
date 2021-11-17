@@ -26,6 +26,7 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
+#include "ui/gfx/color_utils.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/animation/ink_drop_host_view.h"
@@ -408,11 +409,17 @@ std::u16string ExtensionsMenuView::GetAccessibleWindowTitle() const {
 void ExtensionsMenuView::OnThemeChanged() {
   BubbleDialogDelegateView::OnThemeChanged();
   if (manage_extensions_button_) {
+    const SkColor background_color =
+        GetColorProvider()->GetColor(ui::kColorBubbleBackground);
+    SkColor icon_color = GetColorProvider()->GetColor(ui::kColorMenuIcon);
+    if (background_color != SK_ColorTRANSPARENT) {
+      icon_color =
+          color_utils::BlendForMinContrast(icon_color, background_color).color;
+    }
     manage_extensions_button_->SetImage(
         views::Button::STATE_NORMAL,
-        gfx::CreateVectorIcon(
-            vector_icons::kSettingsIcon, kSettingsIconSize,
-            GetColorProvider()->GetColor(ui::kColorMenuIcon)));
+        gfx::CreateVectorIcon(vector_icons::kSettingsIcon, kSettingsIconSize,
+                              icon_color));
   }
 }
 
