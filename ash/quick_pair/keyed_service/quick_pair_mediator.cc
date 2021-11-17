@@ -12,6 +12,7 @@
 #include "ash/quick_pair/feature_status_tracker/fast_pair_pref_enabled_provider.h"
 #include "ash/quick_pair/feature_status_tracker/quick_pair_feature_status_tracker.h"
 #include "ash/quick_pair/feature_status_tracker/quick_pair_feature_status_tracker_impl.h"
+#include "ash/quick_pair/keyed_service/battery_update_message_handler.h"
 #include "ash/quick_pair/keyed_service/fast_pair_bluetooth_config_delegate.h"
 #include "ash/quick_pair/keyed_service/quick_pair_metrics_logger.h"
 #include "ash/quick_pair/message_stream/message_stream_lookup.h"
@@ -74,7 +75,7 @@ Mediator::Mediator(
     : feature_status_tracker_(std::move(feature_status_tracker)),
       scanner_broker_(std::move(scanner_broker)),
       retroactive_pairing_detector_(std::move(retroactive_pairing_detector)),
-      message_stream_lookup(std::move(message_stream_lookup)),
+      message_stream_lookup_(std::move(message_stream_lookup)),
       pairer_broker_(std::move(pairer_broker)),
       ui_broker_(std::move(ui_broker)),
       fast_pair_repository_(std::move(fast_pair_repository)),
@@ -83,7 +84,9 @@ Mediator::Mediator(
           std::make_unique<FastPairBluetoothConfigDelegate>()) {
   metrics_logger_ = std::make_unique<QuickPairMetricsLogger>(
       scanner_broker_.get(), pairer_broker_.get(), ui_broker_.get());
-
+  battery_update_message_handler_ =
+      std::make_unique<BatteryUpdateMessageHandler>(
+          message_stream_lookup_.get());
   feature_status_tracker_observation_.Observe(feature_status_tracker_.get());
   scanner_broker_observation_.Observe(scanner_broker_.get());
   retroactive_pairing_detector_observation_.Observe(
