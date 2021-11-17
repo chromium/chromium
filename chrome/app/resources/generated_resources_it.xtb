@@ -597,6 +597,7 @@
 <translation id="161042844686301425">Ciano</translation>
 <translation id="1611432201750675208">Il tuo dispositivo è bloccato</translation>
 <translation id="1612019740169791082">Il tuo contenitore non è configurato per supportare il ridimensionamento del disco. Per modificare la quantità di spazio riservata a Linux, effettua il backup e il ripristino in un nuovo contenitore.</translation>
+<translation id="1613019471223620622">Mostra password per <ph name="USERNAME" /> su <ph name="DOMAIN" /></translation>
 <translation id="1614511179807650956">Potresti aver esaurito la tua quota di dati mobili. Visita il portale di attivazione <ph name="NAME" /> per acquistare altri dati.</translation>
 <translation id="161460670679785907">Impossibile rilevare il tuo telefono</translation>
 <translation id="1615337439947999338">Salva nel tuo Account Google (<ph name="EMAIL" />)</translation>
@@ -1204,6 +1205,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2220529011494928058">Segnala un problema</translation>
 <translation id="2220572644011485463">PIN o password</translation>
 <translation id="2221261048068091179"><ph name="FIRST_SWITCH" /> e <ph name="SECOND_SWITCH" /></translation>
+<translation id="222201875806112242">Origine di contenuti multimediali senza nome</translation>
 <translation id="2224444042887712269">Questa impostazione appartiene a <ph name="OWNER_EMAIL" />.</translation>
 <translation id="222447520299472966">Deve essere selezionato almeno un album Galleria d'arte</translation>
 <translation id="2224551243087462610">Modifica nome cartella</translation>
@@ -3325,6 +3327,7 @@ e Ctrl + Alt + Riduzione luminosità per diminuire lo zoom.</translation>
 <translation id="4444304522807523469">Accesso a scanner di documenti aggiunti tramite USB o sulla rete locale</translation>
 <translation id="4444512841222467874">Se non viene liberato dello spazio, utenti e dati potrebbero essere rimossi automaticamente.</translation>
 <translation id="4446933390699670756">Speculare</translation>
+<translation id="4448914100439890108">Nascondi password per <ph name="USERNAME" /> su <ph name="DOMAIN" /></translation>
 <translation id="4449948729197510913">Il tuo nome utente appartiene all'account aziendale della tua organizzazione. Per registrare dispositivi all'account, verifica innanzitutto la proprietà del dominio nella Console di amministrazione. Per la verifica, avrai bisogno dei privilegi di amministratore sull'account.</translation>
 <translation id="4449996769074858870">In questa scheda c'è audio in riproduzione.</translation>
 <translation id="4450274068924249931">Quando il tuo schermo è inattivo, mostra foto, ora, meteo e informazioni multimediali. L'attivazione del salvaschermo manterrà il display attivo durante la ricarica.</translation>
@@ -3848,6 +3851,7 @@ e Ctrl + Alt + Riduzione luminosità per diminuire lo zoom.</translation>
 <translation id="5009463889040999939">Ridenominazione del profilo in corso. Questa operazione può richiedere alcuni minuti.</translation>
 <translation id="5010043101506446253">Autorità di certificazione</translation>
 <translation id="5015344424288992913">Risoluzione proxy in corso...</translation>
+<translation id="5016491575926936899">Puoi inviare SMS dal computer, condividere la connessione a Internet, rispondere a notifiche delle conversazioni e sbloccare <ph name="DEVICE_TYPE" /> con il telefono.<ph name="FOOTNOTE_POINTER" /> <ph name="LINK_BEGIN" />Scopri di più<ph name="LINK_END" /></translation>
 <translation id="5017643436812738274">Puoi spostarti da una pagina all'altra con un cursore di testo. Premi Ctrl + Cerca + 7 per disattivare l'opzione.</translation>
 <translation id="5017828934289857214">Ricordamelo dopo</translation>
 <translation id="5018207570537526145">Apri sito web dell'estensione</translation>
@@ -4436,6 +4440,7 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="5638309510554459422">Trova estensioni e temi nel <ph name="BEGIN_LINK" />Chrome Web Store<ph name="END_LINK" /></translation>
 <translation id="5639549361331209298">Ricarica questa pagina, tieni premuto per visualizzare altre opzioni</translation>
 <translation id="5640133431808313291">Gestisci i token di sicurezza</translation>
+<translation id="5641608986289282154">Inizia a usare <ph name="DEVICE_OS" /></translation>
 <translation id="5642508497713047">Firmatario CRL</translation>
 <translation id="5643321261065707929">Rete a consumo</translation>
 <translation id="5643620609347735571">Cancella e continua</translation>
@@ -6089,7 +6094,6 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="7433708794692032816">Inserisci la smart card per continuare a utilizzare il tuo <ph name="DEVICE_TYPE" /></translation>
 <translation id="7433957986129316853">Mantieni</translation>
 <translation id="7434509671034404296">Opzioni per sviluppatori</translation>
-<translation id="7434635829372401939">Sincronizza le impostazioni</translation>
 <translation id="7434757724413878233">Accelerazione del mouse</translation>
 <translation id="7434969625063495310">Impossibile aggiungere il server di stampa. Controlla la configurazione del server e riprova.</translation>
 <translation id="7436921188514130341">Uffa! Si è verificato un errore durante la ridenominazione.</translation>

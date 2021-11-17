@@ -49,6 +49,7 @@
 <translation id="2123055963409958220">‏با گزارش <ph name="BEGIN_LINK" />تنظیمات کنونی<ph name="END_LINK" />، به بهتر شدن Chrome کمک کنید</translation>
 <translation id="2151406531797534936">‏لطفاً اکنون Chrome را بازراه‌اندازی کنید</translation>
 <translation id="2189289170880510015">‏سفارشی کردن بعضی‌از مهم‌ترین انتخاب‌های حریم‌خصوصی Chrome</translation>
+<translation id="2258103955319320201">‏برای دسترسی به چیزهایتان در مرورگر Chrome در همه دستگاه‌هایتان، به سیستم وارد شوید، سپس همگام‌سازی را روشن کنید</translation>
 <translation id="2290014774651636340">‏کلیدهای Google API وجود ندارد. برخی از عملکردهای Google Chrome از کار خواهد افتاد.</translation>
 <translation id="2290095356545025170">‏آیا می‌خواهید Google Chrome را غیر فعال کنید؟</translation>
 <translation id="2309047409763057870">‏این نصب ثانویه Google Chrome است و نمی‌تواند مرورگر پیش‌فرضتان شود.</translation>
@@ -209,6 +210,7 @@
 <translation id="6506909944137591434">‏Chrome برای ایجاد نقشه سه‌بعدی از محیط اطرافتان به اجازه دوربین نیاز دارد</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> - Google Chrome Dev</translation>
 <translation id="6568793831116033768">‏سیستم Chrome OS</translation>
+<translation id="6594121454516132231">‏ببینید Chrome چگونه قصد دارد با حفظ وبِ باز، از شما دربرابر ردیابی بین‌سایتی محافظت کند</translation>
 <translation id="6676384891291319759">دسترسی به اینترنت</translation>
 <translation id="6679975945624592337">‏اجازه به Google Chrome برای اجرا در پس‌زمینه</translation>
 <translation id="6696915334902295848">‏Chrome برای این سایت به اجازه میکروفون نیاز دارد</translation>
@@ -223,6 +225,7 @@
 <translation id="6989339256997917931">‏Google Chrome به روز شده است اما حداقل ۳۰ روز از آن استفاده نکرده‌اید.</translation>
 <translation id="7025800014283535195">‏می‌توانید در اینجا بین نمایه‌های Chrome جابه‌جا شوید</translation>
 <translation id="7062128746136194023">‏ولی‌تان «اجازه‌های مربوط به سایت‌ها، برنامه‌ها، و افزونه‌ها» را برای Chrome خاموش کرده است. افزودن این <ph name="EXTENSION_TYPE_PARAMETER" /> مجاز نیست.</translation>
+<translation id="7085332316435785646">‏انتخاب کنید که آیا سابقه Chrome برای تجربه‌های شخصی‌شده‌تر در سرویس‌های Google لحاظ شود یا نه</translation>
 <translation id="7088681679121566888">‏Chrome به‌روز است</translation>
 <translation id="7098166902387133879">‏Google Chrome درحال استفاده از میکروفون شما است.</translation>
 <translation id="7106741999175697885">‏مدیر فعالیت‌ها - Google Chrome</translation>
@@ -247,6 +250,7 @@
 <translation id="7651907282515937834">‏نشان‌واره Chrome Enterprise</translation>
 <translation id="7665553140559834626">‏راه‌اندازی مجدد برای به‌روزرسانی Chrome OS</translation>
 <translation id="7747138024166251722">نصب‌کننده نتوانست دایرکتوری موقت ایجاد کند. لطفاً فضای خالی دیسک و اجازه نصب نرم‌افزار را بررسی کنید.</translation>
+<translation id="7748512868279796735">‏حساب‌های زیر برای این نمایه Chrome دردسترس هستند</translation>
 <translation id="7761834446675418963">‏برای باز کردن Chrome و شروع به مرور، روی نامتان کلیک کنید.</translation>
 <translation id="7777080907402804672">‏اگر تصویری توضیح مفیدی نداشته باشد، Chrome توضیحی برای شما ارائه خواهد کرد. برای ایجاد توضیحات، تصاویر به Google ارسال می‌شود. هروقت خواستید می‌توانید این گزینه را در تنظیمات خاموش کنید.</translation>
 <translation id="7781002470561365167">‏نسخه جدیدی از Google Chrome موجود است.</translation>
@@ -278,6 +282,7 @@
 <translation id="8540666473246803645">Google Chrome</translation>
 <translation id="8550334526674375523">این نمایه کاری کاملاً مجزا از نمایه شخصی‌تان است.</translation>
 <translation id="8556340503434111824">‏نسخه جدیدی از Google Chrome وجود دارد که سریعتر از همیشه است.</translation>
+<translation id="8571790202382503603">‏با نمایه‌های Chrome می‌توانید همه‌چیزتان را در Chrome جدا کنید. با این کار، راحت‌تر می‌توان کار و سرگرمی را ازهم جدا کرد.</translation>
 <translation id="8614913330719544658">‏Google Chrome پاسخ نمی‌دهد. مجدداً راه‌اندازی شود؟</translation>
 <translation id="861702415419836452">‏Chrome برای دسترسی به دوربین به اجازه نیاز دارد تا بتواند نقشه سه‌بعدی محیط شما را ایجاد کند</translation>
 <translation id="8625237574518804553">{0,plural, =1{‏Chrome ‏۱ دقیقه دیگر راه‌اندازی مجدد می‌شود}one{‏Chrome ‏# دقیقه دیگر راه‌اندازی مجدد می‌شود}other{‏Chrome ‏# دقیقه دیگر راه‌اندازی مجدد می‌شود}}</translation>

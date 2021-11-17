@@ -89,6 +89,7 @@
 <translation id="379295446891231126">Da <ph name="CTRL" /><ph name="SEPARATOR" /> 1 a 8</translation>
 <translation id="3837047332182291558">Aumenta la luminosità della tastiera (soltanto per tastiere retroilluminate)</translation>
 <translation id="3949671998904569433">virgola</translation>
+<translation id="3976707995992061296">Attiva o disattiva l'assegnazione della finestra attiva a tutte le scrivanie</translation>
 <translation id="3976863468609830880">Seleziona l'ultima icona nella barra delle app</translation>
 <translation id="3994783594793697310">Reimposta il livello di zoom dello schermo</translation>
 <translation id="4026843240379844265">Sposta la finestra attiva tra gli schermi</translation>
@@ -149,6 +150,7 @@
 <translation id="6340769215862220182">Aumenta lo zoom dello schermo</translation>
 <translation id="634687982629734605">Consente di spostare lo stato attivo tra: l'area di stato (dove è visualizzata l'immagine del tuo account), Avvio app, la barra degli indirizzi, la barra dei Preferiti (se visibile), la pagina web aperta e la barra dei download (se visibile). Se viene visualizzata una finestra di dialogo attivabile, sposta lì lo stato attivo.</translation>
 <translation id="6359811074279051077"><ph name="MODIFIER" /><ph name="SEPARATOR" /><ph name="KEY" /></translation>
+<translation id="6372960562287888784">Attiva dalla 1ª all'8ª scrivania.</translation>
 <translation id="6395172954772765143">Seleziona il testo alla fine della riga</translation>
 <translation id="6425378783626925378">Consente di fare clic sulle icone 1-8 nella barra delle app</translation>
 <translation id="6435207348963613811">Mette in evidenza l'elemento precedente sulla barra delle app</translation>
@@ -204,6 +206,7 @@
 <translation id="8644639153978066712">Visualizza i file nascosti nell'app File</translation>
 <translation id="8717459106217102612">Seleziona la parola o la lettera precedente</translation>
 <translation id="8727232706774971183">Visualizza le notifiche</translation>
+<translation id="8855548128280178372"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="SEARCH" /><ph name="SEPARATOR2" /> da 1 a 8</translation>
 <translation id="8855885154700222542">Tasto schermo intero</translation>
 <translation id="8881584919399569791">Sposta la finestra attiva sulla scrivania a sinistra</translation>
 <translation id="88986195241502842">Pagina giù</translation>

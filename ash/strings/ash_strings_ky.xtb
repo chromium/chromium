@@ -201,6 +201,7 @@
 <translation id="2352467521400612932">Стилус жөндөөлөрү</translation>
 <translation id="2354174487190027830"><ph name="NAME" /> жандыруу</translation>
 <translation id="2359808026110333948">Улантуу</translation>
+<translation id="2360625459710946148">Төмөнкү боюнча иреттөө:</translation>
 <translation id="2367186422933365202">Chromebook'ка кирген жоксуз</translation>
 <translation id="2369165858548251131">Кытайча "Салам"</translation>
 <translation id="2390318262976603432">Тил жөндөөлөрү</translation>
@@ -353,6 +354,15 @@
 <translation id="3509391053705095206">Телефонуңуз табылбай жатат. Телефонуңуздагы Bluetooth күйгүзүлгөнүн текшериңиз.</translation>
 <translation id="3510164367642747937">Чычкан курсору баса белгиленсин</translation>
 <translation id="3513798432020909783">Аккаунтту башкарган: <ph name="MANAGER_EMAIL" /></translation>
+<translation id="3518604429872942239">Абал түпкүчү, убакыт <ph name="TIME" />,
+        <ph name="BATTERY" />
+        <ph name="NETWORK" />,
+        <ph name="MIC" />,
+        <ph name="CAMERA" />,
+        <ph name="MANAGED" />
+        <ph name="NOTIFICATION" />,
+        <ph name="IME" />
+        <ph name="LOCALE" /></translation>
 <translation id="352245152354538528">{0,plural, =1{Түзмөктү 1 мүнөттүн ичинде жаңыртыңыз}other{Түзмөктү # мүнөттүн ичинде жаңыртыңыз}}</translation>
 <translation id="353086728817903341"><ph name="NUM_DEVICES" /> түзмөккө туташты</translation>
 <translation id="3552189655002856821">Wi-Fi өчүрүлгөн</translation>
@@ -702,6 +712,7 @@
 <translation id="5977415296283489383">Гарнитура</translation>
 <translation id="5978382165065462689">Алыскы жардамчы аркылуу экраныңыздын көзөмөлүн бөлүшүүдө.</translation>
 <translation id="5980301590375426705">Конокту чыгаруу</translation>
+<translation id="598407983968395253">Үлгүнү колдонуу</translation>
 <translation id="598882571027504733">Жаңыртуу үчүн, туташкан баскычтопту үзбөй туруп, Chromebook'ту өчүрүп-күйгүзүңүз.</translation>
 <translation id="5992218262414051481">Жогорку контраст режими иштетилди. Аны өчүрүү үчүн Ctrl+Search+H баскычтарын кайра басыңыз.</translation>
 <translation id="6018164090099858612">Күзгү режиминен чыгууда</translation>

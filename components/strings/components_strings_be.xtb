@@ -82,6 +82,7 @@
 <translation id="124116460088058876">Іншыя мовы</translation>
 <translation id="1243027604378859286">Аўтар:</translation>
 <translation id="1246424317317450637">Паўтлусты</translation>
+<translation id="1248573052514400575"><ph name="MANAGE_CHROMEOS_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />. Каб персаналізаваць інструменты даступнасці ў наладах Chrome OS, націсніце Tab, затым Enter</translation>
 <translation id="1250759482327835220">Каб наступны раз плаціць хутчэй, захавайце картку, імя і адрас для выстаўлення рахункаў ва Уліковым запісе Google.</translation>
 <translation id="1252799212227771492">Кнопка "Стварыць табліцу". Каб хутка стварыць новую табліцу Google, націсніце Enter</translation>
 <translation id="1253921432148366685"><ph name="TYPE_1" />, <ph name="TYPE_2" /> (сінхранізаваныя)</translation>
@@ -156,6 +157,7 @@
 <translation id="1422930527989633628">Сайт можа запытваць дазвол выяўляць прылады з Bluetooth паблізу</translation>
 <translation id="1426410128494586442">Так</translation>
 <translation id="1428146450423315676">Укладчык 7</translation>
+<translation id="142858679511221695">Карыстальнік воблачнага сэрвісу</translation>
 <translation id="1428729058023778569">Гэта папярэджанне паказана вам, бо дадзены сайт не падтрымлівае HTTPS. <ph name="BEGIN_LEARN_MORE_LINK" />Даведацца больш<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1430915738399379752">Друк</translation>
 <translation id="1432581352905426595">Кіраваць пошукавымі сістэмамі</translation>
@@ -322,6 +324,7 @@
 <translation id="192020519938775529">{COUNT,plural, =0{Няма}=1{1 сайт}one{# сайт}few{# сайты}many{# сайтаў}other{# сайта}}</translation>
 <translation id="1923390796829649802">Кнопка "Кіраваць наладамі спецыяльных магчымасцей". Каб персаналізаваць адпаведныя інструменты ў наладах Chrome OS, націсніце Enter</translation>
 <translation id="1924727005275031552">Новая форма</translation>
+<translation id="1927439593081478069">Кнопка "Запусціць праверку бяспекі Chrome", націсніце Enter, каб выканаць праверку бяспекі ў наладах Chrome</translation>
 <translation id="1939175642807587452">Сайт можа запытваць дазвол на адпраўку апавяшчэнняў</translation>
 <translation id="1945968466830820669">Вы можаце страціць доступ да ўліковага запісу арганізацыі, або ў вас могуць скрасці асабістыя даныя. Chromium рэкамендуе змяніць пароль.</translation>
 <translation id="1947454675006758438">Скаба зверху справа</translation>
@@ -341,6 +344,7 @@
 <translation id="2003709556000175978">Скіньце свой пароль</translation>
 <translation id="2003775180883135320">Чатыры дзіркі зверху</translation>
 <translation id="201174227998721785">Кіруйце дазволамі і данымі, якія захоўваюцца на сайтах, праз налады Chrome</translation>
+<translation id="2019607688127825327">Кнопка "Кіраваць наладамі спецыяльных магчымасцей". Каб персаналізаваць інструменты даступнасці ў наладах Chrome, націсніце Enter</translation>
 <translation id="2025115093177348061">Дапоўненая рэальнасць</translation>
 <translation id="2025186561304664664">Для проксі-сервера ўказана аўтаматычнае наладжванне.</translation>
 <translation id="2025891858974379949">Небяспечнае змесціва</translation>
@@ -506,6 +510,7 @@
 <translation id="2556876185419854533">&amp;Адрабіць змену</translation>
 <translation id="2570734079541893434">Кіраваць наладамі</translation>
 <translation id="257674075312929031">Група</translation>
+<translation id="2576880857912732701">Кнопка "Кіраваць наладамі бяспекі". Каб кіраваць параметрамі Бяспечнага прагляду і выконваць іншыя дзеянні праз налады Chrome, націсніце Enter</translation>
 <translation id="2586657967955657006">Буфер абмену</translation>
 <translation id="2587730715158995865">Крыніца: <ph name="ARTICLE_PUBLISHER" />. Вы можаце прачытаць гэты і яшчэ <ph name="OTHER_ARTICLE_COUNT" /> артыкулаў.</translation>
 <translation id="2587841377698384444">Ідэнтыфікатар API каталога:</translation>
@@ -550,6 +555,7 @@
 <translation id="2713444072780614174">Белы</translation>
 <translation id="2715612312510870559"><ph name="UPDATE_CREDIT_CARD_FOCUSED_FRIENDLY_MATCH_TEXT" />. Каб кіраваць плацяжамі і звесткамі крэдытных картак праз налады Chrome, націсніце Tab, затым Enter</translation>
 <translation id="2721148159707890343">Запыт выкананы</translation>
+<translation id="2723669454293168317">Запусціць праверку бяспекі ў наладах Chrome</translation>
 <translation id="2726001110728089263">Бакавы латок</translation>
 <translation id="2728127805433021124">Сертыфікат сервера падпісаны з выкарыстаннем ненадзейнага алгарытму.</translation>
 <translation id="2730326759066348565"><ph name="BEGIN_LINK" />Запусціць дыягностыку падключэння<ph name="END_LINK" />.</translation>
@@ -580,6 +586,7 @@
 <translation id="2859806420264540918">Гэты сайт паказвае назойлівую рэкламу або рэкламу, якая ўводзіць у зман.</translation>
 <translation id="287596039013813457">Таварыскі</translation>
 <translation id="2876489322757410363">Адбудзецца выхад з рэжыму інкогніта для плацяжу праз знешнюю праграму. Працягнуць?</translation>
+<translation id="2876949457278336305"><ph name="MANAGE_SECURITY_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />. Каб кіраваць параметрамі Бяспечнага прагляду і выконваць іншыя дзеянні праз налады Chrome, націсніце Tab, затым Enter</translation>
 <translation id="2878197950673342043">Плакатны згіб</translation>
 <translation id="2878424575911748999">A1</translation>
 <translation id="2880660355386638022">Размяшчэнне вокнаў</translation>
@@ -685,6 +692,7 @@
 <translation id="3229041911291329567">Звесткі пра версію прылады і браўзера</translation>
 <translation id="323107829343500871">Увядзіце CVC-код карткі <ph name="CREDIT_CARD" /></translation>
 <translation id="3234666976984236645">Заўсёды выяўляць важнае змесціва на гэтым сайце</translation>
+<translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />. Каб наладзіць выгляд браўзера, націсніце Tab, затым Enter</translation>
 <translation id="3240791268468473923">Быў адкрыты аркуш, які паказваецца пры адсутнасці супадзення ўліковых даных для бяспечных плацяжоў</translation>
 <translation id="3249845759089040423">Стыльны</translation>
 <translation id="3252266817569339921">Французская</translation>
@@ -712,6 +720,7 @@
 <translation id="3329013043687509092">Насычанасць</translation>
 <translation id="3333762389743153920">Нумар не падыходзіць для віртуальнай карткі</translation>
 <translation id="3338095232262050444">Бяспечны сайт</translation>
+<translation id="3339446062576134663">Воблака (Ash)</translation>
 <translation id="3355823806454867987">Змяніць налады проксі-сервера...</translation>
 <translation id="3360103848165129075">Аркуш апрацоўшчыка плацяжоў</translation>
 <translation id="3361596688432910856">Chrome <ph name="BEGIN_EMPHASIS" />не будзе захоўваць<ph name="END_EMPHASIS" /> наступную інфармацыю:
@@ -728,12 +737,14 @@
       • стварыць 3D-карту вашага асяроддзя і адсочваць становішча камеры;
       • выкарыстоўваць камеру.</translation>
 <translation id="337363190475750230">Ініцыялізацыя скасавана</translation>
+<translation id="3375754925484257129">Запусціць праверку бяспекі Chrome</translation>
 <translation id="3377144306166885718">Сервер выкарыстоўвае ўстарэлую версію пратакола TLS.</translation>
 <translation id="3377188786107721145">Памылка аналізу палітыкі</translation>
 <translation id="3377736046129930310">Выкарыстоўваць блакіроўку экрана для хутчэйшага пацвярджэння картак</translation>
 <translation id="3380365263193509176">Невядомая памылка</translation>
 <translation id="3380864720620200369">Ідэнтыфікатар кліента:</translation>
 <translation id="3381668585148405088">Пацвердзіце куплю</translation>
+<translation id="3383566085871012386">Бягучы парадак прыярытэту</translation>
 <translation id="3387261909427947069">Спосабы аплаты</translation>
 <translation id="3391030046425686457">Адрас дастаўкі</translation>
 <translation id="3391482648489541560">змяненне файлаў</translation>
@@ -768,6 +779,7 @@
 <translation id="3462200631372590220">Схаваць дадатковую інфармацыю</translation>
 <translation id="3467763166455606212">Патрабуецца імя ўладальніка карткі</translation>
 <translation id="3468054117417088249"><ph name="TAB_SWITCH_SUFFIX" />, укладка адкрытая, каб перайсці на адкрытую ўкладку, націсніце Tab, затым Enter</translation>
+<translation id="3470563864795286535"><ph name="CLOSE_INCOGNITO_WINDOWS_FOCUSED_FRIENDLY_MATCH_TEXT" />. Каб закрыць усе адкрытыя вокны ў рэжыме інкогніта, націсніце Tab, затым Enter</translation>
 <translation id="3479552764303398839">Не зараз</translation>
 <translation id="3484560055331845446">Вы можаце страціць доступ да свайго Уліковага запісу Google. Chrome рэкамендуе змяніць пароль. Вас папросяць увайсці ва ўліковы запіс.</translation>
 <translation id="3487845404393360112">Латок 4</translation>
@@ -805,6 +817,7 @@
 <translation id="3611395257124510155">Віртуальная картка (<ph name="CARD_IDENTIFIER" />)</translation>
 <translation id="3614103345592970299">Памер 2</translation>
 <translation id="361438452008624280">Элемент спіса "<ph name="LANGUAGE_ID" />": мова невядомая або не падтрымліваецца.</translation>
+<translation id="3614934205542186002"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />. Каб выканаць праверку бяспекі ў наладах Chrome, націсніце Tab, затым Enter</translation>
 <translation id="3615877443314183785">Увядзіце сапраўдную дату заканчэння тэрміну дзеяння</translation>
 <translation id="36224234498066874">Выдаліць гісторыю праглядаў...</translation>
 <translation id="362276910939193118">Паказаць усю гісторыю</translation>
@@ -1400,6 +1413,7 @@
 <translation id="5478437291406423475">B6/C4 (канверт)</translation>
 <translation id="5481076368049295676">Праз гэта змесціва на вашу прыладу можа ўсталявацца небяспечнае праграмнае забеспячэнне, якое будзе красці або выдаляць інфармацыю. <ph name="BEGIN_LINK" />Усе роўна паказаць<ph name="END_LINK" /></translation>
 <translation id="54817484435770891">Дадайце сапраўдны адрас</translation>
+<translation id="5485973315555778056">Машына воблака</translation>
 <translation id="5490432419156082418">Адрасы і іншае</translation>
 <translation id="5492298309214877701">У інтранэце кампаніі, арганізацыі або школы гэты сайт мае той жа URL-адрас, што і знешні вэб-сайт.
     <ph name="LINE_BREAK" />
@@ -1429,6 +1443,7 @@
 <translation id="5571083550517324815">З гэтага адраса забраць нельга – выберыце іншы.</translation>
 <translation id="5580958916614886209">Праверце месяц заканчэння тэрміну дзеяння і паўтарыце спробу</translation>
 <translation id="5586446728396275693">Няма захаваных адрасоў</translation>
+<translation id="5587987780934666589">Карыстальнік платформы</translation>
 <translation id="5593349413089863479">Падключэнне не цалкам бяспечнае</translation>
 <translation id="5595485650161345191">Рэдагаваць адрас</translation>
 <translation id="5598944008576757369">Выбраць спосаб аплаты</translation>
@@ -1600,6 +1615,7 @@
 <translation id="6218753634732582820">Выдаліць адрас з Chromium?</translation>
 <translation id="622039917539443112">Паралельны згіб</translation>
 <translation id="6221345481584921695">Google Бяспечны прагляд толькі што <ph name="BEGIN_LINK" />выявіў шкоднае ПЗ<ph name="END_LINK" /> на сайце <ph name="SITE" />. Сайты, якія звычайна з'яўляюцца надзейнымі, часам заражаюцца шкодным ПЗ. Шкоднае змесціва паходзіць з хоста <ph name="SUBRESOURCE_HOST" />, вядомай крыніцы шкоднага ПЗ.</translation>
+<translation id="6226163402662242066"><ph name="MANAGE_CHROME_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />. Каб персаналізаваць інструменты даступнасці ў наладах Chrome, націсніце Tab, затым Enter</translation>
 <translation id="6234122620015464377">Абрэзка пасля кожнага дакумента</translation>
 <translation id="6240447795304464094">Лагатып Google Pay</translation>
 <translation id="6241121617266208201">Схаваць прапановы</translation>
@@ -1618,6 +1634,7 @@
 <translation id="6279098320682980337">Не ўказаны нумар віртуальнай карткі? Скапіруйце рэквізіты карткі, націснуўшы на іх</translation>
 <translation id="6280223929691119688">Немагчыма адправіць на гэты адрас. Выберыце іншы адрас.</translation>
 <translation id="6282194474023008486">Паштовы індэкс</translation>
+<translation id="6285507000506177184">Кнопка "Кіраваць спампоўкамі ў Chrome". Каб кіраваць файламі, якія вы спампавалі ў браўзеры Chrome, націсніце Enter</translation>
 <translation id="6289939620939689042">Колер старонкі</translation>
 <translation id="6290238015253830360">Рэкамендаваныя вам артыкулы з'явяцца тут</translation>
 <translation id="6293309776179964942">JIS B5</translation>
@@ -1733,6 +1750,7 @@
 <translation id="6689249931105087298">Адносны са сцісканнем чорных пунктаў</translation>
 <translation id="6689271823431384964">Chrome прапаноўвае захоўваць карткі ва Уліковым запісе Google, бо вы ўвайшлі ў сістэму. Гэту функцыю можна выключыць у наладах. Імя ўладальніка карткі ўзята з вашага ўліковага запісу.</translation>
 <translation id="6694681292321232194"><ph name="FIND_MY_PHONE_FOCUSED_FRIENDLY_MATCH_TEXT" />. Каб знайсці сваю прыладу ва Уліковым запісе Google, націсніце Tab, затым Enter</translation>
+<translation id="6696588630955820014">Кнопка "Абагуліць гэту ўкладку". Каб абагуліць гэту ўкладку (абагуліць спасылку, стварыць QR-код, трансліраваць яе і г. д.), націсніце Enter</translation>
 <translation id="6698381487523150993">Створаны:</translation>
 <translation id="6702919718839027939">Прэзентацыя</translation>
 <translation id="6710213216561001401">Назад</translation>
@@ -1938,6 +1956,7 @@
 <translation id="7392089738299859607">Абнавіць адрас</translation>
 <translation id="7399802613464275309">Праверка бяспекі</translation>
 <translation id="7400418766976504921">URL-адрас</translation>
+<translation id="7403392780200267761">Абагуліць гэту ўкладку (абагуліць спасылку, стварыць QR-код, трансліраваць яе і г. д.)</translation>
 <translation id="7403591733719184120">Прылада "<ph name="DEVICE_NAME" />" знаходзіцца пад кіраваннем</translation>
 <translation id="7407424307057130981">&lt;p&gt;Вы бачыце гэту памылку, бо на вашым камп'ютары з сістэмай Windows усталявана праграмнае забеспячэнне Superfish.&lt;/p&gt;
       &lt;p&gt;Каб часова выключыць гэта праграмнае забеспячэнне і атрымаць магчымасць падключыцца да сеткі, выканайце наступныя крокі. Пры гэтым вам спатрэбяцца правы адміністратара.&lt;/p&gt;
@@ -2114,6 +2133,7 @@
 <translation id="7953569069500808819">Сшыванне па краі зверху</translation>
 <translation id="7956713633345437162">Мабільныя закладкі</translation>
 <translation id="7961015016161918242">Ніколі</translation>
+<translation id="7962467575542381659">Машына платформы</translation>
 <translation id="7966803981046576691">Тып уліковага запісу задання</translation>
 <translation id="79682505114836835">Значэнне <ph name="VALUE" /> не з'яўляецца правільным шаснаццатковым кодам колеру.</translation>
 <translation id="7968982339740310781">Паказаць падрабязныя звесткі</translation>
@@ -2168,6 +2188,7 @@
 <translation id="810875025413331850">Прылад паблізу не знойдзена.</translation>
 <translation id="8116925261070264013">Без гуку</translation>
 <translation id="8118489163946903409">Спосаб аплаты</translation>
+<translation id="8124639700796374294">Кнопка "Наладзіць Chrome". Каб наладзіць выгляд браўзера, націсніце Enter</translation>
 <translation id="8127301229239896662">Праграма "<ph name="SOFTWARE_NAME" />" не была належным чынам усталявана на камп'ютар або ў сетцы: папрасіце IT-адміністратара вырашыць гэту праблему.</translation>
 <translation id="8131740175452115882">Пацвердзіць</translation>
 <translation id="8148608574971654810">Версія PDF:</translation>
@@ -2350,6 +2371,7 @@
 <translation id="87601671197631245">Гэты сайт выкарыстоўвае ўстарэлую канфігурацыю бяспекі, таму звесткі пра вас (напрыклад, паролі, паведамленні або нумары крэдытных картак) пры іх адпраўцы на гэты сайт могуць быць раскрыты.</translation>
 <translation id="8761567432415473239">Google Бяспечны прагляд нядаўна <ph name="BEGIN_LINK" />выявіў шкодныя праграмы<ph name="END_LINK" /> на сайце <ph name="SITE" />.</translation>
 <translation id="8763927697961133303">Прылада USB</translation>
+<translation id="8763986294015493060">Закрыць усе адкрытыя вокны ў рэжыме інкогніта</translation>
 <translation id="8766943070169463815">Аркуш аўтэнтыфікацыі ўліковых даных для бяспечных плацяжоў адкрыты</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8790007591277257123">&amp;Узнавіць выдаленне</translation>
@@ -2363,6 +2385,7 @@
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />. Каб абнавіць браўзер Chrome праз яго налады, націсніце Tab, затым Enter</translation>
 <translation id="8820817407110198400">Закладкі</translation>
 <translation id="882338992931677877">Слот ручной падачы</translation>
+<translation id="8834380158646307944">Кнопка "Закрыць вокны ў рэжыме інкогніта". Каб закрыць усе адкрытыя вокны ў рэжыме інкогніта, націсніце Enter</translation>
 <translation id="883848425547221593">Іншыя закладкі</translation>
 <translation id="884264119367021077">Адрас дастаўкі</translation>
 <translation id="884923133447025588">Механізм адклікання не знойдзены.</translation>
@@ -2416,6 +2439,7 @@
 <translation id="9020200922353704812">Патрабуецца адрас для выстаўлення рахункаў па крэдытнай картцы</translation>
 <translation id="9020542370529661692">Гэта старонка была перакладзена на наступную мову: <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="9020742383383852663">A8</translation>
+<translation id="9021429684248523859"><ph name="SHARE_THIS_PAGE_FOCUSED_FRIENDLY_MATCH_TEXT" />. Каб абагуліць гэту ўкладку (абагуліць спасылку, стварыць QR-код, трансліраваць яе і г. д.), націсніце Tab, затым Enter</translation>
 <translation id="9025348182339809926">(Несапраўдны)</translation>
 <translation id="9030265603405983977">Манахромны</translation>
 <translation id="9035022520814077154">Памылка бяспекі</translation>

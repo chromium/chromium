@@ -119,6 +119,7 @@
 <translation id="1743570585616704562">Не е препознаен</translation>
 <translation id="1746730358044914197">Методите на внесување ги конфигурира вашиот администратор.</translation>
 <translation id="1747827819627189109">Тастатурата на екранот е овозможена</translation>
+<translation id="1750088060796401187">Дозволени се само <ph name="MAX_DESK_LIMIT" /> работни површини. Отстранете работна површина за да отворите нова.</translation>
 <translation id="1761222317188459878">Вклучи/исклучи мрежна врска. <ph name="STATE_TEXT" /></translation>
 <translation id="1768366657309696705">Кратенката од тастатура <ph name="LAUNCHER_KEY_NAME" /> + Точка се промени. За да го користите копчето Insert, притиснете го копчето <ph name="LAUNCHER_KEY_NAME" /> + Shift + Backspace.</translation>
 <translation id="1771761307086386028">Лизгај надесно</translation>

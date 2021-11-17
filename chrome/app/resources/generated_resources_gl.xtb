@@ -2393,6 +2393,7 @@ Se máis tarde decides que prefires que o teu fillo ou filla non utilice Voice M
 <translation id="3449393517661170867">Nova ventá con pestanas</translation>
 <translation id="3449839693241009168">Preme <ph name="SEARCH_KEY" /> para enviar comandos a <ph name="EXTENSION_NAME" /></translation>
 <translation id="3450157232394774192">Porcentaxe de ocupación de estado de inactividade</translation>
+<translation id="3450180775417907283"><ph name="MANAGER" /> require que te conectes agora á wifi e descargues unha actualización.</translation>
 <translation id="3451753556629288767">Con permiso para abrir tipos de ficheiros</translation>
 <translation id="3452999110156026232">Acceso parental</translation>
 <translation id="3453612417627951340">Precisa autorización</translation>
@@ -4261,6 +4262,7 @@ Podes asignarlles esta acción a varios interruptores.</translation>
 <translation id="5472627187093107397">Gardar os contrasinais deste sitio</translation>
 <translation id="5473075389972733037">IBM</translation>
 <translation id="5473156705047072749">{NUM_CHARACTERS,plural, =1{O PIN debe ter como mínimo 1 carácter}other{O PIN debe ter como mínimo # caracteres}}</translation>
+<translation id="5474859849784484111"><ph name="MANAGER" /> require que te conectes agora á wifi e descargues unha actualización. Tamén podes descargala desde unha conexión de pago por consumo (pódense aplicar cargos).</translation>
 <translation id="5481273127572794904">Sitios que non poden descargar automaticamente varios ficheiros</translation>
 <translation id="5481941284378890518">Engadir impresoras que estean cerca</translation>
 <translation id="5483785310822538350">Revogar acceso a ficheiros e dispositivos</translation>
@@ -4686,6 +4688,7 @@ Podes asignarlles esta acción a varios interruptores.</translation>
 <translation id="592880897588170157">Descargar ficheiros PDF en lugar de abrilos automaticamente en Chrome</translation>
 <translation id="592919310198008711">Cando faga clic na extensión</translation>
 <translation id="5932124097031739492">Linux actualizouse correctamente.</translation>
+<translation id="5932209916647644605"><ph name="MANAGER" /> require actualizar o teu dispositivo (<ph name="DEVICE_TYPE" />) de inmediato.</translation>
 <translation id="5932224571077948991">O sitio mostra anuncios enganosos ou intrusivos</translation>
 <translation id="59324397759951282">Dispositivo USB de <ph name="MANUFACTURER_NAME" /></translation>
 <translation id="5932441198730183141">Non tes suficientes licenzas dispoñibles para inscribir este dispositivo de hardware de Google Meet. Se queres comprar máis, ponte en contacto co departamento de vendas. Se consideras que esta mensaxe se che mostrou por erro, ponte en contacto co servizo de asistencia.</translation>
@@ -6091,7 +6094,6 @@ Se máis tarde decides que non queres usar Voice Match, tan só tes que desactiv
 <translation id="7433708794692032816">Para seguir usando o teu dispositivo (<ph name="DEVICE_TYPE" />), insire a tarxeta intelixente</translation>
 <translation id="7433957986129316853">Conservar cambios</translation>
 <translation id="7434509671034404296">Programador</translation>
-<translation id="7434635829372401939">Sincronizar a túa configuración</translation>
 <translation id="7434757724413878233">Aceleración do rato</translation>
 <translation id="7434969625063495310">Non se puido engadir o servidor de impresión. Comproba a súa configuración e téntao de novo.</translation>
 <translation id="7436921188514130341">Que pena! Produciuse un erro durante o cambio de nome.</translation>

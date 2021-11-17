@@ -354,6 +354,15 @@
 <translation id="3509391053705095206">نمی‌توان تلفنتان را پیدا کرد. مطمئن شوید بلوتوث تلفن روشن باشد.</translation>
 <translation id="3510164367642747937">برجسته کردن نشانگر موشواره</translation>
 <translation id="3513798432020909783">حساب تحت مدیریت <ph name="MANAGER_EMAIL" /> است</translation>
+<translation id="3518604429872942239">سینی وضعیت، زمان <ph name="TIME" />,
+        <ph name="BATTERY" />
+        <ph name="NETWORK" />,
+        <ph name="MIC" />,
+        <ph name="CAMERA" />,
+        <ph name="MANAGED" />
+        <ph name="NOTIFICATION" />,
+        <ph name="IME" />
+        <ph name="LOCALE" /></translation>
 <translation id="352245152354538528">{0,plural, =1{دستگاه را تا یک دقیقه دیگر به‌روزرسانی کنید}one{دستگاه را تا # دقیقه دیگر به‌روزرسانی کنید}other{دستگاه را تا # دقیقه دیگر به‌روزرسانی کنید}}</translation>
 <translation id="353086728817903341">به <ph name="NUM_DEVICES" /> دستگاه متصل است</translation>
 <translation id="3552189655002856821">‏Wi-Fi خاموش است</translation>
@@ -376,6 +385,7 @@
 <translation id="3630697955794050612">خاموش</translation>
 <translation id="3631369015426612114">مجاز کردن اعلان‌های منابع زیر</translation>
 <translation id="3638400994746983214">روشن/خاموش کردن صفحه حریم‌خصوصی. <ph name="STATE_TEXT" />.</translation>
+<translation id="3640092422335864171">ذخیره <ph name="NAME" /></translation>
 <translation id="3649505501900178324">به‌روزرسانی عقب‌افتاده</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> کاربر مدیریت‌شده</translation>
 <translation id="3665889125180354336">ضبط میکروفون</translation>
@@ -458,6 +468,7 @@
 <translation id="4215497585250573029">‏تنظیمات VPN</translation>
 <translation id="4217571870635786043">املا</translation>
 <translation id="4221957499226645091"><ph name="APP_NAME" />، برنامه نصب‌شده، موقتاً متوقف‌شده</translation>
+<translation id="4223947355273782392">برای مرتبط‌سازی سریع‌تر با دستگاه‌های دیگر، <ph name="NAME" /> را در <ph name="EMAIL" /> ذخیره کنید</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4242533952199664413">باز کردن تنظیمات</translation>
 <translation id="4250229828105606438">نماگرفت</translation>

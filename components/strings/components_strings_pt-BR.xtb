@@ -157,6 +157,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="1422930527989633628">Pode pedir para descobrir dispositivos Bluetooth por perto</translation>
 <translation id="1426410128494586442">Sim</translation>
 <translation id="1428146450423315676">Empilhador 7</translation>
+<translation id="142858679511221695">Usuário na nuvem</translation>
 <translation id="1428729058023778569">Este aviso está sendo exibido porque o site não é compatível com HTTPS. <ph name="BEGIN_LEARN_MORE_LINK" />Saiba mais<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1430915738399379752">Imprimir</translation>
 <translation id="1432581352905426595">Gerenciar mecanismos de pesquisa</translation>
@@ -715,6 +716,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="3329013043687509092">Saturação</translation>
 <translation id="3333762389743153920">Não qualificado como cartão virtual</translation>
 <translation id="3338095232262050444">Seguro</translation>
+<translation id="3339446062576134663">Nuvem (Ash)</translation>
 <translation id="3355823806454867987">Alterar configurações de proxy...</translation>
 <translation id="3360103848165129075">Página do gerenciador de pagamento</translation>
 <translation id="3361596688432910856">O Chrome <ph name="BEGIN_EMPHASIS" />não salvará<ph name="END_EMPHASIS" /> as seguintes informações:
@@ -738,6 +740,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="3380365263193509176">Erro desconhecido</translation>
 <translation id="3380864720620200369">ID do cliente:</translation>
 <translation id="3381668585148405088">Verificar sua compra</translation>
+<translation id="3383566085871012386">Ordem de precedência atual</translation>
 <translation id="3387261909427947069">Formas de pagamento</translation>
 <translation id="3391030046425686457">Endereço de entrega</translation>
 <translation id="3391482648489541560">edição de arquivo</translation>
@@ -1402,6 +1405,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="5478437291406423475">Envelope 125 mm x 324 mm</translation>
 <translation id="5481076368049295676">Este conteúdo pode tentar instalar softwares perigosos no seu dispositivo que roubam ou excluem suas informações. <ph name="BEGIN_LINK" />Mostrar mesmo assim<ph name="END_LINK" /></translation>
 <translation id="54817484435770891">Adicionar endereço válido</translation>
+<translation id="5485973315555778056">Computador na nuvem</translation>
 <translation id="5490432419156082418">Endereços e mais</translation>
 <translation id="5492298309214877701">Esse site na intranet da empresa, organização ou escola tem o mesmo URL de um website externo.
     <ph name="LINE_BREAK" />
@@ -1431,6 +1435,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="5571083550517324815">Não é possível fazer a retirada nesse endereço. Tente um endereço diferente.</translation>
 <translation id="5580958916614886209">Verifique o mês de validade e tente novamente</translation>
 <translation id="5586446728396275693">Nenhum endereço salvo</translation>
+<translation id="5587987780934666589">Usuário da plataforma</translation>
 <translation id="5593349413089863479">A conexão não é totalmente segura</translation>
 <translation id="5595485650161345191">Editar endereço</translation>
 <translation id="5598944008576757369">Escolher forma de pagamento</translation>
@@ -2119,6 +2124,7 @@ Mais detalhes:
 <translation id="7953569069500808819">Costura na parte superior</translation>
 <translation id="7956713633345437162">Favoritos nos dispositivos móveis</translation>
 <translation id="7961015016161918242">Nunca</translation>
+<translation id="7962467575542381659">Computador da plataforma</translation>
 <translation id="7966803981046576691">Tipo de conta da tarefa</translation>
 <translation id="79682505114836835">O valor "<ph name="VALUE" />" é uma cor hexadecimal inválida.</translation>
 <translation id="7968982339740310781">Visualizar detalhes</translation>

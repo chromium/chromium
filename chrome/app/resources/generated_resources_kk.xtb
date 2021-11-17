@@ -1214,6 +1214,7 @@
 <translation id="2232751457155581899">Сайттар камераңыздың орнын қадағалауға рұқсат сұрай алады.</translation>
 <translation id="2232876851878324699">Бұл файлда импортталмаған бір сертификат қамтылған:</translation>
 <translation id="2233502537820838181">&amp;Қосымша ақпарат</translation>
+<translation id="223356358902285214">Интернет пен қолданбаларды пайдалану тарихы</translation>
 <translation id="2234876718134438132">Синхрондау және Google қызметтері</translation>
 <translation id="2235344399760031203">Үшінші тараптың cookie файлдары бөгелді</translation>
 <translation id="2238379619048995541">Жиілік күйі деректері</translation>
@@ -1894,6 +1895,7 @@
 <translation id="2923006468155067296"><ph name="DEVICE_TYPE" /> құрылғыңыз қазір құлыпталады.
 <ph name="DOMAIN" /> домені смарт картаңызды салып жүруіңізді талап етеді.</translation>
 <translation id="2923234477033317484">Бұл аккаунтты өшіру</translation>
+<translation id="2923644930701689793">Телефон камерасының суреттер қалтасына кіру</translation>
 <translation id="2926085873880284723">Әдепкі таңбашаларды қалпына келтіру</translation>
 <translation id="2926620265753325858">"<ph name="DEVICE_NAME" />" құрылғысына қолдау көрсетілмейді.</translation>
 <translation id="2927017729816812676">Кэш жады</translation>
@@ -3085,6 +3087,7 @@
 <translation id="4168015872538332605"><ph name="PRIMARY_EMAIL" /> аккаунтына қатысты кейбір параметрлер сізбен бөлісілді. Бұл параметрлер бірнеше рет кіру кезінде ғана аккаунтқа әсер етеді.</translation>
 <translation id="4169535189173047238">Рұқсат бермеу</translation>
 <translation id="4170314459383239649">Шыққан кезде тазалау</translation>
+<translation id="417096670996204801">Профиль таңдаңыз</translation>
 <translation id="4175137578744761569">Ашық күлгін және ақ</translation>
 <translation id="4175737294868205930">Тұрақты жад</translation>
 <translation id="4176463684765177261">Өшірілген</translation>
@@ -3818,7 +3821,7 @@
 <translation id="4992473555164495036">Әкімшіңіз қолжетімді енгізу әдістерінің санын шектеді.</translation>
 <translation id="4994474651455208930">Сайттардың протоколдар үшін әдепкі өңдегіш болуды сұрауына рұқсат беру</translation>
 <translation id="4994754230098574403">Реттелуде</translation>
-<translation id="4995131849631312693"><ph name="BEGIN_PARAGRAPH1" />Тіркелуден бұрын TPM-ді тазартуыңыз керек, сонда <ph name="DEVICE_OS" /> құрылғыға иелік құқығын ала алады.<ph name="END_PARAGRAPH1" />
+<translation id="4995131849631312693"><ph name="BEGIN_PARAGRAPH1" />Тіркелуден бұрын TPM-ді тазартуыңыз керек, сонда <ph name="DEVICE_OS" /> құрылғыға меншік құқығын ала алады.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />TPM құрылғысын толығымен өшіріп тастауға да болады. Деректеріңіз бағдарламалық құрал шифрлауымен қауіпсіз түрде сақтала береді, бірақ жабдық қолдауының сертификаттары сияқты кейбір қауіпсіздік функциялары өшіріледі.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />Өшіріп қосып, жүйенің BIOS/UEFI параметрлеріне кіру арқылы TPM параметрлерін өзгерте аласыз. Орындалатын қадамдар құрылғы моделіне байланысты әртүрлі болады. Толығырақ ақпарат алу үшін өшіріп қоспас бұрын басқа құрылғыда <ph name="DEVICE_OS" /> құжаттамасын ашып алыңыз: [URL link]<ph name="END_PARAGRAPH3" /></translation>
 <translation id="4996851818599058005">{NUM_VMS,plural, =0{"<ph name="VM_TYPE" />" виртуалды машиналары табылмады.}=1{1 "<ph name="VM_TYPE" />" виртуалды машинасы табылды: <ph name="VM_NAME_LIST" />.}other{{NUM_VMS} "<ph name="VM_TYPE" />" виртуалды машинасы табылды: <ph name="VM_NAME_LIST" />.}}</translation>
@@ -6070,7 +6073,6 @@
 <translation id="7433708794692032816"><ph name="DEVICE_TYPE" /> құрылғысын пайдалана беру үшін смарт картаны салу</translation>
 <translation id="7433957986129316853">Сақтау</translation>
 <translation id="7434509671034404296">Әзірлеуші</translation>
-<translation id="7434635829372401939">Параметрлерді синхрондау</translation>
 <translation id="7434757724413878233">Тінтуірді жылдамдату</translation>
 <translation id="7434969625063495310">Басып шығару сервері енгізілмеді. Сервер конфигурациясын тексеріп, қайталап көріңіз.</translation>
 <translation id="7436921188514130341">Қап! Атын өзгерту кезінде қате пайда болды.</translation>

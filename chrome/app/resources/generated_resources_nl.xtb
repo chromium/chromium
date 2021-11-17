@@ -1221,6 +1221,7 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="2232751457155581899">Sites kunnen vragen of ze je camerapositie mogen bijhouden</translation>
 <translation id="2232876851878324699">Het bestand bevat één certificaat. Dit certificaat is niet geïmporteerd:</translation>
 <translation id="2233502537820838181">&amp;Meer informatie</translation>
+<translation id="223356358902285214">Web- en app-activiteit</translation>
 <translation id="2234876718134438132">Synchronisatie en Google-services</translation>
 <translation id="2235344399760031203">Cookies van derden worden geblokkeerd</translation>
 <translation id="2238379619048995541">Gegevens van frequentiestatus</translation>
@@ -1906,6 +1907,7 @@ Als je later besluit dat je niet wilt dat je kind Voice Match gebruikt, verwijde
 <translation id="2923006468155067296">Je <ph name="DEVICE_TYPE" /> wordt nu vergrendeld.
 <ph name="DOMAIN" /> vereist dat je smartcard geplaatst blijft.</translation>
 <translation id="2923234477033317484">Dit account verwijderen</translation>
+<translation id="2923644930701689793">De filmrol van je telefoon openen</translation>
 <translation id="2926085873880284723">Standaard snelkoppelingen herstellen</translation>
 <translation id="2926620265753325858"><ph name="DEVICE_NAME" /> wordt niet ondersteund.</translation>
 <translation id="2927017729816812676">Cache-opslag</translation>
@@ -3099,6 +3101,7 @@ Als je later besluit dat je niet wilt dat je kind Voice Match gebruikt, verwijde
 <translation id="4168015872538332605">Sommige instellingen die bij <ph name="PRIMARY_EMAIL" /> horen, worden met je gedeeld. Deze instellingen beïnvloeden je account alleen wanneer toegang tot meerdere accounts wordt gebruikt.</translation>
 <translation id="4169535189173047238">Niet toestaan</translation>
 <translation id="4170314459383239649">Wissen bij het verlaten</translation>
+<translation id="417096670996204801">Profiel kiezen</translation>
 <translation id="4175137578744761569">Lichtpaars/wit</translation>
 <translation id="4175737294868205930">Permanente opslag</translation>
 <translation id="4176463684765177261">Uitgezet</translation>
@@ -4081,6 +4084,7 @@ Als je later besluit dat je niet wilt dat je kind Voice Match gebruikt, verwijde
 <translation id="5265562206369321422">Langer dan een week offline</translation>
 <translation id="5265797726250773323">Fout bij het installeren</translation>
 <translation id="5266113311903163739">Fout bij het importeren van de certificeringsinstantie</translation>
+<translation id="526622169288322445">Meer acties voor <ph name="ADDRESS_SUMMARY" /></translation>
 <translation id="5269977353971873915">Afdrukken mislukt</translation>
 <translation id="5275352920323889391">Hond</translation>
 <translation id="527605982717517565">JavaScript altijd toestaan op <ph name="HOST" /></translation>
@@ -5465,6 +5469,7 @@ Als <ph name="SUPERVISED_USER_NAME" /> hulp nodig heeft bij het lezen, laat je k
 <translation id="6775163072363532304">Beschikbare apparaten zie je hier.</translation>
 <translation id="6777817260680419853">Omleiding geblokkeerd</translation>
 <translation id="6778737459546443941">Je ouder of voogd heeft dit nog niet goedgekeurd</translation>
+<translation id="6779092717724412415">Selecteer tekst en klik met de rechtermuisknop om een markering zoals deze te maken.</translation>
 <translation id="6779447100905857289">je winkelwagens</translation>
 <translation id="677965093459947883">Zeer klein</translation>
 <translation id="6781005693196527806">Zoek&amp;machines beheren…</translation>
@@ -6094,7 +6099,6 @@ Als je later besluit dat je Voice Match niet wilt gebruiken, verwijder je dit ge
 <translation id="7433708794692032816">Plaats een smartcard om je <ph name="DEVICE_TYPE" /> te blijven gebruiken</translation>
 <translation id="7433957986129316853">Behouden</translation>
 <translation id="7434509671034404296">Ontwikkelaar</translation>
-<translation id="7434635829372401939">Je instellingen synchroniseren</translation>
 <translation id="7434757724413878233">Muisversnelling</translation>
 <translation id="7434969625063495310">Kan de printerserver niet toevoegen. Controleer de configuratie van de server en probeer het opnieuw.</translation>
 <translation id="7436921188514130341">Asjemenou! Er is iets misgegaan bij het veranderen van de naam.</translation>
@@ -6281,6 +6285,7 @@ Als je later besluit dat je Voice Match niet wilt gebruiken, verwijder je dit ge
 <translation id="7625823789272218216">Nieuw tabblad aan de linkerkant</translation>
 <translation id="7628201176665550262">Vernieuwingssnelheid</translation>
 <translation id="7629827748548208700">Tabblad: <ph name="TAB_NAME" /></translation>
+<translation id="7630426712700473382">Dit apparaat wordt beheerd door <ph name="MANAGER" /> en vereist dat je elke keer opnieuw inlogt.</translation>
 <translation id="7631014249255418691">Back-up maken van Linux-apps en -bestanden is geslaagd</translation>
 <translation id="7631205654593498032">Door je apparaten te koppelen geef je de <ph name="DEVICE_TYPE" /> toestemming om:</translation>
 <translation id="7631887513477658702">&amp;Altijd bestanden van dit type openen</translation>

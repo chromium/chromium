@@ -158,6 +158,8 @@
 <translation id="357889014807611375">սահմանափակ Wi-Fi</translation>
 <translation id="3583278742022654445">Ազդանշանը թույլ է։ Փորձեք սարքը մոտեցնել Wi-Fi ազդանշանի աղբյուրին։</translation>
 <translation id="3595596368722241419">Մարտկոցը լրիվ լիցքավորված է</translation>
+<translation id="360089215033199597">Վերականգնման գործընթացը հեշտացնելու համար խորհուրդ է տրվում միանալ Wi-Fi-ին։
+        Ձեր ցանցի տվյալները կպահվեն։</translation>
 <translation id="360565022852130722">Wi-Fi ցանցը պաշտպանված է WEP 802.1x թույլ հաղորդակարգով</translation>
 <translation id="3606583719724308068">Բարձր հապաղում HTTPS կայքերի համար</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" /> փորձարկում</translation>
@@ -480,6 +482,7 @@
 <translation id="816013303019725643">Մուտքագրեք ապակողպման կոդը՝</translation>
 <translation id="8206859287963243715">Բջջային</translation>
 <translation id="8208861521865154048">Բոնուսներ</translation>
+<translation id="8217675307824400706">Միացեք ցանցին</translation>
 <translation id="8230672074305416752">Չհաջողվեց փինգ ուղարկել կանխադրված ցանցի անցախուցին</translation>
 <translation id="8246209727385807362">Անհայտ օպերատոր</translation>
 <translation id="8286154143153872371">Միացեք որևէ ցանցի և վերաբեռնեք էջը՝ պաստառը դիտելու համար։</translation>

@@ -375,6 +375,7 @@
 <translation id="3630697955794050612">өшірулі</translation>
 <translation id="3631369015426612114">Келесі көздерден алынатын хабарландыруларға рұқсат беру</translation>
 <translation id="3638400994746983214">Құпиялылық экранын қосу немесе өшіру. <ph name="STATE_TEXT" />.</translation>
+<translation id="3640092422335864171"><ph name="NAME" /> құрылғысын сақтау</translation>
 <translation id="3649505501900178324">Жаңарту мерзімі өтіп кетті</translation>
 <translation id="366222428570480733">Басқарылатын пайдаланушы: <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="3665889125180354336">Микрофон арқылы жазу</translation>
@@ -457,6 +458,7 @@
 <translation id="4215497585250573029">VPN параметрлері</translation>
 <translation id="4217571870635786043">Мәтінді дауыспен енгізу</translation>
 <translation id="4221957499226645091"><ph name="APP_NAME" />, қолданба орнатылған, кідіртілген</translation>
+<translation id="4223947355273782392">Басқа құрылғыларыңызбен жылдамырақ жұптау үшін <ph name="NAME" /> құрылғысын <ph name="EMAIL" /> аккаунтына сақтаңыз.</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4242533952199664413">Параметрлерді ашу</translation>
 <translation id="4250229828105606438">Скриншот</translation>

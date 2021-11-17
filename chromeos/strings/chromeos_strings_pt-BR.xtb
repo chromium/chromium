@@ -63,6 +63,8 @@
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1792647875738159689">Cancelando digitalização</translation>
 <translation id="1851218745569890714">Videoconferência</translation>
+<translation id="1857850044054738019">Selecione esta opção caso o dispositivo volte para o estoque ou seja recondicionado e
+        distribuído para um novo cliente.</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="1887850431809612466">Revisão do hardware</translation>
 <translation id="1905710495812624430">O número máximo de tentativas permitidas foi excedido.</translation>
@@ -197,6 +199,7 @@
 <translation id="4244962993387259361">É necessário ter pelo menos 500 MB livres para executar um teste de memória. Para liberar espaço, acesse Configurações &gt; Gerenciador de armazenamento.</translation>
 <translation id="4258281355379922695">Latência do HTTP</translation>
 <translation id="4271957103967917607">Ver em tela cheia</translation>
+<translation id="4275799948641988986">Após o reparo, quem vai usar o dispositivo?</translation>
 <translation id="4297501883039923494">Parado (erro desconhecido)</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> imagens</translation>
 <translation id="4378373042927530923">Não executada</translation>
@@ -239,6 +242,7 @@
 <translation id="4813345808229079766">Conexão</translation>
 <translation id="4832079907277790330">Selecionar a pasta no app Arquivos…</translation>
 <translation id="4835901797422965222">Não há redes ativas</translation>
+<translation id="4839698083503556542">Crie seu próprio filme</translation>
 <translation id="484790837831576105">(Android) Resolução de DNS</translation>
 <translation id="4848429997038228357">EM EXECUÇÃO</translation>
 <translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> {0} tentativa restante}one{<ph name="ERROR_MESSAGE" /> {0} tentativa restante}other{<ph name="ERROR_MESSAGE" /> {0} tentativas restantes}}</translation>
@@ -412,6 +416,7 @@ Tente tocar no microfone para me pedir algo.</translation>
 <translation id="7297226631177386107">O firewall impediu a conexão a sites HTTPS</translation>
 <translation id="7302860742311162920">ICCID</translation>
 <translation id="7305884605064981971">EDGE</translation>
+<translation id="7309920310754476121">O dispositivo vai mudar de proprietário</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7343649194310845056">Dispositivos de rede</translation>
 <translation id="7359657277149375382">Tipo de arquivo</translation>
@@ -419,6 +424,9 @@ Tente tocar no microfone para me pedir algo.</translation>
 <translation id="7415801143053185905">A latência do HTTP está muito alta</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Digitalização concluída. 1 página digitalizada}one{Digitalização concluída. {NUMBER_OF_PAGES} página digitalizada}other{Digitalização concluída. {NUMBER_OF_PAGES} páginas digitalizadas}}</translation>
+<translation id="7451112128070628323">Selecione esta opção caso a propriedade do dispositivo continue a mesma.
+        Por exemplo, caso o dispositivo esteja sendo transferido para uma pessoa diferente
+        dentro da organização.</translation>
 <translation id="7469648432129124067">Portal detectado</translation>
 <translation id="7487067081878637334">Tecnologia</translation>
 <translation id="7490813197707563893">Endereço MAC</translation>
@@ -544,6 +552,7 @@ Tente tocar no microfone para me pedir algo.</translation>
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9088306295921699330">Uso atual</translation>
+<translation id="9095415590198785865">O dispositivo vai continuar com o mesmo proprietário</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
 <translation id="910415269708673980">Atualizar tíquete para <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Digitalizando página <ph name="PAGE_NUMBER" /></translation>

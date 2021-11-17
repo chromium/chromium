@@ -354,6 +354,15 @@
 <translation id="3509391053705095206">ನಿಮ್ಮ ಫೋನ್ ಅನ್ನು ಹುಡುಕಲು ಸಾಧ್ಯವಾಗುತ್ತಿಲ್ಲ. ನಿಮ್ಮ ಫೋನ್‌ನ ಬ್ಲೂಟೂತ್ ಆನ್‌ ಆಗಿದೆಯೇ ಎಂದು ಖಚಿತಪಡಿಸಿಕೊಳ್ಳಿ.</translation>
 <translation id="3510164367642747937">ಮೌಸ್ ಕರ್ಸರ್ ಎದ್ದುಗಾಣಿಸಿ</translation>
 <translation id="3513798432020909783"><ph name="MANAGER_EMAIL" /> ಮೂಲಕ ಖಾತೆಯನ್ನು ನಿರ್ವಹಿಸಲಾಗಿದೆ</translation>
+<translation id="3518604429872942239">ಸ್ಥಿತಿ ಟ್ರೇ, ಸಮಯ <ph name="TIME" />,
+        <ph name="BATTERY" />
+        <ph name="NETWORK" />,
+        <ph name="MIC" />,
+        <ph name="CAMERA" />,
+        <ph name="MANAGED" />
+        <ph name="NOTIFICATION" />,
+        <ph name="IME" />
+        <ph name="LOCALE" /></translation>
 <translation id="352245152354538528">{0,plural, =1{1 ನಿಮಿಷದೊಳಗೆ ಸಾಧನವನ್ನು ಅಪ್‌ಡೇಟ್ ಮಾಡಿ}one{# ನಿಮಿಷಗಳೊಳಗೆ ಸಾಧನವನ್ನು ಅಪ್‌ಡೇಟ್ ಮಾಡಿ}other{# ನಿಮಿಷಗಳೊಳಗೆ ಸಾಧನವನ್ನು ಅಪ್‌ಡೇಟ್ ಮಾಡಿ}}</translation>
 <translation id="353086728817903341"><ph name="NUM_DEVICES" /> ಸಾಧನಗಳಿಗೆ ಕನೆಕ್ಟ್ ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="3552189655002856821">ವೈ-ಫೈ ಆಫ್ ಮಾಡಲಾಗಿದೆ</translation>
@@ -376,6 +385,7 @@
 <translation id="3630697955794050612">ಆಫ್</translation>
 <translation id="3631369015426612114">ಕೆಳಗಿನವುಗಳಿಂದ ಅಧಿಸೂಚನೆಗಳನ್ನು ಅನುಮತಿಸಿ</translation>
 <translation id="3638400994746983214">ಗೌಪ್ಯತೆ ಸ್ಕ್ರೀನ್ ಅನ್ನು ಟಾಗಲ್ ಮಾಡಿ. <ph name="STATE_TEXT" />.</translation>
+<translation id="3640092422335864171"><ph name="NAME" /> ಉಳಿಸಿ</translation>
 <translation id="3649505501900178324">ಅಪ್‌ಡೇಟ್ ಬಾಕಿ ಉಳಿದಿದೆ</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> ನಿರ್ವಹಿಸಲಾದ ಬಳಕೆದಾರರು</translation>
 <translation id="3665889125180354336">ಮೈಕ್ರೋಫೋನ್ ಮೂಲಕ ರೆಕಾರ್ಡ್ ಮಾಡಿ ಆಯ್ಕೆ</translation>
@@ -458,6 +468,7 @@
 <translation id="4215497585250573029">VPN ಸೆಟ್ಟಿಂಗ್‌ಗಳು</translation>
 <translation id="4217571870635786043">ಉಕ್ತಲೇಖನ</translation>
 <translation id="4221957499226645091"><ph name="APP_NAME" />, ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಿದ ಆ್ಯಪ್, ವಿರಾಮಗೊಳಿಸಲಾಗಿದೆ</translation>
+<translation id="4223947355273782392">ನಿಮ್ಮ ಇತರ ಸಾಧನಗಳ ಜೊತೆಗೆ ಶೀಘ್ರ ಜೋಡಿಗೋಳಿಸುವಿಕೆಗಾಗಿ <ph name="EMAIL" /> ಗೆ <ph name="NAME" /> ಸಾಧನವನ್ನು ಉಳಿಸಿ</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4242533952199664413">ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ತೆರೆ</translation>
 <translation id="4250229828105606438">ಸ್ಕ್ರೀನ್‌ಶಾಟ್</translation>

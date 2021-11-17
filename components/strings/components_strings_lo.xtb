@@ -157,6 +157,7 @@
 <translation id="1422930527989633628">ສາມາດຂໍຄົ້ນພົບອຸປະກອນ Bluetooth ທີ່ຢູ່ໃກ້ຄຽງ</translation>
 <translation id="1426410128494586442">ແມ່ນແລ້ວ</translation>
 <translation id="1428146450423315676">ສະແຕັກເກີ້ 7</translation>
+<translation id="142858679511221695">ຜູ້ໃຊ້ຄລາວ</translation>
 <translation id="1428729058023778569">ທ່ານເຫັນຄຳເຕືອນນີ້ເນື່ອງຈາກເວັບໄຊນີ້ບໍ່ຮອງຮັບ HTTPS. <ph name="BEGIN_LEARN_MORE_LINK" />ສຶກສາເພີ່ມເຕີມ<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1430915738399379752">ພິມ</translation>
 <translation id="1432581352905426595">ຈັດການໂປຣແກຣມຊອກຫາ</translation>
@@ -719,6 +720,7 @@
 <translation id="3329013043687509092">ການອີ່ມຕົວ</translation>
 <translation id="3333762389743153920">ບໍ່ມີສິດສຳລັບບັດສະເໝືອນ</translation>
 <translation id="3338095232262050444">ປອດໄພ</translation>
+<translation id="3339446062576134663">ຄລາວ (Ash)</translation>
 <translation id="3355823806454867987">ປ່ຽນການຕັ້ງຄ່າພຣັອກຊີ...</translation>
 <translation id="3360103848165129075">ແຜ່ນວຽກຂອງເຄື່ອງຈັດການການຊຳລະເງິນ</translation>
 <translation id="3361596688432910856">Chrome <ph name="BEGIN_EMPHASIS" />ຈະບໍ່ບັນທຶກ<ph name="END_EMPHASIS" /> ຂໍ້ມູນຕໍ່ໄປນີ້:
@@ -742,6 +744,7 @@
 <translation id="3380365263193509176">ຄວາມຜິດພາດທີ່ບໍ່ຮູ້ຈັກ</translation>
 <translation id="3380864720620200369">ID ລູກຂ່າຍ:</translation>
 <translation id="3381668585148405088">ຢັ້ງຢືນການສັ່ງຊື້ຂອງທ່ານ</translation>
+<translation id="3383566085871012386">ລຳດັບຄວາມສຳຄັນປັດຈຸບັນ</translation>
 <translation id="3387261909427947069">ວິທີການຈ່າຍເງິນ</translation>
 <translation id="3391030046425686457">ທີ່ຢູ່ການຈັດສົ່ງ</translation>
 <translation id="3391482648489541560">ການແກ້ໄຂໄຟລ໌</translation>
@@ -1411,6 +1414,7 @@
 <translation id="5478437291406423475">B6/C4 (ຊອງຈົດໝາຍ)</translation>
 <translation id="5481076368049295676">ເນື້ອຫານີ້ອາດຈະພະຍາຍາມຕິດຕັ້ງຊອບແວອັນຕະລາຍໃສ່ອຸປະກອນຂອງທ່ານທີ່ລັກເອົາ ຫຼື ລຶບຂໍ້ມູນຂອງທ່ານ. <ph name="BEGIN_LINK" />ຢືນຢັນໃຫ້ສະແດງ<ph name="END_LINK" /></translation>
 <translation id="54817484435770891">ເພີ່ມທີ່ຢູ່ທີ່ຖືກຕ້ອງ</translation>
+<translation id="5485973315555778056">ເຄື່ອງຈັກຄລາວ</translation>
 <translation id="5490432419156082418">ທີ່ຢູ່ ແລະ ອື່ນໆອີກ</translation>
 <translation id="5492298309214877701">ເວັບໄຊນີ້ຢູ່ໃນອິນທຣາເນັດຂອງບໍລິສັດ,​ ອົງການ ຫຼື ໂຮງຮຽນ ມີ URL ດຽວກັນກັບເວັບໄຊພາຍນອກ.
     <ph name="LINE_BREAK" />
@@ -1440,6 +1444,7 @@
 <translation id="5571083550517324815">ບໍ່ສາມາດຮັບເອົາເຄື່ອງຈາກທີ່ຢູ່ນີ້ໄດ້. ເລືອກທີ່ຢູ່ອື່ນ.</translation>
 <translation id="5580958916614886209">ກວດເບິ່ງເດືອນໝົດອາຍຸຂອງທ່ານ ແລະ ລອງອີກຄັ້ງ</translation>
 <translation id="5586446728396275693">ບໍ່ມີທີ່ຢູ່ທີ່ບັນທຶກໄວ້</translation>
+<translation id="5587987780934666589">ຜູ້ໃຊ້ແພລດຟອມ</translation>
 <translation id="5593349413089863479">ການເຊື່ອມຕໍ່ບໍ່ປອດໄພສົມບູນ</translation>
 <translation id="5595485650161345191">ແກ້ໄຂທີ່ຢູ່</translation>
 <translation id="5598944008576757369">ເລືອກວິທີການຈ່າຍເງິນ</translation>
@@ -2128,6 +2133,7 @@
 <translation id="7953569069500808819">ຫຍິບຂອບເທິງສຸດ</translation>
 <translation id="7956713633345437162">ບຸກມາກສ໌ມື​ຖື</translation>
 <translation id="7961015016161918242">ບໍ່​ເລີຍ</translation>
+<translation id="7962467575542381659">ເຄື່ອງຈັກແພລດຟອມ</translation>
 <translation id="7966803981046576691">ປະເພດບັນຊີວຽກ</translation>
 <translation id="79682505114836835">ຄ່າ "<ph name="VALUE" />" ເປັນສີ hex ທີ່ບໍ່ຖືກຕ້ອງ.</translation>
 <translation id="7968982339740310781">ເບິ່ງລາຍ​ລະ​ອຽດ​</translation>

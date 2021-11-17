@@ -376,6 +376,7 @@
 <translation id="3630697955794050612">বন্ধ</translation>
 <translation id="3631369015426612114">নিম্নলিখিত থেকে বিজ্ঞপ্তি অনুমতি দিন</translation>
 <translation id="3638400994746983214">গোপনীয়তা স্ক্রিন টগল করুন। <ph name="STATE_TEXT" />।</translation>
+<translation id="3640092422335864171"><ph name="NAME" /> সেভ করুন</translation>
 <translation id="3649505501900178324">আপডেট করতে ডিভাইস রিস্টার্ট করুন</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> ম্যানেজ করা ব্যবহারকারী</translation>
 <translation id="3665889125180354336">মাইক্রোফোনে রেকর্ড করুন</translation>
@@ -458,6 +459,7 @@
 <translation id="4215497585250573029">ভিপিএন সেটিংস</translation>
 <translation id="4217571870635786043">ডিক্টেশন</translation>
 <translation id="4221957499226645091"><ph name="APP_NAME" />, ইনস্টল করা অ্যাপ, পজ করা হয়েছে</translation>
+<translation id="4223947355273782392">আপনার অন্যান্য ডিভাইসের সাথে আরও দ্রুত পেয়ার করতে <ph name="EMAIL" />-এ <ph name="NAME" /> সেভ করুন</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4242533952199664413">সেটিংস খুলুন</translation>
 <translation id="4250229828105606438">স্ক্রিনশট</translation>

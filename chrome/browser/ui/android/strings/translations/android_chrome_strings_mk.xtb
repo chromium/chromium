@@ -36,6 +36,7 @@
 <translation id="1177863135347784049">Приспособено</translation>
 <translation id="1197267115302279827">Премести обележувачи</translation>
 <translation id="1201402288615127009">Следно</translation>
+<translation id="1202892408424955784">Следени производи</translation>
 <translation id="1204037785786432551">Преземи линк</translation>
 <translation id="1206892813135768548">Копирај текст од врска</translation>
 <translation id="1208340532756947324">За да ги синхронизирате и персонализирате уредите, вклучете синхронизација</translation>
@@ -82,6 +83,7 @@
 <translation id="1414981605391750300">Се воспоставува контакт со Google… Ова може да потрае</translation>
 <translation id="1416550906796893042">Верзија на апликација</translation>
 <translation id="1430915738399379752">Печати</translation>
+<translation id="1448440926884431741">Организирајте ги следените производи во „Обележувачи“</translation>
 <translation id="1450753235335490080">Не може да се сподели <ph name="CONTENT_TYPE" /></translation>
 <translation id="1466383950273130737">Изберете јазик за Chrome</translation>
 <translation id="147113415845704694">Пробајте со „What’s the weather today?“ (Какво е времето денес?)</translation>
@@ -134,6 +136,7 @@
 <translation id="1877026089748256423">Chrome е застарен</translation>
 <translation id="1883903952484604915">Мои датотеки</translation>
 <translation id="189358972401248634">Други јазици</translation>
+<translation id="1894023287452300670">Следете ја цената тука</translation>
 <translation id="1905320231301365059">Датотеките што ќе ги преземете во режим „Инкогнито“ сепак ќе бидат видливи за секој што ќе го користи уредов.</translation>
 <translation id="1910950723001426294">Списокот со опции за споделување е затворен.</translation>
 <translation id="1918175104945982129">Корисничкиот интерфејс за согласност за гласовно пребарување со „Помошникот“ е отворен на половина екран</translation>
@@ -346,6 +349,7 @@
 <translation id="3029704984691124060">Лозинките-фрази не се совпаѓаат</translation>
 <translation id="3031225630520268969">Кориснички интерфејс за согласност за гласовно пребарување со „Помошникот“</translation>
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />Побарајте помош<ph name="END_LINK" /></translation>
+<translation id="3037177537145227281">Цената се следи</translation>
 <translation id="3037517125981011456">Прикажува prompt за најава на Chrome</translation>
 <translation id="3046945242843292318">Стигнете на сајтов побрзо следниот пат</translation>
 <translation id="305593374596241526">Локацијата е исклучена, вклучете ја во <ph name="BEGIN_LINK" />Поставки за Android<ph name="END_LINK" />.</translation>
@@ -504,6 +508,7 @@
 <translation id="4016425174436051808">Не може да се следи. Нешто тргна наопаку.</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# ч.}one{# ч.}other{# ч.}}</translation>
 <translation id="4045764304651014138">Податоци за користењето</translation>
+<translation id="405399507749852140">Добивајте предупредувања ако цената се намали на кој било сајт</translation>
 <translation id="4056223980640387499">Sepia</translation>
 <translation id="4060598801229743805">Достапни се опции речиси на врвот на екранот</translation>
 <translation id="4062305924942672200">Правни информации</translation>
@@ -557,6 +562,7 @@
 <translation id="4409271659088619928">Вашиот пребарувач е <ph name="DSE" />. Погледнете го неговото упатство за бришење на историјата на пребарување ако е применливо.</translation>
 <translation id="4411535500181276704">Лесен режим</translation>
 <translation id="4415276339145661267">Управувајте со сметката на Google</translation>
+<translation id="4425140285732600465">Цената се следи. Добивајте предупредувања ако цената се намали на кој било сајт.</translation>
 <translation id="4427306783828095590">„Подобрената заштита“ помага при блокирање кражби на идентитетот и злонамерен софтвер</translation>
 <translation id="4450672886426705087">Резултати од пребарувањето од Google.</translation>
 <translation id="4452411734226507615">Затвори ја картичката <ph name="TAB_TITLE" /></translation>
@@ -754,6 +760,7 @@
 <translation id="5548606607480005320">Безбедносна проверка</translation>
 <translation id="5555525474779371165">Изберете ја вашата заштита со „Безбедно прелистување“</translation>
 <translation id="5556459405103347317">Повторно вчитај</translation>
+<translation id="555816257274242153">Запре следењето цени</translation>
 <translation id="5561549206367097665">Се чека мрежа…</translation>
 <translation id="5568069709869097550">Не може да се најавите</translation>
 <translation id="55737423895878184">Локацијата и известувањата се дозволени</translation>
@@ -804,9 +811,11 @@
 <translation id="5833984609253377421">Сподели го линкот</translation>
 <translation id="5834764604050996579">За да скенирате QR-код, дозволете Chrome да ја користи камерата</translation>
 <translation id="5839058148541733625">Диносаурус на Chrome</translation>
+<translation id="5842437907245493289">Организирајте ги следените производи во „Обележувачи“ од иконата на папката</translation>
 <translation id="5853623416121554550">паузирано</translation>
 <translation id="5854512288214985237">Не се испраќа ниту статистика ниту извештаи за падовите до Google</translation>
 <translation id="5855546874025048181">Рафинирајте: „<ph name="REFINE_TEXT" />“</translation>
+<translation id="5857447844686706637">Нешто тргна наопаку. Не може да се ажурира „Следете ја цената“.</translation>
 <translation id="5860033963881614850">Исклучено</translation>
 <translation id="5860491529813859533">Вклучи</translation>
 <translation id="5862731021271217234">За да ги добиете вашите картички од другите уреди, вклучете ја синхронизацијата</translation>
@@ -863,6 +872,7 @@
 <translation id="6140912465461743537">Држава/регион</translation>
 <translation id="6141988275892716286">Потврдете го преземањето</translation>
 <translation id="614940544461990577">Обидете се:</translation>
+<translation id="6150320133806434356">Обележувачот е зачуван</translation>
 <translation id="6154478581116148741">Вклучете го заклучувањето на екранот во „Поставки“ за да ги извезете лозинките од уредов</translation>
 <translation id="6159335304067198720"><ph name="PERCENT" /> заштеда на податоци</translation>
 <translation id="6159729262978459665">Ќе ја исчисти историјата од сите синхронизирани уреди.</translation>
@@ -877,6 +887,7 @@
 На пример, некои веб-сајтови може да реагираат на барањето со покажување реклами што не се базираат на другите веб-сајтови што сте ги посетиле. Повеќето веб-сајтови и понатаму ќе ги собираат и користат податоците од вашето прелистување - на пример, за да ја зголемат безбедноста, да обезбедат содржини, реклами и препораки, како и да генерираат статистички податоци за известување.</translation>
 <translation id="6264376385120300461">Сепак преземи</translation>
 <translation id="6277522088822131679">Настана проблем при печатење на страницата. Обидете се повторно.</translation>
+<translation id="6277722725779679269">Не може да се ажурира „Следете ја цената“</translation>
 <translation id="6278428485366576908">Тема</translation>
 <translation id="6292420053234093573">Ако користите Chrome, се согласувате со <ph name="BEGIN_LINK1" />Условите за користење на Google<ph name="END_LINK1" /> и <ph name="BEGIN_LINK2" />Дополнителните услови за користење на Google Chrome и Chrome OS<ph name="END_LINK2" />.</translation>
 <translation id="6294610283659775533">Може да испраќате картички меѓу уредите што се најавени со истата сметка на Google</translation>
@@ -910,6 +921,7 @@
 <translation id="6411219469806822692">Не може да одите повисоко. Почнете од погоре на страницата.</translation>
 <translation id="6412673304250309937">Ги проверува URL-адресите во список со небезбедни сајтови меморирани во Chrome. Ако некој сајт се обиде да ви ја украде лозинката или кога ќе преземете штетна датотека, Chrome може да испрати и URL-адреси, вклучувајќи и делови од содржините на страницата, во „Безбедно прелистување“.</translation>
 <translation id="641643625718530986">Печати...</translation>
+<translation id="6422857128426228781">Следените производи ќе ги најдете тука</translation>
 <translation id="6433501201775827830">Изберете пребарувач</translation>
 <translation id="6434309073475700221">Отфрли</translation>
 <translation id="6437478888915024427">Информации за страницата</translation>
@@ -987,6 +999,7 @@
 <translation id="6817747507826986771">Брзо споделете ја страницава. За да ја измените сликава од екранот, допрете и задржете.</translation>
 <translation id="6820686453637990663">CVC</translation>
 <translation id="6824899148643461612">Избрана е картичката <ph name="TAB_TITLE" /></translation>
+<translation id="6828070228333235514">Запри го следењето цени</translation>
 <translation id="6846298663435243399">Се вчитува…</translation>
 <translation id="6850409657436465440">Вашето преземање е сѐ уште е во тек</translation>
 <translation id="6850830437481525139"><ph name="TAB_COUNT" /> затворени картички</translation>
@@ -1303,6 +1316,7 @@
 <translation id="8571213806525832805">Изминатите 4 седмици</translation>
 <translation id="8572344201470131220">Сликата е копирана</translation>
 <translation id="8583805026567836021">Чистење податоци за сметка</translation>
+<translation id="859046281437143747">Следете ја цената преку копчето „Повеќе опции“</translation>
 <translation id="860043288473659153">Име на сопственикот на картичката</translation>
 <translation id="8602358303461588329">Најавете се на Chrome, затворено.</translation>
 <translation id="860282621117673749">Известувања за попусти</translation>

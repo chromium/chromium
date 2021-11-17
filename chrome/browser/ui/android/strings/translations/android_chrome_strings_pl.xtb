@@ -15,6 +15,7 @@
 <translation id="1100066534610197918">Otwórz w nowej karcie w grupie</translation>
 <translation id="1103142993930332957">Pomożesz w ulepszaniu Chrome?</translation>
 <translation id="1105960400813249514">Zrzut ekranu</translation>
+<translation id="1108938384783527433">Synchronizacja historii</translation>
 <translation id="1110914759170138831">Podświetlenie zostało skrócone</translation>
 <translation id="1111673857033749125">Tutaj wyświetlą się zakładki z innych urządzeń.</translation>
 <translation id="1113597929977215864">Pokaż widok uproszczony</translation>
@@ -160,6 +161,7 @@
 <translation id="2000419248597011803">Niektóre pliki cookie oraz zapytania wpisane na pasku adresu i w polu wyszukiwania zostaną wysłane do domyślnej wyszukiwarki</translation>
 <translation id="200114059308480249">Uwzględniać tekst otaczający słowa, które wyszukujesz w Google?</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# plik}few{# pliki}many{# plików}other{# pliku}}</translation>
+<translation id="2020309681647789787">Będziesz mieć dostęp do swojej historii na wszystkich zsynchronizowanych urządzeniach, aby możliwe było kontynuowanie przerwanych działań</translation>
 <translation id="2021896219286479412">Elementy sterowania stroną na pełnym ekranie</translation>
 <translation id="2038563949887743358">Włącz opcję „Wersja na komputer”</translation>
 <translation id="204321170514947529">Dane aplikacji <ph name="APP_NAME" /> znajdują się też w Chrome</translation>
@@ -858,6 +860,7 @@ Prace nad rozwojem Piaskownicy prywatności wciąż trwają, więc wersja próbn
 <translation id="6070730414166672373">Kontaktuję się z bankiem\u2026</translation>
 <translation id="6085886413119427067">Określa, jak nawiązywać połączenia ze stronami przez zabezpieczone połączenie</translation>
 <translation id="60923314841986378">Pozostało: <ph name="HOURS" /> godz.</translation>
+<translation id="6095578583683628124">Jeśli Google jest Twoją domyślną wyszukiwarką, zobaczysz lepiej dopasowane sugestie</translation>
 <translation id="6108923351542677676">Trwa konfigurowanie…</translation>
 <translation id="6111020039983847643">użytych danych</translation>
 <translation id="6112702117600201073">Odświeżam stronę</translation>
@@ -1411,6 +1414,7 @@ Na przykład niektóre strony mogą na nie zareagować, wyświetlając reklamy b
 <translation id="9148126808321036104">Zaloguj się ponownie</translation>
 <translation id="9155898266292537608">Możesz też wyszukiwać szybkim kliknięciem słowa</translation>
 <translation id="9158770349521403363">Udostępnij tylko treść</translation>
+<translation id="916446198114569890">Odwiedzane adresy URL są zapisywane na Twoim koncie Google</translation>
 <translation id="9169507124922466868">Historia nawigacji jest otwarta w połowie</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{Sprawdzano minutę temu}few{Sprawdzano # minuty temu}many{Sprawdzano # minut temu}other{Sprawdzano # minuty temu}}</translation>
 <translation id="9204836675896933765">Pozostał jeden plik</translation>

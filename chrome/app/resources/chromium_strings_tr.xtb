@@ -26,6 +26,7 @@
 <translation id="1981611865800294956">&amp;Chromium OS'i güncellemek için yeniden başlat</translation>
 <translation id="2008474315282236005">Bu işlem 1 öğeyi bu cihazdan silecektir. Verilerinizi daha sonra geri almak için Chromium'da <ph name="USER_EMAIL" /> hesabıyla oturum açın.</translation>
 <translation id="2020032459870799438">Öteki şifrelerinizin veri ihlali ve diğer güvenlik sorunlarına karşı güvende olup olmadığını kontrol etmek için <ph name="BEGIN_LINK" />Chromium'da oturum açın<ph name="END_LINK" />.</translation>
+<translation id="2049376729098081731">Google hizmetlerinde daha fazla kişiselleştirilmiş deneyimden faydalanmak için Chromium geçmişinin eklenip eklenmeyeceğini seçin</translation>
 <translation id="2174178932569897599">Chromium'u özelleştir</translation>
 <translation id="2185166961232948079">Chromium - Ağda Oturum Açın - <ph name="PAGE_TITLE" /></translation>
 <translation id="2241627712206172106">Bir bilgisayarı paylaşıyorsanız arkadaşlarınız ve aileniz ayrı olarak göz atabilir ve Chromium'u tam olarak istedikleri şekilde ayarlayabilir.</translation>
@@ -37,6 +38,7 @@
 <translation id="2401032172288869980">Bu site için Chromium'un kamera ve mikrofon izinlerine ihtiyacı var</translation>
 <translation id="2483889755041906834">Chromium'da</translation>
 <translation id="2485422356828889247">Kaldır</translation>
+<translation id="251127392410688874">Chromium'un açık web'i korurken sizi siteler arası izlemeden nasıl koruduğunu öğrenin</translation>
 <translation id="2535480412977113886">Hesap oturum açma ayrıntılarınız güncel olmadığından Chromium OS, verilerinizi senkronize edemedi.</translation>
 <translation id="2560420686485554789">Dosya indirmek için Chromium'un depolama alanına erişmesi gerekiyor</translation>
 <translation id="2572494885440352020">Chromium Yardımcısı</translation>
@@ -220,6 +222,7 @@ Chromium ayarlarınızı kurtaramıyor.</translation>
 <translation id="7339898014177206373">Yeni pencere</translation>
 <translation id="734373864078049451">Web, yer işaretleri ve diğer Chromium bilgileriniz burada bulunur.</translation>
 <translation id="7349591376906416160">Sistem yöneticiniz Chromium'u <ph name="TARGET_URL_HOSTNAME" /> adresine erişmek için <ph name="ALTERNATIVE_BROWSER_NAME" /> tarayıcısını açacak şekilde yapılandırmış.</translation>
+<translation id="7398989605938454041">Chromium profilleri ile tüm Chromium öğelerinizi ayırabilirsiniz. Bu özellik, iş ile eğlenceyi daha kolay ayırmayı sağlar.</translation>
 <translation id="7448255348454382571">Chromium OS'i yeniden başlatın</translation>
 <translation id="7449453770951226939"><ph name="PAGE_TITLE" /> - Chromium Dev</translation>
 <translation id="7451052299415159299">Chromium'un bu sitede kameranıza erişmesi için izin gerekiyor</translation>
@@ -240,6 +243,7 @@ Chromium ayarlarınızı kurtaramıyor.</translation>
 <translation id="7828947555739565424">Cihazda bu hesaba sahip bir Chromium profili zaten var</translation>
 <translation id="7857220146454061152">Gelecekteki Chromium güncellemelerini almak için OS X 10.11 veya sonraki bir sürümün yüklü olması gerekir. Bu bilgisayar OS X 10.10 kullanıyor.</translation>
 <translation id="7867198900892795913">Chromium en son sürüme güncellenemediği için yeni özellikler ve güvenlik düzeltmeleri cihazınızda bulunmuyor.</translation>
+<translation id="788352880609666695">Bu Chromium profili için aşağıdaki hesaplar kullanılabilir</translation>
 <translation id="7898472181347242998">Cihazınızın güncel olup olmadığını görmek için <ph name="LINK_BEGIN" />Chromium OS Ayarları<ph name="LINK_END" />'na gidin</translation>
 <translation id="7937630085815544518">Chromium'da <ph name="USER_EMAIL_ADDRESS" /> olarak oturum açtınız. Tekrar oturum açmak için lütfen aynı hesabı kullanın.</translation>
 <translation id="7975919845073681630">Bu, Chromium'un ikincil bir yüklemesidir ve varsayılan tarayıcınız yapılamaz.</translation>
@@ -252,6 +256,7 @@ Chromium ayarlarınızı kurtaramıyor.</translation>
 <translation id="8290862415967981663">Bu dosya tehlikeli olabileceği için Chromium tarafından engellendi.</translation>
 <translation id="8330519371938183845">Chromium'u cihazlarınız arasında senkronize etmek ve kişiselleştirmek için oturum açın</translation>
 <translation id="8340674089072921962"><ph name="USER_EMAIL_ADDRESS" /> önceden Chromium kullanıyordu</translation>
+<translation id="8357820681460164151">Chromium öğelerinize tüm cihazlarınızda erişmek için oturum açın ve senkronizasyonu etkinleştirin</translation>
 <translation id="8417404458978023919">{0,plural, =1{Chromium'u bir gün içinde yeniden başlatın}other{Chromium'u # gün içinde yeniden başlatın}}</translation>
 <translation id="8453117565092476964">Yükleyici arşivi bozuk veya geçersiz. Lütfen Chromium'u yeniden indirin.</translation>
 <translation id="8493179195440786826">Chromium Sürümü Eski</translation>

@@ -157,6 +157,7 @@
 <translation id="1422930527989633628">Жакын жердеги Bluetooth түзмөктөрүн табууга уруксат сурай алат</translation>
 <translation id="1426410128494586442">Ооба</translation>
 <translation id="1428146450423315676">7-төшөгүч</translation>
+<translation id="142858679511221695">Булуттагы колдонуучу</translation>
 <translation id="1428729058023778569">Бул эскертүүнү көрүп жатсаңыз, бул сайтта HTTPS колдоого алынбайт. <ph name="BEGIN_LEARN_MORE_LINK" />Кеңири маалымат<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1430915738399379752">Басып чыгаруу</translation>
 <translation id="1432581352905426595">Издөө каражаттарын башкаруу</translation>
@@ -719,6 +720,7 @@
 <translation id="3329013043687509092">Каныктыруу</translation>
 <translation id="3333762389743153920">Виртуалдык карта үчүн жарамдуу эмес</translation>
 <translation id="3338095232262050444">Корголгон</translation>
+<translation id="3339446062576134663">Булут (Боз)</translation>
 <translation id="3355823806454867987">Прокси жөндөөлөрүн өзгөртүү…</translation>
 <translation id="3360103848165129075">Төлөм иштетүү барагы</translation>
 <translation id="3361596688432910856">Chrome'до төмөнкү маалымат<ph name="BEGIN_EMPHASIS" />сактабайт<ph name="END_EMPHASIS" />:
@@ -742,6 +744,7 @@
 <translation id="3380365263193509176">Белгисиз ката</translation>
 <translation id="3380864720620200369">Кардар ID:</translation>
 <translation id="3381668585148405088">Сатып алууну ырастаңыз</translation>
+<translation id="3383566085871012386">Учурдагы артыкчылык тартиби</translation>
 <translation id="3387261909427947069">Төлөм ыкмалары</translation>
 <translation id="3391030046425686457">Жеткирүү дареги</translation>
 <translation id="3391482648489541560">файл түзөтүү</translation>
@@ -1410,6 +1413,7 @@
 <translation id="5478437291406423475">B6/C4 (Конверт)</translation>
 <translation id="5481076368049295676">Бул мазмун маалыматыңызды уурдай турган же жок кыла турган кооптуу программаны түзмөгүңүзгө орнотууга аракет кылышы мүмкүн. <ph name="BEGIN_LINK" />Баары бир уланта берем<ph name="END_LINK" /></translation>
 <translation id="54817484435770891">Дарегин туура көрсөтүңүз</translation>
+<translation id="5485973315555778056">Булуттагы компьютер</translation>
 <translation id="5490432419156082418">Даректер жана башкалар</translation>
 <translation id="5492298309214877701">Ишкана, уюм же университеттин интранетиндеги бул сайттын URL дареги тышкы вебсайттыкына окшош.
     <ph name="LINE_BREAK" />
@@ -1439,6 +1443,7 @@
 <translation id="5571083550517324815">Бул даректен алып кетүү мүмкүн эмес. Башка дарек тандаңыз.</translation>
 <translation id="5580958916614886209">Мөөнөтү аяктоочу айды текшерип, кайталап көрүңүз</translation>
 <translation id="5586446728396275693">Сакталган даректер жок</translation>
+<translation id="5587987780934666589">Платформаны колдонуучу</translation>
 <translation id="5593349413089863479">Туташуу кооптуураак</translation>
 <translation id="5595485650161345191">Даректи өзгөртүү</translation>
 <translation id="5598944008576757369">Төлөм ыкмасын тандоо</translation>
@@ -2127,6 +2132,7 @@
 <translation id="7953569069500808819">Жогорку четин жамоо</translation>
 <translation id="7956713633345437162">Мобилдик кыстармалар</translation>
 <translation id="7961015016161918242">Эч качан</translation>
+<translation id="7962467575542381659">Платформадагы компьютер</translation>
 <translation id="7966803981046576691">Тапшырманын түрү</translation>
 <translation id="79682505114836835">"<ph name="VALUE" />" маанисинин он алтылык түсү жараксыз.</translation>
 <translation id="7968982339740310781">Чоо-жайын карап көрүү</translation>

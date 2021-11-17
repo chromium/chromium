@@ -1232,6 +1232,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2232751457155581899">Os sites podem pedir para rastrear a posição da câmera</translation>
 <translation id="2232876851878324699">O arquivo continha um certificado que não foi importado:</translation>
 <translation id="2233502537820838181">&amp;Mais informações</translation>
+<translation id="223356358902285214">Atividade na Web e de apps</translation>
 <translation id="2234876718134438132">Serviços do Google e de sincronização</translation>
 <translation id="2235344399760031203">Cookies de terceiros foram bloqueados</translation>
 <translation id="2238379619048995541">Dados do estado de frequência</translation>
@@ -1921,6 +1922,7 @@ e Ctrl + Alt + Diminuir brilho para diminuí-lo.</translation>
 <translation id="2923006468155067296">Seu <ph name="DEVICE_TYPE" /> será bloqueado agora.
 <ph name="DOMAIN" /> requer que você mantenha o cartão inteligente inserido.</translation>
 <translation id="2923234477033317484">Remover esta conta</translation>
+<translation id="2923644930701689793">Acessar o rolo da câmera do smartphone</translation>
 <translation id="2926085873880284723">Restaurar atalhos padrão</translation>
 <translation id="2926620265753325858"><ph name="DEVICE_NAME" /> não é compatível.</translation>
 <translation id="2927017729816812676">Armazenamento de cache</translation>
@@ -3114,6 +3116,7 @@ e Ctrl + Alt + Diminuir brilho para diminuí-lo.</translation>
 <translation id="4168015872538332605">Algumas configurações pertencentes a <ph name="PRIMARY_EMAIL" /> estão sendo compartilhadas com você. Essas configurações afetam sua conta apenas quando o recurso de login múltiplo é usado.</translation>
 <translation id="4169535189173047238">Não permitir</translation>
 <translation id="4170314459383239649">Limpar ao sair</translation>
+<translation id="417096670996204801">Escolha um perfil</translation>
 <translation id="4175137578744761569">Roxo-claro e branco</translation>
 <translation id="4175737294868205930">Armazenamento persistente</translation>
 <translation id="4176463684765177261">Desativado</translation>
@@ -5627,6 +5630,7 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="6914783257214138813">Suas senhas ficarão visíveis para qualquer pessoa que tiver acesso ao arquivo exportado.</translation>
 <translation id="6916590542764765824">Gerenciar extensões</translation>
 <translation id="6919868320029503575">Senhas fracas</translation>
+<translation id="6919952941889172531">Ativar também o Navegação segura com maior proteção neste perfil do Chrome?</translation>
 <translation id="6920989436227028121">Abrir como guia normal</translation>
 <translation id="6921104647315081813">Limpar atividades</translation>
 <translation id="692114467174262153">Não foi possível abrir o <ph name="ALTERNATIVE_BROWSER_NAME" /></translation>
@@ -6109,7 +6113,6 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="7433708794692032816">Insira o cartão inteligente para continuar usando seu <ph name="DEVICE_TYPE" /></translation>
 <translation id="7433957986129316853">Manter assim</translation>
 <translation id="7434509671034404296">Desenvolvedor</translation>
-<translation id="7434635829372401939">Sincronizar as configurações</translation>
 <translation id="7434757724413878233">Aceleração do mouse</translation>
 <translation id="7434969625063495310">Não foi possível adicionar o servidor de impressão. Verifique a configuração do servidor e tente novamente.</translation>
 <translation id="7436921188514130341">Ah, não! Ocorreu um erro durante a renomeação.</translation>

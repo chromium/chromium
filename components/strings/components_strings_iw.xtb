@@ -82,6 +82,7 @@
 <translation id="124116460088058876">שפות נוספות</translation>
 <translation id="1243027604378859286">מחבר:</translation>
 <translation id="1246424317317450637">מודגש</translation>
+<translation id="1248573052514400575">‏<ph name="MANAGE_CHROMEOS_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />, לוחצים על Tab ואז על Enter כדי להתאים אישית את כלי הנגישות בהגדרות Chrome OS</translation>
 <translation id="1250759482327835220">‏כדי לשלם מהר יותר בפעם הבאה, אפשר לשמור בחשבון Google את פרטי הכרטיס, השם והכתובת לחיוב.</translation>
 <translation id="1252799212227771492">‏לחצן ליצירה של גיליון, מקישים על Enter כדי ליצור במהירות גיליון אלקטרוני חדש ב-Google Sheets</translation>
 <translation id="1253921432148366685"><ph name="TYPE_1" />, <ph name="TYPE_2" /> (מסונכרנים)</translation>
@@ -323,6 +324,7 @@
 <translation id="192020519938775529">{COUNT,plural, =0{ללא}=1{אתר אחד}two{שני אתרים}many{# אתרים}other{# אתרים}}</translation>
 <translation id="1923390796829649802">‏הלחצן לניהול הגדרות הנגישות, מקישים על Enter כדי להתאים אישית את כלי הנגישות בהגדרות Chrome OS</translation>
 <translation id="1924727005275031552">חדשה</translation>
+<translation id="1927439593081478069">‏לחצן להרצת בדיקת אבטחה ב-Chrome, לוחצים על Enter כדי להריץ בדיקת אבטחה בהגדרות של Chrome</translation>
 <translation id="1939175642807587452">האתר יכול לבקש הרשאה לשלוח התראות</translation>
 <translation id="1945968466830820669">‏ייתכן שלא יתאפשר לך לגשת לחשבון הארגוני, והזהות שלך עלולה להיגנב. לגלישה בטוחה ב-Chromium, מומלץ לשנות את הסיסמה עכשיו.</translation>
 <translation id="1947454675006758438">סיכת הידוק בפינה הימנית העליונה</translation>
@@ -342,6 +344,7 @@
 <translation id="2003709556000175978">צריך לאפס את הסיסמה עכשיו</translation>
 <translation id="2003775180883135320">4 ניקובים בצד שמאל</translation>
 <translation id="201174227998721785">‏ניתן לנהל את ההרשאות והנתונים השמורים בכל האתרים בהגדרות Chrome</translation>
+<translation id="2019607688127825327">‏הלחצן לניהול הגדרות הנגישות, מקישים על Enter כדי להתאים אישית את כלי הנגישות בהגדרות Chrome</translation>
 <translation id="2025115093177348061">מציאות רבודה</translation>
 <translation id="2025186561304664664">‏שרת Proxy נקבע למוגדר אוטומטית.</translation>
 <translation id="2025891858974379949">תוכן לא מאובטח</translation>
@@ -507,6 +510,7 @@
 <translation id="2556876185419854533">&amp;ביטול עריכה</translation>
 <translation id="2570734079541893434">ניהול ההגדרות</translation>
 <translation id="257674075312929031">קבוצה</translation>
+<translation id="2576880857912732701">‏הלחצן 'ניהול הגדרות האבטחה', יש להקיש על Enter כדי לנהל את הגלישה הבטוחה ועוד בהגדרות Chrome</translation>
 <translation id="2586657967955657006">לוח</translation>
 <translation id="2587730715158995865">מאת <ph name="ARTICLE_PUBLISHER" />. לקריאת כתבה זו ועוד <ph name="OTHER_ARTICLE_COUNT" /> כתבות נוספות.</translation>
 <translation id="2587841377698384444">‏מזהה Directory API:</translation>
@@ -551,6 +555,7 @@
 <translation id="2713444072780614174">לבן</translation>
 <translation id="2715612312510870559">‏<ph name="UPDATE_CREDIT_CARD_FOCUSED_FRIENDLY_MATCH_TEXT" />, יש להקיש על Tab ואז על Enter כדי לנהל את התשלומים ואת פרטי כרטיס האשראי שלך בהגדרות Chrome</translation>
 <translation id="2721148159707890343">הבקשה בוצעה בהצלחה</translation>
+<translation id="2723669454293168317">‏הרצה של בדיקת אבטחה בהגדרות Chrome</translation>
 <translation id="2726001110728089263">מגש צידי</translation>
 <translation id="2728127805433021124">האישור של השרת נחתם באמצעות אלגוריתם של חתימה חלשה.</translation>
 <translation id="2730326759066348565"><ph name="BEGIN_LINK" />מפעיל את אבחון הקישוריות<ph name="END_LINK" /></translation>
@@ -581,6 +586,7 @@
 <translation id="2859806420264540918">באתר הזה מוצגות מודעות מפריעות או מטעות.</translation>
 <translation id="287596039013813457">ידידותי</translation>
 <translation id="2876489322757410363">בחרת לצאת מהמצב האנונימי כדי לשלם באמצעות אפליקציה חיצונית. להמשיך?</translation>
+<translation id="2876949457278336305">‏<ph name="MANAGE_SECURITY_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />, לוחצים על Tab ואז על Enter כדי לנהל את הגלישה הבטוחה ועוד בהגדרות Chrome</translation>
 <translation id="2878197950673342043">קיפול כרזה</translation>
 <translation id="2878424575911748999">A1</translation>
 <translation id="2880660355386638022">מיקום חלונות</translation>
@@ -686,6 +692,7 @@
 <translation id="3229041911291329567">פרטי גרסה של המכשיר והדפדפן</translation>
 <translation id="323107829343500871">יש להזין את קוד האימות של הכרטיס <ph name="CREDIT_CARD" /></translation>
 <translation id="3234666976984236645">זהה תמיד תוכן חשוב באתר זה</translation>
+<translation id="3240683217920639535">‏<ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />, מקישים על Tab ואז על Enter כדי להתאים אישית את מראה הדפדפן</translation>
 <translation id="3240791268468473923">הגיליון 'אין התאמה בין פרטי הכניסה לפרטי הכניסה לתשלום מאובטח' פתוח</translation>
 <translation id="3249845759089040423">מגניב</translation>
 <translation id="3252266817569339921">צרפתית</translation>
@@ -730,6 +737,7 @@
       • ליצור מפות תלת ממד של האזור שמסביבך ולעקוב אחרי המיקום של המצלמה.
       • להשתמש במצלמה שלך.</translation>
 <translation id="337363190475750230">ניהול התצורה בוטל</translation>
+<translation id="3375754925484257129">‏הרצה של בדיקת אבטחה ב-Chrome</translation>
 <translation id="3377144306166885718">‏בשרת נעשה שימוש בגרסה מיושנת של TLS.</translation>
 <translation id="3377188786107721145">שגיאה בניתוח המדיניות</translation>
 <translation id="3377736046129930310">נעילת המסך מאפשרת לך לאשר כרטיסים מהר יותר</translation>
@@ -771,6 +779,7 @@
 <translation id="3462200631372590220">הסתרת פרטים מתקדמים</translation>
 <translation id="3467763166455606212">עליך לציין את שם בעל הכרטיס</translation>
 <translation id="3468054117417088249">‏<ph name="TAB_SWITCH_SUFFIX" />, פתוחה כרגע, יש להקיש על Tab ולאחר מכן על Enter כדי לעבור לכרטיסייה הפתוחה</translation>
+<translation id="3470563864795286535">‏<ph name="CLOSE_INCOGNITO_WINDOWS_FOCUSED_FRIENDLY_MATCH_TEXT" />, לוחצים על Tab ואז על Enter כדי לסגור את כל החלונות הפרטיים שפתוחים כרגע</translation>
 <translation id="3479552764303398839">לא עכשיו</translation>
 <translation id="3484560055331845446">‏ייתכן שמישהו אחר ישלול את הגישה שלך לחשבון Google. לגלישה בטוחה ב-Chrome, מומלץ לשנות את הסיסמה עכשיו.</translation>
 <translation id="3487845404393360112">מגש 4</translation>
@@ -809,6 +818,7 @@
 <translation id="3611395257124510155">כרטיס וירטואלי עבור <ph name="CARD_IDENTIFIER" /></translation>
 <translation id="3614103345592970299">גודל 2</translation>
 <translation id="361438452008624280">רשומה ברשימה "<ph name="LANGUAGE_ID" />": שפה לא מוכרת או לא נתמכת.</translation>
+<translation id="3614934205542186002">‏<ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, לוחצים על Tab ואז על Enter כדי להריץ בדיקת אבטחה בהגדרות Chrome</translation>
 <translation id="3615877443314183785">עליך להזין תאריך תפוגה חוקי</translation>
 <translation id="36224234498066874">ניקוי נתוני גלישה…</translation>
 <translation id="362276910939193118">כל ההיסטוריה</translation>
@@ -1609,6 +1619,7 @@ Del</translation>
 <translation id="6218753634732582820">‏האם להסיר מ-Chromium את הכתובת?</translation>
 <translation id="622039917539443112">קיפול מקביל</translation>
 <translation id="6221345481584921695">‏לאחרונה, 'גלישה בטוחה של Google' ‏<ph name="BEGIN_LINK" />זיהתה תוכנה זדונית<ph name="END_LINK" /> ב-<ph name="SITE" />. אתרים שבדרך כלל נחשבים לבטוחים נדבקים לעתים בתוכנה זדונית. התוכן הזדוני מגיע מ-<ph name="SUBRESOURCE_HOST" />, מפיץ ידוע של תוכנות זדוניות.</translation>
+<translation id="6226163402662242066">‏<ph name="MANAGE_CHROME_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />, מקישים על Tab ואז על Enter כדי להתאים אישית את כלי הנגישות בהגדרות Chrome</translation>
 <translation id="6234122620015464377">חיתוך אחרי כל מסמך</translation>
 <translation id="6240447795304464094">‏הלוגו של Google Pay</translation>
 <translation id="6241121617266208201">הסתרת ההצעות</translation>
@@ -1627,6 +1638,7 @@ Del</translation>
 <translation id="6279098320682980337">מספר הכרטיס הווירטואלי לא הוזן? לוחצים על פרטי הכרטיס כדי להעתיק</translation>
 <translation id="6280223929691119688">לא ניתן לבצע מסירה בכתובת זו. עליך לבחור כתובת אחרת.</translation>
 <translation id="6282194474023008486">מיקוד</translation>
+<translation id="6285507000506177184">‏הלחצן לניהול הורדות ב-Chrome, מקישים על Enter לניהול הקבצים שהורדת ב-Chrome</translation>
 <translation id="6289939620939689042">צבע הדף</translation>
 <translation id="6290238015253830360">הצעות של מאמרים עבורך מופיעות כאן</translation>
 <translation id="6293309776179964942">JIS B5</translation>
@@ -1742,6 +1754,7 @@ Del</translation>
 <translation id="6689249931105087298">יחסי עם דחיסת נקודות שחורות</translation>
 <translation id="6689271823431384964">‏מאחר שנכנסת לחשבון, Chrome מציע לשמור את הכרטיסים שלך בחשבון Google. אפשר לשנות את ההתנהגות הזאת בהגדרות. שם בעל הכרטיס מגיע מהחשבון שלך.</translation>
 <translation id="6694681292321232194">‏<ph name="FIND_MY_PHONE_FOCUSED_FRIENDLY_MATCH_TEXT" />, מקישים על Tab ואז על Enter כדי לאתר את המכשיר דרך חשבון Google</translation>
+<translation id="6696588630955820014">‏לחצן לשיתוף הכרטיסייה הזו, מקישים על Enter כדי לשתף את הכרטיסייה הזו על ידי שיתוף הקישור, יצירת קוד QR, העברה (cast) ועוד</translation>
 <translation id="6698381487523150993">נוצר:</translation>
 <translation id="6702919718839027939">הצגה</translation>
 <translation id="6710213216561001401">הקודם</translation>
@@ -1947,6 +1960,7 @@ Del</translation>
 <translation id="7392089738299859607">עדכון הכתובת</translation>
 <translation id="7399802613464275309">בדיקת אבטחה</translation>
 <translation id="7400418766976504921">כתובת אתר</translation>
+<translation id="7403392780200267761">‏שיתוף הכרטיסייה הזו על ידי שיתוף הקישור, יצירת קוד QR, העברה (cast) ועוד</translation>
 <translation id="7403591733719184120">מכשיר <ph name="DEVICE_NAME" /> זה מנוהל</translation>
 <translation id="7407424307057130981">‏&lt;p&gt;השגיאה הזו תופיע אם תוכנת Superfish מותקנת במחשב Windows שלך.&lt;/p&gt;
       &lt;p&gt;כדי להשבית את התוכנה באופן זמני ולקבל גישה לאינטרנט, צריך לבצע את השלבים הבאים. צריכות להיות לך הרשאות מנהל.&lt;/p&gt;
@@ -2177,6 +2191,7 @@ Del</translation>
 <translation id="810875025413331850">לא נמצאו מכשירים קרובים.</translation>
 <translation id="8116925261070264013">מושתקים</translation>
 <translation id="8118489163946903409">אמצעי תשלום</translation>
+<translation id="8124639700796374294">‏לחצן להתאמה אישית של Chrome, מקישים על Enter כדי להתאים אישית את המראה של הדפדפן</translation>
 <translation id="8127301229239896662">‏הייתה בעיה בהתקנה של "<ph name="SOFTWARE_NAME" />" במחשב שלך או ברשת. יש לבקש ממנהל ה-IT לפתור את הבעיה.</translation>
 <translation id="8131740175452115882">אישור</translation>
 <translation id="8148608574971654810">‏גרסת PDF:</translation>
@@ -2359,6 +2374,7 @@ Del</translation>
 <translation id="87601671197631245">באתר הזה נעשה שימוש בתצורת הגנה מיושנת, כך שמידע נשלח אליו עשוי להיחשף (למשל סיסמאות, הודעות או כרטיסי אשראי).</translation>
 <translation id="8761567432415473239">‏גלישה בטוחה של Google <ph name="BEGIN_LINK" />איתרה לאחרונה תוכניות מזיקות<ph name="END_LINK" /> באתר <ph name="SITE" />.</translation>
 <translation id="8763927697961133303">‏התקן USB</translation>
+<translation id="8763986294015493060">סגירת כל החלונות הפרטיים שפתוחים כרגע</translation>
 <translation id="8766943070169463815">גיליון האימות של פרטי הכניסה לתשלום המאובטח פתוח</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8790007591277257123">&amp;ביצוע מחדש של מחיקה</translation>
@@ -2372,6 +2388,7 @@ Del</translation>
 <translation id="8816395686387277279">‏<ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />, יש להקיש על Tab ואז על Enter כדי לעדכן את דפדפן Chrome בהגדרות Chrome</translation>
 <translation id="8820817407110198400">סימניות</translation>
 <translation id="882338992931677877">חריץ ידני</translation>
+<translation id="8834380158646307944">‏הלחצן לסגירת החלונות האנונימיים, לוחצים על Enter כדי לסגור את כל החלונות האנונימיים שפתוחים כרגע</translation>
 <translation id="883848425547221593">סימניות אחרות</translation>
 <translation id="884264119367021077">כתובת למשלוח</translation>
 <translation id="884923133447025588">לא נמצא מנגנון ביטול</translation>
@@ -2425,6 +2442,7 @@ Del</translation>
 <translation id="9020200922353704812">יש להזין את הכתובת לחיוב של הכרטיס</translation>
 <translation id="9020542370529661692">הדף הזה תורגם ל<ph name="TARGET_LANGUAGE" /></translation>
 <translation id="9020742383383852663">A8</translation>
+<translation id="9021429684248523859">‏<ph name="SHARE_THIS_PAGE_FOCUSED_FRIENDLY_MATCH_TEXT" />, לוחצים על Tab ואז על Enter כדי לשתף את הכרטיסייה הזו על ידי שיתוף הקישור, יצירת קוד QR, העברה (cast) ועוד</translation>
 <translation id="9025348182339809926">(לא חוקי)</translation>
 <translation id="9030265603405983977">מונוכרומטי</translation>
 <translation id="9035022520814077154">שגיאת אבטחה</translation>

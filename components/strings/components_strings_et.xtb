@@ -157,6 +157,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="1422930527989633628">Saab küsida luba läheduses asuvate Bluetooth-seadmete tuvastamiseks</translation>
 <translation id="1426410128494586442">Jah</translation>
 <translation id="1428146450423315676">Virnastaja 7</translation>
+<translation id="142858679511221695">Pilves olev kasutaja</translation>
 <translation id="1428729058023778569">Näete seda hoiatust, kuna see sait ei toeta HTTPS-i. <ph name="BEGIN_LEARN_MORE_LINK" />Lisateave<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1430915738399379752">Printimine</translation>
 <translation id="1432581352905426595">Halda otsingumootoreid</translation>
@@ -718,6 +719,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="3329013043687509092">Küllastus</translation>
 <translation id="3333762389743153920">Ei saa virtuaalkaardina kasutada</translation>
 <translation id="3338095232262050444">Turvaline</translation>
+<translation id="3339446062576134663">Pilv (Ash)</translation>
 <translation id="3355823806454867987">Muuda puhverserveri seadeid ...</translation>
 <translation id="3360103848165129075">Maksetöötleja leht</translation>
 <translation id="3361596688432910856">Chrome <ph name="BEGIN_EMPHASIS" />ei salvesta<ph name="END_EMPHASIS" /> järgmist teavet:
@@ -741,6 +743,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="3380365263193509176">Tundmatu viga</translation>
 <translation id="3380864720620200369">Kliendi ID:</translation>
 <translation id="3381668585148405088">Kinnitage oma ost</translation>
+<translation id="3383566085871012386">Praegune tähtsuse järjekord</translation>
 <translation id="3387261909427947069">Makseviisid</translation>
 <translation id="3391030046425686457">Kohaletoimetamise aadress</translation>
 <translation id="3391482648489541560">failide muutmine</translation>
@@ -1410,6 +1413,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="5478437291406423475">B6/C4 (ümbrik)</translation>
 <translation id="5481076368049295676">See sisu võib üritada installida teie seadmesse ohtlikku tarkvara, mis varastab või kustutab teie teavet. <ph name="BEGIN_LINK" />Kuva ikkagi<ph name="END_LINK" />.</translation>
 <translation id="54817484435770891">Sisestage sobiv aadress</translation>
+<translation id="5485973315555778056">Pilveseade</translation>
 <translation id="5490432419156082418">Aadressid ja muu</translation>
 <translation id="5492298309214877701">Sellel ettevõtte, organisatsiooni või kooli intranetis oleval saidil on sama URL mis välisel veebisaidil.
     <ph name="LINE_BREAK" />
@@ -1439,6 +1443,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="5571083550517324815">Sellelt aadressilt ei saa kaupa kätte. Valige mõni teine aadress.</translation>
 <translation id="5580958916614886209">Kontrollige aegumiskuud ja proovige uuesti</translation>
 <translation id="5586446728396275693">Salvestatud aadresse pole</translation>
+<translation id="5587987780934666589">Platvormi kasutaja</translation>
 <translation id="5593349413089863479">Ühendus pole täiesti turvaline</translation>
 <translation id="5595485650161345191">Muuda aadressi</translation>
 <translation id="5598944008576757369">Valige makseviis</translation>
@@ -2127,6 +2132,7 @@ Lisateave:
 <translation id="7953569069500808819">Õmblus ülaservas</translation>
 <translation id="7956713633345437162">Mobiili järjehoidjad</translation>
 <translation id="7961015016161918242">Mitte kunagi</translation>
+<translation id="7962467575542381659">Platvormi seade</translation>
 <translation id="7966803981046576691">Töökonto tüüp</translation>
 <translation id="79682505114836835">Väärtus „<ph name="VALUE" />“ on sobimatu kuueteistkümnendsüsteemis värvikood.</translation>
 <translation id="7968982339740310781">Kuva üksikasjad</translation>

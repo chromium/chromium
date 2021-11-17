@@ -28,6 +28,7 @@ Sommige functies zijn wellicht niet beschikbaar en wijzigingen in voorkeuren wor
 <translation id="1981611865800294956">Opnieuw opstarten om &amp;Chromium OS te updaten</translation>
 <translation id="2008474315282236005">Hiermee wordt 1 item verwijderd van dit apparaat. Als je je gegevens later wilt terughalen, log je in bij Chromium als <ph name="USER_EMAIL" />.</translation>
 <translation id="2020032459870799438">Als je wilt checken of je andere wachtwoorden zijn beveiligd tegen gegevenslekken en andere beveiligingsproblemen, <ph name="BEGIN_LINK" />log je in bij Chromium<ph name="END_LINK" />.</translation>
+<translation id="2049376729098081731">Kies of je de Chromium-geschiedenis wilt opnemen voor meer gepersonaliseerde functies in Google-services</translation>
 <translation id="2174178932569897599">Chromium aanpassen</translation>
 <translation id="2185166961232948079">Chromium - Inloggen bij netwerk - <ph name="PAGE_TITLE" /></translation>
 <translation id="2241627712206172106">Als je een computer deelt, kunnen vrienden en familie afzonderlijk surfen en Chromium configureren zoals zij dat willen.</translation>
@@ -39,6 +40,7 @@ Sommige functies zijn wellicht niet beschikbaar en wijzigingen in voorkeuren wor
 <translation id="2401032172288869980">Chromium heeft camera- en microfoonrechten nodig voor deze site</translation>
 <translation id="2483889755041906834">In Chromium</translation>
 <translation id="2485422356828889247">Installatie ongedaan maken</translation>
+<translation id="251127392410688874">Bekijk hoe Chromium je wil beschermen tegen tracking op verschillende sites terwijl het open web behouden blijft</translation>
 <translation id="2535480412977113886">Chromium OS kan je gegevens niet synchroniseren omdat de inloggegevens voor je account zijn verouderd.</translation>
 <translation id="2560420686485554789">Chromium heeft toegang tot de opslag nodig om bestanden te downloaden</translation>
 <translation id="2572494885440352020">Chromium Helper</translation>
@@ -224,6 +226,7 @@ Chromium kan je instellingen niet herstellen.</translation>
 <translation id="7339898014177206373">Nieuw venster</translation>
 <translation id="734373864078049451">Hier vind je internet, bookmarks en andere Chromium-instellingen.</translation>
 <translation id="7349591376906416160">Je systeembeheerder heeft Chromium geconfigureerd om <ph name="ALTERNATIVE_BROWSER_NAME" /> te openen voor toegang tot <ph name="TARGET_URL_HOSTNAME" />.</translation>
+<translation id="7398989605938454041">Met Chromium-profielen kun je alle Chromium-gegevens gescheiden houden. Zo kun je makkelijker onderscheid maken tussen werk en privé.</translation>
 <translation id="7448255348454382571">Chromium OS opnieuw opstarten</translation>
 <translation id="7449453770951226939"><ph name="PAGE_TITLE" /> - Chromium voor ontwikkelaars</translation>
 <translation id="7451052299415159299">Chromium heeft toegangsrechten voor je camera nodig voor deze site</translation>
@@ -243,6 +246,7 @@ Chromium kan je instellingen niet herstellen.</translation>
 <translation id="7828947555739565424">Er bestaat op dit apparaat al een Chromium-profiel met dit account</translation>
 <translation id="7857220146454061152">Als je toekomstige Chromium-updates wilt ontvangen, heb je OS X 10.11 of hoger nodig. Deze computer gebruikt OS X 10.10.</translation>
 <translation id="7867198900892795913">Chromium kan niet worden geüpdatet naar de nieuwste versie, dus je loopt nieuwe functies en beveiligingsoplossingen mis.</translation>
+<translation id="788352880609666695">De volgende accounts zijn beschikbaar voor dit Chromium-profiel</translation>
 <translation id="7898472181347242998">Ga naar de <ph name="LINK_BEGIN" />instellingen van Chromium OS<ph name="LINK_END" /> om te kijken of je apparaat up-to-date is</translation>
 <translation id="7937630085815544518">Je bent ingelogd bij Chromium als <ph name="USER_EMAIL_ADDRESS" />. Gebruik hetzelfde account om opnieuw in te loggen.</translation>
 <translation id="7975919845073681630">Dit is een tweede installatie van Chromium en kan niet als standaardbrowser worden ingesteld.</translation>
@@ -255,6 +259,7 @@ Chromium kan je instellingen niet herstellen.</translation>
 <translation id="8290862415967981663">Dit bestand kan gevaarlijk zijn en is daarom door Chromium geblokkeerd.</translation>
 <translation id="8330519371938183845">Log in om Chromium op al je apparaten te synchroniseren en te personaliseren</translation>
 <translation id="8340674089072921962"><ph name="USER_EMAIL_ADDRESS" /> maakte eerder gebruik van Chromium</translation>
+<translation id="8357820681460164151">Log in en zet synchronisatie aan voor toegang tot je Chromium-browsergegevens op al je apparaten</translation>
 <translation id="8417404458978023919">{0,plural, =1{Start Chromium binnen een dag opnieuw}other{Start Chromium binnen # dagen opnieuw}}</translation>
 <translation id="8453117565092476964">Het archief van het installatieprogramma is beschadigd of ongeldig. Download Chromium opnieuw.</translation>
 <translation id="8493179195440786826">Chromium is verouderd</translation>

@@ -107,6 +107,7 @@ O teu motor de busca é <ph name="DSE_NAME" />. En caso aplicable, consulta as s
 <translation id="1894205589103145703">Produciuse un erro ao iniciar sesión.</translation>
 <translation id="1911619930368729126">Cargar en Google Drive</translation>
 <translation id="1923342640370224680">Última hora</translation>
+<translation id="1930989359703290198">A túa organización só che permite iniciar sesión con certas contas. As contas que non están permitidas atópanse ocultas. <ph name="BEGIN_LINK" />Máis información<ph name="END_LINK" /></translation>
 <translation id="1941314575388338491">Toca dúas veces para copiar.</translation>
 <translation id="1952172573699511566">Os sitios web mostrarán o texto no teu idioma preferido, sempre que sexa posible.</translation>
 <translation id="1965935827552890526">Acaba o que estabas facendo na outra ventá de Chrome que tiñas aberta.</translation>
@@ -387,6 +388,8 @@ Os teus datos están encriptados co teu contrasinal de sincronización. Introdú
 <translation id="4802417911091824046">A encriptación mediante frase de acceso non inclúe métodos de pago nin enderezos de Google Pay.
 
 Para cambiar esta opción de configuración, deberás <ph name="BEGIN_LINK" />restablecer a sincronización<ph name="END_LINK" /></translation>
+<translation id="4803185665210547709">Xestionado pola túa organización.
+<ph name="BEGIN_LINK" />Máis información<ph name="END_LINK" /></translation>
 <translation id="4805759445554688327">O número de tarxeta non é válido</translation>
 <translation id="4808744395915275922">Actualizacións</translation>
 <translation id="4818522717893377262">Engadir idioma…</translation>

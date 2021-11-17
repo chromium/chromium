@@ -200,6 +200,7 @@
 <translation id="2352467521400612932">ການຕັ້ງຄ່າປາຍປາກກາ</translation>
 <translation id="2354174487190027830">ກຳລັງເປີດນຳໃຊ້ <ph name="NAME" /></translation>
 <translation id="2359808026110333948">ສືບຕໍ່</translation>
+<translation id="2360625459710946148">ຈັດຮຽງຄືນໃໝ່ຕາມ</translation>
 <translation id="2367186422933365202">ບໍ່ສາມາດເຂົ້າສູ່ລະບົບຫາ Chromebook ຂອງທ່ານໄດ້</translation>
 <translation id="2369165858548251131">"ສະບາຍດີ" ເປັນພາສາຈີນ</translation>
 <translation id="2390318262976603432">ການຕັ້ງຄ່າສະຖານທີ່</translation>
@@ -352,6 +353,15 @@
 <translation id="3509391053705095206">ບໍ່ສາມາດຊອກເຫັນໂທລະສັບຂອງທ່ານໄດ້. ກະລຸນາກວດສອບວ່າ Bluetooth ຂອງໂທລະສັບທ່ານເປີດຢູ່.</translation>
 <translation id="3510164367642747937">ໝາຍເຄີເຊີເມົ້າ</translation>
 <translation id="3513798432020909783">ບັນຊີທີ່ຈັດການໂດຍ <ph name="MANAGER_EMAIL" /></translation>
+<translation id="3518604429872942239">ຖາດສະຖານະ, ເວລາ <ph name="TIME" />,
+        <ph name="BATTERY" />
+        <ph name="NETWORK" />,
+        <ph name="MIC" />,
+        <ph name="CAMERA" />,
+        <ph name="MANAGED" />
+        <ph name="NOTIFICATION" />,
+        <ph name="IME" />
+        <ph name="LOCALE" /></translation>
 <translation id="352245152354538528">{0,plural, =1{ອັບເດດອຸປະກອນພາຍໃນ 1 ນາທີ}other{ອັບເດດອຸປະກອນພາຍໃນ # ນາທີ}}</translation>
 <translation id="353086728817903341">ເຊື່ອມຕໍ່ຫາ <ph name="NUM_DEVICES" /> ອຸປະກອນແລ້ວ</translation>
 <translation id="3552189655002856821">ປິດ Wi-Fi ແລ້ວ</translation>
@@ -699,6 +709,7 @@
 <translation id="5977415296283489383">ຫູຟັງ</translation>
 <translation id="5978382165065462689">​ການແບ່ງປັນ​ການ​ຄວບ​ຄຸມ​ໜ້າ​ຈໍ​ຂອງ​ທ່ານຜ່ານ​ຕົວ​ຊ່ວຍ​ທາງ​ໄກ.</translation>
 <translation id="5980301590375426705">ອອກຈາກແຂກ</translation>
+<translation id="598407983968395253">ໃຊ້ແມ່ແບບ</translation>
 <translation id="598882571027504733">ເພື່ອຮັບເອົາການອັບເດດ, ກະລຸນາປິດເປີດ Chromebook ຂອງທ່ານຄືນໃໝ່ທີ່ມີແປ້ນພິມເຊື່ອມຕໍ່ແລ້ວ.</translation>
 <translation id="5992218262414051481">ເປີດນຳໃຊ້ໂໝດສີຕັດສູງແລ້ວ. ກົດ Ctrl+Search+H ອີກຄັ້ງເພື່ອປິດມັນ.</translation>
 <translation id="6018164090099858612">ກຳລັງອອກຈາກໂໝດແວ່ນສະທ້ອນ</translation>

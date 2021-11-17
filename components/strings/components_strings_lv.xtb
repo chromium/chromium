@@ -156,6 +156,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="1422930527989633628">Var pieprasīt atļauju noteikt tuvumā esošas Bluetooth ierīces</translation>
 <translation id="1426410128494586442">Jā</translation>
 <translation id="1428146450423315676">7. izvades vieta</translation>
+<translation id="142858679511221695">Mākoņa lietotājs</translation>
 <translation id="1428729058023778569">Šis brīdinājums tiek rādīts, jo šajā vietnē netiek atbalstīts HTTPS. <ph name="BEGIN_LEARN_MORE_LINK" />Uzziniet vairāk<ph name="END_LEARN_MORE_LINK" />.</translation>
 <translation id="1430915738399379752">Drukāt</translation>
 <translation id="1432581352905426595">Pārvaldīt meklējumprogrammas</translation>
@@ -712,6 +713,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="3329013043687509092">Piesātinājums</translation>
 <translation id="3333762389743153920">Neatbilst virtuālajai kartei</translation>
 <translation id="3338095232262050444">Droši</translation>
+<translation id="3339446062576134663">Mākonis (Ash)</translation>
 <translation id="3355823806454867987">Mainīt starpniekservera iestatījumus...</translation>
 <translation id="3360103848165129075">Maksājumu apstrādātāja lapa</translation>
 <translation id="3361596688432910856">Pārlūkā Chrome <ph name="BEGIN_EMPHASIS" />netiks saglabāta<ph name="END_EMPHASIS" /> šāda informācija:
@@ -734,6 +736,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="3380365263193509176">Nezināma kļūda</translation>
 <translation id="3380864720620200369">Klienta ID:</translation>
 <translation id="3381668585148405088">Pirkuma apstiprināšana</translation>
+<translation id="3383566085871012386">Pašreizējā prioritārā secība</translation>
 <translation id="3387261909427947069">Maksājumu veidi</translation>
 <translation id="3391030046425686457">Piegādes adrese</translation>
 <translation id="3391482648489541560">failu rediģēšana</translation>
@@ -1400,6 +1403,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="5478437291406423475">B6/C4 (aploksne)</translation>
 <translation id="5481076368049295676">Šis saturs jūsu ierīcē var mēģināt instalēt bīstamu programmatūru, kas var nozagt vai izdzēst jūsu informāciju. <ph name="BEGIN_LINK" />Tāpat rādīt<ph name="END_LINK" />.</translation>
 <translation id="54817484435770891">Derīgas adreses pievienošana</translation>
+<translation id="5485973315555778056">Mākoņa ierīce</translation>
 <translation id="5490432419156082418">Adreses un citus datus</translation>
 <translation id="5492298309214877701">Šai vietnei uzņēmuma, organizācijas vai skolas iekštīklā ir tāds pats URL kā ārējai vietnei.
     <ph name="LINE_BREAK" />
@@ -1429,6 +1433,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="5571083550517324815">Nevar saņemt sūtījumu šajā adresē. Atlasiet citu adresi.</translation>
 <translation id="5580958916614886209">Pārbaudiet derīguma termiņa mēnesi un mēģiniet vēlreiz.</translation>
 <translation id="5586446728396275693">Nav saglabātu adrešu.</translation>
+<translation id="5587987780934666589">Platformas lietotājs</translation>
 <translation id="5593349413089863479">Savienojums nav pilnīgi drošs</translation>
 <translation id="5595485650161345191">Rediģēt adresi</translation>
 <translation id="5598944008576757369">Izvēlēties maksājuma veidu</translation>
@@ -2113,6 +2118,7 @@ Papildu informācija:
 <translation id="7953569069500808819">Malu sašuvums augšdaļā</translation>
 <translation id="7956713633345437162">Mobilās grāmatzīmes</translation>
 <translation id="7961015016161918242">Nekad</translation>
+<translation id="7962467575542381659">Platformas ierīce</translation>
 <translation id="7966803981046576691">Darba konta veids</translation>
 <translation id="79682505114836835">Vērtība “<ph name="VALUE" />” nav derīga krāsa heksadecimālajā sistēmā.</translation>
 <translation id="7968982339740310781">Skatīt detalizētu informāciju</translation>

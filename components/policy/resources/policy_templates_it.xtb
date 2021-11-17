@@ -1667,6 +1667,10 @@ Se questo criterio non viene impostato, la Schermata sulla privacy verrà inizia
 
       Se il criterio non viene configurato, si applica il criterio <ph name="ASK_GEOLOCATION_POLICY_NAME" />, ma gli utenti possono cambiare l'impostazione.</translation>
 <translation id="2922511125678964398">Consenti all'autenticazione captive portal di ignorare le impostazioni del proxy</translation>
+<translation id="2931888116345994552">Se questo criterio non viene configurato o se viene impostato su Attivato, consente gli aggiornamenti di tutti i componenti di <ph name="PRODUCT_NAME" />.
+
+      Se viene impostato su Disattivato, gli aggiornamenti dei componenti vengono disattivati. Tuttavia, alcuni componenti sono esclusi da questo criterio: gli aggiornamenti dei componenti che non contengono codice eseguibile e che sono critici per la sicurezza del browser non verranno disattivati.
+      Esempi di tali componenti includono gli elenchi revoche certificati e i filtri di sottorisorse.</translation>
 <translation id="2939988360019366928">Consenti la visualizzazione dei risultati di ricerca di <ph name="GOOGLE_SEARCH_PRODUCT_NAME" /> più recenti in un riquadro laterale del browser</translation>
 <translation id="2940127076681735544">Se per il criterio viene impostato un URL valido, <ph name="PRODUCT_NAME" /> scarica l'elenco dei siti da tale URL e applica le regole come se fossero state configurate con il criterio <ph name="SITELIST_POLICY_NAME" />.
 
@@ -2717,6 +2721,7 @@ Se questo criterio viene impostato su Falso, <ph name="PRODUCT_NAME" /> non util
 
       Se il criterio viene impostato su Disattivato, <ph name="PRODUCT_NAME" /> verrà disattivato.</translation>
 <translation id="4203879074082863035">Agli utenti vengono mostrate soltanto le stampanti indicate nella whitelist</translation>
+<translation id="4204327073692415353">Non richiedere all'utente di selezionare un certificato client nella schermata di accesso</translation>
 <translation id="4205316772333487392">Viene forzato l'uso di SafeSearch nella Ricerca Google</translation>
 <translation id="4209297478239988291">Consente di attivare la funzione di accessibilità di clic automatico.
 
@@ -5374,6 +5379,7 @@ Per informazioni dettagliate sui pattern <ph name="URL_LABEL" /> validi, visita 
 <translation id="7477231245051133709">Attiva la funzione di accessibilità di audio in formato mono</translation>
 <translation id="7477239290070847560">Destinazioni protocolli (mDNS e DNS-SD) basate su configurazione automatica</translation>
 <translation id="7485481791539008776">Regole di selezione della stampante predefinita</translation>
+<translation id="7486205887492534734">Mostra una richiesta in caso di corrispondenza tra più certificati nella schermata di accesso</translation>
 <translation id="7491720878670299691">La velocità di interrogazione e controllo della rete per eventi. Il valore minimo consentito è 1 minuto.
 
       Se il criterio non viene impostato, viene applicata la velocità predefinita di 1 minuto.</translation>
@@ -5465,6 +5471,7 @@ Per informazioni dettagliate sui pattern <ph name="URL_LABEL" /> validi, visita 
 
       Se il criterio è attivato o non impostato, la funzionalità di conversione delle unità di Risposte rapide sarà attiva.
       Se il criterio è disattivato, la funzionalità di conversione delle unità di Risposte rapide sarà disattivata.</translation>
+<translation id="7587345076013230465">Richiedi all'utente di selezionare il certificato client quando il criterio di selezione automatica corrisponde a più certificati nella schermata di accesso</translation>
 <translation id="7590188804371204512">Controlla l'installazione delle estensioni esterne.
 
       L'attivazione di questa impostazione blocca l'installazione delle estensioni esterne.

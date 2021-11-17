@@ -107,6 +107,7 @@ Du använder <ph name="DSE_NAME" /> som sökmotor. Läs anvisningarna för att r
 <translation id="1894205589103145703">Något gick fel vid inloggningen.</translation>
 <translation id="1911619930368729126">Ladda upp till Google Drive</translation>
 <translation id="1923342640370224680">Senaste timmen</translation>
+<translation id="1930989359703290198">Organisationen tillåter endast inloggning med vissa konton. Konton som inte tillåts är dolda. <ph name="BEGIN_LINK" />Läs mer<ph name="END_LINK" /></translation>
 <translation id="1941314575388338491">Tryck snabbt två gånger om du vill kopiera informationen.</translation>
 <translation id="1952172573699511566">När det är möjligt visas text på webbplatser på önskat språk.</translation>
 <translation id="1965935827552890526">Gör klart det du höll på med i det andra öppna Chrome-fönstret.</translation>
@@ -387,6 +388,8 @@ Din data har krypterats med lösenfrasen för synkronisering. Ange den om du vil
 <translation id="4802417911091824046">Betalningsmetoder och adresser från Google Pay omfattas inte av kryptering med lösenfras.
 
 <ph name="BEGIN_LINK" />Återställ synkroniseringen<ph name="END_LINK" /> om du vill ändra den här inställningen.</translation>
+<translation id="4803185665210547709">Hanteras av organisationen.
+<ph name="BEGIN_LINK" />Läs mer<ph name="END_LINK" /></translation>
 <translation id="4805759445554688327">Ogiltigt kortnummer</translation>
 <translation id="4808744395915275922">Uppdateringar</translation>
 <translation id="4818522717893377262">Lägg till språk …</translation>

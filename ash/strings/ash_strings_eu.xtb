@@ -354,6 +354,15 @@ Hona hemen hasteko egin ditzakezun gauza batzuk.</translation>
 <translation id="3509391053705095206">Ezin da aurkitu telefonoa. Ziurtatu telefonoaren Bluetooth-a aktibatuta dagoela.</translation>
 <translation id="3510164367642747937">Nabarmendu saguaren kurtsorea</translation>
 <translation id="3513798432020909783"><ph name="MANAGER_EMAIL" /> kontuaren bidez kudeatzen da kontu hau</translation>
+<translation id="3518604429872942239">Egoera-erretilua. Ordua: <ph name="TIME" />
+        <ph name="BATTERY" />
+        <ph name="NETWORK" />
+        <ph name="MIC" />
+        <ph name="CAMERA" />
+        <ph name="MANAGED" />
+        <ph name="NOTIFICATION" />
+        <ph name="IME" />
+        <ph name="LOCALE" /></translation>
 <translation id="352245152354538528">{0,plural, =1{Eguneratu gailua minutu bat barru}other{Eguneratu gailua # minutu barru}}</translation>
 <translation id="353086728817903341">Konektatu da <ph name="NUM_DEVICES" /> gailutara</translation>
 <translation id="3552189655002856821">Desaktibatuta dago wifi-konexioa</translation>
@@ -376,6 +385,7 @@ Hona hemen hasteko egin ditzakezun gauza batzuk.</translation>
 <translation id="3630697955794050612">desaktibatuta</translation>
 <translation id="3631369015426612114">Onartu hauen jakinarazpenak</translation>
 <translation id="3638400994746983214">Aktibatu/Desaktibatu pribatutasun-pantaila. <ph name="STATE_TEXT" />.</translation>
+<translation id="3640092422335864171">Gorde <ph name="NAME" /></translation>
 <translation id="3649505501900178324">Eguneratze bat dago egiteke</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" />, erabiltzaile kudeatua</translation>
 <translation id="3665889125180354336">Mikrofono bidezko grabaketa</translation>
@@ -459,6 +469,7 @@ Jarraitu ahal izateko, erabiltzaile guztiek saioa amaitu behar dute.</translatio
 <translation id="4215497585250573029">VPN ezarpenak</translation>
 <translation id="4217571870635786043">Diktaketa</translation>
 <translation id="4221957499226645091"><ph name="APP_NAME" />, instalatutako aplikazioa, pausatuta</translation>
+<translation id="4223947355273782392">Gainerako gailuekin bizkorrago parekatu ahal izateko, gorde <ph name="NAME" /> izeneko gailua <ph name="EMAIL" /> helbideari dagokion kontuan</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4242533952199664413">Ireki ezarpenak</translation>
 <translation id="4250229828105606438">Pantaila-argazkia</translation>

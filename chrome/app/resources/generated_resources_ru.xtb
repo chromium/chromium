@@ -4074,6 +4074,7 @@
 <translation id="5265562206369321422">Не в Сети больше недели</translation>
 <translation id="5265797726250773323">Ошибка при установке</translation>
 <translation id="5266113311903163739">Ошибка при импорте Центра сертификации</translation>
+<translation id="526622169288322445">Другие действия с адресом <ph name="ADDRESS_SUMMARY" /></translation>
 <translation id="5269977353971873915">Печать не выполнена</translation>
 <translation id="5275352920323889391">Собака</translation>
 <translation id="527605982717517565">Всегда разрешать JavaScript для сайта <ph name="HOST" /></translation>
@@ -5453,6 +5454,7 @@
 <translation id="6775163072363532304">Здесь будут появляться доступные устройства.</translation>
 <translation id="6777817260680419853">Попытка переадресации заблокирована</translation>
 <translation id="6778737459546443941">Ещё не одобрено родителем</translation>
+<translation id="6779092717724412415">Чтобы задать такое же выделение, выберите текст и нажмите на него правой кнопкой мыши.</translation>
 <translation id="6779447100905857289">корзины</translation>
 <translation id="677965093459947883">Очень мелкий</translation>
 <translation id="6781005693196527806">&amp;Управление поисковыми системами…</translation>
@@ -6082,7 +6084,6 @@
 <translation id="7433708794692032816">Не вынимайте смарт-карту, чтобы и дальше использовать <ph name="DEVICE_TYPE" /></translation>
 <translation id="7433957986129316853">Оставить так</translation>
 <translation id="7434509671034404296">Разработчикам</translation>
-<translation id="7434635829372401939">Синхронизация настроек</translation>
 <translation id="7434757724413878233">Ускорение мыши</translation>
 <translation id="7434969625063495310">Не удалось добавить сервер печати. Проверьте его настройки и повторите попытку.</translation>
 <translation id="7436921188514130341">При изменении названия произошла ошибка.</translation>
@@ -6268,6 +6269,7 @@
 <translation id="7625823789272218216">Новая вкладка слева</translation>
 <translation id="7628201176665550262">Частота обновления</translation>
 <translation id="7629827748548208700">Вкладка: <ph name="TAB_NAME" /></translation>
+<translation id="7630426712700473382">Этим устройством управляет <ph name="MANAGER" />. Необходимо каждый раз входить в аккаунт.</translation>
 <translation id="7631014249255418691">Резервная копия приложений и файлов Linux сохранена.</translation>
 <translation id="7631205654593498032">После подключения устройство <ph name="DEVICE_TYPE" /> сможет:</translation>
 <translation id="7631887513477658702">Всегда открывать файлы этого типа</translation>

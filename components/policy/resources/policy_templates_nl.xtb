@@ -714,6 +714,16 @@ Het veld <ph name="PROXY_SERVER_MODE_PROXY_SETTINGS_FIELD" /> is beëindigd ten 
 <translation id="1862267110714201519">De functie voor ghostvenster uitzetten.</translation>
 <translation id="1865417998205858223">Rechten voor sleutels</translation>
 <translation id="186719019195685253">Actie die moet worden ondernomen wanneer de vertraging voor inactief wordt bereikt bij gebruik op netspanning</translation>
+<translation id="1881649377321404593">
+      Dit beleid is verwijderd in M80 omdat WebDriver nu werkt met alle bestaande beleidsregels, en het dus niet langer nodig is.
+
+      Met dit beleid kunnen gebruikers van de WebDriver-functie beleidsregels overschrijven die problemen met de werking kunnen veroorzaken.
+
+      Dit beleid zet momenteel de beleidsregels SitePerProcess en IsolateOrigins uit.
+
+      Als het beleid wordt toegepast, kan WebDriver niet-geschikte beleidsregels overschrijven.
+
+      Als het beleid niet wordt toegepast of niet is ingesteld, mag WebDriver niet-geschikte beleidsregels niet overschrijven.</translation>
 <translation id="1885782360784839335">Promotiecontent op volledig tabblad tonen</translation>
 <translation id="1888871729456797026">De inschrijvingstoken van het cloudbeleid op een desktop</translation>
 <translation id="1894790493260633497">Modus voor afdrukken met achtergrondbeelden standaard aanzetten</translation>
@@ -2758,6 +2768,16 @@ Zoals wordt vermeld in ons beleid <ph name="SITE_PER_PROCESS_POLICY_NAME" />, zi
       Vanaf <ph name="PRODUCT_NAME" /> versie 92 wordt dit beleid ook ondersteund in de stand zonder interface.
 
       In <ph name="MS_WIN_NAME" /> is deze functionaliteit alleen beschikbaar voor instanties die zijn gekoppeld aan een <ph name="MS_AD_NAME" />-domein, die worden uitgevoerd in Windows 10 Pro of die zijn ingeschreven voor <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />. In <ph name="MAC_OS_NAME" /> is deze functionaliteit alleen beschikbaar voor instanties die via MDM worden beheerd of via MCX aan een domein zijn gekoppeld.</translation>
+<translation id="4268014245533736105">Chrome blokkeert navigatie naar externe protocollen in iframes in sandboxes. Zie https://chromestatus.com/features/5680742077038592.
+
+      Als dit is ingesteld op True, kan Chrome die navigatie blokkeren.
+
+      Als dit is ingesteld op False, wordt voorkomen dat Chrome die navigatie blokkeert.
+
+      Dit is standaard ingesteld op True: beveiligingsfunctie aan.
+
+      Dit kan worden gebruikt door beheerders die meer tijd nodig hebben om hun interne website te updaten waarop deze nieuwe beperking van invloed is. Dit zakelijke beleid is tijdelijk. Het is de bedoeling het te verwijderen na <ph name="PRODUCT_NAME" /> versie 104.
+      </translation>
 <translation id="4268586991084547853">Meer compatibel met sitelijsten in de Microsoft IE-/Edge-bedrijfsmodus.</translation>
 <translation id="4269859918103560644">Toestaan dat gebruikers dit bepalen</translation>
 <translation id="4274691295133617461">Als je het beleid instelt op 3, kunnen websites leestoegang vragen tot bestanden en directory's in het bestandssysteem van het besturingssysteem van de host via de File System API. Als je het beleid instelt op 2, wordt toegang geblokkeerd.
@@ -4113,6 +4133,12 @@ Gebruikers kunnen deze instelling niet wijzigen.</translation>
 <translation id="5997543603646547632">Klok met 24-uursnotatie standaard gebruiken</translation>
 <translation id="5997846976342452720">Aangeven of de plug-inzoeker moet worden uitgezet (beëindigd)</translation>
 <translation id="5998198091336830580">Dit beleid maakt deel uit van de volgende atomische groep (alleen beleidsregels van de bron met de hoogste prioriteit in de groep worden toegepast):</translation>
+<translation id="6004575267180297869">
+      Geeft aan of WebAssembly-modules cross-origin kunnen worden verstuurd naar een ander venster of een andere werkrol. Het cross-origin delen van WebAssembly-modules wordt beëindigd als onderdeel van de activiteiten om document.domain te beëindigen, zie https://github.com/mikewest/deprecating-document-domain. Dit beleid staat toe dat het cross-origin delen van WebAssembly-modules opnieuw mogelijk wordt gemaakt om een langere overgangsperiode te bieden voor het beëindigingsproces.
+
+      Als je dit beleid instelt op True, kunnen sites zonder beperkingen WebAssembly-modules cross-origin versturen.
+
+      Als je dit beleid instelt op False of niet instelt, kunnen sites alleen WebAssembly-modules naar vensters en werkrollen in dezelfde oorsprong sturen.</translation>
 <translation id="6009062900206392980">Als het beleid is ingesteld op None, staat schermvergroting uit op het inlogscherm.
 
        Als je dit beleid instelt, kunnen gebruikers het vergrootglas tijdelijk aan- of uitzetten. Als het inlogscherm opnieuw wordt geladen of een minuut lang niet wordt gebruikt, wordt de oorspronkelijke status hersteld.
@@ -4288,6 +4314,7 @@ Als je dit beleid instelt, worden afhankelijk van de waarde verschillende van de
       Dit beleid is bedoeld om bedrijven de flexibiliteit te bieden om de audiosandbox uit te zetten als ze instellingen voor beveiligingssoftware gebruiken die de sandbox kunnen verstoren.</translation>
 <translation id="624818583115864448">poort 554 (blokkering kan worden opgeheven tot 15-10-2021)</translation>
 <translation id="6252773211180267325">Niet voorkomen dat <ph name="BOREALIS_NAME" /> wordt uitgevoerd voor een gebruiker</translation>
+<translation id="6258658183356534534">De GREASE-updatefunctie voor User-Agent Client Hints beheren.</translation>
 <translation id="6261643884958898336">ID-gegevens van machine rapporteren</translation>
 <translation id="6265892395051519509">Toegang tot sensoren op deze sites toestaan</translation>
 <translation id="6273015149273504999">
@@ -4369,6 +4396,7 @@ Als je dit beleid instelt, worden afhankelijk van de waarde verschillende van de
           De beleidswaarde moet worden gespecificeerd in milliseconden. De opgegeven waarden moeten kleiner dan of gelijk zijn aan de inactieve vertraging.
 
           Het waarschuwingsbericht wordt alleen getoond als de inactieve actie 'uitloggen' of 'afsluiten' is.</translation>
+<translation id="6331943515692769234">Afdwingen dat het eerdere User-Agent GREASE-algoritme wordt gebruikt.</translation>
 <translation id="6332192586629642626">Geschiedenisclusters zijn niet zichtbaar op chrome://history/journeys.</translation>
 <translation id="6332489309596092806">Als je het beleid instelt, wordt een lijst met web-apps gespecificeerd die op de achtergrond worden geïnstalleerd zonder interactie met de gebruiker en die niet kunnen worden verwijderd of uitgezet door gebruikers.
 
@@ -4725,6 +4753,12 @@ Als je dit beleid instelt op True, wordt WebSQL in contexten van derden opnieuw 
 
       Opmerking: Dit beleid is ook van invloed op extensies en apps die afgedwongen geïnstalleerd worden met <ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" />.</translation>
 <translation id="6731757988219967594">Sites op hoofdniveau (maar geen ingesloten iframes) filteren op content voor volwassenen</translation>
+<translation id="6733851879899284032">
+      Geeft aan of SharedArrayBuffers kan worden gebruikt in een context zonder cross-origin-isolatie. Vanaf <ph name="PRODUCT_NAME" /> 91 (25-05-2021) vereist <ph name="PRODUCT_NAME" /> cross-origin-isolatie bij gebruik van SharedArrayBuffers vanwege redenen met webcompatibiliteit. Je kunt meer informatie bekijken op: https://developer.chrome.com/blog/enabling-shared-array-buffer/.
+
+      Als dit beleid wordt toegepast, kunnen sites SharedArrayBuffer gebruiken zonder beperkingen.
+
+      Als dit beleid niet wordt toegepast of niet is ingesteld, kunnen sites SharedArrayBuffers alleen gebruiken als ze cross-origin geïsoleerd zijn.</translation>
 <translation id="6735701345096330595">Spellingcontrole voor talen verplichten</translation>
 <translation id="6740611636377710500">Sta deze gebruiker toe om PluginVm uit te voeren.
 
@@ -4914,6 +4948,9 @@ Als het beleid niet is ingesteld, worden er geen beperkingen toegepast.</transla
 <translation id="6929746927224321095">Automatisch invullen uitzetten</translation>
 <translation id="6931242315485576290">Synchronisatie van gegevens met Google uitzetten</translation>
 <translation id="6940243892299228102">Niet toestaan dat gebruikers bureautemplates gebruiken</translation>
+<translation id="694071740172924905">Als deze functie aanstaat, brengt de GREASE-updatefunctie voor User-Agent Client Hints het User-Agent GREASE-algoritme in lijn met de nieuwste specificaties.
+De geüpdatete specificaties kunnen ervoor zorgen dat sommige websites niet meer werken die het aantal tekens beperken dat een verzoek mag bevatten. Bekijk de specificaties voor meer informatie: https://wicg.github.io/ua-client-hints/#grease
+Als dit beleid wordt toegepast of niet is ingesteld, staat de GREASE-updatefunctie voor User-Agent Client Hints aan. Als het beleid niet wordt toegepast, wordt het eerdere User-Agent GREASE-algoritme gebruikt.</translation>
 <translation id="6943577887654905793">Voorkeursnaam voor Mac/Linux:</translation>
 <translation id="6946652757373377924">Dit beleid is verwijderd in M77.
       Dit beleid is van toepassing op het inlogscherm. Zie ook het beleid <ph name="ISOLATE_ORIGINS_POLICY_NAME" /> dat van toepassing is op de gebruikerssessie.
@@ -5273,6 +5310,7 @@ Als je dit beleid instelt op False, wordt de functionaliteit uitgezet.</translat
 
       Als dit beleid niet wordt ingesteld, geldt de standaardwaarde 'niet toegestaan' voor beheerde zakelijke gebruikers en 'toegestaan' voor niet-beheerde gebruikers.</translation>
 <translation id="7295019613773647480">Gebruikers met beperkte rechten aanzetten</translation>
+<translation id="7297476773981993405">Toestaan dat het geüpdatete User-Agent GREASE-algoritme wordt uitgevoerd.</translation>
 <translation id="7302043767260300182">Vertraging van schermvergrendeling wanneer op netstroom wordt gewerkt</translation>
 <translation id="7303902834678570827">Gebruikers van beheerde gastsessies kunnen geen weergave-eigenschappen voor het hele apparaat opslaan</translation>
 <translation id="731208205557053914">VPD-gegevens rapporteren</translation>
@@ -5381,6 +5419,12 @@ Als je dit beleid instelt op False, wordt de functionaliteit uitgezet.</translat
 <translation id="7491720878670299691">Snelheid waarmee netwerkgegevens worden opgevraagd en gecheckt op gebeurtenissen. Het toegestane minimum is 1 minuut.
 
       Als je dit beleid niet instelt, is de standaardsnelheid van 1 minuut van toepassing.</translation>
+<translation id="7498595166686106721">
+      Het rechtenbeleid voor schermopname geeft toegang tot getDisplayMedia(), volgens deze specificatie: https://www.w3.org/TR/screen-capture/#feature-policy-integration. Maar als dit beleid niet wordt toegepast, wordt deze vereiste niet afgedwongen en wordt getDisplayMedia() toegestaan vanuit contexten die anders verboden zouden zijn. Dit zakelijke beleid is tijdelijk. Het is de bedoeling het te verwijderen na <ph name="PRODUCT_NAME" /> versie 100. Het is bedoeld om de blokkering van zakelijke gebruikers op te heffen wiens app niet aan de specificaties voldoet, maar tijd nodig heeft om te worden hersteld.
+
+      Als dit beleid wordt toegepast of niet is ingesteld, kunnen sites getDisplayMedia() alleen aanroepen vanuit contexten die door het rechtenbeleid voor schermopname op de toelatingslijst zijn gezet.
+
+      Als het beleid niet wordt toegepast, kunnen sites getDisplayMedia() ook aanroepen vanuit contexten die niet door het rechtenbeleid voor schermopname op de toelatingslijst zijn gezet. Er kunnen nog steeds andere beperkingen gelden.</translation>
 <translation id="7506745375479451616">Met dit beleid wordt bepaald welke opdracht wordt gebruikt om URL's te openen in <ph name="PRODUCT_NAME" /> bij overschakeling vanuit <ph name="IE_PRODUCT_NAME" />. Dit beleid kan worden ingesteld op een pad naar een uitvoerbaar bestand of op <ph name="PRODUCT_NAME_PLACEHOLDER" /> om de locatie van <ph name="PRODUCT_NAME" /> automatisch te detecteren.
 
       Als je het beleid niet instelt, detecteert <ph name="IE_PRODUCT_NAME" /> het eigen pad van <ph name="PRODUCT_NAME" /> naar een uitvoerbaar bestand als <ph name="PRODUCT_NAME" /> wordt gestart vanuit Internet Explorer.
@@ -5997,6 +6041,18 @@ De aanbevolen manier om beleidsregels te configureren op Windows, is via GPO, ma
 <translation id="8266778278542911985">Als je het beleid instelt op 3, kunnen websites toegang vragen tot seriële poorten. Als je het beleid instelt op 2, wordt de toegang tot seriële poorten geblokkeerd.
 
       Als je het beleid niet instelt, vragen websites om toegang maar kunnen gebruikers deze instelling wijzigen.</translation>
+<translation id="8267887696930711948">Beëindigd in M69. Gebruik in plaats hiervan OverrideSecurityRestrictionsOnInsecureOrigin.
+
+Dit beleid specificeert een lijst met herkomsten (URL's) of hostnaampatronen (zoals *.example.com) waarop beveiligingsbeperkingen voor niet-beveiligde herkomsten niet van toepassing zijn.
+
+Het is de bedoeling organisaties de mogelijkheid te geven herkomsten toe te staan voor verouderde apps die geen TLS kunnen implementeren, of een staging server voor interne webontwikkelingen in te stellen, zodat de ontwikkelaars functies die een beveiligde context vereisen, kunnen testen zonder TLS te hoeven implementeren op de staging server. Dit beleid verhindert ook dat de herkomst wordt aangeduid als niet beveiligd in de omnibox.
+
+Als er een lijst met URL's wordt ingesteld in dit beleid, heeft dit hetzelfde effect als wanneer de opdrachtregelmarkering --unsafely-treat-insecure-origin-as-secure wordt ingesteld op een door komma's gescheiden lijst met dezelfde URL's. Als het beleid is ingesteld, wordt de opdrachtregelmarkering overschreven.
+
+Dit beleid is beëindigd in M69 en is vervangen door OverrideSecurityRestrictionsOnInsecureOrigin. Als beide beleidsregels aanwezig zijn, overschrijft OverrideSecurityRestrictionsOnInsecureOrigin dit beleid.
+
+Voor meer informatie over een beveiligde context ga je naar https://www.w3.org/TR/secure-contexts/
+      </translation>
 <translation id="8270320981823560179">Drive</translation>
 <translation id="827054846390793641">Verbindingsgerelateerde UI aanzetten op hostdesktop bij een actieve verbinding</translation>
 <translation id="8274603902181597201">De eCryptfs-hoofdmap van de gebruiker wissen en beginnen met een nieuwe hoofdmap die is versleuteld met ext4</translation>

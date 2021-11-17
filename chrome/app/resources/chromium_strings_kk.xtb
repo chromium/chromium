@@ -28,6 +28,7 @@
 <translation id="1981611865800294956">&amp;Chromium OS жүйесін жаңарту үшін қайта іске қосу</translation>
 <translation id="2008474315282236005">Құрылғыдан 1 элемент жойылады. Деректерді кейінірек алу үшін Chromium браузеріне <ph name="USER_EMAIL" /> болып кіріңіз.</translation>
 <translation id="2020032459870799438">Басқа құпия сөздеріңіздің ұрланудан және басқа да қауіпсіздік мәселелерінен қаншалықты қорғалғанын тексеру үшін <ph name="BEGIN_LINK" />Chromium браузеріне кіріңіз<ph name="END_LINK" />.</translation>
+<translation id="2049376729098081731">Google қызметтерінде жекелендірілген мүмкіндіктерді пайдалану үшін Chromium тарихын қосу-қоспау нұсқасын таңдаңыз.</translation>
 <translation id="2174178932569897599">Chromium-ді реттеу</translation>
 <translation id="2185166961232948079">Chromium – Желіге кіру - <ph name="PAGE_TITLE" /></translation>
 <translation id="2241627712206172106">Компьютерді бөлісетін болсаңыз, достарыңыз интернетке бөлек кіріп, Chromium жүйесін қалауынша орната алады.</translation>
@@ -39,6 +40,7 @@
 <translation id="2401032172288869980">Chromium бұл сайт үшін камера мен микрофонды пайдалануға рұқсат сұрайды.</translation>
 <translation id="2483889755041906834">Chromium аясында</translation>
 <translation id="2485422356828889247">Жою</translation>
+<translation id="251127392410688874">Chromium ашық желіні қолдай отырып, сізді сайтаралық бақылаудан қалай қорғайтынын көріңіз.</translation>
 <translation id="2535480412977113886">Chromium OS деректеріңізді синхрондай алмайды, себебі аккаунтыңызға кіру мәліметтері ескірген.</translation>
 <translation id="2560420686485554789">Файлдарды жүктеп алу үшін Chromium браузеріне сақтау орнын пайдалану құқығы қажет</translation>
 <translation id="2572494885440352020">Chromium Helper</translation>
@@ -224,6 +226,7 @@ Chromium параметрлеріңізді қалпына келтіре алм
 <translation id="7339898014177206373">Жаңа терезе</translation>
 <translation id="734373864078049451">Мұнда веб-беттер, бетбелгілер және басқа Chromium материалдары тұрады.</translation>
 <translation id="7349591376906416160">Жүйе әкімшісі Chromium браузерін <ph name="TARGET_URL_HOSTNAME" /> бетіне кіргенде <ph name="ALTERNATIVE_BROWSER_NAME" /> браузері ашылатын етіп конфигурациялады.</translation>
+<translation id="7398989605938454041">Chromium профильдері арқылы Chromium-дегі барлық материалыңызды бөле аласыз. Осылайша оларды жұмыс немесе көңіл көтеру топтарына оңай іріктеуге болады.</translation>
 <translation id="7448255348454382571">Chromium OS жүйесін қайта қосу</translation>
 <translation id="7449453770951226939"><ph name="PAGE_TITLE" /> - Chromium әзірлеуші нұсқасы</translation>
 <translation id="7451052299415159299">Chromium браузеріне бұл сайтта камераны пайдалану үшін рұқсат керек</translation>
@@ -244,6 +247,7 @@ Chromium параметрлеріңізді қалпына келтіре алм
 <translation id="7828947555739565424">Осы құрылғыда бұл аккаунтқа Chromium профилі тіркеліп қойған.</translation>
 <translation id="7857220146454061152">Chromium жаңартылған нұсқасын алу үшін OS X 10.11 не одан кейінгі операциялық жүйе керек. Бұл компьютерде OS X 10.10 нұсқасы орнатылған.</translation>
 <translation id="7867198900892795913">Chromium браузерінің ең соңғы нұсқасы орнатылмады, сондықтан жаңа мүмкіндіктер мен қауіпсіздікке қатысты түзетілген функцияларды пайдалана алмайсыз.</translation>
+<translation id="788352880609666695">Бұл Chromium профилі үшін келесі аккаунттар қолжетімді.</translation>
 <translation id="7898472181347242998">Құрылғыңызда операциялық жүйенің соңғы нұсқасы бар екенін тексеру үшін <ph name="LINK_BEGIN" />Chromium ОЖ параметрлері<ph name="LINK_END" /> бөлімінен қараңыз.</translation>
 <translation id="7937630085815544518">Chromium жүйесіне <ph name="USER_EMAIL_ADDRESS" /> ретінде кірдіңіз. Қайта кіру үшін бірдей аккаунтты пайдаланыңыз.</translation>
 <translation id="7975919845073681630">Бұл – Chromium браузерінің қайта орнатылған нұсқасы және әдепкі браузер бола алмайды.</translation>
@@ -256,6 +260,7 @@ Chromium параметрлеріңізді қалпына келтіре алм
 <translation id="8290862415967981663">Бұл файл қауіпті болуы мүмкін болғандықтан, Chromium оны бөгеді.</translation>
 <translation id="8330519371938183845">Chromium браузерін барлық құрылғыларда синхрондап, параметрлерін жекелендіру үшін аккаунтыңызға кіріңіз</translation>
 <translation id="8340674089072921962"><ph name="USER_EMAIL_ADDRESS" /> бұрын Chromium браузерін пайдаланған</translation>
+<translation id="8357820681460164151">Chromium браузерінің материалдарын барлық құрылғыда пайдалану үшін аккаунтқа кіріп, синхрондау параметрін қосыңыз.</translation>
 <translation id="8417404458978023919">{0,plural, =1{Chromium браузерін бір күннің ішінде қайта іске қосыңыз}other{Chromium браузерін # күннің ішінде қайта іске қосыңыз}}</translation>
 <translation id="8453117565092476964">Орнатқыш мұрағаты бүлінген немесе жарамсыз. Chromium қайтадан жүктеңіз.</translation>
 <translation id="8493179195440786826">Chromium ескірген</translation>

@@ -52,6 +52,7 @@ Eginbide batzuk agian dira erabilgarri egongo eta hobespenei egindako aldaketak 
 <translation id="2123055963409958220">Lagundu Chrome hobetzen <ph name="BEGIN_LINK" />oraingo ezarpenen<ph name="END_LINK" /> berri emanda</translation>
 <translation id="2151406531797534936">Berrabiarazi Chrome</translation>
 <translation id="2189289170880510015">Pertsonalizatu Chrome-ren pribatutasun-aukera garrantzitsuenetako batzuk</translation>
+<translation id="2258103955319320201">Chrome arakatzaileko gauzak gailu guztietan atzitzeko, hasi saioa eta aktibatu sinkronizazioa</translation>
 <translation id="2290014774651636340">Google APIko gakoak falta dira. Agian Google Chrome-ren funtzio batzuk desgaituta egongo dira.</translation>
 <translation id="2290095356545025170">Ziur Google Chrome desinstalatu nahi duzula?</translation>
 <translation id="2309047409763057870">Google Chrome-ren bigarren mailako instalazio bat da hau; beraz, ezin duzu ezarri arakatzaile lehenetsi gisa.</translation>
@@ -216,6 +217,7 @@ Google Chrome-k ezin ditu berreskuratu zure ezarpenak.</translation>
 <translation id="6506909944137591434">Chrome-k kamera atzitzeko baimena behar du zure inguruaren 3D-ko mapa bat sortzeko</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> - Google Chrome Dev</translation>
 <translation id="6568793831116033768">Chrome OS sistema</translation>
+<translation id="6594121454516132231">Ikusi zer egin nahi duen Chrome-k sare irekia mantendu bitartean zu webguneen arteko jarraipenetik babesteko</translation>
 <translation id="6676384891291319759">Sartu Interneten</translation>
 <translation id="6679975945624592337">Utzi Google Chrome-ri atzeko planoan abiarazten</translation>
 <translation id="6696915334902295848">Chrome-k mikrofonoa atzitzeko baimena behar du webgune honetan</translation>
@@ -230,6 +232,7 @@ Google Chrome-k ezin ditu berreskuratu zure ezarpenak.</translation>
 <translation id="6989339256997917931">Google Chrome eguneratu egin da, baina ez duzu 30 egunetan erabili.</translation>
 <translation id="7025800014283535195">Aldatu Chrome-ko profila hemen</translation>
 <translation id="7062128746136194023">Zure gurasoak "Webguneen, aplikazioen eta luzapenen baimenak" desaktibatu ditu Chrome-n. Ezin da gehitu <ph name="EXTENSION_TYPE_PARAMETER" />.</translation>
+<translation id="7085332316435785646">Aukeratu ea Chrome-ko historia kontuan hartu nahi duzun ala ez Google-ren zerbitzuak modu pertsonalizatuago batean erabiltzeko</translation>
 <translation id="7088681679121566888">Eguneratuta dago Chrome</translation>
 <translation id="7098166902387133879">Google Chrome zure mikrofonoa erabiltzen ari da.</translation>
 <translation id="7106741999175697885">Zeregin-kudeatzailea - Google Chrome</translation>
@@ -254,6 +257,7 @@ Google Chrome-k ezin ditu berreskuratu zure ezarpenak.</translation>
 <translation id="7651907282515937834">Chrome Enterprise logotipoa</translation>
 <translation id="7665553140559834626">Abiaraz ezazu berriro &amp;Chrome OS eguneratzeko</translation>
 <translation id="7747138024166251722">Instalatzaileak ezin izan du sortu behin behineko direktoriorik. Softwarea instalatzeko, egiaztatu diskoan duzun espazio librea eta baimena.</translation>
+<translation id="7748512868279796735">Kontu hauek erabil daitezke Chrome-ko profil honekin:</translation>
 <translation id="7761834446675418963">Sakatu zure izena Chrome irekitzeko eta arakatzen hasteko.</translation>
 <translation id="7777080907402804672">Irudiren batek ez badu azalpen lagungarririk, halako bat lortzen ahaleginduko da Chrome. Azalpen horiek sortzeko, irudiak Google-ri bidaltzen zaizkio. Aukera hori desaktibatu nahi baduzu, joan ezarpenetara.</translation>
 <translation id="7781002470561365167">Google Chrome-ren bertsio berri bat erabilgarri dago.</translation>
@@ -285,6 +289,7 @@ Google Chrome-k ezin ditu berreskuratu zure ezarpenak.</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
 <translation id="8550334526674375523">Laneko profila eta profil pertsonala guztiz bereizita daude.</translation>
 <translation id="8556340503434111824">Google Chrome-ren bertsio berri bat erabilgarri dago; inoiz baino bizkorragoa da.</translation>
+<translation id="8571790202382503603">Chrome-ko profilekin, Chrome-n dituzun gauza guztiak bereiz ditzakezu. Hala, errazago edukiko dituzu bananduta gauza pertsonalak eta lanekoak.</translation>
 <translation id="8614913330719544658">Google Chrome-k ez du erantzuten. Berrabiarazi nahi duzu?</translation>
 <translation id="861702415419836452">Chrome-k kamera atzitzeko baimena behar du, ingurunearen hiru dimentsioko mapa bat sortzeko</translation>
 <translation id="8625237574518804553">{0,plural, =1{1 minutu barru berrabiaraziko da Chrome}other{# minutu barru berrabiaraziko da Chrome}}</translation>

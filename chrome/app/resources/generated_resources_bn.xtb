@@ -1234,6 +1234,7 @@
 <translation id="2232751457155581899">আপনার ক্যামেরার পজিশন ট্র্যাক করতে সাইট অনুমতি চাইতে পারে</translation>
 <translation id="2232876851878324699">ফাইলটিতে একটি সার্টিফিকেট রয়েছে, এটি আমদানি করা হয়নি:</translation>
 <translation id="2233502537820838181">&amp;আরো তথ্য</translation>
+<translation id="223356358902285214">ওয়েব ও অ্যাপ অ্যাক্টিভিটি</translation>
 <translation id="2234876718134438132">সিঙ্ক এবং Google পরিষেবাগুলি</translation>
 <translation id="2235344399760031203">থার্ড-পার্টি কুকি ব্লক করা হয়েছে</translation>
 <translation id="2238379619048995541">ফ্রিকোয়েন্সি স্থিতি ডেটা</translation>
@@ -1922,6 +1923,7 @@
 <translation id="2923006468155067296">আপনার <ph name="DEVICE_TYPE" /> এখনই লক হয়ে যাবে।
 <ph name="DOMAIN" />-এর জন্য আপনার স্মার্ট কার্ড প্রবেশ করিয়ে রাখতে হবে।</translation>
 <translation id="2923234477033317484">এই অ্যাকাউন্ট সরিয়ে দিন</translation>
+<translation id="2923644930701689793">আপনার ফোনের ক্যামেরা রোল অ্যাক্সেস করুন</translation>
 <translation id="2926085873880284723">ডিফল্ট শর্টকাট ফিরিয়ে আনুন</translation>
 <translation id="2926620265753325858"><ph name="DEVICE_NAME" /> কাজ করে না।</translation>
 <translation id="2927017729816812676">ক্যাশে সঞ্চয় স্থান</translation>
@@ -3113,6 +3115,7 @@
 <translation id="4168015872538332605"><ph name="PRIMARY_EMAIL" />-এর কিছু সেটিংস আপনার সাথে শেয়ার করা হচ্ছে৷ এই সেটিংস শুধুমাত্র আপনার অ্যাকাউন্টে একাধিক সাইন-ইন ব্যবহারের সময় কাজ করে৷</translation>
 <translation id="4169535189173047238">অনুমতি দেবেন না</translation>
 <translation id="4170314459383239649">ছেড়ে গেলে কুকিজ মুছে দিন</translation>
+<translation id="417096670996204801">প্রোফাইল বেছে নিন</translation>
 <translation id="4175137578744761569">হালকা বেগুনি ও সাদা</translation>
 <translation id="4175737294868205930">অনবরত স্টোরেজ</translation>
 <translation id="4176463684765177261">অক্ষম হয়েছে</translation>
@@ -6114,7 +6117,6 @@
 <translation id="7433708794692032816">আপনার <ph name="DEVICE_TYPE" /> ব্যবহার করা চালিয়ে যেতে স্মার্ট কার্ড প্রবেশ করান</translation>
 <translation id="7433957986129316853">এটি রাখতে চাই</translation>
 <translation id="7434509671034404296">ডেভেলপার</translation>
-<translation id="7434635829372401939">আপনার সেটিংস সিঙ্ক করুন</translation>
 <translation id="7434757724413878233">মাউস অ্যাক্সিলারেশন</translation>
 <translation id="7434969625063495310">প্রিন্ট সার্ভারটি যোগ করা যায়নি। সার্ভার কনফিগারেশন চেক করে আবার চেষ্টা করুন।</translation>
 <translation id="7436921188514130341">নাম পরিবর্তনের সময় একটি ত্রুটি হয়েছিল।</translation>

@@ -2362,6 +2362,7 @@
 <translation id="3413122095806433232">CA ਜਾਰੀਕਰਤਾ: <ph name="LOCATION" /></translation>
 <translation id="3414952576877147120">ਆਕਾਰ:</translation>
 <translation id="3414966631182382431">ਤੁਹਾਡੇ <ph name="BEGIN_LINK" />ਬ੍ਰਾਊਜ਼ਰ ਦਾ ਪ੍ਰਬੰਧਨ<ph name="END_LINK" /> <ph name="MANAGER" /> ਵੱਲੋਂ ਕੀਤਾ ਜਾਂਦਾ ਹੈ</translation>
+<translation id="341589277604221596">ਲਾਈਵ ਸੁਰਖੀਆਂ - <ph name="LANGUAGE" /></translation>
 <translation id="3416468988018290825">ਹਮੇਸ਼ਾਂ ਪੂਰੇ URL ਦਿਖਾਓ</translation>
 <translation id="3417835166382867856">ਖੋਜ ਟੈਬਾਂ</translation>
 <translation id="3417836307470882032">24-ਘੰਟੇ ਵਾਲੀ ਘੜੀ</translation>
@@ -6115,7 +6116,6 @@
 <translation id="7433708794692032816">ਆਪਣੇ <ph name="DEVICE_TYPE" /> ਨੂੰ ਵਰਤਣਾ ਜਾਰੀ ਰੱਖਣ ਲਈ ਸਮਾਰਟ ਕਾਰਡ ਸ਼ਾਮਲ ਕਰੋ</translation>
 <translation id="7433957986129316853">ਇਹੋ ਰੱਖੋ</translation>
 <translation id="7434509671034404296">ਵਿਕਾਸਕਾਰ</translation>
-<translation id="7434635829372401939">ਆਪਣੀਆਂ ਸੈਟਿੰਗਾਂ ਦਾ ਸਮਕਾਲੀਕਰਨ ਕਰੋ</translation>
 <translation id="7434757724413878233">ਮਾਊਸ ਐਕਸੈੱਲਰੇਸ਼ਨ</translation>
 <translation id="7434969625063495310">ਪ੍ਰਿੰਟ ਸਰਵਰ ਨੂੰ ਸ਼ਾਮਲ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਿਆ। ਕਿਰਪਾ ਕਰਕੇ ਸਰਵਰ ਦੇ ਸੰਰੂਪਣ ਦੀ ਜਾਂਚ ਕਰਕੇ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।</translation>
 <translation id="7436921188514130341">ਓਹੋ! ਨਾਮ ਬਦਲਣ ਦੌਰਾਨ ਗੜਬੜ ਹੋ ਗਈ।</translation>
@@ -7196,6 +7196,7 @@
 <translation id="8540136935098276800">ਸਹੀ ਢੰਗ ਨਾਲ ਫਾਰਮੈਟ ਕੀਤਾ URL ਦਾਖਲ ਕਰੋ</translation>
 <translation id="8540503336857689453">ਸੁਰੱਖਿਆ ਕਾਰਨਾਂ ਕਰਕੇ ਲੁਕਵੇਂ ਨੈੱਟਵਰਕ ਨੂੰ ਵਰਤਣ ਦੀ ਸਿਫ਼ਾਰਸ਼ ਨਹੀਂ ਕੀਤੀ ਜਾਂਦੀ।</translation>
 <translation id="854071720451629801">ਪੜ੍ਹੇ ਵਜੋਂ ਨਿਸ਼ਾਨਦੇਹੀ ਕਰੋ</translation>
+<translation id="8540942859441851323">ਪ੍ਰਦਾਨਕ ਵੱਲੋਂ ਰੋਮਿੰਗ ਲੋੜੀਂਦੀ ਹੈ</translation>
 <translation id="8541462173655894684">ਪ੍ਰਿੰਟ ਸਰਵਰ ਤੋਂ ਕੋਈ ਪ੍ਰਿੰਟਰ ਨਹੀਂ ਮਿਲਿਆ</translation>
 <translation id="8541838361296720865">ਕਿਸੇ ਸਵਿੱਚ ਜਾਂ ਕੀ-ਬੋਰਡ ਕੁੰਜੀ ਨੂੰ “<ph name="ACTION" />” ਦੇ ਜ਼ਿੰਮੇ ਲਗਾਉਣ ਲਈ ਉਸਨੂੰ ਦਬਾਓ</translation>
 <translation id="8542618328173222274">ਕਿਸੇ ਸਾਈਟ ਵੱਲੋਂ ਤੁਹਾਡੇ ਆਭਾਸੀ ਵਾਸਤਵਿਕਤਾ ਡੀਵਾਈਸਾਂ ਅਤੇ ਡਾਟੇ ਨੂੰ ਵਰਤਣ ਵੇਲੇ ਪੁੱਛੋ</translation>

@@ -354,6 +354,15 @@
 <translation id="3509391053705095206">የእርስዎን ስልክ ማግኘት አልተቻለም። የእርስዎ ስልክ ብሉቱዝ እንደበራ ያረጋግጡ።</translation>
 <translation id="3510164367642747937">የመዳፊት ጠቋሚን አድምቅ</translation>
 <translation id="3513798432020909783">መለያው በ<ph name="MANAGER_EMAIL" /> ነው የሚቀናበረው</translation>
+<translation id="3518604429872942239">የሁኔታ መሣቢያ፣ ሰዓት <ph name="TIME" />፣
+        <ph name="BATTERY" />
+        <ph name="NETWORK" />፣
+        <ph name="MIC" />፣
+        <ph name="CAMERA" />፣
+        <ph name="MANAGED" />
+        <ph name="NOTIFICATION" />፣
+        <ph name="IME" />
+        <ph name="LOCALE" /></translation>
 <translation id="352245152354538528">{0,plural, =1{በ1 ደቂቃ ውስጥ መሣሪያን ያዘምኑ}one{በ# ደቂቃዎች ውስጥ መሣሪያን ያዘምኑ}other{በ# ደቂቃዎች ውስጥ መሣሪያን ያዘምኑ}}</translation>
 <translation id="353086728817903341">ከ<ph name="NUM_DEVICES" /> መሣሪያዎች ጋር ተገናኝቷል</translation>
 <translation id="3552189655002856821">Wi-Fi ጠፍቷል</translation>
@@ -376,6 +385,7 @@
 <translation id="3630697955794050612">ጠፍቷል</translation>
 <translation id="3631369015426612114">ማሳወቂያዎች ከሚከተሉት እንዲመጡ ፍቀድ፦</translation>
 <translation id="3638400994746983214">የግላዊነት ማያ ገጽን ቀያይር። <ph name="STATE_TEXT" />።</translation>
+<translation id="3640092422335864171"><ph name="NAME" />ን ያስቀምጡ</translation>
 <translation id="3649505501900178324">ዝማኔ ጊዜው ደርሶ አልፏል</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> የሚተዳደር ተጠቃሚ</translation>
 <translation id="3665889125180354336">ማይክሮፎን ይቅዱ</translation>
@@ -458,6 +468,7 @@
 <translation id="4215497585250573029">የቪፒኤን ቅንብሮች</translation>
 <translation id="4217571870635786043">በቃል ማስጻፍ</translation>
 <translation id="4221957499226645091"><ph name="APP_NAME" />፣ የተጫነ መረግበሪያ፣ ባለበት ቆሟል</translation>
+<translation id="4223947355273782392">ከሌሎች መሣሪያዎችዎ ጋር በፍጥነት ለማጣመር <ph name="NAME" />ን <ph name="EMAIL" /> ላይ ያስቀምጡ</translation>
 <translation id="4239069858505860023">ጂፒአርኤስ</translation>
 <translation id="4242533952199664413">ቅንብሮችን ክፈት</translation>
 <translation id="4250229828105606438">ቅጽበታዊ ገጽ እይታ</translation>

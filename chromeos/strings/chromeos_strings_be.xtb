@@ -63,6 +63,7 @@
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1792647875738159689">Сканіраванне скасоўваецца</translation>
 <translation id="1851218745569890714">Відэаканферэнцыі</translation>
+<translation id="1857850044054738019">Выберыце гэты параметр, калі прылада адпраўляецца на склад або на аднаўленне для продажу новаму кліенту.</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="1887850431809612466">Версія апаратнага забеспячэння</translation>
 <translation id="1905710495812624430">Перавышана максімальная колькасць спроб.</translation>
@@ -200,6 +201,7 @@
 <translation id="4244962993387259361">Каб выканаць праверку памяці, вам патрэбна не менш за 500 МБ вольнага месца. Каб вызваліць месца, перайдзіце ў раздзел "Налады &gt; Кіраванне сховішчам".</translation>
 <translation id="4258281355379922695">Затрымка HTTP-запытаў</translation>
 <translation id="4271957103967917607">Праглядзець у поўнаэкранным рэжыме</translation>
+<translation id="4275799948641988986">Хто будзе выкарыстоўваць прыладу пасля рамонту?</translation>
 <translation id="4297501883039923494">Спынена: невядомая памылка</translation>
 <translation id="4300073214558989">Відарысаў: <ph name="IMAGE_COUNT" /></translation>
 <translation id="4378373042927530923">Паслядоўнасць дзеянняў не запускалася</translation>
@@ -416,6 +418,7 @@
 <translation id="7297226631177386107">Не ўдалося падключыцца праз брандмаўар да вэб-сайтаў HTTPS</translation>
 <translation id="7302860742311162920">ICCID</translation>
 <translation id="7305884605064981971">EDGE</translation>
+<translation id="7309920310754476121">Прылада будзе перададзена іншаму ўладальніку</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7343649194310845056">Сеткавыя прылады</translation>
 <translation id="7359657277149375382">Тып файла</translation>
@@ -423,6 +426,8 @@
 <translation id="7415801143053185905">Вельмі вялікая затрымка HTTP-запытаў</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Сканіраванне завершана. Адсканіравана 1 старонка}one{Сканіраванне завершана. Адсканіравана {NUMBER_OF_PAGES} старонка}few{Сканіраванне завершана. Адсканіравана {NUMBER_OF_PAGES} старонкі}many{Сканіраванне завершана. Адсканіравана {NUMBER_OF_PAGES} старонак}other{Сканіраванне завершана. Адсканіравана {NUMBER_OF_PAGES} старонкі}}</translation>
+<translation id="7451112128070628323">Выберыце гэты параметр, калі права ўласнасці на прыладу не зменіцца
+        (напрыклад, калі прылада перадаецца іншай асобе ўнутры арганізацыі).</translation>
 <translation id="7469648432129124067">Выяўлены партал</translation>
 <translation id="7487067081878637334">Тэхналогія</translation>
 <translation id="7490813197707563893">MAC-адрас</translation>
@@ -549,6 +554,7 @@
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9088306295921699330">Бягучае выкарыстанне</translation>
+<translation id="9095415590198785865">Прылада застанецца ў ранейшага ўладальніка</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
 <translation id="910415269708673980">Абнавіце білет для <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Сканіруецца старонка <ph name="PAGE_NUMBER" /></translation>

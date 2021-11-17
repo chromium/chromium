@@ -385,6 +385,7 @@
 <translation id="3630697955794050612">অফ আছে</translation>
 <translation id="3631369015426612114">এইবোৰৰ জাননীক অনুমতি দিয়ে</translation>
 <translation id="3638400994746983214">গোপনীয়তাৰ স্ক্ৰীন ট’গল কৰক। <ph name="STATE_TEXT" />।</translation>
+<translation id="3640092422335864171"><ph name="NAME" /> ছেভ কৰক</translation>
 <translation id="3649505501900178324">আপডে'ট বাকী আছে</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" />এ পৰিচালনা কৰা ব্যৱহাৰকাৰী</translation>
 <translation id="3665889125180354336">মাইক্ৰ'ফ'ন ৰেকৰ্ড কৰক</translation>
@@ -467,6 +468,7 @@
 <translation id="4215497585250573029">ভিপিএনৰ ছেটিংসমূহ</translation>
 <translation id="4217571870635786043">শ্ৰুতলিপি</translation>
 <translation id="4221957499226645091"><ph name="APP_NAME" />, ইনষ্টল কৰা এপ্‌, পজ কৰি থোৱা</translation>
+<translation id="4223947355273782392">আপোনাৰ অন্য ডিভাইচসমূহৰ সৈতে দ্ৰুতভাৱে পেয়াৰ কৰিবলৈ <ph name="NAME" /> <ph name="EMAIL" />ত ছেভ কৰক</translation>
 <translation id="4239069858505860023">জিপিআৰএছ</translation>
 <translation id="4242533952199664413">ছেটিংসমূহ খোলক</translation>
 <translation id="4250229828105606438">স্ক্রীণশ্বট</translation>

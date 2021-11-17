@@ -353,6 +353,15 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="3509391053705095206">Não é possível encontrar o telemóvel. Certifique-se de que o Bluetooth do telemóvel está ativado.</translation>
 <translation id="3510164367642747937">Realçar cursor do rato</translation>
 <translation id="3513798432020909783">Conta gerida por <ph name="MANAGER_EMAIL" />.</translation>
+<translation id="3518604429872942239">Tabuleiro do estado, hora <ph name="TIME" />,
+        <ph name="BATTERY" />
+        <ph name="NETWORK" />,
+        <ph name="MIC" />,
+        <ph name="CAMERA" />,
+        <ph name="MANAGED" />
+        <ph name="NOTIFICATION" />,
+        <ph name="IME" />
+        <ph name="LOCALE" /></translation>
 <translation id="352245152354538528">{0,plural, =1{Atualize o dispositivo dentro de 1 minuto}one{Atualize o dispositivo dentro de # minuto(s)}other{Atualize o dispositivo dentro de # minutos}}</translation>
 <translation id="353086728817903341">Ligado a <ph name="NUM_DEVICES" /> dispositivos</translation>
 <translation id="3552189655002856821">O Wi-Fi está desativado</translation>
@@ -375,6 +384,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="3630697955794050612">desativado</translation>
 <translation id="3631369015426612114">Permitir notificações das seguintes fontes:</translation>
 <translation id="3638400994746983214">Ative/desative o ecrã de privacidade. <ph name="STATE_TEXT" />.</translation>
+<translation id="3640092422335864171">Guarde o dispositivo <ph name="NAME" /></translation>
 <translation id="3649505501900178324">Atualização vencida</translation>
 <translation id="366222428570480733">Utilizador gerido por <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="3665889125180354336">Gravar microfone</translation>
@@ -457,6 +467,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="4215497585250573029">Definições da VPN</translation>
 <translation id="4217571870635786043">Ditado</translation>
 <translation id="4221957499226645091"><ph name="APP_NAME" />, app instalada, em pausa</translation>
+<translation id="4223947355273782392">Guarde o dispositivo <ph name="NAME" /> em <ph name="EMAIL" /> para permitir uma sincronização mais rápida com os outros dispositivos</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4242533952199664413">Abrir definições</translation>
 <translation id="4250229828105606438">Captura de ecrã</translation>

@@ -82,6 +82,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="124116460088058876">Máis idiomas</translation>
 <translation id="1243027604378859286">Autor:</translation>
 <translation id="1246424317317450637">Negra</translation>
+<translation id="1248573052514400575"><ph name="MANAGE_CHROMEOS_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />. Para personalizar as ferramentas de accesibilidade na configuración de Chrome OS, preme Tabulador e, a continuación, Introducir</translation>
 <translation id="1250759482327835220">Para pagar máis rápido a próxima vez, garda a túa tarxeta, o nome e o enderezo de facturación na túa Conta de Google.</translation>
 <translation id="1252799212227771492">Botón Crear folla. Preme Introducir para crear rapidamente unha nova folla de cálculo de Google</translation>
 <translation id="1253921432148366685"><ph name="TYPE_1" /> e <ph name="TYPE_2" /> (sincronizado)</translation>
@@ -322,6 +323,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="192020519938775529">{COUNT,plural, =0{Ningún}=1{1 sitio}other{# sitios}}</translation>
 <translation id="1923390796829649802">Botón para xestionar a configuración de accesibilidade. Para personalizar as túas ferramentas de accesibilidade na configuración de Chrome OS, preme Introducir</translation>
 <translation id="1924727005275031552">Novo</translation>
+<translation id="1927439593081478069">Botón para executar a comprobación de seguranza de Chrome. Se queres executar unha comprobación de seguranza na configuración de Chrome, preme Introducir</translation>
 <translation id="1939175642807587452">Pode pedirche permiso para enviar notificacións</translation>
 <translation id="1945968466830820669">Poderías perder o acceso á conta da túa organización ou alguén podería roubarche a identidade. Chromium recoméndache que cambies de contrasinal agora.</translation>
 <translation id="1947454675006758438">Grampa na parte superior dereita</translation>
@@ -341,6 +343,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="2003709556000175978">Restablecer o teu contrasinal agora</translation>
 <translation id="2003775180883135320">Catro perforacións na parte superior</translation>
 <translation id="201174227998721785">Xestiona na configuración de Chrome os permisos e os datos almacenados dos sitios</translation>
+<translation id="2019607688127825327">Botón para xestionar a configuración de accesibilidade. Se queres personalizar as ferramentas de accesibilidade na configuración de Chrome, preme Introducir</translation>
 <translation id="2025115093177348061">Realidade aumentada</translation>
 <translation id="2025186561304664664">O proxy está establecido como configurado automaticamente.</translation>
 <translation id="2025891858974379949">Contido inseguro</translation>
@@ -506,6 +509,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="2556876185419854533">&amp;Desfacer modificación</translation>
 <translation id="2570734079541893434">Xestionar configuración</translation>
 <translation id="257674075312929031">Grupo</translation>
+<translation id="2576880857912732701">Botón para xestionar a configuración de seguranza. Se queres xestionar na configuración de Chrome a Navegación segura e outras opcións, preme Introducir</translation>
 <translation id="2586657967955657006">Portapapeis</translation>
 <translation id="2587730715158995865">De <ph name="ARTICLE_PUBLISHER" />. Le esta e <ph name="OTHER_ARTICLE_COUNT" /> noticias máis.</translation>
 <translation id="2587841377698384444">ID de API de directorio:</translation>
@@ -550,6 +554,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="2713444072780614174">Branco</translation>
 <translation id="2715612312510870559"><ph name="UPDATE_CREDIT_CARD_FOCUSED_FRIENDLY_MATCH_TEXT" />. Preme Tab e, a continuación, Intro para xestionar os teus métodos de pago e a información das tarxetas de crédito desde a configuración de Chrome</translation>
 <translation id="2721148159707890343">Solicitude correcta</translation>
+<translation id="2723669454293168317">Executar unha comprobación de seguranza na configuración de Chrome</translation>
 <translation id="2726001110728089263">Bandexa lateral</translation>
 <translation id="2728127805433021124">O certificado do servidor está asinado cun algoritmo de sinatura débil.</translation>
 <translation id="2730326759066348565"><ph name="BEGIN_LINK" />Executar diagnósticos de conectividade<ph name="END_LINK" /></translation>
@@ -580,6 +585,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="2859806420264540918">Este sitio mostra anuncios intrusivos ou enganosos.</translation>
 <translation id="287596039013813457">Amigable</translation>
 <translation id="2876489322757410363">Sairás do modo de incógnito para pagar a través dunha aplicación externa. Queres continuar?</translation>
+<translation id="2876949457278336305"><ph name="MANAGE_SECURITY_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />. Para xestionar na configuración de Chrome a Navegación segura e outras opcións, preme Tabulador e, a continuación, Introducir</translation>
 <translation id="2878197950673342043">Dobrez de póster</translation>
 <translation id="2878424575911748999">A1</translation>
 <translation id="2880660355386638022">Colocación das ventás</translation>
@@ -685,6 +691,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="3229041911291329567">Información sobre a versión do dispositivo e do navegador</translation>
 <translation id="323107829343500871">Introduce o código CVC da tarxeta <ph name="CREDIT_CARD" /></translation>
 <translation id="3234666976984236645">Detectar sempre contido importante neste sitio</translation>
+<translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />. Para personalizar o aspecto do navegador, preme Tabulador e, a continuación, Introducir</translation>
 <translation id="3240791268468473923">A folla da credencial de pagos seguros correspondente ás credenciais non coincidentes está aberta</translation>
 <translation id="3249845759089040423">Moderno</translation>
 <translation id="3252266817569339921">Francés</translation>
@@ -729,6 +736,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
       • Crear un mapa 3D do que te rodea e facer un seguimento da posición da cámara
       • Usar a túa cámara</translation>
 <translation id="337363190475750230">Desaprovisionado</translation>
+<translation id="3375754925484257129">Executar comprobación de seguranza de Chrome</translation>
 <translation id="3377144306166885718">O servidor utilizou unha versión obsoleta de TLS.</translation>
 <translation id="3377188786107721145">Erro de análise da política</translation>
 <translation id="3377736046129930310">Usar o bloqueo de pantalla para confirmar as tarxetas máis rápido</translation>
@@ -770,6 +778,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="3462200631372590220">Ocultar detalles</translation>
 <translation id="3467763166455606212">Precísase o nome do titular da tarxeta</translation>
 <translation id="3468054117417088249">A pestana <ph name="TAB_SWITCH_SUFFIX" /> está aberta actualmente, preme o tabulador e despois Intro para cambiar á pestana aberta</translation>
+<translation id="3470563864795286535"><ph name="CLOSE_INCOGNITO_WINDOWS_FOCUSED_FRIENDLY_MATCH_TEXT" />. Para pechar todas as ventás do modo de incógnito que estean abertas, preme Tabulador e, a continuación, Introducir</translation>
 <translation id="3479552764303398839">Agora non</translation>
 <translation id="3484560055331845446">Poderías perder o acceso á túa Conta de Google. Chrome recoméndache que cambies de contrasinal agora. Deberás iniciar sesión.</translation>
 <translation id="3487845404393360112">Bandexa 4</translation>
@@ -808,6 +817,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="3611395257124510155">Tarxeta virtual para <ph name="CARD_IDENTIFIER" /></translation>
 <translation id="3614103345592970299">Tamaño 2</translation>
 <translation id="361438452008624280">Entrada da lista "<ph name="LANGUAGE_ID" />": idioma descoñecido ou non compatible.</translation>
+<translation id="3614934205542186002"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />. Se queres executar unha comprobación de seguranza na configuración de Chrome, preme Tabulador e, a continuación, Introducir</translation>
 <translation id="3615877443314183785">Introduce unha data de caducidade válida</translation>
 <translation id="36224234498066874">Borrar datos de navegación...</translation>
 <translation id="362276910939193118">Mostrar historial completo</translation>
@@ -1605,6 +1615,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="6218753634732582820">Queres eliminar o enderezo de Chromium?</translation>
 <translation id="622039917539443112">Dobrez en paralelo</translation>
 <translation id="6221345481584921695">A navegación segura de Google <ph name="BEGIN_LINK" />detectou software malicioso<ph name="END_LINK" /> en <ph name="SITE" /> recentemente. Ás veces, os sitios web que adoitan ser seguros inféctanse con software malicioso. O contido malicioso procede de <ph name="SUBRESOURCE_HOST" />, un coñecido distribuidor de software malicioso.</translation>
+<translation id="6226163402662242066"><ph name="MANAGE_CHROME_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />. Para personalizar as ferramentas de accesibilidade na configuración de Chrome, preme Tabulador e, a continuación, Introducir</translation>
 <translation id="6234122620015464377">Recorte despois de cada documento</translation>
 <translation id="6240447795304464094">Logotipo de Google Pay</translation>
 <translation id="6241121617266208201">Ocultar suxestións</translation>
@@ -1623,6 +1634,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="6279098320682980337">Non se autocompletou o número da tarxeta virtual? Para copialo, fai clic nos detalles da tarxeta</translation>
 <translation id="6280223929691119688">Non se pode realizar a entrega neste enderezo. Selecciona un diferente.</translation>
 <translation id="6282194474023008486">Código postal</translation>
+<translation id="6285507000506177184">Botón para xestionar as descargas en Chrome. Se queres xestionar os ficheiros que descargaches en Chrome, preme Introducir</translation>
 <translation id="6289939620939689042">Cor das páxinas</translation>
 <translation id="6290238015253830360">Os teus artigos suxeridos aparecerán aquí</translation>
 <translation id="6293309776179964942">JIS B5</translation>
@@ -1738,6 +1750,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="6689249931105087298">Relativo con compresión de puntos negros</translation>
 <translation id="6689271823431384964">Chrome permíteche gardar as túas tarxetas na túa Conta de Google porque tes a sesión iniciada. Podes cambiar esta opción na configuración cando queiras. O nome do titular da tarxeta procede da túa conta.</translation>
 <translation id="6694681292321232194"><ph name="FIND_MY_PHONE_FOCUSED_FRIENDLY_MATCH_TEXT" />. Para acceder á función da Conta de Google Localizar o meu dispositivo, preme Tabulador e, a continuación, Introducir</translation>
+<translation id="6696588630955820014">Botón para compartir esta pestana. Se queres compartir esta pestana mediante unha ligazón, a través da creación dun código QR, coa súa emisión e outras opcións, preme Introducir</translation>
 <translation id="6698381487523150993">Creada:</translation>
 <translation id="6702919718839027939">Presentar</translation>
 <translation id="6710213216561001401">Anterior</translation>
@@ -1943,6 +1956,7 @@ Detalles adicionais:
 <translation id="7392089738299859607">Actualizar enderezo</translation>
 <translation id="7399802613464275309">Revisión de seguranza</translation>
 <translation id="7400418766976504921">URL</translation>
+<translation id="7403392780200267761">Compartir esta pestana mediante unha ligazón, a través da creación dun código QR, coa súa emisión e outras opcións</translation>
 <translation id="7403591733719184120">O teu <ph name="DEVICE_NAME" /> está xestionado</translation>
 <translation id="7407424307057130981">&lt;p&gt;Verás este erro se tes o software Superfish no teu ordenador Windows.&lt;/p&gt;
       &lt;p&gt;Sigue estes pasos para desactivar temporalmente o software e poder acceder á web. Precisarás privilexios de administrador.&lt;/p&gt;
@@ -2173,6 +2187,7 @@ Detalles adicionais:
 <translation id="810875025413331850">Non se encontraron dispositivos cerca.</translation>
 <translation id="8116925261070264013">Silenciados</translation>
 <translation id="8118489163946903409">Método de pago</translation>
+<translation id="8124639700796374294">Botón para personalizar Chrome. Se queres personalizar o aspecto do navegador, preme Introducir</translation>
 <translation id="8127301229239896662"><ph name="SOFTWARE_NAME" /> non se instalou correctamente no teu ordenador ou na rede. Pídelle ao administrador de TI que solucione este problema.</translation>
 <translation id="8131740175452115882">Confirmar</translation>
 <translation id="8148608574971654810">Versión do PDF:</translation>
@@ -2355,6 +2370,7 @@ Detalles adicionais:
 <translation id="87601671197631245">Este sitio utiliza unha configuración de seguranza obsoleta que pode poñer en risco a túa información (por exemplo, contrasinais, mensaxes ou números de tarxetas de crédito) cando se lle envía.</translation>
 <translation id="8761567432415473239">A navegación segura de Google <ph name="BEGIN_LINK" />atopou programas prexudiciais<ph name="END_LINK" /> recentemente en <ph name="SITE" />.</translation>
 <translation id="8763927697961133303">Dispositivo USB</translation>
+<translation id="8763986294015493060">Pechar todas as ventás do modo de incógnito que estean abertas</translation>
 <translation id="8766943070169463815">A folla de autenticación da credencial de pagos seguros está aberta</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8790007591277257123">&amp;Refacer eliminación</translation>
@@ -2368,6 +2384,7 @@ Detalles adicionais:
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />. Preme Tab e, a continuación, Intro para actualizar Chrome desde a configuración do navegador</translation>
 <translation id="8820817407110198400">Marcadores</translation>
 <translation id="882338992931677877">Oco manual</translation>
+<translation id="8834380158646307944">Botón para pechar as ventás do modo de incógnito. se queres pechar todas as ventás do modo de incógnito que estean abertas, preme Introducir</translation>
 <translation id="883848425547221593">Outros marcadores</translation>
 <translation id="884264119367021077">Enderezo de envío</translation>
 <translation id="884923133447025588">Non se atopou ningún mecanismo de revogación.</translation>
@@ -2421,6 +2438,7 @@ Detalles adicionais:
 <translation id="9020200922353704812">É obrigatorio introducir o enderezo de facturación da tarxeta</translation>
 <translation id="9020542370529661692">Traduciuse esta páxina ao <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="9020742383383852663">A8</translation>
+<translation id="9021429684248523859"><ph name="SHARE_THIS_PAGE_FOCUSED_FRIENDLY_MATCH_TEXT" />. Para compartir esta pestana mediante unha ligazón, a través da creación dun código QR, coa súa emisión e outras opcións, preme Tabulador e, a continuación, Introducir</translation>
 <translation id="9025348182339809926">(Non válido)</translation>
 <translation id="9030265603405983977">Monocromo</translation>
 <translation id="9035022520814077154">Erro de seguranza</translation>

@@ -107,6 +107,7 @@ Arama motorunuz <ph name="DSE_NAME" />. Arama geçmişinizi silmek için arama m
 <translation id="1894205589103145703">Oturum açılırken bir hata oluştu.</translation>
 <translation id="1911619930368729126">Google Drive'a yükle</translation>
 <translation id="1923342640370224680">Son Bir Saat</translation>
+<translation id="1930989359703290198">Kuruluşunuz yalnızca belirli hesaplarla oturum açmanıza izin vermektedir. İzin verilmeyen hesaplar gösterilmez. <ph name="BEGIN_LINK" />Daha Fazla Bilgi<ph name="END_LINK" /></translation>
 <translation id="1941314575388338491">Kopyalamak için iki kez dokunun.</translation>
 <translation id="1952172573699511566">Web siteleri, mümkün olduğunda metni tercih ettiğiniz dilde gösterir.</translation>
 <translation id="1965935827552890526">Açık olan diğer Chrome pencerenizde yaptığınız işlemi tamamlayın.</translation>
@@ -387,6 +388,8 @@ Verileriniz senkronizasyon parolanızla şifrelendi. Senkronizasyonu başlatmak 
 <translation id="4802417911091824046">Parolayla şifreleme, Google Pay'deki adresleri ve ödeme yöntemlerini kapsamaz.
 
 Bu ayarı değiştirmek için <ph name="BEGIN_LINK" />senkronizasyonu sıfırlayın<ph name="END_LINK" /></translation>
+<translation id="4803185665210547709">Kuruluşunuz tarafından yönetiliyor.
+<ph name="BEGIN_LINK" />Daha Fazla Bilgi<ph name="END_LINK" /></translation>
 <translation id="4805759445554688327">Geçersiz Kart Numarası</translation>
 <translation id="4808744395915275922">Güncellemeler</translation>
 <translation id="4818522717893377262">Dil Ekle...</translation>

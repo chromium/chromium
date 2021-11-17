@@ -49,6 +49,7 @@
 <translation id="2123055963409958220">Ajude a melhorar o Chrome informando as <ph name="BEGIN_LINK" />configurações atuais<ph name="END_LINK" /></translation>
 <translation id="2151406531797534936">Reinicie o Chrome agora</translation>
 <translation id="2189289170880510015">Personalize as opções de privacidade mais importantes do Chrome</translation>
+<translation id="2258103955319320201">Para ter acesso aos recursos do navegador Chrome em todos os seus dispositivos, faça login e ative a sincronização</translation>
 <translation id="2290014774651636340">As chaves da API do Google não foram encontradas. Algumas funcionalidades do Google Chrome serão desativadas.</translation>
 <translation id="2290095356545025170">Você quer mesmo desinstalar o Google Chrome?</translation>
 <translation id="2309047409763057870">Como esta é uma instalação secundária do Google Chrome, ele não pode se tornar seu navegador padrão.</translation>
@@ -207,6 +208,7 @@
 <translation id="6506909944137591434">O Chrome precisa da permissão de acesso à câmera para criar um mapa 3D do ambiente</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" />: Google Chrome Dev</translation>
 <translation id="6568793831116033768">Sistema Chrome OS</translation>
+<translation id="6594121454516132231">Veja como o Chrome pretende proteger você contra mecanismos de rastreamento entre sites ao mesmo tempo em que preserva uma Internet livre</translation>
 <translation id="6676384891291319759">Acessar a internet</translation>
 <translation id="6679975945624592337">Permitir a execução do Google Chrome em segundo plano</translation>
 <translation id="6696915334902295848">O Chrome precisa da permissão de acesso ao microfone para este site</translation>
@@ -221,6 +223,7 @@
 <translation id="6989339256997917931">O Google Chrome foi atualizado, mas ele não é utilizado há pelo menos trinta dias.</translation>
 <translation id="7025800014283535195">Aqui, você pode alternar entre os perfis do Chrome</translation>
 <translation id="7062128746136194023">Seu pai/mãe desativou "Permissões para sites, apps e extensões" no Chrome. Não é permitido adicionar <ph name="EXTENSION_TYPE_PARAMETER" />.</translation>
+<translation id="7085332316435785646">Escolha se você quer incluir o histórico do Chrome para ter experiências mais personalizadas nos Serviços do Google</translation>
 <translation id="7088681679121566888">O Chrome está atualizado</translation>
 <translation id="7098166902387133879">O Google Chrome está usando seu microfone.</translation>
 <translation id="7106741999175697885">Gerenciador de tarefas - Google Chrome</translation>
@@ -245,6 +248,7 @@
 <translation id="7651907282515937834">Logotipo do Chrome Enterprise</translation>
 <translation id="7665553140559834626">Reinicializar para atualizar o &amp;Chrome OS</translation>
 <translation id="7747138024166251722">O instalador não conseguiu criar um diretório temporário. Verifique se há espaço livre em disco e se há permissão para a instalação de software.</translation>
+<translation id="7748512868279796735">As seguintes contas estão disponíveis neste perfil do Chrome</translation>
 <translation id="7761834446675418963">Clique no seu nome para abrir o Chrome e começar a navegar.</translation>
 <translation id="7777080907402804672">Se uma imagem não tiver uma descrição útil, o Chrome tentará fornecer uma para você. As imagens serão enviadas ao Google para a criação de descrições. É possível desativar essa opção nas configurações a qualquer momento.</translation>
 <translation id="7781002470561365167">Uma nova versão do Google Chrome está disponível.</translation>
@@ -276,6 +280,7 @@
 <translation id="8540666473246803645">Google Chrome</translation>
 <translation id="8550334526674375523">Este perfil de trabalho é completamente separado do seu perfil pessoal.</translation>
 <translation id="8556340503434111824">Há uma nova versão ainda mais rápida do Google Chrome disponível.</translation>
+<translation id="8571790202382503603">Você pode usar os perfis do Chrome para separar todos os seus dados nele. Assim, fica mais fácil dividir suas atividades entre trabalho e diversão.</translation>
 <translation id="8614913330719544658">O Google Chrome não responde. Reiniciar agora?</translation>
 <translation id="861702415419836452">O Chrome precisa de permissão para acessar sua câmera e criar um mapa 3D do ambiente a sua volta</translation>
 <translation id="8625237574518804553">{0,plural, =1{O Chrome será reiniciado em 1 minuto}one{O Chrome será reiniciado em # minuto}other{O Chrome será reiniciado em # minutos}}</translation>

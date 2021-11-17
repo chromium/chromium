@@ -376,6 +376,7 @@
 <translation id="3630697955794050612">ανενεργή</translation>
 <translation id="3631369015426612114">Να επιτρέπονται ειδοποιήσεις από</translation>
 <translation id="3638400994746983214">Εναλλαγή οθόνης απορρήτου. <ph name="STATE_TEXT" />.</translation>
+<translation id="3640092422335864171">Αποθήκευση <ph name="NAME" /></translation>
 <translation id="3649505501900178324">Εκπρόθεσμη ενημέρωση</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> Διαχειριζόμενος χρήστης</translation>
 <translation id="3665889125180354336">Εγγραφή μικροφώνου</translation>
@@ -458,6 +459,7 @@
 <translation id="4215497585250573029">Ρυθμίσεις VPN</translation>
 <translation id="4217571870635786043">Υπαγόρευση</translation>
 <translation id="4221957499226645091"><ph name="APP_NAME" />, Εγκατεστημένη εφαρμογή, Τέθηκε σε παύση</translation>
+<translation id="4223947355273782392">Αποθηκεύστε τη συσκευή <ph name="NAME" /> στον λογαριασμό <ph name="EMAIL" /> για γρηγορότερη σύζευξη με άλλες συσκευές.</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4242533952199664413">Ανοίξτε τις ρυθμίσεις</translation>
 <translation id="4250229828105606438">Στιγμιότυπο οθόνης</translation>

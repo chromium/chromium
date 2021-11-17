@@ -26,6 +26,7 @@
 <translation id="1981611865800294956">‏راه‌اندازی مجدد برای به‌روزرسانی Chromium OS</translation>
 <translation id="2008474315282236005">‏این کار یک مورد را از این دستگاه حذف می‌کند. برای بازیابی داده‌هایتان در فرصتی دیگر، با <ph name="USER_EMAIL" /> به سیستم Chromium وارد شوید.</translation>
 <translation id="2020032459870799438">‏برای بررسی اینکه از دیگر گذرواژه‌هایتان دربرابر نقض داده یا دیگر مشکلات امنیتی محافظت می‌شود، <ph name="BEGIN_LINK" />به سیستم Chromium وارد شوید<ph name="END_LINK" />.</translation>
+<translation id="2049376729098081731">‏انتخاب کنید که آیا سابقه Chromium برای تجربه‌های شخصی‌شده‌تر در سرویس‌های Google لحاظ شود یا نه</translation>
 <translation id="2174178932569897599">‏سفارشی کردن Chromium</translation>
 <translation id="2185166961232948079">‏Chromium - ورود به سیستم شبکه - <ph name="PAGE_TITLE" /></translation>
 <translation id="2241627712206172106">‏اگر رایانه‌ای را به صورت مشترک استفاده می‌کنید، دوستان و خانواده می‌توانند به صورت جداگانه مرور کنند و Chromium را به صورتی که مایلند تنظیم کنند.</translation>
@@ -37,6 +38,7 @@
 <translation id="2401032172288869980">‏Chromium برای این سایت به اجازه دوربین و میکروفون نیاز دارد</translation>
 <translation id="2483889755041906834">‏در Chromium</translation>
 <translation id="2485422356828889247">حذف نصب</translation>
+<translation id="251127392410688874">‏ببینید Chromium چگونه قصد دارد با حفظ وبِ باز، از شما دربرابر ردیابی بین‌سایتی محافظت کند</translation>
 <translation id="2535480412977113886">‏سیستم‌عامل Chromium قادر به همگام‌سازی داده‌های شما نبود زیرا جزئیات ورود به حساب شما به‌روز نیست.</translation>
 <translation id="2560420686485554789">‏Chromium برای بارگیری فایل‌ها باید به حافظه دسترسی داشته باشد</translation>
 <translation id="2572494885440352020">Chromium Helper</translation>
@@ -221,6 +223,7 @@ Chromium قادر به بازیابی تنظیمات شما نیست.</translati
 <translation id="7339898014177206373">پنجرهٔ جدید</translation>
 <translation id="734373864078049451">‏وب، نشانک‌ها و موارد دیگر Chromium شما در اینجا هستند.</translation>
 <translation id="7349591376906416160">‏سرپرست سیستم برای باز شدن <ph name="ALTERNATIVE_BROWSER_NAME" /> جهت دسترسی به <ph name="TARGET_URL_HOSTNAME" />، Chromium را پیکربندی کرده است.</translation>
+<translation id="7398989605938454041">‏با نمایه‌های Chromium می‌توانید همه‌چیزتان را در Chromium جدا کنید. با این کار، راحت‌تر می‌توان کار و سرگرمی را ازهم جدا کرد.</translation>
 <translation id="7448255348454382571">‏بازراه‌اندازی سیستم‌عامل Chromium</translation>
 <translation id="7449453770951226939"><ph name="PAGE_TITLE" /> - Chromium Dev</translation>
 <translation id="7451052299415159299">‏Chromium برای این سایت به مجوز دسترسی به دوربین نیاز دارد</translation>
@@ -241,6 +244,7 @@ Chromium قادر به بازیابی تنظیمات شما نیست.</translati
 <translation id="7828947555739565424">‏درحال‌حاضر یک نمایه Chromium با این حساب در این دستگاه وجود دارد</translation>
 <translation id="7857220146454061152">‏برای دریافت به‌روزرسانی‌های آتی Chromium، باید OS X نسخه ۱۰.۱۱ یا بالاتر داشته باشید. این رایانه از OS X نسخه ۱۰.۱۰ استفاده می‌کند.</translation>
 <translation id="7867198900892795913">‏Chromium به جدیدترین نسخه به‌روزرسانی نشد، بنابراین قابلیت‌های جدید و رفع اشکال‌های امنیتی را ندارید.</translation>
+<translation id="788352880609666695">‏حساب‌های زیر برای این نمایه Chromium دردسترس هستند</translation>
 <translation id="7898472181347242998">‏برای اینکه ببینید دستگاهتان به‌روز است یا نه، به <ph name="LINK_BEGIN" />تنظیمات سیستم‌عامل Chromium<ph name="LINK_END" /> بروید</translation>
 <translation id="7937630085815544518">‏شما بعنوان <ph name="USER_EMAIL_ADDRESS" /> وارد سیستم Chromium شده‌اید. لطفاً برای ورود به سیستم مجدد از همان حساب استفاده کنید.</translation>
 <translation id="7975919845073681630">‏این نصب ثانویه Chromium است و نمی‌تواند مرورگر پیش‌فرضتان شود.</translation>
@@ -253,6 +257,7 @@ Chromium قادر به بازیابی تنظیمات شما نیست.</translati
 <translation id="8290862415967981663">‏این فایل ممکن است خطرناک باشد، بنابراین Chromium آن را مسدود کرده است.</translation>
 <translation id="8330519371938183845">‏برای همگام‌سازی و شخصی‌سازی Chromium در همه دستگاه‌هایتان، به سیستم وارد شوید</translation>
 <translation id="8340674089072921962">‏<ph name="USER_EMAIL_ADDRESS" /> قبلاً از Chromium استفاده می‌کرد</translation>
+<translation id="8357820681460164151">‏برای دسترسی به چیزهایتان در مرورگر Chromium در همه دستگاه‌هایتان، به سیستم وارد شوید، سپس همگام‌سازی را روشن کنید</translation>
 <translation id="8417404458978023919">{0,plural, =1{‏Chromium را ظرف یک روز راه‌اندازی مجدد کنید}one{‏Chromium را ظرف # روز راه‌اندازی مجدد کنید}other{‏Chromium را ظرف # روز راه‌اندازی مجدد کنید}}</translation>
 <translation id="8453117565092476964">‏بایگانی نصب‌کننده خراب یا نامعتبر است. لطفاً Chromium را دوباره را بارگیری کنید.</translation>
 <translation id="8493179195440786826">‏نسخه Chromium قدیمی است</translation>

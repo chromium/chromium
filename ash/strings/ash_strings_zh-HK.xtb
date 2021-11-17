@@ -354,7 +354,7 @@
 <translation id="3509391053705095206">找不到手機。請確保手機的藍牙功能已開啟。</translation>
 <translation id="3510164367642747937">突顯滑鼠遊標</translation>
 <translation id="3513798432020909783">帳戶由 <ph name="MANAGER_EMAIL" /> 管理</translation>
-<translation id="3518604429872942239">狀態匣，時間 <ph name="TIME" />，
+<translation id="3518604429872942239">狀態列，時間 <ph name="TIME" />，
         <ph name="BATTERY" />
         <ph name="NETWORK" />，
         <ph name="MIC" />，

@@ -63,6 +63,8 @@
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1792647875738159689">ກຳລັງຍົກເລີກການສະແກນ</translation>
 <translation id="1851218745569890714">ການປະຊຸມຜ່ານວິດີໂອ</translation>
+<translation id="1857850044054738019">ເລືອກຕົວເລືອກນີ້ຫາກອຸປະກອນກຳລັງຖືກເກັບເຂົ້າສະຕັອກຄືນໃໝ່ ຫຼື ຣີເຟີບິດ
+        ເພື່ອການແຈກຈ່າຍໄປໃຫ້ລູກຄ້າໃໝ່.</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="1887850431809612466">ການປັບປຸງແກ້ໄຂຮາດແວ</translation>
 <translation id="1905710495812624430">ເກີນຈຳນວນຄວາມພະຍາຍາມສູງສຸດແລ້ວ.</translation>
@@ -198,6 +200,7 @@
 <translation id="4244962993387259361">ທ່ານຕ້ອງມີພື້ນທີ່ຫວ່າງຢ່າງໜ້ອຍ 500 MB ເພື່ອເປີດໃຊ້ການທົດສອບໜ່ວຍຄວາມຈຳ. ເພື່ອສ້າງພື້ນທີ່ຫວ່າງ, ໃຫ້ເຂົ້າໄປການຕັ້ງຄ່າ &gt; ການຈັດການບ່ອນຈັດເກັບຂໍ້ມູນ.</translation>
 <translation id="4258281355379922695">ການຕອບສະໜອງ HTTP</translation>
 <translation id="4271957103967917607">ເບິ່ງແບບເຕັມຈໍ</translation>
+<translation id="4275799948641988986">ຫຼັງຈາກການສ້ອມແປງ, ໃຜຈະເປັນຄົນໃຊ້ອຸປະກອນ?</translation>
 <translation id="4297501883039923494">ຢຸດພິມ, ບໍ່ຮູ້ຈັກຂໍ້ຜິດພາດ</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> ຮູບ</translation>
 <translation id="4378373042927530923">ບໍ່ໄດ້ເອີ້ນໃຊ້</translation>
@@ -415,6 +418,7 @@
 <translation id="7297226631177386107">ບໍ່ສາມາດເຊື່ອມຕໍ່ຜ່ານ firewall ຫາເວັບໄຊ HTTPS ໄດ້</translation>
 <translation id="7302860742311162920">ICCID</translation>
 <translation id="7305884605064981971">EDGE</translation>
+<translation id="7309920310754476121">ອຸປະກອນຈະໄປຫາເຈົ້າຂອງໃໝ່</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7343649194310845056">ອຸປະກອນເຄືອຂ່າຍ</translation>
 <translation id="7359657277149375382">ປະເພດໄຟລ໌</translation>
@@ -422,6 +426,9 @@
 <translation id="7415801143053185905">ການຕອບສະໜອງ HTTP ສູງຫຼາຍ</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{ສຳເລັດການສະແກນແລ້ວ. ສະແກນ 1 ໜ້າແລ້ວ}other{ສຳເລັດການສະແກນແລ້ວ. ສະແກນ {NUMBER_OF_PAGES} ໜ້າແລ້ວ}}</translation>
+<translation id="7451112128070628323">ເລືອກຕົວເລືອກນີ້ຫາກຄວາມເປັນເຈົ້າຂອງອຸປະກອນບໍ່ມີການປ່ຽນແປງ.
+        ຕົວຢ່າງ: ອຸປະກອນກຳລັງຖືກໂອນຍ້າຍໄປໃຫ້ຄົນອື່ນ
+        ພາຍໃນອົງການດຽວກັນ.</translation>
 <translation id="7469648432129124067">ກວດພົບໜ້າເວັບ</translation>
 <translation id="7487067081878637334">​ເທັກ​ໂນ​ໂລ​ຢີ</translation>
 <translation id="7490813197707563893">ທີ່ຢູ່ MAC</translation>
@@ -547,6 +554,7 @@
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9088306295921699330">ການນຳໃຊ້ໃນປັດຈຸບັນ</translation>
+<translation id="9095415590198785865">ອຸປະກອນຈະໄປຫາເຈົ້າຂອງດຽວກັນ</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
 <translation id="910415269708673980">ໂຫຼດຂໍ້ມູນປີ້ສຳລັບ <ph name="PRINCIPAL_NAME" /> ໃໝ່</translation>
 <translation id="9106415115617144481">ກຳລັງສະແກນໜ້າ <ph name="PAGE_NUMBER" /></translation>
