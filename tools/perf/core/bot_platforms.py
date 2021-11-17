@@ -611,7 +611,7 @@ ANDROID_PIXEL4_WEBLAYER = PerfPlatform(
 ANDROID_PIXEL4A_POWER = PerfPlatform('android-pixel4a_power-perf',
                                      'Android QD4A.200102.001.A1',
                                      _ANDROID_PIXEL4A_POWER_BENCHMARK_CONFIGS,
-                                     1, 'android')
+                                     10, 'android')
 
 # Cros/Lacros
 LACROS_EVE_PERF = PerfPlatform('lacros-eve-perf', '',
