@@ -20,6 +20,8 @@ import org.chromium.chrome.browser.autofill.AutofillTestHelper;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.AutofillProfile;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.CreditCard;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.payments.PaymentRequestTestRule.AppPresence;
+import org.chromium.chrome.browser.payments.PaymentRequestTestRule.FactorySpeed;
 import org.chromium.chrome.browser.payments.PaymentRequestTestRule.MainActivityStartCallback;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tabmodel.TabModel;
@@ -44,7 +46,7 @@ public class PaymentRequestTabTest implements MainActivityStartCallback {
 
     @Rule
     public PaymentRequestTestRule mPaymentRequestTestRule =
-            new PaymentRequestTestRule("payment_request_dynamic_shipping_test.html", this);
+            new PaymentRequestTestRule("payment_request_metrics_test.html", this);
 
     @Override
     public void onMainActivityStarted() throws TimeoutException {
@@ -63,7 +65,14 @@ public class PaymentRequestTabTest implements MainActivityStartCallback {
     @MediumTest
     @Feature({"Payments"})
     public void testDismissOnTabSwitch() throws TimeoutException {
-        mPaymentRequestTestRule.triggerUIAndWait(mPaymentRequestTestRule.getReadyForInput());
+        // Install two apps to force showing the payment request UI.
+        mPaymentRequestTestRule.addPaymentAppFactory(
+                "https://bobpay.com", AppPresence.HAVE_APPS, FactorySpeed.FAST_FACTORY);
+        mPaymentRequestTestRule.addPaymentAppFactory(
+                "https://kylepay.com/webpay", AppPresence.HAVE_APPS, FactorySpeed.FAST_FACTORY);
+
+        mPaymentRequestTestRule.triggerUIAndWait(
+                "buyWithUrlMethods", mPaymentRequestTestRule.getReadyToPay());
         Assert.assertEquals(0, mPaymentRequestTestRule.getDismissed().getCallCount());
         TestThreadUtils.runOnUiThreadBlocking(
                 (Runnable) () -> mPaymentRequestTestRule.getActivity().getTabCreator(false).createNewTab(
@@ -79,7 +88,14 @@ public class PaymentRequestTabTest implements MainActivityStartCallback {
     @Test
     @DisabledTest
     public void testDismissOnTabClose() throws TimeoutException {
-        mPaymentRequestTestRule.triggerUIAndWait(mPaymentRequestTestRule.getReadyForInput());
+        // Install two apps to force showing the payment request UI.
+        mPaymentRequestTestRule.addPaymentAppFactory(
+                "https://bobpay.com", AppPresence.HAVE_APPS, FactorySpeed.FAST_FACTORY);
+        mPaymentRequestTestRule.addPaymentAppFactory(
+                "https://kylepay.com/webpay", AppPresence.HAVE_APPS, FactorySpeed.FAST_FACTORY);
+
+        mPaymentRequestTestRule.triggerUIAndWait(
+                "buyWithUrlMethods", mPaymentRequestTestRule.getReadyToPay());
         Assert.assertEquals(0, mPaymentRequestTestRule.getDismissed().getCallCount());
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             TabModel currentModel = mPaymentRequestTestRule.getActivity().getCurrentTabModel();
@@ -93,7 +109,14 @@ public class PaymentRequestTabTest implements MainActivityStartCallback {
     @MediumTest
     @Feature({"Payments"})
     public void testDismissOnTabNavigate() throws TimeoutException {
-        mPaymentRequestTestRule.triggerUIAndWait(mPaymentRequestTestRule.getReadyForInput());
+        // Install two apps to force showing the payment request UI.
+        mPaymentRequestTestRule.addPaymentAppFactory(
+                "https://bobpay.com", AppPresence.HAVE_APPS, FactorySpeed.FAST_FACTORY);
+        mPaymentRequestTestRule.addPaymentAppFactory(
+                "https://kylepay.com/webpay", AppPresence.HAVE_APPS, FactorySpeed.FAST_FACTORY);
+
+        mPaymentRequestTestRule.triggerUIAndWait(
+                "buyWithUrlMethods", mPaymentRequestTestRule.getReadyToPay());
         Assert.assertEquals(0, mPaymentRequestTestRule.getDismissed().getCallCount());
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             TabModel currentModel = mPaymentRequestTestRule.getActivity().getCurrentTabModel();
