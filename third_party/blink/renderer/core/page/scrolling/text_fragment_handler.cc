@@ -276,10 +276,10 @@ void TextFragmentHandler::InvokeReplyCallback(
 }
 
 TextFragmentAnchor* TextFragmentHandler::GetTextFragmentAnchor() {
-  FragmentAnchor* fragmentAnchor = GetTextFragmentSelectorGenerator()
-                                       ->GetFrame()
-                                       ->View()
-                                       ->GetFragmentAnchor();
+  if (!GetFrame() || !GetFrame()->View()) {
+    return nullptr;
+  }
+  FragmentAnchor* fragmentAnchor = GetFrame()->View()->GetFragmentAnchor();
   if (!fragmentAnchor || !fragmentAnchor->IsTextFragmentAnchor()) {
     return nullptr;
   }
