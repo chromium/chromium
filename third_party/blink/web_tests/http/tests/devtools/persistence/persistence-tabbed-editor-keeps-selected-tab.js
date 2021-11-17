@@ -10,7 +10,7 @@
   await TestRunner.showPanel('sources');
 
   var testMapping = BindingsTestRunner.initializeTestMapping();
-  var fs = new BindingsTestRunner.TestFileSystem('file:///var/www');
+  var fs = new BindingsTestRunner.TestFileSystem('/var/www');
   var fsEntry = BindingsTestRunner.addFooJSFile(fs);
   fs.root.addFile('bar.js', 'window.bar = ()=>\'bar\';');
   await fs.reportCreatedPromise();

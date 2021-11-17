@@ -14,7 +14,7 @@
     'file:///usr/local/node/app.js': app_js,
   });
 
-  var fs = new BindingsTestRunner.TestFileSystem('file:///usr/local/node');
+  var fs = new BindingsTestRunner.TestFileSystem('/usr/local/node');
   BindingsTestRunner.addFiles(fs, {
     'app.js': app_js,
   });

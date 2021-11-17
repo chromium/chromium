@@ -19,7 +19,7 @@
 
   var scope = new Sources.SourcesSearchScope();
   var names = ['search.html', 'search.js', 'search.css'];
-  var fs = new BindingsTestRunner.TestFileSystem('file:///var/www');
+  var fs = new BindingsTestRunner.TestFileSystem('/var/www');
 
   var promises = [];
   for (var name of names)

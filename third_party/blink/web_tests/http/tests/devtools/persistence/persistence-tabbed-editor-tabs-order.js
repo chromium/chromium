@@ -11,7 +11,7 @@
   await TestRunner.navigatePromise(TestRunner.url('resources/persistence-tabbed-editor-tab-order.html'));
 
   var testMapping = BindingsTestRunner.initializeTestMapping();
-  var fs = new BindingsTestRunner.TestFileSystem('file:///var/www');
+  var fs = new BindingsTestRunner.TestFileSystem('/var/www');
   var folder = fs.root.mkdir('devtools').mkdir('persistence').mkdir('resources');
   folder.addFile('foo.js', '\n\nwindow.foo = ()=>\'foo\';');
   folder.addFile('bar.js', 'window.bar = () => "bar";');

@@ -25,7 +25,7 @@
     },
 
     function addMapping(next) {
-      var fs = new BindingsTestRunner.TestFileSystem('file:///var/www');
+      var fs = new BindingsTestRunner.TestFileSystem('/var/www');
       BindingsTestRunner.addFooJSFile(fs);
       fs.reportCreated(function() {});
       testMapping.addBinding('foo.js');

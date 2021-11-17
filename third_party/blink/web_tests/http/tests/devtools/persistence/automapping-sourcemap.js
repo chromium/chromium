@@ -16,7 +16,7 @@
   Promise.all([getResourceContent('s.css'), getResourceContent('s.scss')]).then(onResourceContents);
 
   function onResourceContents(contents) {
-    var fs = new BindingsTestRunner.TestFileSystem('file:///var/www');
+    var fs = new BindingsTestRunner.TestFileSystem('/var/www');
     BindingsTestRunner.addFiles(fs, {
       'dist/s.css': {content: contents[0], time: new Date('December 1, 1989')},
       'src/s.scss': {content: contents[1], time: new Date('December 1, 1989')}

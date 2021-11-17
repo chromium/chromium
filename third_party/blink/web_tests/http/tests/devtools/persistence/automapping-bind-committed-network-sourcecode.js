@@ -14,7 +14,7 @@
   content = content.replace(/foo/g, 'bar');
   networkUISourceCode.addRevision(content);
 
-  var fs = new BindingsTestRunner.TestFileSystem('file:///var/www');
+  var fs = new BindingsTestRunner.TestFileSystem('/var/www');
   BindingsTestRunner.addFooJSFile(fs);
   fs.reportCreated(function() {});
 

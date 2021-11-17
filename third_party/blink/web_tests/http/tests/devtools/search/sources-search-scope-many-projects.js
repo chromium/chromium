@@ -18,7 +18,7 @@
   }
 
   var scope = new Sources.SourcesSearchScope();
-  var fs = new BindingsTestRunner.TestFileSystem('file:///var/www');
+  var fs = new BindingsTestRunner.TestFileSystem('/var/www');
   var names = ['search.html', 'search.js', 'search.css'];
   var resources = {};
   var jsFileSystemUISourceCode;

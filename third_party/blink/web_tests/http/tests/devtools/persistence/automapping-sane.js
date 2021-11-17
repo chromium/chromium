@@ -44,7 +44,7 @@
     'http://example.com/sources/module.json': sources_module_json,
   });
 
-  var fs = new BindingsTestRunner.TestFileSystem('file:///var/www');
+  var fs = new BindingsTestRunner.TestFileSystem('/var/www');
   BindingsTestRunner.addFiles(fs, {
     'index.html': index_html,
     'scripts/foo.js': foo_js,

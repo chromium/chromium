@@ -17,7 +17,7 @@
   Promise.all([getResourceContent('out.js'), getResourceContent('out.js? [sm]')]).then(onResourceContents);
 
   function onResourceContents(contents) {
-    var fs = new BindingsTestRunner.TestFileSystem('file:///var/www');
+    var fs = new BindingsTestRunner.TestFileSystem('/var/www');
     BindingsTestRunner.addFiles(fs, {
       'out.js': {content: contents[0], time: new Date('December 1, 1989')},
       'src/out.js': {content: contents[1], time: new Date('December 1, 1989')}
