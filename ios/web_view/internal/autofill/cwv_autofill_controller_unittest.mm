@@ -406,6 +406,10 @@ TEST_F(CWVAutofillControllerTest, NotifyUserOfLeak) {
   OCMExpect([delegate autofillController:autofill_controller_
            notifyUserOfPasswordLeakOnURL:net::NSURLWithGURL(leak_url)
                                 leakType:expected_leak_type]);
+  OCMExpect([delegate autofillController:autofill_controller_
+           notifyUserOfPasswordLeakOnURL:net::NSURLWithGURL(leak_url)
+                                leakType:expected_leak_type
+                                username:@"fake-username"]);
 
   password_manager_client_->NotifyUserCredentialsWereLeaked(
       leak_type, leak_url, base::SysNSStringToUTF16(@"fake-username"));

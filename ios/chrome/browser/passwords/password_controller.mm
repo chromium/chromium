@@ -343,7 +343,8 @@ constexpr int kNotifyAutoSigninDuration = 3;  // seconds
 }
 
 - (void)showPasswordBreachForLeakType:(CredentialLeakType)leakType
-                                  URL:(const GURL&)URL {
+                                  URL:(const GURL&)URL
+                             username:(const std::u16string&)username {
   [self.passwordBreachDispatcher showPasswordBreachForLeakType:leakType];
 }
 

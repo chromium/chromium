@@ -229,7 +229,9 @@ void WebViewPasswordManagerClient::NotifyUserCredentialsWereLeaked(
     password_manager::CredentialLeakType leak_type,
     const GURL& origin,
     const std::u16string& username) {
-  [bridge_ showPasswordBreachForLeakType:leak_type URL:origin];
+  [bridge_ showPasswordBreachForLeakType:leak_type
+                                     URL:origin
+                                username:username];
 }
 
 bool WebViewPasswordManagerClient::IsSavingAndFillingEnabled(
