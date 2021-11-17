@@ -17,7 +17,7 @@
 #include "chrome/browser/apps/app_service/browser_app_instance_observer.h"
 #include "chrome/browser/apps/app_service/browser_app_instance_registry.h"
 #include "components/services/app_service/public/cpp/icon_loader.h"
-#include "components/services/app_service/public/mojom/types.mojom.h"
+#include "components/services/app_service/public/cpp/icon_types.h"
 #include "ui/gfx/image/image_skia.h"
 
 namespace apps {
@@ -72,7 +72,7 @@ class BrowserAppShelfItemController : public ash::ShelfItemDelegate,
   int GetInstanceCommand(const base::UnguessableToken& id);
 
   void LoadAppMenuIcon();
-  void DidLoadAppMenuIcon(apps::mojom::IconValuePtr icon_value);
+  void OnLoadAppMenuIcon(apps::IconValuePtr icon_value);
 
   Profile* profile_;
   apps::BrowserAppInstanceRegistry& registry_;

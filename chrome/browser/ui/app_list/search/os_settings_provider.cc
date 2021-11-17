@@ -27,6 +27,7 @@
 #include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "chrome/common/chrome_features.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
+#include "components/services/app_service/public/cpp/app_types.h"
 #include "ui/gfx/image/image_skia.h"
 #include "url/gurl.h"
 
@@ -194,16 +195,26 @@ OsSettingsProvider::OsSettingsProvider(Profile* profile)
   DCHECK(app_service_proxy_);
 
   Observe(&app_service_proxy_->AppRegistryCache());
-  auto icon_type = apps::mojom::IconType::kStandard;
   apps::mojom::AppType app_type =
       app_service_proxy_->AppRegistryCache().GetAppType(
           web_app::kOsSettingsAppId);
-  app_service_proxy_->LoadIcon(
-      app_type, web_app::kOsSettingsAppId, icon_type,
-      ash::SharedAppListConfig::instance().search_list_icon_dimension(),
-      /*allow_placeholder_icon=*/false,
-      base::BindOnce(&OsSettingsProvider::OnLoadIcon,
-                     weak_factory_.GetWeakPtr()));
+
+  if (base::FeatureList::IsEnabled(features::kAppServiceLoadIconWithoutMojom)) {
+    app_service_proxy_->LoadIcon(
+        apps::ConvertMojomAppTypToAppType(app_type), web_app::kOsSettingsAppId,
+        apps::IconType::kStandard,
+        ash::SharedAppListConfig::instance().search_list_icon_dimension(),
+        /*allow_placeholder_icon=*/false,
+        base::BindOnce(&OsSettingsProvider::OnLoadIcon,
+                       weak_factory_.GetWeakPtr()));
+  } else {
+    app_service_proxy_->LoadIcon(
+        app_type, web_app::kOsSettingsAppId, apps::mojom::IconType::kStandard,
+        ash::SharedAppListConfig::instance().search_list_icon_dimension(),
+        /*allow_placeholder_icon=*/false,
+        apps::MojomIconValueToIconValueCallback(base::BindOnce(
+            &OsSettingsProvider::OnLoadIcon, weak_factory_.GetWeakPtr())));
+  }
 
   // Set parameters from Finch. Reasonable defaults are set in the header.
   accept_alternate_matches_ = base::GetFieldTrialParamByFeatureAsBool(
@@ -311,13 +322,24 @@ void OsSettingsProvider::OnAppUpdate(const apps::AppUpdate& update) {
   // Request the Settings app icon when either the readiness or the icon has
   // changed.
   if (update.ReadinessChanged() || update.IconKeyChanged()) {
-    auto icon_type = apps::mojom::IconType::kStandard;
-    app_service_proxy_->LoadIcon(
-        update.AppType(), web_app::kOsSettingsAppId, icon_type,
-        ash::SharedAppListConfig::instance().search_list_icon_dimension(),
-        /*allow_placeholder_icon=*/false,
-        base::BindOnce(&OsSettingsProvider::OnLoadIcon,
-                       weak_factory_.GetWeakPtr()));
+    if (base::FeatureList::IsEnabled(
+            features::kAppServiceLoadIconWithoutMojom)) {
+      app_service_proxy_->LoadIcon(
+          apps::ConvertMojomAppTypToAppType(update.AppType()),
+          web_app::kOsSettingsAppId, apps::IconType::kStandard,
+          ash::SharedAppListConfig::instance().search_list_icon_dimension(),
+          /*allow_placeholder_icon=*/false,
+          base::BindOnce(&OsSettingsProvider::OnLoadIcon,
+                         weak_factory_.GetWeakPtr()));
+    } else {
+      app_service_proxy_->LoadIcon(
+          update.AppType(), web_app::kOsSettingsAppId,
+          apps::mojom::IconType::kStandard,
+          ash::SharedAppListConfig::instance().search_list_icon_dimension(),
+          /*allow_placeholder_icon=*/false,
+          apps::MojomIconValueToIconValueCallback(base::BindOnce(
+              &OsSettingsProvider::OnLoadIcon, weak_factory_.GetWeakPtr())));
+    }
   }
 }
 
@@ -403,13 +425,10 @@ OsSettingsProvider::FilterResults(
   return clean_results;
 }
 
-void OsSettingsProvider::OnLoadIcon(apps::mojom::IconValuePtr icon_value) {
-  if (icon_value.is_null())
-    return;
-
-  auto icon_type = apps::mojom::IconType::kStandard;
-  if (icon_value->icon_type == icon_type) {
+void OsSettingsProvider::OnLoadIcon(apps::IconValuePtr icon_value) {
+  if (icon_value && icon_value->icon_type == apps::IconType::kStandard) {
     icon_ = icon_value->uncompressed;
   }
 }
+
 }  // namespace app_list

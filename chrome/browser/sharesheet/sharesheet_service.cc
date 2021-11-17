@@ -17,7 +17,9 @@
 #include "chrome/browser/sharesheet/share_action/share_action.h"
 #include "chrome/browser/sharesheet/sharesheet_service_delegator.h"
 #include "chrome/browser/sharesheet/sharesheet_types.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -262,13 +264,24 @@ void SharesheetService::LoadAppIcons(
   // Making a copy because we move |intent_launch_info| out below.
   auto app_id = intent_launch_info[index].app_id;
   auto app_type = app_service_proxy_->AppRegistryCache().GetAppType(app_id);
-  auto icon_type = apps::mojom::IconType::kStandard;
   constexpr bool allow_placeholder_icon = false;
-  app_service_proxy_->LoadIcon(
-      app_type, app_id, icon_type, kIconSize, allow_placeholder_icon,
-      base::BindOnce(&SharesheetService::OnIconLoaded,
-                     weak_factory_.GetWeakPtr(), std::move(intent_launch_info),
-                     std::move(targets), index, std::move(callback)));
+  if (base::FeatureList::IsEnabled(features::kAppServiceLoadIconWithoutMojom)) {
+    app_service_proxy_->LoadIcon(
+        apps::ConvertMojomAppTypToAppType(app_type), app_id,
+        apps::IconType::kStandard, kIconSize, allow_placeholder_icon,
+        base::BindOnce(&SharesheetService::OnIconLoaded,
+                       weak_factory_.GetWeakPtr(),
+                       std::move(intent_launch_info), std::move(targets), index,
+                       std::move(callback)));
+  } else {
+    app_service_proxy_->LoadIcon(
+        app_type, app_id, apps::mojom::IconType::kStandard, kIconSize,
+        allow_placeholder_icon,
+        apps::MojomIconValueToIconValueCallback(base::BindOnce(
+            &SharesheetService::OnIconLoaded, weak_factory_.GetWeakPtr(),
+            std::move(intent_launch_info), std::move(targets), index,
+            std::move(callback))));
+  }
 }
 
 void SharesheetService::OnIconLoaded(
@@ -276,7 +289,7 @@ void SharesheetService::OnIconLoaded(
     std::vector<TargetInfo> targets,
     size_t index,
     SharesheetServiceIconLoaderCallback callback,
-    apps::mojom::IconValuePtr icon_value) {
+    apps::IconValuePtr icon_value) {
   const auto& launch_entry = intent_launch_info[index];
   const auto& app_type =
       app_service_proxy_->AppRegistryCache().GetAppType(launch_entry.app_id);
@@ -290,7 +303,11 @@ void SharesheetService::OnIconLoaded(
   app_service_proxy_->AppRegistryCache().ForOneApp(
       launch_entry.app_id, [&launch_entry, &targets, &icon_value,
                             &target_type](const apps::AppUpdate& update) {
-        targets.emplace_back(target_type, icon_value->uncompressed,
+        gfx::ImageSkia image_skia =
+            (icon_value && icon_value->icon_type == apps::IconType::kStandard)
+                ? icon_value->uncompressed
+                : gfx::ImageSkia();
+        targets.emplace_back(target_type, image_skia,
                              base::UTF8ToUTF16(launch_entry.app_id),
                              base::UTF8ToUTF16(update.Name()),
                              base::UTF8ToUTF16(launch_entry.activity_label),

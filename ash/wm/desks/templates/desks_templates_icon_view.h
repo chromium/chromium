@@ -10,7 +10,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "components/favicon_base/favicon_types.h"
-#include "components/services/app_service/public/mojom/types.mojom.h"
+#include "components/services/app_service/public/cpp/icon_types.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
@@ -61,7 +61,7 @@ class DesksTemplatesIconView : public views::View {
   // use a placeholder icon.
   void OnFaviconLoaded(
       const favicon_base::FaviconRawBitmapResult& image_result);
-  void OnAppIconLoaded(apps::mojom::IconValuePtr icon_value);
+  void OnAppIconLoaded(apps::IconValuePtr icon_value);
 
   // Loads the default favicon to `icon_view_`. Should be called when we fail to
   // load an icon.

@@ -10,6 +10,8 @@
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/notifications/notifier_dataset.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/common/chrome_features.h"
+#include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/app_update.h"
 #include "components/services/app_service/public/cpp/permission_utils.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
@@ -100,20 +102,28 @@ void PwaNotifierController::CallLoadIcon(const std::string& app_id,
   DCHECK(apps::AppServiceProxyFactory::IsAppServiceAvailableForProfile(
       observed_profile_));
 
-  auto icon_type = apps::mojom::IconType::kStandard;
-
-  apps::AppServiceProxyFactory::GetForProfile(observed_profile_)
-      ->LoadIcon(apps::mojom::AppType::kWeb, app_id, icon_type,
-                 message_center::kQuickSettingIconSizeInDp,
-                 allow_placeholder_icon,
-                 base::BindOnce(&PwaNotifierController::OnLoadIcon,
-                                weak_ptr_factory_.GetWeakPtr(), app_id));
+  if (base::FeatureList::IsEnabled(features::kAppServiceLoadIconWithoutMojom)) {
+    apps::AppServiceProxyFactory::GetForProfile(observed_profile_)
+        ->LoadIcon(apps::AppType::kWeb, app_id, apps::IconType::kStandard,
+                   message_center::kQuickSettingIconSizeInDp,
+                   allow_placeholder_icon,
+                   base::BindOnce(&PwaNotifierController::OnLoadIcon,
+                                  weak_ptr_factory_.GetWeakPtr(), app_id));
+  } else {
+    apps::AppServiceProxyFactory::GetForProfile(observed_profile_)
+        ->LoadIcon(apps::mojom::AppType::kWeb, app_id,
+                   apps::mojom::IconType::kStandard,
+                   message_center::kQuickSettingIconSizeInDp,
+                   allow_placeholder_icon,
+                   apps::MojomIconValueToIconValueCallback(
+                       base::BindOnce(&PwaNotifierController::OnLoadIcon,
+                                      weak_ptr_factory_.GetWeakPtr(), app_id)));
+  }
 }
 
 void PwaNotifierController::OnLoadIcon(const std::string& app_id,
-                                       apps::mojom::IconValuePtr icon_value) {
-  auto expected_icon_type = apps::mojom::IconType::kStandard;
-  if (icon_value->icon_type != expected_icon_type)
+                                       apps::IconValuePtr icon_value) {
+  if (!icon_value || icon_value->icon_type != apps::IconType::kStandard)
     return;
 
   SetIcon(app_id, icon_value->uncompressed);

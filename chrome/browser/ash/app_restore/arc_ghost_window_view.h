@@ -7,6 +7,7 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/memory/weak_ptr.h"
+#include "components/services/app_service/public/cpp/icon_types.h"
 #include "components/services/app_service/public/mojom/app_service.mojom.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
@@ -36,11 +37,10 @@ class ArcGhostWindowView : public views::View {
   FRIEND_TEST_ALL_PREFIXES(ArcGhostWindowViewTest, IconLoadTest);
 
   void InitLayout(uint32_t theme_color, int diameter);
-  void OnIconLoaded(apps::mojom::IconType icon_type,
-                    apps::mojom::IconValuePtr icon_value);
+  void OnIconLoaded(apps::IconValuePtr icon_value);
 
   views::ImageView* icon_view_;
-  base::OnceCallback<void(apps::mojom::IconValuePtr icon_value)>
+  base::OnceCallback<void(apps::IconValuePtr icon_value)>
       icon_loaded_cb_for_testing_;
 
   base::WeakPtrFactory<ArcGhostWindowView> weak_ptr_factory_{this};

@@ -34,6 +34,7 @@
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "components/prefs/pref_service.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
+#include "components/services/app_service/public/cpp/app_types.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/image/image_skia.h"
 #include "url/gurl.h"
@@ -336,22 +337,32 @@ void HelpAppProvider::OnSearchResultAvailabilityChanged() {
   Start(last_query_);
 }
 
-void HelpAppProvider::OnLoadIcon(apps::mojom::IconValuePtr icon_value) {
-  auto icon_type = apps::mojom::IconType::kStandard;
-  if (icon_value->icon_type == icon_type) {
+void HelpAppProvider::OnLoadIcon(apps::IconValuePtr icon_value) {
+  if (icon_value && icon_value->icon_type == apps::IconType::kStandard) {
     icon_ = icon_value->uncompressed;
   }
 }
 
 void HelpAppProvider::LoadIcon() {
-  auto icon_type = apps::mojom::IconType::kStandard;
   apps::mojom::AppType app_type =
       app_service_proxy_->AppRegistryCache().GetAppType(web_app::kHelpAppId);
-  app_service_proxy_->LoadIcon(
-      app_type, web_app::kHelpAppId, icon_type,
-      ash::SharedAppListConfig::instance().suggestion_chip_icon_dimension(),
-      /*allow_placeholder_icon=*/false,
-      base::BindOnce(&HelpAppProvider::OnLoadIcon, weak_factory_.GetWeakPtr()));
+
+  if (base::FeatureList::IsEnabled(features::kAppServiceLoadIconWithoutMojom)) {
+    app_service_proxy_->LoadIcon(
+        apps::ConvertMojomAppTypToAppType(app_type), web_app::kHelpAppId,
+        apps::IconType::kStandard,
+        ash::SharedAppListConfig::instance().suggestion_chip_icon_dimension(),
+        /*allow_placeholder_icon=*/false,
+        base::BindOnce(&HelpAppProvider::OnLoadIcon,
+                       weak_factory_.GetWeakPtr()));
+  } else {
+    app_service_proxy_->LoadIcon(
+        app_type, web_app::kHelpAppId, apps::mojom::IconType::kStandard,
+        ash::SharedAppListConfig::instance().suggestion_chip_icon_dimension(),
+        /*allow_placeholder_icon=*/false,
+        apps::MojomIconValueToIconValueCallback(base::BindOnce(
+            &HelpAppProvider::OnLoadIcon, weak_factory_.GetWeakPtr())));
+  }
 }
 
 }  // namespace app_list

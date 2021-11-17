@@ -18,6 +18,7 @@
 #include "chrome/test/base/testing_profile_manager.h"
 #include "chrome/test/views/chrome_test_views_delegate.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
+#include "components/services/app_service/public/cpp/icon_types.h"
 #include "components/services/app_service/public/mojom/app_service.mojom.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "content/public/test/browser_task_environment.h"
@@ -110,7 +111,6 @@ class ArcGhostWindowViewTest : public testing::Test {
   std::unique_ptr<TestingProfileManager> profile_manager_;
 };
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 TEST_F(ArcGhostWindowViewTest, IconLoadTest) {
   const int kDiameter = 24;
   const uint32_t kThemeColor = SK_ColorWHITE;
@@ -122,11 +122,10 @@ TEST_F(ArcGhostWindowViewTest, IconLoadTest) {
   EXPECT_EQ(count, 0);
 
   view()->icon_loaded_cb_for_testing_ = base::BindLambdaForTesting(
-      [&count](apps::mojom::IconValuePtr icon_value) { count++; });
+      [&count](apps::IconValuePtr icon_value) { count++; });
   view()->LoadIcon(kAppId);
   EXPECT_EQ(count, 1);
 }
-#endif
 
 }  // namespace full_restore
 }  // namespace ash

@@ -9,6 +9,8 @@
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ash/app_restore/arc_window_handler.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
+#include "chrome/common/chrome_features.h"
+#include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/mojom/types.mojom-forward.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -92,25 +94,36 @@ void ArcGhostWindowView::LoadIcon(const std::string& app_id) {
       user_manager::UserManager::Get()->GetPrimaryUser()->GetAccountId());
   DCHECK(profile);
 
-  auto icon_type = apps::mojom::IconType::kStandard;
-
   DCHECK(
       apps::AppServiceProxyFactory::IsAppServiceAvailableForProfile(profile));
 
-  apps::AppServiceProxyFactory::GetForProfile(profile)->LoadIcon(
-      apps::mojom::AppType::kArc, app_id, icon_type,
-      ash::SharedAppListConfig::instance().default_grid_icon_dimension(),
-      /*allow_placeholder_icon=*/false,
-      icon_loaded_cb_for_testing_.is_null()
-          ? base::BindOnce(&ArcGhostWindowView::OnIconLoaded,
-                           weak_ptr_factory_.GetWeakPtr(), icon_type)
-          : std::move(icon_loaded_cb_for_testing_));
+  if (base::FeatureList::IsEnabled(features::kAppServiceLoadIconWithoutMojom)) {
+    apps::AppServiceProxyFactory::GetForProfile(profile)->LoadIcon(
+        apps::AppType::kArc, app_id, apps::IconType::kStandard,
+        ash::SharedAppListConfig::instance().default_grid_icon_dimension(),
+        /*allow_placeholder_icon=*/false,
+        icon_loaded_cb_for_testing_.is_null()
+            ? base::BindOnce(&ArcGhostWindowView::OnIconLoaded,
+                             weak_ptr_factory_.GetWeakPtr())
+            : std::move(icon_loaded_cb_for_testing_));
+  } else {
+    apps::AppServiceProxyFactory::GetForProfile(profile)->LoadIcon(
+        apps::mojom::AppType::kArc, app_id, apps::mojom::IconType::kStandard,
+        ash::SharedAppListConfig::instance().default_grid_icon_dimension(),
+        /*allow_placeholder_icon=*/false,
+        icon_loaded_cb_for_testing_.is_null()
+            ? apps::MojomIconValueToIconValueCallback(
+                  base::BindOnce(&ArcGhostWindowView::OnIconLoaded,
+                                 weak_ptr_factory_.GetWeakPtr()))
+            : apps::MojomIconValueToIconValueCallback(
+                  std::move(icon_loaded_cb_for_testing_)));
+  }
 }
 
-void ArcGhostWindowView::OnIconLoaded(apps::mojom::IconType icon_type,
-                                      apps::mojom::IconValuePtr icon_value) {
-  if (icon_type != icon_value->icon_type)
+void ArcGhostWindowView::OnIconLoaded(apps::IconValuePtr icon_value) {
+  if (!icon_value || icon_value->icon_type != apps::IconType::kStandard)
     return;
+
   icon_view_->SetImage(icon_value->uncompressed);
   icon_view_->SetAccessibleName(
       l10n_util::GetStringUTF16(IDS_ARC_GHOST_WINDOW_APP_LAUNCHING_ICON));

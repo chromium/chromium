@@ -12,6 +12,8 @@
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/notifications/notifier_dataset.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/common/chrome_features.h"
+#include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/app_update.h"
 #include "components/services/app_service/public/cpp/permission_utils.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
@@ -107,21 +109,29 @@ void ArcApplicationNotifierController::CallLoadIcon(
   DCHECK(apps::AppServiceProxyFactory::IsAppServiceAvailableForProfile(
       last_used_profile_));
 
-  auto icon_type = apps::mojom::IconType::kStandard;
-
-  apps::AppServiceProxyFactory::GetForProfile(last_used_profile_)
-      ->LoadIcon(apps::mojom::AppType::kArc, app_id, icon_type,
-                 message_center::kQuickSettingIconSizeInDp,
-                 allow_placeholder_icon,
-                 base::BindOnce(&ArcApplicationNotifierController::OnLoadIcon,
-                                weak_ptr_factory_.GetWeakPtr(), app_id));
+  if (base::FeatureList::IsEnabled(features::kAppServiceLoadIconWithoutMojom)) {
+    apps::AppServiceProxyFactory::GetForProfile(last_used_profile_)
+        ->LoadIcon(apps::AppType::kArc, app_id, apps::IconType::kStandard,
+                   message_center::kQuickSettingIconSizeInDp,
+                   allow_placeholder_icon,
+                   base::BindOnce(&ArcApplicationNotifierController::OnLoadIcon,
+                                  weak_ptr_factory_.GetWeakPtr(), app_id));
+  } else {
+    apps::AppServiceProxyFactory::GetForProfile(last_used_profile_)
+        ->LoadIcon(apps::mojom::AppType::kArc, app_id,
+                   apps::mojom::IconType::kStandard,
+                   message_center::kQuickSettingIconSizeInDp,
+                   allow_placeholder_icon,
+                   apps::MojomIconValueToIconValueCallback(base::BindOnce(
+                       &ArcApplicationNotifierController::OnLoadIcon,
+                       weak_ptr_factory_.GetWeakPtr(), app_id)));
+  }
 }
 
 void ArcApplicationNotifierController::OnLoadIcon(
     const std::string& app_id,
-    apps::mojom::IconValuePtr icon_value) {
-  auto expected_icon_type = apps::mojom::IconType::kStandard;
-  if (icon_value->icon_type != expected_icon_type)
+    apps::IconValuePtr icon_value) {
+  if (!icon_value || icon_value->icon_type != apps::IconType::kStandard)
     return;
 
   SetIcon(app_id, icon_value->uncompressed);

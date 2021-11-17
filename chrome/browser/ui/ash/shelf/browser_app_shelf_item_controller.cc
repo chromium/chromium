@@ -14,6 +14,9 @@
 #include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller.h"
 #include "chrome/browser/ui/ash/shelf/shelf_context_menu.h"
+#include "chrome/common/chrome_features.h"
+#include "components/services/app_service/public/cpp/app_types.h"
+#include "components/services/app_service/public/mojom/types.mojom.h"
 #include "extensions/common/constants.h"
 #include "ui/aura/client/aura_constants.h"
 
@@ -201,17 +204,31 @@ int BrowserAppShelfItemController::GetInstanceCommand(
 void BrowserAppShelfItemController::LoadAppMenuIcon() {
   const std::string& app_id = shelf_id().app_id;
   auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile_);
-  icon_loader_releaser_ = proxy->LoadIcon(
-      proxy->AppRegistryCache().GetAppType(app_id), app_id,
-      apps::mojom::IconType::kStandard,
-      // matches favicon size
-      /* size_hint_in_dip= */ extension_misc::EXTENSION_ICON_BITTY,
-      /* allow_placeholder_icon= */ false,
-      base::BindOnce(&BrowserAppShelfItemController::DidLoadAppMenuIcon,
-                     weak_ptr_factory_.GetWeakPtr()));
+  auto app_type = proxy->AppRegistryCache().GetAppType(app_id);
+  if (base::FeatureList::IsEnabled(features::kAppServiceLoadIconWithoutMojom)) {
+    icon_loader_releaser_ = proxy->LoadIcon(
+        apps::ConvertMojomAppTypToAppType(app_type), app_id,
+        apps::IconType::kStandard,
+        // matches favicon size
+        /* size_hint_in_dip= */ extension_misc::EXTENSION_ICON_BITTY,
+        /* allow_placeholder_icon= */ false,
+        base::BindOnce(&BrowserAppShelfItemController::OnLoadAppMenuIcon,
+                       weak_ptr_factory_.GetWeakPtr()));
+  } else {
+    icon_loader_releaser_ = proxy->LoadIcon(
+        app_type, app_id, apps::mojom::IconType::kStandard,
+        // matches favicon size
+        /* size_hint_in_dip= */ extension_misc::EXTENSION_ICON_BITTY,
+        /* allow_placeholder_icon= */ false,
+        apps::MojomIconValueToIconValueCallback(
+            base::BindOnce(&BrowserAppShelfItemController::OnLoadAppMenuIcon,
+                           weak_ptr_factory_.GetWeakPtr())));
+  }
 }
 
-void BrowserAppShelfItemController::DidLoadAppMenuIcon(
-    apps::mojom::IconValuePtr icon_value) {
-  menu_icon_ = icon_value->uncompressed;
+void BrowserAppShelfItemController::OnLoadAppMenuIcon(
+    apps::IconValuePtr icon_value) {
+  if (icon_value && icon_value->icon_type == apps::IconType::kStandard) {
+    menu_icon_ = icon_value->uncompressed;
+  }
 }

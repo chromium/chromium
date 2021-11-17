@@ -43,7 +43,7 @@ StandaloneBrowserExtensionAppShelfItemController::
         apps::AppType::kStandaloneBrowserExtension, shelf_id.app_id, icon_key,
         icon_type, kIconSize, kAllowPlaceholderIcon,
         base::BindOnce(
-            &StandaloneBrowserExtensionAppShelfItemController::DidLoadIcon,
+            &StandaloneBrowserExtensionAppShelfItemController::OnLoadIcon,
             weak_factory_.GetWeakPtr()));
   } else {
     apps::mojom::IconKeyPtr icon_key = apps::mojom::IconKey::New();
@@ -51,9 +51,9 @@ StandaloneBrowserExtensionAppShelfItemController::
     icon_loader_releaser_ = proxy->LoadIconFromIconKey(
         apps::mojom::AppType::kStandaloneBrowserExtension, shelf_id.app_id,
         std::move(icon_key), icon_type, kIconSize, kAllowPlaceholderIcon,
-        base::BindOnce(
-            &StandaloneBrowserExtensionAppShelfItemController::DidLoadMojomIcon,
-            weak_factory_.GetWeakPtr()));
+        apps::MojomIconValueToIconValueCallback(base::BindOnce(
+            &StandaloneBrowserExtensionAppShelfItemController::OnLoadIcon,
+            weak_factory_.GetWeakPtr())));
   }
 
   context_menu_ = std::make_unique<StandaloneBrowserExtensionAppContextMenu>(
@@ -223,8 +223,11 @@ size_t StandaloneBrowserExtensionAppShelfItemController::WindowCount() {
   return windows_.size();
 }
 
-void StandaloneBrowserExtensionAppShelfItemController::DidLoadIcon(
+void StandaloneBrowserExtensionAppShelfItemController::OnLoadIcon(
     apps::IconValuePtr icon_value) {
+  if (!icon_value || icon_value->icon_type != apps::IconType::kStandard)
+    return;
+
   icon_ = icon_value->uncompressed;
 
   if (ItemAddedToShelf()) {
@@ -234,11 +237,6 @@ void StandaloneBrowserExtensionAppShelfItemController::DidLoadIcon(
     ash::ShelfModel::Get()->Set(index, item);
     return;
   }
-}
-
-void StandaloneBrowserExtensionAppShelfItemController::DidLoadMojomIcon(
-    apps::mojom::IconValuePtr icon_value) {
-  DidLoadIcon(apps::ConvertMojomIconValueToIconValue(std::move(icon_value)));
 }
 
 void StandaloneBrowserExtensionAppShelfItemController::OnWindowDestroying(

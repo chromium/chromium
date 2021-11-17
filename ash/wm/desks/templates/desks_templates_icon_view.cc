@@ -125,8 +125,12 @@ void DesksTemplatesIconView::OnFaviconLoaded(
   LoadDefaultIcon();
 }
 
-void DesksTemplatesIconView::OnAppIconLoaded(
-    apps::mojom::IconValuePtr icon_value) {
+void DesksTemplatesIconView::OnAppIconLoaded(apps::IconValuePtr icon_value) {
+  if (!icon_value || icon_value->icon_type != apps::IconType::kStandard) {
+    LoadDefaultIcon();
+    return;
+  }
+
   gfx::ImageSkia image_result = icon_value->uncompressed;
   if (!image_result.isNull()) {
     icon_view_->SetImage(image_result, gfx::Size(kIconSize, kIconSize));

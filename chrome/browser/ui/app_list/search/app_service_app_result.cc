@@ -27,7 +27,9 @@
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller.h"
 #include "chrome/browser/ui/web_applications/system_web_app_ui_utils.h"
 #include "chrome/browser/web_applications/system_web_apps/system_web_app_manager.h"
+#include "chrome/common/chrome_features.h"
 #include "components/favicon/core/large_icon_service.h"
+#include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/app_update.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "extensions/common/extension.h"
@@ -209,13 +211,17 @@ void AppServiceAppResult::Launch(int event_flags,
 }
 
 void AppServiceAppResult::CallLoadIcon(bool chip, bool allow_placeholder_icon) {
-  if (icon_loader_) {
-    // If |icon_loader_releaser_| is non-null, assigning to it will signal to
-    // |icon_loader_| that the previous icon is no longer being used, as a hint
-    // that it could be flushed from any caches.
-    auto icon_type = apps::mojom::IconType::kStandard;
+  if (!icon_loader_) {
+    return;
+  }
+
+  // If |icon_loader_releaser_| is non-null, assigning to it will signal to
+  // |icon_loader_| that the previous icon is no longer being used, as a hint
+  // that it could be flushed from any caches.
+  if (base::FeatureList::IsEnabled(features::kAppServiceLoadIconWithoutMojom)) {
     icon_loader_releaser_ = icon_loader_->LoadIcon(
-        app_type_, app_id(), icon_type,
+        apps::ConvertMojomAppTypToAppType(app_type_), app_id(),
+        apps::IconType::kStandard,
         chip ? ash::SharedAppListConfig::instance()
                    .suggestion_chip_icon_dimension()
              : ash::SharedAppListConfig::instance().GetPreferredIconDimension(
@@ -223,13 +229,22 @@ void AppServiceAppResult::CallLoadIcon(bool chip, bool allow_placeholder_icon) {
         allow_placeholder_icon,
         base::BindOnce(&AppServiceAppResult::OnLoadIcon,
                        weak_ptr_factory_.GetWeakPtr(), chip));
+  } else {
+    icon_loader_releaser_ = icon_loader_->LoadIcon(
+        app_type_, app_id(), apps::mojom::IconType::kStandard,
+        chip ? ash::SharedAppListConfig::instance()
+                   .suggestion_chip_icon_dimension()
+             : ash::SharedAppListConfig::instance().GetPreferredIconDimension(
+                   display_type()),
+        allow_placeholder_icon,
+        apps::MojomIconValueToIconValueCallback(
+            base::BindOnce(&AppServiceAppResult::OnLoadIcon,
+                           weak_ptr_factory_.GetWeakPtr(), chip)));
   }
 }
 
-void AppServiceAppResult::OnLoadIcon(bool chip,
-                                     apps::mojom::IconValuePtr icon_value) {
-  auto icon_type = apps::mojom::IconType::kStandard;
-  if (icon_value->icon_type != icon_type) {
+void AppServiceAppResult::OnLoadIcon(bool chip, apps::IconValuePtr icon_value) {
+  if (!icon_value || icon_value->icon_type != apps::IconType::kStandard) {
     return;
   }
 

@@ -44,11 +44,10 @@ class ASH_PUBLIC_EXPORT TestDesksTemplatesDelegate
                         int desired_icon_size,
                         favicon_base::FaviconRawBitmapCallback callback,
                         base::CancelableTaskTracker* tracker) const override;
-  void GetIconForAppId(
-      const std::string& app_id,
-      int desired_icon_size,
-      base::OnceCallback<void(apps::mojom::IconValuePtr icon_value)> callback)
-      const override;
+  void GetIconForAppId(const std::string& app_id,
+                       int desired_icon_size,
+                       base::OnceCallback<void(apps::IconValuePtr icon_value)>
+                           callback) const override;
   void LaunchAppsFromTemplate(
       std::unique_ptr<DeskTemplate> desk_template) override;
   bool IsWindowSupportedForDeskTemplate(aura::Window* window) const override;

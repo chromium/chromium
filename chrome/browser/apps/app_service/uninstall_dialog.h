@@ -102,9 +102,6 @@ class UninstallDialog {
   // Callback invoked when the icon is loaded.
   void OnLoadIcon(IconValuePtr icon_value);
 
-  // TODO(crbug.com/1253250): Will be removed soon.
-  void OnLoadMojomIcon(apps::mojom::IconValuePtr mojom_icon_value);
-
   Profile* const profile_;
   const apps::mojom::AppType app_type_;
   const std::string app_id_;

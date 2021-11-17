@@ -7,7 +7,7 @@
 
 #include "ash/public/cpp/ash_public_export.h"
 #include "components/favicon_base/favicon_callback.h"
-#include "components/services/app_service/public/mojom/app_service.mojom.h"
+#include "components/services/app_service/public/cpp/icon_types.h"
 
 namespace app_restore {
 struct AppLaunchInfo;
@@ -59,7 +59,7 @@ class ASH_PUBLIC_EXPORT DesksTemplatesDelegate {
   virtual void GetIconForAppId(
       const std::string& app_id,
       int desired_icon_size,
-      base::OnceCallback<void(apps::mojom::IconValuePtr icon_value)> callback)
+      base::OnceCallback<void(apps::IconValuePtr icon_value)> callback)
       const = 0;
 
   // Launches apps into the active desk. Ran immediately after a desk is created

@@ -15,6 +15,8 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
+#include "chrome/common/chrome_features.h"
+#include "components/services/app_service/public/cpp/app_types.h"
 #include "content/public/browser/navigation_handle.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/models/image_model.h"
@@ -93,9 +95,12 @@ void IntentPickerTabHelper::OnAppIconLoaded(
     std::vector<apps::IntentPickerAppInfo> apps,
     IntentPickerIconLoaderCallback callback,
     size_t index,
-    apps::mojom::IconValuePtr icon_value) {
-  apps[index].icon_model =
-      ui::ImageModel::FromImage(gfx::Image(icon_value->uncompressed));
+    apps::IconValuePtr icon_value) {
+  gfx::Image image =
+      (icon_value && icon_value->icon_type == apps::IconType::kStandard)
+          ? gfx::Image(icon_value->uncompressed)
+          : gfx::Image();
+  apps[index].icon_model = ui::ImageModel::FromImage(image);
 
   if (index == apps.size() - 1)
     std::move(callback).Run(std::move(apps));
@@ -119,12 +124,21 @@ void IntentPickerTabHelper::LoadAppIcon(
       Profile::FromBrowserContext(web_contents()->GetBrowserContext());
 
   constexpr bool allow_placeholder_icon = false;
-  apps::AppServiceProxyFactory::GetForProfile(profile)->LoadIcon(
-      app_type, app_id, apps::mojom::IconType::kStandard, gfx::kFaviconSize,
-      allow_placeholder_icon,
-      base::BindOnce(&IntentPickerTabHelper::OnAppIconLoaded,
-                     weak_factory_.GetWeakPtr(), std::move(apps),
-                     std::move(callback), index));
+  if (base::FeatureList::IsEnabled(features::kAppServiceLoadIconWithoutMojom)) {
+    apps::AppServiceProxyFactory::GetForProfile(profile)->LoadIcon(
+        apps::ConvertMojomAppTypToAppType(app_type), app_id,
+        apps::IconType::kStandard, gfx::kFaviconSize, allow_placeholder_icon,
+        base::BindOnce(&IntentPickerTabHelper::OnAppIconLoaded,
+                       weak_factory_.GetWeakPtr(), std::move(apps),
+                       std::move(callback), index));
+  } else {
+    apps::AppServiceProxyFactory::GetForProfile(profile)->LoadIcon(
+        app_type, app_id, apps::mojom::IconType::kStandard, gfx::kFaviconSize,
+        allow_placeholder_icon,
+        apps::MojomIconValueToIconValueCallback(base::BindOnce(
+            &IntentPickerTabHelper::OnAppIconLoaded, weak_factory_.GetWeakPtr(),
+            std::move(apps), std::move(callback), index)));
+  }
 }
 
 void IntentPickerTabHelper::DidFinishNavigation(

@@ -13,6 +13,7 @@
 #include "chrome/browser/apps/intent_helper/apps_navigation_types.h"
 #include "chrome/browser/web_applications/app_registrar_observer.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
+#include "components/services/app_service/public/cpp/icon_types.h"
 #include "components/services/app_service/public/mojom/types.mojom-forward.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
@@ -51,7 +52,7 @@ class IntentPickerTabHelper
   void OnAppIconLoaded(std::vector<apps::IntentPickerAppInfo> apps,
                        IntentPickerIconLoaderCallback callback,
                        size_t index,
-                       apps::mojom::IconValuePtr icon_value);
+                       apps::IconValuePtr icon_value);
 
   void LoadAppIcon(std::vector<apps::IntentPickerAppInfo> apps,
                    IntentPickerIconLoaderCallback callback,

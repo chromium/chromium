@@ -76,8 +76,8 @@ UninstallDialog::UninstallDialog(Profile* profile,
     icon_loader->LoadIconFromIconKey(
         app_type, app_id, std::move(mojom_icon_key), mojom_icon_type,
         size_hint_in_dip, kAllowPlaceholderIcon,
-        base::BindOnce(&UninstallDialog::OnLoadMojomIcon,
-                       weak_ptr_factory_.GetWeakPtr()));
+        MojomIconValueToIconValueCallback(base::BindOnce(
+            &UninstallDialog::OnLoadIcon, weak_ptr_factory_.GetWeakPtr())));
   }
 }
 
@@ -120,11 +120,6 @@ void UninstallDialog::OnLoadIcon(IconValuePtr icon_value) {
   if (!dialog_created_callback_.is_null()) {
     std::move(dialog_created_callback_).Run();
   }
-}
-
-void UninstallDialog::OnLoadMojomIcon(
-    apps::mojom::IconValuePtr mojom_icon_value) {
-  OnLoadIcon(ConvertMojomIconValueToIconValue(std::move(mojom_icon_value)));
 }
 
 }  // namespace apps

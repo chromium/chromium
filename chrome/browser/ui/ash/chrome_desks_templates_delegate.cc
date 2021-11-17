@@ -17,6 +17,7 @@
 #include "chrome/browser/ui/ash/desks_client.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/common/chrome_features.h"
 #include "components/app_restore/app_launch_info.h"
 #include "components/app_restore/app_restore_data.h"
 #include "components/app_restore/features.h"
@@ -26,6 +27,7 @@
 #include "components/app_restore/window_properties.h"
 #include "components/favicon/core/favicon_service.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
+#include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "components/user_manager/user_manager.h"
 #include "extensions/common/constants.h"
@@ -152,19 +154,26 @@ void ChromeDesksTemplatesDelegate::GetFaviconForUrl(
 void ChromeDesksTemplatesDelegate::GetIconForAppId(
     const std::string& app_id,
     int desired_icon_size,
-    base::OnceCallback<void(apps::mojom::IconValuePtr icon_value)> callback)
-    const {
+    base::OnceCallback<void(apps::IconValuePtr icon_value)> callback) const {
   auto* app_service_proxy = apps::AppServiceProxyFactory::GetForProfile(
       ProfileManager::GetActiveUserProfile());
   if (!app_service_proxy) {
-    std::move(callback).Run(apps::mojom::IconValue::New());
+    std::move(callback).Run(std::make_unique<apps::IconValue>());
     return;
   }
 
-  app_service_proxy->LoadIcon(
-      app_service_proxy->AppRegistryCache().GetAppType(app_id), app_id,
-      apps::mojom::IconType::kStandard, desired_icon_size,
-      /*allow_placeholder_icon=*/false, std::move(callback));
+  auto app_type = app_service_proxy->AppRegistryCache().GetAppType(app_id);
+  if (base::FeatureList::IsEnabled(features::kAppServiceLoadIconWithoutMojom)) {
+    app_service_proxy->LoadIcon(
+        apps::ConvertMojomAppTypToAppType(app_type), app_id,
+        apps::IconType::kStandard, desired_icon_size,
+        /*allow_placeholder_icon=*/false, std::move(callback));
+  } else {
+    app_service_proxy->LoadIcon(
+        app_type, app_id, apps::mojom::IconType::kStandard, desired_icon_size,
+        /*allow_placeholder_icon=*/false,
+        apps::MojomIconValueToIconValueCallback(std::move(callback)));
+  }
 }
 
 void ChromeDesksTemplatesDelegate::LaunchAppsFromTemplate(

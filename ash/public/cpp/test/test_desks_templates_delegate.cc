@@ -35,8 +35,7 @@ void TestDesksTemplatesDelegate::GetFaviconForUrl(
 void TestDesksTemplatesDelegate::GetIconForAppId(
     const std::string& app_id,
     int desired_icon_size,
-    base::OnceCallback<void(apps::mojom::IconValuePtr icon_value)> callback)
-    const {}
+    base::OnceCallback<void(apps::IconValuePtr icon_value)> callback) const {}
 
 void TestDesksTemplatesDelegate::LaunchAppsFromTemplate(
     std::unique_ptr<DeskTemplate> desk_template) {}

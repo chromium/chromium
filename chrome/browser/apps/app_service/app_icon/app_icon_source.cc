@@ -16,7 +16,10 @@
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/common/url_constants.h"
+#include "components/services/app_service/public/cpp/app_types.h"
+#include "components/services/app_service/public/cpp/icon_types.h"
 #include "extensions/grit/extensions_browser_resources.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "url/gurl.h"
@@ -37,13 +40,13 @@ void LoadDefaultImage(content::URLDataSource::GotDataCallback callback) {
 }
 
 void RunCallback(content::URLDataSource::GotDataCallback callback,
-                 apps::mojom::IconValuePtr iv) {
-  if (!iv->compressed.has_value() || iv->compressed.value().empty()) {
+                 apps::IconValuePtr iv) {
+  if (!iv || iv->compressed.empty()) {
     LoadDefaultImage(std::move(callback));
     return;
   }
   base::RefCountedBytes* image_bytes =
-      new base::RefCountedBytes(iv->compressed.value());
+      new base::RefCountedBytes(iv->compressed);
   std::move(callback).Run(image_bytes);
 }
 
@@ -99,10 +102,18 @@ void AppIconSource::StartDataRequest(
   const apps::mojom::AppType app_type =
       app_service_proxy->AppRegistryCache().GetAppType(app_id);
   constexpr bool allow_placeholder_icon = false;
-  app_service_proxy->LoadIcon(
-      app_type, app_id, apps::mojom::IconType::kCompressed, size_in_dip,
-      allow_placeholder_icon,
-      base::BindOnce(&RunCallback, std::move(callback)));
+  if (base::FeatureList::IsEnabled(features::kAppServiceLoadIconWithoutMojom)) {
+    app_service_proxy->LoadIcon(
+        ConvertMojomAppTypToAppType(app_type), app_id, IconType::kCompressed,
+        size_in_dip, allow_placeholder_icon,
+        base::BindOnce(&RunCallback, std::move(callback)));
+  } else {
+    app_service_proxy->LoadIcon(
+        app_type, app_id, apps::mojom::IconType::kCompressed, size_in_dip,
+        allow_placeholder_icon,
+        MojomIconValueToIconValueCallback(
+            base::BindOnce(&RunCallback, std::move(callback))));
+  }
 }
 
 std::string AppIconSource::GetMimeType(const std::string&) {

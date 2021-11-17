@@ -83,11 +83,7 @@ class StandaloneBrowserExtensionAppShelfItemController
   using ShelfItem = ash::ShelfItem;
 
   // Called by AppServiceProxy once an icon has been loaded.
-  void DidLoadIcon(apps::IconValuePtr icon_value);
-
-  // Called by AppServiceProxy once an icon has been loaded.
-  // TODO(crbug.com/1251501): Remove this mojom callback.
-  void DidLoadMojomIcon(apps::mojom::IconValuePtr icon_value);
+  void OnLoadIcon(apps::IconValuePtr icon_value);
 
   // aura::WindowObserver overrides:
   void OnWindowDestroying(aura::Window* window) override;

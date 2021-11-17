@@ -13,6 +13,8 @@ source_set("test_support") {
   deps = [
     "//build:chromeos_buildflags",
     "//chrome/test:test_support",
+    "//components/services/app_service/public/cpp:app_types",
+    "//components/services/app_service/public/cpp:icon_types",
     "//components/services/app_service/public/mojom",
     "//skia",
   ]

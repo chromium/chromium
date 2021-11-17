@@ -28,6 +28,8 @@
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "chrome/common/chrome_features.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
+#include "components/services/app_service/public/cpp/app_types.h"
+#include "components/services/app_service/public/mojom/types.mojom-forward.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
@@ -362,15 +364,24 @@ const WebAppRegistrar& WebAppBrowserController::registrar() const {
 void WebAppBrowserController::LoadAppIcon(bool allow_placeholder_icon) const {
   apps::AppServiceProxy* proxy =
       apps::AppServiceProxyFactory::GetForProfile(browser()->profile());
-  proxy->LoadIcon(proxy->AppRegistryCache().GetAppType(app_id()), app_id(),
-                  apps::mojom::IconType::kStandard, kWebAppIconSmall,
-                  allow_placeholder_icon,
-                  base::BindOnce(&WebAppBrowserController::OnLoadIcon,
-                                 weak_ptr_factory_.GetWeakPtr()));
+  auto app_type = proxy->AppRegistryCache().GetAppType(app_id());
+  if (base::FeatureList::IsEnabled(features::kAppServiceLoadIconWithoutMojom)) {
+    proxy->LoadIcon(apps::ConvertMojomAppTypToAppType(app_type), app_id(),
+                    apps::IconType::kStandard, kWebAppIconSmall,
+                    allow_placeholder_icon,
+                    base::BindOnce(&WebAppBrowserController::OnLoadIcon,
+                                   weak_ptr_factory_.GetWeakPtr()));
+  } else {
+    proxy->LoadIcon(app_type, app_id(), apps::mojom::IconType::kStandard,
+                    kWebAppIconSmall, allow_placeholder_icon,
+                    apps::MojomIconValueToIconValueCallback(
+                        base::BindOnce(&WebAppBrowserController::OnLoadIcon,
+                                       weak_ptr_factory_.GetWeakPtr())));
+  }
 }
 
-void WebAppBrowserController::OnLoadIcon(apps::mojom::IconValuePtr icon_value) {
-  if (icon_value->icon_type != apps::mojom::IconType::kStandard)
+void WebAppBrowserController::OnLoadIcon(apps::IconValuePtr icon_value) {
+  if (!icon_value || icon_value->icon_type != apps::IconType::kStandard)
     return;
 
   app_icon_ = ui::ImageModel::FromImageSkia(icon_value->uncompressed);

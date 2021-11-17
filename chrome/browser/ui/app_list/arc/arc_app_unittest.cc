@@ -73,13 +73,16 @@
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller.h"
 #include "chrome/browser/ui/ash/shelf/shelf_controller_helper.h"
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/arc/mojom/app.mojom.h"
 #include "components/arc/mojom/compatibility_mode.mojom.h"
 #include "components/arc/session/arc_service_manager.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
+#include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/app_update.h"
+#include "components/services/app_service/public/cpp/icon_types.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
 #include "components/services/app_service/public/cpp/stub_icon_loader.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
@@ -2834,18 +2837,34 @@ TEST_P(ArcAppModelBuilderTest, IconLoaderCompressed) {
       apps::AppServiceProxyFactory::GetForProfile(profile_.get());
   ASSERT_NE(nullptr, proxy);
 
-  proxy->LoadIcon(
-      apps::mojom::AppType::kArc, app_id, apps::mojom::IconType::kCompressed,
-      icon_size, false /*allow_placeholder_icon*/,
-      base::BindLambdaForTesting([&](apps::mojom::IconValuePtr icon_value) {
-        EXPECT_EQ(apps::mojom::IconType::kCompressed, icon_value->icon_type);
-        EXPECT_TRUE(icon_value->compressed);
-        std::vector<uint8_t> png_data = icon_value->compressed.value();
-        std::string compressed(png_data.begin(), png_data.end());
-        // Check that |compressed| starts with the 8-byte PNG magic string.
-        EXPECT_EQ(compressed.substr(0, 8), "\x89\x50\x4e\x47\x0d\x0a\x1a\x0a");
-        quit.Run();
-      }));
+  if (base::FeatureList::IsEnabled(features::kAppServiceLoadIconWithoutMojom)) {
+    proxy->LoadIcon(
+        apps::AppType::kArc, app_id, apps::IconType::kCompressed, icon_size,
+        false /*allow_placeholder_icon*/,
+        base::BindLambdaForTesting([&](apps::IconValuePtr icon_value) {
+          EXPECT_EQ(apps::IconType::kCompressed, icon_value->icon_type);
+          std::vector<uint8_t> png_data = icon_value->compressed;
+          std::string compressed(png_data.begin(), png_data.end());
+          // Check that |compressed| starts with the 8-byte PNG magic string.
+          EXPECT_EQ(compressed.substr(0, 8),
+                    "\x89\x50\x4e\x47\x0d\x0a\x1a\x0a");
+          quit.Run();
+        }));
+  } else {
+    proxy->LoadIcon(
+        apps::mojom::AppType::kArc, app_id, apps::mojom::IconType::kCompressed,
+        icon_size, false /*allow_placeholder_icon*/,
+        base::BindLambdaForTesting([&](apps::mojom::IconValuePtr icon_value) {
+          EXPECT_EQ(apps::mojom::IconType::kCompressed, icon_value->icon_type);
+          EXPECT_TRUE(icon_value->compressed);
+          std::vector<uint8_t> png_data = icon_value->compressed.value();
+          std::string compressed(png_data.begin(), png_data.end());
+          // Check that |compressed| starts with the 8-byte PNG magic string.
+          EXPECT_EQ(compressed.substr(0, 8),
+                    "\x89\x50\x4e\x47\x0d\x0a\x1a\x0a");
+          quit.Run();
+        }));
+  }
   run_loop.Run();
 }
 
