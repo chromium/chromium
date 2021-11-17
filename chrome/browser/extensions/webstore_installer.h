@@ -12,6 +12,7 @@
 #include "base/compiler_specific.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/ref_counted.h"
+#include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/supports_user_data.h"
 #include "base/timer/timer.h"
@@ -23,7 +24,6 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/notification_observer.h"
 #include "content/public/browser/notification_registrar.h"
-#include "content/public/browser/web_contents_observer.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_observer.h"
 #include "extensions/common/manifest_handlers/shared_module_info.h"
@@ -50,7 +50,6 @@ class Manifest;
 class WebstoreInstaller : public content::NotificationObserver,
                           public ExtensionRegistryObserver,
                           public download::DownloadItem::Observer,
-                          public content::WebContentsObserver,
                           public base::RefCountedThreadSafe<
                               WebstoreInstaller,
                               content::BrowserThread::DeleteOnUIThread> {
@@ -269,6 +268,7 @@ class WebstoreInstaller : public content::NotificationObserver,
   content::NotificationRegistrar registrar_;
   base::ScopedObservation<ExtensionRegistry, ExtensionRegistryObserver>
       extension_registry_observation_{this};
+  base::WeakPtr<content::WebContents> web_contents_;
   Profile* profile_;
   Delegate* delegate_;
   std::string id_;

@@ -275,7 +275,7 @@ WebstoreInstaller::WebstoreInstaller(Profile* profile,
                                      const std::string& id,
                                      std::unique_ptr<Approval> approval,
                                      InstallSource source)
-    : content::WebContentsObserver(web_contents),
+    : web_contents_(web_contents->GetWeakPtr()),
       profile_(profile),
       delegate_(delegate),
       id_(id),
@@ -594,21 +594,20 @@ void WebstoreInstaller::StartDownload(const std::string& extension_id,
     return;
   }
 
-  content::WebContents* contents = web_contents();
-  if (!contents) {
+  if (!web_contents_) {
     ReportFailure(kDownloadDirectoryError, FAILURE_REASON_OTHER);
     return;
   }
-  if (!contents->GetMainFrame()->GetRenderViewHost()) {
+  if (!web_contents_->GetMainFrame()->GetRenderViewHost()) {
     ReportFailure(kDownloadDirectoryError, FAILURE_REASON_OTHER);
     return;
   }
-  if (!contents->GetMainFrame()->GetRenderViewHost()->GetProcess()) {
+  if (!web_contents_->GetMainFrame()->GetRenderViewHost()->GetProcess()) {
     ReportFailure(kDownloadDirectoryError, FAILURE_REASON_OTHER);
     return;
   }
 
-  content::NavigationController& controller = contents->GetController();
+  content::NavigationController& controller = web_contents_->GetController();
   if (!controller.GetBrowserContext()) {
     ReportFailure(kDownloadDirectoryError, FAILURE_REASON_OTHER);
     return;
@@ -622,9 +621,9 @@ void WebstoreInstaller::StartDownload(const std::string& extension_id,
   // We will navigate the current tab to this url to start the download. The
   // download system will then pass the crx to the CrxInstaller.
   int render_process_host_id =
-      contents->GetMainFrame()->GetRenderViewHost()->GetProcess()->GetID();
+      web_contents_->GetMainFrame()->GetRenderViewHost()->GetProcess()->GetID();
 
-  content::RenderFrameHost* render_frame_host = contents->GetMainFrame();
+  content::RenderFrameHost* render_frame_host = web_contents_->GetMainFrame();
   net::NetworkTrafficAnnotationTag traffic_annotation =
       net::DefineNetworkTrafficAnnotation("webstore_installer", R"(
         semantics {
