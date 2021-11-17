@@ -8,6 +8,8 @@
 #include <utility>
 
 #include "ash/components/arc/arc_prefs.h"
+#include "ash/components/arc/metrics/arc_metrics_service.h"
+#include "ash/components/arc/metrics/stability_metrics_manager.h"
 #include "ash/components/arc/test/fake_arc_session.h"
 #include "ash/constants/app_types.h"
 #include "ash/public/cpp/app_types_util.h"
@@ -17,8 +19,6 @@
 #include "chrome/browser/ash/arc/test/test_arc_session_manager.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/dbus/concierge/concierge_client.h"
-#include "components/arc/metrics/arc_metrics_service.h"
-#include "components/arc/metrics/stability_metrics_manager.h"
 #include "components/arc/session/arc_service_manager.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/session_manager/core/session_manager.h"

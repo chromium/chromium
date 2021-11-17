@@ -2,24 +2,24 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/arc/memory_pressure/arc_memory_pressure_bridge.h"
+#include "ash/components/arc/memory_pressure/arc_memory_pressure_bridge.h"
 
 #include <stdint.h>
 #include <unistd.h>
 
 #include "ash/components/arc/arc_prefs.h"
+#include "ash/components/arc/metrics/stability_metrics_manager.h"
 #include "ash/components/arc/test/fake_process_instance.h"
 #include "ash/components/arc/test/test_browser_context.h"
 #include "chromeos/dbus/resourced/fake_resourced_client.h"
-#include "components/arc/metrics/stability_metrics_manager.h"
 #include "components/arc/session/arc_bridge_service.h"
 #include "components/arc/session/arc_service_manager.h"
 #include "content/public/test/browser_task_environment.h"
 #include "mojo/public/cpp/system/platform_handle.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+#include "ash/components/arc/metrics/arc_metrics_service.h"
 #include "chromeos/dbus/session_manager/fake_session_manager_client.h"
-#include "components/arc/metrics/arc_metrics_service.h"
 #include "components/session_manager/core/session_manager.h"
 
 namespace arc {

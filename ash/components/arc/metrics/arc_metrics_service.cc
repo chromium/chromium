@@ -2,13 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/arc/metrics/arc_metrics_service.h"
+#include "ash/components/arc/metrics/arc_metrics_service.h"
 
 #include <string>
 #include <utility>
 
 #include "ash/components/arc/arc_prefs.h"
 #include "ash/components/arc/arc_util.h"
+#include "ash/components/arc/metrics/stability_metrics_manager.h"
 #include "ash/public/cpp/app_types_util.h"
 #include "base/bind.h"
 #include "base/logging.h"
@@ -19,7 +20,6 @@
 #include "base/strings/string_util.h"
 #include "chromeos/dbus/power_manager/idle.pb.h"
 #include "chromeos/dbus/session_manager/session_manager_client.h"
-#include "components/arc/metrics/stability_metrics_manager.h"
 #include "components/arc/session/arc_bridge_service.h"
 #include "components/exo/wm_helper.h"
 #include "components/prefs/pref_service.h"

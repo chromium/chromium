@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/arc/metrics/arc_metrics_service.h"
+#include "ash/components/arc/metrics/arc_metrics_service.h"
 
 #include <algorithm>
 #include <array>
@@ -12,6 +12,7 @@
 
 #include "ash/components/arc/arc_prefs.h"
 #include "ash/components/arc/metrics/arc_metrics_constants.h"
+#include "ash/components/arc/metrics/stability_metrics_manager.h"
 #include "ash/components/arc/test/test_browser_context.h"
 #include "ash/constants/app_types.h"
 #include "base/metrics/histogram_samples.h"
@@ -19,7 +20,6 @@
 #include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "chromeos/dbus/session_manager/fake_session_manager_client.h"
-#include "components/arc/metrics/stability_metrics_manager.h"
 #include "components/arc/session/arc_service_manager.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/session_manager/core/session_manager.h"

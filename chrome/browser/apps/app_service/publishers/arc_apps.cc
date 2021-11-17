@@ -9,6 +9,7 @@
 
 #include "ash/components/arc/arc_util.h"
 #include "ash/components/arc/metrics/arc_metrics_constants.h"
+#include "ash/components/arc/metrics/arc_metrics_service.h"
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/app_menu_constants.h"
 #include "base/bind.h"
@@ -44,8 +45,6 @@
 #include "components/app_restore/features.h"
 #include "components/app_restore/full_restore_save_handler.h"
 #include "components/app_restore/full_restore_utils.h"
-#include "components/arc/intent_helper/intent_constants.h"
-#include "components/arc/metrics/arc_metrics_service.h"
 #include "components/arc/mojom/app_permissions.mojom.h"
 #include "components/arc/mojom/compatibility_mode.mojom.h"
 #include "components/arc/mojom/file_system.mojom.h"

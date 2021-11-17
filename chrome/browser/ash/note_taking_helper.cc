@@ -9,6 +9,7 @@
 
 #include "apps/launcher.h"
 #include "ash/components/arc/metrics/arc_metrics_constants.h"
+#include "ash/components/arc/metrics/arc_metrics_service.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/stylus_utils.h"
 #include "base/bind.h"
@@ -35,7 +36,6 @@
 #include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "chrome/common/pref_names.h"
 #include "components/arc/intent_helper/arc_intent_helper_bridge.h"
-#include "components/arc/metrics/arc_metrics_service.h"
 #include "components/arc/mojom/file_system.mojom.h"
 #include "components/arc/mojom/intent_common.mojom.h"
 #include "components/arc/mojom/intent_helper.mojom.h"

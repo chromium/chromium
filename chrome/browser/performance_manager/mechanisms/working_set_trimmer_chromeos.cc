@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "ash/components/arc/memory/arc_memory_bridge.h"
 #include "base/bind.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -15,7 +16,6 @@
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "components/arc/memory/arc_memory_bridge.h"
 #include "components/performance_manager/public/graph/process_node.h"
 #include "content/public/browser/browser_thread.h"
 

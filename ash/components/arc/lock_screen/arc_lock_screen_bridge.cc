@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/arc/lock_screen/arc_lock_screen_bridge.h"
+#include "ash/components/arc/lock_screen/arc_lock_screen_bridge.h"
 
 #include "ash/components/arc/arc_browser_context_keyed_service_factory_base.h"
 #include "base/bind.h"

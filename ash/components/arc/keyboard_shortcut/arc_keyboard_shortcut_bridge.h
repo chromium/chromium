@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_ARC_KEYBOARD_SHORTCUT_ARC_KEYBOARD_SHORTCUT_BRIDGE_H_
-#define COMPONENTS_ARC_KEYBOARD_SHORTCUT_ARC_KEYBOARD_SHORTCUT_BRIDGE_H_
+#ifndef ASH_COMPONENTS_ARC_KEYBOARD_SHORTCUT_ARC_KEYBOARD_SHORTCUT_BRIDGE_H_
+#define ASH_COMPONENTS_ARC_KEYBOARD_SHORTCUT_ARC_KEYBOARD_SHORTCUT_BRIDGE_H_
 
 #include "components/arc/mojom/keyboard_shortcut.mojom.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -43,4 +43,4 @@ class ArcKeyboardShortcutBridge : public KeyedService,
 
 }  // namespace arc
 
-#endif  // COMPONENTS_ARC_KEYBOARD_SHORTCUT_ARC_KEYBOARD_SHORTCUT_BRIDGE_H_
+#endif  // ASH_COMPONENTS_ARC_KEYBOARD_SHORTCUT_ARC_KEYBOARD_SHORTCUT_BRIDGE_H_

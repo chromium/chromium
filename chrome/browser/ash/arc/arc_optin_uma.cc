@@ -7,6 +7,7 @@
 #include <string>
 
 #include "ash/components/arc/arc_util.h"
+#include "ash/components/arc/metrics/stability_metrics_manager.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "chrome/browser/ash/arc/arc_util.h"
@@ -15,7 +16,6 @@
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "components/arc/metrics/stability_metrics_manager.h"
 #include "components/arc/mojom/app.mojom.h"
 #include "components/arc/mojom/auth.mojom.h"
 

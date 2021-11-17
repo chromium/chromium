@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_ARC_METRICS_STABILITY_METRICS_MANAGER_H_
-#define COMPONENTS_ARC_METRICS_STABILITY_METRICS_MANAGER_H_
+#ifndef ASH_COMPONENTS_ARC_METRICS_STABILITY_METRICS_MANAGER_H_
+#define ASH_COMPONENTS_ARC_METRICS_STABILITY_METRICS_MANAGER_H_
 
 #include "ash/components/arc/metrics/arc_metrics_constants.h"
 #include "base/sequence_checker.h"
@@ -61,4 +61,4 @@ class StabilityMetricsManager {
 
 }  // namespace arc
 
-#endif  // COMPONENTS_ARC_METRICS_STABILITY_METRICS_MANAGER_H_
+#endif  // ASH_COMPONENTS_ARC_METRICS_STABILITY_METRICS_MANAGER_H_

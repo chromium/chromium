@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_ARC_MEMORY_PRESSURE_ARC_MEMORY_PRESSURE_BRIDGE_H_
-#define COMPONENTS_ARC_MEMORY_PRESSURE_ARC_MEMORY_PRESSURE_BRIDGE_H_
+#ifndef ASH_COMPONENTS_ARC_MEMORY_PRESSURE_ARC_MEMORY_PRESSURE_BRIDGE_H_
+#define ASH_COMPONENTS_ARC_MEMORY_PRESSURE_ARC_MEMORY_PRESSURE_BRIDGE_H_
 
+#include "ash/components/arc/metrics/arc_metrics_service.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/dbus/resourced/resourced_client.h"
-#include "components/arc/metrics/arc_metrics_service.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 namespace content {
@@ -61,4 +61,4 @@ class ArcMemoryPressureBridge
 
 }  // namespace arc
 
-#endif  // COMPONENTS_ARC_MEMORY_PRESSURE_ARC_MEMORY_PRESSURE_BRIDGE_H_
+#endif  // ASH_COMPONENTS_ARC_MEMORY_PRESSURE_ARC_MEMORY_PRESSURE_BRIDGE_H_

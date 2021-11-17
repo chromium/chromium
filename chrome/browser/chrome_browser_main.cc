@@ -212,11 +212,11 @@
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/components/arc/metrics/stability_metrics_manager.h"
 #include "ash/components/settings/cros_settings_names.h"
 #include "ash/constants/ash_switches.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
 #include "chrome/browser/ash/settings/stats_reporting_controller.h"
-#include "components/arc/metrics/stability_metrics_manager.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 // TODO(crbug.com/1052397): Revisit the macro expression once build flag switch

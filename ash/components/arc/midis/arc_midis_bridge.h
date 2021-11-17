@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_ARC_MIDIS_ARC_MIDIS_BRIDGE_H_
-#define COMPONENTS_ARC_MIDIS_ARC_MIDIS_BRIDGE_H_
+#ifndef ASH_COMPONENTS_ARC_MIDIS_ARC_MIDIS_BRIDGE_H_
+#define ASH_COMPONENTS_ARC_MIDIS_ARC_MIDIS_BRIDGE_H_
 
 #include <stdint.h>
 
@@ -21,8 +21,7 @@ namespace arc {
 
 class ArcBridgeService;
 
-class ArcMidisBridge : public KeyedService,
-                       public mojom::MidisHost {
+class ArcMidisBridge : public KeyedService, public mojom::MidisHost {
  public:
   // Returns singleton instance for the given BrowserContext,
   // or nullptr if the browser |context| is not allowed to use ARC.
@@ -58,4 +57,4 @@ class ArcMidisBridge : public KeyedService,
 
 }  // namespace arc
 
-#endif  // COMPONENTS_ARC_MIDIS_ARC_MIDIS_BRIDGE_H_
+#endif  // ASH_COMPONENTS_ARC_MIDIS_ARC_MIDIS_BRIDGE_H_
