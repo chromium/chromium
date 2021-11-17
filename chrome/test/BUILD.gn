@@ -2059,7 +2059,6 @@ if (!is_android && !is_fuchsia) {
       "../browser/unload_browsertest.cc",
       "../browser/usb/usb_browsertest.cc",
       "../browser/wake_lock/wake_lock_browsertest.cc",
-      "../browser/web_applications/extensions/bookmark_app_browsertest.cc",
       "../browser/webauthn/chrome_webauthn_browsertest.cc",
       "../browser/window_placement/window_placement_browsertest.cc",
       "../browser/window_placement/window_placement_permission_context_browsertest.cc",

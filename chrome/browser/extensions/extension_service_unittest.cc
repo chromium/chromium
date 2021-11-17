@@ -1247,36 +1247,6 @@ TEST_F(ExtensionServiceTest, InstallObserverNotified) {
   registry->RemoveObserver(&observer);
 }
 
-// Tests that flags passed to OnExternalExtensionFileFound() make it to the
-// extension object.
-TEST_F(ExtensionServiceTest, InstallingExternalExtensionWithFlags) {
-  InitializeEmptyExtensionService();
-
-  base::FilePath path = data_dir().AppendASCII("good.crx");
-
-  // Register and install an external extension.
-  std::string version_str = "1.0.0.0";
-  std::unique_ptr<ExternalInstallInfoFile> info = CreateExternalExtension(
-      good_crx, version_str, path, ManifestLocation::kExternalPref,
-      Extension::FROM_BOOKMARK);
-  MockExternalProvider* provider =
-      AddMockExternalProvider(ManifestLocation::kExternalPolicyDownload);
-  provider->UpdateOrAddExtension(std::move(info));
-  WaitForExternalExtensionInstalled();
-
-  const Extension* extension =
-      registry()->enabled_extensions().GetByID(good_crx);
-  ASSERT_TRUE(extension);
-  ASSERT_TRUE(extension->from_bookmark());
-
-  // Upgrade to version 2.0, the flag should be preserved.
-  path = data_dir().AppendASCII("good2.crx");
-  UpdateExtension(good_crx, path, ENABLED);
-  extension = registry()->enabled_extensions().GetByID(good_crx);
-  ASSERT_TRUE(extension);
-  ASSERT_TRUE(extension->from_bookmark());
-}
-
 // Test the handling of uninstalling external extensions.
 TEST_F(ExtensionServiceTest, UninstallingExternalExtensions) {
   InitializeEmptyExtensionService();
@@ -4657,42 +4627,6 @@ TEST_F(ExtensionServiceTest, PreinstalledAppsInstall) {
   EXPECT_TRUE(extension->was_installed_by_default());
 }
 #endif
-
-// Crashes on Linux/CrOS.  https://crbug.com/703712
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
-#define MAYBE_UpdatingPendingExternalExtensionWithFlags \
-  DISABLED_UpdatingPendingExternalExtensionWithFlags
-#else
-#define MAYBE_UpdatingPendingExternalExtensionWithFlags \
-  UpdatingPendingExternalExtensionWithFlags
-#endif
-
-TEST_F(ExtensionServiceTest, MAYBE_UpdatingPendingExternalExtensionWithFlags) {
-  // Regression test for crbug.com/627522
-  InitializeEmptyExtensionService();
-
-  base::FilePath path = data_dir().AppendASCII("good.crx");
-
-  // Register and install an external extension.
-  base::Version version("1.0.0.0");
-  content::WindowedNotificationObserver observer(
-      NOTIFICATION_CRX_INSTALLER_DONE,
-      content::NotificationService::AllSources());
-  ExternalInstallInfoFile info(
-      good_crx, version, path, ManifestLocation::kExternalPref,
-      Extension::FROM_BOOKMARK, false /* mark_acknowledged */,
-      false /* install_immediately */);
-  ASSERT_TRUE(service()->OnExternalExtensionFileFound(info));
-  EXPECT_TRUE(service()->pending_extension_manager()->IsIdPending(good_crx));
-
-  // Upgrade to version 2.0, the flag should be preserved.
-  path = data_dir().AppendASCII("good2.crx");
-  UpdateExtension(good_crx, path, ENABLED);
-  const Extension* extension =
-      registry()->enabled_extensions().GetByID(good_crx);
-  ASSERT_TRUE(extension);
-  ASSERT_TRUE(extension->from_bookmark());
-}
 
 // Tests disabling extensions
 TEST_F(ExtensionServiceTest, DisableExtension) {

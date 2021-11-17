@@ -253,6 +253,12 @@ scoped_refptr<Extension> Extension::Create(const base::FilePath& path,
     return nullptr;
   }
 
+  if ((flags & FROM_BOOKMARK) != 0) {
+    // Extension-based bookmark apps are no longer supported.
+    // They have been replaced by web apps.
+    return nullptr;
+  }
+
   std::unique_ptr<extensions::Manifest> manifest;
   if (flags & FOR_LOGIN_SCREEN) {
     manifest = Manifest::CreateManifestForLoginScreen(

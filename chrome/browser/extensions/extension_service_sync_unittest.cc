@@ -235,25 +235,6 @@ class ExtensionServiceSyncTest
   }
 };
 
-TEST_F(ExtensionServiceSyncTest, DeleteAllInstalledBookMarkAppsDuringSync) {
-  InitializeEmptyExtensionService();
-
-  // Install the bookmark app.
-  InstallCRX(data_dir().AppendASCII("good.crx"),
-             ManifestLocation::kExternalPref, INSTALL_NEW,
-             Extension::FROM_BOOKMARK);
-  const Extension* extension = registry()->GetInstalledExtension(good_crx);
-  ASSERT_TRUE(extension);
-  ASSERT_TRUE(extension->from_bookmark());
-  ASSERT_FALSE(extensions::util::ShouldSync(extension, profile()));
-
-  StartSyncing(syncer::EXTENSIONS);
-
-  // Should uninstall the bookmark app.
-  EXPECT_FALSE(
-      registry()->GetExtensionById(good_crx, ExtensionRegistry::EVERYTHING));
-}
-
 TEST_F(ExtensionServiceSyncTest, DeferredSyncStartupPreInstalledComponent) {
   InitializeEmptyExtensionService();
 
