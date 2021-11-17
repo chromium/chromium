@@ -119,6 +119,7 @@
 <translation id="1743570585616704562">Танихгүй байна</translation>
 <translation id="1746730358044914197">Оролтын аргыг таны админ тохируулсан.</translation>
 <translation id="1747827819627189109">Дэлгэцэн дээрх гарыг идэвхжүүлсэн байна</translation>
+<translation id="1750088060796401187">Зөвхөн <ph name="MAX_DESK_LIMIT" /> дэлгэцийг зөвшөөрсөн. Шинэ дэлгэц нээхийн тулд дэлгэц хасна уу.</translation>
 <translation id="1761222317188459878">Сүлжээний холболтыг унтрааж/асаана уу. <ph name="STATE_TEXT" /></translation>
 <translation id="1768366657309696705"><ph name="LAUNCHER_KEY_NAME" /> + Цэг товчлуурын шууд холбоосыг өөрчилсөн байна. Оруулах товчлуурыг ашиглахын тулд <ph name="LAUNCHER_KEY_NAME" /> товчлуур + Shift + Ухраахыг дарна уу.</translation>
 <translation id="1771761307086386028">Баруун тийш гүйлгэх</translation>

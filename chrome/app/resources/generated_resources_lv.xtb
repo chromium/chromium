@@ -1223,6 +1223,7 @@ Varat pārvaldīt šī konta iestatījumus, savā ierīcē instalējot lietotni 
 <translation id="2232751457155581899">Atļaut vietnēm pieprasīt atļauju izsekot kameras pozīciju</translation>
 <translation id="2232876851878324699">Failā bija iekļauts viens sertifikāts, kas netika importēts:</translation>
 <translation id="2233502537820838181">&amp;Plašāka informācija</translation>
+<translation id="223356358902285214">Darbības tīmeklī un lietotnēs</translation>
 <translation id="2234876718134438132">Sinhronizēšana un Google pakalp.</translation>
 <translation id="2235344399760031203">Trešo pušu sīkfaili ir bloķēti</translation>
 <translation id="2238379619048995541">Dati par frekvences stāvokli</translation>
@@ -1909,6 +1910,7 @@ Servera ziņojums: <ph name="SERVER_MSG" /></translation>
 <translation id="2923006468155067296">Jūsu <ph name="DEVICE_TYPE" /> ierīce tūlīt tiks bloķēta.
 Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievietotai.</translation>
 <translation id="2923234477033317484">Noņemt šo kontu</translation>
+<translation id="2923644930701689793">Piekļūstiet sava tālruņa kameras fotoalbumam.</translation>
 <translation id="2926085873880284723">Atjaunot noklusējuma saīsnes</translation>
 <translation id="2926620265753325858">Ierīce <ph name="DEVICE_NAME" /> netiek atbalstīta.</translation>
 <translation id="2927017729816812676">Kešatmiņas krātuve</translation>
@@ -3100,6 +3102,7 @@ Vai vēlaties palaist rīku <ph name="CONTROL_PANEL_APPLET_NAME" />?</translatio
 <translation id="4168015872538332605">Daži iestatījumi, ko veica <ph name="PRIMARY_EMAIL" />, ir kopīgoti ar jums. Šie iestatījumi ietekmē jūsu kontu tikai tad, kad izmantojat vairākkārtēju pierakstīšanos.</translation>
 <translation id="4169535189173047238">Neatļaut</translation>
 <translation id="4170314459383239649">Aizverot notīrīt</translation>
+<translation id="417096670996204801">Profila izvēle</translation>
 <translation id="4175137578744761569">Gaiši violeta un balta</translation>
 <translation id="4175737294868205930">Pastāvīga krātuve</translation>
 <translation id="4176463684765177261">Atspējota</translation>

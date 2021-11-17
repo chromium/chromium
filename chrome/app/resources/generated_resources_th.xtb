@@ -595,6 +595,7 @@
 <translation id="161042844686301425">สีฟ้า</translation>
 <translation id="1611432201750675208">อุปกรณ์ล็อกอยู่</translation>
 <translation id="1612019740169791082">คอนเทนเนอร์ไม่ได้กำหนดค่าไว้ให้รองรับการปรับขนาดดิสก์ หากต้องการปรับพื้นที่ว่างที่สำรองไว้สำหรับ Linux ให้สำรองข้อมูลแล้วคืนค่าในคอนเทนเนอร์ใหม่</translation>
+<translation id="1613019471223620622">แสดงรหัสผ่านของ <ph name="USERNAME" /> ใน <ph name="DOMAIN" /></translation>
 <translation id="1614511179807650956">คุณอาจใช้เน็ตมือถือตามปริมาณที่อนุญาตหมดแล้ว ไปที่พอร์ทัลการเปิดใช้งาน <ph name="NAME" /> เพื่อซื้อเน็ตมือถือเพิ่มเติม</translation>
 <translation id="161460670679785907">ไม่พบโทรศัพท์ของคุณ</translation>
 <translation id="1615337439947999338">บันทึกในบัญชี Google (<ph name="EMAIL" />)</translation>
@@ -1200,6 +1201,7 @@
 <translation id="2220529011494928058">รายงานปัญหา</translation>
 <translation id="2220572644011485463">PIN หรือรหัสผ่าน</translation>
 <translation id="2221261048068091179"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" /></translation>
+<translation id="222201875806112242">แหล่งที่มาของสื่อซึ่งไม่มีชื่อ</translation>
 <translation id="2224444042887712269">การตั้งค่านี้เป็นของ <ph name="OWNER_EMAIL" /></translation>
 <translation id="222447520299472966">ต้องเลือกอัลบั้มแกลเลอรีศิลปะอย่างน้อย 1 อัลบั้ม</translation>
 <translation id="2224551243087462610">แก้ไขชื่อโฟลเดอร์</translation>
@@ -3318,6 +3320,7 @@
 <translation id="4444304522807523469">เข้าถึงเครื่องสแกนเอกสารที่เชื่อมต่อผ่าน USB หรือบนเครือข่าย LAN</translation>
 <translation id="4444512841222467874">หากไม่เพิ่มพื้นที่ว่าง ระบบอาจลบผู้ใช้และข้อมูลโดยอัตโนมัติ</translation>
 <translation id="4446933390699670756">มิเรอร์</translation>
+<translation id="4448914100439890108">ซ่อนรหัสผ่านของ <ph name="USERNAME" /> ใน <ph name="DOMAIN" /></translation>
 <translation id="4449948729197510913">ชื่อผู้ใช้ของคุณเป็นของบัญชีองค์กรของคุณ หากต้องการลงทะเบียนอุปกรณ์กับบัญชีดังกล่าว ก่อนอื่นให้ยืนยันการเป็นเจ้าของโดเมนในคอนโซลผู้ดูแลระบบ คุณจะต้องมีสิทธิ์ระดับผู้ดูแลระบบในบัญชีเพื่อยืนยัน</translation>
 <translation id="4449996769074858870">แท็บนี้กำลังเล่นเสียง</translation>
 <translation id="4450274068924249931">ระบบจะแสดงรูปภาพ เวลา สภาพอากาศ และข้อมูลสื่อเมื่อไม่มีการใช้งานหน้าจอ การเปิดใช้โปรแกรมรักษาหน้าจอจะเปิดจอแสดงผลไว้ขณะชาร์จ</translation>
@@ -3841,6 +3844,7 @@
 <translation id="5009463889040999939">กำลังเปลี่ยนชื่อโปรไฟล์ การดำเนินการนี้อาจใช้เวลาสักครู่</translation>
 <translation id="5010043101506446253">ผู้ออกใบรับรอง</translation>
 <translation id="5015344424288992913">กำลังแปลงพร็อกซี...</translation>
+<translation id="5016491575926936899">คุณสามารถส่งข้อความจากคอมพิวเตอร์ แชร์การเชื่อมต่ออินเทอร์เน็ต ตอบกลับการแจ้งเตือนการสนทนา และปลดล็อก <ph name="DEVICE_TYPE" /> ด้วยโทรศัพท์<ph name="FOOTNOTE_POINTER" /> <ph name="LINK_BEGIN" />ดูข้อมูลเพิ่มเติม<ph name="LINK_END" /></translation>
 <translation id="5017643436812738274">คุณไปยังส่วนต่างๆ ของหน้าได้ด้วยเคอร์เซอร์ข้อความ กด Ctrl+Search+7 เพื่อปิด</translation>
 <translation id="5017828934289857214">เตือนฉันภายหลัง</translation>
 <translation id="5018207570537526145">เปิดเว็บไซต์ส่วนขยาย</translation>
@@ -4427,6 +4431,7 @@
 <translation id="5638309510554459422">ค้นหาส่วนขยายและธีมต่างๆ ได้ใน <ph name="BEGIN_LINK" />Chrome เว็บสโตร์<ph name="END_LINK" /></translation>
 <translation id="5639549361331209298">โหลดหน้าเว็บนี้ซ้ำ กดค้างไว้เพื่อดูตัวเลือกเพิ่มเติม</translation>
 <translation id="5640133431808313291">จัดการคีย์ความปลอดภัย</translation>
+<translation id="5641608986289282154">เริ่มใช้ <ph name="DEVICE_OS" /></translation>
 <translation id="5642508497713047">ผู้เซ็นชื่อ CRL</translation>
 <translation id="5643321261065707929">เครือข่ายมีการวัดปริมาณอินเทอร์เน็ต</translation>
 <translation id="5643620609347735571">ล้างและดำเนินการต่อ</translation>

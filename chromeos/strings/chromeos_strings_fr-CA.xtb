@@ -184,6 +184,7 @@
 <translation id="409427325554347132">Enregistrer les détails du test</translation>
 <translation id="4111761024568264522">Pavé tactile USB</translation>
 <translation id="4131410914670010031">Noir et blanc</translation>
+<translation id="4140251671072434548">Effectuer le déverrouillage du serveur ARM</translation>
 <translation id="4145784616224233563">Pare-feu HTTP</translation>
 <translation id="4147897805161313378">Google Photos</translation>
 <translation id="4155551848414053977">Assurez-vous que le numériseur est allumé et accessible par le biais de votre réseau ou d'une connexion directe</translation>
@@ -469,6 +470,7 @@ Essayez de toucher le micro pour me demander ce que vous souhaitez.</translation
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
 <translation id="8132480444149501833">Demander des compteurs de trafic</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
+<translation id="816013303019725643">Entrez le code de déverrouillage :</translation>
 <translation id="8206859287963243715">Cellulaire</translation>
 <translation id="8208861521865154048">Avantages</translation>
 <translation id="8230672074305416752">Impossible d'effectuer un ping avec la passerelle réseau par défaut</translation>

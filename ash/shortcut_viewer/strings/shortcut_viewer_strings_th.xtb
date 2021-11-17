@@ -89,6 +89,7 @@
 <translation id="379295446891231126"><ph name="CTRL" /><ph name="SEPARATOR" /> 1 จนถึง 8</translation>
 <translation id="3837047332182291558">เพิ่มแสงแป้นพิมพ์ (เฉพาะแป้นพิมพ์เรืองแสง)</translation>
 <translation id="3949671998904569433">จุลภาค</translation>
+<translation id="3976707995992061296">สลับปุ่มเพื่อระบุว่าจะกำหนดหน้าต่างที่ใช้งานอยู่ให้กับเดสก์ทั้งหมดหรือไม่</translation>
 <translation id="3976863468609830880">คลิกไอคอนสุดท้ายบนชั้นวาง</translation>
 <translation id="3994783594793697310">รีเซ็ตระดับการซูมหน้าจอ</translation>
 <translation id="4026843240379844265">ย้ายหน้าต่างที่ใช้งานไปยังหน้าจอต่างๆ</translation>
@@ -149,6 +150,7 @@
 <translation id="6340769215862220182">ซูมหน้าจอเข้า</translation>
 <translation id="634687982629734605">สลับโฟกัสระหว่างพื้นที่แสดงสถานะ (ตำแหน่งที่รูปสำหรับบัญชีของคุณปรากฏ), Launcher, แถบที่อยู่, แถบบุ๊กมาร์ก (ถ้ามองเห็นได้), หน้าเว็บที่เปิด และแถบดาวน์โหลด (ถ้ามองเห็นได้) หากกล่องโต้ตอบที่โฟกัสได้แสดงขึ้น ให้ย้ายไปโฟกัสตรงนั้นแทน</translation>
 <translation id="6359811074279051077"><ph name="MODIFIER" /><ph name="SEPARATOR" /><ph name="KEY" /></translation>
+<translation id="6372960562287888784">เปิดใช้งานเดสก์ที่ 1 ถึง 8</translation>
 <translation id="6395172954772765143">เลือกข้อความไปจนสุดบรรทัด</translation>
 <translation id="6425378783626925378">คลิกไอคอน 1-8 บนชั้นวาง</translation>
 <translation id="6435207348963613811">ไฮไลต์รายการก่อนหน้านี้บนชั้นวาง</translation>
@@ -204,6 +206,7 @@
 <translation id="8644639153978066712">แสดงไฟล์ที่ซ่อนอยู่ในแอป Files</translation>
 <translation id="8717459106217102612">เลือกคำหรืออักษรก่อนหน้า</translation>
 <translation id="8727232706774971183">ดูการแจ้งเตือน</translation>
+<translation id="8855548128280178372"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="SEARCH" /><ph name="SEPARATOR2" /> 1 จนถึง 8</translation>
 <translation id="8855885154700222542">แป้นแสดงเต็มหน้าจอ</translation>
 <translation id="8881584919399569791">ย้ายหน้าต่างที่เปิดใช้งานอยู่ไปยังพื้นที่ทำงานทางด้านซ้าย</translation>
 <translation id="88986195241502842">เลื่อนหน้าลง</translation>

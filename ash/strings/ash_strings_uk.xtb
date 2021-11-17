@@ -384,6 +384,7 @@
 <translation id="3630697955794050612">вимкнено</translation>
 <translation id="3631369015426612114">Дозволити сповіщення з перелічених нижче джерел</translation>
 <translation id="3638400994746983214">Перемикає екран конфіденційності. <ph name="STATE_TEXT" />.</translation>
+<translation id="3640092422335864171">Зберегти пристрій <ph name="NAME" /></translation>
 <translation id="3649505501900178324">Оновлення прострочено</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> – керований користувач</translation>
 <translation id="3665889125180354336">Мікрофон для запису</translation>
@@ -466,6 +467,7 @@
 <translation id="4215497585250573029">Налаштування VPN</translation>
 <translation id="4217571870635786043">Диктування</translation>
 <translation id="4221957499226645091"><ph name="APP_NAME" />, установлений додаток, призупинено</translation>
+<translation id="4223947355273782392">Збережіть пристрій <ph name="NAME" /> в обліковому записі <ph name="EMAIL" />, щоб швидко створювати пари з іншими пристроями</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4242533952199664413">Відкрити налаштування</translation>
 <translation id="4250229828105606438">Знімок екрана</translation>

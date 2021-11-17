@@ -1233,6 +1233,7 @@
 <translation id="2232751457155581899">사이트에서 카메라 위치 추적을 요청할 수 있음</translation>
 <translation id="2232876851878324699">파일에 하나의 인증서가 있지만 이 인증서를 가져올 수 없습니다.</translation>
 <translation id="2233502537820838181">추가 정보</translation>
+<translation id="223356358902285214">웹 및 앱 활동</translation>
 <translation id="2234876718134438132">동기화 및 Google 서비스</translation>
 <translation id="2235344399760031203">타사 쿠키가 차단됨</translation>
 <translation id="2238379619048995541">주파수 상태 데이터</translation>
@@ -1922,6 +1923,7 @@
 <translation id="2923006468155067296">지금 <ph name="DEVICE_TYPE" /> 기기가 잠깁니다.
 <ph name="DOMAIN" />에서 스마트 카드를 삽입해 둔 상태로 둘 것을 요청합니다.</translation>
 <translation id="2923234477033317484">계정 삭제</translation>
+<translation id="2923644930701689793">휴대전화 카메라 롤에 액세스합니다.</translation>
 <translation id="2926085873880284723">기본 바로가기 복원</translation>
 <translation id="2926620265753325858"><ph name="DEVICE_NAME" /> 기기는 지원되지 않습니다.</translation>
 <translation id="2927017729816812676">캐시 저장공간</translation>
@@ -3113,6 +3115,7 @@
 <translation id="4168015872538332605"><ph name="PRIMARY_EMAIL" />의 설정 중 일부가 나와 공유됩니다. 이러한 설정은 멀티 로그인을 사용하는 경우에만 계정에 적용됩니다.</translation>
 <translation id="4169535189173047238">허용 안함</translation>
 <translation id="4170314459383239649">종료 시 삭제</translation>
+<translation id="417096670996204801">프로필 선택</translation>
 <translation id="4175137578744761569">연한 보라색 및 흰색</translation>
 <translation id="4175737294868205930">영구 저장소</translation>
 <translation id="4176463684765177261">사용 중지됨</translation>

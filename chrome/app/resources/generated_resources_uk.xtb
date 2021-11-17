@@ -1234,6 +1234,7 @@
 <translation id="2232751457155581899">Сайти можуть запитувати дозвіл на відстеження положення камери</translation>
 <translation id="2232876851878324699">Файл містив сертифікат, який не було імпортовано:</translation>
 <translation id="2233502537820838181">&amp;Докладніше</translation>
+<translation id="223356358902285214">Історія додатків і веб-пошуку</translation>
 <translation id="2234876718134438132">Синхронізація та сервіси Google</translation>
 <translation id="2235344399760031203">Файли cookie третіх сторін блокуються</translation>
 <translation id="2238379619048995541">Дані про стан частоти</translation>
@@ -1918,6 +1919,7 @@
 <translation id="2923006468155067296"><ph name="DEVICE_TYPE" /> зараз буде заблоковано.
 Домен <ph name="DOMAIN" /> вимагає, щоб ви не виймали розумну картку.</translation>
 <translation id="2923234477033317484">Видалити цей обліковий запис</translation>
+<translation id="2923644930701689793">Отримайте доступ до фотоплівки на телефоні</translation>
 <translation id="2926085873880284723">Відновити ярлики за умовчанням</translation>
 <translation id="2926620265753325858">Пристрій <ph name="DEVICE_NAME" /> не підтримується</translation>
 <translation id="2927017729816812676">Кеш-пам’ять</translation>
@@ -3110,6 +3112,7 @@
 <translation id="4168015872538332605">Деякі налаштування, які встановив користувач <ph name="PRIMARY_EMAIL" />, доступні для вас. Ці налаштування впливають на ваш обліковий запис, лише коли використовується паралельний вхід.</translation>
 <translation id="4169535189173047238">Не дозволяти</translation>
 <translation id="4170314459383239649">Очищати під час виходу</translation>
+<translation id="417096670996204801">Виберіть профіль</translation>
 <translation id="4175137578744761569">Світло-фіолетовий і білий</translation>
 <translation id="4175737294868205930">Постійна пам’ять</translation>
 <translation id="4176463684765177261">Вимкнено</translation>
@@ -4092,6 +4095,7 @@
 <translation id="5265562206369321422">Офлайн понад тиждень</translation>
 <translation id="5265797726250773323">Помилка під час встановлення</translation>
 <translation id="5266113311903163739">Помилка імпортування центру сертифікації</translation>
+<translation id="526622169288322445">Додаткові дії з адресою "<ph name="ADDRESS_SUMMARY" />"</translation>
 <translation id="5269977353971873915">Помилка друку</translation>
 <translation id="5275352920323889391">Собака</translation>
 <translation id="527605982717517565">Завжди дозволяти JavaScript на хості <ph name="HOST" /></translation>
@@ -5471,6 +5475,7 @@
 <translation id="6775163072363532304">Тут відображатимуться доступні пристрої.</translation>
 <translation id="6777817260680419853">Переспрямування заблоковано</translation>
 <translation id="6778737459546443941">Батьки ще не схвалили його</translation>
+<translation id="6779092717724412415">Щоб створити виділений текст (такий як цей), виберіть текст і натисніть його правою кнопкою миші.</translation>
 <translation id="6779447100905857289">ваші картки</translation>
 <translation id="677965093459947883">Дуже малий</translation>
 <translation id="6781005693196527806">&amp;Керувати пошуковими системами…</translation>
@@ -6285,6 +6290,7 @@
 <translation id="7625823789272218216">Нова вкладка ліворуч</translation>
 <translation id="7628201176665550262">Частота оновлення</translation>
 <translation id="7629827748548208700">Вкладка: <ph name="TAB_NAME" /></translation>
+<translation id="7630426712700473382">Цим пристроєм керує <ph name="MANAGER" />. На ньому потрібно щоразу входити в обліковий запис.</translation>
 <translation id="7631014249255418691">Створено резервну копію додатків і файлів Linux</translation>
 <translation id="7631205654593498032">Підключаючи пристрої, ви дозволяєте пристрою <ph name="DEVICE_TYPE" />:</translation>
 <translation id="7631887513477658702">&amp;Завжди відкривати файли цього типу</translation>

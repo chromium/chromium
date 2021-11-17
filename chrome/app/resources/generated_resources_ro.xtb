@@ -1222,6 +1222,7 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="2232751457155581899">Site-urile pot solicita permisiunea de a urmări poziția camerei</translation>
 <translation id="2232876851878324699">Fișierul conținea un certificat, care nu a fost importat:</translation>
 <translation id="2233502537820838181">&amp;Mai multe informații</translation>
+<translation id="223356358902285214">Activitatea de pe web și din aplicații</translation>
 <translation id="2234876718134438132">Sincronizarea și serviciile Google</translation>
 <translation id="2235344399760031203">Cookie-urile terță parte sunt blocate</translation>
 <translation id="2238379619048995541">Date pentru starea activă</translation>
@@ -1908,6 +1909,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="2923006468155067296">Dispozitivul <ph name="DEVICE_TYPE" /> va fi blocat.
 <ph name="DOMAIN" /> solicită să nu scoți cardul inteligent din dispozitiv.</translation>
 <translation id="2923234477033317484">Elimină acest cont</translation>
+<translation id="2923644930701689793">Accesează dosarul camerei foto a telefonului</translation>
 <translation id="2926085873880284723">Restabilește comenzile rapide prestabilite</translation>
 <translation id="2926620265753325858"><ph name="DEVICE_NAME" /> nu este compatibil.</translation>
 <translation id="2927017729816812676">Stocarea pentru memoria cache</translation>
@@ -3100,6 +3102,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="4168015872538332605">Aveți acces la anumite setări care aparțin utilizatorului <ph name="PRIMARY_EMAIL" />. Aceste setări vă afectează contul numai când folosiți conectarea multiplă.</translation>
 <translation id="4169535189173047238">Nu permite</translation>
 <translation id="4170314459383239649">Șterge la ieșire</translation>
+<translation id="417096670996204801">Alege un profil</translation>
 <translation id="4175137578744761569">Mov deschis și alb</translation>
 <translation id="4175737294868205930">Stocare persistentă</translation>
 <translation id="4176463684765177261">Dezactivat</translation>

@@ -26,6 +26,7 @@
 <translation id="1981611865800294956">Neu starten, um &amp;Chromium OS zu aktualisieren</translation>
 <translation id="2008474315282236005">Dadurch wird 1 Element von diesem Gerät gelöscht. Wenn Sie Ihre Daten später abrufen möchten, melden Sie sich als <ph name="USER_EMAIL" /> in Chromium an.</translation>
 <translation id="2020032459870799438">Wenn Sie prüfen möchten, ob Ihre anderen Passwörter von Datenpannen und anderen Sicherheitsproblemen betroffen sind, <ph name="BEGIN_LINK" />melden Sie sich in Chromium an<ph name="END_LINK" />.</translation>
+<translation id="2049376729098081731">Wählen Sie, ob der Chromium-Verlauf dafür verwendet werden soll, die Google-Dienste stärker für Sie zu personalisieren</translation>
 <translation id="2174178932569897599">Chromium anpassen</translation>
 <translation id="2185166961232948079">Chromium – Netzwerkanmeldung – <ph name="PAGE_TITLE" /></translation>
 <translation id="2241627712206172106">Bei gemeinsam genutzten Computern können die verschiedenen Personen separat surfen und Chromium jeweils nach ihren Wünschen einrichten.</translation>
@@ -37,6 +38,7 @@
 <translation id="2401032172288869980">Chromium benötigt die Kamera- und Mikrofonberechtigungen für diese Website</translation>
 <translation id="2483889755041906834">In Chromium</translation>
 <translation id="2485422356828889247">Deinstallieren</translation>
+<translation id="251127392410688874">Sehen Sie sich an, wie Sie in Chromium vor websiteübergreifendem Tracking geschützt werden sollen, während das offene Web erhalten bleibt</translation>
 <translation id="2535480412977113886">Chromium OS konnte Ihre Daten nicht synchronisieren, da die Anmeldedaten Ihres Kontos veraltet sind.</translation>
 <translation id="2560420686485554789">Chromium benötigt Speicherzugriff, um Dateien herunterladen zu können</translation>
 <translation id="2572494885440352020">Chromium Helper</translation>
@@ -222,6 +224,7 @@ Chromium kann Ihre Einstellungen nicht wiederherstellen.</translation>
 <translation id="7339898014177206373">Neues Fenster</translation>
 <translation id="734373864078049451">Hier können Sie im Web surfen und Ihre Lesezeichen und andere Chromium-Inhalte speichern.</translation>
 <translation id="7349591376906416160">Ihr Systemadministrator hat Chromium so konfiguriert, dass <ph name="ALTERNATIVE_BROWSER_NAME" /> für den Zugriff auf <ph name="TARGET_URL_HOSTNAME" /> geöffnet wird.</translation>
+<translation id="7398989605938454041">Mit Chromium-Profilen können Sie Ihre Chromium-Inhalte voneinander trennen. Das macht es einfacher, Arbeit und Freizeitspaß auseinanderzuhalten.</translation>
 <translation id="7448255348454382571">Chromium OS neu starten</translation>
 <translation id="7449453770951226939"><ph name="PAGE_TITLE" /> – Chromium Dev</translation>
 <translation id="7451052299415159299">Chromium benötigt für diese Website die Berechtigung, auf Ihre Kamera zuzugreifen</translation>
@@ -241,6 +244,7 @@ Chromium kann Ihre Einstellungen nicht wiederherstellen.</translation>
 <translation id="7828947555739565424">Ein Chromium-Profil mit diesem Konto ist auf diesem Gerät bereits vorhanden</translation>
 <translation id="7857220146454061152">Sie benötigen OS X 10.11 oder höher, um zukünftige Chromium-Updates zu erhalten. Dieser Computer verfügt über OS X 10.10.</translation>
 <translation id="7867198900892795913">Chromium konnte nicht auf die neueste Version aktualisiert werden. In Ihrer Version fehlen daher einige neue Funktionen und Sicherheitspatches.</translation>
+<translation id="788352880609666695">Die folgenden Konten sind für dieses Chromium-Profil verfügbar</translation>
 <translation id="7898472181347242998">Sie können anhand der <ph name="LINK_BEGIN" />Einstellungen von Chromium OS<ph name="LINK_END" /> sehen, ob Ihr Gerät auf dem neuesten Stand ist</translation>
 <translation id="7937630085815544518">Sie waren in Chromium als <ph name="USER_EMAIL_ADDRESS" /> angemeldet. Melden Sie sich bitte wieder mit demselben Konto an.</translation>
 <translation id="7975919845073681630">Dies ist eine Zweitinstallation, daher kann Chromium nicht als Standardbrowser festgelegt werden.</translation>
@@ -253,6 +257,7 @@ Chromium kann Ihre Einstellungen nicht wiederherstellen.</translation>
 <translation id="8290862415967981663">Diese Datei ist eventuell schädlich und wurde von Chromium blockiert.</translation>
 <translation id="8330519371938183845">Wenn Sie sich anmelden, wird Chromium auf allen Ihren Geräten synchronisiert und personalisiert</translation>
 <translation id="8340674089072921962"><ph name="USER_EMAIL_ADDRESS" /> hat zuvor Chromium verwendet</translation>
+<translation id="8357820681460164151">Wenn Sie auf allen Ihren Geräten auf Ihre Chromium-Browserinhalte zugreifen möchten, melden Sie sich an und aktivieren Sie die Synchronisierung</translation>
 <translation id="8417404458978023919">{0,plural, =1{Chromium innerhalb eines Tages neu starten}other{Chromium innerhalb von # Tagen neu starten}}</translation>
 <translation id="8453117565092476964">Das Installationsarchiv ist beschädigt oder ungültig. Bitte laden Sie Chromium erneut herunter.</translation>
 <translation id="8493179195440786826">Chromium ist veraltet.</translation>

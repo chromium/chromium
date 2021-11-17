@@ -2343,6 +2343,7 @@
 <translation id="3413122095806433232">CA 证书颁发者：<ph name="LOCATION" /></translation>
 <translation id="3414952576877147120">大小：</translation>
 <translation id="3414966631182382431">您的<ph name="BEGIN_LINK" />浏览器<ph name="END_LINK" />由 <ph name="MANAGER" /> 管理</translation>
+<translation id="341589277604221596">实时字幕 - <ph name="LANGUAGE" /></translation>
 <translation id="3416468988018290825">总是显示完整网址</translation>
 <translation id="3417835166382867856">搜索标签页</translation>
 <translation id="3417836307470882032">24 小时制</translation>
@@ -7174,6 +7175,7 @@
 <translation id="8540136935098276800">请输入格式正确的网址</translation>
 <translation id="8540503336857689453">出于安全考虑，我们不建议您使用隐藏的网络。</translation>
 <translation id="854071720451629801">标记为已读</translation>
+<translation id="8540942859441851323">提供商要求开启漫游</translation>
 <translation id="8541462173655894684">通过打印服务器找不到任何打印机</translation>
 <translation id="8541838361296720865">按某个开关键或键盘按键即可将其分配给“<ph name="ACTION" />”操作</translation>
 <translation id="8542618328173222274">在网站想使用您的虚拟实境设备和数据时询问您</translation>

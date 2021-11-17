@@ -1233,6 +1233,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2232751457155581899">Webbplatser får begära tillstånd att registrera kamerans position</translation>
 <translation id="2232876851878324699">Filen innehöll ett certifikat och det importerades inte:</translation>
 <translation id="2233502537820838181">Mer information</translation>
+<translation id="223356358902285214">Webb- och appaktivitet</translation>
 <translation id="2234876718134438132">Synk och Googles tjänster</translation>
 <translation id="2235344399760031203">Cookies från tredje part har blockerats</translation>
 <translation id="2238379619048995541">Data för frekvenstillstånd</translation>
@@ -1922,6 +1923,7 @@ och Ctrl + Alt + Minska ljusstyrka för att zooma ut.</translation>
 <translation id="2923006468155067296">Din <ph name="DEVICE_TYPE" /> kommer nu att låsas.
 <ph name="DOMAIN" /> kräver att du har smartkortet isatt.</translation>
 <translation id="2923234477033317484">Ta bort det här kontot</translation>
+<translation id="2923644930701689793">Kom åt telefonens kamerabilder</translation>
 <translation id="2926085873880284723">Återställ standardgenvägarna</translation>
 <translation id="2926620265753325858"><ph name="DEVICE_NAME" /> stöds inte.</translation>
 <translation id="2927017729816812676">Cachelagring</translation>
@@ -2362,6 +2364,7 @@ och Ctrl + Alt + Minska ljusstyrka för att zooma ut.</translation>
 <translation id="3413122095806433232">CA-utfärdare: <ph name="LOCATION" /></translation>
 <translation id="3414952576877147120">Storlek:</translation>
 <translation id="3414966631182382431">Din <ph name="BEGIN_LINK" />webbläsare hanteras<ph name="END_LINK" /> av <ph name="MANAGER" /></translation>
+<translation id="341589277604221596">Live Caption – <ph name="LANGUAGE" /></translation>
 <translation id="3416468988018290825">Visa alltid hela webbadresser</translation>
 <translation id="3417835166382867856">Sök bland flikar</translation>
 <translation id="3417836307470882032">24-timmarsvisning</translation>
@@ -3114,6 +3117,7 @@ och Ctrl + Alt + Minska ljusstyrka för att zooma ut.</translation>
 <translation id="4168015872538332605">Vissa inställningar som tillhör <ph name="PRIMARY_EMAIL" /> delas med dig. Dessa inställningar påverkar bara ditt konto när du använder multiinloggning.</translation>
 <translation id="4169535189173047238">Tillåt inte</translation>
 <translation id="4170314459383239649">Rensa vid avslut</translation>
+<translation id="417096670996204801">Välj en profil</translation>
 <translation id="4175137578744761569">Ljuslila och vit</translation>
 <translation id="4175737294868205930">Beständig lagring</translation>
 <translation id="4176463684765177261">Inaktiverad</translation>
@@ -7196,6 +7200,7 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="8540136935098276800">Ange en webbadress i rätt format</translation>
 <translation id="8540503336857689453">Att använda ett dolt nätverk rekommenderas inte av säkerhetsskäl.</translation>
 <translation id="854071720451629801">Markera som läst</translation>
+<translation id="8540942859441851323">Roaming krävs av leverantören</translation>
 <translation id="8541462173655894684">Inga skrivare från utskriftsservern hittades</translation>
 <translation id="8541838361296720865">Tryck på en brytare eller en tangent för att tilldela den åtgärden <ph name="ACTION" /></translation>
 <translation id="8542618328173222274">Fråga när en webbplats vill använda VR-enheter och VR-data</translation>

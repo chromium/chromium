@@ -35,6 +35,7 @@
 <translation id="1177863135347784049">ที่กำหนดเอง</translation>
 <translation id="1197267115302279827">ย้ายบุ๊กมาร์ก</translation>
 <translation id="1201402288615127009">ถัดไป</translation>
+<translation id="1202892408424955784">ผลิตภัณฑ์ที่ติดตาม</translation>
 <translation id="1204037785786432551">ดาวน์โหลดลิงก์</translation>
 <translation id="1206892813135768548">คัดลอกข้อความลิงก์</translation>
 <translation id="1208340532756947324">เปิดการซิงค์เพื่อซิงค์และปรับเปลี่ยนข้อมูลตามความต้องการในอุปกรณ์ทุกเครื่อง</translation>
@@ -81,6 +82,7 @@
 <translation id="1414981605391750300">กำลังติดต่อ Google อาจใช้เวลาประมาณ 1 นาที…</translation>
 <translation id="1416550906796893042">เวอร์ชันของแอปพลิเคชัน</translation>
 <translation id="1430915738399379752">พิมพ์</translation>
+<translation id="1448440926884431741">จัดระเบียบผลิตภัณฑ์ที่ติดตามในบุ๊กมาร์ก</translation>
 <translation id="1450753235335490080">แชร์<ph name="CONTENT_TYPE" />ไม่สำเร็จ</translation>
 <translation id="1466383950273130737">เลือกภาษาของ Chrome</translation>
 <translation id="147113415845704694">ลองพูดว่า "สภาพอากาศวันนี้เป็นอย่างไร"</translation>
@@ -133,6 +135,7 @@
 <translation id="1877026089748256423">Chrome ล้าสมัย</translation>
 <translation id="1883903952484604915">ไฟล์ของฉัน</translation>
 <translation id="189358972401248634">ภาษาอื่นๆ</translation>
+<translation id="1894023287452300670">ติดตามราคาที่นี่</translation>
 <translation id="1905320231301365059">ทุกคนที่ใช้อุปกรณ์เครื่องนี้จะยังเห็นไฟล์ที่คุณดาวน์โหลดในโหมดไม่ระบุตัวตน</translation>
 <translation id="1910950723001426294">ปิดรายการตัวเลือกการแชร์แล้ว</translation>
 <translation id="1918175104945982129">UI คำยินยอมให้ค้นหาด้วยเสียงของ Assistant ที่เปิดอยู่ที่ระดับความสูงครึ่งหนึ่งของหน้าจอ</translation>
@@ -344,6 +347,7 @@
 <translation id="3029704984691124060">รหัสผ่านไม่ตรงกัน</translation>
 <translation id="3031225630520268969">UI คำยินยอมให้ค้นหาด้วยเสียงของ Assistant</translation>
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />ขอความช่วยเหลือ<ph name="END_LINK" /></translation>
+<translation id="3037177537145227281">กำลังติดตามราคา</translation>
 <translation id="3037517125981011456">แสดงข้อความแจ้งให้ลงชื่อเข้าใช้ Chrome</translation>
 <translation id="3046945242843292318">ไปที่เว็บไซต์นี้ได้เร็วขึ้นในครั้งถัดไป</translation>
 <translation id="305593374596241526">ตอนนี้ตำแหน่งปิดอยู่ เปิดตำแหน่งได้ใน<ph name="BEGIN_LINK" />การตั้งค่า Android<ph name="END_LINK" /></translation>
@@ -502,6 +506,7 @@
 <translation id="4016425174436051808">ติดตามไม่ได้ เกิดข้อผิดพลาด</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# ชม.}other{# ชม.}}</translation>
 <translation id="4045764304651014138">ข้อมูลการใช้งาน</translation>
+<translation id="405399507749852140">รับการแจ้งเตือนหากราคาลดลงในเว็บไซต์ใดก็ตาม</translation>
 <translation id="4056223980640387499">ซีเปีย</translation>
 <translation id="4060598801229743805">ตัวเลือกอยู่ตรงบริเวณด้านบนของหน้าจอ</translation>
 <translation id="4062305924942672200">ข้อมูลทางกฎหมาย</translation>
@@ -555,6 +560,7 @@
 <translation id="4409271659088619928">เครื่องมือค้นหาของคุณคือ <ph name="DSE" /> ดูวิธีลบประวัติการค้นหา (หากมี) ของเครื่องมือค้นหาที่คุณใช้</translation>
 <translation id="4411535500181276704">โหมด Lite</translation>
 <translation id="4415276339145661267">จัดการบัญชี Google</translation>
+<translation id="4425140285732600465">กำลังติดตามราคา รับการแจ้งเตือนหากราคาลดลงในเว็บไซต์ใดก็ตาม</translation>
 <translation id="4427306783828095590">การปกป้องที่ปรับปรุงแล้วทำได้มากกว่าบล็อกฟิชชิงและมัลแวร์</translation>
 <translation id="4450672886426705087">ผลการค้นหาจาก Google</translation>
 <translation id="4452411734226507615">ปิดแท็บ <ph name="TAB_TITLE" /></translation>
@@ -752,6 +758,7 @@
 <translation id="5548606607480005320">การตรวจสอบความปลอดภัย</translation>
 <translation id="5555525474779371165">เลือกระดับการปกป้องด้วย Google Safe Browsing</translation>
 <translation id="5556459405103347317">โหลดใหม่</translation>
+<translation id="555816257274242153">หยุดติดตามราคาแล้ว</translation>
 <translation id="5561549206367097665">กำลังรอเครือข่าย…</translation>
 <translation id="5568069709869097550">ไม่สามารถลงชื่อเข้าใช้</translation>
 <translation id="55737423895878184">อนุญาตให้ใช้ตำแหน่งและแสดงการแจ้งเตือน</translation>
@@ -802,9 +809,11 @@
 <translation id="5833984609253377421">แชร์ลิงก์</translation>
 <translation id="5834764604050996579">อนุญาตให้ Chrome ใช้กล้องเพื่อสแกนคิวอาร์โค้ด</translation>
 <translation id="5839058148541733625">ไดโนเสาร์ Chrome</translation>
+<translation id="5842437907245493289">จัดระเบียบผลิตภัณฑ์ที่ติดตามในบุ๊กมาร์กโดยใช้ไอคอนโฟลเดอร์</translation>
 <translation id="5853623416121554550">หยุดชั่วคราว</translation>
 <translation id="5854512288214985237">ไม่มีการส่งสถิติหรือรายงานข้อขัดข้องไปยัง Google</translation>
 <translation id="5855546874025048181">ปรับแต่ง "<ph name="REFINE_TEXT" />"</translation>
+<translation id="5857447844686706637">เกิดข้อผิดพลาด อัปเดตการติดตามราคาไม่ได้</translation>
 <translation id="5860033963881614850">ปิด</translation>
 <translation id="5860491529813859533">เปิด</translation>
 <translation id="5862731021271217234">เปิดการซิงค์เพื่อรับแท็บจากอุปกรณ์เครื่องอื่นๆ ของคุณ</translation>
@@ -860,6 +869,7 @@
 <translation id="6140912465461743537">ประเทศ/ภูมิภาค</translation>
 <translation id="6141988275892716286">ยืนยันการดาวน์โหลด</translation>
 <translation id="614940544461990577">ลอง:</translation>
+<translation id="6150320133806434356">บันทึกบุ๊กมาร์กแล้ว</translation>
 <translation id="6154478581116148741">เปิดล็อกหน้าจอใน "การตั้งค่า" เพื่อส่งออกรหัสผ่านจากอุปกรณ์นี้</translation>
 <translation id="6159335304067198720">ประหยัดอินเทอร์เน็ต <ph name="PERCENT" /></translation>
 <translation id="6159729262978459665">ล้างประวัติจากอุปกรณ์ที่ซิงค์ทั้งหมด</translation>
@@ -874,6 +884,7 @@
 ตัวอย่างเช่น บางเว็บไซต์อาจตอบสนองต่อคำขอนี้โดยแสดงให้คุณเห็นโฆษณาที่ไม่ได้อิงอยู่กับเว็บไซต์อื่นๆ ที่คุณเข้าชม เว็บไซต์จำนวนมากจะยังคงรวบรวมและใช้ข้อมูลการท่องเว็บของคุณเพื่อปรับปรุงความปลอดภัย เพื่อแสดงเนื้อหา โฆษณา และคำแนะนำ และเพื่อสร้างสถิติในการรายงาน เป็นต้น</translation>
 <translation id="6264376385120300461">ดาวน์โหลดต่อไป</translation>
 <translation id="6277522088822131679">เกิดปัญหาในการพิมพ์หน้านี้ โปรดลองอีกครั้ง</translation>
+<translation id="6277722725779679269">อัปเดตการติดตามราคาไม่ได้</translation>
 <translation id="6278428485366576908">ธีม</translation>
 <translation id="6292420053234093573">การใช้ Chrome หมายความว่า คุณยอมรับ<ph name="BEGIN_LINK1" />ข้อกำหนดในการให้บริการของ Google<ph name="END_LINK1" /> และ<ph name="BEGIN_LINK2" />ข้อกำหนดในการให้บริการเพิ่มเติมของ Google Chrome และ Chrome OS<ph name="END_LINK2" /></translation>
 <translation id="6294610283659775533">คุณสามารถส่งแท็บระหว่างอุปกรณ์ที่ลงชื่อเข้าใช้บัญชี Google เดียวกัน</translation>
@@ -907,6 +918,7 @@
 <translation id="6411219469806822692">ขึ้นไปสูงกว่านี้ไม่ได้ ลองเริ่มลากจากด้านบนของหน้า</translation>
 <translation id="6412673304250309937">ตรวจสอบ URL กับรายการเว็บไซต์ที่ไม่ปลอดภัยซึ่งจัดเก็บไว้ใน Chrome หากเว็บไซต์พยายามขโมยรหัสผ่าน หรือคุณดาวน์โหลดไฟล์ที่เป็นอันตราย Chrome อาจส่ง URL รวมถึงเนื้อหาบางส่วนในหน้าไปยัง Google Safe Browsing ด้วย</translation>
 <translation id="641643625718530986">พิมพ์…</translation>
+<translation id="6422857128426228781">คุณจะเห็นผลิตภัณฑ์ที่ติดตามที่นี่</translation>
 <translation id="6433501201775827830">เลือกเครื่องมือค้นหา</translation>
 <translation id="6434309073475700221">ทิ้ง</translation>
 <translation id="6437478888915024427">ข้อมูลหน้าเว็บ</translation>
@@ -984,6 +996,7 @@
 <translation id="6817747507826986771">แชร์หน้านี้อย่างรวดเร็ว หากต้องการแก้ไขทางลัดนี้ ให้แตะค้างไว้</translation>
 <translation id="6820686453637990663">CVC</translation>
 <translation id="6824899148643461612">เลือกแท็บ <ph name="TAB_TITLE" /> แล้ว</translation>
+<translation id="6828070228333235514">หยุดติดตามราคา</translation>
 <translation id="6846298663435243399">กำลังโหลด…</translation>
 <translation id="6850409657436465440">ระบบยังดาวน์โหลดอยู่</translation>
 <translation id="6850830437481525139">ปิดแล้ว <ph name="TAB_COUNT" /> แท็บ</translation>
@@ -1300,6 +1313,7 @@
 <translation id="8571213806525832805">4 สัปดาห์ที่แล้ว</translation>
 <translation id="8572344201470131220">คัดลอกรูปภาพแล้ว</translation>
 <translation id="8583805026567836021">กำลังล้างข้อมูลบัญชี</translation>
+<translation id="859046281437143747">ติดตามราคาโดยใช้ปุ่ม "ตัวเลือกเพิ่มเติม"</translation>
 <translation id="860043288473659153">ชื่อผู้ถือบัตร</translation>
 <translation id="8602358303461588329">ลงชื่อเข้าใช้ Chrome ปิดอยู่</translation>
 <translation id="860282621117673749">การแจ้งเตือนการลดราคา</translation>

@@ -1218,6 +1218,7 @@ Wenn Sie die Family Link App auf Ihrem Gerät installieren, können Sie die Eins
 <translation id="2232751457155581899">Websites dürfen nachfragen, wenn sie meine Kameraposition erfassen möchten</translation>
 <translation id="2232876851878324699">Die Datei enthielt ein Zertifikat, das nicht importiert wurde:</translation>
 <translation id="2233502537820838181">&amp;Weitere Informationen</translation>
+<translation id="223356358902285214">Web- &amp; App-Aktivitäten</translation>
 <translation id="2234876718134438132">Synchronisierung und Google-Dienste</translation>
 <translation id="2235344399760031203">Drittanbieter-Cookies werden blockiert</translation>
 <translation id="2238379619048995541">Daten für aktiven Zustand</translation>
@@ -1904,6 +1905,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="2923006468155067296"><ph name="DEVICE_TYPE" /> wird jetzt gesperrt.
 <ph name="DOMAIN" /> erfordert, dass deine Smartcard eingesteckt ist.</translation>
 <translation id="2923234477033317484">Konto entfernen</translation>
+<translation id="2923644930701689793">Greifen Sie auf die Aufnahmen Ihres Smartphones zu</translation>
 <translation id="2926085873880284723">Standardverknüpfungen wiederherstellen</translation>
 <translation id="2926620265753325858"><ph name="DEVICE_NAME" /> wird nicht unterstützt.</translation>
 <translation id="2927017729816812676">Cache-Speicher</translation>
@@ -2344,6 +2346,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3413122095806433232">Aussteller von Zertifizierungsstellen: <ph name="LOCATION" /></translation>
 <translation id="3414952576877147120">Größe:</translation>
 <translation id="3414966631182382431"><ph name="BEGIN_LINK" />Ihr Browser wird von <ph name="MANAGER" /> verwaltet<ph name="END_LINK" /></translation>
+<translation id="341589277604221596">Automatische Untertitel – <ph name="LANGUAGE" /></translation>
 <translation id="3416468988018290825">Immer vollständige URLs anzeigen</translation>
 <translation id="3417835166382867856">Tabs suchen</translation>
 <translation id="3417836307470882032">24-Stunden-Format</translation>
@@ -3096,6 +3099,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="4168015872538332605">Einige Einstellungen, die <ph name="PRIMARY_EMAIL" /> gehören, werden mit Ihnen geteilt. Diese Einstellungen wirken sich nur dann auf Ihr Konto aus, wenn die Mehrfachanmeldung verwendet wird.</translation>
 <translation id="4169535189173047238">Nicht zulassen</translation>
 <translation id="4170314459383239649">Beim Beenden löschen</translation>
+<translation id="417096670996204801">Profil auswählen</translation>
 <translation id="4175137578744761569">Hellviolett und Weiß</translation>
 <translation id="4175737294868205930">Permanentspeicher</translation>
 <translation id="4176463684765177261">Deaktiviert</translation>
@@ -7174,6 +7178,7 @@ Unter <ph name="BEGIN_LINK" />photos.google.com/settings<ph name="END_LINK" /> k
 <translation id="8540136935098276800">Bitte geben Sie eine korrekt formatierte URL ein</translation>
 <translation id="8540503336857689453">Aus Sicherheitsgründen empfehlen wir Ihnen, kein verborgenes Netzwerk zu verwenden.</translation>
 <translation id="854071720451629801">Als gelesen markieren</translation>
+<translation id="8540942859441851323">Anbieter verlangt Roaming</translation>
 <translation id="8541462173655894684">Auf dem Druckserver wurden keine Drucker gefunden</translation>
 <translation id="8541838361296720865">Drücken Sie auf einen Schalter oder eine Taste, um sie „<ph name="ACTION" />“ zuzuweisen</translation>
 <translation id="8542618328173222274">Nachfragen, wenn eine Website meine Virtual-Reality-Geräte und ‑Daten verwenden möchte</translation>

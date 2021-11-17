@@ -26,6 +26,7 @@
 <translation id="1981611865800294956">Genstart og opdater &amp;Chromium OS</translation>
 <translation id="2008474315282236005">Denne handling sletter ét element på denne enhed. Hvis du senere vil hente dine data igen, skal du logge ind på Chromium som <ph name="USER_EMAIL" />.</translation>
 <translation id="2020032459870799438">Du kan tjekke, om dine andre adgangskoder er beskyttet mod brud på datasikkerheden og andre sikkerhedsproblemer ved at <ph name="BEGIN_LINK" />logge ind på Chromium<ph name="END_LINK" />.</translation>
+<translation id="2049376729098081731">Vælg, om du vil inkludere Chromium-historikken for at få mere tilpassede oplevelser i Googles tjenester</translation>
 <translation id="2174178932569897599">Tilpas Chromium</translation>
 <translation id="2185166961232948079">Chromium – Login på netværk – <ph name="PAGE_TITLE" /></translation>
 <translation id="2241627712206172106">Hvis du deler en computer, kan venner og familie browse individuelt og konfigurere Chromium, som de ønsker hver især.</translation>
@@ -37,6 +38,7 @@
 <translation id="2401032172288869980">Chromium skal have adgangstilladelse til kamera og mikrofon for at bruge dette website</translation>
 <translation id="2483889755041906834">I Chromium</translation>
 <translation id="2485422356828889247">Afinstaller</translation>
+<translation id="251127392410688874">Se, hvordan Chromium bestræber sig på at beskytte dig mod sporing på tværs af forskellige websites og samtidig bevarer det åbne net</translation>
 <translation id="2535480412977113886">Chromium OS kunne ikke synkronisere dine data, fordi loginoplysningerne til din konto er forældede.</translation>
 <translation id="2560420686485554789">Chromium skal have lageradgang for at downloade filer</translation>
 <translation id="2572494885440352020">Chromium Helper</translation>
@@ -223,6 +225,7 @@ Chromium kan ikke gendanne dine præferencer.</translation>
 <translation id="7339898014177206373">Nyt vindue</translation>
 <translation id="734373864078049451">Dit webindhold, dine bogmærker og andre Chromium-ting kan findes her.</translation>
 <translation id="7349591376906416160">Din systemadministrator har konfigureret Chromium til at åbne <ph name="ALTERNATIVE_BROWSER_NAME" /> for at få adgang til <ph name="TARGET_URL_HOSTNAME" />.</translation>
+<translation id="7398989605938454041">Du kan organisere alle dine ting i Chromium ved hjælp af Chromium-profiler. Når du har flere profiler, kan du nemmere adskille arbejde og fornøjelse.</translation>
 <translation id="7448255348454382571">Genstart Chromium OS</translation>
 <translation id="7449453770951226939"><ph name="PAGE_TITLE" /> – Chromium for udviklere</translation>
 <translation id="7451052299415159299">Chromium skal have tilladelse til at bruge dit kamera på dette website</translation>
@@ -243,6 +246,7 @@ Chromium kan ikke gendanne dine præferencer.</translation>
 <translation id="7828947555739565424">Der findes allerede en Chromium-profil med denne konto på enheden</translation>
 <translation id="7857220146454061152">Hvis du vil have Chromium-opdateringer i fremtiden, skal du have OS X 10.11 eller nyere. Denne computer kører OS X 10.10.</translation>
 <translation id="7867198900892795913">Chromium kunne ikke opdatere til den nyeste version, så du går glip af nye funktioner og sikkerhedsrettelser.</translation>
+<translation id="788352880609666695">Følgende konti er tilgængelige for denne Chromium-profil</translation>
 <translation id="7898472181347242998">Du kan se, om en enhed er opdateret, ved at gå til <ph name="LINK_BEGIN" />indstillingerne for Chromium OS<ph name="LINK_END" /></translation>
 <translation id="7937630085815544518">Du loggede ind på Chromium som <ph name="USER_EMAIL_ADDRESS" />. Brug den samme konto til at logge ind igen.</translation>
 <translation id="7975919845073681630">Dette er en sekundær installation af Chromium, og den kan ikke gøres til din standardbrowser.</translation>
@@ -255,6 +259,7 @@ Chromium kan ikke gendanne dine præferencer.</translation>
 <translation id="8290862415967981663">Denne fil kan være farlig, så Chromium har blokeret den.</translation>
 <translation id="8330519371938183845">Log ind for at synkronisere og tilpasse Chromium på alle dine enheder</translation>
 <translation id="8340674089072921962"><ph name="USER_EMAIL_ADDRESS" /> brugte tidligere Chromium</translation>
+<translation id="8357820681460164151">Log ind, og aktivér derefter synkronisering for at få adgang til dine Chromium-ting på alle dine enheder</translation>
 <translation id="8417404458978023919">{0,plural, =1{Genstart Chromium inden for en dag}one{Genstart Chromium inden for # dag}other{Genstart Chromium inden for # dag}}</translation>
 <translation id="8453117565092476964">Installationsarkivet er beskadiget eller ugyldigt. Download Chromium igen.</translation>
 <translation id="8493179195440786826">Chromium er forældet</translation>

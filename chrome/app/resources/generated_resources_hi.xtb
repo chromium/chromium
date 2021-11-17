@@ -2362,6 +2362,7 @@
 <translation id="3413122095806433232">CA जारीकर्ता: <ph name="LOCATION" /></translation>
 <translation id="3414952576877147120">आकार:</translation>
 <translation id="3414966631182382431"><ph name="MANAGER" /> आपके <ph name="BEGIN_LINK" />ब्राउज़र को मैनेज करता है<ph name="END_LINK" /></translation>
+<translation id="341589277604221596">लाइव कैप्शन - <ph name="LANGUAGE" /></translation>
 <translation id="3416468988018290825">हमेशा पूरे यूआरएल दिखाएं</translation>
 <translation id="3417835166382867856">टैब खोजें</translation>
 <translation id="3417836307470882032">24 घंटे वाली घड़ी का इस्तेमाल करें</translation>
@@ -7194,6 +7195,7 @@
 <translation id="8540136935098276800">सही से फ़ॉर्मैट किया गया यूआरएल डालें</translation>
 <translation id="8540503336857689453">सुरक्षा को ध्यान में रखते हुए, छिपाए हुए नेटवर्क का सुझाव नहीं दिया जाता है.</translation>
 <translation id="854071720451629801">'पढ़ा गया' का निशान लगाएं</translation>
+<translation id="8540942859441851323">इंटरनेट सेवा देने वाली कंपनी को मोबाइल डेटा रोमिंग की ज़रूरत है</translation>
 <translation id="8541462173655894684">प्रिंट सर्वर पर कोई प्रिंटर नहीं मिला</translation>
 <translation id="8541838361296720865">कोई स्विच या कीबोर्ड की कोई कुंजी दबाएं, ताकि इसे “<ph name="ACTION" />” के लिए असाइन किया जा सके</translation>
 <translation id="8542618328173222274">जब कोई साइट आपके वर्चुअल रिएलिटी वाले डिवाइस और डेटा का इस्तेमाल करना चाहे, ताे इसके लिए पूछें</translation>

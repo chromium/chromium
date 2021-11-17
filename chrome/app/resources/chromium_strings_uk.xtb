@@ -26,6 +26,7 @@
 <translation id="1981611865800294956">Перезапустити, щоб оновити &amp;ОС Chromium</translation>
 <translation id="2008474315282236005">1 елемент буде видалено з цього пристрою. Щоб відновити дані пізніше, увійдіть в обліковий запис Chromium як <ph name="USER_EMAIL" />.</translation>
 <translation id="2020032459870799438">Щоб перевірити, чи відомі порушення безпеки даних або інші проблеми не заторкнули інші ваші паролі, <ph name="BEGIN_LINK" />увійдіть у Chromium<ph name="END_LINK" />.</translation>
+<translation id="2049376729098081731">Укажіть, чи включати історію Chromium, щоб ми краще персоналізували роботу сервісів Google</translation>
 <translation id="2174178932569897599">Налаштувати Chromium</translation>
 <translation id="2185166961232948079">Chromium – Вхід у мережу– <ph name="PAGE_TITLE" /></translation>
 <translation id="2241627712206172106">Якщо вашим комп’ютером користуєтесь не лише ви, а й ваші друзі чи сім’я, вони можуть налаштувати Chromium на свій смак.</translation>
@@ -37,6 +38,7 @@
 <translation id="2401032172288869980">Веб-переглядачу Chromium потрібен доступ до камери та мікрофона для цього сайту</translation>
 <translation id="2483889755041906834">У Chromium</translation>
 <translation id="2485422356828889247">Видалити</translation>
+<translation id="251127392410688874">Дізнайтесь, як Chromium планує захищати вас від механізмів відстеження на різних сайтах, зберігаючи відкритість і незалежність мережі</translation>
 <translation id="2535480412977113886">ОС Chromium не вдалося синхронізувати ваші дані, оскільки дані для входу в обліковий запис застаріли.</translation>
 <translation id="2560420686485554789">Chromium потрібен доступ до пам’яті, щоб завантажувати файли</translation>
 <translation id="2572494885440352020">Помічник Chromium</translation>
@@ -223,6 +225,7 @@ Chromium не може відновити ваші налаштування.</tr
 <translation id="7339898014177206373">Нове вікно</translation>
 <translation id="734373864078049451">Тут містяться ваші веб-сторінки, закладки та інші дані Chromium.</translation>
 <translation id="7349591376906416160">Ваш системний адміністратор налаштував Chromium відкривати сторінку <ph name="TARGET_URL_HOSTNAME" /> в <ph name="ALTERNATIVE_BROWSER_NAME" />.</translation>
+<translation id="7398989605938454041">Створюйте профілі Chromium для різних цілей (наприклад, робочий і особистий), щоб розмежовувати роботу й дозвілля.</translation>
 <translation id="7448255348454382571">Перезапустіть ОС Chromium</translation>
 <translation id="7449453770951226939"><ph name="PAGE_TITLE" /> – Версія Chromium для розробників</translation>
 <translation id="7451052299415159299">Chromium потрібен дозвіл на використання камери, щоб надати цьому сайту доступ до неї</translation>
@@ -243,6 +246,7 @@ Chromium не може відновити ваші налаштування.</tr
 <translation id="7828947555739565424">Профіль Chromium із цим обліковим записом уже існує на цьому пристрої</translation>
 <translation id="7857220146454061152">Щоб отримувати майбутні оновлення Chromium, потрібна операційна система OS X 10.11 або новішої версії. На цьому комп'ютері встановлено OS X 10.10.</translation>
 <translation id="7867198900892795913">Не вдалось оновити Chromium до останньої версії. Ви не зможете скористатися новими функціями та застосувати виправлення системи безпеки.</translation>
+<translation id="788352880609666695">Для цього профілю Chromium доступні облікові записи нижче</translation>
 <translation id="7898472181347242998">Щоб дізнатися, чи пристрій використовує актуальну версію операційної системи, перейдіть у <ph name="LINK_BEGIN" />налаштування ОС Chromium<ph name="LINK_END" /></translation>
 <translation id="7937630085815544518">Ви ввійшли в Chromium як <ph name="USER_EMAIL_ADDRESS" />. Скористайтеся тим самим обліковим записом, щоб увійти знову.</translation>
 <translation id="7975919845073681630">Це додаткове встановлення Chromium. Його не можна зробити вашим веб-переглядачем за умовчанням.</translation>
@@ -255,6 +259,7 @@ Chromium не може відновити ваші налаштування.</tr
 <translation id="8290862415967981663">Цей файл може бути небезпечним, тому Chromium заблокував його.</translation>
 <translation id="8330519371938183845">Увійдіть, щоб синхронізувати та персоналізувати роботу Chromium на всіх своїх пристроях</translation>
 <translation id="8340674089072921962">Раніше ви входили в обліковий запис <ph name="USER_EMAIL_ADDRESS" /> у Chromium</translation>
+<translation id="8357820681460164151">Щоб мати доступ до своїх даних у веб-переглядачі Chromium на всіх пристроях, увійдіть в обліковий запис і ввімкніть синхронізацію</translation>
 <translation id="8417404458978023919">{0,plural, =1{Перезапустіть Chromium упродовж дня}one{Перезапустіть Chromium упродовж # дня}few{Перезапустіть Chromium упродовж # днів}many{Перезапустіть Chromium упродовж # днів}other{Перезапустіть Chromium упродовж # дня}}</translation>
 <translation id="8453117565092476964">Архів програми встановлення пошкоджений або недійсний. Завантажте Chromium ще раз.</translation>
 <translation id="8493179195440786826">Версія Chromium застаріла</translation>

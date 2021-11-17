@@ -1405,7 +1405,7 @@
 <translation id="2428510569851653187">ટૅબ ક્રેશ થઈ ત્યારે તમે શું કરતા હતા તેનું વર્ણન કરો</translation>
 <translation id="2428939361789119025">વાઇ-ફાઇ બંધ કરો</translation>
 <translation id="2428978615149723410">આ કાર્ટ</translation>
-<translation id="2431027948063157455">Google સહાયક લોડ થવામાં અસમર્થ રહ્યું, કૃપા કરીને તમારું નેટવર્ક કનેક્શન તપાસો અને ફરી પ્રયાસ કરો.</translation>
+<translation id="2431027948063157455">Google Assistant લોડ થવામાં અસમર્થ રહ્યું, કૃપા કરીને તમારું નેટવર્ક કનેક્શન તપાસો અને ફરી પ્રયાસ કરો.</translation>
 <translation id="243179355394256322">તમારી સંસ્થા ડિવાઇસની નોંધણી માત્ર અધિકૃત વપરાશકર્તાઓ પૂરતી જ મર્યાદિત રાખે છે. આ વપરાશકર્તા ડિવાઇસની નોંધણી કરવા માટે અધિકૃત નથી. કૃપા કરીને ખાતરી કરો કે વપરાશકર્તા વ્યવસ્થાપક કન્સોલના વપરાશકર્તા વિભાગમાં "Google Meet હાર્ડવેરની નોંધણી" કરવા માટે વ્યવસ્થાપકનો વિશેષાધિકાર ધરાવે છે.</translation>
 <translation id="243275146591958220">ડાઉનલોડ રદ કરો</translation>
 <translation id="2433452467737464329">પેજને ઑટો રિફ્રેશ કરવા માટે URLમાં ક્વેરી પરમ ઉમેરો: chrome://network/?refresh=&lt;sec&gt;</translation>
@@ -2833,7 +2833,7 @@
 <translation id="3893536212201235195">તમારા ઍક્સેસિબિલિટી સેટિંગને વાંચો અને બદલો</translation>
 <translation id="3893630138897523026">ChromeVox (બોલાયેલ પ્રતિસાદ)</translation>
 <translation id="3893764153531140319"><ph name="DOWNLOADED_SIZE" />/<ph name="DOWNLOAD_SIZE" /></translation>
-<translation id="3894123633473837029">Sherlog મારફત તાજેતરના આસિસ્ટંટ ઇતિહાસનો સમાવેશ કરો. આમાં તમારી ઓળખ, સ્થાન અને ડિબગ માહિતીનો સમાવેશ હોઈ શકે છે. <ph name="BEGIN_LINK" />વધુ જાણો<ph name="END_LINK" /></translation>
+<translation id="3894123633473837029">Sherlog મારફત તાજેતરના Assistant ઇતિહાસનો સમાવેશ કરો. આમાં તમારી ઓળખ, સ્થાન અને ડિબગ માહિતીનો સમાવેશ હોઈ શકે છે. <ph name="BEGIN_LINK" />વધુ જાણો<ph name="END_LINK" /></translation>
 <translation id="3894427358181296146">ફોલ્ડર ઉમેરો</translation>
 <translation id="3894770151966614831">Google એકાઉન્ટમાં ખસેડીએ?</translation>
 <translation id="3895076768659607631">શોધ એન્જિન &amp;મેનેજ કરો...</translation>
@@ -3690,7 +3690,7 @@
 <translation id="4844333629810439236">અન્ય કીબોર્ડ્સ</translation>
 <translation id="4846680374085650406">તમે આ સેટિંગ માટે વ્ય્વસ્થાપકની ભલામણને અનુસરી રહ્યાં છો.</translation>
 <translation id="4847902821209177679"><ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" />ની પસંદગી કરવામાં આવી, <ph name="TOPIC_SOURCE" /> આલ્બમ પસંદ કરવા માટે Enter કી દબાવો</translation>
-<translation id="4848191975108266266">Google Assistant "ઓકે Google"</translation>
+<translation id="4848191975108266266">Google Assistant "Ok Google"</translation>
 <translation id="4849286518551984791">સંકલિત યુનિવર્સલ સમય (UTC/GMT)</translation>
 <translation id="4849517651082200438">ઇન્સ્ટોલ કરશો નહીં</translation>
 <translation id="485053257961878904">નોટિફિકેશન સિંક કરવાની સુવિધા સેટઅપ કરી શક્યાં નથી</translation>
@@ -4160,7 +4160,7 @@
 <translation id="5352033265844765294">ટાઇમ સ્ટેમ્પિંગ</translation>
 <translation id="5353252989841766347">Chrome માંથી પાસવર્ડ્સનો નિકાસ કરો</translation>
 <translation id="5354531123814675522"><ph name="DEVICE_COUNT" />માંથી ડિવાઇસ <ph name="DEVICE_INDEX" />, <ph name="DEVICE_NAME" />, ટૅબ્લેટ, બૅટરીનું લેવલ <ph name="BATTERY_PERCENTAGE" />%</translation>
-<translation id="5355099869024327351">આસિસ્ટંટને તમને નોટિફિકેશન બતાવવાની મંજૂરી આપે છે.</translation>
+<translation id="5355099869024327351">Assistantને તમને નોટિફિકેશન બતાવવાની મંજૂરી આપે છે.</translation>
 <translation id="5355191726083956201">વિગતવાર સુરક્ષા ચાલુ છે</translation>
 <translation id="5355926466126177564">જ્યારે તમે ઑમ્નિબૉક્સથી શોધ કરો છો ત્યારે જે પેજ દર્શાવવામાં આવે છે તે <ph name="EXTENSION_NAME" /> એક્સટેન્શને બદલ્યું છે.</translation>
 <translation id="5356155057455921522">તમારા વ્યવસ્થાપકની આ અપડેટને કારણે તમારી સંસ્થાની ઍપ વધુ ઝડપથી ખોલી શકાશે. આમાં થોડો સમય લાગી શકે છે.</translation>
@@ -6480,7 +6480,7 @@ USB ડિવાઇસ</translation>
 <translation id="780301667611848630">નહીં, આભાર</translation>
 <translation id="7804072833593604762">ટૅબ બંધ કરી છે</translation>
 <translation id="7805768142964895445">સ્થિતિ</translation>
-<translation id="7807067443225230855">શોધ અને સહાયક</translation>
+<translation id="7807067443225230855">Search અને Assistant</translation>
 <translation id="7807117920154132308">એવું લાગી રહ્યું છે કે <ph name="SUPERVISED_USER_NAME" /> દ્વારા પહેલેથી જ અન્ય ડિવાઇસ પર Google Assistantનું સેટઅપ કરાયું છે. આ ડિવાઇસ પર સ્ક્રીન સંદર્ભ ચાલુ કરીને, <ph name="SUPERVISED_USER_NAME" /> Assistantનો હજી પણ વધુ લાભ મેળવી શકે છે.</translation>
 <translation id="7807711621188256451"><ph name="HOST" /> ને હંમેશા તમારા કૅમેરાને ઍક્સેસ કરવાની મંજૂરી આપો</translation>
 <translation id="7810202088502699111">આ પેજ પરનાં પૉપ-અપ બ્લૉક હતા.</translation>

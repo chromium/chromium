@@ -1221,6 +1221,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2232751457155581899">Los sitios pueden solicitar permiso para monitorizar la posición de la cámara</translation>
 <translation id="2232876851878324699">El archivo contenía un certificado, que no se ha importado:</translation>
 <translation id="2233502537820838181">&amp;Más información</translation>
+<translation id="223356358902285214">Actividad en la Web y en Aplicaciones</translation>
 <translation id="2234876718134438132">Sincronización y servicios de Google</translation>
 <translation id="2235344399760031203">Se han bloqueado las cookies de terceros</translation>
 <translation id="2238379619048995541">Datos de estado de frecuencia</translation>
@@ -1907,6 +1908,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2923006468155067296">Tu <ph name="DEVICE_TYPE" /> se va a bloquear ahora.
 <ph name="DOMAIN" /> requiere que mantengas insertada tu tarjeta inteligente.</translation>
 <translation id="2923234477033317484">Quitar esta cuenta</translation>
+<translation id="2923644930701689793">Accede al carrete de tu teléfono</translation>
 <translation id="2926085873880284723">Restaurar accesos directos predeterminados</translation>
 <translation id="2926620265753325858">No se admite el dispositivo <ph name="DEVICE_NAME" />.</translation>
 <translation id="2927017729816812676">Almacenamiento en caché</translation>
@@ -3098,6 +3100,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="4168015872538332605">Algunas opciones que pertenecen a <ph name="PRIMARY_EMAIL" /> se están compartiendo contigo. Estas opciones solo se aplican a tu cuenta cuando utilizas el inicio de sesión múltiple.</translation>
 <translation id="4169535189173047238">No permitir</translation>
 <translation id="4170314459383239649">Borrar al salir</translation>
+<translation id="417096670996204801">Elige un perfil</translation>
 <translation id="4175137578744761569">Morado claro y blanco</translation>
 <translation id="4175737294868205930">Almacenamiento permanente</translation>
 <translation id="4176463684765177261">Inhabilitado</translation>

@@ -1234,6 +1234,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2232751457155581899">Websites kan anmode om tilladelse til at registrere din kameraposition</translation>
 <translation id="2232876851878324699">Filen indeholdt ét certifikat, der ikke blev importeret:</translation>
 <translation id="2233502537820838181">&amp;Flere oplysninger</translation>
+<translation id="223356358902285214">Web- og appaktivitet</translation>
 <translation id="2234876718134438132">Synkronisering og Google-tjenester</translation>
 <translation id="2235344399760031203">Tredjepartscookies er blokeret</translation>
 <translation id="2238379619048995541">Data for frekvenstilstand</translation>
@@ -1923,6 +1924,7 @@ og tryk på Ctrl+Alt+lysstyrke ned for at zoome ud.</translation>
 <translation id="2923006468155067296">Din <ph name="DEVICE_TYPE" /> låses nu.
 <ph name="DOMAIN" /> kræver, at chipkortet er indsat.</translation>
 <translation id="2923234477033317484">Fjern denne konto</translation>
+<translation id="2923644930701689793">Tilgå din telefons kamerarulle</translation>
 <translation id="2926085873880284723">Gendan standardgenveje</translation>
 <translation id="2926620265753325858"><ph name="DEVICE_NAME" /> understøttes ikke.</translation>
 <translation id="2927017729816812676">Cachelagring</translation>
@@ -2363,6 +2365,7 @@ og tryk på Ctrl+Alt+lysstyrke ned for at zoome ud.</translation>
 <translation id="3413122095806433232">CA-udstedere: <ph name="LOCATION" /></translation>
 <translation id="3414952576877147120">Størrelse:</translation>
 <translation id="3414966631182382431">Din <ph name="BEGIN_LINK" />browser administreres<ph name="END_LINK" /> af <ph name="MANAGER" /></translation>
+<translation id="341589277604221596">Livetekstning – <ph name="LANGUAGE" /></translation>
 <translation id="3416468988018290825">Vis altid komplette webadresser</translation>
 <translation id="3417835166382867856">Søg i faner</translation>
 <translation id="3417836307470882032">24-timers format</translation>
@@ -3115,6 +3118,7 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4168015872538332605">Nogle af de indstillinger, der tilhører <ph name="PRIMARY_EMAIL" />, deles med dig. Disse indstillinger påvirker kun din konto ved brug af samlet login fra flere konti.</translation>
 <translation id="4169535189173047238">Tillad ikke</translation>
 <translation id="4170314459383239649">Ryd ved lukning</translation>
+<translation id="417096670996204801">Vælg en profil</translation>
 <translation id="4175137578744761569">Lyslilla og hvid</translation>
 <translation id="4175737294868205930">Vedvarende lagring</translation>
 <translation id="4176463684765177261">Deaktiveret</translation>
@@ -7196,6 +7200,7 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="8540136935098276800">Angiv en webadresse i korrekt format</translation>
 <translation id="8540503336857689453">Af sikkerhedsmæssige årsager anbefales det ikke at bruge et skjult netværk.</translation>
 <translation id="854071720451629801">Markér som læst</translation>
+<translation id="8540942859441851323">Roaming er påkrævet af telefonselskabet</translation>
 <translation id="8541462173655894684">Der blev ikke fundet nogen printere på printerserveren</translation>
 <translation id="8541838361296720865">Tryk på en kontakt eller en tastaturtast for at tildele den handlingen "<ph name="ACTION" />"</translation>
 <translation id="8542618328173222274">Spørg, når et website gerne vil bruge dine virtual reality-enheder og -data</translation>

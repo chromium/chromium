@@ -385,6 +385,7 @@
 <translation id="3630697955794050612">사용 안함</translation>
 <translation id="3631369015426612114">다음 항목에 알림 허용:</translation>
 <translation id="3638400994746983214">개인정보 보호 화면을 켜거나 끕니다. <ph name="STATE_TEXT" />.</translation>
+<translation id="3640092422335864171"><ph name="NAME" /> 저장</translation>
 <translation id="3649505501900178324">업데이트 지연됨</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> 관리 사용자</translation>
 <translation id="3665889125180354336">마이크 녹음</translation>
@@ -467,6 +468,7 @@
 <translation id="4215497585250573029">VPN 설정</translation>
 <translation id="4217571870635786043">음성기록</translation>
 <translation id="4221957499226645091"><ph name="APP_NAME" />, 설치된 앱, 일시중지됨</translation>
+<translation id="4223947355273782392"><ph name="NAME" /> 기기를 <ph name="EMAIL" />에 저장하여 다른 기기에 더 빠르게 페어링하세요.</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4242533952199664413">설정 열기</translation>
 <translation id="4250229828105606438">스크린샷</translation>

@@ -119,6 +119,7 @@
 <translation id="1743570585616704562">ไม่รู้จัก</translation>
 <translation id="1746730358044914197">ผู้ดูแลระบบเป็นคนกำหนดค่าวิธีการป้อนข้อมูล</translation>
 <translation id="1747827819627189109">เปิดใช้แป้นพิมพ์บนหน้าจออยู่</translation>
+<translation id="1750088060796401187">เปิดได้ <ph name="MAX_DESK_LIMIT" /> เดสก์เท่านั้น นำออก 1 เดสก์เพื่อเปิดเดสก์ใหม่</translation>
 <translation id="1761222317188459878">เปิด/ปิดการเชื่อมต่อเครือข่าย <ph name="STATE_TEXT" /></translation>
 <translation id="1768366657309696705">มีการเปลี่ยนแปลงแป้นพิมพ์ลัด <ph name="LAUNCHER_KEY_NAME" /> + จุด หากต้องการใช้แป้น Insert ให้กดแป้น <ph name="LAUNCHER_KEY_NAME" /> + Shift + Backspace</translation>
 <translation id="1771761307086386028">เลื่อนไปทางขวา</translation>

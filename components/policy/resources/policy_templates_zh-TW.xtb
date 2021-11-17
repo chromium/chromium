@@ -677,6 +677,14 @@
 
       如果不設定這項政策，所有使用者均可登入裝置。請注意，如要建立新使用者，仍然需要妥善設定 <ph name="DEVICE_ALLOW_NEW_USERS_POLICY_NAME" /> 政策。
       如果已啟用 <ph name="DEVICE_FAMILY_LINK_ACCOUNTS_ALLOWED_POLICY_NAME" />，除了這項政策中定義的帳戶以外，系統也會允許 Family Link 使用者登入裝置。</translation>
+<translation id="1815669850943987108">這項政策可控管 Chrome 歷史記錄頁面上的瀏覽歷程顯示設定。
+
+      如果將這項政策設為啟用，瀏覽歷程會顯示在 chrome://history/journeys 頁面上。
+
+      如果將這項政策設為停用，瀏覽歷程就不會顯示在 chrome://history/journeys 頁面上。
+
+      如果不設定這項政策，系統預設會在 chrome://history/journeys 頁面上顯示瀏覽歷程，且使用者可以變更叢集記錄的顯示設定。
+      </translation>
 <translation id="1819272352048746487">啟用或停用螢幕小鍵盤上的多項功能</translation>
 <translation id="1823974945066396306">定義可登入裝置的使用者清單。輸入項目格式為 <ph name="USER_ALLOWLIST_ENTRY_FORMAT" /> (例如 <ph name="USER_ALLOWLIST_ENTRY_EXAMPLE" />)。如要允許特定網域的任意使用者登入裝置，請使用 <ph name="USER_ALLOWLIST_ENTRY_WILDCARD" /> 格式輸入項目。
 
@@ -5356,6 +5364,7 @@
        如果將這項政策設為停用或不設定，第三方映像檔將無法顯示驗證提示。
 
       通常會停用這項政策以防範網路詐騙。</translation>
+<translation id="7403217961820363141">在 Chrome 歷史記錄頁面上顯示瀏覽歷程</translation>
 <translation id="7406039009275722824">停用 <ph name="CHROME_SYNC_NAME" />會造成 Android 備份與還原功能無法正常運作。</translation>
 <translation id="7407441173422042771">這項政策可控管 <ph name="PRODUCT_NAME" /> 中的網路預測功能。這項設定會控管 DNS 預先擷取功能、TCP、SSL 預先連線和網頁預先轉譯機制。
 

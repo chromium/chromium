@@ -354,6 +354,15 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="3509391053705095206">Det gick inte att hitta telefonen. Kontrollera att Bluetooth har aktiverats på telefonen.</translation>
 <translation id="3510164367642747937">Markera muspekaren</translation>
 <translation id="3513798432020909783">Kontot hanteras av <ph name="MANAGER_EMAIL" /></translation>
+<translation id="3518604429872942239">Statusfältet, tid <ph name="TIME" />,
+        <ph name="BATTERY" />
+        <ph name="NETWORK" />,
+        <ph name="MIC" />,
+        <ph name="CAMERA" />,
+        <ph name="MANAGED" />
+        <ph name="NOTIFICATION" />,
+        <ph name="IME" />
+        <ph name="LOCALE" /></translation>
 <translation id="352245152354538528">{0,plural, =1{Uppdatera enheten inom 1 minut}other{Uppdatera enheten inom # minuter}}</translation>
 <translation id="353086728817903341">Ansluten till <ph name="NUM_DEVICES" /> enheter</translation>
 <translation id="3552189655002856821">wifi är inaktiverat</translation>
@@ -376,6 +385,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="3630697955794050612">av</translation>
 <translation id="3631369015426612114">Tillåt aviseringar från följande</translation>
 <translation id="3638400994746983214">Aktivera och inaktivera integritetsskärmen. <ph name="STATE_TEXT" />.</translation>
+<translation id="3640092422335864171">Spara <ph name="NAME" /></translation>
 <translation id="3649505501900178324">Uppdatering försenad</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> Hanterad användare</translation>
 <translation id="3665889125180354336">Spela in via mikrofon</translation>
@@ -458,6 +468,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="4215497585250573029">VPN-inställningar</translation>
 <translation id="4217571870635786043">Diktering</translation>
 <translation id="4221957499226645091"><ph name="APP_NAME" />, installerad app, pausad</translation>
+<translation id="4223947355273782392">Spara <ph name="NAME" /> i <ph name="EMAIL" /> för snabbare parkoppling med dina andra enheter</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4242533952199664413">Öppna Inställningar</translation>
 <translation id="4250229828105606438">Skärmbild</translation>

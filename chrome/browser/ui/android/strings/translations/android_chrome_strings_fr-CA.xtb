@@ -260,6 +260,7 @@ Maintenez le doigt sur un mot pour effectuer une recherche sur celui-ci. Pour af
 <translation id="2546283357679194313">Témoins et données de site</translation>
 <translation id="2561519700418191927">Aperçus de vidéos</translation>
 <translation id="2567385386134582609">IMAGE</translation>
+<translation id="2567545343356994513">Ce mode offre une protection proactive et plus rapide contre les extensions, les sites Web et les téléchargements dangereux</translation>
 <translation id="2571711316400087311">Proposer d'envoyer les pages dans d'autres langues vers Google Traduction</translation>
 <translation id="2581165646603367611">Cette action entraînera la suppression de tous les témoins, caches et autres données provenant de sites que Chrome estime ne pas être importants.</translation>
 <translation id="2587052924345400782">Version plus récente dispo</translation>
@@ -487,6 +488,7 @@ Maintenez le doigt sur un mot pour effectuer une recherche sur celui-ci. Pour af
 <translation id="395377504920307820">Utiliser sans compte</translation>
 <translation id="3958287878205277013">Pour effacer l'historique de navigation privée de votre appareil, fermez tous les onglets de navigation privée.</translation>
 <translation id="396192773038029076">{NUM_IN_PROGRESS,plural, =1{Chrome chargera la page lorsque l'appareil sera en ligne}one{Chrome chargera la page lorsque l'appareil sera en ligne}other{Chrome chargera les pages lorsque l'appareil sera en ligne}}</translation>
+<translation id="3962119236270174787">Protection standard contre les extensions, les sites Web, les téléchargements qui sont réputés être dangereux</translation>
 <translation id="3962957115499249330">Vous recevrez une notification lorsque le téléchargement débutera sur Wi-Fi.</translation>
 <translation id="3963007978381181125">Le chiffrement par phrase de passe ne couvre pas les modes de paiement ni les adresses de Google Pay. Seule une personne connaissant votre phrase de passe peut lire vos données chiffrées. Google ne reçoit ni ne stocke la phrase de passe. Si vous l'oubliez ou souhaitez modifier ce paramètre, vous devrez réinitialiser la synchronisation. <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
 <translation id="3969142555815019568">Chrome ne peut pas vérifier vos mots de passe</translation>
@@ -952,6 +954,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="6627583120233659107">Modifier le dossier</translation>
 <translation id="6633067410344541938">Déverrouiller le mode de navigation privée</translation>
 <translation id="663674369910034433">Pour voir plus de paramètres relatifs à la confidentialité, à la sécurité et à la collecte de données, reportez-vous aux rubriques <ph name="BEGIN_LINK1" />Synchronisation<ph name="END_LINK1" /> et <ph name="BEGIN_LINK2" />Services Google<ph name="END_LINK2" /></translation>
+<translation id="6640207029842583248">Toujours bloquer</translation>
 <translation id="6643016212128521049">Effacer</translation>
 <translation id="6643649862576733715">Trier par quantité de données enregistrées</translation>
 <translation id="6648459603387803038">Votre administrateur peut modifier la configuration de votre navigateur à distance. L'activité sur cet appareil peut aussi être gérée à l'extérieur de Chrome.</translation>
@@ -1078,6 +1081,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="7435356471928173109">Désactivée par votre administrateur</translation>
 <translation id="7437998757836447326">Se déconnecter de Chrome</translation>
 <translation id="7438641746574390233">Quand le mode simplifié est activé, Google Chrome utilise les serveurs Google pour que les pages se chargent plus rapidement. Le mode simplifié réécrit les pages très lentes pour en charger seulement le contenu essentiel. Le mode simplifié ne fonctionne pas sur les onglets de navigation privée.</translation>
+<translation id="7443901082822119557">Lorsque vous êtes en mode de navigation privée, les sites ne peuvent pas utiliser vos témoins pour consulter votre activité de navigation sur différents sites (par exemple, pour personnaliser les annonces). Les fonctionnalités pourraient ne pas fonctionner sur certains sites.</translation>
 <translation id="7444811645081526538">Plus de catégories</translation>
 <translation id="7453467225369441013">Vous déconnecte de la plupart des sites. Vous ne serez pas déconnecté de votre compte Google.</translation>
 <translation id="7454641608352164238">Espace insuffisant</translation>
@@ -1185,6 +1189,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="799576009106109668">Vous naviguerez plus rapidement parce que le contenu sera chargé de manière proactive en fonction de la page Web que vous êtes en train de consulter</translation>
 <translation id="7998918019931843664">Rouvrir l'onglet fermé</translation>
 <translation id="8004582292198964060">Navigateur</translation>
+<translation id="8006818846907410687">Bloquer seulement durant l'utilisation du mode de navigation privée</translation>
 <translation id="8013372441983637696">Aussi effacer vos données de Chrome de cet appareil</translation>
 <translation id="8015452622527143194">Afficher cette page dans sa taille par défaut</translation>
 <translation id="8026334261755873520">Effacer les données de navigation</translation>
@@ -1232,6 +1237,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="8223642481677794647">Menu de la carte du flux</translation>
 <translation id="8250920743982581267">Documents</translation>
 <translation id="825412236959742607">Cette page utilise trop de mémoire, Chrome a donc supprimé certains contenus.</translation>
+<translation id="8255617931166444521">Les sites peuvent uniquement utiliser vos témoins pour connaître votre activité de navigation que sur leur propre site</translation>
 <translation id="8260126382462817229">Essayez de vous reconnecter</translation>
 <translation id="8261506727792406068">Supprimer</translation>
 <translation id="82619448491672958">Afficher les autres onglets</translation>

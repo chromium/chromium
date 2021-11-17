@@ -1225,6 +1225,7 @@
 <translation id="2232751457155581899">السماح للمواقع الإلكترونية بتتبُّع موضع الكاميرا</translation>
 <translation id="2232876851878324699">احتوى الملف على شهادة واحدة، لم يتم استيرادها:</translation>
 <translation id="2233502537820838181">&amp;مزيد من المعلومات</translation>
+<translation id="223356358902285214">النشاط على الويب وفي التطبيقات</translation>
 <translation id="2234876718134438132">‏خدمات Google والمزامنة</translation>
 <translation id="2235344399760031203">تم حظر ملفات تعريف الارتباط التابعة لجهات خارجية.</translation>
 <translation id="2238379619048995541">بيانات حالة التردد</translation>
@@ -1912,6 +1913,7 @@
 <translation id="2923006468155067296">سيتم قفل الجهاز <ph name="DEVICE_TYPE" /> الآن.
 يتطلَّب <ph name="DOMAIN" /> منك الإبقاء على بطاقتك الذكية مُدخَلة.</translation>
 <translation id="2923234477033317484">إزالة هذا الحساب</translation>
+<translation id="2923644930701689793">الوصول إلى ألبوم الكاميرا في هاتفك</translation>
 <translation id="2926085873880284723">استعادة الاختصارات التلقائية</translation>
 <translation id="2926620265753325858">الجهاز <ph name="DEVICE_NAME" /> غير متوافق.</translation>
 <translation id="2927017729816812676">مساحة التخزين لذاكرة التخزين المؤقت</translation>
@@ -3103,6 +3105,7 @@
 <translation id="4168015872538332605">تتم مشاركة بعض الإعدادات التي تنتمي إلى <ph name="PRIMARY_EMAIL" /> معك. لن تؤثر هذه الإعدادات في حسابك إلا عند استخدامك الدخول المتعدد.</translation>
 <translation id="4169535189173047238">عدم السماح</translation>
 <translation id="4170314459383239649">محو عند الخروج</translation>
+<translation id="417096670996204801">اختيار ملف شخصي</translation>
 <translation id="4175137578744761569">أرجواني فاتح وأبيض</translation>
 <translation id="4175737294868205930">التخزين الثابت</translation>
 <translation id="4176463684765177261">غير مفعّل</translation>
