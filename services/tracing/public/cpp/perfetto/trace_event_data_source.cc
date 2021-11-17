@@ -734,7 +734,7 @@ void TraceEventDataSource::OnStopTracingDone() {
 }
 
 // static
-TrackEventThreadLocalEventSink* TraceEventDataSource::GetOrPrepareEventSink() {
+TrackEventThreadLocalEventSink* TraceEventDataSource::GetOrPrepareEventSink(bool create_if_needed) {
   // Avoid re-entrancy, which can happen during PostTasks (the taskqueue can
   // emit trace events). We discard the events in this case, as any PostTasking
   // to deal with these events later would break the event ordering that the
@@ -768,10 +768,11 @@ TrackEventThreadLocalEventSink* TraceEventDataSource::GetOrPrepareEventSink() {
     if (new_session_flags.session_id != thread_local_event_sink->session_id()) {
       delete thread_local_event_sink;
       thread_local_event_sink = nullptr;
+      ThreadLocalEventSinkSlot()->Set(nullptr);
     }
   }
 
-  if (!thread_local_event_sink) {
+  if (!thread_local_event_sink && create_if_needed) {
     thread_local_event_sink = GetInstance()->CreateThreadLocalEventSink();
     ThreadLocalEventSinkSlot()->Set(thread_local_event_sink);
   }
@@ -1313,7 +1314,7 @@ base::trace_event::TracePacketHandle TraceEventDataSource::OnAddTracePacket() {
 
 // static
 void TraceEventDataSource::OnAddEmptyPacket() {
-  auto* thread_local_event_sink = GetOrPrepareEventSink();
+  auto* thread_local_event_sink = GetOrPrepareEventSink(false);
   if (thread_local_event_sink) {
     // GetThreadIsInTraceEventTLS() is handled by the sink for trace packets.
     thread_local_event_sink->AddEmptyPacket();

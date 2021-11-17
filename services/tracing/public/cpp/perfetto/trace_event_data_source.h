@@ -235,7 +235,8 @@ class COMPONENT_EXPORT(TRACING_CPP) TraceEventDataSource :
   std::unique_ptr<perfetto::TraceWriter> CreateTraceWriterLocked();
   TrackEventThreadLocalEventSink* CreateThreadLocalEventSink();
 
-  static TrackEventThreadLocalEventSink* GetOrPrepareEventSink();
+  // Returns the event sink for the current thread, creates it if none unless |!create_if_needed|.
+  static TrackEventThreadLocalEventSink* GetOrPrepareEventSink(bool create_if_needed = true);
 
   // Callback from TraceLog / typed macros, can be called from any thread.
   static void OnAddLegacyTraceEvent(
