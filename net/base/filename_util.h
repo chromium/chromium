@@ -16,7 +16,7 @@ namespace base {
 class FilePath;
 }
 
-namespace  net {
+namespace net {
 
 // Given the full path to a file name, creates a file: URL. The returned URL
 // may not be valid if the input is malformed.
