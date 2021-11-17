@@ -12,7 +12,7 @@ import signal
 import subprocess
 import sys
 import time
-import six
+
 
 # This is hardcoded to be src/ relative to this script.
 ROOT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -204,12 +204,12 @@ def run_command_with_output(argv, stdoutfile, env=None, cwd=None):
                      stderr=subprocess.STDOUT)
     forward_signals([process])
     while process.poll() is None:
-      sys.stdout.write(six.ensure_str(reader.read()))
+      sys.stdout.write(reader.read())
       # This sleep is needed for signal propagation. See the
       # wait_with_signals() docstring.
       time.sleep(0.1)
     # Read the remaining.
-    sys.stdout.write(six.ensure_str(reader.read()))
+    sys.stdout.write(reader.read())
     print('Command %r returned exit code %d' % (argv, process.returncode))
     return process.returncode
 
