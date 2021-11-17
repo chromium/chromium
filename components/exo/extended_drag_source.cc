@@ -305,13 +305,16 @@ void ExtendedDragSource::StartDrag(aura::Window* toplevel,
 
   auto end_closure = base::BindOnce(
       [](aura::Window* toplevel,
+         base::WeakPtr<ExtendedDragSource> extended_drag_source,
          ash::ToplevelWindowEventHandler::DragResult result) {
         if (toplevel) {
           toplevel->ClearProperty(ash::kIsDraggingTabsKey);
           toplevel->ClearProperty(ash::kTabDraggingSourceWindowKey);
         }
+        if (extended_drag_source)
+          extended_drag_source->dragged_window_holder_.reset();
       },
-      base::Unretained(toplevel));
+      base::Unretained(toplevel), weak_factory_.GetWeakPtr());
 
   // TODO(crbug.com/1167581): Experiment setting |update_gesture_target| back
   // to true when capture is removed from drag and drop.
@@ -367,7 +370,6 @@ void ExtendedDragSource::Cleanup() {
         aura::client::kAnimationsDisabledKey);
   }
   event_blocker_.reset();
-  dragged_window_holder_.reset();
   drag_source_window_ = nullptr;
   drag_drop_tracker_.reset();
   UnlockCursor();
