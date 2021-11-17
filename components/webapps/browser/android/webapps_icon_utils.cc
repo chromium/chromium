@@ -139,6 +139,11 @@ SkBitmap WebappsIconUtils::FinalizeLauncherIconInBackground(
              : SkBitmap();
 }
 
+int WebappsIconUtils::GetIdealIconCornerRadiusPxForPromptUI() {
+  return Java_WebappsIconUtils_getIdealIconCornerRadiusPxForPromptUI(
+      base::android::AttachCurrentThread());
+}
+
 void WebappsIconUtils::SetIdealShortcutSizeForTesting(int size) {
   g_ideal_shortcut_icon_size = size;
 }

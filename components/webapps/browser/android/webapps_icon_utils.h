@@ -53,6 +53,8 @@ class WebappsIconUtils {
                                                    const GURL& url,
                                                    bool* is_generated);
 
+  static int GetIdealIconCornerRadiusPxForPromptUI();
+
   static void SetIdealShortcutSizeForTesting(int size);
 };
 

@@ -196,6 +196,16 @@ public class WebappsIconUtils {
     }
 
     /**
+     * Returns the ideal size for prompt UI icon corner radius.
+     * @return the dimensions in pixels which the prompt UI should use as the corner radius.
+     */
+    @CalledByNative
+    public static int getIdealIconCornerRadiusPxForPromptUI() {
+        Context context = ContextUtils.getApplicationContext();
+        return context.getResources().getDimensionPixelSize(R.dimen.webapk_prompt_ui_icon_radius);
+    }
+
+    /**
      * Check the running Android version supports adaptive icon (i.e. API level >= 26)
      */
     public static boolean doesAndroidSupportMaskableIcons() {

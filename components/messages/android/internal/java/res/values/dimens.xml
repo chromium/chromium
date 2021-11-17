@@ -12,7 +12,9 @@
     <!-- Min width to ensure the min touchable size. -->
     <dimen name="message_banner_button_width">44dp</dimen>
     <dimen name="message_primary_button_max_width">100dp</dimen>
-    <dimen name="message_icon_padding">12dp</dimen>
+    <dimen name="message_icon_margin">12dp</dimen>
+    <dimen name="message_icon_size">24dp</dimen>
+    <dimen name="message_icon_size_large">36dp</dimen>
     <dimen name="message_divider_margin">12dp</dimen>
     <dimen name="message_shadow_lateral_margin">12dp</dimen>
     <dimen name="message_shadow_bottom_margin">16dp</dimen>

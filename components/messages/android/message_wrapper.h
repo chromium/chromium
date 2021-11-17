@@ -62,6 +62,8 @@ class MessageWrapper {
   void SetIconResourceId(int resource_id);
   bool IsValidIcon();
   void SetIcon(const SkBitmap& icon);
+  void EnableLargeIcon(bool enabled);
+  void SetIconRoundedCornerRadius(int radius);
   // The icon is tinted to default_icon_color_accent1 by default.
   // Call this method to display icons of original colors.
   void DisableIconTint();

@@ -123,6 +123,16 @@ public final class MessageWrapper {
     }
 
     @CalledByNative
+    void setLargeIcon(boolean enabled) {
+        mMessageProperties.set(MessageBannerProperties.LARGE_ICON, enabled);
+    }
+
+    @CalledByNative
+    void setIconRoundedCornerRadius(int radius) {
+        mMessageProperties.set(MessageBannerProperties.ICON_ROUNDED_CORNER_RADIUS_PX, radius);
+    }
+
+    @CalledByNative
     void disableIconTint() {
         mMessageProperties.set(
                 MessageBannerProperties.ICON_TINT_COLOR, MessageBannerProperties.TINT_NONE);

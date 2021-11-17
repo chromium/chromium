@@ -136,6 +136,17 @@ void MessageWrapper::SetIcon(const SkBitmap& icon) {
   Java_MessageWrapper_setIcon(env, java_message_wrapper_, java_bitmap);
 }
 
+void MessageWrapper::EnableLargeIcon(bool enabled) {
+  JNIEnv* env = base::android::AttachCurrentThread();
+  Java_MessageWrapper_setLargeIcon(env, java_message_wrapper_, enabled);
+}
+
+void MessageWrapper::SetIconRoundedCornerRadius(int radius) {
+  JNIEnv* env = base::android::AttachCurrentThread();
+  Java_MessageWrapper_setIconRoundedCornerRadius(env, java_message_wrapper_,
+                                                 radius);
+}
+
 void MessageWrapper::DisableIconTint() {
   JNIEnv* env = base::android::AttachCurrentThread();
   Java_MessageWrapper_disableIconTint(env, java_message_wrapper_);
