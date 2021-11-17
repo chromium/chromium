@@ -167,6 +167,11 @@ export class SettingsBluetoothPairingUiElement extends PolymerElement {
     this.devicePairingHandler_;
 
     /**
+     * @private {?chromeos.bluetoothConfig.mojom.BluetoothDeviceProperties}
+     */
+    this.queuedDevicePendingPairing_;
+
+    /**
      * @private {?chromeos.bluetoothConfig.mojom.DevicePairingDelegateReceiver}
      */
     this.pairingDelegateReceiver_ = null;
@@ -208,16 +213,29 @@ export class SettingsBluetoothPairingUiElement extends PolymerElement {
    * @private
    */
   onPairDevice_(event) {
-    // Pairing delegate should only be available after call to pair device
-    // is made. This delegate is set to null after pair request is made and
-    // returned, allowing for multiple pairing events in the same discovery
-    // session, but only one pairing event at a time.
-    assert(!this.pairingDelegateReceiver_);
+    if (!event.detail.device) {
+      return;
+    }
+    // If a pairing operation is currently underway, close it and queue
+    // the current device to be paired after pairDevice_() promise is
+    // returned.
+    if (this.pairingDelegateReceiver_) {
+      this.queuedDevicePendingPairing_ = event.detail.device;
+      this.pairingDelegateReceiver_.$.close();
+      return;
+    }
+    this.pairDevice_(event.detail.device);
+  }
 
+  /**
+   * @param {!chromeos.bluetoothConfig.mojom.BluetoothDeviceProperties} device
+   * @private
+   */
+  pairDevice_(device) {
     this.pairingDelegateReceiver_ =
         new chromeos.bluetoothConfig.mojom.DevicePairingDelegateReceiver(this);
 
-    this.devicePendingPairing_ = event.detail.device;
+    this.devicePendingPairing_ = device;
     assert(this.devicePendingPairing_);
 
     this.lastFailedPairingDeviceId_ = '';
@@ -236,15 +254,16 @@ export class SettingsBluetoothPairingUiElement extends PolymerElement {
    * @private
    */
   handlePairDeviceResult_(result) {
-    this.pairingDelegateReceiver_.$.close();
-    this.pairingDelegateReceiver_ = null;
+    if (this.pairingDelegateReceiver_) {
+      this.pairingDelegateReceiver_.$.close();
+      this.pairingDelegateReceiver_ = null;
+    }
+    this.pairingAuthType_ = null;
 
     if (this.keyEnteredReceiver_) {
       this.keyEnteredReceiver_.close();
       this.keyEnteredReceiver_ = null;
     }
-
-    this.pairingAuthType_ = null;
 
     if (result === chromeos.bluetoothConfig.mojom.PairingResult.kSuccess) {
       this.dispatchEvent(new CustomEvent('finished', {
@@ -257,6 +276,11 @@ export class SettingsBluetoothPairingUiElement extends PolymerElement {
     this.selectedPageId_ = BluetoothPairingSubpageId.DEVICE_SELECTION_PAGE;
     this.lastFailedPairingDeviceId_ = this.devicePendingPairing_.id;
     this.devicePendingPairing_ = null;
+
+    if (this.queuedDevicePendingPairing_) {
+      this.pairDevice_(this.queuedDevicePendingPairing_);
+      this.queuedDevicePendingPairing_ = null;
+    }
   }
 
   /** @override */

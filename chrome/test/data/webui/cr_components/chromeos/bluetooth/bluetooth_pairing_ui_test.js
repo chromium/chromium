@@ -436,4 +436,63 @@ suite('CrComponentsBluetoothPairingUiTest', function() {
     await displayPinOrPasskey(PairingAuthType.DISPLAY_PASSKEY);
   });
 
+  test('Pairing a new device cancels old pairing', async function() {
+    let finishedPromise = eventToPromise('finished', bluetoothPairingUi);
+    const device = createDefaultBluetoothDevice(
+        /*id=*/ '1234321',
+        /*publicName=*/ 'BeatsX',
+        /*connectionState=*/
+        chromeos.bluetoothConfig.mojom.DeviceConnectionState.kConnected,
+        /*opt_nickname=*/ 'device 1',
+        /*opt_audioCapability=*/
+        mojom.AudioOutputCapability.kCapableOfAudioOutput,
+        /*opt_deviceType=*/ mojom.DeviceType.kMouse);
+
+    const device1 = createDefaultBluetoothDevice(
+        /*id=*/ '12345654321',
+        /*publicName=*/ 'Head phones',
+        /*connectionState=*/
+        chromeos.bluetoothConfig.mojom.DeviceConnectionState.kConnected,
+        /*opt_nickname=*/ 'device 2',
+        /*opt_audioCapability=*/
+        mojom.AudioOutputCapability.kCapableOfAudioOutput,
+        /*opt_deviceType=*/ mojom.DeviceType.kMouse);
+
+    const device2 = createDefaultBluetoothDevice(
+        /*id=*/ '123454321',
+        /*publicName=*/ 'Speakers',
+        /*connectionState=*/
+        chromeos.bluetoothConfig.mojom.DeviceConnectionState.kConnected,
+        /*opt_nickname=*/ 'device 3',
+        /*opt_audioCapability=*/
+        mojom.AudioOutputCapability.kCapableOfAudioOutput,
+        /*opt_deviceType=*/ mojom.DeviceType.kMouse);
+
+    bluetoothConfig.appendToDiscoveredDeviceList(
+        [device.deviceProperties, device1.deviceProperties]);
+    await flushTasks();
+    let deviceHandler = bluetoothConfig.getLastCreatedPairingHandler();
+
+    // Try pairing to first device.
+    await selectDevice(device.deviceProperties);
+    await flushTasks();
+
+    // Try pairing to second device, before first device has completed pairing.
+    await selectDevice(device1.deviceProperties);
+    await flushTasks();
+
+    // Try pairing to third device, before first device has completed pairing.
+    await selectDevice(device2.deviceProperties);
+    await flushTasks();
+
+    // Simulate device pairing cancellation.
+    deviceHandler.completePairDevice(/*success=*/ false);
+    await flushTasks();
+
+    assertEquals(deviceHandler.getPairDeviceCalledCount(), 2);
+
+    // Complete second device pairing.
+    deviceHandler.completePairDevice(/*success=*/ true);
+    await finishedPromise;
+  });
 });
