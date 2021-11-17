@@ -2369,6 +2369,8 @@ source_set("browser") {
       "accessibility/browser_accessibility_manager_fuchsia.cc",
       "accessibility/browser_accessibility_manager_fuchsia.h",
       "child_process_launcher_helper_fuchsia.cc",
+      "font_access/font_enumeration_cache_fuchsia.cc",
+      "font_access/font_enumeration_cache_fuchsia.h",
       "memory/swap_metrics_driver_impl_fuchsia.cc",
       "speech/tts_fuchsia.cc",
     ]
