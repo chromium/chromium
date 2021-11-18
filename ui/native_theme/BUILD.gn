@@ -44,6 +44,8 @@ component("native_theme") {
       "caption_style_mac.mm",
       "native_theme_mac.h",
       "native_theme_mac.mm",
+      "scrollbar_animator_mac.cc",
+      "scrollbar_animator_mac.h",
     ]
   }
 
@@ -75,6 +77,7 @@ component("native_theme") {
     "//ui/color:mixers",
     "//ui/display",
     "//ui/gfx",
+    "//ui/gfx/animation/keyframe",
     "//ui/gfx/geometry",
     "//ui/resources",
   ]
@@ -149,7 +152,10 @@ test("native_theme_unittests") {
   ]
 
   if (is_mac) {
-    sources += [ "native_theme_mac_unittest.mm" ]
+    sources += [
+      "native_theme_mac_unittest.mm",
+      "scrollbar_animator_mac_unittest.cc",
+    ]
     deps += [
       "//ui/color",
       "//ui/gfx:test_support",

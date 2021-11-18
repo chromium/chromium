@@ -87,6 +87,7 @@ const NSScrollerImpValues& GetScrollbarPainterValues(bool overlay,
                                              : legacy_regular_values;
   }
 }
+
 const NSScrollerImpValues& GetScrollbarPainterValues(
     const Scrollbar& scrollbar) {
   return GetScrollbarPainterValues(

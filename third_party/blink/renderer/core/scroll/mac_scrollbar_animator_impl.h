@@ -15,6 +15,7 @@
 #include "third_party/blink/renderer/platform/scheduler/public/post_cancellable_task.h"
 #include "third_party/blink/renderer/platform/timer.h"
 #include "ui/gfx/geometry/point_f.h"
+#include "ui/native_theme/scrollbar_animator_mac.h"
 
 @class BlinkScrollbarObserver;
 @class BlinkScrollbarPainterControllerDelegate;
@@ -27,7 +28,7 @@ namespace blink {
 
 class ScrollbarThemeMac;
 
-class PLATFORM_EXPORT MacScrollbarImpl : public MacScrollbar {
+class CORE_EXPORT MacScrollbarImpl : public MacScrollbar {
  public:
   MacScrollbarImpl(Scrollbar&,
                    base::scoped_nsobject<ScrollbarPainterController>,
@@ -111,7 +112,7 @@ class PLATFORM_EXPORT MacScrollbarImpl : public MacScrollbar {
 // If the scroller is composited, the opacity value stored on the scrollbar
 // painter is subsequently read out through ScrollbarThemeMac::ThumbOpacity and
 // plumbed into PaintedScrollbarLayerImpl::thumb_opacity_.
-class PLATFORM_EXPORT MacScrollbarAnimatorImpl : public MacScrollbarAnimator {
+class CORE_EXPORT MacScrollbarAnimatorImpl : public MacScrollbarAnimator {
  public:
   MacScrollbarAnimatorImpl(ScrollableArea*);
   virtual ~MacScrollbarAnimatorImpl() = default;
@@ -168,6 +169,80 @@ class PLATFORM_EXPORT MacScrollbarAnimatorImpl : public MacScrollbarAnimator {
 
   Member<ScrollableArea> scrollable_area_;
 };
+// Implementation of the MacScrollbarV2::Client interface to talk to a Scrollbar
+// instance (the only other implementations are mocks for testing).
+class CORE_EXPORT MacScrollbarImplV2
+    : public ui::OverlayScrollbarAnimatorMac::Client,
+      public MacScrollbar {
+ public:
+  MacScrollbarImplV2(Scrollbar& scrollbar,
+                     scoped_refptr<base::SingleThreadTaskRunner> task_runner);
+  ~MacScrollbarImplV2() override;
+
+  // Return true if `this` is the animator for `scrollbar`.
+  bool IsAnimatorFor(Scrollbar& scrollbar) const;
+
+  // Function to call upon interaction with this scrollbar.
+  void MouseDidEnter();
+  void MouseDidExit();
+  void DidScroll();
+
+  // MacScrollbar:
+  void SetEnabled(bool) final {}
+  void SetOverlayColorTheme(ScrollbarOverlayColorTheme) final {}
+  float GetKnobAlpha() final;
+  float GetTrackAlpha() final;
+  int GetTrackBoxWidth() final;
+
+  // ui::OverlayScrollbarAnimatorMac::Client:
+  bool IsMouseInScrollbarFrameRect() const override;
+  void SetHidden(bool hidden) override;
+  void SetThumbNeedsDisplay() override;
+  void SetTrackNeedsDisplay() override;
+
+ private:
+  std::unique_ptr<ui::OverlayScrollbarAnimatorMac> overlay_animator_;
+  Persistent<Scrollbar> scrollbar_;
+};
+
+// A non-Cocoa-based implementation of the MacScrollbarAnimator interface.
+class CORE_EXPORT MacScrollbarAnimatorV2 : public MacScrollbarAnimator {
+ public:
+  MacScrollbarAnimatorV2(ScrollableArea*);
+  virtual ~MacScrollbarAnimatorV2();
+
+  // MacScrollbarAnimator:
+  void Trace(Visitor* visitor) const final {
+    MacScrollbarAnimator::Trace(visitor);
+  }
+  void ContentAreaWillPaint() const final {}
+  void MouseEnteredContentArea() const final {}
+  void MouseExitedContentArea() const final {}
+  void MouseMovedInContentArea() const final {}
+  void MouseEnteredScrollbar(Scrollbar&) const final;
+  void MouseExitedScrollbar(Scrollbar&) const final;
+  void ContentsResized() const final {}
+  void DidAddVerticalScrollbar(Scrollbar&) final;
+  void WillRemoveVerticalScrollbar(Scrollbar&) final;
+  void DidAddHorizontalScrollbar(Scrollbar&) final;
+  void WillRemoveHorizontalScrollbar(Scrollbar&) final;
+  bool SetScrollbarsVisibleForTesting(bool) final { return true; }
+  void DidChangeUserVisibleScrollOffset(const ScrollOffset&) final;
+  void UpdateScrollerStyle() final { NOTREACHED(); }
+  bool ScrollbarPaintTimerIsActive() const final {
+    NOTREACHED();
+    return false;
+  }
+  void StartScrollbarPaintTimer() final { NOTREACHED(); }
+  void StopScrollbarPaintTimer() final { NOTREACHED(); }
+  void Dispose() final;
+
+ private:
+  std::unique_ptr<MacScrollbarImplV2> horizontal_scrollbar_;
+  std::unique_ptr<MacScrollbarImplV2> vertical_scrollbar_;
+  scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
+};
+
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_SCROLL_MAC_SCROLLBAR_ANIMATOR_IMPL_H_

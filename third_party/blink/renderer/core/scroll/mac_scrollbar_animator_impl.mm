@@ -6,6 +6,7 @@
 
 #import <AppKit/AppKit.h>
 
+#include "base/feature_list.h"
 #include "base/mac/scoped_nsobject.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/core/scroll/ns_scroller_imp_details.h"
@@ -25,6 +26,15 @@ typedef HeapHashMap<WeakMember<const Scrollbar>, MacScrollbarImpl*>
 ScrollbarToAnimatorMap& GetScrollbarToAnimatorMap() {
   DEFINE_STATIC_LOCAL(Persistent<ScrollbarToAnimatorMap>, map,
                       (MakeGarbageCollected<ScrollbarToAnimatorMap>()));
+  return *map;
+}
+
+typedef HeapHashMap<WeakMember<const Scrollbar>, MacScrollbarImplV2*>
+    ScrollbarToAnimatorV2Map;
+
+ScrollbarToAnimatorV2Map& GetScrollbarToAnimatorV2Map() {
+  DEFINE_STATIC_LOCAL(Persistent<ScrollbarToAnimatorV2Map>, map,
+                      (MakeGarbageCollected<ScrollbarToAnimatorV2Map>()));
   return *map;
 }
 
@@ -81,6 +91,9 @@ ScrollbarPainter ScrollbarPainterForScrollbar(
 }
 
 }  // namespace
+
+///////////////////////////////////////////////////////////////////////////////
+// BlinkScrollbarObserver
 
 @interface BlinkScrollbarObserver : NSObject {
   blink::Scrollbar* _scrollbar;
@@ -149,6 +162,9 @@ ScrollbarPainter ScrollbarPainterForScrollbar(
 
 @end
 
+///////////////////////////////////////////////////////////////////////////////
+// BlinkScrollbarPainterControllerDelegate
+//
 // This class is a delegator of ScrollbarPainterController to ScrollableArea
 // that has the scrollbars of a ScrollbarPainter.
 @interface BlinkScrollbarPainterControllerDelegate : NSObject {
@@ -257,73 +273,12 @@ enum FeatureToAnimate {
 };
 
 @class BlinkScrollbarPartAnimation;
-namespace blink {
-// This class is used to drive the animation timer for
-// BlinkScrollbarPartAnimation
-// objects. This is used instead of NSAnimation because CoreAnimation
-// establishes connections to the WindowServer, which should not be done in a
-// sandboxed renderer process.
-class BlinkScrollbarPartAnimationTimer {
- public:
-  BlinkScrollbarPartAnimationTimer(
-      BlinkScrollbarPartAnimation* animation,
-      CFTimeInterval duration,
-      scoped_refptr<base::SingleThreadTaskRunner> task_runner)
-      : timer_(std::move(task_runner),
-               this,
-               &BlinkScrollbarPartAnimationTimer::TimerFired),
-        start_time_(0.0),
-        duration_(duration),
-        animation_(animation),
-        timing_function_(CubicBezierTimingFunction::Preset(
-            CubicBezierTimingFunction::EaseType::EASE_IN_OUT)) {}
-
-  ~BlinkScrollbarPartAnimationTimer() {}
-
-  void Start() {
-    start_time_ = base::Time::Now().ToDoubleT();
-    // Set the framerate of the animation. NSAnimation uses a default
-    // framerate of 60 Hz, so use that here.
-    timer_.StartRepeating(base::Seconds(1.0 / 60.0), FROM_HERE);
-  }
-
-  void Stop() { timer_.Stop(); }
-
-  void SetDuration(CFTimeInterval duration) { duration_ = duration; }
-
- private:
-  void TimerFired(TimerBase*) {
-    double current_time = base::Time::Now().ToDoubleT();
-    double delta = current_time - start_time_;
-
-    if (delta >= duration_)
-      timer_.Stop();
-
-    double fraction = delta / duration_;
-    fraction = ClampTo(fraction, 0.0, 1.0);
-    double progress = timing_function_->Evaluate(fraction);
-    // In some scenarios, animation_ gets released during the call to
-    // setCurrentProgress. Because BlinkScrollbarPartAnimationTimer is a
-    // member variable of BlinkScrollbarPartAnimation animation_ the timer
-    // gets freed at the same time with animation_. In that case, it will
-    // not be safe to call any other code after animation_ setCurrentProgress.
-    [animation_ setCurrentProgress:progress];
-  }
-
-  TaskRunnerTimer<BlinkScrollbarPartAnimationTimer> timer_;
-  double start_time_;                       // In seconds.
-  double duration_;                         // In seconds.
-  BlinkScrollbarPartAnimation* animation_;  // Weak, owns this.
-  scoped_refptr<CubicBezierTimingFunction> timing_function_;
-};
-
-}  // namespace blink
 
 // This class handles the animation of a |_featureToAnimate| part of
 // |_scrollbar|.
 @interface BlinkScrollbarPartAnimation : NSObject {
   blink::Scrollbar* _scrollbar;
-  std::unique_ptr<blink::BlinkScrollbarPartAnimationTimer> _timer;
+  std::unique_ptr<ui::ScrollbarAnimationTimerMac> _timer;
   base::scoped_nsobject<ScrollbarPainter> _scrollbarPainter;
   FeatureToAnimate _featureToAnimate;
   CGFloat _startValue;
@@ -351,8 +306,14 @@ class BlinkScrollbarPartAnimationTimer {
   if (!self)
     return nil;
 
-  _timer = std::make_unique<blink::BlinkScrollbarPartAnimationTimer>(
-      self, duration, std::move(taskRunner));
+  base::scoped_nsobject<BlinkScrollbarPartAnimation> scoped_self(
+      self, base::scoped_policy::RETAIN);
+  auto animation_callback = WTF::BindRepeating(
+      [](base::scoped_nsobject<BlinkScrollbarPartAnimation> animation,
+         double progress) { [animation setCurrentProgress:progress]; },
+      std::move(scoped_self));
+  _timer = std::make_unique<ui::ScrollbarAnimationTimerMac>(
+      std::move(animation_callback), duration, std::move(taskRunner));
   _scrollbar = scrollbar;
   _featureToAnimate = featureToAnimate;
   _startValue = startValue;
@@ -433,6 +394,9 @@ class BlinkScrollbarPartAnimationTimer {
 }
 @end
 
+///////////////////////////////////////////////////////////////////////////////
+// BlinkScrollbarPainterDelegate
+//
 // This class is a delegator of ScrollbarPainter to the 4 types of animation
 // it can run. The animations are run through BlinkScrollbarPartAnimation.
 @interface BlinkScrollbarPainterDelegate : NSObject <NSAnimationDelegate> {
@@ -692,6 +656,9 @@ class BlinkScrollbarPartAnimationTimer {
 
 namespace blink {
 
+///////////////////////////////////////////////////////////////////////////////
+// MacScrollbarImpl
+
 MacScrollbarImpl::MacScrollbarImpl(
     Scrollbar& scrollbar,
     base::scoped_nsobject<ScrollbarPainterController> painter_controller,
@@ -838,6 +805,9 @@ int MacScrollbarImpl::GetTrackBoxWidth() {
 ScrollbarPainter MacScrollbarImpl::painter() {
   return [observer_ painter];
 }
+
+///////////////////////////////////////////////////////////////////////////////
+// MacScrollbarAnimatorImpl
 
 MacScrollbarAnimatorImpl::MacScrollbarAnimatorImpl(
     ScrollableArea* scrollable_area)
@@ -1060,18 +1030,189 @@ void MacScrollbarAnimatorImpl::SendContentAreaScrolledTask() {
     [scrollbar_painter_controller_ contentAreaScrolled];
 }
 
+///////////////////////////////////////////////////////////////////////////////
+// MacScrollbarImplV2
+
+MacScrollbarImplV2::MacScrollbarImplV2(
+    Scrollbar& scrollbar,
+    scoped_refptr<base::SingleThreadTaskRunner> task_runner)
+    : scrollbar_(scrollbar) {
+  if (ScrollbarThemeMac::PreferOverlayScrollerStyle()) {
+    int track_box_width_expanded = 0;
+    int track_box_width_unexpanded = 0;
+    switch (scrollbar_->CSSScrollbarWidth()) {
+      case EScrollbarWidth::kNone:
+        break;
+      case EScrollbarWidth::kThin:
+        track_box_width_expanded = 14;
+        track_box_width_unexpanded = 10;
+        break;
+      case EScrollbarWidth::kAuto:
+        track_box_width_expanded = 16;
+        track_box_width_unexpanded = 12;
+        break;
+    }
+    overlay_animator_ = std::make_unique<ui::OverlayScrollbarAnimatorMac>(
+        this, track_box_width_expanded, track_box_width_unexpanded,
+        task_runner);
+  }
+  GetScrollbarToAnimatorV2Map().Set(scrollbar_, this);
+}
+
+MacScrollbarImplV2::~MacScrollbarImplV2() {
+  auto it = GetScrollbarToAnimatorV2Map().find(scrollbar_);
+  GetScrollbarToAnimatorV2Map().erase(it);
+}
+
+bool MacScrollbarImplV2::IsAnimatorFor(Scrollbar& scrollbar) const {
+  return &scrollbar == scrollbar_;
+}
+
+void MacScrollbarImplV2::MouseDidEnter() {
+  if (overlay_animator_)
+    overlay_animator_->MouseDidEnter();
+}
+void MacScrollbarImplV2::MouseDidExit() {
+  if (overlay_animator_)
+    overlay_animator_->MouseDidExit();
+}
+
+void MacScrollbarImplV2::DidScroll() {
+  if (overlay_animator_)
+    overlay_animator_->DidScroll();
+}
+
+float MacScrollbarImplV2::GetKnobAlpha() {
+  if (overlay_animator_)
+    return overlay_animator_->GetThumbAlpha();
+  return 1.f;
+}
+
+float MacScrollbarImplV2::GetTrackAlpha() {
+  if (overlay_animator_)
+    return overlay_animator_->GetTrackAlpha();
+  return 1.f;
+}
+
+int MacScrollbarImplV2::GetTrackBoxWidth() {
+  if (overlay_animator_)
+    return overlay_animator_->GetThumbWidth();
+
+  switch (scrollbar_->CSSScrollbarWidth()) {
+    case EScrollbarWidth::kNone:
+      return 0;
+    case EScrollbarWidth::kThin:
+      return 11;
+    case EScrollbarWidth::kAuto:
+      return 15;
+  }
+}
+
+bool MacScrollbarImplV2::IsMouseInScrollbarFrameRect() const {
+  if (auto* area = scrollbar_->GetScrollableArea())
+    return scrollbar_->FrameRect().Contains(area->LastKnownMousePosition());
+  return false;
+}
+void MacScrollbarImplV2::SetHidden(bool hidden) {
+  scrollbar_->SetScrollbarsHiddenFromExternalAnimator(hidden);
+}
+void MacScrollbarImplV2::SetThumbNeedsDisplay() {
+  scrollbar_->SetNeedsPaintInvalidation(kThumbPart);
+}
+void MacScrollbarImplV2::SetTrackNeedsDisplay() {
+  scrollbar_->SetNeedsPaintInvalidation(kTrackBGPart);
+}
+
+///////////////////////////////////////////////////////////////////////////////
+// MacScrollbarAnimatorV2
+
+MacScrollbarAnimatorV2::MacScrollbarAnimatorV2(ScrollableArea* scrollable_area)
+    : task_runner_(scrollable_area->GetCompositorTaskRunner()) {}
+MacScrollbarAnimatorV2::~MacScrollbarAnimatorV2() = default;
+
+void MacScrollbarAnimatorV2::MouseEnteredScrollbar(Scrollbar& scrollbar) const {
+  if (horizontal_scrollbar_ && horizontal_scrollbar_->IsAnimatorFor(scrollbar))
+    horizontal_scrollbar_->MouseDidEnter();
+  if (vertical_scrollbar_ && vertical_scrollbar_->IsAnimatorFor(scrollbar))
+    vertical_scrollbar_->MouseDidEnter();
+}
+
+void MacScrollbarAnimatorV2::MouseExitedScrollbar(Scrollbar& scrollbar) const {
+  if (horizontal_scrollbar_ && horizontal_scrollbar_->IsAnimatorFor(scrollbar))
+    horizontal_scrollbar_->MouseDidExit();
+  if (vertical_scrollbar_ && vertical_scrollbar_->IsAnimatorFor(scrollbar))
+    vertical_scrollbar_->MouseDidExit();
+}
+
+void MacScrollbarAnimatorV2::DidAddVerticalScrollbar(Scrollbar& scrollbar) {
+  if (!IsScrollbarRegistered(scrollbar))
+    return;
+  DCHECK(!vertical_scrollbar_);
+  vertical_scrollbar_ =
+      std::make_unique<MacScrollbarImplV2>(scrollbar, task_runner_);
+}
+
+void MacScrollbarAnimatorV2::WillRemoveVerticalScrollbar(Scrollbar& scrollbar) {
+  vertical_scrollbar_.reset();
+}
+
+void MacScrollbarAnimatorV2::DidAddHorizontalScrollbar(Scrollbar& scrollbar) {
+  if (!IsScrollbarRegistered(scrollbar))
+    return;
+  DCHECK(!horizontal_scrollbar_);
+  horizontal_scrollbar_ =
+      std::make_unique<MacScrollbarImplV2>(scrollbar, task_runner_);
+}
+
+void MacScrollbarAnimatorV2::WillRemoveHorizontalScrollbar(
+    Scrollbar& scrollbar) {
+  horizontal_scrollbar_.reset();
+}
+
+void MacScrollbarAnimatorV2::DidChangeUserVisibleScrollOffset(
+    const ScrollOffset& new_offset) {
+  if (horizontal_scrollbar_ && new_offset.width() != 0)
+    horizontal_scrollbar_->DidScroll();
+  if (vertical_scrollbar_ && new_offset.height() != 0)
+    vertical_scrollbar_->DidScroll();
+}
+
+void MacScrollbarAnimatorV2::Dispose() {
+  vertical_scrollbar_.reset();
+  horizontal_scrollbar_.reset();
+}
+
+///////////////////////////////////////////////////////////////////////////////
+// MacScrollbarAnimator
+
+const base::Feature kMacScrollbarsV2{"MacScrollbarsV2",
+                                     base::FEATURE_ENABLED_BY_DEFAULT};
+
 // static
 MacScrollbarAnimator* MacScrollbarAnimator::Create(
     ScrollableArea* scrollable_area) {
+  if (base::FeatureList::IsEnabled(kMacScrollbarsV2)) {
+    return MakeGarbageCollected<MacScrollbarAnimatorV2>(
+        const_cast<ScrollableArea*>(scrollable_area));
+  }
   return MakeGarbageCollected<MacScrollbarAnimatorImpl>(
       const_cast<ScrollableArea*>(scrollable_area));
 }
 
+///////////////////////////////////////////////////////////////////////////////
+// MacScrollbar
+
 // static
 MacScrollbar* MacScrollbar::GetForScrollbar(const Scrollbar& scrollbar) {
-  auto it = GetScrollbarToAnimatorMap().find(&scrollbar);
-  if (it != GetScrollbarToAnimatorMap().end())
-    return it->value;
+  if (base::FeatureList::IsEnabled(kMacScrollbarsV2)) {
+    auto found = GetScrollbarToAnimatorV2Map().find(&scrollbar);
+    if (found != GetScrollbarToAnimatorV2Map().end())
+      return found->value;
+  } else {
+    auto found = GetScrollbarToAnimatorMap().find(&scrollbar);
+    if (found != GetScrollbarToAnimatorMap().end())
+      return found->value;
+  }
   return nullptr;
 }
 

@@ -1410,6 +1410,16 @@ _CONFIG = [
     },
     {
         'paths': [
+            'third_party/blink/renderer/core/scroll/mac_scrollbar_animator_impl.h',
+            'third_party/blink/renderer/core/scroll/mac_scrollbar_animator_impl.mm',
+        ],
+        'allowed': [
+            'ui::ScrollbarAnimationTimerMac',
+            'ui::OverlayScrollbarAnimatorMac',
+        ],
+    },
+    {
+        'paths': [
             'third_party/blink/renderer/modules/crypto/',
         ],
         'allowed': ['crypto::.+'],
