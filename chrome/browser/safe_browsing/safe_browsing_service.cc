@@ -46,7 +46,6 @@
 #include "components/safe_browsing/buildflags.h"
 #include "components/safe_browsing/content/browser/client_side_phishing_model.h"
 #include "components/safe_browsing/content/browser/safe_browsing_navigation_observer_manager.h"
-#include "components/safe_browsing/content/browser/safe_browsing_network_context.h"
 #include "components/safe_browsing/content/browser/triggers/trigger_manager.h"
 #include "components/safe_browsing/content/browser/ui_manager.h"
 #include "components/safe_browsing/content/browser/web_ui/safe_browsing_ui.h"
@@ -140,12 +139,6 @@ void SafeBrowsingService::Initialize() {
   bool result = base::PathService::Get(chrome::DIR_USER_DATA, &user_data_dir);
   DCHECK(result);
 
-  network_context_ =
-      std::make_unique<safe_browsing::SafeBrowsingNetworkContext>(
-          user_data_dir, features::ShouldTriggerNetworkDataMigration(),
-          base::BindRepeating(&SafeBrowsingService::CreateNetworkContextParams,
-                              base::Unretained(this)));
-
   WebUIInfoSingleton::GetInstance()->set_safe_browsing_service(this);
 
   ui_manager_ = CreateUIManager();
@@ -187,7 +180,6 @@ void SafeBrowsingService::ShutDown() {
 
   WebUIInfoSingleton::GetInstance()->set_safe_browsing_service(nullptr);
 
-  network_context_->ServiceShuttingDown();
   proxy_config_monitor_.reset();
 }
 
@@ -214,9 +206,14 @@ SafeBrowsingService::GetURLLoaderFactory(
   return service->GetURLLoaderFactory();
 }
 
-void SafeBrowsingService::FlushNetworkInterfaceForTesting() {
-  if (network_context_)
-    network_context_->FlushForTesting();
+void SafeBrowsingService::FlushNetworkInterfaceForTesting(
+    content::BrowserContext* browser_context) {
+  NetworkContextService* service =
+      NetworkContextServiceFactory::GetForBrowserContext(browser_context);
+  if (!service)
+    return;
+
+  service->FlushNetworkInterfaceForTesting();
 }
 
 const scoped_refptr<SafeBrowsingUIManager>& SafeBrowsingService::ui_manager()

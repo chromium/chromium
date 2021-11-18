@@ -215,7 +215,7 @@ IN_PROC_BROWSER_TEST_F(QuicAllowedPolicyIsFalse,
     CrashNetworkService();
     // Make sure the NetworkContext has noticed the pipe was closed.
     g_browser_process->safe_browsing_service()
-        ->FlushNetworkInterfaceForTesting();
+        ->FlushNetworkInterfaceForTesting(browser()->profile());
     EXPECT_FALSE(IsQuicEnabledForSafeBrowsing(browser()->profile()));
   }
 }
@@ -284,7 +284,7 @@ IN_PROC_BROWSER_TEST_F(QuicAllowedPolicyIsTrue, QuicAllowedForSafeBrowsing) {
     CrashNetworkService();
     // Make sure the NetworkContext has noticed the pipe was closed.
     g_browser_process->safe_browsing_service()
-        ->FlushNetworkInterfaceForTesting();
+        ->FlushNetworkInterfaceForTesting(browser()->profile());
     EXPECT_TRUE(IsQuicEnabledForSafeBrowsing(browser()->profile()));
   }
 }

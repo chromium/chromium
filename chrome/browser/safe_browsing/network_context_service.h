@@ -34,6 +34,8 @@ class NetworkContextService : public KeyedService {
   // Get the URLLoaderFactory associated to this profile
   scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory();
 
+  void FlushNetworkInterfaceForTesting();
+
  private:
   network::mojom::NetworkContextParamsPtr CreateNetworkContextParams();
 

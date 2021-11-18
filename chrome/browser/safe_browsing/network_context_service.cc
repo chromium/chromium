@@ -39,6 +39,10 @@ NetworkContextService::GetURLLoaderFactory() {
   return network_context_->GetURLLoaderFactory();
 }
 
+void NetworkContextService::FlushNetworkInterfaceForTesting() {
+  network_context_->FlushForTesting();
+}
+
 network::mojom::NetworkContextParamsPtr
 NetworkContextService::CreateNetworkContextParams() {
   auto params = SystemNetworkContextManager::GetInstance()

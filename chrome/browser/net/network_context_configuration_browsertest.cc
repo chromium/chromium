@@ -612,7 +612,7 @@ class NetworkContextConfigurationBrowserTest
         break;
       case NetworkContextType::kSafeBrowsing:
         g_browser_process->safe_browsing_service()
-            ->FlushNetworkInterfaceForTesting();
+            ->FlushNetworkInterfaceForTesting(GetProfile());
         break;
       case NetworkContextType::kProfile:
       case NetworkContextType::kIncognitoProfile:
