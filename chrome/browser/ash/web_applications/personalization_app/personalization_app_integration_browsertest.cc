@@ -274,8 +274,9 @@ IN_PROC_BROWSER_TEST_P(PersonalizationAppIntegrationTest,
 // Screenshot the entire system UI while in fullscreen preview mode. Should see
 // a bright yellow wallpaper with the full screen controls overlay. Note should
 // not see crop option buttons even though wallpaper type is custom.
+// TODO(crbug/1268795) fix this flaky test.
 IN_PROC_BROWSER_TEST_P(PersonalizationAppIntegrationTest,
-                       ScreenshotShowsWallpaperUnderSWA) {
+                       DISABLED_ScreenshotShowsWallpaperUnderSWA) {
   ash::ShellTestApi().SetTabletModeEnabledForTest(true);
   display::test::DisplayManagerTestApi(ash::Shell::Get()->display_manager())
       .UpdateDisplay(
