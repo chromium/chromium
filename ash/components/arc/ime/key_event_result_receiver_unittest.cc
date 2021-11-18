@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/arc/ime/key_event_result_receiver.h"
+#include "ash/components/arc/ime/key_event_result_receiver.h"
 
 #include "base/callback_helpers.h"
 #include "base/test/bind.h"

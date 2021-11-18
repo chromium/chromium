@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_ARC_IME_ARC_IME_BRIDGE_H_
-#define COMPONENTS_ARC_IME_ARC_IME_BRIDGE_H_
+#ifndef ASH_COMPONENTS_ARC_IME_ARC_IME_BRIDGE_H_
+#define ASH_COMPONENTS_ARC_IME_ARC_IME_BRIDGE_H_
 
 #include <string>
 
@@ -71,4 +71,4 @@ class ArcImeBridge {
 
 }  // namespace arc
 
-#endif  // COMPONENTS_ARC_IME_ARC_IME_BRIDGE_H_
+#endif  // ASH_COMPONENTS_ARC_IME_ARC_IME_BRIDGE_H_

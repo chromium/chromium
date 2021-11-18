@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_ARC_INPUT_OVERLAY_TOUCH_INJECTOR_H_
-#define COMPONENTS_ARC_INPUT_OVERLAY_TOUCH_INJECTOR_H_
+#ifndef ASH_COMPONENTS_ARC_INPUT_OVERLAY_TOUCH_INJECTOR_H_
+#define ASH_COMPONENTS_ARC_INPUT_OVERLAY_TOUCH_INJECTOR_H_
 
+#include "ash/components/arc/input_overlay/actions/action.h"
 #include "base/scoped_observation.h"
-#include "components/arc/input_overlay/actions/action.h"
 #include "ui/aura/window.h"
 
 namespace arc {
@@ -82,4 +82,4 @@ class TouchInjector : public ui::EventRewriter {
 
 }  // namespace arc
 
-#endif  // COMPONENTS_ARC_INPUT_OVERLAY_TOUCH_INJECTOR_H_
+#endif  // ASH_COMPONENTS_ARC_INPUT_OVERLAY_TOUCH_INJECTOR_H_

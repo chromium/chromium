@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/arc/ime/key_event_result_receiver.h"
+#include "ash/components/arc/ime/key_event_result_receiver.h"
 
+#include "ash/components/arc/ime/arc_ime_util.h"
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
-#include "components/arc/ime/arc_ime_util.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/event.h"

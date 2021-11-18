@@ -546,7 +546,8 @@
   # END chromeos/ section.
 
   # START components/ section.
-  "components/arc/input_overlay/resources/input_overlay_resources.grd": {
+  # TODO(b/206708823): Move this to the section for ash.
+  "ash/components/arc/input_overlay/resources/input_overlay_resources.grd": {
     # Big alignment at start of section.
     "META": {"align": 1000},
     "includes": [3500],

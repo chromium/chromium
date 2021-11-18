@@ -74,8 +74,8 @@ mojom::IntentHelperInstance* GetInstanceForRequestActivityIcons(
     return nullptr;
   }
 
-  auto* instance = ARC_GET_INSTANCE_FOR_METHOD(intent_helper_holder,
-                                               RequestActivityIcons);
+  auto* instance =
+      ARC_GET_INSTANCE_FOR_METHOD(intent_helper_holder, RequestActivityIcons);
   if (!instance && out_error_code)
     *out_error_code = ActivityIconLoader::GetResult::FAILED_ARC_NOT_SUPPORTED;
   return instance;

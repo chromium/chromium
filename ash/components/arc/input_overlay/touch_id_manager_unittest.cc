@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/arc/input_overlay/touch_id_manager.h"
+#include "ash/components/arc/input_overlay/touch_id_manager.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace arc {

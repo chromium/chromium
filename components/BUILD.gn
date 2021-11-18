@@ -585,7 +585,8 @@ repack("components_tests_pak") {
 
   output = "$root_out_dir/components_tests_resources.pak"
   deps = [
-    "//components/arc/input_overlay/resources:resources_grit",
+    # TODO(b/206711866): Move this to a test suit under ash.
+    "//ash/components/arc/input_overlay/resources:resources_grit",
     "//components/autofill/core/browser:autofill_address_rewriter_resources",
     "//components/omnibox/resources:omnibox_pedal_synonyms",
     "//components/omnibox/resources:omnibox_resources",

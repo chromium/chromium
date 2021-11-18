@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_ARC_IME_ARC_IME_SERVICE_H_
-#define COMPONENTS_ARC_IME_ARC_IME_SERVICE_H_
+#ifndef ASH_COMPONENTS_ARC_IME_ARC_IME_SERVICE_H_
+#define ASH_COMPONENTS_ARC_IME_ARC_IME_SERVICE_H_
 
 #include <memory>
 
+#include "ash/components/arc/ime/arc_ime_bridge.h"
+#include "ash/components/arc/ime/key_event_result_receiver.h"
 #include "ash/public/cpp/keyboard/keyboard_controller_observer.h"
-#include "components/arc/ime/arc_ime_bridge.h"
-#include "components/arc/ime/key_event_result_receiver.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/aura/client/focus_change_observer.h"
@@ -215,4 +215,4 @@ class ArcImeService : public KeyedService,
 
 }  // namespace arc
 
-#endif  // COMPONENTS_ARC_IME_ARC_IME_SERVICE_H_
+#endif  // ASH_COMPONENTS_ARC_IME_ARC_IME_SERVICE_H_

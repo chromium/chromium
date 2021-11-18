@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/arc/ime/arc_ime_bridge_impl.h"
+#include "ash/components/arc/ime/arc_ime_bridge_impl.h"
 
 #include <string>
 #include <utility>
@@ -110,8 +110,8 @@ void ArcImeBridgeImpl::SendInsertText(const std::u16string& text,
   ime_instance->InsertText(base::UTF16ToUTF8(text), new_cursor_position);
 }
 
-void ArcImeBridgeImpl::SendExtendSelectionAndDelete(
-    size_t before, size_t after) {
+void ArcImeBridgeImpl::SendExtendSelectionAndDelete(size_t before,
+                                                    size_t after) {
   auto* ime_instance = ARC_GET_INSTANCE_FOR_METHOD(bridge_service_->ime(),
                                                    ExtendSelectionAndDelete);
   if (!ime_instance)

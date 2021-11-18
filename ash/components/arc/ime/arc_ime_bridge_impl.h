@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_ARC_IME_ARC_IME_BRIDGE_IMPL_H_
-#define COMPONENTS_ARC_IME_ARC_IME_BRIDGE_IMPL_H_
+#ifndef ASH_COMPONENTS_ARC_IME_ARC_IME_BRIDGE_IMPL_H_
+#define ASH_COMPONENTS_ARC_IME_ARC_IME_BRIDGE_IMPL_H_
 
 #include <string>
 
-#include "components/arc/ime/arc_ime_bridge.h"
+#include "ash/components/arc/ime/arc_ime_bridge.h"
 #include "components/arc/mojom/ime.mojom.h"
 #include "ui/base/ime/text_input_type.h"
 #include "ui/gfx/geometry/rect.h"
@@ -66,4 +66,4 @@ class ArcImeBridgeImpl : public ArcImeBridge, public mojom::ImeHost {
 
 }  // namespace arc
 
-#endif  // COMPONENTS_ARC_IME_ARC_IME_BRIDGE_IMPL_H_
+#endif  // ASH_COMPONENTS_ARC_IME_ARC_IME_BRIDGE_IMPL_H_

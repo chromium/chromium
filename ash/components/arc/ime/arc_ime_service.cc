@@ -2,12 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/arc/ime/arc_ime_service.h"
+#include "ash/components/arc/ime/arc_ime_service.h"
 
 #include <utility>
 
 #include "ash/components/arc/arc_browser_context_keyed_service_factory_base.h"
 #include "ash/components/arc/arc_util.h"
+#include "ash/components/arc/ime/arc_ime_bridge_impl.h"
+#include "ash/components/arc/ime/arc_ime_util.h"
+#include "ash/components/arc/ime/key_event_result_receiver.h"
 #include "ash/keyboard/ui/keyboard_ui_controller.h"
 #include "ash/public/cpp/app_types_util.h"
 #include "base/ignore_result.h"
@@ -16,9 +19,6 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
-#include "components/arc/ime/arc_ime_bridge_impl.h"
-#include "components/arc/ime/arc_ime_util.h"
-#include "components/arc/ime/key_event_result_receiver.h"
 #include "components/exo/wm_helper.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/env.h"
@@ -410,8 +410,7 @@ void ArcImeService::OnKeyboardAppearanceChanged(
 ////////////////////////////////////////////////////////////////////////////////
 // Overridden from ui::TextInputClient:
 
-void ArcImeService::SetCompositionText(
-    const ui::CompositionText& composition) {
+void ArcImeService::SetCompositionText(const ui::CompositionText& composition) {
   InvalidateSurroundingTextAndSelectionRange();
   has_composition_text_ = !composition.text.empty();
   ime_bridge_->SendSetCompositionText(composition);
@@ -531,8 +530,8 @@ bool ArcImeService::CanComposeInline() const {
   return true;
 }
 
-bool ArcImeService::GetCompositionCharacterBounds(
-    uint32_t index, gfx::Rect* rect) const {
+bool ArcImeService::GetCompositionCharacterBounds(uint32_t index,
+                                                  gfx::Rect* rect) const {
   return false;
 }
 

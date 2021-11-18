@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_ARC_IME_KEY_EVENT_RESULT_RECEIVER_H_
-#define COMPONENTS_ARC_IME_KEY_EVENT_RESULT_RECEIVER_H_
+#ifndef ASH_COMPONENTS_ARC_IME_KEY_EVENT_RESULT_RECEIVER_H_
+#define ASH_COMPONENTS_ARC_IME_KEY_EVENT_RESULT_RECEIVER_H_
 
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
@@ -47,4 +47,4 @@ class KeyEventResultReceiver {
 
 }  // namespace arc
 
-#endif  // COMPONENTS_ARC_IME_KEY_EVENT_RESULT_RECEIVER_H_
+#endif  // ASH_COMPONENTS_ARC_IME_KEY_EVENT_RESULT_RECEIVER_H_

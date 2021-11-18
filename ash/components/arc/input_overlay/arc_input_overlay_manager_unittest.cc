@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/arc/input_overlay/arc_input_overlay_manager.h"
+#include "ash/components/arc/input_overlay/arc_input_overlay_manager.h"
 
 #include "ash/public/cpp/window_properties.h"
 #include "testing/gtest/include/gtest/gtest.h"

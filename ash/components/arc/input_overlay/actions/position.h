@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_ARC_INPUT_OVERLAY_ACTIONS_POSITION_H_
-#define COMPONENTS_ARC_INPUT_OVERLAY_ACTIONS_POSITION_H_
+#ifndef ASH_COMPONENTS_ARC_INPUT_OVERLAY_ACTIONS_POSITION_H_
+#define ASH_COMPONENTS_ARC_INPUT_OVERLAY_ACTIONS_POSITION_H_
 
 #include "base/values.h"
 #include "ui/gfx/geometry/point_f.h"
@@ -53,4 +53,4 @@ class Position {
 }  // namespace input_overlay
 }  // namespace arc
 
-#endif  // COMPONENTS_ARC_INPUT_OVERLAY_ACTIONS_POSITION_H_
+#endif  // ASH_COMPONENTS_ARC_INPUT_OVERLAY_ACTIONS_POSITION_H_

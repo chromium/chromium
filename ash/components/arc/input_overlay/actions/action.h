@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_ARC_INPUT_OVERLAY_ACTIONS_ACTION_H_
-#define COMPONENTS_ARC_INPUT_OVERLAY_ACTIONS_ACTION_H_
+#ifndef ASH_COMPONENTS_ARC_INPUT_OVERLAY_ACTIONS_ACTION_H_
+#define ASH_COMPONENTS_ARC_INPUT_OVERLAY_ACTIONS_ACTION_H_
 
 #include <string>
 
+#include "ash/components/arc/input_overlay/actions/position.h"
 #include "base/values.h"
-#include "components/arc/input_overlay/actions/position.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_tree_host.h"
 
@@ -80,4 +80,4 @@ class Action {
 }  // namespace input_overlay
 }  // namespace arc
 
-#endif  // COMPONENTS_ARC_INPUT_OVERLAY_ACTIONS_ACTION_H_
+#endif  // ASH_COMPONENTS_ARC_INPUT_OVERLAY_ACTIONS_ACTION_H_

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_ARC_INPUT_OVERLAY_TOUCH_ID_MANAGER_H_
-#define COMPONENTS_ARC_INPUT_OVERLAY_TOUCH_ID_MANAGER_H_
+#ifndef ASH_COMPONENTS_ARC_INPUT_OVERLAY_TOUCH_ID_MANAGER_H_
+#define ASH_COMPONENTS_ARC_INPUT_OVERLAY_TOUCH_ID_MANAGER_H_
 
 #include "base/no_destructor.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -42,4 +42,4 @@ class TouchIdManager {
 
 }  // namespace arc
 
-#endif  // COMPONENTS_ARC_INPUT_OVERLAY_TOUCH_ID_MANAGER_H_
+#endif  // ASH_COMPONENTS_ARC_INPUT_OVERLAY_TOUCH_ID_MANAGER_H_

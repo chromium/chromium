@@ -242,6 +242,7 @@ template("chrome_extra_paks") {
         "$root_gen_dir/ui/file_manager/file_manager_resources.pak",
       ]
       deps += [
+        "//ash/components/arc/input_overlay/resources",
         "//ash/public/cpp/resources:ash_public_unscaled_resources",
         "//ash/webui/file_manager/resources:file_manager_swa_resources",
         "//ash/webui/file_manager/untrusted_resources:file_manager_untrusted_resources",
@@ -282,7 +283,6 @@ template("chrome_extra_paks") {
         "//chrome/browser/supervised_user:supervised_user_unscaled_resources",
         "//chrome/common/chromeos/extensions:resources",
         "//chromeos/resources",
-        "//components/arc/input_overlay/resources",
         "//ui/file_manager:file_manager_gen_resources",
         "//ui/file_manager:resources",
       ]

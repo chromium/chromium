@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/arc/input_overlay/resources/input_overlay_resources_util.h"
+#include "ash/components/arc/input_overlay/resources/input_overlay_resources_util.h"
 
 #include <map>
 
+#include "ash/components/arc/input_overlay/actions/action_move_key.h"
+#include "ash/components/arc/input_overlay/actions/action_tap_key.h"
+#include "ash/components/arc/input_overlay/actions/dependent_position.h"
+#include "ash/components/arc/input_overlay/actions/position.h"
 #include "components/arc/grit/input_overlay_resources.h"
-#include "components/arc/input_overlay/actions/action_move_key.h"
-#include "components/arc/input_overlay/actions/action_tap_key.h"
-#include "components/arc/input_overlay/actions/dependent_position.h"
-#include "components/arc/input_overlay/actions/position.h"
 
 namespace arc {
 namespace {

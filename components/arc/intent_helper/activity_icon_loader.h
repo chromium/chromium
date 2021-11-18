@@ -30,13 +30,14 @@ namespace internal {
 class ActivityIconLoader {
  public:
   struct Icons {
-    Icons(const gfx::Image& icon16, const gfx::Image& icon20,
+    Icons(const gfx::Image& icon16,
+          const gfx::Image& icon20,
           const scoped_refptr<base::RefCountedData<GURL>>& icon16_dataurl);
     Icons(const Icons& other);
     ~Icons();
 
-    const gfx::Image icon16;  // 16 dip
-    const gfx::Image icon20;  // 20 dip
+    const gfx::Image icon16;                                         // 16 dip
+    const gfx::Image icon20;                                         // 20 dip
     const scoped_refptr<base::RefCountedData<GURL>> icon16_dataurl;  // as URL
   };
 
