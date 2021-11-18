@@ -21,6 +21,7 @@
 #include "net/cert/cert_verify_proc_builtin.h"
 #include "net/cert/crl_set.h"
 #include "net/cert/internal/system_trust_store.h"
+#include "net/cert/x509_util.h"
 #include "net/cert_net/cert_net_fetcher_url_request.h"
 #include "net/tools/cert_verify_tool/cert_verify_tool_util.h"
 #include "net/tools/cert_verify_tool/verify_using_cert_verify_proc.h"
@@ -237,6 +238,23 @@ std::unique_ptr<CertVerifyImpl> CreateCertVerifyImplFromName(
   return nullptr;
 }
 
+void PrintCertHashAndSubject(CRYPTO_BUFFER* cert) {
+  std::cout << " " << FingerPrintCryptoBuffer(cert) << " "
+            << SubjectFromCryptoBuffer(cert) << "\n";
+}
+
+void PrintInputChain(const CertInput& target,
+                     const std::vector<CertInput>& intermediates) {
+  std::cout << "Input chain:\n";
+  PrintCertHashAndSubject(
+      net::x509_util::CreateCryptoBuffer(target.der_cert).get());
+  for (const auto& intermediate : intermediates) {
+    PrintCertHashAndSubject(
+        net::x509_util::CreateCryptoBuffer(intermediate.der_cert).get());
+  }
+  std::cout << "\n";
+}
+
 const char kUsage[] =
     " [flags] <target/chain>\n"
     "\n"
@@ -406,6 +424,8 @@ int main(int argc, char** argv) {
     root_der_certs.push_back(intermediate_der_certs.back());
     intermediate_der_certs.pop_back();
   }
+
+  PrintInputChain(target_der_cert, intermediate_der_certs);
 
   // Create a network thread to be used for AIA fetches, and wait for a
   // CertNetFetcher to be constructed on that thread.
