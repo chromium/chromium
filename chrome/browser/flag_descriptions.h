@@ -2320,6 +2320,9 @@ extern const char kAppDiscoveryRemoteUrlSearchDescription[];
 extern const char kAppServiceExternalProtocolName[];
 extern const char kAppServiceExternalProtocolDescription[];
 
+extern const char kArcAccountRestrictionsName[];
+extern const char kArcAccountRestrictionsDescription[];
+
 extern const char kArcCustomTabsExperimentName[];
 extern const char kArcCustomTabsExperimentDescription[];
 

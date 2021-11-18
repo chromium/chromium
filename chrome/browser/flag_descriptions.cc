@@ -4027,6 +4027,10 @@ const char kAppServiceExternalProtocolName[] = "App Service External Protocol";
 const char kAppServiceExternalProtocolDescription[] =
     "Use the App Service to provide data for external protocol dialog.";
 
+const char kArcAccountRestrictionsName[] = "Enable ARC account restrictions";
+const char kArcAccountRestrictionsDescription[] =
+    "ARC account restrictions feature for multi-profile account consistency";
+
 const char kArcCustomTabsExperimentName[] =
     "Enable Custom Tabs experiment for ARC";
 const char kArcCustomTabsExperimentDescription[] =

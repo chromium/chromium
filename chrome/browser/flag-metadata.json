@@ -175,6 +175,11 @@
     "expiry_milestone": 99
   },
   {
+    "name": "arc-account-restrictions",
+    "owners": [ "anastasiian", "team-dent@google.com"],
+    "expiry_milestone": 102
+  },
+  {
     "name": "arc-custom-tabs-experiment",
     "owners": [ "hashimoto", "dominickn" ],
     "expiry_milestone": 95
