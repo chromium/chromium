@@ -50,6 +50,7 @@
 #include "content/browser/bad_message.h"
 #include "content/browser/bluetooth/web_bluetooth_service_impl.h"
 #include "content/browser/broadcast_channel/broadcast_channel_provider.h"
+#include "content/browser/broadcast_channel/broadcast_channel_service.h"
 #include "content/browser/browser_main_loop.h"
 #include "content/browser/child_process_security_policy_impl.h"
 #include "content/browser/code_cache/generated_code_cache_context.h"
@@ -8322,9 +8323,11 @@ void RenderFrameHostImpl::CreateBroadcastChannelProvider(
   auto* storage_partition_impl =
       static_cast<StoragePartitionImpl*>(GetStoragePartition());
 
-  mojo::MakeSelfOwnedAssociatedReceiver(
-      std::make_unique<BroadcastChannelProvider>(
-          storage_partition_impl->GetBroadcastChannelService(), storage_key()),
+  auto* broadcast_channel_service =
+      storage_partition_impl->GetBroadcastChannelService();
+  broadcast_channel_service->AddAssociatedReceiver(
+      std::make_unique<BroadcastChannelProvider>(broadcast_channel_service,
+                                                 storage_key()),
       std::move(receiver));
 }
 

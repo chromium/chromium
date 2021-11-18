@@ -12,6 +12,7 @@
 #include "base/callback_helpers.h"
 #include "content/browser/blob_storage/chrome_blob_storage_context.h"
 #include "content/browser/broadcast_channel/broadcast_channel_provider.h"
+#include "content/browser/broadcast_channel/broadcast_channel_service.h"
 #include "content/browser/code_cache/generated_code_cache_context.h"
 #include "content/browser/devtools/devtools_instrumentation.h"
 #include "content/browser/devtools/worker_devtools_agent_host.h"
@@ -614,10 +615,11 @@ void DedicatedWorkerHost::CreateBroadcastChannelProvider(
   auto* storage_partition_impl = static_cast<StoragePartitionImpl*>(
       GetProcessHost()->GetStoragePartition());
 
-  mojo::MakeSelfOwnedReceiver(
-      std::make_unique<BroadcastChannelProvider>(
-          storage_partition_impl->GetBroadcastChannelService(),
-          GetStorageKey()),
+  auto* broadcast_channel_service =
+      storage_partition_impl->GetBroadcastChannelService();
+  broadcast_channel_service->AddReceiver(
+      std::make_unique<BroadcastChannelProvider>(broadcast_channel_service,
+                                                 GetStorageKey()),
       std::move(receiver));
 }
 
