@@ -164,6 +164,7 @@ public class StartupTabPreloaderTest {
 
     @Test
     @LargeTest
+    @FlakyTest(message = "https://crbug.com/1271158")
     @DisableFeatures(ChromeFeatureList.ELIDE_TAB_PRELOAD_AT_STARTUP)
     public void testStartupTabPreloaderStartupLoadingMetricsRecordedWhenTabNotPreloaded()
             throws Exception {
