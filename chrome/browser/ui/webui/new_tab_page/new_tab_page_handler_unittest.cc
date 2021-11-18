@@ -6,6 +6,10 @@
 #include "base/memory/ref_counted_memory.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
+#include "chrome/browser/new_tab_page/promos/promo_data.h"
+#include "chrome/browser/new_tab_page/promos/promo_service.h"
+#include "chrome/browser/new_tab_page/promos/promo_service_factory.h"
+#include "chrome/browser/new_tab_page/promos/promo_service_observer.h"
 #include "chrome/browser/search/background/ntp_background_data.h"
 #include "chrome/browser/search/background/ntp_custom_background_service.h"
 #include "chrome/browser/search/background/ntp_custom_background_service_observer.h"
@@ -17,6 +21,8 @@
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/theme_resources.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "components/keyed_service/core/keyed_service.h"
 #include "components/search_provider_logos/logo_common.h"
 #include "components/search_provider_logos/logo_service.h"
 #include "content/public/test/browser_task_environment.h"
@@ -24,6 +30,7 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -92,13 +99,38 @@ class MockThemeService : public ThemeService {
   ThemeHelper theme_helper_;
 };
 
+class MockPromoService : public PromoService {
+ public:
+  MockPromoService() : PromoService(nullptr, nullptr) {}
+  MOCK_METHOD(const absl::optional<PromoData>&,
+              promo_data,
+              (),
+              (const, override));
+  MOCK_METHOD(void, AddObserver, (PromoServiceObserver*), (override));
+  MOCK_METHOD(void, Refresh, (), (override));
+};
+
+std::unique_ptr<TestingProfile> MakeTestingProfile() {
+  TestingProfile::Builder profile_builder;
+  profile_builder.AddTestingFactory(
+      PromoServiceFactory::GetInstance(),
+      base::BindRepeating([](content::BrowserContext* context)
+                              -> std::unique_ptr<KeyedService> {
+        return std::make_unique<testing::NiceMock<MockPromoService>>();
+      }));
+  return profile_builder.Build();
+}
+
 }  // namespace
 
 class NewTabPageHandlerTest : public testing::Test {
  public:
   NewTabPageHandlerTest()
-      : mock_ntp_custom_background_service_(&profile_),
-        web_contents_(factory_.CreateWebContents(&profile_)) {}
+      : profile_(MakeTestingProfile()),
+        mock_ntp_custom_background_service_(profile_.get()),
+        mock_promo_service_(*static_cast<MockPromoService*>(
+            PromoServiceFactory::GetForProfile(profile_.get()))),
+        web_contents_(factory_.CreateWebContents(profile_.get())) {}
 
   ~NewTabPageHandlerTest() override = default;
 
@@ -110,12 +142,15 @@ class NewTabPageHandlerTest : public testing::Test {
         .Times(1)
         .WillOnce(
             testing::SaveArg<0>(&ntp_custom_background_service_observer_));
+    EXPECT_CALL(mock_promo_service_, AddObserver)
+        .Times(1)
+        .WillOnce(testing::SaveArg<0>(&promo_service_observer_));
     EXPECT_CALL(mock_page_, SetTheme).Times(1);
     EXPECT_CALL(mock_ntp_custom_background_service_, RefreshBackgroundIfNeeded)
         .Times(1);
     handler_ = std::make_unique<NewTabPageHandler>(
         mojo::PendingReceiver<new_tab_page::mojom::PageHandler>(),
-        mock_page_.BindAndGetRemote(), &profile_,
+        mock_page_.BindAndGetRemote(), profile_.get(),
         &mock_ntp_custom_background_service_, &mock_theme_service_,
         &mock_logo_service_, &mock_theme_provider_, web_contents_,
         base::Time::Now());
@@ -160,18 +195,20 @@ class NewTabPageHandlerTest : public testing::Test {
   testing::NiceMock<MockPage> mock_page_;
   // NOTE: The initialization order of these members matters.
   content::BrowserTaskEnvironment task_environment_;
-  TestingProfile profile_;
+  std::unique_ptr<TestingProfile> profile_;
   testing::NiceMock<MockNtpCustomBackgroundService>
       mock_ntp_custom_background_service_;
   testing::NiceMock<MockThemeService> mock_theme_service_;
   MockLogoService mock_logo_service_;
   testing::NiceMock<MockThemeProvider> mock_theme_provider_;
+  MockPromoService& mock_promo_service_;
   content::TestWebContentsFactory factory_;
   content::WebContents* web_contents_;  // Weak. Owned by factory_.
   base::HistogramTester histogram_tester_;
   std::unique_ptr<NewTabPageHandler> handler_;
   ThemeServiceObserver* theme_service_observer_;
   NtpCustomBackgroundServiceObserver* ntp_custom_background_service_observer_;
+  PromoServiceObserver* promo_service_observer_;
 };
 
 TEST_F(NewTabPageHandlerTest, SetTheme) {
@@ -446,4 +483,61 @@ TEST_F(NewTabPageHandlerTest, GetInteractiveDoodle) {
   EXPECT_EQ(1u, doodle->interactive->width);
   EXPECT_EQ(2u, doodle->interactive->height);
   EXPECT_EQ("alt text", doodle->description);
+}
+
+TEST_F(NewTabPageHandlerTest, GetPromo) {
+  PromoData promo_data;
+  promo_data.promo_html = "<html/>";
+  promo_data.middle_slot_json = R"({
+    "part": [{
+      "image": {
+        "image_url": "https://image.com/image",
+        "target": "https://image.com/target"
+      }
+    }, {
+      "link": {
+        "url": "https://link.com",
+        "text": "bar",
+        "color": "red"
+      }
+    }, {
+      "text": {
+        "text": "blub",
+        "color": "green"
+      }
+    }]
+  })";
+  promo_data.promo_log_url = GURL("https://foo.com");
+  promo_data.promo_id = "foo";
+  auto promo_data_optional = absl::make_optional(promo_data);
+  ON_CALL(mock_promo_service_, promo_data())
+      .WillByDefault(testing::ReturnRef(promo_data_optional));
+  EXPECT_CALL(mock_promo_service_, Refresh).Times(1);
+
+  new_tab_page::mojom::PromoPtr promo;
+  base::MockCallback<NewTabPageHandler::GetPromoCallback> callback;
+  EXPECT_CALL(callback, Run(testing::_))
+      .Times(1)
+      .WillOnce(testing::Invoke([&promo](new_tab_page::mojom::PromoPtr arg) {
+        promo = std::move(arg);
+      }));
+  handler_->GetPromo(callback.Get());
+
+  ASSERT_TRUE(promo);
+  EXPECT_EQ("foo", promo->id);
+  EXPECT_EQ("https://foo.com/", promo->log_url);
+  ASSERT_EQ(3lu, promo->middle_slot_parts.size());
+  ASSERT_TRUE(promo->middle_slot_parts[0]->is_image());
+  const auto& image = promo->middle_slot_parts[0]->get_image();
+  EXPECT_EQ("https://image.com/image", image->image_url);
+  EXPECT_EQ("https://image.com/target", image->target);
+  ASSERT_TRUE(promo->middle_slot_parts[1]->is_link());
+  const auto& link = promo->middle_slot_parts[1]->get_link();
+  EXPECT_EQ("red", link->color);
+  EXPECT_EQ("bar", link->text);
+  EXPECT_EQ("https://link.com/", link->url);
+  ASSERT_TRUE(promo->middle_slot_parts[2]->is_text());
+  const auto& text = promo->middle_slot_parts[2]->get_text();
+  EXPECT_EQ("green", text->color);
+  EXPECT_EQ("blub", text->text);
 }

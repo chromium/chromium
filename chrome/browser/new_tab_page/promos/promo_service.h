@@ -57,8 +57,9 @@ class PromoService : public KeyedService {
 
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
-  // Returns the currently cached middle-slot PromoData, if any.
-  const absl::optional<PromoData>& promo_data() const { return promo_data_; }
+  // Returns the currently cached middle-slot PromoData, if any. Virtual for
+  // testing.
+  virtual const absl::optional<PromoData>& promo_data() const;
   Status promo_status() const { return promo_status_; }
 
   // Requests an asynchronous refresh from the network. After the update
@@ -66,8 +67,8 @@ class PromoService : public KeyedService {
   virtual void Refresh();
 
   // Add/remove observers. All observers must unregister themselves before the
-  // PromoService is destroyed.
-  void AddObserver(PromoServiceObserver* observer);
+  // PromoService is destroyed. Virtual for testing.
+  virtual void AddObserver(PromoServiceObserver* observer);
   void RemoveObserver(PromoServiceObserver* observer);
 
   // Marks |promo_id| as blocked from being shown again.

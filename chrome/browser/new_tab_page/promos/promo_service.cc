@@ -234,6 +234,10 @@ void PromoService::RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterDictionaryPref(prefs::kNtpPromoBlocklist);
 }
 
+const absl::optional<PromoData>& PromoService::promo_data() const {
+  return promo_data_;
+}
+
 void PromoService::AddObserver(PromoServiceObserver* observer) {
   observers_.AddObserver(observer);
 }
