@@ -27,6 +27,17 @@ public interface MessageStateHandler {
      */
     void dismiss(@DismissReason int dismissReason);
 
+    /**
+     * Determines if the message should be shown after it is enqueued. This can be used in features
+     * that require an enqueued message to be shown or not depending on some prerequisites. It is
+     * the responsibility of the feature code to dismiss the message if it is not to be shown
+     * permanently.
+     * @return true if an enqueued message should be shown, false otherwise.
+     */
+    default boolean shouldShow() {
+        return true;
+    }
+
     /** Returns MessageIdentifier of the current message. */
     @MessageIdentifier
     int getMessageIdentifier();

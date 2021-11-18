@@ -592,6 +592,21 @@ public class ChromeSurveyControllerFlowTest {
     }
 
     @Test
+    public void testMessages_EnqueuedMessageDismissedOnExpiredSurvey() throws Exception {
+        presentMessages();
+
+        // Simulate survey expiration after the message is enqueued.
+        mTestSurveyController.isSurveyExpired = true;
+
+        PropertyModel messageModel = mMessagePropertyCaptor.getValue();
+        boolean shouldShow =
+                messageModel.get(MessageBannerProperties.ON_STARTED_SHOWING).getAsBoolean();
+        Assert.assertFalse(
+                "The enqueued message should not be shown if the survey has expired.", shouldShow);
+        verify(mMessageDispatcher).dismissMessage(messageModel, DismissReason.DISMISSED_BY_FEATURE);
+    }
+
+    @Test
     public void testMessages_Dismiss_PrimaryAction() {
         presentMessages();
         PropertyModel messageModel = mMessagePropertyCaptor.getValue();
