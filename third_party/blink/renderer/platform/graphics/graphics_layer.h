@@ -33,7 +33,6 @@
 #include "cc/input/scroll_snap_data.h"
 #include "cc/layers/content_layer_client.h"
 #include "cc/layers/layer.h"
-#include "third_party/blink/renderer/platform/geometry/float_point.h"
 #include "third_party/blink/renderer/platform/geometry/float_point_3d.h"
 #include "third_party/blink/renderer/platform/geometry/float_size.h"
 #include "third_party/blink/renderer/platform/geometry/int_rect.h"
@@ -55,6 +54,7 @@
 #include "third_party/blink/renderer/platform/transforms/transformation_matrix.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
+#include "ui/gfx/geometry/point_f.h"
 
 namespace cc {
 class DisplayItemList;

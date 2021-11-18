@@ -68,7 +68,7 @@ namespace blink {
 
 namespace {
 
-SkRect GetRectForTextLine(FloatPoint pt, float width, float stroke_thickness) {
+SkRect GetRectForTextLine(gfx::PointF pt, float width, float stroke_thickness) {
   int thickness = std::max(static_cast<int>(stroke_thickness), 1);
   SkRect r;
   r.fLeft = WebCoreFloatToSkScalar(pt.x());
@@ -80,7 +80,7 @@ SkRect GetRectForTextLine(FloatPoint pt, float width, float stroke_thickness) {
   return r;
 }
 
-std::pair<gfx::Point, gfx::Point> GetPointsForTextLine(FloatPoint pt,
+std::pair<gfx::Point, gfx::Point> GetPointsForTextLine(gfx::PointF pt,
                                                        float width,
                                                        float stroke_thickness) {
   int y = floorf(pt.y() + std::max<float>(stroke_thickness / 2.0f, 0.5f));
@@ -359,8 +359,8 @@ void GraphicsContext::DrawFocusRingRect(const SkRRect& rrect,
 }
 
 static void EnforceDotsAtEndpoints(GraphicsContext& context,
-                                   FloatPoint& p1,
-                                   FloatPoint& p2,
+                                   gfx::PointF& p1,
+                                   gfx::PointF& p2,
                                    const int path_length,
                                    const int width,
                                    const PaintFlags& flags,
@@ -468,16 +468,16 @@ void GraphicsContext::DrawLine(const gfx::Point& point1,
   if (pen_style == kNoStroke)
     return;
 
-  FloatPoint p1 = FloatPoint(point1);
-  FloatPoint p2 = FloatPoint(point2);
+  gfx::PointF p1 = gfx::PointF(point1);
+  gfx::PointF p2 = gfx::PointF(point2);
   bool is_vertical_line = (p1.x() == p2.x());
   int width = roundf(StrokeThickness());
 
   // We know these are vertical or horizontal lines, so the length will just
   // be the sum of the displacement component vectors give or take 1 -
   // probably worth the speed up of no square root, which also won't be exact.
-  FloatSize disp = p2 - p1;
-  int length = SkScalarRoundToInt(disp.width() + disp.height());
+  gfx::Vector2dF disp = p2 - p1;
+  int length = SkScalarRoundToInt(disp.x() + disp.y());
   const DarkModeFlags flags(this, auto_dark_mode,
                             paint_flags
                                 ? *paint_flags
@@ -513,7 +513,7 @@ void GraphicsContext::DrawLine(const gfx::Point& point1,
   canvas_->drawLine(p1.x(), p1.y(), p2.x(), p2.y(), flags);
 }
 
-void GraphicsContext::DrawLineForText(const FloatPoint& pt,
+void GraphicsContext::DrawLineForText(const gfx::PointF& pt,
                                       float width,
                                       const AutoDarkMode& auto_dark_mode,
                                       const PaintFlags* paint_flags) {
@@ -566,7 +566,7 @@ void GraphicsContext::DrawRect(const IntRect& rect,
 
 void GraphicsContext::DrawText(const Font& font,
                                const TextRunPaintInfo& text_info,
-                               const FloatPoint& point,
+                               const gfx::PointF& point,
                                const PaintFlags& flags,
                                DOMNodeId node_id,
                                const AutoDarkMode& auto_dark_mode) {
@@ -578,7 +578,7 @@ void GraphicsContext::DrawText(const Font& font,
 
 void GraphicsContext::DrawText(const Font& font,
                                const NGTextFragmentPaintInfo& text_info,
-                               const FloatPoint& point,
+                               const gfx::PointF& point,
                                const PaintFlags& flags,
                                DOMNodeId node_id,
                                const AutoDarkMode& auto_dark_mode) {
@@ -619,7 +619,7 @@ void GraphicsContext::DrawTextPasses(const AutoDarkMode& auto_dark_mode,
 template <typename TextPaintInfo>
 void GraphicsContext::DrawTextInternal(const Font& font,
                                        const TextPaintInfo& text_info,
-                                       const FloatPoint& point,
+                                       const gfx::PointF& point,
                                        DOMNodeId node_id,
                                        const AutoDarkMode& auto_dark_mode) {
   DrawTextPasses(auto_dark_mode, [&](const PaintFlags& flags) {
@@ -650,7 +650,7 @@ bool GraphicsContext::ShouldDrawDarkModeTextContrastOutline(
 
 void GraphicsContext::DrawText(const Font& font,
                                const TextRunPaintInfo& text_info,
-                               const FloatPoint& point,
+                               const gfx::PointF& point,
                                DOMNodeId node_id,
                                const AutoDarkMode& auto_dark_mode) {
   DrawTextInternal(font, text_info, point, node_id, auto_dark_mode);
@@ -658,7 +658,7 @@ void GraphicsContext::DrawText(const Font& font,
 
 void GraphicsContext::DrawText(const Font& font,
                                const NGTextFragmentPaintInfo& text_info,
-                               const FloatPoint& point,
+                               const gfx::PointF& point,
                                DOMNodeId node_id,
                                const AutoDarkMode& auto_dark_mode) {
   DrawTextInternal(font, text_info, point, node_id, auto_dark_mode);
@@ -669,7 +669,7 @@ void GraphicsContext::DrawEmphasisMarksInternal(
     const Font& font,
     const TextPaintInfo& text_info,
     const AtomicString& mark,
-    const FloatPoint& point,
+    const gfx::PointF& point,
     const AutoDarkMode& auto_dark_mode) {
   DrawTextPasses(auto_dark_mode, [&font, &text_info, &mark, &point,
                                   this](const PaintFlags& flags) {
@@ -681,7 +681,7 @@ void GraphicsContext::DrawEmphasisMarksInternal(
 void GraphicsContext::DrawEmphasisMarks(const Font& font,
                                         const TextRunPaintInfo& text_info,
                                         const AtomicString& mark,
-                                        const FloatPoint& point,
+                                        const gfx::PointF& point,
                                         const AutoDarkMode& auto_dark_mode) {
   DrawEmphasisMarksInternal(font, text_info, mark, point, auto_dark_mode);
 }
@@ -690,7 +690,7 @@ void GraphicsContext::DrawEmphasisMarks(
     const Font& font,
     const NGTextFragmentPaintInfo& text_info,
     const AtomicString& mark,
-    const FloatPoint& point,
+    const gfx::PointF& point,
     const AutoDarkMode& auto_dark_mode) {
   DrawEmphasisMarksInternal(font, text_info, mark, point, auto_dark_mode);
 }
@@ -698,7 +698,7 @@ void GraphicsContext::DrawEmphasisMarks(
 void GraphicsContext::DrawBidiText(
     const Font& font,
     const TextRunPaintInfo& run_info,
-    const FloatPoint& point,
+    const gfx::PointF& point,
     const AutoDarkMode& auto_dark_mode,
     Font::CustomFontNotReadyAction custom_font_not_ready_action) {
   DrawTextPasses(
@@ -716,7 +716,7 @@ void GraphicsContext::DrawBidiText(
 
 void GraphicsContext::DrawHighlightForText(const Font& font,
                                            const TextRun& run,
-                                           const FloatPoint& point,
+                                           const gfx::PointF& point,
                                            int h,
                                            const Color& background_color,
                                            const AutoDarkMode& auto_dark_mode,
@@ -954,11 +954,12 @@ bool IsSimpleDRRect(const FloatRoundedRect& outer,
                     const FloatRoundedRect& inner) {
   // A DRRect is "simple" (i.e. can be drawn as a rrect stroke) if
   //   1) all sides have the same width
-  const FloatSize stroke_size = inner.Rect().origin() - outer.Rect().origin();
+  const gfx::Vector2dF stroke_size =
+      inner.Rect().origin() - outer.Rect().origin();
   if (!WebCoreFloatNearlyEqual(stroke_size.AspectRatio(), 1) ||
-      !WebCoreFloatNearlyEqual(stroke_size.width(),
+      !WebCoreFloatNearlyEqual(stroke_size.x(),
                                outer.Rect().right() - inner.Rect().right()) ||
-      !WebCoreFloatNearlyEqual(stroke_size.height(),
+      !WebCoreFloatNearlyEqual(stroke_size.y(),
                                outer.Rect().bottom() - inner.Rect().bottom())) {
     return false;
   }
@@ -976,7 +977,7 @@ bool IsSimpleDRRect(const FloatRoundedRect& outer,
     return WebCoreFloatNearlyEqual(outer.width(), outer.height()) &&
            WebCoreFloatNearlyEqual(inner.width(), inner.height()) &&
            WebCoreFloatNearlyEqual(outer.width(),
-                                   inner.width() + stroke_size.width());
+                                   inner.width() + stroke_size.x());
   };
 
   const auto& o_radii = outer.GetRadii();
@@ -1185,8 +1186,8 @@ void GraphicsContext::ConcatCTM(const AffineTransform& affine) {
   Concat(AffineTransformToSkMatrix(affine));
 }
 
-void GraphicsContext::AdjustLineToPixelBoundaries(FloatPoint& p1,
-                                                  FloatPoint& p2,
+void GraphicsContext::AdjustLineToPixelBoundaries(gfx::PointF& p1,
+                                                  gfx::PointF& p2,
                                                   float stroke_width) {
   // For odd widths, we add in 0.5 to the appropriate x/y so that the float
   // arithmetic works out.  For example, with a border width of 3, painting will
@@ -1206,7 +1207,7 @@ void GraphicsContext::AdjustLineToPixelBoundaries(FloatPoint& p1,
   }
 }
 
-Path GraphicsContext::GetPathForTextLine(const FloatPoint& pt,
+Path GraphicsContext::GetPathForTextLine(const gfx::PointF& pt,
                                          float width,
                                          float stroke_thickness,
                                          StrokeStyle stroke_style) {
@@ -1216,8 +1217,8 @@ Path GraphicsContext::GetPathForTextLine(const FloatPoint& pt,
     gfx::Point start;
     gfx::Point end;
     std::tie(start, end) = GetPointsForTextLine(pt, width, stroke_thickness);
-    path.MoveTo(ToGfxPointF(FloatPoint(start)));
-    path.AddLineTo(ToGfxPointF(FloatPoint(end)));
+    path.MoveTo(gfx::PointF(start));
+    path.AddLineTo(gfx::PointF(end));
   } else {
     path.AddRect(GetRectForTextLine(pt, width, stroke_thickness));
   }

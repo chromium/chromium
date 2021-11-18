@@ -7,6 +7,7 @@
 #include <ApplicationServices/ApplicationServices.h>
 
 #include "ui/gfx/geometry/point.h"
+#include "ui/gfx/geometry/point_f.h"
 
 namespace blink {
 
@@ -15,6 +16,14 @@ gfx::Point CGPointToPoint(const CGPoint& p) {
 }
 
 CGPoint PointToCGPoint(const gfx::Point& p) {
+  return CGPointMake(p.x(), p.y());
+}
+
+gfx::PointF CGPointToPointF(const CGPoint& p) {
+  return gfx::PointF(static_cast<int>(p.x), static_cast<int>(p.y));
+}
+
+CGPoint PointFToCGPoint(const gfx::PointF& p) {
   return CGPointMake(p.x(), p.y());
 }
 

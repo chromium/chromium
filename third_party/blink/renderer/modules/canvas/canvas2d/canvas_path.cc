@@ -48,7 +48,7 @@
 namespace blink {
 
 // TODO(crbug.com/940846): Consider using double-type without casting and
-// DoublePoint & DoubleRect instead of FloatPoint & FloatRect.
+// DoublePoint & DoubleRect instead of gfx::PointF & FloatRect.
 
 void CanvasPath::closePath() {
   if (UNLIKELY(path_.IsEmpty()))
@@ -253,14 +253,14 @@ float AdjustEndAngle(float start_angle, float end_angle, bool anticlockwise) {
   return new_end_angle;
 }
 
-inline void LineToFloatPoint(CanvasPath* path, const FloatPoint& p) {
+inline void LineTo(CanvasPath* path, const gfx::PointF& p) {
   path->lineTo(p.x(), p.y());
 }
 
-inline FloatPoint GetPointOnEllipse(float radius_x,
-                                    float radius_y,
-                                    float theta) {
-  return FloatPoint(radius_x * cosf(theta), radius_y * sinf(theta));
+inline gfx::PointF GetPointOnEllipse(float radius_x,
+                                     float radius_y,
+                                     float theta) {
+  return gfx::PointF(radius_x * cosf(theta), radius_y * sinf(theta));
 }
 
 void CanonicalizeAngle(float* start_angle, float* end_angle) {
@@ -331,14 +331,16 @@ void DegenerateEllipse(CanvasPath* path,
   DCHECK((anticlockwise && (start_angle - end_angle) >= 0) ||
          (!anticlockwise && (end_angle - start_angle) >= 0));
 
-  FloatPoint center(x, y);
+  gfx::PointF center(x, y);
   AffineTransform rotation_matrix;
   rotation_matrix.RotateRadians(rotation);
   // First, if the object's path has any subpaths, then the method must add a
   // straight line from the last point in the subpath to the start point of the
   // arc.
-  LineToFloatPoint(path, center + rotation_matrix.MapPoint(GetPointOnEllipse(
-                                      radius_x, radius_y, start_angle)));
+  LineTo(path, center + rotation_matrix
+                            .MapPoint(GetPointOnEllipse(radius_x, radius_y,
+                                                        start_angle))
+                            .OffsetFromOrigin());
   if (UNLIKELY((!radius_x && !radius_y) || start_angle == end_angle))
     return;
 
@@ -349,21 +351,25 @@ void DegenerateEllipse(CanvasPath* path,
     for (float angle = start_angle - fmodf(start_angle, kPiOverTwoFloat) +
                        kPiOverTwoFloat;
          angle < end_angle; angle += kPiOverTwoFloat) {
-      LineToFloatPoint(
-          path, center + rotation_matrix.MapPoint(
-                             GetPointOnEllipse(radius_x, radius_y, angle)));
+      LineTo(path, center + rotation_matrix
+                                .MapPoint(GetPointOnEllipse(radius_x, radius_y,
+                                                            angle))
+                                .OffsetFromOrigin());
     }
   } else {
     for (float angle = start_angle - fmodf(start_angle, kPiOverTwoFloat);
          angle > end_angle; angle -= kPiOverTwoFloat) {
-      LineToFloatPoint(
-          path, center + rotation_matrix.MapPoint(
-                             GetPointOnEllipse(radius_x, radius_y, angle)));
+      LineTo(path, center + rotation_matrix
+                                .MapPoint(GetPointOnEllipse(radius_x, radius_y,
+                                                            angle))
+                                .OffsetFromOrigin());
     }
   }
 
-  LineToFloatPoint(path, center + rotation_matrix.MapPoint(GetPointOnEllipse(
-                                      radius_x, radius_y, end_angle)));
+  LineTo(path, center + rotation_matrix
+                            .MapPoint(GetPointOnEllipse(radius_x, radius_y,
+                                                        end_angle))
+                            .OffsetFromOrigin());
 }
 
 }  // namespace

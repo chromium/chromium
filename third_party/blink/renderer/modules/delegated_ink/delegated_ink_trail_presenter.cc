@@ -84,7 +84,7 @@ void DelegatedInkTrailPresenter::updateInkTrailStartPoint(
   physical_point.Scale(effective_zoom);
   physical_point = layout_view->LocalToAbsolutePoint(
       physical_point, kTraverseDocumentBoundaries);
-  gfx::PointF point = ToGfxPointF(FloatPoint(physical_point));
+  gfx::PointF point = gfx::PointF(physical_point);
 
   // Intersect with the visible viewport so that the presentation area can't
   // extend beyond the edges of the window or over the scrollbars. The frame

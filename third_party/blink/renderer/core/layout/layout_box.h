@@ -1505,7 +1505,7 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   virtual void Autoscroll(const PhysicalOffset&);
   bool CanAutoscroll() const;
   PhysicalOffset CalculateAutoscrollDirection(
-      const FloatPoint& point_in_root_frame) const;
+      const gfx::PointF& point_in_root_frame) const;
   static LayoutBox* FindAutoscrollable(LayoutObject*,
                                        bool is_middle_click_autoscroll);
   static bool HasHorizontallyScrollableAncestor(LayoutObject*);
@@ -1844,7 +1844,7 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
 
   // The optional |size| parameter is used if the size of the object isn't
   // correct yet.
-  FloatPoint PerspectiveOrigin(const PhysicalSize* size = nullptr) const;
+  gfx::PointF PerspectiveOrigin(const PhysicalSize* size = nullptr) const;
 
   // Maps the visual rect state |transform_state| from this box into its
   // container, applying adjustments for the given container offset,

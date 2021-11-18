@@ -1233,14 +1233,14 @@ bool PaintArtifactCompositor::DirectlyUpdatePageScaleTransform(
 
 bool PaintArtifactCompositor::DirectlySetScrollOffset(
     CompositorElementId element_id,
-    const FloatPoint& scroll_offset) {
+    const gfx::PointF& scroll_offset) {
   if (!root_layer_ || !root_layer_->layer_tree_host())
     return false;
   auto* property_trees = root_layer_->layer_tree_host()->property_trees();
   if (!property_trees->element_id_to_scroll_node_index.contains(element_id))
     return false;
-  PropertyTreeManager::DirectlySetScrollOffset(
-      *root_layer_->layer_tree_host(), element_id, ToGfxPointF(scroll_offset));
+  PropertyTreeManager::DirectlySetScrollOffset(*root_layer_->layer_tree_host(),
+                                               element_id, scroll_offset);
   return true;
 }
 

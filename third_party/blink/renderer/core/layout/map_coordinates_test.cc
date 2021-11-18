@@ -158,7 +158,7 @@ TEST_F(MapCoordinatesTest, OverflowClip) {
   To<Element>(overflow->GetNode())
       ->GetLayoutBoxForScrolling()
       ->GetScrollableArea()
-      ->ScrollToAbsolutePosition(FloatPoint(32, 54));
+      ->ScrollToAbsolutePosition(gfx::PointF(32, 54));
 
   PhysicalOffset mapped_point =
       MapLocalToAncestor(target, To<LayoutBoxModelObject>(target->Parent()),
@@ -1434,11 +1434,11 @@ TEST_F(MapCoordinatesTest, Transforms) {
   auto* target = GetLayoutBoxByElementId("target");
   auto* container = GetLayoutBoxByElementId("container");
 
-  FloatQuad initial_quad(FloatPoint(0, 0), FloatPoint(200, 0),
-                         FloatPoint(200, 200), FloatPoint(0, 200));
+  FloatQuad initial_quad(gfx::PointF(0, 0), gfx::PointF(200, 0),
+                         gfx::PointF(200, 200), gfx::PointF(0, 200));
   FloatQuad mapped_quad = MapLocalToAncestor(target, container, initial_quad);
-  EXPECT_FLOAT_QUAD_EQ(FloatQuad(FloatPoint(200, 0), FloatPoint(200, 200),
-                                 FloatPoint(0, 200), FloatPoint(0, 0)),
+  EXPECT_FLOAT_QUAD_EQ(FloatQuad(gfx::PointF(200, 0), gfx::PointF(200, 200),
+                                 gfx::PointF(0, 200), gfx::PointF(0, 0)),
                        mapped_quad);
   mapped_quad = MapAncestorToLocal(target, container, mapped_quad);
   EXPECT_FLOAT_QUAD_EQ(initial_quad, mapped_quad);
@@ -1448,31 +1448,31 @@ TEST_F(MapCoordinatesTest, Transforms) {
   auto* outer_transform = GetLayoutBoxByElementId("outerTransform");
 
   mapped_quad = MapLocalToAncestor(target, inner_transform, initial_quad);
-  EXPECT_FLOAT_QUAD_EQ(FloatQuad(FloatPoint(0, 0), FloatPoint(200, 0),
-                                 FloatPoint(200, 200), FloatPoint(0, 200)),
+  EXPECT_FLOAT_QUAD_EQ(FloatQuad(gfx::PointF(0, 0), gfx::PointF(200, 0),
+                                 gfx::PointF(200, 200), gfx::PointF(0, 200)),
                        mapped_quad);
   mapped_quad = MapAncestorToLocal(target, inner_transform, mapped_quad);
   EXPECT_FLOAT_QUAD_EQ(initial_quad, mapped_quad);
 
-  initial_quad = FloatQuad(FloatPoint(0, 0), FloatPoint(200, 0),
-                           FloatPoint(200, 200), FloatPoint(0, 200));
+  initial_quad = FloatQuad(gfx::PointF(0, 0), gfx::PointF(200, 0),
+                           gfx::PointF(200, 200), gfx::PointF(0, 200));
   mapped_quad =
       MapLocalToAncestor(inner_transform, outer_transform, initial_quad);
   // Clockwise rotation by 45 degrees.
   EXPECT_FLOAT_QUAD_EQ(
-      FloatQuad(FloatPoint(100, -41.42), FloatPoint(241.42, 100),
-                FloatPoint(100, 241.42), FloatPoint(-41.42, 100)),
+      FloatQuad(gfx::PointF(100, -41.42), gfx::PointF(241.42, 100),
+                gfx::PointF(100, 241.42), gfx::PointF(-41.42, 100)),
       mapped_quad);
   mapped_quad =
       MapAncestorToLocal(inner_transform, outer_transform, mapped_quad);
   EXPECT_FLOAT_QUAD_EQ(initial_quad, mapped_quad);
 
-  initial_quad = FloatQuad(FloatPoint(100, -41.42), FloatPoint(241.42, 100),
-                           FloatPoint(100, 241.42), FloatPoint(-41.42, 100));
+  initial_quad = FloatQuad(gfx::PointF(100, -41.42), gfx::PointF(241.42, 100),
+                           gfx::PointF(100, 241.42), gfx::PointF(-41.42, 100));
   mapped_quad = MapLocalToAncestor(outer_transform, container, initial_quad);
   // Another clockwise rotation by 45 degrees. So now 90 degrees in total.
-  EXPECT_FLOAT_QUAD_EQ(FloatQuad(FloatPoint(200, 0), FloatPoint(200, 200),
-                                 FloatPoint(0, 200), FloatPoint(0, 0)),
+  EXPECT_FLOAT_QUAD_EQ(FloatQuad(gfx::PointF(200, 0), gfx::PointF(200, 200),
+                                 gfx::PointF(0, 200), gfx::PointF(0, 0)),
                        mapped_quad);
   mapped_quad = MapAncestorToLocal(outer_transform, container, mapped_quad);
   EXPECT_FLOAT_QUAD_EQ(initial_quad, mapped_quad);
@@ -1650,9 +1650,9 @@ TEST_F(MapCoordinatesTest, LocalToAbsoluteTransform) {
   TransformationMatrix child_matrix = child->LocalToAbsoluteTransform();
   EXPECT_FALSE(child_matrix.IsIdentityOrTranslation());
   EXPECT_TRUE(child_matrix.IsAffine());
-  EXPECT_EQ(FloatPoint(), child_matrix.ProjectPoint(FloatPoint()));
-  EXPECT_EQ(FloatPoint(20.0f, 40.0f),
-            child_matrix.ProjectPoint(FloatPoint(10.0f, 20.0f)));
+  EXPECT_EQ(gfx::PointF(), child_matrix.ProjectPoint(gfx::PointF()));
+  EXPECT_EQ(gfx::PointF(20.0f, 40.0f),
+            child_matrix.ProjectPoint(gfx::PointF(10.0f, 20.0f)));
 }
 
 TEST_F(MapCoordinatesTest, LocalToAncestorTransform) {
@@ -1683,9 +1683,9 @@ TEST_F(MapCoordinatesTest, LocalToAncestorTransform) {
   matrix = child->LocalToAncestorTransform(rotate1);
   EXPECT_FALSE(matrix.IsIdentity());
   EXPECT_TRUE(matrix.IsAffine());
-  EXPECT_NEAR(0.0, matrix.ProjectPoint(FloatPoint(100.0, 0.0)).x(),
+  EXPECT_NEAR(0.0, matrix.ProjectPoint(gfx::PointF(100.0, 0.0)).x(),
               LayoutUnit::Epsilon());
-  EXPECT_NEAR(100.0, matrix.ProjectPoint(FloatPoint(100.0, 0.0)).y(),
+  EXPECT_NEAR(100.0, matrix.ProjectPoint(gfx::PointF(100.0, 0.0)).y(),
               LayoutUnit::Epsilon());
 
   // Rotate (100, 0) 135 degrees to (-70.7, 70.7)
@@ -1693,10 +1693,10 @@ TEST_F(MapCoordinatesTest, LocalToAncestorTransform) {
   EXPECT_FALSE(matrix.IsIdentity());
   EXPECT_TRUE(matrix.IsAffine());
   EXPECT_NEAR(-100.0 * sqrt(2.0) / 2.0,
-              matrix.ProjectPoint(FloatPoint(100.0, 0.0)).x(),
+              matrix.ProjectPoint(gfx::PointF(100.0, 0.0)).x(),
               LayoutUnit::Epsilon());
   EXPECT_NEAR(100.0 * sqrt(2.0) / 2.0,
-              matrix.ProjectPoint(FloatPoint(100.0, 0.0)).y(),
+              matrix.ProjectPoint(gfx::PointF(100.0, 0.0)).y(),
               LayoutUnit::Epsilon());
 }
 
@@ -1723,25 +1723,25 @@ TEST_F(MapCoordinatesTest, LocalToAbsoluteTransformFlattens) {
 
   // With child1, the rotations cancel and points should map basically back to
   // themselves.
-  EXPECT_NEAR(100.0, matrix.MapPoint(FloatPoint(100.0, 50.0)).x(),
+  EXPECT_NEAR(100.0, matrix.MapPoint(gfx::PointF(100.0, 50.0)).x(),
               LayoutUnit::Epsilon());
-  EXPECT_NEAR(50.0, matrix.MapPoint(FloatPoint(100.0, 50.0)).y(),
+  EXPECT_NEAR(50.0, matrix.MapPoint(gfx::PointF(100.0, 50.0)).y(),
               LayoutUnit::Epsilon());
-  EXPECT_NEAR(50.0, matrix.MapPoint(FloatPoint(50.0, 100.0)).x(),
+  EXPECT_NEAR(50.0, matrix.MapPoint(gfx::PointF(50.0, 100.0)).x(),
               LayoutUnit::Epsilon());
-  EXPECT_NEAR(100.0, matrix.MapPoint(FloatPoint(50.0, 100.0)).y(),
+  EXPECT_NEAR(100.0, matrix.MapPoint(gfx::PointF(50.0, 100.0)).y(),
               LayoutUnit::Epsilon());
 
   // With child2, each rotation gets flattened and the end result is
   // approximately a scale(1.0, 0.5).
   matrix = child2->LocalToAbsoluteTransform();
-  EXPECT_NEAR(50.0, matrix.MapPoint(FloatPoint(100.0, 50.0)).x(),
+  EXPECT_NEAR(50.0, matrix.MapPoint(gfx::PointF(100.0, 50.0)).x(),
               LayoutUnit::Epsilon());
-  EXPECT_NEAR(50.0, matrix.MapPoint(FloatPoint(100.0, 50.0)).y(),
+  EXPECT_NEAR(50.0, matrix.MapPoint(gfx::PointF(100.0, 50.0)).y(),
               LayoutUnit::Epsilon());
-  EXPECT_NEAR(25.0, matrix.MapPoint(FloatPoint(50.0, 100.0)).x(),
+  EXPECT_NEAR(25.0, matrix.MapPoint(gfx::PointF(50.0, 100.0)).x(),
               LayoutUnit::Epsilon());
-  EXPECT_NEAR(100.0, matrix.MapPoint(FloatPoint(50.0, 100.0)).y(),
+  EXPECT_NEAR(100.0, matrix.MapPoint(gfx::PointF(50.0, 100.0)).y(),
               LayoutUnit::Epsilon());
 }
 
@@ -1818,7 +1818,7 @@ TEST_F(MapCoordinatesTest, IgnoreScrollOffset) {
   To<Element>(scroller->GetNode())
       ->GetLayoutBoxForScrolling()
       ->GetScrollableArea()
-      ->ScrollToAbsolutePosition(FloatPoint(0, 50));
+      ->ScrollToAbsolutePosition(gfx::PointF(0, 50));
 
   EXPECT_EQ(PhysicalOffset(0, -40),
             MapLocalToAncestor(box, scroller, PhysicalOffset()));
@@ -1857,7 +1857,7 @@ TEST_F(MapCoordinatesTest, IgnoreScrollOffsetForInline) {
   To<Element>(scroller->GetNode())
       ->GetLayoutBoxForScrolling()
       ->GetScrollableArea()
-      ->ScrollToAbsolutePosition(FloatPoint(0, 50));
+      ->ScrollToAbsolutePosition(gfx::PointF(0, 50));
 
   EXPECT_EQ(PhysicalOffset(0, 10),
             MapLocalToAncestor(box, scroller, PhysicalOffset()));
@@ -1894,7 +1894,7 @@ TEST_F(MapCoordinatesTest, IgnoreScrollOffsetWithWritingModes) {
 
   scroll_element->GetLayoutBoxForScrolling()
       ->GetScrollableArea()
-      ->ScrollToAbsolutePosition(FloatPoint(0, 50));
+      ->ScrollToAbsolutePosition(gfx::PointF(0, 50));
 
   EXPECT_EQ(PhysicalOffset(1990, -40),
             MapLocalToAncestor(box, scroller, PhysicalOffset()));
@@ -1904,7 +1904,7 @@ TEST_F(MapCoordinatesTest, IgnoreScrollOffsetWithWritingModes) {
 
   scroll_element->GetLayoutBoxForScrolling()
       ->GetScrollableArea()
-      ->ScrollToAbsolutePosition(FloatPoint(1900, 50));
+      ->ScrollToAbsolutePosition(gfx::PointF(1900, 50));
 
   EXPECT_EQ(PhysicalOffset(90, -40),
             MapLocalToAncestor(box, scroller, PhysicalOffset()));
@@ -1947,7 +1947,7 @@ TEST_F(MapCoordinatesTest,
   To<Element>(scroller->GetNode())
       ->GetLayoutBoxForScrolling()
       ->GetScrollableArea()
-      ->ScrollToAbsolutePosition(FloatPoint(0, 0));
+      ->ScrollToAbsolutePosition(gfx::PointF(0, 0));
 
   // The box is now on the right of the scrollbar therefore there is nothing
   // between the box and the right border of the content.

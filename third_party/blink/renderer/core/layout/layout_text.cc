@@ -2477,7 +2477,7 @@ PhysicalRect LayoutText::LocalSelectionVisualRect() const {
       if (svg_inline_text) {
         FloatRect float_rect(item_rect);
         const NGFragmentItem& item = *cursor.CurrentItem();
-        float_rect.MoveBy(FloatPoint(item.SvgFragmentData()->rect.origin()));
+        float_rect.MoveBy(item.SvgFragmentData()->rect.origin());
         if (item.HasSvgTransformForBoundingBox()) {
           float_rect =
               item.BuildSvgTransformForBoundingBox().MapRect(float_rect);

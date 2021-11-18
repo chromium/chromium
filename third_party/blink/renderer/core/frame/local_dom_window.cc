@@ -1606,10 +1606,10 @@ void LocalDOMWindow::scrollBy(const ScrollToOptions* scroll_to_options) const {
   }
 
   PaintLayerScrollableArea* viewport = view->LayoutViewport();
-  gfx::PointF current_position = ToGfxPointF(viewport->ScrollPosition());
+  gfx::PointF current_position = viewport->ScrollPosition();
   gfx::Vector2dF scaled_delta(x * GetFrame()->PageZoomFactor(),
                               y * GetFrame()->PageZoomFactor());
-  FloatPoint new_scaled_position(current_position + scaled_delta);
+  gfx::PointF new_scaled_position = current_position + scaled_delta;
 
   std::unique_ptr<cc::SnapSelectionStrategy> strategy =
       cc::SnapSelectionStrategy::CreateForEndAndDirection(
@@ -1674,12 +1674,12 @@ void LocalDOMWindow::scrollTo(const ScrollToOptions* scroll_to_options) const {
                GetFrame()->PageZoomFactor();
   }
 
-  FloatPoint new_scaled_position =
+  gfx::PointF new_scaled_position =
       viewport->ScrollOffsetToPosition(ScrollOffset(scaled_x, scaled_y));
 
   std::unique_ptr<cc::SnapSelectionStrategy> strategy =
       cc::SnapSelectionStrategy::CreateForEndPosition(
-          ToGfxPointF(new_scaled_position), scroll_to_options->hasLeft(),
+          new_scaled_position, scroll_to_options->hasLeft(),
           scroll_to_options->hasTop());
   new_scaled_position =
       viewport->GetSnapPositionAndSetTarget(*strategy).value_or(

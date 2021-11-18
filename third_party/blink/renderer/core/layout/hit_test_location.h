@@ -48,16 +48,16 @@ class CORE_EXPORT HitTestLocation {
   HitTestLocation();
   explicit HitTestLocation(const PhysicalOffset&);
   explicit HitTestLocation(const gfx::Point&);
-  explicit HitTestLocation(const FloatPoint&);
+  explicit HitTestLocation(const gfx::PointF&);
   explicit HitTestLocation(const DoublePoint&);
-  explicit HitTestLocation(const FloatPoint&, const FloatQuad&);
+  explicit HitTestLocation(const gfx::PointF&, const FloatQuad&);
   explicit HitTestLocation(const PhysicalRect&);
 
   // The bounding box isn't always a 1x1 rect even when the hit test is not
   // rect-based. When we hit test a transformed box and transform the hit test
   // location into the box's local coordinate space, the bounding box should
   // also be transformed accordingly.
-  explicit HitTestLocation(const FloatPoint& point,
+  explicit HitTestLocation(const gfx::PointF& point,
                            const PhysicalRect& bounding_box);
 
   HitTestLocation(const HitTestLocation&, const PhysicalOffset& offset);
@@ -93,12 +93,9 @@ class CORE_EXPORT HitTestLocation {
   }
   bool Intersects(const FloatRoundedRect&) const;
   bool Intersects(const FloatQuad&) const;
-  bool ContainsPoint(const FloatPoint&) const;
-  bool ContainsPoint(const gfx::PointF& p) const {
-    return ContainsPoint(FloatPoint(p));
-  }
+  bool ContainsPoint(const gfx::PointF&) const;
 
-  const FloatPoint& TransformedPoint() const { return transformed_point_; }
+  const gfx::PointF& TransformedPoint() const { return transformed_point_; }
   const FloatQuad& TransformedRect() const { return transformed_rect_; }
 
  private:
@@ -109,7 +106,7 @@ class CORE_EXPORT HitTestLocation {
   PhysicalOffset point_;
   PhysicalRect bounding_box_;
 
-  FloatPoint transformed_point_;
+  gfx::PointF transformed_point_;
   FloatQuad transformed_rect_;
 
   // Index of fragment (FragmentData) to hit-test. If it's -1, all fragments

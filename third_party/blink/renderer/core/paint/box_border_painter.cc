@@ -357,13 +357,13 @@ struct OpacityGroup {
 };
 
 void ClipQuad(GraphicsContext& context,
-              const FloatPoint quad[],
+              const gfx::PointF quad[],
               bool antialiased) {
   SkPathBuilder path;
-  path.moveTo(FloatPointToSkPoint(quad[0]));
-  path.lineTo(FloatPointToSkPoint(quad[1]));
-  path.lineTo(FloatPointToSkPoint(quad[2]));
-  path.lineTo(FloatPointToSkPoint(quad[3]));
+  path.moveTo(gfx::PointFToSkPoint(quad[0]));
+  path.lineTo(gfx::PointFToSkPoint(quad[1]));
+  path.lineTo(gfx::PointFToSkPoint(quad[2]));
+  path.lineTo(gfx::PointFToSkPoint(quad[3]));
 
   context.ClipPath(path.detach(), antialiased ? kAntiAliased : kNotAntiAliased);
 }
@@ -596,15 +596,15 @@ void DrawRidgeOrGrooveBoxSide(GraphicsContext& context,
 }
 
 void FillQuad(GraphicsContext& context,
-              const FloatPoint quad[],
+              const gfx::PointF quad[],
               const Color& color,
               bool antialias,
               const AutoDarkMode& auto_dark_mode) {
   SkPathBuilder path;
-  path.moveTo(FloatPointToSkPoint(quad[0]));
-  path.lineTo(FloatPointToSkPoint(quad[1]));
-  path.lineTo(FloatPointToSkPoint(quad[2]));
-  path.lineTo(FloatPointToSkPoint(quad[3]));
+  path.moveTo(gfx::PointFToSkPoint(quad[0]));
+  path.lineTo(gfx::PointFToSkPoint(quad[1]));
+  path.lineTo(gfx::PointFToSkPoint(quad[2]));
+  path.lineTo(gfx::PointFToSkPoint(quad[3]));
   PaintFlags flags(context.FillFlags());
   flags.setAntiAlias(antialias);
   flags.setColor(color.Rgb());
@@ -638,35 +638,57 @@ void DrawSolidBoxSide(GraphicsContext& context,
     return;
   }
 
-  FloatPoint quad[4];
+  gfx::PointF quad[4];
   switch (side) {
     case BoxSide::kTop:
-      quad[0] = FloatPoint(x1 + std::max(-adjacent_width1, 0), y1);
-      quad[1] = FloatPoint(x1 + std::max(adjacent_width1, 0), y2);
-      quad[2] = FloatPoint(x2 - std::max(adjacent_width2, 0), y2);
-      quad[3] = FloatPoint(x2 - std::max(-adjacent_width2, 0), y1);
+      quad[0] = gfx::PointF(x1 + std::max(-adjacent_width1, 0), y1);
+      quad[1] = gfx::PointF(x1 + std::max(adjacent_width1, 0), y2);
+      quad[2] = gfx::PointF(x2 - std::max(adjacent_width2, 0), y2);
+      quad[3] = gfx::PointF(x2 - std::max(-adjacent_width2, 0), y1);
       break;
     case BoxSide::kBottom:
-      quad[0] = FloatPoint(x1 + std::max(adjacent_width1, 0), y1);
-      quad[1] = FloatPoint(x1 + std::max(-adjacent_width1, 0), y2);
-      quad[2] = FloatPoint(x2 - std::max(-adjacent_width2, 0), y2);
-      quad[3] = FloatPoint(x2 - std::max(adjacent_width2, 0), y1);
+      quad[0] = gfx::PointF(x1 + std::max(adjacent_width1, 0), y1);
+      quad[1] = gfx::PointF(x1 + std::max(-adjacent_width1, 0), y2);
+      quad[2] = gfx::PointF(x2 - std::max(-adjacent_width2, 0), y2);
+      quad[3] = gfx::PointF(x2 - std::max(adjacent_width2, 0), y1);
       break;
     case BoxSide::kLeft:
-      quad[0] = FloatPoint(x1, y1 + std::max(-adjacent_width1, 0));
-      quad[1] = FloatPoint(x1, y2 - std::max(-adjacent_width2, 0));
-      quad[2] = FloatPoint(x2, y2 - std::max(adjacent_width2, 0));
-      quad[3] = FloatPoint(x2, y1 + std::max(adjacent_width1, 0));
+      quad[0] = gfx::PointF(x1, y1 + std::max(-adjacent_width1, 0));
+      quad[1] = gfx::PointF(x1, y2 - std::max(-adjacent_width2, 0));
+      quad[2] = gfx::PointF(x2, y2 - std::max(adjacent_width2, 0));
+      quad[3] = gfx::PointF(x2, y1 + std::max(adjacent_width1, 0));
       break;
     case BoxSide::kRight:
-      quad[0] = FloatPoint(x1, y1 + std::max(adjacent_width1, 0));
-      quad[1] = FloatPoint(x1, y2 - std::max(adjacent_width2, 0));
-      quad[2] = FloatPoint(x2, y2 - std::max(-adjacent_width2, 0));
-      quad[3] = FloatPoint(x2, y1 + std::max(-adjacent_width1, 0));
+      quad[0] = gfx::PointF(x1, y1 + std::max(adjacent_width1, 0));
+      quad[1] = gfx::PointF(x1, y2 - std::max(adjacent_width2, 0));
+      quad[2] = gfx::PointF(x2, y2 - std::max(-adjacent_width2, 0));
+      quad[3] = gfx::PointF(x2, y1 + std::max(-adjacent_width1, 0));
       break;
   }
 
   FillQuad(context, quad, color, antialias, auto_dark_mode);
+}
+
+void FindIntersection(const gfx::PointF& p1,
+                      const gfx::PointF& p2,
+                      const gfx::PointF& d1,
+                      const gfx::PointF& d2,
+                      gfx::PointF& intersection) {
+  float px_length = p2.x() - p1.x();
+  float py_length = p2.y() - p1.y();
+
+  float dx_length = d2.x() - d1.x();
+  float dy_length = d2.y() - d1.y();
+
+  float denom = px_length * dy_length - py_length * dx_length;
+  if (!denom)
+    return;
+
+  float param =
+      ((d1.x() - p1.x()) * dy_length - (d1.y() - p1.y()) * dx_length) / denom;
+
+  intersection.set_x(p1.x() + param * px_length);
+  intersection.set_y(p1.y() + param * py_length);
 }
 
 }  // anonymous namespace
@@ -1477,10 +1499,10 @@ void BoxBorderPainter::ClipBorderSidePolygon(BoxSide side,
                                              MiterType second_miter) const {
   DCHECK(first_miter != kNoMiter || second_miter != kNoMiter);
 
-  FloatPoint edge_quad[4];  // The boundary of the edge for fill
-  FloatPoint
+  gfx::PointF edge_quad[4];  // The boundary of the edge for fill
+  gfx::PointF
       bound_quad1;  // Point 1 of the rectilinear bounding box of EdgeQuad
-  FloatPoint
+  gfx::PointF
       bound_quad2;  // Point 2 of the rectilinear bounding box of EdgeQuad
 
   const PhysicalRect outer_rect = PhysicalRect::EnclosingRect(outer_.Rect());
@@ -1502,30 +1524,31 @@ void BoxBorderPainter::ClipBorderSidePolygon(BoxSide side,
 
   // Offset size and direction to expand clipping quad
   const static float kExtensionLength = 1e-1f;
-  FloatSize extension_offset;
+  gfx::Vector2dF extension_offset;
   switch (side) {
     case BoxSide::kTop:
-      edge_quad[0] = FloatPoint(outer_rect.MinXMinYCorner());
-      edge_quad[1] = FloatPoint(inner_rect.MinXMinYCorner());
-      edge_quad[2] = FloatPoint(inner_rect.MaxXMinYCorner());
-      edge_quad[3] = FloatPoint(outer_rect.MaxXMinYCorner());
+      edge_quad[0] = gfx::PointF(outer_rect.MinXMinYCorner());
+      edge_quad[1] = gfx::PointF(inner_rect.MinXMinYCorner());
+      edge_quad[2] = gfx::PointF(inner_rect.MaxXMinYCorner());
+      edge_quad[3] = gfx::PointF(outer_rect.MaxXMinYCorner());
 
       DCHECK(edge_quad[0].y() == edge_quad[3].y());
       DCHECK(edge_quad[1].y() == edge_quad[2].y());
 
-      bound_quad1 = FloatPoint(edge_quad[0].x(), edge_quad[1].y());
-      bound_quad2 = FloatPoint(edge_quad[3].x(), edge_quad[2].y());
+      bound_quad1 = gfx::PointF(edge_quad[0].x(), edge_quad[1].y());
+      bound_quad2 = gfx::PointF(edge_quad[3].x(), edge_quad[2].y());
 
-      extension_offset.set_width(-kExtensionLength);
-      extension_offset.set_height(0);
+      extension_offset.set_x(-kExtensionLength);
+      extension_offset.set_y(0);
 
       if (!inner_.GetRadii().TopLeft().IsZero()) {
         FindIntersection(
             edge_quad[0], edge_quad[1],
-            FloatPoint(edge_quad[1].x() + inner_.GetRadii().TopLeft().width(),
-                       edge_quad[1].y()),
-            FloatPoint(edge_quad[1].x(),
-                       edge_quad[1].y() + inner_.GetRadii().TopLeft().height()),
+            gfx::PointF(edge_quad[1].x() + inner_.GetRadii().TopLeft().width(),
+                        edge_quad[1].y()),
+            gfx::PointF(
+                edge_quad[1].x(),
+                edge_quad[1].y() + inner_.GetRadii().TopLeft().height()),
             edge_quad[1]);
         DCHECK(bound_quad1.y() <= edge_quad[1].y());
         bound_quad1.set_y(edge_quad[1].y());
@@ -1535,9 +1558,9 @@ void BoxBorderPainter::ClipBorderSidePolygon(BoxSide side,
       if (!inner_.GetRadii().TopRight().IsZero()) {
         FindIntersection(
             edge_quad[3], edge_quad[2],
-            FloatPoint(edge_quad[2].x() - inner_.GetRadii().TopRight().width(),
-                       edge_quad[2].y()),
-            FloatPoint(
+            gfx::PointF(edge_quad[2].x() - inner_.GetRadii().TopRight().width(),
+                        edge_quad[2].y()),
+            gfx::PointF(
                 edge_quad[2].x(),
                 edge_quad[2].y() + inner_.GetRadii().TopRight().height()),
             edge_quad[2]);
@@ -1551,27 +1574,28 @@ void BoxBorderPainter::ClipBorderSidePolygon(BoxSide side,
     case BoxSide::kLeft:
       // Swap the order of adjacent edges to allow common code
       std::swap(first_miter, second_miter);
-      edge_quad[0] = FloatPoint(outer_rect.MinXMaxYCorner());
-      edge_quad[1] = FloatPoint(inner_rect.MinXMaxYCorner());
-      edge_quad[2] = FloatPoint(inner_rect.MinXMinYCorner());
-      edge_quad[3] = FloatPoint(outer_rect.MinXMinYCorner());
+      edge_quad[0] = gfx::PointF(outer_rect.MinXMaxYCorner());
+      edge_quad[1] = gfx::PointF(inner_rect.MinXMaxYCorner());
+      edge_quad[2] = gfx::PointF(inner_rect.MinXMinYCorner());
+      edge_quad[3] = gfx::PointF(outer_rect.MinXMinYCorner());
 
       DCHECK(edge_quad[0].x() == edge_quad[3].x());
       DCHECK(edge_quad[1].x() == edge_quad[2].x());
 
-      bound_quad1 = FloatPoint(edge_quad[1].x(), edge_quad[0].y());
-      bound_quad2 = FloatPoint(edge_quad[2].x(), edge_quad[3].y());
+      bound_quad1 = gfx::PointF(edge_quad[1].x(), edge_quad[0].y());
+      bound_quad2 = gfx::PointF(edge_quad[2].x(), edge_quad[3].y());
 
-      extension_offset.set_width(0);
-      extension_offset.set_height(kExtensionLength);
+      extension_offset.set_x(0);
+      extension_offset.set_y(kExtensionLength);
 
       if (!inner_.GetRadii().TopLeft().IsZero()) {
         FindIntersection(
             edge_quad[3], edge_quad[2],
-            FloatPoint(edge_quad[2].x() + inner_.GetRadii().TopLeft().width(),
-                       edge_quad[2].y()),
-            FloatPoint(edge_quad[2].x(),
-                       edge_quad[2].y() + inner_.GetRadii().TopLeft().height()),
+            gfx::PointF(edge_quad[2].x() + inner_.GetRadii().TopLeft().width(),
+                        edge_quad[2].y()),
+            gfx::PointF(
+                edge_quad[2].x(),
+                edge_quad[2].y() + inner_.GetRadii().TopLeft().height()),
             edge_quad[2]);
         DCHECK(bound_quad2.x() <= edge_quad[2].x());
         bound_quad1.set_x(edge_quad[2].x());
@@ -1581,10 +1605,10 @@ void BoxBorderPainter::ClipBorderSidePolygon(BoxSide side,
       if (!inner_.GetRadii().BottomLeft().IsZero()) {
         FindIntersection(
             edge_quad[0], edge_quad[1],
-            FloatPoint(
+            gfx::PointF(
                 edge_quad[1].x() + inner_.GetRadii().BottomLeft().width(),
                 edge_quad[1].y()),
-            FloatPoint(
+            gfx::PointF(
                 edge_quad[1].x(),
                 edge_quad[1].y() - inner_.GetRadii().BottomLeft().height()),
             edge_quad[1]);
@@ -1598,27 +1622,27 @@ void BoxBorderPainter::ClipBorderSidePolygon(BoxSide side,
     case BoxSide::kBottom:
       // Swap the order of adjacent edges to allow common code
       std::swap(first_miter, second_miter);
-      edge_quad[0] = FloatPoint(outer_rect.MaxXMaxYCorner());
-      edge_quad[1] = FloatPoint(inner_rect.MaxXMaxYCorner());
-      edge_quad[2] = FloatPoint(inner_rect.MinXMaxYCorner());
-      edge_quad[3] = FloatPoint(outer_rect.MinXMaxYCorner());
+      edge_quad[0] = gfx::PointF(outer_rect.MaxXMaxYCorner());
+      edge_quad[1] = gfx::PointF(inner_rect.MaxXMaxYCorner());
+      edge_quad[2] = gfx::PointF(inner_rect.MinXMaxYCorner());
+      edge_quad[3] = gfx::PointF(outer_rect.MinXMaxYCorner());
 
       DCHECK(edge_quad[0].y() == edge_quad[3].y());
       DCHECK(edge_quad[1].y() == edge_quad[2].y());
 
-      bound_quad1 = FloatPoint(edge_quad[0].x(), edge_quad[1].y());
-      bound_quad2 = FloatPoint(edge_quad[3].x(), edge_quad[2].y());
+      bound_quad1 = gfx::PointF(edge_quad[0].x(), edge_quad[1].y());
+      bound_quad2 = gfx::PointF(edge_quad[3].x(), edge_quad[2].y());
 
-      extension_offset.set_width(kExtensionLength);
-      extension_offset.set_height(0);
+      extension_offset.set_x(kExtensionLength);
+      extension_offset.set_y(0);
 
       if (!inner_.GetRadii().BottomLeft().IsZero()) {
         FindIntersection(
             edge_quad[3], edge_quad[2],
-            FloatPoint(
+            gfx::PointF(
                 edge_quad[2].x() + inner_.GetRadii().BottomLeft().width(),
                 edge_quad[2].y()),
-            FloatPoint(
+            gfx::PointF(
                 edge_quad[2].x(),
                 edge_quad[2].y() - inner_.GetRadii().BottomLeft().height()),
             edge_quad[2]);
@@ -1630,10 +1654,10 @@ void BoxBorderPainter::ClipBorderSidePolygon(BoxSide side,
       if (!inner_.GetRadii().BottomRight().IsZero()) {
         FindIntersection(
             edge_quad[0], edge_quad[1],
-            FloatPoint(
+            gfx::PointF(
                 edge_quad[1].x() - inner_.GetRadii().BottomRight().width(),
                 edge_quad[1].y()),
-            FloatPoint(
+            gfx::PointF(
                 edge_quad[1].x(),
                 edge_quad[1].y() - inner_.GetRadii().BottomRight().height()),
             edge_quad[1]);
@@ -1645,26 +1669,26 @@ void BoxBorderPainter::ClipBorderSidePolygon(BoxSide side,
       break;
 
     case BoxSide::kRight:
-      edge_quad[0] = FloatPoint(outer_rect.MaxXMinYCorner());
-      edge_quad[1] = FloatPoint(inner_rect.MaxXMinYCorner());
-      edge_quad[2] = FloatPoint(inner_rect.MaxXMaxYCorner());
-      edge_quad[3] = FloatPoint(outer_rect.MaxXMaxYCorner());
+      edge_quad[0] = gfx::PointF(outer_rect.MaxXMinYCorner());
+      edge_quad[1] = gfx::PointF(inner_rect.MaxXMinYCorner());
+      edge_quad[2] = gfx::PointF(inner_rect.MaxXMaxYCorner());
+      edge_quad[3] = gfx::PointF(outer_rect.MaxXMaxYCorner());
 
       DCHECK(edge_quad[0].x() == edge_quad[3].x());
       DCHECK(edge_quad[1].x() == edge_quad[2].x());
 
-      bound_quad1 = FloatPoint(edge_quad[1].x(), edge_quad[0].y());
-      bound_quad2 = FloatPoint(edge_quad[2].x(), edge_quad[3].y());
+      bound_quad1 = gfx::PointF(edge_quad[1].x(), edge_quad[0].y());
+      bound_quad2 = gfx::PointF(edge_quad[2].x(), edge_quad[3].y());
 
-      extension_offset.set_width(0);
-      extension_offset.set_height(-kExtensionLength);
+      extension_offset.set_x(0);
+      extension_offset.set_y(-kExtensionLength);
 
       if (!inner_.GetRadii().TopRight().IsZero()) {
         FindIntersection(
             edge_quad[0], edge_quad[1],
-            FloatPoint(edge_quad[1].x() - inner_.GetRadii().TopRight().width(),
-                       edge_quad[1].y()),
-            FloatPoint(
+            gfx::PointF(edge_quad[1].x() - inner_.GetRadii().TopRight().width(),
+                        edge_quad[1].y()),
+            gfx::PointF(
                 edge_quad[1].x(),
                 edge_quad[1].y() + inner_.GetRadii().TopRight().height()),
             edge_quad[1]);
@@ -1676,10 +1700,10 @@ void BoxBorderPainter::ClipBorderSidePolygon(BoxSide side,
       if (!inner_.GetRadii().BottomRight().IsZero()) {
         FindIntersection(
             edge_quad[3], edge_quad[2],
-            FloatPoint(
+            gfx::PointF(
                 edge_quad[2].x() - inner_.GetRadii().BottomRight().width(),
                 edge_quad[2].y()),
-            FloatPoint(
+            gfx::PointF(
                 edge_quad[2].x(),
                 edge_quad[2].y() - inner_.GetRadii().BottomRight().height()),
             edge_quad[2]);
@@ -1703,7 +1727,7 @@ void BoxBorderPainter::ClipBorderSidePolygon(BoxSide side,
   // the miter edge. We extend the clip in the miter direction to ensure overlap
   // as each edge is drawn.
   if (first_miter != kNoMiter) {
-    FloatPoint clipping_quad[4];
+    gfx::PointF clipping_quad[4];
 
     clipping_quad[0] = edge_quad[0] + extension_offset;
     FindIntersection(edge_quad[0], edge_quad[1], bound_quad1, bound_quad2,
@@ -1716,7 +1740,7 @@ void BoxBorderPainter::ClipBorderSidePolygon(BoxSide side,
   }
 
   if (second_miter != kNoMiter) {
-    FloatPoint clipping_quad[4];
+    gfx::PointF clipping_quad[4];
 
     clipping_quad[0] = edge_quad[0];
     clipping_quad[1] = bound_quad1;

@@ -79,7 +79,7 @@ void FileUploadControlPainter::PaintObject(const PaintInfo& paint_info,
         layout_file_upload_control_.ResolveColor(GetCSSPropertyColor()));
     paint_info.context.DrawBidiText(
         font, text_run_paint_info,
-        FloatPoint(RoundToInt(text_x), RoundToInt(text_y)),
+        gfx::PointF(RoundToInt(text_x), RoundToInt(text_y)),
         PaintAutoDarkMode(layout_file_upload_control_.StyleRef(),
                           DarkModeFilter::ElementRole::kText));
     if (!font.ShouldSkipDrawing()) {

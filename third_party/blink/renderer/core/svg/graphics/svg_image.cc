@@ -463,7 +463,7 @@ void SVGImage::PopulatePaintRecordForCurrentFrameForContainer(
   const IntRect dest_rect(gfx::Point(), RoundedIntSize(size));
   cc::PaintCanvas* canvas = recorder.beginRecording(dest_rect);
   DrawForContainer(draw_info, canvas, PaintFlags(), FloatRect(dest_rect),
-                   FloatRect(FloatPoint(), size));
+                   FloatRect(gfx::PointF(), size));
   builder.set_paint_record(recorder.finishRecordingAsPicture(),
                            ToGfxRect(dest_rect),
                            PaintImage::GetNextContentId());
@@ -483,7 +483,7 @@ bool SVGImage::ApplyShaderInternal(const DrawInfo& draw_info,
   if (!record)
     return false;
 
-  const FloatRect bounds(FloatPoint(), draw_info.ContainerSize());
+  const FloatRect bounds(gfx::PointF(), draw_info.ContainerSize());
   flags.setShader(PaintShader::MakePaintRecord(
       std::move(record), bounds, SkTileMode::kClamp, SkTileMode::kClamp,
       &local_matrix));

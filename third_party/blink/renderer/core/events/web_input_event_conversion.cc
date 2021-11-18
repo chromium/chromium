@@ -65,7 +65,7 @@ gfx::Vector2dF FrameTranslation(const LocalFrameView* frame_view) {
   if (frame_view) {
     LocalFrameView* root_view = frame_view->GetFrame().LocalFrameRoot().View();
     if (root_view) {
-      visual_viewport = FlooredIntPoint(
+      visual_viewport = gfx::ToFlooredPoint(
           root_view->GetPage()->GetVisualViewport().VisibleRect().origin());
       overscroll_offset =
           root_view->GetPage()->GetChromeClient().ElasticOverscroll();
@@ -82,9 +82,9 @@ void UpdateWebMouseEventFromCoreMouseEvent(const MouseEvent& event,
   web_event.SetModifiers(event.GetModifiers());
   web_event.SetPositionInScreen(event.screenX(), event.screenY());
 
-  FloatPoint local_point = layout_object->AbsoluteToLocalFloatPoint(
-      FloatPoint(event.AbsoluteLocation()));
-  web_event.SetPositionInWidget(ToGfxPointF(local_point));
+  gfx::PointF local_point = layout_object->AbsoluteToLocalPoint(
+      gfx::PointF(event.AbsoluteLocation()));
+  web_event.SetPositionInWidget(local_point);
 }
 
 unsigned ToWebInputEventModifierFrom(WebMouseEvent::Button button) {
@@ -257,7 +257,7 @@ WebMouseEventBuilder::WebMouseEventBuilder(const LayoutObject* layout_object,
 
   // The mouse event co-ordinates should be generated from the co-ordinates of
   // the touch point.
-  FloatPoint screen_point = touch->ScreenLocation();
+  gfx::PointF screen_point = touch->ScreenLocation();
   SetPositionInScreen(screen_point.x(), screen_point.y());
 
   button = WebMouseEvent::Button::kLeft;
@@ -265,9 +265,9 @@ WebMouseEventBuilder::WebMouseEventBuilder(const LayoutObject* layout_object,
   click_count = (type_ == WebInputEvent::Type::kMouseDown ||
                  type_ == WebInputEvent::Type::kMouseUp);
 
-  FloatPoint local_point = layout_object->AbsoluteToLocalFloatPoint(
-      FloatPoint(touch->AbsoluteLocation()));
-  SetPositionInWidget(ToGfxPointF(local_point));
+  gfx::PointF local_point = layout_object->AbsoluteToLocalPoint(
+      gfx::PointF(touch->AbsoluteLocation()));
+  SetPositionInWidget(local_point);
 
   pointer_type = WebPointerProperties::PointerType::kTouch;
 }

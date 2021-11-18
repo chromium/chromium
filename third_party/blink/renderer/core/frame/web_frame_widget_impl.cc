@@ -161,7 +161,7 @@ const float kIdealPaddingRatio = 0.3f;
 FloatRect NormalizeRect(const IntRect& to_normalize, const IntRect& base_rect) {
   FloatRect result(to_normalize);
   result.set_origin(
-      FloatPoint(to_normalize.origin() - base_rect.OffsetFromOrigin()));
+      gfx::PointF(to_normalize.origin() - base_rect.OffsetFromOrigin()));
   result.Scale(1.0 / base_rect.width(), 1.0 / base_rect.height());
   return result;
 }
@@ -232,7 +232,7 @@ viz::FrameSinkId GetRemoteFrameSinkId(const HitTestResult& result) {
   if (!object->IsBox())
     return viz::FrameSinkId();
 
-  gfx::Point local_point = ToRoundedPoint(result.LocalPoint());
+  LayoutPoint local_point(ToRoundedPoint(result.LocalPoint()));
   if (!To<LayoutBox>(object)->ComputedCSSContentBoxRect().Contains(local_point))
     return viz::FrameSinkId();
 
@@ -410,8 +410,8 @@ void WebFrameWidgetImpl::DragTargetDragLeave(
   }
 
   gfx::PointF point_in_root_frame(ViewportToRootFrame(point_in_viewport));
-  DragData drag_data(current_drag_data_.Get(), FloatPoint(point_in_root_frame),
-                     FloatPoint(screen_point), operations_allowed_);
+  DragData drag_data(current_drag_data_.Get(), point_in_root_frame,
+                     screen_point, operations_allowed_);
 
   GetPage()->GetDragController().DragExited(&drag_data,
                                             *local_root_->GetFrame());
@@ -448,9 +448,8 @@ void WebFrameWidgetImpl::DragTargetDrop(const WebDragData& web_drag_data,
 
   if (!IgnoreInputEvents()) {
     current_drag_data_->SetModifiers(key_modifiers);
-    DragData drag_data(current_drag_data_.Get(),
-                       FloatPoint(point_in_root_frame),
-                       FloatPoint(screen_point), operations_allowed_);
+    DragData drag_data(current_drag_data_.Get(), point_in_root_frame,
+                       screen_point, operations_allowed_);
 
     GetPage()->GetDragController().PerformDrag(&drag_data,
                                                *local_root_->GetFrame());
@@ -474,9 +473,8 @@ void WebFrameWidgetImpl::DragSourceEndedAt(const gfx::PointF& point_in_viewport,
     CancelDrag();
     return;
   }
-  gfx::PointF point_in_root_frame(
-      ToGfxPointF(GetPage()->GetVisualViewport().ViewportToRootFrame(
-          FloatPoint(point_in_viewport))));
+  gfx::PointF point_in_root_frame =
+      GetPage()->GetVisualViewport().ViewportToRootFrame(point_in_viewport);
 
   WebMouseEvent fake_mouse_move(
       WebInputEvent::Type::kMouseMove, point_in_root_frame, screen_point,
@@ -583,13 +581,12 @@ viz::FrameSinkId WebFrameWidgetImpl::GetFrameSinkIdAtPoint(
 
   viz::FrameSinkId remote_frame_sink_id = GetRemoteFrameSinkId(result);
   if (remote_frame_sink_id.is_valid()) {
-    FloatPoint local_point = FloatPoint(result.LocalPoint());
+    gfx::PointF local_point(result.LocalPoint());
     LayoutObject* object = result_node->GetLayoutObject();
     if (auto* box = DynamicTo<LayoutBox>(object))
-      local_point.MoveBy(-FloatPoint(box->PhysicalContentBoxOffset()));
+      local_point -= gfx::Vector2dF(box->PhysicalContentBoxOffset());
 
-    *local_point_in_dips =
-        widget_base_->BlinkSpaceToDIPs(ToGfxPointF(local_point));
+    *local_point_in_dips = widget_base_->BlinkSpaceToDIPs(local_point);
     return remote_frame_sink_id;
   }
 
@@ -798,8 +795,8 @@ void WebFrameWidgetImpl::MouseContextMenu(const WebMouseEvent& event) {
   transformed_event.id = PointerEventFactory::kMouseId;
 
   // Find the right target frame. See issue 1186900.
-  HitTestResult result = HitTestResultForRootFramePos(
-      FloatPoint(transformed_event.PositionInRootFrame()));
+  HitTestResult result =
+      HitTestResultForRootFramePos(transformed_event.PositionInRootFrame());
   Frame* target_frame;
   if (result.InnerNodeOrImageMapImage())
     target_frame = result.InnerNodeOrImageMapImage()->GetDocument().GetFrame();
@@ -862,7 +859,7 @@ WebInputEventResult WebFrameWidgetImpl::HandleGestureEvent(
           web_view->MinimumPageScaleFactor() !=
               web_view->MaximumPageScaleFactor()) {
         gfx::Point pos_in_local_frame_root =
-            FlooredIntPoint(scaled_event.PositionInRootFrame());
+            gfx::ToFlooredPoint(scaled_event.PositionInRootFrame());
         auto block_bounds = ComputeBlockBound(pos_in_local_frame_root, false);
 
         if (ForMainFrame()) {
@@ -1097,11 +1094,11 @@ DragOperation WebFrameWidgetImpl::DragTargetDragEnterOrOver(
     return DragOperation::kNone;
   }
 
-  FloatPoint point_in_root_frame(ViewportToRootFrame(point_in_viewport));
+  gfx::PointF point_in_root_frame = ViewportToRootFrame(point_in_viewport);
 
   current_drag_data_->SetModifiers(key_modifiers);
-  DragData drag_data(current_drag_data_.Get(), FloatPoint(point_in_root_frame),
-                     FloatPoint(screen_point), operations_allowed_);
+  DragData drag_data(current_drag_data_.Get(), point_in_root_frame,
+                     screen_point, operations_allowed_);
 
   DragOperation drag_operation =
       GetPage()->GetDragController().DragEnteredOrUpdated(
@@ -1179,8 +1176,7 @@ void WebFrameWidgetImpl::DisableDragAndDrop() {
 
 gfx::PointF WebFrameWidgetImpl::ViewportToRootFrame(
     const gfx::PointF& point_in_viewport) const {
-  return ToGfxPointF(GetPage()->GetVisualViewport().ViewportToRootFrame(
-      FloatPoint(point_in_viewport)));
+  return GetPage()->GetVisualViewport().ViewportToRootFrame(point_in_viewport);
 }
 
 WebViewImpl* WebFrameWidgetImpl::View() const {
@@ -2818,8 +2814,7 @@ WebFrameWidgetImpl::EnsureCompositorMutatorDispatcher(
 HitTestResult WebFrameWidgetImpl::CoreHitTestResultAt(
     const gfx::PointF& point_in_viewport) {
   LocalFrameView* view = LocalRootImpl()->GetFrameView();
-  FloatPoint point_in_root_frame(
-      view->ViewportToFrame(FloatPoint(point_in_viewport)));
+  gfx::PointF point_in_root_frame(view->ViewportToFrame(point_in_viewport));
   return HitTestResultForRootFramePos(point_in_root_frame);
 }
 
@@ -4026,8 +4021,8 @@ Element* WebFrameWidgetImpl::FocusedElement() const {
 }
 
 HitTestResult WebFrameWidgetImpl::HitTestResultForRootFramePos(
-    const FloatPoint& pos_in_root_frame) {
-  FloatPoint doc_point =
+    const gfx::PointF& pos_in_root_frame) {
+  gfx::PointF doc_point =
       LocalRootImpl()->GetFrame()->View()->ConvertFromRootFrame(
           pos_in_root_frame);
   HitTestLocation location(doc_point);

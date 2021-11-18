@@ -73,8 +73,8 @@ TEST(FileInputTypeTest, ignoreDroppedNonNativeFiles) {
   InputType* file_input = MakeGarbageCollected<FileInputType>(*input);
 
   DataObject* native_file_raw_drag_data = DataObject::Create();
-  const DragData native_file_drag_data(native_file_raw_drag_data, FloatPoint(),
-                                       FloatPoint(), kDragOperationCopy);
+  const DragData native_file_drag_data(native_file_raw_drag_data, gfx::PointF(),
+                                       gfx::PointF(), kDragOperationCopy);
   native_file_drag_data.PlatformData()->Add(
       MakeGarbageCollected<File>("/native/path"));
   native_file_drag_data.PlatformData()->SetFilesystemId("fileSystemId");
@@ -85,7 +85,7 @@ TEST(FileInputTypeTest, ignoreDroppedNonNativeFiles) {
 
   DataObject* non_native_file_raw_drag_data = DataObject::Create();
   const DragData non_native_file_drag_data(non_native_file_raw_drag_data,
-                                           FloatPoint(), FloatPoint(),
+                                           gfx::PointF(), gfx::PointF(),
                                            kDragOperationCopy);
   FileMetadata metadata;
   metadata.length = 1234;
@@ -145,7 +145,7 @@ TEST(FileInputTypeTest, DropTouchesNoPopupOpeningObserver) {
   base::RunLoop run_loop;
   MockFileChooser chooser(doc.GetFrame()->GetBrowserInterfaceBroker(),
                           run_loop.QuitClosure());
-  DragData drag_data(DataObject::Create(), FloatPoint(), FloatPoint(),
+  DragData drag_data(DataObject::Create(), gfx::PointF(), gfx::PointF(),
                      kDragOperationCopy);
   drag_data.PlatformData()->Add(MakeGarbageCollected<File>("/foo/bar"));
   input.ReceiveDroppedFiles(&drag_data);

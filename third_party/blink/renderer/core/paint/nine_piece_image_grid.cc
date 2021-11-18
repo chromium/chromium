@@ -160,7 +160,7 @@ static FloatRect Subrect(FloatSize size,
                          float offset_y,
                          float width,
                          float height) {
-  return Subrect(FloatRect(FloatPoint(), size), offset_x, offset_y, width,
+  return Subrect(FloatRect(gfx::PointF(), size), offset_x, offset_y, width,
                  height);
 }
 

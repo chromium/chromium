@@ -326,7 +326,7 @@ void NGTextPainter::PaintInternalFragment(unsigned from,
   if (step == kPaintEmphasisMark) {
     graphics_context_.DrawEmphasisMarks(
         font_, fragment_paint_info_, emphasis_mark_,
-        FloatPoint(text_origin_) + IntSize(0, emphasis_mark_offset_),
+        gfx::PointF(text_origin_) + gfx::Vector2dF(0, emphasis_mark_offset_),
         auto_dark_mode);
   } else {
     DCHECK(step == kPaintText);
@@ -334,7 +334,7 @@ void NGTextPainter::PaintInternalFragment(unsigned from,
       PaintSvgTextFragment(node_id, auto_dark_mode);
     } else {
       graphics_context_.DrawText(font_, fragment_paint_info_,
-                                 FloatPoint(text_origin_), node_id,
+                                 gfx::PointF(text_origin_), node_id,
                                  auto_dark_mode);
     }
     // TODO(npm): Check that there are non-whitespace characters. See
@@ -405,11 +405,11 @@ void NGTextPainter::PaintSvgTextFragment(DOMNodeId node_id,
       stroke_flags.setColor(state.TextMatchColor().Rgb());
     }
     graphics_context_.DrawText(font_, fragment_paint_info_,
-                               FloatPoint(text_origin_), fill_flags, node_id,
+                               gfx::PointF(text_origin_), fill_flags, node_id,
                                auto_dark_mode);
     if (should_paint_stroke) {
       graphics_context_.DrawText(font_, fragment_paint_info_,
-                                 FloatPoint(text_origin_), stroke_flags,
+                                 gfx::PointF(text_origin_), stroke_flags,
                                  node_id, auto_dark_mode);
     }
     return;
@@ -447,7 +447,7 @@ void NGTextPainter::PaintSvgTextFragment(DOMNodeId node_id,
       if (SetupPaintForSvgText(state, graphics_context_, style_to_paint,
                                SvgPaintMode::kText, *resource_mode, flags)) {
         graphics_context_.DrawText(font_, fragment_paint_info_,
-                                   FloatPoint(text_origin_), flags, node_id,
+                                   gfx::PointF(text_origin_), flags, node_id,
                                    auto_dark_mode);
       }
     }

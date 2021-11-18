@@ -173,13 +173,13 @@ static void AppendServerMapMousePosition(StringBuilder& url, Event* event) {
 
   // The coordinates sent in the query string are relative to the height and
   // width of the image element, ignoring CSS transform/zoom.
-  FloatPoint map_point = layout_object->AbsoluteToLocalFloatPoint(
-      FloatPoint(mouse_event->AbsoluteLocation()));
+  gfx::PointF map_point = layout_object->AbsoluteToLocalPoint(
+      gfx::PointF(mouse_event->AbsoluteLocation()));
 
   // The origin (0,0) is at the upper left of the content area, inside the
   // padding and border.
   map_point -=
-      FloatSize(To<LayoutBox>(layout_object)->PhysicalContentBoxOffset());
+      gfx::Vector2dF(To<LayoutBox>(layout_object)->PhysicalContentBoxOffset());
 
   // CSS zoom is not reflected in the map coordinates.
   float scale_factor = 1 / layout_object->Style()->EffectiveZoom();
@@ -187,7 +187,7 @@ static void AppendServerMapMousePosition(StringBuilder& url, Event* event) {
 
   // Negative coordinates are clamped to 0 such that clicks in the left and
   // top padding/border areas receive an X or Y coordinate of 0.
-  gfx::Point clamped_point = RoundedIntPoint(map_point);
+  gfx::Point clamped_point = gfx::ToRoundedPoint(map_point);
   clamped_point.SetToMax(gfx::Point());
 
   url.Append('?');

@@ -230,8 +230,8 @@ bool FloatRoundedRect::IntersectsQuad(const FloatQuad& quad) const {
   if (!top_left.IsEmpty()) {
     FloatRect rect(rect_.x(), rect_.y(), top_left.width(), top_left.height());
     if (quad.IntersectsRect(rect)) {
-      FloatPoint center(rect_.x() + top_left.width(),
-                        rect_.y() + top_left.height());
+      gfx::PointF center(rect_.x() + top_left.width(),
+                         rect_.y() + top_left.height());
       FloatSize size(top_left.width(), top_left.height());
       if (!quad.IntersectsEllipse(center, size))
         return false;
@@ -243,8 +243,8 @@ bool FloatRoundedRect::IntersectsQuad(const FloatQuad& quad) const {
     FloatRect rect(rect_.right() - top_right.width(), rect_.y(),
                    top_right.width(), top_right.height());
     if (quad.IntersectsRect(rect)) {
-      FloatPoint center(rect_.right() - top_right.width(),
-                        rect_.y() + top_right.height());
+      gfx::PointF center(rect_.right() - top_right.width(),
+                         rect_.y() + top_right.height());
       FloatSize size(top_right.width(), top_right.height());
       if (!quad.IntersectsEllipse(center, size))
         return false;
@@ -256,8 +256,8 @@ bool FloatRoundedRect::IntersectsQuad(const FloatQuad& quad) const {
     FloatRect rect(rect_.x(), rect_.bottom() - bottom_left.height(),
                    bottom_left.width(), bottom_left.height());
     if (quad.IntersectsRect(rect)) {
-      FloatPoint center(rect_.x() + bottom_left.width(),
-                        rect_.bottom() - bottom_left.height());
+      gfx::PointF center(rect_.x() + bottom_left.width(),
+                         rect_.bottom() - bottom_left.height());
       FloatSize size(bottom_left.width(), bottom_left.height());
       if (!quad.IntersectsEllipse(center, size))
         return false;
@@ -270,8 +270,8 @@ bool FloatRoundedRect::IntersectsQuad(const FloatQuad& quad) const {
                    rect_.bottom() - bottom_right.height(), bottom_right.width(),
                    bottom_right.height());
     if (quad.IntersectsRect(rect)) {
-      FloatPoint center(rect_.right() - bottom_right.width(),
-                        rect_.bottom() - bottom_right.height());
+      gfx::PointF center(rect_.right() - bottom_right.width(),
+                         rect_.bottom() - bottom_right.height());
       FloatSize size(bottom_right.width(), bottom_right.height());
       if (!quad.IntersectsEllipse(center, size))
         return false;

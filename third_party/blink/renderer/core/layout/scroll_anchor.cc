@@ -731,11 +731,11 @@ bool ScrollAnchor::RestoreAnchor(const SerializedAnchor& serialized_anchor) {
     // roughly the same.
     ScrollOffset current_offset = scroller_->GetScrollOffset();
     FloatRect bounding_box = anchor_object->AbsoluteBoundingBoxFloatRect();
-    FloatPoint location_point =
+    gfx::PointF location_point =
         anchor_object->Style()->IsFlippedBlocksWritingMode()
             ? bounding_box.top_right()
             : bounding_box.origin();
-    FloatPoint desired_point = location_point + current_offset;
+    gfx::PointF desired_point = location_point + ToGfxVector2dF(current_offset);
 
     ScrollOffset desired_offset =
         ScrollOffset(desired_point.x(), desired_point.y());

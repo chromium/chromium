@@ -213,7 +213,7 @@ TEST_P(ScrollAnchorTest, VisualViewportAnchors) {
   // Scroll the visual viewport to bring #text to the top.
   int top =
       GetDocument().getElementById("text")->getBoundingClientRect()->top();
-  v_viewport.SetLocation(FloatPoint(0, top));
+  v_viewport.SetLocation(gfx::PointF(0, top));
 
   SetHeight(GetDocument().getElementById("div"), 10);
   EXPECT_EQ(GetDocument().getElementById("text")->GetLayoutObject(),
@@ -226,7 +226,7 @@ TEST_P(ScrollAnchorTest, VisualViewportAnchors) {
   EXPECT_EQ(top, v_viewport.ScrollOffsetInt().height());
 
   // Scrolling the visual viewport should clear the anchor.
-  v_viewport.SetLocation(FloatPoint(0, 0));
+  v_viewport.SetLocation(gfx::PointF(0, 0));
   EXPECT_EQ(nullptr, GetScrollAnchor(l_viewport).AnchorObject());
 }
 

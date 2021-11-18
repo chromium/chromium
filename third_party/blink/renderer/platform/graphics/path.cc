@@ -30,7 +30,6 @@
 #include "third_party/blink/renderer/platform/graphics/path.h"
 
 #include <math.h>
-#include "third_party/blink/renderer/platform/geometry/float_point.h"
 #include "third_party/blink/renderer/platform/geometry/float_rect.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
 #include "third_party/blink/renderer/platform/graphics/skia/skia_utils.h"

@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/platform/transforms/rotation.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/renderer/platform/wtf/math_extras.h"
 
 namespace blink {
 

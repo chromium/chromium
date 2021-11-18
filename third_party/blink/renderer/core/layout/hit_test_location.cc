@@ -39,17 +39,17 @@ HitTestLocation::HitTestLocation(const PhysicalOffset& point)
       is_rect_based_(false),
       is_rectilinear_(true) {}
 
-HitTestLocation::HitTestLocation(const FloatPoint& point)
-    : point_(PhysicalOffset::FromFloatPointFloor(point)),
+HitTestLocation::HitTestLocation(const gfx::PointF& point)
+    : point_(PhysicalOffset::FromPointFFloor(point)),
       bounding_box_(RectForPoint(point_)),
       transformed_point_(point),
       transformed_rect_(FloatRect(bounding_box_)),
       is_rect_based_(false),
       is_rectilinear_(true) {}
 
-HitTestLocation::HitTestLocation(const FloatPoint& point,
+HitTestLocation::HitTestLocation(const gfx::PointF& point,
                                  const PhysicalRect& bounding_box)
-    : point_(PhysicalOffset::FromFloatPointFloor(point)),
+    : point_(PhysicalOffset::FromPointFFloor(point)),
       bounding_box_(bounding_box),
       transformed_point_(point),
       transformed_rect_(FloatRect(bounding_box)),
@@ -57,11 +57,12 @@ HitTestLocation::HitTestLocation(const FloatPoint& point,
       is_rectilinear_(true) {}
 
 HitTestLocation::HitTestLocation(const DoublePoint& point)
-    : HitTestLocation(FloatPoint(point)) {}
+    : HitTestLocation(gfx::PointF(point)) {}
 
-HitTestLocation::HitTestLocation(const FloatPoint& point, const FloatQuad& quad)
+HitTestLocation::HitTestLocation(const gfx::PointF& point,
+                                 const FloatQuad& quad)
     : transformed_point_(point), transformed_rect_(quad), is_rect_based_(true) {
-  point_ = PhysicalOffset::FromFloatPointFloor(point);
+  point_ = PhysicalOffset::FromPointFFloor(point);
   bounding_box_ = PhysicalRect::EnclosingRect(quad.BoundingBox());
   is_rectilinear_ = quad.IsRectilinear();
 }
@@ -104,7 +105,7 @@ HitTestLocation& HitTestLocation::operator=(const HitTestLocation& other) =
 void HitTestLocation::Move(const PhysicalOffset& offset) {
   point_ += offset;
   bounding_box_.Move(offset);
-  transformed_point_.Offset(FloatSize(offset));
+  transformed_point_ += gfx::Vector2dF(offset);
   transformed_rect_.Move(FloatSize(offset));
 }
 
@@ -146,10 +147,10 @@ bool HitTestLocation::Intersects(const FloatQuad& quad) const {
   // has false positives.
   if (is_rect_based_)
     return Intersects(quad.BoundingBox());
-  return quad.ContainsPoint(FloatPoint(point_));
+  return quad.ContainsPoint(gfx::PointF(point_));
 }
 
-bool HitTestLocation::ContainsPoint(const FloatPoint& point) const {
+bool HitTestLocation::ContainsPoint(const gfx::PointF& point) const {
   return transformed_rect_.ContainsPoint(point);
 }
 

@@ -31,6 +31,7 @@
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_stream.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
+#include "ui/gfx/geometry/point_conversions.h"
 
 namespace blink {
 
@@ -184,7 +185,7 @@ void FloatRect::UnionIfNonZero(const FloatRect& other) {
   UnionEvenIfEmpty(other);
 }
 
-void FloatRect::Extend(const FloatPoint& p) {
+void FloatRect::Extend(const gfx::PointF& p) {
   float min_x = std::min(x(), p.x());
   float min_y = std::min(y(), p.y());
   float max_x = std::max(this->right(), p.x());
@@ -200,11 +201,11 @@ void FloatRect::Scale(float sx, float sy) {
   size_.set_height(height() * sy);
 }
 
-float FloatRect::SquaredDistanceTo(const FloatPoint& point) const {
-  FloatPoint closest_point;
+float FloatRect::SquaredDistanceTo(const gfx::PointF& point) const {
+  gfx::PointF closest_point;
   closest_point.set_x(ClampTo<float>(point.x(), x(), right()));
   closest_point.set_y(ClampTo<float>(point.y(), y(), bottom()));
-  return (point - closest_point).DiagonalLengthSquared();
+  return (point - closest_point).LengthSquared();
 }
 
 FloatRect UnionRects(const Vector<FloatRect>& rects) {
@@ -217,8 +218,8 @@ FloatRect UnionRects(const Vector<FloatRect>& rects) {
 }
 
 IntRect EnclosedIntRect(const FloatRect& rect) {
-  gfx::Point location = CeiledIntPoint(rect.origin());
-  gfx::Point max_point = FlooredIntPoint(rect.bottom_right());
+  gfx::Point location = gfx::ToCeiledPoint(rect.origin());
+  gfx::Point max_point = gfx::ToFlooredPoint(rect.bottom_right());
   IntSize size(base::ClampSub(max_point.x(), location.x()),
                base::ClampSub(max_point.y(), location.y()));
   size.ClampNegativeToZero();
@@ -226,7 +227,8 @@ IntRect EnclosedIntRect(const FloatRect& rect) {
 }
 
 IntRect RoundedIntRect(const FloatRect& rect) {
-  return IntRect(RoundedIntPoint(rect.origin()), RoundedIntSize(rect.size()));
+  return IntRect(gfx::ToRoundedPoint(rect.origin()),
+                 RoundedIntSize(rect.size()));
 }
 
 FloatRect MapRect(const FloatRect& r,
@@ -247,7 +249,7 @@ std::ostream& operator<<(std::ostream& ostream, const FloatRect& rect) {
 }
 
 String FloatRect::ToString() const {
-  return String::Format("%s %s", origin().ToString().Ascii().c_str(),
+  return String::Format("%s %s", origin().ToString().c_str(),
                         size().ToString().Ascii().c_str());
 }
 

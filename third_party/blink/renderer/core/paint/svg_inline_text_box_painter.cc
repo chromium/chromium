@@ -370,8 +370,8 @@ void SVGInlineTextBoxPainter::PaintDecoration(const PaintInfo& paint_info,
 
   float decoration_offset = BaselineOffsetForDecoration(
       decoration, font_data->GetFontMetrics(), thickness);
-  FloatPoint decoration_origin(fragment.x,
-                               fragment.y - decoration_offset / scaling_factor);
+  gfx::PointF decoration_origin(
+      fragment.x, fragment.y - decoration_offset / scaling_factor);
 
   Path path;
   path.AddRect(
@@ -503,7 +503,7 @@ void SVGInlineTextBoxPainter::PaintText(const PaintInfo& paint_info,
   float scaling_factor = text_layout_object.ScalingFactor();
   DCHECK(scaling_factor);
 
-  FloatPoint text_origin(fragment.x, fragment.y);
+  gfx::PointF text_origin(fragment.x, fragment.y);
 
   GraphicsContext& context = paint_info.context;
   GraphicsContextStateSaver state_saver(context, false);

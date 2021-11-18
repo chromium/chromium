@@ -33,12 +33,14 @@
 #include "base/dcheck_is_on.h"
 #include "base/numerics/clamped_math.h"
 #include "build/build_config.h"
-#include "third_party/blink/renderer/platform/geometry/float_point.h"
 #include "third_party/blink/renderer/platform/geometry/float_rect_outsets.h"
+#include "third_party/blink/renderer/platform/geometry/float_size.h"
 #include "third_party/blink/renderer/platform/geometry/int_rect.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 #include "third_party/skia/include/core/SkRect.h"
+#include "ui/gfx/geometry/point_conversions.h"
+#include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/rect_f.h"
 
 #if defined(OS_MAC)
@@ -56,10 +58,10 @@ class PLATFORM_EXPORT FloatRect {
 
  public:
   constexpr FloatRect() = default;
-  constexpr FloatRect(const FloatPoint& location, const FloatSize& size)
+  constexpr FloatRect(const gfx::PointF& location, const FloatSize& size)
       : location_(location), size_(size) {}
   constexpr FloatRect(float x, float y, float width, float height)
-      : location_(FloatPoint(x, y)), size_(FloatSize(width, height)) {}
+      : location_(gfx::PointF(x, y)), size_(FloatSize(width, height)) {}
   constexpr explicit FloatRect(const IntRect& r)
       : FloatRect(r.x(), r.y(), r.width(), r.height()) {}
   constexpr explicit FloatRect(const gfx::RectF& r)
@@ -72,10 +74,14 @@ class PLATFORM_EXPORT FloatRect {
                                    double width,
                                    double height);
 
-  constexpr FloatPoint origin() const { return location_; }
+  constexpr gfx::PointF origin() const { return location_; }
   constexpr FloatSize size() const { return size_; }
 
-  void set_origin(const FloatPoint& location) { location_ = location; }
+  constexpr gfx::Vector2dF OffsetFromOrigin() const {
+    return location_.OffsetFromOrigin();
+  }
+
+  void set_origin(const gfx::PointF& location) { location_ = location; }
   void set_size(const FloatSize& size) { size_ = size; }
 
   constexpr float x() const { return location_.x(); }
@@ -96,13 +102,14 @@ class PLATFORM_EXPORT FloatRect {
   bool IsFinite() const;
   bool IsExpressibleAsIntRect() const;
 
-  FloatPoint CenterPoint() const {
-    return FloatPoint(x() + width() / 2, y() + height() / 2);
+  gfx::PointF CenterPoint() const {
+    return gfx::PointF(x() + width() / 2, y() + height() / 2);
   }
 
-  void Offset(const FloatSize& delta) { location_ += delta; }
-  void MoveBy(const FloatPoint& delta) {
-    location_.Offset(delta.x(), delta.y());
+  void Offset(const FloatSize& delta) { location_ += ToGfxVector2dF(delta); }
+  void Offset(const gfx::Vector2dF& delta) { location_ += delta; }
+  void MoveBy(const gfx::PointF& delta) {
+    location_ += delta.OffsetFromOrigin();
   }
   void Offset(float dx, float dy) { location_.Offset(dx, dy); }
 
@@ -122,15 +129,15 @@ class PLATFORM_EXPORT FloatRect {
   void ShiftYEdgeTo(float);
   void ShiftMaxYEdgeTo(float);
 
-  FloatPoint top_right() const {
-    return FloatPoint(location_.x() + size_.width(), location_.y());
+  gfx::PointF top_right() const {
+    return gfx::PointF(location_.x() + size_.width(), location_.y());
   }  // typically topRight
-  FloatPoint bottom_left() const {
-    return FloatPoint(location_.x(), location_.y() + size_.height());
+  gfx::PointF bottom_left() const {
+    return gfx::PointF(location_.x(), location_.y() + size_.height());
   }  // typically bottomLeft
-  FloatPoint bottom_right() const {
-    return FloatPoint(location_.x() + size_.width(),
-                      location_.y() + size_.height());
+  gfx::PointF bottom_right() const {
+    return gfx::PointF(location_.x() + size_.width(),
+                       location_.y() + size_.height());
   }  // typically bottomRight
 
   WARN_UNUSED_RESULT bool Intersects(const IntRect&) const;
@@ -144,10 +151,10 @@ class PLATFORM_EXPORT FloatRect {
   void Union(const FloatRect&);
   void UnionEvenIfEmpty(const FloatRect&);
   void UnionIfNonZero(const FloatRect&);
-  void Extend(const FloatPoint&);
+  void Extend(const gfx::PointF&);
 
   // Returns true if |p| is in the rect or is on any of the edges of the rect.
-  bool InclusiveContains(const FloatPoint& p) const {
+  bool InclusiveContains(const gfx::PointF& p) const {
     return p.x() >= x() && p.x() <= right() && p.y() >= y() &&
            p.y() <= bottom();
   }
@@ -168,10 +175,10 @@ class PLATFORM_EXPORT FloatRect {
   void Scale(float sx, float sy);
 
   FloatRect TransposedRect() const {
-    return FloatRect(location_.TransposedPoint(), size_.TransposedSize());
+    return FloatRect(gfx::TransposePoint(location_), size_.TransposedSize());
   }
 
-  float SquaredDistanceTo(const FloatPoint&) const;
+  float SquaredDistanceTo(const gfx::PointF&) const;
 
 #if defined(OS_MAC)
   FloatRect(const CGRect&);
@@ -194,7 +201,7 @@ class PLATFORM_EXPORT FloatRect {
   String ToString() const;
 
  private:
-  FloatPoint location_;
+  gfx::PointF location_;
   FloatSize size_;
 
   void SetLocationAndSizeFromEdges(float left,
@@ -229,7 +236,7 @@ inline FloatRect& operator+=(FloatRect& a, const FloatRect& b) {
 }
 
 constexpr FloatRect operator+(const FloatRect& a, const FloatRect& b) {
-  return FloatRect(a.origin() + b.origin(), a.size() + b.size());
+  return FloatRect(a.origin() + b.OffsetFromOrigin(), a.size() + b.size());
 }
 
 constexpr bool operator==(const FloatRect& a, const FloatRect& b) {
@@ -242,8 +249,8 @@ constexpr bool operator!=(const FloatRect& a, const FloatRect& b) {
 
 // Returns a IntRect containing the given FloatRect.
 inline IntRect EnclosingIntRect(const FloatRect& rect) {
-  gfx::Point location = FlooredIntPoint(rect.origin());
-  gfx::Point max_point = CeiledIntPoint(rect.bottom_right());
+  gfx::Point location = gfx::ToFlooredPoint(rect.origin());
+  gfx::Point max_point = gfx::ToCeiledPoint(rect.bottom_right());
   return IntRect(location,
                  IntSize(base::ClampSub(max_point.x(), location.x()),
                          base::ClampSub(max_point.y(), location.y())));

@@ -33,7 +33,6 @@
 
 #include <iosfwd>
 #include "third_party/blink/renderer/platform/geometry/double_point.h"
-#include "third_party/blink/renderer/platform/geometry/float_point.h"
 #include "third_party/blink/renderer/platform/geometry/layout_size.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
@@ -48,9 +47,7 @@ class PLATFORM_EXPORT LayoutPoint {
   constexpr LayoutPoint() = default;
   constexpr LayoutPoint(LayoutUnit x, LayoutUnit y) : x_(x), y_(y) {}
   constexpr LayoutPoint(int x, int y) : x_(LayoutUnit(x)), y_(LayoutUnit(y)) {}
-  constexpr LayoutPoint(const gfx::Point& point)
-      : x_(point.x()), y_(point.y()) {}
-  constexpr explicit LayoutPoint(const FloatPoint& point)
+  constexpr explicit LayoutPoint(const gfx::Point& point)
       : x_(point.x()), y_(point.y()) {}
   constexpr explicit LayoutPoint(const gfx::PointF& point)
       : x_(point.x()), y_(point.y()) {}
@@ -59,9 +56,6 @@ class PLATFORM_EXPORT LayoutPoint {
   constexpr explicit LayoutPoint(const LayoutSize& size)
       : x_(size.Width()), y_(size.Height()) {}
 
-  constexpr explicit operator FloatPoint() const {
-    return FloatPoint(x_.ToFloat(), y_.ToFloat());
-  }
   constexpr explicit operator gfx::PointF() const {
     return gfx::PointF(x_.ToFloat(), y_.ToFloat());
   }
@@ -195,12 +189,12 @@ inline gfx::Point ToCeiledPoint(const LayoutPoint& point) {
   return gfx::Point(point.X().Ceil(), point.Y().Ceil());
 }
 
-inline LayoutPoint FlooredLayoutPoint(const FloatPoint& p) {
+inline LayoutPoint FlooredLayoutPoint(const gfx::PointF& p) {
   return LayoutPoint(LayoutUnit::FromFloatFloor(p.x()),
                      LayoutUnit::FromFloatFloor(p.y()));
 }
 
-inline LayoutPoint CeiledLayoutPoint(const FloatPoint& p) {
+inline LayoutPoint CeiledLayoutPoint(const gfx::PointF& p) {
   return LayoutPoint(LayoutUnit::FromFloatCeil(p.x()),
                      LayoutUnit::FromFloatCeil(p.y()));
 }
@@ -219,12 +213,10 @@ inline LayoutSize ToLayoutSize(const LayoutPoint& p) {
 }
 
 inline LayoutPoint FlooredLayoutPoint(const FloatSize& s) {
-  return FlooredLayoutPoint(FloatPoint(s));
+  return FlooredLayoutPoint(gfx::PointF(s.width(), s.height()));
 }
 
 PLATFORM_EXPORT std::ostream& operator<<(std::ostream&, const LayoutPoint&);
-PLATFORM_EXPORT WTF::TextStream& operator<<(WTF::TextStream&,
-                                            const LayoutPoint&);
 
 }  // namespace blink
 

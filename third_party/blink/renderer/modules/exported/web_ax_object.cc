@@ -532,7 +532,8 @@ WebAXObject WebAXObject::HitTest(const gfx::Point& point) const {
   if (hit)
     return WebAXObject(hit);
 
-  if (private_->GetBoundsInFrameCoordinates().Contains(contents_point))
+  if (private_->GetBoundsInFrameCoordinates().Contains(
+          LayoutPoint(contents_point)))
     return *this;
 
   return WebAXObject();

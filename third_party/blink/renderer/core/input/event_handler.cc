@@ -101,7 +101,6 @@
 #include "third_party/blink/renderer/core/svg/graphics/svg_image_for_container.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/cursors.h"
-#include "third_party/blink/renderer/platform/geometry/float_point.h"
 #include "third_party/blink/renderer/platform/geometry/int_rect.h"
 #include "third_party/blink/renderer/platform/graphics/image.h"
 #include "third_party/blink/renderer/platform/graphics/image_orientation.h"
@@ -117,6 +116,7 @@
 #include "ui/base/cursor/mojom/cursor_type.mojom-blink.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom-blink.h"
 #include "ui/gfx/geometry/point.h"
+#include "ui/gfx/geometry/point_f.h"
 
 namespace blink {
 
@@ -410,12 +410,12 @@ bool EventHandler::BubblingScroll(mojom::blink::ScrollDirection direction,
       mouse_event_manager_->MousePressNode());
 }
 
-FloatPoint EventHandler::LastKnownMousePositionInRootFrame() const {
+gfx::PointF EventHandler::LastKnownMousePositionInRootFrame() const {
   return frame_->GetPage()->GetVisualViewport().ViewportToRootFrame(
       mouse_event_manager_->LastKnownMousePositionInViewport());
 }
 
-FloatPoint EventHandler::LastKnownMouseScreenPosition() const {
+gfx::PointF EventHandler::LastKnownMouseScreenPosition() const {
   return mouse_event_manager_->LastKnownMouseScreenPosition();
 }
 
@@ -789,7 +789,7 @@ WebInputEventResult EventHandler::HandleMousePressEvent(
   // Save the document point we generate in case the window coordinate is
   // invalidated by what happens when we dispatch the event.
   PhysicalOffset document_point = frame_->View()->ConvertFromRootFrame(
-      PhysicalOffset(FlooredIntPoint(mouse_event.PositionInRootFrame())));
+      PhysicalOffset(gfx::ToFlooredPoint(mouse_event.PositionInRootFrame())));
   MouseEventWithHitTestResults mev = GetMouseEventTarget(request, mouse_event);
   if (!mev.InnerNode()) {
     // An anonymous box can be scrollable.
@@ -869,7 +869,7 @@ WebInputEventResult EventHandler::HandleMousePressEvent(
             ? mev.InnerNode()->GetLayoutObject()->EnclosingLayer()
             : nullptr;
     gfx::Point p = view->ConvertFromRootFrame(
-        FlooredIntPoint(mouse_event.PositionInRootFrame()));
+        gfx::ToFlooredPoint(mouse_event.PositionInRootFrame()));
     if (layer && layer->GetScrollableArea() &&
         layer->GetScrollableArea()->IsPointInResizeControl(
             p, kResizerForPointer)) {
@@ -1265,8 +1265,8 @@ WebInputEventResult EventHandler::UpdateDragAndDrop(
 
   if (AutoscrollController* controller =
           scroll_manager_->GetAutoscrollController()) {
-    controller->UpdateDragAndDrop(
-        new_target, FloatPoint(event.PositionInRootFrame()), event.TimeStamp());
+    controller->UpdateDragAndDrop(new_target, event.PositionInRootFrame(),
+                                  event.TimeStamp());
   }
 
   if (drag_target_ != new_target) {
@@ -1641,7 +1641,7 @@ bool EventHandler::ShouldApplyTouchAdjustment(
 }
 
 void EventHandler::CacheTouchAdjustmentResult(uint32_t id,
-                                              FloatPoint adjusted_point) {
+                                              gfx::PointF adjusted_point) {
   touch_adjustment_result_.unique_event_id = id;
   touch_adjustment_result_.adjusted_point = adjusted_point;
 }
@@ -1661,9 +1661,11 @@ bool EventHandler::GestureCorrespondsToAdjustedTouch(
   // Check if the adjusted point is in the gesture event tap rect.
   // If not, should not use this touch point in following events.
   if (should_use_touch_event_adjusted_point_) {
-    FloatRect tap_rect(FloatPoint(event.PositionInRootFrame()) -
-                           FloatSize(event.TapAreaInRootFrame()) * 0.5,
-                       FloatSize(event.TapAreaInRootFrame()));
+    FloatSize size(event.TapAreaInRootFrame());
+    FloatRect tap_rect(
+        event.PositionInRootFrame() -
+            gfx::Vector2dF(size.width() * 0.5, size.height() * 0.5),
+        size);
     should_use_touch_event_adjusted_point_ =
         tap_rect.InclusiveContains(touch_adjustment_result_.adjusted_point);
   }
@@ -1947,7 +1949,7 @@ GestureEventWithHitTestResults EventHandler::HitTestResultForGestureEvent(
     // point-base hit test. Otherwise add padding and do rect-based hit test.
     if (GestureCorrespondsToAdjustedTouch(gesture_event)) {
       adjusted_event.ApplyTouchAdjustment(
-          ToGfxPointF(touch_adjustment_result_.adjusted_point));
+          touch_adjustment_result_.adjusted_point);
     } else {
       hit_rect_size = GetHitTestRectForAdjustment(
           *frame_, LayoutSize(adjusted_event.TapAreaInRootFrame()));
@@ -1960,13 +1962,12 @@ GestureEventWithHitTestResults EventHandler::HitTestResultForGestureEvent(
   LocalFrame& root_frame = frame_->LocalFrameRoot();
   HitTestResult hit_test_result;
   if (hit_rect_size.IsEmpty()) {
-    location =
-        HitTestLocation(FloatPoint(adjusted_event.PositionInRootFrame()));
+    location = HitTestLocation(adjusted_event.PositionInRootFrame());
     hit_test_result = root_frame.GetEventHandler().HitTestResultAtLocation(
         location, hit_type);
   } else {
-    PhysicalOffset top_left = PhysicalOffset::FromFloatPointRound(
-        FloatPoint(adjusted_event.PositionInRootFrame()));
+    PhysicalOffset top_left =
+        PhysicalOffset::FromPointFRound(adjusted_event.PositionInRootFrame());
     top_left -= PhysicalOffset(hit_rect_size * 0.5f);
     location = HitTestLocation(PhysicalRect(top_left, hit_rect_size));
     hit_test_result = root_frame.GetEventHandler().HitTestResultAtLocation(
@@ -1986,8 +1987,7 @@ GestureEventWithHitTestResults EventHandler::HitTestResultForGestureEvent(
     LocalFrame* hit_frame = hit_test_result.InnerNodeFrame();
     if (!hit_frame)
       hit_frame = frame_;
-    location =
-        HitTestLocation(FloatPoint(adjusted_event.PositionInRootFrame()));
+    location = HitTestLocation(adjusted_event.PositionInRootFrame());
     hit_test_result = root_frame.GetEventHandler().HitTestResultAtLocation(
         location,
         (hit_type | HitTestRequest::kReadOnly) & ~HitTestRequest::kListBased);
@@ -2006,7 +2006,7 @@ void EventHandler::ApplyTouchAdjustment(WebGestureEvent* gesture_event,
                                         HitTestResult* hit_test_result) {
   Node* adjusted_node = nullptr;
   gfx::Point adjusted_point =
-      FlooredIntPoint(gesture_event->PositionInRootFrame());
+      gfx::ToFlooredPoint(gesture_event->PositionInRootFrame());
   bool adjusted = false;
   switch (gesture_event->GetType()) {
     case WebInputEvent::Type::kGestureTap:
@@ -2032,7 +2032,7 @@ void EventHandler::ApplyTouchAdjustment(WebGestureEvent* gesture_event,
   // crbug.com/398914
   if (adjusted) {
     PhysicalOffset point(frame_->View()->ConvertFromRootFrame(adjusted_point));
-    DCHECK(location.ContainsPoint(FloatPoint(point)));
+    DCHECK(location.ContainsPoint(gfx::PointF(point)));
     DCHECK(location.IsRectBasedTest());
     location = hit_test_result->ResolveRectBasedTest(adjusted_node, point);
     gesture_event->ApplyTouchAdjustment(
@@ -2053,8 +2053,8 @@ WebInputEventResult EventHandler::SendContextMenuEvent(
   if (last_scrollbar_under_mouse_)
     last_scrollbar_under_mouse_->MouseUp(event);
 
-  PhysicalOffset position_in_contents(
-      v->ConvertFromRootFrame(FlooredIntPoint(event.PositionInRootFrame())));
+  PhysicalOffset position_in_contents(v->ConvertFromRootFrame(
+      gfx::ToFlooredPoint(event.PositionInRootFrame())));
   HitTestRequest request(HitTestRequest::kActive);
   MouseEventWithHitTestResults mev =
       frame_->GetDocument()->PerformMouseEventHitTest(
@@ -2471,7 +2471,7 @@ MouseEventWithHitTestResults EventHandler::GetMouseEventTarget(
     const WebMouseEvent& event) {
   PhysicalOffset document_point =
       event_handling_util::ContentPointFromRootFrame(
-          frame_, FloatPoint(event.PositionInRootFrame()));
+          frame_, event.PositionInRootFrame());
 
   // TODO(eirage): This does not handle chorded buttons yet.
   if (event.GetType() != WebInputEvent::Type::kMouseDown) {

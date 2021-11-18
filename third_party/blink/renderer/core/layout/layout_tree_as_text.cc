@@ -111,6 +111,10 @@ WTF::TextStream& operator<<(WTF::TextStream& ts, const Color& c) {
   return ts << c.NameForLayoutTreeAsText();
 }
 
+WTF::TextStream& operator<<(WTF::TextStream& ts, const LayoutPoint& point) {
+  return ts << gfx::PointF(point);
+}
+
 WTF::TextStream& operator<<(WTF::TextStream& ts, const gfx::Point& p) {
   return ts << "(" << p.x() << "," << p.y() << ")";
 }
@@ -637,14 +641,11 @@ static void Write(WTF::TextStream& ts,
     ts << " transparent";
 
   if (layer.GetLayoutObject().IsScrollContainer()) {
-    PaintLayerScrollableArea* scrollable_area = layer.GetScrollableArea();
-    ScrollOffset adjusted_scroll_offset =
-        scrollable_area->GetScrollOffset() +
-        ToFloatSize(FloatPoint(scrollable_area->ScrollOrigin()));
-    if (adjusted_scroll_offset.width())
-      ts << " scrollX " << adjusted_scroll_offset.width();
-    if (adjusted_scroll_offset.height())
-      ts << " scrollY " << adjusted_scroll_offset.height();
+    gfx::PointF scroll_position = layer.GetScrollableArea()->ScrollPosition();
+    if (scroll_position.x())
+      ts << " scrollX " << scroll_position.x();
+    if (scroll_position.y())
+      ts << " scrollY " << scroll_position.y();
     if (layer.GetLayoutBox() &&
         layer.GetLayoutBox()->PixelSnappedClientWidth() !=
             layer.GetLayoutBox()->PixelSnappedScrollWidth())

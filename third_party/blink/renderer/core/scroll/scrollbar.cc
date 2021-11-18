@@ -40,6 +40,7 @@
 #include "third_party/blink/renderer/platform/geometry/float_rect.h"
 #include "third_party/blink/renderer/platform/text/text_direction.h"
 #include "ui/base/ui_base_features.h"
+#include "ui/gfx/geometry/point_conversions.h"
 
 namespace blink {
 
@@ -346,7 +347,7 @@ bool Scrollbar::GestureEvent(const WebGestureEvent& evt,
   DCHECK(should_update_capture);
   switch (evt.GetType()) {
     case WebInputEvent::Type::kGestureTapDown: {
-      gfx::Point position = FlooredIntPoint(evt.PositionInRootFrame());
+      gfx::Point position = gfx::ToFlooredPoint(evt.PositionInRootFrame());
       SetPressedPart(GetTheme().HitTestRootFramePosition(*this, position),
                      evt.GetType());
       pressed_pos_ = Orientation() == kHorizontalScrollbar
@@ -448,7 +449,7 @@ bool Scrollbar::HandleTapGesture() {
 }
 
 void Scrollbar::MouseMoved(const WebMouseEvent& evt) {
-  gfx::Point position = FlooredIntPoint(evt.PositionInRootFrame());
+  gfx::Point position = gfx::ToFlooredPoint(evt.PositionInRootFrame());
   ScrollbarPart part = GetTheme().HitTestRootFramePosition(*this, position);
 
   // If the WebMouseEvent was already handled on the compositor thread, simply
@@ -527,7 +528,7 @@ void Scrollbar::MouseUp(const WebMouseEvent& mouse_event) {
       scrollable_area_->MouseReleasedScrollbar();
 
     ScrollbarPart part = GetTheme().HitTestRootFramePosition(
-        *this, FlooredIntPoint(mouse_event.PositionInRootFrame()));
+        *this, gfx::ToFlooredPoint(mouse_event.PositionInRootFrame()));
     if (part == kNoPart) {
       SetHoveredPart(kNoPart);
       scrollable_area_->MouseExitedScrollbar(*this);
@@ -542,7 +543,7 @@ void Scrollbar::MouseDown(const WebMouseEvent& evt) {
   if (evt.button == WebPointerProperties::Button::kRight)
     return;
 
-  gfx::Point position = FlooredIntPoint(evt.PositionInRootFrame());
+  gfx::Point position = gfx::ToFlooredPoint(evt.PositionInRootFrame());
   SetPressedPart(GetTheme().HitTestRootFramePosition(*this, position),
                  evt.GetType());
 

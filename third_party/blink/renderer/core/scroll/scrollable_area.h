@@ -187,7 +187,7 @@ class CORE_EXPORT ScrollableArea : public GarbageCollectedMixin {
       bool scrolled_y,
       base::ScopedClosureRunner on_finish = base::ScopedClosureRunner());
   bool SnapForEndPosition(
-      const FloatPoint& end_position,
+      const gfx::PointF& end_position,
       bool scrolled_x,
       bool scrolled_y,
       base::ScopedClosureRunner on_finish = base::ScopedClosureRunner());
@@ -203,7 +203,7 @@ class CORE_EXPORT ScrollableArea : public GarbageCollectedMixin {
   //
   // NOTE: If a target position is found, then it is expected that this position
   // will be scrolled to.
-  virtual absl::optional<FloatPoint> GetSnapPositionAndSetTarget(
+  virtual absl::optional<gfx::PointF> GetSnapPositionAndSetTarget(
       const cc::SnapSelectionStrategy& strategy) {
     return absl::nullopt;
   }
@@ -339,14 +339,14 @@ class CORE_EXPORT ScrollableArea : public GarbageCollectedMixin {
   // of blink renderer, we should pass "scroll origin". Similarly, when "scroll
   // offset" is set from outside of blink renderer, we should set "scroll
   // position" here.
-  virtual FloatPoint ScrollPosition() const {
-    return FloatPoint(GetScrollOffset());
+  virtual gfx::PointF ScrollPosition() const {
+    return ScrollOffsetToPosition(GetScrollOffset());
   }
-  virtual FloatPoint ScrollOffsetToPosition(const ScrollOffset& offset) const {
-    return FloatPoint(offset);
+  virtual gfx::PointF ScrollOffsetToPosition(const ScrollOffset& offset) const {
+    return gfx::PointF(offset.width(), offset.height());
   }
   virtual ScrollOffset ScrollPositionToOffset(
-      const FloatPoint& position) const {
+      const gfx::PointF& position) const {
     return ToScrollOffset(position);
   }
   virtual IntSize ScrollOffsetInt() const = 0;
@@ -534,7 +534,7 @@ class CORE_EXPORT ScrollableArea : public GarbageCollectedMixin {
       const = 0;
 
   // Callback for compositor-side scrolling.
-  virtual void DidCompositorScroll(const FloatPoint& position);
+  virtual void DidCompositorScroll(const gfx::PointF& position);
 
   virtual void ScrollbarFrameRectChanged() {}
 

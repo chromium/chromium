@@ -12,12 +12,12 @@
 #include "third_party/blink/renderer/core/style/applied_text_decoration.h"
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
 #include "third_party/blink/renderer/platform/fonts/font_baseline.h"
-#include "third_party/blink/renderer/platform/geometry/float_point.h"
 #include "third_party/blink/renderer/platform/geometry/float_rect.h"
 #include "third_party/blink/renderer/platform/geometry/layout_unit.h"
 #include "third_party/blink/renderer/platform/graphics/path.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
+#include "ui/gfx/geometry/point_f.h"
 namespace blink {
 
 class ComputedStyle;
@@ -90,7 +90,7 @@ class CORE_EXPORT TextDecorationInfo {
 
   // SetPerLineData must be called with the line argument before using
   // the remaining methods.
-  FloatPoint StartPoint(TextDecorationLine line) const;
+  gfx::PointF StartPoint(TextDecorationLine line) const;
   float DoubleOffset(TextDecorationLine line) const;
 
   // Compute bounds for the given line and the current decoration.
@@ -120,7 +120,7 @@ class CORE_EXPORT TextDecorationInfo {
   const float computed_font_size_;
   const float scaling_factor_;
   ResolvedUnderlinePosition underline_position_;
-  FloatPoint local_origin_;
+  gfx::PointF local_origin_;
   bool antialias_;
   Vector<float> applied_decorations_thickness_;
 

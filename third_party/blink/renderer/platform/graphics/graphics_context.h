@@ -78,7 +78,7 @@ struct ImageTilingInfo {
   FloatSize scale{1.0f, 1.0f};
 
   // Origin of the full image in destination space.
-  FloatPoint phase;
+  gfx::PointF phase;
 
   // Additional spacing between tiles in destination space.
   FloatSize spacing;
@@ -352,12 +352,12 @@ class PLATFORM_EXPORT GraphicsContext {
 
   void DrawText(const Font&,
                 const TextRunPaintInfo&,
-                const FloatPoint&,
+                const gfx::PointF&,
                 DOMNodeId,
                 const AutoDarkMode& auto_dark_mode);
   void DrawText(const Font&,
                 const NGTextFragmentPaintInfo&,
-                const FloatPoint&,
+                const gfx::PointF&,
                 DOMNodeId,
                 const AutoDarkMode& auto_dark_mode);
 
@@ -365,7 +365,7 @@ class PLATFORM_EXPORT GraphicsContext {
   // if we can change that to use the four parameter version above.
   void DrawText(const Font&,
                 const TextRunPaintInfo&,
-                const FloatPoint&,
+                const gfx::PointF&,
                 const PaintFlags&,
                 DOMNodeId,
                 const AutoDarkMode& auto_dark_mode);
@@ -374,7 +374,7 @@ class PLATFORM_EXPORT GraphicsContext {
   // four parameter overload can be removed or if it can wrap this method.
   void DrawText(const Font&,
                 const NGTextFragmentPaintInfo&,
-                const FloatPoint&,
+                const gfx::PointF&,
                 const PaintFlags&,
                 DOMNodeId,
                 const AutoDarkMode& auto_dark_mode);
@@ -382,30 +382,30 @@ class PLATFORM_EXPORT GraphicsContext {
   void DrawEmphasisMarks(const Font&,
                          const TextRunPaintInfo&,
                          const AtomicString& mark,
-                         const FloatPoint&,
+                         const gfx::PointF&,
                          const AutoDarkMode& auto_dark_mode);
   void DrawEmphasisMarks(const Font&,
                          const NGTextFragmentPaintInfo&,
                          const AtomicString& mark,
-                         const FloatPoint&,
+                         const gfx::PointF&,
                          const AutoDarkMode& auto_dark_mode);
 
   void DrawBidiText(
       const Font&,
       const TextRunPaintInfo&,
-      const FloatPoint&,
+      const gfx::PointF&,
       const AutoDarkMode& auto_dark_mode,
       Font::CustomFontNotReadyAction = Font::kDoNotPaintIfFontNotReady);
   void DrawHighlightForText(const Font&,
                             const TextRun&,
-                            const FloatPoint&,
+                            const gfx::PointF&,
                             int h,
                             const Color& background_color,
                             const AutoDarkMode& auto_dark_mode,
                             int from = 0,
                             int to = -1);
 
-  void DrawLineForText(const FloatPoint&,
+  void DrawLineForText(const gfx::PointF&,
                        float width,
                        const AutoDarkMode& auto_dark_mode,
                        const PaintFlags* flags = nullptr);
@@ -483,11 +483,11 @@ class PLATFORM_EXPORT GraphicsContext {
   // Sets location of a URL destination (a.k.a. anchor) in the page.
   void SetURLDestinationLocation(const String& name, const gfx::Point&);
 
-  static void AdjustLineToPixelBoundaries(FloatPoint& p1,
-                                          FloatPoint& p2,
+  static void AdjustLineToPixelBoundaries(gfx::PointF& p1,
+                                          gfx::PointF& p2,
                                           float stroke_width);
 
-  static Path GetPathForTextLine(const FloatPoint&,
+  static Path GetPathForTextLine(const gfx::PointF&,
                                  float width,
                                  float stroke_thickness,
                                  StrokeStyle);
@@ -516,7 +516,7 @@ class PLATFORM_EXPORT GraphicsContext {
   template <typename TextPaintInfo>
   void DrawTextInternal(const Font&,
                         const TextPaintInfo&,
-                        const FloatPoint&,
+                        const gfx::PointF&,
                         DOMNodeId,
                         const AutoDarkMode& auto_dark_mode);
 
@@ -524,7 +524,7 @@ class PLATFORM_EXPORT GraphicsContext {
   void DrawEmphasisMarksInternal(const Font&,
                                  const TextPaintInfo&,
                                  const AtomicString& mark,
-                                 const FloatPoint&,
+                                 const gfx::PointF&,
                                  const AutoDarkMode& auto_dark_mode);
 
   template <typename DrawTextFunc>

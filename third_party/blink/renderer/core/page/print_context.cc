@@ -183,7 +183,7 @@ int PrintContext::PageNumberForElement(Element* element,
   element->GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kPrinting);
 
   LocalFrame* frame = element->GetDocument().GetFrame();
-  FloatRect page_rect(FloatPoint(0, 0), page_size_in_pixels);
+  FloatRect page_rect(gfx::PointF(0, 0), page_size_in_pixels);
   ScopedPrintContext print_context(frame);
   print_context->BeginPrintMode(page_rect.width(), page_rect.height());
 
@@ -317,7 +317,7 @@ int PrintContext::NumberOfPages(LocalFrame* frame,
                                 const FloatSize& page_size_in_pixels) {
   frame->GetDocument()->UpdateStyleAndLayout(DocumentUpdateReason::kPrinting);
 
-  FloatRect page_rect(FloatPoint(0, 0), page_size_in_pixels);
+  FloatRect page_rect(gfx::PointF(0, 0), page_size_in_pixels);
   ScopedPrintContext print_context(frame);
   print_context->BeginPrintMode(page_rect.width(), page_rect.height());
   // Account for shrink-to-fit.

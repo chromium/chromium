@@ -106,7 +106,7 @@ class CORE_EXPORT VisualViewport : public GarbageCollected<VisualViewport>,
 
   // Sets the location of the visual viewport relative to the outer viewport.
   // The coordinates are in partial CSS pixels.
-  void SetLocation(const FloatPoint&);
+  void SetLocation(const gfx::PointF&);
   // FIXME: This should be called moveBy
   void Move(const ScrollOffset&);
 
@@ -131,7 +131,7 @@ class CORE_EXPORT VisualViewport : public GarbageCollected<VisualViewport>,
   // Sets scale and location in one operation, preventing intermediate clamping.
   void SetScaleAndLocation(float scale,
                            bool is_pinch_gesture_active,
-                           const FloatPoint& location);
+                           const gfx::PointF& location);
 
   void SetScale(float);
   float Scale() const { return scale_; }
@@ -140,7 +140,7 @@ class CORE_EXPORT VisualViewport : public GarbageCollected<VisualViewport>,
   // Convert the given rect in the main LocalFrameView's coordinates into a rect
   // in the viewport. The given and returned rects are in CSS pixels, meaning
   // scale isn't applied.
-  FloatPoint ViewportCSSPixelsToRootFrame(const FloatPoint&) const;
+  gfx::PointF ViewportCSSPixelsToRootFrame(const gfx::PointF&) const;
 
   // Clamp the given point, in document coordinates, to the maximum/minimum
   // scroll extents of the viewport within the document.
@@ -169,8 +169,8 @@ class CORE_EXPORT VisualViewport : public GarbageCollected<VisualViewport>,
   FloatRect RootFrameToViewport(const FloatRect&) const;
   IntRect RootFrameToViewport(const IntRect&) const;
 
-  FloatPoint ViewportToRootFrame(const FloatPoint&) const;
-  FloatPoint RootFrameToViewport(const FloatPoint&) const;
+  gfx::PointF ViewportToRootFrame(const gfx::PointF&) const;
+  gfx::PointF RootFrameToViewport(const gfx::PointF&) const;
   gfx::Point ViewportToRootFrame(const gfx::Point&) const;
   gfx::Point RootFrameToViewport(const gfx::Point&) const;
 
@@ -231,7 +231,7 @@ class CORE_EXPORT VisualViewport : public GarbageCollected<VisualViewport>,
   // WebViewImpl explicitly rather than via
   // ScrollingCoordinator::DidCompositorScroll() since it needs to be set in
   // tandem with the page scale delta.
-  void DidCompositorScroll(const FloatPoint&) final { NOTREACHED(); }
+  void DidCompositorScroll(const gfx::PointF&) final { NOTREACHED(); }
 
   // Visual Viewport API implementation.
   double OffsetLeft() const;
@@ -281,7 +281,7 @@ class CORE_EXPORT VisualViewport : public GarbageCollected<VisualViewport>,
  private:
   bool DidSetScaleOrLocation(float scale,
                              bool is_pinch_gesture_active,
-                             const FloatPoint& location);
+                             const gfx::PointF& location);
 
   void CreateLayers();
   void UpdateStyleAndLayout(DocumentUpdateReason) const;

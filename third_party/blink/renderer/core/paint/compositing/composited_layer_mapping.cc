@@ -115,10 +115,10 @@ static bool UsesCompositedStickyPosition(PaintLayer& layer) {
 // layer for use in CompositedLayerMapping.
 //
 // If the layer is not using composited sticky position, this will return
-// FloatPoint().
-static FloatPoint StickyPositionOffsetForLayer(PaintLayer& layer) {
+// gfx::PointF().
+static gfx::PointF StickyPositionOffsetForLayer(PaintLayer& layer) {
   if (!UsesCompositedStickyPosition(layer))
-    return FloatPoint();
+    return gfx::PointF();
 
   const StickyConstraintsMap& constraints_map =
       layer.AncestorScrollContainerLayer()
@@ -127,7 +127,7 @@ static FloatPoint StickyPositionOffsetForLayer(PaintLayer& layer) {
   const StickyPositionScrollingConstraints* constraints =
       constraints_map.at(&layer);
 
-  return FloatPoint(constraints->GetOffsetForStickyPosition(constraints_map));
+  return gfx::PointF(constraints->GetOffsetForStickyPosition(constraints_map));
 }
 
 static bool NeedsDecorationOutlineLayer(const PaintLayer& paint_layer,
@@ -408,7 +408,7 @@ static PhysicalOffset ComputeOffsetFromCompositedAncestor(
     const PaintLayer* layer,
     const PaintLayer* composited_ancestor,
     const PhysicalOffset& local_representative_point_for_fragmentation,
-    const FloatPoint& offset_for_sticky_position) {
+    const gfx::PointF& offset_for_sticky_position) {
   // Add in the offset of the composited bounds from the coordinate space of
   // the PaintLayer, since visualOffsetFromAncestor() requires the pre-offset
   // input to be in the space of the PaintLayer. We also need to add in this
@@ -432,7 +432,7 @@ static PhysicalOffset ComputeOffsetFromCompositedAncestor(
   if (composited_ancestor)
     offset += composited_ancestor->SubpixelAccumulation();
   offset -= local_representative_point_for_fragmentation;
-  offset -= PhysicalOffset::FromFloatPointRound(offset_for_sticky_position);
+  offset -= PhysicalOffset::FromPointFRound(offset_for_sticky_position);
   return offset;
 }
 
@@ -483,7 +483,7 @@ void CompositedLayerMapping::ComputeBoundsOfOwningLayer(
   // positioned elements. If the compositor is handling sticky offsets for
   // this layer, we need to remove the Blink-side offset to avoid
   // double-counting.
-  FloatPoint offset_for_sticky_position =
+  gfx::PointF offset_for_sticky_position =
       StickyPositionOffsetForLayer(*owning_layer_);
   PhysicalOffset offset_from_composited_ancestor =
       ComputeOffsetFromCompositedAncestor(
@@ -1636,8 +1636,7 @@ IntRect CompositedLayerMapping::RecomputeInterestRect(
     GeometryMapper::SourceToDestinationRect(root_view_state.Transform(),
                                             source_state.Transform(),
                                             local_interest_rect);
-    local_interest_rect.MoveBy(
-        -FloatPoint(graphics_layer->GetOffsetFromTransformNode()));
+    local_interest_rect.Offset(-graphics_layer->GetOffsetFromTransformNode());
 
     // TODO(chrishtr): the code below is a heuristic. Instead we should detect
     // and return whether the mapping failed.  In some cases,

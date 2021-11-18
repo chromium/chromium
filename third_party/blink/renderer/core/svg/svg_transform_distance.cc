@@ -21,9 +21,9 @@
 
 #include <math.h>
 
-#include "third_party/blink/renderer/platform/geometry/float_point.h"
 #include "third_party/blink/renderer/platform/geometry/float_size.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
+#include "ui/gfx/geometry/point_f.h"
 
 namespace blink {
 
@@ -55,18 +55,17 @@ SVGTransformDistance::SVGTransformDistance(
     case SVGTransformType::kUnknown:
       break;
     case SVGTransformType::kRotate: {
-      FloatSize center_distance = to_svg_transform->RotationCenter() -
-                                  from_svg_transform->RotationCenter();
+      gfx::Vector2dF center_distance = to_svg_transform->RotationCenter() -
+                                       from_svg_transform->RotationCenter();
       angle_ = to_svg_transform->Angle() - from_svg_transform->Angle();
-      cx_ = center_distance.width();
-      cy_ = center_distance.height();
+      cx_ = center_distance.x();
+      cy_ = center_distance.y();
       break;
     }
     case SVGTransformType::kTranslate: {
-      FloatSize translation_distance =
+      gfx::Vector2dF translation_distance =
           to_svg_transform->Translate() - from_svg_transform->Translate();
-      transform_.Translate(translation_distance.width(),
-                           translation_distance.height());
+      transform_.Translate(translation_distance.x(), translation_distance.y());
       break;
     }
     case SVGTransformType::kScale: {
@@ -178,8 +177,9 @@ SVGTransform* SVGTransformDistance::AddToSVGTransform(
     case SVGTransformType::kUnknown:
       return MakeGarbageCollected<SVGTransform>();
     case SVGTransformType::kTranslate: {
-      FloatPoint translation = transform->Translate();
-      translation += FloatSize::NarrowPrecision(transform_.E(), transform_.F());
+      gfx::PointF translation = transform->Translate();
+      translation += gfx::Vector2dF(ClampTo<float>(transform_.E()),
+                                    ClampTo<float>(transform_.F()));
       new_transform->SetTranslate(translation.x(), translation.y());
       return new_transform;
     }
@@ -190,7 +190,7 @@ SVGTransform* SVGTransformDistance::AddToSVGTransform(
       return new_transform;
     }
     case SVGTransformType::kRotate: {
-      FloatPoint center = transform->RotationCenter();
+      gfx::PointF center = transform->RotationCenter();
       new_transform->SetRotate(transform->Angle() + angle_, center.x() + cx_,
                                center.y() + cy_);
       return new_transform;

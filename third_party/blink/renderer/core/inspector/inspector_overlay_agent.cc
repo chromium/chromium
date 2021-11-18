@@ -102,10 +102,10 @@ bool ParseQuad(std::unique_ptr<protocol::Array<double>> quad_array,
   const size_t kCoordinatesInQuad = 8;
   if (!quad_array || quad_array->size() != kCoordinatesInQuad)
     return false;
-  quad->set_p1(FloatPoint((*quad_array)[0], (*quad_array)[1]));
-  quad->set_p2(FloatPoint((*quad_array)[2], (*quad_array)[3]));
-  quad->set_p3(FloatPoint((*quad_array)[4], (*quad_array)[5]));
-  quad->set_p4(FloatPoint((*quad_array)[6], (*quad_array)[7]));
+  quad->set_p1(gfx::PointF((*quad_array)[0], (*quad_array)[1]));
+  quad->set_p2(gfx::PointF((*quad_array)[2], (*quad_array)[3]));
+  quad->set_p3(gfx::PointF((*quad_array)[4], (*quad_array)[5]));
+  quad->set_p4(gfx::PointF((*quad_array)[6], (*quad_array)[7]));
   return true;
 }
 

@@ -12,6 +12,7 @@
 
 namespace gfx {
 class Point;
+class PointF;
 }
 
 typedef struct CGPoint CGPoint;
@@ -24,6 +25,9 @@ namespace blink {
 
 PLATFORM_EXPORT gfx::Point CGPointToPoint(const CGPoint&);
 PLATFORM_EXPORT CGPoint PointToCGPoint(const gfx::Point&);
+
+PLATFORM_EXPORT gfx::PointF CGPointToPointF(const CGPoint&);
+PLATFORM_EXPORT CGPoint PointFToCGPoint(const gfx::PointF&);
 
 }  // namespace blink
 

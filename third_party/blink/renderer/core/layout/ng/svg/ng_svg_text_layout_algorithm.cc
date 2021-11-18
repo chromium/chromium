@@ -142,8 +142,8 @@ void NGSvgTextLayoutAlgorithm::SetFlags(
       ascent = font_data->GetFontMetrics().FixedAscent(
           item.Style().GetFontBaseline());
     }
-    FloatPoint offset(logical_offset.inline_offset,
-                      logical_offset.block_offset + ascent);
+    gfx::PointF offset(logical_offset.inline_offset,
+                       logical_offset.block_offset + ascent);
     if (!horizontal_)
       offset.SetPoint(-offset.y(), offset.x());
     css_positions_.push_back(offset);
@@ -174,7 +174,7 @@ void NGSvgTextLayoutAlgorithm::AdjustPositionsDxDy(
   // attributes, initialized to (0,0).
   // TODO(crbug.com/1179585): Report a specification bug on "'x' and 'y'
   // attributes".
-  FloatPoint shift;
+  gfx::PointF shift;
   // 2. For each array element with index i in result:
   ResolvedTextLayoutAttributesIterator iterator(
       inline_node_.SvgCharacterDataList());
@@ -392,7 +392,7 @@ void NGSvgTextLayoutAlgorithm::AdjustPositionsXY(
 
   // 1. Let shift be the current adjustment due to the ‘x’ and ‘y’ attributes,
   // initialized to (0,0).
-  FloatPoint shift;
+  gfx::PointF shift;
   // 2. Set index = 1.
   // 3. While index < count:
   // 3.5. Set index to index + 1.

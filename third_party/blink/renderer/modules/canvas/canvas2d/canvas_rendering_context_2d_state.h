@@ -206,7 +206,7 @@ class CanvasRenderingContext2DState final
 
   void SetShadowOffsetX(double);
   void SetShadowOffsetY(double);
-  const FloatSize& ShadowOffset() const { return shadow_offset_; }
+  const gfx::Vector2dF& ShadowOffset() const { return shadow_offset_; }
 
   void SetShadowBlur(double);
   double ShadowBlur() const { return shadow_blur_; }
@@ -266,7 +266,7 @@ class CanvasRenderingContext2DState final
   mutable PaintFlags fill_flags_;
   mutable PaintFlags image_flags_;
 
-  FloatSize shadow_offset_;
+  gfx::Vector2dF shadow_offset_;
   double shadow_blur_;
   SkColor shadow_color_;
   mutable sk_sp<SkDrawLooper> empty_draw_looper_;

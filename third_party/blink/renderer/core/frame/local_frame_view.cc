@@ -177,6 +177,7 @@
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/cursor/cursor.h"
 #include "ui/base/cursor/mojom/cursor_type.mojom-blink.h"
+#include "ui/gfx/geometry/point_conversions.h"
 
 // Used to check for dirty layouts violating document lifecycle rules.
 // If arg evaluates to true, the program will continue. If arg evaluates to
@@ -3521,17 +3522,18 @@ IntRect LocalFrameView::RootFrameToDocument(const IntRect& rect_in_root_frame) {
 
 gfx::Point LocalFrameView::RootFrameToDocument(
     const gfx::Point& point_in_root_frame) {
-  return FlooredIntPoint(RootFrameToDocument(FloatPoint(point_in_root_frame)));
+  return gfx::ToFlooredPoint(
+      RootFrameToDocument(gfx::PointF(point_in_root_frame)));
 }
 
-FloatPoint LocalFrameView::RootFrameToDocument(
-    const FloatPoint& point_in_root_frame) {
+gfx::PointF LocalFrameView::RootFrameToDocument(
+    const gfx::PointF& point_in_root_frame) {
   ScrollableArea* layout_viewport = LayoutViewport();
   if (!layout_viewport)
     return point_in_root_frame;
 
-  FloatPoint local_frame = ConvertFromRootFrame(point_in_root_frame);
-  return local_frame + layout_viewport->GetScrollOffset();
+  gfx::PointF local_frame = ConvertFromRootFrame(point_in_root_frame);
+  return local_frame + ToGfxVector2dF(layout_viewport->GetScrollOffset());
 }
 
 IntRect LocalFrameView::DocumentToFrame(const IntRect& rect_in_document) const {
@@ -3554,9 +3556,9 @@ gfx::Point LocalFrameView::DocumentToFrame(
   return ToFlooredPoint(DocumentToFrame(DoublePoint(point_in_document)));
 }
 
-FloatPoint LocalFrameView::DocumentToFrame(
-    const FloatPoint& point_in_document) const {
-  return FloatPoint(DocumentToFrame(DoublePoint(point_in_document)));
+gfx::PointF LocalFrameView::DocumentToFrame(
+    const gfx::PointF& point_in_document) const {
+  return gfx::PointF(DocumentToFrame(DoublePoint(point_in_document)));
 }
 
 PhysicalOffset LocalFrameView::DocumentToFrame(
@@ -3648,19 +3650,19 @@ PhysicalOffset LocalFrameView::ConvertToContainingEmbeddedContentView(
   return local_offset;
 }
 
-FloatPoint LocalFrameView::ConvertToContainingEmbeddedContentView(
-    const FloatPoint& local_point) const {
+gfx::PointF LocalFrameView::ConvertToContainingEmbeddedContentView(
+    const gfx::PointF& local_point) const {
   if (ParentFrameView()) {
     auto* layout_object = GetLayoutEmbeddedContent();
     if (!layout_object)
       return local_point;
 
-    PhysicalOffset point = PhysicalOffset::FromFloatPointRound(local_point);
+    PhysicalOffset point = PhysicalOffset::FromPointFRound(local_point);
 
     // Add borders and padding
     point.left += layout_object->BorderLeft() + layout_object->PaddingLeft();
     point.top += layout_object->BorderTop() + layout_object->PaddingTop();
-    return FloatPoint(layout_object->LocalToAbsolutePoint(point));
+    return gfx::PointF(layout_object->LocalToAbsolutePoint(point));
   }
 
   return local_point;
@@ -3668,13 +3670,13 @@ FloatPoint LocalFrameView::ConvertToContainingEmbeddedContentView(
 
 PhysicalOffset LocalFrameView::ConvertFromContainingEmbeddedContentView(
     const PhysicalOffset& parent_offset) const {
-  return PhysicalOffset::FromFloatPointRound(
-      ConvertFromContainingEmbeddedContentView(FloatPoint(parent_offset)));
+  return PhysicalOffset::FromPointFRound(
+      ConvertFromContainingEmbeddedContentView(gfx::PointF(parent_offset)));
 }
 
-FloatPoint LocalFrameView::ConvertFromContainingEmbeddedContentView(
-    const FloatPoint& parent_point) const {
-  return FloatPoint(
+gfx::PointF LocalFrameView::ConvertFromContainingEmbeddedContentView(
+    const gfx::PointF& parent_point) const {
+  return gfx::PointF(
       ConvertFromContainingEmbeddedContentView(DoublePoint(parent_point)));
 }
 
@@ -3687,7 +3689,7 @@ DoublePoint LocalFrameView::ConvertFromContainingEmbeddedContentView(
       return parent_point;
 
     DoublePoint point(
-        layout_object->AbsoluteToLocalFloatPoint(FloatPoint(parent_point)));
+        layout_object->AbsoluteToLocalPoint(gfx::PointF(parent_point)));
     // Subtract borders and padding
     point.Move(
         (-layout_object->BorderLeft() - layout_object->PaddingLeft())
@@ -3986,15 +3988,15 @@ void LocalFrameView::NotifyFrameRectsChangedIfNeeded() {
 
 PhysicalOffset LocalFrameView::ViewportToFrame(
     const PhysicalOffset& point_in_viewport) const {
-  PhysicalOffset point_in_root_frame = PhysicalOffset::FromFloatPointRound(
+  PhysicalOffset point_in_root_frame = PhysicalOffset::FromPointFRound(
       frame_->GetPage()->GetVisualViewport().ViewportToRootFrame(
-          FloatPoint(point_in_viewport)));
+          gfx::PointF(point_in_viewport)));
   return ConvertFromRootFrame(point_in_root_frame);
 }
 
-FloatPoint LocalFrameView::ViewportToFrame(
-    const FloatPoint& point_in_viewport) const {
-  FloatPoint point_in_root_frame(
+gfx::PointF LocalFrameView::ViewportToFrame(
+    const gfx::PointF& point_in_viewport) const {
+  gfx::PointF point_in_root_frame(
       frame_->GetPage()->GetVisualViewport().ViewportToRootFrame(
           point_in_viewport));
   return ConvertFromRootFrame(point_in_root_frame);
@@ -4033,9 +4035,9 @@ IntRect LocalFrameView::FrameToScreen(const IntRect& rect) const {
 
 gfx::Point LocalFrameView::SoonToBeRemovedUnscaledViewportToContents(
     const gfx::Point& point_in_viewport) const {
-  gfx::Point point_in_root_frame = FlooredIntPoint(
+  gfx::Point point_in_root_frame = gfx::ToFlooredPoint(
       frame_->GetPage()->GetVisualViewport().ViewportCSSPixelsToRootFrame(
-          FloatPoint(point_in_viewport)));
+          gfx::PointF(point_in_viewport)));
   return ConvertFromRootFrame(point_in_root_frame);
 }
 
@@ -4249,10 +4251,10 @@ PhysicalOffset LocalFrameView::ConvertToRootFrame(
   return local_offset;
 }
 
-FloatPoint LocalFrameView::ConvertToRootFrame(
-    const FloatPoint& local_point) const {
+gfx::PointF LocalFrameView::ConvertToRootFrame(
+    const gfx::PointF& local_point) const {
   if (LocalFrameView* parent = ParentFrameView()) {
-    FloatPoint parent_point =
+    gfx::PointF parent_point =
         ConvertToContainingEmbeddedContentView(local_point);
     return parent->ConvertToRootFrame(parent_point);
   }
@@ -4295,10 +4297,11 @@ PhysicalOffset LocalFrameView::ConvertFromRootFrame(
   return offset_in_root_frame;
 }
 
-FloatPoint LocalFrameView::ConvertFromRootFrame(
-    const FloatPoint& point_in_root_frame) const {
+gfx::PointF LocalFrameView::ConvertFromRootFrame(
+    const gfx::PointF& point_in_root_frame) const {
   if (LocalFrameView* parent = ParentFrameView()) {
-    FloatPoint parent_point = parent->ConvertFromRootFrame(point_in_root_frame);
+    gfx::PointF parent_point =
+        parent->ConvertFromRootFrame(point_in_root_frame);
     return ConvertFromContainingEmbeddedContentView(parent_point);
   }
   return point_in_root_frame;

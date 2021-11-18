@@ -20,6 +20,8 @@
 #include "third_party/blink/renderer/platform/graphics/paint/drawing_recorder.h"
 #include "third_party/blink/renderer/platform/graphics/path.h"
 #include "third_party/blink/renderer/platform/graphics/skia/skia_utils.h"
+#include "ui/gfx/geometry/point_conversions.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/native_theme/native_theme.h"
 
 namespace blink {
@@ -713,9 +715,10 @@ class ComplexOutlinePainter {
     int joint_offset = (width_ + 1) / 2;
     ExtendLineAtEndpoint(adjusted_line.start, adjusted_line.end, joint_offset);
     ExtendLineAtEndpoint(adjusted_line.end, adjusted_line.start, joint_offset);
-    context_.DrawLine(RoundedIntPoint(FloatPoint(adjusted_line.start)),
-                      RoundedIntPoint(FloatPoint(adjusted_line.end)),
-                      auto_dark_mode);
+    context_.DrawLine(
+        gfx::ToRoundedPoint(gfx::SkPointToPointF(adjusted_line.start)),
+        gfx::ToRoundedPoint(gfx::SkPointToPointF(adjusted_line.end)),
+        auto_dark_mode);
   }
 
   GraphicsContext& context_;

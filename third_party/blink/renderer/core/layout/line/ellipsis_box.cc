@@ -43,8 +43,8 @@ IntRect EllipsisBox::SelectionRect() const {
   const Font& font = style.GetFont();
   return EnclosingIntRect(font.SelectionRectForText(
       ConstructTextRun(font, str_, style, TextRun::kAllowTrailingExpansion),
-      FloatPoint(LogicalLeft().ToInt(),
-                 (LogicalTop() + Root().SelectionTop()).ToInt()),
+      gfx::PointF(LogicalLeft().ToInt(),
+                  (LogicalTop() + Root().SelectionTop()).ToInt()),
       Root().SelectionHeight().ToInt()));
 }
 

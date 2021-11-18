@@ -85,7 +85,7 @@ void ViewportScrollCallback::Invoke(ScrollState* state) {
 
   // Handle Overscroll.
   if (overscroll_controller_) {
-    FloatPoint position(state->positionX(), state->positionY());
+    gfx::PointF position(state->positionX(), state->positionY());
     FloatSize velocity(state->velocityX(), state->velocityY());
     overscroll_controller_->HandleOverscroll(result, position, velocity);
   }

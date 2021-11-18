@@ -190,20 +190,20 @@ FloatRect SVGLengthContext::ResolveRectangle(const SVGElement* context,
                    width.Value(length_context), height.Value(length_context));
 }
 
-FloatPoint SVGLengthContext::ResolvePoint(const SVGElement* context,
-                                          SVGUnitTypes::SVGUnitType type,
-                                          const SVGLength& x,
-                                          const SVGLength& y) {
+gfx::PointF SVGLengthContext::ResolvePoint(const SVGElement* context,
+                                           SVGUnitTypes::SVGUnitType type,
+                                           const SVGLength& x,
+                                           const SVGLength& y) {
   DCHECK_NE(SVGUnitTypes::kSvgUnitTypeUnknown, type);
   if (type == SVGUnitTypes::kSvgUnitTypeUserspaceonuse) {
     SVGLengthContext length_context(context);
-    return FloatPoint(x.Value(length_context), y.Value(length_context));
+    return gfx::PointF(x.Value(length_context), y.Value(length_context));
   }
 
   // FIXME: valueAsPercentage() won't be correct for eg. cm units. They need to
   // be resolved in user space and then be considered in objectBoundingBox
   // space.
-  return FloatPoint(x.ValueAsPercentage(), y.ValueAsPercentage());
+  return gfx::PointF(x.ValueAsPercentage(), y.ValueAsPercentage());
 }
 
 gfx::Vector2dF SVGLengthContext::ResolveLengthPair(

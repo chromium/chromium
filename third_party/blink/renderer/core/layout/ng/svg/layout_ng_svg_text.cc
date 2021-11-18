@@ -264,7 +264,7 @@ bool LayoutNGSVGText::NodeAtPoint(HitTestResult& result,
 PositionWithAffinity LayoutNGSVGText::PositionForPoint(
     const PhysicalOffset& point_in_contents) const {
   NOT_DESTROYED();
-  FloatPoint point(point_in_contents.left, point_in_contents.top);
+  gfx::PointF point(point_in_contents.left, point_in_contents.top);
   float min_distance = std::numeric_limits<float>::max();
   const LayoutSVGInlineText* closest_inline_text = nullptr;
   for (const LayoutObject* descendant = FirstChild(); descendant;

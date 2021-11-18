@@ -2378,12 +2378,12 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
                                       const PhysicalOffset& p,
                                       MapCoordinatesFlags mode = 0) const {
     NOT_DESTROYED();
-    return PhysicalOffset::FromFloatPointRound(
-        AncestorToLocalFloatPoint(ancestor, FloatPoint(p), mode));
+    return PhysicalOffset::FromPointFRound(
+        AncestorToLocalPoint(ancestor, gfx::PointF(p), mode));
   }
-  FloatPoint AncestorToLocalFloatPoint(const LayoutBoxModelObject* ancestor,
-                                       const FloatPoint& p,
-                                       MapCoordinatesFlags = 0) const;
+  gfx::PointF AncestorToLocalPoint(const LayoutBoxModelObject* ancestor,
+                                   const gfx::PointF& p,
+                                   MapCoordinatesFlags = 0) const;
 
   // Convert a rect/quad/point in local physical coordinates into ancestor
   // coordinates, taking transforms into account unless kIgnoreTransforms is
@@ -2413,12 +2413,12 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
                                       const LayoutBoxModelObject* ancestor,
                                       MapCoordinatesFlags mode = 0) const {
     NOT_DESTROYED();
-    return PhysicalOffset::FromFloatPointRound(
-        LocalToAncestorFloatPoint(FloatPoint(p), ancestor, mode));
+    return PhysicalOffset::FromPointFRound(
+        LocalToAncestorPoint(gfx::PointF(p), ancestor, mode));
   }
-  FloatPoint LocalToAncestorFloatPoint(const FloatPoint&,
-                                       const LayoutBoxModelObject* ancestor,
-                                       MapCoordinatesFlags = 0) const;
+  gfx::PointF LocalToAncestorPoint(const gfx::PointF&,
+                                   const LayoutBoxModelObject* ancestor,
+                                   MapCoordinatesFlags = 0) const;
   void LocalToAncestorRects(Vector<PhysicalRect>&,
                             const LayoutBoxModelObject* ancestor,
                             const PhysicalOffset& pre_offset,
@@ -2461,10 +2461,10 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
     NOT_DESTROYED();
     return LocalToAncestorPoint(p, nullptr, mode);
   }
-  FloatPoint LocalToAbsoluteFloatPoint(const FloatPoint& p,
-                                       MapCoordinatesFlags mode = 0) const {
+  gfx::PointF LocalToAbsolutePoint(const gfx::PointF& p,
+                                   MapCoordinatesFlags mode = 0) const {
     NOT_DESTROYED();
-    return LocalToAncestorFloatPoint(p, nullptr, mode);
+    return LocalToAncestorPoint(p, nullptr, mode);
   }
   PhysicalRect AbsoluteToLocalRect(const PhysicalRect& rect,
                                    MapCoordinatesFlags mode = 0) const {
@@ -2481,10 +2481,10 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
     NOT_DESTROYED();
     return AncestorToLocalPoint(nullptr, p, mode);
   }
-  FloatPoint AbsoluteToLocalFloatPoint(const FloatPoint& p,
-                                       MapCoordinatesFlags mode = 0) const {
+  gfx::PointF AbsoluteToLocalPoint(const gfx::PointF& p,
+                                   MapCoordinatesFlags mode = 0) const {
     NOT_DESTROYED();
-    return AncestorToLocalFloatPoint(nullptr, p, mode);
+    return AncestorToLocalPoint(nullptr, p, mode);
   }
 
   // Return the offset from the container() layoutObject (excluding transforms

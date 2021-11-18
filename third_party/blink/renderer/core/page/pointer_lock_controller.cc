@@ -369,8 +369,8 @@ void PointerLockController::DispatchLockedMouseEvent(
 }
 
 void PointerLockController::GetPointerLockPosition(
-    FloatPoint* lock_position,
-    FloatPoint* lock_screen_position) {
+    gfx::PointF* lock_position,
+    gfx::PointF* lock_screen_position) {
   if (element_ && !lock_pending_) {
     DCHECK(lock_position);
     DCHECK(lock_screen_position);

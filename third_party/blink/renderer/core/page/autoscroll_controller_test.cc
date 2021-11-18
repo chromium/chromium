@@ -106,8 +106,8 @@ TEST_F(AutoscrollControllerTest, ContinueAutoscrollAfterMouseLeaveEvent) {
   LocalFrame* frame = GetDocument().GetFrame();
   Node* document_node = GetDocument().documentElement();
   controller.StartMiddleClickAutoscroll(
-      frame, document_node->parentNode()->GetLayoutBox(), FloatPoint(),
-      FloatPoint());
+      frame, document_node->parentNode()->GetLayoutBox(), gfx::PointF(),
+      gfx::PointF());
 
   EXPECT_TRUE(controller.IsAutoscrolling());
 
@@ -145,7 +145,7 @@ TEST_F(AutoscrollControllerTest, StopAutoscrollOnResize) {
 
   LocalFrame* frame = GetDocument().GetFrame();
   controller.StartMiddleClickAutoscroll(frame, GetDocument().GetLayoutView(),
-                                        FloatPoint(), FloatPoint());
+                                        gfx::PointF(), gfx::PointF());
 
   EXPECT_TRUE(controller.IsAutoscrolling());
 
@@ -177,7 +177,7 @@ TEST_F(AutoscrollControllerTest, StopAutoscrollOnResize) {
 
   // And finally confirm that autoscrolling can start again.
   controller.StartMiddleClickAutoscroll(frame, GetDocument().GetLayoutView(),
-                                        FloatPoint(), FloatPoint());
+                                        gfx::PointF(), gfx::PointF());
 
   EXPECT_TRUE(controller.IsAutoscrolling());
 }
@@ -224,7 +224,7 @@ TEST_F(AutoscrollControllerTest, AutoscrollIsNotPropagated) {
       GetDocument().getElementById("scrollable")->GetLayoutBox();
 
   controller.StartMiddleClickAutoscroll(
-      frame, scrollable, FloatPoint(15.0, 15.0), FloatPoint(15.0, 15.0));
+      frame, scrollable, gfx::PointF(15.0, 15.0), gfx::PointF(15.0, 15.0));
 
   EXPECT_TRUE(controller.IsAutoscrolling());
   EXPECT_TRUE(controller.horizontal_autoscroll_layout_box_);
@@ -273,7 +273,7 @@ TEST_F(AutoscrollControllerTest, AutoscrollIsPropagatedInYDirection) {
       GetDocument().getElementById("scrollable")->GetLayoutBox();
 
   controller.StartMiddleClickAutoscroll(
-      frame, scrollable, FloatPoint(15.0, 15.0), FloatPoint(15.0, 15.0));
+      frame, scrollable, gfx::PointF(15.0, 15.0), gfx::PointF(15.0, 15.0));
 
   EXPECT_TRUE(controller.IsAutoscrolling());
   EXPECT_TRUE(controller.vertical_autoscroll_layout_box_);

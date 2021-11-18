@@ -73,6 +73,7 @@
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/traced_value.h"
 #include "ui/base/ui_base_features.h"
+#include "ui/gfx/geometry/point_conversions.h"
 
 namespace blink {
 
@@ -424,7 +425,7 @@ void VisualViewport::SetSize(const IntSize& size) {
 }
 
 void VisualViewport::Reset() {
-  SetScaleAndLocation(1, is_pinch_gesture_active_, FloatPoint());
+  SetScaleAndLocation(1, is_pinch_gesture_active_, gfx::PointF());
 }
 
 void VisualViewport::MainFrameDidChangeSize() {
@@ -448,27 +449,30 @@ FloatRect VisualViewport::VisibleRect(
   visible_size.Enlarge(0, browser_controls_adjustment_);
   visible_size.Scale(1 / scale_);
 
-  return FloatRect(FloatPoint(GetScrollOffset()), visible_size);
+  return FloatRect(
+      gfx::PointAtOffsetFromOrigin(ToGfxVector2dF(GetScrollOffset())),
+      visible_size);
 }
 
-FloatPoint VisualViewport::ViewportCSSPixelsToRootFrame(
-    const FloatPoint& point) const {
+gfx::PointF VisualViewport::ViewportCSSPixelsToRootFrame(
+    const gfx::PointF& point) const {
   // Note, this is in CSS Pixels so we don't apply scale.
-  FloatPoint point_in_root_frame = point;
-  point_in_root_frame.Offset(GetScrollOffset());
+  gfx::PointF point_in_root_frame = point;
+  point_in_root_frame += ToGfxVector2dF(GetScrollOffset());
   return point_in_root_frame;
 }
 
-void VisualViewport::SetLocation(const FloatPoint& new_location) {
+void VisualViewport::SetLocation(const gfx::PointF& new_location) {
   SetScaleAndLocation(scale_, is_pinch_gesture_active_, new_location);
 }
 
 void VisualViewport::Move(const ScrollOffset& delta) {
-  SetLocation(FloatPoint(offset_ + delta));
+  SetLocation(gfx::PointAtOffsetFromOrigin(ToGfxVector2dF(offset_ + delta)));
 }
 
 void VisualViewport::SetScale(float scale) {
-  SetScaleAndLocation(scale, is_pinch_gesture_active_, FloatPoint(offset_));
+  SetScaleAndLocation(scale, is_pinch_gesture_active_,
+                      gfx::PointAtOffsetFromOrigin(ToGfxVector2dF(offset_)));
 }
 
 double VisualViewport::OffsetLeft() const {
@@ -505,7 +509,7 @@ double VisualViewport::ScaleForVisualViewport() const {
 
 void VisualViewport::SetScaleAndLocation(float scale,
                                          bool is_pinch_gesture_active,
-                                         const FloatPoint& location) {
+                                         const gfx::PointF& location) {
   if (DidSetScaleOrLocation(scale, is_pinch_gesture_active, location)) {
     NotifyRootFrameViewport();
     Document* document = LocalMainFrame()->GetDocument();
@@ -535,7 +539,7 @@ double VisualViewport::VisibleHeightCSSPx() const {
 
 bool VisualViewport::DidSetScaleOrLocation(float scale,
                                            bool is_pinch_gesture_active,
-                                           const FloatPoint& location) {
+                                           const gfx::PointF& location) {
   if (!LocalMainFrame()) {
     is_pinch_gesture_active_ = is_pinch_gesture_active;
     // The VisualViewport for a remote mainframe must always be 1.0 or else
@@ -898,8 +902,9 @@ mojom::blink::ColorScheme VisualViewport::UsedColorScheme() const {
 
 void VisualViewport::UpdateScrollOffset(const ScrollOffset& position,
                                         mojom::blink::ScrollType scroll_type) {
-  if (!DidSetScaleOrLocation(scale_, is_pinch_gesture_active_,
-                             FloatPoint(position))) {
+  if (!DidSetScaleOrLocation(
+          scale_, is_pinch_gesture_active_,
+          gfx::PointAtOffsetFromOrigin(ToGfxVector2dF(position)))) {
     return;
   }
   if (IsExplicitScrollType(scroll_type))
@@ -946,7 +951,7 @@ bool VisualViewport::ScheduleAnimation() {
 }
 
 void VisualViewport::ClampToBoundaries() {
-  SetLocation(FloatPoint(offset_));
+  SetLocation(gfx::PointAtOffsetFromOrigin(ToGfxVector2dF(offset_)));
 }
 
 FloatRect VisualViewport::ViewportToRootFrame(
@@ -977,34 +982,34 @@ IntRect VisualViewport::RootFrameToViewport(
   return EnclosingIntRect(RootFrameToViewport(FloatRect(rect_in_root_frame)));
 }
 
-FloatPoint VisualViewport::ViewportToRootFrame(
-    const FloatPoint& point_in_viewport) const {
-  FloatPoint point_in_root_frame = point_in_viewport;
-  point_in_root_frame.Scale(1 / Scale(), 1 / Scale());
-  point_in_root_frame.Offset(GetScrollOffset());
+gfx::PointF VisualViewport::ViewportToRootFrame(
+    const gfx::PointF& point_in_viewport) const {
+  gfx::PointF point_in_root_frame = point_in_viewport;
+  point_in_root_frame.Scale(1 / Scale());
+  point_in_root_frame += ToGfxVector2dF(GetScrollOffset());
   return point_in_root_frame;
 }
 
-FloatPoint VisualViewport::RootFrameToViewport(
-    const FloatPoint& point_in_root_frame) const {
-  FloatPoint point_in_viewport = point_in_root_frame;
-  point_in_viewport.Offset(-GetScrollOffset());
-  point_in_viewport.Scale(Scale(), Scale());
+gfx::PointF VisualViewport::RootFrameToViewport(
+    const gfx::PointF& point_in_root_frame) const {
+  gfx::PointF point_in_viewport = point_in_root_frame;
+  point_in_viewport -= ToGfxVector2dF(GetScrollOffset());
+  point_in_viewport.Scale(Scale());
   return point_in_viewport;
 }
 
 gfx::Point VisualViewport::ViewportToRootFrame(
     const gfx::Point& point_in_viewport) const {
   // FIXME: How to snap to pixels?
-  return FlooredIntPoint(
-      FloatPoint(ViewportToRootFrame(FloatPoint(point_in_viewport))));
+  return gfx::ToFlooredPoint(
+      ViewportToRootFrame(gfx::PointF(point_in_viewport)));
 }
 
 gfx::Point VisualViewport::RootFrameToViewport(
     const gfx::Point& point_in_root_frame) const {
   // FIXME: How to snap to pixels?
-  return FlooredIntPoint(
-      FloatPoint(RootFrameToViewport(FloatPoint(point_in_root_frame))));
+  return gfx::ToFlooredPoint(
+      RootFrameToViewport(gfx::PointF(point_in_root_frame)));
 }
 
 void VisualViewport::StartTrackingPinchStats() {

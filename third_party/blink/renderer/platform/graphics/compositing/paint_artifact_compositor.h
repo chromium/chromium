@@ -179,7 +179,7 @@ class PLATFORM_EXPORT PaintArtifactCompositor final
   // cc::TransformNode::scroll_offset (which will be synched with blink
   // transform node in DirectlyUpdateScrollOffsetTransform() or Update()).
   bool DirectlySetScrollOffset(CompositorElementId,
-                               const FloatPoint& scroll_offset);
+                               const gfx::PointF& scroll_offset);
 
   // The root layer of the tree managed by this object.
   cc::Layer* RootLayer() const { return root_layer_.get(); }

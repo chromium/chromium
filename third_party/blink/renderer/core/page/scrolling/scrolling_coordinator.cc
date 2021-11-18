@@ -104,7 +104,7 @@ void ScrollingCoordinator::DidCompositorScroll(
   auto* scrollable = ScrollableAreaWithElementIdInAllLocalFrames(element_id);
   if (!scrollable)
     return;
-  scrollable->DidCompositorScroll(FloatPoint(offset.x(), offset.y()));
+  scrollable->DidCompositorScroll(gfx::PointF(offset.x(), offset.y()));
   if (snap_target_ids)
     scrollable->SetTargetSnapAreaElementIds(snap_target_ids.value());
 }

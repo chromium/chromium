@@ -305,7 +305,7 @@ TEST_P(VisualViewportTest, TestVisibleContentRect) {
   // Scroll visual viewport and verify visibleContentRect.
   size.Scale(0.5);
   scrollbar_size.Scale(0.5);
-  visual_viewport.SetLocation(FloatPoint(10, 10));
+  visual_viewport.SetLocation(gfx::PointF(10, 10));
   EXPECT_EQ(IntRect(gfx::Point(10, 10), size - scrollbar_size),
             visual_viewport.VisibleContentRect(kExcludeScrollbars));
   EXPECT_EQ(IntRect(gfx::Point(10, 10), size),
@@ -408,7 +408,7 @@ TEST_P(VisualViewportTest, TestResizeAfterVerticalScroll) {
 
   // Scroll visual viewport to the bottom of the main frame
   VisualViewport& visual_viewport = GetFrame()->GetPage()->GetVisualViewport();
-  visual_viewport.SetLocation(FloatPoint(0, 300));
+  visual_viewport.SetLocation(gfx::PointF(0, 300));
   EXPECT_FLOAT_SIZE_EQ(FloatSize(0, 300), visual_viewport.GetScrollOffset());
 
   // Verify the initial size of the visual viewport in the CSS pixels
@@ -496,7 +496,7 @@ TEST_P(VisualViewportTest, TestResizeAfterHorizontalScroll) {
 
   // Scroll visual viewport to the right edge of the frame
   VisualViewport& visual_viewport = GetFrame()->GetPage()->GetVisualViewport();
-  visual_viewport.SetLocation(FloatPoint(150, 0));
+  visual_viewport.SetLocation(gfx::PointF(150, 0));
   EXPECT_FLOAT_SIZE_EQ(FloatSize(150, 0), visual_viewport.GetScrollOffset());
 
   // Verify the initial size of the visual viewport in the CSS pixels
@@ -563,7 +563,7 @@ TEST_P(VisualViewportTest, TestVisibleRect) {
   visual_viewport.SetSize(size);
 
   // Scale the viewport to 2X; size should not change.
-  FloatRect expected_rect(FloatPoint(0, 0), FloatSize(size));
+  FloatRect expected_rect(gfx::PointF(0, 0), FloatSize(size));
   expected_rect.Scale(0.5);
   visual_viewport.SetScale(2);
   EXPECT_EQ(2, visual_viewport.Scale());
@@ -571,23 +571,23 @@ TEST_P(VisualViewportTest, TestVisibleRect) {
   EXPECT_FLOAT_RECT_EQ(expected_rect, visual_viewport.VisibleRect());
 
   // Move the viewport.
-  expected_rect.set_origin(FloatPoint(5, 7));
+  expected_rect.set_origin(gfx::PointF(5, 7));
   visual_viewport.SetLocation(expected_rect.origin());
   EXPECT_FLOAT_RECT_EQ(expected_rect, visual_viewport.VisibleRect());
 
-  expected_rect.set_origin(FloatPoint(200, 100));
+  expected_rect.set_origin(gfx::PointF(200, 100));
   visual_viewport.SetLocation(expected_rect.origin());
   EXPECT_FLOAT_RECT_EQ(expected_rect, visual_viewport.VisibleRect());
 
   // Scale the viewport to 3X to introduce some non-int values.
-  FloatPoint oldLocation = expected_rect.origin();
-  expected_rect = FloatRect(FloatPoint(), FloatSize(size));
+  gfx::PointF oldLocation = expected_rect.origin();
+  expected_rect = FloatRect(gfx::PointF(), FloatSize(size));
   expected_rect.Scale(1 / 3.0f);
   expected_rect.set_origin(oldLocation);
   visual_viewport.SetScale(3);
   EXPECT_FLOAT_RECT_EQ(expected_rect, visual_viewport.VisibleRect());
 
-  expected_rect.set_origin(FloatPoint(0.25f, 0.333f));
+  expected_rect.set_origin(gfx::PointF(0.25f, 0.333f));
   visual_viewport.SetLocation(expected_rect.origin());
   EXPECT_FLOAT_RECT_EQ(expected_rect, visual_viewport.VisibleRect());
 }
@@ -627,45 +627,45 @@ TEST_P(VisualViewportTest, TestOffsetClamping) {
   // possible. At minimum scale, the viewport is 1280x960.
   VisualViewport& visual_viewport = GetFrame()->GetPage()->GetVisualViewport();
   ASSERT_EQ(0.25, visual_viewport.Scale());
-  EXPECT_FLOAT_POINT_EQ(FloatPoint(0, 0),
+  EXPECT_FLOAT_POINT_EQ(gfx::PointF(0, 0),
                         visual_viewport.VisibleRect().origin());
 
-  visual_viewport.SetLocation(FloatPoint(-1, -2));
-  EXPECT_FLOAT_POINT_EQ(FloatPoint(0, 0),
+  visual_viewport.SetLocation(gfx::PointF(-1, -2));
+  EXPECT_FLOAT_POINT_EQ(gfx::PointF(0, 0),
                         visual_viewport.VisibleRect().origin());
 
-  visual_viewport.SetLocation(FloatPoint(100, 200));
-  EXPECT_FLOAT_POINT_EQ(FloatPoint(0, 0),
+  visual_viewport.SetLocation(gfx::PointF(100, 200));
+  EXPECT_FLOAT_POINT_EQ(gfx::PointF(0, 0),
                         visual_viewport.VisibleRect().origin());
 
-  visual_viewport.SetLocation(FloatPoint(-5, 10));
-  EXPECT_FLOAT_POINT_EQ(FloatPoint(0, 0),
+  visual_viewport.SetLocation(gfx::PointF(-5, 10));
+  EXPECT_FLOAT_POINT_EQ(gfx::PointF(0, 0),
                         visual_viewport.VisibleRect().origin());
 
   // Scale to 2x. The viewport's visible rect should now have a size of 160x120.
   visual_viewport.SetScale(2);
-  FloatPoint location(10, 50);
+  gfx::PointF location(10, 50);
   visual_viewport.SetLocation(location);
   EXPECT_FLOAT_POINT_EQ(location, visual_viewport.VisibleRect().origin());
 
-  visual_viewport.SetLocation(FloatPoint(10000, 10000));
-  EXPECT_FLOAT_POINT_EQ(FloatPoint(1120, 840),
+  visual_viewport.SetLocation(gfx::PointF(10000, 10000));
+  EXPECT_FLOAT_POINT_EQ(gfx::PointF(1120, 840),
                         visual_viewport.VisibleRect().origin());
 
-  visual_viewport.SetLocation(FloatPoint(-2000, -2000));
-  EXPECT_FLOAT_POINT_EQ(FloatPoint(0, 0),
+  visual_viewport.SetLocation(gfx::PointF(-2000, -2000));
+  EXPECT_FLOAT_POINT_EQ(gfx::PointF(0, 0),
                         visual_viewport.VisibleRect().origin());
 
   // Make sure offset gets clamped on scale out. Scale to 1.25 so the viewport
   // is 256x192.
-  visual_viewport.SetLocation(FloatPoint(1120, 840));
+  visual_viewport.SetLocation(gfx::PointF(1120, 840));
   visual_viewport.SetScale(1.25);
-  EXPECT_FLOAT_POINT_EQ(FloatPoint(1024, 768),
+  EXPECT_FLOAT_POINT_EQ(gfx::PointF(1024, 768),
                         visual_viewport.VisibleRect().origin());
 
   // Scale out smaller than 1.
   visual_viewport.SetScale(0.25);
-  EXPECT_FLOAT_POINT_EQ(FloatPoint(0, 0),
+  EXPECT_FLOAT_POINT_EQ(gfx::PointF(0, 0),
                         visual_viewport.VisibleRect().origin());
 }
 
@@ -682,59 +682,59 @@ TEST_P(VisualViewportTest, TestOffsetClampingWithResize) {
   // Visual viewport should be initialized to same size as frame so no scrolling
   // possible.
   VisualViewport& visual_viewport = GetFrame()->GetPage()->GetVisualViewport();
-  EXPECT_FLOAT_POINT_EQ(FloatPoint(0, 0),
+  EXPECT_FLOAT_POINT_EQ(gfx::PointF(0, 0),
                         visual_viewport.VisibleRect().origin());
 
   // Shrink the viewport vertically. The resize shouldn't affect the location,
   // but it should allow vertical scrolling.
   visual_viewport.SetSize(IntSize(320, 200));
-  EXPECT_FLOAT_POINT_EQ(FloatPoint(0, 0),
+  EXPECT_FLOAT_POINT_EQ(gfx::PointF(0, 0),
                         visual_viewport.VisibleRect().origin());
-  visual_viewport.SetLocation(FloatPoint(10, 20));
-  EXPECT_FLOAT_POINT_EQ(FloatPoint(0, 20),
+  visual_viewport.SetLocation(gfx::PointF(10, 20));
+  EXPECT_FLOAT_POINT_EQ(gfx::PointF(0, 20),
                         visual_viewport.VisibleRect().origin());
-  visual_viewport.SetLocation(FloatPoint(0, 100));
-  EXPECT_FLOAT_POINT_EQ(FloatPoint(0, 40),
+  visual_viewport.SetLocation(gfx::PointF(0, 100));
+  EXPECT_FLOAT_POINT_EQ(gfx::PointF(0, 40),
                         visual_viewport.VisibleRect().origin());
-  visual_viewport.SetLocation(FloatPoint(0, 10));
-  EXPECT_FLOAT_POINT_EQ(FloatPoint(0, 10),
+  visual_viewport.SetLocation(gfx::PointF(0, 10));
+  EXPECT_FLOAT_POINT_EQ(gfx::PointF(0, 10),
                         visual_viewport.VisibleRect().origin());
-  visual_viewport.SetLocation(FloatPoint(0, -100));
-  EXPECT_FLOAT_POINT_EQ(FloatPoint(0, 0),
+  visual_viewport.SetLocation(gfx::PointF(0, -100));
+  EXPECT_FLOAT_POINT_EQ(gfx::PointF(0, 0),
                         visual_viewport.VisibleRect().origin());
 
   // Repeat the above but for horizontal dimension.
   visual_viewport.SetSize(IntSize(280, 240));
-  EXPECT_FLOAT_POINT_EQ(FloatPoint(0, 0),
+  EXPECT_FLOAT_POINT_EQ(gfx::PointF(0, 0),
                         visual_viewport.VisibleRect().origin());
-  visual_viewport.SetLocation(FloatPoint(10, 20));
-  EXPECT_FLOAT_POINT_EQ(FloatPoint(10, 0),
+  visual_viewport.SetLocation(gfx::PointF(10, 20));
+  EXPECT_FLOAT_POINT_EQ(gfx::PointF(10, 0),
                         visual_viewport.VisibleRect().origin());
-  visual_viewport.SetLocation(FloatPoint(100, 0));
-  EXPECT_FLOAT_POINT_EQ(FloatPoint(40, 0),
+  visual_viewport.SetLocation(gfx::PointF(100, 0));
+  EXPECT_FLOAT_POINT_EQ(gfx::PointF(40, 0),
                         visual_viewport.VisibleRect().origin());
-  visual_viewport.SetLocation(FloatPoint(10, 0));
-  EXPECT_FLOAT_POINT_EQ(FloatPoint(10, 0),
+  visual_viewport.SetLocation(gfx::PointF(10, 0));
+  EXPECT_FLOAT_POINT_EQ(gfx::PointF(10, 0),
                         visual_viewport.VisibleRect().origin());
-  visual_viewport.SetLocation(FloatPoint(-100, 0));
-  EXPECT_FLOAT_POINT_EQ(FloatPoint(0, 0),
+  visual_viewport.SetLocation(gfx::PointF(-100, 0));
+  EXPECT_FLOAT_POINT_EQ(gfx::PointF(0, 0),
                         visual_viewport.VisibleRect().origin());
 
   // Now with both dimensions.
   visual_viewport.SetSize(IntSize(280, 200));
-  EXPECT_FLOAT_POINT_EQ(FloatPoint(0, 0),
+  EXPECT_FLOAT_POINT_EQ(gfx::PointF(0, 0),
                         visual_viewport.VisibleRect().origin());
-  visual_viewport.SetLocation(FloatPoint(10, 20));
-  EXPECT_FLOAT_POINT_EQ(FloatPoint(10, 20),
+  visual_viewport.SetLocation(gfx::PointF(10, 20));
+  EXPECT_FLOAT_POINT_EQ(gfx::PointF(10, 20),
                         visual_viewport.VisibleRect().origin());
-  visual_viewport.SetLocation(FloatPoint(100, 100));
-  EXPECT_FLOAT_POINT_EQ(FloatPoint(40, 40),
+  visual_viewport.SetLocation(gfx::PointF(100, 100));
+  EXPECT_FLOAT_POINT_EQ(gfx::PointF(40, 40),
                         visual_viewport.VisibleRect().origin());
-  visual_viewport.SetLocation(FloatPoint(10, 3));
-  EXPECT_FLOAT_POINT_EQ(FloatPoint(10, 3),
+  visual_viewport.SetLocation(gfx::PointF(10, 3));
+  EXPECT_FLOAT_POINT_EQ(gfx::PointF(10, 3),
                         visual_viewport.VisibleRect().origin());
-  visual_viewport.SetLocation(FloatPoint(-10, -4));
-  EXPECT_FLOAT_POINT_EQ(FloatPoint(0, 0),
+  visual_viewport.SetLocation(gfx::PointF(-10, -4));
+  EXPECT_FLOAT_POINT_EQ(gfx::PointF(0, 0),
                         visual_viewport.VisibleRect().origin());
 }
 
@@ -750,20 +750,20 @@ TEST_P(VisualViewportTest, TestOffsetClampingWithResizeAndScale) {
   // Visual viewport should be initialized to same size as WebView so no
   // scrolling possible.
   VisualViewport& visual_viewport = GetFrame()->GetPage()->GetVisualViewport();
-  EXPECT_FLOAT_POINT_EQ(FloatPoint(0, 0),
+  EXPECT_FLOAT_POINT_EQ(gfx::PointF(0, 0),
                         visual_viewport.VisibleRect().origin());
 
   // Zoom in to 2X so we can scroll the viewport to 160x120.
   visual_viewport.SetScale(2);
-  visual_viewport.SetLocation(FloatPoint(200, 200));
-  EXPECT_FLOAT_POINT_EQ(FloatPoint(160, 120),
+  visual_viewport.SetLocation(gfx::PointF(200, 200));
+  EXPECT_FLOAT_POINT_EQ(gfx::PointF(160, 120),
                         visual_viewport.VisibleRect().origin());
 
   // Now resize the viewport to make it 10px smaller. Since we're zoomed in by
   // 2X it should allow us to scroll by 5px more.
   visual_viewport.SetSize(IntSize(310, 230));
-  visual_viewport.SetLocation(FloatPoint(200, 200));
-  EXPECT_FLOAT_POINT_EQ(FloatPoint(165, 125),
+  visual_viewport.SetLocation(gfx::PointF(200, 200));
+  EXPECT_FLOAT_POINT_EQ(gfx::PointF(165, 125),
                         visual_viewport.VisibleRect().origin());
 
   // The viewport can be larger than the main frame (currently 320, 240) though
@@ -779,15 +779,15 @@ TEST_P(VisualViewportTest, TestOffsetClampingWithResizeAndScale) {
             visual_viewport.Size());
   EXPECT_EQ(IntSize(WebView()->MainFrameViewWidget()->Size()),
             GetFrame()->View()->FrameRect().size());
-  visual_viewport.SetLocation(FloatPoint(1000, 1000));
-  EXPECT_FLOAT_POINT_EQ(FloatPoint(320, 240),
+  visual_viewport.SetLocation(gfx::PointF(1000, 1000));
+  EXPECT_FLOAT_POINT_EQ(gfx::PointF(320, 240),
                         visual_viewport.VisibleRect().origin());
 
   // Make sure resizing the viewport doesn't change its offset if the resize
   // doesn't make the viewport go out of bounds.
-  visual_viewport.SetLocation(FloatPoint(200, 200));
+  visual_viewport.SetLocation(gfx::PointF(200, 200));
   visual_viewport.SetSize(IntSize(880, 560));
-  EXPECT_FLOAT_POINT_EQ(FloatPoint(200, 200),
+  EXPECT_FLOAT_POINT_EQ(gfx::PointF(200, 200),
                         visual_viewport.VisibleRect().origin());
 }
 
@@ -914,15 +914,15 @@ TEST_P(VisualViewportTest, TestTextSelectionHandles) {
                                                              original_focus);
 
   WebView()->SetPageScaleFactor(2);
-  visual_viewport.SetLocation(FloatPoint(100, 400));
+  visual_viewport.SetLocation(gfx::PointF(100, 400));
 
   gfx::Rect anchor;
   gfx::Rect focus;
   WebView()->MainFrameViewWidget()->CalculateSelectionBounds(anchor, focus);
 
   gfx::Point expected = original_anchor.origin();
-  expected -= gfx::ToFlooredVector2d(
-      ToGfxVector2dF(visual_viewport.VisibleRect().origin()));
+  expected -=
+      gfx::ToFlooredVector2d(visual_viewport.VisibleRect().OffsetFromOrigin());
   expected = gfx::ScaleToRoundedPoint(expected, visual_viewport.Scale());
 
   EXPECT_EQ(expected, IntRect(anchor).origin());
@@ -959,7 +959,7 @@ TEST_P(VisualViewportTest, TestSavedToHistoryItem) {
                    ->GetViewState()
                    ->page_scale_factor_);
 
-  visual_viewport.SetLocation(FloatPoint(10, 20));
+  visual_viewport.SetLocation(gfx::PointF(10, 20));
 
   EXPECT_EQ(ScrollOffset(10, 20),
             To<LocalFrame>(WebView()->GetPage()->MainFrame())
@@ -991,7 +991,7 @@ TEST_P(VisualViewportTest, TestRestoredFromHistoryItem) {
   VisualViewport& visual_viewport = GetFrame()->GetPage()->GetVisualViewport();
   EXPECT_EQ(2, visual_viewport.Scale());
 
-  EXPECT_FLOAT_POINT_EQ(FloatPoint(100, 120),
+  EXPECT_FLOAT_POINT_EQ(gfx::PointF(100, 120),
                         visual_viewport.VisibleRect().origin());
 }
 
@@ -1022,7 +1022,7 @@ TEST_P(VisualViewportTest, TestRestoredFromLegacyHistoryItem) {
   EXPECT_EQ(2, visual_viewport.Scale());
   EXPECT_EQ(ScrollOffset(100, 150),
             GetFrame()->View()->LayoutViewport()->GetScrollOffset());
-  EXPECT_FLOAT_POINT_EQ(FloatPoint(20, 30),
+  EXPECT_FLOAT_POINT_EQ(gfx::PointF(20, 30),
                         visual_viewport.VisibleRect().origin());
 }
 
@@ -1045,7 +1045,7 @@ TEST_P(VisualViewportTest,
 
   VisualViewport& visual_viewport = GetFrame()->GetPage()->GetVisualViewport();
   visual_viewport.SetScale(2);
-  visual_viewport.SetLocation(FloatPoint(350, 350));
+  visual_viewport.SetLocation(gfx::PointF(350, 350));
 
   Persistent<HistoryItem> firstItem = WebView()
                                           ->MainFrameImpl()
@@ -1189,7 +1189,7 @@ TEST_P(VisualViewportTest, TestContextMenuShownInCorrectLocation) {
   VisualViewport& visual_viewport = GetFrame()->GetPage()->GetVisualViewport();
   WebView()->SetPageScaleFactor(2);
   EXPECT_CALL(mock_web_frame_client, DidChangeScrollOffset());
-  visual_viewport.SetLocation(FloatPoint(60, 80));
+  visual_viewport.SetLocation(gfx::PointF(60, 80));
   EXPECT_CALL(
       mock_web_frame_client,
       UpdateContextMenuDataForTesting(
@@ -1223,17 +1223,17 @@ TEST_P(VisualViewportTest, TestClientNotifiedOfScrollEvents) {
   VisualViewport& visual_viewport = GetFrame()->GetPage()->GetVisualViewport();
 
   EXPECT_CALL(mock_web_frame_client, DidChangeScrollOffset());
-  visual_viewport.SetLocation(FloatPoint(60, 80));
+  visual_viewport.SetLocation(gfx::PointF(60, 80));
   Mock::VerifyAndClearExpectations(&mock_web_frame_client);
 
   // Scroll vertically.
   EXPECT_CALL(mock_web_frame_client, DidChangeScrollOffset());
-  visual_viewport.SetLocation(FloatPoint(60, 90));
+  visual_viewport.SetLocation(gfx::PointF(60, 90));
   Mock::VerifyAndClearExpectations(&mock_web_frame_client);
 
   // Scroll horizontally.
   EXPECT_CALL(mock_web_frame_client, DidChangeScrollOffset());
-  visual_viewport.SetLocation(FloatPoint(70, 90));
+  visual_viewport.SetLocation(gfx::PointF(70, 90));
 
   // Reset the old client so destruction can occur naturally.
   WebView()->MainFrameImpl()->SetClient(old_client);
@@ -1760,19 +1760,19 @@ TEST_P(VisualViewportTest, ElementBoundsInViewportSpaceAccountsForViewport) {
   IntRect bounds = input_element->GetLayoutObject()->AbsoluteBoundingBoxRect();
 
   VisualViewport& visual_viewport = GetFrame()->GetPage()->GetVisualViewport();
-  FloatPoint scrollDelta(250, 400);
+  gfx::PointF scrollDelta(250, 400);
   visual_viewport.SetScale(2);
   visual_viewport.SetLocation(scrollDelta);
 
   const IntRect bounds_in_viewport = input_element->BoundsInViewport();
   IntRect expectedBounds = bounds;
   expectedBounds.Scale(2.f);
-  FloatPoint expectedScrollDelta = scrollDelta;
+  gfx::PointF expectedScrollDelta = scrollDelta;
   expectedScrollDelta.Scale(2.f, 2.f);
 
-  EXPECT_EQ(RoundedIntPoint(FloatPoint(FloatPoint(expectedBounds.origin()) -
-                                       expectedScrollDelta)),
-            bounds_in_viewport.origin());
+  EXPECT_EQ(gfx::ToRoundedVector2d(gfx::PointF(expectedBounds.origin()) -
+                                   expectedScrollDelta),
+            bounds_in_viewport.OffsetFromOrigin());
   EXPECT_EQ(expectedBounds.size(), bounds_in_viewport.size());
 }
 
@@ -2000,44 +2000,47 @@ TEST_P(VisualViewportTest, TestCoordinateTransforms) {
   // At scale = 1 the transform should be a no-op.
   visual_viewport.SetScale(1);
   EXPECT_FLOAT_POINT_EQ(
-      FloatPoint(314, 273),
-      visual_viewport.ViewportToRootFrame(FloatPoint(314, 273)));
+      gfx::PointF(314, 273),
+      visual_viewport.ViewportToRootFrame(gfx::PointF(314, 273)));
   EXPECT_FLOAT_POINT_EQ(
-      FloatPoint(314, 273),
-      visual_viewport.RootFrameToViewport(FloatPoint(314, 273)));
+      gfx::PointF(314, 273),
+      visual_viewport.RootFrameToViewport(gfx::PointF(314, 273)));
 
   // At scale = 2.
   visual_viewport.SetScale(2);
-  EXPECT_FLOAT_POINT_EQ(FloatPoint(55, 75), visual_viewport.ViewportToRootFrame(
-                                                FloatPoint(110, 150)));
   EXPECT_FLOAT_POINT_EQ(
-      FloatPoint(110, 150),
-      visual_viewport.RootFrameToViewport(FloatPoint(55, 75)));
+      gfx::PointF(55, 75),
+      visual_viewport.ViewportToRootFrame(gfx::PointF(110, 150)));
+  EXPECT_FLOAT_POINT_EQ(
+      gfx::PointF(110, 150),
+      visual_viewport.RootFrameToViewport(gfx::PointF(55, 75)));
 
   // At scale = 2 and with the visual viewport offset.
-  visual_viewport.SetLocation(FloatPoint(10, 12));
-  EXPECT_FLOAT_POINT_EQ(FloatPoint(50, 62), visual_viewport.ViewportToRootFrame(
-                                                FloatPoint(80, 100)));
+  visual_viewport.SetLocation(gfx::PointF(10, 12));
   EXPECT_FLOAT_POINT_EQ(
-      FloatPoint(80, 100),
-      visual_viewport.RootFrameToViewport(FloatPoint(50, 62)));
+      gfx::PointF(50, 62),
+      visual_viewport.ViewportToRootFrame(gfx::PointF(80, 100)));
+  EXPECT_FLOAT_POINT_EQ(
+      gfx::PointF(80, 100),
+      visual_viewport.RootFrameToViewport(gfx::PointF(50, 62)));
 
   // Test points that will cause non-integer values.
   EXPECT_FLOAT_POINT_EQ(
-      FloatPoint(50.5, 62.4),
-      visual_viewport.ViewportToRootFrame(FloatPoint(81, 100.8)));
+      gfx::PointF(50.5, 62.4),
+      visual_viewport.ViewportToRootFrame(gfx::PointF(81, 100.8)));
   EXPECT_FLOAT_POINT_EQ(
-      FloatPoint(81, 100.8),
-      visual_viewport.RootFrameToViewport(FloatPoint(50.5, 62.4)));
+      gfx::PointF(81, 100.8),
+      visual_viewport.RootFrameToViewport(gfx::PointF(50.5, 62.4)));
 
   // Scrolling the main frame should have no effect.
   frame_view.LayoutViewport()->SetScrollOffset(
       ScrollOffset(100, 120), mojom::blink::ScrollType::kProgrammatic);
-  EXPECT_FLOAT_POINT_EQ(FloatPoint(50, 62), visual_viewport.ViewportToRootFrame(
-                                                FloatPoint(80, 100)));
   EXPECT_FLOAT_POINT_EQ(
-      FloatPoint(80, 100),
-      visual_viewport.RootFrameToViewport(FloatPoint(50, 62)));
+      gfx::PointF(50, 62),
+      visual_viewport.ViewportToRootFrame(gfx::PointF(80, 100)));
+  EXPECT_FLOAT_POINT_EQ(
+      gfx::PointF(80, 100),
+      visual_viewport.RootFrameToViewport(gfx::PointF(50, 62)));
 }
 
 // Tests that the window dimensions are available before a full layout occurs.
@@ -2756,7 +2759,7 @@ TEST_P(VisualViewportTest, DirectPinchZoomPropertyUpdate) {
 
   // Scroll visual viewport to the right edge of the frame
   VisualViewport& visual_viewport = GetFrame()->GetPage()->GetVisualViewport();
-  visual_viewport.SetScaleAndLocation(2.f, true, FloatPoint(150, 10));
+  visual_viewport.SetScaleAndLocation(2.f, true, gfx::PointF(150, 10));
 
   EXPECT_FLOAT_SIZE_EQ(FloatSize(150, 10), visual_viewport.GetScrollOffset());
   EXPECT_EQ(2.f, visual_viewport.Scale());
@@ -2765,7 +2768,7 @@ TEST_P(VisualViewportTest, DirectPinchZoomPropertyUpdate) {
 
   // Update the scale and location and ensure that a PaintArtifactCompositor
   // update is not required.
-  visual_viewport.SetScaleAndLocation(3.f, true, FloatPoint(120, 10));
+  visual_viewport.SetScaleAndLocation(3.f, true, gfx::PointF(120, 10));
   UpdateAllLifecyclePhasesExceptPaint();
   EXPECT_FALSE(paint_artifact_compositor()->NeedsUpdate());
 
@@ -2841,11 +2844,11 @@ TEST_P(VisualViewportTest, SetLocationBeforePrePaint) {
   VisualViewport& visual_viewport = GetFrame()->GetPage()->GetVisualViewport();
   visual_viewport.DisposeImpl();
   ASSERT_FALSE(visual_viewport.LayerForScrolling());
-  visual_viewport.SetScaleAndLocation(1.75, false, FloatPoint(12, 34));
-  EXPECT_EQ(FloatPoint(12, 34), visual_viewport.ScrollPosition());
+  visual_viewport.SetScaleAndLocation(1.75, false, gfx::PointF(12, 34));
+  EXPECT_EQ(gfx::PointF(12, 34), visual_viewport.ScrollPosition());
 
   UpdateAllLifecyclePhases();
-  EXPECT_EQ(FloatPoint(12, 34), visual_viewport.ScrollPosition());
+  EXPECT_EQ(gfx::PointF(12, 34), visual_viewport.ScrollPosition());
   // When we create the scrolling layer, we should update its scroll offset.
   ASSERT_TRUE(visual_viewport.LayerForScrolling());
 

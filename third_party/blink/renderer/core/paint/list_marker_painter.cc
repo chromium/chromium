@@ -207,10 +207,10 @@ void ListMarkerPainter::Paint(const PaintInfo& paint_info) {
   TextRunPaintInfo text_run_paint_info(text_run);
   const SimpleFontData* font_data =
       layout_list_marker_.StyleRef().GetFont().PrimaryFont();
-  FloatPoint text_origin =
-      FloatPoint(marker.X().Round(),
-                 marker.Y().Round() +
-                     (font_data ? font_data->GetFontMetrics().Ascent() : 0));
+  gfx::PointF text_origin =
+      gfx::PointF(marker.X().Round(),
+                  marker.Y().Round() +
+                      (font_data ? font_data->GetFontMetrics().Ascent() : 0));
 
   // Text is not arbitrary. We can judge whether it's RTL from the first
   // character, and we only need to handle the direction RightToLeft for now.
@@ -252,20 +252,20 @@ void ListMarkerPainter::Paint(const PaintInfo& paint_info) {
   if (layout_list_marker_.StyleRef().IsLeftToRightDirection()) {
     context.DrawText(font, prefix_run_info, text_origin, kInvalidDOMNodeId,
                      auto_dark_mode);
-    text_origin += FloatSize(IntSize(font.Width(prefix_run), 0));
+    text_origin += gfx::Vector2dF(font.Width(prefix_run), 0);
     context.DrawText(font, text_run_paint_info, text_origin, kInvalidDOMNodeId,
                      auto_dark_mode);
-    text_origin += FloatSize(IntSize(font.Width(text_run), 0));
+    text_origin += gfx::Vector2dF(font.Width(text_run), 0);
     context.DrawText(font, suffix_run_info, text_origin, kInvalidDOMNodeId,
                      auto_dark_mode);
   } else {
     // Is the truncation to IntSize below meaningful or a bug?
     context.DrawText(font, suffix_run_info, text_origin, kInvalidDOMNodeId,
                      auto_dark_mode);
-    text_origin += FloatSize(IntSize(font.Width(suffix_run), 0));
+    text_origin += gfx::Vector2dF(font.Width(suffix_run), 0);
     context.DrawText(font, text_run_paint_info, text_origin, kInvalidDOMNodeId,
                      auto_dark_mode);
-    text_origin += FloatSize(IntSize(font.Width(text_run), 0));
+    text_origin += gfx::Vector2dF(font.Width(text_run), 0);
     context.DrawText(font, prefix_run_info, text_origin, kInvalidDOMNodeId,
                      auto_dark_mode);
   }

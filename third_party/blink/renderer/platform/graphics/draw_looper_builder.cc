@@ -56,7 +56,7 @@ void DrawLooperBuilder::AddUnmodifiedContent() {
   sk_draw_looper_builder_.addLayerOnTop(info);
 }
 
-void DrawLooperBuilder::AddShadow(const FloatSize& offset,
+void DrawLooperBuilder::AddShadow(const gfx::Vector2dF& offset,
                                   float blur,
                                   const Color& color,
                                   ShadowTransformMode shadow_transform_mode,
@@ -85,7 +85,7 @@ void DrawLooperBuilder::AddShadow(const FloatSize& offset,
   if (blur)
     info.fPaintBits |= SkLayerDrawLooper::kMaskFilter_Bit;  // our blur
   info.fPaintBits |= SkLayerDrawLooper::kColorFilter_Bit;
-  info.fOffset.set(offset.width(), offset.height());
+  info.fOffset.set(offset.x(), offset.y());
   info.fPostTranslate = (shadow_transform_mode == kShadowIgnoresTransforms);
 
   SkPaint* paint = sk_draw_looper_builder_.addLayerOnTop(info);

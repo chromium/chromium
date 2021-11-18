@@ -218,10 +218,10 @@ TEST_F(ShapeResultBloberizerTest, StoresGlyphsVerticalOffsets) {
   // 2 pending glyphs
   ShapeResultBloberizerTestInfo::Add(bloberizer, 42, font1.get(),
                                      CanvasRotationInVertical::kRegular,
-                                     FloatPoint(10, 0), 0);
+                                     gfx::Vector2dF(10, 0), 0);
   ShapeResultBloberizerTestInfo::Add(bloberizer, 43, font1.get(),
                                      CanvasRotationInVertical::kRegular,
-                                     FloatPoint(15, 0), 1);
+                                     gfx::Vector2dF(15, 0), 1);
 
   EXPECT_EQ(ShapeResultBloberizerTestInfo::PendingRunFontData(bloberizer),
             font1.get());
@@ -250,7 +250,7 @@ TEST_F(ShapeResultBloberizerTest, StoresGlyphsVerticalOffsets) {
   // one more glyph, different font => pending run flush
   ShapeResultBloberizerTestInfo::Add(bloberizer, 44, font2.get(),
                                      CanvasRotationInVertical::kRegular,
-                                     FloatPoint(12, 2), 2);
+                                     gfx::Vector2dF(12, 2), 2);
 
   EXPECT_EQ(ShapeResultBloberizerTestInfo::PendingRunFontData(bloberizer),
             font2.get());
@@ -312,7 +312,7 @@ TEST_F(ShapeResultBloberizerTest, MixedBlobRotation) {
 
   for (const auto& op : append_ops) {
     ShapeResultBloberizerTestInfo::Add(bloberizer, 42, test_font.get(),
-                                       op.canvas_rotation, FloatPoint(), 0);
+                                       op.canvas_rotation, gfx::Vector2dF(), 0);
     EXPECT_EQ(
         op.expected_pending_glyphs,
         ShapeResultBloberizerTestInfo::PendingRunGlyphs(bloberizer).size());

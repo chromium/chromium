@@ -2942,7 +2942,7 @@ TEST_F(PaintLayerOverlapTest,
   // the same.
   PaintLayerScrollableArea* scrollable_area =
       GetPaintLayerByElementId("scroller")->GetScrollableArea();
-  scrollable_area->ScrollToAbsolutePosition(FloatPoint(10, 10));
+  scrollable_area->ScrollToAbsolutePosition(gfx::PointF(10, 10));
   UpdateAllLifecyclePhasesForTest();
 
   EXPECT_EQ(fixed->ExpandedBoundingBoxForCompositingOverlapTest(false),

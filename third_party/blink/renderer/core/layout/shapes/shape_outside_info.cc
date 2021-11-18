@@ -478,13 +478,14 @@ PhysicalRect ShapeOutsideInfo::ComputedShapePhysicalBoundingBox() const {
   return PhysicalRect(physical_bounding_box);
 }
 
-FloatPoint ShapeOutsideInfo::ShapeToLayoutObjectPoint(FloatPoint point) const {
-  FloatPoint result = FloatPoint(point.x() + LogicalLeftOffset(),
-                                 point.y() + LogicalTopOffset());
+gfx::PointF ShapeOutsideInfo::ShapeToLayoutObjectPoint(
+    gfx::PointF point) const {
+  gfx::PointF result = gfx::PointF(point.x() + LogicalLeftOffset(),
+                                   point.y() + LogicalTopOffset());
   if (layout_box_->StyleRef().IsFlippedBlocksWritingMode())
     result.set_y(layout_box_->LogicalHeight() - result.y());
   if (!layout_box_->StyleRef().IsHorizontalWritingMode())
-    result = result.TransposedPoint();
+    result.Transpose();
   return result;
 }
 

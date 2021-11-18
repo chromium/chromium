@@ -355,7 +355,7 @@ bool SelectionController::HandleSingleClick(
   // existing selection so we can allow for text dragging.
   if (LocalFrameView* view = frame_->View()) {
     const PhysicalOffset v_point(view->ConvertFromRootFrame(
-        FlooredIntPoint(event.Event().PositionInRootFrame())));
+        gfx::ToFlooredPoint(event.Event().PositionInRootFrame())));
     if (!extend_selection && Selection().Contains(v_point)) {
       mouse_down_was_single_click_in_selection_ = true;
       if (!event.Event().FromTouch())
@@ -1078,7 +1078,7 @@ bool SelectionController::HandleMouseReleaseEvent(
   // editing, place the caret.
   if (mouse_down_was_single_click_in_selection_ &&
       selection_state_ != SelectionState::kExtendedSelection &&
-      drag_start_pos == PhysicalOffset(FlooredIntPoint(
+      drag_start_pos == PhysicalOffset(gfx::ToFlooredPoint(
                             event.Event().PositionInRootFrame())) &&
       Selection().ComputeVisibleSelectionInDOMTreeDeprecated().IsRange() &&
       event.Event().button != WebPointerProperties::Button::kRight) {
@@ -1257,7 +1257,7 @@ void SelectionController::PassMousePressEventToSubframe(
   // really strange (having the whole frame be greyed out), so we deselect the
   // selection.
   PhysicalOffset p(frame_->View()->ConvertFromRootFrame(
-      FlooredIntPoint(mev.Event().PositionInRootFrame())));
+      gfx::ToFlooredPoint(mev.Event().PositionInRootFrame())));
   if (!Selection().Contains(p))
     return;
 

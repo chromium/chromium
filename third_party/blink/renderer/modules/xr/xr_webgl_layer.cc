@@ -20,8 +20,8 @@
 #include "third_party/blink/renderer/modules/xr/xr_viewport.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/geometry/double_size.h"
-#include "third_party/blink/renderer/platform/geometry/float_point.h"
 #include "third_party/blink/renderer/platform/geometry/int_size.h"
+#include "ui/gfx/geometry/point_f.h"
 
 #include <algorithm>
 

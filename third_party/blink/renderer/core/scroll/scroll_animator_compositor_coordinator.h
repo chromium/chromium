@@ -138,8 +138,8 @@ class CORE_EXPORT ScrollAnimatorCompositorCoordinator
   // writing-mode:vertical-rl,
   // and flex-direction:row-reverse), they aren't.  See core/layout/README.md
   // for more info.
-  FloatPoint CompositorOffsetFromBlinkOffset(ScrollOffset);
-  ScrollOffset BlinkOffsetFromCompositorOffset(FloatPoint);
+  gfx::PointF CompositorOffsetFromBlinkOffset(ScrollOffset);
+  ScrollOffset BlinkOffsetFromCompositorOffset(gfx::PointF);
 
   void CompositorAnimationFinished(int group_id);
   // Returns true if the compositor animation was attached to a new layer.

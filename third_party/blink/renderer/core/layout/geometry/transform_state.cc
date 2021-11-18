@@ -62,7 +62,7 @@ void TransformState::TranslateMappedCoordinates(const PhysicalOffset& offset) {
   FloatSize adjusted_offset((direction_ == kApplyTransformDirection) ? offset
                                                                      : -offset);
   if (map_point_)
-    last_planar_point_.Offset(adjusted_offset);
+    last_planar_point_ += ToGfxVector2dF(adjusted_offset);
   if (map_quad_)
     last_planar_quad_.Move(adjusted_offset);
 }
@@ -159,16 +159,16 @@ void TransformState::Flatten() {
 }
 
 PhysicalOffset TransformState::MappedPoint() const {
-  FloatPoint point = last_planar_point_;
-  point.Offset(FloatSize(direction_ == kApplyTransformDirection
-                             ? accumulated_offset_
-                             : -accumulated_offset_));
+  gfx::PointF point = last_planar_point_;
+  point += gfx::Vector2dF(direction_ == kApplyTransformDirection
+                              ? accumulated_offset_
+                              : -accumulated_offset_);
   if (accumulated_transform_) {
     point = direction_ == kApplyTransformDirection
                 ? accumulated_transform_->MapPoint(point)
                 : accumulated_transform_->Inverse().ProjectPoint(point);
   }
-  return PhysicalOffset::FromFloatPointRound(point);
+  return PhysicalOffset::FromPointFRound(point);
 }
 
 FloatQuad TransformState::MappedQuad() const {

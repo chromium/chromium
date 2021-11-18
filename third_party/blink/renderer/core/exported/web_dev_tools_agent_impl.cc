@@ -388,7 +388,7 @@ void WebDevToolsAgentImpl::InspectElement(
                             WebInputEvent::kNoModifiers,
                             base::TimeTicks::Now());
   dummy_event.SetPositionInWidget(point);
-  gfx::Point transformed_point = FlooredIntPoint(
+  gfx::Point transformed_point = gfx::ToFlooredPoint(
       TransformWebMouseEvent(web_local_frame_impl_->GetFrameView(), dummy_event)
           .PositionInRootFrame());
   HitTestLocation location(

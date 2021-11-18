@@ -145,7 +145,7 @@ TextDecorationInfo::TextDecorationInfo(
       computed_font_size_(scaled_font.GetFontDescription().ComputedSize()),
       scaling_factor_(scaling_factor),
       underline_position_(ResolveUnderlinePosition(style_, baseline_type_)),
-      local_origin_(FloatPoint(local_origin)),
+      local_origin_(gfx::PointF(local_origin)),
       antialias_(ShouldSetDecorationAntialias(style)),
       decoration_index_(kUndefinedDecorationIndex) {
   DCHECK(font_data_);
@@ -217,9 +217,9 @@ Color TextDecorationInfo::LineColor() const {
   return style_.AppliedTextDecorations()[decoration_index_].GetColor();
 }
 
-FloatPoint TextDecorationInfo::StartPoint(TextDecorationLine line) const {
+gfx::PointF TextDecorationInfo::StartPoint(TextDecorationLine line) const {
   return local_origin_ +
-         FloatPoint(
+         gfx::Vector2dF(
              0, line_data_[TextDecorationToLineDataIndex(line)].line_offset);
 }
 float TextDecorationInfo::DoubleOffset(TextDecorationLine line) const {
@@ -259,7 +259,7 @@ float TextDecorationInfo::ComputeUnderlineThickness(
 }
 
 FloatRect TextDecorationInfo::BoundsForLine(TextDecorationLine line) const {
-  FloatPoint start_point = StartPoint(line);
+  gfx::PointF start_point = StartPoint(line);
   switch (DecorationStyle()) {
     case ETextDecorationStyle::kDotted:
     case ETextDecorationStyle::kDashed:
@@ -289,7 +289,7 @@ FloatRect TextDecorationInfo::BoundsForDottedOrDashed(
   if (!line_data_[line_data_index].stroke_path) {
     // These coordinate transforms need to match what's happening in
     // GraphicsContext's drawLineForText and drawLine.
-    FloatPoint start_point = StartPoint(line);
+    gfx::PointF start_point = StartPoint(line);
     line_data_[TextDecorationToLineDataIndex(line)].stroke_path =
         GraphicsContext::GetPathForTextLine(
             start_point, width_, ResolvedThickness(),
@@ -368,7 +368,7 @@ absl::optional<Path> TextDecorationInfo::PrepareWavyStrokePath(
   if (line_data_[line_data_index].stroke_path)
     return line_data_[line_data_index].stroke_path;
 
-  FloatPoint start_point = StartPoint(line);
+  gfx::PointF start_point = StartPoint(line);
   float wave_offset =
       DoubleOffset(line) *
       line_data_[TextDecorationToLineDataIndex(line)].wavy_offset_factor;
@@ -381,15 +381,15 @@ absl::optional<Path> TextDecorationInfo::PrepareWavyStrokePath(
   // AppliedDecorationPainter::StrokeWavyTextDecoration().
   // Offset the start point, so the beizer curve starts before the current line,
   // that way we can clip it exactly the same way in both ends.
-  FloatPoint p1(start_point + FloatPoint(-2 * step, wave_offset));
+  gfx::PointF p1(start_point + gfx::Vector2dF(-2 * step, wave_offset));
   // Increase the width including the previous offset, plus an extra wave to be
   // painted after the line.
-  FloatPoint p2(start_point + FloatPoint(width_ + 4 * step, wave_offset));
+  gfx::PointF p2(start_point + gfx::Vector2dF(width_ + 4 * step, wave_offset));
 
   GraphicsContext::AdjustLineToPixelBoundaries(p1, p2, ResolvedThickness());
 
   Path& path = line_data_[line_data_index].stroke_path.emplace();
-  path.MoveTo(ToGfxPointF(p1));
+  path.MoveTo(p1);
 
   bool is_vertical_line = (p1.x() == p2.x());
 

@@ -394,11 +394,10 @@ PhysicalOffset NGFragmentItem::MapPointInContainer(
   if (Type() != kSvgText || !HasSvgTransformForBoundingBox())
     return point;
   const float scaling_factor = SvgScalingFactor();
-  return PhysicalOffset::FromFloatPointRound(
-      BuildSvgTransformForBoundingBox()
-          .Inverse()
-          .MapPoint(FloatPoint(point).ScaledBy(scaling_factor))
-          .ScaledBy(1 / scaling_factor));
+  return PhysicalOffset::FromPointFRound(
+      gfx::ScalePoint(BuildSvgTransformForBoundingBox().Inverse().MapPoint(
+                          gfx::ScalePoint(gfx::PointF(point), scaling_factor)),
+                      scaling_factor));
 }
 
 float NGFragmentItem::ScaleInlineOffset(LayoutUnit inline_offset) const {

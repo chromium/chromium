@@ -116,13 +116,13 @@ class EventHandlerSimTest : public SimTest {
 
 class TapEventBuilder : public WebGestureEvent {
  public:
-  TapEventBuilder(FloatPoint position, int tap_count)
+  TapEventBuilder(gfx::PointF position, int tap_count)
       : WebGestureEvent(WebInputEvent::Type::kGestureTap,
                         WebInputEvent::kNoModifiers,
                         base::TimeTicks::Now(),
                         WebGestureDevice::kTouchscreen) {
-    SetPositionInWidget(ToGfxPointF(position));
-    SetPositionInScreen(ToGfxPointF(position));
+    SetPositionInWidget(position);
+    SetPositionInScreen(position);
     data.tap.tap_count = tap_count;
     data.tap.width = 5;
     data.tap.height = 5;
@@ -132,13 +132,13 @@ class TapEventBuilder : public WebGestureEvent {
 
 class TapDownEventBuilder : public WebGestureEvent {
  public:
-  TapDownEventBuilder(FloatPoint position)
+  explicit TapDownEventBuilder(gfx::PointF position)
       : WebGestureEvent(WebInputEvent::Type::kGestureTapDown,
                         WebInputEvent::kNoModifiers,
                         base::TimeTicks::Now(),
                         WebGestureDevice::kTouchscreen) {
-    SetPositionInWidget(ToGfxPointF(position));
-    SetPositionInScreen(ToGfxPointF(position));
+    SetPositionInWidget(position);
+    SetPositionInScreen(position);
     data.tap_down.width = 5;
     data.tap_down.height = 5;
     frame_scale_ = 1;
@@ -147,13 +147,13 @@ class TapDownEventBuilder : public WebGestureEvent {
 
 class ShowPressEventBuilder : public WebGestureEvent {
  public:
-  ShowPressEventBuilder(FloatPoint position)
+  explicit ShowPressEventBuilder(gfx::PointF position)
       : WebGestureEvent(WebInputEvent::Type::kGestureShowPress,
                         WebInputEvent::kNoModifiers,
                         base::TimeTicks::Now(),
                         WebGestureDevice::kTouchscreen) {
-    SetPositionInWidget(ToGfxPointF(position));
-    SetPositionInScreen(ToGfxPointF(position));
+    SetPositionInWidget(position);
+    SetPositionInScreen(position);
     data.show_press.width = 5;
     data.show_press.height = 5;
     frame_scale_ = 1;
@@ -162,13 +162,13 @@ class ShowPressEventBuilder : public WebGestureEvent {
 
 class LongPressEventBuilder : public WebGestureEvent {
  public:
-  LongPressEventBuilder(FloatPoint position)
+  explicit LongPressEventBuilder(gfx::PointF position)
       : WebGestureEvent(WebInputEvent::Type::kGestureLongPress,
                         WebInputEvent::kNoModifiers,
                         base::TimeTicks::Now(),
                         WebGestureDevice::kTouchscreen) {
-    SetPositionInWidget(ToGfxPointF(position));
-    SetPositionInScreen(ToGfxPointF(position));
+    SetPositionInWidget(position);
+    SetPositionInScreen(position);
     data.long_press.width = 5;
     data.long_press.height = 5;
     frame_scale_ = 1;
@@ -285,7 +285,7 @@ TEST_F(EventHandlerTest, multiClickSelectionFromTap) {
 
   Node* line = GetDocument().getElementById("line")->firstChild();
 
-  TapEventBuilder single_tap_event(FloatPoint(0, 0), 1);
+  TapEventBuilder single_tap_event(gfx::PointF(0, 0), 1);
   GetDocument().GetFrame()->GetEventHandler().HandleGestureEvent(
       single_tap_event);
   ASSERT_TRUE(Selection().GetSelectionInDOMTree().IsCaret());
@@ -293,7 +293,7 @@ TEST_F(EventHandlerTest, multiClickSelectionFromTap) {
 
   // Multi-tap events on editable elements should trigger selection, just
   // like multi-click events.
-  TapEventBuilder double_tap_event(FloatPoint(0, 0), 2);
+  TapEventBuilder double_tap_event(gfx::PointF(0, 0), 2);
   GetDocument().GetFrame()->GetEventHandler().HandleGestureEvent(
       double_tap_event);
   ASSERT_TRUE(Selection().GetSelectionInDOMTree().IsRange());
@@ -309,7 +309,7 @@ TEST_F(EventHandlerTest, multiClickSelectionFromTap) {
     EXPECT_EQ("One", Selection().SelectedText().Utf8());
   }
 
-  TapEventBuilder triple_tap_event(FloatPoint(0, 0), 3);
+  TapEventBuilder triple_tap_event(gfx::PointF(0, 0), 3);
   GetDocument().GetFrame()->GetEventHandler().HandleGestureEvent(
       triple_tap_event);
   ASSERT_TRUE(Selection().GetSelectionInDOMTree().IsRange());
@@ -326,20 +326,20 @@ TEST_F(EventHandlerTest, multiClickSelectionFromTapDisabledIfNotEditable) {
 
   Node* line = GetDocument().getElementById("line")->firstChild();
 
-  TapEventBuilder single_tap_event(FloatPoint(0, 0), 1);
+  TapEventBuilder single_tap_event(gfx::PointF(0, 0), 1);
   GetDocument().GetFrame()->GetEventHandler().HandleGestureEvent(
       single_tap_event);
   ASSERT_TRUE(Selection().GetSelectionInDOMTree().IsCaret());
   EXPECT_EQ(Position(line, 0), Selection().GetSelectionInDOMTree().Base());
 
   // As the text is readonly, multi-tap events should not trigger selection.
-  TapEventBuilder double_tap_event(FloatPoint(0, 0), 2);
+  TapEventBuilder double_tap_event(gfx::PointF(0, 0), 2);
   GetDocument().GetFrame()->GetEventHandler().HandleGestureEvent(
       double_tap_event);
   ASSERT_TRUE(Selection().GetSelectionInDOMTree().IsCaret());
   EXPECT_EQ(Position(line, 0), Selection().GetSelectionInDOMTree().Base());
 
-  TapEventBuilder triple_tap_event(FloatPoint(0, 0), 3);
+  TapEventBuilder triple_tap_event(gfx::PointF(0, 0), 3);
   GetDocument().GetFrame()->GetEventHandler().HandleGestureEvent(
       triple_tap_event);
   ASSERT_TRUE(Selection().GetSelectionInDOMTree().IsCaret());
@@ -836,7 +836,7 @@ TEST_F(EventHandlerTest, sendContextMenuEventWithHover) {
 TEST_F(EventHandlerTest, EmptyTextfieldInsertionOnTap) {
   SetHtmlInnerHTML("<textarea cols=50 rows=50></textarea>");
 
-  TapEventBuilder single_tap_event(FloatPoint(200, 200), 1);
+  TapEventBuilder single_tap_event(gfx::PointF(200, 200), 1);
   GetDocument().GetFrame()->GetEventHandler().HandleGestureEvent(
       single_tap_event);
 
@@ -847,7 +847,7 @@ TEST_F(EventHandlerTest, EmptyTextfieldInsertionOnTap) {
 TEST_F(EventHandlerTest, NonEmptyTextfieldInsertionOnTap) {
   SetHtmlInnerHTML("<textarea cols=50 rows=50>Enter text</textarea>");
 
-  TapEventBuilder single_tap_event(FloatPoint(200, 200), 1);
+  TapEventBuilder single_tap_event(gfx::PointF(200, 200), 1);
   GetDocument().GetFrame()->GetEventHandler().HandleGestureEvent(
       single_tap_event);
 
@@ -858,7 +858,7 @@ TEST_F(EventHandlerTest, NonEmptyTextfieldInsertionOnTap) {
 TEST_F(EventHandlerTest, NewlineDivInsertionOnTap) {
   SetHtmlInnerHTML("<div contenteditable><br/></div>");
 
-  TapEventBuilder single_tap_event(FloatPoint(10, 10), 1);
+  TapEventBuilder single_tap_event(gfx::PointF(10, 10), 1);
   GetDocument().GetFrame()->GetEventHandler().HandleGestureEvent(
       single_tap_event);
 
@@ -869,7 +869,7 @@ TEST_F(EventHandlerTest, NewlineDivInsertionOnTap) {
 TEST_F(EventHandlerTest, EmptyTextfieldInsertionOnLongPress) {
   SetHtmlInnerHTML("<textarea cols=50 rows=50></textarea>");
 
-  LongPressEventBuilder long_press_event(FloatPoint(200, 200));
+  LongPressEventBuilder long_press_event(gfx::PointF(200, 200));
   GetDocument().GetFrame()->GetEventHandler().HandleGestureEvent(
       long_press_event);
 
@@ -877,7 +877,7 @@ TEST_F(EventHandlerTest, EmptyTextfieldInsertionOnLongPress) {
   ASSERT_TRUE(Selection().IsHandleVisible());
 
   // Single Tap on an empty edit field should clear insertion handle
-  TapEventBuilder single_tap_event(FloatPoint(200, 200), 1);
+  TapEventBuilder single_tap_event(gfx::PointF(200, 200), 1);
   GetDocument().GetFrame()->GetEventHandler().HandleGestureEvent(
       single_tap_event);
 
@@ -888,7 +888,7 @@ TEST_F(EventHandlerTest, EmptyTextfieldInsertionOnLongPress) {
 TEST_F(EventHandlerTest, NonEmptyTextfieldInsertionOnLongPress) {
   SetHtmlInnerHTML("<textarea cols=50 rows=50>Enter text</textarea>");
 
-  LongPressEventBuilder long_press_event(FloatPoint(200, 200));
+  LongPressEventBuilder long_press_event(gfx::PointF(200, 200));
   GetDocument().GetFrame()->GetEventHandler().HandleGestureEvent(
       long_press_event);
 
@@ -900,7 +900,7 @@ TEST_F(EventHandlerTest, ClearHandleAfterTap) {
   SetHtmlInnerHTML("<textarea cols=50  rows=10>Enter text</textarea>");
 
   // Show handle
-  LongPressEventBuilder long_press_event(FloatPoint(200, 10));
+  LongPressEventBuilder long_press_event(gfx::PointF(200, 10));
   GetDocument().GetFrame()->GetEventHandler().HandleGestureEvent(
       long_press_event);
 
@@ -908,7 +908,7 @@ TEST_F(EventHandlerTest, ClearHandleAfterTap) {
   ASSERT_TRUE(Selection().IsHandleVisible());
 
   // Tap away from text area should clear handle
-  TapEventBuilder single_tap_event(FloatPoint(200, 350), 1);
+  TapEventBuilder single_tap_event(gfx::PointF(200, 350), 1);
   GetDocument().GetFrame()->GetEventHandler().HandleGestureEvent(
       single_tap_event);
 
@@ -961,7 +961,7 @@ TEST_F(EventHandlerTest, MisspellingContextMenuEvent) {
 
   SetHtmlInnerHTML("<textarea cols=50 rows=50>Mispellinggg</textarea>");
 
-  TapEventBuilder single_tap_event(FloatPoint(10, 10), 1);
+  TapEventBuilder single_tap_event(gfx::PointF(10, 10), 1);
   GetDocument().GetFrame()->GetEventHandler().HandleGestureEvent(
       single_tap_event);
 
@@ -983,11 +983,11 @@ TEST_F(EventHandlerTest, MisspellingContextMenuEvent) {
 TEST_F(EventHandlerTest, TouchAdjustmentOnEditableDisplayContents) {
   SetHtmlInnerHTML(
       "<div style='display:contents' contenteditable='true'>TEXT</div>");
-  TapEventBuilder single_tap_event(FloatPoint(1, 1), 1);
+  TapEventBuilder single_tap_event(gfx::PointF(1, 1), 1);
   GetDocument().GetFrame()->GetEventHandler().HandleGestureEvent(
       single_tap_event);
 
-  LongPressEventBuilder long_press_event(FloatPoint(1, 1));
+  LongPressEventBuilder long_press_event(gfx::PointF(1, 1));
   GetDocument().GetFrame()->GetEventHandler().HandleGestureEvent(
       long_press_event);
 
@@ -1251,7 +1251,7 @@ TEST_F(EventHandlerTooltipTest, MAYBE_FocusSetFromMouseDoesntUpdateTooltip) {
 
   Element* element = GetDocument().getElementById("b");
   gfx::PointF mouse_press_point =
-      ToGfxPointF(FloatPoint(element->BoundsInViewport().CenterPoint()));
+      gfx::PointF(element->BoundsInViewport().CenterPoint());
   WebMouseEvent mouse_press_event(
       WebInputEvent::Type::kMouseDown, mouse_press_point, mouse_press_point,
       WebPointerProperties::Button::kLeft, 1,
@@ -1741,7 +1741,7 @@ TEST_F(EventHandlerSimTest, MAYBE_GestureTapWithScrollSnaps) {
 
   // kGestureTapDown sets the pressed parts which is a pre-requisite for
   // kGestureTap performing a scroll.
-  const FloatPoint scrollbar_forward_track(495, 450);
+  const gfx::PointF scrollbar_forward_track(495, 450);
   TapDownEventBuilder tap_down(scrollbar_forward_track);
   GetDocument().GetFrame()->GetEventHandler().HandleGestureEvent(tap_down);
 
@@ -1968,17 +1968,17 @@ TEST_F(EventHandlerSimTest, TapActiveInFrame) {
       To<HTMLIFrameElement>(GetDocument().getElementById("iframe"));
   Document* iframe_doc = iframe_element->contentDocument();
 
-  TapDownEventBuilder tap_down(FloatPoint(10, 10));
+  TapDownEventBuilder tap_down(gfx::PointF(10, 10));
   GetDocument().GetFrame()->GetEventHandler().HandleGestureEvent(tap_down);
 
-  ShowPressEventBuilder show_press(FloatPoint(10, 10));
+  ShowPressEventBuilder show_press(gfx::PointF(10, 10));
   GetDocument().GetFrame()->GetEventHandler().HandleGestureEvent(show_press);
 
   // TapDown and ShowPress active the iframe.
   EXPECT_TRUE(GetDocument().GetActiveElement());
   EXPECT_TRUE(iframe_doc->GetActiveElement());
 
-  TapEventBuilder tap(FloatPoint(10, 10), 1);
+  TapEventBuilder tap(gfx::PointF(10, 10), 1);
   GetDocument().GetFrame()->GetEventHandler().HandleGestureEvent(tap);
 
   // Should still active.
@@ -2042,7 +2042,7 @@ TEST_F(EventHandlerSimTest, TestUpdateHoverAfterCompositorScrollAtBeginFrame) {
   // Do a compositor scroll and set |hover_needs_update_at_scroll_end| to be
   // true in WebViewImpl.
   LocalFrameView* frame_view = GetDocument().View();
-  frame_view->LayoutViewport()->DidCompositorScroll(FloatPoint(0, 500));
+  frame_view->LayoutViewport()->DidCompositorScroll(gfx::PointF(0, 500));
   WebView().MainFrameWidget()->ApplyViewportChangesForTesting(
       {gfx::Vector2dF(), gfx::Vector2dF(), 1.0f, false, 0, 0,
        cc::BrowserControlsState::kBoth, true});
@@ -3182,7 +3182,7 @@ TEST_F(EventHandlerSimTest, MouseDragWithNoSubframeImplicitCapture) {
   EXPECT_EQ(iframe_doc->GetFrame()
                 ->GetEventHandler()
                 .LastKnownMousePositionInRootFrame(),
-            FloatPoint(100, 100));
+            gfx::PointF(100, 100));
   EXPECT_EQ(iframe_doc->HoverElement(), target);
   EXPECT_FALSE(target->hasPointerCapture(PointerEventFactory::kMouseId));
 
@@ -3281,7 +3281,7 @@ TEST_F(EventHandlerSimTest,
   EXPECT_EQ(iframe_doc->GetFrame()
                 ->GetEventHandler()
                 .LastKnownMousePositionInRootFrame(),
-            FloatPoint(100, 300));
+            gfx::PointF(100, 300));
   EXPECT_EQ(iframe_doc->HoverElement(), target);
 
   // Release capture and move event will be send to outer frame.

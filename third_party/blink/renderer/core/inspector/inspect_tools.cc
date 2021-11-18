@@ -32,6 +32,7 @@
 #include "third_party/blink/renderer/platform/cursors.h"
 #include "third_party/blink/renderer/platform/keyboard_codes.h"
 #include "third_party/inspector_protocol/crdtp/json.h"
+#include "ui/gfx/geometry/point_conversions.h"
 
 namespace blink {
 
@@ -82,17 +83,17 @@ Node* HoveredNodeForPoint(LocalFrame* frame,
 Node* HoveredNodeForEvent(LocalFrame* frame,
                           const WebGestureEvent& event,
                           bool ignore_pointer_events_none) {
-  return HoveredNodeForPoint(
-      frame, RoundedIntPoint(FloatPoint(event.PositionInRootFrame())),
-      ignore_pointer_events_none);
+  return HoveredNodeForPoint(frame,
+                             gfx::ToRoundedPoint(event.PositionInRootFrame()),
+                             ignore_pointer_events_none);
 }
 
 Node* HoveredNodeForEvent(LocalFrame* frame,
                           const WebMouseEvent& event,
                           bool ignore_pointer_events_none) {
-  return HoveredNodeForPoint(
-      frame, RoundedIntPoint(FloatPoint(event.PositionInRootFrame())),
-      ignore_pointer_events_none);
+  return HoveredNodeForPoint(frame,
+                             gfx::ToRoundedPoint(event.PositionInRootFrame()),
+                             ignore_pointer_events_none);
 }
 
 Node* HoveredNodeForEvent(LocalFrame* frame,
@@ -100,7 +101,7 @@ Node* HoveredNodeForEvent(LocalFrame* frame,
                           bool ignore_pointer_events_none) {
   WebPointerEvent transformed_point = event.WebPointerEventInRootFrame();
   return HoveredNodeForPoint(
-      frame, RoundedIntPoint(FloatPoint(transformed_point.PositionInWidget())),
+      frame, gfx::ToRoundedPoint(transformed_point.PositionInWidget()),
       ignore_pointer_events_none);
 }
 

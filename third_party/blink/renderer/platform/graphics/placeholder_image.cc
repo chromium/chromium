@@ -14,7 +14,6 @@
 #include "third_party/blink/renderer/platform/fonts/font_family.h"
 #include "third_party/blink/renderer/platform/fonts/font_selection_types.h"
 #include "third_party/blink/renderer/platform/fonts/text_run_paint_info.h"
-#include "third_party/blink/renderer/platform/geometry/float_point.h"
 #include "third_party/blink/renderer/platform/geometry/float_rect.h"
 #include "third_party/blink/renderer/platform/geometry/int_rect.h"
 #include "third_party/blink/renderer/platform/graphics/bitmap_image.h"
@@ -32,6 +31,7 @@
 #include "third_party/skia/include/core/SkRect.h"
 #include "third_party/skia/include/core/SkSize.h"
 #include "ui/gfx/geometry/point.h"
+#include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 
 namespace blink {
@@ -349,8 +349,8 @@ void PlaceholderImage::Draw(cc::PaintCanvas* canvas,
   flags.setColor(SkColorSetARGB(0xAB, 0, 0, 0));
   shared_font_->font().DrawBidiText(
       canvas, TextRunPaintInfo(TextRun(text_)),
-      FloatPoint(text_x, feature_y + icon_and_text_scale_factor_ *
-                                         (kTextPaddingY + kFontSize)),
+      gfx::PointF(text_x, feature_y + icon_and_text_scale_factor_ *
+                                          (kTextPaddingY + kFontSize)),
       Font::kUseFallbackIfFontNotReady, 1.0f, flags);
 }
 

@@ -38,6 +38,7 @@
 #include "third_party/blink/renderer/core/page/chrome_client.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/scroll/scrollbar_theme.h"
+#include "ui/gfx/geometry/point_conversions.h"
 
 namespace blink {
 
@@ -81,8 +82,8 @@ void SpinButtonElement::DefaultEventHandler(Event& event) {
     return;
   }
 
-  gfx::Point local = RoundedIntPoint(box->AbsoluteToLocalFloatPoint(
-      FloatPoint(mouse_event->AbsoluteLocation())));
+  gfx::Point local = gfx::ToRoundedPoint(
+      box->AbsoluteToLocalPoint(gfx::PointF(mouse_event->AbsoluteLocation())));
   if (mouse_event->type() == event_type_names::kMousedown &&
       mouse_event->button() ==
           static_cast<int16_t>(WebPointerProperties::Button::kLeft)) {

@@ -52,7 +52,7 @@ void HitTestingTransformState::Flatten() {
   accumulated_transform_.MakeIdentity();
 }
 
-FloatPoint HitTestingTransformState::MappedPoint() const {
+gfx::PointF HitTestingTransformState::MappedPoint() const {
   return accumulated_transform_.Inverse().ProjectPoint(last_planar_point_);
 }
 

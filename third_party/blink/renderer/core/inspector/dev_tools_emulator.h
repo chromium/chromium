@@ -113,7 +113,7 @@ class CORE_EXPORT DevToolsEmulator final
   DeviceEmulationParams emulation_params_;
 
   struct ViewportOverride {
-    FloatPoint position;
+    gfx::PointF position;
     double scale;
   };
   absl::optional<ViewportOverride> viewport_override_;

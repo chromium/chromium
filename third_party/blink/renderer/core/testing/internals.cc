@@ -2234,8 +2234,9 @@ HitTestLayerRectList* Internals::touchEventTargetLayerRects(
         layer->touch_action_region();
     if (!touch_action_region.GetAllRegions().IsEmpty()) {
       const auto& offset = layer->offset_to_transform_parent();
-      IntRect layer_rect(RoundedIntPoint(FloatPoint(offset.x(), offset.y())),
-                         IntSize(layer->bounds()));
+      IntRect layer_rect(
+          gfx::ToRoundedPoint(gfx::PointAtOffsetFromOrigin(offset)),
+          IntSize(layer->bounds()));
 
       Vector<IntRect> layer_hit_test_rects;
       for (auto hit_test_rect : touch_action_region.GetAllRegions())
@@ -3553,14 +3554,13 @@ String Internals::selectedTextForClipboard() {
 void Internals::setVisualViewportOffset(int x, int y) {
   if (!GetFrame())
     return;
-  FloatPoint offset(x, y);
+  gfx::PointF offset(x, y);
 
   // `setVisualViewportOffset()` inputs are in physical pixels, but
   // `SetLocation()` gets positions in DIPs when --use-zoom-for-dsf disabled.
-  GetFrame()->GetPage()->GetVisualViewport().SetLocation(
-      Platform::Current()->IsUseZoomForDSFEnabled()
-          ? offset
-          : offset.ScaledBy(1 / GetFrame()->DevicePixelRatio()));
+  if (!Platform::Current()->IsUseZoomForDSFEnabled())
+    offset.Scale(1 / GetFrame()->DevicePixelRatio());
+  GetFrame()->GetPage()->GetVisualViewport().SetLocation(offset);
 }
 
 bool Internals::isUseCounted(Document* document, uint32_t feature) {

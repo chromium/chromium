@@ -506,7 +506,7 @@ class CORE_EXPORT LocalFrameView final
   IntRect FrameToViewport(const IntRect&) const;
   gfx::Point FrameToViewport(const gfx::Point&) const;
   gfx::Point ViewportToFrame(const gfx::Point&) const;
-  FloatPoint ViewportToFrame(const FloatPoint&) const;
+  gfx::PointF ViewportToFrame(const gfx::PointF&) const;
   PhysicalOffset ViewportToFrame(const PhysicalOffset&) const;
 
   // FIXME: Some external callers expect to get back a rect that's positioned
@@ -522,18 +522,18 @@ class CORE_EXPORT LocalFrameView final
   IntRect ConvertToRootFrame(const IntRect&) const;
   gfx::Point ConvertToRootFrame(const gfx::Point&) const;
   PhysicalOffset ConvertToRootFrame(const PhysicalOffset&) const;
-  FloatPoint ConvertToRootFrame(const FloatPoint&) const;
+  gfx::PointF ConvertToRootFrame(const gfx::PointF&) const;
   PhysicalRect ConvertToRootFrame(const PhysicalRect&) const;
   IntRect ConvertFromRootFrame(const IntRect&) const;
   gfx::Point ConvertFromRootFrame(const gfx::Point&) const;
-  FloatPoint ConvertFromRootFrame(const FloatPoint&) const;
+  gfx::PointF ConvertFromRootFrame(const gfx::PointF&) const;
   PhysicalOffset ConvertFromRootFrame(const PhysicalOffset&) const;
 
   IntRect RootFrameToDocument(const IntRect&);
   gfx::Point RootFrameToDocument(const gfx::Point&);
-  FloatPoint RootFrameToDocument(const FloatPoint&);
+  gfx::PointF RootFrameToDocument(const gfx::PointF&);
   gfx::Point DocumentToFrame(const gfx::Point&) const;
-  FloatPoint DocumentToFrame(const FloatPoint&) const;
+  gfx::PointF DocumentToFrame(const gfx::PointF&) const;
   DoublePoint DocumentToFrame(const DoublePoint&) const;
   PhysicalOffset DocumentToFrame(const PhysicalOffset&) const;
   IntRect DocumentToFrame(const IntRect&) const;
@@ -906,12 +906,13 @@ class CORE_EXPORT LocalFrameView final
   gfx::Point ConvertToContainingEmbeddedContentView(const gfx::Point&) const;
   PhysicalOffset ConvertToContainingEmbeddedContentView(
       const PhysicalOffset&) const;
-  FloatPoint ConvertToContainingEmbeddedContentView(const FloatPoint&) const;
+  gfx::PointF ConvertToContainingEmbeddedContentView(const gfx::PointF&) const;
   IntRect ConvertFromContainingEmbeddedContentView(const IntRect&) const;
   gfx::Point ConvertFromContainingEmbeddedContentView(const gfx::Point&) const;
   PhysicalOffset ConvertFromContainingEmbeddedContentView(
       const PhysicalOffset&) const;
-  FloatPoint ConvertFromContainingEmbeddedContentView(const FloatPoint&) const;
+  gfx::PointF ConvertFromContainingEmbeddedContentView(
+      const gfx::PointF&) const;
   DoublePoint ConvertFromContainingEmbeddedContentView(
       const DoublePoint&) const;
 

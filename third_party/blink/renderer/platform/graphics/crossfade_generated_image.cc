@@ -46,9 +46,9 @@ void CrossfadeGeneratedImage::DrawCrossfade(
     cc::PaintCanvas* canvas,
     const PaintFlags& flags,
     const ImageDrawOptions& draw_options) {
-  FloatRect from_image_rect(FloatPoint(), FloatSize(from_image_->Size()));
-  FloatRect to_image_rect(FloatPoint(), FloatSize(to_image_->Size()));
-  FloatRect dest_rect((FloatPoint()), size_);
+  FloatRect from_image_rect(gfx::PointF(), FloatSize(from_image_->Size()));
+  FloatRect to_image_rect(gfx::PointF(), FloatSize(to_image_->Size()));
+  FloatRect dest_rect((gfx::PointF()), size_);
 
   // TODO(junov): The various effects encoded into paint should probably be
   // applied here instead of inside the layer.  This probably faulty behavior
@@ -98,7 +98,7 @@ void CrossfadeGeneratedImage::DrawTile(GraphicsContext& context,
     return;
   PaintFlags flags = context.FillFlags();
   flags.setBlendMode(SkBlendMode::kSrcOver);
-  FloatRect dest_rect((FloatPoint()), size_);
+  FloatRect dest_rect((gfx::PointF()), size_);
   ImageDrawOptions draw_options(options);
   draw_options.sampling_options =
       context.ComputeSamplingOptions(this, dest_rect, src_rect);

@@ -92,7 +92,7 @@ DOMRectReadOnly* ResizeObserverUtilities::ZoomAdjustedLayoutRect(
       AdjustForAbsoluteZoom::AdjustLayoutUnit(content_rect.Height(), style));
 
   return DOMRectReadOnly::FromFloatRect(FloatRect(
-      FloatPoint(content_rect.Location()), FloatSize(content_rect.Size())));
+      gfx::PointF(content_rect.Location()), FloatSize(content_rect.Size())));
 }
 
 }  // namespace blink

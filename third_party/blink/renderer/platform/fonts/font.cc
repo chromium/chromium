@@ -149,7 +149,7 @@ namespace {
 void DrawBlobs(cc::PaintCanvas* canvas,
                const cc::PaintFlags& flags,
                const ShapeResultBloberizer::BlobBuffer& blobs,
-               const FloatPoint& point,
+               const gfx::PointF& point,
                cc::NodeId node_id = cc::kInvalidNodeId) {
   for (const auto& blob_info : blobs) {
     DCHECK(blob_info.blob);
@@ -207,7 +207,7 @@ void DrawBlobs(cc::PaintCanvas* canvas,
 
 void Font::DrawText(cc::PaintCanvas* canvas,
                     const TextRunPaintInfo& run_info,
-                    const FloatPoint& point,
+                    const gfx::PointF& point,
                     float device_scale_factor,
                     const cc::PaintFlags& flags,
                     DrawType draw_type) const {
@@ -217,7 +217,7 @@ void Font::DrawText(cc::PaintCanvas* canvas,
 
 void Font::DrawText(cc::PaintCanvas* canvas,
                     const TextRunPaintInfo& run_info,
-                    const FloatPoint& point,
+                    const gfx::PointF& point,
                     float device_scale_factor,
                     cc::NodeId node_id,
                     const cc::PaintFlags& flags,
@@ -240,7 +240,7 @@ void Font::DrawText(cc::PaintCanvas* canvas,
 
 void Font::DrawText(cc::PaintCanvas* canvas,
                     const NGTextFragmentPaintInfo& text_info,
-                    const FloatPoint& point,
+                    const gfx::PointF& point,
                     float device_scale_factor,
                     cc::NodeId node_id,
                     const cc::PaintFlags& flags,
@@ -261,7 +261,7 @@ void Font::DrawText(cc::PaintCanvas* canvas,
 
 bool Font::DrawBidiText(cc::PaintCanvas* canvas,
                         const TextRunPaintInfo& run_info,
-                        const FloatPoint& point,
+                        const gfx::PointF& point,
                         CustomFontNotReadyAction custom_font_not_ready_action,
                         float device_scale_factor,
                         const cc::PaintFlags& flags,
@@ -289,7 +289,7 @@ bool Font::DrawBidiText(cc::PaintCanvas* canvas,
   if (!bidi_runs.RunCount())
     return true;
 
-  FloatPoint curr_point = point;
+  gfx::PointF curr_point = point;
   BidiCharacterRun* bidi_run = bidi_runs.FirstRun();
   CachingWordShaper word_shaper(*this);
   while (bidi_run) {
@@ -324,7 +324,7 @@ bool Font::DrawBidiText(cc::PaintCanvas* canvas,
 void Font::DrawEmphasisMarks(cc::PaintCanvas* canvas,
                              const TextRunPaintInfo& run_info,
                              const AtomicString& mark,
-                             const FloatPoint& point,
+                             const gfx::PointF& point,
                              float device_scale_factor,
                              const cc::PaintFlags& flags) const {
   if (ShouldSkipDrawing())
@@ -348,7 +348,7 @@ void Font::DrawEmphasisMarks(cc::PaintCanvas* canvas,
 void Font::DrawEmphasisMarks(cc::PaintCanvas* canvas,
                              const NGTextFragmentPaintInfo& text_info,
                              const AtomicString& mark,
-                             const FloatPoint& point,
+                             const gfx::PointF& point,
                              float device_scale_factor,
                              const cc::PaintFlags& flags) const {
   if (ShouldSkipDrawing())
@@ -479,7 +479,7 @@ static inline FloatRect PixelSnappedSelectionRect(FloatRect rect) {
 }
 
 FloatRect Font::SelectionRectForText(const TextRun& run,
-                                     const FloatPoint& point,
+                                     const gfx::PointF& point,
                                      float height,
                                      int from,
                                      int to) const {

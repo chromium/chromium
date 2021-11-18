@@ -41,6 +41,7 @@
 #include "third_party/blink/renderer/core/page/autoscroll_controller.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/page/validation_message_client.h"
+#include "ui/gfx/geometry/point_conversions.h"
 
 namespace blink {
 
@@ -97,7 +98,7 @@ WebInputEventResult PageWidgetDelegate::HandleInputEvent(
         root->View(), static_cast<const WebMouseEvent&>(event));
 
     HitTestLocation location(root->View()->ConvertFromRootFrame(
-        FlooredIntPoint(mouse_event.PositionInRootFrame())));
+        gfx::ToFlooredPoint(mouse_event.PositionInRootFrame())));
     HitTestResult result = root->GetEventHandler().HitTestResultAtLocation(
         location, HitTestRequest::kReadOnly | HitTestRequest::kActive);
     result.SetToShadowHostIfInRestrictedShadowRoot();

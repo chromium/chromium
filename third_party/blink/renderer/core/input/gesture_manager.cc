@@ -30,6 +30,7 @@
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
 #include "third_party/blink/renderer/core/scroll/scroll_animator_base.h"
 #include "third_party/blink/renderer/platform/wtf/deque.h"
+#include "ui/gfx/geometry/point_conversions.h"
 
 #if BUILDFLAG(ENABLE_UNHANDLED_TAP)
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
@@ -197,7 +198,7 @@ WebInputEventResult GestureManager::HandleGestureTap(
   // We use the adjusted position so the application isn't surprised to see a
   // event with co-ordinates outside the target's bounds.
   gfx::Point adjusted_point = frame_view->ConvertFromRootFrame(
-      FlooredIntPoint(gesture_event.PositionInRootFrame()));
+      gfx::ToFlooredPoint(gesture_event.PositionInRootFrame()));
 
   const unsigned modifiers = gesture_event.GetModifiers();
 
@@ -229,14 +230,14 @@ WebInputEventResult GestureManager::HandleGestureTap(
             DocumentUpdateReason::kHitTest))
       return WebInputEventResult::kNotHandled;
     adjusted_point = frame_view->ConvertFromRootFrame(
-        FlooredIntPoint(gesture_event.PositionInRootFrame()));
+        gfx::ToFlooredPoint(gesture_event.PositionInRootFrame()));
     current_hit_test = event_handling_util::HitTestResultInFrame(
         frame_, HitTestLocation(adjusted_point), hit_type);
   }
 
   // Capture data for showUnhandledTapUIIfNeeded.
   gfx::Point tapped_position =
-      FlooredIntPoint(gesture_event.PositionInRootFrame());
+      gfx::ToFlooredPoint(gesture_event.PositionInRootFrame());
   Node* tapped_node = current_hit_test.InnerNode();
   Element* tapped_element = current_hit_test.InnerElement();
   LocalFrame::NotifyUserActivation(
@@ -375,7 +376,7 @@ WebInputEventResult GestureManager::HandleGestureLongPress(
 
   long_press_position_in_root_frame_ = gesture_event.PositionInRootFrame();
   HitTestLocation location(frame_->View()->ConvertFromRootFrame(
-      FlooredIntPoint(long_press_position_in_root_frame_)));
+      gfx::ToFlooredPoint(long_press_position_in_root_frame_)));
   HitTestResult hit_test_result =
       frame_->GetEventHandler().HitTestResultAtLocation(location);
 
@@ -482,7 +483,7 @@ WebInputEventResult GestureManager::SendContextMenuEventForGesture(
   if (!suppress_mouse_events_from_gestures_ && frame_->View()) {
     HitTestRequest request(HitTestRequest::kActive);
     PhysicalOffset document_point(frame_->View()->ConvertFromRootFrame(
-        FlooredIntPoint(targeted_event.Event().PositionInRootFrame())));
+        gfx::ToFlooredPoint(targeted_event.Event().PositionInRootFrame())));
     MouseEventWithHitTestResults mev =
         frame_->GetDocument()->PerformMouseEventHitTest(request, document_point,
                                                         mouse_event);

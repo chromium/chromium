@@ -23,11 +23,12 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_GEOMETRY_FLOAT_POINT_3D_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GEOMETRY_FLOAT_POINT_3D_H_
 
-#include "third_party/blink/renderer/platform/geometry/float_point.h"
+#include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 #include "third_party/skia/include/core/SkPoint3.h"
 #include "ui/gfx/geometry/point3_f.h"
+#include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/vector3d_f.h"
 
 namespace blink {
@@ -40,7 +41,7 @@ class PLATFORM_EXPORT FloatPoint3D {
 
   constexpr FloatPoint3D(float x, float y, float z) : x_(x), y_(y), z_(z) {}
 
-  constexpr FloatPoint3D(const FloatPoint& p) : x_(p.x()), y_(p.y()), z_(0) {}
+  constexpr FloatPoint3D(const gfx::PointF& p) : x_(p.x()), y_(p.y()), z_(0) {}
 
   constexpr FloatPoint3D(const FloatPoint3D&) = default;
 

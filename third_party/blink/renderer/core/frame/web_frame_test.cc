@@ -2407,7 +2407,7 @@ TEST_F(WebFrameTest,
   web_view_helper.GetWebView()->GetSettings()->SetForceZeroLayoutHeight(true);
   web_view_helper.Resize(gfx::Size(viewport_width, viewport_height));
 
-  FloatPoint hit_point = FloatPoint(30, 30);  // button size is 100x100
+  gfx::PointF hit_point = gfx::PointF(30, 30);  // button size is 100x100
 
   WebLocalFrameImpl* frame = web_view_helper.LocalMainFrame();
   Document* document = frame->GetFrame()->GetDocument();
@@ -2421,8 +2421,8 @@ TEST_F(WebFrameTest,
                                 WebInputEvent::GetStaticTimeStampForTests(),
                                 WebGestureDevice::kTouchscreen);
   gesture_event.SetFrameScale(1);
-  gesture_event.SetPositionInWidget(ToGfxPointF(hit_point));
-  gesture_event.SetPositionInScreen(ToGfxPointF(hit_point));
+  gesture_event.SetPositionInWidget(hit_point);
+  gesture_event.SetPositionInScreen(hit_point);
   web_view_helper.GetWebView()
       ->MainFrameImpl()
       ->GetFrame()
@@ -3244,14 +3244,6 @@ TEST_F(WebFrameTest, DesktopPageCanBeZoomedInWhenWideViewportIsTurnedOff) {
 
 class WebFrameResizeTest : public WebFrameTest {
  protected:
-  static FloatSize ComputeRelativeOffset(const gfx::Point& absolute_offset,
-                                         const LayoutRect& rect) {
-    FloatSize relative_offset =
-        FloatPoint(absolute_offset) - FloatPoint(rect.Location());
-    relative_offset.Scale(1.f / rect.Width(), 1.f / rect.Height());
-    return relative_offset;
-  }
-
   void TestResizeYieldsCorrectScrollAndScale(
       const char* url,
       const float initial_page_scale_factor,
@@ -5163,7 +5155,7 @@ TEST_F(WebFrameTest, FindInPageMatchRects) {
 
     // Select the match by the center of its rect.
     EXPECT_EQ(main_frame->EnsureTextFinder().SelectNearestFindMatch(
-                  ToGfxPointF(result_rect.CenterPoint()), nullptr),
+                  result_rect.CenterPoint(), nullptr),
               result_index + 1);
 
     // Check that the find result ordering matches with our expectations.
@@ -6491,26 +6483,26 @@ class CompositedSelectionBoundsTest
                                             .As<v8::Int32>()
                                             ->Value();
 
-    FloatPoint hit_point;
+    gfx::PointF hit_point;
 
     if (expected_result.Length() >= 17) {
-      hit_point = FloatPoint(expected_result.Get(context, 15)
-                                 .ToLocalChecked()
-                                 .As<v8::Int32>()
-                                 ->Value(),
-                             expected_result.Get(context, 16)
-                                 .ToLocalChecked()
-                                 .As<v8::Int32>()
-                                 ->Value());
+      hit_point = gfx::PointF(expected_result.Get(context, 15)
+                                  .ToLocalChecked()
+                                  .As<v8::Int32>()
+                                  ->Value(),
+                              expected_result.Get(context, 16)
+                                  .ToLocalChecked()
+                                  .As<v8::Int32>()
+                                  ->Value());
     } else {
       hit_point =
-          FloatPoint((start_edge_start_in_layer_x + start_edge_end_in_layer_x +
-                      end_edge_start_in_layer_x + end_edge_end_in_layer_x) /
-                         4,
-                     (start_edge_start_in_layer_y + start_edge_end_in_layer_y +
-                      end_edge_start_in_layer_y + end_edge_end_in_layer_y) /
-                             4 +
-                         3);
+          gfx::PointF((start_edge_start_in_layer_x + start_edge_end_in_layer_x +
+                       end_edge_start_in_layer_x + end_edge_end_in_layer_x) /
+                          4,
+                      (start_edge_start_in_layer_y + start_edge_end_in_layer_y +
+                       end_edge_start_in_layer_y + end_edge_end_in_layer_y) /
+                              4 +
+                          3);
     }
 
     WebGestureEvent gesture_event(WebInputEvent::Type::kGestureTap,
@@ -6518,8 +6510,8 @@ class CompositedSelectionBoundsTest
                                   WebInputEvent::GetStaticTimeStampForTests(),
                                   WebGestureDevice::kTouchscreen);
     gesture_event.SetFrameScale(1);
-    gesture_event.SetPositionInWidget(ToGfxPointF(hit_point));
-    gesture_event.SetPositionInScreen(ToGfxPointF(hit_point));
+    gesture_event.SetPositionInWidget(hit_point);
+    gesture_event.SetPositionInScreen(hit_point);
 
     web_view_helper_.GetWebView()
         ->MainFrameImpl()
@@ -7363,7 +7355,7 @@ TEST_F(WebFrameTest, CompositorScrollIsUserScrollLongPage) {
   auto* scrollable_area = frame_impl->GetFrameView()->LayoutViewport();
 
   // Do a compositor scroll, verify that this is counted as a user scroll.
-  scrollable_area->DidCompositorScroll(FloatPoint(0, 1));
+  scrollable_area->DidCompositorScroll(gfx::PointF(0, 1));
   web_view_helper.GetWebView()
       ->MainFrameWidget()
       ->ApplyViewportChangesForTesting({gfx::Vector2dF(), gfx::Vector2dF(),
@@ -7376,7 +7368,7 @@ TEST_F(WebFrameTest, CompositorScrollIsUserScrollLongPage) {
   initial_scroll_state.was_scrolled_by_user = false;
 
   // The page scale 1.0f and scroll.
-  scrollable_area->DidCompositorScroll(FloatPoint(0, 2));
+  scrollable_area->DidCompositorScroll(gfx::PointF(0, 2));
   web_view_helper.GetWebView()
       ->MainFrameWidget()
       ->ApplyViewportChangesForTesting({gfx::Vector2dF(), gfx::Vector2dF(),
@@ -7388,7 +7380,7 @@ TEST_F(WebFrameTest, CompositorScrollIsUserScrollLongPage) {
   initial_scroll_state.was_scrolled_by_user = false;
 
   // No scroll event if there is no scroll delta.
-  scrollable_area->DidCompositorScroll(FloatPoint(0, 2));
+  scrollable_area->DidCompositorScroll(gfx::PointF(0, 2));
   web_view_helper.GetWebView()
       ->MainFrameWidget()
       ->ApplyViewportChangesForTesting({gfx::Vector2dF(), gfx::Vector2dF(),
@@ -7399,7 +7391,7 @@ TEST_F(WebFrameTest, CompositorScrollIsUserScrollLongPage) {
   client.Reset();
 
   // Non zero page scale and scroll.
-  scrollable_area->DidCompositorScroll(FloatPoint(9, 15));
+  scrollable_area->DidCompositorScroll(gfx::PointF(9, 15));
   web_view_helper.GetWebView()
       ->MainFrameWidget()
       ->ApplyViewportChangesForTesting({gfx::Vector2dF(), gfx::Vector2dF(),
@@ -12256,14 +12248,14 @@ TEST_F(WebFrameSimTest, FindInPageSelectNextMatch) {
   ASSERT_EQ(2ul, web_match_rects.size());
 
   FloatRect result_rect = static_cast<FloatRect>(web_match_rects[0]);
-  frame->EnsureTextFinder().SelectNearestFindMatch(
-      ToGfxPointF(result_rect.CenterPoint()), nullptr);
+  frame->EnsureTextFinder().SelectNearestFindMatch(result_rect.CenterPoint(),
+                                                   nullptr);
 
   EXPECT_TRUE(frame_view->GetScrollableArea()->VisibleContentRect().Contains(
       box1_rect));
   result_rect = static_cast<FloatRect>(web_match_rects[1]);
-  frame->EnsureTextFinder().SelectNearestFindMatch(
-      ToGfxPointF(result_rect.CenterPoint()), nullptr);
+  frame->EnsureTextFinder().SelectNearestFindMatch(result_rect.CenterPoint(),
+                                                   nullptr);
 
   EXPECT_TRUE(
       frame_view->GetScrollableArea()->VisibleContentRect().Contains(box2_rect))
@@ -12408,7 +12400,7 @@ TEST_F(WebFrameSimTest, TestScrollFocusedEditableElementIntoView) {
   frame_view->GetScrollableArea()->SetScrollOffset(
       ScrollOffset(0, 0), mojom::blink::ScrollType::kProgrammatic);
 
-  ASSERT_EQ(FloatPoint(),
+  ASSERT_EQ(gfx::Point(),
             frame_view->GetScrollableArea()->VisibleContentRect().origin());
 
   WebView()
@@ -12419,8 +12411,9 @@ TEST_F(WebFrameSimTest, TestScrollFocusedEditableElementIntoView) {
   EXPECT_EQ(1, WebView().FakePageScaleAnimationPageScaleForTesting());
 
   frame_view->LayoutViewport()->SetScrollOffset(
-      ToFloatSize(FloatPoint(
-          WebView().FakePageScaleAnimationTargetPositionForTesting())),
+      FloatSize(gfx::PointF(
+                    WebView().FakePageScaleAnimationTargetPositionForTesting())
+                    .OffsetFromOrigin()),
       mojom::blink::ScrollType::kProgrammatic);
 
   EXPECT_TRUE(frame_view->GetScrollableArea()->VisibleContentRect().Contains(
@@ -12450,8 +12443,9 @@ TEST_F(WebFrameSimTest, TestScrollFocusedEditableElementIntoView) {
       ->FrameWidget()
       ->ScrollFocusedEditableElementIntoView();
   frame_view->GetScrollableArea()->SetScrollOffset(
-      ToFloatSize(FloatPoint(
-          WebView().FakePageScaleAnimationTargetPositionForTesting())),
+      FloatSize(gfx::PointF(
+                    WebView().FakePageScaleAnimationTargetPositionForTesting())
+                    .OffsetFromOrigin()),
       mojom::blink::ScrollType::kProgrammatic);
 
   EXPECT_TRUE(frame_view->GetScrollableArea()->VisibleContentRect().Contains(
@@ -12524,7 +12518,7 @@ TEST_F(WebFrameSimTest, TestScrollFocusedEditableInRootScroller) {
   LocalFrameView* frame_view = frame->View();
   IntRect inputRect(200, 700, 100, 20);
   ASSERT_EQ(1, visual_viewport.Scale());
-  ASSERT_EQ(FloatPoint(0, 300),
+  ASSERT_EQ(gfx::Point(0, 300),
             frame_view->GetScrollableArea()->VisibleContentRect().origin());
   ASSERT_FALSE(frame_view->GetScrollableArea()->VisibleContentRect().Contains(
       inputRect));
@@ -12536,8 +12530,9 @@ TEST_F(WebFrameSimTest, TestScrollFocusedEditableInRootScroller) {
 
   EXPECT_EQ(1, WebView().FakePageScaleAnimationPageScaleForTesting());
 
-  ScrollOffset target_offset = ToFloatSize(
-      FloatPoint(WebView().FakePageScaleAnimationTargetPositionForTesting()));
+  ScrollOffset target_offset = FloatSize(
+      gfx::PointF(WebView().FakePageScaleAnimationTargetPositionForTesting())
+          .OffsetFromOrigin());
 
   rs_controller.RootScrollerArea()->SetScrollOffset(
       target_offset, mojom::blink::ScrollType::kProgrammatic);
@@ -12606,7 +12601,7 @@ TEST_F(WebFrameSimTest, ScrollFocusedIntoViewClipped) {
   LocalFrameView* frame_view = frame->View();
   VisualViewport& visual_viewport = frame->GetPage()->GetVisualViewport();
 
-  ASSERT_EQ(FloatPoint(),
+  ASSERT_EQ(gfx::Point(),
             frame_view->GetScrollableArea()->VisibleContentRect().origin());
 
   // Simulate the keyboard being shown and resizing the widget. Cause a scroll
@@ -12755,8 +12750,8 @@ TEST_F(WebFrameSimTest, DoubleTapZoomWhileScrolled) {
     gfx::Rect block_bounds = ComputeBlockBoundHelper(&WebView(), point, false);
     WebView().AnimateDoubleTapZoom(point, block_bounds);
     EXPECT_TRUE(WebView().FakeDoubleTapAnimationPendingForTesting());
-    ScrollOffset new_offset = ToScrollOffset(
-        FloatPoint(WebView().FakePageScaleAnimationTargetPositionForTesting()));
+    ScrollOffset new_offset = ToScrollOffset(gfx::PointF(
+        WebView().FakePageScaleAnimationTargetPositionForTesting()));
     float new_scale = WebView().FakePageScaleAnimationPageScaleForTesting();
     visual_viewport.SetScale(new_scale);
     frame_view->GetScrollableArea()->SetScrollOffset(

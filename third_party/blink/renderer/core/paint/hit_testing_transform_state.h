@@ -27,11 +27,11 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_HIT_TESTING_TRANSFORM_STATE_H_
 
 #include "third_party/blink/renderer/core/layout/geometry/physical_rect.h"
-#include "third_party/blink/renderer/platform/geometry/float_point.h"
 #include "third_party/blink/renderer/platform/geometry/float_quad.h"
 #include "third_party/blink/renderer/platform/transforms/affine_transform.h"
 #include "third_party/blink/renderer/platform/transforms/transformation_matrix.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
+#include "ui/gfx/geometry/point_f.h"
 
 namespace blink {
 
@@ -41,7 +41,7 @@ class HitTestingTransformState {
   STACK_ALLOCATED();
 
  public:
-  HitTestingTransformState(const FloatPoint& p,
+  HitTestingTransformState(const gfx::PointF& p,
                            const FloatQuad& quad,
                            const FloatQuad& area)
       : last_planar_point_(p),
@@ -55,7 +55,7 @@ class HitTestingTransformState {
   void Translate(const gfx::Vector2dF&);
   void ApplyTransform(const TransformPaintPropertyNode&);
 
-  FloatPoint MappedPoint() const;
+  gfx::PointF MappedPoint() const;
   FloatQuad MappedQuad() const;
   PhysicalRect BoundsOfMappedQuad() const;
   PhysicalRect BoundsOfMappedArea() const;
@@ -65,7 +65,7 @@ class HitTestingTransformState {
   }
 
  private:
-  FloatPoint last_planar_point_;
+  gfx::PointF last_planar_point_;
   FloatQuad last_planar_quad_;
   FloatQuad last_planar_area_;
   TransformationMatrix accumulated_transform_;

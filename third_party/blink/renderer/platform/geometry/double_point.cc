@@ -10,8 +10,8 @@
 
 namespace blink {
 
-DoublePoint::operator FloatPoint() const {
-  return FloatPoint(ClampTo<float>(x_), ClampTo<float>(y_));
+DoublePoint::operator gfx::PointF() const {
+  return gfx::PointF(ClampTo<float>(x_), ClampTo<float>(y_));
 }
 
 DoublePoint DoublePoint::ExpandedTo(const DoublePoint& other) const {

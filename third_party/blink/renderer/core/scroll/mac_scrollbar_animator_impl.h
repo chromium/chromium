@@ -9,12 +9,12 @@
 #include "base/task/single_thread_task_runner.h"
 #include "third_party/blink/renderer/core/scroll/mac_scrollbar_animator.h"
 #include "third_party/blink/renderer/core/scroll/scroll_animator_base.h"
-#include "third_party/blink/renderer/platform/geometry/float_point.h"
 #include "third_party/blink/renderer/platform/geometry/float_size.h"
 #include "third_party/blink/renderer/platform/geometry/int_rect.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cancellable_task.h"
 #include "third_party/blink/renderer/platform/timer.h"
+#include "ui/gfx/geometry/point_f.h"
 
 @class BlinkScrollbarObserver;
 @class BlinkScrollbarPainterControllerDelegate;

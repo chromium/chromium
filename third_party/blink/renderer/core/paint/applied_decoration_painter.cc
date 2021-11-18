@@ -31,7 +31,7 @@ void AppliedDecorationPainter::Paint(const PaintFlags* flags) {
       if (decoration_info_.DecorationStyle() == ETextDecorationStyle::kDouble) {
         context_.DrawLineForText(
             decoration_info_.StartPoint(line_) +
-                FloatPoint(0, decoration_info_.DoubleOffset(line_)),
+                gfx::Vector2dF(0, decoration_info_.DoubleOffset(line_)),
             decoration_info_.Width(), auto_dark_mode, flags);
       }
   }

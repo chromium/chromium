@@ -132,7 +132,7 @@ class CORE_EXPORT RootFrameViewport final
   void SetSnapContainerDataNeedsUpdate(bool) override;
   bool NeedsResnap() const override;
   void SetNeedsResnap(bool) override;
-  absl::optional<FloatPoint> GetSnapPositionAndSetTarget(
+  absl::optional<gfx::PointF> GetSnapPositionAndSetTarget(
       const cc::SnapSelectionStrategy& strategy) override;
 
   void SetPendingHistoryRestoreScrollOffset(

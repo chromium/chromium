@@ -29,9 +29,9 @@
 #include "base/gtest_prod_util.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/layout/geometry/physical_offset.h"
-#include "third_party/blink/renderer/platform/geometry/float_point.h"
 #include "third_party/blink/renderer/platform/geometry/float_size.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
+#include "ui/gfx/geometry/point_f.h"
 
 namespace blink {
 
@@ -79,17 +79,17 @@ class CORE_EXPORT AutoscrollController final
   void StopAutoscrollIfNeeded(LayoutObject*);
   void UpdateAutoscrollLayoutObject();
   void UpdateDragAndDrop(Node* target_node,
-                         const FloatPoint& event_position,
+                         const gfx::PointF& event_position,
                          base::TimeTicks event_time);
 
   // Middle-click autoscroll.
   void StartMiddleClickAutoscroll(LocalFrame*,
                                   LayoutBox* scrollable,
-                                  const FloatPoint& position,
-                                  const FloatPoint& position_global);
+                                  const gfx::PointF& position,
+                                  const gfx::PointF& position_global);
   void HandleMouseMoveForMiddleClickAutoscroll(
       LocalFrame*,
-      const FloatPoint& position_global,
+      const gfx::PointF& position_global,
       bool is_middle_button);
   void HandleMouseReleaseForMiddleClickAutoscroll(LocalFrame*,
                                                   bool is_middle_button);
@@ -114,7 +114,7 @@ class CORE_EXPORT AutoscrollController final
   // Middle-click autoscroll.
   Member<LayoutBox> horizontal_autoscroll_layout_box_ = nullptr;
   Member<LayoutBox> vertical_autoscroll_layout_box_ = nullptr;
-  FloatPoint middle_click_autoscroll_start_pos_global_;
+  gfx::PointF middle_click_autoscroll_start_pos_global_;
   gfx::Vector2dF last_velocity_;
   MiddleClickMode middle_click_mode_ = kMiddleClickInitial;
 

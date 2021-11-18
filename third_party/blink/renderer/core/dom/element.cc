@@ -1624,9 +1624,8 @@ void Element::setScrollLeft(double new_left) {
                             scrollable_area->GetScrollOffset().height());
     std::unique_ptr<cc::SnapSelectionStrategy> strategy =
         cc::SnapSelectionStrategy::CreateForEndPosition(
-            ToGfxPointF(scrollable_area->ScrollOffsetToPosition(end_offset)),
-            true, false);
-    absl::optional<FloatPoint> snap_point =
+            scrollable_area->ScrollOffsetToPosition(end_offset), true, false);
+    absl::optional<gfx::PointF> snap_point =
         scrollable_area->GetSnapPositionAndSetTarget(*strategy);
     if (snap_point.has_value()) {
       end_offset = scrollable_area->ScrollPositionToOffset(snap_point.value());
@@ -1676,9 +1675,8 @@ void Element::setScrollTop(double new_top) {
                             new_top * box->Style()->EffectiveZoom());
     std::unique_ptr<cc::SnapSelectionStrategy> strategy =
         cc::SnapSelectionStrategy::CreateForEndPosition(
-            ToGfxPointF(scrollable_area->ScrollOffsetToPosition(end_offset)),
-            false, true);
-    absl::optional<FloatPoint> snap_point =
+            scrollable_area->ScrollOffsetToPosition(end_offset), false, true);
+    absl::optional<gfx::PointF> snap_point =
         scrollable_area->GetSnapPositionAndSetTarget(*strategy);
     if (snap_point.has_value()) {
       end_offset = scrollable_area->ScrollPositionToOffset(snap_point.value());
@@ -1805,8 +1803,7 @@ void Element::ScrollLayoutBoxBy(const ScrollToOptions* scroll_to_options) {
     gfx::PointF current_position(scrollable_area->ScrollPosition().x(),
                                  scrollable_area->ScrollPosition().y());
     displacement.Scale(box->Style()->EffectiveZoom());
-    gfx::PointF new_offset = current_position + displacement;
-    FloatPoint new_position(new_offset.x(), new_offset.y());
+    gfx::PointF new_position = current_position + displacement;
 
     std::unique_ptr<cc::SnapSelectionStrategy> strategy =
         cc::SnapSelectionStrategy::CreateForEndAndDirection(
@@ -1868,9 +1865,9 @@ void Element::ScrollLayoutBoxTo(const ScrollToOptions* scroll_to_options) {
 
     std::unique_ptr<cc::SnapSelectionStrategy> strategy =
         cc::SnapSelectionStrategy::CreateForEndPosition(
-            ToGfxPointF(scrollable_area->ScrollOffsetToPosition(new_offset)),
+            scrollable_area->ScrollOffsetToPosition(new_offset),
             scroll_to_options->hasLeft(), scroll_to_options->hasTop());
-    absl::optional<FloatPoint> snap_point =
+    absl::optional<gfx::PointF> snap_point =
         scrollable_area->GetSnapPositionAndSetTarget(*strategy);
     if (snap_point.has_value()) {
       new_offset = scrollable_area->ScrollPositionToOffset(snap_point.value());
@@ -1905,10 +1902,8 @@ void Element::ScrollFrameBy(const ScrollToOptions* scroll_to_options) {
     return;
 
   displacement.Scale(frame->PageZoomFactor());
-  FloatPoint new_position = viewport->ScrollPosition() +
-                            FloatPoint(displacement.x(), displacement.y());
-
-  gfx::PointF current_position = ToGfxPointF(viewport->ScrollPosition());
+  gfx::PointF new_position = viewport->ScrollPosition() + displacement;
+  gfx::PointF current_position = viewport->ScrollPosition();
   std::unique_ptr<cc::SnapSelectionStrategy> strategy =
       cc::SnapSelectionStrategy::CreateForEndAndDirection(
           current_position, displacement,
@@ -1945,10 +1940,10 @@ void Element::ScrollFrameTo(const ScrollToOptions* scroll_to_options) {
         frame->PageZoomFactor());
   }
 
-  FloatPoint new_position = viewport->ScrollOffsetToPosition(new_offset);
+  gfx::PointF new_position = viewport->ScrollOffsetToPosition(new_offset);
   std::unique_ptr<cc::SnapSelectionStrategy> strategy =
       cc::SnapSelectionStrategy::CreateForEndPosition(
-          ToGfxPointF(new_position), scroll_to_options->hasLeft(),
+          new_position, scroll_to_options->hasLeft(),
           scroll_to_options->hasTop());
   new_position =
       viewport->GetSnapPositionAndSetTarget(*strategy).value_or(new_position);

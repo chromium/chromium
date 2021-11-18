@@ -496,9 +496,9 @@ void XRInputSource::ProcessOverlayHitTest(
   // Do a hit test at the overlay pointer position to see if the pointer
   // intersects a cross origin iframe. If yes, set the visibility to false which
   // causes targetRaySpace and gripSpace to return null poses.
-  FloatPoint point(new_state->overlay_pointer_position->x(),
-                   new_state->overlay_pointer_position->y());
-  DVLOG(3) << __func__ << ": hit test point=" << point;
+  gfx::PointF point(new_state->overlay_pointer_position->x(),
+                    new_state->overlay_pointer_position->y());
+  DVLOG(3) << __func__ << ": hit test point=" << point.ToString();
 
   HitTestRequest::HitTestRequestType hit_type = HitTestRequest::kTouchEvent |
                                                 HitTestRequest::kReadOnly |

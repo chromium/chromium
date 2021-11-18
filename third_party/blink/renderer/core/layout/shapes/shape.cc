@@ -252,7 +252,7 @@ static bool ExtractImageData(Image* image,
   // for layout, which is not allowed. See https://crbug.com/429346
   ImageObserverDisabler disabler(image);
   PaintFlags flags;
-  FloatRect image_source_rect(FloatPoint(), FloatSize(image->Size()));
+  FloatRect image_source_rect(gfx::PointF(), FloatSize(image->Size()));
   IntRect image_dest_rect(gfx::Point(), image_size);
   SkiaPaintCanvas canvas(surface->getCanvas());
   canvas.clear(SK_ColorTRANSPARENT);

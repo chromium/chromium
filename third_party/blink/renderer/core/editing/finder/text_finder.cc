@@ -739,14 +739,14 @@ Vector<gfx::RectF> TextFinder::FindMatchRects() {
 
 int TextFinder::SelectNearestFindMatch(const gfx::PointF& point,
                                        gfx::Rect* selection_rect) {
-  int index = NearestFindMatch(FloatPoint(point), nullptr);
+  int index = NearestFindMatch(point, nullptr);
   if (index != -1)
     return SelectFindMatch(static_cast<unsigned>(index), selection_rect);
 
   return -1;
 }
 
-int TextFinder::NearestFindMatch(const FloatPoint& point,
+int TextFinder::NearestFindMatch(const gfx::PointF& point,
                                  float* distance_squared) {
   UpdateFindMatchRects();
 
@@ -754,10 +754,8 @@ int TextFinder::NearestFindMatch(const FloatPoint& point,
   float nearest_distance_squared = FLT_MAX;
   for (wtf_size_t i = 0; i < find_matches_cache_.size(); ++i) {
     DCHECK(!find_matches_cache_[i].rect_.IsEmpty());
-    FloatSize offset = point - find_matches_cache_[i].rect_.CenterPoint();
-    float width = offset.width();
-    float height = offset.height();
-    float current_distance_squared = width * width + height * height;
+    gfx::Vector2dF offset = point - find_matches_cache_[i].rect_.CenterPoint();
+    float current_distance_squared = offset.LengthSquared();
     if (current_distance_squared < nearest_distance_squared) {
       nearest = i;
       nearest_distance_squared = current_distance_squared;

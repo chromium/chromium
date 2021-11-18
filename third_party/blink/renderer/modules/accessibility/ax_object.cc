@@ -4297,7 +4297,7 @@ AXObject* AXObject::ElementAccessibilityHitTest(const gfx::Point& point) const {
   // Check if there are any mock elements that need to be handled.
   for (const auto& child : ChildrenIncludingIgnored()) {
     if (child->IsMockObject() &&
-        child->GetBoundsInFrameCoordinates().Contains(point))
+        child->GetBoundsInFrameCoordinates().Contains(LayoutPoint(point)))
       return child->ElementAccessibilityHitTest(point);
   }
 
@@ -5288,8 +5288,8 @@ void AXObject::GetRelativeBounds(AXObject** out_container,
             view->GetPage()->GetChromeClient().WindowToViewportScalar(
                 layout_object->GetFrame(), 1.0f);
         out_bounds_in_container.set_origin(
-            FloatPoint(scale_factor * (frame_rect.x() - root_frame_rect.x()),
-                       scale_factor * (frame_rect.y() - root_frame_rect.y())));
+            gfx::PointF(scale_factor * (frame_rect.x() - root_frame_rect.x()),
+                        scale_factor * (frame_rect.y() - root_frame_rect.y())));
       }
     }
     return;

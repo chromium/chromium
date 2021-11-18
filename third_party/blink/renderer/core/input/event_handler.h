@@ -129,8 +129,8 @@ class CORE_EXPORT EventHandler final : public GarbageCollected<EventHandler> {
 
   void ResizeScrollableAreaDestroyed();
 
-  FloatPoint LastKnownMousePositionInRootFrame() const;
-  FloatPoint LastKnownMouseScreenPosition() const;
+  gfx::PointF LastKnownMousePositionInRootFrame() const;
+  gfx::PointF LastKnownMouseScreenPosition() const;
 
   gfx::Point DragDataTransferLocationForTesting();
 
@@ -204,7 +204,7 @@ class CORE_EXPORT EventHandler final : public GarbageCollected<EventHandler> {
                                            const HitTestResult&,
                                            gfx::Point& target_point,
                                            Node*& target_node);
-  void CacheTouchAdjustmentResult(uint32_t, FloatPoint);
+  void CacheTouchAdjustmentResult(uint32_t, gfx::PointF);
 
   // Dispatch a context menu event. If |override_target_element| is provided,
   // the context menu event will use that, so that the browser-generated context

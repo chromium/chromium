@@ -92,6 +92,8 @@
 #include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom-blink.h"
 #include "ui/display/screen_info.h"
+#include "ui/gfx/geometry/point_conversions.h"
+#include "ui/gfx/geometry/vector2d_conversions.h"
 
 #if defined(OS_WIN)
 #include <windows.h>
@@ -124,9 +126,8 @@ static bool DragTypeIsValid(DragSourceAction action) {
 
 static WebMouseEvent CreateMouseEvent(DragData* drag_data) {
   WebMouseEvent result(
-      WebInputEvent::Type::kMouseMove, ToGfxPointF(drag_data->ClientPosition()),
-      ToGfxPointF(drag_data->GlobalPosition()),
-      WebPointerProperties::Button::kLeft, 0,
+      WebInputEvent::Type::kMouseMove, drag_data->ClientPosition(),
+      drag_data->GlobalPosition(), WebPointerProperties::Button::kLeft, 0,
       static_cast<WebInputEvent::Modifiers>(drag_data->GetModifiers()),
       base::TimeTicks::Now());
   // TODO(dtapuska): Really we should chnage DragData to store the viewport
@@ -241,7 +242,7 @@ void DragController::DragExited(DragData* drag_data, LocalFrame& local_root) {
 void DragController::PerformDrag(DragData* drag_data, LocalFrame& local_root) {
   DCHECK(drag_data);
   document_under_mouse_ = local_root.DocumentAtPoint(
-      PhysicalOffset::FromFloatPointRound(drag_data->ClientPosition()));
+      PhysicalOffset::FromPointFRound(drag_data->ClientPosition()));
   LocalFrame::NotifyUserActivation(
       document_under_mouse_ ? document_under_mouse_->GetFrame() : nullptr,
       mojom::blink::UserActivationNotificationType::kInteraction);
@@ -262,7 +263,7 @@ void DragController::PerformDrag(DragData* drag_data, LocalFrame& local_root) {
         // When drop target is plugin element and it can process drag, we
         // should prevent default behavior.
         const HitTestLocation location(local_root.View()->ConvertFromRootFrame(
-            PhysicalOffset::FromFloatPointRound(drag_data->ClientPosition())));
+            PhysicalOffset::FromPointFRound(drag_data->ClientPosition())));
         const HitTestResult result =
             event_handler.HitTestResultAtLocation(location);
         auto* html_plugin_element =
@@ -340,7 +341,7 @@ DragOperation DragController::DragEnteredOrUpdated(DragData* drag_data,
   DCHECK(drag_data);
 
   MouseMovedIntoDocument(local_root.DocumentAtPoint(
-      PhysicalOffset::FromFloatPointRound(drag_data->ClientPosition())));
+      PhysicalOffset::FromPointFRound(drag_data->ClientPosition())));
 
   // TODO(esprehn): Replace acceptsLoadDrops with a Setting used in core.
   drag_destination_action_ =
@@ -438,7 +439,7 @@ bool DragController::TryDocumentDrag(DragData* drag_data,
   if ((action_mask & kDragDestinationActionEdit) &&
       CanProcessDrag(drag_data, local_root)) {
     PhysicalOffset point = frame_view->ConvertFromRootFrame(
-        PhysicalOffset::FromFloatPointRound(drag_data->ClientPosition()));
+        PhysicalOffset::FromPointFRound(drag_data->ClientPosition()));
     Element* element = ElementUnderMouse(document_under_mouse_.Get(), point);
     if (!element)
       return false;
@@ -488,7 +489,7 @@ DragOperation DragController::OperationForLoad(DragData* drag_data,
                                                LocalFrame& local_root) {
   DCHECK(drag_data);
   Document* doc = local_root.DocumentAtPoint(
-      PhysicalOffset::FromFloatPointRound(drag_data->ClientPosition()));
+      PhysicalOffset::FromPointFRound(drag_data->ClientPosition()));
 
   if (doc && (did_initiate_drag_ || IsA<PluginDocument>(doc) ||
               HasEditableStyle(*doc)))
@@ -563,7 +564,7 @@ bool DragController::ConcludeEditDrag(DragData* drag_data) {
     return false;
 
   PhysicalOffset point = document_under_mouse_->View()->ConvertFromRootFrame(
-      PhysicalOffset::FromFloatPointRound(drag_data->ClientPosition()));
+      PhysicalOffset::FromPointFRound(drag_data->ClientPosition()));
   Element* element = ElementUnderMouse(document_under_mouse_.Get(), point);
   if (!element)
     return false;
@@ -731,7 +732,7 @@ bool DragController::CanProcessDrag(DragData* drag_data,
 
   const PhysicalOffset point_in_local_root =
       local_root.View()->ConvertFromRootFrame(
-          PhysicalOffset::FromFloatPointRound(drag_data->ClientPosition()));
+          PhysicalOffset::FromPointFRound(drag_data->ClientPosition()));
 
   const HitTestResult result =
       local_root.GetEventHandler().HitTestResultAtLocation(
@@ -758,8 +759,8 @@ bool DragController::CanProcessDrag(DragData* drag_data,
             ->GetDocument()
             .GetFrame()
             ->View()
-            ->ConvertFromRootFrame(PhysicalOffset::FromFloatPointRound(
-                drag_data->ClientPosition()));
+            ->ConvertFromRootFrame(
+                PhysicalOffset::FromPointFRound(drag_data->ClientPosition()));
     return !result.IsSelected(HitTestLocation(point_in_frame));
   }
 
@@ -1124,9 +1125,9 @@ static gfx::Point DragLocationForImage(
   // Properly orient the drag image and orient it differently if it's smaller
   // than the original
   float scale = new_size.width() / static_cast<float>(original_size.width());
-  FloatPoint offset(image_element_location - drag_origin);
+  gfx::Vector2dF offset = image_element_location - drag_origin;
   return drag_origin +
-         RoundedIntPoint(offset.ScaledBy(scale)).OffsetFromOrigin();
+         gfx::ToRoundedVector2d(gfx::ScaleVector2d(offset, scale));
 }
 
 static std::unique_ptr<DragImage> DragImageForLink(const KURL& link_url,
@@ -1148,16 +1149,16 @@ static gfx::Point DragLocationForLink(const DragImage* link_image,
     return origin;
 
   // Offset the image so that the cursor is horizontally centered.
-  FloatPoint image_offset(-link_image->Size().width() / 2.f,
-                          -kLinkDragBorderInset);
+  gfx::PointF image_offset(-link_image->Size().width() / 2.f,
+                           -kLinkDragBorderInset);
   // |origin| is in the coordinate space of the frame's contents whereas the
   // size of |link_image| is in physical pixels. Adjust the image offset to be
   // scaled in the frame's contents.
   // TODO(pdr): Unify this calculation with the DragImageForImage scaling code.
   float scale = 1.f / (device_scale_factor * page_scale_factor);
-  image_offset.Scale(scale, scale);
-  image_offset.MoveBy(origin);
-  return RoundedIntPoint(image_offset);
+  image_offset.Scale(scale);
+  image_offset += origin.OffsetFromOrigin();
+  return gfx::ToRoundedPoint(image_offset);
 }
 
 // static
@@ -1186,8 +1187,8 @@ std::unique_ptr<DragImage> DragController::DragImageForSelection(
                                  .LocalBorderBoxProperties()
                                  .Unalias();
   return DataTransfer::CreateDragImageForFrame(
-      frame, opacity, painting_rect.size(), painting_rect.origin(), *builder,
-      property_tree_state);
+      frame, opacity, painting_rect.size(), painting_rect.OffsetFromOrigin(),
+      *builder, property_tree_state);
 }
 
 bool DragController::StartDrag(LocalFrame* src,
@@ -1219,7 +1220,7 @@ bool DragController::StartDrag(LocalFrame* src,
   // TODO(pdr): This code shouldn't be necessary because drag_origin is already
   // in the coordinate space of the view's contents.
   gfx::Point mouse_dragged_point = src->View()->ConvertFromRootFrame(
-      FlooredIntPoint(drag_event.PositionInRootFrame()));
+      gfx::ToFlooredPoint(drag_event.PositionInRootFrame()));
 
   gfx::Point drag_location;
   gfx::Point drag_offset;

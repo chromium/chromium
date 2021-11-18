@@ -36,11 +36,12 @@
 #include "third_party/blink/renderer/core/page/chrome_client.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
-#include "third_party/blink/renderer/platform/geometry/float_point.h"
 #include "third_party/blink/renderer/platform/geometry/float_quad.h"
 #include "third_party/blink/renderer/platform/geometry/int_size.h"
 #include "third_party/blink/renderer/platform/text/text_break_iterator.h"
 #include "ui/display/screen_info.h"
+#include "ui/gfx/geometry/point_conversions.h"
+#include "ui/gfx/geometry/point_f.h"
 
 namespace blink {
 
@@ -375,16 +376,16 @@ float HybridDistanceFunction(const gfx::Point& touch_hotspot,
   return hybrid_score;
 }
 
-FloatPoint ConvertToRootFrame(LocalFrameView* view, FloatPoint pt) {
+gfx::PointF ConvertToRootFrame(LocalFrameView* view, gfx::PointF pt) {
   int x = static_cast<int>(pt.x() + 0.5f);
   int y = static_cast<int>(pt.y() + 0.5f);
   gfx::Point adjusted = view->ConvertToRootFrame(gfx::Point(x, y));
-  return FloatPoint(adjusted.x(), adjusted.y());
+  return gfx::PointF(adjusted.x(), adjusted.y());
 }
 
 // Adjusts 'point' to the nearest point inside rect, and leaves it unchanged if
 // already inside.
-void AdjustPointToRect(FloatPoint& point, const IntRect& rect) {
+void AdjustPointToRect(gfx::PointF& point, const IntRect& rect) {
   if (point.x() < rect.x())
     point.set_x(rect.x());
   else if (point.x() > rect.right())
@@ -424,24 +425,24 @@ bool SnapTo(const SubtargetGeometry& geom,
   // the quad. Corner-cases exist where the quad will intersect but this will
   // fail to adjust the point to somewhere in the intersection.
 
-  FloatPoint p1 = ConvertToRootFrame(view, quad.p1());
-  FloatPoint p2 = ConvertToRootFrame(view, quad.p2());
-  FloatPoint p3 = ConvertToRootFrame(view, quad.p3());
-  FloatPoint p4 = ConvertToRootFrame(view, quad.p4());
+  gfx::PointF p1 = ConvertToRootFrame(view, quad.p1());
+  gfx::PointF p2 = ConvertToRootFrame(view, quad.p2());
+  gfx::PointF p3 = ConvertToRootFrame(view, quad.p3());
+  gfx::PointF p4 = ConvertToRootFrame(view, quad.p4());
   quad = FloatQuad(p1, p2, p3, p4);
 
-  if (quad.ContainsPoint(FloatPoint(touch_point))) {
+  if (quad.ContainsPoint(gfx::PointF(touch_point))) {
     adjusted_point = touch_point;
     return true;
   }
 
   // Pull point towards the center of the element.
-  FloatPoint center = quad.Center();
+  gfx::PointF center = quad.Center();
 
   AdjustPointToRect(center, touch_area);
-  adjusted_point = RoundedIntPoint(center);
+  adjusted_point = gfx::ToRoundedPoint(center);
 
-  return quad.ContainsPoint(FloatPoint(adjusted_point));
+  return quad.ContainsPoint(gfx::PointF(adjusted_point));
 }
 
 // A generic function for finding the target node with the lowest distance

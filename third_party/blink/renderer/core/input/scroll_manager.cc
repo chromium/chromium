@@ -35,6 +35,7 @@
 #include "third_party/blink/renderer/platform/heap/heap.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/blink/renderer/platform/widget/input/input_metrics.h"
+#include "ui/gfx/geometry/point_conversions.h"
 
 namespace blink {
 namespace {
@@ -380,7 +381,8 @@ bool ScrollManager::LogicalScroll(mojom::blink::ScrollDirection direction,
         break;
       }
       case ScrollGranularity::kScrollByDocument: {
-        FloatPoint end_position = scrollable_area->ScrollPosition() + delta;
+        gfx::PointF end_position =
+            scrollable_area->ScrollPosition() + ToGfxVector2dF(delta);
         bool scrolled_x = physical_direction == kScrollLeft ||
                           physical_direction == kScrollRight;
         bool scrolled_y = physical_direction == kScrollUp ||
@@ -530,7 +532,8 @@ WebInputEventResult ScrollManager::HandleGestureScrollBegin(
   current_scroll_chain_.clear();
   std::unique_ptr<ScrollStateData> scroll_state_data =
       std::make_unique<ScrollStateData>();
-  gfx::Point position = FlooredIntPoint(gesture_event.PositionInRootFrame());
+  gfx::Point position =
+      gfx::ToFlooredPoint(gesture_event.PositionInRootFrame());
   scroll_state_data->position_x = position.x();
   scroll_state_data->position_y = position.y();
   scroll_state_data->delta_x_hint = -gesture_event.DeltaXInRootFrame();
@@ -625,7 +628,7 @@ WebInputEventResult ScrollManager::HandleGestureScrollUpdate(
   FloatSize delta(-gesture_event.DeltaXInRootFrame(),
                   -gesture_event.DeltaYInRootFrame());
   FloatSize velocity(-gesture_event.VelocityX(), -gesture_event.VelocityY());
-  FloatPoint position(gesture_event.PositionInRootFrame());
+  gfx::PointF position = gesture_event.PositionInRootFrame();
 
   if (delta.IsZero())
     return WebInputEventResult::kNotHandled;
@@ -739,15 +742,15 @@ void ScrollManager::AdjustForSnapAtScrollUpdate(
   if (!scrollable_area)
     return;
 
-  FloatPoint current_position = scrollable_area->ScrollPosition();
+  gfx::PointF current_position = scrollable_area->ScrollPosition();
   std::unique_ptr<cc::SnapSelectionStrategy> strategy =
       cc::SnapSelectionStrategy::CreateForDirection(
-          ToGfxPointF(current_position),
+          current_position,
           gfx::Vector2dF(scroll_state_data->delta_x,
                          scroll_state_data->delta_y),
           RuntimeEnabledFeatures::FractionalScrollOffsetsEnabled());
 
-  absl::optional<FloatPoint> snap_point =
+  absl::optional<gfx::PointF> snap_point =
       scrollable_area->GetSnapPositionAndSetTarget(*strategy);
   if (!snap_point)
     return;
@@ -903,17 +906,17 @@ bool ScrollManager::GetSnapFlingInfoAndSetAnimatingSnapTarget(
   if (!scrollable_area)
     return false;
 
-  FloatPoint current_position = scrollable_area->ScrollPosition();
-  *out_initial_position = ToGfxPointF(current_position);
+  gfx::PointF current_position = scrollable_area->ScrollPosition();
+  *out_initial_position = current_position;
   std::unique_ptr<cc::SnapSelectionStrategy> strategy =
       cc::SnapSelectionStrategy::CreateForEndAndDirection(
           *out_initial_position, natural_displacement,
           RuntimeEnabledFeatures::FractionalScrollOffsetsEnabled());
-  absl::optional<FloatPoint> snap_end =
+  absl::optional<gfx::PointF> snap_end =
       scrollable_area->GetSnapPositionAndSetTarget(*strategy);
   if (!snap_end.has_value())
     return false;
-  *out_target_position = ToGfxPointF(snap_end.value());
+  *out_target_position = snap_end.value();
   return true;
 }
 
@@ -940,8 +943,8 @@ gfx::PointF ScrollManager::ScrollByForSnapFling(const gfx::Vector2dF& delta) {
   scroll_state->SetCurrentNativeScrollingNode(previous_gesture_scrolled_node_);
 
   CustomizedScroll(*scroll_state);
-  FloatPoint end_position = scrollable_area->ScrollPosition();
-  return ToGfxPointF(end_position);
+  // Return the end scroll position.
+  return scrollable_area->ScrollPosition();
 }
 
 void ScrollManager::ScrollEndForSnapFling(bool did_finish) {
@@ -1050,7 +1053,7 @@ WebInputEventResult ScrollManager::HandleGestureScrollEvent(
 
     LocalFrameView* view = frame_->View();
     PhysicalOffset view_point(view->ConvertFromRootFrame(
-        FlooredIntPoint(gesture_event.PositionInRootFrame())));
+        gfx::ToFlooredPoint(gesture_event.PositionInRootFrame())));
     HitTestRequest request(HitTestRequest::kReadOnly);
     HitTestLocation location(view_point);
     HitTestResult result(request, location);
@@ -1203,7 +1206,7 @@ bool ScrollManager::HandleScrollGestureOnResizer(
                             ? event_target->GetLayoutObject()->EnclosingLayer()
                             : nullptr;
     gfx::Point p = frame_->View()->ConvertFromRootFrame(
-        FlooredIntPoint(gesture_event.PositionInRootFrame()));
+        gfx::ToFlooredPoint(gesture_event.PositionInRootFrame()));
     if (layer && layer->GetScrollableArea() &&
         layer->GetScrollableArea()->IsPointInResizeControl(p,
                                                            kResizerForTouch)) {
@@ -1216,8 +1219,7 @@ bool ScrollManager::HandleScrollGestureOnResizer(
   } else if (gesture_event.GetType() ==
              WebInputEvent::Type::kGestureScrollUpdate) {
     if (resize_scrollable_area_ && resize_scrollable_area_->InResizeMode()) {
-      gfx::Point pos =
-          RoundedIntPoint(FloatPoint(gesture_event.PositionInRootFrame()));
+      gfx::Point pos = gfx::ToRoundedPoint(gesture_event.PositionInRootFrame());
       pos.Offset(gesture_event.DeltaXInRootFrame(),
                  gesture_event.DeltaYInRootFrame());
       resize_scrollable_area_->Resize(pos, offset_from_resize_corner_);
@@ -1243,8 +1245,9 @@ void ScrollManager::Resize(const WebMouseEvent& evt) {
   if (evt.GetType() == WebInputEvent::Type::kMouseMove) {
     if (!frame_->GetEventHandler().MousePressed())
       return;
-    resize_scrollable_area_->Resize(FlooredIntPoint(evt.PositionInRootFrame()),
-                                    offset_from_resize_corner_);
+    resize_scrollable_area_->Resize(
+        gfx::ToFlooredPoint(evt.PositionInRootFrame()),
+        offset_from_resize_corner_);
   }
 }
 

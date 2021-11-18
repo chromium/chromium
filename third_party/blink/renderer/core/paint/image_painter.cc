@@ -212,7 +212,7 @@ void ImagePainter::PaintIntoRect(GraphicsContext& context,
   auto respect_orientation = image->HasDefaultOrientation()
                                  ? kDoNotRespectImageOrientation
                                  : image_resource.ImageOrientation();
-  FloatRect src_rect(FloatPoint(), image->SizeAsFloat(respect_orientation));
+  FloatRect src_rect(gfx::PointF(), image->SizeAsFloat(respect_orientation));
 
   // If the content rect requires clipping, adjust |srcRect| and
   // |pixelSnappedDestRect| over using a clip.

@@ -171,7 +171,7 @@ void VTTCueBox::ApplyCSSProperties(
   SetInlineStyleProperty(CSSPropertyID::kWebkitWritingMode,
                          display_parameters.writing_mode);
 
-  const FloatPoint& position = display_parameters.position;
+  const gfx::PointF& position = display_parameters.position;
 
   // the 'top' property must be set to top,
   SetInlineStyleProperty(CSSPropertyID::kTop, position.y(),

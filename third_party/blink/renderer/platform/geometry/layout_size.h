@@ -33,12 +33,12 @@
 
 #include <iosfwd>
 #include "third_party/blink/renderer/platform/geometry/double_size.h"
-#include "third_party/blink/renderer/platform/geometry/float_point.h"
 #include "third_party/blink/renderer/platform/geometry/float_size.h"
 #include "third_party/blink/renderer/platform/geometry/int_size.h"
 #include "third_party/blink/renderer/platform/geometry/layout_unit.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
+#include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/size_f.h"
 #include "ui/gfx/geometry/vector2d_f.h"
 
@@ -68,8 +68,8 @@ class PLATFORM_EXPORT LayoutSize {
   constexpr explicit operator FloatSize() const {
     return FloatSize(width_.ToFloat(), height_.ToFloat());
   }
-  constexpr explicit operator FloatPoint() const {
-    return FloatPoint(width_.ToFloat(), height_.ToFloat());
+  constexpr explicit operator gfx::PointF() const {
+    return gfx::PointF(width_.ToFloat(), height_.ToFloat());
   }
   constexpr explicit operator gfx::SizeF() const {
     return gfx::SizeF(width_.ToFloat(), height_.ToFloat());
@@ -208,8 +208,8 @@ inline bool operator!=(const LayoutSize& a, const IntSize& b) {
   return a.Width() != b.width() || a.Height() != b.height();
 }
 
-constexpr FloatPoint operator+(const FloatPoint& a, const LayoutSize& b) {
-  return FloatPoint(a.x() + b.Width(), a.y() + b.Height());
+constexpr gfx::PointF operator+(const gfx::PointF& a, const LayoutSize& b) {
+  return gfx::PointF(a.x() + b.Width(), a.y() + b.Height());
 }
 
 inline IntSize FlooredIntSize(const LayoutSize& s) {

@@ -44,6 +44,7 @@
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
 #include "third_party/blink/renderer/platform/graphics/paint/drawing_recorder.h"
 #include "third_party/blink/renderer/platform/web_test_support.h"
+#include "ui/gfx/geometry/point_conversions.h"
 
 namespace blink {
 
@@ -362,7 +363,7 @@ bool ScrollbarThemeAura::ShouldSnapBackToDragOrigin(
   int snap_outside_of_max = expansion_amount + thickness;
 
   gfx::Point mouse_position = scrollbar.ConvertFromRootFrame(
-      FlooredIntPoint(event.PositionInRootFrame()));
+      gfx::ToFlooredPoint(event.PositionInRootFrame()));
   int mouse_offset_in_scrollbar =
       is_horizontal ? mouse_position.y() : mouse_position.x();
 

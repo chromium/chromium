@@ -302,7 +302,7 @@ class CORE_EXPORT PaintLayerScrollableArea final
   // only a helper.
   cc::Layer* LayerForScrolling() const override;
 
-  void DidCompositorScroll(const FloatPoint&) override;
+  void DidCompositorScroll(const gfx::PointF&) override;
 
   // GraphicsLayers for the scrolling components.
   // Any function can return nullptr if they are not accelerated.
@@ -334,15 +334,16 @@ class CORE_EXPORT PaintLayerScrollableArea final
   gfx::Point ConvertFromRootFrameToVisualViewport(
       const gfx::Point&) const override;
   int ScrollSize(ScrollbarOrientation) const override;
-  FloatPoint ScrollPosition() const override {
-    return FloatPoint(ScrollOrigin()) + GetScrollOffset();
+  gfx::PointF ScrollPosition() const override {
+    return gfx::PointF(ScrollOrigin()) + ToGfxVector2dF(GetScrollOffset());
   }
-  FloatPoint ScrollOffsetToPosition(const ScrollOffset& offset) const override {
-    return FloatPoint(ScrollOrigin()) + offset;
+  gfx::PointF ScrollOffsetToPosition(
+      const ScrollOffset& offset) const override {
+    return gfx::PointF(ScrollOrigin()) + ToGfxVector2dF(offset);
   }
   ScrollOffset ScrollPositionToOffset(
-      const FloatPoint& position) const override {
-    return position - ScrollOrigin();
+      const gfx::PointF& position) const override {
+    return ScrollOffset(position - gfx::PointF(ScrollOrigin()));
   }
   IntSize ScrollOffsetInt() const override;
   ScrollOffset GetScrollOffset() const override;
@@ -386,12 +387,13 @@ class CORE_EXPORT PaintLayerScrollableArea final
   gfx::Point ScrollOrigin() const { return scroll_origin_; }
   bool ScrollOriginChanged() const { return scroll_origin_changed_; }
 
-  void ScrollToAbsolutePosition(const FloatPoint& position,
+  void ScrollToAbsolutePosition(const gfx::PointF& position,
                                 mojom::blink::ScrollBehavior scroll_behavior =
                                     mojom::blink::ScrollBehavior::kInstant,
                                 mojom::blink::ScrollType scroll_type =
                                     mojom::blink::ScrollType::kProgrammatic) {
-    SetScrollOffset(position - ScrollOrigin(), scroll_type, scroll_behavior);
+    SetScrollOffset(ScrollOffset(position - gfx::PointF(ScrollOrigin())),
+                    scroll_type, scroll_behavior);
   }
 
   // This will set the scroll position without clamping, and it will do all
@@ -610,7 +612,7 @@ class CORE_EXPORT PaintLayerScrollableArea final
   bool NeedsResnap() const override;
   void SetNeedsResnap(bool) override;
 
-  absl::optional<FloatPoint> GetSnapPositionAndSetTarget(
+  absl::optional<gfx::PointF> GetSnapPositionAndSetTarget(
       const cc::SnapSelectionStrategy& strategy) override;
 
   void DisposeImpl() override;

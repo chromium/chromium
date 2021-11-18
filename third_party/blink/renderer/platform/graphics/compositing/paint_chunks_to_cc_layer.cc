@@ -578,8 +578,7 @@ void ConversionContext::StartEffect(const EffectPaintPropertyNode& effect) {
     // with empty bounds, with a filter applied that produces output even when
     // there's no input this will expand the bounds to match.
     gfx::RectF filtered_bounds = current_effect_->MapRect(
-        gfx::RectF(ToGfxPointF(effect.Filter().ReferenceBox().CenterPoint()),
-                   gfx::SizeF()));
+        gfx::RectF(effect.Filter().ReferenceBox().CenterPoint(), gfx::SizeF()));
     effect_bounds_stack_.back().bounds = filtered_bounds;
     // Emit an empty paint operation to add the filtered bounds (mapped to layer
     // space) to the visual rect of the filter's SaveLayerOp.

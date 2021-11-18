@@ -263,9 +263,9 @@ void SnapCoordinator::UpdateSnapContainerData(LayoutBox& snap_container) {
   // to keep the area data up to date. So just update the type and skip updating
   // areas as an optimization.
   if (!snap_container_data.scroll_snap_type().is_none) {
-    FloatPoint max_position = scrollable_area->ScrollOffsetToPosition(
+    gfx::PointF max_position = scrollable_area->ScrollOffsetToPosition(
         scrollable_area->MaximumScrollOffset());
-    snap_container_data.set_max_position(ToGfxPointF(max_position));
+    snap_container_data.set_max_position(max_position);
 
     // Scroll-padding represents inward offsets from the corresponding edge of
     // the scrollport.

@@ -89,7 +89,7 @@ sk_sp<PaintRecord> RecordMarker(Color blink_color) {
 #endif  // defined(OS_MAC)
 
 void DrawDocumentMarker(GraphicsContext& context,
-                        const FloatPoint& pt,
+                        const gfx::PointF& pt,
                         float width,
                         float zoom,
                         PaintRecord* const marker) {
@@ -197,9 +197,9 @@ void DocumentMarkerPainter::PaintStyleableMarkerUnderline(
         break;
     }
     context.DrawLineForText(
-        FloatPoint(box_origin.left + start,
-                   (box_origin.top + logical_height.ToInt() - line_thickness)
-                       .ToFloat()),
+        gfx::PointF(box_origin.left + start,
+                    (box_origin.top + logical_height.ToInt() - line_thickness)
+                        .ToFloat()),
         width, PaintAutoDarkMode(style, DarkModeFilter::ElementRole::kText));
   } else {
     // For wavy underline format we use this logic that is very similar to
@@ -209,9 +209,9 @@ void DocumentMarkerPainter::PaintStyleableMarkerUnderline(
       sk_sp<PaintRecord> composition_marker = (RecordMarker(marker_color));
       DrawDocumentMarker(
           context,
-          FloatPoint((box_origin.left + start).ToFloat(),
-                     (box_origin.top + logical_height.ToInt() - line_thickness)
-                         .ToFloat()),
+          gfx::PointF((box_origin.left + start).ToFloat(),
+                      (box_origin.top + logical_height.ToInt() - line_thickness)
+                          .ToFloat()),
           width, line_thickness, composition_marker.get());
     }
   }
@@ -273,8 +273,8 @@ void DocumentMarkerPainter::PaintDocumentMarker(
                                  : grammar_marker;
 
   DrawDocumentMarker(paint_info.context,
-                     FloatPoint((box_origin.left + local_rect.X()).ToFloat(),
-                                (box_origin.top + underline_offset).ToFloat()),
+                     gfx::PointF((box_origin.left + local_rect.X()).ToFloat(),
+                                 (box_origin.top + underline_offset).ToFloat()),
                      local_rect.Width().ToFloat(), zoom, marker);
 }
 

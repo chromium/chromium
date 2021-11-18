@@ -127,7 +127,7 @@ sk_sp<SkDrawLooper> TextPainterBase::CreateDrawLooper(
     for (wtf_size_t i = shadow_list->Shadows().size(); i--;) {
       const ShadowData& shadow = shadow_list->Shadows()[i];
       draw_looper_builder.AddShadow(
-          FloatSize(shadow.X(), shadow.Y()), shadow.Blur(),
+          shadow.Location().OffsetFromOrigin(), shadow.Blur(),
           shadow.GetColor().Resolve(current_color, color_scheme),
           DrawLooperBuilder::kShadowRespectsTransforms, alpha_mode);
     }
@@ -203,9 +203,9 @@ void TextPainterBase::DecorationsStripeIntercepts(
     float dilation,
     const Vector<Font::TextIntercept>& text_intercepts) {
   for (auto intercept : text_intercepts) {
-    FloatPoint clip_origin(text_origin_);
+    gfx::PointF clip_origin(text_origin_);
     FloatRect clip_rect(
-        clip_origin + FloatPoint(intercept.begin_, upper),
+        clip_origin + gfx::Vector2dF(intercept.begin_, upper),
         FloatSize(intercept.end_ - intercept.begin_, stripe_width));
     clip_rect.OutsetX(dilation);
     // We need to ensure the clip rectangle is covering the full underline
@@ -377,7 +377,7 @@ void TextPainterBase::PaintEmphasisMarkForCombinedText(
 
   const auto font_ascent = font_data->GetFontMetrics().Ascent();
   const TextRun placeholder_text_run(&kIdeographicFullStopCharacter, 1);
-  const FloatPoint emphasis_mark_text_origin(
+  const gfx::PointF emphasis_mark_text_origin(
       text_frame_rect_.X().ToFloat(),
       text_frame_rect_.Y().ToFloat() + font_ascent + emphasis_mark_offset_);
   const TextRunPaintInfo text_run_paint_info(placeholder_text_run);

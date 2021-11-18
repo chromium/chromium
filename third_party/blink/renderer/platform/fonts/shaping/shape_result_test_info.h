@@ -50,7 +50,7 @@ class PLATFORM_EXPORT ShapeResultBloberizerTestInfo {
                   Glyph glyph,
                   const SimpleFontData* font_data,
                   CanvasRotationInVertical canvas_rotation,
-                  const FloatPoint& offset,
+                  const gfx::Vector2dF& offset,
                   unsigned character_index) {
     bloberizer.Add(glyph, font_data, canvas_rotation, offset, character_index);
   }

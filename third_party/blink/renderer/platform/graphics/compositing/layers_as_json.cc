@@ -5,12 +5,12 @@
 #include "third_party/blink/renderer/platform/graphics/compositing/layers_as_json.h"
 
 #include "cc/layers/layer.h"
-#include "third_party/blink/renderer/platform/geometry/float_point.h"
 #include "third_party/blink/renderer/platform/geometry/geometry_as_json.h"
 #include "third_party/blink/renderer/platform/graphics/color.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_types.h"
 #include "third_party/blink/renderer/platform/graphics/paint/transform_paint_property_node.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_stream.h"
+#include "ui/gfx/geometry/point_f.h"
 
 namespace blink {
 

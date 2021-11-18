@@ -154,8 +154,8 @@ class MediaControlsDisplayCutoutDelegateTest
 
   Touch* CreateTouchAtPoint(int x, int y) {
     return Touch::Create(GetDocument().GetFrame(), &GetVideoElement(),
-                         1 /* identifier */, FloatPoint(x, y), FloatPoint(x, y),
-                         FloatSize(1, 1), 90, 0);
+                         1 /* identifier */, gfx::PointF(x, y),
+                         gfx::PointF(x, y), FloatSize(1, 1), 90, 0);
   }
 
   mojom::ViewportFit CurrentViewportFit() const {

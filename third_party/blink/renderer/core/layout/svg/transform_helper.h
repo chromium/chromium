@@ -31,7 +31,7 @@ class TransformHelper {
   static AffineTransform ComputeTransform(const LayoutObject&,
                                           ComputedStyle::ApplyTransformOrigin);
 
-  static FloatPoint ComputeTransformOrigin(const LayoutObject&);
+  static gfx::PointF ComputeTransformOrigin(const LayoutObject&);
 };
 
 // The following enumeration is used to optimize cases where the scale is known

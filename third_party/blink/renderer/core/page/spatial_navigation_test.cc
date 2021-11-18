@@ -124,7 +124,7 @@ TEST_F(SpatialNavigationTest, RootFramesVisualViewport) {
   // Test RootViewport with a pinched viewport.
   VisualViewport& visual_viewport = GetFrame().GetPage()->GetVisualViewport();
   visual_viewport.SetScale(2);
-  visual_viewport.SetLocation(FloatPoint(200, 200));
+  visual_viewport.SetLocation(gfx::PointF(200, 200));
 
   LocalFrameView* root_frame_view = GetFrame().LocalFrameRoot().View();
   const PhysicalRect roots_visible_doc_rect(
@@ -654,7 +654,7 @@ TEST_F(SpatialNavigationTest, BottomOfPinchedViewport) {
   // Now, test SearchOrigin with a pinched viewport.
   VisualViewport& visual_viewport = GetFrame().GetPage()->GetVisualViewport();
   visual_viewport.SetScale(2);
-  visual_viewport.SetLocation(FloatPoint(200, 200));
+  visual_viewport.SetLocation(gfx::PointF(200, 200));
   origin = SearchOrigin(RootViewport(&GetFrame()), nullptr,
                         SpatialNavigationDirection::kUp);
   EXPECT_EQ(origin.Height(), 0);
@@ -1112,7 +1112,7 @@ TEST_F(SpatialNavigationTest, TopOfPinchedViewport) {
   // Now, test SearchOrigin with a pinched viewport.
   VisualViewport& visual_viewport = GetFrame().GetPage()->GetVisualViewport();
   visual_viewport.SetScale(2);
-  visual_viewport.SetLocation(FloatPoint(200, 200));
+  visual_viewport.SetLocation(gfx::PointF(200, 200));
   origin = SearchOrigin(RootViewport(&GetFrame()), nullptr,
                         SpatialNavigationDirection::kDown);
   EXPECT_EQ(origin.Height(), 0);

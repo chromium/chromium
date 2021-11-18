@@ -922,7 +922,7 @@ IntSize ScrollableArea::ExcludeScrollbars(const IntSize& size) const {
                  std::max(0, size.height() - HorizontalScrollbarHeight()));
 }
 
-void ScrollableArea::DidCompositorScroll(const FloatPoint& position) {
+void ScrollableArea::DidCompositorScroll(const gfx::PointF& position) {
   ScrollOffset new_offset(ScrollPositionToOffset(position));
   SetScrollOffset(new_offset, mojom::blink::ScrollType::kCompositor);
 }
@@ -964,19 +964,19 @@ bool ScrollableArea::SnapAtCurrentPosition(
     bool scrolled_y,
     base::ScopedClosureRunner on_finish) {
   DCHECK(IsRootFrameViewport() || !GetLayoutBox()->IsGlobalRootScroller());
-  FloatPoint current_position = ScrollPosition();
+  gfx::PointF current_position = ScrollPosition();
   return SnapForEndPosition(current_position, scrolled_x, scrolled_y,
                             std::move(on_finish));
 }
 
-bool ScrollableArea::SnapForEndPosition(const FloatPoint& end_position,
+bool ScrollableArea::SnapForEndPosition(const gfx::PointF& end_position,
                                         bool scrolled_x,
                                         bool scrolled_y,
                                         base::ScopedClosureRunner on_finish) {
   DCHECK(IsRootFrameViewport() || !GetLayoutBox()->IsGlobalRootScroller());
   std::unique_ptr<cc::SnapSelectionStrategy> strategy =
-      cc::SnapSelectionStrategy::CreateForEndPosition(ToGfxPointF(end_position),
-                                                      scrolled_x, scrolled_y);
+      cc::SnapSelectionStrategy::CreateForEndPosition(end_position, scrolled_x,
+                                                      scrolled_y);
   return PerformSnapping(*strategy, mojom::blink::ScrollBehavior::kSmooth,
                          std::move(on_finish));
 }
@@ -984,10 +984,10 @@ bool ScrollableArea::SnapForEndPosition(const FloatPoint& end_position,
 bool ScrollableArea::SnapForDirection(const ScrollOffset& delta,
                                       base::ScopedClosureRunner on_finish) {
   DCHECK(IsRootFrameViewport() || !GetLayoutBox()->IsGlobalRootScroller());
-  FloatPoint current_position = ScrollPosition();
+  gfx::PointF current_position = ScrollPosition();
   std::unique_ptr<cc::SnapSelectionStrategy> strategy =
       cc::SnapSelectionStrategy::CreateForDirection(
-          ToGfxPointF(current_position), ToGfxVector2dF(delta),
+          current_position, ToGfxVector2dF(delta),
           RuntimeEnabledFeatures::FractionalScrollOffsetsEnabled());
   return PerformSnapping(*strategy, mojom::blink::ScrollBehavior::kSmooth,
                          std::move(on_finish));
@@ -995,10 +995,10 @@ bool ScrollableArea::SnapForDirection(const ScrollOffset& delta,
 
 bool ScrollableArea::SnapForEndAndDirection(const ScrollOffset& delta) {
   DCHECK(IsRootFrameViewport() || !GetLayoutBox()->IsGlobalRootScroller());
-  FloatPoint current_position = ScrollPosition();
+  gfx::PointF current_position = ScrollPosition();
   std::unique_ptr<cc::SnapSelectionStrategy> strategy =
       cc::SnapSelectionStrategy::CreateForEndAndDirection(
-          ToGfxPointF(current_position), ToGfxVector2dF(delta),
+          current_position, ToGfxVector2dF(delta),
           RuntimeEnabledFeatures::FractionalScrollOffsetsEnabled());
   return PerformSnapping(*strategy);
 }
@@ -1008,11 +1008,9 @@ void ScrollableArea::SnapAfterLayout() {
   if (!container_data || !container_data->size())
     return;
 
-  FloatPoint current_position = ScrollPosition();
+  gfx::PointF current_position = ScrollPosition();
   std::unique_ptr<cc::SnapSelectionStrategy> strategy =
-      cc::SnapSelectionStrategy::CreateForTargetElement(
-          ToGfxPointF(current_position));
-
+      cc::SnapSelectionStrategy::CreateForTargetElement(current_position);
   PerformSnapping(*strategy, mojom::blink::ScrollBehavior::kInstant);
 }
 
@@ -1020,7 +1018,8 @@ bool ScrollableArea::PerformSnapping(
     const cc::SnapSelectionStrategy& strategy,
     mojom::blink::ScrollBehavior scroll_behavior,
     base::ScopedClosureRunner on_finish) {
-  absl::optional<FloatPoint> snap_point = GetSnapPositionAndSetTarget(strategy);
+  absl::optional<gfx::PointF> snap_point =
+      GetSnapPositionAndSetTarget(strategy);
   if (!snap_point)
     return false;
   CancelScrollAnimation();

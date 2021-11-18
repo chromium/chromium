@@ -184,19 +184,19 @@ struct CSSGradientValue::GradientDesc {
   STACK_ALLOCATED();
 
  public:
-  GradientDesc(const FloatPoint& p0,
-               const FloatPoint& p1,
+  GradientDesc(const gfx::PointF& p0,
+               const gfx::PointF& p1,
                GradientSpreadMethod spread_method)
       : p0(p0), p1(p1), spread_method(spread_method) {}
-  GradientDesc(const FloatPoint& p0,
-               const FloatPoint& p1,
+  GradientDesc(const gfx::PointF& p0,
+               const gfx::PointF& p1,
                float r0,
                float r1,
                GradientSpreadMethod spread_method)
       : p0(p0), p1(p1), r0(r0), r1(r1), spread_method(spread_method) {}
 
   Vector<Gradient::ColorStop> stops;
-  FloatPoint p0, p1;
+  gfx::PointF p0, p1;
   float r0 = 0, r1 = 0;
   float start_angle = 0, end_angle = 360;
   GradientSpreadMethod spread_method;
@@ -456,6 +456,12 @@ void ClampNegativeOffsets(Vector<GradientStop>& stops) {
   }
 }
 
+// Used in AdjustedGradientDomainForOffsetRange when the type of v1 - v0 is
+// gfx::Vector2dF.
+gfx::Vector2dF operator*(const gfx::Vector2dF& v, float scale) {
+  return gfx::ScaleVector2d(v, scale);
+}
+
 template <typename T>
 std::tuple<T, T> AdjustedGradientDomainForOffsetRange(const T& v0,
                                                       const T& v1,
@@ -524,7 +530,7 @@ void CSSGradientValue::AddStops(
   float gradient_length;
   switch (GetClassType()) {
     case kLinearGradientClass:
-      gradient_length = FloatSize(desc.p1 - desc.p0).DiagonalLength();
+      gradient_length = (desc.p1 - desc.p0).Length();
       break;
     case kRadialGradientClass:
       gradient_length = desc.r1;
@@ -740,12 +746,12 @@ static float PositionFromValue(const CSSValue* value,
 }
 
 // Resolve points/radii to front end values.
-static FloatPoint ComputeEndPoint(
+static gfx::PointF ComputeEndPoint(
     const CSSValue* horizontal,
     const CSSValue* vertical,
     const CSSToLengthConversionData& conversion_data,
     const FloatSize& size) {
-  FloatPoint result;
+  gfx::PointF result;
 
   if (horizontal)
     result.set_x(PositionFromValue(horizontal, conversion_data, size, true));
@@ -875,8 +881,8 @@ String CSSLinearGradientValue::CustomCSSText() const {
 // the given size.
 static void EndPointsFromAngle(float angle_deg,
                                const FloatSize& size,
-                               FloatPoint& first_point,
-                               FloatPoint& second_point,
+                               gfx::PointF& first_point,
+                               gfx::PointF& second_point,
                                CSSGradientType type) {
   // Prefixed gradients use "polar coordinate" angles, rather than "bearing"
   // angles.
@@ -922,7 +928,7 @@ static void EndPointsFromAngle(float angle_deg,
   // Compute start corner relative to center, in Cartesian space (+y = up).
   float half_height = size.height() / 2;
   float half_width = size.width() / 2;
-  FloatPoint end_corner;
+  gfx::PointF end_corner;
   if (angle_deg < 90)
     end_corner.SetPoint(half_width, half_height);
   else if (angle_deg < 180)
@@ -951,8 +957,8 @@ scoped_refptr<Gradient> CSSLinearGradientValue::CreateGradient(
     const ComputedStyle& style) const {
   DCHECK(!size.IsEmpty());
 
-  FloatPoint first_point;
-  FloatPoint second_point;
+  gfx::PointF first_point;
+  gfx::PointF second_point;
   if (angle_) {
     float angle = angle_->ComputeDegrees();
     EndPointsFromAngle(angle, size, first_point, second_point, gradient_type_);
@@ -1245,7 +1251,7 @@ enum EndShapeType { kCircleEndShape, kEllipseEndShape };
 
 // Compute the radius to the closest/farthest side (depending on the compare
 // functor).
-FloatSize RadiusToSide(const FloatPoint& point,
+FloatSize RadiusToSide(const gfx::PointF& point,
                        const FloatSize& size,
                        EndShapeType shape,
                        bool (*compare)(float, float)) {
@@ -1264,9 +1270,10 @@ FloatSize RadiusToSide(const FloatPoint& point,
   return FloatSize(dx, dy);
 }
 
-// Compute the radius of an ellipse with center at 0,0 which passes through p,
-// and has width/height given by aspectRatio.
-inline FloatSize EllipseRadius(const FloatPoint& p, float aspect_ratio) {
+// Compute the radius of an ellipse which passes through a point at
+// |offset_from_center|, and has width/height given by aspectRatio.
+inline FloatSize EllipseRadius(const gfx::Vector2dF& offset_from_center,
+                               float aspect_ratio) {
   // If the aspectRatio is 0 or infinite, the ellipse is completely flat.
   // TODO(sashab): Implement Degenerate Radial Gradients, see crbug.com/635727.
   if (aspect_ratio == 0 || std::isinf(aspect_ratio))
@@ -1274,25 +1281,27 @@ inline FloatSize EllipseRadius(const FloatPoint& p, float aspect_ratio) {
 
   // x^2/a^2 + y^2/b^2 = 1
   // a/b = aspectRatio, b = a/aspectRatio
-  // a = sqrt(x^2 + y^2/(1/r^2))
-  float a = sqrtf(p.x() * p.x() + p.y() * p.y() * aspect_ratio * aspect_ratio);
+  // a = sqrt(x^2 + y^2/(1/aspect_ratio^2))
+  float a = sqrtf(offset_from_center.x() * offset_from_center.x() +
+                  offset_from_center.y() * offset_from_center.y() *
+                      aspect_ratio * aspect_ratio);
   return FloatSize(ClampTo<float>(a), ClampTo<float>(a / aspect_ratio));
 }
 
 // Compute the radius to the closest/farthest corner (depending on the compare
 // functor).
-FloatSize RadiusToCorner(const FloatPoint& point,
+FloatSize RadiusToCorner(const gfx::PointF& point,
                          const FloatSize& size,
                          EndShapeType shape,
                          bool (*compare)(float, float)) {
-  const FloatRect rect(FloatPoint(), size);
-  const FloatPoint corners[] = {rect.origin(), rect.top_right(),
-                                rect.bottom_right(), rect.bottom_left()};
+  const FloatRect rect(gfx::PointF(), size);
+  const gfx::PointF corners[] = {rect.origin(), rect.top_right(),
+                                 rect.bottom_right(), rect.bottom_left()};
 
   unsigned corner_index = 0;
-  float distance = (point - corners[corner_index]).DiagonalLength();
+  float distance = (point - corners[corner_index]).Length();
   for (unsigned i = 1; i < base::size(corners); ++i) {
-    float new_distance = (point - corners[i]).DiagonalLength();
+    float new_distance = (point - corners[i]).Length();
     if (compare(new_distance, distance)) {
       corner_index = i;
       distance = new_distance;
@@ -1311,7 +1320,7 @@ FloatSize RadiusToCorner(const FloatPoint& point,
   const FloatSize side_radius =
       RadiusToSide(point, size, kEllipseEndShape, compare);
 
-  return EllipseRadius(FloatPoint(corners[corner_index] - point),
+  return EllipseRadius(corners[corner_index] - point,
                        side_radius.AspectRatio());
 }
 
@@ -1324,14 +1333,14 @@ scoped_refptr<Gradient> CSSRadialGradientValue::CreateGradient(
     const ComputedStyle& style) const {
   DCHECK(!size.IsEmpty());
 
-  FloatPoint first_point =
+  gfx::PointF first_point =
       ComputeEndPoint(first_x_.Get(), first_y_.Get(), conversion_data, size);
   if (!first_x_)
     first_point.set_x(size.width() / 2);
   if (!first_y_)
     first_point.set_y(size.height() / 2);
 
-  FloatPoint second_point =
+  gfx::PointF second_point =
       ComputeEndPoint(second_x_.Get(), second_y_.Get(), conversion_data, size);
   if (!second_x_)
     second_point.set_x(size.width() / 2);
@@ -1516,7 +1525,7 @@ scoped_refptr<Gradient> CSSConicGradientValue::CreateGradient(
 
   const float angle = from_angle_ ? from_angle_->ComputeDegrees() : 0;
 
-  const FloatPoint position(
+  const gfx::PointF position(
       x_ ? PositionFromValue(x_, conversion_data, size, true)
          : size.width() / 2,
       y_ ? PositionFromValue(y_, conversion_data, size, false)

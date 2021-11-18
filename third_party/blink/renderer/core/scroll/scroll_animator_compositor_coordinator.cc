@@ -235,14 +235,15 @@ ScrollAnimatorCompositorCoordinator::GetCompositorAnimation() const {
   return compositor_animation_.get();
 }
 
-FloatPoint ScrollAnimatorCompositorCoordinator::CompositorOffsetFromBlinkOffset(
+gfx::PointF
+ScrollAnimatorCompositorCoordinator::CompositorOffsetFromBlinkOffset(
     ScrollOffset offset) {
   return GetScrollableArea()->ScrollOffsetToPosition(offset);
 }
 
 ScrollOffset
 ScrollAnimatorCompositorCoordinator::BlinkOffsetFromCompositorOffset(
-    FloatPoint position) {
+    gfx::PointF position) {
   return GetScrollableArea()->ScrollPositionToOffset(position);
 }
 

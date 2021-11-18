@@ -52,7 +52,7 @@ class PLATFORM_EXPORT PictureSnapshot : public RefCounted<PictureSnapshot> {
 
  public:
   struct TilePictureStream : RefCounted<TilePictureStream> {
-    FloatPoint layer_offset;
+    gfx::PointF layer_offset;
     sk_sp<SkPicture> picture;
   };
 

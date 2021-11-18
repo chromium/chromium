@@ -4531,7 +4531,7 @@ TEST_P(PaintArtifactCompositorTest, DirectlySetScrollOffset) {
   ASSERT_FALSE(transform_tree.needs_update());
 
   ASSERT_TRUE(GetPaintArtifactCompositor().DirectlySetScrollOffset(
-      scroll_element_id, FloatPoint(-10, -20)));
+      scroll_element_id, gfx::PointF(-10, -20)));
   EXPECT_TRUE(
       host.pending_commit_state()->layers_that_should_push_properties.contains(
           scroll_layer));

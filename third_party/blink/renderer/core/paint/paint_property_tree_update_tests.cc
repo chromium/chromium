@@ -1760,14 +1760,14 @@ TEST_P(PaintPropertyTreeUpdateTest, InlineFilterReferenceBoxChange) {
   const auto* properties = PaintPropertiesForElement("span");
   ASSERT_TRUE(properties);
   ASSERT_TRUE(properties->Filter());
-  EXPECT_EQ(FloatPoint(0, 20),
+  EXPECT_EQ(gfx::PointF(0, 20),
             properties->Filter()->Filter().ReferenceBox().origin());
 
   GetDocument().getElementById("spacer")->setAttribute(
       html_names::kStyleAttr, "display: inline-block; height: 100px");
   UpdateAllLifecyclePhasesForTest();
   ASSERT_EQ(properties, PaintPropertiesForElement("span"));
-  EXPECT_EQ(FloatPoint(0, 100),
+  EXPECT_EQ(gfx::PointF(0, 100),
             properties->Filter()->Filter().ReferenceBox().origin());
 }
 

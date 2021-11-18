@@ -48,6 +48,7 @@
 #include "third_party/blink/renderer/platform/graphics/interpolation_space.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
+#include "ui/gfx/geometry/point_conversions.h"
 
 namespace blink {
 
@@ -285,7 +286,8 @@ FilterEffect* FilterEffectBuilder::BuildFilterEffect(
       case FilterOperation::kDropShadow: {
         const ShadowData& shadow =
             To<DropShadowFilterOperation>(*filter_operation).Shadow();
-        FloatPoint offset = shadow.Location().ScaledBy(shorthand_scale_);
+        gfx::PointF offset =
+            gfx::ScalePoint(shadow.Location(), shorthand_scale_);
         float radius = shadow.Blur() * shorthand_scale_;
         effect = MakeGarbageCollected<FEDropShadow>(
             parent_filter, radius, radius, offset.x(), offset.y(),
@@ -437,8 +439,8 @@ CompositorFilterOperations FilterEffectBuilder::BuildFilterOperations(
       }
       case FilterOperation::kDropShadow: {
         const ShadowData& shadow = To<DropShadowFilterOperation>(*op).Shadow();
-        gfx::Point floored_offset =
-            FlooredIntPoint(shadow.Location().ScaledBy(shorthand_scale_));
+        gfx::Point floored_offset = gfx::ToFlooredPoint(
+            gfx::ScalePoint(shadow.Location(), shorthand_scale_));
         float radius = shadow.Blur() * shorthand_scale_;
         filters.AppendDropShadowFilter(floored_offset, radius,
                                        shadow.GetColor().GetColor());

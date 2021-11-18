@@ -112,7 +112,7 @@ class CharacterRangePerfTest : public ShapeResultPerfTest,
     int endpos = GetParam();
     param_string = base::NumberToString(endpos);
     do {
-      font.SelectionRectForText(run, FloatPoint(), 100, 0, endpos);
+      font.SelectionRectForText(run, gfx::PointF(), 100, 0, endpos);
       timer.NextLap();
     } while (!timer.HasTimeLimitExpired());
   }

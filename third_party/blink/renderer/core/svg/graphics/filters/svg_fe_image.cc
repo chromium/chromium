@@ -89,7 +89,7 @@ static absl::optional<AffineTransform> ComputeViewportAdjustmentTransform(
   gfx::SizeF viewport_size;
   if (!length_context.DetermineViewport(viewport_size))
     return absl::nullopt;
-  return MakeMapBetweenRects(FloatRect(FloatPoint(), FloatSize(viewport_size)),
+  return MakeMapBetweenRects(FloatRect(gfx::PointF(), FloatSize(viewport_size)),
                              target_rect);
 }
 
@@ -111,7 +111,7 @@ FloatRect FEImage::MapInputs(const FloatRect&) const {
     return dest_rect;
   }
   if (image_) {
-    FloatRect src_rect = FloatRect(FloatPoint(), FloatSize(image_->Size()));
+    FloatRect src_rect = FloatRect(gfx::PointF(), FloatSize(image_->Size()));
     preserve_aspect_ratio_->TransformRect(dest_rect, src_rect);
     return dest_rect;
   }
@@ -199,7 +199,7 @@ sk_sp<PaintFilter> FEImage::CreateImageFilter() {
 
   if (PaintImage image =
           image_ ? image_->PaintImageForCurrentFrame() : PaintImage()) {
-    FloatRect src_rect = FloatRect(FloatPoint(), FloatSize(image_->Size()));
+    FloatRect src_rect = FloatRect(gfx::PointF(), FloatSize(image_->Size()));
     FloatRect dst_rect =
         GetFilter()->MapLocalRectToAbsoluteRect(FilterPrimitiveSubregion());
     preserve_aspect_ratio_->TransformRect(dst_rect, src_rect);

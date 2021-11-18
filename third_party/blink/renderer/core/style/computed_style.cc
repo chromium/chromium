@@ -1280,7 +1280,7 @@ void ComputedStyle::ApplyTransform(
     ApplyMotionPath apply_motion_path,
     ApplyIndependentTransformProperties apply_independent_transform_properties)
     const {
-  ApplyTransform(result, FloatRect(FloatPoint(), FloatSize(border_box_size)),
+  ApplyTransform(result, FloatRect(gfx::PointF(), FloatSize(border_box_size)),
                  apply_origin, apply_motion_path,
                  apply_independent_transform_properties);
 }
@@ -1395,10 +1395,10 @@ void ComputedStyle::ApplyMotionPathTransform(
   float origin_shift_y = 0;
   // If the offset-position and offset-anchor properties are not yet enabled,
   // they will have the default value, auto.
-  FloatPoint anchor_point(origin_x, origin_y);
+  gfx::PointF anchor_point(origin_x, origin_y);
   if (!position.X().IsAuto() || !anchor.X().IsAuto()) {
     anchor_point = FloatPointForLengthPoint(anchor, bounding_box.size());
-    anchor_point += bounding_box.origin();
+    anchor_point += bounding_box.OffsetFromOrigin();
 
     // Shift the origin from transform-origin to offset-anchor.
     origin_shift_x = anchor_point.x() - origin_x;

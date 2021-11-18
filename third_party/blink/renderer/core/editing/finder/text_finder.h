@@ -82,7 +82,7 @@ class CORE_EXPORT TextFinder final : public GarbageCollected<TextFinder> {
   // provided point in find-in-page coordinates, or -1 in case of error.
   // The squared distance to the closest match is returned in the
   // |distanceSquared| parameter.
-  int NearestFindMatch(const FloatPoint&, float* distance_squared);
+  int NearestFindMatch(const gfx::PointF&, float* distance_squared);
 
   // Returns whether this frame has the active match.
   bool ActiveMatchFrame() const { return current_active_match_frame_; }

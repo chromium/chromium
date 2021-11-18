@@ -47,7 +47,7 @@ void LayoutSVGResourceRadialGradient::CollectGradientAttributes() {
       ->CollectGradientAttributes(MutableAttributes());
 }
 
-FloatPoint LayoutSVGResourceRadialGradient::CenterPoint(
+gfx::PointF LayoutSVGResourceRadialGradient::CenterPoint(
     const RadialGradientAttributes& attributes) const {
   NOT_DESTROYED();
   return SVGLengthContext::ResolvePoint(GetElement(),
@@ -55,7 +55,7 @@ FloatPoint LayoutSVGResourceRadialGradient::CenterPoint(
                                         *attributes.Cx(), *attributes.Cy());
 }
 
-FloatPoint LayoutSVGResourceRadialGradient::FocalPoint(
+gfx::PointF LayoutSVGResourceRadialGradient::FocalPoint(
     const RadialGradientAttributes& attributes) const {
   NOT_DESTROYED();
   return SVGLengthContext::ResolvePoint(GetElement(),

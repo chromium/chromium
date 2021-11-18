@@ -416,7 +416,7 @@ TransformationMatrix DevToolsEmulator::ForceViewport(
   if (!viewport_override_)
     viewport_override_ = ViewportOverride();
 
-  viewport_override_->position = FloatPoint(position);
+  viewport_override_->position = position;
   viewport_override_->scale = scale;
 
   // Move the correct (scaled) content area to show in the top left of the

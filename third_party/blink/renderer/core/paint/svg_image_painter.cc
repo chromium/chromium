@@ -70,7 +70,7 @@ void SVGImagePainter::PaintForeground(const PaintInfo& paint_info) {
   RespectImageOrientationEnum respect_orientation =
       image_resource.ImageOrientation();
 
-  FloatRect src_rect(FloatPoint(), image->SizeAsFloat(respect_orientation));
+  FloatRect src_rect(gfx::PointF(), image->SizeAsFloat(respect_orientation));
   if (respect_orientation && !image->HasDefaultOrientation()) {
     // We need the oriented source rect for adjusting the aspect ratio
     FloatSize unadjusted_size(src_rect.size());

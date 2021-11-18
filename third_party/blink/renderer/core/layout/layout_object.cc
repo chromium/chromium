@@ -3230,9 +3230,9 @@ PhysicalRect LayoutObject::ViewRect() const {
   return View()->ViewRect();
 }
 
-FloatPoint LayoutObject::AncestorToLocalFloatPoint(
+gfx::PointF LayoutObject::AncestorToLocalPoint(
     const LayoutBoxModelObject* ancestor,
-    const FloatPoint& container_point,
+    const gfx::PointF& container_point,
     MapCoordinatesFlags mode) const {
   NOT_DESTROYED();
   TransformState transform_state(
@@ -3446,7 +3446,7 @@ void LayoutObject::GetTransformFromContainer(
   if (has_perspective) {
     // Perspective on the container affects us, so we have to factor it in here.
     DCHECK(container_object->HasLayer());
-    FloatPoint perspective_origin;
+    gfx::PointF perspective_origin;
     if (const auto* container_box = DynamicTo<LayoutBox>(container_object))
       perspective_origin = container_box->PerspectiveOrigin(size);
 
@@ -3460,8 +3460,8 @@ void LayoutObject::GetTransformFromContainer(
   }
 }
 
-FloatPoint LayoutObject::LocalToAncestorFloatPoint(
-    const FloatPoint& local_point,
+gfx::PointF LayoutObject::LocalToAncestorPoint(
+    const gfx::PointF& local_point,
     const LayoutBoxModelObject* ancestor,
     MapCoordinatesFlags mode) const {
   NOT_DESTROYED();

@@ -20,8 +20,9 @@
 
 #include "third_party/blink/renderer/core/svg/svg_path_string_source.h"
 
+#include "base/notreached.h"
 #include "third_party/blink/renderer/core/svg/svg_parser_utilities.h"
-#include "third_party/blink/renderer/platform/geometry/float_point.h"
+#include "ui/gfx/geometry/point_f.h"
 
 namespace blink {
 

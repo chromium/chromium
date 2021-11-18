@@ -107,12 +107,12 @@ void ImageLayerBridge::SetImage(scoped_refptr<StaticBitmapImage> image) {
   has_presented_since_last_set_image_ = false;
 }
 
-void ImageLayerBridge::SetUV(const FloatPoint& left_top,
-                             const FloatPoint& right_bottom) {
+void ImageLayerBridge::SetUV(const gfx::PointF& left_top,
+                             const gfx::PointF& right_bottom) {
   if (disposed_)
     return;
 
-  layer_->SetUV(ToGfxPointF(left_top), ToGfxPointF(right_bottom));
+  layer_->SetUV(left_top, right_bottom);
 }
 
 void ImageLayerBridge::Dispose() {

@@ -1305,8 +1305,9 @@ void WebViewImpl::ResizeWithBrowserControls(
       !fullscreen_controller_->IsFullscreenOrTransitioning();
   size_ = main_frame_widget_size;
 
-  FloatSize viewport_anchor_coords(viewportAnchorCoordX, viewportAnchorCoordY);
   if (is_rotation) {
+    gfx::PointF viewport_anchor_coords(viewportAnchorCoordX,
+                                       viewportAnchorCoordY);
     RotationViewportAnchor anchor(*view, visual_viewport,
                                   viewport_anchor_coords,
                                   GetPageScaleConstraintsSet());
@@ -2264,12 +2265,12 @@ float WebViewImpl::ClampPageScaleFactorToLimits(float scale_factor) const {
 
 void WebViewImpl::SetVisualViewportOffset(const gfx::PointF& offset) {
   DCHECK(GetPage());
-  GetPage()->GetVisualViewport().SetLocation(FloatPoint(offset));
+  GetPage()->GetVisualViewport().SetLocation(offset);
 }
 
 gfx::PointF WebViewImpl::VisualViewportOffset() const {
   DCHECK(GetPage());
-  return ToGfxPointF(GetPage()->GetVisualViewport().VisibleRect().origin());
+  return GetPage()->GetVisualViewport().VisibleRect().origin();
 }
 
 gfx::SizeF WebViewImpl::VisualViewportSize() const {
@@ -2279,7 +2280,7 @@ gfx::SizeF WebViewImpl::VisualViewportSize() const {
 
 void WebViewImpl::SetPageScaleFactorAndLocation(float scale_factor,
                                                 bool is_pinch_gesture_active,
-                                                const FloatPoint& location) {
+                                                const gfx::PointF& location) {
   DCHECK(GetPage());
 
   GetPage()->GetVisualViewport().SetScaleAndLocation(
@@ -3600,7 +3601,7 @@ void WebViewImpl::ApplyViewportChanges(const ApplyViewportChangesArgs& args) {
   // controls ratio since doing so will change the bounds and move the
   // viewports to keep the offsets valid. The compositor may have already
   // done that so we don't want to double apply the deltas here.
-  FloatPoint visual_viewport_offset = visual_viewport.VisibleRect().origin();
+  gfx::PointF visual_viewport_offset = visual_viewport.VisibleRect().origin();
   visual_viewport_offset.Offset(args.inner_delta.x(), args.inner_delta.y());
 
   GetBrowserControls().SetShownRatio(

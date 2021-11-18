@@ -23,11 +23,11 @@
 
 #include "third_party/blink/renderer/platform/geometry/length_functions.h"
 
-#include "third_party/blink/renderer/platform/geometry/float_point.h"
 #include "third_party/blink/renderer/platform/geometry/float_size.h"
 #include "third_party/blink/renderer/platform/geometry/layout_unit.h"
 #include "third_party/blink/renderer/platform/geometry/length_point.h"
 #include "third_party/blink/renderer/platform/geometry/length_size.h"
+#include "ui/gfx/geometry/point_f.h"
 
 namespace blink {
 
@@ -124,10 +124,10 @@ FloatSize FloatSizeForLengthSize(const LengthSize& length_size,
       FloatValueForLength(length_size.Height(), box_size.height()));
 }
 
-FloatPoint FloatPointForLengthPoint(const LengthPoint& length_point,
-                                    const FloatSize& box_size) {
-  return FloatPoint(FloatValueForLength(length_point.X(), box_size.width()),
-                    FloatValueForLength(length_point.Y(), box_size.height()));
+gfx::PointF FloatPointForLengthPoint(const LengthPoint& length_point,
+                                     const FloatSize& box_size) {
+  return gfx::PointF(FloatValueForLength(length_point.X(), box_size.width()),
+                     FloatValueForLength(length_point.Y(), box_size.height()));
 }
 
 }  // namespace blink

@@ -88,14 +88,14 @@ bool LayoutSVGRect::ShapeDependentStrokeContains(
   if (use_path_fallback_)
     return LayoutSVGShape::ShapeDependentStrokeContains(location);
 
-  const FloatPoint& point = location.TransformedPoint();
+  const gfx::PointF& point = location.TransformedPoint();
   const float half_stroke_width = StrokeWidth() / 2;
   const float half_width = fill_bounding_box_.width() / 2;
   const float half_height = fill_bounding_box_.height() / 2;
 
-  const FloatPoint fill_bounding_box_center =
-      FloatPoint(fill_bounding_box_.x() + half_width,
-                 fill_bounding_box_.y() + half_height);
+  const gfx::PointF fill_bounding_box_center =
+      gfx::PointF(fill_bounding_box_.x() + half_width,
+                  fill_bounding_box_.y() + half_height);
   const float abs_delta_x = std::abs(point.x() - fill_bounding_box_center.x());
   const float abs_delta_y = std::abs(point.y() - fill_bounding_box_center.y());
 
@@ -112,8 +112,7 @@ bool LayoutSVGRect::ShapeDependentFillContains(const HitTestLocation& location,
   NOT_DESTROYED();
   if (use_path_fallback_)
     return LayoutSVGShape::ShapeDependentFillContains(location, fill_rule);
-  return fill_bounding_box_.InclusiveContains(
-      ToGfxPointF(location.TransformedPoint()));
+  return fill_bounding_box_.InclusiveContains(location.TransformedPoint());
 }
 
 // Returns true if the stroke is continuous and definitely uses miter joins.

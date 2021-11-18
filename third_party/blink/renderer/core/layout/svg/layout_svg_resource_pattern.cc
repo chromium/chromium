@@ -165,7 +165,7 @@ std::unique_ptr<PatternData> LayoutSVGResourcePattern::BuildPatternData(
 
   pattern_data->pattern = Pattern::CreatePaintRecordPattern(
       AsPaintRecord(tile_bounds.size(), tile_transform),
-      FloatRect(FloatPoint(), tile_bounds.size()));
+      FloatRect(gfx::PointF(), tile_bounds.size()));
 
   // Compute pattern space transformation.
   pattern_data->transform.Translate(tile_bounds.x(), tile_bounds.y());
@@ -211,7 +211,7 @@ sk_sp<PaintRecord> LayoutSVGResourcePattern::AsPaintRecord(
       SVGUnitTypes::kSvgUnitTypeObjectboundingbox)
     content_transform = tile_transform;
 
-  FloatRect bounds(FloatPoint(), size);
+  FloatRect bounds(gfx::PointF(), size);
   PaintRecorder paint_recorder;
   cc::PaintCanvas* canvas = paint_recorder.beginRecording(bounds);
 

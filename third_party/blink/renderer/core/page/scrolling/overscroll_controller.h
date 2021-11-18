@@ -9,10 +9,13 @@
 #include "third_party/blink/renderer/platform/geometry/float_size.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 
+namespace gfx {
+class PointF;
+}
+
 namespace blink {
 
 class ChromeClient;
-class FloatPoint;
 struct ScrollResult;
 class VisualViewport;
 
@@ -33,7 +36,7 @@ class OverscrollController : public GarbageCollected<OverscrollController> {
   // in the case of a fling gesture where we want the overscroll to feel like
   // it has momentum.
   void HandleOverscroll(const ScrollResult&,
-                        const FloatPoint& position_in_root_frame,
+                        const gfx::PointF& position_in_root_frame,
                         const FloatSize& velocity_in_root_frame);
 
   void Trace(Visitor*) const;

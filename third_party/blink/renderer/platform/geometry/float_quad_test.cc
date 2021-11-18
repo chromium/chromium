@@ -11,14 +11,14 @@
 namespace blink {
 
 TEST(FloatQuadTest, ToString) {
-  FloatQuad quad(FloatPoint(2, 3), FloatPoint(5, 7), FloatPoint(11, 13),
-                 FloatPoint(17, 19));
+  FloatQuad quad(gfx::PointF(2, 3), gfx::PointF(5, 7), gfx::PointF(11, 13),
+                 gfx::PointF(17, 19));
   EXPECT_EQ("2,3; 5,7; 11,13; 17,19", quad.ToString());
 }
 
 TEST(FloatQuadTest, BoundingBox) {
-  FloatQuad quad(FloatPoint(2, 3), FloatPoint(5, 7), FloatPoint(11, 13),
-                 FloatPoint(17, 19));
+  FloatQuad quad(gfx::PointF(2, 3), gfx::PointF(5, 7), gfx::PointF(11, 13),
+                 gfx::PointF(17, 19));
   FloatRect rect = quad.BoundingBox();
   EXPECT_EQ(rect.x(), 2);
   EXPECT_EQ(rect.y(), 3);
@@ -28,8 +28,8 @@ TEST(FloatQuadTest, BoundingBox) {
 
 TEST(FloatQuadTest, BoundingBoxSaturateInf) {
   constexpr double inf = std::numeric_limits<double>::infinity();
-  FloatQuad quad(FloatPoint(-inf, 3), FloatPoint(5, inf), FloatPoint(11, 13),
-                 FloatPoint(17, 19));
+  FloatQuad quad(gfx::PointF(-inf, 3), gfx::PointF(5, inf), gfx::PointF(11, 13),
+                 gfx::PointF(17, 19));
   FloatRect rect = quad.BoundingBox();
   EXPECT_EQ(rect.x(), std::numeric_limits<int>::min());
   EXPECT_EQ(rect.y(), 3.0f);
@@ -40,8 +40,8 @@ TEST(FloatQuadTest, BoundingBoxSaturateInf) {
 
 TEST(FloatQuadTest, BoundingBoxSaturateLarge) {
   constexpr double large = std::numeric_limits<float>::max() * 4;
-  FloatQuad quad(FloatPoint(-large, 3), FloatPoint(5, large),
-                 FloatPoint(11, 13), FloatPoint(17, 19));
+  FloatQuad quad(gfx::PointF(-large, 3), gfx::PointF(5, large),
+                 gfx::PointF(11, 13), gfx::PointF(17, 19));
   FloatRect rect = quad.BoundingBox();
   EXPECT_EQ(rect.x(), std::numeric_limits<int>::min());
   EXPECT_EQ(rect.y(), 3.0f);
@@ -87,40 +87,40 @@ TEST(FloatQuadTest, CircleIntersectionIsInclusive) {
   FloatQuad quad(FloatRect(10, 10, 10, 10));
 
   // A circle fully contained in the top-left of the quad should intersect.
-  EXPECT_TRUE(quad.IntersectsCircle(FloatPoint(12, 12), 1));
+  EXPECT_TRUE(quad.IntersectsCircle(gfx::PointF(12, 12), 1));
 
   // A point fully contained in the top-left of the quad should intersect.
-  EXPECT_TRUE(quad.IntersectsCircle(FloatPoint(12, 12), 0));
+  EXPECT_TRUE(quad.IntersectsCircle(gfx::PointF(12, 12), 0));
 
   // A circle that touches the left edge should intersect.
-  EXPECT_TRUE(quad.IntersectsCircle(FloatPoint(9, 11), 1));
+  EXPECT_TRUE(quad.IntersectsCircle(gfx::PointF(9, 11), 1));
 
   // A circle that touches the top edge should intersect.
-  EXPECT_TRUE(quad.IntersectsCircle(FloatPoint(11, 9), 1));
+  EXPECT_TRUE(quad.IntersectsCircle(gfx::PointF(11, 9), 1));
 
   // A circle that touches the right edge should intersect.
-  EXPECT_TRUE(quad.IntersectsCircle(FloatPoint(21, 11), 1));
+  EXPECT_TRUE(quad.IntersectsCircle(gfx::PointF(21, 11), 1));
 
   // A circle that touches the bottom edge should intersect.
-  EXPECT_TRUE(quad.IntersectsCircle(FloatPoint(11, 21), 1));
+  EXPECT_TRUE(quad.IntersectsCircle(gfx::PointF(11, 21), 1));
 
   // A point that touches the left edge should intersect.
-  EXPECT_TRUE(quad.IntersectsCircle(FloatPoint(10, 11), 0));
+  EXPECT_TRUE(quad.IntersectsCircle(gfx::PointF(10, 11), 0));
 
   // A point that touches the top edge should intersect.
-  EXPECT_TRUE(quad.IntersectsCircle(FloatPoint(11, 10), 0));
+  EXPECT_TRUE(quad.IntersectsCircle(gfx::PointF(11, 10), 0));
 
   // A point that touches the right edge should intersect.
-  EXPECT_TRUE(quad.IntersectsCircle(FloatPoint(20, 11), 0));
+  EXPECT_TRUE(quad.IntersectsCircle(gfx::PointF(20, 11), 0));
 
   // A point that touches the bottom edge should intersect.
-  EXPECT_TRUE(quad.IntersectsCircle(FloatPoint(11, 20), 0));
+  EXPECT_TRUE(quad.IntersectsCircle(gfx::PointF(11, 20), 0));
 
   // A circle that is fully outside the quad should not intersect.
-  EXPECT_FALSE(quad.IntersectsCircle(FloatPoint(9, 9), 1));
+  EXPECT_FALSE(quad.IntersectsCircle(gfx::PointF(9, 9), 1));
 
   // A point that is fully outside the quad should not intersect.
-  EXPECT_FALSE(quad.IntersectsCircle(FloatPoint(9, 9), 0));
+  EXPECT_FALSE(quad.IntersectsCircle(gfx::PointF(9, 9), 0));
 }
 
 }  // namespace blink

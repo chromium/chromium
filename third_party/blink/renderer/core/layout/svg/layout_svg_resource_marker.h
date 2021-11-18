@@ -63,7 +63,7 @@ class LayoutSVGResourceMarker final : public LayoutSVGResourceContainer {
 
   bool ShouldPaint() const;
 
-  FloatPoint ReferencePoint() const;
+  gfx::PointF ReferencePoint() const;
   float Angle() const;
   SVGMarkerUnitsType MarkerUnits() const;
   SVGMarkerOrientType OrientType() const;

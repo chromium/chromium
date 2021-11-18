@@ -42,7 +42,7 @@ ContainerNode* ParentForClickEvent(const Node&);
 ContainerNode* ParentForClickEventInteractiveElementSensitive(const Node&);
 
 CORE_EXPORT PhysicalOffset
-ContentPointFromRootFrame(LocalFrame*, const FloatPoint& point_in_root_frame);
+ContentPointFromRootFrame(LocalFrame*, const gfx::PointF& point_in_root_frame);
 
 MouseEventWithHitTestResults PerformMouseEventHitTest(LocalFrame*,
                                                       const HitTestRequest&,

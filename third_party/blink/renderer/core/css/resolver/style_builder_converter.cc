@@ -1513,7 +1513,7 @@ ShadowData StyleBuilderConverter::ConvertShadow(
     }
   }
 
-  return ShadowData(FloatPoint(x, y), blur, spread, shadow_style, color);
+  return ShadowData(gfx::PointF(x, y), blur, spread, shadow_style, color);
 }
 
 scoped_refptr<ShadowList> StyleBuilderConverter::ConvertShadowList(

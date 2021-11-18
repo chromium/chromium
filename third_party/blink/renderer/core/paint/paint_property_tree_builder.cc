@@ -2007,7 +2007,7 @@ void FragmentPaintPropertyTreeBuilder::UpdateOverflowClip() {
     context_.current.clip = overflow_clip;
 }
 
-static FloatPoint PerspectiveOrigin(const LayoutBox& box) {
+static gfx::PointF PerspectiveOrigin(const LayoutBox& box) {
   const ComputedStyle& style = box.StyleRef();
   // Perspective origin has no effect without perspective.
   DCHECK(style.HasPerspective());
@@ -2032,7 +2032,7 @@ void FragmentPaintPropertyTreeBuilder::UpdatePerspective() {
           TransformPaintPropertyNode::TransformAndOrigin(
               TransformationMatrix().ApplyPerspective(style.UsedPerspective()),
               PerspectiveOrigin(To<LayoutBox>(object_)) +
-                  FloatSize(context_.current.paint_offset))};
+                  gfx::Vector2dF(context_.current.paint_offset))};
       state.flags.flattens_inherited_transform =
           context_.should_flatten_inherited_transform;
       state.rendering_context_id = context_.rendering_context_id;
@@ -2233,11 +2233,9 @@ void FragmentPaintPropertyTreeBuilder::UpdateScrollAndScrollTranslation() {
       const auto& box = To<LayoutBox>(object_);
       DCHECK(box.GetScrollableArea());
 
-      // Bake ScrollOrigin into ScrollTranslation. See comments for
-      // ScrollTranslation in object_paint_properties.h for details.
-      FloatPoint scroll_position = FloatPoint(box.ScrollOrigin()) +
-                                   box.GetScrollableArea()->GetScrollOffset();
-      TransformPaintPropertyNode::State state{-ToGfxVector2dF(scroll_position)};
+      gfx::PointF scroll_position = box.GetScrollableArea()->ScrollPosition();
+      TransformPaintPropertyNode::State state{
+          -scroll_position.OffsetFromOrigin()};
       if (!box.GetScrollableArea()->PendingScrollAnchorAdjustment().IsZero()) {
         context_.current.pending_scroll_anchor_adjustment += ToGfxVector2dF(
             box.GetScrollableArea()->PendingScrollAnchorAdjustment());

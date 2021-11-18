@@ -175,12 +175,12 @@ void MouseEvent::SetCoordinatesFromWebPointerProperties(
     const WebPointerProperties& web_pointer_properties,
     const LocalDOMWindow* dom_window,
     MouseEventInit* initializer) {
-  FloatPoint client_point;
-  FloatPoint screen_point(web_pointer_properties.PositionInScreen());
+  gfx::PointF client_point;
+  gfx::PointF screen_point = web_pointer_properties.PositionInScreen();
   float scale_factor = 1.0f;
   if (dom_window && dom_window->GetFrame() && dom_window->GetFrame()->View()) {
     LocalFrame* frame = dom_window->GetFrame();
-    FloatPoint root_frame_point(web_pointer_properties.PositionInWidget());
+    gfx::PointF root_frame_point = web_pointer_properties.PositionInWidget();
     if (Page* p = frame->GetPage()) {
       if (p->GetPointerLockController().GetElement() &&
           !p->GetPointerLockController().LockPending()) {
@@ -188,10 +188,10 @@ void MouseEvent::SetCoordinatesFromWebPointerProperties(
                                                              &screen_point);
       }
     }
-    FloatPoint frame_point =
+    gfx::PointF frame_point =
         frame->View()->ConvertFromRootFrame(root_frame_point);
     scale_factor = 1.0f / frame->PageZoomFactor();
-    client_point = frame_point.ScaledBy(scale_factor);
+    client_point = gfx::ScalePoint(frame_point, scale_factor);
   }
 
   initializer->setScreenX(screen_point.x());
@@ -439,8 +439,8 @@ void MouseEvent::ComputeRelativePosition() {
 
   // Adjust offsetLocation to be relative to the target's padding box.
   if (const LayoutObject* layout_object = FindTargetLayoutObject(target_node)) {
-    FloatPoint local_pos = layout_object->AbsoluteToLocalFloatPoint(
-        FloatPoint(AbsoluteLocation()));
+    gfx::PointF local_pos =
+        layout_object->AbsoluteToLocalPoint(gfx::PointF(AbsoluteLocation()));
 
     if (layout_object->IsInline()) {
       UseCounter::Count(

@@ -295,7 +295,7 @@ bool SVGLayoutSupport::IntersectsClipPath(const LayoutObject& object,
     ShapeClipPathOperation& clip_path =
         To<ShapeClipPathOperation>(*clip_path_operation);
     return clip_path.GetPath(FloatRect(reference_box), 1)
-        .Contains(ToGfxPointF(location.TransformedPoint()));
+        .Contains(location.TransformedPoint());
   }
   DCHECK_EQ(clip_path_operation->GetType(), ClipPathOperation::kReference);
   SVGResourceClient* client = SVGResources::GetClient(object);

@@ -681,7 +681,7 @@ void OffscreenCanvasRenderingContext2D::DrawTextInternal(
                    false);
   text_run.SetNormalizeSpace(true);
   // Draw the item text at the correct point.
-  FloatPoint location(x, y + GetFontBaseline(*font_data));
+  gfx::PointF location(x, y + GetFontBaseline(*font_data));
   double font_width = font.Width(text_run);
 
   bool use_max_width = (max_width && *max_width < font_width);
@@ -718,7 +718,7 @@ void OffscreenCanvasRenderingContext2D::DrawTextInternal(
     // We draw when fontWidth is 0 so compositing operations (eg, a "copy" op)
     // still work.
     paint_canvas->scale((font_width > 0 ? (width / font_width) : 0), 1);
-    location = FloatPoint();
+    location = gfx::PointF();
   }
 
   Draw<OverdrawOp::kNone>(

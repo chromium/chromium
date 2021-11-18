@@ -81,7 +81,6 @@ class PointF;
 
 namespace blink {
 class AnimationWorkletMutatorDispatcherImpl;
-class FloatPoint;
 class HitTestResult;
 class HTMLPlugInElement;
 class Page;
@@ -877,7 +876,7 @@ class CORE_EXPORT WebFrameWidgetImpl
 
   // Perform a hit test for a point relative to the root frame of the page.
   HitTestResult HitTestResultForRootFramePos(
-      const FloatPoint& pos_in_root_frame);
+      const gfx::PointF& pos_in_root_frame);
 
   // Called during |UpdateVisualProperties| to apply the new size to the widget.
   void ApplyVisualPropertiesSizing(const VisualProperties& visual_properties);

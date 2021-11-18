@@ -80,7 +80,7 @@ class NGSvgTextLayoutAlgorithm {
 
   // This data member represents "CSS_positions" defined in the specification,
   // but it contains only addressable characters.
-  Vector<FloatPoint> css_positions_;
+  Vector<gfx::PointF> css_positions_;
 };
 
 }  // namespace blink

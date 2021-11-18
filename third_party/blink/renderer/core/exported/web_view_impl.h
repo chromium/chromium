@@ -622,7 +622,7 @@ class CORE_EXPORT WebViewImpl final : public WebView,
 
   void SetPageScaleFactorAndLocation(float scale,
                                      bool is_pinch_gesture_active,
-                                     const FloatPoint&);
+                                     const gfx::PointF&);
   void PropagateZoomFactorToLocalFrameRoots(Frame*, float);
 
   void SetPageLifecycleStateInternal(

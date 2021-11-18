@@ -601,13 +601,13 @@ void BaseRenderingContext2D::setMiterLimit(double limit) {
 }
 
 double BaseRenderingContext2D::shadowOffsetX() const {
-  return GetState().ShadowOffset().width();
+  return GetState().ShadowOffset().x();
 }
 
 void BaseRenderingContext2D::setShadowOffsetX(double x) {
   if (!std::isfinite(x))
     return;
-  if (GetState().ShadowOffset().width() == x)
+  if (GetState().ShadowOffset().x() == x)
     return;
   if (identifiability_study_helper_.ShouldUpdateBuilder()) {
     identifiability_study_helper_.UpdateBuilder(CanvasOps::kSetShadowOffsetX,
@@ -617,13 +617,13 @@ void BaseRenderingContext2D::setShadowOffsetX(double x) {
 }
 
 double BaseRenderingContext2D::shadowOffsetY() const {
-  return GetState().ShadowOffset().height();
+  return GetState().ShadowOffset().y();
 }
 
 void BaseRenderingContext2D::setShadowOffsetY(double y) {
   if (!std::isfinite(y))
     return;
-  if (GetState().ShadowOffset().height() == y)
+  if (GetState().ShadowOffset().y() == y)
     return;
   if (identifiability_study_helper_.ShouldUpdateBuilder()) {
     identifiability_study_helper_.UpdateBuilder(CanvasOps::kSetShadowOffsetY,
@@ -1361,9 +1361,9 @@ static inline void ClipRectsToImageRect(const FloatRect& image_rect,
   // Compute the src to dst transform
   FloatSize scale(dst_rect->size().width() / src_rect->size().width(),
                   dst_rect->size().height() / src_rect->size().height());
-  FloatPoint scaled_src_location = src_rect->origin();
+  gfx::PointF scaled_src_location = src_rect->origin();
   scaled_src_location.Scale(scale.width(), scale.height());
-  FloatSize offset = dst_rect->origin() - scaled_src_location;
+  gfx::Vector2dF offset = dst_rect->origin() - scaled_src_location;
 
   src_rect->Intersect(image_rect);
 
@@ -1670,7 +1670,7 @@ void BaseRenderingContext2D::drawImage(ScriptState* script_state,
   FloatSize image_size = image_source->ElementSize(
       default_object_size, RespectImageOrientationInternal(image_source));
 
-  ClipRectsToImageRect(FloatRect(FloatPoint(), image_size), &src_rect,
+  ClipRectsToImageRect(FloatRect(gfx::PointF(), image_size), &src_rect,
                        &dst_rect);
 
   if (src_rect.IsEmpty())
@@ -1739,8 +1739,8 @@ CanvasGradient* BaseRenderingContext2D::createLinearGradient(double x0,
   float fx1 = ClampTo<float>(x1);
   float fy1 = ClampTo<float>(y1);
 
-  auto* gradient = MakeGarbageCollected<CanvasGradient>(FloatPoint(fx0, fy0),
-                                                        FloatPoint(fx1, fy1));
+  auto* gradient = MakeGarbageCollected<CanvasGradient>(gfx::PointF(fx0, fy0),
+                                                        gfx::PointF(fx1, fy1));
   gradient->SetExecutionContext(
       identifiability_study_helper_.execution_context());
   return gradient;
@@ -1775,7 +1775,7 @@ CanvasGradient* BaseRenderingContext2D::createRadialGradient(
   float fr1 = ClampTo<float>(r1);
 
   auto* gradient = MakeGarbageCollected<CanvasGradient>(
-      FloatPoint(fx0, fy0), fr0, FloatPoint(fx1, fy1), fr1);
+      gfx::PointF(fx0, fy0), fr0, gfx::PointF(fx1, fy1), fr1);
   gradient->SetExecutionContext(
       identifiability_study_helper_.execution_context());
   return gradient;
@@ -1801,7 +1801,7 @@ CanvasGradient* BaseRenderingContext2D::createConicGradient(double startAngle,
   // |startAngle| at 0 starts from x-axis.
   a = Rad2deg(a) + 90;
 
-  auto* gradient = MakeGarbageCollected<CanvasGradient>(a, FloatPoint(x, y));
+  auto* gradient = MakeGarbageCollected<CanvasGradient>(a, gfx::PointF(x, y));
   gradient->SetExecutionContext(
       identifiability_study_helper_.execution_context());
   return gradient;

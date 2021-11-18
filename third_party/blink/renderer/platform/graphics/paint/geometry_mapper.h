@@ -110,11 +110,6 @@ class PLATFORM_EXPORT GeometryMapper {
         rect.Map(Matrix());
     }
 
-    FloatPoint MapPoint(const FloatPoint& point) const {
-      if (LIKELY(IsIdentityOr2DTranslation()))
-        return point + FloatSize(Translation2D());
-      return Matrix().MapPoint(point);
-    }
     gfx::PointF MapPoint(const gfx::PointF& point) const {
       if (LIKELY(IsIdentityOr2DTranslation()))
         return point + Translation2D();

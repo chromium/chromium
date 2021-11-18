@@ -145,7 +145,7 @@ class DraggedNodeImageBuilder {
     dragged_layout_object->GetDocument().Lifecycle().AdvanceTo(
         DocumentLifecycle::kPaintClean);
 
-    FloatPoint paint_offset = bounding_box.origin();
+    gfx::Vector2dF paint_offset = bounding_box.OffsetFromOrigin();
     PropertyTreeState border_box_properties = layer->GetLayoutObject()
                                                   .FirstFragment()
                                                   .LocalBorderBoxProperties()
@@ -153,7 +153,7 @@ class DraggedNodeImageBuilder {
     // We paint in the containing transform node's space. Add the offset from
     // the layer to this transform space.
     paint_offset +=
-        FloatPoint(layer->GetLayoutObject().FirstFragment().PaintOffset());
+        gfx::Vector2dF(layer->GetLayoutObject().FirstFragment().PaintOffset());
 
     return DataTransfer::CreateDragImageForFrame(
         *local_frame_, 1.0f, bounding_box.size(), paint_offset, *builder,
@@ -403,7 +403,7 @@ std::unique_ptr<DragImage> DataTransfer::CreateDragImageForFrame(
     LocalFrame& frame,
     float opacity,
     const FloatSize& css_size,
-    const FloatPoint& paint_offset,
+    const gfx::Vector2dF& paint_offset,
     PaintRecordBuilder& builder,
     const PropertyTreeState& property_tree_state) {
   float device_scale_factor = frame.GetPage()->DeviceScaleFactorDeprecated();

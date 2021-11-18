@@ -101,7 +101,7 @@ positive.
 In all cases, the term 'scrollOffset' (or just 'offset') is used to represent the distance
 of the scrolling viewport from its location when scrolled to the beginning of content, and
 it uses type ScrollOffset. The term 'scrollPosition' (or just 'position') represents a
-point in the coordinate space defined by the overflow rect, and it uses type FloatPoint.
+point in the coordinate space defined by the overflow rect, and it uses type gfx::PointF.
 
 For illustrations of these concepts, see these files:
 

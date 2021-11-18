@@ -41,9 +41,9 @@
 #include "third_party/blink/renderer/core/layout/layout_embedded_content.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
-#include "third_party/blink/renderer/platform/geometry/float_point.h"
 #include "third_party/blink/renderer/platform/geometry/float_quad.h"
 #include "ui/gfx/geometry/point.h"
+#include "ui/gfx/geometry/point_f.h"
 
 namespace blink {
 
@@ -88,7 +88,7 @@ static FloatRect ToNormalizedRect(const FloatRect& absolute_rect,
   // Since we work with rects enclosing quad unions this is still
   // transform-friendly.
   FloatRect normalized_rect = absolute_rect;
-  normalized_rect.MoveBy(-container_rect.origin());
+  normalized_rect.Offset(-container_rect.OffsetFromOrigin());
 
   normalized_rect.Scale(1 / container_rect.width(),
                         1 / container_rect.height());

@@ -48,7 +48,7 @@ TSAN_TEST(TextRendererThreadedTest, MeasureText) {
         TextDirection::kLtr, false);
     text_run.SetNormalizeSpace(true);
     FloatRect text_bounds = font.SelectionRectForText(
-        text_run, FloatPoint(), font.GetFontDescription().ComputedSize(), 0,
+        text_run, gfx::PointF(), font.GetFontDescription().ComputedSize(), 0,
         -1);
 
     // X direction.
@@ -78,7 +78,7 @@ TSAN_TEST(TextRendererThreadedTest, DrawText) {
 
     Font font = Font(font_description);
 
-    FloatPoint location(0, 0);
+    gfx::PointF location(0, 0);
     TextRun text_run(text, 0, 0, TextRun::kAllowTrailingExpansion,
                      TextDirection::kLtr, false);
     text_run.SetNormalizeSpace(true);

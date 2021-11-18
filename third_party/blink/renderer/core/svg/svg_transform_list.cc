@@ -213,8 +213,8 @@ CSSValue* CreateTransformCSSValue(const SVGTransform& transform) {
     case CSSValueID::kRotate: {
       transform_value->Append(*CSSNumericLiteralValue::Create(
           transform.Angle(), CSSPrimitiveValue::UnitType::kDegrees));
-      FloatPoint rotation_origin = transform.RotationCenter();
-      if (!ToFloatSize(rotation_origin).IsZero()) {
+      gfx::PointF rotation_origin = transform.RotationCenter();
+      if (!rotation_origin.IsOrigin()) {
         transform_value->Append(*CSSNumericLiteralValue::Create(
             rotation_origin.x(), CSSPrimitiveValue::UnitType::kUserUnits));
         transform_value->Append(*CSSNumericLiteralValue::Create(

@@ -29,7 +29,6 @@
 #include <memory>
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/layout/geometry/physical_offset.h"
-#include "third_party/blink/renderer/platform/geometry/float_point.h"
 #include "third_party/blink/renderer/platform/geometry/float_quad.h"
 #include "third_party/blink/renderer/platform/geometry/int_size.h"
 #include "third_party/blink/renderer/platform/geometry/layout_point.h"
@@ -37,6 +36,7 @@
 #include "third_party/blink/renderer/platform/transforms/affine_transform.h"
 #include "third_party/blink/renderer/platform/transforms/transformation_matrix.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
+#include "ui/gfx/geometry/point_f.h"
 
 namespace blink {
 
@@ -57,7 +57,7 @@ class CORE_EXPORT TransformState {
   enum TransformAccumulation { kFlattenTransform, kAccumulateTransform };
 
   TransformState(TransformDirection mapping_direction,
-                 const FloatPoint& p,
+                 const gfx::PointF& p,
                  const FloatQuad& quad)
       : last_planar_point_(p),
         last_planar_quad_(quad),
@@ -66,7 +66,7 @@ class CORE_EXPORT TransformState {
         map_quad_(true),
         direction_(mapping_direction) {}
 
-  TransformState(TransformDirection mapping_direction, const FloatPoint& p)
+  TransformState(TransformDirection mapping_direction, const gfx::PointF& p)
       : last_planar_point_(p),
         force_accumulating_transform_(false),
         map_point_(true),
@@ -113,7 +113,7 @@ class CORE_EXPORT TransformState {
   void Flatten();
 
   // Return the coords of the point or quad in the last flattened layer
-  FloatPoint LastPlanarPoint() const { return last_planar_point_; }
+  gfx::PointF LastPlanarPoint() const { return last_planar_point_; }
   FloatQuad LastPlanarQuad() const { return last_planar_quad_; }
 
   // Return the point or quad mapped through the current transform
@@ -129,7 +129,7 @@ class CORE_EXPORT TransformState {
   void FlattenWithTransform(const TransformationMatrix&);
   void ApplyAccumulatedOffset();
 
-  FloatPoint last_planar_point_;
+  gfx::PointF last_planar_point_;
   FloatQuad last_planar_quad_;
 
   // We only allocate the transform if we need to

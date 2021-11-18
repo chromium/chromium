@@ -256,7 +256,7 @@ void FindInPage::SetClient(
 void FindInPage::GetNearestFindResult(const gfx::PointF& point,
                                       GetNearestFindResultCallback callback) {
   float distance;
-  EnsureTextFinder().NearestFindMatch(FloatPoint(point), &distance);
+  EnsureTextFinder().NearestFindMatch(point, &distance);
   std::move(callback).Run(distance);
 }
 

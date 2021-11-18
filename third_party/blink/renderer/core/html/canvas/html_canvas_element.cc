@@ -595,7 +595,7 @@ void HTMLCanvasElement::DoDeferredPaintInvalidation() {
       if (context_->IsComposited()) {
         // Composited 2D canvases need the dirty rect to be expressed relative
         // to the content box, as opposed to the layout box.
-        mapped_dirty_rect.MoveBy(-content_rect.origin());
+        mapped_dirty_rect.Offset(-content_rect.OffsetFromOrigin());
       }
       invalidation_rect = mapped_dirty_rect;
     } else {
@@ -812,8 +812,8 @@ void HTMLCanvasElement::Paint(GraphicsContext& context,
     // Place the icon near the upper left, like the missing image icon
     // for image elements. Offset it a bit from the upper corner.
     FloatSize icon_size(broken_canvas->Size());
-    FloatPoint upper_left =
-        FloatPoint(r.PixelSnappedOffset()) + icon_size.ScaledBy(0.5f);
+    gfx::PointF upper_left = gfx::PointF(r.PixelSnappedOffset()) +
+                             ToGfxVector2dF(icon_size.ScaledBy(0.5f));
     context.DrawImage(
         broken_canvas, Image::kSyncDecode,
         PaintAutoDarkMode(ComputedStyleRef(),
@@ -885,7 +885,7 @@ void HTMLCanvasElement::PaintInternal(GraphicsContext& context,
         !context_ || context_->CreationAttributes().alpha
             ? SkBlendMode::kSrcOver
             : SkBlendMode::kSrc;
-    FloatRect src_rect = FloatRect(FloatPoint(), FloatSize(Size()));
+    FloatRect src_rect = FloatRect(gfx::PointF(), FloatSize(Size()));
     scoped_refptr<StaticBitmapImage> snapshot =
         canvas2d_bridge_
             ? canvas2d_bridge_->NewImageSnapshot()

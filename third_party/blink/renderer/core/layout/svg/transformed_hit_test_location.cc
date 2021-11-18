@@ -19,7 +19,7 @@ const HitTestLocation* InverseTransformLocationIfNeeded(
   if (!transform.IsInvertible())
     return nullptr;
   const AffineTransform inverse = transform.Inverse();
-  FloatPoint transformed_point = inverse.MapPoint(location.TransformedPoint());
+  gfx::PointF transformed_point = inverse.MapPoint(location.TransformedPoint());
   if (UNLIKELY(location.IsRectBasedTest())) {
     storage.emplace(transformed_point,
                     inverse.MapQuad(location.TransformedRect()));

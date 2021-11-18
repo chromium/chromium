@@ -7,10 +7,10 @@
 
 #include <iosfwd>
 #include "third_party/blink/renderer/platform/geometry/double_size.h"
-#include "third_party/blink/renderer/platform/geometry/float_point.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 #include "ui/gfx/geometry/point.h"
+#include "ui/gfx/geometry/point_f.h"
 
 namespace blink {
 
@@ -21,7 +21,7 @@ class PLATFORM_EXPORT DoublePoint {
   constexpr DoublePoint() : x_(0), y_(0) {}
   constexpr DoublePoint(double x, double y) : x_(x), y_(y) {}
   constexpr DoublePoint(const gfx::Point& p) : x_(p.x()), y_(p.y()) {}
-  constexpr DoublePoint(const FloatPoint& p) : x_(p.x()), y_(p.y()) {}
+  constexpr DoublePoint(const gfx::PointF& p) : x_(p.x()), y_(p.y()) {}
   // We also have conversion operator to DoublePoint defined in LayoutPoint.
 
   constexpr explicit DoublePoint(const IntSize& s)
@@ -31,7 +31,7 @@ class PLATFORM_EXPORT DoublePoint {
   constexpr explicit DoublePoint(const DoubleSize& size)
       : x_(size.Width()), y_(size.Height()) {}
 
-  explicit operator FloatPoint() const;
+  explicit operator gfx::PointF() const;
 
   static constexpr DoublePoint Zero() { return DoublePoint(); }
 

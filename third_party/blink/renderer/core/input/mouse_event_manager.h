@@ -46,7 +46,7 @@ class CORE_EXPORT MouseEventManager final
       EventTarget*,
       const AtomicString&,
       const WebMouseEvent&,
-      const FloatPoint* last_position,
+      const gfx::PointF* last_position,
       EventTarget* related_target,
       bool check_for_listener = false,
       const PointerId& pointer_id = PointerEventFactory::kInvalidId,
@@ -122,8 +122,8 @@ class CORE_EXPORT MouseEventManager final
   // refactoring to be able to remove the dependency from EventHandler.
   Element* GetElementUnderMouse();
   bool IsMousePositionUnknown();
-  FloatPoint LastKnownMousePositionInViewport();
-  FloatPoint LastKnownMouseScreenPosition();
+  gfx::PointF LastKnownMousePositionInViewport();
+  gfx::PointF LastKnownMouseScreenPosition();
 
   bool MousePressed();
   void ReleaseMousePress();
@@ -213,8 +213,8 @@ class CORE_EXPORT MouseEventManager final
   // The last mouse movement position this frame has seen in viewport
   // coordinates.
   PhysicalOffset last_known_mouse_position_in_root_frame_;
-  FloatPoint last_known_mouse_position_;
-  FloatPoint last_known_mouse_screen_position_;
+  gfx::PointF last_known_mouse_position_;
+  gfx::PointF last_known_mouse_screen_position_;
 
   unsigned is_mouse_position_unknown_ : 1;
   // Current button-press state for mouse/mouse-like-stylus.

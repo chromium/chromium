@@ -663,10 +663,10 @@ void PaintLayer::MapPointInPaintInvalidationContainerToBacking(
   // transform space, then move into squashing layer state.
   point +=
       paint_invalidation_container.PrimaryStitchingFragment().PaintOffset();
-  point = PhysicalOffset::FromFloatPointRound(
+  point = PhysicalOffset::FromPointFRound(
       GeometryMapper::SourceToDestinationProjection(source_state.Transform(),
                                                     dest_state.Transform())
-          .MapPoint(FloatPoint(point)));
+          .MapPoint(gfx::PointF(point)));
   point -= PhysicalOffset(squashing_layer->GetOffsetFromTransformNode());
 }
 
@@ -1993,7 +1993,7 @@ static double ComputeZOffset(const HitTestingTransformState& transform_state) {
     return 0;
 
   // Flatten the point into the target plane
-  FloatPoint target_point = transform_state.MappedPoint();
+  gfx::PointF target_point = transform_state.MappedPoint();
 
   // Now map the point back through the transform, which computes Z.
   FloatPoint3D backmapped_point =
@@ -2522,7 +2522,7 @@ PaintLayer* PaintLayer::HitTestLayerByApplyingTransform(
   //
   // We can't just map HitTestLocation and HitTestRect because they may have
   // been flattened (losing z) by our container.
-  FloatPoint local_point = new_transform_state.MappedPoint();
+  gfx::PointF local_point = new_transform_state.MappedPoint();
   PhysicalRect bounds_of_mapped_area = new_transform_state.BoundsOfMappedArea();
   absl::optional<HitTestLocation> new_location;
   if (recursion_data.location.IsRectBasedTest())
@@ -2734,7 +2734,7 @@ bool PaintLayer::HitTestClippedOutByClipPath(
   else
     ConvertToLayerCoords(&root_layer, origin);
 
-  FloatPoint point(hit_test_location.Point() - origin.offset);
+  gfx::PointF point(hit_test_location.Point() - origin.offset);
   gfx::RectF reference_box =
       ClipPathClipper::LocalReferenceBox(GetLayoutObject());
 
@@ -2747,7 +2747,7 @@ bool PaintLayer::HitTestClippedOutByClipPath(
     return !clip_path
                 ->GetPath(FloatRect(reference_box),
                           GetLayoutObject().StyleRef().EffectiveZoom())
-                .Contains(ToGfxPointF(point));
+                .Contains(point);
   }
   DCHECK_EQ(clip_path_operation->GetType(), ClipPathOperation::kReference);
   LayoutSVGResourceClipper* clipper =
@@ -2758,7 +2758,7 @@ bool PaintLayer::HitTestClippedOutByClipPath(
   // the coordinate system is the top-left of the reference box, so adjust
   // the point accordingly.
   if (clipper->ClipPathUnits() == SVGUnitTypes::kSvgUnitTypeUserspaceonuse)
-    point.MoveBy(-FloatPoint(reference_box.origin()));
+    point -= reference_box.OffsetFromOrigin();
   // Unzoom the point and the reference box, since the <clipPath> geometry is
   // not zoomed.
   float inverse_zoom = 1 / GetLayoutObject().StyleRef().EffectiveZoom();

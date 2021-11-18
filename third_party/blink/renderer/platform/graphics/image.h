@@ -30,7 +30,6 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "third_party/blink/public/mojom/webpreferences/web_preferences.mojom-blink-forward.h"
-#include "third_party/blink/renderer/platform/geometry/float_point.h"
 #include "third_party/blink/renderer/platform/geometry/float_size.h"
 #include "third_party/blink/renderer/platform/geometry/int_rect.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_types.h"
@@ -44,6 +43,7 @@
 #include "third_party/blink/renderer/platform/wtf/thread_safe_ref_counted.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
 #include "ui/base/resource/resource_scale_factor.h"
+#include "ui/gfx/geometry/point_f.h"
 
 class SkMatrix;
 

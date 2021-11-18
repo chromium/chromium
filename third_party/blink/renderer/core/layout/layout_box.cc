@@ -1785,7 +1785,7 @@ bool LayoutBox::CanAutoscroll() const {
 // inset by the autoscroll activation threshold), returned offset denotes
 // direction of scrolling.
 PhysicalOffset LayoutBox::CalculateAutoscrollDirection(
-    const FloatPoint& point_in_root_frame) const {
+    const gfx::PointF& point_in_root_frame) const {
   NOT_DESTROYED();
   if (!GetFrame())
     return PhysicalOffset();
@@ -1804,7 +1804,7 @@ PhysicalOffset LayoutBox::CalculateAutoscrollDirection(
   PhysicalRect belt_box =
       View()->GetFrameView()->ConvertToRootFrame(absolute_scrolling_box);
   belt_box.Inflate(LayoutUnit(-kAutoscrollBeltSize));
-  FloatPoint point = point_in_root_frame;
+  gfx::PointF point = point_in_root_frame;
 
   if (point.x() < belt_box.X())
     point.Offset(-kAutoscrollBeltSize, 0);
@@ -1816,7 +1816,7 @@ PhysicalOffset LayoutBox::CalculateAutoscrollDirection(
   else if (point.y() > belt_box.Bottom())
     point.Offset(0, kAutoscrollBeltSize);
 
-  return PhysicalOffset::FromFloatSizeRound(point - point_in_root_frame);
+  return PhysicalOffset::FromVector2dFRound(point - point_in_root_frame);
 }
 
 LayoutBox* LayoutBox::FindAutoscrollable(LayoutObject* layout_object,
@@ -1966,9 +1966,9 @@ void LayoutBox::ApplyVisibleOverflowToClipRect(PhysicalRect& clip_rect) const {
   }
 }
 
-FloatPoint LayoutBox::PerspectiveOrigin(const PhysicalSize* size) const {
+gfx::PointF LayoutBox::PerspectiveOrigin(const PhysicalSize* size) const {
   if (!HasTransformRelatedProperty())
-    return FloatPoint();
+    return gfx::PointF();
 
   // Use the |size| parameter instead of |Size()| if present.
   FloatSize float_size = size ? FloatSize(*size) : FloatSize(Size());
@@ -2063,7 +2063,7 @@ bool LayoutBox::MapVisualRectToContainer(
   if (has_perspective) {
     // Perspective on the container affects us, so we have to factor it in here.
     DCHECK(container_object->HasLayer());
-    FloatPoint perspective_origin;
+    gfx::PointF perspective_origin;
     if (const auto* container_box = DynamicTo<LayoutBox>(container_object))
       perspective_origin = container_box->PerspectiveOrigin();
 

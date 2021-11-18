@@ -205,12 +205,12 @@ void TextPainter::PaintInternalRun(TextRunPaintInfo& text_run_paint_info,
   if (step == kPaintEmphasisMark) {
     graphics_context_.DrawEmphasisMarks(
         font_, text_run_paint_info, emphasis_mark_,
-        FloatPoint(text_origin_) + IntSize(0, emphasis_mark_offset_),
+        gfx::PointF(text_origin_) + gfx::Vector2dF(0, emphasis_mark_offset_),
         auto_dark_mode);
   } else {
     DCHECK(step == kPaintText);
     graphics_context_.DrawText(font_, text_run_paint_info,
-                               FloatPoint(text_origin_), node_id,
+                               gfx::PointF(text_origin_), node_id,
                                auto_dark_mode);
   }
 }

@@ -62,7 +62,7 @@ void StaticBitmapImage::DrawHelper(cc::PaintCanvas* canvas,
 
     // ImageOrientation expects the origin to be at (0, 0)
     canvas->translate(adjusted_dst_rect.x(), adjusted_dst_rect.y());
-    adjusted_dst_rect.set_origin(FloatPoint());
+    adjusted_dst_rect.set_origin(gfx::PointF());
 
     canvas->concat(AffineTransformToSkMatrix(
         orientation_.TransformFromDefault(adjusted_dst_rect.size())));

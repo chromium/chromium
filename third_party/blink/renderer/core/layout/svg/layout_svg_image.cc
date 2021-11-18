@@ -232,7 +232,7 @@ bool LayoutSVGImage::NodeAtPoint(HitTestResult& result,
 
   if (hit_rules.can_hit_fill || hit_rules.can_hit_bounding_box) {
     if (local_location->Intersects(object_bounding_box_)) {
-      UpdateHitTestResult(result, PhysicalOffset::FromFloatPointRound(
+      UpdateHitTestResult(result, PhysicalOffset::FromPointFRound(
                                       local_location->TransformedPoint()));
       if (result.AddNodeToListBasedTestResult(GetElement(), *local_location) ==
           kStopHitTesting)

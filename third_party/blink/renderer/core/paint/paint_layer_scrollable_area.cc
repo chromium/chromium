@@ -188,7 +188,8 @@ PaintLayerScrollableArea* PaintLayerScrollableArea::FromNode(const Node& node) {
   return box ? box->GetScrollableArea() : nullptr;
 }
 
-void PaintLayerScrollableArea::DidCompositorScroll(const FloatPoint& position) {
+void PaintLayerScrollableArea::DidCompositorScroll(
+    const gfx::PointF& position) {
   ScrollableArea::DidCompositorScroll(position);
   // This should be alive if it receives composited scroll callbacks.
   CHECK(!HasBeenDisposed());
@@ -770,8 +771,7 @@ PhysicalRect PaintLayerScrollableArea::LayoutContentRect(
       layer_size.Width() - border_width - scrollbars.HorizontalSum(),
       layer_size.Height() - border_height - scrollbars.VerticalSum());
   size.ClampNegativeToZero();
-  return PhysicalRect(PhysicalOffset::FromFloatPointRound(ScrollPosition()),
-                      size);
+  return PhysicalRect(PhysicalOffset::FromPointFRound(ScrollPosition()), size);
 }
 
 IntRect PaintLayerScrollableArea::VisibleContentRect(
@@ -825,10 +825,10 @@ void PaintLayerScrollableArea::ContentsResized() {
 
 gfx::Point PaintLayerScrollableArea::LastKnownMousePosition() const {
   return GetLayoutBox()->GetFrame()
-             ? FlooredIntPoint(GetLayoutBox()
-                                   ->GetFrame()
-                                   ->GetEventHandler()
-                                   .LastKnownMousePositionInRootFrame())
+             ? gfx::ToFlooredPoint(GetLayoutBox()
+                                       ->GetFrame()
+                                       ->GetEventHandler()
+                                       .LastKnownMousePositionInRootFrame())
              : gfx::Point();
 }
 
@@ -1904,7 +1904,7 @@ void PaintLayerScrollableArea::SetNeedsResnap(bool needs_resnap) {
   EnsureRareData().needs_resnap_ = needs_resnap;
 }
 
-absl::optional<FloatPoint>
+absl::optional<gfx::PointF>
 PaintLayerScrollableArea::GetSnapPositionAndSetTarget(
     const cc::SnapSelectionStrategy& strategy) {
   if (!RareData() || !RareData()->snap_container_data_)
@@ -1928,10 +1928,10 @@ PaintLayerScrollableArea::GetSnapPositionAndSetTarget(
 
   cc::TargetSnapAreaElementIds snap_targets;
   gfx::PointF snap_position;
-  absl::optional<FloatPoint> snap_point;
+  absl::optional<gfx::PointF> snap_point;
   if (data.FindSnapPosition(strategy, &snap_position, &snap_targets,
                             active_element_id)) {
-    snap_point = FloatPoint(snap_position.x(), snap_position.y());
+    snap_point = gfx::PointF(snap_position.x(), snap_position.y());
   }
 
   if (data.SetTargetSnapAreaElementIds(snap_targets))
@@ -2073,7 +2073,7 @@ bool PaintLayerScrollableArea::HitTestOverflowControls(
                               (HasHorizontalScrollbar()
                                    ? HorizontalScrollbar()->ScrollbarThickness()
                                    : resize_control_size));
-    if (v_bar_rect.Contains(local_point)) {
+    if (v_bar_rect.Contains(LayoutPoint(local_point))) {
       result.SetScrollbar(VerticalScrollbar());
       return true;
     }
@@ -2092,7 +2092,7 @@ bool PaintLayerScrollableArea::HitTestOverflowControls(
                                     ? VerticalScrollbar()->ScrollbarThickness()
                                     : resize_control_size),
         h_scrollbar_thickness);
-    if (h_bar_rect.Contains(local_point)) {
+    if (h_bar_rect.Contains(LayoutPoint(local_point))) {
       result.SetScrollbar(HorizontalScrollbar());
       return true;
     }
@@ -2371,10 +2371,9 @@ PhysicalRect PaintLayerScrollableArea::ScrollIntoView(
       new_scroll_offset.set_height(old_scroll_offset.height());
   }
 
-  FloatPoint end_point = ScrollOffsetToPosition(new_scroll_offset);
+  gfx::PointF end_point = ScrollOffsetToPosition(new_scroll_offset);
   std::unique_ptr<cc::SnapSelectionStrategy> strategy =
-      cc::SnapSelectionStrategy::CreateForEndPosition(ToGfxPointF(end_point),
-                                                      true, true);
+      cc::SnapSelectionStrategy::CreateForEndPosition(end_point, true, true);
   end_point = GetSnapPositionAndSetTarget(*strategy).value_or(end_point);
   new_scroll_offset = ScrollPositionToOffset(end_point);
 

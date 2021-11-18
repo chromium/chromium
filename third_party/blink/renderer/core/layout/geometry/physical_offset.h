@@ -101,14 +101,6 @@ struct CORE_EXPORT PhysicalOffset {
   explicit PhysicalOffset(const gfx::Vector2d& vector)
       : left(vector.x()), top(vector.y()) {}
 
-  static PhysicalOffset FromFloatPointFloor(const FloatPoint& point) {
-    return {LayoutUnit::FromFloatFloor(point.x()),
-            LayoutUnit::FromFloatFloor(point.y())};
-  }
-  static PhysicalOffset FromFloatPointRound(const FloatPoint& point) {
-    return {LayoutUnit::FromFloatRound(point.x()),
-            LayoutUnit::FromFloatRound(point.y())};
-  }
   static PhysicalOffset FromFloatSizeFloor(const FloatSize& size) {
     return {LayoutUnit::FromFloatFloor(size.width()),
             LayoutUnit::FromFloatFloor(size.height())};
@@ -140,9 +132,8 @@ struct CORE_EXPORT PhysicalOffset {
     top *= s;
   }
 
-  constexpr explicit operator FloatPoint() const { return {left, top}; }
-  constexpr explicit operator FloatSize() const { return {left, top}; }
   constexpr explicit operator gfx::PointF() const { return {left, top}; }
+  constexpr explicit operator FloatSize() const { return {left, top}; }
   constexpr explicit operator gfx::Vector2dF() const { return {left, top}; }
 
   String ToString() const;

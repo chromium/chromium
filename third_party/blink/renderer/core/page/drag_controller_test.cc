@@ -100,7 +100,7 @@ TEST_F(DragControllerSimTest, DropURLOnNonNavigatingClearsState) {
   DataObject* object = DataObject::Create();
   object->SetURLAndTitle("https://www.example.com/index.html", "index");
   DragData data(
-      object, FloatPoint(10, 10), FloatPoint(10, 10),
+      object, gfx::PointF(10, 10), gfx::PointF(10, 10),
       static_cast<DragOperationsMask>(kDragOperationCopy | kDragOperationLink |
                                       kDragOperationMove));
 
@@ -140,7 +140,7 @@ TEST_F(DragControllerSimTest, ThrottledDocumentHandled) {
   DataObject* object = DataObject::Create();
   object->SetURLAndTitle("https://www.example.com/index.html", "index");
   DragData data(
-      object, FloatPoint(10, 10), FloatPoint(10, 10),
+      object, gfx::PointF(10, 10), gfx::PointF(10, 10),
       static_cast<DragOperationsMask>(kDragOperationCopy | kDragOperationLink |
                                       kDragOperationMove));
 

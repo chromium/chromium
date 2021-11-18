@@ -46,7 +46,7 @@ void NGMathMLPainter::PaintStretchyOrLargeOperator(
   AutoDarkMode auto_dark_mode(
       PaintAutoDarkMode(style, DarkModeFilter::ElementRole::kText));
   info.context.DrawText(style.GetFont(), text_fragment_paint_info,
-                        FloatPoint(paint_offset), kInvalidDOMNodeId,
+                        gfx::PointF(paint_offset), kInvalidDOMNodeId,
                         auto_dark_mode);
 }
 

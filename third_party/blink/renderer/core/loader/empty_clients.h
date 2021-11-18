@@ -50,7 +50,6 @@
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/platform/cursors.h"
 #include "third_party/blink/renderer/platform/exported/wrapped_resource_request.h"
-#include "third_party/blink/renderer/platform/geometry/float_point.h"
 #include "third_party/blink/renderer/platform/geometry/float_rect.h"
 #include "third_party/blink/renderer/platform/geometry/int_rect.h"
 #include "third_party/blink/renderer/platform/graphics/touch_action.h"
@@ -60,6 +59,7 @@
 #include "ui/base/cursor/cursor.h"
 #include "ui/display/screen_info.h"
 #include "ui/display/screen_infos.h"
+#include "ui/gfx/geometry/point_f.h"
 #include "v8/include/v8.h"
 
 /*

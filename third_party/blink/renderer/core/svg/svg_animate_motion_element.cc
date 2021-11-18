@@ -127,7 +127,7 @@ void SVGAnimateMotionElement::UpdateAnimationPath() {
 template <typename CharType>
 static bool ParsePointInternal(const CharType* ptr,
                                const CharType* end,
-                               FloatPoint& point) {
+                               gfx::PointF& point) {
   if (!SkipOptionalSVGSpaces(ptr, end))
     return false;
 
@@ -139,13 +139,13 @@ static bool ParsePointInternal(const CharType* ptr,
   if (!ParseNumber(ptr, end, y))
     return false;
 
-  point = FloatPoint(x, y);
+  point = gfx::PointF(x, y);
 
   // disallow anything except spaces at the end
   return !SkipOptionalSVGSpaces(ptr, end);
 }
 
-static bool ParsePoint(const String& string, FloatPoint& point) {
+static bool ParsePoint(const String& string, gfx::PointF& point) {
   if (string.IsEmpty())
     return false;
   return WTF::VisitCharacters(string, [&](const auto* chars, unsigned length) {
@@ -189,7 +189,7 @@ bool SVGAnimateMotionElement::CalculateFromAndByValues(
   // Apply 'from' to 'to' to get 'by' semantics. If the animation mode
   // is 'by', |from_string| will be the empty string and yield a point
   // of (0,0).
-  to_point_ += from_point_;
+  to_point_ += from_point_.OffsetFromOrigin();
   to_point_at_end_of_duration_ = to_point_;
   return true;
 }
@@ -249,13 +249,13 @@ void SVGAnimateMotionElement::ApplyResultsToTarget(
 
 float SVGAnimateMotionElement::CalculateDistance(const String& from_string,
                                                  const String& to_string) {
-  FloatPoint from;
-  FloatPoint to;
+  gfx::PointF from;
+  gfx::PointF to;
   if (!ParsePoint(from_string, from))
     return -1;
   if (!ParsePoint(to_string, to))
     return -1;
-  return (to - from).DiagonalLength();
+  return (to - from).Length();
 }
 
 void SVGAnimateMotionElement::UpdateAnimationMode() {

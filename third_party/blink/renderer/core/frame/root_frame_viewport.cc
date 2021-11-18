@@ -270,11 +270,12 @@ void RootFrameViewport::ApplyPendingHistoryRestoreScrollOffset() {
     visual_viewport->SetScaleAndLocation(
         pending_view_state_->page_scale_factor_,
         visual_viewport->IsPinchGestureActive(),
-        FloatPoint(visual_viewport_offset));
+        gfx::PointAtOffsetFromOrigin(ToGfxVector2dF(visual_viewport_offset)));
   } else if (should_restore_scale) {
     visual_viewport->SetScale(pending_view_state_->page_scale_factor_);
   } else if (should_restore_scroll_) {
-    visual_viewport->SetLocation(FloatPoint(visual_viewport_offset));
+    visual_viewport->SetLocation(
+        gfx::PointAtOffsetFromOrigin(ToGfxVector2dF(visual_viewport_offset)));
   }
 
   should_restore_scroll_ = false;
@@ -345,10 +346,9 @@ PhysicalRect RootFrameViewport::ScrollIntoView(
   if (params->type == mojom::blink::ScrollType::kUser)
     new_scroll_offset = ClampToUserScrollableOffset(new_scroll_offset);
 
-  FloatPoint end_point = ScrollOffsetToPosition(new_scroll_offset);
+  gfx::PointF end_point = ScrollOffsetToPosition(new_scroll_offset);
   std::unique_ptr<cc::SnapSelectionStrategy> strategy =
-      cc::SnapSelectionStrategy::CreateForEndPosition(ToGfxPointF(end_point),
-                                                      true, true);
+      cc::SnapSelectionStrategy::CreateForEndPosition(end_point, true, true);
   if (GetLayoutBox()) {
     end_point = GetSnapPositionAndSetTarget(*strategy).value_or(end_point);
     new_scroll_offset = ScrollPositionToOffset(end_point);
@@ -679,7 +679,7 @@ void RootFrameViewport::SetNeedsResnap(bool needs_resnap) {
   LayoutViewport().SetNeedsResnap(needs_resnap);
 }
 
-absl::optional<FloatPoint> RootFrameViewport::GetSnapPositionAndSetTarget(
+absl::optional<gfx::PointF> RootFrameViewport::GetSnapPositionAndSetTarget(
     const cc::SnapSelectionStrategy& strategy) {
   return LayoutViewport().GetSnapPositionAndSetTarget(strategy);
 }

@@ -14,6 +14,7 @@
 #include "third_party/blink/renderer/core/animation/svg_interpolation_environment.h"
 #include "third_party/blink/renderer/core/svg/svg_transform.h"
 #include "third_party/blink/renderer/core/svg/svg_transform_list.h"
+#include "third_party/blink/renderer/platform/geometry/float_size.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
 
 namespace blink {
@@ -57,7 +58,7 @@ namespace {
 
 std::unique_ptr<InterpolableValue> TranslateToInterpolableValue(
     SVGTransform* transform) {
-  FloatPoint translate = transform->Translate();
+  gfx::PointF translate = transform->Translate();
   auto result = std::make_unique<InterpolableList>(2);
   result->Set(0, std::make_unique<InterpolableNumber>(translate.x()));
   result->Set(1, std::make_unique<InterpolableNumber>(translate.y()));
@@ -95,7 +96,7 @@ SVGTransform* ScaleFromInterpolableValue(const InterpolableValue& value) {
 
 std::unique_ptr<InterpolableValue> RotateToInterpolableValue(
     SVGTransform* transform) {
-  FloatPoint rotation_center = transform->RotationCenter();
+  gfx::PointF rotation_center = transform->RotationCenter();
   auto result = std::make_unique<InterpolableList>(3);
   result->Set(0, std::make_unique<InterpolableNumber>(transform->Angle()));
   result->Set(1, std::make_unique<InterpolableNumber>(rotation_center.x()));

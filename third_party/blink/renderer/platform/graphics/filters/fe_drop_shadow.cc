@@ -44,10 +44,10 @@ FEDropShadow::FEDropShadow(Filter* filter,
       shadow_opacity_(shadow_opacity) {}
 
 FloatRect FEDropShadow::MapEffect(const FloatSize& std_deviation,
-                                  const FloatPoint& offset,
+                                  const gfx::PointF& offset,
                                   const FloatRect& rect) {
   FloatRect offset_rect = rect;
-  offset_rect.MoveBy(offset);
+  offset_rect.Offset(offset.OffsetFromOrigin());
   FloatRect blurred_rect =
       FEGaussianBlur::MapEffect(std_deviation, offset_rect);
   return UnionRects(blurred_rect, rect);
@@ -56,8 +56,8 @@ FloatRect FEDropShadow::MapEffect(const FloatSize& std_deviation,
 FloatRect FEDropShadow::MapEffect(const FloatRect& rect) const {
   const Filter* filter = GetFilter();
   DCHECK(filter);
-  FloatPoint offset(filter->ApplyHorizontalScale(dx_),
-                    filter->ApplyVerticalScale(dy_));
+  gfx::PointF offset(filter->ApplyHorizontalScale(dx_),
+                     filter->ApplyVerticalScale(dy_));
   FloatSize std_error(filter->ApplyHorizontalScale(std_x_),
                       filter->ApplyVerticalScale(std_y_));
   return MapEffect(std_error, offset, rect);

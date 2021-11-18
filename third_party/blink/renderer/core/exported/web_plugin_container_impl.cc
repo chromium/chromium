@@ -210,8 +210,8 @@ void WebPluginContainerImpl::Paint(GraphicsContext& context,
 
   // The plugin is positioned in the root frame's coordinates, so it needs to
   // be painted in them too.
-  FloatPoint origin(ParentFrameView()->ConvertToRootFrame(gfx::Point()));
-  origin.Offset(-paint_offset);
+  gfx::PointF origin(ParentFrameView()->ConvertToRootFrame(gfx::Point()));
+  origin -= gfx::Vector2dF(ToGfxVector2d(paint_offset));
   context.Translate(-origin.x(), -origin.y());
 
   cc::PaintCanvas* canvas = context.Canvas();
@@ -875,15 +875,14 @@ void WebPluginContainerImpl::HandleDragEvent(MouseEvent& event) {
 }
 
 void WebPluginContainerImpl::HandleWheelEvent(WheelEvent& event) {
-  FloatPoint absolute_location =
-      FloatPoint(event.NativeEvent().PositionInRootFrame());
+  gfx::PointF absolute_location = event.NativeEvent().PositionInRootFrame();
 
   // Translate the root frame position to content coordinates.
   absolute_location =
       ParentFrameView()->ConvertFromRootFrame(absolute_location);
 
-  FloatPoint local_point =
-      element_->GetLayoutObject()->AbsoluteToLocalFloatPoint(absolute_location);
+  gfx::PointF local_point =
+      element_->GetLayoutObject()->AbsoluteToLocalPoint(absolute_location);
   WebMouseWheelEvent translated_event = event.NativeEvent().FlattenTransform();
   translated_event.SetPositionInWidget(local_point.x(), local_point.y());
 
@@ -965,16 +964,15 @@ WebTouchEvent WebPluginContainerImpl::TransformTouchEvent(
 
   LocalFrameView* parent = ParentFrameView();
   for (unsigned i = 0; i < transformed_event.touches_length; ++i) {
-    FloatPoint absolute_location =
-        FloatPoint(transformed_event.touches[i].PositionInWidget());
+    gfx::PointF absolute_location =
+        transformed_event.touches[i].PositionInWidget();
 
     // Translate the root frame position to content coordinates.
     absolute_location = parent->ConvertFromRootFrame(absolute_location);
 
-    FloatPoint local_point =
-        element_->GetLayoutObject()->AbsoluteToLocalFloatPoint(
-            absolute_location);
-    transformed_event.touches[i].SetPositionInWidget(ToGfxPointF(local_point));
+    gfx::PointF local_point =
+        element_->GetLayoutObject()->AbsoluteToLocalPoint(absolute_location);
+    transformed_event.touches[i].SetPositionInWidget(local_point);
   }
   return transformed_event;
 }
@@ -1034,11 +1032,10 @@ void WebPluginContainerImpl::HandleGestureEvent(GestureEvent& event) {
   WebGestureEvent translated_event = event.NativeEvent();
   gfx::PointF absolute_root_frame_location =
       event.NativeEvent().PositionInRootFrame();
-  FloatPoint local_point =
-      element_->GetLayoutObject()->AbsoluteToLocalFloatPoint(
-          FloatPoint(absolute_root_frame_location));
+  gfx::PointF local_point = element_->GetLayoutObject()->AbsoluteToLocalPoint(
+      absolute_root_frame_location);
   translated_event.FlattenTransform();
-  translated_event.SetPositionInWidget(ToGfxPointF(local_point));
+  translated_event.SetPositionInWidget(local_point);
 
   ui::Cursor dummy_cursor;
   if (web_plugin_->HandleInputEvent(

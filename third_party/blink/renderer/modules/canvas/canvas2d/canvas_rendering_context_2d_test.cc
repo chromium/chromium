@@ -260,8 +260,8 @@ void CanvasRenderingContext2DTest::SetUp() {
   partial_image_data_ = ImageData::Create(2, 2, settings, ASSERT_NO_EXCEPTION);
 
   NonThrowableExceptionState exception_state;
-  auto* opaque_gradient =
-      MakeGarbageCollected<CanvasGradient>(FloatPoint(0, 0), FloatPoint(10, 0));
+  auto* opaque_gradient = MakeGarbageCollected<CanvasGradient>(
+      gfx::PointF(0, 0), gfx::PointF(10, 0));
   opaque_gradient->addColorStop(0, String("green"), exception_state);
   EXPECT_FALSE(exception_state.HadException());
   opaque_gradient->addColorStop(1, String("blue"), exception_state);
@@ -270,8 +270,8 @@ void CanvasRenderingContext2DTest::SetUp() {
       V8UnionCSSColorValueOrCanvasGradientOrCanvasPatternOrString>(
       opaque_gradient);
 
-  auto* alpha_gradient =
-      MakeGarbageCollected<CanvasGradient>(FloatPoint(0, 0), FloatPoint(10, 0));
+  auto* alpha_gradient = MakeGarbageCollected<CanvasGradient>(
+      gfx::PointF(0, 0), gfx::PointF(10, 0));
   alpha_gradient->addColorStop(0, String("green"), exception_state);
   EXPECT_FALSE(exception_state.HadException());
   alpha_gradient->addColorStop(1, String("rgba(0, 0, 255, 0.5)"),

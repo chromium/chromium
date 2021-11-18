@@ -274,7 +274,7 @@ LayoutRect InlineTextBox::LocalSelectionRect(
   LayoutRect r;
   if (s_pos || e_pos != static_cast<int>(len_)) {
     r = LayoutRect(EnclosingIntRect(
-        font.SelectionRectForText(text_run, FloatPoint(starting_point),
+        font.SelectionRectForText(text_run, gfx::PointF(starting_point),
                                   sel_height.ToInt(), s_pos, e_pos)));
   } else {
     // Avoid computing the font width when the entire line box is selected as an
@@ -598,7 +598,7 @@ LayoutUnit InlineTextBox::PositionForOffset(int offset) const {
   // FIXME: Do we need to add rightBearing here?
   return LayoutUnit(font.SelectionRectForText(
                             ConstructTextRun(style_to_use),
-                            FloatPoint(LogicalLeft().ToInt(), 0), 0, from, to)
+                            gfx::PointF(LogicalLeft().ToInt(), 0), 0, from, to)
                         .right());
 }
 

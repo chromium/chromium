@@ -92,17 +92,17 @@ AffineTransform TransformHelper::ComputeTransform(
   return transform.ToAffineTransform();
 }
 
-FloatPoint TransformHelper::ComputeTransformOrigin(
+gfx::PointF TransformHelper::ComputeTransformOrigin(
     const LayoutObject& layout_object) {
   const auto& style = layout_object.StyleRef();
   FloatRect reference_box = ComputeReferenceBox(layout_object);
-  FloatPoint origin(
+  gfx::PointF origin(
       FloatValueForLength(style.TransformOriginX(), reference_box.width()) +
           reference_box.x(),
       FloatValueForLength(style.TransformOriginY(), reference_box.height()) +
           reference_box.y());
   // See the comment in ComputeTransform() for the reason of scaling by 1/zoom.
-  return origin.ScaledBy(1 / style.EffectiveZoom());
+  return gfx::ScalePoint(origin, style.EffectiveZoom());
 }
 
 }  // namespace blink

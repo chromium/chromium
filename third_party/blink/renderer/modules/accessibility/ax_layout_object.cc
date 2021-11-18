@@ -1753,7 +1753,7 @@ AXObject* AXLayoutObject::AccessibilityImageMapHitTest(
     return nullptr;
 
   for (const auto& child : parent->ChildrenIncludingIgnored()) {
-    if (child->GetBoundsInFrameCoordinates().Contains(point))
+    if (child->GetBoundsInFrameCoordinates().Contains(LayoutPoint(point)))
       return child.Get();
   }
 

@@ -152,12 +152,12 @@ void PaintPieces(GraphicsContext& context,
     // The phase defines the origin of the whole image - not the image
     // rect (see ImageTilingInfo) - so we need to adjust it to account
     // for that.
-    FloatPoint tile_origin_in_dest_space = draw_info.source.origin();
+    gfx::PointF tile_origin_in_dest_space = draw_info.source.origin();
     tile_origin_in_dest_space.Scale(tiling_info.scale.width(),
                                     tiling_info.scale.height());
     tiling_info.phase =
         draw_info.destination.origin() +
-        (FloatPoint(h_tile->phase, v_tile->phase) - tile_origin_in_dest_space);
+        (gfx::PointF(h_tile->phase, v_tile->phase) - tile_origin_in_dest_space);
     tiling_info.spacing = FloatSize(h_tile->spacing, v_tile->spacing);
 
     context.DrawImageTiled(image, draw_info.destination, tiling_info,

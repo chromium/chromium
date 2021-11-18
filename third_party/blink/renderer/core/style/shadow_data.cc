@@ -33,7 +33,7 @@ bool ShadowData::operator==(const ShadowData& o) const {
 }
 
 ShadowData ShadowData::NeutralValue() {
-  return ShadowData(FloatPoint(0, 0), 0, 0, ShadowStyle::kNormal,
+  return ShadowData(gfx::PointF(0, 0), 0, 0, ShadowStyle::kNormal,
                     StyleColor(Color::kTransparent));
 }
 

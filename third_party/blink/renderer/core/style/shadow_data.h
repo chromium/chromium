@@ -28,8 +28,8 @@
 
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/style_color.h"
-#include "third_party/blink/renderer/platform/geometry/float_point.h"
 #include "third_party/blink/renderer/platform/geometry/float_rect_outsets.h"
+#include "ui/gfx/geometry/point_f.h"
 
 namespace blink {
 
@@ -41,7 +41,7 @@ class CORE_EXPORT ShadowData {
   USING_FAST_MALLOC(ShadowData);
 
  public:
-  ShadowData(const FloatPoint& location,
+  ShadowData(const gfx::PointF& location,
              float blur,
              float spread,
              ShadowStyle style,
@@ -59,7 +59,7 @@ class CORE_EXPORT ShadowData {
 
   float X() const { return location_.x(); }
   float Y() const { return location_.y(); }
-  FloatPoint Location() const { return location_; }
+  gfx::PointF Location() const { return location_; }
   float Blur() const { return blur_; }
   float Spread() const { return spread_; }
   ShadowStyle Style() const { return style_; }
@@ -72,7 +72,7 @@ class CORE_EXPORT ShadowData {
   FloatRectOutsets RectOutsets() const;
 
  private:
-  FloatPoint location_;
+  gfx::PointF location_;
   float blur_;
   float spread_;
   StyleColor color_;

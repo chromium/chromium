@@ -38,7 +38,6 @@
 #include "third_party/blink/renderer/platform/fonts/font_metrics.h"
 #include "third_party/blink/renderer/platform/fonts/string_truncator.h"
 #include "third_party/blink/renderer/platform/fonts/text_run_paint_info.h"
-#include "third_party/blink/renderer/platform/geometry/float_point.h"
 #include "third_party/blink/renderer/platform/geometry/float_rect.h"
 #include "third_party/blink/renderer/platform/graphics/bitmap_image.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_resource_provider.h"
@@ -52,6 +51,7 @@
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "ui/gfx/geometry/point.h"
+#include "ui/gfx/geometry/point_f.h"
 
 namespace blink {
 
@@ -230,7 +230,7 @@ std::unique_ptr<DragImage> DragImage::Create(const KURL& url,
       url_string = StringTruncator::CenterTruncate(
           url_string, image_size.width() - (kDragLabelBorderX * 2.0f),
           url_font);
-    FloatPoint text_pos(
+    gfx::PointF text_pos(
         kDragLabelBorderX,
         image_size.height() -
             (kLabelBorderYOffset + url_font_data->GetFontMetrics().Descent()));
@@ -257,7 +257,7 @@ std::unique_ptr<DragImage> DragImage::Create(const KURL& url,
     text_pos.set_x(available_width - ceilf(text_width));
   }
   label_font.DrawBidiText(resource_provider->Canvas(),
-                          TextRunPaintInfo(text_run), FloatPoint(text_pos),
+                          TextRunPaintInfo(text_run), gfx::PointF(text_pos),
                           Font::kDoNotPaintIfFontNotReady, device_scale_factor,
                           text_paint);
 

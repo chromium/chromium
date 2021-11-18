@@ -63,10 +63,10 @@ class CORE_EXPORT SVGLengthContext {
                                     const SVGLength& y,
                                     const SVGLength& width,
                                     const SVGLength& height);
-  static FloatPoint ResolvePoint(const SVGElement*,
-                                 SVGUnitTypes::SVGUnitType,
-                                 const SVGLength& x,
-                                 const SVGLength& y);
+  static gfx::PointF ResolvePoint(const SVGElement*,
+                                  SVGUnitTypes::SVGUnitType,
+                                  const SVGLength& x,
+                                  const SVGLength& y);
   static float ResolveLength(const SVGElement*,
                              SVGUnitTypes::SVGUnitType,
                              const SVGLength&);

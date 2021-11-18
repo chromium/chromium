@@ -148,7 +148,7 @@ class CORE_EXPORT DataTransfer final : public ScriptWrappable,
       LocalFrame&,
       float,
       const FloatSize& css_size,
-      const FloatPoint& paint_offset,
+      const gfx::Vector2dF& paint_offset,
       PaintRecordBuilder&,
       const PropertyTreeState&);
   static std::unique_ptr<DragImage> NodeImage(LocalFrame&, Node&);

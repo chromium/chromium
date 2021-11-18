@@ -39,6 +39,7 @@
 #include "third_party/blink/renderer/core/paint/compositing/paint_layer_compositor.h"
 #include "third_party/blink/renderer/core/paint/embedded_content_painter.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
+#include "ui/gfx/geometry/point_conversions.h"
 
 namespace blink {
 
@@ -358,12 +359,12 @@ void LayoutEmbeddedContent::UpdateGeometry(
   // accumulation.
   PhysicalRect replaced_rect = ReplacedContentRect();
   TransformState transform_state(TransformState::kApplyTransformDirection,
-                                 FloatPoint(),
+                                 gfx::PointF(),
                                  FloatQuad(FloatRect(replaced_rect)));
   MapLocalToAncestor(nullptr, transform_state, 0);
   transform_state.Flatten();
   PhysicalOffset absolute_location =
-      PhysicalOffset::FromFloatPointRound(transform_state.LastPlanarPoint());
+      PhysicalOffset::FromPointFRound(transform_state.LastPlanarPoint());
   PhysicalRect absolute_replaced_rect = replaced_rect;
   absolute_replaced_rect.Move(absolute_location);
   FloatRect absolute_bounding_box =
@@ -379,7 +380,7 @@ void LayoutEmbeddedContent::UpdateGeometry(
   // RemoteFrameView::frameRectsChanged().
   // WebPluginContainerImpl::reportGeometry()
   // TODO(trchen): Remove this hack once we fixed all callers.
-  frame_rect.set_origin(RoundedIntPoint(absolute_bounding_box.origin()));
+  frame_rect.set_origin(gfx::ToRoundedPoint(absolute_bounding_box.origin()));
 
   // As an optimization, we don't include the root layer's scroll offset in the
   // frame rect.  As a result, we don't need to recalculate the frame rect every

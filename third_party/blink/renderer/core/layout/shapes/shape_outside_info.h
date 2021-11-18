@@ -132,7 +132,7 @@ class ShapeOutsideInfo final : public GarbageCollected<ShapeOutsideInfo> {
   bool IsComputingShape() const { return is_computing_shape_; }
 
   PhysicalRect ComputedShapePhysicalBoundingBox() const;
-  FloatPoint ShapeToLayoutObjectPoint(FloatPoint) const;
+  gfx::PointF ShapeToLayoutObjectPoint(gfx::PointF) const;
   const Shape& ComputedShape() const;
 
   void Trace(Visitor* visitor) const;

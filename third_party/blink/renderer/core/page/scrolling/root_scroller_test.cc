@@ -1097,7 +1097,7 @@ TEST_F(ImplicitRootScrollerSimTest, RootScrollerDoesntAffectVisualViewport) {
 
   GetDocument().GetPage()->GetVisualViewport().SetScale(2);
   GetDocument().GetPage()->GetVisualViewport().SetLocation(
-      FloatPoint(100, 120));
+      gfx::PointF(100, 120));
 
   auto* frame = To<LocalFrame>(GetDocument().GetPage()->MainFrame());
   EXPECT_EQ(100, frame->DomWindow()->visualViewport()->pageLeft());
@@ -2846,7 +2846,7 @@ class RootScrollerHitTest : public ImplicitRootScrollerSimTest {
                          .GlobalRootScroller();
     ScrollableArea* scrollable_area =
         To<LayoutBox>(scroller->GetLayoutObject())->GetScrollableArea();
-    scrollable_area->DidCompositorScroll(FloatPoint(0, 100000));
+    scrollable_area->DidCompositorScroll(gfx::PointF(0, 100000));
 
     WebView().ResizeWithBrowserControls(gfx::Size(400, 450), 50, 50, false);
 

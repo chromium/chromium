@@ -27,10 +27,12 @@
 #include "third_party/blink/renderer/platform/geometry/float_rect.h"
 
 #include <ApplicationServices/ApplicationServices.h>
+#include "third_party/blink/renderer/platform/geometry/cg_conversions.h"
 
 namespace blink {
 
-FloatRect::FloatRect(const CGRect& r) : location_(r.origin), size_(r.size) {}
+FloatRect::FloatRect(const CGRect& r)
+    : location_(CGPointToPointF(r.origin)), size_(r.size) {}
 
 FloatRect::operator CGRect() const {
   return CGRectMake(x(), y(), width(), height());

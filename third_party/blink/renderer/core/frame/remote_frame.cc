@@ -83,7 +83,7 @@ static RemoteFramesByTokenMap& GetRemoteFramesMap() {
 FloatRect DeNormalizeRect(const gfx::RectF& normalized, const IntRect& base) {
   FloatRect result(normalized);
   result.Scale(base.width(), base.height());
-  result.MoveBy(FloatPoint(base.origin()));
+  result.MoveBy(gfx::PointF(base.origin()));
   return result;
 }
 

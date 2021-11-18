@@ -269,13 +269,6 @@ gfx::Point AffineTransform::MapPoint(const gfx::Point& point) const {
   return gfx::Point(static_cast<int>(lround(x2)), static_cast<int>(lround(y2)));
 }
 
-FloatPoint AffineTransform::MapPoint(const FloatPoint& point) const {
-  double x2, y2;
-  Map(point.x(), point.y(), x2, y2);
-
-  return FloatPoint(ClampTo<float>(x2), ClampTo<float>(y2));
-}
-
 gfx::PointF AffineTransform::MapPoint(const gfx::PointF& point) const {
   double x2, y2;
   Map(point.x(), point.y(), x2, y2);

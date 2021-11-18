@@ -28,7 +28,7 @@ ResizeObserverEntry::ResizeObserverEntry(Element* target) : target_(target) {
       LayoutSize bounding_box_size =
           LayoutSize(svg_graphics_element->GetBBox().size());
       content_rect_ = DOMRectReadOnly::FromFloatRect(
-          FloatRect(FloatPoint(), FloatSize(bounding_box_size)));
+          FloatRect(gfx::PointF(), FloatSize(bounding_box_size)));
       ResizeObserverSize* size = ResizeObserverSize::Create(
           bounding_box_size.Width(), bounding_box_size.Height());
       content_box_size_.push_back(size);
@@ -72,15 +72,13 @@ ResizeObserverEntry::ResizeObserverEntry(Element* target) : target_(target) {
     }
   }
   if (!content_rect_)
-    content_rect_ = DOMRectReadOnly::FromFloatRect(
-        FloatRect(FloatPoint(LayoutPoint()), FloatSize(LayoutSize())));
+    content_rect_ = DOMRectReadOnly::FromFloatRect(FloatRect());
   if (content_box_size_.size() == 0)
     content_box_size_.push_back(ResizeObserverSize::Create(0, 0));
   if (border_box_size_.size() == 0)
     border_box_size_.push_back(ResizeObserverSize::Create(0, 0));
-  if (device_pixel_content_box_size_.size() == 0) {
+  if (device_pixel_content_box_size_.size() == 0)
     device_pixel_content_box_size_.push_back(ResizeObserverSize::Create(0, 0));
-  }
 }
 
 void ResizeObserverEntry::Trace(Visitor* visitor) const {

@@ -358,7 +358,7 @@ bool LayoutSVGText::NodeAtPoint(HitTestResult& result,
   if (StyleRef().UsedPointerEvents() == EPointerEvents::kBoundingBox) {
     if (IsObjectBoundingBoxValid() &&
         local_location->Intersects(ObjectBoundingBox())) {
-      UpdateHitTestResult(result, PhysicalOffset::FromFloatPointRound(
+      UpdateHitTestResult(result, PhysicalOffset::FromPointFRound(
                                       local_location->TransformedPoint()));
       if (result.AddNodeToListBasedTestResult(GetElement(), *local_location) ==
           kStopHitTesting)

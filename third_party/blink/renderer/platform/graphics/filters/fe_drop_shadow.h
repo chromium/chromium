@@ -33,7 +33,7 @@ class PLATFORM_EXPORT FEDropShadow final : public FilterEffect {
   // Compute which destination area will be affected when applying a drop
   // shadow effect with |stdDeviation| and |offset| to an area |rect|.
   static FloatRect MapEffect(const FloatSize& std_deviation,
-                             const FloatPoint& offset,
+                             const gfx::PointF& offset,
                              const FloatRect&);
 
   void SetShadowColor(const Color& color) { shadow_color_ = color; }

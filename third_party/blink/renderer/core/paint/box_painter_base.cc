@@ -102,7 +102,7 @@ void BoxPainterBase::PaintNormalBoxShadow(const PaintInfo& info,
     if (shadow.Style() != ShadowStyle::kNormal)
       continue;
 
-    FloatSize shadow_offset(shadow.X(), shadow.Y());
+    gfx::Vector2dF shadow_offset = shadow.Location().OffsetFromOrigin();
     float shadow_blur = shadow.Blur();
     float shadow_spread = shadow.Spread();
 
@@ -210,7 +210,7 @@ inline FloatRect AreaCastingShadowInHole(const FloatRect& hole_rect,
     bounds.Outset(-shadow.Spread());
 
   FloatRect offset_bounds = bounds;
-  offset_bounds.MoveBy(-shadow.Location());
+  offset_bounds.Offset(-shadow.Location().OffsetFromOrigin());
   return UnionRects(bounds, offset_bounds);
 }
 
@@ -278,8 +278,8 @@ void BoxPainterBase::PaintInsetBoxShadow(const PaintInfo& info,
     }
 
     DrawLooperBuilder draw_looper_builder;
-    draw_looper_builder.AddShadow(ToFloatSize(shadow.Location()), shadow.Blur(),
-                                  shadow_color,
+    draw_looper_builder.AddShadow(shadow.Location().OffsetFromOrigin(),
+                                  shadow.Blur(), shadow_color,
                                   DrawLooperBuilder::kShadowRespectsTransforms,
                                   DrawLooperBuilder::kShadowIgnoresAlpha);
     context.SetDrawLooper(draw_looper_builder.DetachDrawLooper());
@@ -541,7 +541,7 @@ void DrawTiledBackground(GraphicsContext& context,
   // Note that this tile rect uses the image's pre-scaled size.
   ImageTilingInfo tiling_info;
   tiling_info.image_rect.set_size(intrinsic_tile_size);
-  tiling_info.phase = FloatPoint(geometry.ComputeDestPhase());
+  tiling_info.phase = gfx::PointF(geometry.ComputeDestPhase());
   tiling_info.spacing = FloatSize(geometry.SpaceSize());
 
   // Farther down the pipeline we will use the scaled tile size to determine
@@ -604,7 +604,7 @@ bool PaintBGColorWithPaintWorklet(const Document* document,
       GetBGColorPaintWorkletImage(document, node, dest_rect.Rect().size());
   if (!paint_worklet_image)
     return false;
-  FloatRect src_rect(FloatPoint(), dest_rect.Rect().size());
+  FloatRect src_rect(gfx::PointF(), dest_rect.Rect().size());
   context.DrawImageRRect(
       paint_worklet_image.get(), Image::kSyncDecode,
       PaintAutoDarkMode(style, DarkModeFilter::ElementRole::kBackground),

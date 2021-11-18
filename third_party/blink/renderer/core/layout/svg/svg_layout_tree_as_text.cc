@@ -626,8 +626,8 @@ void WriteSVGResourceContainer(WTF::TextStream& ts,
         ->CollectGradientAttributes(attributes);
     WriteCommonGradientProperties(ts, attributes);
 
-    FloatPoint focal_point = gradient->FocalPoint(attributes);
-    FloatPoint center_point = gradient->CenterPoint(attributes);
+    gfx::PointF focal_point = gradient->FocalPoint(attributes);
+    gfx::PointF center_point = gradient->CenterPoint(attributes);
     float radius = gradient->Radius(attributes);
     float focal_radius = gradient->FocalRadius(attributes);
 

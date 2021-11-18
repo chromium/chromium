@@ -1438,7 +1438,7 @@ TEST_P(LayoutBoxTest, GeometriesWithScrollbarsNonScrollable) {
     const auto* scrollable_area = box->GetScrollableArea();          \
     EXPECT_EQ(IntSize(), scrollable_area->ScrollOffsetInt());        \
     EXPECT_EQ(gfx::Point(), scrollable_area->ScrollOrigin());        \
-    EXPECT_EQ(FloatPoint(), scrollable_area->ScrollPosition());      \
+    EXPECT_EQ(gfx::PointF(), scrollable_area->ScrollPosition());     \
     EXPECT_EQ(IntSize(), scrollable_area->MaximumScrollOffsetInt()); \
     EXPECT_EQ(IntSize(), scrollable_area->MinimumScrollOffsetInt()); \
   } while (false)
@@ -1557,7 +1557,7 @@ TEST_P(LayoutBoxTest, GeometriesWithScrollbarsScrollable) {
   }
   EXPECT_EQ(IntSize(), scrollable_area->MinimumScrollOffsetInt());
   EXPECT_EQ(gfx::Point(), scrollable_area->ScrollOrigin());
-  EXPECT_EQ(FloatPoint(), scrollable_area->ScrollPosition());
+  EXPECT_EQ(gfx::PointF(), scrollable_area->ScrollPosition());
   // These are the same as in the NonScrollable test.
   EXPECT_EQ(LayoutRect(0, 0, 540, 400), normal->BorderBoxRect());
   EXPECT_EQ(LayoutRect(50, 20, 445, 324), normal->NoOverflowRect());
@@ -1583,7 +1583,7 @@ TEST_P(LayoutBoxTest, GeometriesWithScrollbarsScrollable) {
   }
   EXPECT_EQ(IntSize(), scrollable_area->MinimumScrollOffsetInt());
   EXPECT_EQ(gfx::Point(), scrollable_area->ScrollOrigin());
-  EXPECT_EQ(FloatPoint(), scrollable_area->ScrollPosition());
+  EXPECT_EQ(gfx::PointF(), scrollable_area->ScrollPosition());
   // These are the same as in the NonScrollable test.
   EXPECT_EQ(LayoutRect(0, 0, 540, 400), vlr->BorderBoxRect());
   EXPECT_EQ(LayoutRect(50, 20, 445, 324), vlr->NoOverflowRect());
@@ -1605,7 +1605,7 @@ TEST_P(LayoutBoxTest, GeometriesWithScrollbarsScrollable) {
   }
   EXPECT_EQ(IntSize(-1615, 0), scrollable_area->MinimumScrollOffsetInt());
   EXPECT_EQ(gfx::Point(1615, 0), scrollable_area->ScrollOrigin());
-  EXPECT_EQ(FloatPoint(1615, 0), scrollable_area->ScrollPosition());
+  EXPECT_EQ(gfx::PointF(1615, 0), scrollable_area->ScrollPosition());
   // These are the same as in the NonScrollable test.
   EXPECT_EQ(LayoutRect(0, 0, 540, 400), vrl->BorderBoxRect());
   EXPECT_EQ(LayoutRect(45, 20, 445, 324), vrl->NoOverflowRect());
@@ -1622,7 +1622,7 @@ TEST_P(LayoutBoxTest, GeometriesWithScrollbarsScrollable) {
     EXPECT_EQ(IntSize(0, 716), scrollable_area->MaximumScrollOffsetInt());
     EXPECT_EQ(IntSize(-1615, 0), scrollable_area->MinimumScrollOffsetInt());
     EXPECT_EQ(gfx::Point(1615, 0), scrollable_area->ScrollOrigin());
-    EXPECT_EQ(FloatPoint(1615, 0), scrollable_area->ScrollPosition());
+    EXPECT_EQ(gfx::PointF(1615, 0), scrollable_area->ScrollPosition());
   } else {
     // The contents overflow to the left.
     // 2020 = child_width + padding_right (without padding_left which is in
@@ -1632,7 +1632,7 @@ TEST_P(LayoutBoxTest, GeometriesWithScrollbarsScrollable) {
     EXPECT_EQ(IntSize(0, 716), scrollable_area->MaximumScrollOffsetInt());
     EXPECT_EQ(IntSize(-1575, 0), scrollable_area->MinimumScrollOffsetInt());
     EXPECT_EQ(gfx::Point(1575, 0), scrollable_area->ScrollOrigin());
-    EXPECT_EQ(FloatPoint(1575, 0), scrollable_area->ScrollPosition());
+    EXPECT_EQ(gfx::PointF(1575, 0), scrollable_area->ScrollPosition());
   }
   // These are the same as in the NonScrollable test.
   EXPECT_EQ(LayoutRect(0, 0, 540, 400), rtl->BorderBoxRect());
@@ -1650,7 +1650,7 @@ TEST_P(LayoutBoxTest, GeometriesWithScrollbarsScrollable) {
     EXPECT_EQ(IntSize(1615, 0), scrollable_area->MaximumScrollOffsetInt());
     EXPECT_EQ(IntSize(0, -716), scrollable_area->MinimumScrollOffsetInt());
     EXPECT_EQ(gfx::Point(0, 716), scrollable_area->ScrollOrigin());
-    EXPECT_EQ(FloatPoint(0, 716), scrollable_area->ScrollPosition());
+    EXPECT_EQ(gfx::PointF(0, 716), scrollable_area->ScrollPosition());
   } else {
     // 2060 = child_width + padding_left + padding_right
     // 1030 = child_height + padding_bottom (without padding_top which is in
@@ -1659,7 +1659,7 @@ TEST_P(LayoutBoxTest, GeometriesWithScrollbarsScrollable) {
     EXPECT_EQ(IntSize(1615, 0), scrollable_area->MaximumScrollOffsetInt());
     EXPECT_EQ(IntSize(0, -706), scrollable_area->MinimumScrollOffsetInt());
     EXPECT_EQ(gfx::Point(0, 706), scrollable_area->ScrollOrigin());
-    EXPECT_EQ(FloatPoint(0, 706), scrollable_area->ScrollPosition());
+    EXPECT_EQ(gfx::PointF(0, 706), scrollable_area->ScrollPosition());
   }
   // These are the same as in the NonScrollable test.
   EXPECT_EQ(LayoutRect(0, 0, 540, 400), rtl_vlr->BorderBoxRect());
@@ -1678,13 +1678,13 @@ TEST_P(LayoutBoxTest, GeometriesWithScrollbarsScrollable) {
     EXPECT_EQ(IntSize(), scrollable_area->MaximumScrollOffsetInt());
     EXPECT_EQ(IntSize(-1615, -716), scrollable_area->MinimumScrollOffsetInt());
     EXPECT_EQ(gfx::Point(1615, 716), scrollable_area->ScrollOrigin());
-    EXPECT_EQ(FloatPoint(1615, 716), scrollable_area->ScrollPosition());
+    EXPECT_EQ(gfx::PointF(1615, 716), scrollable_area->ScrollPosition());
   } else {
     EXPECT_EQ(LayoutRect(45, -686, 2060, 1030), rtl_vrl->LayoutOverflowRect());
     EXPECT_EQ(IntSize(), scrollable_area->MaximumScrollOffsetInt());
     EXPECT_EQ(IntSize(-1615, -706), scrollable_area->MinimumScrollOffsetInt());
     EXPECT_EQ(gfx::Point(1615, 706), scrollable_area->ScrollOrigin());
-    EXPECT_EQ(FloatPoint(1615, 706), scrollable_area->ScrollPosition());
+    EXPECT_EQ(gfx::PointF(1615, 706), scrollable_area->ScrollPosition());
   }
   EXPECT_EQ(IntSize(), rtl_vrl->OriginAdjustmentForScrollbars());
   // These are the same as in the NonScrollable test.

@@ -751,7 +751,7 @@ WebInputEventResult WebPagePopupImpl::HandleGestureEvent(
   }
   if (RuntimeEnabledFeatures::ScrollUnificationEnabled()) {
     if (event.GetType() == WebInputEvent::Type::kGestureScrollBegin) {
-      HitTestLocation locationScroll(FloatPoint(event.PositionInWidget()));
+      HitTestLocation locationScroll(event.PositionInWidget());
       HitTestResult resultScroll =
           MainFrame().GetEventHandler().HitTestResultAtLocation(locationScroll);
       scrollable_node_ = FindFirstScroller(resultScroll.InnerNode());

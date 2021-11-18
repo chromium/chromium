@@ -48,6 +48,7 @@ class Element;
 class LocalFrame;
 class LayoutBlockFlow;
 class LayoutObject;
+class LayoutPoint;
 
 enum LayoutAsTextBehaviorFlags {
   kLayoutAsTextBehaviorNormal = 0,
@@ -113,6 +114,7 @@ class LayoutTreeAsText {
 // Helper function shared with SVGLayoutTreeAsText (so they are not exported).
 String QuoteAndEscapeNonPrintables(const String&);
 WTF::TextStream& operator<<(WTF::TextStream&, const Color&);
+WTF::TextStream& operator<<(WTF::TextStream& ts, const LayoutPoint&);
 WTF::TextStream& operator<<(WTF::TextStream&, const gfx::Point&);
 WTF::TextStream& operator<<(WTF::TextStream&, const gfx::Size&);
 WTF::TextStream& operator<<(WTF::TextStream&, const gfx::Rect&);

@@ -238,7 +238,7 @@ TEST_P(NGBoxFragmentPainterTest, NodeAtPointWithSvgInline) {
 
   auto* root = GetDocument().getElementById("svg")->GetLayoutBox();
   HitTestResult result;
-  root->NodeAtPoint(result, HitTestLocation(FloatPoint(256, 192)),
+  root->NodeAtPoint(result, HitTestLocation(gfx::PointF(256, 192)),
                     PhysicalOffset(0, 0), kHitTestForeground);
   EXPECT_EQ(GetDocument().getElementById("pass"), result.InnerElement());
 }

@@ -118,7 +118,7 @@ FloatRect SVGInlineTextBox::SelectionRectForTextFragment(
     return FloatRect();
 
   const FontMetrics& scaled_font_metrics = font_data->GetFontMetrics();
-  FloatPoint text_origin(fragment.x, fragment.y);
+  gfx::PointF text_origin(fragment.x, fragment.y);
   if (scaling_factor != 1)
     text_origin.Scale(scaling_factor, scaling_factor);
 

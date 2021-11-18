@@ -33,9 +33,9 @@
 #include <algorithm>
 #include <cmath>
 #include <limits>
-#include "third_party/blink/renderer/platform/geometry/float_shape_helpers.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/skia/include/core/SkPoint.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 
 namespace blink {
 
@@ -47,30 +47,26 @@ static inline float Max4(float a, float b, float c, float d) {
   return std::max(std::max(a, b), std::max(c, d));
 }
 
-inline float Dot(const FloatSize& a, const FloatSize& b) {
-  return a.width() * b.width() + a.height() * b.height();
-}
-
-inline bool IsPointInTriangle(const FloatPoint& p,
-                              const FloatPoint& t1,
-                              const FloatPoint& t2,
-                              const FloatPoint& t3) {
+inline bool IsPointInTriangle(const gfx::PointF& p,
+                              const gfx::PointF& t1,
+                              const gfx::PointF& t2,
+                              const gfx::PointF& t3) {
   // Compute vectors
-  FloatSize v0 = t3 - t1;
-  FloatSize v1 = t2 - t1;
-  FloatSize v2 = p - t1;
+  gfx::Vector2dF v0 = t3 - t1;
+  gfx::Vector2dF v1 = t2 - t1;
+  gfx::Vector2dF v2 = p - t1;
 
   // Compute dot products
-  float dot00 = Dot(v0, v0);
-  float dot01 = Dot(v0, v1);
-  float dot02 = Dot(v0, v2);
-  float dot11 = Dot(v1, v1);
-  float dot12 = Dot(v1, v2);
+  double dot00 = gfx::DotProduct(v0, v0);
+  double dot01 = gfx::DotProduct(v0, v1);
+  double dot02 = gfx::DotProduct(v0, v2);
+  double dot11 = gfx::DotProduct(v1, v1);
+  double dot12 = gfx::DotProduct(v1, v2);
 
   // Compute barycentric coordinates
-  float inv_denom = 1.0f / (dot00 * dot11 - dot01 * dot01);
-  float u = (dot11 * dot02 - dot01 * dot12) * inv_denom;
-  float v = (dot00 * dot12 - dot01 * dot02) * inv_denom;
+  double inv_denom = 1.0f / (dot00 * dot11 - dot01 * dot01);
+  double u = (dot11 * dot02 - dot01 * dot12) * inv_denom;
+  double v = (dot00 * dot12 - dot01 * dot02) * inv_denom;
 
   // Check if point is in triangle
   return (u >= 0) && (v >= 0) && (u + v <= 1);
@@ -100,10 +96,10 @@ static inline bool WithinEpsilon(float a, float b) {
 }
 
 FloatQuad::FloatQuad(const SkPoint (&quad)[4])
-    : FloatQuad(FloatPoint(quad[0]),
-                FloatPoint(quad[1]),
-                FloatPoint(quad[2]),
-                FloatPoint(quad[3])) {}
+    : FloatQuad(gfx::SkPointToPointF(quad[0]),
+                gfx::SkPointToPointF(quad[1]),
+                gfx::SkPointToPointF(quad[2]),
+                gfx::SkPointToPointF(quad[3])) {}
 
 bool FloatQuad::IsRectilinear() const {
   return (WithinEpsilon(p1_.x(), p2_.x()) && WithinEpsilon(p2_.y(), p3_.y()) &&
@@ -112,7 +108,7 @@ bool FloatQuad::IsRectilinear() const {
           WithinEpsilon(p3_.y(), p4_.y()) && WithinEpsilon(p4_.x(), p1_.x()));
 }
 
-bool FloatQuad::ContainsPoint(const FloatPoint& p) const {
+bool FloatQuad::ContainsPoint(const gfx::PointF& p) const {
   return IsPointInTriangle(p, p1_, p2_, p3_) ||
          IsPointInTriangle(p, p1_, p3_, p4_);
 }
@@ -123,8 +119,9 @@ bool FloatQuad::ContainsQuad(const FloatQuad& other) const {
          ContainsPoint(other.p3()) && ContainsPoint(other.p4());
 }
 
-static inline FloatPoint RightMostCornerToVector(const FloatRect& rect,
-                                                 const FloatSize& vector) {
+static inline gfx::PointF RightMostCornerToVector(
+    const FloatRect& rect,
+    const gfx::Vector2dF& vector) {
   // Return the corner of the rectangle that if it is to the left of the vector
   // would mean all of the rectangle is to the left of the vector.
   // The vector here represents the side between two points in a clockwise
@@ -135,12 +132,12 @@ static inline FloatPoint RightMostCornerToVector(const FloatRect& rect,
   //  QQQ      from the top corner of Q to the right corner of Q, then all of X
   //   Q       is left of the vector, and intersection impossible.
   //
-  FloatPoint point;
-  if (vector.width() >= 0)
+  gfx::PointF point;
+  if (vector.x() >= 0)
     point.set_y(rect.bottom());
   else
     point.set_y(rect.y());
-  if (vector.height() >= 0)
+  if (vector.y() >= 0)
     point.set_x(rect.x());
   else
     point.set_x(rect.right());
@@ -154,7 +151,7 @@ bool FloatQuad::IntersectsRect(const FloatRect& rect) const {
   // For each side of the quad clockwise we check if the rectangle is to the
   // left of it since only content on the right can onlap with the quad.  This
   // only works if the quad is convex.
-  FloatSize v1, v2, v3, v4;
+  gfx::Vector2dF v1, v2, v3, v4;
 
   // Ensure we use clockwise vectors.
   if (!IsCounterclockwise()) {
@@ -169,20 +166,20 @@ bool FloatQuad::IntersectsRect(const FloatRect& rect) const {
     v4 = p3_ - p4_;
   }
 
-  FloatPoint p = RightMostCornerToVector(rect, v1);
-  if (Determinant(v1, p - p1_) < 0)
+  gfx::PointF p = RightMostCornerToVector(rect, v1);
+  if (gfx::CrossProduct(v1, p - p1_) < 0)
     return false;
 
   p = RightMostCornerToVector(rect, v2);
-  if (Determinant(v2, p - p2_) < 0)
+  if (gfx::CrossProduct(v2, p - p2_) < 0)
     return false;
 
   p = RightMostCornerToVector(rect, v3);
-  if (Determinant(v3, p - p3_) < 0)
+  if (gfx::CrossProduct(v3, p - p3_) < 0)
     return false;
 
   p = RightMostCornerToVector(rect, v4);
-  if (Determinant(v4, p - p4_) < 0)
+  if (gfx::CrossProduct(v4, p - p4_) < 0)
     return false;
 
   // If not all of the rectangle is outside one of the quad's four sides, then
@@ -191,10 +188,10 @@ bool FloatQuad::IntersectsRect(const FloatRect& rect) const {
 }
 
 // Tests whether the line is contained by or intersected with the circle.
-static inline bool LineIntersectsCircle(const FloatPoint& center,
+static inline bool LineIntersectsCircle(const gfx::PointF& center,
                                         float radius,
-                                        const FloatPoint& p0,
-                                        const FloatPoint& p1) {
+                                        const gfx::PointF& p0,
+                                        const gfx::PointF& p1) {
   float x0 = p0.x() - center.x(), y0 = p0.y() - center.y();
   float x1 = p1.x() - center.x(), y1 = p1.y() - center.y();
   float radius2 = radius * radius;
@@ -220,7 +217,8 @@ static inline bool LineIntersectsCircle(const FloatPoint& center,
           ((y0 <= y && y <= y1) || (y1 <= y && y <= y0)));
 }
 
-bool FloatQuad::IntersectsCircle(const FloatPoint& center, float radius) const {
+bool FloatQuad::IntersectsCircle(const gfx::PointF& center,
+                                 float radius) const {
   return ContainsPoint(
              center)  // The circle may be totally contained by the quad.
          || LineIntersectsCircle(center, radius, p1_, p2_) ||
@@ -229,7 +227,7 @@ bool FloatQuad::IntersectsCircle(const FloatPoint& center, float radius) const {
          LineIntersectsCircle(center, radius, p4_, p1_);
 }
 
-bool FloatQuad::IntersectsEllipse(const FloatPoint& center,
+bool FloatQuad::IntersectsEllipse(const gfx::PointF& center,
                                   const FloatSize& radii) const {
   // Transform the ellipse to an origin-centered circle whose radius is the
   // product of major radius and minor radius.  Here we apply the same
@@ -238,7 +236,7 @@ bool FloatQuad::IntersectsEllipse(const FloatPoint& center,
   transformed_quad.Move(-center.x(), -center.y());
   transformed_quad.Scale(radii.height(), radii.width());
 
-  FloatPoint origin_point;
+  gfx::PointF origin_point;
   return transformed_quad.IntersectsCircle(origin_point,
                                            radii.height() * radii.width());
 }
@@ -246,7 +244,7 @@ bool FloatQuad::IntersectsEllipse(const FloatPoint& center,
 bool FloatQuad::IsCounterclockwise() const {
   // Return if the two first vectors are turning clockwise. If the quad is
   // convex then all following vectors will turn the same way.
-  return Determinant(p2_ - p1_, p3_ - p2_) < 0;
+  return gfx::CrossProduct(p2_ - p1_, p3_ - p2_) < 0;
 }
 
 std::ostream& operator<<(std::ostream& ostream, const FloatQuad& quad) {
@@ -254,10 +252,9 @@ std::ostream& operator<<(std::ostream& ostream, const FloatQuad& quad) {
 }
 
 String FloatQuad::ToString() const {
-  return String::Format("%s; %s; %s; %s", p1_.ToString().Ascii().c_str(),
-                        p2_.ToString().Ascii().c_str(),
-                        p3_.ToString().Ascii().c_str(),
-                        p4_.ToString().Ascii().c_str());
+  return String::Format("%s; %s; %s; %s", p1_.ToString().c_str(),
+                        p2_.ToString().c_str(), p3_.ToString().c_str(),
+                        p4_.ToString().c_str());
 }
 
 }  // namespace blink

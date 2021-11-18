@@ -44,6 +44,10 @@
 // To avoid conflicts with the DrawText macro from the Windows SDK...
 #undef DrawText
 
+namespace gfx {
+class PointF;
+}
+
 namespace cc {
 class PaintCanvas;
 class PaintFlags;
@@ -52,7 +56,6 @@ class PaintFlags;
 namespace blink {
 
 struct CharacterRange;
-class FloatPoint;
 class FloatRect;
 class FontSelector;
 class ShapeCache;
@@ -91,27 +94,27 @@ class PLATFORM_EXPORT Font {
   // https://crbug.com/716231
   void DrawText(cc::PaintCanvas*,
                 const TextRunPaintInfo&,
-                const FloatPoint&,
+                const gfx::PointF&,
                 float device_scale_factor,
                 const cc::PaintFlags&,
                 DrawType = DrawType::kGlyphsOnly) const;
   void DrawText(cc::PaintCanvas*,
                 const TextRunPaintInfo&,
-                const FloatPoint&,
+                const gfx::PointF&,
                 float device_scale_factor,
                 cc::NodeId node_id,
                 const cc::PaintFlags&,
                 DrawType = DrawType::kGlyphsOnly) const;
   void DrawText(cc::PaintCanvas*,
                 const NGTextFragmentPaintInfo&,
-                const FloatPoint&,
+                const gfx::PointF&,
                 float device_scale_factor,
                 cc::NodeId node_id,
                 const cc::PaintFlags&,
                 DrawType = DrawType::kGlyphsOnly) const;
   bool DrawBidiText(cc::PaintCanvas*,
                     const TextRunPaintInfo&,
-                    const FloatPoint&,
+                    const gfx::PointF&,
                     CustomFontNotReadyAction,
                     float device_scale_factor,
                     const cc::PaintFlags&,
@@ -119,13 +122,13 @@ class PLATFORM_EXPORT Font {
   void DrawEmphasisMarks(cc::PaintCanvas*,
                          const TextRunPaintInfo&,
                          const AtomicString& mark,
-                         const FloatPoint&,
+                         const gfx::PointF&,
                          float device_scale_factor,
                          const cc::PaintFlags&) const;
   void DrawEmphasisMarks(cc::PaintCanvas*,
                          const NGTextFragmentPaintInfo&,
                          const AtomicString& mark,
-                         const FloatPoint&,
+                         const gfx::PointF&,
                          float device_scale_factor,
                          const cc::PaintFlags&) const;
 
@@ -164,7 +167,7 @@ class PLATFORM_EXPORT Font {
                         IncludePartialGlyphsOption,
                         BreakGlyphsOption) const;
   FloatRect SelectionRectForText(const TextRun&,
-                                 const FloatPoint&,
+                                 const gfx::PointF&,
                                  float height,
                                  int from = 0,
                                  int to = -1) const;
