@@ -442,7 +442,7 @@ class WebViewContentsClientAdapter extends SharedWebViewContentsClientAdapter {
             if (mPictureListener != null) {
                 PostTask.postDelayedTask(UiThreadTaskTraits.DEFAULT, () -> {
                     if (mPictureListener != null) {
-                        if (TRACE) Log.i(TAG, "onPageFinished-fake");
+                        if (TRACE) Log.i(TAG, "onNewPicture - from onPageFinished workaround.");
                         mPictureListener.onNewPicture(
                                 mWebView, mPictureListenerInvalidateOnly ? null : new Picture());
                     }

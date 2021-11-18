@@ -2242,7 +2242,7 @@ public class AwContents implements SmartClipProvider {
     }
 
     public void setBackgroundColor(int color) {
-        if (TRACE) Log.i(TAG, "%s setBackgroundColor=%d", this, color);
+        if (TRACE) Log.i(TAG, "%s setBackgroundColor=%x", this, color);
         mBaseBackgroundColor = color;
         mDidInitBackground = true;
         if (!isDestroyed(WARN)) {
