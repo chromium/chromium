@@ -39,7 +39,11 @@ class ASH_EXPORT AppListBubblePresenter
   AppListBubblePresenter& operator=(const AppListBubblePresenter&) = delete;
   ~AppListBubblePresenter() override;
 
-  // Shows the bubble on the display with `display_id`.
+  // Shows the bubble on the display with `display_id`. The bubble is shown
+  // asynchronously (after a delay) because the continue suggestions need to be
+  // refreshed before the bubble views can be created and animated. This delay
+  // is skipped in unit tests (see TestAppListClient) for convenience. Larger
+  // tests (e.g. browser_tests) may need to wait for the window to open.
   void Show(int64_t display_id);
 
   // Shows or hides the bubble on the display with `display_id`. Returns the
@@ -76,6 +80,10 @@ class ASH_EXPORT AppListBubblePresenter
   AppListBubbleView* bubble_view_for_test() { return bubble_view_; }
 
  private:
+  // Callback for zero state search update. Builds the bubble widget and views
+  // on display `display_id` and triggers the show animation.
+  void OnZeroStateSearchDone(int64_t display_id);
+
   // Callback for AppListBubbleEventFilter, used to notify this of presses
   // outside the bubble.
   void OnPressOutsideBubble();

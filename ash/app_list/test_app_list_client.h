@@ -28,6 +28,8 @@ class TestAppListClient : public AppListClient {
 
   // AppListClient:
   void OnAppListControllerDestroyed() override {}
+  void StartZeroStateSearch(base::OnceClosure on_done,
+                            base::TimeDelta timeout) override;
   void StartSearch(const std::u16string& trimmed_query) override;
   void OpenSearchResult(int profile_id,
                         const std::string& result_id,
@@ -65,7 +67,10 @@ class TestAppListClient : public AppListClient {
   AppListNotifier* GetNotifier() override;
   void LoadIcon(int profile_id, const std::string& app_id) override {}
 
-  std::u16string last_search_query() { return last_search_query_; }
+  int start_zero_state_search_count() const {
+    return start_zero_state_search_count_;
+  }
+  std::u16string last_search_query() const { return last_search_query_; }
 
   // Returns the number of AppItems that have been activated. These items could
   // live in search, RecentAppsView, or ScrollableAppsGridView.
@@ -83,6 +88,7 @@ class TestAppListClient : public AppListClient {
   std::vector<SearchResultActionId> GetAndClearInvokedResultActions();
 
  private:
+  int start_zero_state_search_count_ = 0;
   std::u16string last_search_query_;
   std::vector<SearchResultActionId> invoked_result_actions_;
   int activate_item_count_ = 0;

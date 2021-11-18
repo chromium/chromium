@@ -16,6 +16,14 @@ TestAppListClient::TestAppListClient() = default;
 
 TestAppListClient::~TestAppListClient() = default;
 
+void TestAppListClient::StartZeroStateSearch(base::OnceClosure on_done,
+                                             base::TimeDelta timeout) {
+  start_zero_state_search_count_++;
+  // Unit tests generally expect the launcher to open immediately, so run the
+  // callback synchronously.
+  std::move(on_done).Run();
+}
+
 void TestAppListClient::StartSearch(const std::u16string& trimmed_query) {
   last_search_query_ = trimmed_query;
 }
@@ -34,7 +42,7 @@ void TestAppListClient::OpenSearchResult(int profile_id,
 void TestAppListClient::InvokeSearchResultAction(
     const std::string& result_id,
     SearchResultActionType action) {
-  invoked_result_actions_.push_back(std::make_pair(result_id, action));
+  invoked_result_actions_.emplace_back(result_id, action);
 }
 
 void TestAppListClient::GetSearchResultContextMenuModel(

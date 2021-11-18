@@ -14,6 +14,7 @@
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "ash/public/cpp/ash_public_export.h"
 #include "base/callback_forward.h"
+#include "base/time/time.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "ui/base/models/simple_menu_model.h"
 
@@ -39,6 +40,14 @@ class ASH_PUBLIC_EXPORT AppListClient {
 
   //////////////////////////////////////////////////////////////////////////////
   // Interfaces on searching:
+
+  // Refreshes the search zero-state suggestions and invokes `on_done` when
+  // complete. The client must run `on_done` before `timeout` because this
+  // method is called when the user tries to open the launcher and the UI waits
+  // until `on_done` before opening it.
+  virtual void StartZeroStateSearch(base::OnceClosure on_done,
+                                    base::TimeDelta timeout) = 0;
+
   // Triggers a search query.
   // |trimmed_query|: the trimmed input texts from the search text field.
   virtual void StartSearch(const std::u16string& trimmed_query) = 0;

@@ -18,6 +18,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/strings/strcat.h"
+#include "base/threading/sequenced_task_runner_handle.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -122,6 +123,13 @@ void AppListClientImpl::OnAppListControllerDestroyed() {
   app_list_controller_ = nullptr;
   if (current_model_updater_)
     current_model_updater_->SetActive(false);
+}
+
+void AppListClientImpl::StartZeroStateSearch(base::OnceClosure on_done,
+                                             base::TimeDelta timeout) {
+  // TODO(https://crbug.com/1269115): Refresh the zero state results.
+  base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
+      FROM_HERE, std::move(on_done), timeout);
 }
 
 void AppListClientImpl::StartSearch(const std::u16string& trimmed_query) {

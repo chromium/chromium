@@ -27,6 +27,11 @@ class ASH_EXPORT AppListTestApi {
   AppListTestApi(const AppListTestApi& other) = delete;
   AppListTestApi& operator=(const AppListTestApi& other) = delete;
 
+  // Waits for the bubble launcher window to open on the primary display.
+  // See AppListBubblePresenter::Show(). Only used with productivity launcher
+  // in clamshell mode.
+  void WaitForBubbleWindow();
+
   // Returns whether there is an item for |app_id|.
   bool HasApp(const std::string& app_id);
 

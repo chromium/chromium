@@ -8,6 +8,7 @@
 
 #include "ash/app_list/app_list_controller_impl.h"
 #include "ash/app_list/test/app_list_test_helper.h"
+#include "ash/app_list/test_app_list_client.h"
 #include "ash/app_list/views/app_list_bubble_view.h"
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/shell_window_ids.h"
@@ -101,6 +102,16 @@ TEST_F(AppListBubblePresenterTest, ShowOpensOneWidgetInAppListContainer) {
   presenter->Show(GetPrimaryDisplay().id());
 
   EXPECT_EQ(1u, NumberOfWidgetsInAppListContainer());
+}
+
+TEST_F(AppListBubblePresenterTest, ShowStartsZeroStateSearch) {
+  AppListBubblePresenter* presenter = GetBubblePresenter();
+  presenter->Show(GetPrimaryDisplay().id());
+  EXPECT_EQ(1, GetTestAppListClient()->start_zero_state_search_count());
+
+  presenter->Dismiss();
+  presenter->Show(GetPrimaryDisplay().id());
+  EXPECT_EQ(2, GetTestAppListClient()->start_zero_state_search_count());
 }
 
 TEST_F(AppListBubblePresenterTest, ShowRecordsCreationTimeHistogram) {

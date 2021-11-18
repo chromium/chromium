@@ -1760,6 +1760,7 @@ void AppListControllerImpl::ResetHomeLauncherIfShown() {
   fullscreen_presenter_->GetView()->CloseOpenedPage();
 
   // Refresh the suggestion chips with empty query.
+  // TODO(crbug.com/1269115): Switch to client_->StartZeroStateSearch()?
   StartSearch(std::u16string());
 }
 

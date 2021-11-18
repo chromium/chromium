@@ -13,6 +13,7 @@
 #include "ash/app_list/views/app_list_bubble_view.h"
 #include "ash/app_list/views/app_list_drag_and_drop_host.h"
 #include "ash/constants/ash_features.h"
+#include "ash/public/cpp/app_list/app_list_client.h"
 #include "ash/public/cpp/assistant/controller/assistant_ui_controller.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/shelf/home_button.h"
@@ -26,6 +27,7 @@
 #include "base/i18n/rtl.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/time/time.h"
 #include "chromeos/services/assistant/public/cpp/assistant_enums.h"
 #include "ui/aura/client/focus_client.h"
 #include "ui/display/display.h"
@@ -38,6 +40,10 @@ namespace ash {
 namespace {
 
 using chromeos::assistant::AssistantExitPoint;
+
+// Maximum amount of time to spend refreshing zero state search results before
+// opening the launcher.
+constexpr base::TimeDelta kZeroStateSearchTimeout = base::Milliseconds(16);
 
 // Space between the edge of the bubble and the edge of the work area.
 constexpr int kWorkAreaPadding = 8;
@@ -160,9 +166,27 @@ void AppListBubblePresenter::Show(int64_t display_id) {
   if (bubble_widget_)
     return;
 
-  base::Time time_shown = base::Time::Now();
+  // Refresh the continue tasks before opening the launcher. If a file doesn't
+  // exist on disk anymore then the launcher should not create or animate the
+  // continue task view for that suggestion.
+  controller_->GetClient()->StartZeroStateSearch(
+      base::BindOnce(&AppListBubblePresenter::OnZeroStateSearchDone,
+                     weak_factory_.GetWeakPtr(), display_id),
+      kZeroStateSearchTimeout);
+}
+
+void AppListBubblePresenter::OnZeroStateSearchDone(int64_t display_id) {
+  // Bubble might be open if Show() was called repeatedly.
+  if (bubble_widget_)
+    return;
 
   aura::Window* root_window = Shell::GetRootWindowForDisplayId(display_id);
+  // Display might have disconnected during zero state refresh.
+  if (!root_window)
+    return;
+
+  base::TimeTicks time_shown = base::TimeTicks::Now();
+
   bubble_widget_ = CreateBubbleWidget(root_window);
   bubble_widget_->GetNativeWindow()->SetEventTargeter(
       std::make_unique<AppListEventTargeter>(controller_));
@@ -203,7 +227,7 @@ void AppListBubblePresenter::Show(int64_t display_id) {
                           base::Unretained(this)));
 
   UmaHistogramTimes("Apps.AppListBubbleCreationTime",
-                    base::Time::Now() - time_shown);
+                    base::TimeTicks::Now() - time_shown);
 }
 
 ShelfAction AppListBubblePresenter::Toggle(int64_t display_id) {

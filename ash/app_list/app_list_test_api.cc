@@ -5,6 +5,7 @@
 #include "ash/public/cpp/test/app_list_test_api.h"
 
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "ash/app_list/app_list_bubble_presenter.h"
@@ -26,6 +27,9 @@
 #include "ash/app_list/views/scrollable_apps_grid_view.h"
 #include "ash/constants/ash_features.h"
 #include "ash/shell.h"
+#include "base/callback.h"
+#include "base/run_loop.h"
+#include "ui/aura/window_observer.h"
 #include "ui/views/view_model.h"
 
 namespace ash {
@@ -52,10 +56,58 @@ AppListModel* GetAppListModel() {
   return AppListModelProvider::Get()->model();
 }
 
+// Waits until a child window is added to a container window.
+class WindowAddedWaiter : public aura::WindowObserver {
+ public:
+  explicit WindowAddedWaiter(aura::Window* container) : container_(container) {
+    container_->AddObserver(this);
+  }
+  WindowAddedWaiter(const WindowAddedWaiter&) = delete;
+  WindowAddedWaiter& operator=(const WindowAddedWaiter&) = delete;
+  ~WindowAddedWaiter() override { container_->RemoveObserver(this); }
+
+  void Wait() { run_loop_.Run(); }
+
+  aura::Window* added_window() { return added_window_; }
+
+ private:
+  // aura::WindowObserver:
+  void OnWindowAdded(aura::Window* new_window) override {
+    added_window_ = new_window;
+    DCHECK(run_loop_.IsRunningOnCurrentThread());
+    run_loop_.Quit();
+  }
+
+  aura::Window* const container_;
+  aura::Window* added_window_ = nullptr;
+  base::RunLoop run_loop_;
+};
+
 }  // namespace
 
 AppListTestApi::AppListTestApi() = default;
 AppListTestApi::~AppListTestApi() = default;
+
+void AppListTestApi::WaitForBubbleWindow() {
+  DCHECK(features::IsProductivityLauncherEnabled());
+  DCHECK(!Shell::Get()->IsInTabletMode());
+
+  // Do nothing if the window already exists.
+  auto* app_list_controller = Shell::Get()->app_list_controller();
+  if (app_list_controller->GetWindow())
+    return;
+
+  // Wait for a child window to be added to the app list container.
+  aura::Window* container = Shell::GetContainer(
+      Shell::GetPrimaryRootWindow(), kShellWindowId_AppListContainer);
+  WindowAddedWaiter waiter(container);
+  waiter.Wait();
+
+  // App list window exists.
+  aura::Window* app_list_window = app_list_controller->GetWindow();
+  DCHECK(app_list_window);
+  DCHECK_EQ(app_list_window, waiter.added_window());
+}
 
 bool AppListTestApi::HasApp(const std::string& app_id) {
   return GetAppListModel()->FindItem(app_id);

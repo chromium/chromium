@@ -74,6 +74,8 @@ class AppListClientImpl
 
   // ash::AppListClient:
   void OnAppListControllerDestroyed() override;
+  void StartZeroStateSearch(base::OnceClosure on_done,
+                            base::TimeDelta timeout) override;
   void StartSearch(const std::u16string& trimmed_query) override;
   void OpenSearchResult(int profile_id,
                         const std::string& result_id,
