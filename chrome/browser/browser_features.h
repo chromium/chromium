@@ -26,6 +26,8 @@ extern const base::Feature kDestroyProfileOnBrowserClose;
 extern const base::Feature kPromoBrowserCommands;
 extern const char kBrowserCommandIdParam[];
 
+extern const base::Feature kUseManagementService;
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 extern const base::Feature kDoubleTapToZoomInTabletMode;
 extern const base::Feature kQuickSettingsPWANotifications;

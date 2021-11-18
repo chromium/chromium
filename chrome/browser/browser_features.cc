@@ -41,6 +41,11 @@ const base::Feature kPromoBrowserCommands{"PromoBrowserCommands",
 // ui/webui/resources/js/browser_command/browser_command.mojom
 const char kBrowserCommandIdParam[] = "BrowserCommandIdParam";
 
+// Enables using policy::ManagementService to get the browser's and platform
+// management state everywhere.
+const base::Feature kUseManagementService{"UseManagementService",
+                                          base::FEATURE_ENABLED_BY_DEFAULT};
+
 #if defined(OS_MAC)
 // Enables integration with the macOS feature Universal Links.
 const base::Feature kEnableUniveralLinks{"EnableUniveralLinks",
