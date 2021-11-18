@@ -2890,6 +2890,12 @@ bool Element::SkipStyleRecalcForContainer(
     const ComputedStyle& style,
     const StyleRecalcChange& child_change) {
   DCHECK(RuntimeEnabledFeatures::CSSContainerSkipStyleRecalcEnabled());
+  if (!child_change.TraversePseudoElements(*this)) {
+    // If none of the children or pseudo elements need to be traversed for style
+    // recalc, there is no point in marking the subtree as skipped.
+    DCHECK(!child_change.TraverseChildren(*this));
+    return false;
+  }
   if (child_change.ReattachLayoutTree()) {
     if (!LayoutObjectIsNeeded(style) || style.Display() == EDisplay::kInline ||
         style.IsDisplayTableType()) {

@@ -174,4 +174,37 @@ TEST_F(StyleRecalcTest, SkipStyleRecalcForContainer) {
                 GetCSSPropertyColor()));
 }
 
+TEST_F(StyleRecalcTest, SkipStyleRecalcForContainerCleanSubtree) {
+  ScopedCSSContainerQueriesForTest scoped_cq(true);
+  ScopedCSSContainerSkipStyleRecalcForTest scoped_skip(true);
+
+  UpdateAllLifecyclePhasesForTest();
+
+  ASSERT_TRUE(GetDocument().body());
+
+  GetDocument().body()->setInnerHTML(R"HTML(
+    <style>
+      #container { container-type: inline-size; }
+      #container.narrow { width: 100px; }
+      @container (max-width: 100px) {
+        #affected { color: green; }
+      }
+    </style>
+    <div id="container">
+      <span id="affected"></span>
+    </div>
+  )HTML",
+                                     ASSERT_NO_EXCEPTION);
+
+  UpdateAllLifecyclePhasesForTest();
+
+  Element* container = GetDocument().getElementById("container");
+  ASSERT_TRUE(container);
+  container->classList().Add("narrow");
+  GetDocument().UpdateStyleAndLayoutTreeForThisDocument();
+
+  ASSERT_TRUE(container->GetContainerQueryData());
+  EXPECT_FALSE(container->GetContainerQueryData()->SkippedStyleRecalc());
+}
+
 }  // namespace blink
