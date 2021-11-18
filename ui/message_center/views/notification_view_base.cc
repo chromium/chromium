@@ -56,7 +56,6 @@
 #include "ui/views/focus/focus_manager.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/box_layout_view.h"
-#include "ui/views/layout/fill_layout.h"
 #include "ui/views/native_cursor.h"
 #include "ui/views/style/typography.h"
 #include "ui/views/widget/widget.h"
@@ -497,11 +496,12 @@ NotificationViewBase::CreateImageContainerBuilder() {
       .SetBorder(views::CreateEmptyBorder(kLargeImageContainerPadding));
 }
 
-std::unique_ptr<views::View> NotificationViewBase::CreateActionsRow() {
+std::unique_ptr<views::View> NotificationViewBase::CreateActionsRow(
+    std::unique_ptr<views::LayoutManager> layout_manager) {
   DCHECK(!actions_row_);
   auto actions_row = std::make_unique<views::View>();
   actions_row->SetVisible(false);
-  actions_row->SetLayoutManager(std::make_unique<views::FillLayout>());
+  actions_row->SetLayoutManager(std::move(layout_manager));
 
   // |action_buttons_row_| contains inline action buttons.
   DCHECK(!action_buttons_row_);

@@ -20,11 +20,13 @@
 #include "ui/views/animation/ink_drop_observer.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/layout/box_layout_view.h"
+#include "ui/views/layout/fill_layout.h"
 
 namespace views {
 class BoxLayoutView;
 class Label;
 class LabelButton;
+class LayoutManager;
 class ProgressBar;
 }  // namespace views
 
@@ -165,8 +167,11 @@ class MESSAGE_CENTER_EXPORT NotificationViewBase
   // Inline settings view contains inline settings.
   views::Builder<views::BoxLayoutView> CreateInlineSettingsBuilder();
 
-  // Actions row contains inline action buttons and inline textfield.
-  std::unique_ptr<views::View> CreateActionsRow();
+  // Actions row contains inline action buttons and inline textfield. Use the
+  // given layout manager for the actions row.
+  std::unique_ptr<views::View> CreateActionsRow(
+      std::unique_ptr<views::LayoutManager> layout_manager =
+          std::make_unique<views::FillLayout>());
 
   // Generate a view to show notification title and other supporting views.
   static std::unique_ptr<views::Label> GenerateTitleView(

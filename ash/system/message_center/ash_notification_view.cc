@@ -387,7 +387,8 @@ AshNotificationView::AshNotificationView(
                                     : kGroupedNotificationsCollapsedSpacing)
                    .Build());
 
-  AddChildView(CreateActionsRow());
+  AddChildView(CreateActionsRow(std::make_unique<views::BoxLayout>(
+      views::BoxLayout::Orientation::kHorizontal)));
 
   // Custom paddings for `AshNotificationView`.
   static_cast<views::BoxLayout*>(action_buttons_row()->GetLayoutManager())
