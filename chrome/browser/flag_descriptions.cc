@@ -1003,10 +1003,6 @@ const char kEnableCanvasContextLostInBackgroundName[] =
 const char kEnableCanvasContextLostInBackgroundDescription[] =
     "Enable canvas context to be cleared when it is running in background";
 
-const char kEnableLayoutNGName[] = "Enable LayoutNG";
-const char kEnableLayoutNGDescription[] =
-    "Enable Blink's next generation layout engine.";
-
 const char kEnableLazyFrameLoadingName[] = "Enable lazy frame loading";
 const char kEnableLazyFrameLoadingDescription[] =
     "Defers the loading of iframes marked with the attribute 'loading=lazy' "

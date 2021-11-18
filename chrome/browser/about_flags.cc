@@ -5290,10 +5290,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(commerce::kShoppingList)},
 #endif  // OS_ANDROID
 
-    {"enable-layout-ng", flag_descriptions::kEnableLayoutNGName,
-     flag_descriptions::kEnableLayoutNGDescription, kOsAll,
-     FEATURE_VALUE_TYPE(blink::features::kLayoutNG)},
-
     {"enable-lazy-image-loading",
      flag_descriptions::kEnableLazyImageLoadingName,
      flag_descriptions::kEnableLazyImageLoadingDescription, kOsAll,
