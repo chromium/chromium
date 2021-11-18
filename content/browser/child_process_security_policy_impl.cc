@@ -2124,8 +2124,8 @@ bool ChildProcessSecurityPolicyImpl::GetMatchingProcessIsolatedOrigin(
                     true /* requires_origin_keyed_process */)
               : OriginAgentClusterIsolationState::CreateNonIsolated();
       OriginAgentClusterIsolationState oac_isolation_state_result =
-          ShouldOriginGetOptInIsolation(isolation_context, origin,
-                                        oac_isolation_state_request);
+          DetermineOriginAgentClusterIsolation(isolation_context, origin,
+                                               oac_isolation_state_request);
       if (oac_isolation_state_result.requires_origin_keyed_process()) {
         *result = origin;
         return true;
@@ -2198,14 +2198,13 @@ bool ChildProcessSecurityPolicyImpl::GetMatchingProcessIsolatedOrigin(
 }
 
 OriginAgentClusterIsolationState
-ChildProcessSecurityPolicyImpl::ShouldOriginGetOptInIsolation(
+ChildProcessSecurityPolicyImpl::DetermineOriginAgentClusterIsolation(
     const IsolationContext& isolation_context,
     const url::Origin& origin,
     const OriginAgentClusterIsolationState& requested_isolation_state) {
   if (!IsolatedOriginUtil::IsValidOriginForOptInIsolation(origin))
     return OriginAgentClusterIsolationState::CreateNonIsolated();
 
-  base::AutoLock origins_isolation_opt_in_lock(origins_isolation_opt_in_lock_);
   // See if the same origin exists in the BrowsingInstance already, and if so
   // return its isolation status.
   // There are two cases we're worried about here: (i) we've previously seen the
@@ -2216,27 +2215,15 @@ ChildProcessSecurityPolicyImpl::ShouldOriginGetOptInIsolation(
       isolation_context.browsing_instance_id());
 
   if (!browsing_instance_id.is_null()) {
-    // Look for |origin| in the opt-in list.
-    auto it_isolated =
-        origin_isolation_by_browsing_instance_.find(browsing_instance_id);
-    if (it_isolated != origin_isolation_by_browsing_instance_.end()) {
-      auto it =
-          std::find_if(it_isolated->second.begin(), it_isolated->second.end(),
-                       [&origin](const OriginAgentClusterOptInEntry entry) {
-                         return entry.origin == origin;
-                       });
-      if (it != it_isolated->second.end())
-        return it->oac_isolation_state;
-    }
-    // Look for |origin| in the non-isolated list.
-    auto it_non_isolated =
-        origin_isolation_non_isolated_by_browsing_instance_.find(
-            browsing_instance_id);
-    if (it_non_isolated !=
-        origin_isolation_non_isolated_by_browsing_instance_.end()) {
-      if (base::Contains(it_non_isolated->second, origin))
-        return OriginAgentClusterIsolationState::CreateNonIsolated();
-    }
+    base::AutoLock origins_isolation_opt_in_lock(
+        origins_isolation_opt_in_lock_);
+
+    // Look for |origin| in the isolation status list.
+    OriginAgentClusterIsolationState* oac_isolation_state =
+        LookupOriginIsolationState(browsing_instance_id, origin);
+
+    if (oac_isolation_state)
+      return *oac_isolation_state;
   }
 
   // If we get to this point, then |origin| is neither opted-in nor opted-out.
@@ -2252,6 +2239,27 @@ bool ChildProcessSecurityPolicyImpl::HasOriginEverRequestedOptInIsolation(
   base::AutoLock origins_isolation_opt_in_lock(origins_isolation_opt_in_lock_);
   return base::Contains(origin_isolation_opt_ins_, browser_context) &&
          base::Contains(origin_isolation_opt_ins_[browser_context], origin);
+}
+
+OriginAgentClusterIsolationState*
+ChildProcessSecurityPolicyImpl::LookupOriginIsolationState(
+    const BrowsingInstanceId& browsing_instance_id,
+    const url::Origin& origin) {
+  auto it_isolation_by_browsing_instance =
+      origin_isolation_by_browsing_instance_.find(browsing_instance_id);
+  if (it_isolation_by_browsing_instance ==
+      origin_isolation_by_browsing_instance_.end()) {
+    return nullptr;
+  }
+  auto& origin_list = it_isolation_by_browsing_instance->second;
+  auto it_origin_list =
+      std::find_if(origin_list.begin(), origin_list.end(),
+                   [&origin](const OriginAgentClusterOptInEntry entry) {
+                     return entry.origin == origin;
+                   });
+  if (it_origin_list != origin_list.end())
+    return &(it_origin_list->oac_isolation_state);
+  return nullptr;
 }
 
 void ChildProcessSecurityPolicyImpl::AddNonIsolatedOriginIfNeeded(
@@ -2279,7 +2287,7 @@ void ChildProcessSecurityPolicyImpl::AddNonIsolatedOriginIfNeeded(
   // isn't in the list of such origins (i.e., the common case), return early to
   // avoid unnecessary work, since this is called on every commit. Skip this
   // during global walks and frame removals, since we do want to track the
-  // non-isolated origin in those cases.
+  // origin's non-isolated status in those cases.
   if (!is_global_walk_or_frame_removal &&
       !(base::Contains(origin_isolation_opt_ins_, browser_context) &&
         base::Contains(origin_isolation_opt_ins_[browser_context], origin))) {
@@ -2291,26 +2299,13 @@ void ChildProcessSecurityPolicyImpl::AddNonIsolatedOriginIfNeeded(
   // walks (when the origin won't be in this list yet), but it matters during
   // frame removal (when we don't want to add an opted-in origin to the
   // non-isolated list when its frame is removed).
-  // TODO(wjmaclean): Add a lookup helper function to simplify the callsites
-  // that do lookup. https://crbug.com/1269748.
-  auto it_opt_in =
-      origin_isolation_by_browsing_instance_.find(browsing_instance_id);
-  if (it_opt_in != origin_isolation_by_browsing_instance_.end()) {
-    auto it = std::find_if(it_opt_in->second.begin(), it_opt_in->second.end(),
-                           [&origin](const OriginAgentClusterOptInEntry entry) {
-                             return entry.origin == origin;
-                           });
-    if (it != it_opt_in->second.end())
-      return;
-  }
-
-  std::vector<url::Origin>& non_isolated_origins =
-      origin_isolation_non_isolated_by_browsing_instance_[browsing_instance_id];
-  if (base::Contains(non_isolated_origins, origin)) {
-    // `origin` is already marked as non-isolated; nothing to do.
+  if (LookupOriginIsolationState(browsing_instance_id, origin))
     return;
-  }
-  non_isolated_origins.push_back(origin);
+
+  // Since there was no prior record for this BrowsingInstance, track that this
+  // origin should not be isolated.
+  origin_isolation_by_browsing_instance_[browsing_instance_id].emplace_back(
+      OriginAgentClusterIsolationState::CreateNonIsolated(), origin);
 }
 
 void ChildProcessSecurityPolicyImpl::
@@ -2362,8 +2357,6 @@ void ChildProcessSecurityPolicyImpl::
     base::AutoLock origins_isolation_opt_in_lock(
         origins_isolation_opt_in_lock_);
     origin_isolation_by_browsing_instance_.erase(browsing_instance_id);
-    origin_isolation_non_isolated_by_browsing_instance_.erase(
-        browsing_instance_id);
   }
 
   {

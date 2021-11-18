@@ -214,7 +214,7 @@ bool IsOriginAgentClusterEnabledForOrigin(SiteInstance* site_instance,
 
   return static_cast<ChildProcessSecurityPolicyImpl*>(
              ChildProcessSecurityPolicy::GetInstance())
-      ->ShouldOriginGetOptInIsolation(
+      ->DetermineOriginAgentClusterIsolation(
           static_cast<SiteInstanceImpl*>(site_instance)->GetIsolationContext(),
           origin, origin_requests_isolation)
       .is_origin_agent_cluster();

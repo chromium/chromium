@@ -289,13 +289,12 @@ class CONTENT_EXPORT ChildProcessSecurityPolicyImpl
   // isolation status, whereas IsIsolatedOrigin() considers all possible
   // mechanisms for requesting isolation. It will check for two things:
   // 1) whether |origin| already is assigned to a SiteInstance in the
-  //    |isolation_context| by being tracked in either
-  //    |origin_isolation_non_isolated_by_browsing_instance_| or
+  //    |isolation_context| by being tracked in
   //    |origin_isolation_by_browsing_instance_|, in which case we follow the
   //    same policy, or
   // 2) if it's not currently tracked as described above, whether |origin| is
   //    currently requesting isolation via |requested_isolation_state|.
-  OriginAgentClusterIsolationState ShouldOriginGetOptInIsolation(
+  OriginAgentClusterIsolationState DetermineOriginAgentClusterIsolation(
       const IsolationContext& isolation_context,
       const url::Origin& origin,
       const OriginAgentClusterIsolationState& requested_isolation_state);
@@ -777,6 +776,13 @@ class CONTENT_EXPORT ChildProcessSecurityPolicyImpl
                               const GURL& url,
                               bool url_is_precursor_of_opaque_origin);
 
+  // Utility function to simplify lookups for OriginAgentClusterOptInEntry
+  // values by origin.
+  OriginAgentClusterIsolationState* LookupOriginIsolationState(
+      const BrowsingInstanceId& browsing_instance_id,
+      const url::Origin& origin)
+      EXCLUSIVE_LOCKS_REQUIRED(origins_isolation_opt_in_lock_);
+
   // You must acquire this lock before reading or writing any members of this
   // class, except for isolated_origins_ which uses its own lock.  You must not
   // block while holding this lock.
@@ -871,28 +877,24 @@ class CONTENT_EXPORT ChildProcessSecurityPolicyImpl
   // by BrowserContext. This is tracked so we know which origins need to be
   // tracked when non-isolated in any given BrowsingInstance. Origins requesting
   // isolation, if successful, are marked as isolated via
-  // ShouldOriginGetOptInIsolation's checking |requested_isolation_state|.
-  // Each BrowserContext's state is tracked separately so that timing attacks do
-  // not reveal whether an origin has been visited in another (e.g., incognito)
-  // BrowserContext. In general, the state of other BrowsingInstances is not
-  // observable outside such timing side channels.
+  // DetermineOriginAgentClusterIsolation's checking
+  // |requested_isolation_state|. Each BrowserContext's state is tracked
+  // separately so that timing attacks do not reveal whether an origin has been
+  // visited in another (e.g., incognito) BrowserContext. In general, the state
+  // of other BrowsingInstances is not observable outside such timing side
+  // channels.
   base::flat_map<BrowserContext*, base::flat_set<url::Origin>>
       origin_isolation_opt_ins_ GUARDED_BY(origins_isolation_opt_in_lock_);
+
   // A map to track origins that have been isolated within a given
-  // BrowsingInstance.
+  // BrowsingInstance, or that have been loaded in a BrowsingInstance
+  // without isolation, but that have requested isolation in at least one other
+  // BrowsingInstance. Origins loaded without isolation are tracked to make sure
+  // we don't try to isolate the origin in the associated BrowsingInstance at a
+  // later time, in order to keep the isolation consistent over the lifetime of
+  // the BrowsingInstance.
   base::flat_map<BrowsingInstanceId, std::vector<OriginAgentClusterOptInEntry>>
       origin_isolation_by_browsing_instance_
-          GUARDED_BY(origins_isolation_opt_in_lock_);
-  // A map to track origins that have been loaded in a BrowsingInstance without
-  // isolation, but that have requested isolation in at least one other
-  // BrowsingInstance. This map makes sure we don't try to isolate the origin
-  // in the associated BrowsingInstance at a later time, in order to keep the
-  // isolation consistent over the lifetime of the BrowsingInstance.
-  // TODO(wjmaclean): Absorb
-  // |origin_isolation_non_isolated_by_browsing_instance_| into
-  // |origin_isolation_by_browsing_instance_|. https://crbug.com/1269748.
-  base::flat_map<BrowsingInstanceId, std::vector<url::Origin>>
-      origin_isolation_non_isolated_by_browsing_instance_
           GUARDED_BY(origins_isolation_opt_in_lock_);
 
   // When we are notified a BrowsingInstance has destructed, delay cleanup by

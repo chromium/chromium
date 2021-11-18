@@ -111,8 +111,8 @@ class IsolatedOriginTestBase : public ContentBrowserTest {
         OriginAgentClusterIsolationState::CreateNonIsolated();
 
     return ChildProcessSecurityPolicyImpl::GetInstance()
-        ->ShouldOriginGetOptInIsolation(site_instance->GetIsolationContext(),
-                                        origin, isolation_request)
+        ->DetermineOriginAgentClusterIsolation(
+            site_instance->GetIsolationContext(), origin, isolation_request)
         .requires_origin_keyed_process();
   }
 
@@ -493,7 +493,7 @@ IN_PROC_BROWSER_TEST_F(OriginIsolationOptInHeaderCommandLineTest,
 
   auto* policy = ChildProcessSecurityPolicyImpl::GetInstance();
   EXPECT_TRUE(policy
-                  ->ShouldOriginGetOptInIsolation(
+                  ->DetermineOriginAgentClusterIsolation(
                       root->current_frame_host()
                           ->GetSiteInstance()
                           ->GetIsolationContext(),
@@ -501,7 +501,7 @@ IN_PROC_BROWSER_TEST_F(OriginIsolationOptInHeaderCommandLineTest,
                       MakeOACIsolationState(false))
                   .requires_origin_keyed_process());
   EXPECT_FALSE(policy
-                   ->ShouldOriginGetOptInIsolation(
+                   ->DetermineOriginAgentClusterIsolation(
                        root->current_frame_host()
                            ->GetSiteInstance()
                            ->GetIsolationContext(),
@@ -646,7 +646,7 @@ IN_PROC_BROWSER_TEST_F(OriginIsolationPrerenderOptInHeaderTest,
       prerender_helper_.GetPrerenderedMainFrameHost(host_id)
           ->GetSiteInstance());
   EXPECT_FALSE(policy
-                   ->ShouldOriginGetOptInIsolation(
+                   ->DetermineOriginAgentClusterIsolation(
                        prerender_site_instance_impl->GetIsolationContext(),
                        url::Origin::Create(non_isolated_origin_url),
                        MakeOACIsolationState(true))
@@ -659,7 +659,7 @@ IN_PROC_BROWSER_TEST_F(OriginIsolationPrerenderOptInHeaderTest,
       prerender_tab->web_contents()->GetSiteInstance());
   EXPECT_EQ(prerender_site_instance_impl, new_prerender_site_instance_impl);
   EXPECT_FALSE(policy
-                   ->ShouldOriginGetOptInIsolation(
+                   ->DetermineOriginAgentClusterIsolation(
                        new_prerender_site_instance_impl->GetIsolationContext(),
                        url::Origin::Create(non_isolated_origin_url),
                        MakeOACIsolationState(true))
@@ -710,7 +710,7 @@ IN_PROC_BROWSER_TEST_F(OriginIsolationPrerenderOptInHeaderTest,
       prerender_helper_.GetPrerenderedMainFrameHost(host_id)
           ->GetSiteInstance());
   EXPECT_TRUE(policy
-                  ->ShouldOriginGetOptInIsolation(
+                  ->DetermineOriginAgentClusterIsolation(
                       prerender_site_instance_impl->GetIsolationContext(),
                       url::Origin::Create(isolated_origin_url),
                       MakeOACIsolationState(false))
@@ -724,7 +724,7 @@ IN_PROC_BROWSER_TEST_F(OriginIsolationPrerenderOptInHeaderTest,
   auto* primary_site_instance_impl = static_cast<SiteInstanceImpl*>(
       shell()->web_contents()->GetSiteInstance());
   EXPECT_FALSE(policy
-                   ->ShouldOriginGetOptInIsolation(
+                   ->DetermineOriginAgentClusterIsolation(
                        primary_site_instance_impl->GetIsolationContext(),
                        url::Origin::Create(isolated_origin_url),
                        MakeOACIsolationState(true))
@@ -737,7 +737,7 @@ IN_PROC_BROWSER_TEST_F(OriginIsolationPrerenderOptInHeaderTest,
       prerender_tab->web_contents()->GetSiteInstance());
   EXPECT_EQ(prerender_site_instance_impl, new_prerender_site_instance_impl);
   EXPECT_TRUE(policy
-                  ->ShouldOriginGetOptInIsolation(
+                  ->DetermineOriginAgentClusterIsolation(
                       new_prerender_site_instance_impl->GetIsolationContext(),
                       url::Origin::Create(isolated_origin_url),
                       MakeOACIsolationState(false))
@@ -841,7 +841,7 @@ IN_PROC_BROWSER_TEST_F(SameProcessOriginIsolationOptInHeaderTest,
                    ->RequiresDedicatedProcess());
   auto* policy = ChildProcessSecurityPolicyImpl::GetInstance();
   EXPECT_TRUE(policy
-                  ->ShouldOriginGetOptInIsolation(
+                  ->DetermineOriginAgentClusterIsolation(
                       root->current_frame_host()
                           ->GetSiteInstance()
                           ->GetIsolationContext(),
@@ -849,7 +849,7 @@ IN_PROC_BROWSER_TEST_F(SameProcessOriginIsolationOptInHeaderTest,
                       MakeOACIsolationState(false))
                   .is_origin_agent_cluster());
   EXPECT_FALSE(policy
-                   ->ShouldOriginGetOptInIsolation(
+                   ->DetermineOriginAgentClusterIsolation(
                        root->current_frame_host()
                            ->GetSiteInstance()
                            ->GetIsolationContext(),
@@ -915,7 +915,7 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ(root_process_lock.lock_url(), GURL("https://foo.com/"));
   auto* policy = ChildProcessSecurityPolicyImpl::GetInstance();
   EXPECT_TRUE(policy
-                  ->ShouldOriginGetOptInIsolation(
+                  ->DetermineOriginAgentClusterIsolation(
                       root->current_frame_host()
                           ->GetSiteInstance()
                           ->GetIsolationContext(),
@@ -923,7 +923,7 @@ IN_PROC_BROWSER_TEST_F(
                       MakeOACIsolationState(false))
                   .is_origin_agent_cluster());
   EXPECT_FALSE(policy
-                   ->ShouldOriginGetOptInIsolation(
+                   ->DetermineOriginAgentClusterIsolation(
                        root->current_frame_host()
                            ->GetSiteInstance()
                            ->GetIsolationContext(),
@@ -1399,7 +1399,7 @@ IN_PROC_BROWSER_TEST_F(OriginIsolationOptInHeaderTest,
 
   // Make sure the current browsing instance does *not* isolate the origin.
   EXPECT_FALSE(policy
-                   ->ShouldOriginGetOptInIsolation(
+                   ->DetermineOriginAgentClusterIsolation(
                        root->current_frame_host()
                            ->GetSiteInstance()
                            ->GetIsolationContext(),
@@ -1451,7 +1451,7 @@ IN_PROC_BROWSER_TEST_F(OriginIsolationOptInHeaderTest,
   // Make sure the current browsing instance does *not* isolate the origin.
   auto* policy = ChildProcessSecurityPolicyImpl::GetInstance();
   EXPECT_FALSE(policy
-                   ->ShouldOriginGetOptInIsolation(
+                   ->DetermineOriginAgentClusterIsolation(
                        root->current_frame_host()
                            ->GetSiteInstance()
                            ->GetIsolationContext(),
@@ -1666,15 +1666,16 @@ IN_PROC_BROWSER_TEST_F(OriginIsolationOptInHeaderTest, IsolatedBaseOrigin) {
       NavigateToURLFromRenderer(child_frame_node2, non_isolated_sub_origin2));
 
   auto* policy = ChildProcessSecurityPolicyImpl::GetInstance();
-  EXPECT_TRUE(policy
-                  ->ShouldOriginGetOptInIsolation(root->current_frame_host()
-                                                      ->GetSiteInstance()
-                                                      ->GetIsolationContext(),
-                                                  url::Origin::Create(test_url),
-                                                  MakeOACIsolationState(false))
-                  .requires_origin_keyed_process());
+  EXPECT_TRUE(
+      policy
+          ->DetermineOriginAgentClusterIsolation(root->current_frame_host()
+                                                     ->GetSiteInstance()
+                                                     ->GetIsolationContext(),
+                                                 url::Origin::Create(test_url),
+                                                 MakeOACIsolationState(false))
+          .requires_origin_keyed_process());
   EXPECT_FALSE(policy
-                   ->ShouldOriginGetOptInIsolation(
+                   ->DetermineOriginAgentClusterIsolation(
                        child_frame_node1->current_frame_host()
                            ->GetSiteInstance()
                            ->GetIsolationContext(),
@@ -1682,7 +1683,7 @@ IN_PROC_BROWSER_TEST_F(OriginIsolationOptInHeaderTest, IsolatedBaseOrigin) {
                        MakeOACIsolationState(false))
                    .requires_origin_keyed_process());
   EXPECT_FALSE(policy
-                   ->ShouldOriginGetOptInIsolation(
+                   ->DetermineOriginAgentClusterIsolation(
                        child_frame_node2->current_frame_host()
                            ->GetSiteInstance()
                            ->GetIsolationContext(),
@@ -1797,7 +1798,7 @@ IN_PROC_BROWSER_TEST_F(OriginIsolationOptInHeaderTest,
 
   auto* policy = ChildProcessSecurityPolicyImpl::GetInstance();
   EXPECT_TRUE(policy
-                  ->ShouldOriginGetOptInIsolation(
+                  ->DetermineOriginAgentClusterIsolation(
                       root->current_frame_host()
                           ->GetSiteInstance()
                           ->GetIsolationContext(),
@@ -1805,7 +1806,7 @@ IN_PROC_BROWSER_TEST_F(OriginIsolationOptInHeaderTest,
                       MakeOACIsolationState(false))
                   .requires_origin_keyed_process());
   EXPECT_FALSE(policy
-                   ->ShouldOriginGetOptInIsolation(
+                   ->DetermineOriginAgentClusterIsolation(
                        child_frame_node1->current_frame_host()
                            ->GetSiteInstance()
                            ->GetIsolationContext(),
@@ -1813,7 +1814,7 @@ IN_PROC_BROWSER_TEST_F(OriginIsolationOptInHeaderTest,
                        MakeOACIsolationState(false))
                    .requires_origin_keyed_process());
   EXPECT_FALSE(policy
-                   ->ShouldOriginGetOptInIsolation(
+                   ->DetermineOriginAgentClusterIsolation(
                        child_frame_node2->current_frame_host()
                            ->GetSiteInstance()
                            ->GetIsolationContext(),
@@ -1897,7 +1898,7 @@ IN_PROC_BROWSER_TEST_F(OriginIsolationOptInHeaderTest,
   SetHeaderValue("?1");
   EXPECT_TRUE(NavigateToURL(shell(), isolated_origin_url));
   EXPECT_TRUE(policy
-                  ->ShouldOriginGetOptInIsolation(
+                  ->DetermineOriginAgentClusterIsolation(
                       static_cast<WebContentsImpl*>(shell()->web_contents())
                           ->GetPrimaryFrameTree()
                           .root()
@@ -1918,13 +1919,13 @@ IN_PROC_BROWSER_TEST_F(OriginIsolationOptInHeaderTest,
   // the global walk.
   // At this stage, `isolated_origin` is not in the non-opt-in list for this
   // BrowsingInstance, since we haven't yet done a global walk in the OTR
-  // BrowserContext, so ShouldOriginGetOptInIsolation will return true.
+  // BrowserContext, so DetermineOriginAgentClusterIsolation will return true.
   // However, during the navigation by the OpenPopup call below that global walk
   // will be triggered before the url's isolation status is set. This walk is
   // triggered by the call to CheckForIsolationOptIn() in
   // NavigationRequest::OnResponseStarted().
   EXPECT_TRUE(policy
-                  ->ShouldOriginGetOptInIsolation(
+                  ->DetermineOriginAgentClusterIsolation(
                       static_cast<WebContentsImpl*>(shell_otr->web_contents())
                           ->GetPrimaryFrameTree()
                           .root()
@@ -1950,9 +1951,9 @@ IN_PROC_BROWSER_TEST_F(OriginIsolationOptInHeaderTest,
       site_instance_popup->GetSiteInfo().requires_origin_keyed_process());
   // Since the OpenPopup navigation triggered a global walk, `isolated_origin`
   // was added to the non-opt-in list, so now calling
-  // ShouldOriginGetOptInIsolation will return false.
+  // DetermineOriginAgentClusterIsolation will return false.
   EXPECT_FALSE(policy
-                   ->ShouldOriginGetOptInIsolation(
+                   ->DetermineOriginAgentClusterIsolation(
                        site_instance_popup->GetIsolationContext(),
                        isolated_origin, MakeOACIsolationState(true))
                    .requires_origin_keyed_process());
@@ -1971,7 +1972,7 @@ IN_PROC_BROWSER_TEST_F(OriginIsolationOptInHeaderTest,
   EXPECT_TRUE(site_instance_shell_otr_tab2->GetSiteInfo()
                   .requires_origin_keyed_process());
   EXPECT_TRUE(policy
-                  ->ShouldOriginGetOptInIsolation(
+                  ->DetermineOriginAgentClusterIsolation(
                       site_instance_shell_otr_tab2->GetIsolationContext(),
                       isolated_origin, MakeOACIsolationState(true))
                   .requires_origin_keyed_process());
@@ -2032,7 +2033,7 @@ IN_PROC_BROWSER_TEST_F(OriginIsolationOptInHeaderTest, FrameTreeTest) {
   // child's BrowsingInstance. We do this by requesting opt-in for the origin,
   // then verifying that it is denied by DoesOriginRequestOptInIsolation.
   EXPECT_FALSE(policy
-                   ->ShouldOriginGetOptInIsolation(
+                   ->DetermineOriginAgentClusterIsolation(
                        tab2_child->current_frame_host()
                            ->GetSiteInstance()
                            ->GetIsolationContext(),
@@ -2040,7 +2041,7 @@ IN_PROC_BROWSER_TEST_F(OriginIsolationOptInHeaderTest, FrameTreeTest) {
                    .requires_origin_keyed_process());
   // Verify that `isolated_origin` in tab1 is indeed isolated.
   EXPECT_TRUE(policy
-                  ->ShouldOriginGetOptInIsolation(
+                  ->DetermineOriginAgentClusterIsolation(
                       tab1_root->current_frame_host()
                           ->GetSiteInstance()
                           ->GetIsolationContext(),
@@ -2116,16 +2117,16 @@ IN_PROC_BROWSER_TEST_F(OriginIsolationOptInHeaderTest,
   auto* policy = ChildProcessSecurityPolicyImpl::GetInstance();
   // Verify that `isolated origin` is in the non-opt-in list for tab1's
   // BrowsingInstance. We do this by requesting opt-in for the origin, then
-  // verifying that it is denied by ShouldOriginGetOptInIsolation.
+  // verifying that it is denied by DetermineOriginAgentClusterIsolation.
   EXPECT_FALSE(policy
-                   ->ShouldOriginGetOptInIsolation(
+                   ->DetermineOriginAgentClusterIsolation(
                        tab1_site_instance->GetIsolationContext(),
                        isolated_origin, MakeOACIsolationState(true))
                    .requires_origin_keyed_process());
 
   // Verify that `isolated_origin` in tab2 is indeed isolated.
   EXPECT_TRUE(policy
-                  ->ShouldOriginGetOptInIsolation(
+                  ->DetermineOriginAgentClusterIsolation(
                       tab2_site_instance->GetIsolationContext(),
                       isolated_origin, MakeOACIsolationState(false))
                   .requires_origin_keyed_process());
@@ -2236,14 +2237,14 @@ IN_PROC_BROWSER_TEST_F(OriginIsolationOptInHeaderTest,
   // BrowsingInstance. We do this by requesting opt-in for the origin, then
   // verifying that it is denied by DoesOriginRequestOptInIsolation.
   EXPECT_FALSE(policy
-                   ->ShouldOriginGetOptInIsolation(
+                   ->DetermineOriginAgentClusterIsolation(
                        tab1_site_instance->GetIsolationContext(),
                        isolated_origin, MakeOACIsolationState(true))
                    .requires_origin_keyed_process());
 
   // Verify that `isolated_origin` in tab2 is indeed isolated.
   EXPECT_TRUE(policy
-                  ->ShouldOriginGetOptInIsolation(
+                  ->DetermineOriginAgentClusterIsolation(
                       tab2_site_instance->GetIsolationContext(),
                       isolated_origin, MakeOACIsolationState(false))
                   .requires_origin_keyed_process());

@@ -188,9 +188,9 @@ SiteInfo SiteInfo::CreateInternal(const IsolationContext& isolation_context,
     auto* policy = ChildProcessSecurityPolicyImpl::GetInstance();
     requires_origin_keyed_process =
         policy
-            ->ShouldOriginGetOptInIsolation(isolation_context,
-                                            url::Origin::Create(url_info.url),
-                                            requested_isolation_state)
+            ->DetermineOriginAgentClusterIsolation(
+                isolation_context, url::Origin::Create(url_info.url),
+                requested_isolation_state)
             .requires_origin_keyed_process();
   }
 

@@ -2602,7 +2602,7 @@ void NavigationRequest::AddSameProcessOriginAgentClusterOptInIfNecessary(
   url::Origin origin = url::Origin::Create(url);
   auto* policy = ChildProcessSecurityPolicyImpl::GetInstance();
   OriginAgentClusterIsolationState isolation_state =
-      policy->ShouldOriginGetOptInIsolation(
+      policy->DetermineOriginAgentClusterIsolation(
           isolation_context, origin,
           OriginAgentClusterIsolationState::CreateForOriginAgentCluster(
               false /* requires_origin_keyed_process */));
@@ -2657,8 +2657,8 @@ void NavigationRequest::DetermineOriginAgentClusterEndResult(
 
   const bool got_origin_agent_cluster =
       policy
-          ->ShouldOriginGetOptInIsolation(isolation_context, origin,
-                                          requested_isolation_state)
+          ->DetermineOriginAgentClusterIsolation(isolation_context, origin,
+                                                 requested_isolation_state)
           .is_origin_agent_cluster();
 
   if (is_requested) {
