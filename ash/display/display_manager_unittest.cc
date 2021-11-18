@@ -60,6 +60,7 @@
 #include "ui/events/test/event_generator.h"
 #include "ui/gfx/font_render_params.h"
 #include "ui/gfx/geometry/rect_conversions.h"
+#include "ui/gfx/overlay_transform.h"
 
 namespace ash {
 
@@ -140,6 +141,7 @@ class DisplayManagerTest : public AshTestBase,
   void OnDidProcessDisplayChanges() override { ++did_process_count_; }
   void OnDisplayMetricsChanged(const display::Display& display,
                                uint32_t changed_metrics) override {
+    LOG(ERROR) << "Changed:" << changed_metrics;
     changed_.push_back(display);
     changed_metrics_ |= changed_metrics;
   }
@@ -152,7 +154,8 @@ class DisplayManagerTest : public AshTestBase,
 
   // aura::WindowObserver overrides:
   void OnWindowDestroying(aura::Window* window) override {
-    ASSERT_EQ(Shell::GetPrimaryRootWindow(), window);
+    if (check_root_window_on_destruction_)
+      ASSERT_EQ(Shell::GetPrimaryRootWindow(), window);
     root_window_destroyed_ = true;
   }
 
@@ -179,6 +182,10 @@ class DisplayManagerTest : public AshTestBase,
     base::RunLoop().RunUntilIdle();
   }
 
+  void disable_check_root_window_on_destruction() {
+    check_root_window_on_destruction_ = false;
+  }
+
  private:
   vector<display::Display> changed_;
   vector<display::Display> added_;
@@ -187,6 +194,7 @@ class DisplayManagerTest : public AshTestBase,
   size_t did_process_count_ = 0u;
   bool root_window_destroyed_ = false;
   uint32_t changed_metrics_ = 0u;
+  bool check_root_window_on_destruction_ = true;
 
   absl::optional<display::ScopedDisplayObserver> display_observer_;
 };
@@ -3072,6 +3080,64 @@ TEST_F(DisplayManagerTest, UnifiedDesktopTabletMode) {
   EXPECT_FALSE(tablet_mode_controller->InTabletMode());
   EXPECT_FALSE(
       app_list_controller->IsVisible(display_manager()->first_display_id()));
+}
+
+TEST_F(DisplayManagerTest, UnifiedDesktopPrimarySizeWithRotatedDisplays) {
+  MirrorWindowTestApi test_api;
+
+  // RootWidow for primary changes during unified desktop transition.
+  disable_check_root_window_on_destruction();
+
+  display::test::DisplayManagerTestApi(display_manager())
+      .SetFirstDisplayAsInternalDisplay();
+  display_manager()->SetUnifiedDesktopEnabled(true);
+
+  UpdateDisplay("1000x700/r");
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(gfx::Size(700, 1000),
+            display::Screen::GetScreen()->GetPrimaryDisplay().size());
+
+  UpdateDisplay("1000x700/r,1000x700/r");
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(gfx::Size(1400, 1000),
+            display::Screen::GetScreen()->GetPrimaryDisplay().size());
+
+  std::vector<aura::WindowTreeHost*> host_list = test_api.GetHosts();
+  EXPECT_EQ(gfx::Size(700, 1000), host_list[0]->window()->bounds().size());
+  EXPECT_EQ(gfx::OVERLAY_TRANSFORM_ROTATE_90,
+            host_list[0]->compositor()->display_transform_hint());
+  EXPECT_EQ(gfx::Size(700, 1000), host_list[1]->window()->bounds().size());
+  EXPECT_EQ(gfx::OVERLAY_TRANSFORM_ROTATE_90,
+            host_list[1]->compositor()->display_transform_hint());
+
+  UpdateDisplay("1000x700/r,1000x700");
+  base::RunLoop().RunUntilIdle();
+  // width = 1000 / 700 * 1000 + 700 ~= 2128
+  EXPECT_EQ(gfx::Size(2128, 1000),
+            display::Screen::GetScreen()->GetPrimaryDisplay().size());
+  host_list = test_api.GetHosts();
+  EXPECT_EQ(gfx::Size(700, 1000), host_list[0]->window()->bounds().size());
+  EXPECT_EQ(gfx::OVERLAY_TRANSFORM_ROTATE_90,
+            host_list[0]->compositor()->display_transform_hint());
+  EXPECT_EQ(gfx::Size(1000, 700), host_list[1]->window()->bounds().size());
+  EXPECT_EQ(gfx::OVERLAY_TRANSFORM_NONE,
+            host_list[1]->compositor()->display_transform_hint());
+
+  // Three displays
+  UpdateDisplay("1000x700/l,1000x700/r, 1000x700/l");
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(gfx::Size(2100, 1000),
+            display::Screen::GetScreen()->GetPrimaryDisplay().size());
+  host_list = test_api.GetHosts();
+  EXPECT_EQ(gfx::Size(700, 1000), host_list[0]->window()->bounds().size());
+  EXPECT_EQ(gfx::OVERLAY_TRANSFORM_ROTATE_270,
+            host_list[0]->compositor()->display_transform_hint());
+  EXPECT_EQ(gfx::Size(700, 1000), host_list[1]->window()->bounds().size());
+  EXPECT_EQ(gfx::OVERLAY_TRANSFORM_ROTATE_90,
+            host_list[1]->compositor()->display_transform_hint());
+  EXPECT_EQ(gfx::Size(700, 1000), host_list[2]->window()->bounds().size());
+  EXPECT_EQ(gfx::OVERLAY_TRANSFORM_ROTATE_270,
+            host_list[2]->compositor()->display_transform_hint());
 }
 
 TEST_F(DisplayManagerTest, DisplayPrefsAndForcedMirrorMode) {

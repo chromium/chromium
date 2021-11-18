@@ -235,6 +235,12 @@ void MirrorWindowController::UpdateWindow(
       mirror_window->Init(ui::LAYER_SOLID_COLOR);
       host->window()->AddChild(mirror_window);
       host_info->ash_host->SetRootWindowTransformer(std::move(transformer));
+
+      const display::Display::Rotation effective_rotation =
+          display_info.GetLogicalActiveRotation();
+      host->SetDisplayTransformHint(
+          display::DisplayRotationToOverlayTransform(effective_rotation));
+
       // The accelerated widget is created synchronously.
       DCHECK_NE(gfx::kNullAcceleratedWidget, host->GetAcceleratedWidget());
     } else {
@@ -244,6 +250,12 @@ void MirrorWindowController::UpdateWindow(
       GetRootWindowSettings(host->window())->display_id = display_info.id();
       ash_host->SetRootWindowTransformer(std::move(transformer));
       host->SetBoundsInPixels(display_info.bounds_in_native());
+
+      // TODO(oshima): Consolidate the code above.
+      const display::Display::Rotation effective_rotation =
+          display_info.GetLogicalActiveRotation();
+      host->SetDisplayTransformHint(
+          display::DisplayRotationToOverlayTransform(effective_rotation));
     }
 
     // |mirror_size| is the size of the compositor of the mirror source in
@@ -258,7 +270,8 @@ void MirrorWindowController::UpdateWindow(
     auto* mirroring_host_info = mirroring_host_info_map_[display_info.id()];
 
     const bool should_undo_rotation = ShouldUndoRotationForMirror();
-    if (!should_undo_rotation) {
+
+    if (!should_undo_rotation && !display_manager->IsInUnifiedMode()) {
       // Use the rotation from source display without panel orientation
       // applied instead of the display transform hint in |source_compositor|
       // so that panel orientation is not applied to the mirror host.

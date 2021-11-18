@@ -304,6 +304,14 @@ class PartialBoundsRootWindowTransformer : public RootWindowTransformer {
     // Physical root bounds.
     root_bounds_ = gfx::Rect(display_info.bounds_in_native().size());
 
+    display::Display::Rotation active_root_rotation =
+        display_info.GetActiveRotation();
+    const bool need_transpose =
+        active_root_rotation == display::Display::ROTATE_90 ||
+        active_root_rotation == display::Display::ROTATE_270;
+    if (need_transpose)
+      root_bounds_.Transpose();
+
     // |screen_bounds| is the unified desktop logical bounds.
     // Calculate the unified height scale value, and apply the same scale on the
     // row physical height to get the row logical height.
@@ -327,6 +335,8 @@ class PartialBoundsRootWindowTransformer : public RootWindowTransformer {
     transform_.Scale(scale, scale);
     transform_.Translate(-SkIntToScalar(display.bounds().x()),
                          -SkIntToScalar(display.bounds().y()));
+    gfx::Transform rotation = CreateRootWindowRotationTransform(display);
+    CHECK((rotation * transform_).GetInverse(&invert_transform_));
   }
 
   PartialBoundsRootWindowTransformer(
@@ -337,9 +347,7 @@ class PartialBoundsRootWindowTransformer : public RootWindowTransformer {
   // RootWindowTransformer:
   gfx::Transform GetTransform() const override { return transform_; }
   gfx::Transform GetInverseTransform() const override {
-    gfx::Transform invert;
-    CHECK(transform_.GetInverse(&invert));
-    return invert;
+    return invert_transform_;
   }
   gfx::Rect GetRootWindowBounds(const gfx::Size& host_size) const override {
     return root_bounds_;
@@ -351,6 +359,7 @@ class PartialBoundsRootWindowTransformer : public RootWindowTransformer {
 
  private:
   gfx::Transform transform_;
+  gfx::Transform invert_transform_;
   gfx::Rect root_bounds_;
 };
 
