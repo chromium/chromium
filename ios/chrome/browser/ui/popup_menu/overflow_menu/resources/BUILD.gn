@@ -164,6 +164,16 @@ imageset("overflow_menu_destination_passwords") {
   ]
 }
 
+imageset("overflow_menu_destination_passwords_rebrand") {
+  sources = [
+    "overflow_menu_destination_passwords_rebrand.imageset/Contents.json",
+    "overflow_menu_destination_passwords_rebrand.imageset/overflow_menu_destination_passwords@2x.png",
+    "overflow_menu_destination_passwords_rebrand.imageset/overflow_menu_destination_passwords@3x.png",
+    "overflow_menu_destination_passwords_rebrand.imageset/overflow_menu_destination_passwords_dark@2x.png",
+    "overflow_menu_destination_passwords_rebrand.imageset/overflow_menu_destination_passwords_dark@3x.png",
+  ]
+}
+
 imageset("overflow_menu_destination_reading_list") {
   sources = [
     "overflow_menu_destination_reading_list.imageset/Contents.json",

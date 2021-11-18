@@ -13,4 +13,7 @@ extern const base::Feature kNewOverflowMenu;
 // Whether the NewOverflowMenu feature is enabled.
 bool IsNewOverflowMenuEnabled();
 
+// Whether the new Google Password Manager branding is enabled.
+bool IsPasswordManagerBrandingUpdateEnabled();
+
 #endif  // IOS_CHROME_BROWSER_UI_POPUP_MENU_OVERFLOW_MENU_FEATURE_FLAGS_H_

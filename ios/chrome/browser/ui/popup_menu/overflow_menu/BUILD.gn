@@ -11,6 +11,7 @@ source_set("overflow_menu") {
     "overflow_menu_mediator.mm",
   ]
   deps = [
+    ":feature_flags",
     ":overflow_menu_swift",
     "resources:overflow_menu_action_bookmark",
     "resources:overflow_menu_action_edit_bookmark",
@@ -31,6 +32,7 @@ source_set("overflow_menu") {
     "resources:overflow_menu_destination_downloads",
     "resources:overflow_menu_destination_history",
     "resources:overflow_menu_destination_passwords",
+    "resources:overflow_menu_destination_passwords_rebrand",
     "resources:overflow_menu_destination_reading_list",
     "resources:overflow_menu_destination_recent_tabs",
     "resources:overflow_menu_destination_settings",
@@ -99,5 +101,8 @@ source_set("feature_flags") {
     "feature_flags.h",
     "feature_flags.mm",
   ]
-  deps = [ "//base" ]
+  deps = [
+    "//base",
+    "//ios/chrome/browser/ui:feature_flags",
+  ]
 }

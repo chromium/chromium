@@ -37,6 +37,7 @@
 #import "ios/chrome/browser/ui/commands/reading_list_add_command.h"
 #import "ios/chrome/browser/ui/commands/text_zoom_commands.h"
 #import "ios/chrome/browser/ui/default_promo/default_browser_utils.h"
+#import "ios/chrome/browser/ui/popup_menu/overflow_menu/feature_flags.h"
 #import "ios/chrome/browser/ui/popup_menu/overflow_menu/overflow_menu_swift.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/web/font_size/font_size_tab_helper.h"
@@ -314,7 +315,11 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
         [weakSelf openHistory];
       });
   self.passwordsDestination = CreateOverflowMenuDestination(
-      IDS_IOS_TOOLS_MENU_PASSWORDS, @"overflow_menu_destination_passwords", ^{
+      IDS_IOS_TOOLS_MENU_PASSWORDS,
+      (IsPasswordManagerBrandingUpdateEnabled()
+           ? @"overflow_menu_destination_passwords_rebrand"
+           : @"overflow_menu_destination_passwords"),
+      ^{
         [weakSelf openPasswords];
       });
   self.readingListDestination = CreateOverflowMenuDestination(

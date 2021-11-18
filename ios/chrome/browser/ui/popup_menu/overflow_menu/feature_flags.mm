@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/popup_menu/overflow_menu/feature_flags.h"
+#import "ios/chrome/browser/ui/ui_feature_flags.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -17,5 +18,14 @@ bool IsNewOverflowMenuEnabled() {
   }
   // The new overflow menu isn't available on iOS <= 14 because it relies on
   // |UISheetPresentationController|, which was introduced in iOS 15.
+  return false;
+}
+
+bool IsPasswordManagerBrandingUpdateEnabled() {
+  if (IsNewOverflowMenuEnabled()) {
+    return base::FeatureList::IsEnabled(
+        kIOSEnablePasswordManagerBrandingUpdate);
+  }
+
   return false;
 }
