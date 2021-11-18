@@ -8378,12 +8378,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_COOKIES_COOKIES" desc="Label for folder under which a list of cookies appear">
         Cookies
       </message>
-      <message name="IDS_COOKIES_APPLICATION_CACHES" desc="Label for folder under which a list of application caches (name of an HTML standard) are stored">
-        Application caches
-      </message>
-      <message name="IDS_COOKIES_APPLICATION_CACHE" desc="The text shown when there is an Application Cache (name of an HTML standard) in the Cookies table">
-        Application cache
-      </message>
       <message name="IDS_COOKIES_WEB_DATABASES" desc="Label for the folder under which a list of web databases (name of an HTML standard) are displayed">
         Web databases
       </message>

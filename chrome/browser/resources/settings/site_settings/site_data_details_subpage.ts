@@ -22,7 +22,6 @@ import {LocalDataBrowserProxy, LocalDataBrowserProxyImpl} from './local_data_bro
 
 
 const categoryLabels: {[key: string]: string} = {
-  app_cache: loadTimeData.getString('cookieAppCache'),
   cache_storage: loadTimeData.getString('cookieCacheStorage'),
   database: loadTimeData.getString('cookieDatabaseStorage'),
   file_system: loadTimeData.getString('cookieFileSystem'),
