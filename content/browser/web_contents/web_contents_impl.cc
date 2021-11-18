@@ -6091,17 +6091,6 @@ void WebContentsImpl::UnregisterProtocolHandler(RenderFrameHostImpl* source,
   delegate_->UnregisterProtocolHandler(source, protocol, url, user_gesture);
 }
 
-void WebContentsImpl::OnAppCacheAccessed(const GURL& manifest_url,
-                                         bool blocked_by_policy) {
-  OPTIONAL_TRACE_EVENT0("content", "WebContentsImpl::OnAppCacheAccessed");
-  // TODO(nick): Should we consider |source| here? Should we call FilterURL on
-  // |manifest_url|?
-
-  // Notify observers about navigation.
-  observers_.NotifyObservers(&WebContentsObserver::AppCacheAccessed,
-                             manifest_url, blocked_by_policy);
-}
-
 void WebContentsImpl::DomOperationResponse(const std::string& json_string) {
   OPTIONAL_TRACE_EVENT1("content", "WebContentsImpl::DomOperationResponse",
                         "json_string", json_string);

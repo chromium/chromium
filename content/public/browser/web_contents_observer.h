@@ -514,9 +514,6 @@ class CONTENT_EXPORT WebContentsObserver {
   // NavigationEntry assigned to it.
   virtual void TitleWasSet(NavigationEntry* entry) {}
 
-  virtual void AppCacheAccessed(const GURL& manifest_url,
-                                bool blocked_by_policy) {}
-
   // These methods are invoked when a Pepper plugin instance is created/deleted
   // in the DOM.
   virtual void PepperInstanceCreated() {}

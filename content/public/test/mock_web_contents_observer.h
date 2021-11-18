@@ -194,11 +194,7 @@ class MockWebContentsObserver : public WebContentsObserver {
               (RenderFrameHost* render_frame_host,
                const gfx::Size& frame_size),
               (override));
-  MOCK_METHOD(void, TitleWasSet, (NavigationEntry* entry), (override));
-  MOCK_METHOD(void,
-              AppCacheAccessed,
-              (const GURL& manifest_url, bool blocked_by_policy),
-              (override));
+  MOCK_METHOD(void, TitleWasSet, (NavigationEntry * entry), (override));
   MOCK_METHOD(void, PepperInstanceCreated, (), (override));
   MOCK_METHOD(void, PepperInstanceDeleted, (), (override));
   MOCK_METHOD(void,

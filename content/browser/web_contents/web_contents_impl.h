@@ -1226,10 +1226,6 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   void DidActivatePortal(WebContentsImpl* predecessor_web_contents,
                          base::TimeTicks activation_time);
 
-  // Notifies observers that AppCache was accessed. Public so AppCache code can
-  // call this directly.
-  void OnAppCacheAccessed(const GURL& manifest_url, bool blocked_by_policy);
-
   void OnServiceWorkerAccessed(RenderFrameHost* render_frame_host,
                                const GURL& scope,
                                AllowServiceWorkerResult allowed);
