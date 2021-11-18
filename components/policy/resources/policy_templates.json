@@ -2077,15 +2077,15 @@
       'items': [
         {
           'value': True,
-          'caption': 'History clusters will be visible at chrome://history/journeys.',
+          'caption': 'Journeys will be visible at chrome://history/journeys.',
         },
         {
           'value': False,
-          'caption': 'History clusters will not be visible at chrome://history/journeys.',
+          'caption': 'Journeys will not be visible at chrome://history/journeys.',
         },
         {
           'value': None,
-          'caption': 'History clusters will be visible at chrome://history/journeys by default and users can change the visibility of history clusters.',
+          'caption': 'Journeys will be visible at chrome://history/journeys by default and users can change the visibility of Journeys.',
         },
       ],
       'example_value': False,
@@ -2100,7 +2100,7 @@
 
       If the policy is set to Disabled, Journeys will not be visible at chrome://history/journeys.
 
-      If the policy is left unset, Journeys will be visible at chrome://history/journeys by default and users can change the visibility of history clusters.
+      If the policy is left unset, Journeys will be visible at chrome://history/journeys by default and users can change the visibility of Journeys.
       ''',
     },
     {
