@@ -190,6 +190,16 @@ export class SettingsPersonalizationOptionsElement extends
   }
   // </if>
 
+  private showUrlCollectionToggle_(): boolean {
+    // <if expr="chromeos">
+    if (loadTimeData.getBoolean('syncSettingsCategorizationEnabled')) {
+      // Should be hidden in OS settings.
+      return !loadTimeData.getBoolean('isOSSettings');
+    }
+    // </if>
+    return true;
+  }
+
   // <if expr="_google_chrome">
   private onUseSpellingServiceToggle_(event: Event) {
     // If turning on using the spelling service, automatically turn on
