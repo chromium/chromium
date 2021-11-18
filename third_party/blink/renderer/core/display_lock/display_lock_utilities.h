@@ -83,6 +83,8 @@ class CORE_EXPORT DisplayLockUtilities {
       // created in the ancestor chain of this chain's node.
       void AddForcedUpdateScopeForContext(DisplayLockContext*);
 
+      void EnsureMinimumForcedPhase(DisplayLockContext::ForcedPhase phase);
+
       void Destroy();
 
       void Trace(Visitor* visitor) const {

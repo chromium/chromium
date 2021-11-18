@@ -108,6 +108,12 @@ class CORE_EXPORT DisplayLockDocumentState final
       DisplayLockUtilities::ScopedForcedUpdate::Impl* chain);
   void EndForcedScope(DisplayLockUtilities::ScopedForcedUpdate::Impl* chain);
 
+  // This is called to make sure that any of the currently forced locks allow at
+  // least the specified phase for updates. This is used when a scope is
+  // created, for example, to update StyleAndLayoutTree, but then is upgraded to
+  // update Layout instead.
+  void EnsureMinimumForcedPhase(DisplayLockContext::ForcedPhase phase);
+
   // Forces the lock on the given element, if it isn't yet forced but appears on
   // the ancestor chain for the forced element (which was set via
   // `BeginNodeForcedScope()`).

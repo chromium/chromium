@@ -69,6 +69,8 @@ class CORE_EXPORT DisplayLockContext final
     : public GarbageCollected<DisplayLockContext>,
       public LocalFrameView::LifecycleNotificationObserver {
  public:
+  // Note the order of the phases matters. Each phase implies all previous ones
+  // as well.
   enum class ForcedPhase { kStyleAndLayoutTree, kLayout, kPrePaint };
 
   explicit DisplayLockContext(Element*);

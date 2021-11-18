@@ -265,6 +265,14 @@ void DisplayLockDocumentState::EndForcedScope(
   NOTREACHED();
 }
 
+void DisplayLockDocumentState::EnsureMinimumForcedPhase(
+    DisplayLockContext::ForcedPhase phase) {
+  for (auto& info : forced_node_infos_)
+    info.Chain()->EnsureMinimumForcedPhase(phase);
+  for (auto& info : forced_range_infos_)
+    info.Chain()->EnsureMinimumForcedPhase(phase);
+}
+
 void DisplayLockDocumentState::ForceLockIfNeeded(Element* element) {
   DCHECK(element->GetDisplayLockContext());
   for (ForcedNodeInfo& info : forced_node_infos_)

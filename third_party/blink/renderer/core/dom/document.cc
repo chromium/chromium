@@ -2017,6 +2017,10 @@ void Document::UpdateStyleAndLayoutTree() {
 
   if (HTMLFrameOwnerElement* owner = LocalOwner()) {
     if (GetStyleEngine().HasViewportDependentMediaQueries()) {
+      owner->GetDocument()
+          .GetDisplayLockDocumentState()
+          .EnsureMinimumForcedPhase(DisplayLockContext::ForcedPhase::kLayout);
+
       // TODO(andruud): Provide a better reason.
       owner->GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kUnknown);
     } else {
@@ -2026,9 +2030,14 @@ void Document::UpdateStyleAndLayoutTree() {
 
   CSSAnimationUpdateScope animation_update_scope(*this);
 
+  // This call has to happen even if UpdateStyleAndLayout below will be called.
+  // In fact, it may set the `UsesContainerQueries()` flag.
   UpdateStyleAndLayoutTreeForThisDocument();
 
   if (GetStyleEngine().UsesContainerQueries()) {
+    GetDisplayLockDocumentState().EnsureMinimumForcedPhase(
+        DisplayLockContext::ForcedPhase::kLayout);
+
     // TODO(crbug.com/1145970): Provide a better reason.
     UpdateStyleAndLayout(DocumentUpdateReason::kUnknown);
   }

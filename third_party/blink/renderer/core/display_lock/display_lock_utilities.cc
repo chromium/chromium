@@ -365,6 +365,18 @@ DisplayLockUtilities::ScopedForcedUpdate::Impl::Impl(
   }
 }
 
+void DisplayLockUtilities::ScopedForcedUpdate::Impl::EnsureMinimumForcedPhase(
+    DisplayLockContext::ForcedPhase phase) {
+  // Our `phase_` is already at least as permissive as `phase`.
+  if (static_cast<int>(phase_) >= static_cast<int>(phase))
+    return;
+  for (auto context : forced_context_set_) {
+    context->NotifyForcedUpdateScopeEnded(phase_);
+    context->NotifyForcedUpdateScopeStarted(phase);
+  }
+  phase_ = phase;
+}
+
 void DisplayLockUtilities::ScopedForcedUpdate::Impl::Destroy() {
   if (!node_)
     return;
