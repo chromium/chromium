@@ -174,7 +174,20 @@ void WebAppMetrics::OnTabStripModelChanged(
     const TabStripSelectionChange& selection) {
   // Process deselection, removal, then selection in-order so we have a
   // consistent view of selected and last-interacted tabs.
-  UpdateUkmData(selection.old_contents, TabSwitching::kFrom);
+  TabSwitching initial_mode = TabSwitching::kFrom;
+  // Foreground usage duration should be counted when the web app is being
+  // closed, despite IsInAppWindow returning false at this point.
+  if (change.type() == TabStripModelChange::kRemoved &&
+      tab_strip_model->empty()) {
+    auto iter = base::ranges::find_if(
+        *BrowserList::GetInstance(), [&tab_strip_model](Browser* item) {
+          return item->tab_strip_model() == tab_strip_model;
+        });
+    if (iter != BrowserList::GetInstance()->end() &&
+        (*iter)->type() == Browser::TYPE_APP)
+      initial_mode = TabSwitching::kForegroundClosing;
+  }
+  UpdateUkmData(selection.old_contents, initial_mode);
 
   foreground_web_contents_ = selection.new_contents;
   // Newly-selected foreground contents should not be going away.
@@ -332,13 +345,15 @@ void WebAppMetrics::UpdateUkmData(WebContents* web_contents,
         /*ignore_existing_installations=*/true);
     // Record usage duration and session counts only for installed web apps that
     // are currently open in a window.
-    if (provider->ui_manager().IsInAppWindow(web_contents)) {
+    if (provider->ui_manager().IsInAppWindow(web_contents) ||
+        mode == TabSwitching::kForegroundClosing) {
       base::Time now = base::Time::Now();
       if (app_last_interacted_time_.contains(app_id)) {
         base::TimeDelta delta = now - app_last_interacted_time_[app_id];
         if (delta < max_valid_session_delta_) {
           switch (mode) {
             case TabSwitching::kFrom:
+            case TabSwitching::kForegroundClosing:
               features.foreground_duration = delta;
               break;
             case TabSwitching::kTo:

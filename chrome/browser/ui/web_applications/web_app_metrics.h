@@ -78,7 +78,12 @@ class WebAppMetrics : public KeyedService,
 
  private:
   void CountUserInstalledApps();
-  enum class TabSwitching { kFrom, kTo, kBackgroundClosing };
+  enum class TabSwitching {
+    kFrom,
+    kTo,
+    kBackgroundClosing,
+    kForegroundClosing
+  };
   void UpdateUkmData(content::WebContents* web_contents, TabSwitching mode);
 
   // Calculate number of user installed apps once on start to avoid cpu costs
