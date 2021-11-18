@@ -22,7 +22,6 @@ class SystemExtensionsSandboxedUnpacker {
   ~SystemExtensionsSandboxedUnpacker();
 
   enum class Status {
-    kOk,
     // This is used for the default constructor of `StatusOrSystemExtension`.
     kUnknown,
     kFailedDirectoryMissing,
