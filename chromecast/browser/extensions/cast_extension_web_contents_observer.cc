@@ -8,7 +8,9 @@ namespace extensions {
 
 CastExtensionWebContentsObserver::CastExtensionWebContentsObserver(
     content::WebContents* web_contents)
-    : ExtensionWebContentsObserver(web_contents) {}
+    : ExtensionWebContentsObserver(web_contents),
+      content::WebContentsUserData<CastExtensionWebContentsObserver>(
+          *web_contents) {}
 
 CastExtensionWebContentsObserver::~CastExtensionWebContentsObserver() {}
 
