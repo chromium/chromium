@@ -117,6 +117,7 @@ build_recipe(
 
 build_recipe(
     name = "recipe:branch_configuration/tester",
+    use_python3 = True,
 )
 
 build_recipe(
