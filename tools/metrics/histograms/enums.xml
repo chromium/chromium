@@ -11585,6 +11585,7 @@ not CDM specific. See media/base/cdm_promise.h. -->
   <int value="12" label="Ignored Windows Rev Checking Enabled"/>
   <int value="13" label="Ignored Authority Invalid"/>
   <int value="14" label="Ignored Known Root"/>
+  <int value="15" label="Ignored Both Errors Platform Symantec"/>
 </enum>
 
 <enum name="ChangePasswordUrlFetchResult">
