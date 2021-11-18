@@ -17,6 +17,7 @@
           ws.onopen = () => {
             startTime = performance.now();
             ws.send('x'.repeat(2000));
+            ws.send('x'.repeat(2000));
           };
           ws.onmessage = () => { resolve(performance.now() - startTime); }
           ws.onerror = () => log += 'onerror ';

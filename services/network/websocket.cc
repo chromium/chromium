@@ -273,6 +273,10 @@ void WebSocket::WebSocketEventHandler::OnDataFrame(
   if (payload.size() > 0) {
     impl_->pending_data_frames_.push(payload);
   }
+  if (impl_->incoming_frame_interceptor_ &&
+      impl_->incoming_frame_interceptor_->IsFrameStarted()) {
+    return;
+  }
   impl_->SendPendingDataFrames();
 }
 
@@ -511,8 +515,11 @@ void WebSocket::SendMessage(mojom::WebSocketMessageType type,
 
   // Safe if ReadAndSendFromDataPipe() deletes |this| because this method is
   // only called from mojo.
-  if (!blocked_on_websocket_channel_)
+  if (!blocked_on_websocket_channel_ &&
+      (!outgoing_frame_interceptor_ ||
+       !outgoing_frame_interceptor_->IsFrameStarted())) {
     ReadAndSendFromDataPipe();
+  }
 }
 
 void WebSocket::StartReceiving() {
@@ -733,7 +740,10 @@ void WebSocket::OnReadable(MojoResult result,
 
   // Safe if ReadAndSendFromDataPipe() deletes |this| because this method is
   // only called from mojo.
-  ReadAndSendFromDataPipe();
+  if (!outgoing_frame_interceptor_ ||
+      !outgoing_frame_interceptor_->IsFrameStarted()) {
+    ReadAndSendFromDataPipe();
+  }
 }
 
 void WebSocket::ReadAndSendFromDataPipe() {

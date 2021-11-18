@@ -44,13 +44,13 @@ WebSocketInterceptor::InterceptResult WebSocketInterceptor::Intercept(
   if (!throttling_interceptor)
     return kContinue;
 
-  frame_started_ = true;
   throttling_interceptor->SetSuspendWhenOffline(true);
   int start_throttle_result = throttling_interceptor->StartThrottle(
       /*result=*/0, size, /*send_end=*/base::TimeTicks(), /*start=*/false,
       /*is_upload=*/direction_ == kOutgoing, throttle_callback_);
   if (start_throttle_result == net::ERR_IO_PENDING) {
     pending_callback_ = std::move(retry_callback);
+    frame_started_ = true;
     return kShouldWait;
   }
   return kContinue;
