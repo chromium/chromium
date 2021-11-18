@@ -560,6 +560,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerImpl
       const std::tuple<int64_t, int64_t>& total_and_available);
 
   void DidDatabaseWork(bool success);
+  void OnComplete(QuotaError result);
 
   void DidGetBucket(base::OnceCallback<void(QuotaErrorOr<BucketInfo>)> callback,
                     QuotaErrorOr<BucketInfo> result);

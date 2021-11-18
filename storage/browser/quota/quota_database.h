@@ -182,11 +182,11 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaDatabase {
   bool GetBucketInfo(BucketId bucket_id, BucketTableEntry* entry);
 
   // Removes all buckets for `storage_key` with `type`.
-  bool DeleteStorageKeyInfo(const blink::StorageKey& storage_key,
-                            blink::mojom::StorageType type);
+  QuotaError DeleteStorageKeyInfo(const blink::StorageKey& storage_key,
+                                  blink::mojom::StorageType type);
 
   // Deletes the specified bucket.
-  bool DeleteBucketInfo(BucketId bucket_id);
+  QuotaError DeleteBucketInfo(BucketId bucket_id);
 
   // Returns the BucketLocator for the least recently used bucket. Will exclude
   // buckets with ids in `bucket_exceptions` and origins that have the special

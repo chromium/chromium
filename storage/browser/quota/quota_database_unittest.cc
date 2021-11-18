@@ -593,7 +593,7 @@ TEST_P(QuotaDatabaseTest, BucketLastAccessTimeLRU) {
             QuotaError::kNone);
 
   // Delete storage_key/type last access time information.
-  EXPECT_TRUE(db.DeleteBucketInfo(bucket3.bucket_id));
+  EXPECT_EQ(db.DeleteBucketInfo(bucket3.bucket_id), QuotaError::kNone);
 
   // Querying again to see if the deletion has worked.
   bucket_exceptions.clear();

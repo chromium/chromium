@@ -182,16 +182,16 @@ QuotaErrorOr<BucketLocator> GetLRUBucketOnDBThread(
   return database->GetLRUBucket(type, bucket_exceptions, policy);
 }
 
-bool DeleteStorageKeyInfoOnDBThread(const StorageKey& storage_key,
-                                    StorageType type,
-                                    QuotaDatabase* database) {
+QuotaError DeleteStorageKeyInfoOnDBThread(const StorageKey& storage_key,
+                                          StorageType type,
+                                          QuotaDatabase* database) {
   DCHECK(database);
   return database->DeleteStorageKeyInfo(storage_key, type);
 }
 
-bool DeleteBucketInfoOnDBThread(BucketId bucket_id,
-                                bool is_eviction,
-                                QuotaDatabase* database) {
+QuotaError DeleteBucketInfoOnDBThread(BucketId bucket_id,
+                                      bool is_eviction,
+                                      QuotaDatabase* database) {
   DCHECK(database);
 
   if (is_eviction) {
@@ -224,42 +224,36 @@ bool BootstrapDatabaseOnDBThread(std::set<StorageKey> storage_keys,
   return false;
 }
 
-bool UpdateAccessTimeOnDBThread(const StorageKey& storage_key,
-                                StorageType type,
-                                base::Time accessed_time,
-                                QuotaDatabase* database) {
-  DCHECK(database);
-  QuotaError result =
-      database->SetStorageKeyLastAccessTime(storage_key, type, accessed_time);
-  return result != QuotaError::kDatabaseError;
-}
-
-bool UpdateBucketAccessTimeOnDBThread(BucketId bucket_id,
+QuotaError UpdateAccessTimeOnDBThread(const StorageKey& storage_key,
+                                      StorageType type,
                                       base::Time accessed_time,
                                       QuotaDatabase* database) {
   DCHECK(database);
-  QuotaError result =
-      database->SetBucketLastAccessTime(bucket_id, accessed_time);
-  return result != QuotaError::kDatabaseError;
+  return database->SetStorageKeyLastAccessTime(storage_key, type,
+                                               accessed_time);
 }
 
-bool UpdateModifiedTimeOnDBThread(const StorageKey& storage_key,
-                                  StorageType type,
-                                  base::Time modified_time,
-                                  QuotaDatabase* database) {
+QuotaError UpdateBucketAccessTimeOnDBThread(BucketId bucket_id,
+                                            base::Time accessed_time,
+                                            QuotaDatabase* database) {
   DCHECK(database);
-  QuotaError result =
-      database->SetStorageKeyLastModifiedTime(storage_key, type, modified_time);
-  return result != QuotaError::kDatabaseError;
+  return database->SetBucketLastAccessTime(bucket_id, accessed_time);
 }
 
-bool UpdateBucketModifiedTimeOnDBThread(BucketId bucket_id,
+QuotaError UpdateModifiedTimeOnDBThread(const StorageKey& storage_key,
+                                        StorageType type,
                                         base::Time modified_time,
                                         QuotaDatabase* database) {
   DCHECK(database);
-  QuotaError result =
-      database->SetBucketLastModifiedTime(bucket_id, modified_time);
-  return result != QuotaError::kDatabaseError;
+  return database->SetStorageKeyLastModifiedTime(storage_key, type,
+                                                 modified_time);
+}
+
+QuotaError UpdateBucketModifiedTimeOnDBThread(BucketId bucket_id,
+                                              base::Time modified_time,
+                                              QuotaDatabase* database) {
+  DCHECK(database);
+  return database->SetBucketLastModifiedTime(bucket_id, modified_time);
 }
 
 void DidGetUsageAndQuotaStripBreakdown(
@@ -1633,10 +1627,9 @@ void QuotaManagerImpl::NotifyStorageAccessed(const StorageKey& storage_key,
   if (db_disabled_)
     return;
   PostTaskAndReplyWithResultForDBThread(
-      FROM_HERE,
       base::BindOnce(&UpdateAccessTimeOnDBThread, storage_key, type,
                      access_time),
-      base::BindOnce(&QuotaManagerImpl::DidDatabaseWork,
+      base::BindOnce(&QuotaManagerImpl::OnComplete,
                      weak_factory_.GetWeakPtr()));
 }
 
@@ -1653,9 +1646,8 @@ void QuotaManagerImpl::NotifyBucketAccessed(BucketId bucket_id,
   if (db_disabled_)
     return;
   PostTaskAndReplyWithResultForDBThread(
-      FROM_HERE,
       base::BindOnce(&UpdateBucketAccessTimeOnDBThread, bucket_id, access_time),
-      base::BindOnce(&QuotaManagerImpl::DidDatabaseWork,
+      base::BindOnce(&QuotaManagerImpl::OnComplete,
                      weak_factory_.GetWeakPtr()));
 }
 
@@ -1677,10 +1669,9 @@ void QuotaManagerImpl::NotifyStorageModified(QuotaClientType client_id,
     return;
 
   PostTaskAndReplyWithResultForDBThread(
-      FROM_HERE,
       base::BindOnce(&UpdateModifiedTimeOnDBThread, storage_key, type,
                      modification_time),
-      base::BindOnce(&QuotaManagerImpl::DidDatabaseWork,
+      base::BindOnce(&QuotaManagerImpl::OnComplete,
                      weak_factory_.GetWeakPtr()));
 }
 
@@ -1702,10 +1693,9 @@ void QuotaManagerImpl::NotifyBucketModified(QuotaClientType client_id,
     return;
 
   PostTaskAndReplyWithResultForDBThread(
-      FROM_HERE,
       base::BindOnce(&UpdateBucketModifiedTimeOnDBThread, bucket_id,
                      modification_time),
-      base::BindOnce(&QuotaManagerImpl::DidDatabaseWork,
+      base::BindOnce(&QuotaManagerImpl::OnComplete,
                      weak_factory_.GetWeakPtr()));
 }
 
@@ -1750,9 +1740,8 @@ void QuotaManagerImpl::DeleteStorageKeyFromDatabase(
     return;
 
   PostTaskAndReplyWithResultForDBThread(
-      FROM_HERE,
       base::BindOnce(&DeleteStorageKeyInfoOnDBThread, storage_key, type),
-      base::BindOnce(&QuotaManagerImpl::DidDatabaseWork,
+      base::BindOnce(&QuotaManagerImpl::OnComplete,
                      weak_factory_.GetWeakPtr()));
 }
 
@@ -1764,9 +1753,8 @@ void QuotaManagerImpl::DeleteBucketFromDatabase(BucketId bucket_id,
     return;
 
   PostTaskAndReplyWithResultForDBThread(
-      FROM_HERE,
       base::BindOnce(&DeleteBucketInfoOnDBThread, bucket_id, is_eviction),
-      base::BindOnce(&QuotaManagerImpl::DidDatabaseWork,
+      base::BindOnce(&QuotaManagerImpl::OnComplete,
                      weak_factory_.GetWeakPtr()));
 }
 
@@ -2235,6 +2223,11 @@ void QuotaManagerImpl::DidGetStorageCapacity(
 void QuotaManagerImpl::DidDatabaseWork(bool success) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   db_disabled_ = !success;
+}
+
+void QuotaManagerImpl::OnComplete(QuotaError result) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DidDatabaseWork(result != QuotaError::kDatabaseError);
 }
 
 void QuotaManagerImpl::DidGetBucket(

@@ -547,11 +547,12 @@ QuotaError QuotaDatabase::DeleteHostQuota(const std::string& host,
   return QuotaError::kNone;
 }
 
-bool QuotaDatabase::DeleteStorageKeyInfo(const StorageKey& storage_key,
-                                         StorageType type) {
+QuotaError QuotaDatabase::DeleteStorageKeyInfo(const StorageKey& storage_key,
+                                               StorageType type) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (EnsureOpened(EnsureOpenedMode::kFailIfNotFound) != QuotaError::kNone)
-    return false;
+  QuotaError open_error = EnsureOpened(EnsureOpenedMode::kFailIfNotFound);
+  if (open_error != QuotaError::kNone)
+    return open_error;
 
   static constexpr char kSql[] =
       "DELETE FROM buckets WHERE storage_key = ? AND type = ?";
@@ -560,27 +561,28 @@ bool QuotaDatabase::DeleteStorageKeyInfo(const StorageKey& storage_key,
   statement.BindInt(1, static_cast<int>(type));
 
   if (!statement.Run())
-    return false;
+    return QuotaError::kDatabaseError;
 
   ScheduleCommit();
-  return true;
+  return QuotaError::kNone;
 }
 
-bool QuotaDatabase::DeleteBucketInfo(BucketId bucket_id) {
+QuotaError QuotaDatabase::DeleteBucketInfo(BucketId bucket_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!bucket_id.is_null());
-  if (EnsureOpened(EnsureOpenedMode::kFailIfNotFound) != QuotaError::kNone)
-    return false;
+  QuotaError open_error = EnsureOpened(EnsureOpenedMode::kFailIfNotFound);
+  if (open_error != QuotaError::kNone)
+    return open_error;
 
   static constexpr char kSql[] = "DELETE FROM buckets WHERE id = ?";
   sql::Statement statement(db_->GetCachedStatement(SQL_FROM_HERE, kSql));
   statement.BindInt64(0, bucket_id.value());
 
   if (!statement.Run())
-    return false;
+    return QuotaError::kDatabaseError;
 
   ScheduleCommit();
-  return true;
+  return QuotaError::kNone;
 }
 
 QuotaErrorOr<BucketLocator> QuotaDatabase::GetLRUBucket(
