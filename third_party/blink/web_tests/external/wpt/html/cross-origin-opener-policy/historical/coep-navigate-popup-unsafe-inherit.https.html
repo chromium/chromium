@@ -1,10 +1,15 @@
 <!doctype html>
 <title>Historical: Cross-Origin-Opener-Policy and Cross-Origin-Embedder-Policy: a navigating popup</title>
 <meta name=timeout content=long>
+<meta name=variant content=?0-0>
+<meta name=variant content=?1-1>
+<meta name=variant content=?2-2>
+<meta name=variant content=?3-3>
 <script src=/resources/testharness.js></script>
 <script src=/resources/testharnessreport.js></script>
 <script src="/common/get-host-info.sub.js"></script>
 <script src="../resources/common.js"></script>
+<script src="/common/subset-tests.js"></script>
 <script>
 [
   {
@@ -19,8 +24,13 @@
     "coep": "",
     "opener": false
   }
-].forEach(variant => {
-  ["same-origin", "same-site"].forEach(site => {
+].forEach((variant, i) => {
+  ["same-origin", "same-site"].forEach((site, j) => {
+
+    // Only run specified variants
+    if (!shouldRunSubTest(2*i + j)) {
+      return;
+    }
     const title = `Popup navigating to ${site} with ${variant.title}`;
     const channel = title.replace(/ /g,"-");
     const navigateHost = site === "same-origin" ? SAME_ORIGIN : SAME_SITE;
