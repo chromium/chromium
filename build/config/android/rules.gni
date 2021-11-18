@@ -3707,7 +3707,7 @@ if (enable_java_templates) {
                                "fake_modules",
                                "ignore_all_data_deps",
                                "modules",
-                               "proguard_enabled",
+                               "proguard_mapping_path",
                                "public_deps",
                                "use_webview_provider",
                              ])
@@ -3868,13 +3868,15 @@ if (enable_java_templates) {
                                "ignore_all_data_deps",
                                "modules",
                                "never_incremental",
-                               "proguard_enabled",
-                               "proguard_enable_obfuscation",
                                "public_deps",
                                "use_webview_provider",
                              ])
       android_test_apk = ":${_apk_target_name}"
       android_test_apk_name = invoker.apk_name
+      if (defined(invoker.proguard_enabled) && invoker.proguard_enabled) {
+        proguard_mapping_path =
+            "$root_build_dir/apks/${invoker.apk_name}.apk.mapping"
+      }
     }
   }
 

@@ -468,9 +468,9 @@ def AddInstrumentationTestOptions(parser):
       dest='set_asserts', action='store_false', default=True,
       help='Removes the dalvik.vm.enableassertions property')
   parser.add_argument(
-      '--enable-java-deobfuscation',
-      action='store_true',
-      help='Deobfuscate java stack traces in test output and logcat.')
+      '--proguard-mapping-path',
+      help='.mapping file to use to Deobfuscate java stack traces in test '
+      'output and logcat.')
   parser.add_argument(
       '-E', '--exclude-annotation',
       dest='exclude_annotation_str',

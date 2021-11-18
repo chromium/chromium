@@ -654,7 +654,7 @@ class InstrumentationTestInstance(test_instance.TestInstance):
     self._store_tombstones = False
     self._symbolizer = None
     self._enable_breakpad_dump = False
-    self._enable_java_deobfuscation = False
+    self._proguard_mapping_path = None
     self._deobfuscator = None
     self._initializeLogAttributes(args)
 
@@ -851,7 +851,7 @@ class InstrumentationTestInstance(test_instance.TestInstance):
 
   def _initializeLogAttributes(self, args):
     self._enable_breakpad_dump = args.enable_breakpad_dump
-    self._enable_java_deobfuscation = args.enable_java_deobfuscation
+    self._proguard_mapping_path = args.proguard_mapping_path
     self._store_tombstones = args.store_tombstones
     self._symbolizer = stack_symbolizer.Symbolizer(
         self.apk_under_test.path if self.apk_under_test else None)
@@ -1054,9 +1054,9 @@ class InstrumentationTestInstance(test_instance.TestInstance):
   def SetUp(self):
     self._data_deps.extend(
         self._data_deps_delegate(self._runtime_deps_path))
-    if self._enable_java_deobfuscation:
+    if self._proguard_mapping_path:
       self._deobfuscator = deobfuscator.DeobfuscatorPool(
-          self.test_apk.path + '.mapping')
+          self._proguard_mapping_path)
 
   def GetDataDependencies(self):
     return self._data_deps

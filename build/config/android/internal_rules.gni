@@ -893,9 +893,14 @@ template("test_runner_script") {
           "@WrappedPath(@FileArg($_rebased_build_config:deps_info:apk_path))",
         ]
       }
-      if (defined(invoker.proguard_enabled) && invoker.proguard_enabled &&
-          !_incremental_apk) {
-        executable_args += [ "--enable-java-deobfuscation" ]
+      if (defined(invoker.proguard_mapping_path) && !_incremental_apk) {
+        data += [ invoker.proguard_mapping_path ]
+        _rebased_mapping_path =
+            rebase_path(invoker.proguard_mapping_path, root_build_dir)
+        executable_args += [
+          "--proguard-mapping-path",
+          "@WrappedPath($_rebased_mapping_path)",
+        ]
       }
       if (use_jacoco_coverage) {
         # Set a default coverage output directory (can be overridden by user
