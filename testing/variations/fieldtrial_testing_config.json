@@ -8256,35 +8256,6 @@
             ]
         }
     ],
-    "V8ConcurrentInlining": [
-        {
-            "platforms": [
-                "android",
-                "android_weblayer",
-                "android_webview",
-                "ios",
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "V8ConcurrentInlining"
-                    ]
-                },
-                {
-                    "name": "Disabled",
-                    "disable_features": [
-                        "V8ConcurrentInlining"
-                    ]
-                }
-            ]
-        }
-    ],
     "V8FastApiCalls": [
         {
             "platforms": [
