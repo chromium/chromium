@@ -209,9 +209,12 @@ def make_handler_template_function(cg_context):
     bind_local_vars(body, cg_context)
 
     body.extend([
-        T("static const void* kTemplateKey = &kTemplateKey;"),
+        T("// Make `template_key` unique for `FindV8Template`."),
+        T("static const char kTemplateKeyTag = 0;"),
+        T("const void* const template_key = &kTemplateKeyTag;"),
+        EmptyNode(),
         T("v8::Local<v8::Template> v8_template = "
-          "${per_isolate_data}->FindV8Template(${world}, kTemplateKey);"),
+          "${per_isolate_data}->FindV8Template(${world}, template_key);"),
         CxxLikelyIfNode(
             cond="!v8_template.IsEmpty()",
             body=T("return v8_template.As<v8::FunctionTemplate>();")),
@@ -245,7 +248,7 @@ def make_handler_template_function(cg_context):
     body.extend([
         EmptyNode(),
         T("${per_isolate_data}->AddV8Template("
-          "${world}, kTemplateKey, constructor_template);"),
+          "${world}, template_key, constructor_template);"),
         T("return constructor_template;"),
     ])
 
