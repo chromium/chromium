@@ -234,6 +234,20 @@ bool Vp9Decoder::Initialize() {
   return true;
 }
 
+void Vp9Decoder::RefreshReferenceSlots(const uint8_t refresh_frame_flags,
+                                       scoped_refptr<MmapedBuffer> buffer) {
+  const std::bitset<kVp9NumRefFrames> slots(refresh_frame_flags);
+
+  static_assert(kVp9NumRefFrames == sizeof(refresh_frame_flags) * CHAR_BIT,
+                "|refresh_frame_flags| size should not be larger than "
+                "|kVp9NumRefFrames|");
+
+  for (size_t i = 0; i < kVp9NumRefFrames; i++) {
+    if (slots[i])
+      ref_frames_[i] = buffer;
+  }
+}
+
 Vp9Parser::Result Vp9Decoder::ReadNextFrame(Vp9FrameHeader& vp9_frame_header,
                                             gfx::Size& size) {
   // TODO(jchinlee): reexamine this loop for cleanup.
@@ -264,10 +278,10 @@ Vp9Decoder::Result Vp9Decoder::DecodeNextFrame() {
   Vp9Parser::Result parser_res = ReadNextFrame(frame_hdr, size);
   switch (parser_res) {
     case Vp9Parser::kInvalidStream:
-      LOG_ASSERT(false) << "Failed to parse frame";
+      LOG_ASSERT(false) << "Failed to parse frame.";
       return Vp9Decoder::kError;
     case Vp9Parser::kAwaitingRefresh:
-      LOG_ASSERT(false) << "Unsupported parser return value";
+      LOG_ASSERT(false) << "Unsupported parser return value.";
       return Vp9Decoder::kError;
     case Vp9Parser::kEOStream:
       return Vp9Decoder::kEOStream;
@@ -345,6 +359,22 @@ Vp9Decoder::Result Vp9Decoder::DecodeNextFrame() {
   v4l2_frame_params.render_width_minus_1 = frame_hdr.render_width - 1;
   v4l2_frame_params.render_height_minus_1 = frame_hdr.render_height - 1;
 
+  constexpr uint64_t kInvalidSurface = std::numeric_limits<uint32_t>::max();
+
+  for (size_t i = 0; i < base::size(frame_hdr.ref_frame_idx); ++i) {
+    const auto idx = frame_hdr.ref_frame_idx[i];
+
+    LOG_ASSERT(idx < kVp9NumRefFrames) << "Invalid reference frame index.\n";
+
+    static_assert(
+        base::size(frame_hdr.ref_frame_idx) ==
+            base::size(v4l2_frame_params.refs),
+        "The number of reference frames in |Vp9FrameHeader| does not match "
+        "|v4l2_ctrl_vp9_frame_decode_params|. Fix |Vp9FrameHeader|.");
+
+    v4l2_frame_params.refs[i] =
+        ref_frames_[idx] ? ref_frames_[idx]->reference_id() : kInvalidSurface;
+  }
   // TODO(stevecho): fill in the rest of |v4l2_frame_params| fields.
   FillV4L2VP9QuantizationParams(frame_hdr.quant_params,
                                 &v4l2_frame_params.quant);
@@ -356,6 +386,8 @@ Vp9Decoder::Result Vp9Decoder::DecodeNextFrame() {
 
   FillV4L2VP9LoopFilterParams(lf_params, &v4l2_frame_params.lf);
   FillV4L2VP9SegmentationParams(segm_params, &v4l2_frame_params.seg);
+
+  // TODO(stevecho): call RefreshReferenceSlots() once decoded buffer is ready.
 
   return Vp9Decoder::kOk;
 }

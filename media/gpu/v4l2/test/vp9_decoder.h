@@ -55,11 +55,18 @@ class Vp9Decoder {
   Vp9Parser::Result ReadNextFrame(Vp9FrameHeader& vp9_frame_header,
                                   gfx::Size& size);
 
+  // Refreshes |ref_frames_| slots with the current |buffer|.
+  void RefreshReferenceSlots(const uint8_t refresh_frame_flags,
+                             scoped_refptr<MmapedBuffer> buffer);
+
   // Parser for the IVF stream to decode.
   const std::unique_ptr<IvfParser> ivf_parser_;
 
   // VP9-specific data.
   const std::unique_ptr<Vp9Parser> vp9_parser_;
+
+  // Reference frames currently in use.
+  std::array<scoped_refptr<MmapedBuffer>, kVp9NumRefFrames> ref_frames_;
 
   // Wrapper for V4L2 ioctl requests.
   const std::unique_ptr<V4L2IoctlShim> v4l2_ioctl_;

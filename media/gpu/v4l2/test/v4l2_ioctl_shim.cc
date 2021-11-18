@@ -83,6 +83,28 @@ void LogIoctlResult(int ret, int request_code) {
       << V4L2RequestCodeToString(request_code) << " succeeded.";
 }
 
+MmapedBuffer::MmapedBuffer(const base::PlatformFile ioctl_fd,
+                           const struct v4l2_buffer& v4l2_buffer)
+    : num_planes_(v4l2_buffer.length) {
+  for (uint32_t i = 0; i < num_planes_; ++i) {
+    void* start_addr =
+        mmap(NULL, v4l2_buffer.m.planes[i].length, PROT_READ | PROT_WRITE,
+             MAP_SHARED, ioctl_fd, v4l2_buffer.m.planes[i].m.mem_offset);
+
+    LOG_IF(FATAL, start_addr == MAP_FAILED)
+        << "Failed to mmap buffer of length(" << v4l2_buffer.m.planes[i].length
+        << ") and offset(" << std::hex << v4l2_buffer.m.planes[i].m.mem_offset
+        << ").";
+
+    mmaped_planes_.emplace_back(start_addr, v4l2_buffer.m.planes[i].length);
+  }
+}
+
+MmapedBuffer::~MmapedBuffer() {
+  for (const auto& plane : mmaped_planes_)
+    munmap(plane.start_addr, plane.length);
+}
+
 V4L2Queue::V4L2Queue(enum v4l2_buf_type type,
                      uint32_t fourcc,
                      const gfx::Size& size,
@@ -95,6 +117,12 @@ V4L2Queue::V4L2Queue(enum v4l2_buf_type type,
       memory_(memory) {}
 
 V4L2Queue::~V4L2Queue() = default;
+
+scoped_refptr<MmapedBuffer> V4L2Queue::GetBuffer(const size_t index) const {
+  DCHECK_LT(index, buffers_.size());
+
+  return buffers_[index];
+}
 
 V4L2IoctlShim::V4L2IoctlShim()
     : decode_fd_(kDecodeDevice,
@@ -119,7 +147,7 @@ bool V4L2IoctlShim::Ioctl(int request_code, T* argp) const {
 template <>
 bool V4L2IoctlShim::Ioctl(int request_code, struct v4l2_capability* cap) const {
   DCHECK_EQ(request_code, static_cast<int>(VIDIOC_QUERYCAP));
-  LOG_ASSERT(cap != nullptr) << "|cap| check failed.\n";
+  LOG_ASSERT(cap != nullptr) << "|cap| check failed.";
 
   const int ret = ioctl(decode_fd_.GetPlatformFile(), request_code, cap);
   LogIoctlResult(ret, request_code);
@@ -131,7 +159,7 @@ template <>
 bool V4L2IoctlShim::Ioctl(int request_code,
                           struct v4l2_fmtdesc* fmtdesc) const {
   DCHECK_EQ(request_code, static_cast<int>(VIDIOC_ENUM_FMT));
-  LOG_ASSERT(fmtdesc != nullptr) << "|fmtdesc| check failed.\n";
+  LOG_ASSERT(fmtdesc != nullptr) << "|fmtdesc| check failed.";
 
   const int ret = ioctl(decode_fd_.GetPlatformFile(), request_code, fmtdesc);
   LogIoctlResult(ret, request_code);
@@ -143,7 +171,7 @@ template <>
 bool V4L2IoctlShim::Ioctl(int request_code,
                           struct v4l2_frmsizeenum* frame_size) const {
   DCHECK_EQ(request_code, static_cast<int>(VIDIOC_ENUM_FRAMESIZES));
-  LOG_ASSERT(frame_size != nullptr) << "|frame_size| check failed.\n";
+  LOG_ASSERT(frame_size != nullptr) << "|frame_size| check failed.";
 
   const int ret = ioctl(decode_fd_.GetPlatformFile(), request_code, frame_size);
   LogIoctlResult(ret, request_code);
@@ -156,7 +184,7 @@ bool V4L2IoctlShim::Ioctl(int request_code, struct v4l2_format* fmt) const {
   DCHECK(request_code == static_cast<int>(VIDIOC_S_FMT) ||
          request_code == static_cast<int>(VIDIOC_G_FMT) ||
          request_code == static_cast<int>(VIDIOC_TRY_FMT));
-  LOG_ASSERT(fmt != nullptr) << "|fmt| check failed.\n";
+  LOG_ASSERT(fmt != nullptr) << "|fmt| check failed.";
 
   const int ret = ioctl(decode_fd_.GetPlatformFile(), request_code, fmt);
   LogIoctlResult(ret, request_code);
@@ -168,7 +196,7 @@ template <>
 bool V4L2IoctlShim::Ioctl(int request_code,
                           struct v4l2_requestbuffers* reqbuf) const {
   DCHECK_EQ(request_code, static_cast<int>(VIDIOC_REQBUFS));
-  LOG_ASSERT(reqbuf != nullptr) << "|reqbuf| check failed.\n";
+  LOG_ASSERT(reqbuf != nullptr) << "|reqbuf| check failed.";
 
   const int ret = ioctl(decode_fd_.GetPlatformFile(), request_code, reqbuf);
   LogIoctlResult(ret, request_code);
@@ -180,7 +208,7 @@ template <>
 bool V4L2IoctlShim::Ioctl(int request_code, struct v4l2_buffer* buffer) const {
   DCHECK(request_code == static_cast<int>(VIDIOC_QUERYBUF) ||
          request_code == static_cast<int>(VIDIOC_QBUF));
-  LOG_ASSERT(buffer != nullptr) << "|buffer| check failed.\n";
+  LOG_ASSERT(buffer != nullptr) << "|buffer| check failed.";
 
   const int ret = ioctl(decode_fd_.GetPlatformFile(), request_code, buffer);
   LogIoctlResult(ret, request_code);
@@ -192,7 +220,7 @@ template <>
 bool V4L2IoctlShim::Ioctl(int request_code, int* arg) const {
   DCHECK(request_code == static_cast<int>(VIDIOC_STREAMON) ||
          request_code == static_cast<int>(MEDIA_IOC_REQUEST_ALLOC));
-  LOG_ASSERT(arg != nullptr) << "|arg| check failed.\n";
+  LOG_ASSERT(arg != nullptr) << "|arg| check failed.";
 
   base::PlatformFile ioctl_fd;
 
@@ -292,7 +320,7 @@ bool V4L2IoctlShim::ReqBufs(const std::unique_ptr<V4L2Queue>& queue) const {
 bool V4L2IoctlShim::QBuf(const std::unique_ptr<V4L2Queue>& queue,
                          const uint32_t index) const {
   LOG_ASSERT(queue->memory() == V4L2_MEMORY_MMAP)
-      << "Only V4L2_MEMORY_MMAP is currently supported.\n";
+      << "Only V4L2_MEMORY_MMAP is currently supported.";
 
   struct v4l2_buffer v4l2_buffer;
   std::vector<v4l2_plane> planes(VIDEO_MAX_PLANES);
@@ -304,11 +332,11 @@ bool V4L2IoctlShim::QBuf(const std::unique_ptr<V4L2Queue>& queue,
   v4l2_buffer.m.planes = planes.data();
   v4l2_buffer.length = queue->num_planes();
 
-  MmapedBuffers buffers = queue->buffers();
+  scoped_refptr<MmapedBuffer> buffer = queue->GetBuffer(index);
 
   for (uint32_t i = 0; i < queue->num_planes(); ++i) {
-    v4l2_buffer.m.planes[i].length = buffers[index][i].length;
-    v4l2_buffer.m.planes[i].bytesused = buffers[index][i].length;
+    v4l2_buffer.m.planes[i].length = buffer->mmaped_planes()[i].length;
+    v4l2_buffer.m.planes[i].bytesused = buffer->mmaped_planes()[i].length;
     v4l2_buffer.m.planes[i].data_offset = 0;
   }
 
@@ -381,10 +409,12 @@ bool V4L2IoctlShim::VerifyCapabilities(uint32_t compressed_format,
 }
 
 bool V4L2IoctlShim::QueryAndMmapQueueBuffers(
-    const std::unique_ptr<V4L2Queue>& queue) const {
+    std::unique_ptr<V4L2Queue>& queue) const {
   DCHECK_EQ(queue->memory(), V4L2_MEMORY_MMAP);
 
   MmapedBuffers buffers;
+
+  constexpr size_t kTimeStampToNanoSecs = 1000;
 
   for (uint32_t i = 0; i < kRequestBufferCount; ++i) {
     struct v4l2_buffer v4l_buffer;
@@ -399,20 +429,21 @@ bool V4L2IoctlShim::QueryAndMmapQueueBuffers(
 
     DCHECK(Ioctl(VIDIOC_QUERYBUF, &v4l_buffer));
 
-    for (uint32_t j = 0; j < queue->num_planes(); ++j) {
-      buffers[i][j].length = v4l_buffer.m.planes[j].length;
-      buffers[i][j].start =
-          mmap(NULL, v4l_buffer.m.planes[j].length, PROT_READ | PROT_WRITE,
-               MAP_SHARED, decode_fd_.GetPlatformFile(),
-               v4l_buffer.m.planes[j].m.mem_offset);
-      if (buffers[i][j].start == MAP_FAILED) {
-        LOG(ERROR) << "Failed to mmap buffer of length("
-                   << v4l_buffer.m.planes[j].length << ") and offset("
-                   << std::hex << v4l_buffer.m.planes[j].m.mem_offset << ").";
+    buffers[i] = base::MakeRefCounted<MmapedBuffer>(
+        decode_fd_.GetPlatformFile(), v4l_buffer);
 
-        return false;
-      }
-    }
+    // Converts buffer ID to reference ID. Reference ID of a frame can be specified
+    // by converting its timestamp into nanoseconds. Buffer ID is used as timestamp
+    // |tv_usec| and |kTimeStampToNanoSecs = 1000| is multipied to the timestamp to
+    // get reference ID. v4l2_timeval_to_ns() is suggested to be used for timestamp
+    // to nanoseconds conversion.
+    // https://www.kernel.org/doc/html/v5.10/userspace-api/media/v4l/dev-stateless-decoder.html#buffer-management-while-decoding
+    // However, the main purpose of this conversion is to have unique reference IDs,
+    // so multiplying microseconds part of timestamp by 1000 to make it nanoseconds
+    // will be good enough for the purpose. This is also how it is implemented in
+    // v4l2 video decode accelerator tests.
+
+    buffers[i]->set_reference_id(i * kTimeStampToNanoSecs);
 
     queue->set_buffers(buffers);
   }

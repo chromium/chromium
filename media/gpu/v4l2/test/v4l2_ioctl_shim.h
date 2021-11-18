@@ -8,6 +8,7 @@
 #include <linux/videodev2.h>
 
 #include "base/files/memory_mapped_file.h"
+#include "base/memory/ref_counted.h"
 #include "media/filters/vp9_parser.h"
 
 namespace media {
@@ -16,15 +17,47 @@ namespace v4l2_test {
 
 constexpr size_t kRequestBufferCount = 8;
 
-// MmapedPlane maintains starting address and length for each plane
-// needed for MmapedBuffers.
-struct MmapedPlane {
-  void* start;
-  size_t length;
+// MmapedBuffer maintains |mmaped_planes_| for each buffer as well as
+// |reference_id_|. Reference ID is computed from buffer ID, which is an
+// index used for VIDIOC_REQBUFS ioctl call. Reference ID is needed to use
+// previously decoded frames from reference frames list.
+class MmapedBuffer : public base::RefCounted<MmapedBuffer> {
+ public:
+  MmapedBuffer(const base::PlatformFile decode_fd,
+               const struct v4l2_buffer& v4l2_buffer);
+  ~MmapedBuffer();
+
+  class MmapedPlane {
+   public:
+    void* start_addr;
+    size_t length;
+
+    MmapedPlane(void* start, size_t len) {
+      start_addr = start;
+      length = len;
+    }
+  };
+
+  using MmapedPlanes = std::vector<MmapedPlane>;
+
+  MmapedPlanes mmaped_planes() const { return mmaped_planes_; }
+
+  uint64_t reference_id() const { return reference_id_; }
+  void set_reference_id(uint64_t reference_id) { reference_id_ = reference_id; }
+
+ private:
+  friend class base::RefCounted<MmapedBuffer>;
+
+  MmapedBuffer(const MmapedBuffer&) = delete;
+  MmapedBuffer& operator=(const MmapedBuffer&) = delete;
+
+  MmapedPlanes mmaped_planes_;
+  const uint32_t num_planes_;
+  uint64_t reference_id_;
 };
 
-using MmapedPlanes = std::array<MmapedPlane, VIDEO_MAX_PLANES>;
-using MmapedBuffers = std::array<MmapedPlanes, kRequestBufferCount>;
+using MmapedBuffers =
+    std::array<scoped_refptr<MmapedBuffer>, kRequestBufferCount>;
 
 // V4L2Queue class maintains properties of a queue.
 class V4L2Queue {
@@ -39,13 +72,16 @@ class V4L2Queue {
   V4L2Queue& operator=(const V4L2Queue&) = delete;
   ~V4L2Queue();
 
+  // Retrieves a mmaped buffer for the given |index|, which is a decoded
+  // surface, from MmapedBuffers.
+  scoped_refptr<MmapedBuffer> GetBuffer(const size_t index) const;
+
   enum v4l2_buf_type type() const { return type_; }
   uint32_t fourcc() const { return fourcc_; }
   gfx::Size display_size() const { return display_size_; }
   enum v4l2_memory memory() const { return memory_; }
 
-  MmapedBuffers buffers() const { return buffers_; }
-  void set_buffers(const MmapedBuffers& buffers) { buffers_ = buffers; }
+  void set_buffers(MmapedBuffers& buffers) { buffers_ = buffers; }
 
   gfx::Size coded_size() const { return coded_size_; }
   void set_coded_size(gfx::Size coded_size) { coded_size_ = coded_size; }
@@ -127,7 +163,7 @@ class V4L2IoctlShim {
       WARN_UNUSED_RESULT;
 
   // Allocates buffers for the given |queue|.
-  bool QueryAndMmapQueueBuffers(const std::unique_ptr<V4L2Queue>& queue) const
+  bool QueryAndMmapQueueBuffers(std::unique_ptr<V4L2Queue>& queue) const
       WARN_UNUSED_RESULT;
 
  private:

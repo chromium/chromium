@@ -76,8 +76,7 @@ std::unique_ptr<Vp9Decoder> CreateDecoder(
 
   LOG_ASSERT(file_header.fourcc == v4l2_fourcc('V', 'P', '9', '0'))
       << "Codec " << media::FourccToString(file_header.fourcc)
-      << " not supported.\n"
-      << kUsageMsg;
+      << " not supported." << kUsageMsg;
 
   const auto driver_codec_fourcc = FileFourccToDriverFourcc(file_header.fourcc);
 
