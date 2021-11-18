@@ -61,6 +61,8 @@ public class StartupTabPreloader implements ProfileManager.Observer, DestroyObse
     private long mLoadDecisionMs;
     // Records whether a preload was triggered.
     boolean mTriggerPreload;
+    // Records whether a preloaded tab matched.
+    boolean mTabMatches;
 
     public static void failNextTabMatchForTesting() {
         sFailNextTabMatchForTesting = true;
@@ -99,10 +101,40 @@ public class StartupTabPreloader implements ProfileManager.Observer, DestroyObse
         long currentTimeMs = SystemClock.uptimeMillis();
         long triggerpointToFirstNavigationStartMs = currentTimeMs - mLoadDecisionMs;
 
+        // Note that we don't use recordDurationFromLoadDecisionIntoHistogram() here as this
+        // point is reached before tab matching occurs.
         String suffix = mTriggerPreload ? ".Load" : ".NoLoad";
         RecordHistogram.recordMediumTimesHistogram(
                 "Android.StartupTabPreloader.LoadDecisionToFirstNavigationStart" + suffix,
                 triggerpointToFirstNavigationStartMs);
+    }
+
+    @Override
+    public void onFirstVisibleContent() {
+        recordDurationFromLoadDecisionIntoHistogram(
+                "Android.StartupTabPreloader.LoadDecisionToFirstVisibleContent");
+    }
+
+    // Records the duration from the load decision to the current time into |histogram| (suffixed
+    // by the state of the tab preload and match decisions).
+    private void recordDurationFromLoadDecisionIntoHistogram(String histogram) {
+        if (mLoadDecisionMs == 0) return;
+
+        long currentTimeMs = SystemClock.uptimeMillis();
+        long triggerpointToCurrentTimeMs = currentTimeMs - mLoadDecisionMs;
+
+        String suffix = ".NoLoad";
+        if (mTriggerPreload) {
+            if (mTab != null) {
+                suffix = ".LoadPreMatch";
+            } else if (mTabMatches) {
+                suffix = ".LoadAndMatch";
+            } else {
+                suffix = ".LoadAndMismatch";
+            }
+        }
+
+        RecordHistogram.recordMediumTimesHistogram(histogram + suffix, triggerpointToCurrentTimeMs);
     }
 
     /**
@@ -116,16 +148,16 @@ public class StartupTabPreloader implements ProfileManager.Observer, DestroyObse
     public Tab takeTabIfMatchingOrDestroy(LoadUrlParams loadUrlParams, @TabLaunchType int type) {
         if (mTab == null) return null;
 
-        boolean tabMatches = type == mTab.getLaunchType()
+        mTabMatches = type == mTab.getLaunchType()
                 && doLoadUrlParamsMatchForWarmupManagerNavigation(mLoadUrlParams, loadUrlParams)
                 && !sFailNextTabMatchForTesting;
 
         sFailNextTabMatchForTesting = false;
 
         RecordHistogram.recordBooleanHistogram(
-                "Startup.Android.StartupTabPreloader.TabTaken", tabMatches);
+                "Startup.Android.StartupTabPreloader.TabTaken", mTabMatches);
 
-        if (!tabMatches) {
+        if (!mTabMatches) {
             mStartupMetricsTracker.onStartupTabPreloadDropped();
 
             mTab.destroy();

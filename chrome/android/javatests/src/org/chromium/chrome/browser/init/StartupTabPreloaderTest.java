@@ -56,6 +56,14 @@ public class StartupTabPreloaderTest {
             "Android.StartupTabPreloader.LoadDecisionToFirstNavigationStart.Load";
     private static final String PRELOAD_TRIGGER_TO_FIRST_NAVIGATION_START_NO_PRELOAD =
             "Android.StartupTabPreloader.LoadDecisionToFirstNavigationStart.NoLoad";
+    private static final String PRELOAD_TRIGGER_TO_FIRST_VISIBLE_CONTENT_PRELOAD_BEFORE_MATCH =
+            "Android.StartupTabPreloader.LoadDecisionToFirstVisibleContent.LoadPreMatch";
+    private static final String PRELOAD_TRIGGER_TO_FIRST_VISIBLE_CONTENT_PRELOAD_AND_TAKE =
+            "Android.StartupTabPreloader.LoadDecisionToFirstVisibleContent.LoadAndMatch";
+    private static final String PRELOAD_TRIGGER_TO_FIRST_VISIBLE_CONTENT_PRELOAD_AND_DROP =
+            "Android.StartupTabPreloader.LoadDecisionToFirstVisibleContent.LoadAndMismatch";
+    private static final String PRELOAD_TRIGGER_TO_FIRST_VISIBLE_CONTENT_NO_PRELOAD =
+            "Android.StartupTabPreloader.LoadDecisionToFirstVisibleContent.NoLoad";
 
     @Rule
     public ChromeTabbedActivityTestRule mActivityRule = new ChromeTabbedActivityTestRule();
@@ -117,6 +125,18 @@ public class StartupTabPreloaderTest {
         Assert.assertEquals(0,
                 RecordHistogram.getHistogramTotalCountForTesting(
                         PRELOAD_TRIGGER_TO_FIRST_NAVIGATION_START_NO_PRELOAD));
+        Assert.assertEquals(1,
+                RecordHistogram.getHistogramTotalCountForTesting(
+                        PRELOAD_TRIGGER_TO_FIRST_VISIBLE_CONTENT_PRELOAD_AND_TAKE));
+        Assert.assertEquals(0,
+                RecordHistogram.getHistogramTotalCountForTesting(
+                        PRELOAD_TRIGGER_TO_FIRST_VISIBLE_CONTENT_PRELOAD_AND_DROP));
+        Assert.assertEquals(0,
+                RecordHistogram.getHistogramTotalCountForTesting(
+                        PRELOAD_TRIGGER_TO_FIRST_VISIBLE_CONTENT_NO_PRELOAD));
+        Assert.assertEquals(0,
+                RecordHistogram.getHistogramTotalCountForTesting(
+                        PRELOAD_TRIGGER_TO_FIRST_VISIBLE_CONTENT_PRELOAD_BEFORE_MATCH));
     }
 
     @Test
@@ -160,6 +180,18 @@ public class StartupTabPreloaderTest {
         Assert.assertEquals(0,
                 RecordHistogram.getHistogramTotalCountForTesting(
                         PRELOAD_TRIGGER_TO_FIRST_NAVIGATION_START_NO_PRELOAD));
+        Assert.assertEquals(0,
+                RecordHistogram.getHistogramTotalCountForTesting(
+                        PRELOAD_TRIGGER_TO_FIRST_VISIBLE_CONTENT_PRELOAD_AND_TAKE));
+        Assert.assertEquals(1,
+                RecordHistogram.getHistogramTotalCountForTesting(
+                        PRELOAD_TRIGGER_TO_FIRST_VISIBLE_CONTENT_PRELOAD_AND_DROP));
+        Assert.assertEquals(0,
+                RecordHistogram.getHistogramTotalCountForTesting(
+                        PRELOAD_TRIGGER_TO_FIRST_VISIBLE_CONTENT_NO_PRELOAD));
+        Assert.assertEquals(0,
+                RecordHistogram.getHistogramTotalCountForTesting(
+                        PRELOAD_TRIGGER_TO_FIRST_VISIBLE_CONTENT_PRELOAD_BEFORE_MATCH));
     }
 
     @Test
@@ -201,6 +233,18 @@ public class StartupTabPreloaderTest {
         Assert.assertEquals(1,
                 RecordHistogram.getHistogramTotalCountForTesting(
                         PRELOAD_TRIGGER_TO_FIRST_NAVIGATION_START_NO_PRELOAD));
+        Assert.assertEquals(0,
+                RecordHistogram.getHistogramTotalCountForTesting(
+                        PRELOAD_TRIGGER_TO_FIRST_VISIBLE_CONTENT_PRELOAD_AND_TAKE));
+        Assert.assertEquals(0,
+                RecordHistogram.getHistogramTotalCountForTesting(
+                        PRELOAD_TRIGGER_TO_FIRST_VISIBLE_CONTENT_PRELOAD_AND_DROP));
+        Assert.assertEquals(1,
+                RecordHistogram.getHistogramTotalCountForTesting(
+                        PRELOAD_TRIGGER_TO_FIRST_VISIBLE_CONTENT_NO_PRELOAD));
+        Assert.assertEquals(0,
+                RecordHistogram.getHistogramTotalCountForTesting(
+                        PRELOAD_TRIGGER_TO_FIRST_VISIBLE_CONTENT_PRELOAD_BEFORE_MATCH));
     }
 
     @Test

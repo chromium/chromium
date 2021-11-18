@@ -34,6 +34,11 @@ public class ActivityTabStartupMetricsTracker {
          * once.
          */
         void onFirstNavigationStart();
+
+        /**
+         * Called when recording first visible content. This will be fired at most once.
+         */
+        void onFirstVisibleContent();
     }
 
     private static ObserverList<Observer> sObservers;
@@ -260,6 +265,10 @@ public class ActivityTabStartupMetricsTracker {
         mFirstVisibleContentRecorded = true;
         RecordHistogram.recordMediumTimesHistogram(
                 "Startup.Android.Cold.TimeToFirstVisibleContent", durationMs);
+
+        for (Observer observer : sObservers) {
+            observer.onFirstVisibleContent();
+        }
     }
 
     /**
