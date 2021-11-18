@@ -52,16 +52,16 @@ void ChromeSpeculationHostDelegate::ProcessCandidates(
   // extracts the candidate's URL.
   auto should_process_entry =
       [&](const blink::mojom::SpeculationCandidatePtr& candidate) {
+        bool is_same_origin =
+            url::Origin::Create(candidate->url).IsSameOriginWith(origin);
         bool private_prefetch =
             candidate->requires_anonymous_client_ip_when_cross_origin &&
-            !origin.IsSameOriginWith(url::Origin::Create(candidate->url));
-        bool same_origin_prefetch =
-            url::Origin::Create(candidate->url).IsSameOriginWith(origin);
+            !is_same_origin;
 
-        if (!private_prefetch && !same_origin_prefetch)
+        if (!private_prefetch && !is_same_origin)
           return false;
 
-        if (same_origin_prefetch) {
+        if (is_same_origin) {
           DCHECK(!private_prefetch);
           if (candidate->action ==
               blink::mojom::SpeculationAction::kPrefetchWithSubresources) {
