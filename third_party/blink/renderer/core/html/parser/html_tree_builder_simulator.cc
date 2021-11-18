@@ -112,7 +112,7 @@ static bool TokenExitsInSelect(const CompactHTMLToken& token) {
 HTMLTreeBuilderSimulator::HTMLTreeBuilderSimulator(
     const HTMLParserOptions& options)
     : options_(options), in_select_insertion_mode_(false) {
-  namespace_stack_.push_back(HTML);
+  namespace_stack_.push_back(kHtml);
 }
 
 HTMLTreeBuilderSimulator::State HTMLTreeBuilderSimulator::StateFor(
@@ -122,9 +122,9 @@ HTMLTreeBuilderSimulator::State HTMLTreeBuilderSimulator::StateFor(
   for (HTMLElementStack::ElementRecord* record =
            tree_builder->OpenElements()->TopRecord();
        record; record = record->Next()) {
-    Namespace current_namespace = HTML;
+    Namespace current_namespace = kHtml;
     if (record->NamespaceURI() == svg_names::kNamespaceURI)
-      current_namespace = SVG;
+      current_namespace = kSvg;
     else if (record->NamespaceURI() == mathml_names::kNamespaceURI)
       current_namespace = kMathML;
 
@@ -144,14 +144,14 @@ HTMLTreeBuilderSimulator::SimulatedToken HTMLTreeBuilderSimulator::Simulate(
   if (token.GetType() == HTMLToken::kStartTag) {
     const String& tag_name = token.Data();
     if (ThreadSafeMatch(tag_name, svg_names::kSVGTag))
-      namespace_stack_.push_back(SVG);
+      namespace_stack_.push_back(kSvg);
     if (ThreadSafeMatch(tag_name, mathml_names::kMathTag))
       namespace_stack_.push_back(kMathML);
     if (InForeignContent() && TokenExitsForeignContent(token))
       namespace_stack_.pop_back();
     if (IsHTMLIntegrationPointForStartTag(token) ||
         (namespace_stack_.back() == kMathML && TokenExitsMath(token))) {
-      namespace_stack_.push_back(HTML);
+      namespace_stack_.push_back(kHtml);
     } else if (!InForeignContent()) {
       // FIXME: This is just a copy of Tokenizer::updateStateFor which uses
       // threadSafeMatches.
@@ -232,13 +232,13 @@ HTMLTreeBuilderSimulator::SimulatedToken HTMLTreeBuilderSimulator::Simulate(
       (token.GetType() == HTMLToken::kStartTag && token.SelfClosing() &&
        InForeignContent())) {
     const String& tag_name = token.Data();
-    if ((namespace_stack_.back() == SVG &&
+    if ((namespace_stack_.back() == kSvg &&
          ThreadSafeMatch(tag_name, svg_names::kSVGTag)) ||
         (namespace_stack_.back() == kMathML &&
          ThreadSafeMatch(tag_name, mathml_names::kMathTag)) ||
         IsHTMLIntegrationPointForEndTag(token) ||
         (namespace_stack_.Contains(kMathML) &&
-         namespace_stack_.back() == HTML && TokenExitsMath(token))) {
+         namespace_stack_.back() == kHtml && TokenExitsMath(token))) {
       namespace_stack_.pop_back();
     }
     if (ThreadSafeMatch(tag_name, html_names::kScriptTag)) {
@@ -289,7 +289,7 @@ bool HTMLTreeBuilderSimulator::IsHTMLIntegrationPointForStartTag(
       return EqualIgnoringASCIICase(encoding->Value(), "text/html") ||
              EqualIgnoringASCIICase(encoding->Value(), "application/xhtml+xml");
     }
-  } else if (tokens_ns == SVG) {
+  } else if (tokens_ns == kSvg) {
     // FIXME: It's very fragile that we special case foreignObject here to be
     // ASCII case-insensitive.
     if (EqualIgnoringASCIICase(tag_name,
@@ -309,7 +309,7 @@ bool HTMLTreeBuilderSimulator::IsHTMLIntegrationPointForEndTag(
 
   // If it's inside an HTML integration point, the top namespace is
   // HTML, and its next namespace is not HTML.
-  if (namespace_stack_.back() != HTML)
+  if (namespace_stack_.back() != kHtml)
     return false;
   if (namespace_stack_.size() < 2)
     return false;
@@ -318,7 +318,7 @@ bool HTMLTreeBuilderSimulator::IsHTMLIntegrationPointForEndTag(
   const String& tag_name = token.Data();
   if (tokens_ns == kMathML)
     return ThreadSafeMatch(tag_name, mathml_names::kAnnotationXmlTag);
-  if (tokens_ns == SVG) {
+  if (tokens_ns == kSvg) {
     // FIXME: It's very fragile that we special case foreignObject here to be
     // ASCII case-insensitive.
     if (EqualIgnoringASCIICase(tag_name,

@@ -166,7 +166,7 @@ class CORE_EXPORT HTMLDocumentParser : public ScriptableDocumentParser,
                      ParserSynchronizationPolicy,
                      ParserPrefetchPolicy);
 
-  enum NextTokenStatus { NoTokens, HaveTokens, HaveTokensAfterScript };
+  enum NextTokenStatus { kNoTokens, kHaveTokens, kHaveTokensAfterScript };
 
   // DocumentParser
   void Detach() final;

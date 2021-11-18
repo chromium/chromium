@@ -40,7 +40,7 @@ class CORE_EXPORT HTMLTreeBuilderSimulator {
   USING_FAST_MALLOC(HTMLTreeBuilderSimulator);
 
  private:
-  enum Namespace { HTML, SVG, kMathML };
+  enum Namespace { kHtml, kSvg, kMathML };
 
   enum class TemplateType { kRegular, kShadow };
 
@@ -67,7 +67,7 @@ class CORE_EXPORT HTMLTreeBuilderSimulator {
   SimulatedToken Simulate(const CompactHTMLToken&, HTMLTokenizer*);
 
  private:
-  bool InForeignContent() const { return namespace_stack_.back() != HTML; }
+  bool InForeignContent() const { return namespace_stack_.back() != kHtml; }
   bool IsHTMLIntegrationPointForStartTag(const CompactHTMLToken&) const;
   bool IsHTMLIntegrationPointForEndTag(const CompactHTMLToken&) const;
 

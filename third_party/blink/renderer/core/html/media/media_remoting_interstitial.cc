@@ -75,7 +75,7 @@ void MediaRemotingInterstitial::Show(
   }
   if (toggle_interstitial_timer_.IsActive())
     toggle_interstitial_timer_.Stop();
-  state_ = VISIBLE;
+  state_ = kVisible;
   RemoveInlineStyleProperty(CSSPropertyID::kDisplay);
   SetInlineStyleProperty(CSSPropertyID::kOpacity, 0,
                          CSSPrimitiveValue::UnitType::kNumber);
@@ -89,7 +89,7 @@ void MediaRemotingInterstitial::Hide(int error_code) {
   if (toggle_interstitial_timer_.IsActive())
     toggle_interstitial_timer_.Stop();
   if (error_code == WebMediaPlayerClient::kMediaRemotingStopNoText) {
-    state_ = HIDDEN;
+    state_ = kHidden;
   } else {
     String stop_text =
         GetVideoElement().GetLocale().QueryString(IDS_MEDIA_REMOTING_STOP_TEXT);
@@ -98,7 +98,7 @@ void MediaRemotingInterstitial::Hide(int error_code) {
                   stop_text;
     }
     toast_message_->setInnerText(stop_text, ASSERT_NO_EXCEPTION);
-    state_ = TOAST;
+    state_ = kToast;
   }
   SetInlineStyleProperty(CSSPropertyID::kOpacity, 0,
                          CSSPrimitiveValue::UnitType::kNumber);
@@ -117,7 +117,7 @@ void MediaRemotingInterstitial::ToggleInterstitialTimerFired(TimerBase*) {
     SetInlineStyleProperty(CSSPropertyID::kBackgroundColor, CSSValueID::kBlack);
     SetInlineStyleProperty(CSSPropertyID::kOpacity, 1,
                            CSSPrimitiveValue::UnitType::kNumber);
-  } else if (state_ == HIDDEN) {
+  } else if (state_ == kHidden) {
     SetInlineStyleProperty(CSSPropertyID::kDisplay, CSSValueID::kNone);
     toast_message_->setInnerText(WebString(), ASSERT_NO_EXCEPTION);
   } else {
@@ -135,7 +135,7 @@ void MediaRemotingInterstitial::ToggleInterstitialTimerFired(TimerBase*) {
                                                CSSValueID::kNone);
     toast_message_->SetInlineStyleProperty(
         CSSPropertyID::kOpacity, 1, CSSPrimitiveValue::UnitType::kNumber);
-    state_ = HIDDEN;
+    state_ = kHidden;
     toggle_interstitial_timer_.StartOneShot(kShowToastDuration, FROM_HERE);
   }
 }

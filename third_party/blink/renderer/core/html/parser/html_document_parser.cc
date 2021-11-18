@@ -664,17 +664,17 @@ void HTMLDocumentParser::RunScriptsForPausedTreeBuilder() {
 
 HTMLDocumentParser::NextTokenStatus HTMLDocumentParser::CanTakeNextToken() {
   if (IsStopped())
-    return NoTokens;
+    return kNoTokens;
 
   // If we're paused waiting for a script, we try to execute scripts before
   // continuing.
-  auto ret = HaveTokens;
+  auto ret = kHaveTokens;
   if (tree_builder_->HasParserBlockingScript()) {
     RunScriptsForPausedTreeBuilder();
-    ret = HaveTokensAfterScript;
+    ret = kHaveTokensAfterScript;
   }
   if (IsStopped() || IsPaused())
-    return NoTokens;
+    return kNoTokens;
   return ret;
 }
 
@@ -1020,10 +1020,10 @@ bool HTMLDocumentParser::PumpTokenizer() {
   unsigned tokens_parsed = 0;
   while (!should_yield) {
     const auto next_token_status = CanTakeNextToken();
-    if (next_token_status == NoTokens) {
+    if (next_token_status == kNoTokens) {
       // No tokens left to process in this pump, so break
       break;
-    } else if (next_token_status == HaveTokensAfterScript &&
+    } else if (next_token_status == kHaveTokensAfterScript &&
                task_runner_state_->HaveExitedHeader()) {
       // Just executed a parser-blocking script in the body. We'd probably like
       // to yield at some point soon, especially if we're in "extended budget"
