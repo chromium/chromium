@@ -271,6 +271,10 @@
 
     <!-- Bookmark visual refresh dimensions. -->
      <dimen name="bookmark_refresh_preferred_start_icon_size">32dp</dimen>
+     <!-- We intentionally use px to avoid showing fewer favicons in some UIs on higher density devices. -->
+     <dimen name="bookmark_refresh_min_start_icon_size" tools:ignore="PxUsage">32px</dimen>
+     <dimen name="bookmark_refresh_circular_monogram_text_size">18dp</dimen>
+
 
     <!-- Bookmark widget dimensions -->
     <dimen name="bookmark_widget_min_width">64dp</dimen>
