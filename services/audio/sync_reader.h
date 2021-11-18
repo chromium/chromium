@@ -18,6 +18,7 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "media/base/audio_bus.h"
+#include "media/base/audio_latency.h"
 #include "services/audio/output_controller.h"
 
 #if defined(OS_POSIX)
@@ -72,6 +73,8 @@ class SyncReader : public OutputController::SyncReader {
 
   base::UnsafeSharedMemoryRegion shared_memory_region_;
   base::WritableSharedMemoryMapping shared_memory_mapping_;
+
+  const media::AudioLatency::LatencyType latency_tag_;
 
   // Mutes all incoming samples. This is used to prevent audible sound
   // during automated testing.

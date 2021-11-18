@@ -1279,13 +1279,31 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.AudioRendererAudioGlitches" enum="AudioGlitchResult"
-    expires_after="2022-04-10">
+    expires_after="2022-02-10">
   <owner>henrika@chromium.org</owner>
   <owner>olka@chromium.org</owner>
   <summary>
     Captures if render-side audio glitches are detected or not. Sampled when a
     low-latency output audio stream is destructed.
   </summary>
+</histogram>
+
+<histogram name="Media.AudioRendererAudioGlitches2.{LatencyTag}"
+    enum="AudioGlitchResult" expires_after="2022-10-04">
+  <owner>dalecurtis@chromium.org</owner>
+  <owner>olka@chromium.org</owner>
+  <owner>tguilbert@chromium.org</owner>
+  <summary>
+    Captures if render-side audio glitches are detected or not. Sampled when a
+    low-latency output audio stream is destructed.
+  </summary>
+  <token key="LatencyTag">
+    <variant name="LatencyExactMs"/>
+    <variant name="LatencyInteractive"/>
+    <variant name="LatencyPlayback"/>
+    <variant name="LatencyRtc"/>
+    <variant name="LatencyUnknown"/>
+  </token>
 </histogram>
 
 <histogram name="Media.AudioRendererImpl.SinkStatus" enum="OutputDeviceStatus"
@@ -1304,13 +1322,36 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.AudioRendererMissedDeadline" units="%"
-    expires_after="2022-04-17">
+    expires_after="2022-02-10">
   <owner>dalecurtis@chromium.org</owner>
   <owner>olka@chromium.org</owner>
   <summary>
     Percentage of AudioSyncReader::Read() calls where the renderer missed its
     realtime deadline.
   </summary>
+</histogram>
+
+<histogram name="Media.AudioRendererMissedDeadline2.{Duration}.{LatencyTag}"
+    units="permille" expires_after="2022-10-04">
+  <owner>dalecurtis@chromium.org</owner>
+  <owner>olka@chromium.org</owner>
+  <owner>tguilbert@chromium.org</owner>
+  <summary>
+    Proportion of AudioSyncReader::Read() calls where the renderer missed its
+    realtime deadline. Rounded up, clipped to 1/10 of the stream callbacks.
+    Sampled when a low-latency output audio stream is destructed.
+  </summary>
+  <token key="Duration">
+    <variant name="Long" summary="Streams equal or longer than 3000 callbacks"/>
+    <variant name="Short" summary="Streams shorter than 3000 callbacks"/>
+  </token>
+  <token key="LatencyTag">
+    <variant name="LatencyExactMs"/>
+    <variant name="LatencyInteractive"/>
+    <variant name="LatencyPlayback"/>
+    <variant name="LatencyRtc"/>
+    <variant name="LatencyUnknown"/>
+  </token>
 </histogram>
 
 <histogram name="Media.AudioService.AudioManagerStartupTime" units="ms"
