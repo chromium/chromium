@@ -1120,6 +1120,8 @@ Unknown properties are collapsed to zero. -->
   <int value="8"
       label="Account addition flow launched by the user from One Google Bar"/>
   <int value="9" label="Re-auth account button in Avatar bubble"/>
+  <int value="10"
+      label="Re-authentication flow triggered from a Chrome extension"/>
 </enum>
 
 <enum name="AccountManagerTokenLoadStatus">

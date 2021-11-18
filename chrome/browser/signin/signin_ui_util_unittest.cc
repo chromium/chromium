@@ -662,10 +662,48 @@ TEST_F(MirrorSigninUiUtilTest, ShowReauthDialog) {
                   account_manager::AccountManagerFacade::AccountAdditionSource::
                       kAvatarBubbleReauthAccountButton,
                   kEmail));
-  signin_ui_util::internal::ShowReauthForPrimaryAccountWithAuthErrorLacros(
+  internal::ShowReauthForPrimaryAccountWithAuthErrorLacros(
       browser(),
       signin_metrics::AccessPoint::ACCESS_POINT_AVATAR_BUBBLE_SIGN_IN,
       &mock_facade);
+}
+
+TEST_F(MirrorSigninUiUtilTest, ShowExtensionSigninPrompt) {
+  const std::string kEmail = "foo@example.com";
+  TabStripModel* tab_strip = browser()->tab_strip_model();
+  account_manager::MockAccountManagerFacade mock_facade;
+
+  EXPECT_CALL(
+      mock_facade,
+      ShowReauthAccountDialog(account_manager::AccountManagerFacade::
+                                  AccountAdditionSource::kChromeExtensionReauth,
+                              kEmail));
+  internal::ShowExtensionSigninPrompt(browser()->profile(), &mock_facade,
+                                      /*enable_sync=*/true, kEmail);
+  // No tabs should be opened.
+  EXPECT_EQ(0, tab_strip->count());
+}
+
+TEST_F(MirrorSigninUiUtilTest, ShowExtensionSigninPrompt_AsLockedProfile) {
+  signin_util::ScopedForceSigninSetterForTesting force_signin_setter(true);
+  Profile* profile = browser()->profile();
+  ProfileAttributesEntry* entry =
+      g_browser_process->profile_manager()
+          ->GetProfileAttributesStorage()
+          .GetProfileAttributesWithPath(profile->GetPath());
+  ASSERT_NE(entry, nullptr);
+  entry->LockForceSigninProfile(true);
+
+  const std::string kEmail = "foo@example.com";
+  TabStripModel* tab_strip = browser()->tab_strip_model();
+  account_manager::MockAccountManagerFacade mock_facade;
+
+  EXPECT_CALL(mock_facade, ShowReauthAccountDialog(testing::_, testing::_))
+      .Times(0);
+  internal::ShowExtensionSigninPrompt(browser()->profile(), &mock_facade,
+                                      /*enable_sync=*/true, kEmail);
+  // No dialogs and tabs should be opened.
+  EXPECT_EQ(0, tab_strip->count());
 }
 
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)

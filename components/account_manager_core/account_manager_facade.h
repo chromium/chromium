@@ -72,8 +72,10 @@ class COMPONENT_EXPORT(ACCOUNT_MANAGER_CORE) AccountManagerFacade {
     kOgbAddAccount = 8,
     // Avatar bubble -> Signin again button.
     kAvatarBubbleReauthAccountButton = 9,
+    // A Chrome extension required account re-authentication.
+    kChromeExtensionReauth = 10,
 
-    kMaxValue = kAvatarBubbleReauthAccountButton
+    kMaxValue = kChromeExtensionReauth
   };
 
   AccountManagerFacade();

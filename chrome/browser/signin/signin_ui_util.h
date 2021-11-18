@@ -61,16 +61,24 @@ void ShowExtensionSigninPrompt(Profile* profile,
                                bool enable_sync,
                                const std::string& email_hint);
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
 namespace internal {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
 // Same as `ShowReauthForPrimaryAccountWithAuthError` but with a getter function
 // for AccountManagerFacade so that it can be unit tested.
 void ShowReauthForPrimaryAccountWithAuthErrorLacros(
     Browser* browser,
     signin_metrics::AccessPoint access_point,
     account_manager::AccountManagerFacade* account_manager_facade);
-}  // namespace internal
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
+void ShowExtensionSigninPrompt(
+    Profile* profile,
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+    account_manager::AccountManagerFacade* account_manager_facade,
 #endif
+    bool enable_sync,
+    const std::string& email_hint);
+}  // namespace internal
 
 // This function is used to enable sync for a given account:
 // * This function does nothing if the user is already signed in to Chrome.

@@ -232,40 +232,16 @@ void ShowReauthForPrimaryAccountWithAuthError(
 void ShowExtensionSigninPrompt(Profile* profile,
                                bool enable_sync,
                                const std::string& email_hint) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  NOTREACHED();
-#else
-  // There is no sign-in flow for guest or system profile.
-  if (profile->IsGuestSession() || profile->IsSystemProfile())
-    return;
-  // Locked profile should be unlocked with UserManager only.
-  ProfileAttributesEntry* entry =
-      g_browser_process->profile_manager()
-          ->GetProfileAttributesStorage()
-          .GetProfileAttributesWithPath(profile->GetPath());
-  if (entry && entry->IsSigninRequired()) {
-    return;
-  }
-
-  // This may be called in incognito. Redirect to the original profile.
-  chrome::ScopedTabbedBrowserDisplayer displayer(profile->GetOriginalProfile());
-  Browser* browser = displayer.browser();
-
-  if (enable_sync) {
-    // Set a primary account.
-    browser->signin_view_controller()->ShowDiceEnableSyncTab(
-        signin_metrics::AccessPoint::ACCESS_POINT_EXTENSIONS,
-        signin_metrics::PromoAction::PROMO_ACTION_NO_SIGNIN_PROMO, email_hint);
-  } else {
-    // Add an account to the web without setting a primary account.
-    browser->signin_view_controller()->ShowDiceAddAccountTab(
-        signin_metrics::AccessPoint::ACCESS_POINT_EXTENSIONS, email_hint);
-  }
-#endif
+  internal::ShowExtensionSigninPrompt(
+      profile,
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+      ::GetAccountManagerFacade(profile->GetPath().value()),
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+      enable_sync, email_hint);
 }
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
 namespace internal {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
 void ShowReauthForPrimaryAccountWithAuthErrorLacros(
     Browser* browser,
     signin_metrics::AccessPoint access_point,
@@ -288,8 +264,72 @@ void ShowReauthForPrimaryAccountWithAuthErrorLacros(
         profiles::BUBBLE_VIEW_MODE_GAIA_REAUTH, access_point);
   }
 }
-}  // namespace internal
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
+void ShowExtensionSigninPrompt(
+    Profile* profile,
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+    account_manager::AccountManagerFacade* account_manager_facade,
+#endif
+    bool enable_sync,
+    const std::string& email_hint) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  NOTREACHED();
+#else
+  // There is no sign-in flow for guest or system profile.
+  if (profile->IsGuestSession() || profile->IsSystemProfile())
+    return;
+  // Locked profile should be unlocked with UserManager only.
+  ProfileAttributesEntry* entry =
+      g_browser_process->profile_manager()
+          ->GetProfileAttributesStorage()
+          .GetProfileAttributesWithPath(profile->GetPath());
+  if (entry && entry->IsSigninRequired()) {
+    return;
+  }
+
+  // This may be called in incognito. Redirect to the original profile.
+  Profile* original_profile = profile->GetOriginalProfile();
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // TODO(https://crbug.com/1233933): remove the fallback to DICE once the
+  // feature is deleted.
+  if (base::FeatureList::IsEnabled(kMultiProfileAccountConsistency)) {
+    // There is no sign-in without an account manager.
+    if (!IsAccountManagerAvailable(original_profile))
+      return;
+
+    if (email_hint.empty()) {
+      // Add a new account.
+      // TODO(https://crbug.com/1260291): add support for signed out profiles.
+      NOTREACHED() << "Lacros doesn't support signed-out profiles yet.";
+      return;
+    }
+
+    // Re-authenticate an existing account.
+    account_manager_facade->ShowReauthAccountDialog(
+        account_manager::AccountManagerFacade::AccountAdditionSource::
+            kChromeExtensionReauth,
+        email_hint);
+    return;
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+  chrome::ScopedTabbedBrowserDisplayer displayer(original_profile);
+  Browser* browser = displayer.browser();
+
+  if (enable_sync) {
+    // Set a primary account.
+    browser->signin_view_controller()->ShowDiceEnableSyncTab(
+        signin_metrics::AccessPoint::ACCESS_POINT_EXTENSIONS,
+        signin_metrics::PromoAction::PROMO_ACTION_NO_SIGNIN_PROMO, email_hint);
+  } else {
+    // Add an account to the web without setting a primary account.
+    browser->signin_view_controller()->ShowDiceAddAccountTab(
+        signin_metrics::AccessPoint::ACCESS_POINT_EXTENSIONS, email_hint);
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+}
+}  // namespace internal
 
 void EnableSyncFromSingleAccountPromo(
     Browser* browser,
