@@ -17,7 +17,6 @@
 -AudioContextManagerTest.AudioContextPlaybackTimeUkm
 -AutoPictureInPictureContentBrowserTest.AutoPictureInPictureTriggeredWhenFullscreen
 -BackForwardCacheBrowserTest.DoesNotCacheIfSpeechRecognitionIsStarted
--BackForwardCacheBrowserTest.DoesNotCacheIfWebDatabase
 -BackForwardCacheBrowserTest.VideoSuspendAndResume
 -BackForwardCacheBrowserTest.WebSocketCachedIfClosed
 -BackForwardCacheBrowserTest.WebSocketNotCached
@@ -27,19 +26,6 @@
 -DataDecoderBrowserTest.DecodeImage
 -DataDecoderBrowserTest.DecodeImageIsolated
 -DataDecoderBrowserTest.LaunchIsolated
--DatabaseTest.DatabaseOperations
--DatabaseTest.DatabasePersistsAfterRelaunch
--DatabaseTest.DeleteNonexistentRow
--DatabaseTest.DeleteRecord
--DatabaseTest.InsertRecord
--DatabaseTest.ModificationPersistInSecondTab
--DatabaseTest.ModificationsPersistAfterRendererCrash
--DatabaseTest.OffTheRecordCannotReadRegularDatabase
--DatabaseTest.OffTheRecordDBPersistentAcrossWindows
--DatabaseTest.OffTheRecordDatabaseNotPersistent
--DatabaseTest.RegularCannotReadOffTheRecordDatabase
--DatabaseTest.ReloadPage
--DatabaseTest.UpdateRecord
 -DirectSocketsTcpBrowserTest.OpenTcp_MDNS
 -DnsHttpsProtocolUpgradeBrowserTest.HttpsProtocolUpgrade
 -File/MediaTest.*
@@ -111,3 +97,19 @@
 -*/InterestGroupFencedFrameBrowserTest.*
 -InterestGroupPrivateNetworkBrowserTest.*
 -InterestGroupRestrictedPermissionsPolicyBrowserTest.*
+
+# crbug.com/1212491: WebSQL is being deprecated, these are low priority
+-BackForwardCacheBrowserTest.DoesNotCacheIfWebDatabase
+-DatabaseTest.DatabaseOperations
+-DatabaseTest.DatabasePersistsAfterRelaunch
+-DatabaseTest.DeleteNonexistentRow
+-DatabaseTest.DeleteRecord
+-DatabaseTest.InsertRecord
+-DatabaseTest.ModificationPersistInSecondTab
+-DatabaseTest.ModificationsPersistAfterRendererCrash
+-DatabaseTest.OffTheRecordCannotReadRegularDatabase
+-DatabaseTest.OffTheRecordDBPersistentAcrossWindows
+-DatabaseTest.OffTheRecordDatabaseNotPersistent
+-DatabaseTest.RegularCannotReadOffTheRecordDatabase
+-DatabaseTest.ReloadPage
+-DatabaseTest.UpdateRecord
