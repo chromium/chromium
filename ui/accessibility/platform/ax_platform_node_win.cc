@@ -6824,6 +6824,22 @@ std::wstring AXPlatformNodeWin::ComputeUIAProperties() {
       properties.push_back(L"valuenow=" + value_now);
   }
 
+  // Expose the aria-current attribute as 'current=<value>' if <value> is not
+  // 'none'.
+  int32_t aria_current_attribute;
+  if (GetIntAttribute(ax::mojom::IntAttribute::kAriaCurrentState,
+                      &aria_current_attribute)) {
+    ax::mojom::AriaCurrentState aria_current_state =
+        static_cast<ax::mojom::AriaCurrentState>(aria_current_attribute);
+    if (aria_current_state != ax::mojom::AriaCurrentState::kNone &&
+        aria_current_state != ax::mojom::AriaCurrentState::kFalse) {
+      std::string value = ui::ToString(aria_current_state);
+      std::wstring wide_value = base::UTF8ToWide(value);
+      SanitizeStringAttributeForUIAAriaProperty(wide_value, &wide_value);
+      properties.push_back(L"current=" + wide_value);
+    }
+  }
+
   std::wstring result = base::JoinString(properties, L";");
   return result;
 }

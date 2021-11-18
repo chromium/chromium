@@ -4000,16 +4000,27 @@ TEST_F(AXPlatformNodeWinTest, UIAGetPropertySimple) {
                           "fake description");
   root.AddIntAttribute(ax::mojom::IntAttribute::kSetSize, 2);
   root.AddIntAttribute(ax::mojom::IntAttribute::kInvalidState, 1);
+  root.AddIntAttribute(ax::mojom::IntAttribute::kAriaCurrentState,
+                       static_cast<int>(ax::mojom::AriaCurrentState::kNone));
   root.id = 1;
 
   AXNodeData child1;
   child1.id = 2;
   child1.role = ax::mojom::Role::kListItem;
   child1.AddIntAttribute(ax::mojom::IntAttribute::kPosInSet, 1);
+  child1.AddIntAttribute(ax::mojom::IntAttribute::kAriaCurrentState,
+                         static_cast<int>(ax::mojom::AriaCurrentState::kPage));
   child1.SetName("child1");
   root.child_ids.push_back(child1.id);
 
-  Init(root, child1);
+  AXNodeData child2;
+  child2.id = 3;
+  child2.role = ax::mojom::Role::kGenericContainer;
+  child2.AddIntAttribute(ax::mojom::IntAttribute::kAriaCurrentState,
+                         static_cast<int>(ax::mojom::AriaCurrentState::kFalse));
+  root.child_ids.push_back(child2.id);
+
+  Init(root, child1, child2);
 
   ComPtr<IRawElementProviderSimple> root_node =
       GetRootIRawElementProviderSimple();
@@ -4047,6 +4058,19 @@ TEST_F(AXPlatformNodeWinTest, UIAGetPropertySimple) {
       QueryInterfaceFromNode<IRawElementProviderSimple>(
           GetRootAsAXNode()->children()[0]);
   EXPECT_UIA_INT_EQ(child_node1, UIA_PositionInSetPropertyId, 1);
+  EXPECT_UIA_BSTR_EQ(
+      child_node1, UIA_AriaPropertiesPropertyId,
+      L"readonly=true;expanded=false;multiline=false;multiselectable=false;"
+      L"posinset=1;required=false;current=page");
+
+  ComPtr<IRawElementProviderSimple> child_node2 =
+      QueryInterfaceFromNode<IRawElementProviderSimple>(
+          GetRootAsAXNode()->children()[1]);
+  // aria-current="false" should not be serialized.
+  EXPECT_UIA_BSTR_EQ(
+      child_node2, UIA_AriaPropertiesPropertyId,
+      L"readonly=true;expanded=false;multiline=false;multiselectable=false;"
+      L"required=false");
 }
 
 TEST_F(AXPlatformNodeWinTest, UIAGetPropertyValueClickablePoint) {
