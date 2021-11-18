@@ -93,15 +93,16 @@ the system** and instrument the [system WebView shell app](webview-shell.md)
 `//android_webview/tools/system_webview_shell/`.
 
 *** note
-**Important:** because these tests run against the WebView installed on the
-system, both these test targets automatically compile and install
-`system_webview_apk` and switch the WebView provider. This means you need to
-configure this target to be compatible with your system by following the
-[full build instructions](build-instructions.md).
+**Important:** these tests compile and install both `system_webview_apk` and
+`system_webview_shell_apk`.
 
-**Note:** we do not currently support running these tests on the emulator due to
-signing key mismatches with the preinstalled WebView shell
-(https://crbug.com/1205665 tracks supporting this).
+You will need to configure GN args to make sure `system_webview_apk` is a valid
+WebView provider for your system. Please see the [full build
+instructions](build-instructions.md).
+
+If you are using an **emulator**, you will also need to configure the
+`system_webview_shell_package_name` GN arg. See [WebView shell
+docs](webview-shell.md#setting-up-the-build) for details.
 ***
 
 ```sh

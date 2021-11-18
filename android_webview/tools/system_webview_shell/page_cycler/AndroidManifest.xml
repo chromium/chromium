@@ -18,6 +18,6 @@
     <uses-permission android:name="android.permission.READ_LOGS"/>
 
     <instrumentation android:name="org.chromium.base.test.BaseChromiumAndroidJUnitRunner"
-        android:targetPackage="org.chromium.webview_shell"
+        android:targetPackage="{{target_package|default('org.chromium.webview_shell')}}"
         android:label="Page cycler for org.chromium.webview_shell"/>
 </manifest>

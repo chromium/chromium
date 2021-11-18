@@ -26,6 +26,8 @@ declare_args() {
 
 system_webview_shell_android_manifest =
     "$root_gen_dir/android_webview/system_webview_shell_apk/AndroidManifest.xml"
+layout_tests_android_manifest = "$root_gen_dir/android_webview/system_webview_shell_apk/layout_tests/AndroidManifest.xml"
+page_cycler_tests_android_manifest = "$root_gen_dir/android_webview/system_webview_shell_apk/page_cycler/AndroidManifest.xml"
 
 android_apk("system_webview_shell_apk") {
   apk_name = "SystemWebViewShell"
@@ -75,6 +77,18 @@ jinja_template("system_webview_shell_manifest") {
   variables = [ "manifest_package=$system_webview_shell_package_name" ]
 }
 
+jinja_template("layout_tests_manifest") {
+  input = "layout_tests/AndroidManifest.xml"
+  output = layout_tests_android_manifest
+  variables = [ "target_package=$system_webview_shell_package_name" ]
+}
+
+jinja_template("page_cycler_tests_manifest") {
+  input = "page_cycler/AndroidManifest.xml"
+  output = page_cycler_tests_android_manifest
+  variables = [ "target_package=$system_webview_shell_package_name" ]
+}
+
 android_resources("system_webview_shell_apk_resources") {
   sources = [
     "apk/res/drawable-mdpi/breadcrumb_arrow_black.png",
@@ -100,7 +114,8 @@ android_resources("system_webview_shell_apk_resources") {
 instrumentation_test_apk("system_webview_shell_page_cycler_apk") {
   apk_name = "SystemWebViewShellPageCycler"
   apk_under_test = ":system_webview_shell_apk"
-  android_manifest = "page_cycler/AndroidManifest.xml"
+  android_manifest = page_cycler_tests_android_manifest
+  android_manifest_dep = ":page_cycler_tests_manifest"
   sources = [ "page_cycler/src/org/chromium/webview_shell/page_cycler/PageCyclerTest.java" ]
   deps = [
     ":system_webview_shell_apk_java",
@@ -118,7 +133,8 @@ instrumentation_test_apk("system_webview_shell_page_cycler_apk") {
 instrumentation_test_apk("system_webview_shell_layout_test_apk") {
   apk_name = "SystemWebViewShellLayoutTest"
   apk_under_test = ":system_webview_shell_apk"
-  android_manifest = "layout_tests/AndroidManifest.xml"
+  android_manifest = layout_tests_android_manifest
+  android_manifest_dep = ":layout_tests_manifest"
   sources = [
     "layout_tests/src/org/chromium/webview_shell/test/WebPlatformTestsActivityTest.java",
     "layout_tests/src/org/chromium/webview_shell/test/WebViewLayoutTest.java",

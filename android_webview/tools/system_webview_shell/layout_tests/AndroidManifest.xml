@@ -29,6 +29,7 @@
     </application>
 
     <instrumentation android:name="org.chromium.base.test.BaseChromiumAndroidJUnitRunner"
-        android:targetPackage="org.chromium.webview_shell"
+        android:targetPackage="{{target_package|default('org.chromium.webview_shell')}}"
         android:label="Layout tests for org.chromium.webview_shell"/>
+
 </manifest>
