@@ -1341,6 +1341,11 @@ PCScanInternal::SuperPages GetSuperPagesAndCommitStateBitmaps(
     for (char *super_page = SuperPagesBeginFromExtent(super_page_extent),
               *super_page_end = SuperPagesEndFromExtent(super_page_extent);
          super_page != super_page_end; super_page += kSuperPageSize) {
+      // Make sure the metadata is committed.
+      // TODO(bikineev): Remove once this is known to work.
+      const volatile char* metadata =
+          PartitionSuperPageToMetadataArea(super_page);
+      *metadata;
       RecommitSystemPages(internal::SuperPageStateBitmap(super_page),
                           state_bitmap_size_to_commit, PageReadWrite,
                           PageUpdatePermissions);
@@ -1400,6 +1405,11 @@ void PCScanInternal::RegisterNewSuperPage(Root* root,
   PA_DCHECK(root);
   PA_CHECK(root->IsQuarantineAllowed());
   PA_DCHECK(!(super_page_base % kSuperPageAlignment));
+  // Make sure the metadata is committed.
+  // TODO(bikineev): Remove once this is known to work.
+  const volatile char* metadata = PartitionSuperPageToMetadataArea(
+      reinterpret_cast<char*>(super_page_base));
+  *metadata;
 
   std::lock_guard<std::mutex> lock(roots_mutex_);
 
