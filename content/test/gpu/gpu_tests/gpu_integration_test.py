@@ -325,7 +325,10 @@ class GpuIntegrationTest(
         GpuIntegrationTest._first_run_test = test_name
       if GpuIntegrationTest._first_run_test == test_name:
         logging.warning('Forcing RetryOnFailure in test %s', test_name)
+        # Internal bookkeeping.
         should_retry_on_failure = True
+        # Notify typ that it should retry this test if necessary.
+        self.retryOnFailure = True  # pylint: disable=attribute-defined-outside-init
     try:
       # TODO(nednguyen): For some reason the arguments are getting wrapped
       # in another tuple sometimes (like in the WebGL extension tests).
