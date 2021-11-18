@@ -583,6 +583,8 @@ RenderThreadImpl::RenderThreadImpl(
 void RenderThreadImpl::Init() {
   TRACE_EVENT0("startup", "RenderThreadImpl::Init");
 
+  SCOPED_UMA_HISTOGRAM_TIMER("Renderer.RenderThreadImpl.Init");
+
   GetContentClient()->renderer()->PostIOThreadCreated(GetIOTaskRunner().get());
 
   base::trace_event::TraceLog::GetInstance()->SetThreadSortIndex(
