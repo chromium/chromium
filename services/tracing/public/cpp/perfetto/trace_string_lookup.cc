@@ -148,6 +148,7 @@ constexpr ThreadType kThreadTypes[] = {
     {"NetworkConfigWatcher",
      ChromeThreadDescriptor::THREAD_NETWORKCONFIGWATCHER},
     {"wasapi_render_thread", ChromeThreadDescriptor::THREAD_WASAPI_RENDER},
+    {"LoaderLockSampler", ChromeThreadDescriptor::THREAD_LOADER_LOCK_SAMPLER},
 };
 
 ChromeProcessDescriptor::ProcessType GetProcessType(const std::string& name) {
