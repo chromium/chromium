@@ -533,7 +533,7 @@ TEST_F(UkmPageLoadMetricsObserverTest, AbortNeverForegrounded) {
       entry, PageLoad::kNavigation_PageTransitionName,
       ui::PAGE_TRANSITION_LINK);
   tester()->test_ukm_recorder().ExpectEntryMetric(
-      entry, PageLoad::kExperimental_TotalForegroundDurationName, 0);
+      entry, PageLoad::kPageTiming_TotalForegroundDurationName, 0);
 }
 
 TEST_F(UkmPageLoadMetricsObserverTest, FCPPlusPlus_DiscardBackgroundResult) {

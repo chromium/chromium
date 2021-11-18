@@ -1045,8 +1045,8 @@ void UkmPageLoadMetricsObserver::RecordAbortMetrics(
                            total_foreground_duration_);
 
   builder->SetPageVisitFinalStatus(static_cast<int>(page_visit_status))
-      .SetExperimental_TotalForegroundDuration(
-          ukm::GetExponentialBucketMinForUserTiming(
+      .SetPageTiming_TotalForegroundDuration(
+          ukm::GetSemanticBucketMinForDurationTiming(
               total_foreground_duration_.InMilliseconds()));
 }
 

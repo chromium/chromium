@@ -12251,6 +12251,10 @@ be describing additional metrics about the same event.
     </summary>
   </metric>
   <metric name="Experimental.TotalForegroundDuration">
+    <obsolete>
+      Deprecated on November 2021, replaced by
+      PageTiming.TotalForegroundDuration.
+    </obsolete>
     <summary>
       The total amount of time the page spent in the foreground, in
       milliseconds. Note that this metric adds all foreground durations
@@ -13281,6 +13285,20 @@ be describing additional metrics about the same event.
       Measures the time in milliseconds from navigation timing's navigation
       start to the time the provisional load failed. Only measures provisional
       loads that failed in the foreground.
+    </summary>
+  </metric>
+  <metric name="PageTiming.TotalForegroundDuration">
+    <summary>
+      The total amount of time the page spent in the foreground, in
+      milliseconds. Note that this metric adds all foreground durations
+      occurring for the page. For example: if the page starts foregrounded
+      during 1 second, then goes to the background for a while, then is
+      foregrounded again for 2 seconds, and then is unloaded, this metric
+      reports 3 seconds. To see metrics about consecutive foreground sessions,
+      see the PageForegroundSession event instead. This metric is recorded at
+      the end of each page load. As usual with PageLoad metrics, we consider app
+      backgrounding on Android to be the end of page load as well as the app
+      could be evicted by Android anytime after that happens.
     </summary>
   </metric>
   <metric name="PageTiming.UserTimingMarkFullyLoaded">
