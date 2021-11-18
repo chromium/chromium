@@ -275,6 +275,9 @@ struct AppHistoryEntry {
   mojo_base.mojom.String16 key;
   mojo_base.mojom.String16 id;
   mojo_base.mojom.String16 url;
+  int64 item_sequence_number;
+  int64 document_sequence_number;
+  mojo_base.mojom.String16 state;
 };
 
 // Used by commit IPC messages. Holds the parameters needed by the renderer to

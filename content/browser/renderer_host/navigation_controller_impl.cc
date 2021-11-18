@@ -4100,7 +4100,10 @@ NavigationControllerImpl::PopulateSingleAppHistoryEntryVector(
           blink::mojom::AppHistoryEntry::New(
               frame_state.app_history_key.value_or(std::u16string()),
               frame_state.app_history_id.value_or(std::u16string()),
-              frame_state.url_string.value_or(std::u16string()));
+              frame_state.url_string.value_or(std::u16string()),
+              frame_state.item_sequence_number,
+              frame_state.document_sequence_number,
+              frame_state.app_history_state.value_or(std::u16string()));
       DCHECK(pending_origin.CanBeDerivedFrom(GURL(entry->url)));
       entries.push_back(std::move(entry));
       previous_item_sequence_number = frame_entry->item_sequence_number();
