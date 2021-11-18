@@ -238,7 +238,7 @@ def main_run(args):
   parser = argparse.ArgumentParser()
   parser.add_argument('--isolated-script-test-output', type=str)
   args, rest = parser.parse_known_args()
-  rc = _run_tests(rest)
+  rc = _run_tests(*rest)
   if args.isolated_script_test_output:
     with open(args.isolated_script_test_output, 'w') as f:
       common.record_local_script_results('run_variations_smoke_tests', f, [],
