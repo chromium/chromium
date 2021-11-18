@@ -487,10 +487,14 @@ if (is_android) {
     output_name = content_shell_product_name
     sources = [ "app/shell_main_mac.cc" ]
     defines = [ "SHELL_PRODUCT_NAME=\"$content_shell_product_name\"" ]
+
+    # Must have minimal dependencies. In particular cannot depend on //base.
+    # Depending on //base leads to loading //base twice (once in the exe, once
+    # in the main framework).
     deps = [
       ":content_shell_framework_bundle_data",
       ":content_shell_resources_bundle_data",
-      "//sandbox",
+      "//sandbox/mac:seatbelt",
     ]
     info_plist_target = ":content_shell_plist"
     data_deps = [ ":content_shell_app" ]
