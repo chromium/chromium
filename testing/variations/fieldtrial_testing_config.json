@@ -1762,24 +1762,6 @@
             ]
         }
     ],
-    "ButterForPaymentsIOS": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_Butter_IndicationForAllUsers",
-                    "enable_features": [
-                        "AutofillEnableAccountWalletStorage",
-                        "AutofillEnableInfoBarAccountIndicationFooterForSingleAccountUsers",
-                        "AutofillEnableInfoBarAccountIndicationFooterForSyncUsers",
-                        "AutofillEnableSaveCardInfoBarAccountIndicationFooter"
-                    ]
-                }
-            ]
-        }
-    ],
     "CPSS": [
         {
             "platforms": [
