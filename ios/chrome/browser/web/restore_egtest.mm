@@ -16,6 +16,7 @@
 #include "ios/net/url_test_util.h"
 #import "ios/testing/earl_grey/app_launch_manager.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
+#import "ios/web/common/features.h"
 #include "net/test/embedded_test_server/default_handlers.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
@@ -180,6 +181,9 @@ bool WaitForOmniboxContaining(std::string text) {
   AppLaunchConfiguration config;
   if ([self.name containsString:kDisableCacheRestoreSuffix]) {
     config.features_disabled.push_back(web::kRestoreSessionFromCache);
+    // TODO(crbug.com/1266497) eg test changes are in a followup cl.
+    config.features_disabled.push_back(
+        web::features::kSynthesizedRestoreSession);
   }
   config.features_disabled.push_back(kStartSurface);
   return config;

@@ -933,6 +933,14 @@ bool WebStateImpl::SetSessionStateData(NSData* data) {
   bool state_set = [web_controller_ setSessionStateData:data];
   if (!state_set)
     return false;
+
+  // If this fails (e.g., see crbug.com/1019672 for a previous failure), this
+  // may be a bug in WebKit session restoration, or a bug in generating the
+  // |cached_data_| blob.
+  if (navigation_manager_->GetItemCount() == 0) {
+    return false;
+  }
+
   for (int i = 0; i < navigation_manager_->GetItemCount(); i++) {
     web::NavigationItem* item = navigation_manager_->GetItemAtIndex(i);
     if ([CRWErrorPageHelper isErrorPageFileURL:item->GetURL()]) {

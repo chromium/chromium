@@ -97,6 +97,10 @@ source_set("core") {
     "navigation_manager_delegate.h",
     "navigation_manager_impl.h",
     "navigation_manager_impl.mm",
+    "synthesized_history_entry_data.h",
+    "synthesized_history_entry_data.mm",
+    "synthesized_session_restore.h",
+    "synthesized_session_restore.mm",
     "time_smoother.cc",
     "time_smoother.h",
   ]

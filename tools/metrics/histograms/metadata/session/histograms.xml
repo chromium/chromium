@@ -551,6 +551,28 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Session.WebStates.NativeRestoreSession" enum="BooleanSuccess"
+    expires_after="2022-05-01">
+  <owner>justincohen@chromium.org</owner>
+  <owner>ajuma@chromium.org</owner>
+  <summary>
+    Records whether generic WKWebView native session restore succeeded in
+    creating navigation items. Recorded each time a generic native session
+    restore is attempted.
+  </summary>
+</histogram>
+
+<histogram name="Session.WebStates.NativeRestoreSessionFromCache"
+    enum="BooleanSuccess" expires_after="2022-05-01">
+  <owner>justincohen@chromium.org</owner>
+  <owner>ajuma@chromium.org</owner>
+  <summary>
+    Records whether WKWebView native session restore from cached data succeeded
+    in creating navigation items. Recorded each time a cached native session
+    restore is attempted.
+  </summary>
+</histogram>
+
 <histogram base="true" name="Session.WebStates.NavigationItem" units="KB"
     expires_after="2022-05-01">
   <owner>djean@chromium.org</owner>

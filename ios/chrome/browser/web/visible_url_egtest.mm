@@ -20,6 +20,7 @@
 #import "ios/chrome/test/earl_grey/web_http_server_chrome_test_case.h"
 #import "ios/chrome/test/scoped_eg_synchronization_disabler.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
+#import "ios/web/common/features.h"
 #include "ios/web/public/test/http_server/html_response_provider.h"
 #import "ios/web/public/test/http_server/http_server.h"
 #include "ios/web/public/test/http_server/http_server_util.h"
@@ -162,6 +163,9 @@ class PausableResponseProvider : public HtmlResponseProvider {
   AppLaunchConfiguration config;
   if ([self.name containsString:kDisableCacheRestoreSuffix]) {
     config.features_disabled.push_back(web::kRestoreSessionFromCache);
+    // TODO(crbug.com/1266497) eg test changes are in a followup cl.
+    config.features_disabled.push_back(
+        web::features::kSynthesizedRestoreSession);
   }
   return config;
 }

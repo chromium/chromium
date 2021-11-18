@@ -17,6 +17,7 @@
 #import "base/strings/sys_string_conversions.h"
 #include "base/test/gmock_callback_support.h"
 #import "base/test/ios/wait_util.h"
+#include "base/test/scoped_feature_list.h"
 #include "ios/web/common/features.h"
 #import "ios/web/common/uikit_ui_util.h"
 #import "ios/web/navigation/navigation_context_impl.h"
@@ -1022,6 +1023,10 @@ TEST_F(WebStateImplTest, NoUncommittedRestoreSession) {
 }
 
 TEST_F(WebStateImplTest, BuildStorageDuringRestore) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures({},
+                                       {features::kSynthesizedRestoreSession});
+
   GURL urls[3] = {GURL("https://chromium.test/1"),
                   GURL("https://chromium.test/2"),
                   GURL("https://chromium.test/3")};
@@ -1236,6 +1241,12 @@ TEST_F(WebStateImplTest, MixedSafeUnsafeRestore) {
     return;
   }
 
+  // There's never any unsafe restore with kSynthesizedRestoreSession and iOS15,
+  // so disable it first, and test again enabled after.
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures({},
+                                       {features::kSynthesizedRestoreSession});
+
   GURL urls[3] = {GURL("https://chromium.test/1"),
                   GURL("https://chromium.test/2"),
                   GURL("https://chromium.test/3")};
@@ -1256,9 +1267,22 @@ TEST_F(WebStateImplTest, MixedSafeUnsafeRestore) {
   ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForPageLoadTimeout, ^{
     return restore_done;
   }));
+  EXPECT_EQ(nullptr, web_state_->SessionStateData());
 
-  NSData* data = web_state_->SessionStateData();
-  EXPECT_EQ(nullptr, data);
+  // Enable kSynthesizedRestoreSession to test the opposite.
+  scoped_feature_list.Reset();
+  scoped_feature_list.InitWithFeatures({features::kSynthesizedRestoreSession},
+                                       {});
+  for (size_t index = 0; index < base::size(urls); ++index) {
+    items.push_back(NavigationItem::Create());
+    items.back()->SetURL(urls[index]);
+  }
+  web::WebState::CreateParams params(GetBrowserState());
+  __block auto web_state = std::make_unique<web::WebStateImpl>(params);
+  web_state->GetView();
+  web_state->SetKeepRenderProcessAlive(true);
+  web_state->GetNavigationManager()->Restore(0, std::move(items));
+  EXPECT_NE(nullptr, web_state->SessionStateData());
 }
 
 // Tests that WebState sessionState data can be read and writen.

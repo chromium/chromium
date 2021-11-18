@@ -499,8 +499,8 @@ enum class BackForwardNavigationType {
                     rendererInitiated:NO];
 
   if (self.navigationManagerImpl->IsRestoreSessionInProgress()) {
-    if (self.navigationManagerImpl->RestoreSessionFromCache(navigationURL)) {
-      // Return early if the session was restored from cache.
+    if (self.navigationManagerImpl->RestoreNativeSession(navigationURL)) {
+      // Return early if the session was restored via native API.
       return;
     }
     [self.delegate

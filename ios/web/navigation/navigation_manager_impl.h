@@ -12,6 +12,7 @@
 
 #include "base/callback.h"
 #import "ios/web/navigation/navigation_item_impl.h"
+#include "ios/web/navigation/synthesized_session_restore.h"
 #include "ios/web/navigation/time_smoother.h"
 #import "ios/web/public/navigation/navigation_manager.h"
 #include "ios/web/public/navigation/reload_type.h"
@@ -191,8 +192,8 @@ class NavigationManagerImpl : public NavigationManager {
   // matches |url|.  Applies the workaround for crbug.com/997182
   void SetWKWebViewNextPendingUrlNotSerializable(const GURL& url);
 
-  // Returns true if URL was restored via session restoration cache.
-  bool RestoreSessionFromCache(const GURL& url);
+  // Returns true if URL was restored via the native WKWebView API.
+  bool RestoreNativeSession(const GURL& url);
 
   // Resets the transient url rewriter list.
   void RemoveTransientURLRewriters();
@@ -470,6 +471,11 @@ class NavigationManagerImpl : public NavigationManager {
   // registered in AddRestoreCompletionCallback() and are executed in
   // FinalizeSessionRestore().
   std::vector<base::OnceClosure> restore_session_completion_callbacks_;
+
+  // Used to trigger a WKWebView native session restore with a synthesized
+  // data blob (rather than a cached one). This is useful for when there is a
+  // cache miss, or when syncing tabs between devices.
+  SynthesizedSessionRestore synthesized_restore_helper_;
 };
 
 }  // namespace web
