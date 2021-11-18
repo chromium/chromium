@@ -42,6 +42,7 @@ android_resources("java_resources") {
 
 android_library("java") {
   sources = [
+    "java/src/org/chromium/chrome/features/start_surface/BackgroundTabAnimation.java",
     "java/src/org/chromium/chrome/features/start_surface/BottomBarCoordinator.java",
     "java/src/org/chromium/chrome/features/start_surface/BottomBarView.java",
     "java/src/org/chromium/chrome/features/start_surface/BottomBarViewBinder.java",
@@ -85,6 +86,7 @@ android_library("java") {
     "//chrome/browser/version:java",
     "//chrome/browser/xsurface:java",
     "//components/browser_ui/bottomsheet/android:java",
+    "//components/browser_ui/styles/android:java",
     "//components/browser_ui/widget/android:java",
     "//components/prefs/android:java",
     "//components/user_prefs/android:java",

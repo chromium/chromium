@@ -6,10 +6,13 @@ package org.chromium.chrome.features.start_surface;
 
 import android.os.SystemClock;
 
+import androidx.annotation.Nullable;
+
 import com.google.android.material.appbar.AppBarLayout;
 
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.ntp.NewTabPageLaunchOrigin;
+import org.chromium.chrome.browser.tasks.TasksSurface;
 import org.chromium.chrome.browser.tasks.tab_management.TabSwitcher;
 
 /** Interface to communicate with the start surface. */
@@ -224,4 +227,11 @@ public interface StartSurface {
      */
     void onOverviewShownAtLaunch(
             boolean isOverviewShownOnStartup, final long activityCreationTimeMs);
+
+    /**
+     * Returns the primary {@link TasksSurface} (omnibox, most visited, feed, etc.). Can be null if
+     * grid tab switcher is enabled but Start surface is disabled.
+     */
+    @Nullable
+    TasksSurface getPrimaryTasksSurface();
 }

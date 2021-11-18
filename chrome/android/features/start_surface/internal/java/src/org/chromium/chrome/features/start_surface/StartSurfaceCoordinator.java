@@ -492,6 +492,12 @@ public class StartSurfaceCoordinator implements StartSurface {
         }
     }
 
+    @Override
+    @Nullable
+    public TasksSurface getPrimaryTasksSurface() {
+        return mTasksSurface;
+    }
+
     @VisibleForTesting
     public boolean isInitPendingForTesting() {
         return mIsInitPending;

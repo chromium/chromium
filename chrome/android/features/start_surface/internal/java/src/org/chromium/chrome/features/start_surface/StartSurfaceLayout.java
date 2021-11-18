@@ -12,6 +12,7 @@ import android.graphics.Rect;
 import android.graphics.RectF;
 import android.os.Handler;
 import android.os.SystemClock;
+import android.view.ViewGroup;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
@@ -40,6 +41,7 @@ import org.chromium.chrome.browser.layouts.scene_layer.SceneLayer;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tasks.ReturnToChromeExperimentsUtil;
+import org.chromium.chrome.browser.tasks.TasksSurface;
 import org.chromium.chrome.browser.tasks.tab_management.TabSwitcher;
 import org.chromium.chrome.browser.tasks.tab_management.TabSwitcher.TabListDelegate;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
@@ -95,6 +97,8 @@ public class StartSurfaceLayout extends Layout {
     private float mThumbnailAspectRatio;
 
     private boolean mAndroidViewFinishedShowing;
+
+    private Animator mBackgroundTabAnimation;
 
     interface PerfListener {
         void onAnimationDone(
@@ -375,6 +379,26 @@ public class StartSurfaceLayout extends Layout {
         if (mTabToSwitcherAnimation != null) {
             if (mTabToSwitcherAnimation.isRunning()) mTabToSwitcherAnimation.end();
         }
+    }
+
+    @Override
+    public void onTabCreated(long time, int id, int index, int sourceId, boolean newIsIncognito,
+            boolean background, float originX, float originY) {
+        super.onTabCreated(time, id, index, sourceId, newIsIncognito, background, originX, originY);
+        if (!background || newIsIncognito
+                || mController.getStartSurfaceState() != StartSurfaceState.SHOWN_HOMEPAGE) {
+            return;
+        }
+        TasksSurface primaryTasksSurface = mStartSurface.getPrimaryTasksSurface();
+        assert primaryTasksSurface != null;
+
+        if (mBackgroundTabAnimation != null && mBackgroundTabAnimation.isStarted()) {
+            mBackgroundTabAnimation.end();
+        }
+        mBackgroundTabAnimation =
+                BackgroundTabAnimation.create(this, (ViewGroup) primaryTasksSurface.getView(),
+                        originX, originY, getOrientation() == Orientation.PORTRAIT);
+        mBackgroundTabAnimation.start();
     }
 
     /**
