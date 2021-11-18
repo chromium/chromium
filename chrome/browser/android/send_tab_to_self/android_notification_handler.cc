@@ -101,7 +101,7 @@ void AndroidNotificationHandler::DisplayNewEntries(
   content::GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE,
       base::BindOnce(&AndroidNotificationHandler::DisplayNewEntriesOnUIThread,
-                     base::Unretained(this), std::move(vector_copy)));
+                     weak_factory_.GetWeakPtr(), std::move(vector_copy)));
 }
 
 void AndroidNotificationHandler::DisplayNewEntriesOnUIThread(
@@ -109,18 +109,22 @@ void AndroidNotificationHandler::DisplayNewEntriesOnUIThread(
   for (const SendTabToSelfEntry& entry : new_entries) {
     if (base::FeatureList::IsEnabled(send_tab_to_self::kSendTabToSelfV2) ||
         share::AreUpcomingSharingFeaturesEnabled()) {
-      web_contents_ = GetWebContentsForProfile(profile_)->GetWeakPtr();
-
+      if (profile_ != nullptr &&
+          GetWebContentsForProfile(profile_) != nullptr) {
+        web_contents_ = GetWebContentsForProfile(profile_)->GetWeakPtr();
+      } else {
+        web_contents_ = nullptr;
+      }
       std::unique_ptr<messages::MessageWrapper> message =
           std::make_unique<messages::MessageWrapper>(
               messages::MessageIdentifier::SEND_TAB_TO_SELF);
 
       message->SetActionClick(base::BindOnce(
-          &AndroidNotificationHandler::OnMessageOpened, base::Unretained(this),
-          entry.GetURL(), entry.GetGUID()));
+          &AndroidNotificationHandler::OnMessageOpened,
+          weak_factory_.GetWeakPtr(), entry.GetURL(), entry.GetGUID()));
       message->SetDismissCallback(base::BindOnce(
           &AndroidNotificationHandler::OnMessageDismissed,
-          base::Unretained(this), message.get(), entry.GetGUID()));
+          weak_factory_.GetWeakPtr(), message.get(), entry.GetGUID()));
 
       message->SetTitle(
           l10n_util::GetStringFUTF16(IDS_SEND_TAB_TO_SELF_MESSAGE,

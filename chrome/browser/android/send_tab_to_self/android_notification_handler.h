@@ -8,6 +8,7 @@
 #include <queue>
 #include <string>
 
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/send_tab_to_self/receiving_ui_handler.h"
 #include "components/messages/android/message_wrapper.h"
 
@@ -60,6 +61,7 @@ class AndroidNotificationHandler : public ReceivingUiHandler {
   Profile* profile_;
 
   base::WeakPtr<content::WebContents> web_contents_;
+  base::WeakPtrFactory<AndroidNotificationHandler> weak_factory_{this};
 };
 
 }  // namespace send_tab_to_self
