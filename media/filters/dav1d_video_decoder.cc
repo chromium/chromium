@@ -31,12 +31,14 @@ static void GetDecoderThreadCounts(const int coded_height,
                                    int* tile_threads,
                                    int* frame_threads) {
   // Tile thread counts based on currently available content. Recommended by
-  // YouTube, while frame thread values fit within limits::kMaxVideoThreads.
+  // YouTube, while frame thread values fit within
+  // limits::kMaxVideoDecodeThreads.
   if (coded_height >= 700) {
     *tile_threads =
         4;  // Current 720p content is encoded in 5 tiles and 1080p content with
-            // 8 tiles, but we'll exceed limits::kMaxVideoThreads with 5+ tile
-            // threads with 3 frame threads (5 * 3 + 3 = 18 threads vs 16 max).
+            // 8 tiles, but we'll exceed limits::kMaxVideoDecodeThreads with 5+
+            // tile threads with 3 frame threads (5 * 3 + 3 = 18 threads vs 16
+            // max).
             //
             // Since 720p playback isn't smooth without 3 frame threads, we've
             // chosen a slightly lower tile thread count.
