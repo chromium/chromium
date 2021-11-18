@@ -830,8 +830,11 @@ scoped_refptr<const NGLayoutResult> NGFlexLayoutAlgorithm::LayoutInternal() {
       ConstraintSpace(), Style(), BorderPadding(), total_intrinsic_block_size,
       container_builder_.InlineSize());
 
-  if (!IsResumingLayout(BreakToken()))
+  if (!IsResumingLayout(BreakToken())) {
     ApplyFinalAlignmentAndReversals(&flex_line_outputs);
+    if (!GiveItemsFinalPositionAndSize(flex_line_outputs))
+      return nullptr;
+  }
 
   LayoutUnit previously_consumed_block_size;
   if (UNLIKELY(BreakToken()))
@@ -845,9 +848,8 @@ scoped_refptr<const NGLayoutResult> NGFlexLayoutAlgorithm::LayoutInternal() {
             .ClampNegativeToZero();
   }
 
-  bool success = GiveItemsFinalPositionAndSize(flex_line_outputs);
-  if (!success)
-    return nullptr;
+  if (has_block_fragmentation_)
+    GiveItemsFinalPositionAndSizeForFragmentation(flex_line_outputs);
 
   LayoutUnit block_size;
   if (has_block_fragmentation_ || (use_empty_line_block_size &&
@@ -1053,6 +1055,7 @@ void NGFlexLayoutAlgorithm::ApplyFinalAlignmentAndReversals(
 
 bool NGFlexLayoutAlgorithm::GiveItemsFinalPositionAndSize(
     const Vector<NGFlexLine>& flex_line_outputs) {
+  DCHECK(!IsResumingLayout(BreakToken()));
   LayoutUnit final_content_cross_size;
   if (is_column_) {
     final_content_cross_size =
@@ -1063,20 +1066,88 @@ bool NGFlexLayoutAlgorithm::GiveItemsFinalPositionAndSize(
   }
 
   absl::optional<LayoutUnit> fallback_baseline;
+  bool success = true;
+  for (wtf_size_t flex_line_idx = 0; flex_line_idx < flex_line_outputs.size();
+       ++flex_line_idx) {
+    const NGFlexLine& line_output = flex_line_outputs[flex_line_idx];
+    for (wtf_size_t flex_item_idx = 0;
+         flex_item_idx < line_output.line_items.size(); ++flex_item_idx) {
+      const NGFlexItem& flex_item = line_output.line_items[flex_item_idx];
+      FlexItem* item = algorithm_.FlexItemAtIndex(flex_line_idx, flex_item_idx);
+
+      // flex_item.offset stores the main axis offset in X and the
+      // cross axis offset in Y. But AddChild wants offset from parent
+      // rectangle, so we have to transpose for columns. AddChild takes care of
+      // any writing mode differences though.
+      LayoutPoint location =
+          is_column_ ? flex_item.offset.TransposedPoint() : flex_item.offset;
+
+      scoped_refptr<const NGLayoutResult> layout_result;
+      if (DoesItemStretch(flex_item.ng_input_node)) {
+        NGConstraintSpace child_space = BuildSpaceForLayout(
+            flex_item.ng_input_node, flex_item.main_axis_final_size,
+            line_output.line_cross_size);
+        layout_result =
+            flex_item.ng_input_node.Layout(child_space,
+                                           /* break_token */ nullptr);
+      } else {
+        DCHECK(item);
+        layout_result = item->layout_result_;
+      }
+
+      const auto& physical_fragment =
+          To<NGPhysicalBoxFragment>(layout_result->PhysicalFragment());
+
+      NGBoxFragment fragment(ConstraintSpace().GetWritingDirection(),
+                             physical_fragment);
+      if (!has_block_fragmentation_) {
+        container_builder_.AddResult(*layout_result,
+                                     {location.X(), location.Y()});
+
+        // Only propagate baselines from children on the first flex-line.
+        if (&line_output == flex_line_outputs.begin()) {
+          PropagateBaselineFromChild(flex_item.Style(), fragment, location.Y(),
+                                     &fallback_baseline);
+        }
+      }
+      success &= PropagateFlexItemInfo(item, flex_line_idx, location,
+                                       physical_fragment.Size());
+    }
+  }
+
+  // Set the baseline to the fallback, if we didn't find any children with
+  // baseline alignment.
+  if (!has_block_fragmentation_ && !container_builder_.Baseline() &&
+      fallback_baseline)
+    container_builder_.SetBaseline(*fallback_baseline);
+
+  // TODO(crbug.com/1131352): Avoid control-specific handling.
+  if (Node().IsButton()) {
+    DCHECK(!has_block_fragmentation_);
+    AdjustButtonBaseline(final_content_cross_size);
+  } else if (Node().IsSlider()) {
+    DCHECK(!has_block_fragmentation_);
+    container_builder_.SetBaseline(BorderScrollbarPadding().BlockSum() +
+                                   final_content_cross_size);
+  }
+
+  // Signal if we need to relayout with new child scrollbar information.
+  return success;
+}
+
+void NGFlexLayoutAlgorithm::GiveItemsFinalPositionAndSizeForFragmentation(
+    const Vector<NGFlexLine>& flex_line_outputs) {
+  DCHECK(has_block_fragmentation_);
+
+  absl::optional<LayoutUnit> fallback_baseline;
   NGFlexItemIterator item_iterator(flex_line_outputs, BreakToken());
 
-  bool success = true;
-  bool add_layout_result = true;
   for (auto entry = item_iterator.NextItem();
        NGFlexItem* flex_item = entry.flex_item;
        entry = item_iterator.NextItem()) {
     wtf_size_t flex_line_idx = entry.flex_line_idx;
     const NGFlexLine& line_output = flex_line_outputs[flex_line_idx];
     const NGBreakToken* item_break_token = entry.token;
-
-    FlexItem* item = nullptr;
-    if (!IsResumingLayout(BreakToken()))
-      item = algorithm_.FlexItemAtIndex(flex_line_idx, entry.flex_item_idx);
 
     // flex_item.offset stores the main axis offset in X and the
     // cross axis offset in Y. But AddChild wants offset from parent
@@ -1094,40 +1165,21 @@ bool NGFlexLayoutAlgorithm::GiveItemsFinalPositionAndSize(
       location.SetY(updated_block_offset);
     }
 
-    scoped_refptr<const NGLayoutResult> layout_result;
-    if (has_block_fragmentation_ && add_layout_result) {
-      absl::optional<LayoutUnit> line_cross_size_for_stretch =
-          DoesItemStretch(flex_item->ng_input_node)
-              ? absl::optional<LayoutUnit>(line_output.line_cross_size)
-              : absl::nullopt;
-      layout_result = LayoutWithBlockFragmentation(
-          *flex_item, location.Y(), To<NGBlockBreakToken>(item_break_token),
-          line_cross_size_for_stretch);
+    absl::optional<LayoutUnit> line_cross_size_for_stretch =
+        DoesItemStretch(flex_item->ng_input_node)
+            ? absl::optional<LayoutUnit>(line_output.line_cross_size)
+            : absl::nullopt;
+    scoped_refptr<const NGLayoutResult> layout_result =
+        LayoutWithBlockFragmentation(*flex_item, location.Y(),
+                                     To<NGBlockBreakToken>(item_break_token),
+                                     line_cross_size_for_stretch);
 
-      // A child break in a parallel flow doesn't affect whether we should
-      // break here or not.
-      if (container_builder_.HasInflowChildBreakInside()) {
-        // But if the break happened in the same flow, we'll now just finish
-        // layout of the fragment. No more siblings should be processed.
-        // Unless this is the first parent fragment. In which case, continue
-        // iterating over the flex children as if fragmentation is disabled and
-        // avoid adding further child layout results to the builder. This is
-        // done to allow propagation of FlexItem info that won't be available in
-        // the next fragment's layout pass.
-        if (IsResumingLayout(BreakToken()))
-          break;
-        add_layout_result = false;
-      }
-    } else if (DoesItemStretch(flex_item->ng_input_node) && add_layout_result) {
-      NGConstraintSpace child_space = BuildSpaceForLayout(
-          flex_item->ng_input_node, flex_item->main_axis_final_size,
-          line_output.line_cross_size);
-      layout_result =
-          flex_item->ng_input_node.Layout(child_space,
-                                          /* break_token */ nullptr);
-    } else {
-      DCHECK(item);
-      layout_result = item->layout_result_;
+    // A child break in a parallel flow doesn't affect whether we should
+    // break here or not.
+    if (container_builder_.HasInflowChildBreakInside()) {
+      // But if the break happened in the same flow, we'll now just finish
+      // layout of the fragment. No more siblings should be processed.
+      break;
     }
 
     const auto& physical_fragment =
@@ -1135,34 +1187,23 @@ bool NGFlexLayoutAlgorithm::GiveItemsFinalPositionAndSize(
 
     NGBoxFragment fragment(ConstraintSpace().GetWritingDirection(),
                            physical_fragment);
-    if (add_layout_result) {
-      if (has_block_fragmentation_) {
-        // TODO(almaher): What to do in the case where the line extends past
-        // the last item? Should that be included when fragmenting?
-        intrinsic_block_size_ +=
-            (location.Y() + fragment.BlockSize() - intrinsic_block_size_)
-                .ClampNegativeToZero();
-      }
+    // TODO(almaher): What to do in the case where the line extends past
+    // the last item? Should that be included when fragmenting?
+    intrinsic_block_size_ +=
+        (location.Y() + fragment.BlockSize() - intrinsic_block_size_)
+            .ClampNegativeToZero();
 
-      container_builder_.AddResult(*layout_result,
-                                   {location.X(), location.Y()});
+    container_builder_.AddResult(*layout_result, {location.X(), location.Y()});
 
-      // Only propagate baselines from children on the first flex-line.
-      if (&line_output == flex_line_outputs.begin()) {
-        // TODO(almaher): How will this work with fragmentation?
-        PropagateBaselineFromChild(flex_item->Style(), fragment, location.Y(),
-                                   &fallback_baseline);
-      }
-    }
-
-    // Some FlexItem info will only be available in the first layout pass.
-    if (item) {
-      success &= PropagateFlexItemInfo(item, flex_line_idx, location,
-                                       physical_fragment.Size());
+    // Only propagate baselines from children on the first flex-line.
+    if (&line_output == flex_line_outputs.begin()) {
+      // TODO(almaher): How will this work with fragmentation?
+      PropagateBaselineFromChild(flex_item->Style(), fragment, location.Y(),
+                                 &fallback_baseline);
     }
   }
 
-  if (add_layout_result && !container_builder_.HasInflowChildBreakInside() &&
+  if (!container_builder_.HasInflowChildBreakInside() &&
       !item_iterator.NextItem().flex_item) {
     container_builder_.SetHasSeenAllChildren();
   }
@@ -1171,17 +1212,6 @@ bool NGFlexLayoutAlgorithm::GiveItemsFinalPositionAndSize(
   // baseline alignment.
   if (!container_builder_.Baseline() && fallback_baseline)
     container_builder_.SetBaseline(*fallback_baseline);
-
-  // TODO(crbug.com/1131352): Avoid control-specific handling.
-  if (Node().IsButton()) {
-    AdjustButtonBaseline(final_content_cross_size);
-  } else if (Node().IsSlider()) {
-    container_builder_.SetBaseline(BorderScrollbarPadding().BlockSum() +
-                                   final_content_cross_size);
-  }
-
-  // Signal if we need to relayout with new child scrollbar information.
-  return success;
 }
 
 bool NGFlexLayoutAlgorithm::PropagateFlexItemInfo(FlexItem* flex_item,

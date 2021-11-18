@@ -76,6 +76,8 @@ class CORE_EXPORT NGFlexLayoutAlgorithm
   void ApplyFinalAlignmentAndReversals(Vector<NGFlexLine>* flex_line_outputs);
   bool GiveItemsFinalPositionAndSize(
       const Vector<NGFlexLine>& flex_line_outputs);
+  void GiveItemsFinalPositionAndSizeForFragmentation(
+      const Vector<NGFlexLine>& flex_line_outputs);
   bool PropagateFlexItemInfo(FlexItem* flex_item,
                              wtf_size_t flex_line_idx,
                              LayoutPoint location,
