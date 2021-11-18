@@ -371,12 +371,19 @@ class VIEWS_EXPORT DialogDelegateView : public DialogDelegate, public View {
   View* GetContentsView() override;
 };
 
+// Explicitly instantiate the following templates to ensure proper linking,
+// especially when using GCC.
+template View* DialogDelegate::SetExtraView<View>(std::unique_ptr<View>);
+template View* DialogDelegate::SetFootnoteView<View>(std::unique_ptr<View>);
+
 BEGIN_VIEW_BUILDER(VIEWS_EXPORT, DialogDelegateView, View)
 VIEW_BUILDER_PROPERTY(ax::mojom::Role, AccessibleRole)
 VIEW_BUILDER_PROPERTY(std::u16string, AccessibleTitle)
 VIEW_BUILDER_PROPERTY(bool, CanMaximize)
 VIEW_BUILDER_PROPERTY(bool, CanMinimize)
 VIEW_BUILDER_PROPERTY(bool, CanResize)
+VIEW_BUILDER_VIEW_TYPE_PROPERTY(views::View, ExtraView)
+VIEW_BUILDER_VIEW_TYPE_PROPERTY(views::View, FootnoteView)
 VIEW_BUILDER_PROPERTY(bool, FocusTraversesOut)
 VIEW_BUILDER_PROPERTY(bool, EnableArrowKeyTraversal)
 VIEW_BUILDER_PROPERTY(const gfx::ImageSkia&, Icon)
