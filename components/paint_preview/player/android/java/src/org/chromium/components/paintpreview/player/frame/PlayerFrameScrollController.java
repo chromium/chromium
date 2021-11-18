@@ -140,7 +140,7 @@ public class PlayerFrameScrollController {
     }
 
     private boolean maybeHandleOverscroll(float distanceY) {
-        if (mOverscrollHandler == null || mViewport.getTransY() != 0f) return false;
+        if (mOverscrollHandler == null || mViewport.getTransY() >= 1f) return false;
 
         // Ignore if there is no active overscroll and the direction is down.
         if (!mIsOverscrolling && distanceY <= 0) return false;

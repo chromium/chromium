@@ -5,6 +5,7 @@
 package org.chromium.components.paintpreview.player.frame;
 
 import android.graphics.Matrix;
+import android.graphics.Point;
 import android.graphics.Rect;
 import android.util.Size;
 import android.view.View;
@@ -25,6 +26,11 @@ class PlayerFrameProperties {
     static final PropertyModel.WritableObjectPropertyKey<Size> TILE_DIMENSIONS =
             new PropertyModel.WritableObjectPropertyKey<>();
     /**
+     * Contains the current user-visible offset.
+     */
+    static final PropertyModel.WritableObjectPropertyKey<Point> OFFSET =
+            new PropertyModel.WritableObjectPropertyKey<>(true);
+    /**
      * Contains the current user-visible content window. The view should use this to draw the
      * appropriate bitmap tiles from {@link #BITMAP_MATRIX}.
      */
@@ -43,6 +49,6 @@ class PlayerFrameProperties {
     /** The matrix to apply to the view before a zoom is committed. */
     static final PropertyModel.WritableObjectPropertyKey<Matrix> SCALE_MATRIX =
             new PropertyModel.WritableObjectPropertyKey<>(true);
-    static final PropertyKey[] ALL_KEYS = {
-            BITMAP_MATRIX, TILE_DIMENSIONS, VIEWPORT, SUBFRAME_VIEWS, SUBFRAME_RECTS, SCALE_MATRIX};
+    static final PropertyKey[] ALL_KEYS = {BITMAP_MATRIX, TILE_DIMENSIONS, OFFSET, VIEWPORT,
+            SUBFRAME_VIEWS, SUBFRAME_RECTS, SCALE_MATRIX};
 }

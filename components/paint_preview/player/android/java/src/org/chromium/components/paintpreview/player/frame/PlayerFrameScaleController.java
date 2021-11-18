@@ -5,7 +5,6 @@
 package org.chromium.components.paintpreview.player.frame;
 
 import android.graphics.Matrix;
-import android.graphics.Rect;
 import android.util.Size;
 
 import androidx.annotation.Nullable;
@@ -129,12 +128,6 @@ public class PlayerFrameScaleController {
                 Math.min(uncorrectedY,
                         mContentSize.getHeight() * correctedAggregateScaleFactor
                                 - mViewport.getHeight()));
-        final int correctedXRounded = Math.abs(Math.round(correctedX));
-        final int correctedYRounded = Math.abs(Math.round(correctedY));
-        mMediatorDelegate.updateSubframes(new Rect(correctedXRounded, correctedYRounded,
-                                                  correctedXRounded + mViewport.getWidth(),
-                                                  correctedYRounded + mViewport.getHeight()),
-                mUncommittedScaleFactor);
 
         if (uncorrectedX != correctedX || uncorrectedY != correctedY) {
             // This is the delta required to force the viewport to be inside the bounds of the
@@ -152,6 +145,7 @@ public class PlayerFrameScaleController {
             bitmapScaleMatrixValues[Matrix.MTRANS_Y] += deltaY;
             mBitmapScaleMatrix.setValues(bitmapScaleMatrixValues);
         }
+        mMediatorDelegate.updateSubframes(mViewport.asRect(), mViewport.getScale());
         mMediatorDelegate.setBitmapScaleMatrix(mBitmapScaleMatrix, correctedAggregateScaleFactor);
         if (mOnScaleListener != null) mOnScaleListener.onResult(false);
         return true;

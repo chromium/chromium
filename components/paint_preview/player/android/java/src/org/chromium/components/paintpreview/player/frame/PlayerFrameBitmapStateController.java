@@ -43,7 +43,7 @@ public class PlayerFrameBitmapStateController {
         mShouldCompressBitmaps = shouldCompressBitmaps;
     }
 
-    void destroy() {
+    void deleteAll() {
         if (mLoadingBitmapState != null) {
             mLoadingBitmapState.destroy();
             mLoadingBitmapState = null;
@@ -52,6 +52,10 @@ public class PlayerFrameBitmapStateController {
             mVisibleBitmapState.destroy();
             mVisibleBitmapState = null;
         }
+    }
+
+    void destroy() {
+        deleteAll();
     }
 
     @VisibleForTesting
@@ -77,9 +81,10 @@ public class PlayerFrameBitmapStateController {
                 (mLoadingBitmapState == null) ? mVisibleBitmapState : mLoadingBitmapState;
         if (scaleUpdated || activeLoadingState == null) {
             invalidateLoadingBitmaps();
-            mLoadingBitmapState = new PlayerFrameBitmapState(mGuid, mViewport.getWidth(),
-                    Math.round(mViewport.getHeight() / 2.0f), mViewport.getScale(), mContentSize,
-                    mCompositorDelegate, this, mTaskRunner, mShouldCompressBitmaps);
+            Size tileSize = mViewport.getBitmapTileSize();
+            mLoadingBitmapState = new PlayerFrameBitmapState(mGuid, tileSize.getWidth(),
+                    tileSize.getHeight(), mViewport.getScale(), mContentSize, mCompositorDelegate,
+                    this, mTaskRunner, mShouldCompressBitmaps);
             if (mVisibleBitmapState == null) {
                 mLoadingBitmapState.skipWaitingForVisibleBitmaps();
                 swap(mLoadingBitmapState);
@@ -130,6 +135,9 @@ public class PlayerFrameBitmapStateController {
 
     void onStartScaling() {
         invalidateLoadingBitmaps();
+
+        if (mVisibleBitmapState == null) return;
+
         mVisibleBitmapState.lock();
     }
 
