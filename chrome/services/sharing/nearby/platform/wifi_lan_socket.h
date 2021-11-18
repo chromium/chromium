@@ -6,6 +6,7 @@
 #define CHROME_SERVICES_SHARING_NEARBY_PLATFORM_WIFI_LAN_SOCKET_H_
 
 #include "base/memory/scoped_refptr.h"
+#include "base/synchronization/lock.h"
 #include "chrome/services/sharing/nearby/platform/bidirectional_stream.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/shared_remote.h"
@@ -68,6 +69,11 @@ class WifiLanSocket : public api::WifiLanSocket {
  private:
   // Close if the TCP socket disconnects.
   void OnTcpConnectedSocketDisconnected();
+
+  void CloseTcpSocketIfNecessary();
+
+  // Protects |tcp_connected_socket_| while closing.
+  base::Lock lock_;
 
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
   mojo::SharedRemote<network::mojom::TCPConnectedSocket> tcp_connected_socket_;

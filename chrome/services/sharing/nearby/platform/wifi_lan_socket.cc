@@ -73,15 +73,10 @@ OutputStream& WifiLanSocket::GetOutputStream() {
   return *bidirectional_stream_.GetOutputStream();
 }
 
-// Note: This is thread safe because we can call reset() on
-// |tcp_connected_socket_| as many times as we want, and
-// BidirectionalStream::Close() is thread safe.
+// Note: Both CloseTcpSocketIfNecessary() and BidirectionalStream::Close() are
+// thread safe.
 Exception WifiLanSocket::Close() {
-  if (tcp_connected_socket_) {
-    VLOG(1) << "WifiLanSocket::" << __func__
-            << ": Closing TCP connected socket.";
-    tcp_connected_socket_.reset();
-  }
+  CloseTcpSocketIfNecessary();
 
   return bidirectional_stream_.Close();
 }
@@ -95,6 +90,16 @@ void WifiLanSocket::OnTcpConnectedSocketDisconnected() {
                << ": TCP connected socket unexpectedly disconnected. Closing "
                << "WifiLanSocket.";
   Close();
+}
+
+void WifiLanSocket::CloseTcpSocketIfNecessary() {
+  base::AutoLock lock(lock_);
+
+  if (!tcp_connected_socket_)
+    return;
+
+  VLOG(1) << "WifiLanSocket::" << __func__ << ": Closing TCP connected socket.";
+  tcp_connected_socket_.reset();
 }
 
 }  // namespace chrome
