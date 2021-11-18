@@ -14,6 +14,17 @@
   return [super init];
 }
 
+- (void)showFetchKeysFlowForIdentity:(CWVIdentity*)identity
+                  fromViewController:(UIViewController*)viewController {
+  // No op.
+}
+
+- (void)showFixDegradedRecoverabilityFlowForIdentity:(CWVIdentity*)identity
+                                  fromViewController:
+                                      (UIViewController*)viewController {
+  // No op.
+}
+
 #pragma mark - CWVTrustedVaultProvider
 
 - (void)addTrustedVaultObserver:(CWVTrustedVaultObserver*)observer {

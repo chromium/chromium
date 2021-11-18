@@ -18,6 +18,12 @@ NS_ASSUME_NONNULL_BEGIN
     NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;
 
+- (void)showFetchKeysFlowForIdentity:(CWVIdentity*)identity
+                  fromViewController:(UIViewController*)viewController;
+- (void)showFixDegradedRecoverabilityFlowForIdentity:(CWVIdentity*)identity
+                                  fromViewController:
+                                      (UIViewController*)viewController;
+
 @end
 
 NS_ASSUME_NONNULL_END
