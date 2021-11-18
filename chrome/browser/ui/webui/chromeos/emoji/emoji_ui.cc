@@ -102,8 +102,7 @@ void EmojiUI::Show(Profile* profile) {
   // here to reduce code duplication.
 
   auto contents_wrapper = std::make_unique<BubbleContentsWrapperT<EmojiUI>>(
-      GURL(chrome::kChromeUIEmojiPickerURL), profile, IDS_ACCNAME_EMOJI_PICKER,
-      false /*enable_extension_apis*/);
+      GURL(chrome::kChromeUIEmojiPickerURL), profile, IDS_ACCNAME_EMOJI_PICKER);
   // Need to reload the web contents here because the view isn't visible unless
   // ShowUI is called from the JS side.  By reloading, we trigger the JS to
   // eventually call ShowUI().
