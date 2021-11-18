@@ -7,6 +7,7 @@
 #include <algorithm>
 
 #include "base/files/memory_mapped_file.h"
+#include "base/memory/shared_memory_mapping.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "base/time/time.h"
@@ -39,16 +40,54 @@ std::unique_ptr<MultipartDataPipeGetter> MultipartDataPipeGetter::Create(
                                                    std::move(mm_file));
 }
 
+// static
+std::unique_ptr<MultipartDataPipeGetter> MultipartDataPipeGetter::Create(
+    const std::string& boundary,
+    const std::string& metadata,
+    base::ReadOnlySharedMemoryRegion page) {
+  if (!page.IsValid())
+    return nullptr;
+
+  base::ReadOnlySharedMemoryMapping mapping = page.Map();
+  if (!mapping.IsValid())
+    return nullptr;
+
+  return std::make_unique<MultipartDataPipeGetter>(boundary, metadata,
+                                                   std::move(mapping));
+}
+
 MultipartDataPipeGetter::MultipartDataPipeGetter(
     const std::string& boundary,
     const std::string& metadata,
     std::unique_ptr<base::MemoryMappedFile> file)
-    : file_(std::move(file)) {
+    : MultipartDataPipeGetter(boundary,
+                              metadata,
+                              std::move(file),
+                              base::ReadOnlySharedMemoryMapping()) {
+  file_data_pipe_ = true;
+  CHECK(file_->IsValid());
+}
+
+MultipartDataPipeGetter::MultipartDataPipeGetter(
+    const std::string& boundary,
+    const std::string& metadata,
+    base::ReadOnlySharedMemoryMapping page)
+    : MultipartDataPipeGetter(boundary, metadata, nullptr, std::move(page)) {
+  file_data_pipe_ = false;
+  CHECK(page_.IsValid());
+}
+
+MultipartDataPipeGetter::MultipartDataPipeGetter(
+    const std::string& boundary,
+    const std::string& metadata,
+    std::unique_ptr<base::MemoryMappedFile> file,
+    base::ReadOnlySharedMemoryMapping page)
+    : file_(std::move(file)), page_(std::move(page)) {
   metadata_ = base::StrCat({"--", boundary, "\r\n", kDataContentType,
                             "\r\n\r\n", metadata, "\r\n--", boundary, "\r\n",
                             kDataContentType, "\r\n\r\n"});
+
   last_boundary_ = base::StrCat({"\r\n--", boundary, "--\r\n"});
-  CHECK(file_->IsValid());
 }
 
 MultipartDataPipeGetter::~MultipartDataPipeGetter() = default;
@@ -101,9 +140,18 @@ void MultipartDataPipeGetter::Write() {
       return;
   }
 
-  int64_t data_end = metadata_end + file_->length();
+  int64_t data_end = metadata_end;
+  if (is_file_data_pipe()) {
+    data_end += file_->length();
+  } else {
+    DCHECK(is_page_data_pipe());
+    data_end += page_.size();
+  }
+
   if (metadata_end <= write_position_ && write_position_ < data_end) {
-    if (!WriteFileData())
+    if (is_file_data_pipe() && !WriteFileData())
+      return;
+    if (is_page_data_pipe() && !WritePageData())
       return;
   }
 
@@ -149,6 +197,14 @@ bool MultipartDataPipeGetter::WriteFileData() {
                file_offset);
 }
 
+bool MultipartDataPipeGetter::WritePageData() {
+  int64_t page_offset = write_position_ - metadata_.size();
+  CHECK_GE(page_offset, 0);
+  CHECK_LT(page_offset, static_cast<int64_t>(page_.size()));
+
+  return Write(page_.GetMemoryAs<char>(), page_.size(), page_offset);
+}
+
 bool MultipartDataPipeGetter::Write(const char* data,
                                     int64_t full_size,
                                     int64_t offset) {
@@ -178,7 +234,21 @@ bool MultipartDataPipeGetter::Write(const char* data,
 }
 
 int64_t MultipartDataPipeGetter::FullSize() {
-  return metadata_.size() + file_->length() + last_boundary_.size();
+  int64_t size = metadata_.size() + last_boundary_.size();
+  if (is_file_data_pipe()) {
+    return size + file_->length();
+  } else {
+    DCHECK(is_page_data_pipe());
+    return size + page_.size();
+  }
+}
+
+bool MultipartDataPipeGetter::is_file_data_pipe() const {
+  return file_data_pipe_;
+}
+
+bool MultipartDataPipeGetter::is_page_data_pipe() const {
+  return !file_data_pipe_;
 }
 
 }  // namespace safe_browsing
