@@ -37,6 +37,7 @@ static_assert(sizeof(void*) != 8, "");
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(5, 8, 0)
 #define PA_STARSCAN_UFFD_WRITE_PROTECTOR_SUPPORTED
 #endif
+#endif
 
 #if defined(PA_HAS_64_BITS_POINTERS)
 // Use card table to avoid races for PCScan configuration without safepoints.
@@ -46,7 +47,6 @@ static_assert(sizeof(void*) != 8, "");
 #else
 // The card table is permanently disabled for 32-bit.
 #define PA_STARSCAN_USE_CARD_TABLE 0
-#endif
 #endif
 
 #if PA_STARSCAN_USE_CARD_TABLE && !defined(PA_ALLOW_PCSCAN)
