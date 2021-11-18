@@ -5,7 +5,7 @@ enums that support causality tracking, data attachment, and general assistance
 with debugging, without adding slowdowns due to returning large structs,
 pointers, or more complicated types.
 
-TypedStatus<T> should be specialized with a traits struct that defines:
+TypedStatus<T> should be instantiated with a traits struct that defines:
 
   Codes - enum (usually enum class) that would be the return type, if we weren't
           using TypedStatus.
@@ -74,7 +74,7 @@ enum class MyExampleEnum : StatusCodeType {
 ```
 
 Define an |TypedStatusTraits|, picking a name for the group of codes:
-(copying the desciptive comments is not suggested)
+(copying the descriptive comments is not suggested)
 
 ```c++
 struct MyExampleStatusTraits {
@@ -82,7 +82,7 @@ struct MyExampleStatusTraits {
   // here, instead of `using`.
   using Codes = MyExampleEnum;
   static constexpr StatusGroupType Group() { return "MyExampleStatus"; }
-  static constexpr absl::optional<Codes> { return Codes::kDefaultValue; }
+  static constexpr Codes DefaultEnumValue() { return Codes::kDefaultValue; }
 }
 ```
 
