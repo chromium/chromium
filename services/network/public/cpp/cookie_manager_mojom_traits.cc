@@ -474,7 +474,11 @@ bool StructTraits<network::mojom::CookiePartitionKeyDataView,
   net::SchemefulSite site;
   if (!partition_key.ReadSite(&site))
     return false;
-  *out = net::CookiePartitionKey::FromWire(site);
+
+  absl::optional<base::UnguessableToken> nonce;
+  if (!partition_key.ReadNonce(&nonce))
+    return false;
+  *out = net::CookiePartitionKey::FromWire(site, nonce);
   return true;
 }
 

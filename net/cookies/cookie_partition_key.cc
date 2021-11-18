@@ -12,8 +12,10 @@ namespace net {
 
 CookiePartitionKey::CookiePartitionKey() = default;
 
-CookiePartitionKey::CookiePartitionKey(const SchemefulSite& site)
-    : site_(site) {}
+CookiePartitionKey::CookiePartitionKey(
+    const SchemefulSite& site,
+    absl::optional<base::UnguessableToken> nonce)
+    : site_(site), nonce_(nonce) {}
 
 CookiePartitionKey::CookiePartitionKey(const GURL& url)
     : site_(SchemefulSite(url)) {}
@@ -35,15 +37,15 @@ CookiePartitionKey& CookiePartitionKey::operator=(CookiePartitionKey&& other) =
 CookiePartitionKey::~CookiePartitionKey() = default;
 
 bool CookiePartitionKey::operator==(const CookiePartitionKey& other) const {
-  return site_ == other.site_;
+  return site_ == other.site_ && nonce_ == other.nonce_;
 }
 
 bool CookiePartitionKey::operator!=(const CookiePartitionKey& other) const {
-  return site_ != other.site_;
+  return site_ != other.site_ || nonce_ != other.nonce_;
 }
 
 bool CookiePartitionKey::operator<(const CookiePartitionKey& other) const {
-  return site_ < other.site_;
+  return std::tie(site_, nonce_) < std::tie(other.site_, other.nonce_);
 }
 
 // static
@@ -74,21 +76,27 @@ bool CookiePartitionKey::Deserialize(const std::string& in,
   // SchemfulSite is opaque if the input is invalid.
   if (schemeful_site.opaque())
     return false;
-  out = absl::make_optional(CookiePartitionKey(schemeful_site));
+  out = absl::make_optional(CookiePartitionKey(schemeful_site, absl::nullopt));
   return true;
 }
 
 absl::optional<CookiePartitionKey> CookiePartitionKey::FromNetworkIsolationKey(
     const NetworkIsolationKey& network_isolation_key) {
-  if (!base::FeatureList::IsEnabled(features::kPartitionedCookies))
+  if (!base::FeatureList::IsEnabled(features::kPartitionedCookies)) {
     return absl::nullopt;
+  }
+
   // TODO(crbug.com/1225444): Check if the top frame site is in a First-Party
   // Set or if it is an extension URL.
   absl::optional<net::SchemefulSite> top_frame_site =
       network_isolation_key.GetTopFrameSite();
   if (!top_frame_site)
     return absl::nullopt;
-  return absl::make_optional(net::CookiePartitionKey(top_frame_site.value()));
+
+  absl::optional<base::UnguessableToken> nonce =
+      network_isolation_key.GetNonce();
+  return absl::make_optional(
+      net::CookiePartitionKey(top_frame_site.value(), nonce));
 }
 
 bool CookiePartitionKey::IsSerializeable() const {
@@ -96,7 +104,7 @@ bool CookiePartitionKey::IsSerializeable() const {
     return false;
   // We should not try to serialize a partition key created by a renderer.
   DCHECK(!from_script_);
-  return !site_.opaque();
+  return !site_.opaque() && !nonce_.has_value();
 }
 
 }  // namespace net

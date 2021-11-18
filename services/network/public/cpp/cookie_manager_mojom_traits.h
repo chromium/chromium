@@ -189,6 +189,11 @@ struct StructTraits<network::mojom::CookiePartitionKeyDataView,
     return cpk.from_script();
   }
 
+  static const absl::optional<base::UnguessableToken>& nonce(
+      const net::CookiePartitionKey& cpk) {
+    return cpk.nonce();
+  }
+
   static bool Read(network::mojom::CookiePartitionKeyDataView partition_key,
                    net::CookiePartitionKey* out);
 };

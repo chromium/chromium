@@ -32,11 +32,11 @@ class NET_EXPORT CookiePartitionKey {
   // This will be used for Android, storing persistent partitioned cookies, and
   // loading partitioned cookies into Java code.
   //
-  // This function returns true if the partition key is not opaque. We do not
-  // want to serialize cookies with opaque origins in their partition key to
-  // disk, because if the browser session ends we will not be able to attach the
-  // saved cookie to any future requests. This is because opaque origins' nonces
-  // are only stored in volatile memory.
+  // This function returns true if the partition key is not opaque and if nonce_
+  // is not present. We do not want to serialize cookies with opaque origins or
+  // nonce in their partition key to disk, because if the browser session ends
+  // we will not be able to attach the saved cookie to any future requests. This
+  // is because opaque origins' nonces are only stored in volatile memory.
   //
   // TODO(crbug.com/1225444) Investigate ways to persist partition keys with
   // opaque origins if a browser session is restored.
@@ -62,8 +62,10 @@ class NET_EXPORT CookiePartitionKey {
   // Create a new CookiePartitionKey from the site of an existing
   // CookiePartitionKey. This should only be used for sites of partition keys
   // which were already created using Deserialize or FromNetworkIsolationKey.
-  static CookiePartitionKey FromWire(const SchemefulSite& site) {
-    return CookiePartitionKey(site);
+  static CookiePartitionKey FromWire(
+      const SchemefulSite& site,
+      absl::optional<base::UnguessableToken> nonce) {
+    return CookiePartitionKey(site, nonce);
   }
 
   // Create a new CookiePartitionKey in a script running in a renderer. We do
@@ -94,13 +96,20 @@ class NET_EXPORT CookiePartitionKey {
   // Cookie partition keys whose internal site is opaque cannot be serialized.
   bool IsSerializeable() const;
 
+  const absl::optional<base::UnguessableToken>& nonce() const { return nonce_; }
+
  private:
-  explicit CookiePartitionKey(const SchemefulSite& site);
+  explicit CookiePartitionKey(const SchemefulSite& site,
+                              absl::optional<base::UnguessableToken> nonce);
   explicit CookiePartitionKey(const GURL& url);
   explicit CookiePartitionKey(bool from_script);
 
   SchemefulSite site_;
   bool from_script_ = false;
+
+  // Having a nonce is a way to force a transient opaque `CookiePartitionKey`
+  // for non-opaque origins.
+  absl::optional<base::UnguessableToken> nonce_;
 };
 
 }  // namespace net

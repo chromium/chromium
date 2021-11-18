@@ -6,6 +6,7 @@ module network.mojom;
 
 import "components/content_settings/core/common/content_settings.mojom";
 import "mojo/public/mojom/base/time.mojom";
+import "mojo/public/mojom/base/unguessable_token.mojom";
 import "services/network/public/mojom/schemeful_site.mojom";
 import "url/mojom/url.mojom";
 
@@ -151,10 +152,13 @@ struct CookieOptions {
 
 struct CookiePartitionKey {
   SchemefulSite site;
+
   // Indicates the CookiePartitionKey is a placeholder indicating that the
   // cookie should be partitioned, but it was created in the renderer so we
   // don't know what its partition key is yet.
   bool from_script = false;
+
+  mojo_base.mojom.UnguessableToken? nonce;
 };
 
 struct CookiePartitionKeychain {
