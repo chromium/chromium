@@ -91274,7 +91274,6 @@ Called by update_scheduler_enums.py.-->
   <int value="2052019697" label="chrome://userimage/"/>
   <int value="2114840772" label="chrome://drive-internals/"/>
   <int value="2120829362" label="chrome://account-manager-welcome/"/>
-  <int value="3251925547" label="chrome://offline-internals/"/>
 </enum>
 
 <enum name="WebURLRequestPriority">
