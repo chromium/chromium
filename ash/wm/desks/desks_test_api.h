@@ -37,7 +37,6 @@ class DesksTestApi {
   static PersistentDesksBarContextMenu* GetPersistentDesksBarContextMenu();
   static const std::vector<PersistentDesksBarDeskButton*>
   GetPersistentDesksBarDeskButtons();
-  static bool HasVerticalDotsButton();
 
   static bool IsDesksBarLeftGradientVisible();
   static bool IsDesksBarRightGradientVisible();

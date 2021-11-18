@@ -5728,32 +5728,6 @@ TEST_F(DesksTest, PrimaryUserHasUsedDesksRecently) {
   desks_restore_util::OverrideClockForTesting(nullptr);
 }
 
-// Tests the visibility of the vertical dots button inside desks bar.
-TEST_F(DesksTest, VerticalDotsButtonVisibility) {
-  // Enable the bento bar feature through FeatureList instead of command line.
-  base::test::ScopedFeatureList scoped_feature_list;
-  auto feature_list = std::make_unique<base::FeatureList>();
-  feature_list->RegisterFieldTrialOverride(
-      features::kBentoBar.name, base::FeatureList::OVERRIDE_ENABLE_FEATURE,
-      base::FieldTrialList::CreateFieldTrial("FooTrial", "Group1"));
-  scoped_feature_list.InitWithFeatureList(std::move(feature_list));
-  ASSERT_FALSE(desks_restore_util::HasPrimaryUserUsedDesksRecently());
-  EXPECT_TRUE(features::IsBentoBarEnabled());
-
-  // Vertical dots button should not be shown even though bento bar is enabled
-  // but HasPrimaryUserUsedDesksRecently is false.
-  NewDesk();
-  EnterOverview();
-  EXPECT_FALSE(DesksTestApi::HasVerticalDotsButton());
-
-  // Vertical dots button should be shown if bento bar is enabled and
-  // HasPrimaryUserUsedDesksRecently is true.
-  ExitOverview();
-  desks_restore_util::SetPrimaryUserHasUsedDesksRecentlyForTesting(true);
-  EnterOverview();
-  EXPECT_TRUE(DesksTestApi::HasVerticalDotsButton());
-}
-
 // A test class that uses a mock time test environment.
 class DesksMockTimeTest : public DesksTest {
  public:
