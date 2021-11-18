@@ -242,6 +242,7 @@ build_recipe(
 
 build_recipe(
     name = "recipe:tricium_oilpan",
+    use_python3 = True,
 )
 
 build_recipe(
