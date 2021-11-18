@@ -48,10 +48,6 @@
 #include "net/url_request/url_request_context.h"
 #include "url/gurl.h"
 
-#if defined(OS_ANDROID)
-#include "net/android/network_library.h"
-#endif  // OS_ANDROID
-
 namespace net {
 
 namespace {
