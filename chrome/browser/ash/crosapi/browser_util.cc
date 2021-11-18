@@ -42,6 +42,7 @@
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/ui/webui/chrome_web_ui_controller_factory.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/common/channel_info.h"
 #include "chrome/common/chrome_features.h"
@@ -877,6 +878,12 @@ mojom::BrowserInitParamsPtr GetBrowserInitParams(
 
   params->is_unfiltered_bluetooth_device_enabled =
       chromeos::switches::IsUnfilteredBluetoothDevicesEnabled();
+
+  // Pass the accepted internal urls to lacros. Only accepted urls are allowed
+  // to be passed via OpenURL from Lacros to Ash.
+  params->accepted_internal_ash_urls =
+      std::move(ChromeWebUIControllerFactory::GetInstance())
+          ->GetListOfAcceptableURLs();
   return params;
 }
 

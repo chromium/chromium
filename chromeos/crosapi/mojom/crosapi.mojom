@@ -606,8 +606,8 @@ enum CreationResult {
 // If ash-chrome is newer than the browser, then some fields may not be
 // processed by the browser.
 //
-// Next version: 33
-// Next id: 32
+// Next version: 34
+// Next id: 33
 [Stable, RenamedFrom="crosapi.mojom.LacrosInitParams"]
 struct BrowserInitParams {
   // This is ash-chrome's version of the Crosapi interface. This is used by
@@ -817,6 +817,12 @@ struct BrowserInitParams {
   // past M100, then we can remove this workaround.
   [MinVersion=32]
   array<string>? ash_workarounds@31;
+
+  // Internal chrome:// URLs which can be handled by Ash. These are sent from
+  // Ash to Lacros at startup so Lacros knows which URLs are OK to forward.
+  // Added in M97.
+  [MinVersion=33]
+  array<url.mojom.Url>? accepted_internal_ash_urls@32;
 };
 
 // BrowserService defines the APIs that live in a browser (such as
