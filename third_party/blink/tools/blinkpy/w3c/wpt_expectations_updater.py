@@ -338,32 +338,6 @@ class WPTExpectationsUpdater(object):
         return self.git_cl.latest_try_jobs(builder_names=builder_names,
                                            patchset=self.patchset)
 
-    def get_test_ids_with_unexpected_results(self, builds, test_suite):
-        """Returns a set of test ids for which to create baselines and expectations.
-
-        Only tests that always run unexpected from the initial step are included.
-        These tests either failed all three retries, or is an unexpected pass. We do not
-        create test expectations for passed tests even if they have flaky results, so
-        that we do not create excessive test expectations, thus negatively impact the
-        test coverage.
-        Once we decided the list of tests to work on, results from both the initial step
-        and retry-with-patch step are used to create test expecations.
-        """
-        rv = set()
-        predicate = {"expectancy": "VARIANTS_WITH_ONLY_UNEXPECTED_RESULTS"}
-        test_results_list = self.host.results_fetcher.fetch_results_from_resultdb(self.host, builds, predicate)
-        for result in test_results_list:
-            test_id = result["testId"]
-            test_name = test_id[len(self.testid_prefix):]
-            if not self._is_wpt_test(test_name):
-                continue
-            if result["variant"]["def"]["test_suite"] != test_suite:
-                continue
-            if result["status"] == "PASS" and not self.options.include_unexpected_pass:
-                continue
-            rv.add(test_id)
-        return rv
-
     def get_failing_results_dicts(self, build, test_suite):
         """Returns a list of nested dicts of failing test results.
 
@@ -392,6 +366,12 @@ class WPTExpectationsUpdater(object):
         predicate = {"expectancy": "VARIANTS_WITH_ONLY_UNEXPECTED_RESULTS"}
         rv = self.host.results_fetcher.fetch_results_from_resultdb(self.host, [build], predicate)
         rv = filter(func, rv)
+        if not self.options.include_unexpected_pass:
+            # if a test first fail then passed unexpectedly
+            filter_passed = lambda x: (x["status"] == "PASS")
+            passed = filter(filter_passed, rv)
+            passed_test_ids = set([r["testId"] for r in passed])
+            rv = [r for r in rv if r["testId"] not in passed_test_ids]
         test_results_list.extend(rv)
 
         has_webdriver_tests = self.host.builders.has_webdriver_tests_for_builder(
