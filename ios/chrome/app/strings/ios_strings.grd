@@ -741,7 +741,7 @@ See your search engine’s instructions for deleting your search history, if app
       <message name="IDS_IOS_COPY_VERSION_HINT" desc="The accessibility hint for the label showing the Chrome version. [iOS only]">
         Double tap to copy.
       </message>
-      <message name="IDS_IOS_DEFAULT_BROWSER_MAIN_BUTTON_TEXT" desc="Text of the button that will take the user to the Settings page to configure the default browser [iOS only]">
+      <message name="IDS_IOS_OPEN_SETTINGS" desc="Text of the button that will take the user to the Settings page to configure the default browser [iOS only]">
         Open Settings
       </message>
       <message name="IDS_IOS_DEFAULT_NON_MODAL_PRIMARY_BUTTON_TEXT" desc="Text of button that will take users to Chrome or iOS settings where they can change the default browser. Used in the non-modal default browser promo [iOS only]">
@@ -2079,6 +2079,27 @@ Try to use a unique password for every site.
       </message>
       <message name="IDS_IOS_SETTINGS_PASSWORDS_IN_OTHER_APPS" desc="The title of the view that teaches users to turn on iOS auto-fill from Chrome password manager">
         Passwords In Other Apps
+      </message>
+      <message name="IDS_IOS_SETTINGS_PASSWORDS_IN_OTHER_APPS_CAPTION" desc="The caption label below subtitle of the view that teaches users to turn off iOS auto-fill from Chrome password manager">
+        To turn off, open <ph name="BEGIN_LINK">BEGIN_LINK</ph>Settings<ph name="END_LINK">END_LINK</ph> and go to Passwords.
+      </message>
+      <message name="IDS_IOS_SETTINGS_PASSWORDS_IN_OTHER_APPS_SHORTENED_STEP_1" desc="Text of the row indicating the first step of shortened instruction of of turning on iOS auto-fill from Chrome password manager [iOS only]">
+        Open AutoFill Password Settings
+      </message>
+      <message name="IDS_IOS_SETTINGS_PASSWORDS_IN_OTHER_APPS_STEP_1_IPAD" desc="Text of the row indicating the first step of full instruction of of turning on iOS auto-fill from Chrome password manager [iOS only]">
+        1. Open iPad Settings
+      </message>
+      <message name="IDS_IOS_SETTINGS_PASSWORDS_IN_OTHER_APPS_STEP_1_IPHONE" desc="Text of the row indicating the first step of full instruction of of turning on iOS auto-fill from Chrome password manager [iOS only]">
+        1. Open iPhone Settings
+      </message>
+      <message name="IDS_IOS_SETTINGS_PASSWORDS_IN_OTHER_APPS_STEP_2" desc="Text of the row indicating the second step of full instruction of of turning on iOS auto-fill from Chrome password manager [iOS only]">
+        2. Tap on Passwords
+      </message>
+      <message name="IDS_IOS_SETTINGS_PASSWORDS_IN_OTHER_APPS_STEP_3" desc="Text of the row indicating the third step of full instruction of of turning on iOS auto-fill from Chrome password manager [iOS only]">
+        3. Tap AutoFill Passwords
+      </message>
+      <message name="IDS_IOS_SETTINGS_PASSWORDS_IN_OTHER_APPS_SUBTITLE" desc="The subtitle of the view that teaches users to turn on iOS auto-fill from Chrome password manager">
+        Use the passwords you saved to Chrome in other apps on your device
       </message>
       <message name="IDS_IOS_SETTINGS_SAFETY_CHECK_PASSWORDS_TITLE" desc="Title for the passwords element of safety check" meaning="Row title to access the passowrd check subpage if a probelm is found with user's saved passwords [CHAR_LIMIT=20]">
         Passwords

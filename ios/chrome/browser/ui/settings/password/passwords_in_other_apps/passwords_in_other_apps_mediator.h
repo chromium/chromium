@@ -7,12 +7,15 @@
 
 #import <Foundation/Foundation.h>
 #import "ios/chrome/browser/ui/settings/password/passwords_in_other_apps/passwords_in_other_apps_consumer.h"
+#import "ios/chrome/browser/ui/settings/password/passwords_in_other_apps/passwords_in_other_apps_view_controller_delegate.h"
 #import "ios/chrome/browser/ui/settings/utils/password_auto_fill_status_observer.h"
 
 // This mediator fetches and organises passwords autofill status for its
-// consumer.
+// consumer, as well as implementing its delegate methods to responding to its
+// action items.
 @interface PasswordsInOtherAppsMediator
-    : NSObject <PasswordAutoFillStatusObserver>
+    : NSObject <PasswordAutoFillStatusObserver,
+                PasswordsInOtherAppsViewControllerDelegate>
 
 // Consumer for the mediator that utilizes mediator properties and updates.
 @property(nonatomic, weak) id<PasswordsInOtherAppsConsumer> consumer;

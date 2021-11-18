@@ -321,6 +321,10 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
 
   self.view.backgroundColor = [UIColor colorNamed:kPrimaryBackgroundColor];
 
+  // TODO(crbug.com/1268684): Explicitly set
+  // shadowImage/shadowColor/backgroundImage for navigation bar in iOS versions
+  // lower than 15 to workaround the issue that the navigation bar UI breaks
+  // occassionally in the presence of a search bar.
   self.navigationBar.translucent = NO;
   self.toolbar.translucent = NO;
   self.navigationBar.barTintColor =

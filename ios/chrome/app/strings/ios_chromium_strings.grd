@@ -409,6 +409,12 @@ locale.  The strings in this file are specific to iOS.
       <message name="IDS_IOS_UPGRADE_AVAILABLE" desc="Text to inform the user of the presence of a new version of the application">
         Chromium just got better! A new version is available.
       </message>
+      <message name="IDS_IOS_SETTINGS_PASSWORDS_IN_OTHER_APPS_SHORTENED_STEP_2" desc="Text of the row indicating the second step of shortened instruction of turning on iOS auto-fill from Chrome password manager [iOS only]">
+        Select Chromium
+      </message>
+      <message name="IDS_IOS_SETTINGS_PASSWORDS_IN_OTHER_APPS_STEP_4" desc="Text of the row indicating the fourth step of full instruction of of turning on iOS auto-fill from Chrome password manager [iOS only]">
+        4. Select Chromium
+      </message>
       <message name="IDS_IOS_SETTINGS_SAFETY_CHECK_PAGE_HEADER" desc="Informational header at the top of the safety check page">
         Chromium can help keep you safe from data breaches, unsafe websites and more.
       </message>

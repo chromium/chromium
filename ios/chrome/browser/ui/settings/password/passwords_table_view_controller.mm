@@ -349,6 +349,10 @@ void RemoveFormsToBeDeleted(
       UIOffsetMake(0.0f, kTableViewNavigationVerticalOffsetForSearchHeader);
   searchController.searchBar.searchFieldBackgroundPositionAdjustment = offset;
 
+  // TODO(crbug.com/1268684): Explicitly set the background color for the search
+  // bar to match with the color of navigation bar in iOS 13/14 to work around
+  // an iOS issue.
+
   // UIKit needs to know which controller will be presenting the
   // searchController. If we don't add this trying to dismiss while
   // SearchController is active will fail.

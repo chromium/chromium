@@ -24,15 +24,34 @@ source_set("passwords_in_other_apps_ui") {
     "passwords_in_other_apps_consumer.h",
     "passwords_in_other_apps_view_controller.h",
     "passwords_in_other_apps_view_controller.mm",
+    "passwords_in_other_apps_view_controller_delegate.h",
   ]
   deps = [
+    ":constants",
+    "//base",
     "//components/strings",
-    "//ios/chrome/app/strings:ios_strings_grit",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/ui:feature_flags",
     "//ios/chrome/browser/ui/elements",
+    "//ios/chrome/browser/ui/settings:settings_root",
+    "//ios/chrome/browser/ui/settings/resources:settings",
+    "//ios/chrome/browser/ui/settings/resources:settings_passwords_in_other_apps_banner",
     "//ios/chrome/browser/ui/settings/utils",
+    "//ios/chrome/browser/ui/util",
+    "//ios/chrome/common",
     "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/util",
     "//ui/base",
   ]
+}
+
+source_set("constants") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "constants.h",
+    "constants.mm",
+  ]
+  frameworks = [ "Foundation.framework" ]
 }
 
 source_set("unit_tests") {

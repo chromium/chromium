@@ -45,6 +45,8 @@
   self.viewController.presenter = self;
 
   self.mediator = [[PasswordsInOtherAppsMediator alloc] init];
+
+  self.viewController.delegate = self.mediator;
   self.mediator.consumer = self.viewController;
 
   [self.baseNavigationController pushViewController:self.viewController

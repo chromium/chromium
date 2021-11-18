@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/ui/settings/password/passwords_in_other_apps/passwords_in_other_apps_mediator.h"
 
+#import <UIKit/UIKit.h>
+
 #include "base/check.h"
 #import "ios/chrome/browser/ui/settings/utils/password_auto_fill_status_manager.h"
 
@@ -32,6 +34,16 @@
   // self.consumer should have already been setup.
   DCHECK(self.consumer);
   [self.consumer updateInstructionsWithCurrentPasswordAutoFillStatus];
+}
+
+#pragma mark - PasswordsInOtherAppsViewControllerDelegate
+
+- (void)openApplicationSettings {
+  // TODO(crbug.com/1269843): The current URL used is a placeholder.
+  [[UIApplication sharedApplication]
+                openURL:[NSURL URLWithString:UIApplicationOpenSettingsURLString]
+                options:@{}
+      completionHandler:nil];
 }
 
 @end
