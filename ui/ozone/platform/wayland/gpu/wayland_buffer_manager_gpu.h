@@ -40,11 +40,14 @@ struct OverlayPlane;
 class WaylandBufferManagerGpu : public ozone::mojom::WaylandBufferManagerGpu {
  public:
   WaylandBufferManagerGpu();
-
   WaylandBufferManagerGpu(const WaylandBufferManagerGpu&) = delete;
   WaylandBufferManagerGpu& operator=(const WaylandBufferManagerGpu&) = delete;
 
   ~WaylandBufferManagerGpu() override;
+
+  scoped_refptr<base::SingleThreadTaskRunner> gpu_thread_runner() const {
+    return gpu_thread_runner_;
+  }
 
   // WaylandBufferManagerGpu overrides:
   void Initialize(
@@ -198,6 +201,8 @@ class WaylandBufferManagerGpu : public ozone::mojom::WaylandBufferManagerGpu {
       uint32_t buffer_id,
       const gfx::PresentationFeedback& feedback);
 
+  void OnHostDisconnected();
+
 #if defined(WAYLAND_GBM)
   // Finds drm render node, opens it and stores the handle into
   // |drm_render_node_fd|.
@@ -246,26 +251,30 @@ class WaylandBufferManagerGpu : public ozone::mojom::WaylandBufferManagerGpu {
 
   // These task runners can be used to pass messages back to the same thread,
   // where the commit buffer request came from. For example, swap requests can
-  // come from the GpuMainThread, but are rerouted to the IOChildThread and then
+  // come from the Viz thread, but are rerouted to the GpuMainThread and then
   // mojo calls happen. However, when the manager receives mojo calls, it has to
   // reroute calls back to the same thread where the calls came from to ensure
-  // correct sequence. Note that not all calls come from the GpuMainThread, e.g.
-  // WaylandCanvasSurface calls from the VizCompositorThread.
-  // This map must only be accessed from the IO thread.
+  // correct sequence. Note that not all calls come from the Viz thread, e.g.
+  // GbmPixmapWayland may call from either the GpuMainThread or IOChildThread.
+  // This map must only be accessed from the GpuMainThread.
   base::small_map<std::map<gfx::AcceleratedWidget,
                            scoped_refptr<base::SingleThreadTaskRunner>>>
       commit_thread_runners_;
 
   // A task runner, which is initialized in a multi-process mode. It is used to
-  // ensure all the methods of this class are run on IOChildThread. This is
+  // ensure all the methods of this class are run on GpuMainThread. This is
   // needed to ensure mojo calls happen on a right sequence.
-  scoped_refptr<base::SingleThreadTaskRunner> io_thread_runner_;
+  scoped_refptr<base::SingleThreadTaskRunner> gpu_thread_runner_;
 
   // Protects access to |widget_to_surface_map_| and |commit_thread_runners_|.
   base::Lock lock_;
 
   // Keeps track of the next unique buffer ID.
   uint32_t next_buffer_id_ = 0;
+
+  // All calls must happen on the correct sequence. See comments in the
+  // constructor for more details.
+  SEQUENCE_CHECKER(gpu_sequence_checker_);
 };
 
 }  // namespace ui

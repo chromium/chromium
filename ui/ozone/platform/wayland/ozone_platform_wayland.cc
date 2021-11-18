@@ -14,7 +14,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/no_destructor.h"
-#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/threading/thread_task_runner_handle.h"
 #include "ui/base/buildflags.h"
 #include "ui/base/cursor/cursor_factory.h"
 #include "ui/base/dragdrop/os_exchange_data_provider_factory_ozone.h"
@@ -327,11 +327,22 @@ class OzonePlatformWayland : public OzonePlatform,
   }
 
   void AddInterfaces(mojo::BinderMap* binders) override {
+    // It's preferred to reuse the same task runner where the
+    // WaylandBufferManagerGpu has been created. However, when tests are
+    // executed, the task runner might not have been set at that time. Thus, use
+    // the current one. See the comment in WaylandBufferManagerGpu why it takes
+    // a task runner.
+    //
+    // Please note this call happens on the gpu.
+    auto gpu_task_runner = buffer_manager_->gpu_thread_runner();
+    if (!gpu_task_runner)
+      gpu_task_runner = base::ThreadTaskRunnerHandle::Get();
+
     binders->Add<ozone::mojom::WaylandBufferManagerGpu>(
         base::BindRepeating(
             &OzonePlatformWayland::CreateWaylandBufferManagerGpuBinding,
             base::Unretained(this)),
-        base::SequencedTaskRunnerHandle::Get());
+        gpu_task_runner);
   }
 
   void CreateWaylandBufferManagerGpuBinding(
