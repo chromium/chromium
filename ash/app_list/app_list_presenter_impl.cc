@@ -542,7 +542,8 @@ void AppListPresenterImpl::OnWindowFocused(aura::Window* gained_focus,
       !base::Contains(kIdsOfContainersThatWontHideAppList,
                       gained_focus_container_id);
 
-  const bool app_list_gained_focus = applist_window->Contains(gained_focus);
+  const bool app_list_gained_focus = applist_window->Contains(gained_focus) ||
+                                     applist_container->Contains(gained_focus);
   const bool app_list_lost_focus =
       gained_focus ? gained_focus_hides_app_list
                    : (lost_focus && applist_container->Contains(lost_focus));

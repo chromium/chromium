@@ -28,6 +28,7 @@ class SearchResultListViewTest;
 
 class AppListMainView;
 class AppListViewDelegate;
+class SearchResultPageDialogController;
 
 // SearchResultListView displays SearchResultList with a list of
 // SearchResultView.
@@ -68,6 +69,7 @@ class ASH_EXPORT SearchResultListView : public SearchResultContainerView {
 
   SearchResultListView(AppListMainView* main_view,
                        AppListViewDelegate* view_delegate,
+                       SearchResultPageDialogController* dialog_controller,
                        absl::optional<size_t> productivity_launcher_index);
 
   SearchResultListView(const SearchResultListView&) = delete;

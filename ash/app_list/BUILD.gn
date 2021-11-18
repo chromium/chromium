@@ -126,6 +126,8 @@ source_set("app_list") {
     "views/search_result_list_view.h",
     "views/search_result_page_anchored_dialog.cc",
     "views/search_result_page_anchored_dialog.h",
+    "views/search_result_page_dialog_controller.cc",
+    "views/search_result_page_dialog_controller.h",
     "views/search_result_page_view.cc",
     "views/search_result_page_view.h",
     "views/search_result_suggestion_chip_view.cc",

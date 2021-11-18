@@ -20,6 +20,7 @@ namespace ash {
 class AppListViewDelegate;
 class ResultSelectionController;
 class SearchBoxView;
+class SearchResultPageDialogController;
 
 // The search results view for productivity launcher. Contains a scrolling list
 // of search results. Does not include the search box, which is owned by a
@@ -31,8 +32,10 @@ class ASH_EXPORT ProductivityLauncherSearchView
  public:
   METADATA_HEADER(ProductivityLauncherSearchView);
 
-  ProductivityLauncherSearchView(AppListViewDelegate* view_delegate,
-                                 SearchBoxView* search_box_view);
+  ProductivityLauncherSearchView(
+      AppListViewDelegate* view_delegate,
+      SearchResultPageDialogController* dialog_controller,
+      SearchBoxView* search_box_view);
   ProductivityLauncherSearchView(const ProductivityLauncherSearchView&) =
       delete;
   ProductivityLauncherSearchView& operator=(
@@ -93,6 +96,8 @@ class ASH_EXPORT ProductivityLauncherSearchView
   // Send a kSelection a11y notification for the currently selected search
   // result view unless overridden by |ignore_result_changes_for_a11y_|.
   void MaybeNotifySelectedResultChanged();
+
+  SearchResultPageDialogController* const dialog_controller_;
 
   SearchBoxView* const search_box_view_;
 

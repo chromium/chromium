@@ -231,10 +231,12 @@ void SearchResultPageView::InitializeContainers(
     AppListViewDelegate* view_delegate,
     AppListMainView* app_list_main_view,
     SearchBoxView* search_box_view) {
+  dialog_controller_ = std::make_unique<SearchResultPageDialogController>(this);
+
   if (features::IsProductivityLauncherEnabled()) {
     std::unique_ptr<ProductivityLauncherSearchView> search_view_ptr =
-        std::make_unique<ProductivityLauncherSearchView>(view_delegate,
-                                                         search_box_view);
+        std::make_unique<ProductivityLauncherSearchView>(
+            view_delegate, dialog_controller_.get(), search_box_view);
     productivity_launcher_search_view_ = search_view_ptr.get();
     contents_view_->AddChildView(
         std::make_unique<SearchCardView>(std::move(search_view_ptr)));
@@ -249,7 +251,8 @@ void SearchResultPageView::InitializeContainers(
     // productivity_launcher_index is not set as the feature is not enabled.
     search_result_list_view_ =
         AddSearchResultContainerView(std::make_unique<SearchResultListView>(
-            app_list_main_view, view_delegate, absl::nullopt));
+            app_list_main_view, view_delegate, dialog_controller_.get(),
+            absl::nullopt));
     search_result_list_view_->SetListType(
         SearchResultListView::SearchResultListType::kUnified);
 
@@ -508,23 +511,6 @@ void SearchResultPageView::SearchEngineChanged() {}
 
 void SearchResultPageView::ShowAssistantChanged() {}
 
-void SearchResultPageView::ShowAnchoredDialog(
-    std::unique_ptr<views::DialogDelegateView> dialog) {
-  ContentsView* const contents_view = AppListPage::contents_view();
-  if (contents_view->GetActiveState() != AppListState::kStateSearchResults)
-    return;
-
-  anchored_dialog_ = std::make_unique<SearchResultPageAnchoredDialog>(
-      std::move(dialog), contents_view,
-      base::BindOnce(&SearchResultPageView::OnAnchoredDialogClosed,
-                     base::Unretained(this)));
-  const gfx::Rect anchor_bounds =
-      contents_view->GetSearchBoxBounds(AppListState::kStateSearchResults);
-  anchored_dialog_->UpdateBounds(anchor_bounds);
-
-  anchored_dialog_->widget()->Show();
-}
-
 SkColor SearchResultPageView::GetBackgroundColorForState(
     AppListState state) const {
   if (state == AppListState::kStateSearchResults)
@@ -545,10 +531,6 @@ SearchResultListView* SearchResultPageView::GetSearchResultListViewForTest() {
   return search_result_list_view_;
 }
 
-void SearchResultPageView::OnWillBeHidden() {
-  anchored_dialog_.reset();
-}
-
 bool SearchResultPageView::ShouldShowSearchResultView() const {
   SearchModel* search_model = AppListModelProvider::Get()->search_model();
   return (!features::IsProductivityLauncherEnabled() ||
@@ -562,6 +544,7 @@ void SearchResultPageView::OnHidden() {
   // being moved onto suggested apps when zero state is enabled.
   AppListPage::OnHidden();
   notify_a11y_results_changed_timer_.Stop();
+  dialog_controller_->SetEnabled(false);
   SetVisible(false);
   for (auto* container_view : result_container_views_) {
     container_view->SetShown(false);
@@ -574,6 +557,9 @@ void SearchResultPageView::OnHidden() {
 
 void SearchResultPageView::OnShown() {
   AppListPage::OnShown();
+
+  dialog_controller_->SetEnabled(true);
+
   for (auto* container_view : result_container_views_) {
     container_view->SetShown(ShouldShowSearchResultView());
   }
@@ -601,10 +587,12 @@ void SearchResultPageView::AnimateYPosition(AppListViewState target_view_state,
 
   animator.Run(default_offset, layer());
   animator.Run(default_offset, view_shadow_->shadow()->shadow_layer());
-  if (anchored_dialog_) {
+  SearchResultPageAnchoredDialog* search_page_dialog =
+      dialog_controller_->dialog();
+  if (search_page_dialog) {
     const float offset =
-        anchored_dialog_->AdjustVerticalTransformOffset(default_offset);
-    animator.Run(offset, anchored_dialog_->widget()->GetLayer());
+        search_page_dialog->AdjustVerticalTransformOffset(default_offset);
+    animator.Run(offset, search_page_dialog->widget()->GetLayer());
   }
 }
 
@@ -612,16 +600,6 @@ void SearchResultPageView::UpdatePageOpacityForState(AppListState state,
                                                      float search_box_opacity,
                                                      bool restore_opacity) {
   layer()->SetOpacity(search_box_opacity);
-}
-
-void SearchResultPageView::UpdatePageBoundsForState(
-    AppListState state,
-    const gfx::Rect& contents_bounds,
-    const gfx::Rect& search_box_bounds) {
-  AppListPage::UpdatePageBoundsForState(state, contents_bounds,
-                                        search_box_bounds);
-  if (anchored_dialog_)
-    anchored_dialog_->UpdateBounds(search_box_bounds);
 }
 
 gfx::Rect SearchResultPageView::GetPageBoundsForState(
@@ -716,10 +694,6 @@ void SearchResultPageView::OnAnimationUpdated(double progress,
 gfx::Size SearchResultPageView::GetPreferredSearchBoxSize() const {
   static gfx::Size size = gfx::Size(kWidth, kSearchBoxHeight);
   return size;
-}
-
-void SearchResultPageView::OnAnchoredDialogClosed() {
-  anchored_dialog_.reset();
 }
 
 }  // namespace ash

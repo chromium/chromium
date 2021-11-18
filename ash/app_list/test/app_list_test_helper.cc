@@ -21,6 +21,7 @@
 #include "ash/app_list/views/apps_container_view.h"
 #include "ash/app_list/views/contents_view.h"
 #include "ash/app_list/views/productivity_launcher_search_view.h"
+#include "ash/app_list/views/search_result_page_dialog_controller.h"
 #include "ash/app_list/views/search_result_page_view.h"
 #include "ash/constants/ash_features.h"
 #include "ash/shell.h"
@@ -184,6 +185,15 @@ views::View* AppListTestHelper::GetFullscreenLauncherAppsSeparatorView() {
   return GetAppsContainerView()->GetSeparatorView();
 }
 
+SearchResultPageAnchoredDialog*
+AppListTestHelper::GetFullscreenSearchPageDialog() {
+  return GetAppListView()
+      ->app_list_main_view()
+      ->contents_view()
+      ->search_result_page_view()
+      ->dialog_for_test();
+}
+
 AppListBubbleView* AppListTestHelper::GetBubbleView() {
   return app_list_controller_->bubble_presenter_for_test()
       ->bubble_view_for_test();
@@ -225,6 +235,11 @@ AppListBubbleSearchPage* AppListTestHelper::GetBubbleSearchPage() {
       ->search_page_;
 }
 
+SearchResultPageAnchoredDialog* AppListTestHelper::GetBubbleSearchPageDialog() {
+  return app_list_controller_->bubble_presenter_for_test()
+      ->bubble_view_for_test()
+      ->search_page_dialog_controller_->dialog();
+}
 AppListBubbleAssistantPage* AppListTestHelper::GetBubbleAssistantPage() {
   return app_list_controller_->bubble_presenter_for_test()
       ->bubble_view_for_test()
