@@ -417,8 +417,7 @@ void NavigationURLLoaderImpl::CreateInterceptors(
         prefetched_signed_exchange_interceptor =
             prefetched_signed_exchange_cache->MaybeCreateInterceptor(
                 url_, frame_tree_node_id_,
-                resource_request_->trusted_params->isolation_info
-                    .network_isolation_key());
+                resource_request_->trusted_params->isolation_info);
     if (prefetched_signed_exchange_interceptor) {
       interceptors_.push_back(
           std::move(prefetched_signed_exchange_interceptor));
@@ -608,10 +607,10 @@ void NavigationURLLoaderImpl::FallbackToNonInterceptedRequest(
     // fallback, so restart it with the non-interceptor factory.
     url_loader_->RestartWithFactory(std::move(factory), options);
   } else {
-    // In SXG cases we don't have `url_loader_` because it was reset when the
-    // SXG interceptor intercepted the response in
-    // MaybeCreateLoaderForResponse.
-    DCHECK(response_loader_receiver_.is_bound());
+    // In SXG cases we don't have `url_loader_` because it was reset when
+    // - SignedExchangeRequestHandler intercepted the response in
+    //   MaybeCreateLoaderForResponse, or
+    // - PrefetchedNavigationLoaderInterceptor made an internal redirect.
     response_loader_receiver_.reset();
     url_loader_ = blink::ThrottlingURLLoader::CreateLoaderAndStart(
         std::move(factory), CreateURLLoaderThrottles(),

@@ -51,7 +51,9 @@ enum class SignedExchangeLoadResult {
   kVariantMismatch,
   // Certificate's validity period is too long.
   kCertValidityPeriodTooLong,
-  kMaxValue = kCertValidityPeriodTooLong
+  // SXG had "Vary: Cookie" inner header but we had a cookie for the URL.
+  kHadCookieForCookielessOnlySXG,
+  kMaxValue = kHadCookieForCookielessOnlySXG
 };
 
 struct SignedExchangeError {

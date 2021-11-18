@@ -676,6 +676,93 @@ IN_PROC_BROWSER_TEST_P(SignedExchangeRequestHandlerBrowserTest, CertNotFound) {
       "SignedExchange.Time.CertificateFetch.Failure", UsePrefetch() ? 2 : 1);
 }
 
+IN_PROC_BROWSER_TEST_P(SignedExchangeRequestHandlerBrowserTest,
+                       VaryCookieSxgUsed) {
+  InstallUrlInterceptor(
+      GURL("https://cert.example.org/cert.msg"),
+      "content/test/data/sxg/test.example.org.public.pem.cbor");
+  InstallMockCert();
+
+  embedded_test_server()->ServeFilesFromSourceDirectory("content/test/data");
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  GURL url =
+      embedded_test_server()->GetURL("/sxg/test.example.org_vary_cookie.sxg");
+  MaybeTriggerPrefetchSXG(url, true);
+
+  if (!UsePrefetch()) {
+    // Need to be in a page to execute JavaScript to trigger renderer initiated
+    // navigation.
+    EXPECT_TRUE(
+        NavigateToURL(shell(), embedded_test_server()->GetURL("/empty.html")));
+  }
+
+  std::u16string title = u"https://test.example.org/test/";
+  TitleWatcher title_watcher(shell()->web_contents(), title);
+  // PrefetchedSignedExchangeCache is used only for renderer initiated
+  // navigation. So use JavaScript to trigger renderer initiated navigation.
+  EXPECT_TRUE(
+      ExecJs(shell()->web_contents(),
+             base::StringPrintf("location.href = '%s';", url.spec().c_str())));
+  EXPECT_EQ(title, title_watcher.WaitAndGetTitle());
+
+  histogram_tester_.ExpectUniqueSample(
+      kLoadResultHistogram, SignedExchangeLoadResult::kSuccess,
+      (UsePrefetch() && !SXGPrefetchCacheIsEnabled()) ? 2 : 1);
+}
+
+IN_PROC_BROWSER_TEST_P(SignedExchangeRequestHandlerBrowserTest,
+                       VaryCookieSxgNotUsed) {
+  InstallUrlInterceptor(
+      GURL("https://cert.example.org/cert.msg"),
+      "content/test/data/sxg/test.example.org.public.pem.cbor");
+  InstallUrlInterceptor(GURL("https://test.example.org/test/"),
+                        "content/test/data/sxg/fallback.html");
+  InstallMockCert();
+
+  embedded_test_server()->ServeFilesFromSourceDirectory("content/test/data");
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  SetCookie(shell()->web_contents()->GetBrowserContext(),
+            GURL("https://test.example.org/test/"), "milk=1");
+
+  GURL url =
+      embedded_test_server()->GetURL("/sxg/test.example.org_vary_cookie.sxg");
+  MaybeTriggerPrefetchSXG(url, true);
+
+  if (!UsePrefetch()) {
+    // Need to be in a page to execute JavaScript to trigger renderer initiated
+    // navigation.
+    EXPECT_TRUE(
+        NavigateToURL(shell(), embedded_test_server()->GetURL("/empty.html")));
+  }
+
+  std::u16string title = u"Fallback URL response";
+  TitleWatcher title_watcher(shell()->web_contents(), title);
+  // PrefetchedSignedExchangeCache is used only for renderer initiated
+  // navigation. So use JavaScript to trigger renderer initiated navigation.
+  EXPECT_TRUE(
+      ExecJs(shell()->web_contents(),
+             base::StringPrintf("location.href = '%s';", url.spec().c_str())));
+  EXPECT_EQ(title, title_watcher.WaitAndGetTitle());
+
+  if (UsePrefetch()) {
+    // kSuccess is recorded for successful prefetch, and
+    // kHadCookieForCookielessOnlySXG is recorded by not being used for actual
+    // navigation.
+    histogram_tester_.ExpectBucketCount(kLoadResultHistogram,
+                                        SignedExchangeLoadResult::kSuccess, 1);
+    histogram_tester_.ExpectBucketCount(
+        kLoadResultHistogram,
+        SignedExchangeLoadResult::kHadCookieForCookielessOnlySXG, 1);
+    histogram_tester_.ExpectTotalCount(kLoadResultHistogram, 2);
+  } else {
+    histogram_tester_.ExpectUniqueSample(
+        kLoadResultHistogram,
+        SignedExchangeLoadResult::kHadCookieForCookielessOnlySXG, 1);
+  }
+}
+
 INSTANTIATE_TEST_SUITE_P(All,
                          SignedExchangeRequestHandlerBrowserTest,
                          ::testing::Combine(::testing::Bool(),

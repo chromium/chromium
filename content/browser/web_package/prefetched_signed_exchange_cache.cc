@@ -14,6 +14,9 @@
 #include "content/browser/loader/navigation_loader_interceptor.h"
 #include "content/browser/loader/single_request_url_loader_factory.h"
 #include "content/browser/navigation_subresource_loader_params.h"
+#include "content/browser/renderer_host/frame_tree_node.h"
+#include "content/browser/renderer_host/render_frame_host_impl.h"
+#include "content/browser/storage_partition_impl.h"
 #include "content/browser/web_package/signed_exchange_reporter.h"
 #include "content/browser/web_package/signed_exchange_utils.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -37,6 +40,7 @@
 #include "services/network/public/cpp/url_loader_completion_status.h"
 #include "services/network/public/cpp/wrapper_shared_url_loader_factory.h"
 #include "services/network/public/mojom/fetch_api.mojom-shared.h"
+#include "services/network/public/mojom/restricted_cookie_manager.mojom.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "storage/browser/blob/blob_data_handle.h"
@@ -471,8 +475,11 @@ class PrefetchedNavigationLoaderInterceptor
  public:
   PrefetchedNavigationLoaderInterceptor(
       std::unique_ptr<const PrefetchedSignedExchangeCacheEntry> exchange,
-      std::vector<blink::mojom::PrefetchedSignedExchangeInfoPtr> info_list)
-      : exchange_(std::move(exchange)), info_list_(std::move(info_list)) {}
+      std::vector<blink::mojom::PrefetchedSignedExchangeInfoPtr> info_list,
+      mojo::Remote<network::mojom::RestrictedCookieManager> cookie_manager)
+      : exchange_(std::move(exchange)),
+        info_list_(std::move(info_list)),
+        cookie_manager_(std::move(cookie_manager)) {}
 
   PrefetchedNavigationLoaderInterceptor(
       const PrefetchedNavigationLoaderInterceptor&) = delete;
@@ -497,12 +504,21 @@ class PrefetchedNavigationLoaderInterceptor
     }
     if (tentative_resource_request.url == exchange_->inner_url()) {
       DCHECK_EQ(State::kOuterRequestRequested, state_);
-      state_ = State::kInnerResponseRequested;
-      std::move(callback).Run(
-          base::MakeRefCounted<SingleRequestURLLoaderFactory>(base::BindOnce(
-              &PrefetchedNavigationLoaderInterceptor::StartInnerResponse,
-              weak_factory_.GetWeakPtr())));
-      return;
+      if (signed_exchange_utils::IsCookielessOnlyExchange(
+              *exchange_->inner_response()->headers)) {
+        DCHECK(cookie_manager_);
+        state_ = State::kCheckingCookies;
+        CheckAbsenceOfCookies(tentative_resource_request, std::move(callback),
+                              std::move(fallback_callback));
+        return;
+      } else {
+        state_ = State::kInnerResponseRequested;
+        std::move(callback).Run(
+            base::MakeRefCounted<SingleRequestURLLoaderFactory>(base::BindOnce(
+                &PrefetchedNavigationLoaderInterceptor::StartInnerResponse,
+                weak_factory_.GetWeakPtr())));
+        return;
+      }
     }
     NOTREACHED();
   }
@@ -521,8 +537,42 @@ class PrefetchedNavigationLoaderInterceptor
   enum class State {
     kInitial,
     kOuterRequestRequested,
+    kCheckingCookies,
     kInnerResponseRequested
   };
+
+  void CheckAbsenceOfCookies(const network::ResourceRequest& request,
+                             LoaderCallback callback,
+                             FallbackCallback fallback_callback) {
+    auto match_options = network::mojom::CookieManagerGetOptions::New();
+    match_options->name = "";
+    match_options->match_type = network::mojom::CookieMatchType::STARTS_WITH;
+    cookie_manager_->GetAllForUrl(
+        request.url, request.trusted_params->isolation_info.site_for_cookies(),
+        *request.trusted_params->isolation_info.top_frame_origin(),
+        std::move(match_options),
+        base::BindOnce(&PrefetchedNavigationLoaderInterceptor::OnGetCookies,
+                       weak_factory_.GetWeakPtr(), std::move(callback),
+                       std::move(fallback_callback)));
+  }
+
+  void OnGetCookies(LoaderCallback callback,
+                    FallbackCallback fallback_callback,
+                    const std::vector<net::CookieWithAccessResult>& results) {
+    DCHECK_EQ(State::kCheckingCookies, state_);
+    if (!results.empty()) {
+      signed_exchange_utils::RecordLoadResultHistogram(
+          SignedExchangeLoadResult::kHadCookieForCookielessOnlySXG);
+      std::move(fallback_callback)
+          .Run(true /* reset_subresource_loader_params */);
+      return;
+    }
+    state_ = State::kInnerResponseRequested;
+    std::move(callback).Run(
+        base::MakeRefCounted<SingleRequestURLLoaderFactory>(base::BindOnce(
+            &PrefetchedNavigationLoaderInterceptor::StartInnerResponse,
+            weak_factory_.GetWeakPtr())));
+  }
 
   void StartRedirectResponse(
       const network::ResourceRequest& resource_request,
@@ -567,6 +617,7 @@ class PrefetchedNavigationLoaderInterceptor
   State state_ = State::kInitial;
   const std::unique_ptr<const PrefetchedSignedExchangeCacheEntry> exchange_;
   std::vector<blink::mojom::PrefetchedSignedExchangeInfoPtr> info_list_;
+  mojo::Remote<network::mojom::RestrictedCookieManager> cookie_manager_;
 
   base::WeakPtrFactory<PrefetchedNavigationLoaderInterceptor> weak_factory_{
       this};
@@ -704,7 +755,7 @@ std::unique_ptr<NavigationLoaderInterceptor>
 PrefetchedSignedExchangeCache::MaybeCreateInterceptor(
     const GURL& outer_url,
     int frame_tree_node_id,
-    const net::NetworkIsolationKey& network_isolation_key) {
+    const net::IsolationInfo& isolation_info) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   const auto it = exchanges_.find(outer_url);
   if (it == exchanges_.end())
@@ -717,11 +768,35 @@ PrefetchedSignedExchangeCache::MaybeCreateInterceptor(
     exchanges_.erase(it);
     return nullptr;
   }
-  auto info_list = GetInfoListForNavigation(
-      *exchange, verification_time, frame_tree_node_id, network_isolation_key);
+  auto info_list =
+      GetInfoListForNavigation(*exchange, verification_time, frame_tree_node_id,
+                               isolation_info.network_isolation_key());
+
+  mojo::Remote<network::mojom::RestrictedCookieManager> cookie_manager;
+  auto* frame = FrameTreeNode::GloballyFindByID(frame_tree_node_id);
+  if (frame) {
+    StoragePartition* storage_partition =
+        frame->current_frame_host()->GetProcess()->GetStoragePartition();
+    url::Origin inner_url_origin = url::Origin::Create(exchange->inner_url());
+    net::IsolationInfo inner_url_isolation_info =
+        isolation_info.CreateForRedirect(inner_url_origin);
+
+    RenderFrameHostImpl* render_frame_host = frame->current_frame_host();
+    static_cast<StoragePartitionImpl*>(storage_partition)
+        ->CreateRestrictedCookieManager(
+            network::mojom::RestrictedCookieManagerRole::NETWORK,
+            inner_url_origin, inner_url_isolation_info,
+            /* is_service_worker = */ false,
+            render_frame_host ? render_frame_host->GetProcess()->GetID() : -1,
+            render_frame_host ? render_frame_host->GetRoutingID()
+                              : MSG_ROUTING_NONE,
+            cookie_manager.BindNewPipeAndPassReceiver(),
+            render_frame_host ? render_frame_host->CreateCookieAccessObserver()
+                              : mojo::NullRemote());
+  }
 
   return std::make_unique<PrefetchedNavigationLoaderInterceptor>(
-      exchange->Clone(), std::move(info_list));
+      exchange->Clone(), std::move(info_list), std::move(cookie_manager));
 }
 
 const PrefetchedSignedExchangeCache::EntryMap&

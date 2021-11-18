@@ -103,13 +103,10 @@ void SignedExchangeDevToolsProxy::CertificateRequestCompleted(
 void SignedExchangeDevToolsProxy::OnSignedExchangeReceived(
     const absl::optional<SignedExchangeEnvelope>& envelope,
     const scoped_refptr<net::X509Certificate>& certificate,
-    const net::SSLInfo* ssl_info) {
+    const absl::optional<net::SSLInfo>& ssl_info) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (!devtools_enabled_)
     return;
-  absl::optional<net::SSLInfo> ssl_info_opt;
-  if (ssl_info)
-    ssl_info_opt = *ssl_info;
 
   FrameTreeNode* frame_tree_node =
       FrameTreeNode::GloballyFindByID(frame_tree_node_id_);
@@ -118,8 +115,7 @@ void SignedExchangeDevToolsProxy::OnSignedExchangeReceived(
 
   devtools_instrumentation::OnSignedExchangeReceived(
       frame_tree_node, devtools_navigation_token_, outer_request_url_,
-      *outer_response_, envelope, certificate, ssl_info_opt,
-      std::move(errors_));
+      *outer_response_, envelope, certificate, ssl_info, std::move(errors_));
 }
 
 }  // namespace content

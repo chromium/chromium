@@ -16,7 +16,7 @@
 #include "url/gurl.h"
 
 namespace net {
-class NetworkIsolationKey;
+class IsolationInfo;
 }
 
 namespace content {
@@ -60,7 +60,7 @@ class CONTENT_EXPORT PrefetchedSignedExchangeCache
   std::unique_ptr<NavigationLoaderInterceptor> MaybeCreateInterceptor(
       const GURL& outer_url,
       int frame_tree_node_id,
-      const net::NetworkIsolationKey& network_isolation_key);
+      const net::IsolationInfo& isolation_info);
 
   const EntryMap& GetExchanges();
 

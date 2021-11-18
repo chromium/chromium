@@ -277,6 +277,22 @@ gen-signedexchange \
   -o test.example.org_csp.sxg \
   -miRecordSize 100
 
+# A signed exchange with "Vary: Cookie" response header.
+gen-signedexchange \
+  -version 1b3 \
+  -uri https://test.example.org/test/ \
+  -status 200 \
+  -content test.html \
+  -certificate prime256v1-sha256.public.pem \
+  -certUrl https://cert.example.org/cert.msg \
+  -validityUrl https://test.example.org/resource.validity.msg \
+  -privateKey prime256v1.key \
+  -date $signature_date \
+  -expire 168h \
+  -responseHeader "Vary: Cookie" \
+  -o test.example.org_vary_cookie.sxg \
+  -miRecordSize 100
+
 echo "Update the test signatures in "
 echo "signed_exchange_signature_verifier_unittest.cc with the followings:"
 echo "===="

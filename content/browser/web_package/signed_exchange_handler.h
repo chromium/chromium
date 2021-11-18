@@ -14,14 +14,17 @@
 #include "content/browser/web_package/signed_exchange_error.h"
 #include "content/browser/web_package/signed_exchange_prologue.h"
 #include "content/common/content_export.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/system/data_pipe.h"
 #include "net/base/io_buffer.h"
 #include "net/base/ip_endpoint.h"
+#include "net/base/isolation_info.h"
 #include "net/base/network_isolation_key.h"
 #include "net/cert/cert_verifier.h"
 #include "net/cert/cert_verify_result.h"
 #include "net/log/net_log_with_source.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "services/network/public/mojom/restricted_cookie_manager.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
@@ -97,6 +100,7 @@ class CONTENT_EXPORT SignedExchangeHandler {
       ExchangeHeadersCallback headers_callback,
       std::unique_ptr<SignedExchangeCertFetcherFactory> cert_fetcher_factory,
       const net::NetworkIsolationKey& network_isolation_key,
+      const absl::optional<net::IsolationInfo> outer_request_isolation_info,
       int load_flags,
       const net::IPEndPoint& remote_endpoint,
       std::unique_ptr<blink::WebPackageRequestMatcher> request_matcher,
@@ -152,6 +156,10 @@ class CONTENT_EXPORT SignedExchangeHandler {
   bool CheckOCSPStatus(const net::OCSPVerifyResult& ocsp_result);
 
   void OnVerifyCert(int32_t error_code, const net::CertVerifyResult& cv_result);
+  void CheckAbsenceOfCookies(base::OnceClosure callback);
+  void OnGetCookies(base::OnceClosure callback,
+                    const std::vector<net::CookieWithAccessResult>& results);
+  void CreateResponse(network::mojom::URLResponseHeadPtr response_head);
   std::unique_ptr<net::SourceStream> CreateResponseBodyStream();
 
   const bool is_secure_transport_;
@@ -175,12 +183,14 @@ class CONTENT_EXPORT SignedExchangeHandler {
   std::unique_ptr<SignedExchangeCertFetcherFactory> cert_fetcher_factory_;
   std::unique_ptr<SignedExchangeCertFetcher> cert_fetcher_;
   const net::NetworkIsolationKey network_isolation_key_;
+  absl::optional<net::IsolationInfo> outer_request_isolation_info_;
   const int load_flags_ = 0;
   const net::IPEndPoint remote_endpoint_;
 
   std::unique_ptr<SignedExchangeCertificateChain> unverified_cert_chain_;
 
   std::unique_ptr<blink::WebPackageRequestMatcher> request_matcher_;
+  mojo::Remote<network::mojom::RestrictedCookieManager> cookie_manager_;
 
   std::unique_ptr<SignedExchangeDevToolsProxy> devtools_proxy_;
 

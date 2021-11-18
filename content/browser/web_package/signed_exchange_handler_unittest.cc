@@ -366,7 +366,8 @@ class SignedExchangeHandlerTest
         base::BindOnce(&SignedExchangeHandlerTest::OnHeaderFound,
                        base::Unretained(this)),
         std::move(cert_fetcher_factory_), network_isolation_key_,
-        net::LOAD_NORMAL, net::IPEndPoint(),
+        absl::nullopt /* outer_request_isolation_info */, net::LOAD_NORMAL,
+        net::IPEndPoint(),
         std::make_unique<blink::WebPackageRequestMatcher>(
             net::HttpRequestHeaders(), std::string() /* accept_langs */),
         nullptr /* devtools_proxy */, nullptr /* reporter */,

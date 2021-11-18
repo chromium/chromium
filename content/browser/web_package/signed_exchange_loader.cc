@@ -42,7 +42,6 @@ namespace content {
 
 namespace {
 
-constexpr char kLoadResultHistogram[] = "SignedExchange.LoadResult2";
 constexpr char kPrefetchLoadResultHistogram[] =
     "SignedExchange.Prefetch.LoadResult2";
 
@@ -186,6 +185,9 @@ void SignedExchangeLoader::OnStartLoadingResponseBody(
       base::BindOnce(&SignedExchangeLoader::OnHTTPExchangeFound,
                      weak_factory_.GetWeakPtr()),
       std::move(cert_fetcher_factory), network_isolation_key_,
+      outer_request_.trusted_params
+          ? absl::make_optional(outer_request_.trusted_params->isolation_info)
+          : absl::nullopt,
       outer_request_.load_flags, outer_response_head_->remote_endpoint,
       std::make_unique<blink::WebPackageRequestMatcher>(outer_request_.headers,
                                                         accept_langs_),
@@ -401,7 +403,7 @@ void SignedExchangeLoader::NotifyClientOnCompleteIfReady() {
 }
 
 void SignedExchangeLoader::ReportLoadResult(SignedExchangeLoadResult result) {
-  UMA_HISTOGRAM_ENUMERATION(kLoadResultHistogram, result);
+  signed_exchange_utils::RecordLoadResultHistogram(result);
   // |metric_recorder_| could be null in some tests.
   if ((outer_request_.load_flags & net::LOAD_PREFETCH) && metric_recorder_) {
     UMA_HISTOGRAM_ENUMERATION(kPrefetchLoadResultHistogram, result);

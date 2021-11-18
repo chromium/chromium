@@ -6,6 +6,7 @@
 
 #include "base/command_line.h"
 #include "base/feature_list.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -29,8 +30,13 @@ namespace content {
 namespace signed_exchange_utils {
 
 namespace {
+constexpr char kLoadResultHistogram[] = "SignedExchange.LoadResult2";
 absl::optional<base::Time> g_verification_time_for_testing;
 }  // namespace
+
+void RecordLoadResultHistogram(SignedExchangeLoadResult result) {
+  base::UmaHistogramEnumeration(kLoadResultHistogram, result);
+}
 
 void ReportErrorAndTraceEvent(
     SignedExchangeDevToolsProxy* devtools_proxy,
@@ -268,6 +274,16 @@ base::Time GetVerificationTime() {
 void SetVerificationTimeForTesting(
     absl::optional<base::Time> verification_time_for_testing) {
   g_verification_time_for_testing = verification_time_for_testing;
+}
+
+bool IsCookielessOnlyExchange(const net::HttpResponseHeaders& inner_headers) {
+  std::string value;
+  size_t iter = 0;
+  while (inner_headers.EnumerateHeader(&iter, "Vary", &value)) {
+    if (base::EqualsCaseInsensitiveASCII(value, "cookie"))
+      return true;
+  }
+  return false;
 }
 
 }  // namespace signed_exchange_utils
