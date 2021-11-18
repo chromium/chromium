@@ -211,11 +211,7 @@ std::u16string GetDisplayErrorNotificationMessageForTest() {
 }
 
 bool ShouldUndoRotationForMirror() {
-  return Shell::Get()
-             ->display_manager()
-             ->layout_store()
-             ->forced_mirror_mode_for_tablet() ||
-         Shell::Get()->tablet_mode_controller()->is_in_tablet_physical_state();
+  return Shell::Get()->tablet_mode_controller()->is_in_tablet_physical_state();
 }
 
 }  // namespace ash
