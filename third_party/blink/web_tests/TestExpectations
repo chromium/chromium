@@ -3446,8 +3446,6 @@ crbug.com/626703 [ Mac10.14 ] virtual/webrtc-wpt-plan-b/external/wpt/webrtc/RTCD
 crbug.com/626703 [ Mac11 ] virtual/webrtc-wpt-plan-b/external/wpt/webrtc/RTCDataChannel-iceRestart.html [ Skip Timeout ]
 crbug.com/626703 [ Mac10.14 ] external/wpt/webrtc/RTCDtlsTransport-state.html [ Timeout ]
 crbug.com/626703 [ Mac11 ] external/wpt/webrtc/RTCDtlsTransport-state.html [ Timeout ]
-crbug.com/626703 [ Mac10.14 ] external/wpt/mediacapture-record/passthrough/MediaRecorder-passthrough.https.html [ Timeout ]
-crbug.com/626703 [ Mac11-arm64 ] external/wpt/mediacapture-record/passthrough/MediaRecorder-passthrough.https.html [ Failure Pass Timeout ]
 crbug.com/626703 [ Mac10.14 ] external/wpt/webrtc-encoded-transform/RTCPeerConnection-insertable-streams-simulcast.https.html [ Timeout ]
 crbug.com/626703 [ Mac11 ] external/wpt/webrtc-encoded-transform/RTCPeerConnection-insertable-streams-simulcast.https.html [ Timeout ]
 crbug.com/626703 [ Mac10.14 ] external/wpt/webrtc/RTCIceTransport.html [ Timeout ]
@@ -7300,3 +7298,5 @@ crbug.com/1271044 http/tests/devtools/application-panel/resources-panel-websql.j
 # Security OWP fixit week
 crbug.com/1270355 external/wpt/html/browsers/browsing-the-web/navigating-across-documents/009.html [ Timeout ]
 
+# Sheriff 2021-11-18
+crbug.com/1180993 external/wpt/mediacapture-record/passthrough/MediaRecorder-passthrough.https.html [ Failure Pass Timeout ]
