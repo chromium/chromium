@@ -1207,6 +1207,11 @@ bool PaintArtifactCompositor::DirectlyUpdateTransform(
   // We can only directly-update compositor values if all content associated
   // with the node is known to be composited.
   DCHECK(transform.HasDirectCompositingReasons());
+  // We only assume worst-case overlap testing due to animations (see:
+  // |PendingLayer::VisualRectForOverlapTesting|) so we can only use the direct
+  // transform update (which skips checking for compositing changes) when
+  // animations are present.
+  DCHECK(transform.HasActiveTransformAnimation());
   if (CanDirectlyUpdateProperties()) {
     return PropertyTreeManager::DirectlyUpdateTransform(
         *root_layer_->layer_tree_host(), transform);
