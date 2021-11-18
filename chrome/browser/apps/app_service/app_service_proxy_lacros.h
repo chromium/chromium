@@ -14,6 +14,7 @@
 #include "base/memory/weak_ptr.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/app_service/browser_app_launcher.h"
+#include "chrome/browser/apps/app_service/launch_result_type.h"
 #include "chromeos/crosapi/mojom/app_service.mojom.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/services/app_service/public/cpp/app_capability_access_cache.h"
@@ -43,6 +44,8 @@ namespace apps {
 
 class BrowserAppInstanceForwarder;
 class BrowserAppInstanceTracker;
+
+struct AppLaunchParams;
 
 struct IntentLaunchInfo {
   std::string app_id;
@@ -147,6 +150,11 @@ class AppServiceProxyLacros : public KeyedService,
                         GURL url,
                         apps::mojom::LaunchSource launch_source,
                         apps::mojom::WindowInfoPtr window_info = nullptr);
+
+  // Launches an app for the given |params.app_id|. The |params| can also
+  // contain other param such as launch container, window diposition, etc.
+  void LaunchAppWithParams(AppLaunchParams&& params,
+                           LaunchCallback callback = base::DoNothing());
 
   // Sets |permission| for the app identified by |app_id|.
   void SetPermission(const std::string& app_id,

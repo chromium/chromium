@@ -3621,6 +3621,7 @@ static_library("browser") {
       "apps/app_service/extension_uninstaller.h",
       "apps/app_service/intent_util.cc",
       "apps/app_service/intent_util.h",
+      "apps/app_service/launch_result_type.h",
       "apps/app_service/launch_utils.cc",
       "apps/app_service/launch_utils.h",
       "apps/app_service/metrics/app_service_metrics.cc",

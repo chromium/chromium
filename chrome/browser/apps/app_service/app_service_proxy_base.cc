@@ -15,6 +15,7 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/app_service/app_icon/app_icon_source.h"
+#include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/apps/app_service/launch_utils.h"
 #include "chrome/browser/apps/app_service/metrics/app_service_metrics.h"
 #include "chrome/browser/ash/file_manager/app_id.h"
@@ -362,6 +363,18 @@ void AppServiceProxyBase::LaunchAppWithUrl(
     apps::mojom::WindowInfoPtr window_info) {
   LaunchAppWithIntent(app_id, event_flags, apps_util::CreateIntentFromUrl(url),
                       launch_source, std::move(window_info));
+}
+
+void AppServiceProxyBase::LaunchAppWithParams(AppLaunchParams&& params,
+                                              LaunchCallback callback) {
+  auto app_type = ConvertMojomAppTypToAppType(
+      app_registry_cache_.GetAppType(params.app_id));
+  auto* publisher = GetPublisher(app_type);
+  if (!publisher) {
+    std::move(callback).Run(LaunchResult());
+    return;
+  }
+  publisher->LaunchAppWithParams(std::move(params), std::move(callback));
 }
 
 void AppServiceProxyBase::SetPermission(const std::string& app_id,

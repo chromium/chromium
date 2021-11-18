@@ -14,6 +14,7 @@
 #include "base/notreached.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/app_service/app_icon/app_icon_source.h"
+#include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/apps/app_service/browser_app_instance_forwarder.h"
 #include "chrome/browser/apps/app_service/browser_app_instance_tracker.h"
 #include "chrome/browser/apps/app_service/intent_util.h"
@@ -342,6 +343,12 @@ void AppServiceProxyLacros::LaunchAppWithUrl(
     apps::mojom::WindowInfoPtr window_info) {
   LaunchAppWithIntent(app_id, event_flags, apps_util::CreateIntentFromUrl(url),
                       launch_source, std::move(window_info));
+}
+
+void AppServiceProxyLacros::LaunchAppWithParams(AppLaunchParams&& params,
+                                                LaunchCallback callback) {
+  // TODO(crbug.com/1244506): Add params on crosapi and implement this.
+  std::move(callback).Run(LaunchResult());
 }
 
 void AppServiceProxyLacros::SetPermission(
