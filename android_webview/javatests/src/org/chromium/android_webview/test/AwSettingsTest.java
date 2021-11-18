@@ -2562,11 +2562,10 @@ public class AwSettingsTest {
         }
     }
 
-    // Test an assert URL (file:///android_asset/)
+    // Test an Android asset URL (file:///android_asset/)
     @Test
     @SmallTest
     @Feature({"AndroidWebView", "Navigation"})
-    @DisabledTest(message = "https://crbug.com/1144938")
     public void testAssetUrl() throws Throwable {
         // Note: this text needs to be kept in sync with the contents of the html file referenced
         // below.
@@ -2580,7 +2579,7 @@ public class AwSettingsTest {
         Assert.assertEquals(expectedTitle, mActivityTestRule.getTitleOnUiThread(awContents));
     }
 
-    // Test a resource URL (file:///android_res/).
+    // Test an Android resource URL (file:///android_res/).
     @Test
     @SmallTest
     @Feature({"AndroidWebView", "Navigation"})
