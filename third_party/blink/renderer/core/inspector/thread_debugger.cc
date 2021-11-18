@@ -8,7 +8,6 @@
 
 #include "base/rand_util.h"
 #include "third_party/blink/public/mojom/frame/user_activation_notification_type.mojom-blink.h"
-#include "third_party/blink/renderer/bindings/core/v8/script_source_code.h"
 #include "third_party/blink/renderer/bindings/core/v8/source_location.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_blob.h"
@@ -33,6 +32,7 @@
 #include "third_party/blink/renderer/core/inspector/inspector_trace_events.h"
 #include "third_party/blink/renderer/core/inspector/v8_inspector_string.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
+#include "third_party/blink/renderer/core/script/classic_script.h"
 #include "third_party/blink/renderer/core/trustedtypes/trusted_html.h"
 #include "third_party/blink/renderer/core/trustedtypes/trusted_script.h"
 #include "third_party/blink/renderer/core/trustedtypes/trusted_script_url.h"
@@ -361,12 +361,15 @@ void ThreadDebugger::installAdditionalCommandLineAPI(
       v8::SideEffectType::kHasNoSideEffect);
 
   v8::Local<v8::Value> function_value;
+  // `kDoNotSanitize` is used for internal scripts for keeping the existing
+  // behavior.
   bool success =
       V8ScriptRunner::CompileAndRunInternalScript(
           isolate_, ScriptState::From(context),
-          ScriptSourceCode("(function(e) { console.log(e.type, e); })",
-                           ScriptSourceLocationType::kInternal, nullptr, KURL(),
-                           TextPosition::MinimumPosition()))
+          *ClassicScript::CreateUnspecifiedScript(
+              ScriptSourceCode("(function(e) { console.log(e.type, e); })",
+                               ScriptSourceLocationType::kInternal),
+              SanitizeScriptErrors::kDoNotSanitize))
           .ToLocal(&function_value) &&
       function_value->IsFunction();
   DCHECK(success);

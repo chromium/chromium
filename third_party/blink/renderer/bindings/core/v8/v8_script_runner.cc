@@ -638,8 +638,14 @@ ScriptEvaluationResult V8ScriptRunner::CompileAndRunScript(
 v8::MaybeLocal<v8::Value> V8ScriptRunner::CompileAndRunInternalScript(
     v8::Isolate* isolate,
     ScriptState* script_state,
-    const ScriptSourceCode& source_code) {
+    const ClassicScript& classic_script) {
   DCHECK_EQ(isolate, script_state->GetIsolate());
+
+  const ScriptSourceCode& source_code = classic_script.GetScriptSourceCode();
+  const ReferrerScriptInfo referrer_info(classic_script.BaseURL(),
+                                         classic_script.FetchOptions());
+  v8::Local<v8::Data> host_defined_options =
+      referrer_info.ToV8HostDefinedOptions(isolate, source_code.Url());
 
   v8::ScriptCompiler::CompileOptions compile_options;
   V8CodeCache::ProduceCacheOptions produce_cache_options;
@@ -651,13 +657,9 @@ v8::MaybeLocal<v8::Value> V8ScriptRunner::CompileAndRunInternalScript(
   // produce cache for them.
   DCHECK_EQ(produce_cache_options,
             V8CodeCache::ProduceCacheOptions::kNoProduceCache);
-  v8::Local<v8::Data> host_defined_options;
   v8::Local<v8::Script> script;
-  // Use default ScriptReferrerInfo here:
-  // - nonce: empty for internal script, and
-  // - parser_state: always "not parser inserted" for internal scripts.
   if (!V8ScriptRunner::CompileScript(
-           script_state, source_code, SanitizeScriptErrors::kDoNotSanitize,
+           script_state, source_code, classic_script.GetSanitizeScriptErrors(),
            compile_options, no_cache_reason, host_defined_options)
            .ToLocal(&script))
     return v8::MaybeLocal<v8::Value>();
