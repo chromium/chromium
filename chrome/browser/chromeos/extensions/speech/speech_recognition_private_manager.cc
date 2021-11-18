@@ -9,6 +9,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/chromeos/extensions/speech/speech_recognition_private_recognizer.h"
+#include "chrome/browser/profiles/incognito_helpers.h"
 #include "chrome/common/extensions/api/speech_recognition_private.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
@@ -102,8 +103,8 @@ KeyedService* SpeechRecognitionPrivateManagerFactory::BuildServiceInstanceFor(
 content::BrowserContext*
 SpeechRecognitionPrivateManagerFactory::GetBrowserContextToUse(
     content::BrowserContext* context) const {
-  // Redirected in incognito.
-  return ExtensionsBrowserClient::Get()->GetOriginalContext(context);
+  // Incognito profiles should use their own instance of the browser context.
+  return chrome::GetBrowserContextOwnInstanceInIncognito(context);
 }
 
 }  // namespace
