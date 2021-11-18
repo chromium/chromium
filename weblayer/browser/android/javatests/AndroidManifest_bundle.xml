@@ -10,6 +10,18 @@
     package="org.chromium.weblayer.tests">
   <uses-permission android:name="android.permission.RUN_INSTRUMENTATION" />
   <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+
+  <!-- Starting from Android 11 not all packages are visible by default and this stops us
+       from starting an EmbeddedTestServer. Request visibility by using an intent
+       filter signature
+       (https://developer.android.com/training/package-visibility/declaring#intent-filter-signature)
+  -->
+  <queries>
+    <intent>
+      <action android:name="org.chromium.net.test.EMBEDDED_TEST_SERVER_SERVICE" />
+    </intent>
+  </queries>
+
   <!-- We add an application tag here just so that we can indicate that this
        package needs to link against the android.test library, which is
        needed when building test cases. -->
