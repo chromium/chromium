@@ -96,8 +96,7 @@ NET_EXPORT CRYPTO_BUFFER_POOL* GetBufferPool();
 
 // Creates a CRYPTO_BUFFER in the same pool returned by GetBufferPool.
 NET_EXPORT bssl::UniquePtr<CRYPTO_BUFFER> CreateCryptoBuffer(
-    const uint8_t* data,
-    size_t length);
+    base::span<const uint8_t> data);
 
 // Creates a CRYPTO_BUFFER in the same pool returned by GetBufferPool.
 NET_EXPORT bssl::UniquePtr<CRYPTO_BUFFER> CreateCryptoBuffer(

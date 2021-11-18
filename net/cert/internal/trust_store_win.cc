@@ -213,8 +213,9 @@ void TrustStoreWin::SyncGetIssuersOf(const ParsedCertificate* cert,
   while ((cert_from_store = CertFindCertificateInStore(
               all_certs_store_.get(), X509_ASN_ENCODING, 0,
               CERT_FIND_SUBJECT_NAME, &cert_issuer_blob, cert_from_store))) {
-    bssl::UniquePtr<CRYPTO_BUFFER> der_crypto = x509_util::CreateCryptoBuffer(
-        cert_from_store->pbCertEncoded, cert_from_store->cbCertEncoded);
+    bssl::UniquePtr<CRYPTO_BUFFER> der_crypto =
+        x509_util::CreateCryptoBuffer(base::make_span(
+            cert_from_store->pbCertEncoded, cert_from_store->cbCertEncoded));
     CertErrors errors;
     ParsedCertificate::CreateAndAddToVector(
         std::move(der_crypto), x509_util::DefaultParseCertificateOptions(),

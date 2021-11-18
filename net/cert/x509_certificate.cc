@@ -654,7 +654,7 @@ bssl::UniquePtr<CRYPTO_BUFFER> X509Certificate::CreateCertBufferFromBytes(
     return nullptr;
   }
 
-  return x509_util::CreateCryptoBuffer(data.data(), data.size());
+  return x509_util::CreateCryptoBuffer(data);
 }
 
 // static

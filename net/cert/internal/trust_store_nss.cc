@@ -68,8 +68,8 @@ void TrustStoreNSS::SyncGetIssuersOf(const ParsedCertificate* cert,
        !CERT_LIST_END(node, found_certs); node = CERT_LIST_NEXT(node)) {
     CertErrors parse_errors;
     scoped_refptr<ParsedCertificate> cur_cert = ParsedCertificate::Create(
-        x509_util::CreateCryptoBuffer(node->cert->derCert.data,
-                                      node->cert->derCert.len),
+        x509_util::CreateCryptoBuffer(
+            base::make_span(node->cert->derCert.data, node->cert->derCert.len)),
         {}, &parse_errors);
 
     if (!cur_cert) {

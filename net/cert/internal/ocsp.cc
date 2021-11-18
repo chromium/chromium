@@ -541,10 +541,8 @@ scoped_refptr<ParsedCertificate> OCSPParseCertificate(base::StringPiece der) {
   // TODO(eroman): Swallows the parsing errors. However uses a permissive
   // parsing model.
   CertErrors errors;
-  return ParsedCertificate::Create(
-      x509_util::CreateCryptoBuffer(
-          reinterpret_cast<const uint8_t*>(der.data()), der.size()),
-      {}, &errors);
+  return ParsedCertificate::Create(x509_util::CreateCryptoBuffer(der), {},
+                                   &errors);
 }
 
 // Checks that the ResponderID |id| matches the certificate |cert| either

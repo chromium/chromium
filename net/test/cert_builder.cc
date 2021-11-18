@@ -770,8 +770,8 @@ void CertBuilder::GenerateCertificate() {
   ASSERT_TRUE(CBB_did_write(&signature, sig_len));
 
   auto cert_der = FinishCBB(cbb.get());
-  cert_ = x509_util::CreateCryptoBuffer(
-      reinterpret_cast<const uint8_t*>(cert_der.data()), cert_der.size());
+  cert_ =
+      x509_util::CreateCryptoBuffer(base::as_bytes(base::make_span(cert_der)));
 }
 
 }  // namespace net

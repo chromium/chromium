@@ -109,8 +109,7 @@ bool PerformAIAFetchAndAddResultToVector(scoped_refptr<CertNetFetcher> fetcher,
     return false;
   CertErrors errors;
   return ParsedCertificate::CreateAndAddToVector(
-      x509_util::CreateCryptoBuffer(aia_fetch_bytes.data(),
-                                    aia_fetch_bytes.size()),
+      x509_util::CreateCryptoBuffer(aia_fetch_bytes),
       x509_util::DefaultParseCertificateOptions(), cert_list, &errors);
 }
 

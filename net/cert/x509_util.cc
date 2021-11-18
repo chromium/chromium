@@ -373,10 +373,10 @@ CRYPTO_BUFFER_POOL* GetBufferPool() {
   return g_buffer_pool_singleton.Get().pool();
 }
 
-bssl::UniquePtr<CRYPTO_BUFFER> CreateCryptoBuffer(const uint8_t* data,
-                                                  size_t length) {
+bssl::UniquePtr<CRYPTO_BUFFER> CreateCryptoBuffer(
+    base::span<const uint8_t> data) {
   return bssl::UniquePtr<CRYPTO_BUFFER>(
-      CRYPTO_BUFFER_new(data, length, GetBufferPool()));
+      CRYPTO_BUFFER_new(data.data(), data.size(), GetBufferPool()));
 }
 
 bssl::UniquePtr<CRYPTO_BUFFER> CreateCryptoBuffer(
