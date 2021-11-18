@@ -77,7 +77,8 @@ class BatterySampler : public Sampler {
       base::mac::ScopedIOObject<io_service_t> power_source);
 
   BatterySampler(MaybeGetBatteryDataFn maybe_get_battery_data_fn,
-                 base::mac::ScopedIOObject<io_service_t> power_source);
+                 base::mac::ScopedIOObject<io_service_t> power_source,
+                 BatteryData initial_battery_data);
 
  private:
   void StoreBatteryData(base::TimeTicks sample_time,
@@ -106,6 +107,9 @@ class BatterySampler : public Sampler {
   // consumption.
   base::TimeTicks prev_battery_sample_time_ = base::TimeTicks::Min();
   absl::optional<BatteryData> prev_battery_data_;
+  // Consumed capacity sampled at the time of creation, used to determine
+  // eligibility of early samples for power estimates.
+  const int64_t initial_consumed_mah_;
 };
 
 }  // namespace power_sampler
