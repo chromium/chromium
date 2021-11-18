@@ -204,12 +204,12 @@ def run_command_with_output(argv, stdoutfile, env=None, cwd=None):
                      stderr=subprocess.STDOUT)
     forward_signals([process])
     while process.poll() is None:
-      sys.stdout.write(reader.read())
+      sys.stdout.write(reader.read().decode('utf-8'))
       # This sleep is needed for signal propagation. See the
       # wait_with_signals() docstring.
       time.sleep(0.1)
     # Read the remaining.
-    sys.stdout.write(reader.read())
+    sys.stdout.write(reader.read().decode('utf-8'))
     print('Command %r returned exit code %d' % (argv, process.returncode))
     return process.returncode
 
