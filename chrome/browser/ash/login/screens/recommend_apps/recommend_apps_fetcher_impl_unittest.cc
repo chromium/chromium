@@ -23,6 +23,7 @@
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "content/public/test/browser_task_environment.h"
+#include "gpu/config/gpu_info.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -1361,6 +1362,21 @@ TEST_F(RecommendAppsFetcherImplTest, FailureOnRetry) {
 
   EXPECT_EQ(FakeRecommendAppsFetcherDelegate::Result::PARSE_ERROR,
             delegate_.WaitForResult());
+}
+
+TEST_F(RecommendAppsFetcherImplTest, GpuInfo) {
+  ASSERT_TRUE(recommend_apps_fetcher_);
+
+  gpu::GPUInfo gpu_info;
+  gpu_info.gl_version = "OpenGL ES 3.2 Mesa 21.2.3";
+  gpu_info.gl_renderer = "Mesa DRI";
+  gpu_info.gl_extensions =
+      "GL_EXT_texture_format_BGRA8888 GL_EXT_read_format_bgra";
+
+  RecommendAppsFetcherImpl::ScopedGpuInfoForTest scoped(&gpu_info);
+
+  // `gpu_info` should be parsed without causing use-after-free.
+  recommend_apps_fetcher_->Start();
 }
 
 }  // namespace ash

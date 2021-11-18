@@ -24,6 +24,10 @@ namespace base {
 class Value;
 }
 
+namespace gpu {
+struct GPUInfo;
+}
+
 namespace network {
 namespace mojom {
 class URLLoaderFactory;
@@ -57,6 +61,12 @@ class RecommendAppsFetcherDelegate;
 // 13. gl_extension
 class RecommendAppsFetcherImpl : public RecommendAppsFetcher {
  public:
+  class ScopedGpuInfoForTest {
+   public:
+    explicit ScopedGpuInfoForTest(const gpu::GPUInfo* gpu_info);
+    ~ScopedGpuInfoForTest();
+  };
+
   RecommendAppsFetcherImpl(
       RecommendAppsFetcherDelegate* delegate,
       mojo::PendingRemote<mojom::CrosDisplayConfigController> display_config,

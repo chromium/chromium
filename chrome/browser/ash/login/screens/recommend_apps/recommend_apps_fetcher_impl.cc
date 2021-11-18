@@ -50,6 +50,9 @@ constexpr const int64_t kMaxDownloadBytes = 1024 * 1024;  // 1Mb
 
 constexpr const int kMaxAppCount = 21;
 
+// Fake gpu info for test.
+const gpu::GPUInfo* g_gpu_info_for_test = nullptr;
+
 enum RecommendAppsResponseParseResult {
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.
@@ -186,13 +189,15 @@ GetScreenLayoutSizeId(const int screen_layout_size_value) {
 }
 
 const gpu::GPUInfo GetGPUInfo() {
+  if (g_gpu_info_for_test)
+    return *g_gpu_info_for_test;
+
   return content::GpuDataManager::GetInstance()->GetGPUInfo();
 }
 
 // This function converts the major and minor versions to the proto accepted
 // value. For example, if the version is 3.2, the return value is 0x00030002.
-unsigned GetGLVersionInfo() {
-  const gpu::GPUInfo gpu_info = GetGPUInfo();
+unsigned GetGLVersionInfo(const gpu::GPUInfo& gpu_info) {
   gfx::ExtensionSet extensionSet(gfx::MakeExtensionSet(gpu_info.gl_extensions));
   gl::GLVersionInfo glVersionInfo(gpu_info.gl_version.c_str(),
                                   gpu_info.gl_renderer.c_str(), extensionSet);
@@ -206,8 +211,7 @@ unsigned GetGLVersionInfo() {
   return version;
 }
 
-gfx::ExtensionSet GetGLExtensions() {
-  const gpu::GPUInfo gpu_info = GetGPUInfo();
+gfx::ExtensionSet GetGLExtensions(const gpu::GPUInfo& gpu_info) {
   gfx::ExtensionSet extensionSet(gfx::MakeExtensionSet(gpu_info.gl_extensions));
 
   return extensionSet;
@@ -259,6 +263,16 @@ void RecordUmaResponseParseResult(RecommendAppsResponseParseResult result) {
 
 }  // namespace
 
+RecommendAppsFetcherImpl::ScopedGpuInfoForTest::ScopedGpuInfoForTest(
+    const gpu::GPUInfo* gpu_info) {
+  DCHECK(!g_gpu_info_for_test);
+  g_gpu_info_for_test = gpu_info;
+}
+
+RecommendAppsFetcherImpl::ScopedGpuInfoForTest::~ScopedGpuInfoForTest() {
+  g_gpu_info_for_test = nullptr;
+}
+
 RecommendAppsFetcherImpl::RecommendAppsFetcherImpl(
     RecommendAppsFetcherDelegate* delegate,
     mojo::PendingRemote<mojom::CrosDisplayConfigController> display_config,
@@ -307,9 +321,10 @@ void RecommendAppsFetcherImpl::PopulateDeviceConfig() {
           DeviceConfigurationProto_Navigation_NONAV);
   device_config_.set_has_five_way_navigation(false);
 
-  device_config_.set_gl_es_version(GetGLVersionInfo());
+  const gpu::GPUInfo gpu_info = GetGPUInfo();
+  device_config_.set_gl_es_version(GetGLVersionInfo(gpu_info));
 
-  for (const base::StringPiece& gl_extension : GetGLExtensions()) {
+  for (const base::StringPiece& gl_extension : GetGLExtensions(gpu_info)) {
     if (!gl_extension.empty())
       device_config_.add_gl_extension(std::string(gl_extension));
   }
