@@ -195,8 +195,9 @@ std::unique_ptr<Network::Cookie> BuildCookie(
   if (partition_key) {
     std::string serialized_partition_key;
     if (partition_key->IsSerializeable()) {
-      DCHECK(net::CookiePartitionKey::Serialize(partition_key,
-                                                serialized_partition_key));
+      bool serialized = net::CookiePartitionKey::Serialize(
+          partition_key, serialized_partition_key);
+      DCHECK(serialized);
       devtools_cookie->SetPartitionKey(serialized_partition_key);
     } else {
       devtools_cookie->SetPartitionKeyOpaque(true);
