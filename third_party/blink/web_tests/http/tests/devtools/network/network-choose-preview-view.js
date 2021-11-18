@@ -11,9 +11,9 @@
 
   function createNetworkRequest(mimeType, content, statusCode, resourceType) {
     var request = SDK.NetworkRequest.create(0, 'http://localhost');
-    request.resourceType = resourceType;
+    request.setResourceType(resourceType);
     request.mimeType = mimeType;
-    request.contentDataInternal = Promise.resolve({error: null, content: content, encoded: false});
+    request.setContentDataProvider(() => Promise.resolve({error: null, content: content, encoded: false}));
     if (statusCode !== undefined)
       request.statusCode = statusCode;
     return request;
