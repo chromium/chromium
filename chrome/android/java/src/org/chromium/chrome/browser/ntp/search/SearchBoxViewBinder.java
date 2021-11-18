@@ -64,7 +64,7 @@ class SearchBoxViewBinder
             searchBoxTextView.addTextChangedListener(
                     model.get(SearchBoxProperties.SEARCH_BOX_TEXT_WATCHER));
         } else if (SearchBoxProperties.SEARCH_TEXT == propertyKey) {
-            searchBoxTextView.setText(model.get(SearchBoxProperties.SEARCH_TEXT).first);
+            searchBoxTextView.setText(model.get(SearchBoxProperties.SEARCH_TEXT));
         } else if (SearchBoxProperties.SEARCH_HINT_VISIBILITY == propertyKey) {
             boolean isHintVisible = model.get(SearchBoxProperties.SEARCH_HINT_VISIBILITY);
             searchBoxTextView.setHint(isHintVisible
@@ -77,19 +77,6 @@ class SearchBoxViewBinder
         } else if (SearchBoxProperties.SEARCH_BOX_HINT_COLOR == propertyKey) {
             searchBoxTextView.setHintTextColor(
                     model.get(SearchBoxProperties.SEARCH_BOX_HINT_COLOR));
-        } else if (SearchBoxProperties.CHIP_TEXT == propertyKey) {
-            chipView.getPrimaryTextView().setText(model.get(SearchBoxProperties.CHIP_TEXT));
-        } else if (SearchBoxProperties.CHIP_VISIBILITY == propertyKey) {
-            chipView.setVisibility(
-                    model.get(SearchBoxProperties.CHIP_VISIBILITY) ? View.VISIBLE : View.GONE);
-        } else if (SearchBoxProperties.CHIP_DRAWABLE == propertyKey) {
-            chipView.setIcon(model.get(SearchBoxProperties.CHIP_DRAWABLE), true);
-        } else if (SearchBoxProperties.CHIP_CLICK_CALLBACK == propertyKey) {
-            chipView.setOnClickListener(model.get(SearchBoxProperties.CHIP_CLICK_CALLBACK));
-        } else if (SearchBoxProperties.CHIP_CANCEL_CALLBACK == propertyKey) {
-            chipView.addRemoveIcon();
-            chipView.setRemoveIconClickListener(
-                    model.get(SearchBoxProperties.CHIP_CANCEL_CALLBACK));
         } else {
             assert false : "Unhandled property detected in SearchBoxViewBinder!";
         }

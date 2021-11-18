@@ -832,7 +832,6 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/ntp/cards/SignInPromo.java",
   "java/src/org/chromium/chrome/browser/ntp/cards/promo/enhanced_protection/EnhancedProtectionPromoController.java",
   "java/src/org/chromium/chrome/browser/ntp/cards/promo/enhanced_protection/EnhancedProtectionPromoUtils.java",
-  "java/src/org/chromium/chrome/browser/ntp/search/SearchBoxChipDelegate.java",
   "java/src/org/chromium/chrome/browser/ntp/search/SearchBoxContainerView.java",
   "java/src/org/chromium/chrome/browser/ntp/search/SearchBoxCoordinator.java",
   "java/src/org/chromium/chrome/browser/ntp/search/SearchBoxMediator.java",

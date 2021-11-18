@@ -8,8 +8,6 @@ import android.content.Context;
 import android.content.res.ColorStateList;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
-import android.text.TextUtils;
-import android.util.Pair;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 
@@ -49,7 +47,6 @@ class SearchBoxMediator
     private final List<OnClickListener> mLensClickListeners = new ArrayList<>();
     private ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
     private AssistantVoiceSearchService mAssistantVoiceSearchService;
-    private SearchBoxChipDelegate mChipDelegate;
 
     /** Constructor. */
     SearchBoxMediator(Context context, PropertyModel model, ViewGroup view) {
@@ -115,15 +112,7 @@ class SearchBoxMediator
 
     /** Called to set a click listener for the search box. */
     void setSearchBoxClickListener(OnClickListener listener) {
-        mModel.set(SearchBoxProperties.SEARCH_BOX_CLICK_CALLBACK, v -> {
-            boolean isChipVisible = mModel.get(SearchBoxProperties.CHIP_VISIBILITY);
-            if (isChipVisible) {
-                String chipText = mModel.get(SearchBoxProperties.CHIP_TEXT);
-                mModel.set(SearchBoxProperties.SEARCH_TEXT, Pair.create(chipText, true));
-                mChipDelegate.onCancelClicked();
-            }
-            listener.onClick(v);
-        });
+        mModel.set(SearchBoxProperties.SEARCH_BOX_CLICK_CALLBACK, v -> listener.onClick(v));
     }
 
     /**
@@ -151,30 +140,6 @@ class SearchBoxMediator
             for (OnClickListener clickListener : mLensClickListeners) {
                 clickListener.onClick(v);
             }
-        });
-    }
-
-    /**
-     * Called to set or clear a chip on the search box.
-     * @param chipText The text to be shown on the chip.
-     */
-    void setChipText(String chipText) {
-        boolean chipVisible = !TextUtils.isEmpty(chipText);
-        mModel.set(SearchBoxProperties.CHIP_VISIBILITY, chipVisible);
-        mModel.set(SearchBoxProperties.SEARCH_HINT_VISIBILITY, !chipVisible);
-        mModel.set(SearchBoxProperties.CHIP_TEXT, chipText);
-    }
-
-    /**
-     * Called to set a delegate for handling the interactions between the chip and the embedder.
-     * @param chipDelegate A {@link SearchBoxChipDelegate}.
-     */
-    void setChipDelegate(SearchBoxChipDelegate chipDelegate) {
-        mChipDelegate = chipDelegate;
-        mModel.set(SearchBoxProperties.CHIP_CLICK_CALLBACK, v -> chipDelegate.onChipClicked());
-        mModel.set(SearchBoxProperties.CHIP_CANCEL_CALLBACK, v -> chipDelegate.onCancelClicked());
-        mChipDelegate.getChipIcon(bitmap -> {
-            mModel.set(SearchBoxProperties.CHIP_DRAWABLE, getRoundedDrawable(bitmap));
         });
     }
 
