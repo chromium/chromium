@@ -14,18 +14,35 @@ namespace android {
 namespace {
 constexpr size_t kBitsPerElement = sizeof(uint32_t) * 8;
 
-#if BUILDFLAG(SUPPORTS_CODE_ORDERING)
+// Below an array of uint32_t in BSS is introduced and then casted to an array
+// of std::atomic<uint32_t>. In C++20 constructing an std::atomic is not
+// 'trivial'. See https://github.com/microsoft/STL/issues/661 for reasons of
+// this change in the standard.
+//
+// Assert that both types have the same size. The sizes do not have to match
+// according to a note in [atomics.types.generic] in C++17. With this assertion
+// in place it is unlikely that the constructor produces the value other than
+// (uint32_t)0.
+static_assert(sizeof(uint32_t) == sizeof(std::atomic<uint32_t>), "");
+
+// Keep the array in BSS only for non-official builds to avoid potential harm to
+// data locality and unspecified behavior from the reinterpret_cast below. In
+// order to start new experiments with base::Feature(ReachedCodeProfiler) on
+// Canary/Dev this array will need to be reintroduced to official builds.
+#if BUILDFLAG(SUPPORTS_CODE_ORDERING) && !defined(OFFICIAL_BUILD)
 // Enough for 1 << 29 bytes of code, 512MB.
 constexpr size_t kTextBitfieldSize = 1 << 20;
-std::atomic<uint32_t> g_text_bitfield[kTextBitfieldSize];
+uint32_t g_text_bitfield[kTextBitfieldSize];
 #endif
 }  // namespace
 
 // static
 ReachedAddressesBitset* ReachedAddressesBitset::GetTextBitset() {
-#if BUILDFLAG(SUPPORTS_CODE_ORDERING)
-  static ReachedAddressesBitset text_bitset(kStartOfText, kEndOfText,
-                                            g_text_bitfield, kTextBitfieldSize);
+#if BUILDFLAG(SUPPORTS_CODE_ORDERING) && !defined(OFFICIAL_BUILD)
+  static ReachedAddressesBitset text_bitset(
+      kStartOfText, kEndOfText,
+      reinterpret_cast<std::atomic<uint32_t>*>(g_text_bitfield),
+      kTextBitfieldSize);
   return &text_bitset;
 #else
   return nullptr;
