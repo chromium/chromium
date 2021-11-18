@@ -6667,7 +6667,7 @@ void RenderFrameHostImpl::CreateNewWindow(
         params->frame_name.clear();
     }
   }
-  if (anonymous_) {
+  if (anonymous_ || IsNestedWithinFencedFrame()) {
     params->opener_suppressed = true;
   }
 

@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<script src="/resources/testharness.js"></script>
+<script src="utils.js"></script>
+<title>Fenced frame creating popups</title>
+
+<body>
+<script>
+async function init() {
+  // This file is meant to run in a <fencedframe>. It sets up multiple frames
+  // in the following arrangements:
+  //   1.) A top-level fenced frame
+  //   2.) An iframe within a fenced frame
+  //   3.) A nested fenced frame
+  // All of the above frames create a popup which should not return a reference
+  // to the new window.
+
+  const test_type = new URL(location.href).searchParams.get('test_type');
+
+  switch (test_type) {
+    case "top-level fenced frame":
+      src_popup = `popup-noopener-destination.html`;
+      const popup = window.open(src_popup);
+      const popup_openee_key = KEYS["popup_openee"];
+      if (popup) {
+        writeValueToServer(popup_openee_key, "FAIL");
+      } else {
+        writeValueToServer(popup_openee_key, "PASS");
+      }
+      break;
+    case "nested iframe":
+      const iframe = document.createElement('iframe');
+      document.body.append(iframe);
+      iframe.src = `create-popup.html`;
+      break;
+    case "nested fenced frame":
+      const ff =
+          attachFencedFrame("create-popup.html");
+      break;
+  }
+
+}
+
+init();
+</script>
+</body>

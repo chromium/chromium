@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<title>Test popup created from a Fenced Frame Tree</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="resources/utils.js"></script>
+
+<body>
+<script>
+// This key is used by `resources/popup-noopener-destination.html` to let us know if a
+// a new popup window is correctly opened without an opener.
+const popup_noopener_key = KEYS["popup_noopener"];
+const kAssertion = "window.opener is null ";
+
+// This key is used by `resources/popup-noopener-inner.html` and
+// `resources/create-popup.html to let us know if a
+// a new popup window is correctly opened without an openee reference.
+const popup_openee_key = KEYS["popup_openee"];
+const kAssertion_openee = "openee is null ";
+
+async function runTest(test_type) {
+  const fenced_frame =
+    attachFencedFrame(`resources/popup-noopener-inner.html?test_type=${test_type}`);
+
+  result = await nextValueFromServer(popup_openee_key);
+  assert_equals(result, "PASS", kAssertion_openee + test_type);
+
+  result = await nextValueFromServer(popup_noopener_key);
+  assert_equals(result, "PASS", kAssertion + test_type);
+
+  // Clean up the fenced frame
+  document.body.removeChild(fenced_frame);
+}
+
+promise_test(async () => {
+  return runTest("top-level fenced frame");
+}, "Create popup from top-level fenced frame");
+
+promise_test(async () => {
+  return runTest("nested iframe");
+}, "Create popup from iframe nested in a fenced frame");
+
+promise_test(async () => {
+  return runTest("nested fenced frame");
+}, "Create popup from nested fenced frame");
+</script>
+</body>
