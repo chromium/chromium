@@ -69,6 +69,7 @@ parser.add_argument('--output',
                     required=True,
                     help='where to write output rustc flags')
 parser.add_argument('--target', help='rust target triple')
+parser.add_argument('--features', help='features', nargs='+')
 parser.add_argument('--rust-prefix', required=True, help='rust path prefix')
 parser.add_argument('--out-dir', required=True, help='target out dir')
 
@@ -84,7 +85,12 @@ if args.target is None:
   env["TARGET"] = env["HOST"]
 else:
   env["TARGET"] = args.target
-# In the future we shoul, set all the variables listed here:
+if args.features:
+  for f in args.features:
+    feature_name = f.upper().replace("-", "_")
+    env["CARGO_FEATURE_%s" % feature_name] = "1"
+
+# In the future we should, set all the variables listed here:
 # https://doc.rust-lang.org/cargo/reference/environment-variables.html#environment-variables-cargo-sets-for-build-scripts
 
 # In the future, we could consider isolating this build script

@@ -173,6 +173,12 @@ template("cargo_crate") {
           rust_abi_target,
         ]
       }
+      if (defined(invoker.features)) {
+        args += [ "--features" ]
+        foreach(feature, invoker.features) {
+          args += [ feature ]
+        }
+      }
       inputs = [ build_script ]
       outputs = [ flags_file ]
       if (defined(invoker.build_script_outputs)) {

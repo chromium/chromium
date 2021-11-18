@@ -27,6 +27,15 @@ fn main() {
     if target.contains("darwin") {
         println!("cargo:rustc-cfg=is_mac");
     }
+
+    let feature_a_enabled = env::var_os("CARGO_FEATURE_MY_FEATURE_A").is_some();
+    if feature_a_enabled {
+        println!("cargo:rustc-cfg=has_feature_a");
+    }
+    let feature_b_enabled = env::var_os("CARGO_FEATURE_MY_FEATURE_B").is_some();
+    if feature_b_enabled {
+        println!("cargo:rustc-cfg=has_feature_b");
+    }
 }
 
 fn rustc_minor_version() -> Option<u32> {

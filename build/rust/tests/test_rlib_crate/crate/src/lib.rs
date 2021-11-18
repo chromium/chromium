@@ -11,4 +11,10 @@ pub fn say_hello_from_crate() {
     println!("Is android!");
     #[cfg(is_mac)]
     println!("Is darwin!");
+    #[cfg(has_feature_a)]
+    println!("Has feature A!");
+    #[cfg(not(has_feature_a))]
+    panic!("Wasn't passed feature a");
+    #[cfg(not(has_feature_b))]
+    panic!("Wasn't passed feature b");
 }
