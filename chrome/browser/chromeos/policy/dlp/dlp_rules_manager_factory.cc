@@ -7,7 +7,7 @@
 #include "base/no_destructor.h"
 #include "base/strings/string_piece.h"
 #include "base/task/bind_post_task.h"
-#include "chrome/browser/ash/profiles/profile_helper.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_reporting_manager.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
@@ -18,9 +18,35 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/prefs/pref_service.h"
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "components/user_manager/user_manager.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace policy {
+
+namespace {
+
+bool CanBuildServiceForProfile(const Profile* profile) {
+  if (!profile)
+    return false;
+
+  bool is_main_profile = false;
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // UserManager might be not available in tests.
+  is_main_profile = user_manager::UserManager::IsInitialized() &&
+                    chromeos::ProfileHelper::IsPrimaryProfile(profile);
+#elif BUILDFLAG(IS_CHROMEOS_LACROS)
+  // DLP policy is not per-profile yet and hence currently we do not
+  // support secondary profiles. DLP policy is instantiated once with
+  // the main profile.
+  is_main_profile = profile->IsMainProfile();
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+  return is_main_profile && profile->GetProfilePolicyConnector()->IsManaged();
+}
+
+}  // namespace
 
 // static
 DlpRulesManagerFactory* DlpRulesManagerFactory::GetInstance() {
@@ -54,12 +80,8 @@ bool DlpRulesManagerFactory::ServiceIsCreatedWithBrowserContext() const {
 KeyedService* DlpRulesManagerFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
   Profile* profile = Profile::FromBrowserContext(context);
-  // UserManager might be not available in tests.
-  if (!user_manager::UserManager::IsInitialized() || !profile ||
-      !chromeos::ProfileHelper::IsPrimaryProfile(profile) ||
-      !profile->GetProfilePolicyConnector()->IsManaged()) {
+  if (!CanBuildServiceForProfile(profile))
     return nullptr;
-  }
 
   PrefService* local_state = g_browser_process->local_state();
   // Might be not available in tests.

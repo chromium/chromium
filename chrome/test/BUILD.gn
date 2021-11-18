@@ -2301,6 +2301,7 @@ if (!is_android && !is_fuchsia) {
       sources += [
         "../browser/chromeos/policy/dlp/dlp_content_restriction_set_browsertest.cc",
         "../browser/chromeos/policy/dlp/dlp_content_tab_helper_browsertest.cc",
+        "../browser/chromeos/policy/dlp/dlp_rules_manager_test_utils.h",
         "../browser/chromeos/policy/dlp/mock_dlp_content_observer.cc",
         "../browser/chromeos/policy/dlp/mock_dlp_content_observer.h",
         "../browser/lacros/app_mode/kiosk_session_service_browsertest.cc",
@@ -6395,9 +6396,20 @@ test("unit_tests") {
   if (is_chromeos_lacros) {
     assert(enable_system_notifications)
     sources += [
+      "../browser/chromeos/policy/dlp/data_transfer_dlp_controller_unittest.cc",
+      "../browser/chromeos/policy/dlp/dlp_clipboard_notifier_unittest.cc",
       "../browser/chromeos/policy/dlp/dlp_content_tab_helper_unittest.cc",
+      "../browser/chromeos/policy/dlp/dlp_drag_drop_notifier_unittest.cc",
+      "../browser/chromeos/policy/dlp/dlp_reporting_manager_test_helper.cc",
+      "../browser/chromeos/policy/dlp/dlp_reporting_manager_test_helper.h",
+      "../browser/chromeos/policy/dlp/dlp_reporting_manager_unittest.cc",
+      "../browser/chromeos/policy/dlp/dlp_rules_manager_impl_unittest.cc",
+      "../browser/chromeos/policy/dlp/dlp_rules_manager_test_utils.cc",
+      "../browser/chromeos/policy/dlp/dlp_rules_manager_test_utils.h",
       "../browser/chromeos/policy/dlp/mock_dlp_content_observer.cc",
       "../browser/chromeos/policy/dlp/mock_dlp_content_observer.h",
+      "../browser/chromeos/policy/dlp/mock_dlp_rules_manager.cc",
+      "../browser/chromeos/policy/dlp/mock_dlp_rules_manager.h",
       "../browser/lacros/account_manager/account_manager_util_unittest.cc",
       "../browser/lacros/account_manager/account_profile_mapper_unittest.cc",
       "../browser/lacros/account_manager/get_account_information_helper_unittest.cc",
@@ -6414,7 +6426,9 @@ test("unit_tests") {
     ]
 
     deps += [
+      "//chrome/browser:dlp_policy_event_proto",
       "//chromeos/crosapi/mojom",
+      "//chromeos/dbus/dlp:dlp",
       "//chromeos/lacros:test_support",
       "//chromeos/ui/base",
       "//components/account_manager_core",

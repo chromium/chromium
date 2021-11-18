@@ -9,6 +9,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/views/widget/widget.h"
 
+// TODO(crbug.com/1262948): Enable and modify for lacros.
 namespace policy {
 
 namespace {

@@ -178,12 +178,14 @@ std::pair<DlpRulesManager::Level, absl::optional<T>> GetMaxJoinRestrictionLevel(
   return max_level;
 }
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 void OnSetDlpFilesPolicy(const ::dlp::SetDlpFilesPolicyResponse response) {
   if (response.has_error_message()) {
     LOG(ERROR) << "Failed to set DLP Files policy and start DLP daemon, error: "
                << response.error_message();
   }
 }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 ::dlp::DlpRuleLevel GetLevelProtoEnum(const DlpRulesManager::Level level) {
   static constexpr auto kLevelsMap =
@@ -394,7 +396,7 @@ std::string DlpRulesManagerImpl::GetSourceUrlPattern(const GURL& source_url,
   return std::string();
 }
 
-int DlpRulesManagerImpl::GetClipboardCheckSizeLimitInBytes() const {
+size_t DlpRulesManagerImpl::GetClipboardCheckSizeLimitInBytes() const {
   return pref_change_registrar_.prefs()->GetInteger(
       policy_prefs::kDlpClipboardCheckSizeLimit);
 }
@@ -510,6 +512,7 @@ void DlpRulesManagerImpl::OnPolicyUpdate() {
     DataTransferDlpController::DeleteInstance();
   }
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // TODO(crbug.com/1174501) Shutdown the daemon when restrictions are empty.
   if (request_to_daemon.rules_size() > 0 &&
       base::FeatureList::IsEnabled(
@@ -518,6 +521,7 @@ void DlpRulesManagerImpl::OnPolicyUpdate() {
     chromeos::DlpClient::Get()->SetDlpFilesPolicy(
         request_to_daemon, base::BindOnce(&OnSetDlpFilesPolicy));
   }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 }  // namespace policy

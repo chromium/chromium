@@ -8,7 +8,7 @@
 
 #include "base/memory/ptr_util.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_histogram_helper.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_policy_event.pb.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_reporting_manager_test_helper.h"
@@ -18,6 +18,15 @@
 #include "components/user_manager/scoped_user_manager.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chromeos/lacros/lacros_service.h"
+#include "content/public/test/browser_task_environment.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 using ::testing::_;
 using ::testing::Mock;
@@ -40,13 +49,17 @@ class DlpReportingManagerTest : public testing::Test {
  protected:
   DlpReportingManager manager_;
   std::vector<DlpPolicyEvent> events_;
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  content::BrowserTaskEnvironment task_environment_;
+  chromeos::LacrosService lacros_service_;
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 };
 
 TEST_F(DlpReportingManagerTest, ReportEvent) {
   manager_.ReportEvent(kCompanyPattern, DlpRulesManager::Restriction::kPrinting,
                        DlpRulesManager::Level::kBlock);
 
-  EXPECT_EQ(events_.size(), 1);
+  EXPECT_EQ(events_.size(), 1u);
   EXPECT_EQ(events_[0].source().url(), kCompanyPattern);
   EXPECT_FALSE(events_[0].has_destination());
   EXPECT_EQ(events_[0].restriction(), DlpPolicyEvent_Restriction_PRINTING);
@@ -59,7 +72,7 @@ TEST_F(DlpReportingManagerTest, ReportEventWithUrlDst) {
                        DlpRulesManager::Restriction::kClipboard,
                        DlpRulesManager::Level::kBlock);
 
-  EXPECT_EQ(events_.size(), 1);
+  EXPECT_EQ(events_.size(), 1u);
   EXPECT_EQ(events_[0].source().url(), kCompanyPattern);
   EXPECT_EQ(events_[0].destination().url(), dst_pattern);
   EXPECT_FALSE(events_[0].destination().has_component());
@@ -72,7 +85,7 @@ TEST_F(DlpReportingManagerTest, ReportEventWithComponentDst) {
                        DlpRulesManager::Restriction::kClipboard,
                        DlpRulesManager::Level::kBlock);
 
-  EXPECT_EQ(events_.size(), 1);
+  EXPECT_EQ(events_.size(), 1u);
   EXPECT_EQ(events_[0].source().url(), kCompanyPattern);
   EXPECT_FALSE(events_[0].destination().has_url());
   EXPECT_EQ(events_[0].destination().component(),
@@ -89,7 +102,7 @@ TEST_F(DlpReportingManagerTest, MetricsReported) {
                        DlpRulesManager::Restriction::kScreenshot,
                        DlpRulesManager::Level::kReport);
 
-  EXPECT_EQ(events_.size(), 2);
+  EXPECT_EQ(events_.size(), 2u);
   histogram_tester.ExpectUniqueSample(
       GetDlpHistogramPrefix() + dlp::kReportedEventStatus,
       reporting::error::Code::OK, 2);
@@ -101,6 +114,8 @@ TEST_F(DlpReportingManagerTest, MetricsReported) {
       DlpRulesManager::Restriction::kScreenshot, 1);
 }
 
+// TODO(crbug.com/1262948): Enable and modify for lacros.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 TEST_F(DlpReportingManagerTest, UserType) {
   auto* user_manager = new ash::FakeChromeUserManager();
   user_manager::ScopedUserManager enabler(base::WrapUnique(user_manager));
@@ -117,7 +132,7 @@ TEST_F(DlpReportingManagerTest, UserType) {
                              /*browser_restart=*/false, /*is_child=*/false);
   manager_.ReportEvent(kCompanyPattern, DlpRulesManager::Restriction::kPrinting,
                        DlpRulesManager::Level::kBlock);
-  EXPECT_EQ(events_.size(), 1);
+  EXPECT_EQ(events_.size(), 1u);
   EXPECT_EQ(events_[0].user_type(), DlpPolicyEvent_UserType_REGULAR);
   user_manager->RemoveUserFromList(regular_account_id);
 
@@ -125,7 +140,7 @@ TEST_F(DlpReportingManagerTest, UserType) {
                              /*browser_restart=*/false, /*is_child=*/false);
   manager_.ReportEvent(kCompanyPattern, DlpRulesManager::Restriction::kPrinting,
                        DlpRulesManager::Level::kBlock);
-  EXPECT_EQ(events_.size(), 2);
+  EXPECT_EQ(events_.size(), 2u);
   EXPECT_EQ(events_[1].user_type(), DlpPolicyEvent_UserType_MANAGED_GUEST);
   user_manager->RemoveUserFromList(mgs_account_id);
 
@@ -133,9 +148,10 @@ TEST_F(DlpReportingManagerTest, UserType) {
                              /*browser_restart=*/false, /*is_child=*/false);
   manager_.ReportEvent(kCompanyPattern, DlpRulesManager::Restriction::kPrinting,
                        DlpRulesManager::Level::kBlock);
-  EXPECT_EQ(events_.size(), 3);
+  EXPECT_EQ(events_.size(), 3u);
   EXPECT_EQ(events_[2].user_type(), DlpPolicyEvent_UserType_KIOSK);
   user_manager->RemoveUserFromList(kiosk_account_id);
 }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 }  // namespace policy

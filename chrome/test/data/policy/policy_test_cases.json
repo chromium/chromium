@@ -15881,7 +15881,8 @@
   },
   "DataLeakPreventionClipboardCheckSizeLimit": {
     "os": [
-      "chromeos_ash"
+      "chromeos_ash",
+      "chromeos_lacros"
     ],
     "can_be_recommended": false,
     "policy_pref_mapping_tests": [
@@ -15899,7 +15900,8 @@
   },
   "DataLeakPreventionReportingEnabled": {
     "os": [
-      "chromeos_ash"
+      "chromeos_ash",
+      "chromeos_lacros"
     ],
     "can_be_recommended": false,
     "policy_pref_mapping_tests": [
@@ -15917,7 +15919,8 @@
   },
   "DataLeakPreventionRulesList": {
     "os": [
-      "chromeos_ash"
+      "chromeos_ash",
+      "chromeos_lacros"
     ],
     "policy_pref_mapping_tests": [
       {

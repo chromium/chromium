@@ -166,6 +166,7 @@
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager_factory.h"
 #include "chrome/browser/policy/messaging_layer/util/heartbeat_event_factory.h"
 #endif
 
@@ -414,6 +415,9 @@ void ChromeBrowserMainExtraPartsProfiles::
 #if defined(OS_ANDROID)
   ProfileProtoDBFactory<
       merchant_signal_db::MerchantSignalContentProto>::GetInstance();
+#endif
+#if BUILDFLAG(IS_CHROMEOS)
+  policy::DlpRulesManagerFactory::GetInstance();
 #endif
   policy::UserCloudPolicyInvalidatorFactory::GetInstance();
 #if !BUILDFLAG(IS_CHROMEOS_ASH)

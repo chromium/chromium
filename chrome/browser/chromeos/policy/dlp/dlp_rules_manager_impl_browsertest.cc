@@ -15,6 +15,7 @@
 #include "components/policy/policy_constants.h"
 #include "content/public/test/browser_test.h"
 
+// TODO(crbug.com/1262948): Enable and modify for lacros.
 namespace policy {
 
 namespace {

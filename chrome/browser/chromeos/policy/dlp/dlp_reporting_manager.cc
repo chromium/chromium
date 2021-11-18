@@ -9,6 +9,7 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_histogram_helper.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_policy_event.pb.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
@@ -17,9 +18,16 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "components/reporting/client/report_queue.h"
 #include "components/reporting/util/status.h"
+#include "url/gurl.h"
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
-#include "url/gurl.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chromeos/lacros/lacros_service.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 namespace policy {
 // TODO(1187477, marcgrimme): revisit if this should be refactored.
@@ -78,6 +86,7 @@ DlpRulesManager::Restriction DlpEventRestriction2DlpRulesManagerRestriction(
 }
 
 DlpPolicyEvent_UserType GetCurrentUserType() {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // Could be not initialized in tests.
   if (!user_manager::UserManager::IsInitialized() ||
       !user_manager::UserManager::Get()->GetPrimaryUser()) {
@@ -95,10 +104,28 @@ DlpPolicyEvent_UserType GetCurrentUserType() {
     case user_manager::USER_TYPE_ARC_KIOSK_APP:
     case user_manager::USER_TYPE_WEB_KIOSK_APP:
       return DlpPolicyEvent_UserType_KIOSK;
-    default:
+    case user_manager::USER_TYPE_GUEST:
+    case user_manager::USER_TYPE_CHILD:
+    case user_manager::USER_TYPE_ACTIVE_DIRECTORY:
+      return DlpPolicyEvent_UserType_UNDEFINED_USER_TYPE;
+    case user_manager::NUM_USER_TYPES:
       NOTREACHED();
       return DlpPolicyEvent_UserType_UNDEFINED_USER_TYPE;
   }
+#elif BUILDFLAG(IS_CHROMEOS_LACROS)
+  DCHECK(chromeos::LacrosService::Get());
+  switch (chromeos::LacrosService::Get()->init_params()->session_type) {
+    case crosapi::mojom::SessionType::kRegularSession:
+      return DlpPolicyEvent_UserType_REGULAR;
+    case crosapi::mojom::SessionType::kPublicSession:
+      return DlpPolicyEvent_UserType_MANAGED_GUEST;
+    case crosapi::mojom::SessionType::kWebKioskSession:
+      return DlpPolicyEvent_UserType_KIOSK;
+    case crosapi::mojom::SessionType::kUnknown:
+    case crosapi::mojom::SessionType::kGuestSession:
+      return DlpPolicyEvent_UserType_UNDEFINED_USER_TYPE;
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 DlpPolicyEvent CreateDlpPolicyEvent(const std::string& src_pattern,

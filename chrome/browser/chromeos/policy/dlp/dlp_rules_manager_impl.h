@@ -52,7 +52,7 @@ class DlpRulesManagerImpl : public DlpRulesManager {
   std::string GetSourceUrlPattern(const GURL& source_url,
                                   Restriction restriction,
                                   Level level) const override;
-  int GetClipboardCheckSizeLimitInBytes() const override;
+  size_t GetClipboardCheckSizeLimitInBytes() const override;
 
  protected:
   friend class DlpRulesManagerFactory;

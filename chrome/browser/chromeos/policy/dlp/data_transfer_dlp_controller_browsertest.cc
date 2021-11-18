@@ -45,6 +45,7 @@
 #include "ui/views/widget/widget_observer.h"
 #include "url/origin.h"
 
+// TODO(crbug.com/1262948): Enable and modify for lacros.
 namespace policy {
 
 namespace {

@@ -9,6 +9,7 @@
 #include "base/stl_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_histogram_helper.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_policy_event.pb.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_reporting_manager.h"
@@ -29,6 +30,10 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
 #include "url/origin.h"
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chromeos/lacros/lacros_service.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 namespace policy {
 
@@ -72,12 +77,6 @@ class MockDlpController : public DataTransferDlpController {
                     base::OnceClosure drop_cb));
 };
 
-// Creates a new MockDlpRulesManager for the given |context|.
-std::unique_ptr<KeyedService> BuildDlpRulesManager(
-    content::BrowserContext* context) {
-  return std::make_unique<::testing::StrictMock<MockDlpRulesManager>>();
-}
-
 absl::optional<ui::DataTransferEndpoint> CreateEndpoint(
     ui::EndpointType* type,
     bool notify_if_restricted) {
@@ -100,6 +99,7 @@ std::unique_ptr<content::WebContents> CreateTestWebContents(
       browser_context, std::move(site_instance));
 }
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 DlpRulesManager::Component GetComponent(ui::EndpointType endpoint_type) {
   switch (endpoint_type) {
     case ui::EndpointType::kArc:
@@ -112,6 +112,7 @@ DlpRulesManager::Component GetComponent(ui::EndpointType endpoint_type) {
       return DlpRulesManager::Component::kUnknownComponent;
   }
 }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 }  // namespace
 
@@ -129,6 +130,9 @@ class DataTransferDlpControllerTest
   ::testing::StrictMock<MockDlpRulesManager> rules_manager_;
   ::testing::StrictMock<MockDlpController> dlp_controller_;
   base::HistogramTester histogram_tester_;
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  chromeos::LacrosService lacros_service_;
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 };
 
 TEST_F(DataTransferDlpControllerTest, NullSrc) {
@@ -282,8 +286,10 @@ INSTANTIATE_TEST_SUITE_P(
     DlpControllerTest,
     ::testing::Combine(::testing::Values(absl::nullopt,
                                          ui::EndpointType::kDefault,
+#if BUILDFLAG(IS_CHROMEOS_ASH)
                                          ui::EndpointType::kUnknownVm,
                                          ui::EndpointType::kBorealis,
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
                                          ui::EndpointType::kUrl),
                        testing::Bool()));
 
@@ -448,6 +454,7 @@ TEST_P(DlpControllerTest, Warn_DropIfAllowed) {
       GetDlpHistogramPrefix() + dlp::kDragDropBlockedUMA, true, 1);
 }
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 // Create a version of the test class for parameterized testing.
 class DlpControllerVMsTest : public DataTransferDlpControllerTest {
  protected:
@@ -621,5 +628,6 @@ TEST_P(DlpControllerVMsTest, Warn_DropIfAllowed) {
   histogram_tester_.ExpectUniqueSample(
       GetDlpHistogramPrefix() + dlp::kDragDropBlockedUMA, true, 1);
 }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 }  // namespace policy

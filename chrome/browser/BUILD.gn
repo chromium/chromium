@@ -5056,6 +5056,15 @@ static_library("browser") {
       "chromeos/app_mode/kiosk_session_plugin_handler_delegate.h",
       "chromeos/app_mode/kiosk_settings_navigation_throttle.cc",
       "chromeos/app_mode/kiosk_settings_navigation_throttle.h",
+      "chromeos/policy/dlp/clipboard_bubble.cc",
+      "chromeos/policy/dlp/clipboard_bubble.h",
+      "chromeos/policy/dlp/data_transfer_dlp_controller.cc",
+      "chromeos/policy/dlp/data_transfer_dlp_controller.h",
+      "chromeos/policy/dlp/dlp_browser_helper_lacros.cc",
+      "chromeos/policy/dlp/dlp_browser_helper_lacros.h",
+      "chromeos/policy/dlp/dlp_clipboard_bubble_constants.h",
+      "chromeos/policy/dlp/dlp_clipboard_notifier.cc",
+      "chromeos/policy/dlp/dlp_clipboard_notifier.h",
       "chromeos/policy/dlp/dlp_content_manager_lacros.cc",
       "chromeos/policy/dlp/dlp_content_manager_lacros.h",
       "chromeos/policy/dlp/dlp_content_observer.cc",
@@ -5064,6 +5073,20 @@ static_library("browser") {
       "chromeos/policy/dlp/dlp_content_restriction_set.h",
       "chromeos/policy/dlp/dlp_content_tab_helper.cc",
       "chromeos/policy/dlp/dlp_content_tab_helper.h",
+      "chromeos/policy/dlp/dlp_data_transfer_notifier.cc",
+      "chromeos/policy/dlp/dlp_data_transfer_notifier.h",
+      "chromeos/policy/dlp/dlp_drag_drop_notifier.cc",
+      "chromeos/policy/dlp/dlp_drag_drop_notifier.h",
+      "chromeos/policy/dlp/dlp_histogram_helper.cc",
+      "chromeos/policy/dlp/dlp_histogram_helper.h",
+      "chromeos/policy/dlp/dlp_policy_constants.h",
+      "chromeos/policy/dlp/dlp_reporting_manager.cc",
+      "chromeos/policy/dlp/dlp_reporting_manager.h",
+      "chromeos/policy/dlp/dlp_rules_manager.h",
+      "chromeos/policy/dlp/dlp_rules_manager_factory.cc",
+      "chromeos/policy/dlp/dlp_rules_manager_factory.h",
+      "chromeos/policy/dlp/dlp_rules_manager_impl.cc",
+      "chromeos/policy/dlp/dlp_rules_manager_impl.h",
       "feedback/show_feedback_page_lacros.cc",
       "first_run/first_run_internal_lacros.cc",
       "lacros/account_manager/account_manager_util.cc",
@@ -5177,8 +5200,10 @@ static_library("browser") {
       "ui/lacros/window_utility.h",
     ]
     deps += [
+      ":dlp_policy_event_proto",
       "//chromeos/crosapi/cpp",
       "//chromeos/crosapi/mojom",
+      "//chromeos/dbus/dlp:dlp",
       "//chromeos/lacros",
       "//chromeos/ui/frame",
       "//ui/platform_window",
@@ -7831,5 +7856,11 @@ if (!is_android) {
   }
   proto_library("coupon_db_content_proto") {
     sources = [ "commerce/coupons/coupon_db_content.proto" ]
+  }
+}
+
+if (is_chromeos_lacros) {
+  proto_library("dlp_policy_event_proto") {
+    sources = [ "chromeos/policy/dlp/dlp_policy_event.proto" ]
   }
 }

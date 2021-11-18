@@ -43,7 +43,7 @@ class MockDlpRulesManager : public DlpRulesManager {
                                  Restriction restriction,
                                  Level level));
 
-  MOCK_CONST_METHOD0(GetClipboardCheckSizeLimitInBytes, int());
+  MOCK_CONST_METHOD0(GetClipboardCheckSizeLimitInBytes, size_t());
 };
 
 }  // namespace policy

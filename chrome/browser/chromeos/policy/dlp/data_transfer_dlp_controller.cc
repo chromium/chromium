@@ -11,6 +11,7 @@
 #include "base/notreached.h"
 #include "base/stl_util.h"
 #include "base/time/time.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_histogram_helper.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_reporting_manager.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
@@ -31,6 +32,19 @@ namespace {
 // - 100 ms is approximately the time a human needs to press a key.
 // See DataTransferDlpController::LastReportedEndpoints struct for details.
 const base::TimeDelta kSkipReportingTimeout = base::Milliseconds(50);
+
+// In case the clipboard data is in warning mode, it will be allowed to
+// be shared with Arc, Crostini, and Plugin VM without waiting for the
+// user decision.
+bool IsVM(const ui::EndpointType type) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  return type == ui::EndpointType::kArc ||
+         type == ui::EndpointType::kPluginVm ||
+         type == ui::EndpointType::kCrostini;
+#else
+  return false;
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+}
 
 bool IsFilesApp(const ui::DataTransferEndpoint* const data_dst) {
   if (!data_dst || !data_dst->IsUrlType())
@@ -84,25 +98,7 @@ DlpRulesManager::Level IsDataTransferAllowed(
   DlpRulesManager::Level level = DlpRulesManager::Level::kAllow;
 
   switch (dst_type) {
-    case ui::EndpointType::kDefault:
-    case ui::EndpointType::kUnknownVm:
-    case ui::EndpointType::kBorealis: {
-      // Passing empty URL will return restricted if there's a rule restricting
-      // the src against any dst (*), otherwise it will return ALLOW.
-      level = dlp_rules_manager.IsRestrictedDestination(
-          src_url, GURL(), DlpRulesManager::Restriction::kClipboard,
-          src_pattern, dst_pattern);
-      break;
-    }
-
-    case ui::EndpointType::kUrl: {
-      GURL dst_url = data_dst->origin()->GetURL();
-      level = dlp_rules_manager.IsRestrictedDestination(
-          src_url, dst_url, DlpRulesManager::Restriction::kClipboard,
-          src_pattern, dst_pattern);
-      break;
-    }
-
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     case ui::EndpointType::kCrostini: {
       level = dlp_rules_manager.IsRestrictedComponent(
           src_url, DlpRulesManager::Component::kCrostini,
@@ -121,6 +117,26 @@ DlpRulesManager::Level IsDataTransferAllowed(
       level = dlp_rules_manager.IsRestrictedComponent(
           src_url, DlpRulesManager::Component::kArc,
           DlpRulesManager::Restriction::kClipboard, src_pattern);
+      break;
+    }
+
+    case ui::EndpointType::kUnknownVm:
+    case ui::EndpointType::kBorealis:
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+    case ui::EndpointType::kDefault: {
+      // Passing empty URL will return restricted if there's a rule restricting
+      // the src against any dst (*), otherwise it will return ALLOW.
+      level = dlp_rules_manager.IsRestrictedDestination(
+          src_url, GURL(), DlpRulesManager::Restriction::kClipboard,
+          src_pattern, dst_pattern);
+      break;
+    }
+
+    case ui::EndpointType::kUrl: {
+      GURL dst_url = data_dst->origin()->GetURL();
+      level = dlp_rules_manager.IsRestrictedDestination(
+          src_url, dst_url, DlpRulesManager::Restriction::kClipboard,
+          src_pattern, dst_pattern);
       break;
     }
 
@@ -168,15 +184,9 @@ bool DataTransferDlpController::IsClipboardReadAllowed(
       }
       is_read_allowed = false;
       break;
-
     case DlpRulesManager::Level::kWarn:
       if (notify_on_paste) {
-        // In case the clipboard data is in warning mode, it will be allowed to
-        // be shared with Arc, Crostini, and Plugin VM without waiting for the
-        // user decision.
-        if (data_dst && (data_dst->type() == ui::EndpointType::kArc ||
-                         data_dst->type() == ui::EndpointType::kPluginVm ||
-                         data_dst->type() == ui::EndpointType::kCrostini)) {
+        if (data_dst && IsVM(data_dst->type())) {
           WarnOnPaste(data_src, data_dst);
         } else if (ShouldCancelOnWarn(data_dst)) {
           is_read_allowed = false;
@@ -187,7 +197,6 @@ bool DataTransferDlpController::IsClipboardReadAllowed(
         }
       }
       break;
-
     default:
       break;
   }
@@ -383,6 +392,7 @@ void DataTransferDlpController::ReportEvent(
   ui::EndpointType dst_type =
       data_dst ? data_dst->type() : ui::EndpointType::kDefault;
   switch (dst_type) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     case ui::EndpointType::kCrostini:
       reporting_manager->ReportEvent(
           src_pattern, DlpRulesManager::Component::kCrostini,
@@ -400,7 +410,7 @@ void DataTransferDlpController::ReportEvent(
           src_pattern, DlpRulesManager::Component::kArc,
           DlpRulesManager::Restriction::kClipboard, level);
       break;
-
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
     default:
       reporting_manager->ReportEvent(src_pattern, dst_pattern,
                                      DlpRulesManager::Restriction::kClipboard,
