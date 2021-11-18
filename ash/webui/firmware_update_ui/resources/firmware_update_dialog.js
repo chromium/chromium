@@ -4,10 +4,12 @@
 
 import './firmware_shared_css.js';
 import './firmware_shared_fonts.js';
+import './strings.m.js';
 
 import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
 import 'chrome://resources/polymer/v3_0/paper-progress/paper-progress.js';
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/js/i18n_behavior.m.js';
+import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {FirmwareUpdate, InstallationProgress, UpdateControllerInterface} from './firmware_update_types.js';
 import {getUpdateController} from './mojo_interface_provider.js';
 
@@ -23,7 +25,18 @@ export const DialogState = {
  * @fileoverview
  * 'firmware-update-dialog' displays information related to a firmware update.
  */
-export class FirmwareUpdateDialogElement extends PolymerElement {
+
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {I18nBehaviorInterface}
+ */
+const FirmwareUpdateDialogElementBase =
+    mixinBehaviors([I18nBehavior], PolymerElement);
+
+/** @polymer */
+export class FirmwareUpdateDialogElement extends
+    FirmwareUpdateDialogElementBase {
   static get is() {
     return 'firmware-update-dialog';
   }
@@ -156,8 +169,8 @@ export class FirmwareUpdateDialogElement extends PolymerElement {
    */
   computeUpdateDialogTitle_() {
     return this.isUpdateInProgress_() ?
-        `Updating ${this.update.deviceName}` :
-        `Your ${this.update.deviceName} is up to date`;
+        this.i18n('updating', this.update.deviceName) :
+        this.i18n('deviceUpToDate', this.update.deviceName);
   }
 
   /**
@@ -166,9 +179,8 @@ export class FirmwareUpdateDialogElement extends PolymerElement {
    */
   computeProgressText_() {
     if (this.installationProgress && this.installationProgress.percentage) {
-      return `Installing (${this.computePercentageValue_()})%`;
+      return this.i18n('installing', this.computePercentageValue_());
     }
-    // TODO(michaelcheco): i18n string.
     return '';
   }
 
@@ -178,14 +190,9 @@ export class FirmwareUpdateDialogElement extends PolymerElement {
    */
   computeUpdateDialogBodyText_() {
     const {deviceName, version} = this.update;
-    // TODO(michaelcheco): i18n string.
     return this.dialogState === DialogState.UPDATE_DONE ?
-        `Firmware ${deviceName} has been updated to version ${version}` :
-        `
-    While updating, you can minimize window but do not unplug your
-    device. This may take a few minutes and your device might not work
-    during this update.
-    `;
+        this.i18n('hasBeenUpdated', deviceName, version) :
+        this.i18n('updatingInfo');
   }
 }
 

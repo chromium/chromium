@@ -50,8 +50,7 @@
   <cr-dialog id="devicePrepDialog" show-on-attach
     on-close="closeDialog_">
   <div slot="title">
-    <!-- TODO(michaelcheco): i18n string -->
-    Prepare your device
+    [[i18n('prepareDevice')]]
   </div>
   <div slot="body">
     <div id="updateInstructions" hidden$="[[!update.updateModeInstructions]]">
@@ -60,14 +59,12 @@
   </div>
   <div slot="button-container">
     <cr-button id="cancelButton" on-click="closeDialog_">
-      <!-- TODO(michaelcheco): i18n string -->
-      Cancel
+      [[i18n('cancelButton')]]
     </cr-button>
     <cr-button class="action-button"
         id="nextButton"
         on-click="startUpdate_">
-      <!-- TODO(michaelcheco): i18n string -->
-      Next
+      [[i18n('nextButton')]]
     </cr-button>
   </div>
   </cr-dialog>
@@ -80,7 +77,6 @@
     </div>
     <div slot="body">
       <div>
-        <!-- TODO(michaelcheco): i18n string -->
         [[computeUpdateDialogBodyText_(dialogState)]]
       </div>
     </div>
@@ -98,8 +94,7 @@
       <cr-button class="action-button"
           on-click="closeDialog_"
           id="updateDoneButton">
-        <!-- TODO(michaelcheco): i18n string -->
-        Done
+        [[i18n('doneButton')]]
       </cr-button>
     </div>
   </cr-dialog>

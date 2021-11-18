@@ -7,6 +7,7 @@
 #include "ash/grit/ash_firmware_update_app_resources.h"
 #include "ash/grit/ash_firmware_update_app_resources_map.h"
 #include "ash/webui/firmware_update_ui/url_constants.h"
+#include "chromeos/strings/grit/chromeos_strings.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
@@ -30,6 +31,26 @@ void SetUpWebUIDataSource(content::WebUIDataSource* source,
                           IDR_WEBUI_JS_TEST_LOADER_UTIL_JS);
 }
 
+void AddFirmwareUpdateAppStrings(content::WebUIDataSource* source) {
+  static constexpr webui::LocalizedString kLocalizedStrings[] = {
+      {"appTitle", IDS_FIRMWARE_TITLE_TEXT},
+      {"criticalUpdate", IDS_FIRMWARE_CRITICAL_UPDATE_TEXT},
+      {"prepareDevice", IDS_FIRMWARE_PREPARE_DEVICE_TEXT},
+      {"nextButton", IDS_FIRMWARE_NEXT_BUTTON_TEXT},
+      {"cancelButton", IDS_FIRMWARE_CANCEL_BUTTON_TEXT},
+      {"doneButton", IDS_FIRMWARE_DONE_BUTTON_TEXT},
+      {"updateButton", IDS_FIRMWARE_UPDATE_BUTTON_TEXT},
+      {"updating", IDS_FIRMWARE_UPDATING_TEXT},
+      {"deviceUpToDate", IDS_FIRMWARE_DEVICE_UP_TO_DATE_TEXT},
+      {"hasBeenUpdated", IDS_FIRMWARE_HAS_BEEN_UPDATED_TEXT},
+      {"updatingInfo", IDS_FIRMWARE_UPDATING_INFO_TEXT},
+      {"installing", IDS_FIRMWARE_INSTALLING_TEXT},
+      {"upToDate", IDS_FIRMWARE_UP_TO_DATE_TEXT}};
+
+  source->AddLocalizedStrings(kLocalizedStrings);
+  source->UseStringsJs();
+}
+
 }  // namespace
 
 FirmwareUpdateAppUI::FirmwareUpdateAppUI(content::WebUI* web_ui)
@@ -45,6 +66,8 @@ FirmwareUpdateAppUI::FirmwareUpdateAppUI(content::WebUI* web_ui)
                                          kAshFirmwareUpdateAppResourcesSize);
   SetUpWebUIDataSource(source.get(), resources,
                        IDR_ASH_FIRMWARE_UPDATE_APP_INDEX_HTML);
+
+  AddFirmwareUpdateAppStrings(source.get());
 
   auto* browser_context = web_ui->GetWebContents()->GetBrowserContext();
   content::WebUIDataSource::Add(browser_context, source.release());

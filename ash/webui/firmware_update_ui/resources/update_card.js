@@ -5,15 +5,26 @@
 import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
 import './firmware_shared_css.js';
 import './firmware_shared_fonts.js';
+import './strings.m.js';
 
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/js/i18n_behavior.m.js';
+import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {FirmwareUpdate, UpdatePriority} from './firmware_update_types.js';
 
 /**
  * @fileoverview
  * 'update-card' displays information about a peripheral update.
  */
-export class UpdateCardElement extends PolymerElement {
+
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {I18nBehaviorInterface}
+ */
+const UpdateCardElementBase = mixinBehaviors([I18nBehavior], PolymerElement);
+
+/** @polymer */
+export class UpdateCardElement extends UpdateCardElementBase {
   static get is() {
     return 'update-card';
   }

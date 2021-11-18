@@ -94,7 +94,7 @@ export function firmwareUpdateAppTest() {
     // TODO(michaelcheco): Remove this stub test once the page has more
     // capabilities to test.
     assertEquals(
-        'Firmware updates',
+        'Update peripherals',
         page.shadowRoot.querySelector('#header').textContent.trim());
   });
 

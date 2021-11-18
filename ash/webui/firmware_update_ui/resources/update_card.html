@@ -26,14 +26,12 @@
       <span>[[update.version]]</span>
       <span id ="priorityText"
           hidden$="[[!isCriticalUpdate_(update.priority)]]">
-        <!-- TODO(michaelcheco): i18n string -->
-        Critical update
+        [[i18n('criticalUpdate')]]
       </span>
     </div>
     <div id="description">[[update.description]]</div>
   </div>
   <cr-button id="updateButton" on-click="onUpdateButtonClicked_">
-    <!-- TODO(michaelcheco): i18n string -->
-    Update
+    [[i18n('updateButton')]]
   </cr-button>
 </div>
