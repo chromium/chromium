@@ -268,6 +268,7 @@ enum Setting {
   kTermsOfService = 1706,
   kDiagnostics = 1707,
   kChangeDeviceName = 1708,
+  kFirmwareUpdates = 1709,
 
   // Kerberos section.
   kAddKerberosTicketV2 = 1800,

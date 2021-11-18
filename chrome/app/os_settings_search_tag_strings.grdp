@@ -1354,6 +1354,9 @@
   <message name="IDS_OS_SETTINGS_TAG_ABOUT_DIAGNOSTICS_ALT4" desc="Text for search result item which, when clicked, navigates the user to 'Diagnostics' settings, with a link which opens the Diagnostics App. Alternate phrase for 'Diagnostics', 'Troubleshooting', 'Battery Health', 'CPU Usage'">
     Memory Usage
   </message>
+  <message name="IDS_OS_SETTINGS_TAG_ABOUT_FIRMWARE_UPDATES" desc="Text for search result item which, when clicked, navigates the user to 'Firmware updates' settings, with a link which opens the 'Firmware updates' app.">
+    Firmware updates
+  </message>
 
   <!-- On Startup section. -->
   <message name="IDS_OS_SETTINGS_TAG_ON_STARTUP" desc="Text for search result item which, when clicked, navigates the user to On Startup settings, with a radio group to configure the restore apps and pages options">

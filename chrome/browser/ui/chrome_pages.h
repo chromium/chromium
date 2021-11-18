@@ -173,6 +173,9 @@ void ShowConnectivityDiagnosticsApp(Profile* profile);
 void ShowScanningApp(Profile* profile);
 
 void ShowDiagnosticsApp(Profile* profile);
+
+void ShowFirmwareUpdatesApp(Profile* profile);
+
 #endif
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)

@@ -467,6 +467,12 @@ void ShowDiagnosticsApp(Profile* profile) {
   LaunchSystemWebAppAsync(profile, web_app::SystemAppType::DIAGNOSTICS);
 }
 
+void ShowFirmwareUpdatesApp(Profile* profile) {
+  DCHECK(base::FeatureList::IsEnabled(chromeos::features::kFirmwareUpdaterApp));
+
+  LaunchSystemWebAppAsync(profile, web_app::SystemAppType::FIRMWARE_UPDATE);
+}
+
 GURL GetOSSettingsUrl(const std::string& sub_page) {
   DCHECK(sub_page.empty() || chromeos::settings::IsOSSettingsSubPage(sub_page))
       << sub_page;

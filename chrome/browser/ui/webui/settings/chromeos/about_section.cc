@@ -113,6 +113,18 @@ const std::vector<SearchConcept>& GetDiagnosticsAppSearchConcepts() {
   return *tags;
 }
 
+const std::vector<SearchConcept>& GetFirmwareUpdatesAppSearchConcepts() {
+  static const base::NoDestructor<std::vector<SearchConcept>> tags({
+      {IDS_OS_SETTINGS_TAG_ABOUT_FIRMWARE_UPDATES,
+       mojom::kAboutChromeOsDetailsSubpagePath,
+       mojom::SearchResultIcon::kChrome,
+       mojom::SearchResultDefaultRank::kMedium,
+       mojom::SearchResultType::kSetting,
+       {.setting = mojom::Setting::kFirmwareUpdates}},
+  });
+  return *tags;
+}
+
 const std::vector<SearchConcept>& GetDeviceNameSearchConcepts() {
   static const base::NoDestructor<std::vector<SearchConcept>> tags({
       {IDS_OS_SETTINGS_TAG_ABOUT_DEVICE_NAME,
@@ -200,6 +212,10 @@ AboutSection::AboutSection(Profile* profile,
     updater.AddSearchTags(GetDiagnosticsAppSearchConcepts());
   }
 
+  if (base::FeatureList::IsEnabled(chromeos::features::kFirmwareUpdaterApp)) {
+    updater.AddSearchTags(GetFirmwareUpdatesAppSearchConcepts());
+  }
+
   if (base::FeatureList::IsEnabled(
           chromeos::features::kEnableHostnameSetting)) {
     updater.AddSearchTags(GetDeviceNameSearchConcepts());
@@ -216,6 +232,7 @@ void AboutSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
     {"aboutReportAnIssue", IDS_SETTINGS_ABOUT_PAGE_REPORT_AN_ISSUE},
 #endif
     {"aboutDiagnostics", IDS_SETTINGS_ABOUT_PAGE_DIAGNOSTICS},
+    {"aboutFirmwareUpdates", IDS_SETTINGS_ABOUT_PAGE_FIRMWARE_UPDATES},
     {"aboutRelaunch", IDS_SETTINGS_ABOUT_PAGE_RELAUNCH},
     {"aboutUpgradeCheckStarted", IDS_SETTINGS_ABOUT_UPGRADE_CHECK_STARTED},
     {"aboutUpgradeRelaunch", IDS_SETTINGS_UPGRADE_SUCCESSFUL_RELAUNCH},
@@ -390,6 +407,10 @@ void AboutSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
       "diagnosticsAppEnabled",
       base::FeatureList::IsEnabled(chromeos::features::kDiagnosticsApp));
 
+  html_source->AddBoolean(
+      "isFirmwareUpdaterAppEnabled",
+      base::FeatureList::IsEnabled(chromeos::features::kFirmwareUpdaterApp));
+
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   html_source->AddString("aboutTermsURL", chrome::kChromeUITermsURL);
   html_source->AddLocalizedString("aboutProductTos",
@@ -439,7 +460,8 @@ void AboutSection::RegisterHierarchy(HierarchyGenerator* generator) const {
   static constexpr mojom::Setting kAboutChromeOsDetailsSettings[] = {
       mojom::Setting::kCheckForOsUpdate,    mojom::Setting::kSeeWhatsNew,
       mojom::Setting::kGetHelpWithChromeOs, mojom::Setting::kReportAnIssue,
-      mojom::Setting::kTermsOfService,      mojom::Setting::kDiagnostics};
+      mojom::Setting::kTermsOfService,      mojom::Setting::kDiagnostics,
+      mojom::Setting::kFirmwareUpdates};
   RegisterNestedSettingBulk(mojom::Subpage::kAboutChromeOsDetails,
                             kAboutChromeOsDetailsSettings, generator);
 

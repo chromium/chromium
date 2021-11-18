@@ -158,6 +158,12 @@ Polymer({
       }
     },
 
+    /** @protected */
+    showFirmwareUpdatesApp_: {
+      type: Boolean,
+      value: () => loadTimeData.getBoolean('isFirmwareUpdaterAppEnabled'),
+    },
+
     /** @private {!Map<string, string>} */
     focusConfig_: {
       type: Object,
@@ -212,6 +218,7 @@ Polymer({
         chromeos.settings.mojom.Setting.kReportAnIssue,
         chromeos.settings.mojom.Setting.kTermsOfService,
         chromeos.settings.mojom.Setting.kDiagnostics,
+        chromeos.settings.mojom.Setting.kFirmwareUpdates,
       ]),
     },
   },
@@ -342,6 +349,13 @@ Polymer({
     assert(this.showDiagnosticsApp_);
     this.aboutBrowserProxy_.openDiagnostics();
     recordSettingChange(chromeos.settings.mojom.Setting.kDiagnostics);
+  },
+
+  /** @private */
+  onFirmwareUpdatesClick_() {
+    assert(this.showFirmwareUpdatesApp_);
+    this.aboutBrowserProxy_.openFirmwareUpdatesPage();
+    recordSettingChange(chromeos.settings.mojom.Setting.kFirmwareUpdates);
   },
 
   /** @private */

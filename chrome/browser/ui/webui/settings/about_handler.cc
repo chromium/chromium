@@ -287,6 +287,12 @@ void AboutHandler::RegisterMessages() {
       "openDiagnostics",
       base::BindRepeating(&AboutHandler::HandleOpenDiagnostics,
                           base::Unretained(this)));
+
+  web_ui()->RegisterDeprecatedMessageCallback(
+      "openFirmwareUpdatesPage",
+      base::BindRepeating(&AboutHandler::HandleOpenFirmwareUpdates,
+                          base::Unretained(this)));
+
   web_ui()->RegisterDeprecatedMessageCallback(
       "openOsHelpPage", base::BindRepeating(&AboutHandler::HandleOpenOsHelpPage,
                                             base::Unretained(this)));
@@ -437,6 +443,11 @@ void AboutHandler::HandleOpenHelpPage(const base::ListValue* args) {
 void AboutHandler::HandleOpenDiagnostics(const base::ListValue* args) {
   DCHECK(args->GetList().empty());
   chrome::ShowDiagnosticsApp(profile_);
+}
+
+void AboutHandler::HandleOpenFirmwareUpdates(const base::ListValue* args) {
+  DCHECK(args->GetList().empty());
+  chrome::ShowFirmwareUpdatesApp(profile_);
 }
 
 void AboutHandler::HandleCheckInternetConnection(const base::ListValue* args) {

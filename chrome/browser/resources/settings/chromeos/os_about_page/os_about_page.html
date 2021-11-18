@@ -161,6 +161,12 @@
           label="$i18n{aboutDiagnostics}" external
           deep-link-focus-id$="[[Setting.kDiagnostics]]">
       </cr-link-row>
+      <cr-link-row class="hr" id="firmwareUpdates"
+          on-click="onFirmwareUpdatesClick_"
+          hidden$="[[!showFirmwareUpdatesApp_]]"
+          label="$i18n{aboutFirmwareUpdates}" external
+          deep-link-focus-id$="[[Setting.kFirmwareUpdates]]">
+      </cr-link-row>
       <cr-link-row class="hr" id="detailed-build-info-trigger"
           on-click="onDetailedBuildInfoClick_"
           label="$i18n{aboutDetailedBuildInfo}"
