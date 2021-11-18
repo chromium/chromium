@@ -16,15 +16,15 @@
 
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/memory/weak_ptr.h"
-#include "content/browser/renderer_host/back_forward_cache_impl.h"
-#include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/renderer_host/should_swap_browsing_instance.h"
 #include "content/browser/renderer_host/stored_page.h"
 #include "content/browser/site_instance_group.h"
 #include "content/browser/site_instance_impl.h"
 #include "content/browser/web_exposed_isolation_info.h"
 #include "content/common/content_export.h"
+#include "content/common/frame.mojom-forward.h"
 #include "content/public/browser/global_request_id.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/common/referrer.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
@@ -34,6 +34,10 @@
 #include "ui/base/page_transition_types.h"
 #include "url/origin.h"
 
+namespace blink {
+struct FramePolicy;
+}  // namespace blink
+
 namespace content {
 class FrameTree;
 class FrameTreeNode;
@@ -41,6 +45,7 @@ class NavigationControllerImpl;
 class NavigationEntry;
 class NavigationRequest;
 class NavigatorTest;
+class RenderFrameHostImpl;
 class RenderFrameHostManagerTest;
 class RenderFrameProxyHost;
 class RenderViewHost;
