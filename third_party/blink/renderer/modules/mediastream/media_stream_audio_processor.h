@@ -56,16 +56,24 @@ class MODULES_EXPORT MediaStreamAudioProcessor
                                    base::TimeTicks audio_capture_time,
                                    absl::optional<double> new_volume)>;
 
+  using LogCallback = base::RepeatingCallback<void(const std::string&)>;
+
   // |deliver_processed_audio_callback| is used to deliver frames of processed
   // capture audio, from ProcessCapturedAudio(), and has to be valid until
-  // Stop() is called. |playout_data_source| is used to register this class as a
-  // sink to the WebRtc playout data for processing AEC. If clients do not
-  // enable AEC, |playout_data_source| won't be used.
+  // Stop() is called. |log_callback| is used for logging messages.
+  // |playout_data_source| is used to register this class as a sink to the
+  // WebRtc playout data for processing AEC. If clients do not enable AEC,
+  // |playout_data_source| won't be used.
+
+  // |playout_data_source| is used to register this class as a sink to the
+  // WebRtc playout data for processing AEC. If clients do not enable AEC,
+  // |playout_data_source| won't be used.
   //
   // Threading note: The constructor assumes it is being run on the main render
   // thread.
   MediaStreamAudioProcessor(
       DeliverProcessedAudioCallback deliver_processed_audio_callback,
+      LogCallback log_callback,
       const AudioProcessingProperties& properties,
       bool use_capture_multi_channel_processing,
       scoped_refptr<WebRtcAudioDeviceImpl> playout_data_source);
@@ -195,10 +203,13 @@ class MODULES_EXPORT MediaStreamAudioProcessor
   // Update AEC stats. Called on the main render thread.
   void UpdateAecStats();
 
-  void SendLogMessage(const WTF::String& message);
+  void SendLogMessage(const std::string& message);
 
   // Consumer of processed capture audio in ProcessCapturedAudio().
   DeliverProcessedAudioCallback deliver_processed_audio_callback_;
+
+  // Used by SendLogMessage.
+  LogCallback log_callback_;
 
   // Cached value for the render delay latency. This member is accessed by
   // both the capture audio thread and the render audio thread.

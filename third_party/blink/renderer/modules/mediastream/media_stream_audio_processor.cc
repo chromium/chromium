@@ -222,10 +222,12 @@ class MediaStreamAudioFifo {
 
 MediaStreamAudioProcessor::MediaStreamAudioProcessor(
     DeliverProcessedAudioCallback deliver_processed_audio_callback,
+    LogCallback log_callback,
     const AudioProcessingProperties& properties,
     bool use_capture_multi_channel_processing,
     scoped_refptr<WebRtcAudioDeviceImpl> playout_data_source)
     : deliver_processed_audio_callback_(deliver_processed_audio_callback),
+      log_callback_(log_callback),
       render_delay_(base::TimeDelta()),
       audio_delay_stats_reporter_(kBuffersPerSecond),
       playout_data_source_(std::move(playout_data_source)),
@@ -235,12 +237,14 @@ MediaStreamAudioProcessor::MediaStreamAudioProcessor(
       stopped_(false),
       use_capture_multi_channel_processing_(
           use_capture_multi_channel_processing) {
+  DCHECK(deliver_processed_audio_callback_);
+  DCHECK(log_callback_);
   DCHECK(main_thread_runner_);
   DETACH_FROM_THREAD(capture_thread_checker_);
   DETACH_FROM_THREAD(render_thread_checker_);
-  SendLogMessage(
-      String::Format("%s({use_capture_multi_channel_processing=%s})", __func__,
-                     use_capture_multi_channel_processing ? "true" : "false"));
+  SendLogMessage(base::StringPrintf(
+      "%s({use_capture_multi_channel_processing=%s})", __func__,
+      use_capture_multi_channel_processing ? "true" : "false"));
 
   InitializeAudioProcessingModule(properties);
 }
@@ -346,7 +350,7 @@ void MediaStreamAudioProcessor::SetOutputWillBeMuted(bool muted) {
   DCHECK(base::FeatureList::IsEnabled(
       features::kMinimizeAudioProcessingForUnusedOutput));
   SendLogMessage(
-      String::Format("%s({muted=%s})", __func__, muted ? "true" : "false"));
+      base::StringPrintf("%s({muted=%s})", __func__, muted ? "true" : "false"));
   if (audio_processing_) {
     audio_processing_->set_output_will_be_muted(muted);
   }
@@ -482,7 +486,7 @@ void MediaStreamAudioProcessor::InitializeAudioProcessingModule(
     const AudioProcessingProperties& properties) {
   DCHECK(main_thread_runner_->BelongsToCurrentThread());
   DCHECK(!audio_processing_);
-  SendLogMessage(String::Format("%s()", __func__));
+  SendLogMessage(base::StringPrintf("%s()", __func__));
 
   // Note: The audio mirroring constraint (i.e., swap left and right channels)
   // is handled within this MediaStreamAudioProcessor and does not, by itself,
@@ -526,8 +530,9 @@ void MediaStreamAudioProcessor::InitializeCaptureFifo(
     const media::AudioParameters& input_format) {
   DCHECK(main_thread_runner_->BelongsToCurrentThread());
   DCHECK(input_format.IsValid());
-  SendLogMessage(String::Format("%s({input_format=[%s]})", __func__,
-                                input_format.AsHumanReadableString().c_str()));
+  SendLogMessage(
+      base::StringPrintf("%s({input_format=[%s]})", __func__,
+                         input_format.AsHumanReadableString().c_str()));
 
   input_format_ = input_format;
 
@@ -610,11 +615,11 @@ void MediaStreamAudioProcessor::InitializeCaptureFifo(
     output_format_.set_channels_for_discrete(input_format.channels());
   }
   SendLogMessage(
-      String::Format("%s => (output_format=[%s])", __func__,
-                     output_format_.AsHumanReadableString().c_str()));
-  SendLogMessage(
-      String::Format("%s => (FIFO: processing_frames=%d, output_channels=%d)",
-                     __func__, processing_frames, fifo_output_channels));
+      base::StringPrintf("%s => (output_format=[%s])", __func__,
+                         output_format_.AsHumanReadableString().c_str()));
+  SendLogMessage(base::StringPrintf(
+      "%s => (FIFO: processing_frames=%d, output_channels=%d)", __func__,
+      processing_frames, fifo_output_channels));
 
   capture_fifo_ = std::make_unique<MediaStreamAudioFifo>(
       input_format.channels(), fifo_output_channels,
@@ -743,11 +748,10 @@ void MediaStreamAudioProcessor::UpdateAecStats() {
   DCHECK(main_thread_runner_->BelongsToCurrentThread());
 }
 
-void MediaStreamAudioProcessor::SendLogMessage(const WTF::String& message) {
-  WebRtcLogMessage(String::Format("MSAP::%s [this=0x%" PRIXPTR "]",
-                                  message.Utf8().c_str(),
-                                  reinterpret_cast<uintptr_t>(this))
-                       .Utf8());
+void MediaStreamAudioProcessor::SendLogMessage(const std::string& message) {
+  log_callback_.Run(base::StringPrintf("MSAP::%s [this=0x%" PRIXPTR "]",
+                                       message.c_str(),
+                                       reinterpret_cast<uintptr_t>(this)));
 }
 
 }  // namespace blink

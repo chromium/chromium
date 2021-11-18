@@ -380,9 +380,13 @@ bool ProcessedLocalAudioSource::EnsureSourceIsStarted() {
       ConvertToBaseRepeatingCallback(CrossThreadBindRepeating(
           &ProcessedLocalAudioSource::DeliverProcessedAudio,
           CrossThreadUnretained(this)));
+  MediaStreamAudioProcessor::LogCallback log_callback =
+      ConvertToBaseRepeatingCallback(
+          CrossThreadBindRepeating(&WebRtcLogMessage));
   audio_processor_ = new rtc::RefCountedObject<MediaStreamAudioProcessor>(
-      std::move(processing_callback), audio_processing_properties_,
-      use_multichannel_processing, rtc_audio_device);
+      std::move(processing_callback), std::move(log_callback),
+      audio_processing_properties_, use_multichannel_processing,
+      rtc_audio_device);
   params.set_frames_per_buffer(GetBufferSize(device().input.sample_rate()));
   audio_processor_->OnCaptureFormatChanged(params);
   SetFormat(audio_processor_->OutputFormat());
