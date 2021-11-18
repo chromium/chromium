@@ -163,6 +163,11 @@
       :host([is-card-start][is-card-end]) #background {
         border-radius: var(--cr-card-border-radius);
       }
+
+      #options {
+        align-items: center;
+        display: flex;
+      }
     </style>
 
     <div id="main-container">
@@ -205,19 +210,15 @@
             </a>
             <span id="domain">[[item.domain]]</span>
           </div>
-          <div id="star-container">
+          <div role="gridcell" id="options">
             <template is="dom-if" if="[[item.starred]]">
-              <div role="gridcell">
-                <cr-icon-button id="bookmark-star" iron-icon="cr:star"
-                    focus-row-control focus-type="star"
-                    title="$i18n{removeBookmark}"
-                    on-click="onRemoveBookmarkTap_"
-                    aria-describedby$="[[ariaDescribedByForHeading_]]">
-                </cr-icon-button>
-              </div>
+              <cr-icon-button id="bookmark-star" iron-icon="cr:star"
+                  focus-row-control focus-type="star"
+                  title="$i18n{removeBookmark}"
+                  on-click="onRemoveBookmarkTap_"
+                  aria-describedby$="[[ariaDescribedByForHeading_]]">
+              </cr-icon-button>
             </template>
-          </div>
-          <div role="gridcell">
             <cr-icon-button id="menu-button" iron-icon="cr:more-vert"
                 focus-row-control focus-type="cr-menu-button"
                 title="$i18n{actionMenuDescription}" on-click="onMenuButtonTap_"
