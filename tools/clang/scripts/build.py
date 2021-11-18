@@ -995,12 +995,14 @@ def main():
       cflags = [
           '--target=' + target_triple,
           '--sysroot=%s/sysroot' % toolchain_dir,
+          '--gcc-toolchain=' + toolchain_dir,
           # android_ndk/toolchains/llvm/prebuilt/linux-x86_64/aarch64-linux-android/bin/ld
           # depends on a newer version of libxml2.so than what's available on
           # the bots. To make things work, use our just-built lld as linker.
           '-fuse-ld=lld',
-          # We don't have an unwinder ready, and don't need it either.
-          '--unwindlib=none',
+          # The compiler we're building with (just-built clang) doesn't have the
+          # compiler-rt builtins; use libgcc to get past the CMake checks.
+          '--rtlib=libgcc',
       ]
 
       android_args = base_cmake_args + [
@@ -1015,45 +1017,17 @@ def main():
         '-DCOMPILER_RT_BUILD_LIBFUZZER=OFF',
         '-DCOMPILER_RT_BUILD_MEMPROF=OFF',
         '-DCOMPILER_RT_BUILD_ORC=OFF',
-        '-DCOMPILER_RT_BUILD_PROFILE=OFF',
-        '-DCOMPILER_RT_BUILD_SANITIZERS=OFF',
+        '-DCOMPILER_RT_BUILD_PROFILE=ON',
+        '-DCOMPILER_RT_BUILD_SANITIZERS=ON',
         '-DCOMPILER_RT_BUILD_XRAY=OFF',
         '-DSANITIZER_CXX_ABI=libcxxabi',
         '-DCMAKE_SHARED_LINKER_FLAGS=-Wl,-u__cxa_demangle',
-        '-DANDROID=1'
-
-        # These are necessary because otherwise CMake tries to build an
-        # executable to test to see if the compiler is working, but in doing so,
-        # it links against the builtins.a that we're about to build.
-        '-DCMAKE_CXX_COMPILER_WORKS=ON',
-        '-DCMAKE_C_COMPILER_WORKS=ON',
-        '-DCMAKE_ASM_COMPILER_WORKS=ON',
-      ]
-
-      # First build the builtins and copy to the main build tree.
-      RunCommand(['cmake'] +
-                 android_args +
-                 [os.path.join(COMPILER_RT_DIR, 'lib', 'builtins')])
-      builtins_a = 'lib/linux/libclang_rt.builtins-%s-android.a' % target_arch
-      RunCommand(['ninja', builtins_a])
-      shutil.copy(builtins_a, rt_lib_dst_dir)
-
-      # With the builtins in place, we can build the other runtimes.
-      build_dir_2 = build_dir + '-phase2'
-      if not os.path.exists(build_dir_2):
-        os.mkdir(os.path.join(build_dir_2))
-      os.chdir(build_dir_2)
-
-      android_args.extend([
-        '-DCOMPILER_RT_BUILD_BUILTINS=OFF',
-        '-DCOMPILER_RT_USE_BUILTINS_LIBRARY=ON',
-        '-DCOMPILER_RT_BUILD_PROFILE=ON',
-        '-DCOMPILER_RT_BUILD_SANITIZERS=ON',
-      ])
+        '-DANDROID=1']
       RunCommand(['cmake'] + android_args + [COMPILER_RT_DIR])
 
       libs_want = [
           'lib/linux/libclang_rt.asan-{0}-android.so',
+          'lib/linux/libclang_rt.builtins-{0}-android.a',
           'lib/linux/libclang_rt.ubsan_standalone-{0}-android.so',
           'lib/linux/libclang_rt.profile-{0}-android.a',
       ]
