@@ -28,10 +28,10 @@
 namespace {
 CGFloat const kCaptionTextViewOffset = 16;
 CGFloat const kDefaultMargin = 16;
+CGFloat const kTitleTopMinimumMargin = 48;
 CGFloat const kTitleHorizontalMargin = 18;
 CGFloat const kDefaultBannerMultiplier = 0.25;
 CGFloat const kContentWidthMultiplier = 0.65;
-CGFloat const kContentMaxWidth = 327;
 CGFloat const kButtonHorizontalMargin = 4;
 }  // namespace
 
@@ -126,9 +126,6 @@ CGFloat const kButtonHorizontalMargin = 4;
   self.scrollContentView = [[UIView alloc] init];
   self.scrollContentView.translatesAutoresizingMaskIntoConstraints = NO;
 
-  // TODO(crbug.com/1269856): Image view should be removed or hidden in compact
-  // landscape mode. "traitCollectionDidChange:" will be implemented to support
-  // orientation change observation.
   [self.scrollContentView addSubview:self.imageView];
 
   // Add the labels.
@@ -234,12 +231,16 @@ CGFloat const kButtonHorizontalMargin = 4;
         constraintEqualToAnchor:self.scrollContentView.bottomAnchor],
   ]];
 
-  // Also constrain the width layout guide to a maximum constant, but at a lower
-  // priority so that it only applies in compact screens.
-  NSLayoutConstraint* contentLayoutGuideWidthConstraint =
-      [widthLayoutGuide.widthAnchor constraintEqualToConstant:kContentMaxWidth];
-  contentLayoutGuideWidthConstraint.priority = UILayoutPriorityRequired - 1;
-  contentLayoutGuideWidthConstraint.active = YES;
+  // In iPhone landscape mode, the top image is removed. In that case, we should
+  // make sure there is enough distance between the title label and the top edge
+  // of the iPhone.
+  // We set to priority of this constraint to be lower than the imageView's
+  // compression resistance priority so it could expand if the image height is
+  // bigger than this.
+  NSLayoutConstraint* imageHeightConstraint = [self.imageView.heightAnchor
+      constraintEqualToConstant:kTitleTopMinimumMargin];
+  imageHeightConstraint.priority = UILayoutPriorityDefaultHigh - 1;
+  imageHeightConstraint.active = YES;
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
@@ -268,9 +269,8 @@ CGFloat const kButtonHorizontalMargin = 4;
 
   // Rescale image here as on iPad the view height isn't correctly set during
   // -viewDidLoad.
-  self.imageView.image = [self scaleSourceImage:self.bannerImage
-                                   currentImage:self.imageView.image
-                                         toSize:[self computeBannerImageSize]];
+  self.imageView.image = [self createOrUpdateImage:self.imageView.image];
+
   if (self.navigationController &&
       [self.navigationController
           isKindOfClass:[SettingsNavigationController class]]) {
@@ -307,6 +307,14 @@ CGFloat const kButtonHorizontalMargin = 4;
   }
 }
 
+- (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
+  [super traitCollectionDidChange:previousTraitCollection];
+  if (self.traitCollection.verticalSizeClass !=
+      previousTraitCollection.verticalSizeClass) {
+    self.imageView.image = [self createOrUpdateImage:self.imageView.image];
+  }
+}
+
 #pragma mark - Accessors
 
 - (UIScrollView*)scrollView {
@@ -323,10 +331,8 @@ CGFloat const kButtonHorizontalMargin = 4;
 
 - (UIImageView*)imageView {
   if (!_imageView) {
-    _imageView = [[UIImageView alloc]
-        initWithImage:[self scaleSourceImage:self.bannerImage
-                                currentImage:nil
-                                      toSize:[self computeBannerImageSize]]];
+    _imageView =
+        [[UIImageView alloc] initWithImage:[self createOrUpdateImage:nil]];
     _imageView.clipsToBounds = YES;
     _imageView.translatesAutoresizingMaskIntoConstraints = NO;
   }
@@ -638,6 +644,20 @@ CGFloat const kButtonHorizontalMargin = 4;
   return captionTextView;
 }
 
+// Returns a new UIImage which is |sourceImage| resized to |newSize|.
+// Returns |currentImage| if it is already at the correct size.
+// Returns nil when the view should not show an image (iPhone landscape mode).
+- (UIImage*)createOrUpdateImage:(UIImage*)currentImage {
+  if (IsCompactHeight(self)) {
+    return nil;
+  }
+  CGSize newSize = [self computeBannerImageSize];
+  if (CGSizeEqualToSize(newSize, currentImage.size)) {
+    return currentImage;
+  }
+  return ResizeImage(self.bannerImage, newSize, ProjectionMode::kAspectFit);
+}
+
 // Computes banner's image size.
 - (CGSize)computeBannerImageSize {
   CGFloat destinationHeight =
@@ -647,17 +667,6 @@ CGFloat const kButtonHorizontalMargin = 4;
              destinationHeight);
   CGSize newSize = CGSizeMake(destinationWidth, destinationHeight);
   return newSize;
-}
-
-// Returns a new UIImage which is |sourceImage| resized to |newSize|. Returns
-// |currentImage| if it is already at the correct size.
-- (UIImage*)scaleSourceImage:(UIImage*)sourceImage
-                currentImage:(UIImage*)currentImage
-                      toSize:(CGSize)newSize {
-  if (CGSizeEqualToSize(newSize, currentImage.size)) {
-    return currentImage;
-  }
-  return ResizeImage(sourceImage, newSize, ProjectionMode::kAspectFit);
 }
 
 // Selector of self.actionButton and link in caption text view.
