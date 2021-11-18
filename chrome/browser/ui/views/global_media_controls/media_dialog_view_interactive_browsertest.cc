@@ -350,19 +350,11 @@ class MediaDialogViewBrowserTest : public InProcessBrowserTest {
   }
 
   void SetUp() override {
-    std::vector<base::Feature> enabled_features = {
-        media::kGlobalMediaControls, media::kGlobalMediaControlsForCast,
-        media::kLiveCaption, feature_engagement::kIPHLiveCaptionFeature,
-        media::kLiveCaptionMultiLanguage};
-    std::vector<base::Feature> disabled_features;
-#if defined(OS_LINUX)
-    // TODO(crbug.com/1182859): Update this test to enable the
-    // kUseSodaForLiveCaption feature.
-    disabled_features.push_back(media::kUseSodaForLiveCaption);
-#else
-    enabled_features.push_back(media::kUseSodaForLiveCaption);
-#endif
-    feature_list_.InitWithFeatures(enabled_features, disabled_features);
+    feature_list_.InitWithFeatures(
+        {media::kGlobalMediaControls, media::kGlobalMediaControlsForCast,
+         media::kLiveCaption, feature_engagement::kIPHLiveCaptionFeature,
+         media::kLiveCaptionMultiLanguage, media::kUseSodaForLiveCaption},
+        {});
 
     presentation_manager_ =
         std::make_unique<TestWebContentsPresentationManager>();
@@ -970,6 +962,7 @@ IN_PROC_BROWSER_TEST_F(MediaDialogViewBrowserTest, MAYBE_LiveCaption) {
   OpenTestURL();
   StartPlayback();
   WaitForStart();
+  speech::SodaInstaller::GetInstance()->NeverDownloadSodaForTesting();
 
   // Open the media dialog.
   EXPECT_TRUE(WaitForToolbarIconShown());
@@ -979,33 +972,24 @@ IN_PROC_BROWSER_TEST_F(MediaDialogViewBrowserTest, MAYBE_LiveCaption) {
 
   // The Live Caption title should appear.
   EXPECT_TRUE(GetLiveCaptionTitleLabel()->GetVisible());
-  std::string title;
-#if defined(OS_LINUX)
-  title = "Live Caption (English only)";
-#else
-  title = "Live Caption";
-#endif
-  EXPECT_EQ(title, base::UTF16ToUTF8(GetLiveCaptionTitleLabel()->GetText()));
+  EXPECT_EQ("Live Caption",
+            base::UTF16ToUTF8(GetLiveCaptionTitleLabel()->GetText()));
 
   // Click the Live Caption toggle to toggle it on.
   ClickEnableLiveCaptionOnDialog();
   EXPECT_TRUE(
       browser()->profile()->GetPrefs()->GetBoolean(prefs::kLiveCaptionEnabled));
   EXPECT_TRUE(GetLiveCaptionTitleLabel()->GetVisible());
-#if !defined(OS_LINUX)
-  title = "Live Caption - English";
-#endif
-  EXPECT_EQ(title, base::UTF16ToUTF8(GetLiveCaptionTitleLabel()->GetText()));
+  EXPECT_EQ("Live Caption - English",
+            base::UTF16ToUTF8(GetLiveCaptionTitleLabel()->GetText()));
 
   // Click the Live Caption toggle again to toggle it off.
   ClickEnableLiveCaptionOnDialog();
   EXPECT_FALSE(
       browser()->profile()->GetPrefs()->GetBoolean(prefs::kLiveCaptionEnabled));
   EXPECT_TRUE(GetLiveCaptionTitleLabel()->GetVisible());
-#if !defined(OS_LINUX)
-  title = "Live Caption";
-#endif
-  EXPECT_EQ(title, base::UTF16ToUTF8(GetLiveCaptionTitleLabel()->GetText()));
+  EXPECT_EQ("Live Caption",
+            base::UTF16ToUTF8(GetLiveCaptionTitleLabel()->GetText()));
 
   // Close dialog and enable live caption preference. Reopen dialog.
   ClickToolbarIcon();
@@ -1016,20 +1000,16 @@ IN_PROC_BROWSER_TEST_F(MediaDialogViewBrowserTest, MAYBE_LiveCaption) {
   EXPECT_TRUE(WaitForDialogOpened());
   EXPECT_TRUE(IsDialogVisible());
   EXPECT_TRUE(GetLiveCaptionTitleLabel()->GetVisible());
-#if !defined(OS_LINUX)
-  title = "Live Caption - English";
-#endif
-  EXPECT_EQ(title, base::UTF16ToUTF8(GetLiveCaptionTitleLabel()->GetText()));
+  EXPECT_EQ("Live Caption - English",
+            base::UTF16ToUTF8(GetLiveCaptionTitleLabel()->GetText()));
 
   // Click the Live Caption toggle to toggle it off.
   ClickEnableLiveCaptionOnDialog();
   EXPECT_FALSE(
       browser()->profile()->GetPrefs()->GetBoolean(prefs::kLiveCaptionEnabled));
   EXPECT_TRUE(GetLiveCaptionTitleLabel()->GetVisible());
-#if !defined(OS_LINUX)
-  title = "Live Caption";
-#endif
-  EXPECT_EQ(title, base::UTF16ToUTF8(GetLiveCaptionTitleLabel()->GetText()));
+  EXPECT_EQ("Live Caption",
+            base::UTF16ToUTF8(GetLiveCaptionTitleLabel()->GetText()));
 }
 
 #if defined(OS_MAC) && defined(ARCH_CPU_ARM64)
@@ -1040,6 +1020,7 @@ IN_PROC_BROWSER_TEST_F(MediaDialogViewBrowserTest, MAYBE_LiveCaption) {
 #endif
 IN_PROC_BROWSER_TEST_F(MediaDialogViewBrowserTest,
                        MAYBE_LiveCaptionProgressUpdate) {
+  speech::SodaInstaller::GetInstance()->NeverDownloadSodaForTesting();
   // Open a tab and play media.
   OpenTestURL();
   StartPlayback();
@@ -1051,13 +1032,8 @@ IN_PROC_BROWSER_TEST_F(MediaDialogViewBrowserTest,
   EXPECT_TRUE(WaitForDialogOpened());
   EXPECT_TRUE(IsDialogVisible());
 
-  std::string title;
-#if defined(OS_LINUX)
-  title = "Live Caption (English only)";
-#else
-  title = "Live Caption";
-#endif
-  EXPECT_EQ(title, base::UTF16ToUTF8(GetLiveCaptionTitleLabel()->GetText()));
+  EXPECT_EQ("Live Caption",
+            base::UTF16ToUTF8(GetLiveCaptionTitleLabel()->GetText()));
 
   ClickEnableLiveCaptionOnDialog();
   OnSodaProgress(0);
@@ -1077,10 +1053,8 @@ IN_PROC_BROWSER_TEST_F(MediaDialogViewBrowserTest,
             base::UTF16ToUTF8(GetLiveCaptionTitleLabel()->GetText()));
 
   OnSodaInstalled();
-#if !defined(OS_LINUX)
-  title = "Live Caption - English";
-#endif
-  EXPECT_EQ(title, base::UTF16ToUTF8(GetLiveCaptionTitleLabel()->GetText()));
+  EXPECT_EQ("Live Caption - English",
+            base::UTF16ToUTF8(GetLiveCaptionTitleLabel()->GetText()));
 }
 
 #if defined(OS_MAC) && defined(ARCH_CPU_ARM64)
@@ -1095,6 +1069,7 @@ IN_PROC_BROWSER_TEST_F(MediaDialogViewBrowserTest,
   OpenTestURL();
   StartPlayback();
   WaitForStart();
+  speech::SodaInstaller::GetInstance()->NeverDownloadSodaForTesting();
 
   // Open the media dialog.
   EXPECT_TRUE(WaitForToolbarIconShown());
@@ -1104,21 +1079,14 @@ IN_PROC_BROWSER_TEST_F(MediaDialogViewBrowserTest,
 
   // Live Caption is disabled, so the title should not show the language.
   EXPECT_TRUE(GetLiveCaptionTitleLabel()->GetVisible());
-  std::string title;
-#if defined(OS_LINUX)
-  title = "Live Caption (English only)";
-#else
-  title = "Live Caption";
-#endif
-  EXPECT_EQ(title, base::UTF16ToUTF8(GetLiveCaptionTitleLabel()->GetText()));
+  EXPECT_EQ("Live Caption",
+            base::UTF16ToUTF8(GetLiveCaptionTitleLabel()->GetText()));
 
   // When Live Caption is enabled, the title should show the language.
   ClickEnableLiveCaptionOnDialog();
   EXPECT_TRUE(GetLiveCaptionTitleLabel()->GetVisible());
-#if !defined(OS_LINUX)
-  title = "Live Caption - English";
-#endif
-  EXPECT_EQ(title, base::UTF16ToUTF8(GetLiveCaptionTitleLabel()->GetText()));
+  EXPECT_EQ("Live Caption - English",
+            base::UTF16ToUTF8(GetLiveCaptionTitleLabel()->GetText()));
 
   // Close dialog and change live caption language. Reopen dialog.
   ClickToolbarIcon();
@@ -1131,18 +1099,14 @@ IN_PROC_BROWSER_TEST_F(MediaDialogViewBrowserTest,
 
   // Live Caption is enabled so the title should show the new language.
   EXPECT_TRUE(GetLiveCaptionTitleLabel()->GetVisible());
-#if !defined(OS_LINUX)
-  title = "Live Caption - German";
-#endif
-  EXPECT_EQ(title, base::UTF16ToUTF8(GetLiveCaptionTitleLabel()->GetText()));
+  EXPECT_EQ("Live Caption - German",
+            base::UTF16ToUTF8(GetLiveCaptionTitleLabel()->GetText()));
 
   // When Live Caption is disabled, the title should not show the language.
   ClickEnableLiveCaptionOnDialog();
   EXPECT_TRUE(GetLiveCaptionTitleLabel()->GetVisible());
-#if !defined(OS_LINUX)
-  title = "Live Caption";
-#endif
-  EXPECT_EQ(title, base::UTF16ToUTF8(GetLiveCaptionTitleLabel()->GetText()));
+  EXPECT_EQ("Live Caption",
+            base::UTF16ToUTF8(GetLiveCaptionTitleLabel()->GetText()));
 }
 
 class MediaDialogViewWithBackForwardCacheBrowserTest
