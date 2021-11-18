@@ -799,6 +799,12 @@ const base::Feature kLogUnexpectedIPCPostedToBackForwardCachedDocuments{
     "LogUnexpectedIPCPostedToBackForwardCachedDocuments",
     base::FEATURE_ENABLED_BY_DEFAULT};
 
+// Enables the "handle_links" manifest field for web apps.
+// Explainer:
+// https://github.com/WICG/pwa-url-handler/blob/main/handle_links/explainer.md
+const base::Feature kWebAppEnableHandleLinks{"WebAppEnableHandleLinks",
+                                             base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enables web apps to request isolated storage.
 const base::Feature kWebAppEnableIsolatedStorage{
     "WebAppEnableIsolatedStorage", base::FEATURE_DISABLED_BY_DEFAULT};

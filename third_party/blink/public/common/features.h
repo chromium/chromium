@@ -320,6 +320,8 @@ BLINK_COMMON_EXPORT extern const base::Feature kPreferCompositingToLCDText;
 BLINK_COMMON_EXPORT extern const base::Feature
     kLogUnexpectedIPCPostedToBackForwardCachedDocuments;
 
+BLINK_COMMON_EXPORT extern const base::Feature kWebAppEnableHandleLinks;
+
 BLINK_COMMON_EXPORT extern const base::Feature kWebAppEnableIsolatedStorage;
 
 BLINK_COMMON_EXPORT extern const base::Feature kWebAppEnableLaunchHandler;

@@ -2396,6 +2396,10 @@
       status: "experimental",
     },
     {
+      name: "WebAppHandleLinks",
+      status: "experimental",
+    },
+    {
       name: "WebAppLaunchHandler",
       status: "experimental",
     },
