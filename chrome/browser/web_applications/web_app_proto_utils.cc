@@ -81,6 +81,9 @@ absl::optional<std::vector<apps::IconInfo>> ParseAppIconInfos(
 }
 
 sync_pb::WebAppSpecifics WebAppToSyncProto(const WebApp& app) {
+  DCHECK(!app.start_url().is_empty());
+  DCHECK(app.start_url().is_valid());
+
   sync_pb::WebAppSpecifics sync_proto;
   if (app.manifest_id().has_value())
     sync_proto.set_manifest_id(app.manifest_id().value());

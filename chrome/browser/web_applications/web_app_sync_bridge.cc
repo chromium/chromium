@@ -771,8 +771,10 @@ std::string WebAppSyncBridge::GetClientTag(
 
   const sync_pb::WebAppSpecifics& specifics = entity_data.specifics.web_app();
   const GURL start_url(specifics.start_url());
-  DCHECK(!start_url.is_empty());
-  DCHECK(start_url.is_valid());
+  if (start_url.is_empty() || !start_url.is_valid()) {
+    DLOG(ERROR) << "GetClientTag: start_url parse error.";
+    return std::string();
+  }
 
   absl::optional<std::string> manifest_id = absl::nullopt;
   if (specifics.has_manifest_id())
