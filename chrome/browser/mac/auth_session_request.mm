@@ -194,6 +194,7 @@ AuthSessionRequest::AuthSessionRequest(
     ASWebAuthenticationSessionRequest* request,
     std::string scheme)
     : content::WebContentsObserver(web_contents),
+      content::WebContentsUserData<AuthSessionRequest>(*web_contents),
       browser_(browser),
       request_(request, base::scoped_policy::RETAIN),
       scheme_(scheme) {
