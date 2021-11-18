@@ -209,14 +209,18 @@ void Portal::Close() {
   is_closing_ = true;
   receiver_.reset();
 
-  // If the contents is unowned, it would need to be properly detached from the
-  // WebContentsTreeNode before it can be cleanly closed. Otherwise a race is
-  // possible.
+  // If the contents is attached to its outer `WebContents`, and therefore not
+  // owned by `portal_contents_`, we can destroy ourself right now.
   if (!portal_contents_.OwnsContents()) {
     DestroySelf();  // Deletes this.
     return;
   }
 
+  // Otherwise if the portal contents is not attached to an outer `WebContents`,
+  // we have to manage the destruction process ourself. We start by calling
+  // `WebContentsImpl::ClosePage()`, which will go through the proper unload
+  // handler dance, and eventually come back and call `Portal::CloseContents()`,
+  // which for orphaned contents, will finally invoke `DestroySelf()`.
   portal_contents_->ClosePage();
 }
 
