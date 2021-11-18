@@ -80,15 +80,10 @@ WebStateImpl::WebStateImpl(const CreateParams& params)
 
 WebStateImpl::WebStateImpl(const CreateParams& params,
                            CRWSessionStorage* session_storage)
-    : delegate_(nullptr),
-      is_loading_(false),
-      is_being_destroyed_(false),
-      web_controller_(nil),
-      created_with_opener_(params.created_with_opener),
+    : created_with_opener_(params.created_with_opener),
       user_agent_type_(features::UseWebClientDefaultUserAgent()
                            ? UserAgentType::AUTOMATIC
-                           : UserAgentType::MOBILE),
-      weak_factory_(this) {
+                           : UserAgentType::MOBILE) {
   navigation_manager_ = std::make_unique<NavigationManagerImpl>();
 
   navigation_manager_->SetDelegate(this);
@@ -156,12 +151,10 @@ WebState* WebStateImpl::ForceRealized() {
 }
 
 void WebStateImpl::AddObserver(WebStateObserver* observer) {
-  DCHECK(!observers_.HasObserver(observer));
   observers_.AddObserver(observer);
 }
 
 void WebStateImpl::RemoveObserver(WebStateObserver* observer) {
-  DCHECK(observers_.HasObserver(observer));
   observers_.RemoveObserver(observer);
 }
 
@@ -169,7 +162,6 @@ void WebStateImpl::AddPolicyDecider(WebStatePolicyDecider* decider) {
   // Despite the name, ObserverList is actually generic, so it is used for
   // deciders. This makes the call here odd looking, but it's really just
   // managing the list, not setting observers on deciders.
-  DCHECK(!policy_deciders_.HasObserver(decider));
   policy_deciders_.AddObserver(decider);
 }
 
@@ -177,7 +169,6 @@ void WebStateImpl::RemovePolicyDecider(WebStatePolicyDecider* decider) {
   // Despite the name, ObserverList is actually generic, so it is used for
   // deciders. This makes the call here odd looking, but it's really just
   // managing the list, not setting observers on deciders.
-  DCHECK(policy_deciders_.HasObserver(decider));
   policy_deciders_.RemoveObserver(decider);
 }
 
@@ -324,7 +315,7 @@ void WebStateImpl::ClearWebUI() {
   web_ui_.reset();
 }
 
-bool WebStateImpl::HasWebUI() {
+bool WebStateImpl::HasWebUI() const {
   return !!web_ui_;
 }
 
@@ -370,24 +361,34 @@ void WebStateImpl::RunJavaScriptDialog(
     std::move(callback).Run(false, nil);
     return;
   }
+
   running_javascript_dialog_ = true;
-  DialogClosedCallback presenter_callback =
-      base::BindOnce(&WebStateImpl::JavaScriptDialogClosed,
-                     weak_factory_.GetWeakPtr(), std::move(callback));
-  presenter->RunJavaScriptDialog(this, origin_url, javascript_dialog_type,
-                                 message_text, default_prompt_text,
-                                 std::move(presenter_callback));
+  presenter->RunJavaScriptDialog(
+      this, origin_url, javascript_dialog_type, message_text,
+      default_prompt_text,
+      // Use a lambda to mark the dialog as closed if the `WebState` still
+      // exists, then always run `callback`, even if the `WebState` has been
+      // destroyed (otherwise, WebKit raises an inconsistent state exception).
+      //
+      // Since bound callback that take a member function and a `WeakPtr<T>`
+      // are not called, this cannot be implemented by passing the `callback`
+      // to `JavaScriptDialogClosed` as otherwise the call would not happen
+      // if `WebState` is destroyed.
+      base::BindOnce(
+          [](base::WeakPtr<WebStateImpl> weak_web_state,
+             DialogClosedCallback callback, bool success,
+             NSString* user_input) {
+            if (weak_web_state) {
+              weak_web_state->JavaScriptDialogClosed();
+            }
+
+            std::move(callback).Run(success, user_input);
+          },
+          weak_factory_.GetWeakPtr(), std::move(callback)));
 }
 
-void WebStateImpl::JavaScriptDialogClosed(
-    base::WeakPtr<WebStateImpl> weak_web_state,
-    DialogClosedCallback callback,
-    bool success,
-    NSString* user_input) {
-  if (weak_web_state) {
-    weak_web_state->running_javascript_dialog_ = false;
-  }
-  std::move(callback).Run(success, user_input);
+void WebStateImpl::JavaScriptDialogClosed() {
+  running_javascript_dialog_ = false;
 }
 
 bool WebStateImpl::IsJavaScriptDialogRunning() {

@@ -128,7 +128,7 @@ class WebStateImpl : public WebState, public NavigationManagerDelegate {
   // into this class.
   void ClearWebUI();
   // Returns true if there is a WebUI active.
-  bool HasWebUI();
+  bool HasWebUI() const;
 
   // Explicitly sets the MIME type, overwriting any MIME type that was set by
   // headers. Note that this should be called after OnNavigationCommitted, as
@@ -312,18 +312,8 @@ class WebStateImpl : public WebState, public NavigationManagerDelegate {
   void RemovePolicyDecider(WebStatePolicyDecider* decider) override;
 
  private:
-  // Called when a dialog presented by the JavaScriptDialogPresenter is
-  // dismissed.  |callback| is the callback provided to RunJavaScriptDialog(),
-  // and is executed with |success| and |user_input|.
-  //
-  // This is defined as a static function taking WeakPtr to WebStateImpl instead
-  // of an instance method of WebStateImpl. This is to guarantee that |callback|
-  // is called even when JavaScriptDialogClosed() is called after WebStateImpl
-  // is destructed. Otherwise WKWebView raises NSInternalInconsistencyException.
-  static void JavaScriptDialogClosed(base::WeakPtr<WebStateImpl> weak_web_state,
-                                     DialogClosedCallback callback,
-                                     bool success,
-                                     NSString* user_input);
+  // Called when a dialog presented by JavaScriptDialogPresented is dismissed.
+  void JavaScriptDialogClosed();
 
   // Creates a WebUIIOS object for |url| that is owned by the caller. Returns
   // nullptr if |url| does not correspond to a WebUI page.
@@ -339,16 +329,16 @@ class WebStateImpl : public WebState, public NavigationManagerDelegate {
   void RestoreSessionStorage(CRWSessionStorage* session_storage);
 
   // Delegate, not owned by this object.
-  WebStateDelegate* delegate_;
+  WebStateDelegate* delegate_ = nullptr;
 
   // Stores whether the web state is currently loading a page.
-  bool is_loading_;
+  bool is_loading_ = false;
 
   // Stores whether the web state is currently being destroyed.
-  bool is_being_destroyed_;
+  bool is_being_destroyed_ = false;
 
   // The CRWWebController that backs this object.
-  CRWWebController* web_controller_;
+  __strong CRWWebController* web_controller_ = nil;
 
   // The NavigationManagerImpl that stores session info for this WebStateImpl.
   std::unique_ptr<NavigationManagerImpl> navigation_manager_;
@@ -369,9 +359,6 @@ class WebStateImpl : public WebState, public NavigationManagerDelegate {
 
   // All the WebStatePolicyDeciders asked for navigation decision. Weak
   // references.
-  // WebStatePolicyDeciders are semantically different from observers (they
-  // modify the behavior of the WebState) but are used like observers in the
-  // code, hence the ObserverList.
   base::ObserverList<WebStatePolicyDecider, true>::Unchecked policy_deciders_;
 
   std::string mime_type_;
@@ -386,11 +373,11 @@ class WebStateImpl : public WebState, public NavigationManagerDelegate {
 
   // Whether this WebState has an opener.  See
   // WebState::CreateParams::created_with_opener_ for more details.
-  bool created_with_opener_;
+  bool created_with_opener_ = false;
 
   // The most recently restored session history that has not yet committed in
   // the WKWebView. This is reset in OnNavigationItemCommitted().
-  CRWSessionStorage* restored_session_storage_;
+  __strong CRWSessionStorage* restored_session_storage_ = nil;
 
   // Favicons URLs received in OnFaviconUrlUpdated.
   // WebStateObserver:FaviconUrlUpdated must be called for same-document
@@ -405,9 +392,9 @@ class WebStateImpl : public WebState, public NavigationManagerDelegate {
   // requests from the main frame.
   InterfaceBinder interface_binder_{this};
 
-  UserAgentType user_agent_type_;
+  UserAgentType user_agent_type_ = UserAgentType::NONE;
 
-  base::WeakPtrFactory<WebStateImpl> weak_factory_;
+  base::WeakPtrFactory<WebStateImpl> weak_factory_{this};
 };
 
 }  // namespace web
