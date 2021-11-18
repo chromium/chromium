@@ -62,6 +62,8 @@ class ASH_EXPORT CaptureModeSessionFocusCycler : public views::WidgetObserver {
   // to override this class, which manages a custom focus ring.
   class HighlightableView {
    public:
+    bool has_focus() const { return has_focus_; }
+
     // Get the view class associated with |this|.
     virtual views::View* GetView() = 0;
 

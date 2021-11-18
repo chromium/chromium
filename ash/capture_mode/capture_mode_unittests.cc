@@ -5861,6 +5861,103 @@ TEST_F(CaptureModeAdvancedSettingsTest,
             advanced_settings_test_api.GetSelectFolderMenuItem());
 }
 
+// Tests that selecting the default `Downloads` folder as the custom folder via
+// keyboard navigation doesn't lead to a crash. Regression test for
+// https://crbug.com/1269373.
+TEST_F(CaptureModeAdvancedSettingsTest,
+       KeyboardNavigationForRemovingCustomFolderOption) {
+  // Begin a new session with a pre-configured custom folder.
+  auto* controller = CaptureModeController::Get();
+  const base::FilePath custom_folder(CreateCustomFolder("test"));
+  controller->SetCustomCaptureFolder(custom_folder);
+  StartImageRegionCapture();
+
+  using FocusGroup = CaptureModeSessionFocusCycler::FocusGroup;
+  CaptureModeSessionTestApi test_api(controller->capture_mode_session());
+
+  // Tab six times to focus the settings button, then enter space to open the
+  // setting menu. Wait for the setting menu to be refreshed.
+  auto* event_generator = GetEventGenerator();
+  SendKey(ui::VKEY_TAB, event_generator, /*shift_down=*/false, /*count=*/6);
+  SendKey(ui::VKEY_SPACE, event_generator);
+  WaitForSettingsMenuToBeRefreshed();
+  EXPECT_EQ(FocusGroup::kPendingSettings, test_api.GetCurrentFocusGroup());
+  CaptureModeAdvancedSettingsView* settings_menu =
+      GetCaptureModeAdvancedSettingsView();
+  ASSERT_TRUE(settings_menu);
+
+  // Tab five times to focus the `Select folder...` menu item and enter space
+  // to open the selection window.
+  SendKey(ui::VKEY_TAB, event_generator, /*shift_down=*/false, /*count=*/5);
+  SendKey(ui::VKEY_SPACE, event_generator);
+  EXPECT_TRUE(IsFolderSelectionDialogShown());
+  // The current focus group is `FocusGroup::kSettingsMenu` and focus index is
+  // 4u.
+  EXPECT_EQ(FocusGroup::kSettingsMenu, test_api.GetCurrentFocusGroup());
+  EXPECT_EQ(4u, test_api.GetCurrentFocusIndex());
+
+  // Select the default `Downloads` folder as the custom folder which will
+  // have custom folder option get removed.
+  auto* test_delegate = controller->delegate_for_testing();
+  const auto default_downloads_folder =
+      test_delegate->GetUserDefaultDownloadsFolder();
+  auto* dialog_factory = FakeFolderSelectionDialogFactory::Get();
+  dialog_factory->AcceptPath(default_downloads_folder);
+
+  // Tab once to make sure there's no crash and the focus gets moved to
+  // settings button.
+  SendKey(ui::VKEY_TAB, event_generator);
+  EXPECT_EQ(FocusGroup::kSettingsClose, test_api.GetCurrentFocusGroup());
+  EXPECT_EQ(0u, test_api.GetCurrentFocusIndex());
+}
+
+// Tests that first time selecting a custom folder via keyboard navigation.
+// After the custom folder is selected, tabbing one more time will move focus
+// from the settings menu to the settings button.
+TEST_F(CaptureModeAdvancedSettingsTest,
+       KeyboardNavigationForAddingCustomFolderOption) {
+  auto* controller = CaptureModeController::Get();
+  StartImageRegionCapture();
+
+  using FocusGroup = CaptureModeSessionFocusCycler::FocusGroup;
+  CaptureModeSessionTestApi test_api(controller->capture_mode_session());
+
+  // Tab six times to focus the settings button, then enter space to open the
+  // setting menu.
+  auto* event_generator = GetEventGenerator();
+  SendKey(ui::VKEY_TAB, event_generator, /*shift_down=*/false, /*count=*/6);
+  SendKey(ui::VKEY_SPACE, event_generator);
+  EXPECT_EQ(FocusGroup::kPendingSettings, test_api.GetCurrentFocusGroup());
+  CaptureModeAdvancedSettingsView* settings_menu =
+      GetCaptureModeAdvancedSettingsView();
+  ASSERT_TRUE(settings_menu);
+
+  // Tab four times to focus the `Select folder...` menu item and enter space
+  // to open the selection window.
+  SendKey(ui::VKEY_TAB, event_generator, /*shift_down=*/false, /*count=*/4);
+  SendKey(ui::VKEY_SPACE, event_generator);
+  EXPECT_TRUE(IsFolderSelectionDialogShown());
+  // The current focus group is `FocusGroup::kSettingsMenu` and focus index is
+  // 3u.
+  EXPECT_EQ(FocusGroup::kSettingsMenu, test_api.GetCurrentFocusGroup());
+  EXPECT_EQ(3u, test_api.GetCurrentFocusIndex());
+
+  // Select the custom folder. Wait for the settings menu to be refreshed. The
+  // custom folder option should be added to the settings menu and checked.
+  const base::FilePath custom_folder(CreateCustomFolder("test"));
+  controller->SetCustomCaptureFolder(custom_folder);
+  auto* dialog_factory = FakeFolderSelectionDialogFactory::Get();
+  dialog_factory->AcceptPath(custom_folder);
+  WaitForSettingsMenuToBeRefreshed();
+  CaptureModeAdvancedSettingsTestApi advanced_test_api;
+  EXPECT_TRUE(advanced_test_api.GetCustomFolderOptionIfAny());
+
+  // Tab once to make sure the focus gets moved to settings button.
+  SendKey(ui::VKEY_TAB, event_generator);
+  EXPECT_EQ(FocusGroup::kSettingsClose, test_api.GetCurrentFocusGroup());
+  EXPECT_EQ(0u, test_api.GetCurrentFocusIndex());
+}
+
 // -----------------------------------------------------------------------------
 // CaptureModeHistogramTest:
 
