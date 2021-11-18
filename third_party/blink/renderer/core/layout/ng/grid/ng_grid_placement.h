@@ -28,6 +28,14 @@ class CORE_EXPORT NGGridPlacement {
                   const wtf_size_t column_start_offset = 0,
                   const wtf_size_t row_start_offset = 0);
 
+  NGGridPlacement(const ComputedStyle& grid_style,
+                  const NGGridPlacementData& placement_data)
+      : NGGridPlacement(grid_style,
+                        placement_data.column_auto_repetitions,
+                        placement_data.row_auto_repetitions,
+                        placement_data.column_start_offset,
+                        placement_data.row_start_offset) {}
+
   void SetPlacementData(const NGGridPlacementData& placement_data);
   NGGridPlacementData RunAutoPlacementAlgorithm(const GridItems& grid_items);
 

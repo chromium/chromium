@@ -5,13 +5,19 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_GRID_NG_GRID_GEOMETRY_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_GRID_NG_GRID_GEOMETRY_H_
 
-#include "third_party/blink/renderer/core/layout/ng/grid/ng_grid_data.h"
+#include "third_party/blink/renderer/core/style/grid_positions_resolver.h"
 #include "third_party/blink/renderer/platform/geometry/layout_unit.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
 
-using SetOffsetData = NGGridLayoutData::SetData;
+struct SetOffsetData {
+  SetOffsetData(LayoutUnit offset, wtf_size_t track_count)
+      : offset(offset), track_count(track_count) {}
+
+  LayoutUnit offset;
+  wtf_size_t track_count;
+};
 
 // Contains the information about the start offset of the tracks, as well as
 // the gutter size between them, for a given direction.
@@ -53,7 +59,7 @@ struct SetGeometry {
       : gutter_size(track_alignment_geometry.gutter_size) {
     sets.ReserveInitialCapacity(set_count);
     sets.emplace_back(track_alignment_geometry.start_offset,
-                      /* track_count */ kNotFound);
+                      /* track_count */ 0);
   }
 
   SetGeometry(const Vector<SetOffsetData>& sets, const LayoutUnit gutter_size)
@@ -82,7 +88,8 @@ struct NGGridGeometry {
 
   NGGridGeometry() = default;
 
-  const SetGeometry& Geometry(GridTrackSizingDirection track_direction) const {
+  const SetGeometry& Geometry(
+      const GridTrackSizingDirection track_direction) const {
     return (track_direction == kForColumns) ? column_geometry : row_geometry;
   }
 

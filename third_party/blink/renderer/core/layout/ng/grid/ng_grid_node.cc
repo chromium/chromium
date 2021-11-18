@@ -16,6 +16,11 @@ absl::optional<const wtf_size_t> NGGridNode::CachedGridItemCount() const {
   return absl::nullopt;
 }
 
+const NGGridPlacementData& NGGridNode::CachedPlacementData() const {
+  LayoutNGGrid* layout_grid = To<LayoutNGGrid>(box_.Get());
+  return layout_grid->CachedPlacementData();
+}
+
 const Vector<GridArea>& NGGridNode::ResolveGridItemPositions(
     const GridItems& grid_items,
     NGGridPlacement* grid_placement) const {

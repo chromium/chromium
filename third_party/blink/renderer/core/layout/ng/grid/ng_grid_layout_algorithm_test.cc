@@ -52,8 +52,8 @@ class NGGridLayoutAlgorithmTest
 
     // Measure items.
     NGGridProperties grid_properties;
-    algorithm.ConstructAndAppendGridItems(
-        &grid_items_, &grid_placement, &grid_properties, &out_of_flow_items_);
+    algorithm.ConstructAndAppendGridItems(&grid_items_, &grid_placement,
+                                          &grid_properties);
 
     // Build block track collections.
     NGGridBlockTrackCollection column_block_track_collection(kForColumns);
@@ -62,27 +62,30 @@ class NGGridLayoutAlgorithmTest
                                          &column_block_track_collection,
                                          &row_block_track_collection);
 
+    const bool is_inline_available_size_indefinite =
+        algorithm.grid_available_size_.inline_size == kIndefiniteSize;
+    const bool is_block_available_size_indefinite =
+        algorithm.grid_available_size_.block_size == kIndefiniteSize;
+
     // Build algorithm track collections from the block track collections.
     column_track_collection_ = NGGridLayoutAlgorithmTrackCollection(
-        column_block_track_collection,
-        algorithm.grid_available_size_.inline_size == kIndefiniteSize,
+        column_block_track_collection, is_inline_available_size_indefinite,
         &grid_properties);
-
     row_track_collection_ = NGGridLayoutAlgorithmTrackCollection(
-        row_block_track_collection,
-        algorithm.grid_available_size_.block_size == kIndefiniteSize,
+        row_block_track_collection, is_block_available_size_indefinite,
         &grid_properties);
-
-    for (auto& grid_item : grid_items_) {
-      grid_item.ComputeSetIndices(column_track_collection_);
-      grid_item.ComputeSetIndices(row_track_collection_);
-    }
 
     // Cache track span properties for grid items.
     algorithm.CacheGridItemsTrackSpanProperties(column_track_collection_,
                                                 &grid_items_);
     algorithm.CacheGridItemsTrackSpanProperties(row_track_collection_,
                                                 &grid_items_);
+
+    // Cache set indices for grid items.
+    for (auto& grid_item : grid_items_) {
+      grid_item.ComputeSetIndices(column_track_collection_);
+      grid_item.ComputeSetIndices(row_track_collection_);
+    }
 
     grid_geometry_ = {algorithm.InitializeTrackSizes(&column_track_collection_),
                       algorithm.InitializeTrackSizes(&row_track_collection_)};
@@ -196,12 +199,9 @@ class NGGridLayoutAlgorithmTest
   }
 
   GridItems grid_items_;
-  GridItemStorageVector out_of_flow_items_;
-
+  NGGridGeometry grid_geometry_;
   NGGridLayoutAlgorithmTrackCollection column_track_collection_;
   NGGridLayoutAlgorithmTrackCollection row_track_collection_;
-
-  NGGridGeometry grid_geometry_;
 };
 
 TEST_F(NGGridLayoutAlgorithmTest, NGGridLayoutAlgorithmBaseSetSizes) {

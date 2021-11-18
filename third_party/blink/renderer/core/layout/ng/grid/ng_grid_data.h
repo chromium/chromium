@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_GRID_NG_GRID_DATA_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_GRID_NG_GRID_DATA_H_
 
+#include "third_party/blink/renderer/core/layout/ng/grid/ng_grid_geometry.h"
 #include "third_party/blink/renderer/core/layout/ng/grid/ng_grid_track_collection.h"
 #include "third_party/blink/renderer/platform/geometry/layout_unit.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
@@ -39,17 +40,9 @@ struct CORE_EXPORT NGGridLayoutData {
  public:
   using RangeData = NGGridLayoutAlgorithmTrackCollection::Range;
 
-  struct SetData {
-    SetData(LayoutUnit offset, wtf_size_t track_count)
-        : offset(offset), track_count(track_count) {}
-
-    LayoutUnit offset;
-    wtf_size_t track_count;
-  };
-
   struct TrackCollectionGeometry {
     Vector<RangeData> ranges;
-    Vector<SetData> sets;
+    Vector<SetOffsetData> sets;
 
     LayoutUnit gutter_size;
     wtf_size_t track_count;

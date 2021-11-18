@@ -320,26 +320,41 @@ const NGOutOfFlowLayoutPart::ContainingBlockInfo
 NGOutOfFlowLayoutPart::GetContainingBlockInfo(
     const NGLogicalOutOfFlowPositionedNode& candidate) {
   const auto* container_object = container_builder_->GetLayoutObject();
+  const auto& node_style = candidate.Node().Style();
 
   if (container_object->IsLayoutNGGrid()) {
-    absl::optional<LogicalRect> containing_block_rect =
-        NGGridLayoutAlgorithm::ComputeContainingBlockRect(
-            candidate.Node(), container_builder_->Style(),
-            To<LayoutNGGrid>(container_object)->CachedPlacementData(),
-            container_builder_->GridLayoutData(), container_builder_->Borders(),
-            container_builder_->InitialBorderBoxSize(),
-            default_writing_direction_.GetWritingMode(),
-            container_builder_->FragmentsTotalBlockSize());
+    // If the out of flow item has the grid container as a containing block,
+    // then we don't need to go through placement.
+    const bool requires_grid_placement =
+        !node_style.GridColumnStart().IsAuto() ||
+        !node_style.GridColumnEnd().IsAuto() ||
+        !node_style.GridRowStart().IsAuto() ||
+        !node_style.GridRowEnd().IsAuto();
 
-    if (containing_block_rect.has_value())
-      return {default_writing_direction_, *containing_block_rect};
+    if (requires_grid_placement) {
+      const auto& container_style = container_builder_->Style();
+      auto grid_item = NGGridLayoutAlgorithm::InitializeGridItem(
+          candidate.Node(), container_style,
+          default_writing_direction_.GetWritingMode());
+
+      return {default_writing_direction_,
+              NGGridLayoutAlgorithm::ComputeOutOfFlowItemContainingRect(
+                  container_style,
+                  To<LayoutNGGrid>(container_object)->CachedPlacementData(),
+                  container_builder_->GridLayoutData(),
+                  container_builder_->Borders(),
+                  container_builder_->InitialBorderBoxSize(),
+                  container_builder_->FragmentsTotalBlockSize(), &grid_item)};
+    }
   }
+
   if (candidate.inline_container.container) {
     const auto it =
         containing_blocks_map_.find(candidate.inline_container.container);
     DCHECK(it != containing_blocks_map_.end());
     return it->value;
   }
+
   if (candidate.containing_block.fragment) {
     DCHECK(container_builder_->IsBlockFragmentationContextRoot());
 
@@ -379,7 +394,7 @@ NGOutOfFlowLayoutPart::GetContainingBlockInfo(
         .stored_value->value;
   }
 
-  return candidate.Node().Style().GetPosition() == EPosition::kAbsolute
+  return node_style.GetPosition() == EPosition::kAbsolute
              ? default_containing_block_info_for_absolute_
              : default_containing_block_info_for_fixed_;
 }

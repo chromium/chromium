@@ -628,8 +628,7 @@ void NGGridPlacement::ResolveOutOfFlowItemGridLines(
     const ComputedStyle& out_of_flow_item_style,
     wtf_size_t* start_line,
     wtf_size_t* end_line) const {
-  DCHECK(start_line);
-  DCHECK(end_line);
+  DCHECK(start_line && end_line);
 
   const GridTrackSizingDirection track_direction = track_collection.Direction();
   GridSpan span = GridPositionsResolver::ResolveGridPositionsFromStyle(
@@ -642,9 +641,9 @@ void NGGridPlacement::ResolveOutOfFlowItemGridLines(
     return;
   }
 
-  wtf_size_t start_offset = StartOffset(track_direction);
-  int span_start_line = span.UntranslatedStartLine() + start_offset;
-  int span_end_line = span.UntranslatedEndLine() + start_offset;
+  const wtf_size_t start_offset = StartOffset(track_direction);
+  const int span_start_line = span.UntranslatedStartLine() + start_offset;
+  const int span_end_line = span.UntranslatedEndLine() + start_offset;
 
   if (span_start_line < 0 ||
       IsStartLineAuto(track_direction, out_of_flow_item_style) ||

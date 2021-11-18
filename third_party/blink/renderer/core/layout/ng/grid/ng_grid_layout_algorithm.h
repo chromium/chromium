@@ -50,9 +50,11 @@ struct OutOfFlowItemPlacement {
 struct CORE_EXPORT GridItemData {
   DISALLOW_NEW();
 
- public:
   explicit GridItemData(const NGBlockNode node)
       : node(node), is_sizing_dependent_on_block_size(false) {}
+
+  bool IsOutOfFlow() const { return node.IsOutOfFlowPositioned(); }
+  bool IsGridContainingBlock() const { return node.IsContainingBlockNGGrid(); }
 
   const GridSpan& Span(GridTrackSizingDirection track_direction) const {
     return resolved_position.Span(track_direction);
@@ -115,10 +117,8 @@ struct CORE_EXPORT GridItemData {
       const NGGridPlacement& grid_placement);
 
   NGBlockNode node;
-  ItemType item_type;
   GridArea resolved_position;
 
-  bool is_grid_containing_block : 1;
   bool is_block_axis_overflow_safe : 1;
   bool is_inline_axis_overflow_safe : 1;
   bool is_sizing_dependent_on_block_size : 1;
@@ -218,17 +218,21 @@ class CORE_EXPORT NGGridLayoutAlgorithm
   scoped_refptr<const NGLayoutResult> Layout() override;
   MinMaxSizesResult ComputeMinMaxSizes(const MinMaxSizesFloatInput&) override;
 
+  static GridItemData InitializeGridItem(
+      const NGBlockNode node,
+      const ComputedStyle& container_style,
+      const WritingMode container_writing_mode);
+
   // Computes the containing block rect of out of flow items from stored data in
   // |NGGridLayoutData|.
-  static absl::optional<LogicalRect> ComputeContainingBlockRect(
-      const NGBlockNode& node,
+  static LogicalRect ComputeOutOfFlowItemContainingRect(
       const ComputedStyle& container_style,
       const NGGridPlacementData& placement_data,
       const NGGridLayoutData& layout_data,
       const NGBoxStrut& borders,
       const LogicalSize& border_box_size,
-      const WritingMode container_writing_mode,
-      const LayoutUnit block_size);
+      const LayoutUnit block_size,
+      GridItemData* out_of_flow_item);
 
   // Helper that computes tracks sizes in a given range.
   static Vector<std::div_t> ComputeTrackSizesInRange(
@@ -247,9 +251,9 @@ class CORE_EXPORT NGGridLayoutAlgorithm
       const NGGridBlockTrackCollection& column_block_track_collection,
       const NGGridBlockTrackCollection& row_block_track_collection,
       GridItems* grid_items,
+      NGGridProperties* grid_properties,
       NGGridLayoutAlgorithmTrackCollection* column_track_collection,
       NGGridLayoutAlgorithmTrackCollection* row_track_collection,
-      NGGridProperties* grid_properties,
       LayoutUnit* intrinsic_block_size);
 
   LayoutUnit ComputeIntrinsicBlockSizeIgnoringChildren() const;
@@ -266,15 +270,9 @@ class CORE_EXPORT NGGridLayoutAlgorithm
   wtf_size_t ComputeAutomaticRepetitions(
       const GridTrackSizingDirection track_direction) const;
 
-  void ConstructAndAppendGridItems(
-      GridItems* grid_items,
-      NGGridPlacement* grid_placement,
-      NGGridProperties* grid_properties,
-      GridItemStorageVector* out_of_flow_items = nullptr) const;
-
-  static GridItemData MeasureGridItem(const NGBlockNode node,
-                                      const ComputedStyle& container_style,
-                                      const WritingMode container_writing_mode);
+  void ConstructAndAppendGridItems(GridItems* grid_items,
+                                   NGGridPlacement* grid_placement,
+                                   NGGridProperties* grid_properties) const;
 
   void BuildBlockTrackCollections(
       const NGGridPlacement& grid_placement,
@@ -403,23 +401,8 @@ class CORE_EXPORT NGGridLayoutAlgorithm
 
   // Computes the static position, grid area and its offset of out of flow
   // elements in the grid.
-  void PlaceOutOfFlowItems(
-      const NGGridLayoutAlgorithmTrackCollection& column_track_collection,
-      const NGGridLayoutAlgorithmTrackCollection& row_track_collection,
-      const GridItemStorageVector& out_of_flow_items,
-      const NGGridGeometry& grid_geometry,
-      LayoutUnit block_size);
-
-  // Helper method to compute the containing block rect for out of flow
-  // elements.
-  static LogicalRect ComputeContainingGridAreaRect(
-      const NGGridLayoutAlgorithmTrackCollection& column_track_collection,
-      const NGGridLayoutAlgorithmTrackCollection& row_track_collection,
-      const NGGridGeometry& grid_geometry,
-      const GridItemData& item,
-      const NGBoxStrut& borders,
-      const LogicalSize& border_box_size,
-      LayoutUnit block_size);
+  void PlaceOutOfFlowItems(const NGGridLayoutData& layout_data,
+                           const LayoutUnit block_size);
 
   void ComputeGridItemOffsetAndSize(
       const GridItemData& grid_item,
@@ -428,22 +411,7 @@ class CORE_EXPORT NGGridLayoutAlgorithm
       LayoutUnit* start_offset,
       LayoutUnit* size) const;
 
-  static void ComputeOutOfFlowOffsetAndSize(
-      const GridItemData& out_of_flow_item,
-      const SetGeometry& set_geometry,
-      const NGGridLayoutAlgorithmTrackCollection& track_collection,
-      const NGBoxStrut& borders,
-      const LogicalSize& border_box_size,
-      LayoutUnit block_size,
-      LayoutUnit* start_offset,
-      LayoutUnit* size);
-
-  NGGridLayoutData::TrackCollectionGeometry ConvertSetGeometry(
-      const SetGeometry& set_geometry,
-      const NGGridLayoutAlgorithmTrackCollection& track_collection) const;
-
   LogicalSize border_box_size_;
-
   LogicalSize grid_available_size_;
   LogicalSize grid_min_available_size_;
   LogicalSize grid_max_available_size_;

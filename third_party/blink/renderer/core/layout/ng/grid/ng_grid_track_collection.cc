@@ -151,10 +151,6 @@ void NGGridBlockTrackCollection::Range::SetIsCollapsed() {
   properties.SetProperty(TrackSpanProperties::kIsCollapsed);
 }
 
-NGGridBlockTrackCollection::NGGridBlockTrackCollection(
-    GridTrackSizingDirection direction)
-    : direction_(direction) {}
-
 void NGGridBlockTrackCollection::SetSpecifiedTracks(
     const NGGridTrackList* explicit_tracks,
     const NGGridTrackList* implicit_tracks,
@@ -467,19 +463,19 @@ wtf_size_t NGGridBlockTrackCollection::ImplicitRepeatSize() const {
 
 wtf_size_t NGGridBlockTrackCollection::RangeTrackNumber(
     wtf_size_t range_index) const {
-  DCHECK_LT(range_index, RangeCount());
+  DCHECK_LT(range_index, ranges_.size());
   return ranges_[range_index].start_line;
 }
 
 wtf_size_t NGGridBlockTrackCollection::RangeTrackCount(
     wtf_size_t range_index) const {
-  DCHECK_LT(range_index, RangeCount());
+  DCHECK_LT(range_index, ranges_.size());
   return ranges_[range_index].track_count;
 }
 
 bool NGGridBlockTrackCollection::IsRangeCollapsed(
     wtf_size_t range_index) const {
-  DCHECK_LT(range_index, RangeCount());
+  DCHECK_LT(range_index, ranges_.size());
   return ranges_[range_index].IsCollapsed();
 }
 
@@ -600,8 +596,8 @@ NGGridLayoutAlgorithmTrackCollection::NGGridLayoutAlgorithmTrackCollection(
     const NGGridBlockTrackCollection& block_track_collection,
     bool is_available_size_indefinite,
     NGGridProperties* grid_properties)
-    : non_collapsed_track_count_(0),
-      direction_(block_track_collection.Direction()),
+    : track_direction_(block_track_collection.Direction()),
+      non_collapsed_track_count_(0),
       depends_on_available_size_(false),
       is_spanning_flexible_track_(false),
       is_spanning_only_definite_tracks_(true) {
@@ -616,11 +612,6 @@ NGGridLayoutAlgorithmTrackCollection::NGGridLayoutAlgorithmTrackCollection(
                      is_available_size_indefinite, grid_properties);
   }
 }
-
-NGGridLayoutAlgorithmTrackCollection::NGGridLayoutAlgorithmTrackCollection(
-    const Vector<Range>& ranges,
-    GridTrackSizingDirection direction)
-    : direction_(direction), ranges_(ranges) {}
 
 void NGGridLayoutAlgorithmTrackCollection::SetAllGrowthLimitsToBaseSize() {
   for (auto set_iterator = GetSetIterator(); !set_iterator.IsAtEnd();
@@ -755,7 +746,7 @@ void NGGridLayoutAlgorithmTrackCollection::AppendTrackRange(
 
   ranges_.push_back(new_range);
 
-  if (direction_ == kForColumns) {
+  if (track_direction_ == kForColumns) {
     grid_properties->has_flexible_column |= is_range_spanning_flexible_track;
     grid_properties->has_intrinsic_column |= is_range_spanning_intrinsic_track;
     grid_properties->has_auto_min_column |=
@@ -774,8 +765,7 @@ wtf_size_t NGGridLayoutAlgorithmTrackCollection::EndLineOfImplicitGrid() const {
   if (ranges_.IsEmpty())
     return 0;
 
-  DCHECK_GT(RangeCount(), 0U);
-  wtf_size_t last_range_index = RangeCount() - 1;
+  wtf_size_t last_range_index = ranges_.size() - 1;
   return RangeTrackNumber(last_range_index) + RangeTrackCount(last_range_index);
 }
 
@@ -821,38 +811,38 @@ NGGridLayoutAlgorithmTrackCollection::GetSetIterator(
 
 wtf_size_t NGGridLayoutAlgorithmTrackCollection::RangeSetCount(
     wtf_size_t range_index) const {
-  DCHECK_LT(range_index, RangeCount());
+  DCHECK_LT(range_index, ranges_.size());
   return ranges_[range_index].set_count;
 }
 
 wtf_size_t NGGridLayoutAlgorithmTrackCollection::RangeStartingSetIndex(
     wtf_size_t range_index) const {
-  DCHECK_LT(range_index, RangeCount());
+  DCHECK_LT(range_index, ranges_.size());
   return ranges_[range_index].starting_set_index;
 }
 
 bool NGGridLayoutAlgorithmTrackCollection::RangeHasTrackSpanProperty(
     wtf_size_t range_index,
     TrackSpanProperties::PropertyId property_id) const {
-  DCHECK_LT(range_index, RangeCount());
+  DCHECK_LT(range_index, ranges_.size());
   return ranges_[range_index].properties.HasProperty(property_id);
 }
 
 wtf_size_t NGGridLayoutAlgorithmTrackCollection::RangeTrackNumber(
     wtf_size_t range_index) const {
-  DCHECK_LT(range_index, RangeCount());
+  DCHECK_LT(range_index, ranges_.size());
   return ranges_[range_index].start_line;
 }
 
 wtf_size_t NGGridLayoutAlgorithmTrackCollection::RangeTrackCount(
     wtf_size_t range_index) const {
-  DCHECK_LT(range_index, RangeCount());
+  DCHECK_LT(range_index, ranges_.size());
   return ranges_[range_index].track_count;
 }
 
 bool NGGridLayoutAlgorithmTrackCollection::IsRangeCollapsed(
     wtf_size_t range_index) const {
-  DCHECK_LT(range_index, RangeCount());
+  DCHECK_LT(range_index, ranges_.size());
   return ranges_[range_index].IsCollapsed();
 }
 

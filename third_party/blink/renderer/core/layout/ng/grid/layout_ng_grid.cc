@@ -273,6 +273,8 @@ Vector<LayoutUnit> LayoutNGGrid::ComputeTrackSizeRepeaterForRange(
       range.starting_set_index + range.set_count;
   for (wtf_size_t set_index = range.starting_set_index;
        set_index < ending_set_index; ++set_index) {
+    DCHECK_LT(set_index + 1, geometry.sets.size());
+
     // Set information is stored as offsets. To determine the size of a single
     // track in a given set, first determine the total size the set takes up by
     // finding the difference between the offsets.

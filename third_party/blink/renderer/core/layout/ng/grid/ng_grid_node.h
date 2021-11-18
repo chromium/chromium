@@ -21,6 +21,8 @@ class CORE_EXPORT NGGridNode final : public NGBlockNode {
   }
 
   absl::optional<const wtf_size_t> CachedGridItemCount() const;
+  const NGGridPlacementData& CachedPlacementData() const;
+
   const Vector<GridArea>& ResolveGridItemPositions(
       const GridItems& grid_items,
       NGGridPlacement* grid_placement) const;
