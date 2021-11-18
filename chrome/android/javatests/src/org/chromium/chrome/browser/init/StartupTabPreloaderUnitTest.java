@@ -16,6 +16,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.Callback;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.IntentHandler;
@@ -176,6 +177,10 @@ public class StartupTabPreloaderUnitTest {
 
     private StartupTabPreloader createStartupTabPreloader(
             Intent intent, TabCreatorManager tabCreatorManager) {
+        // StartupTabPreloader calls into code that asserts that it is on the UI thread, which
+        // doesn't exist in this unittesting context.
+        ThreadUtils.setThreadAssertsDisabledForTesting(true);
+
         return new StartupTabPreloader(
                 new Supplier<Intent>() {
                     @Override

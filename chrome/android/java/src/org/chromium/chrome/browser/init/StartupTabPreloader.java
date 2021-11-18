@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.init;
 
 import android.content.Intent;
+import android.os.SystemClock;
 import android.text.TextUtils;
 
 import androidx.annotation.VisibleForTesting;
@@ -39,7 +40,8 @@ import org.chromium.url.GURL;
  * This class attempts to preload the tab if the url is known from the intent when the profile
  * is created. This is done to improve startup latency.
  */
-public class StartupTabPreloader implements ProfileManager.Observer, DestroyObserver {
+public class StartupTabPreloader implements ProfileManager.Observer, DestroyObserver,
+                                            ActivityTabStartupMetricsTracker.Observer {
     public static final String EXTRA_DISABLE_STARTUP_TAB_PRELOADER =
             "org.chromium.chrome.browser.init.DISABLE_STARTUP_TAB_PRELOADER";
     private static boolean sFailNextTabMatchForTesting;
@@ -53,6 +55,12 @@ public class StartupTabPreloader implements ProfileManager.Observer, DestroyObse
     private Tab mTab;
     private StartupTabObserver mObserver;
     private ActivityTabStartupMetricsTracker mStartupMetricsTracker;
+
+    // The time at which the tab preload decision was made. Recorded only for non-incognito
+    // startups.
+    private long mLoadDecisionMs;
+    // Records whether a preload was triggered.
+    boolean mTriggerPreload;
 
     public static void failNextTabMatchForTesting() {
         sFailNextTabMatchForTesting = true;
@@ -71,6 +79,7 @@ public class StartupTabPreloader implements ProfileManager.Observer, DestroyObse
 
         mActivityLifecycleDispatcher.register(this);
         ProfileManager.addObserver(this);
+        ActivityTabStartupMetricsTracker.addObserver(this);
     }
 
     @Override
@@ -79,7 +88,21 @@ public class StartupTabPreloader implements ProfileManager.Observer, DestroyObse
         mTab = null;
 
         ProfileManager.removeObserver(this);
+        ActivityTabStartupMetricsTracker.removeObserver(this);
         mActivityLifecycleDispatcher.unregister(this);
+    }
+
+    @Override
+    public void onFirstNavigationStart() {
+        if (mLoadDecisionMs == 0) return;
+
+        long currentTimeMs = SystemClock.uptimeMillis();
+        long triggerpointToFirstNavigationStartMs = currentTimeMs - mLoadDecisionMs;
+
+        String suffix = mTriggerPreload ? ".Load" : ".NoLoad";
+        RecordHistogram.recordMediumTimesHistogram(
+                "Android.StartupTabPreloader.LoadDecisionToFirstNavigationStart" + suffix,
+                triggerpointToFirstNavigationStartMs);
     }
 
     /**
@@ -145,10 +168,11 @@ public class StartupTabPreloader implements ProfileManager.Observer, DestroyObse
             if (profile.isOffTheRecord()) return;
 
             ProfileManager.removeObserver(this);
-            boolean shouldLoad = shouldLoadTab();
-            if (shouldLoad) loadTab();
+            mTriggerPreload = shouldLoadTab();
+            mLoadDecisionMs = SystemClock.uptimeMillis();
+            if (mTriggerPreload) loadTab();
             RecordHistogram.recordBooleanHistogram(
-                    "Startup.Android.StartupTabPreloader.TabLoaded", shouldLoad);
+                    "Startup.Android.StartupTabPreloader.TabLoaded", mTriggerPreload);
         }
     }
 

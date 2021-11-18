@@ -52,6 +52,10 @@ public class StartupTabPreloaderTest {
             "Startup.Android.Cold.TimeToFirstVisibleContent";
     private static final String VISIBLE_CONTENT_HISTOGRAM =
             "Startup.Android.Cold.TimeToVisibleContent";
+    private static final String PRELOAD_TRIGGER_TO_FIRST_NAVIGATION_START_PRELOAD =
+            "Android.StartupTabPreloader.LoadDecisionToFirstNavigationStart.Load";
+    private static final String PRELOAD_TRIGGER_TO_FIRST_NAVIGATION_START_NO_PRELOAD =
+            "Android.StartupTabPreloader.LoadDecisionToFirstNavigationStart.NoLoad";
 
     @Rule
     public ChromeTabbedActivityTestRule mActivityRule = new ChromeTabbedActivityTestRule();
@@ -105,6 +109,14 @@ public class StartupTabPreloaderTest {
                 RecordHistogram.getHistogramTotalCountForTesting(FIRST_VISIBLE_CONTENT_HISTOGRAM));
         Assert.assertEquals(
                 1, RecordHistogram.getHistogramTotalCountForTesting(VISIBLE_CONTENT_HISTOGRAM));
+
+        // Startup tab preload-specific startup metrics should also have been recorded.
+        Assert.assertEquals(1,
+                RecordHistogram.getHistogramTotalCountForTesting(
+                        PRELOAD_TRIGGER_TO_FIRST_NAVIGATION_START_PRELOAD));
+        Assert.assertEquals(0,
+                RecordHistogram.getHistogramTotalCountForTesting(
+                        PRELOAD_TRIGGER_TO_FIRST_NAVIGATION_START_NO_PRELOAD));
     }
 
     @Test
@@ -140,6 +152,54 @@ public class StartupTabPreloaderTest {
                 RecordHistogram.getHistogramTotalCountForTesting(FIRST_VISIBLE_CONTENT_HISTOGRAM));
         Assert.assertEquals(
                 1, RecordHistogram.getHistogramTotalCountForTesting(VISIBLE_CONTENT_HISTOGRAM));
+
+        // Startup tab preload-specific startup metrics should also have been recorded.
+        Assert.assertEquals(1,
+                RecordHistogram.getHistogramTotalCountForTesting(
+                        PRELOAD_TRIGGER_TO_FIRST_NAVIGATION_START_PRELOAD));
+        Assert.assertEquals(0,
+                RecordHistogram.getHistogramTotalCountForTesting(
+                        PRELOAD_TRIGGER_TO_FIRST_NAVIGATION_START_NO_PRELOAD));
+    }
+
+    @Test
+    @LargeTest
+    @DisableFeatures(ChromeFeatureList.ELIDE_TAB_PRELOAD_AT_STARTUP)
+    public void testStartupTabPreloaderStartupLoadingMetricsRecordedWhenTabNotPreloaded()
+            throws Exception {
+        Intent intent = new Intent(Intent.ACTION_VIEW);
+        intent.addCategory(Intent.CATEGORY_LAUNCHER);
+        intent.putExtra(StartupTabPreloader.EXTRA_DISABLE_STARTUP_TAB_PRELOADER, true);
+        mActivityRule.startMainActivityFromIntent(
+                intent, mServerRule.getServer().getURL(TEST_PAGE));
+
+        // The StartupTabPreloader should not have loaded a url.
+        Assert.assertEquals(
+                0, RecordHistogram.getHistogramValueCountForTesting(TAB_LOADED_HISTOGRAM, 1));
+        Assert.assertEquals(
+                0, RecordHistogram.getHistogramValueCountForTesting(TAB_TAKEN_HISTOGRAM, 1));
+
+        // First contentful paint should be recorded.
+        CriteriaHelper.pollUiThread(()
+                                            -> RecordHistogram.getHistogramTotalCountForTesting(
+                                                       FIRST_CONTENTFUL_PAINT_HISTOGRAM)
+                        == 1);
+        // First contentful paint is the last startup metric to be recorded, so the other startup
+        // metrics should also have been recorded at this point.
+        Assert.assertEquals(
+                1, RecordHistogram.getHistogramTotalCountForTesting(FIRST_COMMIT_HISTOGRAM));
+        Assert.assertEquals(1,
+                RecordHistogram.getHistogramTotalCountForTesting(FIRST_VISIBLE_CONTENT_HISTOGRAM));
+        Assert.assertEquals(
+                1, RecordHistogram.getHistogramTotalCountForTesting(VISIBLE_CONTENT_HISTOGRAM));
+
+        // Startup tab preload-specific startup metrics should also have been recorded.
+        Assert.assertEquals(0,
+                RecordHistogram.getHistogramTotalCountForTesting(
+                        PRELOAD_TRIGGER_TO_FIRST_NAVIGATION_START_PRELOAD));
+        Assert.assertEquals(1,
+                RecordHistogram.getHistogramTotalCountForTesting(
+                        PRELOAD_TRIGGER_TO_FIRST_NAVIGATION_START_NO_PRELOAD));
     }
 
     @Test

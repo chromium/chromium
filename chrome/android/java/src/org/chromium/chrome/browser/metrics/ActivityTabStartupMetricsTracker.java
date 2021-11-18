@@ -6,6 +6,8 @@ package org.chromium.chrome.browser.metrics;
 
 import android.os.SystemClock;
 
+import org.chromium.base.ObserverList;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.chrome.browser.paint_preview.StartupPaintPreviewHelper;
@@ -25,11 +27,37 @@ import org.chromium.url.GURL;
 public class ActivityTabStartupMetricsTracker {
     private static final String UMA_HISTOGRAM_TABBED_SUFFIX = ".Tabbed";
 
+    /** Observer for startup metrics. */
+    public interface Observer {
+        /**
+         * Called when the initial navigation upon startup is started. This will be fired at most
+         * once.
+         */
+        void onFirstNavigationStart();
+    }
+
+    private static ObserverList<Observer> sObservers;
+
+    /** Adds an observer. */
+    public static boolean addObserver(Observer observer) {
+        ThreadUtils.assertOnUiThread();
+        if (sObservers == null) sObservers = new ObserverList<>();
+        return sObservers.addObserver(observer);
+    }
+
+    /** Removes an observer. */
+    public static boolean removeObserver(Observer observer) {
+        ThreadUtils.assertOnUiThread();
+        if (sObservers == null) return false;
+        return sObservers.removeObserver(observer);
+    }
+
     private class PageLoadMetricsObserverImpl implements PageLoadMetrics.Observer {
         private static final long NO_NAVIGATION_ID = -1;
 
         private long mNavigationId = NO_NAVIGATION_ID;
         private boolean mShouldRecordHistograms;
+        private boolean mInvokedOnFirstNavigationStart;
 
         @Override
         public void onNewNavigation(WebContents webContents, long navigationId,
@@ -38,6 +66,13 @@ public class ActivityTabStartupMetricsTracker {
 
             mNavigationId = navigationId;
             mShouldRecordHistograms = mShouldTrackStartupMetrics;
+
+            if (!mInvokedOnFirstNavigationStart) {
+                for (Observer observer : sObservers) {
+                    observer.onFirstNavigationStart();
+                }
+                mInvokedOnFirstNavigationStart = true;
+            }
         }
 
         @Override
@@ -48,7 +83,9 @@ public class ActivityTabStartupMetricsTracker {
             recordFirstContentfulPaint(navigationStartTick / 1000 + firstContentfulPaintMs);
         }
 
-        void reset() {
+        void resetMetricsRecordingStateForInitialNavigation() {
+            // NOTE: |mInvokedOnFirstNavigationStart| is intentionally not reset to avoid duplicate
+            // observer notifications.
             mNavigationId = NO_NAVIGATION_ID;
             mShouldRecordHistograms = false;
         }
@@ -128,7 +165,7 @@ public class ActivityTabStartupMetricsTracker {
         // Note that observers are not created in all contexts (e.g., CCT).
         if (mPageLoadMetricsObserver == null) return;
 
-        mPageLoadMetricsObserver.reset();
+        mPageLoadMetricsObserver.resetMetricsRecordingStateForInitialNavigation();
     }
 
     /**
