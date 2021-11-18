@@ -34,6 +34,8 @@ class LayoutNGSVGText final : public LayoutNGBlockFlowMixin<LayoutSVGBlock> {
   bool IsChildAllowed(LayoutObject* child, const ComputedStyle&) const override;
   void AddChild(LayoutObject* child, LayoutObject* before_child) override;
   void RemoveChild(LayoutObject* child) override;
+  void InsertedIntoTree() override;
+  void WillBeRemovedFromTree() override;
   gfx::RectF ObjectBoundingBox() const override;
   gfx::RectF StrokeBoundingBox() const override;
   gfx::RectF VisualRectInLocalSVGCoordinates() const override;

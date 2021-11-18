@@ -83,6 +83,20 @@ void LayoutNGSVGText::RemoveChild(LayoutObject* child) {
   LayoutSVGBlock::RemoveChild(child);
 }
 
+void LayoutNGSVGText::InsertedIntoTree() {
+  NOT_DESTROYED();
+  LayoutNGBlockFlowMixin<LayoutSVGBlock>::InsertedIntoTree();
+  for (LayoutBlock* cb = ContainingBlock(); cb; cb = cb->ContainingBlock())
+    cb->AddSvgTextDescendant(*this);
+}
+
+void LayoutNGSVGText::WillBeRemovedFromTree() {
+  NOT_DESTROYED();
+  for (LayoutBlock* cb = ContainingBlock(); cb; cb = cb->ContainingBlock())
+    cb->RemoveSvgTextDescendant(*this);
+  LayoutNGBlockFlowMixin<LayoutSVGBlock>::WillBeRemovedFromTree();
+}
+
 void LayoutNGSVGText::SubtreeStructureChanged(
     LayoutInvalidationReasonForTracing) {
   NOT_DESTROYED();
