@@ -482,6 +482,9 @@
 // Returns YES if UKM feature is enabled.
 + (BOOL)isUKMEnabled WARN_UNUSED_RESULT;
 
+// Returns YES if kSynthesizedRestoreSessionEnabled feature is enabled.
++ (BOOL)isSynthesizedRestoreSessionEnabled WARN_UNUSED_RESULT;
+
 // Returns YES if kTestFeature is enabled.
 + (BOOL)isTestFeatureEnabled;
 

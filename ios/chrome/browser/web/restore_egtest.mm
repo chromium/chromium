@@ -8,7 +8,6 @@
 #include "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #import "ios/chrome/browser/ui/start_surface/start_surface_features.h"
-#include "ios/chrome/browser/web/features.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
@@ -42,9 +41,6 @@ const char kPageTwoTitle[] = "page 2";
 
 // Path to a test page used to count each page load.
 const char kCountURL[] = "/countme.html";
-
-// Suffix used to disable kRestoreSessionFromCache.
-NSString* const kDisableCacheRestoreSuffix = @"WithCacheRestoreDisabled";
 
 // Response handler for page1 and page2 that supports 'airplane mode' by
 // returning an empty RawHttpResponse when |responds_with_content| us false.
@@ -142,49 +138,8 @@ bool WaitForOmniboxContaining(std::string text) {
 
 @implementation RestoreTestCase
 
-+ (NSArray*)testInvocations {
-  NSMutableArray* testInvocations = [[super testInvocations] mutableCopy];
-
-  // RestoreTestCase tests a lot of ios/web session restore logic. iOS 15
-  // supports a more efficient session restore flow, but there are plenty of
-  // edge case reasons for a session restore to fall back to legacy restore.
-  // To ensure each test below ios/web restore path, duplicate each test with a
-  // version that runs with kRestoreSessionFromCache enabled and disabled.
-  if (@available(iOS 15, *)) {
-    unsigned int count = 0;
-    Method* methods = class_copyMethodList(self, &count);
-    for (unsigned i = 0; i < count; i++) {
-      SEL selector = method_getName(methods[i]);
-      NSString* name = NSStringFromSelector(selector);
-      if ([name hasPrefix:@"test"]) {
-        // Add disabled selector to test invocations.
-        SEL disabled_selector = NSSelectorFromString([NSString
-            stringWithFormat:@"%@%@", name, kDisableCacheRestoreSuffix]);
-        NSInvocation* invocation = [NSInvocation
-            invocationWithMethodSignature:
-                [self instanceMethodSignatureForSelector:selector]];
-        [invocation setSelector:disabled_selector];
-        [testInvocations addObject:invocation];
-
-        // Link method to disabled selector.
-        Method instanceMethod = class_getInstanceMethod(self, selector);
-        const char* typeEncoding = method_getTypeEncoding(instanceMethod);
-        class_addMethod(self, disabled_selector,
-                        method_getImplementation(instanceMethod), typeEncoding);
-      }
-    }
-  }
-  return [testInvocations copy];
-}
-
 - (AppLaunchConfiguration)appConfigurationForTestCase {
-  AppLaunchConfiguration config;
-  if ([self.name containsString:kDisableCacheRestoreSuffix]) {
-    config.features_disabled.push_back(web::kRestoreSessionFromCache);
-    // TODO(crbug.com/1266497) eg test changes are in a followup cl.
-    config.features_disabled.push_back(
-        web::features::kSynthesizedRestoreSession);
-  }
+  AppLaunchConfiguration config = [super appConfigurationForTestCase];
   config.features_disabled.push_back(kStartSurface);
   return config;
 }

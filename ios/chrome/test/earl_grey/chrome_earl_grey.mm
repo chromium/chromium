@@ -1188,6 +1188,10 @@ UIWindow* GetAnyKeyWindow() {
   return [ChromeEarlGreyAppInterface isUKMEnabled];
 }
 
+- (BOOL)isSynthesizedRestoreSessionEnabled {
+  return [ChromeEarlGreyAppInterface isSynthesizedRestoreSessionEnabled];
+}
+
 - (BOOL)isTestFeatureEnabled {
   return [ChromeEarlGreyAppInterface isTestFeatureEnabled];
 }

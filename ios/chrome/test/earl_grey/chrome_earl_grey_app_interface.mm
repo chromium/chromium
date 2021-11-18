@@ -966,6 +966,11 @@ NSString* SerializedPref(const PrefService::Preference* pref) {
   return base::FeatureList::IsEnabled(ukm::kUkmFeature);
 }
 
++ (BOOL)isSynthesizedRestoreSessionEnabled {
+  return base::FeatureList::IsEnabled(
+      web::features::kSynthesizedRestoreSession);
+}
+
 + (BOOL)isTestFeatureEnabled {
   return base::FeatureList::IsEnabled(kTestFeature);
 }
