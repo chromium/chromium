@@ -2685,6 +2685,9 @@ message RemoteCommand {
     // the device.
     DEVICE_RESET_EUICC = 13;
 
+    // Rotates the attestation credentials associated with a browser device.
+    BROWSER_ROTATE_ATTESTATION_CREDENTIAL = 14;
+
     // Please update metrics after adding a new item - see the comment above.
   }
 

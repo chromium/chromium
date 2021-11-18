@@ -73343,6 +73343,9 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="15" label="Get available diagnostic routines command"/>
   <int value="16" label="Run diagnostic routine command"/>
   <int value="17" label="Get diagnostic routine update command"/>
+  <int value="18" label="Clear the cache and cookies command"/>
+  <int value="19" label="Resets the cellular EUICC command"/>
+  <int value="20" label="Rotate attestation credentials command"/>
 </enum>
 
 <enum name="RemoteHungProcessTerminateReason">
