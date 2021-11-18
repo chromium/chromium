@@ -28,10 +28,10 @@ static_js_files = [
   "trusted/personalization_state.ts",
   "trusted/personalization_store.ts",
   "trusted/personalization_test_api.js",
-  "trusted/utils.js",
+  "trusted/utils.ts",
 
   "untrusted/iframe_api.ts",
-  "untrusted/setup.js",
+  "untrusted/setup.ts",
 ]
 
 polymer_js_files = [

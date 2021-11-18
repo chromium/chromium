@@ -8,10 +8,9 @@
 
 import {WallpaperLayout} from '../trusted/personalization_app.mojom-webui.js';
 /**
- * @param {string} layout
- * @return {WallpaperLayout}
+ * Convert a string layout value to the corresponding enum.
  */
-export function getWallpaperLayoutEnum(layout) {
+export function getWallpaperLayoutEnum(layout: string): WallpaperLayout {
   switch (layout) {
     case 'FILL':
       return WallpaperLayout.kCenterCropped;
@@ -23,9 +22,7 @@ export function getWallpaperLayoutEnum(layout) {
 
 /**
  * Checks if argument is a string with non-zero length.
- * @param {?} maybeString
- * @return {boolean}
  */
-export function isNonEmptyString(maybeString) {
+export function isNonEmptyString(maybeString: unknown): maybeString is string {
   return typeof maybeString === 'string' && maybeString.length > 0;
 }
