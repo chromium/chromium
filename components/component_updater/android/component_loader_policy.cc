@@ -7,6 +7,7 @@
 #include <jni.h>
 #include <stdio.h>
 
+#include <cstddef>
 #include <map>
 #include <memory>
 #include <string>
@@ -44,14 +45,6 @@ namespace {
 
 constexpr char kManifestFileName[] = "manifest.json";
 
-// TODO(crbug.com/1180964) move to base/file_util.h
-bool ReadFdToString(int fd, std::string* contents) {
-  base::ScopedFILE file_stream(fdopen(fd, "r"));
-  return file_stream.get()
-             ? base::ReadStreamToString(file_stream.get(), contents)
-             : false;
-}
-
 std::unique_ptr<base::DictionaryValue> ReadManifest(
     const std::string& manifest_content) {
   JSONStringValueDeserializer deserializer(manifest_content);
@@ -65,10 +58,10 @@ std::unique_ptr<base::DictionaryValue> ReadManifest(
 
 std::unique_ptr<base::DictionaryValue> ReadManifestFromFd(int fd) {
   std::string content;
-  if (!ReadFdToString(fd, &content)) {
-    return nullptr;
-  }
-  return ReadManifest(content);
+  base::ScopedFILE file_stream(fdopen(fd, "r"));
+  return base::ReadStreamToString(file_stream.get(), &content)
+             ? ReadManifest(content)
+             : nullptr;
 }
 
 void RecordComponentLoadStatusHistogram(const std::string& suffix,

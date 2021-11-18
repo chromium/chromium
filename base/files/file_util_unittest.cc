@@ -3618,6 +3618,11 @@ TEST_F(FileUtilTest, ReadStreamToStringWithMaxSize) {
   EXPECT_FALSE(ReadStreamToStringWithMaxSize(stream.get(), 2, &contents));
 }
 
+TEST_F(FileUtilTest, ReadStreamToStringNullStream) {
+  std::string contents;
+  EXPECT_FALSE(ReadStreamToString(nullptr, &contents));
+}
+
 TEST_F(FileUtilTest, TouchFile) {
   FilePath data_dir =
       temp_dir_.GetPath().Append(FILE_PATH_LITERAL("FilePathTest"));

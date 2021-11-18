@@ -191,7 +191,8 @@ bool ReadStreamToStringWithMaxSize(FILE* stream,
                                    std::string* contents) {
   if (contents)
     contents->clear();
-
+  if (!stream)
+    return false;
   // Seeking to the beginning is best-effort -- it is expected to fail for
   // certain non-file stream (e.g., pipes).
   HANDLE_EINTR(fseek(stream, 0, SEEK_SET));
