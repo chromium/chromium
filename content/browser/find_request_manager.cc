@@ -458,12 +458,12 @@ void FindRequestManager::RemoveFrame(RenderFrameHost* rfh) {
     find_in_page_clients_.erase(it);
   }
 
-  // If this is a primary main frame, then clear the search queue as well, since
-  // we shouldn't be dispatching any more requests. Note that if any other frame
-  // is removed, we can target any queued requests to the focused frame or
-  // primary main frame. However, if the primary main frame is removed we will
-  // not have a valid RenderFrameHost to target for the request queue.
-  if (rfh->IsInPrimaryMainFrame())
+  // If this is a main frame, then clear the search queue as well, since we
+  // shouldn't be dispatching any more requests. Note that if any other frame is
+  // removed, we can target any queued requests to the focused frame or main
+  // frame. However, if the main frame is removed we will not have a valid
+  // RenderFrameHost to target for the request queue.
+  if (!rfh->GetParent())
     find_request_queue_ = base::queue<FindRequest>();
 
   // Update the active match ordinal, since it may have changed.
