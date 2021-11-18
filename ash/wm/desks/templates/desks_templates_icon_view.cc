@@ -132,7 +132,7 @@ void DesksTemplatesIconView::OnAppIconLoaded(apps::IconValuePtr icon_value) {
   }
 
   gfx::ImageSkia image_result = icon_value->uncompressed;
-  if (!image_result.isNull()) {
+  if (!icon_value->is_placeholder_icon && !image_result.isNull()) {
     icon_view_->SetImage(image_result, gfx::Size(kIconSize, kIconSize));
     return;
   }
