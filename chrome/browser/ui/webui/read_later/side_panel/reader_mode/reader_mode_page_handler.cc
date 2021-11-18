@@ -105,7 +105,8 @@ void ReaderModePageHandler::CombineTextNodesAndMakeCallback(
     const ui::AXTreeUpdate& update) {
   ui::AXTree tree;
   bool success = tree.Unserialize(update);
-  DCHECK(success);
+  if (!success)
+    return;
 
   // If this page has an article node, only combine text from that node.
   const ui::AXNode* reader_root = GetArticleNode(tree.root());
