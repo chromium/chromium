@@ -71,6 +71,7 @@ WaylandWindow::WaylandWindow(PlatformWindowDelegate* delegate,
 }
 
 WaylandWindow::~WaylandWindow() {
+  CHECK(ui_task_runner_->BelongsToCurrentThread());
   shutting_down_ = true;
 
   PlatformEventSource::GetInstance()->RemovePlatformEventDispatcher(this);

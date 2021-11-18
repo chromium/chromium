@@ -84,7 +84,8 @@ void WaylandEventWatcher::SetShutdownCb(
 }
 
 void WaylandEventWatcher::StartProcessingEvents() {
-  ui_thread_task_runner_ = base::ThreadTaskRunnerHandle::Get();
+  if (!ui_thread_task_runner_)
+    ui_thread_task_runner_ = base::ThreadTaskRunnerHandle::Get();
   if (use_dedicated_polling_thread_ && !thread_) {
     // FD watching will happen on a different thread.
     DETACH_FROM_THREAD(thread_checker_);
