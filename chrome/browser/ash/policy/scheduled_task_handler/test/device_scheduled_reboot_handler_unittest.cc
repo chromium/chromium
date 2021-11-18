@@ -74,7 +74,7 @@ class DeviceScheduledRebootHandlerTest : public testing::Test {
         task_environment_.GetMockTickClock());
 
     auto task_executor = std::make_unique<FakeScheduledTaskExecutor>(
-        task_environment_.GetMockClock(), task_environment_.GetMockTickClock());
+        task_environment_.GetMockClock());
     scheduled_task_executor_ = task_executor.get();
     device_scheduled_reboot_handler_ =
         std::make_unique<DeviceScheduledRebootHandlerForTest>(
@@ -288,10 +288,10 @@ TEST_F(DeviceScheduledRebootHandlerTest, CheckIfMonthlyRebootIsScheduled) {
       first_reboot_icu_time.get()));
   base::Time second_reboot_time =
       scheduled_task_test_util::IcuToBaseTime(*first_reboot_icu_time);
-  base::TimeDelta second_reboot_delay =
+  absl::optional<base::TimeDelta> second_reboot_delay =
       second_reboot_time - scheduled_task_executor_->GetCurrentTime();
-  EXPECT_GT(second_reboot_delay, scheduled_task_internal::kInvalidDelay);
-  task_environment_.FastForwardBy(second_reboot_delay);
+  ASSERT_TRUE(second_reboot_delay.has_value());
+  task_environment_.FastForwardBy(second_reboot_delay.value());
   EXPECT_TRUE(CheckStats(expected_scheduled_reboots, expected_reboot_requests));
 }
 

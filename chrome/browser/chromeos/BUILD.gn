@@ -4346,6 +4346,7 @@ source_set("unit_tests") {
     "../ash/policy/scheduled_task_handler/test/fake_scheduled_task_executor.h",
     "../ash/policy/scheduled_task_handler/test/scheduled_task_test_util.cc",
     "../ash/policy/scheduled_task_handler/test/scheduled_task_test_util.h",
+    "../ash/policy/scheduled_task_handler/test/scheduled_task_util_unittest.cc",
     "../ash/policy/server_backed_state/active_directory_device_state_uploader_unittest.cc",
     "../ash/policy/server_backed_state/server_backed_state_keys_broker_unittest.cc",
     "../ash/policy/status_collector/activity_storage_unittest.cc",

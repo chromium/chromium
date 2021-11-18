@@ -46,10 +46,6 @@ class ScheduledTaskExecutor {
     // Only set when frequency is |kMonthly|. Corresponds to UCAL_DAY_OF_MONTH
     // in icu::Calendar i.e. values between 1 to 31.
     absl::optional<int> day_of_month;
-
-    // Absolute time ticks when the next scheduled task (i.e. |UpdateCheck|)
-    // will happen.
-    base::TimeTicks next_scheduled_task_time_ticks;
   };
 
   virtual ~ScheduledTaskExecutor() = default;

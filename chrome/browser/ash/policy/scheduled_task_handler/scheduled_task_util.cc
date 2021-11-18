@@ -4,13 +4,15 @@
 
 #include "chrome/browser/ash/policy/scheduled_task_handler/scheduled_task_util.h"
 
+#include <memory>
 #include <string>
 
 #include "base/check.h"
 #include "base/logging.h"
+#include "base/memory/ptr_util.h"
+#include "base/notreached.h"
 #include "base/values.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
-#include "third_party/icu/source/i18n/unicode/calendar.h"
+#include "third_party/icu/source/i18n/unicode/gregocal.h"
 
 namespace policy {
 namespace {
@@ -43,6 +45,88 @@ UCalendarDaysOfWeek StringDayOfWeekToIcuDayOfWeek(
   DCHECK_EQ(day_of_week, "SATURDAY");
   return UCAL_SATURDAY;
 }
+
+bool IsAfter(const icu::Calendar& a, const icu::Calendar& b) {
+  UErrorCode status = U_ZERO_ERROR;
+  if (a.after(b, status)) {
+    DCHECK(U_SUCCESS(status));
+    return true;
+  }
+
+  return false;
+}
+
+// Returns a valid time based on the policy represented by
+// |scheduled_task_data|.
+std::unique_ptr<icu::Calendar> SnapToValidTimeBasedOnPolicy(
+    const icu::Calendar& time,
+    const ScheduledTaskExecutor::ScheduledTaskData& scheduled_task_data) {
+  auto res_time = base::WrapUnique(time.clone());
+
+  // Set the daily fields first as they will be common across different policy
+  // types.
+  res_time->set(UCAL_HOUR_OF_DAY, scheduled_task_data.hour);
+  res_time->set(UCAL_MINUTE, scheduled_task_data.minute);
+  res_time->set(UCAL_SECOND, 0);
+  res_time->set(UCAL_MILLISECOND, 0);
+
+  switch (scheduled_task_data.frequency) {
+    case ScheduledTaskExecutor::Frequency::kDaily:
+      return res_time;
+
+    case ScheduledTaskExecutor::Frequency::kWeekly:
+      DCHECK(scheduled_task_data.day_of_week);
+      res_time->set(UCAL_DAY_OF_WEEK, scheduled_task_data.day_of_week.value());
+      return res_time;
+
+    case ScheduledTaskExecutor::Frequency::kMonthly: {
+      DCHECK(scheduled_task_data.day_of_month);
+      UErrorCode status = U_ZERO_ERROR;
+      // If policy's |day_of_month| is greater than the maximum days in |time|'s
+      // current month then it's set to the last day in the month.
+      int cur_max_days_in_month =
+          res_time->getActualMaximum(UCAL_DAY_OF_MONTH, status);
+      DCHECK(U_SUCCESS(status));
+
+      res_time->set(UCAL_DAY_OF_MONTH,
+                    std::min(scheduled_task_data.day_of_month.value(),
+                             cur_max_days_in_month));
+      return res_time;
+    }
+  }
+}
+
+UCalendarDateFields GetFieldToAdvanceFor(
+    ScheduledTaskExecutor::Frequency frequency) {
+  switch (frequency) {
+    case ScheduledTaskExecutor::Frequency::kDaily:
+      return UCAL_DAY_OF_MONTH;
+    case ScheduledTaskExecutor::Frequency::kWeekly:
+      return UCAL_WEEK_OF_YEAR;
+    case ScheduledTaskExecutor::Frequency::kMonthly:
+      return UCAL_MONTH;
+  }
+  NOTREACHED();
+}
+
+// Returns a valid time that is advanced in comparison to |time| based on the
+// policy represented by |scheduled_task_data|.
+//
+// For daily policy - Advances |time| by 1 day.
+// For weekly policy - Advances |time| by 1 week.
+// For monthly policy - Advances |time| by 1 month.
+std::unique_ptr<icu::Calendar> AdvanceToNextValidTimeBasedOnPolicy(
+    const icu::Calendar& time,
+    const ScheduledTaskExecutor::ScheduledTaskData& scheduled_task_data) {
+  auto res_time = base::WrapUnique(time.clone());
+  UErrorCode status = U_ZERO_ERROR;
+  res_time->add(GetFieldToAdvanceFor(scheduled_task_data.frequency), 1, status);
+  DCHECK(U_SUCCESS(status));
+  // Need to run SnapToValid again, as we might be in a month with less days
+  // than the previous month.
+  return SnapToValidTimeBasedOnPolicy(*res_time, scheduled_task_data);
+}
+
 }  // namespace
 
 namespace scheduled_task_util {
@@ -106,5 +190,73 @@ absl::optional<ScheduledTaskExecutor::ScheduledTaskData> ParseScheduledTask(
 
   return result;
 }
+
+base::TimeDelta GetDiff(const icu::Calendar& a, const icu::Calendar& b) {
+  UErrorCode status = U_ZERO_ERROR;
+  UDate a_ms = a.getTime(status);
+  DCHECK(U_SUCCESS(status));
+  UDate b_ms = b.getTime(status);
+  DCHECK(U_SUCCESS(status));
+  DCHECK(a_ms >= b_ms);
+  return base::Milliseconds(a_ms - b_ms);
+}
+
+std::unique_ptr<icu::Calendar> ConvertUtcToTzIcuTime(base::Time cur_time,
+                                                     const icu::TimeZone& tz) {
+  // Get ms from epoch for |cur_time| and use it to get the new time in |tz|.
+  UErrorCode status = U_ZERO_ERROR;
+  std::unique_ptr<icu::Calendar> cal_tz =
+      std::make_unique<icu::GregorianCalendar>(tz, status);
+  if (U_FAILURE(status)) {
+    LOG(ERROR) << "Couldn't create calendar";
+    return nullptr;
+  }
+  // Erase current time from the calendar.
+  cal_tz->clear();
+  // Use Time::ToJavaTime() to get ms since epoch in int64_t format.
+  cal_tz->setTime(cur_time.ToJavaTime(), status);
+  if (U_FAILURE(status)) {
+    LOG(ERROR) << "Couldn't create calendar";
+    return nullptr;
+  }
+
+  return cal_tz;
+}
+
+absl::optional<base::TimeDelta> CalculateNextScheduledTaskTimerDelay(
+    const ScheduledTaskExecutor::ScheduledTaskData& data,
+    base::Time time,
+    const icu::TimeZone& time_zone) {
+  const auto cal = ConvertUtcToTzIcuTime(time, time_zone);
+  if (!cal) {
+    LOG(ERROR) << "Failed to get current ICU time";
+    return absl::nullopt;
+  }
+
+  auto scheduled_task_time = CalculateNextScheduledTimeAfter(data, *cal);
+
+  return GetDiff(*scheduled_task_time, *cal);
+}
+
+std::unique_ptr<icu::Calendar> CalculateNextScheduledTimeAfter(
+    const ScheduledTaskExecutor::ScheduledTaskData& data,
+    const icu::Calendar& time) {
+  auto scheduled_task_time = SnapToValidTimeBasedOnPolicy(time, data);
+
+  // If the time has already passed it means that the scheduled task needs to be
+  // advanced based on the policy i.e. by a day, week or month. The equal to
+  // case happens when the timer_expired_cb runs and sets the next
+  // |scheduled_task_timer_|. In this case |scheduled_task_time| definitely
+  // needs to advance as per the policy.
+  if (!IsAfter(*scheduled_task_time, time)) {
+    scheduled_task_time =
+        AdvanceToNextValidTimeBasedOnPolicy(*scheduled_task_time, data);
+  }
+
+  DCHECK(IsAfter(*scheduled_task_time, time));
+
+  return scheduled_task_time;
+}
+
 }  // namespace scheduled_task_util
 }  // namespace policy
