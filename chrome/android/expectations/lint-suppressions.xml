@@ -287,6 +287,11 @@ https://chromium.googlesource.com/chromium/src/+/main/build/android/docs/lint.md
     <ignore regexp="The resource `R.string.quick_action_search_widget_message_no_incognito` appears to be unused"/>
     <ignore regexp="The resource `R.string.quick_action_search_widget_message_no_voice_search` appears to be unused"/>
 
+    <!-- 1: TODO(crbug.com/1268473): Remove when error is shown in UI.  -->
+    <ignore regexp="The resource `R.string.lightweight_reactions_error_screenshot` appears to be unused"/>
+    <!-- 1: TODO(crbug.com/1268474): Remove when error is shown in UI.  -->
+    <ignore regexp="The resource `R.string.lightweight_reactions_error_asset_fetch` appears to be unused"/>
+
     <!-- Endnote: Please specify number of suppressions when adding more -->
   </issue>
   <issue id="VectorPath" severity="ignore"/>
