@@ -366,6 +366,8 @@ TEST(StorageKeyTest, DeserializeForServiceWorker) {
   std::string nonce_low_first = "https://example.com/^212345^167890";
   std::string malformed_3_carets = "https://example.com/^112345^267890^";
   std::string malformed_seperators_too_close = "https://example.com/^1^267890";
+  std::string malformed_first_party =
+      "https://www.example.com/^0https://example.com";
 
   absl::optional<StorageKey> key12 =
       StorageKey::DeserializeForServiceWorker(nonce_low_first);
@@ -373,10 +375,13 @@ TEST(StorageKeyTest, DeserializeForServiceWorker) {
       StorageKey::DeserializeForServiceWorker(malformed_3_carets);
   absl::optional<StorageKey> key14 =
       StorageKey::DeserializeForServiceWorker(malformed_seperators_too_close);
+  absl::optional<StorageKey> key15 =
+      StorageKey::DeserializeForServiceWorker(malformed_first_party);
 
   EXPECT_FALSE(key12.has_value());
   EXPECT_FALSE(key13.has_value());
   EXPECT_FALSE(key14.has_value());
+  EXPECT_FALSE(key15.has_value());
 }
 
 // Test that string -> StorageKey test function performs as expected.

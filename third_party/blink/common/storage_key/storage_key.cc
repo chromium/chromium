@@ -108,8 +108,15 @@ absl::optional<StorageKey> StorageKey::DeserializeForServiceWorker(
 
       // There is no nonce.
 
-      if (key_origin.opaque() || key_top_level_site.opaque())
+      // In addition to checking for opaque-ness, check to make sure that the
+      // origin is not same-site with the top-level site (i.e.: A first-party
+      // StorageKey). This is important because we specifically do not serialize
+      // the top-level site portion of a 1p StorageKey for backwards
+      // compatibility reasons, meaning that such an input is malformed.
+      if (key_origin.opaque() || key_top_level_site.opaque() ||
+          key_top_level_site == net::SchemefulSite(key_origin)) {
         return absl::nullopt;
+      }
 
       return StorageKey(key_origin, key_top_level_site);
     }
