@@ -27,10 +27,9 @@ class KeyRotationLauncher {
   virtual ~KeyRotationLauncher() = default;
 
   // Builds a key rotation payload using `nonce`, and then kicks off a key
-  // rotation command. Returns true if the command was correctly triggered.
-  virtual bool LaunchKeyRotation(const std::string& nonce,
-                                 KeyRotationCommand::Callback callback)
-      WARN_UNUSED_RESULT = 0;
+  // rotation command.
+  virtual void LaunchKeyRotation(const std::string& nonce,
+                                 KeyRotationCommand::Callback callback) = 0;
 };
 
 }  // namespace enterprise_connectors

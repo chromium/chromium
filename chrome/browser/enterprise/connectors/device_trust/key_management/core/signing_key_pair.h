@@ -47,6 +47,13 @@ class SigningKeyPair {
 
   ~SigningKeyPair();
 
+  bool is_empty() const {
+    return trust_level_ ==
+               enterprise_management::BrowserPublicKeyUploadRequest::
+                   KEY_TRUST_LEVEL_UNSPECIFIED ||
+           !key();
+  }
+
   crypto::UnexportableSigningKey* key() const {
     return key_pair_ ? key_pair_.get() : nullptr;
   }

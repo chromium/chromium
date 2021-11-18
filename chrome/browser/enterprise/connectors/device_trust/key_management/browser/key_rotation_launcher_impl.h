@@ -22,7 +22,7 @@ class KeyRotationLauncherImpl : public KeyRotationLauncher {
   ~KeyRotationLauncherImpl() override;
 
   // KeyRotationLauncher:
-  bool LaunchKeyRotation(const std::string& nonce,
+  void LaunchKeyRotation(const std::string& nonce,
                          KeyRotationCommand::Callback callback) override;
 
  private:

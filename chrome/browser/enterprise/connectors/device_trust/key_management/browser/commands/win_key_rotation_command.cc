@@ -143,7 +143,7 @@ WinKeyRotationCommand::WinKeyRotationCommand(
 
 WinKeyRotationCommand::~WinKeyRotationCommand() = default;
 
-bool WinKeyRotationCommand::Trigger(const KeyRotationCommand::Params& params,
+void WinKeyRotationCommand::Trigger(const KeyRotationCommand::Params& params,
                                     Callback callback) {
   DCHECK(!callback.is_null());
 
@@ -202,8 +202,6 @@ bool WinKeyRotationCommand::Trigger(const KeyRotationCommand::Params& params,
           },
           params, run_elevated_command, waiting_enabled_),
       std::move(callback));
-
-  return true;
 }
 
 }  // namespace enterprise_connectors

@@ -16,7 +16,7 @@ class MockKeyRotationLauncher : public KeyRotationLauncher {
   MockKeyRotationLauncher();
   ~MockKeyRotationLauncher() override;
 
-  MOCK_METHOD(bool,
+  MOCK_METHOD(void,
               LaunchKeyRotation,
               (const std::string&, KeyRotationCommand::Callback),
               (override));

@@ -26,11 +26,12 @@ KeyRotationLauncherImpl::KeyRotationLauncherImpl(
 }
 KeyRotationLauncherImpl::~KeyRotationLauncherImpl() = default;
 
-bool KeyRotationLauncherImpl::LaunchKeyRotation(
+void KeyRotationLauncherImpl::LaunchKeyRotation(
     const std::string& nonce,
     KeyRotationCommand::Callback callback) {
   if (!dm_token_storage_ || !device_management_service_) {
-    return false;
+    std::move(callback).Run(KeyRotationCommand::Status::FAILED);
+    return;
   }
 
   // Get the CBCM DM token.  This will be needed later to send the new key's
@@ -38,8 +39,10 @@ bool KeyRotationLauncherImpl::LaunchKeyRotation(
   auto client_id = dm_token_storage_->RetrieveClientId();
   auto dm_token = dm_token_storage_->RetrieveDMToken();
 
-  if (!dm_token.is_valid())
-    return false;
+  if (!dm_token.is_valid()) {
+    std::move(callback).Run(KeyRotationCommand::Status::FAILED);
+    return;
+  }
 
   // Get the DM server URL to upload the public key.  Reuse
   // DMServerJobConfiguration to reuse the URL building steps.
@@ -52,7 +55,7 @@ bool KeyRotationLauncherImpl::LaunchKeyRotation(
   std::string dm_server_url = config.GetResourceRequest(false, 0)->url.spec();
 
   KeyRotationCommand::Params params{dm_token.value(), dm_server_url, nonce};
-  return KeyRotationCommandFactory::GetInstance()->CreateCommand()->Trigger(
+  KeyRotationCommandFactory::GetInstance()->CreateCommand()->Trigger(
       params, std::move(callback));
 }
 

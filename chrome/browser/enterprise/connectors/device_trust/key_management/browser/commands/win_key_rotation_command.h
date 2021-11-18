@@ -35,7 +35,7 @@ class WinKeyRotationCommand : public KeyRotationCommand {
   ~WinKeyRotationCommand() override;
 
   // KeyRotationCommand:
-  bool Trigger(const Params& params, Callback callback) override;
+  void Trigger(const Params& params, Callback callback) override;
 
   // Enable or disable wait/sleep in tests to keep them from taking too long.
   void enable_waiting_for_testing(bool enabled) { waiting_enabled_ = enabled; }

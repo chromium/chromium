@@ -37,7 +37,7 @@ class KeyRotationCommand {
 
   // Kicks off a platform-specific key rotation command using the given
   // `params`.  Invokes `callback` upon completion.
-  virtual bool Trigger(const Params& params, Callback callback) = 0;
+  virtual void Trigger(const Params& params, Callback callback) = 0;
 };
 
 }  // namespace enterprise_connectors

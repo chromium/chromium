@@ -8,15 +8,30 @@
 #include "base/check.h"
 #include "base/containers/span.h"
 #include "base/notreached.h"
+#include "base/task/bind_post_task.h"
 #include "base/task/post_task.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
+#include "base/threading/sequenced_task_runner_handle.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/browser/key_rotation_launcher.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/core/signing_key_pair.h"
 #include "crypto/unexportable_key.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace enterprise_connectors {
+
+namespace {
+
+absl::optional<std::vector<uint8_t>> SignString(
+    const std::string& str,
+    crypto::UnexportableSigningKey* key) {
+  if (!key) {
+    return absl::nullopt;
+  }
+  return key->SignSlowly(base::as_bytes(base::make_span(str)));
+}
+
+}  // namespace
 
 DeviceTrustKeyManagerImpl::DeviceTrustKeyManagerImpl(
     std::unique_ptr<KeyRotationLauncher> key_rotation_launcher)
@@ -34,7 +49,10 @@ void DeviceTrustKeyManagerImpl::StartInitialization() {
   // Initialization is only needed when the manager is in its default state
   // with no loaded key.
   if (state_ == InitializationState::kDefault && !key_pair_) {
-    LoadKey();
+    // Create a key upon loading failure iff a key was not already successfully
+    // created/rotated to prevent trying to re-create a key after failing to
+    // load it.
+    LoadKey(/*create_on_fail=*/!key_rotation_succeeded_);
   }
 }
 
@@ -52,9 +70,9 @@ void DeviceTrustKeyManagerImpl::ExportPublicKeyAsync(
     return;
   }
 
-  // TODO(b/204914180): Handle the requests based on the current state (queue,
-  // up requests, or retry loading the key).
-  std::move(callback).Run(absl::nullopt);
+  AddPendingRequest(
+      base::BindOnce(&DeviceTrustKeyManagerImpl::ResumeExportPublicKey,
+                     weak_factory_.GetWeakPtr(), std::move(callback)));
 }
 
 void DeviceTrustKeyManagerImpl::SignStringAsync(const std::string& str,
@@ -62,59 +80,130 @@ void DeviceTrustKeyManagerImpl::SignStringAsync(const std::string& str,
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (is_fully_initialized()) {
     background_task_runner_->PostTaskAndReplyWithResult(
-        FROM_HERE,
-        base::BindOnce(&crypto::UnexportableSigningKey::SignSlowly,
-                       base::Unretained(key_pair_->key()),
-                       base::as_bytes(base::make_span(str))),
+        FROM_HERE, base::BindOnce(&SignString, str, key_pair_->key()),
         std::move(callback));
     return;
   }
 
-  // TODO(b/204914180): Handle the requests based on the current state (queue,
-  // up requests, or retry loading the key).
-  std::move(callback).Run(absl::nullopt);
+  AddPendingRequest(base::BindOnce(&DeviceTrustKeyManagerImpl::ResumeSignString,
+                                   weak_factory_.GetWeakPtr(), str,
+                                   std::move(callback)));
 }
 
-void DeviceTrustKeyManagerImpl::LoadKey() {
+void DeviceTrustKeyManagerImpl::AddPendingRequest(
+    base::OnceClosure pending_request) {
+  if (pending_request.is_null()) {
+    return;
+  }
+
+  // Unsafe is fine as long as the pending closures are bound to a weak pointer.
+  pending_client_requests_.AddUnsafe(std::move(pending_request));
+
+  // Hook to allow the manager to fix itself if it is in a bad state.
+  StartInitialization();
+}
+
+void DeviceTrustKeyManagerImpl::LoadKey(bool create_on_fail) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   state_ = InitializationState::kLoadingKey;
   background_task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE, base::BindOnce(&SigningKeyPair::LoadPersistedKey),
       base::BindOnce(&DeviceTrustKeyManagerImpl::OnKeyLoaded,
-                     weak_factory_.GetWeakPtr()));
+                     weak_factory_.GetWeakPtr(), create_on_fail));
 }
 
 void DeviceTrustKeyManagerImpl::OnKeyLoaded(
+    bool create_on_fail,
     std::unique_ptr<SigningKeyPair> loaded_key_pair) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (loaded_key_pair) {
+
+  if (loaded_key_pair && !loaded_key_pair->is_empty()) {
     key_pair_ = std::move(loaded_key_pair);
-    state_ = InitializationState::kDefault;
+  } else {
+    key_pair_.reset();
+  }
+
+  state_ = InitializationState::kDefault;
+
+  if (!is_fully_initialized() && create_on_fail) {
+    // Key loading failed, so we can kick-off the key creation. This is
+    // guarded by a flag to make sure not to loop infinitely over:
+    // create succeeds -> load fails -> create again...
+    StartKeyRotationInner(/*nonce=*/std::string());
     return;
   }
 
-  // Key loading failed, so we can kick-off the key creation.
-  StartKeyRotationInner(std::string());
+  // Respond to callbacks. If a key was loaded, these callbacks will be
+  // successfully answered to. If a key was not loaded, then might as well
+  // respond with a failure instead of keeping them waiting even longer.
+  ResumePendingCallbacks();
 }
 
 void DeviceTrustKeyManagerImpl::StartKeyRotationInner(
     const std::string& nonce) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // TODO(b/204914180): Update logic once key creation can provide status
-  // updates.
-  state_ = InitializationState::kStartingKeyRotation;
-  background_task_runner_->PostTaskAndReplyWithResult(
+  state_ = InitializationState::kRotatingKey;
+  key_rotation_succeeded_ = false;
+
+  KeyRotationCommand::Callback rotation_finished_callback =
+      base::BindOnce(&DeviceTrustKeyManagerImpl::OnKeyRotationFinished,
+                     weak_factory_.GetWeakPtr());
+
+  background_task_runner_->PostTask(
       FROM_HERE,
-      base::BindOnce(&KeyRotationLauncher::LaunchKeyRotation,
-                     base::Unretained(key_rotation_launcher_.get()), nonce,
-                     base::DoNothing()),
-      base::BindOnce(&DeviceTrustKeyManagerImpl::OnKeyRotationStarted,
-                     weak_factory_.GetWeakPtr()));
+      base::BindOnce(
+          &KeyRotationLauncher::LaunchKeyRotation,
+          base::Unretained(key_rotation_launcher_.get()), nonce,
+          base::BindPostTask(base::SequencedTaskRunnerHandle::Get(),
+                             std::move(rotation_finished_callback))));
 }
 
-void DeviceTrustKeyManagerImpl::OnKeyRotationStarted(bool rotation_started) {
+void DeviceTrustKeyManagerImpl::OnKeyRotationFinished(
+    KeyRotationCommand::Status result_status) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  state_ = InitializationState::kWaitingForKeyRotation;
+  key_rotation_succeeded_ =
+      result_status == KeyRotationCommand::Status::SUCCEEDED;
+  state_ = InitializationState::kDefault;
+
+  if (key_rotation_succeeded_) {
+    LoadKey(/*create_on_fail=*/false);
+    return;
+  }
+
+  // Two possible failure scenarios:
+  // - Either there was no key before and key creation failed,
+  // - Or there was a previous key and creation of a new key failed, so the old
+  //   key was restored.
+  // In both cases, the manager doesn't need to try and reload the key (its
+  // loaded key is already either null or the old key).
+  // Just respond to the pending callbacks - if a key is still set, it will
+  // successfully respond to them.
+  ResumePendingCallbacks();
+}
+
+void DeviceTrustKeyManagerImpl::ResumePendingCallbacks() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  pending_client_requests_.Notify();
+}
+
+void DeviceTrustKeyManagerImpl::ResumeExportPublicKey(
+    ExportPublicKeyCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (is_fully_initialized()) {
+    ExportPublicKeyAsync(std::move(callback));
+  } else {
+    std::move(callback).Run(absl::nullopt);
+  }
+}
+
+void DeviceTrustKeyManagerImpl::ResumeSignString(const std::string& str,
+                                                 SignStringCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (is_fully_initialized()) {
+    SignStringAsync(str, std::move(callback));
+  } else {
+    std::move(callback).Run(absl::nullopt);
+  }
 }
 
 }  // namespace enterprise_connectors
