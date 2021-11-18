@@ -1525,6 +1525,14 @@ util.isBannerFrameworkEnabled = () => {
 };
 
 /**
+ * Returns true if FilesExtractArchive flag is enabled.
+ * @return {boolean}
+ */
+util.isExtractArchiveEnabled = () => {
+  return loadTimeData.getBoolean('EXTRACT_ARCHIVE');
+};
+
+/**
  * Retrieves all entries inside the given |rootEntry|.
  * @param {!DirectoryEntry} rootEntry
  * @param {function(!Array<!Entry>)} entriesCallback Called when some chunk of

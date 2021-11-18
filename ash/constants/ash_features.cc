@@ -571,6 +571,11 @@ const base::Feature kFilesArchivemount2{"FilesArchivemount2",
 const base::Feature kFilesBannerFramework{"FilesBannerFramework",
                                           base::FEATURE_ENABLED_BY_DEFAULT};
 
+// Enable the simple archive extraction.
+// https://crbug.com/953256
+const base::Feature kFilesExtractArchive{"FilesExtractArchive",
+                                         base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enables the System Web App (SWA) version of file manager.
 const base::Feature kFilesSWA{"FilesSWA", base::FEATURE_DISABLED_BY_DEFAULT};
 

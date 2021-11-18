@@ -4698,6 +4698,10 @@ const char kFilesBannerFrameworkName[] =
 const char kFilesBannerFrameworkDescription[] =
     "Enable the updated branner framework in Files app";
 
+const char kFilesExtractArchiveName[] = "Extract archive in Files app";
+const char kFilesExtractArchiveDescription[] =
+    "Enable the simplified archive extraction feature in Files app";
+
 const char kFilesSinglePartitionFormatName[] =
     "Enable Partitioning of Removable Disks.";
 const char kFilesSinglePartitionFormatDescription[] =

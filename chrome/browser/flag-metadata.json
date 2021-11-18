@@ -3133,6 +3133,11 @@
     "expiry_milestone": 100
   },
   {
+    "name": "files-extract-archive",
+    "owners": [ "adanilo", "simmonsjosh@google.com" ],
+    "expiry_milestone": 112
+  },
+  {
     "name": "files-filters-in-recents",
     "owners": [ "simmonsjosh@google.com", "benhartney@google.com" ],
     "expiry_milestone": 98

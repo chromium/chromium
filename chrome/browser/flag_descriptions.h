@@ -2700,6 +2700,9 @@ extern const char kFilesArchivemount2Description[];
 extern const char kFilesBannerFrameworkName[];
 extern const char kFilesBannerFrameworkDescription[];
 
+extern const char kFilesExtractArchiveName[];
+extern const char kFilesExtractArchiveDescription[];
+
 extern const char kFilesSinglePartitionFormatName[];
 extern const char kFilesSinglePartitionFormatDescription[];
 
