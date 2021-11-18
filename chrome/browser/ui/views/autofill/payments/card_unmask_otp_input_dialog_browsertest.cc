@@ -37,7 +37,7 @@ class CardUnmaskOtpInputDialogBrowserTest : public DialogBrowserTest {
     controller()->ShowDialog(kDefaultOtpLength, /*delegate=*/nullptr);
   }
 
-  CardUnmaskOtpInputDialogViews* GetDialogViews() {
+  CardUnmaskOtpInputDialogViews* GetDialog() {
     if (!controller())
       return nullptr;
 
@@ -112,6 +112,32 @@ IN_PROC_BROWSER_TEST_F(CardUnmaskOtpInputDialogBrowserTest,
   VerifyUi();
   browser()->window()->Close();
   base::RunLoop().RunUntilIdle();
+}
+
+// Ensures activating the new code link sets it to invalid for a set period of
+// time.
+#if defined(OS_WIN)
+// Triggering logic required for Windows OS runs: https://crbug.com/1254686
+#define MAYBE_LinkInvalidatesOnActivation DISABLED_LinkInvalidatesOnActivation
+#else
+#define MAYBE_LinkInvalidatesOnActivation LinkInvalidatesOnActivation
+#endif
+IN_PROC_BROWSER_TEST_F(CardUnmaskOtpInputDialogBrowserTest,
+                       MAYBE_LinkInvalidatesOnActivation) {
+  ShowUi("");
+  VerifyUi();
+  // Link should be disabled on click.
+  GetDialog()->OnNewCodeLinkClicked();
+  EXPECT_FALSE(GetDialog()->NewCodeLinkIsEnabledForTesting());
+  base::RunLoop run_loop;
+  // Link should be re-enabled after timeout completes.
+  base::RepeatingClosure
+      closure_to_run_after_new_code_link_is_enabled_for_testing =
+          run_loop.QuitClosure();
+  GetDialog()->SetClosureToRunAfterNewCodeLinkIsEnabledForTesting(
+      closure_to_run_after_new_code_link_is_enabled_for_testing);
+  run_loop.Run();
+  EXPECT_TRUE(GetDialog()->NewCodeLinkIsEnabledForTesting());
 }
 
 }  // namespace autofill

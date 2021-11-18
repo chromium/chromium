@@ -161,7 +161,7 @@ void CardUnmaskOtpInputDialogViews::CreateOtpInputView() {
   otp_input_view_->SetOrientation(views::BoxLayout::Orientation::kVertical);
   otp_input_view_->SetBetweenChildSpacing(
       ChromeLayoutProvider::Get()->GetDistanceMetric(
-          views::DISTANCE_UNRELATED_CONTROL_VERTICAL));
+          views::DISTANCE_RELATED_CONTROL_VERTICAL));
 
   // Set initial creation of |otp_input_view_| to visible as it is the first
   // view shown in the dialog.
@@ -203,16 +203,34 @@ void CardUnmaskOtpInputDialogViews::CreateOtpInputView() {
   // Adds footer.
   const std::u16string link_text = controller_->GetNewCodeLinkText();
   const FooterText footer_text = controller_->GetFooterText(link_text);
-  auto* footer_label =
+  footer_label_ =
       otp_input_view_->AddChildView(std::make_unique<views::StyledLabel>());
-  footer_label->SetText(footer_text.text);
-  footer_label->AddStyleRange(
+  footer_label_->SetText(footer_text.text);
+  footer_label_->AddStyleRange(
       gfx::Range(footer_text.link_offset_in_text,
                  footer_text.link_offset_in_text + link_text.length()),
       views::StyledLabel::RangeStyleInfo::CreateForLink(base::BindRepeating(
-          &CardUnmaskOtpInputDialogController::OnNewCodeLinkClicked,
-          base::Unretained(controller_))));
-  footer_label->SetDefaultTextStyle(views::style::STYLE_SECONDARY);
+          &CardUnmaskOtpInputDialogViews::OnNewCodeLinkClicked,
+          weak_ptr_factory_.GetWeakPtr())));
+  footer_label_->SetDefaultTextStyle(views::style::STYLE_SECONDARY);
+}
+
+void CardUnmaskOtpInputDialogViews::OnNewCodeLinkClicked() {
+  controller_->OnNewCodeLinkClicked();
+  footer_label_->SetEnabled(false);
+  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(&CardUnmaskOtpInputDialogViews::EnableNewCodeLink,
+                     weak_ptr_factory_.GetWeakPtr()),
+      kNewOtpCodeLinkDisabledDuration);
+}
+
+void CardUnmaskOtpInputDialogViews::EnableNewCodeLink() {
+  footer_label_->SetEnabled(true);
+
+  if (closure_to_run_after_new_code_link_is_enabled_for_testing_) {
+    closure_to_run_after_new_code_link_is_enabled_for_testing_.Run();
+  }
 }
 
 void CardUnmaskOtpInputDialogViews::CreateHiddenProgressView() {
