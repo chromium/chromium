@@ -33,13 +33,19 @@ source_set("browser") {
 
 source_set("test_support") {
   testonly = true
-  sources = [
-    "mock_key_rotation_launcher.cc",
+  public = [
+    "mock_device_trust_key_manager.h",
     "mock_key_rotation_launcher.h",
   ]
 
-  deps = [
+  sources = [
+    "mock_device_trust_key_manager.cc",
+    "mock_key_rotation_launcher.cc",
+  ]
+
+  public_deps = [
     ":browser",
+    "//components/enterprise",
     "//testing/gmock",
   ]
 }

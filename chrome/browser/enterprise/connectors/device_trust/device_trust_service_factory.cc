@@ -22,7 +22,11 @@
 #include "content/public/browser/browser_context.h"
 
 #if defined(OS_LINUX) || defined(OS_WIN) || defined(OS_MAC)
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/connectors/device_trust/attestation/desktop/desktop_attestation_service.h"
+#include "chrome/browser/policy/chrome_browser_policy_connector.h"
+#include "components/enterprise/browser/controller/chrome_browser_cloud_management_controller.h"
+#include "components/enterprise/browser/device_trust/device_trust_key_manager.h"
 #endif  // defined(OS_LINUX) || defined(OS_WIN) || defined(OS_MAC)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -60,10 +64,11 @@ KeyedService* DeviceTrustServiceFactory::BuildServiceInstanceFor(
   std::unique_ptr<AttestationService> attestation_service =
       std::make_unique<AshAttestationService>(profile);
 #else
+  auto* key_manager = g_browser_process->browser_policy_connector()
+                          ->chrome_browser_cloud_management_controller()
+                          ->GetDeviceTrustKeyManager();
   std::unique_ptr<AttestationService> attestation_service =
-      std::make_unique<DesktopAttestationService>(
-          KeyPersistenceDelegateFactory::GetInstance()
-              ->CreateKeyPersistenceDelegate());
+      std::make_unique<DesktopAttestationService>(key_manager);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   return new DeviceTrustService(
