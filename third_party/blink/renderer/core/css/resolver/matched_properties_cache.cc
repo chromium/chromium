@@ -233,6 +233,18 @@ bool MatchedPropertiesCache::IsCacheable(const StyleResolverState& state) {
   if (!state.ParentNode() || parent_style.ChildHasExplicitInheritance())
     return false;
 
+  // Do not cache computed styles for shadow root children which have a
+  // different UserModify value than its shadow host.
+  //
+  // UserModify is modified to not inherit from the shadow host for shadow root
+  // children. That means that if we get a MatchedPropertiesCache match for a
+  // style stored for a shadow root child against a non shadow root child, we
+  // would end up with an incorrect match.
+  if (IsAtShadowBoundary(&state.GetElement()) &&
+      style.UserModify() != parent_style.UserModify()) {
+    return false;
+  }
+
   return true;
 }
 
