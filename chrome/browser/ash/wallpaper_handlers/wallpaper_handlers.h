@@ -121,6 +121,29 @@ class BackdropSurpriseMeImageFetcher {
   OnSurpriseMeImageFetched callback_;
 };
 
+// Downloads the number of photos a user has stored in Google Photos.
+class GooglePhotosCountFetcher {
+ public:
+  using OnGooglePhotosCountFetched = base::OnceCallback<void(int64_t count)>;
+
+  GooglePhotosCountFetcher();
+
+  GooglePhotosCountFetcher(const GooglePhotosCountFetcher&) = delete;
+  GooglePhotosCountFetcher& operator=(const GooglePhotosCountFetcher&) = delete;
+
+  ~GooglePhotosCountFetcher();
+
+  // Starts the fetcher.
+  void Start(OnGooglePhotosCountFetched callback);
+
+ private:
+  // Called when the photo count download completes.
+  void OnResponseFetched(const std::string& response);
+
+  // Runs upon photo count download completion.
+  OnGooglePhotosCountFetched callback_;
+};
+
 }  // namespace wallpaper_handlers
 
 #endif  // CHROME_BROWSER_ASH_WALLPAPER_HANDLERS_WALLPAPER_HANDLERS_H_

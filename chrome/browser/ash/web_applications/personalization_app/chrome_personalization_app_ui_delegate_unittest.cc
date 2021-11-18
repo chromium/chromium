@@ -293,3 +293,39 @@ TEST_F(ChromePersonalizationAppUiDelegateTest, ObserveWallpaperFiresWhenBound) {
                 *CreateSolidImageSkia(256, 256, SK_ColorBLACK).bitmap()),
             current->url);
 }
+
+class ChromePersonalizationAppUiDelegateGooglePhotosTest
+    : public ChromePersonalizationAppUiDelegateTest,
+      public testing::WithParamInterface<bool /* google_photos_enabled */> {
+ public:
+  // Returns true if the test should run with the Google Photos Wallpaper
+  // integration enabled, false otherwise.
+  bool GooglePhotosEnabled() const { return GetParam(); }
+
+ protected:
+  // ChromePersonalizationAppUiDelegateTest:
+  void SetUp() override {
+    ChromePersonalizationAppUiDelegateTest::SetUp();
+    scoped_feature_list_.InitWithFeatureState(
+        ash::features::kWallpaperGooglePhotosIntegration,
+        GooglePhotosEnabled());
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         ChromePersonalizationAppUiDelegateGooglePhotosTest,
+                         /*google_photos_enabled=*/::testing::Bool());
+
+TEST_P(ChromePersonalizationAppUiDelegateGooglePhotosTest, FetchCount) {
+  base::RunLoop loop;
+  wallpaper_provider_remote()->get()->FetchGooglePhotosCount(
+      base::BindLambdaForTesting([&, this](int64_t count) {
+        EXPECT_EQ(count, GooglePhotosEnabled() ? 0 : -1);
+        loop.QuitClosure().Run();
+      }));
+  wallpaper_provider_remote()->FlushForTesting();
+  loop.Run();
+}

@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import {OnlineImageType, WallpaperLayout, WallpaperType} from 'chrome://personalization/trusted/personalization_app.mojom-webui.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 
 import {assertTrue} from '../../chai_assert.js';
 import {TestBrowserProxy} from '../../test_browser_proxy.js';
@@ -17,6 +18,7 @@ export class TestWallpaperProvider extends TestBrowserProxy {
       'makeTransparent',
       'fetchCollections',
       'fetchImagesForCollection',
+      'fetchGooglePhotosCount',
       'getLocalImages',
       'getLocalImageThumbnail',
       'setWallpaperObserver',
@@ -154,6 +156,14 @@ export class TestWallpaperProvider extends TestBrowserProxy {
         'Must request images for existing wallpaper collection',
     );
     return Promise.resolve({images: this.images_});
+  }
+
+  /** @override */
+  fetchGooglePhotosCount() {
+    this.methodCalled('fetchGooglePhotosCount');
+    const count =
+        loadTimeData.getBoolean('isGooglePhotosIntegrationEnabled') ? 0n : -1n;
+    return Promise.resolve({count: count});
   }
 
   /** @override */

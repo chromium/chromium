@@ -370,4 +370,21 @@ void BackdropSurpriseMeImageFetcher::OnResponseFetched(
                            surprise_me_image_response.resume_token());
 }
 
+GooglePhotosCountFetcher::GooglePhotosCountFetcher() {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+}
+
+GooglePhotosCountFetcher::~GooglePhotosCountFetcher() = default;
+
+void GooglePhotosCountFetcher::Start(OnGooglePhotosCountFetched callback) {
+  DCHECK(callback_.is_null());
+  callback_ = std::move(callback);
+
+  OnResponseFetched(std::string());
+}
+
+void GooglePhotosCountFetcher::OnResponseFetched(const std::string& response) {
+  std::move(callback_).Run(/*count=*/0);
+}
+
 }  // namespace wallpaper_handlers

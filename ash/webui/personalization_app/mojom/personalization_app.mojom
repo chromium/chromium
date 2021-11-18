@@ -127,6 +127,10 @@ interface WallpaperProvider {
     FetchImagesForCollection(string collection_id) => (
         array<WallpaperImage>? images);
 
+    // Fetch the number of photos the user has stored in Google Photos. |count|
+    // will be -1 on failure.
+    FetchGooglePhotosCount() => (int64 count);
+
     // Fetch a list of FilePath objects from the local file system. |images|
     // will be null on failure.
     GetLocalImages() => (array<mojo_base.mojom.FilePath>? images);

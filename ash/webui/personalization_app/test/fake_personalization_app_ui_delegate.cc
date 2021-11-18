@@ -60,6 +60,11 @@ void FakePersonalizationAppUiDelegate::FetchImagesForCollection(
   std::move(callback).Run(std::move(images));
 }
 
+void FakePersonalizationAppUiDelegate::FetchGooglePhotosCount(
+    FetchGooglePhotosCountCallback callback) {
+  std::move(callback).Run(0);
+}
+
 void FakePersonalizationAppUiDelegate::GetLocalImages(
     GetLocalImagesCallback callback) {
   std::move(callback).Run({});

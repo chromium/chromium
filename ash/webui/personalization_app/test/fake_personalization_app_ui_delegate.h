@@ -44,6 +44,8 @@ class FakePersonalizationAppUiDelegate
       const std::string& collection_id,
       FetchImagesForCollectionCallback callback) override;
 
+  void FetchGooglePhotosCount(FetchGooglePhotosCountCallback callback) override;
+
   void GetLocalImages(GetLocalImagesCallback callback) override;
 
   void GetLocalImageThumbnail(const base::FilePath& path,

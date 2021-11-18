@@ -11,6 +11,7 @@
 #include <string>
 #include <vector>
 
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/tablet_mode.h"
 #include "ash/public/cpp/wallpaper/online_wallpaper_params.h"
 #include "ash/public/cpp/wallpaper/online_wallpaper_variant.h"
@@ -172,6 +173,32 @@ void ChromePersonalizationAppUiDelegate::FetchImagesForCollection(
       &ChromePersonalizationAppUiDelegate::OnFetchCollectionImages,
       weak_ptr_factory_.GetWeakPtr(), std::move(callback),
       std::move(wallpaper_images_info_fetcher)));
+}
+
+void ChromePersonalizationAppUiDelegate::FetchGooglePhotosCount(
+    FetchGooglePhotosCountCallback callback) {
+  if (!ash::features::IsWallpaperGooglePhotosIntegrationEnabled()) {
+    mojo::ReportBadMessage(
+        "Cannot call `FetchGooglePhotosCount()` without Google Photos "
+        "Wallpaper integration enabled.");
+    std::move(callback).Run(-1);
+    return;
+  }
+
+  pending_google_photos_count_callbacks_.push_back(std::move(callback));
+  if (google_photos_count_fetcher_) {
+    // Photo count fetching already started. No need to start again.
+    return;
+  }
+
+  google_photos_count_fetcher_ =
+      std::make_unique<wallpaper_handlers::GooglePhotosCountFetcher>();
+
+  // base::Unretained is safe to use because |this| outlives
+  // |google_photos_count_fetcher_|.
+  google_photos_count_fetcher_->Start(base::BindOnce(
+      &ChromePersonalizationAppUiDelegate::OnFetchGooglePhotosCount,
+      base::Unretained(this)));
 }
 
 void ChromePersonalizationAppUiDelegate::GetLocalImages(
@@ -438,6 +465,18 @@ void ChromePersonalizationAppUiDelegate::OnFetchCollectionImages(
     result = std::move(images);
   }
   std::move(callback).Run(std::move(result));
+}
+
+void ChromePersonalizationAppUiDelegate::OnFetchGooglePhotosCount(
+    int64_t count) {
+  DCHECK(google_photos_count_fetcher_);
+  DCHECK(!pending_google_photos_count_callbacks_.empty());
+
+  for (auto& callback : pending_google_photos_count_callbacks_) {
+    std::move(callback).Run(count);
+  }
+  pending_google_photos_count_callbacks_.clear();
+  google_photos_count_fetcher_.reset();
 }
 
 void ChromePersonalizationAppUiDelegate::OnGetLocalImages(
