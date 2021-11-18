@@ -711,6 +711,7 @@ crbug.com/1099148 [ android android-nexus-5x ] deqp/data/gles2/shaders/swizzles.
 crbug.com/1122644 [ android android-nexus-5x ] conformance/textures/misc/texture-upload-size.html [ Failure ]
 crbug.com/1163306 [ android android-nexus-5x ] conformance/textures/image_bitmap_from_video/* [ RetryOnFailure ]
 crbug.com/1203167 [ android android-nexus-5x ] conformance/extensions/oes-texture-float-with-video.html [ RetryOnFailure ]
+crbug.com/1270815 [ android android-nexus-5x ] conformance/textures/misc/texture-size.html [ RetryOnFailure ]
 
 # Android NVIDIA: Nexus 9 and/or Shield TV
 crbug.com/798117 [ android android-nexus-9 ] conformance/glsl/bugs/assign-to-swizzled-twice-in-function.html [ Failure ]
