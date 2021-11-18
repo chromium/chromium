@@ -341,7 +341,7 @@ public class ContextualSearchManagerTest {
         mActivityMonitor = null;
         mLatestSlowResolveSearch = null;
         if (mActionTester != null) mActionTester.tearDown();
-        InstrumentationRegistry.getInstrumentation().runOnMainSync(() -> forgetHistograms());
+        forgetHistograms();
         FeatureList.setTestFeatures(null);
         CompositorAnimationHandler.setTestingMode(false);
     }
