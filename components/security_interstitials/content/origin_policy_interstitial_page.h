@@ -15,6 +15,7 @@
 #include "url/gurl.h"
 
 namespace content {
+class StoragePartition;
 class WebContents;
 }  // namespace content
 
@@ -25,6 +26,7 @@ class OriginPolicyInterstitialPage : public SecurityInterstitialPage {
  public:
   OriginPolicyInterstitialPage(
       content::WebContents* web_contents,
+      content::StoragePartition* storage_partition,
       const GURL& request_url,
       std::unique_ptr<SecurityInterstitialControllerClient> controller,
       network::OriginPolicyState error_reason);
@@ -43,6 +45,7 @@ class OriginPolicyInterstitialPage : public SecurityInterstitialPage {
   void PopulateInterstitialStrings(base::Value*) override;
 
  private:
+  content::StoragePartition* storage_partition_;
   network::OriginPolicyState error_reason_;
 
   void Proceed();

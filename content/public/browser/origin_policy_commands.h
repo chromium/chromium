@@ -11,14 +11,15 @@ class GURL;
 
 namespace content {
 
-class BrowserContext;
+class StoragePartition;
 
 // Instruct the Origin Policy throttle to disregard errors for the given URL.
 //
 // Intended use: This should be called by the browser when the user selects
 // "proceed" on the security interstitial page for the given URL.
-CONTENT_EXPORT void OriginPolicyAddExceptionFor(BrowserContext* browser_context,
-                                                const GURL& url);
+CONTENT_EXPORT void OriginPolicyAddExceptionFor(
+    StoragePartition* storage_partition,
+    const GURL& url);
 
 }  // namespace content
 
