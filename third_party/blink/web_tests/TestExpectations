@@ -3491,8 +3491,6 @@ crbug.com/626703 [ Mac11 ] external/wpt/webrtc/RTCRtpTransceiver.https.html [ Sk
 crbug.com/626703 [ Mac11 ] virtual/webrtc-wpt-plan-b/external/wpt/webrtc/RTCDataChannel-close.html [ Skip Timeout ]
 crbug.com/626703 [ Mac11-arm64 ] virtual/webrtc-wpt-plan-b/external/wpt/webrtc/RTCDataChannel-close.html [ Skip Timeout ]
 crbug.com/626703 [ Mac11 ] external/wpt/webrtc/RTCPeerConnection-perfect-negotiation.https.html [ Skip Timeout ]
-crbug.com/626703 [ Mac11 ] external/wpt/webrtc/RTCPeerConnection-iceConnectionState.https.html [ Skip Timeout ]
-crbug.com/626703 [ Mac11-arm64 ] external/wpt/webrtc/RTCPeerConnection-iceConnectionState.https.html [ Skip Timeout ]
 crbug.com/626703 [ Mac11 ] external/wpt/webrtc/promises-call.html [ Timeout ]
 crbug.com/626703 [ Mac11 ] virtual/webrtc-wpt-plan-b/external/wpt/webrtc/RTCPeerConnection-createDataChannel.html [ Skip Timeout ]
 crbug.com/626703 [ Mac11 ] external/wpt/webrtc/RTCPeerConnection-addIceCandidate-connectionSetup.html [ Skip Timeout ]
@@ -6051,7 +6049,6 @@ crbug.com/1144171 http/tests/devtools/report-API-errors.js [ Skip ]
 
 # Sheriff 2020-12-11
 # Flaking on Linux Trusty
-crbug.com/1157849 [ Linux Release ] external/wpt/webrtc/RTCPeerConnection-iceConnectionState.https.html [ Pass Skip Timeout ]
 crbug.com/1157861 http/tests/devtools/extensions/extensions-resources.js [ Failure Pass ]
 crbug.com/1157861 http/tests/devtools/console/paintworklet-console-selector.js [ Failure Pass ]
 
