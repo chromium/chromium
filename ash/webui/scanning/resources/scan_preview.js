@@ -628,7 +628,8 @@ Polymer({
     }
 
     assert(pageIndex >= 0 && pageIndex < scannedImages.length);
-    scannedImages[pageIndex].scrollIntoView();
+    this.$$('#previewDiv').scrollTop =
+        scannedImages[pageIndex].offsetTop - /*imageFocusBorder=*/ 2;
   },
 
   /** @private */
