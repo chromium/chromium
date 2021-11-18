@@ -215,7 +215,7 @@ std::unique_ptr<ComponentUpdateService> TestComponentUpdateServiceFactory(
   DCHECK(config);
   return std::make_unique<CrxUpdateService>(
       config, std::make_unique<MockUpdateScheduler>(),
-      base::MakeRefCounted<MockUpdateClient>());
+      base::MakeRefCounted<MockUpdateClient>(), "");
 }
 
 ComponentUpdaterTest::ComponentUpdaterTest() {
@@ -225,7 +225,7 @@ ComponentUpdaterTest::ComponentUpdaterTest() {
   ON_CALL(*scheduler_, Schedule(_, _, _, _))
       .WillByDefault(Invoke(this, &ComponentUpdaterTest::Schedule));
   component_updater_ = std::make_unique<CrxUpdateService>(
-      config_, std::move(scheduler), update_client_);
+      config_, std::move(scheduler), update_client_, "");
 }
 
 ComponentUpdaterTest::~ComponentUpdaterTest() {

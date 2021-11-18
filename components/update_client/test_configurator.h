@@ -83,7 +83,6 @@ class TestConfigurator : public Configurator {
   std::string GetProdId() const override;
   base::Version GetBrowserVersion() const override;
   std::string GetChannel() const override;
-  std::string GetBrand() const override;
   std::string GetLang() const override;
   std::string GetOSLongName() const override;
   base::flat_map<std::string, std::string> ExtraRequestParams() const override;
@@ -102,7 +101,6 @@ class TestConfigurator : public Configurator {
   std::unique_ptr<ProtocolHandlerFactory> GetProtocolHandlerFactory()
       const override;
 
-  void SetBrand(const std::string& brand);
   void SetOnDemandTime(int seconds);
   void SetInitialDelay(double seconds);
   void SetDownloadPreference(const std::string& download_preference);
@@ -123,7 +121,6 @@ class TestConfigurator : public Configurator {
 
   class TestPatchService;
 
-  std::string brand_;
   double initial_time_{0};
   int ondemand_time_{0};
   std::string download_preference_;

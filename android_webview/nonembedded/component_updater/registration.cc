@@ -26,8 +26,7 @@ constexpr int kNumWebViewComponents = 3;
 
 void RegisterComponentInstallerPolicyShim(
     std::unique_ptr<component_updater::ComponentInstallerPolicy> policy_,
-    base::OnceCallback<bool(const update_client::CrxComponent&)>
-        register_callback,
+    base::OnceCallback<bool(update_client::CrxComponent)> register_callback,
     base::OnceClosure registration_finished) {
   base::MakeRefCounted<component_updater::ComponentInstaller>(
       std::make_unique<AwComponentInstallerPolicyShim>(std::move(policy_)))
@@ -38,7 +37,7 @@ void RegisterComponentInstallerPolicyShim(
 }  // namespace
 
 void RegisterComponentsForUpdate(
-    base::RepeatingCallback<bool(const update_client::CrxComponent&)>
+    base::RepeatingCallback<bool(update_client::CrxComponent)>
         register_callback,
     base::OnceClosure on_finished) {
   // TODO(crbug.com/1174022): remove command line flag once launched.

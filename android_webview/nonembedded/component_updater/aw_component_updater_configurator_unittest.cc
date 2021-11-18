@@ -106,7 +106,6 @@ TEST_F(AwComponentUpdaterConfiguratorTest, TestCustomImpl) {
                    update_client::UpdateQueryParams::ProdId::WEBVIEW),
                config->GetProdId().c_str());
 
-  EXPECT_TRUE(config->GetBrand().empty());
   EXPECT_TRUE(config->GetLang().empty());
 }
 

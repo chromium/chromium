@@ -91,11 +91,6 @@ std::string AwComponentUpdaterConfigurator::GetChannel() const {
   return version_info::GetChannelString(version_info::android::GetChannel());
 }
 
-std::string AwComponentUpdaterConfigurator::GetBrand() const {
-  // WebView isn't branded.
-  return std::string();
-}
-
 std::string AwComponentUpdaterConfigurator::GetLang() const {
   // WebView uses the locale of the embedding app. Components are shared with
   // WebView instances across apps so we don't set a locale.

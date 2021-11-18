@@ -185,12 +185,6 @@ std::string ChromeUpdateClientConfig::GetChannel() const {
   return chrome::GetChannelName(chrome::WithExtendedStable(true));
 }
 
-std::string ChromeUpdateClientConfig::GetBrand() const {
-  std::string brand;
-  google_brand::GetBrand(&brand);
-  return brand;
-}
-
 std::string ChromeUpdateClientConfig::GetLang() const {
   return ChromeUpdateQueryParamsDelegate::GetLang();
 }

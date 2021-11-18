@@ -95,7 +95,7 @@ class ComponentUpdateService {
   virtual void RemoveObserver(Observer* observer) = 0;
 
   // Add component to be checked for updates.
-  virtual bool RegisterComponent(const CrxComponent& component) = 0;
+  virtual bool RegisterComponent(CrxComponent component) = 0;
 
   // Unregisters the component with the given ID. This means that the component
   // is not going to be included in future update checks. If a download or
@@ -187,7 +187,8 @@ class OnDemandUpdater {
 // Creates the component updater.
 std::unique_ptr<ComponentUpdateService> ComponentUpdateServiceFactory(
     scoped_refptr<Configurator> config,
-    std::unique_ptr<UpdateScheduler> scheduler);
+    std::unique_ptr<UpdateScheduler> scheduler,
+    const std::string& brand);
 
 }  // namespace component_updater
 

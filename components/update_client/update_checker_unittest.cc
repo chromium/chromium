@@ -81,6 +81,7 @@ class UpdateCheckerTest : public testing::TestWithParam<bool> {
   void RunThreads();
 
   std::unique_ptr<Component> MakeComponent() const;
+  std::unique_ptr<Component> MakeComponent(const std::string& brand) const;
 
   scoped_refptr<TestConfigurator> config_;
   std::unique_ptr<TestActivityDataService> activity_data_service_;
@@ -182,8 +183,14 @@ scoped_refptr<UpdateContext> UpdateCheckerTest::MakeMockUpdateContext() const {
 }
 
 std::unique_ptr<Component> UpdateCheckerTest::MakeComponent() const {
+  return MakeComponent({});
+}
+
+std::unique_ptr<Component> UpdateCheckerTest::MakeComponent(
+    const std::string& brand) const {
   CrxComponent crx_component;
   crx_component.app_id = "jebgalgnebhfojomionfpkfelancnnkf";
+  crx_component.brand = brand;
   crx_component.name = "test_jebg";
   crx_component.pk_hash.assign(jebg_hash, jebg_hash + base::size(jebg_hash));
   crx_component.installer = nullptr;
@@ -206,7 +213,7 @@ TEST_P(UpdateCheckerTest, UpdateCheckSuccess) {
   update_checker_ = UpdateChecker::Create(config_, metadata_.get());
 
   IdToComponentPtrMap components;
-  components[kUpdateItemId] = MakeComponent();
+  components[kUpdateItemId] = MakeComponent("TEST");
 
   auto& component = components[kUpdateItemId];
   component->crx_component_->installer_attributes["ap"] = "some_ap";
@@ -323,7 +330,7 @@ TEST_P(UpdateCheckerTest, UpdateCheckInvalidAp) {
   update_checker_ = UpdateChecker::Create(config_, metadata_.get());
 
   IdToComponentPtrMap components;
-  components[kUpdateItemId] = MakeComponent();
+  components[kUpdateItemId] = MakeComponent("TEST");
 
   // Make "ap" too long.
   auto& component = components[kUpdateItemId];
@@ -361,11 +368,10 @@ TEST_P(UpdateCheckerTest, UpdateCheckSuccessNoBrand) {
       std::make_unique<PartialMatch>("updatecheck"),
       test_file("updatecheck_reply_1.json")));
 
-  config_->SetBrand("TOOLONG");   // Sets an invalid brand code.
   update_checker_ = UpdateChecker::Create(config_, metadata_.get());
 
   IdToComponentPtrMap components;
-  components[kUpdateItemId] = MakeComponent();
+  components[kUpdateItemId] = MakeComponent("TOOLONG");
 
   update_checker_->CheckForUpdates(
       update_context_->session_id, {kUpdateItemId}, components, {}, true,
@@ -459,7 +465,7 @@ TEST_P(UpdateCheckerTest, UpdateCheckCupError) {
   update_checker_ = UpdateChecker::Create(config_, metadata_.get());
 
   IdToComponentPtrMap components;
-  components[kUpdateItemId] = MakeComponent();
+  components[kUpdateItemId] = MakeComponent("TEST");
 
   update_checker_->CheckForUpdates(
       update_context_->session_id, {kUpdateItemId}, components, {}, true,
@@ -475,22 +481,22 @@ TEST_P(UpdateCheckerTest, UpdateCheckCupError) {
 
   // Sanity check the request.
   const auto& request = post_interceptor_->GetRequestBody(0);
-    const auto root = base::JSONReader::Read(request);
-    ASSERT_TRUE(root);
-    const auto& app = root->FindKey("request")->FindKey("app")->GetList()[0];
-    EXPECT_EQ(kUpdateItemId, app.FindKey("appid")->GetString());
-    EXPECT_EQ("0.9", app.FindKey("version")->GetString());
-    EXPECT_EQ("TEST", app.FindKey("brand")->GetString());
-    if (is_foreground_)
-      EXPECT_EQ("ondemand", app.FindKey("installsource")->GetString());
-    EXPECT_EQ(true, app.FindKey("enabled")->GetBool());
-    EXPECT_TRUE(app.FindKey("updatecheck"));
-    EXPECT_TRUE(app.FindKey("ping"));
-    EXPECT_EQ(-2, app.FindPath({"ping", "r"})->GetInt());
-    EXPECT_EQ("fp1", app.FindPath({"packages", "package"})
-                         ->GetList()[0]
-                         .FindKey("fp")
-                         ->GetString());
+  const auto root = base::JSONReader::Read(request);
+  ASSERT_TRUE(root);
+  const auto& app = root->FindKey("request")->FindKey("app")->GetList()[0];
+  EXPECT_EQ(kUpdateItemId, app.FindKey("appid")->GetString());
+  EXPECT_EQ("0.9", app.FindKey("version")->GetString());
+  EXPECT_EQ("TEST", app.FindKey("brand")->GetString());
+  if (is_foreground_)
+    EXPECT_EQ("ondemand", app.FindKey("installsource")->GetString());
+  EXPECT_EQ(true, app.FindKey("enabled")->GetBool());
+  EXPECT_TRUE(app.FindKey("updatecheck"));
+  EXPECT_TRUE(app.FindKey("ping"));
+  EXPECT_EQ(-2, app.FindPath({"ping", "r"})->GetInt());
+  EXPECT_EQ("fp1", app.FindPath({"packages", "package"})
+                       ->GetList()[0]
+                       .FindKey("fp")
+                       ->GetString());
 
   // Expect an error since the response is not trusted.
   EXPECT_EQ(ErrorCategory::kUpdateCheck, error_category_);
@@ -893,7 +899,6 @@ TEST_P(UpdateCheckerTest, ComponentDisabled) {
 }
 
 TEST_P(UpdateCheckerTest, UpdateCheckUpdateDisabled) {
-  config_->SetBrand("");
   update_checker_ = UpdateChecker::Create(config_, metadata_.get());
 
   IdToComponentPtrMap components;
@@ -1055,7 +1060,7 @@ TEST_P(UpdateCheckerTest, UpdatePauseResume) {
   update_checker_ = UpdateChecker::Create(config_, metadata_.get());
 
   IdToComponentPtrMap components;
-  components[kUpdateItemId] = MakeComponent();
+  components[kUpdateItemId] = MakeComponent("TEST");
 
   // Ignore this test parameter to keep the test simple.
   update_context_->is_foreground = false;

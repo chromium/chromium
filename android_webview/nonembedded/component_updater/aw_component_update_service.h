@@ -27,7 +27,7 @@ class TimeTicks;
 
 namespace android_webview {
 using RegisterComponentsCallback =
-    base::RepeatingCallback<bool(const update_client::CrxComponent&)>;
+    base::RepeatingCallback<bool(update_client::CrxComponent)>;
 
 class TestAwComponentUpdateService;
 
@@ -43,7 +43,7 @@ class AwComponentUpdateService {
 
   void StartComponentUpdateService(UpdateCallback finished_callback,
                                    bool on_demand_update);
-  bool RegisterComponent(const update_client::CrxComponent& component);
+  bool RegisterComponent(update_client::CrxComponent component);
   void CheckForUpdates(UpdateCallback on_finished, bool on_demand_update);
 
   void IncrementComponentsUpdatedCount();

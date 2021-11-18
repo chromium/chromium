@@ -135,6 +135,8 @@ TEST_P(PingManagerTest, SendPing) {
     Component component(*update_context, "abc");
     component.crx_component_ = CrxComponent();
     component.crx_component_->version = base::Version("1.0");
+    component.crx_component_->ap = "ap1";
+    component.crx_component_->brand = "BRND";
     component.state_ = std::make_unique<Component::StateUpdated>(&component);
     component.previous_version_ = base::Version("1.0");
     component.next_version_ = base::Version("2.0");
@@ -150,44 +152,46 @@ TEST_P(PingManagerTest, SendPing) {
 
     EXPECT_EQ(1, interceptor->GetCount()) << interceptor->GetRequestsAsString();
     const auto msg = interceptor->GetRequestBody(0);
-      const auto root = base::JSONReader::Read(msg);
-      ASSERT_TRUE(root);
-      const auto* request = root->FindKey("request");
-      ASSERT_TRUE(request);
-      EXPECT_TRUE(request->FindKey("@os"));
-      EXPECT_EQ("fake_prodid", request->FindKey("@updater")->GetString());
-      EXPECT_EQ("crx3", request->FindKey("acceptformat")->GetString());
-      EXPECT_TRUE(request->FindKey("arch"));
-      EXPECT_EQ("cr", request->FindKey("dedup")->GetString());
-      EXPECT_LT(0, request->FindPath({"hw", "physmemory"})->GetInt());
-      EXPECT_EQ("fake_lang", request->FindKey("lang")->GetString());
-      EXPECT_TRUE(request->FindKey("nacl_arch"));
-      EXPECT_EQ("fake_channel_string",
-                request->FindKey("prodchannel")->GetString());
-      EXPECT_EQ("30.0", request->FindKey("prodversion")->GetString());
-      EXPECT_EQ("3.1", request->FindKey("protocol")->GetString());
-      EXPECT_TRUE(request->FindKey("requestid"));
-      EXPECT_TRUE(request->FindKey("sessionid"));
-      EXPECT_EQ("fake_channel_string",
-                request->FindKey("updaterchannel")->GetString());
-      EXPECT_EQ("30.0", request->FindKey("updaterversion")->GetString());
+    const auto root = base::JSONReader::Read(msg);
+    ASSERT_TRUE(root);
+    const auto* request = root->FindKey("request");
+    ASSERT_TRUE(request);
+    EXPECT_TRUE(request->FindKey("@os"));
+    EXPECT_EQ("fake_prodid", request->FindKey("@updater")->GetString());
+    EXPECT_EQ("crx3", request->FindKey("acceptformat")->GetString());
+    EXPECT_TRUE(request->FindKey("arch"));
+    EXPECT_EQ("cr", request->FindKey("dedup")->GetString());
+    EXPECT_LT(0, request->FindPath({"hw", "physmemory"})->GetInt());
+    EXPECT_EQ("fake_lang", request->FindKey("lang")->GetString());
+    EXPECT_TRUE(request->FindKey("nacl_arch"));
+    EXPECT_EQ("fake_channel_string",
+              request->FindKey("prodchannel")->GetString());
+    EXPECT_EQ("30.0", request->FindKey("prodversion")->GetString());
+    EXPECT_EQ("3.1", request->FindKey("protocol")->GetString());
+    EXPECT_TRUE(request->FindKey("requestid"));
+    EXPECT_TRUE(request->FindKey("sessionid"));
+    EXPECT_EQ("fake_channel_string",
+              request->FindKey("updaterchannel")->GetString());
+    EXPECT_EQ("30.0", request->FindKey("updaterversion")->GetString());
 
-      EXPECT_TRUE(request->FindPath({"os", "arch"})->is_string());
-      EXPECT_EQ("Fake Operating System",
-                request->FindPath({"os", "platform"})->GetString());
-      EXPECT_TRUE(request->FindPath({"os", "version"})->is_string());
+    EXPECT_TRUE(request->FindPath({"os", "arch"})->is_string());
+    EXPECT_EQ("Fake Operating System",
+              request->FindPath({"os", "platform"})->GetString());
+    EXPECT_TRUE(request->FindPath({"os", "version"})->is_string());
 
-      const auto& app = request->FindKey("app")->GetList()[0];
-      EXPECT_EQ("abc", app.FindKey("appid")->GetString());
-      EXPECT_EQ("1.0", app.FindKey("version")->GetString());
-      EXPECT_EQ("c1", app.FindKey("cohort")->GetString());
-      EXPECT_EQ("cn1", app.FindKey("cohortname")->GetString());
-      EXPECT_EQ("ch1", app.FindKey("cohorthint")->GetString());
-      const auto& event = app.FindKey("event")->GetList()[0];
-      EXPECT_EQ(1, event.FindKey("eventresult")->GetInt());
-      EXPECT_EQ(3, event.FindKey("eventtype")->GetInt());
-      EXPECT_EQ("2.0", event.FindKey("nextversion")->GetString());
-      EXPECT_EQ("1.0", event.FindKey("previousversion")->GetString());
+    const auto& app = request->FindKey("app")->GetList()[0];
+    EXPECT_EQ("abc", app.FindKey("appid")->GetString());
+    EXPECT_EQ("ap1", app.FindKey("ap")->GetString());
+    EXPECT_EQ("BRND", app.FindKey("brand")->GetString());
+    EXPECT_EQ("1.0", app.FindKey("version")->GetString());
+    EXPECT_EQ("c1", app.FindKey("cohort")->GetString());
+    EXPECT_EQ("cn1", app.FindKey("cohortname")->GetString());
+    EXPECT_EQ("ch1", app.FindKey("cohorthint")->GetString());
+    const auto& event = app.FindKey("event")->GetList()[0];
+    EXPECT_EQ(1, event.FindKey("eventresult")->GetInt());
+    EXPECT_EQ(3, event.FindKey("eventtype")->GetInt());
+    EXPECT_EQ("2.0", event.FindKey("nextversion")->GetString());
+    EXPECT_EQ("1.0", event.FindKey("previousversion")->GetString());
 
     // Check the ping request does not carry the specific extra request headers.
     const auto headers = std::get<1>(interceptor->GetRequests()[0]);

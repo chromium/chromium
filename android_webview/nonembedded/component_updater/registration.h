@@ -11,7 +11,7 @@
 namespace android_webview {
 
 void RegisterComponentsForUpdate(
-    base::RepeatingCallback<bool(const update_client::CrxComponent&)>
+    base::RepeatingCallback<bool(update_client::CrxComponent)>
         register_callback,
     base::OnceClosure on_finished);
 

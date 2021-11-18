@@ -198,13 +198,17 @@ void CheckForUpdatesTask::RemoveAppIDsAndSendUninstallPings(
     const std::string& app_id = app_id_to_remove.app_id_;
     const int ping_reason = app_id_to_remove.ping_reason_;
     const base::Version& app_version = app_id_to_remove.app_version_;
+    const std::string& brand = persisted_data_->GetBrandCode(app_id);
+    const std::string& ap = persisted_data_->GetAP(app_id);
 
     if (persisted_data_->RemoveApp(app_id)) {
       VLOG(1) << "Uninstall ping for app id: " << app_id
               << ". Ping reason: " << ping_reason;
       ++number_of_pings_remaining_;
       update_client::CrxComponent crx_component;
+      crx_component.ap = ap;
       crx_component.app_id = app_id;
+      crx_component.brand = brand;
       crx_component.version = app_version;
       crx_component.requires_network_encryption = false;
       update_client_->SendUninstallPing(

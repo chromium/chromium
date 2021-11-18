@@ -228,7 +228,7 @@ ComponentInstallerTest::ComponentInstallerTest() {
   ON_CALL(*scheduler_, Schedule(_, _, _, _))
       .WillByDefault(Invoke(this, &ComponentInstallerTest::Schedule));
   component_updater_ = std::make_unique<CrxUpdateService>(
-      config_, std::move(scheduler), update_client_);
+      config_, std::move(scheduler), update_client_, "");
 }
 
 ComponentInstallerTest::~ComponentInstallerTest() {

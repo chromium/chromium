@@ -16,7 +16,6 @@
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/component_updater/component_updater_utils.h"
-#include "chrome/browser/google/google_brand.h"
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/browser/update_client/chrome_update_query_params_delegate.h"
 #include "chrome/common/channel_info.h"
@@ -62,7 +61,6 @@ class ChromeConfigurator : public update_client::Configurator {
   std::string GetProdId() const override;
   base::Version GetBrowserVersion() const override;
   std::string GetChannel() const override;
-  std::string GetBrand() const override;
   std::string GetLang() const override;
   std::string GetOSLongName() const override;
   base::flat_map<std::string, std::string> ExtraRequestParams() const override;
@@ -142,12 +140,6 @@ base::Version ChromeConfigurator::GetBrowserVersion() const {
 
 std::string ChromeConfigurator::GetChannel() const {
   return chrome::GetChannelName(chrome::WithExtendedStable(true));
-}
-
-std::string ChromeConfigurator::GetBrand() const {
-  std::string brand;
-  google_brand::GetBrand(&brand);
-  return brand;
 }
 
 std::string ChromeConfigurator::GetLang() const {

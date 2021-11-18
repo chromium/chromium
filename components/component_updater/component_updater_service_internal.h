@@ -39,7 +39,8 @@ class CrxUpdateService : public ComponentUpdateService,
  public:
   CrxUpdateService(scoped_refptr<Configurator> config,
                    std::unique_ptr<UpdateScheduler> scheduler,
-                   scoped_refptr<UpdateClient> update_client);
+                   scoped_refptr<UpdateClient> update_client,
+                   const std::string& brand);
 
   CrxUpdateService(const CrxUpdateService&) = delete;
   CrxUpdateService& operator=(const CrxUpdateService&) = delete;
@@ -49,7 +50,7 @@ class CrxUpdateService : public ComponentUpdateService,
   // Overrides for ComponentUpdateService.
   void AddObserver(Observer* observer) override;
   void RemoveObserver(Observer* observer) override;
-  bool RegisterComponent(const CrxComponent& component) override;
+  bool RegisterComponent(CrxComponent component) override;
   bool UnregisterComponent(const std::string& id) override;
   std::vector<std::string> GetComponentIDs() const override;
   std::vector<ComponentInfo> GetComponents() const override;
@@ -96,6 +97,8 @@ class CrxUpdateService : public ComponentUpdateService,
   std::unique_ptr<UpdateScheduler> scheduler_;
 
   scoped_refptr<UpdateClient> update_client_;
+
+  std::string brand_;
 
   // A collection of every registered component.
   using Components = base::flat_map<std::string, CrxComponent>;

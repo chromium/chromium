@@ -59,10 +59,12 @@ ComponentInfo::~ComponentInfo() = default;
 
 CrxUpdateService::CrxUpdateService(scoped_refptr<Configurator> config,
                                    std::unique_ptr<UpdateScheduler> scheduler,
-                                   scoped_refptr<UpdateClient> update_client)
+                                   scoped_refptr<UpdateClient> update_client,
+                                   const std::string& brand)
     : config_(config),
       scheduler_(std::move(scheduler)),
-      update_client_(update_client) {
+      update_client_(update_client),
+      brand_(brand) {
   AddObserver(this);
 }
 
@@ -115,7 +117,7 @@ void CrxUpdateService::Stop() {
 
 // Adds a component to be checked for upgrades. If the component exists it
 // it will be replaced.
-bool CrxUpdateService::RegisterComponent(const CrxComponent& component) {
+bool CrxUpdateService::RegisterComponent(CrxComponent component) {
   DCHECK(thread_checker_.CalledOnValidThread());
   if (component.app_id.empty() || !component.version.IsValid() ||
       !component.installer) {
@@ -128,6 +130,9 @@ bool CrxUpdateService::RegisterComponent(const CrxComponent& component) {
     it->second = component;
     return true;
   }
+
+  // Replace the component's brand code with the updater's brand code.
+  component.brand = brand_;
 
   components_.insert(std::make_pair(component.app_id, component));
   components_order_.push_back(component.app_id);
@@ -448,12 +453,13 @@ void CrxUpdateService::OnEvent(Events event, const std::string& id) {
 // TODO(sorin): consider making this a singleton.
 std::unique_ptr<ComponentUpdateService> ComponentUpdateServiceFactory(
     scoped_refptr<Configurator> config,
-    std::unique_ptr<UpdateScheduler> scheduler) {
+    std::unique_ptr<UpdateScheduler> scheduler,
+    const std::string& brand) {
   DCHECK(config);
   DCHECK(scheduler);
   auto update_client = update_client::UpdateClientFactory(config);
   return std::make_unique<CrxUpdateService>(config, std::move(scheduler),
-                                            std::move(update_client));
+                                            std::move(update_client), brand);
 }
 
 }  // namespace component_updater

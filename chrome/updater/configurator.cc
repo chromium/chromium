@@ -101,10 +101,6 @@ std::string Configurator::GetChannel() const {
   return {};
 }
 
-std::string Configurator::GetBrand() const {
-  return {};
-}
-
 std::string Configurator::GetLang() const {
   return "en-US";
 }

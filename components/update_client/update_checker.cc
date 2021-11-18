@@ -188,9 +188,8 @@ void UpdateCheckerImpl::CheckForUpdatesHelper(
         crx_component->supports_group_policy_enable_component_updates &&
         !enabled_component_updates;
 
-    // TODO(crbug.com/1259972): Brand is per-item for some users.
     apps.push_back(MakeProtocolApp(
-        app_id, crx_component->version, crx_component->ap, config_->GetBrand(),
+        app_id, crx_component->version, crx_component->ap, crx_component->brand,
         install_source, crx_component->install_location,
         crx_component->fingerprint, crx_component->installer_attributes,
         metadata_->GetCohort(app_id), metadata_->GetCohortName(app_id),

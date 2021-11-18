@@ -94,21 +94,20 @@ void PingSender::SendPing(const Component& component,
   callback_ = std::move(callback);
 
   std::vector<protocol_request::App> apps;
-  // TODO(crbug.com/1259972): We need to transmit brand information as well.
-  apps.push_back(
-      MakeProtocolApp(component.id(), component.crx_component()->version,
-                      component.crx_component()->ap, {} /* brand */,
-                      component.crx_component()->install_source,
-                      component.crx_component()->install_location,
-                      component.crx_component()->fingerprint,
-                      component.crx_component()->installer_attributes,
-                      metadata.GetCohort(component.id()),
-                      metadata.GetCohortHint(component.id()),
-                      metadata.GetCohortName(component.id()),
-                      component.crx_component()->channel,
-                      component.crx_component()->disabled_reasons,
-                      absl::nullopt /* update check */,
-                      absl::nullopt /* ping */, component.GetEvents()));
+  apps.push_back(MakeProtocolApp(
+      component.id(), component.crx_component()->version,
+      component.crx_component()->ap, component.crx_component()->brand,
+      component.crx_component()->install_source,
+      component.crx_component()->install_location,
+      component.crx_component()->fingerprint,
+      component.crx_component()->installer_attributes,
+      metadata.GetCohort(component.id()),
+      metadata.GetCohortHint(component.id()),
+      metadata.GetCohortName(component.id()),
+      component.crx_component()->channel,
+      component.crx_component()->disabled_reasons,
+      absl::nullopt /* update check */, absl::nullopt /* ping */,
+      component.GetEvents()));
   request_sender_ = std::make_unique<RequestSender>(config_);
   request_sender_->Send(
       urls, {},

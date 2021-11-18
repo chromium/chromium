@@ -70,12 +70,6 @@ class Configurator : public base::RefCountedThreadSafe<Configurator> {
   // "stable".
   virtual std::string GetChannel() const = 0;
 
-  // Returns the brand code or distribution tag that has been assigned to
-  // a partner. A brand code is a 4-character string used to identify
-  // installations that took place as a result of partner deals or website
-  // promotions.
-  virtual std::string GetBrand() const = 0;
-
   // Returns the language for the present locale. Possible return values are
   // standard tags for languages, such as "en", "en-US", "de", "fr", "af", etc.
   virtual std::string GetLang() const = 0;

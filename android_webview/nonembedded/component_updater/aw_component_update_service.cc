@@ -71,7 +71,7 @@ void AwComponentUpdateService::StartComponentUpdateService(
 }
 
 bool AwComponentUpdateService::RegisterComponent(
-    const update_client::CrxComponent& component) {
+    update_client::CrxComponent component) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // TODO(crbug.com/1180595): Add the histograms being logged in

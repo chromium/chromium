@@ -289,6 +289,10 @@ struct CrxComponent {
   // chosen at install time.
   std::string ap;
 
+  // If nonempty, the brand is an uppercase 4-letter string that describes the
+  // flavor, branding, or provenance of the software.
+  std::string brand;
+
   std::string fingerprint;  // Optional.
   std::string name;         // Optional.
 

@@ -434,7 +434,7 @@ void ComponentInstaller::FinishRegistration(
   crx.supports_group_policy_enable_component_updates =
       installer_policy_->SupportsGroupPolicyEnabledComponentUpdates();
 
-  if (!std::move(register_callback).Run(crx)) {
+  if (!std::move(register_callback).Run(std::move(crx))) {
     LOG(ERROR) << "Component registration failed for "
                << installer_policy_->GetName();
     if (!callback.is_null())
