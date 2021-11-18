@@ -646,7 +646,11 @@ def main():
   options = _ParseOptions()
 
   logging.debug('Preparing configs')
-  proguard_configs = options.proguard_configs
+  # Temporarily skip failing proguard config until r8 is rolled: b/206957373
+  proguard_configs = [
+      cfg for cfg in options.proguard_configs if not cfg.endswith(
+          'java_com_google_privacy_one_psl_annotation_proguard.pgcfg')
+  ]
 
   # ProGuard configs that are derived from flags.
   dynamic_config_data = _CreateDynamicConfig(options)
