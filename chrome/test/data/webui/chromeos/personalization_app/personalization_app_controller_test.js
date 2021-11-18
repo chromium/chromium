@@ -2,11 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js';
-import 'chrome://resources/mojo/url/mojom/url.mojom-lite.js';
+import '../../mojo_webui_test_support.js';
+
 import * as action from 'chrome://personalization/trusted/personalization_actions.js';
 import {WallpaperCollection} from 'chrome://personalization/trusted/personalization_app.mojom-webui.js';
 import {fetchGooglePhotosAlbum, fetchLocalData, initializeBackdropData, initializeGooglePhotosData, selectWallpaper} from 'chrome://personalization/trusted/personalization_controller.js';
+
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
 import {TestWallpaperProvider} from './test_mojo_interface_provider.js';
 import {TestPersonalizationStore} from './test_personalization_store.js';

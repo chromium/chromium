@@ -2,6 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'chrome://personalization/strings.m.js';
+import '../../mojo_webui_test_support.js';
+
 import {GooglePhotosTest} from './google_photos_element_test.js';
 import {LocalImagesTest} from './local_images_element_test.js';
 import {PersonalizationRouterTest} from './personalization_router_element_test.js';
