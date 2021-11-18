@@ -268071,7 +268071,7 @@
       []
      ],
      "delete.js": [
-      "88ed59d9918ee79f27b065af202865f58d091f07",
+      "3c3d1ef703b08bf79c44e3726b75d6a50ebb703c",
       []
      ],
      "fontname.js": [
@@ -268091,7 +268091,7 @@
       []
      ],
      "forwarddelete.js": [
-      "a61b28303d4afa9e3452655f56cc3419ba94be6f",
+      "52152327f2154f69763ce434c52ba18f95aceefc",
       []
      ],
      "hilitecolor.js": [
@@ -268373,7 +268373,7 @@
       []
      ],
      "delete_7001-last-expected.txt": [
-      "a7e6d30ae6724c8b8d9456c45a14ccd3837216af",
+      "a05da9c7ef446ee33011f53df9df721804308fbd",
       []
      ],
      "fontname-expected.txt": [
@@ -292348,7 +292348,7 @@
        []
       ],
       "underover-parameters-4.tentative-expected.txt": [
-       "7ca753da6662a38a0d6ca324d78ee129c892ac42",
+       "023452f778d73d6b81de241037b9e0d2f2eb596e",
        []
       ],
       "underover-stretchy-001-ref.html": [
@@ -306512,6 +306512,12 @@
      ]
     },
     "the-audio-api": {
+     "the-audiobuffer-interface": {
+      "acquire-the-content-expected.txt": [
+       "74faed557c78367661d2024d85dc5ec4b5c36c85",
+       []
+      ]
+     },
      "the-audiobuffersourcenode-interface": {
       "resources": {
        "audiobuffersource-multi-channels-expected.wav": [
@@ -447136,7 +447142,7 @@
     },
     "user-activation": {
      "activation-trigger-keyboard-enter.html": [
-      "fd51229c5dba4179e6c5c64336761f443f67f865",
+      "4c1b31c50bd0d37ac40ef7a6d15468d65c398629",
       [
        null,
        {
@@ -447145,7 +447151,7 @@
       ]
      ],
      "activation-trigger-keyboard-escape.html": [
-      "76bdefbb19ac3888917178c6e271fcc49496d0b2",
+      "01cb27d7b5f096ec7b2009a453f0d0dea2362fef",
       [
        null,
        {
@@ -447154,7 +447160,7 @@
       ]
      ],
      "activation-trigger-mouse-left.html": [
-      "8bde4dd2edc17978e2d273e3b1e10872977ab7f4",
+      "51ad49a44ebdf94b0cb0a9156b0d9c750b526c80",
       [
        null,
        {
@@ -447163,9 +447169,30 @@
       ]
      ],
      "activation-trigger-mouse-right.html": [
-      "a4734d06a12bc9a6b7972928f6ab510005885523",
+      "1e9f839df31508118e56d34e7249d58b92b344eb",
       [
        null,
+       {
+        "testdriver": true
+       }
+      ]
+     ],
+     "activation-trigger-pointerevent.html": [
+      "49870936084f5be768a25821eb0414715caa2e20",
+      [
+       "html/user-activation/activation-trigger-pointerevent.html?mouse",
+       {
+        "testdriver": true
+       }
+      ],
+      [
+       "html/user-activation/activation-trigger-pointerevent.html?pen",
+       {
+        "testdriver": true
+       }
+      ],
+      [
+       "html/user-activation/activation-trigger-pointerevent.html?touch",
        {
         "testdriver": true
        }
@@ -506641,6 +506668,13 @@
       ]
      },
      "the-audiobuffer-interface": {
+      "acquire-the-content.html": [
+       "659a69c866429acad5e0239ae021b92d690ff59a",
+       [
+        null,
+        {}
+       ]
+      ],
       "audiobuffer-copy-channel.html": [
        "c0cd49d32520fdf3c55248b1130da64d5845097d",
        [
