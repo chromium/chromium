@@ -300,8 +300,9 @@ void OverviewWindowDragController::StartNormalDragMode(
   original_scaled_size_ = item_->target_bounds().size();
   auto* overview_grid = item_->overview_grid();
   // We need to transform desks bar view to expanded state if it's at zero state
-  // when dragging starts.
-  overview_grid->MaybeExpandDesksBarView();
+  // when dragging starts and if `kDragWindowToNewDesk` is enabled.
+  if (features::IsDragWindowToNewDeskEnabled())
+    overview_grid->MaybeExpandDesksBarView();
   overview_grid->AddDropTargetForDraggingFromThisGrid(item_);
 
   if (should_allow_split_view_) {

@@ -484,6 +484,9 @@ class ASH_EXPORT OverviewGrid : public SplitViewObserver,
   // Called back when the button to save a desk template is pressed.
   void OnSaveDeskAsTemplateButtonPressed();
 
+  // Returns the height of `desks_bar_view_`.
+  int GetDesksBarHeight() const;
+
   // Root window the grid is in.
   aura::Window* root_window_;
 

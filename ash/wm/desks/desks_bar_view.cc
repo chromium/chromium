@@ -44,6 +44,7 @@
 #include "ui/events/devices/input_device.h"
 #include "ui/events/event_observer.h"
 #include "ui/events/types/event_type.h"
+#include "ui/views/background.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/event_monitor.h"
 #include "ui/views/widget/unique_widget_ptr.h"
@@ -249,14 +250,6 @@ class DesksBarScrollViewLayout : public views::LayoutManager {
                       zero_state_desks_templates_button_size));
         zero_state_desks_templates_button->SetVisible(should_show_templates_ui);
       }
-
-      // Keep the background view's translation updated while the height of bar
-      // changes. E.g, it could happens while zooming in/out the bar. Note, the
-      // background view is only translated while in zero state.
-      gfx::Transform transform;
-      transform.Translate(
-          0, -(scroll_bounds.height() - DesksBarView::kZeroStateBarHeight));
-      bar_view_->background_view()->layer()->SetTransform(transform);
       return;
     }
 
@@ -325,10 +318,9 @@ DesksBarView::DesksBarView(OverviewGrid* overview_grid)
   SetPaintToLayer();
   layer()->SetFillsBoundsOpaquely(false);
 
-  background_view_ = AddChildView(std::make_unique<views::View>());
-  background_view_->SetPaintToLayer(ui::LAYER_SOLID_COLOR);
-  background_view_->layer()->SetFillsBoundsOpaquely(false);
-
+  SetBackground(
+      views::CreateSolidBackground(AshColorProvider::Get()->GetShieldLayerColor(
+          AshColorProvider::ShieldLayerType::kShield80)));
   scroll_view_ = AddChildView(std::make_unique<views::ScrollView>());
   scroll_view_->SetPaintToLayer();
   scroll_view_->layer()->SetFillsBoundsOpaquely(false);
@@ -417,7 +409,10 @@ DesksBarView::~DesksBarView() {
 }
 
 // static
-int DesksBarView::GetBarHeightForWidth(aura::Window* root) {
+constexpr int DesksBarView::kZeroStateBarHeight;
+
+// static
+int DesksBarView::GetExpandedBarHeight(aura::Window* root) {
   return DeskPreviewView::GetHeight(root) + kNonPreviewAllocatedHeight;
 }
 
@@ -686,7 +681,9 @@ const char* DesksBarView::GetClassName() const {
 }
 
 void DesksBarView::Layout() {
-  background_view()->SetBoundsRect(bounds());
+  if (is_bounds_animation_on_going_)
+    return;
+
   // Scroll buttons are kept |kScrollViewMinimumHorizontalPadding| away from
   // the edge of the scroll view. So the horizontal padding of the scroll view
   // is set to guarantee enough space for the scroll buttons.
@@ -747,10 +744,10 @@ void DesksBarView::OnGestureEvent(ui::GestureEvent* event) {
 
 void DesksBarView::OnThemeChanged() {
   views::View::OnThemeChanged();
-  DCHECK_EQ(ui::LAYER_SOLID_COLOR, background_view_->layer()->type());
-  background_view_->layer()->SetColor(
+  background()->SetNativeControlColor(
       AshColorProvider::Get()->GetShieldLayerColor(
           AshColorProvider::ShieldLayerType::kShield80));
+  SchedulePaint();
 }
 
 void DesksBarView::OnDeskAdded(const Desk* desk) {
@@ -865,7 +862,6 @@ void DesksBarView::UpdateNewMiniViews(bool initializing_bar_view,
   // This should not be called when a desk is removed.
   DCHECK_LE(mini_views_.size(), desks.size());
 
-  const bool first_time_mini_views = mini_views_.empty();
   const int begin_x = GetFirstMiniViewXOffset();
   std::vector<DeskMiniView*> new_mini_views;
 
@@ -906,20 +902,19 @@ void DesksBarView::UpdateNewMiniViews(bool initializing_bar_view,
     should_name_nudge_ = false;
   }
 
-  Layout();
-
   if (expanding_bar_view) {
     UpdateDeskButtonsVisibility();
     PerformZeroStateToExpandedStateMiniViewAnimation(this);
     return;
   }
 
+  Layout();
+
   if (initializing_bar_view)
     return;
 
   PerformNewDeskMiniViewAnimation(this, new_mini_views,
-                                  begin_x - GetFirstMiniViewXOffset(),
-                                  first_time_mini_views);
+                                  begin_x - GetFirstMiniViewXOffset());
 }
 
 void DesksBarView::ScrollToShowMiniViewIfNecessary(

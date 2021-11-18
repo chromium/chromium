@@ -31,6 +31,7 @@
 #include "ash/wm/desks/desk_name_view.h"
 #include "ash/wm/desks/desk_preview_view.h"
 #include "ash/wm/desks/desks_bar_view.h"
+#include "ash/wm/desks/desks_controller.h"
 #include "ash/wm/desks/desks_util.h"
 #include "ash/wm/desks/expanded_desks_bar_button.h"
 #include "ash/wm/desks/templates/desks_templates_grid_view.h"
@@ -1593,8 +1594,7 @@ gfx::Rect OverviewGrid::GetGridEffectiveBounds() const {
     return bounds_;
 
   gfx::Rect effective_bounds = bounds_;
-  effective_bounds.Inset(0, DesksBarView::GetBarHeightForWidth(root_window_), 0,
-                         0);
+  effective_bounds.Inset(0, GetDesksBarHeight(), 0, 0);
   return effective_bounds;
 }
 
@@ -2211,8 +2211,8 @@ void OverviewGrid::AddDraggedWindowIntoOverviewOnDragEnd(
 
 gfx::Rect OverviewGrid::GetDesksWidgetBounds() const {
   gfx::Rect desks_widget_screen_bounds = bounds_;
-  desks_widget_screen_bounds.set_height(
-      DesksBarView::GetBarHeightForWidth(root_window_));
+  desks_widget_screen_bounds.set_height(GetDesksBarHeight());
+
   // Shift the widget down to make room for the splitview indicator guidance
   // when it's shown at the top of the screen and no other windows are snapped.
   if (split_view_drag_indicators_ &&
@@ -2245,6 +2245,17 @@ void OverviewGrid::UpdateFrameThrottling() {
 
 void OverviewGrid::OnSaveDeskAsTemplateButtonPressed() {
   DesksTemplatesPresenter::Get()->SaveActiveDeskAsTemplate();
+}
+
+int OverviewGrid::GetDesksBarHeight() const {
+  const bool should_show_zero_state_desks_bar =
+      desks_bar_view_ ? desks_bar_view_->IsZeroState()
+                      : !IsShowingDesksTemplatesGrid() &&
+                            DesksController::Get()->GetNumberOfDesks() == 1;
+
+  return should_show_zero_state_desks_bar
+             ? DesksBarView::kZeroStateBarHeight
+             : DesksBarView::GetExpandedBarHeight(root_window_);
 }
 
 }  // namespace ash
