@@ -6,18 +6,7 @@ found in the LICENSE file.
 
 <!--
 
-        You
-
-                   888                  d8b 888
-                   888                  88P 888
-                   888                  8P  888
-               .d88888  .d88b.  88888b. "   888888
-              d88" 888 d88""88b 888 "88b    888
-              888  888 888  888 888  888    888
-              Y88b 888 Y88..88P 888  888    Y88b.
-               "Y88888  "Y88P"  888  888     "Y888
-
-        need an OWNER review to submit changes to this file.
+        You DON'T need an OWNER review to submit changes to this file.
 
 This file describes the enumerations used in metrics data.  It is used
 along with histograms.xml to describe the histogram data collected by Chrome.
