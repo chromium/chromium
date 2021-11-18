@@ -18,6 +18,8 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/ime/composition_text.h"
 #include "ui/base/ime/ime_text_span.h"
+#include "ui/base/ime/text_input_flags.h"
+#include "ui/base/ime/text_input_type.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/event.h"
 #include "ui/events/event_utils.h"
@@ -117,6 +119,71 @@ ConvertStyle(uint32_t style) {
       VLOG(1) << "Unsupported style. Skipped: " << style;
   }
   return absl::nullopt;
+}
+
+// Converts Chrome's TextInputType into wayland's content_purpose.
+// Some of TextInputType values do not have clearly corresponding wayland value,
+// and they fallback to closer type.
+uint32_t InputTypeToContentPurpose(TextInputType input_type) {
+  switch (input_type) {
+    case TEXT_INPUT_TYPE_NONE:
+      return ZWP_TEXT_INPUT_V1_CONTENT_PURPOSE_NORMAL;
+    case TEXT_INPUT_TYPE_TEXT:
+      return ZWP_TEXT_INPUT_V1_CONTENT_PURPOSE_NORMAL;
+    case TEXT_INPUT_TYPE_PASSWORD:
+      return ZWP_TEXT_INPUT_V1_CONTENT_PURPOSE_PASSWORD;
+    case TEXT_INPUT_TYPE_SEARCH:
+      return ZWP_TEXT_INPUT_V1_CONTENT_PURPOSE_NORMAL;
+    case TEXT_INPUT_TYPE_EMAIL:
+      return ZWP_TEXT_INPUT_V1_CONTENT_PURPOSE_EMAIL;
+    case TEXT_INPUT_TYPE_NUMBER:
+      return ZWP_TEXT_INPUT_V1_CONTENT_PURPOSE_NUMBER;
+    case TEXT_INPUT_TYPE_TELEPHONE:
+      return ZWP_TEXT_INPUT_V1_CONTENT_PURPOSE_PHONE;
+    case TEXT_INPUT_TYPE_URL:
+      return ZWP_TEXT_INPUT_V1_CONTENT_PURPOSE_URL;
+    case TEXT_INPUT_TYPE_DATE:
+      return ZWP_TEXT_INPUT_V1_CONTENT_PURPOSE_DATE;
+    case TEXT_INPUT_TYPE_DATE_TIME:
+      return ZWP_TEXT_INPUT_V1_CONTENT_PURPOSE_DATETIME;
+    case TEXT_INPUT_TYPE_DATE_TIME_LOCAL:
+      return ZWP_TEXT_INPUT_V1_CONTENT_PURPOSE_DATETIME;
+    case TEXT_INPUT_TYPE_MONTH:
+      return ZWP_TEXT_INPUT_V1_CONTENT_PURPOSE_DATE;
+    case TEXT_INPUT_TYPE_TIME:
+      return ZWP_TEXT_INPUT_V1_CONTENT_PURPOSE_TIME;
+    case TEXT_INPUT_TYPE_WEEK:
+      return ZWP_TEXT_INPUT_V1_CONTENT_PURPOSE_DATE;
+    case TEXT_INPUT_TYPE_TEXT_AREA:
+      return ZWP_TEXT_INPUT_V1_CONTENT_PURPOSE_NORMAL;
+    case TEXT_INPUT_TYPE_CONTENT_EDITABLE:
+      return ZWP_TEXT_INPUT_V1_CONTENT_PURPOSE_NORMAL;
+    case TEXT_INPUT_TYPE_DATE_TIME_FIELD:
+      return ZWP_TEXT_INPUT_V1_CONTENT_PURPOSE_DATETIME;
+    case TEXT_INPUT_TYPE_NULL:
+      return ZWP_TEXT_INPUT_V1_CONTENT_PURPOSE_NORMAL;
+  }
+}
+
+// Converts Chrome's TextInputType into wayland's content_hint.
+uint32_t InputFlagsToContentHint(int input_flags) {
+  uint32_t hint = 0;
+  if (input_flags & TEXT_INPUT_FLAG_AUTOCOMPLETE_ON)
+    hint |= ZWP_TEXT_INPUT_V1_CONTENT_HINT_AUTO_COMPLETION;
+  if (input_flags & TEXT_INPUT_FLAG_AUTOCORRECT_ON)
+    hint |= ZWP_TEXT_INPUT_V1_CONTENT_HINT_AUTO_CORRECTION;
+  // No good match. Fallback to AUTO_CORRECTION.
+  if (input_flags & TEXT_INPUT_FLAG_SPELLCHECK_ON)
+    hint |= ZWP_TEXT_INPUT_V1_CONTENT_HINT_AUTO_CORRECTION;
+  if (input_flags & TEXT_INPUT_FLAG_AUTOCAPITALIZE_CHARACTERS)
+    hint |= ZWP_TEXT_INPUT_V1_CONTENT_HINT_UPPERCASE;
+  if (input_flags & TEXT_INPUT_FLAG_AUTOCAPITALIZE_WORDS)
+    hint |= ZWP_TEXT_INPUT_V1_CONTENT_HINT_TITLECASE;
+  if (input_flags & TEXT_INPUT_FLAG_AUTOCAPITALIZE_SENTENCES)
+    hint |= ZWP_TEXT_INPUT_V1_CONTENT_HINT_AUTO_CAPITALIZATION;
+  if (input_flags & TEXT_INPUT_FLAG_HAS_BEEN_PASSWORD)
+    hint |= ZWP_TEXT_INPUT_V1_CONTENT_HINT_PASSWORD;
+  return hint;
 }
 
 }  // namespace
@@ -317,6 +384,16 @@ void WaylandInputMethodContext::SetSurroundingText(
       gfx::Range(0, kWaylandMessageDataMaxLength)));
   surrounding_text_offset_ = truncated_text_start;
   text_input_->SetSurroundingText(truncated_text, relocated_selection_range);
+}
+
+void WaylandInputMethodContext::SetContentType(TextInputType input_type,
+                                               int input_flags) {
+  if (!text_input_)
+    return;
+
+  uint32_t content_purpose = InputTypeToContentPurpose(input_type);
+  uint32_t content_hint = InputFlagsToContentHint(input_flags);
+  text_input_->SetContentType(content_hint, content_purpose);
 }
 
 void WaylandInputMethodContext::OnPreeditString(

@@ -152,6 +152,8 @@ class LinuxInputMethodContextForTesting : public LinuxInputMethodContext {
     TestResult::GetInstance()->RecordAction(base::ASCIIToUTF16(re.str()));
   }
 
+  void SetContentType(TextInputType input_type, int input_flags) override {}
+
  private:
   LinuxInputMethodContextDelegate* delegate_;
   std::vector<std::u16string> actions_;

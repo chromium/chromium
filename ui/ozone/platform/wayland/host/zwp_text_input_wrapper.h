@@ -86,6 +86,8 @@ class ZWPTextInputWrapper {
   virtual void SetCursorRect(const gfx::Rect& rect) = 0;
   virtual void SetSurroundingText(const std::string& text,
                                   const gfx::Range& selection_range) = 0;
+  virtual void SetContentType(uint32_t content_hint,
+                              uint32_t content_purpose) = 0;
 };
 
 }  // namespace ui

@@ -11,6 +11,7 @@
 #include "ui/base/ime/constants.h"
 #include "ui/base/ime/linux/linux_input_method_context_factory.h"
 #include "ui/base/ime/text_input_client.h"
+#include "ui/base/ime/text_input_flags.h"
 #include "ui/events/event.h"
 
 namespace {
@@ -367,6 +368,14 @@ void InputMethodAuraLinux::OnTextInputTypeChanged(
     const TextInputClient* client) {
   UpdateContextFocusState();
   InputMethodBase::OnTextInputTypeChanged(client);
+
+  LinuxInputMethodContext* context =
+      text_input_type_ != TEXT_INPUT_TYPE_NONE &&
+              text_input_type_ != TEXT_INPUT_TYPE_PASSWORD
+          ? context_.get()
+          : context_simple_.get();
+  int flags = client ? client->GetTextInputFlags() : TEXT_INPUT_FLAG_NONE;
+  context->SetContentType(text_input_type_, flags);
   // TODO(yoichio): Support inputmode HTML attribute.
 }
 

@@ -94,6 +94,11 @@ void ZWPTextInputWrapperV1::SetSurroundingText(
       obj_.get(), text.c_str(), selection_range.start(), selection_range.end());
 }
 
+void ZWPTextInputWrapperV1::SetContentType(uint32_t content_hint,
+                                           uint32_t content_purpose) {
+  zwp_text_input_v1_set_content_type(obj_.get(), content_hint, content_purpose);
+}
+
 void ZWPTextInputWrapperV1::ResetInputEventState() {
   spans_.clear();
   preedit_cursor_ = -1;

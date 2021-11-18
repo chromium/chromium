@@ -12,6 +12,8 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/ime/linux/linux_input_method_context.h"
+#include "ui/base/ime/text_input_flags.h"
+#include "ui/base/ime/text_input_type.h"
 #include "ui/events/event.h"
 #include "ui/gfx/range/range.h"
 #include "ui/ozone/platform/wayland/host/wayland_input_method_context.h"
@@ -367,6 +369,17 @@ TEST_P(WaylandInputMethodContextTest, DeleteSurroundingTextWithExtendedRange) {
   EXPECT_EQ(
       input_method_context_delegate_->last_on_delete_surrounding_text_args(),
       (std::pair<size_t, size_t>(1, 1)));
+}
+
+TEST_P(WaylandInputMethodContextTest, SetContentType) {
+  EXPECT_CALL(*zwp_text_input_,
+              SetContentType(ZWP_TEXT_INPUT_V1_CONTENT_HINT_AUTO_COMPLETION,
+                             ZWP_TEXT_INPUT_V1_CONTENT_PURPOSE_URL))
+      .Times(1);
+  input_method_context_->SetContentType(TEXT_INPUT_TYPE_URL,
+                                        TEXT_INPUT_FLAG_AUTOCOMPLETE_ON);
+  connection_->ScheduleFlush();
+  Sync();
 }
 
 TEST_P(WaylandInputMethodContextTest, OnPreeditChanged) {
