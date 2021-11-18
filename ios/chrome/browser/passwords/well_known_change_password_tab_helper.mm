@@ -122,15 +122,14 @@ void WellKnownChangePasswordTabHelper::WebStateDestroyed(
 void WellKnownChangePasswordTabHelper::OnProcessingFinished(bool is_supported) {
   if (!response_policy_callback_)
     return;
-  if (is_supported) {
+  GURL redirect_url = affiliation_service_->GetChangePasswordURL(request_url_);
+  if (is_supported || redirect_url == request_url_) {
     std::move(response_policy_callback_)
         .Run(web::WebStatePolicyDecider::PolicyDecision::Allow());
     RecordMetric(WellKnownChangePasswordResult::kUsedWellKnownChangePassword);
   } else {
     std::move(response_policy_callback_)
         .Run(web::WebStatePolicyDecider::PolicyDecision::Cancel());
-    GURL redirect_url =
-        affiliation_service_->GetChangePasswordURL(request_url_);
     if (redirect_url.is_valid()) {
       RecordMetric(WellKnownChangePasswordResult::kFallbackToOverrideUrl);
       Redirect(redirect_url);

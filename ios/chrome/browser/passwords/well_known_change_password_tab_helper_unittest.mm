@@ -66,7 +66,7 @@ class TestAffiliationService : public password_manager::AffiliationService {
   GURL GetChangePasswordURL(const GURL& url) const override {
     if (override_available_) {
       GURL::Replacements replacement;
-      replacement.SetPathStr(kMockChangePasswordPath);
+      replacement.SetPathStr(path_);
       return url.ReplaceComponents(replacement);
     }
     return GURL();
@@ -85,10 +85,16 @@ class TestAffiliationService : public password_manager::AffiliationService {
       AffiliationService::StrategyOnCacheMiss strategy_on_cache_miss,
       PasswordFormsCallback result_callback) override {}
 
-  void SetOverrideAvailable(bool available) { override_available_ = available; }
+  void SetOverrideAvailable(bool available, std::string path) {
+    override_available_ = available;
+    path_ = path;
+  }
 
  private:
   bool override_available_ = false;
+
+  // Path to change password url.
+  std::string path_;
 };
 
 // Re-implementation of web::LoadUrl() that allows specifying a custom page
@@ -162,8 +168,9 @@ class WellKnownChangePasswordTabHelperTest : public ChromeWebTest {
   GURL GetNavigatedUrl() const;
 
   // Sets if change passwords URL can be obtained.
-  void SetOverrideAvailable(bool available) {
-    affiliation_service_->SetOverrideAvailable(available);
+  void SetOverrideAvailable(bool available,
+                            std::string path = kMockChangePasswordPath) {
+    affiliation_service_->SetOverrideAvailable(available, path);
   }
 
   // Maps a path to a ServerResponse config object.
@@ -308,4 +315,18 @@ TEST_F(WellKnownChangePasswordTabHelperTest,
   // In the case of PAGE_TRANSITION_LINK the tab helper should not be active and
   // no metrics should be recorded.
   EXPECT_TRUE(test_recorder_->GetEntriesByName(UkmBuilder::kEntryName).empty());
+}
+
+TEST_F(WellKnownChangePasswordTabHelperTest,
+       NoSupportForChangePassword_AffiliationServiceReturnsWellKnownUrl) {
+  SetOverrideAvailable(true, kWellKnownChangePasswordPath);
+  path_response_map_[kWellKnownChangePasswordPath] = {net::HTTP_NOT_FOUND, {}};
+  path_response_map_["/"] = {net::HTTP_OK, {}};
+  SetUrlLoaderResponse(kWellKnownNotExistingResourcePath, net::HTTP_NOT_FOUND);
+
+  web::test::LoadUrl(web_state(),
+                     test_server_->GetURL(kWellKnownChangePasswordPath));
+  ASSERT_TRUE(WaitUntilLoaded());
+  EXPECT_EQ(GetNavigatedUrl().path(), kWellKnownChangePasswordPath);
+  ExpectUkmMetric(WellKnownChangePasswordResult::kUsedWellKnownChangePassword);
 }

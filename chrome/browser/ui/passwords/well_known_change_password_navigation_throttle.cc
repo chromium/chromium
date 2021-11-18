@@ -152,12 +152,15 @@ const char* WellKnownChangePasswordNavigationThrottle::GetNameForLogging() {
 
 void WellKnownChangePasswordNavigationThrottle::OnProcessingFinished(
     bool is_supported) {
-  if (is_supported) {
+  GURL redirect_url = affiliation_service_->GetChangePasswordURL(request_url_);
+
+  // If affiliation service returns .well-known/change-password as change
+  // password url - show it even if Chrome doesn't detect it as supported.
+  if (is_supported || redirect_url == request_url_) {
     RecordMetric(WellKnownChangePasswordResult::kUsedWellKnownChangePassword);
     Resume();
     return;
   }
-  GURL redirect_url = affiliation_service_->GetChangePasswordURL(request_url_);
 
   if (redirect_url.is_valid()) {
     RecordMetric(WellKnownChangePasswordResult::kFallbackToOverrideUrl);
