@@ -104,7 +104,7 @@ non_preprocessed_files = [
   "site_data_test.js",
   "site_details_permission_tests.ts",
   "site_details_tests.ts",
-  "site_entry_tests.js",
+  "site_entry_tests.ts",
   "site_favicon_test.js",
   "site_list_tests.ts",
   "site_settings_page_test.ts",

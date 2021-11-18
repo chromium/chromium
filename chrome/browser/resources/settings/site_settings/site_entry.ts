@@ -40,9 +40,11 @@ interface RepeaterEvent {
   },
 }
 
-interface SiteEntryElement {
+export interface SiteEntryElement {
   $: {
     expandIcon: CrIconButtonElement,
+    collapseParent: HTMLElement,
+    cookies: HTMLElement,
     originList: CrLazyRenderElement<IronCollapseElement>,
     toggleButton: HTMLElement,
   };
@@ -59,7 +61,7 @@ const SiteEntryElementBase =
       BaseMixinInterface
     };
 
-class SiteEntryElement extends SiteEntryElementBase {
+export class SiteEntryElement extends SiteEntryElementBase {
   static get is() {
     return 'site-entry';
   }
@@ -479,6 +481,12 @@ class SiteEntryElement extends SiteEntryElementBase {
     }
     assertNotReached();
     return (_origin1, _origin2) => 0;
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'site-entry': SiteEntryElement;
   }
 }
 

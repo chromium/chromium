@@ -76,4 +76,10 @@ class SiteFaviconElement extends PolymerElement {
   }
 }
 
+declare global {
+  interface HTMLElementTagNameMap {
+    'site-favicon': SiteFaviconElement;
+  }
+}
+
 customElements.define(SiteFaviconElement.is, SiteFaviconElement);

@@ -7,8 +7,9 @@ import 'chrome://test/cr_elements/cr_policy_strings.js';
 
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {ContentSettingsTypes, LocalDataBrowserProxyImpl, SiteSettingsPrefsBrowserProxyImpl, SortMethod} from 'chrome://settings/lazy_load.js';
+import {LocalDataBrowserProxyImpl, SiteEntryElement, SiteSettingsPrefsBrowserProxyImpl, SortMethod} from 'chrome://settings/lazy_load.js';
 import {Router, routes} from 'chrome://settings/settings.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
 import {TestLocalDataBrowserProxy} from './test_local_data_browser_proxy.js';
@@ -20,7 +21,6 @@ import {createSiteGroup} from './test_util.js';
 suite('SiteEntry_DisabledConsolidatedControls', function() {
   /**
    * An example eTLD+1 Object with multiple origins grouped under it.
-   * @type {!SiteGroup}
    */
   const TEST_MULTIPLE_SITE_GROUP = createSiteGroup('example.com', [
     'http://example.com',
@@ -30,7 +30,6 @@ suite('SiteEntry_DisabledConsolidatedControls', function() {
 
   /**
    * An example eTLD+1 Object with a single origin in it.
-   * @type {!SiteGroup}
    */
   const TEST_SINGLE_SITE_GROUP = createSiteGroup('foo.com', [
     'https://login.foo.com',
@@ -38,27 +37,18 @@ suite('SiteEntry_DisabledConsolidatedControls', function() {
 
   /**
    * The mock proxy object to use during test.
-   * @type {TestSiteSettingsPrefsBrowserProxy}
    */
-  let browserProxy;
+  let browserProxy: TestSiteSettingsPrefsBrowserProxy;
 
   /**
    * The mock local data proxy object to use during test.
-   * @type {TestLocalDataBrowserProxy}
    */
-  let localDataBrowserProxy;
+  let localDataBrowserProxy: TestLocalDataBrowserProxy;
 
   /**
    * A site list element created before each test.
-   * @type {SiteList}
    */
-  let testElement;
-
-  /**
-   * The clickable element that expands to show the list of origins.
-   * @type {Element}
-   */
-  let toggleButton;
+  let testElement: SiteEntryElement;
 
   suiteSetup(function() {
     loadTimeData.overrideValues({
@@ -73,12 +63,9 @@ suite('SiteEntry_DisabledConsolidatedControls', function() {
     SiteSettingsPrefsBrowserProxyImpl.setInstance(browserProxy);
     LocalDataBrowserProxyImpl.setInstance(localDataBrowserProxy);
 
-    PolymerTest.clearBody();
+    document.body.innerHTML = '';
     testElement = document.createElement('site-entry');
-    assertTrue(!!testElement);
     document.body.appendChild(testElement);
-
-    toggleButton = testElement.$.toggleButton;
   });
 
   teardown(function() {
@@ -98,13 +85,15 @@ suite('SiteEntry_DisabledConsolidatedControls', function() {
   test('expands and closes to show more origins', function() {
     testElement.siteGroup = TEST_MULTIPLE_SITE_GROUP;
     assertFalse(testElement.$.expandIcon.hidden);
-    assertEquals('false', toggleButton.getAttribute('aria-expanded'));
+    assertEquals(
+        'false', testElement.$.toggleButton.getAttribute('aria-expanded'));
     const originList = testElement.$.originList.get();
     assertTrue(originList.classList.contains('iron-collapse-closed'));
     assertEquals('true', originList.getAttribute('aria-hidden'));
 
-    toggleButton.click();
-    assertEquals('true', toggleButton.getAttribute('aria-expanded'));
+    testElement.$.toggleButton.click();
+    assertEquals(
+        'true', testElement.$.toggleButton.getAttribute('aria-expanded'));
     assertTrue(originList.classList.contains('iron-collapse-opened'));
     assertEquals('false', originList.getAttribute('aria-hidden'));
   });
@@ -112,13 +101,15 @@ suite('SiteEntry_DisabledConsolidatedControls', function() {
   test('with single origin navigates to Site Details', function() {
     testElement.siteGroup = TEST_SINGLE_SITE_GROUP;
     assertTrue(testElement.$.expandIcon.hidden);
-    assertEquals('false', toggleButton.getAttribute('aria-expanded'));
+    assertEquals(
+        'false', testElement.$.toggleButton.getAttribute('aria-expanded'));
     const originList = testElement.$.originList.get();
     assertTrue(originList.classList.contains('iron-collapse-closed'));
     assertEquals('true', originList.getAttribute('aria-hidden'));
 
-    toggleButton.click();
-    assertEquals('false', toggleButton.getAttribute('aria-expanded'));
+    testElement.$.toggleButton.click();
+    assertEquals(
+        'false', testElement.$.toggleButton.getAttribute('aria-expanded'));
     assertTrue(originList.classList.contains('iron-collapse-closed'));
     assertEquals('true', originList.getAttribute('aria-hidden'));
     assertEquals(
@@ -134,25 +125,28 @@ suite('SiteEntry_DisabledConsolidatedControls', function() {
     flush();
     const collapseChild = testElement.$.originList.get();
     flush();
-    const originList = collapseChild.querySelectorAll('.origin-link');
+    const originList =
+        collapseChild.querySelectorAll<HTMLElement>('.origin-link');
     assertEquals(3, originList.length);
 
     // Test clicking on one of these origins takes the user to Site Details,
     // with the correct origin.
-    originList[1].click();
+    originList[1]!.click();
     assertEquals(
         routes.SITE_SETTINGS_SITE_DETAILS.path,
         Router.getInstance().getCurrentRoute().path);
     assertEquals(
-        TEST_MULTIPLE_SITE_GROUP.origins[1].origin,
+        TEST_MULTIPLE_SITE_GROUP.origins[1]!.origin,
         Router.getInstance().getQueryParameters().get('site'));
   });
 
   test('with single origin, shows overflow menu', function() {
     testElement.siteGroup = TEST_SINGLE_SITE_GROUP;
     flush();
-    const overflowMenuButton = testElement.$$('#overflowMenuButton');
-    assertFalse(overflowMenuButton.closest('.row-aligned').hidden);
+    const overflowMenuButton =
+        testElement.$$<HTMLElement>('#overflowMenuButton')!;
+    assertFalse(
+        overflowMenuButton.closest<HTMLElement>('.row-aligned')!.hidden);
   });
 
   test('clear data for single origin fires the right method', async function() {
@@ -167,9 +161,9 @@ suite('SiteEntry_DisabledConsolidatedControls', function() {
 
     for (let i = 0; i < originList.length; i++) {
       const menuOpened = eventToPromise('open-menu', testElement);
-      const originEntry = originList[i];
+      const originEntry = originList[i]!;
       const overflowMenuButton =
-          originEntry.querySelector('#originOverflowMenuButton');
+          originEntry.querySelector<HTMLElement>('#originOverflowMenuButton')!;
       overflowMenuButton.click();
       const openMenuEvent = await menuOpened;
 
@@ -177,7 +171,7 @@ suite('SiteEntry_DisabledConsolidatedControls', function() {
       const {actionScope, index, origin} = args;
       assertEquals('origin', actionScope);
       assertEquals(testElement.listIndex, index);
-      assertEquals(testElement.siteGroup.origins[i].origin, origin);
+      assertEquals(testElement.siteGroup.origins[i]!.origin, origin);
     }
   });
 
@@ -188,7 +182,7 @@ suite('SiteEntry_DisabledConsolidatedControls', function() {
         testElement.siteGroup =
             JSON.parse(JSON.stringify(TEST_MULTIPLE_SITE_GROUP));
         flush();
-        toggleButton.click();
+        testElement.$.toggleButton.click();
         assertTrue(testElement.$.originList.get().opened);
 
         // Remove all origins except one, then make sure it's not still
@@ -218,7 +212,7 @@ suite('SiteEntry_DisabledConsolidatedControls', function() {
         .then((args) => {
           assertEquals(3, args);
           assertFalse(cookiesLabel.hidden);
-          assertEquals('· 3 cookies', cookiesLabel.textContent.trim());
+          assertEquals('· 3 cookies', cookiesLabel.textContent!.trim());
         });
   });
 
@@ -241,7 +235,7 @@ suite('SiteEntry_DisabledConsolidatedControls', function() {
         .then((args) => {
           assertEquals(3, args);
           assertFalse(cookiesLabel.hidden);
-          assertEquals('· 3 cookies', cookiesLabel.textContent.trim());
+          assertEquals('· 3 cookies', cookiesLabel.textContent!.trim());
         });
   });
 
@@ -256,12 +250,14 @@ suite('SiteEntry_DisabledConsolidatedControls', function() {
     testSiteGroup.origins[2].usage = numBytes3;
     testElement.siteGroup = testSiteGroup;
     flush();
-    return browserProxy.whenCalled('getFormattedBytes').then((args) => {
+    return browserProxy.whenCalled('getFormattedBytes').then(args => {
       const sumBytes = numBytes1 + numBytes2 + numBytes3;
+      assertEquals(sumBytes, args);
       assertEquals(
           `${sumBytes} B`,
-          testElement.root.querySelector('#displayName .data-unit')
-              .textContent.trim());
+          testElement.shadowRoot!
+              .querySelector<HTMLElement>(
+                  '#displayName .data-unit')!.textContent!.trim());
     });
   });
 
@@ -272,11 +268,13 @@ suite('SiteEntry_DisabledConsolidatedControls', function() {
     testSiteGroup.origins[0].usage = numBytes;
     testElement.siteGroup = testSiteGroup;
     flush();
-    return browserProxy.whenCalled('getFormattedBytes').then((args) => {
+    return browserProxy.whenCalled('getFormattedBytes').then(args => {
+      assertEquals(numBytes, args);
       assertEquals(
           `${numBytes} B`,
-          testElement.root.querySelector('#displayName .data-unit')
-              .textContent.trim());
+          testElement.shadowRoot!
+              .querySelector<HTMLElement>(
+                  '#displayName .data-unit')!.textContent!.trim());
     });
   });
 
@@ -296,10 +294,12 @@ suite('SiteEntry_DisabledConsolidatedControls', function() {
         flush();
         return browserProxy.whenCalled('getFormattedBytes').then((args) => {
           const sumBytes = numBytes1 + numBytes2 + numBytes3;
+          assertEquals(sumBytes, args);
           assertEquals(
               `${sumBytes} B`,
-              testElement.root.querySelector('#displayName .data-unit')
-                  .textContent.trim());
+              testElement.shadowRoot!
+                  .querySelector<HTMLElement>(
+                      '#displayName .data-unit')!.textContent!.trim());
         });
       });
 
@@ -312,7 +312,7 @@ suite('SiteEntry_DisabledConsolidatedControls', function() {
     testElement.siteGroup = testSiteGroup;
     flush();
     assertEquals(
-        testElement.$.collapseParent.querySelector('site-favicon').url,
+        testElement.$.collapseParent.querySelector('site-favicon')!.url,
         'https://www.example.com');
   });
 
@@ -326,7 +326,7 @@ suite('SiteEntry_DisabledConsolidatedControls', function() {
     testElement.siteGroup = testSiteGroup;
     flush();
     assertEquals(
-        testElement.$.collapseParent.querySelector('site-favicon').url,
+        testElement.$.collapseParent.querySelector('site-favicon')!.url,
         'https://login.example.com');
   });
 
@@ -343,7 +343,7 @@ suite('SiteEntry_DisabledConsolidatedControls', function() {
     testElement.siteGroup = testSiteGroup;
     flush();
     assertEquals(
-        testElement.$.collapseParent.querySelector('site-favicon').url,
+        testElement.$.collapseParent.querySelector('site-favicon')!.url,
         'https://abc.example.com');
   });
 
@@ -368,13 +368,16 @@ suite('SiteEntry_DisabledConsolidatedControls', function() {
     assertEquals(3, origins.length);
     assertEquals(
         'www.example.com',
-        origins[0].querySelector('#originSiteRepresentation').innerText.trim());
+        origins[0]!.querySelector<HTMLElement>(
+                       '#originSiteRepresentation')!.innerText.trim());
     assertEquals(
         'example.com',
-        origins[1].querySelector('#originSiteRepresentation').innerText.trim());
+        origins[1]!.querySelector<HTMLElement>(
+                       '#originSiteRepresentation')!.innerText.trim());
     assertEquals(
         'login.example.com',
-        origins[2].querySelector('#originSiteRepresentation').innerText.trim());
+        origins[2]!.querySelector<HTMLElement>(
+                       '#originSiteRepresentation')!.innerText.trim());
   });
 
   test('can be sorted by storage', function() {
@@ -398,13 +401,16 @@ suite('SiteEntry_DisabledConsolidatedControls', function() {
     assertEquals(3, origins.length);
     assertEquals(
         'www.example.com',
-        origins[0].querySelector('#originSiteRepresentation').innerText.trim());
+        origins[0]!.querySelector<HTMLElement>(
+                       '#originSiteRepresentation')!.innerText.trim());
     assertEquals(
         'login.example.com',
-        origins[1].querySelector('#originSiteRepresentation').innerText.trim());
+        origins[1]!.querySelector<HTMLElement>(
+                       '#originSiteRepresentation')!.innerText.trim());
     assertEquals(
         'example.com',
-        origins[2].querySelector('#originSiteRepresentation').innerText.trim());
+        origins[2]!.querySelector<HTMLElement>(
+                       '#originSiteRepresentation')!.innerText.trim());
   });
 
   test('can be sorted by name', function() {
@@ -428,20 +434,22 @@ suite('SiteEntry_DisabledConsolidatedControls', function() {
     assertEquals(3, origins.length);
     assertEquals(
         'example.com',
-        origins[0].querySelector('#originSiteRepresentation').innerText.trim());
+        origins[0]!.querySelector<HTMLElement>(
+                       '#originSiteRepresentation')!.innerText.trim());
     assertEquals(
         'login.example.com',
-        origins[1].querySelector('#originSiteRepresentation').innerText.trim());
+        origins[1]!.querySelector<HTMLElement>(
+                       '#originSiteRepresentation')!.innerText.trim());
     assertEquals(
         'www.example.com',
-        origins[2].querySelector('#originSiteRepresentation').innerText.trim());
+        origins[2]!.querySelector<HTMLElement>(
+                       '#originSiteRepresentation')!.innerText.trim());
   });
 });
 
 suite('SiteEntry_EnabledConsolidatedControls', function() {
   /**
    * An example eTLD+1 Object with multiple origins grouped under it.
-   * @type {!SiteGroup}
    */
   const TEST_MULTIPLE_SITE_GROUP = createSiteGroup('example.com', [
     'http://example.com',
@@ -450,30 +458,19 @@ suite('SiteEntry_EnabledConsolidatedControls', function() {
   ]);
 
   /**
-   * An example eTLD+1 Object with a single origin in it.
-   * @type {!SiteGroup}
-   */
-  const TEST_SINGLE_SITE_GROUP = createSiteGroup('foo.com', [
-    'https://login.foo.com',
-  ]);
-
-  /**
    * The mock proxy object to use during test.
-   * @type {TestSiteSettingsPrefsBrowserProxy}
    */
-  let browserProxy;
+  let browserProxy: TestSiteSettingsPrefsBrowserProxy;
 
   /**
    * The mock local data proxy object to use during test.
-   * @type {TestLocalDataBrowserProxy}
    */
-  let localDataBrowserProxy;
+  let localDataBrowserProxy: TestLocalDataBrowserProxy;
 
   /**
    * A site list element created before each test.
-   * @type {SiteList}
    */
-  let testElement;
+  let testElement: SiteEntryElement;
 
   suiteSetup(function() {
     loadTimeData.overrideValues({
@@ -488,9 +485,8 @@ suite('SiteEntry_EnabledConsolidatedControls', function() {
     SiteSettingsPrefsBrowserProxyImpl.setInstance(browserProxy);
     LocalDataBrowserProxyImpl.setInstance(localDataBrowserProxy);
 
-    PolymerTest.clearBody();
+    document.body.innerHTML = '';
     testElement = document.createElement('site-entry');
-    assertTrue(!!testElement);
     document.body.appendChild(testElement);
   });
 
@@ -506,13 +502,13 @@ suite('SiteEntry_EnabledConsolidatedControls', function() {
 
     for (let i = 0; i < originList.length; i++) {
       const siteRemoved = eventToPromise('remove-site', testElement);
-      originList[i].querySelector('#removeOriginButton').click();
+      originList[i]!.querySelector<HTMLElement>('#removeOriginButton')!.click();
       const siteRemovedEvent = await siteRemoved;
 
       const {actionScope, index, origin} = siteRemovedEvent.detail;
       assertEquals('origin', actionScope);
       assertEquals(testElement.listIndex, index);
-      assertEquals(testElement.siteGroup.origins[i].origin, origin);
+      assertEquals(testElement.siteGroup.origins[i]!.origin, origin);
     }
   });
 
@@ -522,7 +518,7 @@ suite('SiteEntry_EnabledConsolidatedControls', function() {
     flush();
 
     const siteRemoved = eventToPromise('remove-site', testElement);
-    testElement.$$('#removeSiteButton').click();
+    testElement.$$<HTMLElement>('#removeSiteButton')!.click();
     const siteRemovedEvent = await siteRemoved;
 
     const {actionScope, index, origin} = siteRemovedEvent.detail;
