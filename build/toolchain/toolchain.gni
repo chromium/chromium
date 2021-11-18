@@ -21,13 +21,6 @@ declare_args() {
   generate_linker_map = is_android && is_official_build
 }
 
-# This variable is no longer used in Chromium, but some projects based on
-# //build still reference it, so keep defining until all references have
-# been removed from those projects. It is defined outside of `declare_args`
-# as it setting it in `args.gn` is no longer supported.
-# TODO(crbug.com/1266466): Remove when no longer used by other projects.
-use_xcode_clang = false
-
 if (generate_linker_map) {
   assert(is_official_build || is_chromecast,
          "Linker map files should only be generated when is_official_build = " +
