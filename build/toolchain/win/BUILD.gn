@@ -304,6 +304,13 @@ template("msvc_toolchain") {
     }
 
     if (toolchain_has_rust) {
+      # TODO(https://crbug.com/1271215)
+      # Other toolchains (Linux, Mac) wrap rustc in a linker driver
+      # which enables it to accept {{ldflags}} and a -Clinker=...
+      # argument. This is necessary for some types of build such as
+      # LTO and sanitizers. However, such ldflags are not yet fully
+      # compatible with the arguments passed from rustc to the linker,
+      # so we'll do this at a later stage.
       tool("rust_staticlib") {
         rust_outfile = "{{target_out_dir}}/{{crate_name}}.lib"
         depfile = "{{crate_name}}.d"

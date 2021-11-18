@@ -59,7 +59,7 @@ declare_args() {
   # disable Rust unit test executables, so we do need to fix this.
   # https://crbug.com/1229423
   # NB this may be overridden by individual toolchains
-  rustc_can_link = !use_thin_lto && !is_android
+  rustc_can_link = !is_android
 }
 
 # Has a Rust toolchain available in the build by default.

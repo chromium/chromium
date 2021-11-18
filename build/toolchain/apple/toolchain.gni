@@ -242,10 +242,11 @@ template("apple_toolchain") {
       }
 
       if (toolchain_args.rustc_can_link) {
+        rust_link_wrapper = rebase_path("//build/rust/rust_link_wrapper.py")
         tool("rust_bin") {
           rust_outfile = "{{root_out_dir}}/{{crate_name}}"
           depfile = "{{output}}.d"
-          command = "$rustc $rustc_common_args --emit=dep-info=$depfile,link -o $rust_outfile"
+          command = "$python_path \"$rust_link_wrapper\" --rustc=$rustc -- -Clinker=\"$_cc\" $rustc_common_args --emit=dep-info=$depfile,link -o $rust_outfile LDFLAGS {{ldflags}}"
           description = "RUST $rust_outfile"
           outputs = [ rust_outfile ]
         }
@@ -253,7 +254,7 @@ template("apple_toolchain") {
         tool("rust_cdylib") {
           rust_outfile = "{{target_out_dir}}/lib{{crate_name}}.dylib"
           depfile = "{{output}}.d"
-          command = "$rustc $rustc_common_args --emit=dep-info=$depfile,link -o $rust_outfile"
+          command = "$python_path \"$rust_link_wrapper\" --rustc=$rustc -- -Clinker=\"$_cc\" $rustc_common_args --emit=dep-info=$depfile,link -o $rust_outfile LDFLAGS {{ldflags}}"
           description = "RUST $rust_outfile"
           outputs = [ rust_outfile ]
         }
@@ -261,7 +262,7 @@ template("apple_toolchain") {
         tool("rust_macro") {
           rust_outfile = "{{target_out_dir}}/lib{{crate_name}}.dylib"
           depfile = "{{output}}.d"
-          command = "$rustc $rustc_common_args --emit=dep-info=$depfile,link -o $rust_outfile"
+          command = "$python_path \"$rust_link_wrapper\" --rustc=$rustc -- -Clinker=\"$_cc\" $rustc_common_args --emit=dep-info=$depfile,link -o $rust_outfile LDFLAGS {{ldflags}}"
           description = "RUST $rust_outfile"
           outputs = [ rust_outfile ]
         }
