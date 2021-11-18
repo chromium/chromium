@@ -89,6 +89,10 @@ void ConfigurableAttributionTestBrowserClient::
   blocked_reporting_origin_ = reporting_origin;
 }
 
+base::GUID DefaultExternalReportID() {
+  return base::GUID::ParseLowercase("21abd97f-73e8-4b88-9389-a9fee6abda5e");
+}
+
 ConfigurableStorageDelegate::ConfigurableStorageDelegate() = default;
 ConfigurableStorageDelegate::~ConfigurableStorageDelegate() = default;
 
@@ -134,6 +138,10 @@ base::TimeDelta ConfigurableStorageDelegate::GetDeleteExpiredSourcesFrequency()
 base::TimeDelta
 ConfigurableStorageDelegate::GetDeleteExpiredRateLimitsFrequency() const {
   return delete_expired_rate_limits_frequency_;
+}
+
+base::GUID ConfigurableStorageDelegate::NewReportID() const {
+  return DefaultExternalReportID();
 }
 
 AttributionManager* TestManagerProvider::GetManager(
@@ -353,7 +361,8 @@ StorableTrigger TriggerBuilder::Build() const {
 }
 
 ReportBuilder::ReportBuilder(StorableSource source)
-    : source_(std::move(source)) {}
+    : source_(std::move(source)),
+      external_report_id_(DefaultExternalReportID()) {}
 
 ReportBuilder::~ReportBuilder() = default;
 
@@ -377,6 +386,12 @@ ReportBuilder& ReportBuilder::SetPriority(int64_t priority) {
   return *this;
 }
 
+ReportBuilder& ReportBuilder::SetExternalReportId(
+    base::GUID external_report_id) {
+  external_report_id_ = std::move(external_report_id);
+  return *this;
+}
+
 ReportBuilder& ReportBuilder::SetReportId(
     absl::optional<AttributionReport::Id> id) {
   report_id_ = id;
@@ -385,7 +400,8 @@ ReportBuilder& ReportBuilder::SetReportId(
 
 AttributionReport ReportBuilder::Build() const {
   return AttributionReport(source_, trigger_data_, conversion_time_,
-                           report_time_, priority_, report_id_);
+                           report_time_, priority_, external_report_id_,
+                           report_id_);
 }
 
 // Custom comparator for `StorableSource` that does not take impression IDs
@@ -409,7 +425,7 @@ bool operator==(const AttributionReport& a, const AttributionReport& b) {
   const auto tie = [](const AttributionReport& conversion) {
     return std::make_tuple(conversion.impression, conversion.trigger_data,
                            conversion.conversion_time, conversion.report_time,
-                           conversion.priority,
+                           conversion.priority, conversion.external_report_id,
                            conversion.failed_send_attempts);
   };
   return tie(a) == tie(b);
@@ -563,7 +579,9 @@ std::ostream& operator<<(std::ostream& out, const AttributionReport& report) {
              << ",trigger_data=" << report.trigger_data
              << ",conversion_time=" << report.conversion_time
              << ",report_time=" << report.report_time
-             << ",priority=" << report.priority << ",conversion_id="
+             << ",priority=" << report.priority
+             << ",external_report_id=" << report.external_report_id
+             << ",conversion_id="
              << (report.conversion_id
                      ? base::NumberToString(**report.conversion_id)
                      : "null")

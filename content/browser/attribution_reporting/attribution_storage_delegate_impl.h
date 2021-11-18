@@ -11,6 +11,7 @@
 #include "content/common/content_export.h"
 
 namespace base {
+class GUID;
 class Time;
 }  // namespace base
 
@@ -48,6 +49,7 @@ class CONTENT_EXPORT AttributionStorageDelegateImpl
   uint64_t GetFakeEventSourceTriggerData() const override;
   base::TimeDelta GetDeleteExpiredSourcesFrequency() const override;
   base::TimeDelta GetDeleteExpiredRateLimitsFrequency() const override;
+  base::GUID NewReportID() const override;
 
  private:
   // Whether the API is running in debug mode, meaning that there should be

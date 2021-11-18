@@ -10,6 +10,7 @@
 #include <string>
 
 #include "base/compiler_specific.h"
+#include "base/guid.h"
 #include "base/time/time.h"
 #include "base/types/strong_alias.h"
 #include "content/browser/attribution_reporting/storable_source.h"
@@ -32,6 +33,7 @@ struct CONTENT_EXPORT AttributionReport {
                     base::Time conversion_time,
                     base::Time report_time,
                     int64_t priority,
+                    base::GUID external_report_id,
                     absl::optional<Id> conversion_id);
   AttributionReport(const AttributionReport& other);
   AttributionReport& operator=(const AttributionReport& other);
@@ -60,6 +62,10 @@ struct CONTENT_EXPORT AttributionReport {
 
   // Priority specified in conversion redirect.
   int64_t priority;
+
+  // External report ID for deduplicating reports received by the reporting
+  // origin.
+  base::GUID external_report_id;
 
   // Id assigned by storage to uniquely identify a completed conversion. If
   // null, an ID has not been assigned yet.

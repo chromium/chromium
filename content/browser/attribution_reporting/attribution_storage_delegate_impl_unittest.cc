@@ -4,6 +4,7 @@
 
 #include "content/browser/attribution_reporting/attribution_storage_delegate_impl.h"
 
+#include "base/guid.h"
 #include "base/time/time.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
 #include "content/browser/attribution_reporting/attribution_test_utils.h"
@@ -136,6 +137,10 @@ TEST_F(AttributionStorageDelegateImplTest,
   EXPECT_EQ(impression_time + base::Days(4) + base::Hours(1),
             AttributionStorageDelegateImpl().GetReportTime(
                 report.impression, report.conversion_time));
+}
+
+TEST_F(AttributionStorageDelegateImplTest, NewReportID_IsValidGUID) {
+  EXPECT_TRUE(AttributionStorageDelegateImpl().NewReportID().is_valid());
 }
 
 }  // namespace content

@@ -128,9 +128,9 @@ TEST_F(AttributionNetworkSenderTest, ReportSent_ReportBodySetCorrectly) {
     const char* expected_report;
   } kTestCases[] = {
       {StorableSource::SourceType::kNavigation,
-       R"({"attribution_destination":"https://conversion.test","source_event_id":"100","source_type":"navigation","trigger_data":"5"})"},
+       R"({"attribution_destination":"https://conversion.test","report_id":"21abd97f-73e8-4b88-9389-a9fee6abda5e","source_event_id":"100","source_type":"navigation","trigger_data":"5"})"},
       {StorableSource::SourceType::kEvent,
-       R"({"attribution_destination":"https://conversion.test","source_event_id":"100","source_type":"event","trigger_data":"5"})"},
+       R"({"attribution_destination":"https://conversion.test","report_id":"21abd97f-73e8-4b88-9389-a9fee6abda5e","source_event_id":"100","source_type":"event","trigger_data":"5"})"},
   };
 
   for (const auto& test_case : kTestCases) {

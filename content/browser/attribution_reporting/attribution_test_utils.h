@@ -10,6 +10,7 @@
 #include <iosfwd>
 #include <vector>
 
+#include "base/guid.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/observer_list.h"
 #include "base/task/sequenced_task_runner.h"
@@ -77,6 +78,8 @@ class ConfigurableAttributionTestBrowserClient
   absl::optional<url::Origin> blocked_reporting_origin_;
 };
 
+base::GUID DefaultExternalReportID();
+
 class ConfigurableStorageDelegate : public AttributionStorage::Delegate {
  public:
   ConfigurableStorageDelegate();
@@ -95,6 +98,7 @@ class ConfigurableStorageDelegate : public AttributionStorage::Delegate {
   uint64_t GetFakeEventSourceTriggerData() const override;
   base::TimeDelta GetDeleteExpiredSourcesFrequency() const override;
   base::TimeDelta GetDeleteExpiredRateLimitsFrequency() const override;
+  base::GUID NewReportID() const override;
 
   void set_max_attributions_per_source(int max) {
     max_attributions_per_source_ = max;
@@ -338,6 +342,9 @@ class ReportBuilder {
 
   ReportBuilder& SetPriority(int64_t priority) WARN_UNUSED_RESULT;
 
+  ReportBuilder& SetExternalReportId(base::GUID external_report_id)
+      WARN_UNUSED_RESULT;
+
   ReportBuilder& SetReportId(absl::optional<AttributionReport::Id> id)
       WARN_UNUSED_RESULT;
 
@@ -349,6 +356,7 @@ class ReportBuilder {
   base::Time conversion_time_;
   base::Time report_time_;
   int64_t priority_ = 0;
+  base::GUID external_report_id_;
   absl::optional<AttributionReport::Id> report_id_;
 };
 

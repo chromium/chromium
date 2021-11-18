@@ -15,6 +15,7 @@
 #include "base/callback_helpers.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/guid.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/simple_test_clock.h"
 #include "build/build_config.h"
@@ -1611,6 +1612,19 @@ TEST_F(AttributionStorageTest,
                    DeactivatedSource(
                        source1,
                        DeactivatedSource::Reason::kReachedAttributionLimit))));
+}
+
+TEST_F(AttributionStorageTest, ReportID_RoundTrips) {
+  storage()->StoreSource(SourceBuilder(clock()->Now()).Build());
+  EXPECT_EQ(CreateReportStatus::kSuccess,
+            MaybeCreateAndStoreReport(DefaultTrigger()));
+
+  clock()->Advance(base::Milliseconds(kReportTime));
+
+  std::vector<AttributionReport> actual_reports =
+      storage()->GetAttributionsToReport(clock()->Now());
+  EXPECT_EQ(1u, actual_reports.size());
+  EXPECT_EQ(DefaultExternalReportID(), actual_reports[0].external_report_id);
 }
 
 }  // namespace content

@@ -16,6 +16,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
+class GUID;
 class Time;
 }  // namespace base
 
@@ -107,6 +108,9 @@ class AttributionStorage {
     // Must be positive.
     virtual base::TimeDelta GetDeleteExpiredRateLimitsFrequency() const
         WARN_UNUSED_RESULT = 0;
+
+    // Returns a new report ID.
+    virtual base::GUID NewReportID() const WARN_UNUSED_RESULT = 0;
   };
 
   struct CONTENT_EXPORT DeactivatedSource {

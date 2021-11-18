@@ -6,6 +6,7 @@
 #define CONTENT_BROWSER_ATTRIBUTION_REPORTING_ATTRIBUTION_STORAGE_SQL_MIGRATIONS_H_
 
 #include "base/compiler_specific.h"
+#include "content/browser/attribution_reporting/attribution_storage.h"
 
 namespace sql {
 class Database;
@@ -45,7 +46,8 @@ namespace content {
 // Upgrades |db| to the latest schema, and updates the version stored in
 // |meta_table| accordingly. Must be called with an open |db|.
 bool UpgradeAttributionStorageSqlSchema(sql::Database* db,
-                                        sql::MetaTable* meta_table)
+                                        sql::MetaTable* meta_table,
+                                        AttributionStorage::Delegate* delegate)
     WARN_UNUSED_RESULT;
 
 }  // namespace content

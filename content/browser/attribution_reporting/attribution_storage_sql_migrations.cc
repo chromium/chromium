@@ -6,7 +6,10 @@
 
 #include <vector>
 
+#include "base/guid.h"
 #include "base/metrics/histogram_functions.h"
+#include "content/browser/attribution_reporting/attribution_report.h"
+#include "content/browser/attribution_reporting/attribution_storage.h"
 #include "content/browser/attribution_reporting/sql_utils.h"
 #include "content/browser/attribution_reporting/storable_source.h"
 #include "net/base/schemeful_site.h"
@@ -23,6 +26,11 @@ namespace {
 WARN_UNUSED_RESULT
 StorableSource::Id NextImpressionId(StorableSource::Id id) {
   return StorableSource::Id(*id + 1);
+}
+
+WARN_UNUSED_RESULT
+AttributionReport::Id NextConversionId(AttributionReport::Id id) {
+  return AttributionReport::Id(*id + 1);
 }
 
 struct ImpressionIdAndConversionOrigin {
@@ -93,6 +101,31 @@ GetImpressionIdAndImpressionOrigins(sql::Database* db,
   if (!statement.Succeeded())
     return {};
   return impressions;
+}
+
+std::vector<AttributionReport::Id> GetConversionIds(
+    sql::Database* db,
+    AttributionReport::Id start_conversion_id) {
+  static constexpr char kGetConversionsSql[] =
+      "SELECT conversion_id FROM conversions "
+      "WHERE conversion_id >= ? "
+      "ORDER BY conversion_id "
+      "LIMIT ?";
+
+  sql::Statement statement(
+      db->GetCachedStatement(SQL_FROM_HERE, kGetConversionsSql));
+  statement.BindInt64(0, *start_conversion_id);
+
+  const int kNumConversions = 100;
+  statement.BindInt(1, kNumConversions);
+
+  std::vector<AttributionReport::Id> conversion_ids;
+  while (statement.Step()) {
+    conversion_ids.emplace_back(statement.ColumnInt64(0));
+  }
+  if (!statement.Succeeded())
+    return {};
+  return conversion_ids;
 }
 
 bool MigrateToVersion2(sql::Database* db, sql::MetaTable* meta_table) {
@@ -1093,10 +1126,110 @@ bool MigrateToVersion14(sql::Database* db, sql::MetaTable* meta_table) {
   return transaction.Commit();
 }
 
+bool MigrateToVersion15(sql::Database* db,
+                        sql::MetaTable* meta_table,
+                        AttributionStorage::Delegate* delegate) {
+  // Wrap each migration in its own transaction. See comment in
+  // |MigrateToVersion2|.
+  sql::Transaction transaction(db);
+  if (!transaction.Begin())
+    return false;
+
+  // Create the new conversions table with external_report_id.
+  static constexpr char kNewConversionTableSql[] =
+      "CREATE TABLE IF NOT EXISTS new_conversions"
+      "(conversion_id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,"
+      "impression_id INTEGER NOT NULL,"
+      "conversion_data INTEGER NOT NULL,"
+      "conversion_time INTEGER NOT NULL,"
+      "report_time INTEGER NOT NULL,"
+      "priority INTEGER NOT NULL,"
+      "failed_send_attempts INTEGER NOT NULL,"
+      "external_report_id TEXT NOT NULL)";
+  if (!db->Execute(kNewConversionTableSql))
+    return false;
+
+  // Transfer the existing conversions rows to the new table, using the empty
+  // string for external_report_id, which we will update afterward.
+  static constexpr char kPopulateNewConversionsSql[] =
+      "INSERT INTO new_conversions SELECT "
+      "conversion_id,impression_id,conversion_data,conversion_time,report_time,"
+      "priority,failed_send_attempts,'' FROM conversions";
+  sql::Statement populate_new_conversions_statement(
+      db->GetCachedStatement(SQL_FROM_HERE, kPopulateNewConversionsSql));
+  if (!populate_new_conversions_statement.Run())
+    return false;
+
+  // Update each of the conversion rows to have a random external_report_id.
+  //
+  // We update a subset of rows at a time to avoid pulling the entire
+  // conversions table into memory.
+  std::vector<AttributionReport::Id> conversion_ids =
+      GetConversionIds(db, AttributionReport::Id(0));
+
+  static constexpr char kUpdateExternalReportIdSql[] =
+      "UPDATE new_conversions SET external_report_id = ? "
+      "WHERE conversion_id = ?";
+  sql::Statement update_statement(
+      db->GetCachedStatement(SQL_FROM_HERE, kUpdateExternalReportIdSql));
+
+  while (!conversion_ids.empty()) {
+    // Perform the column updates for each row we pulled into memory.
+    for (AttributionReport::Id conversion_id : conversion_ids) {
+      update_statement.Reset(/*clear_bound_vars=*/true);
+
+      base::GUID external_report_id = delegate->NewReportID();
+      DCHECK(external_report_id.is_valid());
+      update_statement.BindString(0, external_report_id.AsLowercaseString());
+
+      update_statement.BindInt64(1, *conversion_id);
+
+      if (!update_statement.Run())
+        return false;
+    }
+
+    // Fetch the next batch of rows from the database.
+    conversion_ids =
+        GetConversionIds(db, NextConversionId(conversion_ids.back()));
+  }
+
+  static constexpr char kDropOldConversionTableSql[] = "DROP TABLE conversions";
+  if (!db->Execute(kDropOldConversionTableSql))
+    return false;
+
+  static constexpr char kRenameConversionTableSql[] =
+      "ALTER TABLE new_conversions RENAME TO conversions";
+  if (!db->Execute(kRenameConversionTableSql))
+    return false;
+
+  // Create the pre-existing conversion table indices on the new table.
+
+  static constexpr char kConversionReportTimeIndexSql[] =
+      "CREATE INDEX IF NOT EXISTS conversion_report_idx "
+      "ON conversions(report_time)";
+  if (!db->Execute(kConversionReportTimeIndexSql))
+    return false;
+
+  static constexpr char kConversionImpressionIdIndexSql[] =
+      "CREATE INDEX IF NOT EXISTS conversion_impression_id_idx "
+      "ON conversions(impression_id)";
+  if (!db->Execute(kConversionImpressionIdIndexSql))
+    return false;
+
+  meta_table->SetVersionNumber(15);
+  return transaction.Commit();
+}
+
 }  // namespace
 
-bool UpgradeAttributionStorageSqlSchema(sql::Database* db,
-                                        sql::MetaTable* meta_table) {
+bool UpgradeAttributionStorageSqlSchema(
+    sql::Database* db,
+    sql::MetaTable* meta_table,
+    AttributionStorage::Delegate* delegate) {
+  DCHECK(db);
+  DCHECK(meta_table);
+  DCHECK(delegate);
+
   base::ThreadTicks start_timestamp = base::ThreadTicks::Now();
 
   if (meta_table->GetVersionNumber() == 1) {
@@ -1149,6 +1282,10 @@ bool UpgradeAttributionStorageSqlSchema(sql::Database* db,
   }
   if (meta_table->GetVersionNumber() == 13) {
     if (!MigrateToVersion14(db, meta_table))
+      return false;
+  }
+  if (meta_table->GetVersionNumber() == 14) {
+    if (!MigrateToVersion15(db, meta_table, delegate))
       return false;
   }
   // Add similar if () blocks for new versions here.

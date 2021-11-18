@@ -4,6 +4,7 @@
 
 #include "content/browser/attribution_reporting/attribution_storage_delegate_impl.h"
 
+#include "base/guid.h"
 #include "base/rand_util.h"
 #include "base/time/time.h"
 #include "content/browser/attribution_reporting/attribution_policy.h"
@@ -96,6 +97,10 @@ base::Time AttributionStorageDelegateImpl::GetReportTime(
   if (debug_mode_)
     return trigger_time;
   return ComputeReportTime(source, trigger_time);
+}
+
+base::GUID AttributionStorageDelegateImpl::NewReportID() const {
+  return base::GUID::GenerateRandomV4();
 }
 
 }  // namespace content

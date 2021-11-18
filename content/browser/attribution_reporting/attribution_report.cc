@@ -19,13 +19,17 @@ AttributionReport::AttributionReport(StorableSource impression,
                                      base::Time conversion_time,
                                      base::Time report_time,
                                      int64_t priority,
+                                     base::GUID external_report_id,
                                      absl::optional<Id> conversion_id)
     : impression(std::move(impression)),
       trigger_data(trigger_data),
       conversion_time(conversion_time),
       report_time(report_time),
       priority(priority),
-      conversion_id(conversion_id) {}
+      external_report_id(std::move(external_report_id)),
+      conversion_id(conversion_id) {
+  DCHECK(external_report_id.is_valid());
+}
 
 AttributionReport::AttributionReport(const AttributionReport& other) = default;
 
@@ -70,6 +74,9 @@ std::string AttributionReport::ReportBody(bool pretty_print) const {
       break;
   }
   dict.SetStringKey("source_type", source_type);
+
+  DCHECK(external_report_id.is_valid());
+  dict.SetStringKey("report_id", external_report_id.AsLowercaseString());
 
   // Write the dict to json;
   std::string output_json;

@@ -99,6 +99,12 @@ struct ExpectedReportWaiter {
     base::Value body = base::test::ParseJson(request.content);
     EXPECT_THAT(body, base::test::DictionaryHasValues(expected_body));
 
+    // The report ID is random, so just test that the field exists here and is a
+    // valid GUID.
+    std::string* report_id = body.FindStringKey("report_id");
+    EXPECT_TRUE(report_id);
+    EXPECT_TRUE(base::GUID::ParseLowercase(*report_id).is_valid());
+
     // Clear the port as it is assigned by the EmbeddedTestServer at runtime.
     replace_host.SetPortStr("");
 
