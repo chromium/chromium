@@ -1687,17 +1687,6 @@ virtual/not-site-per-process/external/wpt/app-history/navigate-event/cross-windo
 virtual/not-site-per-process/external/wpt/app-history/navigate-event/cross-window/submit-samedocument-crossorigin-sameorigindomain.sub.html [ Pass ]
 virtual/wasm-module-sharing-enabled-not-site-per-process/external/wpt/wasm/serialization/module/window-similar-but-cross-origin-success.sub.html [ Pass ]
 virtual/wasm-module-sharing-enabled-not-site-per-process/external/wpt/wasm/serialization/module/window-domain-success.sub.html [ Pass ]
-# -------------------- origin-vs-url in console messages -----------------
-# Process hosting https://foo.example.com should not get any data from
-# https://bar.other-site-example.com.  This includes things like cookies
-# and localStorage, but also full URLs (which may include some "secrets"
-# and [unlike origins] are not exposed to other origins through web APIs).
-# To properly enforce security boundary described above, console messages
-# cannot include full cross-origin URLs (i.e. the messages need to strip
-# cross-origin URLs down to just the origin - for example,
-# https://foo.example.com/path?token=secret needs to be replaced with just
-# https://foo.example.com).
-crbug.com/669083 http/tests/security/frameNavigation/xss-DENIED-top-navigation-without-user-gesture.html [ Skip ]
 # ----------------------- origin-keyed agent clusters --------------------
 # Origin-keyed agent clusters web platform tests are for the feature at
 # https://html.spec.whatwg.org/#origin-keyed-agent-clusters. It doesn't make
