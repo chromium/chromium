@@ -2,32 +2,28 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {Destination, DestinationConnectionStatus, DestinationOrigin, DestinationType, PrintPreviewButtonStripElement, State} from 'chrome://print/print_preview.js';
+import {CrButtonElement, Destination, DestinationConnectionStatus, DestinationOrigin, DestinationType, PrintPreviewButtonStripElement, State} from 'chrome://print/print_preview.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
-import {isWindows} from 'chrome://resources/js/cr.m.js';
-
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
-window.button_strip_test = {};
-const button_strip_test = window.button_strip_test;
-button_strip_test.suiteName = 'ButtonStripTest';
-/** @enum {string} */
-button_strip_test.TestNames = {
-  ButtonStripChangesForState: 'button strip changes for state',
-  ButtonOrder: 'button order',
-  ButtonStripFiresEvents: 'button strip fires events',
+const button_strip_test = {
+  suiteName: 'ButtonStripTest',
+  TestNames: {
+    ButtonStripChangesForState: 'button strip changes for state',
+    ButtonOrder: 'button order',
+    ButtonStripFiresEvents: 'button strip fires events',
+  },
 };
 
-suite(button_strip_test.suiteName, function() {
-  /** @type {!PrintPreviewButtonStripElement} */
-  let buttonStrip;
+Object.assign(window, {button_strip_test: button_strip_test});
 
-  /** @override */
+suite(button_strip_test.suiteName, function() {
+  let buttonStrip: PrintPreviewButtonStripElement;
+
   setup(function() {
     document.body.innerHTML = '';
-    buttonStrip = /** @type {!PrintPreviewButtonStripElement} */ (
-        document.createElement('print-preview-button-strip'));
+    buttonStrip = document.createElement('print-preview-button-strip');
 
     buttonStrip.destination = new Destination(
         'FooDevice', DestinationType.GOOGLE, DestinationOrigin.COOKIES,
@@ -44,7 +40,8 @@ suite(button_strip_test.suiteName, function() {
       assert(button_strip_test.TestNames.ButtonStripChangesForState),
       function() {
         const printButton =
-            buttonStrip.shadowRoot.querySelector('.action-button');
+            buttonStrip.shadowRoot!.querySelector<CrButtonElement>(
+                '.action-button')!;
         assertFalse(printButton.disabled);
 
         buttonStrip.state = State.NOT_READY;
@@ -65,34 +62,35 @@ suite(button_strip_test.suiteName, function() {
   test(assert(button_strip_test.TestNames.ButtonOrder), function() {
     // Verify that there are only 2 buttons.
     assertEquals(
-        2, buttonStrip.shadowRoot.querySelectorAll('cr-button').length);
+        2, buttonStrip.shadowRoot!.querySelectorAll('cr-button').length);
 
     const firstButton =
-        buttonStrip.shadowRoot.querySelector('cr-button:not(:last-child)');
+        buttonStrip.shadowRoot!.querySelector('cr-button:not(:last-child)');
     const lastButton =
-        buttonStrip.shadowRoot.querySelector('cr-button:last-child');
+        buttonStrip.shadowRoot!.querySelector('cr-button:last-child');
     const printButton =
-        buttonStrip.shadowRoot.querySelector('cr-button.action-button');
+        buttonStrip.shadowRoot!.querySelector('cr-button.action-button');
     const cancelButton =
-        buttonStrip.shadowRoot.querySelector('cr-button.cancel-button');
+        buttonStrip.shadowRoot!.querySelector('cr-button.cancel-button');
 
-    if (isWindows) {
-      // On Windows, the print button is on the left.
-      assertEquals(firstButton, printButton);
-      assertEquals(lastButton, cancelButton);
-    } else {
-      assertEquals(firstButton, cancelButton);
-      assertEquals(lastButton, printButton);
-    }
+    // <if expr="is_win">
+    // On Windows, the print button is on the left.
+    assertEquals(firstButton, printButton);
+    assertEquals(lastButton, cancelButton);
+    // </if>
+    // <if expr="not is_win">
+    assertEquals(firstButton, cancelButton);
+    assertEquals(lastButton, printButton);
+    // </if>
   });
 
   // Tests that the button strip fires print-requested and cancel-requested
   // events.
   test(assert(button_strip_test.TestNames.ButtonStripFiresEvents), function() {
-    const printButton =
-        buttonStrip.shadowRoot.querySelector('cr-button.action-button');
-    const cancelButton =
-        buttonStrip.shadowRoot.querySelector('cr-button.cancel-button');
+    const printButton = buttonStrip.shadowRoot!.querySelector<HTMLElement>(
+        'cr-button.action-button')!;
+    const cancelButton = buttonStrip.shadowRoot!.querySelector<HTMLElement>(
+        'cr-button.cancel-button')!;
 
     const whenPrintRequested = eventToPromise('print-requested', buttonStrip);
     printButton.click();

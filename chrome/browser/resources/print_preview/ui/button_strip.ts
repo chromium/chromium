@@ -181,5 +181,11 @@ export class PrintPreviewButtonStripElement extends PolymerElement {
   // </if>
 }
 
+declare global {
+  interface HTMLElementTagNameMap {
+    'print-preview-button-strip': PrintPreviewButtonStripElement;
+  }
+}
+
 customElements.define(
     PrintPreviewButtonStripElement.is, PrintPreviewButtonStripElement);

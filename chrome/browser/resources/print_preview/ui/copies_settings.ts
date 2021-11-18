@@ -121,5 +121,11 @@ export class PrintPreviewCopiesSettingsElement extends
   }
 }
 
+declare global {
+  interface HTMLElementTagNameMap {
+    'print-preview-copies-settings': PrintPreviewCopiesSettingsElement;
+  }
+}
+
 customElements.define(
     PrintPreviewCopiesSettingsElement.is, PrintPreviewCopiesSettingsElement);

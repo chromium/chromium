@@ -61,5 +61,11 @@ export class PrintPreviewColorSettingsElement extends
   }
 }
 
+declare global {
+  interface HTMLElementTagNameMap {
+    'print-preview-color-settings': PrintPreviewColorSettingsElement;
+  }
+}
+
 customElements.define(
     PrintPreviewColorSettingsElement.is, PrintPreviewColorSettingsElement);

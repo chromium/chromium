@@ -10,6 +10,8 @@ import("//ui/webui/resources/tools/generate_grd.gni")
 # Print Preview test files that contain // <if expr> and therefore require
 # preprocessing.
 preprocessed_tests = [
+  "button_strip_test.ts",
+  "color_settings_test.ts",
   "destination_settings_test.js",
   "destination_store_test.js",
   "invalid_settings_browsertest.js",
@@ -30,12 +32,10 @@ preprocessed_tests = [
 non_preprocessed_tests = [
   "advanced_dialog_test.ts",
   "advanced_item_test.ts",
-  "button_strip_interactive_test.js",
-  "button_strip_test.js",
+  "button_strip_interactive_test.ts",
   "cloud_print_interface_stub.ts",
-  "color_settings_test.js",
-  "copies_settings_test.js",
-  "custom_margins_test.js",
+  "copies_settings_test.ts",
+  "custom_margins_test.ts",
   "destination_dialog_cros_interactive_test.js",
   "destination_dialog_cros_test.js",
   "destination_dialog_interactive_test.js",

@@ -516,6 +516,13 @@ export class PrintPreviewMarginControlContainerElement extends
   }
 }
 
+declare global {
+  interface HTMLElementTagNameMap {
+    'print-preview-margin-control-container':
+        PrintPreviewMarginControlContainerElement;
+  }
+}
+
 customElements.define(
     PrintPreviewMarginControlContainerElement.is,
     PrintPreviewMarginControlContainerElement);

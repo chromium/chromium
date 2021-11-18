@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 import {DEFAULT_MAX_COPIES, PrintPreviewCopiesSettingsElement, PrintPreviewModelElement} from 'chrome://print/print_preview.js';
-import {assert} from 'chrome://resources/js/assert.m.js';
 
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {fakeDataBind} from 'chrome://webui-test/test_util.js';
@@ -11,22 +10,17 @@ import {fakeDataBind} from 'chrome://webui-test/test_util.js';
 import {triggerInputEvent} from './print_preview_test_utils.js';
 
 suite('CopiesSettingsTest', function() {
-  /** @type {!PrintPreviewCopiesSettingsElement} */
-  let copiesSection;
+  let copiesSection: PrintPreviewCopiesSettingsElement;
 
-  /** @type {!PrintPreviewModelElement} */
-  let model;
+  let model: PrintPreviewModelElement;
 
-  /** @override */
   setup(function() {
     document.body.innerHTML = '';
-    model = /** @type {!PrintPreviewModelElement} */ (
-        document.createElement('print-preview-model'));
+    model = document.createElement('print-preview-model');
     document.body.appendChild(model);
     model.set('settings.collate.available', true);
 
-    copiesSection = /** @type {!PrintPreviewCopiesSettingsElement} */ (
-        document.createElement('print-preview-copies-settings'));
+    copiesSection = document.createElement('print-preview-copies-settings');
     copiesSection.settings = model.settings;
     copiesSection.disabled = false;
     fakeDataBind(model, copiesSection, 'settings');
@@ -35,12 +29,12 @@ suite('CopiesSettingsTest', function() {
 
   /**
    * Confirms that |max| is currently set as copiesSection's maxCopies.
-   * @param {number} max Expected maximum copies value to check.
+   * @param max Expected maximum copies value to check.
    */
-  async function checkCopiesMax(max) {
-    const input = copiesSection.shadowRoot
-                      .querySelector('print-preview-number-settings-section')
-                      .getInput();
+  async function checkCopiesMax(max: number) {
+    const input =
+        copiesSection.shadowRoot!
+            .querySelector('print-preview-number-settings-section')!.getInput();
 
     // Check that |max| copies is valid.
     await triggerInputEvent(input, max.toString(), copiesSection);
@@ -55,9 +49,8 @@ suite('CopiesSettingsTest', function() {
   // supported.
   test('set copies max', async () => {
     const copiesInput =
-        copiesSection.shadowRoot
-            .querySelector('print-preview-number-settings-section')
-            .getInput();
+        copiesSection.shadowRoot!
+            .querySelector('print-preview-number-settings-section')!.getInput();
     assertEquals('1', copiesInput.value);
     assertFalse(copiesSection.getSetting('copies').setFromUi);
 
@@ -70,7 +63,8 @@ suite('CopiesSettingsTest', function() {
   });
 
   test('collate visibility', async () => {
-    const collateSection = copiesSection.shadowRoot.querySelector('.checkbox');
+    const collateSection =
+        copiesSection.shadowRoot!.querySelector<HTMLElement>('.checkbox')!;
     assertTrue(collateSection.hidden);
 
     copiesSection.setSetting('copies', 2);
@@ -83,9 +77,8 @@ suite('CopiesSettingsTest', function() {
 
     // Set copies empty.
     const copiesInput =
-        copiesSection.shadowRoot
-            .querySelector('print-preview-number-settings-section')
-            .getInput();
+        copiesSection.shadowRoot!
+            .querySelector('print-preview-number-settings-section')!.getInput();
     await triggerInputEvent(copiesInput, '', copiesSection);
     assertTrue(collateSection.hidden);
 
@@ -102,9 +95,8 @@ suite('CopiesSettingsTest', function() {
   // correctly.
   test('set copies', async () => {
     const copiesInput =
-        copiesSection.shadowRoot
-            .querySelector('print-preview-number-settings-section')
-            .getInput();
+        copiesSection.shadowRoot!
+            .querySelector('print-preview-number-settings-section')!.getInput();
     assertEquals('1', copiesInput.value);
     assertFalse(copiesSection.getSetting('copies').setFromUi);
 
@@ -143,9 +135,8 @@ suite('CopiesSettingsTest', function() {
   // Verifies that the inputs update when the value is updated.
   test('update from settings', function() {
     const copiesInput =
-        copiesSection.shadowRoot
-            .querySelector('print-preview-number-settings-section')
-            .getInput();
+        copiesSection.shadowRoot!
+            .querySelector('print-preview-number-settings-section')!.getInput();
     const collateCheckbox = copiesSection.$.collate;
 
     assertEquals('1', copiesInput.value);

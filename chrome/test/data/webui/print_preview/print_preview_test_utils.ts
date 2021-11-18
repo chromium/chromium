@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import {CapabilitiesResponse, Cdd, DEFAULT_MAX_COPIES, Destination, DestinationCertificateStatus, DestinationConnectionStatus, DestinationOrigin, DestinationStore, DestinationType, GooglePromotedDestinationId, LocalDestinationInfo, MeasurementSystemUnitType, MediaSizeCapability, MediaSizeOption, NativeInitialSettings, VendorCapabilityValueType} from 'chrome://print/print_preview.js';
+import {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.m.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {WebUIListenerMixin} from 'chrome://resources/js/web_ui_listener_mixin.js';
@@ -301,7 +302,7 @@ export function getMediaSizeCapabilityWithCustomNames(): MediaSizeCapability {
  * @return Promise that resolves when the input-change event has fired.
  */
 export function triggerInputEvent(
-    inputElement: HTMLInputElement, input: string,
+    inputElement: HTMLInputElement|CrInputElement, input: string,
     parentElement: HTMLElement): Promise<void> {
   inputElement.value = input;
   inputElement.dispatchEvent(

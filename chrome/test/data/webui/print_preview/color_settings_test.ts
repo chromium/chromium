@@ -4,8 +4,7 @@
 
 import 'chrome://print/print_preview.js';
 
-import {assert} from 'chrome://resources/js/assert.m.js';
-import {isChromeOS, isLacros} from 'chrome://resources/js/cr.m.js';
+import {PrintPreviewColorSettingsElement, PrintPreviewModelElement} from 'chrome://print/print_preview.js';
 
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise, fakeDataBind} from 'chrome://webui-test/test_util.js';
@@ -13,21 +12,16 @@ import {eventToPromise, fakeDataBind} from 'chrome://webui-test/test_util.js';
 import {selectOption} from './print_preview_test_utils.js';
 
 suite('ColorSettingsTest', function() {
-  /** @type {!PrintPreviewColorSettingsElement} */
-  let colorSection;
+  let colorSection: PrintPreviewColorSettingsElement;
 
-  /** @type {!PrintPreviewModelElement} */
-  let model;
+  let model: PrintPreviewModelElement;
 
-  /** @override */
   setup(function() {
     document.body.innerHTML = '';
-    model = /** @type {!PrintPreviewModelElement} */ (
-        document.createElement('print-preview-model'));
+    model = document.createElement('print-preview-model');
     document.body.appendChild(model);
 
-    colorSection = /** @type {!PrintPreviewColorSettingsElement} */ (
-        document.createElement('print-preview-color-settings'));
+    colorSection = document.createElement('print-preview-color-settings');
     colorSection.settings = model.settings;
     colorSection.disabled = false;
     fakeDataBind(model, colorSection, 'settings');
@@ -37,7 +31,7 @@ suite('ColorSettingsTest', function() {
 
   // Tests that setting the setting updates the UI.
   test('set setting', async () => {
-    const select = colorSection.shadowRoot.querySelector('select');
+    const select = colorSection.shadowRoot!.querySelector('select')!;
     assertEquals('color', select.value);
 
     colorSection.setSetting('color', false);
@@ -48,28 +42,28 @@ suite('ColorSettingsTest', function() {
   // Tests that selecting a new option in the dropdown updates the setting.
   test('select option', async () => {
     // Verify that the selected option and names are as expected.
-    const select = colorSection.shadowRoot.querySelector('select');
+    const select = colorSection.shadowRoot!.querySelector('select')!;
     assertEquals('color', select.value);
-    assertTrue(/** @type {boolean} */ (colorSection.getSettingValue('color')));
+    assertTrue(colorSection.getSettingValue('color') as boolean);
     assertFalse(colorSection.getSetting('color').setFromUi);
     assertEquals(2, select.options.length);
 
     // Verify that selecting an new option in the dropdown sets the setting.
     await selectOption(colorSection, 'bw');
-    assertFalse(/** @type {boolean} */ (colorSection.getSettingValue('color')));
+    assertFalse(colorSection.getSettingValue('color') as boolean);
     assertTrue(colorSection.getSetting('color').setFromUi);
   });
 
-  if (isChromeOS || isLacros) {
-    // Tests that if the setting is enforced by enterprise policy it is
-    // disabled.
-    test('disabled by policy', function() {
-      // Verify that the selected option and names are as expected.
-      const select = colorSection.shadowRoot.querySelector('select');
-      assertFalse(select.disabled);
+  // <if expr="chromeos or lacros">
+  // Tests that if the setting is enforced by enterprise policy it is
+  // disabled.
+  test('disabled by policy', function() {
+    // Verify that the selected option and names are as expected.
+    const select = colorSection.shadowRoot!.querySelector('select')!;
+    assertFalse(select.disabled);
 
-      model.set('settings.color.setByPolicy', true);
-      assertTrue(select.disabled);
-    });
-  }
+    model.set('settings.color.setByPolicy', true);
+    assertTrue(select.disabled);
+  });
+  // </if>
 });
