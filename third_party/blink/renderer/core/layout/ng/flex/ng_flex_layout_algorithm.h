@@ -16,7 +16,6 @@ class NGBlockNode;
 class NGBlockBreakToken;
 class NGBoxFragment;
 struct DevtoolsFlexInfo;
-struct NGFlexItem;
 
 class CORE_EXPORT NGFlexLayoutAlgorithm
     : public NGLayoutAlgorithm<NGBlockNode,
@@ -74,10 +73,10 @@ class CORE_EXPORT NGFlexLayoutAlgorithm
       bool min_block_size_should_encompass_intrinsic_size = false) const;
   void ConstructAndAppendFlexItems();
   void ApplyFinalAlignmentAndReversals(Vector<NGFlexLine>* flex_line_outputs);
-  bool GiveItemsFinalPositionAndSize(
-      const Vector<NGFlexLine>& flex_line_outputs);
+  bool GiveItemsFinalPositionAndSize(Vector<NGFlexLine>* flex_line_outputs);
   void GiveItemsFinalPositionAndSizeForFragmentation(
-      const Vector<NGFlexLine>& flex_line_outputs);
+      Vector<NGFlexLine>* flex_line_outputs,
+      LayoutUnit* total_intrinsic_block_size);
   bool PropagateFlexItemInfo(FlexItem* flex_item,
                              wtf_size_t flex_line_idx,
                              LayoutPoint location,
@@ -99,13 +98,6 @@ class CORE_EXPORT NGFlexLayoutAlgorithm
       const NGBoxFragment&,
       LayoutUnit block_offset,
       absl::optional<LayoutUnit>* fallback_baseline);
-
-  // Re-layout a given flex item, taking fragmentation into account.
-  scoped_refptr<const NGLayoutResult> LayoutWithBlockFragmentation(
-      const NGFlexItem& flex_item,
-      LayoutUnit block_offset,
-      const NGBlockBreakToken* item_break_token,
-      absl::optional<LayoutUnit> line_cross_size_for_stretch);
 
 #if DCHECK_IS_ON()
   void CheckFlexLines(const Vector<NGFlexLine>& flex_line_outputs) const;

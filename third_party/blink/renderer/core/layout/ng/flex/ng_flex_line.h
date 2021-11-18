@@ -16,6 +16,11 @@ struct NGFlexItem {
   const ComputedStyle& Style() const { return ng_input_node.Style(); }
 
   LayoutUnit main_axis_final_size;
+  // This will originally be set to the total block size of the item before
+  // fragmentation. It will then be reduced while performing fragmentation. If
+  // it becomes negative, that means that the item expanded as a result of
+  // fragmentation.
+  LayoutUnit total_remaining_block_size;
   // The main axis offset is stored in X and cross axis offset in Y.
   //
   // TODO(almaher): Update the type from LayoutPoint to something else.
@@ -28,6 +33,8 @@ struct NGFlexLine {
   explicit NGFlexLine(wtf_size_t num_items) : line_items(num_items) {}
 
   LayoutUnit line_cross_size;
+  // Note: This is only used by column flex containers.
+  LayoutUnit item_offset_adjustment;
   Vector<NGFlexItem> line_items;
 };
 
