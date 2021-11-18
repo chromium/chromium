@@ -120,6 +120,8 @@ class FindRequestManager {
   }
 
  private:
+  friend class FindRequestManagerFencedFrameTest;
+
   // An invalid ID. This value is invalid for any render process ID, render
   // frame ID, find request ID, or find match rects version number.
   static const int kInvalidId;
