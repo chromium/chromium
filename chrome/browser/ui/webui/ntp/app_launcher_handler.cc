@@ -872,8 +872,6 @@ void AppLauncherHandler::HandleSetLaunchType(const base::ListValue* args) {
     web_app::DisplayMode display_mode = web_app::DisplayMode::kBrowser;
     switch (launch_type) {
       case extensions::LAUNCH_TYPE_FULLSCREEN:
-        display_mode = web_app::DisplayMode::kFullscreen;
-        break;
       case extensions::LAUNCH_TYPE_WINDOW:
         display_mode = web_app::DisplayMode::kStandalone;
         break;
