@@ -17,7 +17,13 @@ namespace gpu {
 #if defined(CYGPROFILE_INSTRUMENTATION)
 constexpr base::TimeDelta kGpuWatchdogTimeout = base::Seconds(30);
 #elif defined(OS_MAC)
+#if defined(ADDRESS_SANITIZER)
+// Use a longer timeout because of slower execution time leading to
+// intermittent flakes. http://crbug.com/1270755
+constexpr base::TimeDelta kGpuWatchdogTimeout = base::Seconds(50);
+#else
 constexpr base::TimeDelta kGpuWatchdogTimeout = base::Seconds(25);
+#endif
 #elif defined(OS_WIN)
 constexpr base::TimeDelta kGpuWatchdogTimeout = base::Seconds(30);
 #else
