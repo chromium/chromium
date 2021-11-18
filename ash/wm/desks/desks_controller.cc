@@ -724,8 +724,8 @@ void DesksController::MaybeRemoveVisibleOnAllDesksWindow(aura::Window* window) {
     Shell::Get()
         ->accessibility_controller()
         ->TriggerAccessibilityAlertWithMessage(l10n_util::GetStringFUTF8(
-            IDS_ASH_VIRTUAL_DESKS_UNASSIGNED_FROM_ALL_DESKS,
-            window->GetTitle()));
+            IDS_ASH_VIRTUAL_DESKS_UNASSIGNED_FROM_ALL_DESKS, window->GetTitle(),
+            active_desk_->name()));
   }
 }
 

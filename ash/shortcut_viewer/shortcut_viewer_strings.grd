@@ -813,13 +813,13 @@
     Activate the desk on the right
   </message>
   <message name="IDS_KSV_DESCRIPTION_DESKS_ACTIVATE_INDEXED_DESK" desc="Description of the command in keyboard shortcut viewer.">
-    Activate the 1st to 8th desk.
+    Go to desk 1 to 8
   </message>
   <message name="IDS_KSV_SHORTCUT_DESKS_ACTIVATE_INDEXED_DESK" desc="Description of the command in keyboard shortcut viewer.">
     <ph name="shift">$1<ex>Shift</ex></ph><ph name="separator1">$2<ex>+</ex></ph><ph name="search">$3<ex>Search</ex></ph><ph name="separator2">$4<ex>+</ex></ph> 1 through 8
   </message>
   <message name="IDS_KSV_DESCRIPTION_DESKS_TOGGLE_WINDOW_ASSIGNED_TO_ALL_DESKS" desc="Description of the command in keyboard shortcut viewer.">
-    Toggle whether the active window is assigned to all desks
+    Assign active window to all desks
   </message>
   <message name="IDS_KSV_DESCRIPTION_DESKS_MOVE_ACTIVE_ITEM_LEFT_DESK" desc="Description of the command in keyboard shortcut viewer.">
     Move active window to the desk on the left

@@ -3687,10 +3687,10 @@ Here are some things you can try to get started.
         Window <ph name="WINDOW_TITLE">$1<ex>Files</ex></ph> moved from Desk <ph name="ACTIVE_DESK">$2</ph> to Desk <ph name="TARGET_DESK">$3</ph>
       </message>
       <message name="IDS_ASH_VIRTUAL_DESKS_ASSIGNED_TO_ALL_DESKS" desc="A window is assigned to all desks.">
-        Window <ph name="WINDOW_TITLE">$1<ex>Files</ex></ph> assigned to all desks.
+        Window <ph name="WINDOW_TITLE">$1<ex>Files</ex></ph> assigned to all desks
       </message>
       <message name="IDS_ASH_VIRTUAL_DESKS_UNASSIGNED_FROM_ALL_DESKS" desc="A window is unassigned from all desks.">
-        Window <ph name="WINDOW_TITLE">$1<ex>Files</ex></ph> unassigned from all desks.
+        Window <ph name="WINDOW_TITLE">$1<ex>Files</ex></ph> assigned to <ph name="DESK_TITLE">$2<ex>School</ex></ph> and unassigned from all other desks
       </message>
 
       <!-- Alt Tab -->
