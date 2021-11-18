@@ -232,6 +232,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kEnhancedProtectionPromoCard,
     &kExperimentsForAgsa,
     &kExploreSites,
+    &kFixedUmaSessionResumeOrder,
     &kFocusOmniboxInIncognitoTabIntents,
     &kGoogleLensSdkIntent,
     &kHandleMediaIntents,
@@ -616,6 +617,9 @@ const base::Feature kExperimentsForAgsa{"ExperimentsForAgsa",
 
 const base::Feature kExploreSites{"ExploreSites",
                                   base::FEATURE_DISABLED_BY_DEFAULT};
+
+const base::Feature kFixedUmaSessionResumeOrder{
+    "FixedUmaSessionResumeOrder", base::FEATURE_DISABLED_BY_DEFAULT};
 
 const base::Feature kHandleMediaIntents{"HandleMediaIntents",
                                         base::FEATURE_ENABLED_BY_DEFAULT};
