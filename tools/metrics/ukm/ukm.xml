@@ -18284,6 +18284,15 @@ be describing additional metrics about the same event.
     Cache Restore (more metrics in the HistoryNavigation event), and AMP
     documents (more metrics in the AmpPageLoad event)
   </summary>
+  <metric name="NotCountedForCoreWebVitals" enum="Boolean">
+    <summary>
+      Determines if this page visit event should be counted towards calculations
+      involving Core Web Vitals. If true, this page visit event should not be
+      counted. If false or NULL, the page visit event should be considered.
+      Currently this is determined by checking the mime-type of the page visit
+      event.
+    </summary>
+  </metric>
   <metric name="PageVisitFinalStatus" enum="PageVisitFinalStatus">
     <summary>
       Determines the final status for this page visit. That is, records whether

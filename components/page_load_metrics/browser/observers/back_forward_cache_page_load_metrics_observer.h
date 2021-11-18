@@ -93,6 +93,8 @@ class BackForwardCachePageLoadMetricsObserver
   void OnRestoreFromBackForwardCache(
       const page_load_metrics::mojom::PageLoadTiming& timing,
       content::NavigationHandle* navigation_handle) override;
+  page_load_metrics::PageLoadMetricsObserver::ObservePolicy
+  ShouldObserveMimeType(const std::string& mime_type) const override;
   void OnFirstPaintAfterBackForwardCacheRestoreInPage(
       const page_load_metrics::mojom::BackForwardCacheTiming& timing,
       size_t index) override;

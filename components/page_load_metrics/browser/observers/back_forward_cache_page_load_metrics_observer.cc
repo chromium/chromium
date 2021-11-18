@@ -186,6 +186,20 @@ void BackForwardCachePageLoadMetricsObserver::OnRestoreFromBackForwardCache(
   builder.Record(ukm::UkmRecorder::Get());
 }
 
+page_load_metrics::PageLoadMetricsObserver::ObservePolicy
+BackForwardCachePageLoadMetricsObserver::ShouldObserveMimeType(
+    const std::string& mime_type) const {
+  PageLoadMetricsObserver::ObservePolicy policy =
+      PageLoadMetricsObserver::ShouldObserveMimeType(mime_type);
+  if (policy == STOP_OBSERVING && has_ever_entered_back_forward_cache_) {
+    ukm::builders::UserPerceivedPageVisit(
+        GetLastUkmSourceIdForBackForwardCacheRestore())
+        .SetNotCountedForCoreWebVitals(true)
+        .Record(ukm::UkmRecorder::Get());
+  }
+  return policy;
+}
+
 void BackForwardCachePageLoadMetricsObserver::
     OnFirstPaintAfterBackForwardCacheRestoreInPage(
         const page_load_metrics::mojom::BackForwardCacheTiming& timing,

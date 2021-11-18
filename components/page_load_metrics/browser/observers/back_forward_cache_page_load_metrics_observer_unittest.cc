@@ -20,6 +20,7 @@ using content::Visibility;
 using page_load_metrics::FakePageLoadMetricsObserverDelegate;
 using page_load_metrics::PageLoadMetricsObserverDelegate;
 using ukm::builders::HistoryNavigation;
+using ukm::builders::UserPerceivedPageVisit;
 
 class BackForwardCachePageLoadMetricsObserverTest
     : public page_load_metrics::PageLoadMetricsObserverContentTestHarness {
@@ -497,4 +498,38 @@ TEST_F(BackForwardCachePageLoadMetricsObserverTest,
             result_metrics[1].begin()->first);
   EXPECT_EQ(page_load_metrics::PageEndReason::END_NEW_NAVIGATION,
             result_metrics[1].begin()->second);
+}
+
+TEST_F(BackForwardCachePageLoadMetricsObserverTest, TestLogsNonCWVPageVisit) {
+  auto fake_bfcache_restore =
+      PageLoadMetricsObserverDelegate::BackForwardCacheRestore(
+          /*was_in_foreground=*/true, base::TimeTicks());
+  fake_delegate_->AddBackForwardCacheRestore(fake_bfcache_restore);
+  observer_with_fake_delegate_->ShouldObserveMimeType("fake-mime-type");
+  auto& test_ukm_recorder = tester()->test_ukm_recorder();
+  auto result_metrics = test_ukm_recorder.FilteredHumanReadableMetricForEntry(
+      UserPerceivedPageVisit::kEntryName,
+      UserPerceivedPageVisit::kNotCountedForCoreWebVitalsName);
+  EXPECT_EQ(1U, result_metrics.size());
+  EXPECT_EQ(UserPerceivedPageVisit::kNotCountedForCoreWebVitalsName,
+            result_metrics[0].begin()->first);
+  EXPECT_TRUE(result_metrics[0].begin()->second);
+
+  observer_with_fake_delegate_->ShouldObserveMimeType("text/html");
+  result_metrics = test_ukm_recorder.FilteredHumanReadableMetricForEntry(
+      UserPerceivedPageVisit::kEntryName,
+      UserPerceivedPageVisit::kNotCountedForCoreWebVitalsName);
+  // The metric being tested here indicates whether or not logs should be
+  // ignored when counting logs towards Core Web Vitals. Either the metric being
+  // present and false, or the metric being absent completely, means the logs
+  // shouldn't be counted.
+  // We've just indicated that these logs *should* be counted.
+  // So if the result metrics size is still 1, this test has passed, and if the
+  // result metrics are of size 2, the new value should be false.
+  if (result_metrics.size() > 1) {
+    EXPECT_EQ(2U, result_metrics.size());
+    EXPECT_EQ(UserPerceivedPageVisit::kNotCountedForCoreWebVitalsName,
+              result_metrics[1].begin()->first);
+    EXPECT_FALSE(result_metrics[1].begin()->second);
+  }
 }
