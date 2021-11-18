@@ -283,6 +283,16 @@ chromium-metrics-reviews@google.com.
   <summary>Resulting state of the safety check updates check.</summary>
 </histogram>
 
+<histogram name="Settings.SearchEngines.Interactions"
+    enum="SettingsSearchEnginesInteractions" expires_after="2022-05-02">
+  <owner>yoangela@chromium.org</owner>
+  <owner>chrome-omnibox-team@google.com</owner>
+  <summary>
+    Which Search Engines settings page elements a user interacted with. Recorded
+    every time a user interacts with an element of interest.
+  </summary>
+</histogram>
+
 <histogram name="Settings.SearchLength" units="units" expires_after="M85">
   <owner>dschuyler@chromium.org</owner>
   <summary>

@@ -23,14 +23,14 @@ import {assert} from 'chrome://resources/js/assert.m.js';
 import {focusWithoutInk} from 'chrome://resources/js/cr/ui/focus_without_ink.m.js';
 import {WebUIListenerMixin, WebUIListenerMixinInterface} from 'chrome://resources/js/web_ui_listener_mixin.js';
 import {IronListElement} from 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
-import {afterNextRender, html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {SettingsRadioGroupElement} from '../controls/settings_radio_group.js';
 import {GlobalScrollTargetMixin} from '../global_scroll_target_mixin.js';
 import {loadTimeData} from '../i18n_setup.js';
 import {routes} from '../route.js';
 
-import {SearchEngine, SearchEnginesBrowserProxyImpl, SearchEnginesInfo} from './search_engines_browser_proxy.js';
-import {SettingsSearchEnginesListElement} from './search_engines_list.js';
+import {SearchEngine, SearchEnginesBrowserProxy, SearchEnginesBrowserProxyImpl, SearchEnginesInfo, SearchEnginesInteractions} from './search_engines_browser_proxy.js';
 
 type SearchEngineEditEvent = CustomEvent<{
   engine: SearchEngine,
@@ -41,6 +41,7 @@ export interface SettingsSearchEnginesPageElement {
   $: {
     addSearchEngine: HTMLElement,
     extensions: IronListElement,
+    keyboardShortcutSettingGroup: SettingsRadioGroupElement,
   };
 }
 
@@ -164,11 +165,13 @@ export class SettingsSearchEnginesPageElement extends
   private showDialog_: boolean;
   private showKeywordTriggerSetting_: boolean;
   private isActiveSearchEnginesFlagEnabled_: boolean;
+  private browserProxy_: SearchEnginesBrowserProxy =
+      SearchEnginesBrowserProxyImpl.getInstance();
 
   ready() {
     super.ready();
 
-    SearchEnginesBrowserProxyImpl.getInstance().getSearchEnginesList().then(
+    this.browserProxy_.getSearchEnginesList().then(
         this.enginesChanged_.bind(this));
     this.addWebUIListener(
         'search-engines-changed', this.enginesChanged_.bind(this));
@@ -249,6 +252,16 @@ export class SettingsSearchEnginesPageElement extends
   private showNoResultsMessage_(
       list: Array<SearchEngine>, filteredList: Array<SearchEngine>): boolean {
     return list.length > 0 && filteredList.length === 0;
+  }
+
+  private onKeyboardShortcutSettingChange_() {
+    const spaceEnabled =
+        this.$.keyboardShortcutSettingGroup.selected === 'true';
+
+    this.browserProxy_.recordSearchEnginesPageHistogram(
+        spaceEnabled ?
+            SearchEnginesInteractions.KEYBOARD_SHORTCUT_SPACE_OR_TAB :
+            SearchEnginesInteractions.KEYBOARD_SHORTCUT_TAB);
   }
 }
 
