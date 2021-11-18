@@ -47,6 +47,8 @@ Polymer({
 
     hasTouchpad: Boolean,
 
+    hasHapticTouchpad: Boolean,
+
     swapPrimaryOptions: {
       readOnly: true,
       type: Array,

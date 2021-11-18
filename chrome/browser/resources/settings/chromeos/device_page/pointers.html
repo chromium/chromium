@@ -188,42 +188,43 @@
         </settings-slider>
       </div>
     </template>
-    <!--TODO(gavinwill): Check if device has a haptic touchpad.-->
-    <template is="dom-if" if="[[allowTouchpadHapticClickSettings_]]">
-      <div class="settings-box">
-        <div class="start" id="touchpadHapticClickSensitivityLabel"
-            aria-hidden="true">
-          $i18n{touchpadHapticClickSensitivityLabel}
-        </div>
+    <template is="dom-if" if="[[hasHapticTouchpad]]">
+      <template is="dom-if" if="[[allowTouchpadHapticClickSettings_]]">
+        <div class="settings-box">
+          <div class="start" id="touchpadHapticClickSensitivityLabel"
+              aria-hidden="true">
+            $i18n{touchpadHapticClickSensitivityLabel}
+          </div>
           <settings-slider id="touchpadHapticClickSensitivity"
               pref="{{prefs.settings.touchpad.haptic_click_sensitivity}}"
               ticks="[[hapticClickSensitivityValues_]]"
               label-aria="$i18n{touchpadHapticClickSensitivityLabel}"
               label-min="$i18n{touchpadHapticLightClickLabel}"
               label-max="$i18n{touchpadHapticFirmClickLabel}"
-              deep-link-focus-id$="[[Setting.kTouchpadHapticClickSensitivity]]">
+              deep-link-focus-id$=
+                "[[Setting.kTouchpadHapticClickSensitivity]]">
           </settings-slider>
-      </div>
-    </template>
-    <!--TODO(gavinwill): Check if device has a haptic touchpad.-->
-    <template is="dom-if" if="[[allowTouchpadHapticFeedback_]]">
-      <div class="settings-box" id="touchpadHapticFeedbackRow"
-          on-click="onTouchpadHapticFeedbackRowClicked_">
-        <div class="start settings-box-text">
-          <!--TODO(gavinwill): Add haptic feedback help link URL.-->
-          <localized-link
-              on-click="onLearnMoreLinkClicked_"
-              id="touchpadHapticFeedbackLabel"
-              localized-string="$i18n{touchpadHapticFeedbackLabel}"
-              link-url="#">
-          </localized-link>
         </div>
-        <cr-toggle id="touchpadHapticFeedbackToggle"
-            checked="{{prefs.settings.touchpad.haptic_feedback.value}}"
-            aria-labelledby="touchpadHapticFeedbackRow"
-            deep-link-focus-id$="[[Setting.kTouchpadHapticFeedback]]">
-        </cr-toggle>
-      </div>
+      </template>
+      <template is="dom-if" if="[[allowTouchpadHapticFeedback_]]">
+        <div class="settings-box" id="touchpadHapticFeedbackRow"
+            on-click="onTouchpadHapticFeedbackRowClicked_">
+          <div class="start settings-box-text">
+            <!--TODO(gavinwill): Add haptic feedback help link URL.-->
+            <localized-link
+                on-click="onLearnMoreLinkClicked_"
+                id="touchpadHapticFeedbackLabel"
+                localized-string="$i18n{touchpadHapticFeedbackLabel}"
+                link-url="#">
+            </localized-link>
+          </div>
+          <cr-toggle id="touchpadHapticFeedbackToggle"
+              checked="{{prefs.settings.touchpad.haptic_feedback.value}}"
+              aria-labelledby="touchpadHapticFeedbackRow"
+              deep-link-focus-id$="[[Setting.kTouchpadHapticFeedback]]">
+          </cr-toggle>
+        </div>
+      </template>
     </template>
     <div class="settings-box" id="reverseScrollRow"
          on-click="onTouchpadReverseScrollRowClicked_">

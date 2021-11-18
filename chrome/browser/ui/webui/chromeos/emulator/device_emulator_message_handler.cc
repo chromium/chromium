@@ -655,6 +655,8 @@ void DeviceEmulatorMessageHandler::TouchpadExists(bool exists) {
   FireWebUIListener("touchpad-exists-changed", base::Value(exists));
 }
 
+void DeviceEmulatorMessageHandler::HapticTouchpadExists(bool exists) {}
+
 void DeviceEmulatorMessageHandler::MouseExists(bool exists) {
   if (!IsJavascriptAllowed())
     return;

@@ -40,6 +40,16 @@ var OSSettingsDevicePageV3Test = class extends OSSettingsV3BrowserTest {
   get browsePreload() {
     return 'chrome://os-settings/test_loader.html?module=settings/chromeos/device_page_tests.m.js';
   }
+
+  /** @override */
+  get featureList() {
+    return {
+      enabled: [
+        'features::kAllowDisableTouchpadHapticFeedback',
+        'features::kAllowTouchpadHapticClickSettings',
+      ],
+    };
+  }
 };
 
 TEST_F(

@@ -65,6 +65,13 @@ Polymer({
     hasTouchpad_: Boolean,
 
     /**
+     * Whether the device has a haptic touchpad. If this is true, |hasTouchpad_|
+     * will also be true.
+     * @private
+     */
+    hasHapticTouchpad_: Boolean,
+
+    /**
      * |hasStylus_| is initialized to false so that dom-if behaves correctly.
      * @private
      */
@@ -140,6 +147,9 @@ Polymer({
         'has-pointing-stick-changed', this.set.bind(this, 'hasPointingStick_'));
     this.addWebUIListener(
         'has-touchpad-changed', this.set.bind(this, 'hasTouchpad_'));
+    this.addWebUIListener(
+        'has-haptic-touchpad-changed',
+        this.set.bind(this, 'hasHapticTouchpad_'));
     DevicePageBrowserProxyImpl.getInstance().initializePointers();
 
     this.addWebUIListener(

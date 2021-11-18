@@ -1031,23 +1031,30 @@ void DeviceSection::TouchpadExists(bool exists) {
   SearchTagRegistry::ScopedTagUpdater updater = registry()->StartUpdate();
   updater.RemoveSearchTags(GetTouchpadSearchConcepts());
   updater.RemoveSearchTags(GetTouchpadScrollAccelerationSearchConcepts());
-  updater.RemoveSearchTags(GetTouchpadHapticFeedback());
-  updater.RemoveSearchTags(GetTouchpadHapticClickSensitivity());
 
   if (exists) {
     updater.AddSearchTags(GetTouchpadSearchConcepts());
     if (base::FeatureList::IsEnabled(chromeos::features::kAllowScrollSettings))
       updater.AddSearchTags(GetTouchpadScrollAccelerationSearchConcepts());
-    // TODO (gavinwill): Move the haptic touchpad search concepts into
-    // HapticTouchpadExists() once available.
-    if (base::FeatureList::IsEnabled(
-            ::features::kAllowDisableTouchpadHapticFeedback)) {
-      updater.AddSearchTags(GetTouchpadHapticFeedback());
-    }
-    if (base::FeatureList::IsEnabled(
-            ::features::kAllowTouchpadHapticClickSettings)) {
-      updater.AddSearchTags(GetTouchpadHapticClickSensitivity());
-    }
+  }
+}
+
+void DeviceSection::HapticTouchpadExists(bool exists) {
+  SearchTagRegistry::ScopedTagUpdater updater = registry()->StartUpdate();
+  updater.RemoveSearchTags(GetTouchpadHapticFeedback());
+  updater.RemoveSearchTags(GetTouchpadHapticClickSensitivity());
+
+  if (!exists) {
+    return;
+  }
+
+  if (base::FeatureList::IsEnabled(
+          ::features::kAllowDisableTouchpadHapticFeedback)) {
+    updater.AddSearchTags(GetTouchpadHapticFeedback());
+  }
+  if (base::FeatureList::IsEnabled(
+          ::features::kAllowTouchpadHapticClickSettings)) {
+    updater.AddSearchTags(GetTouchpadHapticClickSensitivity());
   }
 }
 

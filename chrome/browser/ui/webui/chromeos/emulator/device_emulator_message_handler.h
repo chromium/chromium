@@ -127,6 +127,7 @@ class DeviceEmulatorMessageHandler :
 
   // system::PointerDeviceObserver::Observer:
   void TouchpadExists(bool exists) override;
+  void HapticTouchpadExists(bool exists) override;
   void MouseExists(bool exists) override;
   void PointingStickExists(bool exists) override;
 

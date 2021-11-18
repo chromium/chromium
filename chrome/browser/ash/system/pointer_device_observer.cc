@@ -29,6 +29,7 @@ void PointerDeviceObserver::CheckDevices() {
   CheckMouseExists();
   CheckPointingStickExists();
   CheckTouchpadExists();
+  CheckHapticTouchpadExists();
 }
 
 void PointerDeviceObserver::AddObserver(Observer* observer) {
@@ -52,6 +53,12 @@ void PointerDeviceObserver::CheckTouchpadExists() {
       &PointerDeviceObserver::OnTouchpadExists, weak_factory_.GetWeakPtr()));
 }
 
+void PointerDeviceObserver::CheckHapticTouchpadExists() {
+  InputDeviceSettings::Get()->HapticTouchpadExists(
+      base::BindOnce(&PointerDeviceObserver::OnHapticTouchpadExists,
+                     weak_factory_.GetWeakPtr()));
+}
+
 void PointerDeviceObserver::CheckMouseExists() {
   InputDeviceSettings::Get()->MouseExists(base::BindOnce(
       &PointerDeviceObserver::OnMouseExists, weak_factory_.GetWeakPtr()));
@@ -66,6 +73,11 @@ void PointerDeviceObserver::CheckPointingStickExists() {
 void PointerDeviceObserver::OnTouchpadExists(bool exists) {
   for (auto& observer : observers_)
     observer.TouchpadExists(exists);
+}
+
+void PointerDeviceObserver::OnHapticTouchpadExists(bool exists) {
+  for (auto& observer : observers_)
+    observer.HapticTouchpadExists(exists);
 }
 
 void PointerDeviceObserver::OnMouseExists(bool exists) {

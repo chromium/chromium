@@ -40,6 +40,10 @@ void PointerHandler::TouchpadExists(bool exists) {
   FireWebUIListener("has-touchpad-changed", base::Value(exists));
 }
 
+void PointerHandler::HapticTouchpadExists(bool exists) {
+  FireWebUIListener("has-haptic-touchpad-changed", base::Value(exists));
+}
+
 void PointerHandler::MouseExists(bool exists) {
   FireWebUIListener("has-mouse-changed", base::Value(exists));
 }
