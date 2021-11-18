@@ -116,7 +116,6 @@ crbug.com/856601 [ Linux ] external/wpt/IndexedDB/nested-cloning-large.any.servi
 crbug.com/856601 [ Linux ] external/wpt/IndexedDB/nested-cloning-large.any.sharedworker.html [ Pass Timeout ]
 crbug.com/856601 [ Linux ] external/wpt/IndexedDB/nested-cloning-large.any.worker.html [ Pass Timeout ]
 crbug.com/856601 [ Linux ] external/wpt/IndexedDB/nested-cloning-small.any.serviceworker.html [ Pass Timeout ]
-crbug.com/856601 [ Linux ] http/tests/devtools/a11y-axe-core/console/console-a11y-test.js [ Pass Timeout ]
 
 # Sheriff 2019-06-28
 crbug.com/856601 [ Linux ] http/tests/devtools/indexeddb/live-update-indexeddb-content.js [ Pass Timeout ]
@@ -170,9 +169,6 @@ crbug.com/1179829 [ Linux ] http/tests/devtools/console/console-format.js [ Pass
 crbug.com/1179829 [ Linux ] http/tests/devtools/tracing/console-timeline.js [ Pass Timeout ]
 crbug.com/1179829 [ Linux ] http/tests/devtools/console/console-viewport-stick-to-bottom-onload.js [ Pass Timeout ]
 crbug.com/1179829 [ Linux ] http/tests/devtools/isolated-code-cache/stale-revalidation-test.js [ Pass Timeout ]
-
-# Sheriff 2021-03-23
-crbug.com/1179829 [ Linux ] http/tests/devtools/console/viewport-testing/console-stick-to-bottom-with-large-prompt.js [ Pass Timeout ]
 
 # Sheriff 2021-04-22
 crbug.com/1201807 [ Linux ] virtual/feature-policy-permissions/external/wpt/mediacapture-streams/MediaStreamTrack-MediaElement-disabled-video-is-black.https.html [ Pass Timeout ]
