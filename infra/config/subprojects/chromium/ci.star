@@ -6668,7 +6668,7 @@ ci.cipd_builder(
     name = "rts-model-packager",
     builderless = False,
     executable = "recipe:chromium_rts/create_model",
-    schedule = "0 7 * * *",  # at 12AM or 1AM PT (depending on DST), once a day.
+    schedule = "0 9 * * *",  # at 1AM or 2AM PT (depending on DST), once a day.
     triggered_by = [],
     execution_timeout = 8 * time.hour,
     cores = None,
@@ -6680,7 +6680,7 @@ ci.cipd_builder(
         luci.notifier(
             name = "rts-model-packager-notifier",
             on_occurrence = ["FAILURE", "INFRA_FAILURE"],
-            notify_emails = ["guterman@google.com"],
+            notify_emails = ["chrome-browser-infra-team@google.com"],
         ),
     ],
 )
