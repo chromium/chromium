@@ -295,7 +295,8 @@ void FirstPartySets::SetOnSiteDataCleared(
 }
 
 base::flat_set<net::SchemefulSite> FirstPartySets::ComputeSetsDiff(
-    const base::flat_map<net::SchemefulSite, net::SchemefulSite>& old_sets) {
+    const base::flat_map<net::SchemefulSite, net::SchemefulSite>& old_sets)
+    const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (old_sets.empty())
     return {};

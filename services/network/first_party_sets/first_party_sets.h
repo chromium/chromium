@@ -138,7 +138,8 @@ class FirstPartySets {
   // 1) were in `old_sets` but are no longer in `sets_`, i.e. leave the FPSs;
   // or, 2) mapped to a different owner site.
   base::flat_set<net::SchemefulSite> ComputeSetsDiff(
-      const base::flat_map<net::SchemefulSite, net::SchemefulSite>& old_sets);
+      const base::flat_map<net::SchemefulSite, net::SchemefulSite>& old_sets)
+      const;
 
   // Checks the required inputs have been received, and if so, computes the diff
   // between the `sets_` and the parsed `raw_persisted_sets_`, and clears the
