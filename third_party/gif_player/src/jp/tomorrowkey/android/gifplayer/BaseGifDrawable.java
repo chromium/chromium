@@ -237,6 +237,14 @@ public class BaseGifDrawable extends Drawable implements Runnable, Animatable,
         }
     }
 
+    /**
+     * Posts a RESET_DECODER request to the decoder thread so that the decoder starts decoding back
+     * from the start of the GIF.
+     */
+    public void requestReset() {
+        sDecoderHandler.sendMessage(sDecoderHandler.obtainMessage(RESET_DECODER, this));
+    }
+
     @Override
     protected void onBoundsChange(Rect bounds) {
         super.onBoundsChange(bounds);
@@ -377,7 +385,7 @@ public class BaseGifDrawable extends Drawable implements Runnable, Animatable,
     /**
      * Restarts decoding the image from the beginning.  Called from the background thread.
      */
-    protected void reset() {
+    private void reset() {
         // Return to the position of the first image frame in the stream.
         mPosition = mGifImage.mHeaderSize;
         mBackupSaved = false;
