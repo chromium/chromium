@@ -2768,6 +2768,8 @@ static_library("ui") {
       "webui/settings/chromeos/languages_section.h",
       "webui/settings/chromeos/main_section.cc",
       "webui/settings/chromeos/main_section.h",
+      "webui/settings/chromeos/metrics_consent_handler.cc",
+      "webui/settings/chromeos/metrics_consent_handler.h",
       "webui/settings/chromeos/multidevice_handler.cc",
       "webui/settings/chromeos/multidevice_handler.h",
       "webui/settings/chromeos/multidevice_section.cc",

@@ -144,6 +144,7 @@ export {AccountManagerBrowserProxy, AccountManagerBrowserProxyImpl} from './os_p
 export {FingerprintBrowserProxyImpl, FingerprintResultType} from './os_people_page/fingerprint_browser_proxy.m.js';
 export {OsSyncBrowserProxyImpl} from './os_people_page/os_sync_browser_proxy.m.js';
 export {FingerprintLocation, FingerprintSetupStep} from './os_people_page/setup_fingerprint_dialog.m.js';
+export {MetricsConsentBrowserProxy, MetricsConsentBrowserProxyImpl, MetricsConsentState} from './os_privacy_page/metrics_consent_browser_proxy.js';
 export {DataAccessPolicyState, PeripheralDataAccessBrowserProxy, PeripheralDataAccessBrowserProxyImpl} from './os_privacy_page/peripheral_data_access_browser_proxy.js';
 export {OsResetBrowserProxyImpl} from './os_reset_page/os_reset_browser_proxy.js';
 export {routes} from './os_route.m.js';
