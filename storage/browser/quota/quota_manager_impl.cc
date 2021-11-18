@@ -159,22 +159,18 @@ QuotaErrorOr<std::set<BucketLocator>> GetModifiedBetweenOnDBThread(
   return database->GetBucketsModifiedBetween(type, begin, end);
 }
 
-bool GetPersistentHostQuotaOnDBThread(const std::string& host,
-                                      int64_t* quota,
-                                      QuotaDatabase* database) {
+QuotaErrorOr<int64_t> GetPersistentHostQuotaOnDBThread(
+    const std::string& host,
+    QuotaDatabase* database) {
   DCHECK(database);
-  database->GetHostQuota(host, StorageType::kPersistent, quota);
-  return true;
+  return database->GetHostQuota(host, StorageType::kPersistent);
 }
 
-bool SetPersistentHostQuotaOnDBThread(const std::string& host,
-                                      int64_t* new_quota,
-                                      QuotaDatabase* database) {
+QuotaError SetPersistentHostQuotaOnDBThread(const std::string& host,
+                                            int64_t* new_quota,
+                                            QuotaDatabase* database) {
   DCHECK(database);
-  if (database->SetHostQuota(host, StorageType::kPersistent, *new_quota))
-    return true;
-  *new_quota = 0;
-  return false;
+  return database->SetHostQuota(host, StorageType::kPersistent, *new_quota);
 }
 
 QuotaErrorOr<BucketLocator> GetLRUBucketOnDBThread(
@@ -1381,13 +1377,10 @@ void QuotaManagerImpl::GetPersistentHostQuota(const std::string& host,
   if (!persistent_host_quota_callbacks_.Add(host, std::move(callback)))
     return;
 
-  int64_t* quota_ptr = new int64_t(0);
   PostTaskAndReplyWithResultForDBThread(
-      FROM_HERE,
-      base::BindOnce(&GetPersistentHostQuotaOnDBThread, host,
-                     base::Unretained(quota_ptr)),
+      base::BindOnce(&GetPersistentHostQuotaOnDBThread, host),
       base::BindOnce(&QuotaManagerImpl::DidGetPersistentHostQuota,
-                     weak_factory_.GetWeakPtr(), host, base::Owned(quota_ptr)));
+                     weak_factory_.GetWeakPtr(), host));
 }
 
 void QuotaManagerImpl::SetPersistentHostQuota(const std::string& host,
@@ -1419,7 +1412,6 @@ void QuotaManagerImpl::SetPersistentHostQuota(const std::string& host,
 
   int64_t* new_quota_ptr = new int64_t(new_quota);
   PostTaskAndReplyWithResultForDBThread(
-      FROM_HERE,
       base::BindOnce(&SetPersistentHostQuotaOnDBThread, host,
                      base::Unretained(new_quota_ptr)),
       base::BindOnce(&QuotaManagerImpl::DidSetPersistentHostQuota,
@@ -2114,25 +2106,33 @@ void QuotaManagerImpl::GetLRUBucket(StorageType type,
 }
 
 void QuotaManagerImpl::DidGetPersistentHostQuota(const std::string& host,
-                                                 const int64_t* quota,
-                                                 bool success) {
+                                                 QuotaErrorOr<int64_t> result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DidDatabaseWork(success);
+  DidDatabaseWork(result.ok() || result.error() != QuotaError::kDatabaseError);
+
+  if (!result.ok() && result.error() != QuotaError::kNotFound) {
+    persistent_host_quota_callbacks_.Run(
+        host, blink::mojom::QuotaStatusCode::kErrorInvalidAccess, /*quota=*/0);
+    return;
+  }
   persistent_host_quota_callbacks_.Run(
       host, blink::mojom::QuotaStatusCode::kOk,
-      std::min(*quota, kPerHostPersistentQuotaLimit));
+      std::min(result.ok() ? result.value() : 0, kPerHostPersistentQuotaLimit));
 }
 
 void QuotaManagerImpl::DidSetPersistentHostQuota(const std::string& host,
                                                  QuotaCallback callback,
                                                  const int64_t* new_quota,
-                                                 bool success) {
+                                                 QuotaError error) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DidDatabaseWork(success);
-  std::move(callback).Run(
-      success ? blink::mojom::QuotaStatusCode::kOk
-              : blink::mojom::QuotaStatusCode::kErrorInvalidAccess,
-      *new_quota);
+  DidDatabaseWork(error != QuotaError::kDatabaseError);
+
+  if (error == QuotaError::kNone) {
+    std::move(callback).Run(blink::mojom::QuotaStatusCode::kOk, *new_quota);
+    return;
+  }
+  std::move(callback).Run(blink::mojom::QuotaStatusCode::kErrorInvalidAccess,
+                          /*new_quota=*/0);
 }
 
 void QuotaManagerImpl::DidGetLRUBucket(QuotaErrorOr<BucketLocator> result) {

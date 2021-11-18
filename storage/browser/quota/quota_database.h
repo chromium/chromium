@@ -90,16 +90,17 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaDatabase {
 
   ~QuotaDatabase();
 
-  // Returns whether the record could be found.
-  bool GetHostQuota(const std::string& host,
-                    blink::mojom::StorageType type,
-                    int64_t* quota);
+  // Returns quota if entry is found. Returns QuotaError::kNotFound no entry if
+  // found.
+  QuotaErrorOr<int64_t> GetHostQuota(const std::string& host,
+                                     blink::mojom::StorageType type);
 
   // Returns whether the operation succeeded.
-  bool SetHostQuota(const std::string& host,
-                    blink::mojom::StorageType type,
-                    int64_t quota);
-  bool DeleteHostQuota(const std::string& host, blink::mojom::StorageType type);
+  QuotaError SetHostQuota(const std::string& host,
+                          blink::mojom::StorageType type,
+                          int64_t quota);
+  QuotaError DeleteHostQuota(const std::string& host,
+                             blink::mojom::StorageType type);
 
   // Gets the bucket with `bucket_name` for the `storage_key` for StorageType
   // kTemporary and returns the BucketInfo. If one doesn't exist, it creates
@@ -262,9 +263,6 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaDatabase {
   bool EnsureDatabaseVersion();
   bool ResetSchema();
   bool UpgradeSchema(int current_version);
-  bool InsertOrReplaceHostQuota(const std::string& host,
-                                blink::mojom::StorageType type,
-                                int64_t quota);
 
   bool CreateSchema();
   bool CreateTable(const TableSchema& table);

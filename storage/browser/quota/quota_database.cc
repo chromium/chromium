@@ -129,13 +129,12 @@ QuotaDatabase::~QuotaDatabase() {
   }
 }
 
-bool QuotaDatabase::GetHostQuota(const std::string& host,
-                                 StorageType type,
-                                 int64_t* quota) {
+QuotaErrorOr<int64_t> QuotaDatabase::GetHostQuota(const std::string& host,
+                                                  StorageType type) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(quota);
-  if (EnsureOpened(EnsureOpenedMode::kFailIfNotFound) != QuotaError::kNone)
-    return false;
+  QuotaError open_error = EnsureOpened(EnsureOpenedMode::kFailIfNotFound);
+  if (open_error != QuotaError::kNone)
+    return open_error;
 
   static constexpr char kSql[] =
       "SELECT quota FROM quota WHERE host = ? AND type = ?";
@@ -143,27 +142,36 @@ bool QuotaDatabase::GetHostQuota(const std::string& host,
   statement.BindString(0, host);
   statement.BindInt(1, static_cast<int>(type));
 
-  if (!statement.Step())
-    return false;
-
-  *quota = statement.ColumnInt64(0);
-  return true;
+  if (!statement.Step()) {
+    return statement.Succeeded() ? QuotaError::kNotFound
+                                 : QuotaError::kDatabaseError;
+  }
+  return statement.ColumnInt64(0);
 }
 
-bool QuotaDatabase::SetHostQuota(const std::string& host,
-                                 StorageType type,
-                                 int64_t quota) {
+QuotaError QuotaDatabase::SetHostQuota(const std::string& host,
+                                       StorageType type,
+                                       int64_t quota) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_GE(quota, 0);
-  if (EnsureOpened(EnsureOpenedMode::kCreateIfNotFound) != QuotaError::kNone)
-    return false;
+  QuotaError open_error = EnsureOpened(EnsureOpenedMode::kCreateIfNotFound);
+  if (open_error != QuotaError::kNone)
+    return open_error;
 
   if (quota == 0)
     return DeleteHostQuota(host, type);
-  if (!InsertOrReplaceHostQuota(host, type, quota))
-    return false;
+
+  static constexpr char kSql[] =
+      "INSERT OR REPLACE INTO quota(quota, host, type) VALUES (?, ?, ?)";
+  sql::Statement statement(db_->GetCachedStatement(SQL_FROM_HERE, kSql));
+  statement.BindInt64(0, quota);
+  statement.BindString(1, host);
+  statement.BindInt(2, static_cast<int>(type));
+  if (!statement.Run())
+    return QuotaError::kDatabaseError;
+
   ScheduleCommit();
-  return true;
+  return QuotaError::kNone;
 }
 
 QuotaErrorOr<BucketInfo> QuotaDatabase::GetOrCreateBucket(
@@ -519,11 +527,12 @@ bool QuotaDatabase::GetBucketInfo(BucketId bucket_id,
   return true;
 }
 
-bool QuotaDatabase::DeleteHostQuota(
-    const std::string& host, StorageType type) {
+QuotaError QuotaDatabase::DeleteHostQuota(const std::string& host,
+                                          StorageType type) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (EnsureOpened(EnsureOpenedMode::kFailIfNotFound) != QuotaError::kNone)
-    return false;
+  QuotaError open_error = EnsureOpened(EnsureOpenedMode::kFailIfNotFound);
+  if (open_error != QuotaError::kNone)
+    return open_error;
 
   static constexpr char kSql[] =
       "DELETE FROM quota WHERE host = ? AND type = ?";
@@ -532,10 +541,10 @@ bool QuotaDatabase::DeleteHostQuota(
   statement.BindInt(1, static_cast<int>(type));
 
   if (!statement.Run())
-    return false;
+    return QuotaError::kDatabaseError;
 
   ScheduleCommit();
-  return true;
+  return QuotaError::kNone;
 }
 
 bool QuotaDatabase::DeleteStorageKeyInfo(const StorageKey& storage_key,
@@ -890,23 +899,6 @@ bool QuotaDatabase::ResetSchema() {
 
   base::AutoReset<bool> auto_reset(&is_recreating_, true);
   return EnsureOpened(EnsureOpenedMode::kCreateIfNotFound) == QuotaError::kNone;
-}
-
-bool QuotaDatabase::InsertOrReplaceHostQuota(const std::string& host,
-                                             StorageType type,
-                                             int64_t quota) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(db_.get());
-  static constexpr char kSql[] =
-      // clang-format off
-      "INSERT OR REPLACE INTO quota(quota, host, type)"
-        "VALUES (?, ?, ?)";
-  // clang-format on
-  sql::Statement statement(db_->GetCachedStatement(SQL_FROM_HERE, kSql));
-  statement.BindInt64(0, quota);
-  statement.BindString(1, host);
-  statement.BindInt(2, static_cast<int>(type));
-  return statement.Run();
 }
 
 QuotaError QuotaDatabase::DumpQuotaTable(const QuotaTableCallback& callback) {

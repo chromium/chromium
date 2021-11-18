@@ -546,12 +546,11 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerImpl
   void GetLRUBucket(blink::mojom::StorageType type, GetBucketCallback callback);
 
   void DidGetPersistentHostQuota(const std::string& host,
-                                 const int64_t* quota,
-                                 bool success);
+                                 QuotaErrorOr<int64_t> result);
   void DidSetPersistentHostQuota(const std::string& host,
                                  QuotaCallback callback,
                                  const int64_t* new_quota,
-                                 bool success);
+                                 QuotaError error);
   void DidGetLRUBucket(QuotaErrorOr<BucketLocator> result);
   void GetQuotaSettings(QuotaSettingsCallback callback);
   void DidGetSettings(absl::optional<QuotaSettings> settings);
