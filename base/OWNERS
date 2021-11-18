@@ -2,6 +2,7 @@
 
 set noparent
 # NOTE: keep this in sync with lsc-owners-override@chromium.org owners
+# by emailing lsc-policy@chromium.org when this list changes.
 ajwong@chromium.org
 danakj@chromium.org
 dcheng@chromium.org
@@ -14,6 +15,7 @@ thakis@chromium.org
 thestig@chromium.org
 wez@chromium.org
 # NOTE: keep this in sync with lsc-owners-override@chromium.org owners
+# by emailing lsc-policy@chromium.org when this list changes.
 
 # per-file rules:
 # These are for the common case of adding or renaming files. If you're doing

@@ -1,5 +1,6 @@
 set noparent
 # NOTE: keep this in sync with lsc-owners-override@chromium.org owners
+# by emailing lsc-policy@chromium.org when this list changes.
 agrieve@chromium.org
 brucedawson@chromium.org
 dpranke@google.com
@@ -16,6 +17,7 @@ file://tools/clang/scripts/OWNERS
 wnwen@chromium.org
 
 # NOTE: keep this in sync with lsc-owners-override@chromium.org owners
+# by emailing lsc-policy@chromium.org when this list changes.
 
 per-file .gitignore=*
 per-file check_gn_headers_whitelist.txt=*
