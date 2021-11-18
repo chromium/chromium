@@ -11,7 +11,7 @@ topics, see the [main page](README.md).
 ### Setting up your build environment
 
 Generate build files by using the `use_libfuzzer` [GN] argument together with a
-sanitizer:
+sanitizer. Pick the [GN config] that corresponds to the DUT you're deploying to:
 
 ```bash
 # AddressSanitizer is the default config we recommend testing with.
@@ -95,17 +95,19 @@ target.
 
 ### Running the fuzz target
 
-After you create your fuzz target, build it with ninja and run it locally:
+After you create your fuzz target, build it with autoninja and run it locally. In
+most cases you don't want to commit your locally generated corpus, so save it
+somewhere like `/tmp/corpus`.
 
 ```bash
 # Build the fuzz target.
-ninja -C out/libfuzzer url_parse_fuzzer
+autoninja -C out/libfuzzer url_parse_fuzzer
 # Create an empty corpus directory.
-mkdir corpus
+mkdir /tmp/corpus
 # Run the fuzz target.
-./out/libfuzzer/url_parse_fuzzer corpus
+./out/libfuzzer/url_parse_fuzzer /tmp/corpus
 # If have other corpus directories, pass their paths as well:
-./out/libfuzzer/url_parse_fuzzer corpus seed_corpus_dir_1 seed_corpus_dir_N
+./out/libfuzzer/url_parse_fuzzer /tmp/corpus seed_corpus_dir_1 seed_corpus_dir_N
 ```
 
 Your fuzz target should produce output like this:
@@ -312,6 +314,7 @@ fuzzing engine.
 [FuzzedDataProvider]: https://cs.chromium.org/chromium/src/third_party/libFuzzer/src/utils/FuzzedDataProvider.h
 [Fuzzer Dictionary]: efficient_fuzzing.md#Fuzzer-dictionary
 [GN]: https://gn.googlesource.com/gn/+/master/README.md
+[GN config]: https://source.chromium.org/chromium/chromium/src/tools/mb/mb_config_expectations/chromium.fuzz.json
 [Getting Started with libprotobuf-mutator in Chromium]: libprotobuf-mutator.md
 [Integration Reference]: reference.md
 [MemorySanitizer]: http://clang.llvm.org/docs/MemorySanitizer.html
