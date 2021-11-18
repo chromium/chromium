@@ -259,11 +259,11 @@ class WeakPtr : public internal::WeakPtrBase {
 
   T& operator*() const {
     CHECK(ref_.IsValid());
-    return *get();
+    return *reinterpret_cast<T*>(ptr_);
   }
   T* operator->() const {
     CHECK(ref_.IsValid());
-    return get();
+    return reinterpret_cast<T*>(ptr_);
   }
 
   // Allow conditionals to test validity, e.g. if (weak_ptr) {...};
