@@ -45,8 +45,11 @@ TELEMETRY_BIN_DEPS_CONFIG = os.path.join(
 
 
 def _GetBranchName():
-  return subprocess.check_output(
+  branch_name = subprocess.check_output(
       ['git', 'rev-parse', '--abbrev-ref', 'HEAD']).strip()
+  if isinstance(branch_name, bytes):
+    return branch_name.decode("utf-8")
+  return branch_name
 
 
 def _OpenBrowser(url):
