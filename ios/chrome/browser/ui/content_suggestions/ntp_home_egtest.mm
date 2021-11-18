@@ -16,6 +16,7 @@
 #import "ios/chrome/browser/ui/content_suggestions/ntp_home_constant.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_constants.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_feature.h"
+#import "ios/chrome/browser/ui/popup_menu/popup_menu_constants.h"
 #import "ios/chrome/browser/ui/settings/settings_table_view_controller_constants.h"
 #import "ios/chrome/browser/ui/start_surface/start_surface_features.h"
 #import "ios/chrome/browser/ui/toolbar/public/toolbar_constants.h"
@@ -816,6 +817,35 @@ id<GREYMatcher> OmniboxWidthBetween(CGFloat width, CGFloat margin) {
   [self checkFeedLabelForFeedVisible:YES];
   [self checkIfNTPIsScrollable];
 }
+
+// Test to ensure that NTP for incognito mode works properly.
+- (void)testIncognitoMode {
+  // Checks that default NTP is not incognito.
+  [self
+      testNTPInitialPositionAndContent:[NewTabPageAppInterface collectionView]];
+
+  // Open tools menu and open incognito tab.
+  [ChromeEarlGreyUI openToolsMenu];
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          kToolsMenuNewIncognitoTabId)]
+      performAction:grey_tap()];
+  [ChromeEarlGrey waitForIncognitoTabCount:1];
+
+  // Ensure that incognito view is visible and that the regular NTP is not.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::NTPIncognitoView()]
+      assertWithMatcher:grey_sufficientlyVisible()];
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::NTPCollectionView()]
+      assertWithMatcher:grey_notVisible()];
+
+  // Open tools menu and reload page, then check if incognito view is still
+  // visible.
+  [ChromeEarlGreyUI openToolsMenu];
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(kToolsMenuReload)]
+      performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::NTPIncognitoView()]
+      assertWithMatcher:grey_sufficientlyVisible()];
+}
+
 #pragma mark - Helpers
 
 - (void)addMostVisitedTile {
@@ -845,8 +875,8 @@ id<GREYMatcher> OmniboxWidthBetween(CGFloat width, CGFloat margin) {
 }
 
 - (void)testNTPInitialPositionAndContent:(UICollectionView*)collectionView {
-  // TODO(crbug.com/1194106): Initial offset should be checked to be 0 with
-  // refactored NTP using native header.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::NTPCollectionView()]
+      assertWithMatcher:grey_sufficientlyVisible()];
   [[EarlGrey selectElementWithMatcher:chrome_test_util::NTPLogo()]
       assertWithMatcher:grey_sufficientlyVisible()];
   [[EarlGrey selectElementWithMatcher:chrome_test_util::FakeOmnibox()]

@@ -337,6 +337,9 @@ id<GREYMatcher> ContentSuggestionsCollectionView();
 // Returns matcher for the collection view of the NTP.
 id<GREYMatcher> NTPCollectionView();
 
+// Returns matcher for the NTP view when the user is in incognito mode.
+id<GREYMatcher> NTPIncognitoView();
+
 // Returns matcher for the warning message while filling in payment requests.
 id<GREYMatcher> WarningMessageView();
 

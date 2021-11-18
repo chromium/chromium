@@ -331,6 +331,9 @@
 // Returns matcher for the collection view of the NTP.
 + (id<GREYMatcher>)ntpCollectionView;
 
+// Returns matcher for the NTP view when the user is in incognito mode.
++ (id<GREYMatcher>)ntpIncognitoView;
+
 // Returns matcher for the warning message while filling in payment requests.
 + (id<GREYMatcher>)warningMessageView;
 

@@ -10,4 +10,7 @@
 // Represents the NTP collection view.
 extern NSString* const kNTPCollectionViewIdentifier;
 
+// Represents the incognito NTP view.
+extern NSString* const kNTPIncognitoViewIdentifier;
+
 #endif  // IOS_CHROME_BROWSER_UI_NTP_NEW_TAB_PAGE_CONSTANTS_H_

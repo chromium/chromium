@@ -427,6 +427,10 @@ id<GREYMatcher> NTPCollectionView() {
   return [ChromeMatchersAppInterface ntpCollectionView];
 }
 
+id<GREYMatcher> NTPIncognitoView() {
+  return [ChromeMatchersAppInterface ntpIncognitoView];
+}
+
 id<GREYMatcher> WarningMessageView() {
   return [ChromeMatchersAppInterface warningMessageView];
 }

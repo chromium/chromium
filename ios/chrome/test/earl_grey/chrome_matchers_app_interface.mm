@@ -710,6 +710,10 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
   return grey_accessibilityID(kNTPCollectionViewIdentifier);
 }
 
++ (id<GREYMatcher>)ntpIncognitoView {
+  return grey_accessibilityID(kNTPIncognitoViewIdentifier);
+}
+
 // TODO(crbug.com/1021752): Remove this stub.
 + (id<GREYMatcher>)warningMessageView {
   return nil;
