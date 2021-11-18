@@ -185,6 +185,7 @@ source_set("unit_tests") {
   sources = [
     "file_monitor_unittest.cc",
     "service_config_impl_unittest.cc",
+    "stats_unittest.cc",
   ]
 
   if (!is_ios) {

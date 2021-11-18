@@ -39,6 +39,7 @@ std::string OptBoolToString(absl::optional<bool> value) {
   return "UNKNOWN";
 }
 
+// TODO(xingliu): Reuse ClientToHistogramSuffix in stats.cc.
 std::string ClientToString(DownloadClient client) {
   switch (client) {
     case DownloadClient::TEST:

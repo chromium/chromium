@@ -15,6 +15,10 @@ namespace download {
 namespace stats {
 namespace {
 
+// The maximum tracked file size in KB, larger files will fall into overflow
+// bucket.
+const int64_t kMaxFileSizeKB = 4 * 1024 * 1024; /* 4GB */
+
 // Enum used by UMA metrics to track various reasons of pausing a download.
 enum class PauseReason {
   // The download was paused. The reason can be anything.
@@ -164,14 +168,19 @@ void LogStartDownloadResult(DownloadClient client,
                                 DownloadParams::StartResult::COUNT);
 }
 
-void LogDownloadCompletion(CompletionType type, uint64_t file_size_bytes) {
+void LogDownloadCompletion(DownloadClient client,
+                           CompletionType type,
+                           uint64_t file_size_bytes) {
   // Records completion type.
   UMA_HISTOGRAM_ENUMERATION("Download.Service.Finish.Type", type,
                             CompletionType::COUNT);
 
-  // TODO(xingliu): Use DownloadItem::GetStartTime and DownloadItem::GetEndTime
-  // to record the completion time to histogram "Download.Service.Finish.Time".
-  // Also propagates and records the mime type here.
+  // Records the file size.
+  std::string name("Download.Service.Complete.FileSize.");
+  name.append(ClientToHistogramSuffix(client));
+  uint64_t file_size_kb = file_size_bytes / 1024;
+  base::UmaHistogramCustomCounts(name, static_cast<int>(file_size_kb), 1,
+                                 kMaxFileSizeKB, 50);
 }
 
 void LogDownloadPauseReason(const DownloadBlockageStatus& blockage_status,

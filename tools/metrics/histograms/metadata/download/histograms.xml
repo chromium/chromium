@@ -22,6 +22,16 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
+<variants name="DownloadClient">
+  <variant name="__Test__"/>
+  <variant name="BackgroundFetch"/>
+  <variant name="Debugging"/>
+  <variant name="MountainInternal"/>
+  <variant name="OfflinePage"/>
+  <variant name="OptimizationGuidePredictionModels"/>
+  <variant name="PluginVmImage"/>
+</variants>
+
 <histogram name="Download.ApiFunctions" enum="DownloadFunctions"
     expires_after="2020-03-08">
   <owner>dtrainor@chromium.org</owner>
@@ -870,6 +880,21 @@ chromium-metrics-reviews@google.com.
     Events (e.g. Started, Cancelled, Finished, Write to Completed file, Write to
     Failed file) occuring within the state machine of a SavePackage operation.
   </summary>
+</histogram>
+
+<histogram name="Download.Service.Complete.FileSize.{DownloadClient}"
+    units="KB" expires_after="never">
+<!-- expires-never: Download service stability metric. -->
+
+  <owner>xingliu@chromium.org</owner>
+  <owner>clank-downloads@chromium.org</owner>
+  <summary>
+    The file size of completed background download. Recorded when background
+    downloads are finished.
+  </summary>
+  <token key="DownloadClient" variants="DownloadClient">
+    <variant name=""/>
+  </token>
 </histogram>
 
 <histogram name="Download.Service.Db.Operation.Failure"
