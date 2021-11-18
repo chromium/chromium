@@ -1,0 +1,91 @@
+// Copyright 2021 Google LLC
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//      http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+syntax = "proto3";
+
+package distributed_point_functions;
+
+// For compatibility with protobuf lite.
+option optimize_for = LITE_RUNTIME;
+
+// For faster allocations of submessages.
+option cc_enable_arenas = true;
+
+// Parameters of a distributed point function (DPF).
+message DpfParameters {
+  int32 log_domain_size = 1;
+  int32 element_bitsize = 2;
+}
+
+// A single 128-bit AES block.
+message Block {
+  uint64 high = 1;
+  uint64 low = 2;
+}
+
+// A correction word used to evaluate a single layer in the DPF evaluation tree.
+message CorrectionWord {
+  // Block used to correct the new seeds after PRG evaluation.
+  Block seed = 1;
+  // Correction bits for the left and right control bits.
+  bool control_left = 2;
+  bool control_right = 3;
+  // Block used to correct the output value at the previous tree layer. Only
+  // included if the previous tree layer is an output layer.
+  Block output = 4;
+}
+
+// A key of a distributed point function (DPF).
+message DpfKey {
+  // Initial seed at the first level.
+  Block seed = 1;
+  // Correction words for each level after expansion.
+  repeated CorrectionWord correction_words = 2;
+  // Party this DpfKey belongs to (0 or 1).
+  int32 party = 3;
+  // Output correction for the last layer.
+  Block last_level_output_correction = 4;
+}
+
+// Maps a single prefix of a DPF index to a PRG seed. Used to store partial
+// evaluation state between hierarchy levels in `EvaluationContext`
+message PartialEvaluation {
+  // Prefix in the FSS evaluation tree. Does not necessarily coincide with the
+  // corresponding prefix of the output domain at this hierarchy level.
+  Block prefix = 1;
+  // Seed for the next evaluation.
+  Block seed = 2;
+  // Control bit for the correction in the next evaluation.
+  bool control_bit = 3;
+}
+
+// An EvaluationContext holds the state of a partially evaluated incremental
+// DPF.
+message EvaluationContext {
+  // The parameters of the DPF being evaluated. One set of parameters for each
+  // hierarchy level of the incremental DPF.
+  repeated DpfParameters parameters = 1;
+  // The DPF key being evaluated.
+  DpfKey key = 2;
+  // The hierarchy level that this EvaluationContext was last evaluated on.
+  int32 previous_hierarchy_level = 3;
+  // Maps prefixes from an earlier hierarchy level to PRG seeds, which are used
+  // to continue the evaluation under each prefix. Uses a repeated message field
+  // since Protobuf doesn't allow messages (such as `Block`) as map keys.
+  repeated PartialEvaluation partial_evaluations = 4;
+  // The hierarchy level `partial_evaluations` corresponds to. If levels are
+  // expanded sequentially, this is equal to `previous_hierarchy_level - 1`,
+  // otherwise it can be smaller. Ignored when `partial_evaluations` is empty.
+  int32 partial_evaluations_level = 5;
+}

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/distributed_point_functions/src/dpf/distributed_point_function.h"
+#include "third_party/distributed_point_functions/code/dpf/distributed_point_function.h"
 
 #include <stddef.h>
 #include <stdint.h>

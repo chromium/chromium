@@ -6,7 +6,7 @@ import("//testing/libfuzzer/fuzzer_test.gni")
 import("//third_party/protobuf/proto_library.gni")
 
 proto_library("proto") {
-  sources = [ "src/dpf/distributed_point_function.proto" ]
+  sources = [ "code/dpf/distributed_point_function.proto" ]
   proto_out_dir = "third_party/distributed_point_functions/dpf"
   cc_generator_options = "lite"
 }
@@ -18,7 +18,7 @@ if (!defined(dpf_abseil_cpp_dir)) {
 config("distributed_point_functions_includes") {
   include_dirs = [
     ".",
-    "src",
+    "code",
     "$target_gen_dir",
   ]
 }
@@ -34,19 +34,21 @@ config("distributed_point_functions_warnings") {
 
 source_set("distributed_point_functions") {
   sources = [
+    "code/dpf/distributed_point_function.cc",
+    "code/dpf/distributed_point_function.h",
+    "code/dpf/internal/array_conversions.h",
+    "code/dpf/internal/pseudorandom_generator.cc",
+    "code/dpf/internal/pseudorandom_generator.h",
+    "code/dpf/status_macros.h",
     "glog/logging.h",
-    "src/dpf/distributed_point_function.cc",
-    "src/dpf/distributed_point_function.h",
-    "src/dpf/internal/array_conversions.h",
-    "src/dpf/internal/pseudorandom_generator.cc",
-    "src/dpf/internal/pseudorandom_generator.h",
-    "src/dpf/status_macros.h",
   ]
 
   public_deps = [
     ":proto",
     "$dpf_abseil_cpp_dir:absl",
+    "//base",
     "//third_party/boringssl",
+    "//third_party/protobuf:protobuf_lite",
   ]
 
   # Do not apply Chromium code rules to this third-party code.

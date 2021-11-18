@@ -1,0 +1,8 @@
+tasks:
+  ubuntu2004:
+    build_targets:
+      - "//..."
+    test_flags:
+      - "--test_tag_filters=-benchmark"
+    test_targets:
+      - "//..."
