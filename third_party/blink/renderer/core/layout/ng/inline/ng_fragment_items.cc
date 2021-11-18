@@ -99,6 +99,7 @@ void NGFragmentItems::FinalizeAfterLayout(
   ClearCollectionScope<HeapHashMap<Member<const LayoutObject>, LastItem>>
       clear_scope(&last_items);
   wtf_size_t item_index = 0;
+  wtf_size_t line_fragment_id = NGFragmentItem::kInitialLineFragmentId;
   for (const auto& result : results) {
     const auto& fragment =
         To<NGPhysicalBoxFragment>(result->PhysicalFragment());
@@ -112,6 +113,7 @@ void NGFragmentItems::FinalizeAfterLayout(
       ++item_index;
       if (item.Type() == NGFragmentItem::kLine) {
         DCHECK_EQ(item.DeltaToNextForSameLayoutObject(), 0u);
+        item.SetFragmentId(line_fragment_id++);
         continue;
       }
       LayoutObject* const layout_object = item.GetMutableLayoutObject();

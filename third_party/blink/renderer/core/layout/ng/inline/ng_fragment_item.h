@@ -123,13 +123,14 @@ class CORE_EXPORT NGFragmentItem {
   void SetSvgLineLocalRect(const PhysicalRect& unscaled_rect);
 
   // A sequence number of fragments generated from a |LayoutObject|.
-  // For line boxes, please see |kInitialLineFragmentId|.
+  // For line boxes, this is a sequence number for the containing
+  // |LayoutBlockFlow|, starting at |kInitialLineFragmentId|.
   wtf_size_t FragmentId() const {
-    DCHECK_NE(Type(), kLine);
+    DCHECK(Type() != kLine || fragment_id_ >= kInitialLineFragmentId);
     return fragment_id_;
   }
   void SetFragmentId(wtf_size_t id) const {
-    DCHECK_NE(Type(), kLine);
+    DCHECK(Type() != kLine || id >= kInitialLineFragmentId);
     fragment_id_ = id;
   }
   // The initial framgent_id for line boxes.
@@ -137,8 +138,6 @@ class CORE_EXPORT NGFragmentItem {
   // its |LayoutBlockFlow| as their |DisplayItemClient|, but multicol also uses
   // fragment id for |LayoutBlockFlow| today. The plan is to make |FragmentData|
   // a |DisplayItemClient| instead.
-  // TODO(kojii): The fragment id for line boxes must be unique across NG block
-  // fragmentation. This is not implemented yet.
   static constexpr wtf_size_t kInitialLineFragmentId = 0x80000000;
 
   // Return true if this is the first fragment generated from a node.

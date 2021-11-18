@@ -1472,7 +1472,6 @@ inline void NGBoxFragmentPainter::PaintLineBox(
     const NGPhysicalFragment& line_box_fragment,
     const DisplayItemClient& display_item_client,
     const NGFragmentItem& line_box_item,
-    wtf_size_t line_fragment_id,
     const PaintInfo& paint_info,
     const PhysicalOffset& child_offset) {
   if (paint_info.phase != PaintPhase::kForeground)
@@ -1481,6 +1480,8 @@ inline void NGBoxFragmentPainter::PaintLineBox(
   PhysicalRect border_box = line_box_fragment.LocalRect();
   border_box.offset += child_offset;
   absl::optional<ScopedDisplayItemFragment> display_item_fragment;
+  const wtf_size_t line_fragment_id = line_box_item.FragmentId();
+  DCHECK_GE(line_fragment_id, NGFragmentItem::kInitialLineFragmentId);
   if (ShouldRecordHitTestData(paint_info)) {
     display_item_fragment.emplace(paint_info.context, line_fragment_id);
     paint_info.context.GetPaintController().RecordHitTestData(
@@ -1556,7 +1557,6 @@ void NGBoxFragmentPainter::PaintLineBoxChildItems(
     const PaintInfo& paint_info,
     const PhysicalOffset& paint_offset) {
   const bool is_horizontal = box_fragment_.Style().IsHorizontalWritingMode();
-  wtf_size_t line_fragment_id = NGFragmentItem::kInitialLineFragmentId;
   for (; *children; children->MoveToNextSkippingChildren()) {
     const NGFragmentItem* child_item = children->CurrentItem();
     DCHECK(child_item);
@@ -1586,7 +1586,7 @@ void NGBoxFragmentPainter::PaintLineBoxChildItems(
           child_item->LineBoxFragment();
       DCHECK(line_box_fragment);
       PaintLineBox(*line_box_fragment, *child_item->GetDisplayItemClient(),
-                   *child_item, line_fragment_id++, paint_info, child_offset);
+                   *child_item, paint_info, child_offset);
       NGInlineCursor line_box_cursor = children->CursorForDescendants();
       PaintInlineItems(paint_info, paint_offset,
                        child_item->OffsetInContainerFragment(),

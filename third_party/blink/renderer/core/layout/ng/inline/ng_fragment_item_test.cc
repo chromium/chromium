@@ -428,6 +428,41 @@ TEST_F(NGFragmentItemTest, EllipsizedAtomicInline) {
   EXPECT_TRUE(cursor.Current()->IsLastForNode());
 }
 
+TEST_F(NGFragmentItemTest, LineFragmentId) {
+  ScopedLayoutNGBlockFragmentationForTest ng_block_frag(true);
+  SetBodyInnerHTML(R"HTML(
+    <style>
+    #columns {
+      columns: 2;
+      column-fill: auto;
+      line-height: 1em;
+      height: 3em;
+    }
+    </style>
+    <body>
+      <div id="columns">
+        <div id="target">
+          1<br>
+          2<br>
+          3<br>
+          4<br>
+          5<br>
+          6
+        </div>
+      </div>
+    </body>
+  )HTML");
+  auto* target = To<LayoutBlockFlow>(GetLayoutObjectByElementId("target"));
+  NGInlineCursor cursor(*target);
+  wtf_size_t line_index = 0;
+  for (cursor.MoveToFirstLine(); cursor;
+       cursor.MoveToNextLineIncludingFragmentainer(), ++line_index) {
+    EXPECT_EQ(cursor.Current()->FragmentId(),
+              line_index + NGFragmentItem::kInitialLineFragmentId);
+  }
+  EXPECT_EQ(line_index, 6u);
+}
+
 // Various nodes/elements to test insertions.
 using CreateNode = Node* (*)(Document&);
 static CreateNode node_creators[] = {

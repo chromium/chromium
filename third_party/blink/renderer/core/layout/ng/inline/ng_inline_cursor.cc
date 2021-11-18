@@ -1192,6 +1192,15 @@ void NGInlineCursor::MoveToNextLine() {
   NOTREACHED();
 }
 
+void NGInlineCursor::MoveToNextLineIncludingFragmentainer() {
+  MoveToNextLine();
+  if (!Current() && max_fragment_index_ && CanMoveAcrossFragmentainer()) {
+    MoveToNextFragmentainer();
+    if (Current() && !Current().IsLineBox())
+      MoveToFirstLine();
+  }
+}
+
 void NGInlineCursor::MoveToPreviousInlineLeaf() {
   if (Current() && Current().IsInlineLeaf())
     MoveToPrevious();
