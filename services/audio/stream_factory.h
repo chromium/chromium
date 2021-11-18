@@ -21,6 +21,7 @@
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "services/audio/concurrent_stream_metric_reporter.h"
 #include "services/audio/loopback_coordinator.h"
+#include "services/audio/output_device_mixer_manager.h"
 
 namespace base {
 class UnguessableToken;
@@ -111,6 +112,7 @@ class StreamFactory final : public media::mojom::AudioStreamFactory {
   ConcurrentStreamMetricReporter stream_count_metric_reporter_;
 
   // Order of the following members is important for a clean shutdown.
+  OutputDeviceMixerManager output_device_mixer_manager_;
   LoopbackCoordinator coordinator_;
   std::vector<std::unique_ptr<LocalMuter>> muters_;
   base::Thread loopback_worker_thread_;

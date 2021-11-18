@@ -33,6 +33,8 @@ std::string GetCtorLogString(media::AudioManager* audio_manager,
 OutputStream::OutputStream(
     CreatedCallback created_callback,
     DeleteCallback delete_callback,
+    ManagedDeviceOutputStreamCreateCallback
+        managed_device_output_stream_create_callback,
     mojo::PendingReceiver<media::mojom::AudioOutputStream> stream_receiver,
     mojo::PendingAssociatedRemote<media::mojom::AudioOutputStreamObserver>
         observer,
@@ -60,7 +62,8 @@ OutputStream::OutputStream(
                   activity_monitor,
                   params,
                   output_device_id,
-                  &reader_),
+                  &reader_,
+                  std::move(managed_device_output_stream_create_callback)),
       loopback_group_id_(loopback_group_id) {
   DCHECK(receiver_.is_bound());
   DCHECK(created_callback);

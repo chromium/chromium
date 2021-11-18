@@ -865,5 +865,104 @@ TEST_F(OutputControllerTest, ReportActivity) {
   EXPECT_FALSE(stream_active_state);
 }
 
+class MockAudioOutputStreamForMixing : public AudioOutputStream {
+ public:
+  MOCK_METHOD0(Open, bool());
+  MOCK_METHOD1(Start, void(AudioSourceCallback*));
+  MOCK_METHOD0(Stop, void());
+  void SetVolume(double volume) override {}
+  void GetVolume(double* volume) override {}
+  MOCK_METHOD0(Close, void());
+  MOCK_METHOD0(Flush, void());
+};
+
+TEST(OutputControllerMixingTest,
+     ControllerUsesProvidedCManagedDeviceOutputStreamCreateCallbackCorrectly) {
+  base::TestMessageLoop message_loop_;
+  // Controller creation parameters.
+  AudioManagerForControllerTest audio_manager;
+  NiceMock<MockOutputControllerEventHandler> mock_event_handler;
+  NiceMock<MockOutputStreamActivityMonitor> mock_stream_activity_monitor;
+  NiceMock<MockOutputControllerSyncReader> mock_sync_reader;
+  const std::string controller_device_id("device id");
+  const AudioParameters controller_params(GetTestParams());
+
+  // Callback that OutputController should provide when calling
+  // ManagedDeviceOutputStreamCreateCallback to create a stream.
+  base::OnceClosure provided_on_device_change_callback;
+
+  // Mock outputstream which will be returned to the OutputController when it
+  // calls ManagedDeviceOutputStreamCreateCallback.
+  StrictMock<MockAudioOutputStreamForMixing> mock_output_stream;
+
+  // Mock to be used for ManagedDeviceOutputStreamCreateCallback implementation.
+  auto CreateStream =
+      [](const std::string& controller_device_id,
+         const AudioParameters& controller_params,
+         MockAudioOutputStreamForMixing* const mock_output_stream,
+         base::OnceClosure* provided_on_device_change_callback,
+         const std::string& device_id, const AudioParameters& params,
+         base::OnceClosure on_device_change_callback) -> AudioOutputStream* {
+    EXPECT_TRUE(params.Equals(controller_params));
+    EXPECT_EQ(device_id, controller_device_id);
+    *provided_on_device_change_callback = std::move(on_device_change_callback);
+    return mock_output_stream;
+  };
+
+  ON_CALL(mock_output_stream, Open()).WillByDefault(Return(true));
+
+  OutputController::ManagedDeviceOutputStreamCreateCallback
+      mock_create_stream_cb = base::BindRepeating(
+          CreateStream, controller_device_id, controller_params,
+          &mock_output_stream, &provided_on_device_change_callback);
+
+  EXPECT_FALSE(provided_on_device_change_callback);
+
+  // Check that controller called |mock_create_stream_cb| on its CreateStream(),
+  // and uses the result AudioOutputStream.
+  EXPECT_CALL(mock_output_stream, Open()).Times(1);
+
+  OutputController controller(&audio_manager, &mock_event_handler,
+                              &mock_stream_activity_monitor, controller_params,
+                              controller_device_id, &mock_sync_reader,
+                              std::move(mock_create_stream_cb));
+
+  controller.CreateStream();
+
+  // When invoking |mock_create_stream_cb|, OutputController
+  // provided a callback to handle device changes.
+  EXPECT_TRUE(provided_on_device_change_callback);
+  Mock::VerifyAndClearExpectations(&mock_output_stream);
+
+  {
+    // When |provided_on_device_change_callback| is called, OutputController
+    // must synchronously close the output stream, and then it will call
+    // |mock_create_stream_cb| to create a new one.
+    testing::InSequence s;
+    EXPECT_CALL(mock_output_stream, Close()).Times(1);
+    EXPECT_CALL(mock_output_stream, Open()).Times(1);
+    EXPECT_TRUE(provided_on_device_change_callback);
+
+    std::move(provided_on_device_change_callback).Run();
+    Mock::VerifyAndClearExpectations(&mock_output_stream);
+  }
+
+  {
+    // After the first device change, OutputController handles the next device
+    // change correctly as well.
+    testing::InSequence s;
+    EXPECT_CALL(mock_output_stream, Close()).Times(1);
+    EXPECT_CALL(mock_output_stream, Open()).Times(1);
+    EXPECT_TRUE(provided_on_device_change_callback);
+
+    std::move(provided_on_device_change_callback).Run();
+    Mock::VerifyAndClearExpectations(&mock_output_stream);
+  }
+
+  EXPECT_CALL(mock_output_stream, Close()).Times(1);
+  controller.Close();
+  audio_manager.Shutdown();
+}
+
 }  // namespace
 }  // namespace audio

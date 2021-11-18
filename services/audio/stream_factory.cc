@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/feature_list.h"
 #include "base/trace_event/trace_event.h"
 #include "base/unguessable_token.h"
 #include "build/chromecast_buildflags.h"
@@ -14,15 +15,21 @@
 #include "services/audio/input_stream.h"
 #include "services/audio/local_muter.h"
 #include "services/audio/loopback_stream.h"
+#include "services/audio/output_device_mixer.h"
 #include "services/audio/output_stream.h"
 #include "services/audio/user_input_monitor.h"
 
 namespace audio {
 
+const base::Feature kMixingForChromeWideAec{"MixingForChromeWideAec",
+                                            base::FEATURE_DISABLED_BY_DEFAULT};
+
 StreamFactory::StreamFactory(media::AudioManager* audio_manager)
     : audio_manager_(audio_manager),
-      loopback_worker_thread_("Loopback Worker") {
-}
+      output_device_mixer_manager_(
+          audio_manager,
+          base::BindRepeating(&OutputDeviceMixer::Create)),
+      loopback_worker_thread_("Loopback Worker") {}
 
 StreamFactory::~StreamFactory() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(owning_sequence_);
@@ -106,8 +113,20 @@ void StreamFactory::CreateOutputStream(
       output_device_id;
 #endif
 
+  // base::Unretained() is safe since |this| owns both |output_mixer_manager_|
+  // and |output_streams_|, and ensures the correct order of destruction.
+  OutputStream::ManagedDeviceOutputStreamCreateCallback
+      managed_device_output_stream_create_callback;
+
+  if (base::FeatureList::IsEnabled(kMixingForChromeWideAec)) {
+    managed_device_output_stream_create_callback =
+        base::BindRepeating(&OutputDeviceMixerManager::MakeOutputStream,
+                            base::Unretained(&output_device_mixer_manager_));
+  }
+
   output_streams_.insert(std::make_unique<OutputStream>(
       std::move(created_callback), std::move(deleter_callback),
+      std::move(managed_device_output_stream_create_callback),
       std::move(stream_receiver), std::move(observer), std::move(log),
       audio_manager_, &stream_count_metric_reporter_, device_id_or_group_id,
       params, &coordinator_, group_id));

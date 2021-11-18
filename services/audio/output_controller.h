@@ -108,15 +108,30 @@ class OutputController : public media::AudioOutputStream::AudioSourceCallback,
     kError,
   };
 
+  // OutputController guarantees that |on_device_change_callback| will
+  // synchronously close the stream received in
+  // ManagedDeviceOutputStreamCreateCallback.
+  using ManagedDeviceOutputStreamCreateCallback =
+      base::RepeatingCallback<media::AudioOutputStream*(
+          const std::string&,
+          const media::AudioParameters&,
+          base::OnceClosure on_device_change_callback)>;
+
   // |audio_manager| and |handler| must outlive OutputController.  The
   // |output_device_id| can be either empty (default device) or specify a
   // specific hardware device for audio output.
+  // If |managed_device_output_stream_create_callback| is provided, it will be
+  // used to create a device stream under control; otherwise the stream will be
+  // created using |audio_manager|.
   OutputController(media::AudioManager* audio_manager,
                    EventHandler* handler,
                    OutputStreamActivityMonitor* activity_monitor,
                    const media::AudioParameters& params,
                    const std::string& output_device_id,
-                   SyncReader* sync_reader);
+                   SyncReader* sync_reader,
+                   ManagedDeviceOutputStreamCreateCallback
+                       managed_device_output_stream_create_callback =
+                           ManagedDeviceOutputStreamCreateCallback());
 
   OutputController(const OutputController&) = delete;
   OutputController& operator=(const OutputController&) = delete;
@@ -277,6 +292,11 @@ class OutputController : public media::AudioOutputStream::AudioSourceCallback,
 
   media::AudioManager* const audio_manager_;
   const media::AudioParameters params_;
+
+  // Callback to create a device output stream; if not specified -
+  // |audio_manager_| will be used to create a device output stream.
+  ManagedDeviceOutputStreamCreateCallback
+      managed_device_output_stream_create_callback_;
 
   // This object (OC) is owned by an OutputStream (OS) object which is an
   // EventHandler. |handler_| is set at construction by the OS (using this).
