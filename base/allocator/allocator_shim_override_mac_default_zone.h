@@ -16,6 +16,7 @@
 #include "base/allocator/partition_allocator/partition_alloc_constants.h"
 #include "base/bits.h"
 #include "base/ignore_result.h"
+#include "base/logging.h"
 
 namespace base {
 
@@ -231,6 +232,11 @@ InitializeDefaultMallocZoneWithPartitionAlloc() {
     // The default zone is already provided by PartitionAlloc, so this function
     // has been called from another library (or the main executable), nothing to
     // do.
+    //
+    // This should be a crash, ideally, but callers do it, so only warn, for
+    // now.
+    RAW_LOG(ERROR, "Trying to load the allocator multiple times. This is *not* "
+                   "supported.");
     return;
   }
 
