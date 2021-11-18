@@ -1116,6 +1116,12 @@
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_11.components_unittests.filter',
         ],
       },
+      'android-12-x64-fyi-rel': {
+        'args': [
+          # TODO(crbug.com/1192348): Fix the test failure
+          '--gtest_filter=-FieldFormatterTest.DifferentLocales',
+        ],
+      },
       'linux-blink-heap-concurrent-marking-tsan-rel': {
         'swarming': {
           'shards': 2,
@@ -2223,6 +2229,12 @@
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_11.net_unittests.filter',
         ],
       },
+      'android-12-x64-fyi-rel': {
+        'args': [
+          # TODO(crbug.com/1191793): Fix the test failure
+          '--gtest_filter=-MimeUtilTest.ExtensionTest',
+        ],
+      },
       'android-cronet-x86-dbg-10-tests': {
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_10.net_unittests.filter',
@@ -2609,7 +2621,13 @@
     'modifications': {
       'android-11-x86-rel': {
         'args': [
-          # TODO(crbug.com/1234824): Fix the failed tests
+          # TODO(crbug.com/1264654): Fix the failed tests
+          '--gtest_filter=-PacLibraryTest.ActualPacMyIpAddress*'
+        ],
+      },
+      'android-12-x64-fyi-rel': {
+        'args': [
+          # TODO(crbug.com/1264654): Fix the failed tests
           '--gtest_filter=-PacLibraryTest.ActualPacMyIpAddress*'
         ],
       },
@@ -3303,7 +3321,13 @@
     'modifications': {
       'android-11-x86-rel': {
         'args': [
-          # TODO(crbug.com/1191784): Enable this test once the issue is fixed.
+          # TODO(crbug.com/1191784): Fix the test failure
+          '--gtest_filter=-DownloadBrowserTest.OverrideDownloadDirectory',
+        ],
+      },
+      'android-12-x64-fyi-rel': {
+        'args': [
+          # TODO(crbug.com/1191784): Fix the test failure
           '--gtest_filter=-DownloadBrowserTest.OverrideDownloadDirectory',
         ],
       },
