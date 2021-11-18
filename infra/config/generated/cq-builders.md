@@ -493,6 +493,9 @@ as required builders.
 * [linux_chromium_tsan_rel_ng_rts](https://ci.chromium.org/p/chromium/builders/try/linux_chromium_tsan_rel_ng_rts) ([definition](https://cs.chromium.org/search?q=+file:/try.star$+""linux_chromium_tsan_rel_ng_rts"")) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+""linux_chromium_tsan_rel_ng_rts""))
   * Experiment percentage: 5.0
 
+* [mac-rel-orchestrator](https://ci.chromium.org/p/chromium/builders/try/mac-rel-orchestrator) ([definition](https://cs.chromium.org/search?q=+file:/try.star$+""mac-rel-orchestrator"")) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+""mac-rel-orchestrator""))
+  * Experiment percentage: 1.0
+
 * [mac11-arm64-rel](https://ci.chromium.org/p/chromium/builders/try/mac11-arm64-rel) ([definition](https://cs.chromium.org/search?q=+file:/try.star$+""mac11-arm64-rel"")) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+""mac11-arm64-rel""))
   * Experiment percentage: 100.0
 
