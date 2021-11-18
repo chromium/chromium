@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/user_education/tutorial/tutorial.h"
 
 #include "base/bind.h"
+#include "base/logging.h"
 #include "chrome/browser/ui/user_education/tutorial/tutorial_bubble.h"
 #include "chrome/browser/ui/user_education/tutorial/tutorial_bubble_factory.h"
 #include "chrome/browser/ui/user_education/tutorial/tutorial_bubble_factory_registry.h"
@@ -93,6 +94,12 @@ Tutorial::StepBuilder& Tutorial::StepBuilder::SetMustRemainVisible(
   return *this;
 }
 
+Tutorial::StepBuilder& Tutorial::StepBuilder::SetNameElementsCallback(
+    TutorialDescription::NameElementsCallback name_elements_callback_) {
+  step_.name_elements_callback = name_elements_callback_;
+  return *this;
+}
+
 std::unique_ptr<ui::InteractionSequence::Step> Tutorial::StepBuilder::Build(
     TutorialService* tutorial_service,
     TutorialBubbleFactoryRegistry* bubble_factory_registry) {
@@ -112,20 +119,41 @@ std::unique_ptr<ui::InteractionSequence::Step> Tutorial::StepBuilder::Build(
     interaction_sequence_step_builder->SetMustRemainVisible(
         step_.must_remain_visible.value());
 
-  if (step_.ShouldShowBubble()) {
-    interaction_sequence_step_builder->SetStartCallback(
-        BuildShowBubbleCallback(tutorial_service, bubble_factory_registry));
-    interaction_sequence_step_builder->SetEndCallback(
-        BuildHideBubbleCallback(tutorial_service));
-  }
+  interaction_sequence_step_builder->SetStartCallback(
+      BuildStartCallback(tutorial_service, bubble_factory_registry));
+  interaction_sequence_step_builder->SetEndCallback(
+      BuildHideBubbleCallback(tutorial_service));
 
   return interaction_sequence_step_builder->Build();
 }
 
 ui::InteractionSequence::StepStartCallback
-Tutorial::StepBuilder::BuildShowBubbleCallback(
+Tutorial::StepBuilder::BuildStartCallback(
     TutorialService* tutorial_service,
     TutorialBubbleFactoryRegistry* bubble_factory_registry) {
+  // get show bubble callback
+  ui::InteractionSequence::StepStartCallback maybe_show_bubble_callback =
+      BuildMaybeShowBubbleCallback(tutorial_service, bubble_factory_registry);
+
+  return base::BindOnce(
+      [](TutorialDescription::NameElementsCallback name_elements_callback,
+         ui::InteractionSequence::StepStartCallback maybe_show_bubble_callback,
+         ui::InteractionSequence* sequence, ui::TrackedElement* element) {
+        if (name_elements_callback)
+          name_elements_callback.Run(sequence, element);
+        if (maybe_show_bubble_callback)
+          std::move(maybe_show_bubble_callback).Run(sequence, element);
+      },
+      step_.name_elements_callback, std::move(maybe_show_bubble_callback));
+}
+
+ui::InteractionSequence::StepStartCallback
+Tutorial::StepBuilder::BuildMaybeShowBubbleCallback(
+    TutorialService* tutorial_service,
+    TutorialBubbleFactoryRegistry* bubble_factory_registry) {
+  if (!step_.ShouldShowBubble())
+    return ui::InteractionSequence::StepStartCallback();
+
   return base::BindOnce(
       [](TutorialService* tutorial_service,
          TutorialBubbleFactoryRegistry* bubble_factory_registry,

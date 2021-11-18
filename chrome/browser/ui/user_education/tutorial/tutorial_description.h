@@ -17,6 +17,10 @@
 // for constructing the InteractionSequence::Step from the
 // TutorialDescription::Step.
 struct TutorialDescription {
+  using NameElementsCallback =
+      base::RepeatingCallback<bool(ui::InteractionSequence*,
+                                   ui::TrackedElement*)>;
+
   TutorialDescription();
   ~TutorialDescription();
   TutorialDescription(const TutorialDescription& description);
@@ -38,7 +42,8 @@ struct TutorialDescription {
          ui::ElementIdentifier element_id_,
          std::string element_name_,
          Arrow arrow_,
-         absl::optional<bool> must_remain_visible_ = absl::nullopt);
+         absl::optional<bool> must_remain_visible_ = absl::nullopt,
+         NameElementsCallback name_elements_callback_ = NameElementsCallback());
     Step(const Step& step);
     Step& operator=(const Step& step) = default;
     ~Step();
@@ -67,6 +72,16 @@ struct TutorialDescription {
     // decide what its value should be based on the generated
     // InteractionSequence::StepBuilder
     absl::optional<bool> must_remain_visible;
+
+    // lambda which is called on the start callback of the InteractionSequence
+    // which provides the interaction sequence and the current element that
+    // belongs to the step. The intention for this functionality is to name one
+    // or many elements using the Framework's Specific API finding an element
+    // and naming it OR using the current element from the sequence as the
+    // element for naming. The return value is a boolean which controls whether
+    // the Interaction Sequence should continue or not. If false is returned
+    // the tutorial will abort
+    NameElementsCallback name_elements_callback;
 
     // returns true iff all of the required parameters exist to display a
     // bubble.

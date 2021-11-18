@@ -75,6 +75,8 @@ class Tutorial {
     StepBuilder& SetProgress(absl::optional<std::pair<int, int>> progress_);
     StepBuilder& SetIsLastStep(bool is_last_step_);
     StepBuilder& SetMustRemainVisible(bool must_remain_visible_);
+    StepBuilder& SetNameElementsCallback(
+        TutorialDescription::NameElementsCallback name_elements_callback_);
 
     std::unique_ptr<ui::InteractionSequence::Step> Build(
         TutorialService* tutorial_service,
@@ -84,9 +86,14 @@ class Tutorial {
     absl::optional<std::pair<int, int>> progress;
     bool is_last_step = false;
 
-    ui::InteractionSequence::StepStartCallback BuildShowBubbleCallback(
+    ui::InteractionSequence::StepStartCallback BuildStartCallback(
         TutorialService* tutorial_service,
         TutorialBubbleFactoryRegistry* bubble_factory_registry);
+
+    ui::InteractionSequence::StepStartCallback BuildMaybeShowBubbleCallback(
+        TutorialService* tutorial_service,
+        TutorialBubbleFactoryRegistry* bubble_factory_registry);
+
     ui::InteractionSequence::StepEndCallback BuildHideBubbleCallback(
         TutorialService* tutorial_service);
     TutorialDescription::Step step_;
