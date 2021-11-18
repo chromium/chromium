@@ -137,12 +137,9 @@ class FamilyUserChromeActivityMetricsTest
         apps::Instance::InstanceKey::ForWindowBasedApp(window));
     instance->UpdateState(state, base::Time::Now());
 
-    std::vector<std::unique_ptr<apps::Instance>> deltas;
-    deltas.push_back(std::move(instance));
-
     apps::AppServiceProxyFactory::GetForProfile(profile())
         ->InstanceRegistry()
-        .OnInstances(std::move(deltas));
+        .OnInstance(std::move(instance));
   }
 
   std::unique_ptr<Browser> CreateBrowserWithAuraWindow() {
