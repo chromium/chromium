@@ -18,9 +18,14 @@ namespace content {
 class BrowserContext;
 }  // namespace content
 
+namespace ash {
+class HatsNotificationController;
+}  // namespace ash
+
 namespace arc {
 
 class ArcBridgeService;
+class ArcSurveyServiceTest;
 
 // This service monitors as ARC apps are created/destroyed and determines when
 // to show ARC++ Games Survey.
@@ -64,6 +69,9 @@ class ArcSurveyService : public KeyedService, public ArcAppListPrefs::Observer {
   void AddAllowedPackageNameForTesting(const std::string package_name);
 
  private:
+  friend class ArcSurveyServiceTest;
+  bool LoadPackageNames(const std::string& survey_data);
+
   base::ScopedObservation<ArcAppListPrefs, ArcAppListPrefs::Observer>
       arc_prefs_observer_{this};
 
@@ -88,6 +96,11 @@ class ArcSurveyService : public KeyedService, public ArcAppListPrefs::Observer {
 
   // List of package names for which to show the survey.
   std::set<std::string> allowed_packages_;
+
+  // Unowned pointer.
+  Profile* const profile_;
+
+  scoped_refptr<ash::HatsNotificationController> hats_notification_controller_;
 };
 
 }  // namespace arc

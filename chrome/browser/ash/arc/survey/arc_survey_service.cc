@@ -8,9 +8,13 @@
 #include <utility>
 
 #include "ash/components/arc/arc_browser_context_keyed_service_factory_base.h"
+#include "base/json/json_reader.h"
 #include "base/logging.h"
 #include "base/memory/singleton.h"
 #include "base/time/time.h"
+#include "chrome/browser/ash/hats/hats_config.h"
+#include "chrome/browser/ash/hats/hats_finch_helper.h"
+#include "chrome/browser/ash/hats/hats_notification_controller.h"
 #include "chrome/browser/profiles/profile.h"
 
 namespace arc {
@@ -18,6 +22,8 @@ namespace arc {
 namespace {
 
 const int kArcGameSurveyTriggerTimeInMinutes = 10;
+constexpr char kKeyPackageNames[] = "package_names";
+constexpr char kKeyMostRecentAndroidGame[] = "mostRecentAndroidGame";
 
 // Singleton factory for ArcSurveyServiceFactory.
 class ArcSurveyServiceFactory
@@ -53,19 +59,57 @@ ArcSurveyService* ArcSurveyService::GetForBrowserContextForTesting(
 }
 
 ArcSurveyService::ArcSurveyService(content::BrowserContext* context,
-                                   ArcBridgeService* arc_bridge_service) {
+                                   ArcBridgeService* arc_bridge_service)
+    : profile_(Profile::FromBrowserContext(context)) {
   VLOG(1) << "ArcSurveyService created";
-  ArcAppListPrefs* prefs =
-      ArcAppListPrefs::Get(Profile::FromBrowserContext(context));
+
+  if (!base::FeatureList::IsEnabled(ash::kHatsArcGamesSurvey.feature)) {
+    VLOG(1) << "ARC Games HaTS survey feature is not enabled";
+    return;
+  }
+  const std::string survey_data =
+      ash::HatsFinchHelper::GetCustomClientDataAsString(
+          ash::kHatsArcGamesSurvey);
+  if (survey_data.length() == 0) {
+    VLOG(1) << "No HaTS config found for ARC Games.";
+    return;
+  }
+  if (!LoadPackageNames(survey_data)) {
+    VLOG(1) << "List of package names not loaded.";
+    return;
+  }
+  ArcAppListPrefs* prefs = ArcAppListPrefs::Get(profile_);
   if (prefs)
     arc_prefs_observer_.Observe(prefs);
-  // TODO(b:204572472): Populate |allowed_packages_| from
-  // HatsConfig::kHatsArcGamesSurvey.
 }
 
 ArcSurveyService::~ArcSurveyService() {
   package_name_map_.clear();
   task_id_map_.clear();
+}
+
+bool ArcSurveyService::LoadPackageNames(const std::string& survey_data) {
+  const absl::optional<base::Value> root = base::JSONReader::Read(survey_data);
+  if (!root) {
+    VLOG(2) << "Error reading survey data";
+    return false;
+  }
+  const base::Value* list = root->FindListKey(kKeyPackageNames);
+  if (!list) {
+    VLOG(2) << "Package name list not found in survey data.";
+    return false;
+  }
+  for (const auto& item : list->GetList()) {
+    const std::string* package_name = item.GetIfString();
+    if (!package_name) {
+      VLOG(2) << "Non-string value found in list";
+      allowed_packages_.clear();
+      return false;
+    }
+    allowed_packages_.emplace(*package_name);
+  }
+  DVLOG(1) << "Added " << allowed_packages_.size() << " entries";
+  return true;
 }
 
 void ArcSurveyService::OnTaskCreated(int32_t task_id,
@@ -79,17 +123,21 @@ void ArcSurveyService::OnTaskCreated(int32_t task_id,
   }
 
   // Add |task_id| to TaskIdMap
+  DVLOG(1) << "Adding new entry in task ID map: {" << task_id << ", "
+           << package_name << "}";
   task_id_map_.emplace(task_id, package_name);
 
   // Add or update the respective entry in PackageNameMap
   PackageNameMap::iterator entry = package_name_map_.find(package_name);
   if (entry == package_name_map_.end()) {
     // Add new entry
+    DVLOG(1) << "Adding new entry to package name map:" << package_name;
     package_name_map_.emplace(
         package_name, std::make_pair(1, base::Time::NowFromSystemTime()));
   } else {
     // Update the count for the existing entry.
     entry->second.first++;
+    DVLOG(1) << "Updating package name map: " << package_name;
   }
 }
 
@@ -102,6 +150,8 @@ void ArcSurveyService::OnTaskDestroyed(int32_t task_id) {
     return;
   }
   const std::string package_name = task_id_iterator->second;
+  DVLOG(1) << "Removing entry from task ID map: {" << task_id_iterator->first
+           << ", " << task_id_iterator->second << "}";
   task_id_map_.erase(task_id_iterator);
 
   // Update PackageNameMap
@@ -115,6 +165,7 @@ void ArcSurveyService::OnTaskDestroyed(int32_t task_id) {
   if (package_name_iterator->second.first == 0) {
     const base::Time on_task_create_timestamp =
         package_name_iterator->second.second;
+    DVLOG(1) << "Removing from package name map:  " << package_name;
     package_name_map_.erase(package_name_iterator);
 
     // Trigger ArcGames survey if it's been active for at least
@@ -122,9 +173,17 @@ void ArcSurveyService::OnTaskDestroyed(int32_t task_id) {
     base::TimeDelta elapsedTime =
         base::Time::NowFromSystemTime() - on_task_create_timestamp;
     if (elapsedTime.InMinutes() >= kArcGameSurveyTriggerTimeInMinutes) {
-      VLOG(1) << "~~~ Elapsed time is more than 10: "
+      VLOG(1) << "~~~ Elapsed time is more than "
+              << kArcGameSurveyTriggerTimeInMinutes << ": "
               << elapsedTime.InMinutes();
-      // TODO(b:204572472): Trigger HatsConfig::kHatsArcGamesSurvey
+      if (ash::HatsNotificationController::ShouldShowSurveyToProfile(
+              profile_, ash::kHatsArcGamesSurvey)) {
+        const base::flat_map<std::string, std::string> product_specific_data = {
+            {kKeyMostRecentAndroidGame, package_name}};
+        hats_notification_controller_ =
+            base::MakeRefCounted<ash::HatsNotificationController>(
+                profile_, ash::kHatsArcGamesSurvey, product_specific_data);
+      }
     }
   }
 }

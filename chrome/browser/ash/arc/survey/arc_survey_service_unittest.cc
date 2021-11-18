@@ -21,6 +21,7 @@ constexpr char kPackageA[] = "package A";
 constexpr char kPackageB[] = "package B";
 
 }  // namespace
+
 class ArcSurveyServiceTest : public testing::Test {
  public:
   ArcSurveyServiceTest() = default;
@@ -52,6 +53,14 @@ class ArcSurveyServiceTest : public testing::Test {
 
   const ArcSurveyService::TaskIdMap* getTaskIdMap() {
     return arc_survey_service_->GetTaskIdMapForTesting();
+  }
+
+  bool LoadPackageNames(const std::string package_names) {
+    return arc_survey_service_->LoadPackageNames(package_names);
+  }
+
+  std::set<std::string>& GetAllowedPackageNameSet() {
+    return arc_survey_service_->allowed_packages_;
   }
 
  private:
@@ -138,6 +147,34 @@ TEST_F(ArcSurveyServiceTest, MultiTask) {
   OnTaskDestroyed(1);
   EXPECT_EQ(0, GetPackageNameMap()->size());
   EXPECT_EQ(0, getTaskIdMap()->size());
+}
+
+TEST_F(ArcSurveyServiceTest, LoadPackageNames) {
+  // Clear any existing entries.
+  GetAllowedPackageNameSet().clear();
+  EXPECT_EQ(0, GetAllowedPackageNameSet().size());
+
+  // INVALID: No JSON String
+  EXPECT_FALSE(LoadPackageNames("foobar1234"));
+  EXPECT_EQ(0, GetAllowedPackageNameSet().size());
+
+  // Invalid JSON String: |package_names| as the key and a string as the value.
+  EXPECT_FALSE(LoadPackageNames(R"({"package_names":"com.android.vending")"));
+  EXPECT_EQ(0, GetAllowedPackageNameSet().size());
+
+  // Invalid JSON format: |package_names| as the key and not all the items in
+  // the list are strings.
+  EXPECT_FALSE(
+      LoadPackageNames(R"({"package_names":["com.android.vending",123]})"));
+  EXPECT_EQ(0, GetAllowedPackageNameSet().size());
+
+  // Valid JSON Format: |package_names| as the key and ALL the items in the list
+  // are strings.
+  EXPECT_TRUE(LoadPackageNames(
+      R"({"package_names":["com.android.vending","com.android.settings"]})"));
+  EXPECT_EQ(2, GetAllowedPackageNameSet().size());
+  EXPECT_EQ(1, GetAllowedPackageNameSet().count("com.android.vending"));
+  EXPECT_EQ(1, GetAllowedPackageNameSet().count("com.android.settings"));
 }
 
 }  // namespace arc
