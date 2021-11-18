@@ -5927,7 +5927,7 @@ static_library("browser") {
     }
   }
 
-  if (is_chromeos_ash && use_cras) {
+  if (use_cras) {
     defines += [ "USE_CRAS" ]
   }
 

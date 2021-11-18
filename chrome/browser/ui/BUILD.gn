@@ -3056,10 +3056,10 @@ static_library("ui") {
         "//ash/webui/telemetry_extension_ui",
       ]
     }
+  }
 
-    if (use_cras) {
-      defines += [ "USE_CRAS" ]
-    }
+  if (use_cras) {
+    defines += [ "USE_CRAS" ]
   }
 
   if (is_cfm) {
