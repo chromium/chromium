@@ -341,8 +341,15 @@ public class ContextualSearchSelectionController {
             handleSelection(selection, mSelectionType);
             mWasTapGestureDetected = false;
         } else {
-            boolean isValidSelection = validateSelectionSuppression(selection);
-            mHandler.handleSelectionModification(selection, isValidSelection, mX, mY);
+            // If the user is dragging the handles just update the Bar, otherwise make a new search.
+            if (mAreSelectionHandlesBeingDragged) {
+                boolean isValidSelection = validateSelectionSuppression(selection);
+                mHandler.handleSelectionModification(selection, isValidSelection, mX, mY);
+            } else {
+                // Smart Selection can cause a longpress selection change without the handles
+                // being dragged. In that case do a full handling of the new selection.
+                handleSelection(selection, mSelectionType);
+            }
         }
         mLastValidSelectionType = mSelectionType;
     }
@@ -377,23 +384,6 @@ public class ContextualSearchSelectionController {
                 break;
             case SelectionEventType.SELECTION_HANDLE_DRAG_STARTED:
                 mAreSelectionHandlesBeingDragged = true;
-                break;
-            case SelectionEventType.SELECTION_HANDLES_MOVED:
-                // If we're in the middle of a drag operation then we can wait for the drag to end,
-                // otherwise we need to process this right away.
-                if (mAreSelectionHandlesBeingDragged) break;
-
-                // Smart text selection generates MOVED without STARTED and since that's not a user
-                // gesture we should not consider it an adjusted selection requiring an exact
-                // search. MOVED events are also sent on simple scroll operations that hide and then
-                // show the selection handles so we need to differentiate based on whether the
-                // selection changed.
-                String previousSelection = mSelectedText;
-                if (getSelectionPopupController() != null) {
-                    mSelectedText = getSelectionPopupController().getSelectedText();
-                }
-                shouldHandleSelection =
-                        (mSelectedText != null && !mSelectedText.equals(previousSelection));
                 break;
             case SelectionEventType.SELECTION_HANDLE_DRAG_STOPPED:
                 mAreSelectionHandlesBeingDragged = false;

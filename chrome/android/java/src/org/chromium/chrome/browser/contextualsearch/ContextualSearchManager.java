@@ -802,7 +802,8 @@ public class ContextualSearchManager
                 && (mSelectionController.getSelectionType() == SelectionType.TAP
                         || mSelectionController.getSelectionType()
                                 == SelectionType.RESOLVING_LONG_PRESS)) {
-            String originalSelection = mContext == null ? null : mContext.getInitialSelectedWord();
+            String originalSelection =
+                    mContext == null ? null : mContext.getSelectionBeingResolved();
             String currentSelection = mSelectionController.getSelectedText();
             if (currentSelection != null) currentSelection = currentSelection.trim();
             if (originalSelection != null && originalSelection.trim().equals(currentSelection)) {
