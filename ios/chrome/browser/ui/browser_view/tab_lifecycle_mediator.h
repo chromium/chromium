@@ -13,9 +13,13 @@ class AccountConsistencyService;
 @class BrowserViewController;
 @class CommandDispatcher;
 @class DownloadManagerCoordinator;
+@protocol PassKitTabHelperDelegate;
 class PrerenderService;
+@class PrintController;
+@protocol RepostFormTabHelperDelegate;
 @class SadTabCoordinator;
 @class SideSwipeController;
+@protocol StoreKitLauncher;
 class WebStateList;
 
 typedef struct {
@@ -24,8 +28,13 @@ typedef struct {
   SadTabCoordinator* sadTabCoordinator;
   DownloadManagerCoordinator* downloadManagerCoordinator;
   CommandDispatcher* commandDispatcher;
-  UIViewController* passwordBaseViewController;
+  // A base view controller used for several tab helpers.
+  UIViewController* baseViewController;
   AccountConsistencyService* accountConsistencyService;
+  id<PassKitTabHelperDelegate> passKitDelegate;
+  PrintController* printController;
+  id<RepostFormTabHelperDelegate> repostFormDelegate;
+  id<StoreKitLauncher> storeKitLauncher;
 } TabLifecycleDependencies;
 
 // Mediator that handles the setup of tab helpers that require UI-layer

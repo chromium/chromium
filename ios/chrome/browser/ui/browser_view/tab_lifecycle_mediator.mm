@@ -5,16 +5,22 @@
 #import "ios/chrome/browser/ui/browser_view/tab_lifecycle_mediator.h"
 
 #import "components/signin/ios/browser/account_consistency_service.h"
+#import "ios/chrome/browser/autofill/autofill_tab_helper.h"
 #import "ios/chrome/browser/download/download_manager_tab_helper.h"
+#import "ios/chrome/browser/download/pass_kit_tab_helper.h"
 #import "ios/chrome/browser/ntp/new_tab_page_tab_helper.h"
 #import "ios/chrome/browser/overscroll_actions/overscroll_actions_tab_helper.h"
 #import "ios/chrome/browser/passwords/password_tab_helper.h"
 #import "ios/chrome/browser/prerender/prerender_service.h"
 #import "ios/chrome/browser/snapshots/snapshot_tab_helper.h"
 #import "ios/chrome/browser/ssl/captive_portal_detector_tab_helper.h"
+#import "ios/chrome/browser/store_kit/store_kit_tab_helper.h"
 #import "ios/chrome/browser/ui/download/download_manager_coordinator.h"
+#import "ios/chrome/browser/ui/print/print_controller.h"
 #import "ios/chrome/browser/ui/sad_tab/sad_tab_coordinator.h"
 #import "ios/chrome/browser/ui/side_swipe/side_swipe_controller.h"
+#import "ios/chrome/browser/web/print/print_tab_helper.h"
+#import "ios/chrome/browser/web/repost_form_tab_helper.h"
 #import "ios/chrome/browser/web/sad_tab_tab_helper.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/web_state_list/web_state_list_observer_bridge.h"
@@ -45,8 +51,12 @@
   __weak SadTabCoordinator* _sadTabCoordinator;
   __weak DownloadManagerCoordinator* _downloadManagerCoordinator;
   __weak CommandDispatcher* _commandDispatcher;
-  __weak UIViewController* _passwordBaseViewController;
+  __weak UIViewController* _baseViewController;
   AccountConsistencyService* _accountConsistencyService;
+  __weak id<PassKitTabHelperDelegate> _passKitDelegate;
+  __weak PrintController* _printController;
+  __weak id<RepostFormTabHelperDelegate> _repostFormDelegate;
+  __weak id<StoreKitLauncher> _storeKitLauncher;
 }
 
 - (instancetype)initWithWebStateList:(WebStateList*)webStateList
@@ -58,8 +68,12 @@
     _sadTabCoordinator = dependencies.sadTabCoordinator;
     _downloadManagerCoordinator = dependencies.downloadManagerCoordinator;
     _commandDispatcher = dependencies.commandDispatcher;
-    _passwordBaseViewController = dependencies.passwordBaseViewController;
+    _baseViewController = dependencies.baseViewController;
     _accountConsistencyService = dependencies.accountConsistencyService;
+    _passKitDelegate = dependencies.passKitDelegate;
+    _printController = dependencies.printController;
+    _repostFormDelegate = dependencies.repostFormDelegate;
+    _storeKitLauncher = dependencies.storeKitLauncher;
     // Some dependencies can't be null.
     DCHECK(_downloadManagerCoordinator);
 
@@ -113,54 +127,66 @@
   DCHECK(!_prerenderService ||
          !_prerenderService->IsWebStatePrerendered(webState));
 
-  SnapshotTabHelper::FromWebState(webState)->SetDelegate(_delegate);
-
-  if (PasswordTabHelper* passwordTabHelper =
-          PasswordTabHelper::FromWebState(webState)) {
-    passwordTabHelper->SetBaseViewController(_passwordBaseViewController);
-    passwordTabHelper->SetPasswordControllerDelegate(_delegate);
-    passwordTabHelper->SetDispatcher(_commandDispatcher);
-  }
-
-  // Only create the overscroll actions helper on phones.
-  if (ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_TABLET) {
-    OverscrollActionsTabHelper::FromWebState(webState)->SetDelegate(_delegate);
-  }
-
-  web_deprecated::SetSwipeRecognizerProvider(webState, _sideSwipeController);
-  SadTabTabHelper::FromWebState(webState)->SetDelegate(_sadTabCoordinator);
-
-  NetExportTabHelper::CreateForWebState(webState, _delegate);
-  CaptivePortalDetectorTabHelper::CreateForWebState(webState, _delegate);
-  NewTabPageTabHelper::FromWebState(webState)->SetDelegate(_delegate);
-  DownloadManagerTabHelper::CreateForWebState(webState,
-                                              _downloadManagerCoordinator);
-
+  // Set up delegates for things that aren't tab helpers.
   if (_accountConsistencyService) {
     _accountConsistencyService->SetWebStateHandler(webState, _delegate);
+  }
+  web_deprecated::SetSwipeRecognizerProvider(webState, _sideSwipeController);
+
+  // Tab helpers that aren't created until delegates are available.
+  CaptivePortalDetectorTabHelper::CreateForWebState(webState, _delegate);
+  DownloadManagerTabHelper::CreateForWebState(webState,
+                                              _downloadManagerCoordinator);
+  NetExportTabHelper::CreateForWebState(webState, _delegate);
+  PassKitTabHelper::CreateForWebState(webState, _passKitDelegate);
+  RepostFormTabHelper::CreateForWebState(webState, _repostFormDelegate);
+
+  // Existing tab helpers which get delegates assigned.
+  AutofillTabHelper::FromWebState(webState)->SetBaseViewController(
+      _baseViewController);
+  NewTabPageTabHelper::FromWebState(webState)->SetDelegate(_delegate);
+  PrintTabHelper::FromWebState(webState)->set_printer(_printController);
+  SadTabTabHelper::FromWebState(webState)->SetDelegate(_sadTabCoordinator);
+  SnapshotTabHelper::FromWebState(webState)->SetDelegate(_delegate);
+
+  StoreKitTabHelper::FromWebState(webState)->SetLauncher(_storeKitLauncher);
+
+  PasswordTabHelper* passwordTabHelper =
+      PasswordTabHelper::FromWebState(webState);
+  passwordTabHelper->SetBaseViewController(_baseViewController);
+  passwordTabHelper->SetPasswordControllerDelegate(_delegate);
+  passwordTabHelper->SetDispatcher(_commandDispatcher);
+
+  // Only assign the overscroll actions helper delegate on phones.
+  if (ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_TABLET) {
+    OverscrollActionsTabHelper::FromWebState(webState)->SetDelegate(_delegate);
   }
 }
 
 // Uninstalls delegates where needed.
 - (void)uninstallDelegatesForWebState:(web::WebState*)webState {
-  if (PasswordTabHelper* passwordTabHelper =
-          PasswordTabHelper::FromWebState(webState)) {
-    passwordTabHelper->SetBaseViewController(nil);
-    passwordTabHelper->SetPasswordControllerDelegate(nil);
-    passwordTabHelper->SetDispatcher(nil);
+  // Remove delegates for things that aren't tab helpers.
+  if (_accountConsistencyService) {
+    _accountConsistencyService->RemoveWebStateHandler(webState);
   }
-
   web_deprecated::SetSwipeRecognizerProvider(webState, nil);
+
+  // Remove delegates for tab helpers which may otherwise do bad things during
+  // shutdown.
+  SnapshotTabHelper::FromWebState(webState)->SetDelegate(nil);
+  NewTabPageTabHelper::FromWebState(webState)->SetDelegate(nil);
+  PrintTabHelper::FromWebState(webState)->set_printer(nil);
+  StoreKitTabHelper::FromWebState(webState)->SetLauncher(nil);
+
+  PasswordTabHelper* passwordTabHelper =
+      PasswordTabHelper::FromWebState(webState);
+  passwordTabHelper->SetBaseViewController(nil);
+  passwordTabHelper->SetPasswordControllerDelegate(nil);
+  passwordTabHelper->SetDispatcher(nil);
 
   if (ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_TABLET) {
     OverscrollActionsTabHelper::FromWebState(webState)->SetDelegate(nil);
   }
-  if (_accountConsistencyService) {
-    _accountConsistencyService->RemoveWebStateHandler(webState);
-  }
-
-  SnapshotTabHelper::FromWebState(webState)->SetDelegate(nil);
-  NewTabPageTabHelper::FromWebState(webState)->SetDelegate(nil);
 }
 
 @end
