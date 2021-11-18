@@ -128,8 +128,15 @@ class RenderingMobile(_RenderingBenchmark):
   # TODO(rmhasan): Remove the SUPPORTED_PLATFORMS lists.
   # SUPPORTED_PLATFORMS is deprecated, please put system specifier tags
   # from expectations.config in SUPPORTED_PLATFORM_TAGS.
-  SUPPORTED_PLATFORMS = [story_module.expectations.ALL_MOBILE]
-  SUPPORTED_PLATFORM_TAGS = [core_platforms.MOBILE]
+  SUPPORTED_PLATFORMS = [
+      story_module.expectations.ALL_MOBILE,
+      story_module.expectations.FUCHSIA_ASTRO,
+      story_module.expectations.FUCHSIA_SHERLOCK
+  ]
+  SUPPORTED_PLATFORM_TAGS = [
+      core_platforms.MOBILE, core_platforms.FUCHSIA_ASTRO,
+      core_platforms.FUCHSIA_SHERLOCK
+  ]
   PLATFORM_NAME = platforms.MOBILE
 
   @classmethod
