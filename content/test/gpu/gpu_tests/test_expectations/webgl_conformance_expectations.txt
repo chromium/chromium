@@ -802,6 +802,7 @@ crbug.com/1227774 [ chromeos chromeos-board-amd64-generic ] conformance/glsl/mis
 
 # Failing on chromeos-amd64-generic-rel.
 crbug.com/1232446 [ chromeos chromeos-board-amd64-generic ] conformance/rendering/gl-scissor-test.html [ Failure ]
+crbug.com/1271227 [ chromeos chromeos-board-amd64-generic ] conformance/attribs/gl-bindAttribLocation-aliasing.html [ RetryOnFailure ]
 
 
 ###########################
