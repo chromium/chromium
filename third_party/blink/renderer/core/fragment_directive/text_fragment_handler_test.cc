@@ -29,8 +29,6 @@
 
 namespace blink {
 
-namespace {
-
 using test::RunPendingTasks;
 
 class TextFragmentHandlerTest : public SimTest {
@@ -70,9 +68,11 @@ class TextFragmentHandlerTest : public SimTest {
 
   String SelectThenRequestSelector(const Position& start, const Position& end) {
     SetSelection(start, end);
-
     GetTextFragmentHandler().StartPreemptiveGenerationIfNeeded();
+    return RequestSelector();
+  }
 
+  String RequestSelector() {
     bool callback_called = false;
     String selector;
     auto lambda = [](bool& callback_called, String& selector,
@@ -140,6 +140,47 @@ class TextFragmentHandlerTest : public SimTest {
         ->addForBinding(script_state, ahem, exception_state);
   }
 
+  void VerifyPreemptiveGenerationMetricsDetailed(
+      bool success,
+      bool requested_after_ready,
+      absl::optional<shared_highlighting::LinkGenerationError> error,
+      bool has_async_tasks) {
+    base::StringPiece recorded_histograme;
+    base::StringPiece not_recorded_histogram;
+    if (requested_after_ready) {
+      recorded_histograme =
+          "SharedHighlights.LinkGenerated.RequestedAfterReady";
+      not_recorded_histogram =
+          "SharedHighlights.LinkGenerated.RequestedBeforeReady";
+    } else {
+      recorded_histograme =
+          "SharedHighlights.LinkGenerated.RequestedBeforeReady";
+      not_recorded_histogram =
+          "SharedHighlights.LinkGenerated.RequestedAfterReady";
+    }
+
+    histogram_tester_.ExpectTotalCount(recorded_histograme, 1);
+    histogram_tester_.ExpectTotalCount(not_recorded_histogram, 0);
+    histogram_tester_.ExpectBucketCount(recorded_histograme, success, 1);
+
+    histogram_tester_.ExpectTotalCount(
+        "SharedHighlights.LinkGenerated.Error.Requested", !success);
+    if (!success && error.has_value()) {
+      histogram_tester_.ExpectBucketCount(
+          "SharedHighlights.LinkGenerated.Error.Requested", error.value(), 1);
+    }
+
+    if (has_async_tasks) {
+      EXPECT_LT(0u, histogram_tester_
+                        .GetAllSamples("SharedHighlights.AsyncTask.Iterations")
+                        .size());
+      EXPECT_LT(0u,
+                histogram_tester_
+                    .GetAllSamples("SharedHighlights.AsyncTask.SearchDuration")
+                    .size());
+    }
+  }
+
   void VerifyPreemptiveGenerationMetrics(bool success) {
     EXPECT_EQ(1u,
               histogram_tester_
@@ -151,13 +192,8 @@ class TextFragmentHandlerTest : public SimTest {
                           "SharedHighlights.LinkGenerated.RequestedBeforeReady")
                       .size());
 
-    if (!success) {
-      histogram_tester_.ExpectTotalCount(
-          "SharedHighlights.LinkGenerated.Error.Requested", 1);
-    } else {
-      histogram_tester_.ExpectTotalCount(
-          "SharedHighlights.LinkGenerated.Error.Requested", 0);
-    }
+    histogram_tester_.ExpectTotalCount(
+        "SharedHighlights.LinkGenerated.Error.Requested", !success);
 
     // Check async task metrics.
     EXPECT_LT(0u, histogram_tester_
@@ -680,7 +716,9 @@ TEST_F(TextFragmentHandlerTest, SecondGenerationCrash) {
   ASSERT_EQ("First paragraph", PlainText(EphemeralRange(start, end)));
   SetSelection(start, end);
 
-  auto callback = WTF::Bind([](const TextFragmentSelector& selector) {});
+  auto callback = WTF::Bind(
+      [](const TextFragmentSelector& selector,
+         absl::optional<shared_highlighting::LinkGenerationError> error) {});
   GetDocument()
       .GetFrame()
       ->GetTextFragmentHandler()
@@ -1136,6 +1174,36 @@ TEST_F(TextFragmentHandlerTest,
                                                  ->Url());
 }
 
-}  // namespace
+// crbug.com/1266937 Even if |TextFragmentSelectorGenerator| gets reset between
+// generation completion and selector request we should record the correct error
+// code.
+TEST_F(TextFragmentHandlerTest, IfGeneratorResetShouldRecordCorrectError) {
+  SimRequest request("https://example.com/test.html", "text/html");
+  LoadURL("https://example.com/test.html");
+  request.Complete(R"HTML(
+    <!DOCTYPE html>
+    <div>Test page</div>
+    <p id='first'>First paragraph text that is longer than 20 chars</p>
+    <p id='second'>Second paragraph text</p>
+  )HTML");
+
+  Node* first_paragraph = GetDocument().getElementById("first")->firstChild();
+  const auto& selected_start = Position(first_paragraph, 5);
+  const auto& selected_end = Position(first_paragraph, 6);
+  ASSERT_EQ(" ", PlainText(EphemeralRange(selected_start, selected_end)));
+
+  SetSelection(selected_start, selected_end);
+  GetTextFragmentHandler().StartPreemptiveGenerationIfNeeded();
+
+  // Reset |TextFragmentSelectorGenerator|.
+  GetTextFragmentHandler().DidDetachDocumentOrFrame();
+
+  EXPECT_EQ(RequestSelector(), "");
+
+  absl::optional<shared_highlighting::LinkGenerationError> expected_error =
+      shared_highlighting::LinkGenerationError::kEmptySelection;
+  EXPECT_EQ(expected_error, GetTextFragmentHandler().error_);
+  VerifyPreemptiveGenerationMetricsDetailed(false, true, expected_error, false);
+}
 
 }  // namespace blink

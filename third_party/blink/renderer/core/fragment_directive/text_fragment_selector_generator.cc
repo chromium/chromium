@@ -716,7 +716,7 @@ void TextFragmentSelectorGenerator::OnSelectorReady(
 void TextFragmentSelectorGenerator::NotifyClientSelectorReady(
     const TextFragmentSelector& selector) {
   DCHECK(pending_generate_selector_callback_);
-  std::move(pending_generate_selector_callback_).Run(selector);
+  std::move(pending_generate_selector_callback_).Run(selector, error_);
 }
 
 }  // namespace blink

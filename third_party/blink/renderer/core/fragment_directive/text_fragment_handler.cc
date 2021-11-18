@@ -57,7 +57,7 @@ void TextFragmentHandler::RequestSelector(RequestSelectorCallback callback) {
   // respond with the result. Otherwise, the response callback is stored so
   // that we reply on completion.
   if (!selector_requested_before_ready_.value())
-    InvokeReplyCallback(preemptive_generation_result_.value());
+    InvokeReplyCallback(preemptive_generation_result_.value(), error_);
 }
 
 void TextFragmentHandler::GetExistingSelectors(
@@ -173,16 +173,18 @@ void TextFragmentHandler::ExtractFirstFragmentRect(
 }
 
 void TextFragmentHandler::DidFinishSelectorGeneration(
-    const TextFragmentSelector& selector) {
+    const TextFragmentSelector& selector,
+    absl::optional<shared_highlighting::LinkGenerationError> error) {
   DCHECK(!preemptive_generation_result_.has_value());
 
   if (response_callback_) {
-    InvokeReplyCallback(selector);
+    InvokeReplyCallback(selector, error);
   } else {
     // If we don't have a callback yet, it's because we started generating
     // preemptively. We'll store the result so that when the selector actually
     // is requested we can simply use the stored result.
     preemptive_generation_result_.emplace(selector);
+    error_ = error;
   }
 }
 
@@ -203,7 +205,8 @@ void TextFragmentHandler::StartGeneratingForCurrentSelection() {
 }
 
 void TextFragmentHandler::RecordPreemptiveGenerationMetrics(
-    const TextFragmentSelector& selector) {
+    const TextFragmentSelector& selector,
+    absl::optional<shared_highlighting::LinkGenerationError> optional_error) {
   DCHECK(selector_requested_before_ready_.has_value());
 
   bool success =
@@ -218,8 +221,6 @@ void TextFragmentHandler::RecordPreemptiveGenerationMetrics(
   base::UmaHistogramBoolean(uma_prefix, success);
 
   if (!success) {
-    absl::optional<shared_highlighting::LinkGenerationError> optional_error =
-        GetTextFragmentSelectorGenerator()->GetError();
     shared_highlighting::LinkGenerationError error =
         optional_error.has_value()
             ? optional_error.value()
@@ -230,11 +231,21 @@ void TextFragmentHandler::RecordPreemptiveGenerationMetrics(
 }
 
 void TextFragmentHandler::StartPreemptiveGenerationIfNeeded() {
-  if (shared_highlighting::ShouldOfferLinkToText(
+  preemptive_generation_result_.reset();
+  error_.reset();
+  selector_requested_before_ready_.reset();
+
+  // It is possible we have unsurved callback, but if we are starting a new
+  // generation, then we have a new selection, in which case it is safe to
+  // assume that the client is not waiting for the callback return.
+  response_callback_.Reset();
+
+  if (!shared_highlighting::ShouldOfferLinkToText(
           GetFrame()->GetDocument()->Url())) {
-    preemptive_generation_result_.reset();
-    StartGeneratingForCurrentSelection();
+    return;
   }
+
+  StartGeneratingForCurrentSelection();
 }
 
 void TextFragmentHandler::Trace(Visitor* visitor) const {
@@ -249,8 +260,9 @@ void TextFragmentHandler::DidDetachDocumentOrFrame() {
 }
 
 void TextFragmentHandler::InvokeReplyCallback(
-    const TextFragmentSelector& selector) {
-  RecordPreemptiveGenerationMetrics(selector);
+    const TextFragmentSelector& selector,
+    absl::optional<shared_highlighting::LinkGenerationError> error) {
+  RecordPreemptiveGenerationMetrics(selector, error);
 
   DCHECK(response_callback_);
   std::move(response_callback_).Run(selector.ToString());

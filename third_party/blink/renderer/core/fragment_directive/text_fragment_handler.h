@@ -60,18 +60,27 @@ class CORE_EXPORT TextFragmentHandler final
   void DidDetachDocumentOrFrame();
 
  private:
+  FRIEND_TEST_ALL_PREFIXES(TextFragmentHandlerTest,
+                           IfGeneratorResetShouldRecordCorrectError);
+
   // The callback passed to TextFragmentSelectorGenerator that will receive the
   // result.
-  void DidFinishSelectorGeneration(const TextFragmentSelector& selector);
+  void DidFinishSelectorGeneration(
+      const TextFragmentSelector& selector,
+      absl::optional<shared_highlighting::LinkGenerationError> error);
 
   // This starts running the generator over the current selection.
   // The result will be returned by invoking DidFinishSelectorGeneration().
   void StartGeneratingForCurrentSelection();
 
-  void RecordPreemptiveGenerationMetrics(const TextFragmentSelector& selector);
+  void RecordPreemptiveGenerationMetrics(
+      const TextFragmentSelector& selector,
+      absl::optional<shared_highlighting::LinkGenerationError> error);
 
   // Called to reply to the client's RequestSelector call with the result.
-  void InvokeReplyCallback(const TextFragmentSelector& selector);
+  void InvokeReplyCallback(
+      const TextFragmentSelector& selector,
+      absl::optional<shared_highlighting::LinkGenerationError> error);
 
   TextFragmentAnchor* GetTextFragmentAnchor();
 
@@ -87,6 +96,10 @@ class CORE_EXPORT TextFragmentHandler final
   // in this member when completed. Used only in preemptive link generation
   // mode.
   absl::optional<TextFragmentSelector> preemptive_generation_result_;
+
+  // If generation failed, contains the reason that generation failed, otherwise
+  // contains an empty optional.
+  absl::optional<shared_highlighting::LinkGenerationError> error_;
 
   // Reports whether |RequestSelector| was called before or after selector was
   // ready. Used only in preemptive link generation mode.

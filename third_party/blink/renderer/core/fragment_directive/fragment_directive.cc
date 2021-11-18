@@ -144,8 +144,8 @@ ScriptPromise FragmentDirective::createSelectorDirective(
       WTF::Bind(
           [](ScriptPromiseResolver* resolver,
              TextFragmentSelectorGenerator* generator,
-             const RangeInFlatTree* range,
-             const TextFragmentSelector& selector) {
+             const RangeInFlatTree* range, const TextFragmentSelector& selector,
+             absl::optional<shared_highlighting::LinkGenerationError> error) {
             if (selector.Type() ==
                 TextFragmentSelector::SelectorType::kInvalid) {
               RejectWithCode(resolver, DOMExceptionCode::kOperationError,
