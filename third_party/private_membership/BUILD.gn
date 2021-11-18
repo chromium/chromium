@@ -9,6 +9,16 @@ import("//third_party/protobuf/proto_library.gni")
 config("private_membership_config") {
   # TODO(crbug.com/1072732) Reenable the deprecated warning, after updating the upstream.
   cflags = [ "-Wno-deprecated-declarations" ]
+  defines = []
+  if (is_component_build) {
+    defines = [
+      # Build targets inside private_membership will need this macro to
+      # be defined in order to correctly export symbols when is_component_build
+      # is true.
+      # For more info see: base/private_membership_export.h.
+      "PRIVATE_MEMBERSHIP_ENABLE_SYMBOL_EXPORT",
+    ]
+  }
   include_dirs = [
     # Allow includes to be prefixed with shell-encryption/src/ in case it is not an
     # immediate subdirectory of the top-level.
@@ -31,16 +41,24 @@ proto_library("private_membership_proto") {
     "src/private_membership_rlwe.proto",
   ]
   import_dirs = [ "//third_party/shell-encryption/src" ]
+  extra_configs = [ ":private_membership_config" ]
+
   proto_in_dir = "src/"
+  cc_generator_options = "dllexport_decl=PRIVATE_MEMBERSHIP_EXPORT:"
+  cc_include = "third_party/private_membership/base/private_membership_export.h"
+  component_build_force_source_set = true
+
   link_deps = [ "//third_party/shell-encryption:serialization_proto" ]
 }
 
 if (is_chromeos_ash) {
-  source_set("private_membership") {
+  component("private_membership") {
     public_configs = [ ":private_membership_config" ]
     configs -= [ "//build/config/compiler:chromium_code" ]
     configs += [ "//build/config/compiler:no_chromium_code" ]
+
     public = [
+      "base/private_membership_export.h",
       "src/internal/aes_ctr_256_with_fixed_iv.h",
       "src/internal/constants.h",
       "src/internal/crypto_utils.h",
