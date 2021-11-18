@@ -15,6 +15,17 @@ config("shell_encryption_config1") {
     "-Wno-ignored-qualifiers",
   ]
 
+  defines = []
+  if (is_component_build) {
+    defines = [
+      # Build targets inside shell-encryption will need this macro to
+      # be defined in order to correctly export symbols when is_component_build
+      # is true.
+      # For more info see: base/shell_encryption_export.h.
+      "SHELL_ENCRYPTION_ENABLE_SYMBOL_EXPORT",
+    ]
+  }
+
   include_dirs = [
     # Allow includes to be prefixed with shell-encryption/src/ in case it is not an
     # immediate subdirectory of the top-level.
@@ -39,20 +50,30 @@ config("shell_encryption_config1") {
 proto_library("serialization_proto") {
   sources = [ "src/serialization.proto" ]
   proto_in_dir = "src/"
+
+  cc_generator_options = "dllexport_decl=SHELL_ENCRYPTION_EXPORT:"
+  cc_include = "third_party/shell-encryption/base/shell_encryption_export.h"
+  component_build_force_source_set = true
 }
 
 proto_library("coefficient_polynomial_proto") {
   sources = [ "src/testing/coefficient_polynomial.proto" ]
   proto_in_dir = "src/testing/"
+
+  cc_generator_options = "dllexport_decl=SHELL_ENCRYPTION_EXPORT:"
+  cc_include = "third_party/shell-encryption/base/shell_encryption_export.h"
+  component_build_force_source_set = true
 }
 
 # SHELL lib.
 if (is_chromeos_ash) {
-  source_set("shell_encryption") {
+  component("shell_encryption") {
     public_configs = [ ":shell_encryption_config1" ]
     configs -= [ "//build/config/compiler:chromium_code" ]
     configs += [ "//build/config/compiler:no_chromium_code" ]
     public = [
+      "base/shell_encryption_export.h",
+      "base/shell_encryption_export_template.h",
       "glog/logging.h",
       "src/bits_util.h",
       "src/constants.h",
@@ -116,6 +137,7 @@ if (is_chromeos_ash) {
     ]
     public_deps = [
       ":coefficient_polynomial_proto",
+      ":serialization_proto",
       ":shell_encryption",
       "//testing/gmock:gmock",
       "//testing/gtest:gtest",

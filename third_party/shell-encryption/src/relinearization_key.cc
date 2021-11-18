@@ -22,6 +22,8 @@
 #include "status_macros.h"
 #include "statusor.h"
 #include "symmetric_encryption_with_prng.h"
+#include "third_party/shell-encryption/base/shell_encryption_export.h"
+#include "third_party/shell-encryption/base/shell_encryption_export_template.h"
 
 namespace rlwe {
 namespace {
@@ -432,9 +434,9 @@ RelinearizationKey<ModularInt>::Deserialize(
 // Instantiations of RelinearizationKey with specific MontgomeryInt classes.
 // If any new types are added, montgomery.h should be updated accordingly (such
 // as ensuring BigInt is correctly specialized, etc.).
-template class RelinearizationKey<MontgomeryInt<Uint16>>;
-template class RelinearizationKey<MontgomeryInt<Uint32>>;
-template class RelinearizationKey<MontgomeryInt<Uint64>>;
-template class RelinearizationKey<MontgomeryInt<absl::uint128>>;
+template class EXPORT_TEMPLATE_DEFINE(SHELL_ENCRYPTION_EXPORT) RelinearizationKey<MontgomeryInt<Uint16>>;
+template class EXPORT_TEMPLATE_DEFINE(SHELL_ENCRYPTION_EXPORT) RelinearizationKey<MontgomeryInt<Uint32>>;
+template class EXPORT_TEMPLATE_DEFINE(SHELL_ENCRYPTION_EXPORT) RelinearizationKey<MontgomeryInt<Uint64>>;
+template class EXPORT_TEMPLATE_DEFINE(SHELL_ENCRYPTION_EXPORT) RelinearizationKey<MontgomeryInt<absl::uint128>>;
 
 }  //  namespace rlwe
