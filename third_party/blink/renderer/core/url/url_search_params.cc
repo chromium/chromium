@@ -19,7 +19,8 @@ namespace blink {
 namespace {
 
 class URLSearchParamsIterationSource final
-    : public PairIterable<String, String>::IterationSource {
+    : public PairIterable<String, IDLString, String, IDLString>::
+          IterationSource {
  public:
   explicit URLSearchParamsIterationSource(URLSearchParams* params)
       : params_(params), current_(0) {}
@@ -39,7 +40,8 @@ class URLSearchParamsIterationSource final
 
   void Trace(Visitor* visitor) const override {
     visitor->Trace(params_);
-    PairIterable<String, String>::IterationSource::Trace(visitor);
+    PairIterable<String, IDLString, String, IDLString>::IterationSource::Trace(
+        visitor);
   }
 
  private:
@@ -261,9 +263,8 @@ scoped_refptr<EncodedFormData> URLSearchParams::ToEncodedFormData() const {
   return EncodedFormData::Create(encoded_data.data(), encoded_data.size());
 }
 
-PairIterable<String, String>::IterationSource* URLSearchParams::StartIteration(
-    ScriptState*,
-    ExceptionState&) {
+PairIterable<String, IDLString, String, IDLString>::IterationSource*
+URLSearchParams::StartIteration(ScriptState*, ExceptionState&) {
   return MakeGarbageCollected<URLSearchParamsIterationSource>(this);
 }
 

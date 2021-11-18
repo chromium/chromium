@@ -21,8 +21,9 @@ class ExceptionState;
 using HeadersInit = ByteStringSequenceSequenceOrByteStringByteStringRecord;
 
 // http://fetch.spec.whatwg.org/#headers-class
-class CORE_EXPORT Headers final : public ScriptWrappable,
-                                  public PairIterable<String, String> {
+class CORE_EXPORT Headers final
+    : public ScriptWrappable,
+      public PairIterable<String, IDLString, String, IDLString> {
   DEFINE_WRAPPERTYPEINFO();
 
  public:

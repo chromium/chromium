@@ -15,7 +15,7 @@ namespace blink {
 // everything else should be provided by this class. For examples, see
 // `XRPlaneSet` and `XRAnchorSet`.
 template <typename ElementType>
-class XRSetlike : public SetlikeIterable<Member<ElementType>> {
+class XRSetlike : public SetlikeIterable<Member<ElementType>, ElementType> {
  public:
   unsigned size() const { return elements().size(); }
 
@@ -33,7 +33,8 @@ class XRSetlike : public SetlikeIterable<Member<ElementType>> {
 
  private:
   class IterationSource final
-      : public SetlikeIterable<Member<ElementType>>::IterationSource {
+      : public SetlikeIterable<Member<ElementType>,
+                               ElementType>::IterationSource {
    public:
     explicit IterationSource(const HeapHashSet<Member<ElementType>>& elements)
         : index_(0) {
@@ -59,7 +60,8 @@ class XRSetlike : public SetlikeIterable<Member<ElementType>> {
 
     void Trace(Visitor* visitor) const override {
       visitor->Trace(elements_);
-      SetlikeIterable<Member<ElementType>>::IterationSource::Trace(visitor);
+      SetlikeIterable<Member<ElementType>, ElementType>::IterationSource::Trace(
+          visitor);
     }
 
    private:

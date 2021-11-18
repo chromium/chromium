@@ -21,10 +21,11 @@ class WebData;
 // status known to a particular session. Since it can be updated any time there
 // is a keychange event, iteration order and completeness is not guaranteed
 // if the event loop runs.
-class MediaKeyStatusMap final
-    : public ScriptWrappable,
-      public PairIterable<Member<V8BufferSource>, String>
-{
+class MediaKeyStatusMap final : public ScriptWrappable,
+                                public PairIterable<Member<V8BufferSource>,
+                                                    V8BufferSource,
+                                                    String,
+                                                    IDLString> {
   DEFINE_WRAPPERTYPEINFO();
 
  private:

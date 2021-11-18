@@ -17,7 +17,8 @@ namespace blink {
 namespace {
 
 class HeadersIterationSource final
-    : public PairIterable<String, String>::IterationSource {
+    : public PairIterable<String, IDLString, String, IDLString>::
+          IterationSource {
  public:
   explicit HeadersIterationSource(const FetchHeaderList* headers)
       : headers_(headers->SortAndCombine()), current_(0) {}
@@ -324,9 +325,8 @@ void Headers::Trace(Visitor* visitor) const {
   ScriptWrappable::Trace(visitor);
 }
 
-PairIterable<String, String>::IterationSource* Headers::StartIteration(
-    ScriptState*,
-    ExceptionState&) {
+PairIterable<String, IDLString, String, IDLString>::IterationSource*
+Headers::StartIteration(ScriptState*, ExceptionState&) {
   return MakeGarbageCollected<HeadersIterationSource>(header_list_);
 }
 

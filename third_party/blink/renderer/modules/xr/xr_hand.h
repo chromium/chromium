@@ -16,7 +16,10 @@ class XRInputSource;
 class XRJointSpace;
 
 class XRHand : public ScriptWrappable,
-               public PairIterable<String, Member<XRJointSpace>> {
+               public PairIterable<String,
+                                   IDLString,
+                                   Member<XRJointSpace>,
+                                   XRJointSpace> {
   DEFINE_WRAPPERTYPEINFO();
 
   static const unsigned kNumJoints =

@@ -177,6 +177,12 @@ struct ToV8Traits<
 template <>
 struct ToV8Traits<IDLObject> {
   static v8::MaybeLocal<v8::Value> WARN_UNUSED_RESULT
+  ToV8(ScriptState* script_state, const v8::Local<v8::Object>& value) {
+    DCHECK(!value.IsEmpty());
+    return value;
+  }
+
+  static v8::MaybeLocal<v8::Value> WARN_UNUSED_RESULT
   ToV8(ScriptState* script_state, const ScriptValue& script_value) {
     DCHECK(!script_value.IsEmpty());
     v8::Local<v8::Value> v8_value = script_value.V8ValueFor(script_state);

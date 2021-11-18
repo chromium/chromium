@@ -14,7 +14,7 @@ namespace blink {
 
 class BluetoothServiceDataMap final
     : public ScriptWrappable,
-      public Maplike<String, Member<DOMDataView>> {
+      public Maplike<String, IDLString, Member<DOMDataView>, DOMDataView> {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
@@ -30,9 +30,9 @@ class BluetoothServiceDataMap final
   uint32_t size() const { return parameter_map_.size(); }
 
  private:
-  PairIterable<String, Member<DOMDataView>>::IterationSource* StartIteration(
-      ScriptState*,
-      ExceptionState&) override;
+  PairIterable<String, IDLString, Member<DOMDataView>, DOMDataView>::
+      IterationSource*
+      StartIteration(ScriptState*, ExceptionState&) override;
   bool GetMapEntry(ScriptState*,
                    const String& key,
                    Member<DOMDataView>&,

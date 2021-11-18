@@ -11,7 +11,10 @@
 namespace blink {
 
 class XRHandIterationSource final
-    : public PairIterable<String, Member<XRJointSpace>>::IterationSource {
+    : public PairIterable<String,
+                          IDLString,
+                          Member<XRJointSpace>,
+                          XRJointSpace>::IterationSource {
  public:
   explicit XRHandIterationSource(HeapVector<Member<XRJointSpace>>& joints)
       : index_(0), joints_(joints) {}
@@ -31,7 +34,8 @@ class XRHandIterationSource final
   }
 
   void Trace(Visitor* visitor) const override {
-    PairIterable<String, Member<XRJointSpace>>::IterationSource::Trace(visitor);
+    PairIterable<String, IDLString, Member<XRJointSpace>,
+                 XRJointSpace>::IterationSource::Trace(visitor);
   }
 
  private:

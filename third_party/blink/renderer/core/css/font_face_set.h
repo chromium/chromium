@@ -21,7 +21,7 @@ namespace blink {
 
 class FontFaceCache;
 
-using FontFaceSetIterable = SetlikeIterable<Member<FontFace>>;
+using FontFaceSetIterable = SetlikeIterable<Member<FontFace>, FontFace>;
 
 class CORE_EXPORT FontFaceSet : public EventTargetWithInlineData,
                                 public ExecutionContextClient,

@@ -14,7 +14,8 @@
 
 namespace blink {
 
-using HighlightSetIterable = SetlikeIterable<Member<AbstractRange>>;
+using HighlightSetIterable =
+    SetlikeIterable<Member<AbstractRange>, AbstractRange>;
 class HighlightRegistry;
 
 class CORE_EXPORT Highlight : public ScriptWrappable,
