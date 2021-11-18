@@ -199,8 +199,8 @@ class RedoButton : public SortUiControl {
     const SkColor icon_color = AshColorProvider::Get()->GetContentLayerColor(
         AshColorProvider::ContentLayerType::kButtonIconColor);
     SetImage(views::Button::STATE_NORMAL,
-             gfx::CreateVectorIcon(kCloseButtonIcon, GetPreferredSize().width(),
-                                   icon_color));
+             gfx::CreateVectorIcon(kSmallCloseButtonIcon,
+                                   GetPreferredSize().width(), icon_color));
   }
 
   void RevertAppListSort() {
