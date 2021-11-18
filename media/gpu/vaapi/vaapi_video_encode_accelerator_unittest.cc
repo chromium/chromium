@@ -608,6 +608,7 @@ class VaapiVideoEncodeAcceleratorTest
           .WillOnce(Return(kEncodedChunkSize));
       EXPECT_CALL(*mock_encoder_, BitrateControlUpdate(kEncodedChunkSize))
           .WillOnce(Return());
+
       EXPECT_CALL(*mock_encoder_, GetMetadata(_, _))
           .WillOnce(
               WithArgs<0, 1>([](const VaapiVideoEncoderDelegate::EncodeJob& job,
@@ -620,6 +621,11 @@ class VaapiVideoEncodeAcceleratorTest
                                    ->metadata_for_encoding;
                 return metadata;
               }));
+    }
+
+    for (size_t i = 0; i < num_spatial_layers; ++i) {
+      const VABufferID kCodedBufferId = kCodedBufferIds[i];
+      const uint64_t kEncodedChunkSize = kEncodedChunkSizes[i];
       EXPECT_CALL(
           *mock_vaapi_wrapper_,
           DownloadFromVABuffer(kCodedBufferId, _, _, output_buffer_size_, _))

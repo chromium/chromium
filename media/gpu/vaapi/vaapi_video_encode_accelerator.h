@@ -186,10 +186,10 @@ class MEDIA_GPU_EXPORT VaapiVideoEncodeAccelerator
   scoped_refptr<VASurface> GetAvailableVASurfaceAsRefCounted(
       std::vector<std::unique_ptr<ScopedVASurface>>* va_surfaces);
 
-  // Returns a bitstream buffer to the client if we have both pending the
+  // Returns pending bitstream buffers to the client if we have both pending
   // encoded data to be completed and bitstream buffers available to download
   // the encoded data into.
-  void TryToReturnBitstreamBuffer();
+  void TryToReturnBitstreamBuffers();
 
   // Downloads encoded data produced as a result of running |encode_result| into
   // |buffer|, and returns it to the client.

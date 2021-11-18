@@ -431,31 +431,35 @@ void VaapiVideoEncodeAccelerator::RecycleVASurface(
   EncodePendingInputs();
 }
 
-void VaapiVideoEncodeAccelerator::TryToReturnBitstreamBuffer() {
+void VaapiVideoEncodeAccelerator::TryToReturnBitstreamBuffers() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(encoder_sequence_checker_);
 
   if (state_ != kEncoding)
     return;
 
-  while (!pending_encode_results_.empty() &&
-         pending_encode_results_.front() == nullptr) {
-    // A null job indicates a flush command.
+  TRACE_EVENT1("media,gpu", "VAVEA::TryToReturnBitstreamBuffers",
+               "pending encode results", pending_encode_results_.size());
+  while (!pending_encode_results_.empty()) {
+    if (pending_encode_results_.front() == nullptr) {
+      // A null job indicates a flush command.
+      pending_encode_results_.pop();
+      DVLOGF(2) << "FlushDone";
+      DCHECK(flush_callback_);
+      child_task_runner_->PostTask(
+          FROM_HERE, base::BindOnce(std::move(flush_callback_), true));
+      continue;
+    }
+
+    if (available_bitstream_buffers_.empty())
+      return;
+
+    auto buffer = std::move(available_bitstream_buffers_.front());
+    available_bitstream_buffers_.pop();
+    auto encode_result = std::move(pending_encode_results_.front());
     pending_encode_results_.pop();
-    DVLOGF(2) << "FlushDone";
-    DCHECK(flush_callback_);
-    child_task_runner_->PostTask(
-        FROM_HERE, base::BindOnce(std::move(flush_callback_), true));
+
+    ReturnBitstreamBuffer(std::move(encode_result), std::move(buffer));
   }
-
-  if (pending_encode_results_.empty() || available_bitstream_buffers_.empty())
-    return;
-
-  auto buffer = std::move(available_bitstream_buffers_.front());
-  available_bitstream_buffers_.pop();
-  auto encode_result = std::move(pending_encode_results_.front());
-  pending_encode_results_.pop();
-
-  ReturnBitstreamBuffer(std::move(encode_result), std::move(buffer));
 }
 
 void VaapiVideoEncodeAccelerator::ReturnBitstreamBuffer(
@@ -568,7 +572,7 @@ bool VaapiVideoEncodeAccelerator::CreateSurfacesForGpuMemoryBufferEncoding(
   }
 
   // Create input and reconstructed surfaces.
-  TRACE_EVENT1("media,gpu", "VAVEA::ConstructSurfaces", "the number of layers",
+  TRACE_EVENT1("media,gpu", "VAVEA::ConstructSurfaces", "layers",
                spatial_layer_resolutions.size());
   input_surfaces->reserve(spatial_layer_resolutions.size());
   reconstructed_surfaces->reserve(spatial_layer_resolutions.size());
@@ -823,10 +827,12 @@ void VaapiVideoEncodeAccelerator::EncodePendingInputs() {
       // |pending_encode_results_| queue.
       pending_encode_results_.push(nullptr);
       input_queue_.pop();
-      TryToReturnBitstreamBuffer();
+      TryToReturnBitstreamBuffers();
       continue;
     }
 
+    TRACE_EVENT0("media,gpu",
+                 "VAVEA::EncodeOneInputFrameAndReturnEncodedChunks");
     const size_t num_spatial_layers = spatial_layer_resolutions.size();
     std::vector<scoped_refptr<VASurface>> input_surfaces;
     std::vector<scoped_refptr<VASurface>> reconstructed_surfaces;
@@ -865,7 +871,7 @@ void VaapiVideoEncodeAccelerator::EncodePendingInputs() {
     }
 
     for (auto&& job : jobs) {
-      TRACE_EVENT0("media,gpu", "VAVEA::FromEncodeToReturn");
+      TRACE_EVENT0("media,gpu", "VAVEA::Encode");
       std::unique_ptr<EncodeResult> result = encoder_->Encode(std::move(job));
       if (!result) {
         NOTIFY_ERROR(kPlatformFailureError, "Failed encoding job");
@@ -873,9 +879,9 @@ void VaapiVideoEncodeAccelerator::EncodePendingInputs() {
       }
 
       pending_encode_results_.push(std::move(result));
-      TryToReturnBitstreamBuffer();
     }
 
+    TryToReturnBitstreamBuffers();
     input_queue_.pop();
   }
 }
@@ -910,7 +916,7 @@ void VaapiVideoEncodeAccelerator::UseOutputBitstreamBufferTask(
   }
 
   available_bitstream_buffers_.push(std::move(buffer_ref));
-  TryToReturnBitstreamBuffer();
+  TryToReturnBitstreamBuffers();
 }
 
 void VaapiVideoEncodeAccelerator::RequestEncodingParametersChange(
