@@ -457,7 +457,7 @@
   {
     "name": "autofill-parse-merchant-promo-code-fields",
     "owners": [ "jsaul@google.com", "payments-autofill-team@google.com" ],
-    "expiry_milestone": 97
+    "expiry_milestone": 102
   },
   {
     "name": "autofill-profile-client-validation",
