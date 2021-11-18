@@ -1723,6 +1723,38 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="SafeBrowsing.TailoredSecurityUnconsentedMessageDismissReason"
+    enum="MessageDismissReason" expires_after="2022-11-11">
+  <owner>drubery@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <summary>
+    Logs the specific reason a message was dismissed when a signed-in,
+    non-syncing user changes their account tailored security setting and
+    dismisses the corresponding message.
+  </summary>
+</histogram>
+
+<histogram name="SafeBrowsing.TailoredSecurityUnconsentedMessageOutcome"
+    enum="SafeBrowsingTailoredSecurityOutcome" expires_after="2022-11-11">
+  <owner>drubery@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <summary>
+    Logs the outcome of displaying the message when a signed-in, non-syncing
+    user changes their account tailored security setting.
+  </summary>
+</histogram>
+
+<histogram name="SafeBrowsing.TailoredSecurityUnconsentedModalOutcome"
+    enum="SafeBrowsingTailoredSecurityOutcome" expires_after="2022-11-11">
+  <owner>drubery@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <summary>
+    Logs the outcome of displaying a modal dialog when a signed-in, non-syncing
+    user changes their account tailored security setting and dismisses the
+    corresponding message.
+  </summary>
+</histogram>
+
 <histogram name="SafeBrowsing.TokenFetcher.ErrorType"
     enum="GoogleServiceAuthError" expires_after="2022-04-24">
   <owner>xinghuilu@chromium.org</owner>

@@ -6632,6 +6632,14 @@ Keep your key file in a safe place. You will need it to create new versions of y
          To save memory, Chrome removed some content
       </message>
 
+      <!-- Tailored Security Prompt for Unconsented users -->
+      <message name="IDS_TAILORED_SECURITY_UNCONSENTED_MESSAGE_TITLE" desc="The title of the message asking if the user wants to enable Enhanced Safe Browsing">
+         Also turn on Enhanced Safe Browsing for this Chrome profile?
+      </message>
+      <message name="IDS_TAILORED_SECURITY_UNCONSENTED_MESSAGE_ACCEPT" desc="The text on the 'accept' button when asking if the user wants to enable Enhanced Safe Browsing">
+        Turn on
+      </message>
+
       <!-- Password Manager -->
       <if expr="use_titlecase">
         <message name="IDS_PASSWORD_MANAGER_CANCEL_BUTTON" desc="Label for the 'dismiss' button in the Manage Password bubble/Update Password infobar. These UIs ask the user if they wish to perform some action with saved passwords, e.g. updating or deleting them; the button dismisses the UI without taking the suggested action.">

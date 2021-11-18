@@ -127,8 +127,9 @@ static_library("safe_browsing") {
       "safe_browsing_service.h",
       "services_delegate.cc",
       "services_delegate.h",
-      "tailored_security_service_factory.cc",
-      "tailored_security_service_factory.h",
+      "tailored_security/tailored_security_outcome.h",
+      "tailored_security/tailored_security_service_factory.cc",
+      "tailored_security/tailored_security_service_factory.h",
       "telemetry/telemetry_service.cc",
       "telemetry/telemetry_service.h",
       "test_safe_browsing_blocking_page_quiet.cc",
@@ -366,10 +367,14 @@ static_library("safe_browsing") {
         sources += [
           "android/services_delegate_android.cc",
           "android/services_delegate_android.h",
+          "tailored_security/unconsented_message_android.cc",
+          "tailored_security/unconsented_message_android.h",
           "telemetry/android/android_telemetry_service.cc",
           "telemetry/android/android_telemetry_service.h",
         ]
         deps += [
+          "//chrome/app/vector_icons:vector_icons",
+          "//components/messages/android:android",
           "//components/safe_browsing/android:remote_database_manager",
           "//ui/android:android",
         ]

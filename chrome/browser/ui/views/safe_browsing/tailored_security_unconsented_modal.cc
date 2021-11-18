@@ -6,6 +6,7 @@
 
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/safe_browsing/tailored_security/tailored_security_outcome.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/grit/generated_resources.h"
@@ -19,16 +20,7 @@ namespace safe_browsing {
 
 namespace {
 
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-enum class ModalOutcome {
-  MODAL_OUTCOME_ACCEPT = 0,
-  MODAL_OUTCOME_CANCEL = 1,
-  MODAL_OUTCOME_CLOSE = 2,
-  kMaxValue = MODAL_OUTCOME_CLOSE,
-};
-
-void RecordModalOutcomeAndRunCallback(ModalOutcome outcome,
+void RecordModalOutcomeAndRunCallback(TailoredSecurityOutcome outcome,
                                       base::OnceClosure callback) {
   base::UmaHistogramEnumeration(
       "SafeBrowsing.TailoredSecurityUnconsentedModalOutcome", outcome);
@@ -69,13 +61,13 @@ TailoredSecurityUnconsentedModal::TailoredSecurityUnconsentedModal(
                      IDS_TAILORED_SECURITY_UNCONSENTED_CANCEL_BUTTON));
 
   SetAcceptCallback(base::BindOnce(
-      RecordModalOutcomeAndRunCallback, ModalOutcome::MODAL_OUTCOME_ACCEPT,
+      RecordModalOutcomeAndRunCallback, TailoredSecurityOutcome::kAccepted,
       base::BindOnce(&EnableEsbAndShowSettings, web_contents_)));
   SetCancelCallback(base::BindOnce(RecordModalOutcomeAndRunCallback,
-                                   ModalOutcome::MODAL_OUTCOME_CANCEL,
+                                   TailoredSecurityOutcome::kDismissed,
                                    base::DoNothing()));
   SetCloseCallback(base::BindOnce(RecordModalOutcomeAndRunCallback,
-                                  ModalOutcome::MODAL_OUTCOME_CLOSE,
+                                  TailoredSecurityOutcome::kDismissed,
                                   base::DoNothing()));
 }
 

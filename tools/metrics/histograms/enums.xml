@@ -57284,6 +57284,7 @@ Called by update_use_counter_css.py.-->
   <int value="6" label="Tab destroyed"/>
   <int value="7" label="Activity destroyed"/>
   <int value="8" label="Scope destroyed"/>
+  <int value="9" label="DismissedByFeature"/>
 </enum>
 
 <enum name="MessageIdentifier">
@@ -57309,6 +57310,8 @@ Called by update_use_counter_css.py.-->
   <int value="19" label="NearOomReduction"/>
   <int value="20" label="InstallableAmbientBadge"/>
   <int value="21" label="AutoDarkWebContents"/>
+  <int value="22" label="TestMessage"/>
+  <int value="23" label="TailoredSecurityEnabled"/>
 </enum>
 
 <enum name="MessageLoopProblems">
@@ -74739,6 +74742,12 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="2" label="Database Unavailable"/>
   <int value="3" label="Store Unavailable"/>
   <int value="4" label="Available"/>
+</enum>
+
+<enum name="SafeBrowsingTailoredSecurityOutcome">
+  <int value="0" label="Accepted"/>
+  <int value="1" label="Dismissed"/>
+  <int value="2" label="Settings"/>
 </enum>
 
 <enum name="SafeBrowsingUserConsentVsUrlCheckRaceResult">

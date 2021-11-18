@@ -249,6 +249,10 @@ aggregate_vector_icons("chrome_vector_icons") {
   if (is_chrome_branded && is_chromeos_ash) {
     sources += [ "google_chrome/assistant.icon" ]
   }
+
+  if (is_android) {
+    sources += [ "safety_check.icon" ]
+  }
 }
 
 source_set("vector_icons") {

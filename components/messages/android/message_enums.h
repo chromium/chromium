@@ -95,6 +95,7 @@ enum class MessageIdentifier {
   INSTALLABLE_AMBIENT_BADGE = 20,
   AUTO_DARK_WEB_CONTENTS = 21,
   TEST_MESSAGE = 22,
+  TAILORED_SECURITY_ENABLED = 23,
 
   // Insert new values before this line.
   COUNT
