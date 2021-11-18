@@ -1078,6 +1078,7 @@
 
     // grid-template-{columns|rows}
     "minmax",
+    "subgrid",
 
     // text-indent
     "each-line",

@@ -47,7 +47,12 @@ enum class AllowTextValue { kAllow, kForbid };
 enum class AllowPathValue { kAllow, kForbid };
 enum class DefaultFill { kFill, kNoFill };
 enum class ParsingStyle { kLegacy, kNotLegacy };
-enum class TrackListType { kGridTemplate, kGridTemplateNoRepeat, kGridAuto };
+enum class TrackListType {
+  kGridAuto,
+  kGridTemplate,
+  kGridTemplateNoRepeat,
+  kGridTemplateSubgrid
+};
 enum class UnitlessQuirk { kAllow, kForbid };
 
 using ConsumeAnimationItemValue = CSSValue* (*)(CSSPropertyID,

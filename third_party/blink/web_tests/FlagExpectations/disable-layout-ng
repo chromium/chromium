@@ -230,6 +230,9 @@ crbug.com/1045599 virtual/shared_array_buffer_on_desktop/http/tests/devtools/ele
 crbug.com/1045599 virtual/shared_array_buffer_on_desktop/http/tests/devtools/elements/highlight/highlight-display-locked-grid.js [ Failure ]
 crbug.com/1045599 virtual/shared_array_buffer_on_desktop/http/tests/devtools/elements/highlight/highlight-multiple-css-grid.js [ Failure ]
 
+### Subgrid will not be implemented in legacy.
+crbug.com/618969 external/wpt/css/css-grid/subgrid/* [ Skip ]
+
 ### external/wpt/css/css-images
 crbug.com/1076121 external/wpt/css/css-images/image-orientation/image-orientation-list-style-image.html [ Failure ]
 

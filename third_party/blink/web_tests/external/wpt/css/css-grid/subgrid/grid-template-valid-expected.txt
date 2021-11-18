@@ -1,0 +1,29 @@
+This is a testharness.js-based test.
+PASS e.style['grid-template-rows'] = "subgrid" should set the property value
+PASS e.style['grid-template-rows'] = "subgrid [a]" should set the property value
+PASS e.style['grid-template-rows'] = "subgrid [a] [b]" should set the property value
+PASS e.style['grid-template-rows'] = "subgrid [a] [b] [c]" should set the property value
+FAIL e.style['grid-template-rows'] = "subgrid [a] [b] [] [c]" should set the property value assert_not_equals: property should be set got disallowed value ""
+PASS e.style['grid-template-rows'] = "subgrid repeat(auto-fill, [a])" should set the property value
+PASS e.style['grid-template-rows'] = "subgrid [a] repeat(auto-fill, [b])" should set the property value
+PASS e.style['grid-template-rows'] = "subgrid [a] repeat(auto-fill, [b]) [c]" should set the property value
+PASS e.style['grid-template-rows'] = "subgrid repeat(2, [a])" should set the property value
+PASS e.style['grid-template-rows'] = "subgrid repeat(2, [a] [b])" should set the property value
+PASS e.style['grid-template-rows'] = "subgrid [a] repeat(2, [b])" should set the property value
+PASS e.style['grid-template-rows'] = "subgrid [a] repeat(2, [b]) [c]" should set the property value
+PASS e.style['grid-template-rows'] = "subgrid [a] repeat(2, [b]) repeat(auto-fill, [c]) [d]" should set the property value
+PASS e.style['grid-template-columns'] = "subgrid" should set the property value
+PASS e.style['grid-template-columns'] = "subgrid [a]" should set the property value
+PASS e.style['grid-template-columns'] = "subgrid [a] [b]" should set the property value
+PASS e.style['grid-template-columns'] = "subgrid [a] [b] [c]" should set the property value
+FAIL e.style['grid-template-columns'] = "subgrid [a] [b] [] [c]" should set the property value assert_not_equals: property should be set got disallowed value ""
+PASS e.style['grid-template-columns'] = "subgrid repeat(auto-fill, [a])" should set the property value
+PASS e.style['grid-template-columns'] = "subgrid [a] repeat(auto-fill, [b])" should set the property value
+PASS e.style['grid-template-columns'] = "subgrid [a] repeat(auto-fill, [b]) [c]" should set the property value
+PASS e.style['grid-template-columns'] = "subgrid repeat(2, [a])" should set the property value
+PASS e.style['grid-template-columns'] = "subgrid repeat(2, [a] [b])" should set the property value
+PASS e.style['grid-template-columns'] = "subgrid [a] repeat(2, [b])" should set the property value
+PASS e.style['grid-template-columns'] = "subgrid [a] repeat(2, [b]) [c]" should set the property value
+PASS e.style['grid-template-columns'] = "subgrid [a] repeat(2, [b]) repeat(auto-fill, [c]) [d]" should set the property value
+Harness: the test ran to completion.
+

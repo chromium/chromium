@@ -1134,9 +1134,9 @@ CSSCustomIdentValue* ConsumeCustomIdentWithToken(
 CSSCustomIdentValue* ConsumeCustomIdent(CSSParserTokenRange& range,
                                         const CSSParserContext& context) {
   if (range.Peek().GetType() != kIdentToken ||
-      IsCSSWideKeyword(range.Peek().Value()))
+      IsCSSWideKeyword(range.Peek().Value())) {
     return nullptr;
-
+  }
   return ConsumeCustomIdentWithToken(range.ConsumeIncludingWhitespace(),
                                      context);
 }
@@ -3995,12 +3995,13 @@ Vector<String> ParseGridTemplateAreasColumnNames(const String& grid_row_names) {
 CSSValue* ConsumeGridBreadth(CSSParserTokenRange& range,
                              const CSSParserContext& context) {
   const CSSParserToken& token = range.Peek();
-  if (IdentMatches<CSSValueID::kMinContent, CSSValueID::kMaxContent,
-                   CSSValueID::kAuto>(token.Id()))
+  if (IdentMatches<CSSValueID::kAuto, CSSValueID::kMinContent,
+                   CSSValueID::kMaxContent>(token.Id())) {
     return ConsumeIdent(range);
+  }
   if (token.GetType() == kDimensionToken &&
       token.GetUnitType() == CSSPrimitiveValue::UnitType::kFraction) {
-    if (range.Peek().NumericValue() < 0)
+    if (token.NumericValue() < 0)
       return nullptr;
     return CSSNumericLiteralValue::Create(
         range.ConsumeIncludingWhitespace().NumericValue(),
@@ -4030,9 +4031,9 @@ CSSValue* ConsumeFitContent(CSSParserTokenRange& range,
 bool IsGridBreadthFixedSized(const CSSValue& value) {
   if (auto* identifier_value = DynamicTo<CSSIdentifierValue>(value)) {
     CSSValueID value_id = identifier_value->GetValueID();
-    return !(value_id == CSSValueID::kMinContent ||
-             value_id == CSSValueID::kMaxContent ||
-             value_id == CSSValueID::kAuto);
+    return value_id != CSSValueID::kAuto &&
+           value_id != CSSValueID::kMinContent &&
+           value_id != CSSValueID::kMaxContent;
   }
 
   if (auto* primitive_value = DynamicTo<CSSPrimitiveValue>(value))
@@ -4058,11 +4059,9 @@ bool IsGridTrackFixedSized(const CSSValue& value) {
 
 CSSValue* ConsumeGridTrackSize(CSSParserTokenRange& range,
                                const CSSParserContext& context) {
-  const CSSParserToken& token = range.Peek();
-  if (IdentMatches<CSSValueID::kAuto>(token.Id()))
-    return ConsumeIdent(range);
+  const auto& token_id = range.Peek().FunctionId();
 
-  if (token.FunctionId() == CSSValueID::kMinmax) {
+  if (token_id == CSSValueID::kMinmax) {
     CSSParserTokenRange range_copy = range;
     CSSParserTokenRange args = ConsumeFunction(range_copy);
     CSSValue* min_track_breadth = ConsumeGridBreadth(args, context);
@@ -4071,8 +4070,9 @@ CSSValue* ConsumeGridTrackSize(CSSParserTokenRange& range,
     if (!min_track_breadth ||
         (min_track_breadth_primitive_value &&
          min_track_breadth_primitive_value->IsFlex()) ||
-        !ConsumeCommaIncludingWhitespace(args))
+        !ConsumeCommaIncludingWhitespace(args)) {
       return nullptr;
+    }
     CSSValue* max_track_breadth = ConsumeGridBreadth(args, context);
     if (!max_track_breadth || !args.AtEnd())
       return nullptr;
@@ -4083,10 +4083,9 @@ CSSValue* ConsumeGridTrackSize(CSSParserTokenRange& range,
     return result;
   }
 
-  if (token.FunctionId() == CSSValueID::kFitContent)
-    return ConsumeFitContent(range, context);
-
-  return ConsumeGridBreadth(range, context);
+  return (token_id == CSSValueID::kFitContent)
+             ? ConsumeFitContent(range, context)
+             : ConsumeGridBreadth(range, context);
 }
 
 CSSCustomIdentValue* ConsumeCustomIdentForGridLine(
@@ -4094,8 +4093,9 @@ CSSCustomIdentValue* ConsumeCustomIdentForGridLine(
     const CSSParserContext& context) {
   if (range.Peek().Id() == CSSValueID::kAuto ||
       range.Peek().Id() == CSSValueID::kSpan ||
-      range.Peek().Id() == CSSValueID::kDefault)
+      range.Peek().Id() == CSSValueID::kDefault) {
     return nullptr;
+  }
   return ConsumeCustomIdent(range, context);
 }
 
@@ -4108,31 +4108,48 @@ CSSGridLineNamesValue* ConsumeGridLineNames(
   CSSParserTokenRange range_copy = range;
   if (range_copy.ConsumeIncludingWhitespace().GetType() != kLeftBracketToken)
     return nullptr;
+
   if (!line_names)
     line_names = MakeGarbageCollected<CSSGridLineNamesValue>();
   while (CSSCustomIdentValue* line_name =
-             ConsumeCustomIdentForGridLine(range_copy, context))
+             ConsumeCustomIdentForGridLine(range_copy, context)) {
     line_names->Append(*line_name);
+  }
+
   if (range_copy.ConsumeIncludingWhitespace().GetType() != kRightBracketToken)
     return nullptr;
   range = range_copy;
+
   if (line_names->length() == 0U)
     return nullptr;
   return line_names;
 }
 
+bool AppendLineNames(CSSParserTokenRange& range,
+                     const CSSParserContext& context,
+                     CSSValueList* values) {
+  if (CSSGridLineNamesValue* line_names =
+          ConsumeGridLineNames(range, context)) {
+    values->Append(*line_names);
+    return true;
+  }
+  return false;
+}
+
 bool ConsumeGridTrackRepeatFunction(CSSParserTokenRange& range,
                                     const CSSParserContext& context,
+                                    bool is_subgrid_track_list,
                                     CSSValueList& list,
                                     bool& is_auto_repeat,
                                     bool& all_tracks_are_fixed_sized) {
   CSSParserTokenRange args = ConsumeFunction(range);
-  // The number of repetitions for <auto-repeat> is not important at parsing
-  // level because it will be computed later, let's set it to 1.
-  wtf_size_t repetitions = 1;
   is_auto_repeat = IdentMatches<CSSValueID::kAutoFill, CSSValueID::kAutoFit>(
       args.Peek().Id());
   CSSValueList* repeated_values;
+  // The number of repetitions for <auto-repeat> is not important at parsing
+  // level because it will be computed later, let's set it to 1.
+  wtf_size_t repetitions = 1;
+
   if (is_auto_repeat) {
     repeated_values = MakeGarbageCollected<cssvalue::CSSGridAutoRepeatValue>(
         args.ConsumeIncludingWhitespace().Id());
@@ -4145,36 +4162,49 @@ bool ConsumeGridTrackRepeatFunction(CSSParserTokenRange& range,
         ClampTo<wtf_size_t>(repetition->GetDoubleValue(), 0, kGridMaxTracks);
     repeated_values = CSSValueList::CreateSpaceSeparated();
   }
+
   if (!ConsumeCommaIncludingWhitespace(args))
     return false;
-  CSSGridLineNamesValue* line_names = ConsumeGridLineNames(args, context);
-  if (line_names)
-    repeated_values->Append(*line_names);
 
+  wtf_size_t number_of_line_name_sets =
+      AppendLineNames(args, context, repeated_values);
   wtf_size_t number_of_tracks = 0;
   while (!args.AtEnd()) {
-    CSSValue* track_size = ConsumeGridTrackSize(args, context);
-    if (!track_size)
-      return false;
-    if (all_tracks_are_fixed_sized)
-      all_tracks_are_fixed_sized = IsGridTrackFixedSized(*track_size);
-    repeated_values->Append(*track_size);
-    ++number_of_tracks;
-    line_names = ConsumeGridLineNames(args, context);
-    if (line_names)
-      repeated_values->Append(*line_names);
+    if (is_subgrid_track_list) {
+      if (!number_of_line_name_sets ||
+          !AppendLineNames(args, context, repeated_values)) {
+        return false;
+      }
+      ++number_of_line_name_sets;
+    } else {
+      CSSValue* track_size = ConsumeGridTrackSize(args, context);
+      if (!track_size)
+        return false;
+      if (all_tracks_are_fixed_sized)
+        all_tracks_are_fixed_sized = IsGridTrackFixedSized(*track_size);
+      repeated_values->Append(*track_size);
+      ++number_of_tracks;
+      AppendLineNames(args, context, repeated_values);
+    }
   }
+
   // We should have found at least one <track-size> or else it is not a valid
-  // <track-list>.
-  if (!number_of_tracks)
+  // <track-list>. If it's a subgrid <line-name-list>, then we should have found
+  // at least one named grid line.
+  if ((is_subgrid_track_list && !number_of_line_name_sets) ||
+      (!is_subgrid_track_list && !number_of_tracks)) {
     return false;
+  }
 
   if (is_auto_repeat) {
     list.Append(*repeated_values);
   } else {
     // We clamp the repetitions to a multiple of the repeat() track list's size,
     // while staying below the max grid size.
-    repetitions = std::min(repetitions, kGridMaxTracks / number_of_tracks);
+    repetitions =
+        std::min(repetitions, kGridMaxTracks / (is_subgrid_track_list
+                                                    ? number_of_line_name_sets
+                                                    : number_of_tracks));
     auto* integer_repeated_values =
         MakeGarbageCollected<cssvalue::CSSGridIntegerRepeatValue>(repetitions);
     for (wtf_size_t i = 0; i < repeated_values->length(); ++i)
@@ -4265,9 +4295,8 @@ CSSValue* ConsumeGridLine(CSSParserTokenRange& range,
     if (span_value) {
       numeric_value = ConsumeInteger(range, context);
       grid_line_name = ConsumeCustomIdentForGridLine(range, context);
-      if (!numeric_value) {
+      if (!numeric_value)
         numeric_value = ConsumeInteger(range, context);
-      }
     } else {
       grid_line_name = ConsumeCustomIdentForGridLine(range, context);
       if (grid_line_name) {
@@ -4310,43 +4339,72 @@ CSSValue* ConsumeGridTrackList(CSSParserTokenRange& range,
                                const CSSParserContext& context,
                                TrackListType track_list_type) {
   bool allow_grid_line_names = track_list_type != TrackListType::kGridAuto;
-  CSSValueList* values = CSSValueList::CreateSpaceSeparated();
   if (!allow_grid_line_names && range.Peek().GetType() == kLeftBracketToken)
     return nullptr;
-  CSSGridLineNamesValue* line_names = ConsumeGridLineNames(range, context);
-  if (line_names)
-    values->Append(*line_names);
 
-  bool allow_repeat = track_list_type == TrackListType::kGridTemplate;
+  bool is_subgrid_track_list =
+      RuntimeEnabledFeatures::LayoutNGSubgridEnabled() &&
+      track_list_type == TrackListType::kGridTemplateSubgrid;
+
+  CSSValueList* values = CSSValueList::CreateSpaceSeparated();
+  if (is_subgrid_track_list) {
+    if (IdentMatches<CSSValueID::kSubgrid>(range.Peek().Id()))
+      values->Append(*ConsumeIdent(range));
+    else
+      return nullptr;
+  }
+
+  // TODO(ansollan): Allow explicit empty line names sets in the track list for
+  // subgrid.
+  AppendLineNames(range, context, values);
+
+  bool allow_repeat =
+      is_subgrid_track_list || track_list_type == TrackListType::kGridTemplate;
   bool seen_auto_repeat = false;
   bool all_tracks_are_fixed_sized = true;
+  auto IsRangeAtEnd = [](CSSParserTokenRange& range) -> bool {
+    return range.AtEnd() || range.Peek().GetType() == kDelimiterToken;
+  };
+
   do {
     bool is_auto_repeat;
     if (range.Peek().FunctionId() == CSSValueID::kRepeat) {
       if (!allow_repeat)
         return nullptr;
-      if (!ConsumeGridTrackRepeatFunction(range, context, *values,
-                                          is_auto_repeat,
-                                          all_tracks_are_fixed_sized))
+      if (!ConsumeGridTrackRepeatFunction(range, context, is_subgrid_track_list,
+                                          *values, is_auto_repeat,
+                                          all_tracks_are_fixed_sized)) {
         return nullptr;
+      }
       if (is_auto_repeat && seen_auto_repeat)
         return nullptr;
+
       seen_auto_repeat = seen_auto_repeat || is_auto_repeat;
     } else if (CSSValue* value = ConsumeGridTrackSize(range, context)) {
+      // If we find a <track-size> in a subgrid track list, then it isn't a
+      // valid <line-name-list>.
+      if (is_subgrid_track_list)
+        return nullptr;
       if (all_tracks_are_fixed_sized)
         all_tracks_are_fixed_sized = IsGridTrackFixedSized(*value);
+
       values->Append(*value);
-    } else {
+    } else if (!is_subgrid_track_list) {
       return nullptr;
     }
+
     if (seen_auto_repeat && !all_tracks_are_fixed_sized)
       return nullptr;
     if (!allow_grid_line_names && range.Peek().GetType() == kLeftBracketToken)
       return nullptr;
-    line_names = ConsumeGridLineNames(range, context);
-    if (line_names)
-      values->Append(*line_names);
-  } while (!range.AtEnd() && range.Peek().GetType() != kDelimiterToken);
+
+    bool did_append_line_names = AppendLineNames(range, context, values);
+    if (is_subgrid_track_list && !did_append_line_names &&
+        range.Peek().FunctionId() != CSSValueID::kRepeat) {
+      return IsRangeAtEnd(range) ? values : nullptr;
+    }
+  } while (!IsRangeAtEnd(range));
+
   return values;
 }
 
@@ -4420,9 +4478,15 @@ bool ParseGridTemplateAreasRow(const String& grid_row_names,
 
 CSSValue* ConsumeGridTemplatesRowsOrColumns(CSSParserTokenRange& range,
                                             const CSSParserContext& context) {
-  if (range.Peek().Id() == CSSValueID::kNone)
-    return ConsumeIdent(range);
-  return ConsumeGridTrackList(range, context, TrackListType::kGridTemplate);
+  switch (range.Peek().Id()) {
+    case CSSValueID::kNone:
+      return ConsumeIdent(range);
+    case CSSValueID::kSubgrid:
+      return ConsumeGridTrackList(range, context,
+                                  TrackListType::kGridTemplateSubgrid);
+    default:
+      return ConsumeGridTrackList(range, context, TrackListType::kGridTemplate);
+  }
 }
 
 bool ConsumeGridItemPositionShorthand(bool important,
@@ -4475,10 +4539,8 @@ bool ConsumeGridTemplateShorthand(bool important,
   }
 
   // 2- <grid-template-rows> / <grid-template-columns>
-  if (!template_rows) {
-    template_rows =
-        ConsumeGridTrackList(range, context, TrackListType::kGridTemplate);
-  }
+  if (!template_rows)
+    template_rows = ConsumeGridTemplatesRowsOrColumns(range, context);
 
   if (template_rows) {
     if (!ConsumeSlashIncludingWhitespace(range))
