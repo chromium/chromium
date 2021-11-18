@@ -898,6 +898,38 @@ TEST_F(BookmarkRemoteUpdatesHandlerWithInitialMergeTest,
 }
 
 TEST_F(BookmarkRemoteUpdatesHandlerWithInitialMergeTest,
+       ShouldIgnoreNodeIfMissingParentNode) {
+  // Prepare creation updates to construct this structure:
+  // bookmark_bar
+
+  const std::string kMissingParentId = "missing_parent_id";
+  const std::string kChildId = "child_id";
+  const std::string kTitle = "Title";
+  const GURL kUrl("http://www.url.com");
+
+  syncer::UpdateResponseDataList updates;
+  updates.push_back(CreateUpdateResponseData(
+      /*server_id=*/kChildId, /*parent_id=*/kMissingParentId,
+      /*guid=*/base::GUID::GenerateRandomV4(),
+      /*is_deletion=*/false));
+
+  base::HistogramTester histogram_tester;
+  updates_handler()->Process(updates,
+                             /*got_new_encryption_requirements=*/false);
+
+  const bookmarks::BookmarkNode* bookmark_bar_node =
+      bookmark_model()->bookmark_bar_node();
+  EXPECT_EQ(bookmark_bar_node->children().size(), 0U);
+  histogram_tester.ExpectBucketCount(
+      "Sync.ProblematicServerSideBookmarks",
+      /*sample=*/ExpectedRemoteBookmarkUpdateError::kMissingParentNode,
+      /*expected_count=*/1);
+
+  EXPECT_THAT(tracker()->GetNumIgnoredUpdatesDueToMissingParentForTest(),
+              Eq(1));
+}
+
+TEST_F(BookmarkRemoteUpdatesHandlerWithInitialMergeTest,
        ShouldIgnoreNodeIfParentIsNotFolder) {
   // Prepare creation updates to construct this structure:
   // bookmark_bar

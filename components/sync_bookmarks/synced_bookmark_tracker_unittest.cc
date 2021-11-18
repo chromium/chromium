@@ -1136,6 +1136,28 @@ TEST(SyncedBookmarkTrackerTest, ShouldNotReuploadEntitiesAfterMergeAndRestart) {
 }
 
 TEST(SyncedBookmarkTrackerTest,
+     ShouldReportZeroIgnoredUpdateDueToMissingParentForNewTracker) {
+  std::unique_ptr<SyncedBookmarkTracker> tracker =
+      SyncedBookmarkTracker::CreateEmpty(sync_pb::ModelTypeState());
+
+  EXPECT_THAT(tracker->GetNumIgnoredUpdatesDueToMissingParentForTest(), Eq(0));
+  EXPECT_THAT(
+      tracker->GetMaxVersionAmongIgnoredUpdatesDueToMissingParentForTest(),
+      Eq(absl::nullopt));
+
+  const sync_pb::BookmarkModelMetadata bookmark_model_metadata =
+      tracker->BuildBookmarkModelMetadata();
+  EXPECT_TRUE(
+      bookmark_model_metadata.has_num_ignored_updates_due_to_missing_parent());
+  EXPECT_THAT(
+      bookmark_model_metadata.num_ignored_updates_due_to_missing_parent(),
+      Eq(0));
+  EXPECT_FALSE(
+      bookmark_model_metadata
+          .has_max_version_among_ignored_updates_due_to_missing_parent());
+}
+
+TEST(SyncedBookmarkTrackerTest,
      ShouldResetReuploadFlagOnDisabledFeatureToggle) {
   base::test::ScopedFeatureList override_features;
   override_features.InitAndDisableFeature(switches::kSyncReuploadBookmarks);
@@ -1158,6 +1180,129 @@ TEST(SyncedBookmarkTrackerTest,
 
   EXPECT_FALSE(tracker->BuildBookmarkModelMetadata()
                    .bookmarks_hierarchy_fields_reuploaded());
+}
+
+TEST(SyncedBookmarkTrackerTest,
+     ShouldRestoreZeroIgnoredUpdateDueToMissingParent) {
+  std::unique_ptr<bookmarks::BookmarkModel> bookmark_model =
+      bookmarks::TestBookmarkClient::CreateModel();
+  sync_pb::BookmarkModelMetadata bookmark_model_metadata =
+      CreateMetadataForPermanentNodes(bookmark_model.get());
+
+  bookmark_model_metadata.set_num_ignored_updates_due_to_missing_parent(0);
+
+  std::unique_ptr<SyncedBookmarkTracker> tracker =
+      SyncedBookmarkTracker::CreateFromBookmarkModelAndMetadata(
+          bookmark_model.get(), std::move(bookmark_model_metadata));
+
+  ASSERT_THAT(tracker, NotNull());
+  EXPECT_THAT(tracker->GetNumIgnoredUpdatesDueToMissingParentForTest(), Eq(0));
+  EXPECT_THAT(
+      tracker->GetMaxVersionAmongIgnoredUpdatesDueToMissingParentForTest(),
+      Eq(absl::nullopt));
+}
+
+TEST(SyncedBookmarkTrackerTest,
+     ShouldRestoreUnknownIgnoredUpdateDueToMissingParent) {
+  std::unique_ptr<bookmarks::BookmarkModel> bookmark_model =
+      bookmarks::TestBookmarkClient::CreateModel();
+  sync_pb::BookmarkModelMetadata bookmark_model_metadata =
+      CreateMetadataForPermanentNodes(bookmark_model.get());
+
+  std::unique_ptr<SyncedBookmarkTracker> tracker =
+      SyncedBookmarkTracker::CreateFromBookmarkModelAndMetadata(
+          bookmark_model.get(), std::move(bookmark_model_metadata));
+
+  ASSERT_THAT(tracker, NotNull());
+  EXPECT_THAT(tracker->GetNumIgnoredUpdatesDueToMissingParentForTest(),
+              Eq(absl::nullopt));
+  EXPECT_THAT(
+      tracker->GetMaxVersionAmongIgnoredUpdatesDueToMissingParentForTest(),
+      Eq(absl::nullopt));
+}
+
+TEST(SyncedBookmarkTrackerTest,
+     ShouldRestoreNonZeroIgnoredUpdateDueToMissingParent) {
+  const int64_t kIgnoredUpdates = 7;
+  const int64_t kServerVersion = 123;
+
+  std::unique_ptr<bookmarks::BookmarkModel> bookmark_model =
+      bookmarks::TestBookmarkClient::CreateModel();
+  sync_pb::BookmarkModelMetadata bookmark_model_metadata =
+      CreateMetadataForPermanentNodes(bookmark_model.get());
+
+  bookmark_model_metadata.set_num_ignored_updates_due_to_missing_parent(
+      kIgnoredUpdates);
+  bookmark_model_metadata
+      .set_max_version_among_ignored_updates_due_to_missing_parent(
+          kServerVersion);
+
+  std::unique_ptr<SyncedBookmarkTracker> tracker =
+      SyncedBookmarkTracker::CreateFromBookmarkModelAndMetadata(
+          bookmark_model.get(), std::move(bookmark_model_metadata));
+
+  ASSERT_THAT(tracker, NotNull());
+  EXPECT_THAT(tracker->GetNumIgnoredUpdatesDueToMissingParentForTest(),
+              Eq(kIgnoredUpdates));
+  EXPECT_THAT(
+      tracker->GetMaxVersionAmongIgnoredUpdatesDueToMissingParentForTest(),
+      Eq(kServerVersion));
+}
+
+TEST(SyncedBookmarkTrackerTest, ShouldRecordIgnoredUpdateDueToMissingParent) {
+  const int64_t kServerVersion = 123;
+
+  std::unique_ptr<SyncedBookmarkTracker> tracker =
+      SyncedBookmarkTracker::CreateEmpty(sync_pb::ModelTypeState());
+
+  ASSERT_THAT(tracker->GetNumIgnoredUpdatesDueToMissingParentForTest(), Eq(0));
+  ASSERT_THAT(
+      tracker->GetMaxVersionAmongIgnoredUpdatesDueToMissingParentForTest(),
+      Eq(absl::nullopt));
+
+  tracker->RecordIgnoredServerUpdateDueToMissingParent(kServerVersion);
+
+  EXPECT_THAT(tracker->GetNumIgnoredUpdatesDueToMissingParentForTest(), Eq(1));
+  EXPECT_THAT(
+      tracker->GetMaxVersionAmongIgnoredUpdatesDueToMissingParentForTest(),
+      Eq(kServerVersion));
+
+  const sync_pb::BookmarkModelMetadata bookmark_model_metadata =
+      tracker->BuildBookmarkModelMetadata();
+  EXPECT_THAT(
+      bookmark_model_metadata.num_ignored_updates_due_to_missing_parent(),
+      Eq(1));
+  EXPECT_THAT(bookmark_model_metadata
+                  .max_version_among_ignored_updates_due_to_missing_parent(),
+              Eq(kServerVersion));
+}
+
+TEST(SyncedBookmarkTrackerTest,
+     ShouldPartiallyRecordIgnoredUpdateDueToMissingParentIfCounterUnknown) {
+  const int64_t kServerVersion = 123;
+
+  std::unique_ptr<bookmarks::BookmarkModel> bookmark_model =
+      bookmarks::TestBookmarkClient::CreateModel();
+  sync_pb::BookmarkModelMetadata bookmark_model_metadata =
+      CreateMetadataForPermanentNodes(bookmark_model.get());
+
+  std::unique_ptr<SyncedBookmarkTracker> tracker =
+      SyncedBookmarkTracker::CreateFromBookmarkModelAndMetadata(
+          bookmark_model.get(), std::move(bookmark_model_metadata));
+
+  ASSERT_THAT(tracker, NotNull());
+  ASSERT_THAT(tracker->GetNumIgnoredUpdatesDueToMissingParentForTest(),
+              Eq(absl::nullopt));
+  ASSERT_THAT(
+      tracker->GetMaxVersionAmongIgnoredUpdatesDueToMissingParentForTest(),
+      Eq(absl::nullopt));
+
+  tracker->RecordIgnoredServerUpdateDueToMissingParent(kServerVersion);
+  EXPECT_THAT(tracker->GetNumIgnoredUpdatesDueToMissingParentForTest(),
+              Eq(absl::nullopt));
+  EXPECT_THAT(
+      tracker->GetMaxVersionAmongIgnoredUpdatesDueToMissingParentForTest(),
+      Eq(kServerVersion));
 }
 
 }  // namespace

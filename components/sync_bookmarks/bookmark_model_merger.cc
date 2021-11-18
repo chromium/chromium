@@ -523,7 +523,7 @@ BookmarkModelMerger::BookmarkModelMerger(
     : bookmark_model_(bookmark_model),
       favicon_service_(favicon_service),
       bookmark_tracker_(bookmark_tracker),
-      remote_forest_(BuildRemoteForest(std::move(updates))),
+      remote_forest_(BuildRemoteForest(std::move(updates), bookmark_tracker)),
       guid_to_match_map_(
           FindGuidMatchesOrReassignLocal(remote_forest_, bookmark_model_)) {
   DCHECK(bookmark_tracker_->IsEmpty());
@@ -604,8 +604,11 @@ void BookmarkModelMerger::Merge() {
 
 // static
 BookmarkModelMerger::RemoteForest BookmarkModelMerger::BuildRemoteForest(
-    syncer::UpdateResponseDataList updates) {
+    syncer::UpdateResponseDataList updates,
+    SyncedBookmarkTracker* tracker_for_recording_ignored_updates) {
   TRACE_EVENT0("sync", "BookmarkModelMerger::BuildRemoteForest");
+
+  DCHECK(tracker_for_recording_ignored_updates);
 
   // Filter out invalid remote updates and group the valid ones by the server ID
   // of their parent.
@@ -636,6 +639,9 @@ BookmarkModelMerger::RemoteForest BookmarkModelMerger::BuildRemoteForest(
     for (const UpdateResponseData& update : parent_id_and_updates.second) {
       if (update.entity.specifics.has_bookmark()) {
         LogProblematicBookmark(RemoteBookmarkUpdateError::kMissingParentEntity);
+        tracker_for_recording_ignored_updates
+            ->RecordIgnoredServerUpdateDueToMissingParent(
+                update.response_version);
       }
     }
   }

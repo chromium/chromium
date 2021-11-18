@@ -122,7 +122,12 @@ class BookmarkModelMerger {
   // tag. All invalid updates are filtered out, including invalid bookmark
   // specifics as well as tombstones, in the unlikely event that the server
   // sends tombstones as part of the initial download.
-  static RemoteForest BuildRemoteForest(syncer::UpdateResponseDataList updates);
+  // |tracker_for_recording_ignored_updates| must not be null and is exclusively
+  // used to record which updates where ignored because their parent couldn't be
+  // determined.
+  static RemoteForest BuildRemoteForest(
+      syncer::UpdateResponseDataList updates,
+      SyncedBookmarkTracker* tracker_for_recording_ignored_updates);
 
   // Recursively counts and returns the number of descendants for |node|,
   // excluding |node| itself.

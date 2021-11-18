@@ -144,7 +144,10 @@ std::unique_ptr<SyncedBookmarkTracker> SyncedBookmarkTracker::CreateEmpty(
   // base::WrapUnique() used because the constructor is private.
   return base::WrapUnique(new SyncedBookmarkTracker(
       std::move(model_type_state), /*bookmarks_reuploaded=*/false,
-      /*last_sync_time=*/base::Time::Now()));
+      /*last_sync_time=*/base::Time::Now(),
+      /*num_ignored_updates_due_to_missing_parent=*/absl::optional<int64_t>(0),
+      /*max_version_among_ignored_updates_due_to_missing_parent=*/
+      absl::nullopt));
 }
 
 // static
@@ -169,9 +172,26 @@ SyncedBookmarkTracker::CreateFromBookmarkModelAndMetadata(
       model_metadata.bookmarks_hierarchy_fields_reuploaded() &&
       base::FeatureList::IsEnabled(switches::kSyncReuploadBookmarks);
 
+  absl::optional<int64_t> num_ignored_updates_due_to_missing_parent;
+  if (model_metadata.has_num_ignored_updates_due_to_missing_parent()) {
+    num_ignored_updates_due_to_missing_parent =
+        model_metadata.num_ignored_updates_due_to_missing_parent();
+  }
+
+  absl::optional<int64_t>
+      max_version_among_ignored_updates_due_to_missing_parent;
+  if (model_metadata
+          .has_max_version_among_ignored_updates_due_to_missing_parent()) {
+    max_version_among_ignored_updates_due_to_missing_parent =
+        model_metadata
+            .max_version_among_ignored_updates_due_to_missing_parent();
+  }
+
   // base::WrapUnique() used because the constructor is private.
   auto tracker = base::WrapUnique(new SyncedBookmarkTracker(
-      model_metadata.model_type_state(), bookmarks_reuploaded, last_sync_time));
+      model_metadata.model_type_state(), bookmarks_reuploaded, last_sync_time,
+      num_ignored_updates_due_to_missing_parent,
+      max_version_among_ignored_updates_due_to_missing_parent));
 
   const CorruptionReason corruption_reason =
       tracker->InitEntitiesFromModelAndMetadata(model,
@@ -370,6 +390,16 @@ SyncedBookmarkTracker::BuildBookmarkModelMetadata() const {
       bookmarks_reuploaded_);
   model_metadata.set_last_sync_time(syncer::TimeToProtoTime(last_sync_time_));
 
+  if (num_ignored_updates_due_to_missing_parent_.has_value()) {
+    model_metadata.set_num_ignored_updates_due_to_missing_parent(
+        *num_ignored_updates_due_to_missing_parent_);
+  }
+
+  if (max_version_among_ignored_updates_due_to_missing_parent_.has_value()) {
+    model_metadata.set_max_version_among_ignored_updates_due_to_missing_parent(
+        *max_version_among_ignored_updates_due_to_missing_parent_);
+  }
+
   for (const std::pair<const std::string, std::unique_ptr<Entity>>& pair :
        sync_id_to_entities_map_) {
     DCHECK(pair.second) << " for ID " << pair.first;
@@ -458,10 +488,17 @@ SyncedBookmarkTracker::GetEntitiesWithLocalChanges(size_t max_entries) const {
 SyncedBookmarkTracker::SyncedBookmarkTracker(
     sync_pb::ModelTypeState model_type_state,
     bool bookmarks_reuploaded,
-    base::Time last_sync_time)
+    base::Time last_sync_time,
+    absl::optional<int64_t> num_ignored_updates_due_to_missing_parent,
+    absl::optional<int64_t>
+        max_version_among_ignored_updates_due_to_missing_parent)
     : model_type_state_(std::move(model_type_state)),
       bookmarks_reuploaded_(bookmarks_reuploaded),
-      last_sync_time_(last_sync_time) {}
+      last_sync_time_(last_sync_time),
+      num_ignored_updates_due_to_missing_parent_(
+          num_ignored_updates_due_to_missing_parent),
+      max_version_among_ignored_updates_due_to_missing_parent_(
+          max_version_among_ignored_updates_due_to_missing_parent) {}
 
 SyncedBookmarkTracker::CorruptionReason
 SyncedBookmarkTracker::InitEntitiesFromModelAndMetadata(
@@ -674,6 +711,31 @@ bool SyncedBookmarkTracker::ReuploadBookmarksOnLoadIfNeeded() {
 bool SyncedBookmarkTracker::bookmark_client_tags_in_protocol_enabled() const {
   return base::FeatureList::IsEnabled(
       switches::kSyncUseClientTagForBookmarkCommits);
+}
+
+void SyncedBookmarkTracker::RecordIgnoredServerUpdateDueToMissingParent(
+    int64_t server_version) {
+  if (num_ignored_updates_due_to_missing_parent_.has_value()) {
+    ++(*num_ignored_updates_due_to_missing_parent_);
+  }
+
+  if (max_version_among_ignored_updates_due_to_missing_parent_.has_value()) {
+    *max_version_among_ignored_updates_due_to_missing_parent_ =
+        std::max(*max_version_among_ignored_updates_due_to_missing_parent_,
+                 server_version);
+  } else {
+    max_version_among_ignored_updates_due_to_missing_parent_ = server_version;
+  }
+}
+
+absl::optional<int64_t>
+SyncedBookmarkTracker::GetNumIgnoredUpdatesDueToMissingParentForTest() const {
+  return num_ignored_updates_due_to_missing_parent_;
+}
+
+absl::optional<int64_t> SyncedBookmarkTracker::
+    GetMaxVersionAmongIgnoredUpdatesDueToMissingParentForTest() const {
+  return max_version_among_ignored_updates_due_to_missing_parent_;
 }
 
 void SyncedBookmarkTracker::TraverseAndAppend(

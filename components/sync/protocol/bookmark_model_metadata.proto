@@ -50,4 +50,30 @@ message BookmarkModelMetadata {
   // TODO(crbug.com/1232951): remove this code when most of bookmarks are
   // reuploaded.
   optional bool bookmarks_hierarchy_fields_reuploaded = 6;
+
+  // Number of remote updates that were ignored because the parent folder could
+  // not be determined since sync (bookmark sync) started (since initial sync,
+  // including initial sync itself). Note that this excludes updates
+  // representing changes (moves) to existing/tracked bookmarks (i.e. the parent
+  // folder used to be known, but the new one specified in the update isn't).
+  //
+  // Only a minority of users should have a non-zero value, due to a) corrupt
+  // data, reasons unknown; or b) permanent folders that were unsupported at the
+  // time the update was received (either for the permanent folder itself or for
+  // descendants). The absence of this field should be interpreted as 'unknown',
+  // which roughly means the counter wasn't supported by the browser -M77 or
+  // below- at the time sync was enabled (it also means, it will remain
+  // 'unknown' until initial sync is exercised, e.g. sync disabled and
+  // reenabled).
+  optional int64 num_ignored_updates_due_to_missing_parent = 7;
+
+  // See field above. Among such ignored updates, this field tracks which was
+  // the highest server version. This may be useful -in the future- to get a
+  // sense of "time" (or, since versions are opaque to the client, at least a
+  // notion of ordering with respect to other updates). The absence of this
+  // field should be interpreted as 'unknown' and does not distinguish the
+  // case between a) no updates ignored; and b) field wasn't supported at the
+  // time the last update was ignored. To distinguish between these two, the
+  // field above can be used.
+  optional int64 max_version_among_ignored_updates_due_to_missing_parent = 8;
 }

@@ -1772,7 +1772,10 @@ TEST(BookmarkModelMergerTest, ShouldLogMetricsForChildrenOfOrphanUpdates) {
       /*guid=*/base::GUID::GenerateRandomV4()));
 
   base::HistogramTester histogram_tester;
-  Merge(std::move(updates), bookmark_model.get());
+  std::unique_ptr<SyncedBookmarkTracker> tracker =
+      Merge(std::move(updates), bookmark_model.get());
+  ASSERT_THAT(tracker, NotNull());
+
   EXPECT_THAT(histogram_tester.GetTotalSum(
                   "Sync.BookmarkModelMerger.ValidInputUpdates"),
               Eq(2));
@@ -1783,6 +1786,8 @@ TEST(BookmarkModelMergerTest, ShouldLogMetricsForChildrenOfOrphanUpdates) {
   EXPECT_THAT(histogram_tester.GetTotalSum(
                   "Sync.BookmarkModelMerger.ReachableInputUpdates"),
               Eq(1));
+
+  EXPECT_THAT(tracker->GetNumIgnoredUpdatesDueToMissingParentForTest(), Eq(1));
 }
 
 TEST(BookmarkModelMergerTest, ShouldLogMetricsForUnsupportedServerTag) {

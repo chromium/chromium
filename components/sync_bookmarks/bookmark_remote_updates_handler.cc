@@ -537,6 +537,8 @@ BookmarkRemoteUpdatesHandler::ProcessCreate(
         << update_entity.specifics.bookmark().legacy_canonicalized_title()
         << ", parent id = " << update_entity.parent_id;
     LogProblematicBookmark(RemoteBookmarkUpdateError::kMissingParentNode);
+    bookmark_tracker_->RecordIgnoredServerUpdateDueToMissingParent(
+        update.response_version);
     return nullptr;
   }
   if (!parent_node->is_folder()) {

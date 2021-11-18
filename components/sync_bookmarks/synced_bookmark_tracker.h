@@ -15,6 +15,7 @@
 #include "components/sync/base/client_tag_hash.h"
 #include "components/sync/protocol/entity_metadata.pb.h"
 #include "components/sync/protocol/model_type_state.pb.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace sync_pb {
 class BookmarkModelMetadata;
@@ -281,6 +282,16 @@ class SyncedBookmarkTracker {
   // creations) should populate client tags.
   bool bookmark_client_tags_in_protocol_enabled() const;
 
+  // Causes the tracker to remember that a remote sync update (initial or
+  // incremental) was ignored because its parent was unknown (either because
+  // the data was corrupt or because the update is a descendant of an
+  // unsupported permanent folder).
+  void RecordIgnoredServerUpdateDueToMissingParent(int64_t server_version);
+
+  absl::optional<int64_t> GetNumIgnoredUpdatesDueToMissingParentForTest() const;
+  absl::optional<int64_t>
+  GetMaxVersionAmongIgnoredUpdatesDueToMissingParentForTest() const;
+
  private:
   // Enumeration of possible reasons why persisted metadata are considered
   // corrupted and don't match the bookmark model. Used in UMA metrics. Do not
@@ -305,9 +316,13 @@ class SyncedBookmarkTracker {
     kMaxValue = MISSING_CLIENT_TAG_HASH
   };
 
-  SyncedBookmarkTracker(sync_pb::ModelTypeState model_type_state,
-                        bool bookmarks_reuploaded,
-                        base::Time last_sync_time);
+  SyncedBookmarkTracker(
+      sync_pb::ModelTypeState model_type_state,
+      bool bookmarks_reuploaded,
+      base::Time last_sync_time,
+      absl::optional<int64_t> num_ignored_updates_due_to_missing_parent,
+      absl::optional<int64_t>
+          max_version_among_ignored_updates_due_to_missing_parent);
 
   // Add entities to |this| tracker based on the content of |*model| and
   // |model_metadata|. Validates the integrity of |*model| and |model_metadata|
@@ -369,6 +384,11 @@ class SyncedBookmarkTracker {
   // TODO(crbug.com/1032052): Remove this code once all local sync metadata is
   // required to populate the client tag (and be considered invalid otherwise).
   base::Time last_sync_time_;
+
+  // See corresponding proto fields in BookmarkModelMetadata.
+  absl::optional<int64_t> num_ignored_updates_due_to_missing_parent_;
+  absl::optional<int64_t>
+      max_version_among_ignored_updates_due_to_missing_parent_;
 };
 
 }  // namespace sync_bookmarks
