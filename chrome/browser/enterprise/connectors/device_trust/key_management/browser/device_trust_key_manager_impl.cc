@@ -154,13 +154,8 @@ void DeviceTrustKeyManagerImpl::StartKeyRotationInner(
       base::BindOnce(&DeviceTrustKeyManagerImpl::OnKeyRotationFinished,
                      weak_factory_.GetWeakPtr());
 
-  background_task_runner_->PostTask(
-      FROM_HERE,
-      base::BindOnce(
-          &KeyRotationLauncher::LaunchKeyRotation,
-          base::Unretained(key_rotation_launcher_.get()), nonce,
-          base::BindPostTask(base::SequencedTaskRunnerHandle::Get(),
-                             std::move(rotation_finished_callback))));
+  key_rotation_launcher_->LaunchKeyRotation(
+      nonce, std::move(rotation_finished_callback));
 }
 
 void DeviceTrustKeyManagerImpl::OnKeyRotationFinished(
