@@ -65,7 +65,7 @@ class ProfileOAuth2TokenServiceDelegate {
                                const GoogleServiceAuthError& error) {}
 
   // Returns a list of accounts for which a refresh token is maintained by
-  // |this| instance.
+  // |this| instance, in the order the refresh tokens were added.
   // Note: If tokens have not been fully loaded yet, an empty list is returned.
   // Also, see |RefreshTokenIsAvailable|.
   virtual std::vector<CoreAccountId> GetAccounts() const;

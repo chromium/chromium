@@ -42,6 +42,7 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
+import org.chromium.components.signin.AccountUtils;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
@@ -111,6 +112,25 @@ public class AccountManagementFragmentTest {
         View view = mSettingsActivityTestRule.getFragment().getView();
         onViewWaiting(allOf(is(view), isDisplayed()));
         mRenderTestRule.render(view, "account_management_fragment_for_child_account");
+    }
+
+    @Test
+    @MediumTest
+    @Feature("RenderTest")
+    public void testAccountManagementViewForChildAccountWithSecondaryEduAccount() throws Exception {
+        mAccountManagerTestRule.addAccount(CHILD_ACCOUNT);
+        // The code under test doesn't care what account type this is, though in practice only
+        // EDU accounts are supported on devices where the primary account is a child account.
+        mAccountManagerTestRule.addAccount(
+                AccountUtils.createAccountFromName("account@school.com"));
+        mAccountManagerTestRule.waitForSeeding();
+        final Profile profile = TestThreadUtils.runOnUiThreadBlockingNoException(
+                Profile::getLastUsedRegularProfile);
+        CriteriaHelper.pollUiThread(profile::isChild);
+        mSettingsActivityTestRule.startSettingsActivity();
+        View view = mSettingsActivityTestRule.getFragment().getView();
+        onViewWaiting(allOf(is(view), isDisplayed()));
+        mRenderTestRule.render(view, "account_management_fragment_for_child_and_edu_accounts");
     }
 
     @Test

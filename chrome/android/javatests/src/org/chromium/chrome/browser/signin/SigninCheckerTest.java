@@ -192,6 +192,10 @@ public class SigninCheckerTest {
     @Test
     @MediumTest
     public void noSigninWhenChildAccountIsTheSecondaryAccount() {
+        // If a child account co-exists with another account on the device, then the child account
+        // must be the first device (this is enforced by the Kids Module).  The behaviour in this
+        // test case therefore is not currently hittable on a real device; however it is included
+        // here for completeness.
         mAccountManagerTestRule.addAccount("the.default.account@gmail.com");
         mAccountManagerTestRule.addAccount(CHILD_ACCOUNT);
 
@@ -209,19 +213,22 @@ public class SigninCheckerTest {
 
     @Test
     @MediumTest
-    public void noSigninWhenChildAccountIsNotTheOnlyAccount() {
-        mAccountManagerTestRule.addAccount(CHILD_ACCOUNT);
+    public void signinWhenChildAccountIsFirstAccount() {
+        final CoreAccountInfo childAccount = mAccountManagerTestRule.addAccount(CHILD_ACCOUNT);
         mAccountManagerTestRule.addAccount("the.second.account@gmail.com");
 
         mActivityTestRule.startMainActivityOnBlankPage();
         UserActionTester actionTester = new UserActionTester();
 
-        // The check should be done once at activity start-up
         CriteriaHelper.pollUiThread(() -> {
-            return SigninCheckerProvider.get().getNumOfChildAccountChecksDoneForTests() == 1;
+            return childAccount.equals(
+                    mAccountManagerTestRule.getPrimaryAccount(ConsentLevel.SYNC));
         });
-        Assert.assertNull(mAccountManagerTestRule.getPrimaryAccount(ConsentLevel.SYNC));
-        Assert.assertFalse(
+
+        // The check should be done once at activity start-up
+        Assert.assertEquals(
+                1, SigninCheckerProvider.get().getNumOfChildAccountChecksDoneForTests());
+        Assert.assertTrue(
                 actionTester.getActions().contains("Signin_Signin_WipeDataOnChildAccountSignin2"));
     }
 }

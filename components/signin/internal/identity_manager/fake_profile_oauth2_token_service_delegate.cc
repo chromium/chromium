@@ -6,6 +6,8 @@
 
 #include <memory>
 
+#include "base/containers/cxx20_erase.h"
+#include "base/ranges/algorithm.h"
 #include "components/signin/internal/identity_manager/profile_oauth2_token_service.h"
 #include "google_apis/gaia/gaia_access_token_fetcher.h"
 #include "google_apis/gaia/gaia_constants.h"
@@ -82,8 +84,8 @@ const net::BackoffEntry* FakeProfileOAuth2TokenServiceDelegate::BackoffEntry()
 std::vector<CoreAccountId> FakeProfileOAuth2TokenServiceDelegate::GetAccounts()
     const {
   std::vector<CoreAccountId> account_ids;
-  for (const auto& token : refresh_tokens_)
-    account_ids.push_back(token.first);
+  for (const auto& account_id : account_ids_)
+    account_ids.push_back(account_id);
   return account_ids;
 }
 
@@ -111,9 +113,14 @@ void FakeProfileOAuth2TokenServiceDelegate::IssueRefreshTokenForUser(
     const std::string& token) {
   ScopedBatchChange batch(this);
   if (token.empty()) {
+    base::Erase(account_ids_, account_id);
     refresh_tokens_.erase(account_id);
     FireRefreshTokenRevoked(account_id);
   } else {
+    // Look for the account ID in the list, and if it is not present append it.
+    if (base::ranges::find(account_ids_, account_id) == account_ids_.end()) {
+      account_ids_.push_back(account_id);
+    }
     refresh_tokens_[account_id] = std::make_unique<AccountInfo>(token);
     // If the token is a special "invalid" value, then that means the token was
     // rejected by the client and is thus not valid. So set the appropriate

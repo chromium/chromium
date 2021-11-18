@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_SIGNIN_INTERNAL_IDENTITY_MANAGER_FAKE_PROFILE_OAUTH2_TOKEN_SERVICE_DELEGATE_H_
 #define COMPONENTS_SIGNIN_INTERNAL_IDENTITY_MANAGER_FAKE_PROFILE_OAUTH2_TOKEN_SERVICE_DELEGATE_H_
 
+#include <list>
 #include <memory>
 
 #include "base/memory/ref_counted.h"
@@ -82,6 +83,10 @@ class FakeProfileOAuth2TokenServiceDelegate
 #if defined(OS_ANDROID)
   base::android::ScopedJavaLocalRef<jobject> GetJavaObject() override;
 #endif
+
+  // The account IDs, in the order they were first added.
+  // A given account ID appears at most once in this list.
+  std::list<CoreAccountId> account_ids_;
 
   // Maps account ids to info.
   std::map<CoreAccountId, std::unique_ptr<AccountInfo>> refresh_tokens_;
