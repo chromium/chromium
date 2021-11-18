@@ -4,7 +4,9 @@
 
 #include "android_webview/browser/metrics/visibility_metrics_logger.h"
 
+#include "android_webview/common/aw_features.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/clock.h"
 #include "content/public/test/browser_task_environment.h"
@@ -349,6 +351,88 @@ TEST_F(VisibilityMetricsLoggerTest, TestTwoVisibleWebContentClients) {
       VisibilityMetricsLogger::WebViewOpenWebVisibility::
           kNotDisplayOpenWebContent,
       170);
+}
+
+TEST_F(VisibilityMetricsLoggerTest, TestScreenPortion) {
+  // t=0: client created
+  // t=10: client visible, navigates to web content, screen percentage 0%
+  // t=30: 7% screen percentage
+  // t=35: 42% screen percentage
+  // t=45: 100% screen percentage
+  // t=60: client invisible
+  // t=70: client visible
+  // t=95: client navigates away from web content
+  // t=100: client deleted
+
+  // Time with no visible client: 10 + 10 = 20
+  // Time with client visible: 20 + 5 + 10 + 15 + 25 + 5 = 80
+  // Time with client displaying web content: 20 + 5 + 10 + 15 + 25 = 75
+  // Time displaying web content with portion kExactlyZeroPercent: 20
+  // Time displaying web content with portion kZeroPercent: 5
+  // Time displaying web content with portion kFortyPercent: 10
+  // Time displaying web content with portion kOneHundredPercent: 15 + 25 = 40
+
+  base::HistogramTester histogram_tester;
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      android_webview::features::kWebViewMeasureScreenCoverage);
+  std::unique_ptr<TestClient> client = std::make_unique<TestClient>(logger());
+
+  task_environment().FastForwardBy(base::Seconds(10));
+  client->SetViewVisible(true);
+  client->SetViewAttached(true);
+  client->SetWindowVisible(true);
+  client->SetSchemeHttpOrHttps(true);
+  // If pixels is 0 then time spent is logged under kExactlyZeroPercent,
+  // otherwise the screen portion is calculated as percentage / 10.
+  logger()->UpdateOpenWebScreenArea(/*pixels=*/0, /*percentage=*/0);
+
+  task_environment().FastForwardBy(base::Seconds(20));
+  logger()->UpdateOpenWebScreenArea(/*pixels=*/14, /*percentage=*/7);
+
+  task_environment().FastForwardBy(base::Seconds(5));
+  logger()->UpdateOpenWebScreenArea(/*pixels=*/84, /*percentage=*/42);
+
+  task_environment().FastForwardBy(base::Seconds(10));
+  logger()->UpdateOpenWebScreenArea(/*pixels=*/200, /*percentage=*/100);
+
+  task_environment().FastForwardBy(base::Seconds(15));
+  client->SetViewVisible(false);
+
+  task_environment().FastForwardBy(base::Seconds(10));
+  client->SetViewVisible(true);
+
+  task_environment().FastForwardBy(base::Seconds(25));
+  client->SetSchemeHttpOrHttps(false);
+
+  task_environment().FastForwardBy(base::Seconds(5));
+  logger()->RecordMetrics();
+  client.reset();
+
+  histogram_tester.ExpectBucketCount(
+      "Android.WebView.Visibility.Global",
+      VisibilityMetricsLogger::Visibility::kNotVisible, 20);
+  histogram_tester.ExpectBucketCount(
+      "Android.WebView.Visibility.Global",
+      VisibilityMetricsLogger::Visibility::kVisible, 80);
+  histogram_tester.ExpectBucketCount(
+      "Android.WebView.WebViewOpenWebVisible.Global",
+      VisibilityMetricsLogger::WebViewOpenWebVisibility::kDisplayOpenWebContent,
+      75);
+  histogram_tester.ExpectBucketCount(
+      "Android.WebView.WebViewOpenWebVisible.ScreenPortion2",
+      VisibilityMetricsLogger::WebViewOpenWebScreenPortion::kExactlyZeroPercent,
+      20);
+  histogram_tester.ExpectBucketCount(
+      "Android.WebView.WebViewOpenWebVisible.ScreenPortion2",
+      VisibilityMetricsLogger::WebViewOpenWebScreenPortion::kZeroPercent, 5);
+  histogram_tester.ExpectBucketCount(
+      "Android.WebView.WebViewOpenWebVisible.ScreenPortion2",
+      VisibilityMetricsLogger::WebViewOpenWebScreenPortion::kFortyPercent, 10);
+  histogram_tester.ExpectBucketCount(
+      "Android.WebView.WebViewOpenWebVisible.ScreenPortion2",
+      VisibilityMetricsLogger::WebViewOpenWebScreenPortion::kOneHundredPercent,
+      40);
 }
 
 }  // namespace android_webview
