@@ -23,23 +23,17 @@
           value="[[progressValue_]]">
       </paper-progress>
       <div slot="subtitle">
-        <p>
-          [[i18nDynamic(locale, 'lacrosDataMigrationSubtitle', progressValue_)]]
-        </p>
-        <p hidden="[[!canCancel_]]">
-          [[i18nDynamic(locale, 'lacrosDataMigrationSkipSuggestion')]]
-        </p>
+        [[i18nDynamic(locale, 'lacrosDataMigrationSubtitle', progressValue_)]]
       </div>
       <div slot="content" class="flex layout vertical center center-justified">
         <img src="/images/update_boot.svg"
             class="oobe-illustration" aria-hidden="true">
       </div>
       <!-- Cancel button -->
-      <div slot="bottom-buttons"
+      <div slot="bottom-buttons" hidden="[[!canCancel]]"
           class="flex layout horizontal">
-        <oobe-text-button id="cancelButton"  hidden="[[!canCancel_]]"
-            on-click="onCancelButtonClicked_"
-            text-key="lacrosDataMigrationSkipButton">
+        <oobe-text-button id="cancelButton" on-click="onCancelButtonClicked_"
+            text-key="cancelButton">
         </oobe-text-button>
       </div>
     </oobe-adaptive-dialog>

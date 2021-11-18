@@ -846,14 +846,6 @@ cr.define('cr.ui.login.debug', function() {
     {
       id: 'lacros-data-migration',
       kind: ScreenKind.OTHER,
-      defaultState: 'default',
-      handledSteps: 'skip-revealed',
-      states: [{
-        id: 'skip-revealed',
-        trigger: (screen) => {
-          screen.showSkipButton();
-        }
-      }],
     },
     {
       id: 'terms-of-service',

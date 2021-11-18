@@ -8,8 +8,6 @@
 #include "base/command_line.h"
 #include "base/task/bind_post_task.h"
 #include "base/threading/sequenced_task_runner_handle.h"
-#include "base/threading/thread_task_runner_handle.h"
-#include "base/time/time.h"
 #include "chrome/browser/ash/crosapi/browser_data_migrator.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "content/public/browser/browser_thread.h"
@@ -19,27 +17,13 @@
 namespace ash {
 namespace {
 constexpr char kUserActionCancel[] = "cancel";
-constexpr base::TimeDelta kShowSkipButtonDuration = base::Seconds(20);
-
-class MigratorDelegateImpl
-    : public LacrosDataMigrationScreen::MigratorDelegate {
-  base::OnceClosure Migrate(
-      const std::string& user_id_hash,
-      const base::RepeatingCallback<void(int)>& progress_callback) override {
-    return BrowserDataMigrator::Migrate(
-        user_id_hash, progress_callback,
-        base::BindOnce(&chrome::AttemptRestart));
-  }
-};
-
-}  // namespace
+}
 
 LacrosDataMigrationScreen::LacrosDataMigrationScreen(
     LacrosDataMigrationScreenView* view)
     : BaseScreen(LacrosDataMigrationScreenView::kScreenId,
                  OobeScreenPriority::SCREEN_DEVICE_DEVELOPER_MODIFICATION),
-      view_(view),
-      migrator_delegate_(std::make_unique<MigratorDelegateImpl>()) {
+      view_(view) {
   DCHECK(view_);
   if (view_)
     view_->Bind(this);
@@ -60,43 +44,27 @@ void LacrosDataMigrationScreen::ShowImpl() {
   if (!view_)
     return;
 
-  // user_id_hash_ is not empty if it is already set by
-  // `SetUserIdHashForTesting()`.
-  if (user_id_hash_.empty()) {
-    user_id_hash_ = base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
-        switches::kBrowserDataMigrationForUser);
-  }
-  DCHECK(!user_id_hash_.empty()) << "user_id_hash_ should not be empty.";
-
+  const std::string user_id_hash =
+      base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
+          switches::kBrowserDataMigrationForUser);
   base::RepeatingCallback<void(int)> progress_callback = base::BindPostTask(
       base::SequencedTaskRunnerHandle::Get(),
       base::BindRepeating(&LacrosDataMigrationScreen::OnProgressUpdate,
                           weak_factory_.GetWeakPtr()),
       FROM_HERE);
-
-  cancel_callback_ =
-      migrator_delegate_->Migrate(user_id_hash_, progress_callback);
+  // TODO(crbug.com/1178702): Hide skip button and only show it after 10s.
+  // Start browser data migration.
+  cancel_callback_ = BrowserDataMigrator::Migrate(
+      user_id_hash, progress_callback, base::BindOnce(&chrome::AttemptRestart));
 
   // Show the screen.
   view_->Show();
 
   GetWakeLock()->RequestWakeLock();
-
-  // Post a delayed task to show the skip button after
-  // `kShowSkipButtonDuration`.
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
-      FROM_HERE,
-      base::BindOnce(&LacrosDataMigrationScreen::ShowSkipButton,
-                     weak_factory_.GetWeakPtr()),
-      kShowSkipButtonDuration);
 }
 
 void LacrosDataMigrationScreen::OnProgressUpdate(int progress) {
   view_->SetProgressValue(progress);
-}
-
-void LacrosDataMigrationScreen::ShowSkipButton() {
-  view_->ShowSkipButton();
 }
 
 void LacrosDataMigrationScreen::OnUserAction(const std::string& action_id) {
@@ -132,16 +100,6 @@ device::mojom::WakeLock* LacrosDataMigrationScreen::GetWakeLock() {
       device::mojom::WakeLockReason::kOther,
       "Profile migration is in progress...", std::move(receiver));
   return wake_lock_.get();
-}
-
-void LacrosDataMigrationScreen::SetMigratorDelegateForTesting(
-    std::unique_ptr<MigratorDelegate> migrator_delegate) {
-  migrator_delegate_ = std::move(migrator_delegate);
-}
-
-void LacrosDataMigrationScreen::SetUserIdHashForTesting(
-    const std::string& user_id_hash) {
-  user_id_hash_ = user_id_hash;
 }
 
 }  // namespace ash
