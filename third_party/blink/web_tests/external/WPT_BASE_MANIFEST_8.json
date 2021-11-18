@@ -285903,6 +285903,10 @@
         "6ffd72296d8302c71866624b08b1b3213f1b5e4e",
         []
        ],
+       "dialog-focus-shadow-expected.txt": [
+        "bee1f6e980eec04820ab9e260b5acd5164993045",
+        []
+       ],
        "dialog-focusing-steps-disconnected-expected.txt": [
         "5270b6237ecbb824eb78fd402ed3b24d073d1cc7",
         []
@@ -440472,6 +440476,20 @@
        ],
        "dialog-enabled.html": [
         "87a130c6f0178de695a1f9ebd8c000dabf3e53c3",
+        [
+         null,
+         {}
+        ]
+       ],
+       "dialog-focus-shadow-delegatesfocus.html": [
+        "0263e5632f9156dcadfb3bfd836fa7c8feb33ff3",
+        [
+         null,
+         {}
+        ]
+       ],
+       "dialog-focus-shadow.html": [
+        "7f52189d9ff19248ffefdf73a2a801ceefc4f448",
         [
          null,
          {}
