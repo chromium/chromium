@@ -154,3 +154,7 @@ wayland_protocol("weston_test") {
 wayland_protocol("org_kde_kwin_idle") {
   sources = [ "kde/src/protocols/idle.xml" ]
 }
+
+wayland_protocol("touchpad_haptics_protocol") {
+  sources = [ "unstable/touchpad-haptics/touchpad-haptics-unstable-v1.xml" ]
+}
