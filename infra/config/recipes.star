@@ -173,6 +173,7 @@ build_recipe(
 
 build_recipe(
     name = "recipe:chromium_rts/create_model",
+    use_python3 = True,
 )
 
 build_recipe(
