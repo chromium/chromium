@@ -21,6 +21,7 @@ using AccountList = content::IdpNetworkRequestManager::AccountList;
 using AccountsResponse = content::IdpNetworkRequestManager::AccountsResponse;
 using AccountsRequestCallback =
     content::IdpNetworkRequestManager::AccountsRequestCallback;
+using RevokeResponse = content::IdpNetworkRequestManager::RevokeResponse;
 
 namespace content {
 
@@ -29,6 +30,7 @@ namespace {
 const char kTestIdpUrl[] = "https://idp.test";
 const char kTestRpUrl[] = "https://rp.test";
 const char kTestAccountsEndpoint[] = "https://idp.test/accounts_endpoint";
+const char kTestRevokeEndpoint[] = "https://idp.test/revoke_endpoint";
 
 class IdpNetworkRequestManagerTest : public ::testing::Test {
  public:
@@ -66,6 +68,26 @@ class IdpNetworkRequestManagerTest : public ::testing::Test {
             std::move(parsed_idp_metadata)};
   }
 
+  RevokeResponse SendRevokeRequestAndWaitForResponse(
+      const char* client_id,
+      const char* account_id,
+      net::HttpStatusCode http_status = net::HTTP_NO_CONTENT) {
+    GURL revoke_endpoint(kTestRevokeEndpoint);
+    test_url_loader_factory().AddResponse(revoke_endpoint.spec(), "",
+                                          http_status);
+
+    RevokeResponse status;
+    base::RunLoop run_loop;
+    auto callback =
+        base::BindLambdaForTesting([&](RevokeResponse revoke_status) {
+          status = revoke_status;
+          run_loop.Quit();
+        });
+    manager().SendRevokeRequest(revoke_endpoint, client_id, account_id,
+                                std::move(callback));
+    run_loop.Run();
+    return status;
+  }
   IdpNetworkRequestManager& manager() { return *manager_; }
 
   network::TestURLLoaderFactory& test_url_loader_factory() {
@@ -433,6 +455,33 @@ TEST_F(IdpNetworkRequestManagerTest,
   EXPECT_EQ(absl::nullopt, idp_metadata.brand_text_color);
 }
 
+// Tests the revoke implementation.
+TEST_F(IdpNetworkRequestManagerTest, Revoke) {
+  bool called = false;
+  auto interceptor =
+      base::BindLambdaForTesting([&](const network::ResourceRequest& request) {
+        called = true;
+        ASSERT_NE(request.request_body, nullptr);
+        ASSERT_EQ(1ul, request.request_body->elements()->size());
+        const network::DataElement& elem =
+            request.request_body->elements()->at(0);
+        ASSERT_EQ(network::DataElement::Tag::kBytes, elem.type());
+        const network::DataElementBytes& byte_elem =
+            elem.As<network::DataElementBytes>();
+        EXPECT_EQ("{\"request\":{\"client_id\":\"xxx\"},\"sub\":\"yyy\"}",
+                  byte_elem.AsStringPiece());
+      });
+  test_url_loader_factory().SetInterceptor(interceptor);
+  RevokeResponse status = SendRevokeRequestAndWaitForResponse("xxx", "yyy");
+  ASSERT_TRUE(called);
+  ASSERT_EQ(RevokeResponse::kSuccess, status);
+}
+
+TEST_F(IdpNetworkRequestManagerTest, RevokeError) {
+  RevokeResponse status =
+      SendRevokeRequestAndWaitForResponse("xxx", "yyy", net::HTTP_FORBIDDEN);
+  ASSERT_EQ(RevokeResponse::kError, status);
+}
 }  // namespace
 
 }  // namespace content

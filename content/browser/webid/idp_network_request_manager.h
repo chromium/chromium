@@ -17,6 +17,10 @@
 #include "url/gurl.h"
 #include "url/origin.h"
 
+namespace net {
+enum class ReferrerPolicy;
+}
+
 namespace network {
 class SimpleURLLoader;
 }
@@ -87,6 +91,11 @@ class CONTENT_EXPORT IdpNetworkRequestManager {
     kError,
   };
 
+  enum class RevokeResponse {
+    kSuccess,
+    kError,
+  };
+
   struct CONTENT_EXPORT Endpoints {
     Endpoints();
     ~Endpoints();
@@ -116,6 +125,7 @@ class CONTENT_EXPORT IdpNetworkRequestManager {
       void(AccountsResponse, AccountList, IdentityProviderMetadata)>;
   using TokenRequestCallback =
       base::OnceCallback<void(TokenResponse, const std::string&)>;
+  using RevokeCallback = base::OnceCallback<void(RevokeResponse)>;
   using LogoutCallback = base::OnceCallback<void()>;
 
   static std::unique_ptr<IdpNetworkRequestManager> Create(
@@ -154,6 +164,12 @@ class CONTENT_EXPORT IdpNetworkRequestManager {
                                 const std::string& request,
                                 TokenRequestCallback callback);
 
+  // Send a revoke token request to the IDP.
+  virtual void SendRevokeRequest(const GURL& revoke_url,
+                                 const std::string& client_id,
+                                 const std::string& account_id,
+                                 RevokeCallback callback);
+
   // Send logout request to a single target.
   virtual void SendLogout(const GURL& logout_url, LogoutCallback);
 
@@ -168,9 +184,15 @@ class CONTENT_EXPORT IdpNetworkRequestManager {
   void OnAccountsRequestParsed(data_decoder::DataDecoder::ValueOrError result);
   void OnTokenRequestResponse(std::unique_ptr<std::string> response_body);
   void OnTokenRequestParsed(data_decoder::DataDecoder::ValueOrError result);
+  void OnRevokeResponse(std::unique_ptr<std::string> response_body);
   void OnLogoutCompleted(std::unique_ptr<std::string> response_body);
 
-  void SetupUncredentialedUrlLoader(const GURL& url);
+  std::unique_ptr<network::SimpleURLLoader> CreateUncredentialedUrlLoader(
+      const GURL& url) const;
+  std::unique_ptr<network::SimpleURLLoader> CreateCredentialedUrlLoader(
+      const GURL& url,
+      absl::optional<std::string> request_body = absl::nullopt,
+      absl::optional<net::ReferrerPolicy> policy = absl::nullopt) const;
 
   // URL of the Identity Provider.
   GURL provider_;
@@ -184,6 +206,7 @@ class CONTENT_EXPORT IdpNetworkRequestManager {
   SigninRequestCallback signin_request_callback_;
   AccountsRequestCallback accounts_request_callback_;
   TokenRequestCallback token_request_callback_;
+  RevokeCallback revoke_callback_;
   LogoutCallback logout_callback_;
 
   std::unique_ptr<network::SimpleURLLoader> url_loader_;
