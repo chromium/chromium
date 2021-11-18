@@ -1831,8 +1831,8 @@ body.files-ng #list-container .thumbnail-grid
     .thumbnail-item[lead]:not([selected]) {
   /* 2px border: 1px via box-shadow + 1px via border, to accommodate
      the difference between regular border 1px and selected border 2px.*/
-  border-color: var(--cros-icon-color-secondary);
-  box-shadow: 0 0 0 1px var(--cros-icon-color-secondary);
+  border-color: var(--cros-focus-ring-color-inactive);
+  box-shadow: 0 0 0 1px var(--cros-focus-ring-color-inactive);
 }
 
 .thumbnail-grid > .spacer.folder-spacer {
@@ -1927,7 +1927,7 @@ html[dir='rtl'] body.files-ng #default-tasks-list > li > * {
 body.files-ng #list-container list > li[selected],
 body.files-ng #list-container list > li:active,
 body.files-ng #list-container list > li.accepts,
-body.files-ng #list-container list:focus > li[lead] {
+body.files-ng #list-container list > li[lead] {
   background-color: var(--cros-highlight-color-hover);
   border-radius: 2px;
 }
@@ -1977,8 +1977,17 @@ body.files-ng #list-container li {
   border: 1px solid transparent;
 }
 
-html.focus-outline-visible body.files-ng #list-container list:focus > li[lead] {
+/*
+ * selector "li[lead]" is for the row just being operated on,
+ * e.g. with mouse: click/select/unselect
+ *      with keyboard: Ctrl + ArrowUp/ArrowDown to move
+ */
+body.files-ng.check-select #list-container list:focus > li[lead] {
   border: 1px solid var(--cros-focus-ring-color);
+}
+
+body.files-ng.check-select #list-container list > li[lead] {
+  border: 1px solid var(--cros-focus-ring-color-inactive);
 }
 
 #list-container.nohover grid > .accepts {
@@ -2618,7 +2627,7 @@ body.files-ng #list-container :focus li .detail-checkmark {
 }
 
 body.files-ng #list-container li .detail-checkmark {
-  color: var(--cros-icon-color-primary);
+  color: var(--cros-icon-color-secondary);
 }
 
 body.files-ng #list-container li .detail-thumbnail {
