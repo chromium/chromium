@@ -160,7 +160,7 @@ class GenericExpectations(expectations.Expectations):
   def GetExpectationFilepaths(self):
     return []
 
-  def _GetExpectationFileTagHeader(self):
+  def _GetExpectationFileTagHeader(self, _):
     return """\
 # tags: [ linux mac win ]
 # results: [ Failure RetryOnFailure Skip Pass ]

@@ -62,6 +62,35 @@ def main():
     stale, semi_stale, active = test_expectation_map.SplitByStaleness()
     result_output.OutputResults(stale, semi_stale, active, unmatched,
                                 unused_expectations, args.output_format)
+
+    affected_urls = set()
+    stale_message = ''
+    if args.remove_stale_expectations:
+        for expectation_file, expectation_map in stale.items():
+            stale_expectations = []
+            stale_expectations.extend(expectation_map.keys())
+            stale_expectations.extend(
+                unused_expectations.get(expectation_file, []))
+            affected_urls |= expectations_instance.RemoveExpectationsFromFile(
+                stale_expectations, expectation_file)
+            stale_message += (
+                'Stale expectations removed from %s. Stale '
+                'comments, etc. may still need to be removed.\n' %
+                expectation_file)
+
+    if args.modify_semi_stale_expectations:
+        affected_urls |= expectations_instance.ModifySemiStaleExpectations(
+            semi_stale)
+        stale_message += ('Semi-stale expectations modified in expectation '
+                          'files. Stale comments, etc. may still need to be '
+                          'removed.\n')
+
+    if stale_message:
+        print(stale_message)
+    if affected_urls:
+        orphaned_urls = expectations_instance.FindOrphanedBugs(affected_urls)
+        result_output.OutputAffectedUrls(affected_urls, orphaned_urls)
+
     return 0
 
 

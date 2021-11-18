@@ -186,7 +186,8 @@ class Expectations(object):
           in_disable_block = False
         continue
 
-      current_expectation = self._CreateExpectationFromExpectationFileLine(line)
+      current_expectation = self._CreateExpectationFromExpectationFileLine(
+          line, expectation_file)
 
       # Add any lines containing expectations that don't match any of the given
       # expectations to remove.
@@ -216,16 +217,18 @@ class Expectations(object):
 
     return removed_urls
 
-  def _CreateExpectationFromExpectationFileLine(self, line):
+  def _CreateExpectationFromExpectationFileLine(self, line, expectation_file):
     """Creates a data_types.Expectation from |line|.
 
     Args:
       line: A string containing a single line from an expectation file.
+      expectation_file: A filepath pointing to an expectation file |line| came
+          from.
 
     Returns:
       A data_types.Expectation containing the same information as |line|.
     """
-    header = self._GetExpectationFileTagHeader()
+    header = self._GetExpectationFileTagHeader(expectation_file)
     single_line_content = header + line
     list_parser = expectations_parser.TaggedTestListParser(single_line_content)
     assert len(list_parser.expectations) == 1
@@ -234,8 +237,12 @@ class Expectations(object):
                                   typ_expectation.raw_results,
                                   typ_expectation.reason)
 
-  def _GetExpectationFileTagHeader(self):
+  def _GetExpectationFileTagHeader(self, expectation_file):
     """Gets the tag header used for expectation files.
+
+    Args:
+      expectation_file: A filepath pointing to an expectation file to get the
+          tag header from.
 
     Returns:
       A string containing an expectation file header, i.e. the comment block at
@@ -266,7 +273,8 @@ class Expectations(object):
         stale_expectation_map.IterBuilderStepMaps()):
       with open(expectation_file) as infile:
         file_contents = infile.read()
-      line, line_number = self._GetExpectationLine(e, file_contents)
+      line, line_number = self._GetExpectationLine(e, file_contents,
+                                                   expectation_file)
       expectation_str = None
       if not line:
         logging.error(
@@ -311,13 +319,15 @@ class Expectations(object):
       modified_urls.add(e.bug)
     return modified_urls
 
-  def _GetExpectationLine(self, expectation, file_contents):
+  def _GetExpectationLine(self, expectation, file_contents, expectation_file):
     """Gets the line and line number of |expectation| in |file_contents|.
 
     Args:
       expectation: A data_types.Expectation.
       file_contents: A string containing the contents read from an expectation
           file.
+      expectation_file: A string containing the path to the expectation file
+          that |file_contents| came from.
 
     Returns:
       A tuple (line, line_number). |line| is a string containing the exact line
@@ -337,7 +347,8 @@ class Expectations(object):
     for line_number, line in enumerate(file_lines):
       if _IsCommentOrBlankLine(line.strip()):
         continue
-      current_expectation = self._CreateExpectationFromExpectationFileLine(line)
+      current_expectation = self._CreateExpectationFromExpectationFileLine(
+          line, expectation_file)
       if expectation == current_expectation:
         return line, line_number + 1
     return None, None

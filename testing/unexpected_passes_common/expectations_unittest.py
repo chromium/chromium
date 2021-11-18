@@ -217,7 +217,7 @@ crbug.com/1234 [ tag1 ] testname [ Failure ]
 class RemoveExpectationsFromFileUnittest(fake_filesystem_unittest.TestCase):
   def setUp(self):
     self.instance = uu.CreateGenericExpectations()
-    self.header = self.instance._GetExpectationFileTagHeader()
+    self.header = self.instance._GetExpectationFileTagHeader(None)
     self.setUpPyfakefs()
     with tempfile.NamedTemporaryFile(delete=False) as f:
       self.filename = f.name
@@ -361,7 +361,7 @@ class GetExpectationLineUnittest(unittest.TestCase):
     """Tests that the case of no matching expectation is handled."""
     expectation = data_types.Expectation('foo', ['win'], 'Failure')
     line, line_number = self.instance._GetExpectationLine(
-        expectation, FAKE_EXPECTATION_FILE_CONTENTS)
+        expectation, FAKE_EXPECTATION_FILE_CONTENTS, None)
     self.assertIsNone(line)
     self.assertIsNone(line_number)
 
@@ -370,7 +370,7 @@ class GetExpectationLineUnittest(unittest.TestCase):
     expectation = data_types.Expectation('foo/test', ['win'], 'Failure',
                                          'crbug.com/1234')
     line, line_number = self.instance._GetExpectationLine(
-        expectation, FAKE_EXPECTATION_FILE_CONTENTS)
+        expectation, FAKE_EXPECTATION_FILE_CONTENTS, None)
     self.assertEqual(line, 'crbug.com/1234 [ win ] foo/test [ Failure ]')
     self.assertEqual(line_number, 3)
 

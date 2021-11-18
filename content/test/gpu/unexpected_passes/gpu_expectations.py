@@ -24,5 +24,5 @@ class GpuExpectations(expectations.Expectations):
         filepaths.append(os.path.join(EXPECTATIONS_DIR, f))
     return filepaths
 
-  def _GetExpectationFileTagHeader(self):
+  def _GetExpectationFileTagHeader(self, _):
     return validate_tag_consistency.TAG_HEADER

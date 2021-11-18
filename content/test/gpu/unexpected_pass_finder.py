@@ -149,15 +149,15 @@ def main():
   affected_urls = set()
   stale_message = ''
   if args.remove_stale_expectations:
-    stale_expectations = []
     for expectation_file, expectation_map in stale.items():
+      stale_expectations = []
       stale_expectations.extend(expectation_map.keys())
       stale_expectations.extend(unused_expectations.get(expectation_file, []))
-    affected_urls |= expectations_instance.RemoveExpectationsFromFile(
-        stale_expectations, args.expectation_file)
-    stale_message += ('Stale expectations removed from %s. Stale comments, '
-                      'etc. may still need to be removed.\n' %
-                      args.expectation_file)
+      affected_urls |= expectations_instance.RemoveExpectationsFromFile(
+          stale_expectations, expectation_file)
+      stale_message += ('Stale expectations removed from %s. Stale comments, '
+                        'etc. may still need to be removed.\n' %
+                        expectation_file)
 
   if args.modify_semi_stale_expectations:
     affected_urls |= expectations_instance.ModifySemiStaleExpectations(

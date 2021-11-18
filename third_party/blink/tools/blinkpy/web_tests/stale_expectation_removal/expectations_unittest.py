@@ -13,6 +13,7 @@ if six.PY3:
 
 from pyfakefs import fake_filesystem_unittest
 
+from blinkpy.web_tests.stale_expectation_removal import constants
 from blinkpy.web_tests.stale_expectation_removal import expectations
 
 
@@ -33,7 +34,7 @@ class GetExpectationFilepathsUnittest(fake_filesystem_unittest.TestCase):
         self.instance = expectations.WebTestExpectations()
         CreateFile(
             self.fs,
-            os.path.join(expectations.WEB_TEST_ROOT_DIR, 'FlagExpectations',
+            os.path.join(constants.WEB_TEST_ROOT_DIR, 'FlagExpectations',
                          'README.txt'))
 
     def testRealFilesCanBeFound(self):
@@ -54,7 +55,7 @@ class GetExpectationFilepathsUnittest(fake_filesystem_unittest.TestCase):
 
     def testFlagSpecificFiles(self):
         """Tests that flag-specific files are properly returned."""
-        flag_filepath = os.path.join(expectations.WEB_TEST_ROOT_DIR,
+        flag_filepath = os.path.join(constants.WEB_TEST_ROOT_DIR,
                                      'FlagExpectations', 'foo-flag')
         CreateFile(self.fs, flag_filepath)
         with mock.patch.object(self.instance,
@@ -65,7 +66,7 @@ class GetExpectationFilepathsUnittest(fake_filesystem_unittest.TestCase):
 
     def testAllExpectationFiles(self):
         """Tests that both top level and flag-specific files are returned."""
-        flag_filepath = os.path.join(expectations.WEB_TEST_ROOT_DIR,
+        flag_filepath = os.path.join(constants.WEB_TEST_ROOT_DIR,
                                      'FlagExpectations', 'foo-flag')
         CreateFile(self.fs, flag_filepath)
         with mock.patch.object(self.instance,
@@ -84,7 +85,8 @@ class GetExpectationFileTagHeaderUnittest(fake_filesystem_unittest.TestCase):
     def testRealContentsCanBeLoaded(self):
         """Tests that some sort of valid content can be read from the file."""
         with fake_filesystem_unittest.Pause(self):
-            header = self.instance._GetExpectationFileTagHeader()
+            header = self.instance._GetExpectationFileTagHeader(
+                expectations.MAIN_EXPECTATION_FILE)
         self.assertIn('tags', header)
         self.assertIn('results', header)
 
@@ -102,7 +104,8 @@ not a comment
         CreateFile(self.fs, expectations.MAIN_EXPECTATION_FILE)
         with open(expectations.MAIN_EXPECTATION_FILE, 'w') as f:
             f.write(header_contents)
-        header = self.instance._GetExpectationFileTagHeader()
+        header = self.instance._GetExpectationFileTagHeader(
+            expectations.MAIN_EXPECTATION_FILE)
         expected_header = """\
 # foo
 #   bar
