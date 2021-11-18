@@ -1801,13 +1801,6 @@ crbug.com/1085129 virtual/force-eager/external/wpt/measure-memory/idlharness.win
 crbug.com/1207146 virtual/force-eager/external/wpt/measure-memory/service-worker.https.any.serviceworker.html [ Skip ]
 crbug.com/1207146 virtual/force-eager/external/wpt/measure-memory/shared-worker.https.any.sharedworker.html [ Skip ]
 
-# AppCache is no longer supported.
-crbug.com/582750 external/wpt/html/browsers/offline/appcache/* [ Skip ]
-crbug.com/940797 external/wpt/signed-exchange/appcache/* [ Skip ]
-crbug.com/582750 external/wpt/service-workers/service-worker/appcache-ordering-main.https.html [ Skip ]
-crbug.com/582750 external/wpt/service-workers/service-worker/claim-fetch-with-appcache.https.html [ Skip ]
-crbug.com/582750 external/wpt/storage/estimate-usage-details-application-cache.https.tentative.html [ Skip ]
-
 # WeakRefs are under development and run in a virtual test suite
 crbug.com/1016767 js/weakrefs/* [ Skip ]
 virtual/weakrefs/js/weakrefs/* [ Pass ]

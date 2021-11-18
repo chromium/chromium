@@ -719,7 +719,6 @@ LAYOUTTESTS APIS: webxr/resources/webxr_util.js
 
 # Signed Exchange files have hard-coded URLs in the certUrl field
 WEB-PLATFORM.TEST:signed-exchange/resources/*.sxg
-WEB-PLATFORM.TEST:signed-exchange/appcache/resources/*.sxg
 WEB-PLATFORM.TEST:signed-exchange/resources/generate-test-sxgs.sh
 
 # Web Bundle files have hard-coded URLs

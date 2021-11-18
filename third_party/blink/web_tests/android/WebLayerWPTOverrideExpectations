@@ -265,8 +265,6 @@ crbug.com/1198081 external/wpt/reporting/idlharness.any.html [ Failure ]
 crbug.com/1198081 external/wpt/reporting/idlharness.any.worker.html [ Failure ]
 
 # Signed Exchange failures on Android.
-crbug.com/1198085 external/wpt/signed-exchange/appcache/sxg-inner-resp-over-appcache.tentative.https.html [ Failure ]
-crbug.com/1198085 external/wpt/signed-exchange/appcache/sxg-served-from-appcache.tentative.https.html [ Failure ]
 crbug.com/1198085 external/wpt/signed-exchange/check-cert-request.tentative.html [ Failure ]
 crbug.com/1198085 external/wpt/signed-exchange/fallback-to-another-sxg.tentative.html [ Failure ]
 crbug.com/1198085 external/wpt/signed-exchange/reporting/sxg-reporting-navigation-cert_fetch_error-downgraded.tentative.html [ Failure ]
@@ -987,7 +985,6 @@ crbug.com/1050754 external/wpt/html/browsers/history/the-history-interface/004.h
 crbug.com/1050754 external/wpt/html/browsers/history/the-history-interface/005.html [ Failure Pass ]
 crbug.com/1050754 external/wpt/html/browsers/history/the-location-interface/allow_prototype_cycle_through_location.sub.html [ Failure ]
 crbug.com/1050754 external/wpt/html/browsers/history/the-location-interface/location-prototype-setting-same-origin-domain.sub.html [ Pass ]
-crbug.com/1050754 external/wpt/html/browsers/offline/appcache/workers/appcache-worker.https.html [ Failure ]
 crbug.com/1050754 external/wpt/html/browsers/offline/introduction-4/event_cached.https.html [ Failure ]
 crbug.com/1050754 external/wpt/html/browsers/offline/introduction-4/event_checking.https.html [ Failure ]
 crbug.com/1050754 external/wpt/html/browsers/offline/introduction-4/event_noupdate.https.html [ Failure ]

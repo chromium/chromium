@@ -122,20 +122,6 @@ def main(request, response):
       response.headers.set(b"Content-Type", b"application/javascript")
       return b"self.postMessage('loaded');"
 
-    ## Return an appcache manifest
-    if key.startswith(b"appcache-manifest"):
-      response.headers.set(b"Content-Type", b"text/cache-manifest")
-      return b"""CACHE MANIFEST
-/fetch/metadata/resources/record-header.py?file=appcache-resource%s
-
-NETWORK:
-*""" % key[17:]
-
-    ## Return an appcache resource
-    if key.startswith(b"appcache-resource"):
-      response.headers.set(b"Content-Type", b"text/html")
-      return b"<html>Appcache!</html>"
-
     ## Return a valid XSLT
     if key.startswith(b"xslt"):
       response.headers.set(b"Content-Type", b"text/xsl")

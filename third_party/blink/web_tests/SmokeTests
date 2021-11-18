@@ -204,8 +204,6 @@ external/wpt/html/browsers/history/the-history-interface/history_back.html
 external/wpt/html/browsers/history/the-history-interface/history_pushstate.html
 external/wpt/html/browsers/history/the-history-interface/history_replacestate_err.html
 external/wpt/html/browsers/history/the-history-interface/history_replacestate_nooptionalparam.html
-external/wpt/html/browsers/offline/application-cache-api/api_update_error.html
-external/wpt/html/browsers/offline/introduction-4/event_cached.html
 external/wpt/html/browsers/the-window-object/named-access-on-the-window-object/window-null-names.html
 external/wpt/html/browsers/the-windowproxy-exotic-object/windowproxy-prototype-setting-same-origin.html
 external/wpt/html/dom/documents/dom-tree-accessors/Document.getElementsByClassName-null-undef.html

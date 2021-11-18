@@ -1920,7 +1920,6 @@ crbug.com/1083820 [ Mac ] fast/scrolling/document-level-wheel-event-listener-pas
 # expectation files. The following tests with [ Failure ] don't have failure
 # expectation files because they contain local path names.
 # Use crbug.com/490511 for untriaged failures.
-crbug.com/490511 external/wpt/html/browsers/offline/application-cache-api/api_update.https.html [ Failure Pass ]
 crbug.com/108417 external/wpt/html/rendering/non-replaced-elements/tables/table-border-1.html [ Failure ]
 crbug.com/490511 external/wpt/html/rendering/non-replaced-elements/the-hr-element-0/color.html [ Failure ]
 crbug.com/490511 external/wpt/html/rendering/non-replaced-elements/the-hr-element-0/width.html [ Failure ]
