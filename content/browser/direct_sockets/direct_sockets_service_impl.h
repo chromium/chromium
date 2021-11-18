@@ -100,6 +100,10 @@ class CONTENT_EXPORT DirectSocketsServiceImpl
 
   class ResolveHostAndOpenSocket;
 
+  // Compares the last committed origin with allowed restricted API origins.
+  static bool IsAllowedRestrictedApiOrigin(
+      const url::Origin& last_committed_origin);
+
   // Returns net::OK if the options are valid and the connection is permitted.
   net::Error ValidateOptions(const blink::mojom::DirectSocketOptions& options);
 

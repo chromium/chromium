@@ -65,6 +65,11 @@ const char kConversionsDebugMode[] = "conversions-debug-mode";
 const char kCrossOriginWebAssemblyModuleSharingAllowed[] =
     "cross-origin-webassembly-module-sharing-allowed";
 
+// Enable restricted APIs for a set of origins, specified as a
+// comma-separated list. For example:
+//   --restricted-api-origins=https://www.foo.com,https://www.bar.com
+const char kRestrictedApiOrigins[] = "restricted-api-origins";
+
 // Enables gating of getDisplayMedia by the display-capture permissions-policy.
 // This switch supports the shipping of display-capture, as it allows admins to
 // temporarily disable display-capture gating with an Enterprise policy.

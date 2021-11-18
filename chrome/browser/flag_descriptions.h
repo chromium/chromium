@@ -515,6 +515,9 @@ extern const char kDesktopPWAsWindowControlsOverlayDescription[];
 extern const char kDevicePostureName[];
 extern const char kDevicePostureDescription[];
 
+extern const char kRestrictedApiOriginsName[];
+extern const char kRestrictedApiOriginsDescription[];
+
 extern const char kEnableMigrateDefaultChromeAppToWebAppsGSuiteName[];
 extern const char kEnableMigrateDefaultChromeAppToWebAppsGSuiteDescription[];
 

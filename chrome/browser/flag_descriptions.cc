@@ -592,6 +592,11 @@ const char kDevicePostureName[] = "Device Posture API";
 const char kDevicePostureDescription[] =
     "Enables Device Posture API (foldable devices)";
 
+extern const char kRestrictedApiOriginsName[] = "Restricted API Origins";
+extern const char kRestrictedApiOriginsDescription[] =
+    "Enables Restricted APIs (Direct Sockets API) for development purposes for "
+    "a set of origins, specified as a comma-separated list.";
+
 const char kDoubleBufferCompositingName[] = "Double buffered compositing";
 const char kDoubleBufferCompositingDescription[] =
     "Use double buffer for compositing (instead of triple-buffering). "
