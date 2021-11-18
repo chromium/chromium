@@ -74,7 +74,8 @@ class EcheAppNotificationControllerTest : public BrowserWithTestWindowTest {
 };
 
 TEST_F(EcheAppNotificationControllerTest, ShowScreenLockNotification) {
-  notification_controller_->ShowScreenLockNotification();
+  absl::optional<std::u16string> title = u"title";
+  notification_controller_->ShowScreenLockNotification(title);
   absl::optional<message_center::Notification> notification =
       display_service_->GetNotification(kEcheAppScreenLockNotifierId);
   ASSERT_TRUE(notification);

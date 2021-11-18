@@ -149,7 +149,7 @@ void EcheAppManagerFactory::ShowNotification(
     if (absl::get<LaunchAppHelper::NotificationInfo::NotificationType>(
             info->type()) ==
         LaunchAppHelper::NotificationInfo::NotificationType::kScreenLock) {
-      weak_ptr->notification_controller_->ShowScreenLockNotification();
+      weak_ptr->notification_controller_->ShowScreenLockNotification(title);
     }
   } else if (info->category() ==
              LaunchAppHelper::NotificationInfo::Category::kWebUI) {

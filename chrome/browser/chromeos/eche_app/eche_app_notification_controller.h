@@ -32,7 +32,7 @@ class EcheAppNotificationController {
 
   // Shows the notification when screen lock is already enabled on the phone,
   // but the ChromeOS is not enabled.
-  void ShowScreenLockNotification();
+  void ShowScreenLockNotification(const absl::optional<std::u16string>& title);
   // Shows the notification which was generated from WebUI and carry title and
   // message.
   void ShowNotificationFromWebUI(

@@ -44,7 +44,7 @@ void EcheNotificationClickHandler::HandleNotificationClick(
         app_metadata.visible_app_name, app_metadata.user_id);
   } else {
     launch_app_helper_->ShowNotification(
-        /* title= */ absl::nullopt, /* message= */ absl::nullopt,
+        app_metadata.visible_app_name, /* message= */ absl::nullopt,
         std::make_unique<LaunchAppHelper::NotificationInfo>(
             LaunchAppHelper::NotificationInfo::Category::kNative,
             LaunchAppHelper::NotificationInfo::NotificationType::kScreenLock));
