@@ -31,17 +31,16 @@ namespace history_clusters {
 
 namespace {
 
-// Returns the normalized URL for the user's default search
-// provider if the URL for the visit is a Search URL. Otherwise, returns the
-// visit's original URL.
-GURL GetNormalizedURLForVisit(const history::AnnotatedVisit& visit,
-                              const TemplateURLService* template_url_service) {
+// Returns the normalized URL for the search provider if the URL for the visit
+// is a Search URL. Otherwise, returns nullopt.
+absl::optional<GURL> GetNormalizedURLForSearchVisit(
+    const history::AnnotatedVisit& visit,
+    const TemplateURLService* template_url_service) {
   if (!template_url_service)
-    return visit.url_row.url();
+    return absl::nullopt;
 
   const TemplateURL* template_url =
       template_url_service->GetTemplateURLForHost(visit.url_row.url().host());
-
   const SearchTermsData& search_terms_data =
       template_url_service->search_terms_data();
 
@@ -52,14 +51,14 @@ GURL GetNormalizedURLForVisit(const history::AnnotatedVisit& visit,
           visit.url_row.url(), search_terms_data, &search_terms) &&
       !search_terms.empty();
   if (!is_valid_search_url)
-    return visit.url_row.url();
+    return absl::nullopt;
 
   const std::u16string& normalized_search_query =
       base::i18n::ToLower(base::CollapseWhitespace(search_terms, false));
   TemplateURLRef::SearchTermsArgs search_terms_args(normalized_search_query);
   const TemplateURLRef& search_url_ref = template_url->url_ref();
   if (!search_url_ref.SupportsReplacement(search_terms_data))
-    return visit.url_row.url();
+    return absl::nullopt;
 
   return GURL(
       search_url_ref.ReplaceSearchTerms(search_terms_args, search_terms_data));
@@ -153,8 +152,11 @@ void OnDeviceClusteringBackend::OnBatchEntityMetadataRetrieved(
   for (const auto& visit : annotated_visits) {
     history::ClusterVisit cluster_visit;
     cluster_visit.annotated_visit = visit;
+    absl::optional<GURL> maybe_normalized_url =
+        GetNormalizedURLForSearchVisit(visit, template_url_service_);
+    cluster_visit.is_search_visit = maybe_normalized_url.has_value();
     cluster_visit.normalized_url =
-        GetNormalizedURLForVisit(visit, template_url_service_);
+        maybe_normalized_url.value_or(visit.url_row.url());
 
     // Rewrite the entities for the visit, but only if it is possible that we
     // had additional metadata for it.

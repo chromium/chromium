@@ -18,7 +18,8 @@ class VisitResult {
  public:
   VisitResult(int visit_id,
               float score,
-              const std::vector<history::VisitID>& duplicate_visit_ids = {});
+              const std::vector<history::VisitID>& duplicate_visit_ids = {},
+              bool is_search_visit = false);
   explicit VisitResult(const history::ClusterVisit& visit);
   VisitResult(const VisitResult& other);
   ~VisitResult();
@@ -29,6 +30,7 @@ class VisitResult {
   const int visit_id_;
   const float score_;
   const std::vector<history::VisitID> duplicate_visit_ids_;
+  const bool is_search_visit_;
 };
 
 // Converts |clusters| to VisitResults which are easier to test equality for.

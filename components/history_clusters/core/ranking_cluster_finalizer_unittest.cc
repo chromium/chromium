@@ -190,18 +190,20 @@ TEST_F(RankingClusterFinalizerTest, ScoreTwoCanonicalSearchResultsPages) {
       testing::CreateDefaultAnnotatedVisit(
           1, GURL("https://google.com/search?q=whatever#abc")),
       GURL("https://google.com/search?q=whatever"));
+  visit.is_search_visit = true;
 
   history::ClusterVisit visit2 = testing::CreateClusterVisit(
       testing::CreateDefaultAnnotatedVisit(
           2, GURL("https://google.com/search?q=bar#abc")),
       GURL("https://google.com/search?q=bar"));
+  visit2.is_search_visit = true;
 
   history::Cluster cluster;
   cluster.visits = {visit, visit2};
   FinalizeCluster(cluster);
   EXPECT_THAT(testing::ToVisitResults({cluster}),
-              ElementsAre(ElementsAre(testing::VisitResult(1, 1.0),
-                                      testing::VisitResult(2, 1.0))));
+              ElementsAre(ElementsAre(testing::VisitResult(1, 1.0, {}, true),
+                                      testing::VisitResult(2, 1.0, {}, true))));
 }
 
 TEST_F(RankingClusterFinalizerTest, ScoreSearchResultsPagesOneDuplicate) {
@@ -211,18 +213,20 @@ TEST_F(RankingClusterFinalizerTest, ScoreSearchResultsPagesOneDuplicate) {
           1, GURL("https://google.com/search?q=whatever#abc")),
       GURL("https://google.com/search?q=whatever"));
   visit.duplicate_visit_ids = {2};
+  visit.is_search_visit = true;
 
   history::ClusterVisit visit2 = testing::CreateClusterVisit(
       testing::CreateDefaultAnnotatedVisit(
           2, GURL("https://google.com/search?q=bar")),
       GURL("https://google.com/search?q=bar"));
+  visit2.is_search_visit = true;
 
   history::Cluster cluster;
   cluster.visits = {visit, visit2};
   FinalizeCluster(cluster);
   EXPECT_THAT(testing::ToVisitResults({cluster}),
-              ElementsAre(ElementsAre(testing::VisitResult(1, 1.0, {2}),
-                                      testing::VisitResult(2, 0.0))));
+              ElementsAre(ElementsAre(testing::VisitResult(1, 1.0, {2}, true),
+                                      testing::VisitResult(2, 0.0, {}, true))));
 }
 
 }  // namespace

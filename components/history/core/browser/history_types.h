@@ -820,6 +820,9 @@ struct ClusterVisit {
   // The normalized URL for the visit (i.e. a SRP URL normalized based on the
   // user's default search provider).
   GURL normalized_url;
+
+  // Whether this visit contained a user-input search or query.
+  bool is_search_visit = false;
 };
 
 // A cluster of `ClusterVisit`s with associated metadata (i.e. `keywords` and

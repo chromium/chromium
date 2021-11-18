@@ -526,9 +526,9 @@ TEST_F(OnDeviceClusteringWithAllTheBackendsTest,
   std::vector<history::Cluster> result_clusters = ClusterVisits(visits);
   ASSERT_EQ(result_clusters.size(), 2u);
   EXPECT_THAT(testing::ToVisitResults(result_clusters),
-              ElementsAre(ElementsAre(testing::VisitResult(1, 0.0),
-                                      testing::VisitResult(2, 1.0, {1})),
-                          ElementsAre(testing::VisitResult(3, 1.0))));
+              ElementsAre(ElementsAre(testing::VisitResult(1, 0.0, {}, true),
+                                      testing::VisitResult(2, 1.0, {1}, true)),
+                          ElementsAre(testing::VisitResult(3, 1.0, {}, true))));
   // Make sure visits are normalized.
   history::Cluster cluster = result_clusters.at(0);
   ASSERT_EQ(cluster.visits.size(), 2u);

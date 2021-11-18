@@ -74,10 +74,8 @@ void RankingClusterFinalizer::CalculateVisitAttributeScoring(
       it->second.set_bookmarked();
     }
 
-    // Check if the visit is a search results page. For now, we approximate this
-    // if the normalized URL is not the same as the original URL since result
-    // pages from the default search engine are all we normalize.
-    if (visit.normalized_url != visit.annotated_visit.url_row.url()) {
+    // Check if the visit contained a search query.
+    if (visit.is_search_visit) {
       it->second.set_is_srp();
     }
 
