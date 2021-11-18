@@ -22,6 +22,11 @@ namespace enterprise_connectors {
 
 namespace {
 
+// Wrap the SignSlowly call into this anonymous synchronous function to ensure
+// that `str` lives throughout the execution. If that was not being done, `str`
+// would get destroyed in the calling sequence and, with span being just a
+// pointer, the called sequence would use its data pointer after the address
+// was freed up (use-after-free), which is a security issue.
 absl::optional<std::vector<uint8_t>> SignString(
     const std::string& str,
     crypto::UnexportableSigningKey* key) {
