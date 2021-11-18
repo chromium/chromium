@@ -124,9 +124,6 @@ class SectionSizeKnobs:
 # Parameters and states for archiving a container.
 @dataclasses.dataclass
 class ContainerArchiveOptions:
-  # TODO(agrieve): Delete pak_compression_ratio. We haven't compressed .pak
-  #    files since moving to bundles.
-  pak_compression_ratio: float = 0.5
   # Whether to count number of relative relocations instead of binary size.
   relocations_mode: bool = False
   # Whether to break down .so files.
@@ -979,12 +976,9 @@ def _ParseElfInfo(native_spec, outdir_context=None):
           raw_symbols, object_paths_by_name)
 
 
-def _ComputePakFileSymbols(
-    file_name, contents, res_info, symbols_by_id, compression_ratio=1):
-  id_map = {
-      id(v): k
-      for k, v in sorted(list(contents.resources.items()), reverse=True)
-  }
+def _ComputePakFileSymbols(file_name, contents, res_info, symbols_by_id):
+  # Reversed so that aliases are clobbered by the entries they are aliases of.
+  id_map = {id(v): k for k, v in reversed(contents.resources.items())}
   alias_map = {
       k: id_map[id(v)]
       for k, v in contents.resources.items() if id_map[id(v)] != k
@@ -997,15 +991,16 @@ def _ComputePakFileSymbols(
   else:
     # E.g.: resources.pak, chrome_100_percent.pak.
     section_name = models.SECTION_PAK_NONTRANSLATED
-  overhead = (12 + 6) * compression_ratio  # Header size plus extra offset
+  overhead = 12 + 6  # Header size plus extra offset
   # Key just needs to be unique from other IDs and pak overhead symbols.
   symbols_by_id[-len(symbols_by_id) - 1] = models.Symbol(
       section_name, overhead, full_name='Overhead: {}'.format(file_name))
   for resource_id in sorted(contents.resources):
-    if resource_id in alias_map:
+    aliased_resource_id = alias_map.get(resource_id)
+    if aliased_resource_id is not None:
       # 4 extra bytes of metadata (2 16-bit ints)
       size = 4
-      resource_id = alias_map[resource_id]
+      resource_id = aliased_resource_id
     else:
       resource_data = contents.resources[resource_id]
       # 6 extra bytes of metadata (1 32-bit int, 1 16-bit int)
@@ -1020,7 +1015,6 @@ def _ComputePakFileSymbols(
           new_symbol.flags |= models.FLAG_UNCOMPRESSED
         symbols_by_id[resource_id] = new_symbol
 
-    size *= compression_ratio
     symbols_by_id[resource_id].size += size
   return section_name
 
@@ -1100,27 +1094,10 @@ def _ParsePakSymbols(symbols_by_id, object_paths_by_pak_id):
           full_name=symbol.full_name, object_path=path, aliases=aliases)
       aliases.append(new_sym)
       raw_symbols.append(new_sym)
-  raw_total = 0.0
-  int_total = 0
-  for symbol in raw_symbols:
-    raw_total += symbol.size
-    # We truncate rather than round to ensure that we do not over attribute. It
-    # is easier to add another symbol to make up the difference.
-    symbol.size = int(symbol.size)
-    int_total += symbol.size
-  # Attribute excess to translations since only those are compressed.
-  overhead_size = round(raw_total - int_total)
-  if overhead_size:
-    raw_symbols.append(
-        models.Symbol(models.SECTION_PAK_TRANSLATIONS,
-                      overhead_size,
-                      address=raw_symbols[-1].end_address,
-                      full_name='Overhead: Pak compression artifacts'))
 
   # Pre-sort to make final sort faster.
   # Note: _SECTION_SORT_ORDER[] for pak symbols matches section_name ordering.
-  raw_symbols.sort(
-      key=lambda s: (s.section_name, s.IsOverhead(), s.address, s.object_path))
+  raw_symbols.sort(key=lambda s: (s.section_name, s.address, s.object_path))
   return raw_symbols
 
 
@@ -1240,33 +1217,22 @@ def _CreatePakObjectMap(object_paths_by_name):
   return object_paths_by_pak_id
 
 
-def _FindPakSymbolsFromApk(opts, section_ranges, apk_path, size_info_prefix):
+def _FindPakSymbolsFromApk(section_ranges, apk_path, size_info_prefix):
   with zipfile.ZipFile(apk_path) as z:
     pak_zip_infos = (f for f in z.infolist() if f.filename.endswith('.pak'))
     pak_info_path = size_info_prefix + '.pak.info'
     res_info = _ParsePakInfoFile(pak_info_path)
     symbols_by_id = {}
-    total_compressed_size = 0
-    total_uncompressed_size = 0
     for zip_info in pak_zip_infos:
       contents = data_pack.ReadDataPackFromString(z.read(zip_info))
-      compression_ratio = 1.0
-      if zip_info.compress_size < zip_info.file_size:
-        total_compressed_size += zip_info.compress_size
-        total_uncompressed_size += zip_info.file_size
-        compression_ratio = opts.pak_compression_ratio
-      section_name = _ComputePakFileSymbols(
-          zip_info.filename, contents,
-          res_info, symbols_by_id, compression_ratio=compression_ratio)
+      if zip_info.compress_type != zipfile.ZIP_STORED:
+        logging.warning(
+            'Expected .pak files to be STORED, but this one is compressed: %s',
+            zip_info.filename)
+      section_name = _ComputePakFileSymbols(zip_info.filename, contents,
+                                            res_info, symbols_by_id)
       _ExtendSectionRange(section_ranges, section_name, zip_info.compress_size)
 
-    if total_uncompressed_size > 0:
-      actual_ratio = (
-          float(total_compressed_size) / total_uncompressed_size)
-      logging.info(
-          'Pak Compression Ratio: %f Actual: %f Diff: %.0f',
-          opts.pak_compression_ratio, actual_ratio,
-          (opts.pak_compression_ratio - actual_ratio) * total_uncompressed_size)
   return symbols_by_id
 
 
@@ -1533,7 +1499,7 @@ def CreateContainerAndSymbols(*,
   other_symbols = []
   if apk_spec and apk_spec.size_info_prefix and not opts.relocations_mode:
     # Can modify |section_ranges|.
-    pak_symbols_by_id = _FindPakSymbolsFromApk(opts, section_ranges,
+    pak_symbols_by_id = _FindPakSymbolsFromApk(section_ranges,
                                                apk_spec.apk_path,
                                                apk_spec.size_info_prefix)
 
@@ -2044,10 +2010,6 @@ def _ProcessContainerArgs(top_args,
       sub_args.aux_elf_file = None
 
   opts = ContainerArchiveOptions()
-  # An estimate of pak translation compression ratio to make comparisons
-  # between .size files reasonable. Otherwise this can differ every pak
-  # change.
-  opts.pak_compression_ratio = 0.38 if sub_args.minimal_apks_file else 0.33
   opts.relocations_mode = top_args.relocations
   opts.analyze_native = not (sub_args.java_only or sub_args.no_native
                              or top_args.java_only or top_args.no_native)
