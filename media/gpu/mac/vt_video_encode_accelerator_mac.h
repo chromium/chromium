@@ -33,8 +33,6 @@ class MEDIA_GPU_EXPORT VTVideoEncodeAccelerator
   VTVideoEncodeAccelerator(const VTVideoEncodeAccelerator&) = delete;
   VTVideoEncodeAccelerator& operator=(const VTVideoEncodeAccelerator&) = delete;
 
-  ~VTVideoEncodeAccelerator() override;
-
   // VideoEncodeAccelerator implementation.
   VideoEncodeAccelerator::SupportedProfiles GetSupportedProfiles() override;
   bool Initialize(const Config& config, Client* client) override;
@@ -55,6 +53,8 @@ class MEDIA_GPU_EXPORT VTVideoEncodeAccelerator
 
   // Holds output buffers coming from the client ready to be filled.
   struct BitstreamBufferRef;
+
+  ~VTVideoEncodeAccelerator() override;
 
   // Encoding tasks to be run on |encoder_thread_|.
   void EncodeTask(scoped_refptr<VideoFrame> frame, bool force_keyframe);
@@ -129,7 +129,6 @@ class MEDIA_GPU_EXPORT VTVideoEncodeAccelerator
   // Context: https://crbug.com/1195177 https://crbug.com/webrtc/7304
   bool require_low_delay_ = true;
 
-
   // Bitstream buffers ready to be used to return encoded output as a FIFO.
   base::circular_deque<std::unique_ptr<BitstreamBufferRef>>
       bitstream_buffer_queue_;
@@ -138,7 +137,8 @@ class MEDIA_GPU_EXPORT VTVideoEncodeAccelerator
   base::circular_deque<std::unique_ptr<EncodeOutput>> encoder_output_queue_;
 
   // Our original calling task runner for the child thread.
-  const scoped_refptr<base::SingleThreadTaskRunner> client_task_runner_;
+  const scoped_refptr<base::SequencedTaskRunner> client_task_runner_;
+  SEQUENCE_CHECKER(client_sequence_checker_);
 
   // To expose client callbacks from VideoEncodeAccelerator.
   // NOTE: all calls to this object *MUST* be executed on
@@ -146,13 +146,8 @@ class MEDIA_GPU_EXPORT VTVideoEncodeAccelerator
   base::WeakPtr<Client> client_;
   std::unique_ptr<base::WeakPtrFactory<Client>> client_ptr_factory_;
 
-  // Thread checker to enforce that this object is used on a specific thread.
-  // It is pinned on |client_task_runner_| thread.
-  base::ThreadChecker thread_checker_;
-
   // This thread services tasks posted from the VEA API entry points by the
   // GPU child thread and CompressionCallback() posted from device thread.
-  base::Thread encoder_thread_;
   scoped_refptr<base::SingleThreadTaskRunner> encoder_thread_task_runner_;
 
   // Tracking information for ensuring flushes aren't completed until all

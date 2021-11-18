@@ -11,6 +11,7 @@
 #include "base/mac/mac_logging.h"
 #include "base/memory/shared_memory_mapping.h"
 #include "base/memory/unsafe_shared_memory_region.h"
+#include "base/task/thread_pool.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "media/base/bitrate.h"
 #include "media/base/mac/video_frame_mac.h"
@@ -107,24 +108,23 @@ struct VTVideoEncodeAccelerator::BitstreamBufferRef {
 VTVideoEncodeAccelerator::VTVideoEncodeAccelerator()
     : h264_profile_(H264PROFILE_BASELINE),
       bitrate_adjuster_(.5, .95),
-      client_task_runner_(base::ThreadTaskRunnerHandle::Get()),
-      encoder_thread_("VTEncoderThread"),
+      client_task_runner_(base::SequencedTaskRunnerHandle::Get()),
+      encoder_thread_task_runner_(
+          base::ThreadPool::CreateSingleThreadTaskRunner({})),
       encoder_task_weak_factory_(this) {
   encoder_weak_ptr_ = encoder_task_weak_factory_.GetWeakPtr();
 }
 
 VTVideoEncodeAccelerator::~VTVideoEncodeAccelerator() {
   DVLOG(3) << __func__;
-  DCHECK(thread_checker_.CalledOnValidThread());
-
-  DCHECK(!encoder_thread_.IsRunning());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(client_sequence_checker_);
   DCHECK(!encoder_task_weak_factory_.HasWeakPtrs());
 }
 
 VideoEncodeAccelerator::SupportedProfiles
 VTVideoEncodeAccelerator::GetSupportedProfiles() {
   DVLOG(3) << __func__;
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(client_sequence_checker_);
 
   SupportedProfiles profiles;
   const bool rv = CreateCompressionSession(
@@ -150,7 +150,7 @@ VTVideoEncodeAccelerator::GetSupportedProfiles() {
 bool VTVideoEncodeAccelerator::Initialize(const Config& config,
                                           Client* client) {
   DVLOG(3) << __func__ << ": " << config.AsHumanReadableString();
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(client_sequence_checker_);
   DCHECK(client);
 
   // Clients are expected to call Flush() before reinitializing the encoder.
@@ -181,12 +181,6 @@ bool VTVideoEncodeAccelerator::Initialize(const Config& config,
   bitstream_buffer_size_ = config.input_visible_size.GetArea();
   require_low_delay_ = config.require_low_delay;
 
-  if (!encoder_thread_.Start()) {
-    DLOG(ERROR) << "Failed spawning encoder thread.";
-    return false;
-  }
-  encoder_thread_task_runner_ = encoder_thread_.task_runner();
-
   if (!ResetCompressionSession()) {
     DLOG(ERROR) << "Failed creating compression session.";
     return false;
@@ -202,18 +196,18 @@ bool VTVideoEncodeAccelerator::Initialize(const Config& config,
 void VTVideoEncodeAccelerator::Encode(scoped_refptr<VideoFrame> frame,
                                       bool force_keyframe) {
   DVLOG(3) << __func__;
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(client_sequence_checker_);
 
   encoder_thread_task_runner_->PostTask(
       FROM_HERE,
-      base::BindOnce(&VTVideoEncodeAccelerator::EncodeTask,
-                     base::Unretained(this), std::move(frame), force_keyframe));
+      base::BindOnce(&VTVideoEncodeAccelerator::EncodeTask, encoder_weak_ptr_,
+                     std::move(frame), force_keyframe));
 }
 
 void VTVideoEncodeAccelerator::UseOutputBitstreamBuffer(
     BitstreamBuffer buffer) {
   DVLOG(3) << __func__ << ": buffer size=" << buffer.size();
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(client_sequence_checker_);
 
   if (buffer.size() < bitstream_buffer_size_) {
     DLOG(ERROR) << "Output BitstreamBuffer isn't big enough: " << buffer.size()
@@ -236,7 +230,7 @@ void VTVideoEncodeAccelerator::UseOutputBitstreamBuffer(
   encoder_thread_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(&VTVideoEncodeAccelerator::UseOutputBitstreamBufferTask,
-                     base::Unretained(this), std::move(buffer_ref)));
+                     encoder_weak_ptr_, std::move(buffer_ref)));
 }
 
 void VTVideoEncodeAccelerator::RequestEncodingParametersChange(
@@ -244,41 +238,38 @@ void VTVideoEncodeAccelerator::RequestEncodingParametersChange(
     uint32_t framerate) {
   DVLOG(3) << __func__ << ": bitrate=" << bitrate.ToString()
            << ": framerate=" << framerate;
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(client_sequence_checker_);
 
   encoder_thread_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(
           &VTVideoEncodeAccelerator::RequestEncodingParametersChangeTask,
-          base::Unretained(this), bitrate, framerate));
+          encoder_weak_ptr_, bitrate, framerate));
 }
 
 void VTVideoEncodeAccelerator::Destroy() {
   DVLOG(3) << __func__;
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(client_sequence_checker_);
 
   // Cancel all callbacks.
   client_ptr_factory_.reset();
 
-  if (encoder_thread_.IsRunning()) {
-    encoder_thread_task_runner_->PostTask(
-        FROM_HERE, base::BindOnce(&VTVideoEncodeAccelerator::DestroyTask,
-                                  base::Unretained(this)));
-    encoder_thread_.Stop();
-  } else {
-    DestroyTask();
-  }
-
-  delete this;
+  // VT resources need to be cleaned up on |encoder_thread_task_runner_|,
+  // but the object itself is supposed to be deleted on this runner, so when
+  // DestroyTask() is done we schedule deletion of |this|
+  auto delete_self = [](VTVideoEncodeAccelerator* self) { delete self; };
+  encoder_thread_task_runner_->PostTaskAndReply(
+      FROM_HERE,
+      base::BindOnce(&VTVideoEncodeAccelerator::DestroyTask, encoder_weak_ptr_),
+      base::BindOnce(delete_self, base::Unretained(this)));
 }
 
 void VTVideoEncodeAccelerator::Flush(FlushCallback flush_callback) {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(client_sequence_checker_);
 
   encoder_thread_task_runner_->PostTask(
-      FROM_HERE,
-      base::BindOnce(&VTVideoEncodeAccelerator::FlushTask,
-                     base::Unretained(this), std::move(flush_callback)));
+      FROM_HERE, base::BindOnce(&VTVideoEncodeAccelerator::FlushTask,
+                                encoder_weak_ptr_, std::move(flush_callback)));
 }
 
 bool VTVideoEncodeAccelerator::IsFlushSupported() {
@@ -416,9 +407,7 @@ void VTVideoEncodeAccelerator::SetVariableBitrate(const Bitrate& bitrate) {
 }
 
 void VTVideoEncodeAccelerator::DestroyTask() {
-  DCHECK(thread_checker_.CalledOnValidThread() ||
-         (encoder_thread_.IsRunning() &&
-          encoder_thread_task_runner_->BelongsToCurrentThread()));
+  DCHECK(encoder_thread_task_runner_->BelongsToCurrentThread());
 
   // Cancel all encoder thread callbacks.
   encoder_task_weak_factory_.InvalidateWeakPtrs();
@@ -539,7 +528,7 @@ void VTVideoEncodeAccelerator::ReturnBitstreamBuffer(
 }
 
 bool VTVideoEncodeAccelerator::ResetCompressionSession() {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(client_sequence_checker_);
 
   DestroyCompressionSession();
 
@@ -557,7 +546,7 @@ bool VTVideoEncodeAccelerator::ResetCompressionSession() {
 
 bool VTVideoEncodeAccelerator::CreateCompressionSession(
     const gfx::Size& input_size) {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(client_sequence_checker_);
 
   std::vector<CFTypeRef> encoder_keys(
       1, kVTVideoEncoderSpecification_RequireHardwareAcceleratedVideoEncoder);
@@ -592,7 +581,7 @@ bool VTVideoEncodeAccelerator::CreateCompressionSession(
 }
 
 bool VTVideoEncodeAccelerator::ConfigureCompressionSession() {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(client_sequence_checker_);
   DCHECK(compression_session_);
 
   video_toolbox::SessionPropertySetter session_property_setter(
@@ -629,10 +618,6 @@ bool VTVideoEncodeAccelerator::ConfigureCompressionSession() {
 }
 
 void VTVideoEncodeAccelerator::DestroyCompressionSession() {
-  DCHECK(thread_checker_.CalledOnValidThread() ||
-         (encoder_thread_.IsRunning() &&
-          encoder_thread_task_runner_->BelongsToCurrentThread()));
-
   if (compression_session_) {
     VTCompressionSessionInvalidate(compression_session_);
     compression_session_.reset();

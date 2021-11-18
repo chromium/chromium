@@ -198,7 +198,8 @@ class MEDIA_GPU_EXPORT MediaFoundationVideoEncodeAccelerator
   // |main_client_task_runner_|.
   base::WeakPtr<Client> main_client_;
   std::unique_ptr<base::WeakPtrFactory<Client>> main_client_weak_factory_;
-  scoped_refptr<base::SingleThreadTaskRunner> main_client_task_runner_;
+  scoped_refptr<base::SequencedTaskRunner> main_client_task_runner_;
+  SEQUENCE_CHECKER(sequence_checker_);
 
   // This thread services tasks posted from the VEA API entry points by the
   // GPU child thread and CompressionCallback() posted from device thread.
