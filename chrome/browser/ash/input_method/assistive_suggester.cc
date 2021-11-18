@@ -137,6 +137,11 @@ void RecordTextInputStateMetric(AssistiveTextInputState state) {
 void RecordMultiWordTextInputState(PrefService* pref_service,
                                    AssistiveSuggesterSwitch* suggester_switch,
                                    const std::string& engine_id) {
+  if (IsLacrosEnabled()) {
+    RecordTextInputStateMetric(AssistiveTextInputState::kUnsupportedClient);
+    return;
+  }
+
   if (!suggester_switch->IsMultiWordSuggestionAllowed()) {
     RecordTextInputStateMetric(
         AssistiveTextInputState::kFeatureBlockedByDenylist);
@@ -146,11 +151,6 @@ void RecordMultiWordTextInputState(PrefService* pref_service,
   if (!IsMultiWordPrefEnabled(pref_service)) {
     RecordTextInputStateMetric(
         AssistiveTextInputState::kFeatureBlockedByPreference);
-    return;
-  }
-
-  if (IsLacrosEnabled()) {
-    RecordTextInputStateMetric(AssistiveTextInputState::kUnsupportedClient);
     return;
   }
 
