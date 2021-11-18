@@ -3734,7 +3734,8 @@ TEST_F(AuthenticatorImplTest, AllowListWithDuplicateCredentialIds) {
       device::CredentialType::kPublicKey,
       std::vector<uint8_t>(kTestCredentialIdLength, 2),
       {device::FidoTransportProtocol::kUsbHumanInterfaceDevice});
-  // Same ID as `cred_a` and `cred_b` but with different transports.
+  // Same ID as `cred_a` and `cred_b` but with different transports. Transport
+  // hints from descriptors with equal IDs should be merged.
   device::PublicKeyCredentialDescriptor cred_c(
       device::CredentialType::kPublicKey,
       std::vector<uint8_t>(kTestCredentialIdLength, 1),
@@ -3762,19 +3763,12 @@ TEST_F(AuthenticatorImplTest, AllowListWithDuplicateCredentialIds) {
             AuthenticatorStatus::SUCCESS);
   EXPECT_EQ(virtual_device_factory_->mutable_state()->allow_list_history.size(),
             1u);
-  // Transport hints from descriptors with equal IDs should be merged.
   device::PublicKeyCredentialDescriptor cred_a_and_c(
       device::CredentialType::kPublicKey,
-      std::vector<uint8_t>(kTestCredentialIdLength, 1),
-      // The union of the empty transports in `cred_a` plus the non-empty set
-      // from `cred_c` should still be empty, since empty set is interpreted to
-      // mean "any available transport".
-      {});
+      std::vector<uint8_t>(kTestCredentialIdLength, 1));
   device::PublicKeyCredentialDescriptor cred_b_and_d(
       device::CredentialType::kPublicKey,
-      std::vector<uint8_t>(kTestCredentialIdLength, 2),
-      {device::FidoTransportProtocol::kUsbHumanInterfaceDevice,
-       device::FidoTransportProtocol::kBluetoothLowEnergy});
+      std::vector<uint8_t>(kTestCredentialIdLength, 2));
   EXPECT_THAT(
       virtual_device_factory_->mutable_state()->allow_list_history.at(0),
       testing::UnorderedElementsAre(cred_a_and_c, cred_b_and_d));
@@ -3798,7 +3792,8 @@ TEST_F(AuthenticatorImplTest, ExcludeListWithDuplicateCredentialIds) {
       device::CredentialType::kPublicKey,
       std::vector<uint8_t>(kTestCredentialIdLength, 2),
       {device::FidoTransportProtocol::kUsbHumanInterfaceDevice});
-  // Same ID as `cred_a` and `cred_b` but with different transports.
+  // Same ID as `cred_a` and `cred_b` but with different transports. Transport
+  // hints from descriptors with equal IDs should be merged.
   device::PublicKeyCredentialDescriptor cred_c(
       device::CredentialType::kPublicKey,
       std::vector<uint8_t>(kTestCredentialIdLength, 1),
@@ -3824,19 +3819,12 @@ TEST_F(AuthenticatorImplTest, ExcludeListWithDuplicateCredentialIds) {
   EXPECT_EQ(
       virtual_device_factory_->mutable_state()->exclude_list_history.size(),
       1u);
-  // Transport hints from descriptors with equal IDs should be merged.
   device::PublicKeyCredentialDescriptor cred_a_and_c(
       device::CredentialType::kPublicKey,
-      std::vector<uint8_t>(kTestCredentialIdLength, 1),
-      // The union of the empty transports in `cred_a` plus the non-empty set
-      // from `cred_c` should still be empty, since empty set is interpreted to
-      // mean "any available transport".
-      {});
+      std::vector<uint8_t>(kTestCredentialIdLength, 1));
   device::PublicKeyCredentialDescriptor cred_b_and_d(
       device::CredentialType::kPublicKey,
-      std::vector<uint8_t>(kTestCredentialIdLength, 2),
-      {device::FidoTransportProtocol::kUsbHumanInterfaceDevice,
-       device::FidoTransportProtocol::kBluetoothLowEnergy});
+      std::vector<uint8_t>(kTestCredentialIdLength, 2));
   EXPECT_THAT(
       virtual_device_factory_->mutable_state()->exclude_list_history.at(0),
       testing::UnorderedElementsAre(cred_a_and_c, cred_b_and_d));

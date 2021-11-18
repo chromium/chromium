@@ -2,13 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/containers/contains.h"
 #include "components/cbor/reader.h"
 #include "device/fido/ctap_get_assertion_request.h"
 #include "device/fido/ctap_make_credential_request.h"
 #include "device/fido/fido_constants.h"
 #include "device/fido/fido_parsing_utils.h"
 #include "device/fido/fido_test_data.h"
+#include "device/fido/fido_transport_protocol.h"
 #include "device/fido/mock_fido_device.h"
+#include "device/fido/public_key_credential_descriptor.h"
 #include "device/fido/virtual_ctap2_device.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -70,6 +73,16 @@ TEST(CTAPRequestTest, TestConstructGetAssertionRequest) {
   EXPECT_THAT(serialized_data,
               ::testing::ElementsAreArray(
                   test_data::kTestComplexCtapGetAssertionRequest));
+}
+
+// Regression test for https://crbug.com/1270757.
+TEST(CTAPRequestTest, PublicKeyCredentialDescriptorAsCBOR_1270757) {
+  PublicKeyCredentialDescriptor descriptor(
+      CredentialType::kPublicKey, {{1, 2, 3}},
+      {FidoTransportProtocol::kUsbHumanInterfaceDevice});
+  cbor::Value value = AsCBOR(descriptor);
+  const cbor::Value::MapValue& map = value.GetMap();
+  EXPECT_FALSE(base::Contains(map, cbor::Value("transports")));
 }
 
 }  // namespace device
