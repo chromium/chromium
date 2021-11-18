@@ -29,6 +29,13 @@ import("//build/config/rust.gni")
 #     ]
 #     sources = [ "src/lib.rs" ]
 #   }
+#
+# Implementation note: you might assume it makes sense to implement this
+# in terms of rust_target in order to avoid the duplication of logic around
+# features and editions. We don't do that because rust_target actually
+# depends on this template in order to build embedded unit tests
+# (and therefore depending on rust_target here would lead to an infinite
+# import loop).
 
 template("rust_unit_test") {
   if (defined(invoker.crate_root)) {
