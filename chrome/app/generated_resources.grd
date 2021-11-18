@@ -4581,11 +4581,8 @@ are declared in tools/grit/grit_rule.gni.
       </message>
 
       <if expr="chromeos">
-        <message name="IDS_EXTENSION_NOTIFICATION_INSTALLED" desc="Notification message shown in the message center when an application is successfully install.">
-          Successfully installed
-        </message>
-        <message name="IDS_EXTENSION_NOTIFICATION_DISPLAY_SOURCE" desc="Notification display source shown in the message center when an application is successfully installed.">
-          Extensions
+        <message name="IDS_EXTENSION_NOTIFICATION_INSTALLED" desc="Toast message shown when an application is successfully installed.">
+          <ph name="APP">$1<ex>Google Keep</ex></ph> installed
         </message>
       </if>
 

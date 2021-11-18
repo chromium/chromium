@@ -2290,8 +2290,6 @@ static_library("ui") {
       "ash/window_properties.h",
       "browser_commands_chromeos.cc",
       "browser_commands_chromeos.h",
-      "extensions/extension_installed_notification.cc",
-      "extensions/extension_installed_notification.h",
       "settings_window_manager_chromeos.cc",
       "settings_window_manager_chromeos.h",
       "settings_window_manager_observer_chromeos.h",
