@@ -133,8 +133,7 @@ class PortSelector {
   }
 
   static int GetFileFlags() {
-    return base::File::FLAG_CREATE | base::File::FLAG_EXCLUSIVE_WRITE |
-           base::File::FLAG_WRITE;
+    return base::File::FLAG_CREATE | base::File::FLAG_WRITE;
   }
 
   // File exclusively opened on the file-system, to ensure no other fake S3
