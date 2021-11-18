@@ -122,6 +122,29 @@ async function queryShowWithUrlMethods() { // eslint-disable-line no-unused-vars
 }
 
 /**
+ * Queries CanMakePayment, HasEnrolledInstrument, and shows the PaymentRequest.
+ * If called with 'await', this method will be blocked until all of the
+ * promises are resolved.
+ * @param {Array<Object>} methods An array of payment method objects.
+ * @return {Promise<string>} 'success' if the execution is successful;
+ *         otherwise, returns the cause of the failure.
+ */
+ async function queryShowWithMethodsBlocking(methods) { // eslint-disable-line no-unused-vars, max-len
+  try {
+    request = new PaymentRequest(methods, defaultDetails);
+    print(await request.canMakePayment());
+    print(await request.hasEnrolledInstrument());
+    const resp = await request.show();
+    print(JSON.stringify(resp, undefined, 2));
+    await resp.complete('success');
+    return 'success';
+  } catch (error) {
+    print(error.message);
+    return error.message;
+  }
+}
+
+/**
  * Queries CanMakePayment but does not show the PaymentRequest after. This
  * request will be sent with a url-based method and a basic-card methods.
  */
@@ -141,14 +164,18 @@ async function queryNoShowWithUrlMethods() { // eslint-disable-line no-unused-va
  * Queries CanMakePayment but does not show the PaymentRequest after. This
  * request will be sent with url-based methods only.
  * @param {Array<Object>} methods An array of payment method objects.
+ * @return {Promise<string>} 'success' if the execution is successful;
+ *         otherwise, returns the cause of the failure.
  */
 async function queryNoShowWithMethods(methods) { // eslint-disable-line no-unused-vars, max-len
   try {
     request = new PaymentRequest(methods, defaultDetails);
     print(await request.canMakePayment());
     print(await request.hasEnrolledInstrument());
+    return 'success';
   } catch (error) {
     print(error.message);
+    return error.message;
   }
 }
 

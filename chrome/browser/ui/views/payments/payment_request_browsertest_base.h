@@ -109,6 +109,7 @@ class PaymentRequestBrowserTestBase
   // Test will open a browser window to |file_path| (relative to
   // components/test/data/payments).
   void NavigateTo(const std::string& file_path);
+  void NavigateTo(const std::string& hostname, const std::string& file_path);
 
   void SetIncognito();
   void SetInvalidSsl();

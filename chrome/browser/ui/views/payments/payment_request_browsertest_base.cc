@@ -119,11 +119,16 @@ void PaymentRequestBrowserTestBase::SetUpOnMainThread() {
 }
 
 void PaymentRequestBrowserTestBase::NavigateTo(const std::string& file_path) {
+  NavigateTo("a.com", file_path);
+}
+
+void PaymentRequestBrowserTestBase::NavigateTo(const std::string& hostname,
+                                               const std::string& file_path) {
   if (file_path.find("data:") == 0U) {
     ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(file_path)));
   } else {
     ASSERT_TRUE(ui_test_utils::NavigateToURL(
-        browser(), https_server()->GetURL("a.com", file_path)));
+        browser(), https_server()->GetURL(hostname, file_path)));
   }
 }
 
