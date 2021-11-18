@@ -400,6 +400,8 @@ TabGroupEditorBubbleView::TabGroupEditorBubbleView(
         std::make_unique<views::ToggleButton>(
             base::BindRepeating(&TabGroupEditorBubbleView::OnSaveTogglePressed,
                                 base::Unretained(this))));
+    save_group_toggle_->SetAccessibleName(
+        l10n_util::GetStringUTF16(IDS_TAB_GROUP_HEADER_CXMENU_SAVE_GROUP));
 
     bool is_saved =
         tab_strip_model->group_model()->GetTabGroup(group_)->IsSaved();
