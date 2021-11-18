@@ -41,28 +41,38 @@ public class PriceTrackingNotificationBridge {
     private static final long UNITS_TO_MICROS = 1000000L;
     private final long mNativePriceTrackingNotificationBridge;
     private final PriceDropNotifier mNotifier;
+    private final PriceDropNotificationManager mPriceDropNotificationManager;
 
     /**
      * Construct a {@link PriceTrackingNotificationBridge} object from native code.
      * @param nativePriceTrackingNotificationBridge The native JNI object pointer.
+     * @param notifier {@link PriceDropNotifier} used to create the actual notification in tray.
+     * @param notificationManager {@link PriceDropNotificationManager} used to check price drop
+     *         notification channel.
      */
     @VisibleForTesting
-    PriceTrackingNotificationBridge(
-            long nativePriceTrackingNotificationBridge, PriceDropNotifier notifier) {
+    PriceTrackingNotificationBridge(long nativePriceTrackingNotificationBridge,
+            PriceDropNotifier notifier, PriceDropNotificationManager notificationManager) {
         mNativePriceTrackingNotificationBridge = nativePriceTrackingNotificationBridge;
         mNotifier = notifier;
+        mPriceDropNotificationManager = notificationManager;
     }
 
     @CalledByNative
     private static PriceTrackingNotificationBridge create(
             long nativePriceTrackingNotificationBridge) {
         return new PriceTrackingNotificationBridge(nativePriceTrackingNotificationBridge,
-                PriceDropNotifier.create(ContextUtils.getApplicationContext()));
+                PriceDropNotifier.create(ContextUtils.getApplicationContext()),
+                new PriceDropNotificationManager());
     }
 
     @VisibleForTesting
     @CalledByNative
     void showNotification(byte[] payload) {
+        // Price drop notification channel is created after the alert card UI is shown. If that
+        // didn't happen, don't show the notification.
+        if (!mPriceDropNotificationManager.canPostNotification()) return;
+
         ChromeNotification chromeNotification = parseAndValidateChromeNotification(payload);
         if (chromeNotification == null) {
             Log.e(TAG, "Invalid ChromeNotification proto.");

@@ -100,9 +100,9 @@ public class PriceDropNotifierUnitTest {
         private final ImageFetcher mMockImageFetcher;
 
         TestPriceDropNotifier(Context context, ImageFetcher imageFetcher,
-                NotificationWrapperBuilder notificationBuilder,
+                NotificationBuilderFactory notificationBuilderFactory,
                 NotificationManagerProxy notificationManager) {
-            super(context, notificationBuilder, notificationManager);
+            super(context, notificationBuilderFactory, notificationManager);
             mMockImageFetcher = imageFetcher;
         }
 
@@ -117,6 +117,8 @@ public class PriceDropNotifierUnitTest {
 
     @Mock
     private ImageFetcher mImageFetcher;
+    @Mock
+    private PriceDropNotifier.NotificationBuilderFactory mNotificationBuilderFactory;
     @Mock
     private NotificationWrapperBuilder mNotificationBuilder;
     @Mock
@@ -138,8 +140,10 @@ public class PriceDropNotifierUnitTest {
     public void setUp() {
         ShadowLog.stream = System.out;
         mPriceDropNotifier = new TestPriceDropNotifier(ContextUtils.getApplicationContext(),
-                mImageFetcher, mNotificationBuilder, mNotificationManagerProxy);
+                mImageFetcher, mNotificationBuilderFactory, mNotificationManagerProxy);
         ChromeBrowserInitializer.setForTesting(mChromeInitializer);
+        when(mNotificationBuilderFactory.createNotificationBuilder())
+                .thenReturn(mNotificationBuilder);
         when(mNotificationBuilder.buildNotificationWrapper()).thenReturn(mNotificationWrapper);
     }
 
