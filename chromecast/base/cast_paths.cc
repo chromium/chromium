@@ -88,6 +88,9 @@ bool PathProvider(int key, base::FilePath* result) {
     case DIR_BUNDLED_WIDEVINE_CDM: {
       base::FilePath base_dir;
       CHECK(base::PathService::Get(base::DIR_MODULE, &base_dir));
+#if !BUILDFLAG(IS_CAST_DESKTOP_BUILD)
+      base_dir = base_dir.AppendASCII("lib");
+#endif
       *result = base_dir.AppendASCII(kWidevineCdmBaseDirectory);
       return true;
     }
