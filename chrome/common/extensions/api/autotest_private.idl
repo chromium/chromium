@@ -587,6 +587,14 @@ namespace autotestPrivate {
   // getDisplaySmoothness is called.
   callback GetDisplaySmoothnessCallback = void (long smoothness);
 
+  // Options for resetting the holding space.
+  dictionary ResetHoldingSpaceOptions {
+    // Whether to call `ash::holding_space_prefs::MarkTimeOfFirstAdd()` after
+    // reset. Used to show the holding space tray in tests, since it's otherwise
+    // hidden after OOBE.
+    boolean markTimeOfFirstAdd;
+  };
+
   interface Functions {
     // Must be called to allow autotestPrivateAPI events to be fired.
     static void initializeEvents();
@@ -1202,6 +1210,11 @@ namespace autotestPrivate {
     [supportsPromises] static void getDisplaySmoothness(
         optional DOMString displayId,
         GetDisplaySmoothnessCallback callback);
+
+    // Resets the holding space by removing all items and clearing the prefs.
+    [supportsPromises] static void resetHoldingSpace(
+        optional ResetHoldingSpaceOptions options,
+        VoidCallback callback);
   };
 
   interface Events {

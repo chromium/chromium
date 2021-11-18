@@ -2013,6 +2013,42 @@ TEST_F(HoldingSpaceKeyedServiceTest, AddInProgressDownloadItem) {
   EXPECT_TRUE(BitmapsAreEqual(actual_image, expected_image));
 }
 
+TEST_F(HoldingSpaceKeyedServiceTest, RemoveAll) {
+  // Wait for the holding space model to attach.
+  TestingProfile* profile = GetProfile();
+  HoldingSpaceModelAttachedWaiter(profile).Wait();
+
+  // Verify the holding space `model` is empty.
+  HoldingSpaceModel* const model = HoldingSpaceController::Get()->model();
+  ASSERT_EQ(0u, model->items().size());
+
+  // Create a test mount point.
+  std::unique_ptr<ScopedTestMountPoint> mount_point =
+      ScopedTestMountPoint::CreateAndMountDownloads(profile);
+  ASSERT_TRUE(mount_point->IsValid());
+
+  auto* service =
+      HoldingSpaceKeyedServiceFactory::GetInstance()->GetService(profile);
+
+  // Create files on the file system.
+  const base::FilePath download_path = mount_point->CreateFile(
+      /*relative_path=*/base::FilePath("bar"), /*content=*/"bar");
+  const base::FilePath pinned_file_path = mount_point->CreateFile(
+      /*relative_path=*/base::FilePath("foo"), /*content=*/"foo");
+
+  // Add them both to holding space, one in pinned files the other in downloads.
+  service->AddDownload(HoldingSpaceItem::Type::kDownload, download_path);
+  service->AddPinnedFiles(
+      {file_manager::util::GetFileManagerFileSystemContext(profile)
+           ->CrackURLInFirstPartyContext(
+               holding_space_util::ResolveFileSystemUrl(profile,
+                                                        pinned_file_path))});
+
+  ASSERT_EQ(2u, model->items().size());
+  service->RemoveAll();
+  EXPECT_EQ(0u, model->items().size());
+}
+
 // Base class for tests of in-progress downloads integration. Parameterized by
 // whether the holding space in-progress downloads feature is enabled.
 class HoldingSpaceKeyedServiceInProgressDownloadsTest

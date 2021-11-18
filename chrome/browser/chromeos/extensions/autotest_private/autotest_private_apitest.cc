@@ -10,10 +10,13 @@
 #include "ash/components/arc/test/arc_util_test_support.h"
 #include "ash/components/arc/test/connection_holder_util.h"
 #include "ash/components/arc/test/fake_app_instance.h"
+#include "ash/public/cpp/holding_space/holding_space_prefs.h"
 #include "ash/public/cpp/overview_test_api.h"
 #include "ash/public/cpp/test/shell_test_api.h"
+#include "base/json/json_writer.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
@@ -82,13 +85,33 @@ class AutotestPrivateApiTest : public ExtensionApiTest {
         ->set_test_mode(true);
   }
 
+  bool RunAutotestPrivateExtensionTest(const std::string& test_suite) {
+    return RunAutotestPrivateExtensionTest(
+        test_suite,
+        /*suite_args=*/std::vector<base::Value>());
+  }
+
+  bool RunAutotestPrivateExtensionTest(const std::string& test_suite,
+                                       std::vector<base::Value> suite_args) {
+    base::DictionaryValue custom_args;
+    custom_args.SetKey("testSuite", base::Value(test_suite));
+    custom_args.SetKey("args", base::Value(suite_args));
+
+    std::string json;
+    if (!base::JSONWriter::Write(custom_args, &json)) {
+      LOG(ERROR) << "Failed to parse custom args into json.";
+      return false;
+    }
+
+    return RunExtensionTest("autotest_private", {.custom_arg = json.c_str()},
+                            {.load_as_component = true});
+  }
+
   ash::ScopedTestingCrosSettings scoped_testing_cros_settings_;
 };
 
 IN_PROC_BROWSER_TEST_F(AutotestPrivateApiTest, AutotestPrivate) {
-  ASSERT_TRUE(RunExtensionTest("autotest_private", {.custom_arg = "default"},
-                               {.load_as_component = true}))
-      << message_;
+  ASSERT_TRUE(RunAutotestPrivateExtensionTest("default")) << message_;
 }
 
 // Set of tests where ARC is enabled and test apps and packages are registered.
@@ -126,24 +149,66 @@ IN_PROC_BROWSER_TEST_F(AutotestPrivateApiTest, AutotestPrivateArcEnabled) {
       true /* sync */));
   app_instance->SendRefreshPackageList(std::move(packages));
 
-  ASSERT_TRUE(RunExtensionTest("autotest_private", {.custom_arg = "arcEnabled"},
-                               {.load_as_component = true}))
-      << message_;
+  ASSERT_TRUE(RunAutotestPrivateExtensionTest("arcEnabled")) << message_;
 
   arc::SetArcPlayStoreEnabledForProfile(profile(), false);
 }
 
 IN_PROC_BROWSER_TEST_F(AutotestPrivateApiTest, ScrollableShelfAPITest) {
-  ASSERT_TRUE(RunExtensionTest("autotest_private",
-                               {.custom_arg = "scrollableShelf"},
-                               {.load_as_component = true}))
-      << message_;
+  ASSERT_TRUE(RunAutotestPrivateExtensionTest("scrollableShelf")) << message_;
 }
 
 IN_PROC_BROWSER_TEST_F(AutotestPrivateApiTest, ShelfAPITest) {
-  ASSERT_TRUE(RunExtensionTest("autotest_private", {.custom_arg = "shelf"},
-                               {.load_as_component = true}))
+  ASSERT_TRUE(RunAutotestPrivateExtensionTest("shelf")) << message_;
+}
+
+class AutotestPrivateHoldingSpaceApiTest
+    : public AutotestPrivateApiTest,
+      public ::testing::WithParamInterface<bool /* mark_time_of_first_add */> {
+};
+
+INSTANTIATE_TEST_CASE_P(All,
+                        AutotestPrivateHoldingSpaceApiTest,
+                        ::testing::Bool() /* mark_time_of_first_add */);
+
+IN_PROC_BROWSER_TEST_P(AutotestPrivateHoldingSpaceApiTest,
+                       HoldingSpaceAPITest) {
+  auto* prefs = browser()->profile()->GetPrefs();
+
+  ash::holding_space_prefs::SetPreviewsEnabled(prefs, false);
+  ash::holding_space_prefs::MarkTimeOfFirstAdd(prefs);
+  ash::holding_space_prefs::MarkTimeOfFirstAvailability(prefs);
+  ash::holding_space_prefs::MarkTimeOfFirstEntry(prefs);
+  ash::holding_space_prefs::MarkTimeOfFirstFilesAppChipPress(prefs);
+  ash::holding_space_prefs::MarkTimeOfFirstPin(prefs);
+
+  const bool mark_time_of_first_add = GetParam();
+
+  base::DictionaryValue options;
+  options.SetBoolean("markTimeOfFirstAdd", mark_time_of_first_add);
+  std::vector<base::Value> suite_args;
+  suite_args.emplace_back(std::move(options));
+
+  ASSERT_TRUE(
+      RunAutotestPrivateExtensionTest("holdingSpace", std::move(suite_args)))
       << message_;
+
+  absl::optional<base::Time> timeOfFirstAdd =
+      ash::holding_space_prefs::GetTimeOfFirstAdd(prefs);
+  absl::optional<base::Time> timeOfFirstAvailability =
+      ash::holding_space_prefs::GetTimeOfFirstAvailability(prefs);
+
+  ASSERT_TRUE(ash::holding_space_prefs::IsPreviewsEnabled(prefs));
+  ASSERT_EQ(timeOfFirstAdd.has_value(), mark_time_of_first_add);
+  ASSERT_NE(timeOfFirstAvailability, absl::nullopt);
+  ASSERT_EQ(ash::holding_space_prefs::GetTimeOfFirstEntry(prefs),
+            absl::nullopt);
+  ASSERT_EQ(ash::holding_space_prefs::GetTimeOfFirstFilesAppChipPress(prefs),
+            absl::nullopt);
+  ASSERT_EQ(ash::holding_space_prefs::GetTimeOfFirstPin(prefs), absl::nullopt);
+
+  if (timeOfFirstAdd)
+    ASSERT_GT(timeOfFirstAdd, timeOfFirstAvailability);
 }
 
 class AutotestPrivateApiOverviewTest : public AutotestPrivateApiTest {
@@ -178,10 +243,7 @@ class AutotestPrivateApiOverviewTest : public AutotestPrivateApiTest {
 };
 
 IN_PROC_BROWSER_TEST_F(AutotestPrivateApiOverviewTest, Default) {
-  ASSERT_TRUE(RunExtensionTest("autotest_private",
-                               {.custom_arg = "overviewDefault"},
-                               {.load_as_component = true}))
-      << message_;
+  ASSERT_TRUE(RunAutotestPrivateExtensionTest("overviewDefault")) << message_;
 }
 
 IN_PROC_BROWSER_TEST_F(AutotestPrivateApiOverviewTest, Drag) {
@@ -206,10 +268,7 @@ IN_PROC_BROWSER_TEST_F(AutotestPrivateApiOverviewTest, Drag) {
   const gfx::Point end_point(start_point.x() + 50, start_point.y());
   generator.MoveTouch(end_point);
 
-  ASSERT_TRUE(RunExtensionTest("autotest_private",
-                               {.custom_arg = "overviewDrag"},
-                               {.load_as_component = true}))
-      << message_;
+  ASSERT_TRUE(RunAutotestPrivateExtensionTest("overviewDrag")) << message_;
 }
 
 IN_PROC_BROWSER_TEST_F(AutotestPrivateApiOverviewTest, LeftSnapped) {
@@ -234,9 +293,7 @@ IN_PROC_BROWSER_TEST_F(AutotestPrivateApiOverviewTest, LeftSnapped) {
   generator.MoveTouch(end_point);
   generator.ReleaseTouch();
 
-  ASSERT_TRUE(RunExtensionTest("autotest_private",
-                               {.custom_arg = "splitviewLeftSnapped"},
-                               {.load_as_component = true}))
+  ASSERT_TRUE(RunAutotestPrivateExtensionTest("splitviewLeftSnapped"))
       << message_;
 }
 
@@ -274,9 +331,7 @@ class AutotestPrivateWithPolicyApiTest : public AutotestPrivateApiTest {
 
 // GetAllEnterprisePolicies Sanity check.
 IN_PROC_BROWSER_TEST_F(AutotestPrivateWithPolicyApiTest, PolicyAPITest) {
-  ASSERT_TRUE(RunExtensionTest("autotest_private",
-                               {.custom_arg = "enterprisePolicies"},
-                               {.load_as_component = true}))
+  ASSERT_TRUE(RunAutotestPrivateExtensionTest("enterprisePolicies"))
       << message_;
 }
 
@@ -329,9 +384,7 @@ IN_PROC_BROWSER_TEST_F(AutotestPrivateArcPerformanceTracing, Basic) {
       wm::ActivationChangeObserver::ActivationReason::ACTIVATION_CLIENT,
       arc_widget->GetNativeWindow(), arc_widget->GetNativeWindow());
 
-  ASSERT_TRUE(RunExtensionTest("autotest_private",
-                               {.custom_arg = "arcPerformanceTracing"},
-                               {.load_as_component = true}))
+  ASSERT_TRUE(RunAutotestPrivateExtensionTest("arcPerformanceTracing"))
       << message_;
 }
 
@@ -349,10 +402,7 @@ class AutotestPrivateSystemWebAppsTest : public AutotestPrivateApiTest {
 
 // TODO(crbug.com/1201545): Fix flakiness.
 IN_PROC_BROWSER_TEST_F(AutotestPrivateSystemWebAppsTest, SystemWebApps) {
-  ASSERT_TRUE(RunExtensionTest("autotest_private",
-                               {.custom_arg = "systemWebApps"},
-                               {.load_as_component = true}))
-      << message_;
+  ASSERT_TRUE(RunAutotestPrivateExtensionTest("systemWebApps")) << message_;
 }
 
 }  // namespace extensions

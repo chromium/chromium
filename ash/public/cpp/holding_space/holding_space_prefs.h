@@ -23,8 +23,16 @@ namespace holding_space_prefs {
 // Registers holding space profile preferences to `registry`.
 ASH_PUBLIC_EXPORT void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
+// Resets all preferences to their default values.
+ASH_PUBLIC_EXPORT void ResetProfilePrefsForTesting(PrefService* prefs);
+
 // Adds `callback` to `registrar` to be invoked on changes to previews enabled.
 ASH_PUBLIC_EXPORT void AddPreviewsEnabledChangedCallback(
+    PrefChangeRegistrar* registrar,
+    base::RepeatingClosure callback);
+
+// Adds `callback` to `registrar` to be invoked on changes to time of first add.
+ASH_PUBLIC_EXPORT void AddTimeOfFirstAddChangedCallback(
     PrefChangeRegistrar* registrar,
     base::RepeatingClosure callback);
 

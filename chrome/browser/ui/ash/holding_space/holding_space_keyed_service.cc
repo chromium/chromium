@@ -332,6 +332,10 @@ HoldingSpaceKeyedService::UpdateItem(const std::string& id) {
   return holding_space_model_.UpdateItem(id);
 }
 
+void HoldingSpaceKeyedService::RemoveAll() {
+  holding_space_model_.RemoveAll();
+}
+
 void HoldingSpaceKeyedService::CancelItem(const HoldingSpaceItem* item) {
   // Currently it is only possible to cancel download type items.
   if (!HoldingSpaceItem::IsDownload(item->type()) || !downloads_delegate_)

@@ -147,6 +147,9 @@ class HoldingSpaceKeyedService : public crosapi::mojom::HoldingSpaceService,
   std::unique_ptr<HoldingSpaceModel::ScopedItemUpdate> UpdateItem(
       const std::string& id);
 
+  // Removes all holding space items directly from the model.
+  void RemoveAll();
+
   // Attempts to cancel/pause/resume the specified holding space `item`.
   void CancelItem(const HoldingSpaceItem* item);
   void PauseItem(const HoldingSpaceItem* item);

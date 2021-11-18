@@ -30082,6 +30082,7 @@ Called by update_extension_histograms.py.-->
   <int value="1599" label="WEB_AUTHENTICATION_PROXY_DETACH"/>
   <int value="1600" label="FILEMANAGERPRIVATE_CANCELIOTASK"/>
   <int value="1601" label="AUTOTESTPRIVATE_GETDISPLAYSMOOTHNESS"/>
+  <int value="1602" label="AUTOTESTPRIVATE_RESETHOLDINGSPACE"/>
 </enum>
 
 <enum name="ExtensionIconState">

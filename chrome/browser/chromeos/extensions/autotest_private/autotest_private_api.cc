@@ -25,6 +25,8 @@
 #include "ash/public/cpp/autotest_ambient_api.h"
 #include "ash/public/cpp/autotest_desks_api.h"
 #include "ash/public/cpp/autotest_private_api_utils.h"
+#include "ash/public/cpp/holding_space/holding_space_model.h"
+#include "ash/public/cpp/holding_space/holding_space_prefs.h"
 #include "ash/public/cpp/login_screen.h"
 #include "ash/public/cpp/metrics_util.h"
 #include "ash/public/cpp/overview_test_api.h"
@@ -102,6 +104,8 @@
 #include "chrome/browser/ui/app_list/arc/arc_app_list_prefs.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_utils.h"
 #include "chrome/browser/ui/ash/default_pinned_apps.h"
+#include "chrome/browser/ui/ash/holding_space/holding_space_keyed_service.h"
+#include "chrome/browser/ui/ash/holding_space/holding_space_keyed_service_factory.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller_util.h"
 #include "chrome/browser/ui/ash/shelf/shelf_spinner_controller.h"
@@ -139,6 +143,7 @@
 #include "components/app_restore/window_properties.h"
 #include "components/policy/core/browser/policy_conversions.h"
 #include "components/policy/core/common/policy_service.h"
+#include "components/prefs/pref_service.h"
 #include "components/services/app_service/public/cpp/types_util.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "components/user_manager/user.h"
@@ -5265,6 +5270,51 @@ AutotestPrivateGetDisplaySmoothnessFunction::Run() {
   return RespondNow(
       ArgumentList(api::autotest_private::GetDisplaySmoothness::Results::Create(
           smoothness)));
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// AutotestPrivateResetHoldingSpaceFunction
+////////////////////////////////////////////////////////////////////////////////
+
+AutotestPrivateResetHoldingSpaceFunction::
+    AutotestPrivateResetHoldingSpaceFunction() = default;
+
+AutotestPrivateResetHoldingSpaceFunction::
+    ~AutotestPrivateResetHoldingSpaceFunction() = default;
+
+ExtensionFunction::ResponseAction
+AutotestPrivateResetHoldingSpaceFunction::Run() {
+  auto params(api::autotest_private::ResetHoldingSpace::Params::Create(args()));
+  EXTENSION_FUNCTION_VALIDATE(params);
+
+  Profile* profile = Profile::FromBrowserContext(browser_context());
+
+  ash::HoldingSpaceKeyedService* service =
+      ash::HoldingSpaceKeyedServiceFactory::GetInstance()->GetService(profile);
+
+  if (service == nullptr)
+    return RespondNow(Error("Failed to get `HoldingSpaceKeyedService`."));
+
+  service->RemoveAll();
+
+  PrefService* prefs = profile->GetPrefs();
+  ash::holding_space_prefs::ResetProfilePrefsForTesting(prefs);
+
+  if (!ash::holding_space_prefs::MarkTimeOfFirstAvailability(prefs)) {
+    return RespondNow(
+        Error("Failed to call `MarkTimeOfFirstAvailability()` after clearing "
+              "prefs."));
+  }
+
+  if (!params->options || !params->options->mark_time_of_first_add)
+    return RespondNow(NoArguments());
+
+  if (!ash::holding_space_prefs::MarkTimeOfFirstAdd(prefs)) {
+    return RespondNow(
+        Error("Failed to call `MarkTimeOfFirstAdd()` after clearing prefs."));
+  }
+
+  return RespondNow(NoArguments());
 }
 
 ///////////////////////////////////////////////////////////////////////////////

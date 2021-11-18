@@ -641,12 +641,20 @@ void HoldingSpaceTray::ObservePrefService(PrefService* prefs) {
   pref_change_registrar_ = std::make_unique<PrefChangeRegistrar>();
   pref_change_registrar_->Init(prefs);
 
-  // NOTE: The callback being bound is scoped to `pref_change_registrar_` which
-  // is owned by `this` so it is safe to bind with an unretained raw pointer.
+  // NOTE: The binding of these callbacks is scoped to `pref_change_registrar_`
+  // which is owned by `this` so it is safe to bind with an unretained raw
+  // pointer.
   holding_space_prefs::AddPreviewsEnabledChangedCallback(
       pref_change_registrar_.get(),
       base::BindRepeating(&HoldingSpaceTray::UpdatePreviewsState,
                           base::Unretained(this)));
+  holding_space_prefs::AddTimeOfFirstAddChangedCallback(
+      pref_change_registrar_.get(), base::BindRepeating(
+                                        [](HoldingSpaceTray* tray) {
+                                          tray->SetShouldAnimate(true);
+                                          tray->UpdateVisibility();
+                                        },
+                                        base::Unretained(this)));
 }
 
 void HoldingSpaceTray::UpdatePreviewsState() {

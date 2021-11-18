@@ -1431,6 +1431,17 @@ class AutotestPrivateGetDisplaySmoothnessFunction : public ExtensionFunction {
   ResponseAction Run() override;
 };
 
+class AutotestPrivateResetHoldingSpaceFunction : public ExtensionFunction {
+ public:
+  AutotestPrivateResetHoldingSpaceFunction();
+  DECLARE_EXTENSION_FUNCTION("autotestPrivate.resetHoldingSpace",
+                             AUTOTESTPRIVATE_RESETHOLDINGSPACE)
+
+ private:
+  ~AutotestPrivateResetHoldingSpaceFunction() override;
+  ResponseAction Run() override;
+};
+
 template <>
 KeyedService*
 BrowserContextKeyedAPIFactory<AutotestPrivateAPI>::BuildServiceInstanceFor(
