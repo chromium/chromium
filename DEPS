@@ -1457,8 +1457,8 @@ deps = {
   'src/third_party/qemu-linux-x64': {
       'packages': [
           {
-              'package': 'fuchsia/qemu/linux-amd64',
-              'version': '9cc486c5b18a0be515c39a280ca9a309c54cf994'
+              'package': 'fuchsia/third_party/qemu/linux-amd64',
+              'version': 'FFZaD9tecL-z0lq2XP_7UqiAaMgRGwXTyvcmkv7XCQcC'
           },
       ],
       'condition': 'host_os == "linux" and checkout_fuchsia',
@@ -1468,8 +1468,8 @@ deps = {
   'src/third_party/qemu-mac-x64': {
       'packages': [
           {
-              'package': 'fuchsia/qemu/mac-amd64',
-              'version': '2d3358ae9a569b2d4a474f498b32b202a152134f'
+              'package': 'fuchsia/third_party/qemu/mac-amd64',
+              'version': '79L6B9YhuL7uIg_CxwlQcZqLOixVtS2Cctn7dmVg0q4C'
           },
       ],
       'condition': 'host_os == "mac" and checkout_fuchsia',
