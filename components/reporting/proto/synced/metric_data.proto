@@ -99,6 +99,22 @@ message InfoData {
   optional CpuInfo cpu_info = 1;
 }
 
+// Audio telemetry data recorded intermittently
+message AudioTelemetry {
+  // Is active output device mute or not.
+  optional bool output_mute = 1;
+  // Is active input device mute or not.
+  optional bool input_mute = 2;
+  // Active output device's volume in [0, 100].
+  optional int32 output_volume = 3;
+  // Active output device's name.
+  optional string output_device_name = 4;
+  // Active input device's gain in [0, 100].
+  optional int32 input_gain = 5;
+  // Active input device's name.
+  optional string input_device_name = 6;
+}
+
 // Data that can change over time, collected and reported every specific period
 // of time or when an event occur.
 message TelemetryData {
@@ -106,11 +122,14 @@ message TelemetryData {
 
   // Networks telemetry data.
   optional NetworksTelemetry networks_telemetry = 1;
+  // Audio telemetry data.
+  optional AudioTelemetry audio_telemetry = 2;
 }
 
 enum MetricEventType {
   EVENT_TYPE_UNSPECIFIED = 0;
   NETWORK_HTTPS_LATENCY_CHANGE = 1;
+  AUDIO_SEVERE_UNDERRUN = 2;
 }
 
 // Indicates one of the following conditions occurred on the device, data
