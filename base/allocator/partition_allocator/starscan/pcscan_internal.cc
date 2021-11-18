@@ -51,6 +51,16 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 
+// TODO(bikineev): Temporarily disable inlining in *Scan to get clearer
+// stacktraces.
+#define PA_STARSCAN_NOINLINE_SCAN_FUNCTIONS
+
+#if defined(PA_STARSCAN_NOINLINE_SCAN_FUNCTIONS)
+#define PA_SCAN_INLINE NOINLINE
+#else
+#define PA_SCAN_INLINE ALWAYS_INLINE
+#endif
+
 namespace base {
 namespace internal {
 
@@ -181,7 +191,7 @@ struct GetSlotStartResult final {
 //
 // |maybe_inner_ptr| must be within a normal-bucket super page and can also
 // point to guard pages or slot-span metadata.
-ALWAYS_INLINE GetSlotStartResult
+PA_SCAN_INLINE GetSlotStartResult
 GetSlotStartInSuperPage(uintptr_t maybe_inner_ptr) {
   char* maybe_inner_ptr_as_char_ptr = reinterpret_cast<char*>(maybe_inner_ptr);
   PA_SCAN_DCHECK(IsManagedByNormalBuckets(maybe_inner_ptr_as_char_ptr));
@@ -536,12 +546,12 @@ class PCScanTask final : public base::RefCountedThreadSafe<PCScanTask>,
   friend class base::RefCountedThreadSafe<PCScanTask>;
   ~PCScanTask() = default;
 
-  ALWAYS_INLINE AllocationStateMap* TryFindScannerBitmapForPointer(
+  PA_SCAN_INLINE AllocationStateMap* TryFindScannerBitmapForPointer(
       uintptr_t maybe_ptr) const;
 
   // Lookup and marking functions. Return size of the object if marked or zero
   // otherwise.
-  ALWAYS_INLINE size_t TryMarkObjectInNormalBuckets(uintptr_t maybe_ptr) const;
+  PA_SCAN_INLINE size_t TryMarkObjectInNormalBuckets(uintptr_t maybe_ptr) const;
 
   // Scans stack, only called from safepoints.
   void ScanStack();
@@ -588,7 +598,7 @@ class PCScanTask final : public base::RefCountedThreadSafe<PCScanTask>,
   PCScan& pcscan_;
 };
 
-ALWAYS_INLINE AllocationStateMap* PCScanTask::TryFindScannerBitmapForPointer(
+PA_SCAN_INLINE AllocationStateMap* PCScanTask::TryFindScannerBitmapForPointer(
     uintptr_t maybe_ptr) const {
   PA_SCAN_DCHECK(
       IsManagedByPartitionAllocRegularPool(reinterpret_cast<void*>(maybe_ptr)));
@@ -632,7 +642,7 @@ ALWAYS_INLINE AllocationStateMap* PCScanTask::TryFindScannerBitmapForPointer(
 // TryMarkObjectInNormalBuckets() marks it again in the bitmap and clears
 // from the scanner bitmap. This way, when scanning is done, all uncleared
 // entries in the scanner bitmap correspond to unreachable objects.
-ALWAYS_INLINE size_t
+PA_SCAN_INLINE size_t
 PCScanTask::TryMarkObjectInNormalBuckets(uintptr_t maybe_ptr) const {
   // Check if |maybe_ptr| points somewhere to the heap.
   auto* state_map = TryFindScannerBitmapForPointer(maybe_ptr);
@@ -760,7 +770,7 @@ class PCScanScanLoop final : public ScanLoop<PCScanScanLoop> {
 #endif
   }
 
-  ALWAYS_INLINE void CheckPointer(uintptr_t maybe_ptr) {
+  PA_SCAN_INLINE void CheckPointer(uintptr_t maybe_ptr) {
     quarantine_size_ +=
         task_.TryMarkObjectInNormalBuckets(memory::UnmaskPtr(maybe_ptr));
   }
