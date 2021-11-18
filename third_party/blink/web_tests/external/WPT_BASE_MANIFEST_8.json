@@ -214623,6 +214623,19 @@
         {}
        ]
       ],
+      "transform-dynamic-change.html": [
+       "964a7d31f69397ecc5a06cac4cf0e4efd890ebeb",
+       [
+        null,
+        [
+         [
+          "/svg/text/reftests/transform-dynamic-change-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
       "tspan-opacity-mixed-direction.svg": [
        "fa153250e79ab6a60bf167c659b4e2d777609a30",
        [
@@ -303991,6 +304004,10 @@
       ],
       "textpath-side-001-ref.svg": [
        "0e2008c328aeb06071efa6086786a273c6cafe7d",
+       []
+      ],
+      "transform-dynamic-change-ref.html": [
+       "c7e238d2bf957491c5a1f041db0b0c19bd8269bd",
        []
       ],
       "tspan-opacity-mixed-direction-ref.svg": [
@@ -477950,6 +477967,13 @@
       }
      ]
     ],
+    "prompt-in-detached-iframe.html": [
+     "501471755ab8130e0799a9c2c82960eb096ae5a3",
+     [
+      null,
+      {}
+     ]
+    ],
     "watch-availability-initial-callback.html": [
      "352321b06ae66c5a3e31c1d3d7cf40a5e3b4c460",
      [
@@ -500049,7 +500073,7 @@
      ]
     ],
     "request-video-frame-callback-dom.html": [
-     "0277d7297883c4cd4f472b08c4399806280fe8eb",
+     "c1804b4edd0c986aa161dfc13179983c04ace404",
      [
       null,
       {}
@@ -500063,14 +500087,14 @@
      ]
     ],
     "request-video-frame-callback-parallel.html": [
-     "14c5de1adf55ba0016ab9985776c568e49f5956d",
+     "682fd0ac8f6a22006e015c2f9b621da84fe53e04",
      [
       null,
       {}
      ]
     ],
     "request-video-frame-callback-repeating.html": [
-     "e637a0872cb0d0c151e0a80a6a569449fd222a1b",
+     "38e4abafd4afe963232ec7427afa5cbd57bc734d",
      [
       null,
       {}
@@ -500084,7 +500108,7 @@
      ]
     ],
     "request-video-frame-callback.html": [
-     "a4404143fa408ebbb8f49cc3180e065d200ffa4a",
+     "256216e8fc098482baf267d95fc5f2ceca430c53",
      [
       null,
       {}
