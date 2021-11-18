@@ -138,6 +138,8 @@ class CrostiniHandler : public ::settings::SettingsPageUIHandler,
   void HandleDeleteContainer(base::Value::ConstListView args);
   // Handle a request for the running info of all known containers
   void HandleRequestContainerInfo(base::Value::ConstListView args);
+  // Handle a request to set the badge color for a container
+  void HandleSetContainerBadgeColor(base::Value::ConstListView args);
   // Handle a request to stop a running lxd container
   void HandleStopContainer(base::Value::ConstListView args);
 

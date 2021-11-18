@@ -36,6 +36,7 @@
       'createContainer',
       'deleteContainer',
       'requestContainerInfo',
+      'setContainerBadgeColor',
       'stopContainer',
     ]);
     this.crostiniMicSharingEnabled = false;
@@ -225,6 +226,11 @@
   requestContainerInfo() {
     this.methodCalled('requestContainerInfo');
     cr.webUIListenerCallback('crostini-container-info', this.containerInfo);
+  }
+
+  /** @override */
+  setContainerBadgeColor(containerId, badge_color) {
+    this.methodCalled('setContainerBadgeColor');
   }
 
   /** @override */

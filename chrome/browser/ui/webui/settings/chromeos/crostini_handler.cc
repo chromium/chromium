@@ -164,6 +164,10 @@ void CrostiniHandler::RegisterMessages() {
         base::BindRepeating(&CrostiniHandler::HandleRequestContainerInfo,
                             handler_weak_ptr_factory_.GetWeakPtr()));
     web_ui()->RegisterMessageCallback(
+        "setContainerBadgeColor",
+        base::BindRepeating(&CrostiniHandler::HandleSetContainerBadgeColor,
+                            handler_weak_ptr_factory_.GetWeakPtr()));
+    web_ui()->RegisterMessageCallback(
         "stopContainer",
         base::BindRepeating(&CrostiniHandler::HandleStopContainer,
                             handler_weak_ptr_factory_.GetWeakPtr()));
@@ -771,9 +775,28 @@ void CrostiniHandler::HandleRequestContainerInfo(
     if (info) {
       container_info_value.SetStringKey(kIpv4Key, info->ipv4_address);
     }
+
+    SkColor badge_color =
+        crostini::GetContainerBadgeColor(profile_, container_id);
+    std::string badge_color_str =
+        base::StringPrintf("#%02x%02x%02x", SkColorGetR(badge_color),
+                           SkColorGetG(badge_color), SkColorGetB(badge_color));
+    container_info_value.SetStringKey("badge_color", badge_color_str);
+
     container_info_list.Append(std::move(container_info_value));
   }
+
   FireWebUIListener("crostini-container-info", container_info_list);
+}
+
+void CrostiniHandler::HandleSetContainerBadgeColor(
+    base::Value::ConstListView args) {
+  CHECK_EQ(2U, args.size());
+
+  crostini::ContainerId container_id(args[0]);
+  SkColor badge_color(args[1].FindDoubleKey("value").value());
+
+  crostini::SetContainerBadgeColor(profile_, container_id, badge_color);
 }
 
 void CrostiniHandler::HandleStopContainer(base::Value::ConstListView args) {

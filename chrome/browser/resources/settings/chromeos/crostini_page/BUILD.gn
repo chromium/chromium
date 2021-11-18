@@ -58,6 +58,7 @@ js_library("crostini_arc_adb_confirmation_dialog") {
 
 js_library("crostini_browser_proxy") {
   deps = [
+    "//skia/public/mojom:mojom_js_library_for_compile",
     "//ui/webui/resources/cr_elements/cr_input:cr_input.m",
     "//ui/webui/resources/js:cr.m",
     "//ui/webui/resources/js:load_time_data.m",

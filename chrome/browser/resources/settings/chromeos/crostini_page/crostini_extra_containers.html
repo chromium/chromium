@@ -46,6 +46,10 @@
         aria-hidden="true">
       $i18n{crostiniExtraContainersContainerIpLabel}
     </div>
+    <div id="color"
+        class="column-title vm-column"
+        aria-hidden="true">
+    </div>
   </div>
   <template is="dom-repeat" items="[[allContainers_]]">
     <div class="list-item">
@@ -57,6 +61,13 @@
       </div>
        <div class="vm-column" aria-hidden="true">
         [[item.ipv4]]
+      </div>
+      <div class="vm-column"
+          aria-hidden="true">
+        <input type="color"
+            data-container-id="[[item.id]]"
+            value="[[item.badge_color]]"
+            on-change="onContainerColorChange_">
       </div>
       <cr-icon-button id="showContainerMenu[[index]]"
           class="icon-more-vert"
