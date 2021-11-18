@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Tests hit testing in Layers3DView\n`);
-  await TestRunner.loadModule('panels/layers'); await TestRunner.loadTestModule('layers_test_runner');
+  await TestRunner.loadTestModule('layers_test_runner');
 
   await TestRunner.loadHTML(`
       <div id="a" style="will-change: transform; transform:translateY(60px) rotateZ(45deg);width:300px;height:300px;margin-left:100px; border: 1px solid black;">

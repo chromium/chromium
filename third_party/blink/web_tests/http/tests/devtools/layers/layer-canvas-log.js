@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Tests layer command log\n`);
-  await TestRunner.loadModule('panels/layers'); await TestRunner.loadTestModule('layers_test_runner');
+  await TestRunner.loadTestModule('layers_test_runner');
   await TestRunner.loadHTML(`
       <div id="a" style="will-change: transform; background-color:blue; width:100px; height:100px;">
           <div style="width:50px; height:50px; background-color:red;"></div>
