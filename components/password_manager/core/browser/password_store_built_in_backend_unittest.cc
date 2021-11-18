@@ -291,9 +291,12 @@ TEST_F(PasswordStoreBuiltInBackendTest, OperationsOnABadDatabaseSilentlyFail) {
   RunUntilIdle();
   testing::Mock::VerifyAndClearExpectations(&tester);
 
-  EXPECT_CALL(tester, LoginsReceivedConstRef(IsEmpty()));
-  bad_backend->GetAllLoginsAsync(handle_logins);
+  base::MockCallback<LoginsOrErrorReply> mock_reply;
+  std::vector<std::unique_ptr<PasswordForm>> expected_logins;
+  EXPECT_CALL(mock_reply, Run(LoginsResultsOrErrorAre(&expected_logins)));
+  bad_backend->GetAllLoginsAsync(mock_reply.Get());
   RunUntilIdle();
+
   testing::Mock::VerifyAndClearExpectations(&tester);
 
   EXPECT_CALL(tester, HandleChanges(IsEmpty()));
@@ -336,9 +339,8 @@ TEST_F(PasswordStoreBuiltInBackendTest, GetAllLoginsAsync) {
   std::vector<std::unique_ptr<PasswordForm>> expected_results;
   for (const auto& credential : all_credentials)
     expected_results.push_back(std::make_unique<PasswordForm>(*credential));
-  base::MockCallback<LoginsReply> mock_reply;
-  EXPECT_CALL(mock_reply,
-              Run(UnorderedPasswordFormElementsAre(&expected_results)));
+  base::MockCallback<LoginsOrErrorReply> mock_reply;
+  EXPECT_CALL(mock_reply, Run(LoginsResultsOrErrorAre(&expected_results)));
   backend->GetAllLoginsAsync(mock_reply.Get());
 
   RunUntilIdle();

@@ -92,23 +92,35 @@ class GetAllLoginsAsyncMetricsRecorder
     : public base::RefCounted<GetAllLoginsAsyncMetricsRecorder> {
  public:
   // Returns the unchanged |result| so it can be passed to the main handler.
-  LoginsResult RecordMainResult(LoginsResult result) {
+  LoginsResultOrError RecordMainResult(LoginsResultOrError result) {
+    if (absl::holds_alternative<PasswordStoreBackendError>(result)) {
+      return result;
+    }
+
+    LoginsResult logins = std::move(absl::get<LoginsResult>(result));
+
     if (!first_result_) {
       first_result_ = absl::make_optional<LoginsResult>();
-      first_result_->reserve(result.size());
-      for (const auto& login : result)
+      first_result_->reserve(logins.size());
+      for (const auto& login : logins)
         first_result_->push_back(std::make_unique<PasswordForm>(*login));
     } else {
-      RecordMetrics(/*main_result=*/result, /*shadow_result=*/*first_result_);
+      RecordMetrics(/*main_result=*/logins, /*shadow_result=*/*first_result_);
     }
-    return result;
+
+    return logins;
   }
 
-  void RecordShadowResult(LoginsResult result) {
+  void RecordShadowResult(LoginsResultOrError result) {
+    if (absl::holds_alternative<PasswordStoreBackendError>(result)) {
+      return;
+    }
+    LoginsResult logins = std::move(absl::get<LoginsResult>(result));
+
     if (!first_result_)
-      first_result_ = std::move(result);
+      first_result_ = std::move(logins);
     else
-      RecordMetrics(/*main_result=*/*first_result_, /*shadow_result=*/result);
+      RecordMetrics(/*main_result=*/*first_result_, /*shadow_result=*/logins);
   }
 
  private:
@@ -163,7 +175,7 @@ void PasswordStoreProxyBackend::Shutdown(base::OnceClosure shutdown_completed) {
   shadow_backend_->Shutdown(pending_shutdown_calls);
 }
 
-void PasswordStoreProxyBackend::GetAllLoginsAsync(LoginsReply callback) {
+void PasswordStoreProxyBackend::GetAllLoginsAsync(LoginsOrErrorReply callback) {
   scoped_refptr<GetAllLoginsAsyncMetricsRecorder> handler =
       base::MakeRefCounted<GetAllLoginsAsyncMetricsRecorder>();
   main_backend_->GetAllLoginsAsync(

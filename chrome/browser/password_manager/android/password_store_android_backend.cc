@@ -47,7 +47,7 @@ std::vector<std::unique_ptr<PasswordForm>> WrapPasswordsIntoPointers(
 PasswordStoreAndroidBackend::JobReturnHandler::JobReturnHandler() = default;
 
 PasswordStoreAndroidBackend::JobReturnHandler::JobReturnHandler(
-    LoginsReply callback,
+    LoginsOrErrorReply callback,
     MetricInfix metric_infix)
     : success_callback_(std::move(callback)),
       metric_infix_(std::move(metric_infix)) {}
@@ -180,7 +180,8 @@ void PasswordStoreAndroidBackend::Shutdown(
   std::move(shutdown_completed).Run();
 }
 
-void PasswordStoreAndroidBackend::GetAllLoginsAsync(LoginsReply callback) {
+void PasswordStoreAndroidBackend::GetAllLoginsAsync(
+    LoginsOrErrorReply callback) {
   JobId job_id = bridge_->GetAllLogins();
   QueueNewJob(job_id, JobReturnHandler(
                           std::move(callback),
@@ -279,10 +280,10 @@ void PasswordStoreAndroidBackend::OnCompleteWithLogins(
   DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
   JobReturnHandler reply = GetAndEraseJob(job_id);
   reply.RecordMetrics(JobReturnHandler::WasSuccess(true));
-  DCHECK(reply.Holds<LoginsReply>());
+  DCHECK(reply.Holds<LoginsOrErrorReply>());
   main_task_runner_->PostTask(
       FROM_HERE,
-      base::BindOnce(std::move(reply).Get<LoginsReply>(),
+      base::BindOnce(std::move(reply).Get<LoginsOrErrorReply>(),
                      WrapPasswordsIntoPointers(std::move(passwords))));
 }
 
@@ -305,6 +306,12 @@ void PasswordStoreAndroidBackend::OnError(JobId job_id,
   DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
   JobReturnHandler reply = GetAndEraseJob(job_id);
   reply.RecordMetrics(JobReturnHandler::WasSuccess(false));
+  if (reply.Holds<LoginsOrErrorReply>()) {
+    main_task_runner_->PostTask(
+        FROM_HERE, base::BindOnce(std::move(reply).Get<LoginsOrErrorReply>(),
+                                  PasswordStoreBackendError::kUnspecified));
+  }
+
   base::UmaHistogramEnumeration(
       "PasswordManager.PasswordStoreAndroidBackend.ErrorCode", error.type);
   if (error.type == AndroidBackendErrorType::kExternalError) {

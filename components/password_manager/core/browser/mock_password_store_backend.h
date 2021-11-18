@@ -36,7 +36,10 @@ class MockPasswordStoreBackend : public PasswordStoreBackend {
               (override));
   MOCK_METHOD(void, Shutdown, (base::OnceClosure), (override));
 
-  MOCK_METHOD(void, GetAllLoginsAsync, (LoginsReply callback), (override));
+  MOCK_METHOD(void,
+              GetAllLoginsAsync,
+              (LoginsOrErrorReply callback),
+              (override));
   MOCK_METHOD(void,
               GetAutofillableLoginsAsync,
               (LoginsReply callback),

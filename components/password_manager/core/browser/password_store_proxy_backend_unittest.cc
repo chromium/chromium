@@ -132,20 +132,19 @@ TEST_F(PasswordStoreProxyBackendTest, CallCompletionWithFailureForAnyError) {
 }
 
 TEST_F(PasswordStoreProxyBackendTest, UseMainBackendToGetAllLoginsAsync) {
-  base::MockCallback<LoginsReply> mock_reply;
+  base::MockCallback<LoginsOrErrorReply> mock_reply;
   std::vector<std::unique_ptr<PasswordForm>> expected_logins =
       CreateTestLogins();
-  EXPECT_CALL(mock_reply,
-              Run(UnorderedPasswordFormElementsAre(&expected_logins)));
+  EXPECT_CALL(mock_reply, Run(LoginsResultsOrErrorAre(&expected_logins)));
   EXPECT_CALL(main_backend(), GetAllLoginsAsync)
-      .WillOnce(WithArg<0>(Invoke([](LoginsReply reply) -> void {
+      .WillOnce(WithArg<0>(Invoke([](LoginsOrErrorReply reply) -> void {
         std::move(reply).Run(CreateTestLogins());
       })));
   EXPECT_CALL(main_backend(), GetSyncStatus)
       .WillOnce(WithArg<0>(
           Invoke([](auto callback) { std::move(callback).Run(true); })));
   EXPECT_CALL(shadow_backend(), GetAllLoginsAsync)
-      .WillOnce(WithArg<0>(Invoke([](LoginsReply reply) -> void {
+      .WillOnce(WithArg<0>(Invoke([](LoginsOrErrorReply reply) -> void {
         std::move(reply).Run(CreateTestLogins());
       })));
   proxy_backend().GetAllLoginsAsync(mock_reply.Get());
@@ -289,13 +288,12 @@ TEST_F(PasswordStoreProxyBackendTest,
 
 TEST_F(PasswordStoreProxyBackendTest, NoShadowGetAllLoginsWhenSyncDisabled) {
   base::HistogramTester histogram_tester;
-  base::MockCallback<LoginsReply> mock_reply;
+  base::MockCallback<LoginsOrErrorReply> mock_reply;
   std::vector<std::unique_ptr<PasswordForm>> expected_logins =
       CreateTestLogins();
-  EXPECT_CALL(mock_reply,
-              Run(UnorderedPasswordFormElementsAre(&expected_logins)));
+  EXPECT_CALL(mock_reply, Run(LoginsResultsOrErrorAre(&expected_logins)));
   EXPECT_CALL(main_backend(), GetAllLoginsAsync)
-      .WillOnce(WithArg<0>(Invoke([](LoginsReply reply) -> void {
+      .WillOnce(WithArg<0>(Invoke([](LoginsOrErrorReply reply) -> void {
         std::move(reply).Run(CreateTestLogins());
       })));
   EXPECT_CALL(main_backend(), GetSyncStatus)
@@ -363,18 +361,18 @@ TEST_P(PasswordStoreProxyBackendTestWithLoginsParams,
        GetAllLoginsAsyncMetrics) {
   const LoginsMetricsParam& p = GetParam();
   base::HistogramTester histogram_tester;
-  base::MockCallback<LoginsReply> mock_reply;
+  base::MockCallback<LoginsOrErrorReply> mock_reply;
   {
     EXPECT_CALL(mock_reply, Run(_));
     EXPECT_CALL(main_backend(), GetAllLoginsAsync)
-        .WillOnce(WithArg<0>(Invoke([&p](LoginsReply reply) -> void {
+        .WillOnce(WithArg<0>(Invoke([&p](LoginsOrErrorReply reply) -> void {
           std::move(reply).Run(p.GetMainLogins());
         })));
     EXPECT_CALL(main_backend(), GetSyncStatus)
         .WillOnce(WithArg<0>(
             Invoke([](auto callback) { std::move(callback).Run(true); })));
     EXPECT_CALL(shadow_backend(), GetAllLoginsAsync)
-        .WillOnce(WithArg<0>(Invoke([&p](LoginsReply reply) -> void {
+        .WillOnce(WithArg<0>(Invoke([&p](LoginsOrErrorReply reply) -> void {
           std::move(reply).Run(p.GetShadowLogins());
         })));
     proxy_backend().GetAllLoginsAsync(mock_reply.Get());

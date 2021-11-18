@@ -28,13 +28,32 @@ IgnoreChangeListAndRunCallback(base::OnceClosure callback) {
       std::move(callback));
 }
 
+struct IsLess {
+  bool operator()(const PasswordForm* lhs, const PasswordForm* rhs) const {
+    return PasswordFormUniqueKey(*lhs) < PasswordFormUniqueKey(*rhs);
+  }
+};
+
 }  // namespace
 
 struct BuiltInBackendToAndroidBackendMigrator::BackendAndLoginsResults {
   PasswordStoreBackend* backend;
-  LoginsResult logins_result;
+  LoginsResultOrError logins_result;
 
-  BackendAndLoginsResults(PasswordStoreBackend* backend, LoginsResult logins)
+  bool HasError() {
+    return absl::holds_alternative<PasswordStoreBackendError>(logins_result);
+  }
+
+  base::flat_set<const PasswordForm*, IsLess> GetLogins() {
+    DCHECK(!HasError());
+
+    return base::MakeFlatSet<const PasswordForm*, IsLess>(
+        absl::get<LoginsResult>(logins_result), {},
+        &std::unique_ptr<PasswordForm>::get);
+  }
+
+  BackendAndLoginsResults(PasswordStoreBackend* backend,
+                          LoginsResultOrError logins)
       : backend(backend), logins_result(std::move(logins)) {}
   BackendAndLoginsResults(BackendAndLoginsResults&&) = default;
   BackendAndLoginsResults& operator=(BackendAndLoginsResults&&) = default;
@@ -80,8 +99,8 @@ void BuiltInBackendToAndroidBackendMigrator::PrepareForMigration() {
                         weak_ptr_factory_.GetWeakPtr()));
 
   auto bind_backend_to_logins = [](PasswordStoreBackend* backend,
-                                   LoginsResult logins) {
-    return BackendAndLoginsResults(backend, std::move(logins));
+                                   LoginsResultOrError result) {
+    return BackendAndLoginsResults(backend, std::move(result));
   };
 
   built_in_backend_->GetAllLoginsAsync(
@@ -97,24 +116,18 @@ void BuiltInBackendToAndroidBackendMigrator::
     StartBuiltInToAndroidBackendMigration(
         std::vector<BackendAndLoginsResults> results) {
   DCHECK_EQ(2u, results.size());
+  // TODO:(crbug.com/1252443) Record that migration was canceled due to an
+  // error.
+  if (results[0].HasError() || results[1].HasError())
+    return;
 
-  struct IsLess {
-    bool operator()(const PasswordForm* lhs, const PasswordForm* rhs) const {
-      return PasswordFormUniqueKey(*lhs) < PasswordFormUniqueKey(*rhs);
-    }
-  };
+  auto built_in_backend_logins = (results[0].backend == built_in_backend_)
+                                     ? results[0].GetLogins()
+                                     : results[1].GetLogins();
 
-  auto built_in_backend_logins = base::MakeFlatSet<const PasswordForm*, IsLess>(
-      (results[0].backend == built_in_backend_)
-          ? std::move(results[0].logins_result)
-          : std::move(results[1].logins_result),
-      {}, &std::unique_ptr<PasswordForm>::get);
-
-  auto android_logins = base::MakeFlatSet<const PasswordForm*, IsLess>(
-      (results[0].backend == android_backend_)
-          ? std::move(results[0].logins_result)
-          : std::move(results[1].logins_result),
-      {}, &std::unique_ptr<PasswordForm>::get);
+  auto android_logins = (results[0].backend == android_backend_)
+                            ? results[0].GetLogins()
+                            : results[1].GetLogins();
 
   // This method merges password from the built in backend and password from the
   // android backend based on their primary keys. For a form |F|, there are

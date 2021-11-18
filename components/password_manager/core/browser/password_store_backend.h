@@ -27,10 +27,24 @@ struct PasswordForm;
 class FieldInfoStore;
 class SmartBubbleStatsStore;
 
+enum class PasswordStoreBackendError {
+  // Error which isn't specified properly, should be treated as kUnrecoverable.
+  kUnspecified,
+  // Recoverable which can be possible fixed by retrying request.
+  kRecoverable,
+  // Unrecoverable errors which can't be fixed easily. It may require some input
+  // from a user (to enter a passphrase) or indicate broken database.
+  kUnrecoverable,
+};
+
 using LoginsResult = std::vector<std::unique_ptr<PasswordForm>>;
 using LoginsReply = base::OnceCallback<void(LoginsResult)>;
 using PasswordStoreChangeListReply =
     base::OnceCallback<void(const PasswordStoreChangeList&)>;
+
+using LoginsResultOrError =
+    absl::variant<LoginsResult, PasswordStoreBackendError>;
+using LoginsOrErrorReply = base::OnceCallback<void(LoginsResultOrError)>;
 
 // The backend is used by the `PasswordStore` to interact with the storage in a
 // platform-dependent way (e.g. on Desktop, it calls a local database while on
@@ -39,8 +53,6 @@ using PasswordStoreChangeListReply =
 // IO operation from possibly blocking the main thread.
 class PasswordStoreBackend {
  public:
-  using OptionalLoginsReply =
-      base::OnceCallback<void(absl::optional<LoginsResult>)>;
   using RemoteChangesReceived =
       base::RepeatingCallback<void(const PasswordStoreChangeList&)>;
 
@@ -64,9 +76,8 @@ class PasswordStoreBackend {
   virtual void Shutdown(base::OnceClosure shutdown_completed) = 0;
 
   // Returns the complete list of PasswordForms (regardless of their blocklist
-  // status) and notify `consumer` on completion. Callback is called on the main
-  // sequence.
-  virtual void GetAllLoginsAsync(LoginsReply callback) = 0;
+  // status). Callback is called on the main sequence.
+  virtual void GetAllLoginsAsync(LoginsOrErrorReply callback) = 0;
 
   // Returns the complete list of non-blocklist PasswordForms. Callback is
   // called on the main sequence.

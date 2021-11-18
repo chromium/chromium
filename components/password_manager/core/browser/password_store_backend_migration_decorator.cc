@@ -84,7 +84,7 @@ void PasswordStoreBackendMigrationDecorator::Shutdown(
 }
 
 void PasswordStoreBackendMigrationDecorator::GetAllLoginsAsync(
-    LoginsReply callback) {
+    LoginsOrErrorReply callback) {
   active_backend_->GetAllLoginsAsync(std::move(callback));
 }
 

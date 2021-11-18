@@ -1148,9 +1148,9 @@ TEST_F(PasswordStoreTest, GetAllLoginsWithAffiliationAndBrandingInformation) {
   EXPECT_CALL(mock_consumer,
               OnGetPasswordStoreResultsConstRef(
                   UnorderedPasswordFormElementsAre(&expected_results)));
-  LoginsReply callback;
+  LoginsOrErrorReply callback;
   EXPECT_CALL(*mock_backend, GetAllLoginsAsync)
-      .WillOnce([&all_credentials](LoginsReply callback) {
+      .WillOnce([&all_credentials](LoginsOrErrorReply callback) {
         std::move(callback).Run(std::move(all_credentials));
       });
   store->GetAllLoginsWithAffiliationAndBrandingInformation(&mock_consumer);

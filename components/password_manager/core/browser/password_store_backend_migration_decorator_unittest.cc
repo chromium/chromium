@@ -89,12 +89,11 @@ class PasswordStoreBackendMigrationDecoratorTest : public testing::Test {
 
 TEST_F(PasswordStoreBackendMigrationDecoratorTest,
        UseBuiltInBackendToGetAllLoginsAsync) {
-  base::MockCallback<LoginsReply> mock_reply;
+  base::MockCallback<LoginsOrErrorReply> mock_reply;
   std::vector<std::unique_ptr<PasswordForm>> expected_logins =
       CreateTestLogins();
   AddTestLogins();
-  EXPECT_CALL(mock_reply,
-              Run(UnorderedPasswordFormElementsAre(&expected_logins)));
+  EXPECT_CALL(mock_reply, Run(LoginsResultsOrErrorAre(&expected_logins)));
   backend_migration_decorator()->GetAllLoginsAsync(mock_reply.Get());
   RunUntilIdle();
 }

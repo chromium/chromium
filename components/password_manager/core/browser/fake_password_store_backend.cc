@@ -32,7 +32,7 @@ void FakePasswordStoreBackend::Shutdown(base::OnceClosure shutdown_completed) {
   std::move(shutdown_completed).Run();
 }
 
-void FakePasswordStoreBackend::GetAllLoginsAsync(LoginsReply callback) {
+void FakePasswordStoreBackend::GetAllLoginsAsync(LoginsOrErrorReply callback) {
   base::SequencedTaskRunnerHandle::Get()->PostTaskAndReplyWithResult(
       FROM_HERE,
       base::BindOnce(&FakePasswordStoreBackend::GetAllLoginsInternal,

@@ -281,7 +281,8 @@ void PasswordStoreBuiltInBackend::InitBackend(
       std::move(completion));
 }
 
-void PasswordStoreBuiltInBackend::GetAllLoginsAsync(LoginsReply callback) {
+void PasswordStoreBuiltInBackend::GetAllLoginsAsync(
+    LoginsOrErrorReply callback) {
   DCHECK(!was_shutdown_);
   DCHECK(main_task_runner_->RunsTasksInCurrentSequence());
   background_task_runner_->PostTaskAndReplyWithResult(

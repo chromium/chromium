@@ -165,7 +165,7 @@ void TestPasswordStore::Shutdown(base::OnceClosure shutdown_completed) {
   std::move(shutdown_completed).Run();
 }
 
-void TestPasswordStore::GetAllLoginsAsync(LoginsReply callback) {
+void TestPasswordStore::GetAllLoginsAsync(LoginsOrErrorReply callback) {
   background_task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE,
       base::BindOnce(&TestPasswordStore::GetAllLoginsInternal,

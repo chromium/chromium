@@ -73,6 +73,13 @@ PasswordStoreChangeList JoinPasswordStoreChanges(
   return joined_changes;
 }
 
+LoginsResult GetLoginsOrEmptyListOnFailure(LoginsResultOrError result) {
+  if (absl::holds_alternative<PasswordStoreBackendError>(result)) {
+    return {};
+  }
+  return std::move(absl::get<LoginsResult>(result));
+}
+
 }  // namespace
 
 PasswordStore::PasswordStore(std::unique_ptr<PasswordStoreBackend> backend) {
@@ -265,8 +272,10 @@ void PasswordStore::GetAllLogins(PasswordStoreConsumer* consumer) {
     return;  // Once the shutdown started, ignore new requests.
 
   backend_->GetAllLoginsAsync(
-      base::BindOnce(&PasswordStoreConsumer::OnGetPasswordStoreResultsFrom,
-                     consumer->GetWeakPtr(), base::RetainedRef(this)));
+      base::BindOnce(&GetLoginsOrEmptyListOnFailure)
+          .Then(base::BindOnce(
+              &PasswordStoreConsumer::OnGetPasswordStoreResultsFrom,
+              consumer->GetWeakPtr(), base::RetainedRef(this))));
 }
 
 void PasswordStore::GetAllLoginsWithAffiliationAndBrandingInformation(
@@ -282,7 +291,8 @@ void PasswordStore::GetAllLoginsWithAffiliationAndBrandingInformation(
   auto affiliation_injection =
       base::BindOnce(&PasswordStore::InjectAffiliationAndBrandingInformation,
                      this, std::move(consumer_reply));
-  backend_->GetAllLoginsAsync(std::move(affiliation_injection));
+  backend_->GetAllLoginsAsync(base::BindOnce(&GetLoginsOrEmptyListOnFailure)
+                                  .Then(std::move(affiliation_injection)));
 }
 
 SmartBubbleStatsStore* PasswordStore::GetSmartBubbleStatsStore() {

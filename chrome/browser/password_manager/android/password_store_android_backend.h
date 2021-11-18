@@ -89,7 +89,7 @@ class PasswordStoreAndroidBackend
     using WasSuccess = base::StrongAlias<struct WasSuccessTag, bool>;
 
     JobReturnHandler();
-    JobReturnHandler(LoginsReply callback, MetricInfix metric_name);
+    JobReturnHandler(LoginsOrErrorReply callback, MetricInfix metric_name);
     JobReturnHandler(PasswordStoreChangeListReply callback,
                      MetricInfix metric_infix);
     JobReturnHandler(JobReturnHandler&&);
@@ -112,7 +112,8 @@ class PasswordStoreAndroidBackend
     void RecordMetrics(WasSuccess success) const;
 
    private:
-    absl::variant<LoginsReply, PasswordStoreChangeListReply> success_callback_;
+    absl::variant<LoginsOrErrorReply, PasswordStoreChangeListReply>
+        success_callback_;
     MetricInfix metric_infix_;
     base::Time start_ = base::Time::Now();
   };
@@ -129,7 +130,7 @@ class PasswordStoreAndroidBackend
                    base::RepeatingClosure sync_enabled_or_disabled_cb,
                    base::OnceCallback<void(bool)> completion) override;
   void Shutdown(base::OnceClosure shutdown_completed) override;
-  void GetAllLoginsAsync(LoginsReply callback) override;
+  void GetAllLoginsAsync(LoginsOrErrorReply callback) override;
   void GetAutofillableLoginsAsync(LoginsReply callback) override;
   void FillMatchingLoginsAsync(
       LoginsReply callback,

@@ -167,10 +167,9 @@ TEST_P(BuiltInBackendToAndroidBackendMigratorTestWithMigrationParams,
   RunUntilIdle();
 
   for (auto* const backend : {&android_backend(), &built_in_backend()}) {
-    base::MockCallback<LoginsReply> mock_reply;
+    base::MockCallback<LoginsOrErrorReply> mock_reply;
     auto expected_logins = p.GetMigratedLogins();
-    EXPECT_CALL(mock_reply,
-                Run(UnorderedPasswordFormElementsAre(&expected_logins)));
+    EXPECT_CALL(mock_reply, Run(LoginsResultsOrErrorAre(&expected_logins)));
     backend->GetAllLoginsAsync(mock_reply.Get());
     RunUntilIdle();
   }

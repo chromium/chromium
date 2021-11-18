@@ -28,6 +28,11 @@ using testing::StrictMock;
 using testing::WithArg;
 using JobId = PasswordStoreAndroidBackendBridge::JobId;
 
+MATCHER_P(ExpectError, expectation, "") {
+  return absl::holds_alternative<PasswordStoreBackendError>(arg) &&
+         expectation == absl::get<PasswordStoreBackendError>(arg);
+}
+
 std::vector<std::unique_ptr<PasswordForm>> CreateTestLogins() {
   std::vector<std::unique_ptr<PasswordForm>> forms;
   forms.push_back(CreateEntry("Todd Tester", "S3cr3t",
@@ -114,14 +119,13 @@ TEST_F(PasswordStoreAndroidBackendTest, CallsBridgeForLogins) {
   backend().InitBackend(PasswordStoreAndroidBackend::RemoteChangesReceived(),
                         base::RepeatingClosure(), base::DoNothing());
   const JobId kJobId{1337};
-  base::MockCallback<LoginsReply> mock_reply;
+  base::MockCallback<LoginsOrErrorReply> mock_reply;
   EXPECT_CALL(*bridge(), GetAllLogins).WillOnce(Return(kJobId));
   backend().GetAllLoginsAsync(mock_reply.Get());
 
   std::vector<std::unique_ptr<PasswordForm>> expected_logins =
       CreateTestLogins();
-  EXPECT_CALL(mock_reply,
-              Run(UnorderedPasswordFormElementsAre(&expected_logins)));
+  EXPECT_CALL(mock_reply, Run(LoginsResultsOrErrorAre(&expected_logins)));
   consumer().OnCompleteWithLogins(kJobId, UnwrapForms(CreateTestLogins()));
   RunUntilIdle();
 }
@@ -185,10 +189,11 @@ TEST_F(PasswordStoreAndroidBackendTest, OnExternalError) {
                         base::RepeatingClosure(), base::DoNothing());
   const JobId kJobId{1337};
   base::HistogramTester histogram_tester;
-  base::MockCallback<LoginsReply> mock_reply;
+  base::MockCallback<LoginsOrErrorReply> mock_reply;
   EXPECT_CALL(*bridge(), GetAllLogins).WillOnce(Return(kJobId));
   backend().GetAllLoginsAsync(mock_reply.Get());
-  EXPECT_CALL(mock_reply, Run(_)).Times(0);
+  EXPECT_CALL(mock_reply,
+              Run(ExpectError(PasswordStoreBackendError::kUnspecified)));
   AndroidBackendError error{AndroidBackendErrorType::kExternalError};
   error.api_error_code = absl::optional<int>(11004);
   consumer().OnError(kJobId, std::move(error));
@@ -225,10 +230,10 @@ TEST_P(PasswordStoreAndroidBackendTestForMetrics, GetAllLoginsAsyncMetrics) {
   const char kErrorCodeMetric[] =
       "PasswordManager.PasswordStoreAndroidBackend.ErrorCode";
   base::HistogramTester histogram_tester;
-  base::MockCallback<LoginsReply> mock_reply;
+  base::MockCallback<LoginsOrErrorReply> mock_reply;
   EXPECT_CALL(*bridge(), GetAllLogins).WillOnce(Return(kJobId));
   backend().GetAllLoginsAsync(mock_reply.Get());
-  EXPECT_CALL(mock_reply, Run(_)).Times(ShouldSucceed() ? 1 : 0);
+  EXPECT_CALL(mock_reply, Run(_)).Times(1);
   task_environment_.FastForwardBy(kLatencyDelta);
   if (ShouldSucceed())
     consumer().OnCompleteWithLogins(kJobId, {});
