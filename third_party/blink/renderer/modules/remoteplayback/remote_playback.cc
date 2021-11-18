@@ -206,6 +206,13 @@ ScriptPromise RemotePlayback::prompt(ScriptState* script_state) {
     return promise;
   }
 
+  if (!media_element_->DomWindow()) {
+    resolver->Reject(MakeGarbageCollected<DOMException>(
+        DOMExceptionCode::kInvalidAccessError,
+        "RemotePlayback::prompt() does not work in a detached window."));
+    return promise;
+  }
+
   if (!LocalFrame::HasTransientUserActivation(
           media_element_->DomWindow()->GetFrame())) {
     resolver->Reject(MakeGarbageCollected<DOMException>(
