@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/ui/settings/password/passwords_in_other_apps/passwords_in_other_apps_view_controller.h"
 
+#include "base/ios/ios_util.h"
 #import "ios/chrome/browser/ui/elements/instruction_view.h"
 #import "ios/chrome/browser/ui/settings/password/passwords_in_other_apps/constants.h"
 #import "ios/chrome/browser/ui/settings/password/passwords_in_other_apps/passwords_in_other_apps_view_controller_delegate.h"
@@ -62,7 +63,8 @@ CGFloat const kButtonHorizontalMargin = 4;
     NSArray<NSLayoutConstraint*>* turnOnInstructionViewConstraints;
 @property(nonatomic, strong)
     NSArray<NSLayoutConstraint*>* turnOffInstructionViewConstraints;
-@property(nonatomic, weak) UINavigationBar* navigationBar;
+@property(nonatomic, strong) UINavigationBar* navigationBar;
+@property(nonatomic, strong) UINavigationBarAppearance* defaultAppearance;
 @end
 
 @interface PasswordsInOtherAppsViewController () <UITextViewDelegate>
@@ -241,15 +243,22 @@ CGFloat const kButtonHorizontalMargin = 4;
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
-  // TODO(crbug.com/1268684): Set the shadow image and background image to the
-  // original value in settings_navigation_controller.
   if (self.navigationBar) {
+    self.navigationItem.rightBarButtonItem = nil;
     [self.navigationBar setBackgroundImage:nil
                              forBarMetrics:UIBarMetricsDefault];
     self.navigationBar.shadowImage = nil;
     self.navigationBar.translucent = NO;
 
-    self.navigationItem.rightBarButtonItem = nil;
+    // Revert navigation bar style for iOS 14 and under to workaround bug that
+    // navigation bar height not adjusting consistently across subviews. Should
+    // be removed once iOS 14 is deprecated.
+    if (!base::ios::IsRunningOnIOS15OrLater()) {
+      self.navigationBar.standardAppearance = self.defaultAppearance;
+      self.navigationBar.compactAppearance = self.defaultAppearance;
+      self.navigationBar.scrollEdgeAppearance = self.defaultAppearance;
+    }
+
     self.navigationBar = nil;
   }
 }
@@ -265,15 +274,29 @@ CGFloat const kButtonHorizontalMargin = 4;
   if (self.navigationController &&
       [self.navigationController
           isKindOfClass:[SettingsNavigationController class]]) {
+    UIBarButtonItem* doneButton =
+        [(SettingsNavigationController*)self.navigationController doneButton];
+    self.navigationItem.rightBarButtonItem = doneButton;
+
     self.navigationBar = self.navigationController.navigationBar;
+
+    // Set navigation bar to transparent for iOS 14 and under to workaround bug
+    // that navigation bar height not adjusting consistently across subviews.
+    // Should be removed once iOS 14 is deprecated.
+    if (!base::ios::IsRunningOnIOS15OrLater()) {
+      UINavigationBarAppearance* transparentAppearance =
+          [[UINavigationBarAppearance alloc] init];
+      [transparentAppearance configureWithTransparentBackground];
+      self.defaultAppearance = self.navigationBar.standardAppearance;
+      self.navigationBar.standardAppearance = transparentAppearance;
+      self.navigationBar.compactAppearance = transparentAppearance;
+      self.navigationBar.scrollEdgeAppearance = transparentAppearance;
+    }
+
     [self.navigationBar setBackgroundImage:[[UIImage alloc] init]
                              forBarMetrics:UIBarMetricsDefault];
     self.navigationBar.shadowImage = [[UIImage alloc] init];
     self.navigationBar.translucent = YES;
-
-    UIBarButtonItem* doneButton =
-        [(SettingsNavigationController*)self.navigationController doneButton];
-    self.navigationItem.rightBarButtonItem = doneButton;
   }
 }
 
