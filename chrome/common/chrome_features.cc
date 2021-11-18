@@ -38,13 +38,13 @@ const base::Feature kAllowDisableMouseAcceleration{
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 // Shows settings to adjust and disable touchpad haptic feedback.
 const base::Feature kAllowDisableTouchpadHapticFeedback{
-    "AllowDisableTouchpadHapticFeedback", base::FEATURE_DISABLED_BY_DEFAULT};
+    "AllowDisableTouchpadHapticFeedback", base::FEATURE_ENABLED_BY_DEFAULT};
 #endif  // defined(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 // Shows settings to adjust the touchpad haptic click settings.
 const base::Feature kAllowTouchpadHapticClickSettings{
-    "AllowTouchpadHapticClickSettings", base::FEATURE_DISABLED_BY_DEFAULT};
+    "AllowTouchpadHapticClickSettings", base::FEATURE_ENABLED_BY_DEFAULT};
 #endif  // defined(IS_CHROMEOS_ASH)
 
 // Always reinstall system web apps, instead of only doing so after version
