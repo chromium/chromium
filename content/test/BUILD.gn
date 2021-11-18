@@ -1498,7 +1498,10 @@ test("content_browsertests") {
     "//ui/webui:test_support",
   ]
 
-  data = [ "data/" ]
+  data = [
+    "data/",
+    "//media/test/data/",
+  ]
 
   data_deps = [
     "//content/shell:pak",
@@ -1533,10 +1536,7 @@ test("content_browsertests") {
       "../browser/media/capture/web_contents_video_capture_device_browsertest.cc",
     ]
 
-    data += [
-      "$root_out_dir/content_shell.pak",
-      "//media/test/data/",
-    ]
+    data += [ "$root_out_dir/content_shell.pak" ]
   }
 
   if (is_linux || is_chromeos || is_mac || is_win) {
