@@ -1005,6 +1005,115 @@ class ChromeDriverTest(ChromeDriverBaseTestWithWebServer):
     self._driver.ExecuteScript('window.scrollTo(0, %d);' % (targetScrollTop));
     link.Click()
 
+  def testClickElementHavingSmallIntersectionWithindowObscuredByScrollBar(self):
+    # This is a regression test for chromedriver:3933.
+    # It relies on some internal knowledge on how ExecuteClickElement is implemented.
+    # See also: https://bugs.chromium.org/p/chromedriver/issues/detail?id=3933
+    # This is what happens if the bug exists in the code:
+    # Assume:
+    # bar.height = 50.5 (see the CSS from horizontal_scroller.html)
+    # x = 1.5 (can be any 1.5 <= x < 2.5)
+    # horizontalScrollBar.height = 15
+    # p = 36.5 <- position of #link relative to the viewport, calculated and scrolled to by webdriver::atoms::GET_LOCATION_IN_VIEW
+    # Assign:
+    # window.innerHeight = floor(bar.height + x) = 52
+    # Then:
+    # horizontalScrollBar.y = window.innerHeight - horizontalScrollBar.height = 37
+    # clickPosition.y = p + (window.innerHeight - bar.height) / 2 = 37.25
+    #
+    # Condition clickPosition.y > horizontalScrollBar.y means that we are clicking the area obscured by horizontal scroll bar.
+    # It is worth mentioning that if x < 1.5 or x >= 2.5 then 'p' will be calculated differently and the bug will not reproduce.
+    testcaseUrl = self.GetHttpUrlForFile(
+        '/chromedriver/horizontal_scroller.html')
+    self._driver.Load(testcaseUrl)
+    self._driver.SetWindowRect(640, 480, None, None)
+    innerHeight = self._driver.ExecuteScript('return window.innerHeight;')
+    windowDecorationHeight = 480 - innerHeight
+    # The value of barHeight is 50.5
+    barHeight = self._driver.FindElement(
+        'css selector', '#bar').GetRect()['height']
+    x = 1.5  # as mentioned above any number 1.5 <= x < 2.5 is ok provided scroll.height = 15
+    windowHeight = barHeight + windowDecorationHeight + x
+
+    self._driver.SetWindowRect(640, windowHeight, None, None)
+    self._driver.Load(testcaseUrl)
+
+    link = self._driver.FindElement('css selector', '#link')
+    link.Click()
+
+    # Click must be registered
+    counter = self._driver.FindElement('css selector', '#click-counter')
+    self.assertEqual(1, int(counter.GetProperty('value')))
+
+  def testClickElementObscuredByScrollBar(self):
+    testcaseUrl = self.GetHttpUrlForFile(
+        '/chromedriver/horizontal_scroller.html')
+    self._driver.Load(testcaseUrl)
+    self._driver.SetWindowRect(640, 480, None, None)
+    innerHeight = self._driver.ExecuteScript('return window.innerHeight;')
+    windowDecorationHeight = 480 - innerHeight
+    viewportHeight = self._driver.ExecuteScript(
+        'return window.visualViewport.height;')
+    scrollbarHeight = innerHeight - viewportHeight
+    barHeight = self._driver.FindElement(
+        'css selector', '#bar').GetRect()['height']
+
+    # -1 is used to ensure that there is no space for link before the scroll bar.
+    self._driver.SetWindowRect(640, math.floor(
+        barHeight + windowDecorationHeight + scrollbarHeight - 1), None, None)
+    self._driver.Load(testcaseUrl)
+    newInnerHeight = self._driver.ExecuteScript('return window.innerHeight;')
+
+    link = self._driver.FindElement('css selector', '#link')
+    link.Click()
+
+    rc = self._driver.ExecuteScript(
+        'return document.getElementById("link").getBoundingClientRect();')
+    # As link was obscured it has to be brought into view
+    self.assertLess(0, rc['y'] + rc['height'])
+    self.assertLess(rc['y'], newInnerHeight - scrollbarHeight)
+    # Click must be registered
+    counter = self._driver.FindElement('css selector', '#click-counter')
+    self.assertEqual(1, int(counter.GetProperty('value')))
+
+  def testClickElementAlmostObscuredByScrollBar(self):
+    # https://bugs.chromium.org/p/chromedriver/issues/detail?id=3933
+    # This test does not reproduce chromedriver:3933.
+    # However it fails if the implementation contains the bug that was responsible for the issue:
+    # incorrect calculation of the intersection between the element and the viewport
+    # led to scrolling where the element was positioned in such a way that it could not be clicked.
+    testcaseUrl = self.GetHttpUrlForFile(
+        '/chromedriver/horizontal_scroller.html')
+    self._driver.Load(testcaseUrl)
+    self._driver.SetWindowRect(640, 480, None, None)
+    innerHeight = self._driver.ExecuteScript('return window.innerHeight;')
+    windowDecorationHeight = 480 - innerHeight
+    viewportHeight = self._driver.ExecuteScript(
+        'return window.visualViewport.height;')
+    scrollbarHeight = innerHeight - viewportHeight
+    barHeight = self._driver.FindElement(
+        'css selector', '#bar').GetRect()['height']
+
+    # +1 is used in order to give some space for link before the scroll bar.
+    self._driver.SetWindowRect(640, math.floor(
+        barHeight + windowDecorationHeight + scrollbarHeight + 1), None, None)
+    self._driver.Load(testcaseUrl)
+
+    link = self._driver.FindElement('css selector', '#link')
+    rc = self._driver.ExecuteScript(
+        'return document.getElementById("link").getBoundingClientRect();')
+    oldY = rc['y']
+
+    link.Click()
+
+    rc = self._driver.ExecuteScript(
+        'return document.getElementById("link").getBoundingClientRect();')
+    # As link is only partially obscured it must stay in place
+    self.assertEqual(oldY, rc['y'])
+    # Click must be registered
+    counter = self._driver.FindElement('css selector', '#click-counter')
+    self.assertEqual(1, int(counter.GetProperty('value')))
+
   def testActionsMouseMove(self):
     self._driver.Load(self.GetHttpUrlForFile('/chromedriver/empty.html'))
     self._driver.ExecuteScript(
