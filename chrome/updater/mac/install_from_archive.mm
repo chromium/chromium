@@ -116,14 +116,6 @@ bool IsInstallScriptExecutable(const base::FilePath& script_path) {
   return (permissions & kExecutableMask) == kExecutableMask;
 }
 
-struct ExecutableFile {
-  // The file basename to execute.
-  std::string name;
-
-  // True if and only if installation should fail if the file is missing.
-  bool is_required = false;
-};
-
 int RunExecutable(const base::FilePath& existence_checker_path,
                   const std::string& ap,
                   const std::string& arguments,
@@ -132,19 +124,16 @@ int RunExecutable(const base::FilePath& existence_checker_path,
     VLOG(1) << "File path (" << unpacked_path << ") does not exist.";
     return static_cast<int>(InstallErrors::kMountedDmgPathDoesNotExist);
   }
-  for (const auto& executable : std::vector<ExecutableFile>{
-           {".preinstall", false},
-           {".install", true},
-           {".postinstall", false},
+  int run_executables = 0;
+  for (const char* executable : {
+           ".preinstall",
+           ".install",
+           ".keystone_install",
+           ".postinstall",
        }) {
-    base::FilePath executable_file_path = unpacked_path.Append(executable.name);
-    if (!base::PathExists(executable_file_path)) {
-      if (!executable.is_required)
-        continue;
-      VLOG(1) << "Executable file path (" << executable_file_path
-              << ") does not exist.";
-      return static_cast<int>(InstallErrors::kExecutableFilePathDoesNotExist);
-    }
+    base::FilePath executable_file_path = unpacked_path.Append(executable);
+    if (!base::PathExists(executable_file_path))
+      continue;
 
     if (!IsInstallScriptExecutable(executable_file_path)) {
       VLOG(1) << "Executable file path (" << executable_file_path
@@ -186,8 +175,11 @@ int RunExecutable(const base::FilePath& existence_checker_path,
       return static_cast<int>(InstallErrors::kExecutableWaitForExitFailed);
     if (exit_code != 0)
       return exit_code;
+    ++run_executables;
   }
-  return 0;
+  return run_executables > 0
+             ? 0
+             : static_cast<int>(InstallErrors::kExecutableFilePathDoesNotExist);
 }
 
 base::FilePath AlterFileExtension(const base::FilePath& path,
