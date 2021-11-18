@@ -15,6 +15,7 @@
 #include "content/browser/renderer_host/render_view_host_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/notification_service.h"
 #include "content/public/browser/notification_types.h"
 #include "content/public/browser/site_isolation_policy.h"
@@ -1538,6 +1539,20 @@ IN_PROC_BROWSER_TEST_P(FencedFrameTreeBrowserTest, CheckSecFetchDestHeader) {
   EXPECT_TRUE(CheckAndClearSecFetchDestHeader(iframe_url, "iframe"));
 }
 
+// An observer class that asserts the page transition always is
+// `ui::PageTransition::PAGE_TRANSITION_AUTO_SUBFRAME`.
+class AlwaysAutoSubframeNavigationObserver : public WebContentsObserver {
+ public:
+  explicit AlwaysAutoSubframeNavigationObserver(WebContents* web_contents)
+      : WebContentsObserver(web_contents) {}
+
+  void DidFinishNavigation(NavigationHandle* navigation_handle) override {
+    EXPECT_TRUE(ui::PageTransitionCoreTypeIs(
+        navigation_handle->GetPageTransition(),
+        ui::PageTransition::PAGE_TRANSITION_AUTO_SUBFRAME));
+  }
+};
+
 // Tests that any navigation or history API calls always replace the current
 // entry and do not increase the back/forward entries.
 IN_PROC_BROWSER_TEST_P(FencedFrameTreeBrowserTest,
@@ -1559,6 +1574,11 @@ IN_PROC_BROWSER_TEST_P(FencedFrameTreeBrowserTest,
   auto* fenced_frame = GetFencedFrameRootNode(root->child_at(0));
   EXPECT_TRUE(fenced_frame->IsFencedFrameRoot());
   EXPECT_TRUE(fenced_frame->IsInFencedFrameTree());
+
+  // Instantiate a navigation observer to assert from here on the navigations
+  // are always `ui::PageTransition::PAGE_TRANSITION_AUTO_SUBFRAME`.
+  AlwaysAutoSubframeNavigationObserver auto_subframe_observer(
+      shell()->web_contents());
 
   // ShadowDOM fenced frames have the same NavigationController as the top-level
   // frame, therefore the count here is 1 because of the navigation of the

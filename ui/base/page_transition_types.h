@@ -45,7 +45,10 @@ enum PageTransition {
   // loaded in a non-toplevel frame. For example, if a page consists of
   // several frames containing ads, those ad URLs will have this transition
   // type. The user may not even realize the content in these pages is a
-  // separate frame, so may not care about the URL (see MANUAL below).
+  // separate frame, so may not care about the URL (see MANUAL below). All
+  // Fenced Frame navigations will be of this type because they are considered
+  // a non-toplevel navigation that does not generate new navigation entries
+  // in the back/forward list.
   PAGE_TRANSITION_AUTO_SUBFRAME = 3,
 
   // For subframe navigations that are explicitly requested by the user and

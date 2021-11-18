@@ -3753,4 +3753,8 @@ const SessionStorageNamespaceId& WebViewImpl::GetSessionStorageNamespaceId() {
   return session_storage_namespace_id_;
 }
 
+bool WebViewImpl::IsFencedFrameRoot() const {
+  return GetPage()->IsMainFrameFencedFrameRoot();
+}
+
 }  // namespace blink

@@ -614,7 +614,8 @@ class CONTENT_EXPORT NavigationControllerImpl : public NavigationController {
   // entry or on reloads, the old one will replace |entry|.
   void InsertOrReplaceEntry(std::unique_ptr<NavigationEntryImpl> entry,
                             bool replace,
-                            bool was_post_commit_error);
+                            bool was_post_commit_error,
+                            bool is_in_fenced_frame_tree);
 
   // Removes the entry at |index|, as long as it is not the current entry.
   void RemoveEntryAtIndexInternal(int index);

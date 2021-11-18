@@ -1781,7 +1781,8 @@ void NavigationControllerImpl::RendererDidNavigateToNewEntry(
       request->IsRendererInitiated(), request->GetPreviousPageUkmSourceId());
 
   InsertOrReplaceEntry(std::move(new_entry), replace_entry,
-                       !request->post_commit_error_page_html().empty());
+                       !request->post_commit_error_page_html().empty(),
+                       rfh->frame_tree_node()->IsInFencedFrameTree());
 }
 
 void NavigationControllerImpl::RendererDidNavigateToExistingEntry(
@@ -1972,7 +1973,8 @@ void NavigationControllerImpl::RendererDidNavigateNewSubframe(
   // https://crbug.com/607205. For now, the call to CloneAndReplace() will
   // delete the |frame_entry| when the function exits if it doesn't get used.
 
-  InsertOrReplaceEntry(std::move(new_entry), replace_entry, false);
+  InsertOrReplaceEntry(std::move(new_entry), replace_entry, false,
+                       rfh->frame_tree_node()->IsInFencedFrameTree());
 }
 
 bool NavigationControllerImpl::RendererDidNavigateAutoSubframe(
@@ -2638,9 +2640,21 @@ int NavigationControllerImpl::GetPendingEntryIndex() {
 void NavigationControllerImpl::InsertOrReplaceEntry(
     std::unique_ptr<NavigationEntryImpl> entry,
     bool replace,
-    bool was_post_commit_error) {
-  DCHECK(!ui::PageTransitionCoreTypeIs(entry->GetTransitionType(),
-                                       ui::PAGE_TRANSITION_AUTO_SUBFRAME));
+    bool was_post_commit_error,
+    bool in_fenced_frame_tree) {
+  // Fenced frame trees should always have `ui::PAGE_TRANSITION_AUTO_SUBFRAME`
+  // set because:
+  // 1) They don't influence the history of the outer page.
+  // 2) They are always replace only navigation (there is always only one entry
+  // in their history stack).
+  // 3) Are not top level navigations and appear similar to iframes.
+  // Navigations of the fenced frame might create a new NavigationEntry, which
+  // will call this function. Non fenced frame navigations will never have
+  // `ui::PAGE_TRANSITION_AUTO_SUBFRAME` because they won't call
+  // InsertOrReplaceEntry.
+  DCHECK_EQ(in_fenced_frame_tree,
+            ui::PageTransitionCoreTypeIs(entry->GetTransitionType(),
+                                         ui::PAGE_TRANSITION_AUTO_SUBFRAME));
 
   // If the pending_entry_index_ is -1, the navigation was to a new page, and we
   // need to keep continuity with the pending entry, so copy the pending entry's

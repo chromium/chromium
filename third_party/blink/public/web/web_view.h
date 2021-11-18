@@ -466,6 +466,9 @@ class WebView {
   virtual int32_t HistoryBackListCount() const = 0;
   virtual int32_t HistoryForwardListCount() const = 0;
 
+  // Returns whether this WebView represents a fenced frame root or not.
+  virtual bool IsFencedFrameRoot() const = 0;
+
   // Misc -------------------------------------------------------------
 
   // Returns the number of live WebView instances in this process.

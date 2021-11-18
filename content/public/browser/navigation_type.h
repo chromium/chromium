@@ -24,6 +24,9 @@ enum NavigationType {
   // Navigation entries created by subframe navigations are NEW_SUBFRAME.
   // Note: This includes all main frames (e.g. fenced frames), not only the
   // navigation entries created by navigations in primary main frames.
+  // Navigation entries with this type will have a
+  // `ui::PageTransition::PAGE_TRANSITION_AUTO_SUBFRAME` when this is a fenced
+  // frame navigation.
   NAVIGATION_TYPE_MAIN_FRAME_NEW_ENTRY,
 
   // Navigating the main frame to an existing navigation entry. This is the case
@@ -43,13 +46,16 @@ enum NavigationType {
   //
   // This type of navigation will reuse the existing NavigationEntry but modify
   // most/all of the contents of the existing NavigationEntry. This means the
-  // session history entry for the frame, which might be shared with othe
+  // session history entry for the frame, which might be shared with other
   // NavigationEntries, will be reused in the updated NavigationEntry.
   // Note: This includes all main frames (e.g. fenced frames), not only the
   // navigation entries created by navigations in primary main frames.
   // TODO(https://crbug.com/1226489): Do not reuse the session history entry
   // for the frame (and maybe the NavigationEntry itself) for same-document
   // location.replace().
+  // Navigation entries with this type will have a
+  // `ui::PageTransition::PAGE_TRANSITION_AUTO_SUBFRAME` when this is a fenced
+  // frame navigation.
   NAVIGATION_TYPE_MAIN_FRAME_EXISTING_ENTRY,
 
   // A new subframe was manually navigated by the user. We will create a new

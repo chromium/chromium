@@ -341,7 +341,15 @@ std::string TrimURL(const std::string& url) {
 ui::PageTransition GetTransitionType(ui::PageTransition default_transition,
                                      bool replaces_current_item,
                                      bool is_main_frame,
+                                     bool is_in_fenced_frame_tree,
                                      WebNavigationType navigation_type) {
+  if (is_in_fenced_frame_tree) {
+    // Navigations inside fenced frame trees do not add session history items
+    // and must be marked with PAGE_TRANSITION_AUTO_SUBFRAME. This is set
+    // regardless of the `is_main_frame` value since this is inside a fenced
+    // frame tree and should behave the same as iframes.
+    return ui::PAGE_TRANSITION_AUTO_SUBFRAME;
+  }
   if (replaces_current_item && !is_main_frame) {
     // Subframe navigations that don't add session history items must be
     // marked with AUTO_SUBFRAME. See also DidFailProvisionalLoad for how we
@@ -362,7 +370,8 @@ ui::PageTransition GetTransitionType(ui::PageTransition default_transition,
 // Calculates transition type for the specific document loaded using
 // WebDocumentLoader. Used while loading subresources.
 ui::PageTransition GetTransitionType(blink::WebDocumentLoader* document_loader,
-                                     bool is_main_frame) {
+                                     bool is_main_frame,
+                                     bool is_in_fenced_frame_tree) {
   NavigationState* navigation_state =
       NavigationState::FromDocumentLoader(document_loader);
   ui::PageTransition default_transition =
@@ -370,11 +379,12 @@ ui::PageTransition GetTransitionType(blink::WebDocumentLoader* document_loader,
           ? ui::PAGE_TRANSITION_LINK
           : ui::PageTransitionFromInt(
                 navigation_state->common_params().transition);
-  if (navigation_state->WasWithinSameDocument())
+  if (!is_in_fenced_frame_tree && navigation_state->WasWithinSameDocument())
     return default_transition;
   return GetTransitionType(default_transition,
                            document_loader->ReplacesCurrentHistoryItem(),
-                           is_main_frame, document_loader->GetNavigationType());
+                           is_main_frame, is_in_fenced_frame_tree,
+                           document_loader->GetNavigationType());
 }
 
 // Gets URL that should override the default getter for this data source
@@ -3893,7 +3903,8 @@ void RenderFrameImpl::DidCommitNavigation(
     media_permission_dispatcher_->OnNavigation();
 
   ui::PageTransition transition =
-      GetTransitionType(frame_->GetDocumentLoader(), IsMainFrame());
+      GetTransitionType(frame_->GetDocumentLoader(), IsMainFrame(),
+                        GetWebView()->IsFencedFrameRoot());
 
   // When NavigationThreadingOptimizations feature is not enabled
   // pending_code_cache_host_ could be nullptr. In such cases the code cache
@@ -3960,8 +3971,8 @@ void RenderFrameImpl::DidCommitDocumentReplacementNavigation(
     observer.ReadyToCommitNavigation(document_loader);
   for (auto& observer : observers_)
     observer.DidCreateNewDocument();
-  ui::PageTransition transition =
-      GetTransitionType(document_loader, IsMainFrame());
+  ui::PageTransition transition = GetTransitionType(
+      document_loader, IsMainFrame(), GetWebView()->IsFencedFrameRoot());
   NotifyObserversOfNavigationCommit(transition);
 }
 
@@ -4093,8 +4104,8 @@ void RenderFrameImpl::DidFinishSameDocumentNavigation(
     data->set_navigation_state(NavigationState::CreateForSynchronousCommit());
   data->navigation_state()->set_was_within_same_document(true);
 
-  ui::PageTransition transition =
-      GetTransitionType(document_loader, IsMainFrame());
+  ui::PageTransition transition = GetTransitionType(
+      document_loader, IsMainFrame(), GetWebView()->IsFencedFrameRoot());
   auto same_document_params =
       mojom::DidCommitSameDocumentNavigationParams::New();
   same_document_params->same_document_navigation_type =
@@ -4773,7 +4784,15 @@ RenderFrameImpl::MakeDidCommitProvisionalLoadParams(
         document_loader->GetResponse().MimeType().Utf8();
 
     params->transition = transition;
-    DCHECK(ui::PageTransitionIsMainFrame(params->transition));
+    // Check that if we are in a fenced frame tree then we must have
+    // PAGE_TRANSITION_AUTO_SUBFRAME. Otherwise we are a main frame
+    // and should have valid main frame values.
+    if (GetWebView()->IsFencedFrameRoot()) {
+      DCHECK(ui::PageTransitionCoreTypeIs(params->transition,
+                                          ui::PAGE_TRANSITION_AUTO_SUBFRAME));
+    } else {
+      DCHECK(ui::PageTransitionIsMainFrame(params->transition));
+    }
 
     // If the page contained a client redirect (meta refresh, document.loc...),
     // set the transition appropriately.
@@ -5727,7 +5746,7 @@ void RenderFrameImpl::BeginNavigationInternal(
   ui::PageTransition transition_type = GetTransitionType(
       ui::PAGE_TRANSITION_LINK,
       info->frame_load_type == WebFrameLoadType::kReplaceCurrentItem,
-      IsMainFrame(), info->navigation_type);
+      IsMainFrame(), GetWebView()->IsFencedFrameRoot(), info->navigation_type);
   if (info->is_client_redirect) {
     transition_type = ui::PageTransitionFromInt(
         transition_type | ui::PAGE_TRANSITION_CLIENT_REDIRECT);

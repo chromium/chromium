@@ -10282,8 +10282,10 @@ bool RenderFrameHostImpl::DidCommitNavigationInternal(
     mojom::DidCommitProvisionalLoadParamsPtr params,
     mojom::DidCommitSameDocumentNavigationParamsPtr same_document_params) {
   const bool is_same_document_navigation = !!same_document_params;
-  // Sanity-check the page transition for frame type.
-  DCHECK_EQ(ui::PageTransitionIsMainFrame(params->transition), !GetParent());
+  // Sanity-check the page transition for frame type. Fenced Frames
+  // will set page transition to AUTO_SUBFRAME.
+  DCHECK_EQ(ui::PageTransitionIsMainFrame(params->transition),
+            !GetParent() && !IsFencedFrameRoot());
   if (navigation_request &&
       navigation_request->commit_params().navigation_token !=
           params->navigation_token) {
@@ -11535,7 +11537,25 @@ bool CalculateDidCreateNewEntry(NavigationRequest* request,
 ui::PageTransition CalculateTransition(
     NavigationRequest* request,
     RendererLoadType renderer_load_type,
-    const mojom::DidCommitProvisionalLoadParams& params) {
+    const mojom::DidCommitProvisionalLoadParams& params,
+    bool is_in_fenced_frame_tree) {
+  if (is_in_fenced_frame_tree) {
+    // Navigations inside fenced frame trees do not add session history items
+    // and must be marked with PAGE_TRANSITION_AUTO_SUBFRAME. This is set
+    // regardless of the `is_main_frame` value since this is inside a fenced
+    // frame tree and should behave the same as iframes. Also preserve client
+    // redirects if they were set.
+    ui::PageTransition transition = ui::PAGE_TRANSITION_AUTO_SUBFRAME;
+    if (request->IsInMainFrame() && !request->DidEncounterError() &&
+        request->common_params().transition &
+            ui::PAGE_TRANSITION_CLIENT_REDIRECT) {
+      transition =
+          ui::PageTransitionFromInt(ui::PAGE_TRANSITION_AUTO_SUBFRAME |
+                                    ui::PAGE_TRANSITION_CLIENT_REDIRECT);
+    }
+
+    return transition;
+  }
   if (request->IsSameDocument())
     return params.transition;
   if (request->IsInMainFrame()) {
@@ -11728,7 +11748,8 @@ void RenderFrameHostImpl::
                                        renderer_load_type);
 
   const ui::PageTransition browser_transition =
-      CalculateTransition(request, renderer_load_type, params);
+      CalculateTransition(request, renderer_load_type, params,
+                          frame_tree_node_->IsInFencedFrameTree());
 
   const bool browser_history_list_was_cleared =
       request->commit_params().should_clear_history_list;
