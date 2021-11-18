@@ -29,12 +29,12 @@ var TelemetryExtensionUIBrowserTest = class extends testing.Test {
 
   /** @override */
   get featureList() {
-    return {enabled: ['chromeos::features::kTelemetryExtension']};
+    return {enabled: ['ash::features::kTelemetryExtension']};
   }
 
   /** @override */
   get typedefCppFixture() {
-    return 'TelemetryExtensionUiBrowserTest';
+    return 'ash::TelemetryExtensionUiBrowserTest';
   }
 
   /** @override */

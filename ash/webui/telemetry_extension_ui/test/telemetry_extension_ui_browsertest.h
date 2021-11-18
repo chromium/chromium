@@ -10,6 +10,8 @@
 #include "base/command_line.h"
 #include "base/memory/weak_ptr.h"
 
+namespace ash {
+
 class TelemetryExtensionUiBrowserTest : public SandboxedWebUiAppTestBase {
  public:
   TelemetryExtensionUiBrowserTest();
@@ -51,5 +53,7 @@ class TelemetryExtensionUiBrowserTest : public SandboxedWebUiAppTestBase {
   base::WeakPtrFactory<TelemetryExtensionUiBrowserTest>
       system_events_weak_ptr_factory_{this};
 };
+
+}  // namespace ash
 
 #endif  // ASH_WEBUI_TELEMETRY_EXTENSION_UI_TEST_TELEMETRY_EXTENSION_UI_BROWSERTEST_H_

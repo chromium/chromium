@@ -19,6 +19,8 @@
 #include "chromeos/dbus/cros_healthd/cros_healthd_client.h"
 #include "chromeos/dbus/cros_healthd/fake_cros_healthd_client.h"
 
+namespace ash {
+
 namespace {
 
 // Folder containing the resources for JS browser tests.
@@ -40,8 +42,8 @@ constexpr base::FilePath::CharType kUntrustedTestCases[] = FILE_PATH_LITERAL(
 }  // namespace
 
 TelemetryExtensionUiBrowserTest::TelemetryExtensionUiBrowserTest()
-    : SandboxedWebUiAppTestBase(ash::kChromeUITelemetryExtensionURL,
-                                ash::kChromeUIUntrustedTelemetryExtensionURL,
+    : SandboxedWebUiAppTestBase(kChromeUITelemetryExtensionURL,
+                                kChromeUIUntrustedTelemetryExtensionURL,
                                 {base::FilePath(kUntrustedTestHandlers),
                                  base::FilePath(kUntrustedTestUtils),
                                  base::FilePath(kUntrustedTestCases)}) {}
@@ -528,3 +530,5 @@ void TelemetryExtensionUiBrowserTest::RunCallbackPeriodically(
                      system_events_weak_ptr_factory_.GetWeakPtr(), callback),
       base::Seconds(1));
 }
+
+}  // namespace ash
