@@ -67,4 +67,8 @@ ShellDevToolsFrontend::ShellDevToolsFrontend(Shell* frontend_shell,
 
 ShellDevToolsFrontend::~ShellDevToolsFrontend() {}
 
+base::WeakPtr<ShellDevToolsFrontend> ShellDevToolsFrontend::GetWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 }  // namespace content

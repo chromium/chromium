@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/compiler_specific.h"
+#include "base/memory/weak_ptr.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/shell/browser/shell_devtools_bindings.h"
 
@@ -30,6 +31,8 @@ class ShellDevToolsFrontend : public ShellDevToolsDelegate,
 
   Shell* frontend_shell() const { return frontend_shell_; }
 
+  base::WeakPtr<ShellDevToolsFrontend> GetWeakPtr();
+
  private:
   // WebContentsObserver overrides
   void DocumentAvailableInMainFrame(
@@ -40,6 +43,8 @@ class ShellDevToolsFrontend : public ShellDevToolsDelegate,
   ~ShellDevToolsFrontend() override;
   Shell* frontend_shell_;
   std::unique_ptr<ShellDevToolsBindings> devtools_bindings_;
+
+  base::WeakPtrFactory<ShellDevToolsFrontend> weak_ptr_factory_{this};
 };
 
 }  // namespace content

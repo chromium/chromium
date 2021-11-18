@@ -213,14 +213,11 @@ class Shell : public WebContentsDelegate, public WebContentsObserver {
   void TitleWasSet(NavigationEntry* entry) override;
   void RenderFrameCreated(RenderFrameHost* frame_host) override;
 
-  void OnDevToolsWebContentsDestroyed();
-
   std::unique_ptr<JavaScriptDialogManager> dialog_manager_;
 
   std::unique_ptr<WebContents> web_contents_;
 
-  std::unique_ptr<DevToolsWebContentsObserver> devtools_observer_;
-  ShellDevToolsFrontend* devtools_frontend_ = nullptr;
+  base::WeakPtr<ShellDevToolsFrontend> devtools_frontend_;
 
   bool is_fullscreen_ = false;
 
