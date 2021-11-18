@@ -245,16 +245,6 @@
       "use_goma": true
     }
   },
-  "gpu-fyi-try-linux-intel-dqp": {
-    "gn_args": {
-      "build_angle_deqp_tests": true,
-      "dcheck_always_on": true,
-      "is_component_build": true,
-      "is_debug": false,
-      "symbol_level": 1,
-      "use_goma": true
-    }
-  },
   "gpu-fyi-try-linux-intel-exp": {
     "gn_args": {
       "blink_enable_generated_code_formatting": false,
@@ -327,16 +317,6 @@
       "is_debug": true,
       "is_gpu_fyi_bot": true,
       "proprietary_codecs": true,
-      "symbol_level": 1,
-      "use_goma": true
-    }
-  },
-  "gpu-fyi-try-linux-nvidia-dqp": {
-    "gn_args": {
-      "build_angle_deqp_tests": true,
-      "dcheck_always_on": true,
-      "is_component_build": true,
-      "is_debug": false,
       "symbol_level": 1,
       "use_goma": true
     }
