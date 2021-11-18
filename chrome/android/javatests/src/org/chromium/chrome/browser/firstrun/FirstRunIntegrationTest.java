@@ -112,6 +112,9 @@ public class FirstRunIntegrationTest {
     @Rule
     public JniMocker mJniMocker = new JniMocker();
 
+    @Rule
+    public TestRule mCommandLineFlagsRule = CommandLineFlags.getTestRule();
+
     @Mock
     public FirstRunAppRestrictionInfo mMockAppRestrictionInfo;
     @Mock

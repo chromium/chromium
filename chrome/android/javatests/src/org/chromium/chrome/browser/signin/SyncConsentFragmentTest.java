@@ -39,6 +39,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
@@ -109,6 +110,9 @@ public class SyncConsentFragmentTest {
             mIsUpdateAccountCalled = true;
         }
     }
+
+    @Rule
+    public final TestRule mCommandLindFlagRule = CommandLineFlags.getTestRule();
 
     @Rule
     public final DisableAnimationsTestRule mNoAnimationsRule = new DisableAnimationsTestRule();

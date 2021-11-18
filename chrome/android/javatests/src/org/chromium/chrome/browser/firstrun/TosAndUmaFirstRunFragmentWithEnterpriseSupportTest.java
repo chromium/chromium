@@ -31,6 +31,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
@@ -109,6 +110,8 @@ public class TosAndUmaFirstRunFragmentWithEnterpriseSupportTest {
                     .setRevision(RENDER_TEST_REVISION)
                     .setDescription(RENDER_TEST_REVISION_DESCRIPTION)
                     .build();
+    @Rule
+    public TestRule mCommandLineFlagsRule = CommandLineFlags.getTestRule();
 
     @Mock
     public FirstRunAppRestrictionInfo mMockAppRestrictionInfo;

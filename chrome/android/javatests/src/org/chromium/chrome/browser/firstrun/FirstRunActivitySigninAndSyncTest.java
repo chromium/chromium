@@ -31,6 +31,7 @@ import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
@@ -68,6 +69,9 @@ public class FirstRunActivitySigninAndSyncTest {
     @ClassRule
     public static final DisableAnimationsTestRule sNoAnimationsRule =
             new DisableAnimationsTestRule();
+
+    @Rule
+    public final TestRule mCommandLindFlagRule = CommandLineFlags.getTestRule();
 
     @Rule
     public final MockitoRule mMockitoRule = MockitoJUnit.rule();
