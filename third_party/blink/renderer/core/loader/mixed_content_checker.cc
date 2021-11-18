@@ -234,7 +234,7 @@ static void MeasureStricterVersionOfIsMixedContent(Frame& frame,
           source->GetDocument(),
           WebFeature::kMixedContentInNonHTTPSFrameThatRestrictsMixedContent);
     }
-  } else if (network::IsUrlPotentiallyTrustworthy(url) &&
+  } else if (!network::IsUrlPotentiallyTrustworthy(url) &&
              base::Contains(url::GetSecureSchemes(),
                             origin->Protocol().Ascii())) {
     UseCounter::Count(
