@@ -231,15 +231,11 @@ void TestAttributionManager::Reset() {
 // Builds an impression with default values. This is done as a builder because
 // all values needed to be provided at construction time.
 SourceBuilder::SourceBuilder(base::Time time)
-    : source_event_id_(123),
-      impression_time_(time),
+    : impression_time_(time),
       expiry_(base::Milliseconds(kExpiryTime)),
       impression_origin_(url::Origin::Create(GURL(kDefaultImpressionOrigin))),
       conversion_origin_(url::Origin::Create(GURL(kDefaultTriggerOrigin))),
-      reporting_origin_(url::Origin::Create(GURL(kDefaultReportOrigin))),
-      source_type_(StorableSource::SourceType::kNavigation),
-      priority_(0),
-      attribution_logic_(StorableSource::AttributionLogic::kTruthfully) {}
+      reporting_origin_(url::Origin::Create(GURL(kDefaultReportOrigin))) {}
 
 SourceBuilder::~SourceBuilder() = default;
 
@@ -545,7 +541,9 @@ std::ostream& operator<<(std::ostream& out, const StorableSource& impression) {
       << ",impression_time=" << impression.impression_time()
       << ",expiry_time=" << impression.expiry_time()
       << ",source_type=" << impression.source_type()
-      << ",priority=" << impression.priority() << ",impression_id="
+      << ",priority=" << impression.priority()
+      << ",attribution_logic=" << impression.attribution_logic()
+      << ",impression_id="
       << (impression.impression_id()
               ? base::NumberToString(**impression.impression_id())
               : "null")

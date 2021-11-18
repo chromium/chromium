@@ -508,11 +508,14 @@ TEST_F(AttributionStorageSqlTest, MaxUint64StorageSucceeds) {
   storage()->StoreSource(impression);
   EXPECT_THAT(storage()->GetActiveSources(), ElementsAre(impression));
 
-  EXPECT_EQ(CreateReportStatus::kSuccess,
-            MaybeCreateAndStoreReport(StorableTrigger(
-                /*trigger_data=*/kMaxUint64, impression.ConversionDestination(),
-                impression.reporting_origin(), /*event_source_trigger_data=*/0,
-                /*priority=*/0, /*dedup_key=*/absl::nullopt)));
+  EXPECT_EQ(
+      CreateReportStatus::kSuccess,
+      MaybeCreateAndStoreReport(
+          TriggerBuilder()
+              .SetTriggerData(kMaxUint64)
+              .SetConversionDestination(impression.ConversionDestination())
+              .SetReportingOrigin(impression.reporting_origin())
+              .Build()));
 
   EXPECT_THAT(storage()->GetAttributionsToReport(clock()->Now()),
               ElementsAre(Field(&AttributionReport::trigger_data, kMaxUint64)));

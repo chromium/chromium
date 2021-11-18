@@ -269,15 +269,17 @@ class SourceBuilder {
   StorableSource Build() const WARN_UNUSED_RESULT;
 
  private:
-  uint64_t source_event_id_;
+  uint64_t source_event_id_ = 123;
   base::Time impression_time_;
   base::TimeDelta expiry_;
   url::Origin impression_origin_;
   url::Origin conversion_origin_;
   url::Origin reporting_origin_;
-  StorableSource::SourceType source_type_;
-  int64_t priority_;
-  StorableSource::AttributionLogic attribution_logic_;
+  StorableSource::SourceType source_type_ =
+      StorableSource::SourceType::kNavigation;
+  int64_t priority_ = 0;
+  StorableSource::AttributionLogic attribution_logic_ =
+      StorableSource::AttributionLogic::kTruthfully;
   absl::optional<StorableSource::Id> impression_id_;
   std::vector<int64_t> dedup_keys_;
 };
