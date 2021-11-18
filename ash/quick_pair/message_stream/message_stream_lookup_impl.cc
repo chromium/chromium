@@ -112,7 +112,7 @@ void MessageStreamLookupImpl::CreateMessageStream(
 void MessageStreamLookupImpl::OnConnected(
     std::string device_address,
     scoped_refptr<device::BluetoothSocket> socket) {
-  QP_LOG(ERROR) << __func__;
+  QP_LOG(VERBOSE) << __func__;
   std::unique_ptr<MessageStream> message_stream =
       std::make_unique<MessageStream>(device_address, std::move(socket));
 
