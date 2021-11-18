@@ -30,7 +30,8 @@ const base::Feature kChromeTipsInMainMenuNewBadge{
 // Enables "Chrome What's New" UI.
 const base::Feature kChromeWhatsNewUI {
   "ChromeWhatsNewUI",
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING) && !defined(ANDROID)
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING) && !defined(ANDROID) && \
+    !BUILDFLAG(IS_CHROMEOS_LACROS)
       base::FEATURE_ENABLED_BY_DEFAULT
 #else
       base::FEATURE_DISABLED_BY_DEFAULT
