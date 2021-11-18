@@ -184,7 +184,7 @@ void ChromeShelfPrefs::RegisterProfilePrefs(
   registry->RegisterListPref(prefs::kPolicyPinnedLauncherApps);
   registry->RegisterListPref(
       prefs::kShelfDefaultPinLayoutRolls,
-      user_prefs::PrefRegistrySyncable::SYNCABLE_PRIORITY_PREF);
+      user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PRIORITY_PREF);
   registry->RegisterListPref(
       prefs::kShelfDefaultPinLayoutRollsForTabletFormFactor,
       PrefRegistry::NO_REGISTRATION_FLAGS);
