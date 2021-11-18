@@ -5,6 +5,7 @@
 #ifndef CHROMEOS_CONSTANTS_CHROMEOS_FEATURES_H_
 #define CHROMEOS_CONSTANTS_CHROMEOS_FEATURES_H_
 
+#include "base/component_export.h"
 #include "base/feature_list.h"
 
 // This file is only for the feature flags that are shared between ash-chrome
@@ -12,6 +13,7 @@
 // in //ash/constants/ash_features.h.
 namespace chromeos {
 
+COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 extern const base::Feature kLacrosTtsSupport;
 
 }  // namespace chromeos
