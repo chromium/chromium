@@ -144,10 +144,17 @@ bool IsValidCopyTextureForBrowserFormats(SkColorType src_color_type,
   // TODO(crbug.com/dawn/856): Cover more source formats if needed.
   if ((src_color_type == SkColorType::kRGBA_8888_SkColorType ||
        src_color_type == SkColorType::kBGRA_8888_SkColorType) &&
-      (dst_texture_format == WGPUTextureFormat_RG8Unorm ||
+      (dst_texture_format == WGPUTextureFormat_R8Unorm ||
+       dst_texture_format == WGPUTextureFormat_R16Float ||
+       dst_texture_format == WGPUTextureFormat_R32Float ||
+       dst_texture_format == WGPUTextureFormat_RG8Unorm ||
+       dst_texture_format == WGPUTextureFormat_RG16Float ||
+       dst_texture_format == WGPUTextureFormat_RG32Float ||
        dst_texture_format == WGPUTextureFormat_RGBA8Unorm ||
        dst_texture_format == WGPUTextureFormat_BGRA8Unorm ||
-       dst_texture_format == WGPUTextureFormat_RGB10A2Unorm)) {
+       dst_texture_format == WGPUTextureFormat_RGB10A2Unorm ||
+       dst_texture_format == WGPUTextureFormat_RGBA16Float ||
+       dst_texture_format == WGPUTextureFormat_RGBA32Float)) {
     return true;
   }
 
