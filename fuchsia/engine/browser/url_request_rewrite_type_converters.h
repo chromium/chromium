@@ -2,12 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef FUCHSIA_ENGINE_URL_REQUEST_REWRITE_TYPE_CONVERTERS_H_
-#define FUCHSIA_ENGINE_URL_REQUEST_REWRITE_TYPE_CONVERTERS_H_
+#ifndef FUCHSIA_ENGINE_BROWSER_URL_REQUEST_REWRITE_TYPE_CONVERTERS_H_
+#define FUCHSIA_ENGINE_BROWSER_URL_REQUEST_REWRITE_TYPE_CONVERTERS_H_
 
 #include <fuchsia/web/cpp/fidl.h>
 
 #include "components/url_rewrite/mojom/url_request_rewrite.mojom.h"
+#include "fuchsia/engine/web_engine_export.h"
 #include "mojo/public/cpp/bindings/type_converter.h"
 
 namespace mojo {
@@ -22,12 +23,13 @@ namespace mojo {
 // conversion is performed, the Mojo types are used as is to apply the rewrites
 // on URL requests.
 template <>
-struct TypeConverter<url_rewrite::mojom::UrlRequestRewriteRulesPtr,
-                     std::vector<fuchsia::web::UrlRequestRewriteRule>> {
+struct WEB_ENGINE_EXPORT
+    TypeConverter<url_rewrite::mojom::UrlRequestRewriteRulesPtr,
+                  std::vector<fuchsia::web::UrlRequestRewriteRule>> {
   static url_rewrite::mojom::UrlRequestRewriteRulesPtr Convert(
       const std::vector<fuchsia::web::UrlRequestRewriteRule>& input);
 };
 
 }  // namespace mojo
 
-#endif  // FUCHSIA_ENGINE_URL_REQUEST_REWRITE_TYPE_CONVERTERS_H_
+#endif  // FUCHSIA_ENGINE_BROWSER_URL_REQUEST_REWRITE_TYPE_CONVERTERS_H_

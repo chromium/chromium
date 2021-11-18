@@ -2,11 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "fuchsia/engine/browser/url_request_rewrite_rules_manager.h"
+#include "components/url_rewrite/browser/url_request_rewrite_rules_manager.h"
 
 #include "components/url_rewrite/browser/url_request_rewrite_rules_validation.h"
-#include "fuchsia/engine/url_request_rewrite_type_converters.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
+
+namespace url_rewrite {
 
 // static
 std::unique_ptr<UrlRequestRewriteRulesManager>
@@ -22,31 +23,25 @@ UrlRequestRewriteRulesManager::~UrlRequestRewriteRulesManager() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
-zx_status_t UrlRequestRewriteRulesManager::OnRulesUpdated(
-    std::vector<fuchsia::web::UrlRequestRewriteRule> rules,
-    fuchsia::web::Frame::SetUrlRequestRewriteRulesCallback callback) {
+bool UrlRequestRewriteRulesManager::OnRulesUpdated(
+    mojom::UrlRequestRewriteRulesPtr rules) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  cached_rules_ = base::MakeRefCounted<url_rewrite::UrlRequestRewriteRules>(
-      mojo::ConvertTo<url_rewrite::mojom::UrlRequestRewriteRulesPtr>(
-          std::move(rules)));
-  if (!url_rewrite::ValidateRules(cached_rules_->data.get())) {
-    cached_rules_ = nullptr;
-    return ZX_ERR_INVALID_ARGS;
+  if (!ValidateRules(rules.get())) {
+    return false;
   }
 
+  cached_rules_ =
+      base::MakeRefCounted<UrlRequestRewriteRules>(std::move(rules));
   // Send the updated rules to the receivers.
   for (const auto& receiver_pair : active_remotes_) {
     receiver_pair.second->OnRulesUpdated(mojo::Clone(cached_rules_->data));
   }
 
-  // TODO(crbug.com/976975): Only call the callback when there are pending
-  // throttles.
-  std::move(callback)();
-  return ZX_OK;
+  return true;
 }
 
-scoped_refptr<url_rewrite::UrlRequestRewriteRules>&
+scoped_refptr<UrlRequestRewriteRules>&
 UrlRequestRewriteRulesManager::GetCachedRules() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return cached_rules_;
@@ -59,8 +54,7 @@ void UrlRequestRewriteRulesManager::RenderFrameCreated(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // Register the frame rules receiver.
-  mojo::AssociatedRemote<url_rewrite::mojom::UrlRequestRulesReceiver>
-      rules_receiver;
+  mojo::AssociatedRemote<mojom::UrlRequestRulesReceiver> rules_receiver;
   render_frame_host->GetRemoteAssociatedInterfaces()->GetInterface(
       &rules_receiver);
   auto iter = active_remotes_.emplace(render_frame_host->GetGlobalId(),
@@ -80,3 +74,5 @@ void UrlRequestRewriteRulesManager::RenderFrameDeleted(
   size_t removed = active_remotes_.erase(render_frame_host->GetGlobalId());
   DCHECK_EQ(removed, 1u);
 }
+
+}  // namespace url_rewrite

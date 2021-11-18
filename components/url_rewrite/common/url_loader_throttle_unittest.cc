@@ -65,8 +65,7 @@ TEST_F(URLLoaderThrottleTest, WildcardHosts) {
   rules->rules.push_back(std::move(rule));
 
   URLLoaderThrottle throttle(
-      base::MakeRefCounted<url_rewrite::UrlRequestRewriteRules>(
-          std::move(rules)),
+      base::MakeRefCounted<UrlRequestRewriteRules>(std::move(rules)),
       CreateCorsExemptHeadersCallback({}));
   bool defer = false;
 
@@ -120,8 +119,7 @@ TEST_F(URLLoaderThrottleTest, CorsAwareHeaders) {
   // Use the mixed case form for CORS exempt header #1, and the uppercased form
   // of header #2.
   URLLoaderThrottle throttle(
-      base::MakeRefCounted<url_rewrite::UrlRequestRewriteRules>(
-          std::move(rules)),
+      base::MakeRefCounted<UrlRequestRewriteRules>(std::move(rules)),
       CreateCorsExemptHeadersCallback(
           {kMixedCaseCorsExemptHeader, kUpperCaseCorsExemptHeader2}));
 
@@ -166,8 +164,7 @@ TEST_F(URLLoaderThrottleTest, DataReplacementUrl) {
   rules->rules.push_back(std::move(rule));
 
   URLLoaderThrottle throttle(
-      base::MakeRefCounted<url_rewrite::UrlRequestRewriteRules>(
-          std::move(rules)),
+      base::MakeRefCounted<UrlRequestRewriteRules>(std::move(rules)),
       CreateCorsExemptHeadersCallback({}));
   bool defer = false;
 
@@ -223,8 +220,7 @@ TEST_F(URLLoaderThrottleTest, AllowAndDeny) {
   }
 
   URLLoaderThrottle throttle(
-      base::MakeRefCounted<url_rewrite::UrlRequestRewriteRules>(
-          std::move(rules)),
+      base::MakeRefCounted<UrlRequestRewriteRules>(std::move(rules)),
       CreateCorsExemptHeadersCallback({}));
   bool defer = false;
 

@@ -26,7 +26,6 @@
 #include "fuchsia/base/init_logging.h"
 #include "fuchsia/engine/browser/frame_impl.h"
 #include "fuchsia/engine/browser/navigation_policy_throttle.h"
-#include "fuchsia/engine/browser/url_request_rewrite_rules_manager.h"
 #include "fuchsia/engine/browser/web_engine_browser_context.h"
 #include "fuchsia/engine/browser/web_engine_browser_interface_binders.h"
 #include "fuchsia/engine/browser/web_engine_browser_main_parts.h"

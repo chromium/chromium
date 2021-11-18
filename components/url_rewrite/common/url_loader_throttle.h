@@ -23,9 +23,8 @@ class URLLoaderThrottle : public blink::URLLoaderThrottle {
   using IsHeaderCorsExemptCallback =
       base::RepeatingCallback<bool(base::StringPiece)>;
 
-  URLLoaderThrottle(
-      scoped_refptr<url_rewrite::UrlRequestRewriteRules> rules,
-      IsHeaderCorsExemptCallback is_header_cors_exempt_callback);
+  URLLoaderThrottle(scoped_refptr<UrlRequestRewriteRules> rules,
+                    IsHeaderCorsExemptCallback is_header_cors_exempt_callback);
   ~URLLoaderThrottle() override;
 
   URLLoaderThrottle(const URLLoaderThrottle&) = delete;
@@ -52,7 +51,7 @@ class URLLoaderThrottle : public blink::URLLoaderThrottle {
       network::ResourceRequest* request,
       const mojom::UrlRequestRewriteAddHeadersPtr& add_headers);
 
-  scoped_refptr<url_rewrite::UrlRequestRewriteRules> rules_;
+  scoped_refptr<UrlRequestRewriteRules> rules_;
   IsHeaderCorsExemptCallback is_header_cors_exempt_callback_;
 };
 

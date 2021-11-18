@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "fuchsia/engine/url_request_rewrite_type_converters.h"
+#include "fuchsia/engine/browser/url_request_rewrite_type_converters.h"
 
 #include "base/strings/strcat.h"
 #include "base/strings/string_piece.h"

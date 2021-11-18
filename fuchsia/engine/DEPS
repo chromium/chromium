@@ -6,7 +6,6 @@ include_rules = [
   "+components/embedder_support",
   "+components/media_control",
   "+components/on_load_script_injector",
-  "+components/url_rewrite/mojom",
   "+components/version_info",
   "+components/viz/common",
   "+content/public/app",

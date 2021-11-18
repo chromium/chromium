@@ -170,7 +170,7 @@ bool IsRequestAllowed(network::ResourceRequest* request,
 }  // namespace
 
 URLLoaderThrottle::URLLoaderThrottle(
-    scoped_refptr<url_rewrite::UrlRequestRewriteRules> rules,
+    scoped_refptr<UrlRequestRewriteRules> rules,
     IsHeaderCorsExemptCallback is_header_cors_exempt_callback)
     : rules_(std::move(rules)),
       is_header_cors_exempt_callback_(

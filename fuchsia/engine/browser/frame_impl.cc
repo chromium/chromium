@@ -10,6 +10,7 @@
 #include <lib/ui/scenic/cpp/view_ref_pair.h>
 #include <limits>
 
+#include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
 #include "base/fuchsia/fuchsia_logging.h"
@@ -47,6 +48,7 @@
 #include "fuchsia/engine/browser/media_player_impl.h"
 #include "fuchsia/engine/browser/navigation_policy_handler.h"
 #include "fuchsia/engine/browser/receiver_session_client.h"
+#include "fuchsia/engine/browser/url_request_rewrite_type_converters.h"
 #include "fuchsia/engine/browser/web_engine_devtools_controller.h"
 #include "fuchsia/engine/common/cast_streaming.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
@@ -866,11 +868,14 @@ void FrameImpl::SetPopupFrameCreationListener(
 void FrameImpl::SetUrlRequestRewriteRules(
     std::vector<fuchsia::web::UrlRequestRewriteRule> rules,
     SetUrlRequestRewriteRulesCallback callback) {
-  zx_status_t error = url_request_rewrite_rules_manager_.OnRulesUpdated(
-      std::move(rules), std::move(callback));
-  if (error != ZX_OK) {
-    CloseAndDestroyFrame(error);
-    return;
+  auto mojom_rules =
+      mojo::ConvertTo<url_rewrite::mojom::UrlRequestRewriteRulesPtr>(
+          std::move(rules));
+  if (url_request_rewrite_rules_manager_.OnRulesUpdated(
+          std::move(mojom_rules))) {
+    std::move(callback)();
+  } else {
+    CloseAndDestroyFrame(ZX_ERR_INVALID_ARGS);
   }
 }
 
