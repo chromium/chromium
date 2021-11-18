@@ -115,7 +115,7 @@ if (is_win) {
   if (needs_stack_alignment) {
     dav1d_copts += [ stackalign_flag ]
   }
-  if (is_mac) {
+  if (is_mac || is_ios) {
     dav1d_copts += [ "-D_DARWIN_C_SOURCE" ]
   }
   if (is_linux || is_chromeos || is_android || current_os == "aix") {
