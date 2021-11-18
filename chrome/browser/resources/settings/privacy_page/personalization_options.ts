@@ -208,6 +208,13 @@ export class SettingsPersonalizationOptionsElement extends
   }
 
   private shouldShowDriveSuggest_(): boolean {
+    // <if expr="chromeos">
+    if (loadTimeData.getBoolean('syncSettingsCategorizationEnabled') &&
+        loadTimeData.getBoolean('isOSSettings')) {
+      // Should be hidden in OS settings.
+      return false;
+    }
+    // </if>
     return loadTimeData.getBoolean('driveSuggestAvailable') &&
         !!this.syncStatus && !!this.syncStatus.signedIn &&
         this.syncStatus.statusAction !== StatusAction.REAUTHENTICATE;
