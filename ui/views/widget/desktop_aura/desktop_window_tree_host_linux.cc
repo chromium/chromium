@@ -374,6 +374,13 @@ void DesktopWindowTreeHostLinux::AddAdditionalInitProperties(
   properties->x11_extension_delegate = this;
 }
 
+base::flat_map<std::string, std::string>
+DesktopWindowTreeHostLinux::GetKeyboardLayoutMap() {
+  if (auto* linux_ui = LinuxUI::instance())
+    return linux_ui->GetKeyboardLayoutMap();
+  return WindowTreeHostPlatform::GetKeyboardLayoutMap();
+}
+
 void DesktopWindowTreeHostLinux::OnCompleteSwapWithNewSize(
     const gfx::Size& size) {
   if (GetX11Extension())
