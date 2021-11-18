@@ -775,7 +775,8 @@ id<GREYMatcher> OmniboxWidthBetween(CGFloat width, CGFloat margin) {
 
 // Test to ensure that feed can be enabled/disabled and that feed header changes
 // accordingly.
-- (void)testToggleFeedEnabled {
+// TODO(crbug.com/1194106): Flaky on ios-simulator-noncq.
+- (void)DISABLED_testToggleFeedEnabled {
   [self
       testNTPInitialPositionAndContent:[NewTabPageAppInterface collectionView]];
 
