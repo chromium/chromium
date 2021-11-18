@@ -33,11 +33,6 @@ declare_args() {
   # Path to an entitlements file used in ios_web_view_shell. Can be overridden
   # to provide an alternative.
   ios_web_view_shell_entitlements_path = "//build/config/ios/entitlements.plist"
-
-  # Controls whether WebView shell links with MaterialComponents.framework or
-  # gets the implementation from its downstream provider. Ignored if
-  # MaterialComponents is not build as a framework.
-  ios_web_view_shell_links_with_material_components_framework = true
 }
 
 ios_app_bundle("ios_web_view_shell") {
@@ -51,17 +46,10 @@ ios_app_bundle("ios_web_view_shell") {
   entitlements_path = ios_web_view_shell_entitlements_path
   bundle_identifier = ios_web_view_shell_bundle_identifier
 
-  if (ios_web_view_shell_links_with_material_components_framework) {
-    deps += [
-      "//ios/third_party/material_components_ios:material_components_ios+bundle",
-      "//ios/third_party/material_components_ios:material_components_ios+link",
-    ]
-  } else {
-    assert_no_deps = [
-      "//ios/third_party/material_components_ios:material_components_ios+bundle",
-      "//ios/third_party/material_components_ios:material_components_ios+link",
-    ]
-  }
+  assert_no_deps = [
+    "//ios/third_party/material_components_ios:material_components_ios+bundle",
+    "//ios/third_party/material_components_ios:material_components_ios+link",
+  ]
 
   configs += [ "//build/config/compiler:enable_arc" ]
 }
