@@ -37,6 +37,11 @@ void FakeInputDeviceSettings::SetTouchpadScrollSensitivity(int value) {
   UpdateTouchpadSettings(settings);
 }
 
+void FakeInputDeviceSettings::HapticTouchpadExists(
+    DeviceExistsCallback callback) {
+  std::move(callback).Run(haptic_touchpad_exists_);
+}
+
 void FakeInputDeviceSettings::SetTouchpadHapticFeedback(bool enabled) {
   TouchpadSettings settings;
   settings.SetHapticFeedback(enabled);
@@ -173,6 +178,10 @@ FakeInputDeviceSettings::GetFakeInterface() {
 
 void FakeInputDeviceSettings::set_touchpad_exists(bool exists) {
   touchpad_exists_ = exists;
+}
+
+void FakeInputDeviceSettings::set_haptic_touchpad_exists(bool exists) {
+  haptic_touchpad_exists_ = exists;
 }
 
 void FakeInputDeviceSettings::set_mouse_exists(bool exists) {
