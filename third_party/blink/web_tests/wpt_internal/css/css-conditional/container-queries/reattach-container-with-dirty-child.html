@@ -1,0 +1,33 @@
+<!doctype html>
+<title>@container changing display type while descendant styles change</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<style>
+  #container {
+    container-type: inline-size;
+  }
+  @container (min-width: 200px) {
+    div { color: red }
+  }
+  @container (max-width: 150px) {
+    div { color: lime }
+  }
+</style>
+<div id="container">
+  <div id="child"><span id="inner">XXX</span></div>
+</div>
+<script>
+  test(() => {
+    container.offsetTop;
+    assert_equals(getComputedStyle(child).color, "rgb(255, 0, 0)");
+  }, "Initially wider than 200px");
+
+  test(() => {
+    container.style.width = "100px";
+    container.style.display = "inline-block";
+    inner.style.color = "green";
+    container.offsetTop;
+    assert_equals(getComputedStyle(child).color, "rgb(0, 255, 0)");
+    assert_equals(getComputedStyle(inner).color, "rgb(0, 128, 0)");
+  }, "Container query changed and inner.style applied");
+</script>

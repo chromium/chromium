@@ -2925,6 +2925,12 @@ bool Element::SkipStyleRecalcForContainer(
 
   if (HasCustomStyleCallbacks())
     DidRecalcStyle(child_change);
+
+  // This needs to be cleared to satisty the DCHECKed invariants in
+  // Element::RebuildLayoutTree(). ChildNeedsStyleRecalc() is flipped back on
+  // before resuming the style recalc when the container is laid out. The stored
+  // child_change contains the correct flags to resume recalc of child nodes.
+  ClearChildNeedsStyleRecalc();
   return true;
 }
 
