@@ -16,6 +16,7 @@
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "chrome/browser/navigation_predictor/navigation_predictor_keyed_service.h"
+#include "chrome/browser/prefetch/prefetch_proxy/prefetch_container.h"
 #include "chrome/browser/prefetch/prefetch_proxy/prefetch_proxy_cookie_listener.h"
 #include "chrome/browser/prefetch/prefetch_proxy/prefetch_proxy_prefetch_status.h"
 #include "chrome/browser/prefetch/prefetch_proxy/prefetch_proxy_probe_result.h"
@@ -262,6 +263,10 @@ class PrefetchProxyTabHelper
 
     Profile* profile_;
 
+    // The set of URLs that can potentially be prefetched, and the state
+    // associated the individual prefetches.
+    std::map<GURL, std::unique_ptr<PrefetchContainer>> prefetch_containers_;
+
     // The start time of the current navigation.
     const base::TimeTicks navigation_start_;
 
@@ -281,13 +286,6 @@ class PrefetchProxyTabHelper
     scoped_refptr<PrefetchProxyPrefetchMetricsCollector>
         prefetch_metrics_collector_;
 
-    // The status of each prefetch.
-    std::map<GURL, PrefetchProxyPrefetchStatus> prefetch_status_by_url_;
-
-    // A map of all predicted URLs to their original placement in the ordered
-    // prediction.
-    std::map<GURL, size_t> original_prediction_ordering_;
-
     // The url loaders that do all the prefetches. Only active loaders are in
     // this set.
     std::set<std::unique_ptr<network::SimpleURLLoader>,
@@ -295,28 +293,11 @@ class PrefetchProxyTabHelper
         url_loaders_;
 
     // An ordered list of the URLs to prefetch.
-    std::vector<GURL> urls_to_prefetch_;
-
-    // Subset of |urls_to_prefetch_| that is allowed to have subresources
-    // fetched. These are still subject to an overall limit restricting how many
-    // prefetches can fetch subresources.
-    std::set<GURL> allowed_to_prefetch_subresources_;
-
-    // A set of all urls that were decoy requests.
-    std::set<GURL> decoy_urls_;
+    std::vector<PrefetchContainer*> urls_to_prefetch_;
 
     // The amount of time that the probe took to complete. Kept in this class
     // until commit in order to be plumbed into |AfterSRPMetrics|.
     absl::optional<base::TimeDelta> probe_latency_;
-
-    // All prefetched responses by URL. This is cleared every time a mainframe
-    // navigation commits.
-    std::map<GURL, std::unique_ptr<PrefetchedMainframeResponseContainer>>
-        prefetched_responses_;
-
-    // A map that corresponds to |prefetched_responses_| for storing prefetch
-    // start times.
-    std::map<GURL, base::TimeTicks> prefetch_start_times_;
 
     // The number of no state prefetch requests that have been made.
     size_t number_of_no_state_prefetch_attempts_ = 0;
@@ -328,14 +309,7 @@ class PrefetchProxyTabHelper
     // prefetch finishes, in success or in error, it is removed from this list.
     // If there is an active no state prefetch, its url will always be the first
     // element.
-    std::vector<GURL> urls_to_no_state_prefetch_;
-
-    // All urls have have been successfully no state prefetched and finished.
-    std::vector<GURL> no_state_prefetched_urls_;
-
-    // URLs for which a NoStatePrefetch was attempted and was denied by the
-    // Prerender code.
-    std::vector<GURL> failed_no_state_prefetch_urls_;
+    std::vector<PrefetchContainer*> urls_to_no_state_prefetch_;
 
     // If the current page load was prerendered, then this subresource manager
     // is taken from |PrefetchProxyService| and used to facilitate loading
@@ -358,10 +332,6 @@ class PrefetchProxyTabHelper
     mojo::Remote<network::mojom::NetworkContext> isolated_network_context_;
     mojo::Remote<network::mojom::CookieManager> isolated_cookie_manager_;
     scoped_refptr<network::SharedURLLoaderFactory> isolated_url_loader_factory_;
-
-    // A map of URLs to Listeners for any changes to the cookies for that URL.
-    std::map<GURL, std::unique_ptr<PrefetchProxyCookieListener>>
-        cookie_listeners_;
   };
 
   // Returns true if the current profile is not incognito and meets any
@@ -400,8 +370,8 @@ class PrefetchProxyTabHelper
                           const network::mojom::URLResponseHead& response_head,
                           std::vector<std::string>* removed_headers);
 
-  // Called when |loader| completes. |url| is the url that was requested
-  // and |key| is the temporary NIK used during the request.
+  // Called when |loader| completes. |url| is the url that was requested and
+  // |key| is the temporary NIK used during the request.
   void OnPrefetchComplete(network::SimpleURLLoader* loader,
                           const GURL& url,
                           const net::IsolationInfo& isolation_info,
@@ -410,14 +380,14 @@ class PrefetchProxyTabHelper
   // Checks the response from |OnPrefetchComplete| for success or failure. On
   // success the response is moved to a |PrefetchedMainframeResponseContainer|
   // and cached in |prefetched_responses_|.
-  void HandlePrefetchResponse(const GURL& url,
+  void HandlePrefetchResponse(PrefetchContainer* prefetch_container,
                               const net::IsolationInfo& isolation_info,
                               network::mojom::URLResponseHeadPtr head,
                               std::unique_ptr<std::string> body);
 
   // Checks if the given |url| is eligible to be no state prefetched and if so,
   // adds it to the list of urls to be no state prefetched.
-  void MaybeDoNoStatePrefetch(const GURL& url);
+  void MaybeDoNoStatePrefetch(PrefetchContainer* prefetch_container);
 
   // Starts a new no state prefetch for the next eligible url.
   void DoNoStatePrefetch();
@@ -429,15 +399,14 @@ class PrefetchProxyTabHelper
   // Makes a clone of |this|'s prefetch response so that it can be used for
   // NoStatePrefetch now and later reused if the user navigates to that page.
   std::unique_ptr<PrefetchedMainframeResponseContainer>
-  CopyPrefetchResponseForNSP(const GURL& url);
+  CopyPrefetchResponseForNSP(PrefetchContainer* prefetch_container);
 
   // Updates any status like kPrefetchUsed or kPrefetchNotUsed with additional
   // information about applicable NoStatePrefetches given |self|. Note: This is
   // done here because the navigation loader interceptor doesn't have visibility
   // itself and can't report it. Static and public to enable testing.
   PrefetchProxyPrefetchStatus MaybeUpdatePrefetchStatusWithNSPContext(
-      const GURL& url,
-      PrefetchProxyPrefetchStatus status) const;
+      PrefetchContainer* prefetch_container) const;
 
   // NavigationPredictorKeyedService::Observer:
   void OnPredictionUpdated(
@@ -463,11 +432,12 @@ class PrefetchProxyTabHelper
       mojo::PendingReceiver<network::mojom::URLLoaderFactory> pending_receiver,
       absl::optional<net::IsolationInfo> isolation_info);
 
-  // Starts a query for all cookies on |url| in the isolated cookie jar so that
-  // they can be copied to the normal profile. After this method is called,
-  // |IsWaitingForAfterSRPCookiesCopy| returns true until
+  // Starts a query for all cookies associated with |prefetch_container|| in the
+  // isolated cookie jar so that they can be copied to the normal profile. After
+  // this method is called, |IsWaitingForAfterSRPCookiesCopy| returns true until
   // |OnCopiedIsolatedCookiesAfterSRPClick| runs.
-  void CopyIsolatedCookiesOnAfterSRPClick(const GURL& url);
+  void CopyIsolatedCookiesOnAfterSRPClick(
+      PrefetchContainer* prefetch_container);
 
   // Starts copying all cookies in |cookie_list| to the normal profile.
   void OnGotIsolatedCookiesToCopyAfterSRPClick(

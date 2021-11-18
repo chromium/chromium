@@ -1285,6 +1285,8 @@ static_library("browser") {
     "prefetch/prefetch_prefs.h",
     "prefetch/prefetch_proxy/chrome_speculation_host_delegate.cc",
     "prefetch/prefetch_proxy/chrome_speculation_host_delegate.h",
+    "prefetch/prefetch_proxy/prefetch_container.cc",
+    "prefetch/prefetch_proxy/prefetch_container.h",
     "prefetch/prefetch_proxy/prefetch_proxy_cookie_listener.cc",
     "prefetch/prefetch_proxy/prefetch_proxy_cookie_listener.h",
     "prefetch/prefetch_proxy/prefetch_proxy_features.cc",
