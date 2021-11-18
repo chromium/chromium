@@ -635,4 +635,12 @@ if (enable_extensions) {
       "//base",
     ]
   }
+
+  fuzzer_test("extension_csp_validator_fuzzer") {
+    sources = [ "csp_validator_fuzzer.cc" ]
+    deps = [
+      ":common",
+      "//base",
+    ]
+  }
 }  # enable_extensions
