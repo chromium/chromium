@@ -1054,6 +1054,18 @@
   <message name="IDS_OS_SETTINGS_TAG_PRIVACY_PERIPHERAL_DATA_ACCESS_PROTECTION_ALT5" desc="Text for search result item which, when clicked, navigates the user to privacy settings, with a toggle to enable/disable peripheral data access protection. Alternate phrase for: 'Data access protection for peripherals', 'PCIe', 'Thunderbolt', 'USB', 'USB4'">
     USB-C
   </message>
+  <message name="IDS_OS_SETTINGS_TAG_SMART_PRIVACY" desc="Text for search result item which, when clicked, navigates the user to the smart privacy subpage." translateable="false">
+    Smart privacy protections
+  </message>
+  <message name="IDS_OS_SETTINGS_TAG_SMART_PRIVACY_SNOOPING" desc="Text for search result item which, when clicked, navigates the user to the smart privacy subpage with a toggle to enable/disable snooping protection. Alternate phrase for: 'Shoulder surfing', 'Peeking'" translateable="false">
+    Snooping protection
+  </message>
+  <message name="IDS_OS_SETTINGS_TAG_SMART_PRIVACY_SNOOPING_ALT1" desc="Text for search result item which, when clicked, navigates the user to the smart privacy subpage with a toggle to enable/disable snooping protection. Alternate phrase for: 'Snooping protection', 'Peeking'" translateable="false">
+    Shoulder surfing
+  </message>
+  <message name="IDS_OS_SETTINGS_TAG_SMART_PRIVACY_SNOOPING_ALT2" desc="Text for search result item which, when clicked, navigates the user to the smart privacy subpage with a toggle to enable/disable snooping protection. Alternate phrase for: 'Snooping protection', 'Shoulder surfing'" translateable="false">
+    Peeking
+  </message>
 
   <!-- Languages and Input section. -->
   <message name="IDS_OS_SETTINGS_TAG_LANGUAGES" desc="Text for search result item which, when clicked, navigates the user to languages settings.">

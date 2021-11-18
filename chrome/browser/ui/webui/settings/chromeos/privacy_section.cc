@@ -109,8 +109,6 @@ const std::vector<SearchConcept>& GetPrivacySearchConcepts() {
             {.subpage = mojom::Subpage::kSecurityAndSignInV2}}});
     }
 
-    // TODO(chromium:1262869): add smart privacy search concepts.
-
     return all_tags;
   }());
 
@@ -161,6 +159,26 @@ const std::vector<SearchConcept>& GetPciguardSearchConcepts() {
         IDS_OS_SETTINGS_TAG_PRIVACY_PERIPHERAL_DATA_ACCESS_PROTECTION_ALT4,
         IDS_OS_SETTINGS_TAG_PRIVACY_PERIPHERAL_DATA_ACCESS_PROTECTION_ALT5}},
   });
+  return *tags;
+}
+
+const std::vector<SearchConcept>& GetSmartPrivacySearchConcepts() {
+  static const base::NoDestructor<std::vector<SearchConcept>> tags(
+      {{IDS_OS_SETTINGS_TAG_SMART_PRIVACY_SNOOPING,
+        mojom::kSmartPrivacySubpagePath,
+        mojom::SearchResultIcon::kShield,
+        mojom::SearchResultDefaultRank::kMedium,
+        mojom::SearchResultType::kSetting,
+        {.setting = mojom::Setting::kSnoopingProtection},
+        {IDS_OS_SETTINGS_TAG_SMART_PRIVACY_SNOOPING_ALT1,
+         IDS_OS_SETTINGS_TAG_SMART_PRIVACY_SNOOPING_ALT2}},
+       {IDS_OS_SETTINGS_TAG_SMART_PRIVACY,
+        mojom::kSmartPrivacySubpagePath,
+        mojom::SearchResultIcon::kShield,
+        mojom::SearchResultDefaultRank::kMedium,
+        mojom::SearchResultType::kSubpage,
+        {.subpage = mojom::Subpage::kSmartPrivacy}}});
+
   return *tags;
 }
 
@@ -217,6 +235,10 @@ PrivacySection::PrivacySection(Profile* profile,
 
   if (chromeos::features::IsPciguardUiEnabled()) {
     updater.AddSearchTags(GetPciguardSearchConcepts());
+  }
+
+  if (ash::features::IsSnoopingProtectionEnabled()) {
+    updater.AddSearchTags(GetSmartPrivacySearchConcepts());
   }
 }
 
@@ -375,6 +397,8 @@ void PrivacySection::RegisterHierarchy(HierarchyGenerator* generator) const {
       IDS_OS_SETTINGS_SMART_PRIVACY_TITLE, mojom::Subpage::kSmartPrivacy,
       mojom::SearchResultIcon::kShield, mojom::SearchResultDefaultRank::kMedium,
       mojom::kSmartPrivacySubpagePath);
+  RegisterNestedSettingBulk(mojom::Subpage::kSmartPrivacy,
+                            {{mojom::Setting::kSnoopingProtection}}, generator);
 }
 
 bool PrivacySection::AreFingerprintSettingsAllowed() {

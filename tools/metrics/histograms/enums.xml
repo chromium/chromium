@@ -64252,6 +64252,7 @@ Called by update_net_trust_anchors.py.-->
   <int value="1112" label="Privacy: Remove Fingerprint V2"/>
   <int value="1113"
       label="Privacy: Enable/Disable peripheral data access protection"/>
+  <int value="1114" label="Privacy: Snooping Protection"/>
   <int value="1200" label="Add Language"/>
   <int value="1201" label="Show Input Options In Shelf"/>
   <int value="1202" label="Show Personal Information Suggestions"/>
