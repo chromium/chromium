@@ -8,8 +8,6 @@ static_library("mozilla_security_manager") {
     "nsNSSCertHelper.h",
     "nsNSSCertificate.cpp",
     "nsNSSCertificate.h",
-    "nsUsageArrayHelper.cpp",
-    "nsUsageArrayHelper.h",
   ]
 
   deps = [

@@ -30,9 +30,6 @@ std::string GetVersion(CERTCertificate* cert_handle);
 
 net::CertType GetType(CERTCertificate* cert_handle);
 
-void GetUsageStrings(CERTCertificate* cert_handle,
-                     std::vector<std::string>* usages);
-
 std::string GetSerialNumberHexified(CERTCertificate* cert_handle,
                                     const std::string& alternative_text);
 
