@@ -494,7 +494,8 @@ chrome.fileManagerPrivate.FileWatchEvent;
  *   use24hourClock: boolean,
  *   timezone: string,
  *   arcEnabled: boolean,
- *   arcRemovableMediaAccessEnabled: boolean
+ *   arcRemovableMediaAccessEnabled: boolean,
+ *   folderShortcuts: !Array<string>
  * }}
  */
 chrome.fileManagerPrivate.Preferences;
@@ -503,7 +504,8 @@ chrome.fileManagerPrivate.Preferences;
  * @typedef {{
  *   cellularDisabled: (boolean|undefined),
  *   arcEnabled: (boolean|undefined),
- *   arcRemovableMediaAccessEnabled: (boolean|undefined)
+ *   arcRemovableMediaAccessEnabled: (boolean|undefined),
+ *   folderShortcuts: (!Array<string>|undefined)
  * }}
  */
 chrome.fileManagerPrivate.PreferencesChange;

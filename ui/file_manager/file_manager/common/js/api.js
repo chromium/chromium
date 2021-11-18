@@ -50,3 +50,10 @@ export async function resolveIsolatedEntries(isolatedEntries) {
   return promisify(
       chrome.fileManagerPrivate.resolveIsolatedEntries, isolatedEntries);
 }
+
+/**
+ * @return {!Promise<!chrome.fileManagerPrivate.Preferences|undefined>}
+ */
+export async function getPreferences() {
+  return promisify(chrome.fileManagerPrivate.getPreferences);
+}

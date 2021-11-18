@@ -14,6 +14,7 @@
 #include "ash/components/arc/arc_prefs.h"
 #include "ash/components/drivefs/drivefs_host.h"
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/tablet_mode.h"
 #include "base/bind.h"
 #include "base/command_line.h"
@@ -653,6 +654,7 @@ void EventRouter::ObserveEvents() {
   pref_change_registrar_->Add(arc::prefs::kArcEnabled, callback);
   pref_change_registrar_->Add(arc::prefs::kArcHasAccessToRemovableMedia,
                               callback);
+  pref_change_registrar_->Add(ash::prefs::kFilesAppFolderShortcuts, callback);
 
   auto plugin_vm_callback = base::BindRepeating(&EventRouter::OnPluginVmChanged,
                                                 weak_factory_.GetWeakPtr());

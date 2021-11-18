@@ -884,8 +884,12 @@ const char kChromadToCloudMigrationEnabled[] =
 const char kProjectorCreationFlowLanguage[] =
     "ash.projector.projectorCreationFlowLanguage";
 
-// NOTE: New prefs should start with the "ash." prefix. Existing prefs
-// moved into this file should not be renamed, since they may be synced.
+// List of Drive Folder Shortcuts in the Files app. Used to sync the shortcuts
+// across devices.
+const char kFilesAppFolderShortcuts[] = "ash.filesapp.folder_shortcuts";
+
+// NOTE: New prefs should start with the "ash." prefix. Existing prefs moved
+// into this file should not be renamed, since they may be synced.
 
 }  // namespace prefs
 }  // namespace ash

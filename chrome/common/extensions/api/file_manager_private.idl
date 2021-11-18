@@ -722,12 +722,14 @@ dictionary Preferences {
   DOMString timezone;
   boolean arcEnabled;
   boolean arcRemovableMediaAccessEnabled;
+  DOMString[] folderShortcuts;
 };
 
 dictionary PreferencesChange {
   boolean? cellularDisabled;
   boolean? arcEnabled;
   boolean? arcRemovableMediaAccessEnabled;
+  DOMString[]? folderShortcuts;
 };
 
 dictionary SearchParams {
