@@ -1,13 +1,18 @@
 (async function(testRunner) {
+
   var {page, session, dp} = await testRunner.startBlank(
       `Tests that cookies are set, updated and removed.`);
 
-  async function logCookies() {
-    var data = (await dp.Network.getAllCookies()).result;
+  async function logCookies(opt_data) {
+    var data = opt_data || (await dp.Network.getAllCookies()).result;
     testRunner.log('Num of cookies ' + data.cookies.length);
     data.cookies.sort((a, b) => a.name.localeCompare(b.name));
     for (var cookie of data.cookies) {
       var suffix = ''
+      if (cookie.partitionKeyOpaque)
+        suffix += `, partitionKey: <opaque>`;
+      else if (cookie.partitionKey)
+        suffix += `, partitionKey: ${cookie.partitionKey}`;
       if (cookie.secure)
         suffix += `, secure`;
       if (cookie.httpOnly)
@@ -224,6 +229,35 @@
     deleteAllCookies,
 
     printCookieViaFetch,
+
+    deleteAllCookies,
+
+    async function setPartitionedCookie() {
+      await setCookie({url: 'https://devtools.test:8443', secure: true, name: '__Host-foo', value: 'bar', partitionKey: 'https://example.test:8443'});
+      await setCookie({url: 'https://example.test:8443', secure: true, name: '__Host-foo', value: 'bar', partitionKey: 'https://devtools.test:8443'});
+    },
+
+    deleteAllCookies,
+    logCookies,
+
+    async function setPartitionedCookies() {
+      await setCookies([
+        {url: 'https://devtools.test:8443', secure: true, name: '__Host-foo', value: 'bar', partitionKey: 'https://example.test:8443'},
+        {url: 'https://example.test:8443', secure: true, name: '__Host-foo', value: 'bar', partitionKey: 'https://devtools.test:8443'}
+      ]);
+    },
+
+    async function getPartitionedCookie() {
+      await page.navigate('https://devtools.test:8443/inspector-protocol/resources/iframe-third-party-cookie-parent.php');
+      logCookies((await dp.Network.getCookies()).result);
+    },
+
+    deleteAllCookies,
+
+    async function getPartitionedCookieFromOpaqueOrigin() {
+      await page.navigate('https://devtools.test:8443/inspector-protocol/resources/iframe-third-party-cookie-parent.php?opaque');
+      logCookies((await dp.Network.getCookies()).result);
+    },
 
     deleteAllCookies,
   ]);

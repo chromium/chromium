@@ -5117,6 +5117,11 @@ domain Network
       # An unspecified port value allows protocol clients to emulate legacy cookie scope for the port.
       # This is a temporary ability and it will be removed in the future.
       experimental integer sourcePort
+      # Cookie partition key. The site of the top-level URL the browser was visiting at the start
+      # of the request to the endpoint that set the cookie.
+      experimental optional string partitionKey
+      # True if cookie partition key is opaque.
+      experimental optional boolean partitionKeyOpaque
 
   # Types of reasons why a cookie may not be stored from a response.
   experimental type SetCookieBlockedReason extends string
@@ -5275,6 +5280,10 @@ domain Network
       # An unspecified port value allows protocol clients to emulate legacy cookie scope for the port.
       # This is a temporary ability and it will be removed in the future.
       experimental optional integer sourcePort
+      # Cookie partition key. The site of the top-level URL the browser was visiting at the start
+      # of the request to the endpoint that set the cookie.
+      # If not set, the cookie will be set as not partitioned.
+      experimental optional string partitionKey
 
   # Authorization challenge for HTTP status code 401 or 407.
   experimental type AuthChallenge extends object
@@ -5645,6 +5654,10 @@ domain Network
       # An unspecified port value allows protocol clients to emulate legacy cookie scope for the port.
       # This is a temporary ability and it will be removed in the future.
       experimental optional integer sourcePort
+      # Cookie partition key. The site of the top-level URL the browser was visiting at the start
+      # of the request to the endpoint that set the cookie.
+      # If not set, the cookie will be set as not partitioned.
+      experimental optional string partitionKey
     returns
       # Always set to true. If an error occurs, the response indicates protocol error.
       deprecated boolean success

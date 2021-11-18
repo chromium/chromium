@@ -69,6 +69,7 @@
 #include "net/cert/x509_util.h"
 #include "net/cookies/canonical_cookie.h"
 #include "net/cookies/cookie_inclusion_status.h"
+#include "net/cookies/cookie_partition_key.h"
 #include "net/cookies/cookie_util.h"
 #include "net/http/http_response_headers.h"
 #include "net/http/http_status_code.h"
@@ -190,7 +191,17 @@ std::unique_ptr<Network::Cookie> BuildCookie(
   if (maybe_same_site) {
     devtools_cookie->SetSameSite(*maybe_same_site);
   }
-
+  absl::optional<net::CookiePartitionKey> partition_key = cookie.PartitionKey();
+  if (partition_key) {
+    std::string serialized_partition_key;
+    if (partition_key->IsSerializeable()) {
+      DCHECK(net::CookiePartitionKey::Serialize(partition_key,
+                                                serialized_partition_key));
+      devtools_cookie->SetPartitionKey(serialized_partition_key);
+    } else {
+      devtools_cookie->SetPartitionKeyOpaque(true);
+    }
+  }
   return devtools_cookie;
 }
 
@@ -199,13 +210,17 @@ class CookieRetrieverNetworkService
  public:
   static void Retrieve(network::mojom::CookieManager* cookie_manager,
                        const std::vector<GURL> urls,
+                       const net::NetworkIsolationKey& network_isolation_key,
                        std::unique_ptr<GetCookiesCallback> callback) {
     scoped_refptr<CookieRetrieverNetworkService> self =
         new CookieRetrieverNetworkService(std::move(callback));
     net::CookieOptions cookie_options = net::CookieOptions::MakeAllInclusive();
     for (const auto& url : urls) {
       cookie_manager->GetCookieList(
-          url, cookie_options, net::CookiePartitionKeychain::Todo(),
+          url, cookie_options,
+          net::CookiePartitionKeychain::FromOptional(
+              net::CookiePartitionKey::FromNetworkIsolationKey(
+                  network_isolation_key)),
           base::BindOnce(&CookieRetrieverNetworkService::GotCookies, self));
     }
   }
@@ -317,7 +332,8 @@ MakeCookieFromProtocolValues(const std::string& name,
                              const std::string& priority,
                              bool same_party,
                              const Maybe<std::string>& source_scheme,
-                             const Maybe<int>& source_port) {
+                             const Maybe<int>& source_port,
+                             const Maybe<std::string>& partition_key) {
   std::string normalized_domain = domain;
 
   if (url_spec.empty() && domain.empty()) {
@@ -373,12 +389,24 @@ MakeCookieFromProtocolValues(const std::string& name,
   else if (priority == Network::CookiePriorityEnum::Low)
     cp = net::CookiePriority::COOKIE_PRIORITY_LOW;
 
+  absl::optional<net::CookiePartitionKey> deserialized_partition_key;
+  if (partition_key.isJust()) {
+    if (!base::FeatureList::IsEnabled(net::features::kPartitionedCookies)) {
+      return Response::InvalidParams(
+          "Partitioned cookies disabled. Cannot set cookie partition key");
+    }
+    if (!net::CookiePartitionKey::Deserialize(partition_key.fromJust(),
+                                              deserialized_partition_key)) {
+      return Response::InvalidParams(
+          "Deserializing cookie partition key failed");
+    }
+  }
   // TODO(crbug.com/1225444) Add Partitioned to DevTools cookie structures.
   std::unique_ptr<net::CanonicalCookie> cookie =
       net::CanonicalCookie::CreateSanitizedCookie(
           url, name, value, normalized_domain, path, base::Time(),
           expiration_date, base::Time(), secure, http_only, css, cp, same_party,
-          absl::nullopt);
+          deserialized_partition_key);
 
   if (!cookie)
     return Response::InvalidParams("Sanitizing cookie failed");
@@ -1418,7 +1446,7 @@ void NetworkHandler::GetCookies(Maybe<Array<String>> protocol_urls,
 
   CookieRetrieverNetworkService::Retrieve(
       storage_partition_->GetCookieManagerForBrowserProcess(), urls,
-      std::move(callback));
+      host_->GetNetworkIsolationKey(), std::move(callback));
 }
 
 void NetworkHandler::GetAllCookies(
@@ -1449,6 +1477,7 @@ void NetworkHandler::SetCookie(const std::string& name,
                                Maybe<bool> same_party,
                                Maybe<std::string> source_scheme,
                                Maybe<int> source_port,
+                               Maybe<std::string> partition_key,
                                std::unique_ptr<SetCookieCallback> callback) {
   if (!storage_partition_) {
     callback->sendFailure(Response::InternalError());
@@ -1459,7 +1488,7 @@ void NetworkHandler::SetCookie(const std::string& name,
       name, value, url.fromMaybe(""), domain.fromMaybe(""), path.fromMaybe(""),
       secure.fromMaybe(false), http_only.fromMaybe(false),
       same_site.fromMaybe(""), expires.fromMaybe(-1), priority.fromMaybe(""),
-      same_party.fromMaybe(false), source_scheme, source_port);
+      same_party.fromMaybe(false), source_scheme, source_port, partition_key);
 
   if (absl::holds_alternative<Response>(cookie_or_error)) {
     callback->sendFailure(absl::get<Response>(std::move(cookie_or_error)));
@@ -1497,13 +1526,17 @@ void NetworkHandler::SetCookies(
     const Maybe<int> source_port = cookie->HasSourcePort()
                                        ? Maybe<int>(cookie->GetSourcePort(0))
                                        : Maybe<int>();
+    const Maybe<std::string> partition_key =
+        cookie->HasPartitionKey()
+            ? Maybe<std::string>(cookie->GetPartitionKey(""))
+            : Maybe<std::string>();
 
     auto net_cookie_or_error = MakeCookieFromProtocolValues(
         cookie->GetName(), cookie->GetValue(), cookie->GetUrl(""),
         cookie->GetDomain(""), cookie->GetPath(""), cookie->GetSecure(false),
         cookie->GetHttpOnly(false), cookie->GetSameSite(""),
         cookie->GetExpires(-1), cookie->GetPriority(""),
-        cookie->GetSameParty(false), source_scheme, source_port);
+        cookie->GetSameParty(false), source_scheme, source_port, partition_key);
     if (absl::holds_alternative<Response>(net_cookie_or_error)) {
       // TODO: Investiage whether we can report the error as a protocol error
       // (this might be a breaking CDP change).

@@ -145,6 +145,7 @@ class NetworkHandler : public DevToolsDomainHandler,
                  Maybe<bool> same_party,
                  Maybe<std::string> source_scheme,
                  Maybe<int> source_port,
+                 Maybe<std::string> partition_key,
                  std::unique_ptr<SetCookieCallback> callback) override;
   void SetCookies(
       std::unique_ptr<protocol::Array<Network::CookieParam>> cookies,
