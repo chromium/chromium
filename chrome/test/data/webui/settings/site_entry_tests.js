@@ -36,15 +36,6 @@ suite('SiteEntry_DisabledConsolidatedControls', function() {
     'https://login.foo.com',
   ]);
 
-  const TEST_COOKIE_LIST = {
-    id: 'foo',
-    children: [
-      {domain: 'example.com'},
-      {domain: 'example.com'},
-      {domain: 'example.com'},
-    ]
-  };
-
   /**
    * The mock proxy object to use during test.
    * @type {TestSiteSettingsPrefsBrowserProxy}
@@ -106,7 +97,7 @@ suite('SiteEntry_DisabledConsolidatedControls', function() {
 
   test('expands and closes to show more origins', function() {
     testElement.siteGroup = TEST_MULTIPLE_SITE_GROUP;
-    assertTrue(testElement.grouped_(testElement.siteGroup));
+    assertFalse(testElement.$.expandIcon.hidden);
     assertEquals('false', toggleButton.getAttribute('aria-expanded'));
     const originList = testElement.$.originList.get();
     assertTrue(originList.classList.contains('iron-collapse-closed'));
@@ -120,7 +111,7 @@ suite('SiteEntry_DisabledConsolidatedControls', function() {
 
   test('with single origin navigates to Site Details', function() {
     testElement.siteGroup = TEST_SINGLE_SITE_GROUP;
-    assertFalse(testElement.grouped_(testElement.siteGroup));
+    assertTrue(testElement.$.expandIcon.hidden);
     assertEquals('false', toggleButton.getAttribute('aria-expanded'));
     const originList = testElement.$.originList.get();
     assertTrue(originList.classList.contains('iron-collapse-closed'));
@@ -202,14 +193,15 @@ suite('SiteEntry_DisabledConsolidatedControls', function() {
 
         // Remove all origins except one, then make sure it's not still
         // expanded.
-        testElement.siteGroup.origins.splice(1);
+        const siteGroupUpdated =
+            JSON.parse(JSON.stringify(TEST_MULTIPLE_SITE_GROUP));
+        siteGroupUpdated.origins.splice(1);
+        testElement.siteGroup = siteGroupUpdated;
         assertEquals(1, testElement.siteGroup.origins.length);
-        testElement.onSiteGroupChanged_(testElement.siteGroup);
         assertFalse(testElement.$.originList.get().opened);
       });
 
   test('cookies show correctly for grouped entries', function() {
-    localDataBrowserProxy.setCookieDetails(TEST_COOKIE_LIST);
     testElement.siteGroup = TEST_MULTIPLE_SITE_GROUP;
     flush();
     const cookiesLabel = testElement.$.cookies;
@@ -465,15 +457,6 @@ suite('SiteEntry_EnabledConsolidatedControls', function() {
     'https://login.foo.com',
   ]);
 
-  const TEST_COOKIE_LIST = {
-    id: 'foo',
-    children: [
-      {domain: 'example.com'},
-      {domain: 'example.com'},
-      {domain: 'example.com'},
-    ]
-  };
-
   /**
    * The mock proxy object to use during test.
    * @type {TestSiteSettingsPrefsBrowserProxy}
@@ -502,8 +485,8 @@ suite('SiteEntry_EnabledConsolidatedControls', function() {
   setup(function() {
     browserProxy = new TestSiteSettingsPrefsBrowserProxy();
     localDataBrowserProxy = new TestLocalDataBrowserProxy();
-    SiteSettingsPrefsBrowserProxyImpl.instance_ = browserProxy;
-    LocalDataBrowserProxyImpl.instance_ = localDataBrowserProxy;
+    SiteSettingsPrefsBrowserProxyImpl.setInstance(browserProxy);
+    LocalDataBrowserProxyImpl.setInstance(localDataBrowserProxy);
 
     PolymerTest.clearBody();
     testElement = document.createElement('site-entry');
