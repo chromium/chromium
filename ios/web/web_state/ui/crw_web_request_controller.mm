@@ -508,21 +508,27 @@ enum class BackForwardNavigationType {
   }
 
   WKNavigation* navigation = nil;
+#if defined(__IPHONE_15_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_15_0
+  if (@available(iOS 15, *)) {
+    if (base::FeatureList::IsEnabled(web::features::kSetRequestAttribution)) {
+      request.attribution = NSURLRequestAttributionUser;
+    }
+  }
+#endif
+
   if (navigationURL.SchemeIsFile() &&
       web::GetWebClient()->IsAppSpecificURL(virtualURL)) {
     // file:// URL navigations are allowed for app-specific URLs, which
     // already have elevated privileges.
-    NSURL* navigationNSURL = net::NSURLWithGURL(navigationURL);
-    navigation = [self.webView loadFileURL:navigationNSURL
-                   allowingReadAccessToURL:navigationNSURL];
-  } else {
-#if defined(__IPHONE_15_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_15_0
     if (@available(iOS 15, *)) {
-      if (base::FeatureList::IsEnabled(web::features::kSetRequestAttribution)) {
-        request.attribution = NSURLRequestAttributionUser;
-      }
+      navigation = [self.webView loadFileRequest:request
+                         allowingReadAccessToURL:request.URL];
+    } else {
+      NSURL* navigationNSURL = net::NSURLWithGURL(navigationURL);
+      navigation = [self.webView loadFileURL:navigationNSURL
+                     allowingReadAccessToURL:navigationNSURL];
     }
-#endif
+  } else {
     navigation = [self.webView loadRequest:request];
   }
   [self.navigationHandler.navigationStates
