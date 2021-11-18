@@ -55,6 +55,8 @@ class ContinueSectionViewTest : public AshTestBase {
   void SetUp() override { AshTestBase::SetUp(); }
 
   ContinueSectionView* GetContinueSectionView() {
+    if (Shell::Get()->tablet_mode_controller()->InTabletMode())
+      return GetAppListTestHelper()->GetFullscreenContinueSectionView();
     return GetAppListTestHelper()->GetBubbleContinueSectionView();
   }
 
@@ -307,7 +309,18 @@ TEST_F(ContinueSectionViewTest, ResultRemovedContextMenuCloses) {
   RemoveSearchResultAt(3);
   VerifyResultViewsUpdated();
 
-  EXPECT_FALSE(continue_task_view->IsMenuShowing());
+  ASSERT_EQ(std::vector<std::string>({"id1", "id2", "id3"}), GetResultIds());
+
+  // Click on another result and verify it activates the item to confirm the
+  // event is not consumed by a context menu.
+  EXPECT_EQ(GetResultViewAt(0)->result()->id(), "id1");
+  GetEventGenerator()->MoveMouseTo(
+      GetResultViewAt(0)->GetBoundsInScreen().CenterPoint());
+  GetEventGenerator()->ClickLeftButton();
+
+  // The item was activated.
+  TestAppListClient* client = GetAppListTestHelper()->app_list_client();
+  EXPECT_EQ("id1", client->last_opened_search_result());
 }
 
 TEST_F(ContinueSectionViewTest, UpdateAppsOnModelChange) {
@@ -349,6 +362,51 @@ TEST_F(ContinueSectionViewTest, UpdateAppsOnModelChange) {
   // Results should be cleared if app list models get reset.
   Shell::Get()->app_list_controller()->ClearActiveModel();
   EXPECT_EQ(std::vector<std::string>{}, GetResultIds());
+}
+
+TEST_F(ContinueSectionViewTest, TabletModeLayoutWithThreeSuggestions) {
+  AddSearchResult("id1", AppListSearchResultType::kFileChip);
+  AddSearchResult("id2", AppListSearchResultType::kDriveChip);
+  AddSearchResult("id3", AppListSearchResultType::kDriveChip);
+
+  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
+  VerifyResultViewsUpdated();
+
+  ASSERT_TRUE(GetContinueSectionView()->GetVisible());
+  ASSERT_EQ(3u, GetContinueSectionView()->GetTasksSuggestionsCount());
+
+  const int width = GetResultViewAt(0)->width();
+  const int vertical_position = GetResultViewAt(0)->y();
+
+  for (int i = 1; i < 3; i++) {
+    EXPECT_EQ(width, GetResultViewAt(i)->width());
+    EXPECT_EQ(vertical_position, GetResultViewAt(i)->y());
+    EXPECT_GT(GetResultViewAt(i)->x(),
+              GetResultViewAt(i - 1)->bounds().right());
+  }
+}
+
+TEST_F(ContinueSectionViewTest, TabletModeLayoutWithFourSuggestions) {
+  AddSearchResult("id1", AppListSearchResultType::kFileChip);
+  AddSearchResult("id2", AppListSearchResultType::kDriveChip);
+  AddSearchResult("id3", AppListSearchResultType::kDriveChip);
+  AddSearchResult("id4", AppListSearchResultType::kFileChip);
+
+  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
+  VerifyResultViewsUpdated();
+
+  ASSERT_TRUE(GetContinueSectionView()->GetVisible());
+  ASSERT_EQ(4u, GetContinueSectionView()->GetTasksSuggestionsCount());
+
+  const int width = GetResultViewAt(0)->width();
+  const int vertical_position = GetResultViewAt(0)->y();
+
+  for (int i = 1; i < 4; i++) {
+    EXPECT_EQ(width, GetResultViewAt(i)->width());
+    EXPECT_EQ(vertical_position, GetResultViewAt(i)->y());
+    EXPECT_GT(GetResultViewAt(i)->x(),
+              GetResultViewAt(i - 1)->bounds().right());
+  }
 }
 
 }  // namespace

@@ -20,13 +20,15 @@
 #include "ui/views/border.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
+#include "ui/views/layout/flex_layout.h"
 #include "ui/views/layout/table_layout.h"
+
+using views::BoxLayout;
+using views::FlexLayout;
+using views::TableLayout;
 
 namespace ash {
 namespace {
-// Suggested tasks padding in dips
-constexpr int kSuggestedTasksHorizontalPadding = 6;
-
 // Suggested tasks layout constants.
 constexpr int kColumnSpacingClamshell = 8;
 constexpr int kColumnSpacingTablet = 16;
@@ -67,39 +69,16 @@ ContinueTaskContainerView::ContinueTaskContainerView(
     int columns,
     OnResultsChanged update_callback,
     bool tablet_mode)
-    : view_delegate_(view_delegate), update_callback_(update_callback) {
+    : view_delegate_(view_delegate),
+      update_callback_(update_callback),
+      tablet_mode_(tablet_mode) {
   DCHECK(!update_callback_.is_null());
 
-  SetBorder(views::CreateEmptyBorder(
-      gfx::Insets(0, kSuggestedTasksHorizontalPadding)));
-
-  auto* layout = SetLayoutManager(std::make_unique<views::TableLayout>());
-  for (int i = 0; i < columns; i++) {
-    if (i > 0) {
-      layout->AddPaddingColumn(
-          views::TableLayout::kFixedSize,
-          tablet_mode ? kColumnSpacingTablet : kColumnSpacingClamshell);
-    }
-    layout->AddColumn(
-        views::LayoutAlignment::kStretch, views::LayoutAlignment::kCenter,
-        /*resize_percent=*/1.0f, views::TableLayout::ColumnSize::kUsePreferred,
-        /*fixed_width=*/0, /*min_width=*/0);
-  }
-
-  for (size_t i = 0; i < kMaxFilesForContinueSection; ++i) {
-    if (i % columns == 0) {
-      if (i > 0)
-        layout->AddPaddingRow(views::TableLayout::kFixedSize, kRowSpacing);
-      layout->AddRows(1, views::TableLayout::kFixedSize);
-    }
-    ContinueTaskView* task = AddChildView(
-        std::make_unique<ContinueTaskView>(view_delegate, tablet_mode));
-    // This view has a predefined number of placeholder tasks views which toggle
-    // visibility depending on the result being null or not. The container's
-    // visibility is handled on the parent view.
-    task->SetVisible(false);
-    task->set_index_in_container(i);
-    suggestion_tasks_views_.emplace_back(task);
+  if (tablet_mode_) {
+    InitializeFlexLayout();
+  } else {
+    columns_ = columns;
+    InitializeTableLayout();
   }
 }
 
@@ -128,10 +107,18 @@ void ContinueTaskContainerView::Update() {
   std::vector<SearchResult*> tasks =
       GetTasksResultsForContinueSection(results_);
 
-  // Update search results here.
-  for (size_t i = 0; i < suggestion_tasks_views_.size(); ++i) {
-    suggestion_tasks_views_[i]->SetResult(i < tasks.size() ? tasks[i]
-                                                           : nullptr);
+  RemoveAllChildViews();
+  suggestion_tasks_views_.clear();
+  num_results_ = std::min(kMaxFilesForContinueSection, tasks.size());
+
+  for (size_t i = 0; i < num_results_; ++i) {
+    auto task =
+        std::make_unique<ContinueTaskView>(view_delegate_, tablet_mode_);
+    task->set_index_in_container(i);
+    task->SetResult(tasks[i]);
+    suggestion_tasks_views_.emplace_back(task.get());
+    MaybeAddNewRowToLayout(i);
+    AddChildView(std::move(task));
   }
 
   auto* notifier = view_delegate_->GetNotifier();
@@ -139,10 +126,9 @@ void ContinueTaskContainerView::Update() {
     std::vector<AppListNotifier::Result> notifier_results;
     for (const auto* task : tasks)
       notifier_results.emplace_back(task->id(), task->metrics_type());
-    notifier->NotifyResultsUpdated(SearchResultDisplayType::kChip,
+    notifier->NotifyResultsUpdated(SearchResultDisplayType::kList,
                                    notifier_results);
   }
-  num_results_ = std::min(kMaxFilesForContinueSection, tasks.size());
   if (!update_callback_.is_null())
     update_callback_.Run();
 }
@@ -172,6 +158,56 @@ void ContinueTaskContainerView::ScheduleUpdate() {
         FROM_HERE, base::BindOnce(&ContinueTaskContainerView::Update,
                                   update_factory_.GetWeakPtr()));
   }
+}
+
+void ContinueTaskContainerView::MaybeAddNewRowToLayout(int task_index) {
+  if (!table_layout_)
+    return;
+
+  // Only adds a new row if the columns have been filled by previous views.
+  if (task_index % columns_)
+    return;
+
+  if (task_index > 0)
+    table_layout_->AddPaddingRow(views::TableLayout::kFixedSize, kRowSpacing);
+  table_layout_->AddRows(1, views::TableLayout::kFixedSize);
+}
+
+void ContinueTaskContainerView::InitializeFlexLayout() {
+  DCHECK(tablet_mode_);
+  DCHECK(!table_layout_);
+  DCHECK(!columns_);
+
+  flex_layout_ = SetLayoutManager(std::make_unique<FlexLayout>());
+  flex_layout_->SetOrientation(views::LayoutOrientation::kHorizontal)
+      .SetMainAxisAlignment(views::LayoutAlignment::kCenter)
+      .SetDefault(views::kMarginsKey,
+                  gfx::Insets(0, kColumnSpacingTablet, 0, 0))
+      .SetDefault(views::kFlexBehaviorKey,
+                  views::FlexSpecification(
+                      views::MinimumFlexSizeRule::kScaleToMinimum,
+                      views::MaximumFlexSizeRule::kScaleToMaximum));
+}
+
+void ContinueTaskContainerView::InitializeTableLayout() {
+  DCHECK(!tablet_mode_);
+  DCHECK(!flex_layout_);
+  DCHECK_GT(columns_, 0);
+
+  table_layout_ = SetLayoutManager(std::make_unique<views::TableLayout>());
+  std::vector<size_t> linked_columns;
+  for (int i = 0; i < columns_; i++) {
+    if (i > 0) {
+      table_layout_->AddPaddingColumn(views::TableLayout::kFixedSize,
+                                      kColumnSpacingClamshell);
+    }
+    table_layout_->AddColumn(
+        views::LayoutAlignment::kStretch, views::LayoutAlignment::kCenter,
+        /*resize_percent=*/1.0f, views::TableLayout::ColumnSize::kFixed,
+        /*fixed_width=*/0, /*min_width=*/0);
+    linked_columns.push_back(2 * i);
+  }
+  table_layout_->LinkColumnSizes(linked_columns);
 }
 
 BEGIN_METADATA(ContinueTaskContainerView, views::View)
