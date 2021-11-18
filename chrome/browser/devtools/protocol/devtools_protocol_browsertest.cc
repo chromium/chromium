@@ -8,6 +8,7 @@
 #include "base/bind.h"
 #include "base/files/file_util.h"
 #include "base/path_service.h"
+#include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/test/values_test_util.h"
 #include "base/threading/thread_restrictions.h"
@@ -44,7 +45,10 @@
 #include "third_party/boringssl/src/include/openssl/ssl.h"
 
 using DevToolsProtocolTest = DevToolsProtocolTestBase;
+using testing::AllOf;
 using testing::Eq;
+using testing::Contains;
+using testing::Not;
 
 namespace {
 
@@ -110,6 +114,81 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest,
   EXPECT_EQ(chrome::kChromeUINewTabURL, wc->GetLastCommittedURL().spec());
 
   // Should not crash by this point.
+}
+
+IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest,
+                       InputDispatchEventsToCorrectTarget) {
+  Attach();
+
+  std::string setup_logging = R"(
+      window.logs = [];
+      ['dragenter', 'keydown', 'mousedown', 'mouseenter', 'mouseleave',
+       'mousemove', 'mouseout', 'mouseover', 'mouseup', 'click', 'touchcancel',
+       'touchend', 'touchmove', 'touchstart',
+      ].forEach((event) =>
+        window.addEventListener(event, (e) => logs.push(e.type)));)";
+  content::WebContents* target_web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+
+  ui_test_utils::NavigateToURLWithDisposition(
+      browser(), GURL("about:blank"), WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+  content::WebContents* other_web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  EXPECT_TRUE(
+      content::EvalJs(target_web_contents, setup_logging).error.empty());
+  EXPECT_TRUE(content::EvalJs(other_web_contents, setup_logging).error.empty());
+
+  base::DictionaryValue params;
+  params.SetStringKey("button", "left");
+  params.SetIntKey("clickCount", 1);
+  params.SetIntKey("x", 100);
+  params.SetIntKey("y", 250);
+  params.SetIntKey("clickCount", 1);
+
+  params.SetStringKey("type", "mousePressed");
+  SendCommandSync("Input.dispatchMouseEvent", params.Clone());
+
+  params.SetStringKey("type", "mouseMoved");
+  params.SetIntKey("y", 270);
+  SendCommandSync("Input.dispatchMouseEvent", params.Clone());
+
+  params.SetStringKey("type", "mouseReleased");
+  SendCommandSync("Input.dispatchMouseEvent", std::move(params));
+
+  params = base::DictionaryValue();
+  params.SetIntKey("x", 100);
+  params.SetIntKey("y", 250);
+  params.SetStringPath("type", "dragEnter");
+  params.SetIntPath("data.dragOperationsMask", 1);
+  params.SetPath("data.items", base::ListValue());
+  SendCommandSync("Input.dispatchDragEvent", std::move(params));
+
+  params = base::DictionaryValue();
+  params.SetIntKey("x", 100);
+  params.SetIntKey("y", 250);
+  SendCommandSync("Input.synthesizeTapGesture", std::move(params));
+
+  params = base::DictionaryValue();
+  params.SetStringKey("type", "keyDown");
+  params.SetStringKey("key", "a");
+  SendCommandSync("Input.dispatchKeyEvent", std::move(params));
+
+  content::EvalJsResult main_target_events =
+      content::EvalJs(target_web_contents, "logs.join(' ')");
+  content::EvalJsResult other_target_events =
+      content::EvalJs(other_web_contents, "logs.join(' ')");
+  // mouse events might happen in the other_target if the real mouse pointer
+  // happens to be over the browser window
+  EXPECT_THAT(base::SplitString(main_target_events.ExtractString(), " ",
+                                base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL),
+              AllOf(Contains("mouseover"), Contains("mousedown"), Contains("mousemove"),
+                    Contains("mouseup"), Contains("click"), Contains("dragenter"),
+                    Contains("keydown")));
+  EXPECT_THAT(base::SplitString(other_target_events.ExtractString(), " ",
+                                base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL),
+              AllOf(Not(Contains("click")), Not(Contains("dragenter")),
+                    Not(Contains("keydown"))));
 }
 
 class DevToolsProtocolTest_AppId : public DevToolsProtocolTest {
