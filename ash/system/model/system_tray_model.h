@@ -88,9 +88,6 @@ class SystemTrayModel : public SystemTray {
   std::unique_ptr<TrayNetworkStateModel> network_state_model_;
   std::unique_ptr<ActiveNetworkIcon> active_network_icon_;
 
-  // TODO(tetsui): Add following as a sub-model of SystemTrayModel:
-  // * BluetoothModel
-
   // Client interface in chrome browser. May be null in tests.
   SystemTrayClient* client_ = nullptr;
 };
