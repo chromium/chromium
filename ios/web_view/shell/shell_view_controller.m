@@ -612,30 +612,7 @@ NSString* const kWebViewShellJavaScriptDialogTextFieldAccessibilityIdentifier =
                                 handler:^(UIAlertAction* action) {
                                   [weakSelf showPassphraseUnlockAlert];
                                 }]];
-    } else if (syncController.trustedVaultKeysRequired) {
-      [alertController
-          addAction:[UIAlertAction
-                        actionWithTitle:@"Fetch trusted vault keys"
-                                  style:UIAlertActionStyleDefault
-                                handler:^(UIAlertAction* action) {
-                                  [weakSelf.trustedVaultProvider
-                                      showFetchKeysFlowForIdentity:
-                                          currentIdentity
-                                                fromViewController:weakSelf];
-                                }]];
-    } else if (syncController.trustedVaultRecoverabilityDegraded) {
-      [alertController
-          addAction:
-              [UIAlertAction
-                  actionWithTitle:@"Fix degraded recoverability"
-                            style:UIAlertActionStyleDefault
-                          handler:^(UIAlertAction* action) {
-                            [weakSelf.trustedVaultProvider
-                                showFixDegradedRecoverabilityFlowForIdentity:
-                                    currentIdentity
-                                                          fromViewController:
-                                                              weakSelf];
-                          }]];
+    } else {
     }
   } else {
     for (CWVIdentity* identity in [_authService identities]) {
