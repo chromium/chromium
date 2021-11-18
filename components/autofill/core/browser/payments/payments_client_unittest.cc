@@ -1546,6 +1546,7 @@ TEST_F(PaymentsClientTest, SelectChallengeOptionWithSmsOtpMethod) {
 
   EXPECT_EQ(AutofillClient::PaymentsRpcResult::kSuccess, result_);
   assertIncludedInRequest("context_token");
+  assertIncludedInRequest("external_customer_id");
   assertIncludedInRequest("selected_idv_challenge_option");
   assertIncludedInRequest("sms_otp_challenge_option");
   // We should only set the challenge id. No need to send the masked phone
