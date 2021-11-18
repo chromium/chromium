@@ -77,6 +77,27 @@ TEST_F(FirstPartySetsDisabledTest, SetsManuallySpecified_IgnoresValid) {
   EXPECT_THAT(sets.Sets(), IsEmpty());
 }
 
+TEST_F(FirstPartySetsDisabledTest, IsInNontrivialFirstPartySet) {
+  const std::string input =
+      R"([{
+        "owner": "https://example.test",
+        "members": ["https://aaaa.test"]
+        }])";
+  ASSERT_TRUE(base::JSONReader::Read(input));
+
+  FirstPartySets sets;
+  sets.ParseAndSet(input);
+
+  // IsInNontrivialFirstPartySet queries should return false, regardless of what
+  // data has been passed to the instance.
+  EXPECT_FALSE(sets.IsInNontrivialFirstPartySet(
+      net::SchemefulSite(GURL("https://example.test"))));
+  EXPECT_FALSE(sets.IsInNontrivialFirstPartySet(
+      net::SchemefulSite(GURL("https://aaaa.test"))));
+  EXPECT_FALSE(sets.IsInNontrivialFirstPartySet(
+      net::SchemefulSite(GURL("https://bbbb.test"))));
+}
+
 TEST_F(FirstPartySetsDisabledTest, ComputeContext_InfersSingletons) {
   using SamePartyContextType = net::SamePartyContext::Type;
 
