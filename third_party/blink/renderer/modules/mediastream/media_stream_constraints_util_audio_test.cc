@@ -16,6 +16,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "media/base/audio_parameters.h"
+#include "media/webrtc/constants.h"
 #include "media/webrtc/webrtc_features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/platform/modules/mediastream/web_platform_media_stream_source.h"
@@ -530,7 +531,7 @@ class MediaStreamConstraintsUtilAudioTest
           "8khz_sample_rate_device", "fake_group4",
           media::AudioParameters(media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
                                  media::CHANNEL_LAYOUT_STEREO,
-                                 blink::AudioProcessing::kSampleRate8kHz,
+                                 webrtc::AudioProcessing::kSampleRate8kHz,
                                  1000));
 
       capabilities_.emplace_back(
@@ -972,19 +973,19 @@ TEST_P(MediaStreamConstraintsUtilAudioTest, ChannelsWithSource) {
 
 TEST_P(MediaStreamConstraintsUtilAudioTest, SampleRate) {
   AudioCaptureSettings result;
-  int exact_sample_rate = blink::AudioProcessing::kSampleRate8kHz;
-  int min_sample_rate = blink::AudioProcessing::kSampleRate8kHz;
+  int exact_sample_rate = webrtc::AudioProcessing::kSampleRate8kHz;
+  int min_sample_rate = webrtc::AudioProcessing::kSampleRate8kHz;
   // |max_sample_rate| is different based on architecture, namely due to a
   // difference on Android.
   int max_sample_rate =
       std::max(static_cast<int>(media::AudioParameters::kAudioCDSampleRate),
-               blink::kAudioProcessingSampleRate);
-  int ideal_sample_rate = blink::AudioProcessing::kSampleRate8kHz;
+               media::kAudioProcessingSampleRateHz);
+  int ideal_sample_rate = webrtc::AudioProcessing::kSampleRate8kHz;
   if (!IsDeviceCapture()) {
     exact_sample_rate = media::AudioParameters::kAudioCDSampleRate;
     min_sample_rate =
         std::min(static_cast<int>(media::AudioParameters::kAudioCDSampleRate),
-                 blink::kAudioProcessingSampleRate);
+                 media::kAudioProcessingSampleRateHz);
     ideal_sample_rate = media::AudioParameters::kAudioCDSampleRate;
   }
 
@@ -1059,7 +1060,7 @@ TEST_P(MediaStreamConstraintsUtilAudioTest, SampleRate) {
 
   if (IsDeviceCapture()) {
     constraint_factory_.basic().sample_rate.SetIdeal(
-        blink::AudioProcessing::kSampleRate48kHz + 1000);
+        webrtc::AudioProcessing::kSampleRate48kHz + 1000);
     result = SelectSettings();
     EXPECT_TRUE(result.HasValue());
     EXPECT_EQ(result.device_id(), "default_device");

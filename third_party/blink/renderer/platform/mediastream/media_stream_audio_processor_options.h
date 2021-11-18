@@ -12,15 +12,6 @@
 
 namespace blink {
 
-using webrtc::AudioProcessing;
-
-static constexpr int kAudioProcessingSampleRate =
-#if defined(OS_ANDROID)
-    AudioProcessing::kSampleRate16kHz;
-#else
-    AudioProcessing::kSampleRate48kHz;
-#endif
-
 // Simple struct with audio-processing properties.
 struct PLATFORM_EXPORT AudioProcessingProperties {
   enum class EchoCancellationType {

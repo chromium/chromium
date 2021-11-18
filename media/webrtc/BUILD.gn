@@ -11,6 +11,7 @@ component("webrtc") {
   sources = [
     "audio_delay_stats_reporter.cc",
     "audio_delay_stats_reporter.h",
+    "constants.h",
     "helpers.cc",
     "helpers.h",
     "webrtc_features.cc",

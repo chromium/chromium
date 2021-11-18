@@ -26,6 +26,7 @@
 #include "media/base/audio_parameters.h"
 #include "media/base/channel_layout.h"
 #include "media/base/limits.h"
+#include "media/webrtc/constants.h"
 #include "media/webrtc/helpers.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/features.h"
@@ -542,14 +543,14 @@ void MediaStreamAudioProcessor::InitializeCaptureFifo(
   // convert at output) or ideally, have a backchannel from the sink to know
   // what format it would prefer.
   const int output_sample_rate =
-      audio_processing_
-          ?
+      audio_processing_ ?
 #if BUILDFLAG(IS_CHROMECAST)
-          std::min(kAudioProcessingSampleRate, input_format.sample_rate())
+                        std::min(media::kAudioProcessingSampleRateHz,
+                                 input_format.sample_rate())
 #else
-          kAudioProcessingSampleRate
+                        media::kAudioProcessingSampleRateHz
 #endif  // BUILDFLAG(IS_CHROMECAST)
-          : input_format.sample_rate();
+                        : input_format.sample_rate();
 
   // The output channels from the fifo is normally the same as input.
   int fifo_output_channels = input_format.channels();

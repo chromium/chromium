@@ -20,6 +20,7 @@
 #include "build/build_config.h"
 #include "media/base/audio_parameters.h"
 #include "media/capture/video_capture_types.h"
+#include "media/webrtc/constants.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/common/mediastream/media_stream_controls.h"
 #include "third_party/blink/public/common/mediastream/media_stream_request.h"
@@ -1381,9 +1382,9 @@ MediaStreamSource* UserMediaProcessor::InitializeAudioSourceObject(
   auto device_parameters = audio_source->device().input;
   if (device_parameters.IsValid()) {
     capabilities.channel_count = {1, device_parameters.channels()};
-    capabilities.sample_rate = {std::min(blink::kAudioProcessingSampleRate,
+    capabilities.sample_rate = {std::min(media::kAudioProcessingSampleRateHz,
                                          device_parameters.sample_rate()),
-                                std::max(blink::kAudioProcessingSampleRate,
+                                std::max(media::kAudioProcessingSampleRateHz,
                                          device_parameters.sample_rate())};
     double fallback_latency =
         static_cast<double>(blink::kFallbackAudioLatencyMs) / 1000;

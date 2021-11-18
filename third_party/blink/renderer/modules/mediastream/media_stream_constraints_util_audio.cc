@@ -16,6 +16,7 @@
 #include "media/audio/audio_features.h"
 #include "media/base/audio_parameters.h"
 #include "media/base/limits.h"
+#include "media/webrtc/constants.h"
 #include "media/webrtc/webrtc_features.h"
 #include "third_party/blink/public/common/mediastream/media_stream_controls.h"
 #include "third_party/blink/public/platform/web_string.h"
@@ -726,7 +727,7 @@ class ProcessingBasedContainer {
         IntRangeSet::FromValue(GetSampleSize()),    /* sample_size_range */
         GetApmSupportedChannels(device_parameters), /* channels_set */
         IntRangeSet::FromValue(
-            blink::kAudioProcessingSampleRate), /* sample_rate_range */
+            media::kAudioProcessingSampleRateHz), /* sample_rate_range */
         source_info, is_device_capture, device_parameters,
         is_reconfiguration_allowed);
   }

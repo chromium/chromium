@@ -21,6 +21,7 @@
 #include "build/chromecast_buildflags.h"
 #include "media/base/audio_bus.h"
 #include "media/base/audio_parameters.h"
+#include "media/webrtc/constants.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -219,9 +220,9 @@ TEST_P(MediaStreamAudioProcessorTestMultichannel, MAYBE_WithAudioProcessing) {
   const int expected_output_channels =
       use_multichannel_processing ? params_.channels() : 1;
   ProcessDataAndVerifyFormat(*audio_processor, mock_capture_callback_,
-                             blink::kAudioProcessingSampleRate,
+                             media::kAudioProcessingSampleRateHz,
                              expected_output_channels,
-                             blink::kAudioProcessingSampleRate / 100);
+                             media::kAudioProcessingSampleRateHz / 100);
 
   // Stop |audio_processor| so that it removes itself from
   // |webrtc_audio_device| and clears its pointer to it.
@@ -289,9 +290,9 @@ TEST_P(MediaStreamAudioProcessorTestMultichannel, MAYBE_TestAllSampleRates) {
 
     int expected_sample_rate =
 #if BUILDFLAG(IS_CHROMECAST)
-        std::min(kSupportedSampleRates[i], blink::kAudioProcessingSampleRate);
+        std::min(kSupportedSampleRates[i], media::kAudioProcessingSampleRateHz);
 #else
-        blink::kAudioProcessingSampleRate;
+        media::kAudioProcessingSampleRateHz;
 #endif  // BUILDFLAG(IS_CHROMECAST)
     const int expected_output_channels =
         use_multichannel_processing ? params_.channels() : 1;
@@ -467,9 +468,9 @@ TEST_P(MediaStreamAudioProcessorTestMultichannel,
       use_multichannel_processing ? params_.channels() : 1;
 
   ProcessDataAndVerifyFormat(*audio_processor, mock_capture_callback_,
-                             blink::kAudioProcessingSampleRate,
+                             media::kAudioProcessingSampleRateHz,
                              expected_output_channels,
-                             blink::kAudioProcessingSampleRate / 100);
+                             media::kAudioProcessingSampleRateHz / 100);
 
   // Stop |audio_processor| so that it removes itself from
   // |webrtc_audio_device| and clears its pointer to it.
