@@ -56,3 +56,53 @@ function loadAndReturnSwData(t, url, frame_type) {
 
   return message_promise;
 }
+
+// 3p iframe utilities
+async function setup3pIframe() {
+
+  const script = './partitioned-storage-sw.js';
+  const scope = './partitioned-';
+
+  var reg = await navigator.serviceWorker.register(script, { scope: scope });
+
+  // We should keep track if we installed a worker or not. If we did then we
+  // need to uninstall it. Otherwise we let the top level test uninstall it
+  // (If partitioning is not working).
+  var installed_a_worker = true;
+  await new Promise(resolve => {
+    // Check if a worker is already activated.
+    var worker = reg.active;
+    // If so, just resolve.
+    if ( worker ) {
+      installed_a_worker = false;
+      resolve();
+      return;
+    }
+
+    //Otherwise check if one is waiting.
+    worker = reg.waiting;
+    // If not waiting, grab the installing worker.
+    if ( !worker ) {
+      worker = reg.installing;
+    }
+
+    // Resolve once it's activated.
+    worker.addEventListener('statechange', evt => {
+      if (worker.state === 'activated') {
+        resolve();
+      }
+    });
+  });
+
+  self.addEventListener('unload', async () => {
+    // If we didn't install a worker then that means the top level test did, and
+    // that test is therefore responsible for cleaning it up.
+    if ( !installed_a_worker ) {
+        return;
+    }
+
+    await reg.unregister();
+  });
+
+  return reg;
+}

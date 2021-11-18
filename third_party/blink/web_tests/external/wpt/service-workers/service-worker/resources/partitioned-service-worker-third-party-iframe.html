@@ -2,6 +2,7 @@
 <title>Service Worker: 3P iframe for partitioned service workers</title>
 <script src="/test-helpers.sub.js"></script>
 <script src="/common/get-host-info.sub.js"></script>
+<script src="./partitioned-utils.js"></script>
 
 
 <body>
@@ -9,40 +10,9 @@ This iframe will register a service worker when it loads and then add its own
 iframe that will attempt to navigate to a url that service worker will intercept
 and use to resolve the service worker's internal Promise.
 <script>
-// We should keep track if we installed a worker or not. If we did then we need
-// to uninstall it. Otherwise we let the top level test uninstall it.
-var installed_a_worker = true;
-var reg;
 
 async function onLoad() {
-  const script = './partitioned-storage-sw.js'
-  const scope = './partitioned-'
-
-  reg = await navigator.serviceWorker.register(script, { scope: scope });
-  await new Promise(resolve => {
-    // Check if a worker is already activated.
-    var worker = reg.active;
-    // If so, just resolve.
-    if ( worker ) {
-       installed_a_worker = false;
-       resolve();
-       return;
-    }
-
-    //Otherwise check if one is waiting.
-    worker = reg.waiting;
-    // If not waiting, grab the installing worker.
-    if ( !worker ) {
-      worker = reg.installing;
-    }
-
-    // Resolve once it's activated.
-    worker.addEventListener('statechange', evt => {
-      if (worker.state === 'activated') {
-        resolve();
-      }
-    });
-  });
+  await setup3pIframe();
 
   // When the SW's iframe finishes it'll post a message. This forwards it up to
   // the window.
@@ -60,16 +30,6 @@ async function onLoad() {
     document.body.appendChild(frame);
   });
 }
-
-self.addEventListener('unload', async () => {
-  // If we didn't install a worker then that means the top level test did, and
-  // that test is therefore responsible for cleaning it up.
-  if ( !installed_a_worker ) {
-      return;
-  }
-
-    await reg.unregister();
-});
 
 self.addEventListener('load', onLoad);
 </script>
