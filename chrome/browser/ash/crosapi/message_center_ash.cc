@@ -123,6 +123,14 @@ class ForwardingDelegate : public message_center::NotificationDelegate {
   ~ForwardingDelegate() override = default;
 
   void OnDisconnect() {
+    mc::Notification* notification =
+        mc::MessageCenter::Get()->FindNotificationById(notification_id_);
+    if (!notification)
+      return;
+    // If the disconnect occurred because an existing notification was updated
+    // with new content, don't close it. https://crbug.com/1270544
+    if (notification->delegate() != this)
+      return;
     // NOTE: Triggers a call to Close() if the notification is still showing.
     mc::MessageCenter::Get()->RemoveNotification(notification_id_,
                                                  /*by_user=*/false);

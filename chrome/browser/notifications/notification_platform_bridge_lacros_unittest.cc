@@ -272,6 +272,26 @@ TEST_F(NotificationPlatformBridgeLacrosTest, SerializationProgress) {
   ASSERT_TRUE(last_notification);
   EXPECT_EQ(55, last_notification->progress);
   EXPECT_EQ(u"status", last_notification->progress_status);
+
+  // Update progress by creating a new notification with the same ID.
+  message_center::RichNotificationData rich_data2;
+  rich_data2.progress = 66;
+  rich_data2.progress_status = u"status2";
+  message_center::Notification ui_notification2(
+      message_center::NOTIFICATION_TYPE_PROGRESS, "test_id", std::u16string(),
+      std::u16string(), gfx::Image(), std::u16string(), GURL(),
+      message_center::NotifierId(), rich_data2, nullptr);
+
+  // Update the notification.
+  bridge_.Display(NotificationHandler::Type::TRANSIENT, /*profile=*/nullptr,
+                  ui_notification2, /*metadata=*/nullptr);
+  message_center_remote_.FlushForTesting();
+
+  // Updated notification was sent.
+  last_notification = test_message_center_.last_notification_.get();
+  ASSERT_TRUE(last_notification);
+  EXPECT_EQ(66, last_notification->progress);
+  EXPECT_EQ(u"status2", last_notification->progress_status);
 }
 
 TEST_F(NotificationPlatformBridgeLacrosTest, UserActions) {

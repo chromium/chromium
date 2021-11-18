@@ -298,6 +298,45 @@ TEST_F(MessageCenterAshTest, SerializationProgress) {
   EXPECT_EQ(u"complete", ui_notification->progress_status());
 }
 
+// Regression test for https://crbug.com/1270544.
+TEST_F(MessageCenterAshTest, DisplayNotificationCanUpdateWithoutClosing) {
+  // Display a progress notification.
+  auto mojo_notification = mojom::Notification::New();
+  mojo_notification->type = mojom::NotificationType::kProgress;
+  mojo_notification->id = "test_id";
+  mojo_notification->progress = 55;
+
+  auto mojo_delegate1 = std::make_unique<MojoDelegate>();
+  message_center_remote_->DisplayNotification(
+      std::move(mojo_notification),
+      mojo_delegate1->receiver_.BindNewPipeAndPassRemote());
+  message_center_remote_.FlushForTesting();
+
+  // Update the progress by creating a new notification with the same ID.
+  mojo_notification = mojom::Notification::New();
+  mojo_notification->type = mojom::NotificationType::kProgress;
+  mojo_notification->id = "test_id";
+  mojo_notification->progress = 66;
+
+  auto mojo_delegate2 = std::make_unique<MojoDelegate>();
+  message_center_remote_->DisplayNotification(
+      std::move(mojo_notification),
+      mojo_delegate2->receiver_.BindNewPipeAndPassRemote());
+  message_center_remote_.FlushForTesting();
+
+  // Destroy the first delegate, which destroys its mojo receiver. This
+  // simulates how Lacros updates notifications.
+  mojo_delegate1.reset();
+  message_center_remote_.FlushForTesting();
+
+  // Notification is still visible and has updated progress.
+  message_center::Notification* ui_notification =
+      message_center::MessageCenter::Get()->FindVisibleNotificationById(
+          "test_id");
+  ASSERT_TRUE(ui_notification);
+  EXPECT_EQ(66, ui_notification->progress());
+}
+
 TEST_F(MessageCenterAshTest, UserActions) {
   // Build mojo notification for display.
   auto mojo_notification = mojom::Notification::New();
