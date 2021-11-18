@@ -401,6 +401,10 @@ class AllSitesElement extends AllSitesElementBase {
     this.$.allSitesList.fire('iron-resize');
   }
 
+  forceListUpdateForTesting() {
+    this.forceListUpdate_();
+  }
+
   /**
    * @return Whether the |siteGroupMap| is empty.
    */

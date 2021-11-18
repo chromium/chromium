@@ -6,7 +6,7 @@
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {beforeNextRender,flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {ContentSetting,ContentSettingsTypes,LocalDataBrowserProxyImpl,SiteSettingsPrefsBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
-import {CrSettingsPrefs, Router,routes} from 'chrome://settings/settings.js';
+import {CrSettingsPrefs, Router, routes} from 'chrome://settings/settings.js';
 
 import {isChildVisible} from 'chrome://webui-test/test_util.js';
 
@@ -17,18 +17,6 @@ import {createContentSettingTypeToValuePair,createOriginInfo,createRawSiteExcept
 // clang-format on
 
 suite('AllSites_DisabledConsolidatedControls', function() {
-  const TEST_COOKIE_LIST = {
-    id: 'example',
-    children: [
-      {domain: 'bar.com'},
-      {domain: 'bar.com'},
-      {domain: 'bar.com'},
-      {domain: 'bar.com'},
-      {domain: 'google.com'},
-      {domain: 'google.com'},
-    ]
-  };
-
   /**
    * An example eTLD+1 Object with multiple origins grouped under it.
    * @type {!SiteGroup}
@@ -136,7 +124,7 @@ suite('AllSites_DisabledConsolidatedControls', function() {
 
   test('All sites list populated', async function() {
     setUpAllSites(prefsVarious);
-    testElement.populateList_();
+    testElement.currentRouteChanged(routes.SITE_SETTINGS_ALL);
     await browserProxy.whenCalled('getAllSites');
     assertEquals(3, testElement.siteGroupMap.size);
 
@@ -150,7 +138,7 @@ suite('AllSites_DisabledConsolidatedControls', function() {
   test('search query filters list', async function() {
     const SEARCH_QUERY = 'foo';
     setUpAllSites(prefsVarious);
-    testElement.populateList_();
+    testElement.currentRouteChanged(routes.SITE_SETTINGS_ALL);
     await browserProxy.whenCalled('getAllSites');
     // Flush to be sure list container is populated.
     flush();
@@ -161,15 +149,14 @@ suite('AllSites_DisabledConsolidatedControls', function() {
     testElement.filter = SEARCH_QUERY;
     flush();
     siteEntries = testElement.$.listContainer.querySelectorAll('site-entry');
-    const hiddenSiteEntries =
-        testElement.shadowRoot.querySelectorAll('site-entry[hidden]');
+    const hiddenSiteEntries = Array.from(
+        testElement.shadowRoot.querySelectorAll('site-entry[hidden]'));
     assertEquals(1, siteEntries.length - hiddenSiteEntries.length);
 
-    for (let i = 0; i < siteEntries; ++i) {
-      const entry = siteEntries[i];
+    for (const entry of siteEntries) {
       if (!hiddenSiteEntries.includes(entry)) {
-        assertTrue(entry.siteGroup.origins.some((origin) => {
-          return origin.includes(SEARCH_QUERY);
+        assertTrue(entry.siteGroup.origins.some(origin => {
+          return origin.origin.includes(SEARCH_QUERY);
         }));
       }
     }
@@ -177,7 +164,7 @@ suite('AllSites_DisabledConsolidatedControls', function() {
 
   test('can be sorted by most visited', function() {
     setUpAllSites(prefsVarious);
-    testElement.populateList_();
+    testElement.currentRouteChanged(routes.SITE_SETTINGS_ALL);
 
     return browserProxy.whenCalled('getAllSites').then(() => {
       // Add additional origins and artificially insert fake engagement scores
@@ -197,8 +184,8 @@ suite('AllSites_DisabledConsolidatedControls', function() {
 
       // 'Most visited' is the default sort method, so sort by a different
       // method first to ensure changing to 'Most visited' works.
-      testElement.root.querySelector('select').value = 'name';
-      testElement.onSortMethodChanged_();
+      testElement.shadowRoot.querySelector('select').value = 'name';
+      testElement.$.sortMethod.dispatchEvent(new CustomEvent('change'));
       flush();
       let siteEntries =
           testElement.$.listContainer.querySelectorAll('site-entry');
@@ -206,8 +193,8 @@ suite('AllSites_DisabledConsolidatedControls', function() {
       assertEquals('foo.com', siteEntries[1].$.displayName.innerText.trim());
       assertEquals('google.com', siteEntries[2].$.displayName.innerText.trim());
 
-      testElement.root.querySelector('select').value = 'most-visited';
-      testElement.onSortMethodChanged_();
+      testElement.shadowRoot.querySelector('select').value = 'most-visited';
+      testElement.$.sortMethod.dispatchEvent(new CustomEvent('change'));
       flush();
       siteEntries = testElement.$.listContainer.querySelectorAll('site-entry');
       // Each site entry is sorted by its maximum engagement, so expect
@@ -219,9 +206,8 @@ suite('AllSites_DisabledConsolidatedControls', function() {
   });
 
   test('can be sorted by storage', async function() {
-    localDataBrowserProxy.setCookieDetails(TEST_COOKIE_LIST);
     setUpAllSites(prefsVarious);
-    testElement.populateList_();
+    testElement.currentRouteChanged(routes.SITE_SETTINGS_ALL);
     await browserProxy.whenCalled('getAllSites');
     flush();
     let siteEntries =
@@ -235,7 +221,7 @@ suite('AllSites_DisabledConsolidatedControls', function() {
     siteEntries[2].siteGroup.origins.push(
         createOriginInfo('http://google.com'));
 
-    testElement.onSortMethodChanged_();
+    testElement.$.sortMethod.dispatchEvent(new CustomEvent('change'));
     siteEntries = testElement.$.listContainer.querySelectorAll('site-entry');
     // Verify all sites is not sorted by storage.
     assertEquals(3, siteEntries.length);
@@ -245,8 +231,8 @@ suite('AllSites_DisabledConsolidatedControls', function() {
 
     // Change the sort method, then verify all sites is now sorted by
     // name.
-    testElement.root.querySelector('select').value = 'data-stored';
-    testElement.onSortMethodChanged_();
+    testElement.shadowRoot.querySelector('select').value = 'data-stored';
+    testElement.$.sortMethod.dispatchEvent(new CustomEvent('change'));
 
 
     flush();
@@ -254,17 +240,17 @@ suite('AllSites_DisabledConsolidatedControls', function() {
     assertEquals(
         'bar.com',
         siteEntries[0]
-            .root.querySelector('#displayName .url-directionality')
+            .shadowRoot.querySelector('#displayName .url-directionality')
             .innerText.trim());
     assertEquals(
         'foo.com',
         siteEntries[1]
-            .root.querySelector('#displayName .url-directionality')
+            .shadowRoot.querySelector('#displayName .url-directionality')
             .innerText.trim());
     assertEquals(
         'google.com',
         siteEntries[2]
-            .root.querySelector('#displayName .url-directionality')
+            .shadowRoot.querySelector('#displayName .url-directionality')
             .innerText.trim());
   });
 
@@ -285,23 +271,23 @@ suite('AllSites_DisabledConsolidatedControls', function() {
     assertEquals(
         'google.com',
         siteEntries[0]
-            .root.querySelector('#displayName .url-directionality')
+            .shadowRoot.querySelector('#displayName .url-directionality')
             .innerText.trim());
     assertEquals(
         'bar.com',
         siteEntries[1]
-            .root.querySelector('#displayName .url-directionality')
+            .shadowRoot.querySelector('#displayName .url-directionality')
             .innerText.trim());
     assertEquals(
         'foo.com',
         siteEntries[2]
-            .root.querySelector('#displayName .url-directionality')
+            .shadowRoot.querySelector('#displayName .url-directionality')
             .innerText.trim());
   });
 
   test('can be sorted by name', async function() {
     setUpAllSites(prefsVarious);
-    testElement.populateList_();
+    testElement.currentRouteChanged(routes.SITE_SETTINGS_ALL);
     await browserProxy.whenCalled('getAllSites');
     flush();
     let siteEntries =
@@ -314,8 +300,8 @@ suite('AllSites_DisabledConsolidatedControls', function() {
     assertEquals('google.com', siteEntries[2].$.displayName.innerText.trim());
 
     // Change the sort method, then verify all sites is now sorted by name.
-    testElement.root.querySelector('select').value = 'name';
-    testElement.onSortMethodChanged_();
+    testElement.shadowRoot.querySelector('select').value = 'name';
+    testElement.$.sortMethod.dispatchEvent(new CustomEvent('change'));
     flush();
     siteEntries = testElement.$.listContainer.querySelectorAll('site-entry');
     assertEquals('bar.com', siteEntries[0].$.displayName.innerText.trim());
@@ -341,7 +327,7 @@ suite('AllSites_DisabledConsolidatedControls', function() {
 
   test('merging additional SiteGroup lists works', async function() {
     setUpAllSites(prefsVarious);
-    testElement.populateList_();
+    testElement.currentRouteChanged(routes.SITE_SETTINGS_ALL);
     await browserProxy.whenCalled('getAllSites');
     flush();
     let siteEntries =
@@ -421,7 +407,7 @@ suite('AllSites_DisabledConsolidatedControls', function() {
     testElement.siteGroupMap.set(
         TEST_MULTIPLE_SITE_GROUP.etldPlus1,
         JSON.parse(JSON.stringify(TEST_MULTIPLE_SITE_GROUP)));
-    testElement.forceListUpdate_();
+    testElement.forceListUpdateForTesting();
     resetSettingsViaOverflowMenu('cancel-button');
   });
 
@@ -431,13 +417,13 @@ suite('AllSites_DisabledConsolidatedControls', function() {
     testElement.siteGroupMap.set(
         TEST_MULTIPLE_SITE_GROUP.etldPlus1,
         JSON.parse(JSON.stringify(TEST_MULTIPLE_SITE_GROUP)));
-    testElement.forceListUpdate_();
+    testElement.forceListUpdateForTesting();
     resetSettingsViaOverflowMenu('action-button');
     // Ensure a call was made to setOriginPermissions for each origin.
     assertEquals(
         TEST_MULTIPLE_SITE_GROUP.origins.length,
         browserProxy.getCallCount('setOriginPermissions'));
-    assertEquals(testElement.filteredList_.length, 0);
+    assertEquals(testElement.$.allSitesList.items.length, 0);
   });
 
   test(
@@ -451,14 +437,16 @@ suite('AllSites_DisabledConsolidatedControls', function() {
         siteGroup.origins[0].numCookies = 2;
         testElement.siteGroupMap.set(
             siteGroup.etldPlus1, JSON.parse(JSON.stringify(siteGroup)));
-        testElement.forceListUpdate_();
+        testElement.forceListUpdateForTesting();
         resetSettingsViaOverflowMenu('action-button');
-        assertEquals(testElement.filteredList_.length, 1);
-        assertEquals(1, testElement.filteredList_[0].origins.length);
-        assertFalse(
-            testElement.filteredList_[0].origins[0].hasPermissionSettings);
-        assertEquals(testElement.filteredList_[0].origins[0].usage, 100);
-        assertEquals(testElement.filteredList_[0].origins[0].numCookies, 2);
+        assertEquals(testElement.$.allSitesList.items.length, 1);
+        assertEquals(1, testElement.$.allSitesList.items[0].origins.length);
+        assertFalse(testElement.$.allSitesList.items[0]
+                        .origins[0]
+                        .hasPermissionSettings);
+        assertEquals(testElement.$.allSitesList.items[0].origins[0].usage, 100);
+        assertEquals(
+            testElement.$.allSitesList.items[0].origins[0].numCookies, 2);
       });
 
   test('reset settings via overflow menu (etld+1 has cookies)', function() {
@@ -470,13 +458,14 @@ suite('AllSites_DisabledConsolidatedControls', function() {
     siteGroup.numCookies = 5;
     testElement.siteGroupMap.set(
         siteGroup.etldPlus1, JSON.parse(JSON.stringify(siteGroup)));
-    testElement.forceListUpdate_();
+    testElement.forceListUpdateForTesting();
     resetSettingsViaOverflowMenu('action-button');
-    assertEquals(testElement.filteredList_.length, 1);
-    assertEquals(1, testElement.filteredList_[0].origins.length);
-    assertFalse(testElement.filteredList_[0].origins[0].hasPermissionSettings);
-    assertEquals(testElement.filteredList_[0].origins[0].usage, 0);
-    assertEquals(testElement.filteredList_[0].origins[0].numCookies, 5);
+    assertEquals(testElement.$.allSitesList.items.length, 1);
+    assertEquals(1, testElement.$.allSitesList.items[0].origins.length);
+    assertFalse(
+        testElement.$.allSitesList.items[0].origins[0].hasPermissionSettings);
+    assertEquals(testElement.$.allSitesList.items[0].origins[0].usage, 0);
+    assertEquals(testElement.$.allSitesList.items[0].origins[0].numCookies, 5);
   });
 
   function clearDataViaOverflowMenu(buttonType) {
@@ -504,10 +493,6 @@ suite('AllSites_DisabledConsolidatedControls', function() {
     const actionButtonList =
         testElement.$.confirmClearData.get().getElementsByClassName(buttonType);
     assertEquals(1, actionButtonList.length);
-    testElement.actionMenuModel_ = {
-      index: 0,
-      item: testElement.filteredList_[0],
-    };
     actionButtonList[0].click();
 
     // Check the dialog and overflow menu are now both closed.
@@ -519,7 +504,7 @@ suite('AllSites_DisabledConsolidatedControls', function() {
     testElement.siteGroupMap.set(
         TEST_MULTIPLE_SITE_GROUP.etldPlus1,
         JSON.parse(JSON.stringify(TEST_MULTIPLE_SITE_GROUP)));
-    testElement.forceListUpdate_();
+    testElement.forceListUpdateForTesting();
     clearDataViaOverflowMenu('cancel-button');
   });
 
@@ -529,11 +514,11 @@ suite('AllSites_DisabledConsolidatedControls', function() {
     testElement.siteGroupMap.set(
         TEST_MULTIPLE_SITE_GROUP.etldPlus1,
         JSON.parse(JSON.stringify(TEST_MULTIPLE_SITE_GROUP)));
-    testElement.forceListUpdate_();
+    testElement.forceListUpdateForTesting();
     clearDataViaOverflowMenu('action-button');
     // Ensure a call was made to clearEtldPlus1DataAndCookies.
     assertEquals(1, browserProxy.getCallCount('clearEtldPlus1DataAndCookies'));
-    assertEquals(testElement.filteredList_.length, 0);
+    assertEquals(testElement.$.allSitesList.items.length, 0);
   });
 
   test('clear data via overflow menu (one origin has permission)', function() {
@@ -543,10 +528,10 @@ suite('AllSites_DisabledConsolidatedControls', function() {
     siteGroup.origins[0].hasPermissionSettings = true;
     testElement.siteGroupMap.set(
         siteGroup.etldPlus1, JSON.parse(JSON.stringify(siteGroup)));
-    testElement.forceListUpdate_();
+    testElement.forceListUpdateForTesting();
     clearDataViaOverflowMenu('action-button');
-    assertEquals(testElement.filteredList_.length, 1);
-    assertEquals(testElement.filteredList_[0].origins.length, 1);
+    assertEquals(testElement.$.allSitesList.items.length, 1);
+    assertEquals(testElement.$.allSitesList.items[0].origins.length, 1);
   });
 
   test(
@@ -560,14 +545,16 @@ suite('AllSites_DisabledConsolidatedControls', function() {
         siteGroup.origins[0].numCookies = 3;
         testElement.siteGroupMap.set(
             siteGroup.etldPlus1, JSON.parse(JSON.stringify(siteGroup)));
-        testElement.forceListUpdate_();
+        testElement.forceListUpdateForTesting();
         clearDataViaOverflowMenu('action-button');
-        assertEquals(testElement.filteredList_.length, 1);
-        assertEquals(testElement.filteredList_[0].origins.length, 1);
-        assertTrue(
-            testElement.filteredList_[0].origins[0].hasPermissionSettings);
-        assertEquals(testElement.filteredList_[0].origins[0].usage, 0);
-        assertEquals(testElement.filteredList_[0].origins[0].numCookies, 0);
+        assertEquals(testElement.$.allSitesList.items.length, 1);
+        assertEquals(testElement.$.allSitesList.items[0].origins.length, 1);
+        assertTrue(testElement.$.allSitesList.items[0]
+                       .origins[0]
+                       .hasPermissionSettings);
+        assertEquals(testElement.$.allSitesList.items[0].origins[0].usage, 0);
+        assertEquals(
+            testElement.$.allSitesList.items[0].origins[0].numCookies, 0);
       });
 
   function clearDataViaClearAllButton(buttonType) {
@@ -602,7 +589,7 @@ suite('AllSites_DisabledConsolidatedControls', function() {
     testElement.siteGroupMap.set(
         TEST_MULTIPLE_SITE_GROUP.etldPlus1,
         JSON.parse(JSON.stringify(TEST_MULTIPLE_SITE_GROUP)));
-    testElement.forceListUpdate_();
+    testElement.forceListUpdateForTesting();
     clearDataViaClearAllButton('cancel-button');
   });
 
@@ -618,11 +605,11 @@ suite('AllSites_DisabledConsolidatedControls', function() {
       'https://mail.google.com',
     ]);
     testElement.siteGroupMap.set(googleSiteGroup.etldPlus1, googleSiteGroup);
-    testElement.forceListUpdate_();
+    testElement.forceListUpdateForTesting();
     clearDataViaClearAllButton('action-button');
     // Ensure a call was made to clearEtldPlus1DataAndCookies.
     assertEquals(2, browserProxy.getCallCount('clearEtldPlus1DataAndCookies'));
-    assertEquals(testElement.filteredList_.length, 0);
+    assertEquals(testElement.$.allSitesList.items.length, 0);
   });
 
   test(
@@ -641,14 +628,14 @@ suite('AllSites_DisabledConsolidatedControls', function() {
         ]);
         testElement.siteGroupMap.set(
             googleSiteGroup.etldPlus1, googleSiteGroup);
-        testElement.forceListUpdate_();
-        assertEquals(testElement.filteredList_.length, 2);
+        testElement.forceListUpdateForTesting();
+        assertEquals(testElement.$.allSitesList.items.length, 2);
         assertEquals(
-            testElement.filteredList_[0].origins.length,
+            testElement.$.allSitesList.items[0].origins.length,
             siteGroup.origins.length);
         clearDataViaClearAllButton('action-button');
-        assertEquals(testElement.filteredList_.length, 1);
-        assertEquals(testElement.filteredList_[0].origins.length, 1);
+        assertEquals(testElement.$.allSitesList.items.length, 1);
+        assertEquals(testElement.$.allSitesList.items[0].origins.length, 1);
       });
 
   /**
@@ -695,12 +682,6 @@ suite('AllSites_DisabledConsolidatedControls', function() {
     const actionButtonList =
         testElement.$.confirmClearData.get().getElementsByClassName(buttonType);
     assertEquals(1, actionButtonList.length);
-    testElement.actionMenuModel_ = {
-      index: 0,
-      item: testElement.filteredList_[0],
-      origin: siteGroup.origins[originIndex].origin,
-      actionScope: 'origin',
-    };
     actionButtonList[0].click();
 
     // Check the dialog and overflow menu are now both closed.
@@ -711,12 +692,12 @@ suite('AllSites_DisabledConsolidatedControls', function() {
   test('cancelling the confirm dialog on clear data works', function() {
     const siteGroup = JSON.parse(JSON.stringify(TEST_MULTIPLE_SITE_GROUP));
     testElement.siteGroupMap.set(siteGroup.etldPlus1, siteGroup);
-    testElement.forceListUpdate_();
-    assertEquals(1, testElement.filteredList_.length);
-    assertEquals(3, testElement.filteredList_[0].origins.length);
+    testElement.forceListUpdateForTesting();
+    assertEquals(1, testElement.$.allSitesList.items.length);
+    assertEquals(3, testElement.$.allSitesList.items[0].origins.length);
     clearOriginDataViaOverflowMenu('cancel-button', siteGroup, 0);
-    assertEquals(1, testElement.filteredList_.length);
-    assertEquals(3, testElement.filteredList_[0].origins.length);
+    assertEquals(1, testElement.$.allSitesList.items.length);
+    assertEquals(3, testElement.$.allSitesList.items[0].origins.length);
   });
 
   test('clear single origin data via overflow menu', function() {
@@ -726,10 +707,10 @@ suite('AllSites_DisabledConsolidatedControls', function() {
     siteGroup.origins[0].numCookies = 3;
     testElement.siteGroupMap.set(
         siteGroup.etldPlus1, JSON.parse(JSON.stringify(siteGroup)));
-    testElement.forceListUpdate_();
+    testElement.forceListUpdateForTesting();
     clearOriginDataViaOverflowMenu('action-button', siteGroup, 0);
-    assertEquals(1, testElement.filteredList_.length);
-    assertEquals(2, testElement.filteredList_[0].origins.length);
+    assertEquals(1, testElement.$.allSitesList.items.length);
+    assertEquals(2, testElement.$.allSitesList.items[0].origins.length);
   });
 
   test(
@@ -741,12 +722,12 @@ suite('AllSites_DisabledConsolidatedControls', function() {
         siteGroup.origins[0].numCookies = 3;
         testElement.siteGroupMap.set(
             siteGroup.etldPlus1, JSON.parse(JSON.stringify(siteGroup)));
-        testElement.forceListUpdate_();
+        testElement.forceListUpdateForTesting();
         clearOriginDataViaOverflowMenu('action-button', siteGroup, 0);
-        assertEquals(1, testElement.filteredList_.length);
-        assertEquals(3, testElement.filteredList_[0].origins.length);
+        assertEquals(1, testElement.$.allSitesList.items.length);
+        assertEquals(3, testElement.$.allSitesList.items[0].origins.length);
 
-        const updatedOrigin = testElement.filteredList_[0].origins[0];
+        const updatedOrigin = testElement.$.allSitesList.items[0].origins[0];
         assertTrue(updatedOrigin.hasPermissionSettings);
         assertEquals(0, updatedOrigin.usage);
         assertEquals(0, updatedOrigin.numCookies);
@@ -798,12 +779,6 @@ suite('AllSites_DisabledConsolidatedControls', function() {
         testElement.$.confirmResetSettings.get().getElementsByClassName(
             buttonType);
     assertEquals(1, actionButtonList.length);
-    testElement.actionMenuModel_ = {
-      index: 0,
-      item: testElement.filteredList_[0],
-      origin: siteGroup.origins[originIndex].origin,
-      actionScope: 'origin',
-    };
     actionButtonList[0].click();
 
     // Check the dialog and overflow menu are now both closed.
@@ -814,12 +789,12 @@ suite('AllSites_DisabledConsolidatedControls', function() {
   test('cancelling the confirm dialog on resetting settings works', function() {
     const siteGroup = JSON.parse(JSON.stringify(TEST_MULTIPLE_SITE_GROUP));
     testElement.siteGroupMap.set(siteGroup.etldPlus1, siteGroup);
-    testElement.forceListUpdate_();
-    assertEquals(1, testElement.filteredList_.length);
-    assertEquals(3, testElement.filteredList_[0].origins.length);
+    testElement.forceListUpdateForTesting();
+    assertEquals(1, testElement.$.allSitesList.items.length);
+    assertEquals(3, testElement.$.allSitesList.items[0].origins.length);
     resetOriginSettingsViaOverflowMenu('cancel-button', siteGroup, 0);
-    assertEquals(1, testElement.filteredList_.length);
-    assertEquals(3, testElement.filteredList_[0].origins.length);
+    assertEquals(1, testElement.$.allSitesList.items.length);
+    assertEquals(3, testElement.$.allSitesList.items[0].origins.length);
   });
 
   test(
@@ -831,10 +806,10 @@ suite('AllSites_DisabledConsolidatedControls', function() {
         siteGroup.origins[0].numCookies = 0;
         testElement.siteGroupMap.set(
             siteGroup.etldPlus1, JSON.parse(JSON.stringify(siteGroup)));
-        testElement.forceListUpdate_();
+        testElement.forceListUpdateForTesting();
         resetOriginSettingsViaOverflowMenu('action-button', siteGroup, 0);
-        assertEquals(1, testElement.filteredList_.length);
-        assertEquals(2, testElement.filteredList_[0].origins.length);
+        assertEquals(1, testElement.$.allSitesList.items.length);
+        assertEquals(2, testElement.$.allSitesList.items[0].origins.length);
       });
 
   test(
@@ -846,10 +821,10 @@ suite('AllSites_DisabledConsolidatedControls', function() {
         siteGroup.origins[0].numCookies = 10;
         testElement.siteGroupMap.set(
             siteGroup.etldPlus1, JSON.parse(JSON.stringify(siteGroup)));
-        testElement.forceListUpdate_();
+        testElement.forceListUpdateForTesting();
         resetOriginSettingsViaOverflowMenu('action-button', siteGroup, 0);
-        assertEquals(1, testElement.filteredList_.length);
-        assertEquals(3, testElement.filteredList_[0].origins.length);
+        assertEquals(1, testElement.$.allSitesList.items.length);
+        assertEquals(3, testElement.$.allSitesList.items[0].origins.length);
       });
 });
 
@@ -954,7 +929,7 @@ suite('AllSites_EnabledConsolidatedControls', function() {
     testElement.siteGroupMap.set(
         TEST_MULTIPLE_SITE_GROUP.etldPlus1,
         JSON.parse(JSON.stringify(TEST_MULTIPLE_SITE_GROUP)));
-    testElement.forceListUpdate_();
+    testElement.forceListUpdateForTesting();
     flush();
 
     removeFirstSiteGroup();
@@ -963,7 +938,7 @@ suite('AllSites_EnabledConsolidatedControls', function() {
     assertEquals(
         TEST_MULTIPLE_SITE_GROUP.origins.length,
         browserProxy.getCallCount('setOriginPermissions'));
-    assertEquals(0, testElement.filteredList_.length);
+    assertEquals(0, testElement.$.allSitesList.items.length);
     assertEquals(1, browserProxy.getCallCount('clearEtldPlus1DataAndCookies'));
   });
 
@@ -975,7 +950,7 @@ suite('AllSites_EnabledConsolidatedControls', function() {
     siteGroup.numCookies = 6;
     testElement.siteGroupMap.set(
         siteGroup.etldPlus1, JSON.parse(JSON.stringify(siteGroup)));
-    testElement.forceListUpdate_();
+    testElement.forceListUpdateForTesting();
     flush();
 
     removeFirstOrigin();
@@ -985,21 +960,21 @@ suite('AllSites_EnabledConsolidatedControls', function() {
         siteGroup.origins[0].origin,
         await browserProxy.whenCalled('clearOriginDataAndCookies'));
     assertEquals(1, browserProxy.getCallCount('clearOriginDataAndCookies'));
-    assertEquals(5, testElement.filteredList_[0].numCookies);
+    assertEquals(5, testElement.$.allSitesList.items[0].numCookies);
   });
 
   test('cancel remove site group', function() {
     testElement.siteGroupMap.set(
         TEST_MULTIPLE_SITE_GROUP.etldPlus1,
         JSON.parse(JSON.stringify(TEST_MULTIPLE_SITE_GROUP)));
-    testElement.forceListUpdate_();
+    testElement.forceListUpdateForTesting();
     flush();
 
     removeFirstSiteGroup();
     cancelDialog();
 
     assertEquals(0, browserProxy.getCallCount('setOriginPermissions'));
-    assertEquals(1, testElement.filteredList_.length);
+    assertEquals(1, testElement.$.allSitesList.items.length);
     assertEquals(0, browserProxy.getCallCount('clearEtldPlus1DataAndCookies'));
   });
 
@@ -1011,7 +986,7 @@ suite('AllSites_EnabledConsolidatedControls', function() {
     siteGroup.numCookies = 6;
     testElement.siteGroupMap.set(
         siteGroup.etldPlus1, JSON.parse(JSON.stringify(siteGroup)));
-    testElement.forceListUpdate_();
+    testElement.forceListUpdateForTesting();
     flush();
 
     removeFirstOrigin();
@@ -1019,7 +994,7 @@ suite('AllSites_EnabledConsolidatedControls', function() {
 
     assertEquals(0, browserProxy.getCallCount('clearOriginDataAndCookies'));
     assertEquals(0, browserProxy.getCallCount('setOriginPermissions'));
-    assertEquals(6, testElement.filteredList_[0].numCookies);
+    assertEquals(6, testElement.$.allSitesList.items[0].numCookies);
   });
 
   test('permissions bullet point visbility', function() {
@@ -1027,7 +1002,7 @@ suite('AllSites_EnabledConsolidatedControls', function() {
     siteGroup.origins[0].hasPermissionSettings = true;
     testElement.siteGroupMap.set(
         siteGroup.etldPlus1, JSON.parse(JSON.stringify(siteGroup)));
-    testElement.forceListUpdate_();
+    testElement.forceListUpdateForTesting();
     flush();
 
     removeFirstOrigin();
@@ -1043,7 +1018,7 @@ suite('AllSites_EnabledConsolidatedControls', function() {
     siteGroup.origins[0].hasPermissionSettings = false;
     testElement.siteGroupMap.set(
         siteGroup.etldPlus1, JSON.parse(JSON.stringify(siteGroup)));
-    testElement.forceListUpdate_();
+    testElement.forceListUpdateForTesting();
     flush();
 
     removeFirstOrigin();
@@ -1062,7 +1037,7 @@ suite('AllSites_EnabledConsolidatedControls', function() {
     const siteGroup = JSON.parse(JSON.stringify(TEST_MULTIPLE_SITE_GROUP));
     testElement.siteGroupMap.set(
         siteGroup.etldPlus1, JSON.parse(JSON.stringify(siteGroup)));
-    testElement.forceListUpdate_();
+    testElement.forceListUpdateForTesting();
     flush();
 
     removeFirstOrigin();
@@ -1090,7 +1065,7 @@ suite('AllSites_EnabledConsolidatedControls', function() {
     siteGroup.origins[0].isInstalled = true;
     testElement.siteGroupMap.set(
         siteGroup.etldPlus1, JSON.parse(JSON.stringify(siteGroup)));
-    testElement.forceListUpdate_();
+    testElement.forceListUpdateForTesting();
     flush();
 
     removeFirstOrigin();
@@ -1119,7 +1094,7 @@ suite('AllSites_EnabledConsolidatedControls', function() {
     siteGroup.origins[1].isInstalled = true;
     testElement.siteGroupMap.set(
         siteGroup.etldPlus1, JSON.parse(JSON.stringify(siteGroup)));
-    testElement.forceListUpdate_();
+    testElement.forceListUpdateForTesting();
     flush();
 
     removeFirstSiteGroup();
@@ -1138,7 +1113,7 @@ suite('AllSites_EnabledConsolidatedControls', function() {
     testElement.siteGroupMap.set(
         singleOriginSiteGroup.etldPlus1,
         JSON.parse(JSON.stringify(singleOriginSiteGroup)));
-    testElement.forceListUpdate_();
+    testElement.forceListUpdateForTesting();
     flush();
 
     removeFirstSiteGroup();
@@ -1156,7 +1131,7 @@ suite('AllSites_EnabledConsolidatedControls', function() {
     testElement.siteGroupMap.set(
         singleOriginSiteGroup.etldPlus1,
         JSON.parse(JSON.stringify(singleOriginSiteGroup)));
-    testElement.forceListUpdate_();
+    testElement.forceListUpdateForTesting();
     flush();
 
     removeFirstSiteGroup();
