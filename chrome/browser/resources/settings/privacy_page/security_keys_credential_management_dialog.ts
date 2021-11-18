@@ -180,10 +180,6 @@ export class SettingsSecurityKeysCredentialManagementDialogElement extends
   }
 
   private onCredentials_(credentials: Array<Credential>) {
-    if (!credentials.length) {
-      this.onError_(this.i18n('securityKeysCredentialManagementNoCredentials'));
-      return;
-    }
     this.credentials_ = credentials;
     this.$.credentialList.fire('iron-resize');
     this.dialogPage_ = CredentialManagementDialogPage.CREDENTIALS;

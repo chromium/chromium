@@ -475,6 +475,10 @@ void SecurityKeysCredentialHandler::OnHaveCredentials(
   DCHECK(credential_management_);
   DCHECK(!callback_id_.empty());
 
+  if (status == device::CtapDeviceResponseCode::kCtap2ErrNoCredentials) {
+    OnFinished(device::CredentialManagementStatus::kNoCredentials);
+    return;
+  }
   if (status != device::CtapDeviceResponseCode::kSuccess) {
     OnFinished(
         device::CredentialManagementStatus::kAuthenticatorResponseInvalid);
@@ -596,6 +600,9 @@ void SecurityKeysCredentialHandler::OnFinished(
       break;
     case device::CredentialManagementStatus::kHardPINBlock:
       error = IDS_SETTINGS_SECURITY_KEYS_PIN_HARD_LOCK;
+      break;
+    case device::CredentialManagementStatus::kNoCredentials:
+      error = IDS_SETTINGS_SECURITY_KEYS_CREDENTIAL_MANAGEMENT_NO_CREDENTIALS;
       break;
     case device::CredentialManagementStatus::
         kAuthenticatorMissingCredentialManagement:

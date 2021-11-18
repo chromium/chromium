@@ -30,6 +30,7 @@ enum class CredentialManagementStatus {
   kSoftPINBlock,
   kHardPINBlock,
   kAuthenticatorMissingCredentialManagement,
+  kNoCredentials,
   kNoPINSet,
   kForcePINChange,
 };
