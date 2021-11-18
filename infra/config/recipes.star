@@ -201,6 +201,7 @@ build_recipe(
 
 build_recipe(
     name = "recipe:findit/chromium/export_bot_db",
+    use_python3 = True,
 )
 
 build_recipe(
