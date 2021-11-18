@@ -22,7 +22,7 @@ declare_args() {
   use_unverified_rust_toolchain = false
 
   # The version string returned by rustc -V.
-  rustc_version = "rustc 1.55.0-dev"
+  rustc_version = "rustc 1.56.1-dev"
 
   # If using an unverified Rust toolchain, use this prefix for where to find
   # the binaries.

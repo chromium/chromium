@@ -2,6 +2,10 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+config("edition_2021") {
+  rustflags = [ "--edition=2021" ]
+}
+
 config("edition_2018") {
   rustflags = [ "--edition=2018" ]
 }

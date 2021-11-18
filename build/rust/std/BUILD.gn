@@ -32,6 +32,8 @@ import("//build/config/rust.gni")
 # List of Rust stdlib rlibs which are present in the official
 # Rust toolchain we are using from the Android team. This is usually
 # a version or two behind nightly.
+# See //docs/security/rust-toolchain.md#building-on-non_linux-platforms
+# for how to maintain this list.
 stdlib_files = [
   "std",  # List first because it makes depfiles more debuggable (see below)
   "addr2line",
@@ -44,6 +46,7 @@ stdlib_files = [
   "gimli",
   "hashbrown",
   "libc",
+  "memchr",
   "miniz_oxide",
   "object",
   "panic_abort",

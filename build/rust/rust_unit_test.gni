@@ -43,11 +43,15 @@ template("rust_unit_test") {
     }
   }
   _configs = invoker.configs
-  if (defined(invoker.edition) && invoker.edition == "2015") {
-    _configs += [ "//build/rust:edition_2015" ]
-  } else {
-    _configs += [ "//build/rust:edition_2018" ]
+  _edition = "2021"
+  if (defined(invoker.edition)) {
+    _edition = invoker.edition
   }
+  _configs += [ string_join("",
+                            [
+                              "//build/rust:edition_",
+                              _edition,
+                            ]) ]
 
   # We require that all source files are listed, even though this is
   # not a requirement for rustc. The reason is to ensure that tools

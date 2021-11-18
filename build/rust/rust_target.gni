@@ -58,11 +58,15 @@ template("rust_target") {
       _rustflags += [ "--cfg=feature=\"${i}\"" ]
     }
   }
-  if (defined(invoker.edition) && invoker.edition == "2015") {
-    _configs = [ "//build/rust:edition_2015" ]
-  } else {
-    _configs = [ "//build/rust:edition_2018" ]
+  _edition = "2021"
+  if (defined(invoker.edition)) {
+    _edition = invoker.edition
   }
+  _configs = [ string_join("",
+                           [
+                             "//build/rust:edition_",
+                             _edition,
+                           ]) ]
   if (invoker.target_type == "executable") {
     if (defined(invoker.executable_configs)) {
       _configs += invoker.executable_configs
