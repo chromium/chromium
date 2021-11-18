@@ -976,8 +976,6 @@ void AddFileManagerFeatureStrings(const std::string& locale,
                    base::FeatureList::IsEnabled(chromeos::features::kFilesSWA));
   dict->SetBoolKey("FILES_TRASH_ENABLED", base::FeatureList::IsEnabled(
                                               chromeos::features::kFilesTrash));
-  dict->SetBoolKey("ZIP_UNPACK", base::FeatureList::IsEnabled(
-                                     chromeos::features::kFilesZipUnpack));
   dict->SetBoolKey(
       "DRIVE_DSS_PIN_ENABLED",
       base::FeatureList::IsEnabled(

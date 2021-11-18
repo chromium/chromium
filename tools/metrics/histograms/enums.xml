@@ -52136,7 +52136,6 @@ from previous Chrome versions.
   <int value="570469494" label="LoginDetection:disabled"/>
   <int value="571349694" label="AllowAllSitesToInitiateMirroring:enabled"/>
   <int value="571562912" label="InstallableAmbientBadgeMessage:disabled"/>
-  <int value="572915501" label="FilesZipUnpack:disabled"/>
   <int value="573385109" label="SharedClipboardUI:enabled"/>
   <int value="575380532" label="ExperimentalAccessibilityLabels:disabled"/>
   <int value="575394365" label="AndroidPaymentApps:disabled"/>
@@ -52205,7 +52204,6 @@ from previous Chrome versions.
   <int value="624783596" label="SamePartyCookiesConsideredFirstParty:enabled"/>
   <int value="625273056" label="disable-boot-animation"/>
   <int value="625725485" label="FilesTrash:enabled"/>
-  <int value="626605468" label="FilesZipUnpack:enabled"/>
   <int value="628302973" label="NTPSnippets:enabled"/>
   <int value="628570445" label="AndroidAutofillAccessibility:enabled"/>
   <int value="629549626" label="ContextualSearchMlTapSuppression:enabled"/>

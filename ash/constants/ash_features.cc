@@ -587,9 +587,6 @@ const base::Feature kFilesSinglePartitionFormat{
 const base::Feature kFilesTrash{"FilesTrash",
                                 base::FEATURE_DISABLED_BY_DEFAULT};
 
-const base::Feature kFilesZipUnpack{"FilesZipUnpack",
-                                    base::FEATURE_DISABLED_BY_DEFAULT};
-
 // Enables filters in Files app Recents view.
 const base::Feature kFiltersInRecents{"FiltersInRecents",
                                       base::FEATURE_DISABLED_BY_DEFAULT};

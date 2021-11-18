@@ -2712,9 +2712,6 @@ extern const char kFilesSWADescription[];
 extern const char kFilesTrashName[];
 extern const char kFilesTrashDescription[];
 
-extern const char kFilesZipUnpackName[];
-extern const char kFilesZipUnpackDescription[];
-
 extern const char kFiltersInRecentsName[];
 extern const char kFiltersInRecentsDescription[];
 

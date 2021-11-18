@@ -4715,10 +4715,6 @@ const char kFilesTrashName[] = "Enable Files Trash.";
 const char kFilesTrashDescription[] =
     "Enable trash for My files volume in Files App.";
 
-const char kFilesZipUnpackName[] = "New ZIP unpacking in Files App";
-const char kFilesZipUnpackDescription[] =
-    "Enable new ZIP archive extraction system in File Manager.";
-
 const char kForceSpectreVariant2MitigationName[] =
     "Force Spectre variant 2 mitigagtion";
 const char kForceSpectreVariant2MitigationDescription[] =
