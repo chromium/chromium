@@ -60,6 +60,7 @@
 #include "third_party/skia/include/pathops/SkPathOps.h"
 #include "third_party/skia/include/utils/SkNullCanvas.h"
 #include "ui/base/ui_base_features.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 
 // To avoid conflicts with the DrawText macro from the Windows SDK...
 #undef DrawText
@@ -68,16 +69,14 @@ namespace blink {
 
 namespace {
 
-SkRect GetRectForTextLine(gfx::PointF pt, float width, float stroke_thickness) {
+gfx::RectF GetRectForTextLine(gfx::PointF pt,
+                              float width,
+                              float stroke_thickness) {
   int thickness = std::max(static_cast<int>(stroke_thickness), 1);
-  SkRect r;
-  r.fLeft = WebCoreFloatToSkScalar(pt.x());
   // Avoid anti-aliasing lines. Currently, these are always horizontal.
   // Round to nearest pixel to match text and other content.
-  r.fTop = WebCoreFloatToSkScalar(floorf(pt.y() + 0.5f));
-  r.fRight = r.fLeft + WebCoreFloatToSkScalar(width);
-  r.fBottom = r.fTop + SkIntToScalar(thickness);
-  return r;
+  float y = floorf(pt.y() + 0.5f);
+  return gfx::RectF(pt.x(), y, width, thickness);
 }
 
 std::pair<gfx::Point, gfx::Point> GetPointsForTextLine(gfx::PointF pt,
@@ -528,7 +527,8 @@ void GraphicsContext::DrawLineForText(const gfx::PointF& pt,
     std::tie(start, end) = GetPointsForTextLine(pt, width, StrokeThickness());
     DrawLine(start, end, auto_dark_mode, true, paint_flags);
   } else {
-    SkRect r = GetRectForTextLine(pt, width, StrokeThickness());
+    SkRect r =
+        gfx::RectFToSkRect(GetRectForTextLine(pt, width, StrokeThickness()));
     if (paint_flags) {
       DrawRect(r, *paint_flags, auto_dark_mode);
     } else {

@@ -137,7 +137,7 @@ void RasterShapeIntervals::BuildBoundsPath(Path& path) const {
       if (IntervalAt(end_y).IsEmpty() || IntervalAt(end_y) != extent)
         break;
     }
-    path.AddRect(FloatRect(extent.X1(), y, extent.Width(), end_y - y));
+    path.AddRect(gfx::PointF(extent.X1(), y), gfx::PointF(extent.X2(), end_y));
     y = end_y - 1;
   }
 }

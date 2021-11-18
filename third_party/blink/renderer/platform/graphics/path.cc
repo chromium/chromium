@@ -400,9 +400,16 @@ void Path::AddArc(const gfx::PointF& p,
   AddEllipse(p, radius, radius, start_angle, end_angle);
 }
 
-void Path::AddRect(const FloatRect& rect) {
+void Path::AddRect(const gfx::RectF& rect) {
   // Start at upper-left, add clock-wise.
-  path_.addRect(rect, SkPathDirection::kCW, 0);
+  path_.addRect(gfx::RectFToSkRect(rect), SkPathDirection::kCW, 0);
+}
+
+void Path::AddRect(const gfx::PointF& origin,
+                   const gfx::PointF& opposite_point) {
+  path_.addRect(SkRect::MakeLTRB(origin.x(), origin.y(), opposite_point.x(),
+                                 opposite_point.y()),
+                SkPathDirection::kCW, 0);
 }
 
 void Path::AddEllipse(const gfx::PointF& p,

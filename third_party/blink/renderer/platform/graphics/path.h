@@ -42,13 +42,13 @@
 
 namespace gfx {
 class PointF;
+class RectF;
 class Vector2dF;
 }
 
 namespace blink {
 
 class AffineTransform;
-class FloatRect;
 class StrokeData;
 
 enum PathElementType {
@@ -169,7 +169,12 @@ class PLATFORM_EXPORT Path {
               float radius,
               float start_angle,
               float end_angle);
-  void AddRect(const FloatRect&);
+
+  void AddRect(const gfx::RectF&);
+  // Use this form if the rect is defined by locations of a pair of opposite
+  // corners, where |origin| may not be the top-left corner.
+  void AddRect(const gfx::PointF& origin, const gfx::PointF& opposite_point);
+
   void AddEllipse(const gfx::PointF&,
                   float radius_x,
                   float radius_y,

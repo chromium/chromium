@@ -115,7 +115,7 @@ Path HTMLAreaElement::GetPath(const LayoutObject* container_object) const {
     // No need to zoom because it is already applied in
     // containerObject->borderBoxRect().
     if (const auto* box = DynamicTo<LayoutBox>(container_object))
-      path.AddRect(FloatRect(box->BorderBoxRect()));
+      path.AddRect(gfx::RectF(box->BorderBoxRect()));
     path_ = nullptr;
     return path;
   }
@@ -155,7 +155,7 @@ Path HTMLAreaElement::GetPath(const LayoutObject* container_object) const {
           float y0 = ClampCoordinate(coords_[1]);
           float x1 = ClampCoordinate(coords_[2]);
           float y1 = ClampCoordinate(coords_[3]);
-          path.AddRect(FloatRect(x0, y0, x1 - x0, y1 - y0));
+          path.AddRect(gfx::PointF(x0, y0), gfx::PointF(x1, y1));
         }
         break;
       default:

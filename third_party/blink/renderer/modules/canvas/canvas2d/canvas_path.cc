@@ -497,7 +497,7 @@ void CanvasPath::rect(double double_x,
         CanvasOps::kRect, double_x, double_y, double_width, double_height);
   }
 
-  path_.AddRect(FloatRect(x, y, width, height));
+  path_.AddRect(gfx::PointF(x, y), gfx::PointF(x + width, y + height));
 }
 
 void CanvasPath::roundRect(
@@ -570,7 +570,7 @@ void CanvasPath::roundRect(
   if (UNLIKELY(width == 0) || UNLIKELY(height == 0)) {
     // AddRoundRect does not handle flat rects, correctly.  But since there are
     // no rounded corners on a flat rect, we can just use AddRect.
-    path_.AddRect(FloatRect(x, y, width, height));
+    path_.AddRect(gfx::PointF(x, y), gfx::PointF(x + width, y + height));
     return;
   }
 

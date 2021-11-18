@@ -848,7 +848,7 @@ bool BoxBorderPainter::PaintBorderFastPath() const {
          {BoxSide::kTop, BoxSide::kRight, BoxSide::kBottom, BoxSide::kLeft}) {
       const BorderEdge& curr_edge = Edge(side);
       if (curr_edge.ShouldRender())
-        path.AddRect(CalculateSideRect(outer_, curr_edge, side));
+        path.AddRect(ToGfxRectF(CalculateSideRect(outer_, curr_edge, side)));
     }
 
     context_.SetFillColor(FirstEdge().color);

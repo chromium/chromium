@@ -375,8 +375,8 @@ void SVGInlineTextBoxPainter::PaintDecoration(const PaintInfo& paint_info,
 
   Path path;
   path.AddRect(
-      FloatRect(decoration_origin,
-                FloatSize(fragment.width, thickness / scaling_factor)));
+      gfx::RectF(decoration_origin,
+                 gfx::SizeF(fragment.width, thickness / scaling_factor)));
 
   AutoDarkMode auto_dark_mode(
       PaintAutoDarkMode(decoration_style, DarkModeFilter::ElementRole::kSVG));

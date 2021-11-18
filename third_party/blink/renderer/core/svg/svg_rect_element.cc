@@ -117,7 +117,7 @@ Path SVGRectElement::AsPath() const {
     radii.SetToMin(gfx::ScaleVector2d(size, 0.5));
     path.AddRoundedRect(FloatRoundedRect(rect, radii.x(), radii.y()));
   } else {
-    path.AddRect(rect);
+    path.AddRect(ToGfxRectF(rect));
   }
   return path;
 }
