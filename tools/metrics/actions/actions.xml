@@ -10328,921 +10328,1657 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="LanguageOptions_DisableInputMethod_chewing">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M-59) and obsolete input method system.
+    No longer emitted since https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_DisableInputMethod_english-m">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M-59) and obsolete input method system.
+    No longer emitted since https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_DisableInputMethod_hangul">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M-59) and obsolete input method system.
+    No longer emitted since https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_DisableInputMethod_m17n:am:sera">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M-59) and obsolete input method system.
+    No longer emitted since https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_DisableInputMethod_m17n:ar:kbd">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M-59) and obsolete input method system.
+    No longer emitted since https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_DisableInputMethod_m17n:bn:itrans">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M-59) and obsolete input method system.
+    No longer emitted since https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_DisableInputMethod_m17n:fa:isiri">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M-59) and obsolete input method system.
+    No longer emitted since https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_DisableInputMethod_m17n:gu:itrans">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M-59) and obsolete input method system.
+    No longer emitted since https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_DisableInputMethod_m17n:hi:itrans">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M-59) and obsolete input method system.
+    No longer emitted since https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_DisableInputMethod_m17n:kn:itrans">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M-59) and obsolete input method system.
+    No longer emitted since https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_DisableInputMethod_m17n:ml:itrans">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M-59) and obsolete input method system.
+    No longer emitted since https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_DisableInputMethod_m17n:mr:itrans">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M-59) and obsolete input method system.
+    No longer emitted since https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_DisableInputMethod_m17n:ta:inscript">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M-59) and obsolete input method system.
+    No longer emitted since https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_DisableInputMethod_m17n:ta:itrans">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M-59) and obsolete input method system.
+    No longer emitted since https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_DisableInputMethod_m17n:ta:phonetic">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M-59) and obsolete input method system.
+    No longer emitted since https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_DisableInputMethod_m17n:ta:tamil99">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M-59) and obsolete input method system.
+    No longer emitted since https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_DisableInputMethod_m17n:ta:typewriter">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M-59) and obsolete input method system.
+    No longer emitted since https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_DisableInputMethod_m17n:te:itrans">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M-59) and obsolete input method system.
+    No longer emitted since https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_DisableInputMethod_m17n:th:kesmanee">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M-59) and obsolete input method system.
+    No longer emitted since https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_DisableInputMethod_m17n:th:pattachote">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M-59) and obsolete input method system.
+    No longer emitted since https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_DisableInputMethod_m17n:th:tis820">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M-59) and obsolete input method system.
+    No longer emitted since https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_DisableInputMethod_m17n:vi:tcvn">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M-59) and obsolete input method system.
+    No longer emitted since https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_DisableInputMethod_m17n:vi:telex">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M-59) and obsolete input method system.
+    No longer emitted since https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_DisableInputMethod_m17n:vi:viqr">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M-59) and obsolete input method system.
+    No longer emitted since https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_DisableInputMethod_m17n:vi:vni">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M-59) and obsolete input method system.
+    No longer emitted since https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_DisableInputMethod_m17n:zh:cangjie">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M-59) and obsolete input method system.
+    No longer emitted since https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_DisableInputMethod_m17n:zh:quick">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M-59) and obsolete input method system.
+    No longer emitted since https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_DisableInputMethod_mozc">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M-59) and obsolete input method system.
+    No longer emitted since https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_DisableInputMethod_mozc-chewing">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M-59) and obsolete input method system.
+    No longer emitted since https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_DisableInputMethod_mozc-dv">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M-59) and obsolete input method system.
+    No longer emitted since https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_DisableInputMethod_mozc-hangul">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M-59) and obsolete input method system.
+    No longer emitted since https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_DisableInputMethod_mozc-jp">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M-59) and obsolete input method system.
+    No longer emitted since https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_DisableInputMethod_pinyin">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M-59) and obsolete input method system.
+    No longer emitted since https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_DisableInputMethod_pinyin-dv">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M-59) and obsolete input method system.
+    No longer emitted since https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_DisableInputMethod_xkb:am:phonetic:arm">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M-59) and obsolete input method system.
+    No longer emitted since https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_DisableInputMethod_xkb:be::fra">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M-59) and obsolete input method system.
+    No longer emitted since https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_DisableInputMethod_xkb:be::ger">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M-59) and obsolete input method system.
+    No longer emitted since https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_DisableInputMethod_xkb:be::nld">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M-59) and obsolete input method system.
+    No longer emitted since https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_DisableInputMethod_xkb:bg::bul">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M-59) and obsolete input method system.
+    No longer emitted since https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_DisableInputMethod_xkb:bg:phonetic:bul">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M-59) and obsolete input method system.
+    No longer emitted since https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_DisableInputMethod_xkb:br::por">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M-59) and obsolete input method system.
+    No longer emitted since https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_DisableInputMethod_xkb:by::bel">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M-59) and obsolete input method system.
+    No longer emitted since https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_DisableInputMethod_xkb:ca::fra">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M-59) and obsolete input method system.
+    No longer emitted since https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_DisableInputMethod_xkb:ca:eng:eng">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M-59) and obsolete input method system.
+    No longer emitted since https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_DisableInputMethod_xkb:ca:multix:fra">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M-59) and obsolete input method system.
+    No longer emitted since https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_DisableInputMethod_xkb:ch::ger">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M-59) and obsolete input method system.
+    No longer emitted since https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_DisableInputMethod_xkb:ch:fr:fra">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M-59) and obsolete input method system.
+    No longer emitted since https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_DisableInputMethod_xkb:cz::cze">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M-59) and obsolete input method system.
+    No longer emitted since https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_DisableInputMethod_xkb:cz:qwerty:cze">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M-59) and obsolete input method system.
+    No longer emitted since https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_DisableInputMethod_xkb:de::ger">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M-59) and obsolete input method system.
+    No longer emitted since https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_DisableInputMethod_xkb:de:neo:ger">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M-59) and obsolete input method system.
+    No longer emitted since https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_DisableInputMethod_xkb:dk::dan">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M-59) and obsolete input method system.
+    No longer emitted since https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_DisableInputMethod_xkb:ee::est">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M-59) and obsolete input method system.
+    No longer emitted since https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_DisableInputMethod_xkb:es::spa">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M-59) and obsolete input method system.
+    No longer emitted since https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_DisableInputMethod_xkb:es:cat:cat">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M-59) and obsolete input method system.
+    No longer emitted since https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_DisableInputMethod_xkb:fi::fin">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M-59) and obsolete input method system.
+    No longer emitted since https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_DisableInputMethod_xkb:fr::fra">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M-59) and obsolete input method system.
+    No longer emitted since https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_DisableInputMethod_xkb:gb:dvorak:eng">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M-59) and obsolete input method system.
+    No longer emitted since https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_DisableInputMethod_xkb:gb:extd:eng">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M-59) and obsolete input method system.
+    No longer emitted since https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_DisableInputMethod_xkb:ge::geo">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M-59) and obsolete input method system.
+    No longer emitted since https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_DisableInputMethod_xkb:gr::gre">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M-59) and obsolete input method system.
+    No longer emitted since https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_DisableInputMethod_xkb:hr::scr">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M-59) and obsolete input method system.
+    No longer emitted since https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_DisableInputMethod_xkb:hu::hun">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M-59) and obsolete input method system.
+    No longer emitted since https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_DisableInputMethod_xkb:il::heb">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M-59) and obsolete input method system.
+    No longer emitted since https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_DisableInputMethod_xkb:is::ice">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M-59) and obsolete input method system.
+    No longer emitted since https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_DisableInputMethod_xkb:it::ita">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M-59) and obsolete input method system.
+    No longer emitted since https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_DisableInputMethod_xkb:jp::jpn">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M-59) and obsolete input method system.
+    No longer emitted since https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_DisableInputMethod_xkb:kr:kr104:kor">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M-59) and obsolete input method system.
+    No longer emitted since https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_DisableInputMethod_xkb:latam::spa">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M-59) and obsolete input method system.
+    No longer emitted since https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_DisableInputMethod_xkb:lt::lit">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M-59) and obsolete input method system.
+    No longer emitted since https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_DisableInputMethod_xkb:lv::lav">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M-59) and obsolete input method system.
+    No longer emitted since https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_DisableInputMethod_xkb:lv:apostrophe:lav">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M-59) and obsolete input method system.
+    No longer emitted since https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_DisableInputMethod_xkb:mn::mon">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M-59) and obsolete input method system.
+    No longer emitted since https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_DisableInputMethod_xkb:nl::nld">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M-59) and obsolete input method system.
+    No longer emitted since https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_DisableInputMethod_xkb:no::nob">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M-59) and obsolete input method system.
+    No longer emitted since https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_DisableInputMethod_xkb:no::nor">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M-59) and obsolete input method system.
+    No longer emitted since https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_DisableInputMethod_xkb:pl::pol">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M-59) and obsolete input method system.
+    No longer emitted since https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_DisableInputMethod_xkb:pt::por">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M-59) and obsolete input method system.
+    No longer emitted since https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_DisableInputMethod_xkb:ro::rum">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M-59) and obsolete input method system.
+    No longer emitted since https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_DisableInputMethod_xkb:rs::srp">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M-59) and obsolete input method system.
+    No longer emitted since https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_DisableInputMethod_xkb:ru::rus">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M-59) and obsolete input method system.
+    No longer emitted since https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_DisableInputMethod_xkb:ru:phonetic:rus">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M-59) and obsolete input method system.
+    No longer emitted since https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_DisableInputMethod_xkb:se::swe">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M-59) and obsolete input method system.
+    No longer emitted since https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_DisableInputMethod_xkb:si::slv">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M-59) and obsolete input method system.
+    No longer emitted since https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_DisableInputMethod_xkb:sk::slo">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M-59) and obsolete input method system.
+    No longer emitted since https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_DisableInputMethod_xkb:tr::tur">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M-59) and obsolete input method system.
+    No longer emitted since https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_DisableInputMethod_xkb:ua::ukr">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M-59) and obsolete input method system.
+    No longer emitted since https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_DisableInputMethod_xkb:us::eng">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M-59) and obsolete input method system.
+    No longer emitted since https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_DisableInputMethod_xkb:us:altgr-intl:eng">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M-59) and obsolete input method system.
+    No longer emitted since https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_DisableInputMethod_xkb:us:colemak:eng">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M-59) and obsolete input method system.
+    No longer emitted since https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_DisableInputMethod_xkb:us:dvorak:eng">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M-59) and obsolete input method system.
+    No longer emitted since https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_DisableInputMethod_xkb:us:intl:eng">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M-59) and obsolete input method system.
+    No longer emitted since https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_EnableInputMethod_chewing">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M-59) and obsolete input method system.
+    No longer emitted since https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_EnableInputMethod_english-m">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M-59) and obsolete input method system.
+    No longer emitted since https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_EnableInputMethod_hangul">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M-59) and obsolete input method system.
+    No longer emitted since https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_EnableInputMethod_m17n:am:sera">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M-59) and obsolete input method system.
+    No longer emitted since https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_EnableInputMethod_m17n:ar:kbd">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M-59) and obsolete input method system.
+    No longer emitted since https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_EnableInputMethod_m17n:bn:itrans">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M-59) and obsolete input method system.
+    No longer emitted since https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_EnableInputMethod_m17n:fa:isiri">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M-59) and obsolete input method system.
+    No longer emitted since https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_EnableInputMethod_m17n:gu:itrans">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M-59) and obsolete input method system.
+    No longer emitted since https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_EnableInputMethod_m17n:hi:itrans">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M-59) and obsolete input method system.
+    No longer emitted since https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_EnableInputMethod_m17n:kn:itrans">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M-59) and obsolete input method system.
+    No longer emitted since https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_EnableInputMethod_m17n:ml:itrans">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M-59) and obsolete input method system.
+    No longer emitted since https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_EnableInputMethod_m17n:mr:itrans">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M-59) and obsolete input method system.
+    No longer emitted since https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_EnableInputMethod_m17n:ta:inscript">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M-59) and obsolete input method system.
+    No longer emitted since https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_EnableInputMethod_m17n:ta:itrans">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M-59) and obsolete input method system.
+    No longer emitted since https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_EnableInputMethod_m17n:ta:phonetic">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M-59) and obsolete input method system.
+    No longer emitted since https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_EnableInputMethod_m17n:ta:tamil99">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M-59) and obsolete input method system.
+    No longer emitted since https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_EnableInputMethod_m17n:ta:typewriter">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M-59) and obsolete input method system.
+    No longer emitted since https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_EnableInputMethod_m17n:te:itrans">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M-59) and obsolete input method system.
+    No longer emitted since https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_EnableInputMethod_m17n:th:kesmanee">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M-59) and obsolete input method system.
+    No longer emitted since https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_EnableInputMethod_m17n:th:pattachote">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M-59) and obsolete input method system.
+    No longer emitted since https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_EnableInputMethod_m17n:th:tis820">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M-59) and obsolete input method system.
+    No longer emitted since https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_EnableInputMethod_m17n:vi:tcvn">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M-59) and obsolete input method system.
+    No longer emitted since https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_EnableInputMethod_m17n:vi:telex">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M-59) and obsolete input method system.
+    No longer emitted since https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_EnableInputMethod_m17n:vi:viqr">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M-59) and obsolete input method system.
+    No longer emitted since https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_EnableInputMethod_m17n:vi:vni">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M-59) and obsolete input method system.
+    No longer emitted since https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_EnableInputMethod_m17n:zh:cangjie">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M-59) and obsolete input method system.
+    No longer emitted since https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_EnableInputMethod_m17n:zh:quick">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M-59) and obsolete input method system.
+    No longer emitted since https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_EnableInputMethod_mozc">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M-59) and obsolete input method system.
+    No longer emitted since https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_EnableInputMethod_mozc-chewing">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M-59) and obsolete input method system.
+    No longer emitted since https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_EnableInputMethod_mozc-dv">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M-59) and obsolete input method system.
+    No longer emitted since https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_EnableInputMethod_mozc-hangul">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M-59) and obsolete input method system.
+    No longer emitted since https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_EnableInputMethod_mozc-jp">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M-59) and obsolete input method system.
+    No longer emitted since https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_EnableInputMethod_pinyin">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M-59) and obsolete input method system.
+    No longer emitted since https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_EnableInputMethod_pinyin-dv">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M-59) and obsolete input method system.
+    No longer emitted since https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_EnableInputMethod_xkb:am:phonetic:arm">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M-59) and obsolete input method system.
+    No longer emitted since https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_EnableInputMethod_xkb:be::fra">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M-59) and obsolete input method system.
+    No longer emitted since https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_EnableInputMethod_xkb:be::ger">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M-59) and obsolete input method system.
+    No longer emitted since https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_EnableInputMethod_xkb:be::nld">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M-59) and obsolete input method system.
+    No longer emitted since https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_EnableInputMethod_xkb:bg::bul">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M-59) and obsolete input method system.
+    No longer emitted since https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_EnableInputMethod_xkb:bg:phonetic:bul">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M-59) and obsolete input method system.
+    No longer emitted since https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_EnableInputMethod_xkb:br::por">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M-59) and obsolete input method system.
+    No longer emitted since https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_EnableInputMethod_xkb:by::bel">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M-59) and obsolete input method system.
+    No longer emitted since https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_EnableInputMethod_xkb:ca::fra">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M-59) and obsolete input method system.
+    No longer emitted since https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_EnableInputMethod_xkb:ca:eng:eng">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M-59) and obsolete input method system.
+    No longer emitted since https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_EnableInputMethod_xkb:ca:multix:fra">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M-59) and obsolete input method system.
+    No longer emitted since https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_EnableInputMethod_xkb:ch::ger">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M-59) and obsolete input method system.
+    No longer emitted since https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_EnableInputMethod_xkb:ch:fr:fra">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M-59) and obsolete input method system.
+    No longer emitted since https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_EnableInputMethod_xkb:cz::cze">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M-59) and obsolete input method system.
+    No longer emitted since https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_EnableInputMethod_xkb:cz:qwerty:cze">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M-59) and obsolete input method system.
+    No longer emitted since https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_EnableInputMethod_xkb:de::ger">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M-59) and obsolete input method system.
+    No longer emitted since https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_EnableInputMethod_xkb:de:neo:ger">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M-59) and obsolete input method system.
+    No longer emitted since https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_EnableInputMethod_xkb:dk::dan">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M-59) and obsolete input method system.
+    No longer emitted since https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_EnableInputMethod_xkb:ee::est">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M-59) and obsolete input method system.
+    No longer emitted since https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_EnableInputMethod_xkb:es::spa">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M-59) and obsolete input method system.
+    No longer emitted since https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_EnableInputMethod_xkb:es:cat:cat">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M-59) and obsolete input method system.
+    No longer emitted since https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_EnableInputMethod_xkb:fi::fin">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M-59) and obsolete input method system.
+    No longer emitted since https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_EnableInputMethod_xkb:fr::fra">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M-59) and obsolete input method system.
+    No longer emitted since https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_EnableInputMethod_xkb:gb:dvorak:eng">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M-59) and obsolete input method system.
+    No longer emitted since https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_EnableInputMethod_xkb:gb:extd:eng">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M-59) and obsolete input method system.
+    No longer emitted since https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_EnableInputMethod_xkb:ge::geo">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M-59) and obsolete input method system.
+    No longer emitted since https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_EnableInputMethod_xkb:gr::gre">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M-59) and obsolete input method system.
+    No longer emitted since https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_EnableInputMethod_xkb:hr::scr">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M-59) and obsolete input method system.
+    No longer emitted since https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_EnableInputMethod_xkb:hu::hun">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M-59) and obsolete input method system.
+    No longer emitted since https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_EnableInputMethod_xkb:il::heb">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M-59) and obsolete input method system.
+    No longer emitted since https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_EnableInputMethod_xkb:is::ice">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M-59) and obsolete input method system.
+    No longer emitted since https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_EnableInputMethod_xkb:it::ita">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M-59) and obsolete input method system.
+    No longer emitted since https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_EnableInputMethod_xkb:jp::jpn">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M-59) and obsolete input method system.
+    No longer emitted since https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_EnableInputMethod_xkb:kr:kr104:kor">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M-59) and obsolete input method system.
+    No longer emitted since https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_EnableInputMethod_xkb:latam::spa">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M-59) and obsolete input method system.
+    No longer emitted since https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_EnableInputMethod_xkb:lt::lit">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M-59) and obsolete input method system.
+    No longer emitted since https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_EnableInputMethod_xkb:lv::lav">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M-59) and obsolete input method system.
+    No longer emitted since https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_EnableInputMethod_xkb:lv:apostrophe:lav">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M-59) and obsolete input method system.
+    No longer emitted since https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_EnableInputMethod_xkb:mn::mon">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M-59) and obsolete input method system.
+    No longer emitted since https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_EnableInputMethod_xkb:nl::nld">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M-59) and obsolete input method system.
+    No longer emitted since https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_EnableInputMethod_xkb:no::nob">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M-59) and obsolete input method system.
+    No longer emitted since https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_EnableInputMethod_xkb:no::nor">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M-59) and obsolete input method system.
+    No longer emitted since https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_EnableInputMethod_xkb:pl::pol">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M-59) and obsolete input method system.
+    No longer emitted since https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_EnableInputMethod_xkb:pt::por">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M-59) and obsolete input method system.
+    No longer emitted since https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_EnableInputMethod_xkb:ro::rum">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M-59) and obsolete input method system.
+    No longer emitted since https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_EnableInputMethod_xkb:rs::srp">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M-59) and obsolete input method system.
+    No longer emitted since https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_EnableInputMethod_xkb:ru::rus">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M-59) and obsolete input method system.
+    No longer emitted since https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_EnableInputMethod_xkb:ru:phonetic:rus">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M-59) and obsolete input method system.
+    No longer emitted since https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_EnableInputMethod_xkb:se::swe">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M-59) and obsolete input method system.
+    No longer emitted since https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_EnableInputMethod_xkb:si::slv">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M-59) and obsolete input method system.
+    No longer emitted since https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_EnableInputMethod_xkb:sk::slo">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M-59) and obsolete input method system.
+    No longer emitted since https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_EnableInputMethod_xkb:tr::tur">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M-59) and obsolete input method system.
+    No longer emitted since https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_EnableInputMethod_xkb:ua::ukr">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M-59) and obsolete input method system.
+    No longer emitted since https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_EnableInputMethod_xkb:us::eng">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M-59) and obsolete input method system.
+    No longer emitted since https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_EnableInputMethod_xkb:us:altgr-intl:eng">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M-59) and obsolete input method system.
+    No longer emitted since https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_EnableInputMethod_xkb:us:colemak:eng">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M-59) and obsolete input method system.
+    No longer emitted since https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_EnableInputMethod_xkb:us:dvorak:eng">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M-59) and obsolete input method system.
+    No longer emitted since https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_EnableInputMethod_xkb:us:intl:eng">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M-59) and obsolete input method system.
+    No longer emitted since https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>

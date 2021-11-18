@@ -102,8 +102,7 @@ KNOWN_COMPUTED_USERS = (
     'user_metrics.cc',  # method definition
     'new_tab_ui.cc',  # most visited clicks 1-9
     'extension_metrics_module.cc',  # extensions hook for user metrics
-    'language_options_handler_common.cc',  # languages and input methods in CrOS
-    'cros_language_options_handler.cc',  # languages and input methods in CrOS
+    'language_options_handler_common.cc',  # languages in CrOS
     'external_metrics.cc',  # see AddChromeOSActions()
     'core_options_handler.cc',  # see AddWebUIActions()
     'browser_render_process_host.cc',  # see AddRendererActions()
@@ -146,33 +145,6 @@ LANGUAGE_CODES = (
   'ur', 'uz', 'vi', 'xh', 'yi', 'yo', 'zh', 'zh-CN', 'zh-TW', 'zu',
 )
 
-# Input method IDs used in Chrome OS. The list should be updated when a
-# new input method is added to
-# chromeos/ime/input_methods.txt in the Chrome tree, as
-# follows:
-#
-# % sort chromeos/ime/input_methods.txt | \
-#   perl -ne "print \"'\$1', \" if /^([^#]+?)\s/" | \
-#   fold -w75 -s | perl -pe 's/^/  /;s/ $//'; echo
-#
-# The script extracts input method IDs from input_methods.txt.
-INPUT_METHOD_IDS = (
-  'xkb:am:phonetic:arm', 'xkb:be::fra', 'xkb:be::ger', 'xkb:be::nld',
-  'xkb:bg::bul', 'xkb:bg:phonetic:bul', 'xkb:br::por', 'xkb:by::bel',
-  'xkb:ca::fra', 'xkb:ca:eng:eng', 'xkb:ca:multix:fra', 'xkb:ch::ger',
-  'xkb:ch:fr:fra', 'xkb:cz::cze', 'xkb:cz:qwerty:cze', 'xkb:de::ger',
-  'xkb:de:neo:ger', 'xkb:dk::dan', 'xkb:ee::est', 'xkb:es::spa',
-  'xkb:es:cat:cat', 'xkb:fi::fin', 'xkb:fr::fra', 'xkb:gb:dvorak:eng',
-  'xkb:gb:extd:eng', 'xkb:ge::geo', 'xkb:gr::gre', 'xkb:hr::scr',
-  'xkb:hu::hun', 'xkb:il::heb', 'xkb:is::ice', 'xkb:it::ita', 'xkb:jp::jpn',
-  'xkb:latam::spa', 'xkb:lt::lit', 'xkb:lv:apostrophe:lav', 'xkb:mn::mon',
-  'xkb:no::nob', 'xkb:pl::pol', 'xkb:pt::por', 'xkb:ro::rum', 'xkb:rs::srp',
-  'xkb:ru::rus', 'xkb:ru:phonetic:rus', 'xkb:se::swe', 'xkb:si::slv',
-  'xkb:sk::slo', 'xkb:tr::tur', 'xkb:ua::ukr', 'xkb:us::eng',
-  'xkb:us:altgr-intl:eng', 'xkb:us:colemak:eng', 'xkb:us:dvorak:eng',
-  'xkb:us:intl:eng',
-)
-
 # The path to the root of the repository.
 REPOSITORY_ROOT = os.path.join(os.path.dirname(__file__), '..', '..', '..')
 
@@ -210,9 +182,6 @@ def AddComputedActions(actions):
     actions.add('MostVisited%d' % i)
 
   # Actions for language_options_handler.cc (Chrome OS specific).
-  for input_method_id in INPUT_METHOD_IDS:
-    actions.add('LanguageOptions_DisableInputMethod_%s' % input_method_id)
-    actions.add('LanguageOptions_EnableInputMethod_%s' % input_method_id)
   for language_code in LANGUAGE_CODES:
     actions.add('LanguageOptions_UiLanguageChange_%s' % language_code)
     actions.add('LanguageOptions_SpellCheckLanguageChange_%s' % language_code)
