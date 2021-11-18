@@ -34,7 +34,7 @@ const base::Feature kCOEPForSharedWorker{"COEPForSharedWorker",
                                          base::FEATURE_ENABLED_BY_DEFAULT};
 
 const base::Feature kCOLRV1Fonts{"COLRV1Fonts",
-                                 base::FEATURE_DISABLED_BY_DEFAULT};
+                                 base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Enable CSS Container Queries. Also implies LayoutNGGrid and CSSContainSize1D.
 const base::Feature kCSSContainerQueries{"CSSContainerQueries",
