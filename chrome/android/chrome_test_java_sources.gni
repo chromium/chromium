@@ -523,6 +523,7 @@ chrome_test_java_sources = [
   "javatests/src/org/chromium/chrome/browser/site_settings/CookieControlsServiceBridgeTest.java",
   "javatests/src/org/chromium/chrome/browser/site_settings/ManageSpaceActivityTest.java",
   "javatests/src/org/chromium/chrome/browser/site_settings/PermissionInfoTest.java",
+  "javatests/src/org/chromium/chrome/browser/site_settings/SingleWebsiteSettingsTest.java",
   "javatests/src/org/chromium/chrome/browser/site_settings/SiteSettingsTest.java",
   "javatests/src/org/chromium/chrome/browser/site_settings/SiteSettingsTestUtils.java",
   "javatests/src/org/chromium/chrome/browser/site_settings/WebsitePermissionsFetcherTest.java",

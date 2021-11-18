@@ -109,7 +109,8 @@ public class SingleWebsiteSettings extends SiteSettingsPreferenceFragment
      * @param type ContentSettingsType
      * @return The preference key of this type
      */
-    private static @Nullable String getPreferenceKey(@ContentSettingsType int type) {
+    @VisibleForTesting
+    public static @Nullable String getPreferenceKey(@ContentSettingsType int type) {
         switch (type) {
             case ContentSettingsType.ADS:
                 return "ads_permission_list";
