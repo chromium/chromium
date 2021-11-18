@@ -483,7 +483,7 @@ void FakeShillManagerClient::ConnectToBestServices(
 void FakeShillManagerClient::AddPasspointCredentials(
     const dbus::ObjectPath& profile_path,
     const base::Value& properties,
-    ObjectPathCallback callback,
+    base::OnceClosure callback,
     ErrorCallback error_callback) {
   return;
 }

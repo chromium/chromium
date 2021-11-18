@@ -216,7 +216,7 @@ class COMPONENT_EXPORT(SHILL_CLIENT) ShillManagerClient {
   // referenced by |profile_path|.
   virtual void AddPasspointCredentials(const dbus::ObjectPath& profile_path,
                                        const base::Value& properties,
-                                       ObjectPathCallback callback,
+                                       base::OnceClosure callback,
                                        ErrorCallback error_callback) = 0;
 
   // Returns an interface for testing (stub only), or returns null.
