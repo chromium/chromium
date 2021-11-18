@@ -1,0 +1,10 @@
+This is a testharness.js-based test.
+PASS postMessage
+PASS start
+PASS close
+PASS onmessage
+PASS addEventListener
+PASS removeEventListener
+PASS despatchEvent
+Harness: the test ran to completion.
+

@@ -105304,6 +105304,32 @@
        {}
       ]
      ],
+     "font-palette-35.html": [
+      "fcd7e29dd97a242690b396998ede820a0d6b9c7d",
+      [
+       null,
+       [
+        [
+         "/css/css-fonts/font-palette-35-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "font-palette-36.html": [
+      "d84a9aa12396ad121a61c3168c1392f79474c27e",
+      [
+       null,
+       [
+        [
+         "/css/css-fonts/font-palette-35-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "font-palette-4.html": [
       "540ba2542190205fbebc43b3b90381ab19a07b5e",
       [
@@ -238427,6 +238453,10 @@
       "4fe9d815f8c5faf3c3f5027f22e50ea10ae8e5aa",
       []
      ],
+     "font-palette-35-ref.html": [
+      "5a8078d913a8733053fbef02b6257fbdc40f7824",
+      []
+     ],
      "font-palette-4-notref.html": [
       "31dbd232efb041c11d6188a4e152a2f545dff870",
       []
@@ -274426,8 +274456,20 @@
          "593c428a67566a0e2498d9b3f8411c92d0e533e6",
          []
         ],
+        "page-that-post-message-to-opener.html": [
+         "65a0c821494ab32fcb2cc5a41fc43581d81bd9a2",
+         []
+        ],
+        "page-with-top-navigating-iframe.html": [
+         "568e44296f10dfc083e2358ae4b3a5b7d4916a38",
+         []
+        ],
         "redirect.py": [
          "3c78c256b02fd9be3bce4a4002b81ced999cf276",
+         []
+        ],
+        "top-navigating-page.html": [
+         "557f408fba0e63b66ee170c04ba405744325036d",
          []
         ],
         "wait-for-messages.js": [
@@ -299044,6 +299086,48 @@
     }
    },
    "secure-payment-confirmation": {
+    "META.yml": [
+     "cdcab0e70535014219e2da44a28615004db6a1a4",
+     []
+    ],
+    "authentication-accepted.https-expected.txt": [
+     "51ace4ed85da9ac55547fffc751f7fa28b23b265",
+     []
+    ],
+    "authentication-cross-origin.sub.https-expected.txt": [
+     "eb082bd3bcaf059fd7c341dcef621008815f424e",
+     []
+    ],
+    "authentication-icon-data-url.https-expected.txt": [
+     "51ace4ed85da9ac55547fffc751f7fa28b23b265",
+     []
+    ],
+    "authentication-in-iframe.sub.https-expected.txt": [
+     "5f4d9b0bcb3915e753f733e4cc97cf2689b9e2c3",
+     []
+    ],
+    "authentication-invalid-icon.https-expected.txt": [
+     "f3a35dff00aff92cbd3970b5f8f4e78e57ebb316",
+     []
+    ],
+    "authentication-rejected.https-expected.txt": [
+     "81374cc95b81514962979e4e076d615589fcd0d1",
+     []
+    ],
+    "enrollment.https-expected.txt": [
+     "3613bbce753b456ecacc55b658955ab0adc3feab",
+     []
+    ],
+    "resources": {
+     "iframe-authenticate.html": [
+      "d41700224fd01ede58fd372a3866dd69761cf047",
+      []
+     ],
+     "iframe-enroll.html": [
+      "6ac03a762ef680f8b83b4423091b9e075670fed1",
+      []
+     ]
+    },
     "secure-payment-confirmation-authentication-accepted.https-expected.txt": [
      "51ace4ed85da9ac55547fffc751f7fa28b23b265",
      []
@@ -299061,7 +299145,7 @@
      []
     ],
     "utils.sub.js": [
-     "86ce967c1d9241d45656990d35d6d387b1a11596",
+     "705de30bbd6f806d85e9d8f3e95b55b994ffb23a",
      []
     ]
    },
@@ -311354,10 +311438,6 @@
       ],
       "port-onmessage.js": [
        "64ef84df15a3d0b1fec05b1b8cba9a39b0a655e8",
-       []
-      ],
-      "setting-port-members-expected.txt": [
-       "9176169787f278cca40f35d447ca84b956b71401",
        []
       ],
       "shared-worker.js": [
@@ -345653,6 +345733,13 @@
      ],
      "hit-test-inline-fragmentation-with-border-radius.html": [
       "4d0fc7eccc45e44480b4305632ceac2068c59919",
+      [
+       null,
+       {}
+      ]
+     ],
+     "hit-test-transformed.html": [
+      "99365c908cb7754ee2c1ee588c1157d9ebd36add",
       [
        null,
        {}
@@ -404934,6 +405021,42 @@
          }
         ]
        ],
+       "cross-origin-top-navigation-with-user-activation-in-parent.window.js": [
+        "8dbe667348a00a3c00122a50cc2adc619e6ccb9f",
+        [
+         "html/browsers/browsing-the-web/navigating-across-documents/cross-origin-top-navigation-with-user-activation-in-parent.window.html",
+         {
+          "script_metadata": [
+           [
+            "script",
+            "/resources/testharness.js"
+           ],
+           [
+            "script",
+            "/resources/testharnessreport.js"
+           ]
+          ]
+         }
+        ]
+       ],
+       "cross-origin-top-navigation-without-user-activation.window.js": [
+        "bd7140f459770e5dc48f1dc6ac1e37877a03f4fc",
+        [
+         "html/browsers/browsing-the-web/navigating-across-documents/cross-origin-top-navigation-without-user-activation.window.html",
+         {
+          "script_metadata": [
+           [
+            "script",
+            "/resources/testharness.js"
+           ],
+           [
+            "script",
+            "/resources/testharnessreport.js"
+           ]
+          ]
+         }
+        ]
+       ],
        "empty_fragment.html": [
         "18a6f84c9f591b3d65ad66c528e1cb4d2c05364f",
         [
@@ -429271,9 +429394,27 @@
      ],
      "historical": {
       "coep-navigate-popup-unsafe-inherit.https.html": [
-       "21feef73ddf2a9cdfffc58ef2d17d45773fb2b7d",
+       "8756cb67143be81771ad91e3b1cbcd7913dfbe62",
        [
-        null,
+        "html/cross-origin-opener-policy/historical/coep-navigate-popup-unsafe-inherit.https.html?0-0",
+        {
+         "timeout": "long"
+        }
+       ],
+       [
+        "html/cross-origin-opener-policy/historical/coep-navigate-popup-unsafe-inherit.https.html?1-1",
+        {
+         "timeout": "long"
+        }
+       ],
+       [
+        "html/cross-origin-opener-policy/historical/coep-navigate-popup-unsafe-inherit.https.html?2-2",
+        {
+         "timeout": "long"
+        }
+       ],
+       [
+        "html/cross-origin-opener-policy/historical/coep-navigate-popup-unsafe-inherit.https.html?3-3",
         {
          "timeout": "long"
         }
@@ -481645,7 +481786,7 @@
     ]
    },
    "secure-payment-confirmation": {
-    "secure-payment-confirmation-authentication-accepted.https.html": [
+    "authentication-accepted.https.html": [
      "b62716e0ccb9dfbf84a26b5ce3bdd6fe27d30e48",
      [
       null,
@@ -481654,7 +481795,43 @@
       }
      ]
     ],
-    "secure-payment-confirmation-authentication-rejected.https.html": [
+    "authentication-cross-origin.sub.https.html": [
+     "ed1db0d017a4d9421968e468e46b8093bffccb89",
+     [
+      null,
+      {
+       "testdriver": true
+      }
+     ]
+    ],
+    "authentication-icon-data-url.https.html": [
+     "7a2bc357b8663766ef224c061a7671a46ade6a22",
+     [
+      null,
+      {
+       "testdriver": true
+      }
+     ]
+    ],
+    "authentication-in-iframe.sub.https.html": [
+     "53274963f45b01ed1a1faa14b990b2a87e843178",
+     [
+      null,
+      {
+       "testdriver": true
+      }
+     ]
+    ],
+    "authentication-invalid-icon.https.html": [
+     "28ca629a9447c8da9bd6cc0f8a890b6488487493",
+     [
+      null,
+      {
+       "testdriver": true
+      }
+     ]
+    ],
+    "authentication-rejected.https.html": [
      "22432b88161d5fa9b34fa1a3dad23cfac96db749",
      [
       null,
@@ -481663,7 +481840,7 @@
       }
      ]
     ],
-    "secure-payment-confirmation-constructor.https.html": [
+    "constructor.https.html": [
      "88b250511d07365b721b64d7999d5d9e1198f0d9",
      [
       null,
@@ -481672,7 +481849,7 @@
       }
      ]
     ],
-    "secure-payment-confirmation-enrollment.https.html": [
+    "enrollment.https.html": [
      "ab553d4a7905926ffa4853ccf0a94dcae238f786",
      [
       null,
@@ -529570,7 +529747,7 @@
        ]
       ],
       "setting-port-members.html": [
-       "367b756d33badf66ab096d40b56eb817cd01c81d",
+       "0c53474ff0768f3f8ce28c1db1b0ab0dbf7f1baf",
        [
         null,
         {}
