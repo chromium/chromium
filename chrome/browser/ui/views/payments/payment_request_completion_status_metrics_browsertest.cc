@@ -6,12 +6,14 @@
 
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/views/payments/payment_request_browsertest_base.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/payments/core/journey_logger.h"
+#include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "url/gurl.h"
@@ -526,6 +528,100 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestInitiatedCompletionStatusMetricsTest,
                 JourneyLogger::EVENT_REQUEST_METHOD_OTHER |
                 JourneyLogger::EVENT_NEEDS_COMPLETION_PAYMENT,
             buckets[0].min);
+}
+
+// The tests in this class correspond to the tests of the same name in
+// PaymentRequestCompletionStatusMetricsTest, with the basic-card being
+// disabled. Parameterized tests are not used because the test setup for both
+// tests are too different.
+class PaymentRequestCompletionStatusMetricsWithBasicCardDisabledTest
+    : public PaymentRequestCompletionStatusMetricsTest {
+ public:
+  PaymentRequestCompletionStatusMetricsWithBasicCardDisabledTest(
+      const PaymentRequestCompletionStatusMetricsWithBasicCardDisabledTest&) =
+      delete;
+  PaymentRequestCompletionStatusMetricsWithBasicCardDisabledTest& operator=(
+      const PaymentRequestCompletionStatusMetricsWithBasicCardDisabledTest&) =
+      delete;
+
+ protected:
+  PaymentRequestCompletionStatusMetricsWithBasicCardDisabledTest() {
+    feature_list_.InitWithFeatures({}, {::features::kPaymentRequestBasicCard});
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(
+    PaymentRequestCompletionStatusMetricsWithBasicCardDisabledTest,
+    Completed) {
+  NavigateTo("a.com", "/payment_handler_installer.html");
+  base::HistogramTester histogram_tester;
+
+  std::string method_name = https_server()->GetURL("a.com", "/").spec();
+  method_name = method_name.substr(0, method_name.length() - 1);
+  ASSERT_NE('/', method_name[method_name.length() - 1]);
+  ASSERT_EQ(
+      "success",
+      content::EvalJs(
+          GetActiveWebContents(),
+          content::JsReplace(
+              "install('payment_request_success_responder.js', [$1], false)",
+              method_name)));
+
+  NavigateTo("b.com", "/payment_request_can_make_payment_metrics_test.html");
+
+  // Try to start the Payment Request and call show().
+  ASSERT_EQ("success",
+            content::EvalJs(
+                GetActiveWebContents(),
+                content::JsReplace(
+                    "queryShowWithMethodsBlocking([{supportedMethods:$1}]);",
+                    method_name)));
+
+  // Navigate away to trigger the log.
+  NavigateTo("a.com", "/payment_request_email_test.html");
+
+  histogram_tester.ExpectUniqueSample(
+      "PaymentRequest.TransactionAmount.Triggered", kRegularTransaction, 1);
+
+  histogram_tester.ExpectTotalCount("PaymentRequest.TimeToCheckout.Completed",
+                                    1);
+  histogram_tester.ExpectTotalCount(
+      "PaymentRequest.TimeToCheckout.Completed.SkippedShow", 1);
+  histogram_tester.ExpectTotalCount(
+      "PaymentRequest.TimeToCheckout.Completed.SkippedShow.Other", 1);
+
+  histogram_tester.ExpectUniqueSample(
+      "PaymentRequest.TransactionAmount.Completed", kRegularTransaction, 1);
+
+  // Make sure the correct events were logged.
+  std::vector<base::Bucket> buckets =
+      histogram_tester.GetAllSamples("PaymentRequest.Events");
+  ASSERT_EQ(1U, buckets.size());
+  EXPECT_FALSE(buckets[0].min & JourneyLogger::EVENT_SHOWN);
+  EXPECT_TRUE(buckets[0].min & JourneyLogger::EVENT_PAY_CLICKED);
+  EXPECT_TRUE(buckets[0].min &
+              JourneyLogger::EVENT_RECEIVED_INSTRUMENT_DETAILS);
+  EXPECT_TRUE(buckets[0].min &
+              JourneyLogger::EVENT_HAD_INITIAL_FORM_OF_PAYMENT);
+  EXPECT_TRUE(buckets[0].min &
+              JourneyLogger::EVENT_HAD_NECESSARY_COMPLETE_SUGGESTIONS);
+  EXPECT_TRUE(buckets[0].min & JourneyLogger::EVENT_COMPLETED);
+  EXPECT_FALSE(buckets[0].min & JourneyLogger::EVENT_OTHER_ABORTED);
+  EXPECT_TRUE(buckets[0].min & JourneyLogger::EVENT_SKIPPED_SHOW);
+  EXPECT_FALSE(buckets[0].min & JourneyLogger::EVENT_USER_ABORTED);
+  EXPECT_FALSE(buckets[0].min & JourneyLogger::EVENT_REQUEST_SHIPPING);
+  EXPECT_FALSE(buckets[0].min & JourneyLogger::EVENT_REQUEST_PAYER_NAME);
+  EXPECT_FALSE(buckets[0].min & JourneyLogger::EVENT_REQUEST_PAYER_PHONE);
+  EXPECT_FALSE(buckets[0].min & JourneyLogger::EVENT_REQUEST_PAYER_EMAIL);
+  EXPECT_FALSE(buckets[0].min & JourneyLogger::EVENT_CAN_MAKE_PAYMENT_FALSE);
+  EXPECT_TRUE(buckets[0].min & JourneyLogger::EVENT_CAN_MAKE_PAYMENT_TRUE);
+  EXPECT_TRUE(buckets[0].min &
+              JourneyLogger::EVENT_HAS_ENROLLED_INSTRUMENT_TRUE);
+  EXPECT_FALSE(buckets[0].min &
+               JourneyLogger::EVENT_HAS_ENROLLED_INSTRUMENT_FALSE);
 }
 
 }  // namespace payments
