@@ -287,44 +287,42 @@ def _NormalizeSourcePath(path):
   return True, path
 
 
-def _ExtractSourcePathsAndNormalizeObjectPaths(raw_symbols,
-                                               object_source_mapper,
-                                               address_source_mapper):
+def _AddSourcePathsUsingObjectPaths(ninja_source_mapper, raw_symbols):
+  logging.info('Looking up source paths from ninja files')
+  for symbol in raw_symbols:
+    if symbol.IsDex() or symbol.IsOther():
+      continue
+    # Native symbols and pak symbols use object paths.
+    object_path = symbol.object_path
+    if not object_path:
+      continue
+
+    # We don't have source info for prebuilt .a files.
+    if not os.path.isabs(object_path) and not object_path.startswith('..'):
+      symbol.source_path = ninja_source_mapper.FindSourceForPath(object_path)
+  assert ninja_source_mapper.unmatched_paths_count == 0, (
+      'One or more source file paths could not be found. Likely caused by '
+      '.ninja files being generated at a different time than the .map file.')
+
+
+def _AddSourcePathsUsingAddress(dwarf_source_mapper, raw_symbols):
+  logging.info('Looking up source paths from dwarfdump')
+  for symbol in raw_symbols:
+    if symbol.section_name != models.SECTION_TEXT:
+      continue
+    source_path = dwarf_source_mapper.FindSourceForTextAddress(symbol.address)
+    if source_path and not os.path.isabs(source_path):
+      symbol.source_path = source_path
+  # Majority of unmatched queries are for assembly source files (ex libav1d)
+  # and v8 builtins.
+  assert dwarf_source_mapper.unmatched_queries_ratio < 0.1, (
+      'Percentage of failing |dwarf_source_mapper| queries ' +
+      '({}%) >= 10% '.format(dwarf_source_mapper.unmatched_queries_ratio * 100)
+      + 'FindSourceForTextAddress() likely has a bug.')
+
+
+def _NormalizeObjectPaths(raw_symbols):
   """Fills in the |source_path| attribute and normalizes |object_path|."""
-  assert not object_source_mapper or not address_source_mapper
-  if object_source_mapper:
-    logging.info('Looking up source paths from ninja files')
-    for symbol in raw_symbols:
-      if symbol.IsDex() or symbol.IsOther():
-        continue
-      # Native symbols and pak symbols use object paths.
-      object_path = symbol.object_path
-      if not object_path:
-        continue
-
-      # We don't have source info for prebuilt .a files.
-      if not os.path.isabs(object_path) and not object_path.startswith('..'):
-        symbol.source_path = object_source_mapper.FindSourceForPath(object_path)
-    assert object_source_mapper.unmatched_paths_count == 0, (
-        'One or more source file paths could not be found. Likely caused by '
-        '.ninja files being generated at a different time than the .map file.')
-  elif address_source_mapper:
-    logging.info('Looking up source paths from dwarfdump')
-    for symbol in raw_symbols:
-      if symbol.section_name != models.SECTION_TEXT:
-        continue
-      source_path = address_source_mapper.FindSourceForTextAddress(
-          symbol.address)
-      if source_path and not os.path.isabs(source_path):
-        symbol.source_path = source_path
-    # Majority of unmatched queries are for assembly source files (ex libav1d)
-    # and v8 builtins.
-    assert address_source_mapper.unmatched_queries_ratio < 0.1, (
-        'Percentage of failing |address_source_mapper| queries ' +
-        '({}%) >= 10% '.format(
-            address_source_mapper.unmatched_queries_ratio * 100) +
-        'FindSourceForTextAddress() likely has a bug.')
-
   logging.info('Normalizing source and object paths')
   for symbol in raw_symbols:
     if symbol.object_path:
@@ -1460,8 +1458,8 @@ def CreateContainerAndSymbols(*,
         _ElfInfoFromApk,
         (apk_spec.apk_path, native_spec.apk_so_path, native_spec.tool_prefix))
 
-  object_source_mapper = None
-  address_source_mapper = None
+  ninja_source_mapper = None
+  dwarf_source_mapper = None
   section_ranges = {}
   raw_symbols = []
   object_paths_by_name = None
@@ -1469,15 +1467,15 @@ def CreateContainerAndSymbols(*,
     ninja_elf_object_paths = None
     if output_directory and native_spec.map_path:
       # Finds all objects passed to the linker and creates a map of .o -> .cc.
-      object_source_mapper, ninja_elf_object_paths = _ParseNinjaFiles(
+      ninja_source_mapper, ninja_elf_object_paths = _ParseNinjaFiles(
           output_directory, native_spec.elf_path)
     elif native_spec.elf_path:
       logging.info('Parsing source path info via dwarfdump')
-      address_source_mapper = dwarfdump.CreateAddressSourceMapper(
+      dwarf_source_mapper = dwarfdump.CreateAddressSourceMapper(
           native_spec.elf_path, native_spec.tool_prefix)
       logging.info('Found %d source paths across %s ranges',
-                   address_source_mapper.NumberOfPaths(),
-                   address_source_mapper.num_ranges)
+                   dwarf_source_mapper.NumberOfPaths(),
+                   dwarf_source_mapper.num_ranges)
 
     # Start by finding elf_object_paths so that nm can run on them while the
     # linker .map is being parsed.
@@ -1491,9 +1489,9 @@ def CreateContainerAndSymbols(*,
       known_inputs = None
       # When we don't know which elf file is used, just search all paths.
       # TODO(agrieve): Seems to be used only for tests. Remove?
-      if object_source_mapper:
+      if ninja_source_mapper:
         thin_archives = set(
-            p for p in object_source_mapper.IterAllPaths() if p.endswith('.a')
+            p for p in ninja_source_mapper.IterAllPaths() if p.endswith('.a')
             and ar.IsThinArchive(os.path.join(output_directory, p)))
       else:
         thin_archives = None
@@ -1609,8 +1607,12 @@ def CreateContainerAndSymbols(*,
       '**'), s.address, s.full_name))
   raw_symbols.extend(other_symbols)
 
-  _ExtractSourcePathsAndNormalizeObjectPaths(raw_symbols, object_source_mapper,
-                                             address_source_mapper)
+  if ninja_source_mapper:
+    _AddSourcePathsUsingObjectPaths(ninja_source_mapper, raw_symbols)
+  elif dwarf_source_mapper:
+    _AddSourcePathsUsingAddress(dwarf_source_mapper, raw_symbols)
+  _NormalizeObjectPaths(raw_symbols)
+
   dir_metadata.PopulateComponents(raw_symbols, source_directory)
   logging.info('Converting excessive aliases into shared-path symbols')
   _CompactLargeAliasesIntoSharedSymbols(raw_symbols, knobs)
