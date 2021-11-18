@@ -14,8 +14,8 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "build/chromeos_buildflags.h"
+#include "ui/base/cursor/cursor.h"
 #include "ui/base/cursor/mojom/cursor_type.mojom.h"
-#include "ui/base/cursor/ozone/bitmap_cursor_factory_ozone.h"
 #include "ui/base/cursor/platform_cursor.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
 #include "ui/base/dragdrop/os_exchange_data.h"
@@ -26,6 +26,7 @@
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/native_widget_types.h"
+#include "ui/ozone/common/bitmap_cursor.h"
 #include "ui/ozone/common/features.h"
 #include "ui/ozone/platform/wayland/common/wayland_util.h"
 #include "ui/ozone/platform/wayland/host/wayland_buffer_manager_host.h"
@@ -343,7 +344,7 @@ void WaylandWindow::SetCursor(scoped_refptr<PlatformCursor> platform_cursor) {
   if (cursor_ == platform_cursor)
     return;
 
-  UpdateCursorShape(BitmapCursorOzone::FromPlatformCursor(platform_cursor));
+  UpdateCursorShape(BitmapCursor::FromPlatformCursor(platform_cursor));
 }
 
 void WaylandWindow::MoveCursorTo(const gfx::Point& location) {
@@ -975,7 +976,7 @@ bool WaylandWindow::CommitOverlays(
   return true;
 }
 
-void WaylandWindow::UpdateCursorShape(scoped_refptr<BitmapCursorOzone> cursor) {
+void WaylandWindow::UpdateCursorShape(scoped_refptr<BitmapCursor> cursor) {
   DCHECK(cursor);
   absl::optional<int32_t> shape =
       WaylandZcrCursorShapes::ShapeFromType(cursor->type());
@@ -994,7 +995,7 @@ void WaylandWindow::UpdateCursorShape(scoped_refptr<BitmapCursorOzone> cursor) {
                                    // support (e.g. exo for lacros).
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
     // Lacros should not load image assets for default cursors. See
-    // BitmapCursorFactoryOzone::GetDefaultCursor().
+    // `BitmapCursorFactory::GetDefaultCursor()`.
     DCHECK(cursor->bitmaps().empty());
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
     connection_->zcr_cursor_shapes()->SetCursorShape(shape.value());

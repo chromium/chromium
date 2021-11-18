@@ -61,7 +61,7 @@
 #endif
 
 #if defined(OS_CHROMEOS)
-#include "ui/base/cursor/ozone/bitmap_cursor_factory_ozone.h"
+#include "ui/ozone/common/bitmap_cursor_factory.h"
 #else
 #include "ui/ozone/platform/wayland/host/wayland_cursor_factory.h"
 #endif
@@ -223,7 +223,7 @@ class OzonePlatformWayland : public OzonePlatform,
     buffer_manager_connector_ = std::make_unique<WaylandBufferManagerConnector>(
         connection_->buffer_manager_host());
 #if defined(OS_CHROMEOS)
-    cursor_factory_ = std::make_unique<BitmapCursorFactoryOzone>();
+    cursor_factory_ = std::make_unique<BitmapCursorFactory>();
 #else
     cursor_factory_ = std::make_unique<WaylandCursorFactory>(connection_.get());
 #endif

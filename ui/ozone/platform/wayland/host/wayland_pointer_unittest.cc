@@ -13,10 +13,10 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/cursor/mojom/cursor_type.mojom-shared.h"
-#include "ui/base/cursor/ozone/bitmap_cursor_factory_ozone.h"
 #include "ui/base/cursor/platform_cursor.h"
 #include "ui/events/devices/device_data_manager.h"
 #include "ui/events/event.h"
+#include "ui/ozone/common/bitmap_cursor_factory.h"
 #include "ui/ozone/platform/wayland/host/wayland_cursor.h"
 #include "ui/ozone/platform/wayland/host/wayland_window.h"
 #include "ui/ozone/platform/wayland/test/mock_pointer.h"
@@ -322,7 +322,7 @@ TEST_P(WaylandPointerTest, SetBitmapAndScaleOnPointerFocus) {
                                          SkAlphaType::kPremul_SkAlphaType);
     dummy_cursor.allocPixels(info, size.width() * 4);
 
-    BitmapCursorFactoryOzone cursor_factory;
+    BitmapCursorFactory cursor_factory;
     cursor_factory.SetDeviceScaleFactor(scale);
     auto cursor = cursor_factory.CreateImageCursor(
         mojom::CursorType::kCustom, dummy_cursor, gfx::Point(5, 8));

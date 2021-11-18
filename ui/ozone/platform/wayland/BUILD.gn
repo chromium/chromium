@@ -241,7 +241,6 @@ source_set("wayland") {
     "//ui/base",
     "//ui/base:buildflags",
     "//ui/base:data_exchange",
-    "//ui/base/cursor",
     "//ui/base/cursor:cursor_base",
     "//ui/base/cursor:theme_manager",
     "//ui/base/cursor/mojom:cursor_type",
@@ -500,6 +499,7 @@ source_set("wayland_unittests") {
   deps = [
     ":test_support",
     ":wayland",
+    "//build:chromeos_buildflags",
     "//components/exo/wayland/protocol:aura_shell_protocol",
     "//testing/gmock",
     "//testing/gtest",
@@ -512,7 +512,6 @@ source_set("wayland_unittests") {
     "//third_party/wayland-protocols:xdg_shell_protocol",
     "//ui/base",
     "//ui/base:buildflags",
-    "//ui/base/cursor",
     "//ui/base/dragdrop:types",
     "//ui/base/dragdrop/mojom",
     "//ui/base/ime/linux",

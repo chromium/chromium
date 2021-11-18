@@ -359,7 +359,10 @@ action("generate_test_support_constructor_list") {
 }
 
 test("ozone_unittests") {
-  deps = [ ":test_support" ]
+  deps = [
+    ":test_support",
+    "//ui/ozone/common:unittests",
+  ]
 
   # Add tests of platform internals.
   deps += ozone_platform_test_deps

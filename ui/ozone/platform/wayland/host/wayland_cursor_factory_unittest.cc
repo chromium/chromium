@@ -9,8 +9,8 @@
 #include "base/containers/flat_map.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/scoped_refptr.h"
-#include "ui/base/cursor/ozone/bitmap_cursor_factory_ozone.h"
 #include "ui/base/cursor/platform_cursor.h"
+#include "ui/ozone/common/bitmap_cursor.h"
 #include "ui/ozone/platform/wayland/test/wayland_test.h"
 
 using ::testing::Values;
@@ -134,7 +134,7 @@ TEST_P(WaylandCursorFactoryTest, RetainOldThemeUntilNewBufferIsAttached) {
     WaitForThemeLoaded();
 
     cursor_factory->OnCursorBufferAttached(static_cast<wl_cursor*>(
-        BitmapCursorOzone::FromPlatformCursor(cursor)->platform_data()));
+        BitmapCursor::FromPlatformCursor(cursor)->platform_data()));
     EXPECT_EQ(cursor_factory->unloaded_theme_.get(), current_theme);
   }
 
@@ -146,7 +146,7 @@ TEST_P(WaylandCursorFactoryTest, RetainOldThemeUntilNewBufferIsAttached) {
     EXPECT_NE(cursor, nullptr);
 
     cursor_factory->OnCursorBufferAttached(static_cast<wl_cursor*>(
-        BitmapCursorOzone::FromPlatformCursor(cursor)->platform_data()));
+        BitmapCursor::FromPlatformCursor(cursor)->platform_data()));
 
     EXPECT_EQ(cursor_factory->unloaded_theme_.get(), nullptr);
   }

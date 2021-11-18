@@ -33,7 +33,7 @@
 
 namespace ui {
 
-class BitmapCursorOzone;
+class BitmapCursor;
 class OSExchangeData;
 class WaylandConnection;
 class WaylandSubsurface;
@@ -361,7 +361,7 @@ class WaylandWindow : public PlatformWindow,
   friend WaylandWindowDragController;
   std::unique_ptr<WaylandSurface> TakeWaylandSurface();
 
-  void UpdateCursorShape(scoped_refptr<BitmapCursorOzone> cursor);
+  void UpdateCursorShape(scoped_refptr<BitmapCursor> cursor);
 
   PlatformWindowDelegate* delegate_;
   WaylandConnection* connection_;
@@ -387,7 +387,7 @@ class WaylandWindow : public PlatformWindow,
   std::list<WaylandSubsurface*> subsurface_stack_below_;
 
   // The current cursor bitmap (immutable).
-  scoped_refptr<BitmapCursorOzone> cursor_;
+  scoped_refptr<BitmapCursor> cursor_;
 
   // Current bounds of the platform window. This is either initialized, or the
   // requested size by the Wayland compositor. When this is set in SetBounds(),

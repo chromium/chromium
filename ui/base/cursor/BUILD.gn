@@ -76,18 +76,6 @@ if (use_aura) {
       ]
       deps += [ "//ui/resources:ui_unscaled_resources_grd" ]
     }
-
-    if (use_ozone) {
-      sources += [
-        "ozone/bitmap_cursor_factory_ozone.cc",
-        "ozone/bitmap_cursor_factory_ozone.h",
-      ]
-      public_deps += [
-        "//skia",
-        "//ui/gfx/geometry",
-      ]
-      deps += [ "//build:chromeos_buildflags" ]
-    }
   }
 }
 
@@ -119,14 +107,9 @@ source_set("unittests") {
       "//skia",
       "//ui/gfx/geometry",
     ]
-  }
 
-  if (use_ozone) {
-    sources += [ "ozone/bitmap_cursor_factory_ozone_unittest.cc" ]
-    deps += [
-      ":cursor",
-      "//base",
-      "//build:chromeos_buildflags",
-    ]
+    if (use_ozone) {
+      deps += [ "//ui/ozone/common" ]
+    }
   }
 }

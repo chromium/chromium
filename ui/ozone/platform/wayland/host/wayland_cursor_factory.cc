@@ -12,6 +12,8 @@
 #include "base/task/thread_pool.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "ui/base/cursor/platform_cursor.h"
+#include "ui/ozone/common/bitmap_cursor.h"
+#include "ui/ozone/common/bitmap_cursor_factory.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
 #include "ui/ozone/platform/wayland/host/wayland_shm.h"
 
@@ -58,7 +60,7 @@ scoped_refptr<PlatformCursor> WaylandCursorFactory::GetDefaultCursor(
         continue;
 
       current_theme_->cache[type] =
-          base::MakeRefCounted<BitmapCursorOzone>(type, cursor, scale_);
+          base::MakeRefCounted<BitmapCursor>(type, cursor, scale_);
       break;
     }
   }
@@ -68,7 +70,7 @@ scoped_refptr<PlatformCursor> WaylandCursorFactory::GetDefaultCursor(
   // Fall back to the base class implementation if the theme has't provided
   // a shape for the requested type.
   if (current_theme_->cache[type].get() == nullptr)
-    return BitmapCursorFactoryOzone::GetDefaultCursor(type);
+    return BitmapCursorFactory::GetDefaultCursor(type);
 
   return current_theme_->cache[type];
 }

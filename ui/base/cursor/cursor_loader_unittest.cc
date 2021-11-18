@@ -17,7 +17,8 @@
 #endif
 
 #if defined(USE_OZONE)
-#include "ui/base/cursor/ozone/bitmap_cursor_factory_ozone.h"
+#include "ui/ozone/common/bitmap_cursor.h"
+#include "ui/ozone/common/bitmap_cursor_factory.h"
 #endif
 
 namespace ui {
@@ -46,10 +47,10 @@ TEST(CursorLoaderTest, InvisibleCursor) {
 
 #if defined(USE_OZONE)
 TEST(CursorLoaderTest, InvisibleCursor) {
-  BitmapCursorFactoryOzone cursor_factory;
+  BitmapCursorFactory cursor_factory;
   auto invisible_cursor = LoadInvisibleCursor();
   ASSERT_NE(invisible_cursor, nullptr);
-  EXPECT_EQ(BitmapCursorOzone::FromPlatformCursor(invisible_cursor)->type(),
+  EXPECT_EQ(BitmapCursor::FromPlatformCursor(invisible_cursor)->type(),
             CursorType::kNone);
 }
 #endif
