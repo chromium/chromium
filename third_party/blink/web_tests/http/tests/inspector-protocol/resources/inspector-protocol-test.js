@@ -199,9 +199,9 @@ var TestRunner = class {
       params.height = options.height;
     if (options.enableBeginFrameControl)
       params.enableBeginFrameControl = true;
-    if (options.createContext) {
-      const browserContextId = (await browserProtocol.Target.createBrowserContext()).result.browserContextId;
-      options.browserContextId = browserContextId;
+    if (options.createContextOptions) {
+      const browserContextId = (await browserProtocol.Target.createBrowserContext(options.createContextOptions)).result.browserContextId;
+      params.browserContextId = browserContextId;
     }
     const targetId = (await browserProtocol.Target.createTarget(params)).result.targetId;
     const page = new TestRunner.Page(this, targetId);
@@ -249,7 +249,7 @@ var TestRunner = class {
     options = options || {};
     options.width = options.width || 800;
     options.height = options.height || 600;
-    options.createContext = true;
+    options.createContextOptions = {};
     options.enableBeginFrameControl = true;
     return this._start(description, options);
   }
