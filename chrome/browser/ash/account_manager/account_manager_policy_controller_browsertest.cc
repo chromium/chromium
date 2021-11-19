@@ -6,6 +6,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
+#include "build/build_config.h"
 #include "chrome/browser/ash/account_manager/account_manager_policy_controller.h"
 #include "chrome/browser/ash/account_manager/account_manager_policy_controller_factory.h"
 #include "chrome/browser/ash/account_manager/child_account_type_changed_user_data.h"
@@ -186,9 +187,17 @@ IN_PROC_BROWSER_TEST_F(
             accounts[0].key.id());
 }
 
+// TODO(crbug.com/1271335): Flaky on ChromeOS
+#if defined(OS_CHROMEOS)
+#define MAYBE_SecondaryAccountsAreRemovedAfterAccountTypeChangedWithCoexistenceEnabled \
+  DISABLED_SecondaryAccountsAreRemovedAfterAccountTypeChangedWithCoexistenceEnabled
+#else
+#define MAYBE_SecondaryAccountsAreRemovedAfterAccountTypeChangedWithCoexistenceEnabled \
+  SecondaryAccountsAreRemovedAfterAccountTypeChangedWithCoexistenceEnabled
+#endif
 IN_PROC_BROWSER_TEST_F(
     AccountManagerPolicyControllerTest,
-    SecondaryAccountsAreRemovedAfterAccountTypeChangedWithCoexistenceEnabled) {
+    MAYBE_SecondaryAccountsAreRemovedAfterAccountTypeChangedWithCoexistenceEnabled) {
   std::vector<::account_manager::Account> accounts =
       GetAccountManagerAccounts();
   const std::vector<::account_manager::Account>::size_type
