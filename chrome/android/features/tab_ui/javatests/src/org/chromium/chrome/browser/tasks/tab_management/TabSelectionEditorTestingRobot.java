@@ -27,7 +27,6 @@ import static org.chromium.chrome.browser.tasks.tab_management.RecyclerViewMatch
 import static org.chromium.chrome.browser.tasks.tab_management.RecyclerViewMatcherUtils.atPositionWithViewHolder;
 import static org.chromium.chrome.browser.tasks.tab_management.RecyclerViewMatcherUtils.withItemType;
 
-import android.os.Build;
 import android.view.View;
 
 import androidx.recyclerview.widget.RecyclerView;
@@ -67,7 +66,7 @@ public class TabSelectionEditorTestingRobot {
                 mSelectableTabGridView = selectableTabGridView;
 
                 return mSelectableTabGridView.isChecked() && actionButtonSelected()
-                        && highlightIndicatorIsVisible();
+                        && mSelectableTabGridView.getForeground() != null;
             }
 
             @Override
@@ -82,18 +81,6 @@ public class TabSelectionEditorTestingRobot {
                                    .findViewById(org.chromium.chrome.tab_ui.R.id.action_button)
                                    .getBackground()
                                    .getLevel();
-            }
-
-            private boolean highlightIndicatorIsVisible() {
-                if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.LOLLIPOP_MR1) {
-                    return mSelectableTabGridView
-                                   .findViewById(org.chromium.chrome.tab_ui.R.id
-                                                         .selected_view_below_lollipop)
-                                   .getVisibility()
-                            == View.VISIBLE;
-                } else {
-                    return mSelectableTabGridView.getForeground() != null;
-                }
             }
         };
     }

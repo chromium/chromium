@@ -13,13 +13,6 @@
         android:background="?attr/tabGridBackground"
         android:layout_margin="?attr/tabGridMargin"
         android:visibility="gone"/>
-    <org.chromium.ui.widget.ChromeImageView
-        android:id="@+id/selected_view_below_lollipop"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@drawable/selected_tab_background"
-        android:layout_margin="6dp"
-        android:visibility="gone"/>
     <FrameLayout
         android:id="@+id/content_view"
         android:layout_width="match_parent"
