@@ -1073,7 +1073,7 @@ void ServiceWorkerVersion::InitializeGlobalScope(
 
 bool ServiceWorkerVersion::IsControlleeProcessID(int process_id) const {
   for (const auto& controllee : controllee_map_) {
-    if (controllee.second.get()->GetProcessId() == process_id)
+    if (controllee.second && controllee.second->GetProcessId() == process_id)
       return true;
   }
   return false;
