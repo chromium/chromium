@@ -46,9 +46,6 @@ void SpinningMutex::Reinit() {
   // On most platforms, no need to re-init the lock, can just unlock it.
   Release();
 #else
-  // On macOS, os_unfair_lock cannot be unlocked from a thread which didn't lock
-  // it, otherwise an assertion is triggered inside its implementation.
-#if !defined(PA_NO_OS_UNFAIR_LOCK_CRBUG_1267256)
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wunguarded-availability"
 
@@ -58,8 +55,6 @@ void SpinningMutex::Reinit() {
   }
 
 #pragma clang diagnostic pop
-
-#endif  // !defined(PA_NO_OS_UNFAIR_LOCK_CRBUG_1267256)
 
   Release();
 #endif  // defined(OS_APPLE)

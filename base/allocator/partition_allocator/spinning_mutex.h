@@ -28,15 +28,6 @@
 
 #if defined(OS_APPLE)
 
-// With PA-E, os_unfair_lock is incompatible with the fork()
-// hooks. Temporarily revert to the SpinLock to mitigate the failures. See
-// crbug.com/1267256 for details.
-#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
-#define PA_NO_OS_UNFAIR_LOCK_CRBUG_1267256
-#endif
-
-#if !defined(PA_NO_OS_UNFAIR_LOCK_CRBUG_1267256)
-
 #include <os/lock.h>
 
 // os_unfair_lock is available starting with OS X 10.12, and Chromium targets
@@ -61,8 +52,6 @@ PA_WEAK void os_unfair_lock_unlock(os_unfair_lock_t lock);
 }
 
 #pragma clang diagnostic pop
-
-#endif  // defined(PA_NO_OS_UNFAIR_LOCK_CRBUG_1267256)
 
 #endif  // defined(OS_APPLE)
 
@@ -281,29 +270,23 @@ ALWAYS_INLINE void SpinningMutex::ReleaseSpinLock() {
 #pragma clang diagnostic ignored "-Wunguarded-availability"
 
 ALWAYS_INLINE bool SpinningMutex::Try() {
-#if !defined(PA_NO_OS_UNFAIR_LOCK_CRBUG_1267256)
   if (LIKELY(os_unfair_lock_trylock))
     return os_unfair_lock_trylock(&unfair_lock_);
-#endif  // !defined(PA_NO_OS_UNFAIR_LOCK_CRBUG_1267256)
 
   return TrySpinLock();
 }
 
 ALWAYS_INLINE void SpinningMutex::Release() {
-#if !defined(PA_NO_OS_UNFAIR_LOCK_CRBUG_1267256)
   // Always testing trylock(), since the definitions are all or nothing.
   if (LIKELY(os_unfair_lock_trylock))
     return os_unfair_lock_unlock(&unfair_lock_);
-#endif  // !defined(PA_NO_OS_UNFAIR_LOCK_CRBUG_1267256)
 
   return ReleaseSpinLock();
 }
 
 ALWAYS_INLINE void SpinningMutex::LockSlow() {
-#if !defined(PA_NO_OS_UNFAIR_LOCK_CRBUG_1267256)
   if (LIKELY(os_unfair_lock_trylock))
     return os_unfair_lock_lock(&unfair_lock_);
-#endif  // !defined(PA_NO_OS_UNFAIR_LOCK_CRBUG_1267256)
   return LockSlowSpinLock();
 }
 
