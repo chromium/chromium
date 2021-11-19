@@ -365,7 +365,14 @@ void NativeDesktopMediaList::RefreshForVizFrameSinkWindows(
     if (source.id.type != DesktopMediaID::TYPE_WINDOW)
       continue;
 
-#if defined(USE_AURA)
+// TODO(https://crbug.com/1270801): The capturer id to aura::Window mapping on
+// lacros is currently broken because they both separately use monotonically
+// increasing ints as ids. This causes collisions where we mistakenly try to
+// capture non-aura windows as aura windows. While the preview matches what is
+// ultimately captured, it does not match the title of the window in the preview
+// and is both unexpected for the user and means that the collided non-aura
+// window cannot be captured.
+#if defined(USE_AURA) && !BUILDFLAG(IS_CHROMEOS_LACROS)
     aura::WindowTreeHost* const host =
         aura::WindowTreeHost::GetForAcceleratedWidget(
             *reinterpret_cast<gfx::AcceleratedWidget*>(&source.id.id));
