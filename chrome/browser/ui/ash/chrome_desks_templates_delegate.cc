@@ -19,6 +19,8 @@
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/common/chrome_features.h"
+#include "chrome/common/webui_url_constants.h"
+#include "chrome/grit/theme_resources.h"
 #include "components/app_restore/app_launch_info.h"
 #include "components/app_restore/app_restore_data.h"
 #include "components/app_restore/full_restore_save_handler.h"
@@ -33,6 +35,8 @@
 #include "extensions/common/constants.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
+#include "ui/base/resource/resource_bundle.h"
+#include "ui/gfx/image/image_skia.h"
 #include "url/gurl.h"
 
 namespace {
@@ -134,6 +138,17 @@ ChromeDesksTemplatesDelegate::GetAppLaunchDataForDeskTemplate(
 
 desks_storage::DeskModel* ChromeDesksTemplatesDelegate::GetDeskModel() {
   return DesksClient::Get()->GetDeskModel();
+}
+
+absl::optional<gfx::ImageSkia>
+ChromeDesksTemplatesDelegate::MaybeRetrieveChromeIconForNTPUrl(
+    const std::string& page_url) const {
+  if (page_url != chrome::kChromeUINewTabURL)
+    return absl::nullopt;
+
+  ui::ResourceBundle& rb = ui::ResourceBundle::GetSharedInstance();
+  return absl::make_optional<gfx::ImageSkia>(
+      rb.GetImageNamed(IDR_PRODUCT_LOGO_32).AsImageSkia());
 }
 
 void ChromeDesksTemplatesDelegate::GetFaviconForUrl(

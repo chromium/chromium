@@ -9,6 +9,7 @@
 #include "components/app_restore/app_launch_info.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
+#include "ui/gfx/image/image_skia.h"
 
 namespace ash {
 
@@ -24,6 +25,12 @@ TestDesksTemplatesDelegate::GetAppLaunchDataForDeskTemplate(
 
 desks_storage::DeskModel* TestDesksTemplatesDelegate::GetDeskModel() {
   return desk_model_;
+}
+
+absl::optional<gfx::ImageSkia>
+TestDesksTemplatesDelegate::MaybeRetrieveChromeIconForNTPUrl(
+    const std::string& page_url) const {
+  return absl::nullopt;
 }
 
 void TestDesksTemplatesDelegate::GetFaviconForUrl(

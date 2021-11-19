@@ -18,6 +18,7 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/image/image_skia.h"
+#include "ui/gfx/image/image_skia_operations.h"
 #include "ui/native_theme/native_theme.h"
 #include "ui/resources/grit/ui_resources.h"
 #include "ui/views/border.h"
@@ -77,18 +78,30 @@ void DesksTemplatesIconView::SetIconIdentifierAndCount(
 
   GURL potential_url{icon_identifier_};
   auto* delegate = Shell::Get()->desks_templates_delegate();
-  if (potential_url.is_valid()) {
-    delegate->GetFaviconForUrl(
-        icon_identifier_, kIconSize,
-        base::BindOnce(&DesksTemplatesIconView::OnFaviconLoaded,
-                       weak_ptr_factory_.GetWeakPtr()),
-        &cancelable_task_tracker_);
-  } else {
+  if (!potential_url.is_valid()) {
     delegate->GetIconForAppId(
         icon_identifier_, kIconSize,
         base::BindOnce(&DesksTemplatesIconView::OnAppIconLoaded,
                        weak_ptr_factory_.GetWeakPtr()));
+    return;
   }
+
+  // First check if the valid url is the NTP. If it is, use the chrome icon
+  // instead of a favicon.
+  absl::optional<gfx::ImageSkia> chrome_icon =
+      delegate->MaybeRetrieveChromeIconForNTPUrl(icon_identifier_);
+  if (chrome_icon.has_value()) {
+    icon_view_->SetImage(gfx::ImageSkiaOperations::CreateResizedImage(
+        chrome_icon.value(), skia::ImageOperations::RESIZE_BEST,
+        gfx::Size(kIconSize, kIconSize)));
+    return;
+  }
+
+  delegate->GetFaviconForUrl(
+      icon_identifier_, kIconSize,
+      base::BindOnce(&DesksTemplatesIconView::OnFaviconLoaded,
+                     weak_ptr_factory_.GetWeakPtr()),
+      &cancelable_task_tracker_);
 }
 
 void DesksTemplatesIconView::UpdateCount(int count) {

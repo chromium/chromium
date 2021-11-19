@@ -28,6 +28,8 @@ class ChromeDesksTemplatesDelegate : public ash::DesksTemplatesDelegate {
   std::unique_ptr<app_restore::AppLaunchInfo> GetAppLaunchDataForDeskTemplate(
       aura::Window* window) const override;
   desks_storage::DeskModel* GetDeskModel() override;
+  absl::optional<gfx::ImageSkia> MaybeRetrieveChromeIconForNTPUrl(
+      const std::string& page_url) const override;
   void GetFaviconForUrl(const std::string& page_url,
                         int desired_icon_size,
                         favicon_base::FaviconRawBitmapCallback callback,

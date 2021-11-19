@@ -5,9 +5,12 @@
 #ifndef ASH_PUBLIC_CPP_DESKS_TEMPLATES_DELEGATE_H_
 #define ASH_PUBLIC_CPP_DESKS_TEMPLATES_DELEGATE_H_
 
+#include <string>
+
 #include "ash/public/cpp/ash_public_export.h"
 #include "components/favicon_base/favicon_callback.h"
 #include "components/services/app_service/public/cpp/icon_types.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace app_restore {
 struct AppLaunchInfo;
@@ -23,6 +26,10 @@ class CancelableTaskTracker;
 
 namespace desks_storage {
 class DeskModel;
+}
+
+namespace gfx {
+class ImageSkia;
 }
 
 namespace ash {
@@ -46,6 +53,11 @@ class ASH_PUBLIC_EXPORT DesksTemplatesDelegate {
   // Returns either the local desk storage backend or Chrome sync desk storage
   // backend depending on the feature flag DeskTemplateSync.
   virtual desks_storage::DeskModel* GetDeskModel() = 0;
+
+  // Returns the chrome icon if `page_url` is the new tab page, otherwise
+  // returns `absl::nullopt`.
+  virtual absl::optional<gfx::ImageSkia> MaybeRetrieveChromeIconForNTPUrl(
+      const std::string& page_url) const = 0;
 
   // Fetches the favicon for `page_url` and returns it via the provided
   // `callback`. `callback` may be called synchronously.
