@@ -8929,6 +8929,8 @@ domain Target
       optional string proxyServer
       # Proxy bypass list, similar to the one passed to --proxy-bypass-list
       optional string proxyBypassList
+      # An optional list of origins to grant unlimited cross-origin access to.
+      optional array of string originsWithUniversalNetworkAccess
 
     returns
       # The id of the context created.

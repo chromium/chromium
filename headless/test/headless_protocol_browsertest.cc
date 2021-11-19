@@ -285,6 +285,9 @@ HEADLESS_PROTOCOL_TEST(HeadlessSessionCreateContextDisposeOnDetach,
 HEADLESS_PROTOCOL_TEST(BrowserSetInitialProxyConfig,
                        "sanity/browser-set-initial-proxy-config.js")
 
+HEADLESS_PROTOCOL_TEST(BrowserUniversalNetworkAccess,
+                       "sanity/universal-network-access.js")
+
 class HeadlessProtocolBrowserTestWithProxy
     : public HeadlessProtocolBrowserTest {
  public:
