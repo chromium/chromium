@@ -345,7 +345,7 @@ template("msvc_toolchain") {
         }
 
         tool("rust_macro") {
-          rust_outfile = "{{target_out_dir}}/lib{{crate_name}}.dll"
+          rust_outfile = "{{target_out_dir}}/{{crate_name}}.dll"
           depfile = "{{crate_name}}.d"
           command = "${rust_prefix}/rustc $rustc_common_args --emit=dep-info={{target_out_dir}}/$depfile,link -o $rust_outfile"
           description = "RUST $rust_outfile"
