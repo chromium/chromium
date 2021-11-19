@@ -11999,1331 +11999,2395 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="LanguageOptions_SpellCheckLanguageChange_af">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M59). No longer emitted since
+    https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_SpellCheckLanguageChange_am">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M59). No longer emitted since
+    https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_SpellCheckLanguageChange_ar">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M59). No longer emitted since
+    https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_SpellCheckLanguageChange_az">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M59). No longer emitted since
+    https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_SpellCheckLanguageChange_be">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M59). No longer emitted since
+    https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_SpellCheckLanguageChange_bg">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M59). No longer emitted since
+    https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_SpellCheckLanguageChange_bh">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M59). No longer emitted since
+    https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_SpellCheckLanguageChange_bn">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M59). No longer emitted since
+    https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_SpellCheckLanguageChange_br">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M59). No longer emitted since
+    https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_SpellCheckLanguageChange_bs">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M59). No longer emitted since
+    https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_SpellCheckLanguageChange_ca">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M59). No longer emitted since
+    https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_SpellCheckLanguageChange_co">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M59). No longer emitted since
+    https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_SpellCheckLanguageChange_cs">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M59). No longer emitted since
+    https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_SpellCheckLanguageChange_cy">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M59). No longer emitted since
+    https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_SpellCheckLanguageChange_da">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M59). No longer emitted since
+    https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_SpellCheckLanguageChange_de">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M59). No longer emitted since
+    https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_SpellCheckLanguageChange_de-AT">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M59). No longer emitted since
+    https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_SpellCheckLanguageChange_de-CH">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M59). No longer emitted since
+    https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_SpellCheckLanguageChange_de-DE">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M59). No longer emitted since
+    https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_SpellCheckLanguageChange_el">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M59). No longer emitted since
+    https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_SpellCheckLanguageChange_en">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M59). No longer emitted since
+    https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_SpellCheckLanguageChange_en-AU">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M59). No longer emitted since
+    https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_SpellCheckLanguageChange_en-CA">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M59). No longer emitted since
+    https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_SpellCheckLanguageChange_en-GB">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M59). No longer emitted since
+    https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_SpellCheckLanguageChange_en-NZ">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M59). No longer emitted since
+    https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_SpellCheckLanguageChange_en-US">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M59). No longer emitted since
+    https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_SpellCheckLanguageChange_en-ZA">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M59). No longer emitted since
+    https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_SpellCheckLanguageChange_eo">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M59). No longer emitted since
+    https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_SpellCheckLanguageChange_es">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M59). No longer emitted since
+    https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_SpellCheckLanguageChange_es-419">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M59). No longer emitted since
+    https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_SpellCheckLanguageChange_et">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M59). No longer emitted since
+    https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_SpellCheckLanguageChange_eu">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M59). No longer emitted since
+    https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_SpellCheckLanguageChange_fa">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M59). No longer emitted since
+    https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_SpellCheckLanguageChange_fi">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M59). No longer emitted since
+    https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_SpellCheckLanguageChange_fil">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M59). No longer emitted since
+    https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_SpellCheckLanguageChange_fo">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M59). No longer emitted since
+    https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_SpellCheckLanguageChange_fr">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M59). No longer emitted since
+    https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_SpellCheckLanguageChange_fr-CA">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M59). No longer emitted since
+    https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_SpellCheckLanguageChange_fr-CH">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M59). No longer emitted since
+    https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_SpellCheckLanguageChange_fr-FR">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M59). No longer emitted since
+    https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_SpellCheckLanguageChange_fy">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M59). No longer emitted since
+    https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_SpellCheckLanguageChange_ga">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M59). No longer emitted since
+    https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_SpellCheckLanguageChange_gd">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M59). No longer emitted since
+    https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_SpellCheckLanguageChange_gl">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M59). No longer emitted since
+    https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_SpellCheckLanguageChange_gn">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M59). No longer emitted since
+    https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_SpellCheckLanguageChange_gu">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M59). No longer emitted since
+    https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_SpellCheckLanguageChange_ha">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M59). No longer emitted since
+    https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_SpellCheckLanguageChange_haw">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M59). No longer emitted since
+    https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_SpellCheckLanguageChange_he">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M59). No longer emitted since
+    https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_SpellCheckLanguageChange_hi">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M59). No longer emitted since
+    https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_SpellCheckLanguageChange_hr">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M59). No longer emitted since
+    https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_SpellCheckLanguageChange_hu">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M59). No longer emitted since
+    https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_SpellCheckLanguageChange_hy">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M59). No longer emitted since
+    https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_SpellCheckLanguageChange_ia">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M59). No longer emitted since
+    https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_SpellCheckLanguageChange_id">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M59). No longer emitted since
+    https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_SpellCheckLanguageChange_is">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M59). No longer emitted since
+    https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_SpellCheckLanguageChange_it">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M59). No longer emitted since
+    https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_SpellCheckLanguageChange_it-CH">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M59). No longer emitted since
+    https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_SpellCheckLanguageChange_it-IT">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M59). No longer emitted since
+    https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_SpellCheckLanguageChange_ja">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M59). No longer emitted since
+    https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_SpellCheckLanguageChange_jw">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M59). No longer emitted since
+    https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_SpellCheckLanguageChange_ka">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M59). No longer emitted since
+    https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_SpellCheckLanguageChange_kk">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M59). No longer emitted since
+    https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_SpellCheckLanguageChange_km">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M59). No longer emitted since
+    https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_SpellCheckLanguageChange_kn">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M59). No longer emitted since
+    https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_SpellCheckLanguageChange_ko">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M59). No longer emitted since
+    https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_SpellCheckLanguageChange_ku">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M59). No longer emitted since
+    https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_SpellCheckLanguageChange_ky">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M59). No longer emitted since
+    https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_SpellCheckLanguageChange_la">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M59). No longer emitted since
+    https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_SpellCheckLanguageChange_ln">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M59). No longer emitted since
+    https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_SpellCheckLanguageChange_lo">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M59). No longer emitted since
+    https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_SpellCheckLanguageChange_lt">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M59). No longer emitted since
+    https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_SpellCheckLanguageChange_lv">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M59). No longer emitted since
+    https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_SpellCheckLanguageChange_mk">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M59). No longer emitted since
+    https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_SpellCheckLanguageChange_ml">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M59). No longer emitted since
+    https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_SpellCheckLanguageChange_mn">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M59). No longer emitted since
+    https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_SpellCheckLanguageChange_mo">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M59). No longer emitted since
+    https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_SpellCheckLanguageChange_mr">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M59). No longer emitted since
+    https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_SpellCheckLanguageChange_ms">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M59). No longer emitted since
+    https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_SpellCheckLanguageChange_mt">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M59). No longer emitted since
+    https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_SpellCheckLanguageChange_nb">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M59). No longer emitted since
+    https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_SpellCheckLanguageChange_ne">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M59). No longer emitted since
+    https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_SpellCheckLanguageChange_nl">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M59). No longer emitted since
+    https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_SpellCheckLanguageChange_nn">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M59). No longer emitted since
+    https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_SpellCheckLanguageChange_no">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M59). No longer emitted since
+    https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_SpellCheckLanguageChange_oc">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M59). No longer emitted since
+    https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_SpellCheckLanguageChange_om">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M59). No longer emitted since
+    https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_SpellCheckLanguageChange_or">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M59). No longer emitted since
+    https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_SpellCheckLanguageChange_pa">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M59). No longer emitted since
+    https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_SpellCheckLanguageChange_pl">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M59). No longer emitted since
+    https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_SpellCheckLanguageChange_ps">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M59). No longer emitted since
+    https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_SpellCheckLanguageChange_pt">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M59). No longer emitted since
+    https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_SpellCheckLanguageChange_pt-BR">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M59). No longer emitted since
+    https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_SpellCheckLanguageChange_pt-PT">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M59). No longer emitted since
+    https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_SpellCheckLanguageChange_qu">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M59). No longer emitted since
+    https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_SpellCheckLanguageChange_rm">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M59). No longer emitted since
+    https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_SpellCheckLanguageChange_ro">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M59). No longer emitted since
+    https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_SpellCheckLanguageChange_ru">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M59). No longer emitted since
+    https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_SpellCheckLanguageChange_sd">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M59). No longer emitted since
+    https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_SpellCheckLanguageChange_sh">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M59). No longer emitted since
+    https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_SpellCheckLanguageChange_si">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M59). No longer emitted since
+    https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_SpellCheckLanguageChange_sk">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M59). No longer emitted since
+    https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_SpellCheckLanguageChange_sl">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M59). No longer emitted since
+    https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_SpellCheckLanguageChange_sn">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M59). No longer emitted since
+    https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_SpellCheckLanguageChange_so">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M59). No longer emitted since
+    https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_SpellCheckLanguageChange_sq">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M59). No longer emitted since
+    https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_SpellCheckLanguageChange_sr">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M59). No longer emitted since
+    https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_SpellCheckLanguageChange_st">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M59). No longer emitted since
+    https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_SpellCheckLanguageChange_su">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M59). No longer emitted since
+    https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_SpellCheckLanguageChange_sv">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M59). No longer emitted since
+    https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_SpellCheckLanguageChange_sw">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M59). No longer emitted since
+    https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_SpellCheckLanguageChange_ta">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M59). No longer emitted since
+    https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_SpellCheckLanguageChange_te">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M59). No longer emitted since
+    https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_SpellCheckLanguageChange_tg">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M59). No longer emitted since
+    https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_SpellCheckLanguageChange_th">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M59). No longer emitted since
+    https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_SpellCheckLanguageChange_ti">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M59). No longer emitted since
+    https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_SpellCheckLanguageChange_tk">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M59). No longer emitted since
+    https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_SpellCheckLanguageChange_to">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M59). No longer emitted since
+    https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_SpellCheckLanguageChange_tr">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M59). No longer emitted since
+    https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_SpellCheckLanguageChange_tt">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M59). No longer emitted since
+    https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_SpellCheckLanguageChange_tw">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M59). No longer emitted since
+    https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_SpellCheckLanguageChange_ug">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M59). No longer emitted since
+    https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_SpellCheckLanguageChange_uk">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M59). No longer emitted since
+    https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_SpellCheckLanguageChange_ur">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M59). No longer emitted since
+    https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_SpellCheckLanguageChange_uz">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M59). No longer emitted since
+    https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_SpellCheckLanguageChange_vi">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M59). No longer emitted since
+    https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_SpellCheckLanguageChange_xh">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M59). No longer emitted since
+    https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_SpellCheckLanguageChange_yi">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M59). No longer emitted since
+    https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_SpellCheckLanguageChange_yo">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M59). No longer emitted since
+    https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_SpellCheckLanguageChange_zh">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M59). No longer emitted since
+    https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_SpellCheckLanguageChange_zh-CN">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M59). No longer emitted since
+    https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_SpellCheckLanguageChange_zh-TW">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M59). No longer emitted since
+    https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_SpellCheckLanguageChange_zu">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M59). No longer emitted since
+    https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_UiLanguageChange_af">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M59). No longer emitted since
+    https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_UiLanguageChange_am">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M59). No longer emitted since
+    https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_UiLanguageChange_ar">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M59). No longer emitted since
+    https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_UiLanguageChange_az">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M59). No longer emitted since
+    https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_UiLanguageChange_be">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M59). No longer emitted since
+    https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_UiLanguageChange_bg">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M59). No longer emitted since
+    https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_UiLanguageChange_bh">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M59). No longer emitted since
+    https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_UiLanguageChange_bn">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M59). No longer emitted since
+    https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_UiLanguageChange_br">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M59). No longer emitted since
+    https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_UiLanguageChange_bs">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M59). No longer emitted since
+    https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_UiLanguageChange_ca">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M59). No longer emitted since
+    https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_UiLanguageChange_co">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M59). No longer emitted since
+    https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_UiLanguageChange_cs">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M59). No longer emitted since
+    https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_UiLanguageChange_cy">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M59). No longer emitted since
+    https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_UiLanguageChange_da">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M59). No longer emitted since
+    https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_UiLanguageChange_de">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M59). No longer emitted since
+    https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_UiLanguageChange_de-AT">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M59). No longer emitted since
+    https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_UiLanguageChange_de-CH">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M59). No longer emitted since
+    https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_UiLanguageChange_de-DE">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M59). No longer emitted since
+    https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_UiLanguageChange_el">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M59). No longer emitted since
+    https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_UiLanguageChange_en">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M59). No longer emitted since
+    https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_UiLanguageChange_en-AU">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M59). No longer emitted since
+    https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_UiLanguageChange_en-CA">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M59). No longer emitted since
+    https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_UiLanguageChange_en-GB">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M59). No longer emitted since
+    https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_UiLanguageChange_en-NZ">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M59). No longer emitted since
+    https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_UiLanguageChange_en-US">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M59). No longer emitted since
+    https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_UiLanguageChange_en-ZA">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M59). No longer emitted since
+    https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_UiLanguageChange_eo">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M59). No longer emitted since
+    https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_UiLanguageChange_es">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M59). No longer emitted since
+    https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_UiLanguageChange_es-419">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M59). No longer emitted since
+    https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_UiLanguageChange_et">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M59). No longer emitted since
+    https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_UiLanguageChange_eu">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M59). No longer emitted since
+    https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_UiLanguageChange_fa">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M59). No longer emitted since
+    https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_UiLanguageChange_fi">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M59). No longer emitted since
+    https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_UiLanguageChange_fil">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M59). No longer emitted since
+    https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_UiLanguageChange_fo">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M59). No longer emitted since
+    https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_UiLanguageChange_fr">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M59). No longer emitted since
+    https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_UiLanguageChange_fr-CA">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M59). No longer emitted since
+    https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_UiLanguageChange_fr-CH">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M59). No longer emitted since
+    https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_UiLanguageChange_fr-FR">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M59). No longer emitted since
+    https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_UiLanguageChange_fy">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M59). No longer emitted since
+    https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_UiLanguageChange_ga">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M59). No longer emitted since
+    https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_UiLanguageChange_gd">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M59). No longer emitted since
+    https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_UiLanguageChange_gl">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M59). No longer emitted since
+    https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_UiLanguageChange_gn">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M59). No longer emitted since
+    https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_UiLanguageChange_gu">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M59). No longer emitted since
+    https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_UiLanguageChange_ha">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M59). No longer emitted since
+    https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_UiLanguageChange_haw">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M59). No longer emitted since
+    https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_UiLanguageChange_he">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M59). No longer emitted since
+    https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_UiLanguageChange_hi">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M59). No longer emitted since
+    https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_UiLanguageChange_hr">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M59). No longer emitted since
+    https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_UiLanguageChange_hu">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M59). No longer emitted since
+    https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_UiLanguageChange_hy">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M59). No longer emitted since
+    https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_UiLanguageChange_ia">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M59). No longer emitted since
+    https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_UiLanguageChange_id">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M59). No longer emitted since
+    https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_UiLanguageChange_is">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M59). No longer emitted since
+    https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_UiLanguageChange_it">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M59). No longer emitted since
+    https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_UiLanguageChange_it-CH">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M59). No longer emitted since
+    https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_UiLanguageChange_it-IT">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M59). No longer emitted since
+    https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_UiLanguageChange_ja">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M59). No longer emitted since
+    https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_UiLanguageChange_jw">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M59). No longer emitted since
+    https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_UiLanguageChange_ka">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M59). No longer emitted since
+    https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_UiLanguageChange_kk">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M59). No longer emitted since
+    https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_UiLanguageChange_km">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M59). No longer emitted since
+    https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_UiLanguageChange_kn">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M59). No longer emitted since
+    https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_UiLanguageChange_ko">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M59). No longer emitted since
+    https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_UiLanguageChange_ku">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M59). No longer emitted since
+    https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_UiLanguageChange_ky">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M59). No longer emitted since
+    https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_UiLanguageChange_la">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M59). No longer emitted since
+    https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_UiLanguageChange_ln">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M59). No longer emitted since
+    https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_UiLanguageChange_lo">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M59). No longer emitted since
+    https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_UiLanguageChange_lt">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M59). No longer emitted since
+    https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_UiLanguageChange_lv">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M59). No longer emitted since
+    https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_UiLanguageChange_mk">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M59). No longer emitted since
+    https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_UiLanguageChange_ml">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M59). No longer emitted since
+    https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_UiLanguageChange_mn">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M59). No longer emitted since
+    https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_UiLanguageChange_mo">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M59). No longer emitted since
+    https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_UiLanguageChange_mr">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M59). No longer emitted since
+    https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_UiLanguageChange_ms">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M59). No longer emitted since
+    https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_UiLanguageChange_mt">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M59). No longer emitted since
+    https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_UiLanguageChange_nb">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M59). No longer emitted since
+    https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_UiLanguageChange_ne">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M59). No longer emitted since
+    https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_UiLanguageChange_nl">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M59). No longer emitted since
+    https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_UiLanguageChange_nn">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M59). No longer emitted since
+    https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_UiLanguageChange_no">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M59). No longer emitted since
+    https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_UiLanguageChange_oc">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M59). No longer emitted since
+    https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_UiLanguageChange_om">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M59). No longer emitted since
+    https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_UiLanguageChange_or">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M59). No longer emitted since
+    https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_UiLanguageChange_pa">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M59). No longer emitted since
+    https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_UiLanguageChange_pl">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M59). No longer emitted since
+    https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_UiLanguageChange_ps">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M59). No longer emitted since
+    https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_UiLanguageChange_pt">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M59). No longer emitted since
+    https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_UiLanguageChange_pt-BR">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M59). No longer emitted since
+    https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_UiLanguageChange_pt-PT">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M59). No longer emitted since
+    https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_UiLanguageChange_qu">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M59). No longer emitted since
+    https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_UiLanguageChange_rm">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M59). No longer emitted since
+    https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_UiLanguageChange_ro">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M59). No longer emitted since
+    https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_UiLanguageChange_ru">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M59). No longer emitted since
+    https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_UiLanguageChange_sd">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M59). No longer emitted since
+    https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_UiLanguageChange_sh">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M59). No longer emitted since
+    https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_UiLanguageChange_si">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M59). No longer emitted since
+    https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_UiLanguageChange_sk">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M59). No longer emitted since
+    https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_UiLanguageChange_sl">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M59). No longer emitted since
+    https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_UiLanguageChange_sn">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M59). No longer emitted since
+    https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_UiLanguageChange_so">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M59). No longer emitted since
+    https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_UiLanguageChange_sq">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M59). No longer emitted since
+    https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_UiLanguageChange_sr">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M59). No longer emitted since
+    https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_UiLanguageChange_st">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M59). No longer emitted since
+    https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_UiLanguageChange_su">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M59). No longer emitted since
+    https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_UiLanguageChange_sv">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M59). No longer emitted since
+    https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_UiLanguageChange_sw">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M59). No longer emitted since
+    https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_UiLanguageChange_ta">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M59). No longer emitted since
+    https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_UiLanguageChange_te">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M59). No longer emitted since
+    https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_UiLanguageChange_tg">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M59). No longer emitted since
+    https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_UiLanguageChange_th">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M59). No longer emitted since
+    https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_UiLanguageChange_ti">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M59). No longer emitted since
+    https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_UiLanguageChange_tk">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M59). No longer emitted since
+    https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_UiLanguageChange_to">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M59). No longer emitted since
+    https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_UiLanguageChange_tr">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M59). No longer emitted since
+    https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_UiLanguageChange_tt">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M59). No longer emitted since
+    https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_UiLanguageChange_tw">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M59). No longer emitted since
+    https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_UiLanguageChange_ug">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M59). No longer emitted since
+    https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_UiLanguageChange_uk">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M59). No longer emitted since
+    https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_UiLanguageChange_ur">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M59). No longer emitted since
+    https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_UiLanguageChange_uz">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M59). No longer emitted since
+    https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_UiLanguageChange_vi">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M59). No longer emitted since
+    https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_UiLanguageChange_xh">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M59). No longer emitted since
+    https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_UiLanguageChange_yi">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M59). No longer emitted since
+    https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_UiLanguageChange_yo">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M59). No longer emitted since
+    https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_UiLanguageChange_zh">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M59). No longer emitted since
+    https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_UiLanguageChange_zh-CN">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M59). No longer emitted since
+    https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_UiLanguageChange_zh-TW">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M59). No longer emitted since
+    https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>
 
 <action name="LanguageOptions_UiLanguageChange_zu">
+  <obsolete>
+    Pertaining to old Settings UI (pre-M59). No longer emitted since
+    https://crrev.com/c/602884.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>

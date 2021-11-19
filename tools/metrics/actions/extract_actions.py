@@ -102,7 +102,6 @@ KNOWN_COMPUTED_USERS = (
     'user_metrics.cc',  # method definition
     'new_tab_ui.cc',  # most visited clicks 1-9
     'extension_metrics_module.cc',  # extensions hook for user metrics
-    'language_options_handler_common.cc',  # languages in CrOS
     'external_metrics.cc',  # see AddChromeOSActions()
     'core_options_handler.cc',  # see AddWebUIActions()
     'browser_render_process_host.cc',  # see AddRendererActions()
@@ -117,32 +116,6 @@ KNOWN_COMPUTED_USERS = (
     'devtools_ui_bindings.cc',  # see AddDevToolsActions()
     'sharing_hub_bubble_controller.cc',  # share targets
     'sharing_hub_sub_menu_model.cc',  # share targets
-)
-
-# Language codes used in Chrome. The list should be updated when a new
-# language is added to app/l10n_util.cc, as follows:
-#
-# % (cat app/l10n_util.cc | \
-#    perl -n0e 'print $1 if /kAcceptLanguageList.*?\{(.*?)\}/s' | \
-#    perl -nle 'print $1, if /"(.*)"/'; echo 'es-419') | \
-#   sort | perl -pe "s/(.*)\n/'\$1', /" | \
-#   fold -w75 -s | perl -pe 's/^/  /;s/ $//'; echo
-#
-# The script extracts language codes from kAcceptLanguageList, but es-419
-# (Spanish in Latin America) is an exception.
-LANGUAGE_CODES = (
-  'af', 'am', 'ar', 'az', 'be', 'bg', 'bh', 'bn', 'br', 'bs', 'ca', 'co',
-  'cs', 'cy', 'da', 'de', 'de-AT', 'de-CH', 'de-DE', 'el', 'en', 'en-AU',
-  'en-CA', 'en-GB', 'en-NZ', 'en-US', 'en-ZA', 'eo', 'es', 'es-419', 'et',
-  'eu', 'fa', 'fi', 'fil', 'fo', 'fr', 'fr-CA', 'fr-CH', 'fr-FR', 'fy',
-  'ga', 'gd', 'gl', 'gn', 'gu', 'ha', 'haw', 'he', 'hi', 'hr', 'hu', 'hy',
-  'ia', 'id', 'is', 'it', 'it-CH', 'it-IT', 'ja', 'jw', 'ka', 'kk', 'km',
-  'kn', 'ko', 'ku', 'ky', 'la', 'ln', 'lo', 'lt', 'lv', 'mk', 'ml', 'mn',
-  'mo', 'mr', 'ms', 'mt', 'nb', 'ne', 'nl', 'nn', 'no', 'oc', 'om', 'or',
-  'pa', 'pl', 'ps', 'pt', 'pt-BR', 'pt-PT', 'qu', 'rm', 'ro', 'ru', 'sd',
-  'sh', 'si', 'sk', 'sl', 'sn', 'so', 'sq', 'sr', 'st', 'su', 'sv', 'sw',
-  'ta', 'te', 'tg', 'th', 'ti', 'tk', 'to', 'tr', 'tt', 'tw', 'ug', 'uk',
-  'ur', 'uz', 'vi', 'xh', 'yi', 'yo', 'zh', 'zh-CN', 'zh-TW', 'zu',
 )
 
 # The path to the root of the repository.
@@ -180,11 +153,6 @@ def AddComputedActions(actions):
   # Actions for new_tab_ui.cc.
   for i in range(1, 10):
     actions.add('MostVisited%d' % i)
-
-  # Actions for language_options_handler.cc (Chrome OS specific).
-  for language_code in LANGUAGE_CODES:
-    actions.add('LanguageOptions_UiLanguageChange_%s' % language_code)
-    actions.add('LanguageOptions_SpellCheckLanguageChange_%s' % language_code)
 
   # Actions for sharing_hub_bubble_controller.cc and
   # sharing_hub_sub_menu_model.cc.
