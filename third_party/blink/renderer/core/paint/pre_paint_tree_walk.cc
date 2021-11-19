@@ -27,6 +27,7 @@
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/paint/compositing/composited_layer_mapping.h"
 #include "third_party/blink/renderer/core/paint/compositing/paint_layer_compositor.h"
+#include "third_party/blink/renderer/core/paint/cull_rect_updater.h"
 #include "third_party/blink/renderer/core/paint/object_paint_invalidator.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/paint/paint_property_tree_printer.h"
@@ -648,16 +649,8 @@ void PrePaintTreeWalk::WalkInternal(const LayoutObject& object,
         (!RuntimeEnabledFeatures::CompositeAfterPaintEnabled() &&
          context.paint_invalidator_context.painting_layer
              ->SelfOrDescendantNeedsRepaint())) {
-      if (object.HasLayer()) {
-        To<LayoutBoxModelObject>(object).Layer()->SetNeedsCullRectUpdate();
-      } else if (object.SlowFirstChild()) {
-        // This ensures cull rect update of the child PaintLayers affected by
-        // the paint property change on a non-PaintLayer. Though this may
-        // unnecessarily force update of unrelated children, the situation is
-        // rare and this is much easier.
-        context.paint_invalidator_context.painting_layer
-            ->SetForcesChildrenCullRectUpdate();
-      }
+      CullRectUpdater::PaintPropertiesChanged(
+          object, *context.paint_invalidator_context.painting_layer);
     }
   } else if (context.clip_changed && object.HasLayer()) {
     // When this or ancestor clip changed, the layer needs repaint because it
