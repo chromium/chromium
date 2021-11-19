@@ -422,6 +422,38 @@ def normalize_resource_url_path(rel_dir: Text, url: Text) -> Text:
   return os.path.normpath(rooted_path)
 
 
+def find_images_used_by_markdown(all_png_files: Set[Text]) -> Set[Text]:
+  """Finds images used by markdown files.
+
+  Args:
+    all_png_files: The set of all PNG files, used to filter results.
+
+  Returns:
+    A set of image filepaths used by markdown files.
+  """
+  md_url_pattern = re.compile(r'\(([^\s\)]+\.png)[\s\)]')
+  md_files = list_files(['**/README', '**/*.md'])
+  used_files = set()
+  for md_file in md_files:
+    file_dir = os.path.dirname(md_file)
+    with open(md_file, 'rb') as f:
+      for match in md_url_pattern.finditer(f.read().decode('utf-8')):
+        url_relpath = match.group(1)
+        if url_relpath.startswith('http'):
+          continue
+        if url_relpath.startswith('/'):
+          rooted_filepath = url_relpath.lstrip('/')
+        else:
+          rooted_filepath = os.path.join(file_dir, url_relpath)
+        rooted_filepath = os.path.normpath(rooted_filepath)
+        if rooted_filepath in all_png_files:
+          used_files.add(rooted_filepath)
+        else:
+          logger.warning('PNG file %s does not exist, reffed in %s as %s',
+                         rooted_filepath, md_file, url_relpath)
+  return used_files
+
+
 def find_images_used_by_ios_imageset(all_png_files: Set[Text]
                                      ) -> Tuple[Set[Text], Set[Text]]:
   """Finds images used and unused by ios imagesets and friends.
@@ -508,6 +540,13 @@ def main() -> None:
   used_by_css = find_images_used_by_css(all_png_files)
   logger.info('Found %d PNG files used in css.', len(used_by_css))
   used_png_files |= used_by_css
+  png_files -= used_png_files
+
+  # Find files used by markdown.
+  logger.info('Looking for usages by markdown files...')
+  used_by_markdown = find_images_used_by_markdown(all_png_files)
+  logger.info('Found %d PNG files used by markdown.', len(used_by_markdown))
+  used_png_files |= used_by_markdown
   png_files -= used_png_files
 
   # Find images used by ios imagesets.
