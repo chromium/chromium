@@ -2103,6 +2103,31 @@ class RenderFrameHostChangedCallbackRunner : public WebContentsObserver {
   RenderFrameHostChangedCallback callback_;
 };
 
+// Calls |callback| whenever a navigation finishes in |render_frame_host|.
+class DidFinishNavigationObserver : public WebContentsObserver {
+ public:
+  DidFinishNavigationObserver(
+      WebContents* web_contents,
+      base::RepeatingCallback<void(NavigationHandle*)> callback);
+
+  DidFinishNavigationObserver(
+      RenderFrameHost* render_frame_host,
+      base::RepeatingCallback<void(NavigationHandle*)> callback);
+
+  ~DidFinishNavigationObserver() override;
+
+  DidFinishNavigationObserver(const DidFinishNavigationObserver&) = delete;
+  DidFinishNavigationObserver& operator=(const DidFinishNavigationObserver&) =
+      delete;
+
+ protected:
+  // WebContentsObserver:
+  void DidFinishNavigation(NavigationHandle* navigation_handle) override;
+
+ private:
+  base::RepeatingCallback<void(NavigationHandle*)> callback_;
+};
+
 // Functions to traverse history and wait until the traversal completes. These
 // are wrappers around the same-named methods of the `NavigationController`.
 WARN_UNUSED_RESULT bool HistoryGoToIndex(WebContents* wc, int index);

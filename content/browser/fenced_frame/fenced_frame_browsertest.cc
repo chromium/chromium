@@ -12,6 +12,8 @@
 #include "content/browser/renderer_host/render_frame_proxy_host.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/common/frame.mojom-test-utils.h"
+#include "content/public/browser/navigating_frame_type.h"
+#include "content/public/browser/navigation_handle.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
@@ -414,6 +416,64 @@ IN_PROC_BROWSER_TEST_P(FencedFrameNestedFrameBrowserTest,
                        IsNestedWithinFencedFrame) {
   RenderFrameHostImpl* rfh = LoadNestedFrame();
   EXPECT_EQ(IsInFencedFrameTest(), rfh->IsNestedWithinFencedFrame());
+}
+
+// Tests that NavigationHandle::GetNavigatingFrameType() returns the correct
+// type.
+IN_PROC_BROWSER_TEST_F(FencedFrameBrowserTest, NavigationHandleFrameType) {
+  {
+    DidFinishNavigationObserver observer(
+        web_contents(),
+        base::BindLambdaForTesting([](NavigationHandle* navigation_handle) {
+          EXPECT_TRUE(navigation_handle->IsInPrimaryMainFrame());
+          DCHECK_EQ(navigation_handle->GetNavigatingFrameType(),
+                    NavigatingFrameType::kPrimaryMainFrame);
+        }));
+    EXPECT_TRUE(NavigateToURL(
+        shell(),
+        embedded_test_server()->GetURL("fencedframe.test", "/title1.html")));
+  }
+
+  {
+    DidFinishNavigationObserver observer(
+        web_contents(),
+        base::BindLambdaForTesting([](NavigationHandle* navigation_handle) {
+          EXPECT_FALSE(navigation_handle->IsInMainFrame());
+          DCHECK_EQ(navigation_handle->GetNavigatingFrameType(),
+                    NavigatingFrameType::kSubframe);
+        }));
+    constexpr char kAddIframeScript[] = R"({
+        (()=>{
+            return new Promise((resolve) => {
+              const frame = document.createElement('iframe');
+              frame.addEventListener('load', () => {resolve();});
+              frame.src = $1;
+              document.body.appendChild(frame);
+            });
+        })();
+        })";
+    EXPECT_TRUE(ExecJs(
+        primary_main_frame_host(),
+        JsReplace(kAddIframeScript, embedded_test_server()->GetURL(
+                                        "fencedframe.test", "/empty.html"))));
+  }
+  {
+    const GURL fenced_frame_url = embedded_test_server()->GetURL(
+        "fencedframe.test", "/fenced_frames/title1.html");
+    RenderFrameHostImplWrapper fenced_frame_rfh(
+        fenced_frame_test_helper().CreateFencedFrame(primary_main_frame_host(),
+                                                     fenced_frame_url));
+    DidFinishNavigationObserver observer(
+        web_contents(),
+        base::BindLambdaForTesting([](NavigationHandle* navigation_handle) {
+          EXPECT_TRUE(
+              navigation_handle->GetRenderFrameHost()->IsFencedFrameRoot());
+          DCHECK_EQ(navigation_handle->GetNavigatingFrameType(),
+                    NavigatingFrameType::kFencedFrameRoot);
+        }));
+    fenced_frame_test_helper().NavigateFrameInFencedFrameTree(
+        fenced_frame_rfh.get(), fenced_frame_url);
+  }
 }
 
 INSTANTIATE_TEST_SUITE_P(FencedFrameNestedFrameBrowserTest,

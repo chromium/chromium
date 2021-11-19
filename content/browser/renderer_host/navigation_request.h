@@ -284,6 +284,7 @@ class CONTENT_EXPORT NavigationRequest
   bool IsInPrimaryMainFrame() const override;
   bool IsInPrerenderedMainFrame() override;
   bool IsPrerenderedPageActivation() override;
+  NavigatingFrameType GetNavigatingFrameType() const override;
   bool IsRendererInitiated() override;
   bool IsSameOrigin() override;
   bool WasServerRedirect() override;

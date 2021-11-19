@@ -5233,4 +5233,46 @@ IN_PROC_BROWSER_TEST_F(
   web_contents_impl()->SetJavaScriptDialogManagerForTesting(nullptr);
 }
 
+// Tests that NavigationHandle::GetNavigatingFrameType() returns the correct
+// type in prerendering and after activation.
+IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, NavigationHandleFrameType) {
+  {
+    const GURL kInitialUrl = GetUrl("/empty.html");
+    DidFinishNavigationObserver observer(
+        web_contents(),
+        base::BindLambdaForTesting([](NavigationHandle* navigation_handle) {
+          EXPECT_TRUE(navigation_handle->IsInPrimaryMainFrame());
+          DCHECK_EQ(navigation_handle->GetNavigatingFrameType(),
+                    NavigatingFrameType::kPrimaryMainFrame);
+        }));
+    // Navigate to an initial page.
+    ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
+  }
+
+  const GURL kPrerenderingUrl = GetUrl("/empty.html?prerender");
+  {
+    DidFinishNavigationObserver observer(
+        web_contents(),
+        base::BindLambdaForTesting([](NavigationHandle* navigation_handle) {
+          EXPECT_TRUE(navigation_handle->IsInPrerenderedMainFrame());
+          DCHECK_EQ(navigation_handle->GetNavigatingFrameType(),
+                    NavigatingFrameType::kPrerenderMainFrame);
+        }));
+    // Start prerendering.
+    AddPrerender(kPrerenderingUrl);
+  }
+
+  {
+    DidFinishNavigationObserver observer(
+        web_contents(),
+        base::BindLambdaForTesting([](NavigationHandle* navigation_handle) {
+          EXPECT_TRUE(navigation_handle->IsInPrimaryMainFrame());
+          EXPECT_TRUE(navigation_handle->IsPrerenderedPageActivation());
+          DCHECK_EQ(navigation_handle->GetNavigatingFrameType(),
+                    NavigatingFrameType::kPrimaryMainFrame);
+        }));
+    NavigatePrimaryPage(kPrerenderingUrl);
+  }
+}
+
 }  // namespace content

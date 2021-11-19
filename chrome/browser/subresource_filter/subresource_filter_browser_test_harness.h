@@ -22,6 +22,7 @@
 #include "components/subresource_filter/core/browser/subresource_filter_features_test_support.h"
 #include "components/subresource_filter/core/common/test_ruleset_creator.h"
 #include "components/url_pattern_index/proto/rules.pb.h"
+#include "content/public/test/fenced_frame_test_util.h"
 #include "content/public/test/prerender_test_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "url/gurl.h"
@@ -232,6 +233,20 @@ class SubresourceFilterPrerenderingBrowserTest
 
  protected:
   content::test::PrerenderTestHelper prerender_helper_;
+};
+
+class SubresourceFilterFencedFrameBrowserTest
+    : public SubresourceFilterListInsertingBrowserTest {
+ public:
+  SubresourceFilterFencedFrameBrowserTest() = default;
+  ~SubresourceFilterFencedFrameBrowserTest() override = default;
+
+  content::test::FencedFrameTestHelper& fenced_frame_test_helper() {
+    return fenced_frame_test_helper_;
+  }
+
+ private:
+  content::test::FencedFrameTestHelper fenced_frame_test_helper_;
 };
 
 }  // namespace subresource_filter

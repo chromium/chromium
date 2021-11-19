@@ -3900,6 +3900,25 @@ void RenderFrameHostChangedCallbackRunner::RenderFrameHostChanged(
     std::move(callback_).Run(old_host, new_host);
 }
 
+DidFinishNavigationObserver::DidFinishNavigationObserver(
+    WebContents* web_contents,
+    base::RepeatingCallback<void(NavigationHandle*)> callback)
+    : WebContentsObserver(web_contents), callback_(callback) {}
+
+DidFinishNavigationObserver::DidFinishNavigationObserver(
+    RenderFrameHost* render_frame_host,
+    base::RepeatingCallback<void(NavigationHandle*)> callback)
+    : DidFinishNavigationObserver(
+          WebContents::FromRenderFrameHost(render_frame_host),
+          callback) {}
+
+DidFinishNavigationObserver::~DidFinishNavigationObserver() = default;
+
+void DidFinishNavigationObserver::DidFinishNavigation(
+    NavigationHandle* navigation_handle) {
+  callback_.Run(navigation_handle);
+}
+
 bool HistoryGoToIndex(WebContents* wc, int index) {
   wc->GetController().GoToIndex(index);
   return WaitForLoadStop(wc);

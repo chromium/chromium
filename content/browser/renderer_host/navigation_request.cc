@@ -6163,13 +6163,11 @@ RenderFrameHostImpl* NavigationRequest::GetParentFrame() {
 }
 
 bool NavigationRequest::IsInPrimaryMainFrame() const {
-  return IsInMainFrame() &&
-         frame_tree_node()->frame_tree()->type() == FrameTree::Type::kPrimary;
+  return GetNavigatingFrameType() == NavigatingFrameType::kPrimaryMainFrame;
 }
 
 bool NavigationRequest::IsInPrerenderedMainFrame() {
-  return IsInMainFrame() &&
-         frame_tree_node()->frame_tree()->type() == FrameTree::Type::kPrerender;
+  return GetNavigatingFrameType() == NavigatingFrameType::kPrerenderMainFrame;
 }
 
 bool NavigationRequest::IsPrerenderedPageActivation() {
@@ -6178,6 +6176,29 @@ bool NavigationRequest::IsPrerenderedPageActivation() {
 
   CHECK(prerender_frame_tree_node_id_.has_value());
   return prerender_frame_tree_node_id_ != RenderFrameHost::kNoFrameTreeNodeId;
+}
+
+NavigatingFrameType NavigationRequest::GetNavigatingFrameType() const {
+  // Use IsFencedFrameRoot() since we have
+  // FencedFramesImplementationType::kShadowDOM that is not checked with
+  // FrameTree::Type.
+  if (frame_tree_node()->IsFencedFrameRoot())
+    return NavigatingFrameType::kFencedFrameRoot;
+
+  if (!IsInMainFrame())
+    return NavigatingFrameType::kSubframe;
+
+  switch (frame_tree_node()->frame_tree()->type()) {
+    case FrameTree::Type::kPrimary:
+      return NavigatingFrameType::kPrimaryMainFrame;
+    case FrameTree::Type::kPrerender:
+      return NavigatingFrameType::kPrerenderMainFrame;
+    case FrameTree::Type::kFencedFrame:
+      // This should have been covered for both MPArch and ShadowDOM by
+      // checking IsFencedFrameRoot() above.
+      NOTREACHED();
+      return NavigatingFrameType::kFencedFrameRoot;
+  }
 }
 
 int NavigationRequest::GetFrameTreeNodeId() {

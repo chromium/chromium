@@ -56,6 +56,10 @@ class MockNavigationHandle : public NavigationHandle {
   bool IsPrerenderedPageActivation() override {
     return is_prerendered_page_activation_;
   }
+  NavigatingFrameType GetNavigatingFrameType() const override {
+    NOTIMPLEMENTED();
+    return NavigatingFrameType::kPrimaryMainFrame;
+  }
   // By default, MockNavigationHandles are renderer-initiated navigations.
   bool IsRendererInitiated() override { return is_renderer_initiated_; }
   bool IsSameOrigin() override {

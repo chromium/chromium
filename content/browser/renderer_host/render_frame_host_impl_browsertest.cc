@@ -1910,29 +1910,6 @@ class ScopedInterfaceRequestMonitor
   base::RepeatingClosure request_callback_;
 };
 
-// Calls |callback| whenever a navigation finishes in |render_frame_host|.
-class DidFinishNavigationObserver : public WebContentsObserver {
- public:
-  DidFinishNavigationObserver(RenderFrameHost* render_frame_host,
-                              base::RepeatingClosure callback)
-      : WebContentsObserver(
-            WebContents::FromRenderFrameHost(render_frame_host)),
-        callback_(callback) {}
-
-  DidFinishNavigationObserver(const DidFinishNavigationObserver&) = delete;
-  DidFinishNavigationObserver& operator=(const DidFinishNavigationObserver&) =
-      delete;
-
- protected:
-  // WebContentsObserver:
-  void DidFinishNavigation(NavigationHandle* navigation_handle) override {
-    callback_.Run();
-  }
-
- private:
-  base::RepeatingClosure callback_;
-};
-
 }  // namespace
 
 // For cross-document navigations, the DidCommitProvisionalLoad message from
@@ -1990,7 +1967,8 @@ IN_PROC_BROWSER_TEST_F(
           ->GetRenderFrameHost();
 
   DidFinishNavigationObserver navigation_finish_observer(
-      committing_rfh, base::BindLambdaForTesting([&did_finish_navigation]() {
+      committing_rfh,
+      base::BindLambdaForTesting([&did_finish_navigation](NavigationHandle*) {
         did_finish_navigation = true;
       }));
 
@@ -2074,7 +2052,7 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
   // sanity check to ensure that the request injection is actually executed.
   base::MockCallback<base::RepeatingClosure> navigation_finished_callback;
   DidFinishNavigationObserver navigation_finish_observer(
-      main_rfh, base::BindLambdaForTesting([&]() {
+      main_rfh, base::BindLambdaForTesting([&](NavigationHandle*) {
         interface_broker->GetInterface(std::move(test_interface_receiver));
         std::move(navigation_finished_callback).Run();
       }));
