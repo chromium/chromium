@@ -37,6 +37,8 @@
 #include "third_party/blink/renderer/core/css/css_scroll_timeline_rule.h"
 #include "third_party/blink/renderer/core/css/css_style_rule.h"
 #include "third_party/blink/renderer/core/css/css_supports_rule.h"
+#include "third_party/blink/renderer/core/css/parser/container_query_parser.h"
+#include "third_party/blink/renderer/core/css/parser/css_parser_context.h"
 #include "third_party/blink/renderer/core/css/style_rule_counter_style.h"
 #include "third_party/blink/renderer/core/css/style_rule_import.h"
 #include "third_party/blink/renderer/core/css/style_rule_keyframe.h"
@@ -588,9 +590,14 @@ StyleRuleContainer::StyleRuleContainer(const StyleRuleContainer& container_rule)
 void StyleRuleContainer::SetConditionText(
     const ExecutionContext* execution_context,
     String value) {
-  if (container_query_->MediaQueries())
-    container_query_->MediaQueries()->Set(value, execution_context);
-  condition_text_ = container_query_->ToString();
+  auto* context = MakeGarbageCollected<CSSParserContext>(*execution_context);
+  ContainerQueryParser parser(*context);
+
+  if (auto exp_node = parser.ParseQuery(value)) {
+    condition_text_ = exp_node->Serialize();
+    container_query_ = MakeGarbageCollected<ContainerQuery>(
+        container_query_->Name(), std::move(exp_node));
+  }
 }
 
 void StyleRuleContainer::TraceAfterDispatch(blink::Visitor* visitor) const {

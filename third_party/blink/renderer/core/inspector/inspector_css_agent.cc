@@ -1889,12 +1889,8 @@ InspectorCSSAgent::BuildContainerQueryObject(CSSContainerRule* rule) {
 void InspectorCSSAgent::CollectContainerQueriesFromRule(
     CSSRule* rule,
     protocol::Array<protocol::CSS::CSSContainerQuery>* container_queries) {
-  if (auto* container_rule = DynamicTo<CSSContainerRule>(rule)) {
-    if (container_rule->IsEmpty())
-      return;
-
+  if (auto* container_rule = DynamicTo<CSSContainerRule>(rule))
     container_queries->emplace_back(BuildContainerQueryObject(container_rule));
-  }
 }
 
 std::unique_ptr<protocol::Array<protocol::CSS::CSSContainerQuery>>

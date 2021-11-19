@@ -8,17 +8,16 @@
 namespace blink {
 
 ContainerQuery::ContainerQuery(const AtomicString& name,
-                               scoped_refptr<MediaQuerySet> media_queries)
+                               std::unique_ptr<MediaQueryExpNode> query)
     : name_(name),
-      media_queries_(media_queries),
-      queried_axes_(media_queries->QueriedAxes()) {}
+      query_(std::move(query)),
+      queried_axes_(query_->QueriedAxes()) {}
 
 ContainerQuery::ContainerQuery(const ContainerQuery& other)
-    : media_queries_(other.media_queries_->Copy()),
-      queried_axes_(other.queried_axes_) {}
+    : query_(other.query_->Copy()), queried_axes_(other.queried_axes_) {}
 
 String ContainerQuery::ToString() const {
-  return media_queries_->MediaText();
+  return query_->Serialize();
 }
 
 }  // namespace blink

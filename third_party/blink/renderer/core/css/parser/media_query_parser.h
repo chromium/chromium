@@ -18,6 +18,7 @@ namespace blink {
 
 class MediaQuerySet;
 class CSSParserContext;
+class ContainerQueryParser;
 
 class CORE_EXPORT MediaQueryParser {
   STACK_ALLOCATED();
@@ -38,12 +39,24 @@ class CORE_EXPORT MediaQueryParser {
       const ExecutionContext*);
 
  private:
+  friend class ContainerQueryParser;
+
   enum ParserType {
     kMediaQuerySetParser,
     kMediaConditionParser,
   };
 
-  MediaQueryParser(ParserType, CSSParserMode, const ExecutionContext*);
+  enum class SyntaxLevel {
+    // Determined by CSSMediaQueries4 flag.
+    kAuto,
+    // Use mediaqueries-4 syntax regardless of flags.
+    kLevel4,
+  };
+
+  MediaQueryParser(ParserType,
+                   CSSParserMode,
+                   const ExecutionContext*,
+                   SyntaxLevel = SyntaxLevel::kAuto);
   MediaQueryParser(const MediaQueryParser&) = delete;
   MediaQueryParser& operator=(const MediaQueryParser&) = delete;
   virtual ~MediaQueryParser();
@@ -130,10 +143,16 @@ class CORE_EXPORT MediaQueryParser {
   // True if <media-not> is enabled.
   bool IsNotKeywordEnabled() const;
 
+  // Media Queries Level 4 added 'or', 'not', nesting, and ranges. These
+  // features are normally controlled by a runtime flag, but are always
+  // enabled by ContainerQueryParser.
+  bool IsMediaQueries4SyntaxEnabled() const;
+
   ParserType parser_type_;
   scoped_refptr<MediaQuerySet> query_set_;
   CSSParserMode mode_;
   const ExecutionContext* execution_context_;
+  SyntaxLevel syntax_level_;
   // A fake CSSParserContext for use counter only.
   // TODO(xiaochengh): Plumb the real CSSParserContext from the document.
   const CSSParserContext& fake_context_;

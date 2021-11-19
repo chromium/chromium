@@ -13,6 +13,7 @@
 #include "third_party/blink/renderer/core/css/css_keyframes_rule.h"
 #include "third_party/blink/renderer/core/css/css_style_sheet.h"
 #include "third_party/blink/renderer/core/css/parser/at_rule_descriptor_parser.h"
+#include "third_party/blink/renderer/core/css/parser/container_query_parser.h"
 #include "third_party/blink/renderer/core/css/parser/css_at_rule_id.h"
 #include "third_party/blink/renderer/core/css/parser/css_lazy_parsing_state.h"
 #include "third_party/blink/renderer/core/css/parser/css_lazy_property_parser_impl.h"
@@ -1072,14 +1073,12 @@ StyleRuleContainer* CSSParserImpl::ConsumeContainerRule(
 
   AtomicString name = ConsumeContainerName(prelude, *context_);
 
-  // TODO(crbug.com/1145970): Restrict what is allowed by @container.
-  scoped_refptr<MediaQuerySet> media_queries =
-      MediaQueryParser::ParseMediaQuerySet(prelude,
-                                           context_->GetExecutionContext());
-  if (!media_queries)
+  ContainerQueryParser query_parser(*context_);
+  std::unique_ptr<MediaQueryExpNode> query = query_parser.ParseQuery(prelude);
+  if (!query)
     return nullptr;
   ContainerQuery* container_query =
-      MakeGarbageCollected<ContainerQuery>(name, media_queries);
+      MakeGarbageCollected<ContainerQuery>(name, std::move(query));
 
   HeapVector<Member<StyleRuleBase>> rules;
   ConsumeRuleList(stream, kRegularRuleList,

@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<title>@container: parsing</title>
+<link rel="help" href="https://drafts.csswg.org/css-contain-3/#container-rule">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<div style="container:size; width:100px; height:100px">
+  <main id=main></main>
+</div>
+<script>
+
+  function cleanup_main() {
+    while (main.firstChild)
+      main.firstChild.remove();
+  }
+
+  function set_style(text) {
+    let style = document.createElement('style');
+    style.innerText = text;
+    main.append(style);
+    return style;
+  }
+
+  function test_query_invalid(query) {
+    test(function(t) {
+      t.add_cleanup(cleanup_main);
+      let style = set_style(`@container ${query} {}`);
+      assert_equals(style.sheet.rules.length, 0);
+    }, query);
+  }
+
+  // Tests that 1) the query parses, and 2) it does not evaluate to "unknown".
+  function test_query_known(query) {
+    test(function(t) {
+      t.add_cleanup(cleanup_main);
+      let style = set_style(`
+        @container ${query} {}
+        @container (${query}) or (not (${query})) { main { --match:true; } }
+      `);
+      assert_equals(style.sheet.rules.length, 2);
+      assert_equals(getComputedStyle(main).getPropertyValue('--match'), 'true');
+    }, query);
+  }
+
+  test_query_known('(width: 100px)');
+  test_query_known('((width: 100px))');
+  test_query_known('(not (width: 100px))');
+  test_query_known('(width: 100px) and (height: 100px)');
+  test_query_known('(width: 50px) or (height: 100px)');
+  test_query_known('(width < 100px)');
+  test_query_known('(100px < width)');
+  test_query_known('(100px < width < 200px)');
+
+  test_query_invalid('screen');
+  test_query_invalid('print');
+  test_query_invalid('not print');
+  test_query_invalid('only print');
+  test_query_invalid('screen and (width: 100px)');
+  test_query_invalid('screen or (width: 100px)');
+  test_query_invalid('not screen and (width: 100px)');
+  test_query_invalid('not screen or (width: 100px)');
+  test_query_invalid('(width: 100px), (height: 100px)');
+
+</script>

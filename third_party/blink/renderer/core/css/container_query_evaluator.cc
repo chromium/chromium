@@ -68,7 +68,8 @@ bool ContainerQueryEvaluator::Eval(const ContainerQuery& container_query,
   if (!IsSufficientlyContained(contained_axes_, container_query.QueriedAxes()))
     return false;
   DCHECK(media_query_evaluator_);
-  return media_query_evaluator_->Eval(*container_query.media_queries_, results);
+  return media_query_evaluator_->Eval(*container_query.query_, results) ==
+         KleeneValue::kTrue;
 }
 
 void ContainerQueryEvaluator::Add(const ContainerQuery& query, bool result) {

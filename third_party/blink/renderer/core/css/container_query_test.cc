@@ -27,9 +27,19 @@ class ContainerQueryTest : public PageTestBase,
  public:
   ContainerQueryTest() : ScopedCSSContainerQueriesForTest(true) {}
 
+  bool HasUnknown(StyleRuleContainer* rule) {
+    return rule && rule->GetContainerQuery().Query().HasUnknown();
+  }
+
+  // Note that these parsing utils treat "unknown" values as parse
+  // errors.
+  //
+  // https://drafts.csswg.org/mediaqueries-4/#evaluating
+
   StyleRuleContainer* ParseAtContainer(String rule_string) {
-    return DynamicTo<StyleRuleContainer>(
+    auto* rule = DynamicTo<StyleRuleContainer>(
         css_test_helpers::ParseRule(GetDocument(), rule_string));
+    return HasUnknown(rule) ? nullptr : rule;
   }
 
   ContainerQuery* ParseContainerQuery(String query) {
@@ -52,10 +62,8 @@ class ContainerQueryTest : public PageTestBase,
     return container->GetContainerQuery().ToString();
   }
 
-  // TODO(crbug.com/1145970): Remove this when ContainerQuery no longer
-  // relies on MediaQuerySet.
-  MediaQuerySet& GetMediaQuerySet(ContainerQuery& container_query) {
-    return *container_query.media_queries_;
+  const MediaQueryExpNode& GetInnerQuery(ContainerQuery& container_query) {
+    return container_query.Query();
   }
 
   const CSSValue* ComputedValue(Element* element, String property_name) {
@@ -99,16 +107,24 @@ TEST_F(ContainerQueryTest, PreludeParsing) {
   EXPECT_EQ(
       "(max-width: 500px)",
       SerializeCondition(ParseAtContainer("@container (max-width: 500px) {}")));
-
-  // TODO(crbug.com/1145970): The MediaQuery parser emits a "not all"
-  // MediaQuery for parse failures. When ContainerQuery has its own parser,
-  // it should probably return nullptr instead.
+  EXPECT_EQ("(not (max-width: 500px))",
+            SerializeCondition(
+                ParseAtContainer("@container (not (max-width: 500px)) {}")));
+  EXPECT_EQ("(max-width: 500px) and (max-height: 500px)",
+            SerializeCondition(ParseAtContainer(
+                "@container (max-width: 500px) and (max-height: 500px) {}")));
+  EXPECT_EQ("(max-width: 500px) or (max-height: 500px)",
+            SerializeCondition(ParseAtContainer(
+                "@container (max-width: 500px) or (max-height: 500px) {}")));
+  EXPECT_EQ(
+      "(width < 300px)",
+      SerializeCondition(ParseAtContainer("@container (width < 300px) {}")));
 
   // Invalid:
-  EXPECT_EQ("not all",
-            SerializeCondition(ParseAtContainer("@container 100px {}")));
-  EXPECT_EQ("not all",
-            SerializeCondition(ParseAtContainer("@container calc(1) {}")));
+  EXPECT_FALSE(ParseAtContainer("@container 100px {}"));
+  EXPECT_FALSE(ParseAtContainer("@container calc(1) {}"));
+  EXPECT_FALSE(ParseAtContainer("@container {}"));
+  EXPECT_FALSE(ParseAtContainer("@container (min-width: 300px) nonsense {}"));
 }
 
 TEST_F(ContainerQueryTest, RuleParsing) {
@@ -161,9 +177,9 @@ TEST_F(ContainerQueryTest, RuleCopy) {
   // The ContainerQuery should be copied.
   EXPECT_NE(&container->GetContainerQuery(), &copy->GetContainerQuery());
 
-  // The inner MediaQuerySet should be copied.
-  EXPECT_NE(&GetMediaQuerySet(container->GetContainerQuery()),
-            &GetMediaQuerySet(copy->GetContainerQuery()));
+  // The inner MediaQueryExpNode should be copied.
+  EXPECT_NE(&GetInnerQuery(container->GetContainerQuery()),
+            &GetInnerQuery(copy->GetContainerQuery()));
 }
 
 TEST_F(ContainerQueryTest, ContainerQueryEvaluation) {

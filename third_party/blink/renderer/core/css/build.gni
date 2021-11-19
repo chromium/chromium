@@ -482,6 +482,8 @@ blink_core_sources_css = [
   "parser/font_variant_numeric_parser.h",
   "parser/media_query_parser.cc",
   "parser/media_query_parser.h",
+  "parser/container_query_parser.cc",
+  "parser/container_query_parser.h",
   "parser/sizes_attribute_parser.cc",
   "parser/sizes_attribute_parser.h",
   "parser/sizes_math_function_parser.cc",

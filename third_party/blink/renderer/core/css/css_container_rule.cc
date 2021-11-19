@@ -23,10 +23,8 @@ String CSSContainerRule::cssText() const {
     result.Append(Name());
     result.Append(' ');
   }
-  if (ContainerQueries()) {
-    result.Append(ContainerQueries()->MediaText());
-    result.Append(' ');
-  }
+  ContainerQuery().Query().SerializeTo(result);
+  result.Append(' ');
   result.Append("{\n");
   AppendCSSTextForItems(result);
   result.Append('}');
@@ -34,11 +32,7 @@ String CSSContainerRule::cssText() const {
 }
 
 const AtomicString& CSSContainerRule::Name() const {
-  return To<StyleRuleContainer>(group_rule_.Get())->GetContainerQuery().Name();
-}
-
-bool CSSContainerRule::IsEmpty() const {
-  return ContainerQueries()->QueryVector().IsEmpty();
+  return ContainerQuery().Name();
 }
 
 void CSSContainerRule::SetConditionText(
@@ -49,10 +43,8 @@ void CSSContainerRule::SetConditionText(
       ->SetConditionText(execution_context, value);
 }
 
-scoped_refptr<MediaQuerySet> CSSContainerRule::ContainerQueries() const {
-  return To<StyleRuleContainer>(group_rule_.Get())
-      ->GetContainerQuery()
-      .MediaQueries();
+const ContainerQuery& CSSContainerRule::ContainerQuery() const {
+  return To<StyleRuleContainer>(group_rule_.Get())->GetContainerQuery();
 }
 
 }  // namespace blink
