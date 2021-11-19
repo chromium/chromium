@@ -28,6 +28,7 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_timeouts.h"
 #include "base/win/scoped_handle.h"
+#include "base/win/scoped_localalloc.h"
 #include "base/win/scoped_process_information.h"
 #include "base/win/win_util.h"
 #include "base/win/windows_version.h"
@@ -155,13 +156,14 @@ void CheckLpacToken(HANDLE process) {
   ASSERT_TRUE(::ConvertStringSecurityDescriptorToSecurityDescriptor(
       L"O:SYG:SYD:(A;;0x3;;;WD)(A;;0x1;;;AC)(A;;0x2;;;S-1-15-2-2)",
       SDDL_REVISION_1, &security_desc_ptr, nullptr));
-  std::unique_ptr<void, LocalFreeDeleter> security_desc(security_desc_ptr);
+  base::win::ScopedLocalAlloc security_desc =
+      base::win::TakeLocalAlloc(security_desc_ptr);
   GENERIC_MAPPING generic_mapping = {};
   PRIVILEGE_SET priv_set = {};
   DWORD priv_set_length = sizeof(PRIVILEGE_SET);
   DWORD granted_access;
   BOOL access_status;
-  ASSERT_TRUE(::AccessCheck(security_desc_ptr, token.Get(), MAXIMUM_ALLOWED,
+  ASSERT_TRUE(::AccessCheck(security_desc.get(), token.Get(), MAXIMUM_ALLOWED,
                             &generic_mapping, &priv_set, &priv_set_length,
                             &granted_access, &access_status));
   ASSERT_TRUE(access_status);
@@ -696,7 +698,7 @@ SBOX_TESTS_COMMAND int CheckIsAppContainer(int argc, wchar_t** argv) {
 // correctly.
 SBOX_TESTS_COMMAND int Socket_CreateTCP(int argc, wchar_t** argv) {
   int init_status = InitWinsock();
-  if (init_status != STATUS_SUCCESS)
+  if (init_status != ERROR_SUCCESS)
     return init_status;
   SOCKET socket_handle = INVALID_SOCKET;
 
@@ -791,7 +793,7 @@ SBOX_TESTS_COMMAND int Socket_CreateTCP(int argc, wchar_t** argv) {
 // correctly.
 SBOX_TESTS_COMMAND int Socket_CreateUDP(int argc, wchar_t** argv) {
   int init_status = InitWinsock();
-  if (init_status != STATUS_SUCCESS)
+  if (init_status != ERROR_SUCCESS)
     return init_status;
   SOCKET socket_handle = INVALID_SOCKET;
 
@@ -915,7 +917,7 @@ class SocketBrokerTest
                            /* add brokering rule */ bool>> {
  public:
   void SetUp() override {
-    ASSERT_EQ(STATUS_SUCCESS, InitWinsock());
+    ASSERT_EQ(ERROR_SUCCESS, InitWinsock());
     SetUpSandboxPolicy();
   }
 

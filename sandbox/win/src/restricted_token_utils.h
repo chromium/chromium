@@ -5,10 +5,9 @@
 #ifndef SANDBOX_WIN_SRC_RESTRICTED_TOKEN_UTILS_H_
 #define SANDBOX_WIN_SRC_RESTRICTED_TOKEN_UTILS_H_
 
-#include <windows.h>
-
 #include "base/win/scoped_handle.h"
 #include "base/win/sid.h"
+#include "base/win/windows_types.h"
 #include "sandbox/win/src/restricted_token.h"
 #include "sandbox/win/src/security_level.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -18,7 +17,8 @@
 
 namespace sandbox {
 
-// The type of the token returned by the CreateNakedToken.
+// The type of the token returned by the CreateRestrictedToken and
+// CreateLowBoxToken APIs.
 enum TokenType { IMPERSONATION = 0, PRIMARY };
 
 // Creates a restricted token from effective token. If it's nullptr then
@@ -99,8 +99,8 @@ DWORD HardenProcessIntegrityLevelPolicy();
 // the error.
 DWORD CreateLowBoxToken(HANDLE base_token,
                         TokenType token_type,
-                        PSECURITY_CAPABILITIES security_capabilities,
-                        PHANDLE saved_handles,
+                        SECURITY_CAPABILITIES* security_capabilities,
+                        HANDLE* saved_handles,
                         DWORD saved_handles_count,
                         base::win::ScopedHandle* token);
 
@@ -112,7 +112,7 @@ DWORD CreateLowBoxToken(HANDLE base_token,
 // If the function succeeds, the return value is ERROR_SUCCESS. If the
 // function fails, the return value is the win32 error code corresponding to
 // the error.
-DWORD CreateLowBoxObjectDirectory(PSID lowbox_sid,
+DWORD CreateLowBoxObjectDirectory(const base::win::Sid& lowbox_sid,
                                   bool open_directory,
                                   base::win::ScopedHandle* directory);
 

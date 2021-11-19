@@ -185,13 +185,13 @@ DWORD CreateRestrictedToken(
 
   DWORD err_code = ERROR_SUCCESS;
   if (deny_sids) {
-    err_code = restricted_token.AddAllSidsForDenyOnly(&sid_exceptions);
+    err_code = restricted_token.AddAllSidsForDenyOnly(sid_exceptions);
     if (ERROR_SUCCESS != err_code)
       return err_code;
   }
 
   if (remove_privileges) {
-    err_code = restricted_token.DeleteAllPrivileges(&privilege_exceptions);
+    err_code = restricted_token.DeleteAllPrivileges(privilege_exceptions);
     if (ERROR_SUCCESS != err_code)
       return err_code;
   }
@@ -299,8 +299,8 @@ DWORD HardenProcessIntegrityLevelPolicy() {
 
 DWORD CreateLowBoxToken(HANDLE base_token,
                         TokenType token_type,
-                        PSECURITY_CAPABILITIES security_capabilities,
-                        PHANDLE saved_handles,
+                        SECURITY_CAPABILITIES* security_capabilities,
+                        HANDLE* saved_handles,
                         DWORD saved_handles_count,
                         base::win::ScopedHandle* token) {
   NtCreateLowBoxToken CreateLowBoxToken = nullptr;
@@ -375,20 +375,20 @@ DWORD CreateLowBoxToken(HANDLE base_token,
   return ERROR_SUCCESS;
 }
 
-DWORD CreateLowBoxObjectDirectory(PSID lowbox_sid,
+DWORD CreateLowBoxObjectDirectory(const base::win::Sid& lowbox_sid,
                                   bool open_directory,
                                   base::win::ScopedHandle* directory) {
   DWORD session_id = 0;
   if (!::ProcessIdToSessionId(::GetCurrentProcessId(), &session_id))
     return ::GetLastError();
 
-  LPWSTR sid_string = nullptr;
-  if (!::ConvertSidToStringSid(lowbox_sid, &sid_string))
-    return ::GetLastError();
+  absl::optional<std::wstring> sid_string = lowbox_sid.ToSddlString();
+  if (!sid_string)
+    return ERROR_INVALID_SID;
 
-  std::unique_ptr<wchar_t, LocalFreeDeleter> sid_string_ptr(sid_string);
-  std::wstring directory_path = base::StringPrintf(
-      L"\\Sessions\\%d\\AppContainerNamedObjects\\%ls", session_id, sid_string);
+  std::wstring directory_path =
+      base::StringPrintf(L"\\Sessions\\%d\\AppContainerNamedObjects\\%ls",
+                         session_id, sid_string->c_str());
 
   NtCreateDirectoryObjectFunction CreateObjectDirectory = nullptr;
   ResolveNTFunctionPtr("NtCreateDirectoryObject", &CreateObjectDirectory);

@@ -21,6 +21,7 @@
 #include "base/win/windows_version.h"
 #include "sandbox/win/src/interception_internal.h"
 #include "sandbox/win/src/interceptors.h"
+#include "sandbox/win/src/internal_types.h"
 #include "sandbox/win/src/sandbox.h"
 #include "sandbox/win/src/sandbox_rand.h"
 #include "sandbox/win/src/service_resolver.h"

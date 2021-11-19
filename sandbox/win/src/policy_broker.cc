@@ -13,6 +13,7 @@
 #include "base/win/windows_version.h"
 #include "sandbox/win/src/interception.h"
 #include "sandbox/win/src/interceptors.h"
+#include "sandbox/win/src/internal_types.h"
 #include "sandbox/win/src/policy_target.h"
 #include "sandbox/win/src/process_thread_interception.h"
 #include "sandbox/win/src/sandbox.h"

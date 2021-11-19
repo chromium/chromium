@@ -15,6 +15,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/win/scoped_co_mem.h"
 #include "base/win/scoped_handle.h"
+#include "base/win/scoped_localalloc.h"
 #include "sandbox/win/src/acl.h"
 #include "sandbox/win/src/app_container_base.h"
 #include "sandbox/win/src/restricted_token_utils.h"
@@ -232,17 +233,17 @@ bool AppContainerBase::AccessCheck(const wchar_t* object_name,
 
   GENERIC_MAPPING generic_mapping = GetGenericMappingForType(object_type);
   ::MapGenericMask(&desired_access, &generic_mapping);
-  PSECURITY_DESCRIPTOR sd = nullptr;
+  PSECURITY_DESCRIPTOR sd_ptr = nullptr;
   PACL dacl = nullptr;
   if (::GetNamedSecurityInfo(
           object_name, native_object_type,
           OWNER_SECURITY_INFORMATION | GROUP_SECURITY_INFORMATION |
               DACL_SECURITY_INFORMATION | LABEL_SECURITY_INFORMATION,
-          nullptr, nullptr, &dacl, nullptr, &sd) != ERROR_SUCCESS) {
+          nullptr, nullptr, &dacl, nullptr, &sd_ptr) != ERROR_SUCCESS) {
     return false;
   }
 
-  std::unique_ptr<void, LocalFreeDeleter> sd_ptr(sd);
+  base::win::ScopedLocalAlloc sd = base::win::TakeLocalAlloc(sd_ptr);
 
   if (enable_low_privilege_app_container_) {
     base::win::Sid any_package_sid = *base::win::Sid::FromKnownSid(
@@ -276,9 +277,9 @@ bool AppContainerBase::AccessCheck(const wchar_t* object_name,
   if (BuildLowBoxToken(&token) != SBOX_ALL_OK)
     return false;
 
-  return !!::AccessCheck(sd, token.Get(), desired_access, &generic_mapping,
-                         &priv_set, &priv_set_length, granted_access,
-                         access_status);
+  return !!::AccessCheck(sd.get(), token.Get(), desired_access,
+                         &generic_mapping, &priv_set, &priv_set_length,
+                         granted_access, access_status);
 }
 
 bool AppContainerBase::AddCapability(const wchar_t* capability_name) {
@@ -356,8 +357,8 @@ ResultCode AppContainerBase::BuildLowBoxToken(
     base::win::ScopedHandle* lockdown) {
   if (type_ == AppContainerType::kLowbox) {
     if (!lowbox_directory_.IsValid()) {
-      DWORD result = CreateLowBoxObjectDirectory(package_sid_.GetPSID(), true,
-                                                 &lowbox_directory_);
+      DWORD result =
+          CreateLowBoxObjectDirectory(package_sid_, true, &lowbox_directory_);
       DCHECK(result == ERROR_SUCCESS);
     }
 

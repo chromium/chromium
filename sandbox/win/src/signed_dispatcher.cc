@@ -18,6 +18,7 @@
 #include "sandbox/win/src/sandbox.h"
 #include "sandbox/win/src/signed_interception.h"
 #include "sandbox/win/src/signed_policy.h"
+#include "sandbox/win/src/win_utils.h"
 
 namespace sandbox {
 
