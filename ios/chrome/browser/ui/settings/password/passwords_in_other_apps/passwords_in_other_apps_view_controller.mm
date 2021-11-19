@@ -18,6 +18,7 @@
 #import "ios/chrome/common/ui/util/pointer_interaction_util.h"
 #include "ios/chrome/grit/ios_google_chrome_strings.h"
 #include "ios/chrome/grit/ios_strings.h"
+#import "ios/public/provider/chrome/browser/password_auto_fill/password_auto_fill_api.h"
 #import "ui/base/device_form_factor.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -38,11 +39,10 @@ CGFloat const kButtonHorizontalMargin = 4;
 @interface PasswordsInOtherAppsViewController ()
 
 // Properties set on initialization.
-@property(nonatomic, copy) NSString* titleText;
-@property(nonatomic, copy) NSString* subtitleText;
-@property(nonatomic, strong) UIImage* bannerImage;
-@property(nonatomic, copy) NSString* actionString;
-@property(nonatomic, strong) NSArray<NSString*>* steps;
+@property(nonatomic, copy, readonly) NSString* titleText;
+@property(nonatomic, copy, readonly) NSString* subtitleText;
+@property(nonatomic, strong, readonly) UIImage* bannerImage;
+@property(nonatomic, copy, readonly) NSString* actionString;
 
 // Visible UI components.
 @property(nonatomic, strong) UIImageView* imageView;
@@ -59,6 +59,8 @@ CGFloat const kButtonHorizontalMargin = 4;
 @property(nonatomic, strong) UIView* specificContentView;
 
 // Helper properties.
+@property(nonatomic, assign, readonly) BOOL useShortInstruction;
+@property(nonatomic, strong, readonly) NSArray<NSString*>* steps;
 @property(nonatomic, strong)
     NSArray<NSLayoutConstraint*>* turnOnInstructionViewConstraints;
 @property(nonatomic, strong)
@@ -83,27 +85,6 @@ CGFloat const kButtonHorizontalMargin = 4;
     _bannerImage =
         [UIImage imageNamed:@"settings_passwords_in_other_apps_banner"];
     _actionString = l10n_util::GetNSString(IDS_IOS_OPEN_SETTINGS);
-
-    NSArray<NSString*>* shortInstruction = @[
-      l10n_util::GetNSString(
-          IDS_IOS_SETTINGS_PASSWORDS_IN_OTHER_APPS_SHORTENED_STEP_1),
-      l10n_util::GetNSString(
-          IDS_IOS_SETTINGS_PASSWORDS_IN_OTHER_APPS_SHORTENED_STEP_2)
-    ];
-    NSArray<NSString*>* longInstruction = @[
-      ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET
-          ? l10n_util::GetNSString(
-                IDS_IOS_SETTINGS_PASSWORDS_IN_OTHER_APPS_STEP_1_IPAD)
-          : l10n_util::GetNSString(
-                IDS_IOS_SETTINGS_PASSWORDS_IN_OTHER_APPS_STEP_1_IPHONE),
-      l10n_util::GetNSString(IDS_IOS_SETTINGS_PASSWORDS_IN_OTHER_APPS_STEP_2),
-      l10n_util::GetNSString(IDS_IOS_SETTINGS_PASSWORDS_IN_OTHER_APPS_STEP_3),
-      l10n_util::GetNSString(IDS_IOS_SETTINGS_PASSWORDS_IN_OTHER_APPS_STEP_4)
-    ];
-    _steps = base::FeatureList::IsEnabled(
-                 kEnableShortenedPasswordAutoFillInstruction)
-                 ? shortInstruction
-                 : longInstruction;
   }
   return self;
 }
@@ -433,10 +414,8 @@ CGFloat const kButtonHorizontalMargin = 4;
 - (UIView*)turnOnInstructionView {
   if (!_turnOnInstructionView) {
     UIImage* icon = [UIImage imageNamed:@"settings"];
-    NSArray<UIImage*>* icons = base::FeatureList::IsEnabled(
-                                   kEnableShortenedPasswordAutoFillInstruction)
-                                   ? nil
-                                   : @[ icon, icon, icon, icon ];
+    NSArray<UIImage*>* icons =
+        self.useShortInstruction ? nil : @[ icon, icon, icon, icon ];
     InstructionView* instruction =
         [[InstructionView alloc] initWithList:self.steps
                                         style:InstructionViewStyleGrayscale
@@ -493,8 +472,7 @@ CGFloat const kButtonHorizontalMargin = 4;
     // if the view will contain an action button, place action button at the
     // bottom and instruction right above it; otherwise, place the instruction
     // at the bottom.
-    if (base::FeatureList::IsEnabled(
-            kEnableShortenedPasswordAutoFillInstruction)) {
+    if (self.useShortInstruction) {
       [_turnOnInstructionView addSubview:self.actionButton];
       [constraints addObjectsFromArray:@[
         [self.actionButton.widthAnchor
@@ -596,6 +574,33 @@ CGFloat const kButtonHorizontalMargin = 4;
   if (_spinner) {
     sharedManager.ready ? [_spinner stopAnimating] : [_spinner startAnimating];
   }
+}
+
+- (BOOL)useShortInstruction {
+  return ios::provider::SupportShortenedInstructionForPasswordAutoFill() &&
+         base::FeatureList::IsEnabled(
+             kEnableShortenedPasswordAutoFillInstruction);
+}
+
+- (NSArray<NSString*>*)steps {
+  if (self.useShortInstruction) {
+    return @[
+      l10n_util::GetNSString(
+          IDS_IOS_SETTINGS_PASSWORDS_IN_OTHER_APPS_SHORTENED_STEP_1),
+      l10n_util::GetNSString(
+          IDS_IOS_SETTINGS_PASSWORDS_IN_OTHER_APPS_SHORTENED_STEP_2)
+    ];
+  }
+  return @[
+    ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET
+        ? l10n_util::GetNSString(
+              IDS_IOS_SETTINGS_PASSWORDS_IN_OTHER_APPS_STEP_1_IPAD)
+        : l10n_util::GetNSString(
+              IDS_IOS_SETTINGS_PASSWORDS_IN_OTHER_APPS_STEP_1_IPHONE),
+    l10n_util::GetNSString(IDS_IOS_SETTINGS_PASSWORDS_IN_OTHER_APPS_STEP_2),
+    l10n_util::GetNSString(IDS_IOS_SETTINGS_PASSWORDS_IN_OTHER_APPS_STEP_3),
+    l10n_util::GetNSString(IDS_IOS_SETTINGS_PASSWORDS_IN_OTHER_APPS_STEP_4)
+  ];
 }
 
 #pragma mark - UITextViewDelegate

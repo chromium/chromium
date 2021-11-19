@@ -75,7 +75,7 @@ const base::Feature kRemoveExcessNTPs{"RemoveExcessNTPs",
 
 const base::Feature kEnableShortenedPasswordAutoFillInstruction{
     "EnableShortenedPasswordAutoFillInstruction",
-    base::FEATURE_DISABLED_BY_DEFAULT};
+    base::FEATURE_ENABLED_BY_DEFAULT};
 
 bool IsContextMenuActionsRefreshEnabled() {
   return base::FeatureList::IsEnabled(kContextMenuActionsRefresh);
