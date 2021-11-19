@@ -784,7 +784,13 @@
       'android-11-x86-rel': {
         # https://crbug.com/1039860
         'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_11.cc_unittests.filter',
+          '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_11_12.cc_unittests.filter',
+        ],
+      },
+      'android-12-x64-fyi-rel': {
+        # https://crbug.com/1039860
+        'args': [
+          '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_11_12.cc_unittests.filter',
         ],
       },
       'android-marshmallow-x86-rel': {

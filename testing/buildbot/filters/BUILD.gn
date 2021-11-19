@@ -21,7 +21,7 @@ source_set("cc_unittests_filters") {
 
   data = [
     "//testing/buildbot/filters/android.emulator.cc_unittests.filter",
-    "//testing/buildbot/filters/android.emulator_11.cc_unittests.filter",
+    "//testing/buildbot/filters/android.emulator_11_12.cc_unittests.filter",
     "//testing/buildbot/filters/fuchsia.debug.cc_unittests.filter",
     "//testing/buildbot/filters/gpu.linux.skiarenderer_dawn_cc_unittests.filter",
     "//testing/buildbot/filters/gpu.skiarenderer_dawn_cc_unittests.filter",
