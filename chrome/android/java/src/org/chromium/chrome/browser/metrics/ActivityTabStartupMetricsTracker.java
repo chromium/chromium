@@ -72,7 +72,9 @@ public class ActivityTabStartupMetricsTracker {
             mNavigationId = navigationId;
             mShouldRecordHistograms = mShouldTrackStartupMetrics;
 
-            if (!mInvokedOnFirstNavigationStart) {
+            // Only notify observers of the initial navigation in the case where we will also record
+            // first contentful paint for this navigation.
+            if (!mInvokedOnFirstNavigationStart && mShouldRecordHistograms) {
                 for (Observer observer : sObservers) {
                     observer.onFirstNavigationStart();
                 }
