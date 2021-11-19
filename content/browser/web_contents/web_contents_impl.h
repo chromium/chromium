@@ -1645,6 +1645,10 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   // Execute a PageBroadcast Mojo method.
   void ExecutePageBroadcastMethod(PageBroadcastMethodCallback callback);
 
+  // Execute a PageBroadcast Mojo method for all MPArch pages.
+  void ExecutePageBroadcastMethodForAllPages(
+      PageBroadcastMethodCallback callback);
+
   void SetOpenerForNewContents(FrameTreeNode* opener, bool opener_suppressed);
 
   // Tracking loading progress -------------------------------------------------

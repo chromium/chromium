@@ -1483,6 +1483,18 @@ void WebContentsImpl::ExecutePageBroadcastMethod(
       callback);
 }
 
+void WebContentsImpl::ExecutePageBroadcastMethodForAllPages(
+    PageBroadcastMethodCallback callback) {
+  OPTIONAL_TRACE_EVENT0(
+      "content", "WebContentsImpl::ExecutePageBroadcastMethodForAllPages");
+  ForEachFrameTree(base::BindRepeating(
+      [](PageBroadcastMethodCallback* callback, FrameTree* frame_tree) {
+        frame_tree->root()->render_manager()->ExecutePageBroadcastMethod(
+            *callback);
+      },
+      &callback));
+}
+
 RenderViewHostImpl* WebContentsImpl::GetRenderViewHost() {
   return GetRenderManager()->current_frame_host()->render_view_host();
 }
@@ -1756,7 +1768,6 @@ void WebContentsImpl::SetUserAgentOverride(
   renderer_preferences_.user_agent_override = ua_override;
 
   // Send the new override string to all renderers in the current page.
-  // TODO(https://crbug.com/1235984): Sync for all FrameTree instance.
   SyncRendererPrefs();
 
   // Reload the page if a load is currently in progress to avoid having
@@ -2860,7 +2871,7 @@ void WebContentsImpl::SyncRendererPrefs() {
 
   blink::RendererPreferences renderer_preferences = GetRendererPrefs();
   RenderViewHostImpl::GetPlatformSpecificPrefs(&renderer_preferences);
-  ExecutePageBroadcastMethod(base::BindRepeating(
+  ExecutePageBroadcastMethodForAllPages(base::BindRepeating(
       [](const blink::RendererPreferences& preferences,
          RenderViewHostImpl* rvh) {
         rvh->SendRendererPreferencesToRenderer(preferences);
