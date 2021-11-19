@@ -155,26 +155,6 @@ TEST(MultiWordSuggesterTest, CalculatesConfirmedLengthForManyWords) {
   EXPECT_EQ(suggestion_handler.GetConfirmedLength(), 3);  // whe
 }
 
-TEST(MultiWordSuggesterTest, CalculatesConfirmedLengthGreedily) {
-  FakeSuggestionHandler suggestion_handler;
-  MultiWordSuggester suggester(&suggestion_handler);
-
-  std::vector<TextSuggestion> suggestions = {
-      TextSuggestion{.mode = TextSuggestionMode::kCompletion,
-                     .type = TextSuggestionType::kMultiWord,
-                     .text = "hohohohoho"},
-  };
-
-  suggester.OnFocus(kFocusedContextId);
-  suggester.OnSurroundingTextChanged(u"merry christmas hohoho",
-                                     /*cursor_pos=*/22, /*anchor_pos=*/22);
-  suggester.OnExternalSuggestionsUpdated(suggestions);
-
-  EXPECT_TRUE(suggestion_handler.GetShowingSuggestion());
-  EXPECT_EQ(suggestion_handler.GetSuggestionText(), u"hohohohoho");
-  EXPECT_EQ(suggestion_handler.GetConfirmedLength(), 6);  // hohoho
-}
-
 TEST(MultiWordSuggesterTest, TracksLastSuggestionOnSurroundingTextChange) {
   FakeSuggestionHandler suggestion_handler;
   MultiWordSuggester suggester(&suggestion_handler);
@@ -289,6 +269,7 @@ TEST(MultiWordSuggesterTest,
   suggester.OnFocus(kFocusedContextId);
   suggester.OnSurroundingTextChanged(u"this is some text", 17, 17);
   suggester.OnExternalSuggestionsUpdated(suggestions);
+
   suggester.OnSurroundingTextChanged(u"this is some text ", 18, 18);
   suggester.Suggest(u"this is some text ", 18, 18);
   suggester.OnSurroundingTextChanged(u"this is some text f", 19, 19);
@@ -301,7 +282,8 @@ TEST(MultiWordSuggesterTest,
   suggester.Suggest(u"this is some text ", 18, 18);
   suggester.OnSurroundingTextChanged(u"this is some text", 17, 17);
 
-  EXPECT_FALSE(suggester.Suggest(u"this is some text", 17, 17));
+  EXPECT_TRUE(suggester.Suggest(u"this is some text", 17, 17));
+  EXPECT_FALSE(suggester.Suggest(u"this is some tex", 16, 16));
 }
 
 TEST(MultiWordSuggesterTest, ReturnsGenericActionIfNoSuggestionHasBeenShown) {
@@ -439,6 +421,92 @@ TEST(MultiWordSuggesterTest, RecordsTimeToDismissMetric) {
 
   histogram_tester.ExpectTotalCount(
       "InputMethod.Assistive.TimeToDismiss.MultiWord", 1);
+}
+
+TEST(MultiWordSuggesterTest, RecordsDismissedAccuracyMetric) {
+  FakeSuggestionHandler suggestion_handler;
+  MultiWordSuggester suggester(&suggestion_handler);
+
+  std::vector<TextSuggestion> suggestions = {
+      TextSuggestion{.mode = TextSuggestionMode::kPrediction,
+                     .type = TextSuggestionType::kMultiWord,
+                     .text = "are you"},
+  };
+
+  base::HistogramTester histogram_tester;
+  histogram_tester.ExpectUniqueSample(
+      "InputMethod.Assistive.DismissedAccuracy.MultiWord", 43, 0);
+
+  suggester.OnFocus(kFocusedContextId);
+  suggester.OnSurroundingTextChanged(u"how ", 4, 4);
+  suggester.OnExternalSuggestionsUpdated(suggestions);
+  suggester.Suggest(u"how a", 5, 5);
+  suggester.Suggest(u"how ar", 6, 6);
+  suggester.Suggest(u"how are", 7, 7);
+  suggester.Suggest(u"how aren", 8, 8);
+  suggester.DismissSuggestion();
+
+  // Correctly predicted "are" which is three of the seven chars in "are you",
+  // thus accuracy is 3/7 ~= 0.428 which comes to a rounded percentage int val
+  // of 43.
+  histogram_tester.ExpectUniqueSample(
+      "InputMethod.Assistive.DismissedAccuracy.MultiWord", 43, 1);
+}
+
+TEST(MultiWordSuggesterTest, RecordsZeroValuedDismissedAccuracy) {
+  FakeSuggestionHandler suggestion_handler;
+  MultiWordSuggester suggester(&suggestion_handler);
+
+  std::vector<TextSuggestion> suggestions = {
+      TextSuggestion{.mode = TextSuggestionMode::kPrediction,
+                     .type = TextSuggestionType::kMultiWord,
+                     .text = "are you"},
+  };
+
+  base::HistogramTester histogram_tester;
+  histogram_tester.ExpectUniqueSample(
+      "InputMethod.Assistive.DismissedAccuracy.MultiWord", 0, 0);
+
+  suggester.OnFocus(kFocusedContextId);
+  suggester.OnSurroundingTextChanged(u"how ", 4, 4);
+  suggester.OnExternalSuggestionsUpdated(suggestions);
+  suggester.Suggest(u"how d", 5, 5);
+  suggester.DismissSuggestion();
+
+  // Zero predicted chars
+  histogram_tester.ExpectUniqueSample(
+      "InputMethod.Assistive.DismissedAccuracy.MultiWord", 0, 1);
+}
+
+TEST(MultiWordSuggesterTest, RecordsCompletionCandidateDismissedAccuracy) {
+  FakeSuggestionHandler suggestion_handler;
+  MultiWordSuggester suggester(&suggestion_handler);
+
+  std::vector<TextSuggestion> suggestions = {
+      TextSuggestion{.mode = TextSuggestionMode::kCompletion,
+                     .type = TextSuggestionType::kMultiWord,
+                     .text = "aren\'t you"},
+  };
+
+  base::HistogramTester histogram_tester;
+  histogram_tester.ExpectUniqueSample(
+      "InputMethod.Assistive.DismissedAccuracy.MultiWord", 63, 0);
+
+  suggester.OnFocus(kFocusedContextId);
+  suggester.OnSurroundingTextChanged(u"why ar", 6, 6);
+  suggester.OnExternalSuggestionsUpdated(suggestions);
+  suggester.Suggest(u"why are", 7, 7);
+  suggester.Suggest(u"why aren", 8, 8);
+  suggester.Suggest(u"why aren\'", 9, 9);
+  suggester.Suggest(u"why aren\'t", 10, 10);
+  suggester.Suggest(u"why aren\'t ", 11, 11);
+  suggester.Suggest(u"why aren\'t w", 12, 12);
+  suggester.DismissSuggestion();
+
+  // Predicted the cars "en\'t " which is 5 of the 8 chars in "en\'t you",
+  // thus accuracy is 5/8 or approx 62 percent
+  histogram_tester.ExpectUniqueSample(
+      "InputMethod.Assistive.DismissedAccuracy.MultiWord", 63, 1);
 }
 
 TEST(MultiWordSuggesterTest, SurroundingTextChangesDoNotTriggerAnnouncements) {
