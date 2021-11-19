@@ -7211,7 +7211,6 @@ crbug.com/1255221 http/tests/devtools/elements/styles-4/svg-style.js [ Failure P
 crbug.com/1226112 [ Win ] http/tests/text-autosizing/wide-iframe.html [ Pass Timeout ]
 
 # DevTools roll
-crbug.com/1222126 http/tests/devtools/domdebugger/domdebugger-getEventListeners.js [ Skip ]
 crbug.com/1222126 http/tests/devtools/cache-storage/cache-live-update-list.js [ Skip ]
 crbug.com/1222126 http/tests/devtools/runtime/evaluate-timeout.js [ Skip ]
 crbug.com/1215072 http/tests/devtools/elements/copy-styles.js [ Skip ]

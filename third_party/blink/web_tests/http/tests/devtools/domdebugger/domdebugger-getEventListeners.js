@@ -22,16 +22,14 @@
   function dumpListeners(listeners) {
     listeners.sort((a, b) => a.type().localeCompare(b.type()));
     for (var listener of listeners) {
-      delete listener.location.scriptId;
-      var sourceURL = listener.sourceURLInternal;
-      sourceURL = sourceURL.substr(sourceURL.lastIndexOf('/') + 1);
-      listener.sourceURLInternal = sourceURL;
+      const sourceURL = listener.sourceURL();
+      const sourceURLForOutput = sourceURL.substr(sourceURL.lastIndexOf('/') + 1);
 
       TestRunner.addResult('type: ' + listener.type());
       TestRunner.addResult('useCapture: ' + listener.useCapture());
       TestRunner.addResult(`location: ${listener.location().lineNumber}:${listener.location().columnNumber}`);
       TestRunner.addResult('handler: ' + listener.handler().description);
-      TestRunner.addResult('sourceURL: ' + listener.sourceURL());
+      TestRunner.addResult('sourceURL: ' + sourceURLForOutput);
       TestRunner.addResult('');
     }
   }
