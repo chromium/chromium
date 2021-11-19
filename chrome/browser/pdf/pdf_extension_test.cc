@@ -2838,7 +2838,7 @@ class PDFExtensionSaveWithPolicyTest : public PDFExtensionSaveTest {
   testing::NiceMock<policy::MockConfigurationPolicyProvider> policy_provider_;
 };
 
-// Flaky, http://crbug.com/1269147
+// Flaky, http://crbug.com/1269103
 #if defined(OS_LINUX) || defined(OS_WIN)
 #define MAYBE_SaveWithPolicy DISABLED_SaveWithPolicy
 #else
@@ -2861,7 +2861,7 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionSaveWithPolicyTest, MAYBE_SaveWithPolicy) {
   WaitForSavedPdf(save_path);
 }
 
-// Flaky, http://crbug.com/1269105
+// Flaky, http://crbug.com/1269103
 #if defined(OS_LINUX)
 #define MAYBE_SaveWithPolicyUniqueNumberSuffix \
   DISABLED_SaveWithPolicyUniqueNumberSuffix
@@ -2891,8 +2891,15 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionSaveWithPolicyTest,
   WaitForSavedPdf(save_path);
 }
 
+// Flaky, http://crbug.com/1269103
+#if defined(OS_LINUX) || defined(OS_WIN)
+#define MAYBE_SaveWithPolicyUniqueTimeSuffix \
+  DISABLED_SaveWithPolicyUniqueTimeSuffix
+#else
+#define MAYBE_SaveWithPolicyUniqueTimeSuffix SaveWithPolicyUniqueTimeSuffix
+#endif
 IN_PROC_BROWSER_TEST_P(PDFExtensionSaveWithPolicyTest,
-                       SaveWithPolicyUniqueTimeSuffix) {
+                       MAYBE_SaveWithPolicyUniqueTimeSuffix) {
   base::ScopedAllowBlockingForTesting allow_blocking;
 
   CreateConflictingFilenames(GetDownloadDir().AppendASCII("combobox_form.pdf"),
