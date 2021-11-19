@@ -20,6 +20,7 @@
 namespace content {
 class BrowserContext;
 class RenderProcessHost;
+class StoragePartitionConfig;
 
 using SiteInstanceId = base::IdType32<class SiteInstanceIdTag>;
 
@@ -216,11 +217,11 @@ class CONTENT_EXPORT SiteInstance : public base::RefCounted<SiteInstance> {
       const GURL& url);
 
   // Factory method to create a SiteInstance for a <webview> guest in a new
-  // BrowsingInstance.
-  // TODO(734722): Replace this method once SecurityPrincipal is available.
+  // BrowsingInstance. A guest requires a non-default StoragePartitionConfig
+  // which should be passed in via `partition_config`.
   static scoped_refptr<SiteInstance> CreateForGuest(
       BrowserContext* browser_context,
-      const GURL& guest_site_url);
+      const StoragePartitionConfig& partition_config);
 
   // Determine if a URL should "use up" a site.  URLs such as about:blank or
   // chrome-native:// leave the site unassigned.

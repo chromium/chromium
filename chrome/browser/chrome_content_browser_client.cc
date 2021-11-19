@@ -1481,13 +1481,6 @@ ChromeContentBrowserClient::GetStoragePartitionConfigForSite(
         /*in_memory=*/false);
   }
 
-  // The partition ID for webview guest processes is the string value of its
-  // SiteInstance URL - "chrome-guest://app_id/persist?partition".
-  if (extensions::WebViewGuest::GetGuestPartitionConfigForSite(
-          browser_context, site, &storage_partition_config)) {
-    return storage_partition_config;
-  }
-
   if (site.SchemeIs(extensions::kExtensionScheme)) {
     // The host in an extension site URL is the extension_id.
     CHECK(site.has_host());

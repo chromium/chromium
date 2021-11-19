@@ -1438,17 +1438,19 @@ TEST_P(RenderFrameHostManagerTest, CleanUpProxiesOnProcessCrash) {
 
 // Test that we reuse the same guest SiteInstance if we navigate across sites.
 TEST_P(RenderFrameHostManagerTest, NoSwapOnGuestNavigations) {
-  // Create a custom site URL for the SiteInstance. There is nothing special
-  // about this URL other than we expect the resulting SiteInstance to return
-  // this exact URL from its GetSiteURL() method.
-  const GURL kGuestSiteUrl("my-guest-scheme://someapp/somepath");
+  // Create a custom StoragePartitionConfig for the guest SiteInstance. The
+  // resulting SiteInstance should become associated with this
+  // StoragePartitionConfig rather than a default one.
+  const StoragePartitionConfig kGuestPartitionConfig =
+      StoragePartitionConfig::Create(browser_context(), "someapp",
+                                     "somepartition", /*in_memory=*/false);
   scoped_refptr<SiteInstance> instance =
-      SiteInstance::CreateForGuest(browser_context(), kGuestSiteUrl);
+      SiteInstance::CreateForGuest(browser_context(), kGuestPartitionConfig);
   std::unique_ptr<TestWebContents> web_contents(
       TestWebContents::Create(browser_context(), instance));
 
   EXPECT_TRUE(instance->IsGuest());
-  EXPECT_EQ(kGuestSiteUrl, instance->GetSiteURL());
+  EXPECT_EQ(kGuestPartitionConfig, instance->GetStoragePartitionConfig());
 
   RenderFrameHostManager* manager = web_contents->GetRenderManagerForTesting();
 

@@ -41,8 +41,9 @@ class SiteInstanceRenderProcessHostFactory : public RenderProcessHostFactory {
   RenderProcessHost* CreateRenderProcessHost(
       BrowserContext* browser_context,
       SiteInstance* site_instance) override {
-    processes_.push_back(
-        std::make_unique<MockRenderProcessHost>(browser_context));
+    processes_.push_back(std::make_unique<MockRenderProcessHost>(
+        browser_context, site_instance->GetStoragePartitionConfig(),
+        site_instance->IsGuest()));
 
     // A spare RenderProcessHost is created with a null SiteInstance.
     if (site_instance)
@@ -222,7 +223,7 @@ TEST_F(ServiceWorkerProcessManagerTest, AllocateWorkerProcess_InShutdown) {
 TEST_F(ServiceWorkerProcessManagerTest,
        AllocateWorkerProcess_StoragePartitionForGuests) {
   // Allocate a process to a worker. It should use |script_url_| as the
-  // site URL of the SiteInstance.
+  // site URL of the SiteInstance and a default StoragePartition.
   {
     const int kEmbeddedWorkerId = 55;  // dummy value
     ServiceWorkerProcessManager::AllocatedProcessInfo process_info;
@@ -232,40 +233,40 @@ TEST_F(ServiceWorkerProcessManagerTest,
             absl::nullopt /* cross_origin_embedder_policy */,
             true /* can_use_existing_process */, &process_info);
     EXPECT_EQ(blink::ServiceWorkerStatusCode::kOk, status);
-    // Instead of testing the input to the CreateRenderProcessHost(), it'd be
-    // more interesting to check the StoragePartition of the returned process
-    // here and below. Alas, MockRenderProcessHosts always use the default
-    // StoragePartition.
     EXPECT_EQ(
         GURL("http://example.com"),
         render_process_host_factory_->last_site_instance_used()->GetSiteURL());
     EXPECT_FALSE(
         render_process_host_factory_->last_site_instance_used()->IsGuest());
+    auto* rph = RenderProcessHost::FromID(process_info.process_id);
+    ASSERT_TRUE(rph);
+    auto* storage_partition =
+        static_cast<StoragePartitionImpl*>(rph->GetStoragePartition());
+    EXPECT_TRUE(storage_partition->GetConfig().is_default());
 
     // Release the process.
     process_manager_->ReleaseWorkerProcess(kEmbeddedWorkerId);
   }
 
-  // Now change ServiceWorkerProcessManager to use a StoragePartition with
-  // |site_for_guest_service_worker_or_shared_worker| set. We must set
-  // |site_for_guest_service_worker_or_shared_worker| manually since the
-  // production codepath in CreateRenderProcessHost() isn't hit here since we
-  // are using RenderProcessHostFactory.
-  const GURL kGuestSiteUrl("my-guest-scheme://someapp/somepath");
-  scoped_refptr<SiteInstanceImpl> site_instance =
-      SiteInstanceImpl::CreateForGuest(browser_context_.get(), kGuestSiteUrl);
-  EXPECT_TRUE(site_instance->IsGuest());
-  // It'd be more realistic to create a non-default StoragePartition, but there
-  // would be no added value to this test since MockRenderProcessHost is not
-  // StoragePartition-aware.
+  // Now change ServiceWorkerProcessManager to use a guest StoragePartition.
+  // We must call |set_is_guest()| manually since the production codepath in
+  // CreateRenderProcessHost() isn't hit here since we are using
+  // RenderProcessHostFactory.
+  const StoragePartitionConfig kGuestPartitionConfig =
+      StoragePartitionConfig::Create(browser_context_.get(), "someapp",
+                                     "somepartition", /*in_memory=*/false);
+  scoped_refptr<SiteInstanceImpl> guest_site_instance =
+      SiteInstanceImpl::CreateForGuest(browser_context_.get(),
+                                       kGuestPartitionConfig);
+  EXPECT_TRUE(guest_site_instance->IsGuest());
   StoragePartitionImpl* storage_partition = static_cast<StoragePartitionImpl*>(
-      browser_context_->GetDefaultStoragePartition());
-  storage_partition->set_site_for_guest_service_worker_or_shared_worker(
-      site_instance->GetSiteURL());
+      browser_context_->GetStoragePartition(kGuestPartitionConfig));
+  storage_partition->set_is_guest();
   process_manager_->set_storage_partition(storage_partition);
 
-  // Allocate a process to a worker. It should use kGuestSiteUrl instead of
-  // |script_url_| as the site URL of the SiteInstance.
+  // Allocate a process to a worker. It should use the site URL of
+  // |guest_site_instance| instead of |script_url_| as the site URL of the
+  // SiteInstance, and it should be in the guest's StoragePartition.
   {
     const int kEmbeddedWorkerId = 77;  // dummy value
     ServiceWorkerProcessManager::AllocatedProcessInfo process_info;
@@ -276,10 +277,13 @@ TEST_F(ServiceWorkerProcessManagerTest,
             true /* can_use_existing_process */, &process_info);
     EXPECT_EQ(blink::ServiceWorkerStatusCode::kOk, status);
     EXPECT_EQ(
-        kGuestSiteUrl,
+        guest_site_instance->GetSiteURL(),
         render_process_host_factory_->last_site_instance_used()->GetSiteURL());
     EXPECT_TRUE(
         render_process_host_factory_->last_site_instance_used()->IsGuest());
+    auto* rph = RenderProcessHost::FromID(process_info.process_id);
+    ASSERT_TRUE(rph);
+    EXPECT_EQ(rph->GetStoragePartition(), storage_partition);
 
     // Release the process.
     process_manager_->ReleaseWorkerProcess(kEmbeddedWorkerId);

@@ -65,7 +65,6 @@
 #include "extensions/common/manifest_constants.h"
 #include "extensions/strings/grit/extensions_strings.h"
 #include "ipc/ipc_message_macros.h"
-#include "net/base/escape.h"
 #include "net/base/net_errors.h"
 #include "net/cookies/canonical_cookie.h"
 #include "third_party/blink/public/common/logging/logging_utils.h"
@@ -89,11 +88,6 @@ using zoom::ZoomController;
 namespace extensions {
 
 namespace {
-
-// Strings used to encode blob url fallback mode in site URLs.
-constexpr char kNoFallback[] = "nofallback";
-constexpr char kInMemoryFallback[] = "inmemoryfallback";
-constexpr char kOnDiskFallback[] = "ondiskfallback";
 
 // Returns storage partition removal mask from web_view clearData mask. Note
 // that storage partition mask is a subset of webview's data removal mask.
@@ -276,87 +270,6 @@ GuestViewBase* WebViewGuest::Create(WebContents* owner_web_contents) {
 }
 
 // static
-bool WebViewGuest::GetGuestPartitionConfigForSite(
-    content::BrowserContext* browser_context,
-    const GURL& site,
-    content::StoragePartitionConfig* storage_partition_config) {
-  if (!site.SchemeIs(content::kGuestScheme))
-    return false;
-
-  // The partition name is user supplied value, which we have encoded when the
-  // URL was created, so it needs to be decoded. Since it was created via
-  // EscapeQueryParamValue(), it should have no path separators or control codes
-  // when unescaped, but safest to check for that and fail if it does.
-  std::string partition_name;
-  if (!net::UnescapeBinaryURLComponentSafe(site.query_piece(),
-                                           true /* fail_on_path_separators */,
-                                           &partition_name)) {
-    return false;
-  }
-
-  // Since guest URLs are only used for packaged apps, there must be an app
-  // id in the URL.
-  CHECK(site.has_host());
-  // Since persistence is optional, the path must either be empty or the
-  // literal string.
-  bool in_memory = (site.path() != "/persist");
-
-  *storage_partition_config = content::StoragePartitionConfig::Create(
-      browser_context, site.host(), partition_name, in_memory);
-  // A <webview> inside a chrome app needs to be able to resolve Blob URLs that
-  // were created by the chrome app. The chrome app has the same
-  // partition_domain but empty partition_name. Setting this flag on the
-  // partition config causes it to be used as fallback for the purpose of
-  // resolving blob URLs.
-
-  // Default to having the fallback partition on disk, as that matches most
-  // closely what we would have done before fallback behavior started being
-  // encoded in the site URL.
-  content::StoragePartitionConfig::FallbackMode fallback_mode =
-      content::StoragePartitionConfig::FallbackMode::kFallbackPartitionOnDisk;
-  if (site.ref() == kNoFallback) {
-    fallback_mode = content::StoragePartitionConfig::FallbackMode::kNone;
-  } else if (site.ref() == kInMemoryFallback) {
-    fallback_mode = content::StoragePartitionConfig::FallbackMode::
-        kFallbackPartitionInMemory;
-  } else if (site.ref() == kOnDiskFallback) {
-    fallback_mode =
-        content::StoragePartitionConfig::FallbackMode::kFallbackPartitionOnDisk;
-  }
-
-  storage_partition_config->set_fallback_to_partition_domain_for_blob_urls(
-      fallback_mode);
-  return true;
-}
-
-// static
-GURL WebViewGuest::GetSiteForGuestPartitionConfig(
-    const content::StoragePartitionConfig& storage_partition_config) {
-  std::string url_encoded_partition = net::EscapeQueryParamValue(
-      storage_partition_config.partition_name(), false);
-  const char* fallback = "";
-  switch (
-      storage_partition_config.fallback_to_partition_domain_for_blob_urls()) {
-    case content::StoragePartitionConfig::FallbackMode::kNone:
-      fallback = kNoFallback;
-      break;
-    case content::StoragePartitionConfig::FallbackMode::
-        kFallbackPartitionOnDisk:
-      fallback = kOnDiskFallback;
-      break;
-    case content::StoragePartitionConfig::FallbackMode::
-        kFallbackPartitionInMemory:
-      fallback = kInMemoryFallback;
-      break;
-  }
-  return GURL(
-      base::StringPrintf("%s://%s/%s?%s#%s", content::kGuestScheme,
-                         storage_partition_config.partition_domain().c_str(),
-                         storage_partition_config.in_memory() ? "" : "persist",
-                         url_encoded_partition.c_str(), fallback));
-}
-
-// static
 std::string WebViewGuest::GetPartitionID(
     RenderProcessHost* render_process_host) {
   WebViewRendererState* renderer_state = WebViewRendererState::GetInstance();
@@ -434,8 +347,6 @@ void WebViewGuest::CreateWebContents(const base::DictionaryValue& create_params,
     }
   }
 
-  GURL guest_site = GetSiteForGuestPartitionConfig(partition_config);
-
   // If we already have a webview tag in the same app using the same storage
   // partition, we should use the same SiteInstance so the existing tag and
   // the new tag can script each other.
@@ -447,8 +358,8 @@ void WebViewGuest::CreateWebContents(const base::DictionaryValue& create_params,
     // Create the SiteInstance in a new BrowsingInstance, which will ensure
     // that webview tags are also not allowed to send messages across
     // different partitions.
-    guest_site_instance =
-        content::SiteInstance::CreateForGuest(browser_context(), guest_site);
+    guest_site_instance = content::SiteInstance::CreateForGuest(
+        browser_context(), partition_config);
   }
   WebContents::CreateParams params(browser_context(),
                                    std::move(guest_site_instance));

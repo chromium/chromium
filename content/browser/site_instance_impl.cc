@@ -161,7 +161,8 @@ scoped_refptr<SiteInstanceImpl> SiteInstanceImpl::CreateForServiceWorker(
   scoped_refptr<SiteInstanceImpl> site_instance;
 
   if (is_guest) {
-    site_instance = CreateForGuest(browser_context, url_info.url);
+    site_instance = CreateForGuest(browser_context,
+                                   url_info.storage_partition_config.value());
   } else {
     // This will create a new SiteInstance and BrowsingInstance.
     scoped_refptr<BrowsingInstance> instance(new BrowsingInstance(
@@ -192,12 +193,12 @@ scoped_refptr<SiteInstanceImpl> SiteInstanceImpl::CreateForServiceWorker(
 // static
 scoped_refptr<SiteInstanceImpl> SiteInstanceImpl::CreateForGuest(
     BrowserContext* browser_context,
-    const GURL& guest_site_url) {
+    const StoragePartitionConfig& partition_config) {
   DCHECK(browser_context);
-  DCHECK_NE(guest_site_url, GetDefaultSiteURL());
+  DCHECK(!partition_config.is_default());
 
   auto guest_site_info =
-      SiteInfo::CreateForGuest(browser_context, guest_site_url);
+      SiteInfo::CreateForGuest(browser_context, partition_config);
   scoped_refptr<SiteInstanceImpl> site_instance =
       base::WrapRefCounted(new SiteInstanceImpl(new BrowsingInstance(
           browser_context, guest_site_info.web_exposed_isolation_info())));
@@ -765,9 +766,9 @@ scoped_refptr<SiteInstance> SiteInstance::CreateForURL(
 // static
 scoped_refptr<SiteInstance> SiteInstance::CreateForGuest(
     BrowserContext* browser_context,
-    const GURL& guest_site_url) {
+    const StoragePartitionConfig& partition_config) {
   DCHECK(browser_context);
-  return SiteInstanceImpl::CreateForGuest(browser_context, guest_site_url);
+  return SiteInstanceImpl::CreateForGuest(browser_context, partition_config);
 }
 
 // static

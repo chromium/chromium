@@ -36,6 +36,7 @@ class BrowsingInstance;
 class ProcessLock;
 class RenderProcessHostFactory;
 class SiteInstanceGroup;
+class StoragePartitionConfig;
 class StoragePartitionImpl;
 struct UrlInfo;
 
@@ -75,7 +76,7 @@ class CONTENT_EXPORT SiteInstanceImpl final : public SiteInstance,
       const UrlInfo& url_info);
   static scoped_refptr<SiteInstanceImpl> CreateForGuest(
       BrowserContext* browser_context,
-      const GURL& guest_site_url);
+      const StoragePartitionConfig& partition_config);
 
   // Creates a SiteInstance that will be use for a service worker.
   // `url_info` - The UrlInfo for the service worker. It contains the URL and

@@ -1278,9 +1278,11 @@ TEST_F(NavigationControllerTest, Reload_GeneratesNewPage) {
 // without ending up in the "we have a wrong process for the URL" branch in
 // NavigationControllerImpl::ReloadInternal.
 TEST_F(NavigationControllerTest, ReloadWithGuest) {
-  const GURL kGuestSiteUrl("my-guest-scheme://someapp/somepath");
+  const StoragePartitionConfig kGuestPartitionConfig =
+      StoragePartitionConfig::Create(browser_context(), "someapp",
+                                     "somepartition", /*in_memory=*/false);
   scoped_refptr<SiteInstance> guest_instance =
-      SiteInstance::CreateForGuest(browser_context(), kGuestSiteUrl);
+      SiteInstance::CreateForGuest(browser_context(), kGuestPartitionConfig);
   std::unique_ptr<TestWebContents> guest_web_contents(
       TestWebContents::Create(browser_context(), guest_instance));
   NavigationControllerImpl& controller = guest_web_contents->GetController();

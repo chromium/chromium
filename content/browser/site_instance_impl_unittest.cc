@@ -1771,18 +1771,15 @@ TEST_F(SiteInstanceTest, CreateForGuest) {
   }
 
   // Verify that a SiteInstance created with CreateForGuest() is considered
-  // a <webview> guest and has a site URL that is identical to what was passed
-  // to CreateForGuest().
-  auto instance2 = SiteInstanceImpl::CreateForGuest(context(), kGuestUrl);
+  // a <webview> guest and has a site URL that reflects the guest's
+  // StoragePartition configuration.
+  const StoragePartitionConfig kGuestConfig = StoragePartitionConfig::Create(
+      context(), "appid", "partition_name", /*in_memory=*/false);
+  const GURL kGuestSiteUrl(std::string(kGuestScheme) +
+                           "://appid/persist?partition_name#nofallback");
+  auto instance2 = SiteInstanceImpl::CreateForGuest(context(), kGuestConfig);
   EXPECT_TRUE(instance2->IsGuest());
-  EXPECT_EQ(kGuestUrl, instance2->GetSiteURL());
-
-  // Verify that a SiteInstance being considered a <webview> guest does not
-  // depend on using a specific scheme.
-  const GURL kGuestUrl2("my-special-scheme://abc123/path");
-  auto instance3 = SiteInstanceImpl::CreateForGuest(context(), kGuestUrl2);
-  EXPECT_TRUE(instance3->IsGuest());
-  EXPECT_EQ(kGuestUrl2, instance3->GetSiteURL());
+  EXPECT_EQ(kGuestSiteUrl, instance2->GetSiteURL());
 }
 
 TEST_F(SiteInstanceTest, DoesSiteRequireDedicatedProcess) {

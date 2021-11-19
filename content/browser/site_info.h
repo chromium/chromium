@@ -48,8 +48,9 @@ class CONTENT_EXPORT SiteInfo {
       BrowserContext* browser_context,
       const StoragePartitionConfig storage_partition_config,
       const WebExposedIsolationInfo& web_exposed_isolation_info);
-  static SiteInfo CreateForGuest(BrowserContext* browser_context,
-                                 const GURL& guest_site_url);
+  static SiteInfo CreateForGuest(
+      BrowserContext* browser_context,
+      const StoragePartitionConfig& partition_config);
 
   // This function returns a SiteInfo with the appropriate site_url and
   // process_lock_url computed. This function can only be called on the UI

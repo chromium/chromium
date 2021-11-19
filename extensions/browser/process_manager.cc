@@ -96,18 +96,17 @@ base::TimeDelta GetEventPageSuspendDelay() {
 
 std::string GetExtensionIdForSiteInstance(
     content::SiteInstance* site_instance) {
-  if (!site_instance)
-    return std::string();
+  // <webview> guests always store the ExtensionId in the partition domain.
+  if (site_instance->IsGuest())
+    return site_instance->GetStoragePartitionConfig().partition_domain();
 
   // This works for both apps and extensions because the site has been
   // normalized to the extension URL for hosted apps.
   const GURL& site_url = site_instance->GetSiteURL();
+  if (site_url.SchemeIs(kExtensionScheme))
+    return site_url.host();
 
-  if (!site_url.SchemeIs(kExtensionScheme) &&
-      !site_url.SchemeIs(content::kGuestScheme))
-    return std::string();
-
-  return site_url.host();
+  return std::string();
 }
 
 std::string GetExtensionID(content::RenderFrameHost* render_frame_host) {

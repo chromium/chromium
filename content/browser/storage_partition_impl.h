@@ -343,19 +343,15 @@ class CONTENT_EXPORT StoragePartitionImpl
     return cors_exempt_header_list_;
   }
 
-  // When this StoragePartition is for guests (e.g., for a <webview> tag), this
-  // is the site URL to use when creating a SiteInstance for a service worker or
-  // a shared worker. Typically one would use the script URL of the worker
-  // (e.g., "https://example.com/sw.js"), but if this StoragePartition is for
-  // guests, one must use the <webview> guest site URL to ensure that the worker
-  // stays in this StoragePartition. This is an empty GURL if this
-  // StoragePartition is not for guests.
-  void set_site_for_guest_service_worker_or_shared_worker(const GURL& site) {
-    site_for_guest_service_worker_or_shared_worker_ = site;
-  }
-  const GURL& site_for_guest_service_worker_or_shared_worker() const {
-    return site_for_guest_service_worker_or_shared_worker_;
-  }
+  // Tracks whether this StoragePartition is for guests (e.g., for a <webview>
+  // tag).  This is needed to properly create a SiteInstance for a
+  // service worker or a shared worker in a guest. Typically one would use the
+  // script URL of the worker (e.g., "https://example.com/sw.js"), but if this
+  // StoragePartition is for guests, one must create the SiteInstance via
+  // guest-specific helpers that ensure that the worker stays in the same
+  // StoragePartition.
+  void set_is_guest() { is_guest_ = true; }
+  bool is_guest() const { return is_guest_; }
 
   // Use the network context to retrieve the origin policy manager.
   network::mojom::OriginPolicyManager*
@@ -634,8 +630,8 @@ class CONTENT_EXPORT StoragePartitionImpl
   // Initialized in InitNetworkContext() and never updated after then.
   std::vector<std::string> cors_exempt_header_list_;
 
-  // See comments for site_for_guest_service_worker_or_shared_worker().
-  GURL site_for_guest_service_worker_or_shared_worker_;
+  // See comments for is_guest().
+  bool is_guest_ = false;
 
   // Track number of running deletion. For test use only.
   int deletion_helpers_running_;

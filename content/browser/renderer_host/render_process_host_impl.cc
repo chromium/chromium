@@ -1513,17 +1513,13 @@ RenderProcessHost* RenderProcessHostImpl::CreateRenderProcessHost(
     flags |= RenderProcessFlags::kForGuestsOnly;
 
     // If we've made a StoragePartition for guests (e.g., for the <webview>
-    // tag), stash the Site URL on it. This way, when we start a service worker
-    // inside this storage partition, we can create the appropriate SiteInstance
-    // for finding a process (e.g., we will try to start a worker from
-    // "https://example.com/sw.js" but need to use the guest site URL to get a
-    // process in the guest's StoragePartition.)
-    if (storage_partition_impl->site_for_guest_service_worker_or_shared_worker()
-            .is_empty()) {
-      storage_partition_impl
-          ->set_site_for_guest_service_worker_or_shared_worker(
-              site_instance->GetSiteInfo().site_url());
-    }
+    // tag), make the StoragePartition aware of that.  This will be consulted
+    // when we start a service worker inside this StoragePartition, so that we
+    // can create the appropriate SiteInstance (e.g., we will try to start a
+    // worker from "https://example.com/sw.js" but need to use the guest's
+    // StoragePartitionConfig to get a process in the guest's
+    // StoragePartition.)
+    storage_partition_impl->set_is_guest();
   }
 
   if (site_instance) {

@@ -229,10 +229,9 @@ ExtensionNavigationThrottle::WillStartOrRedirectRequest() {
         content::StoragePartitionConfig::CreateDefault(browser_context);
     bool is_guest = navigation_handle()->GetStartingSiteInstance()->IsGuest();
     if (is_guest) {
-      is_guest = WebViewGuest::GetGuestPartitionConfigForSite(
-          browser_context,
-          navigation_handle()->GetStartingSiteInstance()->GetSiteURL(),
-          &storage_partition_config);
+      storage_partition_config = navigation_handle()
+                                     ->GetStartingSiteInstance()
+                                     ->GetStoragePartitionConfig();
     }
     CHECK_EQ(is_guest,
              navigation_handle()->GetStartingSiteInstance()->IsGuest());
