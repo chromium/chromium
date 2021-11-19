@@ -422,9 +422,18 @@ void LoadArmGpuLibraries() {
       const char* driver_paths[] = {
 #if defined(DRI_DRIVER_DIR)
         DRI_DRIVER_DIR "/msm_dri.so",
+        DRI_DRIVER_DIR "/panfrost_dri.so",
+        DRI_DRIVER_DIR "/mediatek_dri.so",
+        DRI_DRIVER_DIR "/rockchip_dri.so",
 #else
         "/usr/lib64/dri/msm_dri.so",
+        "/usr/lib64/dri/panfrost_dri.so",
+        "/usr/lib64/dri/mediatek_dri.so",
+        "/usr/lib64/dri/rockchip_dri.so",
         "/usr/lib/dri/msm_dri.so",
+        "/usr/lib/dri/panfrost_dri.so",
+        "/usr/lib/dri/mediatek_dri.so",
+        "/usr/lib/dri/rockchip_dri.so",
 #endif
         nullptr
       };
