@@ -94,6 +94,12 @@ Tutorial::StepBuilder& Tutorial::StepBuilder::SetMustRemainVisible(
   return *this;
 }
 
+Tutorial::StepBuilder& Tutorial::StepBuilder::SetTransitionOnlyOnEvent(
+    bool transition_only_on_event_) {
+  step_.transition_only_on_event = transition_only_on_event_;
+  return *this;
+}
+
 Tutorial::StepBuilder& Tutorial::StepBuilder::SetNameElementsCallback(
     TutorialDescription::NameElementsCallback name_elements_callback_) {
   step_.name_elements_callback = name_elements_callback_;
@@ -118,6 +124,9 @@ std::unique_ptr<ui::InteractionSequence::Step> Tutorial::StepBuilder::Build(
   if (step_.must_remain_visible.has_value())
     interaction_sequence_step_builder->SetMustRemainVisible(
         step_.must_remain_visible.value());
+
+  interaction_sequence_step_builder->SetTransitionOnlyOnEvent(
+      step_.transition_only_on_event);
 
   interaction_sequence_step_builder->SetStartCallback(
       BuildStartCallback(tutorial_service, bubble_factory_registry));

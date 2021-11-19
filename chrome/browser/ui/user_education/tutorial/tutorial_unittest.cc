@@ -54,10 +54,18 @@ TEST(TutorialTest, TutorialBuilder) {
           .SetAnchorElementName(std::string(kTestElementName1))
           .Build(service.get(), bubble_factory_registry.get());
 
+  // transition event
+  std::unique_ptr<ui::InteractionSequence::Step> step4 =
+      Tutorial::StepBuilder()
+          .SetAnchorElementID(kTestIdentifier1)
+          .SetTransitionOnlyOnEvent(true)
+          .Build(service.get(), bubble_factory_registry.get());
+
   builder.SetContext(kTestContext1)
       .AddStep(std::move(step1))
       .AddStep(std::move(step2))
       .AddStep(std::move(step3))
+      .AddStep(std::move(step4))
       .Build();
 }
 

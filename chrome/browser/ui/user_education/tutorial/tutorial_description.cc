@@ -25,6 +25,7 @@ TutorialDescription::Step::Step(
     std::string element_name_,
     Arrow arrow_,
     absl::optional<bool> must_remain_visible_,
+    bool transition_only_on_event_,
     TutorialDescription::NameElementsCallback name_elements_callback_)
     : title_text(title_text_),
       body_text(body_text_),
@@ -33,6 +34,7 @@ TutorialDescription::Step::Step(
       element_name(element_name_),
       arrow(arrow_),
       must_remain_visible(must_remain_visible_),
+      transition_only_on_event(transition_only_on_event_),
       name_elements_callback(name_elements_callback_) {}
 TutorialDescription::Step::Step(const TutorialDescription::Step& description) =
     default;
