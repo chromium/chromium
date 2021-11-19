@@ -15,6 +15,7 @@
 #include "base/version.h"
 #include "build/build_config.h"
 #include "chrome/updater/persisted_data.h"
+#include "chrome/updater/update_service.h"
 #include "chrome/updater/updater_scope.h"
 #include "components/update_client/update_client.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -42,6 +43,7 @@ class Installer final : public update_client::CrxInstaller {
             const std::string& target_version_prefix,
             bool rollback_allowed,
             bool update_disabled,
+            UpdateService::PolicySameVersionUpdate policy_same_version_update,
             scoped_refptr<PersistedData> persisted_data);
   Installer(const Installer&) = delete;
   Installer& operator=(const Installer&) = delete;
@@ -110,6 +112,7 @@ class Installer final : public update_client::CrxInstaller {
   const std::string target_channel_;
   const std::string target_version_prefix_;
   const bool update_disabled_;
+  const UpdateService::PolicySameVersionUpdate policy_same_version_update_;
   scoped_refptr<PersistedData> persisted_data_;
 
   // These members are not updated when the installer succeeds.

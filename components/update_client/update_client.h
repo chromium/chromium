@@ -348,6 +348,10 @@ struct CrxComponent {
   // An indicator sent to the server to advise whether it may perform a version
   // downgrade of this item.
   bool rollback_allowed = false;
+
+  // An indicator sent to the server to advise whether it may perform an
+  // over-install on this item.
+  bool same_version_update_allowed = false;
 };
 
 // Called when a non-blocking call of UpdateClient completes.

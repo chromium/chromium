@@ -24,6 +24,18 @@ enum class UpdaterScope;
 // All functions and callbacks must be called on the same sequence.
 class UpdateService : public base::RefCountedThreadSafe<UpdateService> {
  public:
+  // Defines the behavior of the update stack for over-installs.
+  enum class PolicySameVersionUpdate {
+    // The embedder does not allow over-installs with the same version. In this
+    // case, the server is expected to return `update not available` when it
+    // is queried for updates.
+    kNotAllowed = 0,
+
+    // The embedder is capable of handling updates with the same version, and
+    // the server may respond with such an update.
+    kAllowed = 1,
+  };
+
   // Values posted by the completion |callback| as a result of the
   // non-blocking invocation of the service functions. These values are not
   // present in the telemetry pings.

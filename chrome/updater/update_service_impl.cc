@@ -144,6 +144,7 @@ std::vector<absl::optional<update_client::CrxComponent>> GetComponents(
     scoped_refptr<PersistedData> persisted_data,
     bool foreground,
     bool update_blocked,
+    UpdateService::PolicySameVersionUpdate policy_same_version_update,
     const std::vector<std::string>& ids) {
   std::vector<absl::optional<update_client::CrxComponent>> components;
   for (const auto& id : ids) {
@@ -183,7 +184,7 @@ std::vector<absl::optional<update_client::CrxComponent>> GetComponents(
                       (!foreground && policy == kPolicyManualUpdatesOnly) ||
                       (foreground && policy == kPolicyAutomaticUpdatesOnly));
             }(),
-            persisted_data)
+            policy_same_version_update, persisted_data)
             ->MakeCrxComponent());
   }
   return components;
@@ -287,8 +288,8 @@ void UpdateServiceImpl::UpdateAll(StateChangeCallback state_update,
   ShouldBlockUpdateForMeteredNetwork(
       priority,
       base::BindOnce(&UpdateServiceImpl::OnShouldBlockUpdateForMeteredNetwork,
-                     this, state_update, std::move(callback), app_ids,
-                     priority));
+                     this, state_update, std::move(callback), app_ids, priority,
+                     UpdateService::PolicySameVersionUpdate::kNotAllowed));
 }
 
 void UpdateServiceImpl::Update(const std::string& app_id,
@@ -302,7 +303,8 @@ void UpdateServiceImpl::Update(const std::string& app_id,
   ShouldBlockUpdateForMeteredNetwork(
       priority,
       base::BindOnce(&UpdateServiceImpl::OnShouldBlockUpdateForMeteredNetwork,
-                     this, state_update, std::move(callback), ids, priority));
+                     this, state_update, std::move(callback), ids, priority,
+                     UpdateService::PolicySameVersionUpdate::kNotAllowed));
 }
 
 void UpdateServiceImpl::OnShouldBlockUpdateForMeteredNetwork(
@@ -310,6 +312,7 @@ void UpdateServiceImpl::OnShouldBlockUpdateForMeteredNetwork(
     Callback callback,
     const std::vector<std::string>& ids,
     Priority priority,
+    UpdateService::PolicySameVersionUpdate policy_same_version_update,
     bool update_blocked) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -318,7 +321,7 @@ void UpdateServiceImpl::OnShouldBlockUpdateForMeteredNetwork(
       base::BindOnce(
           &update_client::UpdateClient::Update, update_client_, ids,
           base::BindOnce(&GetComponents, config_, persisted_data_, false,
-                         update_blocked),
+                         update_blocked, policy_same_version_update),
           MakeUpdateClientCrxStateChangeCallback(config_, state_update),
           priority == Priority::kForeground,
           MakeUpdateClientCallback(std::move(callback))));
