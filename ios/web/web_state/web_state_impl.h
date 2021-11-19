@@ -75,15 +75,15 @@ class WebStateImpl : public WebState, public NavigationManagerDelegate {
   void SetWebController(CRWWebController* web_controller);
 
   // Notifies the observers that a navigation has started.
-  void OnNavigationStarted(web::NavigationContextImpl* context);
+  void OnNavigationStarted(NavigationContextImpl* context);
 
   // Notifies the observers that a navigation was redirected.
-  void OnNavigationRedirected(web::NavigationContextImpl* context);
+  void OnNavigationRedirected(NavigationContextImpl* context);
 
   // Notifies the observers that a navigation has finished. For same-document
   // navigations notifies the observers about favicon URLs update using
   // candidates received in OnFaviconUrlUpdated.
-  void OnNavigationFinished(web::NavigationContextImpl* context);
+  void OnNavigationFinished(NavigationContextImpl* context);
 
   // Called when current window's canGoBack / canGoForward state was changed.
   void OnBackForwardStateChanged();
@@ -99,8 +99,9 @@ class WebStateImpl : public WebState, public NavigationManagerDelegate {
                                const base::Value& value,
                                const GURL& page_url,
                                bool user_is_interacting,
-                               web::WebFrame* sender_frame);
+                               WebFrame* sender_frame);
 
+  // Marks the WebState as loading/not loading.
   void SetIsLoading(bool is_loading);
 
   // Called when a page is loaded. Must be called only once per page.
@@ -123,10 +124,12 @@ class WebStateImpl : public WebState, public NavigationManagerDelegate {
 
   // Creates a WebUI page for the given url, owned by this object.
   void CreateWebUI(const GURL& url);
+
   // Clears any current WebUI. Should be called when the page changes.
   // TODO(stuartmorgan): Remove once more logic is moved from WebController
   // into this class.
   void ClearWebUI();
+
   // Returns true if there is a WebUI active.
   bool HasWebUI() const;
 
@@ -172,81 +175,14 @@ class WebStateImpl : public WebState, public NavigationManagerDelegate {
   // nil.
   UIView* GetWebViewContainer();
 
-  // Registers |frame| as a new web frame and notifies any observers.
-  void WebFrameBecameAvailable(std::unique_ptr<WebFrame> frame);
-  // Removes the web frame with |frame_id|, if one exists and notifies any
-  // observers.
-  void WebFrameBecameUnavailable(const std::string& frame_id);
-  // Removes all current web frames.
-  void RemoveAllWebFrames();
-
-  // WebState:
-  Getter CreateDefaultGetter() override;
-  OnceGetter CreateDefaultOnceGetter() override;
-  WebStateDelegate* GetDelegate() override;
-  void SetDelegate(WebStateDelegate* delegate) override;
-  bool IsRealized() const final;
-  WebState* ForceRealized() final;
-  bool IsWebUsageEnabled() const override;
-  void SetWebUsageEnabled(bool enabled) override;
-  UIView* GetView() override;
-  void DidCoverWebContent() override;
-  void DidRevealWebContent() override;
-  void WasShown() override;
-  void WasHidden() override;
-  void SetKeepRenderProcessAlive(bool keep_alive) override;
-  BrowserState* GetBrowserState() const override;
-  void OpenURL(const WebState::OpenURLParams& params) override;
-  void Stop() override;
-  const NavigationManager* GetNavigationManager() const override;
-  NavigationManager* GetNavigationManager() override;
-  const WebFramesManager* GetWebFramesManager() const override;
-  WebFramesManager* GetWebFramesManager() override;
-  const SessionCertificatePolicyCache* GetSessionCertificatePolicyCache()
-      const override;
-  SessionCertificatePolicyCache* GetSessionCertificatePolicyCache() override;
-  CRWSessionStorage* BuildSessionStorage() override;
-  CRWJSInjectionReceiver* GetJSInjectionReceiver() const override;
-  void LoadData(NSData* data, NSString* mime_type, const GURL& url) override;
-  void ExecuteJavaScript(const std::u16string& javascript) override;
-  void ExecuteJavaScript(const std::u16string& javascript,
-                         JavaScriptResultCallback callback) override;
-  void ExecuteUserJavaScript(NSString* javaScript) override;
-  const std::string& GetContentsMimeType() const override;
-  bool ContentIsHTML() const override;
-  const std::u16string& GetTitle() const override;
-  bool IsLoading() const override;
-  double GetLoadingProgress() const override;
-  bool IsCrashed() const override;
-  bool IsVisible() const override;
-  bool IsEvicted() const override;
-  bool IsBeingDestroyed() const override;
-  const GURL& GetVisibleURL() const override;
-  const GURL& GetLastCommittedURL() const override;
-  GURL GetCurrentURL(URLVerificationTrustLevel* trust_level) const override;
-  base::CallbackListSubscription AddScriptCommandCallback(
-      const ScriptCommandCallback& callback,
-      const std::string& command_prefix) override;
-  id<CRWWebViewProxy> GetWebViewProxy() const override;
-  void DidChangeVisibleSecurityState() override;
-  InterfaceBinder* GetInterfaceBinderForMainFrame() override;
-  bool HasOpener() const override;
-  void SetHasOpener(bool has_opener) override;
-  bool CanTakeSnapshot() const override;
-  void TakeSnapshot(const gfx::RectF& rect, SnapshotCallback callback) override;
-  void CreateFullPagePdf(base::OnceCallback<void(NSData*)> callback) override;
-  void AddObserver(WebStateObserver* observer) override;
-  void RemoveObserver(WebStateObserver* observer) override;
-  void CloseWebState() override;
-  bool SetSessionStateData(NSData* data) override;
-  NSData* SessionStateData() override;
-
   // Returns the UserAgent that should be used to load the |url| if it is a new
   // navigation. This will be Mobile or Desktop.
   UserAgentType GetUserAgentForNextNavigation(const GURL& url);
+
   // Returns the UserAgent type actually used by this WebState, mostly use for
   // restoration.
   UserAgentType GetUserAgentForSessionRestoration() const;
+
   // Sets the UserAgent type that should be used by the WebState. If
   // |user_agent| is AUTOMATIC, GetUserAgentForNextNavigation() will return
   // MOBILE or DESKTOP based on the size class of the WebView. Otherwise, it
@@ -256,6 +192,7 @@ class WebStateImpl : public WebState, public NavigationManagerDelegate {
 
   // Notifies the delegate that the load progress was updated.
   void SendChangeLoadProgress(double progress);
+
   // Notifies the delegate that a context menu needs handling.
   void HandleContextMenu(const ContextMenuParams& params);
 
@@ -289,27 +226,98 @@ class WebStateImpl : public WebState, public NavigationManagerDelegate {
   // Cancels all dialogs associated with this web_state.
   void CancelDialogs();
 
-  // NavigationManagerDelegate:
-  void ClearDialogs() override;
-  void RecordPageStateInNavigationItem() override;
-  void LoadCurrentItem(NavigationInitiationType type) override;
-  void LoadIfNecessary() override;
-  void Reload() override;
-  void OnNavigationItemCommitted(NavigationItem* item) override;
+  // Registers |frame| as a new web frame and notifies any observers.
+  void WebFrameBecameAvailable(std::unique_ptr<WebFrame> frame);
 
-  WebState* GetWebState() override;
-  void SetWebStateUserAgent(UserAgentType user_agent_type) override;
+  // Removes the web frame with |frame_id|, if one exists and notifies any
+  // observers.
+  void WebFrameBecameUnavailable(const std::string& frame_id);
+
+  // Removes all current web frames.
+  void RemoveAllWebFrames();
+
+  // WebState:
+  Getter CreateDefaultGetter() final;
+  OnceGetter CreateDefaultOnceGetter() final;
+  WebStateDelegate* GetDelegate() final;
+  void SetDelegate(WebStateDelegate* delegate) final;
+  bool IsRealized() const final;
+  WebState* ForceRealized() final;
+  bool IsWebUsageEnabled() const final;
+  void SetWebUsageEnabled(bool enabled) final;
+  UIView* GetView() final;
+  void DidCoverWebContent() final;
+  void DidRevealWebContent() final;
+  void WasShown() final;
+  void WasHidden() final;
+  void SetKeepRenderProcessAlive(bool keep_alive) final;
+  BrowserState* GetBrowserState() const final;
+  void OpenURL(const WebState::OpenURLParams& params) final;
+  void Stop() final;
+  const NavigationManager* GetNavigationManager() const final;
+  NavigationManager* GetNavigationManager() final;
+  const WebFramesManager* GetWebFramesManager() const final;
+  WebFramesManager* GetWebFramesManager() final;
+  const SessionCertificatePolicyCache* GetSessionCertificatePolicyCache()
+      const final;
+  SessionCertificatePolicyCache* GetSessionCertificatePolicyCache() final;
+  CRWSessionStorage* BuildSessionStorage() final;
+  CRWJSInjectionReceiver* GetJSInjectionReceiver() const final;
+  void LoadData(NSData* data, NSString* mime_type, const GURL& url) final;
+  void ExecuteJavaScript(const std::u16string& javascript) final;
+  void ExecuteJavaScript(const std::u16string& javascript,
+                         JavaScriptResultCallback callback) final;
+  void ExecuteUserJavaScript(NSString* javaScript) final;
+  const std::string& GetContentsMimeType() const final;
+  bool ContentIsHTML() const final;
+  const std::u16string& GetTitle() const final;
+  bool IsLoading() const final;
+  double GetLoadingProgress() const final;
+  bool IsVisible() const final;
+  bool IsCrashed() const final;
+  bool IsEvicted() const final;
+  bool IsBeingDestroyed() const final;
+  const GURL& GetVisibleURL() const final;
+  const GURL& GetLastCommittedURL() const final;
+  GURL GetCurrentURL(URLVerificationTrustLevel* trust_level) const final;
+  base::CallbackListSubscription AddScriptCommandCallback(
+      const ScriptCommandCallback& callback,
+      const std::string& command_prefix) final;
+  id<CRWWebViewProxy> GetWebViewProxy() const final;
+  void DidChangeVisibleSecurityState() final;
+  InterfaceBinder* GetInterfaceBinderForMainFrame() final;
+  bool HasOpener() const final;
+  void SetHasOpener(bool has_opener) final;
+  bool CanTakeSnapshot() const final;
+  void TakeSnapshot(const gfx::RectF& rect, SnapshotCallback callback) final;
+  void CreateFullPagePdf(base::OnceCallback<void(NSData*)> callback) final;
+  void AddObserver(WebStateObserver* observer) final;
+  void RemoveObserver(WebStateObserver* observer) final;
+  void CloseWebState() final;
+  bool SetSessionStateData(NSData* data) final;
+  NSData* SessionStateData() final;
+
+  // NavigationManagerDelegate:
+  void ClearDialogs() final;
+  void RecordPageStateInNavigationItem() final;
+  void LoadCurrentItem(NavigationInitiationType type) final;
+  void LoadIfNecessary() final;
+  void Reload() final;
+  void OnNavigationItemCommitted(NavigationItem* item) final;
+  WebState* GetWebState() final;
+  void SetWebStateUserAgent(UserAgentType user_agent_type) final;
   id<CRWWebViewNavigationProxy> GetWebViewNavigationProxy() const override;
   void GoToBackForwardListItem(WKBackForwardListItem* wk_item,
                                NavigationItem* item,
                                NavigationInitiationType type,
-                               bool has_user_gesture) override;
-  void RemoveWebView() override;
-  NavigationItemImpl* GetPendingItem() override;
+                               bool has_user_gesture) final;
+  void RemoveWebView() final;
+  NavigationItemImpl* GetPendingItem() final;
 
  protected:
-  void AddPolicyDecider(WebStatePolicyDecider* decider) override;
-  void RemovePolicyDecider(WebStatePolicyDecider* decider) override;
+  // WebState:
+  void AddPolicyDecider(WebStatePolicyDecider* decider) final;
+  void RemovePolicyDecider(WebStatePolicyDecider* decider) final;
 
  private:
   // Called when a dialog presented by JavaScriptDialogPresented is dismissed.
@@ -317,7 +325,7 @@ class WebStateImpl : public WebState, public NavigationManagerDelegate {
 
   // Creates a WebUIIOS object for |url| that is owned by the caller. Returns
   // nullptr if |url| does not correspond to a WebUI page.
-  std::unique_ptr<web::WebUIIOS> CreateWebUIIOS(const GURL& url);
+  std::unique_ptr<WebUIIOS> CreateWebUIIOS(const GURL& url);
 
   // Returns true if |web_controller_| has been set.
   bool Configured() const;
@@ -350,9 +358,9 @@ class WebStateImpl : public WebState, public NavigationManagerDelegate {
   // information for this WebStateImpl.
   std::unique_ptr<SessionCertificatePolicyCacheImpl> certificate_policy_cache_;
 
-  // |web::WebUIIOS| object for the current page if it is a WebUI page that
+  // |WebUIIOS| object for the current page if it is a WebUI page that
   // uses the web-based WebUI framework, or nullptr otherwise.
-  std::unique_ptr<web::WebUIIOS> web_ui_;
+  std::unique_ptr<WebUIIOS> web_ui_;
 
   // A list of observers notified when page state changes. Weak references.
   base::ObserverList<WebStateObserver, true>::Unchecked observers_;
@@ -383,7 +391,7 @@ class WebStateImpl : public WebState, public NavigationManagerDelegate {
   // WebStateObserver:FaviconUrlUpdated must be called for same-document
   // navigations, so this cache will be used to avoid running expensive favicon
   // fetching JavaScript.
-  std::vector<web::FaviconURL> cached_favicon_urls_;
+  std::vector<FaviconURL> cached_favicon_urls_;
 
   // Whether a JavaScript dialog is currently being presented.
   bool running_javascript_dialog_ = false;
