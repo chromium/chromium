@@ -123,6 +123,7 @@ export {SettingsSearchEngineDialogElement} from './search_engines_page/search_en
 export {SettingsSearchEngineEntryElement} from './search_engines_page/search_engine_entry.js';
 export {SettingsSearchEnginesPageElement} from './search_engines_page/search_engines_page.js';
 export {AddSiteDialogElement} from './site_settings/add_site_dialog.js';
+export {AllSitesElement} from './site_settings/all_sites.js';
 // <if expr="chromeos">
 export {AndroidInfoBrowserProxy, AndroidInfoBrowserProxyImpl, AndroidSmsInfo} from './site_settings/android_info_browser_proxy.js';
 // </if>

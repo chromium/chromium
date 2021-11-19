@@ -64,13 +64,15 @@ declare global {
   }
 }
 
-interface AllSitesElement {
+export interface AllSitesElement {
   $: {
     allSitesList: IronListElement,
+    clearAllButton: HTMLElement,
     confirmClearAllData: CrLazyRenderElement<CrDialogElement>,
     confirmClearData: CrLazyRenderElement<CrDialogElement>,
     confirmRemoveSite: CrLazyRenderElement<CrDialogElement>,
     confirmResetSettings: CrLazyRenderElement<CrDialogElement>,
+    listContainer: HTMLElement,
     menu: CrLazyRenderElement<CrActionMenuElement>,
     sortMethod: HTMLSelectElement,
   };
@@ -90,7 +92,7 @@ const AllSitesElementBase = AllSitesElementBaseTemp as unknown as {
   SiteSettingsMixinInterface & RouteObserverMixinInterface
 };
 
-class AllSitesElement extends AllSitesElementBase {
+export class AllSitesElement extends AllSitesElementBase {
   static get is() {
     return 'all-sites';
   }
@@ -195,7 +197,7 @@ class AllSitesElement extends AllSitesElementBase {
   siteGroupMap: Map<string, SiteGroup>;
   private filteredList_: Array<SiteGroup>;
   subpageRoute: Route;
-  private filter: string;
+  filter: string;
   private selectedItem_: SelectedItem|null;
   private listBlurred_: boolean;
   private actionMenuModel_: ActionMenuModel|null;
@@ -928,6 +930,12 @@ class AllSitesElement extends AllSitesElementBase {
     this.$.allSitesList.fire('iron-resize');
     this.totalUsage_ = '0 B';
     this.onCloseDialog_(e);
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'all-sites': AllSitesElement;
   }
 }
 

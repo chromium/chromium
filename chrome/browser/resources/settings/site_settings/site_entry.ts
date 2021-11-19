@@ -45,6 +45,7 @@ export interface SiteEntryElement {
     expandIcon: CrIconButtonElement,
     collapseParent: HTMLElement,
     cookies: HTMLElement,
+    displayName: HTMLElement,
     originList: CrLazyRenderElement<IronCollapseElement>,
     toggleButton: HTMLElement,
   };

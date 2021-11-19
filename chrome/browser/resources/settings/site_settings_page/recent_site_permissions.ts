@@ -410,6 +410,12 @@ export class SettingsRecentSitePermissionsElement extends
   }
 }
 
+declare global {
+  interface HTMLElementTagNameMap {
+    'settings-recent-site-permissions': SettingsRecentSitePermissionsElement;
+  }
+}
+
 customElements.define(
     SettingsRecentSitePermissionsElement.is,
     SettingsRecentSitePermissionsElement);
