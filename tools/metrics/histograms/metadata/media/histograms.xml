@@ -4584,9 +4584,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.VideoCapture.DelayUntilFirstFrame" units="ms"
-    expires_after="2021-12-12">
-  <owner>guidou@chromium.org</owner>
+    expires_after="2022-06-12">
   <owner>armax@chromium.org</owner>
+  <owner>video-cmi-mpp@google.com</owner>
   <summary>
     Time it takes from the moment that a VideoCaptureController is requested to
     start to the moment the first video frame arrives at
