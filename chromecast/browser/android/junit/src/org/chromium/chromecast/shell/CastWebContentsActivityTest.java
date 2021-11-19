@@ -52,14 +52,24 @@ public class CastWebContentsActivityTest {
     @Implements(Activity.class)
     public static class ExtendedShadowActivity extends ShadowActivity {
         private boolean mTurnScreenOn;
+        private boolean mShowWhenLocked;
 
         public boolean getTurnScreenOn() {
             return mTurnScreenOn;
         }
 
+        public boolean getShowWhenLocked() {
+            return mShowWhenLocked;
+        }
+
         @Implementation
         public void setTurnScreenOn(boolean turnScreenOn) {
             mTurnScreenOn = turnScreenOn;
+        }
+
+        @Implementation
+        public void setShowWhenLocked(boolean showWhenLocked) {
+            mShowWhenLocked = showWhenLocked;
         }
     }
 
@@ -175,6 +185,7 @@ public class CastWebContentsActivityTest {
         mActivityLifecycle.create();
 
         Assert.assertTrue(shadowActivity.getTurnScreenOn());
+        Assert.assertTrue(shadowActivity.getShowWhenLocked());
     }
 
     @Test
@@ -203,6 +214,7 @@ public class CastWebContentsActivityTest {
         mActivityLifecycle.create();
 
         Assert.assertFalse(shadowActivity.getTurnScreenOn());
+        Assert.assertFalse(shadowActivity.getShowWhenLocked());
     }
 
     @Test

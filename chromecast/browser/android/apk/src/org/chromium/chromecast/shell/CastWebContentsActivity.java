@@ -15,7 +15,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.Window;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
 
@@ -129,16 +128,12 @@ public class CastWebContentsActivity extends Activity {
 
         mCreatedState.subscribe(Observers.onExit(x -> mSurfaceHelperState.reset()));
 
-        mCreatedState.map(x -> getWindow())
-                .and(mGotIntentState)
-                .subscribe(Observers.onEnter(Both.adapt((Window window, Intent intent) -> {
-                    // Set flag to exit sleep mode when this activity starts. If an app that
-                    // shouldn't turn on the screen is launching, we don't add TURN_SCREEN_ON.
-                    if (CastWebContentsIntentUtils.shouldTurnOnScreen(intent)) {
-                        Log.i(TAG, "Setting FLAG_TURN_SCREEN_ON.");
-                        turnScreenOn();
-                    }
-                })));
+        // Set a flag to exit sleep mode when this activity starts.
+        mCreatedState.and(mGotIntentState)
+                .map(Both::getSecond)
+                // Turn the screen on only if the launching Intent asks to.
+                .filter(CastWebContentsIntentUtils::shouldTurnOnScreen)
+                .subscribe(Observers.onEnter(x -> turnScreenOn()));
 
         // Initialize the audio manager in onCreate() if tests haven't already.
         mCreatedState.and(Observable.not(mAudioManagerState)).subscribe(Observers.onEnter(x -> {
@@ -279,8 +274,11 @@ public class CastWebContentsActivity extends Activity {
     }
 
     private void turnScreenOn() {
+        Log.i(TAG, "Setting flag to turn screen on");
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {
             setTurnScreenOn(true);
+            // Allow Activities that turn on the screen to show in the lock screen.
+            setShowWhenLocked(true);
         } else {
             getWindow().addFlags(WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON);
         }
