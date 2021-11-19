@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/compiler_specific.h"
 #include "chrome/test/chromedriver/command_listener.h"
 
 class CommandListenerProxy : public CommandListener {

@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_REPOST_FORM_WARNING_CONTROLLER_H_
 #define CHROME_BROWSER_REPOST_FORM_WARNING_CONTROLLER_H_
 
-#include "base/compiler_specific.h"
 #include "chrome/browser/ui/tab_modal_confirm_dialog_delegate.h"
 
 // This class is used to continue or cancel a pending reload when the

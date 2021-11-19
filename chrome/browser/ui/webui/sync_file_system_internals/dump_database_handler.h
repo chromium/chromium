@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_SYNC_FILE_SYSTEM_INTERNALS_DUMP_DATABASE_HANDLER_H_
 #define CHROME_BROWSER_UI_WEBUI_SYNC_FILE_SYSTEM_INTERNALS_DUMP_DATABASE_HANDLER_H_
 
-#include "base/compiler_specific.h"
 #include "content/public/browser/web_ui_message_handler.h"
 
 class Profile;

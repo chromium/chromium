@@ -8,7 +8,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/compiler_specific.h"
 #include "chrome/test/base/in_process_browser_test.h"
 
 namespace net {

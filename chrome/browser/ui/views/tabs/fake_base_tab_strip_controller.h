@@ -8,7 +8,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/compiler_specific.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_controller.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_types.h"
 #include "components/tab_groups/tab_group_id.h"

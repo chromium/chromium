@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_SYNC_TEST_INTEGRATION_SYNC_EXTENSION_INSTALLER_H_
 #define CHROME_BROWSER_SYNC_TEST_INTEGRATION_SYNC_EXTENSION_INSTALLER_H_
 
-#include "base/compiler_specific.h"
 #include "base/memory/weak_ptr.h"
 #include "content/public/browser/notification_observer.h"
 #include "content/public/browser/notification_registrar.h"

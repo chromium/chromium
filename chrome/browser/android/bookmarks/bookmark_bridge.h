@@ -11,7 +11,6 @@
 
 #include "base/android/jni_android.h"
 #include "base/android/jni_weak_ref.h"
-#include "base/compiler_specific.h"
 #include "base/guid.h"
 #include "base/scoped_observation.h"
 #include "base/strings/utf_string_conversions.h"

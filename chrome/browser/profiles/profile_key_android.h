@@ -8,7 +8,6 @@
 #include <jni.h>
 
 #include "base/android/scoped_java_ref.h"
-#include "base/compiler_specific.h"
 
 class ProfileKey;
 

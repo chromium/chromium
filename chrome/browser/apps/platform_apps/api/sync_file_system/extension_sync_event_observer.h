@@ -8,7 +8,6 @@
 #include <string>
 #include <vector>
 
-#include "base/compiler_specific.h"
 #include "base/values.h"
 #include "chrome/browser/sync_file_system/sync_event_observer.h"
 #include "extensions/browser/browser_context_keyed_api_factory.h"

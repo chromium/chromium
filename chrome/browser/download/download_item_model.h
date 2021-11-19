@@ -9,7 +9,6 @@
 
 #include <string>
 
-#include "base/compiler_specific.h"
 #include "build/build_config.h"
 #include "chrome/browser/download/download_ui_model.h"
 #include "components/download/public/common/download_item.h"

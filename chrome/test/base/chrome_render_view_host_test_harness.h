@@ -8,7 +8,6 @@
 #include <memory>
 #include <utility>
 
-#include "base/compiler_specific.h"
 #include "chrome/test/base/testing_profile.h"
 #include "content/public/test/test_renderer_host.h"
 

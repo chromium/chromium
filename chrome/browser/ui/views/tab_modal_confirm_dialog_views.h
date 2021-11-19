@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/compiler_specific.h"
 #include "chrome/browser/ui/tab_modal_confirm_dialog.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/views/window/dialog_delegate.h"

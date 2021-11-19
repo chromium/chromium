@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/auto_reset.h"
-#include "base/compiler_specific.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/login/signin/token_handle_util.h"

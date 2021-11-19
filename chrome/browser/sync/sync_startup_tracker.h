@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_SYNC_SYNC_STARTUP_TRACKER_H_
 #define CHROME_BROWSER_SYNC_SYNC_STARTUP_TRACKER_H_
 
-#include "base/compiler_specific.h"
 #include "components/sync/driver/sync_service_observer.h"
 
 // SyncStartupTracker provides a centralized way for observers to detect when

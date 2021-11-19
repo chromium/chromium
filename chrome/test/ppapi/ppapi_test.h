@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/compiler_specific.h"
 #include "base/scoped_observation.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/test/base/in_process_browser_test.h"

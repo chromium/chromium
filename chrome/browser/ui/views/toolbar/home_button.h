@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_TOOLBAR_HOME_BUTTON_H_
 #define CHROME_BROWSER_UI_VIEWS_TOOLBAR_HOME_BUTTON_H_
 
-#include "base/compiler_specific.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_button.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/metadata/view_factory.h"

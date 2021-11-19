@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/compiler_specific.h"
 #include "base/memory/ref_counted.h"
 #include "base/sequence_checker.h"
 #include "components/policy/core/common/cloud/cloud_external_data_manager.h"

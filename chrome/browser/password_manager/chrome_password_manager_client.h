@@ -10,7 +10,6 @@
 #include <string>
 #include <vector>
 
-#include "base/compiler_specific.h"
 #include "base/memory/scoped_refptr.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"

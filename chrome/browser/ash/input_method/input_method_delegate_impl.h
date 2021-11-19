@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/compiler_specific.h"
 #include "ui/base/ime/ash/input_method_delegate.h"
 
 namespace ash {

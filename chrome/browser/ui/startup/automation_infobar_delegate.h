@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/compiler_specific.h"
 #include "components/infobars/core/confirm_infobar_delegate.h"
 #include "url/gurl.h"
 

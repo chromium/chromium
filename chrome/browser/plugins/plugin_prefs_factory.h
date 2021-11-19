@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_PLUGINS_PLUGIN_PREFS_FACTORY_H_
 #define CHROME_BROWSER_PLUGINS_PLUGIN_PREFS_FACTORY_H_
 
-#include "base/compiler_specific.h"
 #include "base/memory/singleton.h"
 #include "components/keyed_service/content/refcounted_browser_context_keyed_service_factory.h"
 

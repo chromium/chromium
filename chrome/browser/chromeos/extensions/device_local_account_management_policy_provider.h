@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/compiler_specific.h"
 #include "chrome/browser/ash/policy/core/device_local_account.h"
 #include "extensions/browser/management_policy.h"
 

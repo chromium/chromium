@@ -14,7 +14,6 @@
 
 #include "ash/components/settings/timezone_settings.h"
 #include "ash/public/cpp/tablet_mode_observer.h"
-#include "base/compiler_specific.h"
 #include "base/gtest_prod_util.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
 #include "chrome/browser/ash/file_manager/file_watcher.h"

@@ -10,7 +10,6 @@
 #include <string>
 #include <vector>
 
-#include "base/compiler_specific.h"
 #include "base/values.h"
 #include "chrome/test/chromedriver/chrome/chrome.h"
 

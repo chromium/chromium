@@ -8,7 +8,6 @@
 #include <set>
 #include <string>
 
-#include "base/compiler_specific.h"
 #include "components/nacl/browser/nacl_browser_delegate.h"
 #include "extensions/buildflags/buildflags.h"
 

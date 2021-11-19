@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/compiler_specific.h"
 #include "chrome/browser/ui/views/location_bar/icon_label_bubble_view.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/metadata/metadata_header_macros.h"

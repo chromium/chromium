@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/compiler_specific.h"
 #include "base/timer/timer.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "ui/base/user_activity/user_activity_observer.h"

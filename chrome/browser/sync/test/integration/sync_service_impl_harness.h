@@ -9,7 +9,6 @@
 #include <string>
 #include <vector>
 
-#include "base/compiler_specific.h"
 #include "build/chromeos_buildflags.h"
 #include "components/sync/base/user_selectable_type.h"
 #include "components/sync/driver/sync_service_impl.h"

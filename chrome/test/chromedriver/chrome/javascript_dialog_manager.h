@@ -8,7 +8,6 @@
 #include <list>
 #include <string>
 
-#include "base/compiler_specific.h"
 #include "chrome/test/chromedriver/chrome/devtools_event_listener.h"
 
 namespace base {

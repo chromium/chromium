@@ -10,7 +10,6 @@
 #include <string>
 #include <vector>
 
-#include "base/compiler_specific.h"
 #include "base/observer_list.h"
 #include "base/sequence_checker.h"
 #include "chromeos/network/onc/certificate_scope.h"

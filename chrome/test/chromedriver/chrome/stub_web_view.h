@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/compiler_specific.h"
 #include "chrome/test/chromedriver/chrome/web_view.h"
 
 class StubWebView : public WebView {

@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_FRAME_GLASS_BROWSER_FRAME_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_FRAME_GLASS_BROWSER_FRAME_VIEW_H_
 
-#include "base/compiler_specific.h"
 #include "base/win/scoped_gdi_object.h"
 #include "chrome/browser/ui/views/frame/browser_non_client_frame_view.h"
 #include "chrome/browser/ui/views/frame/windows_10_caption_button.h"

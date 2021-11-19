@@ -9,7 +9,6 @@
 #include <string>
 #include <unordered_set>
 
-#include "base/compiler_specific.h"
 #include "chrome/test/chromedriver/chrome/devtools_event_listener.h"
 #include "chrome/test/chromedriver/chrome/web_view.h"
 

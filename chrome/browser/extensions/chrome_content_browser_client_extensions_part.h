@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/compiler_specific.h"
 #include "base/gtest_prod_util.h"
 #include "chrome/browser/chrome_content_browser_client_parts.h"
 #include "components/download/public/common/quarantine_connection.h"

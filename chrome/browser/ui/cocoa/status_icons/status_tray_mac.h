@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_COCOA_STATUS_ICONS_STATUS_TRAY_MAC_H_
 #define CHROME_BROWSER_UI_COCOA_STATUS_ICONS_STATUS_TRAY_MAC_H_
 
-#include "base/compiler_specific.h"
 #include "chrome/browser/status_icons/status_tray.h"
 
 class StatusTrayMac : public StatusTray {

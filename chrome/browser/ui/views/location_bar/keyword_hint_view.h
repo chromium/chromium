@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/compiler_specific.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/gfx/geometry/size.h"

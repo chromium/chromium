@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/compiler_specific.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_observer.h"
 #include "components/infobars/core/confirm_infobar_delegate.h"

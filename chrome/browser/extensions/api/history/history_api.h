@@ -8,7 +8,6 @@
 #include <string>
 #include <vector>
 
-#include "base/compiler_specific.h"
 #include "base/scoped_observation.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "base/values.h"

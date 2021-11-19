@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/compiler_specific.h"
 #include "ui/base/models/combobox_model.h"
 
 class TranslateBubbleModel;

@@ -13,7 +13,6 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/compiler_specific.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/login/demo_mode/demo_mode_detector.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"

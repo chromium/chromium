@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/compiler_specific.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_manager.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
 // TODO(https://crbug.com/1164001): move to forward declaration.

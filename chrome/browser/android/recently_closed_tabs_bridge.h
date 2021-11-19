@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_ANDROID_RECENTLY_CLOSED_TABS_BRIDGE_H_
 
 #include "base/android/scoped_java_ref.h"
-#include "base/compiler_specific.h"
 #include "components/sessions/core/tab_restore_service_observer.h"
 
 class Profile;

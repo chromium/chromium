@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/compiler_specific.h"
 #include "base/time/time.h"
 #include "chrome/browser/download/download_shelf_context_menu.h"
 #include "ui/base/ui_base_types.h"

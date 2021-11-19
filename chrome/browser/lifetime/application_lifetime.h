@@ -7,7 +7,6 @@
 
 #include "base/callback.h"
 #include "base/callback_list.h"
-#include "base/compiler_specific.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 

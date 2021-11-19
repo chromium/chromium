@@ -9,7 +9,6 @@
 #include <string>
 #include <vector>
 
-#include "base/compiler_specific.h"
 #include "base/memory/ref_counted.h"
 #include "base/strings/string_piece.h"
 #include "base/task/sequenced_task_runner_helpers.h"

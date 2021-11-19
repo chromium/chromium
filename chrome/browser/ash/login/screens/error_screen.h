@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/callback_list.h"
-#include "base/compiler_specific.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
 #include "chrome/browser/ash/login/screens/network_error.h"

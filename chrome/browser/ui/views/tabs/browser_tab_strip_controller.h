@@ -8,7 +8,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/compiler_specific.h"
 #include "chrome/browser/ui/tabs/hover_tab_selector.h"
 #include "chrome/browser/ui/tabs/tab_menu_model_factory.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"

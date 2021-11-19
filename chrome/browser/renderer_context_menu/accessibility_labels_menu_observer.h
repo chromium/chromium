@@ -8,7 +8,6 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include "base/compiler_specific.h"
 #include "components/prefs/pref_member.h"
 #include "components/renderer_context_menu/render_view_context_menu_observer.h"
 

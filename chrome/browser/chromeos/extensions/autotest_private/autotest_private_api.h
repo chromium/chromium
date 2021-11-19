@@ -12,7 +12,6 @@
 #include "ash/display/screen_orientation_controller.h"
 #include "ash/public/cpp/assistant/assistant_state.h"
 #include "ash/rotator/screen_rotation_animator_observer.h"
-#include "base/compiler_specific.h"
 #include "base/scoped_observation.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/chromeos/printing/cups_printers_manager.h"

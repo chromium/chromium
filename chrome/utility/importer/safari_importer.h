@@ -11,7 +11,6 @@
 #include <set>
 #include <vector>
 
-#include "base/compiler_specific.h"
 #include "base/files/file_path.h"
 #include "base/gtest_prod_util.h"
 #include "chrome/common/importer/importer_url_row.h"

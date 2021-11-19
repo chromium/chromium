@@ -9,7 +9,6 @@
 #include <set>
 
 #include "base/callback_forward.h"
-#include "base/compiler_specific.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "chrome/browser/ui/bookmarks/bookmark_bar.h"

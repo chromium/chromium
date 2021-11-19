@@ -10,7 +10,6 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/compiler_specific.h"
 #include "base/location.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"

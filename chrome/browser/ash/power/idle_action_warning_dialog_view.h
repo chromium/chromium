@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_ASH_POWER_IDLE_ACTION_WARNING_DIALOG_VIEW_H_
 #define CHROME_BROWSER_ASH_POWER_IDLE_ACTION_WARNING_DIALOG_VIEW_H_
 
-#include "base/compiler_specific.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "ui/base/metadata/metadata_header_macros.h"

@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/compiler_specific.h"
 #include "chrome/browser/ui/sync/profile_signin_confirmation_helper.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/metadata/view_factory.h"

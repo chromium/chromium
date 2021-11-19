@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_AUTOFILL_AUTOCOMPLETE_HISTORY_MANAGER_FACTORY_H_
 #define CHROME_BROWSER_AUTOFILL_AUTOCOMPLETE_HISTORY_MANAGER_FACTORY_H_
 
-#include "base/compiler_specific.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 #include "components/keyed_service/core/keyed_service.h"
 

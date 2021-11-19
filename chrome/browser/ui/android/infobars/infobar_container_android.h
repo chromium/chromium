@@ -9,7 +9,6 @@
 
 #include "base/android/jni_weak_ref.h"
 #include "base/android/scoped_java_ref.h"
-#include "base/compiler_specific.h"
 #include "components/infobars/core/infobar_container.h"
 
 class InfoBarContainerAndroid : public infobars::InfoBarContainer {

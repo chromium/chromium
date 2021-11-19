@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_ASH_POLICY_CORE_DEVICE_LOCAL_ACCOUNT_EXTENSION_TRACKER_H_
 #define CHROME_BROWSER_ASH_POLICY_CORE_DEVICE_LOCAL_ACCOUNT_EXTENSION_TRACKER_H_
 
-#include "base/compiler_specific.h"
 #include "components/policy/core/common/cloud/cloud_policy_store.h"
 
 namespace policy {

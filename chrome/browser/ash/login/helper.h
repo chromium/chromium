@@ -9,7 +9,6 @@
 
 #include <string>
 
-#include "base/compiler_specific.h"
 #include "base/memory/ref_counted.h"
 #include "chromeos/network/network_handler_callbacks.h"
 #include "third_party/skia/include/core/SkColor.h"

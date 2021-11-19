@@ -12,7 +12,6 @@
 #include <vector>
 
 #include "base/callback_forward.h"
-#include "base/compiler_specific.h"
 #include "chrome/browser/ui/bookmarks/bookmark_editor.h"
 #include "components/bookmarks/browser/bookmark_expanded_state_tracker.h"
 #include "components/bookmarks/browser/bookmark_model_observer.h"

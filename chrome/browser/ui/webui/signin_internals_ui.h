@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_SIGNIN_INTERNALS_UI_H_
 #define CHROME_BROWSER_UI_WEBUI_SIGNIN_INTERNALS_UI_H_
 
-#include "base/compiler_specific.h"
 #include "base/values.h"
 #include "components/signin/core/browser/about_signin_internals.h"
 #include "content/public/browser/web_ui_controller.h"

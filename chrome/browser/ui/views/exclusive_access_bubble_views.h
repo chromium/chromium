@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/compiler_specific.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_bubble.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_bubble_hide_callback.h"

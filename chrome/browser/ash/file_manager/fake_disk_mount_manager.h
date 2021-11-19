@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/compiler_specific.h"
 #include "base/containers/queue.h"
 #include "base/observer_list.h"
 #include "chromeos/dbus/cros_disks/cros_disks_client.h"

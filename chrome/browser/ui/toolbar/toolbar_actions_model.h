@@ -8,7 +8,6 @@
 #include <stddef.h>
 #include <vector>
 
-#include "base/compiler_specific.h"
 #include "base/containers/flat_set.h"
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"

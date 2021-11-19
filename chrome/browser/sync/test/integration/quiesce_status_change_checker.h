@@ -8,7 +8,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/compiler_specific.h"
 #include "chrome/browser/sync/test/integration/multi_client_status_change_checker.h"
 
 namespace syncer {

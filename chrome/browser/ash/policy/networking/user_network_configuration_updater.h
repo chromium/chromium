@@ -8,7 +8,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/compiler_specific.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/policy/networking/network_configuration_updater.h"

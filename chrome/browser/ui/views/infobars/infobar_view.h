@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_INFOBARS_INFOBAR_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_INFOBARS_INFOBAR_VIEW_H_
 
-#include "base/compiler_specific.h"
 #include "base/gtest_prod_util.h"
 #include "components/infobars/core/infobar.h"
 #include "components/infobars/core/infobar_container.h"

@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/compiler_specific.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/browser/commands/key_rotation_command.h"
 
 namespace policy {

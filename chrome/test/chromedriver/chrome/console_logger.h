@@ -5,7 +5,6 @@
 #ifndef CHROME_TEST_CHROMEDRIVER_CHROME_CONSOLE_LOGGER_H_
 #define CHROME_TEST_CHROMEDRIVER_CHROME_CONSOLE_LOGGER_H_
 
-#include "base/compiler_specific.h"
 #include "chrome/test/chromedriver/chrome/devtools_event_listener.h"
 
 class Log;

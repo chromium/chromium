@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_UI_VIEWS_EXTENSIONS_EXTENSION_POPUP_H_
 
 #include "base/callback.h"
-#include "base/compiler_specific.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"

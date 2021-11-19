@@ -10,7 +10,6 @@
 
 #include "base/android/jni_weak_ref.h"
 #include "base/android/scoped_java_ref.h"
-#include "base/compiler_specific.h"
 #include "chrome/browser/flags/android/chrome_session_state.h"
 #include "chrome/browser/ui/android/tab_model/tab_model.h"
 

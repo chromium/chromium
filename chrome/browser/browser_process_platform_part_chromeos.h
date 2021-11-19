@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/compiler_specific.h"
 #include "base/sequence_checker.h"
 #include "chrome/browser/browser_process_platform_part_base.h"
 #include "chrome/browser/component_updater/cros_component_installer_chromeos.h"

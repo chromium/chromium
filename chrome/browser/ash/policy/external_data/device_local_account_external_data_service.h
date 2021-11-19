@@ -9,7 +9,6 @@
 #include <memory>
 #include <string>
 
-#include "base/compiler_specific.h"
 #include "base/memory/ref_counted.h"
 #include "chrome/browser/ash/policy/core/device_local_account_policy_service.h"
 #include "chrome/browser/ash/policy/external_data/device_local_account_external_data_manager.h"

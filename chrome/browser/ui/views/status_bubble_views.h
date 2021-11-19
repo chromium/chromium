@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/compiler_specific.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/status_bubble.h"
 #include "ui/gfx/geometry/rect.h"

@@ -5,7 +5,6 @@
 #ifndef CHROME_TEST_BASE_CHROME_TEST_UTILS_H_
 #define CHROME_TEST_BASE_CHROME_TEST_UTILS_H_
 
-#include "base/compiler_specific.h"
 #include "build/build_config.h"
 #include "url/gurl.h"
 

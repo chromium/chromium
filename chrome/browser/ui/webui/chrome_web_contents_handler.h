@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_CHROME_WEB_CONTENTS_HANDLER_H_
 #define CHROME_BROWSER_UI_WEBUI_CHROME_WEB_CONTENTS_HANDLER_H_
 
-#include "base/compiler_specific.h"
 #include "ui/web_dialogs/web_dialog_web_contents_delegate.h"
 
 class ChromeWebContentsHandler

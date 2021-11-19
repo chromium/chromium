@@ -9,7 +9,6 @@
 #include <memory>
 #include <string>
 
-#include "base/compiler_specific.h"
 #include "base/memory/ref_counted.h"
 #include "components/policy/core/common/policy_namespace.h"
 #include "components/policy/core/common/policy_service.h"

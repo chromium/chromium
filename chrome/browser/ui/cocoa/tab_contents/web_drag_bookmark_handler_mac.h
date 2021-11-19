@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_COCOA_TAB_CONTENTS_WEB_DRAG_BOOKMARK_HANDLER_MAC_H_
 #define CHROME_BROWSER_UI_COCOA_TAB_CONTENTS_WEB_DRAG_BOOKMARK_HANDLER_MAC_H_
 
-#include "base/compiler_specific.h"
 #include "components/bookmarks/browser/bookmark_node_data.h"
 #include "content/public/browser/web_drag_dest_delegate.h"
 

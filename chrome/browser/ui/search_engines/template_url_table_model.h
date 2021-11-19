@@ -9,7 +9,6 @@
 #include <string>
 #include <vector>
 
-#include "base/compiler_specific.h"
 #include "components/search_engines/template_url_service_observer.h"
 #include "ui/base/models/table_model.h"
 
