@@ -5,9 +5,6 @@
 #include "services/network/public/cpp/client_hints.h"
 #include <iostream>
 
-#include "base/feature_list.h"
-#include "base/test/scoped_feature_list.h"
-#include "services/network/public/cpp/features.h"
 #include "services/network/public/mojom/web_client_hints_types.mojom-shared.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -72,54 +69,6 @@ TEST(ClientHintsTest, ParseAcceptCHLifetime) {
   EXPECT_EQ(base::TimeDelta(), ParseAcceptCHLifetime("1000s"));
   EXPECT_EQ(base::TimeDelta(), ParseAcceptCHLifetime("1000.5"));
   EXPECT_EQ(base::Seconds(1000), ParseAcceptCHLifetime("1000"));
-}
-
-TEST(ClientHintsTest, SuggestAlternateClientHintIfDeprecated) {
-  EXPECT_EQ(SuggestAlternateClientHintIfDeprecated(
-                network::mojom::WebClientHintsType::kDeviceMemory_DEPRECATED),
-            absl::nullopt);
-  EXPECT_EQ(SuggestAlternateClientHintIfDeprecated(
-                network::mojom::WebClientHintsType::kDpr_DEPRECATED),
-            absl::nullopt);
-  EXPECT_EQ(SuggestAlternateClientHintIfDeprecated(
-                network::mojom::WebClientHintsType::kResourceWidth_DEPRECATED),
-            absl::nullopt);
-  EXPECT_EQ(SuggestAlternateClientHintIfDeprecated(
-                network::mojom::WebClientHintsType::kResourceWidth_DEPRECATED),
-            absl::nullopt);
-  EXPECT_EQ(SuggestAlternateClientHintIfDeprecated(
-                network::mojom::WebClientHintsType::kRtt_DEPRECATED),
-            absl::nullopt);
-  EXPECT_EQ(SuggestAlternateClientHintIfDeprecated(
-                network::mojom::WebClientHintsType::kDownlink_DEPRECATED),
-            absl::nullopt);
-  EXPECT_EQ(SuggestAlternateClientHintIfDeprecated(
-                network::mojom::WebClientHintsType::kEct_DEPRECATED),
-            absl::nullopt);
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      features::kClientHintDeprecationIssue);
-  EXPECT_EQ(SuggestAlternateClientHintIfDeprecated(
-                network::mojom::WebClientHintsType::kDeviceMemory_DEPRECATED),
-            network::mojom::WebClientHintsType::kDeviceMemory);
-  EXPECT_EQ(SuggestAlternateClientHintIfDeprecated(
-                network::mojom::WebClientHintsType::kDpr_DEPRECATED),
-            network::mojom::WebClientHintsType::kDpr);
-  EXPECT_EQ(SuggestAlternateClientHintIfDeprecated(
-                network::mojom::WebClientHintsType::kResourceWidth_DEPRECATED),
-            network::mojom::WebClientHintsType::kResourceWidth);
-  EXPECT_EQ(SuggestAlternateClientHintIfDeprecated(
-                network::mojom::WebClientHintsType::kResourceWidth_DEPRECATED),
-            network::mojom::WebClientHintsType::kResourceWidth);
-  EXPECT_EQ(SuggestAlternateClientHintIfDeprecated(
-                network::mojom::WebClientHintsType::kRtt_DEPRECATED),
-            absl::nullopt);
-  EXPECT_EQ(SuggestAlternateClientHintIfDeprecated(
-                network::mojom::WebClientHintsType::kDownlink_DEPRECATED),
-            absl::nullopt);
-  EXPECT_EQ(SuggestAlternateClientHintIfDeprecated(
-                network::mojom::WebClientHintsType::kEct_DEPRECATED),
-            absl::nullopt);
 }
 
 }  // namespace network

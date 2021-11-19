@@ -36,11 +36,6 @@ absl::optional<std::vector<network::mojom::WebClientHintsType>>
 base::TimeDelta COMPONENT_EXPORT(NETWORK_CPP)
     ParseAcceptCHLifetime(const std::string& header);
 
-// Suggest the alternate client hint to use if the checked one is deprecated.
-absl::optional<network::mojom::WebClientHintsType> COMPONENT_EXPORT(NETWORK_CPP)
-    SuggestAlternateClientHintIfDeprecated(
-        const network::mojom::WebClientHintsType type);
-
 }  // namespace network
 
 #endif  // SERVICES_NETWORK_PUBLIC_CPP_CLIENT_HINTS_H_
