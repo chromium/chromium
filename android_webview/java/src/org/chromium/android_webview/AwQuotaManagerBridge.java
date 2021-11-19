@@ -59,12 +59,11 @@ public class AwQuotaManagerBridge {
     }
 
     /*
-     * There are five HTML5 offline storage APIs.
+     * There are four HTML5 offline storage APIs.
      * 1) Web Storage (ie the localStorage and sessionStorage variables)
      * 2) Web SQL database
-     * 3) Application cache
-     * 4) Indexed Database
-     * 5) Filesystem API
+     * 3) Indexed Database
+     * 4) Filesystem API
      */
 
     /**

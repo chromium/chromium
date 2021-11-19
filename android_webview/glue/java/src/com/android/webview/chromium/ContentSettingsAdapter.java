@@ -438,12 +438,12 @@ public class ContentSettingsAdapter extends android.webkit.WebSettings {
 
     @Override
     public synchronized void setAppCacheEnabled(boolean flag) {
-        mAwSettings.setAppCacheEnabled(flag);
+        // Intentional no-op.
     }
 
     @Override
     public synchronized void setAppCachePath(String appCachePath) {
-        mAwSettings.setAppCachePath(appCachePath);
+        // Intentional no-op.
     }
 
     @Override

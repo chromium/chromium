@@ -1433,20 +1433,6 @@ public class AwSettings {
     }
 
     /**
-     * See {@link android.webkit.WebSettings#setAppCacheEnabled}.
-     */
-    public void setAppCacheEnabled(boolean flag) {
-        // Deprecated no-op.
-    }
-
-    /**
-     * See {@link android.webkit.WebSettings#setAppCachePath}.
-     */
-    public void setAppCachePath(String path) {
-        // Deprecated no-op.
-    }
-
-    /**
      * See {@link android.webkit.WebSettings#setDomStorageEnabled}.
      */
     public void setDomStorageEnabled(boolean flag) {

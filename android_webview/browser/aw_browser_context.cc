@@ -132,7 +132,6 @@ void MigrateProfileData(base::FilePath cache_path,
   migrate_context_storage_data("Session Storage");
 
   // These were missed in the initial migration
-  migrate_context_storage_data("Application Cache");
   migrate_context_storage_data("File System");
   migrate_context_storage_data("IndexedDB");
   migrate_context_storage_data("Local Storage");
