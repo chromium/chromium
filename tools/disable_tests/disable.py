@@ -23,7 +23,7 @@ import resultdb
 SRC_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
 
 
-def main() -> int:
+def main(argv: List[str]) -> int:
   valid_conds = ' '.join(
       sorted(f'\t{term.name}' for term in conditions.TERMINALS))
 
@@ -50,7 +50,7 @@ def main() -> int:
                       action='store_true',
                       help='cache ResultDB rpc results, useful for testing')
 
-  args = parser.parse_args()
+  args = parser.parse_args(argv[1:])
 
   if args.cache:
     resultdb.CANNED_RESPONSE_FILE = os.path.join(os.path.dirname(__file__),
@@ -191,4 +191,4 @@ Checked out chromium/src revision:
 
 
 if __name__ == '__main__':
-  sys.exit(main())
+  sys.exit(main(sys.argv))
