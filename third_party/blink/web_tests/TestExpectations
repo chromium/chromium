@@ -6492,9 +6492,10 @@ crbug.com/1261900 external/wpt/css/css-transforms/transform-fixed-bg-007.html [ 
 css3/flexbox/perpendicular-writing-modes-inside-flex-item.html [ Failure ]
 
 # Sheriff 2021-05-18
-crbug.com/1210658 [ Mac10.14 ] virtual/jxl-enabled/images/jxl/jxl-images.html [ Failure ]
-crbug.com/1210658 [ Mac10.15 ] virtual/jxl-enabled/images/jxl/jxl-images.html [ Failure ]
-crbug.com/1210658 [ Win ] virtual/jxl-enabled/images/jxl/jxl-images.html [ Failure ]
+crbug.com/1210658 [ Mac10.12 ] virtual/jxl-enabled/images/jxl/jxl-images.html [ Failure Pass ]
+crbug.com/1210658 [ Mac10.14 ] virtual/jxl-enabled/images/jxl/jxl-images.html [ Failure Pass ]
+crbug.com/1210658 [ Mac10.15 ] virtual/jxl-enabled/images/jxl/jxl-images.html [ Failure Pass ]
+crbug.com/1210658 [ Win ] virtual/jxl-enabled/images/jxl/jxl-images.html [ Failure Pass ]
 
 # Temporarily disabled to unblock https://crrev.com/c/3099011
 crbug.com/1199701 http/tests/devtools/console/console-big-array.js [ Skip ]
