@@ -691,8 +691,9 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest, ResourceLoadComplete) {
 
 // Same as WebContentsImplBrowserTest.ResourceLoadComplete but with resources
 // retrieved from the network cache.
+// TODO(crbug.com/1271252): Flaky everywhere.
 IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
-                       ResourceLoadCompleteFromNetworkCache) {
+                       DISABLED_ResourceLoadCompleteFromNetworkCache) {
   ResourceLoadObserver observer(shell());
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL page_url(
