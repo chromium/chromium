@@ -31,6 +31,7 @@
 #import "ios/chrome/browser/ui/image_util/image_saver.h"
 #import "ios/chrome/browser/ui/incognito_reauth/incognito_reauth_commands.h"
 #import "ios/chrome/browser/ui/incognito_reauth/incognito_reauth_scene_agent.h"
+#import "ios/chrome/browser/ui/lens/lens_availability.h"
 #import "ios/chrome/browser/ui/main/scene_state_browser_agent.h"
 #import "ios/chrome/browser/ui/menu/browser_action_factory.h"
 #import "ios/chrome/browser/ui/menu/menu_histograms.h"
@@ -282,14 +283,19 @@ const CGFloat kFaviconWidthHeight = 24;
                                                      completion:nil];
     [menuElements addObject:openImageInNewTab];
 
-    // Search by image or Search image with Lens.
+    // Search the image using Lens if Lens is enabled and available. Otherwise
+    // fall back to a standard search by image experience.
     TemplateURLService* service =
         ios::TemplateURLServiceFactory::GetForBrowserState(
             self.browser->GetBrowserState());
     __weak ContextMenuConfigurationProvider* weakSelf = self;
-    if (ios::provider::IsLensSupported() &&
-        base::FeatureList::IsEnabled(kUseLensToSearchForImage) &&
-        search_engines::SupportsSearchImageWithLens(service)) {
+
+    const BOOL lensEnabled =
+        ios::provider::IsLensSupported() &&
+        base::FeatureList::IsEnabled(kUseLensToSearchForImage);
+    const BOOL useLens =
+        lensEnabled && search_engines::SupportsSearchImageWithLens(service);
+    if (useLens) {
       UIAction* searchImageWithLensAction =
           [actionFactory actionToSearchImageUsingLensWithBlock:^{
             [weakSelf searchImageWithURL:imageURL
@@ -297,7 +303,14 @@ const CGFloat kFaviconWidthHeight = 24;
                                 referrer:referrer];
           }];
       [menuElements addObject:searchImageWithLensAction];
-    } else if (search_engines::SupportsSearchByImage(service)) {
+      UMA_HISTOGRAM_ENUMERATION(kIOSLensSupportStatusHistogram,
+                                LensSupportStatus::LensSearchSupported);
+    } else if (lensEnabled) {
+      UMA_HISTOGRAM_ENUMERATION(kIOSLensSupportStatusHistogram,
+                                LensSupportStatus::NonGoogleSearchEngine);
+    }
+
+    if (!useLens && search_engines::SupportsSearchByImage(service)) {
       const TemplateURL* defaultURL = service->GetDefaultSearchProvider();
       NSString* title =
           IsContextMenuActionsRefreshEnabled()

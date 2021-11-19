@@ -3677,6 +3677,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="ContextMenu.iOS.LensSupportStatus" enum="IOSLensSupportStatus"
+    expires_after="2022-05-16">
+  <owner>hujasonx@google.com</owner>
+  <owner>lens-in-bling-team@google.com</owner>
+  <summary>
+    Whether or not Lens is supported, and if not, the reason why. Recorded only
+    if the feature is enabled when the long-press context menu is shown for an
+    image.
+  </summary>
+</histogram>
+
 <histogram name="ContextMenu.LensChip.Event" enum="LensChipEvent"
     expires_after="2022-04-03">
   <owner>yusuyoutube@google.com</owner>
