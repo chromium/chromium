@@ -8,6 +8,7 @@
 #include "ash/accessibility/magnifier/partial_magnifier_controller.h"
 #include "ash/capture_mode/capture_mode_controller.h"
 #include "ash/constants/ash_features.h"
+#include "ash/projector/projector_annotation_tray.h"
 #include "ash/projector/projector_controller_impl.h"
 #include "ash/projector/projector_metrics.h"
 #include "ash/projector/ui/projector_bar_view.h"
@@ -15,6 +16,7 @@
 #include "ash/public/cpp/toast_data.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/resources/vector_icons/vector_icons.h"
+#include "ash/root_window_controller.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/toast/toast_manager_impl.h"
@@ -259,6 +261,7 @@ ProjectorUiController::ProjectorUiController(
 ProjectorUiController::~ProjectorUiController() = default;
 
 void ProjectorUiController::ShowToolbar() {
+  // TODO(b/201664243): Remove the projector toolbar.
   if (!projector_bar_widget_) {
     // Create the toolbar.
     projector_bar_widget_ = ProjectorBarView::Create(projector_controller_);
@@ -271,10 +274,24 @@ void ProjectorUiController::ShowToolbar() {
   projector_bar_widget_->ShowInactive();
   model_.SetBarEnabled(true);
 
+  // Show the tray icon
+  auto* projector_annotation_tray = Shell::GetPrimaryRootWindowController()
+                                        ->GetStatusAreaWidget()
+                                        ->projector_annotation_tray();
+  DCHECK(projector_annotation_tray);
+  projector_annotation_tray->SetVisiblePreferred(true);
+
   RecordToolbarMetrics(ProjectorToolbar::kToolbarOpened);
 }
 
 void ProjectorUiController::CloseToolbar() {
+  // Hide the tray icon
+  auto* projector_annotation_tray = Shell::GetPrimaryRootWindowController()
+                                        ->GetStatusAreaWidget()
+                                        ->projector_annotation_tray();
+  DCHECK(projector_annotation_tray);
+  projector_annotation_tray->SetVisiblePreferred(false);
+
   if (!projector_bar_widget_)
     return;
 

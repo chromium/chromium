@@ -1661,6 +1661,10 @@ This file contains the strings for ash.
         Stop screen recording
       </message>
 
+      <message name="IDS_ASH_STATUS_AREA_PROJECTOR_ANNOTATION_TRAY_TITLE" desc="The accessible name and title for the projector annotation button in the system tray.">
+        Screencast tools
+      </message>
+
       <!-- Overview Mode -->
       <message name="IDS_ASH_OVERVIEW_BUTTON_ACCESSIBLE_NAME" desc="The accessible name for the Overview button in the system tray.">
         Toggle window overview
@@ -4096,6 +4100,10 @@ Here are some things you can try to get started.
         Add key idea
       </message>
 
+      <message name="IDS_PEN_BUTTON" desc="The name for the pen button.">
+        Pen
+      </message>
+
       <message name="IDS_LASER_POINTER_BUTTON" desc="The name for the laser pointer button.">
         Laser pointer
       </message>
@@ -4158,6 +4166,14 @@ Here are some things you can try to get started.
 
       <message name="IDS_TOOLBAR_LOCATION_BUTTON" desc="The name for the button that toggles the toolbar location.">
         Toggle toolbar location
+      </message>
+
+      <message name="IDS_RED_COLOR_BUTTON" desc="The name for the red pen button.">
+        Red
+      </message>
+
+      <message name="IDS_YELLOW_COLOR_BUTTON" desc="The name for the yellow pen button.">
+        Yellow
       </message>
 
       <message name="IDS_BLACK_COLOR_BUTTON" desc="The name for the black marker button.">

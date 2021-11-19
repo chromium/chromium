@@ -702,6 +702,8 @@ component("ash") {
     "projector/model/projector_session_impl.h",
     "projector/model/projector_ui_model.cc",
     "projector/model/projector_ui_model.h",
+    "projector/projector_annotation_tray.cc",
+    "projector/projector_annotation_tray.h",
     "projector/projector_controller_impl.cc",
     "projector/projector_controller_impl.h",
     "projector/projector_feature_pod_controller.cc",
