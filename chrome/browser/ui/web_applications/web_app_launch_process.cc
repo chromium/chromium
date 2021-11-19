@@ -144,6 +144,9 @@ std::tuple<GURL, bool /*is_file_handling*/> WebAppLaunchProcess::GetLaunchUrl(
 
   if (!params_.override_url.is_empty()) {
     launch_url = params_.override_url;
+  } else if (share_target) {
+    // Handle share_target launch.
+    launch_url = share_target->action;
   } else if (params_.url_handler_launch_url.has_value() &&
              params_.url_handler_launch_url->is_valid()) {
     // Handle url_handlers launch.
@@ -159,9 +162,6 @@ std::tuple<GURL, bool /*is_file_handling*/> WebAppLaunchProcess::GetLaunchUrl(
                      provider_.os_integration_manager(), params_)) {
     // Handle protocol_handlers launch.
     launch_url = protocol_handler_translated_url.value();
-  } else if (share_target) {
-    // Handle share_target launch.
-    launch_url = share_target->action;
   } else if (is_note_taking_intent &&
              web_app_->note_taking_new_note_url().is_valid()) {
     // Handle Create Note launch.
