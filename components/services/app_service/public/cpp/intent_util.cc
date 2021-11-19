@@ -41,6 +41,7 @@ const char kCategoriesKey[] = "categories";
 const char kDataKey[] = "data";
 const char kUiBypassedKey[] = "ui_bypassed";
 const char kExtrasKey[] = "extras";
+const char kMimeTypeInodeDirectory[] = "inode/directory";
 
 // Get the field/s from the |intent| that need to be checked/matched based on
 // |condition_type|. Most types return a single string but we return a vector
@@ -435,10 +436,11 @@ bool IsGenericFileHandler(const apps::mojom::IntentPtr& intent,
     }
   }
 
-  // We consider it a generic match if a directory is selected.
+  // If directory is selected, it is generic unless mime_types included
+  // 'inode/directory'.
   for (const auto& file : intent->files.value()) {
     if (file->is_directory == apps::mojom::OptionalBool::kTrue)
-      return true;
+      return mime_types.count(kMimeTypeInodeDirectory) == 0;
   }
   return false;
 }

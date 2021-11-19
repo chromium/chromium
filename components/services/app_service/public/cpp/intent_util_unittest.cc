@@ -789,4 +789,9 @@ TEST_F(IntentUtilTest, IsGenericFileHandler) {
   IntentFilterPtr filter11 =
       apps_util::CreateFileFilterForView("text/*", "", kLabel);
   EXPECT_TRUE(apps_util::IsGenericFileHandler(intent3, filter11));
+
+  // File is a directory, but filter is inode/directory.
+  IntentFilterPtr filter12 =
+      apps_util::CreateFileFilterForView("inode/directory", "", kLabel);
+  EXPECT_FALSE(apps_util::IsGenericFileHandler(intent3, filter12));
 }
