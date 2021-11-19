@@ -23,6 +23,7 @@
 
 #include "third_party/blink/renderer/core/svg/svg_path_parser.h"
 
+#include "base/notreached.h"
 #include "third_party/blink/renderer/core/svg/svg_path_consumer.h"
 #include "third_party/blink/renderer/platform/transforms/affine_transform.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"

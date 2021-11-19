@@ -23,6 +23,7 @@
 
 #include "third_party/blink/renderer/core/svg/svg_path_query.h"
 
+#include "base/notreached.h"
 #include "third_party/blink/renderer/core/svg/svg_path_byte_stream_source.h"
 #include "third_party/blink/renderer/core/svg/svg_path_consumer.h"
 #include "third_party/blink/renderer/core/svg/svg_path_data.h"

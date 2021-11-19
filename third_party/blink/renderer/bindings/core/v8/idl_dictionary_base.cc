@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/bindings/core/v8/idl_dictionary_base.h"
 
+#include "base/notreached.h"
+
 namespace blink {
 
 v8::Local<v8::Value> IDLDictionaryBase::ToV8Impl(v8::Local<v8::Object>,

@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/modules/sanitizer_api/sanitizer_config_impl.h"
 
 #include "third_party/blink/renderer/bindings/modules/v8/v8_sanitizer_config.h"
+#include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_hash.h"
 

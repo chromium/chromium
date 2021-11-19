@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/core/frame/directive.h"
 
+#include "base/notreached.h"
+
 namespace blink {
 
 Directive::Directive(Type type) : type_(type) {}

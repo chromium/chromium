@@ -6,6 +6,8 @@
 
 #include <utility>
 
+#include "base/notreached.h"
+
 namespace blink {
 
 namespace {
