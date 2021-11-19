@@ -1094,7 +1094,14 @@ IN_PROC_BROWSER_TEST_F(SavePageSitePerProcessBrowserTest, SaveAsCompleteHtml) {
 }
 
 // Test for crbug.com/538766.
-IN_PROC_BROWSER_TEST_F(SavePageSitePerProcessBrowserTest, SaveAsMHTML) {
+// Disabled on Mac due to excessive flakiness. https://crbug.com/1271741
+#if defined(OS_MAC)
+#define MAYBE_SaveAsMHTML DISABLED_SaveAsMHTML
+#else
+#define MAYBE_SaveAsMHTML SaveAsMHTML
+#endif
+IN_PROC_BROWSER_TEST_F(SavePageSitePerProcessBrowserTest,
+                       MAYBE_SaveAsMHTML) {
   GURL url(
       embedded_test_server()->GetURL("a.com", "/save_page/frames-xsite.htm"));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
