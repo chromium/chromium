@@ -240,6 +240,10 @@ class BrowserSwitchHandler : public content::WebUIMessageHandler {
   // Immediately re-download and apply XML rules.
   void HandleRefreshXml(const base::ListValue* args);
 
+  // Resolves a promise with the boolean value describing whether the feature
+  // is enabled or not which is configured by BrowserSwitcherEnabled key
+  void HandleIsBrowserSwitchEnabled(const base::ListValue* args);
+
   base::CallbackListSubscription prefs_subscription_;
 
   base::CallbackListSubscription service_subscription_;
@@ -280,6 +284,10 @@ void BrowserSwitchHandler::RegisterMessages() {
   web_ui()->RegisterDeprecatedMessageCallback(
       "refreshXml", base::BindRepeating(&BrowserSwitchHandler::HandleRefreshXml,
                                         base::Unretained(this)));
+  web_ui()->RegisterDeprecatedMessageCallback(
+      "isBrowserSwitcherEnabled",
+      base::BindRepeating(&BrowserSwitchHandler::HandleIsBrowserSwitchEnabled,
+                          base::Unretained(this)));
 }
 
 void BrowserSwitchHandler::OnJavascriptAllowed() {
@@ -480,6 +488,16 @@ void BrowserSwitchHandler::HandleRefreshXml(const base::ListValue* args) {
   DCHECK(args);
   auto* service = GetBrowserSwitcherService(web_ui());
   service->StartDownload(base::TimeDelta());
+}
+
+void BrowserSwitchHandler::HandleIsBrowserSwitchEnabled(
+    const base::ListValue* args) {
+  DCHECK(args);
+  AllowJavascript();
+
+  auto* service = GetBrowserSwitcherService(web_ui());
+  ResolveJavascriptCallback(args->GetList()[0],
+                            base::Value(service->prefs().IsEnabled()));
 }
 
 BrowserSwitchUI::BrowserSwitchUI(content::WebUI* web_ui)

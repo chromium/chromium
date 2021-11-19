@@ -126,9 +126,9 @@ function updateTables(rulesets: RuleSetList) {
  * Gets the English name of the alternate browser.
  */
 function getAltBrowserName(): string {
-  // TODO (crbug.com/1258133): if you change the AlternativeBrowserPath policy,
-  // then loadTimeData can contain stale data. It won't update until you refresh
-  // (despite the rest of the page auto-updating).
+  // TODO (crbug.com/1258133): if you change the AlternativeBrowserPath
+  // policy, then loadTimeData can contain stale data. It won't update
+  // until you refresh (despite the rest of the page auto-updating).
   return loadTimeData.getString('altBrowserName');
 }
 
@@ -136,9 +136,9 @@ function getAltBrowserName(): string {
  * Gets the English name of the browser.
  */
 function getBrowserName(): string {
-  // TODO (crbug.com/1258133): if you change the AlternativeBrowserPath policy,
-  // then loadTimeData can contain stale data. It won't update until you refresh
-  // (despite the rest of the page auto-updating).
+  // TODO (crbug.com/1258133): if you change the AlternativeBrowserPath
+  // policy, then loadTimeData can contain stale data. It won't update
+  // until you refresh (despite the rest of the page auto-updating).
   return loadTimeData.getString('browserName');
 }
 
@@ -162,9 +162,11 @@ function urlOutputText(decision: Decision): Array<string> {
   let reason = '';
   if (decision.matching_rule) {
     if (decision.matching_rule.startsWith('!')) {
-      reason += `Reason: The inverted rule ${JSON.stringify(decision.matching_rule)} was found in `;
+      reason += `Reason: The inverted rule ${
+          JSON.stringify(decision.matching_rule)} was found in `;
     } else {
-      reason += `Reason: ${JSON.stringify(decision.matching_rule)} was found in `;
+      reason +=
+          `Reason: ${JSON.stringify(decision.matching_rule)} was found in `;
     }
   }
   // if undefined - add nothing to the output
@@ -290,11 +292,18 @@ function generateStaticContent() {
 /**
  * Called by C++ when we need to update everything on the page.
  */
-function updateEverything() {
-  sendWithPromise('getAllRulesets').then(updateTables);
-  sendWithPromise('getTimestamps').then(updateTimestamps);
-  sendWithPromise('getRulesetSources').then(updateXmlTable);
-  checkUrl();
+async function updateEverything() {
+  const isEnabled = await sendWithPromise('isBrowserSwitcherEnabled');
+  $('browser-switcher-disabled-container').style.display =
+      isEnabled ? 'none' : 'block';
+  $('browser-switcher-enabled-container').style.display =
+      isEnabled ? 'block' : 'none';
+  if (isEnabled) {
+    sendWithPromise('getAllRulesets').then(updateTables);
+    sendWithPromise('getTimestamps').then(updateTimestamps);
+    sendWithPromise('getRulesetSources').then(updateXmlTable);
+    checkUrl();
+  }
 }
 
 // TODO(crbug/959379): Keep the page up-to-date at all times: updateEverything()
