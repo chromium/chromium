@@ -223,5 +223,41 @@ TEST(CSSParsingUtilsTest, ConsumeIfDelimiter_Stream) {
   EXPECT_EQ(kCommaToken, stream.Peek().GetType());
 }
 
+TEST(CSSParsingUtilsTest, ConsumeAnyValue) {
+  struct {
+    // The input string to parse as <any-value>.
+    const char* input;
+    // The expected result from ConsumeAnyValue.
+    bool expected;
+    // The serialization of the tokens remaining in the range.
+    const char* remainder;
+  } tests[] = {
+      {"1", true, ""},
+      {"1px", true, ""},
+      {"1px ", true, ""},
+      {"ident", true, ""},
+      {"(([ident]))", true, ""},
+      {" ( ( 1 ) ) ", true, ""},
+      {"rgb(1, 2, 3)", true, ""},
+      {"rgb(1, 2, 3", true, ""},
+      {"!!!;;;", true, ""},
+      {"asdf)", false, ")"},
+      {")asdf", false, ")asdf"},
+      {"(ab)cd) e", false, ") e"},
+      {"(as]df) e", false, " e"},
+      {"(a b [ c { d ) e } f ] g h) i", false, " i"},
+      {"a url(() b", false, "url(() b"},
+  };
+
+  for (const auto& test : tests) {
+    String input(test.input);
+    SCOPED_TRACE(input);
+    auto tokens = CSSTokenizer(input).TokenizeToEOF();
+    CSSParserTokenRange range(tokens);
+    EXPECT_EQ(test.expected, css_parsing_utils::ConsumeAnyValue(range));
+    EXPECT_EQ(String(test.remainder), range.Serialize());
+  }
+}
+
 }  // namespace
 }  // namespace blink

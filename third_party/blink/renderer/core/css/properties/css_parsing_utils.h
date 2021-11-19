@@ -71,6 +71,12 @@ bool ConsumeSlashIncludingWhitespace(CSSParserTokenRange&);
 // consumeFunction expects the range starts with a FunctionToken.
 CSSParserTokenRange ConsumeFunction(CSSParserTokenRange&);
 
+// https://drafts.csswg.org/css-syntax/#typedef-any-value
+//
+// Consumes component values until it reaches a token that is not allowed
+// for <any-value>.
+CORE_EXPORT bool ConsumeAnyValue(CSSParserTokenRange&);
+
 CSSPrimitiveValue* ConsumeInteger(
     CSSParserTokenRange&,
     const CSSParserContext&,

@@ -45,6 +45,15 @@ class MediaValues;
 
 using MediaQueryResultList = Vector<MediaQueryResult>;
 
+// See Kleene 3-valued logic
+//
+// https://drafts.csswg.org/mediaqueries-4/#evaluating
+enum class KleeneValue {
+  kTrue,
+  kFalse,
+  kUnknown,
+};
+
 // Class that evaluates css media queries as defined in
 // CSS3 Module "Media Queries" (http://www.w3.org/TR/css3-mediaqueries/)
 // Special constructors are needed, if simple media queries are to be
@@ -97,8 +106,9 @@ class CORE_EXPORT MediaQueryEvaluator final
   bool Eval(const MediaQuery&) const;
   bool Eval(const MediaQuery&, Results) const;
 
-  bool Eval(const MediaQueryExpNode&) const;
-  bool Eval(const MediaQueryExpNode&, Results) const;
+  // https://drafts.csswg.org/mediaqueries-4/#evaluating
+  KleeneValue Eval(const MediaQueryExpNode&) const;
+  KleeneValue Eval(const MediaQueryExpNode&, Results) const;
 
   // Evaluates media query subexpression, ie "and (media-feature: value)" part.
   bool Eval(const MediaQueryExp&) const;
@@ -115,6 +125,14 @@ class CORE_EXPORT MediaQueryEvaluator final
   void Trace(Visitor*) const;
 
  private:
+  KleeneValue EvalNot(const MediaQueryExpNode&, Results) const;
+  KleeneValue EvalAnd(const MediaQueryExpNode&,
+                      const MediaQueryExpNode&,
+                      Results) const;
+  KleeneValue EvalOr(const MediaQueryExpNode&,
+                     const MediaQueryExpNode&,
+                     Results) const;
+
   const String MediaType() const;
 
   String media_type_;

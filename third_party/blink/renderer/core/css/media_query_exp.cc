@@ -618,6 +618,10 @@ void MediaQueryFeatureExpNode::CollectExpressions(
   result.push_back(exp_);
 }
 
+bool MediaQueryFeatureExpNode::HasUnknown() const {
+  return false;
+}
+
 std::unique_ptr<MediaQueryExpNode> MediaQueryFeatureExpNode::Copy() const {
   return std::make_unique<MediaQueryFeatureExpNode>(exp_);
 }
@@ -629,6 +633,10 @@ PhysicalAxes MediaQueryUnaryExpNode::QueriedAxes() const {
 void MediaQueryUnaryExpNode::CollectExpressions(
     Vector<MediaQueryExp>& result) const {
   operand_->CollectExpressions(result);
+}
+
+bool MediaQueryUnaryExpNode::HasUnknown() const {
+  return operand_->HasUnknown();
 }
 
 void MediaQueryNestedExpNode::SerializeTo(StringBuilder& builder) const {
@@ -660,6 +668,10 @@ void MediaQueryCompoundExpNode::CollectExpressions(
   right_->CollectExpressions(result);
 }
 
+bool MediaQueryCompoundExpNode::HasUnknown() const {
+  return left_->HasUnknown() || right_->HasUnknown();
+}
+
 void MediaQueryAndExpNode::SerializeTo(StringBuilder& builder) const {
   Left().SerializeTo(builder);
   builder.Append(" and ");
@@ -678,6 +690,25 @@ void MediaQueryOrExpNode::SerializeTo(StringBuilder& builder) const {
 
 std::unique_ptr<MediaQueryExpNode> MediaQueryOrExpNode::Copy() const {
   return std::make_unique<MediaQueryOrExpNode>(Left().Copy(), Right().Copy());
+}
+
+PhysicalAxes MediaQueryUnknownExpNode::QueriedAxes() const {
+  return PhysicalAxes(kPhysicalAxisNone);
+}
+
+void MediaQueryUnknownExpNode::SerializeTo(StringBuilder& builder) const {
+  builder.Append(string_);
+}
+
+void MediaQueryUnknownExpNode::CollectExpressions(
+    Vector<MediaQueryExp>&) const {}
+
+bool MediaQueryUnknownExpNode::HasUnknown() const {
+  return true;
+}
+
+std::unique_ptr<MediaQueryExpNode> MediaQueryUnknownExpNode::Copy() const {
+  return std::make_unique<MediaQueryUnknownExpNode>(string_);
 }
 
 }  // namespace blink

@@ -13,35 +13,8 @@
 namespace blink {
 
 using css_parsing_utils::AtIdent;
+using css_parsing_utils::ConsumeAnyValue;
 using css_parsing_utils::ConsumeIfIdent;
-
-namespace {
-
-// https://drafts.csswg.org/css-syntax/#typedef-any-value
-bool IsNextTokenAllowedForAnyValue(CSSParserTokenRange& range) {
-  switch (range.Peek().GetType()) {
-    case kBadStringToken:
-    case kEOFToken:
-    case kBadUrlToken:
-      return false;
-    case kRightParenthesisToken:
-    case kRightBracketToken:
-    case kRightBraceToken:
-      return range.Peek().GetBlockType() == CSSParserToken::kBlockEnd;
-    default:
-      return true;
-  }
-}
-
-// https://drafts.csswg.org/css-syntax/#typedef-any-value
-bool ConsumeAnyValue(CSSParserTokenRange& range) {
-  DCHECK(!range.AtEnd());
-  while (IsNextTokenAllowedForAnyValue(range))
-    range.Consume();
-  return range.AtEnd();
-}
-
-}  // namespace
 
 CSSSupportsParser::Result CSSSupportsParser::ConsumeSupportsCondition(
     CSSParserTokenStream& stream,
@@ -192,10 +165,8 @@ CSSSupportsParser::Result CSSSupportsParser::ConsumeGeneralEnclosed(
     CSSParserTokenStream& stream) {
   if (IsGeneralEnclosed(first_token)) {
     auto block = stream.ConsumeUntilPeekedTypeIs<kRightParenthesisToken>();
-    // Note that <any-value> matches a sequence of one or more tokens, hence the
-    // block-range can't be empty.
-    // https://drafts.csswg.org/css-syntax-3/#typedef-any-value
-    if (block.AtEnd() || !ConsumeAnyValue(block))
+    // TODO(crbug.com/1269284): We should allow empty values here.
+    if (!ConsumeAnyValue(block) || !block.AtEnd())
       return Result::kParseFailure;
 
     stream.ConsumeWhitespace();

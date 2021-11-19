@@ -101,8 +101,12 @@ bool MediaQueryEvaluator::MediaTypeMatch(
          EqualIgnoringASCIICase(media_type_to_match, MediaType());
 }
 
-static bool ApplyRestrictor(MediaQuery::RestrictorType r, bool value) {
-  return r == MediaQuery::kNot ? !value : value;
+static bool ApplyRestrictor(MediaQuery::RestrictorType r, KleeneValue value) {
+  if (value == KleeneValue::kUnknown)
+    return false;
+  if (r == MediaQuery::kNot)
+    return value == KleeneValue::kFalse;
+  return value == KleeneValue::kTrue;
 }
 
 bool MediaQueryEvaluator::Eval(const MediaQuery& query) const {
@@ -111,9 +115,10 @@ bool MediaQueryEvaluator::Eval(const MediaQuery& query) const {
 
 bool MediaQueryEvaluator::Eval(const MediaQuery& query, Results results) const {
   if (!MediaTypeMatch(query.MediaType()))
-    return ApplyRestrictor(query.Restrictor(), false);
-  return ApplyRestrictor(query.Restrictor(),
-                         !query.ExpNode() || Eval(*query.ExpNode(), results));
+    return ApplyRestrictor(query.Restrictor(), KleeneValue::kFalse);
+  if (!query.ExpNode())
+    return ApplyRestrictor(query.Restrictor(), KleeneValue::kTrue);
+  return ApplyRestrictor(query.Restrictor(), Eval(*query.ExpNode(), results));
 }
 
 bool MediaQueryEvaluator::Eval(const MediaQuerySet& query_set) const {
@@ -134,21 +139,59 @@ bool MediaQueryEvaluator::Eval(const MediaQuerySet& query_set,
   return result;
 }
 
-bool MediaQueryEvaluator::Eval(const MediaQueryExpNode& node) const {
+KleeneValue MediaQueryEvaluator::Eval(const MediaQueryExpNode& node) const {
   return Eval(node, Results());
 }
 
-bool MediaQueryEvaluator::Eval(const MediaQueryExpNode& node,
-                               Results results) const {
+KleeneValue MediaQueryEvaluator::Eval(const MediaQueryExpNode& node,
+                                      Results results) const {
   if (auto* n = DynamicTo<MediaQueryNestedExpNode>(node))
     return Eval(n->Operand(), results);
   if (auto* n = DynamicTo<MediaQueryNotExpNode>(node))
-    return !Eval(n->Operand(), results);
+    return EvalNot(n->Operand(), results);
   if (auto* n = DynamicTo<MediaQueryAndExpNode>(node))
-    return Eval(n->Left(), results) && Eval(n->Right(), results);
+    return EvalAnd(n->Left(), n->Right(), results);
   if (auto* n = DynamicTo<MediaQueryOrExpNode>(node))
-    return Eval(n->Left(), results) || Eval(n->Right(), results);
-  return Eval(To<MediaQueryFeatureExpNode>(node).Expression(), results);
+    return EvalOr(n->Left(), n->Right(), results);
+  if (auto* n = DynamicTo<MediaQueryUnknownExpNode>(node))
+    return KleeneValue::kUnknown;
+  return Eval(To<MediaQueryFeatureExpNode>(node).Expression(), results)
+             ? KleeneValue::kTrue
+             : KleeneValue::kFalse;
+}
+
+KleeneValue MediaQueryEvaluator::EvalNot(const MediaQueryExpNode& operand_node,
+                                         Results results) const {
+  switch (Eval(operand_node, results)) {
+    case KleeneValue::kTrue:
+      return KleeneValue::kFalse;
+    case KleeneValue::kFalse:
+      return KleeneValue::kTrue;
+    case KleeneValue::kUnknown:
+      return KleeneValue::kUnknown;
+  }
+}
+
+KleeneValue MediaQueryEvaluator::EvalAnd(const MediaQueryExpNode& left_node,
+                                         const MediaQueryExpNode& right_node,
+                                         Results results) const {
+  KleeneValue left = Eval(left_node, results);
+  // Short-circuiting before calling Eval on |right_node| prevents
+  // unnecessary entries in |results|.
+  if (left != KleeneValue::kTrue)
+    return left;
+  return Eval(right_node, results);
+}
+
+KleeneValue MediaQueryEvaluator::EvalOr(const MediaQueryExpNode& left_node,
+                                        const MediaQueryExpNode& right_node,
+                                        Results results) const {
+  KleeneValue left = Eval(left_node, results);
+  // Short-circuiting before calling Eval on |right_node| prevents
+  // unnecessary entries in |results|.
+  if (left == KleeneValue::kTrue)
+    return left;
+  return Eval(right_node, results);
 }
 
 bool MediaQueryEvaluator::DidResultsChange(

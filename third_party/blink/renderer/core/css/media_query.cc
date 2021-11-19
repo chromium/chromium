@@ -40,7 +40,7 @@ namespace blink {
 // https://drafts.csswg.org/cssom/#serialize-a-media-query
 String MediaQuery::Serialize() const {
   StringBuilder result;
-  switch (restrictor_) {
+  switch (Restrictor()) {
     case MediaQuery::kOnly:
       result.Append("only ");
       break;
@@ -51,18 +51,20 @@ String MediaQuery::Serialize() const {
       break;
   }
 
-  if (!exp_node_) {
-    result.Append(media_type_);
+  const MediaQueryExpNode* exp_node = ExpNode();
+
+  if (!exp_node) {
+    result.Append(MediaType());
     return result.ReleaseString();
   }
 
-  if (media_type_ != media_type_names::kAll || restrictor_ != kNone) {
-    result.Append(media_type_);
+  if (MediaType() != media_type_names::kAll || Restrictor() != kNone) {
+    result.Append(MediaType());
     result.Append(" and ");
   }
 
-  if (exp_node_)
-    result.Append(exp_node_->Serialize());
+  if (exp_node)
+    result.Append(exp_node->Serialize());
 
   return result.ReleaseString();
 }
@@ -77,18 +79,42 @@ MediaQuery::MediaQuery(RestrictorType restrictor,
                        std::unique_ptr<MediaQueryExpNode> exp_node)
     : restrictor_(restrictor),
       media_type_(AttemptStaticStringCreation(media_type.LowerASCII())),
-      exp_node_(std::move(exp_node)) {}
+      exp_node_(std::move(exp_node)),
+      has_unknown_(exp_node_ ? exp_node_->HasUnknown() : false) {}
 
 MediaQuery::MediaQuery(const MediaQuery& o)
     : restrictor_(o.restrictor_),
       media_type_(o.media_type_),
       exp_node_(o.exp_node_ ? o.exp_node_->Copy() : nullptr),
-      serialization_cache_(o.serialization_cache_) {}
+      serialization_cache_(o.serialization_cache_),
+      has_unknown_(o.has_unknown_) {}
 
 MediaQuery::~MediaQuery() = default;
 
+MediaQuery::RestrictorType MediaQuery::Restrictor() const {
+  if (has_unknown_)
+    return MediaQuery::kNot;
+  return restrictor_;
+}
+
+const MediaQueryExpNode* MediaQuery::ExpNode() const {
+  if (has_unknown_)
+    return nullptr;
+  return exp_node_.get();
+}
+
+const String& MediaQuery::MediaType() const {
+  if (has_unknown_) {
+    DEFINE_STATIC_LOCAL(const AtomicString, all, ("all"));
+    return all;
+  }
+  return media_type_;
+}
+
 PhysicalAxes MediaQuery::QueriedAxes() const {
-  return exp_node_ ? exp_node_->QueriedAxes() : PhysicalAxes(kPhysicalAxisNone);
+  if (const MediaQueryExpNode* exp_node = ExpNode())
+    return exp_node_->QueriedAxes();
+  return PhysicalAxes(kPhysicalAxisNone);
 }
 
 // https://drafts.csswg.org/cssom/#compare-media-queries
@@ -102,6 +128,13 @@ String MediaQuery::CssText() const {
     const_cast<MediaQuery*>(this)->serialization_cache_ = Serialize();
 
   return serialization_cache_;
+}
+
+std::unique_ptr<MediaQuery> MediaQuery::CopyIgnoringUnknownForTest() const {
+  auto query = Copy();
+  query->has_unknown_ = false;
+  query->serialization_cache_ = g_null_atom;
+  return query;
 }
 
 }  // namespace blink

@@ -14,6 +14,7 @@
 namespace blink {
 
 using css_parsing_utils::AtIdent;
+using css_parsing_utils::ConsumeAnyValue;
 using css_parsing_utils::ConsumeIfDelimiter;
 using css_parsing_utils::ConsumeIfIdent;
 
@@ -374,10 +375,39 @@ std::unique_ptr<MediaQueryExpNode> MediaQueryParser::ConsumeInParens(
   }
   range = original_range;
 
-  // TODO(crbug.com/962417): <general-enclosed>
-
   // <media-feature>
-  return ConsumeFeature(range);
+  if (auto node = ConsumeFeature(range))
+    return node;
+  range = original_range;
+
+  // <general-enclosed>
+  return ConsumeGeneralEnclosed(range);
+}
+
+std::unique_ptr<MediaQueryExpNode> MediaQueryParser::ConsumeGeneralEnclosed(
+    CSSParserTokenRange& range) {
+  if (range.Peek().GetType() != kLeftParenthesisToken &&
+      range.Peek().GetType() != kFunctionToken) {
+    return nullptr;
+  }
+
+  const CSSParserToken* first = range.begin();
+
+  CSSParserTokenRange block = range.ConsumeBlock();
+  block.ConsumeWhitespace();
+
+  // Note that <any-value> is optional in <general-enclosed>, so having an
+  // empty block is fine.
+  if (!block.AtEnd()) {
+    if (!ConsumeAnyValue(block) || !block.AtEnd())
+      return nullptr;
+  }
+
+  // TODO(crbug.com/962417): This is not well specified.
+  String general_enclosed =
+      range.MakeSubRange(first, range.begin()).Serialize();
+  range.ConsumeWhitespace();
+  return std::make_unique<MediaQueryUnknownExpNode>(general_enclosed);
 }
 
 scoped_refptr<MediaQuerySet> MediaQueryParser::ConsumeSingleCondition(

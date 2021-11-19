@@ -575,6 +575,22 @@ CSSLightDarkValuePair* ConsumeInternalLightDark(Func consume_value,
   return MakeGarbageCollected<CSSLightDarkValuePair>(light_value, dark_value);
 }
 
+// https://drafts.csswg.org/css-syntax/#typedef-any-value
+bool IsTokenAllowedForAnyValue(const CSSParserToken& token) {
+  switch (token.GetType()) {
+    case kBadStringToken:
+    case kEOFToken:
+    case kBadUrlToken:
+      return false;
+    case kRightParenthesisToken:
+    case kRightBracketToken:
+    case kRightBraceToken:
+      return token.GetBlockType() == CSSParserToken::kBlockEnd;
+    default:
+      return true;
+  }
+}
+
 }  // namespace
 
 void Complete4Sides(CSSValue* side[4]) {
@@ -610,6 +626,24 @@ CSSParserTokenRange ConsumeFunction(CSSParserTokenRange& range) {
   range.ConsumeWhitespace();
   contents.ConsumeWhitespace();
   return contents;
+}
+
+bool ConsumeAnyValue(CSSParserTokenRange& range) {
+  bool result = IsTokenAllowedForAnyValue(range.Peek());
+  unsigned nesting_level = 0;
+
+  while (nesting_level || result) {
+    const CSSParserToken& token = range.Consume();
+    if (token.GetBlockType() == CSSParserToken::kBlockStart)
+      nesting_level++;
+    else if (token.GetBlockType() == CSSParserToken::kBlockEnd)
+      nesting_level--;
+    if (range.AtEnd())
+      return result;
+    result = result && IsTokenAllowedForAnyValue(range.Peek());
+  }
+
+  return result;
 }
 
 // TODO(rwlbuis): consider pulling in the parsing logic from

@@ -100,6 +100,10 @@ std::unique_ptr<MediaQueryExpNode> OrNode(
   return MediaQueryExpNode::Or(std::move(left), std::move(right));
 }
 
+std::unique_ptr<MediaQueryExpNode> UnknownNode(String string) {
+  return std::make_unique<MediaQueryUnknownExpNode>(string);
+}
+
 }  // namespace
 
 TEST(MediaQueryExpTest, ValuesType) {
@@ -219,6 +223,7 @@ TEST(MediaQueryExpTest, Copy) {
   nodes.push_back(NestedNode(FeatureNode(width_lt10)));
   nodes.push_back(AndNode(FeatureNode(width_lt10), FeatureNode(height_lt10)));
   nodes.push_back(OrNode(FeatureNode(width_lt10), FeatureNode(height_lt10)));
+  nodes.push_back(UnknownNode("foo(1)"));
 
   for (const auto& node : nodes) {
     EXPECT_EQ(node->GetType(), node->Copy()->GetType());
@@ -290,6 +295,11 @@ TEST(MediaQueryExpTest, QueriedAxes) {
   // not (width < 10px)
   EXPECT_EQ(PhysicalAxes(kPhysicalAxisHorizontal),
             NotNode(FeatureNode(width_lt10))->QueriedAxes());
+  // (foo)
+  EXPECT_EQ(PhysicalAxes(kPhysicalAxisNone), UnknownNode("foo")->QueriedAxes());
+  // (foo) or (width)
+  EXPECT_EQ(PhysicalAxes(kPhysicalAxisHorizontal),
+            OrNode(UnknownNode("foo"), FeatureNode(width_lt10))->QueriedAxes());
 }
 
 TEST(MediaQueryExpTest, CollectExpressions) {
@@ -338,6 +348,13 @@ TEST(MediaQueryExpTest, CollectExpressions) {
     NotNode(FeatureNode(width_lt10))->CollectExpressions(expressions);
     ASSERT_EQ(1u, expressions.size());
     EXPECT_EQ(width_lt10, expressions[0]);
+  }
+
+  // unknown
+  {
+    Vector<MediaQueryExp> expressions;
+    UnknownNode("foo")->CollectExpressions(expressions);
+    EXPECT_EQ(0u, expressions.size());
   }
 }
 

@@ -339,6 +339,53 @@ TEST(MediaQuerySetTest, CSSMediaQueries4) {
   }
 }
 
+TEST(MediaQuerySetTest, GeneralEnclosed) {
+  ScopedCSSMediaQueries4ForTest media_queries_4_flag(true);
+
+  MediaQuerySetTestCase test_cases[] = {
+      {"()", nullptr},
+      {"( )", nullptr},
+      {"(1)", nullptr},
+      {"( 1 )", nullptr},
+      {"(1px)", nullptr},
+      {"(unknown)", nullptr},
+      {"(unknown: 50kg)", nullptr},
+      {"unknown()", nullptr},
+      {"unknown(1)", nullptr},
+      {"(a b c)", nullptr},
+      {"(width <> height)", nullptr},
+      {"( a! b; )", nullptr},
+      {"not screen and (unknown)", nullptr},
+      {"not all and (unknown)", nullptr},
+      {"not all and (width) and (unknown)", nullptr},
+      {"not all and (not ((width) or (unknown)))", nullptr},
+      {"(])", "not all"},
+      {"(url(as'df))", "not all"},
+  };
+
+  for (const MediaQuerySetTestCase& test : test_cases) {
+    String input(test.input);
+    SCOPED_TRACE(input);
+    auto query_set = MediaQuerySet::Create(input, nullptr);
+    ASSERT_TRUE(query_set);
+    ASSERT_EQ(1u, query_set->QueryVector().size());
+    std::unique_ptr<MediaQuery> query =
+        query_set->QueryVector()[0]->CopyIgnoringUnknownForTest();
+    const char* expected = test.output ? test.output : test.input;
+    EXPECT_EQ(expected, query->CssText());
+  }
+
+  // Run same tests again, except this time avoid CopyIgnoringUnknownForTest().
+  // This should result in a serialization of "not all".
+  for (const MediaQuerySetTestCase& test : test_cases) {
+    String input(test.input);
+    SCOPED_TRACE(input);
+    auto query_set = MediaQuerySet::Create(input, nullptr);
+    ASSERT_TRUE(query_set);
+    EXPECT_EQ("not all", query_set->MediaText());
+  }
+}
+
 TEST(MediaQuerySetTest, BehindRuntimeFlag) {
   ScopedForcedColorsForTest forced_colors_flag(false);
   ScopedMediaQueryNavigationControlsForTest navigation_controls_flag(false);
@@ -369,6 +416,10 @@ TEST(MediaQuerySetTest, BehindRuntimeFlag) {
       {"(width >= 10px)", "not all"},
       {"(10px < width)", "not all"},
       {"(10px < width < 20px)", "not all"},
+      {"()", "not all"},
+      {"(unknown)", "not all"},
+      {"unknown()", "not all"},
+      {"(1px)", "not all"},
       {nullptr, nullptr}  // Do not remove the terminator line.
   };
 
@@ -398,6 +449,7 @@ TEST(MediaQuerySetTest, QueriedAxes) {
             QueriedAxes("not screen and (height)"));
   EXPECT_EQ(PhysicalAxes(kPhysicalAxisHorizontal), QueriedAxes("((width))"));
   EXPECT_EQ(PhysicalAxes(kPhysicalAxisVertical), QueriedAxes("((height))"));
+  EXPECT_EQ(PhysicalAxes(kPhysicalAxisNone), QueriedAxes("(unknown)"));
 }
 
 }  // namespace blink

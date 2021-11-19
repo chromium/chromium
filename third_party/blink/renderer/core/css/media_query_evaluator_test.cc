@@ -898,29 +898,36 @@ TEST(MediaQueryEvaluatorTest, ExpNode) {
       "width", MediaQueryExpBounds(MediaQueryExpComparison(
                    PxValue(800), MediaQueryOperator::kLt))));
 
-  EXPECT_TRUE(media_query_evaluator.Eval(*width_lt_600.Copy()));
-  EXPECT_FALSE(media_query_evaluator.Eval(*width_lt_400.Copy()));
+  EXPECT_EQ(KleeneValue::kTrue,
+            media_query_evaluator.Eval(*width_lt_600.Copy()));
+  EXPECT_EQ(KleeneValue::kFalse,
+            media_query_evaluator.Eval(*width_lt_400.Copy()));
 
-  EXPECT_TRUE(
+  EXPECT_EQ(
+      KleeneValue::kTrue,
       media_query_evaluator.Eval(MediaQueryNestedExpNode(width_lt_600.Copy())));
-  EXPECT_FALSE(
+  EXPECT_EQ(
+      KleeneValue::kFalse,
       media_query_evaluator.Eval(MediaQueryNestedExpNode(width_lt_400.Copy())));
 
-  EXPECT_FALSE(
+  EXPECT_EQ(
+      KleeneValue::kFalse,
       media_query_evaluator.Eval(MediaQueryNotExpNode(width_lt_600.Copy())));
-  EXPECT_TRUE(
-      media_query_evaluator.Eval(MediaQueryNotExpNode(width_lt_400.Copy())));
+  EXPECT_EQ(KleeneValue::kTrue, media_query_evaluator.Eval(
+                                    MediaQueryNotExpNode(width_lt_400.Copy())));
 
-  EXPECT_TRUE(media_query_evaluator.Eval(
-      MediaQueryAndExpNode(width_lt_600.Copy(), width_lt_800.Copy())));
-  EXPECT_FALSE(media_query_evaluator.Eval(
-      MediaQueryAndExpNode(width_lt_600.Copy(), width_lt_400.Copy())));
+  EXPECT_EQ(KleeneValue::kTrue, media_query_evaluator.Eval(MediaQueryAndExpNode(
+                                    width_lt_600.Copy(), width_lt_800.Copy())));
+  EXPECT_EQ(KleeneValue::kFalse,
+            media_query_evaluator.Eval(MediaQueryAndExpNode(
+                width_lt_600.Copy(), width_lt_400.Copy())));
 
-  EXPECT_TRUE(media_query_evaluator.Eval(
-      MediaQueryOrExpNode(width_lt_600.Copy(), width_lt_400.Copy())));
-  EXPECT_FALSE(media_query_evaluator.Eval(MediaQueryOrExpNode(
-      width_lt_400.Copy(),
-      std::make_unique<MediaQueryNotExpNode>(width_lt_800.Copy()))));
+  EXPECT_EQ(KleeneValue::kTrue, media_query_evaluator.Eval(MediaQueryOrExpNode(
+                                    width_lt_600.Copy(), width_lt_400.Copy())));
+  EXPECT_EQ(KleeneValue::kFalse,
+            media_query_evaluator.Eval(MediaQueryOrExpNode(
+                width_lt_400.Copy(),
+                std::make_unique<MediaQueryNotExpNode>(width_lt_800.Copy()))));
 }
 
 TEST(MediaQueryEvaluatorTest, DependentResults) {
@@ -1104,6 +1111,8 @@ TEST(MediaQueryEvaluatorTest, CSSMediaQueries4) {
   MediaValuesCached::MediaValuesCachedData data;
   data.viewport_width = 500;
   data.viewport_height = 500;
+  auto* media_values = MakeGarbageCollected<MediaValuesCached>(data);
+  MediaQueryEvaluator media_query_evaluator(media_values);
 
   MediaQueryEvaluatorTestCase test_cases[] = {
       {"(width: 1px) or (width: 2px)", false},
@@ -1141,10 +1150,62 @@ TEST(MediaQueryEvaluatorTest, CSSMediaQueries4) {
       {nullptr, false}  // Do not remove the terminator line.
   };
 
+  TestMQEvaluator(test_cases, media_query_evaluator);
+}
+
+TEST(MediaQueryEvaluatorTest, GeneralEnclosed) {
+  MediaValuesCached::MediaValuesCachedData data;
+  data.viewport_width = 500;
+  data.viewport_height = 500;
+
   auto* media_values = MakeGarbageCollected<MediaValuesCached>(data);
   MediaQueryEvaluator media_query_evaluator(media_values);
 
-  TestMQEvaluator(test_cases, media_query_evaluator);
+  MediaQueryEvaluatorTestCase tests[] = {
+      {"(unknown)", false},
+      {"((unknown: 1px))", false},
+      {"not (unknown: 1px)", false},
+      {"(width) or (unknown: 1px)", true},
+      {"(unknown: 1px) or (width)", true},
+      {"not ((width) or (unknown: 1px))", false},
+      {"not ((unknown: 1px) or (width))", false},
+      {"(width) and (unknown: 1px)", false},
+      {"(unknown: 1px) and (width)", false},
+      {"not ((width) and (unknown: 1px))", false},
+      {"not ((unknown: 1px) and (width))", false},
+  };
+
+  {
+    ScopedCSSMediaQueries4ForTest media_queries_4_flag(true);
+
+    for (const MediaQueryEvaluatorTestCase& test : tests) {
+      SCOPED_TRACE(test.input);
+      String input(test.input);
+      auto query_set = MediaQueryParser::ParseMediaQuerySet(input, nullptr);
+      ASSERT_TRUE(query_set);
+      ASSERT_EQ(1u, query_set->QueryVector().size());
+      std::unique_ptr<MediaQuery> query =
+          query_set->QueryVector()[0]->CopyIgnoringUnknownForTest();
+      EXPECT_EQ(test.output, media_query_evaluator.Eval(*query));
+    }
+  }
+
+  // Run the same tests again, but avoiding CopyIgnoringUnknownForTest. This
+  // should make any MediaQuery containing "unknown" effectively behave as "not
+  // all".
+  Vector<bool> flag_values = {true, false};
+  for (bool flag : flag_values) {
+    // The runtime flag CSSMediaQueries4 should not affect the results.
+    ScopedCSSMediaQueries4ForTest media_queries_4_flag(flag);
+
+    for (const MediaQueryEvaluatorTestCase& test : tests) {
+      SCOPED_TRACE(test.input);
+      String input(test.input);
+      auto query_set = MediaQueryParser::ParseMediaQuerySet(input, nullptr);
+      ASSERT_TRUE(query_set);
+      EXPECT_FALSE(media_query_evaluator.Eval(*query_set));
+    }
+  }
 }
 
 }  // namespace blink

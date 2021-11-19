@@ -109,6 +109,10 @@ class CORE_EXPORT MediaQueryParser {
   // https://drafts.csswg.org/mediaqueries-4/#typedef-media-in-parens
   std::unique_ptr<MediaQueryExpNode> ConsumeInParens(CSSParserTokenRange&);
 
+  // https://drafts.csswg.org/mediaqueries-4/#typedef-general-enclosed
+  std::unique_ptr<MediaQueryExpNode> ConsumeGeneralEnclosed(
+      CSSParserTokenRange&);
+
   // https://drafts.csswg.org/mediaqueries-4/#typedef-media-query
   std::unique_ptr<MediaQuery> ConsumeQuery(CSSParserTokenRange&);
 
