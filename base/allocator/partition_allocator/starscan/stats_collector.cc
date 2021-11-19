@@ -4,8 +4,8 @@
 
 #include "base/allocator/partition_allocator/starscan/stats_collector.h"
 
+#include "base/allocator/partition_allocator/starscan/logging.h"
 #include "base/allocator/partition_allocator/starscan/stats_reporter.h"
-#include "base/logging.h"
 #include "base/time/time.h"
 
 namespace base {
@@ -84,11 +84,13 @@ void StatsCollector::ReportSurvivalRate(StatsReporter& reporter) const {
       static_cast<double>(survived_quarantine_size()) / quarantine_last_size_;
   reporter.ReportSurvivedQuarantineSize(survived_quarantine_size());
   reporter.ReportSurvivedQuarantinePercent(survived_rate);
-  VLOG(2) << "quarantine size: " << quarantine_last_size_ << " -> "
-          << survived_quarantine_size() << ", swept bytes: " << swept_size()
-          << ", survival rate: " << survived_rate;
+  PA_PCSCAN_VLOG(2) << "quarantine size: " << quarantine_last_size_ << " -> "
+                    << survived_quarantine_size()
+                    << ", swept bytes: " << swept_size()
+                    << ", survival rate: " << survived_rate;
   if (discarded_quarantine_size_)
-    VLOG(2) << "discarded quarantine size: " << discarded_quarantine_size_;
+    PA_PCSCAN_VLOG(2) << "discarded quarantine size: "
+                      << discarded_quarantine_size_;
 }
 
 template base::TimeDelta StatsCollector::GetTimeImpl(
