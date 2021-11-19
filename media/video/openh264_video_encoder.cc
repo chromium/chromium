@@ -170,10 +170,12 @@ void OpenH264VideoEncoder::Initialize(VideoCodecProfile profile,
 }
 
 Status OpenH264VideoEncoder::DrainOutputs(const SFrameBSInfo& frame_info,
-                                          base::TimeDelta timestamp) {
+                                          base::TimeDelta timestamp,
+                                          gfx::ColorSpace color_space) {
   VideoEncoderOutput result;
   result.key_frame = (frame_info.eFrameType == videoFrameTypeIDR);
   result.timestamp = timestamp;
+  result.color_space = color_space;
 
   DCHECK_GT(frame_info.iFrameSizeInBytes, 0);
   size_t total_chunk_size = frame_info.iFrameSizeInBytes;
@@ -301,6 +303,11 @@ void OpenH264VideoEncoder::Encode(scoped_refptr<VideoFrame> frame,
     frame = std::move(i420_frame);
   }
 
+  if (last_frame_color_space_ != frame->ColorSpace()) {
+    last_frame_color_space_ = frame->ColorSpace();
+    key_frame = true;
+  }
+
   SSourcePicture picture = {};
   picture.iPicWidth = frame->visible_rect().width();
   picture.iPicHeight = frame->visible_rect().height();
@@ -331,7 +338,7 @@ void OpenH264VideoEncoder::Encode(scoped_refptr<VideoFrame> frame,
     return;
   }
 
-  status = DrainOutputs(frame_info, frame->timestamp());
+  status = DrainOutputs(frame_info, frame->timestamp(), frame->ColorSpace());
   std::move(done_cb).Run(std::move(status));
 }
 

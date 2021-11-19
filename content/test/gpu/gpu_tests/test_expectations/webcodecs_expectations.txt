@@ -84,12 +84,6 @@ crbug.com/1208827 [ chromeos-board-amd64-generic ] WebCodecs_Encode_capture_avc1
 crbug.com/1256493 [ chromeos-board-kevin ] WebCodecs_copyTo_hw_decoder [ Failure ]
 crbug.com/1207682 [ android ] WebCodecs_* [ RetryOnFailure ]
 
-# These should pass once we fix OpenH264's color space plumbing.
-crbug.com/1241448 [ chromeos ] WebCodecs_EncodeColorSpace_avc1.42001E_prefer-software [ Failure ]
-crbug.com/1241448 [ linux ] WebCodecs_EncodeColorSpace_avc1.42001E_prefer-software [ Failure ]
-crbug.com/1241448 [ mac ] WebCodecs_EncodeColorSpace_avc1.42001E_prefer-software [ Failure ]
-crbug.com/1241448 [ win ] WebCodecs_EncodeColorSpace_avc1.42001E_prefer-software [ Failure ]
-
 # These should pass once we fix acclerate encoding color space plumbing.
 crbug.com/1241448 [ android ] WebCodecs_EncodeColorSpace_avc1.42001E_prefer-hardware [ Failure ]
 crbug.com/1241448 [ chromeos ] WebCodecs_EncodeColorSpace_avc1.42001E_prefer-hardware [ Failure ]
