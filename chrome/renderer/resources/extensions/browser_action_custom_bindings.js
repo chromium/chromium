@@ -21,7 +21,7 @@ apiBridge.registerCustomHook(function(bindingsAPI) {
   });
 
   apiFunctions.setCustomCallback('openPopup',
-      function(name, callback, response) {
+      function(callback, response) {
     if (!callback)
       return;
 

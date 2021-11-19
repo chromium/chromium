@@ -40,7 +40,7 @@ function getFileBindingsForApi(apiName) {
   if (WINDOW == backgroundPage) {
     var bindFileEntryCallback = function(functionName, apiFunctions) {
       apiFunctions.setCustomCallback(functionName,
-          function(name, callback, response) {
+          function(callback, response) {
         if (callback) {
           if (!response) {
             callback();
@@ -138,7 +138,7 @@ function getBindDirectoryEntryCallback() {
   // context as their own. This allows them to be used from other windows
   // (including the background page) after the original window is closed.
   if (WINDOW == backgroundPage) {
-    return function(name, callback, response) {
+    return function(callback, response) {
       if (callback) {
         if (!response) {
           callback();

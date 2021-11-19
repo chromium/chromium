@@ -99,8 +99,7 @@ class APIRequestHandler::AsyncResultHandler {
   void ResolveRequest(v8::Local<v8::Context> context,
                       APILastError* last_error,
                       const std::vector<v8::Local<v8::Value>>& response_args,
-                      const std::string& error,
-                      const std::string& method_name);
+                      const std::string& error);
 
   // Returns true if the request handler is using a custom callback.
   bool has_custom_callback() const { return !custom_callback_.IsEmpty(); }
@@ -128,8 +127,7 @@ class APIRequestHandler::AsyncResultHandler {
   void CallCustomCallback(
       v8::Local<v8::Context> context,
       const std::vector<v8::Local<v8::Value>>& response_args,
-      const std::string& error,
-      const std::string& method_name);
+      const std::string& error);
 
   // Callback-based handlers. Mutually exclusive with promise-based handlers.
   v8::Global<v8::Function> callback_;
@@ -170,8 +168,7 @@ void APIRequestHandler::AsyncResultHandler::ResolveRequest(
     v8::Local<v8::Context> context,
     APILastError* last_error,
     const std::vector<v8::Local<v8::Value>>& response_args,
-    const std::string& error,
-    const std::string& method_name) {
+    const std::string& error) {
   v8::Isolate* isolate = context->GetIsolate();
 
   // Set runtime.lastError if there is an error and this isn't a promise-based
@@ -185,7 +182,7 @@ void APIRequestHandler::AsyncResultHandler::ResolveRequest(
     // Custom callback case; the custom callback will invoke a curried-in
     // callback, which will trigger the response in the extension (either
     // promise or callback).
-    CallCustomCallback(context, response_args, error, method_name);
+    CallCustomCallback(context, response_args, error);
   } else if (!promise_resolver_.IsEmpty()) {  // Promise-based request.
     DCHECK(callback_.IsEmpty());
     ResolvePromise(context, response_args, error,
@@ -277,8 +274,7 @@ void APIRequestHandler::AsyncResultHandler::CustomCallbackAdaptor(
 void APIRequestHandler::AsyncResultHandler::CallCustomCallback(
     v8::Local<v8::Context> context,
     const std::vector<v8::Local<v8::Value>>& response_args,
-    const std::string& error,
-    const std::string& method_name) {
+    const std::string& error) {
   v8::Isolate* isolate = context->GetIsolate();
 
   v8::Local<v8::Value> callback_to_pass = v8::Undefined(isolate);
@@ -303,10 +299,9 @@ void APIRequestHandler::AsyncResultHandler::CallCustomCallback(
   }
 
   // Custom callbacks in the JS bindings are called with the arguments of the
-  // method name, callback function, and the response from the API.
+  // callback function and the response from the API.
   std::vector<v8::Local<v8::Value>> custom_callback_args;
-  custom_callback_args.reserve(2 + response_args.size());
-  custom_callback_args.push_back(gin::StringToSymbol(isolate, method_name));
+  custom_callback_args.reserve(1 + response_args.size());
   custom_callback_args.push_back(callback_to_pass);
   custom_callback_args.insert(custom_callback_args.end(), response_args.begin(),
                               response_args.end());
@@ -554,8 +549,8 @@ void APIRequestHandler::CompleteRequestImpl(int request_id,
 
   v8::TryCatch try_catch(isolate);
 
-  pending_request.async_handler->ResolveRequest(
-      context, &last_error_, response_args, error, pending_request.method_name);
+  pending_request.async_handler->ResolveRequest(context, &last_error_,
+                                                response_args, error);
 
   // Since arbitrary JS has ran, the context may have been invalidated. If it
   // was, bail.

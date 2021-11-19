@@ -1977,8 +1977,7 @@ TEST_F(APIBindingUnittest, TestPromisesWithJSCustomCallback) {
   const char kRegisterHook[] = R"(
       (function(hooks) {
         hooks.setCustomCallback('supportsPromises',
-                                (name, callback, response) => {
-          this.methodName = name;
+                                (callback, response) => {
           this.response = response;
           this.resolveCallback = callback;
           if (response == 'resolveNow')
@@ -2012,9 +2011,6 @@ TEST_F(APIBindingUnittest, TestPromisesWithJSCustomCallback) {
                                        std::string());
     // The promise should still be unfulfilled until the callback is invoked.
     EXPECT_EQ(v8::Promise::kPending, promise->State());
-    EXPECT_EQ(
-        R"("test.supportsPromises")",
-        GetStringPropertyFromObject(context->Global(), context, "methodName"));
     v8::Local<v8::Function> resolve_callback;
     ASSERT_TRUE(GetPropertyFromObjectAs(context->Global(), context,
                                         "resolveCallback", &resolve_callback));

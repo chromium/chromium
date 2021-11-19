@@ -98,9 +98,8 @@ const char kGammaAPISpec[] = R"(
 const char kCustomCallbackHook[] = R"(
     (function(hooks) {
       hooks.setCustomCallback(
-          'functionWithCallback', (name, originalCallback,
+          'functionWithCallback', (originalCallback,
                                    firstResult, secondResult) => {
-        this.methodName = name;
         this.results = [firstResult, secondResult];
         originalCallback(secondResult);
       });
@@ -439,9 +438,6 @@ TEST_F(APIBindingsSystemTest, TestSetCustomCallback_SuccessWithCallback) {
   bindings_system()->CompleteRequest(last_request()->request_id, *response,
                                      std::string());
 
-  EXPECT_EQ(
-      R"("alpha.functionWithCallback")",
-      GetStringPropertyFromObject(context->Global(), context, "methodName"));
   EXPECT_EQ(R"(["alpha","beta"])",
             GetStringPropertyFromObject(context->Global(), context, "results"));
   EXPECT_EQ(R"(["beta"])",
@@ -480,9 +476,6 @@ TEST_F(APIBindingsSystemTest, TestSetCustomCallback_SuccessWithPromise) {
   bindings_system()->CompleteRequest(last_request()->request_id, *response,
                                      std::string());
 
-  EXPECT_EQ(
-      R"("alpha.functionWithCallback")",
-      GetStringPropertyFromObject(context->Global(), context, "methodName"));
   EXPECT_EQ(R"(["gamma","delta"])",
             GetStringPropertyFromObject(context->Global(), context, "results"));
   EXPECT_EQ(v8::Promise::kFulfilled, promise->State());

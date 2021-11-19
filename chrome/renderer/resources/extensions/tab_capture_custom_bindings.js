@@ -7,7 +7,7 @@
 apiBridge.registerCustomHook(function(bindingsAPI, extensionId) {
   var apiFunctions = bindingsAPI.apiFunctions;
 
-  function proxyToGetUserMedia(name, callback, response) {
+  function proxyToGetUserMedia(callback, response) {
     if (!callback)
       return;
 
@@ -24,7 +24,7 @@ apiBridge.registerCustomHook(function(bindingsAPI, extensionId) {
       if (!error || (typeof error.message !== 'string'))
         return fallbackMessage;
       return error.message.replace(/(navigator\.)?(webkit)?GetUserMedia/gi,
-                                   name);
+                                   'tabCapture.capture');
     }
 
     var options = {};

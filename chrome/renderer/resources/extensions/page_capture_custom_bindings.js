@@ -13,7 +13,7 @@ apiBridge.registerCustomHook(function(bindingsAPI) {
   var apiFunctions = bindingsAPI.apiFunctions;
 
   apiFunctions.setCustomCallback('saveAsMHTML',
-      function(name,  callback, response) {
+      function(callback, response) {
     var requestId;
     if (response) {
       requestId = response.requestId;
