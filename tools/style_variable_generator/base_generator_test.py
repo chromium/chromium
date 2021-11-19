@@ -181,6 +181,80 @@ class BaseGeneratorTest(unittest.TestCase):
         ''')
         self.assertRaises(ValueError, self.generator.Validate)
 
+    def testBlend(self):
+        self.generator.AddJSONToModel('''
+{
+  colors: {
+    expect_color_white: "blend($white, #202124)",
+    expect_color_lighter: "blend(rgba($white_rgb, 0.06), rgba(32, 33, 36, 0.6))"
+  }
+}
+        ''')
+        self.assertEqual(self.ResolveRGBA('expect_color_white'),
+                         'rgba(255, 255, 255, 1)')
+        self.assertEqual(self.ResolveRGBA('expect_color_lighter'),
+                         'rgba(53, 54, 57, 0.624)')
+
+    def testBlendVariableReference(self):
+        self.generator.AddJSONToModel('''
+{
+  colors: {
+    google_grey_900: "#202124",
+    bg_color_elevation_3: "blend(rgba($white_rgb, 0.08), $google_grey_900)",
+  }
+}
+        ''')
+        self.assertEqual(self.ResolveRGBA('bg_color_elevation_3'),
+                         'rgba(50, 51, 54, 1)')
+
+    def testBlendMoreVariableReferences(self):
+        self.generator.AddJSONToModel('''
+{
+  colors: {
+    color_a: "blend(rgba($white_rgb, 0.5), $black)",
+    color_b: "blend(rgba($color_a_rgb, 0.5), rgba($black_rgb, 0.5))",
+    color_c: "blend($color_a, blend(rgba($color_b_rgb, 0.5), $white))",
+  }
+}
+        ''')
+        self.assertEqual(self.ResolveRGBA('color_a'), 'rgba(128, 128, 128, 1)')
+        self.assertEqual(self.ResolveRGBA('color_b'), 'rgba(85, 85, 85, 0.75)')
+        # Same as color_a because color_a has alpha 1.
+        self.assertEqual(self.ResolveRGBA('color_c'), 'rgba(128, 128, 128, 1)')
+
+    def testBlendVariableReferenceLightDarkModes(self):
+        self.generator.AddJSONToModel('''
+{
+  colors: {
+    google_blue_300: "#8ab4f8",
+    google_blue_600: "#1a73e8",
+    color_prominent: {
+      light: "$google_blue_600",
+      dark: "$google_blue_300",
+    },
+    color_prominent_dull: {
+      light: "blend(rgba($white_rgb, 0.08), $color_prominent)",
+      dark: "blend(rgba($black_rgb, 0.08), $color_prominent)",
+    },
+  }
+}
+        ''')
+        self.assertEqual(self.ResolveRGBA('color_prominent_dull', Modes.LIGHT),
+                         'rgba(44, 126, 234, 1)')
+        self.assertEqual(self.ResolveRGBA('color_prominent_dull', Modes.DARK),
+                         'rgba(127, 166, 228, 1)')
+
+    def testBlendNested(self):
+        self.generator.AddJSONToModel('''
+{
+  colors: {
+    expect_color_black: "blend(blend($black, $white), $white)",
+  }
+}
+        ''')
+        self.assertEqual(self.ResolveRGBA('expect_color_black'),
+                         'rgba(0, 0, 0, 1)')
+
 
 if __name__ == '__main__':
     unittest.main()

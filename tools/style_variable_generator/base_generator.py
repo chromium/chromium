@@ -132,18 +132,52 @@ class ColorModel(ModeKeyedModel):
 
     # Returns a Color that is the final RGBA value for |name| in |mode|.
     def ResolveToRGBA(self, name, mode):
-        c = self.Resolve(name, mode)
-        if c.var:
-            return self.ResolveToRGBA(c.var, mode)
-        result = Color()
-        assert c.opacity
-        result.opacity = self.opacity_model.ResolveOpacity(c.opacity, mode)
+        return self._ResolveColorToRGBA(self.Resolve(name, mode), mode)
 
-        rgb = c
-        if c.rgb_var:
-            rgb = self.ResolveToRGBA(c.RGBVarToVar(), mode)
+    # Returns a Color that is the final RGBA value for |color| in |mode|.
+    def _ResolveColorToRGBA(self, color, mode):
+        if color.var:
+            return self.ResolveToRGBA(color.var, mode)
+
+        if len(color.blended_colors) == 2:
+            return self._BlendColors(color.blended_colors[0],
+                                     color.blended_colors[1], mode)
+
+        result = Color()
+        assert color.opacity
+        result.opacity = self.opacity_model.ResolveOpacity(color.opacity, mode)
+
+        rgb = color
+        if color.rgb_var:
+            rgb = self.ResolveToRGBA(color.RGBVarToVar(), mode)
 
         (result.r, result.g, result.b) = (rgb.r, rgb.g, rgb.b)
+        return result
+
+    # Returns a Color that is the final RGBA value for |color_a| over |color_b|
+    # in |mode|.
+    def _BlendColors(self, color_a, color_b, mode):
+        # TODO(b/206887565): Check for circular references.
+        color_a_res = self._ResolveColorToRGBA(color_a, mode)
+        (alpha_a, r_a, g_a, b_a) = (color_a_res.opacity.a, color_a_res.r,
+                                    color_a_res.g, color_a_res.b)
+        color_b_res = self._ResolveColorToRGBA(color_b, mode)
+        (alpha_b, r_b, g_b, b_b) = (color_b_res.opacity.a, color_b_res.r,
+                                    color_b_res.g, color_b_res.b)
+
+        # Blend using the formula for "A over B" from
+        # https://wikipedia.org/wiki/Alpha_compositing.
+        alpha_out = alpha_a + (alpha_b * (1 - alpha_a))
+        r_out = round(
+            (r_a * alpha_a + r_b * alpha_b * (1 - alpha_a)) / alpha_out)
+        g_out = round(
+            (g_a * alpha_a + g_b * alpha_b * (1 - alpha_a)) / alpha_out)
+        b_out = round(
+            (b_a * alpha_a + b_b * alpha_b * (1 - alpha_a)) / alpha_out)
+
+        result = Color()
+        (result.r, result.g, result.b) = (r_out, g_out, b_out)
+        result.opacity = Opacity(alpha_out)
         return result
 
     def _CreateValue(self, value):
@@ -232,6 +266,31 @@ class BaseGenerator:
         except ValueError as err:
             raise ValueError('Error parsing color "%s": %s' % (value_obj, err))
 
+    # Add all the colors in the data to the model.
+    def _AddColors(self, data, generator_context):
+        for name, value in data.get('colors', {}).items():
+            if not re.match('^[a-z0-9_]+$', name):
+                raise ValueError(
+                    '%s is not a valid variable name (lower case, 0-9, _)' %
+                    name)
+
+            self.AddColor(name, value, generator_context)
+        # Calculate the final RGBA for all blended colors because the
+        # generator's subclasses can't blend yet.
+        color_model = self.model[VariableType.COLOR]
+        temp_model = {}
+        for name, value in color_model.items():
+            for mode, color in value.items():
+                if color.blended_colors:
+                    assert len(color.blended_colors) == 2
+                    if name not in temp_model:
+                        temp_model[name] = {}
+                    temp_model[name][mode] = color_model.ResolveToRGBA(
+                        name, mode)
+        for name, value in temp_model.items():
+            for mode, color in value.items():
+                color_model[name][mode] = temp_model[name][mode]
+
     def AddOpacity(self, name, value_obj, context=None):
         self._SetVariableContext(name, context)
         try:
@@ -268,13 +327,7 @@ class BaseGenerator:
         generator_context = data.get('options', {})
         self.in_file_to_context[in_file] = generator_context
 
-        for name, value in data.get('colors', {}).items():
-            if not re.match('^[a-z0-9_]+$', name):
-                raise ValueError(
-                    '%s is not a valid variable name (lower case, 0-9, _)' %
-                    name)
-
-            self.AddColor(name, value, generator_context)
+        self._AddColors(data, generator_context)
 
         for name, value in data.get('opacities', {}).items():
             if not re.match('^[a-z0-9_]+_opacity$', name):
@@ -349,4 +402,4 @@ class BaseGenerator:
                 if opacity.var:
                     CheckOpacityReference(opacity.var, name)
 
-        # TODO(calamity): Check for circular references.
+        # TODO(b/206887565): Check for circular references.

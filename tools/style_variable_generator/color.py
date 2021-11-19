@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 # Copyright 2019 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
@@ -5,6 +6,26 @@
 import re
 import textwrap
 from style_variable_generator.opacity import Opacity
+
+
+def split_args(arg_str):
+    '''Splits a string of args by comma, taking into account brackets.
+    '''
+    num_unmatched = 0
+    prev_index = 0
+    for i, c in enumerate(arg_str):
+        if c == '(':
+            num_unmatched += 1
+        elif c == ')':
+            num_unmatched -= 1
+            if (num_unmatched < 0):
+                raise ValueError('too many ")"')
+        elif c == ',' and num_unmatched == 0:
+            yield arg_str[prev_index:i].strip()
+            prev_index = i + 1
+    if num_unmatched > 0:
+        raise ValueError('too many "("')
+    yield arg_str[prev_index:].strip()
 
 
 class Color:
@@ -19,6 +40,7 @@ class Color:
     - rgb($other_color_rgb)
     - rgba($other_color_rgb, a)
     - rgba($other_color_rgb, $named_opacity)
+    - blend(color1, color2)
 
     NB: The color components that refer to other colors' RGB values must end
     with '_rgb'.
@@ -30,12 +52,16 @@ class Color:
         self.r = -1
         self.g = -1
         self.b = -1
+        # If non-empty, this color is the result of blending two other
+        # colors using the "A over B" operation, where A is blended_colors[0]
+        # and B is blended_colors[1].
+        self.blended_colors = []
 
         self.opacity = None
 
         if value_str is not None:
             self.Parse(value_str)
-            if not self.var and not self.opacity:
+            if not self.var and not self.blended_colors and not self.opacity:
                 raise ValueError(repr(self))
 
     def _AssignRGB(self, rgb):
@@ -124,6 +150,19 @@ class Color:
             raise ValueError('rgba() expected to have either'
                              '1 reference + alpha, or 3 ints + alpha')
 
+        def ParseBlend(value):
+            match = re.match('^blend\((.*)\)$', value)
+            if not match:
+                return False
+
+            values = list(split_args(match.group(1)))
+            if len(values) == 2:
+                self.blended_colors.append(Color(values[0]))
+                self.blended_colors.append(Color(values[1]))
+                return True
+
+            raise ValueError('blend() expected to have 2 colors')
+
         def ParseVariableReference(value):
             match = re.match('^\$([\w\d_]+)$', value)
             if not match:
@@ -146,6 +185,7 @@ class Color:
             ParseHex,
             ParseRGB,
             ParseRGBA,
+            ParseBlend,
             ParseVariableReference,
         ]
 

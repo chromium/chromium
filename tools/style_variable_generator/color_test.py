@@ -3,7 +3,11 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-from style_variable_generator.color import Color
+import sys
+import os
+sys.path += [os.path.dirname(os.path.dirname(__file__))]
+
+from style_variable_generator.color import Color, split_args
 import unittest
 
 
@@ -36,6 +40,33 @@ class ColorTest(unittest.TestCase):
         c = Color('rgba($some_color_400_rgb, 0.1)')
         self.assertEqual(c.rgb_var, 'some_color_400_rgb')
         self.assertEqual(c.opacity.a, 0.1)
+
+    def testBlendColors(self):
+        # White over Grey 900.
+        c = Color('blend($white, #00ff00)')
+        self.assertEqual(len(c.blended_colors), 2)
+        c0 = c.blended_colors[0]
+        self.assertEqual(c0.r, 255)
+        self.assertEqual(c0.g, 255)
+        self.assertEqual(c0.b, 255)
+        self.assertEqual(c0.opacity.a, 1)
+        c1 = c.blended_colors[1]
+        self.assertEqual(c1.r, 0)
+        self.assertEqual(c1.g, 255)
+        self.assertEqual(c1.b, 0)
+        self.assertEqual(c1.opacity.a, 1)
+
+        # Some color 6% over Grey 900 60%.
+        c = Color('blend(rgba($some_color_rgb, 0.06), rgba(32, 33, 36, 0.6))')
+        self.assertEqual(len(c.blended_colors), 2)
+        c0 = c.blended_colors[0]
+        self.assertEqual(c0.rgb_var, 'some_color_rgb')
+        self.assertEqual(c0.opacity.a, 0.06)
+        c1 = c.blended_colors[1]
+        self.assertEqual(c1.r, 32)
+        self.assertEqual(c1.g, 33)
+        self.assertEqual(c1.b, 36)
+        self.assertEqual(c1.opacity.a, 0.6)
 
     def testReferenceColor(self):
         c = Color('$some_color')
@@ -96,6 +127,27 @@ class ColorTest(unittest.TestCase):
         with self.assertRaises(ValueError):
             # Variable reference with accidental space.
             Color('rgba($non_ rgb_var, 0.4)')
+
+    def testSplitArgs(self):
+        args = list(split_args('a'))
+        self.assertEqual(args, ['a'])
+
+        args = list(split_args('a, b, c'))
+        self.assertEqual(args, ['a', 'b', 'c'])
+
+        args = list(split_args('foo(), bar(x), baz(x, y)'))
+        self.assertEqual(args, ['foo()', 'bar(x)', 'baz(x, y)'])
+
+        args = list(split_args('foo(bar(a, b, c))'))
+        self.assertEqual(args, ['foo(bar(a, b, c))'])
+
+        with self.assertRaises(ValueError):
+            # Too many ")".
+            list(split_args('foo(bar(a, b)) )'))
+
+        with self.assertRaises(ValueError):
+            # Too many "(".
+            list(split_args('foo(bar(a, b)) ('))
 
 
 if __name__ == '__main__':
