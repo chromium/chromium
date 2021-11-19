@@ -228,12 +228,10 @@ Color TextDecorationInfo::LineColor() const {
 }
 
 gfx::PointF TextDecorationInfo::StartPoint(TextDecorationLine line) const {
-  return local_origin_ +
-         gfx::Vector2dF(
-             0, line_data_[TextDecorationToLineDataIndex(line)].line_offset);
+  return local_origin_ + gfx::Vector2dF(0, LineDataForLine(line).line_offset);
 }
 float TextDecorationInfo::DoubleOffset(TextDecorationLine line) const {
-  return line_data_[TextDecorationToLineDataIndex(line)].double_offset;
+  return LineDataForLine(line).double_offset;
 }
 
 enum StrokeStyle TextDecorationInfo::StrokeStyle() const {
@@ -295,30 +293,27 @@ FloatRect TextDecorationInfo::BoundsForLine(TextDecorationLine line) const {
 
 FloatRect TextDecorationInfo::BoundsForDottedOrDashed(
     TextDecorationLine line) const {
-  int line_data_index = TextDecorationToLineDataIndex(line);
   StrokeData stroke_data;
   stroke_data.SetThickness(roundf(ResolvedThickness()));
   stroke_data.SetStyle(TextDecorationStyleToStrokeStyle(DecorationStyle()));
-  return FloatRect(
-      line_data_[line_data_index].stroke_path.value().StrokeBoundingRect(
-          stroke_data));
+  return FloatRect(LineDataForLine(line).stroke_path.value().StrokeBoundingRect(
+      stroke_data));
 }
 
 FloatRect TextDecorationInfo::BoundsForWavy(TextDecorationLine line) const {
-  int line_data_index = TextDecorationToLineDataIndex(line);
   StrokeData stroke_data;
   stroke_data.SetThickness(ResolvedThickness());
   auto bounding_rect = FloatRect(
-      line_data_[line_data_index].stroke_path->StrokeBoundingRect(stroke_data));
+      LineDataForLine(line).stroke_path->StrokeBoundingRect(stroke_data));
 
   bounding_rect.set_x(StartPoint(line).x());
   bounding_rect.set_width(width_);
   return bounding_rect;
 }
 
-absl::optional<Path> TextDecorationInfo::StrokePathForLine(TextDecorationLine line) const {
-  int line_data_index = TextDecorationToLineDataIndex(line);
-  return line_data_[line_data_index].stroke_path;
+absl::optional<Path> TextDecorationInfo::StrokePathForLine(
+    TextDecorationLine line) const {
+  return LineDataForLine(line).stroke_path;
 }
 
 float TextDecorationInfo::WavyDecorationSizing() const {
@@ -379,14 +374,13 @@ Path TextDecorationInfo::PrepareDottedOrDashedStrokePath(
  *                 step
  */
 Path TextDecorationInfo::PrepareWavyStrokePath(TextDecorationLine line) const {
-  gfx::PointF start_point = StartPoint(line);
   float wave_offset =
-      DoubleOffset(line) *
-      line_data_[TextDecorationToLineDataIndex(line)].wavy_offset_factor;
+      DoubleOffset(line) * LineDataForLine(line).wavy_offset_factor;
 
   float control_point_distance = ControlPointDistanceFromResolvedThickness();
   float step = StepFromResolvedThickness();
 
+  gfx::PointF start_point = StartPoint(line);
   // We paint the wave before and after the text line (to cover the whole length
   // of the line) and then we clip it at
   // AppliedDecorationPainter::StrokeWavyTextDecoration().
@@ -456,6 +450,12 @@ Path TextDecorationInfo::PrepareWavyStrokePath(TextDecorationLine line) const {
     }
   }
   return path;
+}
+
+TextDecorationInfo::PerLineData TextDecorationInfo::LineDataForLine(
+    TextDecorationLine line) const {
+  int line_data_index = TextDecorationToLineDataIndex(line);
+  return line_data_[line_data_index];
 }
 
 }  // namespace blink
