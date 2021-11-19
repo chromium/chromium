@@ -160,7 +160,11 @@ void PositionView(UIView* view, CGPoint point) {
                            constant:kGridCellPriceDropTopSpacing],
         [priceCardView.leadingAnchor
             constraintEqualToAnchor:snapshotView.leadingAnchor
-                           constant:kGridCellPriceDropLeadingSpacing]
+                           constant:kGridCellPriceDropLeadingSpacing],
+        [priceCardView.trailingAnchor
+            constraintLessThanOrEqualToAnchor:snapshotView.trailingAnchor
+                                     constant:-
+                                              kGridCellPriceDropTrailingSpacing]
       ]];
     }
     [NSLayoutConstraint activateConstraints:constraints];
