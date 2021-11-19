@@ -237,8 +237,7 @@ NetMetricsLogUploader::NetMetricsLogUploader(
       service_type_(service_type),
       on_upload_complete_(on_upload_complete) {}
 
-NetMetricsLogUploader::~NetMetricsLogUploader() {
-}
+NetMetricsLogUploader::~NetMetricsLogUploader() = default;
 
 void NetMetricsLogUploader::UploadLog(const std::string& compressed_log_data,
                                       const std::string& log_hash,
