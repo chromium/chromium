@@ -33,7 +33,7 @@
     // shipped stable can have its runtime flag removed soon after.
     status: {
       valid_values: ["stable", "experimental", "test"],
-      valid_keys: ["Android", "Win", "ChromeOS", "Mac", "Lacros"]
+      valid_keys: ["Android", "Win", "ChromeOS", "Mac", "Lacros", "Linux"]
     },
 
     // "implied_by" or "depends_on" specifies relationship to other features:
@@ -998,9 +998,12 @@
     {
       name: "EyeDropperAPI",
       status: {
-        // EyeDropper UI is available only on desktop operating systems.
-        "Android": "test",
-        "default": "stable",
+        // EyeDropper UI is available only on Windows, Mac, and Linux. This list
+        // should match the supported operating systems for the kEyeDropper
+        // base::Feature.
+        "Mac": "stable",
+        "Win": "stable",
+        "Linux": "stable",
       },
     },
     {
