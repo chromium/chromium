@@ -822,6 +822,78 @@ TEST_P(SurfaceTest, SetViewport) {
   EXPECT_EQ(ToPixel(gfx::Rect(0, 0, 512, 512)), GetCompleteDamage(frame));
 }
 
+TEST_P(SurfaceTest, SubpixelCoordinate) {
+  gfx::Size buffer_size(512, 512);
+  auto buffer = std::make_unique<Buffer>(
+      exo_test_helper()->CreateGpuMemoryBuffer(buffer_size));
+  auto surface = std::make_unique<Surface>();
+  auto shell_surface = std::make_unique<ShellSurface>(surface.get());
+
+  // This will update the bounds of the surface and take the buffer transform
+  // into account.
+  surface->Attach(buffer.get());
+
+  gfx::Size inverted_size(buffer_size.height(), buffer_size.width());
+
+  gfx::Size child_buffer_size(64, 64);
+  auto child_buffer = std::make_unique<Buffer>(
+      exo_test_helper()->CreateGpuMemoryBuffer(child_buffer_size));
+  auto child_surface = std::make_unique<Surface>();
+  auto sub_surface =
+      std::make_unique<SubSurface>(child_surface.get(), surface.get());
+
+  gfx::Transform device_scale_transform;
+  device_scale_transform.Scale(1.f / device_scale_factor(),
+                               1.f / device_scale_factor());
+
+  child_surface->Attach(child_buffer.get());
+
+  // These rects are in pixel coordinates with some having subpixel coordinates.
+  gfx::RectF kTestRects[] = {
+      gfx::RectF(10, 20, 30, 40),     gfx::RectF(11, 22, 33, 44),
+      gfx::RectF(10.5, 20, 30, 40),   gfx::RectF(10, 20.5, 30, 40),
+      gfx::RectF(10, 20, 30.5, 40),   gfx::RectF(10, 20, 30, 40.5),
+      gfx::RectF(10.5, 20, 30, 40.5), gfx::RectF(10.5, 20.5, 30, 40)};
+  bool kExpectedAligned[] = {true,  true,  false, false,
+                             false, false, false, false};
+  static_assert(base::size(kTestRects) == base::size(kExpectedAligned),
+                "Number of elements in each list should be the identical.");
+
+  for (size_t i = 0; i < base::size(kTestRects); i++) {
+    auto rect_in_dip = kTestRects[i];
+    device_scale_transform.TransformRect(&rect_in_dip);
+    sub_surface->SetPosition(rect_in_dip.origin());
+    child_surface->SetViewport(rect_in_dip.size());
+    const int kChildBufferScale = 2;
+    child_surface->SetBufferScale(kChildBufferScale);
+    child_surface->Commit();
+    surface->Commit();
+    base::RunLoop().RunUntilIdle();
+
+    const viz::CompositorFrame& frame =
+        GetFrameFromSurface(shell_surface.get());
+    ASSERT_EQ(1u, frame.render_pass_list.size());
+    const auto& quad_list = frame.render_pass_list[0]->quad_list;
+    ASSERT_EQ(2u, quad_list.size());
+    auto transform =
+        quad_list.front()->shared_quad_state->quad_to_target_transform;
+    auto rect = gfx::RectF(quad_list.front()->rect);
+    transform.TransformRect(&rect);
+    if (kExpectedAligned[i]) {
+      EXPECT_EQ(gfx::Transform(), transform);
+      EXPECT_EQ(kTestRects[i], rect);
+    } else {
+      EXPECT_EQ(gfx::Rect(1, 1), quad_list.front()->rect);
+      // Subpixel quads have non identity transforms and due to floating point
+      // math can only be approximately compared.
+      EXPECT_NEAR(kTestRects[i].x(), rect.x(), 0.001f);
+      EXPECT_NEAR(kTestRects[i].y(), rect.y(), 0.001f);
+      EXPECT_NEAR(kTestRects[i].width(), rect.width(), 0.001f);
+      EXPECT_NEAR(kTestRects[i].height(), rect.height(), 0.001f);
+    }
+  }
+}
+
 TEST_P(SurfaceTest, SetCrop) {
   gfx::Size buffer_size(16, 16);
   auto buffer = std::make_unique<Buffer>(
@@ -1159,19 +1231,32 @@ TEST_P(SurfaceTest, ScaledSurfaceQuad) {
               frame.render_pass_list.back()
                   ->quad_list.back()
                   ->shared_quad_state->clip_rect);
-    // Rect should be the unmodified surface size.
-    EXPECT_EQ(gfx::Rect(gfx::Point(0, 0), gfx::Size(256, 256)),
-              frame.render_pass_list.back()->quad_list.back()->rect);
+
+    auto testing_rect = gfx::RectF(gfx::PointF(0, 0), gfx::SizeF(256, 256));
     // To get 32,32 -> 160,160 into the correct position it must be translated
     // backwards and scaled 0.5x in Y, then everything is scaled by the scale
     // factor.
-    EXPECT_EQ(gfx::Transform(1.0f * device_scale_factor(), 0.0f, 0.0f,
-                             0.5f * device_scale_factor(),
-                             -32.0f * device_scale_factor(),
-                             -16.0f * device_scale_factor()),
-              frame.render_pass_list.back()
-                  ->quad_list.back()
-                  ->shared_quad_state->quad_to_target_transform);
+    auto expected_transform = gfx::Transform(
+        1.0f * device_scale_factor(), 0.0f, 0.0f, 0.5f * device_scale_factor(),
+        -32.0f * device_scale_factor(), -32.0f * device_scale_factor() * 0.5f);
+
+    // When possible exo will represent the transform completely in the |rect|.
+    // This leaves the |quad_to_target_transform| transform as Identity.
+    if (gfx::Transform() == frame.render_pass_list.back()
+                                ->quad_list.back()
+                                ->shared_quad_state->quad_to_target_transform) {
+      expected_transform.TransformRect(&testing_rect);
+      auto expected_rect = gfx::ToNearestRect(testing_rect);
+      EXPECT_EQ(expected_rect,
+                frame.render_pass_list.back()->quad_list.back()->rect);
+    } else {
+      EXPECT_EQ(expected_transform,
+                frame.render_pass_list.back()
+                    ->quad_list.back()
+                    ->shared_quad_state->quad_to_target_transform);
+      EXPECT_EQ(gfx::ToNearestRect(testing_rect),
+                frame.render_pass_list.back()->quad_list.back()->rect);
+    }
   }
 }
 

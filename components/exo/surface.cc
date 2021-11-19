@@ -1333,17 +1333,29 @@ void Surface::AppendContentsToFrame(const gfx::PointF& origin,
       state_.basic_state.opaque_region.Contains(
           gfx::ToEnclosedRect(output_rect));
 
-  viz::SharedQuadState* quad_state =
-      render_pass->CreateAndAppendSharedQuadState();
-
   gfx::MaskFilterInfo msk;
-
   if (!state_.radii.IsEmpty()) {
     const auto rect =
         gfx::ScaleRect(gfx::RectF(scale.x(), scale.y()), device_scale_factor);
     msk = gfx::MaskFilterInfo(rect, state_.radii);
   }
 
+  // The overdraw algorithm in 'Display::RemoveOverdrawQuads' operates in
+  // content space and, due to the discretized nature of the |gfx::Rect|, cannot
+  // work with 0,0 1x1 quads. This also means that quads that do not fall on
+  // pixel boundaries (rotated or subpixel rects) cannot be removed by the
+  // algorithm.
+  gfx::RectF target_space_rect(quad_rect);
+  quad_to_target_transform.TransformRect(&target_space_rect);
+  CHECK(quad_to_target_transform.Preserves2dAxisAlignment());
+  if (gfx::IsNearestRectWithinDistance(target_space_rect, 0.001f)) {
+    quad_rect = gfx::ToNearestRect(target_space_rect);
+    // Later in 'SurfaceAggregator' this transform will have 2d translation.
+    quad_to_target_transform = gfx::Transform();
+  }
+
+  viz::SharedQuadState* quad_state =
+      render_pass->CreateAndAppendSharedQuadState();
   quad_state->SetAll(/*quad_layer_rect=*/quad_to_target_transform, quad_rect,
                      /*visible_quad_layer_rect=*/quad_rect,
                      /*mask_filter_info=*/msk, /*clip_rect=*/absl::nullopt,
