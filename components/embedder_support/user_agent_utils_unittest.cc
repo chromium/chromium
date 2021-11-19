@@ -761,10 +761,9 @@ TEST_P(UserAgentUtilsTest, GetProduct) {
   std::string major_version;
   EXPECT_TRUE(
       re2::RE2::FullMatch(product, kChromeProductVersionRegex, &major_version));
-  if (ForceMajorVersionTo100())
-    EXPECT_EQ(major_version, "100");
-  else
-    EXPECT_EQ(major_version, version_info::GetMajorVersionNumber());
+  // Whether the force M100 experiment is on or not, the product value should
+  // contain the actual major version number.
+  EXPECT_EQ(major_version, version_info::GetMajorVersionNumber());
 }
 
 TEST_P(UserAgentUtilsTest, GetUserAgent) {

@@ -22,7 +22,9 @@ class WebContents;
 
 namespace embedder_support {
 
-// Returns the product used in building the user-agent.
+// Returns the product string, e.g. "Chrome/98.0.4521.0".  It's possible to have
+// a mismatch between the product's version number and the version number in the
+// User-Agent string, if there are flag-enabled overrides.
 std::string GetProduct();
 
 // Returns the user agent string for Chrome. If the ReduceUserAgent

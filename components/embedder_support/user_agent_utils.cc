@@ -232,14 +232,19 @@ const blink::UserAgentBrandList& GetBrandFullVersionList(
   return GetUserAgentBrandFullVersionList(enable_updated_grease_by_policy);
 }
 
-}  // namespace
-
-std::string GetProduct() {
-  if (base::FeatureList::IsEnabled(
+std::string GetProduct(const bool allow_version_override) {
+  if (allow_version_override &&
+      base::FeatureList::IsEnabled(
           blink::features::kForceMajorVersion100InUserAgent))
     return "Chrome/" + GetM100VersionNumber();
 
   return version_info::GetProductNameAndVersionForUserAgent();
+}
+
+}  // namespace
+
+std::string GetProduct() {
+  return GetProduct(/*allow_version_override=*/false);
 }
 
 std::string GetUserAgent() {
@@ -254,7 +259,7 @@ std::string GetUserAgent() {
   if (base::FeatureList::IsEnabled(blink::features::kReduceUserAgent))
     return GetReducedUserAgent();
 
-  std::string product = GetProduct();
+  std::string product = GetProduct(/*allow_version_override=*/true);
 #if defined(OS_ANDROID)
   if (command_line->HasSwitch(switches::kUseMobileUserAgent))
     product += " Mobile";
@@ -455,8 +460,8 @@ void SetDesktopUserAgentOverride(content::WebContents* web_contents,
   const char kLinuxInfoStr[] = "X11; Linux x86_64";
 
   blink::UserAgentOverride spoofed_ua;
-  spoofed_ua.ua_string_override =
-      content::BuildUserAgentFromOSAndProduct(kLinuxInfoStr, GetProduct());
+  spoofed_ua.ua_string_override = content::BuildUserAgentFromOSAndProduct(
+      kLinuxInfoStr, GetProduct(/*allow_version_override=*/true));
   spoofed_ua.ua_metadata_override = metadata;
   spoofed_ua.ua_metadata_override->platform = "Linux";
   spoofed_ua.ua_metadata_override->platform_version =
