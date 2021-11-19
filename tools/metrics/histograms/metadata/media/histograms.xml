@@ -1031,9 +1031,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.AudioCapturerAudioGlitches" enum="AudioGlitchResult"
-    expires_after="2022-04-10">
-  <owner>guidou@chromium.org</owner>
+    expires_after="2022-10-04">
   <owner>olka@chromium.org</owner>
+  <owner>gustaf@chromium.org</owner>
   <summary>
     Whether there is input audio glitches due to dropped input audio data or
     not. Sampled when a low-latency input audio stream is destructed.
@@ -1041,9 +1041,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.AudioCapturerDroppedData" units="%"
-    expires_after="2022-04-10">
-  <owner>guidou@chromium.org</owner>
+    expires_after="2022-02-04">
   <owner>olka@chromium.org</owner>
+  <owner>gustaf@chromium.org</owner>
   <summary>
     The percentage of input audio data that was dropped at the browser/renderer
     boundary due to for example buffer overflow in the writer side buffer or in
@@ -1051,16 +1051,49 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Media.AudioCapturerMissedReadDeadline" units="%"
+<histogram name="Media.AudioCapturerDroppedData2.{Duration}" units="permille"
     expires_after="2022-10-04">
   <owner>olka@chromium.org</owner>
-  <owner>gudou@chromium.org</owner>
+  <owner>gustaf@chromium.org</owner>
+  <summary>
+    The proportion of input audio data that was dropped at the browser/renderer
+    boundary due to for example buffer overflow in the writer side buffer or in
+    the socket. Reported at the destruction of low-latency audio input stream.
+    Rounded up, cropped to 1/10 of all callbacks.
+  </summary>
+  <token key="Duration">
+    <variant name="Long" summary="Streams equal or longer than 3000 callbacks"/>
+    <variant name="Short" summary="Streams shorter than 3000 callbacks"/>
+  </token>
+</histogram>
+
+<histogram name="Media.AudioCapturerMissedReadDeadline" units="%"
+    expires_after="2022-02-04">
+  <owner>olka@chromium.org</owner>
+  <owner>gustaf@chromium.org</owner>
   <summary>
     The percentage of input audio data blocks that had to be buffered because
     there was not room in the shared memory ring buffer on the browser/renderer
     boundary. This happens if the reading side hasn't read data in time.
     Reported at the destruction of low-latency audio input stream.
   </summary>
+</histogram>
+
+<histogram name="Media.AudioCapturerMissedReadDeadline2.{Duration}"
+    units="permille" expires_after="2022-10-04">
+  <owner>olka@chromium.org</owner>
+  <owner>gustaf@chromium.org</owner>
+  <summary>
+    The proportion of input audio data blocks that had to be buffered because
+    there was not room in the shared memory ring buffer on the browser/renderer
+    boundary. This happens if the reading side hasn't read data in time.
+    Reported at the destruction of low-latency audio input stream. Rounded up,
+    cropped to 1/10 of all callbacks.
+  </summary>
+  <token key="Duration">
+    <variant name="Long" summary="Streams equal or longer than 3000 callbacks"/>
+    <variant name="Short" summary="Streams shorter than 3000 callbacks"/>
+  </token>
 </histogram>
 
 <histogram name="Media.AudioCodec" enum="AudioCodec" expires_after="never">

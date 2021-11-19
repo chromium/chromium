@@ -9,7 +9,7 @@
 
 #include "base/format_macros.h"
 #include "base/logging.h"
-#include "base/metrics/histogram_macros.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/stringprintf.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
@@ -20,10 +20,10 @@ namespace {
 
 // Used to log if any audio glitches have been detected during an audio session.
 // Elements in this enum should not be added, deleted or rearranged.
-enum AudioGlitchResult {
-  AUDIO_CAPTURER_NO_AUDIO_GLITCHES = 0,
-  AUDIO_CAPTURER_AUDIO_GLITCHES = 1,
-  AUDIO_CAPTURER_AUDIO_GLITCHES_MAX = AUDIO_CAPTURER_AUDIO_GLITCHES
+enum class AudioGlitchResult {
+  kNoGlitches = 0,
+  kGlitches = 1,
+  kMaxValue = kGlitches
 };
 
 }  // namespace
@@ -111,17 +111,43 @@ InputSyncWriter::~InputSyncWriter() {
   if (write_count_ == 0)
     return;
 
-  UMA_HISTOGRAM_PERCENTAGE("Media.AudioCapturerMissedReadDeadline",
-                           100.0 * write_to_fifo_count_ / write_count_);
+  base::UmaHistogramPercentage("Media.AudioCapturerMissedReadDeadline",
+                               100.0 * write_to_fifo_count_ / write_count_);
 
-  UMA_HISTOGRAM_PERCENTAGE("Media.AudioCapturerDroppedData",
-                           100.0 * write_error_count_ / write_count_);
+  base::UmaHistogramPercentage("Media.AudioCapturerDroppedData",
+                               100.0 * write_error_count_ / write_count_);
 
-  UMA_HISTOGRAM_ENUMERATION("Media.AudioCapturerAudioGlitches",
-                            write_error_count_ == 0
-                                ? AUDIO_CAPTURER_NO_AUDIO_GLITCHES
-                                : AUDIO_CAPTURER_AUDIO_GLITCHES,
-                            AUDIO_CAPTURER_AUDIO_GLITCHES_MAX + 1);
+  base::UmaHistogramEnumeration("Media.AudioCapturerAudioGlitches",
+                                write_error_count_ == 0
+                                    ? AudioGlitchResult::kNoGlitches
+                                    : AudioGlitchResult::kGlitches);
+
+  const int kPermilleScaling = 1000;
+  // 10%: if we have more that 10% of callbacks having issues, the details are
+  // not very interesting any more, so we just log all those cases together to
+  // have a better resolution for lower values.
+  const int kHistogramRange = kPermilleScaling / 10;
+
+  // 30 s for 10 ms buffers.
+  const int kShortStreamMaxCallbackCount = 3000;
+  const std::string suffix =
+      write_count_ < kShortStreamMaxCallbackCount ? "Short" : "Long";
+
+  int missed_deadline =
+      std::ceil(kPermilleScaling * static_cast<double>(write_to_fifo_count_) /
+                write_count_);
+
+  base::UmaHistogramCustomCounts(
+      "Media.AudioCapturerMissedReadDeadline2." + suffix,
+      std::min(missed_deadline, kHistogramRange), 0, kHistogramRange + 1, 100);
+
+  int dropped_data =
+      std::ceil(kPermilleScaling * static_cast<double>(write_error_count_) /
+                write_count_);
+
+  base::UmaHistogramCustomCounts("Media.AudioCapturerDroppedData2." + suffix,
+                                 std::min(dropped_data, kHistogramRange), 0,
+                                 kHistogramRange + 1, 100);
 
   std::string log_string = base::StringPrintf(
       "AISW: number of detected audio glitches: %" PRIuS " out of %" PRIuS,
