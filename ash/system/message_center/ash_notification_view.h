@@ -79,6 +79,7 @@ class ASH_EXPORT AshNotificationView
       const std::u16string& label) override;
   gfx::Size GetIconViewSize() const override;
   void ToggleInlineSettings(const ui::Event& event) override;
+  void ActionButtonPressed(size_t index, const ui::Event& event) override;
 
  private:
   friend class AshNotificationViewTest;
@@ -179,6 +180,8 @@ class ASH_EXPORT AshNotificationView
   bool is_grouped_child_view_ = false;
   // Whether this view is shown in a notification popup.
   bool shown_in_popup_ = false;
+
+  base::WeakPtrFactory<AshNotificationView> weak_factory_{this};
 };
 
 }  // namespace ash

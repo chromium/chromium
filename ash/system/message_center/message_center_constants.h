@@ -62,6 +62,11 @@ constexpr int kMessageViewFadeInAnimationDelayMs = 100;
 constexpr int kMessageViewFadeInAnimationDurationMs = 100;
 constexpr int kMessageViewInExpandedStateFadeInAnimationDelayMs = 100;
 constexpr int kMessageViewInExpandedStateFadeInAnimationDurationMs = 183;
+constexpr int kActionsRowFadeInAnimationDelayMs = 50;
+constexpr int kActionsRowFadeInAnimationDurationMs = 100;
+constexpr int kActionButtonsFadeOutAnimationDurationMs = 100;
+constexpr int kInlineReplyFadeInAnimationDurationMs = 100;
+constexpr int kInlineReplyFadeOutAnimationDurationMs = 50;
 
 }  // namespace ash
 

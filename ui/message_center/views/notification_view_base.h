@@ -243,8 +243,12 @@ class MESSAGE_CENTER_EXPORT NotificationViewBase
     return image_container_view_;
   }
 
+  views::View* actions_row() { return actions_row_; }
+
   views::View* action_buttons_row() { return action_buttons_row_; }
   const views::View* action_buttons_row() const { return action_buttons_row_; }
+
+  NotificationInputContainer* inline_reply() { return inline_reply_; }
 
   const views::Label* status_view() const { return status_view_; }
   const std::vector<views::View*> item_views() const { return item_views_; }

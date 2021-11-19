@@ -172,6 +172,28 @@ void FadeInView(views::View* view,
       .SetOpacity(view, 1.0f, tween_type);
 }
 
+// Fade out animation using AnimationBuilder.
+void FadeOutView(views::View* view,
+                 base::OnceClosure on_animation_ended,
+                 int delay_in_ms,
+                 int duration_in_ms,
+                 gfx::Tween::Type tween_type = gfx::Tween::LINEAR) {
+  std::pair<base::OnceClosure, base::OnceClosure> split =
+      base::SplitOnceCallback(std::move(on_animation_ended));
+
+  view->SetVisible(true);
+  views::AnimationBuilder()
+      .SetPreemptionStrategy(
+          ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET)
+      .OnEnded(std::move(split.first))
+      .OnAborted(std::move(split.second))
+      .Once()
+      .At(base::Milliseconds(delay_in_ms))
+      .SetDuration(base::Milliseconds(duration_in_ms))
+      .SetVisibility(view, false)
+      .SetOpacity(view, 0.0f, tween_type);
+}
+
 }  // namespace
 
 namespace ash {
@@ -411,6 +433,7 @@ AshNotificationView::AshNotificationView(
   // Create layer in some views for animations.
   InitLayerForAnimations(header_row());
   InitLayerForAnimations(message_view_in_expanded_state_);
+  InitLayerForAnimations(actions_row());
 
   UpdateWithNotification(notification);
 }
@@ -419,6 +442,21 @@ AshNotificationView::~AshNotificationView() = default;
 
 void AshNotificationView::ToggleExpand() {
   SetManuallyExpandedOrCollapsed(true);
+
+  if (inline_reply()->GetVisible()) {
+    // If inline reply is visible, fade it out then set expanded.
+    FadeOutView(inline_reply(),
+                base::BindOnce(
+                    [](base::WeakPtr<ash::AshNotificationView> parent,
+                       views::View* inline_reply) {
+                      if (parent) {
+                        inline_reply->layer()->SetOpacity(1.0f);
+                      }
+                    },
+                    weak_factory_.GetWeakPtr(), inline_reply()),
+                /*delay_in_ms=*/0, kInlineReplyFadeOutAnimationDurationMs);
+  }
+
   SetExpanded(!IsExpanded());
 
   PerformExpandCollapseAnimation();
@@ -731,6 +769,33 @@ void AshNotificationView::ToggleInlineSettings(const ui::Event& event) {
   expand_button_->SetVisible(!inline_settings_visible);
 }
 
+void AshNotificationView::ActionButtonPressed(size_t index,
+                                              const ui::Event& event) {
+  NotificationViewBase::ActionButtonPressed(index, event);
+
+  // If inline reply is visible, fade out actions button and then fade in inline
+  // reply.
+  if (inline_reply()->GetVisible()) {
+    InitLayerForAnimations(action_buttons_row());
+    FadeOutView(action_buttons_row(),
+                base::BindOnce(
+                    [](base::WeakPtr<ash::AshNotificationView> parent,
+                       views::View* action_buttons_row) {
+                      if (parent) {
+                        action_buttons_row->layer()->SetOpacity(1.0f);
+                        action_buttons_row->SetVisible(false);
+                      }
+                    },
+                    weak_factory_.GetWeakPtr(), action_buttons_row()),
+                /*delay_in_ms=*/0, kActionButtonsFadeOutAnimationDurationMs);
+
+    // Delay for the action buttons to fade out, then fade in inline reply.
+    InitLayerForAnimations(inline_reply());
+    FadeInView(inline_reply(), kActionButtonsFadeOutAnimationDurationMs,
+               kInlineReplyFadeInAnimationDurationMs);
+  }
+}
+
 void AshNotificationView::UpdateMessageViewInExpandedState(
     const message_center::Notification& notification) {
   if (notification.message().empty()) {
@@ -846,6 +911,11 @@ void AshNotificationView::PerformExpandCollapseAnimation() {
     FadeInView(message_view_in_expanded_state_,
                kMessageViewInExpandedStateFadeInAnimationDelayMs,
                kMessageViewInExpandedStateFadeInAnimationDurationMs);
+  }
+
+  if (actions_row()->GetVisible()) {
+    FadeInView(actions_row(), kActionsRowFadeInAnimationDelayMs,
+               kActionsRowFadeInAnimationDurationMs);
   }
 }
 
