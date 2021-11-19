@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/toolbar/read_later_toolbar_button.h"
+#include "chrome/browser/ui/views/toolbar/side_panel_toolbar_button.h"
 
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
@@ -166,8 +166,8 @@ class ReadLaterSidePanelWebView : public views::WebView,
 
 }  // namespace
 
-ReadLaterToolbarButton::ReadLaterToolbarButton(Browser* browser)
-    : ToolbarButton(base::BindRepeating(&ReadLaterToolbarButton::ButtonPressed,
+SidePanelToolbarButton::SidePanelToolbarButton(Browser* browser)
+    : ToolbarButton(base::BindRepeating(&SidePanelToolbarButton::ButtonPressed,
                                         base::Unretained(this))),
       browser_(browser),
       dot_indicator_(views::DotIndicator::Install(image())),
@@ -186,18 +186,18 @@ ReadLaterToolbarButton::ReadLaterToolbarButton(Browser* browser)
     reading_list_model_scoped_observation_.Observe(reading_list_model_);
 }
 
-ReadLaterToolbarButton::~ReadLaterToolbarButton() = default;
+SidePanelToolbarButton::~SidePanelToolbarButton() = default;
 
-ReadLaterToolbarButton::DotBoundsUpdater::DotBoundsUpdater(
+SidePanelToolbarButton::DotBoundsUpdater::DotBoundsUpdater(
     views::DotIndicator* dot_indicator,
     views::ImageView* image)
     : dot_indicator_(dot_indicator), image_(image) {
   observation_.Observe(image);
 }
 
-ReadLaterToolbarButton::DotBoundsUpdater::~DotBoundsUpdater() = default;
+SidePanelToolbarButton::DotBoundsUpdater::~DotBoundsUpdater() = default;
 
-void ReadLaterToolbarButton::DotBoundsUpdater::OnViewBoundsChanged(
+void SidePanelToolbarButton::DotBoundsUpdater::OnViewBoundsChanged(
     View* observed_view) {
   gfx::Rect dot_rect(8, 8);
   if (ui::TouchUiController::Get()->touch_ui()) {
@@ -209,13 +209,13 @@ void ReadLaterToolbarButton::DotBoundsUpdater::OnViewBoundsChanged(
   dot_indicator_->SetBoundsRect(dot_rect);
 }
 
-void ReadLaterToolbarButton::ReadingListModelLoaded(
+void SidePanelToolbarButton::ReadingListModelLoaded(
     const ReadingListModel* model) {
   if (model->unseen_size())
     dot_indicator_->Show();
 }
 
-void ReadLaterToolbarButton::ReadingListModelBeingDeleted(
+void SidePanelToolbarButton::ReadingListModelBeingDeleted(
     const ReadingListModel* model) {
   DCHECK(model == reading_list_model_);
   DCHECK(reading_list_model_scoped_observation_.IsObservingSource(
@@ -223,7 +223,7 @@ void ReadLaterToolbarButton::ReadingListModelBeingDeleted(
   reading_list_model_scoped_observation_.Reset();
 }
 
-void ReadLaterToolbarButton::ReadingListDidApplyChanges(
+void SidePanelToolbarButton::ReadingListDidApplyChanges(
     ReadingListModel* model) {
   if (!side_panel_webview_ && reading_list_model_->unseen_size() > 0) {
     dot_indicator_->Show();
@@ -232,7 +232,7 @@ void ReadLaterToolbarButton::ReadingListDidApplyChanges(
   }
 }
 
-void ReadLaterToolbarButton::ButtonPressed() {
+void SidePanelToolbarButton::ButtonPressed() {
   BrowserView* const browser_view =
       BrowserView::GetBrowserViewForBrowser(browser_);
   DCHECK(browser_view->right_aligned_side_panel());
@@ -250,9 +250,9 @@ void ReadLaterToolbarButton::ButtonPressed() {
 
     // Using base::Unretained(this) is safe here because the side panel (and the
     // web view as its child) will be destroyed before the toolbar which will
-    // destroy the ReadLaterToolbarButton.
+    // destroy the SidePanelToolbarButton.
     auto webview = std::make_unique<ReadLaterSidePanelWebView>(
-        browser_, base::BindRepeating(&ReadLaterToolbarButton::ButtonPressed,
+        browser_, base::BindRepeating(&SidePanelToolbarButton::ButtonPressed,
                                       base::Unretained(this)));
     side_panel_webview_ =
         browser_view->right_aligned_side_panel()->AddChildView(
@@ -265,7 +265,7 @@ void ReadLaterToolbarButton::ButtonPressed() {
   }
 }
 
-void ReadLaterToolbarButton::HideSidePanel() {
+void SidePanelToolbarButton::HideSidePanel() {
   BrowserView* const browser_view =
       BrowserView::GetBrowserViewForBrowser(browser_);
   DCHECK(browser_view->right_aligned_side_panel());
@@ -277,6 +277,6 @@ void ReadLaterToolbarButton::HideSidePanel() {
   }
 }
 
-bool ReadLaterToolbarButton::ShouldShowInkdropAfterIphInteraction() {
+bool SidePanelToolbarButton::ShouldShowInkdropAfterIphInteraction() {
   return false;
 }

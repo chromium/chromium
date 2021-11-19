@@ -62,8 +62,8 @@
 #include "chrome/browser/ui/views/toolbar/chrome_labs_button.h"
 #include "chrome/browser/ui/views/toolbar/chrome_labs_utils.h"
 #include "chrome/browser/ui/views/toolbar/home_button.h"
-#include "chrome/browser/ui/views/toolbar/read_later_toolbar_button.h"
 #include "chrome/browser/ui/views/toolbar/reload_button.h"
+#include "chrome/browser/ui/views/toolbar/side_panel_toolbar_button.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_account_icon_container_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_button.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
@@ -293,10 +293,10 @@ void ToolbarView::Init() {
         std::make_unique<ToolbarAccountIconContainerView>(browser_view_);
   }
 
-  std::unique_ptr<ReadLaterToolbarButton> read_later_button;
+  std::unique_ptr<SidePanelToolbarButton> side_panel_button;
   if (browser_view_->right_aligned_side_panel() &&
       reading_list::switches::IsReadingListEnabled()) {
-    read_later_button = std::make_unique<ReadLaterToolbarButton>(browser_);
+    side_panel_button = std::make_unique<SidePanelToolbarButton>(browser_);
   }
 
   // Always add children in order from left to right, for accessibility.
@@ -354,8 +354,8 @@ void ToolbarView::Init() {
   if (send_tab_to_self_button)
     send_tab_to_self_button_ = AddChildView(std::move(send_tab_to_self_button));
 
-  if (read_later_button)
-    read_later_button_ = AddChildView(std::move(read_later_button));
+  if (side_panel_button)
+    side_panel_button_ = AddChildView(std::move(side_panel_button));
 
   if (toolbar_account_icon_container) {
     toolbar_account_icon_container_ =
@@ -885,8 +885,8 @@ void ToolbarView::ZoomChangedForActiveTab(bool can_show_bubble) {
       can_show_bubble);
 }
 
-ReadLaterToolbarButton* ToolbarView::GetSidePanelButton() {
-  return read_later_button_;
+SidePanelToolbarButton* ToolbarView::GetSidePanelButton() {
+  return side_panel_button_;
 }
 
 AvatarToolbarButton* ToolbarView::GetAvatarToolbarButton() {

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_VIEWS_TOOLBAR_READ_LATER_TOOLBAR_BUTTON_H_
-#define CHROME_BROWSER_UI_VIEWS_TOOLBAR_READ_LATER_TOOLBAR_BUTTON_H_
+#ifndef CHROME_BROWSER_UI_VIEWS_TOOLBAR_SIDE_PANEL_TOOLBAR_BUTTON_H_
+#define CHROME_BROWSER_UI_VIEWS_TOOLBAR_SIDE_PANEL_TOOLBAR_BUTTON_H_
 
 #include "base/scoped_observation.h"
 #include "chrome/browser/ui/views/bubble/bubble_contents_wrapper.h"
@@ -15,13 +15,13 @@
 
 class Browser;
 
-class ReadLaterToolbarButton : public ToolbarButton,
+class SidePanelToolbarButton : public ToolbarButton,
                                public ReadingListModelObserver {
  public:
-  explicit ReadLaterToolbarButton(Browser* browser);
-  ReadLaterToolbarButton(const ReadLaterToolbarButton&) = delete;
-  ReadLaterToolbarButton& operator=(const ReadLaterToolbarButton&) = delete;
-  ~ReadLaterToolbarButton() override;
+  explicit SidePanelToolbarButton(Browser* browser);
+  SidePanelToolbarButton(const SidePanelToolbarButton&) = delete;
+  SidePanelToolbarButton& operator=(const SidePanelToolbarButton&) = delete;
+  ~SidePanelToolbarButton() override;
 
   // ToolbarButton
   bool ShouldShowInkdropAfterIphInteraction() override;
@@ -75,4 +75,4 @@ class ReadLaterToolbarButton : public ToolbarButton,
   views::View* side_panel_webview_ = nullptr;
 };
 
-#endif  // CHROME_BROWSER_UI_VIEWS_TOOLBAR_READ_LATER_TOOLBAR_BUTTON_H_
+#endif  // CHROME_BROWSER_UI_VIEWS_TOOLBAR_SIDE_PANEL_TOOLBAR_BUTTON_H_

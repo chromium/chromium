@@ -3284,7 +3284,7 @@ void BrowserView::AddedToWidget() {
   // the ToolbarView does not create a button for them. This specifically seems
   // to hit web apps. See https://crbug.com/1267781.
   if (base::FeatureList::IsEnabled(features::kSidePanelBorder) &&
-      toolbar_->read_later_button() &&
+      toolbar_->side_panel_button() &&
       (lens_side_panel_ || right_aligned_side_panel_)) {
     std::vector<View*> panels;
     if (lens_side_panel_)
@@ -3293,7 +3293,7 @@ void BrowserView::AddedToWidget() {
       panels.push_back(right_aligned_side_panel_);
     side_panel_button_highlighter_ =
         std::make_unique<SidePanelButtonHighlighter>(
-            toolbar_->read_later_button(), panels);
+            toolbar_->side_panel_button(), panels);
   }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)

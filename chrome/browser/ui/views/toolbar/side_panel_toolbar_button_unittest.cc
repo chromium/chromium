@@ -2,7 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/toolbar/read_later_toolbar_button.h"
+#include "chrome/browser/ui/views/toolbar/side_panel_toolbar_button.h"
+
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/read_later/read_later_test_utils.h"
 #include "chrome/browser/ui/read_later/reading_list_model_factory.h"
@@ -14,7 +15,7 @@
 #include "ui/events/event_utils.h"
 #include "ui/views/test/button_test_api.h"
 
-class ReadLaterToolbarButtonTest : public TestWithBrowserView {
+class SidePanelToolbarButtonTest : public TestWithBrowserView {
  public:
   void SetUp() override {
     scoped_feature_list_.InitAndEnableFeature(features::kSidePanel);
@@ -33,9 +34,8 @@ class ReadLaterToolbarButtonTest : public TestWithBrowserView {
     return factories;
   }
 
-  ReadLaterToolbarButton* GetReadLaterToolbarButton() {
-    return browser_view()->toolbar()->read_later_button();
-    ;
+  SidePanelToolbarButton* GetSidePanelToolbarButton() {
+    return browser_view()->toolbar()->side_panel_button();
   }
 
   ReadingListModel* model() { return model_; }
@@ -45,11 +45,11 @@ class ReadLaterToolbarButtonTest : public TestWithBrowserView {
   ReadingListModel* model_;
 };
 
-TEST_F(ReadLaterToolbarButtonTest, DotIndicatorVisibleWithUnreadItems) {
+TEST_F(SidePanelToolbarButtonTest, DotIndicatorVisibleWithUnreadItems) {
   // Verify the dot indicator is seen when there is an unseen entry.
   model()->AddEntry(GURL("http://foo/1"), "Tab 1",
                     reading_list::EntrySource::ADDED_VIA_CURRENT_APP);
-  ReadLaterToolbarButton* const side_panel_button = GetReadLaterToolbarButton();
+  SidePanelToolbarButton* const side_panel_button = GetSidePanelToolbarButton();
   ASSERT_TRUE(side_panel_button->GetDotIndicatorVisibilityForTesting());
 
   // Verify the dot indicator is hidden once the toolbar button is clicked.
