@@ -353,6 +353,11 @@ void ModelTypeWorker::ProcessGetUpdatesResponse(
           break;
         }
         // Copy the sync entity for later decryption.
+        // TODO(crbug.com/1270734): Any write to |entries_pending_decryption_|
+        // should do like DeduplicatePendingUpdatesBasedOnServerId() and honor
+        // entity version. Additionally, it should look up the same server id
+        // in |pending_updates_| and compare versions. In fact, the 2 containers
+        // should probably be moved to a separate class with unit tests.
         entries_pending_decryption_[server_id] = *update_entity;
         break;
       }
@@ -732,10 +737,15 @@ void ModelTypeWorker::DeduplicatePendingUpdatesBasedOnServerId() {
       // New server id, append at the end. Note that we already inserted
       // the correct index (|pending_updates_.size()|) above.
       pending_updates_.push_back(std::move(candidate));
-    } else {
-      // Duplicate! Overwrite the existing item.
-      size_t existing_index = it_and_success.first->second;
-      pending_updates_[existing_index] = std::move(candidate);
+      continue;
+    }
+
+    // Duplicate! Overwrite the existing update if |candidate| has a more recent
+    // version.
+    const size_t existing_index = it_and_success.first->second;
+    UpdateResponseData& existing_update = pending_updates_[existing_index];
+    if (candidate.response_version >= existing_update.response_version) {
+      existing_update = std::move(candidate);
     }
   }
 }
@@ -760,10 +770,15 @@ void ModelTypeWorker::DeduplicatePendingUpdatesBasedOnClientTagHash() {
       // New client tag hash, append at the end. Note that we already inserted
       // the correct index (|pending_updates_.size()|) above.
       pending_updates_.push_back(std::move(candidate));
-    } else {
-      // Duplicate! Overwrite the existing item.
-      size_t existing_index = it_and_success.first->second;
-      pending_updates_[existing_index] = std::move(candidate);
+      continue;
+    }
+
+    // Duplicate! Overwrite the existing update if |candidate| has a more recent
+    // version.
+    const size_t existing_index = it_and_success.first->second;
+    UpdateResponseData& existing_update = pending_updates_[existing_index];
+    if (candidate.response_version >= existing_update.response_version) {
+      existing_update = std::move(candidate);
     }
   }
 }
@@ -792,10 +807,15 @@ void ModelTypeWorker::DeduplicatePendingUpdatesBasedOnOriginatorClientItemId() {
       // New item ID, append at the end. Note that we already inserted the
       // correct index (|pending_updates_.size()|) above.
       pending_updates_.push_back(std::move(candidate));
-    } else {
-      // Duplicate! Overwrite the existing item.
-      size_t existing_index = it_and_success.first->second;
-      pending_updates_[existing_index] = std::move(candidate);
+      continue;
+    }
+
+    // Duplicate! Overwrite the existing update if |candidate| has a more recent
+    // version.
+    const size_t existing_index = it_and_success.first->second;
+    UpdateResponseData& existing_update = pending_updates_[existing_index];
+    if (candidate.response_version >= existing_update.response_version) {
+      existing_update = std::move(candidate);
     }
   }
 }

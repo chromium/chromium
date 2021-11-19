@@ -281,7 +281,10 @@ class ModelTypeWorker : public UpdateHandler,
       unknown_encryption_keys_by_name_;
 
   // Accumulates all the updates from a single GetUpdates cycle in memory so
-  // they can all be sent to the processor at once.
+  // they can all be sent to the processor at once. Some updates may be
+  // deduplicated, e.g. in DeduplicatePendingUpdatesBasedOnServerId(). The
+  // ordering here is NOT guaranteed to stick to the download ordering or any
+  // other.
   UpdateResponseDataList pending_updates_;
 
   // Indicates if processor has local changes. Processor only nudges worker once

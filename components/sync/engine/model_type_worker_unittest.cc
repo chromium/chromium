@@ -809,39 +809,49 @@ TEST_F(ModelTypeWorkerTest, ReceiveUpdates_MultipleDuplicateHashes) {
   EXPECT_EQ(kValue3, result[2]->entity.specifics.preference().value());
 }
 
-// Covers the scenario where two updates have the same client tag hash but
+// Covers the scenario where updates have the same client tag hash but
 // different server IDs. This scenario is considered a bug on the server.
 TEST_F(ModelTypeWorkerTest,
        ReceiveUpdates_DuplicateClientTagHashesForDistinctServerIds) {
   NormalInitialize();
 
-  // First create two entities with different tags, so they get assigned
+  // First create three entities with different tags, so they get assigned
   // different server ids.
-  SyncEntity entity1 = server()->UpdateFromServer(
+  SyncEntity oldest_entity = server()->UpdateFromServer(
       /*version_offset=*/10, GenerateTagHash(kTag1),
       GenerateSpecifics("key1", "value1"));
-  SyncEntity entity2 = server()->UpdateFromServer(
-      /*version_offset=*/10, GenerateTagHash(kTag2),
+  SyncEntity second_newest_entity = server()->UpdateFromServer(
+      /*version_offset=*/11, GenerateTagHash(kTag2),
       GenerateSpecifics("key2", "value2"));
-  // Mimic a bug on the server by modifying the second entity to have the same
-  // tag as the first one.
-  entity2.set_client_defined_unique_tag(GenerateTagHash(kTag1).value());
+  SyncEntity newest_entity = server()->UpdateFromServer(
+      /*version_offset=*/12, GenerateTagHash(kTag3),
+      GenerateSpecifics("key3", "value3"));
+
+  // Mimic a bug on the server by modifying all entities to have the same tag.
+  second_newest_entity.set_client_defined_unique_tag(
+      oldest_entity.client_defined_unique_tag());
+  newest_entity.set_client_defined_unique_tag(
+      oldest_entity.client_defined_unique_tag());
+
+  // Send |newest_entity| in the middle position, to rule out the worker is
+  // keeping the first or last received update.
   worker()->ProcessGetUpdatesResponse(
-      server()->GetProgress(), server()->GetContext(), {&entity1, &entity2},
+      server()->GetProgress(), server()->GetContext(),
+      {&oldest_entity, &newest_entity, &second_newest_entity},
       status_controller());
 
   ApplyUpdates();
 
-  // Make sure the first update has been discarded.
+  // Make sure the update with latest version was kept.
   ASSERT_EQ(1u, processor()->GetNumUpdateResponses());
   std::vector<const UpdateResponseData*> result =
       processor()->GetNthUpdateResponse(0);
   ASSERT_EQ(1u, result.size());
   ASSERT_TRUE(result[0]);
-  EXPECT_EQ(entity2.id_string(), result[0]->entity.id);
+  EXPECT_EQ(newest_entity.id_string(), result[0]->entity.id);
 }
 
-// Covers the scenario where two updates have the same GUID as originator client
+// Covers the scenario where updates have the same GUID as originator client
 // item ID but different server IDs. This scenario is considered a bug on the
 // server.
 TEST_F(ModelTypeWorkerTest,
@@ -849,35 +859,48 @@ TEST_F(ModelTypeWorkerTest,
   const std::string kOriginatorClientItemId = base::GenerateGUID();
   const std::string kURL1 = "http://url1";
   const std::string kURL2 = "http://url2";
+  const std::string kURL3 = "http://url3";
   const std::string kServerId1 = "serverid1";
   const std::string kServerId2 = "serverid2";
+  const std::string kServerId3 = "serverid3";
 
   NormalInitialize();
 
-  sync_pb::SyncEntity entity1;
-  sync_pb::SyncEntity entity2;
+  sync_pb::SyncEntity oldest_entity;
+  sync_pb::SyncEntity second_newest_entity;
+  sync_pb::SyncEntity newest_entity;
 
-  // Generate two entities with the same originator client item ID.
-  entity1.set_id_string(kServerId1);
-  entity2.set_id_string(kServerId2);
-  entity1.mutable_specifics()->mutable_bookmark()->set_url(kURL1);
-  entity2.mutable_specifics()->mutable_bookmark()->set_url(kURL2);
-  entity1.set_originator_client_item_id(kOriginatorClientItemId);
-  entity2.set_originator_client_item_id(kOriginatorClientItemId);
+  oldest_entity.set_version(1000);
+  second_newest_entity.set_version(1001);
+  newest_entity.set_version(1002);
 
+  // Generate entities with the same originator client item ID.
+  oldest_entity.set_id_string(kServerId1);
+  second_newest_entity.set_id_string(kServerId2);
+  newest_entity.set_id_string(kServerId3);
+  oldest_entity.mutable_specifics()->mutable_bookmark()->set_url(kURL1);
+  second_newest_entity.mutable_specifics()->mutable_bookmark()->set_url(kURL2);
+  newest_entity.mutable_specifics()->mutable_bookmark()->set_url(kURL3);
+  oldest_entity.set_originator_client_item_id(kOriginatorClientItemId);
+  second_newest_entity.set_originator_client_item_id(kOriginatorClientItemId);
+  newest_entity.set_originator_client_item_id(kOriginatorClientItemId);
+
+  // Send |newest_entity| in the middle position, to rule out the worker is
+  // keeping the first or last received update.
   worker()->ProcessGetUpdatesResponse(
-      server()->GetProgress(), server()->GetContext(), {&entity1, &entity2},
+      server()->GetProgress(), server()->GetContext(),
+      {&oldest_entity, &newest_entity, &second_newest_entity},
       status_controller());
 
   ApplyUpdates();
 
-  // Make sure the first update has been discarded.
+  // Make sure the update with latest version was kept.
   ASSERT_EQ(1u, processor()->GetNumUpdateResponses());
   std::vector<const UpdateResponseData*> result =
       processor()->GetNthUpdateResponse(0);
   ASSERT_EQ(1u, result.size());
   ASSERT_TRUE(result[0]);
-  EXPECT_EQ(kURL2, result[0]->entity.specifics.bookmark().url());
+  EXPECT_EQ(newest_entity.id_string(), result[0]->entity.id);
 }
 
 // Covers the scenario where two updates have the same originator client item ID
