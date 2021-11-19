@@ -137,6 +137,8 @@ class BLINK_PLATFORM_EXPORT MultiBufferDataSource : public media::DataSource {
 
   bool cancel_on_defer_for_testing() const { return cancel_on_defer_; }
 
+  const std::string& mime_type() const { return url_data_->mime_type(); }
+
  protected:
   void OnRedirected(const scoped_refptr<UrlData>& new_destination);
 

@@ -327,6 +327,60 @@ bool UsesAudioService(media::RendererType renderer_type) {
   return renderer_type != media::RendererType::kMediaFoundation;
 }
 
+#if defined(OS_ANDROID)
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class MimeType {
+  kOtherMimeType = 0,
+  kApplicationDashXml = 1,
+  kApplicationOgg = 2,
+  kApplicationMpegUrl = 3,
+  kApplicationVndAppleMpegUrl = 4,
+  kApplicationXMpegUrl = 5,
+  kAudioMpegUrl = 6,
+  kAudioXMpegUrl = 7,
+  kNonspecificAudio = 8,
+  kNonspecificImage = 9,
+  kNonspecificVideo = 10,
+  kTextVtt = 11,
+  kMaxValue = kTextVtt,  // For UMA histograms.
+};
+MimeType TranslateMimeTypeToHistogramEnum(const std::string& mime_type) {
+  constexpr auto kCaseInsensitive = base::CompareCase::INSENSITIVE_ASCII;
+  if (base::StartsWith(mime_type, "application/dash+xml", kCaseInsensitive))
+    return MimeType::kApplicationDashXml;
+  if (base::StartsWith(mime_type, "application/ogg", kCaseInsensitive))
+    return MimeType::kApplicationOgg;
+  if (base::StartsWith(mime_type, "application/mpegurl", kCaseInsensitive))
+    return MimeType::kApplicationMpegUrl;
+  if (base::StartsWith(mime_type, "application/vnd.apple.mpegurl",
+                       kCaseInsensitive)) {
+    return MimeType::kApplicationVndAppleMpegUrl;
+  }
+  if (base::StartsWith(mime_type, "application/x-mpegurl", kCaseInsensitive))
+    return MimeType::kApplicationXMpegUrl;
+
+  if (base::StartsWith(mime_type, "audio/mpegurl", kCaseInsensitive))
+    return MimeType::kAudioMpegUrl;
+  if (base::StartsWith(mime_type, "audio/x-mpegurl", kCaseInsensitive))
+    return MimeType::kAudioXMpegUrl;
+
+  if (base::StartsWith(mime_type, "audio/", kCaseInsensitive))
+    return MimeType::kNonspecificAudio;
+  if (base::StartsWith(mime_type, "image/", kCaseInsensitive))
+    return MimeType::kNonspecificImage;
+  if (base::StartsWith(mime_type, "video/", kCaseInsensitive))
+    return MimeType::kNonspecificVideo;
+
+  if (base::StartsWith(mime_type, "text/vtt", kCaseInsensitive))
+    return MimeType::kTextVtt;
+
+  return MimeType::kOtherMimeType;
+}
+
+#endif
+
 }  // namespace
 
 class BufferedDataSourceHostImpl;
@@ -1808,6 +1862,15 @@ void WebMediaPlayerImpl::OnError(media::PipelineStatus status) {
     if (mb_data_source_->IsCorsCrossOrigin()) {
       UMA_HISTOGRAM_BOOLEAN("Media.WebMediaPlayerImpl.HLS.HasAccessControl",
                             mb_data_source_->HasAccessControl());
+    }
+
+    MimeType mime_type =
+        TranslateMimeTypeToHistogramEnum(mb_data_source_->mime_type());
+    base::UmaHistogramEnumeration("Media.WebMediaPlayerImpl.HLS.MimeType",
+                                  mime_type);
+    if (mb_data_source_->IsCorsCrossOrigin()) {
+      base::UmaHistogramEnumeration(
+          "Media.WebMediaPlayerImpl.HLS.CorsCrossOrigin.MimeType", mime_type);
     }
 
     // Note: Does not consider the full redirect chain, which could contain

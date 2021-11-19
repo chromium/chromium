@@ -327,6 +327,8 @@ void ResourceMultiBufferDataProvider::DidReceiveResponse(
       // probably accurate enough for metrics.
       destination_url_data->set_has_access_control();
     }
+
+    destination_url_data->set_mime_type(response.MimeType().Utf8());
   }
 
   if (destination_url_data != url_data_) {

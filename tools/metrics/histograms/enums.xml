@@ -57563,6 +57563,24 @@ Called by update_use_counter_css.py.-->
   </int>
 </enum>
 
+<enum name="MimeTypeOfHlsManifest">
+  <summary>
+    Captures the MIME type of the HTTP response that carried an HLS manifest.
+  </summary>
+  <int value="0" label="Other MIME type"/>
+  <int value="1" label="application/dash+xml"/>
+  <int value="2" label="application/ogg"/>
+  <int value="3" label="application/mpegurl"/>
+  <int value="4" label="application/vnd.apple.mpegurl"/>
+  <int value="5" label="application/x-mpegurl"/>
+  <int value="6" label="audio/mpegurl"/>
+  <int value="7" label="audio/x-mpegurl"/>
+  <int value="8" label="audio/*"/>
+  <int value="9" label="image/*"/>
+  <int value="10" label="video/*"/>
+  <int value="11" label="text/vtt"/>
+</enum>
+
 <enum name="MirrorFailureType">
   <int value="0" label="Capture Tab failed due to empty stream"/>
   <int value="1" label="Capture Desktop failed due to timeout"/>
