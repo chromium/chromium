@@ -32,13 +32,13 @@ class FingerprintAuthFactorModel : public AuthFactorModel {
 
  private:
   // AuthFactorModel:
-  AuthFactorState GetAuthFactorState() override;
-  AuthFactorType GetType() override;
-  int GetLabelId() override;
-  bool ShouldAnnounceLabel() override;
-  int GetAccessibleNameId() override;
-  void OnTapOrClickEvent() override;
-  void OnErrorTimeout() override;
+  AuthFactorState GetAuthFactorState() const override;
+  AuthFactorType GetType() const override;
+  int GetLabelId() const override;
+  bool ShouldAnnounceLabel() const override;
+  int GetAccessibleNameId() const override;
+  void DoHandleTapOrClick() override;
+  void DoHandleErrorTimeout() override;
   void UpdateIcon(AuthIconView* icon) override;
 
   FingerprintState state_ = FingerprintState::AVAILABLE_DEFAULT;

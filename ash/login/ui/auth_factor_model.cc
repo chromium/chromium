@@ -12,10 +12,10 @@ AuthFactorModel::AuthFactorModel() = default;
 AuthFactorModel::~AuthFactorModel() = default;
 
 void AuthFactorModel::Init(AuthIconView* icon,
-                           base::RepeatingClosure on_state_changed_callback) {
+                           base::RepeatingClosure update_state_callback) {
   DCHECK(!icon_) << "Init should only be called once.";
   icon_ = icon;
-  on_state_changed_callback_ = on_state_changed_callback;
+  update_state_callback_ = update_state_callback;
 }
 
 void AuthFactorModel::SetVisible(bool visible) {
@@ -28,10 +28,38 @@ void AuthFactorModel::OnThemeChanged() {
     UpdateIcon(icon_);
 }
 
-void AuthFactorModel::NotifyOnStateChanged() {
+void AuthFactorModel::HandleTapOrClick() {
+  // If an auth factor icon is clicked while the auth factor has a permanent
+  // error, then show the error again by marking it as not timed out.
+  if (GetAuthFactorState() == AuthFactorState::kErrorPermanent)
+    has_permanent_error_display_timed_out_ = false;
+
+  DoHandleTapOrClick();
+
+  // Call `RefreshUI` here in case |has_permanent_error_display_timed_out_|
+  // changed. It's called regardless of whether or not there was an actual
+  // change so that `DoHandleTapOrClick` can avoid calling `RefreshUI`, which
+  // could result in multiple calls.
+  RefreshUI();
+}
+
+void AuthFactorModel::HandleErrorTimeout() {
+  if (GetAuthFactorState() == AuthFactorState::kErrorPermanent)
+    has_permanent_error_display_timed_out_ = true;
+
+  DoHandleErrorTimeout();
+
+  // Call `RefreshUI` here in case |has_permanent_error_display_timed_out_|
+  // changed. It's called regardless of whether or not there was an actual
+  // change so that `DoHandleErrorTimeout` can avoid calling `RefreshUI`, which
+  // could result in multiple calls.
+  RefreshUI();
+}
+
+void AuthFactorModel::RefreshUI() {
   DCHECK(icon_);
-  if (on_state_changed_callback_) {
-    on_state_changed_callback_.Run();
+  if (update_state_callback_) {
+    update_state_callback_.Run();
   }
   UpdateIcon(icon_);
 }

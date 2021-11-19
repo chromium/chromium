@@ -56,17 +56,22 @@ void SmartLockAuthFactorModel::SetSmartLockState(SmartLockState state) {
   if (state_ == state)
     return;
 
+  // Clear out the timeout if the state changes. This shouldn't happen
+  // ordinarily -- permanent error states are permanent after all -- but this is
+  // required for the debug overlay to work properly when cycling states.
+  has_permanent_error_display_timed_out_ = false;
+
   state_ = state;
-  NotifyOnStateChanged();
+  RefreshUI();
 }
 
 void SmartLockAuthFactorModel::NotifySmartLockAuthResult(bool result) {
   auth_result_ = result;
-  NotifyOnStateChanged();
+  RefreshUI();
 }
 
-AuthFactorModel::AuthFactorState
-SmartLockAuthFactorModel::GetAuthFactorState() {
+AuthFactorModel::AuthFactorState SmartLockAuthFactorModel::GetAuthFactorState()
+    const {
   if (auth_result_.has_value()) {
     return auth_result_.value() ? AuthFactorState::kAuthenticated
                                 : AuthFactorState::kErrorPermanent;
@@ -102,11 +107,11 @@ SmartLockAuthFactorModel::GetAuthFactorState() {
   }
 }
 
-AuthFactorType SmartLockAuthFactorModel::GetType() {
+AuthFactorType SmartLockAuthFactorModel::GetType() const {
   return AuthFactorType::kSmartLock;
 }
 
-int SmartLockAuthFactorModel::GetLabelId() {
+int SmartLockAuthFactorModel::GetLabelId() const {
   if (auth_result_.has_value()) {
     return auth_result_.value() ? IDS_SMART_LOCK_LABEL_PHONE_LOCKED
                                 : IDS_AUTH_FACTOR_LABEL_CANNOT_UNLOCK;
@@ -143,12 +148,12 @@ int SmartLockAuthFactorModel::GetLabelId() {
   NOTREACHED();
 }
 
-bool SmartLockAuthFactorModel::ShouldAnnounceLabel() {
+bool SmartLockAuthFactorModel::ShouldAnnounceLabel() const {
   // TODO(crbug.com/1233614): Return 'true' depending on SmartLockState.
   return false;
 }
 
-int SmartLockAuthFactorModel::GetAccessibleNameId() {
+int SmartLockAuthFactorModel::GetAccessibleNameId() const {
   // TODO(crbug.com/1233614): Determine whether any state needs to have a
   // different label for a11y.
   return GetLabelId();
@@ -167,9 +172,15 @@ void SmartLockAuthFactorModel::UpdateIcon(AuthIconView* icon) {
       AshColorProvider::ContentLayerType::kIconColorAlert);
 
   if (auth_result_.has_value() && !auth_result_.value()) {
-    // TODO(crbug.com/1233614): Get actual failure icon once asset is ready.
-    icon->SetImage(gfx::CreateVectorIcon(kLockScreenSmartCardFailureIcon,
-                                         kSmartLockIconSizeDp, alert_color));
+    if (has_permanent_error_display_timed_out_) {
+      icon->SetImage(gfx::CreateVectorIcon(kLockScreenSmartLockDisabledIcon,
+                                           kSmartLockIconSizeDp,
+                                           disabled_color));
+    } else {
+      // TODO(crbug.com/1233614): Get actual failure icon once asset is ready.
+      icon->SetImage(gfx::CreateVectorIcon(kLockScreenSmartCardFailureIcon,
+                                           kSmartLockIconSizeDp, alert_color));
+    }
     return;
   }
 
@@ -213,7 +224,10 @@ void SmartLockAuthFactorModel::UpdateIcon(AuthIconView* icon) {
   }
 }
 
-void SmartLockAuthFactorModel::OnTapOrClickEvent() {}
+void SmartLockAuthFactorModel::DoHandleTapOrClick() {
+  // Do Nothing: Smart Lock does not react to taps on its icon. Clicks on the
+  // arrow button are handled in LoginAuthFactorsView.
+}
 
 void SmartLockAuthFactorModel::OnArrowButtonTapOrClickEvent() {
   if (state_ == SmartLockState::kPhoneAuthenticated) {
@@ -221,6 +235,9 @@ void SmartLockAuthFactorModel::OnArrowButtonTapOrClickEvent() {
   }
 }
 
-void SmartLockAuthFactorModel::OnErrorTimeout() {}
+void SmartLockAuthFactorModel::DoHandleErrorTimeout() {
+  // Do Nothing: Smart Lock has no temporary errors to restore from, so there is
+  // nothing to do.
+}
 
 }  // namespace ash

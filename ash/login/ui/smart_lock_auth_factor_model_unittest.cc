@@ -86,6 +86,22 @@ TEST_F(SmartLockAuthFactorModelUnittest, AvailableStates) {
   }
 }
 
+TEST_F(SmartLockAuthFactorModelUnittest, ErrorStates) {
+  for (SmartLockState state : {SmartLockState::kPasswordReentryRequired,
+                               SmartLockState::kPrimaryUserAbsent,
+                               SmartLockState::kPhoneNotAuthenticated,
+                               SmartLockState::kBluetoothDisabled,
+                               SmartLockState::kPhoneNotLockable}) {
+    smart_lock_model_->SetSmartLockState(state);
+    EXPECT_TRUE(on_state_changed_called_);
+    EXPECT_EQ(AuthFactorState::kErrorPermanent, model_->GetAuthFactorState());
+    EXPECT_FALSE(model_->has_permanent_error_display_timed_out());
+    model_->HandleErrorTimeout();
+    EXPECT_TRUE(model_->has_permanent_error_display_timed_out());
+    on_state_changed_called_ = false;
+  }
+}
+
 TEST_F(SmartLockAuthFactorModelUnittest, ReadyStates) {
   smart_lock_model_->SetSmartLockState(
       SmartLockState::kPhoneFoundLockedAndProximate);

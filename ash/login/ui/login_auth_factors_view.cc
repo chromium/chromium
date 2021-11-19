@@ -28,6 +28,8 @@ namespace ash {
 
 namespace {
 
+using AuthFactorState = AuthFactorModel::AuthFactorState;
+
 constexpr int kAuthFactorsViewWidthDp = 204;
 constexpr int kSpacingBetweenIconsAndLabelDp = 15;
 constexpr int kIconTopSpacingDp = 20;
@@ -36,22 +38,87 @@ constexpr int kSpacingBetweenIconsDp = 28;
 constexpr int kIconSizeDp = 32;
 constexpr base::TimeDelta kErrorTimeout = base::Seconds(3);
 
-// Return the AuthFactorModel whose AuthFactorState has the highest priority.
-// "Priority" here roughly corresponds with how close the given state is to
-// completing the auth flow. E.g. kAvailable < kReady because there are fewer
-// steps to complete authentication for a Ready auth factor. The highest
-// priority auth factor's state determines the behavior of LoginAuthFactorsView.
+// The values of this enum should be nearly the same as the values of
+// AuthFactorState, except instead of kErrorTemporary and kErrorPermanent, we
+// have kErrorForeground and kErrorBackground.
+//
+// Foreground/background here refers to whether or not the error has already
+// been displayed to the user. Permanent errors, which can't be recovered from,
+// start in the foreground and then transition to the background after having
+// been displayed. Temporary errors, on the other hand, start in the foreground
+// and then transition to a non-error state after display.
+//
+// The idea is to provide separation of concerns: AuthFactorModel is concerned
+// with the type of error being shown, but LoginAuthFactorsView is concerned
+// with how to show the error. When deciding how to prioritize which states to
+// show, what matters is whether the error is currently in the foreground or
+// background, not whether the underlying error state is temporary or permanent.
+//
+// DO NOT change the relative ordering of these enum values. The values
+// assigned here correspond to the priority of these states. For example, if
+// LoginAuthFactorsView has one auth factor in the kClickRequired state and
+// one auth factor in the kReady state, then it will prioritize showing the
+// kClickRequired state since it's assigned a higher priority.
+enum class PrioritizedAuthFactorViewState {
+  // All auth factors are unavailable, and LoginAuthFactorsView should not be
+  // visible.
+  kUnavailable = 0,
+  // All auth factors are either unavailable or have permanent errors that have
+  // already been displayed.
+  kErrorBackground = 1,
+  // There is at least one auth factor that is available, but it requires extra
+  // steps to authenticate.
+  kAvailable = 2,
+  // There is at least one auth factor that is ready to authenticate.
+  kReady = 3,
+  // An auth factor has an error message to display.
+  kErrorForeground = 4,
+  // An auth factor requires a tap or click as the last step in its
+  // authentication flow.
+  kClickRequired = 5,
+  // Authentication is complete.
+  kAuthenticated = 6,
+};
+
+PrioritizedAuthFactorViewState GetPrioritizedAuthFactorViewState(
+    const AuthFactorModel& auth_factor) {
+  switch (auth_factor.GetAuthFactorState()) {
+    case AuthFactorState::kUnavailable:
+      return PrioritizedAuthFactorViewState::kUnavailable;
+    case AuthFactorState::kErrorPermanent:
+      if (auth_factor.has_permanent_error_display_timed_out())
+        return PrioritizedAuthFactorViewState::kErrorBackground;
+
+      return PrioritizedAuthFactorViewState::kErrorForeground;
+    case AuthFactorState::kAvailable:
+      return PrioritizedAuthFactorViewState::kAvailable;
+    case AuthFactorState::kReady:
+      return PrioritizedAuthFactorViewState::kReady;
+    case AuthFactorState::kErrorTemporary:
+      return PrioritizedAuthFactorViewState::kErrorForeground;
+    case AuthFactorState::kClickRequired:
+      return PrioritizedAuthFactorViewState::kClickRequired;
+    case AuthFactorState::kAuthenticated:
+      return PrioritizedAuthFactorViewState::kAuthenticated;
+  }
+}
+
+// Return the AuthFactorModel whose state has the highest priority. "Priority"
+// here roughly corresponds with how close the given state is to completing the
+// auth flow. E.g. kAvailable < kReady because there are fewer steps to complete
+// authentication for a Ready auth factor. The highest priority auth factor's
+// state determines the behavior of LoginAuthFactorsView.
 AuthFactorModel* GetHighestPriorityAuthFactor(
     const std::vector<std::unique_ptr<AuthFactorModel>>& auth_factors) {
   if (auth_factors.empty())
     return nullptr;
 
-  // AuthFactorState's enum values are assigned so that the highest numerical
-  // value corresponds to the highest priority.
+  // PrioritizedAuthFactorViewState enum values are assigned so that the
+  // highest numerical value corresponds to the highest priority.
   auto compare_by_priority = [](const std::unique_ptr<AuthFactorModel>& a,
                                 const std::unique_ptr<AuthFactorModel>& b) {
-    return static_cast<int>(a->GetAuthFactorState()) <
-           static_cast<int>(b->GetAuthFactorState());
+    return static_cast<int>(GetPrioritizedAuthFactorViewState(*a)) <
+           static_cast<int>(GetPrioritizedAuthFactorViewState(*b));
   };
 
   auto& max = *std::max_element(auth_factors.begin(), auth_factors.end(),
@@ -187,11 +254,10 @@ void LoginAuthFactorsView::AddAuthFactor(
       auth_factor_icon_row_->AddChildView(std::make_unique<AuthIconView>());
   auth_factor->Init(
       icon,
-      /*on_state_changed_callback=*/base::BindRepeating(
+      /*update_state_callback=*/base::BindRepeating(
           &LoginAuthFactorsView::UpdateState, base::Unretained(this)));
-  icon->set_on_tap_or_click_callback(
-      base::BindRepeating(&AuthFactorModel::OnTapOrClickEvent,
-                          base::Unretained(auth_factor.get())));
+  icon->set_on_tap_or_click_callback(base::BindRepeating(
+      &AuthFactorModel::HandleTapOrClick, base::Unretained(auth_factor.get())));
   auth_factors_.push_back(std::move(auth_factor));
   UpdateState();
 }
@@ -199,22 +265,27 @@ void LoginAuthFactorsView::AddAuthFactor(
 void LoginAuthFactorsView::UpdateState() {
   AuthFactorModel* active_auth_factor =
       GetHighestPriorityAuthFactor(auth_factors_);
+  if (!active_auth_factor) {
+    SetVisible(false);
+    return;
+  }
 
-  if (!active_auth_factor || active_auth_factor->GetAuthFactorState() ==
-                                 AuthFactorState::kUnavailable) {
+  PrioritizedAuthFactorViewState state =
+      GetPrioritizedAuthFactorViewState(*active_auth_factor);
+  if (state == PrioritizedAuthFactorViewState::kUnavailable) {
     SetVisible(false);
     return;
   }
   SetVisible(true);
 
-  if (active_auth_factor->GetAuthFactorState() !=
-      AuthFactorState::kErrorTemporary) {
+  if (state != PrioritizedAuthFactorViewState::kErrorForeground) {
     error_timer_.Stop();
   }
 
   int ready_label_id;
-  switch (active_auth_factor->GetAuthFactorState()) {
-    case AuthFactorState::kAuthenticated:
+  size_t num_factors_in_error_background_state;
+  switch (state) {
+    case PrioritizedAuthFactorViewState::kAuthenticated:
       // An auth factor has successfully authenticated. Show a green checkmark.
       ShowCheckmark();
       // TODO(crbug.com/1233614): If we're on the login page, show "Signed in"
@@ -222,27 +293,39 @@ void LoginAuthFactorsView::UpdateState() {
       SetLabelTextAndAccessibleName(IDS_AUTH_FACTOR_LABEL_UNLOCKED,
                                     IDS_AUTH_FACTOR_LABEL_UNLOCKED);
       return;
-    case AuthFactorState::kClickRequired:
+    case PrioritizedAuthFactorViewState::kClickRequired:
       // An auth factor requires a click to enter. Show arrow button.
       // TODO(crbug.com/1233614): collapse password/pin
       ShowArrowButton();
       SetLabelTextAndAccessibleName(IDS_AUTH_FACTOR_LABEL_CLICK_TO_ENTER,
                                     IDS_AUTH_FACTOR_LABEL_CLICK_TO_ENTER);
       FireAlert();
+
+      // Dismiss any errors in the background.
+      OnErrorTimeout();
       return;
-    case AuthFactorState::kReady:
+    case PrioritizedAuthFactorViewState::kReady:
       // One or more auth factors is in the Ready state. Show the ready auth
       // factors.
-      // TODO(crbug.com/1233614): show disabled auth factors
-      ShowReadyAuthFactors();
+      ShowReadyAndDisabledAuthFactors();
       ready_label_id = GetReadyLabelId();
       SetLabelTextAndAccessibleName(ready_label_id, ready_label_id);
       // TODO(crbug.com/1233614): Should FireAlert() be called here?
       FireAlert();
       return;
-    case AuthFactorState::kErrorTemporary:
-      // An auth factor has an error to show temporarily. Show the error for a
-      // period of time.
+    case PrioritizedAuthFactorViewState::kAvailable:
+      // At least one auth factor is available, but none are ready. Show first
+      // available auth factor.
+      ShowSingleAuthFactor(active_auth_factor);
+      SetLabelTextAndAccessibleName(active_auth_factor->GetLabelId(),
+                                    active_auth_factor->GetAccessibleNameId());
+      if (active_auth_factor->ShouldAnnounceLabel()) {
+        FireAlert();
+      }
+      return;
+    case PrioritizedAuthFactorViewState::kErrorForeground:
+      // An auth factor has either a temporary or permanent error to show. Show
+      // the error for a period of time.
 
       // Do not replace the current error if an error is already showing.
       if (error_timer_.IsRunning())
@@ -259,28 +342,31 @@ void LoginAuthFactorsView::UpdateState() {
         FireAlert();
       }
       return;
-    case AuthFactorState::kAvailable:
-      // At least one auth factor is available, but none are ready. Show first
-      // available auth factor.
-      ShowSingleAuthFactor(active_auth_factor);
-      SetLabelTextAndAccessibleName(active_auth_factor->GetLabelId(),
-                                    active_auth_factor->GetAccessibleNameId());
-      if (active_auth_factor->ShouldAnnounceLabel()) {
-        FireAlert();
+    case PrioritizedAuthFactorViewState::kErrorBackground:
+      // Any auth factors that were available have errors that cannot be
+      // resolved, and those errors have already been displayed in the
+      // foreground. Show the "disabled" icons and instruct the user to enter
+      // their password.
+      ShowReadyAndDisabledAuthFactors();
+
+      num_factors_in_error_background_state = std::count_if(
+          auth_factors_.begin(), auth_factors_.end(), [](const auto& factor) {
+            return GetPrioritizedAuthFactorViewState(*factor) ==
+                   PrioritizedAuthFactorViewState::kErrorBackground;
+          });
+
+      if (num_factors_in_error_background_state == 1) {
+        SetLabelTextAndAccessibleName(
+            active_auth_factor->GetLabelId(),
+            active_auth_factor->GetAccessibleNameId());
+      } else {
+        // TODO(crbug.com/1233614): Check if pin is visible and use "enter
+        // password or PIN" string if it is.
+        SetLabelTextAndAccessibleName(IDS_AUTH_FACTOR_LABEL_UNLOCK_PASSWORD,
+                                      IDS_AUTH_FACTOR_LABEL_UNLOCK_PASSWORD);
       }
       return;
-    case AuthFactorState::kErrorPermanent:
-      // Any auth factors that were available have errors that cannot be
-      // resolved. Show the "disabled" icons and instruct the user to enter
-      // their password.
-      // TODO(crbug.com/1233614): show disabled auth factors
-      auth_factor_icon_row_->SetVisible(false);
-      arrow_button_->SetVisible(false);
-      checkmark_icon_->SetVisible(false);
-      SetLabelTextAndAccessibleName(IDS_AUTH_FACTOR_LABEL_UNLOCK_PASSWORD,
-                                    IDS_AUTH_FACTOR_LABEL_UNLOCK_PASSWORD);
-      return;
-    case AuthFactorState::kUnavailable:
+    case PrioritizedAuthFactorViewState::kUnavailable:
       NOTREACHED();
       return;
   }
@@ -302,12 +388,17 @@ void LoginAuthFactorsView::ShowSingleAuthFactor(AuthFactorModel* auth_factor) {
   }
 }
 
-void LoginAuthFactorsView::ShowReadyAuthFactors() {
+void LoginAuthFactorsView::ShowReadyAndDisabledAuthFactors() {
   auth_factor_icon_row_->SetVisible(true);
   arrow_button_->SetVisible(false);
   checkmark_icon_->SetVisible(false);
+
   for (auto& factor : auth_factors_) {
-    factor->SetVisible(factor->GetAuthFactorState() == AuthFactorState::kReady);
+    PrioritizedAuthFactorViewState state =
+        GetPrioritizedAuthFactorViewState(*factor);
+    factor->SetVisible(state == PrioritizedAuthFactorViewState::kReady ||
+                       state ==
+                           PrioritizedAuthFactorViewState::kErrorBackground);
   }
 }
 
@@ -390,8 +481,9 @@ void LoginAuthFactorsView::OnErrorTimeout() {
     // If additional errors occur during the error timeout, then mark all
     // errors timed out instead of trying to queue them. The user can still get
     // the error messages by clicking on the icons.
-    if (factor->GetAuthFactorState() == AuthFactorState::kErrorTemporary) {
-      factor->OnErrorTimeout();
+    if (GetPrioritizedAuthFactorViewState(*factor) ==
+        PrioritizedAuthFactorViewState::kErrorForeground) {
+      factor->HandleErrorTimeout();
     }
   }
 }

@@ -71,7 +71,7 @@ class ASH_EXPORT LoginAuthFactorsView : public views::View {
 
   void ShowArrowButton();
   void ShowSingleAuthFactor(AuthFactorModel* auth_factor);
-  void ShowReadyAuthFactors();
+  void ShowReadyAndDisabledAuthFactors();
   void ShowCheckmark();
 
   // Sets the text and accessible name of the label using the provided string
@@ -111,7 +111,7 @@ class ASH_EXPORT LoginAuthFactorsView : public views::View {
 
   /////////////////////////////////////////////////////////////////////////////
 
-  // The auth factor models that have been added by calling AddAuthFactor().
+  // The auth factor models that have been added by calling `AddAuthFactor`.
   // The order here should match the order in which they appear in the UI when
   // multiple are visible.
   std::vector<std::unique_ptr<AuthFactorModel>> auth_factors_;

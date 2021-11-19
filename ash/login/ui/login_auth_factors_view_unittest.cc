@@ -39,27 +39,29 @@ class FakeAuthFactorModel : public AuthFactorModel {
   ~FakeAuthFactorModel() override = default;
 
   // AuthFactorModel:
-  AuthFactorState GetAuthFactorState() override { return state_; }
+  AuthFactorState GetAuthFactorState() const override { return state_; }
 
   // AuthFactorModel:
-  AuthFactorType GetType() override { return type_; }
+  AuthFactorType GetType() const override { return type_; }
 
   // AuthFactorModel:
-  int GetLabelId() override { return IDS_SMART_LOCK_LABEL_LOOKING_FOR_PHONE; }
-
-  // AuthFactorModel:
-  bool ShouldAnnounceLabel() override { return should_announce_label_; }
-
-  // AuthFactorModel:
-  int GetAccessibleNameId() override {
+  int GetLabelId() const override {
     return IDS_SMART_LOCK_LABEL_LOOKING_FOR_PHONE;
   }
 
   // AuthFactorModel:
-  void OnTapOrClickEvent() override { on_tap_or_click_event_called_ = true; }
+  bool ShouldAnnounceLabel() const override { return should_announce_label_; }
 
   // AuthFactorModel:
-  void OnErrorTimeout() override { on_error_timeout_called_ = true; }
+  int GetAccessibleNameId() const override {
+    return IDS_SMART_LOCK_LABEL_LOOKING_FOR_PHONE;
+  }
+
+  // AuthFactorModel:
+  void DoHandleTapOrClick() override { do_handle_tap_or_click_called_ = true; }
+
+  // AuthFactorModel:
+  void DoHandleErrorTimeout() override { do_handle_error_timeout_num_calls_++; }
 
   // AuthFactorModel:
   void UpdateIcon(AuthIconView* icon) override {
@@ -67,14 +69,15 @@ class FakeAuthFactorModel : public AuthFactorModel {
     icon_ = icon;
   }
 
-  using AuthFactorModel::NotifyOnStateChanged;
+  using AuthFactorModel::has_permanent_error_display_timed_out_;
+  using AuthFactorModel::RefreshUI;
 
   AuthFactorType type_;
   AuthFactorState state_ = AuthFactorState::kReady;
   AuthIconView* icon_ = nullptr;
-  bool on_tap_or_click_event_called_ = false;
+  bool do_handle_tap_or_click_called_ = false;
   bool should_announce_label_ = false;
-  bool on_error_timeout_called_ = false;
+  int do_handle_error_timeout_num_calls_ = 0;
 };
 
 class ScopedAXEventObserver : public views::AXEventObserver {
@@ -196,15 +199,15 @@ TEST_F(LoginAuthFactorsViewUnittest, TapOrClickCalled) {
   AddAuthFactors({AuthFactorType::kFingerprint, AuthFactorType::kSmartLock});
   auto* factor = auth_factors_[0];
 
-  // NotifyOnStateChanged() calls UpdateIcon(), which captures a pointer to the
+  // RefreshUI() calls UpdateIcon(), which captures a pointer to the
   // icon.
-  factor->NotifyOnStateChanged();
+  factor->RefreshUI();
 
-  EXPECT_FALSE(factor->on_tap_or_click_event_called_);
+  EXPECT_FALSE(factor->do_handle_tap_or_click_called_);
   const gfx::Point point(0, 0);
   factor->icon_->OnMousePressed(ui::MouseEvent(
       ui::ET_MOUSE_PRESSED, point, point, base::TimeTicks::Now(), 0, 0));
-  EXPECT_TRUE(factor->on_tap_or_click_event_called_);
+  EXPECT_TRUE(factor->do_handle_tap_or_click_called_);
 }
 
 TEST_F(LoginAuthFactorsViewUnittest, ShouldAnnounceLabel) {
@@ -326,9 +329,64 @@ TEST_F(LoginAuthFactorsViewUnittest, ErrorTemporary) {
   // state update.
   EXPECT_EQ(1u, GetVisibleIconCount());
 
-  ASSERT_FALSE(auth_factors_[0]->on_error_timeout_called_);
+  ASSERT_EQ(0, auth_factors_[0]->do_handle_error_timeout_num_calls_);
   task_environment()->FastForwardBy(kErrorTimeout);
-  EXPECT_TRUE(auth_factors_[0]->on_error_timeout_called_);
+  EXPECT_EQ(1, auth_factors_[0]->do_handle_error_timeout_num_calls_);
+}
+
+TEST_F(LoginAuthFactorsViewUnittest, ErrorPermanent) {
+  AddAuthFactors({AuthFactorType::kFingerprint, AuthFactorType::kSmartLock});
+  LoginAuthFactorsView::TestApi test_api(view_);
+  auth_factors_[0]->state_ = AuthFactorState::kErrorPermanent;
+  auth_factors_[1]->state_ = AuthFactorState::kReady;
+  test_api.UpdateState();
+  auto* factor = auth_factors_[0];
+
+  EXPECT_TRUE(test_api.auth_factor_icon_row()->GetVisible());
+  EXPECT_FALSE(test_api.checkmark_icon()->GetVisible());
+  EXPECT_FALSE(test_api.arrow_button()->GetVisible());
+
+  // Only the error should be visible for the first three seconds after the
+  // state update.
+  EXPECT_EQ(1u, GetVisibleIconCount());
+
+  // Fast-forward four seconds. Ensure that the OnErrorTimeout() callback gets
+  // called, and |has_permanent_error_display_timed_out_| correctly reflects
+  // whether the most recent timeout has expired.
+  ASSERT_EQ(0, factor->do_handle_error_timeout_num_calls_);
+  EXPECT_FALSE(factor->has_permanent_error_display_timed_out_);
+  task_environment()->FastForwardBy(base::Seconds(4));
+  EXPECT_EQ(1, factor->do_handle_error_timeout_num_calls_);
+  EXPECT_TRUE(factor->has_permanent_error_display_timed_out_);
+
+  // After timeout, permanent errors are shown alongside ready auth factors.
+  test_api.UpdateState();
+  EXPECT_EQ(2u, GetVisibleIconCount());
+
+  // Simulate a click event.
+  EXPECT_FALSE(factor->do_handle_tap_or_click_called_);
+  factor->RefreshUI();
+  const gfx::Point point(0, 0);
+  factor->icon_->OnMousePressed(ui::MouseEvent(
+      ui::ET_MOUSE_PRESSED, point, point, base::TimeTicks::Now(), 0, 0));
+  EXPECT_TRUE(factor->do_handle_tap_or_click_called_);
+
+  // Clicking causes only the error to be visible.
+  test_api.UpdateState();
+  EXPECT_EQ(1u, GetVisibleIconCount());
+
+  // Fast-forward four seconds. Ensure that the OnErrorTimeout() callback gets
+  // called, and |has_permanent_error_display_timed_out_| correctly reflects
+  // whether the most recent timeout has expired.
+  ASSERT_EQ(1, factor->do_handle_error_timeout_num_calls_);
+  EXPECT_FALSE(factor->has_permanent_error_display_timed_out_);
+  task_environment()->FastForwardBy(base::Seconds(4));
+  EXPECT_EQ(2, factor->do_handle_error_timeout_num_calls_);
+  EXPECT_TRUE(factor->has_permanent_error_display_timed_out_);
+
+  // After timeout, permanent errors are shown alongside ready auth factors.
+  test_api.UpdateState();
+  EXPECT_EQ(2u, GetVisibleIconCount());
 }
 
 }  // namespace ash
