@@ -4,6 +4,7 @@
 
 #include "services/audio/mixing_graph_impl.h"
 
+#include "base/compiler_specific.h"
 #include "base/trace_event/trace_event.h"
 #include "media/base/audio_timestamp_helper.h"
 #include "media/base/loopback_audio_converter.h"
@@ -16,6 +17,22 @@ std::unique_ptr<media::LoopbackAudioConverter> CreateConverter(
     const media::AudioParameters& output_params) {
   return std::make_unique<media::LoopbackAudioConverter>(
       input_params, output_params, /*disable_fifo=*/true);
+}
+
+// Clamps all samples to the interval [-1, 1].
+void SanitizeOutput(media::AudioBus* bus) {
+  for (int channel = 0; channel < bus->channels(); ++channel) {
+    float* data = bus->channel(channel);
+    for (int frame = 0; frame < bus->frames(); frame++) {
+      float value = data[frame];
+      if (LIKELY(value * value <= 1.0f)) {
+        continue;
+      }
+      // The sample is out of range. Negative values are clamped to -1. Positive
+      // values and NaN are clamped to 1.
+      data[frame] = value < 0.0f ? -1.0f : 1.0f;
+    }
+  }
 }
 }  // namespace
 
@@ -181,6 +198,8 @@ int MixingGraphImpl::OnMoreData(base::TimeDelta delay,
     base::AutoLock scoped_lock(lock_);
     main_converter_.ConvertWithDelay(frames_delayed, dest);
   }
+
+  SanitizeOutput(dest);
 
   on_more_data_cb_.Run(*dest, total_delay);
 
