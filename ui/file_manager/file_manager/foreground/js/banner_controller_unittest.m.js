@@ -652,6 +652,60 @@ export async function testVolumeSizeChangeShowsBanner() {
 }
 
 /**
+ * Test that when a volume size changes multiple events in sequence are
+ * debounced to avoid the scenario when lots of small size files cause many
+ * events to be emitted that will lock up the UI thread.
+ */
+export async function testVolumeSizeChangeIsDebounced() {
+  controller.setWarningBannersInOrder([testWarningBanners[0].tagName]);
+  testWarningBanners[0].setAllowedVolumes([downloadsAllowedVolumeType]);
+  testWarningBanners[0].setDiskThreshold({
+    type: VolumeManagerCommon.VolumeType.DOWNLOADS,
+    minSize: 1 * 1024 * 1024 * 1024,  // 1 GB
+  });
+
+  // When a volume is first navigated to it retrieves the size of the disk at
+  // first. Ensure the first size it retrieves is above the threshold.
+  changeCurrentVolume(VolumeManagerCommon.VolumeType.DOWNLOADS, 'downloads');
+  changeCurrentVolumeDiskSpace({
+    totalSize: 20 * 1024 * 1024 * 1024,      // 20 GB
+    remainingSize: 20 * 1024 * 1024 * 1024,  // 10 GB
+  });
+
+  await controller.initialize();
+  await waitUntil(isAllBannersHidden);
+
+  // Set the date to 1s, any time from [1s, 6s] will cause the debouncing to
+  // kick in and therefore no banner will be visible.
+  mockDate.setDate(1);
+
+  // Change remaining size in the current volume to 512 KB (less than 1 GB)
+  changeCurrentVolumeDiskSpace({
+    totalSize: 20 * 1024 * 1024 * 1024,  // 20 GB
+    remainingSize: 512 * 1024 * 1024,    // 512 KB
+  });
+  await waitUntil(isOnlyBannerVisible(testWarningBanners[0]));
+
+  // Set the date to 3s (still within the debounce interval) and change the size
+  // to cause the banner to not show. Expect this to not happen until the time
+  // is set to >6s which is outside the debounce window. Update the current
+  // volume multiple times ensuring the banner never changes.
+  mockDate.setDate(3);
+  for (let i = 0; i < 10; i++) {
+    changeCurrentVolumeDiskSpace({
+      totalSize: 20 * 1024 * 1024 * 1024,      // 20 GB
+      remainingSize: 20 * 1024 * 1024 * 1024,  // 10 GB
+    });
+    await waitUntil(isOnlyBannerVisible(testWarningBanners[0]));
+  }
+
+  // Once the date is set to a time outside the debounce interval, the banner
+  // should hide.
+  mockDate.setDate(7);
+  await waitUntil(isAllBannersHidden);
+}
+
+/**
  * Test that when the remaining space goes below the threshold, the banner is
  * show and if enough free space is reclaimed the banner is hidden.
  */

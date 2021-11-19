@@ -4,6 +4,7 @@
 
 import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_target.m.js';
 
+import {AsyncUtil} from '../../common/js/async_util.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
 import {xfm} from '../../common/js/xfm.js';
 import {Crostini} from '../../externs/background/crostini.js';
@@ -60,6 +61,12 @@ const DISMISSED_FOREVER_SUFFIX = '_DISMISSED_FOREVER';
  * @private {string}
  */
 const _BANNER_FORCE_SHOW_ATTRIBUTE = 'force-show-for-testing';
+
+/**
+ * Allowed duration between onDirectorySizeChanged events in milliseconds.
+ * @type {number}
+ */
+const MIN_INTERVAL_BETWEEN_DIRECTORY_SIZE_CHANGED_EVENTS = 5000;
 
 /**
  * The central component to the Banners Framework. The controller maintains the
@@ -208,11 +215,28 @@ export class BannerController extends EventTarget {
     this.customBannerFilters_ = {};
 
     /**
+     * The volumeId that is pending a volume size update, updateVolumeSizeStats_
+     * will remove the volumeId once updated. This is cleared when the debounced
+     * version of updateVolumeSizeStats_ executes.
+     * @private {!Set<string>}
+     */
+    this.pendingVolumeSizeUpdates_ = new Set();
+
+    /**
      * Bind the onDirectorySizeChanged_ method to this instance once.
      * @private {!function(!chrome.fileManagerPrivate.FileWatchEvent)}
      */
     this.onDirectorySizeChangedBound_ = async event =>
         this.onDirectorySizeChanged_(event);
+
+    /**
+     * Debounced version of updateVolumeSizeStats_ to stop overly aggressive
+     * calls coming from onDirectoryChanged_.
+     * @private {AsyncUtil.RateLimiter}
+     */
+    this.updateVolumeSizeStatsDebounced_ = new AsyncUtil.RateLimiter(
+        async () => this.updateVolumeSizeStats_(),
+        MIN_INTERVAL_BETWEEN_DIRECTORY_SIZE_CHANGED_EVENTS);
 
     // Only attach event listeners if the controller is enabled. Used to disable
     // all banners from being loaded.
@@ -335,9 +359,11 @@ export class BannerController extends EventTarget {
 
     // When navigating to a different volume, refresh the volume size stats
     // when first navigating. A listener will keep this in sync.
-    if (previousVolume !== this.currentVolume_ && this.currentVolume_ &&
+    if (this.currentVolume_ && previousVolume &&
+        previousVolume.volumeId !== this.currentVolume_.volumeId &&
         this.volumeSizeObservers_[this.currentVolume_.volumeType]) {
-      await this.updateVolumeSizeStats_(this.currentVolume_);
+      this.pendingVolumeSizeUpdates_.add(this.currentVolume_.volumeId);
+      this.updateVolumeSizeStatsDebounced_.runImmediately();
     }
 
     /** @type {?Banner} */
@@ -741,8 +767,11 @@ export class BannerController extends EventTarget {
     }
     const eventVolumeInfo =
         this.volumeManager_.getVolumeInfo(/** @type{!Entry} */ (event.entry));
-    await this.updateVolumeSizeStats_(eventVolumeInfo);
-    await this.reconcile();
+    if (!eventVolumeInfo || !eventVolumeInfo.volumeId) {
+      return;
+    }
+    this.pendingVolumeSizeUpdates_.add(eventVolumeInfo.volumeId);
+    this.updateVolumeSizeStatsDebounced_.run();
   }
 
   /**
@@ -772,19 +801,23 @@ export class BannerController extends EventTarget {
   }
 
   /**
-   * Refresh the volume size stats for the specific volumeInfo.
-   * @param {?VolumeInfo} volumeInfo
+   * Refresh the volume size stats for all volumeIds in
+   * |pendingVolumeSizeUpdate_|.
    * @private
    */
-  async updateVolumeSizeStats_(volumeInfo) {
-    if (!volumeInfo || !volumeInfo.volumeId) {
+  async updateVolumeSizeStats_() {
+    if (this.pendingVolumeSizeUpdates_.size === 0) {
       return;
     }
-    const sizeStats = await getSizeStats(volumeInfo.volumeId);
-    if (!sizeStats || sizeStats.totalSize === 0) {
-      return;
+    for (const volumeId of this.pendingVolumeSizeUpdates_) {
+      const sizeStats = await getSizeStats(volumeId);
+      if (!sizeStats || sizeStats.totalSize === 0) {
+        continue;
+      }
+      this.volumeSizeStats_[volumeId] = sizeStats;
     }
-    this.volumeSizeStats_[volumeInfo.volumeId] = sizeStats;
+    this.pendingVolumeSizeUpdates_.clear();
+    await this.reconcile();
   }
 
   /**

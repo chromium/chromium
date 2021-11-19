@@ -202,6 +202,7 @@ js_library("banner_controller") {
     "ui/banners:local_disk_low_space_banner",
     "ui/banners:shared_with_crostini_pluginvm_banner",
     "ui/banners:trash_banner",
+    "//ui/file_manager/file_manager/common/js:async_util",
     "//ui/file_manager/file_manager/common/js:volume_manager_types",
     "//ui/file_manager/file_manager/common/js:xfm",
     "//ui/file_manager/file_manager/externs:banner",
