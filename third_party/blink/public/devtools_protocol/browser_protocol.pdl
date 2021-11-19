@@ -6204,6 +6204,19 @@ domain Network
     parameters
       ReportingApiReport report
 
+  experimental type ReportingApiEndpoint extends object
+    properties
+      # The URL of the endpoint to which reports may be delivered.
+      string url
+      # Name of the endpoint group.
+      string groupName
+
+  experimental event reportingApiEndpointsChangedForOrigin
+    parameters
+      # Origin of the document(s) which configured the endpoints.
+      string origin
+      array of ReportingApiEndpoint endpoints
+
   # An object providing the result of a network resource load.
   experimental type LoadNetworkResourcePageResult extends object
     properties

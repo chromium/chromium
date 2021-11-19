@@ -582,6 +582,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
   void OnReportAdded(const net::ReportingReport* service_report) override;
   void OnReportUpdated(const net::ReportingReport* service_report) override;
   void OnReportingObserverDisconnect(mojo::RemoteSetElementId mojo_id);
+  void OnEndpointsUpdatedForOrigin(
+      const std::vector<net::ReportingEndpoint>& endpoints) override;
 #endif  // BUILDFLAG(ENABLE_REPORTING)
 
  private:

@@ -1072,12 +1072,27 @@ void NetworkContext::AddReportingApiObserver(
     for (const auto* service_report : service_reports) {
       reporting_api_observers_.Get(id)->OnReportAdded(*service_report);
     }
+
+    base::flat_map<url::Origin, std::vector<net::ReportingEndpoint>>
+        endpoints_by_origin = url_request_context()
+                                  ->reporting_service()
+                                  ->GetV1ReportingEndpointsByOrigin();
+    for (auto const& origin_and_endpoints : endpoints_by_origin) {
+      OnEndpointsUpdatedForOrigin(origin_and_endpoints.second);
+    }
   }
 }
 
 void NetworkContext::OnReportAdded(const net::ReportingReport* service_report) {
   for (const auto& observer : reporting_api_observers_) {
     observer->OnReportAdded(*service_report);
+  }
+}
+
+void NetworkContext::OnEndpointsUpdatedForOrigin(
+    const std::vector<net::ReportingEndpoint>& endpoints) {
+  for (const auto& observer : reporting_api_observers_) {
+    observer->OnEndpointsUpdatedForOrigin(endpoints);
   }
 }
 

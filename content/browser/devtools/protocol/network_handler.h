@@ -107,6 +107,8 @@ class NetworkHandler : public DevToolsDomainHandler,
 #if BUILDFLAG(ENABLE_REPORTING)
   void OnReportAdded(const net::ReportingReport& report) override;
   void OnReportUpdated(const net::ReportingReport& report) override;
+  void OnEndpointsUpdatedForOrigin(
+      const std::vector<net::ReportingEndpoint>& endpoints) override;
 #endif  // BUILDFLAG(ENABLE_REPORTING)
 
   Response EnableReportingApi(bool enable) override;
@@ -311,6 +313,8 @@ class NetworkHandler : public DevToolsDomainHandler,
       const std::string& mime_type);
   std::unique_ptr<protocol::Network::ReportingApiReport> BuildProtocolReport(
       const net::ReportingReport& report);
+  std::unique_ptr<protocol::Network::ReportingApiEndpoint>
+  BuildProtocolEndpoint(const net::ReportingEndpoint& endpoint);
 
   // TODO(dgozman): Remove this.
   const std::string host_id_;

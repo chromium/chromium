@@ -1338,8 +1338,43 @@ void NetworkHandler::OnReportUpdated(const net::ReportingReport& report) {
   }
 }
 
+std::unique_ptr<protocol::Network::ReportingApiEndpoint>
+NetworkHandler::BuildProtocolEndpoint(const net::ReportingEndpoint& endpoint) {
+  return protocol::Network::ReportingApiEndpoint::Create()
+      .SetUrl(endpoint.info.url.spec())
+      .SetGroupName(endpoint.group_key.group_name)
+      .Build();
+}
+
+void NetworkHandler::OnEndpointsUpdatedForOrigin(
+    const std::vector<::net::ReportingEndpoint>& endpoints) {
+  if (!host_ || endpoints.empty()) {
+    return;
+  }
+  url::Origin origin = endpoints[0].group_key.origin;
+  DCHECK(base::ranges::all_of(endpoints, [&](auto const& endpoint) {
+    return endpoint.group_key.origin == origin;
+  }));
+  std::vector<GURL> reporting_filter_urls = ComputeReportingURLs(host_);
+
+  // Only send protocol event if the origin of the updated endpoints matches
+  // an origin in the local frame tree.
+  if (base::ranges::any_of(reporting_filter_urls, [&](auto const& url) {
+        return url::Origin::Create(url) == origin;
+      })) {
+    auto protocol_endpoints = std::make_unique<
+        protocol::Array<protocol::Network::ReportingApiEndpoint>>();
+    protocol_endpoints->reserve(endpoints.size());
+    for (const auto& endpoint : endpoints) {
+      protocol_endpoints->push_back(BuildProtocolEndpoint(endpoint));
+    }
+    frontend_->ReportingApiEndpointsChangedForOrigin(
+        origin.Serialize(), std::move(protocol_endpoints));
+  }
+}
+
 Response NetworkHandler::EnableReportingApi(const bool enable) {
-  if (!storage_partition_) {
+  if (!storage_partition_ || !host_) {
     return Response::InternalError();
   }
 

@@ -1,0 +1,21 @@
+Tests ReportingApiEndpointsChangedForOrigin events.
+
+Endpoints updated:
+{
+    endpoints : [
+        [0] : {
+            groupName : csp
+            url : https://localhost/reporting-endpoint
+        }
+        [1] : {
+            groupName : default
+            url : https://reports.example/default
+        }
+        [2] : {
+            groupName : main-endpoint
+            url : https://reports.example/main
+        }
+    ]
+    origin : https://127.0.0.1:8443
+}
+
