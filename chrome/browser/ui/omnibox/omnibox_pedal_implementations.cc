@@ -698,10 +698,9 @@ class OmniboxPedalCreateGoogleCalendarEvent : public OmniboxPedalAuthRequired {
                 IDS_OMNIBOX_PEDAL_CREATE_GOOGLE_CALENDAR_EVENT_SUGGESTION_CONTENTS,
                 IDS_ACC_OMNIBOX_PEDAL_CREATE_GOOGLE_CALENDAR_EVENT_SUFFIX,
                 IDS_ACC_OMNIBOX_PEDAL_CREATE_GOOGLE_CALENDAR_EVENT)) {}
-
-#if SUPPORTS_DESKTOP_ICONS && BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#if SUPPORTS_DESKTOP_ICONS
   const gfx::VectorIcon& GetVectorIcon() const override {
-    return vector_icons::kGoogleCalendarIcon;
+    return omnibox::kGoogleCalendarIcon;
   }
 #endif
 
@@ -743,9 +742,9 @@ class OmniboxPedalCreateGoogleSite : public OmniboxPedalAuthRequired {
                 IDS_OMNIBOX_PEDAL_CREATE_GOOGLE_SITE_SUGGESTION_CONTENTS,
                 IDS_ACC_OMNIBOX_PEDAL_CREATE_GOOGLE_SITE_SUFFIX,
                 IDS_ACC_OMNIBOX_PEDAL_CREATE_GOOGLE_SITE)) {}
-#if SUPPORTS_DESKTOP_ICONS && BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#if SUPPORTS_DESKTOP_ICONS
   const gfx::VectorIcon& GetVectorIcon() const override {
-    return vector_icons::kGoogleSitesIcon;
+    return omnibox::kGoogleSitesIcon;
   }
 #endif
 
@@ -787,10 +786,9 @@ class OmniboxPedalCreateGoogleKeepNote : public OmniboxPedalAuthRequired {
                 IDS_OMNIBOX_PEDAL_CREATE_GOOGLE_KEEP_NOTE_SUGGESTION_CONTENTS,
                 IDS_ACC_OMNIBOX_PEDAL_CREATE_GOOGLE_KEEP_NOTE_SUFFIX,
                 IDS_ACC_OMNIBOX_PEDAL_CREATE_GOOGLE_KEEP_NOTE)) {}
-
-#if SUPPORTS_DESKTOP_ICONS && BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#if SUPPORTS_DESKTOP_ICONS
   const gfx::VectorIcon& GetVectorIcon() const override {
-    return vector_icons::kGoogleKeepNoteIcon;
+    return omnibox::kGoogleKeepNoteIcon;
   }
 #endif
 
@@ -915,10 +913,9 @@ class OmniboxPedalManageGoogleAccount : public OmniboxPedalAuthRequired {
                 IDS_OMNIBOX_PEDAL_MANAGE_GOOGLE_ACCOUNT_SUGGESTION_CONTENTS,
                 IDS_ACC_OMNIBOX_PEDAL_MANAGE_GOOGLE_ACCOUNT_SUFFIX,
                 IDS_ACC_OMNIBOX_PEDAL_MANAGE_GOOGLE_ACCOUNT)) {}
-
-#if SUPPORTS_DESKTOP_ICONS && BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#if SUPPORTS_DESKTOP_ICONS
   const gfx::VectorIcon& GetVectorIcon() const override {
-    return vector_icons::kGoogleSuperGIcon;
+    return omnibox::kGoogleSuperGIcon;
   }
 #endif
 
@@ -960,10 +957,9 @@ class OmniboxPedalChangeGooglePassword : public OmniboxPedalAuthRequired {
                 IDS_OMNIBOX_PEDAL_CHANGE_GOOGLE_PASSWORD_SUGGESTION_CONTENTS,
                 IDS_ACC_OMNIBOX_PEDAL_CHANGE_GOOGLE_PASSWORD_SUFFIX,
                 IDS_ACC_OMNIBOX_PEDAL_CHANGE_GOOGLE_PASSWORD)) {}
-
-#if SUPPORTS_DESKTOP_ICONS && BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#if SUPPORTS_DESKTOP_ICONS
   const gfx::VectorIcon& GetVectorIcon() const override {
-    return vector_icons::kGoogleSuperGIcon;
+    return omnibox::kGoogleSuperGIcon;
   }
 #endif
 
@@ -1112,9 +1108,9 @@ class OmniboxPedalFindMyPhone : public OmniboxPedalAuthRequired {
                          IDS_ACC_OMNIBOX_PEDAL_FIND_MY_PHONE_SUFFIX,
                          IDS_ACC_OMNIBOX_PEDAL_FIND_MY_PHONE)) {}
 
-#if SUPPORTS_DESKTOP_ICONS && BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#if SUPPORTS_DESKTOP_ICONS
   const gfx::VectorIcon& GetVectorIcon() const override {
-    return vector_icons::kGoogleSuperGIcon;
+    return omnibox::kGoogleSuperGIcon;
   }
 #endif
 
@@ -1135,9 +1131,9 @@ class OmniboxPedalManageGooglePrivacy : public OmniboxPedalAuthRequired {
                 IDS_ACC_OMNIBOX_PEDAL_MANAGE_GOOGLE_PRIVACY_SUFFIX,
                 IDS_ACC_OMNIBOX_PEDAL_MANAGE_GOOGLE_PRIVACY)) {}
 
-#if SUPPORTS_DESKTOP_ICONS && BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#if SUPPORTS_DESKTOP_ICONS
   const gfx::VectorIcon& GetVectorIcon() const override {
-    return vector_icons::kGoogleSuperGIcon;
+    return omnibox::kGoogleSuperGIcon;
   }
 #endif
 
