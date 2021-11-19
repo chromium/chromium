@@ -265,6 +265,10 @@ const base::Feature kPurgeRendererMemoryWhenBackgrounded {
 #endif
 };
 
+// Enables new behavior for window.open() and BarProp properties.
+const base::Feature kWindowOpenNewPopupBehavior{
+    "WindowOpenNewPopupBehavior", base::FEATURE_ENABLED_BY_DEFAULT};
+
 // Changes the default RTCPeerConnection constructor behavior to use Unified
 // Plan as the SDP semantics. When the feature is enabled, Unified Plan is used
 // unless the default is overridden (by passing {sdpSemantics:'plan-b'} as the

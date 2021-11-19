@@ -2689,6 +2689,11 @@
       depends_on: ["WebXRARModule"],
       status: "stable",
     },
+    // New behavior for window.open's interpretation of the windowFeatures parameter.
+    {
+      name: "WindowOpenNewPopupBehavior",
+      status: "stable",
+    },
     // Extends window placement functionality for multi-screen devices. Also
     // exposes requisite information about displays connected to the device.
     {

@@ -97,6 +97,7 @@ BLINK_COMMON_EXPORT extern const base::Feature
     kPreviewsResourceLoadingHintsSpecificResourceTypes;
 BLINK_COMMON_EXPORT extern const base::Feature
     kPurgeRendererMemoryWhenBackgrounded;
+BLINK_COMMON_EXPORT extern const base::Feature kWindowOpenNewPopupBehavior;
 BLINK_COMMON_EXPORT extern const base::Feature kRTCUnifiedPlanByDefault;
 BLINK_COMMON_EXPORT extern const base::Feature
     kRTCDisallowPlanBOutsideDeprecationTrial;
