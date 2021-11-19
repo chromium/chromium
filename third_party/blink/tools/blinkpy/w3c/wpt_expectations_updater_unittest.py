@@ -613,8 +613,8 @@ class WPTExpectationsUpdaterTest(LoggingTestCase):
         self.assertEqual(
             line_dict, {
                 'virtual/foo/external/wpt/test/aa-manual.html': [
-                    'crbug.com/test [ Trusty ] virtual/foo/external/wpt/test/aa-manual.html [ Skip ]',
-                    'crbug.com/test [ Mac10.11 ] virtual/foo/external/wpt/test/aa-manual.html [ Skip ]',
+                    '[ Trusty ] virtual/foo/external/wpt/test/aa-manual.html [ Skip ]',
+                    '[ Mac10.11 ] virtual/foo/external/wpt/test/aa-manual.html [ Skip ]',
                 ],
             })
 
@@ -1363,7 +1363,7 @@ class WPTExpectationsUpdaterTest(LoggingTestCase):
         self.assertEqual(
             line_dict, {
                 'external/wpt/x-manual.html':
-                ['crbug.com/test external/wpt/x-manual.html [ Skip ]']
+                ['external/wpt/x-manual.html [ Skip ]']
             })
 
     def test_same_platform_one_without_results(self):

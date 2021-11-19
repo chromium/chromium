@@ -804,8 +804,8 @@ class WPTExpectationsUpdater(object):
             line_parts.append(test_name.replace('*', '\\*'))
             line_parts.append(expectations)
 
-            # Only add the bug link if the expectations do not include WontFix.
-            if 'WontFix' not in expectations and result.bug:
+            # Only add the bug link if the expectations do not include SKIP.
+            if 'Skip' not in expectations and result.bug:
                 line_parts.insert(0, result.bug)
 
             lines.append(' '.join(line_parts))
@@ -996,7 +996,8 @@ class WPTExpectationsUpdater(object):
             self.host.filesystem.write_text_file(expectations_file_path,
                                                  file_contents)
 
-        if wont_fix_list:
+        # only write to NeverFixTests for the generic round
+        if wont_fix_list and flag_specific is None:
             _log.info('Lines to write to NeverFixTests:\n %s',
                       '\n'.join(wont_fix_list))
             # Writes to NeverFixTests file.
