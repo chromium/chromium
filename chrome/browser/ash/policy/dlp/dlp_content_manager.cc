@@ -668,10 +668,14 @@ DlpContentManager::GetScreenShareConfidentialContentsInfo(
                 media_id.web_contents_id.render_process_id,
                 media_id.web_contents_id.main_render_frame_id));
     ConfidentialContentsInfo info;
-    info.restriction_info =
-        GetConfidentialRestrictions(web_contents)
-            .GetRestrictionLevelAndUrl(DlpContentRestriction::kScreenShare);
-    info.confidential_contents.Add(web_contents);
+    if (web_contents) {
+      info.restriction_info =
+          GetConfidentialRestrictions(web_contents)
+              .GetRestrictionLevelAndUrl(DlpContentRestriction::kScreenShare);
+      info.confidential_contents.Add(web_contents);
+    } else {
+      NOTREACHED();
+    }
     return info;
   }
   DCHECK_EQ(media_id.type, content::DesktopMediaID::Type::TYPE_WINDOW);
