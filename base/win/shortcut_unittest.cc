@@ -225,8 +225,12 @@ TEST_F(ShortcutTest, UpdateShortcutUpdateOnlyTargetAndResolve) {
   EXPECT_STREQ(kFileContents2, read_contents);
 }
 
-// Flaky test: crbug.com/1270603.
-TEST_F(ShortcutTest, DISABLED_UpdateShortcutMakeDualMode) {
+TEST_F(ShortcutTest, UpdateShortcutMakeDualMode) {
+  // This test is extremely flaky on Win7, so disable.
+  // TODO(crbug.com/1264563): Investigate why it's so flaky on Win7 bots.
+  if (base::win::OSInfo::GetInstance()->version() <= base::win::Version::WIN7)
+    GTEST_SKIP() << "Skipping test for win7";
+
   ASSERT_TRUE(CreateOrUpdateShortcutLink(link_file_, link_properties_,
                                          SHORTCUT_CREATE_ALWAYS));
 
