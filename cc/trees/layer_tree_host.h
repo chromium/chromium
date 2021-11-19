@@ -516,6 +516,9 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
   float device_scale_factor() const {
     return pending_commit_state()->device_scale_factor;
   }
+  float painted_device_scale_factor() const {
+    return pending_commit_state()->painted_device_scale_factor;
+  }
 
   void SetRecordingScaleFactor(float recording_scale_factor);
 

@@ -79,6 +79,7 @@ class CC_PAINT_EXPORT PaintCanvas {
   virtual void restoreToCount(int save_count) = 0;
   virtual void translate(SkScalar dx, SkScalar dy) = 0;
   virtual void scale(SkScalar sx, SkScalar sy) = 0;
+  void scale(SkScalar s) { scale(s, s); }
   virtual void rotate(SkScalar degrees) = 0;
   // TODO(aaronhk): crbug.com/1153330 deprecate these in favor of the SkM44
   // versions.

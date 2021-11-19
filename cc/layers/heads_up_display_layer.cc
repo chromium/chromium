@@ -34,30 +34,36 @@ void HeadsUpDisplayLayer::UpdateLocationAndSize(
     const gfx::Size& device_viewport,
     float device_scale_factor) {
   DCHECK(IsMutationAllowed());
-  gfx::Size device_viewport_in_layout_pixels =
-      gfx::Size(device_viewport.width() / device_scale_factor,
-                device_viewport.height() / device_scale_factor);
+  float multiplier = 1.f / (device_scale_factor *
+                            layer_tree_host()->painted_device_scale_factor());
+  gfx::Size device_viewport_in_dips =
+      gfx::ScaleToFlooredSize(device_viewport, multiplier);
 
-  gfx::Size bounds;
+  gfx::Size bounds_in_dips;
 
   // If the HUD is not displaying full-viewport rects (e.g., it is showing the
   // Frame Rendering Stats), use a fixed size.
   constexpr int kDefaultHUDSize = 256;
-  bounds.SetSize(kDefaultHUDSize, kDefaultHUDSize);
+  bounds_in_dips.SetSize(kDefaultHUDSize, kDefaultHUDSize);
 
   if (layer_tree_host()->GetDebugState().ShowDebugRects()) {
-    bounds = device_viewport_in_layout_pixels;
+    bounds_in_dips = device_viewport_in_dips;
   } else if (layer_tree_host()->GetDebugState().show_web_vital_metrics ||
              layer_tree_host()->GetDebugState().show_smoothness_metrics) {
     // If the HUD is used to display performance metrics (which is on the right
     // hand side_, make sure the bounds has the correct width, with a fixed
     // height.
-    bounds.set_width(device_viewport_in_layout_pixels.width());
+    bounds_in_dips.set_width(device_viewport_in_dips.width());
     // Increase HUD layer height to make sure all the metrics are showing.
-    bounds.set_height(kDefaultHUDSize * 2);
+    bounds_in_dips.set_height(kDefaultHUDSize * 2);
   }
 
-  SetBounds(bounds);
+  // DIPs are layout coordinates if painted dsf is 1. If it's not 1, then layout
+  // coordinates are DIPs * painted dsf.
+  auto bounds_in_layout_space = gfx::ScaleToCeiledSize(
+      bounds_in_dips, layer_tree_host()->painted_device_scale_factor());
+
+  SetBounds(bounds_in_layout_space);
 }
 
 bool HeadsUpDisplayLayer::HasDrawableContent() const {

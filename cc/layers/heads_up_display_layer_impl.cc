@@ -632,7 +632,10 @@ void HeadsUpDisplayLayerImpl::DrawHudContents(PaintCanvas* canvas) {
   TRACE_EVENT0("cc", "DrawHudContents");
   canvas->clear(SkColorSetARGB(0, 0, 0, 0));
   canvas->save();
-  canvas->scale(internal_contents_scale_, internal_contents_scale_);
+  canvas->scale(internal_contents_scale_);
+  // Our output should be in layout space, but all of the draw commands here are
+  // in dips. Scale the canvas to account for this difference.
+  canvas->scale(layer_tree_impl()->painted_device_scale_factor());
 
   if (debug_state.ShowDebugRects()) {
     DrawDebugRects(canvas, layer_tree_impl()->debug_rect_history());
@@ -662,13 +665,13 @@ void HeadsUpDisplayLayerImpl::DrawHudContents(PaintCanvas* canvas) {
 
   // For the web vital and smoothness HUD on the top right corner, if the width
   // of the screen is smaller than the default width of the HUD, scale it down.
-  if (bounds().width() < metrics_sizes.kWidth) {
-    double scale_to_bounds = static_cast<double>(bounds().width()) /
+  if (bounds_width_in_dips() < metrics_sizes.kWidth) {
+    double scale_to_bounds = static_cast<double>(bounds_width_in_dips()) /
                              static_cast<double>(metrics_sizes.kWidth);
     canvas->scale(scale_to_bounds, scale_to_bounds);
   }
   SkRect metrics_area = SkRect::MakeXYWH(
-      std::max<SkScalar>(0, bounds().width() - metrics_sizes.kWidth), 0,
+      std::max<SkScalar>(0, bounds_width_in_dips() - metrics_sizes.kWidth), 0,
       metrics_sizes.kWidth, 0);
   if (debug_state.show_web_vital_metrics) {
     metrics_area = DrawWebVitalMetrics(

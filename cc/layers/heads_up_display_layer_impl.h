@@ -17,6 +17,7 @@
 #include "cc/resources/memory_history.h"
 #include "cc/resources/resource_pool.h"
 #include "cc/trees/debug_rect_history.h"
+#include "cc/trees/layer_tree_impl.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
 
 class SkTypeface;
@@ -162,6 +163,12 @@ class CC_EXPORT HeadsUpDisplayLayerImpl : public LayerImpl {
                                int left,
                                int top,
                                int width) const;
+
+  int bounds_width_in_dips() const {
+    // bounds() is specified in layout coordinates, which is painted dsf away
+    // from DIPs.
+    return bounds().width() / layer_tree_impl()->painted_device_scale_factor();
+  }
 
   ResourcePool::InUsePoolResource in_flight_resource_;
   std::unique_ptr<ResourcePool> pool_;
