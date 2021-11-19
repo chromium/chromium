@@ -2015,7 +2015,7 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, WindowOpenClose1) {
   GURL url = embedded_test_server()->GetURL("/window.close.html");
   GURL::Replacements add_query;
   std::string query("test1");
-  add_query.SetQuery(query.c_str(), url::Component(0, query.length()));
+  add_query.SetQueryStr(query);
   url = url.ReplaceComponents(add_query);
 
   std::u16string title = u"Title Of Awesomeness";
@@ -2032,7 +2032,7 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, WindowOpenClose2) {
   GURL url = embedded_test_server()->GetURL("/window.close.html");
   GURL::Replacements add_query;
   std::string query("test2");
-  add_query.SetQuery(query.c_str(), url::Component(0, query.length()));
+  add_query.SetQueryStr(query);
   url = url.ReplaceComponents(add_query);
 
   std::u16string title = u"Title Of Awesomeness";
@@ -2055,7 +2055,7 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, DISABLED_WindowOpenClose3) {
   GURL url = embedded_test_server()->GetURL("/window.close.html");
   GURL::Replacements add_query;
   std::string query("test3");
-  add_query.SetQuery(query.c_str(), url::Component(0, query.length()));
+  add_query.SetQueryStr(query);
   url = url.ReplaceComponents(add_query);
 
   std::u16string title = u"Title Of Awesomeness";

@@ -186,7 +186,7 @@ GURL ChromeContentVerifierDelegate::GetSignatureFetchUrl(
 
   GURL base_url = extension_urls::GetWebstoreUpdateUrl();
   GURL::Replacements replacements;
-  replacements.SetQuery(query.c_str(), url::Component(0, query.length()));
+  replacements.SetQueryStr(query);
   return base_url.ReplaceComponents(replacements);
 }
 

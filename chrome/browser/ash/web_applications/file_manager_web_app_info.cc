@@ -35,8 +35,7 @@ void AppendFileHandler(WebApplicationInfo& info,
 
   GURL action = GURL(kChromeUIFileManagerURL);
   GURL::Replacements replacements;
-  replacements.SetQuery(action_name.c_str(),
-                        url::Component(0, action_name.length()));
+  replacements.SetQueryStr(action_name);
   handler.action = action.ReplaceComponents(replacements);
 
   handler.accept.emplace_back();

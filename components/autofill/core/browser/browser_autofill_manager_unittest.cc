@@ -556,8 +556,7 @@ class BrowserAutofillManagerTest : public testing::Test {
       // the main frame to HTTP, otherwise mixed form warnings will trigger and
       // autofill will be disabled.
       GURL::Replacements replacements;
-      replacements.SetScheme(url::kHttpScheme,
-                             url::Component(0, strlen(url::kHttpScheme)));
+      replacements.SetSchemeStr(url::kHttpScheme);
       autofill_client_.set_form_origin(
           autofill_client_.form_origin().ReplaceComponents(replacements));
       form->url = GURL("http://myform.com/form.html");
@@ -5760,8 +5759,7 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
   // the main frame to HTTP in the client, otherwise mixed form warnings will
   // trigger and autofill will be disabled.
   GURL::Replacements replacements;
-  replacements.SetScheme(url::kHttpScheme,
-                         url::Component(0, strlen(url::kHttpScheme)));
+  replacements.SetSchemeStr(url::kHttpScheme);
   client.set_form_origin(client.form_origin().ReplaceComponents(replacements));
   ResetBrowserAutofillManager(&client);
   browser_autofill_manager_->SetAutofillProfileEnabled(false);
@@ -5797,8 +5795,7 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
   // the main frame to HTTP in the client, otherwise mixed form warnings will
   // trigger and autofill will be disabled.
   GURL::Replacements replacements;
-  replacements.SetScheme(url::kHttpScheme,
-                         url::Component(0, strlen(url::kHttpScheme)));
+  replacements.SetSchemeStr(url::kHttpScheme);
   client.set_form_origin(client.form_origin().ReplaceComponents(replacements));
   ResetBrowserAutofillManager(&client);
   browser_autofill_manager_->SetAutofillProfileEnabled(false);

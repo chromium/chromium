@@ -463,7 +463,7 @@ void AvailabilityProber::CreateAndStartURLLoader() {
   if (retry_policy_.use_random_urls) {
     std::string query = "guid=" + base::GenerateGUID();
     GURL::Replacements replacements;
-    replacements.SetQuery(query.c_str(), url::Component(0, query.length()));
+    replacements.SetQueryStr(query);
     url = url.ReplaceComponents(replacements);
   }
 

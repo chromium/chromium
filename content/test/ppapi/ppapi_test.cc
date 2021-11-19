@@ -91,7 +91,7 @@ GURL PPAPITestBase::GetTestFileUrl(const std::string& test_case) {
 
   GURL::Replacements replacements;
   std::string query = BuildQuery(std::string(), test_case);
-  replacements.SetQuery(query.c_str(), url::Component(0, query.size()));
+  replacements.SetQueryStr(query);
   return test_url.ReplaceComponents(replacements);
 }
 

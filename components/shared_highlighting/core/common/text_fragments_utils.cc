@@ -172,7 +172,7 @@ GURL AppendFragmentDirectives(const GURL& base_url,
   new_ref += fragments_string;
 
   GURL::Replacements replacements;
-  replacements.SetRef(new_ref.c_str(), url::Component(0, new_ref.size()));
+  replacements.SetRefStr(new_ref);
 
   return base_url.ReplaceComponents(replacements);
 }

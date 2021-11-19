@@ -1410,10 +1410,9 @@ GURL TemplateURL::GenerateFaviconURL(const GURL& url) {
   DCHECK(url.is_valid());
   GURL::Replacements rep;
 
-  const char favicon_path[] = "/favicon.ico";
-  int favicon_path_len = base::size(favicon_path) - 1;
+  static const char kFaviconPath[] = "/favicon.ico";
 
-  rep.SetPath(favicon_path, url::Component(0, favicon_path_len));
+  rep.SetPathStr(kFaviconPath);
   rep.ClearUsername();
   rep.ClearPassword();
   rep.ClearQuery();

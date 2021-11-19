@@ -818,8 +818,7 @@ GURL AutocompleteMatch::GURLToStrippedGURL(
       (input.terms_prefixed_by_http_or_https().empty() ||
        !WordMatchesURLContent(
            input.terms_prefixed_by_http_or_https(), url))) {
-    replacements.SetScheme(url::kHttpScheme,
-                           url::Component(0, strlen(url::kHttpScheme)));
+    replacements.SetSchemeStr(url::kHttpScheme);
     needs_replacement = true;
   }
 

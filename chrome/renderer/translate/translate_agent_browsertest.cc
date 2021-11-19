@@ -39,7 +39,7 @@ namespace {
 
 std::string UpdateGURLScheme(GURL url, const char scheme[]) {
   GURL::Replacements replacements;
-  replacements.SetScheme(scheme, url::Component(0, strlen(scheme)));
+  replacements.SetSchemeStr(scheme);
   return url.ReplaceComponents(replacements).spec();
 }
 

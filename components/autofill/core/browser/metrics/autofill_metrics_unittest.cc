@@ -4953,8 +4953,7 @@ TEST_F(AutofillMetricsTest, QueriedCreditCardFormIsSecure) {
     // skipped due to the form being detected as mixed content.
     GURL client_form_origin = autofill_client_.form_origin();
     GURL::Replacements replacements;
-    replacements.SetScheme(url::kHttpScheme,
-                           url::Component(0, strlen(url::kHttpScheme)));
+    replacements.SetSchemeStr(url::kHttpScheme);
     autofill_client_.set_form_origin(
         client_form_origin.ReplaceComponents(replacements));
     form.main_frame_origin =
