@@ -1380,10 +1380,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.FontLookup.FetchAllFontFiles.Time" units="ms"
+    expires_after="2022-05-01">
+  <owner>twellington@chromium.org</owner>
+  <owner>clank-app-team@google.com</owner>
+  <summary>
+    Records the time taken to fetch all available font files from the GMS Core
+    Android downloadable font provider.
+  </summary>
+</histogram>
+
 <histogram name="Android.FontLookup.FetchFontName" enum="FetchFontName"
     expires_after="2022-04-24">
-  <owner>chouinard@chromium.org</owner>
   <owner>twellington@chromium.org</owner>
+  <owner>clank-app-team@google.com</owner>
   <summary>
     Records font fetch requests by font name. These results may be used to
     determine whether it remains worthwhile to preload fonts that are available
@@ -1393,8 +1403,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Android.FontLookup.FetchFontResult" enum="FetchFontResult"
     expires_after="2022-05-01">
-  <owner>chouinard@chromium.org</owner>
   <owner>twellington@chromium.org</owner>
+  <owner>clank-app-team@google.com</owner>
   <summary>
     Records the result of font fetch requests made to the GMS Core Android
     downloadable font provider. The result may be success, or failure with a
@@ -1405,8 +1415,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Android.FontLookup.GmsFontRequest.Time" units="ms"
     expires_after="2022-05-01">
-  <owner>chouinard@chromium.org</owner>
   <owner>twellington@chromium.org</owner>
+  <owner>clank-app-team@google.com</owner>
   <summary>
     Records the time taken to make a fetchFonts font request to GMS Core via the
     Android downloadable font provider API. This metric may be used to determine
@@ -1417,8 +1427,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Android.FontLookup.MatchLocalFontByUniqueName.Time" units="ms"
     expires_after="2022-05-01">
-  <owner>chouinard@chromium.org</owner>
   <owner>twellington@chromium.org</owner>
+  <owner>clank-app-team@google.com</owner>
   <summary>
     Records the time taken to respond to a request from the renderer to fetch a
     specific font file from the GMS Core Android downloadable font provider.

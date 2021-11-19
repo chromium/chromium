@@ -5,6 +5,8 @@
 package org.chromium.content.browser.font;
 
 import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertNotNull;
+import static junit.framework.Assert.assertTrue;
 
 import static org.mockito.AdditionalMatchers.aryEq;
 import static org.mockito.ArgumentMatchers.argThat;
@@ -39,6 +41,8 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.stubbing.OngoingStubbing;
 
@@ -46,12 +50,14 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.blink.mojom.AndroidFontLookup;
+import org.chromium.blink.mojom.AndroidFontLookup.FetchAllFontFiles_Response;
 import org.chromium.blink.mojom.AndroidFontLookup.GetUniqueNameLookupTable_Response;
 import org.chromium.blink.mojom.AndroidFontLookup.MatchLocalFontByUniqueName_Response;
 import org.chromium.content.browser.font.AndroidFontLookupImpl.FetchFontName;
 import org.chromium.content.browser.font.AndroidFontLookupImpl.FetchFontResult;
 import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
 import org.chromium.mojo.MojoTestRule;
+import org.chromium.mojo_base.mojom.ReadOnlyFile;
 
 import java.util.Map;
 
@@ -88,6 +94,11 @@ public final class AndroidFontLookupImplTest {
     private GetUniqueNameLookupTable_Response mGetUniqueNameLookupTableCallback;
     @Mock
     private MatchLocalFontByUniqueName_Response mMatchLocalFontByUniqueNameCallback;
+    @Mock
+    private FetchAllFontFiles_Response mFetchAllFontFilesCallback;
+
+    @Captor
+    private ArgumentCaptor<Map<String, ReadOnlyFile>> mFontMapCaptor;
 
     private AndroidFontLookupImpl mAndroidFontLookup;
 
@@ -131,6 +142,80 @@ public final class AndroidFontLookupImplTest {
 
         mMojoTestRule.runLoop(RUN_LOOP_TIMEOUT_MS);
         verify(mGetUniqueNameLookupTableCallback).call(aryEq(expected));
+    }
+
+    @SmallTest
+    @Test
+    public void testFetchAllFontFiles_Available() throws NameNotFoundException {
+        FontInfo fontInfo = new FontInfo(URI, 0, 400, false, Columns.RESULT_CODE_OK);
+        FontFamilyResult result =
+                new FontFamilyResult(FontFamilyResult.STATUS_OK, new FontInfo[] {fontInfo});
+        whenFetchFontsWith(FONT_QUERY_1).thenReturn(result);
+        whenFetchFontsWith(FONT_QUERY_2).thenReturn(result);
+        whenFetchFontsWith(FONT_QUERY_3).thenReturn(result);
+
+        mAndroidFontLookup.fetchAllFontFiles(mFetchAllFontFilesCallback);
+
+        mMojoTestRule.runLoop(RUN_LOOP_TIMEOUT_MS);
+        verify(mFetchAllFontFilesCallback).call(mFontMapCaptor.capture());
+
+        Map<String, ReadOnlyFile> response = mFontMapCaptor.getValue();
+        assertEquals(3, response.size());
+        assertNotNull(response.get(FULL_FONT_NAME_1));
+        assertNotNull(response.get(FULL_FONT_NAME_2));
+        assertNotNull(response.get(FULL_FONT_NAME_3));
+
+        assertEquals(1,
+                RecordHistogram.getHistogramTotalCountForTesting(
+                        AndroidFontLookupImpl.FETCH_ALL_FONT_FILES_HISTOGRAM));
+    }
+
+    @SmallTest
+    @Test
+    public void testFetchAllFontFiles_OneNotAvailable() throws NameNotFoundException {
+        FontInfo fontInfo = new FontInfo(URI, 0, 400, false, Columns.RESULT_CODE_OK);
+        FontFamilyResult result =
+                new FontFamilyResult(FontFamilyResult.STATUS_OK, new FontInfo[] {fontInfo});
+        whenFetchFontsWith(FONT_QUERY_1).thenReturn(result);
+        whenFetchFontsWith(FONT_QUERY_2).thenReturn(result);
+        whenFetchFontsWith(FONT_QUERY_3)
+                .thenReturn(new FontFamilyResult(
+                        FontFamilyResult.STATUS_UNEXPECTED_DATA_PROVIDED, null));
+
+        mAndroidFontLookup.fetchAllFontFiles(mFetchAllFontFilesCallback);
+
+        mMojoTestRule.runLoop(RUN_LOOP_TIMEOUT_MS);
+        verify(mFetchAllFontFilesCallback).call(mFontMapCaptor.capture());
+
+        Map<String, ReadOnlyFile> response = mFontMapCaptor.getValue();
+        assertEquals(2, response.size());
+        assertNotNull(response.get(FULL_FONT_NAME_1));
+        assertNotNull(response.get(FULL_FONT_NAME_2));
+
+        assertEquals(1,
+                RecordHistogram.getHistogramTotalCountForTesting(
+                        AndroidFontLookupImpl.FETCH_ALL_FONT_FILES_HISTOGRAM));
+
+        // Verify the font was removed from the lookup table.
+        mAndroidFontLookup.getUniqueNameLookupTable(mGetUniqueNameLookupTableCallback);
+        mMojoTestRule.runLoop(RUN_LOOP_TIMEOUT_MS);
+        verify(mGetUniqueNameLookupTableCallback)
+                .call(aryEq(new String[] {FULL_FONT_NAME_2, FULL_FONT_NAME_1}));
+    }
+
+    @SmallTest
+    @Test
+    public void testFetchAllFontFiles_Empty() throws NameNotFoundException {
+        mAndroidFontLookup = new AndroidFontLookupImpl(
+                mMockContext, mMockFontsContractWrapper, ImmutableMap.of());
+
+        mAndroidFontLookup.fetchAllFontFiles(mFetchAllFontFilesCallback);
+
+        mMojoTestRule.runLoop(RUN_LOOP_TIMEOUT_MS);
+        verify(mFetchAllFontFilesCallback).call(mFontMapCaptor.capture());
+
+        Map<String, ReadOnlyFile> response = mFontMapCaptor.getValue();
+        assertTrue(response.isEmpty());
     }
 
     @SmallTest

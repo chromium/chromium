@@ -23,6 +23,7 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.PostTask;
+import org.chromium.base.task.SequencedTaskRunner;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.blink.mojom.AndroidFontLookup;
 import org.chromium.content.R;
@@ -57,6 +58,8 @@ public class AndroidFontLookupImpl implements AndroidFontLookup {
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     static final String MATCH_LOCAL_FONT_BY_UNIQUE_NAME_HISTOGRAM =
             "Android.FontLookup.MatchLocalFontByUniqueName.Time";
+    static final String FETCH_ALL_FONT_FILES_HISTOGRAM =
+            "Android.FontLookup.FetchAllFontFiles.Time";
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     static final String GMS_FONT_REQUEST_HISTOGRAM = "Android.FontLookup.GmsFontRequest.Time";
 
@@ -78,6 +81,9 @@ public class AndroidFontLookupImpl implements AndroidFontLookup {
      * on-device they will be removed from this set.
      */
     private final Set<String> mExpectedFonts;
+
+    private final SequencedTaskRunner mTaskRunner =
+            PostTask.createSequencedTaskRunner(TaskTraits.USER_BLOCKING_MAY_BLOCK);
 
     private AndroidFontLookupImpl(Context appContext) {
         this(appContext, new FontsContractWrapper(), createFullFontNameToQueryMap());
@@ -164,25 +170,56 @@ public class AndroidFontLookupImpl implements AndroidFontLookup {
         Executor executor = ExecutorFactory.getExecutorForCurrentThread(core);
 
         // Post synchronous font request to background worker thread.
-        PostTask.postTask(TaskTraits.USER_BLOCKING, () -> {
-            ReadOnlyFile file = null;
-
-            ParcelFileDescriptor fileDescriptor = tryFetchFont(fontUniqueName);
-            if (fileDescriptor == null) {
-                // Avoid re-requesting this font in future.
-                mExpectedFonts.remove(fontUniqueName);
-            } else {
-                // Wrap file descriptor as an opened Mojo file handle.
-                file = new ReadOnlyFile();
-                file.fd = core.wrapFileDescriptor(fileDescriptor);
-                file.async = false;
-            }
-
-            final ReadOnlyFile result = file;
+        mTaskRunner.postTask(() -> {
+            final ReadOnlyFile result = fetchFontInBackground(fontUniqueName, core);
             RecordHistogram.recordTimesHistogram(MATCH_LOCAL_FONT_BY_UNIQUE_NAME_HISTOGRAM,
                     SystemClock.elapsedRealtime() - startTimeMs);
             executor.execute(() -> callback.call(result));
         });
+    }
+
+    /** Fetches all available font files from the {@link #mExpectedFonts} array. */
+    @Override
+    public void fetchAllFontFiles(FetchAllFontFiles_Response callback) {
+        long startTimeMs = SystemClock.elapsedRealtime();
+        Core core = CoreImpl.getInstance();
+        Executor executor = ExecutorFactory.getExecutorForCurrentThread(core);
+
+        // Post synchronous font request to background worker thread.
+        mTaskRunner.postTask(() -> {
+            HashMap<String, ReadOnlyFile> result = new HashMap<>();
+            // Make a copy of mExpectedFonts because it may be modified.
+            for (String font : mExpectedFonts.toArray(new String[mExpectedFonts.size()])) {
+                ReadOnlyFile file = fetchFontInBackground(font, core);
+                if (file != null) {
+                    result.put(font, file);
+                }
+            }
+            RecordHistogram.recordTimesHistogram(
+                    FETCH_ALL_FONT_FILES_HISTOGRAM, SystemClock.elapsedRealtime() - startTimeMs);
+            executor.execute(() -> callback.call(result));
+        });
+    }
+
+    /**
+     * Fetches the font file from GMS Core and removes from the expected fonts array if not
+     * available.
+     *
+     * @param fontUniqueName The ICU case folded unique full font name to fetch.
+     */
+    private ReadOnlyFile fetchFontInBackground(String fontUniqueName, Core core) {
+        ParcelFileDescriptor fileDescriptor = tryFetchFont(fontUniqueName);
+        if (fileDescriptor == null) {
+            // Avoid re-requesting this font in future.
+            mExpectedFonts.remove(fontUniqueName);
+        } else {
+            // Wrap file descriptor as an opened Mojo file handle.
+            ReadOnlyFile file = new ReadOnlyFile();
+            file.fd = core.wrapFileDescriptor(fileDescriptor);
+            file.async = false;
+            return file;
+        }
+        return null;
     }
 
     /**
