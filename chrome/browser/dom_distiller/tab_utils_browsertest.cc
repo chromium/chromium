@@ -277,7 +277,14 @@ IN_PROC_BROWSER_TEST_F(DomDistillerTabUtilsBrowserTest,
   destroyed_watcher.Wait();
 }
 
-IN_PROC_BROWSER_TEST_F(DomDistillerTabUtilsBrowserTest, ToggleOriginalPage) {
+// TODO(crbug.com/1271740): Flaky on linux.
+#if defined(OS_LINUX)
+#define MAYBE_ToggleOriginalPage DISABLED_ToggleOriginalPage
+#else
+#define MAYBE_ToggleOriginalPage ToggleOriginalPage
+#endif
+IN_PROC_BROWSER_TEST_F(DomDistillerTabUtilsBrowserTest,
+                       MAYBE_ToggleOriginalPage) {
   content::WebContents* source_web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
 
