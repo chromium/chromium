@@ -1203,4 +1203,11 @@ bool IsParentAccessCodeForOnlineLoginEnabled() {
 const base::Feature kOmniboxTriggerForPrerender2{
     "OmniboxTriggerForPrerender2", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Enables omnibox trigger no state prefetch. Only one of
+// kOmniboxTriggerForPrerender2 or kOmniboxTriggerForNoStatePrefetch can be
+// enabled in the experiment.
+// TODO(crbug.com/1267731): Remove this flag once the experiments are completed.
+const base::Feature kOmniboxTriggerForNoStatePrefetch{
+    "OmniboxTriggerForNoStatePrefetch", base::FEATURE_ENABLED_BY_DEFAULT};
+
 }  // namespace features

@@ -805,6 +805,9 @@ bool IsParentAccessCodeForOnlineLoginEnabled();
 COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::Feature kOmniboxTriggerForPrerender2;
 
+COMPONENT_EXPORT(CHROME_FEATURES)
+extern const base::Feature kOmniboxTriggerForNoStatePrefetch;
+
 bool PrefServiceEnabled();
 
 // DON'T ADD RANDOM STUFF HERE. Put it in the main section above in

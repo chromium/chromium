@@ -204,7 +204,8 @@ void AutocompleteActionPredictor::StartPrerendering(
     // prerendering url.
     if (new_prerender_handle)
       prerender_handle_ = std::move(new_prerender_handle);
-  } else {
+  } else if (base::FeatureList::IsEnabled(
+                 features::kOmniboxTriggerForNoStatePrefetch)) {
     content::SessionStorageNamespace* session_storage_namespace =
         web_contents.GetController().GetDefaultSessionStorageNamespace();
     // Only cancel the old prefetch after starting the new one, so if the URLs
