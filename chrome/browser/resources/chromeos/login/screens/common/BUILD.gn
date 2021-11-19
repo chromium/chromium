@@ -23,6 +23,7 @@ group("polymer3_elements") {
     ":family_link_notice_module",
     ":fingerprint_setup_module",
     ":gesture_navigation_module",
+    ":guest_tos_module",
     ":managed_terms_of_service_module",
     ":marketing_opt_in_module",
     ":oobe_reset_module",
@@ -62,6 +63,7 @@ js_type_check("closure_compile_module") {
     ":family_link_notice.m",
     ":fingerprint_setup.m",
     ":gesture_navigation.m",
+    ":guest_tos.m",
     ":managed_terms_of_service.m",
     ":marketing_opt_in.m",
     ":oobe_reset.m",
@@ -241,6 +243,31 @@ js_library("gesture_navigation.m") {
     "//ui/webui/resources/js:cr.m",
   ]
   extra_deps = [ ":gesture_navigation_module" ]
+}
+
+js_library("guest_tos.m") {
+  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/common/guest_tos.m.js" ]
+  deps = [
+    "../..:display_manager.m",
+    "../../components:web_view_helper.m",
+    "../../components:web_view_loader.m",
+    "../../components/behaviors:login_screen_behavior.m",
+    "../../components/behaviors:multi_step_behavior.m",
+    "../../components/behaviors:oobe_i18n_behavior.m",
+    "../../components/buttons:oobe_back_button.m",
+    "../../components/buttons:oobe_next_button.m",
+    "../../components/buttons:oobe_text_button.m",
+    "../../components/dialogs:oobe_adaptive_dialog.m",
+    "../../components/dialogs:oobe_loading_dialog.m",
+    "../../components/dialogs:oobe_modal_dialog.m",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/cr_elements/cr_toggle:cr_toggle.m",
+  ]
+  extra_deps = [ ":guest_tos_module" ]
+  externs_list = [
+    "$externs_path/chrome_extensions.js",
+    "$externs_path/webview_tag.js",
+  ]
 }
 
 js_library("managed_terms_of_service.m") {
@@ -467,6 +494,14 @@ polymer_modulizer("fingerprint_setup") {
 polymer_modulizer("gesture_navigation") {
   js_file = "gesture_navigation.js"
   html_file = "gesture_navigation.html"
+  html_type = "dom-module"
+  auto_imports = oobe_auto_imports
+  namespace_rewrites = oobe_namespace_rewrites
+}
+
+polymer_modulizer("guest_tos") {
+  js_file = "guest_tos.js"
+  html_file = "guest_tos.html"
   html_type = "dom-module"
   auto_imports = oobe_auto_imports
   namespace_rewrites = oobe_namespace_rewrites
