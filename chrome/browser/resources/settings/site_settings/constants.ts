@@ -138,6 +138,8 @@ export enum AllSitesAction2 {
   CLEAR_SITE_GROUP_DATA = 4,
   CLEAR_ORIGIN_DATA = 5,
   ENTER_SITE_DETAILS = 6,
+  REMOVE_SITE_GROUP = 7,
+  REMOVE_ORIGIN = 8,
 }
 
 /**
