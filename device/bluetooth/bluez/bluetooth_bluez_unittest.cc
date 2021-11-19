@@ -45,10 +45,10 @@
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "ash/constants/ash_features.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "device/bluetooth/bluetooth_low_energy_scan_filter.h"
 #include "device/bluetooth/bluetooth_low_energy_scan_session.h"
 #include "device/bluetooth/chromeos/bluetooth_utils.h"
@@ -264,7 +264,8 @@ class BluetoothBlueZTest : public testing::Test {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   BluetoothBlueZTest() {
     scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{ash::features::kBluetoothAdvertisementMonitoring},
+        /*enabled_features=*/{chromeos::features::
+                                  kBluetoothAdvertisementMonitoring},
         /*disabled_features=*/{});
   }
 #endif

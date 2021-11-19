@@ -6,7 +6,6 @@
 
 #include <utility>
 
-#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/session/session_controller.h"
 #include "base/barrier_closure.h"
 #include "base/bind.h"
@@ -50,6 +49,7 @@
 #include "chrome/browser/ui/scoped_tabbed_browser_displayer.h"
 #include "chrome/services/sharing/public/cpp/advertisement.h"
 #include "chrome/services/sharing/public/cpp/conversions.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/services/nearby/public/mojom/nearby_connections_types.mojom.h"
 #include "chromeos/services/nearby/public/mojom/nearby_decoder.mojom.h"
 #include "chromeos/services/nearby/public/mojom/nearby_share_target_types.mojom.h"

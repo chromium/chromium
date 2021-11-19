@@ -8,7 +8,6 @@
 #include <string>
 #include <utility>
 
-#include "ash/constants/ash_features.h"
 #include "base/barrier_closure.h"
 #include "base/bind.h"
 #include "base/callback.h"
@@ -58,6 +57,7 @@
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "chromeos/components/feature_usage/feature_usage_metrics.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/services/nearby/public/cpp/mock_nearby_process_manager.h"
 #include "chromeos/services/nearby/public/cpp/mock_nearby_sharing_decoder.h"
 #include "chromeos/services/nearby/public/mojom/nearby_connections_types.mojom.h"
@@ -467,7 +467,8 @@ class NearbySharingServiceImplTest : public testing::Test {
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/{features::kNearbySharing,
                               features::kNearbySharingBackgroundScanning,
-                              ash::features::kBluetoothAdvertisementMonitoring},
+                              chromeos::features::
+                                  kBluetoothAdvertisementMonitoring},
         /*disabled_features=*/{});
     RegisterNearbySharingPrefs(prefs_.registry());
   }
