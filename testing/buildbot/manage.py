@@ -158,6 +158,7 @@ SKIP_GN_ISOLATE_MAP_TARGETS = {
     'audio_decoder_unittests',
     'common_audio_unittests',
     'common_video_unittests',
+    'dcsctp_unittests',
     'libjingle_peerconnection_android_unittest',
     'modules_tests',
     'modules_unittests',
