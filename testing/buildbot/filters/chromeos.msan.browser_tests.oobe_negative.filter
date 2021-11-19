@@ -92,6 +92,7 @@
 -MarketingOptInDefaultContries/MarketingOptInScreenTest.*
 -MarketingOptInDoubleOptInCountriesContries/MarketingOptInScreenTest.*
 -MarketingOptInExtendedContries/MarketingOptInScreenTest.*
+-MarketingOptInExtendedCountries/MarketingTestCountryCodes.*
 -MarketingOptInScreenTestDisabled.*
 -NetworkErrorScreenTest.*
 -NoOobeTestApiTest.*
