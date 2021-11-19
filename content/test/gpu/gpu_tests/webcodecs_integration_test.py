@@ -85,6 +85,15 @@ class WebCodecsIntegrationTest(gpu_integration_test.GpuIntegrationTest):
             layers
         }))
 
+    for codec in codecs:
+      for acc in accelerations:
+        args = (codec, acc)
+        yield ('WebCodecs_EncodeColorSpace_%s_%s' % args,
+               'encode-color-space.html', ({
+                   "codec": codec,
+                   "acceleration": acc
+               }))
+
   def RunActualGpuTest(self, test_path, *args):
     url = self.UrlOfStaticFilePath(html_path + '/' + test_path)
     tab = self.tab
