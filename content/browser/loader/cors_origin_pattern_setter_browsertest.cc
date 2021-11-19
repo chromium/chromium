@@ -13,10 +13,12 @@
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/cors_origin_pattern_setter.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
+#include "content/public/test/test_browser_context.h"
 #include "content/shell/browser/shell.h"
 #include "net/base/host_port_pair.h"
 #include "net/dns/mock_host_resolver.h"
@@ -88,7 +90,7 @@ class CorsOriginPatternSetterBrowserTest : public ContentBrowserTest {
 
       base::RunLoop run_loop;
       CorsOriginPatternSetter::Set(
-          web_contents()->GetBrowserContext(),
+          browser_context(),
           url::Origin::Create(
               embedded_test_server()->base_url().DeprecatedGetOriginAsURL()),
           std::move(list), std::vector<network::mojom::CorsOriginPatternPtr>(),
@@ -105,7 +107,7 @@ class CorsOriginPatternSetterBrowserTest : public ContentBrowserTest {
 
       base::RunLoop run_loop;
       CorsOriginPatternSetter::Set(
-          web_contents()->GetBrowserContext(),
+          browser_context(),
           url::Origin::Create(embedded_test_server()
                                   ->GetURL(kTestHost, "/")
                                   .DeprecatedGetOriginAsURL()),
@@ -120,9 +122,11 @@ class CorsOriginPatternSetterBrowserTest : public ContentBrowserTest {
   const std::u16string& pass_string() const { return pass_string_; }
   const std::u16string& fail_string() const { return fail_string_; }
 
-  WebContents* web_contents() { return shell()->web_contents(); }
+  virtual WebContents* web_contents() { return shell()->web_contents(); }
+  virtual BrowserContext* browser_context() {
+    return web_contents()->GetBrowserContext();
+  }
 
- private:
   void SetUpOnMainThread() override {
     ASSERT_TRUE(embedded_test_server()->Start());
 
@@ -136,6 +140,7 @@ class CorsOriginPatternSetterBrowserTest : public ContentBrowserTest {
                              embedded_test_server()->host_port_pair().host());
   }
 
+ private:
   const std::u16string pass_string_ = u"PASS";
   const std::u16string fail_string_ = u"FAIL";
   const std::u16string script_ = u"reason";
@@ -256,6 +261,56 @@ IN_PROC_BROWSER_TEST_F(CorsOriginPatternSetterBrowserTest,
           kTestHost,
           base::StringPrintf("%s?target=%s", kTestPath, host_ip().c_str()))));
   EXPECT_EQ(fail_string(), watcher->WaitAndGetTitle()) << GetReason();
+}
+
+// Assures that the access lists are properly propagated to the storage
+// partitions and network contexts created after the lists have been set.
+class NewContextCorsOriginPatternSetterBrowserTest
+    : public CorsOriginPatternSetterBrowserTest {
+ protected:
+  void SetUpOnMainThread() override {
+    browser_context_ = std::make_unique<TestBrowserContext>();
+    CorsOriginPatternSetterBrowserTest::SetUpOnMainThread();
+  }
+
+  void TearDownOnMainThread() override {
+    web_contents_.reset();
+    CorsOriginPatternSetterBrowserTest::TearDownOnMainThread();
+  }
+
+  void TearDown() override {
+    content::GetUIThreadTaskRunner({})->DeleteSoon(FROM_HERE,
+                                                   browser_context_.release());
+    CorsOriginPatternSetterBrowserTest::TearDown();
+  }
+
+  NewContextCorsOriginPatternSetterBrowserTest() = default;
+
+  WebContents* web_contents() override { return web_contents_.get(); }
+  BrowserContext* browser_context() override { return browser_context_.get(); }
+
+  void CreateWebContents() {
+    web_contents_ = content::WebContents::Create(
+        content::WebContents::CreateParams(browser_context_.get()));
+  }
+
+ private:
+  std::unique_ptr<BrowserContext> browser_context_;
+  std::unique_ptr<WebContents> web_contents_;
+};
+
+IN_PROC_BROWSER_TEST_F(NewContextCorsOriginPatternSetterBrowserTest,
+                       PatternListPropagation) {
+  SetAllowList("http", "", kAllowSubdomains);
+  CreateWebContents();
+
+  std::unique_ptr<TitleWatcher> watcher = CreateWatcher();
+  EXPECT_TRUE(NavigateToURL(
+      web_contents(),
+      embedded_test_server()->GetURL(
+          kTestHost,
+          base::StringPrintf("%s?target=%s", kTestPath, host_ip().c_str()))));
+  EXPECT_EQ(pass_string(), watcher->WaitAndGetTitle()) << GetReason();
 }
 
 }  // namespace content

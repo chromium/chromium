@@ -881,12 +881,6 @@ void ProfileNetworkContextService::ConfigureNetworkContextParamsInternal(
   }
 #endif
 
-  // Should be initialized with existing per-profile CORS access lists.
-  network_context_params->cors_origin_access_list =
-      profile_->GetSharedCorsOriginAccessList()
-          ->GetOriginAccessList()
-          .CreateCorsOriginAccessPatternsList();
-
   network_context_params->reset_http_cache_backend =
       GetHttpCacheBackendResetParam(g_browser_process->local_state());
 

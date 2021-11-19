@@ -91,6 +91,7 @@
 #include "content/public/browser/permission_controller.h"
 #include "content/public/browser/service_process_host.h"
 #include "content/public/browser/session_storage_usage_info.h"
+#include "content/public/browser/shared_cors_origin_access_list.h"
 #include "content/public/browser/storage_notification_service.h"
 #include "content/public/browser/storage_usage_info.h"
 #include "content/public/common/content_client.h"
@@ -105,6 +106,7 @@
 #include "net/ssl/client_cert_store.h"
 #include "ppapi/buildflags/buildflags.h"
 #include "services/cert_verifier/public/mojom/cert_verifier_service_factory.mojom.h"
+#include "services/network/public/cpp/cors/origin_access_list.h"
 #include "services/network/public/cpp/cross_thread_pending_shared_url_loader_factory.h"
 #include "services/network/public/mojom/cookie_access_observer.mojom.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
@@ -2700,6 +2702,14 @@ void StoragePartitionImpl::InitNetworkContext() {
   GetContentClient()->browser()->ConfigureNetworkContextParams(
       browser_context_, is_in_memory(), relative_partition_path_,
       context_params.get(), cert_verifier_creation_params.get());
+  // Should be initialized with existing per-profile CORS access lists.
+  DCHECK(context_params->cors_origin_access_list.empty())
+      << "NetworkContextParams::cors_origin_access_list should be populated "
+         "via SharedCorsOriginAccessList";
+  context_params->cors_origin_access_list =
+      browser_context_->GetSharedCorsOriginAccessList()
+          ->GetOriginAccessList()
+          .CreateCorsOriginAccessPatternsList();
   devtools_instrumentation::ApplyNetworkContextParamsOverrides(
       browser_context_, context_params.get());
   DCHECK(!context_params->cert_verifier_params)
