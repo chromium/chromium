@@ -117,8 +117,6 @@ android_library("cast_shell_java") {
     "$java_src_dir/org/chromium/chromecast/shell/CastCrashUploader.java",
     "$java_src_dir/org/chromium/chromecast/shell/CastCrashUploaderFactory.java",
     "$java_src_dir/org/chromium/chromecast/shell/CastMetricsHelper.java",
-    "$java_src_dir/org/chromium/chromecast/shell/CastSerialGenerator.java",
-    "$java_src_dir/org/chromium/chromecast/shell/CastSysInfoAndroid.java",
     "$java_src_dir/org/chromium/chromecast/shell/CastWebContentsActivity.java",
     "$java_src_dir/org/chromium/chromecast/shell/CastWebContentsComponent.java",
     "$java_src_dir/org/chromium/chromecast/shell/CastWebContentsIntentUtils.java",

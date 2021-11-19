@@ -772,7 +772,6 @@ if (is_android) {
       "android/apk/src/org/chromium/chromecast/shell/CastContentWindowAndroid.java",
       "android/apk/src/org/chromium/chromecast/shell/CastCrashHandler.java",
       "android/apk/src/org/chromium/chromecast/shell/CastMetricsHelper.java",
-      "android/apk/src/org/chromium/chromecast/shell/CastSysInfoAndroid.java",
     ]
   }
 

@@ -217,6 +217,7 @@ if (is_android) {
   cast_source_set("android_create_sys_info") {
     deps = [
       ":cast_version",
+      ":jni_headers",
       "//base",
       "//chromecast/browser:jni_headers",
       "//chromecast/public",
@@ -315,6 +316,7 @@ process_version("cast_version") {
 if (is_android) {
   generate_jni("jni_headers") {
     sources = [
+      "java/src/org/chromium/chromecast/base/CastSysInfoAndroid.java",
       "java/src/org/chromium/chromecast/base/DumpstateWriter.java",
       "java/src/org/chromium/chromecast/base/SystemTimeChangeNotifierAndroid.java",
     ]
@@ -340,8 +342,10 @@ if (is_android) {
       "$java_src_dir/org/chromium/chromecast/base/Unit.java",
 
       # TODO(sanfin): Move these files to another target.
+      "$java_src_dir/org/chromium/chromecast/base/CastSerialGenerator.java",
       "$java_src_dir/org/chromium/chromecast/base/CastSettingsManager.java",
       "$java_src_dir/org/chromium/chromecast/base/CastSwitches.java",
+      "$java_src_dir/org/chromium/chromecast/base/CastSysInfoAndroid.java",
       "$java_src_dir/org/chromium/chromecast/base/DumpstateWriter.java",
       "$java_src_dir/org/chromium/chromecast/base/SystemTimeChangeNotifierAndroid.java",
     ]
@@ -349,6 +353,7 @@ if (is_android) {
     deps = [
       "//base:base_java",
       "//third_party/androidx:androidx_annotation_annotation_java",
+      "//third_party/androidx:androidx_core_core_java",
     ]
     annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
   }

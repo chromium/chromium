@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chromecast.shell;
+package org.chromium.chromecast.base;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -22,7 +22,7 @@ import org.chromium.base.annotations.JNINamespace;
 public final class CastSysInfoAndroid {
     private static final String TAG = "CastSysInfoAndroid";
     private static final String READ_PRIVILEGED_PHONE_STATE_PERMISSION =
-        "android.permission.READ_PRIVILEGED_PHONE_STATE";
+            "android.permission.READ_PRIVILEGED_PHONE_STATE";
 
     @SuppressLint({"HardwareIds", "MissingPermission"})
     @CalledByNative
