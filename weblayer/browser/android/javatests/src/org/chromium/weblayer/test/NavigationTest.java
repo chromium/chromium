@@ -1404,6 +1404,7 @@ public class NavigationTest {
         assertStreamContent();
     }
 
+    @DisabledTest(message = "https://crbug.com/1271989")
     @Test
     @SmallTest
     public void testWebResponseNoStore() throws Exception {
