@@ -133,45 +133,44 @@ TEST_P(CookiePartitionKeyTest, FromNetworkIsolationKey) {
   }
 }
 
-TEST_P(CookiePartitionKeyTest, FromNetworkIsolationKeyWithNonce) {
-  SchemefulSite top_level_site =
+TEST_P(CookiePartitionKeyTest, FromNetworkIsolationKey_WithNonce) {
+  const SchemefulSite kTopLevelSite =
       SchemefulSite(GURL("https://toplevelsite.com"));
-  base::UnguessableToken nonce = base::UnguessableToken::Create();
+  const base::UnguessableToken kNonce = base::UnguessableToken::Create();
+
   absl::optional<CookiePartitionKey> got =
       CookiePartitionKey::FromNetworkIsolationKey(NetworkIsolationKey(
-          top_level_site, SchemefulSite(GURL("https://cookiesite.com")),
-          &nonce));
+          kTopLevelSite, SchemefulSite(GURL("https://cookiesite.com")),
+          &kNonce));
   bool partitioned_cookies_enabled = PartitionedCookiesEnabled();
   EXPECT_EQ(partitioned_cookies_enabled, got.has_value());
   if (!partitioned_cookies_enabled)
     return;
 
-  EXPECT_TRUE(got.has_value());
   EXPECT_FALSE(got->from_script());
-  EXPECT_TRUE(got->nonce().has_value());
-  EXPECT_EQ(nonce, got->nonce().value());
+  EXPECT_TRUE(got->nonce());
+  EXPECT_EQ(kTopLevelSite, got->site());
+  EXPECT_EQ(kNonce, got->nonce().value());
 }
 
 TEST_P(CookiePartitionKeyTest, FromWire) {
-  auto want = CookiePartitionKey::FromURLForTesting(GURL("https://foo.com"));
-  auto got = CookiePartitionKey::FromWire(want.site(), want.nonce());
-  EXPECT_EQ(want, got);
-  EXPECT_FALSE(got.from_script());
-}
+  struct TestCase {
+    const GURL url;
+    const absl::optional<base::UnguessableToken> nonce;
+  } test_cases[] = {
+      {GURL("https://foo.com"), absl::nullopt},
+      {GURL(), absl::nullopt},
+      {GURL("https://foo.com"),
+       absl::make_optional(base::UnguessableToken::Create())},
+  };
 
-TEST_P(CookiePartitionKeyTest, FromWireWithNonce) {
-  SchemefulSite top_level_site =
-      SchemefulSite(GURL("https://toplevelsite.com"));
-  base::UnguessableToken nonce = base::UnguessableToken::Create();
-  auto want = CookiePartitionKey::FromNetworkIsolationKey(NetworkIsolationKey(
-      top_level_site, SchemefulSite(GURL("https://cookiesite.com")), &nonce));
-  bool partitioned_cookies_enabled = PartitionedCookiesEnabled();
-  EXPECT_EQ(partitioned_cookies_enabled, want.has_value());
-  if (!partitioned_cookies_enabled)
-    return;
-  auto got = CookiePartitionKey::FromWire(want->site(), want->nonce());
-  EXPECT_EQ(want, got);
-  EXPECT_FALSE(got.from_script());
+  for (const auto& test_case : test_cases) {
+    auto want =
+        CookiePartitionKey::FromURLForTesting(test_case.url, test_case.nonce);
+    auto got = CookiePartitionKey::FromWire(want.site(), want.nonce());
+    EXPECT_EQ(want, got);
+    EXPECT_FALSE(got.from_script());
+  }
 }
 
 TEST_P(CookiePartitionKeyTest, FromScript) {
@@ -188,7 +187,7 @@ TEST_P(CookiePartitionKeyTest, IsSerializeable) {
                                              .IsSerializeable());
 }
 
-TEST_P(CookiePartitionKeyTest, EqualityWithNonce) {
+TEST_P(CookiePartitionKeyTest, Equality_WithNonce) {
   SchemefulSite top_level_site =
       SchemefulSite(GURL("https://toplevelsite.com"));
   SchemefulSite frame_site = SchemefulSite(GURL("https://cookiesite.com"));

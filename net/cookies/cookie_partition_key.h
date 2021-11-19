@@ -50,8 +50,11 @@ class NET_EXPORT CookiePartitionKey {
                           absl::optional<CookiePartitionKey>& out)
       WARN_UNUSED_RESULT;
 
-  static CookiePartitionKey FromURLForTesting(const GURL& url) {
-    return CookiePartitionKey(url);
+  static CookiePartitionKey FromURLForTesting(
+      const GURL& url,
+      const absl::optional<base::UnguessableToken> nonce = absl::nullopt) {
+    return nonce ? CookiePartitionKey(SchemefulSite(url), nonce)
+                 : CookiePartitionKey(url);
   }
 
   // Create a cookie partition key from a request's NetworkIsolationKey.
