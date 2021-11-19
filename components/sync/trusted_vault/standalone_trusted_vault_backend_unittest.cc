@@ -21,6 +21,7 @@
 #include "components/os_crypt/os_crypt_mocker.h"
 #include "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
 #include "components/sync/driver/sync_driver_switches.h"
+#include "components/sync/trusted_vault/proto_string_bytes_conversion.h"
 #include "components/sync/trusted_vault/securebox.h"
 #include "components/sync/trusted_vault/trusted_vault_connection.h"
 #include "components/sync/trusted_vault/trusted_vault_server_constants.h"
@@ -331,6 +332,64 @@ TEST_F(StandaloneTrustedVaultBackendTest, ShouldStoreKeys) {
   EXPECT_THAT(proto.user(1).vault_key(),
               ElementsAre(KeyMaterialEq(kKey3), KeyMaterialEq(kKey4)));
   EXPECT_THAT(proto.user(1).last_vault_key_version(), Eq(9));
+}
+
+TEST_F(StandaloneTrustedVaultBackendTest,
+       ShouldUpgradeToVersion1AndFixMissingConstantKey) {
+  const CoreAccountInfo account_info_1 = MakeAccountInfoWithGaiaId("user1");
+  const CoreAccountInfo account_info_2 = MakeAccountInfoWithGaiaId("user2");
+
+  const std::vector<uint8_t> kKey1 = {0, 1, 2, 3, 4};
+  const std::vector<uint8_t> kKey2 = {1, 2, 3, 4};
+
+  sync_pb::LocalTrustedVault initial_data;
+  sync_pb::LocalTrustedVaultPerUser* user_data1 = initial_data.add_user();
+  sync_pb::LocalTrustedVaultPerUser* user_data2 = initial_data.add_user();
+  user_data1->set_gaia_id(account_info_1.gaia);
+  user_data2->set_gaia_id(account_info_2.gaia);
+  // Mimic |user_data1| to be affected by crbug.com/1267391 and |user_data2| to
+  // be not affected.
+  AssignBytesToProtoString(kKey1,
+                           user_data1->add_vault_key()->mutable_key_material());
+  AssignBytesToProtoString(GetConstantTrustedVaultKey(),
+                           user_data2->add_vault_key()->mutable_key_material());
+  AssignBytesToProtoString(kKey2,
+                           user_data2->add_vault_key()->mutable_key_material());
+
+  std::string encrypted_data;
+  ASSERT_TRUE(OSCrypt::EncryptString(initial_data.SerializeAsString(),
+                                     &encrypted_data));
+  ASSERT_NE(-1, base::WriteFile(file_path(), encrypted_data.c_str(),
+                                encrypted_data.size()));
+
+  // Backend should fix corrupted data and write new state.
+  backend()->ReadDataFromDisk();
+
+  // Read the file from disk.
+  std::string ciphertext;
+  std::string decrypted_content;
+  sync_pb::LocalTrustedVault proto;
+  ASSERT_TRUE(base::ReadFileToString(file_path(), &ciphertext));
+  ASSERT_THAT(ciphertext, Ne(""));
+  ASSERT_TRUE(OSCrypt::DecryptString(ciphertext, &decrypted_content));
+  ASSERT_TRUE(proto.ParseFromString(decrypted_content));
+  ASSERT_THAT(proto.user_size(), Eq(2));
+  // Constant key should be added for the first user.
+  EXPECT_THAT(proto.user(0).vault_key(),
+              ElementsAre(KeyMaterialEq(GetConstantTrustedVaultKey()),
+                          KeyMaterialEq(kKey1)));
+  // Sanity check that state for the second user isn't changed.
+  EXPECT_THAT(proto.user(1).vault_key(),
+              ElementsAre(KeyMaterialEq(GetConstantTrustedVaultKey()),
+                          KeyMaterialEq(kKey2)));
+  EXPECT_THAT(proto.data_version(), Eq(1));
+}
+
+// This test ensures that migration logic in ReadDataFromDisk() doesn't create
+// new file if there wasn't any.
+TEST_F(StandaloneTrustedVaultBackendTest, ShouldNotWriteEmptyData) {
+  backend()->ReadDataFromDisk();
+  EXPECT_FALSE(base::PathExists(file_path()));
 }
 
 TEST_F(StandaloneTrustedVaultBackendTest, ShouldFetchPreviouslyStoredKeys) {

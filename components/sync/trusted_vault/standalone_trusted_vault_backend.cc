@@ -34,6 +34,8 @@ namespace syncer {
 
 namespace {
 
+const int kCurrentLocalTrustedVaultVersion = 1;
+
 sync_pb::LocalTrustedVault ReadEncryptedFile(const base::FilePath& file_path) {
   sync_pb::LocalTrustedVault proto;
   std::string ciphertext;
@@ -97,6 +99,32 @@ base::flat_set<std::string> GetGaiaIDs(
   return result;
 }
 
+// Version 0 may contain corrupted data: missing constant key if the client
+// was affected by crbug.com/1267391, this function injects constant key if it's
+// not stored and there is exactly one non-constant key. |local_trusted_vault|
+// must not be null and must have |version| set to 0.
+void UpgradeToVersion1(sync_pb::LocalTrustedVault* local_trusted_vault) {
+  DCHECK(local_trusted_vault);
+  DCHECK_EQ(local_trusted_vault->data_version(), 0);
+
+  std::string constant_key_as_proto_string;
+  AssignBytesToProtoString(GetConstantTrustedVaultKey(),
+                           &constant_key_as_proto_string);
+
+  for (sync_pb::LocalTrustedVaultPerUser& per_user_vault :
+       *local_trusted_vault->mutable_user()) {
+    if (per_user_vault.vault_key_size() == 1 &&
+        per_user_vault.vault_key(0).key_material() !=
+            constant_key_as_proto_string) {
+      // Add constant key in the beginning.
+      *per_user_vault.add_vault_key() = per_user_vault.vault_key(0);
+      per_user_vault.mutable_vault_key(0)->set_key_material(
+          constant_key_as_proto_string);
+    }
+  }
+  local_trusted_vault->set_data_version(1);
+}
+
 }  // namespace
 
 StandaloneTrustedVaultBackend::PendingTrustedRecoveryMethod::
@@ -125,8 +153,17 @@ StandaloneTrustedVaultBackend::~StandaloneTrustedVaultBackend() = default;
 
 void StandaloneTrustedVaultBackend::ReadDataFromDisk() {
   data_ = ReadEncryptedFile(file_path_);
-  // TODO(crbug.com/1269325): restore the constant key if it was removed due to
-  // the bug when following key rotation.
+  if (data_.user_size() == 0) {
+    // No data, set the current version and omit writing the file.
+    data_.set_data_version(kCurrentLocalTrustedVaultVersion);
+  }
+
+  if (data_.data_version() == 0) {
+    UpgradeToVersion1(&data_);
+    WriteToDisk(data_, file_path_);
+  }
+
+  DCHECK_EQ(data_.data_version(), kCurrentLocalTrustedVaultVersion);
 }
 
 void StandaloneTrustedVaultBackend::FetchKeys(
