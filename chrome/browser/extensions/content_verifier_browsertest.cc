@@ -879,7 +879,14 @@ IN_PROC_BROWSER_TEST_F(ContentVerifierPolicyTest,
 }
 
 // Now actually test what happens on the next startup after the PRE test above.
-IN_PROC_BROWSER_TEST_F(ContentVerifierPolicyTest, PolicyCorruptedOnStartup) {
+// TODO(crbug.com/1271946): Flaky on mac arm64.
+#if defined(OS_MAC) && defined(ARCH_CPU_ARM64)
+#define MAYBE_PolicyCorruptedOnStartup DISABLED_PolicyCorruptedOnStartup
+#else
+#define MAYBE_PolicyCorruptedOnStartup PolicyCorruptedOnStartup
+#endif
+IN_PROC_BROWSER_TEST_F(ContentVerifierPolicyTest,
+                       MAYBE_PolicyCorruptedOnStartup) {
   // Depdending on timing, the extension may have already been reinstalled
   // between SetUpInProcessBrowserTestFixture and now (usually not during local
   // testing on a developer machine, but sometimes on a heavily loaded system
