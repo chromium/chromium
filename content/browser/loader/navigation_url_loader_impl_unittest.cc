@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "content/browser/loader/navigation_url_loader_impl.h"
+#include "build/build_config.h"
 
 #include <memory>
 #include <string>
@@ -526,7 +527,14 @@ TEST_F(NavigationURLLoaderImplTest, NavigationTimeoutTest) {
 
 // Like NavigationTimeoutTest but the navigation initially results in a redirect
 // before hanging, to test a slightly more complicated navigation.
-TEST_F(NavigationURLLoaderImplTest, NavigationTimeoutRedirectTest) {
+// TODO(crbug.com/1271228): Flaky on Linux.
+#if defined(OS_LINUX)
+#define MAYBE_NavigationTimeoutRedirectTest \
+  DISABLED_NavigationTimeoutRedirectTest
+#else
+#define MAYBE_NavigationTimeoutRedirectTest NavigationTimeoutRedirectTest
+#endif
+TEST_F(NavigationURLLoaderImplTest, MAYBE_NavigationTimeoutRedirectTest) {
   ASSERT_TRUE(http_test_server_.Start());
   const GURL hang_url = http_test_server_.GetURL("/hung");
   const GURL redirect_url =
