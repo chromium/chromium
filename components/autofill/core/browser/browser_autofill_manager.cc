@@ -1437,6 +1437,8 @@ void BrowserAutofillManager::SelectFieldOptionsDidChange(const FormData& form) {
   if (!form_structure)
     return;
 
+  driver()->SendAutofillTypePredictionsToRenderer({form_structure});
+
   if (ShouldTriggerRefill(*form_structure))
     TriggerRefill(form);
 }
