@@ -258,6 +258,17 @@ constexpr bool kFakeBluetoothAdapterIsPowered = true;
 constexpr uint32_t kFakeNumConnectedBluetoothDevices = 7;
 // Tpm test values:
 constexpr char kFakeTpmDidVid[] = "fake_tpm_did_vid";
+// Bus Device test values:
+constexpr uint8_t kFakeUnusedBusId = 1;
+constexpr char kFakePciVendor[] = "pci_vendor";
+constexpr char kFakePciProduct[] = "pci_product";
+constexpr char kFakePciDriver[] = "pci_driver";
+constexpr char kFakeUsbVendor[] = "usb_vendor";
+constexpr char kFakeUsbProduct[] = "usb_product";
+constexpr char kFakeUsbDriver0[] = "usb_driver_1";
+constexpr char kFakeUsbDriver1[] = "usb_driver_2";
+constexpr uint8_t kFakeUsbInterfaceNumber0 = 0;
+constexpr uint8_t kFakeUsbInterfaceNumber1 = 1;
 
 // Time delta representing 1 hour time interval.
 constexpr base::TimeDelta kHour = base::Hours(1);
@@ -689,6 +700,54 @@ cros_healthd::TpmResultPtr CreateUnsetTpmResult() {
       nullptr, nullptr, nullptr, nullptr, nullptr, nullptr));
 }
 
+cros_healthd::BusResultPtr CreateBusResult() {
+  std::vector<cros_healthd::BusDevicePtr> bus_devices;
+  // pci bus device
+  cros_healthd::PciBusInfoPtr pci_bus_info;
+  pci_bus_info = cros_healthd::PciBusInfo::New(kFakeUnusedBusId,  // class_id
+                                               kFakeUnusedBusId,  // subclass_id
+                                               kFakeUnusedBusId,  // prog_if_id
+                                               kFakeUnusedBusId,  // vendor_id
+                                               kFakeUnusedBusId,  // device_id
+                                               kFakePciDriver     // driver
+  );
+  bus_devices.push_back(cros_healthd::BusDevice::New(
+      kFakePciVendor,                                     // vendor_name
+      kFakePciProduct,                                    // product_name
+      cros_healthd::BusDeviceClass::kEthernetController,  // device_class
+      cros_healthd::BusInfo::NewPciBusInfo(std::move(pci_bus_info))));
+
+  // usb bus device
+  std::vector<cros_healthd::UsbBusInterfaceInfoPtr> usb_interfaces;
+  usb_interfaces.push_back(cros_healthd::UsbBusInterfaceInfo::New(
+      kFakeUsbInterfaceNumber0,  // interface_number
+      kFakeUnusedBusId,          // class_id
+      kFakeUnusedBusId,          // subclass_id
+      kFakeUnusedBusId,          // protocol_id
+      kFakeUsbDriver0            // driver
+      ));
+  usb_interfaces.push_back(cros_healthd::UsbBusInterfaceInfo::New(
+      kFakeUsbInterfaceNumber1,  // interface_number
+      kFakeUnusedBusId,          // class_id
+      kFakeUnusedBusId,          // subclass_id
+      kFakeUnusedBusId,          // protocol_id
+      kFakeUsbDriver1            // driver
+      ));
+  cros_healthd::UsbBusInfoPtr usb_bus_info;
+  usb_bus_info = cros_healthd::UsbBusInfo::New(kFakeUnusedBusId,  // class_id
+                                               kFakeUnusedBusId,  // subclass_id
+                                               kFakeUnusedBusId,  // protocol_id
+                                               kFakeUnusedBusId,  // vendor_id
+                                               kFakeUnusedBusId,  // product_id
+                                               std::move(usb_interfaces));
+  bus_devices.push_back(cros_healthd::BusDevice::New(
+      kFakeUsbVendor,                                     // vendor_name
+      kFakeUsbProduct,                                    // product_name
+      cros_healthd::BusDeviceClass::kWirelessController,  // device_class
+      cros_healthd::BusInfo::NewUsbBusInfo(std::move(usb_bus_info))));
+  return cros_healthd::BusResult::NewBusDevices(std::move(bus_devices));
+}
+
 base::circular_deque<std::unique_ptr<policy::SampledData>>
 CreateFakeSampleData() {
   em::CPUTempInfo fake_cpu_temp_sample;
@@ -747,6 +806,7 @@ void FetchFakeFullCrosHealthdData(
       fake_info.stateful_partition_result = CreateStatefulPartitionResult();
       fake_info.bluetooth_result = CreateBluetoothResult();
       fake_info.tpm_result = CreateTpmResult();
+      fake_info.bus_result = CreateBusResult();
       std::move(receiver).Run(fake_info.Clone(), CreateFakeSampleData());
       return;
     }
@@ -3394,6 +3454,7 @@ TEST_F(DeviceStatusCollectorTest, TestCrosHealthdInfo) {
   EXPECT_EQ(device_status_.fan_info_size(), 0);
   EXPECT_EQ(device_status_.bluetooth_adapter_info_size(), 0);
   EXPECT_FALSE(device_status_.has_tpm_version_info());
+  EXPECT_EQ(device_status_.network_adapter_info_size(), 0);
 
   // When all of the relevant policies are set to true, expect the protobuf to
   // have the corresponding data from cros_healthd.
@@ -4176,6 +4237,41 @@ TEST_F(DeviceStatusCollectorNetworkInterfacesTest, IfKioskMode) {
 
   GetStatus();
   VerifyReporting();
+}
+
+TEST_F(DeviceStatusCollectorNetworkInterfacesTest, TestCrosHealthdBusInfo) {
+  // Create a fake response from cros_healthd and populate it with some
+  // test values.
+  // Because this data collection is gated by the
+  // kReportDeviceNetworkConfiguration policy, this test uses the
+  // DeviceStatusCollectorNetworkInterfacesTest class.
+  auto options = CreateEmptyDeviceStatusCollectorOptions();
+  options->cros_healthd_data_fetcher =
+      base::BindRepeating(&FetchFakeFullCrosHealthdData);
+  RestartStatusCollector(std::move(options));
+  GetStatus();
+
+  // Verify the Network Adapter (bus device) info.
+  ASSERT_EQ(device_status_.network_adapter_info_size(), 2);
+  // Verify the PCI device.
+  const auto& network_adapter_0 = device_status_.network_adapter_info(0);
+  EXPECT_EQ(network_adapter_0.vendor_name(), kFakePciVendor);
+  EXPECT_EQ(network_adapter_0.device_name(), kFakePciProduct);
+  EXPECT_EQ(network_adapter_0.device_class(), em::ETHERNET_CONTROLLER);
+  EXPECT_EQ(network_adapter_0.bus_type(), em::PCI_BUS);
+  EXPECT_EQ(network_adapter_0.driver_size(), 1);
+  EXPECT_EQ(network_adapter_0.driver(0), kFakePciDriver);
+  // Verify the USB device.
+  const auto& network_adapter_1 = device_status_.network_adapter_info(1);
+  EXPECT_EQ(network_adapter_1.vendor_name(), kFakeUsbVendor);
+  EXPECT_EQ(network_adapter_1.device_name(), kFakeUsbProduct);
+  EXPECT_EQ(network_adapter_1.device_class(), em::WIRELESS_CONTROLLER);
+  EXPECT_EQ(network_adapter_1.bus_type(), em::USB_BUS);
+  EXPECT_EQ(network_adapter_1.driver_size(), 2);
+  EXPECT_EQ(network_adapter_1.driver(kFakeUsbInterfaceNumber0),
+            kFakeUsbDriver0);
+  EXPECT_EQ(network_adapter_1.driver(kFakeUsbInterfaceNumber1),
+            kFakeUsbDriver1);
 }
 
 class DeviceStatusCollectorNetworkStateTest

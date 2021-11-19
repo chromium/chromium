@@ -741,13 +741,15 @@ class DeviceStatusCollectorState : public StatusCollectorState {
       bool report_system_info,
       bool report_vpd_info,
       bool report_storage_status,
-      bool report_version_info) {
+      bool report_version_info,
+      bool report_network_configuration) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     cros_healthd_data_fetcher.Run(
         CrosHealthdCollectionMode::kFull,
         base::BindOnce(&DeviceStatusCollectorState::OnCrosHealthdDataReceived,
                        this, report_system_info, report_vpd_info,
-                       report_storage_status, report_version_info));
+                       report_storage_status, report_version_info,
+                       report_network_configuration));
   }
 
   void FetchEMMCLifeTime(
@@ -843,6 +845,7 @@ class DeviceStatusCollectorState : public StatusCollectorState {
       bool report_vpd_info,
       bool report_storage_status,
       bool report_version_info,
+      bool report_network_configuration,
       chromeos::cros_healthd::mojom::TelemetryInfoPtr probe_result,
       const base::circular_deque<std::unique_ptr<SampledData>>& samples) {
     namespace cros_healthd = chromeos::cros_healthd::mojom;
@@ -1406,6 +1409,73 @@ class DeviceStatusCollectorState : public StatusCollectorState {
               response_params_.device_status->mutable_tpm_version_info();
           if (tpm_info->did_vid.has_value()) {
             tpm_version_info_out->set_did_vid(tpm_info->did_vid.value());
+          }
+          break;
+        }
+      }
+    }
+
+    // Process Bus Result.
+    const auto& bus_result = probe_result->bus_result;
+    if (!bus_result.is_null() && report_network_configuration) {
+      switch (bus_result->which()) {
+        case cros_healthd::BusResult::Tag::ERROR: {
+          LOG(ERROR) << "cros_healthd: Error getting Bus info: "
+                     << bus_result->get_error()->msg;
+          break;
+        }
+
+        case cros_healthd::BusResult::Tag::BUS_DEVICES: {
+          for (const auto& bus_device : bus_result->get_bus_devices()) {
+            switch (bus_device->device_class) {
+              case cros_healthd::BusDeviceClass::kEthernetController:
+              case cros_healthd::BusDeviceClass::kWirelessController:
+              case cros_healthd::BusDeviceClass::kBluetoothAdapter: {
+                em::NetworkAdapterInfo* network_adapter_info_out =
+                    response_params_.device_status->add_network_adapter_info();
+                network_adapter_info_out->set_vendor_name(
+                    bus_device->vendor_name);
+                network_adapter_info_out->set_device_name(
+                    bus_device->product_name);
+                network_adapter_info_out->set_device_class(
+                    static_cast<em::BusDeviceClass>(bus_device->device_class));
+
+                if (bus_device->bus_info->is_pci_bus_info()) {
+                  network_adapter_info_out->set_bus_type(em::PCI_BUS);
+                  network_adapter_info_out->set_vendor_id(
+                      bus_device->bus_info->get_pci_bus_info()->vendor_id);
+                  network_adapter_info_out->set_device_id(
+                      bus_device->bus_info->get_pci_bus_info()->device_id);
+                  if (bus_device->bus_info->get_pci_bus_info()
+                          ->driver.has_value()) {
+                    network_adapter_info_out->add_driver(
+                        bus_device->bus_info->get_pci_bus_info()
+                            ->driver.value());
+                  }
+                }
+                if (bus_device->bus_info->is_usb_bus_info()) {
+                  network_adapter_info_out->set_bus_type(em::USB_BUS);
+                  network_adapter_info_out->set_vendor_id(
+                      bus_device->bus_info->get_usb_bus_info()->vendor_id);
+                  network_adapter_info_out->set_device_id(
+                      bus_device->bus_info->get_usb_bus_info()->product_id);
+                  for (const auto& usb_interface :
+                       bus_device->bus_info->get_usb_bus_info()->interfaces) {
+                    if (usb_interface->driver.has_value()) {
+                      network_adapter_info_out->add_driver(
+                          usb_interface->driver.value());
+                    }
+                  }
+                }
+
+                break;
+              }
+              default:
+                break;
+            }
+          }
+          if (response_params_.device_status->network_adapter_info_size() > 0) {
+            SetDeviceStatusReported();
           }
           break;
         }
@@ -2097,6 +2167,8 @@ void DeviceStatusCollector::FetchCrosHealthdData(
         categories_to_probe.push_back(ProbeCategoryEnum::kBluetooth);
       if (report_version_info_)
         categories_to_probe.push_back(ProbeCategoryEnum::kTpm);
+      if (report_network_configuration_)
+        categories_to_probe.push_back(ProbeCategoryEnum::kBus);
 
       completion_callback =
           base::BindOnce(&DeviceStatusCollector::OnProbeDataFetched,
@@ -2130,7 +2202,8 @@ bool DeviceStatusCollector::ShouldFetchCrosHealthdData() const {
   return report_vpd_info_ || report_power_status_ || report_storage_status_ ||
          report_cpu_info_ || report_timezone_info_ || report_memory_info_ ||
          report_backlight_info_ || report_fan_info_ || report_bluetooth_info_ ||
-         report_system_info_;
+         report_system_info_ || report_version_info_ ||
+         report_network_configuration_;
 }
 
 void DeviceStatusCollector::ReportingUsersChanged() {
@@ -2710,7 +2783,8 @@ void DeviceStatusCollector::GetDeviceStatus(
   if (ShouldFetchCrosHealthdData())
     state->FetchCrosHealthdData(cros_healthd_data_fetcher_, report_system_info_,
                                 report_vpd_info_, report_storage_status_,
-                                report_version_info_);
+                                report_version_info_,
+                                report_network_configuration_);
 
   if (report_storage_status_) {
     state->FetchStatefulPartitionInfo(stateful_partition_info_fetcher_);
@@ -2891,7 +2965,6 @@ bool DeviceStatusCollector::IsReportingActivityTimes() const {
   std::string user_email = GetUserForActivityReporting();
   return !user_email.empty() && !IsDeviceLocalAccountUser(user_email, NULL);
 }
-// TODO(b/192252043): Remove this once management ui has been refactored.
 bool DeviceStatusCollector::IsReportingNetworkData() const {
   return report_network_configuration_ || report_network_status_;
 }

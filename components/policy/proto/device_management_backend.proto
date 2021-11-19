@@ -1416,6 +1416,37 @@ message BootInfo {
   optional bool secure_boot = 2 [deprecated = true];
 }
 
+// Hardware component bus device classes.
+// Maps to BusDeviceClass from cros_healthd.
+enum BusDeviceClass {
+  DEVICE_CLASS_UNSPECIFIED = 0;
+  DISPLAY_CONTROLLER = 1;
+  ETHERNET_CONTROLLER = 2;
+  WIRELESS_CONTROLLER = 3;
+  BLUETOOTH_ADAPTER = 4;
+  THUNDERBOLT_CONTROLLER = 5;
+}
+
+// Hardware component busses.
+// Maps to BusInfo types from cros_healthd.
+enum BusType {
+  BUS_TYPE_UNSPECIFIED = 0;
+  PCI_BUS = 1;
+  USB_BUS = 2;
+  THUNDERBOLT_BUS = 3;
+}
+
+// Information about a device's network hardware.
+message NetworkAdapterInfo {
+  optional BusDeviceClass device_class = 1;
+  optional BusType bus_type = 2;
+  optional int32 vendor_id = 3;
+  optional string vendor_name = 4;
+  optional int32 device_id = 5;
+  optional string device_name = 6;
+  repeated string driver = 7;
+}
+
 // Report device level status.
 message DeviceStatusReportRequest {
   reserved 4, 7, 13, 20;
@@ -1550,6 +1581,9 @@ message DeviceStatusReportRequest {
 
   // Information about how the os was booted.
   optional BootInfo boot_info = 44;
+
+  // Information about the device's network hardware.
+  repeated NetworkAdapterInfo network_adapter_info = 45;
 }
 
 message OsUpdateStatus {
