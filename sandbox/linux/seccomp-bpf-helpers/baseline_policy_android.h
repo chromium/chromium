@@ -25,6 +25,7 @@ namespace sandbox {
 class SANDBOX_EXPORT BaselinePolicyAndroid : public BaselinePolicy {
  public:
   BaselinePolicyAndroid();
+  explicit BaselinePolicyAndroid(bool allow_sched_affinity);
 
   BaselinePolicyAndroid(const BaselinePolicyAndroid&) = delete;
   BaselinePolicyAndroid& operator=(const BaselinePolicyAndroid&) = delete;
@@ -34,6 +35,9 @@ class SANDBOX_EXPORT BaselinePolicyAndroid : public BaselinePolicy {
   // sandbox::BaselinePolicy:
   sandbox::bpf_dsl::ResultExpr EvaluateSyscall(
       int system_call_number) const override;
+
+ private:
+  bool allow_sched_affinity_ = false;
 };
 
 }  // namespace sandbox

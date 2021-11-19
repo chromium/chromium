@@ -338,6 +338,8 @@ target(link_target_type, "renderer") {
 
   if (is_android) {
     deps += [
+      "//components/power_scheduler",
+
       # Used by Android WebView only.
       "//components/viz/service",
       "//third_party/android_ndk:cpu_features",
