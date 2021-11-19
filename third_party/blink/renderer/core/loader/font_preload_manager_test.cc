@@ -20,12 +20,6 @@ namespace blink {
 
 class FontPreloadManagerTest : public SimTest {
  public:
-  void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(
-        features::kFontPreloadingDelaysRendering);
-    SimTest::SetUp();
-  }
-
   static Vector<char> ReadAhemWoff2() {
     return test::ReadFromFile(test::CoreTestDataPath("Ahem.woff2"))
         ->CopyAs<Vector<char>>();

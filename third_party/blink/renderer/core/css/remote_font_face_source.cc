@@ -104,12 +104,7 @@ RemoteFontFaceSource::DisplayPeriod RemoteFontFaceSource::ComputePeriod()
       }
 
     case FontDisplay::kOptional: {
-      const bool use_phase_value =
-          !base::FeatureList::IsEnabled(
-              features::kFontPreloadingDelaysRendering) ||
-          !GetDocument();
-
-      if (use_phase_value) {
+      if (!GetDocument()) {
         switch (phase_) {
           case kNoLimitExceeded:
             return kBlockPeriod;
