@@ -120,13 +120,13 @@ void SecurityContextInit::ApplyDocumentPolicy(
 }
 
 void SecurityContextInit::ApplyPermissionsPolicy(
-    LocalFrame* frame,
+    LocalFrame& frame,
     const ResourceResponse& response,
     const absl::optional<WebOriginPolicy>& origin_policy,
     const FramePolicy& frame_policy) {
   // If we are a HTMLViewSourceDocument we use container, header or
   // inherited policies. https://crbug.com/898688.
-  if (frame->InViewSourceMode()) {
+  if (frame.InViewSourceMode()) {
     execution_context_->GetSecurityContext().SetPermissionsPolicy(
         PermissionsPolicy::CreateFromParentPolicy(
             nullptr, {},
@@ -195,7 +195,7 @@ void SecurityContextInit::ApplyPermissionsPolicy(
   }
 
   ParsedPermissionsPolicy container_policy;
-  if (frame && frame->Owner())
+  if (frame.Owner())
     container_policy = frame_policy.container_policy;
 
   // DocumentLoader applied the sandbox flags before calling this function, so
@@ -203,7 +203,7 @@ void SecurityContextInit::ApplyPermissionsPolicy(
   auto sandbox_flags = execution_context_->GetSandboxFlags();
 
   if (RuntimeEnabledFeatures::BlockingFocusWithoutUserActivationEnabled() &&
-      frame && frame->Tree().Parent() &&
+      frame.Tree().Parent() &&
       (sandbox_flags & network::mojom::blink::WebSandboxFlags::kNavigation) !=
           network::mojom::blink::WebSandboxFlags::kNone) {
     // Enforcing the policy for sandbox frames (for context see
@@ -215,8 +215,8 @@ void SecurityContextInit::ApplyPermissionsPolicy(
 
   std::unique_ptr<PermissionsPolicy> permissions_policy;
   auto* parent_permissions_policy =
-      frame->Tree().Parent()
-          ? frame->Tree().Parent()->GetSecurityContext()->GetPermissionsPolicy()
+      frame.Tree().Parent()
+          ? frame.Tree().Parent()->GetSecurityContext()->GetPermissionsPolicy()
           : nullptr;
   permissions_policy = PermissionsPolicy::CreateFromParentPolicy(
       parent_permissions_policy, container_policy,
