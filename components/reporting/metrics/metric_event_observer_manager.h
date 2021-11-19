@@ -44,7 +44,7 @@ class MetricEventObserverManager {
 
   void OnEventObserved(MetricData metric_data);
 
-  virtual void Report(MetricData metric_data);
+  void Report(MetricData metric_data);
 
   const std::unique_ptr<MetricEventObserver> event_observer_;
 
