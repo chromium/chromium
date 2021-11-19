@@ -401,7 +401,7 @@
 <translation id="3594207934078151302">મધ્યમ દરિયાઈ લીલો</translation>
 <translation id="3599054940393788245">ગણિતમાં નહીં</translation>
 <translation id="360241989769010433">સ્વીકૃતિઓ</translation>
-<translation id="3616016838842055984">જો તમે ક્લિક કરવા માગતા હો તે આઇટમ પર પહોંચો, તો શોધ + સ્પેસ દબાવો. આગળ વધવા માટે, હમણાં જ અજમાવી જુઓ.</translation>
+<translation id="3616016838842055984">જો તમે ક્લિક કરવા માગતા હો તે આઇટમ પર પહોંચો, તો Search + Space દબાવો. આગળ વધવા માટે, હમણાં જ અજમાવી જુઓ.</translation>
 <translation id="3616113530831147358">ઑડિઓ</translation>
 <translation id="3622350485154495700">એક આંગળી વડે બે વાર ટૅપ કરો</translation>
 <translation id="3646890046000188562">{COUNT,plural, =1{બેકટિક}one{# બેકટિક}other{# બેકટિક}}</translation>
@@ -513,7 +513,7 @@
 <translation id="4406249099130339147">વિરામચિહ્નનો પડઘો:</translation>
 <translation id="4432457053224379116">ભારતીય લાલ</translation>
 <translation id="4432896207833262240">માર્ક કરેલું કન્ટેન્ટ</translation>
-<translation id="4437615272777527928">મેનુ શોધવા માટે ટાઇપ કરો. પરિણામો જોવા માટે ઉપર અને નીચે એરોનો ઉપયોગ કરો. ટેક્સ્ટ કૅરેટની ગોઠવણી કરવા અને મેનૂ વચ્ચે આવ-જા કરવા માટે ડાબા અને જમણા એરોનો ઉપયોગ કરો.</translation>
+<translation id="4437615272777527928">મેનૂ શોધવા માટે ટાઇપ કરો. પરિણામો જોવા માટે ઉપર અને નીચે ઍરોનો ઉપયોગ કરો. ટેક્સ્ટ કૅરેટની ગોઠવણી કરવા અને મેનૂ વચ્ચે આવ-જા કરવા માટે ડાબા અને જમણા ઍરોનો ઉપયોગ કરો.</translation>
 <translation id="4457472090507035117">વર્તમાન વૉઇસ પસંદ કરો:</translation>
 <translation id="4476183483923481720">નવી લાઇન</translation>
 <translation id="4479068155583208887">આગમાંની ઈંટ જેવો</translation>
@@ -680,7 +680,7 @@
 <translation id="5653397561111110475">Chromebook ટચ સ્ક્રીન ઍક્સેસિબિલિટી સુવિધાઓનો ઉપયોગ કરો</translation>
 <translation id="5655682562155942719">જંપ આદેશો</translation>
 <translation id="56637627897541303">ટેક્સ્ટ ક્ષેત્ર</translation>
-<translation id="5669637233317991674">આ પાઠ પર નૅવિગેટ કરવા માટે, શોધ + જમણો એરો અથવા શોધ + ડાબો એરો દબાવો</translation>
+<translation id="5669637233317991674">આ પાઠ પર નૅવિગેટ કરવા માટે, Search + જમણો ઍરો અથવા Search + ડાબો ઍરો દબાવો</translation>
 <translation id="5677240841070992068">હાલનું સ્થાન</translation>
 <translation id="5678161956734658133">mled</translation>
 <translation id="5681643281275621376">def</translation>
@@ -1066,7 +1066,7 @@
 <translation id="8473540203671727883">માઉસ હેઠળ આવતી ટેક્સ્ટ બોલો</translation>
 <translation id="8476408756881832830">ChromeVox બોલી રહ્યું હોય ત્યારે પ્લેબેક થોભાવો</translation>
 <translation id="8476508772960940536">વિંડોનું વિહંગાવલોકન</translation>
-<translation id="8480873377842220259">હવે તમે થોડું મૂળભૂત નૅવિગેશન શીખશો. સ્ક્રીન પર કોઈપણ જગ્યાએ જવા માટે, તમે શોધ કી દબાવી રાખીને એરો કી દબાવી શકો છો. આગળ વધવા માટે, શોધ + જમણો એરો દબાવો.</translation>
+<translation id="8480873377842220259">હવે તમે થોડું મૂળભૂત નૅવિગેશન શીખશો. સ્ક્રીન પર કોઈપણ જગ્યાએ જવા માટે, તમે Search કી દબાવી રાખીને ઍરો કી દબાવી શકો છો. આગળ વધવા માટે, Search + જમણો ઍરો દબાવો.</translation>
 <translation id="8503360654911991865">નેવિગેશન ગ્રેન્યુલેરિટી ઘટાડો</translation>
 <translation id="8520472399088452386">સ્પિન બટન</translation>
 <translation id="8534394844575788431">ફોર્મેટિંગ</translation>
@@ -1095,7 +1095,7 @@
 <translation id="8693391540059827073">મારી મનપસંદ ઋતુ</translation>
 <translation id="8696284982970258155">હનીડ્યૂ</translation>
 <translation id="8697111817566059991">{COUNT,plural, =1{પાઇપ}one{# વર્ટિકલ પાઇપ}other{# વર્ટિકલ પાઇપ}}</translation>
-<translation id="8741370088760768424">હિન્ટ: વર્તમાન આઇટમને સક્રિય કરવા માટે શોધ + Space દબાવો.</translation>
+<translation id="8741370088760768424">હિન્ટ: વર્તમાન આઇટમને સક્રિય કરવા માટે Search + Space દબાવો.</translation>
 <translation id="8743786158317878347">ગણિત કે ટેબલ જેવું કન્ટેન્ટ દાખલ કરો</translation>
 <translation id="8747966237988593539">ક્રમાંકિત સૂચિ</translation>
 <translation id="8749988712346667988">સિલ્વર</translation>

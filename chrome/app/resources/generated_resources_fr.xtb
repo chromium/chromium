@@ -1183,7 +1183,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2203088913459920044">Le nom peut contenir des lettres, des chiffres et des caractères spéciaux</translation>
 <translation id="2204034823255629767">Accéder au contenu que vous saisissez et le modifier</translation>
 <translation id="220858061631308971">Veuillez saisir le code d'accès de "<ph name="DEVICE_NAME" />" :</translation>
-<translation id="2210462644007531147">Impossible de terminer l'installation</translation>
+<translation id="2210462644007531147">Impossible de procéder à l'installation</translation>
 <translation id="2212565012507486665">Autoriser les cookies</translation>
 <translation id="2214018885812055163">Dossiers partagés</translation>
 <translation id="2214884991347062907">Mot de passe incorrect, veuillez réessayer</translation>
@@ -1237,7 +1237,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="22665427234727190">Me demander lorsqu'un site souhaite accéder aux appareils Bluetooth (recommandé)</translation>
 <translation id="2266957463645820432">IPP sur USB (IPPUSB)</translation>
 <translation id="2270450558902169558">Échanger des données avec n'importe quel appareil dans le domaine suivant : "<ph name="DOMAIN" />"</translation>
-<translation id="2270612886833477697"><ph name="BEGIN_PARAGRAPH1" />L'installation <ph name="BEGIN_BOLD" />effacera tout votre disque dur<ph name="END_BOLD" />. Vérifiez que vous avez une copie de sauvegarde de vos données.<ph name="END_PARAGRAPH1" />
+<translation id="2270612886833477697"><ph name="BEGIN_PARAGRAPH1" />L'installation <ph name="BEGIN_BOLD" />effacera tout votre disque dur<ph name="END_BOLD" />. Vérifiez que vos données sont sauvegardées.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Une fois l'installation lancée, elle ne peut plus être annulée.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2270627217422354837">Échanger des données avec n'importe quel appareil dans les domaines suivants : "<ph name="DOMAINS" />"</translation>
 <translation id="2270666014403455717">Associer un contacteur à "Sélectionner"</translation>
@@ -5893,7 +5893,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="7264432249010320236">Autres sites</translation>
 <translation id="7264564921322372728"><ph name="BEGIN_PARAGRAPH1" />Suivez ces étapes de dépannage :
     <ph name="BEGIN_LIST" />
-    <ph name="LIST_ITEM" />Vérifiez que la mémoire de stockage interne (ex. : HDD, SSD ou eMMC) de votre appareil fonctionne
+    <ph name="LIST_ITEM" />Vérifiez que votre appareil contient une mémoire de stockage interne (ex. : HDD, SSD ou eMMC) qui fonctionne
     <ph name="LIST_ITEM" />Vérifiez qu'elle est supérieure à 16 Go
     <ph name="LIST_ITEM" />Vérifiez sa connexion (si accessible physiquement)
     <ph name="LIST_ITEM" />Vérifiez que vous utilisez un modèle certifié et lisez les notes d'installation
