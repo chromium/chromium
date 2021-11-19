@@ -1,0 +1,35 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module ash.firmware_update.mojom;
+
+import "mojo/public/mojom/base/string16.mojom";
+
+// Represents the priority of an firmware update e.g. a security update may be
+// considered a critical priority.
+enum UpdatePriority {
+  kLow,
+  kMedium,
+  kHigh,
+  kCritical,
+};
+
+// Contains metadata in regards to a specific device's firmware update. Includes
+// the device to be updated and metadata of the firmware state.
+struct FirmwareUpdate {
+  // Unique identifier of the device.
+  string device_id;
+
+  // Device name, may be in an internationalized language.
+  mojo_base.mojom.String16 device_name;
+
+  // Device firmware version.
+  string device_version;
+
+  // Description text associated with the device.
+  mojo_base.mojom.String16 device_description;
+
+  // Priority of the device's firmware update.
+  UpdatePriority priority;
+};

@@ -15,6 +15,7 @@ static_library("firmware_update_ui") {
   ]
 
   deps = [
+    "//ash/webui/firmware_update_ui/mojom",
     "//ash/webui/resources:firmware_update_app_resources",
     "//chromeos/strings/",
     "//content/public/browser",
