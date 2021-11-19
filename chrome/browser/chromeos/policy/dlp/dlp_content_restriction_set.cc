@@ -106,8 +106,6 @@ DlpContentRestrictionSet DlpContentRestrictionSet::GetForURL(const GURL& url) {
 
   DlpContentRestrictionSet set;
 
-// TODO(crbug.com/1254329) Enable on LaCros once DlpRulesManager is available.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   DlpRulesManager* dlp_rules_manager =
       DlpRulesManagerFactory::GetForPrimaryProfile();
   if (!dlp_rules_manager)
@@ -136,7 +134,6 @@ DlpContentRestrictionSet DlpContentRestrictionSet::GetForURL(const GURL& url) {
       continue;
     set.SetRestriction(restriction.second, level, url);
   }
-#endif
 
   return set;
 }

@@ -46,6 +46,22 @@ bool CanBuildServiceForProfile(const Profile* profile) {
   return is_main_profile && profile->GetProfilePolicyConnector()->IsManaged();
 }
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+// Returns the single main profile, or nullptr if none is found.
+Profile* GetMainProfile() {
+  // Might be not initialized in tests.
+  ProfileManager* profile_manager = g_browser_process->profile_manager();
+  if (!profile_manager)
+    return nullptr;
+  auto profiles = profile_manager->GetLoadedProfiles();
+  const auto profile_it = base::ranges::find_if(
+      profiles, [](Profile* profile) { return profile->IsMainProfile(); });
+  if (profile_it == profiles.end())
+    return nullptr;
+  return *profile_it;
+}
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
 }  // namespace
 
 // static
@@ -56,7 +72,11 @@ DlpRulesManagerFactory* DlpRulesManagerFactory::GetInstance() {
 
 // static
 DlpRulesManager* DlpRulesManagerFactory::GetForPrimaryProfile() {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   Profile* profile = ProfileManager::GetPrimaryUserProfile();
+#elif BUILDFLAG(IS_CHROMEOS_LACROS)
+  Profile* profile = GetMainProfile();
+#endif
   if (!profile)
     return nullptr;
   return static_cast<DlpRulesManager*>(
