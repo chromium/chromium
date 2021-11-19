@@ -7,7 +7,7 @@
 #include "base/strings/strcat.h"
 #include "base/values.h"
 
-#include "ios/web/js_features/web_performance_metrics/web_performance_metrics_java_script_feature.h"
+#include "ios/chrome/browser/web/web_performance_metrics/web_performance_metrics_java_script_feature.h"
 #include "ios/web/public/js_messaging/java_script_feature_util.h"
 #include "ios/web/public/js_messaging/script_message.h"
 #include "ios/web/public/js_messaging/web_frame_util.h"
@@ -21,7 +21,6 @@ const char kPerformanceMetricsScript[] = "web_performance_metrics_js";
 const char kWebPerformanceMetricsScriptName[] = "WebPerformanceMetricsHandler";
 }
 
-namespace web {
 WebPerformanceMetricsJavaScriptFeature::WebPerformanceMetricsJavaScriptFeature()
     : JavaScriptFeature(ContentWorld::kAnyContentWorld,
                         {FeatureScript::CreateWithFilename(
@@ -70,6 +69,4 @@ void WebPerformanceMetricsJavaScriptFeature::ScriptMessageReceived(
     UMA_HISTOGRAM_TIMES("IOS.Frame.FirstContentfulPaint.SubFrame",
                         base::Milliseconds(value.value()));
   }
-}
-
 }

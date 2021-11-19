@@ -52,6 +52,7 @@
 #import "ios/chrome/browser/web/java_script_console/java_script_console_feature_factory.h"
 #include "ios/chrome/browser/web/print/print_java_script_feature.h"
 #import "ios/chrome/browser/web/session_state/web_session_state_tab_helper.h"
+#import "ios/chrome/browser/web/web_performance_metrics/web_performance_metrics_java_script_feature.h"
 #import "ios/components/security_interstitials/ios_blocking_page_tab_helper.h"
 #import "ios/components/security_interstitials/legacy_tls/legacy_tls_blocking_page.h"
 #import "ios/components/security_interstitials/legacy_tls/legacy_tls_controller_client.h"
@@ -339,7 +340,7 @@ std::vector<web::JavaScriptFeature*> ChromeWebClient::GetJavaScriptFeatures(
   SearchEngineJavaScriptFeature::GetInstance()->SetDelegate(
       SearchEngineTabHelperFactory::GetInstance());
   features.push_back(SearchEngineJavaScriptFeature::GetInstance());
-
+  features.push_back(WebPerformanceMetricsJavaScriptFeature::GetInstance());
   return features;
 }
 
