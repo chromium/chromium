@@ -20,7 +20,7 @@ static_js_files = [
 
   "trusted/iframe_api.ts",
   "trusted/mojo_interface_provider.ts",
-  "trusted/personalization_actions.js",
+  "trusted/personalization_actions.ts",
   "trusted/personalization_app.js",
   "trusted/personalization_controller.js",
   "trusted/personalization_message_handler.js",
