@@ -295,8 +295,7 @@ def blink_type_info(idl_type):
             # a value type (is_gc_type=False, has_null_value=False) rather than
             # a reference type (is_gc_type=True, has_null_value=True) by
             # default.
-            typename = "HeapVector<AddMemberIfNeeded<{}>>".format(
-                element_type.member_t)
+            typename = "HeapVector<{}>".format(element_type.member_t)
             return TypeInfo(typename,
                             ref_fmt="{}&",
                             const_ref_fmt="const {}&",
@@ -332,9 +331,8 @@ def blink_type_info(idl_type):
             # a value type (is_gc_type=False, has_null_value=False) rather than
             # a reference type (is_gc_type=True, has_null_value=True) by
             # default.
-            typename = (
-                "HeapVector<std::pair<{}, AddMemberIfNeeded<{}>>>".format(
-                    key_type.value_t, value_type.member_t))
+            typename = ("HeapVector<std::pair<{}, {}>>".format(
+                key_type.member_t, value_type.member_t))
             return TypeInfo(typename,
                             ref_fmt="{}&",
                             const_ref_fmt="const {}&",
