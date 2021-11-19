@@ -129,6 +129,8 @@ const char kGroupParamsError[] =
 const char kCannotNavigateToDevtools[] =
     "Cannot navigate to a devtools:// page without either the devtools or "
     "debugger permission.";
+const char kCannotNavigateToChromeUntrusted[] =
+    "Cannot navigate to a chrome-untrusted:// page.";
 const char kCannotHighlightTabs[] =
     "Cannot change tab highlight. This may be due to user dragging in "
     "progress.";
