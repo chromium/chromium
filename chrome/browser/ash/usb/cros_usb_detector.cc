@@ -46,6 +46,7 @@ namespace {
 
 constexpr uint32_t kAllInterfacesMask = ~0U;
 const char16_t kParallelsShortName[] = u"Parallels";
+const char16_t kParallelsName[] = u"Parallels Desktop";
 
 // Not owned locally.
 static CrosUsbDetector* g_cros_usb_detector = nullptr;
@@ -230,12 +231,29 @@ device::mojom::UsbDeviceFilterPtr UsbFilterByClassCode(
   return filter;
 }
 
+std::u16string CombineVmNames(const std::vector<std::u16string>& vm_names) {
+  std::u16string res;
+  int pos = 0;
+  while (pos < vm_names.size()) {
+    res.append(vm_names[pos]);
+    pos++;
+    if (pos < vm_names.size()) {
+      res.append(u" ");
+      res.append(l10n_util::GetStringUTF16(IDS_CROSUSB_NOTIFICATION_OR));
+      res.append(u" ");
+    }
+  }
+  return res;
+}
+
 void ShowNotificationForDevice(const std::string& guid,
                                const std::u16string& label) {
   message_center::RichNotificationData rich_notification_data;
   std::vector<std::string> vm_names;
   std::string settings_sub_page;
   std::u16string vm_name;
+  std::u16string vm_name_button_text;
+  std::vector<std::u16string> vm_names_in_notification;
   rich_notification_data.small_image = gfx::Image(
       gfx::CreateVectorIcon(vector_icons::kUsbIcon, 64, gfx::kGoogleBlue800));
   rich_notification_data.accent_color = ash::kSystemNotificationColorNormal;
@@ -246,29 +264,43 @@ void ShowNotificationForDevice(const std::string& guid,
         message_center::ButtonInfo(l10n_util::GetStringFUTF16(
             IDS_CROSUSB_NOTIFICATION_BUTTON_CONNECT_TO_VM, vm_name)));
     vm_names.emplace_back(crostini::kCrostiniDefaultVmName);
+    vm_names_in_notification.emplace_back(vm_name);
     settings_sub_page =
         chromeos::settings::mojom::kCrostiniUsbPreferencesSubpagePath;
   }
   if (plugin_vm::PluginVmFeatures::Get()->IsEnabled(profile())) {
-    vm_name = kParallelsShortName;
+    vm_name = kParallelsName;
+    vm_name_button_text = kParallelsShortName;
     rich_notification_data.buttons.emplace_back(
         message_center::ButtonInfo(l10n_util::GetStringFUTF16(
-            IDS_CROSUSB_NOTIFICATION_BUTTON_CONNECT_TO_VM, vm_name)));
+            IDS_CROSUSB_NOTIFICATION_BUTTON_CONNECT_TO_VM,
+            vm_name_button_text)));
     vm_names.emplace_back(plugin_vm::kPluginVmName);
+    vm_names_in_notification.emplace_back(vm_name);
     settings_sub_page =
         chromeos::settings::mojom::kPluginVmUsbPreferencesSubpagePath;
   }
 
-  std::u16string message;
-  if (vm_names.size() == 1) {
-    message = l10n_util::GetStringFUTF16(
-        IDS_CROSUSB_DEVICE_DETECTED_NOTIFICATION, label, vm_name);
-  } else {
-    // Note: we assume right now that multi-VM is Linux and Plugin VM.
-    message = l10n_util::GetStringFUTF16(
-        IDS_CROSUSB_DEVICE_DETECTED_NOTIFICATION_LINUX_PLUGIN_VM, label);
+  if (arc::IsArcVmEnabled()) {
+    vm_name = l10n_util::GetStringUTF16(IDS_CROSUSB_NOTIFICATION_ARCVM);
+    vm_name_button_text =
+        l10n_util::GetStringUTF16(IDS_CROSUSB_NOTIFICATION_ARCVM_BUTTON);
+    rich_notification_data.buttons.emplace_back(
+        message_center::ButtonInfo(l10n_util::GetStringFUTF16(
+            IDS_CROSUSB_NOTIFICATION_BUTTON_CONNECT_TO_VM,
+            vm_name_button_text)));
+    vm_names.emplace_back(arc::kArcVmName);
+    vm_names_in_notification.emplace_back(vm_name);
     settings_sub_page = std::string();
   }
+
+  DCHECK(vm_names_in_notification.size());
+  std::u16string message = l10n_util::GetStringFUTF16(
+      IDS_CROSUSB_DEVICE_DETECTED_NOTIFICATION, label,
+      CombineVmNames(vm_names_in_notification));
+
+  if (vm_names.size() > 1)
+    settings_sub_page = std::string();
 
   std::string notification_id = CrosUsbDetector::MakeNotificationId(guid);
   message_center::Notification notification(
@@ -464,7 +496,8 @@ void CrosUsbDetector::ConnectToDeviceManager() {
 
 bool CrosUsbDetector::ShouldShowNotification(const UsbDevice& device) {
   if (!crostini::CrostiniFeatures::Get()->IsEnabled(profile()) &&
-      !plugin_vm::PluginVmFeatures::Get()->IsEnabled(profile())) {
+      !plugin_vm::PluginVmFeatures::Get()->IsEnabled(profile()) &&
+      !arc::IsArcVmEnabled()) {
     return false;
   }
   if (!device.shareable) {
