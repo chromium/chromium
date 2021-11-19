@@ -67,11 +67,6 @@ const base::Feature kPermissionPredictionServiceUseUrlOverride{
     "kPermissionPredictionServiceUseUrlOverride",
     base::FEATURE_DISABLED_BY_DEFAULT};
 
-// When enabled, permission verification and requesting is done on
-// RFH->GetLastCommittedOrigin() instead of RFH->GetLastCommittedURL().
-const base::Feature kRevisedOriginHandling{"PermissionsRevisedOriginHandling",
-                                           base::FEATURE_ENABLED_BY_DEFAULT};
-
 #if defined(OS_ANDROID)
 // When enabled, the Default Search Engine does not automatically receive the
 // "geolocation" and "notifications" permissions. DSE only applies to Android.

@@ -49,9 +49,6 @@ extern const base::Feature kPermissionChipIsProminentStyle;
 COMPONENT_EXPORT(PERMISSIONS_COMMON)
 extern const base::Feature kPermissionPredictionServiceUseUrlOverride;
 
-COMPONENT_EXPORT(PERMISSIONS_COMMON)
-extern const base::Feature kRevisedOriginHandling;
-
 #if defined(OS_ANDROID)
 COMPONENT_EXPORT(PERMISSIONS_COMMON)
 extern const base::Feature kRevertDSEAutomaticPermissions;
