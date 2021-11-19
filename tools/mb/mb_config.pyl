@@ -954,13 +954,13 @@
 
     'tryserver.chromium.dawn': {
       'dawn-linux-x64-deps-rel': 'dawn_tests_with_desktop_gl_release_trybot',
-      'dawn-mac-x64-deps-rel': 'dawn_tests_release_trybot',
-      'dawn-try-mac-amd-exp': 'dawn_tests_release_trybot',
+      'dawn-mac-x64-deps-rel': 'dawn_tests_release_trybot_alloc_none',
+      'dawn-try-mac-amd-exp': 'dawn_tests_release_trybot_alloc_none',
       'dawn-try-mac-intel-exp': 'dawn_tests_release_trybot',
       'dawn-win10-x86-deps-rel': 'dawn_tests_release_trybot_x86',
       'dawn-win10-x64-deps-rel': 'dawn_tests_release_trybot',
       'linux-dawn-rel': 'dawn_tests_with_desktop_gl_release_trybot',
-      'mac-dawn-rel': 'dawn_tests_release_trybot',
+      'mac-dawn-rel': 'dawn_tests_release_trybot_alloc_none',
       'win-dawn-rel': 'dawn_tests_release_trybot',
       'dawn-try-win10-x86-rel': 'dawn_tests_release_trybot_x86',
       'dawn-try-win10-x64-asan-rel': 'dawn_tests_asan_release_trybot',
@@ -2105,6 +2105,12 @@
 
     'dawn_tests_release_trybot': [
       'dawn_tests', 'release_trybot',
+    ],
+
+    # https://crbug.com/dawn/1200: temporarily avoid using partition alloc
+    # while we investigate a crash in the mac AMD shader compiler.
+    'dawn_tests_release_trybot_alloc_none': [
+      'dawn_tests', 'release_trybot', 'padisabled',
     ],
 
     'dawn_tests_release_trybot_x86': [
@@ -3755,6 +3761,12 @@
     # angle on Linux Ozone/X11/Wayland yet).
     'ozone_linux_non_x11': {
       'gn_args': 'ozone_platform_x11=false'
+    },
+
+    # https://crbug.com/dawn/1200: Used to disable partition alloc while we
+    # investigate a crash in the mac AMD shader compiler.
+    'padisabled': {
+      'gn_args': 'use_allocator="none"',
     },
 
     'paeverywhere': {
