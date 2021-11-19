@@ -105,7 +105,6 @@ https://chromium.googlesource.com/chromium/src/+/main/build/android/docs/lint.md
   </issue>
   <issue id="Recycle" severity="ignore"/>
   <issue id="Registered" severity="ignore"/>
-  <issue id="ResourceAsColor" severity="ignore"/>
   <issue id="RtlCompat" severity="ignore"/>
   <issue id="RtlEnabled" severity="ignore"/>
   <issue id="RtlSymmetry" severity="ignore"/>

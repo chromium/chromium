@@ -52,7 +52,7 @@ public class ChromeColors {
                        context.getResources(), R.color.default_bg_color_dark)
                            : MaterialColors.getColor(context, R.attr.default_bg_color_dynamic,
                                    // Temporarily pass a default, see https://crbug.com/1247186.
-                                   R.color.default_bg_color);
+                                   context.getColor(R.color.default_bg_color));
     }
 
     /**
