@@ -121,6 +121,7 @@ blink::mojom::DragDataPtr DropDataToDragData(
     blink::mojom::DragItemBinaryPtr item = blink::mojom::DragItemBinary::New();
     item->data = mojo_base::BigBuffer(
         base::as_bytes(base::make_span(drop_data.file_contents)));
+    item->is_image_accessible = drop_data.file_contents_image_accessible;
     item->source_url = drop_data.file_contents_source_url;
     item->filename_extension =
         base::FilePath(drop_data.file_contents_filename_extension);
@@ -238,8 +239,8 @@ DropData DragDataToDropData(const blink::mojom::DragData& drag_data) {
         const blink::mojom::DragItemBinaryPtr& binary_item = item->get_binary();
         base::span<const uint8_t> contents = base::make_span(binary_item->data);
         result.file_contents.assign(contents.begin(), contents.end());
-        result.file_contents_accessible_from_start_frame =
-            binary_item->is_accessible_from_start_frame;
+        result.file_contents_image_accessible =
+            binary_item->is_image_accessible;
         result.file_contents_source_url = binary_item->source_url;
         result.file_contents_filename_extension =
             binary_item->filename_extension.value();
