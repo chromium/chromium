@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "content/browser/compute_pressure/compute_pressure_sampler.h"
+#include "build/build_config.h"
 
 #include <cstddef>
 #include <memory>
@@ -177,7 +178,15 @@ TEST_F(ComputePressureSamplerTest, EnsureStarted_SkipsFirstSample) {
                             {.cpu_utilization = 0.4, .cpu_speed = 0.6})));
 }
 
-TEST_F(ComputePressureSamplerTest, Stop_Delayed_EnsureStarted_Immediate) {
+// TODO(crbug.com/1271419): Flaky.
+#if defined(OS_LINUX) || defined(OS_FUCHSIA)
+#define MAYBE_Stop_Delayed_EnsureStarted_Immediate \
+  DISABLED_Stop_Delayed_EnsureStarted_Immediate
+#else
+#define MAYBE_Stop_Delayed_EnsureStarted_Immediate \
+  Stop_Delayed_EnsureStarted_Immediate
+#endif
+TEST_F(ComputePressureSamplerTest, MAYBE_Stop_Delayed_EnsureStarted_Immediate) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   sampler_->EnsureStarted();
