@@ -295,16 +295,16 @@ def find_images_used_by_grd(all_png_files: Set[Text]) -> Set[Text]:
     A set of image filepaths that are referenced by grd/grdp.
   """
   used_files = set()
-  maybe_unused_files = set()
   grd_files = set(get_all_ext_files('grd') + get_all_ext_files('grdp'))
   for grd_file in grd_files:
     grd_dir = os.path.dirname(grd_file)
-    cur_used_files = set()
+    cur_relpaths = set()
     grd_root = ET.parse(grd_file).getroot()
     for elem in itertools.chain(grd_root.iter('include'),
                                 grd_root.iter('structure')):
       relpath = elem.get('file')
       if relpath and relpath.endswith('.png'):
+        relpath = relpath.replace('\\', '/')
         relpath = relpath.replace(
             '${input_tools_root_dir}',
             'third_party/google_input_tools/src/chrome/os')
@@ -314,14 +314,15 @@ def find_images_used_by_grd(all_png_files: Set[Text]) -> Set[Text]:
           logger.error('When processing %s got weird relpath: %s', grd_file,
                        relpath)
           raise ValueError('Unexpected relpath!')
-        cur_used_files.add(relpath)
-    for png_file in all_png_files:
-      if os.path.commonpath([grd_dir, png_file]) == grd_dir:
-        relpath = os.path.relpath(png_file, start=grd_dir)
-        if any(relpath.endswith(used) for used in cur_used_files):
+        rooted_filepath = os.path.normpath(os.path.join(grd_dir, relpath))
+        if rooted_filepath in all_png_files:
+          used_files.add(rooted_filepath)
+        cur_relpaths.add(relpath)
+    for relpath in cur_relpaths:
+      pattern = re.compile(grd_dir + r'/(default_\d+_percent/)?' + relpath)
+      for png_file in all_png_files:
+        if pattern.match(png_file):
           used_files.add(png_file)
-        else:
-          maybe_unused_files.add(png_file)
   return used_files
 
 
