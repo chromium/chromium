@@ -7,7 +7,9 @@
 #include "media/base/video_frame.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_external_texture_descriptor.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_texture_view_descriptor.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_union_htmlvideoelement_videoframe.h"
 #include "third_party/blink/renderer/core/html/media/html_video_element.h"
+#include "third_party/blink/renderer/modules/webcodecs/video_frame.h"
 #include "third_party/blink/renderer/modules/webgpu/dawn_conversions.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_device.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_texture.h"
@@ -19,32 +21,58 @@
 namespace blink {
 
 // static
-GPUExternalTexture* GPUExternalTexture::FromVideo(
+GPUExternalTexture* GPUExternalTexture::Create(
     GPUDevice* device,
     const GPUExternalTextureDescriptor* webgpu_desc,
     ExceptionState& exception_state) {
-  HTMLVideoElement* video = webgpu_desc->source();
-
-  if (!video || !video->videoWidth() || !video->videoHeight()) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kOperationError,
-                                      "Missing video source");
-    return nullptr;
-  }
-
-  if (video->WouldTaintOrigin()) {
-    exception_state.ThrowSecurityError(
-        "Video element is tainted by cross-origin data and may not be loaded.");
-    return nullptr;
-  }
-
-  media::PaintCanvasVideoRenderer* video_renderer = nullptr;
   scoped_refptr<media::VideoFrame> media_video_frame;
-  if (auto* wmp = video->GetWebMediaPlayer()) {
-    media_video_frame = wmp->GetCurrentFrame();
-    video_renderer = wmp->GetPaintCanvasVideoRenderer();
+  media::PaintCanvasVideoRenderer* video_renderer = nullptr;
+  switch (webgpu_desc->source()->GetContentType()) {
+    case V8UnionHTMLVideoElementOrVideoFrame::ContentType::kHTMLVideoElement: {
+      HTMLVideoElement* video = webgpu_desc->source()->GetAsHTMLVideoElement();
+
+      if (!video || !video->videoWidth() || !video->videoHeight()) {
+        exception_state.ThrowDOMException(DOMExceptionCode::kOperationError,
+                                          "Missing video source");
+        return nullptr;
+      }
+
+      if (video->WouldTaintOrigin()) {
+        exception_state.ThrowSecurityError(
+            "Video element is tainted by cross-origin data and may not be "
+            "loaded.");
+        return nullptr;
+      }
+
+      if (auto* wmp = video->GetWebMediaPlayer()) {
+        media_video_frame = wmp->GetCurrentFrame();
+        video_renderer = wmp->GetPaintCanvasVideoRenderer();
+      }
+      break;
+    }
+
+    case V8UnionHTMLVideoElementOrVideoFrame::ContentType::kVideoFrame: {
+      VideoFrame* frame = webgpu_desc->source()->GetAsVideoFrame();
+
+      if (!frame || !frame->codedWidth() || !frame->codedHeight()) {
+        exception_state.ThrowDOMException(DOMExceptionCode::kOperationError,
+                                          "Missing video source");
+        return nullptr;
+      }
+
+      if (frame->WouldTaintOrigin()) {
+        exception_state.ThrowSecurityError(
+            "VideoFrame is tainted by cross-origin data and may not be "
+            "loaded.");
+        return nullptr;
+      }
+
+      media_video_frame = frame->frame();
+      break;
+    }
   }
 
-  if (!media_video_frame || !video_renderer) {
+  if (!media_video_frame) {
     exception_state.ThrowDOMException(DOMExceptionCode::kOperationError,
                                       "Failed to import texture from video");
     if (!media_video_frame) {
@@ -87,6 +115,10 @@ GPUExternalTexture* GPUExternalTexture::FromVideo(
   // TODO(crbug.com/1174809): This isn't efficient for VideoFrames which are
   // already available as a shared image. A WebGPUMailboxTexture should be
   // created directly from the VideoFrame instead.
+  // TODO(crbug.com/1174809): VideoFrame cannot extract video_renderer.
+  // DrawVideoFrameIntoResourceProvider() creates local_video_renderer always.
+  // This might affect performance, maybe a cache local_video_renderer could
+  // help.
   const auto dest_rect = gfx::Rect(media_video_frame->natural_size());
   if (!DrawVideoFrameIntoResourceProvider(
           std::move(media_video_frame), resource_provider,

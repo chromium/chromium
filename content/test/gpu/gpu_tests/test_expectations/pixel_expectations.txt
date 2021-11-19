@@ -473,6 +473,9 @@ crbug.com/1230743 [ linux skia-renderer-vulkan ] Pixel_* [ RetryOnFailure ]
 # WebGPU pixel tests flakily hang in the metal shader compiler on Mac.
 crbug.com/1268120 [ mac ] Pixel_WebGPUToDataURL [ Failure ]
 
+# NVIDIA Quadro P400 GPU has problem to generate correct rendering results.
+crbug.com/1238570 [ win nvidia-0x1cb3 ] Pixel_WebGPUImportVideoFrame [ Failure ]
+
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #
 #######################################################################

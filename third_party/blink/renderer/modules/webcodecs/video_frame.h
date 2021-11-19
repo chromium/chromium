@@ -107,6 +107,8 @@ class MODULES_EXPORT VideoFrame final : public ScriptWrappable,
   scoped_refptr<VideoFrameHandle> handle() const { return handle_; }
   scoped_refptr<media::VideoFrame> frame() const { return handle_->frame(); }
 
+  bool WouldTaintOrigin() const override;
+
   // GarbageCollected override
   void Trace(Visitor*) const override;
 
@@ -116,7 +118,7 @@ class MODULES_EXPORT VideoFrame final : public ScriptWrappable,
       SourceImageStatus*,
       const FloatSize&,
       const AlphaDisposition alpha_disposition = kPremultiplyAlpha) override;
-  bool WouldTaintOrigin() const override;
+
   FloatSize ElementSize(const FloatSize&,
                         const RespectImageOrientationEnum) const override;
   bool IsVideoFrame() const override;

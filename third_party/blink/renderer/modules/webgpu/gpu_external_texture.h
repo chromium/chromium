@@ -18,7 +18,7 @@ class GPUExternalTexture : public DawnObject<WGPUExternalTexture> {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  static GPUExternalTexture* FromVideo(
+  static GPUExternalTexture* Create(
       GPUDevice* device,
       const GPUExternalTextureDescriptor* webgpu_desc,
       ExceptionState& exception_state);

@@ -204,6 +204,9 @@ crbug.com/1213657 [ linux skia-renderer-vulkan ] TraceTest_WebGPU* [ Failure ]
 # Flakes on linux-rel.
 crbug.com/1216377 [ linux ] TraceTest_Video_Media_Stream_Incompatible_Stride [ RetryOnFailure ]
 
+# Cannot generate correct rendering results on windows.
+crbug.com/1238570 [ win ] TraceTest_WebGPUImportVideoFrame [ Failure ]
+
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #
 #######################################################################

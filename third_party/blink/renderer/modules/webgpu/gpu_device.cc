@@ -297,7 +297,7 @@ GPUExternalTexture* GPUDevice::importExternalTexture(
     const GPUExternalTextureDescriptor* descriptor,
     ExceptionState& exception_state) {
   GPUExternalTexture* externalTexture =
-      GPUExternalTexture::FromVideo(this, descriptor, exception_state);
+      GPUExternalTexture::Create(this, descriptor, exception_state);
   if (externalTexture)
     EnsureExternalTextureDestroyed(externalTexture);
   return externalTexture;
