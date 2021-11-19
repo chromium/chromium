@@ -5,12 +5,14 @@
 // Some tests for the framework itself.
 
 #include <stddef.h>
+#include <stdlib.h>
 
 #include <windows.h>
 
 // Must be after windows.h.
 #include <versionhelpers.h>
 
+#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/test_timeouts.h"
 #include "base/unguessable_token.h"
@@ -25,11 +27,6 @@
 namespace sandbox {
 
 namespace {
-std::wstring NonCollidingName() {
-  auto token = base::UnguessableToken::Create();
-  return base::UTF8ToWide(token.ToString().c_str());
-}
-
 struct PolicyDiagnosticsWaiter {
  public:
   PolicyDiagnosticsWaiter() {
@@ -117,22 +114,21 @@ SBOX_TESTS_COMMAND int IntegrationTestsTest_args(int argc, wchar_t **argv) {
   return argc;
 }
 
-// Sets the first named event, then waits on the second. This ensures
+// Sets the first inherited event, then waits on the second. This ensures
 // this process is alive and remains alive while its parent tests diagnostics.
 SBOX_TESTS_COMMAND int IntegrationTestsTest_event(int argc, wchar_t** argv) {
   if (argc < 2)
     return SBOX_TEST_INVALID_PARAMETER;
 
-  HANDLE hEventA =
-      ::OpenEventW(SYNCHRONIZE | EVENT_MODIFY_STATE, false, argv[0]);
-  if (!hEventA)
+  base::win::ScopedHandle handle_started(
+      reinterpret_cast<HANDLE>(wcstoul(argv[0], nullptr, 16)));
+  if (!handle_started.IsValid())
     return SBOX_TEST_NOT_FOUND;
-  base::win::ScopedHandle handle_started(hEventA);
 
-  HANDLE hEventB = ::OpenEventW(SYNCHRONIZE, false, argv[1]);
-  if (!hEventB)
+  base::win::ScopedHandle handle_done(
+      reinterpret_cast<HANDLE>(wcstoul(argv[1], nullptr, 16)));
+  if (!handle_done.IsValid())
     return SBOX_TEST_NOT_FOUND;
-  base::win::ScopedHandle handle_done(hEventB);
 
   if (!::SetEvent(handle_started.Get()))
     return SBOX_TEST_FIRST_ERROR;
@@ -381,15 +377,8 @@ TEST(IntegrationTestsTest, RunJoblessChildFromInsideJob) {
 // GetPolicyInfo validation
 TEST(IntegrationTestsTest, GetPolicyDiagnosticsReflectsActiveChildren) {
   TestRunner runner;
-  // Unique event names so tests can run in parallel.
-  auto name_a = NonCollidingName();
-  auto name_done = NonCollidingName();
 
   runner.SetAsynchronous(true);
-  runner.AddRule(TargetPolicy::SUBSYS_SYNC, TargetPolicy::EVENTS_ALLOW_ANY,
-                 name_a.c_str());
-  runner.AddRule(TargetPolicy::SUBSYS_SYNC, TargetPolicy::EVENTS_ALLOW_ANY,
-                 name_done.c_str());
 
   // This helper can be reused if it has finished waiting.
   auto waiter = std::make_unique<PolicyDiagnosticsWaiter>();
@@ -404,15 +393,15 @@ TEST(IntegrationTestsTest, GetPolicyDiagnosticsReflectsActiveChildren) {
     ASSERT_EQ(policies->size(), 0U);
   }
 
-  HANDLE event_a = CreateEventW(nullptr, true, false, name_a.c_str());
-  base::win::ScopedHandle handle_started(event_a);
-  HANDLE event_done = CreateEventW(nullptr, true, false, name_done.c_str());
-  base::win::ScopedHandle handle_done(event_done);
+  base::win::ScopedHandle handle_started(
+      CreateEventW(nullptr, true, false, nullptr));
+  base::win::ScopedHandle handle_done(
+      CreateEventW(nullptr, true, false, nullptr));
 
-  auto cmd_line = std::wstring(L"IntegrationTestsTest_event ");
-  cmd_line += name_a;
-  cmd_line += L" ";
-  cmd_line += name_done;
+  runner.GetPolicy()->AddHandleToShare(handle_started.Get());
+  runner.GetPolicy()->AddHandleToShare(handle_done.Get());
+  auto cmd_line = base::StringPrintf(L"IntegrationTestsTest_event %p %p",
+                                     handle_started.Get(), handle_done.Get());
 
   ASSERT_EQ(SBOX_TEST_SUCCEEDED, runner.RunTest(cmd_line.c_str()));
   ASSERT_EQ(WAIT_OBJECT_0,

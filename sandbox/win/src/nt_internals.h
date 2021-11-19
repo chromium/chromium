@@ -761,12 +761,6 @@ typedef VOID(WINAPI* RtlInitUnicodeStringFunction)(IN OUT PUNICODE_STRING
 
 typedef ULONG(WINAPI* RtlNtStatusToDosErrorFunction)(NTSTATUS status);
 
-typedef enum _EVENT_TYPE {
-  NotificationEvent,
-  SynchronizationEvent
-} EVENT_TYPE,
-    *PEVENT_TYPE;
-
 typedef NTSTATUS(WINAPI* NtCreateDirectoryObjectFunction)(
     PHANDLE DirectoryHandle,
     ACCESS_MASK DesiredAccess,

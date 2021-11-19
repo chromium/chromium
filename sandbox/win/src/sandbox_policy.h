@@ -30,7 +30,6 @@ class TargetPolicy {
     SUBSYS_NAMED_PIPES,      // Creation of named pipes.
     SUBSYS_PROCESS,          // Creation of child processes.
     SUBSYS_REGISTRY,         // Creation and opening of registry keys.
-    SUBSYS_SYNC,             // Creation of named sync objects.
     SUBSYS_WIN32K_LOCKDOWN,  // Win32K Lockdown related policy.
     SUBSYS_SIGNED_BINARY,    // Signed binary policy.
     SUBSYS_SOCKET            // Socket brokering policy.
@@ -53,15 +52,13 @@ class TargetPolicy {
                            // access on the returned handles.
                            // This flag can be used only when the main token of
                            // the sandboxed application is at least INTERACTIVE.
-    EVENTS_ALLOW_ANY,      // Allows the creation of an event with full access.
-    EVENTS_ALLOW_READONLY,  // Allows opening an even with synchronize access.
-    REG_ALLOW_READONLY,     // Allows readonly access to a registry key.
-    REG_ALLOW_ANY,          // Allows read and write access to a registry key.
-    FAKE_USER_GDI_INIT,     // Fakes user32 and gdi32 initialization. This can
-                            // be used to allow the DLLs to load and initialize
-                            // even if the process cannot access that subsystem.
-    SIGNED_ALLOW_LOAD,      // Allows loading the module when CIG is enabled.
-    SOCKET_ALLOW_BROKER     // Allows brokering of sockets.
+    REG_ALLOW_READONLY,    // Allows readonly access to a registry key.
+    REG_ALLOW_ANY,         // Allows read and write access to a registry key.
+    FAKE_USER_GDI_INIT,    // Fakes user32 and gdi32 initialization. This can
+                           // be used to allow the DLLs to load and initialize
+                           // even if the process cannot access that subsystem.
+    SIGNED_ALLOW_LOAD,     // Allows loading the module when CIG is enabled.
+    SOCKET_ALLOW_BROKER    // Allows brokering of sockets.
   };
 
   // Increments the reference count of this object. The reference count must

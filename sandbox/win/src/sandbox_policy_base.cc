@@ -33,7 +33,6 @@
 #include "sandbox/win/src/sandbox_utils.h"
 #include "sandbox/win/src/security_capabilities.h"
 #include "sandbox/win/src/signed_policy.h"
-#include "sandbox/win/src/sync_policy.h"
 #include "sandbox/win/src/target_process.h"
 #include "sandbox/win/src/top_level_dispatcher.h"
 #include "sandbox/win/src/window.h"
@@ -710,13 +709,6 @@ ResultCode PolicyBase::AddRuleInternal(SubSystem subsystem,
         file_system_init_ = true;
       }
       if (!FileSystemPolicy::GenerateRules(pattern, semantics, policy_maker_)) {
-        NOTREACHED();
-        return SBOX_ERROR_BAD_PARAMS;
-      }
-      break;
-    }
-    case SUBSYS_SYNC: {
-      if (!SyncPolicy::GenerateRules(pattern, semantics, policy_maker_)) {
         NOTREACHED();
         return SBOX_ERROR_BAD_PARAMS;
       }

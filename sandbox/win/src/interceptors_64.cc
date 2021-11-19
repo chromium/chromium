@@ -14,7 +14,6 @@
 #include "sandbox/win/src/sandbox_nt_types.h"
 #include "sandbox/win/src/sandbox_types.h"
 #include "sandbox/win/src/signed_interception.h"
-#include "sandbox/win/src/sync_interception.h"
 #include "sandbox/win/src/target_interceptions.h"
 
 namespace sandbox {
@@ -305,30 +304,6 @@ TargetNtOpenKeyEx64(PHANDLE key,
       reinterpret_cast<NtOpenKeyExFunction>(g_originals[OPEN_KEY_EX_ID]);
   return TargetNtOpenKeyEx(orig_fn, key, desired_access, object_attributes,
                            open_options);
-}
-
-// -----------------------------------------------------------------------
-
-SANDBOX_INTERCEPT NTSTATUS WINAPI
-TargetNtCreateEvent64(PHANDLE event_handle,
-                      ACCESS_MASK desired_access,
-                      POBJECT_ATTRIBUTES object_attributes,
-                      EVENT_TYPE event_type,
-                      BOOLEAN initial_state) {
-  NtCreateEventFunction orig_fn =
-      reinterpret_cast<NtCreateEventFunction>(g_originals[CREATE_EVENT_ID]);
-  return TargetNtCreateEvent(orig_fn, event_handle, desired_access,
-                             object_attributes, event_type, initial_state);
-}
-
-SANDBOX_INTERCEPT NTSTATUS WINAPI
-TargetNtOpenEvent64(PHANDLE event_handle,
-                    ACCESS_MASK desired_access,
-                    POBJECT_ATTRIBUTES object_attributes) {
-  NtOpenEventFunction orig_fn =
-      reinterpret_cast<NtOpenEventFunction>(g_originals[OPEN_EVENT_ID]);
-  return TargetNtOpenEvent(orig_fn, event_handle, desired_access,
-                           object_attributes);
 }
 
 // -----------------------------------------------------------------------

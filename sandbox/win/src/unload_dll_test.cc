@@ -32,13 +32,17 @@ SBOX_TESTS_COMMAND int UseOneDLL(int argc, wchar_t** argv) {
   return rv;
 }
 
-// Opens an event passed as the first parameter of argv.
-SBOX_TESTS_COMMAND int SimpleOpenEvent(int argc, wchar_t** argv) {
+// Opens an HKLM registry key passed as the first parameter of argv.
+SBOX_TESTS_COMMAND int SimpleOpenKey(int argc, wchar_t** argv) {
   if (argc != 1)
     return SBOX_TEST_FAILED_TO_EXECUTE_COMMAND;
-
-  base::win::ScopedHandle event_open(::OpenEvent(SYNCHRONIZE, false, argv[0]));
-  return event_open.Get() ? SBOX_TEST_SUCCEEDED : SBOX_TEST_FAILED;
+  HKEY handle;
+  if (::RegOpenKeyEx(HKEY_LOCAL_MACHINE, argv[0], 0, KEY_ENUMERATE_SUB_KEYS,
+                     &handle)) {
+    return SBOX_TEST_FAILED;
+  }
+  ::CloseHandle(handle);
+  return SBOX_TEST_SUCCEEDED;
 }
 
 // Fails on Windows ARM64: https://crbug.com/905526
@@ -51,10 +55,11 @@ TEST(UnloadDllTest, MAYBE_BaselineAvicapDll) {
   TestRunner runner;
   runner.SetTestState(BEFORE_REVERT);
   runner.SetTimeout(2000);
-  // Add a sync rule, because that ensures that the interception agent has
+  // Add a registry rule, because that ensures that the interception agent has
   // more than one item in its internal table.
-  EXPECT_TRUE(runner.AddRule(TargetPolicy::SUBSYS_SYNC,
-                             TargetPolicy::EVENTS_ALLOW_ANY, L"t0001"));
+  EXPECT_TRUE(runner.AddRule(TargetPolicy::SUBSYS_REGISTRY,
+                             TargetPolicy::REG_ALLOW_ANY,
+                             L"HKEY_LOCAL_MACHINE\\Software\\Microsoft"));
 
   // Note for the puzzled: avicap32.dll is a 64-bit dll in 64-bit versions of
   // windows so this test and the others just work.
@@ -79,22 +84,21 @@ TEST(UnloadDllTest, UnloadAviCapDllWithPatching) {
   sandbox::TargetPolicy* policy = runner.GetPolicy();
   policy->AddDllToUnload(L"avicap32.dll");
 
-  base::win::ScopedHandle handle1(
-      ::CreateEvent(nullptr, false, false, L"tst0001"));
-
   // Add a couple of rules that ensures that the interception agent add EAT
   // patching on the client which makes sure that the unload dll record does
   // not interact badly with them.
   EXPECT_TRUE(runner.AddRule(TargetPolicy::SUBSYS_REGISTRY,
+                             TargetPolicy::REG_ALLOW_READONLY,
+                             L"HKEY_LOCAL_MACHINE"));
+  EXPECT_TRUE(runner.AddRule(TargetPolicy::SUBSYS_REGISTRY,
                              TargetPolicy::REG_ALLOW_ANY,
                              L"HKEY_LOCAL_MACHINE\\Software\\Microsoft"));
-  EXPECT_TRUE(runner.AddRule(TargetPolicy::SUBSYS_SYNC,
-                             TargetPolicy::EVENTS_ALLOW_ANY, L"tst0001"));
 
   EXPECT_EQ(SBOX_TEST_FAILED, runner.RunTest(L"UseOneDLL L avicap32.dll"));
 
   runner.SetTestState(AFTER_REVERT);
-  EXPECT_EQ(SBOX_TEST_SUCCEEDED, runner.RunTest(L"SimpleOpenEvent tst0001"));
+  EXPECT_EQ(SBOX_TEST_SUCCEEDED,
+            runner.RunTest(L"SimpleOpenKey software\\microsoft"));
 }
 
 }  // namespace sandbox

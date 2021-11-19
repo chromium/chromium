@@ -33,7 +33,6 @@
 #include "base/win/windows_version.h"
 #include "sandbox/win/src/app_container_base.h"
 #include "sandbox/win/src/sandbox_factory.h"
-#include "sandbox/win/src/sync_policy_test.h"
 #include "sandbox/win/src/win_utils.h"
 #include "sandbox/win/tests/common/controller.h"
 #include "sandbox/win/tests/common/test_utils.h"
@@ -475,6 +474,25 @@ HANDLE UDPEchoServer::GetProcessSignalEvent() {
 
 }  // namespace
 
+SBOX_TESTS_COMMAND int AppContainerEvent_Open(int argc, wchar_t** argv) {
+  if (argc != 1)
+    return SBOX_TEST_FAILED_TO_EXECUTE_COMMAND;
+
+  base::win::ScopedHandle event_open(
+      ::OpenEvent(EVENT_ALL_ACCESS, false, argv[0]));
+  DWORD error_open = ::GetLastError();
+
+  if (event_open.IsValid())
+    return SBOX_TEST_SUCCEEDED;
+
+  if (ERROR_ACCESS_DENIED == error_open || ERROR_BAD_PATHNAME == error_open ||
+      ERROR_FILE_NOT_FOUND == error_open) {
+    return SBOX_TEST_DENIED;
+  }
+
+  return SBOX_TEST_FAILED;
+}
+
 TEST_F(AppContainerTest, DenyOpenEventForLowBox) {
   if (base::win::GetVersion() < base::win::Version::WIN8)
     return;
@@ -484,7 +502,7 @@ TEST_F(AppContainerTest, DenyOpenEventForLowBox) {
   EXPECT_EQ(SBOX_ALL_OK, runner.GetPolicy()->SetLowBox(kAppContainerSid));
   // Run test once, this ensures the app container directory exists, we
   // ignore the result.
-  runner.RunTest(L"Event_Open f test");
+  runner.RunTest(L"AppContainerEvent_Open test");
   std::wstring event_name = L"AppContainerNamedObjects\\";
   event_name += kAppContainerSid;
   event_name += L"\\test";
@@ -493,7 +511,7 @@ TEST_F(AppContainerTest, DenyOpenEventForLowBox) {
       ::CreateEvent(nullptr, false, false, event_name.c_str()));
   ASSERT_TRUE(event.IsValid());
 
-  EXPECT_EQ(SBOX_TEST_DENIED, runner.RunTest(L"Event_Open f test"));
+  EXPECT_EQ(SBOX_TEST_DENIED, runner.RunTest(L"AppContainerEvent_Open test"));
 }
 
 TEST_F(AppContainerTest, CheckIncompatibleOptions) {

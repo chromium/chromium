@@ -208,22 +208,6 @@ TargetNtOpenKeyEx64(PHANDLE key,
                     ULONG open_options);
 
 // -----------------------------------------------------------------------
-// Interceptors handled by the sync dispatcher.
-
-// Interception of NtCreateEvent/NtOpenEvent on the child process.
-SANDBOX_INTERCEPT NTSTATUS WINAPI
-TargetNtCreateEvent64(PHANDLE event_handle,
-                      ACCESS_MASK desired_access,
-                      POBJECT_ATTRIBUTES object_attributes,
-                      EVENT_TYPE event_type,
-                      BOOLEAN initial_state);
-
-SANDBOX_INTERCEPT NTSTATUS WINAPI
-TargetNtOpenEvent64(PHANDLE event_handle,
-                    ACCESS_MASK desired_access,
-                    POBJECT_ATTRIBUTES object_attributes);
-
-// -----------------------------------------------------------------------
 // Interceptors handled by the process mitigations win32k lockdown code.
 
 // Interceptor for the GdiDllInitialize function.
