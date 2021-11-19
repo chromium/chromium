@@ -28,6 +28,7 @@
 
 #if defined(OS_MAC)
 #include "base/mac/mac_util.h"
+#include "chrome/browser/media/webrtc/system_media_capture_permissions_mac.h"
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -91,12 +92,11 @@ void RunGetDisplayMedia(content::WebContents* tab,
       &result));
 
 #if defined(OS_MAC)
-  // Starting from macOS 10.15, screen capture requires system permissions
-  // that are disabled by default. The permission is reported as granted
-  // if the fake UI is used, and is unnecessary if we're not capturing the
-  // screen.
-  expect_success =
-      base::mac::IsAtMostOS10_14() || is_fake_ui || !is_capturing_screen;
+  if (!is_fake_ui && is_capturing_screen &&
+      system_media_permissions::CheckSystemScreenCapturePermission() !=
+          system_media_permissions::SystemPermission::kAllowed) {
+    expect_success = false;
+  }
 #endif
 
   EXPECT_EQ(result, expect_success ? "capture-success" : "capture-failure");
@@ -173,7 +173,7 @@ class WebRtcScreenCaptureBrowserTestWithPicker
 };
 
 // TODO(1170479): Real desktop capture is flaky on below platforms.
-#if defined(OS_WIN) || defined(OS_MAC)
+#if defined(OS_WIN)
 #define MAYBE_ScreenCaptureVideo DISABLED_ScreenCaptureVideo
 #else
 #define MAYBE_ScreenCaptureVideo ScreenCaptureVideo
@@ -231,7 +231,7 @@ IN_PROC_BROWSER_TEST_P(WebRtcScreenCaptureBrowserTestWithPicker,
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 // TODO(1170479): Real desktop capture is flaky on below platforms.
-#if defined(OS_WIN) || defined(OS_MAC)
+#if defined(OS_WIN)
 #define MAYBE_ScreenCaptureVideoAndAudio DISABLED_ScreenCaptureVideoAndAudio
 // On linux debug bots, it's flaky as well.
 #elif ((defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)) && !defined(NDEBUG))
