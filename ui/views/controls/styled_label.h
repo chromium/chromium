@@ -21,6 +21,7 @@
 #include "ui/gfx/range/range.h"
 #include "ui/gfx/text_constants.h"
 #include "ui/views/controls/link.h"
+#include "ui/views/metadata/view_factory.h"
 #include "ui/views/style/typography.h"
 #include "ui/views/view.h"
 
@@ -253,6 +254,21 @@ class VIEWS_EXPORT StyledLabel : public View {
   gfx::HorizontalAlignment horizontal_alignment_ = gfx::ALIGN_LEFT;
 };
 
+BEGIN_VIEW_BUILDER(VIEWS_EXPORT, StyledLabel, View)
+VIEW_BUILDER_PROPERTY(const std::u16string&, Text)
+VIEW_BUILDER_PROPERTY(int, TextContext)
+VIEW_BUILDER_PROPERTY(int, DefaultTextStyle)
+VIEW_BUILDER_PROPERTY(int, LineHeight)
+VIEW_BUILDER_PROPERTY(const absl::optional<SkColor>&,
+                      DisplayedOnBackgroundColor)
+VIEW_BUILDER_PROPERTY(bool, AutoColorReadabilityEnabled)
+VIEW_BUILDER_PROPERTY(gfx::HorizontalAlignment, HorizontalAlignment)
+VIEW_BUILDER_METHOD(SizeToFit, int)
+VIEW_BUILDER_METHOD(AddStyleRange, gfx::Range, StyledLabel::RangeStyleInfo)
+END_VIEW_BUILDER
+
 }  // namespace views
+
+DEFINE_VIEW_BUILDER(VIEWS_EXPORT, views::StyledLabel)
 
 #endif  // UI_VIEWS_CONTROLS_STYLED_LABEL_H_

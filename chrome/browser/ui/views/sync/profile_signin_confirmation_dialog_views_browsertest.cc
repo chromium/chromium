@@ -6,6 +6,7 @@
 
 #include "base/command_line.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
@@ -13,6 +14,7 @@
 #include "chrome/browser/ui/tab_dialogs.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "content/public/test/browser_test.h"
 
@@ -54,7 +56,23 @@ class ProfileSigninConfirmationDialogTest : public DialogBrowserTest {
   }
 };
 
-// Test that calls ShowUi("true").
+class WorkProfileSigninConfirmationDialogTest
+    : public ProfileSigninConfirmationDialogTest {
+ public:
+  WorkProfileSigninConfirmationDialogTest() {
+    features_.InitAndEnableFeature(features::kSyncConfirmationUpdatedText);
+  }
+
+ private:
+  base::test::ScopedFeatureList features_;
+};
+
+// Test that calls ShowUi("default").
 IN_PROC_BROWSER_TEST_F(ProfileSigninConfirmationDialogTest, InvokeUi_default) {
+  ShowAndVerifyUi();
+}
+
+IN_PROC_BROWSER_TEST_F(WorkProfileSigninConfirmationDialogTest,
+                       InvokeUi_default) {
   ShowAndVerifyUi();
 }
