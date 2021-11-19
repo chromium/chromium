@@ -57,6 +57,7 @@ include_rules = [
   "+chromeos/components/feature_usage",
   "+chromeos/components/multidevice",
   "+chromeos/components/proximity_auth/public",
+  "+chromeos/components/quick_answers",
   "+chromeos/components/sensors",
   # crosapi is an API to support lacros.
   "+chromeos/crosapi",

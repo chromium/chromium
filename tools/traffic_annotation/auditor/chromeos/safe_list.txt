@@ -41,7 +41,7 @@ all,ash/quick_pair/repository/fast_pair/device_metadata_fetcher.cc
 all,chrome/browser/ash/wallpaper_handlers/wallpaper_handlers.cc
 all,chrome/browser/search/background/ntp_background_service.cc
 all,chrome/browser/ash/net/network_diagnostics/tls_prober.cc
-all,ash/components/quick_answers/result_loader.cc
+all,chromeos/components/quick_answers/result_loader.cc
 all,chrome/browser/apps/app_service/webapk/webapk_install_task.cc
 all,chrome/browser/ash/login/saml/password_sync_token_fetcher.cc
 all,chrome/browser/ash/login/screens/recommend_apps/recommend_apps_fetcher_impl.cc
