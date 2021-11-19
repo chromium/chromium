@@ -82,7 +82,10 @@ class GetCiBuildersUnittest(fake_filesystem_unittest.TestCase):
     self.assertEqual(
         gpu_builders,
         set([
-            'Android Release (Nexus 5X)', 'ANGLE GPU Android Release (Nexus 5X)'
+            'Android Release (Nexus 5X)',
+            'ANGLE GPU Android Release (Nexus 5X)',
+            'GPU Linux Builder',
+            'GPU FYI Linux Builder',
         ]))
 
   def testFilterBySuite(self):

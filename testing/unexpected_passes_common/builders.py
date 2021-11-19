@@ -64,8 +64,8 @@ class Builders(object):
         continue
 
       for builder, test_map in buildbot_json.items():
-        # Remove compile-only builders and the auto-generated comments.
-        if 'Builder' in builder or 'AAAA' in builder:
+        # Remove the auto-generated comments.
+        if 'AAAA' in builder:
           continue
         # Filter out any builders that don't run the suite in question.
         if not self._BuilderRunsTestOfInterest(test_map, suite):
