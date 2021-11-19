@@ -2755,11 +2755,12 @@ void MediaStreamManager::OnStreamStarted(const std::string& label) {
       RequestTypeToString(request->request_type())));
 
   // Show "Change source" button on notification bar only for tab sharing by
-  // desktopCapture API.
+  // desktopCapture API or getDisplayMedia.
   bool enable_change_source = std::any_of(
       request->devices.cbegin(), request->devices.cend(), [](auto device) {
         DesktopMediaID media_id = DesktopMediaID::Parse(device.id);
-        return device.type == MediaStreamType::GUM_DESKTOP_VIDEO_CAPTURE &&
+        return (device.type == MediaStreamType::GUM_DESKTOP_VIDEO_CAPTURE ||
+                device.type == MediaStreamType::DISPLAY_VIDEO_CAPTURE) &&
                media_id.type == DesktopMediaID::TYPE_WEB_CONTENTS;
       });
 

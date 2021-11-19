@@ -16,7 +16,6 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/bad_message.h"
-#include "chrome/browser/media/webrtc/capture_policy_utils.h"
 #include "chrome/browser/media/webrtc/desktop_capture_devices_util.h"
 #include "chrome/browser/media/webrtc/desktop_media_picker_factory_impl.h"
 #include "chrome/browser/media/webrtc/native_desktop_media_list.h"
@@ -153,6 +152,17 @@ void DisplayMediaAccessHandler::HandleRequest(
   }
 #endif  // defined(OS_MAC)
 
+  if (request.request_type == blink::MEDIA_DEVICE_UPDATE) {
+    DCHECK(!request.requested_video_device_id.empty());
+    // The share-this-tab-instead button is not shown when the screen capture is
+    // initiated with preferCurrentTab: true, so it should not be possible to
+    // reach HandleRequest in that case.
+    DCHECK(request.video_type !=
+           blink::mojom::MediaStreamType::DISPLAY_VIDEO_CAPTURE_THIS_TAB);
+    ProcessChangeSourceRequest(web_contents, request, std::move(callback));
+    return;
+  }
+
   if (request.video_type ==
           blink::mojom::MediaStreamType::DISPLAY_VIDEO_CAPTURE_THIS_TAB ||
       request.video_type ==
@@ -209,6 +219,24 @@ void DisplayMediaAccessHandler::HandleRequest(
     ProcessQueuedAccessRequest(queue, web_contents);
 }
 
+void DisplayMediaAccessHandler::ProcessChangeSourceRequest(
+    content::WebContents* web_contents,
+    const content::MediaStreamRequest& request,
+    content::MediaResponseCallback callback) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  // Ensure we are observing the deletion of |web_contents|.
+  web_contents_collection_.StartObserving(web_contents);
+
+  RequestsQueue& queue = pending_requests_[web_contents];
+  queue.push_back(std::make_unique<PendingAccessRequest>(
+      /*picker=*/nullptr, request, std::move(callback)));
+  // If this is the only request then pop it. Otherwise, there is already a task
+  // scheduled to pop the next request.
+  if (queue.size() == 1)
+    ProcessQueuedAccessRequest(queue, web_contents);
+}
+
 void DisplayMediaAccessHandler::UpdateMediaRequestState(
     int render_process_id,
     int render_frame_id,
@@ -241,24 +269,64 @@ void DisplayMediaAccessHandler::ProcessQueuedAccessRequest(
 
   const PendingAccessRequest& pending_request = *queue.front();
   UpdateTrusted(pending_request.request, false /* is_trusted */);
+
   const GURL& request_origin = pending_request.request.security_origin;
   AllowedScreenCaptureLevel capture_level =
       capture_policy::GetAllowedCaptureLevel(request_origin, web_contents);
 
   // If Capture is not allowed, then reject.
   if (capture_level == AllowedScreenCaptureLevel::kDisallowed) {
-    auto it = pending_requests_.find(web_contents);
-    DCHECK(it != pending_requests_.end());
-    RequestsQueue& mutable_queue = it->second;
-    PendingAccessRequest& mutable_request = *mutable_queue.front();
-    std::move(mutable_request.callback)
-        .Run(blink::MediaStreamDevices(),
-             blink::mojom::MediaStreamRequestResult::PERMISSION_DENIED,
-             nullptr);
-    mutable_queue.pop_front();
+    RejectRequest(web_contents,
+                  blink::mojom::MediaStreamRequestResult::PERMISSION_DENIED);
     return;
   }
 
+  if (pending_request.request.request_type == blink::MEDIA_DEVICE_UPDATE) {
+    ProcessQueuedChangeSourceRequest(pending_request.request, web_contents);
+  } else {
+    ProcessQueuedPickerRequest(pending_request, web_contents, capture_level,
+                               request_origin);
+  }
+}
+
+void DisplayMediaAccessHandler::ProcessQueuedChangeSourceRequest(
+    const content::MediaStreamRequest& request,
+    content::WebContents* web_contents) {
+  DCHECK(!request.requested_video_device_id.empty());
+  content::WebContentsMediaCaptureId web_contents_id;
+  if (!content::WebContentsMediaCaptureId::Parse(
+          request.requested_video_device_id, &web_contents_id)) {
+    RejectRequest(web_contents,
+                  blink::mojom::MediaStreamRequestResult::INVALID_STATE);
+    return;
+  }
+  content::DesktopMediaID media_id(content::DesktopMediaID::TYPE_WEB_CONTENTS,
+                                   content::DesktopMediaID::kNullId,
+                                   web_contents_id);
+  media_id.audio_share =
+      request.audio_type != blink::mojom::MediaStreamType::NO_SERVICE;
+  OnDisplaySurfaceSelected(web_contents, media_id);
+}
+
+void DisplayMediaAccessHandler::RejectRequest(
+    content::WebContents* web_contents,
+    blink::mojom::MediaStreamRequestResult result) {
+  auto it = pending_requests_.find(web_contents);
+  DCHECK(it != pending_requests_.end());
+  RequestsQueue& mutable_queue = it->second;
+  PendingAccessRequest& mutable_request = *mutable_queue.front();
+  std::move(mutable_request.callback)
+      .Run(blink::MediaStreamDevices(), result, nullptr);
+  mutable_queue.pop_front();
+  if (!mutable_queue.empty())
+    ProcessQueuedAccessRequest(mutable_queue, web_contents);
+}
+
+void DisplayMediaAccessHandler::ProcessQueuedPickerRequest(
+    const DisplayMediaAccessHandler::PendingAccessRequest& pending_request,
+    content::WebContents* web_contents,
+    AllowedScreenCaptureLevel capture_level,
+    const GURL& request_origin) {
   std::vector<DesktopMediaList::Type> media_types;
   if (pending_request.request.video_type ==
       blink::mojom::MediaStreamType::DISPLAY_VIDEO_CAPTURE_THIS_TAB) {
@@ -290,7 +358,7 @@ void DisplayMediaAccessHandler::ProcessQueuedAccessRequest(
       media_types, web_contents, includable_web_contents_filter);
 
   DesktopMediaPicker::DoneCallback done_callback =
-      base::BindOnce(&DisplayMediaAccessHandler::OnPickerDialogResults,
+      base::BindOnce(&DisplayMediaAccessHandler::OnDisplaySurfaceSelected,
                      base::Unretained(this), web_contents);
   DesktopMediaPicker::Params picker_params;
   picker_params.web_contents = web_contents;
@@ -351,7 +419,7 @@ void DisplayMediaAccessHandler::FinalizeResult(
     ProcessQueuedAccessRequest(queue, web_contents);
 }
 
-void DisplayMediaAccessHandler::OnPickerDialogResults(
+void DisplayMediaAccessHandler::OnDisplaySurfaceSelected(
     content::WebContents* web_contents,
     content::DesktopMediaID media_id) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);

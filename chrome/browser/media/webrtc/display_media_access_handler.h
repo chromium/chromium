@@ -10,6 +10,7 @@
 #include "base/containers/flat_map.h"
 #include "chrome/browser/media/capture_access_handler_base.h"
 #include "chrome/browser/media/media_access_handler.h"
+#include "chrome/browser/media/webrtc/capture_policy_utils.h"
 #include "chrome/browser/media/webrtc/desktop_media_list.h"
 #include "chrome/browser/media/webrtc/desktop_media_picker.h"
 #include "chrome/browser/media/webrtc/desktop_media_picker_factory.h"
@@ -64,10 +65,27 @@ class DisplayMediaAccessHandler : public CaptureAccessHandlerBase,
       base::circular_deque<std::unique_ptr<PendingAccessRequest>>;
   using RequestsQueues = base::flat_map<content::WebContents*, RequestsQueue>;
 
+  void ProcessChangeSourceRequest(content::WebContents* web_contents,
+                                  const content::MediaStreamRequest& request,
+                                  content::MediaResponseCallback callback);
+
   // Processes one pending request. Requests are queued so that we display one
   // picker UI at a time for each content::WebContents.
   void ProcessQueuedAccessRequest(const RequestsQueue& queue,
                                   content::WebContents* web_contents);
+
+  void ProcessQueuedPickerRequest(
+      const DisplayMediaAccessHandler::PendingAccessRequest& pending_request,
+      content::WebContents* web_contents,
+      AllowedScreenCaptureLevel capture_level,
+      const GURL& request_origin);
+
+  void ProcessQueuedChangeSourceRequest(
+      const content::MediaStreamRequest& request,
+      content::WebContents* web_contents);
+
+  void RejectRequest(content::WebContents* web_contents,
+                     blink::mojom::MediaStreamRequestResult result);
 
   // Processes the first queued access request for |web_contents|
   // according to |request_result|. Calls ProcessQueuedAccessRequest if there
@@ -79,8 +97,8 @@ class DisplayMediaAccessHandler : public CaptureAccessHandlerBase,
   // Called back after the user chooses one of the possible desktop media
   // sources for the request that's currently being processed. If no |media_id|
   // is given, the request was rejected, either by the browser or by the user.
-  void OnPickerDialogResults(content::WebContents* web_contents,
-                             content::DesktopMediaID media_id);
+  void OnDisplaySurfaceSelected(content::WebContents* web_contents,
+                                content::DesktopMediaID media_id);
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // Called back after checking Data Leak Prevention (DLP) restrictions.

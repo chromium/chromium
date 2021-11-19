@@ -16,8 +16,13 @@
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
+#include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/infobars/content/content_infobar_manager.h"
+#include "components/infobars/core/confirm_infobar_delegate.h"
+#include "components/infobars/core/infobar.h"
 #include "components/prefs/pref_service.h"
+#include "components/url_formatter/elide_url.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
@@ -25,6 +30,7 @@
 #include "media/base/media_switches.h"
 #include "net/base/filename_util.h"
 #include "third_party/blink/public/common/features.h"
+#include "ui/base/l10n/l10n_util.h"
 
 #if defined(OS_MAC)
 #include "base/mac/mac_util.h"
@@ -41,6 +47,15 @@ namespace {
 static const char kMainHtmlPage[] = "/webrtc/webrtc_getdisplaymedia_test.html";
 static const char kMainHtmlFileName[] = "webrtc_getdisplaymedia_test.html";
 static const char kSameOriginRenamedTitle[] = "Renamed Same Origin Tab";
+// TODO(https://crbug.com/1215089): Enable on Lacros.
+#if !BUILDFLAG(IS_CHROMEOS_LACROS)
+// The captured tab is identified by its title.
+static const char kCapturedTabTitle[] = "totally-unique-captured-page-title";
+static const char kCapturedPageMain[] = "/webrtc/captured_page_main.html";
+static const std::u16string kShareThisTabInsteadMessage =
+    u"Share this tab instead";
+static const std::u16string kViewTabMessagePrefix = u"View tab:";
+#endif
 
 enum class DisplaySurfaceType { kTab, kWindow, kScreen };
 
@@ -118,6 +133,30 @@ GURL GetFileURL(const char* filename) {
   CHECK(base::PathExists(path));
   return net::FilePathToFileURL(path);
 }
+
+// TODO(https://crbug.com/1215089): Enable on Lacros.
+#if !BUILDFLAG(IS_CHROMEOS_LACROS)
+infobars::ContentInfoBarManager* GetInfoBarManager(
+    content::WebContents* web_contents) {
+  return infobars::ContentInfoBarManager::FromWebContents(web_contents);
+}
+
+ConfirmInfoBarDelegate* GetDelegate(content::WebContents* web_contents) {
+  return static_cast<ConfirmInfoBarDelegate*>(
+      GetInfoBarManager(web_contents)->infobar_at(0)->delegate());
+}
+
+bool HasSecondaryButton(content::WebContents* web_contents) {
+  return GetDelegate(web_contents)->GetButtons() &
+         ConfirmInfoBarDelegate::InfoBarButton::BUTTON_CANCEL;
+}
+
+std::u16string GetSecondaryButtonLabel(content::WebContents* web_contents) {
+  DCHECK(HasSecondaryButton(web_contents));  // Test error otherwise.
+  return GetDelegate(web_contents)
+      ->GetButtonLabel(ConfirmInfoBarDelegate::InfoBarButton::BUTTON_CANCEL);
+}
+#endif
 
 }  // namespace
 
@@ -783,3 +822,75 @@ IN_PROC_BROWSER_TEST_P(GetDisplayMediaVideoTrackBrowserTest, RunCombinedTest) {
     EXPECT_EQ(GetAudioTrackType(), "MediaStreamTrack");
   }
 }
+
+// TODO(https://crbug.com/1215089): Enable this test suite on Lacros.
+#if !BUILDFLAG(IS_CHROMEOS_LACROS)
+class GetDisplayMediaChangeSourceBrowserTest : public WebRtcTestBase {
+ public:
+  void SetUpInProcessBrowserTestFixture() override {
+    WebRtcTestBase::SetUpInProcessBrowserTestFixture();
+
+    DetectErrorsInJavaScript();
+
+    base::FilePath test_dir;
+    ASSERT_TRUE(base::PathService::Get(chrome::DIR_TEST_DATA, &test_dir));
+  }
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    command_line->AppendSwitch(
+        switches::kEnableExperimentalWebPlatformFeatures);
+    command_line->AppendSwitchASCII(
+        switches::kAutoSelectTabCaptureSourceByTitle, kCapturedTabTitle);
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(GetDisplayMediaChangeSourceBrowserTest, ChangeSource) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  content::WebContents* captured_tab = OpenTestPageInNewTab(kCapturedPageMain);
+  content::WebContents* other_tab = OpenTestPageInNewTab(kMainHtmlPage);
+  content::WebContents* capturing_tab = OpenTestPageInNewTab(kMainHtmlPage);
+
+  RunGetDisplayMedia(capturing_tab, "{video: true}", /*is_fake_ui=*/false,
+                     /*expect_success=*/true,
+                     /*is_capturing_screen=*/false);
+
+  EXPECT_TRUE(captured_tab->IsBeingCaptured());
+  EXPECT_FALSE(other_tab->IsBeingCaptured());
+  EXPECT_FALSE(capturing_tab->IsBeingCaptured());
+  EXPECT_EQ(GetSecondaryButtonLabel(captured_tab),
+            l10n_util::GetStringFUTF16(
+                IDS_TAB_SHARING_INFOBAR_SWITCH_TO_BUTTON,
+                url_formatter::FormatOriginForSecurityDisplay(
+                    captured_tab->GetMainFrame()->GetLastCommittedOrigin(),
+                    url_formatter::SchemeDisplay::OMIT_HTTP_AND_HTTPS)));
+  EXPECT_EQ(GetSecondaryButtonLabel(other_tab), kShareThisTabInsteadMessage);
+  EXPECT_EQ(GetSecondaryButtonLabel(capturing_tab),
+            l10n_util::GetStringFUTF16(
+                IDS_TAB_SHARING_INFOBAR_SWITCH_TO_BUTTON,
+                url_formatter::FormatOriginForSecurityDisplay(
+                    capturing_tab->GetMainFrame()->GetLastCommittedOrigin(),
+                    url_formatter::SchemeDisplay::OMIT_HTTP_AND_HTTPS)));
+
+  // Click the secondary button, i.e., the "Share this tab instead" button
+  GetDelegate(other_tab)->Cancel();
+
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_FALSE(captured_tab->IsBeingCaptured());
+  EXPECT_TRUE(other_tab->IsBeingCaptured());
+  EXPECT_FALSE(capturing_tab->IsBeingCaptured());
+  EXPECT_EQ(GetSecondaryButtonLabel(captured_tab), kShareThisTabInsteadMessage);
+  EXPECT_EQ(GetSecondaryButtonLabel(other_tab),
+            l10n_util::GetStringFUTF16(
+                IDS_TAB_SHARING_INFOBAR_SWITCH_TO_BUTTON,
+                url_formatter::FormatOriginForSecurityDisplay(
+                    other_tab->GetMainFrame()->GetLastCommittedOrigin(),
+                    url_formatter::SchemeDisplay::OMIT_HTTP_AND_HTTPS)));
+  EXPECT_EQ(GetSecondaryButtonLabel(capturing_tab),
+            l10n_util::GetStringFUTF16(
+                IDS_TAB_SHARING_INFOBAR_SWITCH_TO_BUTTON,
+                url_formatter::FormatOriginForSecurityDisplay(
+                    capturing_tab->GetMainFrame()->GetLastCommittedOrigin(),
+                    url_formatter::SchemeDisplay::OMIT_HTTP_AND_HTTPS)));
+}
+#endif
