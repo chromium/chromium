@@ -184,7 +184,34 @@ TEST_F(BluetoothSocketTest, TestClose) {
   EXPECT_TRUE(bluetooth_socket_->Close().Ok());
 }
 
-TEST_F(BluetoothSocketTest, TestDestroy) {
+TEST_F(BluetoothSocketTest, Close_CalledFromMultipleThreads) {
+  base::RunLoop run_loop;
+  const size_t kNumThreads = 3;
+
+  // Quit the run loop after Close() returns on all threads.
+  size_t num_close_calls = 0;
+  auto quit_callback =
+      base::BindLambdaForTesting([&num_close_calls, &run_loop] {
+        ++num_close_calls;
+        if (num_close_calls == kNumThreads)
+          run_loop.Quit();
+      });
+
+  // Call Close() from different threads simultaneously to ensure the socket is
+  // shut down gracefully.
+  for (size_t thread = 0; thread < kNumThreads; ++thread) {
+    base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()})
+        ->PostTaskAndReply(
+            FROM_HERE, base::BindLambdaForTesting([this] {
+              base::ScopedAllowBaseSyncPrimitivesForTesting allow;
+              EXPECT_EQ(Exception::kSuccess, bluetooth_socket_->Close().value);
+            }),
+            quit_callback);
+  }
+  run_loop.Run();
+}
+
+TEST_F(BluetoothSocketTest, Destroy) {
   ASSERT_TRUE(fake_socket_);
 
   base::RunLoop run_loop;
