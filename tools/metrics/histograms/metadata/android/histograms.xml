@@ -2874,7 +2874,10 @@ chromium-metrics-reviews@google.com.
   <summary>
     The time in a cold start between the triggerpoint for a startup tab being
     preloaded and first navigation start, recorded in the case where a startup
-    tab preload is determined {LoadDecision} viable.
+    tab preload is determined {LoadDecision} viable. In the case where the
+    ElideTabPreloadAtStartup feature is enabled, this metric will be segmented
+    to reflect the state that would have resulted if tab preloading was not
+    disabled by the feature.
   </summary>
   <token key="LoadDecision">
     <variant name="Load" summary="to be"/>
@@ -2891,7 +2894,9 @@ chromium-metrics-reviews@google.com.
     The time in a cold start between the triggerpoint for a startup tab being
     preloaded and Android.Startup.Cold.TimeToFirstVisibleContent being recorded,
     recorded in the case where a startup tab preload is determined
-    {LoadAndMatchResult}.
+    {LoadAndMatchResult}. In the case where the ElideTabPreloadAtStartup feature
+    is enabled, this metric will be segmented to reflect the state that would
+    have resulted if tab preloading was not disabled by the feature.
   </summary>
   <token key="LoadAndMatchResult">
     <variant name="LoadAndMatch"
