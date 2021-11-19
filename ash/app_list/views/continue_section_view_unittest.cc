@@ -192,6 +192,7 @@ TEST_F(ContinueSectionViewTest, ClickOpensSearchResult) {
 
   EXPECT_EQ(continue_task_view->result()->id(), "id1");
 
+  GetContinueSectionView()->GetWidget()->LayoutRootViewIfNecessary();
   GetEventGenerator()->MoveMouseTo(
       continue_task_view->GetBoundsInScreen().CenterPoint());
   GetEventGenerator()->ClickLeftButton();
@@ -214,6 +215,7 @@ TEST_F(ContinueSectionViewTest, TapOpensSearchResult) {
 
   EXPECT_EQ(continue_task_view->result()->id(), "id1");
 
+  GetContinueSectionView()->GetWidget()->LayoutRootViewIfNecessary();
   GetEventGenerator()->GestureTapAt(
       continue_task_view->GetBoundsInScreen().CenterPoint());
 
@@ -259,6 +261,7 @@ TEST_F(ContinueSectionViewTest, RightClickOpensContextMenu) {
   ContinueTaskView* continue_task_view = GetResultViewAt(0);
   EXPECT_EQ(continue_task_view->result()->id(), "id1");
 
+  GetContinueSectionView()->GetWidget()->LayoutRootViewIfNecessary();
   GetEventGenerator()->MoveMouseTo(
       continue_task_view->GetBoundsInScreen().CenterPoint());
   GetEventGenerator()->ClickRightButton();
@@ -277,6 +280,7 @@ TEST_F(ContinueSectionViewTest, OpenWithContextMenuOption) {
   ContinueTaskView* continue_task_view = GetResultViewAt(0);
   EXPECT_EQ(continue_task_view->result()->id(), "id1");
 
+  GetContinueSectionView()->GetWidget()->LayoutRootViewIfNecessary();
   GetEventGenerator()->MoveMouseTo(
       continue_task_view->GetBoundsInScreen().CenterPoint());
   GetEventGenerator()->ClickRightButton();
@@ -301,6 +305,7 @@ TEST_F(ContinueSectionViewTest, ResultRemovedContextMenuCloses) {
   ContinueTaskView* continue_task_view = GetResultViewAt(3);
   EXPECT_EQ(continue_task_view->result()->id(), "id4");
 
+  GetContinueSectionView()->GetWidget()->LayoutRootViewIfNecessary();
   GetEventGenerator()->MoveMouseTo(
       continue_task_view->GetBoundsInScreen().CenterPoint());
   GetEventGenerator()->ClickRightButton();
@@ -314,6 +319,7 @@ TEST_F(ContinueSectionViewTest, ResultRemovedContextMenuCloses) {
   // Click on another result and verify it activates the item to confirm the
   // event is not consumed by a context menu.
   EXPECT_EQ(GetResultViewAt(0)->result()->id(), "id1");
+  GetContinueSectionView()->GetWidget()->LayoutRootViewIfNecessary();
   GetEventGenerator()->MoveMouseTo(
       GetResultViewAt(0)->GetBoundsInScreen().CenterPoint());
   GetEventGenerator()->ClickLeftButton();
