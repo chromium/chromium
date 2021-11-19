@@ -3181,6 +3181,18 @@
     },
   },
   'webgl2_conformance_metal_passthrough_tests': {
+    'modifications': {
+      'Mac FYI ASAN (Intel)': {
+        'args': [
+          '--is-asan',
+        ]
+      },
+      'Mac FYI Retina ASAN (AMD)': {
+        'args': [
+          '--is-asan',
+        ]
+      },
+    },
     'remove_from': [
       # crbug.com/1270755: failing entire shards on Intel ASAN bot.
       'Mac FYI ASAN (Intel)',
@@ -3224,6 +3236,18 @@
     },
   },
   'webgl_conformance_gl_passthrough_tests': {
+    'modifications': {
+      'Mac FYI ASAN (Intel)': {
+        'args': [
+          '--is-asan',
+        ]
+      },
+      'Mac FYI Retina ASAN (AMD)': {
+        'args': [
+          '--is-asan',
+        ]
+      },
+    },
     'remove_from': [
       # crbug.com/555545 and crbug.com/649824:
       # Disable webgl_conformance_gl_tests on some Win/AMD cards.
@@ -3232,6 +3256,18 @@
     ],
   },
   'webgl_conformance_metal_passthrough_tests': {
+    'modifications': {
+      'Mac FYI ASAN (Intel)': {
+        'args': [
+          '--is-asan',
+        ]
+      },
+      'Mac FYI Retina ASAN (AMD)': {
+        'args': [
+          '--is-asan',
+        ]
+      },
+    },
     'remove_from': [
       # crbug.com/1270755: failing entire shards on Intel ASAN bot.
       'Mac FYI ASAN (Intel)',
@@ -3240,6 +3276,18 @@
     ],
   },
   'webgl_conformance_tests': {
+    'modifications': {
+      'Mac FYI ASAN (Intel)': {
+        'args': [
+          '--is-asan',
+        ]
+      },
+      'Mac FYI Retina ASAN (AMD)': {
+        'args': [
+          '--is-asan',
+        ]
+      },
+    },
     'remove_from': [
       # Too slow on this configuration, which is severely hardware
       # constrained. crbug.com/950690
