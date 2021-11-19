@@ -4309,6 +4309,26 @@ Here are some things you can try to get started.
       <message name="IDS_ENTER_PIP_A11Y_NOTIFICATION" is_accessibility_with_no_ui="true" desc="Accessibility text read by chromevox when a window starts picture-in-picture mode.">
         Picture-in-picture started, Alt+Shift+V to focus
       </message>
+
+      <!-- Shelf Party -->
+      <message name="IDS_ASH_STATUS_TRAY_SHELF_PARTY_LABEL" desc="The text shown in the tray menu button that toggles Shelf Party mode.">
+        Shelf Party
+      </message>
+      <message name="IDS_ASH_STATUS_TRAY_SHELF_PARTY_TOGGLE_TOOLTIP" desc="The tooltip text used for the tray menu button that toggles Shelf Party mode.">
+        Toggle Shelf Party. <ph name="STATE_TEXT">$1<ex>Shelf Party is on.</ex></ph>
+      </message>
+      <message name="IDS_ASH_STATUS_TRAY_SHELF_PARTY_ENABLED_STATE_TOOLTIP" desc="The tooltip text indicating that Shelf Party mode is on.">
+        Shelf Party is on.
+      </message>
+      <message name="IDS_ASH_STATUS_TRAY_SHELF_PARTY_DISABLED_STATE_TOOLTIP" desc="The tooltip text indicating that Shelf Party mode is off.">
+        Shelf Party is off.
+      </message>
+      <message name="IDS_ASH_STATUS_TRAY_SHELF_PARTY_ON_SUBLABEL" desc="The sub label text shown under the tray menu button when Shelf Party mode is on.">
+        On
+      </message>
+      <message name="IDS_ASH_STATUS_TRAY_SHELF_PARTY_OFF_SUBLABEL" desc="The sub label text shown under the tray menu button when Shelf Party mode is off.">
+        Off
+      </message>
     </messages>
   </release>
 </grit>

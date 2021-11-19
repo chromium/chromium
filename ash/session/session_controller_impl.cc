@@ -193,6 +193,10 @@ bool SessionControllerImpl::IsUserFirstLogin() const {
   return GetUserSession(0)->user_info.is_new_profile;
 }
 
+bool SessionControllerImpl::IsEnterpriseManaged() const {
+  return client_ && client_->IsEnterpriseManaged();
+}
+
 bool SessionControllerImpl::ShouldDisplayManagedUI() const {
   if (!IsActiveUserSessionStarted())
     return false;

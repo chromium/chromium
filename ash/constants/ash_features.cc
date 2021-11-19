@@ -1076,6 +1076,10 @@ const base::Feature kSettingsAppNotificationSettings{
 const base::Feature kShelfLauncherNudge{"ShelfLauncherNudge",
                                         base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Enables the shelf party.
+const base::Feature kShelfParty{"ShelfParty",
+                                base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enables or disables the new shimless rma flow.
 const base::Feature kShimlessRMAFlow{"ShimlessRMAFlow",
                                      base::FEATURE_DISABLED_BY_DEFAULT};

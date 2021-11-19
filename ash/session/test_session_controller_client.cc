@@ -304,6 +304,10 @@ PrefService* TestSessionControllerClient::GetUserPrefService(
   return prefs_provider_ ? prefs_provider_->GetUserPrefs(account_id) : nullptr;
 }
 
+bool TestSessionControllerClient::IsEnterpriseManaged() const {
+  return is_enterprise_managed_;
+}
+
 void TestSessionControllerClient::DoSwitchUser(const AccountId& account_id,
                                                bool switch_user) {
   if (!switch_user)

@@ -46,6 +46,9 @@ class ASH_PUBLIC_EXPORT SessionControllerClient {
   // Returns the pref service for the given user if available.
   virtual PrefService* GetUserPrefService(const AccountId& account_id) = 0;
 
+  // Returns true if the device is enterprise managed.
+  virtual bool IsEnterpriseManaged() const = 0;
+
  protected:
   virtual ~SessionControllerClient() = default;
 };

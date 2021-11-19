@@ -858,6 +858,8 @@ component("ash") {
     "shelf/shelf_navigation_widget.cc",
     "shelf/shelf_navigation_widget.h",
     "shelf/shelf_observer.h",
+    "shelf/shelf_party_feature_pod_controller.cc",
+    "shelf/shelf_party_feature_pod_controller.h",
     "shelf/shelf_test_api.cc",
     "shelf/shelf_tooltip_bubble.cc",
     "shelf/shelf_tooltip_bubble.h",

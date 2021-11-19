@@ -409,6 +409,7 @@ extern const base::Feature kSessionManagerLivenessCheck;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kSettingsAppNotificationSettings;
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kShelfLauncherNudge;
+COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kShelfParty;
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kShimlessRMAFlow;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kShowBluetoothDebugLogToggle;

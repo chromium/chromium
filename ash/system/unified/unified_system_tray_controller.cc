@@ -15,6 +15,7 @@
 #include "ash/public/cpp/pagination/pagination_controller.h"
 #include "ash/public/cpp/system_tray_client.h"
 #include "ash/session/session_controller_impl.h"
+#include "ash/shelf/shelf_party_feature_pod_controller.h"
 #include "ash/shell.h"
 #include "ash/system/accessibility/accessibility_feature_pod_controller.h"
 #include "ash/system/accessibility/unified_accessibility_detailed_view_controller.h"
@@ -517,6 +518,8 @@ void UnifiedSystemTrayController::InitFeaturePods() {
   AddFeaturePodItem(std::make_unique<LocaleFeaturePodController>(this));
   if (features::IsDarkLightModeEnabled())
     AddFeaturePodItem(std::make_unique<DarkModeFeaturePodController>(this));
+  if (base::FeatureList::IsEnabled(features::kShelfParty))
+    AddFeaturePodItem(std::make_unique<ShelfPartyFeaturePodController>());
 
   // If you want to add a new feature pod item, add here.
 

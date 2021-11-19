@@ -20,6 +20,7 @@
 #include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
 #include "chrome/browser/ash/login/ui/user_adding_screen.h"
+#include "chrome/browser/ash/login/users/chrome_user_manager.h"
 #include "chrome/browser/ash/login/users/multi_profile_user_controller.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/settings/device_settings_service.h"
@@ -309,6 +310,11 @@ PrefService* SessionControllerClientImpl::GetUserPrefService(
     return nullptr;
 
   return user_profile->GetPrefs();
+}
+
+bool SessionControllerClientImpl::IsEnterpriseManaged() const {
+  const ash::ChromeUserManager* user_manager = ash::ChromeUserManager::Get();
+  return user_manager && user_manager->IsEnterpriseManaged();
 }
 
 // static

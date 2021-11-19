@@ -130,6 +130,9 @@ class ASH_EXPORT SessionControllerImpl : public SessionController {
   // device (i.e. first time login on the device).
   bool IsUserFirstLogin() const;
 
+  // Returns true if the device is enterprise managed.
+  bool IsEnterpriseManaged() const;
+
   // Returns true if should display managed icon for current session,
   // and false otherwise.
   bool ShouldDisplayManagedUI() const;

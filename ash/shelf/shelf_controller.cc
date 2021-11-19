@@ -144,6 +144,17 @@ void ShelfController::RegisterProfilePrefs(PrefRegistrySimple* registry) {
   LauncherNudgeController::RegisterProfilePrefs(registry);
 }
 
+void ShelfController::OnActiveUserSessionChanged(const AccountId& account_id) {
+  if (model_.in_shelf_party())
+    model_.ToggleShelfParty();
+}
+
+void ShelfController::OnSessionStateChanged(
+    session_manager::SessionState state) {
+  if (model_.in_shelf_party())
+    model_.ToggleShelfParty();
+}
+
 void ShelfController::OnActiveUserPrefServiceChanged(
     PrefService* pref_service) {
   SetShelfBehaviorsFromPrefs();
