@@ -200,7 +200,12 @@ std::unique_ptr<Network::Cookie> BuildCookie(
       DCHECK(serialized);
       devtools_cookie->SetPartitionKey(serialized_partition_key);
     } else {
-      devtools_cookie->SetPartitionKeyOpaque(true);
+      devtools_cookie->SetPartitionKeyOpaque(partition_key->site().opaque());
+      // IsSerializeable may return false when the partition key's site is not
+      // opaque since we introduced nonce-based cookie partitioning in
+      // https://crrev.com/c/3285244.
+      // TODO(1225444,1229638): Surface nonce-based cookie partition keys in
+      // DevTools.
     }
   }
   return devtools_cookie;
