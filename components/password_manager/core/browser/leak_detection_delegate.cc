@@ -117,23 +117,6 @@ void LeakDetectionDelegate::OnShowLeakDetectionNotification(
   }
   client_->MaybeReportEnterprisePasswordBreachEvent(identities);
 
-  bool force_dialog_for_testing = base::GetFieldTrialParamByFeatureAsBool(
-      password_manager::features::kPasswordChange,
-      password_manager::features::
-          kPasswordChangeWithForcedDialogAfterEverySuccessfulSubmission,
-      false);
-  if (force_dialog_for_testing) {
-    helper_.reset();
-    // Correct leak_type to offer change password.
-    CredentialLeakType leak_type =
-        CreateLeakType(is_saved, IsReused(false),
-                       IsSyncing(client_->GetPasswordSyncState() ==
-                                 SyncState::kSyncingNormalEncryption),
-                       has_change_script);
-    client_->NotifyUserCredentialsWereLeaked(leak_type, url, username);
-    return;
-  }
-
   DCHECK(is_leaked_timer_);
   base::UmaHistogramTimes("PasswordManager.LeakDetection.NotifyIsLeakedTime",
                           std::exchange(is_leaked_timer_, nullptr)->Elapsed());
