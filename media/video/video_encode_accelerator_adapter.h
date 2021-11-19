@@ -17,6 +17,7 @@
 #include "media/base/video_encoder.h"
 #include "media/video/video_encode_accelerator.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/gfx/color_space.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace base {
@@ -87,6 +88,7 @@ class MEDIA_EXPORT VideoEncodeAcceleratorAdapter
 
     StatusCB done_callback;
     base::TimeDelta timestamp;
+    gfx::ColorSpace color_space;
   };
 
   void FlushCompleted(bool success);
@@ -130,6 +132,9 @@ class MEDIA_EXPORT VideoEncodeAcceleratorAdapter
   // These are encodes that have been sent to the accelerator but have not yet
   // had their encoded data returned via BitstreamBufferReady().
   base::circular_deque<std::unique_ptr<PendingOp>> active_encodes_;
+
+  // Color space associated w/ the last frame sent to accelerator for encoding.
+  gfx::ColorSpace last_frame_color_space_;
 
   std::unique_ptr<PendingOp> pending_flush_;
 

@@ -321,9 +321,15 @@ void VideoEncodeAcceleratorAdapter::EncodeOnAcceleratorThread(
 
   frame = std::move(result).value();
 
+  if (last_frame_color_space_ != frame->ColorSpace()) {
+    last_frame_color_space_ = frame->ColorSpace();
+    key_frame = true;
+  }
+
   auto active_encode = std::make_unique<PendingOp>();
   active_encode->done_callback = std::move(done_cb);
   active_encode->timestamp = frame->timestamp();
+  active_encode->color_space = frame->ColorSpace();
   active_encodes_.push_back(std::move(active_encode));
   accelerator_->Encode(frame, key_frame);
 }
@@ -531,13 +537,17 @@ void VideoEncodeAcceleratorAdapter::BitstreamBufferReady(
   accelerator_->UseOutputBitstreamBuffer(
       BitstreamBuffer(buffer_id, region.Duplicate(), region.GetSize()));
 
+  bool erased_active_encode = false;
   for (auto it = active_encodes_.begin(); it != active_encodes_.end(); ++it) {
     if ((*it)->timestamp == result.timestamp) {
+      result.color_space = (*it)->color_space;
       std::move((*it)->done_callback).Run(Status());
       active_encodes_.erase(it);
+      erased_active_encode = true;
       break;
     }
   }
+  DCHECK(erased_active_encode);
   output_cb_.Run(std::move(result), std::move(desc));
   if (active_encodes_.empty() && !flush_support_.value()) {
     // Manually call FlushCompleted(), since |accelerator_| won't do it for us.
