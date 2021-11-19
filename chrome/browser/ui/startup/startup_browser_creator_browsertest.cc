@@ -3696,4 +3696,40 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorPickerNoParamsTest,
   EXPECT_EQ(0u, chrome::GetTotalBrowserCount());
 }
 
+class SearchQueryStartupBrowserCreatorPickerTest
+    : public StartupBrowserCreatorPickerTestBase {
+ public:
+  SearchQueryStartupBrowserCreatorPickerTest() = default;
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    command_line->AppendArg("? Foo");
+  }
+};
+
+// Create a secondary profile in a separate PRE run because the existence of
+// profiles is checked during startup in the actual test.
+IN_PROC_BROWSER_TEST_F(SearchQueryStartupBrowserCreatorPickerTest,
+                       PRE_SkipsPickerWithCommandLineSearchQuery) {
+  CreateMultipleProfiles();
+  // Need to close the browser window manually so that the real test does not
+  // treat it as session restore.
+  CloseAllBrowsers();
+}
+
+IN_PROC_BROWSER_TEST_F(SearchQueryStartupBrowserCreatorPickerTest,
+                       SkipsPickerWithCommandLineSearchQuery) {
+  // A browser window is shown on start-up because the command line contains a
+  // search query.
+  EXPECT_EQ(1u, chrome::GetTotalBrowserCount());
+
+  // Check the return value of `GetStartupProfilePath()` explicitly.
+  base::FilePath current_dir = base::FilePath();
+  base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
+  command_line.AppendArg("? Foo");
+  StartupProfilePathInfo startup_profile_path_info =
+      GetStartupProfilePath(current_dir, command_line,
+                            /*ignore_profile_picker=*/false);
+  EXPECT_EQ(startup_profile_path_info.mode, StartupProfileMode::kBrowserWindow);
+}
+
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)

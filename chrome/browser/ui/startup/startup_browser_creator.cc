@@ -1295,19 +1295,17 @@ StartupProfilePathInfo GetStartupProfilePath(
   if (!ignore_profile_picker &&
       ShouldShowProfilePickerAtProcessLaunch(profile_manager, command_line)) {
     // Open the picker only if no URLs have been provided to launch Chrome. If
-    // URLs are provided, open them in the last profile, instead.
-    Profile* guest_profile =
-        profile_manager->GetProfile(ProfileManager::GetGuestProfilePath());
-    // TODO(crbug.com/1150326): Consider resolving urls_to_launch without any
-    // profile so that the guest profile does not need to get created in case
-    // some URLs are passed and the picker is not shown in the end.
-    StartupTabs launch_tabs = StartupTabProviderImpl().GetCommandLineTabs(
-        command_line, cur_dir, guest_profile);
-    if (launch_tabs.empty() &&
+    // URLs are provided or if we aren't able to extract them at this stage
+    // (e.g. we need a profile to access search engine preferences and attempt
+    // to resolve a query into a URL), open them in the last profile, instead.
+    auto has_tabs =
+        StartupTabProviderImpl().HasCommandLineTabs(command_line, cur_dir);
+    if (has_tabs == CommandLineTabsPresent::kNo &&
         profile_manager->GetProfile(ProfileManager::GetSystemProfilePath())) {
       // To indicate that we want to show the profile picker, return the guest
       // profile. However, we can only do this if the system profile (where the
       // profile picker lives) also exists (or is creatable).
+      // TODO(crbug.com/1271859): Remove unnecessary system profile check here.
       // TODO(https://crbug.com/1150326): Return an empty path instead of a
       // guest profile path.
       return {ProfileManager::GetGuestProfilePath(),

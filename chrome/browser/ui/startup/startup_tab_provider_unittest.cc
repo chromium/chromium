@@ -267,105 +267,151 @@ TEST(StartupTabProviderTest, GetCommandLineTabs) {
   // Empty arguments case.
   {
     base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
-    StartupTabs output = StartupTabProviderImpl().GetCommandLineTabs(
-        command_line, base::FilePath(), &profile);
+    StartupTabProviderImpl instance;
+    StartupTabs output =
+        instance.GetCommandLineTabs(command_line, base::FilePath(), &profile);
     EXPECT_TRUE(output.empty());
+
+    EXPECT_EQ(CommandLineTabsPresent::kNo,
+              instance.HasCommandLineTabs(command_line, base::FilePath()));
   }
 
   // Simple use. Pass google.com URL.
   {
     base::CommandLine command_line({"", "https://google.com"});
-    StartupTabs output = StartupTabProviderImpl().GetCommandLineTabs(
-        command_line, base::FilePath(), &profile);
+    StartupTabProviderImpl instance;
+    StartupTabs output =
+        instance.GetCommandLineTabs(command_line, base::FilePath(), &profile);
     ASSERT_EQ(1u, output.size());
     EXPECT_EQ(GURL("https://google.com"), output[0].url);
+
+    EXPECT_EQ(CommandLineTabsPresent::kYes,
+              instance.HasCommandLineTabs(command_line, base::FilePath()));
   }
 
   // Two URL case.
   {
     base::CommandLine command_line(
         {"", "https://google.com", "https://gmail.com"});
-    StartupTabs output = StartupTabProviderImpl().GetCommandLineTabs(
-        command_line, base::FilePath(), &profile);
+    StartupTabProviderImpl instance;
+    StartupTabs output =
+        instance.GetCommandLineTabs(command_line, base::FilePath(), &profile);
     ASSERT_EQ(2u, output.size());
     EXPECT_EQ(GURL("https://google.com"), output[0].url);
     EXPECT_EQ(GURL("https://gmail.com"), output[1].url);
+
+    EXPECT_EQ(CommandLineTabsPresent::kYes,
+              instance.HasCommandLineTabs(command_line, base::FilePath()));
   }
 
   // Vista way search query.
   {
     base::CommandLine command_line({"", "? Foo"});
-    StartupTabs output = StartupTabProviderImpl().GetCommandLineTabs(
-        command_line, base::FilePath(), &profile);
+    StartupTabProviderImpl instance;
+    StartupTabs output =
+        instance.GetCommandLineTabs(command_line, base::FilePath(), &profile);
     ASSERT_EQ(1u, output.size());
     EXPECT_EQ(
         GURL("https://www.google.com/search?q=Foo&sourceid=chrome&ie=UTF-8"),
         output[0].url);
+
+    EXPECT_EQ(CommandLineTabsPresent::kUnknown,
+              instance.HasCommandLineTabs(command_line, base::FilePath()));
   }
 
   // "file:" path fix up.
   {
     base::CommandLine command_line({"", "file:foo.txt"});
-    StartupTabs output = StartupTabProviderImpl().GetCommandLineTabs(
-        command_line, base::FilePath(), &profile);
+    StartupTabProviderImpl instance;
+    StartupTabs output =
+        instance.GetCommandLineTabs(command_line, base::FilePath(), &profile);
     ASSERT_EQ(1u, output.size());
     EXPECT_EQ(GURL("file:///foo.txt"), output[0].url);
+
+    EXPECT_EQ(CommandLineTabsPresent::kYes,
+              instance.HasCommandLineTabs(command_line, base::FilePath()));
   }
 
   // Unsafe scheme should be filtered out.
   {
     base::CommandLine command_line({"", "chrome://flags"});
-    StartupTabs output = StartupTabProviderImpl().GetCommandLineTabs(
-        command_line, base::FilePath(), &profile);
+    StartupTabProviderImpl instance;
+    StartupTabs output =
+        instance.GetCommandLineTabs(command_line, base::FilePath(), &profile);
     ASSERT_TRUE(output.empty());
+
+    EXPECT_EQ(CommandLineTabsPresent::kNo,
+              instance.HasCommandLineTabs(command_line, base::FilePath()));
   }
 
   // Exceptional settings page.
   {
     base::CommandLine command_line(
         {"", "chrome://settings/resetProfileSettings"});
-    StartupTabs output = StartupTabProviderImpl().GetCommandLineTabs(
-        command_line, base::FilePath(), &profile);
+    StartupTabProviderImpl instance;
+    StartupTabs output =
+        instance.GetCommandLineTabs(command_line, base::FilePath(), &profile);
     ASSERT_EQ(1u, output.size());
     EXPECT_EQ(GURL("chrome://settings/resetProfileSettings"), output[0].url);
+
+    EXPECT_EQ(CommandLineTabsPresent::kYes,
+              instance.HasCommandLineTabs(command_line, base::FilePath()));
   }
   {
     base::CommandLine command_line(
         {"", "chrome://settings/resetProfileSettings#cct"});
-    StartupTabs output = StartupTabProviderImpl().GetCommandLineTabs(
-        command_line, base::FilePath(), &profile);
+    StartupTabProviderImpl instance;
+    StartupTabs output =
+        instance.GetCommandLineTabs(command_line, base::FilePath(), &profile);
+
+    auto has_tabs = instance.HasCommandLineTabs(command_line, base::FilePath());
     // Allowed only on Windows.
 #if defined(OS_WIN)
     ASSERT_EQ(1u, output.size());
     EXPECT_EQ(GURL("chrome://settings/resetProfileSettings#cct"),
               output[0].url);
+
+    EXPECT_EQ(CommandLineTabsPresent::kYes, has_tabs);
 #else
     EXPECT_TRUE(output.empty());
+
+    EXPECT_EQ(CommandLineTabsPresent::kNo, has_tabs);
 #endif
   }
 
   // chrome://settings/ page handling.
   {
     base::CommandLine command_line({"", "chrome://settings/syncSetup"});
-    StartupTabs output = StartupTabProviderImpl().GetCommandLineTabs(
-        command_line, base::FilePath(), &profile);
+    StartupTabProviderImpl instance;
+    StartupTabs output =
+        instance.GetCommandLineTabs(command_line, base::FilePath(), &profile);
+
+    auto has_tabs = instance.HasCommandLineTabs(command_line, base::FilePath());
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     // On Chrome OS (ash-chrome), settings page is allowed to be specified.
     ASSERT_EQ(1u, output.size());
     EXPECT_EQ(GURL("chrome://settings/syncSetup"), output[0].url);
+
+    EXPECT_EQ(CommandLineTabsPresent::kYes, has_tabs);
 #else
     // On other platforms, it is blocked.
     EXPECT_TRUE(output.empty());
+
+    EXPECT_EQ(CommandLineTabsPresent::kNo, has_tabs);
 #endif
   }
 
   // about:blank URL.
   {
     base::CommandLine command_line({"", "about:blank"});
-    StartupTabs output = StartupTabProviderImpl().GetCommandLineTabs(
-        command_line, base::FilePath(), &profile);
+    StartupTabProviderImpl instance;
+    StartupTabs output =
+        instance.GetCommandLineTabs(command_line, base::FilePath(), &profile);
     ASSERT_EQ(1u, output.size());
     EXPECT_EQ(GURL("about:blank"), output[0].url);
+
+    EXPECT_EQ(CommandLineTabsPresent::kYes,
+              instance.HasCommandLineTabs(command_line, base::FilePath()));
   }
 }
 

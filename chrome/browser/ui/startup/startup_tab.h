@@ -23,4 +23,12 @@ struct StartupTab {
 
 typedef std::vector<StartupTab> StartupTabs;
 
+// Indicates whether the command line arguments includes tabs to be opened on
+// startup.
+enum class CommandLineTabsPresent {
+  kUnknown = -1,
+  kNo = 0,
+  kYes = 1,
+};
+
 #endif  // CHROME_BROWSER_UI_STARTUP_STARTUP_TAB_H_

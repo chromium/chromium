@@ -123,6 +123,13 @@ class FakeStartupTabProvider : public StartupTabProvider {
     return tabs;
   }
 
+  CommandLineTabsPresent HasCommandLineTabs(
+      const base::CommandLine& command_line,
+      const base::FilePath& cur_dir) const override {
+    return (options_ & kCommandLineTabs) ? CommandLineTabsPresent::kYes
+                                         : CommandLineTabsPresent::kNo;
+  }
+
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   StartupTabs GetCrosapiTabs() const override {
     StartupTabs tabs;

@@ -202,42 +202,38 @@ StartupTabs StartupTabProviderImpl::GetCommandLineTabs(
   StartupTabs result;
 
   for (const auto& arg : command_line.GetArgs()) {
-    // Note: Type/encoding of |arg| matches with the one of FilePath.
-    // So, we use them for encoding conversions.
+    ParsedCommandLineTabArg parsed_arg =
+        ParseTabFromCommandLineArg(arg, cur_dir, profile);
 
-    // Handle Vista way of searching - "? <search-term>"
-    if (base::StartsWith(arg, FILE_PATH_LITERAL("? "))) {
-      GURL url(GetDefaultSearchURLForSearchTerms(
-          TemplateURLServiceFactory::GetForProfile(profile),
-          base::FilePath(arg).LossyDisplayName().substr(/* remove "? " */ 2)));
-      if (url.is_valid()) {
-        result.emplace_back(std::move(url), false);
-        continue;
-      }
+    // `ParseTabFromCommandLineArg()` shouldn't return
+    // CommandLineTabsPresent::kUnknown when a profile is provided.
+    DCHECK_NE(parsed_arg.tab_parsed, CommandLineTabsPresent::kUnknown);
+
+    if (parsed_arg.tab_parsed == CommandLineTabsPresent::kYes) {
+      result.emplace_back(std::move(parsed_arg.tab_url), false);
     }
-
-    // Otherwise, fall through to treating it as a URL.
-    // This will create a file URL or a regular URL.
-    GURL url(base::FilePath(arg).MaybeAsASCII());
-
-    // This call can (in rare circumstances) block the UI thread.
-    // FixupRelativeFile may access to current working directory, which is a
-    // blocking API. http://crbug.com/60641
-    // http://crbug.com/371030: Only use URLFixerUpper if we don't have a valid
-    // URL, otherwise we will look in the current directory for a file named
-    // 'about' if the browser was started with a about:foo argument.
-    // http://crbug.com/424991: Always use URLFixerUpper on file:// URLs,
-    // otherwise we wouldn't correctly handle '#' in a file name.
-    if (!url.is_valid() || url.SchemeIsFile()) {
-      base::ScopedAllowBlocking allow_blocking;
-      url = url_formatter::FixupRelativeFile(cur_dir, base::FilePath(arg));
-    }
-
-    if (ValidateUrl(url))
-      result.emplace_back(std::move(url), false);
   }
 
   return result;
+}
+
+CommandLineTabsPresent StartupTabProviderImpl::HasCommandLineTabs(
+    const base::CommandLine& command_line,
+    const base::FilePath& cur_dir) const {
+  bool is_unknown = false;
+  for (const auto& arg : command_line.GetArgs()) {
+    ParsedCommandLineTabArg parsed_arg =
+        ParseTabFromCommandLineArg(arg, cur_dir, /*maybe_profile=*/nullptr);
+    if (parsed_arg.tab_parsed == CommandLineTabsPresent::kYes) {
+      return CommandLineTabsPresent::kYes;
+    }
+    if (parsed_arg.tab_parsed == CommandLineTabsPresent::kUnknown) {
+      is_unknown = true;
+    }
+  }
+
+  return is_unknown ? CommandLineTabsPresent::kUnknown
+                    : CommandLineTabsPresent::kNo;
 }
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -400,4 +396,53 @@ void StartupTabProviderImpl::AddIncompatibleApplicationsUrl(StartupTabs* tabs) {
 GURL StartupTabProviderImpl::GetTriggeredResetSettingsUrl() {
   return GURL(
       chrome::GetSettingsUrl(chrome::kTriggeredResetProfileSettingsSubPage));
+}
+
+// static
+StartupTabProviderImpl::ParsedCommandLineTabArg
+StartupTabProviderImpl::ParseTabFromCommandLineArg(
+    base::FilePath::StringPieceType arg,
+    const base::FilePath& cur_dir,
+    Profile* maybe_profile) {
+  // Note: Type/encoding of |arg| matches with the one of FilePath.
+  // So, we use them for encoding conversions.
+
+  // Handle Vista way of searching - "? <search-term>"
+  if (base::StartsWith(arg, FILE_PATH_LITERAL("? "))) {
+    if (maybe_profile == nullptr) {
+      // In the absence of profile, we are not able to resolve the search URL.
+      // We indicate that we don't know whether a tab would be successfully
+      // created or not.
+      return {CommandLineTabsPresent::kUnknown, GURL()};
+    }
+
+    GURL url(GetDefaultSearchURLForSearchTerms(
+        TemplateURLServiceFactory::GetForProfile(maybe_profile),
+        base::FilePath(arg).LossyDisplayName().substr(/* remove "? " */ 2)));
+    if (url.is_valid()) {
+      return {CommandLineTabsPresent::kYes, std::move(url)};
+    }
+  } else {
+    // Otherwise, fall through to treating it as a URL.
+    // This will create a file URL or a regular URL.
+    GURL url(base::FilePath(arg).MaybeAsASCII());
+
+    // This call can (in rare circumstances) block the UI thread.
+    // FixupRelativeFile may access to current working directory, which is a
+    // blocking API. http://crbug.com/60641
+    // http://crbug.com/371030: Only use URLFixerUpper if we don't have a valid
+    // URL, otherwise we will look in the current directory for a file named
+    // 'about' if the browser was started with a about:foo argument.
+    // http://crbug.com/424991: Always use URLFixerUpper on file:// URLs,
+    // otherwise we wouldn't correctly handle '#' in a file name.
+    if (!url.is_valid() || url.SchemeIsFile()) {
+      base::ScopedAllowBlocking allow_blocking;
+      url = url_formatter::FixupRelativeFile(cur_dir, base::FilePath(arg));
+    }
+
+    if (ValidateUrl(url))
+      return {CommandLineTabsPresent::kYes, std::move(url)};
+  }
+
+  return {CommandLineTabsPresent::kNo, GURL()};
 }
