@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "build/build_config.h"
 #include "components/viz/test/test_gpu_service_holder.h"
 #include "gpu/command_buffer/client/shared_image_interface.h"
 #include "gpu/command_buffer/client/webgpu_implementation.h"
@@ -12,6 +13,11 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/color_space.h"
+
+#if defined(OS_MAC)
+#include "gpu/command_buffer/tests/gl_manager.h"
+#include "ui/gl/gl_context.h"
+#endif
 
 namespace gpu {
 namespace {
@@ -46,8 +52,21 @@ void ToMockUncapturedErrorCallback(WGPUErrorType type,
 class WebGPUMailboxTest : public WebGPUTest {
  protected:
   void SetUp() override {
+#if defined(OS_MAC)
+    // Crashing on Mac M1. Currently missing stack trace. crbug.com/1271926
+    // This must be checked before WebGPUTest::Initialize otherwise context
+    // switched is locked and we cannot temporarily have this GLContext.
+    GLManager gl_manager;
+    gl_manager.Initialize(GLManager::Options());
+    std::string renderer(gl_manager.context()->GetGLRenderer());
+    if (renderer.find("Apple M1") != std::string::npos)
+      mac_m1_ = true;
+    gl_manager.Destroy();
+#endif
+
     WebGPUTest::SetUp();
     Initialize(WebGPUTest::Options());
+
     mock_buffer_map_callback =
         std::make_unique<testing::StrictMock<MockBufferMapCallback>>();
     mock_device_error_callback =
@@ -86,6 +105,10 @@ class WebGPUMailboxTest : public WebGPUTest {
                                ComputeNumEntries(sizeof(cmd) + data_size),
                                &entries_processed);
   }
+
+#if defined(OS_MAC)
+  bool mac_m1_ = false;
+#endif
 };
 
 TEST_F(WebGPUMailboxTest, AssociateMailboxCmd) {
@@ -531,6 +554,12 @@ TEST_F(WebGPUMailboxTest, AssociateOnTwoDevicesAtTheSameTime) {
     LOG(ERROR) << "Test skipped because WebGPUSharedImage isn't supported";
     return;
   }
+
+#if defined(OS_MAC)
+  // Crashing on Mac M1. Currently missing stack trace. crbug.com/1271926
+  if (mac_m1_)
+    return;
+#endif
 
   // Create a the shared images.
   SharedImageInterface* sii = GetSharedImageInterface();
