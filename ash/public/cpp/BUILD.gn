@@ -347,11 +347,11 @@ component("cpp") {
 
   deps = [
     "//ash/components/audio",
+    "//ash/components/quick_answers/public/cpp:prefs",
     "//ash/constants",
     "//ash/public/cpp/ambient/proto",
     "//ash/strings",
     "//base",
-    "//chromeos/components/quick_answers/public/cpp:prefs",
     "//chromeos/dbus/power:power_manager_proto",
     "//chromeos/services/assistant/public/cpp",
     "//chromeos/services/bluetooth_config:in_process_bluetooth_config",

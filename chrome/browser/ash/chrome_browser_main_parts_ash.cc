@@ -19,6 +19,7 @@
 #include "ash/components/fwupd/firmware_update_manager.h"
 #include "ash/components/pcie_peripheral/pcie_peripheral_manager.h"
 #include "ash/components/power/dark_resume_controller.h"
+#include "ash/components/quick_answers/quick_answers_client.h"
 #include "ash/components/settings/cros_settings_names.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
@@ -180,7 +181,6 @@
 #include "chrome/common/pref_names.h"
 #include "chromeos/components/chromebox_for_meetings/buildflags/buildflags.h"  // PLATFORM_CFM
 #include "chromeos/components/local_search_service/public/cpp/local_search_service_proxy_factory.h"
-#include "chromeos/components/quick_answers/quick_answers_client.h"
 #include "chromeos/components/sensors/ash/sensor_hal_dispatcher.h"
 #include "chromeos/cryptohome/cryptohome_parameters.h"
 #include "chromeos/cryptohome/system_salt_getter.h"
