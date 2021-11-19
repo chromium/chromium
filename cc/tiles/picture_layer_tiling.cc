@@ -509,7 +509,7 @@ PictureLayerTiling::CoverageIterator::operator++() {
     // unexpectedly. Unfortunately, there isn't much we can do at this point, so
     // we just do the correctness checks if both y and x offsets are
     // 'reasonable', meaning they are less than the specified value.
-    static constexpr int kReasonableOffsetForDcheck = 500'000'000;
+    static constexpr int kReasonableOffsetForDcheck = 100'000'000;
     if (!new_row && current_geometry_rect_.x() <= kReasonableOffsetForDcheck &&
         current_geometry_rect_.y() <= kReasonableOffsetForDcheck) {
       DCHECK_EQ(last_geometry_rect.right(), current_geometry_rect_.x());
