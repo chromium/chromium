@@ -454,15 +454,14 @@ bool SyncTest::CreateProfile(int index) {
 #if defined(OS_ANDROID)
     DCHECK(index == 0);
     Profile* profile = ProfileManager::GetLastUsedProfile();
-    InitializeProfile(index, profile);
 #else
     // Without need of real GAIA authentication, we create new test profiles.
     Profile* profile =
         g_browser_process->profile_manager()->GetProfile(profile_path);
-    InitializeProfile(index, profile);
 #endif
 
     SetupMockGaiaResponsesForProfile(profile);
+    InitializeProfile(index, profile);
   }
 
   // Once profile initialization has kicked off, wait for it to finish.
