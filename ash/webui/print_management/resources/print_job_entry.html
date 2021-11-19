@@ -6,7 +6,7 @@
 
   .collapsed-status {
     @apply --print-management-header-font;
-    color: var(--google-blue-600);
+    color: var(--cros-color-prominent);
   }
 
   /* Override focus CSS for selectable items. */
@@ -16,7 +16,7 @@
   }
 
   .list-item:focus-within {
-    background-color: var(--google-blue-50);
+    background-color: var(--cros-highlight-color);
     outline: none;
   }
 
@@ -27,7 +27,7 @@
   }
 
   #cancelPrintJobButton {
-    --iron-icon-fill-color: rgb(95,99,104);
+    --iron-icon-fill-color: var(--cros-icon-color-secondary);
     margin-inline-start: 4px;
     padding-bottom: 2px;
   }
@@ -38,17 +38,17 @@
   }
 
   #numericalProgress {
-    color: var(--google-blue-600);
+    color: var(--cros-color-prominent);
     margin-inline-end: 16px;
   }
 
   #rowWrapper:active {
-    background-color: var(--google-blue-50);
+    background-color: var(--cros-highlight-color);
     outline: none;
   }
 
   paper-progress {
-    --paper-progress-active-color: var(--google-blue-600);
+    --paper-progress-active-color: var(--cros-slider-color-active);
     --paper-progress-container-color: rgba(var(--google-blue-600-rgb), .24);
     width: 72px;
   }
