@@ -61,6 +61,7 @@ void AppListTestViewDelegate::OpenSearchResult(
         return;
       case ash::AppListLaunchedFrom::kLaunchedFromGrid:
       case ash::AppListLaunchedFrom::kLaunchedFromShelf:
+      case ash::AppListLaunchedFrom::kLaunchedFromContinueTask:
         return;
     }
   }

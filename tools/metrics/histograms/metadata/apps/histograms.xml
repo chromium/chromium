@@ -1456,6 +1456,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Apps.AppListContinueTaskOpenType" enum="AppListSearchResult"
+    expires_after="2022-11-16">
+<!-- Name completed by histogram_suffixes name="TabletOrClamshellMode" -->
+
+  <owner>anasalazar@chromium.org</owner>
+  <owner>tbarzic@chromium.org</owner>
+  <summary>
+    The type of app list continue search result that was opened by the user.
+    This is gathered per continue section task opened.
+  </summary>
+</histogram>
+
 <histogram name="Apps.AppListCreationTime" units="ms"
     expires_after="2021-04-18">
   <owner>calamity@chromium.org</owner>

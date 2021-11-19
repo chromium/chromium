@@ -1213,6 +1213,7 @@ void AppListControllerImpl::OpenSearchResult(
         break;
       case AppListLaunchedFrom::kLaunchedFromGrid:
       case AppListLaunchedFrom::kLaunchedFromShelf:
+      case AppListLaunchedFrom::kLaunchedFromContinueTask:
         break;
     }
   }

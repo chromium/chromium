@@ -17288,6 +17288,7 @@ chromium-metrics-reviews@google.com.
 <histogram_suffixes name="TabletOrClamshellMode" separator=".">
   <suffix name="ClamshellMode" label="Clamshell Mode Enabled"/>
   <suffix name="TabletMode" label="Tablet Mode Enabled"/>
+  <affected-histogram name="Apps.AppListContinueTaskOpenType"/>
   <affected-histogram name="Apps.AppListFolderNameLength"/>
   <affected-histogram name="Apps.AppListPageSwitcherSource"/>
   <affected-histogram name="Apps.AppListSearchBoxActivated"/>

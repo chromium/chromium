@@ -3186,6 +3186,7 @@ Unknown properties are collapsed to zero. -->
   <int value="3" label="Launched From Shelf"/>
   <int value="4" label="Launched From SearchBox"/>
   <int value="5" label="Launched From RecentApps"/>
+  <int value="6" label="Launched From ContinueSection"/>
 </enum>
 
 <enum name="AppListLaunchRecorderError">
