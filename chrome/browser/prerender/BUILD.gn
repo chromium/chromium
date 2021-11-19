@@ -8,6 +8,7 @@ source_set("browser_tests") {
   testonly = true
 
   sources = [
+    "omnibox_prerender_browsertest.cc",
     "payment_request_for_prerender_browsertest.cc",
     "prerender_browsertest.cc",
   ]
