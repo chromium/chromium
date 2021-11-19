@@ -15,14 +15,18 @@
       'http://127.0.0.1:8000/devtools/resources/test-page-v8-code-cache.html');
 
   await TestRunner.evaluateInPagePromise(`
-      function loadScript() {
+      function waitUntilIdle() {
+        return new Promise(resolve=>window.requestIdleCallback(resolve));
+      }
+      async function loadScript() {
         const url =
             'http://localhost:8000/devtools/resources/v8-cache-script.js';
         const frameId = 'frame_id';
         let iframeWindow = document.getElementById(frameId).contentWindow;
-        return iframeWindow.loadScript(url)
-            .then(() => iframeWindow.loadScript(url))
-            .then(() => iframeWindow.loadScript(url));
+        await iframeWindow.loadScript(url);
+        await iframeWindow.loadScript(url);
+        await waitUntilIdle();
+        await iframeWindow.loadScript(url);
       }
   `);
 

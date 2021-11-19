@@ -70,8 +70,6 @@ crbug.com/760543 [ Linux ] http/tests/devtools/tracing/timeline-misc/timeline-ev
 crbug.com/760543 [ Linux ] http/tests/devtools/tracing/timeline-time/timeline-usertiming.js [ Pass Timeout ]
 crbug.com/760543 [ Linux ] http/tests/devtools/tracing/timeline-paint/timeline-paint.js [ Pass Timeout ]
 crbug.com/760543 [ Linux ] http/tests/devtools/oopif/oopif-performance-cpu-profiles.js [ Pass Timeout ]
-crbug.com/902685 [ Linux ] http/tests/devtools/isolated-code-cache/same-origin-test.js [ Pass Timeout ]
-crbug.com/902685 [ Linux ] http/tests/devtools/isolated-code-cache/cross-origin-test.js [ Pass Timeout ]
 
 # Memory allocation hooks are disabled on ASAN/MSAN
 crbug.com/803276 inspector-protocol/memory/sampling-native-profile.js [ Skip ]
@@ -168,7 +166,6 @@ crbug.com/1179829 [ Linux ] http/tests/devtools/console/console-viewport-selecti
 crbug.com/1179829 [ Linux ] http/tests/devtools/console/console-format.js [ Pass Timeout ]
 crbug.com/1179829 [ Linux ] http/tests/devtools/tracing/console-timeline.js [ Pass Timeout ]
 crbug.com/1179829 [ Linux ] http/tests/devtools/console/console-viewport-stick-to-bottom-onload.js [ Pass Timeout ]
-crbug.com/1179829 [ Linux ] http/tests/devtools/isolated-code-cache/stale-revalidation-test.js [ Pass Timeout ]
 
 # Sheriff 2021-04-22
 crbug.com/1201807 [ Linux ] virtual/feature-policy-permissions/external/wpt/mediacapture-streams/MediaStreamTrack-MediaElement-disabled-video-is-black.https.html [ Pass Timeout ]

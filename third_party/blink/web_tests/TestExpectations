@@ -2539,6 +2539,8 @@ crbug.com/910421 virtual/threaded-composited-iframes/external/wpt/is-input-pendi
 # requestIdleCallback requires threaded compositing
 crbug.com/1259718 external/wpt/requestidlecallback/* [ Skip ]
 crbug.com/1259718 virtual/threaded/external/wpt/requestidlecallback/* [ Pass ]
+crbug.com/1259718 http/tests/devtools/isolated-code-cache/* [ Skip ]
+crbug.com/1259718 virtual/threaded/http/tests/devtools/isolated-code-cache/* [ Pass ]
 
 # WebVTT is off because additional padding
 crbug.com/1012242 external/wpt/webvtt/rendering/cues-with-video/processing-model/2_cues_overlapping_completely_move_up.html [ Failure ]
@@ -6213,8 +6215,6 @@ crbug.com/1180491 [ Linux ] virtual/storage-access-api/external/wpt/storage-acce
 
 # Sheriff 2021-02-24
 crbug.com/1181667 [ Linux ] external/wpt/css/selectors/focus-visible-011.html [ Failure Pass ]
-crbug.com/1045052 [ Linux ] virtual/split-http-cache-not-site-per-process/http/tests/devtools/isolated-code-cache/stale-revalidation-test.js [ Failure Pass Skip Timeout ]
-crbug.com/1045052 [ Linux ] virtual/not-split-http-cache-not-site-per-process/http/tests/devtools/isolated-code-cache/stale-revalidation-test.js [ Failure Pass Skip Timeout ]
 crbug.com/1181857 external/wpt/webaudio/the-audio-api/the-analysernode-interface/test-analyser-output.html [ Failure Pass ]
 
 # Sheriff 2021-02-25
@@ -6624,7 +6624,6 @@ crbug.com/1210687 [ Mac10.15 ] http/tests/devtools/a11y-axe-core/sources/scope-p
 crbug.com/1210687 [ Mac ] http/tests/permissions/chromium/test-request-worker.html [ Pass Skip Timeout ]
 crbug.com/1210687 [ Mac10.15 ] storage/websql/sql-error-codes.html [ Pass Skip Timeout ]
 crbug.com/1210687 [ Mac10.15 ] external/wpt/html/user-activation/propagation-crossorigin.sub.tentative.html [ Pass Skip Timeout ]
-crbug.com/1210687 [ Win ] virtual/split-http-cache-not-site-per-process/http/tests/devtools/isolated-code-cache/stale-revalidation-test.js [ Pass Skip Timeout ]
 crbug.com/1210687 [ Win ] virtual/shared_array_buffer_on_desktop/http/tests/devtools/a11y-axe-core/sources/scope-pane-a11y-test.js [ Pass Skip Timeout ]
 
 # Sheriff 2021-06-02

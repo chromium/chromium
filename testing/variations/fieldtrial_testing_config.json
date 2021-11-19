@@ -1823,6 +1823,34 @@
             ]
         }
     ],
+    "CacheCodeOnIdle": [
+        {
+            "platforms": [
+                "android",
+                "android_weblayer",
+                "android_webview",
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "CacheCodeOnIdle"
+                    ]
+                },
+                {
+                    "name": "Disabled",
+                    "disable_features": [
+                        "CacheCodeOnIdle"
+                    ]
+                }
+            ]
+        }
+    ],
     "CanvasOutOfProcessRasterization": [
         {
             "platforms": [

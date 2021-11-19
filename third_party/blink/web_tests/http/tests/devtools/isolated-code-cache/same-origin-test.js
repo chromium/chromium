@@ -2,6 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+function waitUntilIdle() {
+  return new Promise(resolve=>{
+    window.requestIdleCallback(()=>resolve());
+  });
+}
+
 (async function() {
   TestRunner.addResult(`Tests V8 code cache for javascript resources\n`);
   await TestRunner.loadLegacyModule('timeline'); await TestRunner.loadTestModule('performance_test_runner');
@@ -51,6 +57,7 @@
 
   await expectationComment('Load [A] 2nd time. Produce code cache. -->');
   await TestRunner.addIframe(scope);
+  await waitUntilIdle();
 
   await expectationComment('Load [A] 3rd time. Consume code cache. -->');
   await TestRunner.addIframe(scope);

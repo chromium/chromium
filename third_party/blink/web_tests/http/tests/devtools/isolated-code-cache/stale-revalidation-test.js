@@ -2,6 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+function waitUntilIdle() {
+  return new Promise(resolve=>{
+    window.requestIdleCallback(()=>resolve());
+  });
+}
+
 (async function() {
   TestRunner.addResult('Tests V8 code cache for resources revalidated with 304.\n');
   // The main purpose of the test is to demonstrate that after producing the
@@ -45,6 +51,7 @@
 
   await expectationComment('2nd load. Produce code cache. -->');
   await TestRunner.addIframe(resource);
+  await waitUntilIdle();
 
   await expectationComment('3rd load. Consume code cache. -->');
   await TestRunner.addIframe(resource);
