@@ -252,30 +252,29 @@ CullRect CullRectUpdater::ComputeFragmentCullRect(
     const FragmentData& fragment,
     const FragmentData& parent_fragment) {
   auto local_state = fragment.LocalBorderBoxProperties().Unalias();
+  CullRect cull_rect = parent_fragment.GetContentsCullRect();
+  auto parent_state = parent_fragment.ContentsProperties().Unalias();
+
   if (layer.GetLayoutObject().IsFixedPositioned()) {
     const auto& view_fragment = layer.GetLayoutObject().View()->FirstFragment();
     auto view_state = view_fragment.LocalBorderBoxProperties().Unalias();
-    if (local_state.Transform().Parent() == &view_state.Transform()) {
-      // Use the viewport clip and ignore additional clips (e.g. clip-paths)
-      // because they are applied on this fixed-position layer by non-containers
-      // which may change location relative to this layer on viewport scroll
-      // for which we don't want to change fixed-position cull rects for
-      // performance.
-      local_state.SetClip(view_fragment.ContentsProperties().Clip().Unalias());
-      CullRect cull_rect = view_fragment.GetCullRect();
-      // We don't expand cull rect for fixed-position because it doesn't scroll,
-      // so the ChangedEnough logic doesn't apply and we pass nullopt for the
-      // old cull rect.
-      bool expanded =
-          cull_rect.ApplyPaintProperties(root_state_, view_state, local_state,
-                                         /*old_cull_rect*/ absl::nullopt);
-      DCHECK(!expanded);
-      return cull_rect;
+    if (const auto* properties = fragment.PaintProperties()) {
+      if (const auto* translation = properties->PaintOffsetTranslation()) {
+        if (translation->Parent() == &view_state.Transform()) {
+          // Use the viewport clip and ignore additional clips (e.g. clip-paths)
+          // because they are applied on this fixed-position layer by
+          // non-containers which may change location relative to this layer on
+          // viewport scroll for which we don't want to change fixed-position
+          // cull rects for performance.
+          local_state.SetClip(
+              view_fragment.ContentsProperties().Clip().Unalias());
+          parent_state = view_state;
+          cull_rect = view_fragment.GetCullRect();
+        }
+      }
     }
   }
 
-  CullRect cull_rect = parent_fragment.GetContentsCullRect();
-  auto parent_state = parent_fragment.ContentsProperties().Unalias();
   if (parent_state != local_state) {
     absl::optional<CullRect> old_cull_rect;
     // Not using |old_cull_rect| will force the cull rect to be updated
