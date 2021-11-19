@@ -48,6 +48,7 @@ if (!crashpad_is_ios) {
       "../compat",
       "$mini_chromium_source_parent:base",
       "../util",
+      "../util:net",
     ]
   }
 }

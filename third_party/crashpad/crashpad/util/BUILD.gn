@@ -225,17 +225,6 @@ crashpad_static_library("util") {
     "misc/uuid.h",
     "misc/zlib.cc",
     "misc/zlib.h",
-    "net/http_body.cc",
-    "net/http_body.h",
-    "net/http_body_gzip.cc",
-    "net/http_body_gzip.h",
-    "net/http_headers.h",
-    "net/http_multipart_builder.cc",
-    "net/http_multipart_builder.h",
-    "net/http_transport.cc",
-    "net/http_transport.h",
-    "net/url.cc",
-    "net/url.h",
     "numeric/checked_address_range.cc",
     "numeric/checked_address_range.h",
     "numeric/checked_range.h",
@@ -377,7 +366,6 @@ crashpad_static_library("util") {
       "mach/scoped_task_suspend.h",
       "mach/task_for_pid.cc",
       "mach/task_for_pid.h",
-      "net/http_transport_mac.mm",
       "posix/process_info_mac.cc",
       "process/process_memory_mac.cc",
       "process/process_memory_mac.h",
@@ -405,33 +393,10 @@ crashpad_static_library("util") {
       "ios/raw_logging.h",
       "ios/scoped_vm_read.cc",
       "ios/scoped_vm_read.h",
-      "net/http_transport_mac.mm",
     ]
   }
 
   deps = [ "//build:chromeos_buildflags" ]
-
-  if (crashpad_http_transport_impl == "socket") {
-    sources += [ "net/http_transport_socket.cc" ]
-    if (crashpad_use_boringssl_for_http_transport_socket) {
-      defines += [ "CRASHPAD_USE_BORINGSSL" ]
-
-      if (crashpad_is_in_chromium || crashpad_is_in_fuchsia) {
-        deps += [ "//third_party/boringssl" ]
-      } else {
-        libs = [
-          "crypto",
-          "ssl",
-        ]
-      }
-    }
-  } else if (crashpad_http_transport_impl == "libcurl") {
-    sources += [ "net/http_transport_libcurl.cc" ]
-    if (crashpad_is_in_fuchsia) {
-      # Host Linux builds in Fuchsia don't have libcurl in a sysroot.
-      deps += [ "//third_party/curl:libcurl" ]
-    }
-  }
 
   if (crashpad_is_android) {
     sources += [
@@ -496,7 +461,6 @@ crashpad_static_library("util") {
       "misc/clock_win.cc",
       "misc/paths_win.cc",
       "misc/time_win.cc",
-      "net/http_transport_win.cc",
       "process/process_memory_win.cc",
       "process/process_memory_win.h",
       "synchronization/semaphore_win.cc",
@@ -660,12 +624,70 @@ crashpad_static_library("util") {
   }
 }
 
+# net is split into a separate target from util so that client code does
+# not have to depend on it.
+crashpad_static_library("net") {
+  sources = [
+    "net/http_body.cc",
+    "net/http_body.h",
+    "net/http_body_gzip.cc",
+    "net/http_body_gzip.h",
+    "net/http_headers.h",
+    "net/http_multipart_builder.cc",
+    "net/http_multipart_builder.h",
+    "net/http_transport.cc",
+    "net/http_transport.h",
+    "net/url.cc",
+    "net/url.h",
+  ]
+
+  deps = [
+    ":util",
+    "$mini_chromium_source_parent:base",
+  ]
+
+  if (crashpad_is_mac && !crashpad_is_in_fuchsia) {
+    sources += [ "net/http_transport_mac.mm" ]
+  }
+
+  if (crashpad_is_ios) {
+    sources += [ "net/http_transport_mac.mm" ]
+  }
+
+  if (crashpad_is_win) {
+    sources += [ "net/http_transport_win.cc" ]
+  }
+
+  if (crashpad_http_transport_impl == "socket") {
+    sources += [ "net/http_transport_socket.cc" ]
+    if (crashpad_use_boringssl_for_http_transport_socket) {
+      defines += [ "CRASHPAD_USE_BORINGSSL" ]
+
+      if (crashpad_is_in_chromium || crashpad_is_in_fuchsia) {
+        deps += [ "//third_party/boringssl" ]
+      } else {
+        libs = [
+          "crypto",
+          "ssl",
+        ]
+      }
+    }
+  } else if (crashpad_http_transport_impl == "libcurl") {
+    sources += [ "net/http_transport_libcurl.cc" ]
+    if (crashpad_is_in_fuchsia) {
+      # Host Linux builds in Fuchsia don't have libcurl in a sysroot.
+      deps += [ "//third_party/curl:libcurl" ]
+    }
+  }
+}
+
 if (!crashpad_is_android && !crashpad_is_ios) {
   crashpad_executable("http_transport_test_server") {
     testonly = true
     sources = [ "net/http_transport_test_server.cc" ]
 
     deps = [
+      ":net",
       ":util",
       "$mini_chromium_source_parent:base",
       "../third_party/cpp-httplib",
@@ -874,6 +896,7 @@ source_set("util_test") {
   ]
 
   deps = [
+    ":net",
     ":util",
     "$mini_chromium_source_parent:base",
     "../client",

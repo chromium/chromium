@@ -85,24 +85,40 @@ TEST(UUID, UUID) {
   EXPECT_EQ(uuid_2, uuid);
   EXPECT_FALSE(uuid != uuid_2);
 
+  // Test operator< operator
+  UUID uuid_3{};
+  UUID uuid_4;
+  uuid_4.InitializeFromString("11111111-1111-1111-1111-111111111111");
+  UUID uuid_5;
+  uuid_5.InitializeFromString("22222222-2222-2222-2222-222222222222");
+
+  EXPECT_LT(uuid_3, uuid_4);
+  EXPECT_LT(uuid_3, uuid_5);
+  EXPECT_LT(uuid_4, uuid_5);
+
   // Make sure that operator== and operator!= check the entire UUID.
   ++uuid.data_1;
   EXPECT_NE(uuid, uuid_2);
+  EXPECT_LT(uuid_2, uuid);
   --uuid.data_1;
   ++uuid.data_2;
   EXPECT_NE(uuid, uuid_2);
+  EXPECT_LT(uuid_2, uuid);
   --uuid.data_2;
   ++uuid.data_3;
   EXPECT_NE(uuid, uuid_2);
+  EXPECT_LT(uuid_2, uuid);
   --uuid.data_3;
   for (size_t index = 0; index < base::size(uuid.data_4); ++index) {
     ++uuid.data_4[index];
     EXPECT_NE(uuid, uuid_2);
+    EXPECT_LT(uuid_2, uuid);
     --uuid.data_4[index];
   }
   for (size_t index = 0; index < base::size(uuid.data_5); ++index) {
     ++uuid.data_5[index];
     EXPECT_NE(uuid, uuid_2);
+    EXPECT_LT(uuid_2, uuid);
     --uuid.data_5[index];
   }
 

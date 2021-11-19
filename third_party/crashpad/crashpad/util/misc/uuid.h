@@ -39,6 +39,7 @@ namespace crashpad {
 struct UUID {
   bool operator==(const UUID& that) const;
   bool operator!=(const UUID& that) const { return !operator==(that); }
+  bool operator<(const UUID& that) const;
 
   //! \brief Initializes the %UUID to zero.
   void InitializeToZero();

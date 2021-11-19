@@ -112,6 +112,7 @@ static_library("common") {
     "../client:common",
     "../snapshot",
     "../util",
+    "../util:net",
   ]
   if (crashpad_is_win) {
     cflags = [ "/wd4201" ]  # nonstandard extension used : nameless struct/union

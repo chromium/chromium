@@ -46,6 +46,21 @@
 
 namespace crashpad {
 
+namespace {
+
+// The number of seconds to wait between checking for pending reports.
+const int kRetryWorkIntervalSeconds = 15 * 60;
+
+#if defined(OS_IOS)
+// The number of times to attempt to upload a pending report, repeated on
+// failure. Attempts will happen once per launch, once per call to
+// ReportPending(), and, if Options.watch_pending_reports is true, once every
+// kRetryWorkIntervalSeconds. Currently iOS only.
+const int kRetryAttempts = 5;
+#endif
+
+}  // namespace
+
 CrashReportUploadThread::CrashReportUploadThread(CrashReportDatabase* database,
                                                  const std::string& url,
                                                  const Options& options)
@@ -55,7 +70,7 @@ CrashReportUploadThread::CrashReportUploadThread(CrashReportDatabase* database,
       // absence of a signal from the handler thread. This allows for failed
       // uploads to be retried periodically, and for pending reports written by
       // other processes to be recognized.
-      thread_(options.watch_pending_reports ? 15 * 60.0
+      thread_(options.watch_pending_reports ? kRetryWorkIntervalSeconds
                                             : WorkerThread::kIndefiniteWait,
               this),
       known_pending_report_uuids_(),
@@ -154,45 +169,13 @@ void CrashReportUploadThread::ProcessPendingReport(
     return;
   }
 
-  // This currently implements very simplistic rate-limiting, compatible with
-  // the Breakpad client, where the strategy is to permit one upload attempt per
-  // hour, and retire reports that would exceed this limit or for which the
-  // upload fails on the first attempt.
-  //
-  // If upload was requested explicitly (i.e. by user action), we do not
-  // throttle the upload.
-  //
-  // TODO(mark): Provide a proper rate-limiting strategy and allow for failed
-  // upload attempts to be retried.
-  if (!report.upload_explicitly_requested && options_.rate_limit) {
-    time_t last_upload_attempt_time;
-    if (settings->GetLastUploadAttemptTime(&last_upload_attempt_time)) {
-      time_t now = time(nullptr);
-      if (now >= last_upload_attempt_time) {
-        // If the most recent upload attempt occurred within the past hour,
-        // don’t attempt to upload the new report. If it happened longer ago,
-        // attempt to upload the report.
-        constexpr int kUploadAttemptIntervalSeconds = 60 * 60;  // 1 hour
-        if (now - last_upload_attempt_time < kUploadAttemptIntervalSeconds) {
-          database_->SkipReportUpload(
-              report.uuid, Metrics::CrashSkippedReason::kUploadThrottled);
-          return;
-        }
-      } else {
-        // The most recent upload attempt purportedly occurred in the future. If
-        // it “happened” at least one day in the future, assume that the last
-        // upload attempt time is bogus, and attempt to upload the report. If
-        // the most recent upload time is in the future but within one day,
-        // accept it and don’t attempt to upload the report.
-        constexpr int kBackwardsClockTolerance = 60 * 60 * 24;  // 1 day
-        if (last_upload_attempt_time - now < kBackwardsClockTolerance) {
-          database_->SkipReportUpload(
-              report.uuid, Metrics::CrashSkippedReason::kUnexpectedTime);
-          return;
-        }
-      }
-    }
-  }
+  if (ShouldRateLimitUpload(report))
+    return;
+
+#if defined(OS_IOS)
+  if (ShouldRateLimitRetry(report))
+    return;
+#endif
 
   std::unique_ptr<const CrashReportDatabase::UploadReport> upload_report;
   CrashReportDatabase::OperationStatus status =
@@ -234,6 +217,19 @@ void CrashReportUploadThread::ProcessPendingReport(
           report.uuid, Metrics::CrashSkippedReason::kPrepareForUploadFailed);
       break;
     case UploadResult::kRetry:
+#if defined(OS_IOS)
+      if (upload_report->upload_attempts > kRetryAttempts) {
+        upload_report.reset();
+        database_->SkipReportUpload(report.uuid,
+                                    Metrics::CrashSkippedReason::kUploadFailed);
+      } else {
+        Metrics::CrashUploadSkipped(
+            Metrics::CrashSkippedReason::kUploadFailedButCanRetry);
+        retry_uuid_time_map_[report.uuid] =
+            time(nullptr) +
+            (1 << upload_report->upload_attempts) * kRetryWorkIntervalSeconds;
+      }
+#else
       upload_report.reset();
 
       // TODO(mark): Deal with retries properly: don’t call SkipReportUplaod()
@@ -241,6 +237,7 @@ void CrashReportUploadThread::ProcessPendingReport(
       // too many times.
       database_->SkipReportUpload(report.uuid,
                                   Metrics::CrashSkippedReason::kUploadFailed);
+#endif
       break;
   }
 }
@@ -343,5 +340,56 @@ CrashReportUploadThread::UploadResult CrashReportUploadThread::UploadReport(
 void CrashReportUploadThread::DoWork(const WorkerThread* thread) {
   ProcessPendingReports();
 }
+
+bool CrashReportUploadThread::ShouldRateLimitUpload(
+    const CrashReportDatabase::Report& report) {
+  if (report.upload_explicitly_requested || !options_.rate_limit)
+    return false;
+
+  Settings* const settings = database_->GetSettings();
+  time_t last_upload_attempt_time;
+  if (settings->GetLastUploadAttemptTime(&last_upload_attempt_time)) {
+    time_t now = time(nullptr);
+    if (now >= last_upload_attempt_time) {
+      // If the most recent upload attempt occurred within the past hour,
+      // don’t attempt to upload the new report. If it happened longer ago,
+      // attempt to upload the report.
+      constexpr int kUploadAttemptIntervalSeconds = 60 * 60;  // 1 hour
+      if (now - last_upload_attempt_time < kUploadAttemptIntervalSeconds) {
+        database_->SkipReportUpload(
+            report.uuid, Metrics::CrashSkippedReason::kUploadThrottled);
+        return true;
+      }
+    } else {
+      // The most recent upload attempt purportedly occurred in the future. If
+      // it “happened” at least one day in the future, assume that the last
+      // upload attempt time is bogus, and attempt to upload the report. If
+      // the most recent upload time is in the future but within one day,
+      // accept it and don’t attempt to upload the report.
+      constexpr int kBackwardsClockTolerance = 60 * 60 * 24;  // 1 day
+      if (last_upload_attempt_time - now < kBackwardsClockTolerance) {
+        database_->SkipReportUpload(
+            report.uuid, Metrics::CrashSkippedReason::kUnexpectedTime);
+        return true;
+      }
+    }
+  }
+  return false;
+}
+
+#if defined(OS_IOS)
+bool CrashReportUploadThread::ShouldRateLimitRetry(
+    const CrashReportDatabase::Report& report) {
+  if (retry_uuid_time_map_.find(report.uuid) != retry_uuid_time_map_.end()) {
+    time_t now = time(nullptr);
+    if (now < retry_uuid_time_map_[report.uuid]) {
+      return true;
+    } else {
+      retry_uuid_time_map_.erase(report.uuid);
+    }
+  }
+  return false;
+}
+#endif
 
 }  // namespace crashpad

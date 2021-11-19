@@ -21,6 +21,7 @@ static_library("minidump_uploader") {
     "//third_party/crashpad/crashpad/handler",
     "//third_party/crashpad/crashpad/snapshot",
     "//third_party/crashpad/crashpad/util",
+    "//third_party/crashpad/crashpad/util:net",
   ]
 }
 

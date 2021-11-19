@@ -89,6 +89,10 @@ class Metrics {
     //!     and uploading it to the crash server.
     kPrepareForUploadFailed = 5,
 
+    //! \brief The upload of the crash failed during communication with the
+    //!     server, but the upload can be retried later.
+    kUploadFailedButCanRetry = 6,
+
     //! \brief The number of values in this enumeration; not a valid value.
     kMaxValue
   };
