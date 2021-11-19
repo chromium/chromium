@@ -4,7 +4,11 @@
 
 #include "ash/webui/shimless_rma/backend/shimless_rma_service.h"
 
+#include <memory>
+#include <utility>
+
 #include "ash/public/cpp/network_config_service.h"
+#include "ash/webui/shimless_rma/backend/shimless_rma_delegate.h"
 #include "ash/webui/shimless_rma/backend/version_updater.h"
 #include "ash/webui/shimless_rma/mojom/shimless_rma.mojom.h"
 #include "ash/webui/shimless_rma/mojom/shimless_rma_mojom_traits.h"
@@ -74,7 +78,9 @@ mojom::QrCodePtr GenerateQRCode(const std::string& input) {
 
 }  // namespace
 
-ShimlessRmaService::ShimlessRmaService() {
+ShimlessRmaService::ShimlessRmaService(
+    std::unique_ptr<ShimlessRmaDelegate> shimless_rma_delegate)
+    : shimless_rma_delegate_(std::move(shimless_rma_delegate)) {
   chromeos::RmadClient::Get()->AddObserver(this);
   GetNetworkConfigService(
       remote_cros_network_config_.BindNewPipeAndPassReceiver());

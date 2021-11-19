@@ -4,12 +4,14 @@
 
 #include "ash/webui/shimless_rma/shimless_rma.h"
 
+#include <memory>
 #include <string>
 #include <utility>
 
 #include "ash/grit/ash_shimless_rma_resources.h"
 #include "ash/grit/ash_shimless_rma_resources_map.h"
 #include "ash/public/cpp/network_config_service.h"
+#include "ash/webui/shimless_rma/backend/shimless_rma_delegate.h"
 #include "ash/webui/shimless_rma/url_constants.h"
 #include "base/containers/span.h"
 #include "base/memory/ptr_util.h"
@@ -253,10 +255,12 @@ void AddShimlessRmaStrings(content::WebUIDataSource* html_source) {
 
 }  // namespace
 
-ShimlessRMADialogUI::ShimlessRMADialogUI(content::WebUI* web_ui)
+ShimlessRMADialogUI::ShimlessRMADialogUI(
+    content::WebUI* web_ui,
+    std::unique_ptr<shimless_rma::ShimlessRmaDelegate> shimless_rma_delegate)
     : ui::MojoWebDialogUI(web_ui),
-      shimless_rma_manager_(
-          std::make_unique<shimless_rma::ShimlessRmaService>()) {
+      shimless_rma_manager_(std::make_unique<shimless_rma::ShimlessRmaService>(
+          std::move(shimless_rma_delegate))) {
   auto html_source = base::WrapUnique(
       content::WebUIDataSource::Create(kChromeUIShimlessRMAHost));
   html_source->OverrideContentSecurityPolicy(

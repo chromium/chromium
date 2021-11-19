@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/webui/chrome_web_ui_controller_factory.h"
 
 #include <stddef.h>
+#include <memory>
 #include <utility>
 
 #include "base/bind.h"
@@ -198,6 +199,7 @@
 #include "chrome/browser/ash/scanning/chrome_scanning_app_delegate.h"
 #include "chrome/browser/ash/scanning/scan_service.h"
 #include "chrome/browser/ash/scanning/scan_service_factory.h"
+#include "chrome/browser/ash/shimless_rma/chrome_shimless_rma_delegate.h"
 #include "chrome/browser/ash/web_applications/camera_app/chrome_camera_app_ui_delegate.h"
 #include "chrome/browser/ash/web_applications/chrome_file_manager_ui_delegate.h"
 #include "chrome/browser/ash/web_applications/help_app/help_app_ui_delegate.h"
@@ -493,6 +495,13 @@ WebUIController* NewWebUI<ash::ScanningUI>(WebUI* web_ui, const GURL& url) {
   return new ash::ScanningUI(
       web_ui, base::BindRepeating(&BindScanService, profile),
       std::make_unique<ash::ChromeScanningAppDelegate>(web_ui));
+}
+
+template <>
+WebUIController* NewWebUI<ash::ShimlessRMADialogUI>(WebUI* web_ui,
+                                                    const GURL& url) {
+  return new ash::ShimlessRMADialogUI(
+      web_ui, std::make_unique<ash::shimless_rma::ChromeShimlessRmaDelegate>());
 }
 
 template <>

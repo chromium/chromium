@@ -5,6 +5,7 @@
 #ifndef ASH_WEBUI_SHIMLESS_RMA_BACKEND_SHIMLESS_RMA_SERVICE_H_
 #define ASH_WEBUI_SHIMLESS_RMA_BACKEND_SHIMLESS_RMA_SERVICE_H_
 
+#include <memory>
 #include <string>
 
 #include "ash/webui/shimless_rma/backend/version_updater.h"
@@ -22,10 +23,13 @@
 namespace ash {
 namespace shimless_rma {
 
+class ShimlessRmaDelegate;
+
 class ShimlessRmaService : public mojom::ShimlessRmaService,
                            public chromeos::RmadClient::Observer {
  public:
-  ShimlessRmaService();
+  ShimlessRmaService(
+      std::unique_ptr<ShimlessRmaDelegate> shimless_rma_delegate);
   ShimlessRmaService(const ShimlessRmaService&) = delete;
   ShimlessRmaService& operator=(const ShimlessRmaService&) = delete;
 
@@ -222,6 +226,9 @@ class ShimlessRmaService : public mojom::ShimlessRmaService,
 
   VersionUpdater version_updater_;
   base::OnceCallback<void(const std::string& version)> check_os_callback_;
+
+  // Provides browser functionality from //chrome to the Shimless RMA UI.
+  std::unique_ptr<ShimlessRmaDelegate> shimless_rma_delegate_;
 
   // Note: This should remain the last member so it'll be destroyed and
   // invalidate its weak pointers before any other members are destroyed.

@@ -19,10 +19,16 @@ class WebUI;
 
 namespace ash {
 
+namespace shimless_rma {
+class ShimlessRmaDelegate;
+}  // namespace shimless_rma
+
 // The WebUI for ShimlessRMA or chrome://shimless-rma.
 class ShimlessRMADialogUI : public ui::MojoWebDialogUI {
  public:
-  explicit ShimlessRMADialogUI(content::WebUI* web_ui);
+  ShimlessRMADialogUI(
+      content::WebUI* web_ui,
+      std::unique_ptr<shimless_rma::ShimlessRmaDelegate> shimless_rma_delegate);
   ~ShimlessRMADialogUI() override;
 
   ShimlessRMADialogUI(const ShimlessRMADialogUI&) = delete;

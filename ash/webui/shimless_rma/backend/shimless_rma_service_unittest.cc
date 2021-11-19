@@ -9,6 +9,7 @@
 #include <utility>
 #include <vector>
 
+#include "ash/webui/shimless_rma/backend/shimless_rma_delegate.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
@@ -57,6 +58,17 @@ class FakeRmadClientForTest : public FakeRmadClient {
       check_state_callback;
 };
 
+// A fake impl of ShimlessRmaDelegate.
+class FakeShimlessRmaDelegate : public ShimlessRmaDelegate {
+ public:
+  FakeShimlessRmaDelegate() = default;
+
+  FakeShimlessRmaDelegate(const FakeShimlessRmaDelegate&) = delete;
+  FakeShimlessRmaDelegate& operator=(const FakeShimlessRmaDelegate&) = delete;
+
+  void RestartChrome() override {}
+};
+
 }  // namespace
 
 class ShimlessRmaServiceTest : public testing::Test {
@@ -76,7 +88,8 @@ class ShimlessRmaServiceTest : public testing::Test {
     rmad_client_ = chromeos::RmadClient::Get();
     // ShimlessRmaService has to be created after RmadClient or there will be a
     // null ptr dereference in the service constructor.
-    shimless_rma_provider_ = std::make_unique<ShimlessRmaService>();
+    shimless_rma_provider_ = std::make_unique<ShimlessRmaService>(
+        std::make_unique<FakeShimlessRmaDelegate>());
 
     // Wait until |cros_network_config_test_helper_| has initialized.
     base::RunLoop().RunUntilIdle();

@@ -1,0 +1,24 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef ASH_WEBUI_SHIMLESS_RMA_BACKEND_SHIMLESS_RMA_DELEGATE_H_
+#define ASH_WEBUI_SHIMLESS_RMA_BACKEND_SHIMLESS_RMA_DELEGATE_H_
+
+namespace ash {
+namespace shimless_rma {
+
+// A delegate which exposes browser functionality from //chrome to the Shimless
+// RMA UI.
+class ShimlessRmaDelegate {
+ public:
+  virtual ~ShimlessRmaDelegate() = default;
+
+  // Restarts the Chrome session.
+  virtual void RestartChrome() = 0;
+};
+
+}  // namespace shimless_rma
+}  // namespace ash
+
+#endif  // ASH_WEBUI_SHIMLESS_RMA_BACKEND_SHIMLESS_RMA_DELEGATE_H_
