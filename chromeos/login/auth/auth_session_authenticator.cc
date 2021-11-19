@@ -395,9 +395,86 @@ void AuthSessionAuthenticator::LoginOffTheRecord() {
       /* existing_user_flow */ std::move(guest_exists), std::move(context));
 }
 
+// Public sessions aka Managed Guest Sessions are always ephemeral.
+// Most of the MGS have no credentials, but it optionally can
+// have a password set by extension (so that it is possible to lock session).
 void AuthSessionAuthenticator::LoginAsPublicSession(
     const UserContext& user_context) {
-  NOTIMPLEMENTED();
+  DCHECK_EQ(user_context.GetUserType(), user_manager::USER_TYPE_PUBLIC_ACCOUNT);
+
+  PrepareForNewAttempt("LoginAsPublicSession", "Managed guest session");
+
+  std::unique_ptr<UserContext> context =
+      std::make_unique<UserContext>(user_context);
+
+  if (safe_mode_delegate_->IsSafeMode()) {
+    LOGIN_LOG(EVENT) << "Managed guests can not sign-in in safe mode";
+    NotifyFailure(AuthFailure::OWNER_REQUIRED, std::move(context));
+    return;
+  }
+
+  // (1) Initialize AuthSession & transform keys
+  //   (1.1) MGS are always ephemeral
+  //   (1.2) Key can be empty or be a password
+  //   (2) MGS are ephemeral and can not exist
+  //   For new users:
+  //     (3) Add user key (even if it is empty, this is current limitation)
+  //     (4) Authenticate session with same key
+  //     (5) Mount home directory
+  //        (5.1) with create request (ephemeral is implied by session flag)
+  //     (#) Notify success
+  // (*) Errors are notified as COULD_NOT_MOUNT_TMPFS
+
+  // Callbacks are created in reverse order:
+
+  // (*)
+  auto error_handler_repeating = base::BindRepeating(
+      &AuthSessionAuthenticator::ProcessCryptohomeError,
+      weak_factory_.GetWeakPtr(),
+      /* default_error */ AuthFailure::COULD_NOT_MOUNT_TMPFS);
+  // (#)
+  ContextCallback success = base::BindOnce(
+      &AuthSessionAuthenticator::NotifyAuthSuccess, weak_factory_.GetWeakPtr());
+  // (5.1)
+  ConfigureMountCallback mount_create_cfg =
+      base::BindOnce(&ConfigureCreateMount);
+  // (5)
+  NewUserAuthSessionCallback mgs_mount = base::BindOnce(
+      &AuthSessionAuthenticator::MountGeneric, weak_factory_.GetWeakPtr(),
+      /* error_handler */ base::BindOnce(error_handler_repeating),
+      /* configurator */ std::move(mount_create_cfg),
+      /* continuation */ std::move(success));
+  // (4)
+  ContextCallback authenticate_same_key = base::BindOnce(
+      &AuthSessionAuthenticator::AuthenticateSessionGeneric,
+      weak_factory_.GetWeakPtr(),
+      /* error_handler */ base::BindOnce(error_handler_repeating),
+      /* key_transformer */ base::BindOnce(&TransformToLabeledKey),
+      /* continuation */ std::move(mgs_mount));
+  // (3)
+  NewUserAuthSessionCallback new_user_flow = base::BindOnce(
+      &AuthSessionAuthenticator::AddInitialCredentialsGeneric,
+      weak_factory_.GetWeakPtr(),
+      /* error_handler */ base::BindOnce(error_handler_repeating),
+      /* key_transformer */ base::BindOnce(&TransformToLabeledKey),
+      /* continuation */ std::move(authenticate_same_key));
+  // (2)
+  ExistingUserAuthSessionCallback mgs_exists = base::BindOnce(
+      &AuthSessionAuthenticator::NotifyFailure, weak_factory_.GetWeakPtr(),
+      AuthFailure::COULD_NOT_MOUNT_TMPFS);
+  // (1.2)
+  auto password_hasher = base::BindOnce(&HashPassword);
+  // (1.1)
+  auto ephemeral_session_configurator =
+      base::BindOnce(&ConfigureEphemeralSession);
+  // (1)
+  CreateAuthSessionGeneric(
+      "ManagedGuest",
+      /* error_handler */ base::BindOnce(error_handler_repeating),
+      /* configurator */ std::move(ephemeral_session_configurator),
+      /* key_hasher */ std::move(password_hasher),
+      /* new_user_flow */ std::move(new_user_flow),
+      /* existing_user_flow */ std::move(mgs_exists), std::move(context));
 }
 
 void AuthSessionAuthenticator::LoginAsKioskAccount(
@@ -780,7 +857,6 @@ void AuthSessionAuthenticator::NonOwnerUnmountErrorHandler(
   // Crash if could not unmount home directory, and let session_manager
   // handle it.
   LOG(FATAL) << "Failed to unmount non-owner home directory " << error;
-  NotifyFailure(AuthFailure::OWNER_REQUIRED, std::move(context));
 }
 
 void AuthSessionAuthenticator::MountErrorHandling(
