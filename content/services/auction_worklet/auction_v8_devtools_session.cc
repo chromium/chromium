@@ -190,6 +190,15 @@ AuctionV8DevToolsSession::~AuctionV8DevToolsSession() {
   v8_session_.reset();
 }
 
+base::OnceClosure AuctionV8DevToolsSession::MakeAbortPauseCallback() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(v8_sequence_checker_);
+  // Note that this can be cancelled by the weak pointer only if the session
+  // got unpaused by other means, since if it's paused it's not returning
+  // control to the event loop, so Mojo won't get a chance to delete `this`.
+  return base::BindOnce(&AuctionV8DevToolsSession::AbortDebuggerPause,
+                        weak_ptr_factory_.GetWeakPtr());
+}
+
 void AuctionV8DevToolsSession::MaybeTriggerInstrumentationBreakpoint(
     const std::string& name) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(v8_sequence_checker_);
@@ -280,6 +289,13 @@ void AuctionV8DevToolsSession::FallThrough(int call_id,
 void AuctionV8DevToolsSession::FlushProtocolNotifications() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(v8_sequence_checker_);
   NOTIMPLEMENTED();
+}
+
+void AuctionV8DevToolsSession::AbortDebuggerPause() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(v8_sequence_checker_);
+  // Note that if the session got resumed by other means before execution got
+  // here V8 will simply ignore this call.
+  v8_session_->resume(/*setTerminateOnResume=*/true);
 }
 
 void AuctionV8DevToolsSession::SendProtocolResponseImpl(

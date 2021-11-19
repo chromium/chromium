@@ -2349,5 +2349,52 @@ TEST_F(BidderWorkletTest, InstrumentationBreakpoints) {
   run_loop.Run();
 }
 
+TEST_F(BidderWorkletTest, UnloadWhilePaused) {
+  // Make sure things are cleaned up properly if the worklet is destroyed while
+  // paused on a breakpoint.
+  const char kUrl[] = "http://example.com/bid.js";
+
+  AddJavascriptResponse(
+      &url_loader_factory_, GURL(kUrl),
+      CreateReportWinScript(R"(sendReportTo("https://foo.test"))"));
+
+  auto worklet =
+      CreateWorklet(GURL(kUrl), /*pause_for_debugger_on_start=*/true);
+  GenerateBid(worklet.get());
+
+  mojo::Remote<blink::mojom::DevToolsAgent> agent;
+  worklet->ConnectDevToolsAgent(agent.BindNewPipeAndPassReceiver());
+
+  TestDevToolsAgentClient debug(std::move(agent), "123",
+                                /*use_binary_protocol=*/true);
+
+  debug.RunCommandAndWaitForResult(
+      TestDevToolsAgentClient::Channel::kMain, 1, "Runtime.enable",
+      R"({"id":1,"method":"Runtime.enable","params":{}})");
+  debug.RunCommandAndWaitForResult(
+      TestDevToolsAgentClient::Channel::kMain, 2, "Debugger.enable",
+      R"({"id":2,"method":"Debugger.enable","params":{}})");
+
+  // Set an instrumentation breakpoint to get it debugger paused.
+  debug.RunCommandAndWaitForResult(
+      TestDevToolsAgentClient::Channel::kMain, 3,
+      "EventBreakpoints.setInstrumentationBreakpoint",
+      MakeInstrumentationBreakpointCommand(3, "set",
+                                           "beforeBidderWorkletBiddingStart"));
+  debug.RunCommandAndWaitForResult(
+      TestDevToolsAgentClient::Channel::kMain, 4,
+      "Runtime.runIfWaitingForDebugger",
+      R"({"id":4,"method":"Runtime.runIfWaitingForDebugger","params":{}})");
+
+  // Wait for breakpoint to hit.
+  debug.WaitForMethodNotification("Debugger.paused");
+
+  // ... and destroy the worklet
+  worklet.reset();
+
+  // This won't terminate if the V8 thread is still blocked in debugger.
+  task_environment_.RunUntilIdle();
+}
+
 }  // namespace
 }  // namespace auction_worklet

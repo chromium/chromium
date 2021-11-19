@@ -63,6 +63,10 @@ class AuctionV8DevToolsSession : public blink::mojom::DevToolsSession,
   AuctionV8DevToolsSession& operator=(const AuctionV8DevToolsSession&) = delete;
   ~AuctionV8DevToolsSession() override;
 
+  // Creates a callback that will ask V8 to exit a debugger pause and abort
+  // further execution. Bound to a weak pointer.
+  base::OnceClosure MakeAbortPauseCallback();
+
   int context_group_id() const { return context_group_id_; }
 
   // If an instrumentation breakpoint named `name` has been set, asks V8 for
@@ -102,6 +106,8 @@ class AuctionV8DevToolsSession : public blink::mojom::DevToolsSession,
  private:
   class IOSession;
   class BreakpointHandler;
+
+  void AbortDebuggerPause();
 
   void SendProtocolResponseImpl(int call_id, std::vector<uint8_t> message);
   void SendNotificationImpl(std::vector<uint8_t> message);

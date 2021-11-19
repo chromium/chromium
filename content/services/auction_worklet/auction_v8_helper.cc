@@ -276,6 +276,10 @@ void AuctionV8Helper::DebugId::SetResumeCallback(
   v8_helper_->SetResumeCallback(context_group_id_, std::move(resume_callback));
 }
 
+void AuctionV8Helper::DebugId::AbortDebuggerPauses() {
+  v8_helper_->AbortDebuggerPauses(context_group_id_);
+}
+
 AuctionV8Helper::DebugId::~DebugId() {
   v8_helper_->FreeContextGroupId(context_group_id_);
 }
@@ -519,6 +523,10 @@ v8::MaybeLocal<v8::Value> AuctionV8Helper::RunScript(
   return func_result;
 }
 
+void AuctionV8Helper::AbortDebuggerPauses(int context_group_id) {
+  debug_command_queue_->AbortPauses(context_group_id);
+}
+
 void AuctionV8Helper::MaybeTriggerInstrumentationBreakpoint(
     const DebugId& debug_id,
     const std::string& name) {
@@ -561,9 +569,12 @@ void AuctionV8Helper::SetResumeCallback(int context_group_id,
 }
 
 void AuctionV8Helper::FreeContextGroupId(int context_group_id) {
-  base::AutoLock hold_lock(context_groups_lock_);
-  size_t removed = resume_callbacks_.erase(context_group_id);
-  DCHECK_EQ(1u, removed);
+  debug_command_queue_->RecycleContextGroupId(context_group_id);
+  {
+    base::AutoLock hold_lock(context_groups_lock_);
+    size_t removed = resume_callbacks_.erase(context_group_id);
+    DCHECK_EQ(1u, removed);
+  }
 }
 
 void AuctionV8Helper::Resume(int context_group_id) {
@@ -669,7 +680,8 @@ AuctionV8Helper::AuctionV8Helper(
     scoped_refptr<base::SingleThreadTaskRunner> v8_runner)
     : base::RefCountedDeleteOnSequence<AuctionV8Helper>(v8_runner),
       v8_runner_(v8_runner),
-      timer_task_runner_(base::ThreadPool::CreateSequencedTaskRunner({})) {
+      timer_task_runner_(base::ThreadPool::CreateSequencedTaskRunner({})),
+      debug_command_queue_(base::MakeRefCounted<DebugCommandQueue>(v8_runner)) {
   DETACH_FROM_SEQUENCE(sequence_checker_);
 
   // InitV8 on main thread, to avoid races if multiple instances exist with
@@ -699,11 +711,6 @@ void AuctionV8Helper::CreateIsolate() {
       gin::IsolateHolder::IsolateType::kUtility);
   FullIsolateScope v8_scope(this);
   scratch_context_.Reset(isolate(), CreateContext());
-
-  // This is mostly unneeded unless the debugger agent is in use, but having it
-  // always wil lbe helpful for preventing races if debugger is being created
-  // right as a worklet is being unloaded.
-  debug_command_queue_ = std::make_unique<DebugCommandQueue>();
 }
 
 // static

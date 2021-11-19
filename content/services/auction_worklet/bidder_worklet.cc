@@ -185,6 +185,8 @@ BidderWorklet::~BidderWorklet() {
   // destroyed before the BidderWorklet itself is, but makes the class safer
   // against refactors of the Mojo API.
   FailAllPendingTasks();
+
+  debug_id_->AbortDebuggerPauses();
 }
 
 int BidderWorklet::context_group_id_for_testing() const {

@@ -107,10 +107,14 @@ void AuctionV8DevToolsAgent::runMessageLoopOnPause(int context_group_id) {
 
   auto it = context_groups_.find(context_group_id);
   DCHECK(it != context_groups_.end());
+  DCHECK(!it->second.sessions.empty());
+  AuctionV8DevToolsSession* session = *it->second.sessions.begin();
 
   v8_helper_->PauseTimeoutTimer();
   paused_ = true;
-  debug_command_queue_->PauseForDebuggerAndRunCommands();
+  base::OnceClosure abort_callback = session->MakeAbortPauseCallback();
+  debug_command_queue_->PauseForDebuggerAndRunCommands(
+      context_group_id, std::move(abort_callback));
   DCHECK(paused_);
   v8_helper_->ResumeTimeoutTimer();
   paused_ = false;

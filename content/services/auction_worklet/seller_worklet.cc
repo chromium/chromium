@@ -150,6 +150,7 @@ SellerWorklet::~SellerWorklet() {
     std::move(load_worklet_callback_)
         .Run(false /* success */, std::vector<std::string>() /* errors */);
   }
+  debug_id_->AbortDebuggerPauses();
 }
 
 int SellerWorklet::context_group_id_for_testing() const {

@@ -156,7 +156,6 @@ class SellerWorklet : public mojom::SellerWorklet {
       std::vector<std::string> errors);
 
   scoped_refptr<base::SequencedTaskRunner> v8_runner_;
-
   scoped_refptr<AuctionV8Helper> v8_helper_;
   scoped_refptr<AuctionV8Helper::DebugId> debug_id_;
 

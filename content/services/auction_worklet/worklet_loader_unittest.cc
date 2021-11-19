@@ -112,6 +112,8 @@ TEST_F(WorkletLoaderTest, CompileErrorWithDebugger) {
   run_loop_.Run();
   EXPECT_FALSE(load_succeeded_);
   channel->WaitForMethodNotification("Debugger.scriptFailedToParse");
+
+  id->AbortDebuggerPauses();
 }
 
 TEST_F(WorkletLoaderTest, Success) {

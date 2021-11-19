@@ -458,6 +458,7 @@ TEST_F(AuctionV8HelperTest, ContextIDs) {
 
   // ... including after free.
   int save_id1 = id1->context_group_id();
+  id1->AbortDebuggerPauses();
   id1.reset();
   helper_->Resume(save_id1);
   ASSERT_EQ(1, resume_callback_invocations);
@@ -472,6 +473,7 @@ TEST_F(AuctionV8HelperTest, ContextIDs) {
   EXPECT_GT(id2->context_group_id(), 0);
   ASSERT_EQ(1, resume_callback_invocations);
   int save_id2 = id2->context_group_id();
+  id2->AbortDebuggerPauses();
   id2.reset();
   helper_->Resume(save_id2);
   ASSERT_EQ(1, resume_callback_invocations);
@@ -490,6 +492,9 @@ TEST_F(AuctionV8HelperTest, ContextIDs) {
   ASSERT_EQ(2, resume_callback_invocations);
   helper_->Resume(save_id3);
   ASSERT_EQ(3, resume_callback_invocations);
+
+  id3->AbortDebuggerPauses();
+  id4->AbortDebuggerPauses();
 }
 
 TEST_F(AuctionV8HelperTest, AllocWrap) {
@@ -501,6 +506,9 @@ TEST_F(AuctionV8HelperTest, AllocWrap) {
   // `id2` should be positive and distinct from `id1`.
   EXPECT_GT(id2->context_group_id(), 0);
   EXPECT_NE(id1->context_group_id(), id2->context_group_id());
+
+  id1->AbortDebuggerPauses();
+  id2->AbortDebuggerPauses();
 }
 
 TEST_F(AuctionV8HelperTest, DebuggerBasics) {
@@ -569,6 +577,8 @@ TEST_F(AuctionV8HelperTest, DebuggerBasics) {
       source_response.value.FindStringPath("result.scriptSource");
   ASSERT_TRUE(parsed_src);
   EXPECT_EQ(kScriptSrc, *parsed_src);
+
+  id->AbortDebuggerPauses();
 }
 
 TEST_F(AuctionV8HelperTest, DebugCompileError) {
@@ -616,6 +626,8 @@ TEST_F(AuctionV8HelperTest, DebugCompileError) {
 
   TestChannel::Event context_destroyed_event =
       channel->WaitForMethodNotification("Runtime.executionContextDestroyed");
+
+  id->AbortDebuggerPauses();
 }
 
 TEST_F(AuctionV8HelperTest, DevToolsDebuggerBasics) {
@@ -720,6 +732,8 @@ TEST_F(AuctionV8HelperTest, DevToolsDebuggerBasics) {
     // Produced value changed by the write to `multiplier`.
     result_run_loop.Run();
     EXPECT_EQ(30, result);
+
+    id->AbortDebuggerPauses();
   }
 }
 
@@ -839,6 +853,8 @@ TEST_F(AuctionV8HelperTest, DevToolsAgentDebuggerInstrumentationBreakpoint) {
       // Wait for result.
       result_run_loop.Run();
       EXPECT_EQ(42, result);
+
+      id->AbortDebuggerPauses();
     }
   }
 }
@@ -863,6 +879,8 @@ TEST_F(AuctionV8HelperTest, DevToolsDebuggerInvalidCommand) {
             TestDevToolsAgentClient::Channel::kMain, 1, "NoSuchThing.enable",
             R"({"id":1,"method":"NoSuchThing.enable","params":{}})");
     EXPECT_TRUE(result.value.FindDictKey("error"));
+
+    id->AbortDebuggerPauses();
   }
 }
 
@@ -883,6 +901,7 @@ TEST_F(AuctionV8HelperTest, DevToolsDeleteSessionPipeLate) {
                                        use_binary_protocol);
   task_environment_.RunUntilIdle();
 
+  id->AbortDebuggerPauses();
   id.reset();
   helper_.reset();
   task_environment_.RunUntilIdle();
@@ -967,6 +986,8 @@ TEST_F(MockTimeAuctionV8HelperTest, TimelimitDebug) {
 
   result_run_loop.Run();
   EXPECT_EQ(3, result);
+
+  id->AbortDebuggerPauses();
 }
 
 TEST_F(AuctionV8HelperTest, DebugTimeout) {
@@ -1031,6 +1052,7 @@ TEST_F(AuctionV8HelperTest, DebugTimeout) {
 
   result_run_loop.Run();
   EXPECT_EQ(-1, result);
+  id->AbortDebuggerPauses();
 }
 
 }  // namespace auction_worklet

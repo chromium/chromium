@@ -79,7 +79,8 @@ class AuctionV8Helper
   };
 
   // A wrapper for identifiers used to associate V8 context's with debugging
-  // primitives.  Passed to methods like Compile and RunScript.
+  // primitives.  Passed to methods like Compile and RunScript. If one is
+  // created, AbortDebuggerPauses() must be called before its destruction.
   //
   // This class is thread-safe, except SetResumeCallback must be used from V8
   // thread.
@@ -97,6 +98,18 @@ class AuctionV8Helper
     // be bound to a a WeakPtr, since the invocation is ultimately via debugger
     // mojo pipes, making its timing hard to relate to worklet lifetime.
     void SetResumeCallback(base::OnceClosure resume_callback);
+
+    // If the JS thread is currently within AuctionV8Helper::RunScript() running
+    // code with this debug id, and the execution has been paused by the
+    // debugger, aborts the execution.
+    //
+    // Always prevents further debugger pauses of code associated with this
+    // debug id.
+    //
+    // This may be called from any thread, but note that posting this to the V8
+    // thread is unlikely to work, since this method is in particular useful for
+    // the cases where the V8 thread is blocked.
+    void AbortDebuggerPauses();
 
    private:
     friend class base::RefCountedThreadSafe<DebugId>;
@@ -309,6 +322,7 @@ class AuctionV8Helper
   int AllocContextGroupId();
   void SetResumeCallback(int context_group_id,
                          base::OnceClosure resume_callback);
+  void AbortDebuggerPauses(int context_group_id);
   void FreeContextGroupId(int context_group_id);
 
   static std::string FormatExceptionMessage(v8::Local<v8::Context> context,
@@ -343,8 +357,7 @@ class AuctionV8Helper
   std::map<int, base::OnceClosure> resume_callbacks_
       GUARDED_BY(context_groups_lock_);
 
-  std::unique_ptr<DebugCommandQueue> debug_command_queue_
-      GUARDED_BY_CONTEXT(sequence_checker_);
+  scoped_refptr<DebugCommandQueue> debug_command_queue_;
 
   // Destruction order between `devtools_agent_` and `v8_inspector_` is
   // relevant; see also comment in ~AuctionV8Helper().
