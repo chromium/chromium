@@ -18,19 +18,6 @@ namespace url {
 
 namespace {
 
-template<typename CHAR>
-void SetupReplacement(
-    void (Replacements<CHAR>::*func)(const CHAR*, const Component&),
-    Replacements<CHAR>* replacements,
-    const CHAR* str) {
-  if (str) {
-    Component comp;
-    if (str[0])
-      comp.len = static_cast<int>(strlen(str));
-    (replacements->*func)(str, comp);
-  }
-}
-
 // Returns the canonicalized string for the given URL string for the
 // GURLTest.Types test.
 std::string TypesTestCase(const char* src) {
@@ -496,60 +483,102 @@ TEST(GURLTest, Replacements) {
   // The most important thing to do here is to check that the proper
   // canonicalizer gets called based on the scheme of the input.
   struct ReplaceCase {
+    using ApplyReplacementsFunc = GURL(const GURL&);
+
     const char* base;
-    const char* scheme;
-    const char* username;
-    const char* password;
-    const char* host;
-    const char* port;
-    const char* path;
-    const char* query;
-    const char* ref;
+    ApplyReplacementsFunc* apply_replacements;
     const char* expected;
   } replace_cases[] = {
-      {"http://www.google.com/foo/bar.html?foo#bar", nullptr, nullptr, nullptr,
-       nullptr, nullptr, "/", "", "", "http://www.google.com/"},
-      {"http://www.google.com/foo/bar.html?foo#bar", "javascript", "", "", "",
-       "", "window.open('foo');", "", "", "javascript:window.open('foo');"},
-      {"file:///C:/foo/bar.txt", "http", nullptr, nullptr, "www.google.com",
-       "99", "/foo", "search", "ref",
-       "http://www.google.com:99/foo?search#ref"},
+      {.base = "http://www.google.com/foo/bar.html?foo#bar",
+       .apply_replacements =
+           +[](const GURL& url) {
+             GURL::Replacements replacements;
+             replacements.SetPathStr("/");
+             replacements.ClearQuery();
+             replacements.ClearRef();
+             return url.ReplaceComponents(replacements);
+           },
+       .expected = "http://www.google.com/"},
+      {.base = "http://www.google.com/foo/bar.html?foo#bar",
+       .apply_replacements =
+           +[](const GURL& url) {
+             GURL::Replacements replacements;
+             replacements.SetSchemeStr("javascript");
+             replacements.ClearUsername();
+             replacements.ClearPassword();
+             replacements.ClearHost();
+             replacements.ClearPort();
+             replacements.SetPathStr("window.open('foo');");
+             replacements.ClearQuery();
+             replacements.ClearRef();
+             return url.ReplaceComponents(replacements);
+           },
+       .expected = "javascript:window.open('foo');"},
+      {.base = "file:///C:/foo/bar.txt",
+       .apply_replacements =
+           +[](const GURL& url) {
+             GURL::Replacements replacements;
+             replacements.SetSchemeStr("http");
+             replacements.SetHostStr("www.google.com");
+             replacements.SetPortStr("99");
+             replacements.SetPathStr("/foo");
+             replacements.SetQueryStr("search");
+             replacements.SetRefStr("ref");
+             return url.ReplaceComponents(replacements);
+           },
+       .expected = "http://www.google.com:99/foo?search#ref"},
 #ifdef WIN32
-      {"http://www.google.com/foo/bar.html?foo#bar", "file", "", "", "", "",
-       "c:\\", "", "", "file:///C:/"},
+      {.base = "http://www.google.com/foo/bar.html?foo#bar",
+       .apply_replacements =
+           +[](const GURL& url) {
+             GURL::Replacements replacements;
+             replacements.SetSchemeStr("file");
+             replacements.ClearUsername();
+             replacements.ClearPassword();
+             replacements.ClearHost();
+             replacements.ClearPort();
+             replacements.SetPathStr("c:\\");
+             replacements.ClearQuery();
+             replacements.ClearRef();
+             return url.ReplaceComponents(replacements);
+           },
+       .expected = "file:///C:/"},
 #endif
-      {"filesystem:http://www.google.com/foo/bar.html?foo#bar", nullptr,
-       nullptr, nullptr, nullptr, nullptr, "/", "", "",
-       "filesystem:http://www.google.com/foo/"},
+      {.base = "filesystem:http://www.google.com/foo/bar.html?foo#bar",
+       .apply_replacements =
+           +[](const GURL& url) {
+             GURL::Replacements replacements;
+             replacements.SetPathStr("/");
+             replacements.ClearQuery();
+             replacements.ClearRef();
+             return url.ReplaceComponents(replacements);
+           },
+       .expected = "filesystem:http://www.google.com/foo/"},
       // Lengthen the URL instead of shortening it, to test creation of
       // inner_url.
-      {"filesystem:http://www.google.com/foo/", nullptr, nullptr, nullptr,
-       nullptr, nullptr, "bar.html", "foo", "bar",
-       "filesystem:http://www.google.com/foo/bar.html?foo#bar"},
+      {.base = "filesystem:http://www.google.com/foo/",
+       .apply_replacements =
+           +[](const GURL& url) {
+             GURL::Replacements replacements;
+             replacements.SetPathStr("bar.html");
+             replacements.SetQueryStr("foo");
+             replacements.SetRefStr("bar");
+             return url.ReplaceComponents(replacements);
+           },
+       .expected = "filesystem:http://www.google.com/foo/bar.html?foo#bar"},
   };
 
-  for (size_t i = 0; i < base::size(replace_cases); i++) {
-    const ReplaceCase& cur = replace_cases[i];
-    GURL url(cur.base);
-    GURL::Replacements repl;
-    SetupReplacement(&GURL::Replacements::SetScheme, &repl, cur.scheme);
-    SetupReplacement(&GURL::Replacements::SetUsername, &repl, cur.username);
-    SetupReplacement(&GURL::Replacements::SetPassword, &repl, cur.password);
-    SetupReplacement(&GURL::Replacements::SetHost, &repl, cur.host);
-    SetupReplacement(&GURL::Replacements::SetPort, &repl, cur.port);
-    SetupReplacement(&GURL::Replacements::SetPath, &repl, cur.path);
-    SetupReplacement(&GURL::Replacements::SetQuery, &repl, cur.query);
-    SetupReplacement(&GURL::Replacements::SetRef, &repl, cur.ref);
-    GURL output = url.ReplaceComponents(repl);
+  for (const ReplaceCase& c : replace_cases) {
+    GURL output = c.apply_replacements(GURL(c.base));
 
-    EXPECT_EQ(replace_cases[i].expected, output.spec());
+    EXPECT_EQ(c.expected, output.spec());
 
     EXPECT_EQ(output.SchemeIsFileSystem(), output.inner_url() != NULL);
     if (output.SchemeIsFileSystem()) {
       // TODO(mmenke): inner_url()->spec() is currently the same as the spec()
       // for the GURL itself.  This should be fixed.
       // See https://crbug.com/619596
-      EXPECT_EQ(replace_cases[i].expected, output.inner_url()->spec());
+      EXPECT_EQ(c.expected, output.inner_url()->spec());
     }
   }
 }
