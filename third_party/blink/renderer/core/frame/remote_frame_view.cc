@@ -110,7 +110,6 @@ void RemoteFrameView::SetViewportIntersection(
   new_state.compositor_visible_rect = ToGfxRect(compositing_rect_);
   if (!last_intersection_state_.Equals(new_state)) {
     last_intersection_state_ = new_state;
-    GetFrame().SynchronizeVisualProperties();
     remote_frame_->SetViewportIntersection(new_state);
   } else if (needs_frame_rect_propagation_) {
     PropagateFrameRects();

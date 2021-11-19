@@ -498,6 +498,7 @@ void RenderWidgetHostViewChildFrame::UpdateViewportIntersection(
         !intersection_state.viewport_intersection.IsEmpty());
 
     // Do not send viewport intersection to main frames.
+    DCHECK(!visual_properties.has_value() || !host()->owner_delegate());
     if (!host()->owner_delegate()) {
       host()->GetAssociatedFrameWidget()->SetViewportIntersection(
           intersection_state.Clone(), visual_properties);
