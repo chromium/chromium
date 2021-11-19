@@ -12,7 +12,7 @@
 # tags: [ android-nexus-5 android-nexus-5x android-nexus-9 android-pixel-2
 #             android-pixel-4 android-shield-android-tv
 #         chromeos-board-amd64-generic chromeos-board-kevin chromeos-board-eve
-#         fuchsia-board-astro fuchsia-board-qemu-x64 ]
+#         fuchsia-board-astro fuchsia-board-sherlock fuchsia-board-qemu-x64 ]
 # Platform
 # tags: [ desktop
 #         mobile ]
@@ -429,6 +429,7 @@ crbug.com/1086687 [ chromeos chromeos-board-kevin ] Pixel_PrecisionRoundedCorner
 
 # Flaky hang.
 crbug.com/1218288 [ fuchsia-board-astro ] Pixel_PrecisionRoundedCorner [ Failure ]
+crbug.com/1218288 [ fuchsia-board-sherlock ] Pixel_PrecisionRoundedCorner [ Failure ]
 crbug.com/1136875 [ fuchsia-board-qemu-x64 ] Pixel_PrecisionRoundedCorner [ RetryOnFailure ]
 
 # Still fails on Nexus 5 after all other Pixel_CanvasLowLatency* pass.
@@ -475,6 +476,10 @@ crbug.com/1268120 [ mac ] Pixel_WebGPUToDataURL [ Failure ]
 
 # NVIDIA Quadro P400 GPU has problem to generate correct rendering results.
 crbug.com/1238570 [ win nvidia-0x1cb3 ] Pixel_WebGPUImportVideoFrame [ Failure ]
+
+# Failures on Sherlock
+# Pixel_BackgroundImage causes a crash on Swarming. Skipping so that we have a signal for other tests.
+crbug.com/1268144 [ fuchsia fuchsia-board-sherlock skia-renderer-vulkan ] Pixel_BackgroundImage [ Skip ]
 
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #
