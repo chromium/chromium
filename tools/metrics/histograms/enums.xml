@@ -42451,6 +42451,8 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="7" label="Boot stage timeout other than the above"/>
   <int value="8" label="Device reported wrong magic number"/>
   <int value="9" label="Fault bit set during boot"/>
+  <int value="10" label="MCU flash update failed"/>
+  <int value="11" label="SPI flash update failed"/>
 </enum>
 
 <enum name="HrefTranslatePrefsFilterStatus">
