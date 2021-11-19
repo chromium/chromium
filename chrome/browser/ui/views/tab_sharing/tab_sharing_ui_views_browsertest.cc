@@ -325,9 +325,9 @@ IN_PROC_BROWSER_TEST_P(TabSharingUIViewsBrowserTest, SwitchSharedTab) {
   CreateUiAndStartSharing(browser(), /*capturing_tab=*/0, /*captured_tab=*/1);
 
   // Share a different tab.
+  // When switching tabs, a new UI is created, and the old one destroyed.
   ActivateTab(browser(), 2);
-  tab_sharing_ui_views()->StartSharing(
-      GetInfoBarManager(browser(), 2)->infobar_at(0));
+  CreateUiAndStartSharing(browser(), /*capturing_tab=*/0, /*captured_tab=*/2);
 
   // Test that the UI has been updated.
   VerifyUi(browser(), /*capturing_tab=*/0, /*captured_tab=*/2);

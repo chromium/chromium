@@ -243,21 +243,17 @@ gfx::NativeViewId TabSharingUIViews::OnStarted(
 }
 
 void TabSharingUIViews::StartSharing(infobars::InfoBar* infobar) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (source_callback_.is_null())
     return;
-
-  SetContentsBorderVisible(shared_tab_, false);
 
   WebContents* shared_tab =
       infobars::ContentInfoBarManager::WebContentsFromInfoBar(infobar);
   DCHECK(shared_tab);
   DCHECK_EQ(infobars_[shared_tab], infobar);
-  shared_tab_ = shared_tab;
-  shared_tab_name_ = GetTabName(shared_tab_);
 
   RenderFrameHost* main_frame = shared_tab->GetMainFrame();
   DCHECK(main_frame);
-  RemoveInfobarsForAllTabs();
   source_callback_.Run(content::DesktopMediaID(
       content::DesktopMediaID::TYPE_WEB_CONTENTS,
       content::DesktopMediaID::kNullId,
