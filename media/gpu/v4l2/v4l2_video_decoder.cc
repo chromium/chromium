@@ -418,7 +418,8 @@ CroStatus V4L2VideoDecoder::SetupOutputFormat(const gfx::Size& size,
       client_->PickDecoderOutputFormat(
           candidates, visible_rect, aspect_ratio_.GetNaturalSize(visible_rect),
           /*output_size=*/absl::nullopt, num_output_frames_,
-          /*use+protected=*/false, /*need_aux_frame_pool=*/false);
+          /*use+protected=*/false, /*need_aux_frame_pool=*/false,
+          absl::nullopt);
   if (status_or_output_format.has_error()) {
     VLOGF(1) << "Failed to pick an output format.";
     return std::move(status_or_output_format).error().code();

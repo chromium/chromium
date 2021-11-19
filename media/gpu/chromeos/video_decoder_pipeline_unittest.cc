@@ -662,7 +662,7 @@ TEST_F(VideoDecoderPipelineTest, PickDecoderOutputFormat) {
         test_vector.input_candidates, kVisibleRect,
         /*decoder_natural_size=*/kVisibleRect.size(),
         /*output_size=*/absl::nullopt, /*num_of_pictures=*/kMaxNumOfFrames,
-        /*use_protected=*/false, /*need_aux_frame_pool=*/false);
+        /*use_protected=*/false, /*need_aux_frame_pool=*/false, absl::nullopt);
     ASSERT_TRUE(status_or_chosen_candidate.has_value());
     const PixelLayoutCandidate chosen_candidate =
         std::move(status_or_chosen_candidate).value();
@@ -676,7 +676,10 @@ TEST_F(VideoDecoderPipelineTest, PickDecoderOutputFormat) {
   DetachDecoderSequenceChecker();
 }
 
-#if BUILDFLAG(USE_VAAPI)
+// These tests only work on non-linux vaapi systems, since on linux, there is no
+// support for different modifiers.
+#if BUILDFLAG(USE_VAAPI) && !defined(OS_LINUX)
+
 // Verifies the algorithm for choosing formats in PickDecoderOutputFormat works
 // as expected when the pool returns linear buffers. It should allocate an image
 // processor in those cases.
@@ -716,7 +719,7 @@ TEST_F(VideoDecoderPipelineTest, PickDecoderOutputFormatLinearModifier) {
       {candidate}, kVisibleRect,
       /*decoder_natural_size=*/kVisibleRect.size(),
       /*output_size=*/absl::nullopt, /*num_of_pictures=*/kMaxNumOfFrames,
-      /*use_protected=*/false, /*need_aux_frame_pool=*/false);
+      /*use_protected=*/false, /*need_aux_frame_pool=*/false, absl::nullopt);
 
   EXPECT_TRUE(status_or_chosen_candidate.has_value());
   // Main concern is that the image processor was set.
@@ -749,13 +752,14 @@ TEST_F(VideoDecoderPipelineTest, PickDecoderOutputFormatUnsupportedModifier) {
       {candidate}, kVisibleRect,
       /*decoder_natural_size=*/kVisibleRect.size(),
       /*output_size=*/absl::nullopt, /*num_of_pictures=*/kMaxNumOfFrames,
-      /*use_protected=*/false, /*need_aux_frame_pool=*/false);
+      /*use_protected=*/false, /*need_aux_frame_pool=*/false, absl::nullopt);
 
   EXPECT_TRUE(status_or_chosen_candidate.has_error());
   EXPECT_FALSE(DecoderHasImageProcessor());
   DetachDecoderSequenceChecker();
 }
-#endif
+
+#endif  // BUILDFLAG(USE_VAAPI) && !defined(OS_LINUX)
 
 // Verifies that ReleaseAllFrames is called on the frame pool when we receive
 // the kDecoderStateLost event through the waiting callback. This can occur

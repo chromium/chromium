@@ -24,7 +24,7 @@ namespace media {
 namespace {
 
 template <uint64_t modifier>
-scoped_refptr<VideoFrame> CreateGpuMemoryBufferVideoFrame(
+CroStatus::Or<scoped_refptr<VideoFrame>> CreateGpuMemoryBufferVideoFrame(
     gpu::GpuMemoryBufferFactory* factory,
     VideoPixelFormat format,
     const gfx::Size& coded_size,
@@ -93,6 +93,7 @@ class PlatformVideoFramePoolTest
   }
 
   void SetCreateFrameCB(PlatformVideoFramePool::CreateFrameCB cb) {
+    base::AutoLock auto_lock(pool_->lock_);
     pool_->create_frame_cb_ = cb;
   }
 
@@ -296,8 +297,8 @@ TEST_P(PlatformVideoFramePoolTest, InitializeFail) {
          const gfx::Size& coded_size, const gfx::Rect& visible_rect,
          const gfx::Size& natural_size, bool use_protected,
          base::TimeDelta timestamp) {
-        auto frame = scoped_refptr<VideoFrame>(nullptr);
-        return frame;
+        return CroStatus::Or<scoped_refptr<VideoFrame>>(
+            CroStatus::Codes::kFailedToCreateVideoFrame);
       }));
 
   EXPECT_FALSE(Initialize(fourcc.value()));

@@ -615,7 +615,8 @@ VideoDecoderPipeline::PickDecoderOutputFormat(
     absl::optional<gfx::Size> output_size,
     size_t num_of_pictures,
     bool use_protected,
-    bool need_aux_frame_pool) {
+    bool need_aux_frame_pool,
+    absl::optional<DmabufVideoFramePool::CreateFrameCB> allocator) {
   DVLOGF(3);
   DCHECK_CALLED_ON_VALID_SEQUENCE(decoder_sequence_checker_);
 
@@ -642,6 +643,20 @@ VideoDecoderPipeline::PickDecoderOutputFormat(
         break;
     }
   }
+
+  if (allocator.has_value() && main_frame_pool_->AsPlatformVideoFramePool()) {
+    // The only client likely to be sending a non-nullopt allocator is linux,
+    // which is always using a PlatformVideoFramePool.
+    main_frame_pool_->AsPlatformVideoFramePool()->SetCustomFrameAllocator(
+        *allocator);
+  }
+
+#if defined(OS_LINUX)
+  // viable_candidate should always be set unless using L1 protected content,
+  // which isn't an option on linux.
+  CHECK(viable_candidate);
+#endif
+
   if (viable_candidate) {
     CroStatus::Or<GpuBufferLayout> status_or_layout =
         main_frame_pool_->Initialize(viable_candidate->fourcc,
@@ -651,7 +666,8 @@ VideoDecoderPipeline::PickDecoderOutputFormat(
     if (status_or_layout.has_error())
       return std::move(status_or_layout).error();
 
-#if BUILDFLAG(USE_VAAPI)
+#if BUILDFLAG(USE_VAAPI) && !defined(OS_LINUX)
+    // Linux does not check the modifiers, since it does not set any.
     const GpuBufferLayout layout(std::move(status_or_layout).value());
     if (layout.modifier() == viable_candidate->modifier) {
       return *viable_candidate;
@@ -668,7 +684,7 @@ VideoDecoderPipeline::PickDecoderOutputFormat(
     }
 #else
     return *viable_candidate;
-#endif
+#endif  // BUILDFLAG(USE_VAAPI) && !defined(OS_LINUX)
   }
 
   std::unique_ptr<ImageProcessor> image_processor;
@@ -704,6 +720,7 @@ VideoDecoderPipeline::PickDecoderOutputFormat(
     // overlays anyway.
     auxiliary_frame_pool_ = std::make_unique<PlatformVideoFramePool>(
         /*gpu_memory_buffer_factory=*/nullptr);
+
     auxiliary_frame_pool_->set_parent_task_runner(decoder_task_runner_);
     CroStatus::Or<GpuBufferLayout> status_or_layout =
         auxiliary_frame_pool_->Initialize(

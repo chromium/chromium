@@ -17,7 +17,14 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 
+namespace gpu {
+class GpuMemoryBufferFactory;
+}  // namespace gpu
+
 namespace media {
+
+// Forward declare for use in AsPlatformVideoFramePool.
+class PlatformVideoFramePool;
 
 // Interface for allocating and managing DMA-buf VideoFrame. The client should
 // set a task runner first, and guarantee both GetFrame() and the destructor are
@@ -27,6 +34,16 @@ namespace media {
 class MEDIA_GPU_EXPORT DmabufVideoFramePool {
  public:
   using DmabufId = const std::vector<base::ScopedFD>*;
+
+  using CreateFrameCB =
+      base::RepeatingCallback<CroStatus::Or<scoped_refptr<VideoFrame>>(
+          gpu::GpuMemoryBufferFactory*,
+          VideoPixelFormat,
+          const gfx::Size&,
+          const gfx::Rect&,
+          const gfx::Size&,
+          bool,
+          base::TimeDelta)>;
 
   // Get the identifier of Dmabuf-backed |frame|. Calling this method with the
   // frames backed by the same Dmabuf should return the same result.
@@ -40,6 +57,11 @@ class MEDIA_GPU_EXPORT DmabufVideoFramePool {
   // This method must be called only once before any GetFrame() is called.
   virtual void set_parent_task_runner(
       scoped_refptr<base::SequencedTaskRunner> parent_task_runner);
+
+  // Allows downcasting to an implementation of DmabufVideoFramePool safely
+  // since it has custom behavior that VaapiVideoDecoder needs to take
+  // advantage of.
+  virtual PlatformVideoFramePool* AsPlatformVideoFramePool();
 
   // Sets the parameters of allocating frames and the maximum number of frames
   // which can be allocated.

@@ -77,6 +77,8 @@ class MEDIA_GPU_EXPORT VideoDecoderMixin : public VideoDecoder {
     // initialized and that pool can be obtained by calling GetVideoFramePool().
     // This pool will provide buffers consistent with the selected candidate out
     // of |candidates|. If false, the caller must allocate its own buffers.
+    // if |allocator| is not absl::nullopt, the frame pool will be set
+    // to use the allocator provided for allocating video frames.
     //
     // Note: after a call to this method, callers should assume that a pointer
     // returned by a prior call to GetVideoFramePool() is no longer valid.
@@ -88,7 +90,8 @@ class MEDIA_GPU_EXPORT VideoDecoderMixin : public VideoDecoder {
         absl::optional<gfx::Size> output_size,
         size_t num_of_pictures,
         bool use_protected,
-        bool need_aux_frame_pool) = 0;
+        bool need_aux_frame_pool,
+        absl::optional<DmabufVideoFramePool::CreateFrameCB> allocator) = 0;
   };
 
   VideoDecoderMixin(
@@ -170,7 +173,8 @@ class MEDIA_GPU_EXPORT VideoDecoderPipeline : public VideoDecoder,
       absl::optional<gfx::Size> output_size,
       size_t num_of_pictures,
       bool use_protected,
-      bool need_aux_frame_pool) override;
+      bool need_aux_frame_pool,
+      absl::optional<DmabufVideoFramePool::CreateFrameCB> allocator) override;
 
  private:
   friend class VideoDecoderPipelineTest;

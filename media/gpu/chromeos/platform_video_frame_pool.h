@@ -22,10 +22,6 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/gpu_memory_buffer.h"
 
-namespace gpu {
-class GpuMemoryBufferFactory;
-}  // namespace gpu
-
 namespace media {
 
 // Simple VideoFrame pool used to avoid unnecessarily allocating and destroying
@@ -51,6 +47,8 @@ class MEDIA_GPU_EXPORT PlatformVideoFramePool : public DmabufVideoFramePool {
   static gfx::GpuMemoryBufferId GetGpuMemoryBufferId(const VideoFrame& frame);
 
   // DmabufVideoFramePool implementation.
+  PlatformVideoFramePool* AsPlatformVideoFramePool() override;
+
   CroStatus::Or<GpuBufferLayout> Initialize(const Fourcc& fourcc,
                                             const gfx::Size& coded_size,
                                             const gfx::Rect& visible_rect,
@@ -69,6 +67,12 @@ class MEDIA_GPU_EXPORT PlatformVideoFramePool : public DmabufVideoFramePool {
 
   // Returns the number of frames in the pool for testing purposes.
   size_t GetPoolSizeForTesting();
+
+  // Allows the client to specify how to allocate buffers. |allocator| is only
+  // run during a call to Initialize() or GetFrame(), so it's guaranteed to be
+  // called in the same thread as those two methods. VaapiVideoDecoder uses this
+  // on linux to delegate dmabuf allocation to the libva driver.
+  void SetCustomFrameAllocator(DmabufVideoFramePool::CreateFrameCB allocator);
 
  private:
   friend class PlatformVideoFramePoolTest;
@@ -97,20 +101,12 @@ class MEDIA_GPU_EXPORT PlatformVideoFramePool : public DmabufVideoFramePool {
       EXCLUSIVE_LOCKS_REQUIRED(lock_);
   bool IsExhausted_Locked() EXCLUSIVE_LOCKS_REQUIRED(lock_);
 
-  // The function used to allocate new frames.
-  using CreateFrameCB = base::RepeatingCallback<scoped_refptr<VideoFrame>(
-      gpu::GpuMemoryBufferFactory* gpu_memory_buffer_factory,
-      VideoPixelFormat format,
-      const gfx::Size& coded_size,
-      const gfx::Rect& visible_rect,
-      const gfx::Size& natural_size,
-      bool use_protected,
-      base::TimeDelta timestamp)>;
-  CreateFrameCB create_frame_cb_;
-
   // Lock to protect all data members.
   // Every public method and OnFrameReleased() acquire this lock.
   base::Lock lock_;
+
+  // The function used to allocate new frames.
+  CreateFrameCB create_frame_cb_ GUARDED_BY(lock_);
 
   // Used to allocate the video frame GpuMemoryBuffers, passed directly to
   // the callback that creates video frames. Indirectly owned by GpuChildThread;

@@ -36,6 +36,10 @@
 #include "ui/gfx/gpu_memory_buffer.h"
 #include "ui/gfx/hdr_metadata.h"
 
+namespace gpu {
+class GpuMemoryBufferFactory;
+}  // namespace gpu
+
 namespace media {
 
 class AcceleratedVideoDecoder;
@@ -168,6 +172,29 @@ class VaapiVideoDecoder : public VideoDecoderMixin,
   // browser process for the screen sizes.
   void ApplyResolutionChangeWithScreenSizes(
       const std::vector<gfx::Size>& screen_resolution);
+
+  // Private static helper to allow using weak ptr instead of an unretained ptr.
+  static CroStatus::Or<scoped_refptr<VideoFrame>> AllocateCustomFrameProxy(
+      base::WeakPtr<VaapiVideoDecoder> decoder,
+      gpu::GpuMemoryBufferFactory* gpu_memory_buffer_factory,
+      VideoPixelFormat format,
+      const gfx::Size& coded_size,
+      const gfx::Rect& visible_rect,
+      const gfx::Size& natural_size,
+      bool use_protected,
+      base::TimeDelta timestamp);
+
+  // Allocates a new VideoFrame using a new VASurface directly. Since this is
+  // only used on linux, it also sets the required YCbCr information for the
+  // frame it creates.
+  CroStatus::Or<scoped_refptr<VideoFrame>> AllocateCustomFrame(
+      gpu::GpuMemoryBufferFactory* gpu_memory_buffer_factory,
+      VideoPixelFormat format,
+      const gfx::Size& coded_size,
+      const gfx::Rect& visible_rect,
+      const gfx::Size& natural_size,
+      bool use_protected,
+      base::TimeDelta timestamp);
 
   // Having too many decoder instances at once may cause us to run out of FDs
   // and subsequently crash (b/181264362). To avoid that, we limit the maximum

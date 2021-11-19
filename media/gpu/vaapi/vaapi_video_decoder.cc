@@ -4,6 +4,8 @@
 
 #include "media/gpu/vaapi/vaapi_video_decoder.h"
 
+#include <vulkan/vulkan.h>
+
 #include <limits>
 #include <vector>
 
@@ -15,7 +17,9 @@
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/trace_event/trace_event.h"
+#include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "gpu/ipc/common/gpu_memory_buffer_support.h"
 #include "media/base/bind_to_current_loop.h"
 #include "media/base/format_utils.h"
 #include "media/base/media_log.h"
@@ -762,6 +766,17 @@ void VaapiVideoDecoder::ApplyResolutionChangeWithScreenSizes(
 
   const gfx::Size decoder_natural_size =
       aspect_ratio_.GetNaturalSize(decoder_visible_rect);
+
+#if defined(OS_LINUX)
+  absl::optional<DmabufVideoFramePool::CreateFrameCB> allocator =
+      base::BindRepeating(&AllocateCustomFrameProxy, weak_this_);
+  std::vector<ImageProcessor::PixelLayoutCandidate> candidates = {
+      {.fourcc = *format_fourcc,
+       .size = decoder_pic_size,
+       .modifier = gfx::NativePixmapHandle::kNoModifier}};
+#else
+  absl::optional<DmabufVideoFramePool::CreateFrameCB> allocator = absl::nullopt;
+
   // TODO(b/203240043): We assume that the |dummy_frame|'s modifier matches the
   // buffer returned by the video frame pool. We should create a test to make
   // sure this assumption is never violated.
@@ -778,18 +793,21 @@ void VaapiVideoDecoder::ApplyResolutionChangeWithScreenSizes(
     return;
   }
 
-  ImageProcessor::PixelLayoutCandidate candidate{
-      .fourcc = *format_fourcc,
-      .size = decoder_pic_size,
-      .modifier = dummy_frame->layout().modifier()};
+  std::vector<ImageProcessor::PixelLayoutCandidate> candidates = {
+      {.fourcc = *format_fourcc,
+       .size = decoder_pic_size,
+       .modifier = dummy_frame->layout().modifier()}};
+#endif  // defined(OS_LINUX)
+
   auto status_or_layout = client_->PickDecoderOutputFormat(
-      {candidate}, decoder_visible_rect, decoder_natural_size,
+      candidates, decoder_visible_rect, decoder_natural_size,
       output_visible_rect.size(), decoder_->GetRequiredNumOfPictures(),
       /*use_protected=*/!!cdm_context_ref_,
-      /*need_aux_frame_pool=*/true);
+      /*need_aux_frame_pool=*/true, std::move(allocator));
+
   if (status_or_layout.has_error()) {
-    if (status_or_layout.code() == CroStatus::Codes::kResetRequired) {
-      DVLOGF(2) << "The frame pool initialization is aborted.";
+    if (status_or_layout == CroStatus::Codes::kResetRequired) {
+      DVLOGF(2) << "The frame pool initialization is aborted";
       SetState(State::kExpectingReset);
     } else {
       // TODO(crbug/1103510): don't drop the error on the floor here.
@@ -804,6 +822,93 @@ void VaapiVideoDecoder::ApplyResolutionChangeWithScreenSizes(
   decoder_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(&VaapiVideoDecoder::HandleDecodeTask, weak_this_));
+}
+
+// Static
+CroStatus::Or<scoped_refptr<VideoFrame>>
+VaapiVideoDecoder::AllocateCustomFrameProxy(
+    base::WeakPtr<VaapiVideoDecoder> decoder,
+    gpu::GpuMemoryBufferFactory* gpu_memory_buffer_factory,
+    VideoPixelFormat format,
+    const gfx::Size& coded_size,
+    const gfx::Rect& visible_rect,
+    const gfx::Size& natural_size,
+    bool use_protected,
+    base::TimeDelta timestamp) {
+  if (!decoder)
+    return CroStatus::Codes::kFailedToCreateVideoFrame;
+  return decoder->AllocateCustomFrame(gpu_memory_buffer_factory, format,
+                                      coded_size, visible_rect, natural_size,
+                                      use_protected, timestamp);
+}
+
+CroStatus::Or<scoped_refptr<VideoFrame>> VaapiVideoDecoder::AllocateCustomFrame(
+    gpu::GpuMemoryBufferFactory* gpu_memory_buffer_factory,
+    VideoPixelFormat format,
+    const gfx::Size& coded_size,
+    const gfx::Rect& visible_rect,
+    const gfx::Size& natural_size,
+    bool use_protected,
+    base::TimeDelta timestamp) {
+  DVLOGF(2);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(state_ == State::kChangingResolution || state_ == State::kDecoding);
+  if (format != PIXEL_FORMAT_NV12)
+    return CroStatus::Codes::kFailedToCreateVideoFrame;
+
+  auto surface = vaapi_wrapper_->CreateVASurfaceWithUsageHints(
+      VA_RT_FORMAT_YUV420, coded_size,
+      {VaapiWrapper::SurfaceUsageHint::kVideoDecoder});
+  if (!surface)
+    return CroStatus::Codes::kFailedToCreateVideoFrame;
+  auto pixmap_and_info =
+      vaapi_wrapper_->ExportVASurfaceAsNativePixmapDmaBuf(*surface);
+  if (!pixmap_and_info)
+    return CroStatus::Codes::kFailedToCreateVideoFrame;
+
+  // Increase this one every time this method is called.
+  static int gmb_id = 0;
+  CHECK_LT(gmb_id, std::numeric_limits<int>::max());
+  gfx::GpuMemoryBufferHandle gmb_handle;
+  auto handle_id = gfx::GpuMemoryBufferId(gmb_id++);
+  gmb_handle.id = handle_id;
+  gmb_handle.type = gfx::GpuMemoryBufferType::NATIVE_PIXMAP;
+  gmb_handle.native_pixmap_handle = pixmap_and_info->pixmap->ExportHandle();
+
+  if (gmb_handle.native_pixmap_handle.planes.empty())
+    return CroStatus::Codes::kFailedToCreateVideoFrame;
+
+  gpu::GpuMemoryBufferSupport gmb_support;
+  auto gmb = gmb_support.CreateGpuMemoryBufferImplFromHandle(
+      std::move(gmb_handle), pixmap_and_info->pixmap->GetBufferSize(),
+      pixmap_and_info->pixmap->GetBufferFormat(),
+      gfx::BufferUsage::SCANOUT_VDA_WRITE, base::NullCallback());
+  if (!gmb)
+    return CroStatus::Codes::kFailedToCreateVideoFrame;
+  const gpu::MailboxHolder mailbox_holders[VideoFrame::kMaxPlanes] = {};
+  auto frame = VideoFrame::WrapExternalGpuMemoryBuffer(
+      visible_rect, natural_size, std::move(gmb), mailbox_holders,
+      base::NullCallback(), timestamp);
+
+  if (!frame)
+    return CroStatus::Codes::kFailedToCreateVideoFrame;
+
+  frame->set_ycbcr_info(gpu::VulkanYCbCrInfo(
+      /*image_format=*/VK_FORMAT_G8_B8R8_2PLANE_420_UNORM,
+      /*external_format=*/0,
+      /*suggested_ycbcr_model=*/VK_SAMPLER_YCBCR_MODEL_CONVERSION_YCBCR_709,
+      /*suggested_ycbcr_range=*/VK_SAMPLER_YCBCR_RANGE_ITU_NARROW,
+      /*suggested_xchroma_offset=*/VK_CHROMA_LOCATION_COSITED_EVEN,
+      /*suggested_ychroma_offset=*/VK_CHROMA_LOCATION_COSITED_EVEN,
+      /*format_features=*/VK_FORMAT_FEATURE_SAMPLED_IMAGE_BIT |
+          VK_FORMAT_FEATURE_TRANSFER_SRC_BIT |
+          VK_FORMAT_FEATURE_TRANSFER_DST_BIT |
+          VK_FORMAT_FEATURE_COSITED_CHROMA_SAMPLES_BIT |
+          VK_FORMAT_FEATURE_SAMPLED_IMAGE_FILTER_LINEAR_BIT |
+          VK_FORMAT_FEATURE_COLOR_ATTACHMENT_BLEND_BIT));
+  allocated_va_surfaces_[handle_id] = surface;
+
+  return frame;
 }
 
 bool VaapiVideoDecoder::NeedsBitstreamConversion() const {
