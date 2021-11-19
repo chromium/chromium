@@ -4,7 +4,7 @@
 
 #include "ui/ozone/platform/wayland/host/wayland_window.h"
 
-#include <bits/stdint-intn.h>
+#include <stdint.h>
 #include <wayland-cursor.h>
 #include <algorithm>
 #include <memory>
