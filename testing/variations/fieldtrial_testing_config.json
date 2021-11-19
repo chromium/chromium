@@ -3738,6 +3738,21 @@
             ]
         }
     ],
+    "FeedLoadingPlaceholderStudy": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20211118",
+                    "enable_features": [
+                        "FeedLoadingPlaceholder"
+                    ]
+                }
+            ]
+        }
+    ],
     "FeedPullToRefresh": [
         {
             "platforms": [
