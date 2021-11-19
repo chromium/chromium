@@ -50,7 +50,7 @@ void AppliedDecorationPainter::StrokeWavyTextDecoration(
   // after the line in TextDecorationInfo::PrepareWavyStrokePath().
   context_.Clip(decoration_info_.BoundsForLine(line_));
 
-  absl::optional<Path> path = decoration_info_.PrepareWavyStrokePath(line_);
+  absl::optional<Path> path = decoration_info_.StrokePathForLine(line_);
   AutoDarkMode auto_dark_mode(PaintAutoDarkMode(
       decoration_info_.Style(), DarkModeFilter::ElementRole::kText));
   if (flags)

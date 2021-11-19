@@ -167,9 +167,6 @@ void TextDecorationInfo::SetDecorationIndex(int decoration_index) {
 
 void TextDecorationInfo::SetPerLineData(TextDecorationLine line,
                                         float line_offset) {
-  int index = TextDecorationToLineDataIndex(line);
-  line_data_[index].line_offset = line_offset;
-
   const float double_offset_from_thickness = ResolvedThickness() + 1.0f;
   float double_offset;
   int wavy_offset_factor;
@@ -196,9 +193,22 @@ void TextDecorationInfo::SetPerLineData(TextDecorationLine line,
       NOTREACHED();
   }
 
+  int index = TextDecorationToLineDataIndex(line);
+  line_data_[index].line_offset = line_offset;
   line_data_[index].double_offset = double_offset;
   line_data_[index].wavy_offset_factor = wavy_offset_factor;
-  line_data_[index].stroke_path.reset();
+
+  switch (DecorationStyle()) {
+    case ETextDecorationStyle::kDotted:
+    case ETextDecorationStyle::kDashed:
+      line_data_[index].stroke_path = PrepareDottedOrDashedStrokePath(line);
+      break;
+    case ETextDecorationStyle::kWavy:
+      line_data_[index].stroke_path = PrepareWavyStrokePath(line);
+      break;
+    default:
+      line_data_[index].stroke_path.reset();
+  }
 }
 
 ETextDecorationStyle TextDecorationInfo::DecorationStyle() const {
@@ -286,16 +296,6 @@ FloatRect TextDecorationInfo::BoundsForLine(TextDecorationLine line) const {
 FloatRect TextDecorationInfo::BoundsForDottedOrDashed(
     TextDecorationLine line) const {
   int line_data_index = TextDecorationToLineDataIndex(line);
-  if (!line_data_[line_data_index].stroke_path) {
-    // These coordinate transforms need to match what's happening in
-    // GraphicsContext's drawLineForText and drawLine.
-    gfx::PointF start_point = StartPoint(line);
-    line_data_[TextDecorationToLineDataIndex(line)].stroke_path =
-        GraphicsContext::GetPathForTextLine(
-            start_point, width_, ResolvedThickness(),
-            TextDecorationStyleToStrokeStyle(DecorationStyle()));
-  }
-
   StrokeData stroke_data;
   stroke_data.SetThickness(roundf(ResolvedThickness()));
   stroke_data.SetStyle(TextDecorationStyleToStrokeStyle(DecorationStyle()));
@@ -305,14 +305,20 @@ FloatRect TextDecorationInfo::BoundsForDottedOrDashed(
 }
 
 FloatRect TextDecorationInfo::BoundsForWavy(TextDecorationLine line) const {
+  int line_data_index = TextDecorationToLineDataIndex(line);
   StrokeData stroke_data;
   stroke_data.SetThickness(ResolvedThickness());
-  auto bounding_rect =
-      FloatRect(PrepareWavyStrokePath(line)->StrokeBoundingRect(stroke_data));
+  auto bounding_rect = FloatRect(
+      line_data_[line_data_index].stroke_path->StrokeBoundingRect(stroke_data));
 
   bounding_rect.set_x(StartPoint(line).x());
   bounding_rect.set_width(width_);
   return bounding_rect;
+}
+
+absl::optional<Path> TextDecorationInfo::StrokePathForLine(TextDecorationLine line) const {
+  int line_data_index = TextDecorationToLineDataIndex(line);
+  return line_data_[line_data_index].stroke_path;
 }
 
 float TextDecorationInfo::WavyDecorationSizing() const {
@@ -333,6 +339,16 @@ float TextDecorationInfo::StepFromResolvedThickness() const {
   // points and end point (p2) along the axis of the decoration. Makes the curve
   // wider as strokeThickness increases to make the curve look better.
   return 2.5 * WavyDecorationSizing();
+}
+
+Path TextDecorationInfo::PrepareDottedOrDashedStrokePath(
+    TextDecorationLine line) const {
+  // These coordinate transforms need to match what's happening in
+  // GraphicsContext's drawLineForText and drawLine.
+  gfx::PointF start_point = StartPoint(line);
+  return GraphicsContext::GetPathForTextLine(
+      start_point, width_, ResolvedThickness(),
+      TextDecorationStyleToStrokeStyle(DecorationStyle()));
 }
 
 /*
@@ -362,12 +378,7 @@ float TextDecorationInfo::StepFromResolvedThickness() const {
  *             |-----------|
  *                 step
  */
-absl::optional<Path> TextDecorationInfo::PrepareWavyStrokePath(
-    TextDecorationLine line) const {
-  int line_data_index = TextDecorationToLineDataIndex(line);
-  if (line_data_[line_data_index].stroke_path)
-    return line_data_[line_data_index].stroke_path;
-
+Path TextDecorationInfo::PrepareWavyStrokePath(TextDecorationLine line) const {
   gfx::PointF start_point = StartPoint(line);
   float wave_offset =
       DoubleOffset(line) *
@@ -388,7 +399,7 @@ absl::optional<Path> TextDecorationInfo::PrepareWavyStrokePath(
 
   GraphicsContext::AdjustLineToPixelBoundaries(p1, p2, ResolvedThickness());
 
-  Path& path = line_data_[line_data_index].stroke_path.emplace();
+  Path path;
   path.MoveTo(p1);
 
   bool is_vertical_line = (p1.x() == p2.x());
@@ -444,7 +455,7 @@ absl::optional<Path> TextDecorationInfo::PrepareWavyStrokePath(
                             gfx::PointF(x, y_axis));
     }
   }
-  return line_data_[line_data_index].stroke_path;
+  return path;
 }
 
 }  // namespace blink

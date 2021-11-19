@@ -96,9 +96,8 @@ class CORE_EXPORT TextDecorationInfo {
   // Compute bounds for the given line and the current decoration.
   FloatRect BoundsForLine(TextDecorationLine line) const;
 
-  // Return a path for a wavy line at the given position, for the
-  // current decoration.
-  absl::optional<Path> PrepareWavyStrokePath(TextDecorationLine line) const;
+  // Return a path for current decoration.
+  absl::optional<Path> StrokePathForLine(TextDecorationLine line) const;
 
  private:
   float ComputeUnderlineThickness(
@@ -110,6 +109,8 @@ class CORE_EXPORT TextDecorationInfo {
   float WavyDecorationSizing() const;
   float ControlPointDistanceFromResolvedThickness() const;
   float StepFromResolvedThickness() const;
+  Path PrepareDottedOrDashedStrokePath(TextDecorationLine line) const;
+  Path PrepareWavyStrokePath(TextDecorationLine line) const;
 
   const ComputedStyle& style_;
   const absl::optional<AppliedTextDecoration> selection_text_decoration_;
@@ -135,7 +136,7 @@ class CORE_EXPORT TextDecorationInfo {
     float line_offset;
     float double_offset;
     int wavy_offset_factor;
-    mutable absl::optional<Path> stroke_path;
+    absl::optional<Path> stroke_path;
   };
   PerLineData line_data_[3];
 };
