@@ -24,7 +24,9 @@
     <color name="default_icon_color_disabled_inverse">@color/default_icon_color_disabled_dark</color>
 
     <!-- Common background and branding color. -->
-    <color name="default_bg_color">@color/default_bg_color_dark</color>
+    <!-- TODO(https://crbug.com/1272001): Remove @color/default_bg_color. -->
+    <color name="default_bg_color">@color/default_bg_color_baseline</color>
+    <color name="default_bg_color_baseline">@color/default_bg_color_dark</color>
     <color name="default_bg_color_secondary">@color/default_bg_color_secondary_dark</color>
     <color name="default_bg_color_elev_0">@color/default_bg_color_dark</color>
     <color name="default_bg_color_elev_1">@color/default_bg_color_dark_elev_1</color>

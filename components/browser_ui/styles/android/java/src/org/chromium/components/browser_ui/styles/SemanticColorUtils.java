@@ -31,6 +31,11 @@ public class SemanticColorUtils {
         }
     }
 
+    /** Returns the semantic color value that corresponds to default_bg_color. */
+    public static @ColorInt int getDefaultBgColor(Context context) {
+        return resolve(R.attr.colorSurface, R.color.default_bg_color_baseline, context);
+    }
+
     /** Returns the semantic color value that corresponds to default_text_color. */
     public static @ColorInt int getDefaultTextColor(Context context) {
         return resolve(R.attr.colorOnSurface, R.color.default_text_color_baseline, context);
