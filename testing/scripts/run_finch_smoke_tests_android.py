@@ -202,6 +202,10 @@ class FinchTestCase(wpt_common.BaseWptScriptAdapter):
     parser.add_argument('--webview-provider-apk',
                         type=os.path.realpath,
                         help='Path to the WebView provider apk')
+    parser.add_argument('--additional-apk',
+                        action='append',
+                        type=os.path.realpath,
+                        help='List of additional apk\'s to install')
     parser.add_argument('--browser-activity-name',
                         action='store',
                         help='Browser activity name')
@@ -224,6 +228,8 @@ class FinchTestCase(wpt_common.BaseWptScriptAdapter):
     """Install apks for testing"""
     self._device.Uninstall(self.browser_package_name)
     self._device.Install(self.options.browser_apk, reinstall=True)
+    for apk_path in self.options.additional_apk:
+      self._device.Install(apk_path)
     yield
 
   def browser_command_line_args(self):
