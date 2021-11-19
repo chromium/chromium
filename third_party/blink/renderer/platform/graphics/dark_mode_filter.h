@@ -33,7 +33,7 @@ class PLATFORM_EXPORT DarkModeFilter {
   // TODO(gilmanmh): Add a role for shadows. In general, we don't want to
   // invert shadows, but we may need to do some other kind of processing for
   // them.
-  enum class ElementRole { kText, kListSymbol, kBackground, kSVG };
+  enum class ElementRole { kForeground, kListSymbol, kBackground, kSVG };
 
   DarkModeImagePolicy GetDarkModeImagePolicy() const;
 

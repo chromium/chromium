@@ -81,7 +81,7 @@ void FileUploadControlPainter::PaintObject(const PaintInfo& paint_info,
         font, text_run_paint_info,
         gfx::PointF(RoundToInt(text_x), RoundToInt(text_y)),
         PaintAutoDarkMode(layout_file_upload_control_.StyleRef(),
-                          DarkModeFilter::ElementRole::kText));
+                          DarkModeFilter::ElementRole::kForeground));
     if (!font.ShouldSkipDrawing()) {
       ScopedPaintTimingDetectorBlockPaintHook
           scoped_paint_timing_detector_block_paint_hook;

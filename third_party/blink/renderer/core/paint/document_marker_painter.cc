@@ -200,7 +200,8 @@ void DocumentMarkerPainter::PaintStyleableMarkerUnderline(
         gfx::PointF(box_origin.left + start,
                     (box_origin.top + logical_height.ToInt() - line_thickness)
                         .ToFloat()),
-        width, PaintAutoDarkMode(style, DarkModeFilter::ElementRole::kText));
+        width,
+        PaintAutoDarkMode(style, DarkModeFilter::ElementRole::kForeground));
   } else {
     // For wavy underline format we use this logic that is very similar to
     // spelling/grammar squiggles format. Only applicable for composition

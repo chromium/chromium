@@ -331,7 +331,9 @@ void NGTextPainter::PaintInternalFragment(unsigned from,
   } else {
     DCHECK(step == kPaintText);
     if (svg_text_paint_state_.has_value()) {
-      PaintSvgTextFragment(node_id, auto_dark_mode);
+      AutoDarkMode svg_text_auto_dark_mode(DarkModeFilter::ElementRole::kSVG,
+                                           auto_dark_mode.enabled);
+      PaintSvgTextFragment(node_id, svg_text_auto_dark_mode);
     } else {
       graphics_context_.DrawText(font_, fragment_paint_info_,
                                  gfx::PointF(text_origin_), node_id,

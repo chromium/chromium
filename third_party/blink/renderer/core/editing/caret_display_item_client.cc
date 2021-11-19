@@ -268,7 +268,7 @@ void CaretDisplayItemClient::PaintCaret(
   IntRect paint_rect = PixelSnappedIntRect(drawing_rect);
   context.FillRect(paint_rect, is_visible_if_active_ ? color_ : Color(),
                    PaintAutoDarkMode(layout_block_->StyleRef(),
-                                     DarkModeFilter::ElementRole::kText));
+                                     DarkModeFilter::ElementRole::kForeground));
 }
 
 void CaretDisplayItemClient::RecordSelection(

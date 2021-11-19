@@ -403,8 +403,8 @@ void InlineTextBoxPainter::Paint(const PaintInfo& paint_info,
   DOMNodeId node_id = GetNodeHolder(
       LineLayoutAPIShim::LayoutObjectFrom(inline_text_box_.GetLineLayoutItem())
           ->GetNode());
-  AutoDarkMode auto_dark_mode(
-      PaintAutoDarkMode(style_to_use, DarkModeFilter::ElementRole::kText));
+  AutoDarkMode auto_dark_mode(PaintAutoDarkMode(
+      style_to_use, DarkModeFilter::ElementRole::kForeground));
 
   if (!paint_selected_text_only) {
     // Paint text decorations except line-through.
@@ -587,8 +587,7 @@ void InlineTextBoxPainter::PaintSingleMarkerBackgroundRun(
   context.DrawHighlightForText(
       font, inline_text_box_.ConstructTextRun(style), local_origin, sel_height,
       background_color,
-      PaintAutoDarkMode(style,
-                        DarkModeFilter::ElementRole::kText),
+      PaintAutoDarkMode(style, DarkModeFilter::ElementRole::kForeground),
       start_pos, end_pos);
 }
 
@@ -865,7 +864,7 @@ PhysicalRect InlineTextBoxPainter::PaintSelection(
 
   context.FillRect(
       FloatRect(selection_rect), c,
-      PaintAutoDarkMode(style, DarkModeFilter::ElementRole::kText));
+      PaintAutoDarkMode(style, DarkModeFilter::ElementRole::kForeground));
   return selection_rect;
 }
 
@@ -942,7 +941,7 @@ void InlineTextBoxPainter::PaintTextMarkerForeground(
                            inline_text_box_.IsHorizontal());
 
   AutoDarkMode auto_dark_mode(
-      PaintAutoDarkMode(style, DarkModeFilter::ElementRole::kText));
+      PaintAutoDarkMode(style, DarkModeFilter::ElementRole::kForeground));
 
   text_painter.Paint(paint_offsets.first, paint_offsets.second,
                      inline_text_box_.Len(), text_style, kInvalidDOMNodeId,
@@ -979,7 +978,7 @@ void InlineTextBoxPainter::PaintTextMarkerBackground(
   context.Clip(FloatRect(box_rect));
   context.DrawHighlightForText(
       font, run, gfx::PointF(box_origin), box_rect.Height().ToInt(), color,
-      PaintAutoDarkMode(style, DarkModeFilter::ElementRole::kText),
+      PaintAutoDarkMode(style, DarkModeFilter::ElementRole::kForeground),
       paint_offsets.first, paint_offsets.second);
 }
 
