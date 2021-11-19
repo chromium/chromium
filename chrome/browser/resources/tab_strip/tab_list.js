@@ -4,6 +4,7 @@
 
 import './strings.m.js';
 import './tab.js';
+import './tab_group.js';
 
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {addWebUIListener, removeWebUIListener, WebUIListener} from 'chrome://resources/js/cr.m.js';
