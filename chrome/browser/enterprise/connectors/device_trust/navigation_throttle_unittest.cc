@@ -70,6 +70,8 @@ class DeviceTrustNavigationThrottleTest : public testing::Test {
 
     fake_connector_ = std::make_unique<FakeDeviceTrustConnectorService>(
         profile_.GetTestingPrefService());
+    fake_connector_->Initialize();
+
     fake_connector_->update_policy(
         std::make_unique<base::ListValue>(GetTrustedUrls()));
 

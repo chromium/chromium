@@ -42,7 +42,20 @@ DeviceTrustConnectorService::DeviceTrustConnectorService(
     : profile_prefs_(profile_prefs),
       matcher_(std::make_unique<url_matcher::URLMatcher>()) {
   DCHECK(profile_prefs_);
+}
+
+DeviceTrustConnectorService::~DeviceTrustConnectorService() = default;
+
+bool DeviceTrustConnectorService::IsConnectorEnabled() const {
+  return DeviceTrustConnectorService::IsConnectorEnabled(profile_prefs_);
+}
+
+void DeviceTrustConnectorService::Initialize() {
   if (!IsDeviceTrustConnectorFeatureEnabled()) {
+    return;
+  }
+
+  if (!pref_observer_.IsEmpty()) {
     return;
   }
 
@@ -54,12 +67,6 @@ DeviceTrustConnectorService::DeviceTrustConnectorService(
 
   // Call once to initialize the watcher with the current pref's values.
   OnPolicyUpdated();
-}
-
-DeviceTrustConnectorService::~DeviceTrustConnectorService() = default;
-
-bool DeviceTrustConnectorService::IsConnectorEnabled() const {
-  return DeviceTrustConnectorService::IsConnectorEnabled(profile_prefs_);
 }
 
 bool DeviceTrustConnectorService::Watches(const GURL& url) const {

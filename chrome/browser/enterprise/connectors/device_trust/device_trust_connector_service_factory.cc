@@ -56,16 +56,24 @@ KeyedService* DeviceTrustConnectorServiceFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
   auto* profile = Profile::FromBrowserContext(context);
 
+  DeviceTrustConnectorService* service = nullptr;
+
 #if defined(OS_LINUX) || defined(OS_WIN) || defined(OS_MAC)
   if (IsDeviceTrustConnectorFeatureEnabled()) {
     auto* key_manager = g_browser_process->browser_policy_connector()
                             ->chrome_browser_cloud_management_controller()
                             ->GetDeviceTrustKeyManager();
-    return new BrowserDeviceTrustConnectorService(key_manager,
-                                                  profile->GetPrefs());
+    service = new BrowserDeviceTrustConnectorService(key_manager,
+                                                     profile->GetPrefs());
   }
+#else
+  service = new DeviceTrustConnectorService(profile->GetPrefs());
 #endif  // defined(OS_LINUX) || defined(OS_WIN) || defined(OS_MAC)
-  return new DeviceTrustConnectorService(profile->GetPrefs());
+
+  if (service)
+    service->Initialize();
+
+  return service;
 }
 
 }  // namespace enterprise_connectors

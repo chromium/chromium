@@ -35,6 +35,10 @@ class DeviceTrustConnectorService : public KeyedService {
   // given `profile_prefs` to check the policy value.
   static bool IsConnectorEnabled(PrefService* profile_prefs);
 
+  // Does one time initialization of the service.  This is called from the
+  // factory and client do not need to call it.
+  void Initialize();
+
   // Returns whether the Device Trust connector is enabled or not.
   bool IsConnectorEnabled() const;
 
