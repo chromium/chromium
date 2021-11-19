@@ -547,7 +547,7 @@ void AppPlatformMetrics::OnInstanceUpdate(const apps::InstanceUpdate& update) {
 
   bool is_active = update.State() & apps::InstanceState::kActive;
   if (is_active) {
-    auto* window = update.InstanceKey().GetEnclosingAppWindow();
+    auto* window = update.Window()->GetToplevelWindow();
     AppTypeName app_type_name =
         GetAppTypeNameForWindow(profile_, app_type, app_id, window);
     if (app_type_name == apps::AppTypeName::kUnknown) {
@@ -645,7 +645,7 @@ aura::Window* AppPlatformMetrics::GetBrowserWindow(
     const Instance::InstanceKey& tab_key) const {
   for (const auto& it : active_browsers_to_tabs_) {
     if (it.tab_key == tab_key) {
-      return it.browser_key.GetEnclosingAppWindow();
+      return it.browser_key.Window();
     }
   }
   return nullptr;

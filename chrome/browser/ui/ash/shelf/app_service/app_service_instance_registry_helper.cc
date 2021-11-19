@@ -164,12 +164,11 @@ void AppServiceInstanceRegistryHelper::OnTabClosing(
 void AppServiceInstanceRegistryHelper::OnBrowserRemoved() {
   auto instance_keys = GetInstanceKeys(extension_misc::kChromeAppId);
   for (const apps::Instance::InstanceKey& instance_key : instance_keys) {
-    DCHECK(!instance_key.IsForWebBasedApp());
-    if (!chrome::FindBrowserWithWindow(instance_key.GetEnclosingAppWindow())) {
+    if (!chrome::FindBrowserWithWindow(instance_key.Window())) {
       // The tabs in the browser should be closed, and tab windows have been
       // removed from |browser_window_to_tab_window_|.
       DCHECK(!base::Contains(browser_window_to_tab_instances_,
-                             instance_key.GetEnclosingAppWindow()));
+                             instance_key.Window()));
 
       // The browser is removed if the window can't be found, so update the
       // Chrome window instance as destroyed.

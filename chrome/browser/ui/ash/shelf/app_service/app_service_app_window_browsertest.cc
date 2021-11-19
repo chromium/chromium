@@ -315,7 +315,8 @@ IN_PROC_BROWSER_TEST_F(AppServiceAppWindowBrowserTest,
       app_service_proxy_->InstanceRegistry().GetInstanceKeys(app_id1);
   EXPECT_EQ(1u, instance_keys.size());
   auto instance_key1 = *instance_keys.begin();
-  EXPECT_TRUE(instance_key1.IsForWebBasedApp());
+  EXPECT_NE(instance_key1.Window(),
+            instance_key1.Window()->GetToplevelWindow());
 
   // The window1 is active.
   EXPECT_EQ(apps::InstanceState::kStarted | apps::InstanceState::kRunning |
@@ -332,7 +333,8 @@ IN_PROC_BROWSER_TEST_F(AppServiceAppWindowBrowserTest,
       app_service_proxy_->InstanceRegistry().GetInstanceKeys(app_id2);
   EXPECT_EQ(1u, instance_keys.size());
   auto instance_key2 = *instance_keys.begin();
-  EXPECT_FALSE(instance_key2.IsForWebBasedApp());
+  EXPECT_EQ(instance_key2.Window(),
+            instance_key2.Window()->GetToplevelWindow());
 
   // The window1 is inactive.
   EXPECT_EQ(apps::InstanceState::kStarted | apps::InstanceState::kRunning |
@@ -372,7 +374,7 @@ IN_PROC_BROWSER_TEST_F(AppServiceAppWindowBrowserTest, AshBrowserWindow) {
       extension_misc::kChromeAppId);
   EXPECT_EQ(1u, instance_keys.size());
   auto instance_key = *instance_keys.begin();
-  EXPECT_FALSE(instance_key.IsForWebBasedApp());
+  EXPECT_EQ(instance_key.Window(), instance_key.Window()->GetToplevelWindow());
 }
 
 class AppServiceAppWindowLacrosBrowserTest
@@ -405,7 +407,7 @@ IN_PROC_BROWSER_TEST_F(AppServiceAppWindowLacrosBrowserTest, LacrosWindow) {
       extension_misc::kLacrosAppId);
   EXPECT_EQ(1u, instance_keys.size());
   auto instance_key = *instance_keys.begin();
-  EXPECT_FALSE(instance_key.IsForWebBasedApp());
+  EXPECT_EQ(instance_key.Window(), instance_key.Window()->GetToplevelWindow());
 
   // Find the Lacros shelf item.
   int lacros_index = shelf_model()->ItemIndexByAppID(kLacrosAppId);
@@ -585,7 +587,8 @@ IN_PROC_BROWSER_TEST_F(AppServiceAppWindowWebAppBrowserTest, WebAppsWindow) {
   auto instance_keys =
       app_service_proxy_->InstanceRegistry().GetInstanceKeys(app_id);
   EXPECT_EQ(1u, instance_keys.size());
-  EXPECT_TRUE(instance_keys.begin()->IsForWebBasedApp());
+  EXPECT_NE(instance_keys.begin()->Window(),
+            instance_keys.begin()->Window()->GetToplevelWindow());
   apps::Instance::InstanceKey instance_key = *instance_keys.begin();
   EXPECT_EQ(apps::InstanceState::kStarted | apps::InstanceState::kRunning |
                 apps::InstanceState::kActive | apps::InstanceState::kVisible,

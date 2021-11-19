@@ -47,13 +47,12 @@ class Instance {
     // Return enclosing app windows for the |app_id|. If the app is in a browser
     // tab, the window returned will be the window of the browser.
     aura::Window* GetEnclosingAppWindow() const;
+    aura::Window* Window() const { return window_; }
     bool IsValid() const { return window_ != nullptr; }
     bool operator<(const InstanceKey& other) const;
     bool operator==(const InstanceKey& other) const;
     bool operator!=(const InstanceKey& other) const;
     InstanceKey& operator=(InstanceKey&&) = default;
-
-    bool IsForWebBasedApp() const { return is_web_contents_backed_; }
 
     friend struct InstanceKeyHash;
     friend std::ostream& operator<<(

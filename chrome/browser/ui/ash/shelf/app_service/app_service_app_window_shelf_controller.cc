@@ -346,8 +346,8 @@ void AppServiceAppWindowShelfController::OnWindowActivated(
 
 void AppServiceAppWindowShelfController::OnInstanceUpdate(
     const apps::InstanceUpdate& update) {
-  const apps::Instance::InstanceKey& instance_key = update.InstanceKey();
-  if (instance_key.IsForWebBasedApp()) {
+  if (app_service_instance_helper_->IsOpenedInBrowser(update.AppId(),
+                                                      update.Window())) {
     // Only deal with window based app instances past here.
     return;
   }
@@ -358,14 +358,13 @@ void AppServiceAppWindowShelfController::OnInstanceUpdate(
     // anyways. As such, all which is left to do here is to get rid of our own
     // reference.
     WindowList::iterator it =
-        std::find(window_list_.begin(), window_list_.end(),
-                  instance_key.GetEnclosingAppWindow());
+        std::find(window_list_.begin(), window_list_.end(), update.Window());
     if (it != window_list_.end())
       window_list_.erase(it);
     return;
   }
 
-  aura::Window* window = instance_key.GetEnclosingAppWindow();
+  aura::Window* window = update.Window();
   if (!observed_windows_.IsObservingSource(window)) {
     return;
   }
@@ -746,15 +745,12 @@ void AppServiceAppWindowShelfController::UserHasAppOnActiveDesktop(
     proxy->InstanceRegistry().ForEachInstance(
         [&other_window, &window, &shelf_id, &browser_context, &helper,
          &current_account_id](const apps::InstanceUpdate& update) {
-          const apps::Instance::InstanceKey& instance_key =
-              update.InstanceKey();
-          if (helper->IsWindowOnDesktopOfUser(
-                  instance_key.GetEnclosingAppWindow(), current_account_id) &&
+          if (helper->IsWindowOnDesktopOfUser(update.Window(),
+                                              current_account_id) &&
               (update.AppId() == shelf_id.app_id) &&
               (update.BrowserContext() == browser_context) &&
-              instance_key.GetEnclosingAppWindow() != window) {
-            DCHECK(!instance_key.IsForWebBasedApp());
-            other_window = instance_key.GetEnclosingAppWindow();
+              update.Window() != window) {
+            other_window = update.Window();
           }
         });
     if (other_window)

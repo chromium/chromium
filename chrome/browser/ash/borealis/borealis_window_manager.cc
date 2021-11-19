@@ -162,7 +162,7 @@ std::string BorealisWindowManager::GetShelfAppId(aura::Window* window) {
 
 void BorealisWindowManager::OnInstanceUpdate(
     const apps::InstanceUpdate& update) {
-  aura::Window* window = update.InstanceKey().GetEnclosingAppWindow();
+  aura::Window* window = update.Window();
   if (!IsBorealisWindow(window))
     return;
   if (update.IsCreation()) {

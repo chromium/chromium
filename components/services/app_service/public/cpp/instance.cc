@@ -57,7 +57,7 @@ bool Instance::InstanceKey::operator!=(const InstanceKey& other) const {
 
 Instance::Instance(const std::string& app_id, InstanceKey&& instance_key)
     : app_id_(app_id), instance_key_(std::move(instance_key)) {
-  state_ = InstanceState::kUnknown;
+  window_ = instance_key_.Window();
 }
 
 Instance::Instance(const std::string& app_id,

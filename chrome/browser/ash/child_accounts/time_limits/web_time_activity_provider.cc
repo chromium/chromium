@@ -148,9 +148,7 @@ void WebTimeActivityProvider::OnAppActive(
   if (app_id != GetChromeAppId())
     return;
 
-  DCHECK(!instance_key.IsForWebBasedApp());
-  const Browser* browser =
-      GetBrowserForWindow(instance_key.GetEnclosingAppWindow());
+  const Browser* browser = GetBrowserForWindow(instance_key.Window());
   if (!browser)
     return;
 
@@ -165,9 +163,7 @@ void WebTimeActivityProvider::OnAppInactive(
   if (app_id != GetChromeAppId())
     return;
 
-  DCHECK(!instance_key.IsForWebBasedApp());
-  const Browser* browser =
-      GetBrowserForWindow(instance_key.GetEnclosingAppWindow());
+  const Browser* browser = GetBrowserForWindow(instance_key.Window());
   if (!browser)
     return;
 
