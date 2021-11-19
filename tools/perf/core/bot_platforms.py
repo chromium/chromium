@@ -489,6 +489,10 @@ _LINUX_PERF_FYI_BENCHMARK_CONFIGS = PerfSuite([
 ])
 _FUCHSIA_PERF_FYI_BENCHMARK_CONFIGS = PerfSuite([
     _GetBenchmarkConfig('system_health.memory_desktop'),
+    _GetBenchmarkConfig('media.mobile')
+])
+_FUCHSIA_SHERLOCK_PERF_FYI_BENCHMARK_CONFIGS = PerfSuite([
+    _GetBenchmarkConfig('system_health.memory_desktop'),
     _GetBenchmarkConfig('rendering.mobile'),
     _GetBenchmarkConfig('media.mobile')
 ])
@@ -661,12 +665,13 @@ FUCHSIA_PERF_FYI = PerfPlatform('fuchsia-perf-fyi',
                                 10,
                                 'fuchsia',
                                 is_fyi=True)
-FUCHSIA_PERF_SHERLOCK_FYI = PerfPlatform('fuchsia-perf-sherlock-fyi',
-                                         '',
-                                         _FUCHSIA_PERF_FYI_BENCHMARK_CONFIGS,
-                                         6,
-                                         'fuchsia',
-                                         is_fyi=True)
+FUCHSIA_PERF_SHERLOCK_FYI = PerfPlatform(
+    'fuchsia-perf-sherlock-fyi',
+    '',
+    _FUCHSIA_SHERLOCK_PERF_FYI_BENCHMARK_CONFIGS,
+    6,
+    'fuchsia',
+    is_fyi=True)
 
 # Calibration bots
 LINUX_PERF_CALIBRATION = PerfPlatform(
