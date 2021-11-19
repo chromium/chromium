@@ -33,10 +33,17 @@ TEST(V8PlatformPageAllocatorTest, VerifyGetPageConfig) {
            base::PageReadWrite);
   CHECK_EQ(sut.GetPageConfigForTesting(v8::PageAllocator::kReadWriteExecute),
            base::PageReadWriteExecute);
+
+#if defined(__ARM_FEATURE_BTI_DEFAULT)
   CHECK_EQ(sut.GetPageConfigForTesting(v8::PageAllocator::kReadExecute),
            base::CPU::GetInstanceNoAllocation().has_bti()
                ? base::PageReadExecuteProtected
                : base::PageReadExecute);
+#else
+  CHECK_EQ(sut.GetPageConfigForTesting(v8::PageAllocator::kReadExecute),
+           base::PageReadExecute);
+#endif
+
   CHECK_EQ(
       sut.GetPageConfigForTesting(v8::PageAllocator::kNoAccessWillJitLater),
       base::PageInaccessible);
