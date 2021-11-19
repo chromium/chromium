@@ -1,10 +1,5 @@
 # Being ported, https://crbug.com/1071095.
 
--All/BlockedSchemeNavigationBrowserTest.PDF_BrowserInitiatedNavigation_Allow/*
--All/BlockedSchemeNavigationBrowserTest.PDF_FormPost_Block/*
--All/BlockedSchemeNavigationBrowserTest.PDF_NavigationFromFrame_Block/*
--All/BlockedSchemeNavigationBrowserTest.PDF_NavigationFromFrame_TopFrameHasBlockedScheme_Block/*
--All/BlockedSchemeNavigationBrowserTest.PDF_Navigation_Block/*
 -All/EmergencyStopTracingTest.StopOnUIThread/*
 -All/RenderFrameHostManagerTest.DontSelectInvalidFiles/*
 -All/RenderFrameHostManagerTest.IgnoreRendererDebugURLsWhenCrashed/*
@@ -86,7 +81,6 @@
 -All/SitePerProcessBrowserTest.RenderFrameProxyNotRecreatedDuringProcessShutdown/1
 -BackForwardCacheBrowserTest.NonTrivialRTCPeerConnectionNotCached
 -BackForwardCacheBrowserTest.TrivialRTCPeerConnectionCached
--InterestGroupBrowserTest.JoinInterestGroupNonObjectJSONFields
 -NavigationRequestHostResolutionFailureTest.HostResolutionFailure
 -NetInfoBrowserTest.TwoRenderViewsInOneProcess
 -WebRtcIPPermissionDeniedTest.GatherLocalCandidates
@@ -113,3 +107,10 @@
 -DatabaseTest.RegularCannotReadOffTheRecordDatabase
 -DatabaseTest.ReloadPage
 -DatabaseTest.UpdateRecord
+
+# crbug.com/702993: PDF is disabled until it has been migrated off PPAPI
+-All/BlockedSchemeNavigationBrowserTest.PDF_BrowserInitiatedNavigation_Allow/*
+-All/BlockedSchemeNavigationBrowserTest.PDF_FormPost_Block/*
+-All/BlockedSchemeNavigationBrowserTest.PDF_NavigationFromFrame_Block/*
+-All/BlockedSchemeNavigationBrowserTest.PDF_NavigationFromFrame_TopFrameHasBlockedScheme_Block/*
+-All/BlockedSchemeNavigationBrowserTest.PDF_Navigation_Block/*
