@@ -523,7 +523,7 @@ void PhoneHubNotificationController::OnAttemptConnectionScanFailed() {
               message_center::NotifierType::SYSTEM_COMPONENT,
               kPhoneHubInstantTetherNotificationId),
           message_center::RichNotificationData(), std::move(delegate),
-          kPhoneHubEnableHotspotOnIcon,
+          kPhoneHubEnableHotspotIcon,
           message_center::SystemNotificationWarningLevel::NORMAL);
   message_center::MessageCenter::Get()->AddNotification(
       std::move(notification));
