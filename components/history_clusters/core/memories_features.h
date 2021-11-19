@@ -53,6 +53,14 @@ extern const base::FeatureParam<bool> kUseOnDeviceClusteringBackend;
 // "Resume your research" instead of "Resume your journey".
 extern const base::FeatureParam<bool> kAlternateOmniboxActionText;
 
+// If enabled, this is the min score that a visit needs to have to always be
+// shown above the fold regardless of the number of visits already shown.
+extern const base::FeatureParam<double> kMinScoreToAlwaysShowAboveTheFold;
+
+// If enabled, this is the number of non-zero scored visits to always show
+// above the fold regardless of score.
+extern const base::FeatureParam<int> kNumVisitsToAlwaysShowAboveTheFold;
+
 // Features
 
 // Enables Journeys in the Chrome History WebUI.

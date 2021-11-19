@@ -42,6 +42,12 @@ const base::FeatureParam<bool> kPersistClustersInHistoryDb{
 const base::FeatureParam<bool> kUseOnDeviceClusteringBackend{
     &kJourneys, "JourneysOnDeviceClusteringBackend", true};
 
+const base::FeatureParam<double> kMinScoreToAlwaysShowAboveTheFold{
+    &kJourneys, "JourneysMinScoreToAlwaysShowAboveTheFold", 0.5};
+
+const base::FeatureParam<int> kNumVisitsToAlwaysShowAboveTheFold{
+    &kJourneys, "JourneysNumVisitsToAlwaysShowAboveTheFold", 3};
+
 // Default to true, as this this new alternate action text was recommended by
 // our UX writers.
 const base::FeatureParam<bool> kAlternateOmniboxActionText{

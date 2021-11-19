@@ -142,13 +142,16 @@ mojom::QueryResultPtr QueryClustersResultToMojom(Profile* profile,
       } else {
         const auto& top_visit = cluster.visits.front();
         DCHECK(visit.score <= top_visit.score);
-        // After 3 related visits are attached to the top visit, any subsequent
-        // visits scored below 0.5 are considered below the fold. 0-scored
-        // (duplicate) visits are always considered below the fold.
+        // After the experiment-controlled max related visits are attached to
+        // the top visit, any subsequent visits scored below the
+        // experiment-controlled threshold are considered below the fold.
+        // 0-scored (duplicate) visits are always considered below the fold.
         const auto& top_visit_mojom = cluster_mojom->visit;
         visit_mojom->below_the_fold =
-            (top_visit_mojom->related_visits.size() >= 3 &&
-             visit.score < 0.5) ||
+            (top_visit_mojom->related_visits.size() >=
+                 static_cast<size_t>(
+                     kNumVisitsToAlwaysShowAboveTheFold.Get()) &&
+             visit.score < kMinScoreToAlwaysShowAboveTheFold.Get()) ||
             visit.score == 0.0;
         top_visit_mojom->related_visits.push_back(std::move(visit_mojom));
       }
