@@ -106,13 +106,18 @@ class AccountSelectionMediator {
         String formattedIdpUrl =
                 UrlFormatter.formatUrlForSecurityDisplay(idpUrl, SchemeDisplay.OMIT_HTTP_AND_HTTPS);
 
+        Runnable closeOnClickRunnable = () -> {
+            onDismissed(BottomSheetController.StateChangeReason.NONE);
+        };
+
         // We remove the HTTPS from URL since it is the only protocol that is
         // allowed with WebID.
         mSheetItems.add(new ListItem(ItemType.HEADER,
                 new PropertyModel.Builder(HeaderProperties.ALL_KEYS)
-                        .with(HeaderProperties.TYPE, headerType)
-                        .with(HeaderProperties.FORMATTED_RP_URL, formattedRpUrl)
+                        .with(HeaderProperties.CLOSE_ON_CLICK_LISTENER, closeOnClickRunnable)
                         .with(HeaderProperties.FORMATTED_IDP_URL, formattedIdpUrl)
+                        .with(HeaderProperties.FORMATTED_RP_URL, formattedRpUrl)
+                        .with(HeaderProperties.TYPE, headerType)
                         .build()));
     }
 

@@ -308,6 +308,12 @@ class AccountSelectionViewBinder {
                     model.get(HeaderProperties.FORMATTED_IDP_URL));
             TextView headerIdpUrlText = view.findViewById(R.id.header_idp_url);
             headerIdpUrlText.setText(subheadingText);
+        } else if (key == HeaderProperties.CLOSE_ON_CLICK_LISTENER) {
+            final Runnable closeOnClickRunnable =
+                    (Runnable) model.get(HeaderProperties.CLOSE_ON_CLICK_LISTENER);
+            view.findViewById(R.id.close_button).setOnClickListener(clickedView -> {
+                closeOnClickRunnable.run();
+            });
         } else {
             assert false : "Unhandled update to property:" + key;
         }

@@ -12,20 +12,33 @@
     android:layout_height="wrap_content"
     android:layout_marginTop="8dp"
     android:layout_marginBottom="16dp"
-    android:layout_gravity="center_horizontal"
-    android:orientation="vertical"
+    android:layout_gravity="top"
+    android:orientation="horizontal"
     android:minHeight="@dimen/account_selection_sheet_title_height">
-  <org.chromium.ui.widget.TextViewWithLeading
-      android:id="@+id/header_title"
-      android:layout_width="match_parent"
-      android:layout_height="wrap_content"
-      android:layout_marginBottom="8dp"
-      android:gravity="center"
-      android:textAppearance="@style/TextAppearance.Headline.Primary"/>
-  <TextView
-    android:id="@+id/header_idp_url"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:gravity="center_horizontal"
-    android:textAppearance="@style/TextAppearance.TextMedium.Secondary" />
+   <LinearLayout
+       android:layout_width="0dp"
+       android:layout_height="wrap_content"
+       android:layout_weight="1"
+       android:layout_gravity="start"
+       android:orientation="vertical">
+    <org.chromium.ui.widget.TextViewWithLeading
+        android:id="@+id/header_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:textAppearance="@style/TextAppearance.Headline.Primary"/>
+    <TextView
+        android:id="@+id/header_idp_url"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textAppearance="@style/TextAppearance.TextMedium.Secondary" />
+  </LinearLayout>
+  <org.chromium.ui.widget.ChromeImageButton
+        android:id="@+id/close_button"
+        android:layout_height="48dp"
+        android:layout_width="48dp"
+        android:background="?attr/selectableItemBackground"
+        android:contentDescription="@string/close"
+        android:scaleType="center"
+        android:src="@drawable/btn_close" />
 </LinearLayout>
