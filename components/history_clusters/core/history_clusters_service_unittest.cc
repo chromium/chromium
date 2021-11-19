@@ -785,7 +785,7 @@ TEST_F(HistoryClustersServiceTest, DoesQueryMatchAnyCluster) {
                            test_clustering_backend_->GetVisitById(1),
                            test_clustering_backend_->GetVisitById(2),
                        },
-                       {u"apples", u"oranges"},
+                       {u"apples", u"oranges", u"z"},
                        /*should_show_on_prominent_ui_surfaces=*/true));
   clusters.push_back(
       history::Cluster(0,
@@ -817,8 +817,11 @@ TEST_F(HistoryClustersServiceTest, DoesQueryMatchAnyCluster) {
   EXPECT_FALSE(
       history_clusters_service_->DoesQueryMatchAnyCluster("singlevisit"));
 
-  // Too-short queries rejected.
+  // Too-short prefix queries rejected.
   EXPECT_FALSE(history_clusters_service_->DoesQueryMatchAnyCluster("ap"));
+
+  // Single character exact queries are also rejected.
+  EXPECT_FALSE(history_clusters_service_->DoesQueryMatchAnyCluster("z"));
 
   // Non-exact matches are rejected too.
   EXPECT_FALSE(history_clusters_service_->DoesQueryMatchAnyCluster("appl"));

@@ -490,6 +490,11 @@ bool HistoryClustersService::DoesQueryMatchAnyCluster(
         &cache_query_task_tracker_);
   }
 
+  // Early exit for single-character queries, even if it's an exact match.
+  // We still want to allow for two-character exact matches like "uk".
+  if (query.length() <= 1)
+    return false;
+
   query_parser::QueryNodeVector query_nodes;
   query_parser::QueryParser::ParseQueryNodes(
       base::UTF8ToUTF16(query), query_parser::MatchingAlgorithm::DEFAULT,
