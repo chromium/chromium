@@ -209,7 +209,7 @@ class CorbAndCorsExtensionBrowserTest : public CorbAndCorsExtensionTestBase {
           "permissions": [
               "tabs",
               "*://fetch-initiator.com/*",
-              "*://127.0.0.1/*",  // Initiator in AppCache tests.
+              "*://127.0.0.1/*",
               "*://cross-site.com/*",
               "*://*.subdomain.com/*",
               "*://other-with-permission.com/*"

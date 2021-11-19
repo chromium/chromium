@@ -30,7 +30,7 @@ outside of the quota system.
 
 ### PaddingKey
 Helpers for computing quota usage for opaque resources. Features that store
-opaque resources (AppCache, Cache Storage) should use these helpers to avoid
+opaque resources (e.g. Cache Storage) should use these helpers to avoid
 leaking cross-origin information via the quota usage they report.
 
 ### SpecialStoragePolicy

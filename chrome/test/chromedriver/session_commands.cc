@@ -235,7 +235,6 @@ std::unique_ptr<base::DictionaryValue> CreateCapabilities(
     caps->SetBoolKey("locationContextEnabled", true);
     caps->SetBoolKey("mobileEmulationEnabled",
                      session->chrome->IsMobileEmulationEnabled());
-    caps->SetBoolKey("applicationCacheEnabled", false);
     caps->SetBoolKey("browserConnectionEnabled", false);
     caps->SetBoolKey("cssSelectorsEnabled", true);
     caps->SetBoolKey("webStorageEnabled", true);

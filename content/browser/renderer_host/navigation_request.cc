@@ -3650,8 +3650,8 @@ void NavigationRequest::OnStartChecksComplete(
       navigating_frame_host->GetSiteInstance());
   DCHECK(partition);
 
-  // |loader_| should not exist if the service worker handle and app cache
-  // handles will be destroyed, since it holds raw pointers to them. See the
+  // |loader_| should not exist if the service worker handle
+  // will be destroyed, since it holds raw pointers to it. See the
   // comment in the header for |loader_|.
   DCHECK(!loader_);
 

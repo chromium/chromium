@@ -371,7 +371,7 @@ For incognito windows, everything is in-memory.
 Service workers storage lasts indefinitely, i.e, there is no periodic deletion
 of old but still installed service workers. Installed service workers are only
 evicted by the [Quota Manager] (or user action). The Quota Manager controls
-several web platform APIs, including sandboxed filesystem, WebSQL, appcache,
+several web platform APIs, including sandboxed filesystem, WebSQL,
 IndexedDB, cache storage, service worker (registration and scripts), and
 background fetch.
 
