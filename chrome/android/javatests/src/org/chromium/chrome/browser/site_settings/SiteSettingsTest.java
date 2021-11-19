@@ -166,27 +166,6 @@ public class SiteSettingsTest {
         TestThreadUtils.runOnUiThreadBlocking(() -> tab.addObserver(mPermissionUpdateWaiter));
     }
 
-    private void setAllowLocation(final boolean enabled) {
-        LocationSettingsTestUtil.setSystemLocationSettingEnabled(true);
-        LocationProviderOverrider.setLocationProviderImpl(new MockLocationProvider());
-        final SettingsActivity settingsActivity = SiteSettingsTestUtils.startSiteSettingsCategory(
-                SiteSettingsCategory.Type.DEVICE_LOCATION);
-
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            SingleCategorySettings websitePreferences =
-                    (SingleCategorySettings) settingsActivity.getMainFragment();
-            ChromeSwitchPreference location =
-                    (ChromeSwitchPreference) websitePreferences.findPreference(
-                            SingleCategorySettings.BINARY_TOGGLE_KEY);
-
-            websitePreferences.onPreferenceChange(location, enabled);
-            Assert.assertEquals("Location should be " + (enabled ? "allowed" : "blocked"), enabled,
-                    WebsitePreferenceBridge.areAllLocationSettingsEnabled(
-                            getBrowserContextHandle()));
-            settingsActivity.finish();
-        });
-    }
-
     private void triggerEmbargoForOrigin(String url) throws TimeoutException {
         // Ignore notification request 4 times to enter embargo. 5th one ensures that notifications
         // are blocked by actually causing a deny-by-embargo.
@@ -207,7 +186,7 @@ public class SiteSettingsTest {
     @Test
     @SmallTest
     @Feature({"Preferences"})
-    @DisabledTest(message = "Flaky, see https://crbug.com/1270293")
+    @DisableIf.Build(supported_abis_includes = "arm", message = "https://crbug.com/1270293")
     public void testSetAllowLocationEnabled() throws Exception {
         LocationSettingsTestUtil.setSystemLocationSettingEnabled(true);
         LocationProviderOverrider.setLocationProviderImpl(new MockLocationProvider());
@@ -216,8 +195,9 @@ public class SiteSettingsTest {
                 .run();
         TestThreadUtils.runOnUiThreadBlocking(
                 ()
-                        -> WebsitePreferenceBridge.areAllLocationSettingsEnabled(
-                                getBrowserContextHandle()));
+                        -> Assert.assertTrue("Location should be allowed.",
+                                WebsitePreferenceBridge.areAllLocationSettingsEnabled(
+                                        getBrowserContextHandle())));
 
         initializeUpdateWaiter(true /* expectGranted */);
 
@@ -232,7 +212,7 @@ public class SiteSettingsTest {
     @Test
     @SmallTest
     @Feature({"Preferences"})
-    @DisabledTest(message = "Flaky, see https://crbug.com/1270293")
+    @DisableIf.Build(supported_abis_includes = "arm", message = "https://crbug.com/1270293")
     public void testSetAllowLocationNotEnabled() throws Exception {
         LocationSettingsTestUtil.setSystemLocationSettingEnabled(true);
         LocationProviderOverrider.setLocationProviderImpl(new MockLocationProvider());
@@ -241,8 +221,9 @@ public class SiteSettingsTest {
                 .run();
         TestThreadUtils.runOnUiThreadBlocking(
                 ()
-                        -> WebsitePreferenceBridge.areAllLocationSettingsEnabled(
-                                getBrowserContextHandle()));
+                        -> Assert.assertFalse("Location should be blocked.",
+                                WebsitePreferenceBridge.areAllLocationSettingsEnabled(
+                                        getBrowserContextHandle())));
 
         // Launch a page that uses geolocation. No permission prompt is expected.
         initializeUpdateWaiter(false /* expectGranted */);
@@ -1448,7 +1429,7 @@ public class SiteSettingsTest {
             }
 
             Assert.assertEquals(actualKeys.toString() + " should match " + expectedKeys.toString(),
-                    actualKeys, expectedKeys);
+                    expectedKeys, actualKeys);
         }
     }
 
