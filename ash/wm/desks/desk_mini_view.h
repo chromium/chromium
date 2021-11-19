@@ -160,6 +160,12 @@ class ASH_EXPORT DeskMiniView : public views::View,
   bool defer_select_all_ = false;
 
   bool is_desk_name_being_modified_ = false;
+
+  // This is initialized to true and tells the OnViewBlurred function if the
+  // user wants to set a new desk name. We set this to false if the
+  // HandleKeyEvent function detects that the escape key was pressed so that
+  // OnViewBlurred does not change the name of `desk_`.
+  bool should_commit_name_changes_ = true;
 };
 
 }  // namespace ash

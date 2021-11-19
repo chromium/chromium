@@ -2132,18 +2132,33 @@ TEST_F(DesksEditableNamesTest, DontAllowEmptyNames) {
   // Select all and delete.
   SendKey(ui::VKEY_A, ui::EF_CONTROL_DOWN);
   SendKey(ui::VKEY_BACK);
-  // At this point the desk's name is empty, but editing hasn't committed yet,
-  // so it's ok.
-  auto* desk_1 = controller()->desks()[0].get();
-  EXPECT_TRUE(desk_1->name().empty());
-  // Committing also works with the ESC key.
-  SendKey(ui::VKEY_ESCAPE);
+  // Commit with the enter key.
+  SendKey(ui::VKEY_RETURN);
   // The name should now revert back to the default value.
+  auto* desk_1 = controller()->desks()[0].get();
   EXPECT_FALSE(desk_1->name().empty());
   EXPECT_FALSE(desk_1->is_name_set_by_user());
   EXPECT_EQ(u"Desk 1", desk_1->name());
   VerifyDesksRestoreData(GetPrimaryUserPrefService(),
                          {std::string(), std::string()});
+}
+
+TEST_F(DesksEditableNamesTest, RevertDeskNameOnEscape) {
+  ASSERT_EQ(2u, controller()->desks().size());
+  ASSERT_TRUE(Shell::Get()->overview_controller()->InOverviewSession());
+
+  // Select first desk name view.
+  ClickOnDeskNameViewAtIndex(0);
+  // Edit the name of the desk.
+  SendKey(ui::VKEY_E);
+  SendKey(ui::VKEY_S);
+  SendKey(ui::VKEY_C);
+  // Press escape key.
+  SendKey(ui::VKEY_ESCAPE);
+  // Name should be previous value.
+  auto* desk_1 = controller()->desks()[0].get();
+  EXPECT_FALSE(desk_1->is_name_set_by_user());
+  EXPECT_EQ(u"Desk 1", desk_1->name());
 }
 
 TEST_F(DesksEditableNamesTest, SelectAllOnFocus) {

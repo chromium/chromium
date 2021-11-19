@@ -308,24 +308,14 @@ void DeskMiniView::ContentsChanged(views::Textfield* sender,
   if (!desk_)
     return;
 
-  // Avoid copying new_contents if we don't need to trim it below.
-  const std::u16string* new_text = &new_contents;
-
   // To avoid potential security and memory issues, we don't allow desk names to
   // have an unbounded length. Therefore we trim if needed at kMaxLength UTF-16
   // boundary. Note that we don't care about code point boundaries in this case.
-  std::u16string trimmed_new_contents;
   if (new_contents.size() > DeskNameView::kMaxLength) {
-    trimmed_new_contents = new_contents;
+    std::u16string trimmed_new_contents = new_contents;
     trimmed_new_contents.resize(DeskNameView::kMaxLength);
-    new_text = &trimmed_new_contents;
     desk_name_view_->SetText(trimmed_new_contents);
   }
-
-  desk_->SetName(
-      base::CollapseWhitespace(*new_text,
-                               /*trim_sequences_with_line_breaks=*/false),
-      /*set_by_user=*/true);
 
   Layout();
 }
@@ -336,7 +326,8 @@ bool DeskMiniView::HandleKeyEvent(views::Textfield* sender,
   DCHECK(is_desk_name_being_modified_);
 
   // Pressing enter or escape should blur the focus away from DeskNameView so
-  // that editing the desk's name ends.
+  // that editing the desk's name ends. Pressing tab should do the same, but is
+  // handled in OverviewSession.
   if (key_event.type() != ui::ET_KEY_PRESSED)
     return false;
 
@@ -345,12 +336,14 @@ bool DeskMiniView::HandleKeyEvent(views::Textfield* sender,
     return false;
   }
 
+  // If the escape key was pressed, `should_commit_name_changes_` is set to
+  // false so that OnViewBlurred knows that it should not change the name of
+  // `desk_`.
+  if (key_event.key_code() == ui::VKEY_ESCAPE)
+    should_commit_name_changes_ = false;
+
   DeskNameView::CommitChanges(GetWidget());
 
-  Shell::Get()
-      ->accessibility_controller()
-      ->TriggerAccessibilityAlertWithMessage(l10n_util::GetStringFUTF8(
-          IDS_ASH_DESKS_DESK_NAME_COMMIT, desk_->name()));
   return true;
 }
 
@@ -390,6 +383,10 @@ bool DeskMiniView::HandleMouseEvent(views::Textfield* sender,
 void DeskMiniView::OnViewFocused(views::View* observed_view) {
   DCHECK_EQ(observed_view, desk_name_view_);
   is_desk_name_being_modified_ = true;
+
+  // Assume we should commit the name change unless HandleKeyEvent detects the
+  // user pressed the escape key.
+  should_commit_name_changes_ = true;
   desk_name_view_->UpdateViewAppearance();
 
   // Set the unelided desk name so that the full name shows up for the user to
@@ -410,9 +407,24 @@ void DeskMiniView::OnViewFocused(views::View* observed_view) {
 
 void DeskMiniView::OnViewBlurred(views::View* observed_view) {
   DCHECK_EQ(observed_view, desk_name_view_);
-  is_desk_name_being_modified_ = false;
   defer_select_all_ = false;
   desk_name_view_->UpdateViewAppearance();
+
+  // If `should_commit_name_changes_` is true, then the view was blurred from
+  // the user pressing a key other than escape. In that case we should set the
+  // name of `desk_` to the new name contained in `desk_name_view_`. Order here
+  // matters, because Desk::SetName calls OnDeskNameChanged on each of its
+  // observers, and DeskMiniView::OnDeskNameChanged will only set the text in
+  // `desk_name_view_` to the name contained in `desk_` when
+  // `is_desk_name_being_modified_` is set to false. So, to avoid performing the
+  // operations in OnDeskNameChanged twice, we need to call SetName before
+  // setting `is_desk_name_being_modified_` to false.
+  if (should_commit_name_changes_) {
+    desk_->SetName(
+        base::CollapseWhitespace(desk_name_view_->GetText(),
+                                 /*trim_sequences_with_line_breaks=*/false),
+        /*set_by_user=*/true);
+  }
 
   // When committing the name, do not allow an empty desk name. Revert back to
   // the default name if the desk is not being removed.
@@ -422,11 +434,19 @@ void DeskMiniView::OnViewBlurred(views::View* observed_view) {
   // default one for this position, should we revert it (i.e. consider it
   // `set_by_user = false`?
   if (!desk_->is_desk_being_removed() && desk_->name().empty()) {
+    // DeskController::RevertDeskNameToDefault calls Desk::SetName, so we should
+    // call this before we set `is_desk_name_being_modified_` to false for the
+    // same reason that we call Desk::SetName before.
     DesksController::Get()->RevertDeskNameToDefault(desk_);
-    return;
   }
 
+  is_desk_name_being_modified_ = false;
   OnDeskNameChanged(desk_->name());
+
+  Shell::Get()
+      ->accessibility_controller()
+      ->TriggerAccessibilityAlertWithMessage(l10n_util::GetStringFUTF8(
+          IDS_ASH_DESKS_DESK_NAME_COMMIT, desk_->name()));
 
   // Only when the new desk name has been committed is when we can update the
   // desks restore prefs.
