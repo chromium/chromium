@@ -225,6 +225,9 @@ std::unique_ptr<ExternalVkImageBacking> ExternalVkImageBacking::Create(
   if (!pixel_data.empty()) {
     size_t stride = BitsPerPixel(format) / 8 * size.width();
     backing->WritePixelsWithData(pixel_data, stride);
+
+    // Mark the backing as cleared.
+    backing->SetCleared();
   }
 
   return backing;
