@@ -681,7 +681,7 @@ void PaintLayer::DirtyVisibleContentStatus() {
 void PaintLayer::MarkAncestorChainForFlagsUpdate(
     DescendantDependentFlagsUpdateFlag flag) {
 #if DCHECK_IS_ON()
-  DCHECK(flag == DoesNotNeedDescendantDependentUpdate ||
+  DCHECK(flag == kDoesNotNeedDescendantDependentUpdate ||
          !layout_object_->GetDocument()
               .View()
               ->IsUpdatingDescendantDependentFlags());
@@ -690,7 +690,7 @@ void PaintLayer::MarkAncestorChainForFlagsUpdate(
     if (layer->needs_descendant_dependent_flags_update_ &&
         layer->GetLayoutObject().NeedsPaintPropertyUpdate())
       break;
-    if (flag == NeedsDescendantDependentUpdate)
+    if (flag == kNeedsDescendantDependentUpdate)
       layer->needs_descendant_dependent_flags_update_ = true;
     layer->GetLayoutObject().SetNeedsPaintPropertyUpdate();
   }
@@ -783,7 +783,7 @@ void PaintLayer::UpdateDescendantDependentFlags() {
       GetLayoutObject().RecalcVisualOverflow();
       if (old_visual_rect != GetLayoutObject().PhysicalVisualOverflowRect()) {
         SetNeedsCompositingInputsUpdateInternal();
-        MarkAncestorChainForFlagsUpdate(DoesNotNeedDescendantDependentUpdate);
+        MarkAncestorChainForFlagsUpdate(kDoesNotNeedDescendantDependentUpdate);
       }
     }
     needs_visual_overflow_recalc_ = false;
@@ -1167,7 +1167,7 @@ void PaintLayer::SetNeedsCompositingInputsUpdate(bool mark_ancestor_flags) {
   // dependent flags update. Reduce call sites after CAP launch allows
   /// removal of CompositingInputsUpdater.
   if (mark_ancestor_flags)
-    MarkAncestorChainForFlagsUpdate(NeedsDescendantDependentUpdate);
+    MarkAncestorChainForFlagsUpdate(kNeedsDescendantDependentUpdate);
 }
 
 void PaintLayer::SetNeedsGraphicsLayerRebuild() {

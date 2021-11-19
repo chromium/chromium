@@ -85,8 +85,8 @@ class HeapSizeCache {
     // avoid exposing precise GC timings.
     base::TimeTicks now = clock_->NowTicks();
     base::TimeDelta delta_allowed =
-        precision == MemoryInfo::Precision::Bucketized ? kTwentyMinutes
-                                                       : kFiftyMs;
+        precision == MemoryInfo::Precision::kBucketized ? kTwentyMinutes
+                                                        : kFiftyMs;
     if (!last_update_time_.has_value() ||
         now - last_update_time_.value() >= delta_allowed) {
       Update(precision);
@@ -96,7 +96,7 @@ class HeapSizeCache {
 
   void Update(MemoryInfo::Precision precision) {
     GetHeapSize(info_);
-    if (precision == MemoryInfo::Precision::Precise)
+    if (precision == MemoryInfo::Precision::kPrecise)
       return;
 
     info_.used_js_heap_size = QuantizeMemorySize(info_.used_js_heap_size);

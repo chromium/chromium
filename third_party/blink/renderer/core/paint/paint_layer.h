@@ -1277,14 +1277,14 @@ class CORE_EXPORT PaintLayer : public GarbageCollected<PaintLayer>,
   // Indicates whether the descendant-dependent tree walk bit should also
   // be set.
   enum DescendantDependentFlagsUpdateFlag {
-    NeedsDescendantDependentUpdate,
-    DoesNotNeedDescendantDependentUpdate
+    kNeedsDescendantDependentUpdate,
+    kDoesNotNeedDescendantDependentUpdate
   };
 
   // Marks the ancestor chain for paint property update, and if
   // the flag is set, the descendant-dependent tree walk as well.
   void MarkAncestorChainForFlagsUpdate(
-      DescendantDependentFlagsUpdateFlag = NeedsDescendantDependentUpdate);
+      DescendantDependentFlagsUpdateFlag = kNeedsDescendantDependentUpdate);
 
   bool AttemptDirectCompositingUpdate(const StyleDifference&,
                                       const ComputedStyle* old_style);

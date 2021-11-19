@@ -65,7 +65,7 @@ enum PathComponentIndex : unsigned {
 
 InterpolationValue PathInterpolationFunctions::ConvertValue(
     const StylePath* style_path,
-    CoordinateConversion coordinateConversion) {
+    CoordinateConversion coordinate_conversion) {
   if (!style_path)
     return nullptr;
 
@@ -81,7 +81,7 @@ InterpolationValue PathInterpolationFunctions::ConvertValue(
         SVGPathSegInterpolationFunctions::ConsumePathSeg(segment,
                                                          current_coordinates));
     SVGPathSegType seg_type = segment.command;
-    if (coordinateConversion == ForceAbsolute)
+    if (coordinate_conversion == kForceAbsolute)
       seg_type = ToAbsolutePathSegType(seg_type);
     path_seg_types.push_back(seg_type);
     length++;

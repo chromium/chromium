@@ -55,11 +55,11 @@ class CORE_EXPORT MemoryInfo final : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  // Precision of the performance.memory() attribute. A Precise value means that
-  // the numbers will not be bucketized and only cached for a small amount of
-  // time (50 ms). A Bucketized value means that the numbers will be bucketized
-  // and cached for a long period of time (20 minutes).
-  enum class Precision { Precise, Bucketized };
+  // Precision of the performance.memory() attribute. A kPrecise value means
+  // that the numbers will not be bucketized and only cached for a small amount
+  // of time (50 ms). A kBucketized value means that the numbers will be
+  // bucketized and cached for a long period of time (20 minutes).
+  enum class Precision { kPrecise, kBucketized };
 
   explicit MemoryInfo(Precision precision);
 

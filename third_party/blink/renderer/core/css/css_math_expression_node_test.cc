@@ -206,10 +206,10 @@ TEST(CSSCalculationValue, AddToLengthUnitValues) {
 
 TEST(CSSMathExpressionNode, TestParseDeeplyNestedExpression) {
   enum Kind {
-    calc,
-    min,
-    max,
-    clamp,
+    kCalc,
+    kMin,
+    kMax,
+    kClamp,
   };
 
   // Ref: https://bugs.chromium.org/p/chromium/issues/detail?id=1211283
@@ -218,26 +218,26 @@ TEST(CSSMathExpressionNode, TestParseDeeplyNestedExpression) {
     const int nest_num;
     const bool expected;
   } test_cases[] = {
-      {calc, 1, true},
-      {calc, 10, true},
-      {calc, kMaxExpressionDepth - 1, true},
-      {calc, kMaxExpressionDepth, false},
-      {calc, kMaxExpressionDepth + 1, false},
-      {min, 1, true},
-      {min, 10, true},
-      {min, kMaxExpressionDepth - 1, true},
-      {min, kMaxExpressionDepth, false},
-      {min, kMaxExpressionDepth + 1, false},
-      {max, 1, true},
-      {max, 10, true},
-      {max, kMaxExpressionDepth - 1, true},
-      {max, kMaxExpressionDepth, false},
-      {max, kMaxExpressionDepth + 1, false},
-      {clamp, 1, true},
-      {clamp, 10, true},
-      {clamp, kMaxExpressionDepth - 1, true},
-      {clamp, kMaxExpressionDepth, false},
-      {clamp, kMaxExpressionDepth + 1, false},
+      {kCalc, 1, true},
+      {kCalc, 10, true},
+      {kCalc, kMaxExpressionDepth - 1, true},
+      {kCalc, kMaxExpressionDepth, false},
+      {kCalc, kMaxExpressionDepth + 1, false},
+      {kMin, 1, true},
+      {kMin, 10, true},
+      {kMin, kMaxExpressionDepth - 1, true},
+      {kMin, kMaxExpressionDepth, false},
+      {kMin, kMaxExpressionDepth + 1, false},
+      {kMax, 1, true},
+      {kMax, 10, true},
+      {kMax, kMaxExpressionDepth - 1, true},
+      {kMax, kMaxExpressionDepth, false},
+      {kMax, kMaxExpressionDepth + 1, false},
+      {kClamp, 1, true},
+      {kClamp, 10, true},
+      {kClamp, kMaxExpressionDepth - 1, true},
+      {kClamp, kMaxExpressionDepth, false},
+      {kClamp, kMaxExpressionDepth + 1, false},
   };
 
   for (const auto& test_case : test_cases) {
@@ -252,16 +252,16 @@ TEST(CSSMathExpressionNode, TestParseDeeplyNestedExpression) {
       if (i)
         ss << " + ";
       switch (test_case.kind) {
-        case calc:
+        case kCalc:
           ss << "calc(1px";
           break;
-        case min:
+        case kMin:
           ss << "min(1px, 1px";
           break;
-        case max:
+        case kMax:
           ss << "max(1px, 1px";
           break;
-        case clamp:
+        case kClamp:
           ss << "clamp(1px, 1px, 1px";
           break;
       }

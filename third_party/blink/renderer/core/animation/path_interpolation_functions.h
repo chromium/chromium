@@ -17,7 +17,7 @@ class CORE_EXPORT PathInterpolationFunctions {
   STATIC_ONLY(PathInterpolationFunctions);
 
  public:
-  enum CoordinateConversion { PreserveCoordinates, ForceAbsolute };
+  enum CoordinateConversion { kPreserveCoordinates, kForceAbsolute };
 
   static scoped_refptr<StylePath> AppliedValue(const InterpolableValue&,
                                                const NonInterpolableValue*);

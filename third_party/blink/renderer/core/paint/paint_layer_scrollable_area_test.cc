@@ -1371,7 +1371,7 @@ class ScrollTimelineForTest : public ScrollTimeline {
                             scroll_offsets = CreateScrollOffsets())
       : ScrollTimeline(document,
                        scroll_source,
-                       ScrollTimeline::Vertical,
+                       ScrollTimeline::kVertical,
                        std::move(scroll_offsets)),
         invalidated_(false) {}
   void Invalidate() override {

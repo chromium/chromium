@@ -266,11 +266,11 @@ String ContrastAlgorithmToString(const ContrastAlgorithm& contrast_algorithm) {
   // values. These string values are sent to the overlay code that is expected
   // to handle them properly.
   switch (contrast_algorithm) {
-    case ContrastAlgorithm::AA:
+    case ContrastAlgorithm::kAa:
       return ContrastAlgorithmEnum::Aa;
-    case ContrastAlgorithm::AAA:
+    case ContrastAlgorithm::kAaa:
       return ContrastAlgorithmEnum::Aaa;
-    case ContrastAlgorithm::APCA:
+    case ContrastAlgorithm::kApca:
       return ContrastAlgorithmEnum::Apca;
   }
 }
@@ -1521,14 +1521,14 @@ InspectorHighlightConfig::InspectorHighlightConfig()
       show_rulers(false),
       show_extension_lines(false),
       show_accessibility_info(true),
-      color_format(ColorFormat::HEX) {}
+      color_format(ColorFormat::kHex) {}
 
 InspectorHighlight::InspectorHighlight(float scale)
     : InspectorHighlightBase(scale),
       show_rulers_(false),
       show_extension_lines_(false),
       show_accessibility_info_(true),
-      color_format_(ColorFormat::HEX) {}
+      color_format_(ColorFormat::kHex) {}
 
 InspectorSourceOrderConfig::InspectorSourceOrderConfig() = default;
 
@@ -1956,13 +1956,13 @@ std::unique_ptr<protocol::DictionaryValue> InspectorHighlight::AsProtocolValue()
   object->setBoolean("showExtensionLines", show_extension_lines_);
   object->setBoolean("showAccessibilityInfo", show_accessibility_info_);
   switch (color_format_) {
-    case ColorFormat::RGB:
+    case ColorFormat::kRgb:
       object->setString("colorFormat", "rgb");
       break;
-    case ColorFormat::HSL:
+    case ColorFormat::kHsl:
       object->setString("colorFormat", "hsl");
       break;
-    case ColorFormat::HEX:
+    case ColorFormat::kHex:
       object->setString("colorFormat", "hex");
       break;
   }
@@ -2461,7 +2461,7 @@ InspectorHighlightConfig InspectorHighlight::DefaultConfig() {
   config.show_rulers = true;
   config.show_extension_lines = true;
   config.css_grid = Color::kTransparent;
-  config.color_format = ColorFormat::HEX;
+  config.color_format = ColorFormat::kHex;
   config.grid_highlight_config = std::make_unique<InspectorGridHighlightConfig>(
       InspectorHighlight::DefaultGridConfig());
   config.flex_container_highlight_config =

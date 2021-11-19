@@ -73,7 +73,7 @@ class MemoryInfoTest : public testing::Test {
     // TODO(npm): add a check usedJSHeapSize <= totalJSHeapSize once it always
     // holds. See https://crbug.com/849322
     EXPECT_LE(info->totalJSHeapSize(), info->jsHeapSizeLimit());
-    if (precision == MemoryInfo::Precision::Bucketized) {
+    if (precision == MemoryInfo::Precision::kBucketized) {
       // Check that the bucketized values are heavily rounded.
       EXPECT_EQ(0u, info->totalJSHeapSize() % kModForBucketizationCheck);
       EXPECT_EQ(0u, info->usedJSHeapSize() % kModForBucketizationCheck);
@@ -128,12 +128,12 @@ TEST_F(MemoryInfoTest, Bucketized) {
   // impossible for GC to clear them up unexpectedly early.
   Vector<v8::Local<v8::ArrayBuffer>> objects;
 
-  MemoryInfoTestScopedMockTime mock_time(MemoryInfo::Precision::Bucketized);
+  MemoryInfoTestScopedMockTime mock_time(MemoryInfo::Precision::kBucketized);
   MemoryInfo* bucketized_memory =
-      MakeGarbageCollected<MemoryInfo>(MemoryInfo::Precision::Bucketized);
+      MakeGarbageCollected<MemoryInfo>(MemoryInfo::Precision::kBucketized);
 
   // Check that the values are monotone and rounded.
-  CheckValues(bucketized_memory, MemoryInfo::Precision::Bucketized);
+  CheckValues(bucketized_memory, MemoryInfo::Precision::kBucketized);
 
   // Advance the clock for a minute. Not enough to make bucketized value
   // recalculate. Also allocate some memory.
@@ -141,7 +141,7 @@ TEST_F(MemoryInfoTest, Bucketized) {
   objects.push_back(v8::ArrayBuffer::New(isolate, 100));
 
   MemoryInfo* bucketized_memory2 =
-      MakeGarbageCollected<MemoryInfo>(MemoryInfo::Precision::Bucketized);
+      MakeGarbageCollected<MemoryInfo>(MemoryInfo::Precision::kBucketized);
   // The old bucketized values must be equal to the new bucketized values.
   CheckEqual(bucketized_memory, bucketized_memory2);
 
@@ -160,8 +160,8 @@ TEST_F(MemoryInfoTest, Bucketized) {
     mock_time.AdvanceClock(base::Minutes(30));
     objects.push_back(v8::ArrayBuffer::New(isolate, 100));
     MemoryInfo* bucketized_memory3 =
-        MakeGarbageCollected<MemoryInfo>(MemoryInfo::Precision::Bucketized);
-    CheckValues(bucketized_memory3, MemoryInfo::Precision::Bucketized);
+        MakeGarbageCollected<MemoryInfo>(MemoryInfo::Precision::kBucketized);
+    CheckValues(bucketized_memory3, MemoryInfo::Precision::kBucketized);
     // The limit should remain unchanged.
     EXPECT_EQ(bucketized_memory3->jsHeapSizeLimit(),
               bucketized_memory->jsHeapSizeLimit());
@@ -173,11 +173,11 @@ TEST_F(MemoryInfoTest, Precise) {
   v8::Isolate* isolate = scope.GetIsolate();
   Vector<v8::Local<v8::ArrayBuffer>> objects;
 
-  MemoryInfoTestScopedMockTime mock_time(MemoryInfo::Precision::Precise);
+  MemoryInfoTestScopedMockTime mock_time(MemoryInfo::Precision::kPrecise);
   MemoryInfo* precise_memory =
-      MakeGarbageCollected<MemoryInfo>(MemoryInfo::Precision::Precise);
+      MakeGarbageCollected<MemoryInfo>(MemoryInfo::Precision::kPrecise);
   // Check that the precise values are monotone and not heavily rounded.
-  CheckValues(precise_memory, MemoryInfo::Precision::Precise);
+  CheckValues(precise_memory, MemoryInfo::Precision::kPrecise);
 
   // Advance the clock for a nanosecond, which should not be enough to make the
   // precise value recalculate.
@@ -187,7 +187,7 @@ TEST_F(MemoryInfoTest, Precise) {
   // be noticed by the used heap size in the precise MemoryInfo case.
   objects.push_back(v8::ArrayBuffer::New(isolate, 100));
   MemoryInfo* precise_memory2 =
-      MakeGarbageCollected<MemoryInfo>(MemoryInfo::Precision::Precise);
+      MakeGarbageCollected<MemoryInfo>(MemoryInfo::Precision::kPrecise);
   // The old precise values must be equal to the new precise values.
   CheckEqual(precise_memory, precise_memory2);
 
@@ -198,9 +198,9 @@ TEST_F(MemoryInfoTest, Precise) {
     objects.push_back(v8::ArrayBuffer::New(isolate, 100));
 
     MemoryInfo* new_precise_memory =
-        MakeGarbageCollected<MemoryInfo>(MemoryInfo::Precision::Precise);
+        MakeGarbageCollected<MemoryInfo>(MemoryInfo::Precision::kPrecise);
 
-    CheckValues(new_precise_memory, MemoryInfo::Precision::Precise);
+    CheckValues(new_precise_memory, MemoryInfo::Precision::kPrecise);
     // The old precise used heap size must be different from the new one.
     EXPECT_NE(new_precise_memory->usedJSHeapSize(),
               precise_memory->usedJSHeapSize());
@@ -221,9 +221,9 @@ TEST_F(MemoryInfoTest, FlagEnabled) {
   // Using MemoryInfo::Precision::Bucketized to ensure that the runtime-enabled
   // flag overrides the Precision passed onto the method.
   MemoryInfo* precise_memory =
-      MakeGarbageCollected<MemoryInfo>(MemoryInfo::Precision::Bucketized);
+      MakeGarbageCollected<MemoryInfo>(MemoryInfo::Precision::kBucketized);
   // Check that the precise values are monotone and not heavily rounded.
-  CheckValues(precise_memory, MemoryInfo::Precision::Precise);
+  CheckValues(precise_memory, MemoryInfo::Precision::kPrecise);
 
   // Allocate an object in heap and keep it in a vector to make sure that it
   // does not get accidentally GC'd. This single ArrayBuffer should be enough to
@@ -231,8 +231,8 @@ TEST_F(MemoryInfoTest, FlagEnabled) {
   // PreciseMemoryInfoEnabled flag is on.
   objects.push_back(v8::ArrayBuffer::New(isolate, 100));
   MemoryInfo* precise_memory2 =
-      MakeGarbageCollected<MemoryInfo>(MemoryInfo::Precision::Bucketized);
-  CheckValues(precise_memory2, MemoryInfo::Precision::Precise);
+      MakeGarbageCollected<MemoryInfo>(MemoryInfo::Precision::kBucketized);
+  CheckValues(precise_memory2, MemoryInfo::Precision::kPrecise);
   // The old precise JS heap size value must NOT be equal to the new value.
   EXPECT_NE(precise_memory2->usedJSHeapSize(),
             precise_memory->usedJSHeapSize());
@@ -242,7 +242,7 @@ TEST_F(MemoryInfoTest, ZeroTime) {
   // In this test, we make sure that even if the current base::TimeTicks() value
   // is very close to 0, we still obtain memory information from the first call
   // to MemoryInfo::Create.
-  MemoryInfoTestScopedMockTime mock_time(MemoryInfo::Precision::Precise);
+  MemoryInfoTestScopedMockTime mock_time(MemoryInfo::Precision::kPrecise);
   mock_time.AdvanceClock(base::Microseconds(100));
   V8TestingScope scope;
   v8::Isolate* isolate = scope.GetIsolate();
@@ -250,8 +250,8 @@ TEST_F(MemoryInfoTest, ZeroTime) {
   objects.push_back(v8::ArrayBuffer::New(isolate, 100));
 
   MemoryInfo* precise_memory =
-      MakeGarbageCollected<MemoryInfo>(MemoryInfo::Precision::Precise);
-  CheckValues(precise_memory, MemoryInfo::Precision::Precise);
+      MakeGarbageCollected<MemoryInfo>(MemoryInfo::Precision::kPrecise);
+  CheckValues(precise_memory, MemoryInfo::Precision::kPrecise);
   EXPECT_LT(0u, precise_memory->usedJSHeapSize());
   EXPECT_LT(0u, precise_memory->totalJSHeapSize());
   EXPECT_LT(0u, precise_memory->jsHeapSizeLimit());

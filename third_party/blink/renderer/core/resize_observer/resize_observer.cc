@@ -59,12 +59,12 @@ ResizeObserver::ResizeObserver(Delegate* delegate, LocalDOMWindow* window)
 ResizeObserverBoxOptions ResizeObserver::ParseBoxOptions(
     const String& box_options) {
   if (box_options == kBoxOptionBorderBox)
-    return ResizeObserverBoxOptions::BorderBox;
+    return ResizeObserverBoxOptions::kBorderBox;
   if (box_options == kBoxOptionContentBox)
-    return ResizeObserverBoxOptions::ContentBox;
+    return ResizeObserverBoxOptions::kContentBox;
   if (box_options == kBoxOptionDevicePixelContentBox)
-    return ResizeObserverBoxOptions::DevicePixelContentBox;
-  return ResizeObserverBoxOptions::ContentBox;
+    return ResizeObserverBoxOptions::kDevicePixelContentBox;
+  return ResizeObserverBoxOptions::kContentBox;
 }
 
 void ResizeObserver::observeInternal(Element* target,
@@ -104,7 +104,7 @@ void ResizeObserver::observe(Element* target,
 }
 
 void ResizeObserver::observe(Element* target) {
-  observeInternal(target, ResizeObserverBoxOptions::ContentBox);
+  observeInternal(target, ResizeObserverBoxOptions::kContentBox);
 }
 
 void ResizeObserver::unobserve(Element* target) {

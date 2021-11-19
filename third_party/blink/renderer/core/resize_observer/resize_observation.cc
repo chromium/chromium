@@ -59,10 +59,10 @@ LayoutSize ResizeObservation::ComputeTargetSize() const {
         LayoutSize bounding_box_size =
             LayoutSize(svg_graphics_element->GetBBox().size());
         switch (observed_box_) {
-          case ResizeObserverBoxOptions::BorderBox:
-          case ResizeObserverBoxOptions::ContentBox:
+          case ResizeObserverBoxOptions::kBorderBox:
+          case ResizeObserverBoxOptions::kContentBox:
             return bounding_box_size;
-          case ResizeObserverBoxOptions::DevicePixelContentBox: {
+          case ResizeObserverBoxOptions::kDevicePixelContentBox: {
             bounding_box_size.Scale(style.EffectiveZoom());
             LayoutSize snapped_device_pixel_content_box_size = LayoutSize(
                 ResizeObserverUtilities::ComputeSnappedDevicePixelContentBox(

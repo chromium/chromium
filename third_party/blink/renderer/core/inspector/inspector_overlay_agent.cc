@@ -933,11 +933,11 @@ Response InspectorOverlayAgent::getHighlightObjectForTest(
   String format = colorFormat.fromMaybe("hex");
   namespace ColorFormatEnum = protocol::Overlay::ColorFormatEnum;
   if (format == ColorFormatEnum::Hsl) {
-    config->color_format = ColorFormat::HSL;
+    config->color_format = ColorFormat::kHsl;
   } else if (format == ColorFormatEnum::Rgb) {
-    config->color_format = ColorFormat::RGB;
+    config->color_format = ColorFormat::kRgb;
   } else {
-    config->color_format = ColorFormat::HEX;
+    config->color_format = ColorFormat::kHex;
   }
 
   node->GetDocument().EnsurePaintLocationDataValidForNode(
@@ -1785,11 +1785,11 @@ absl::optional<BoxStyle> InspectorOverlayAgent::ToBoxStyle(
 ContrastAlgorithm GetContrastAlgorithm(const String& contrast_algorithm) {
   namespace ContrastAlgorithmEnum = protocol::Overlay::ContrastAlgorithmEnum;
   if (contrast_algorithm == ContrastAlgorithmEnum::Aaa) {
-    return ContrastAlgorithm::AAA;
+    return ContrastAlgorithm::kAaa;
   } else if (contrast_algorithm == ContrastAlgorithmEnum::Apca) {
-    return ContrastAlgorithm::APCA;
+    return ContrastAlgorithm::kApca;
   } else {
-    return ContrastAlgorithm::AA;
+    return ContrastAlgorithm::kAa;
   }
 }
 
@@ -1827,11 +1827,11 @@ InspectorOverlayAgent::ToHighlightConfig(
   String format = config->getColorFormat("hex");
 
   if (format == ColorFormatEnum::Hsl) {
-    highlight_config->color_format = ColorFormat::HSL;
+    highlight_config->color_format = ColorFormat::kHsl;
   } else if (format == ColorFormatEnum::Rgb) {
-    highlight_config->color_format = ColorFormat::RGB;
+    highlight_config->color_format = ColorFormat::kRgb;
   } else {
-    highlight_config->color_format = ColorFormat::HEX;
+    highlight_config->color_format = ColorFormat::kHex;
   }
 
   namespace ContrastAlgorithmEnum = protocol::Overlay::ContrastAlgorithmEnum;

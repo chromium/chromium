@@ -18,12 +18,12 @@
 namespace blink {
 namespace {
 
-enum class ShouldYield { YIELD, DONT_YIELD };
+using ShouldYield = base::StrongAlias<class ShouldYieldTag, bool>;
 
 class MockScriptedIdleTaskControllerScheduler final : public ThreadScheduler {
  public:
   explicit MockScriptedIdleTaskControllerScheduler(ShouldYield should_yield)
-      : should_yield_(should_yield == ShouldYield::YIELD) {}
+      : should_yield_(should_yield) {}
   MockScriptedIdleTaskControllerScheduler(
       const MockScriptedIdleTaskControllerScheduler&) = delete;
   MockScriptedIdleTaskControllerScheduler& operator=(
@@ -123,7 +123,7 @@ class ScriptedIdleTaskControllerTest : public testing::Test {
 };
 
 TEST_F(ScriptedIdleTaskControllerTest, RunCallback) {
-  MockScriptedIdleTaskControllerScheduler scheduler(ShouldYield::DONT_YIELD);
+  MockScriptedIdleTaskControllerScheduler scheduler(ShouldYield(false));
   ScopedSchedulerOverrider scheduler_overrider(&scheduler);
 
   ScriptedIdleTaskController* controller =
@@ -143,7 +143,7 @@ TEST_F(ScriptedIdleTaskControllerTest, RunCallback) {
 }
 
 TEST_F(ScriptedIdleTaskControllerTest, DontRunCallbackWhenAskedToYield) {
-  MockScriptedIdleTaskControllerScheduler scheduler(ShouldYield::YIELD);
+  MockScriptedIdleTaskControllerScheduler scheduler(ShouldYield(true));
   ScopedSchedulerOverrider scheduler_overrider(&scheduler);
 
   ScriptedIdleTaskController* controller =
@@ -163,7 +163,7 @@ TEST_F(ScriptedIdleTaskControllerTest, DontRunCallbackWhenAskedToYield) {
 }
 
 TEST_F(ScriptedIdleTaskControllerTest, RunCallbacksAsyncWhenUnpaused) {
-  MockScriptedIdleTaskControllerScheduler scheduler(ShouldYield::YIELD);
+  MockScriptedIdleTaskControllerScheduler scheduler(ShouldYield(true));
   ScopedSchedulerOverrider scheduler_overrider(&scheduler);
   ScriptedIdleTaskController* controller =
       ScriptedIdleTaskController::Create(execution_context_);

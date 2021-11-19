@@ -75,7 +75,7 @@ class ClipPathPaintWorkletInput : public PaintWorkletInput {
     if (basic_shape.GetType() == BasicShape::kStylePathType) {
       return PathInterpolationFunctions::ConvertValue(
           To<StylePath>(&basic_shape),
-          PathInterpolationFunctions::ForceAbsolute);
+          PathInterpolationFunctions::kForceAbsolute);
     }
     return basic_shape_interpolation_functions::MaybeConvertBasicShape(
         &basic_shape, zoom_);

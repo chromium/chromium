@@ -50,12 +50,12 @@ ResizeObserverEntry::ResizeObserverEntry(Element* target) : target_(target) {
           ResizeObserverUtilities::ZoomAdjustedLayoutRect(content_rect, style);
 
       FloatSize content_box = ResizeObserverUtilities::ComputeZoomAdjustedBox(
-          ResizeObserverBoxOptions::ContentBox, layout_object, style);
+          ResizeObserverBoxOptions::kContentBox, layout_object, style);
       FloatSize border_box = ResizeObserverUtilities::ComputeZoomAdjustedBox(
-          ResizeObserverBoxOptions::BorderBox, layout_object, style);
+          ResizeObserverBoxOptions::kBorderBox, layout_object, style);
       FloatSize device_pixel_content_box =
           ResizeObserverUtilities::ComputeZoomAdjustedBox(
-              ResizeObserverBoxOptions::DevicePixelContentBox, layout_object,
+              ResizeObserverBoxOptions::kDevicePixelContentBox, layout_object,
               style);
 
       ResizeObserverSize* device_pixel_content_box_size =

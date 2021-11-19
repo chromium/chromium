@@ -44,19 +44,19 @@ ScrollTimelineSet& GetScrollTimelineSet() {
 bool StringToScrollDirection(String scroll_direction,
                              ScrollTimeline::ScrollDirection& result) {
   if (scroll_direction == "block") {
-    result = ScrollTimeline::Block;
+    result = ScrollTimeline::kBlock;
     return true;
   }
   if (scroll_direction == "inline") {
-    result = ScrollTimeline::Inline;
+    result = ScrollTimeline::kInline;
     return true;
   }
   if (scroll_direction == "horizontal") {
-    result = ScrollTimeline::Horizontal;
+    result = ScrollTimeline::kHorizontal;
     return true;
   }
   if (scroll_direction == "vertical") {
-    result = ScrollTimeline::Vertical;
+    result = ScrollTimeline::kVertical;
     return true;
   }
   return false;
@@ -67,13 +67,13 @@ ScrollOrientation ToPhysicalScrollOrientation(
     const LayoutBox& source_box) {
   bool is_horizontal = source_box.IsHorizontalWritingMode();
   switch (direction) {
-    case ScrollTimeline::Block:
+    case ScrollTimeline::kBlock:
       return is_horizontal ? kVerticalScroll : kHorizontalScroll;
-    case ScrollTimeline::Inline:
+    case ScrollTimeline::kInline:
       return is_horizontal ? kHorizontalScroll : kVerticalScroll;
-    case ScrollTimeline::Horizontal:
+    case ScrollTimeline::kHorizontal:
       return kHorizontalScroll;
-    case ScrollTimeline::Vertical:
+    case ScrollTimeline::kVertical:
       return kVerticalScroll;
   }
 }
@@ -434,13 +434,13 @@ Element* ScrollTimeline::source() const {
 
 String ScrollTimeline::orientation() {
   switch (orientation_) {
-    case Block:
+    case kBlock:
       return "block";
-    case Inline:
+    case kInline:
       return "inline";
-    case Horizontal:
+    case kHorizontal:
       return "horizontal";
-    case Vertical:
+    case kVertical:
       return "vertical";
     default:
       NOTREACHED();

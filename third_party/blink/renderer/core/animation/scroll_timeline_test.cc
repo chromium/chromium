@@ -104,7 +104,7 @@ class TestScrollTimeline : public ScrollTimeline {
                          CreateScrollOffsets())
       : ScrollTimeline(document,
                        source,
-                       ScrollTimeline::Vertical,
+                       ScrollTimeline::kVertical,
                        std::move(scroll_offsets)),
         next_service_scheduled_(false) {}
 
@@ -357,7 +357,7 @@ TEST_F(ScrollTimelineTest, AttachOrDetachAnimationWithNullSource) {
   Element* scroll_source = nullptr;
   Persistent<ScrollTimeline> scroll_timeline =
       MakeGarbageCollected<ScrollTimeline>(&GetDocument(), scroll_source,
-                                           ScrollTimeline::Block,
+                                           ScrollTimeline::kBlock,
                                            CreateScrollOffsets());
 
   // Sanity checks.

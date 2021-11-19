@@ -77,9 +77,9 @@ TEST_F(ResizeObserverUnitTest, ResizeObserverDOMContentBoxAndSVG) {
   Element* dom_target = GetDocument().getElementById("domTarget");
   Element* svg_target = GetDocument().getElementById("svgTarget");
   ResizeObservation* dom_observation = MakeGarbageCollected<ResizeObservation>(
-      dom_target, observer, ResizeObserverBoxOptions::ContentBox);
+      dom_target, observer, ResizeObserverBoxOptions::kContentBox);
   ResizeObservation* svg_observation = MakeGarbageCollected<ResizeObservation>(
-      svg_target, observer, ResizeObserverBoxOptions::ContentBox);
+      svg_target, observer, ResizeObserverBoxOptions::kContentBox);
 
   // Initial observation is out of sync
   ASSERT_TRUE(dom_observation->ObservationSizeOutOfSync());
@@ -120,9 +120,8 @@ TEST_F(ResizeObserverUnitTest, ResizeObserverDOMBorderBox) {
       MakeGarbageCollected<TestResizeObserverDelegate>(Window());
   ResizeObserver* observer = ResizeObserver::Create(&Window(), delegate);
   Element* dom_border_target = GetDocument().getElementById("domBorderTarget");
-  ResizeObservation* dom_border_observation =
-      MakeGarbageCollected<ResizeObservation>(
-          dom_border_target, observer, ResizeObserverBoxOptions::BorderBox);
+  auto* dom_border_observation = MakeGarbageCollected<ResizeObservation>(
+      dom_border_target, observer, ResizeObserverBoxOptions::kBorderBox);
 
   // Initial observation is out of sync
   ASSERT_TRUE(dom_border_observation->ObservationSizeOutOfSync());
@@ -157,14 +156,11 @@ TEST_F(ResizeObserverUnitTest, ResizeObserverDOMDevicePixelContentBox) {
   Element* dom_target = GetDocument().getElementById("domTarget");
   Element* dom_dp_target = GetDocument().getElementById("domDPTarget");
 
-  ResizeObservation* dom_dp_nested_observation =
-      MakeGarbageCollected<ResizeObservation>(
-          dom_dp_target, observer,
-          ResizeObserverBoxOptions::DevicePixelContentBox);
-  ResizeObservation* dom_dp_observation =
-      MakeGarbageCollected<ResizeObservation>(
-          dom_target, observer,
-          ResizeObserverBoxOptions::DevicePixelContentBox);
+  auto* dom_dp_nested_observation = MakeGarbageCollected<ResizeObservation>(
+      dom_dp_target, observer,
+      ResizeObserverBoxOptions::kDevicePixelContentBox);
+  auto* dom_dp_observation = MakeGarbageCollected<ResizeObservation>(
+      dom_target, observer, ResizeObserverBoxOptions::kDevicePixelContentBox);
 
   // Initial observation is out of sync
   ASSERT_TRUE(dom_dp_observation->ObservationSizeOutOfSync());

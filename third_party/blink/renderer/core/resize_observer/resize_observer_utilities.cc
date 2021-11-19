@@ -40,18 +40,18 @@ FloatSize ResizeObserverUtilities::ComputeZoomAdjustedBox(
     const ComputedStyle& style) {
   auto* layout_box = To<LayoutBox>(layout_object);
   switch (box_option) {
-    case ResizeObserverBoxOptions::ContentBox:
+    case ResizeObserverBoxOptions::kContentBox:
       return FloatSize(AdjustForAbsoluteZoom::AdjustLayoutUnit(
                            layout_box->ContentLogicalWidth(), style),
                        AdjustForAbsoluteZoom::AdjustLayoutUnit(
                            layout_box->ContentLogicalHeight(), style));
 
-    case ResizeObserverBoxOptions::BorderBox:
+    case ResizeObserverBoxOptions::kBorderBox:
       return FloatSize(AdjustForAbsoluteZoom::AdjustLayoutUnit(
                            layout_box->LogicalWidth(), style),
                        AdjustForAbsoluteZoom::AdjustLayoutUnit(
                            layout_box->LogicalHeight(), style));
-    case ResizeObserverBoxOptions::DevicePixelContentBox: {
+    case ResizeObserverBoxOptions::kDevicePixelContentBox: {
       LayoutSize box_size = LayoutSize(layout_box->ContentLogicalWidth(),
                                        layout_box->ContentLogicalHeight());
 

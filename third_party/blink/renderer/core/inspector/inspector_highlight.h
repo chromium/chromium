@@ -18,8 +18,8 @@ namespace blink {
 
 class Color;
 
-enum class ColorFormat { RGB, HEX, HSL };
-enum class ContrastAlgorithm { AA, AAA, APCA };
+enum class ColorFormat { kRgb, kHex, kHsl };
+enum class ContrastAlgorithm { kAa, kAaa, kApca };
 
 struct CORE_EXPORT LineStyle {
   USING_FAST_MALLOC(LineStyle);
@@ -170,8 +170,8 @@ struct CORE_EXPORT InspectorHighlightConfig {
   bool show_accessibility_info;
 
   String selector_list;
-  ColorFormat color_format = ColorFormat::HEX;
-  ContrastAlgorithm contrast_algorithm = ContrastAlgorithm::AA;
+  ColorFormat color_format = ColorFormat::kHex;
+  ContrastAlgorithm contrast_algorithm = ContrastAlgorithm::kAa;
 
   std::unique_ptr<InspectorGridHighlightConfig> grid_highlight_config;
   std::unique_ptr<InspectorFlexContainerHighlightConfig>

@@ -358,7 +358,7 @@ v8::MaybeLocal<v8::Value> MainThreadDebugger::memoryInfo(
     v8::Local<v8::Context> context) {
   DCHECK(ToLocalDOMWindow(context));
   return ToV8(
-      MakeGarbageCollected<MemoryInfo>(MemoryInfo::Precision::Bucketized),
+      MakeGarbageCollected<MemoryInfo>(MemoryInfo::Precision::kBucketized),
       context->Global(), isolate);
 }
 
