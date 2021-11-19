@@ -131,7 +131,7 @@
 <translation id="5224391634244552924">કોઈ સાચવેલા પાસવર્ડ નથી. જ્યારે તમે તમારા પાસવર્ડ સાચવો ત્યારે Chromium તેને ચેક કરી શકે છે.</translation>
 <translation id="5252179775517634216"><ph name="EXISTING_USER" /> આ Chromium પ્રોફાઇલમાં પહેલેથી સાઇન ઇન છે. આને લીધે <ph name="USER_EMAIL_ADDRESS" /> માટે નવી Chromium પ્રોફાઇલ બનશે</translation>
 <translation id="5277894862589591112">તમારા ફેરફારો લાગુ કરવા માટે, Chromiumને ફરી લૉન્ચ કરો</translation>
-<translation id="5358375970380395591">તમે મેનેજ કરેલા એકાઉન્ટ સાથે સાઇન ઇન કરી રહ્યાં છો અને તમારી Chromium પ્રોફાઇલ પર એનું એડમિન નિયંત્રણ આપી રહ્યાં છો. તમારો Chromium ડેટા, જેમ કે ઍપ, બુકમાર્ક, ઇતિહાસ, પાસવર્ડ અને બીજા સેટિંગ, કાયમ માટે <ph name="USER_NAME" /> થી બંધાયેલ રહેશે. તમે Google એકાઉન્ટ ડૅશબોર્ડથી આ ડેટાને કાઢી શકશો, પરંતુ તમે આ ડેટાને બીજા એકાઉન્ટ સાથે સાંકળી શકશો નહિ. <ph name="LEARN_MORE" /></translation>
+<translation id="5358375970380395591">તમે મેનેજ કરેલા એકાઉન્ટ સાથે સાઇન ઇન કરી રહ્યાં છો અને તમારી Chromium પ્રોફાઇલ પર ઍડમિનને એનું નિયંત્રણ આપી રહ્યાં છો. તમારો Chromium ડેટા, જેમ કે ઍપ, બુકમાર્ક, ઇતિહાસ, પાસવર્ડ અને બીજા સેટિંગ, કાયમ માટે <ph name="USER_NAME" />થી જોડાયેલા રહેશે. તમે Google એકાઉન્ટ ડૅશબોર્ડથી આ ડેટાને ડિલીટ કરી શકશો, પરંતુ તમે આ ડેટાને બીજા એકાઉન્ટ સાથે સાંકળી શકશો નહીં. <ph name="LEARN_MORE" /></translation>
 <translation id="5386450000063123300">Chromium અપડેટ થઈ રહ્યું છે (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="538767207339317086">Chromiumમાં સાઇન-ઇનની મંજૂરી આપો</translation>
 <translation id="5398878173008909840">Chromiumનું નવું વર્ઝન ઉપલબ્ધ છે.</translation>
@@ -223,7 +223,7 @@
 Chromium તમારા સેટિંગને રિકવર શકતું નથી.</translation>
 <translation id="7337881442233988129">Chromium</translation>
 <translation id="7339898014177206373">નવી વિંડો</translation>
-<translation id="734373864078049451">તમારું વેબ, બુકમાર્ક્સ, અને અન્ય Chromium સામગ્રી અહીં રહે છે.</translation>
+<translation id="734373864078049451">તમારું વેબ, બુકમાર્ક અને અન્ય Chromium સામગ્રી અહીં હોય છે.</translation>
 <translation id="7349591376906416160">તમારા સિસ્ટમ વ્યવસ્થાપકે <ph name="TARGET_URL_HOSTNAME" />ને ઍક્સેસ કરવા Chromiumને <ph name="ALTERNATIVE_BROWSER_NAME" /> ખોલવા માટે ગોઠવેલું છે.</translation>
 <translation id="7448255348454382571">Chromium OS ફરી શરૂ કરો</translation>
 <translation id="7449453770951226939"><ph name="PAGE_TITLE" /> - Chromium Dev</translation>

@@ -16,7 +16,7 @@
 <translation id="1103142993930332957">Chromeને બહેતર બનાવવામાં સહાય કરશો?</translation>
 <translation id="1105960400813249514">સ્ક્રીન કૅપ્ચર</translation>
 <translation id="1110914759170138831">હાઇલાઇટ ટૂંકી કરવામાં આવી</translation>
-<translation id="1111673857033749125">તમારા અન્ય ઉપકરણો પર સાચવેલા બુકમાર્ક્સ અહીં દેખાશે.</translation>
+<translation id="1111673857033749125">તમારા અન્ય ડિવાઇસ પર સાચવેલા બુકમાર્ક અહીં દેખાશે.</translation>
 <translation id="1113597929977215864">સરળ દૃશ્ય બતાવો</translation>
 <translation id="1118561384561215815">વેબ પર કાર્યો માટે સહાય મેળવો</translation>
 <translation id="1123070903960493543">તમે Chrome સાથે કેવી રીતે ક્રિયાપ્રતિક્રિયા કરો છો, તમે પસંદ કરેલા સેટિંગ અને Chrome ક્રૅશ થવાની વિગતો</translation>
@@ -31,7 +31,7 @@
 <translation id="1171770572613082465">"લોકપ્રિય સાઇટ" બટન પર ટૅપ કરીને લોકપ્રિય વેબસાઇટ જુઓ</translation>
 <translation id="1173894706177603556">નામ બદલો</translation>
 <translation id="1177863135347784049">કસ્ટમ</translation>
-<translation id="1197267115302279827">બુકમાર્ક્સ ખસેડો</translation>
+<translation id="1197267115302279827">બુકમાર્ક ખસેડો</translation>
 <translation id="1201402288615127009">આગલું</translation>
 <translation id="1204037785786432551">ડાઉનલોડ કરવાની લિંક</translation>
 <translation id="1206892813135768548">લિંક ટેક્સ્ટ કૉપિ કરો</translation>
@@ -114,7 +114,7 @@
 <translation id="1724977129262658800">તમારા પાસવર્ડમાં ફેરફાર કરવા માટે અનલૉક કરો</translation>
 <translation id="173522743738009831">પ્રાઇવસી સૅન્ડબૉક્સનું વર્ણન</translation>
 <translation id="1736419249208073774">શોધખોળ કરો</translation>
-<translation id="1749561566933687563">તમારા બુકમાર્ક્સ સમન્વયિત કરો</translation>
+<translation id="1749561566933687563">તમારા બુકમાર્કને સિંક કરો</translation>
 <translation id="17513872634828108">ટેબ્સ ખોલો</translation>
 <translation id="1754404134430936718">ટેક્સ્ટ કૉપિ કરી</translation>
 <translation id="1772137089884020309">બુકમાર્કના ફોલ્ડરોની સૂચિ બંધ કરી છે</translation>
@@ -295,7 +295,7 @@
 <translation id="2806840421670364300">FLoC</translation>
 <translation id="2809150421034843096">તમારા Chromeના વપરાશ વિશેની માહિતી કે જે કદાચ તમારાથી સંબંધિત ન હોઈ શકે\n\nજો કોઈ કારણસર Chrome ક્રૅશ થાય, તો તેના સંબંધિત ડેટામાં તમારી કેટલીક વ્યક્તિગત માહિતી શામેલ હોઈ શકે છે\n\nજો તમે સિંક કરવાની સુવિધા ચાલુ કરો, તો મેટ્રિકમાં તમે મુલાકાત લીધેલા URL વિશેની માહિતી પણ શામેલ હોઈ શકે છે</translation>
 <translation id="281504910091592009">સાચવેલા પાસવર્ડ તમારા <ph name="BEGIN_LINK" />Google એકાઉન્ટ<ph name="END_LINK" />માં જુઓ અને મેનેજ કરો</translation>
-<translation id="2818669890320396765">તમારા બધા ઉપકરણો પર તમારા બુકમાર્ક મેળવવા માટે, સાઇન ઇન કરો અને સિંક કરવાનું ચાલુ કરો</translation>
+<translation id="2818669890320396765">તમારા બધા ડિવાઇસ પર તમારા બુકમાર્ક મેળવવા માટે, સાઇન ઇન કરો અને સિંક કરવાનું ચાલુ કરો</translation>
 <translation id="2827278682606527653">Feed card menu half height</translation>
 <translation id="2830783625999891985">ક્લિપબોર્ડનું કન્ટેન્ટ છુપાવેલું છે</translation>
 <translation id="2839327205551510876"><ph name="SITE_NAME" />ને અનફૉલો કર્યુ</translation>
@@ -398,7 +398,7 @@
 <translation id="3367813778245106622">સમન્વયન શરૂ કરવા માટે ફરીથી સાઇન ઇન કરો</translation>
 <translation id="337236281855091893">કોઈ શબ્દને શોધવા માટે, તેના પર ટૅપ કરવાને બદલે તેને સ્પર્શ કરી રાખો</translation>
 <translation id="3373979091428520308">આ પેજને બીજા ડિવાઇસ પર શેર કરવા માટે, અન્ય ડિવાઇસ પર Chrome સેટિંગમાં સિંક ચાલુ કરો</translation>
-<translation id="3374023511497244703">તમારો બુકમાર્ક, ઇતિહાસ, પાસવર્ડ અને અન્ય Chrome ડેટા હવેથી તમારા Google એકાઉન્ટ પર સિંક થશે નહીં</translation>
+<translation id="3374023511497244703">તમારા બુકમાર્ક, ઇતિહાસ, પાસવર્ડ અને અન્ય Chrome ડેટા હવેથી તમારા Google એકાઉન્ટ પર સિંક થશે નહીં</translation>
 <translation id="3384347053049321195">છબી શેર કરો</translation>
 <translation id="3387650086002190359">ફાઇલ સિસ્ટમ ભૂલોના કારણે <ph name="FILE_NAME" /> ડાઉનલોડ નિષ્ફળ થયું.</translation>
 <translation id="3389286852084373014">ટેક્સ્ટ ખૂબ મોટી છે</translation>
@@ -998,7 +998,7 @@
 <translation id="694267552845942083">તમે હાલમાં તમારા સિંક સેટિંગને કસ્ટમાઇઝ કરી રહ્યાં છો. સિંક ચાલુ કરવાનું પૂર્ણ કરવા માટે, સ્ક્રીનની નીચેની બાજુએ કન્ફર્મ કરો બટન પર ટૅપ કરો. ઉપર નૅવિગેટ કરો</translation>
 <translation id="6945221475159498467">પસંદ કરો</translation>
 <translation id="6955535239952325894">મેનેજ કરાયેલા બ્રાઉઝર પર આ સેટિંગ બંધ કરવામાં આવ્યું છે</translation>
-<translation id="6963766334940102469">બુકમાર્ક્સ ડિલીટ કરો</translation>
+<translation id="6963766334940102469">બુકમાર્ક ડિલીટ કરો</translation>
 <translation id="6964116075545915250">વાંચન સૂચિમાં ફેરફાર કરો</translation>
 <translation id="696447261358045621">છૂપો મોડ છોડો</translation>
 <translation id="6979737339423435258">હંમેશાં</translation>
@@ -1204,7 +1204,7 @@
 <translation id="8088176524274673045">નજીકના લોકો સાથે શેર કરવા માટે, તેમને આ QR કોડ સ્કૅન કરવા દો</translation>
 <translation id="8103578431304235997">છૂપું ટૅબ</translation>
 <translation id="8105893657415066307"><ph name="DESCRIPTION" /> <ph name="SEPARATOR" /> <ph name="FILE_SIZE" /></translation>
-<translation id="8109613176066109935">તમારા બધા ઉપકરણો પર તમારા બુકમાર્ક મેળવવા માટે, સિંક કરવાનું ચાલુ કરો</translation>
+<translation id="8109613176066109935">તમારા બધા ડિવાઇસ પર તમારા બુકમાર્ક મેળવવા માટે, સિંક કરવાનું ચાલુ કરો</translation>
 <translation id="8110024788458304985">Chromeની સુવિધાઓ અને કાર્યપ્રદર્શનને સુધારવામાં સહાય કરો</translation>
 <translation id="8110087112193408731">શું તમારી Chromeની પ્રવૃત્તિ ડિજિટલ લાઇફસ્ટાઇલમાં બતાવીએ?</translation>
 <translation id="8127542551745560481">હોમપેજમાં ફેરફાર કરો</translation>

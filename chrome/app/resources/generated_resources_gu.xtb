@@ -294,7 +294,7 @@
 <translation id="129770436432446029"><ph name="EXPERIMENT_NAME" /> માટે પ્રતિસાદ મોકલો</translation>
 <translation id="1301135395320604080"><ph name="ORIGIN" /> નીચે આપેલી ફાઇલોમાં ફેરફાર કરી શકે છે</translation>
 <translation id="1302227299132585524">Apple ઇવેન્ટમાંથી JavaScriptને મંજૂરી આપો</translation>
-<translation id="1303101771013849280">બુકમાર્ક્સ HTML ફાઇલ</translation>
+<translation id="1303101771013849280">બુકમાર્ક HTML ફાઇલ</translation>
 <translation id="1303671224831497365">કોઈ Bluetooth ડિવાઇસ મળ્યાં નથી</translation>
 <translation id="130491383855577612">Linux ઍપ અને ફાઇલો સફળતાપૂર્વક બદલી છે</translation>
 <translation id="1306390193749326011">તમે આ પેજ પર <ph name="MODULE_NAME" /> ફરીથી જોઈ શકશો નહીં</translation>
@@ -669,7 +669,7 @@
 <translation id="1682867089915960590">શું ટેક્સ્ટના કર્સર વડે બ્રાઉઝ કરવાનું ચાલુ કરીએ?</translation>
 <translation id="1684279041537802716">ઍક્સન્ટ રંગ</translation>
 <translation id="1686550358074589746">ગ્લાઇડ ટાઇપિંગ ચાલુ કરો</translation>
-<translation id="168715261339224929">તમારા બધા ઉપકરણો પર તમારા બુકમાર્ક મેળવવા માટે, સિંક કરવાનું ચાલુ કરો.</translation>
+<translation id="168715261339224929">તમારા બધા ડિવાઇસ પર તમારા બુકમાર્ક મેળવવા માટે, સિંક કરવાનું ચાલુ કરો.</translation>
 <translation id="1688867105868176567">સાઇટનો ડેટા સાફ કરીએ?</translation>
 <translation id="1688935057616748272">એક અક્ષર લખો</translation>
 <translation id="168991973552362966">નજીકનું પ્રિન્ટર ઉમેરો</translation>
@@ -2320,7 +2320,7 @@
 <translation id="3405763860805964263">...</translation>
 <translation id="3406290648907941085">વર્ચ્યુઅલ રિયાલિટી ડિવાઇસ અને ડેટાનો ઉપયોગ કરવાની મંજૂરી છે</translation>
 <translation id="3406396172897554194">ભાષા કે ઇનપુટના નામ મુજબ શોધો</translation>
-<translation id="3406605057700382950">બુકમાર્ક્સ બાર &amp;બતાવો</translation>
+<translation id="3406605057700382950">&amp;બુકમાર્ક બાર બતાવો</translation>
 <translation id="3409785640040772790">Maps</translation>
 <translation id="3410832398355316179">આ વપરાશકર્તા કાઢી નાખવામાં આવે તે પછી આ વપરાશકર્તા સાથે સંકળાયેલી બધી ફાઇલો અને સ્થાનિક ડેટા કાયમીરૂપે ડિલીટ કરવામાં આવશે. <ph name="USER_EMAIL" /> હજીએ થોડા સમય પછી સાઇન ઇન કરી શકશે.</translation>
 <translation id="3412265149091626468">પસંદગી પર જાઓ</translation>
@@ -2740,7 +2740,7 @@
 <translation id="3826071569074535339">મોશન સેન્સરનો ઉપયોગ કરવાની મંજૂરી છે</translation>
 <translation id="3826440694796503677">તમારા વ્યવસ્થાપકે Googleના વધુ એકાઉન્ટ ઉમેરવાની ક્ષમતા બંધ કરી છે</translation>
 <translation id="3827774300009121996">&amp;પૂર્ણ સ્ક્રીન</translation>
-<translation id="3828029223314399057">બુકમાર્ક્સ શોધો</translation>
+<translation id="3828029223314399057">બુકમાર્ક શોધો</translation>
 <translation id="3829765597456725595">SMB ફાઇલ શેર</translation>
 <translation id="3830654885961023588">{NUM_EXTENSIONS,plural, =1{તમારા વ્યવસ્થાપકે નુકસાન પહોંચાડવાની સંભાવના હોય એવું 1 એક્સ્ટેંશન પાછું ચાલુ કર્યું છે}one{તમારા વ્યવસ્થાપકે નુકસાન પહોંચાડવાની સંભાવના હોય એવું {NUM_EXTENSIONS} એક્સ્ટેંશન પાછું ચાલુ કર્યું છે}other{તમારા વ્યવસ્થાપકે નુકસાન પહોંચાડવાની સંભાવના હોય એવા {NUM_EXTENSIONS} એક્સ્ટેંશન પાછા ચાલુ કર્યાં છે}}</translation>
 <translation id="3831436149286513437">Google ડ્રાઇવ શોધ સૂચનો</translation>
@@ -2934,7 +2934,7 @@
 <translation id="400645326027787740"><ph name="DEVICE_COUNT" />માંથી ડિવાઇસ <ph name="DEVICE_INDEX" />, <ph name="DEVICE_NAME" />, ગેમ કન્ટ્રોલર</translation>
 <translation id="4007856537951125667">શૉર્ટકટ છુપાવો</translation>
 <translation id="4008291085758151621">VRમાં સાઇટ વિશેની માહિતી ઉપલબ્ધ નથી</translation>
-<translation id="4010917659463429001">તમારા મોબાઇલ ઉપકરણ પર તમારી બુકમાર્ક મેળવવા માટે, <ph name="GET_IOS_APP_LINK" />.</translation>
+<translation id="4010917659463429001">તમારા મોબાઇલ ડિવાઇસ પર તમારા બુકમાર્ક મેળવવા માટે, <ph name="GET_IOS_APP_LINK" />.</translation>
 <translation id="4014432863917027322">"<ph name="EXTENSION_NAME" />" ને સુધારીએ?</translation>
 <translation id="4015163439792426608">શું તમારી પાસે એક્સ્ટેંશન છે? એક અનુકૂળ જગ્યાએથી <ph name="BEGIN_LINK" />તમારા એક્સ્ટેંશનને મેનેજ કરો<ph name="END_LINK" />.</translation>
 <translation id="4017225831995090447">આ લિંક માટે QR કોડ બનાવો</translation>
@@ -6984,7 +6984,7 @@ USB ડિવાઇસ</translation>
 <translation id="8363142353806532503">માઇક્રોફોન અવરોધિત</translation>
 <translation id="8366396658833131068">તમારી નેટવર્ક કનેક્ટિવિટી પુનઃસ્થાપિત થઈ છે. કૃપા કરીને બીજું નેટવર્ક પસંદ કરો અથવા તમારી કિઓસ્ક એપ્લિકેશનને લોંચ કરવા માટે નીચે 'ચાલુ રાખો' બટનને દબાવો.</translation>
 <translation id="8366694425498033255">પસંદગી કીઝ</translation>
-<translation id="8368859634510605990">બધાં બુકમાર્ક્સ &amp;ખોલો</translation>
+<translation id="8368859634510605990">&amp;બધાં બુકમાર્ક ખોલો</translation>
 <translation id="8370294614544004647">લૅપટૉપ બંધ કરવામાં આવે ત્યારે નિષ્ક્રિય કરો</translation>
 <translation id="8371695176452482769">હવે બોલો</translation>
 <translation id="8371925839118813971">{NUM_TABS,plural, =1{સાઇટને મ્યૂટ કરો}one{સાઇટને મ્યૂટ કરો}other{સાઇટને મ્યૂટ કરો}}</translation>
@@ -7052,7 +7052,7 @@ USB ડિવાઇસ</translation>
 <translation id="8456512334795994339">ઑફિસના કામ માટેની અને રમવા માટેની ઍપ શોધો</translation>
 <translation id="8456761643544401578">ઑટોમૅટિક ઘેરો મોડ</translation>
 <translation id="845702320058262034">કનેક્ટ કરી શકાતું નથી. તમારા ફોનનું બ્લૂટૂથ ચાલુ હોવાની ખાતરી કરો.</translation>
-<translation id="8457451314607652708">બુકમાર્ક્સ આયાત કરો</translation>
+<translation id="8457451314607652708">બુકમાર્ક આયાત કરો</translation>
 <translation id="8458341576712814616">શૉર્ટકટ</translation>
 <translation id="8458627787104127436">બધી (<ph name="URL_COUNT" />) URL નવી વિન્ડોમાં ખોલો</translation>
 <translation id="8460490661223303637">મેમરી સાચવવા માટે, Chrome દ્વારા અમુક કન્ટેન્ટ કાઢી નાખવામાં આવ્યું છે</translation>
