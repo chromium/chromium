@@ -799,12 +799,8 @@ scoped_refptr<SharedContextState> GpuChannelManager::GetSharedContextState(
     // Disable robust resource initialization for raster decoder and compositor.
     // TODO(crbug.com/1192632): disable robust_resource_initialization for
     // SwANGLE.
-    // TODO(crbug.com/1116174): Currently disabling robust initialization is
-    // breaking some tests with OOP canvas. Once that's fixed remove check for
-    // kCanvasOopRasterization feature.
     if (gl::GLSurfaceEGL::GetDisplayType() != gl::ANGLE_SWIFTSHADER &&
-        features::IsUsingSkiaRenderer() &&
-        !base::FeatureList::IsEnabled(features::kCanvasOopRasterization)) {
+        features::IsUsingSkiaRenderer()) {
       attribs.robust_resource_initialization = false;
     }
 
