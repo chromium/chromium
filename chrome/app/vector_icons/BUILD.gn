@@ -191,6 +191,10 @@ aggregate_vector_icons("chrome_vector_icons") {
     ]
   }
 
+  if (is_chromeos) {
+    sources += [ "notification_download.icon" ]
+  }
+
   if (is_chromeos_ash) {
     sources += [
       "autocorrect_undo.icon",
@@ -198,7 +202,6 @@ aggregate_vector_icons("chrome_vector_icons") {
       "notification_battery.icon",
       "notification_captive_portal.icon",
       "notification_cellular_alert.icon",
-      "notification_download.icon",
       "notification_end_of_support.icon",
       "notification_family_link.icon",
       "notification_google.icon",

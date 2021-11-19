@@ -9,7 +9,10 @@
 #include <memory>
 #include <utility>
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/constants/ash_features.h"
+#endif
+
 #include "base/guid.h"
 #include "base/json/json_reader.h"
 #include "base/run_loop.h"
@@ -53,8 +56,12 @@ const base::FilePath::CharType kDownloadItemTargetPathString[] =
     FILE_PATH_LITERAL("/tmp/TITLE.bin");
 
 bool IsHoldingSpaceInProgressDownloadsNotificationSuppressionEnabled() {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   return ash::features::
       IsHoldingSpaceInProgressDownloadsNotificationSuppressionEnabled();
+#else
+  return false;
+#endif
 }
 
 }  // anonymous namespace
@@ -67,9 +74,11 @@ class DownloadItemNotificationTest : public testing::Test {
       bool
           is_holding_space_in_progress_downloads_notification_suppression_enabled)
       : profile_(nullptr) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     scoped_feature_list_.InitWithFeatureState(
         ash::features::kHoldingSpaceInProgressDownloadsNotificationSuppression,
         is_holding_space_in_progress_downloads_notification_suppression_enabled);
+#endif
   }
 
   void SetUp() override {

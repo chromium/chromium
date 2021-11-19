@@ -178,10 +178,10 @@ void RecordDownloadPromptStatus(DownloadPromptStatus status);
 void RecordDownloadLaterPromptStatus(DownloadLaterPromptStatus status);
 #endif  // defined(OS_ANDROID)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if defined(OS_CHROMEOS)
 // Records that a notification for a download was suppressed.
 void RecordDownloadNotificationSuppressed();
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // defined(OS_CHROMEOS)
 
 enum class DownloadShelfContextMenuAction {
   // Drop down button for download shelf context menu is visible

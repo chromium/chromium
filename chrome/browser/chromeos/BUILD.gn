@@ -4525,7 +4525,6 @@ source_set("unit_tests") {
     "../ash/wilco_dtc_supportd/wilco_dtc_supportd_messaging_unittest.cc",
     "../ash/wilco_dtc_supportd/wilco_dtc_supportd_notification_controller_unittest.cc",
     "../ash/wilco_dtc_supportd/wilco_dtc_supportd_web_request_service_unittest.cc",
-    "../download/notification/download_item_notification_unittest.cc",
     "../download/notification/multi_profile_download_notifier_unittest.cc",
     "../extensions/api/enterprise_platform_keys/enterprise_platform_keys_api_unittest.cc",
     "../extensions/api/enterprise_platform_keys_private/enterprise_platform_keys_private_api_unittest.cc",

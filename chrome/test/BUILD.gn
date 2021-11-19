@@ -2207,7 +2207,10 @@ if (!is_android && !is_fuchsia) {
         "//chrome/browser/web_applications/app_service",
         "//chromeos/ui/frame",
       ]
-      sources += [ "../browser/ui/views/frame/browser_non_client_frame_view_chromeos_browsertest.cc" ]
+      sources += [
+        "../browser/download/notification/download_notification_browsertest.cc",
+        "../browser/ui/views/frame/browser_non_client_frame_view_chromeos_browsertest.cc",
+      ]
     }
 
     if (is_linux && !is_chromeos_lacros) {
@@ -3367,7 +3370,6 @@ if (!is_android && !is_fuchsia) {
         "../browser/chromeos/policy/dlp/mock_dlp_rules_manager.cc",
         "../browser/chromeos/policy/dlp/mock_dlp_rules_manager.h",
         "../browser/device_api/device_attribute_api_browsertest.cc",
-        "../browser/download/notification/download_notification_browsertest.cc",
         "../browser/drive/drive_notification_manager_factory_browsertest.cc",
         "../browser/extensions/api/certificate_provider/certificate_provider_apitest.cc",
         "../browser/extensions/api/file_manager/file_browser_handler_api_ash_test.cc",
@@ -5010,6 +5012,7 @@ test("unit_tests") {
   if (is_chromeos) {
     sources += [
       "../browser/apps/intent_helper/metrics/intent_handling_metrics_unittest.cc",
+      "../browser/download/notification/download_item_notification_unittest.cc",
       "../browser/policy/system_features_disable_list_policy_handler_unittest.cc",
       "chromeos/printing/fake_local_printer_chromeos.cc",
       "chromeos/printing/fake_local_printer_chromeos.h",

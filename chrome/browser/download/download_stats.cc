@@ -101,11 +101,11 @@ void RecordDownloadLaterPromptStatus(DownloadLaterPromptStatus status) {
 
 #endif  // defined(OS_ANDROID)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if defined(OS_CHROMEOS)
 void RecordDownloadNotificationSuppressed() {
   base::UmaHistogramBoolean("Download.Notification.Suppressed", true);
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // defined(OS_CHROMEOS)
 
 DownloadShelfContextMenuAction DownloadCommandToShelfAction(
     DownloadCommands::Command download_command,

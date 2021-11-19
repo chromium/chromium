@@ -66,6 +66,7 @@ enum {
   SECONDARY_ACCOUNT_INDEX_START = 2,
 };
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 // Structure to describe an account info.
 struct TestAccountInfo {
   const char* const email;
@@ -81,6 +82,7 @@ static const TestAccountInfo kTestAccounts[] = {
     {"bob@invalid.domain", "10002", "hashbobbo", "Bob"},
     {"charlie@invalid.domain", "10003", "hashcharl", "Charlie"},
 };
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 class TestChromeDownloadManagerDelegate : public ChromeDownloadManagerDelegate {
  public:
@@ -288,9 +290,11 @@ class DownloadNotificationTestBase
           bool> {
  public:
   DownloadNotificationTestBase() {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     scoped_feature_list_.InitWithFeatureState(
         ash::features::kHoldingSpaceInProgressDownloadsNotificationSuppression,
         IsHoldingSpaceInProgressDownloadsNotificationSuppressionEnabled());
+#endif
   }
 
   DownloadNotificationTestBase(const DownloadNotificationTestBase&) = delete;
@@ -332,7 +336,11 @@ class DownloadNotificationTestBase
   // Returns whether holding space in-progress downloads notification
   // suppression is enabled given test parameterization.
   bool IsHoldingSpaceInProgressDownloadsNotificationSuppressionEnabled() const {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     return GetParam();
+#else
+    return false;
+#endif
   }
 
   std::unique_ptr<NotificationDisplayServiceTester> display_service_;
@@ -1141,6 +1149,10 @@ IN_PROC_BROWSER_TEST_P(DownloadNotificationTest,
   chrome::CloseWindow(incognito_browser());
 }
 
+// These tests have ash dependency so they are only available for ash.
+// TODO(crbug.com/1266950): Enable these tests for Lacros.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+
 //////////////////////////////////////////////////
 // Test with multi profiles
 //////////////////////////////////////////////////
@@ -1395,3 +1407,4 @@ IN_PROC_BROWSER_TEST_P(MultiProfileDownloadNotificationTest,
               notification.type());
   }
 }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)

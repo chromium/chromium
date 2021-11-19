@@ -9,7 +9,11 @@
 
 #include <memory>
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/constants/ash_features.h"
+#include "chrome/browser/ash/note_taking_helper.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
 #include "ash/public/cpp/notification_utils.h"
 #include "base/bind.h"
 #include "base/feature_list.h"
@@ -21,7 +25,6 @@
 #include "base/task/thread_pool.h"
 #include "build/build_config.h"
 #include "chrome/app/vector_icons/vector_icons.h"
-#include "chrome/browser/ash/note_taking_helper.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/download/download_commands.h"
 #include "chrome/browser/download/download_crx_util.h"
@@ -452,6 +455,8 @@ void DownloadItemNotification::UpdateNotificationData(bool display,
 
   const bool was_suppressed = suppressed_;
 
+// TODO(crbug.com/1267463): Support suppression in Lacros.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // When holding space in-progress downloads notification suppression is
   // enabled, download in-progress notifications should be suppressed so long as
   // they do not `force_pop_up`, such as is done in the case of dangerous or
@@ -468,6 +473,7 @@ void DownloadItemNotification::UpdateNotificationData(bool display,
   } else {
     suppressed_ = false;
   }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   if (suppressed_) {
     if (!was_suppressed)
@@ -745,8 +751,11 @@ DownloadItemNotification::GetExtraActions() const {
       actions->push_back(DownloadCommands::SHOW_IN_FOLDER);
       if (!notification_->image().IsEmpty()) {
         actions->push_back(DownloadCommands::COPY_TO_CLIPBOARD);
+// TODO(crbug.com/1267466): Support NoteTakingHelper in Lacros.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
         if (ash::NoteTakingHelper::Get()->IsAppAvailable(profile()))
           actions->push_back(DownloadCommands::ANNOTATE);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
       }
       break;
     case download::DownloadItem::MAX_DOWNLOAD_STATE:
