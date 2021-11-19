@@ -12,9 +12,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.sync.SyncService;
-import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
-import org.chromium.components.sync.ModelType;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.WindowAndroid;
 
@@ -33,11 +31,18 @@ public class PasswordManagerLauncher {
      */
     public static void showPasswordSettings(
             Activity activity, @ManagePasswordsReferrer int referrer) {
-        if (isSyncingPasswordsWithoutCustomPassphrase()
+        IdentityManager identityManager = IdentityServicesProvider.get().getIdentityManager(
+                Profile.getLastUsedRegularProfile());
+        SyncService syncService = SyncService.get();
+        if (PasswordManagerHelper.isSyncingPasswordsWithoutCustomPassphrase(
+                    identityManager, syncService)
                 && ChromeFeatureList.isEnabled(ChromeFeatureList.PASSWORD_SCRIPTS_FETCHING)) {
             PasswordScriptsFetcherBridge.prewarmCache();
         }
-        PasswordManagerHelper.showPasswordSettings(activity, referrer, new SettingsLauncherImpl());
+        CredentialManagerLauncher credentialManagerLauncher = null;
+        PasswordManagerHelper.showPasswordSettings(activity, referrer, new SettingsLauncherImpl(),
+                CredentialManagerLauncherFactory.getInstance().createLauncher(), identityManager,
+                syncService);
     }
 
     @CalledByNative
@@ -47,21 +52,5 @@ public class PasswordManagerLauncher {
         if (window == null) return;
         WeakReference<Activity> currentActivity = window.getActivity();
         showPasswordSettings(currentActivity.get(), referrer);
-    }
-
-    public static boolean isSyncingPasswordsWithoutCustomPassphrase() {
-        IdentityManager identityManager = IdentityServicesProvider.get().getIdentityManager(
-                Profile.getLastUsedRegularProfile());
-        if (!identityManager.hasPrimaryAccount(ConsentLevel.SYNC)) return false;
-
-        SyncService syncService = SyncService.get();
-        if (syncService == null
-                || !syncService.getActiveDataTypes().contains(ModelType.PASSWORDS)) {
-            return false;
-        }
-
-        if (syncService.isUsingExplicitPassphrase()) return false;
-
-        return true;
     }
 }
