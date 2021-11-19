@@ -4,6 +4,8 @@
 
 #include "sandbox/win/src/job.h"
 
+#include <windows.h>
+
 #include <stddef.h>
 #include <utility>
 

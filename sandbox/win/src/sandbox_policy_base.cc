@@ -16,6 +16,7 @@
 #include "base/win/win_util.h"
 #include "base/win/windows_version.h"
 #include "sandbox/win/src/acl.h"
+#include "sandbox/win/src/crosscall_server.h"
 #include "sandbox/win/src/filesystem_policy.h"
 #include "sandbox/win/src/interception.h"
 #include "sandbox/win/src/job.h"
@@ -112,15 +113,12 @@ PolicyBase::PolicyBase()
       add_restricting_random_sid_(false),
       effective_token_(nullptr),
       allow_no_sandbox_job_(false) {
-  ::InitializeCriticalSection(&lock_);
   dispatcher_ = std::make_unique<TopLevelDispatcher>(this);
 }
 
 PolicyBase::~PolicyBase() {
   delete policy_maker_;
   delete policy_;
-
-  ::DeleteCriticalSection(&lock_);
 }
 
 void PolicyBase::AddRef() {
@@ -541,13 +539,13 @@ ResultCode PolicyBase::AddTarget(std::unique_ptr<TargetProcess> target) {
   if (SBOX_ALL_OK != ret)
     return ret;
 
-  AutoLock lock(&lock_);
+  base::AutoLock lock(lock_);
   targets_.push_back(std::move(target));
   return SBOX_ALL_OK;
 }
 
 bool PolicyBase::OnJobEmpty(HANDLE job) {
-  AutoLock lock(&lock_);
+  base::AutoLock lock(lock_);
   targets_.erase(
       std::remove_if(targets_.begin(), targets_.end(),
                      [&](auto&& p) -> bool { return p->Job() == job; }),
@@ -556,7 +554,7 @@ bool PolicyBase::OnJobEmpty(HANDLE job) {
 }
 
 bool PolicyBase::OnProcessFinished(DWORD process_id) {
-  AutoLock lock(&lock_);
+  base::AutoLock lock(lock_);
   targets_.erase(std::remove_if(targets_.begin(), targets_.end(),
                                 [&](auto&& p) -> bool {
                                   return p->ProcessId() == process_id;

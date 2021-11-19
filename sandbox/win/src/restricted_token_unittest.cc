@@ -402,8 +402,7 @@ TEST(RestrictedTokenTest, DenySids) {
   base::win::ScopedHandle token_handle;
 
   ASSERT_EQ(static_cast<DWORD>(ERROR_SUCCESS), token.Init(nullptr));
-  ASSERT_EQ(static_cast<DWORD>(ERROR_SUCCESS),
-            token.AddAllSidsForDenyOnly(nullptr));
+  ASSERT_EQ(static_cast<DWORD>(ERROR_SUCCESS), token.AddAllSidsForDenyOnly({}));
   ASSERT_EQ(static_cast<DWORD>(ERROR_SUCCESS),
             token.GetRestrictedToken(&token_handle));
 
@@ -438,7 +437,7 @@ TEST(RestrictedTokenTest, DenySidsException) {
 
   ASSERT_EQ(static_cast<DWORD>(ERROR_SUCCESS), token.Init(nullptr));
   ASSERT_EQ(static_cast<DWORD>(ERROR_SUCCESS),
-            token.AddAllSidsForDenyOnly(&sids_exception));
+            token.AddAllSidsForDenyOnly(sids_exception));
   ASSERT_EQ(static_cast<DWORD>(ERROR_SUCCESS),
             token.GetRestrictedToken(&token_handle));
 
@@ -544,8 +543,7 @@ TEST(RestrictedTokenTest, DeleteAllPrivileges) {
   base::win::ScopedHandle token_handle;
 
   ASSERT_EQ(static_cast<DWORD>(ERROR_SUCCESS), token.Init(nullptr));
-  ASSERT_EQ(static_cast<DWORD>(ERROR_SUCCESS),
-            token.DeleteAllPrivileges(nullptr));
+  ASSERT_EQ(static_cast<DWORD>(ERROR_SUCCESS), token.DeleteAllPrivileges({}));
   ASSERT_EQ(static_cast<DWORD>(ERROR_SUCCESS),
             token.GetRestrictedToken(&token_handle));
 
@@ -568,7 +566,7 @@ TEST(RestrictedTokenTest, DeleteAllPrivilegesException) {
 
   ASSERT_EQ(static_cast<DWORD>(ERROR_SUCCESS), token.Init(nullptr));
   ASSERT_EQ(static_cast<DWORD>(ERROR_SUCCESS),
-            token.DeleteAllPrivileges(&exceptions));
+            token.DeleteAllPrivileges(exceptions));
   ASSERT_EQ(static_cast<DWORD>(ERROR_SUCCESS),
             token.GetRestrictedToken(&token_handle));
 
@@ -842,12 +840,14 @@ TEST(RestrictedTokenTest, LowBoxToken) {
   CheckLowBoxToken(token, ::TokenPrimary, &caps_with_capabilities);
   CheckRestrictingSid(token.Get(), ATL::Sids::World(), 1);
 
-  SecurityCapabilities caps_for_handles(
-      *base::win::Sid::FromSddlString(L"S-1-15-2-1-2-3-4-5-6-8"));
+  auto caps_for_handles_sid =
+      base::win::Sid::FromSddlString(L"S-1-15-2-1-2-3-4-5-6-8");
+  ASSERT_TRUE(caps_for_handles_sid);
+  SecurityCapabilities caps_for_handles(*caps_for_handles_sid);
   base::win::ScopedHandle object_handle;
-  ASSERT_EQ(DWORD{ERROR_SUCCESS},
-            CreateLowBoxObjectDirectory(caps_for_handles.AppContainerSid, true,
-                                        &object_handle));
+  ASSERT_EQ(
+      DWORD{ERROR_SUCCESS},
+      CreateLowBoxObjectDirectory(*caps_for_handles_sid, true, &object_handle));
   HANDLE saved_handles[] = {object_handle.Get()};
 
   ASSERT_EQ(DWORD{ERROR_SUCCESS},
@@ -857,7 +857,7 @@ TEST(RestrictedTokenTest, LowBoxToken) {
   object_handle.Close();
   ASSERT_FALSE(object_handle.IsValid());
   ASSERT_EQ(DWORD{ERROR_ALREADY_EXISTS},
-            CreateLowBoxObjectDirectory(caps_for_handles.AppContainerSid, false,
+            CreateLowBoxObjectDirectory(*caps_for_handles_sid, false,
                                         &object_handle));
 }
 

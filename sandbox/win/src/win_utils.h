@@ -5,13 +5,15 @@
 #ifndef SANDBOX_WIN_SRC_WIN_UTILS_H_
 #define SANDBOX_WIN_SRC_WIN_UTILS_H_
 
-#include <stddef.h>
 #include <windows.h>
+
+#include <stdlib.h>
+
 #include <memory>
 #include <string>
 
 #include "base/cxx17_backports.h"
-#include "sandbox/win/src/nt_internals.h"
+#include "base/win/windows_types.h"
 
 namespace sandbox {
 
@@ -21,27 +23,6 @@ const size_t kNTPrefixLen = base::size(kNTPrefix) - 1;
 
 const wchar_t kNTDevicePrefix[] = L"\\Device\\";
 const size_t kNTDevicePrefixLen = base::size(kNTDevicePrefix) - 1;
-
-// Automatically acquires and releases a lock when the object is
-// is destroyed.
-class AutoLock {
- public:
-  AutoLock() = delete;
-
-  // Acquires the lock.
-  explicit AutoLock(CRITICAL_SECTION* lock) : lock_(lock) {
-    ::EnterCriticalSection(lock);
-  }
-
-  AutoLock(const AutoLock&) = delete;
-  AutoLock& operator=(const AutoLock&) = delete;
-
-  // Releases the lock;
-  ~AutoLock() { ::LeaveCriticalSection(lock_); }
-
- private:
-  CRITICAL_SECTION* lock_;
-};
 
 // Basic implementation of a singleton which calls the destructor
 // when the exe is shutting down or the DLL is being unloaded.
@@ -66,15 +47,6 @@ class SingletonBase {
     delete GetInstance();
     return 0;
   }
-};
-
-// Function object which invokes LocalFree on its parameter, which must be
-// a pointer. Can be used to store LocalAlloc pointers in std::unique_ptr:
-//
-// std::unique_ptr<int, sandbox::LocalFreeDeleter> foo_ptr(
-//     static_cast<int*>(LocalAlloc(LMEM_FIXED, sizeof(int))));
-struct LocalFreeDeleter {
-  inline void operator()(void* ptr) const { ::LocalFree(ptr); }
 };
 
 // Convert a short path (C:\path~1 or \\??\\c:\path~1) to the long version of

@@ -5,8 +5,6 @@
 #ifndef SANDBOX_WIN_SRC_RESTRICTED_TOKEN_H_
 #define SANDBOX_WIN_SRC_RESTRICTED_TOKEN_H_
 
-#include <windows.h>
-
 #include <vector>
 
 #include <string>
@@ -18,14 +16,6 @@
 #include "sandbox/win/src/acl.h"
 #include "sandbox/win/src/restricted_token_utils.h"
 #include "sandbox/win/src/security_level.h"
-
-// Flags present in the Group SID list. These 2 flags are new in Windows Vista
-#ifndef SE_GROUP_INTEGRITY
-#define SE_GROUP_INTEGRITY (0x00000020L)
-#endif
-#ifndef SE_GROUP_INTEGRITY_ENABLED
-#define SE_GROUP_INTEGRITY_ENABLED (0x00000040L)
-#endif
 
 namespace sandbox {
 
@@ -89,12 +79,11 @@ class RestrictedToken {
   //
   // Sample usage:
   //    std::vector<base::win::Sid> sid_exceptions;
-  //    sid_exceptions.push_back(ATL::Sids::Users().GetPSID());
-  //    sid_exceptions.push_back(ATL::Sids::World().GetPSID());
-  //    restricted_token.AddAllSidsForDenyOnly(&sid_exceptions);
+  //    sid_exceptions.push_back(*base::win::Sid::FromPSID(psid));
+  //    restricted_token.AddAllSidsForDenyOnly(sid_exceptions);
   // Note: A Sid marked for Deny Only in a token cannot be used to grant
   // access to any resource. It can only be used to deny access.
-  DWORD AddAllSidsForDenyOnly(std::vector<base::win::Sid>* exceptions);
+  DWORD AddAllSidsForDenyOnly(const std::vector<base::win::Sid>& exceptions);
 
   // Adds a user or group SID for Deny Only in the restricted token.
   // Parameter: sid is the SID to add in the Deny Only list.
@@ -130,8 +119,8 @@ class RestrictedToken {
   // Sample usage:
   //    std::vector<std::wstring> privilege_exceptions;
   //    privilege_exceptions.push_back(SE_CHANGE_NOTIFY_NAME);
-  //    restricted_token.DeleteAllPrivileges(&privilege_exceptions);
-  DWORD DeleteAllPrivileges(const std::vector<std::wstring>* exceptions);
+  //    restricted_token.DeleteAllPrivileges(privilege_exceptions);
+  DWORD DeleteAllPrivileges(const std::vector<std::wstring>& exceptions);
 
   // Adds a privilege to the list of privileges to remove in the restricted
   // token.
@@ -216,7 +205,7 @@ class RestrictedToken {
   // The list of restricting sids in the restricted token.
   std::vector<base::win::Sid> sids_to_restrict_;
   // The list of privileges to remove in the restricted token.
-  std::vector<LUID> privileges_to_disable_;
+  std::vector<CHROME_LUID> privileges_to_disable_;
   // The list of sids to mark as Deny Only in the restricted token.
   std::vector<base::win::Sid> sids_for_deny_only_;
   // The list of sids to add to the default DACL of the restricted token.
