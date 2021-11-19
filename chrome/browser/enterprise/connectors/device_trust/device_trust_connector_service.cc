@@ -39,8 +39,7 @@ bool DeviceTrustConnectorService::IsConnectorEnabled(
 
 DeviceTrustConnectorService::DeviceTrustConnectorService(
     PrefService* profile_prefs)
-    : profile_prefs_(profile_prefs),
-      matcher_(std::make_unique<url_matcher::URLMatcher>()) {
+    : profile_prefs_(profile_prefs) {
   DCHECK(profile_prefs_);
 }
 
@@ -70,7 +69,7 @@ void DeviceTrustConnectorService::Initialize() {
 }
 
 bool DeviceTrustConnectorService::Watches(const GURL& url) const {
-  return !matcher_->MatchURL(url).empty();
+  return matcher_ && !matcher_->MatchURL(url).empty();
 }
 
 void DeviceTrustConnectorService::OnConnectorEnabled() {
@@ -82,16 +81,14 @@ void DeviceTrustConnectorService::OnPolicyUpdated() {
 
   const base::ListValue* url_patterns = GetPolicyUrlPatterns(profile_prefs_);
 
-  url_matcher::URLMatcherConditionSet::ID condition_set_id(0);
-  if (!matcher_->IsEmpty()) {
-    // Clear old conditions in case they exist.
-    matcher_->RemoveConditionSets({condition_set_id});
+  if (!matcher_ || !matcher_->IsEmpty()) {
+    // Reset the matcher.
+    matcher_ = std::make_unique<url_matcher::URLMatcher>();
   }
 
   if (url_patterns && !url_patterns->GetList().empty()) {
     // Add the new endpoints to the conditions.
-    policy::url_util::AddFilters(matcher_.get(), /*allow=*/true,
-                                 &condition_set_id, url_patterns);
+    policy::url_util::AddAllowFilters(matcher_.get(), url_patterns);
 
     // Call the hook which signals that the connector has been enabled.
     OnConnectorEnabled();
