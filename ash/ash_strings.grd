@@ -4305,7 +4305,10 @@ Here are some things you can try to get started.
         Too many fingerprint attempts
       </message>
 
-      <!-- Continue Section strings -->
+      <!-- Launcher: Continue Section -->
+      <message name="IDS_ASH_LAUNCHER_CONTINUE_SECTION_LABEL" desc="Label for the continue section of the launcher, which shows recent files and apps that the user can continue using.">
+        Continue
+      </message>
       <message name="IDS_ASH_LAUNCHER_CONTINUE_SECTION_CONTEXT_MENU_OPEN" desc="Context menu option title to open a suggestion for a task in the launcher. Tasks display in the continue section located above the app list.">
         Open
       </message>
