@@ -112,7 +112,7 @@ class StreamFactory final : public media::mojom::AudioStreamFactory {
   ConcurrentStreamMetricReporter stream_count_metric_reporter_;
 
   // Order of the following members is important for a clean shutdown.
-  OutputDeviceMixerManager output_device_mixer_manager_;
+  const std::unique_ptr<OutputDeviceMixerManager> output_device_mixer_manager_;
   LoopbackCoordinator coordinator_;
   std::vector<std::unique_ptr<LocalMuter>> muters_;
   base::Thread loopback_worker_thread_;

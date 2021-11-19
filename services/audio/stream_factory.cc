@@ -23,12 +23,23 @@ namespace audio {
 
 const base::Feature kMixingForChromeWideAec{"MixingForChromeWideAec",
                                             base::FEATURE_DISABLED_BY_DEFAULT};
+namespace {
+
+std::unique_ptr<OutputDeviceMixerManager> MaybeCreateOutputDeviceMixerManager(
+    media::AudioManager* audio_manager) {
+  if (!base::FeatureList::IsEnabled(kMixingForChromeWideAec))
+    return nullptr;
+
+  return std::make_unique<OutputDeviceMixerManager>(
+      audio_manager, base::BindRepeating(&OutputDeviceMixer::Create));
+}
+
+}  // namespace
 
 StreamFactory::StreamFactory(media::AudioManager* audio_manager)
     : audio_manager_(audio_manager),
       output_device_mixer_manager_(
-          audio_manager,
-          base::BindRepeating(&OutputDeviceMixer::Create)),
+          MaybeCreateOutputDeviceMixerManager(audio_manager)),
       loopback_worker_thread_("Loopback Worker") {}
 
 StreamFactory::~StreamFactory() {
@@ -118,10 +129,10 @@ void StreamFactory::CreateOutputStream(
   OutputStream::ManagedDeviceOutputStreamCreateCallback
       managed_device_output_stream_create_callback;
 
-  if (base::FeatureList::IsEnabled(kMixingForChromeWideAec)) {
-    managed_device_output_stream_create_callback =
-        base::BindRepeating(&OutputDeviceMixerManager::MakeOutputStream,
-                            base::Unretained(&output_device_mixer_manager_));
+  if (output_device_mixer_manager_) {
+    managed_device_output_stream_create_callback = base::BindRepeating(
+        &OutputDeviceMixerManager::MakeOutputStream,
+        base::Unretained(output_device_mixer_manager_.get()));
   }
 
   output_streams_.insert(std::make_unique<OutputStream>(
