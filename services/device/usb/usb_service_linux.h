@@ -11,7 +11,7 @@
 #include <unordered_map>
 
 #include "base/memory/weak_ptr.h"
-#include "base/task/sequenced_task_runner.h"
+#include "base/threading/sequence_bound.h"
 #include "build/chromeos_buildflags.h"
 #include "services/device/usb/usb_service.h"
 
@@ -57,8 +57,7 @@ class UsbServiceLinux final : public UsbService {
   uint32_t first_enumeration_countdown_ = 0;
   std::list<GetDevicesCallback> enumeration_callbacks_;
 
-  scoped_refptr<base::SequencedTaskRunner> blocking_task_runner_;
-  std::unique_ptr<BlockingTaskRunnerHelper, base::OnTaskRunnerDeleter> helper_;
+  base::SequenceBound<BlockingTaskRunnerHelper> helper_;
   DeviceMap devices_by_path_;
 
   base::WeakPtrFactory<UsbServiceLinux> weak_factory_{this};
