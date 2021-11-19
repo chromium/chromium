@@ -5446,6 +5446,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="MediaRouter.Cast.DeviceNameLength" units="characters"
+    expires_after="2022-05-01">
+  <owner>takumif@chromium.org</owner>
+  <owner>openscreen-eng@google.com</owner>
+  <summary>
+    Records the length of the friendly name of a Cast device when we succeed to
+    open a Cast channel to it.
+  </summary>
+</histogram>
+
 <histogram name="MediaRouter.Cast.Discovery.CachedSinksAvailableCount"
     units="devices" expires_after="2022-05-01">
   <owner>btolsch@chromium.org</owner>
