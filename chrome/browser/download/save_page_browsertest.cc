@@ -465,7 +465,13 @@ IN_PROC_BROWSER_TEST_F(SavePageBrowserTest,
   EXPECT_TRUE(base::ContentsEqual(kTestFile, full_file_name));
 }
 
-IN_PROC_BROWSER_TEST_F(SavePageBrowserTest, SaveHTMLOnlyCancel) {
+// TODO(crbug.com/1271463): Flaky on mac arm64.
+#if defined(OS_MAC) && defined(ARCH_CPU_ARM64)
+#define MAYBE_SaveHTMLOnlyCancel DISABLED_SaveHTMLOnlyCancel
+#else
+#define MAYBE_SaveHTMLOnlyCancel SaveHTMLOnlyCancel
+#endif
+IN_PROC_BROWSER_TEST_F(SavePageBrowserTest, MAYBE_SaveHTMLOnlyCancel) {
   GURL url = NavigateToMockURL("a");
   DownloadManager* manager = GetDownloadManager();
   std::vector<DownloadItem*> downloads;
