@@ -27,6 +27,8 @@
 
   .button-icon {
     flex-grow: 1;
+    height: 40px;
+    width: 40px;
   }
 
   #diagnosticsIconDiv {
@@ -67,7 +69,7 @@
     </cr-button>
     <cr-button id="rmaLogButton" class="button-card"
       on-click="onRmaLogButtonClick_">
-      <iron-icon icon="shimless-icon24:check-circle" class="button-icon"
+      <iron-icon icon="shimless-icon:rma-log" class="button-icon"
           hidden="[[!checked]]">
       </iron-icon>
       <div class="button-text">
@@ -82,7 +84,7 @@
     <!-- TODO(gavindodd): Add UI cues that button is disabled. -->
     <cr-button id="batteryCutButton" class="button-card"
       on-click="onBatteryCutButtonClick_" disabled$="[[pluggedIn_]]">
-      <iron-icon icon="shimless-icon24:check-circle" class="button-icon"
+      <iron-icon icon="shimless-icon:battery-cutoff" class="button-icon"
           hidden="[[!checked]]">
       </iron-icon>
       <div class="button-text">
