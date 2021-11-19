@@ -153,8 +153,16 @@ DeviceService::~DeviceService() {
 #endif
 #if ((defined(OS_LINUX) || defined(OS_CHROMEOS)) && defined(USE_UDEV)) || \
     defined(OS_WIN) || defined(OS_MAC)
-  serial_port_manager_task_runner_->DeleteSoon(FROM_HERE,
-                                               std::move(serial_port_manager_));
+  auto* serial_port_manager = serial_port_manager_.release();
+  if (!serial_port_manager_task_runner_->DeleteSoon(FROM_HERE,
+                                                    serial_port_manager)) {
+    // The ThreadPool can be shutdown by the time ~DeviceService is triggered.
+    // Synchronously delete |serial_port_manager| in that event (which is
+    // naturally sequenced after the last task on
+    // |serial_port_manager_task_runner_| per ThreadPool shutdown semantics).
+    // See crbug.com/1263149#c20 for details.
+    delete serial_port_manager;
+  }
 #endif
 }
 

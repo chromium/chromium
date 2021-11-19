@@ -363,8 +363,10 @@ class TaskEnvironment {
   void DeferredInitFromSubclass(
       scoped_refptr<base::SingleThreadTaskRunner> task_runner);
 
-  // Derived classes may need to control when the sequence manager goes away.
-  void NotifyDestructionObserversAndReleaseSequenceManager();
+  // Derived classes may need to control when the task environment goes away
+  // (e.g. ~FooTaskEnvironment() may want to effectively trigger
+  // ~TaskEnvironment() before its members are destroyed).
+  void DestroyTaskEnvironment();
 
  private:
   class MockTimeDomain;

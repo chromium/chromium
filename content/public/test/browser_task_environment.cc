@@ -143,7 +143,7 @@ BrowserTaskEnvironment::~BrowserTaskEnvironment() {
 
   // Run DestructionObservers before our fake threads go away to ensure
   // BrowserThread::CurrentlyOn() returns the results expected by the observers.
-  NotifyDestructionObserversAndReleaseSequenceManager();
+  DestroyTaskEnvironment();
 
 #if defined(OS_WIN)
   com_initializer_.reset();

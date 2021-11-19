@@ -463,15 +463,27 @@ TaskEnvironment::TaskEnvironment(TaskEnvironment&& other) = default;
 
 TaskEnvironment::~TaskEnvironment() {
   DCHECK_CALLED_ON_VALID_THREAD(main_thread_checker_);
+  DestroyTaskEnvironment();
+}
 
-  // If we've been moved then bail out.
+void TaskEnvironment::DestroyTaskEnvironment() {
+  DCHECK_CALLED_ON_VALID_THREAD(main_thread_checker_);
+
+  // If we've been moved or already destroyed (i.e. subclass invoked
+  // DestroyTaskEnvironment() before ~TaskEnvironment()) then bail out.
   if (!owns_instance_)
     return;
+  owns_instance_.reset();
+
   for (auto& observer : GetDestructionObservers())
     observer.WillDestroyCurrentTaskEnvironment();
+
   DestroyThreadPool();
   task_queue_ = nullptr;
-  NotifyDestructionObserversAndReleaseSequenceManager();
+  // SequenceManagerImpl must outlive ThreadPoolInstance() (DestroyThreadPool()
+  // above) as TaskEnvironment::MockTimeDomain can invoke its
+  // SequenceManagerImpl* from worker threads.
+  sequence_manager_.reset();
 }
 
 void TaskEnvironment::DestroyThreadPool() {
@@ -479,6 +491,7 @@ void TaskEnvironment::DestroyThreadPool() {
 
   if (threading_mode_ == ThreadingMode::MAIN_THREAD_ONLY)
     return;
+  DCHECK(ThreadPoolInstance::Get());
 
   // Ideally this would RunLoop().RunUntilIdle() here to catch any errors or
   // infinite post loop in the remaining work but this isn't possible right now
@@ -514,16 +527,6 @@ void TaskEnvironment::DeferredInitFromSubclass(
   task_runner_ = std::move(task_runner);
   sequence_manager_->SetDefaultTaskRunner(task_runner_);
   CompleteInitialization();
-}
-
-void TaskEnvironment::NotifyDestructionObserversAndReleaseSequenceManager() {
-  DCHECK_CALLED_ON_VALID_THREAD(main_thread_checker_);
-
-  // A derived classes may call this method early.
-  if (!sequence_manager_)
-    return;
-
-  sequence_manager_.reset();
 }
 
 scoped_refptr<base::SingleThreadTaskRunner>
