@@ -100,6 +100,18 @@ TEST_P(ResourceInterfaceTest, SimultaneousScopedReservationTest) {
   waiter.Wait();
 }
 
+TEST_P(ResourceInterfaceTest, MoveScopedReservationTest) {
+  uint64_t size = resource_interface()->GetTotal();
+  ScopedReservation scoped_reservation(size / 2, resource_interface());
+  EXPECT_TRUE(scoped_reservation.reserved());
+  {
+    ScopedReservation moved_scoped_reservation(std::move(scoped_reservation));
+    EXPECT_TRUE(moved_scoped_reservation.reserved());
+    EXPECT_FALSE(scoped_reservation.reserved());
+  }
+  EXPECT_FALSE(scoped_reservation.reserved());
+}
+
 TEST_P(ResourceInterfaceTest, ScopedReservationBasicReduction) {
   uint64_t size = resource_interface()->GetTotal() / 2;
   ScopedReservation scoped_reservation(size, resource_interface());

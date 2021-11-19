@@ -19,7 +19,7 @@ ScopedReservation::ScopedReservation(uint64_t size,
 
 ScopedReservation::ScopedReservation(ScopedReservation&& other)
     : resource_interface_(other.resource_interface_),
-      size_(std::move(other.size_)) {}
+      size_(std::exchange(other.size_, absl::nullopt)) {}
 
 bool ScopedReservation::reserved() const {
   return size_.has_value();
