@@ -11,6 +11,7 @@
 #include <set>
 
 #include "base/scoped_observation.h"
+#include "base/time/time.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_list_prefs.h"
 #include "components/keyed_service/core/keyed_service.h"
 
@@ -70,7 +71,7 @@ class ArcSurveyService : public KeyedService, public ArcAppListPrefs::Observer {
 
  private:
   friend class ArcSurveyServiceTest;
-  bool LoadPackageNames(const std::string& survey_data);
+  bool LoadSurveyData(std::string survey_data);
 
   base::ScopedObservation<ArcAppListPrefs, ArcAppListPrefs::Observer>
       arc_prefs_observer_{this};
@@ -96,6 +97,9 @@ class ArcSurveyService : public KeyedService, public ArcAppListPrefs::Observer {
 
   // List of package names for which to show the survey.
   std::set<std::string> allowed_packages_;
+
+  // Minimum time an app needs to have run before showing the ARC Games survey.
+  base::TimeDelta elapsed_time_survey_trigger_;
 
   // Unowned pointer.
   Profile* const profile_;

@@ -12,6 +12,7 @@
 #include "base/logging.h"
 #include "base/memory/singleton.h"
 #include "base/time/time.h"
+#include "base/values.h"
 #include "chrome/browser/ash/hats/hats_config.h"
 #include "chrome/browser/ash/hats/hats_finch_helper.h"
 #include "chrome/browser/ash/hats/hats_notification_controller.h"
@@ -21,8 +22,10 @@ namespace arc {
 
 namespace {
 
-const int kArcGameSurveyTriggerTimeInMinutes = 10;
-constexpr char kKeyPackageNames[] = "package_names";
+const base::TimeDelta kArcGameElapsedTimeSurveyTrigger = base::Minutes(10);
+constexpr char kJSONKeyElapsedTimeSurveyTriggerMin[] =
+    "elapsed_time_survey_trigger_min";
+constexpr char kJSONKeyPackageNames[] = "package_names";
 constexpr char kKeyMostRecentAndroidGame[] = "mostRecentAndroidGame";
 
 // Singleton factory for ArcSurveyServiceFactory.
@@ -60,22 +63,22 @@ ArcSurveyService* ArcSurveyService::GetForBrowserContextForTesting(
 
 ArcSurveyService::ArcSurveyService(content::BrowserContext* context,
                                    ArcBridgeService* arc_bridge_service)
-    : profile_(Profile::FromBrowserContext(context)) {
-  VLOG(1) << "ArcSurveyService created";
+    : elapsed_time_survey_trigger_(kArcGameElapsedTimeSurveyTrigger),
+      profile_(Profile::FromBrowserContext(context)) {
+  DVLOG(1) << "ArcSurveyService created";
 
   if (!base::FeatureList::IsEnabled(ash::kHatsArcGamesSurvey.feature)) {
     VLOG(1) << "ARC Games HaTS survey feature is not enabled";
     return;
   }
-  const std::string survey_data =
-      ash::HatsFinchHelper::GetCustomClientDataAsString(
-          ash::kHatsArcGamesSurvey);
+  std::string survey_data = ash::HatsFinchHelper::GetCustomClientDataAsString(
+      ash::kHatsArcGamesSurvey);
   if (survey_data.length() == 0) {
-    VLOG(1) << "No HaTS config found for ARC Games.";
+    VLOG(1) << "No survey data found for ARC Games.";
     return;
   }
-  if (!LoadPackageNames(survey_data)) {
-    VLOG(1) << "List of package names not loaded.";
+  if (!LoadSurveyData(survey_data)) {
+    VLOG(1) << "Error loading the survey data.";
     return;
   }
   ArcAppListPrefs* prefs = ArcAppListPrefs::Get(profile_);
@@ -88,21 +91,47 @@ ArcSurveyService::~ArcSurveyService() {
   task_id_map_.clear();
 }
 
-bool ArcSurveyService::LoadPackageNames(const std::string& survey_data) {
-  const absl::optional<base::Value> root = base::JSONReader::Read(survey_data);
+bool ArcSurveyService::LoadSurveyData(std::string survey_data) {
+  absl::optional<base::Value> root = base::JSONReader::Read(survey_data);
   if (!root) {
-    VLOG(2) << "Error reading survey data";
-    return false;
+    LOG(ERROR) << "Unable to find JSON root. Trying char substitutions.";
+    base::ReplaceSubstringsAfterOffset(&survey_data, 0, R"(\{@})", ":");
+    base::ReplaceSubstringsAfterOffset(&survey_data, 0, R"(\{~})", ",");
+    base::ReplaceSubstringsAfterOffset(&survey_data, 0, R"(\{%})", ".");
+    DVLOG(1) << "Data after substitution: " << survey_data;
+    root = base::JSONReader::Read(survey_data);
+    if (!root) {
+      LOG(ERROR) << "Unable to find JSON root after substitution";
+      return false;
+    }
   }
-  const base::Value* list = root->FindListKey(kKeyPackageNames);
+
+  // Load trigger duration
+  absl::optional<int> elapsed_time_survey_trigger_min =
+      root->FindIntKey(kJSONKeyElapsedTimeSurveyTriggerMin);
+  if (elapsed_time_survey_trigger_min) {
+    elapsed_time_survey_trigger_ =
+        (elapsed_time_survey_trigger_min.value() >= 0)
+            ? base::Minutes(elapsed_time_survey_trigger_min.value())
+            : kArcGameElapsedTimeSurveyTrigger;
+    DVLOG(1) << "Survey elapsed time trigger: " << elapsed_time_survey_trigger_;
+  }
+
+  // Load package names
+  const base::Value* list = root->FindListKey(kJSONKeyPackageNames);
   if (!list) {
-    VLOG(2) << "Package name list not found in survey data.";
+    VLOG(1) << "List of package names not found in the survey data.";
     return false;
   }
-  for (const auto& item : list->GetList()) {
+  const base::Value::ConstListView items = list->GetList();
+  if (items.empty()) {
+    VLOG(1) << "List of package names is empty in the survey data.";
+    return false;
+  }
+  for (const auto& item : items) {
     const std::string* package_name = item.GetIfString();
     if (!package_name) {
-      VLOG(2) << "Non-string value found in list";
+      VLOG(1) << "Non-string value found in list. Ignoring all results.";
       allowed_packages_.clear();
       return false;
     }
@@ -169,13 +198,12 @@ void ArcSurveyService::OnTaskDestroyed(int32_t task_id) {
     package_name_map_.erase(package_name_iterator);
 
     // Trigger ArcGames survey if it's been active for at least
-    // |kArcGameSurveyTriggerTimeInMinutes|.
-    base::TimeDelta elapsedTime =
+    // |elapsed_time_survey_trigger_|.
+    base::TimeDelta elapsed_time =
         base::Time::NowFromSystemTime() - on_task_create_timestamp;
-    if (elapsedTime.InMinutes() >= kArcGameSurveyTriggerTimeInMinutes) {
-      VLOG(1) << "~~~ Elapsed time is more than "
-              << kArcGameSurveyTriggerTimeInMinutes << ": "
-              << elapsedTime.InMinutes();
+    if (elapsed_time >= elapsed_time_survey_trigger_) {
+      DVLOG(1) << "Elapsed time is more than " << elapsed_time_survey_trigger_
+               << ": " << elapsed_time.InMinutes();
       if (ash::HatsNotificationController::ShouldShowSurveyToProfile(
               profile_, ash::kHatsArcGamesSurvey)) {
         const base::flat_map<std::string, std::string> product_specific_data = {

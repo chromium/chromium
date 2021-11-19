@@ -7,6 +7,7 @@
 #include <cstdint>
 #include <memory>
 
+#include "base/time/time.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/arc/session/arc_bridge_service.h"
 #include "components/arc/session/arc_service_manager.h"
@@ -55,12 +56,16 @@ class ArcSurveyServiceTest : public testing::Test {
     return arc_survey_service_->GetTaskIdMapForTesting();
   }
 
-  bool LoadPackageNames(const std::string package_names) {
-    return arc_survey_service_->LoadPackageNames(package_names);
+  bool LoadSurveyData(std::string package_names) {
+    return arc_survey_service_->LoadSurveyData(package_names);
   }
 
   std::set<std::string>& GetAllowedPackageNameSet() {
     return arc_survey_service_->allowed_packages_;
+  }
+
+  const base::TimeDelta GetElapsedTimeSurveyTrigger() {
+    return arc_survey_service_->elapsed_time_survey_trigger_;
   }
 
  private:
@@ -74,7 +79,7 @@ TEST_F(ArcSurveyServiceTest, ConstructDestruct) {}
 
 TEST_F(ArcSurveyServiceTest, SingleTask) {
   // Create task
-  EXPECT_EQ(0, GetPackageNameMap()->size());
+  EXPECT_TRUE(GetPackageNameMap()->empty());
   OnTaskCreated(1, kPackageA);
 
   EXPECT_EQ(1, GetPackageNameMap()->size());
@@ -91,13 +96,13 @@ TEST_F(ArcSurveyServiceTest, SingleTask) {
 
   // Destroy original task
   OnTaskDestroyed(1);
-  EXPECT_EQ(0, GetPackageNameMap()->size());
-  EXPECT_EQ(0, getTaskIdMap()->size());
+  EXPECT_TRUE(GetPackageNameMap()->empty());
+  EXPECT_TRUE(getTaskIdMap()->empty());
 }
 
 TEST_F(ArcSurveyServiceTest, MultiPackage) {
   // Create 2 tasks
-  EXPECT_EQ(0, GetPackageNameMap()->size());
+  EXPECT_TRUE(GetPackageNameMap()->empty());
   OnTaskCreated(1, kPackageA);
   OnTaskCreated(2, kPackageB);
 
@@ -119,13 +124,13 @@ TEST_F(ArcSurveyServiceTest, MultiPackage) {
 
   // Destroy task w/ ID 1
   OnTaskDestroyed(1);
-  EXPECT_EQ(0, GetPackageNameMap()->size());
-  EXPECT_EQ(0, getTaskIdMap()->size());
+  EXPECT_TRUE(GetPackageNameMap()->empty());
+  EXPECT_TRUE(getTaskIdMap()->empty());
 }
 
 TEST_F(ArcSurveyServiceTest, MultiTask) {
   // Create 2 tasks for the same package
-  EXPECT_EQ(0, GetPackageNameMap()->size());
+  EXPECT_TRUE(GetPackageNameMap()->empty());
   OnTaskCreated(1, kPackageA);
   OnTaskCreated(2, kPackageA);
 
@@ -145,36 +150,102 @@ TEST_F(ArcSurveyServiceTest, MultiTask) {
 
   // Destroy task w/ ID 1
   OnTaskDestroyed(1);
-  EXPECT_EQ(0, GetPackageNameMap()->size());
-  EXPECT_EQ(0, getTaskIdMap()->size());
+  EXPECT_TRUE(GetPackageNameMap()->empty());
+  EXPECT_TRUE(getTaskIdMap()->empty());
 }
 
-TEST_F(ArcSurveyServiceTest, LoadPackageNames) {
+TEST_F(ArcSurveyServiceTest, LoadSurveyData_InvalidFormats) {
   // Clear any existing entries.
   GetAllowedPackageNameSet().clear();
-  EXPECT_EQ(0, GetAllowedPackageNameSet().size());
+  EXPECT_TRUE(GetAllowedPackageNameSet().empty());
+  EXPECT_EQ(base::Minutes(10), GetElapsedTimeSurveyTrigger());
 
-  // INVALID: No JSON String
-  EXPECT_FALSE(LoadPackageNames("foobar1234"));
-  EXPECT_EQ(0, GetAllowedPackageNameSet().size());
+  // No JSON String
+  ASSERT_FALSE(LoadSurveyData("foobar1234"));
+  EXPECT_TRUE(GetAllowedPackageNameSet().empty());
+  EXPECT_EQ(base::Minutes(10), GetElapsedTimeSurveyTrigger());
 
-  // Invalid JSON String: |package_names| as the key and a string as the value.
-  EXPECT_FALSE(LoadPackageNames(R"({"package_names":"com.android.vending")"));
-  EXPECT_EQ(0, GetAllowedPackageNameSet().size());
+  // |package_names| as a key and a string as its value, AND
+  // |elapsed_time_survey_trigger| as a key and a string as its value.
+  ASSERT_FALSE(LoadSurveyData(R"({
+      "package_names":"com.android.vending",
+      "elapsed_time_survey_trigger_ min":"foo"})"));
+  EXPECT_TRUE(GetAllowedPackageNameSet().empty());
+  EXPECT_EQ(base::Minutes(10), GetElapsedTimeSurveyTrigger());
 
-  // Invalid JSON format: |package_names| as the key and not all the items in
-  // the list are strings.
-  EXPECT_FALSE(
-      LoadPackageNames(R"({"package_names":["com.android.vending",123]})"));
-  EXPECT_EQ(0, GetAllowedPackageNameSet().size());
+  // |elapsed_time_survey_trigger| as the key and a string as its value.
+  ASSERT_FALSE(LoadSurveyData(R"({
+      "package_names":"com.android.vending",
+      "elapsed_time_survey_trigger_ min":"foo")"));
+  EXPECT_TRUE(GetAllowedPackageNameSet().empty());
+  EXPECT_EQ(base::Minutes(10), GetElapsedTimeSurveyTrigger());
 
-  // Valid JSON Format: |package_names| as the key and ALL the items in the list
-  // are strings.
-  EXPECT_TRUE(LoadPackageNames(
-      R"({"package_names":["com.android.vending","com.android.settings"]})"));
+  // |package_names| as the key and not all the items in the list are strings.
+  ASSERT_FALSE(LoadSurveyData(R"({
+      "package_names":["com.android.vending",123]})"));
+  EXPECT_TRUE(GetAllowedPackageNameSet().empty());
+}
+
+TEST_F(ArcSurveyServiceTest, LoadSurveyData_ValidFormat) {
+  // Clear any existing entries.
+  GetAllowedPackageNameSet().clear();
+  EXPECT_TRUE(GetAllowedPackageNameSet().empty());
+  EXPECT_EQ(base::Minutes(10), GetElapsedTimeSurveyTrigger());
+
+  ASSERT_TRUE(LoadSurveyData(R"({
+      "package_names":["com.android.vending","com.android.settings"],
+      "elapsed_time_survey_trigger_min":200})"));
   EXPECT_EQ(2, GetAllowedPackageNameSet().size());
   EXPECT_EQ(1, GetAllowedPackageNameSet().count("com.android.vending"));
   EXPECT_EQ(1, GetAllowedPackageNameSet().count("com.android.settings"));
+  EXPECT_EQ(base::Minutes(200), GetElapsedTimeSurveyTrigger());
+}
+
+TEST_F(ArcSurveyServiceTest, LoadSurveyData_ValidFormat_EmptyList) {
+  // Clear any existing entries.
+  GetAllowedPackageNameSet().clear();
+  EXPECT_TRUE(GetAllowedPackageNameSet().empty());
+  EXPECT_EQ(base::Minutes(10), GetElapsedTimeSurveyTrigger());
+
+  ASSERT_FALSE(LoadSurveyData(R"({"package_names":[]})"));
+  EXPECT_TRUE(GetAllowedPackageNameSet().empty());
+  EXPECT_EQ(base::Minutes(10), GetElapsedTimeSurveyTrigger());
+}
+
+TEST_F(ArcSurveyServiceTest, LoadSurveyData_ValidFormat_NoSurveyTrigger) {
+  // Clear any existing entries.
+  GetAllowedPackageNameSet().clear();
+  EXPECT_TRUE(GetAllowedPackageNameSet().empty());
+  EXPECT_EQ(base::Minutes(10), GetElapsedTimeSurveyTrigger());
+
+  // No |elapsed_time_survey_trigger_min| key
+  ASSERT_TRUE(LoadSurveyData(R"({
+      "package_names":["com.android.vending","com.android.settings"]})"));
+  EXPECT_EQ(2, GetAllowedPackageNameSet().size());
+  EXPECT_EQ(1, GetAllowedPackageNameSet().count("com.android.vending"));
+  EXPECT_EQ(1, GetAllowedPackageNameSet().count("com.android.settings"));
+  EXPECT_EQ(base::Minutes(10), GetElapsedTimeSurveyTrigger());
+}
+
+TEST_F(ArcSurveyServiceTest, LoadSurveyData_ValidFormat_CharSubstitution) {
+  // Clear any existing entries.
+  GetAllowedPackageNameSet().clear();
+  EXPECT_TRUE(GetAllowedPackageNameSet().empty());
+  EXPECT_EQ(base::Minutes(10), GetElapsedTimeSurveyTrigger());
+
+  // Survey Data that requires character substitution.
+  // \{@} --> :
+  // \{~} --> ,
+  // \{%} --> .
+  ASSERT_TRUE(LoadSurveyData(R"({
+      "package_names"\{@}[
+         "com\{%}android\{%}vending"\{~}"com\{%}android\{%}settings"]\{~}
+      "elapsed_time_survey_trigger_min"\{@}500})"));
+
+  EXPECT_EQ(2, GetAllowedPackageNameSet().size());
+  EXPECT_EQ(1, GetAllowedPackageNameSet().count("com.android.vending"));
+  EXPECT_EQ(1, GetAllowedPackageNameSet().count("com.android.settings"));
+  EXPECT_EQ(base::Minutes(500), GetElapsedTimeSurveyTrigger());
 }
 
 }  // namespace arc
