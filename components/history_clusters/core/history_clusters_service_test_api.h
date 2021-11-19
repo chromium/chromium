@@ -7,6 +7,7 @@
 
 #include <vector>
 
+#include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/time/time.h"
 #include "components/history/core/browser/history_service.h"
@@ -55,6 +56,13 @@ class HistoryClustersServiceTestApi {
 
   void SetShortKeywordCacheTimestamp(base::Time time) {
     history_clusters_service_->short_keyword_cache_timestamp_ = time;
+  }
+
+  void FlushPostProcessingTaskRunner() {
+    base::RunLoop loop;
+    history_clusters_service_->post_processing_task_runner_->PostTask(
+        FROM_HERE, loop.QuitClosure());
+    loop.Run();
   }
 
   HistoryClustersService* const history_clusters_service_;

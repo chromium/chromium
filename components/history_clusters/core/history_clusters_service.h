@@ -17,7 +17,9 @@
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
 #include "base/task/cancelable_task_tracker.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
+#include "base/timer/elapsed_timer.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/history_service_observer.h"
 #include "components/history/core/browser/history_types.h"
@@ -147,9 +149,9 @@ class HistoryClustersService : public KeyedService {
 
   // Converts the vector of history::Cluster types to history_clusters::Cluster
   // by collapsing all the duplicate visits into the canonical visits, thereby
-  // "unflattening" the output of the backend. Exposed for testing.
-  std::vector<Cluster> CollapseDuplicateVisits(
-      const std::vector<history::Cluster>& raw_clusters) const;
+  // "unflattening" the output of the backend. Public for testing purposes.
+  static std::vector<Cluster> CollapseDuplicateVisits(
+      const std::vector<history::Cluster>& raw_clusters);
 
   // Clears `all_keywords_cache_` and cancels any pending tasks to populate it.
   void ClearKeywordCache();
@@ -173,12 +175,24 @@ class HistoryClustersService : public KeyedService {
                           std::vector<history::AnnotatedVisit> annotated_visits,
                           base::Time continuation_end_time) const;
 
-  // Internally used callback for `OnGotHistoryVisits()`.
-  void OnGotClusters(const std::string& query,
-                     base::Time continuation_end_time,
-                     base::TimeTicks cluster_start_time,
-                     QueryClustersCallback callback,
-                     std::vector<history::Cluster> clusters) const;
+  // Runs on UI thread. Internally used callback for `OnGotHistoryVisits()`.
+  void OnGotRawClusters(const std::string& query,
+                        base::Time continuation_end_time,
+                        base::TimeTicks cluster_start_time,
+                        QueryClustersCallback callback,
+                        std::vector<history::Cluster> clusters) const;
+
+  // Runs on `post_processing_task_runner_`, posted by `OnGotRawClusters()`.
+  static QueryClustersResult PostProcessClusters(
+      const std::string& query,
+      base::Time continuation_end_time,
+      std::vector<history::Cluster> clusters);
+
+  // Runs on UI thread. Used as the 'reply' part from `PostProcessClusters()`.
+  void OnProcessedClusters(base::ElapsedTimer post_processing_timer,
+                           size_t clusters_from_backend_count,
+                           QueryClustersCallback callback,
+                           QueryClustersResult result) const;
 
   // `VisitContextAnnotations`s are constructed stepwise; they're initially
   // placed in `incomplete_visit_context_annotations_` and saved to the history
@@ -217,6 +231,9 @@ class HistoryClustersService : public KeyedService {
   base::ObserverList<Observer> observers_;
 
   VisitDeletionObserver visit_deletion_observer_;
+
+  // A task runner to run all the post-processing tasks on.
+  scoped_refptr<base::SequencedTaskRunner> post_processing_task_runner_;
 
   // Weak pointers issued from this factory never get invalidated before the
   // service is destroyed.

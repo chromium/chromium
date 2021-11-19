@@ -803,6 +803,7 @@ TEST_F(HistoryClustersServiceTest, DoesQueryMatchAnyCluster) {
                        {u"singlevisit"},
                        /*should_show_on_prominent_ui_surfaces=*/true));
   test_clustering_backend_->FulfillCallback(clusters);
+  history_clusters_service_test_api_->FlushPostProcessingTaskRunner();
 
   // Now the exact query should match the populated cache.
   EXPECT_TRUE(history_clusters_service_->DoesQueryMatchAnyCluster("apples"));
@@ -838,6 +839,7 @@ TEST_F(HistoryClustersServiceTest, DoesQueryMatchAnyCluster) {
   // The keyword cache should be repopulated.
   test_clustering_backend_->WaitForGetClustersCall();
   test_clustering_backend_->FulfillCallback(clusters);
+  history_clusters_service_test_api_->FlushPostProcessingTaskRunner();
   EXPECT_TRUE(history_clusters_service_->DoesQueryMatchAnyCluster("apples"));
   history::BlockUntilHistoryProcessesPendingRequests(history_service_.get());
 }
@@ -881,6 +883,7 @@ TEST_F(HistoryClustersServiceTest, DoesQueryMatchAnyClusterSecondaryCache) {
                        {u"peach", u""},
                        /*should_show_on_prominent_ui_surfaces=*/true));
   test_clustering_backend_->FulfillCallback(clusters2);
+  history_clusters_service_test_api_->FlushPostProcessingTaskRunner();
   EXPECT_TRUE(history_clusters_service_->DoesQueryMatchAnyCluster("peach"));
 
   history::BlockUntilHistoryProcessesPendingRequests(history_service_.get());

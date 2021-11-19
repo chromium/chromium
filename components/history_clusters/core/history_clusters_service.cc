@@ -22,6 +22,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/system/sys_info.h"
+#include "base/task/thread_pool.h"
 #include "base/time/time.h"
 #include "base/time/time_to_iso8601.h"
 #include "base/timer/elapsed_timer.h"
@@ -32,6 +33,7 @@
 #include "components/history/core/browser/history_types.h"
 #include "components/history_clusters/core/history_clusters_buildflags.h"
 #include "components/history_clusters/core/history_clusters_db_tasks.h"
+#include "components/history_clusters/core/history_clusters_types.h"
 #include "components/history_clusters/core/memories_features.h"
 #include "components/history_clusters/core/remote_clustering_backend.h"
 #include "components/optimization_guide/core/entity_metadata_provider.h"
@@ -284,7 +286,10 @@ HistoryClustersService::HistoryClustersService(
     TemplateURLService* template_url_service,
     optimization_guide::EntityMetadataProvider* entity_metadata_provider,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
-    : history_service_(history_service), visit_deletion_observer_(this) {
+    : history_service_(history_service),
+      visit_deletion_observer_(this),
+      post_processing_task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
+          {base::MayBlock(), base::TaskPriority::USER_VISIBLE})) {
   DCHECK(history_service_);
 
   visit_deletion_observer_.AttachToHistoryService(history_service);
@@ -498,8 +503,9 @@ bool HistoryClustersService::DoesQueryMatchAnyCluster(
                                                    /*exact=*/true);
 }
 
+// static
 std::vector<Cluster> HistoryClustersService::CollapseDuplicateVisits(
-    const std::vector<history::Cluster>& raw_clusters) const {
+    const std::vector<history::Cluster>& raw_clusters) {
   std::vector<Cluster> result_clusters;
   for (const auto& raw_cluster : raw_clusters) {
     Cluster cluster;
@@ -528,18 +534,14 @@ std::vector<Cluster> HistoryClustersService::CollapseDuplicateVisits(
       for (auto& duplicate_id : raw_visit.duplicate_visit_ids) {
         auto duplicate_visit = visits_map.find(duplicate_id);
         if (duplicate_visit == visits_map.end()) {
-          NotifyDebugMessage(
-              base::StringPrintf("Visit id=%d has missing duplicate_id=%d",
-                                 int(visit_id), int(duplicate_id)));
+          NOTREACHED() << "Visit has missing duplicate ID.";
           continue;
         }
 
         // Move the duplicate visit into the vector of the canonical visit.
-        if (!duplicate_visit->second.duplicate_visits.empty()) {
-          NotifyDebugMessage(
-              "Duplicates shouldn't themselves have duplicates. "
-              "If they do, the output is undefined.");
-        }
+        DCHECK(duplicate_visit->second.duplicate_visits.empty())
+            << "Duplicates shouldn't themselves have duplicates. "
+               "If they do, the output is undefined.";
         auto& canonical_visit = visits_map[visit_id];
         canonical_visit.duplicate_visits.push_back(
             std::move(duplicate_visit->second));
@@ -645,40 +647,70 @@ void HistoryClustersService::OnGotHistoryVisits(
                                static_cast<int>(annotated_visits.size()));
 
   backend_->GetClusters(
-      base::BindOnce(&HistoryClustersService::OnGotClusters,
+      base::BindOnce(&HistoryClustersService::OnGotRawClusters,
                      weak_ptr_factory_.GetWeakPtr(), query,
                      continuation_end_time, base::TimeTicks::Now(),
                      std::move(callback)),
       annotated_visits);
 }
 
-void HistoryClustersService::OnGotClusters(
+void HistoryClustersService::OnGotRawClusters(
     const std::string& query,
     base::Time continuation_end_time,
     base::TimeTicks cluster_start_time,
     QueryClustersCallback callback,
     std::vector<history::Cluster> clusters) const {
-  NotifyDebugMessage("HistoryClustersService::OnGotClusters()");
+  NotifyDebugMessage("HistoryClustersService::OnGotRawClusters()");
+
+  int clusters_from_backend_count = clusters.size();
+  base::UmaHistogramTimes("History.Clusters.Backend.GetClustersLatency",
+                          base::TimeTicks::Now() - cluster_start_time);
+  base::UmaHistogramCounts1000("History.Clusters.Backend.NumClustersReturned",
+                               clusters_from_backend_count);
+
+  NotifyDebugMessage("  Raw Clusters from Backend JSON follows:");
+  NotifyDebugMessage(GetDebugJSONForClusters(clusters));
+
+  // Post-process the clusters (expensive task) on an anonymous thread to
+  // prevent janks.
+  base::ElapsedTimer post_processing_timer;  // Create here to time the task.
+  post_processing_task_runner_->PostTaskAndReplyWithResult(
+      FROM_HERE,
+      base::BindOnce(&HistoryClustersService::PostProcessClusters, query,
+                     continuation_end_time, std::move(clusters)),
+      base::BindOnce(&HistoryClustersService::OnProcessedClusters,
+                     weak_ptr_factory_.GetWeakPtr(),
+                     std::move(post_processing_timer),
+                     clusters_from_backend_count, std::move(callback)));
+}
+
+// static
+QueryClustersResult HistoryClustersService::PostProcessClusters(
+    const std::string& query,
+    base::Time continuation_end_time,
+    std::vector<history::Cluster> raw_clusters) {
   QueryClustersResult result;
   if (!continuation_end_time.is_null()) {
     result.continuation_end_time = continuation_end_time;
   }
 
-  int clusters_from_backend_count = clusters.size();
-  base::UmaHistogramTimes("History.Clusters.Backend.GetClustersLatency",
-                          base::TimeTicks::Now() - cluster_start_time);
-
-  base::ElapsedTimer timer;
-  FilterClustersMatchingQuery(query, &clusters);
-  result.clusters = CollapseDuplicateVisits(clusters);
+  FilterClustersMatchingQuery(query, &raw_clusters);
+  result.clusters = CollapseDuplicateVisits(raw_clusters);
   SortClusters(&result.clusters);
 
-  base::TimeDelta clustering_duration = timer.Elapsed();
+  return result;
+}
+
+void HistoryClustersService::OnProcessedClusters(
+    base::ElapsedTimer post_processing_timer,
+    size_t clusters_from_backend_count,
+    QueryClustersCallback callback,
+    QueryClustersResult result) const {
+  NotifyDebugMessage("HistoryClustersService::OnProcesedClusters()");
+
+  base::TimeDelta clustering_duration = post_processing_timer.Elapsed();
   base::UmaHistogramLongTimes("History.Clusters.ProcessClustersDuration",
                               clustering_duration);
-
-  base::UmaHistogramCounts1000("History.Clusters.Backend.NumClustersReturned",
-                               clusters_from_backend_count);
 
   if (clusters_from_backend_count > 0) {
     // Log the percentage of clusters that get filtered (e.g., 100 - % of
@@ -688,9 +720,6 @@ void HistoryClustersService::OnGotClusters(
         static_cast<int>(100 - (result.clusters.size() /
                                 (1.0 * clusters_from_backend_count) * 100)));
   }
-
-  NotifyDebugMessage("  Clusters JSON follows:");
-  NotifyDebugMessage(GetDebugJSONForClusters(clusters));
 
   NotifyDebugMessage("  Passing results back to original caller now.");
   std::move(callback).Run(std::move(result));
