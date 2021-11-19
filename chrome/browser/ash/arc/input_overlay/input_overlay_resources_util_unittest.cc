@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/components/arc/input_overlay/resources/input_overlay_resources_util.h"
-#include "ash/components/arc/input_overlay/actions/action_tap_key.h"
+#include "chrome/browser/ash/arc/input_overlay/input_overlay_resources_util.h"
 #include "base/json/json_reader.h"
+#include "chrome/browser/ash/arc/input_overlay/actions/action_tap_key.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/aura/test/test_window_delegate.h"
 #include "ui/aura/test/test_windows.h"

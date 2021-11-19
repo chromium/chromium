@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/components/arc/input_overlay/actions/position.h"
+#include "chrome/browser/ash/arc/input_overlay/actions/position.h"
 
-#include "ash/components/arc/input_overlay/resources/input_overlay_resources_util.h"
+#include "chrome/browser/ash/arc/input_overlay/input_overlay_resources_util.h"
 
 namespace arc {
 namespace input_overlay {

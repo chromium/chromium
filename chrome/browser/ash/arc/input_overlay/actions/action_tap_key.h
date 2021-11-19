@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_COMPONENTS_ARC_INPUT_OVERLAY_ACTIONS_ACTION_TAP_KEY_H_
-#define ASH_COMPONENTS_ARC_INPUT_OVERLAY_ACTIONS_ACTION_TAP_KEY_H_
+#ifndef CHROME_BROWSER_ASH_ARC_INPUT_OVERLAY_ACTIONS_ACTION_TAP_KEY_H_
+#define CHROME_BROWSER_ASH_ARC_INPUT_OVERLAY_ACTIONS_ACTION_TAP_KEY_H_
 
-#include "ash/components/arc/input_overlay/actions/action.h"
+#include "chrome/browser/ash/arc/input_overlay/actions/action.h"
 
 #include "ui/aura/window.h"
 
@@ -47,4 +47,4 @@ class ActionTapKey : public Action {
 }  // namespace input_overlay
 }  // namespace arc
 
-#endif  // ASH_COMPONENTS_ARC_INPUT_OVERLAY_ACTIONS_ACTION_TAP_KEY_H_
+#endif  // CHROME_BROWSER_ASH_ARC_INPUT_OVERLAY_ACTIONS_ACTION_TAP_KEY_H_

@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/components/arc/input_overlay/actions/action_move_key.h"
+#include "chrome/browser/ash/arc/input_overlay/actions/action_move_key.h"
 
-#include "ash/components/arc/input_overlay/actions/action.h"
-#include "ash/components/arc/input_overlay/touch_id_manager.h"
+#include "chrome/browser/ash/arc/input_overlay/actions/action.h"
+#include "chrome/browser/ash/arc/input_overlay/touch_id_manager.h"
 #include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/events/keycodes/dom/keycode_converter.h"
 

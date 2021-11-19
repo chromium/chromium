@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/components/arc/input_overlay/resources/input_overlay_resources_util.h"
+#include "chrome/browser/ash/arc/input_overlay/input_overlay_resources_util.h"
 
 #include <map>
 
-#include "ash/components/arc/input_overlay/actions/action_move_key.h"
-#include "ash/components/arc/input_overlay/actions/action_tap_key.h"
-#include "ash/components/arc/input_overlay/actions/dependent_position.h"
-#include "ash/components/arc/input_overlay/actions/position.h"
+#include "chrome/browser/ash/arc/input_overlay/actions/action_move_key.h"
+#include "chrome/browser/ash/arc/input_overlay/actions/action_tap_key.h"
+#include "chrome/browser/ash/arc/input_overlay/actions/dependent_position.h"
+#include "chrome/browser/ash/arc/input_overlay/actions/position.h"
 #include "components/arc/grit/input_overlay_resources.h"
 
 namespace arc {
@@ -28,7 +28,7 @@ constexpr char kDependentPosition[] = "dependent_position";
 }  // namespace
 
 absl::optional<int> GetInputOverlayResourceId(const std::string& package_name) {
-  static std::map<std::string, int> resource_id_map = {
+  std::map<std::string, int> resource_id_map = {
       {"org.chromium.arc.testapp.inputoverlay",
        IDR_IO_ORG_CHROMIUM_ARC_TESTAPP_INPUTOVERLAY},
       {"com.blackpanther.ninjaarashi2", IDR_IO_COM_BLACKPANTHER_NINJAARASHI2},

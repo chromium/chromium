@@ -2,7 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/components/arc/input_overlay/actions/action_tap_key.h"
+#include "chrome/browser/ash/arc/input_overlay/actions/action_move_key.h"
+
 #include "base/json/json_reader.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/aura/test/test_window_delegate.h"
@@ -12,45 +13,20 @@
 namespace arc {
 namespace input_overlay {
 
-class ActionTapKeyTest : public testing::Test {
+class ActionMoveKeyTest : public testing::Test {
  protected:
-  ActionTapKeyTest() = default;
+  ActionMoveKeyTest() = default;
 };
 
 constexpr const char kValidJson[] =
     R"json({
-      "name": "Fight",
-      "key": "KeyA",
-      "location": [
-        {
-          "type": "position",
-          "anchor": [
-            0,
-            0
-          ],
-          "anchor_to_target": [
-            0.5,
-            0.5
-          ]
-        },
-        {
-          "type": "position",
-          "anchor": [
-            0,
-            0
-          ],
-          "anchor_to_target": [
-            0.8,
-            0.8
-          ]
-        }
-      ]
-    })json";
-
-constexpr const char kInValidJsonWrongKey[] =
-    R"json({
-      "name": "Fight",
-      "key": "Key_A",
+      "name": "Virtual Joystick",
+      "keys": [
+        "KeyW",
+        "KeyA",
+        "KeyS",
+        "KeyD"
+      ],
       "location": [
         {
           "type": "position",
@@ -66,13 +42,54 @@ constexpr const char kInValidJsonWrongKey[] =
       ]
     })json";
 
-constexpr const char kInValidJsonEmptyLocation[] =
+constexpr const char kInValidJsonWrongAmountKeys[] =
     R"json({
-      "name": "Fight",
-      "key": "KeyA"
+      "name": "Virtual Joystick",
+      "keys": [
+        "KeyW",
+        "KeyA",
+        "KeyS"
+      ],
+      "location": [
+        {
+          "type": "position",
+          "anchor": [
+            0,
+            0
+          ],
+          "anchor_to_target": [
+            0.5,
+            0.5
+          ]
+        }
+      ]
     })json";
 
-TEST(ActionTapKeyTest, TestParseJson) {
+constexpr const char kInValidJsonDuplicatedKeys[] =
+    R"json({
+      "name": "Virtual Joystick",
+      "keys": [
+        "KeyW",
+        "KeyW",
+        "KeyS",
+        "KeyD"
+      ],
+      "location": [
+        {
+          "type": "position",
+          "anchor": [
+            0,
+            0
+          ],
+          "anchor_to_target": [
+            0.5,
+            0.5
+          ]
+        }
+      ]
+    })json";
+
+TEST(ActionMoveKeyTest, TestParseJson) {
   // Parse valid Json.
   base::JSONReader::ValueWithError json_value =
       base::JSONReader::ReadAndReturnValueWithError(kValidJson);
@@ -80,27 +97,31 @@ TEST(ActionTapKeyTest, TestParseJson) {
   aura::test::TestWindowDelegate dummy_delegate;
   auto window = base::WrapUnique(aura::test::CreateTestWindowWithDelegate(
       &dummy_delegate, 11, gfx::Rect(200, 400), nullptr));
-  std::unique_ptr<ActionTapKey> action =
-      std::make_unique<ActionTapKey>(window.get());
+  std::unique_ptr<ActionMoveKey> action =
+      std::make_unique<ActionMoveKey>(window.get());
   EXPECT_TRUE(action->ParseFromJson(json_value.value.value()));
-  EXPECT_TRUE(action->key() == ui::DomCode::US_A);
-  EXPECT_TRUE(action->name() == std::string("Fight"));
-  EXPECT_TRUE(action->locations().size() == 2);
+  auto keys = action->keys();
+  EXPECT_TRUE(keys.size() == kActionMoveKeysSize);
+  EXPECT_TRUE(action->keys()[0] == ui::DomCode::US_W);
+  EXPECT_TRUE(action->keys()[1] == ui::DomCode::US_A);
+  EXPECT_TRUE(action->keys()[2] == ui::DomCode::US_S);
+  EXPECT_TRUE(action->keys()[3] == ui::DomCode::US_D);
+  EXPECT_TRUE(action->name() == std::string("Virtual Joystick"));
   action.reset();
 
-  // Parse invalid Json with wrong key code.
-  json_value =
-      base::JSONReader::ReadAndReturnValueWithError(kInValidJsonWrongKey);
+  // Parse invalid Json with wrong amount of keys.
+  json_value = base::JSONReader::ReadAndReturnValueWithError(
+      kInValidJsonWrongAmountKeys);
   EXPECT_FALSE(!json_value.value || !json_value.value->is_dict());
-  action = std::make_unique<ActionTapKey>(window.get());
+  action = std::make_unique<ActionMoveKey>(window.get());
   EXPECT_FALSE(action->ParseFromJson(json_value.value.value()));
   action.reset();
 
-  // Parse invalid Json with no location.
+  // Parse invalid Json with duplicated keys.
   json_value =
-      base::JSONReader::ReadAndReturnValueWithError(kInValidJsonEmptyLocation);
+      base::JSONReader::ReadAndReturnValueWithError(kInValidJsonDuplicatedKeys);
   EXPECT_FALSE(!json_value.value || !json_value.value->is_dict());
-  action = std::make_unique<ActionTapKey>(window.get());
+  action = std::make_unique<ActionMoveKey>(window.get());
   EXPECT_FALSE(action->ParseFromJson(json_value.value.value()));
   action.reset();
 }

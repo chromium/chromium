@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/components/arc/input_overlay/touch_injector.h"
+#include "chrome/browser/ash/arc/input_overlay/touch_injector.h"
 
-#include "ash/components/arc/input_overlay/actions/action.h"
-#include "ash/components/arc/input_overlay/resources/input_overlay_resources_util.h"
 #include "base/bind.h"
 #include "base/task/thread_pool.h"
+#include "chrome/browser/ash/arc/input_overlay/actions/action.h"
+#include "chrome/browser/ash/arc/input_overlay/input_overlay_resources_util.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/window/non_client_view.h"
 

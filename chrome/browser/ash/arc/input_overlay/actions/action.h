@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_COMPONENTS_ARC_INPUT_OVERLAY_ACTIONS_ACTION_H_
-#define ASH_COMPONENTS_ARC_INPUT_OVERLAY_ACTIONS_ACTION_H_
+#ifndef CHROME_BROWSER_ASH_ARC_INPUT_OVERLAY_ACTIONS_ACTION_H_
+#define CHROME_BROWSER_ASH_ARC_INPUT_OVERLAY_ACTIONS_ACTION_H_
 
 #include <string>
 
-#include "ash/components/arc/input_overlay/actions/position.h"
 #include "base/values.h"
+#include "chrome/browser/ash/arc/input_overlay/actions/position.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_tree_host.h"
 
@@ -80,4 +80,4 @@ class Action {
 }  // namespace input_overlay
 }  // namespace arc
 
-#endif  // ASH_COMPONENTS_ARC_INPUT_OVERLAY_ACTIONS_ACTION_H_
+#endif  // CHROME_BROWSER_ASH_ARC_INPUT_OVERLAY_ACTIONS_ACTION_H_

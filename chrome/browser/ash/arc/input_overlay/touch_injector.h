@@ -2,17 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_COMPONENTS_ARC_INPUT_OVERLAY_TOUCH_INJECTOR_H_
-#define ASH_COMPONENTS_ARC_INPUT_OVERLAY_TOUCH_INJECTOR_H_
+#ifndef CHROME_BROWSER_ASH_ARC_INPUT_OVERLAY_TOUCH_INJECTOR_H_
+#define CHROME_BROWSER_ASH_ARC_INPUT_OVERLAY_TOUCH_INJECTOR_H_
 
-#include "ash/components/arc/input_overlay/actions/action.h"
 #include "base/scoped_observation.h"
+#include "chrome/browser/ash/arc/input_overlay/actions/action.h"
 #include "ui/aura/window.h"
 
 namespace arc {
 namespace input_overlay {
 // If the following touch move sent immediately, the touch move event is not
-// processed correctly by apps. This is a delayed time to send touch move event.
+// processed correctly by apps. This is a delayed time to send touch move
+// event.
 constexpr base::TimeDelta kSendTouchMoveDelay = base::Milliseconds(50);
 
 }  // namespace input_overlay
@@ -82,4 +83,4 @@ class TouchInjector : public ui::EventRewriter {
 
 }  // namespace arc
 
-#endif  // ASH_COMPONENTS_ARC_INPUT_OVERLAY_TOUCH_INJECTOR_H_
+#endif  // CHROME_BROWSER_ASH_ARC_INPUT_OVERLAY_TOUCH_INJECTOR_H_

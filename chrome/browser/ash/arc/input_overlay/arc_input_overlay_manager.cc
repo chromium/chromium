@@ -2,17 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/components/arc/input_overlay/arc_input_overlay_manager.h"
+#include "chrome/browser/ash/arc/input_overlay/arc_input_overlay_manager.h"
 
 #include <utility>
 
 #include "ash/components/arc/arc_browser_context_keyed_service_factory_base.h"
-#include "ash/components/arc/input_overlay/resources/input_overlay_resources_util.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/shell.h"
 #include "base/json/json_reader.h"
 #include "base/logging.h"
 #include "base/memory/singleton.h"
+#include "chrome/browser/ash/arc/input_overlay/input_overlay_resources_util.h"
 #include "ui/aura/client/focus_client.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/base/ime/input_method_observer.h"

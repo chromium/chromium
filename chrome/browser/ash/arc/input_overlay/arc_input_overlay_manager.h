@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_COMPONENTS_ARC_INPUT_OVERLAY_ARC_INPUT_OVERLAY_MANAGER_H_
-#define ASH_COMPONENTS_ARC_INPUT_OVERLAY_ARC_INPUT_OVERLAY_MANAGER_H_
+#ifndef CHROME_BROWSER_ASH_ARC_INPUT_OVERLAY_ARC_INPUT_OVERLAY_MANAGER_H_
+#define CHROME_BROWSER_ASH_ARC_INPUT_OVERLAY_ARC_INPUT_OVERLAY_MANAGER_H_
 
 #include "ash/components/arc/ime/arc_ime_bridge.h"
-#include "ash/components/arc/input_overlay/touch_injector.h"
 #include "base/scoped_multi_source_observation.h"
 #include "base/scoped_observation.h"
 #include "base/strings/string_util.h"
+#include "chrome/browser/ash/arc/input_overlay/touch_injector.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "ui/aura/client/focus_change_observer.h"
 #include "ui/aura/client/focus_client.h"
@@ -90,4 +90,4 @@ class ArcInputOverlayManager : public KeyedService,
 
 }  // namespace arc
 
-#endif  // ASH_COMPONENTS_ARC_INPUT_OVERLAY_ARC_INPUT_OVERLAY_MANAGER_H_
+#endif  // CHROME_BROWSER_ASH_ARC_INPUT_OVERLAY_ARC_INPUT_OVERLAY_MANAGER_H_

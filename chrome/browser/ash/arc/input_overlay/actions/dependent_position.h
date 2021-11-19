@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_COMPONENTS_ARC_INPUT_OVERLAY_ACTIONS_DEPENDENT_POSITION_H_
-#define ASH_COMPONENTS_ARC_INPUT_OVERLAY_ACTIONS_DEPENDENT_POSITION_H_
+#ifndef CHROME_BROWSER_ASH_ARC_INPUT_OVERLAY_ACTIONS_DEPENDENT_POSITION_H_
+#define CHROME_BROWSER_ASH_ARC_INPUT_OVERLAY_ACTIONS_DEPENDENT_POSITION_H_
 
-#include "ash/components/arc/input_overlay/actions/position.h"
+#include "chrome/browser/ash/arc/input_overlay/actions/position.h"
 
 namespace arc {
 namespace input_overlay {
@@ -62,4 +62,4 @@ class DependentPosition : public Position {
 }  // namespace input_overlay
 }  // namespace arc
 
-#endif  // ASH_COMPONENTS_ARC_INPUT_OVERLAY_ACTIONS_DEPENDENT_POSITION_H_
+#endif  // CHROME_BROWSER_ASH_ARC_INPUT_OVERLAY_ACTIONS_DEPENDENT_POSITION_H_
