@@ -4,6 +4,9 @@
 
 #include "chrome/browser/ash/policy/dlp/dlp_confidential_contents.h"
 
+#include <vector>
+
+#include "base/containers/cxx20_erase_vector.h"
 #include "chrome/browser/favicon/favicon_utils.h"
 #include "content/public/browser/web_contents.h"
 
@@ -48,6 +51,12 @@ bool DlpConfidentialContent::operator>=(
 DlpConfidentialContents::DlpConfidentialContents() = default;
 
 DlpConfidentialContents::DlpConfidentialContents(
+    const std::vector<content::WebContents*>& web_contents) {
+  for (auto* content : web_contents)
+    Add(content);
+}
+
+DlpConfidentialContents::DlpConfidentialContents(
     const DlpConfidentialContents& other) = default;
 
 DlpConfidentialContents& DlpConfidentialContents::operator=(
@@ -67,6 +76,21 @@ void DlpConfidentialContents::Add(content::WebContents* web_contents) {
 void DlpConfidentialContents::ClearAndAdd(content::WebContents* web_contents) {
   contents_.clear();
   Add(web_contents);
+}
+
+void DlpConfidentialContents::Remove(content::WebContents* web_contents) {
+  base::EraseIf(contents_, [&](const DlpConfidentialContent& content) {
+    return content.url.EqualsIgnoringRef(web_contents->GetLastCommittedURL());
+  });
+}
+
+bool DlpConfidentialContents::Contains(
+    content::WebContents* web_contents) const {
+  return (std::find_if(contents_.begin(), contents_.end(),
+                       [&](const DlpConfidentialContent& content) {
+                         return content.url.EqualsIgnoringRef(
+                             web_contents->GetLastCommittedURL());
+                       })) != contents_.end();
 }
 
 bool DlpConfidentialContents::IsEmpty() const {

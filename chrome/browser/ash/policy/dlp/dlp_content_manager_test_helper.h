@@ -7,8 +7,10 @@
 
 #include <memory>
 #include "base/time/time.h"
+#include "chrome/browser/ash/policy/dlp/dlp_confidential_contents.h"
 #include "chrome/browser/ash/policy/dlp/dlp_content_manager.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_content_restriction_set.h"
+#include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
 
 namespace content {
 class WebContents;
@@ -35,6 +37,9 @@ class DlpContentManagerTestHelper {
   void SetWarnNotifierForTesting(std::unique_ptr<DlpWarnNotifier> notifier);
 
   void ResetWarnNotifierForTesting();
+
+  const DlpConfidentialContents& GetUserAllowedContentsForRestriction(
+      DlpRulesManager::Restriction restriction) const;
 
   base::TimeDelta GetPrivacyScreenOffDelay() const;
 

@@ -55,6 +55,13 @@ void DlpContentManagerTestHelper::ResetWarnNotifierForTesting() {
   manager_->ResetWarnNotifierForTesting();
 }
 
+const DlpConfidentialContents&
+DlpContentManagerTestHelper::GetUserAllowedContentsForRestriction(
+    DlpRulesManager::Restriction restriction) const {
+  DCHECK(manager_);
+  return manager_->user_allowed_contents_[restriction];
+}
+
 base::TimeDelta DlpContentManagerTestHelper::GetPrivacyScreenOffDelay() const {
   DCHECK(manager_);
   return manager_->GetPrivacyScreenOffDelayForTesting();

@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ASH_POLICY_DLP_DLP_CONFIDENTIAL_CONTENTS_H_
 
 #include <string>
+#include <vector>
 
 #include "base/containers/flat_set.h"
 #include "ui/gfx/image/image_skia.h"
@@ -45,11 +46,12 @@ struct DlpConfidentialContent {
 };
 
 // Provides basic functions for storing and working with confidential contents.
-// TODO(crbug.com/1264803): Limit the size + delete if related WebContents are
-// destroyed
+// TODO(crbug.com/1264803): Limit the size
 class DlpConfidentialContents {
  public:
   DlpConfidentialContents();
+  explicit DlpConfidentialContents(
+      const std::vector<content::WebContents*>& web_contents);
   DlpConfidentialContents(const DlpConfidentialContents& other);
   DlpConfidentialContents& operator=(const DlpConfidentialContents& other);
   ~DlpConfidentialContents();
@@ -60,9 +62,18 @@ class DlpConfidentialContents {
   // Converts |web_contents| to a DlpConfidentialContent and adds it to the
   // underlying container.
   void Add(content::WebContents* web_contents);
+
   // Removes all stored confidential content, if there was any, and adds
   // |web_contents| converted to a DlpConfidentialContent.
   void ClearAndAdd(content::WebContents* web_contents);
+
+  // Removes the content corresponding to |web_contents| if it exists and no-op
+  // otherwise.
+  void Remove(content::WebContents* web_contents);
+
+  // Returns true if the underlying container contains DlpConfidentialContent
+  // that is created from |web_contents|.
+  bool Contains(content::WebContents* web_contents) const;
 
   // Returns whether there is any content stored or not.
   bool IsEmpty() const;

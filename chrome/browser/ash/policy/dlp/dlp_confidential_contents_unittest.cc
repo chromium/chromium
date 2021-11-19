@@ -7,6 +7,7 @@
 #include <string>
 
 #include "chrome/test/base/testing_profile.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/web_contents_tester.h"
@@ -57,64 +58,107 @@ TEST_F(DlpConfidentialContentsTest, EmptyContents) {
 
 TEST_F(DlpConfidentialContentsTest, DuplicateConfidentialDataAdded) {
   DlpConfidentialContents contents;
-  contents.Add(CreateWebContents(title1, url1).get());
-  contents.Add(CreateWebContents(title1, url1).get());
+  auto web_contents = CreateWebContents(title1, url1);
+  contents.Add(web_contents.get());
+  contents.Add(web_contents.get());
   EXPECT_EQ(contents.GetContents().size(), 1);
-  EXPECT_EQ(contents.GetContents().begin()->title, title1);
-  EXPECT_EQ(contents.GetContents().begin()->url, url1);
+  EXPECT_TRUE(contents.Contains(web_contents.get()));
 }
 
 TEST_F(DlpConfidentialContentsTest, ClearAndAdd) {
   DlpConfidentialContents contents;
 
-  contents.Add(CreateWebContents(title1, url1).get());
-  contents.Add(CreateWebContents(title2, url2).get());
+  auto web_contents1 = CreateWebContents(title1, url1);
+  auto web_contents2 = CreateWebContents(title2, url2);
+  auto web_contents3 = CreateWebContents(title3, url3);
+
+  contents.Add(web_contents1.get());
+  contents.Add(web_contents2.get());
   EXPECT_EQ(contents.GetContents().size(), 2);
 
   contents.ClearAndAdd(CreateWebContents(title3, url3).get());
   EXPECT_EQ(contents.GetContents().size(), 1);
-  EXPECT_EQ(contents.GetContents().begin()->title, title3);
-  EXPECT_EQ(contents.GetContents().begin()->url, url3);
+  EXPECT_FALSE(contents.Contains(web_contents1.get()));
+  EXPECT_FALSE(contents.Contains(web_contents2.get()));
+  EXPECT_TRUE(contents.Contains(web_contents3.get()));
 }
 
 TEST_F(DlpConfidentialContentsTest, UnionShouldAddUniqueItems) {
   DlpConfidentialContents contents1;
   DlpConfidentialContents contents2;
 
-  contents1.Add(CreateWebContents(title1, url1).get());
-  contents1.Add(CreateWebContents(title2, url2).get());
+  auto web_contents1 = CreateWebContents(title1, url1);
+  auto web_contents2 = CreateWebContents(title2, url2);
+  auto web_contents3 = CreateWebContents(title3, url3);
 
-  contents2.Add(CreateWebContents(title1, url1).get());
-  contents2.Add(CreateWebContents(title3, url3).get());
+  contents1.Add(web_contents1.get());
+  contents1.Add(web_contents2.get());
+
+  contents2.Add(web_contents1.get());
+  contents2.Add(web_contents3.get());
 
   EXPECT_EQ(contents1.GetContents().size(), 2);
   EXPECT_EQ(contents2.GetContents().size(), 2);
+  EXPECT_FALSE(contents1.Contains(web_contents3.get()));
 
   contents1.UnionWith(contents2);
 
   EXPECT_EQ(contents1.GetContents().size(), 3);
   EXPECT_EQ(contents2.GetContents().size(), 2);
+  EXPECT_TRUE(contents1.Contains(web_contents3.get()));
 }
 
 TEST_F(DlpConfidentialContentsTest, DifferenceShouldRemoveMatchedItems) {
   DlpConfidentialContents contents1;
   DlpConfidentialContents contents2;
 
-  contents1.Add(CreateWebContents(title1, url1).get());
+  auto web_contents1 = CreateWebContents(title1, url1);
+
+  contents1.Add(web_contents1.get());
   contents1.Add(CreateWebContents(title2, url2).get());
 
-  contents2.Add(CreateWebContents(title1, url1).get());
+  contents2.Add(web_contents1.get());
   contents2.Add(CreateWebContents(title3, url3).get());
 
   EXPECT_EQ(contents1.GetContents().size(), 2);
   EXPECT_EQ(contents2.GetContents().size(), 2);
+  EXPECT_TRUE(contents1.Contains(web_contents1.get()));
 
   contents1.DifferenceWith(contents2);
 
   EXPECT_EQ(contents1.GetContents().size(), 1);
-  EXPECT_EQ(contents1.GetContents().begin()->title, title2);
-  EXPECT_EQ(contents1.GetContents().begin()->url, url2);
+  EXPECT_FALSE(contents1.Contains(web_contents1.get()));
   EXPECT_EQ(contents2.GetContents().size(), 2);
+}
+
+TEST_F(DlpConfidentialContentsTest, RemoveExistingContents) {
+  DlpConfidentialContents contents;
+
+  auto web_contents1 = CreateWebContents(title1, url1);
+
+  contents.Add(web_contents1.get());
+  contents.Add(CreateWebContents(title2, url2).get());
+
+  EXPECT_EQ(contents.GetContents().size(), 2);
+  EXPECT_TRUE(contents.Contains(web_contents1.get()));
+
+  contents.Remove(web_contents1.get());
+
+  EXPECT_EQ(contents.GetContents().size(), 1);
+  EXPECT_FALSE(contents.Contains(web_contents1.get()));
+}
+
+TEST_F(DlpConfidentialContentsTest, RemoveNonexistingContents) {
+  DlpConfidentialContents contents;
+
+  contents.Add(CreateWebContents(title1, url1).get());
+  contents.Add(CreateWebContents(title2, url2).get());
+
+  EXPECT_EQ(contents.GetContents().size(), 2);
+
+  contents.Remove(CreateWebContents(title3, url3).get());
+
+  EXPECT_EQ(contents.GetContents().size(), 2);
 }
 
 }  // namespace policy
