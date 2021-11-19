@@ -196,8 +196,8 @@ class CORE_EXPORT DisplayLockDocumentState final
 
   // Contains all of the currently forced node infos, each of which represents
   // the node that caused the scope to be created.
-  VectorOf<ForcedNodeInfo> forced_node_infos_;
-  VectorOf<ForcedRangeInfo> forced_range_infos_;
+  HeapVector<ForcedNodeInfo> forced_node_infos_;
+  HeapVector<ForcedRangeInfo> forced_range_infos_;
 
   bool printing_ = false;
 

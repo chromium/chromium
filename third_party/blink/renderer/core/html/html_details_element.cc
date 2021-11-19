@@ -221,7 +221,7 @@ bool HTMLDetailsElement::ExpandDetailsAncestors(const Node& node) {
   // Since setting the open attribute fires mutation events which could mess
   // with the FlatTreeTraversal iterator, we should first iterate details
   // elements to open and then open them all.
-  VectorOf<HTMLDetailsElement> details_to_open;
+  HeapVector<Member<HTMLDetailsElement>> details_to_open;
 
   for (Node& parent : FlatTreeTraversal::AncestorsOf(node)) {
     if (HTMLDetailsElement* details = DynamicTo<HTMLDetailsElement>(parent)) {
