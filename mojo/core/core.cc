@@ -41,6 +41,7 @@
 #include "mojo/core/shared_buffer_dispatcher.h"
 #include "mojo/core/user_message_impl.h"
 #include "mojo/core/watcher_dispatcher.h"
+#include "mojo/public/cpp/platform/platform_handle_internal.h"
 
 namespace mojo {
 namespace core {
@@ -1035,7 +1036,7 @@ MojoResult Core::WrapPlatformSharedMemoryRegion(
     return MOJO_RESULT_INVALID_ARGUMENT;
 
   base::UnguessableToken token =
-      base::UnguessableToken::Deserialize(guid->high, guid->low);
+      mojo::internal::PlatformHandleInternal::UnmarshalUnguessableToken(guid);
 
   base::subtle::PlatformSharedMemoryRegion::Mode mode;
   switch (access_mode) {
@@ -1107,9 +1108,8 @@ MojoResult Core::UnwrapPlatformSharedMemoryRegion(
   DCHECK(size);
   *size = region.GetSize();
 
-  base::UnguessableToken token = region.GetGUID();
-  guid->high = token.GetHighForSerialization();
-  guid->low = token.GetLowForSerialization();
+  *guid = mojo::internal::PlatformHandleInternal::MarshalUnguessableToken(
+      region.GetGUID());
 
   DCHECK(access_mode);
   switch (region.GetMode()) {

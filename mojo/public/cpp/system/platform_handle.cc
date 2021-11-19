@@ -9,6 +9,7 @@
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "build/build_config.h"
+#include "mojo/public/cpp/platform/platform_handle_internal.h"
 
 namespace mojo {
 
@@ -84,9 +85,9 @@ ScopedSharedBufferHandle WrapPlatformSharedMemoryRegion(
         static_cast<uint64_t>(handle.readonly_fd.release());
   }
 #endif
-  const auto& guid = region.GetGUID();
-  MojoSharedBufferGuid mojo_guid = {guid.GetHighForSerialization(),
-                                    guid.GetLowForSerialization()};
+  MojoSharedBufferGuid mojo_guid =
+      mojo::internal::PlatformHandleInternal::MarshalUnguessableToken(
+          region.GetGUID());
   MojoHandle mojo_handle;
   MojoResult result = MojoWrapPlatformSharedMemoryRegion(
       platform_handles, num_platform_handles, region.GetSize(), &mojo_guid,
@@ -174,7 +175,7 @@ base::subtle::PlatformSharedMemoryRegion UnwrapPlatformSharedMemoryRegion(
 
   return base::subtle::PlatformSharedMemoryRegion::Take(
       std::move(region_handle), mode, size,
-      base::UnguessableToken::Deserialize(mojo_guid.high, mojo_guid.low));
+      internal::PlatformHandleInternal::UnmarshalUnguessableToken(&mojo_guid));
 }
 
 ScopedHandle WrapPlatformHandle(PlatformHandle handle) {

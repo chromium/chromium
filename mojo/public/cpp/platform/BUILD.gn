@@ -12,6 +12,7 @@ component("platform") {
     "platform_channel_endpoint.h",
     "platform_channel_server_endpoint.h",
     "platform_handle.h",
+    "platform_handle_internal.h",
   ]
 
   sources = [
