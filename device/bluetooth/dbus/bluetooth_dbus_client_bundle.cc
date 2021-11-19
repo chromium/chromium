@@ -74,6 +74,8 @@ BluetoothDBusClientBundle::BluetoothDBusClientBundle(bool use_fakes)
     bluetooth_gatt_service_client_.reset(BluetoothGattServiceClient::Create());
 
     alternate_bluetooth_adapter_client_.reset(BluetoothAdapterClient::Create());
+    alternate_bluetooth_admin_policy_client_ =
+        BluetoothAdminPolicyClient::Create();
     alternate_bluetooth_device_client_.reset(BluetoothDeviceClient::Create());
   } else {
 #if defined(USE_REAL_DBUS_CLIENTS)
@@ -110,6 +112,8 @@ BluetoothDBusClientBundle::BluetoothDBusClientBundle(bool use_fakes)
 
     alternate_bluetooth_adapter_client_ =
         std::make_unique<FakeBluetoothAdapterClient>();
+    alternate_bluetooth_admin_policy_client_ =
+        std::make_unique<FakeBluetoothAdminPolicyClient>();
     alternate_bluetooth_device_client_ =
         std::make_unique<FakeBluetoothDeviceClient>();
 #endif  // defined(USE_REAL_DBUS_CLIENTS)

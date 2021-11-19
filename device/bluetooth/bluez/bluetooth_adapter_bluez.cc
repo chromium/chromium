@@ -740,11 +740,15 @@ void BluetoothAdapterBlueZ::AdapterPropertyChanged(
 void BluetoothAdapterBlueZ::AdminPolicyAdded(
     const dbus::ObjectPath& object_path) {
   BLUETOOTH_LOG(DEBUG) << "Admin Policy added " << object_path.value();
+
+  UpdateDeviceAdminPolicyFromAdminPolicyClient(object_path);
 }
 
 void BluetoothAdapterBlueZ::AdminPolicyRemoved(
     const dbus::ObjectPath& object_path) {
   BLUETOOTH_LOG(DEBUG) << "Admin Policy removed " << object_path.value();
+
+  UpdateDeviceAdminPolicyFromAdminPolicyClient(object_path);
 }
 
 void BluetoothAdapterBlueZ::AdminPolicyPropertyChanged(
@@ -752,6 +756,8 @@ void BluetoothAdapterBlueZ::AdminPolicyPropertyChanged(
     const std::string& property_name) {
   BLUETOOTH_LOG(DEBUG) << "Admin Policy property " << property_name
                        << " changed " << object_path.value();
+
+  UpdateDeviceAdminPolicyFromAdminPolicyClient(object_path);
 }
 
 void BluetoothAdapterBlueZ::BatteryAdded(const dbus::ObjectPath& object_path) {
@@ -801,6 +807,7 @@ void BluetoothAdapterBlueZ::DeviceAdded(const dbus::ObjectPath& object_path) {
   // detected device in case we ignored BatteryAdded calls for it before this
   // DeviceAdded call.
   UpdateDeviceBatteryLevelFromBatteryClient(object_path);
+  UpdateDeviceAdminPolicyFromAdminPolicyClient(object_path);
 
   for (auto& observer : observers_)
     observer.DeviceAdded(this, device_bluez);
@@ -917,13 +924,6 @@ void BluetoothAdapterBlueZ::DevicePropertyChanged(
     }
 
     UMA_HISTOGRAM_COUNTS_100("Bluetooth.ConnectedDeviceCount", count);
-  }
-
-  if (property_name == properties->is_blocked_by_policy.name()) {
-#if defined(OS_CHROMEOS)
-    NotifyDeviceIsBlockedByPolicyChanged(
-        device_bluez, properties->is_blocked_by_policy.value());
-#endif
   }
 }
 
@@ -2107,6 +2107,35 @@ void BluetoothAdapterBlueZ::OnConnectDeviceError(
     const std::string& error_name,
     const std::string& error_message) {
   std::move(error_callback).Run();
+}
+
+void BluetoothAdapterBlueZ::UpdateDeviceAdminPolicyFromAdminPolicyClient(
+    const dbus::ObjectPath& object_path) {
+#if defined(OS_CHROMEOS)
+  BluetoothDevice* device = GetDeviceWithPath(object_path);
+
+  if (!device) {
+    BLUETOOTH_LOG(DEBUG)
+        << "Trying to update admin policy for nonexistent device, object_path: "
+        << object_path.value();
+    return;
+  }
+
+  bluez::BluetoothAdminPolicyClient::Properties* properties =
+      bluez::BluezDBusManager::Get()
+          ->GetBluetoothAdminPolicyClient()
+          ->GetProperties(object_path);
+
+  if (properties && properties->is_blocked_by_policy.is_valid()) {
+    device->SetIsBlockedByPolicy(properties->is_blocked_by_policy.value());
+    return;
+  }
+
+  // |properties| is null or properties->is_blocked_by_policy is not valid, that
+  // means BlueZ has removed the admin policy from the device and we should
+  // clear our value as well.
+  device->SetIsBlockedByPolicy(false);
+#endif
 }
 
 void BluetoothAdapterBlueZ::UpdateDeviceBatteryLevelFromBatteryClient(

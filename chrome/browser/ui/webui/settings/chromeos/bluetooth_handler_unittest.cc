@@ -44,7 +44,7 @@ class BluetoothHandlerTest : public testing::Test {
     device::BluetoothAdapterFactory::SetAdapterForTesting(mock_adapter_);
     mock_device_ =
         std::make_unique<testing::NiceMock<device::MockBluetoothDevice>>(
-            /*adapter=*/nullptr, /*bluetooth_class=*/0,
+            mock_adapter_.get(), /*bluetooth_class=*/0,
             /*name=*/"Bluetooth 2.0 Mouse", kDeviceAddress, /*paired=*/false,
             /*connected=*/false);
     EXPECT_CALL(*mock_adapter_, GetDevice(testing::_))
@@ -71,8 +71,7 @@ class BluetoothHandlerTest : public testing::Test {
 };
 
 TEST_F(BluetoothHandlerTest, GetIsDeviceBlockedByPolicy) {
-  EXPECT_CALL(*mock_device_, IsBlockedByPolicy())
-      .WillOnce(testing::Return(true));
+  mock_device_->SetIsBlockedByPolicy(true);
 
   size_t call_data_count_before_call = test_web_ui()->call_data().size();
 

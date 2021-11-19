@@ -327,6 +327,18 @@ BluetoothDevice::UUIDSet BluetoothDevice::GetUUIDs() const {
   return device_uuids_.GetUUIDs();
 }
 
+#if defined(OS_CHROMEOS)
+void BluetoothDevice::SetIsBlockedByPolicy(bool is_blocked_by_policy) {
+  is_blocked_by_policy_ = is_blocked_by_policy;
+  GetAdapter()->NotifyDeviceIsBlockedByPolicyChanged(this,
+                                                     is_blocked_by_policy);
+}
+
+bool BluetoothDevice::IsBlockedByPolicy() const {
+  return is_blocked_by_policy_;
+}
+#endif
+
 const BluetoothDevice::ServiceDataMap& BluetoothDevice::GetServiceData() const {
   return service_data_;
 }

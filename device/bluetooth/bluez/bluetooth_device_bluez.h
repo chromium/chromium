@@ -71,9 +71,6 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothDeviceBlueZ
   bool IsGattConnected() const override;
   bool IsConnectable() const override;
   bool IsConnecting() const override;
-#if defined(OS_CHROMEOS)
-  bool IsBlockedByPolicy() const override;
-#endif
   UUIDSet GetUUIDs() const override;
   absl::optional<int8_t> GetInquiryRSSI() const override;
   absl::optional<int8_t> GetInquiryTxPower() const override;

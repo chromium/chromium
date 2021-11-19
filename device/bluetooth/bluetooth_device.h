@@ -351,10 +351,9 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothDevice {
   virtual UUIDSet GetUUIDs() const;
 
 #if defined(OS_CHROMEOS)
-  // Indicate whether or not this device is blocked by admin policy. This would
-  // be true if any of its auto-connect service does not exist in the
-  // ServiceAllowList under org.bluez.AdminPolicy1.
-  virtual bool IsBlockedByPolicy() const = 0;
+  // Sets if this device is blocked by admin policy.
+  void SetIsBlockedByPolicy(bool);
+  bool IsBlockedByPolicy() const;
 #endif
 
   // Returns the last advertised Service Data. Returns an empty map if the
@@ -817,6 +816,13 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothDevice {
 #if defined(OS_CHROMEOS) || defined(OS_LINUX)
   // Battery information for the known battery types for this device.
   base::flat_map<BatteryType, BatteryInfo> battery_info_map_;
+#endif
+
+#if defined(OS_CHROMEOS)
+  // Indicate whether or not this device is blocked by admin policy. This would
+  // be true if any of its auto-connect service does not exist in the
+  // ServiceAllowList under org.bluez.AdminPolicyStatus1.
+  bool is_blocked_by_policy_ = false;
 #endif
 };
 

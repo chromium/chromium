@@ -506,6 +506,12 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapterBlueZ final
                             const std::string& error_name,
                             const std::string& error_message);
 
+  // Updates |is_blocked_by_policy| field of a device based on its corresponding
+  // value in Admin Policy interface. Should be called when receiving events
+  // about admin policy addition, change, or removal.
+  void UpdateDeviceAdminPolicyFromAdminPolicyClient(
+      const dbus::ObjectPath& object_path);
+
   // Updates |battery_percentage| field of a device based on its corresponding
   // value in Battery interface. Should be called when receiving events about
   // battery object addition, change, or removal.

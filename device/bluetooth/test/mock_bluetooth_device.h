@@ -53,7 +53,6 @@ class MockBluetoothDevice : public BluetoothDevice {
   MOCK_CONST_METHOD0(IsGattConnected, bool());
   MOCK_CONST_METHOD0(IsConnectable, bool());
   MOCK_CONST_METHOD0(IsConnecting, bool());
-  MOCK_CONST_METHOD0(IsBlockedByPolicy, bool());
   MOCK_CONST_METHOD0(GetUUIDs, UUIDSet());
   MOCK_CONST_METHOD0(GetInquiryRSSI, absl::optional<int8_t>());
   MOCK_CONST_METHOD0(GetInquiryTxPower, absl::optional<int8_t>());

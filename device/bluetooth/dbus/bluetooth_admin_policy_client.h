@@ -31,6 +31,9 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdminPolicyClient
     // UUID-128 string, Read-only.
     dbus::Property<std::vector<std::string>> service_allow_list;
 
+    // Whether the device is blocked by an admin policy, read-only.
+    dbus::Property<bool> is_blocked_by_policy;
+
     Properties(dbus::ObjectProxy* object_proxy,
                const std::string& interface_name,
                const PropertyChangedCallback& callback);

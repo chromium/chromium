@@ -4,6 +4,7 @@
 
 #include "device/bluetooth/dbus/fake_bluetooth_admin_policy_client.h"
 
+#include "base/containers/contains.h"
 #include "base/logging.h"
 #include "device/bluetooth/dbus/fake_bluetooth_adapter_client.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
@@ -14,7 +15,7 @@ FakeBluetoothAdminPolicyClient::Properties::Properties(
     const PropertyChangedCallback& callback)
     : BluetoothAdminPolicyClient::Properties(
           nullptr,
-          bluetooth_admin_policy::kBluetoothAdminPolicyInterface,
+          bluetooth_admin_policy::kBluetoothAdminPolicyStatusInterface,
           callback) {}
 
 FakeBluetoothAdminPolicyClient::Properties::~Properties() = default;
@@ -66,6 +67,46 @@ FakeBluetoothAdminPolicyClient::GetProperties(
   if (iter != properties_map_.end())
     return iter->second.get();
   return nullptr;
+}
+
+void FakeBluetoothAdminPolicyClient::CreateAdminPolicy(
+    const dbus::ObjectPath& path,
+    bool is_blocked_by_policy) {
+  DCHECK(!base::Contains(properties_map_, path));
+
+  auto properties = std::make_unique<Properties>(
+      base::BindRepeating(&FakeBluetoothAdminPolicyClient::OnPropertyChanged,
+                          base::Unretained(this), path));
+  properties->is_blocked_by_policy.ReplaceValue(is_blocked_by_policy);
+  properties->is_blocked_by_policy.set_valid(true);
+
+  properties_map_.emplace(path, std::move(properties));
+
+  for (auto& observer : observers_)
+    observer.AdminPolicyAdded(path);
+}
+
+void FakeBluetoothAdminPolicyClient::ChangeAdminPolicy(
+    const dbus::ObjectPath& path,
+    bool is_blocked_by_policy) {
+  DCHECK(base::Contains(properties_map_, path));
+
+  properties_map_[path]->is_blocked_by_policy.ReplaceValue(
+      is_blocked_by_policy);
+
+  for (auto& observer : observers_) {
+    observer.AdminPolicyPropertyChanged(
+        path, bluetooth_admin_policy::kIsBlockedByPolicyProperty);
+  }
+}
+
+void FakeBluetoothAdminPolicyClient::RemoveAdminPolicy(
+    const dbus::ObjectPath& path) {
+  DCHECK(base::Contains(properties_map_, path));
+  properties_map_.erase(path);
+
+  for (auto& observer : observers_)
+    observer.AdminPolicyRemoved(path);
 }
 
 void FakeBluetoothAdminPolicyClient::OnPropertyChanged(

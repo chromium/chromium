@@ -17,6 +17,7 @@
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "device/bluetooth/dbus/bluetooth_adapter_client.h"
+#include "device/bluetooth/dbus/bluetooth_admin_policy_client.h"
 #include "device/bluetooth/dbus/bluetooth_device_client.h"
 #include "device/bluetooth/dbus/bluez_dbus_manager.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -64,7 +65,6 @@ struct FakeDeviceOptions {
   absl::optional<std::string> name;
   bool paired = false;
   bool connected = false;
-  bool is_blocked_by_policy = false;
 };
 
 // Exposes high-level methods to simulate Bluetooth events e.g. a new adapter
@@ -516,7 +516,6 @@ class DEVICE_BLUETOOTH_EXPORT TestBluetoothDeviceClient
     }
 
     properties->paired.ReplaceValue(options.paired);
-    properties->is_blocked_by_policy.ReplaceValue(options.is_blocked_by_policy);
     properties->connected.ReplaceValue(options.connected);
     properties->adapter.ReplaceValue(options.adapter_object_path);
 
@@ -642,6 +641,91 @@ class DEVICE_BLUETOOTH_EXPORT TestBluetoothDeviceClient
   base::ObserverList<Observer>::Unchecked observers_;
 };
 
+// Exposes high-level methods to retrieve Bluetooth device admin policy info.
+class DEVICE_BLUETOOTH_EXPORT TestBluetoothAdminPolicyClient
+    : public bluez::BluetoothAdminPolicyClient {
+ public:
+  struct Properties : public bluez::BluetoothAdminPolicyClient::Properties {
+    explicit Properties(const PropertyChangedCallback& callback)
+        : BluetoothAdminPolicyClient::Properties(
+              /*object_proxy=*/nullptr,
+              bluetooth_admin_policy::kBluetoothAdminPolicyStatusInterface,
+              callback) {}
+    ~Properties() override = default;
+
+    // dbus::PropertySet
+    void Get(dbus::PropertyBase* property,
+             dbus::PropertySet::GetCallback callback) override {
+      NOTIMPLEMENTED() << "Get " << property->name();
+    }
+
+    void GetAll() override { NOTIMPLEMENTED() << "GetAll"; }
+
+    void Set(dbus::PropertyBase* property,
+             dbus::PropertySet::SetCallback callback) override {
+      NOTIMPLEMENTED() << "Set " << property->name();
+    }
+  };
+
+  TestBluetoothAdminPolicyClient() = default;
+  ~TestBluetoothAdminPolicyClient() override = default;
+
+  void SimulateAdminPolicyAdded(const dbus::ObjectPath& object_path,
+                                bool is_blocked_by_policy) {
+    ObjectPathToProperties::iterator it;
+    bool was_inserted;
+    std::tie(it, was_inserted) = device_object_paths_to_properties_.emplace(
+        object_path,
+        std::make_unique<Properties>(
+            base::BindLambdaForTesting([&](const std::string& property_name) {
+              for (auto& observer : observers_)
+                observer.AdminPolicyPropertyChanged(object_path, property_name);
+            })));
+
+    DCHECK(was_inserted);
+
+    auto* properties = GetProperties(object_path);
+    properties->is_blocked_by_policy.ReplaceValue(is_blocked_by_policy);
+    properties->is_blocked_by_policy.set_valid(true);
+
+    for (auto& observer : observers_)
+      observer.AdminPolicyAdded(object_path);
+  }
+
+  // bluez::BluetoothAdminPolicyClient
+  void Init(dbus::Bus* bus,
+            const std::string& bluetooth_service_name) override {}
+
+  void AddObserver(Observer* observer) override {
+    observers_.AddObserver(observer);
+  }
+
+  void RemoveObserver(Observer* observer) override {
+    observers_.RemoveObserver(observer);
+  }
+
+  Properties* GetProperties(const dbus::ObjectPath& object_path) override {
+    auto it = device_object_paths_to_properties_.find(object_path);
+    if (it == device_object_paths_to_properties_.end())
+      return nullptr;
+    return it->second.get();
+  }
+
+  void SetServiceAllowList(const dbus::ObjectPath& object_path,
+                           const UUIDList& service_uuids,
+                           base::OnceClosure callback,
+                           ErrorCallback error_callback) override {
+    NOTIMPLEMENTED() << "SetServiceAllowList";
+  }
+
+ private:
+  using ObjectPathToProperties =
+      std::map<dbus::ObjectPath, std::unique_ptr<Properties>>;
+  ObjectPathToProperties device_object_paths_to_properties_;
+
+  base::ObserverList<Observer>::Unchecked observers_;
+};
+
 }  // namespace
 
 class BluetoothSystemTest : public DeviceServiceTestBase,
@@ -662,6 +746,10 @@ class BluetoothSystemTest : public DeviceServiceTestBase,
     auto test_bluetooth_adapter_client =
         std::make_unique<TestBluetoothAdapterClient>();
     test_bluetooth_adapter_client_ = test_bluetooth_adapter_client.get();
+    auto test_bluetooth_admin_policy_client =
+        std::make_unique<TestBluetoothAdminPolicyClient>();
+    test_bluetooth_admin_policy_client_ =
+        test_bluetooth_admin_policy_client.get();
     auto test_bluetooth_device_client =
         std::make_unique<TestBluetoothDeviceClient>();
     test_bluetooth_device_client_ = test_bluetooth_device_client.get();
@@ -670,6 +758,8 @@ class BluetoothSystemTest : public DeviceServiceTestBase,
         bluez::BluezDBusManager::GetSetterForTesting();
     dbus_setter->SetAlternateBluetoothAdapterClient(
         std::move(test_bluetooth_adapter_client));
+    dbus_setter->SetAlternateBluetoothAdminPolicyClient(
+        std::move(test_bluetooth_admin_policy_client));
     dbus_setter->SetAlternateBluetoothDeviceClient(
         std::move(test_bluetooth_device_client));
   }
@@ -769,6 +859,7 @@ class BluetoothSystemTest : public DeviceServiceTestBase,
   mojo::Remote<mojom::BluetoothSystemFactory> system_factory_;
 
   TestBluetoothAdapterClient* test_bluetooth_adapter_client_;
+  TestBluetoothAdminPolicyClient* test_bluetooth_admin_policy_client_;
   TestBluetoothDeviceClient* test_bluetooth_device_client_;
 
   mojo::Receiver<mojom::BluetoothSystemClient> system_client_receiver_{this};
@@ -1961,8 +2052,9 @@ TEST_F(BluetoothSystemTest, GetAvailableDevices) {
     fake_options.name = "Fake Device";
     fake_options.paired = true;
     fake_options.connected = true;
-    fake_options.is_blocked_by_policy = true;
     test_bluetooth_device_client_->SimulateDeviceAdded(fake_options);
+    test_bluetooth_admin_policy_client_->SimulateAdminPolicyAdded(
+        fake_options.object_path, /*is_blocked_by_policy=*/true);
   }
   {
     FakeDeviceOptions fake_options("2");
@@ -1970,8 +2062,9 @@ TEST_F(BluetoothSystemTest, GetAvailableDevices) {
     fake_options.name = absl::nullopt;
     fake_options.paired = false;
     fake_options.connected = false;
-    fake_options.is_blocked_by_policy = false;
     test_bluetooth_device_client_->SimulateDeviceAdded(fake_options);
+    test_bluetooth_admin_policy_client_->SimulateAdminPolicyAdded(
+        fake_options.object_path, /*is_blocked_by_policy=*/false);
   }
 
   auto devices = GetAvailableDevicesAndWait(system.get());

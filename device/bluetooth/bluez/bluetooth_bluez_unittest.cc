@@ -31,6 +31,7 @@
 #include "device/bluetooth/bluez/bluetooth_pairing_bluez.h"
 #include "device/bluetooth/dbus/bluez_dbus_manager.h"
 #include "device/bluetooth/dbus/fake_bluetooth_adapter_client.h"
+#include "device/bluetooth/dbus/fake_bluetooth_admin_policy_client.h"
 #include "device/bluetooth/dbus/fake_bluetooth_agent_manager_client.h"
 #include "device/bluetooth/dbus/fake_bluetooth_battery_client.h"
 #include "device/bluetooth/dbus/fake_bluetooth_device_client.h"
@@ -280,6 +281,9 @@ class BluetoothBlueZTest : public testing::Test {
         std::make_unique<bluez::FakeBluetoothAdapterClient>();
     fake_bluetooth_adapter_client->SetSimulationIntervalMs(10);
 
+    auto fake_bluetooth_admin_policy_client =
+        std::make_unique<bluez::FakeBluetoothAdminPolicyClient>();
+
     auto fake_bluetooth_battery_client =
         std::make_unique<bluez::FakeBluetoothBatteryClient>();
 
@@ -289,6 +293,8 @@ class BluetoothBlueZTest : public testing::Test {
     fake_bluetooth_device_client->set_delay_start_discovery(true);
 
     fake_bluetooth_adapter_client_ = fake_bluetooth_adapter_client.get();
+    fake_bluetooth_admin_policy_client_ =
+        fake_bluetooth_admin_policy_client.get();
     fake_bluetooth_battery_client_ = fake_bluetooth_battery_client.get();
     fake_bluetooth_device_client_ = fake_bluetooth_device_client.get();
 
@@ -297,6 +303,8 @@ class BluetoothBlueZTest : public testing::Test {
     // implementations.
     dbus_setter->SetBluetoothAdapterClient(
         std::move(fake_bluetooth_adapter_client));
+    dbus_setter->SetBluetoothAdminPolicyClient(
+        std::move(fake_bluetooth_admin_policy_client));
     dbus_setter->SetBluetoothBatteryClient(
         std::move(fake_bluetooth_battery_client));
     dbus_setter->SetBluetoothDeviceClient(
@@ -476,6 +484,7 @@ class BluetoothBlueZTest : public testing::Test {
  protected:
   base::test::SingleThreadTaskEnvironment task_environment_;
   bluez::FakeBluetoothAdapterClient* fake_bluetooth_adapter_client_;
+  bluez::FakeBluetoothAdminPolicyClient* fake_bluetooth_admin_policy_client_;
   bluez::FakeBluetoothBatteryClient* fake_bluetooth_battery_client_;
   bluez::FakeBluetoothDeviceClient* fake_bluetooth_device_client_;
   scoped_refptr<BluetoothAdapter> adapter_;
@@ -4652,6 +4661,71 @@ TEST_F(BluetoothBlueZTest, SetConnectionLatency) {
   EXPECT_EQ(3, callback_count_);
   EXPECT_EQ(2, error_callback_count_);
 }
+
+#if defined(OS_CHROMEOS)
+TEST_F(BluetoothBlueZTest, AdminPolicyEvents) {
+  // Simulate the addition, removal, and change of admin policy.
+  GetAdapter();
+
+  // Create a device that will have related admin policy events with.
+  dbus::ObjectPath device_path =
+      dbus::ObjectPath(bluez::FakeBluetoothDeviceClient::kLowEnergyPath);
+  fake_bluetooth_device_client_->CreateDevice(
+      dbus::ObjectPath(bluez::FakeBluetoothAdapterClient::kAdapterPath),
+      device_path);
+  BluetoothDevice* device =
+      adapter_->GetDevice(bluez::FakeBluetoothDeviceClient::kLowEnergyAddress);
+  EXPECT_TRUE(device);
+  // A new device is not blocked by policy.
+  EXPECT_FALSE(device->IsBlockedByPolicy());
+
+  // Create an admin policy, check that the device policy is updated.
+  fake_bluetooth_admin_policy_client_->CreateAdminPolicy(
+      device_path,
+      /*is_blocked_by_policy=*/true);
+  EXPECT_TRUE(device->IsBlockedByPolicy());
+
+  // Change the admin policy, check that the device policy is updated.
+  fake_bluetooth_admin_policy_client_->ChangeAdminPolicy(
+      device_path,
+      /*is_blocked_by_policy=*/false);
+  EXPECT_FALSE(device->IsBlockedByPolicy());
+
+  // Change the admin policy again, check that the device policy is updated.
+  fake_bluetooth_admin_policy_client_->ChangeAdminPolicy(
+      device_path,
+      /*is_blocked_by_policy=*/true);
+  EXPECT_TRUE(device->IsBlockedByPolicy());
+
+  // Remove the admin policy. The device policy should be set back to default
+  // (false).
+  fake_bluetooth_admin_policy_client_->RemoveAdminPolicy(device_path);
+  EXPECT_FALSE(device->IsBlockedByPolicy());
+}
+
+TEST_F(BluetoothBlueZTest, AdminPolicyInitBeforeDevice) {
+  // Simulate the admin policy being added before the device is added.
+  GetAdapter();
+
+  dbus::ObjectPath device_path =
+      dbus::ObjectPath(bluez::FakeBluetoothDeviceClient::kLowEnergyPath);
+
+  // Create an admin policy.
+  fake_bluetooth_admin_policy_client_->CreateAdminPolicy(
+      device_path,
+      /*is_blocked_by_policy=*/true);
+
+  // Create the associated device.
+  fake_bluetooth_device_client_->CreateDevice(
+      dbus::ObjectPath(bluez::FakeBluetoothAdapterClient::kAdapterPath),
+      device_path);
+  BluetoothDevice* device =
+      adapter_->GetDevice(bluez::FakeBluetoothDeviceClient::kLowEnergyAddress);
+  EXPECT_TRUE(device);
+  // The new device should contain the admin policy.
+  EXPECT_TRUE(device->IsBlockedByPolicy());
+}
+#endif
 
 TEST_F(BluetoothBlueZTest, BatteryEvents) {
   // Simulate the addition, removal, and change of Battery objects.

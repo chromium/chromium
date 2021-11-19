@@ -132,14 +132,6 @@ bool BluetoothDeviceFloss::IsConnecting() const {
   return false;
 }
 
-#if defined(OS_CHROMEOS)
-bool BluetoothDeviceFloss::IsBlockedByPolicy() const {
-  NOTIMPLEMENTED();
-
-  return false;
-}
-#endif
-
 device::BluetoothDevice::UUIDSet BluetoothDeviceFloss::GetUUIDs() const {
   NOTIMPLEMENTED();
 
