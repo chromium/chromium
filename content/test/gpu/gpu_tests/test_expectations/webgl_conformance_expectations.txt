@@ -607,6 +607,8 @@ crbug.com/angleproject/5505 [ mac apple-angle-metal-renderer:-apple-m1 angle-met
 crbug.com/angleproject/5505 [ mac apple-angle-metal-renderer:-apple-m1 angle-metal ] conformance/rendering/multisample-corruption.html [ Failure ]
 # No active browser window, but no crash stack.
 crbug.com/1240443 [ mac apple-apple-m1 passthrough angle-opengl ] conformance/renderbuffers/stencil-renderbuffer-initialization.html [ RetryOnFailure ]
+# After converting to Python 3: crbug.com/1266604
+crbug.com/1271941 [ mac apple-apple-m1 angle-metal ] conformance/ogles/GL/* [ RetryOnFailure ]
 
 ####################
 # Linux failures   #
