@@ -448,6 +448,8 @@ class CORE_EXPORT LocalDOMWindow final : public DOMWindow,
                            LocalDOMWindow* source) override;
 
  private:
+  class NetworkStateObserver;
+
   // Intentionally private to prevent redundant checks when the type is
   // already LocalDOMWindow.
   bool IsLocalDOMWindow() const override { return true; }
@@ -545,6 +547,9 @@ class CORE_EXPORT LocalDOMWindow final : public DOMWindow,
   // this UKM is logged.
   // TODO(crbug.com/1112491): Remove when no longer needed.
   Deque<ukm::SourceId> post_message_ukm_recorded_source_ids_;
+
+  // Fire "online" and "offline" events.
+  Member<NetworkStateObserver> network_state_observer_;
 };
 
 template <>
