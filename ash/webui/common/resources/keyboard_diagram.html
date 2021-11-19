@@ -228,21 +228,21 @@
       data-show-assistant-key$="[[showAssistantKey]]">
     <div id="topRow">
       <keyboard-key main-glyph="esc"></keyboard-key>
-      <!-- TODO(crbug.com/1207678): Use icons for the top row keys. -->
-      <keyboard-key main-glyph="[b]"></keyboard-key>
-      <keyboard-key main-glyph="[r]"></keyboard-key>
-      <keyboard-key main-glyph="[fs]"></keyboard-key>
-      <keyboard-key main-glyph="[o]"></keyboard-key>
-      <keyboard-key main-glyph="[s]"></keyboard-key>
-      <keyboard-key main-glyph="[bd]"></keyboard-key>
-      <keyboard-key main-glyph="[bu]"></keyboard-key>
-      <keyboard-key main-glyph="[m]"></keyboard-key>
-      <keyboard-key main-glyph="[vd]"></keyboard-key>
-      <keyboard-key main-glyph="[vu]"></keyboard-key>
+      <!-- TODO(crbug.com/1207678): Populate the top row from Vivaldi data. -->
+      <keyboard-key icon="keyboard:back"></keyboard-key>
+      <keyboard-key icon="keyboard:refresh"></keyboard-key>
+      <keyboard-key icon="keyboard:fullscreen"></keyboard-key>
+      <keyboard-key icon="keyboard:overview"></keyboard-key>
+      <keyboard-key icon="keyboard:screenshot"></keyboard-key>
+      <keyboard-key icon="keyboard:display-brightness-down"></keyboard-key>
+      <keyboard-key icon="keyboard:display-brightness-up"></keyboard-key>
+      <keyboard-key icon="keyboard:volume-mute"></keyboard-key>
+      <keyboard-key icon="keyboard:volume-down"></keyboard-key>
+      <keyboard-key icon="keyboard:volume-up"></keyboard-key>
       <template is="dom-if" if="[[isEqual_(physicalLayout, 'dell-enterprise')]]">
         <keyboard-key id="dellDeleteKey" main-glyph="delete"></keyboard-key>
       </template>
-      <keyboard-key main-glyph="[p]"></keyboard-key>
+      <keyboard-key icon="keyboard:power"></keyboard-key>
     </div>
 
     <!-- TODO(crbug.com/1207678): Apply glyphs from the backend to the keys. -->
