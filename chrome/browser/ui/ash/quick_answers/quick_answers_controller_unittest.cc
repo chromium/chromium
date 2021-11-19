@@ -4,13 +4,13 @@
 
 #include "chrome/browser/ui/ash/quick_answers/quick_answers_controller_impl.h"
 
-#include "ash/components/quick_answers/quick_answers_client.h"
 #include "ash/public/cpp/quick_answers/quick_answers_state.h"
 #include "base/memory/scoped_refptr.h"
 #include "chrome/browser/ui/ash/quick_answers/quick_answers_ui_controller.h"
 #include "chrome/browser/ui/ash/quick_answers/test/chrome_quick_answers_test_base.h"
 #include "chrome/browser/ui/ash/quick_answers/ui/quick_answers_view.h"
 #include "chrome/browser/ui/ash/quick_answers/ui/user_consent_view.h"
+#include "chromeos/components/quick_answers/quick_answers_client.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
 
