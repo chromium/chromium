@@ -1014,8 +1014,8 @@ BuildObjectForResourceResponse(const ResourceResponse& response,
   }
   response_object->setProtocol(protocol);
 
-  const net::SSLInfo* ssl_info = response.GetSSLInfo();
-  if (ssl_info) {
+  const absl::optional<net::SSLInfo>& ssl_info = response.GetSSLInfo();
+  if (ssl_info.has_value()) {
     response_object->setSecurityDetails(BuildSecurityDetails(*ssl_info));
   }
 
@@ -1372,8 +1372,8 @@ void InspectorNetworkAgent::DidReceiveResourceResponse(
   resources_data_->ResponseReceived(request_id, frame_id, response);
   resources_data_->SetResourceType(request_id, type);
 
-  const net::SSLInfo* ssl_info = response.GetSSLInfo();
-  if (ssl_info && ssl_info->cert) {
+  const absl::optional<net::SSLInfo>& ssl_info = response.GetSSLInfo();
+  if (ssl_info.has_value() && ssl_info->cert) {
     resources_data_->SetCertificate(request_id, ssl_info->cert);
   }
 

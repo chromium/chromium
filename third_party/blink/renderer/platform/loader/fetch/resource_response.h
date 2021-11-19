@@ -215,7 +215,7 @@ class PLATFORM_EXPORT ResourceResponse final {
     security_style_ = security_style;
   }
 
-  const net::SSLInfo* GetSSLInfo() const { return ssl_info_.ssl_info.get(); }
+  const absl::optional<net::SSLInfo>& GetSSLInfo() const { return ssl_info_; }
   void SetSSLInfo(const net::SSLInfo& ssl_info);
 
   const KURL& WebBundleURL() const { return web_bundle_url_; }
@@ -429,21 +429,6 @@ class PLATFORM_EXPORT ResourceResponse final {
   }
 
  private:
-  // Behaves like an `absl::optional<net::SSLInfo>`, except it is stored in
-  // `std::unique_ptr` to reduce memory in the common case when it is omitted.
-  // (`ResourceResponse` primarily only has `net::SSLInfo` when DevTools is
-  // open.) This wrapper is needed to provide a copy constructor.
-  struct OptionalSSLInfo {
-    OptionalSSLInfo();
-    OptionalSSLInfo(OptionalSSLInfo&&);
-    OptionalSSLInfo(const OptionalSSLInfo&);
-    ~OptionalSSLInfo();
-    OptionalSSLInfo& operator=(OptionalSSLInfo&&);
-    OptionalSSLInfo& operator=(const OptionalSSLInfo&);
-
-    std::unique_ptr<net::SSLInfo> ssl_info;
-  };
-
   void UpdateHeaderParsedState(const AtomicString& name);
 
   KURL current_request_url_;
@@ -570,7 +555,7 @@ class PLATFORM_EXPORT ResourceResponse final {
   SecurityStyle security_style_ = SecurityStyle::kUnknown;
 
   // Security details of this request's connection.
-  OptionalSSLInfo ssl_info_;
+  absl::optional<net::SSLInfo> ssl_info_;
 
   scoped_refptr<ResourceLoadTiming> resource_load_timing_;
 

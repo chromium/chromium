@@ -231,7 +231,7 @@ void ResourceResponse::UpdateHeaderParsedState(const AtomicString& name) {
 void ResourceResponse::SetSSLInfo(const net::SSLInfo& ssl_info) {
   DCHECK_NE(security_style_, SecurityStyle::kUnknown);
   DCHECK_NE(security_style_, SecurityStyle::kNeutral);
-  ssl_info_.ssl_info = std::make_unique<net::SSLInfo>(ssl_info);
+  ssl_info_ = ssl_info;
 }
 
 bool ResourceResponse::IsCorsSameOrigin() const {
@@ -501,28 +501,6 @@ ResourceResponse::GetCrossOriginEmbedderPolicy() const {
   } else {
     return network::mojom::CrossOriginEmbedderPolicyValue::kNone;
   }
-}
-
-ResourceResponse::OptionalSSLInfo::OptionalSSLInfo() = default;
-ResourceResponse::OptionalSSLInfo::OptionalSSLInfo(
-    ResourceResponse::OptionalSSLInfo&&) = default;
-ResourceResponse::OptionalSSLInfo::OptionalSSLInfo(
-    const ResourceResponse::OptionalSSLInfo& other) {
-  *this = other;
-}
-
-ResourceResponse::OptionalSSLInfo::~OptionalSSLInfo() = default;
-
-ResourceResponse::OptionalSSLInfo& ResourceResponse::OptionalSSLInfo::operator=(
-    ResourceResponse::OptionalSSLInfo&&) = default;
-ResourceResponse::OptionalSSLInfo& ResourceResponse::OptionalSSLInfo::operator=(
-    const ResourceResponse::OptionalSSLInfo& other) {
-  if (other.ssl_info) {
-    ssl_info = std::make_unique<net::SSLInfo>(*other.ssl_info);
-  } else {
-    ssl_info = nullptr;
-  }
-  return *this;
 }
 
 STATIC_ASSERT_ENUM(WebURLResponse::kHTTPVersionUnknown,
