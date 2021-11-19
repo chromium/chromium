@@ -69,14 +69,17 @@ namespace blink {
 
 namespace {
 
+float RoundDownThickness(float stroke_thickness) {
+  return std::max(floorf(stroke_thickness), 1.0f);
+}
+
 gfx::RectF GetRectForTextLine(gfx::PointF pt,
                               float width,
                               float stroke_thickness) {
-  int thickness = std::max(static_cast<int>(stroke_thickness), 1);
   // Avoid anti-aliasing lines. Currently, these are always horizontal.
   // Round to nearest pixel to match text and other content.
   float y = floorf(pt.y() + 0.5f);
-  return gfx::RectF(pt.x(), y, width, thickness);
+  return gfx::RectF(pt.x(), y, width, stroke_thickness);
 }
 
 std::pair<gfx::Point, gfx::Point> GetPointsForTextLine(gfx::PointF pt,
@@ -527,15 +530,19 @@ void GraphicsContext::DrawLineForText(const gfx::PointF& pt,
     std::tie(start, end) = GetPointsForTextLine(pt, width, StrokeThickness());
     DrawLine(start, end, auto_dark_mode, true, paint_flags);
   } else {
-    SkRect r =
-        gfx::RectFToSkRect(GetRectForTextLine(pt, width, StrokeThickness()));
     if (paint_flags) {
+      // In SVG, we don't round down the thickness to an integer for better
+      // scaling behavior.  See crbug.com/1270336.
+      SkRect r =
+          gfx::RectFToSkRect(GetRectForTextLine(pt, width, StrokeThickness()));
       DrawRect(r, *paint_flags, auto_dark_mode);
     } else {
       PaintFlags flags;
       flags = ImmutableState()->FillFlags();
       // Text lines are drawn using the stroke color.
       flags.setColor(StrokeColor().Rgb());
+      SkRect r = gfx::RectFToSkRect(
+          GetRectForTextLine(pt, width, RoundDownThickness(StrokeThickness())));
       DrawRect(r, flags, auto_dark_mode);
     }
   }
@@ -1220,7 +1227,8 @@ Path GraphicsContext::GetPathForTextLine(const gfx::PointF& pt,
     path.MoveTo(gfx::PointF(start));
     path.AddLineTo(gfx::PointF(end));
   } else {
-    path.AddRect(GetRectForTextLine(pt, width, stroke_thickness));
+    path.AddRect(
+        GetRectForTextLine(pt, width, RoundDownThickness(stroke_thickness)));
   }
   return path;
 }
