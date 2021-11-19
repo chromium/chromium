@@ -129,6 +129,8 @@ class ArcContainerClientAdapter
     request.set_disable_download_provider(params.disable_download_provider);
     request.set_disable_ureadahead(params.disable_ureadahead);
     request.set_arc_generate_pai(params.arc_generate_play_auto_install);
+    request.set_enable_notifications_refresh(
+        params.enable_notifications_refresh);
     return request;
   }
 
