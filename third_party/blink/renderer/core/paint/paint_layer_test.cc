@@ -2779,6 +2779,34 @@ TEST_P(PaintLayerTest, HasNonEmptyChildLayoutObjectsZeroSizeOverflowVisible) {
   EXPECT_TRUE(layer->HasNonEmptyChildLayoutObjects());
 }
 
+TEST_P(PaintLayerTest, AddLayerNeedsRepaintAndCullRectUpdate) {
+  if (!RuntimeEnabledFeatures::CullRectUpdateEnabled())
+    return;
+
+  SetBodyInnerHTML(R"HTML(
+    <div id="parent" style="opacity: 0.9">
+      <div id="child"></div>
+  )HTML");
+
+  auto* parent_layer = GetPaintLayerByElementId("parent");
+  EXPECT_FALSE(parent_layer->DescendantNeedsRepaint());
+  EXPECT_FALSE(parent_layer->DescendantNeedsCullRectUpdate());
+  auto* child = GetLayoutBoxByElementId("child");
+  EXPECT_FALSE(child->HasLayer());
+
+  GetDocument().getElementById("child")->setAttribute(html_names::kStyleAttr,
+                                                      "position: relative");
+  GetDocument().View()->UpdateLifecycleToLayoutClean(
+      DocumentUpdateReason::kTest);
+  EXPECT_TRUE(parent_layer->DescendantNeedsRepaint());
+  EXPECT_TRUE(parent_layer->DescendantNeedsCullRectUpdate());
+
+  auto* child_layer = child->Layer();
+  ASSERT_TRUE(child_layer);
+  EXPECT_TRUE(child_layer->SelfNeedsRepaint());
+  EXPECT_TRUE(child_layer->NeedsCullRectUpdate());
+}
+
 class PaintLayerOverlapTest : public RenderingTest {
  public:
   PaintLayerOverlapTest()
