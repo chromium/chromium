@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/webui/projector_app/untrusted_projector_ui_config.h"
+#include "ash/webui/projector_app/untrusted_projector_ui.h"
 
 #include "ash/grit/ash_projector_app_untrusted_resources.h"
 #include "ash/grit/ash_projector_app_untrusted_resources_map.h"
@@ -21,7 +21,8 @@ namespace ash {
 
 namespace {
 
-content::WebUIDataSource* CreateProjectorHTMLSource() {
+content::WebUIDataSource* CreateProjectorHTMLSource(
+    UntrustedProjectorUIDelegate* delegate) {
   content::WebUIDataSource* source =
       content::WebUIDataSource::Create(kChromeUIUntrustedProjectorAppUrl);
 
@@ -72,38 +73,23 @@ content::WebUIDataSource* CreateProjectorHTMLSource() {
 
   source->AddFrameAncestor(GURL(kChromeUITrustedProjectorUrl));
 
-  // TODO(b/201666699): Move this into a delegate, and populate with real data.
-  source->AddBoolean("isDevChannel", true);
+  delegate->PopulateLoadTimeData(source);
   source->UseStringsJs();
 
   return source;
 }
 
-// The implementation for the untrusted projector WebUI.
-class UntrustedProjectorUI : public ui::UntrustedWebUIController {
- public:
-  explicit UntrustedProjectorUI(content::WebUI* web_ui)
-      : ui::UntrustedWebUIController(web_ui) {
-    auto* browser_context = web_ui->GetWebContents()->GetBrowserContext();
-    content::WebUIDataSource::Add(browser_context, CreateProjectorHTMLSource());
-  }
-
-  UntrustedProjectorUI(const UntrustedProjectorUI&) = delete;
-  UntrustedProjectorUI& operator=(const UntrustedProjectorUI&) = delete;
-  ~UntrustedProjectorUI() override = default;
-};
-
 }  // namespace
 
-UntrustedProjectorUIConfig::UntrustedProjectorUIConfig()
-    : WebUIConfig(content::kChromeUIUntrustedScheme,
-                  kChromeUIProjectorAppHost) {}
-
-UntrustedProjectorUIConfig::~UntrustedProjectorUIConfig() = default;
-
-std::unique_ptr<content::WebUIController>
-UntrustedProjectorUIConfig::CreateWebUIController(content::WebUI* web_ui) {
-  return std::make_unique<UntrustedProjectorUI>(web_ui);
+UntrustedProjectorUI::UntrustedProjectorUI(
+    content::WebUI* web_ui,
+    UntrustedProjectorUIDelegate* delegate)
+    : UntrustedWebUIController(web_ui) {
+  auto* browser_context = web_ui->GetWebContents()->GetBrowserContext();
+  content::WebUIDataSource::Add(browser_context,
+                                CreateProjectorHTMLSource(delegate));
 }
+
+UntrustedProjectorUI::~UntrustedProjectorUI() = default;
 
 }  // namespace ash

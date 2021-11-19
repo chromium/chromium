@@ -31,9 +31,9 @@
 #include "ash/webui/file_manager/file_manager_untrusted_ui.h"
 #include "ash/webui/help_app_ui/help_app_kids_magazine_untrusted_ui.h"
 #include "ash/webui/personalization_app/untrusted_personalization_app_ui_config.h"
-#include "ash/webui/projector_app/untrusted_projector_ui_config.h"
 #include "chrome/browser/ash/web_applications/help_app/help_app_untrusted_ui_config.h"
 #include "chrome/browser/ash/web_applications/media_app/media_app_guest_ui_config.h"
+#include "chrome/browser/ash/web_applications/projector_app/untrusted_projector_ui_config.h"
 #include "chrome/browser/ash/web_applications/terminal_ui.h"
 #if !defined(OFFICIAL_BUILD)
 #include "ash/webui/sample_system_web_app_ui/untrusted_sample_system_web_app_ui.h"
@@ -79,7 +79,7 @@ WebUIConfigList CreateConfigs() {
   register_config(
       std::make_unique<ash::HelpAppKidsMagazineUntrustedUIConfig>());
   if (ash::features::IsProjectorEnabled())
-    register_config(std::make_unique<ash::UntrustedProjectorUIConfig>());
+    register_config(std::make_unique<UntrustedProjectorUIConfig>());
   if (ash::features::IsFileManagerSwaEnabled())
     register_config(
         std::make_unique<ash::file_manager::FileManagerUntrustedUIConfig>());

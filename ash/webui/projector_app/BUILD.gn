@@ -22,8 +22,8 @@ static_library("projector_app") {
     "projector_xhr_sender.h",
     "trusted_projector_ui.cc",
     "trusted_projector_ui.h",
-    "untrusted_projector_ui_config.cc",
-    "untrusted_projector_ui_config.h",
+    "untrusted_projector_ui.cc",
+    "untrusted_projector_ui.h",
   ]
 
   deps = [
