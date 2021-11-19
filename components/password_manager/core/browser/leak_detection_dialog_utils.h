@@ -64,7 +64,7 @@ bool IsAutomaticPasswordChangeScriptAvailable(CredentialLeakType leak_type);
 std::u16string GetAcceptButtonLabel(CredentialLeakType leak_type);
 
 // Returns the label for the leak dialog cancel button.
-std::u16string GetCancelButtonLabel();
+std::u16string GetCancelButtonLabel(CredentialLeakType leak_type);
 
 // Returns the leak dialog message based on leak type.
 std::u16string GetDescription(CredentialLeakType leak_type);

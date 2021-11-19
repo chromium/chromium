@@ -67,26 +67,30 @@ std::u16string GetFormattedUrl(const GURL& origin) {
 std::u16string GetAcceptButtonLabel(CredentialLeakType leak_type) {
   // |ShouldShowChangePasswordButton()| and |ShouldCheckPasswords()| are not
   // both true at the same time.
-  if (ShouldCheckPasswords(leak_type)) {
-    return l10n_util::GetStringUTF16(IDS_LEAK_CHECK_CREDENTIALS);
+  if (ShouldShowChangePasswordButton(leak_type)) {
+    return l10n_util::GetStringUTF16(IDS_CREDENTIAL_LEAK_CHANGE_AUTOMATICALLY);
   }
 
-  if (ShouldShowChangePasswordButton(leak_type)) {
-    return l10n_util::GetStringUTF16(IDS_PASSWORD_CHANGE);
+  if (ShouldCheckPasswords(leak_type)) {
+    return l10n_util::GetStringUTF16(IDS_LEAK_CHECK_CREDENTIALS);
   }
 
   return l10n_util::GetStringUTF16(IDS_OK);
 }
 
-std::u16string GetCancelButtonLabel() {
+std::u16string GetCancelButtonLabel(CredentialLeakType leak_type) {
+  if (ShouldShowChangePasswordButton(leak_type)) {
+    return l10n_util::GetStringUTF16(
+        IDS_CREDENTIAL_LEAK_DONT_CHANGE_AUTOMATICALLY);
+  }
+
   return l10n_util::GetStringUTF16(IDS_CLOSE);
 }
 
 std::u16string GetDescription(CredentialLeakType leak_type) {
   if (ShouldShowChangePasswordButton(leak_type)) {
-    // TODO(crbug.com/1264320): Add a dedicated string for this case.
     return l10n_util::GetStringUTF16(
-        IDS_CREDENTIAL_LEAK_CHANGE_PASSWORD_MESSAGE);
+        IDS_CREDENTIAL_LEAK_CHANGE_PASSWORD_AUTOMATICALLY_MESSAGE);
   }
   if (!ShouldCheckPasswords(leak_type)) {
     return l10n_util::GetStringUTF16(
@@ -102,8 +106,8 @@ std::u16string GetDescription(CredentialLeakType leak_type) {
 
 std::u16string GetTitle(CredentialLeakType leak_type) {
   if (ShouldShowChangePasswordButton(leak_type)) {
-    // TODO(crbug.com/1264320): Add a dedicated string for this case.
-    return l10n_util::GetStringUTF16(IDS_CREDENTIAL_LEAK_TITLE_CHANGE);
+    return l10n_util::GetStringUTF16(
+        IDS_CREDENTIAL_LEAK_TITLE_CHANGE_AUTOMATICALLY);
   }
 
   return l10n_util::GetStringUTF16(ShouldCheckPasswords(leak_type)

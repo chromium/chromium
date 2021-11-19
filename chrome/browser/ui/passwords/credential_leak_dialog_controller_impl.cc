@@ -70,7 +70,7 @@ std::u16string CredentialLeakDialogControllerImpl::GetAcceptButtonLabel()
 
 std::u16string CredentialLeakDialogControllerImpl::GetCancelButtonLabel()
     const {
-  return password_manager::GetCancelButtonLabel();
+  return password_manager::GetCancelButtonLabel(leak_type_);
 }
 
 std::u16string CredentialLeakDialogControllerImpl::GetDescription() const {

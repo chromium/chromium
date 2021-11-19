@@ -105,7 +105,7 @@ std::u16string CredentialLeakControllerAndroid::GetAcceptButtonLabel() const {
 }
 
 std::u16string CredentialLeakControllerAndroid::GetCancelButtonLabel() const {
-  return password_manager::GetCancelButtonLabel();
+  return password_manager::GetCancelButtonLabel(leak_type_);
 }
 
 std::u16string CredentialLeakControllerAndroid::GetDescription() const {
