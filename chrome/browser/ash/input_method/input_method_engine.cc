@@ -467,9 +467,10 @@ void InputMethodEngine::UpdateComposition(
     bool is_visible) {
   ui::IMEInputContextHandlerInterface* input_context =
       ui::IMEBridge::Get()->GetInputContextHandler();
-  if (input_context)
+  if (input_context) {
     input_context->UpdateCompositionText(composition_text, cursor_pos,
                                          is_visible);
+  }
 }
 
 bool InputMethodEngine::SetCompositionRange(

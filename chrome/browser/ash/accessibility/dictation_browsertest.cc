@@ -88,6 +88,14 @@ PrefService* GetActiveUserPrefs() {
   return ProfileManager::GetActiveUserProfile()->GetPrefs();
 }
 
+AccessibilityManager* GetManager() {
+  return AccessibilityManager::Get();
+}
+
+void EnableChromeVox() {
+  GetManager()->EnableSpokenFeedback(true);
+}
+
 // Listens for changes to the histogram provided at construction. This class
 // only allows `Wait()` to be called once. If you need to call `Wait()` multiple
 // times, create multiple instances of this class.
@@ -121,30 +129,30 @@ class HistogramWaiterOneShot {
   base::RunLoop run_loop_;
 };
 
-class TextMatchesWaiter {
+// A class that repeatedly runs a function, which is supplied at construction,
+// until it evaluates to true.
+class SuccessWaiter {
  public:
-  TextMatchesWaiter(const std::string& expected,
-                    base::RepeatingCallback<std::string()> checker)
-      : expected_(expected), checker_(std::move(checker)) {}
-  ~TextMatchesWaiter() = default;
-  TextMatchesWaiter(const TextMatchesWaiter&) = delete;
-  TextMatchesWaiter& operator=(const TextMatchesWaiter&) = delete;
+  explicit SuccessWaiter(base::RepeatingCallback<bool()> is_success)
+      : is_success_(std::move(is_success)) {}
+  ~SuccessWaiter() = default;
+  SuccessWaiter(const SuccessWaiter&) = delete;
+  SuccessWaiter& operator=(const SuccessWaiter&) = delete;
 
   void Wait() {
-    base::RepeatingTimer check_timer;
-    check_timer.Start(FROM_HERE, base::Milliseconds(10), this,
-                      &TextMatchesWaiter::OnTimer);
+    base::RepeatingTimer timer;
+    timer.Start(FROM_HERE, base::Milliseconds(10), this,
+                &SuccessWaiter::OnTimer);
     run_loop_.Run();
   }
 
- private:
   void OnTimer() {
-    if (checker_.Run() == expected_)
+    if (is_success_.Run())
       run_loop_.Quit();
   }
 
-  std::string expected_;
-  base::RepeatingCallback<std::string()> checker_;
+ private:
+  base::RepeatingCallback<bool()> is_success_;
   base::RunLoop run_loop_;
 };
 
@@ -290,10 +298,6 @@ class DictationTest : public DictationBaseTest {
         prefs::kDictationAcceleratorDialogHasBeenAccepted, true);
     ash::Shell::Get()->accessibility_controller()->dictation().SetEnabled(true);
   }
-
-  AccessibilityManager* GetManager() { return AccessibilityManager::Get(); }
-
-  void EnableChromeVox() { GetManager()->EnableSpokenFeedback(true); }
 
   void SendSpeechResult(const std::string& result, bool is_final) {
     if (GetParam() == speech::SpeechRecognitionType::kNetwork && !is_final) {
@@ -463,6 +467,7 @@ IN_PROC_BROWSER_TEST_P(DictationTest, UserEndsDictation) {
   EXPECT_EQ(kFinalSpeechResult16, input_context_handler_->last_commit_text());
 }
 
+// TODO(crbug.com/1216111): add a DictationExtensionTest variant of this test.
 IN_PROC_BROWSER_TEST_P(DictationTest, UserEndsDictationWhenChromeVoxEnabled) {
   AccessibilityManager* manager = GetManager();
 
@@ -651,8 +656,6 @@ IN_PROC_BROWSER_TEST_P(DictationTest, Metrics) {
   }
 }
 
-// TODO(crbug.com/1216111): Use a MockIMEInputContextHandler to check
-// composition after supporting interim results.
 class DictationExtensionTest : public DictationBaseTest {
  protected:
   DictationExtensionTest() {}
@@ -698,7 +701,7 @@ class DictationExtensionTest : public DictationBaseTest {
     WaitForTextAreaValue(value);
   }
 
-  std::string GetTextareaValue() {
+  std::string GetTextAreaValue() {
     std::string output;
     std::string script =
         "window.domAutomationController.send("
@@ -709,9 +712,9 @@ class DictationExtensionTest : public DictationBaseTest {
   }
 
   void WaitForTextAreaValue(const std::string& value) {
-    TextMatchesWaiter waiter(
-        value, base::BindRepeating(&DictationExtensionTest::GetTextareaValue,
-                                   base::Unretained(this)));
+    SuccessWaiter waiter(
+        base::BindRepeating(&DictationExtensionTest::TextAreaValueEquals,
+                            base::Unretained(this), value));
     waiter.Wait();
     base::RunLoop().RunUntilIdle();
   }
@@ -721,7 +724,52 @@ class DictationExtensionTest : public DictationBaseTest {
         nullptr, ui::KeyboardCode::VKEY_D, false, false, false, true)));
   }
 
+  void InstallMockInputContextHandler() {
+    input_context_handler_ = std::make_unique<ui::MockIMEInputContextHandler>();
+    ui::IMEBridge::Get()->SetInputContextHandler(input_context_handler_.get());
+  }
+
+  // Retrieves the number of times pre-edit text (composition text) is updated.
+  int GetUpdatePreeditTextCallCount() {
+    DCHECK(input_context_handler_);
+    return input_context_handler_->update_preedit_text_call_count();
+  }
+
+  void WaitForCompositionText(const std::u16string& value) {
+    DCHECK(input_context_handler_);
+    SuccessWaiter waiter(
+        base::BindRepeating(&DictationExtensionTest::CompositionTextEquals,
+                            base::Unretained(this), value));
+    waiter.Wait();
+    base::RunLoop().RunUntilIdle();
+  }
+
+  void WaitForCommitText(const std::u16string& value) {
+    DCHECK(input_context_handler_);
+    SuccessWaiter waiter(
+        base::BindRepeating(&DictationExtensionTest::CommitTextEquals,
+                            base::Unretained(this), value));
+    waiter.Wait();
+    base::RunLoop().RunUntilIdle();
+  }
+
  private:
+  bool TextAreaValueEquals(const std::string& value) {
+    return value == GetTextAreaValue();
+  }
+
+  bool CompositionTextEquals(const std::u16string& value) {
+    DCHECK(input_context_handler_);
+    return value == input_context_handler_->last_update_composition_arg()
+                        .composition_text.text;
+  }
+
+  bool CommitTextEquals(const std::u16string& value) {
+    DCHECK(input_context_handler_);
+    return value == input_context_handler_->last_commit_text();
+  }
+
+  std::unique_ptr<ui::MockIMEInputContextHandler> input_context_handler_;
   std::unique_ptr<ui::test::EventGenerator> generator_;
   std::unique_ptr<ExtensionConsoleErrorObserver> console_observer_;
 };
@@ -773,7 +821,7 @@ IN_PROC_BROWSER_TEST_P(DictationExtensionTest,
   ASSERT_NO_FATAL_FAILURE(ASSERT_TRUE(ui_test_utils::SendKeyPressToWindowSync(
       nullptr, ui::KeyboardCode::VKEY_TAB, false, false, false, false)));
   WaitForRecognitionStopped();
-  EXPECT_EQ("Vega is a star", GetTextareaValue());
+  EXPECT_EQ("Vega is a star", GetTextAreaValue());
 }
 
 // Without the feature flag kExperimentalAccessibilityDictationCommands,
@@ -787,6 +835,61 @@ IN_PROC_BROWSER_TEST_P(DictationExtensionTest, IgnoresCommands) {
     SendFinalSpeechResultAndWaitForTextAreaValue(command, expected_text);
   }
   ToggleDictationWithKeystroke();
+  WaitForRecognitionStopped();
+}
+
+// Tests that the Dictation extension sets composition text when interim
+// (non-finalized) speech results are returned, then commits text when the
+// speech results are finalized.
+IN_PROC_BROWSER_TEST_P(DictationExtensionTest, CompositionAndCommitText) {
+  if (GetParam() == speech::SpeechRecognitionType::kNetwork) {
+    // Interim speech results are not supported with fake network speech
+    // recognition, so skip this test.
+    return;
+  }
+
+  InstallMockInputContextHandler();
+
+  ToggleDictationWithKeystroke();
+  WaitForRecognitionStarted();
+  SendFakeSpeechResultAndWait(kFirstSpeechResult, /*is_final=*/false);
+  WaitForCompositionText(kFirstSpeechResult16);
+  SendFakeSpeechResultAndWait(kSecondSpeechResult, /*is_final=*/false);
+  WaitForCompositionText(kSecondSpeechResult16);
+  SendFinalFakeSpeechResultAndWait(kFinalSpeechResult);
+  WaitForCommitText(kFinalSpeechResult16);
+  ASSERT_EQ(2, GetUpdatePreeditTextCallCount());
+  ToggleDictationWithKeystroke();
+  WaitForRecognitionStopped();
+}
+
+// Tests behavior of the Dictation extension while ChromeVox is on.
+IN_PROC_BROWSER_TEST_P(DictationExtensionTest,
+                       CompositionAndCommitTextWithChromeVoxEnabled) {
+  if (GetParam() == speech::SpeechRecognitionType::kNetwork) {
+    // Interim speech results are not supported with fake network speech
+    // recognition, so skip this test.
+    return;
+  }
+
+  EnableChromeVox();
+  EXPECT_TRUE(GetManager()->IsSpokenFeedbackEnabled());
+  InstallMockInputContextHandler();
+
+  // Toggle Dictation using AccessibilityManager. If we toggle Dictation with
+  // a keystroke (Search + D), then it will be intercepted by ChromeVox and
+  // Dictation won't be toggled.
+  GetManager()->ToggleDictation();
+  WaitForRecognitionStarted();
+  SendFakeSpeechResultAndWait(kFirstSpeechResult, /*is_final=*/false);
+  SendFakeSpeechResultAndWait(kSecondSpeechResult, /*is_final=*/false);
+  // Finalized speech results should be committed.
+  SendFinalFakeSpeechResultAndWait(kFinalSpeechResult);
+  WaitForCommitText(kFinalSpeechResult16);
+  // Dictation should not have set composition text if ChromeVox is on. This
+  // helps reduce verbosity.
+  ASSERT_EQ(0, GetUpdatePreeditTextCallCount());
+  GetManager()->ToggleDictation();
   WaitForRecognitionStopped();
 }
 
