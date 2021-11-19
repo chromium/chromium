@@ -199,6 +199,7 @@ source_set("gl_tests_filters") {
   data = [
     "//testing/buildbot/filters/android.emulator.gl_tests.filter",
     "//testing/buildbot/filters/android.emulator_11.gl_tests.filter",
+    "//testing/buildbot/filters/android.emulator_12.gl_tests.filter",
     "//testing/buildbot/filters/android.pie_arm64_rel.gl_tests.filter",
   ]
 }
