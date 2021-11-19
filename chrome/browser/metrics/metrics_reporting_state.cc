@@ -129,31 +129,26 @@ void UpdateMetricsPrefsOnPermissionChange(bool metrics_enabled) {
     // collected data should be cleared to ensure that nothing is reported
     // before a user opts in and all reported data is accurate.
     g_browser_process->metrics_service()->ClearSavedStabilityMetrics();
-  } else {
-    // Clear the client id and low entropy sources pref when opting out.
-    // Note: This will not affect the running state (e.g. field trial
-    // randomization), as the pref is only read on startup.
-    UMA_HISTOGRAM_BOOLEAN("UMA.ClientIdCleared", true);
+    return;
+  }
+  // Clear the client id and low entropy sources pref when opting out.
+  // Note: This will not affect the running state (e.g. field trial
+  // randomization), as the pref is only read on startup.
+  UMA_HISTOGRAM_BOOLEAN("UMA.ClientIdCleared", true);
 
+  PrefService* local_state = g_browser_process->local_state();
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-    metrics::structured::NeutrinoDevicesLogClientIdCleared(
-        g_browser_process->local_state()->GetString(
-            metrics::prefs::kMetricsClientID),
-        g_browser_process->local_state()->GetInt64(
-            metrics::prefs::kInstallDate),
-        g_browser_process->local_state()->GetInt64(
-            metrics::prefs::kMetricsReportingEnabledTimestamp));
+  metrics::structured::NeutrinoDevicesLogClientIdCleared(
+      local_state->GetString(metrics::prefs::kMetricsClientID),
+      local_state->GetInt64(metrics::prefs::kInstallDate),
+      local_state->GetInt64(metrics::prefs::kMetricsReportingEnabledTimestamp));
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-    g_browser_process->local_state()->ClearPref(
-        metrics::prefs::kMetricsClientID);
-    metrics::EntropyState::ClearPrefs(g_browser_process->local_state());
-    metrics::ClonedInstallDetector::ClearClonedInstallInfo(
-        g_browser_process->local_state());
-    g_browser_process->local_state()->ClearPref(
-        metrics::prefs::kMetricsReportingEnabledTimestamp);
-    crash_keys::ClearMetricsClientId();
-  }
+  local_state->ClearPref(metrics::prefs::kMetricsClientID);
+  metrics::EntropyState::ClearPrefs(local_state);
+  metrics::ClonedInstallDetector::ClearClonedInstallInfo(local_state);
+  local_state->ClearPref(metrics::prefs::kMetricsReportingEnabledTimestamp);
+  crash_keys::ClearMetricsClientId();
 }
 
 #if !defined(OS_ANDROID)

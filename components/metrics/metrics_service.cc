@@ -555,7 +555,8 @@ void MetricsService::InitializeMetricsState() {
   session_id_ = local_state_->GetInteger(prefs::kMetricsSessionID);
 
   StabilityMetricsProvider provider(local_state_);
-  if (!state_manager_->clean_exit_beacon()->exited_cleanly()) {
+  const bool was_last_shutdown_clean = WasLastShutdownClean();
+  if (!was_last_shutdown_clean) {
     provider.LogCrash(
         state_manager_->clean_exit_beacon()->browser_last_live_timestamp());
 #if defined(OS_ANDROID)
@@ -581,8 +582,7 @@ void MetricsService::InitializeMetricsState() {
 
   // HasPreviousSessionData is called first to ensure it is never bypassed.
   const bool is_initial_stability_log_required =
-      delegating_provider_.HasPreviousSessionData() ||
-      !state_manager_->clean_exit_beacon()->exited_cleanly();
+      delegating_provider_.HasPreviousSessionData() || !was_last_shutdown_clean;
   bool has_initial_stability_log = false;
   if (is_initial_stability_log_required) {
     // If the previous session didn't exit cleanly, or if any provider
