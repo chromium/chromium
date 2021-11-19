@@ -30,6 +30,8 @@ REMOTE_ASSISTANCE_PROGNAME = $(BUILD_DIR)/remote_assistance_host
 REMOTE_ASSISTANCE_DEBUGFILE = $(REMOTE_ASSISTANCE_PROGNAME).debug
 REMOTE_OPEN_URL_PROGNAME = $(BUILD_DIR)/remote_open_url
 REMOTE_OPEN_URL_DEBUGFILE = $(REMOTE_OPEN_URL_PROGNAME).debug
+REMOTE_WEBAUTHN_PROGNAME = $(BUILD_DIR)/remote_webauthn
+REMOTE_WEBAUTHN_DEBUGFILE = $(REMOTE_WEBAUTHN_PROGNAME).debug
 
 all:
 
@@ -91,6 +93,9 @@ install:
 	  "$(INSTALL_DIR)/remote-open-url"
 	eu-strip -f "$(REMOTE_OPEN_URL_DEBUGFILE)" \
 	  "$(INSTALL_DIR)/remote-open-url"
+
+	install "$(REMOTE_WEBAUTHN_PROGNAME)" "$(INSTALL_DIR)/remote-webauthn"
+	eu-strip -f "$(REMOTE_WEBAUTHN_DEBUGFILE)" "$(INSTALL_DIR)/remote-webauthn"
 
 	install -m 0644 \
 	  "$(BUILD_DIR)/remoting/crd-url-forwarder.desktop" \

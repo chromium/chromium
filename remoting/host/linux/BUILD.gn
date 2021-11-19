@@ -74,6 +74,7 @@ if (enable_me2me_host) {
       ":url_forwarder_desktop_entry",
       "//remoting/host:remoting_me2me_host",
       "//remoting/host/remote_open_url",
+      "//remoting/host/webauthn:remote_webauthn",
     ]
   }
 }
