@@ -8,7 +8,6 @@
         var(--keyboard-key-top-radii, 3px)
         var(--keyboard-key-bottom-right-radius, 3px)
         3px;
-    --glyph-alignment: var(--keyboard-key-glyph-alignment, center);
     --travel: var(--keyboard-key-travel, 3px);
     --foreground-color-unpressed: hsl(214deg 82% 51%);
     --foreground-color-pressed: hsl(213deg 23% 91%);
@@ -28,7 +27,7 @@
     color: var(--foreground-color-unpressed);
     display: flex;
     font-family: sans-serif;
-    justify-content: var(--glyph-alignment);
+    justify-content: center;
     left: 0;
     position: absolute;
     right: 0;
@@ -36,10 +35,24 @@
     transition: all 150ms ease-in-out;
   }
 
+  :host(.left) #foreground {
+    justify-content: left;
+  }
+
+  :host(.right) #foreground {
+    justify-content: right;
+  }
+
   iron-icon {
     --iron-icon-fill-color: var(--foreground-color-unpressed);
     --iron-icon-height: 100%;
     --iron-icon-width: 100%;
+  }
+
+  :host(.left) iron-icon,
+  :host(.right) iron-icon {
+    --iron-icon-width: 24px;
+    padding: 0 5px;
   }
 
   #text {

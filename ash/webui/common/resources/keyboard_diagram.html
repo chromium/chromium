@@ -26,14 +26,6 @@
     grid-column: span 2;
   }
 
-  .left {
-    --keyboard-key-glyph-alignment: left;
-  }
-
-  .right {
-    --keyboard-key-glyph-alignment: right;
-  }
-
   #topRow {
     column-gap: var(--grid-gap);
     display: flex;
@@ -71,7 +63,7 @@
     grid-column: span 3;
   }
 
-  #searchKey,
+  #launcherKey,
   #rightShiftKey,
   #leftAltKey {
     grid-column: span 4;
@@ -279,7 +271,7 @@
     <keyboard-key main-glyph="]"></keyboard-key>
     <keyboard-key id="backslashKey" main-glyph="\\"></keyboard-key>
 
-    <keyboard-key id="searchKey" class="left" main-glyph="search"></keyboard-key>
+    <keyboard-key id="launcherKey" class="left" icon="keyboard:launcher"></keyboard-key>
     <keyboard-key main-glyph="a"></keyboard-key>
     <keyboard-key main-glyph="s"></keyboard-key>
     <keyboard-key main-glyph="d"></keyboard-key>
