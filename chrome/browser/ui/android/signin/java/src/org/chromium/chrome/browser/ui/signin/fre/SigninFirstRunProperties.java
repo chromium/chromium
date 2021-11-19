@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.ui.signin.fre;
 
+import android.text.SpannableString;
 import android.view.View.OnClickListener;
 
 import org.chromium.chrome.browser.signin.services.DisplayableProfileData;
@@ -45,6 +46,9 @@ class SigninFirstRunProperties {
     static final WritableBooleanPropertyKey IS_SIGNIN_SUPPORTED =
             new WritableBooleanPropertyKey("is_signin_supported");
 
+    static final WritableObjectPropertyKey<CharSequence> FOOTER_STRING =
+            new WritableObjectPropertyKey<>("footer_string");
+
     static final PropertyKey[] ALL_KEYS = new PropertyKey[] {
             ON_SELECTED_ACCOUNT_CLICKED,
             SELECTED_ACCOUNT_DATA,
@@ -54,13 +58,15 @@ class SigninFirstRunProperties {
             ARE_NATIVE_AND_POLICY_LOADED,
             FRE_POLICY,
             IS_SIGNIN_SUPPORTED,
+            FOOTER_STRING,
     };
 
     /**
      * Creates a default model for FRE bottom group.
      */
     static PropertyModel createModel(Runnable onSelectedAccountClicked,
-            Runnable onContinueAsClicked, Runnable onDismissClicked, boolean isSigninSupported) {
+            Runnable onContinueAsClicked, Runnable onDismissClicked, boolean isSigninSupported,
+            SpannableString footerString) {
         return new PropertyModel.Builder(ALL_KEYS)
                 .with(ON_SELECTED_ACCOUNT_CLICKED, v -> onSelectedAccountClicked.run())
                 .with(SELECTED_ACCOUNT_DATA, null)
@@ -70,6 +76,7 @@ class SigninFirstRunProperties {
                 .with(ARE_NATIVE_AND_POLICY_LOADED, false)
                 .with(FRE_POLICY, null)
                 .with(IS_SIGNIN_SUPPORTED, isSigninSupported)
+                .with(FOOTER_STRING, footerString)
                 .build();
     }
 

@@ -10,8 +10,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
-import android.text.SpannableString;
-import android.text.method.LinkMovementMethod;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,7 +20,6 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.fragment.app.Fragment;
 
-import org.chromium.base.Callback;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.customtabs.CustomTabActivity;
 import org.chromium.chrome.browser.firstrun.FirstRunFragment;
@@ -34,9 +31,6 @@ import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.ui.base.LocalizationUtils;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogManagerHolder;
-import org.chromium.ui.text.NoUnderlineClickableSpan;
-import org.chromium.ui.text.SpanApplier;
-import org.chromium.ui.widget.TextViewWithClickableSpans;
 
 /**
  * This fragment handles the sign-in without sync consent during the FRE.
@@ -96,6 +90,17 @@ public class SigninFirstRunFragment extends Fragment implements FirstRunFragment
         mSigninFirstRunCoordinator.destroy();
     }
 
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == ADD_ACCOUNT_REQUEST_CODE && resultCode == Activity.RESULT_OK
+                && data != null) {
+            String addedAccountName = data.getStringExtra(AccountManager.KEY_ACCOUNT_NAME);
+            if (addedAccountName != null) {
+                mSigninFirstRunCoordinator.onAccountSelected(addedAccountName);
+            }
+        }
+    }
+
     /** Implements {@link FirstRunFragment}. */
     @Override
     public void setInitialA11yFocus() {
@@ -136,21 +141,24 @@ public class SigninFirstRunFragment extends Fragment implements FirstRunFragment
         getPageDelegate().recordFreProgressHistogram(state);
     }
 
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == ADD_ACCOUNT_REQUEST_CODE && resultCode == Activity.RESULT_OK
-                && data != null) {
-            String addedAccountName = data.getStringExtra(AccountManager.KEY_ACCOUNT_NAME);
-            if (addedAccountName != null) {
-                mSigninFirstRunCoordinator.onAccountSelected(addedAccountName);
-            }
-        }
-    }
-
     /** Implements {@link SigninFirstRunCoordinator.Delegate}. */
     @Override
     public void acceptTermsOfService() {
         getPageDelegate().acceptTermsOfService(mAllowCrashUpload);
+    }
+
+    /** Implements {@link SigninFirstRunCoordinator.Delegate}. */
+    @Override
+    public void openTermsOfService() {
+        CustomTabActivity.showInfoPage(requireContext(),
+                LocalizationUtils.substituteLocalePlaceholder(
+                        getString(R.string.google_terms_of_service_url)));
+    }
+
+    /** Implements {@link SigninFirstRunCoordinator.Delegate}. */
+    @Override
+    public void openUmaDialog() {
+        new FreUMADialogCoordinator(requireContext(), mModalDialogManager, this, mAllowCrashUpload);
     }
 
     /** Implements {@link FreUMADialogCoordinator.Listener} */
@@ -176,29 +184,6 @@ public class SigninFirstRunFragment extends Fragment implements FirstRunFragment
         mSigninFirstRunCoordinator =
                 new SigninFirstRunCoordinator(requireContext(), view, mModalDialogManager, this);
         notifyCoordinatorWhenNativeAndPolicyAreLoaded();
-        setUpFooter(view.findViewById(R.id.signin_fre_footer));
         return view;
-    }
-
-    private void setUpFooter(TextViewWithClickableSpans footerView) {
-        final Callback<View> onTermsOfServiceSpanClickListener = view -> {
-            CustomTabActivity.showInfoPage(requireContext(),
-                    LocalizationUtils.substituteLocalePlaceholder(
-                            getString(R.string.google_terms_of_service_url)));
-        };
-        final Callback<View> onUmaDialogSpanClickListener = view -> {
-            new FreUMADialogCoordinator(
-                    requireContext(), mModalDialogManager, this, mAllowCrashUpload);
-        };
-        final NoUnderlineClickableSpan clickableTermsOfServiceSpan =
-                new NoUnderlineClickableSpan(getResources(), onTermsOfServiceSpanClickListener);
-        final NoUnderlineClickableSpan clickableUMADialogSpan =
-                new NoUnderlineClickableSpan(getResources(), onUmaDialogSpanClickListener);
-        final SpannableString footerString = SpanApplier.applySpans(
-                getString(R.string.signin_fre_footer),
-                new SpanApplier.SpanInfo("<LINK1>", "</LINK1>", clickableTermsOfServiceSpan),
-                new SpanApplier.SpanInfo("<LINK2>", "</LINK2>", clickableUMADialogSpan));
-        footerView.setText(footerString);
-        footerView.setMovementMethod(LinkMovementMethod.getInstance());
     }
 }

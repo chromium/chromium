@@ -4,9 +4,11 @@
 
 package org.chromium.chrome.browser.ui.signin.fre;
 
+import android.text.method.LinkMovementMethod;
 import android.transition.TransitionManager;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 
@@ -57,6 +59,10 @@ class SigninFirstRunViewBinder {
                 button.setText(R.string.continue_button);
                 updateVisibility(view, model);
             }
+        } else if (propertyKey == SigninFirstRunProperties.FOOTER_STRING) {
+            final TextView footerView = view.findViewById(R.id.signin_fre_footer);
+            footerView.setText(model.get(SigninFirstRunProperties.FOOTER_STRING));
+            footerView.setMovementMethod(LinkMovementMethod.getInstance());
         } else {
             throw new IllegalArgumentException("Unknown property key:" + propertyKey);
         }

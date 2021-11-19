@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.ui.signin.fre;
 
 import android.accounts.Account;
 import android.content.Context;
+import android.text.SpannableString;
 import android.text.TextUtils;
 
 import androidx.annotation.Nullable;
@@ -32,6 +33,8 @@ import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.metrics.SignoutReason;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.text.NoUnderlineClickableSpan;
+import org.chromium.ui.text.SpanApplier;
 
 import java.util.List;
 
@@ -55,7 +58,7 @@ class SigninFirstRunMediator implements AccountsChangeObserver, ProfileDataCache
         mProfileDataCache = ProfileDataCache.createWithDefaultImageSizeAndNoBadge(mContext);
         mModel = SigninFirstRunProperties.createModel(this::onSelectedAccountClicked,
                 this::onContinueAsClicked, this::onDismissClicked,
-                ExternalAuthUtils.getInstance().canUseGooglePlayServices());
+                ExternalAuthUtils.getInstance().canUseGooglePlayServices(), getFooterString());
 
         mProfileDataCache.addObserver(this);
 
@@ -216,5 +219,15 @@ class SigninFirstRunMediator implements AccountsChangeObserver, ProfileDataCache
         mModel.set(SigninFirstRunProperties.IS_SELECTED_ACCOUNT_SUPERVISED, isChild);
         // Selected account data will be updated in {@link #onProfileDataUpdated}
         mProfileDataCache.setBadge(isChild ? R.drawable.ic_account_child_20dp : 0);
+    }
+
+    private SpannableString getFooterString() {
+        final NoUnderlineClickableSpan clickableTermsOfServiceSpan = new NoUnderlineClickableSpan(
+                mContext.getResources(), view -> mDelegate.openTermsOfService());
+        final NoUnderlineClickableSpan clickableUMADialogSpan = new NoUnderlineClickableSpan(
+                mContext.getResources(), view -> mDelegate.openUmaDialog());
+        return SpanApplier.applySpans(mContext.getString(R.string.signin_fre_footer),
+                new SpanApplier.SpanInfo("<LINK1>", "</LINK1>", clickableTermsOfServiceSpan),
+                new SpanApplier.SpanInfo("<LINK2>", "</LINK2>", clickableUMADialogSpan));
     }
 }
