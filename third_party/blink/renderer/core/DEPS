@@ -146,11 +146,15 @@ specific_include_rules = {
         # Test harness may use cc directly instead of going through WebViewImpl etc.
         "+cc",
         "+components/ukm/test_ukm_recorder.h",
+        "+components/viz/test",
 	# TODO(crbug.com/838693): Test harnesses use LayerTreeView
 	# from content instead of a fake WebLayerTreeView implementation, so
 	# that the Web abstraction can go away.
         "+content/renderer/compositor",
         "+content/test",
+        # Unit tests may use gpu/ for mocking and faking and for config tweaks.
+        "+gpu/command_buffer/client/raster_implementation_gles.h",
+        "+gpu/config",
         "+testing/perf/perf_result_reporter.h",
         "+third_party/blink/renderer/core/frame/web_local_frame_impl.h",
         "+third_party/blink/renderer/core/frame/web_remote_frame_impl.h",

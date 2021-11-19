@@ -146,6 +146,8 @@ class CanvasRenderingContext2DTest : public ::testing::Test,
 
   enum class ReadFrequencyMode { kWillReadFrequency, kWillNotReadFrequency };
 
+  static constexpr size_t kMaxPinnedImageBytes = 1000;
+
   void CreateContext(
       OpacityMode,
       LatencyMode = kNormalLatency,
@@ -238,6 +240,8 @@ void CanvasRenderingContext2DTest::CreateContext(
 }
 
 void CanvasRenderingContext2DTest::SetUp() {
+  CanvasResourceProvider::SetMaxPinnedImageBytesForTesting(
+      kMaxPinnedImageBytes);
   test_context_provider_ = CreateContextProvider();
   InitializeSharedGpuContext(test_context_provider_.get());
   allow_accelerated_ =
@@ -287,6 +291,8 @@ void CanvasRenderingContext2DTest::SetUp() {
 }
 
 void CanvasRenderingContext2DTest::TearDown() {
+  CanvasResourceProvider::ResetMaxPinnedImageBytesForTesting();
+
   ThreadState::Current()->CollectAllGarbageForTesting(
       ThreadState::StackState::kNoHeapPointers);
 
@@ -1300,8 +1306,8 @@ TEST_P(CanvasRenderingContext2DTest, AutoFlushPinnedImages) {
 
   Context2D()->fillRect(0, 0, 1, 1);  // Ensure resource provider is created.
 
-  constexpr unsigned int kImageSize = 1024;
-  constexpr unsigned int kBytesPerImage = 4 * kImageSize * kImageSize;
+  constexpr unsigned int kImageSize = 10;
+  constexpr unsigned int kBytesPerImage = 400;
 
   const size_t initial_op_count =
       CanvasElement().ResourceProvider()->TotalOpCount();
@@ -1310,8 +1316,7 @@ TEST_P(CanvasRenderingContext2DTest, AutoFlushPinnedImages) {
   // reset by the Flush.
   for (int repeat = 0; repeat < 2; ++repeat) {
     size_t expected_op_count = initial_op_count;
-    for (size_t pinned_bytes = 0;
-         pinned_bytes <= CanvasResourceProvider::kMaxPinnedImageBytes;
+    for (size_t pinned_bytes = 0; pinned_bytes <= kMaxPinnedImageBytes;
          pinned_bytes += kBytesPerImage) {
       FakeImageSource unique_image(IntSize(kImageSize, kImageSize),
                                    kOpaqueBitmap);
@@ -1338,8 +1343,8 @@ TEST_P(CanvasRenderingContext2DTest, OverdrawResetsPinnedImageBytes) {
   CanvasElement().SetResourceProviderForTesting(
       nullptr, std::move(fake_accelerate_surface), size);
 
-  constexpr unsigned int kImageSize = 1024;
-  constexpr unsigned int kBytesPerImage = 4 * kImageSize * kImageSize;
+  constexpr unsigned int kImageSize = 10;
+  constexpr unsigned int kBytesPerImage = 400;
 
   FakeImageSource unique_image(IntSize(kImageSize, kImageSize), kOpaqueBitmap);
   NonThrowableExceptionState exception_state;
@@ -1367,13 +1372,12 @@ TEST_P(CanvasRenderingContext2DTest, AutoFlushSameImage) {
   Context2D()->fillRect(0, 0, 1, 1);  // Ensure resource provider is created.
   size_t expected_op_count = CanvasElement().ResourceProvider()->TotalOpCount();
 
-  constexpr unsigned int kImageSize = 1024;
-  constexpr unsigned int kBytesPerImage = 4 * kImageSize * kImageSize;
+  constexpr unsigned int kImageSize = 10;
+  constexpr unsigned int kBytesPerImage = 400;
 
   FakeImageSource image(IntSize(kImageSize, kImageSize), kOpaqueBitmap);
 
-  for (size_t pinned_bytes = 0;
-       pinned_bytes <= 2 * CanvasResourceProvider::kMaxPinnedImageBytes;
+  for (size_t pinned_bytes = 0; pinned_bytes <= 2 * kMaxPinnedImageBytes;
        pinned_bytes += kBytesPerImage) {
     NonThrowableExceptionState exception_state;
     Context2D()->drawImage(GetScriptState(), &image, 0, 0, 1, 1, 0, 0, 1, 1,

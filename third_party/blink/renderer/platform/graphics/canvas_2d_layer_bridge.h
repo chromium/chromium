@@ -159,10 +159,6 @@ class PLATFORM_EXPORT Canvas2DLayerBridge : public cc::TextureLayerClient {
     return last_record_tainted_by_write_pixels_ ? nullptr : last_recording_;
   }
 
-  // This is called when the Canvas element has cleared the frame, so the 2D
-  // bridge knows that there's no previous content on the resource.
-  void ClearFrame() { clear_frame_ = true; }
-
   bool HasRateLimiterForTesting();
 
  private:
@@ -190,7 +186,6 @@ class PLATFORM_EXPORT Canvas2DLayerBridge : public cc::TextureLayerClient {
   bool hibernation_scheduled_ = false;
   bool dont_use_idle_scheduling_for_testing_ = false;
   bool context_lost_ = false;
-  bool clear_frame_ = true;
 
   // WritePixels content is not saved in recording. If a call was made to
   // WritePixels, the recording is now missing that information.

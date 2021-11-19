@@ -81,6 +81,9 @@ bool IsGMBAllowed(const SkImageInfo& info, const gpu::Capabilities& caps) {
 
 }  // namespace
 
+size_t CanvasResourceProvider::max_pinned_image_bytes_ =
+    kDefaultMaxPinnedImageBytes;
+
 class CanvasResourceProvider::CanvasImageProvider : public cc::ImageProvider {
  public:
   CanvasImageProvider(cc::ImageDecodeCache* cache_n32,
@@ -1351,8 +1354,8 @@ void CanvasResourceProvider::FlushCanvas() {
 }
 
 sk_sp<cc::PaintRecord>
-CanvasResourceProvider::FlushCanvasAndPreserveRecording() {
-  return FlushCanvasInternal(true);
+CanvasResourceProvider::FlushCanvasAndMaybePreserveRecording() {
+  return FlushCanvasInternal(IsPrinting() && clear_frame_);
 }
 
 IntSize CanvasResourceProvider::Size() const {
@@ -1375,6 +1378,7 @@ sk_sp<cc::PaintRecord> CanvasResourceProvider::FlushCanvasInternal(
     bool preserve_recording) {
   if (!HasRecordedDrawOps())
     return nullptr;
+  clear_frame_ = false;
   sk_sp<cc::PaintRecord> last_recording = recorder_->finishRecordingAsPicture();
   RasterRecord(last_recording, preserve_recording);
   total_pinned_image_bytes_ = 0;
@@ -1476,6 +1480,7 @@ void CanvasResourceProvider::Clear() {
     Canvas()->clear(SK_ColorTRANSPARENT);
 
   FlushCanvas();
+  ClearFrame();
 }
 
 uint32_t CanvasResourceProvider::ContentUniqueID() const {
@@ -1582,7 +1587,7 @@ void CanvasResourceProvider::SkipQueuedDrawCommands() {
   // Note that this function only gets called when canvas needs a full repaint,
   // so always update the |mode_| to discard the old copy of canvas content.
   mode_ = SkSurface::kDiscard_ContentChangeMode;
-
+  ClearFrame();
   if (!HasRecordedDrawOps())
     return;
   recorder_->finishRecordingAsPicture();

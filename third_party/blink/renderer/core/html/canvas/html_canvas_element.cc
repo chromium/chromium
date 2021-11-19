@@ -661,8 +661,8 @@ void HTMLCanvasElement::Reset() {
   if (had_resource_provider && old_size == new_size && IsRenderingContext2D()) {
     if (!canvas_is_clear_) {
       canvas_is_clear_ = true;
-      if (canvas2d_bridge_)
-        canvas2d_bridge_->ClearFrame();
+      if (ResourceProvider())
+        ResourceProvider()->ClearFrame();
       context_->ClearRect(0, 0, width(), height());
     }
     return;
@@ -858,12 +858,12 @@ void HTMLCanvasElement::PaintInternal(GraphicsContext& context,
     // display list or image snapshot. Display list allows better PDF printing
     // and we prefer this method.
     // Here are the requirements for display list to be used:
-    //    1. We must have had a full repaint of the Canvas after beginprint
+    //    1. We must have had a full repaint of the Canvas after beforeprint
     //       event has been fired. Otherwise, we don't have a PaintRecord.
     //    2. CSS property 'image-rendering' must not be 'pixelated'.
 
     // display list rendering: we replay the last full PaintRecord, if Canvas
-    // has been redraw since beginprint happened.
+    // has been redraw since beforeprint happened.
     if (IsPrinting() && IsRenderingContext2D() && canvas2d_bridge_) {
       canvas2d_bridge_->FlushRecording();
       if (canvas2d_bridge_->getLastRecord()) {
