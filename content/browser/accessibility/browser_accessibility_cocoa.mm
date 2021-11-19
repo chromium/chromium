@@ -1489,11 +1489,12 @@ id content::AXTextMarkerRangeFrom(id anchor_textmarker, id focus_textmarker) {
   DCHECK(!caretPosition->IsNullPosition())
       << "Calling HasVisibleCaretOrSelection() should have ensured that there "
          "is a valid selection focus inside the current object.";
-  const std::vector<int> lineBreaks = _owner->GetLineStartOffsets();
+  const std::vector<int> lineStarts =
+      _owner->GetIntListAttribute(ax::mojom::IntListAttribute::kLineStarts);
   auto iterator =
-      std::upper_bound(lineBreaks.begin(), lineBreaks.end(),
+      std::lower_bound(lineStarts.begin(), lineStarts.end(),
                        caretPosition->AsTextPosition()->text_offset());
-  return @(std::distance(lineBreaks.begin(), iterator));
+  return @(std::distance(lineStarts.begin(), iterator));
 }
 
 // Returns whether or not this node should be ignored in the
@@ -2498,10 +2499,11 @@ id content::AXTextMarkerRangeFrom(id anchor_textmarker, id focus_textmarker) {
 - (id)AXLineForIndex:(id)parameter {
   DCHECK([parameter isKindOfClass:[NSNumber class]]);
   int lineIndex = [(NSNumber*)parameter intValue];
-  const std::vector<int> lineBreaks = _owner->GetLineStartOffsets();
+  const std::vector<int> lineStarts =
+      _owner->GetIntListAttribute(ax::mojom::IntListAttribute::kLineStarts);
   auto iterator =
-      std::upper_bound(lineBreaks.begin(), lineBreaks.end(), lineIndex);
-  return @(std::distance(lineBreaks.begin(), iterator));
+      std::lower_bound(lineStarts.begin(), lineStarts.end(), lineIndex);
+  return @(std::distance(lineStarts.begin(), iterator));
 }
 
 - (id)AXRangeForLine:(id)parameter {
@@ -2510,15 +2512,17 @@ id content::AXTextMarkerRangeFrom(id anchor_textmarker, id focus_textmarker) {
     return nil;
 
   int lineIndex = [(NSNumber*)parameter intValue];
-  const std::vector<int> lineBreaks = _owner->GetLineStartOffsets();
+  const std::vector<int> lineStarts =
+      _owner->GetIntListAttribute(ax::mojom::IntListAttribute::kLineStarts);
   std::u16string value = _owner->GetValueForControl();
   int valueLength = static_cast<int>(value.size());
 
-  int lineCount = static_cast<int>(lineBreaks.size()) + 1;
+  int lineCount = static_cast<int>(lineStarts.size());
   if (lineIndex < 0 || lineIndex >= lineCount)
     return nil;
-  int start = (lineIndex > 0) ? lineBreaks[lineIndex - 1] : 0;
-  int end = (lineIndex < (lineCount - 1)) ? lineBreaks[lineIndex] : valueLength;
+  int start = lineStarts[lineIndex];
+  int end =
+      (lineIndex < (lineCount - 1)) ? lineStarts[lineIndex + 1] : valueLength;
   return [NSValue valueWithRange:NSMakeRange(start, end - start)];
 }
 
@@ -2720,22 +2724,24 @@ id content::AXTextMarkerRangeFrom(id anchor_textmarker, id focus_textmarker) {
       return nil;
 
     int textOffset = position->AsTextPosition()->text_offset();
-    const std::vector<int> lineBreaks = _owner->GetLineStartOffsets();
+    const std::vector<int> lineStarts =
+        _owner->GetIntListAttribute(ax::mojom::IntListAttribute::kLineStarts);
     const auto iterator =
-        std::upper_bound(lineBreaks.begin(), lineBreaks.end(), textOffset);
-    return @(std::distance(lineBreaks.begin(), iterator));
+        std::lower_bound(lineStarts.begin(), lineStarts.end(), textOffset);
+    return @(std::distance(lineStarts.begin(), iterator));
   }
 
   if ([attribute
           isEqualToString:
               NSAccessibilityTextMarkerRangeForLineParameterizedAttribute]) {
     int lineIndex = [(NSNumber*)parameter intValue];
-    const std::vector<int> lineBreaks = _owner->GetLineStartOffsets();
-    int lineCount = static_cast<int>(lineBreaks.size()) + 1;
+    const std::vector<int> lineStarts =
+        _owner->GetIntListAttribute(ax::mojom::IntListAttribute::kLineStarts);
+    int lineCount = static_cast<int>(lineStarts.size());
     if (lineIndex < 0 || lineIndex >= lineCount)
       return nil;
 
-    int lineStartOffset = (lineIndex > 0) ? lineBreaks[lineIndex - 1] : 0;
+    int lineStartOffset = lineStarts[lineIndex];
     BrowserAccessibility::AXPosition lineStartPosition = CreateTextPosition(
         *_owner, lineStartOffset, ax::mojom::TextAffinity::kDownstream);
     if (lineStartPosition->IsNullPosition())

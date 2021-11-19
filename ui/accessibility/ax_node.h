@@ -290,10 +290,6 @@ class AX_EXPORT AXNode final {
   bool IsDescendantOf(const AXNode* ancestor) const;
   bool IsDescendantOfCrossingTreeBoundary(const AXNode* ancestor) const;
 
-  // Gets the text offsets where new lines start either from the node's data or
-  // by computing them and caching the result.
-  std::vector<int> GetOrComputeLineStartOffsets();
-
   // If the color is transparent, blends with the ancestor's color.
   // Note that this is imperfect; it won't work if a node is absolute-
   // positioned outside of its ancestor. However, it handles the most
@@ -373,17 +369,11 @@ class AX_EXPORT AXNode final {
   GetIntListAttributes() const {
     return data().intlist_attributes;
   }
-  bool HasIntListAttribute(ax::mojom::IntListAttribute attribute) const {
-    return data().HasIntListAttribute(attribute);
-  }
+  bool HasIntListAttribute(ax::mojom::IntListAttribute attribute) const;
   const std::vector<int32_t>& GetIntListAttribute(
-      ax::mojom::IntListAttribute attribute) const {
-    return data().GetIntListAttribute(attribute);
-  }
+      ax::mojom::IntListAttribute attribute) const;
   bool GetIntListAttribute(ax::mojom::IntListAttribute attribute,
-                           std::vector<int32_t>* value) const {
-    return data().GetIntListAttribute(attribute, value);
-  }
+                           std::vector<int32_t>* value) const;
 
   bool HasStringListAttribute(ax::mojom::StringListAttribute attribute) const {
     return data().HasStringListAttribute(attribute);
@@ -705,10 +695,6 @@ class AX_EXPORT AXNode final {
   AXNode* GetOrderedSet() const;
 
  private:
-  // Computes the text offset where each line starts by traversing all child
-  // leaf nodes.
-  void ComputeLineStartOffsets(std::vector<int>* line_offsets,
-                               int* start_offset) const;
   AXTableInfo* GetAncestorTableInfo() const;
   void IdVectorToNodeVector(const std::vector<AXNodeID>& ids,
                             std::vector<AXNode*>* nodes) const;

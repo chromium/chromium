@@ -717,48 +717,6 @@ bool AXNode::IsDescendantOfCrossingTreeBoundary(const AXNode* ancestor) const {
   return false;
 }
 
-std::vector<int> AXNode::GetOrComputeLineStartOffsets() {
-  DCHECK(!tree_->GetTreeUpdateInProgressState());
-  std::vector<int> line_offsets;
-  if (GetIntListAttribute(ax::mojom::IntListAttribute::kLineStarts,
-                          &line_offsets)) {
-    return line_offsets;
-  }
-
-  int start_offset = 0;
-  ComputeLineStartOffsets(&line_offsets, &start_offset);
-  data_.AddIntListAttribute(ax::mojom::IntListAttribute::kLineStarts,
-                            line_offsets);
-  return line_offsets;
-}
-
-void AXNode::ComputeLineStartOffsets(std::vector<int>* line_offsets,
-                                     int* start_offset) const {
-  DCHECK(!tree_->GetTreeUpdateInProgressState());
-  DCHECK(line_offsets);
-  DCHECK(start_offset);
-  for (auto iter = AllChildrenCrossingTreeBoundaryBegin();
-       iter != AllChildrenCrossingTreeBoundaryEnd(); ++iter) {
-    if (iter->GetChildCountCrossingTreeBoundary()) {
-      iter->ComputeLineStartOffsets(line_offsets, start_offset);
-      continue;
-    }
-
-    // Don't report if the first piece of text starts a new line or not.
-    if (*start_offset &&
-        !iter->HasIntAttribute(ax::mojom::IntAttribute::kPreviousOnLineId)) {
-      // If there are multiple objects with an empty accessible label at the
-      // start of a line, only include a single line start offset.
-      if (line_offsets->empty() || line_offsets->back() != *start_offset)
-        line_offsets->push_back(*start_offset);
-    }
-
-    std::u16string text =
-        iter->GetString16Attribute(ax::mojom::StringAttribute::kName);
-    *start_offset += static_cast<int>(text.length());
-  }
-}
-
 SkColor AXNode::ComputeColor() const {
   return ComputeColorAttribute(ax::mojom::IntAttribute::kColor);
 }
@@ -837,6 +795,24 @@ const std::string& AXNode::GetInheritedStringAttribute(
 std::u16string AXNode::GetInheritedString16Attribute(
     ax::mojom::StringAttribute attribute) const {
   return base::UTF8ToUTF16(GetInheritedStringAttribute(attribute));
+}
+
+bool AXNode::HasIntListAttribute(ax::mojom::IntListAttribute attribute) const {
+  return GetComputedNodeData().HasOrCanComputeAttribute(attribute);
+}
+
+const std::vector<int32_t>& AXNode::GetIntListAttribute(
+    ax::mojom::IntListAttribute attribute) const {
+  return GetComputedNodeData().GetOrComputeAttribute(attribute);
+}
+
+bool AXNode::GetIntListAttribute(ax::mojom::IntListAttribute attribute,
+                                 std::vector<int32_t>* value) const {
+  if (GetComputedNodeData().HasOrCanComputeAttribute(attribute)) {
+    *value = GetComputedNodeData().GetOrComputeAttribute(attribute);
+    return true;
+  }
+  return false;
 }
 
 AXLanguageInfo* AXNode::GetLanguageInfo() const {

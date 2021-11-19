@@ -380,9 +380,6 @@ class CONTENT_EXPORT BrowserAccessibility : public ui::AXPlatformNodeDelegate {
   // non-leaf node.
   AXPosition CreatePositionForSelectionAt(int offset) const;
 
-  // Gets the text offsets where new lines start.
-  std::vector<int> GetLineStartOffsets() const;
-
   std::u16string GetNameAsString16() const;
 
   // `AXPlatformNodeDelegate` implementation.

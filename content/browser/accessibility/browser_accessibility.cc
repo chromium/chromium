@@ -930,10 +930,6 @@ std::string BrowserAccessibility::GetLiveRegionText() const {
   return text;
 }
 
-std::vector<int> BrowserAccessibility::GetLineStartOffsets() const {
-  return node()->GetOrComputeLineStartOffsets();
-}
-
 BrowserAccessibility::AXPosition BrowserAccessibility::CreatePositionAt(
     int offset,
     ax::mojom::TextAffinity affinity) const {
