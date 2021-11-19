@@ -815,13 +815,15 @@ void ExtensionAppsChromeOs::RegisterInstance(extensions::AppWindow* app_window,
     DCHECK(base::Contains(app_window_to_aura_window_, app_window));
     window = app_window_to_aura_window_[app_window];
   }
+  std::vector<std::unique_ptr<apps::Instance>> deltas;
   auto instance = std::make_unique<apps::Instance>(
       app_window->extension_id(),
       apps::Instance::InstanceKey::ForWindowBasedApp(window));
   instance->SetLaunchId(GetLaunchId(app_window));
   instance->UpdateState(new_state, base::Time::Now());
   instance->SetBrowserContext(app_window->browser_context());
-  instance_registry_->OnInstance(std::move(instance));
+  deltas.push_back(std::move(instance));
+  instance_registry_->OnInstances(std::move(deltas));
 }
 
 content::WebContents* ExtensionAppsChromeOs::LaunchImpl(

@@ -194,15 +194,16 @@ class FamilyUserAppMetricsTest
     cache.OnApps(std::move(deltas), apps::mojom::AppType::kUnknown,
                  false /* should_notify_initialized */);
 
+    apps::InstanceRegistry::Instances instances;
     apps::InstanceRegistry& instance_registry =
         apps::AppServiceProxyFactory::GetForProfile(profile())
             ->InstanceRegistry();
     window_ = std::make_unique<aura::Window>(nullptr);
     window_->Init(ui::LAYER_NOT_DRAWN);
-    auto instance = std::make_unique<apps::Instance>(
+    instances.push_back(std::make_unique<apps::Instance>(
         /*app_id=*/"a",
-        apps::Instance::InstanceKey::ForWindowBasedApp(window_.get()));
-    instance_registry.OnInstance(std::move(instance));
+        apps::Instance::InstanceKey::ForWindowBasedApp(window_.get())));
+    instance_registry.OnInstances(std::move(instances));
   }
 
   SupervisedUserService* supervised_user_service() {

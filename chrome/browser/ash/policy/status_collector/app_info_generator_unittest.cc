@@ -176,7 +176,9 @@ class AppInfoGeneratorTest : public ::testing::Test {
     auto clone = instance.instance()->Clone();
     clone->UpdateState(state, time);
 
-    GetInstanceRegistry().OnInstance(std::move(clone));
+    std::vector<std::unique_ptr<apps::Instance>> deltas;
+    deltas.push_back(std::move(clone));
+    GetInstanceRegistry().OnInstances(std::move(deltas));
   }
 
   std::unique_ptr<TestingProfile> CreateProfile(const AccountId& account_id,

@@ -5,11 +5,11 @@
 #ifndef COMPONENTS_SERVICES_APP_SERVICE_PUBLIC_CPP_INSTANCE_REGISTRY_H_
 #define COMPONENTS_SERVICES_APP_SERVICE_PUBLIC_CPP_INSTANCE_REGISTRY_H_
 
-#include <list>
 #include <map>
 #include <memory>
 #include <set>
 #include <string>
+#include <vector>
 
 #include "ash/public/cpp/shelf_types.h"
 #include "base/observer_list.h"
@@ -75,20 +75,21 @@ class InstanceRegistry {
   void RemoveObserver(Observer* observer);
 
   using InstancePtr = std::unique_ptr<Instance>;
+  using Instances = std::vector<InstancePtr>;
 
-  // Notification and merging might be delayed until after OnInstance returns.
+  // Notification and merging might be delayed until after OnInstances returns.
   // For example, suppose that the initial set of states is (a0, b0, c0) for
-  // three app_id's ("a", "b", "c"). Now suppose OnInstance is called with an
-  // update (b1), and when notified of b1, an observer calls OnInstance
-  // again with (b2). The b1 delta should be processed before the b2 delta,
-  // as it was sent first, and both b1 and b2 will be updated to the observer
-  // following the sequence. This means that processing b2 (scheduled by the
-  // second OnInstance call) should wait until the first OnInstance call has
-  // finished processing b1, and then b2, which means that processing b2 is
-  // delayed until after the second OnInstance call returns.
+  // three app_id's ("a", "b", "c"). Now suppose OnInstances is called with two
+  // updates (b1, c1), and when notified of b1, an observer calls OnInstances
+  // again with (c2, d2). The c1 delta should be processed before the c2 delta,
+  // as it was sent first, and both c1 and c2 will be updated to the observer
+  // following the sequence. This means that processing c2 (scheduled by the
+  // second OnInstances call) should wait until the first OnInstances call has
+  // finished processing b1, and then c1, which means that processing c2 is
+  // delayed until after the second OnInstances call returns.
   //
-  // The caller presumably calls OnInstance(std::move(delta)).
-  void OnInstance(InstancePtr delta);
+  // The caller presumably calls OnInstances(std::move(deltas)).
+  void OnInstances(Instances deltas);
 
   // Return enclosing app windows for the |app_id|. If the app is in a browser
   // tab, the window returned will be the window of the browser.
@@ -158,27 +159,27 @@ class InstanceRegistry {
   }
 
  private:
-  void DoOnInstance(InstancePtr deltas);
+  void DoOnInstances(const Instances& deltas);
 
   base::ObserverList<Observer> observers_;
 
-  // OnInstance calls DoOnInstance zero or more times. If we're nested,
-  // in_progress is true, so that there's multiple OnInstance call to this
+  // OnInstances calls DoOnInstances zero or more times. If we're nested,
+  // in_progress is true, so that there's multiple OnInstances call to this
   // InstanceRegistry in the call stack, the deeper OnInstances call simply adds
-  // work to deltas_pending_ and returns without calling DoOnInstance. If we're
-  // not nested, in_progress is false, OnInstance calls DoOnInstance one or
-  // more times; "more times" happens if DoOnInstance notifying observers leads
-  // to more OnInstance calls that enqueue deltas_pending_ work.
+  // work to deltas_pending_ and returns without calling DoOnInstances. If we're
+  // not nested, in_progress is false, OnInstances calls DoOnInstances one or
+  // more times; "more times" happens if DoOnInstances notifying observers leads
+  // to more OnInstances calls that enqueue deltas_pending_ work.
   //
-  // Nested OnInstance calls are expected to be rare (but still dealt with
-  // sensibly). In the typical case, OnInstance should call DoOnInstance
+  // Nested OnInstances calls are expected to be rare (but still dealt with
+  // sensibly). In the typical case, OnInstances should call DoOnInstances
   // exactly once, and deltas_pending_ will stay empty.
   bool in_progress_ = false;
 
   // Maps from instance key to the latest state: the "sum" of all previous
   // deltas.
   std::map<const Instance::InstanceKey, InstancePtr> instance_key_states_;
-  std::list<InstancePtr> deltas_pending_;
+  Instances deltas_pending_;
 
   // Maps from app id to app instance key.
   std::map<const std::string, std::set<const Instance::InstanceKey>>

@@ -371,9 +371,12 @@ class AppPlatformMetricsServiceTest : public testing::Test {
         app_id, apps::Instance::InstanceKey::ForWindowBasedApp(window));
     instance->UpdateState(state, base::Time::Now());
 
+    std::vector<std::unique_ptr<apps::Instance>> deltas;
+    deltas.push_back(std::move(instance));
+
     apps::AppServiceProxyFactory::GetForProfile(testing_profile_.get())
         ->InstanceRegistry()
-        .OnInstance(std::move(instance));
+        .OnInstances(std::move(deltas));
   }
 
   void ModifyWebAppInstance(const std::string& app_id,
@@ -383,9 +386,12 @@ class AppPlatformMetricsServiceTest : public testing::Test {
         app_id, apps::Instance::InstanceKey::ForWebBasedApp(window));
     instance->UpdateState(state, base::Time::Now());
 
+    std::vector<std::unique_ptr<apps::Instance>> deltas;
+    deltas.push_back(std::move(instance));
+
     apps::AppServiceProxyFactory::GetForProfile(testing_profile_.get())
         ->InstanceRegistry()
-        .OnInstance(std::move(instance));
+        .OnInstances(std::move(deltas));
   }
 
   std::unique_ptr<Browser> CreateBrowserWithAuraWindow1() {

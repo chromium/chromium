@@ -56,37 +56,43 @@ void InstanceRegistry::RemoveObserver(Observer* observer) {
   observers_.RemoveObserver(observer);
 }
 
-void InstanceRegistry::OnInstance(InstancePtr delta) {
+void InstanceRegistry::OnInstances(Instances deltas) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(my_sequence_checker_);
 
-  if (!delta || delta->InstanceId()) {
-    // TODO(crbug.com/1251501): Implement updating the instance registry using
-    // instance ID as a key.
-    return;
-  }
-  // If the instance state is not kDestroyed, adds to
-  // |app_id_to_app_instance_key_|, otherwise removes the instance key from
-  // |app_id_to_app_instance_key_|.
-  if (static_cast<InstanceState>(delta->State() & InstanceState::kDestroyed) ==
-      InstanceState::kUnknown) {
-    app_id_to_app_instance_key_[delta->AppId()].insert(delta->GetInstanceKey());
-  } else {
-    app_id_to_app_instance_key_[delta->AppId()].erase(
-        delta.get()->GetInstanceKey());
-    if (app_id_to_app_instance_key_[delta->AppId()].size() == 0) {
-      app_id_to_app_instance_key_.erase(delta->AppId());
+  for (auto& delta : deltas) {
+    if (delta->InstanceId()) {
+      // TODO(crbug.com/1251501): Implement updating the instance registry using
+      // instance ID as a key.
+      continue;
+    }
+    // If the instance state is not kDestroyed, adds to
+    // |app_id_to_app_instance_key_|, otherwise removes the instance key from
+    // |app_id_to_app_instance_key_|.
+    if (static_cast<InstanceState>(delta.get()->State() &
+                                   InstanceState::kDestroyed) ==
+        InstanceState::kUnknown) {
+      app_id_to_app_instance_key_[delta.get()->AppId()].insert(
+          delta.get()->GetInstanceKey());
+    } else {
+      app_id_to_app_instance_key_[delta.get()->AppId()].erase(
+          delta.get()->GetInstanceKey());
+      if (app_id_to_app_instance_key_[delta.get()->AppId()].size() == 0) {
+        app_id_to_app_instance_key_.erase(delta.get()->AppId());
+      }
     }
   }
 
   if (in_progress_) {
-    deltas_pending_.push_back(std::move(delta));
+    for (auto& delta : deltas) {
+      deltas_pending_.push_back(delta.get()->Clone());
+    }
     return;
   }
-  DoOnInstance(std::move(delta));
+  DoOnInstances(std::move(deltas));
   while (!deltas_pending_.empty()) {
-    InstancePtr instance = std::move(*deltas_pending_.begin());
-    DoOnInstance(std::move(instance));
-    deltas_pending_.pop_front();
+    Instances pending;
+    pending.swap(deltas_pending_);
+    DoOnInstances(std::move(pending));
   }
 }
 
@@ -134,43 +140,43 @@ bool InstanceRegistry::ContainsAppId(const std::string& app_id) const {
   return base::Contains(app_id_to_app_instance_key_, app_id);
 }
 
-void InstanceRegistry::DoOnInstance(InstancePtr delta) {
+void InstanceRegistry::DoOnInstances(const Instances& deltas) {
   in_progress_ = true;
 
-  if (delta->InstanceId()) {
-    // TODO(crbug.com/1251501): Implement updating the instance registry using
-    // instance ID as a key.
-    in_progress_ = false;
-    return;
-  }
-  auto s_iter = instance_key_states_.find(delta->GetInstanceKey());
-  Instance* state =
-      (s_iter != instance_key_states_.end()) ? s_iter->second.get() : nullptr;
-  if (InstanceUpdate::Equals(state, delta.get())) {
-    in_progress_ = false;
-    return;
-  }
+  // The remaining for loops range over the deltas vector, so that
+  // OninstanceUpdate is called for each updates, and notify the observers for
+  // every de-duplicated delta. Also update the states for every delta.
+  for (const auto& d_iter : deltas) {
+    if (d_iter->InstanceId()) {
+      // TODO(crbug.com/1251501): Implement updating the instance registry using
+      // instance ID as a key.
+      continue;
+    }
+    auto s_iter = instance_key_states_.find(d_iter->GetInstanceKey());
+    Instance* state =
+        (s_iter != instance_key_states_.end()) ? s_iter->second.get() : nullptr;
+    if (InstanceUpdate::Equals(state, d_iter.get())) {
+      continue;
+    }
 
-  std::unique_ptr<Instance> old_state;
-  Instance* new_delta = delta.get();
-  if (state) {
-    old_state = state->Clone();
-    InstanceUpdate::Merge(state, delta.get());
-  } else {
-    // The content of `delta` is moved, however, `new_delta` is still valid,
-    // because `new_delta` is the pointer to the content of `delta`.
-    instance_key_states_.insert(
-        std::make_pair(delta->GetInstanceKey(), std::move(delta)));
-  }
+    std::unique_ptr<Instance> old_state;
+    if (state) {
+      old_state = state->Clone();
+      InstanceUpdate::Merge(state, d_iter.get());
+    } else {
+      instance_key_states_.insert(std::make_pair(d_iter.get()->GetInstanceKey(),
+                                                 (d_iter.get()->Clone())));
+    }
 
-  for (auto& obs : observers_) {
-    obs.OnInstanceUpdate(InstanceUpdate(old_state.get(), new_delta));
-  }
+    for (auto& obs : observers_) {
+      obs.OnInstanceUpdate(InstanceUpdate(old_state.get(), d_iter.get()));
+    }
 
-  if (static_cast<InstanceState>(new_delta->State() &
-                                 InstanceState::kDestroyed) !=
-      InstanceState::kUnknown) {
-    instance_key_states_.erase(new_delta->GetInstanceKey());
+    if (static_cast<InstanceState>(d_iter.get()->State() &
+                                   InstanceState::kDestroyed) !=
+        InstanceState::kUnknown) {
+      instance_key_states_.erase(d_iter.get()->GetInstanceKey());
+    }
   }
   in_progress_ = false;
 }
