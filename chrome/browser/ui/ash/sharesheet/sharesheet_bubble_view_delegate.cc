@@ -63,9 +63,11 @@ void SharesheetBubbleViewDelegate::ShowNearbyShareBubbleForArc(
       std::move(close_callback));
 }
 
-void SharesheetBubbleViewDelegate::OnActionLaunched() {
+void SharesheetBubbleViewDelegate::OnActionLaunched(bool has_action_view) {
   DCHECK(sharesheet_bubble_view_);
-  sharesheet_bubble_view_->ShowActionView();
+  if (has_action_view) {
+    sharesheet_bubble_view_->ShowActionView();
+  }
 }
 
 void SharesheetBubbleViewDelegate::SetBubbleSize(int width, int height) {

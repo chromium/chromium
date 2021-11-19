@@ -42,7 +42,7 @@ class SharesheetBubbleViewDelegate : public ::sharesheet::SharesheetUiDelegate {
       ::sharesheet::CloseCallback close_callback) override;
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-  void OnActionLaunched() override;
+  void OnActionLaunched(bool has_action_view) override;
 
   // ::sharesheet::SharesheetController:
   void SetBubbleSize(int width, int height) override;

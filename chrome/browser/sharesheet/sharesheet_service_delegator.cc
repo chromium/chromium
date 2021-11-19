@@ -79,9 +79,9 @@ void SharesheetServiceDelegator::ShowNearbyShareBubbleForArc(
 
 // Invoked immediately after an action has launched in the event that UI
 // changes need to occur at this point.
-void SharesheetServiceDelegator::OnActionLaunched() {
+void SharesheetServiceDelegator::OnActionLaunched(bool has_action_view) {
   if (sharesheet_controller_) {
-    sharesheet_controller_->OnActionLaunched();
+    sharesheet_controller_->OnActionLaunched(has_action_view);
     return;
   }
   NOTREACHED();

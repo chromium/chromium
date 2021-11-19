@@ -264,7 +264,8 @@ void SharesheetBubbleView::ShowNearbyShareBubbleForArc(
     apps::mojom::IntentPtr intent,
     ::sharesheet::DeliveredCallback delivered_callback,
     ::sharesheet::CloseCallback close_callback) {
-  user_selection_made_ = true;  // Disable close when clicking outside bubble.
+  // Disable close when clicking outside bubble for Nearby Share.
+  close_on_deactivate_ = false;
   ShowBubble({}, std::move(intent), std::move(delivered_callback),
              std::move(close_callback));
   if (delivered_callback_) {
@@ -386,6 +387,10 @@ void SharesheetBubbleView::PopulateLayoutsWithTargets(
 }
 
 void SharesheetBubbleView::ShowActionView() {
+  // TODO(melzhang) This should be a separate function on sharesheet controller
+  // called by Nearby. Disable close when clicking outside bubble for Nearby
+  // Share.
+  close_on_deactivate_ = false;
   constexpr float kShareActionScaleUpFactor = 0.9f;
 
   main_view_->SetPaintToLayer();
@@ -555,9 +560,8 @@ gfx::Size SharesheetBubbleView::CalculatePreferredSize() const {
 void SharesheetBubbleView::OnWidgetActivationChanged(views::Widget* widget,
                                                      bool active) {
   // Catch widgets that are closing due to the user clicking out of the bubble.
-  // If |user_selection_made_| we should not close the bubble here as it will be
-  // closed in a different code path.
-  if (!active && !user_selection_made_ && !is_bubble_closing_) {
+  // If |close_on_deactivate_| we should close the bubble here.
+  if (!active && close_on_deactivate_ && !is_bubble_closing_) {
     if (delivered_callback_) {
       std::move(delivered_callback_)
           .Run(::sharesheet::SharesheetResult::kCancel);
@@ -588,7 +592,6 @@ void SharesheetBubbleView::OnTabletControllerDestroyed() {
 }
 
 void SharesheetBubbleView::CreateBubble() {
-  set_close_on_deactivate(false);
   SetButtons(ui::DIALOG_BUTTON_NONE);
 
   SetLayoutManager(std::make_unique<views::BoxLayout>(
@@ -647,20 +650,18 @@ void SharesheetBubbleView::AnimateToExpandedState() {
 }
 
 void SharesheetBubbleView::TargetButtonPressed(TargetInfo target) {
-  user_selection_made_ = true;
   auto type = target.type;
   if (type == ::sharesheet::TargetType::kAction) {
     active_target_ = target.launch_name;
   } else {
     intent_->activity_name = target.activity_name;
   }
-  delegator_->OnTargetSelected(target.launch_name, type, std::move(intent_),
+  delegator_->OnTargetSelected(target.launch_name, type, intent_->Clone(),
                                share_action_view_);
   if (delivered_callback_) {
     std::move(delivered_callback_)
         .Run(::sharesheet::SharesheetResult::kSuccess);
   }
-  intent_.reset();
 }
 
 void SharesheetBubbleView::UpdateAnchorPosition() {

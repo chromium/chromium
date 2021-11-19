@@ -31,6 +31,7 @@ class NearbyShareAction : public sharesheet::ShareAction,
                     views::View* root_view,
                     apps::mojom::IntentPtr intent) override;
   void OnClosing(sharesheet::SharesheetController* controller) override {}
+  bool HasActionView() override;
   bool ShouldShowAction(const apps::mojom::IntentPtr& intent,
                         bool contains_hosted_document) override;
   bool OnAcceleratorPressed(const ui::Accelerator& accelerator) override;

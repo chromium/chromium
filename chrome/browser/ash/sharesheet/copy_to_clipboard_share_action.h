@@ -30,7 +30,6 @@ class CopyToClipboardShareAction : public ::sharesheet::ShareAction {
 
  private:
   Profile* profile_;
-  ::sharesheet::SharesheetController* controller_ = nullptr;
 };
 
 }  // namespace sharesheet

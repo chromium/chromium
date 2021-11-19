@@ -194,6 +194,11 @@ void NearbyShareAction::LaunchAction(
       CreateAttachmentsFromIntent(profile_, std::move(intent)));
 }
 
+bool NearbyShareAction::HasActionView() {
+  // Return true so that the Nearby UI is shown after it has been selected.
+  return true;
+}
+
 bool NearbyShareAction::ShouldShowAction(const apps::mojom::IntentPtr& intent,
                                          bool contains_hosted_document) {
   bool valid_file_share =

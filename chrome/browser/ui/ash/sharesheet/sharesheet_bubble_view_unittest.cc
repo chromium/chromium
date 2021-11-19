@@ -242,8 +242,10 @@ TEST_F(SharesheetBubbleViewTest, ClickCopyToClipboard) {
   // Click on copy target.
   Click(targets_view->children()[0]);
 
-  // Bubble should have closed when copy target was pressed.
-  ASSERT_FALSE(IsSharesheetVisible());
+  // Bubble should stay open after copy target was pressed.
+  ASSERT_TRUE(IsSharesheetVisible());
+
+  CloseBubble();
 
   // Copy to clipboard was clicked on.
   histograms.ExpectBucketCount(

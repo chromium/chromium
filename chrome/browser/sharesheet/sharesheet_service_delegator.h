@@ -74,7 +74,7 @@ class SharesheetServiceDelegator {
 
   // Invoked immediately after an action has launched in the event that UI
   // changes need to occur at this point.
-  void OnActionLaunched();
+  void OnActionLaunched(bool has_action_view);
 
   void CloseBubble(SharesheetResult result);
 

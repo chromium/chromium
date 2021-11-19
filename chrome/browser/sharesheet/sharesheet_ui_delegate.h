@@ -36,7 +36,7 @@ class SharesheetUiDelegate : public SharesheetController {
 
   // Invoked immediately after an action has launched in the event that UI
   // changes need to occur at this point.
-  virtual void OnActionLaunched() {}
+  virtual void OnActionLaunched(bool has_action_view) {}
 };
 
 }  // namespace sharesheet

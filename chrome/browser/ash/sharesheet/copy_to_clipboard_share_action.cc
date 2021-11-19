@@ -11,7 +11,6 @@
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "chrome/browser/apps/app_service/file_utils.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/sharesheet/sharesheet_controller.h"
 #include "chrome/browser/sharesheet/sharesheet_types.h"
 #include "chrome/browser/ui/ash/sharesheet/sharesheet_util.h"
 #include "chrome/grit/generated_resources.h"
@@ -48,7 +47,6 @@ void CopyToClipboardShareAction::LaunchAction(
     ::sharesheet::SharesheetController* controller,
     views::View* root_view,
     apps::mojom::IntentPtr intent) {
-  controller_ = controller;
   ui::ScopedClipboardWriter clipboard_writer(ui::ClipboardBuffer::kCopyPaste);
 
   if (intent->share_text.has_value()) {
@@ -89,16 +87,10 @@ void CopyToClipboardShareAction::LaunchAction(
                   /*dismiss_text=*/absl::nullopt,
                   /*visible_on_lock_screen=*/false);
   ToastManager::Get()->Show(toast);
-
-  if (controller_) {
-    controller_->CloseBubble(::sharesheet::SharesheetResult::kSuccess);
-  }
 }
 
 void CopyToClipboardShareAction::OnClosing(
-    ::sharesheet::SharesheetController* controller) {
-  controller_ = nullptr;
-}
+    ::sharesheet::SharesheetController* controller) {}
 
 }  // namespace sharesheet
 }  // namespace ash

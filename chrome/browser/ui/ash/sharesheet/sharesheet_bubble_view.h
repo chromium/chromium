@@ -107,7 +107,7 @@ class SharesheetBubbleView : public views::BubbleDialogDelegateView,
   int height_ = 0;
   bool show_expanded_view_ = false;
   bool is_bubble_closing_ = false;
-  bool user_selection_made_ = false;
+  bool close_on_deactivate_ = true;
   bool escape_pressed_ = false;
 
   size_t keyboard_highlighted_target_ = 0;
