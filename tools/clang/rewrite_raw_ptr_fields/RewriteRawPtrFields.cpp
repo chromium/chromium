@@ -1112,9 +1112,11 @@ int main(int argc, const char* argv[]) {
   //
   // See also testcases in tests/affected-expr-original.cc
   auto templated_function_arg_matcher = forEachArgumentWithParam(
-      affected_expr_matcher, parmVarDecl(hasType(qualType(allOf(
-                                 findAll(qualType(substTemplateTypeParmType())),
-                                 unless(referenceType()))))));
+      affected_expr_matcher,
+      parmVarDecl(allOf(
+          hasType(qualType(allOf(findAll(qualType(substTemplateTypeParmType())),
+                                 unless(referenceType())))),
+          unless(hasAncestor(functionDecl(hasName("Unretained")))))));
   match_finder.addMatcher(callExpr(templated_function_arg_matcher),
                           &affected_expr_rewriter);
   // TODO(lukasza): It is unclear why |traverse| below is needed.  Maybe it can
