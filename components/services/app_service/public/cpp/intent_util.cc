@@ -445,6 +445,11 @@ bool IsGenericFileHandler(const apps::mojom::IntentPtr& intent,
   return false;
 }
 
+bool IsShareIntent(const apps::mojom::IntentPtr& intent) {
+  return intent->action == kIntentActionSend ||
+         intent->action == kIntentActionSendMultiple;
+}
+
 // TODO(crbug.com/853604): For glob match, it is currently only for Android
 // intent filters, so we will use the ARC intent filter implementation that is
 // transcribed from Android codebase, to prevent divergence from Android code.
@@ -531,25 +536,17 @@ bool MatchGlob(const std::string& value, const std::string& pattern) {
 }
 
 bool OnlyShareToDrive(const apps::mojom::IntentPtr& intent) {
-  if (intent->action == kIntentActionSend ||
-      intent->action == kIntentActionSendMultiple) {
-    if (intent->drive_share_url.has_value() &&
-        !intent->share_text.has_value() && !intent->files.has_value()) {
-      return true;
-    }
-  }
-  return false;
+  return IsShareIntent(intent) && intent->drive_share_url &&
+         !intent->share_text && !intent->files;
 }
 
 bool IsIntentValid(const apps::mojom::IntentPtr& intent) {
   // TODO(crbug.com/853604):Add more checks here to make this a general intent
-  // validity check. Check if this is a share intent with no file or text.
-  if (intent->action == kIntentActionSend ||
-      intent->action == kIntentActionSendMultiple) {
-    if (!intent->share_text.has_value() && !intent->files.has_value()) {
-      return false;
-    }
-  }
+  // validity check. Return false if this is a share intent with no file or
+  // text.
+  if (IsShareIntent(intent))
+    return intent->share_text || intent->files;
+
   return true;
 }
 

@@ -201,11 +201,10 @@ bool NearbyShareAction::HasActionView() {
 
 bool NearbyShareAction::ShouldShowAction(const apps::mojom::IntentPtr& intent,
                                          bool contains_hosted_document) {
-  bool valid_file_share =
-      (intent->action == apps_util::kIntentActionSend ||
-       intent->action == apps_util::kIntentActionSendMultiple) &&
-      intent->files && !intent->files->empty() && !intent->share_text &&
-      !intent->url && !intent->drive_share_url && !contains_hosted_document;
+  bool valid_file_share = apps_util::IsShareIntent(intent) && intent->files &&
+                          !intent->files->empty() && !intent->share_text &&
+                          !intent->url && !intent->drive_share_url &&
+                          !contains_hosted_document;
 
   bool valid_text_share = intent->action == apps_util::kIntentActionSend &&
                           intent->share_text && !intent->files;

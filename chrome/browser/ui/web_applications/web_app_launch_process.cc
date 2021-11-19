@@ -125,9 +125,7 @@ content::WebContents* WebAppLaunchProcess::Run() {
 const apps::ShareTarget* WebAppLaunchProcess::MaybeGetShareTarget() const {
   DCHECK(web_app_);
   bool is_share_intent =
-      params_.intent &&
-      (params_.intent->action == apps_util::kIntentActionSend ||
-       params_.intent->action == apps_util::kIntentActionSendMultiple);
+      params_.intent && apps_util::IsShareIntent(params_.intent);
   return is_share_intent && web_app_->share_target().has_value()
              ? &web_app_->share_target().value()
              : nullptr;

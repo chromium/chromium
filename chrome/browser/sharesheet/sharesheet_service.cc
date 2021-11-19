@@ -67,8 +67,7 @@ void SharesheetService::ShowBubble(content::WebContents* web_contents,
                                    SharesheetMetrics::LaunchSource source,
                                    DeliveredCallback delivered_callback,
                                    CloseCallback close_callback) {
-  DCHECK(intent->action == apps_util::kIntentActionSend ||
-         intent->action == apps_util::kIntentActionSendMultiple);
+  DCHECK(apps_util::IsShareIntent(intent));
   SharesheetMetrics::RecordSharesheetLaunchSource(source);
   PrepareToShowBubble(web_contents->GetWeakPtr(), std::move(intent),
                       contains_hosted_document, std::move(delivered_callback),
@@ -91,8 +90,7 @@ void SharesheetService::ShowNearbyShareBubbleForArc(
     DeliveredCallback delivered_callback,
     CloseCallback close_callback,
     ActionCleanupCallback action_cleanup_callback) {
-  DCHECK(intent->action == apps_util::kIntentActionSend ||
-         intent->action == apps_util::kIntentActionSendMultiple);
+  DCHECK(apps_util::IsShareIntent(intent));
 
   ShareAction* share_action = share_action_cache_->GetActionFromName(
       l10n_util::GetStringUTF16(IDS_NEARBY_SHARE_FEATURE_NAME));

@@ -170,11 +170,10 @@ class WebAppPublisherHelper : public AppRegistrarObserver,
                                apps::mojom::LaunchSource launch_source,
                                apps::mojom::WindowInfoPtr window_info);
 
-  content::WebContents* LaunchAppWithFiles(
-      const std::string& app_id,
-      int32_t event_flags,
-      apps::mojom::LaunchSource launch_source,
-      apps::mojom::FilePathsPtr file_paths);
+  void LaunchAppWithFiles(const std::string& app_id,
+                          int32_t event_flags,
+                          apps::mojom::LaunchSource launch_source,
+                          apps::mojom::FilePathsPtr file_paths);
 
   content::WebContents* MaybeNavigateExistingWindow(const std::string& app_id,
                                                     absl::optional<GURL> url);

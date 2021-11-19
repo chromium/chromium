@@ -40,6 +40,7 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "components/content_settings/core/common/content_settings.h"
+#include "components/services/app_service/public/cpp/intent_util.h"
 #include "components/services/app_service/public/cpp/publisher_base.h"
 #include "content/public/browser/clear_site_data_utils.h"
 #include "third_party/blink/public/mojom/manifest/capture_links.mojom.h"
@@ -685,7 +686,7 @@ content::WebContents* WebAppPublisherHelper::Launch(
   return LaunchAppWithParams(std::move(params));
 }
 
-content::WebContents* WebAppPublisherHelper::LaunchAppWithFiles(
+void WebAppPublisherHelper::LaunchAppWithFiles(
     const std::string& app_id,
     int32_t event_flags,
     apps::mojom::LaunchSource launch_source,
@@ -703,12 +704,13 @@ content::WebContents* WebAppPublisherHelper::LaunchAppWithFiles(
 
   if (base::FeatureList::IsEnabled(
           features::kDesktopPWAsFileHandlingSettingsGated)) {
-    NOTIMPLEMENTED();
-    return nullptr;
+    LaunchAppWithFilesCheckingUserPermission(app_id, std::move(params),
+                                             base::DoNothing());
+    return;
   }
 
   // The app will be launched for the currently active profile.
-  return LaunchAppWithParams(std::move(params));
+  LaunchAppWithParams(std::move(params));
 }
 
 void WebAppPublisherHelper::LaunchAppWithIntent(
@@ -1295,20 +1297,22 @@ void WebAppPublisherHelper::LaunchAppWithIntentImpl(
     return;
   }
 
+  bool is_file_handling_launch = intent->files && !intent->files->empty() &&
+                                 !apps_util::IsShareIntent(intent);
   auto params = apps::CreateAppLaunchParamsForIntent(
       app_id, event_flags, launch_source, display_id,
       ConvertDisplayModeToAppLaunchContainer(
           registrar().GetAppEffectiveDisplayMode(app_id)),
       std::move(intent), profile_);
-  if (params.launch_files.empty() ||
-      !base::FeatureList::IsEnabled(
+  if (is_file_handling_launch &&
+      base::FeatureList::IsEnabled(
           features::kDesktopPWAsFileHandlingSettingsGated)) {
-    std::move(callback).Run(LaunchAppWithParams(std::move(params)));
+    LaunchAppWithFilesCheckingUserPermission(app_id, std::move(params),
+                                             std::move(callback));
     return;
   }
 
-  LaunchAppWithFilesCheckingUserPermission(app_id, std::move(params),
-                                           std::move(callback));
+  std::move(callback).Run(LaunchAppWithParams(std::move(params)));
 }
 
 #if defined(OS_CHROMEOS)
@@ -1412,16 +1416,11 @@ void WebAppPublisherHelper::LaunchAppWithFilesCheckingUserPermission(
     const std::string& app_id,
     apps::AppLaunchParams params,
     base::OnceCallback<void(content::WebContents*)> callback) {
-  absl::optional<GURL> file_handler_url =
-      provider_->os_integration_manager().GetMatchingFileHandlerURL(
-          app_id, params.launch_files);
-  if (!file_handler_url) {
-    NOTREACHED() << "App " << app_id
-                 << " was asked to launch with files it can't handle.";
-    std::move(callback).Run(nullptr);
-    return;
-  }
+  DCHECK(
+      provider_->os_integration_manager().IsFileHandlingAPIAvailable(app_id));
 
+  // TODO(estade): move the system app check into
+  // WebAppRegistrar::GetFileHandlerApprovalState().
   const WebApp* web_app = provider_->registrar().GetAppById(app_id);
   DCHECK(web_app);
   if (web_app->IsSystemApp()) {
@@ -1430,7 +1429,6 @@ void WebAppPublisherHelper::LaunchAppWithFilesCheckingUserPermission(
   }
 
   std::vector<base::FilePath> file_paths = params.launch_files;
-
   auto launch_callback =
       base::BindOnce(&WebAppPublisherHelper::OnFileHandlerDialogCompleted,
                      weak_ptr_factory_.GetWeakPtr(), app_id, std::move(params),

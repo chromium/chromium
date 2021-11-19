@@ -9,6 +9,7 @@
 #include "base/path_service.h"
 #include "base/strings/string_util.h"
 #include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "build/branding_buildflags.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/ash/file_manager/app_id.h"
@@ -26,6 +27,8 @@
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
+#include "chrome/browser/web_applications/web_app_registry_update.h"
+#include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
@@ -153,6 +156,10 @@ class FileTasksBrowserTestBase
     }
     EXPECT_EQ(0, remaining);
   }
+
+ private:
+  base::test::ScopedFeatureList feature_list_{
+      blink::features::kFileHandlingAPI};
 };
 
 class FileTasksBrowserTest : public FileTasksBrowserTestBase {
@@ -498,6 +505,11 @@ IN_PROC_BROWSER_TEST_P(FileTasksBrowserTest, ExecuteWebApp) {
         web_app::test::InstallWebApp(profile, std::move(web_app_info));
     task_descriptor =
         TaskDescriptor(app_id, TaskType::TASK_TYPE_WEB_APP, "activity name");
+    // Skip past the permission dialog.
+    web_app::ScopedRegistryUpdate(
+        &web_app::WebAppProvider::GetForTest(profile)->sync_bridge())
+        ->UpdateApp(app_id)
+        ->SetFileHandlerApprovalState(web_app::ApiApprovalState::kAllowed);
   } else {
     // Use an existing SWA in ash - Media app.
     task_descriptor =
