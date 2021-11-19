@@ -31,6 +31,7 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/dcheck_is_on.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/threading/thread_checker.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -144,10 +145,24 @@ UnretainedWrapper<T> Unretained(T* value) {
 }
 
 template <typename T>
+UnretainedWrapper<T> Unretained(const raw_ptr<T>& value) {
+  static_assert(!WTF::IsGarbageCollectedType<T>::value,
+                "WTF::Unretained() + GCed type is forbidden");
+  return UnretainedWrapper<T>(value.get());
+}
+
+template <typename T>
 CrossThreadUnretainedWrapper<T> CrossThreadUnretained(T* value) {
   static_assert(!WTF::IsGarbageCollectedType<T>::value,
                 "CrossThreadUnretained() + GCed type is forbidden");
   return CrossThreadUnretainedWrapper<T>(value);
+}
+
+template <typename T>
+CrossThreadUnretainedWrapper<T> CrossThreadUnretained(const raw_ptr<T>& value) {
+  static_assert(!WTF::IsGarbageCollectedType<T>::value,
+                "CrossThreadUnretained() + GCed type is forbidden");
+  return CrossThreadUnretainedWrapper<T>(value.get());
 }
 
 namespace internal {

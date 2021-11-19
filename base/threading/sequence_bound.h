@@ -38,7 +38,7 @@ struct DefaultCrossThreadBindTraits {
   }
 
   template <typename T>
-  static inline auto Unretained(T* ptr) {
+  static inline auto Unretained(T ptr) {
     return base::Unretained(ptr);
   }
 

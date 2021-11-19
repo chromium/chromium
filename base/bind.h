@@ -12,6 +12,7 @@
 
 #include "base/bind_internal.h"
 #include "base/compiler_specific.h"
+#include "base/memory/raw_ptr.h"
 #include "base/template_util.h"
 #include "build/build_config.h"
 
@@ -137,6 +138,11 @@ BindFailedCheckPreviousErrors BindRepeating(...);
 template <typename T>
 inline internal::UnretainedWrapper<T> Unretained(T* o) {
   return internal::UnretainedWrapper<T>(o);
+}
+
+template <typename T>
+inline internal::UnretainedWrapper<T> Unretained(const raw_ptr<T>& o) {
+  return internal::UnretainedWrapper<T>(o.get());
 }
 
 // RetainedRef() accepts a ref counted object and retains a reference to it.

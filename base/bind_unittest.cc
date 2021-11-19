@@ -11,6 +11,7 @@
 
 #include "base/callback.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string_number_conversions.h"
@@ -1711,6 +1712,19 @@ TEST_F(BindTest, BindNoexcept) {
   EXPECT_EQ(
       42, base::BindOnce(&BindTest::ConstNoexceptMethod, base::Unretained(this))
               .Run());
+}
+
+int PingPong(int* i_ptr) {
+  return *i_ptr;
+}
+
+TEST_F(BindTest, BindAndCallbacks) {
+  int i = 123;
+  raw_ptr<int> p = &i;
+
+  auto callback = base::BindOnce(PingPong, base::Unretained(p));
+  int res = std::move(callback).Run();
+  EXPECT_EQ(123, res);
 }
 
 // Test null callbacks cause a DCHECK.
