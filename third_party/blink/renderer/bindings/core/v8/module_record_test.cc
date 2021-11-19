@@ -21,6 +21,7 @@
 #include "third_party/blink/renderer/core/testing/module_test_base.h"
 #include "third_party/blink/renderer/platform/bindings/v8_binding.h"
 #include "third_party/blink/renderer/platform/bindings/v8_per_context_data.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_deque.h"
 #include "v8/include/v8.h"
 
 namespace blink {
