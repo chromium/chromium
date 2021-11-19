@@ -38,9 +38,16 @@ def _RunApkAnalyzer(apk_path, mapping_path):
     args.extend(['--proguard-mappings', mapping_path])
   env = os.environ.copy()
   env['JAVA_HOME'] = path_util.GetJavaHome()
-  output = subprocess.check_output(args, env=env).decode('ascii')
+  result = subprocess.run(args,
+                          env=env,
+                          encoding='utf8',
+                          capture_output=True,
+                          check=True)
+  stderr = re.sub(r'Successfully loaded.*?\n', '', result.stderr)
+  if stderr.strip():
+    raise Exception('Unexpected stderr:\n' + stderr)
   data = []
-  for line in output.splitlines():
+  for line in result.stdout.splitlines():
     try:
       vals = line.split()
       # We want to name these columns so we know exactly which is which.
