@@ -60,9 +60,6 @@ const CGFloat kGoogleSearchDoodleShrunkHeight = 68;
 // Height for the shrunk logo frame.
 // TODO(crbug.com/1170491): clean up post-launch.
 const CGFloat kGoogleSearchLogoShrunkHeight = 36;
-
-// Height for the doodle frame when Google is not the default search engine.
-const CGFloat kNonGoogleSearchDoodleHeight = 60;
 }
 
 namespace content_suggestions {
@@ -74,8 +71,9 @@ const CGFloat kReturnToRecentTabSectionBottomMargin = 25;
 CGFloat doodleHeight(BOOL logoIsShowing,
                      BOOL doodleIsShowing,
                      UITraitCollection* traitCollection) {
+  // For users with non-Google default search engine, there is no doodle.
   if (!IsRegularXRegularSizeClass(traitCollection) && !logoIsShowing) {
-    return kNonGoogleSearchDoodleHeight;
+    return 0;
   }
 
   if (ShouldShrinkLogoForStartSurface() && logoIsShowing) {
