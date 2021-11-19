@@ -871,14 +871,12 @@ apps::mojom::WindowMode WebAppPublisherHelper::GetWindowMode(
 
 void WebAppPublisherHelper::SetWindowMode(const std::string& app_id,
                                           apps::mojom::WindowMode window_mode) {
-  auto display_mode = blink::mojom::DisplayMode::kUndefined;
+  auto display_mode = blink::mojom::DisplayMode::kStandalone;
   switch (window_mode) {
-    case apps::mojom::WindowMode::kUnknown:
-      display_mode = blink::mojom::DisplayMode::kUndefined;
-      break;
     case apps::mojom::WindowMode::kBrowser:
       display_mode = blink::mojom::DisplayMode::kBrowser;
       break;
+    case apps::mojom::WindowMode::kUnknown:
     case apps::mojom::WindowMode::kWindow:
       display_mode = blink::mojom::DisplayMode::kStandalone;
       break;
