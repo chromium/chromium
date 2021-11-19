@@ -5,9 +5,11 @@
 #ifndef SANDBOX_WIN_SRC_THREADPOOL_H_
 #define SANDBOX_WIN_SRC_THREADPOOL_H_
 
+#include <stddef.h>
+
+#include <algorithm>
 #include <list>
-#include "base/synchronization/lock.h"
-#include "base/win/windows_types.h"
+#include "sandbox/win/src/crosscall_server.h"
 
 namespace sandbox {
 // This function signature is required as the callback when an IPC call fires.
@@ -78,7 +80,7 @@ class ThreadPool {
   typedef std::list<PoolObject> PoolObjects;
   PoolObjects pool_objects_;
   // This lock protects the list of pool wait objects.
-  base::Lock lock_;
+  CRITICAL_SECTION lock_;
 };
 
 }  // namespace sandbox

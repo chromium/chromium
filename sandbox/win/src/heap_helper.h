@@ -5,7 +5,9 @@
 #ifndef SANDBOX_WIN_SRC_HEAP_HELPER_H_
 #define SANDBOX_WIN_SRC_HEAP_HELPER_H_
 
-#include "base/win/windows_types.h"
+#include <windows.h>
+
+#include "base/win/windows_version.h"
 
 namespace sandbox {
 // These helper functions are not expected to be used generally, but are exposed

@@ -5,6 +5,8 @@
 #ifndef SANDBOX_WIN_SRC_SANDBOX_POLICY_BASE_H_
 #define SANDBOX_WIN_SRC_SANDBOX_POLICY_BASE_H_
 
+#include <windows.h>
+
 #include <stddef.h>
 #include <stdint.h>
 
@@ -16,19 +18,18 @@
 #include "base/compiler_specific.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/process/launch.h"
-#include "base/synchronization/lock.h"
 #include "base/win/scoped_handle.h"
-#include "base/win/windows_types.h"
 #include "sandbox/win/src/app_container_base.h"
+#include "sandbox/win/src/crosscall_server.h"
 #include "sandbox/win/src/handle_closer.h"
 #include "sandbox/win/src/ipc_tags.h"
 #include "sandbox/win/src/policy_engine_opcodes.h"
 #include "sandbox/win/src/policy_engine_params.h"
 #include "sandbox/win/src/sandbox_policy.h"
+#include "sandbox/win/src/win_utils.h"
 
 namespace sandbox {
 
-class Dispatcher;
 class LowLevelPolicy;
 class PolicyDiagnostic;
 class PolicyInfo;
@@ -102,6 +103,8 @@ class PolicyBase final : public TargetPolicy {
                         base::win::ScopedHandle* lockdown,
                         base::win::ScopedHandle* lowbox);
 
+  PSID GetLowBoxSid() const;
+
   // Adds a target process to the internal list of targets. Internally a
   // call to TargetProcess::Init() is issued.
   ResultCode AddTarget(std::unique_ptr<TargetProcess> target);
@@ -139,7 +142,7 @@ class PolicyBase final : public TargetPolicy {
                              const wchar_t* pattern);
 
   // This lock synchronizes operations on the targets_ collection.
-  base::Lock lock_;
+  CRITICAL_SECTION lock_;
   // Maintains the list of target process associated with this policy.
   // The policy takes ownership of them.
   typedef std::list<std::unique_ptr<TargetProcess>> TargetSet;

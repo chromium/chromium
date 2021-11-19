@@ -19,7 +19,10 @@
 #ifndef SANDBOX_WIN_SRC_SANDBOX_H_
 #define SANDBOX_WIN_SRC_SANDBOX_H_
 
-#if defined(SANDBOX_FUZZ_TARGET)
+#if !defined(SANDBOX_FUZZ_TARGET)
+#include <windows.h>
+#include <winsock2.h>
+#else
 #include "sandbox/win/fuzzer/fuzzer_types.h"
 #endif
 
@@ -28,7 +31,6 @@
 #include <vector>
 
 #include "base/memory/ref_counted.h"
-#include "base/win/windows_types.h"
 #include "sandbox/win/src/sandbox_policy.h"
 #include "sandbox/win/src/sandbox_types.h"
 

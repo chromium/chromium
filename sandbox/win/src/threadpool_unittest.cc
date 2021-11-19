@@ -4,8 +4,6 @@
 
 #include "sandbox/win/src/threadpool.h"
 
-#include <windows.h>
-
 #include <stdint.h>
 
 #include "testing/gtest/include/gtest/gtest.h"

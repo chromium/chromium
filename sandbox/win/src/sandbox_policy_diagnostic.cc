@@ -384,7 +384,7 @@ PolicyDiagnostic::PolicyDiagnostic(PolicyBase* policy) {
   DCHECK(policy);
   // TODO(crbug/997273) Add more fields once webui plumbing is complete.
   {
-    base::AutoLock lock(policy->lock_);
+    AutoLock lock(&policy->lock_);
     for (auto&& target_process : policy->targets_) {
       process_ids_.push_back(
           base::strict_cast<uint32_t>(target_process->ProcessId()));

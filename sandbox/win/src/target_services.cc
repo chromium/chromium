@@ -4,9 +4,6 @@
 
 #include "sandbox/win/src/target_services.h"
 
-#include <windows.h>
-#include <winsock2.h>
-
 #include <new>
 
 #include <process.h>

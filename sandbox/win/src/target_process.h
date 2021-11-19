@@ -5,6 +5,8 @@
 #ifndef SANDBOX_WIN_SRC_TARGET_PROCESS_H_
 #define SANDBOX_WIN_SRC_TARGET_PROCESS_H_
 
+#include <windows.h>
+
 #include <stddef.h>
 #include <stdint.h>
 
@@ -15,12 +17,11 @@
 #include "base/win/scoped_handle.h"
 #include "base/win/scoped_process_information.h"
 #include "base/win/sid.h"
-#include "base/win/windows_types.h"
+#include "sandbox/win/src/crosscall_server.h"
 #include "sandbox/win/src/sandbox_types.h"
 
 namespace sandbox {
 
-class Dispatcher;
 class SharedMemIPCServer;
 class Sid;
 class ThreadPool;

@@ -18,7 +18,6 @@
 #include "sandbox/win/src/registry_policy.h"
 #include "sandbox/win/src/sandbox.h"
 #include "sandbox/win/src/sandbox_nt_util.h"
-#include "sandbox/win/src/win_utils.h"
 
 namespace {
 

@@ -4,8 +4,6 @@
 
 #include "sandbox/win/src/target_process.h"
 
-#include <windows.h>
-
 #include <stddef.h>
 #include <stdint.h>
 

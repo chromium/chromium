@@ -4,8 +4,6 @@
 
 #include "sandbox/win/src/restricted_token.h"
 
-#include <windows.h>
-
 #include <stddef.h>
 
 #include <memory>
@@ -26,29 +24,6 @@ std::unique_ptr<BYTE[]> GetTokenInfo(const base::win::ScopedHandle& token,
   if (*error != ERROR_SUCCESS)
     return nullptr;
   return buffer;
-}
-
-LUID ConvertToLuid(const CHROME_LUID& luid) {
-  LUID ret;
-  memcpy(&ret, &luid, sizeof(luid));
-  return ret;
-}
-
-CHROME_LUID ConvertToChromeLuid(const LUID& luid) {
-  CHROME_LUID ret;
-  memcpy(&ret, &luid, sizeof(luid));
-  return ret;
-}
-
-std::vector<SID_AND_ATTRIBUTES> ConvertToAttributes(
-    const std::vector<base::win::Sid>& sids,
-    DWORD attributes) {
-  std::vector<SID_AND_ATTRIBUTES> ret(sids.size());
-  for (size_t i = 0; i < sids.size(); ++i) {
-    ret[i].Attributes = attributes;
-    ret[i].Sid = sids[i].GetPSID();
-  }
-  return ret;
 }
 
 }  // namespace
@@ -93,24 +68,48 @@ DWORD RestrictedToken::GetRestrictedToken(
   if (!init_)
     return ERROR_NO_TOKEN;
 
-  std::vector<SID_AND_ATTRIBUTES> deny_sids =
-      ConvertToAttributes(sids_for_deny_only_, SE_GROUP_USE_FOR_DENY_ONLY);
-  std::vector<SID_AND_ATTRIBUTES> restrict_sids =
-      ConvertToAttributes(sids_to_restrict_, 0);
-  std::vector<LUID_AND_ATTRIBUTES> disable_privs(privileges_to_disable_.size());
-  for (size_t i = 0; i < privileges_to_disable_.size(); ++i) {
-    disable_privs[i].Attributes = 0;
-    disable_privs[i].Luid = ConvertToLuid(privileges_to_disable_[i]);
+  size_t deny_size = sids_for_deny_only_.size();
+  size_t restrict_size = sids_to_restrict_.size();
+  size_t privileges_size = privileges_to_disable_.size();
+
+  SID_AND_ATTRIBUTES* deny_only_array = nullptr;
+  if (deny_size) {
+    deny_only_array = new SID_AND_ATTRIBUTES[deny_size];
+
+    for (unsigned int i = 0; i < sids_for_deny_only_.size(); ++i) {
+      deny_only_array[i].Attributes = SE_GROUP_USE_FOR_DENY_ONLY;
+      deny_only_array[i].Sid = sids_for_deny_only_[i].GetPSID();
+    }
+  }
+
+  SID_AND_ATTRIBUTES* sids_to_restrict_array = nullptr;
+  if (restrict_size) {
+    sids_to_restrict_array = new SID_AND_ATTRIBUTES[restrict_size];
+
+    for (unsigned int i = 0; i < restrict_size; ++i) {
+      sids_to_restrict_array[i].Attributes = 0;
+      sids_to_restrict_array[i].Sid = sids_to_restrict_[i].GetPSID();
+    }
+  }
+
+  LUID_AND_ATTRIBUTES* privileges_to_disable_array = nullptr;
+  if (privileges_size) {
+    privileges_to_disable_array = new LUID_AND_ATTRIBUTES[privileges_size];
+
+    for (unsigned int i = 0; i < privileges_size; ++i) {
+      privileges_to_disable_array[i].Attributes = 0;
+      privileges_to_disable_array[i].Luid = privileges_to_disable_[i];
+    }
   }
 
   bool result = true;
   HANDLE new_token_handle = nullptr;
-  if (!deny_sids.empty() || !restrict_sids.empty() || !disable_privs.empty()) {
+  if (deny_size || restrict_size || privileges_size) {
     result = ::CreateRestrictedToken(
-        effective_token_.Get(), 0, static_cast<DWORD>(deny_sids.size()),
-        deny_sids.data(), static_cast<DWORD>(disable_privs.size()),
-        disable_privs.data(), static_cast<DWORD>(restrict_sids.size()),
-        restrict_sids.data(), &new_token_handle);
+        effective_token_.Get(), 0, static_cast<DWORD>(deny_size),
+        deny_only_array, static_cast<DWORD>(privileges_size),
+        privileges_to_disable_array, static_cast<DWORD>(restrict_size),
+        sids_to_restrict_array, &new_token_handle);
   } else {
     // Duplicate the token even if it's not modified at this point
     // because any subsequent changes to this token would also affect the
@@ -119,9 +118,19 @@ DWORD RestrictedToken::GetRestrictedToken(
                                 nullptr, SecurityIdentification, TokenPrimary,
                                 &new_token_handle);
   }
+  auto last_error = ::GetLastError();
+
+  if (deny_only_array)
+    delete[] deny_only_array;
+
+  if (sids_to_restrict_array)
+    delete[] sids_to_restrict_array;
+
+  if (privileges_to_disable_array)
+    delete[] privileges_to_disable_array;
 
   if (!result)
-    return ::GetLastError();
+    return last_error;
 
   base::win::ScopedHandle new_token(new_token_handle);
 
@@ -197,7 +206,7 @@ DWORD RestrictedToken::GetRestrictedTokenForImpersonation(
 }
 
 DWORD RestrictedToken::AddAllSidsForDenyOnly(
-    const std::vector<base::win::Sid>& exceptions) {
+    std::vector<base::win::Sid>* exceptions) {
   DCHECK(init_);
   if (!init_)
     return ERROR_NO_TOKEN;
@@ -216,10 +225,12 @@ DWORD RestrictedToken::AddAllSidsForDenyOnly(
     if ((token_groups->Groups[i].Attributes & SE_GROUP_INTEGRITY) == 0 &&
         (token_groups->Groups[i].Attributes & SE_GROUP_LOGON_ID) == 0) {
       bool should_ignore = false;
-      for (const base::win::Sid& sid : exceptions) {
-        if (sid.Equal(token_groups->Groups[i].Sid)) {
-          should_ignore = true;
-          break;
+      if (exceptions) {
+        for (unsigned int j = 0; j < exceptions->size(); ++j) {
+          if ((*exceptions)[j].Equal(token_groups->Groups[i].Sid)) {
+            should_ignore = true;
+            break;
+          }
         }
       }
       if (!should_ignore) {
@@ -263,7 +274,7 @@ DWORD RestrictedToken::AddUserSidForDenyOnly() {
 }
 
 DWORD RestrictedToken::DeleteAllPrivileges(
-    const std::vector<std::wstring>& exceptions) {
+    const std::vector<std::wstring>* exceptions) {
   DCHECK(init_);
   if (!init_)
     return ERROR_NO_TOKEN;
@@ -281,18 +292,19 @@ DWORD RestrictedToken::DeleteAllPrivileges(
   // Build the list of privileges to disable
   for (unsigned int i = 0; i < token_privileges->PrivilegeCount; ++i) {
     bool should_ignore = false;
-    for (const std::wstring& name : exceptions) {
-      LUID luid = {};
-      ::LookupPrivilegeValue(nullptr, name.c_str(), &luid);
-      if (token_privileges->Privileges[i].Luid.HighPart == luid.HighPart &&
-          token_privileges->Privileges[i].Luid.LowPart == luid.LowPart) {
-        should_ignore = true;
-        break;
+    if (exceptions) {
+      for (unsigned int j = 0; j < exceptions->size(); ++j) {
+        LUID luid = {0};
+        ::LookupPrivilegeValue(nullptr, (*exceptions)[j].c_str(), &luid);
+        if (token_privileges->Privileges[i].Luid.HighPart == luid.HighPart &&
+            token_privileges->Privileges[i].Luid.LowPart == luid.LowPart) {
+          should_ignore = true;
+          break;
+        }
       }
     }
     if (!should_ignore) {
-      privileges_to_disable_.push_back(
-          ConvertToChromeLuid(token_privileges->Privileges[i].Luid));
+      privileges_to_disable_.push_back(token_privileges->Privileges[i].Luid);
     }
   }
 
@@ -305,8 +317,8 @@ DWORD RestrictedToken::DeletePrivilege(const wchar_t* privilege) {
     return ERROR_NO_TOKEN;
 
   LUID luid = {0};
-  if (::LookupPrivilegeValue(nullptr, privilege, &luid))
-    privileges_to_disable_.push_back(ConvertToChromeLuid(luid));
+  if (LookupPrivilegeValue(nullptr, privilege, &luid))
+    privileges_to_disable_.push_back(luid);
   else
     return ::GetLastError();
 
