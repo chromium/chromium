@@ -882,8 +882,9 @@ IN_PROC_BROWSER_TEST_F(BackgroundFetchBrowserTest,
       "StartFetchFromServiceWorker()", "permissionerror"));
 }
 
+// TODO(crbug.com/1271962): Flaky on many platforms.
 IN_PROC_BROWSER_TEST_F(BackgroundFetchBrowserTest,
-                       FetchFromServiceWorkerWithAsk) {
+                       DISABLED_FetchFromServiceWorkerWithAsk) {
   auto* settings_map =
       HostContentSettingsMapFactory::GetForProfile(browser()->profile());
   DCHECK(settings_map);
@@ -899,8 +900,9 @@ IN_PROC_BROWSER_TEST_F(BackgroundFetchBrowserTest,
             offline_items_collection::OfflineItemState::PAUSED);
 }
 
+// TODO(crbug.com/1271962): Flaky on many platforms.
 IN_PROC_BROWSER_TEST_F(BackgroundFetchBrowserTest,
-                       FetchFromChildFrameWithPermissions) {
+                       DISABLED_FetchFromChildFrameWithPermissions) {
   // Give the needed permissions. The fetch should still start in a paused
   // state.
   SetPermission(ContentSettingsType::AUTOMATIC_DOWNLOADS,
@@ -915,7 +917,9 @@ IN_PROC_BROWSER_TEST_F(BackgroundFetchBrowserTest,
             offline_items_collection::OfflineItemState::PAUSED);
 }
 
-IN_PROC_BROWSER_TEST_F(BackgroundFetchBrowserTest, FetchFromChildFrameWithAsk) {
+// TODO(crbug.com/1271962): Flaky on many platforms.
+IN_PROC_BROWSER_TEST_F(BackgroundFetchBrowserTest,
+                       DISABLED_FetchFromChildFrameWithAsk) {
   SetPermission(ContentSettingsType::AUTOMATIC_DOWNLOADS, CONTENT_SETTING_ASK);
 
   // The fetch starts in a paused state.
