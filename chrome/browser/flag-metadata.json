@@ -4236,6 +4236,11 @@
     "expiry_milestone": 98
   },
   {
+    "name": "omnibox-zero-suggest-prefetching",
+    "owners": [ "mahmadi", "chrome-omnibox-team@google.com" ],
+    "expiry_milestone": 100
+  },
+  {
     "name": "optimization-guide-model-downloading",
     "owners": [ "mcrouse", "chrome-intelligence-core@google.com" ],
     "expiry_milestone": 95

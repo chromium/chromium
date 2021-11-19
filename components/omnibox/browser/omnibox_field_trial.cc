@@ -958,6 +958,12 @@ const base::FeatureParam<int>
         "ShortBookmarkSuggestionsByTotalInputLengthThreshold",
         3);
 
+// Zero Suggest
+const base::FeatureParam<int> kZeroSuggestCacheDurationSec(
+    &omnibox::kZeroSuggestPrefetching,
+    "ZeroSuggestCacheDurationSec",
+    0);
+
 }  // namespace OmniboxFieldTrial
 
 std::string OmniboxFieldTrial::internal::GetValueForRuleInContext(

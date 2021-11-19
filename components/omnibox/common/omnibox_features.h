@@ -6,6 +6,7 @@
 #define COMPONENTS_OMNIBOX_COMMON_OMNIBOX_FEATURES_H_
 
 #include "base/feature_list.h"
+#include "base/metrics/field_trial_params.h"
 
 namespace omnibox {
 
@@ -43,6 +44,7 @@ extern const base::Feature kOnFocusSuggestionsContextualWeb;
 extern const base::Feature kOnFocusSuggestionsContextualWebAllowSRP;
 extern const base::Feature kOnFocusSuggestionsContextualWebOnContent;
 extern const base::Feature kLocalHistoryZeroSuggest;
+extern const base::Feature kZeroSuggestPrefetching;
 // Related, kMaxZeroSuggestMatches.
 
 // On Device Head Suggest.

@@ -1241,6 +1241,22 @@ const FeatureEntry::FeatureVariation kMaxZeroSuggestMatchesVariations[] = {
     {"15", kMaxZeroSuggestMatches15, base::size(kMaxZeroSuggestMatches15),
      nullptr}};
 
+constexpr FeatureEntry::FeatureParam kOmniboxZeroSuggestCacheDuration15Secs[] =
+    {{"ZeroSuggestCacheDurationSec", "15"}};
+constexpr FeatureEntry::FeatureParam kOmniboxZeroSuggestCacheDuration30Secs[] =
+    {{"ZeroSuggestCacheDurationSec", "30"}};
+constexpr FeatureEntry::FeatureParam kOmniboxZeroSuggestCacheDuration60Secs[] =
+    {{"ZeroSuggestCacheDurationSec", "60"}};
+
+constexpr FeatureEntry::FeatureVariation
+    kOmniboxZeroSuggestPrefetchingVariations[] = {
+        {"15 seconds", kOmniboxZeroSuggestCacheDuration15Secs,
+         base::size(kOmniboxZeroSuggestCacheDuration15Secs), nullptr},
+        {"30 seconds", kOmniboxZeroSuggestCacheDuration30Secs,
+         base::size(kOmniboxZeroSuggestCacheDuration30Secs), nullptr},
+        {"60 seconds", kOmniboxZeroSuggestCacheDuration60Secs,
+         base::size(kOmniboxZeroSuggestCacheDuration60Secs), nullptr}};
+
 const FeatureEntry::FeatureParam kOmniboxUIMaxAutocompleteMatches3[] = {
     {OmniboxFieldTrial::kUIMaxAutocompleteMatchesParam, "3"}};
 const FeatureEntry::FeatureParam kOmniboxUIMaxAutocompleteMatches4[] = {
@@ -4553,6 +4569,13 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kOmniboxTrendingZeroPrefixSuggestionsOnNTPDescription,
      kOsAll,
      FEATURE_VALUE_TYPE(omnibox::kOmniboxTrendingZeroPrefixSuggestionsOnNTP)},
+
+    {"omnibox-zero-suggest-prefetching",
+     flag_descriptions::kOmniboxZeroSuggestPrefetchingName,
+     flag_descriptions::kOmniboxZeroSuggestPrefetchingDescription, kOsAll,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(omnibox::kZeroSuggestPrefetching,
+                                    kOmniboxZeroSuggestPrefetchingVariations,
+                                    "OmniboxBundledExperimentV1")},
 
 #if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_MAC) || \
     defined(OS_WIN) || defined(OS_FUCHSIA)

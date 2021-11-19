@@ -157,6 +157,10 @@ const base::Feature kOnFocusSuggestionsContextualWebOnContent{
 const base::Feature kLocalHistoryZeroSuggest{
     "LocalHistoryZeroSuggest", enabled_by_default_desktop_android};
 
+// Enables prefetching of the zero prefix suggestions for signed-in users.
+const base::Feature kZeroSuggestPrefetching{"ZeroSuggestPrefetching",
+                                            base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Features to provide non personalized head search suggestion from a compact
 // on device model. More specifically, feature name with suffix Incognito /
 // NonIncognito will only controls behaviors under incognito / non-incognito

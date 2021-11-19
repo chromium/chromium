@@ -53784,6 +53784,7 @@ from previous Chrome versions.
   <int value="1812368073" label="enable-new-app-list-mixer"/>
   <int value="1813370929"
       label="MigrateDefaultChromeAppToWebAppsNonGSuite:enabled"/>
+  <int value="1813741175" label="ZeroSuggestPrefetching:enabled"/>
   <int value="1814039202"
       label="CrossOriginEmbedderPolicyCredentialless:disabled"/>
   <int value="1814310862" label="WebKioskEnableLacros:enabled"/>
@@ -53892,6 +53893,7 @@ from previous Chrome versions.
   <int value="1888812860" label="ChromeModernAlternateCardLayout:enabled"/>
   <int value="1889076955" label="disable-app-link"/>
   <int value="1889198874" label="TabSwitcherOnReturn:disabled"/>
+  <int value="1889885696" label="ZeroSuggestPrefetching:disabled"/>
   <int value="1890329937"
       label="SafeBrowsingEnhancedProtectionMessageInInterstitials:disabled"/>
   <int value="1891210939" label="enable-blink-features"/>

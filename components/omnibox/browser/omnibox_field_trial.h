@@ -548,6 +548,12 @@ extern const base::FeatureParam<bool>
 extern const base::FeatureParam<int>
     kShortBookmarkSuggestionsByTotalInputLengthThreshold;
 
+// Zero Suggest
+// Specifies the HTTP cache duration for the zero prefix suggest responses. If
+// the provided value is a positive number, the cache duration will be sent as a
+// query string parameter in the zero suggest requests.
+extern const base::FeatureParam<int> kZeroSuggestCacheDurationSec;
+
 // New params should be inserted above this comment and formatted as:
 // - Short comment categorizing the relevant features & params.
 // - Optional: `bool Is[FeatureName]Enabled();` helpers that check if the

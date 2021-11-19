@@ -1744,6 +1744,14 @@ const char kOmniboxTrendingZeroPrefixSuggestionsOnNTPDescription[] =
     "Enables trending zero prefix suggestions for signed-in users with no or "
     "insufficient search history.";
 
+const char kOmniboxZeroSuggestPrefetchingName[] =
+    "Omnibox Zero Prefix Suggestion Prefetching";
+const char kOmniboxZeroSuggestPrefetchingDescription[] =
+    "Enables prefetching of the zero prefix suggestions for signed-in users. "
+    "The options indicate the duration for which the response will be stored "
+    "in the HTTP cache. If no or zero duration is provided, the existing "
+    "in-memory cache will used instead of HTTP cache.";
+
 const char kOmniboxRichAutocompletionName[] = "Omnibox Rich Autocompletion";
 const char kOmniboxRichAutocompletionDescription[] =
     "Allow autocompletion for titles and non-prefixes. I.e. suggestions whose "
