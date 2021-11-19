@@ -33,8 +33,7 @@
 #include "base/mac/mac_util.h"
 #endif
 
-static const char kMainWebrtcTestHtmlPage[] =
-    "/webrtc/webrtc_jsep01_test.html";
+static const char kMainWebrtcTestHtmlPage[] = "/webrtc/webrtc_jsep01_test.html";
 
 static const char kKeygenAlgorithmRsa[] =
     "{ name: \"RSASSA-PKCS1-v1_5\", modulusLength: 2048, publicExponent: "
@@ -96,8 +95,8 @@ class WebRtcBrowserTest : public WebRtcTestBase {
     CloseDatabase(left_tab_);
     DeleteDatabase(left_tab_);
 
-    SetupPeerconnectionWithCertificateAndLocalStream(
-        left_tab_, "gCertificateClone");
+    SetupPeerconnectionWithCertificateAndLocalStream(left_tab_,
+                                                     "gCertificateClone");
     SetupPeerconnectionWithLocalStream(right_tab_, cert_keygen_alg);
 
     NegotiateCall(left_tab_, right_tab_);
@@ -161,21 +160,12 @@ class WebRtcBrowserTest : public WebRtcTestBase {
   content::WebContents* right_tab_;
 };
 
-// TODO(898546): many of these tests are failing on ASan builds.
-// They are also flaky crashers on Linux.
-#if defined(ADDRESS_SANITIZER) || defined(OS_LINUX) || defined(OS_CHROMEOS)
-#define MAYBE_WebRtcBrowserTest DISABLED_WebRtcBrowserTest
-class DISABLED_WebRtcBrowserTest : public WebRtcBrowserTest {};
-#else
-#define MAYBE_WebRtcBrowserTest WebRtcBrowserTest
-#endif
-
-IN_PROC_BROWSER_TEST_F(MAYBE_WebRtcBrowserTest,
+IN_PROC_BROWSER_TEST_F(WebRtcBrowserTest,
                        RunsAudioVideoWebRTCCallInTwoTabsVP8) {
   RunsAudioVideoWebRTCCallInTwoTabs("VP8");
 }
 
-IN_PROC_BROWSER_TEST_F(MAYBE_WebRtcBrowserTest,
+IN_PROC_BROWSER_TEST_F(WebRtcBrowserTest,
                        RunsAudioVideoWebRTCCallInTwoTabsVP9) {
   RunsAudioVideoWebRTCCallInTwoTabs("VP9");
 }
@@ -187,9 +177,10 @@ IN_PROC_BROWSER_TEST_F(WebRtcBrowserTest,
   // Only run test if run-time feature corresponding to |rtc_use_h264| is on.
   if (!base::FeatureList::IsEnabled(
           blink::features::kWebRtcH264WithOpenH264FFmpeg)) {
-    LOG(WARNING) << "Run-time feature WebRTC-H264WithOpenH264FFmpeg disabled. "
-        "Skipping WebRtcBrowserTest.RunsAudioVideoWebRTCCallInTwoTabsH264 "
-        "(test \"OK\")";
+    LOG(WARNING)
+        << "Run-time feature WebRTC-H264WithOpenH264FFmpeg disabled. "
+           "Skipping WebRtcBrowserTest.RunsAudioVideoWebRTCCallInTwoTabsH264 "
+           "(test \"OK\")";
     return;
   }
 
@@ -219,14 +210,14 @@ IN_PROC_BROWSER_TEST_F(WebRtcBrowserTest, TestWebAudioMediaStream) {
   ASSERT_FALSE(tab->IsCrashed());
 }
 
-IN_PROC_BROWSER_TEST_F(MAYBE_WebRtcBrowserTest,
+IN_PROC_BROWSER_TEST_F(WebRtcBrowserTest,
                        RunsAudioVideoWebRTCCallInTwoTabsOfferRsaAnswerRsa) {
   RunsAudioVideoWebRTCCallInTwoTabs(WebRtcTestBase::kUseDefaultVideoCodec,
                                     false /* prefer_hw_video_codec */,
                                     kKeygenAlgorithmRsa, kKeygenAlgorithmRsa);
 }
 
-IN_PROC_BROWSER_TEST_F(MAYBE_WebRtcBrowserTest,
+IN_PROC_BROWSER_TEST_F(WebRtcBrowserTest,
                        RunsAudioVideoWebRTCCallInTwoTabsOfferEcdsaAnswerEcdsa) {
   RunsAudioVideoWebRTCCallInTwoTabs(
       WebRtcTestBase::kUseDefaultVideoCodec, false /* prefer_hw_video_codec */,
@@ -234,32 +225,32 @@ IN_PROC_BROWSER_TEST_F(MAYBE_WebRtcBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(
-    MAYBE_WebRtcBrowserTest,
+    WebRtcBrowserTest,
     RunsAudioVideoWebRTCCallInTwoTabsWithClonedCertificateRsa) {
   RunsAudioVideoWebRTCCallInTwoTabsWithClonedCertificate(kKeygenAlgorithmRsa);
 }
 
 IN_PROC_BROWSER_TEST_F(
-    MAYBE_WebRtcBrowserTest,
+    WebRtcBrowserTest,
     RunsAudioVideoWebRTCCallInTwoTabsWithClonedCertificateEcdsa) {
   RunsAudioVideoWebRTCCallInTwoTabsWithClonedCertificate(kKeygenAlgorithmEcdsa);
 }
 
-IN_PROC_BROWSER_TEST_F(MAYBE_WebRtcBrowserTest,
+IN_PROC_BROWSER_TEST_F(WebRtcBrowserTest,
                        RunsAudioVideoWebRTCCallInTwoTabsOfferRsaAnswerEcdsa) {
   RunsAudioVideoWebRTCCallInTwoTabs(WebRtcTestBase::kUseDefaultVideoCodec,
                                     false /* prefer_hw_video_codec */,
                                     kKeygenAlgorithmRsa, kKeygenAlgorithmEcdsa);
 }
 
-IN_PROC_BROWSER_TEST_F(MAYBE_WebRtcBrowserTest,
+IN_PROC_BROWSER_TEST_F(WebRtcBrowserTest,
                        RunsAudioVideoWebRTCCallInTwoTabsOfferEcdsaAnswerRsa) {
   RunsAudioVideoWebRTCCallInTwoTabs(WebRtcTestBase::kUseDefaultVideoCodec,
                                     false /* prefer_hw_video_codec */,
                                     kKeygenAlgorithmEcdsa, kKeygenAlgorithmRsa);
 }
 
-IN_PROC_BROWSER_TEST_F(MAYBE_WebRtcBrowserTest,
+IN_PROC_BROWSER_TEST_F(WebRtcBrowserTest,
                        RunsAudioVideoWebRTCCallInTwoTabsGetStatsCallback) {
   StartServerAndOpenTabs();
   SetupPeerconnectionWithLocalStream(left_tab_);
@@ -271,7 +262,7 @@ IN_PROC_BROWSER_TEST_F(MAYBE_WebRtcBrowserTest,
   DetectVideoAndHangUp();
 }
 
-IN_PROC_BROWSER_TEST_F(MAYBE_WebRtcBrowserTest,
+IN_PROC_BROWSER_TEST_F(WebRtcBrowserTest,
                        GetPeerToPeerConnectionsCountChangeFromNetworkService) {
   EXPECT_EQ(0u, GetPeerToPeerConnectionsCountChangeFromNetworkService());
 
@@ -288,7 +279,7 @@ IN_PROC_BROWSER_TEST_F(MAYBE_WebRtcBrowserTest,
   EXPECT_EQ(0u, GetPeerToPeerConnectionsCountChangeFromNetworkService());
 }
 
-IN_PROC_BROWSER_TEST_F(MAYBE_WebRtcBrowserTest,
+IN_PROC_BROWSER_TEST_F(WebRtcBrowserTest,
                        RunsAudioVideoWebRTCCallInTwoTabsGetStatsPromise) {
   StartServerAndOpenTabs();
   SetupPeerconnectionWithLocalStream(left_tab_);
@@ -312,7 +303,7 @@ IN_PROC_BROWSER_TEST_F(MAYBE_WebRtcBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(
-    MAYBE_WebRtcBrowserTest,
+    WebRtcBrowserTest,
     RunsAudioVideoWebRTCCallInTwoTabsEmitsGatheringStateChange) {
   StartServerAndOpenTabs();
   SetupPeerconnectionWithLocalStream(left_tab_);
@@ -335,7 +326,7 @@ IN_PROC_BROWSER_TEST_F(
   RunsAudioVideoWebRTCCallInTwoTabsEmitsGatheringStateChange_ConnectionCount
 #endif
 IN_PROC_BROWSER_TEST_F(
-    MAYBE_WebRtcBrowserTest,
+    WebRtcBrowserTest,
     MAYBE_RunsAudioVideoWebRTCCallInTwoTabsEmitsGatheringStateChange_ConnectionCount) {
   EXPECT_EQ(0u, GetPeerToPeerConnectionsCountChangeFromNetworkService());
   StartServerAndOpenTabs();
