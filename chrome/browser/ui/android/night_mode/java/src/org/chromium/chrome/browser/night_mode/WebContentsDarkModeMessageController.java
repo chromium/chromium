@@ -46,8 +46,6 @@ import org.chromium.ui.text.SpanApplier.SpanInfo;
  * feature.
  */
 public class WebContentsDarkModeMessageController {
-    private static final String FEEDBACK_CATEGORY_TAG = "USER_INITIATED_FEEDBACK_REPORT_AUTO_DARK";
-    private static final String FEEDBACK_CONTEXT = "chrome_auto_dark";
     @VisibleForTesting
     static final String FEEDBACK_DIALOG_PARAM = "feedback_dialog";
 
@@ -224,9 +222,8 @@ public class WebContentsDarkModeMessageController {
             HelpAndFeedbackLauncher launcher, Activity activity, Profile profile, String url) {
         // TODO(crbug.com/1260152): Import ScreenshotMode instead of hardcoding value once new build
         //  target added.
-        launcher.showFeedback(activity, profile, url,
-                activity.getPackageName() + FEEDBACK_CATEGORY_TAG,
-                /* ScreenshotMode.DEFAULT */ 0, FEEDBACK_CONTEXT);
+        launcher.showFeedback(activity, profile, url, null,
+                /* ScreenshotMode.DEFAULT */ 0, null);
     }
 
     /**
