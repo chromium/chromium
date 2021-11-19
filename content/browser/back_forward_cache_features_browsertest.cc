@@ -70,8 +70,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   delete_rfh_a.WaitUntilDeleted();
 
   // Go back.
-  web_contents()->GetController().GoBack();
-  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+  ASSERT_TRUE(HistoryGoBack(web_contents()));
   ExpectNotRestored(
       {BackForwardCacheMetrics::NotRestoredReason::kBlocklistedFeatures},
       {blink::scheduler::WebSchedulerTrackedFeature::kDedicatedWorkerOrWorklet},
@@ -134,8 +133,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheWithDedicatedWorkerBrowserTest,
       NavigateToURL(shell(), https_server()->GetURL("b.test", "/title1.html")));
 
   // Go back to the original page.
-  web_contents()->GetController().GoBack();
-  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+  ASSERT_TRUE(HistoryGoBack(web_contents()));
   ExpectRestored(FROM_HERE);
 }
 
@@ -164,8 +162,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheWithDedicatedWorkerBrowserTest,
 
   // Go back to the original page. The page was not cached as the worker used
   // WebTransport.
-  web_contents()->GetController().GoBack();
-  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+  ASSERT_TRUE(HistoryGoBack(web_contents()));
   ExpectNotRestored(
       {BackForwardCacheMetrics::NotRestoredReason::kBlocklistedFeatures},
       {blink::scheduler::WebSchedulerTrackedFeature::kWebTransport}, {}, {}, {},
@@ -198,8 +195,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheWithDedicatedWorkerBrowserTest,
   // Go back to the original page. The page was cached. Even though WebTransport
   // is used once, the page is eligible for back-forward cache as the feature is
   // not sticky.
-  web_contents()->GetController().GoBack();
-  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+  ASSERT_TRUE(HistoryGoBack(web_contents()));
   ExpectRestored(FROM_HERE);
 }
 
@@ -239,8 +235,7 @@ IN_PROC_BROWSER_TEST_F(
   // Go back to the original page. The page was not cached due to WebTransport
   // and a broadcast channel, which came from the dedicated worker and the frame
   // respectively. Confirm both are recorded.
-  web_contents()->GetController().GoBack();
-  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+  ASSERT_TRUE(HistoryGoBack(web_contents()));
   ExpectNotRestored(
       {BackForwardCacheMetrics::NotRestoredReason::kBlocklistedFeatures},
       {blink::scheduler::WebSchedulerTrackedFeature::kWebTransport,
@@ -292,8 +287,7 @@ IN_PROC_BROWSER_TEST_F(
   // Go back to the original page. The page was not cached due to a broadcast
   // channel, which came from the frame. WebTransport was used once in the
   // dedicated worker but was closed, then this doesn't affect the cache usage.
-  web_contents()->GetController().GoBack();
-  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+  ASSERT_TRUE(HistoryGoBack(web_contents()));
   ExpectNotRestored(
       {BackForwardCacheMetrics::NotRestoredReason::kBlocklistedFeatures},
       {blink::scheduler::WebSchedulerTrackedFeature::kBroadcastChannel}, {}, {},
@@ -325,8 +319,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   delete_observer_rfh_a.WaitUntilDeleted();
 
   // Go back.
-  web_contents()->GetController().GoBack();
-  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+  ASSERT_TRUE(HistoryGoBack(web_contents()));
   ExpectNotRestored(
       {BackForwardCacheMetrics::NotRestoredReason::kBlocklistedFeatures},
       {blink::scheduler::WebSchedulerTrackedFeature::kSharedWorker}, {}, {}, {},
@@ -359,8 +352,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   rfh_b->DidChangeBackForwardCacheDisablingFeatures(0);
 
   // 4) Go back.
-  web_contents()->GetController().GoBack();
-  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+  ASSERT_TRUE(HistoryGoBack(web_contents()));
   EXPECT_EQ(current_frame_host(), rfh_a);
 
   ExpectRestored(FROM_HERE);
@@ -399,8 +391,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   // 3) Go back. Note that the reason for kWasGrantedMediaAccess occurs after
   // MediaDevicesDispatcherHost is called, hence, both are reasons for the page
   // not being restored.
-  web_contents()->GetController().GoBack();
-  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+  ASSERT_TRUE(HistoryGoBack(web_contents()));
   auto reason = BackForwardCacheDisable::DisabledReason(
       BackForwardCacheDisable::DisabledReasonId::kMediaDevicesDispatcherHost);
   ExpectNotRestored(
@@ -447,8 +438,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   // 3) Go back. Note that the reason for kWasGrantedMediaAccess occurs after
   // MediaDevicesDispatcherHost is called, hence, both are reasons for the page
   // not being restored.
-  web_contents()->GetController().GoBack();
-  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+  ASSERT_TRUE(HistoryGoBack(web_contents()));
   auto reason = BackForwardCacheDisable::DisabledReason(
       BackForwardCacheDisable::DisabledReasonId::kMediaDevicesDispatcherHost);
 
@@ -493,8 +483,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   deleted.WaitUntilDeleted();
 
   // 3) Go back.
-  web_contents()->GetController().GoBack();
-  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+  ASSERT_TRUE(HistoryGoBack(web_contents()));
   auto reason = BackForwardCacheDisable::DisabledReason(
       BackForwardCacheDisable::DisabledReasonId::kMediaDevicesDispatcherHost);
   ExpectNotRestored({BackForwardCacheMetrics::NotRestoredReason::
@@ -520,8 +509,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, CacheIfWebGL) {
   // but it should be cached.
 
   // 3) Go back.
-  web_contents()->GetController().GoBack();
-  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+  ASSERT_TRUE(HistoryGoBack(web_contents()));
   ExpectRestored(FROM_HERE);
 }
 
@@ -554,8 +542,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, DoesNotCacheIfWebHID) {
   deleted.WaitUntilDeleted();
 
   // 3) Go back.
-  web_contents()->GetController().GoBack();
-  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+  ASSERT_TRUE(HistoryGoBack(web_contents()));
   ExpectNotRestored(
       {BackForwardCacheMetrics::NotRestoredReason::kBlocklistedFeatures},
       {blink::scheduler::WebSchedulerTrackedFeature::kWebHID}, {}, {}, {},
@@ -584,8 +571,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   EXPECT_TRUE(rfh_a->IsInBackForwardCache());
 
   // 3) Go back to the page with WakeLock, restored from BackForwardCache.
-  web_contents()->GetController().GoBack();
-  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+  ASSERT_TRUE(HistoryGoBack(web_contents()));
   EXPECT_EQ(current_frame_host(), rfh_a);
   EXPECT_TRUE(EvalJs(rfh_a, "wakeLockIsReleased()").ExtractBool());
   ExpectRestored(FROM_HERE);
@@ -624,8 +610,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, CacheWithWebFileSystem) {
   EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
 
   // 3) Go back to the page with WebFileSystem.
-  web_contents()->GetController().GoBack();
-  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+  ASSERT_TRUE(HistoryGoBack(web_contents()));
   ExpectRestored(FROM_HERE);
   // Check the file content is reserved.
   EXPECT_EQ("foo", EvalJs(rfh_a, R"(
@@ -691,8 +676,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, DoesNotCacheIdleManager) {
   deleted.WaitUntilDeleted();
 
   // 3) Go back and make sure the IdleManager page wasn't in the cache.
-  web_contents()->GetController().GoBack();
-  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+  ASSERT_TRUE(HistoryGoBack(web_contents()));
   ExpectNotRestored(
       {BackForwardCacheMetrics::NotRestoredReason::kBlocklistedFeatures},
       {blink::scheduler::WebSchedulerTrackedFeature::kIdleManager}, {}, {}, {},
@@ -721,8 +705,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, DoesNotCacheSMSService) {
   rfh_a_deleted.WaitUntilDeleted();
 
   // 3) Go back and make sure the SMSService page wasn't in the cache.
-  web_contents()->GetController().GoBack();
-  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+  ASSERT_TRUE(HistoryGoBack(web_contents()));
 
   // Note that on certain linux tests, there is occasionally a not restored
   // reason of kDisableForRenderFrameHostCalled. This is due to the javascript
@@ -765,8 +748,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   rfh_a_deleted.WaitUntilDeleted();
 
   // 3) Go back.
-  web_contents()->GetController().GoBack();
-  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+  ASSERT_TRUE(HistoryGoBack(web_contents()));
   ExpectNotRestored(
       {BackForwardCacheMetrics::NotRestoredReason::kBlocklistedFeatures},
       {blink::scheduler::WebSchedulerTrackedFeature::kPaymentManager}, {}, {},
@@ -818,8 +800,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   rfh_a_deleted.WaitUntilDeleted();
 
   // 3) Go back and make sure the keyboard lock page wasn't in the cache.
-  web_contents()->GetController().GoBack();
-  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+  ASSERT_TRUE(HistoryGoBack(web_contents()));
   ExpectNotRestored(
       {BackForwardCacheMetrics::NotRestoredReason::kBlocklistedFeatures},
       {blink::scheduler::WebSchedulerTrackedFeature::kKeyboardLock}, {}, {}, {},
@@ -847,18 +828,15 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   RenderFrameHostImplWrapper rfh_b(current_frame_host());
 
   // 3) Go back and page should be restored from BackForwardCache.
-  web_contents()->GetController().GoBack();
-  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+  ASSERT_TRUE(HistoryGoBack(web_contents()));
   ExpectRestored(FROM_HERE);
 
   // 4) Go forward and back, the page should be restored from BackForwardCache.
-  web_contents()->GetController().GoForward();
-  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+  ASSERT_TRUE(HistoryGoForward(web_contents()));
   EXPECT_EQ(rfh_b.get(), current_frame_host());
   ExpectRestored(FROM_HERE);
 
-  web_contents()->GetController().GoBack();
-  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+  ASSERT_TRUE(HistoryGoBack(web_contents()));
   EXPECT_EQ(rfh_a.get(), current_frame_host());
   ExpectRestored(FROM_HERE);
 }
@@ -887,8 +865,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   rfh_a_deleted.WaitUntilDeleted();
 
   // 3) Go back and make sure the keyboard lock page wasn't in the cache.
-  web_contents()->GetController().GoBack();
-  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+  ASSERT_TRUE(HistoryGoBack(web_contents()));
   ExpectNotRestored(
       {BackForwardCacheMetrics::NotRestoredReason::kBlocklistedFeatures},
       {blink::scheduler::WebSchedulerTrackedFeature::kKeyboardLock}, {}, {}, {},
@@ -915,8 +892,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
       shell(), embedded_test_server()->GetURL("b.com", "/title1.html")));
 
   // 3) Go back and page should be restored from BackForwardCache.
-  web_contents()->GetController().GoBack();
-  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+  ASSERT_TRUE(HistoryGoBack(web_contents()));
   ExpectRestored(FROM_HERE);
 }
 
@@ -948,8 +924,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
       shell(), embedded_test_server()->GetURL("b.com", "/title1.html")));
 
   // 3) Go back and page should be restored from BackForwardCache.
-  web_contents()->GetController().GoBack();
-  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+  ASSERT_TRUE(HistoryGoBack(web_contents()));
   ExpectRestored(FROM_HERE);
 }
 
@@ -972,8 +947,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   rfh_a_deleted.WaitUntilDeleted();
 
   // 3) Go back and make sure the dummy sticky feature page wasn't in the cache.
-  web_contents()->GetController().GoBack();
-  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+  ASSERT_TRUE(HistoryGoBack(web_contents()));
   ExpectNotRestored(
       {BackForwardCacheMetrics::NotRestoredReason::kBlocklistedFeatures},
       {blink::scheduler::WebSchedulerTrackedFeature::kDummy}, {}, {}, {},
@@ -1015,8 +989,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
       web_contents()->GetMainFrame()->GetSiteInstance()));
 
   // 4) Go back.
-  web_contents()->GetController().GoBack();
-  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+  ASSERT_TRUE(HistoryGoBack(web_contents()));
 
   // Only sticky features are recorded because they're tracked in
   // RenderFrameHostManager::UnloadOldFrame.
@@ -1058,8 +1031,7 @@ IN_PROC_BROWSER_TEST_F(
       web_contents()->GetMainFrame()->GetSiteInstance()));
 
   // 4) Go back.
-  web_contents()->GetController().GoBack();
-  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+  ASSERT_TRUE(HistoryGoBack(web_contents()));
 
   if (AreStrictSiteInstancesEnabled()) {
     // Only sticky features are recorded because they're tracked in
@@ -1074,15 +1046,13 @@ IN_PROC_BROWSER_TEST_F(
         {ShouldSwapBrowsingInstance::kNo_NotNeededForBackForwardCache}, {}, {},
         FROM_HERE);
 
-    web_contents()->GetController().GoForward();
-    EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+    ASSERT_TRUE(HistoryGoForward(web_contents()));
 
     ExpectBrowsingInstanceNotSwappedReason(
         ShouldSwapBrowsingInstance::kNo_AlreadyHasMatchingBrowsingInstance,
         FROM_HERE);
 
-    web_contents()->GetController().GoBack();
-    EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+    ASSERT_TRUE(HistoryGoBack(web_contents()));
 
     ExpectBrowsingInstanceNotSwappedReason(
         ShouldSwapBrowsingInstance::kNo_AlreadyHasMatchingBrowsingInstance,
@@ -1133,8 +1103,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
       web_contents()->GetMainFrame()->GetSiteInstance()));
 
   // 4) Go back.
-  web_contents()->GetController().GoBack();
-  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+  ASSERT_TRUE(HistoryGoBack(web_contents()));
 
   // Non-sticky reasons are not recorded here.
   ExpectNotRestored(
@@ -1180,8 +1149,7 @@ IN_PROC_BROWSER_TEST_F(
       web_contents()->GetMainFrame()->GetSiteInstance()));
 
   // 4) Go back.
-  web_contents()->GetController().GoBack();
-  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+  ASSERT_TRUE(HistoryGoBack(web_contents()));
 
   // Because the RenderFrameHostManager changed, the blocklisted features will
   // be tracked in RenderFrameHostManager::UnloadOldFrame.
@@ -1222,8 +1190,7 @@ IN_PROC_BROWSER_TEST_F(
       web_contents()->GetMainFrame()->GetSiteInstance()));
 
   // 4) Go back.
-  web_contents()->GetController().GoBack();
-  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+  ASSERT_TRUE(HistoryGoBack(web_contents()));
 
   // Because the RenderFrameHostManager changed, the blocklisted features will
   // be tracked in RenderFrameHostManager::UnloadOldFrame.
@@ -1263,8 +1230,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
       web_contents()->GetMainFrame()->GetSiteInstance()));
 
   // 4) Go back.
-  web_contents()->GetController().GoBack();
-  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+  ASSERT_TRUE(HistoryGoBack(web_contents()));
 
   // Because the RenderFrameHostManager changed, the blocklisted features will
   // be tracked in RenderFrameHostManager::UnloadOldFrame.
@@ -1342,8 +1308,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, DoesNotCacheIfAppBanner) {
   delete_observer_rfh.WaitUntilDeleted();
 
   // 3) Go back to A.
-  web_contents()->GetController().GoBack();
-  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+  ASSERT_TRUE(HistoryGoBack(web_contents()));
   ExpectNotRestored(
       {BackForwardCacheMetrics::NotRestoredReason::kBlocklistedFeatures},
       {blink::scheduler::WebSchedulerTrackedFeature::kAppBanner}, {}, {}, {},
@@ -1365,8 +1330,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, DoesNotCacheIfWebDatabase) {
   deleted.WaitUntilDeleted();
 
   // 3) Go back to the page with WebDatabase.
-  web_contents()->GetController().GoBack();
-  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+  ASSERT_TRUE(HistoryGoBack(web_contents()));
   ExpectNotRestored(
       {BackForwardCacheMetrics::NotRestoredReason::kBlocklistedFeatures},
       {blink::scheduler::WebSchedulerTrackedFeature::kWebDatabase}, {}, {}, {},
@@ -1396,8 +1360,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
 
   // 4) Go back.
-  web_contents()->GetController().GoBack();
-  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+  ASSERT_TRUE(HistoryGoBack(web_contents()));
 
   // Because the RenderFrameHostManager changed, the blocklisted features will
   // be tracked in RenderFrameHostManager::UnloadOldFrame.
@@ -1430,8 +1393,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
 
   // 4) Go back.
-  web_contents()->GetController().GoBack();
-  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+  ASSERT_TRUE(HistoryGoBack(web_contents()));
   ExpectRestored(FROM_HERE);
 }
 
@@ -1477,8 +1439,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   EXPECT_TRUE(rfh_a->IsInBackForwardCache());
 
   // 3) Navigate back.
-  web_contents()->GetController().GoBack();
-  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+  ASSERT_TRUE(HistoryGoBack(web_contents()));
   ExpectRestored(FROM_HERE);
 }
 
@@ -1525,8 +1486,7 @@ IN_PROC_BROWSER_TEST_F(WebTransportBackForwardCacheBrowserTest,
   delete_observer_rfh_a.WaitUntilDeleted();
 
   // 3) Go back.
-  web_contents()->GetController().GoBack();
-  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+  ASSERT_TRUE(HistoryGoBack(web_contents()));
   ExpectNotRestored(
       {BackForwardCacheMetrics::NotRestoredReason::kBlocklistedFeatures},
       {blink::scheduler::WebSchedulerTrackedFeature::kWebTransport}, {}, {}, {},
@@ -1561,8 +1521,7 @@ IN_PROC_BROWSER_TEST_F(WebTransportBackForwardCacheBrowserTest,
   EXPECT_TRUE(rfh_a->IsInBackForwardCache());
 
   // 3) Navigate back.
-  web_contents()->GetController().GoBack();
-  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+  ASSERT_TRUE(HistoryGoBack(web_contents()));
   ExpectRestored(FROM_HERE);
 }
 
@@ -1728,8 +1687,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTestWithVibration,
   EXPECT_TRUE(IsCancelled());
 
   // 3) Go back to A.
-  web_contents()->GetController().GoBack();
-  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+  ASSERT_TRUE(HistoryGoBack(web_contents()));
   ExpectRestored(FROM_HERE);
 }
 
@@ -1753,8 +1711,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTestWithVibration,
   EXPECT_TRUE(IsCancelled());
 
   // 3) Go back to A.
-  web_contents()->GetController().GoBack();
-  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+  ASSERT_TRUE(HistoryGoBack(web_contents()));
   ExpectRestored(FROM_HERE);
 }
 
@@ -1783,8 +1740,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   EXPECT_TRUE(rfh_a->IsInBackForwardCache());
 
   // 3) Go back to A. The navigation should be served from the cache.
-  web_contents()->GetController().GoBack();
-  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+  ASSERT_TRUE(HistoryGoBack(web_contents()));
   EXPECT_FALSE(deleted.deleted());
   EXPECT_EQ(rfh_a, current_frame_host());
 }
@@ -1821,8 +1777,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   tab_y->Close();
   deleted.WaitUntilDeleted();
   // 6) Navigate to A in tab X.
-  tab_x->web_contents()->GetController().GoBack();
-  EXPECT_TRUE(WaitForLoadStop(tab_x->web_contents()));
+  ASSERT_TRUE(HistoryGoBack(tab_x->web_contents()));
   ExpectNotRestored(
       {
           BackForwardCacheMetrics::NotRestoredReason::
@@ -1882,8 +1837,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   ASSERT_TRUE(rfh.WaitUntilRenderFrameDeleted());
 
   // 6) Go back to A in |tab_to_be_bfcached|.
-  tab_to_be_bfcached->web_contents()->GetController().GoBack();
-  EXPECT_TRUE(WaitForLoadStop(tab_to_be_bfcached->web_contents()));
+  ASSERT_TRUE(HistoryGoBack(tab_to_be_bfcached->web_contents()));
   ExpectNotRestored(
       {BackForwardCacheMetrics::NotRestoredReason::kServiceWorkerPostMessage},
       {}, {}, {}, {}, FROM_HERE);
@@ -1930,8 +1884,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, EvictOnServiceWorkerClaim) {
   EXPECT_EQ("DONE", EvalJs(tab_to_execute_service_worker, "claim()"));
 
   // 6) Navigate to A in |tab_to_be_bfcached|.
-  tab_to_be_bfcached->web_contents()->GetController().GoBack();
-  EXPECT_TRUE(WaitForLoadStop(tab_to_be_bfcached->web_contents()));
+  ASSERT_TRUE(HistoryGoBack(tab_to_be_bfcached->web_contents()));
   EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
   EXPECT_TRUE(deleted.deleted());
   ExpectNotRestored(
@@ -1993,8 +1946,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
              "unregister('service_worker_registration.html?to_be_bfcached')"));
 
   // 7) Navigate back to A in |tab_to_be_bfcached|.
-  tab_to_be_bfcached->web_contents()->GetController().GoBack();
-  EXPECT_TRUE(WaitForLoadStop(tab_to_be_bfcached->web_contents()));
+  ASSERT_TRUE(HistoryGoBack(tab_to_be_bfcached->web_contents()));
   EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
   EXPECT_TRUE(deleted.deleted());
   ExpectNotRestored({BackForwardCacheMetrics::NotRestoredReason::
@@ -2133,8 +2085,7 @@ IN_PROC_BROWSER_TEST_F(GeolocationBackForwardCacheBrowserTest,
   // The location when navigated back can be observed
   geo_override_.UpdateLocation(3.0, 3.0);
 
-  web_contents()->GetController().GoBack();
-  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+  ASSERT_TRUE(HistoryGoBack(web_contents()));
   EXPECT_EQ(rfh_a, current_frame_host());
   EXPECT_FALSE(rfh_a->IsInBackForwardCache());
 
@@ -2226,8 +2177,7 @@ IN_PROC_BROWSER_TEST_F(BluetoothForwardCacheBrowserTest, WebBluetooth) {
 
   ASSERT_TRUE(NavigateToURL(web_contents(),
                             https_server()->GetURL("b.com", "/title1.html")));
-  web_contents()->GetController().GoBack();
-  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+  ASSERT_TRUE(HistoryGoBack(web_contents()));
   ExpectNotRestored({BackForwardCacheMetrics::NotRestoredReason::
                          kDisableForRenderFrameHostCalled},
                     {}, {}, {reason}, {}, FROM_HERE);
@@ -2474,8 +2424,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, AudioSuspendAndResume) {
   EXPECT_TRUE(rfh_a->IsInBackForwardCache());
 
   // 3) Navigate back to A.
-  web_contents()->GetController().GoBack();
-  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+  ASSERT_TRUE(HistoryGoBack(web_contents()));
   EXPECT_EQ(rfh_a, current_frame_host());
 
   // Check that the media position is not changed when the page is in cache.
@@ -2555,8 +2504,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, VideoSuspendAndResume) {
   EXPECT_TRUE(rfh_a->IsInBackForwardCache());
 
   // 3) Navigate back to A.
-  web_contents()->GetController().GoBack();
-  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+  ASSERT_TRUE(HistoryGoBack(web_contents()));
   EXPECT_EQ(rfh_a, current_frame_host());
 
   // Check that the media position is not changed when the page is in cache.
@@ -2631,8 +2579,7 @@ IN_PROC_BROWSER_TEST_F(SensorBackForwardCacheBrowserTest,
   delete_observer_rfh_a.WaitUntilDeleted();
 
   // 3) Go back.
-  web_contents()->GetController().GoBack();
-  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+  ASSERT_TRUE(HistoryGoBack(web_contents()));
   ExpectNotRestored(
       {BackForwardCacheMetrics::NotRestoredReason::kBlocklistedFeatures},
       {blink::scheduler::WebSchedulerTrackedFeature::
@@ -2772,8 +2719,7 @@ IN_PROC_BROWSER_TEST_F(SensorBackForwardCacheBrowserTest,
 
   // 3) Go back to A.
   provider_->UpdateRelativeOrientationSensorData(0, 0, 0);
-  web_contents()->GetController().GoBack();
-  ASSERT_TRUE(WaitForLoadStop(shell()->web_contents()));
+  ASSERT_TRUE(HistoryGoBack(web_contents()));
   ASSERT_EQ(rfh_a, current_frame_host());
 
   // Collect 3 orientation events.
@@ -2827,8 +2773,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   ASSERT_TRUE(NavigateToURL(shell(), url_b));
 
   // 3) Go back.
-  web_contents()->GetController().GoBack();
-  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+  ASSERT_TRUE(HistoryGoBack(web_contents()));
   ExpectRestored(FROM_HERE);
 
   // RTCPeerConnection object, that is created before being put into the cache,
@@ -2957,8 +2902,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   delete_observer_rfh_a.WaitUntilDeleted();
 
   // 3) Go back.
-  web_contents()->GetController().GoBack();
-  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+  ASSERT_TRUE(HistoryGoBack(web_contents()));
   ExpectNotRestored(
       {BackForwardCacheMetrics::NotRestoredReason::kBlocklistedFeatures},
       {blink::scheduler::WebSchedulerTrackedFeature::kWebRTC}, {}, {}, {},
@@ -2994,8 +2938,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, WebLocksNotCached) {
   delete_observer_rfh_a.WaitUntilDeleted();
 
   // 3) Go back.
-  web_contents()->GetController().GoBack();
-  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+  ASSERT_TRUE(HistoryGoBack(web_contents()));
   ExpectNotRestored(
       {BackForwardCacheMetrics::NotRestoredReason::kBlocklistedFeatures},
       {blink::scheduler::WebSchedulerTrackedFeature::kWebLocks}, {}, {}, {},
@@ -3024,8 +2967,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, WebMidiNotCached) {
   delete_observer_rfh_a.WaitUntilDeleted();
 
   // 3) Go back.
-  web_contents()->GetController().GoBack();
-  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+  ASSERT_TRUE(HistoryGoBack(web_contents()));
   ExpectNotRestored(
       {BackForwardCacheMetrics::NotRestoredReason::kBlocklistedFeatures},
       {blink::scheduler::WebSchedulerTrackedFeature::kRequestedMIDIPermission},
@@ -3076,8 +3018,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
 
   // Navigate back to A. Ensure that connection state has been updated
   // accordingly.
-  web_contents()->GetController().GoBack();
-  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+  ASSERT_TRUE(HistoryGoBack(web_contents()));
   EXPECT_FALSE(rfh_a->IsInBackForwardCache());
   EXPECT_EQ(presentation_connection_id, EvalJs(rfh_a, "connection.id"));
   EXPECT_EQ("closed", EvalJs(rfh_a, "connection.state"));
@@ -3123,8 +3064,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   delete_observer_rfh_a.WaitUntilDeleted();
 
   // 5) Go back to the page with SpeechRecognition.
-  web_contents()->GetController().GoBack();
-  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+  ASSERT_TRUE(HistoryGoBack(web_contents()));
   ExpectNotRestored(
       {BackForwardCacheMetrics::NotRestoredReason::kBlocklistedFeatures},
       {blink::scheduler::WebSchedulerTrackedFeature::kSpeechRecognizer}, {}, {},
@@ -3159,8 +3099,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   EXPECT_TRUE(rfh_a->IsInBackForwardCache());
 
   // 5) Go back to the page with SpeechRecognition.
-  web_contents()->GetController().GoBack();
-  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+  ASSERT_TRUE(HistoryGoBack(web_contents()));
   EXPECT_EQ(rfh_a, current_frame_host());
 
   ExpectRestored(FROM_HERE);
@@ -3201,8 +3140,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   rhf_a_deleted.WaitUntilDeleted();
 
   // 3) Go back to the page with SpeechSynthesis.
-  web_contents()->GetController().GoBack();
-  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+  ASSERT_TRUE(HistoryGoBack(web_contents()));
   ExpectNotRestored(
       {BackForwardCacheMetrics::NotRestoredReason::kBlocklistedFeatures},
       {blink::scheduler::WebSchedulerTrackedFeature::kSpeechSynthesis}, {}, {},
@@ -3252,8 +3190,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   deleted_rfh_a.WaitUntilDeleted();
 
   // 6) Go back to the page with FileChooser.
-  web_contents()->GetController().GoBack();
-  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+  ASSERT_TRUE(HistoryGoBack(web_contents()));
   ExpectNotRestored({BackForwardCacheMetrics::NotRestoredReason::
                          kDisableForRenderFrameHostCalled},
                     {}, {}, {reason}, {}, FROM_HERE);
@@ -3281,8 +3218,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, CacheWithMediaSession) {
   EXPECT_TRUE(rfh_a->IsInBackForwardCache());
 
   // 3) Go back.
-  web_contents()->GetController().GoBack();
-  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+  ASSERT_TRUE(HistoryGoBack(web_contents()));
   EXPECT_EQ(rfh_a.get(), current_frame_host());
   ExpectRestored(FROM_HERE);
   // Check the media session state is reserved.
@@ -3320,8 +3256,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTestWithSupportedFeatures,
   EXPECT_TRUE(rfh_a->IsInBackForwardCache());
 
   // 3) Go back to the page A
-  web_contents()->GetController().GoBack();
-  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+  ASSERT_TRUE(HistoryGoBack(web_contents()));
   EXPECT_EQ(rfh_a, current_frame_host());
   ExpectRestored(FROM_HERE);
 
@@ -3334,8 +3269,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTestWithSupportedFeatures,
   EXPECT_TRUE(rfh_a->IsInBackForwardCache());
 
   // 6) Go back to the page A again.
-  web_contents()->GetController().GoBack();
-  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+  ASSERT_TRUE(HistoryGoBack(web_contents()));
   EXPECT_EQ(rfh_a, current_frame_host());
   ExpectRestored(FROM_HERE);
 }
@@ -3369,8 +3303,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTestWithNoSupportedFeatures,
   deleted_a1.WaitUntilDeleted();
 
   // 3) Go back to the page A
-  web_contents()->GetController().GoBack();
-  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+  ASSERT_TRUE(HistoryGoBack(web_contents()));
   ExpectNotRestored(
       {BackForwardCacheMetrics::NotRestoredReason::kBlocklistedFeatures},
       {blink::scheduler::WebSchedulerTrackedFeature::kBroadcastChannel}, {}, {},
@@ -3387,8 +3320,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTestWithNoSupportedFeatures,
   deleted_a2.WaitUntilDeleted();
 
   // 6) Go back to the page A again.
-  web_contents()->GetController().GoBack();
-  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+  ASSERT_TRUE(HistoryGoBack(web_contents()));
   ExpectNotRestored(
       {BackForwardCacheMetrics::NotRestoredReason::kBlocklistedFeatures},
       {blink::scheduler::WebSchedulerTrackedFeature::kKeyboardLock}, {}, {}, {},
@@ -3418,8 +3350,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
       shell(), embedded_test_server()->GetURL("b.com", "/title1.html")));
 
   // 3) Go back.
-  web_contents()->GetController().GoBack();
-  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+  ASSERT_TRUE(HistoryGoBack(web_contents()));
 
   // The page is restored since the playback state is not changed.
   ExpectRestored(FROM_HERE);
@@ -3434,8 +3365,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
       shell(), embedded_test_server()->GetURL("b.com", "/title1.html")));
 
   // 6) Go back.
-  web_contents()->GetController().GoBack();
-  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+  ASSERT_TRUE(HistoryGoBack(web_contents()));
 
   // The page is not restored due to the playback.
   auto reason = BackForwardCacheDisable::DisabledReason(
@@ -3474,8 +3404,7 @@ class BackForwardCacheBrowserTestWithMediaSessionPlaybackStateChangeSupported
         shell(), embedded_test_server()->GetURL("b.test", "/title1.html")));
 
     // Go back.
-    web_contents()->GetController().GoBack();
-    EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+    ASSERT_TRUE(HistoryGoBack(web_contents()));
   }
 };
 

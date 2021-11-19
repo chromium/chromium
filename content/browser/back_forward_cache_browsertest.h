@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/compiler_specific.h"
 #include "base/feature_list.h"
 #include "base/hash/hash.h"
 #include "base/test/scoped_feature_list.h"

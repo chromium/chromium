@@ -2103,6 +2103,13 @@ class RenderFrameHostChangedCallbackRunner : public WebContentsObserver {
   RenderFrameHostChangedCallback callback_;
 };
 
+// Functions to traverse history and wait until the traversal completes. These
+// are wrappers around the same-named methods of the `NavigationController`.
+WARN_UNUSED_RESULT bool HistoryGoToIndex(WebContents* wc, int index);
+WARN_UNUSED_RESULT bool HistoryGoToOffset(WebContents* wc, int offset);
+WARN_UNUSED_RESULT bool HistoryGoBack(WebContents* wc);
+WARN_UNUSED_RESULT bool HistoryGoForward(WebContents* wc);
+
 }  // namespace content
 
 #endif  // CONTENT_PUBLIC_TEST_BROWSER_TEST_UTILS_H_

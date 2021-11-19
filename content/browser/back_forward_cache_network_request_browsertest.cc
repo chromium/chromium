@@ -53,8 +53,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, FetchWhileStoring) {
   EXPECT_FALSE(delete_observer_rfh_a.deleted());
 
   // 3) Go back to A.
-  web_contents()->GetController().GoBack();
-  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+  ASSERT_TRUE(HistoryGoBack(web_contents()));
   ExpectRestored(FROM_HERE);
 }
 
@@ -104,8 +103,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   delete_observer_rfh_a.WaitUntilDeleted();
 
   // 3) Go back to A.
-  web_contents()->GetController().GoBack();
-  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+  ASSERT_TRUE(HistoryGoBack(web_contents()));
   ExpectNotRestored(
       {BackForwardCacheMetrics::NotRestoredReason::kNetworkRequestRedirected},
       {}, {}, {}, {}, FROM_HERE);
@@ -161,8 +159,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   delete_observer_rfh_a.WaitUntilDeleted();
 
   // 3) Go back to A.
-  web_contents()->GetController().GoBack();
-  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+  ASSERT_TRUE(HistoryGoBack(web_contents()));
   ExpectNotRestored(
       {BackForwardCacheMetrics::NotRestoredReason::kNetworkRequestRedirected},
       {}, {}, {}, {}, FROM_HERE);
@@ -201,8 +198,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   delete_observer_rfh_a.WaitUntilDeleted();
 
   // 3) Go back to A.
-  web_contents()->GetController().GoBack();
-  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+  ASSERT_TRUE(HistoryGoBack(web_contents()));
   ExpectNotRestored({BackForwardCacheMetrics::NotRestoredReason::
                          kNetworkRequestDatapipeDrainedAsBytesConsumer},
                     {}, {}, {}, {}, FROM_HERE);
@@ -244,8 +240,7 @@ IN_PROC_BROWSER_TEST_F(
   response.Done();
 
   // 3) Go back to A.
-  web_contents()->GetController().GoBack();
-  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+  ASSERT_TRUE(HistoryGoBack(web_contents()));
   ExpectRestored(FROM_HERE);
 }
 
@@ -288,8 +283,7 @@ IN_PROC_BROWSER_TEST_F(
   response.Done();
 
   // 3) Go back to A.
-  web_contents()->GetController().GoBack();
-  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+  ASSERT_TRUE(HistoryGoBack(web_contents()));
   ExpectNotRestored(
       {BackForwardCacheMetrics::NotRestoredReason::kNetworkExceedsBufferLimit},
       {}, {}, {}, {}, FROM_HERE);
@@ -320,8 +314,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
 
   // 3) Go back to the first page. We should restore the page from the
   // back-forward cache.
-  web_contents()->GetController().GoBack();
-  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+  ASSERT_TRUE(HistoryGoBack(web_contents()));
   ExpectRestored(FROM_HERE);
 
   // Wait until the deferred body is processed. Since it's not a valid image
@@ -360,8 +353,7 @@ IN_PROC_BROWSER_TEST_F(
 
   // 3) Go back to the first page. We should not restore the page from the
   // back-forward cache.
-  web_contents()->GetController().GoBack();
-  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+  ASSERT_TRUE(HistoryGoBack(web_contents()));
   ExpectNotRestored(
       {BackForwardCacheMetrics::NotRestoredReason::kNetworkExceedsBufferLimit},
       {}, {}, {}, {}, FROM_HERE);
@@ -478,8 +470,7 @@ IN_PROC_BROWSER_TEST_F(
 
   // 3) Go back to the first page. We should not restore the page from the
   // back-forward cache.
-  web_contents()->GetController().GoBack();
-  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+  ASSERT_TRUE(HistoryGoBack(web_contents()));
   ExpectNotRestored(
       {BackForwardCacheMetrics::NotRestoredReason::kNetworkExceedsBufferLimit},
       {}, {}, {}, {}, FROM_HERE);
@@ -563,8 +554,7 @@ IN_PROC_BROWSER_TEST_F(
 
   // 3) Go back to the first page. We should not restore the page from the
   // back-forward cache.
-  web_contents()->GetController().GoBack();
-  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+  ASSERT_TRUE(HistoryGoBack(web_contents()));
   ExpectNotRestored(
       {BackForwardCacheMetrics::NotRestoredReason::kNetworkExceedsBufferLimit},
       {}, {}, {}, {}, FROM_HERE);
@@ -620,8 +610,7 @@ IN_PROC_BROWSER_TEST_F(
 
   // 4) Go back to the first page. We should restore the page from the
   // back-forward cache.
-  web_contents()->GetController().GoBack();
-  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+  ASSERT_TRUE(HistoryGoBack(web_contents()));
   ExpectRestored(FROM_HERE);
 
   // The second page was still loading images when we navigated away, but it's
@@ -642,8 +631,7 @@ IN_PROC_BROWSER_TEST_F(
 
   // 5) Go forward. We should restore the second page from the back-forward
   // cache.
-  web_contents()->GetController().GoForward();
-  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+  ASSERT_TRUE(HistoryGoForward(web_contents()));
   ExpectRestored(FROM_HERE);
 }
 
@@ -697,8 +685,7 @@ IN_PROC_BROWSER_TEST_F(
 
   // 4) Go back to the first page. We should not restore the page from the
   // back-forward cache.
-  web_contents()->GetController().GoBack();
-  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+  ASSERT_TRUE(HistoryGoBack(web_contents()));
   ExpectNotRestored(
       {BackForwardCacheMetrics::NotRestoredReason::kNetworkExceedsBufferLimit},
       {}, {}, {}, {}, FROM_HERE);
@@ -719,8 +706,7 @@ IN_PROC_BROWSER_TEST_F(
 
   // 5) Go forward. We should restore the second page from the back-forward
   // cache.
-  web_contents()->GetController().GoForward();
-  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+  ASSERT_TRUE(HistoryGoForward(web_contents()));
   ExpectRestored(FROM_HERE);
 
   // Wait until the deferred body is processed. Since it's not a valid image
@@ -758,8 +744,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
 
   // 3) Go back to the first page. We should not restore the page from the
   // back-forward cache.
-  web_contents()->GetController().GoBack();
-  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+  ASSERT_TRUE(HistoryGoBack(web_contents()));
   ExpectNotRestored(
       {BackForwardCacheMetrics::NotRestoredReason::kNetworkRequestTimeout}, {},
       {}, {}, {}, FROM_HERE);
@@ -799,8 +784,7 @@ IN_PROC_BROWSER_TEST_F(
 
   // 3) Go back to the first page. We should not restore the page from the
   // back-forward cache.
-  web_contents()->GetController().GoBack();
-  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+  ASSERT_TRUE(HistoryGoBack(web_contents()));
   ExpectNotRestored(
       {BackForwardCacheMetrics::NotRestoredReason::kNetworkExceedsBufferLimit},
       {}, {}, {}, {}, FROM_HERE);
@@ -876,8 +860,7 @@ IN_PROC_BROWSER_TEST_F(
 
   // 3) Go back to the first page. We should not restore the page from the
   // back-forward cache.
-  web_contents()->GetController().GoBack();
-  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+  ASSERT_TRUE(HistoryGoBack(web_contents()));
   ExpectNotRestored(
       {BackForwardCacheMetrics::NotRestoredReason::kNetworkExceedsBufferLimit},
       {}, {}, {}, {}, FROM_HERE);
@@ -923,8 +906,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
 
   // 3) Go back to the first page. We should restore the page from the
   // back-forward cache.
-  web_contents()->GetController().GoBack();
-  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+  ASSERT_TRUE(HistoryGoBack(web_contents()));
   ExpectRestored(FROM_HERE);
 }
 
@@ -968,8 +950,7 @@ IN_PROC_BROWSER_TEST_F(
 
   // 3) Go back to the first page. We should restore the page from the
   // back-forward cache.
-  web_contents()->GetController().GoBack();
-  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+  ASSERT_TRUE(HistoryGoBack(web_contents()));
   ExpectRestored(FROM_HERE);
 }
 
@@ -1003,8 +984,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
 
   // 3) Go back to the first page. We should restore the page from the
   // back-forward cache.
-  web_contents()->GetController().GoBack();
-  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+  ASSERT_TRUE(HistoryGoBack(web_contents()));
   ExpectRestored(FROM_HERE);
 
   // Wait until the deferred body is processed. Since it's not a valid image

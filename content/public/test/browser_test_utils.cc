@@ -3900,4 +3900,24 @@ void RenderFrameHostChangedCallbackRunner::RenderFrameHostChanged(
     std::move(callback_).Run(old_host, new_host);
 }
 
+bool HistoryGoToIndex(WebContents* wc, int index) {
+  wc->GetController().GoToIndex(index);
+  return WaitForLoadStop(wc);
+}
+
+bool HistoryGoToOffset(WebContents* wc, int offset) {
+  wc->GetController().GoToOffset(offset);
+  return WaitForLoadStop(wc);
+}
+
+bool HistoryGoBack(WebContents* wc) {
+  wc->GetController().GoBack();
+  return WaitForLoadStop(wc);
+}
+
+bool HistoryGoForward(WebContents* wc) {
+  wc->GetController().GoForward();
+  return WaitForLoadStop(wc);
+}
+
 }  // namespace content

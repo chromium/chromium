@@ -82,8 +82,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, SubframeWithNoStoreCached) {
   EXPECT_TRUE(NavigateToURL(shell(), url_b));
 
   // 3) Navigate back and expect everything to be restored.
-  web_contents()->GetController().GoBack();
-  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+  ASSERT_TRUE(HistoryGoBack(web_contents()));
   EXPECT_FALSE(delete_observer_rfh_a.deleted());
   EXPECT_EQ(rfh_a, current_frame_host());
 }
@@ -263,8 +262,7 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ("foo=baz", EvalJs(tab_to_modify_cookie, "document.cookie"));
 
   // 5) Go back. |rfh_a| should be evicted upon restoration.
-  tab_to_be_bfcached->web_contents()->GetController().GoBack();
-  EXPECT_TRUE(WaitForLoadStop(tab_to_be_bfcached->web_contents()));
+  ASSERT_TRUE(HistoryGoBack(tab_to_be_bfcached->web_contents()));
 
   EXPECT_EQ("foo=baz", EvalJs(tab_to_be_bfcached, "document.cookie"));
   ExpectNotRestored({BackForwardCacheMetrics::NotRestoredReason::
@@ -278,8 +276,7 @@ IN_PROC_BROWSER_TEST_F(
 
   // 7) Navigate back to a.com. This time the cookie change has to be reset and
   // gets evicted with a different reason.
-  tab_to_be_bfcached->web_contents()->GetController().GoBack();
-  EXPECT_TRUE(WaitForLoadStop(tab_to_be_bfcached->web_contents()));
+  ASSERT_TRUE(HistoryGoBack(tab_to_be_bfcached->web_contents()));
   ExpectNotRestored(
       {BackForwardCacheMetrics::NotRestoredReason::kCacheControlNoStore}, {},
       {}, {}, {}, FROM_HERE);
@@ -373,8 +370,7 @@ IN_PROC_BROWSER_TEST_F(
   EvictByJavaScript(rfh_a.get());
 
   // 4) Go back.
-  web_contents()->GetController().GoBack();
-  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+  ASSERT_TRUE(HistoryGoBack(web_contents()));
 
   ExpectNotRestored(
       {BackForwardCacheMetrics::NotRestoredReason::kJavaScriptExecution,
@@ -406,8 +402,7 @@ IN_PROC_BROWSER_TEST_F(
   delete_observer_rfh_a.WaitUntilDeleted();
 
   // 3) Go back.
-  web_contents()->GetController().GoBack();
-  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+  ASSERT_TRUE(HistoryGoBack(web_contents()));
 
   ExpectNotRestored(
       {BackForwardCacheMetrics::NotRestoredReason::kBlocklistedFeatures,
@@ -708,8 +703,7 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_TRUE(rfh_a->IsInBackForwardCache());
 
   // 3) Go back. |rfh_a| should be restored.
-  web_contents()->GetController().GoBack();
-  EXPECT_TRUE(WaitForLoadStop(web_contents()));
+  ASSERT_TRUE(HistoryGoBack(web_contents()));
   ExpectRestored(FROM_HERE);
 }
 
@@ -894,8 +888,7 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_TRUE(NavigateToURL(tab_to_modify_cookie, url_a_2));
 
   // 4) Go back. |rfh_a| should be restored from bfcache.
-  tab_to_be_bfcached->web_contents()->GetController().GoBack();
-  EXPECT_TRUE(WaitForLoadStop(tab_to_be_bfcached->web_contents()));
+  ASSERT_TRUE(HistoryGoBack(tab_to_be_bfcached->web_contents()));
 
   ExpectRestored(FROM_HERE);
 }
@@ -943,8 +936,7 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ("foo=baz", EvalJs(tab_to_modify_cookie, "document.cookie"));
 
   // 5) Go back. |rfh_a| should be restored from bfcache.
-  tab_to_be_bfcached->web_contents()->GetController().GoBack();
-  EXPECT_TRUE(WaitForLoadStop(tab_to_be_bfcached->web_contents()));
+  ASSERT_TRUE(HistoryGoBack(tab_to_be_bfcached->web_contents()));
 
   EXPECT_EQ("foo=baz", EvalJs(tab_to_be_bfcached, "document.cookie"));
   ExpectRestored(FROM_HERE);
