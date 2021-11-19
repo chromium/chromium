@@ -12,6 +12,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/version.h"
 #include "chrome/updater/enum_traits.h"
+#include "components/update_client/update_client.h"
 
 namespace updater {
 
@@ -25,6 +26,10 @@ enum class UpdaterScope;
 class UpdateService : public base::RefCountedThreadSafe<UpdateService> {
  public:
   // Defines the behavior of the update stack for over-installs.
+  // Typically, same versions updates are not allowed, in which case, the update
+  // server replies with `update not available'. But there are cases, such as
+  // re-installing an application again, when the server may respond with an
+  // update.
   enum class PolicySameVersionUpdate {
     // The embedder does not allow over-installs with the same version. In this
     // case, the server is expected to return `update not available` when it
@@ -214,6 +219,7 @@ class UpdateService : public base::RefCountedThreadSafe<UpdateService> {
   //    Result: the final result from the update engine.
   virtual void Update(const std::string& app_id,
                       Priority priority,
+                      PolicySameVersionUpdate policy_same_version_update,
                       StateChangeCallback state_update,
                       Callback callback) = 0;
 

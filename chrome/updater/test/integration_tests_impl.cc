@@ -199,7 +199,8 @@ void Update(UpdaterScope scope, const std::string& app_id) {
   scoped_refptr<UpdateService> update_service = CreateUpdateServiceProxy(scope);
   base::RunLoop loop;
   update_service->Update(
-      app_id, UpdateService::Priority::kForeground, base::DoNothing(),
+      app_id, UpdateService::Priority::kForeground,
+      UpdateService::PolicySameVersionUpdate::kNotAllowed, base::DoNothing(),
       base::BindOnce(base::BindLambdaForTesting(
           [&loop](UpdateService::Result result_unused) { loop.Quit(); })));
   loop.Run();

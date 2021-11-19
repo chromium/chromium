@@ -138,6 +138,8 @@ using base::SysUTF8ToNSString;
 
 - (void)checkForUpdateWithAppID:(NSString* _Nonnull)appID
                        priority:(CRUPriorityWrapper* _Nonnull)priority
+        policySameVersionUpdate:
+            (CRUPolicySameVersionUpdateWrapper* _Nonnull)policySameVersionUpdate
                     updateState:
                         (id<CRUUpdateStateObserving> _Nonnull)updateState
                           reply:(void (^_Nonnull)(int rc))reply {
@@ -150,6 +152,7 @@ using base::SysUTF8ToNSString;
   [[_updateCheckXPCConnection remoteObjectProxyWithErrorHandler:errorHandler]
       checkForUpdateWithAppID:appID
                      priority:priority
+      policySameVersionUpdate:policySameVersionUpdate
                   updateState:updateState
                         reply:reply];
 }
@@ -236,10 +239,12 @@ void UpdateServiceProxy::UpdateAll(StateChangeCallback state_update,
   [client_ checkForUpdatesWithUpdateState:stateObserver.get() reply:reply];
 }
 
-void UpdateServiceProxy::Update(const std::string& app_id,
-                                UpdateService::Priority priority,
-                                StateChangeCallback state_update,
-                                Callback callback) {
+void UpdateServiceProxy::Update(
+    const std::string& app_id,
+    UpdateService::Priority priority,
+    PolicySameVersionUpdate policy_same_version_update,
+    StateChangeCallback state_update,
+    Callback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   __block base::OnceCallback<void(UpdateService::Result)> block_callback =
@@ -252,6 +257,9 @@ void UpdateServiceProxy::Update(const std::string& app_id,
 
   base::scoped_nsobject<CRUPriorityWrapper> priorityWrapper(
       [[CRUPriorityWrapper alloc] initWithPriority:priority]);
+  base::scoped_nsobject<CRUPolicySameVersionUpdateWrapper>
+      policySameVersionUpdateWrapper([[CRUPolicySameVersionUpdateWrapper alloc]
+          initWithPolicySameVersionUpdate:policy_same_version_update]);
   base::scoped_nsprotocol<id<CRUUpdateStateObserving>> stateObserver(
       [[CRUUpdateStateObserver alloc]
           initWithRepeatingCallback:state_update
@@ -259,6 +267,7 @@ void UpdateServiceProxy::Update(const std::string& app_id,
 
   [client_ checkForUpdateWithAppID:SysUTF8ToNSString(app_id)
                           priority:priorityWrapper.get()
+           policySameVersionUpdate:policySameVersionUpdateWrapper.get()
                        updateState:stateObserver.get()
                              reply:reply];
 }

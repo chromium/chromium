@@ -43,6 +43,16 @@ using StateChangeCallback =
 
 @end
 
+@interface CRUPolicySameVersionUpdateWrapper : NSObject <NSSecureCoding>
+
+@property(readonly, nonatomic)
+    updater::UpdateService::PolicySameVersionUpdate policySameVersionUpdate;
+
+- (instancetype)initWithPolicySameVersionUpdate:
+    (updater::UpdateService::PolicySameVersionUpdate)policySameVersionUpdate;
+
+@end
+
 @interface CRUErrorCategoryWrapper : NSObject <NSSecureCoding>
 
 @property(readonly, nonatomic)

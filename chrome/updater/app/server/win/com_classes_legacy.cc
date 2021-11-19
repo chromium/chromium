@@ -19,6 +19,7 @@
 #include "base/win/scoped_process_information.h"
 #include "chrome/updater/app/server/win/server.h"
 #include "chrome/updater/constants.h"
+#include "chrome/updater/update_service.h"
 #include "chrome/updater/win/win_constants.h"
 #include "chrome/updater/win/win_util.h"
 
@@ -172,6 +173,7 @@ STDMETHODIMP LegacyOnDemandImpl::checkForUpdate() {
              LegacyOnDemandImplPtr obj) {
             update_service->Update(
                 obj->app_id(), UpdateService::Priority::kForeground,
+                UpdateService::PolicySameVersionUpdate::kNotAllowed,
                 base::BindRepeating(
                     [](LegacyOnDemandImplPtr obj,
                        const UpdateService::UpdateState& state_update) {

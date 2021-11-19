@@ -26,6 +26,7 @@ static NSString* const kCRUUpdateStateErrorCode = @"updateStateErrorCode";
 static NSString* const kCRUUpdateStateExtraCode = @"updateStateExtraCode";
 
 static NSString* const kCRUPriority = @"priority";
+static NSString* const kCRUPolicySameVersionUpdate = @"policySameVersionUpdate";
 static NSString* const kCRUErrorCategory = @"errorCategory";
 
 using StateChangeCallback =
@@ -314,7 +315,6 @@ typedef NS_ENUM(NSInteger, CRUUpdatePriorityEnum) {
   DCHECK([coder respondsToSelector:@selector(encodeInt:forKey:)]);
   [coder encodeInt:static_cast<NSInteger>(self.priority) forKey:kCRUPriority];
 }
-
 // Required for unit tests.
 - (BOOL)isEqual:(id)object {
   if (![object isMemberOfClass:[CRUPriorityWrapper class]]) {
@@ -327,6 +327,75 @@ typedef NS_ENUM(NSInteger, CRUUpdatePriorityEnum) {
 // Required because isEqual is overridden.
 - (NSUInteger)hash {
   return static_cast<NSUInteger>(_priority);
+}
+
+@end
+
+@implementation CRUPolicySameVersionUpdateWrapper
+
+@synthesize policySameVersionUpdate = _policySameVersionUpdate;
+
+// Wrapper for updater::UpdateService::PolicySameVersionUpdate.
+typedef NS_ENUM(NSInteger, CRUUpdatePolicySameVersionUpdateEnum) {
+  kCRUPolicySameVersionUpdateNotAllowed = static_cast<NSInteger>(
+      updater::UpdateService::PolicySameVersionUpdate::kNotAllowed),
+  kCRUPolicySameVersionUpdateAllowed = static_cast<NSInteger>(
+      updater::UpdateService::PolicySameVersionUpdate::kAllowed),
+};
+
+// Designated initializer.
+- (instancetype)initWithPolicySameVersionUpdate:
+    (updater::UpdateService::PolicySameVersionUpdate)policySameVersionUpdate {
+  if (self = [super init]) {
+    _policySameVersionUpdate = policySameVersionUpdate;
+  }
+  return self;
+}
+
++ (BOOL)supportsSecureCoding {
+  return YES;
+}
+
+- (instancetype)initWithCoder:(NSCoder*)aDecoder {
+  DCHECK([aDecoder allowsKeyedCoding]);
+  NSInteger enumValue =
+      [aDecoder decodeIntegerForKey:kCRUPolicySameVersionUpdate];
+
+  switch (enumValue) {
+    case kCRUPolicySameVersionUpdateNotAllowed:
+      return [self
+          initWithPolicySameVersionUpdate:
+              updater::UpdateService::PolicySameVersionUpdate::kNotAllowed];
+    case kCRUPolicySameVersionUpdateAllowed:
+      return
+          [self initWithPolicySameVersionUpdate:
+                    updater::UpdateService::PolicySameVersionUpdate::kAllowed];
+    default:
+      DLOG(ERROR)
+          << "Unexpected value for CRUUpdatePolicySameVersionUpdateEnum: "
+          << enumValue;
+      return nil;
+  }
+}
+- (void)encodeWithCoder:(NSCoder*)coder {
+  DCHECK([coder respondsToSelector:@selector(encodeInt:forKey:)]);
+  [coder encodeInt:static_cast<NSInteger>(self.policySameVersionUpdate)
+            forKey:kCRUPolicySameVersionUpdate];
+}
+// Required for unit tests.
+- (BOOL)isEqual:(id)object {
+  if (![object isMemberOfClass:[CRUPolicySameVersionUpdateWrapper class]]) {
+    return NO;
+  }
+  CRUPolicySameVersionUpdateWrapper* otherPolicySameVersionUpdateWrapper =
+      object;
+  return self.policySameVersionUpdate ==
+         otherPolicySameVersionUpdateWrapper.policySameVersionUpdate;
+}
+
+// Required because isEqual is overridden.
+- (NSUInteger)hash {
+  return static_cast<NSUInteger>(_policySameVersionUpdate);
 }
 
 @end

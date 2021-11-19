@@ -22,6 +22,7 @@
 #include "base/win/scoped_bstr.h"
 #include "chrome/updater/app/server/win/server.h"
 #include "chrome/updater/registration_data.h"
+#include "chrome/updater/update_service.h"
 #include "chrome/updater/updater_version.h"
 #include "chrome/updater/win/win_util.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -296,6 +297,7 @@ HRESULT UpdaterImpl::Update(const wchar_t* app_id, IUpdaterObserver* observer) {
              const std::string& app_id, IUpdaterObserverPtr observer) {
             update_service->Update(
                 app_id, UpdateService::Priority::kForeground,
+                UpdateService::PolicySameVersionUpdate::kNotAllowed,
                 base::BindRepeating(&StateChangeCallbackFilter::OnStateChange,
                                     base::Owned(new StateChangeCallbackFilter(
                                         task_runner, observer))),

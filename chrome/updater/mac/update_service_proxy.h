@@ -45,6 +45,7 @@ class UpdateServiceProxy : public UpdateService {
   void UpdateAll(StateChangeCallback state_update, Callback callback) override;
   void Update(const std::string& app_id,
               Priority priority,
+              PolicySameVersionUpdate policy_same_version_update,
               StateChangeCallback state_update,
               Callback callback) override;
   void Uninitialize() override;

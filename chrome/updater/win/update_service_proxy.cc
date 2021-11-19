@@ -394,10 +394,12 @@ void UpdateServiceProxy::UpdateAll(StateChangeCallback state_update,
           base::BindPostTask(main_task_runner_, std::move(callback))));
 }
 
-void UpdateServiceProxy::Update(const std::string& app_id,
-                                UpdateService::Priority /*priority*/,
-                                StateChangeCallback state_update,
-                                Callback callback) {
+void UpdateServiceProxy::Update(
+    const std::string& app_id,
+    UpdateService::Priority /*priority*/,
+    PolicySameVersionUpdate /*policy_same_version_update*/,
+    StateChangeCallback state_update,
+    Callback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_main_);
 
   // Reposts the call to the COM task runner. Adapts `callback` so that

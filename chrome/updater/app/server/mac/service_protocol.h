@@ -13,6 +13,7 @@
 @class CRUUpdateStateObserver;
 @class CRUUpdateStateWrapper;
 @class CRUPriorityWrapper;
+@class CRUPolicySameVersionUpdateWrapper;
 
 // Protocol which observes the state of the XPC update checking service.
 @protocol CRUUpdateStateObserving <NSObject>
@@ -42,6 +43,8 @@
 // updates of progress and returns the result in the reply block.
 - (void)checkForUpdateWithAppID:(NSString* _Nonnull)appID
                        priority:(CRUPriorityWrapper* _Nonnull)priority
+        policySameVersionUpdate:
+            (CRUPolicySameVersionUpdateWrapper* _Nonnull)policySameVersionUpdate
                     updateState:(CRUUpdateStateObserver* _Nonnull)updateState
                           reply:(void (^_Nonnull)(int rc))reply;
 

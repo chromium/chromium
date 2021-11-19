@@ -292,10 +292,12 @@ void UpdateServiceImpl::UpdateAll(StateChangeCallback state_update,
                      UpdateService::PolicySameVersionUpdate::kNotAllowed));
 }
 
-void UpdateServiceImpl::Update(const std::string& app_id,
-                               Priority priority,
-                               StateChangeCallback state_update,
-                               Callback callback) {
+void UpdateServiceImpl::Update(
+    const std::string& app_id,
+    Priority priority,
+    PolicySameVersionUpdate /*policy_same_version_update*/,
+    StateChangeCallback state_update,
+    Callback callback) {
   VLOG(1) << __func__;
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -312,7 +314,7 @@ void UpdateServiceImpl::OnShouldBlockUpdateForMeteredNetwork(
     Callback callback,
     const std::vector<std::string>& ids,
     Priority priority,
-    UpdateService::PolicySameVersionUpdate policy_same_version_update,
+    PolicySameVersionUpdate policy_same_version_update,
     bool update_blocked) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 

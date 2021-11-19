@@ -141,6 +141,8 @@
 
 - (void)checkForUpdateWithAppID:(NSString* _Nonnull)appID
                        priority:(CRUPriorityWrapper* _Nonnull)priority
+        policySameVersionUpdate:
+            (CRUPolicySameVersionUpdateWrapper* _Nonnull)policySameVersionUpdate
                     updateState:(id<CRUUpdateStateObserving>)updateState
                           reply:(void (^_Nonnull)(int rc))reply {
   auto cb =
@@ -185,6 +187,7 @@
       FROM_HERE,
       base::BindOnce(&updater::UpdateService::Update, _service,
                      base::SysNSStringToUTF8(appID), [priority priority],
+                     [policySameVersionUpdate policySameVersionUpdate],
                      std::move(sccb), std::move(cb)));
 }
 

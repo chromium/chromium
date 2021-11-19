@@ -45,6 +45,7 @@ class UpdateServiceImpl : public UpdateService {
   void UpdateAll(StateChangeCallback state_update, Callback callback) override;
   void Update(const std::string& app_id,
               Priority priority,
+              PolicySameVersionUpdate policy_same_version_update,
               StateChangeCallback state_update,
               Callback callback) override;
 
@@ -64,7 +65,7 @@ class UpdateServiceImpl : public UpdateService {
       Callback callback,
       const std::vector<std::string>& ids,
       Priority priority,
-      UpdateService::PolicySameVersionUpdate policy_same_version_update,
+      PolicySameVersionUpdate policy_same_version_update,
       bool update_blocked);
 
   SEQUENCE_CHECKER(sequence_checker_);

@@ -48,8 +48,9 @@ class UpdateServiceImplInactive : public UpdateService {
   }
 
   void Update(const std::string& app_id,
-              Priority priority,
-              StateChangeCallback state_update,
+              Priority /*priority*/,
+              PolicySameVersionUpdate /*policy_same_version_update*/,
+              StateChangeCallback /*state_update*/,
               Callback callback) override {
     base::SequencedTaskRunnerHandle::Get()->PostTask(
         FROM_HERE,
