@@ -28,7 +28,6 @@ android_resources("java_resources") {
     "java/res/anim/iph_touch_point_animation.xml",
     "java/res/anim/iph_touch_point_background_alpha_animation.xml",
     "java/res/anim/iph_touch_point_background_animation.xml",
-    "java/res/color/dark_text_color_list.xml",
     "java/res/drawable-v21/fake_search_box_bg_incognito.xml",
     "java/res/drawable/chevron_right.xml",
     "java/res/drawable/fake_search_box_text_box_bg_incognito.xml",

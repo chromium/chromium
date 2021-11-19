@@ -3984,9 +3984,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_WITH_PARAMS_VALUE_TYPE(chrome::android::kToolbarMicIphAndroid,
                                     kIphMicToolbarVariations,
                                     "ToolbarMicIphAndroid")},
-    {"theme-refactor-android", flag_descriptions::kThemeRefactorAndroidName,
-     flag_descriptions::kThemeRefactorAndroidDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(chrome::android::kThemeRefactorAndroid)},
 #endif  // OS_ANDROID
     {"disallow-doc-written-script-loads",
      flag_descriptions::kDisallowDocWrittenScriptsUiName,
