@@ -247,6 +247,42 @@ class PermissionsSecurityModelInteractiveUITest : public InProcessBrowserTest {
     EXPECT_EQ(1, bubble_factory->TotalRequestCount());
   }
 
+  // getUserMedia requires focus. It should be verified only on a popup window.
+  void VerifyPopupWindowGetUserMedia(content::WebContents* opener_contents,
+                                     content::WebContents* popup_contents) {
+    content::RenderFrameHost* opener_rfh = opener_contents->GetMainFrame();
+    content::RenderFrameHost* popup_rfh = popup_contents->GetMainFrame();
+
+    ASSERT_FALSE(content::EvalJs(opener_rfh, kCheckCamera).value.GetBool());
+    ASSERT_FALSE(content::EvalJs(popup_rfh, kCheckCamera).value.GetBool());
+
+    permissions::PermissionRequestManager* manager =
+        permissions::PermissionRequestManager::FromWebContents(popup_contents);
+    std::unique_ptr<permissions::MockPermissionPromptFactory> bubble_factory =
+        std::make_unique<permissions::MockPermissionPromptFactory>(manager);
+
+    // Enable auto-accept of a permission request.
+    bubble_factory->set_response_type(
+        permissions::PermissionRequestManager::AutoResponseType::ACCEPT_ALL);
+
+    // Move the web contents to the foreground.
+    popup_rfh->GetView()->Focus();
+    ASSERT_TRUE(popup_rfh->GetView()->HasFocus());
+    // Request permission on the popup RenderFrameHost.
+    EXPECT_EQ("granted",
+              content::EvalJs(popup_rfh, kRequestCamera,
+                              content::EXECUTE_SCRIPT_USE_MANUAL_REPLY)
+                  .ExtractString());
+    EXPECT_EQ(1, bubble_factory->TotalRequestCount());
+
+    // Disable auto-accept of a permission request.
+    bubble_factory->set_response_type(
+        permissions::PermissionRequestManager::AutoResponseType::NONE);
+
+    EXPECT_TRUE(content::EvalJs(popup_rfh, kCheckCamera).value.GetBool());
+    EXPECT_TRUE(content::EvalJs(opener_rfh, kCheckCamera).value.GetBool());
+  }
+
   void VerifyPermissionsExceptGetUserMedia(
       content::WebContents* opener_or_embedder_contents,
       content::RenderFrameHost* test_rfh) {
@@ -328,10 +364,9 @@ IN_PROC_BROWSER_TEST_F(PermissionsSecurityModelInteractiveUITest,
       OpenPopup(browser(), GURL("about:blank"));
   ASSERT_TRUE(popup_contents);
 
-  // TODO(crbug.com/1242047): Add back the camera access tests when they are
-  // no longer flaky on Linux.
   VerifyPermissionsExceptGetUserMedia(opener_contents,
                                       popup_contents->GetMainFrame());
+  VerifyPopupWindowGetUserMedia(opener_contents, popup_contents);
 }
 
 // `about:srcdoc` supports only embedder WebContents, hence no test for opener.
@@ -380,8 +415,6 @@ IN_PROC_BROWSER_TEST_F(PermissionsSecurityModelInteractiveUITest,
                    kCheckCamera);
 }
 
-// TODO(crbug.com/1242047): Add back the camera access tests when they are
-// no longer flaky on Linux.
 IN_PROC_BROWSER_TEST_F(PermissionsSecurityModelInteractiveUITest,
                        WindowOpenBlob) {
   ASSERT_TRUE(embedded_test_server()->Start());
@@ -401,6 +434,7 @@ IN_PROC_BROWSER_TEST_F(PermissionsSecurityModelInteractiveUITest,
 
   VerifyPermissionsExceptGetUserMedia(opener_contents,
                                       blob_popup_contents->GetMainFrame());
+  VerifyPopupWindowGetUserMedia(opener_contents, blob_popup_contents);
 }
 
 IN_PROC_BROWSER_TEST_F(PermissionsSecurityModelInteractiveUITest,
@@ -445,8 +479,6 @@ IN_PROC_BROWSER_TEST_F(PermissionsSecurityModelInteractiveUITest,
   EXPECT_EQ("", popup_iframe->GetLastCommittedURL().scheme());
 }
 
-// TODO(crbug.com/1242046): Add back the camera access tests when they are
-// no longer flaky on Linux and Mac.
 IN_PROC_BROWSER_TEST_F(PermissionsSecurityModelInteractiveUITest,
                        WindowOpenFileSystemBrowserNavigation) {
   ASSERT_TRUE(embedded_test_server()->Start());
@@ -475,6 +507,8 @@ IN_PROC_BROWSER_TEST_F(PermissionsSecurityModelInteractiveUITest,
   EXPECT_TRUE(popup_rfh->GetLastCommittedURL().SchemeIsFileSystem());
 
   VerifyPermissionsExceptGetUserMedia(opener_contents, popup_rfh);
+  VerifyPopupWindowGetUserMedia(
+      opener_contents, content::WebContents::FromRenderFrameHost(popup_rfh));
 }
 
 IN_PROC_BROWSER_TEST_F(PermissionsSecurityModelInteractiveUITest,
