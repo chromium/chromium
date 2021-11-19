@@ -1,11 +1,13 @@
-<?xml version="1.0" encoding="utf-8"?><!-- Copyright 2021 The Chromium Authors. All rights reserved.
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2021 The Chromium Authors. All rights reserved.
      Use of this source code is governed by a BSD-style license that can be
      found in the LICENSE file. -->
 
 <org.chromium.ui.widget.ViewLookupCachingFrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:focusable="true">
 
   <LinearLayout
       android:layout_width="match_parent"
@@ -26,45 +28,45 @@
           android:layout_gravity="center_vertical|start"
           android:background="@drawable/bookmark_save_flow_background"
           android:foreground="@drawable/bookmark_save_flow_ripple"
-          android:scaleType="centerInside" />
-
-      <LinearLayout
-          android:layout_width="match_parent"
-          android:layout_height="wrap_content"
-          android:layout_gravity="center_vertical|start"
-          android:orientation="horizontal">
+          android:scaleType="centerInside"
+          android:contentDescription="@string/bookmark_action_bar_edit_folder" />
 
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:layout_gravity="center_vertical|start"
+            android:orientation="vertical"
+            android:screenReaderFocusable="true"
+            android:focusable="true">
 
           <TextView
               android:id="@+id/title_text"
               android:layout_width="wrap_content"
               android:layout_height="wrap_content"
               android:ellipsize="end"
-              android:textAppearance="@style/TextAppearance.TextMediumThick.Primary" />
+              android:textAppearance="@style/TextAppearance.TextMediumThick.Primary"
+              android:focusable="false" />
 
           <TextView
               android:id="@+id/subtitle_text"
               android:layout_width="wrap_content"
               android:layout_height="wrap_content"
               android:ellipsize="end"
-              android:textAppearance="@style/TextAppearance.TextMedium.Primary" />
+              android:textAppearance="@style/TextAppearance.TextMedium.Primary"
+              android:focusable="false" />
         </LinearLayout>
 
-        <TextView
-            android:id="@+id/bookmark_edit"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:layout_gravity="center_vertical"
-            android:gravity="end"
-            android:text="@string/bookmark_item_edit"
-            android:paddingHorizontal="24dp"
-            android:textAppearance="@style/TextAppearance.TextMedium.Blue" />
-      </LinearLayout>
+      <org.chromium.ui.widget.ButtonCompat
+          android:id="@+id/bookmark_edit"
+          android:layout_width="0dp"
+          android:layout_height="72dp"
+          android:layout_weight="1"
+          android:gravity="center|end"
+          android:layout_gravity="end"
+          android:text="@string/bookmark_item_edit"
+          android:textAppearance="@style/TextAppearance.TextMedium.Blue"
+          style="@style/TextButton"
+          android:paddingEnd="24dp" />
     </LinearLayout>
 
     <View
@@ -92,7 +94,7 @@
           android:layout_width="0dp"
           android:layout_height="wrap_content"
           android:layout_weight="1"
-          android:layout_gravity="center_vertical" 
+          android:layout_gravity="center_vertical"
           android:orientation="vertical">
         <TextView
             android:id="@+id/notification_switch_title"
