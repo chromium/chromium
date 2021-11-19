@@ -4080,6 +4080,7 @@ kasutades juhtpaneeli funktsiooni <ph name="CONTROL_PANEL_APPLET_NAME" />.
 <translation id="5265562206369321422">Üle ühe nädala võrguühenduseta</translation>
 <translation id="5265797726250773323">Viga installimisel</translation>
 <translation id="5266113311903163739">Sertifitseerimisorgani impordi viga</translation>
+<translation id="526622169288322445">Rohkem toiminguid: <ph name="ADDRESS_SUMMARY" /></translation>
 <translation id="5269977353971873915">Printimine nurjus</translation>
 <translation id="5275352920323889391">Koer</translation>
 <translation id="527605982717517565">Luba alati JavaScript saidil <ph name="HOST" /></translation>
@@ -5458,6 +5459,7 @@ Saate sellele toimingule määrata mitu lülitit.</translation>
 <translation id="6775163072363532304">Saadaolevad seadmed kuvatakse siin.</translation>
 <translation id="6777817260680419853">Ümbersuunamine blokeeriti</translation>
 <translation id="6778737459546443941">Vanem ei ole seda veel kinnitanud</translation>
+<translation id="6779092717724412415">Sellega sarnase esiletõstu loomiseks valige mis tahes tekst ja tehke paremklikk.</translation>
 <translation id="6779447100905857289">teie ostukorvid</translation>
 <translation id="677965093459947883">Väga väike</translation>
 <translation id="6781005693196527806">&amp;Otsingumootorite haldamine …</translation>
@@ -6273,6 +6275,7 @@ Saate sellele toimingule määrata mitu lülitit.</translation>
 <translation id="7625823789272218216">Uus vaheleht vasakul</translation>
 <translation id="7628201176665550262">Värskendussagedus</translation>
 <translation id="7629827748548208700">Vaheleht: <ph name="TAB_NAME" /></translation>
+<translation id="7630426712700473382">Seda seadet haldab <ph name="MANAGER" /> ja teil tuleb iga kord sisse logida.</translation>
 <translation id="7631014249255418691">Linuxi rakenduste ja failide varundamine õnnestus</translation>
 <translation id="7631205654593498032">Seadmete ühendamisel lubate seadmel <ph name="DEVICE_TYPE" /> teha järgmist.</translation>
 <translation id="7631887513477658702">Ava alati &amp;seda tüüpi failid</translation>

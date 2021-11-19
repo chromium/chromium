@@ -69,6 +69,7 @@ Til að opna vafravalmynd Chrome skal ýta á Alt+F.</translation>
 <translation id="1354356357730355833">afrita</translation>
 <translation id="135978014023467274">Þú uppfærðir í ChromeVox 63!</translation>
 <translation id="1360699455582016846">Smelltu á atriðið undir leiðarlyklinum <ph name="ROUTING_KEY_NUMBER" /></translation>
+<translation id="1376703628032300005">færa á næsta staf</translation>
 <translation id="1377925789329510816">Þetta er síðasta fyrirsögnin. Ýttu á leitarlykilinn + H til að fara aftur á fyrstu fyrirsögnina eða leitarlykilinn + Shift + H til að fara á aðra fyrirsögnina á þessari síðu.</translation>
 <translation id="138218114945450791">Ljósblár</translation>
 <translation id="1383876407941801731">Leita</translation>
@@ -213,6 +214,7 @@ Til að opna vafravalmynd Chrome skal ýta á Alt+F.</translation>
 <translation id="2450814015951372393">Gátreitur</translation>
 <translation id="2461822463642141190">Núna</translation>
 <translation id="2462626033734746142">Valhnappahópur</translation>
+<translation id="2467741090055146971">afturkalla val</translation>
 <translation id="2471138580042810658">Fyrirsögn 6</translation>
 <translation id="248982282205370495">{COUNT,plural, =1{stjarna}one{# stjarna}other{# stjörnur}}</translation>
 <translation id="2490721194269245365">Brúnbleikur</translation>
@@ -565,6 +567,7 @@ Til að opna vafravalmynd Chrome skal ýta á Alt+F.</translation>
 <translation id="4854380505292502090">Engin fyrri margmiðlunargræja</translation>
 <translation id="4855927945655956315">Nauðsynlegir lyklar: Control</translation>
 <translation id="4862744964787595316">Ekki feitletrað</translation>
+<translation id="4865995900839719272">færa í fyrri línu</translation>
 <translation id="4866956062845190338">rdmnuitm</translation>
 <translation id="4867316986324544967">Virkja TTS-skráningu</translation>
 <translation id="4886524826165775965"><ph name="INDEX" />/<ph name="TOTAL" /></translation>
@@ -623,6 +626,7 @@ Til að opna vafravalmynd Chrome skal ýta á Alt+F.</translation>
 <translation id="5304943142864553931"><ph name="TITLE" />, flipi</translation>
 <translation id="5308380583665731573">Tengjast</translation>
 <translation id="5310788376443009632">fjarlægt:</translation>
+<translation id="5316825363044614340">færa í næstu línu</translation>
 <translation id="5320727453979144100">Festistilling virk</translation>
 <translation id="5321085947096604457">{COUNT,plural, =1{komma}one{# komma}other{# kommur}}</translation>
 <translation id="532485153932049746">Textasnið
@@ -902,6 +906,7 @@ Til að opna vafravalmynd Chrome skal ýta á Alt+F.</translation>
 <translation id="7292195267473691167"><ph name="LOCALE" /> (<ph name="VARIANT" />)</translation>
 <translation id="7308519659008003150">Enginn fyrri eyðublaðsreitur</translation>
 <translation id="731121099745151312">tritm</translation>
+<translation id="7313717760367325059">hjálp</translation>
 <translation id="7317017974771324508">hluti valinn</translation>
 <translation id="7322442671176251901">Snertikönnun</translation>
 <translation id="7344012264516629579">Aðrar stökkskipanir eru m.a. stökk með tengli, hnappi eða gátreit svo fáeinar séu nefndar. Heildarlista stökkskipana má nálgast í valmyndum ChromeVox sem hægt er að opna með því að ýta á leitarlykilinn + punkt.</translation>
@@ -1129,6 +1134,7 @@ Til að opna vafravalmynd Chrome skal ýta á Alt+F.</translation>
 <translation id="9014206344398081366">ChromeVox leiðsögn</translation>
 <translation id="9040132695316389094">Fyrirsögn 1</translation>
 <translation id="9061884144798498064">Velja átta punkta blindraleturstöflu:</translation>
+<translation id="9063946545000394379">færa á fyrri staf</translation>
 <translation id="9065283790526219006">+sprettigluggi</translation>
 <translation id="9065912140022662363">Enginn næsti hringhnappur</translation>
 <translation id="9067522039955793016">Síðuskil</translation>

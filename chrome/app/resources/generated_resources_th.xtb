@@ -2385,6 +2385,7 @@
 <translation id="3449393517661170867">หน้าต่างแท็บใหม่</translation>
 <translation id="3449839693241009168">กด <ph name="SEARCH_KEY" /> เพื่อส่งคำสั่งไปที่ <ph name="EXTENSION_NAME" /></translation>
 <translation id="3450157232394774192">เปอร์เซ็นต์การเกิดขึ้นของสถานะไม่มีการใช้งาน</translation>
+<translation id="3450180775417907283"><ph name="MANAGER" /> ต้องการให้คุณเชื่อมต่อ Wi-Fi ตอนนี้และดาวน์โหลดอัปเดต</translation>
 <translation id="3451753556629288767">ได้รับอนุญาตให้เปิดไฟล์ประเภทต่างๆ</translation>
 <translation id="3452999110156026232">การเข้าถึงของผู้ปกครอง</translation>
 <translation id="3453612417627951340">ต้องขออนุมัติก่อน</translation>
@@ -4248,6 +4249,7 @@
 <translation id="5472627187093107397">บันทึกรหัสผ่านสำหรับเว็บไซต์นี้</translation>
 <translation id="5473075389972733037">IBM</translation>
 <translation id="5473156705047072749">{NUM_CHARACTERS,plural, =1{PIN ต้องมีอักขระอย่างน้อย 1 ตัว}other{PIN ต้องมีอักขระอย่างน้อย # ตัว}}</translation>
+<translation id="5474859849784484111"><ph name="MANAGER" /> ต้องการให้คุณเชื่อมต่อ Wi-Fi ตอนนี้และดาวน์โหลดอัปเดต หรือดาวน์โหลดจากการเชื่อมต่อที่มีการวัดปริมาณอินเทอร์เน็ต (อาจมีค่าบริการ)</translation>
 <translation id="5481273127572794904">ไม่ได้รับอนุญาตให้ดาวน์โหลดไฟล์หลายไฟล์โดยอัตโนมัติ</translation>
 <translation id="5481941284378890518">เพิ่มเครื่องพิมพ์ที่อยู่ใกล้เคียง</translation>
 <translation id="5483785310822538350">เพิกถอนสิทธิ์การเข้าถึงไฟล์และอุปกรณ์</translation>
@@ -4670,6 +4672,7 @@
 <translation id="592880897588170157">ดาวน์โหลดไฟล์ PDF แทนการเปิดโดยอัตโนมัติใน Chrome</translation>
 <translation id="592919310198008711">เมื่อฉันคลิกส่วนขยาย</translation>
 <translation id="5932124097031739492">อัปเกรด Linux เรียบร้อยแล้ว</translation>
+<translation id="5932209916647644605"><ph name="MANAGER" /> ต้องการให้คุณอัปเดต <ph name="DEVICE_TYPE" /> ทันที</translation>
 <translation id="5932224571077948991">เว็บไซต์แสดงโฆษณาที่แทรกหรือทำให้เข้าใจผิด</translation>
 <translation id="59324397759951282">อุปกรณ์ USB จาก <ph name="MANUFACTURER_NAME" /></translation>
 <translation id="5932441198730183141">คุณมีใบอนุญาตที่ใช้ได้ไม่เพียงพอสำหรับการลงทะเบียนอุปกรณ์ฮาร์ดแวร์ของ Google Meet เครื่องนี้ โปรดติดต่อฝ่ายขายเพื่อซื้อใบอนุญาตเพิ่ม หากเชื่อว่าคุณเห็นข้อความนี้เนื่องจากข้อผิดพลาด โปรดติดต่อฝ่ายสนับสนุน</translation>

@@ -702,6 +702,16 @@ Questa norma viene rispettata soltanto se la norma "DefaultSearchProviderEnabled
 <translation id="1862267110714201519">Disattiva la funzionalità di finestre nascoste.</translation>
 <translation id="1865417998205858223">Autorizzazioni chiave</translation>
 <translation id="186719019195685253">Azione da compiere quando il ritardo di inattività viene raggiunto durante l'utilizzo della corrente CA</translation>
+<translation id="1881649377321404593">
+      Questo criterio non è più necessario poiché WebDriver è ora compatibile con tutti i criteri esistenti ed è stato pertanto rimosso da M80.
+
+      Questo criterio consente agli utenti della funzionalità WebDriver di sostituire i criteri che possono interferire con il relativo funzionamento.
+
+      Al momento questo criterio disattiva i criteri SitePerProcess e IsolateOrigins.
+
+      Se il criterio viene attivato, WebDriver potrà sostituire i criteri non compatibili.
+
+      Se il criterio viene disattivato o se non viene configurato, WebDriver non potrà sostituire i criteri non compatibili.</translation>
 <translation id="1885782360784839335">Attiva la visualizzazione di contenuti promozionali a scheda intera</translation>
 <translation id="1888871729456797026">Il token di registrazione della norma relativa alla cloud su desktop</translation>
 <translation id="1894790493260633497">Attiva la modalità di stampa delle immagini di sfondo per impostazione predefinita</translation>
@@ -2768,6 +2778,16 @@ Se questo criterio viene impostato su Falso, <ph name="PRODUCT_NAME" /> non util
       A partire dalla versione 92 di <ph name="PRODUCT_NAME" />, questo criterio è supportato anche nella modalità headless.
 
       Su <ph name="MS_WIN_NAME" />, questa funzionalità è disponibile soltanto nelle istanze che fanno parte di un dominio <ph name="MS_AD_NAME" />, sono in esecuzione su Windows 10 Pro o sono registrate in <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />. Su <ph name="MAC_OS_NAME" />, questa funzionalità è disponibile soltanto nelle istanze gestite tramite MDM o aggiunte a un dominio tramite MCX.</translation>
+<translation id="4268014245533736105">Chrome bloccherà le navigazioni verso protocolli esterni all'interno di iframe con sandbox. Visita la pagina https://chromestatus.com/features/5680742077038592.
+
+      Quando il valore è Vero, Chrome può bloccare queste navigazioni.
+
+      Quando il valore è Falso, Chrome non può bloccare queste navigazioni.
+
+      Il valore predefinito è Vero, ossia la funzionalità di sicurezza è attiva.
+
+      Questo criterio può essere utilizzato dagli amministratori che hanno bisogno di più tempo per aggiornare i siti web interni interessati da questa nuova limitazione. Questo criterio aziendale è temporaneo ed è destinato a essere rimosso dopo la versione 104 di <ph name="PRODUCT_NAME" />.
+      </translation>
 <translation id="4268586991084547853">Più compatibilità con gli elenchi dei siti in modalità Enterprise di Microsoft IE/Edge</translation>
 <translation id="4269859918103560644">Consenti all'utente di decidere</translation>
 <translation id="4274691295133617461">Se il criterio viene impostato su 3, i siti web possono richiedere l'accesso di lettura di file e directory nel file system del sistema operativo host tramite l'API file system. Se il criterio viene impostato su 2, l'accesso viene negato.
@@ -4128,6 +4148,12 @@ Se il criterio viene configurato, gli utenti non possono apportare modifiche. Gl
 <translation id="5997543603646547632">Utilizza orologio di 24 ore per impostazione predefinita</translation>
 <translation id="5997846976342452720">Specifica se disattivare o meno la ricerca dei plug-in (ritirata)</translation>
 <translation id="5998198091336830580">Questo criterio fa parte del seguente gruppo atomico (vengono applicati soltanto i criteri dell'origine con la priorità massima presenti nel gruppo):</translation>
+<translation id="6004575267180297869">
+      Consente di specificare se i moduli WebAssembly possono essere inviati a un'altra finestra o un altro worker tra origini. La condivisione di moduli WebAssembly tra origini sarà deprecata nell'ambito del lavoro per ritirare document.domain; visita la pagina https://github.com/mikewest/deprecating-document-domain. Questo criterio consente di riattivare la condivisione di moduli WebAssembly tra origini per offrire un periodo di transizione più lungo durante la procedura di ritiro.
+
+      Se questo criterio viene impostato su Vero, i siti possono inviare moduli WebAssembly anche tra origini senza limitazioni.
+
+      Se viene impostato su Falso o se non viene configurato, i siti possono inviare moduli WebAssembly solo a finestre e worker nella stessa origine.</translation>
 <translation id="6009062900206392980">Se il criterio è impostato su None, la Lente d'ingrandimento è disattivata nella schermata di accesso.
 
        Se imposti il criterio, gli utenti possono attivare o disattivare temporaneamente la Lente d'ingrandimento. Quando la schermata di accesso viene ricaricata o rimane inattiva per un minuto, la Lente d'ingrandimento torna allo stato originale.
@@ -4307,6 +4333,7 @@ Se il criterio viene configurato, gli utenti non possono apportare modifiche. Gl
       Lo scopo di questo criterio è fornire alle imprese la flessibilità di disattivare la sandbox dell'audio qualora interferisca con le configurazioni software di sicurezza utilizzate.</translation>
 <translation id="624818583115864448">porta 554 (può essere sbloccata fino al 15/10/2021)</translation>
 <translation id="6252773211180267325">È consentita l'esecuzione di <ph name="BOREALIS_NAME" /> per un utente</translation>
+<translation id="6258658183356534534">Controlla la funzionalità di aggiornamento User-Agent Client Hints GREASE.</translation>
 <translation id="6261643884958898336">Segnala informazioni di identificazione dei computer</translation>
 <translation id="6265892395051519509">Consenti l'accesso ai sensori su questi siti</translation>
 <translation id="6273015149273504999">
@@ -4389,6 +4416,7 @@ Se il criterio viene configurato, gli utenti non possono apportare modifiche. Gl
           Il valore del criterio deve essere specificato in millisecondi. I valori devono essere inferiori o uguali al ritardo di inattività.
 
           L'avviso viene mostrato solo se l'azione stabilita in caso di inattività è la disconnessione o lo spegnimento.</translation>
+<translation id="6331943515692769234">Forza l'utilizzo dell'algoritmo User-Agent GREASE precedente.</translation>
 <translation id="6332546092866098577">Blocca l'accesso di lettura tramite l'API file system su questi siti</translation>
 <translation id="6334330017384340264">Questo criterio consente di specificare le applicazioni e gli URL da autorizzare per i limiti di utilizzo per app.
         La lista consentita configurata viene applicata alle app installate su <ph name="PRODUCT_OS_NAME" /> per l'utente in questione con limiti di utilizzo per app.
@@ -4728,6 +4756,12 @@ Se il criterio viene configurato, gli utenti non possono apportare modifiche. Gl
 
       Nota: questo criterio riguarda anche le estensioni e le app con installazione forzata tramite <ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" />.</translation>
 <translation id="6731757988219967594">Filtra i siti di contenuti per adulti di primo livello (ma non gli iframe incorporati)</translation>
+<translation id="6733851879899284032">
+      Consente di specificare se è possibile usare SharedArrayBuffers in un contesto senza isolamento multiorigine. <ph name="PRODUCT_NAME" /> richiede l'isolamento multiorigine se viene usato SharedArrayBuffers a partire dalla versione 91 di <ph name="PRODUCT_NAME" /> (dal 25/05/2021) per motivi di compatibilità web. Ulteriori dettagli sono disponibili all'indirizzo: https://developer.chrome.com/blog/enabling-shared-array-buffer/.
+
+      Se questo criterio viene impostato su Attivato, i siti possono usare SharedArrayBuffer senza limitazioni.
+
+      Se viene impostato su Disattivato o se non viene configurato, i siti possono usare SharedArrayBuffers soltanto con isolamento multiorigine.</translation>
 <translation id="6735701345096330595">Forza attivazione lingue per controllo ortografico</translation>
 <translation id="6740611636377710500">Consenti all'utente di eseguire PluginVm.
 
@@ -4919,6 +4953,9 @@ Se il criterio viene configurato, gli utenti non possono apportare modifiche. Gl
 <translation id="6929746927224321095">Disattiva la compilazione automatica</translation>
 <translation id="6931242315485576290">Disattiva la sincronizzazione dei dati con Google</translation>
 <translation id="6940243892299228102">Gli utenti non possono usare i modelli di scrivanie</translation>
+<translation id="694071740172924905">Se il criterio viene attivato, la funzionalità di aggiornamento User-Agent Client Hints GREASE allinea l'algoritmo User-Agent GREASE alla specifica più recente.
+      La specifica aggiornata potrebbe interrompere il funzionamento di alcuni siti web che limitano i caratteri consentiti per le richieste. Per ulteriori informazioni, consulta la specifica: https://wicg.github.io/ua-client-hints/#grease.
+      Se questo criterio viene attivato o se non viene configurato, la funzionalità di aggiornamento User-Agent Client Hints GREASE viene attivata. Se il criterio viene disattivato, viene usato l'algoritmo User-Agent GREASE precedente.</translation>
 <translation id="6943577887654905793">Nome di preferenza per Mac/Linux:</translation>
 <translation id="6946652757373377924">
       Questo criterio è stato rimosso da M77.
@@ -5280,6 +5317,7 @@ Per informazioni dettagliate sui pattern <ph name="URL_LABEL" /> validi, visita 
 
       Se questa norma non è impostata, per impostazione predefinita la funzione non è consentita per gli utenti gestiti dall'azienda ed è consentita per gli utenti non gestiti.</translation>
 <translation id="7295019613773647480">Attiva utenti supervisionati</translation>
+<translation id="7297476773981993405">Consenti l'esecuzione dell'algoritmo User-Agent GREASE aggiornato.</translation>
 <translation id="7302043767260300182">Ritardo blocco schermo in caso di utilizzo di CA</translation>
 <translation id="7303902834678570827">Gli utenti di sessioni Ospite gestite non possono memorizzare le impostazioni di visualizzazione a livello di dispositivo.</translation>
 <translation id="731208205557053914">Segnala informazioni sui VPD</translation>
@@ -5385,6 +5423,12 @@ Per informazioni dettagliate sui pattern <ph name="URL_LABEL" /> validi, visita 
 <translation id="7491720878670299691">La velocità di interrogazione e controllo della rete per eventi. Il valore minimo consentito è 1 minuto.
 
       Se il criterio non viene impostato, viene applicata la velocità predefinita di 1 minuto.</translation>
+<translation id="7498595166686106721">
+      Il criterio relativo alle autorizzazioni display-capture consente di dare o meno l'accesso a getDisplayMedia(), in base a questa specifica: https://www.w3.org/TR/screen-capture/#feature-policy-integration. Se questo criterio viene impostato su Disattivato, questo requisito non viene applicato e l'accesso a getDisplayMedia() è consentito da contesti che altrimenti sarebbero vietati. Questo criterio aziendale è temporaneo ed è destinato a essere rimosso dopo la versione 100 di <ph name="PRODUCT_NAME" />. Ha lo scopo di sbloccare gli utenti aziendali la cui applicazione non è conforme alla specifica, ma che richiede tempo per essere sistemata.
+
+      Se il criterio viene attivato o se non viene configurato, i siti possono chiamare getDisplayMedia() solo da contesti che sono stati aggiunti alla lista consentita in base al criterio relativo alle autorizzazioni display-capture.
+
+      Se il criterio viene disattivato, i siti possono chiamare getDisplayMedia() anche da contesti che non sono stati aggiunti alla lista consentita in base al criterio relativo alle autorizzazioni display-capture. Tieni presente che potrebbero essere applicate altre limitazioni.</translation>
 <translation id="7506745375479451616">Questo criterio consente di stabilire il comando da usare per aprire gli URL in <ph name="PRODUCT_NAME" /> anziché in <ph name="IE_PRODUCT_NAME" />. Per questo criterio è possibile impostare un percorso file eseguibile o un valore <ph name="PRODUCT_NAME_PLACEHOLDER" /> per rilevare automaticamente la posizione di <ph name="PRODUCT_NAME" />.
 
       Se il criterio non viene impostato, <ph name="IE_PRODUCT_NAME" /> rileva automaticamente il percorso eseguibile di <ph name="PRODUCT_NAME" /> all'avvio di <ph name="PRODUCT_NAME" /> da Internet Explorer.
@@ -5997,6 +6041,18 @@ Su Windows è consigliabile configurare le norme tramite Criteri di gruppo, anch
 <translation id="8266778278542911985">Se il criterio viene impostato su 3, i siti web possono chiedere l'accesso alle porte seriali. Se il criterio viene impostato su 2, l'accesso alle porte seriali viene negato.
 
       Se non viene configurato, i siti web possono richiedere l'accesso, ma gli utenti possono modificare l'impostazione.</translation>
+<translation id="8267887696930711948">Criterio ritirato nella versione M69. Usa il criterio OverrideSecurityRestrictionsOnInsecureOrigin.
+
+      Questo criterio consente di specificare un elenco di origini (URL) o di pattern di nomi host (ad esempio "*.example.com") a cui non vengono applicate le limitazioni di sicurezza previste per le origini non sicure.
+
+      Lo scopo è consentire alle organizzazioni di autorizzare le origini per le applicazioni precedenti che non possono eseguire il deployment di TLS o di configurare un server temporaneo per lo sviluppo web interno, affinché gli sviluppatori possano testare le funzionalità che richiedono contesti sicuri senza dover eseguire il deployment di TLS sul server temporaneo. Questo criterio impedisce inoltre che l'origine venga contrassegnata come "Non sicura" nella omnibox.
+
+      L'impostazione di un elenco di URL in questo criterio ha lo stesso effetto dell'impostazione del flag della riga di comando "--unsafely-treat-insecure-origin-as-secure" in un elenco separato da virgole degli stessi URL. Se viene configurato, questo criterio sostituisce il flag della riga di comando.
+
+      Questo criterio è stato ritirato nella versione M69 ed è stato sostituito dal criterio OverrideSecurityRestrictionsOnInsecureOrigin. Se sono presenti entrambi i criteri, viene usato il criterio OverrideSecurityRestrictionsOnInsecureOrigin.
+
+      Per ulteriori informazioni sui contesti sicuri, visita il sito https://www.w3.org/TR/secure-contexts/.
+      </translation>
 <translation id="8270320981823560179">Drive</translation>
 <translation id="827054846390793641">Attiva l'interfaccia utente relativa alla connessione sul computer desktop host quando è attiva una connessione</translation>
 <translation id="8274603902181597201">Cancella la home directory ecryptfs dell'utente e inizia con una nuova home directory criptata tramite ext4</translation>

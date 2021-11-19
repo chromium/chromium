@@ -2404,6 +2404,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="3449393517661170867">Nýr flipagluggi</translation>
 <translation id="3449839693241009168">Ýttu á <ph name="SEARCH_KEY" /> til að senda skipanir til <ph name="EXTENSION_NAME" /></translation>
 <translation id="3450157232394774192">Nýtingarhlutfall biðstöðu</translation>
+<translation id="3450180775417907283"><ph name="MANAGER" /> fer fram á að þú tengist Wi-Fi núna og sækir uppfærslu.</translation>
 <translation id="3451753556629288767">Leyft að opna skráargerðir</translation>
 <translation id="3452999110156026232">Foreldraaðgangur</translation>
 <translation id="3453612417627951340">Krefst heimildar</translation>
@@ -4270,6 +4271,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="5472627187093107397">Vista aðgangsorð fyrir þetta vefsvæði</translation>
 <translation id="5473075389972733037">IBM</translation>
 <translation id="5473156705047072749">{NUM_CHARACTERS,plural, =1{PIN-númer verður að vera minnst einn stafur}one{PIN-númer verður að vera að minnst # stafur}other{PIN-númer verður að vera að minnst # stafir}}</translation>
+<translation id="5474859849784484111"><ph name="MANAGER" /> fer fram á að þú tengist Wi-Fi núna og sækir uppfærslu. Þú getur einnig hlaðið niður með gagnamældri tengingu (gjöld kunna að eiga við).</translation>
 <translation id="5481273127572794904">Mega ekki sækja margar skrár sjálfkrafa</translation>
 <translation id="5481941284378890518">Bæta nálægum prenturum við</translation>
 <translation id="5483785310822538350">Afturkalla skráa- og tækjaaðgang</translation>
@@ -4692,6 +4694,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="592880897588170157">Sækja PDF-skrár í stað þess að opna þær sjálfkrafa í Chrome</translation>
 <translation id="592919310198008711">Þegar ég smelli á viðbótina</translation>
 <translation id="5932124097031739492">Linux var uppfært.</translation>
+<translation id="5932209916647644605"><ph name="MANAGER" /> fer fram á að þú uppfærir <ph name="DEVICE_TYPE" /> strax.</translation>
 <translation id="5932224571077948991">Vefsvæðið sýnir ágengar eða villandi auglýsingar.</translation>
 <translation id="59324397759951282">USB-tæki frá <ph name="MANUFACTURER_NAME" /></translation>
 <translation id="5932441198730183141">Þú ert ekki með nógu mörg laus leyfi til að skrá þetta Google Meet vélbúnaðartæki. Hafðu samband við söludeild til að kaupa fleiri. Ef þú telur að þessi villuboð eigi ekki við rök að styðjast skaltu tala við þjónustudeild.</translation>

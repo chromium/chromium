@@ -4092,6 +4092,7 @@ e Ctrl + Alt + Diminuir brilho para diminuí-lo.</translation>
 <translation id="5265562206369321422">Off-line há mais de uma semana</translation>
 <translation id="5265797726250773323">Erro ao instalar</translation>
 <translation id="5266113311903163739">Erro de importação da Autoridade de certificação</translation>
+<translation id="526622169288322445">Mais ações para <ph name="ADDRESS_SUMMARY" /></translation>
 <translation id="5269977353971873915">Falha ao imprimir</translation>
 <translation id="5275352920323889391">Cachorro</translation>
 <translation id="527605982717517565">Sempre permitir JavaScript em <ph name="HOST" /></translation>
@@ -5471,6 +5472,7 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="6775163072363532304">Os dispositivos disponíveis serão exibidos aqui.</translation>
 <translation id="6777817260680419853">Redirecionamento bloqueado</translation>
 <translation id="6778737459546443941">Seu responsável ainda não o aprovou</translation>
+<translation id="6779092717724412415">Para criar um destaque como esse, selecione qualquer trecho do texto e clique nele com o botão direito do mouse.</translation>
 <translation id="6779447100905857289">seus carrinhos</translation>
 <translation id="677965093459947883">Muito pequeno</translation>
 <translation id="6781005693196527806">&amp;Gerenciar mecanismos de pesquisa…</translation>
@@ -6286,6 +6288,7 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="7625823789272218216">Nova guia à esquerda</translation>
 <translation id="7628201176665550262">Taxa de atualização</translation>
 <translation id="7629827748548208700">Guia: <ph name="TAB_NAME" /></translation>
+<translation id="7630426712700473382">Este dispositivo é gerenciado por <ph name="MANAGER" /> e requer que o login seja feito todas as vezes.</translation>
 <translation id="7631014249255418691">O backup dos apps e arquivos do Linux foi concluído</translation>
 <translation id="7631205654593498032">Ao conectar os dispositivos, você concorda que seu <ph name="DEVICE_TYPE" /> pode:</translation>
 <translation id="7631887513477658702">&amp;Sempre abrir arquivos deste tipo</translation>

@@ -69,6 +69,7 @@
 <translation id="1354356357730355833">คัดลอก</translation>
 <translation id="135978014023467274">ระบบอัปเดตเป็น ChromeVox 63 ให้แล้ว</translation>
 <translation id="1360699455582016846">คลิกรายการใต้แป้นกำหนดเส้นทาง <ph name="ROUTING_KEY_NUMBER" /></translation>
+<translation id="1376703628032300005">ย้ายไปที่อักขระถัดไป</translation>
 <translation id="1377925789329510816">นี่เป็นส่วนหัวสุดท้าย กด Search+H เพื่อตัดข้อความไปยังส่วนหัวแรกหรือกด Search+Shift+H เพื่อไปที่ส่วนหัวที่ 2 ในหน้านี้</translation>
 <translation id="138218114945450791">ฟ้าอ่อน</translation>
 <translation id="1383876407941801731">ค้นหา</translation>
@@ -213,6 +214,7 @@
 <translation id="2450814015951372393">ช่องทำเครื่องหมาย</translation>
 <translation id="2461822463642141190">ปัจจุบัน</translation>
 <translation id="2462626033734746142">กลุ่มปุ่มตัวเลือก</translation>
+<translation id="2467741090055146971">ยกเลิกการเลือก</translation>
 <translation id="2471138580042810658">ส่วนหัวระดับ 6</translation>
 <translation id="248982282205370495">{COUNT,plural, =1{เครื่องหมายดอกจัน}other{# เครื่องหมายดอกจัน}}</translation>
 <translation id="2490721194269245365">สีน้ำตาลโรซีบราวน์</translation>
@@ -565,6 +567,7 @@
 <translation id="4854380505292502090">ไม่มีวิดเจ็ตสื่อก่อนหน้า</translation>
 <translation id="4855927945655956315">แป้นหลัก: Control</translation>
 <translation id="4862744964787595316">ไม่เป็นตัวหนา</translation>
+<translation id="4865995900839719272">ย้ายไปที่บรรทัดก่อนหน้า</translation>
 <translation id="4866956062845190338">rdmnuitm</translation>
 <translation id="4867316986324544967">เปิดใช้การสลับ TTS</translation>
 <translation id="4886524826165775965"><ph name="INDEX" />/<ph name="TOTAL" /></translation>
@@ -623,6 +626,7 @@
 <translation id="5304943142864553931">แท็บ <ph name="TITLE" /></translation>
 <translation id="5308380583665731573">เชื่อมต่อ</translation>
 <translation id="5310788376443009632">ลบออกแล้ว:</translation>
+<translation id="5316825363044614340">ย้ายไปที่บรรทัดถัดไป</translation>
 <translation id="5320727453979144100">เปิดใช้งานโหมดติดหนึบแล้ว</translation>
 <translation id="5321085947096604457">{COUNT,plural, =1{เครื่องหมายจุลภาค}other{# เครื่องหมายจุลภาค}}</translation>
 <translation id="532485153932049746">การจัดรูปแบบข้อความ
@@ -902,6 +906,7 @@
 <translation id="7292195267473691167"><ph name="LOCALE" /> (<ph name="VARIANT" />)</translation>
 <translation id="7308519659008003150">ไม่มีช่องฟอร์มก่อนหน้า</translation>
 <translation id="731121099745151312">tritm</translation>
+<translation id="7313717760367325059">ความช่วยเหลือ</translation>
 <translation id="7317017974771324508">เลือกบางส่วน</translation>
 <translation id="7322442671176251901">แตะเพื่อสำรวจ</translation>
 <translation id="7344012264516629579">คำสั่งข้ามเพิ่มเติม เช่น ข้ามลิงก์ ปุ่ม และช่องทำเครื่องหมาย เป็นต้น เปิดดูรายการคำสั่งข้ามทั้งหมดได้ที่เมนูของ ChromeVox โดยกดแป้น Search + จุด</translation>
@@ -1128,6 +1133,7 @@
 <translation id="9014206344398081366">บทแนะนำ ChromeVox</translation>
 <translation id="9040132695316389094">ส่วนหัวระดับ 1</translation>
 <translation id="9061884144798498064">เลือกตารางเบรลล์แบบ 8 จุด:</translation>
+<translation id="9063946545000394379">ย้ายไปที่อักขระก่อนหน้า</translation>
 <translation id="9065283790526219006">+ป๊อปอัป</translation>
 <translation id="9065912140022662363">ไม่มีปุ่มตัวเลือกถัดไป</translation>
 <translation id="9067522039955793016">ตัวแบ่งหน้า</translation>

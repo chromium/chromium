@@ -4090,6 +4090,7 @@ en Ctrl+Alt+Verlaag Helderheid om uit te zoem</translation>
 <translation id="5265562206369321422">Vanlyn vir meer as 'n week</translation>
 <translation id="5265797726250773323">Kon nie installeer nie</translation>
 <translation id="5266113311903163739">Sertifiseringoutoriteit-invoerfout</translation>
+<translation id="526622169288322445">Meer handelinge vir <ph name="ADDRESS_SUMMARY" /></translation>
 <translation id="5269977353971873915">Kon nie uitdruk nie</translation>
 <translation id="5275352920323889391">Hond</translation>
 <translation id="527605982717517565">Laat JavaScript altyd op <ph name="HOST" /> toe.</translation>
@@ -5469,6 +5470,7 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="6775163072363532304">Beskikbare toestelle sal hier verskyn.</translation>
 <translation id="6777817260680419853">Herleiding is geblokkeer</translation>
 <translation id="6778737459546443941">Jou ouer het dit nog nie goedgekeur nie</translation>
+<translation id="6779092717724412415">Kies enige teks en regsklik om 'n hoogtepunt soos hierdie een te skep.</translation>
 <translation id="6779447100905857289">jou mandjies</translation>
 <translation id="677965093459947883">Baie klein</translation>
 <translation id="6781005693196527806">&amp;Bestuur soekenjins …</translation>
@@ -6284,6 +6286,7 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="7625823789272218216">Nuwe oortjie aan die linkerkant</translation>
 <translation id="7628201176665550262">Herlaaitempo</translation>
 <translation id="7629827748548208700">Oortjie: <ph name="TAB_NAME" /></translation>
+<translation id="7630426712700473382">Hierdie toestel word bestuur deur <ph name="MANAGER" /> en vereis dat jy elke keer aanmeld.</translation>
 <translation id="7631014249255418691">Linux-programme en -lêers is suksesvol gerugsteun</translation>
 <translation id="7631205654593498032">Wanneer jy jou toestelle koppel, stem jy in dat jou <ph name="DEVICE_TYPE" /> die volgende kan doen:</translation>
 <translation id="7631887513477658702">Maak altyd hierdie tipe lêers oop</translation>

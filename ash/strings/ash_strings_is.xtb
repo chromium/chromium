@@ -326,6 +326,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="334252345105450327">Taka skjámynd</translation>
 <translation id="3351879221545518001">Þú ert að senda út skjámynd.</translation>
 <translation id="3364721542077212959">Pennaverkfæri</translation>
+<translation id="3365977133351922112">Síminn þinn er of langt í burtu. Færðu símann nær.</translation>
 <translation id="3368922792935385530">Tengt</translation>
 <translation id="3371140690572404006">USB-C tæki (tengi hægra megin að framan)</translation>
 <translation id="3375634426936648815">Tengt</translation>
@@ -602,6 +603,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="5170568018924773124">Sýna í möppu</translation>
 <translation id="5176318573511391780">Upptaka á hluta skjás</translation>
 <translation id="5199367439331364630">Sláðu inn aðgangsorð til að skrá þig inn á Chromebook</translation>
+<translation id="5206028654245650022"><ph name="APP_NAME" />, <ph name="NOTIFICATION_TITLE" />: <ph name="MESSAGE" />, <ph name="PHONE_NAME" /></translation>
 <translation id="5206057955438543357">{NUM_NOTIFICATIONS,plural, =1{1 tilkynning í viðbót}one{# tilkynning í viðbót}other{# tilkynningar í viðbót}}</translation>
 <translation id="5207949376430453814">Auðkenna textainnskotsmerki</translation>
 <translation id="5208059991603368177">Kveikt</translation>
@@ -884,6 +886,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="7398254312354928459">Skipt var um nettengingu</translation>
 <translation id="7405710164030118432">Til að opna tækið skaltu slá inn aðgangskóða foreldris fyrir Family Link</translation>
 <translation id="7406608787870898861">Ljúktu við uppsetningu farsímakerfis</translation>
+<translation id="740790383907119240">Flýtileiðir forrita</translation>
 <translation id="741244894080940828">umreikningur</translation>
 <translation id="7413851974711031813">Ýttu á Esc til að loka</translation>
 <translation id="742594950370306541">Myndavélin er í notkun.</translation>
@@ -986,6 +989,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="8061464966246066292">Mikil birtuskil</translation>
 <translation id="8098591350844501178">Hætta að senda skjáinn út í <ph name="RECEIVER_NAME" /></translation>
 <translation id="8113423164597455979">Öll forrit</translation>
+<translation id="8120151603115102514">Síminn þinn er ekki með lásskjá. Sláðu inn aðgangsorð til að taka Chromebook úr lás.</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
 <translation id="8131740175452115882">Staðfesta</translation>
 <translation id="8132487352815776550">Slökkva á skjátextum</translation>
@@ -1034,6 +1038,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" /> hefur <ph name="FEATURE_STATE" /> <ph name="FEATURE_NAME" />.</translation>
 <translation id="8477270416194247200">Ýttu á Alt+leitarlykil eða Shift til að hætta við.</translation>
 <translation id="8492573885090281069"><ph name="DISPLAY_NAME" /> styður ekki <ph name="SPECIFIED_RESOLUTION" />. Upplausninni var breytt í <ph name="FALLBACK_RESOLUTION" />. Veldu „Staðfesta“ til að halda breytingum. Fyrri stillingar verða valdar eftir <ph name="TIMEOUT_SECONDS" />.</translation>
+<translation id="85123341071060231">Slökkt er á Bluetooth í Chromebook. Sláðu inn aðgangsorð til að taka Chromebook úr lás.</translation>
 <translation id="8513108775083588393">Snýst sjálft</translation>
 <translation id="851458219935658693">Sýna glugga á núverandi skrifborði, hringhnappur valinn</translation>
 <translation id="8517041960877371778">Ekki er víst að <ph name="DEVICE_TYPE" /> hlaðist á meðan kveikt er á tölvunni.</translation>

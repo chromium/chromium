@@ -554,7 +554,7 @@
 <translation id="4868492592575313542">સક્રિય કરેલું</translation>
 <translation id="4872237917498892622">Alt+Search અથવા Shift</translation>
 <translation id="4881695831933465202">ખોલો</translation>
-<translation id="4890187583552566966">તમારા વ્યવસ્થાપકે Google સહાયક બંધ કરેલું છે.</translation>
+<translation id="4890187583552566966">તમારા વ્યવસ્થાપકે Google Assistant બંધ કરેલું છે.</translation>
 <translation id="4890408602550914571">ખાતરી કરો કે તમારો ફોન નજીકમાં હોય અને બ્લૂટૂથ ચાલુ કરેલું હોય.</translation>
 <translation id="4895488851634969361">બેટરી સંપૂર્ણ છે.</translation>
 <translation id="490375751687810070">વર્ટિકલ</translation>
@@ -664,7 +664,7 @@
 <translation id="5673434351075758678">તમારી સેટિંગને સિંક કર્યા પછી "<ph name="FROM_LOCALE" />" થી "<ph name="TO_LOCALE" />"માં ફેરવો.</translation>
 <translation id="5677928146339483299">બ્લૉક કરેલ</translation>
 <translation id="5679050765726761783">ઓછી ક્ષમતાવાળું પાવર અડૅપ્ટર કનેક્ટ કરેલું છે</translation>
-<translation id="5682642926269496722">હાલના વપરાશકર્તા એકાઉન્ટ માટે Google આસિસ્ટંટ ઉપલબ્ધ નથી.</translation>
+<translation id="5682642926269496722">હાલના વપરાશકર્તા એકાઉન્ટ માટે Google Assistant ઉપલબ્ધ નથી.</translation>
 <translation id="5689633613396158040">રાત્રિ પ્રકાશથી તમે સરળતાથી તમારી સ્ક્રીનને જોઈ શકો છો અથવા ઓછા પ્રકાશમાં વાંચી શકો છો. રાત્રિ પ્રકાશ ચાલુ થવાનો સમય બદલવા અથવા તેને સંપૂર્ણપણે બંધ કરવા ટૅપ કરો.</translation>
 <translation id="5691772641933328258">ફિંગરપ્રિન્ટ ઓળખી શકાઈ નથી</translation>
 <translation id="5710450975648804523">ખલેલ પાડશો નહીં ચાલુ છે</translation>
@@ -941,7 +941,7 @@
 <translation id="7749640678855296659">તમારું માઇક્રોફોન હાલમાં બંધ છે</translation>
 <translation id="776344839111254542">અપડેટની વિગતો જોવા માટે ક્લિક કરો</translation>
 <translation id="7780159184141939021">સ્ક્રીનને ફેરવો</translation>
-<translation id="7796353162336583443">એક નોંધ અથવા સ્ક્રીનશૉટ લેવા, Google સહાયક, લૅઝર પૉઇન્ટર અથવા બૃહદદર્શક કાચનો ઉપયોગ કરવા માટે શેલ્ફ પરના સ્ટાઇલસ બટનને ટૅપ કરો.</translation>
+<translation id="7796353162336583443">એક નોંધ અથવા સ્ક્રીનશૉટ લેવા, Google Assistant, લૅઝર પૉઇન્ટર અથવા બૃહદદર્શક કાચનો ઉપયોગ કરવા માટે શેલ્ફ પરના સ્ટાઇલસ બટનને ટૅપ કરો.</translation>
 <translation id="7798302898096527229">રદ કરવા માટે શોધો અથવા Shift દબાવો.</translation>
 <translation id="780301667611848630">નહીં, આભાર</translation>
 <translation id="7807067443225230855">Search અને Assistant</translation>
@@ -964,7 +964,7 @@
 <translation id="7902625623987030061">ફિંગરપ્રિન્ટ સેન્સરને ટચ કરો</translation>
 <translation id="7904094684485781019">આ એકાઉન્ટ માટે વ્યસ્થાપકે એકથી વધુ સાઇન ઇનને નામંજૂર કર્યું છે.</translation>
 <translation id="7930731167419639574">સ્પીચ પર હવે ડિવાઇસમાં જ પ્રક્રિયા કરવામાં આવે છે અને ડિક્ટેશનની સુવિધા ઑફલાઇન કામ કરે છે</translation>
-<translation id="7933084174919150729">Google સહાયક માત્ર પ્રાથમિક પ્રોફાઇલ માટે જ ઉપલબ્ધ છે.</translation>
+<translation id="7933084174919150729">Google Assistant માત્ર પ્રાથમિક પ્રોફાઇલ માટે જ ઉપલબ્ધ છે.</translation>
 <translation id="79341161159229895"><ph name="FIRST_PARENT_EMAIL" /> અને <ph name="SECOND_PARENT_EMAIL" /> દ્વારા મેનેજ કરાતું એકાઉન્ટ</translation>
 <translation id="793716872548410480">તમારું ક્લિપબોર્ડ જોવા માટે <ph name="SHORTCUT_KEY_NAME" /> + V દબાવો. તમે કૉપિ કરેલી છેલ્લી 5 આઇટમ તમારા ક્લિપબોર્ડ પર સાચવવામાં આવી છે.</translation>
 <translation id="7955885781510802139">ઉચ્ચ કોન્ટ્રાસ્ટ મોડ</translation>
@@ -1113,7 +1113,7 @@
 <translation id="9059834730836941392">નોટિફિકેશન સંકુચિત કરો</translation>
 <translation id="9063800855227801443">ગોપનીય કન્ટેન્ટ કૅપ્ચર કરી શકાતું નથી</translation>
 <translation id="9065203028668620118">ફેરફાર કરો</translation>
-<translation id="9070640332319875144">આસિસ્ટંટ સેટિંગ</translation>
+<translation id="9070640332319875144">Assistant સેટિંગ</translation>
 <translation id="9072519059834302790">બૅટરી ખલાસ થવામાં <ph name="TIME_LEFT" /> બાકી છે.</translation>
 <translation id="9074739597929991885">બ્લૂટૂથ</translation>
 <translation id="9077404278023321866">નમૂના</translation>

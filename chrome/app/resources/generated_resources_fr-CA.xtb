@@ -2391,6 +2391,7 @@ et sur Ctrl+Alt+diminuer la luminosité pour effectuer un zoom arrière.</transl
 <translation id="3449393517661170867">Nouvelle fenêtre à onglets</translation>
 <translation id="3449839693241009168">Appuyez sur <ph name="SEARCH_KEY" /> pour envoyer des commandes à <ph name="EXTENSION_NAME" /></translation>
 <translation id="3450157232394774192">Pourcentage d'utilisation à l'état de veille</translation>
+<translation id="3450180775417907283"><ph name="MANAGER" /> exige que vous vous connectiez au Wi-Fi maintenant et que vous téléchargiez une mise à jour.</translation>
 <translation id="3451753556629288767">Autorisé à ouvrir certains types de fichiers</translation>
 <translation id="3452999110156026232">Accès parental</translation>
 <translation id="3453612417627951340">Nécessite une autorisation</translation>
@@ -4256,6 +4257,7 @@ Vous pouvez attribuer plusieurs commutateurs à cette action.</translation>
 <translation id="5472627187093107397">Enregistrer les mots de passe pour ce site</translation>
 <translation id="5473075389972733037">IBM</translation>
 <translation id="5473156705047072749">{NUM_CHARACTERS,plural, =1{Le NIP doit comprendre au moins un caractère}one{Le NIP doit comprendre au moins # caractère}other{Le NIP doit comprendre au moins # caractères}}</translation>
+<translation id="5474859849784484111"><ph name="MANAGER" /> exige que vous vous connectiez au Wi-Fi maintenant et que vous téléchargiez une mise à jour. Autrement, téléchargez-la à l'aide d'une connexion mesurée (des frais pourraient s'appliquer).</translation>
 <translation id="5481273127572794904">Non autorisés à télécharger automatiquement plusieurs fichiers</translation>
 <translation id="5481941284378890518">Ajouter des imprimantes à proximité</translation>
 <translation id="5483785310822538350">Retirer l'accès au fichier et à l'appareil</translation>
@@ -4678,6 +4680,7 @@ Vous pouvez attribuer plusieurs commutateurs à cette action.</translation>
 <translation id="592880897588170157">Téléchargez des fichiers PDF plutôt que de les ouvrir automatiquement dans Chrome</translation>
 <translation id="592919310198008711">Lorsque je clique sur l'extension</translation>
 <translation id="5932124097031739492">La mise à niveau de Linux a été effectuée.</translation>
+<translation id="5932209916647644605"><ph name="MANAGER" /> exige que vous mettiez immédiatement à jour votre <ph name="DEVICE_TYPE" />.</translation>
 <translation id="5932224571077948991">Site diffusant des annonces intrusives ou trompeuses</translation>
 <translation id="59324397759951282">Appareil USB fabriqué par <ph name="MANUFACTURER_NAME" /></translation>
 <translation id="5932441198730183141">Vous n'avez pas suffisamment de licences disponibles pour inscrire cet accessoire. Veuillez communiquer avec le service des ventes pour en acheter davantage. Si vous pensez que ce message s'affiche par erreur, veuillez communiquer avec l'assistance technique.</translation>
@@ -5596,6 +5599,7 @@ Vous pouvez attribuer plusieurs commutateurs à cette action.</translation>
 <translation id="6914783257214138813">Vos mots de passe seront accessibles à quiconque peut voir le fichier exporté.</translation>
 <translation id="6916590542764765824">Gérer les extensions</translation>
 <translation id="6919868320029503575">Mots de passe faibles</translation>
+<translation id="6919952941889172531">Voulez-vous également activer la navigation sécurisée améliorée pour ce profil Chrome?</translation>
 <translation id="6920989436227028121">Ouvrir dans un onglet ordinaire</translation>
 <translation id="6921104647315081813">Effacer les activités</translation>
 <translation id="692114467174262153">Impossible d'ouvrir <ph name="ALTERNATIVE_BROWSER_NAME" /></translation>

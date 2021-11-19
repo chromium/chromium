@@ -4074,6 +4074,7 @@ e Ctrl + Alt + Riduzione luminosità per diminuire lo zoom.</translation>
 <translation id="5265562206369321422">Offline per più di una settimana</translation>
 <translation id="5265797726250773323">Errore durante l'installazione</translation>
 <translation id="5266113311903163739">Errore di importazione dell'autorità di certificazione</translation>
+<translation id="526622169288322445">Altre azioni per <ph name="ADDRESS_SUMMARY" /></translation>
 <translation id="5269977353971873915">Stampa non riuscita</translation>
 <translation id="5275352920323889391">Cane</translation>
 <translation id="527605982717517565">Consenti sempre JavaScript su <ph name="HOST" /></translation>
@@ -5450,6 +5451,7 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="6775163072363532304">I dispositivi disponibili verranno mostrati qui.</translation>
 <translation id="6777817260680419853">Reindirizzamento bloccato</translation>
 <translation id="6778737459546443941">Il tuo genitore non ha ancora approvato la richiesta</translation>
+<translation id="6779092717724412415">Per creare un'evidenziazione come questa, seleziona del testo e fai clic con il tasto destro del mouse.</translation>
 <translation id="6779447100905857289">i tuoi carrelli</translation>
 <translation id="677965093459947883">Molto piccole</translation>
 <translation id="6781005693196527806">&amp;Gestisci motori di ricerca…</translation>
@@ -6265,6 +6267,7 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="7625823789272218216">Posizionamento nuova scheda a sinistra</translation>
 <translation id="7628201176665550262">Frequenza di aggiornamento</translation>
 <translation id="7629827748548208700">Scheda: <ph name="TAB_NAME" /></translation>
+<translation id="7630426712700473382">Questo dispositivo è gestito da <ph name="MANAGER" /> e richiede l'accesso a ogni utilizzo.</translation>
 <translation id="7631014249255418691">Backup app e file Linux riuscito</translation>
 <translation id="7631205654593498032">Quando connetti i tuoi dispositivi, accetti che il dispositivo <ph name="DEVICE_TYPE" /> possa:</translation>
 <translation id="7631887513477658702">&amp;Apri sempre file di questo tipo</translation>
