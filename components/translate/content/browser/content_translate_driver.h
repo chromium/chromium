@@ -21,7 +21,6 @@
 #include "services/metrics/public/cpp/ukm_source_id.h"
 
 namespace content {
-class NavigationController;
 class WebContents;
 }  // namespace content
 
@@ -56,7 +55,6 @@ class ContentTranslateDriver : public TranslateDriver,
   };
 
   ContentTranslateDriver(content::WebContents& web_contents,
-                         content::NavigationController* nav_controller,
                          language::UrlLanguageHistogram* url_language_histogram,
                          TranslateModelService* translate_model_service);
 
@@ -150,9 +148,6 @@ class ContentTranslateDriver : public TranslateDriver,
   void OnLanguageModelFileAvailabilityChanged(
       GetLanguageDetectionModelCallback callback,
       bool is_available);
-
-  // The navigation controller of the tab we are associated with.
-  content::NavigationController* navigation_controller_;
 
   TranslateManager* translate_manager_;
 
