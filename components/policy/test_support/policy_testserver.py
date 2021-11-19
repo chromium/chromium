@@ -65,6 +65,8 @@ Example:
 
 import base64
 from six.moves import BaseHTTPServer
+from cryptography.hazmat.primitives.asymmetric import padding, rsa
+from cryptography.hazmat.primitives import hashes, serialization
 import glob
 import google.protobuf.text_format
 import hashlib
@@ -76,15 +78,10 @@ import re
 import six
 import sys
 import time
-import tlslite
-import tlslite.api
-import tlslite.utils
-import tlslite.utils.cryptomath
 from six.moves import urllib
 from six.moves.urllib import request as urllib_request
 from six.moves.urllib import parse as urlparse
 
-import asn1der
 import testserver_base
 
 import device_management_backend_pb2 as dm
@@ -112,9 +109,6 @@ try:
   from OpenSSL import crypto
 except ImportError:
   crypto = None
-
-# ASN.1 object identifier for PKCS#1/RSA.
-PKCS1_RSA_OID = b'\x2a\x86\x48\x86\xf7\x0d\x01\x01\x01'
 
 # List of machines that trigger the server to send kiosk enrollment response
 # for the register request.
@@ -1342,8 +1336,8 @@ class PolicyRequestHandler(BaseHTTPServer.BaseHTTPRequestHandler):
 
     # Sign the serialized policy data
     if msg.signature_type == dm.PolicyFetchRequest.SHA1_RSA:
-      response.policy_data_signature = bytes(
-          signing_key['private_key'].hashAndSign(response.policy_data))
+      response.policy_data_signature = signing_key['private_key'].sign(
+          response.policy_data, padding.PKCS1v15(), hashes.SHA1())
       if msg.public_key_version != signing_key_version:
         response.new_public_key = signing_key['public_key']
 
@@ -1359,8 +1353,8 @@ class PolicyRequestHandler(BaseHTTPServer.BaseHTTPRequestHandler):
                 verification_sig)
 
         if client_key is not None:
-          response.new_public_key_signature = bytes(
-              client_key['private_key'].hashAndSign(response.new_public_key))
+          response.new_public_key_signature = client_key['private_key'].sign(
+              response.new_public_key, padding.PKCS1v15(), hashes.SHA1())
 
     return (200, response.SerializeToString())
 
@@ -1562,15 +1556,14 @@ class PolicyTestServer(testserver_base.BrokenPipeHandlerMixIn,
           print('Failed to load private key from %s' % key_path)
           continue
         try:
-          # Decode with replacement characters to avoid decode errors if was
-          # actually DER.
-          key = tlslite.api.parsePEMKey(key_str.decode('utf-8', 'replace'),
-                                        private=True)
-        except SyntaxError:
-          key = tlslite.utils.python_rsakey.Python_RSAKey._parsePKCS8(
-              bytearray(key_str))
+          key = serialization.load_pem_private_key(key_str, password=None)
+        except ValueError:
+          key = serialization.load_der_private_key(key_str, password=None)
 
         assert key is not None
+        if not isinstance(key, rsa.RSAPrivateKey):
+          raise TypeError('Unexpected key type')
+
         key_info = { 'private_key' : key }
 
         # Now try to read in a signature, if one exists.
@@ -1585,9 +1578,9 @@ class PolicyTestServer(testserver_base.BrokenPipeHandlerMixIn,
       # Use the canned private keys if none were passed from the command line.
       for signing_key in SIGNING_KEYS:
         decoded_key = base64.b64decode(signing_key['key']);
-        key = tlslite.utils.python_rsakey.Python_RSAKey._parsePKCS8(
-            bytearray(decoded_key))
+        key = serialization.load_der_private_key(decoded_key, password=None)
         assert key is not None
+        assert isinstance(key, rsa.RSAPrivateKey)
         # Grab the signature dictionary for this key and decode all of the
         # signatures.
         signature_dict = signing_key['signatures']
@@ -1599,15 +1592,9 @@ class PolicyTestServer(testserver_base.BrokenPipeHandlerMixIn,
 
     # Derive the public keys from the private keys.
     for entry in self.keys:
-      key = entry['private_key']
-
-      algorithm = asn1der.Sequence(
-          [ asn1der.Data(asn1der.OBJECT_IDENTIFIER, PKCS1_RSA_OID),
-            asn1der.Data(asn1der.NULL, b'') ])
-      rsa_pubkey = asn1der.Sequence([ asn1der.Integer(key.n),
-                                      asn1der.Integer(key.e) ])
-      pubkey = asn1der.Sequence([ algorithm, asn1der.Bitstring(rsa_pubkey) ])
-      entry['public_key'] = pubkey
+      entry['public_key'] = entry['private_key'].public_key().public_bytes(
+          encoding=serialization.Encoding.DER,
+          format=serialization.PublicFormat.SubjectPublicKeyInfo)
 
     try:
       self.ReadClientStateFile()
