@@ -3407,4 +3407,33 @@ TEST_F(DisplayLockContextTest, ConnectedElementDefersSubtreeChecks) {
   EXPECT_TRUE(HasSelection(context));
 }
 
+TEST_F(DisplayLockContextTest, BlockedReattachOfSlotted) {
+  GetDocument().body()->setInnerHTMLWithDeclarativeShadowDOMForTesting(R"HTML(
+    <div id="host">
+      <template shadowroot="open">
+        <style>
+          slot { display: block; }
+          .locked {
+            content-visibility: hidden;
+          }
+        </style>
+        <slot id="slot"></slot>
+      </template>
+      <span id="slotted"></span>
+    </div>
+  )HTML");
+  UpdateAllLifecyclePhasesForTest();
+
+  auto* host = GetDocument().getElementById("host");
+  auto* slotted = GetDocument().getElementById("slotted");
+  auto* slot = host->GetShadowRoot()->getElementById("slot");
+
+  EXPECT_TRUE(slot->GetLayoutObject());
+
+  slot->classList().Add("locked");
+  GetDocument().documentElement()->SetForceReattachLayoutTree();
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_FALSE(slotted->GetLayoutObject());
+}
+
 }  // namespace blink
