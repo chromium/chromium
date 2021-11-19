@@ -4,15 +4,32 @@
 
 #include "chrome/browser/support_tool/support_tool_handler.h"
 
+#include <algorithm>
 #include <memory>
+#include <set>
 #include <string>
+#include <vector>
 
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/files/file_path.h"
+#include "base/files/file_util.h"
+#include "base/files/scoped_temp_dir.h"
 #include "base/run_loop.h"
+#include "base/task/post_task.h"
+#include "base/task/task_traits.h"
+#include "base/task/thread_pool.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "chrome/browser/support_tool/data_collector.h"
+#include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/zlib/google/zip_reader.h"
+
+using testing::Pair;
+using testing::UnorderedElementsAre;
+
+const char kTestDataToWriteOnFile[] = "fake data to write to file for testing";
 
 // TestDataCollector implements DataCollector functions for testing.
 class TestDataCollector : public DataCollector {
@@ -36,6 +53,17 @@ class TestDataCollector : public DataCollector {
     std::move(on_data_collected_callback).Run();
   }
 
+  void ExportCollectedDataWithPII(
+      std::set<PIIType> pii_types_to_keep,
+      base::FilePath target_directory,
+      base::OnceClosure on_exported_callback) override {
+    base::ThreadPool::PostTaskAndReply(
+        FROM_HERE, {base::MayBlock()},
+        base::BindOnce(&TestDataCollector::WriteFileForTesting,
+                       weak_ptr_factory_.GetWeakPtr(), target_directory),
+        std::move(on_exported_callback));
+  }
+
  private:
   // Adds an entry to the PIIMap with the name of the data collector. The
   // PIIType is not significant at this point so we use a random one.
@@ -44,56 +72,129 @@ class TestDataCollector : public DataCollector {
         PIIType::kUIHierarchyWindowTitles, name_));
   }
 
+  // Writes fake test data to the given `target_directory` under a file named as
+  // `TestDataCollector.name_`.
+  void WriteFileForTesting(base::FilePath target_directory) {
+    base::FilePath target_file = target_directory.AppendASCII(name_);
+    base::WriteFile(target_file, kTestDataToWriteOnFile);
+  }
+
   // Name of the TestDataCollector. It will be used to create fake PII inside
   // the PIIMap.
   std::string name_;
   PIIMap pii_map_;
+  base::WeakPtrFactory<TestDataCollector> weak_ptr_factory_{this};
 };
 
 class SupportToolHandlerTest : public ::testing::Test {
  public:
-  SupportToolHandlerTest() {
-    // Create and set up SupportToolHandler.
-    handler_ = std::make_unique<SupportToolHandler>();
-    SetUpHandler();
-  }
+  SupportToolHandlerTest() = default;
 
   SupportToolHandlerTest(const SupportToolHandlerTest&) = delete;
   SupportToolHandlerTest& operator=(const SupportToolHandlerTest&) = delete;
 
-  // Run SupportToolHandler's CollectSupportData and returns the result.
-  const PIIMap& CollectData() {
-    base::RunLoop run_loop;
-    handler_->CollectSupportData(
-        base::BindOnce(&SupportToolHandlerTest::OnDataCollected,
-                       base::Unretained(this), run_loop.QuitClosure()));
-    run_loop.Run();
-    return pii_result_;
+  void SetUp() override { ASSERT_TRUE(temp_dir_.CreateUniqueTempDir()); }
+
+  void TearDown() override {
+    if (!temp_dir_.IsValid())
+      return;
+    EXPECT_TRUE(temp_dir_.Delete());
   }
+
+  // Returns the contents of `zip_file` as a map [filename -> file contents].
+  std::map<std::string, std::string> ReadZipFileContents(
+      base::FilePath zip_file) {
+    const int64_t kMaxEntrySize = 10 * 1024;
+    std::map<std::string, std::string> result;
+    zip::ZipReader reader;
+    if (!reader.Open(zip_file)) {
+      ADD_FAILURE() << "Could not open " << zip_file;
+      return {};
+    }
+    while (reader.HasMore()) {
+      if (!reader.OpenCurrentEntryInZip()) {
+        ADD_FAILURE() << "Could not open entry in zip";
+        return {};
+      }
+      const zip::ZipReader::EntryInfo* entry = reader.current_entry_info();
+      std::string entry_file_name =
+          entry->file_path().BaseName().MaybeAsASCII();
+      if (entry->original_size() > kMaxEntrySize) {
+        ADD_FAILURE() << "Zip entry " << entry_file_name
+                      << " was too large: " << entry->original_size();
+        return {};
+      }
+
+      std::string entry_contents;
+      if (!reader.ExtractCurrentEntryToString(kMaxEntrySize, &entry_contents)) {
+        ADD_FAILURE() << "Can't read zip entry " << entry_file_name
+                      << " contents into string";
+        return {};
+      }
+      result[entry_file_name] = entry_contents;
+
+      if (!reader.AdvanceToNextEntry()) {
+        ADD_FAILURE() << "Could not advance to next entry";
+        return {};
+      }
+    }
+    return result;
+  }
+
+ protected:
+  base::FilePath GetPathForOutput() { return temp_dir_.GetPath(); }
 
  private:
-  // Adds TestDataCollectors to SupportToolHandler.
-  void SetUpHandler() {
-    handler_->AddDataCollector(
-        std::make_unique<TestDataCollector>("test_data_collector_1"));
-    handler_->AddDataCollector(
-        std::make_unique<TestDataCollector>("test_data_collector_2"));
-  }
-
-  void OnDataCollected(base::OnceClosure quit_closure, const PIIMap& result) {
-    pii_result_ = result;
-    std::move(quit_closure).Run();
-  }
-
-  std::unique_ptr<SupportToolHandler> handler_;
-  PIIMap pii_result_;
+  // The temporary directory that we'll store the output files.
+  base::ScopedTempDir temp_dir_;
+  base::test::TaskEnvironment task_environment;
 };
 
 TEST_F(SupportToolHandlerTest, CollectSupportData) {
-  base::test::TaskEnvironment task_environment;
+  // Set-up SupportToolHandler and add DataCollectors.
+  std::unique_ptr<SupportToolHandler> handler =
+      std::make_unique<SupportToolHandler>();
+  handler->AddDataCollector(
+      std::make_unique<TestDataCollector>("test_data_collector_1"));
+  handler->AddDataCollector(
+      std::make_unique<TestDataCollector>("test_data_collector_2"));
 
-  const PIIMap& detected_pii = CollectData();
+  // Collect support data.
+  base::test::TestFuture<PIIMap> test_future;
+  handler->CollectSupportData(test_future.GetCallback<const PIIMap&>());
+  const PIIMap& detected_pii = test_future.Get();
   // Check if the detected PII map returned from the SupportToolHandler is
   // empty.
   EXPECT_FALSE(detected_pii.empty());
+}
+
+TEST_F(SupportToolHandlerTest, ExportSupportDataTest) {
+  // Set-up SupportToolHandler and add DataCollectors.
+  std::unique_ptr<SupportToolHandler> handler =
+      std::make_unique<SupportToolHandler>();
+  handler->AddDataCollector(
+      std::make_unique<TestDataCollector>("test_data_collector_1"));
+  handler->AddDataCollector(
+      std::make_unique<TestDataCollector>("test_data_collector_2"));
+
+  // Export collected data into a file in temporary directory.
+  base::FilePath target_path = GetPathForOutput().Append(
+      FILE_PATH_LITERAL("support-tool-export-success"));
+  base::RunLoop run_loop;
+  std::set<PIIType> pii_types{PIIType::kUIHierarchyWindowTitles};
+  handler->ExportCollectedData(pii_types, target_path, run_loop.QuitClosure());
+  run_loop.Run();
+
+  // SupportToolHandler will archive the data into a .zip archive.
+  target_path = target_path.AddExtension(FILE_PATH_LITERAL(".zip"));
+  EXPECT_TRUE(base::PathExists(target_path));
+  // Read the output file contents.
+  std::map<std::string, std::string> zip_contents =
+      ReadZipFileContents(target_path);
+  // Each TestDataCollector should write the output contents on a file in the
+  // .zip file which has a same name as the data collector.
+  EXPECT_THAT(zip_contents,
+              UnorderedElementsAre(
+                  Pair("test_data_collector_1", kTestDataToWriteOnFile),
+                  Pair("test_data_collector_2", kTestDataToWriteOnFile)));
 }
