@@ -2151,9 +2151,23 @@ ui::AXNode* AutomationInternalCustomBindings::GetParent(
     }
   }
 
-  if (node->GetUnignoredParent())
-    return node->GetUnignoredParent();
+  ui::AXNode* parent = node->GetUnignoredParent();
+  if (!parent) {
+    // Search up ancestor trees until we find one with a host that is unignored.
+    while ((parent = GetHostInParentTree(in_out_tree_wrapper))) {
+      if (*in_out_tree_wrapper && !(*in_out_tree_wrapper)->IsTreeIgnored())
+        break;
+    }
 
+    if (parent && parent->IsIgnored())
+      parent = parent->GetUnignoredParent();
+  }
+
+  return parent;
+}
+
+ui::AXNode* AutomationInternalCustomBindings::GetHostInParentTree(
+    AutomationAXTreeWrapper** in_out_tree_wrapper) const {
   AutomationAXTreeWrapper* parent_tree_wrapper = nullptr;
 
   ui::AXTreeID parent_tree_id =
@@ -2471,6 +2485,12 @@ bool AutomationInternalCustomBindings::SendTreeChangeEvent(
   // At this point, don't bother dispatching to js if the node is ignored. A js
   // client shouldn't process ignored nodes.
   if (node->IsIgnored())
+    return false;
+
+  // Likewise, don't process tree changes on ignored trees.
+  auto* tree_wrapper =
+      GetAutomationAXTreeWrapperFromTreeID(tree->GetAXTreeID());
+  if (!tree_wrapper || tree_wrapper->IsTreeIgnored())
     return false;
 
   bool has_filter = false;

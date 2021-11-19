@@ -487,4 +487,80 @@ TEST_F(AutomationInternalCustomBindingsTest, GetBoundsNestedAppIdConstruction) {
             CallComputeGlobalNodeBounds(wrapper_1, wrapper1_root));
 }
 
+TEST_F(AutomationInternalCustomBindingsTest, IgnoredAncestorTrees) {
+  // Three trees each with a button and link.
+  std::vector<ExtensionMsg_AccessibilityEventBundleParams> bundles;
+  for (int i = 0; i < 3; i++) {
+    bundles.emplace_back();
+    auto& bundle = bundles.back();
+    bundle.updates.emplace_back();
+    auto& tree_update = bundle.updates.back();
+    tree_update.has_tree_data = true;
+    tree_update.root_id = 1;
+    auto& tree_data = tree_update.tree_data;
+
+    // This is a point of inconsistency as the mojo representation allows
+    // updates from multiple trees.
+    tree_data.tree_id = ui::AXTreeID::CreateNewAXTreeID();
+    bundle.tree_id = tree_data.tree_id;
+    tree_data.focus_id = 2;
+    tree_update.nodes.emplace_back();
+    auto& node_data1 = tree_update.nodes.back();
+    node_data1.id = 1;
+    node_data1.role = ax::mojom::Role::kRootWebArea;
+    node_data1.child_ids.push_back(2);
+    node_data1.child_ids.push_back(3);
+    tree_update.nodes.emplace_back();
+    auto& node_data2 = tree_update.nodes.back();
+    node_data2.id = 2;
+    node_data2.role = ax::mojom::Role::kButton;
+    tree_update.nodes.emplace_back();
+    auto& node_data3 = tree_update.nodes.back();
+    node_data3.id = 3;
+    node_data3.role = ax::mojom::Role::kLink;
+  }
+
+  // Link up the trees so that the first is a parent of the second and the
+  // second a parent of the third.
+  ui::AXTreeID tree_0_id = bundles[0].updates[0].tree_data.tree_id;
+  ui::AXTreeID tree_1_id = bundles[1].updates[0].tree_data.tree_id;
+  ui::AXTreeID tree_2_id = bundles[2].updates[0].tree_data.tree_id;
+  bundles[0].updates[0].nodes[1].AddChildTreeId(tree_1_id);
+
+  // Make the hosting node ignored.
+  bundles[0].updates[0].nodes[1].AddState(ax::mojom::State::kInvisible);
+
+  bundles[1].updates[0].nodes[1].AddChildTreeId(tree_2_id);
+
+  for (auto& bundle : bundles)
+    SendOnAccessibilityEvents(bundle, true /* active profile */);
+
+  ASSERT_EQ(3U, GetTreeIDToTreeMap().size());
+
+  AutomationAXTreeWrapper* wrapper_0 = GetTreeIDToTreeMap()[tree_0_id].get();
+  ASSERT_TRUE(wrapper_0);
+  AutomationAXTreeWrapper* wrapper_1 = GetTreeIDToTreeMap()[tree_1_id].get();
+  ASSERT_TRUE(wrapper_1);
+  AutomationAXTreeWrapper* wrapper_2 = GetTreeIDToTreeMap()[tree_2_id].get();
+  ASSERT_TRUE(wrapper_2);
+
+  // The root tree isn't ignored.
+  EXPECT_FALSE(wrapper_0->IsTreeIgnored());
+
+  // However, since the hosting node in |wrapper_0| is ignored, both of the
+  // descendant trees should be ignored.
+  EXPECT_TRUE(wrapper_1->IsTreeIgnored());
+  EXPECT_TRUE(wrapper_2->IsTreeIgnored());
+
+  // No longer invisible.
+  ui::AXNode* button = wrapper_0->tree()->GetFromId(2);
+  ui::AXNodeData data = button->TakeData();
+  data.RemoveState(ax::mojom::State::kInvisible);
+  button->SetData(data);
+
+  EXPECT_FALSE(wrapper_0->IsTreeIgnored());
+  EXPECT_FALSE(wrapper_1->IsTreeIgnored());
+  EXPECT_FALSE(wrapper_2->IsTreeIgnored());
+}
+
 }  // namespace extensions

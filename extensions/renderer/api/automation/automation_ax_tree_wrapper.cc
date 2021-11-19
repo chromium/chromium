@@ -498,6 +498,21 @@ void AutomationAXTreeWrapper::OnAtomicUpdateFinished(
   text_changed_node_ids_.clear();
 }
 
+bool AutomationAXTreeWrapper::IsTreeIgnored() {
+  // Check the hosting nodes within the parenting trees for ignored host nodes.
+  AutomationAXTreeWrapper* tree = this;
+  while (tree) {
+    ui::AXNode* host = owner_->GetHostInParentTree(&tree);
+    if (!host)
+      break;
+
+    // This catches things like aria hidden on an iframe.
+    if (host->data().HasState(ax::mojom::State::kInvisible))
+      return true;
+  }
+  return false;
+}
+
 ui::AXNode* AutomationAXTreeWrapper::GetNodeFromTree(
     const ui::AXTreeID tree_id,
     const ui::AXNodeID node_id) const {
