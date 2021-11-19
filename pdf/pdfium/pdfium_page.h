@@ -57,22 +57,32 @@ class PDFiumPage {
 
   // Log overlaps between annotations in the page.
   void LogOverlappingAnnotations();
+
   // See definition of PDFEngine::GetTextRunInfo().
   absl::optional<AccessibilityTextRunInfo> GetTextRunInfo(int start_char_index);
+
   // Get a unicode character from the page.
   uint32_t GetCharUnicode(int char_index);
+
   // Get the bounds of a character in page pixels.
   gfx::RectF GetCharBounds(int char_index);
+
+  // Get the bounds of the page with the crop box applied, in page pixels.
+  gfx::RectF GetCroppedRect();
+
   // For all the links on the page, get their urls, underlying text ranges and
   // bounding boxes.
   std::vector<AccessibilityLinkInfo> GetLinkInfo(
       const std::vector<AccessibilityTextRunInfo>& text_runs);
+
   // For all the images on the page, get their alt texts and bounding boxes.
   std::vector<AccessibilityImageInfo> GetImageInfo(uint32_t text_run_count);
+
   // For all the highlights on the page, get their underlying text ranges and
   // bounding boxes.
   std::vector<AccessibilityHighlightInfo> GetHighlightInfo(
       const std::vector<AccessibilityTextRunInfo>& text_runs);
+
   // For all the text fields on the page, get their properties like name,
   // value, bounding boxes, etc.
   std::vector<AccessibilityTextFieldInfo> GetTextFieldInfo(

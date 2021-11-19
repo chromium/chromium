@@ -682,12 +682,10 @@ TEST_F(PDFiumEngineTest, SelectCroppedText) {
   EXPECT_THAT(engine->GetSelectedText(), IsEmpty());
 
   engine->SelectAll();
-  // TODO(crbug.com/791426): This is incorrect, as parts of the text is outside
-  // the crop box.
 #if defined(OS_WIN)
-  constexpr char kExpectedText[] = "Hello, world!\r\nGoodbye, world!";
+  constexpr char kExpectedText[] = "world!\r\n";
 #else
-  constexpr char kExpectedText[] = "Hello, world!\nGoodbye, world!";
+  constexpr char kExpectedText[] = "world!\n";
 #endif
   EXPECT_EQ(kExpectedText, engine->GetSelectedText());
 }

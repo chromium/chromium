@@ -10,6 +10,7 @@
 #include "pdf/pdfium/pdfium_api_string_buffer_adapter.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/rect_f.h"
 
 namespace chrome_pdf {
 
@@ -96,22 +97,39 @@ const std::vector<gfx::Rect>& PDFiumRange::GetScreenRects(
 std::u16string PDFiumRange::GetText() const {
   int index = char_index_;
   int count = char_count_;
-  std::u16string rv;
+  std::u16string result;
   if (count == 0)
-    return rv;
+    return result;
 
   AdjustForBackwardsRange(index, count);
   if (count > 0) {
-    PDFiumAPIStringBufferAdapter<std::u16string> api_string_adapter(&rv, count,
-                                                                    false);
+    PDFiumAPIStringBufferAdapter<std::u16string> api_string_adapter(
+        &result, count, /*check_expected_size=*/false);
     unsigned short* data =
         reinterpret_cast<unsigned short*>(api_string_adapter.GetData());
     int written = FPDFText_GetText(page_->GetTextPage(), index, count, data);
     api_string_adapter.Close(written);
-    base::EraseIf(rv, IsIgnorableCharacter);
+
+    const gfx::RectF page_bounds = page_->GetCroppedRect();
+    std::u16string in_bound_text;
+    in_bound_text.reserve(result.size());
+    for (int i = 0; i < count; ++i) {
+      gfx::RectF char_bounds = page_->GetCharBounds(index + i);
+
+      // Make sure `char_bounds` has a minimum size so Intersects() works
+      // correctly.
+      if (char_bounds.IsEmpty()) {
+        static constexpr gfx::SizeF kMinimumSize(0.0001f, 0.0001f);
+        char_bounds.set_size(kMinimumSize);
+      }
+      if (page_bounds.Intersects(char_bounds))
+        in_bound_text += result[i];
+    }
+    result = in_bound_text;
+    base::EraseIf(result, IsIgnorableCharacter);
   }
 
-  return rv;
+  return result;
 }
 
 }  // namespace chrome_pdf

@@ -620,6 +620,23 @@ gfx::RectF PDFiumPage::GetCharBounds(int char_index) {
   return GetFloatCharRectInPixels(page, text_page, char_index);
 }
 
+gfx::RectF PDFiumPage::GetCroppedRect() {
+  FPDF_PAGE page = GetPage();
+  FS_RECTF raw_rect;
+  if (!FPDF_GetPageBoundingBox(page, &raw_rect))
+    return gfx::RectF();
+
+  if (raw_rect.right < raw_rect.left)
+    std::swap(raw_rect.right, raw_rect.left);
+  if (raw_rect.bottom > raw_rect.top)
+    std::swap(raw_rect.bottom, raw_rect.top);
+
+  gfx::RectF rect(raw_rect.left, raw_rect.bottom,
+                  raw_rect.right - raw_rect.left,
+                  raw_rect.top - raw_rect.bottom);
+  return FloatPageRectToPixelRect(page, rect);
+}
+
 std::vector<AccessibilityLinkInfo> PDFiumPage::GetLinkInfo(
     const std::vector<AccessibilityTextRunInfo>& text_runs) {
   std::vector<AccessibilityLinkInfo> link_info;
