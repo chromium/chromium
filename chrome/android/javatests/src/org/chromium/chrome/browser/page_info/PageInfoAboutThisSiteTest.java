@@ -126,7 +126,7 @@ public class PageInfoAboutThisSiteTest {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             new ChromePageInfo(activity.getModalDialogManagerSupplier(), null,
                     PageInfoController.OpenedFromSource.TOOLBAR, null)
-                    .show(tab, PageInfoController.NO_HIGHLIGHTED_PERMISSION, false);
+                    .show(tab, ChromePageInfoHighlight.noHighlight());
         });
         onViewWaiting(allOf(withId(org.chromium.chrome.R.id.page_info_url_wrapper), isDisplayed()));
     }

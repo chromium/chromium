@@ -75,7 +75,7 @@ public class ChromePageInfoControllerDelegate extends PageInfoControllerDelegate
     private final Context mContext;
     private final Profile mProfile;
     private final Supplier<StoreInfoActionHandler> mStoreInfoActionHandlerSupplier;
-    private final boolean mPageInfoOpenedFromStoreIcon;
+    private final ChromePageInfoHighlight mPageInfoHighlight;
     private String mOfflinePageCreationDate;
     private OfflinePageLoadUrlDelegate mOfflinePageLoadUrlDelegate;
 
@@ -83,7 +83,7 @@ public class ChromePageInfoControllerDelegate extends PageInfoControllerDelegate
             Supplier<ModalDialogManager> modalDialogManagerSupplier,
             OfflinePageLoadUrlDelegate offlinePageLoadUrlDelegate,
             @Nullable Supplier<StoreInfoActionHandler> storeInfoActionHandlerSupplier,
-            boolean pageInfoOpenedFromStoreIcon) {
+            ChromePageInfoHighlight pageInfoHighlight) {
         super(new ChromeAutocompleteSchemeClassifier(Profile.fromWebContents(webContents)),
                 VrModuleProvider.getDelegate(),
                 /** isSiteSettingsAvailable= */
@@ -95,7 +95,7 @@ public class ChromePageInfoControllerDelegate extends PageInfoControllerDelegate
         mModalDialogManagerSupplier = modalDialogManagerSupplier;
         mProfile = Profile.fromWebContents(mWebContents);
         mStoreInfoActionHandlerSupplier = storeInfoActionHandlerSupplier;
-        mPageInfoOpenedFromStoreIcon = pageInfoOpenedFromStoreIcon;
+        mPageInfoHighlight = pageInfoHighlight;
 
         initOfflinePageParams();
         mOfflinePageLoadUrlDelegate = offlinePageLoadUrlDelegate;
@@ -255,7 +255,8 @@ public class ChromePageInfoControllerDelegate extends PageInfoControllerDelegate
             storeInfoRow.setId(PageInfoStoreInfoController.STORE_INFO_ROW_ID);
             rowWrapper.addView(storeInfoRow);
             controllers.add(new PageInfoStoreInfoController(mainController, storeInfoRow,
-                    mStoreInfoActionHandlerSupplier, mPageInfoOpenedFromStoreIcon));
+                    mStoreInfoActionHandlerSupplier,
+                    mPageInfoHighlight.shouldHighlightStoreInfo()));
         }
         return controllers;
     }

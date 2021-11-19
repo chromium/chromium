@@ -208,7 +208,7 @@ public class PageInfoViewTest {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             new ChromePageInfo(activity.getModalDialogManagerSupplier(), null,
                     PageInfoController.OpenedFromSource.TOOLBAR, null)
-                    .show(tab, highlightedPermission, /*fromStoreIcon=*/false);
+                    .show(tab, ChromePageInfoHighlight.forPermission(highlightedPermission));
         });
         onViewWaiting(allOf(withId(R.id.page_info_url_wrapper), isDisplayed()));
     }
@@ -631,7 +631,7 @@ public class PageInfoViewTest {
                     new ChromePageInfoControllerDelegate(activity, tab.getWebContents(),
                             activity::getModalDialogManager,
                             new OfflinePageUtils.TabOfflinePageLoadUrlDelegate(tab), null,
-                            /*pageInfoOpenedFromStoreIcon=*/false) {
+                            ChromePageInfoHighlight.noHighlight()) {
                         @Override
                         public boolean isShowingPaintPreviewPage() {
                             return true;
@@ -639,7 +639,7 @@ public class PageInfoViewTest {
                     };
             PageInfoController.show(sActivityTestRule.getActivity(), tab.getWebContents(), null,
                     PageInfoController.OpenedFromSource.MENU, pageInfoControllerDelegate,
-                    PageInfoController.NO_HIGHLIGHTED_PERMISSION);
+                    ChromePageInfoHighlight.noHighlight());
         });
         onViewWaiting(allOf(withText(R.string.page_info_connection_paint_preview), isDisplayed()));
     }

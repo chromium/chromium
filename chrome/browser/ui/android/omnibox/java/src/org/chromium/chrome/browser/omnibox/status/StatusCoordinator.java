@@ -21,13 +21,13 @@ import org.chromium.chrome.browser.omnibox.LocationBarDataProvider;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.SearchEngineLogoUtils;
 import org.chromium.chrome.browser.omnibox.UrlBarEditingTextStateProvider;
+import org.chromium.chrome.browser.page_info.ChromePageInfoHighlight;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider;
 import org.chromium.chrome.browser.user_education.IPHCommandBuilder;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
-import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.permissions.PermissionDialogController;
@@ -47,14 +47,11 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 public class StatusCoordinator implements View.OnClickListener, LocationBarDataProvider.Observer {
     /** Interface for displaying page info popup on omnibox. */
     public interface PageInfoAction {
-        // TODO(crbug.com/1257656): Create a class to pass highlight info instead of adding more
-        // parameters.
         /**
          * @param tab Tab containing the content to show page info for.
-         * @param highlightedPermission The ContentSettingsType to be highlighted on the page.
-         * @param fromStoreIcon Whether user enters page info via the store icon in omnibox.
+         * @param pageInfoHighlight Providing the highlight row info related to this dialog.
          */
-        void show(Tab tab, @ContentSettingsType int highlightedPermission, boolean fromStoreIcon);
+        void show(Tab tab, ChromePageInfoHighlight pageInfoHighlight);
     }
 
     // TODO(crbug.com/1109369): Do not store the StatusView
@@ -299,8 +296,7 @@ public class StatusCoordinator implements View.OnClickListener, LocationBarDataP
             return;
         }
 
-        mPageInfoAction.show(mLocationBarDataProvider.getTab(), mMediator.getLastPermission(),
-                mMediator.isStoreIconShowing());
+        mPageInfoAction.show(mLocationBarDataProvider.getTab(), mMediator.getPageInfoHighlight());
         mMediator.onPageInfoOpened();
     }
 
