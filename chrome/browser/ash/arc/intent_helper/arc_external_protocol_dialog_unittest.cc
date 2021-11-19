@@ -6,7 +6,6 @@
 
 #include "ash/components/arc/arc_prefs.h"
 #include "ash/components/arc/test/connection_holder_util.h"
-#include "ash/components/arc/test/fake_intent_helper_instance.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/arc/arc_web_contents_data.h"
 #include "chrome/browser/sharing/click_to_call/click_to_call_ui_controller.h"
@@ -21,6 +20,7 @@
 #include "components/arc/intent_helper/arc_intent_helper_bridge.h"
 #include "components/arc/session/arc_bridge_service.h"
 #include "components/arc/session/arc_service_manager.h"
+#include "components/arc/test/fake_intent_helper_instance.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_view_host.h"
 #include "testing/gmock/include/gmock/gmock.h"

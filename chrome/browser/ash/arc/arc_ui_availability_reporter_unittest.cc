@@ -6,7 +6,6 @@
 
 #include "ash/components/arc/test/arc_util_test_support.h"
 #include "ash/components/arc/test/fake_app_instance.h"
-#include "ash/components/arc/test/fake_intent_helper_instance.h"
 #include "base/command_line.h"
 #include "base/metrics/histogram_samples.h"
 #include "base/metrics/statistics_recorder.h"
@@ -16,6 +15,7 @@
 #include "components/arc/intent_helper/arc_intent_helper_bridge.h"
 #include "components/arc/session/arc_bridge_service.h"
 #include "components/arc/session/arc_service_manager.h"
+#include "components/arc/test/fake_intent_helper_instance.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

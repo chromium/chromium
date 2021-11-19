@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_COMPONENTS_ARC_TEST_FAKE_INTENT_HELPER_INSTANCE_H_
-#define ASH_COMPONENTS_ARC_TEST_FAKE_INTENT_HELPER_INSTANCE_H_
+#ifndef COMPONENTS_ARC_TEST_FAKE_INTENT_HELPER_INSTANCE_H_
+#define COMPONENTS_ARC_TEST_FAKE_INTENT_HELPER_INSTANCE_H_
 
 #include <map>
 #include <string>
@@ -142,4 +142,4 @@ class FakeIntentHelperInstance : public mojom::IntentHelperInstance {
 
 }  // namespace arc
 
-#endif  // ASH_COMPONENTS_ARC_TEST_FAKE_INTENT_HELPER_INSTANCE_H_
+#endif  // COMPONENTS_ARC_TEST_FAKE_INTENT_HELPER_INSTANCE_H_

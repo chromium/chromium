@@ -576,6 +576,7 @@ source_set("web_applications_unit_tests") {
       "//ash/constants",
       "//chrome/browser/chromeos",
       "//components/arc:arc",
+      "//components/arc:arc_test_support",
       "//components/arc/mojom",
     ]
   }
