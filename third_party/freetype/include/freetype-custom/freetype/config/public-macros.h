@@ -95,6 +95,7 @@ FT_BEGIN_HEADER
    */
 #define FT_EXPORT( x )  FT_PUBLIC_FUNCTION_ATTRIBUTE extern x
 
+
   /*
    * `FT_UNUSED` indicates that a given parameter is not used -- this is
    * only used to get rid of unpleasant compiler warnings.
@@ -104,6 +105,18 @@ FT_BEGIN_HEADER
    */
 #ifndef FT_UNUSED
 #define FT_UNUSED( arg )  ( (arg) = (arg) )
+#endif
+
+
+  /*
+   * Support for casts in both C and C++.
+   */
+#ifdef __cplusplus
+#define FT_STATIC_CAST( type )       static_cast<type>
+#define FT_REINTERPRET_CAST( type )  reinterpret_cast<type>
+#else
+#define FT_STATIC_CAST( type )       (type)
+#define FT_REINTERPRET_CAST( type )  (type)
 #endif
 
 
