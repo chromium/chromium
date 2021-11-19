@@ -2,10 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/password_manager/android/save_password_message_delegate.h"
+#include "chrome/browser/password_manager/android/save_update_password_message_delegate.h"
 
 #include "base/android/jni_android.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/utf_string_conversions.h"
@@ -43,8 +42,10 @@ constexpr char16_t kUsername2[] = u"username2";
 constexpr char16_t kPassword[] = u"password";
 constexpr char kAccountEmail[] = "account@example.com";
 constexpr char16_t kAccountEmail16[] = u"account@example.com";
-constexpr char kDismissalReasonHistogramName[] =
+constexpr char kSaveUIDismissalReasonHistogramName[] =
     "PasswordManager.SaveUIDismissalReason";
+constexpr char kUpdateUIDismissalReasonHistogramName[] =
+    "PasswordManager.UpdateUIDismissalReason";
 }  // namespace
 
 class MockPasswordEditDialog : public PasswordEditDialog {
@@ -60,9 +61,10 @@ class MockPasswordEditDialog : public PasswordEditDialog {
   MOCK_METHOD(void, Dismiss, (), (override));
 };
 
-class SavePasswordMessageDelegateTest : public ChromeRenderViewHostTestHarness {
+class SaveUpdatePasswordMessageDelegateTest
+    : public ChromeRenderViewHostTestHarness {
  public:
-  SavePasswordMessageDelegateTest();
+  SaveUpdatePasswordMessageDelegateTest();
 
  protected:
   void SetUp() override;
@@ -88,7 +90,7 @@ class SavePasswordMessageDelegateTest : public ChromeRenderViewHostTestHarness {
   messages::MessageWrapper* GetMessageWrapper();
 
   // Password edit dialog factory function that is passed to
-  // SavePasswordMessageDelegate. Passes the dialog prepared by
+  // SaveUpdatePasswordMessageDelegate. Passes the dialog prepared by
   // PreparePasswordEditDialog. Captures accept and dismiss callbacks.
   std::unique_ptr<PasswordEditDialog> CreatePasswordEditDialog(
       content::WebContents* web_contents,
@@ -96,7 +98,7 @@ class SavePasswordMessageDelegateTest : public ChromeRenderViewHostTestHarness {
       PasswordEditDialog::DialogDismissedCallback dialog_dismissed_callback);
 
   // Creates a mock of PasswordEditDialog that will be passed to
-  // SavePasswordMessageDelegate through CreatePasswordEditDialog factory.
+  // SaveUpdatePasswordMessageDelegate through CreatePasswordEditDialog factory.
   // Returns non-owning pointer to the mock for test to configure mock
   // expectations.
   MockPasswordEditDialog* PreparePasswordEditDialog();
@@ -129,7 +131,7 @@ class SavePasswordMessageDelegateTest : public ChromeRenderViewHostTestHarness {
       &kPasswordForm1, &kPasswordForm2};
 
   PasswordForm pending_credentials_;
-  std::unique_ptr<SavePasswordMessageDelegate> delegate_;
+  std::unique_ptr<SaveUpdatePasswordMessageDelegate> delegate_;
   GURL password_form_url_;
   scoped_refptr<PasswordFormMetricsRecorder> metrics_recorder_;
   ukm::SourceId ukm_source_id_;
@@ -139,13 +141,13 @@ class SavePasswordMessageDelegateTest : public ChromeRenderViewHostTestHarness {
   PasswordEditDialog::DialogDismissedCallback dialog_dismissed_callback_;
 };
 
-SavePasswordMessageDelegateTest::SavePasswordMessageDelegateTest()
-    : delegate_(
-          base::WrapUnique(new SavePasswordMessageDelegate(base::BindRepeating(
-              &SavePasswordMessageDelegateTest::CreatePasswordEditDialog,
+SaveUpdatePasswordMessageDelegateTest::SaveUpdatePasswordMessageDelegateTest()
+    : delegate_(base::WrapUnique(
+          new SaveUpdatePasswordMessageDelegate(base::BindRepeating(
+              &SaveUpdatePasswordMessageDelegateTest::CreatePasswordEditDialog,
               base::Unretained(this))))) {}
 
-void SavePasswordMessageDelegateTest::SetUp() {
+void SaveUpdatePasswordMessageDelegateTest::SetUp() {
   ChromeRenderViewHostTestHarness::SetUp();
   ChromePasswordManagerClient::CreateForWebContentsWithAutofillClient(
       web_contents(), nullptr);
@@ -158,13 +160,13 @@ void SavePasswordMessageDelegateTest::SetUp() {
       &message_dispatcher_bridge_);
 }
 
-void SavePasswordMessageDelegateTest::TearDown() {
+void SaveUpdatePasswordMessageDelegateTest::TearDown() {
   messages::MessageDispatcherBridge::SetInstanceForTesting(nullptr);
   ChromeRenderViewHostTestHarness::TearDown();
 }
 
 std::unique_ptr<MockPasswordFormManagerForUI>
-SavePasswordMessageDelegateTest::CreateFormManager(
+SaveUpdatePasswordMessageDelegateTest::CreateFormManager(
     const GURL& password_form_url,
     const std::vector<const PasswordForm*>* best_matches) {
   password_form_url_ = password_form_url;
@@ -186,7 +188,7 @@ SavePasswordMessageDelegateTest::CreateFormManager(
   return form_manager;
 }
 
-void SavePasswordMessageDelegateTest::SetPendingCredentials(
+void SaveUpdatePasswordMessageDelegateTest::SetPendingCredentials(
     std::u16string username,
     std::u16string password) {
   pending_credentials_.username_value = std::move(username);
@@ -194,7 +196,7 @@ void SavePasswordMessageDelegateTest::SetPendingCredentials(
 }
 
 // static
-PasswordForm SavePasswordMessageDelegateTest::CreatePasswordForm(
+PasswordForm SaveUpdatePasswordMessageDelegateTest::CreatePasswordForm(
     std::u16string username,
     std::u16string password) {
   PasswordForm password_form;
@@ -203,7 +205,7 @@ PasswordForm SavePasswordMessageDelegateTest::CreatePasswordForm(
   return password_form;
 }
 
-void SavePasswordMessageDelegateTest::EnqueueMessage(
+void SaveUpdatePasswordMessageDelegateTest::EnqueueMessage(
     std::unique_ptr<PasswordFormManagerForUI> form_to_save,
     bool user_signed_in,
     bool update_password) {
@@ -213,22 +215,22 @@ void SavePasswordMessageDelegateTest::EnqueueMessage(
     account_info.value().email = kAccountEmail;
   }
   EXPECT_CALL(message_dispatcher_bridge_, EnqueueMessage);
-  delegate_->DisplaySavePasswordPromptInternal(
+  delegate_->DisplaySaveUpdatePasswordPromptInternal(
       web_contents(), std::move(form_to_save), account_info, update_password);
 }
 
-void SavePasswordMessageDelegateTest::TriggerActionClick() {
+void SaveUpdatePasswordMessageDelegateTest::TriggerActionClick() {
   GetMessageWrapper()->HandleActionClick(base::android::AttachCurrentThread());
   // Simulate call from Java to dismiss message on primary button click.
   DismissMessage(messages::DismissReason::PRIMARY_ACTION);
 }
 
-void SavePasswordMessageDelegateTest::TriggerPasswordEditDialog() {
+void SaveUpdatePasswordMessageDelegateTest::TriggerPasswordEditDialog() {
   GetMessageWrapper()->HandleSecondaryActionClick(
       base::android::AttachCurrentThread());
 }
 
-void SavePasswordMessageDelegateTest::ExpectDismissMessageCall() {
+void SaveUpdatePasswordMessageDelegateTest::ExpectDismissMessageCall() {
   EXPECT_CALL(message_dispatcher_bridge_, DismissMessage)
       .WillOnce([](messages::MessageWrapper* message,
                    messages::DismissReason dismiss_reason) {
@@ -237,23 +239,24 @@ void SavePasswordMessageDelegateTest::ExpectDismissMessageCall() {
       });
 }
 
-void SavePasswordMessageDelegateTest::DismissMessage(
+void SaveUpdatePasswordMessageDelegateTest::DismissMessage(
     messages::DismissReason dismiss_reason) {
   ExpectDismissMessageCall();
-  delegate_->DismissSavePasswordMessage(dismiss_reason);
+  delegate_->DismissSaveUpdatePasswordMessage(dismiss_reason);
   EXPECT_EQ(nullptr, GetMessageWrapper());
 }
 
-void SavePasswordMessageDelegateTest::DestroyDelegate() {
+void SaveUpdatePasswordMessageDelegateTest::DestroyDelegate() {
   delegate_.reset();
 }
 
-messages::MessageWrapper* SavePasswordMessageDelegateTest::GetMessageWrapper() {
+messages::MessageWrapper*
+SaveUpdatePasswordMessageDelegateTest::GetMessageWrapper() {
   return delegate_->message_.get();
 }
 
 std::unique_ptr<PasswordEditDialog>
-SavePasswordMessageDelegateTest::CreatePasswordEditDialog(
+SaveUpdatePasswordMessageDelegateTest::CreatePasswordEditDialog(
     content::WebContents* web_contents,
     PasswordEditDialog::DialogAcceptedCallback dialog_accepted_callback,
     PasswordEditDialog::DialogDismissedCallback dialog_dismissed_callback) {
@@ -263,26 +266,26 @@ SavePasswordMessageDelegateTest::CreatePasswordEditDialog(
 }
 
 MockPasswordEditDialog*
-SavePasswordMessageDelegateTest::PreparePasswordEditDialog() {
+SaveUpdatePasswordMessageDelegateTest::PreparePasswordEditDialog() {
   mock_password_edit_dialog_ = std::make_unique<MockPasswordEditDialog>();
   return mock_password_edit_dialog_.get();
 }
 
-void SavePasswordMessageDelegateTest::TriggerDialogAcceptedCallback(
+void SaveUpdatePasswordMessageDelegateTest::TriggerDialogAcceptedCallback(
     int selected_username_index) {
   std::move(dialog_accepted_callback_).Run(selected_username_index);
 }
 
-void SavePasswordMessageDelegateTest::TriggerDialogDismissedCallback(
+void SaveUpdatePasswordMessageDelegateTest::TriggerDialogDismissedCallback(
     bool dialog_accepted) {
   std::move(dialog_dismissed_callback_).Run(dialog_accepted);
 }
-void SavePasswordMessageDelegateTest::CommitPasswordFormMetrics() {
+void SaveUpdatePasswordMessageDelegateTest::CommitPasswordFormMetrics() {
   // PasswordFormMetricsRecorder::dtor commits accumulated metrics.
   metrics_recorder_.reset();
 }
 
-void SavePasswordMessageDelegateTest::VerifyUkmMetrics(
+void SaveUpdatePasswordMessageDelegateTest::VerifyUkmMetrics(
     const ukm::TestUkmRecorder& ukm_recorder,
     PasswordFormMetricsRecorder::BubbleDismissalReason
         expected_dismissal_reason) {
@@ -305,7 +308,8 @@ void SavePasswordMessageDelegateTest::VerifyUkmMetrics(
 
 // Tests that message properties (title, description, icon, button text) are
 // set correctly for save password message.
-TEST_F(SavePasswordMessageDelegateTest, MessagePropertyValues_SavePassword) {
+TEST_F(SaveUpdatePasswordMessageDelegateTest,
+       MessagePropertyValues_SavePassword) {
   SetPendingCredentials(kUsername, kPassword);
   auto form_manager =
       CreateFormManager(GURL(kDefaultUrl), empty_best_matches());
@@ -336,7 +340,8 @@ TEST_F(SavePasswordMessageDelegateTest, MessagePropertyValues_SavePassword) {
 
 // Tests that message properties (title, description, icon, button text) are
 // set correctly for update password message.
-TEST_F(SavePasswordMessageDelegateTest, MessagePropertyValues_UpdatePassword) {
+TEST_F(SaveUpdatePasswordMessageDelegateTest,
+       MessagePropertyValues_UpdatePassword) {
   SetPendingCredentials(kUsername, kPassword);
   auto form_manager =
       CreateFormManager(GURL(kDefaultUrl), empty_best_matches());
@@ -356,7 +361,8 @@ TEST_F(SavePasswordMessageDelegateTest, MessagePropertyValues_UpdatePassword) {
 
 // Tests that the description is set correctly when signed-in user saves a
 // password.
-TEST_F(SavePasswordMessageDelegateTest, SignedInDescription_SavePassword) {
+TEST_F(SaveUpdatePasswordMessageDelegateTest,
+       SignedInDescription_SavePassword) {
   SetPendingCredentials(kUsername, kPassword);
   auto form_manager =
       CreateFormManager(GURL(kDefaultUrl), empty_best_matches());
@@ -375,7 +381,8 @@ TEST_F(SavePasswordMessageDelegateTest, SignedInDescription_SavePassword) {
 
 // Tests that the description is set correctly when signed-in user updates a
 // password.
-TEST_F(SavePasswordMessageDelegateTest, SignedInDescription_UpdatePassword) {
+TEST_F(SaveUpdatePasswordMessageDelegateTest,
+       SignedInDescription_UpdatePassword) {
   SetPendingCredentials(kUsername, kPassword);
   auto form_manager =
       CreateFormManager(GURL(kDefaultUrl), empty_best_matches());
@@ -393,7 +400,7 @@ TEST_F(SavePasswordMessageDelegateTest, SignedInDescription_UpdatePassword) {
 }
 
 // Tests that the previous prompt gets dismissed when the new one is enqueued.
-TEST_F(SavePasswordMessageDelegateTest, OnlyOnePromptAtATime) {
+TEST_F(SaveUpdatePasswordMessageDelegateTest, OnlyOnePromptAtATime) {
   SetPendingCredentials(kUsername, kPassword);
   auto form_manager =
       CreateFormManager(GURL(kDefaultUrl), empty_best_matches());
@@ -410,7 +417,7 @@ TEST_F(SavePasswordMessageDelegateTest, OnlyOnePromptAtATime) {
 
 // Tests that password form is saved and metrics recorded correctly when the
 // user clicks "Save" button.
-TEST_F(SavePasswordMessageDelegateTest, SaveOnActionClick) {
+TEST_F(SaveUpdatePasswordMessageDelegateTest, SaveOnActionClick) {
   base::HistogramTester histogram_tester;
   ukm::TestAutoSetUkmRecorder test_ukm_recorder;
 
@@ -428,13 +435,13 @@ TEST_F(SavePasswordMessageDelegateTest, SaveOnActionClick) {
       test_ukm_recorder,
       PasswordFormMetricsRecorder::BubbleDismissalReason::kAccepted);
   histogram_tester.ExpectUniqueSample(
-      kDismissalReasonHistogramName,
+      kSaveUIDismissalReasonHistogramName,
       password_manager::metrics_util::CLICKED_ACCEPT, 1);
 }
 
 // Tests that password form is not saved and metrics recorded correctly when the
 // user dismisses the message.
-TEST_F(SavePasswordMessageDelegateTest, DontSaveOnDismiss) {
+TEST_F(SaveUpdatePasswordMessageDelegateTest, DontSaveOnDismiss) {
   base::HistogramTester histogram_tester;
   ukm::TestAutoSetUkmRecorder test_ukm_recorder;
 
@@ -452,13 +459,13 @@ TEST_F(SavePasswordMessageDelegateTest, DontSaveOnDismiss) {
       test_ukm_recorder,
       PasswordFormMetricsRecorder::BubbleDismissalReason::kDeclined);
   histogram_tester.ExpectUniqueSample(
-      kDismissalReasonHistogramName,
+      kSaveUIDismissalReasonHistogramName,
       password_manager::metrics_util::CLICKED_CANCEL, 1);
 }
 
 // Tests that password form is not saved and metrics recorded correctly when the
 // message is autodismissed.
-TEST_F(SavePasswordMessageDelegateTest, MetricOnAutodismissTimer) {
+TEST_F(SaveUpdatePasswordMessageDelegateTest, MetricOnAutodismissTimer) {
   base::HistogramTester histogram_tester;
   ukm::TestAutoSetUkmRecorder test_ukm_recorder;
 
@@ -476,13 +483,13 @@ TEST_F(SavePasswordMessageDelegateTest, MetricOnAutodismissTimer) {
       test_ukm_recorder,
       PasswordFormMetricsRecorder::BubbleDismissalReason::kIgnored);
   histogram_tester.ExpectUniqueSample(
-      kDismissalReasonHistogramName,
+      kSaveUIDismissalReasonHistogramName,
       password_manager::metrics_util::NO_DIRECT_INTERACTION, 1);
 }
 
 // Tests that update password message with a single PasswordForm immediately
 // saves the form on Update button tap and doesn't display confirmation dialog.
-TEST_F(SavePasswordMessageDelegateTest, UpdatePasswordWithSingleForm) {
+TEST_F(SaveUpdatePasswordMessageDelegateTest, UpdatePasswordWithSingleForm) {
   base::HistogramTester histogram_tester;
   ukm::TestAutoSetUkmRecorder test_ukm_recorder;
 
@@ -503,11 +510,11 @@ TEST_F(SavePasswordMessageDelegateTest, UpdatePasswordWithSingleForm) {
       test_ukm_recorder,
       PasswordFormMetricsRecorder::BubbleDismissalReason::kAccepted);
   histogram_tester.ExpectUniqueSample(
-      kDismissalReasonHistogramName,
+      kUpdateUIDismissalReasonHistogramName,
       password_manager::metrics_util::CLICKED_ACCEPT, 1);
 }
 
-TEST_F(SavePasswordMessageDelegateTest, DialogProperties) {
+TEST_F(SaveUpdatePasswordMessageDelegateTest, DialogProperties) {
   SetPendingCredentials(kUsername, kPassword);
   auto form_manager =
       CreateFormManager(GURL(kDefaultUrl), two_forms_best_matches());
@@ -525,7 +532,7 @@ TEST_F(SavePasswordMessageDelegateTest, DialogProperties) {
 
 // Tests triggering password edit dialog and saving credentials after the
 // user accepts the dialog.
-TEST_F(SavePasswordMessageDelegateTest, TriggerEditDialog_Accept) {
+TEST_F(SaveUpdatePasswordMessageDelegateTest, TriggerEditDialog_Accept) {
   base::HistogramTester histogram_tester;
   ukm::TestAutoSetUkmRecorder test_ukm_recorder;
 
@@ -547,13 +554,13 @@ TEST_F(SavePasswordMessageDelegateTest, TriggerEditDialog_Accept) {
       test_ukm_recorder,
       PasswordFormMetricsRecorder::BubbleDismissalReason::kAccepted);
   histogram_tester.ExpectUniqueSample(
-      kDismissalReasonHistogramName,
+      kUpdateUIDismissalReasonHistogramName,
       password_manager::metrics_util::CLICKED_ACCEPT, 1);
 }
 
 // Tests that credentials are not saved if the user cancels password edit
 // dialog.
-TEST_F(SavePasswordMessageDelegateTest, TriggerEditDialog_Cancel) {
+TEST_F(SaveUpdatePasswordMessageDelegateTest, TriggerEditDialog_Cancel) {
   base::HistogramTester histogram_tester;
   ukm::TestAutoSetUkmRecorder test_ukm_recorder;
 
@@ -574,6 +581,6 @@ TEST_F(SavePasswordMessageDelegateTest, TriggerEditDialog_Cancel) {
       test_ukm_recorder,
       PasswordFormMetricsRecorder::BubbleDismissalReason::kDeclined);
   histogram_tester.ExpectUniqueSample(
-      kDismissalReasonHistogramName,
+      kUpdateUIDismissalReasonHistogramName,
       password_manager::metrics_util::CLICKED_CANCEL, 1);
 }

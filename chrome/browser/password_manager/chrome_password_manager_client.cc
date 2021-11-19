@@ -326,7 +326,7 @@ bool ChromePasswordManagerClient::PromptUserToSaveOrUpdatePassword(
 
   if (update_password) {
     if (messages::IsUpdatePasswordMessagesUiEnabled()) {
-      save_password_message_delegate_.DisplaySavePasswordPrompt(
+      save_update_password_message_delegate_.DisplaySaveUpdatePasswordPrompt(
           web_contents(), std::move(form_to_save), /*update_password=*/true);
     } else {
       UpdatePasswordInfoBarDelegate::Create(web_contents(),
@@ -334,7 +334,7 @@ bool ChromePasswordManagerClient::PromptUserToSaveOrUpdatePassword(
     }
   } else {
     if (messages::IsPasswordMessagesUiEnabled()) {
-      save_password_message_delegate_.DisplaySavePasswordPrompt(
+      save_update_password_message_delegate_.DisplaySaveUpdatePasswordPrompt(
           web_contents(), std::move(form_to_save), /*update_password=*/false);
     } else {
       SavePasswordInfoBarDelegate::Create(web_contents(),
@@ -607,7 +607,7 @@ void ChromePasswordManagerClient::NotifyUserCredentialsWereLeaked(
   }
 
   if (messages::IsPasswordMessagesUiEnabled()) {
-    save_password_message_delegate_.DismissSavePasswordPrompt();
+    save_update_password_message_delegate_.DismissSaveUpdatePasswordPrompt();
   } else {
     HideSavePasswordInfobar(web_contents());
   }
@@ -1325,7 +1325,7 @@ void ChromePasswordManagerClient::WebContentsDestroyed() {
   }
 
 #if defined(OS_ANDROID)
-  save_password_message_delegate_.DismissSavePasswordPrompt();
+  save_update_password_message_delegate_.DismissSaveUpdatePasswordPrompt();
 #endif
 }
 

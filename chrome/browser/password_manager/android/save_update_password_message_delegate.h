@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_PASSWORD_MANAGER_ANDROID_SAVE_PASSWORD_MESSAGE_DELEGATE_H_
-#define CHROME_BROWSER_PASSWORD_MANAGER_ANDROID_SAVE_PASSWORD_MESSAGE_DELEGATE_H_
+#ifndef CHROME_BROWSER_PASSWORD_MANAGER_ANDROID_SAVE_UPDATE_PASSWORD_MESSAGE_DELEGATE_H_
+#define CHROME_BROWSER_PASSWORD_MANAGER_ANDROID_SAVE_UPDATE_PASSWORD_MESSAGE_DELEGATE_H_
 
 #include <memory>
 
@@ -22,10 +22,11 @@ class WebContents;
 }  // namespace content
 
 // This class provides simplified interface for ChromePasswordManagerClient to
-// display a prompt to save password through Messages API. The class is
-// responsible for populating message properties, managing message's lifetime,
-// saving password form in response to user interactions and recording metrics.
-class SavePasswordMessageDelegate {
+// display a prompt to save and update password through Messages API. The class
+// is responsible for populating message properties, managing message's
+// lifetime, saving password form in response to user interactions and recording
+// metrics.
+class SaveUpdatePasswordMessageDelegate {
  public:
   using PasswordEditDialogFactory =
       base::RepeatingCallback<std::unique_ptr<PasswordEditDialog>(
@@ -33,12 +34,12 @@ class SavePasswordMessageDelegate {
           PasswordEditDialog::DialogAcceptedCallback,
           PasswordEditDialog::DialogDismissedCallback)>;
 
-  SavePasswordMessageDelegate();
-  ~SavePasswordMessageDelegate();
+  SaveUpdatePasswordMessageDelegate();
+  ~SaveUpdatePasswordMessageDelegate();
 
   // Displays a "Save password" message for current |web_contents| and
   // |form_to_save|.
-  void DisplaySavePasswordPrompt(
+  void DisplaySaveUpdatePasswordPrompt(
       content::WebContents* web_contents,
       std::unique_ptr<password_manager::PasswordFormManagerForUI> form_to_save,
       bool update_password);
@@ -46,17 +47,17 @@ class SavePasswordMessageDelegate {
   // Dismisses currently displayed message or dialog. Because the implementation
   // uses some of the dependencies (e.g. log manager) this method needs to be
   // called before the object is destroyed.
-  void DismissSavePasswordPrompt();
+  void DismissSaveUpdatePasswordPrompt();
 
  private:
-  friend class SavePasswordMessageDelegateTest;
+  friend class SaveUpdatePasswordMessageDelegateTest;
 
-  SavePasswordMessageDelegate(
+  SaveUpdatePasswordMessageDelegate(
       PasswordEditDialogFactory password_edit_dialog_factory);
 
-  void DismissSavePasswordMessage(messages::DismissReason dismiss_reason);
+  void DismissSaveUpdatePasswordMessage(messages::DismissReason dismiss_reason);
 
-  void DisplaySavePasswordPromptInternal(
+  void DisplaySaveUpdatePasswordPromptInternal(
       content::WebContents* web_contents,
       std::unique_ptr<password_manager::PasswordFormManagerForUI> form_to_save,
       absl::optional<AccountInfo> account_info,
@@ -98,6 +99,7 @@ class SavePasswordMessageDelegate {
 
   content::WebContents* web_contents_ = nullptr;
   std::string account_email_;
+  bool update_password_ = false;
 
   // ManagePasswordsState maintains the password form that is being
   // saved/updated. It provides helper functions for populating username list.
@@ -107,4 +109,4 @@ class SavePasswordMessageDelegate {
   std::unique_ptr<PasswordEditDialog> password_edit_dialog_;
 };
 
-#endif  // CHROME_BROWSER_PASSWORD_MANAGER_ANDROID_SAVE_PASSWORD_MESSAGE_DELEGATE_H_
+#endif  // CHROME_BROWSER_PASSWORD_MANAGER_ANDROID_SAVE_UPDATE_PASSWORD_MESSAGE_DELEGATE_H_
