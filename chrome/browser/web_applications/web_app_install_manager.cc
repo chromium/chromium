@@ -4,10 +4,12 @@
 
 #include "chrome/browser/web_applications/web_app_install_manager.h"
 
+#include <iterator>
 #include <utility>
 
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/callback_helpers.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/utf_string_conversions.h"
@@ -18,6 +20,7 @@
 #include "chrome/browser/web_applications/web_app_data_retriever.h"
 #include "chrome/browser/web_applications/web_app_install_finalizer.h"
 #include "chrome/browser/web_applications/web_app_install_task.h"
+#include "chrome/browser/web_applications/web_app_internals_utils.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/browser/web_applications/web_application_info.h"
@@ -36,14 +39,23 @@ bool TaskExpectsAppId(const WebAppInstallTask* task, const AppId& app_id) {
          task->app_id_to_expect().value() == app_id;
 }
 
+constexpr char kWebAppInstallManagerName[] = "WebAppInstallManager";
+
 }  // namespace
 
 WebAppInstallManager::WebAppInstallManager(Profile* profile)
     : profile_(profile), url_loader_(std::make_unique<WebAppUrlLoader>()) {
   data_retriever_factory_ = base::BindRepeating(
       []() { return std::make_unique<WebAppDataRetriever>(); });
-  if (base::FeatureList::IsEnabled(features::kRecordWebAppDebugInfo))
+  if (base::FeatureList::IsEnabled(features::kRecordWebAppDebugInfo)) {
     error_log_ = std::make_unique<ErrorLog>();
+    ReadErrorLog(GetWebAppsRootDirectory(profile_), kWebAppInstallManagerName,
+                 base::BindOnce(&WebAppInstallManager::OnReadErrorLog,
+                                weak_ptr_factory_.GetWeakPtr()));
+  } else {
+    ClearErrorLog(GetWebAppsRootDirectory(profile_), kWebAppInstallManagerName,
+                  base::DoNothing());
+  }
 }
 
 WebAppInstallManager::~WebAppInstallManager() = default;
@@ -440,7 +452,7 @@ void WebAppInstallManager::TakeTaskErrorLog(WebAppInstallTask* task) {
   if (error_log_) {
     base::Value task_error_dict = task->TakeErrorDict();
     if (!task_error_dict.DictEmpty())
-      error_log_->push_back(std::move(task_error_dict));
+      LogErrorObject(std::move(task_error_dict));
   }
 }
 
@@ -539,16 +551,59 @@ void WebAppInstallManager::LogUrlLoaderError(const char* stage,
         "task.app_id_to_expect", pending_task.task->app_id_to_expect().value());
   }
 
-  LogErrorObject(stage, std::move(url_loader_error));
+  LogErrorObjectAtStage(stage, std::move(url_loader_error));
 }
 
-void WebAppInstallManager::LogErrorObject(const char* stage,
-                                          base::Value object) {
+void WebAppInstallManager::MaybeWriteErrorLog() {
+  DCHECK(error_log_);
+  if (error_log_writing_in_progress_ || !error_log_updated_)
+    return;
+
+  WriteErrorLog(GetWebAppsRootDirectory(profile_), kWebAppInstallManagerName,
+                base::Value(*error_log_),
+                base::BindOnce(&WebAppInstallManager::OnWriteErrorLog,
+                               weak_ptr_factory_.GetWeakPtr()));
+
+  error_log_writing_in_progress_ = true;
+  error_log_updated_ = false;
+}
+
+void WebAppInstallManager::OnWriteErrorLog(Result result) {
+  error_log_writing_in_progress_ = false;
+  MaybeWriteErrorLog();
+}
+
+void WebAppInstallManager::OnReadErrorLog(Result result,
+                                          base::Value error_log) {
+  DCHECK(error_log_);
+  if (result != Result::kOk || !error_log.is_list())
+    return;
+
+  ErrorLog early_error_log = std::move(*error_log_);
+  *error_log_ = std::move(error_log).TakeList();
+
+  // Appends the `early_error_log` at the end.
+  error_log_->insert(error_log_->end(),
+                     std::make_move_iterator(early_error_log.begin()),
+                     std::make_move_iterator(early_error_log.end()));
+}
+
+void WebAppInstallManager::LogErrorObject(base::Value object) {
+  if (!error_log_)
+    return;
+
+  error_log_->push_back(std::move(object));
+  error_log_updated_ = true;
+  MaybeWriteErrorLog();
+}
+
+void WebAppInstallManager::LogErrorObjectAtStage(const char* stage,
+                                                 base::Value object) {
   if (!error_log_)
     return;
 
   object.SetStringKey("!stage", stage);
-  error_log_->push_back(std::move(object));
+  LogErrorObject(std::move(object));
 }
 
 WebAppInstallManager::PendingTask::PendingTask() = default;

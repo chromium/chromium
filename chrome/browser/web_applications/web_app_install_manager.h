@@ -198,7 +198,12 @@ class WebAppInstallManager final : public SyncInstallDelegate {
   void OnWebContentsReadyRunTask(PendingTask pending_task,
                                  WebAppUrlLoader::Result result);
 
-  void LogErrorObject(const char* stage, base::Value object);
+  void MaybeWriteErrorLog();
+  void OnWriteErrorLog(Result result);
+  void OnReadErrorLog(Result result, base::Value error_log);
+
+  void LogErrorObject(base::Value object);
+  void LogErrorObjectAtStage(const char* stage, base::Value object);
   void LogUrlLoaderError(const char* stage,
                          const PendingTask& task,
                          WebAppUrlLoader::Result result);
@@ -229,6 +234,8 @@ class WebAppInstallManager final : public SyncInstallDelegate {
   bool started_ = false;
 
   std::unique_ptr<ErrorLog> error_log_;
+  bool error_log_updated_ = false;
+  bool error_log_writing_in_progress_ = false;
 
   base::WeakPtrFactory<WebAppInstallManager> weak_ptr_factory_{this};
 };
