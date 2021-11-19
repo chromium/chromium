@@ -41,6 +41,7 @@
 #include "chrome/common/extensions/extension_constants.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
+#include "chromeos/system/statistics_provider.h"
 #include "chromeos/tpm/install_attributes.h"
 #include "components/language/core/browser/pref_names.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -346,6 +347,18 @@ bool DemoSession::ShouldShowExtensionInAppLauncher(const std::string& app_id) {
          app_id != extensions::kWebStoreAppId;
 }
 
+// Static function to default region from VPD.
+static std::string GetDefaultRegion() {
+  std::string region_code;
+  bool found_region_code =
+      chromeos::system::StatisticsProvider::GetInstance()->GetMachineStatistic(
+          chromeos::system::kRegionKey, &region_code);
+  if (found_region_code) {
+    return region_code.substr(0, region_code.find("."));
+  }
+  return "";
+}
+
 // static
 bool DemoSession::ShouldShowWebApp(const std::string& app_id) {
   if (IsDeviceInDemoMode() &&
@@ -360,9 +373,10 @@ bool DemoSession::ShouldShowWebApp(const std::string& app_id) {
 // static
 base::Value DemoSession::GetCountryList() {
   base::Value country_list(base::Value::Type::LIST);
-  const std::string current_country =
-      g_browser_process->local_state()->GetString(prefs::kDemoModeCountry);
+  std::string region(GetDefaultRegion());
   const std::string current_locale = g_browser_process->GetApplicationLocale();
+  bool country_selected = false;
+
   // TODO(b/203105588): Use the new way of base::Value to create the country
   // list.
   for (const std::string country : kSupportedCountries) {
@@ -370,17 +384,27 @@ base::Value DemoSession::GetCountryList() {
     dict.SetString("value", country);
     dict.SetString(
         "title", l10n_util::GetDisplayNameForCountry(country, current_locale));
-    dict.SetBoolean("selected", false);
+    if (country == region) {
+      dict.SetBoolean("selected", true);
+      g_browser_process->local_state()->SetString(prefs::kDemoModeCountry,
+                                                  country);
+      country_selected = true;
+    } else {
+      dict.SetBoolean("selected", false);
+    }
     country_list.Append(std::move(dict));
   }
-  base::DictionaryValue countryNotSelectedDict;
-  countryNotSelectedDict.SetString("value", DemoSession::kCountryNotSelectedId);
-  countryNotSelectedDict.SetString(
-      "title",
-      l10n_util::GetStringUTF16(
-          IDS_OOBE_DEMO_SETUP_PREFERENCES_SCREEN_COUNTRY_NOT_SELECTED_TITLE));
-  countryNotSelectedDict.SetBoolean("selected", true);
-  country_list.Append(std::move(countryNotSelectedDict));
+  if (!country_selected) {
+    base::DictionaryValue countryNotSelectedDict;
+    countryNotSelectedDict.SetString("value",
+                                     DemoSession::kCountryNotSelectedId);
+    countryNotSelectedDict.SetString(
+        "title",
+        l10n_util::GetStringUTF16(
+            IDS_OOBE_DEMO_SETUP_PREFERENCES_SCREEN_COUNTRY_NOT_SELECTED_TITLE));
+    countryNotSelectedDict.SetBoolean("selected", true);
+    country_list.Append(std::move(countryNotSelectedDict));
+  }
   return country_list;
 }
 

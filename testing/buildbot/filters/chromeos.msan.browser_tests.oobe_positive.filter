@@ -49,7 +49,10 @@ DemoSetupArcSupportedTest.*
 DemoSetupArcUnsupportedTest.*
 DemoSetupFRETest.*
 DemoSetupProgressStepsTest.*
+DemoSetupRegionCodeNotExistTest.*
 DemoSetupTestBase.*
+DemoSetupVariantCountryCodeRegionTest.*
+DemoSetupVirtualSetRegionCodeTest.*
 DeviceDisablingBeforeLoginHostCreated.*
 DeviceDisablingTest.*
 DeviceIDTest.*

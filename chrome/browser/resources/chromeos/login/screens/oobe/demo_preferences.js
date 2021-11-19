@@ -181,6 +181,13 @@ class DemoPreferencesScreen extends DemoPreferencesScreenBase {
   setCountryList_(countries) {
     this.countries = countries;
     this.$.countryDropdownContainer.hidden = countries.length == 0;
+    for (let i = 0; i < countries.length; ++i) {
+      let country = countries[i];
+      if (country.selected && country.value !== this.country_not_selected_id_) {
+        this.is_country_selected_ = true;
+        return;
+      }
+    }
   }
 
   /**
