@@ -9,9 +9,9 @@ namespace variations {
 const base::FilePath::CharType kVariationsFilename[] =
     FILE_PATH_LITERAL("Variations");
 
-const char kExtendedSafeModeTrial[] = "ExtendedVariationsSafeMode3";
-const char kControlGroup[] = "Control3";
-const char kDefaultGroup[] = "Default3";
-const char kSignalAndWriteViaFileUtilGroup[] = "SignalAndWriteViaFileUtil3";
+const char kExtendedSafeModeTrial[] = "ExtendedVariationsSafeMode4";
+const char kControlGroup[] = "Control4";
+const char kDefaultGroup[] = "Default4";
+const char kSignalAndWriteViaFileUtilGroup[] = "SignalAndWriteViaFileUtil4";
 
 }  // namespace variations
