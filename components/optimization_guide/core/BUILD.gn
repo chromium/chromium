@@ -56,6 +56,8 @@ static_library("core") {
     "insertion_ordered_set.h",
     "memory_hint.cc",
     "memory_hint.h",
+    "model_executor.h",
+    "model_handler.h",
     "model_info.cc",
     "model_info.h",
     "noisy_metrics_recorder.cc",
@@ -112,8 +114,6 @@ static_library("core") {
       "bert_model_executor.h",
       "bert_model_handler.cc",
       "bert_model_handler.h",
-      "model_executor.h",
-      "model_handler.h",
       "model_validator.cc",
       "model_validator.h",
       "page_content_annotation_job_executor.cc",
@@ -123,6 +123,7 @@ static_library("core") {
       "page_topics_model_executor.h",
       "page_visibility_model_executor.cc",
       "page_visibility_model_executor.h",
+      "tflite_model_executor.h",
     ]
   }
 
@@ -134,6 +135,7 @@ static_library("core") {
   if (build_with_tflite_lib) {
     public_deps += [
       "//components/optimization_guide/core:machine_learning",
+      "//third_party/abseil-cpp:absl",
       "//third_party/tflite",
       "//third_party/tflite:tflite_public_headers",
       "//third_party/tflite_support",
@@ -184,11 +186,22 @@ static_library("test_support") {
     "proto_database_provider_test_base.h",
     "test_hints_component_creator.cc",
     "test_hints_component_creator.h",
+    "test_model_executor.cc",
+    "test_model_executor.h",
+    "test_model_handler.h",
     "test_model_info_builder.cc",
     "test_model_info_builder.h",
     "test_optimization_guide_model_provider.cc",
     "test_optimization_guide_model_provider.h",
   ]
+  if (build_with_tflite_lib) {
+    sources += [
+      "test_tflite_model_executor.cc",
+      "test_tflite_model_executor.h",
+      "test_tflite_model_handler.h",
+    ]
+  }
+
   deps = [
     ":bloomfilter",
     ":core",
@@ -199,6 +212,9 @@ static_library("test_support") {
     "//testing/gtest",
     "//url",
   ]
+  if (build_with_tflite_lib) {
+    deps += [ "//third_party/abseil-cpp:absl" ]
+  }
 }
 
 if (is_ios) {
@@ -234,6 +250,7 @@ source_set("unit_tests") {
     "hints_manager_unittest.cc",
     "hints_processing_util_unittest.cc",
     "insertion_ordered_set_unittest.cc",
+    "model_handler_unittest.cc",
     "noisy_metrics_recorder_unittest.cc",
     "optimization_filter_unittest.cc",
     "optimization_guide_features_unittest.cc",
@@ -253,15 +270,11 @@ source_set("unit_tests") {
   if (build_with_tflite_lib) {
     sources += [
       "bert_model_executor_unittest.cc",
-      "model_executor_unittest.cc",
-      "model_handler_unittest.cc",
       "model_validator_unittest.cc",
       "page_content_annotation_job_executor_unittest.cc",
       "page_topics_model_executor_unittest.cc",
       "page_visibility_model_executor_unittest.cc",
-      "test_model_executor.cc",
-      "test_model_executor.h",
-      "test_model_handler.h",
+      "tflite_model_executor_unittest.cc",
     ]
   }
 
@@ -290,6 +303,7 @@ source_set("unit_tests") {
   ]
   if (build_with_tflite_lib) {
     deps += [
+      "//third_party/abseil-cpp:absl",
       "//third_party/tflite",
       "//third_party/tflite:tflite_public_headers",
       "//third_party/tflite_support",

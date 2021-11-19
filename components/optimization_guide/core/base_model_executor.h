@@ -7,7 +7,7 @@
 
 #include "components/optimization_guide/core/base_model_executor_helpers.h"
 #include "components/optimization_guide/core/execution_status.h"
-#include "components/optimization_guide/core/model_executor.h"
+#include "components/optimization_guide/core/tflite_model_executor.h"
 #include "components/optimization_guide/core/tflite_op_resolver.h"
 #include "third_party/tflite_support/src/tensorflow_lite_support/cc/task/core/base_task_api.h"
 
@@ -18,7 +18,7 @@ namespace optimization_guide {
 // of this class to a |ModelHandler|, whereas the
 // handle is the actual class that calling code would own and call into.
 template <class OutputType, class... InputTypes>
-class BaseModelExecutor : public ModelExecutor<OutputType, InputTypes...>,
+class BaseModelExecutor : public TFLiteModelExecutor<OutputType, InputTypes...>,
                           public InferenceDelegate<OutputType, InputTypes...> {
  public:
   using ModelExecutionTask =

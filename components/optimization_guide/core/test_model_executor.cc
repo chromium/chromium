@@ -4,22 +4,16 @@
 
 #include "components/optimization_guide/core/test_model_executor.h"
 
-#include "third_party/tflite_support/src/tensorflow_lite_support/cc/task/core/task_utils.h"
-
 namespace optimization_guide {
 
-absl::Status TestModelExecutor::Preprocess(
-    const std::vector<TfLiteTensor*>& input_tensors,
-    const std::vector<float>& input) {
-  tflite::task::core::PopulateTensor<float>(input, input_tensors[0]);
-  return absl::OkStatus();
-}
-
-std::vector<float> TestModelExecutor::Postprocess(
-    const std::vector<const TfLiteTensor*>& output_tensors) {
-  std::vector<float> data;
-  tflite::task::core::PopulateVector<float>(output_tensors[0], &data);
-  return data;
+void TestModelExecutor::SendForExecution(
+    ExecutionCallback ui_callback_on_complete,
+    base::TimeTicks start_time,
+    const std::vector<float>& args) {
+  std::vector<float> results = std::vector<float>();
+  for (auto& arg : args)
+    results.push_back(arg);
+  std::move(ui_callback_on_complete).Run(std::move(results));
 }
 
 }  // namespace optimization_guide

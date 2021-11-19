@@ -2,15 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/optimization_guide/core/model_executor.h"
-
 #include "base/path_service.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
-#include "components/optimization_guide/core/test_model_executor.h"
-#include "components/optimization_guide/core/test_model_handler.h"
 #include "components/optimization_guide/core/test_model_info_builder.h"
 #include "components/optimization_guide/core/test_optimization_guide_model_provider.h"
+#include "components/optimization_guide/core/test_tflite_model_executor.h"
+#include "components/optimization_guide/core/test_tflite_model_handler.h"
 #include "components/optimization_guide/proto/common_types.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/tflite_support/src/tensorflow_lite_support/cc/task/core/task_utils.h"
@@ -18,7 +16,7 @@
 namespace optimization_guide {
 namespace {
 
-class NoUnloadingTestModelExecutor : public TestModelExecutor {
+class NoUnloadingTestTFLiteModelExecutor : public TestTFLiteModelExecutor {
  protected:
   void OnExecutionComplete() override {
     // Intentionally do nothing, overriding the something done in the
@@ -26,20 +24,21 @@ class NoUnloadingTestModelExecutor : public TestModelExecutor {
   }
 };
 
-class NoUnloadingTestModelHandler : public TestModelHandler {
+class NoUnloadingTestTFLiteModelHandler : public TestTFLiteModelHandler {
  public:
-  NoUnloadingTestModelHandler(
+  NoUnloadingTestTFLiteModelHandler(
       OptimizationGuideModelProvider* model_provider,
       scoped_refptr<base::SequencedTaskRunner> background_task_runner)
-      : TestModelHandler(model_provider,
-                         background_task_runner,
-                         std::make_unique<NoUnloadingTestModelExecutor>()) {}
+      : TestTFLiteModelHandler(
+            model_provider,
+            background_task_runner,
+            std::make_unique<NoUnloadingTestTFLiteModelExecutor>()) {}
 };
 
-class ModelExecutorTest : public testing::Test {
+class TFLiteModelExecutorTest : public testing::Test {
  public:
-  ModelExecutorTest() = default;
-  ~ModelExecutorTest() override = default;
+  TFLiteModelExecutorTest() = default;
+  ~TFLiteModelExecutorTest() override = default;
 
   void SetUp() override {
     base::FilePath source_root_dir;
@@ -60,11 +59,12 @@ class ModelExecutorTest : public testing::Test {
     if (model_handler_)
       model_handler_.reset();
 
-    model_handler_ = std::make_unique<TestModelHandler>(
+    model_handler_ = std::make_unique<TestTFLiteModelHandler>(
         test_model_provider(), task_environment_.GetMainThreadTaskRunner());
   }
 
-  void ResetModelHandler(std::unique_ptr<TestModelHandler> handle = nullptr) {
+  void ResetModelHandler(
+      std::unique_ptr<TestTFLiteModelHandler> handle = nullptr) {
     model_handler_ = std::move(handle);
     // Allow for the background class to be destroyed.
     RunUntilIdle();
@@ -83,7 +83,7 @@ class ModelExecutorTest : public testing::Test {
     RunUntilIdle();
   }
 
-  TestModelHandler* model_handler() { return model_handler_.get(); }
+  TestTFLiteModelHandler* model_handler() { return model_handler_.get(); }
 
   TestOptimizationGuideModelProvider* test_model_provider() {
     return test_model_provider_.get();
@@ -99,10 +99,10 @@ class ModelExecutorTest : public testing::Test {
   base::FilePath model_file_path_;
   std::unique_ptr<TestOptimizationGuideModelProvider> test_model_provider_;
 
-  std::unique_ptr<TestModelHandler> model_handler_;
+  std::unique_ptr<TestTFLiteModelHandler> model_handler_;
 };
 
-TEST_F(ModelExecutorTest, ExecuteReturnsImmediatelyIfNoModelLoaded) {
+TEST_F(TFLiteModelExecutorTest, ExecuteReturnsImmediatelyIfNoModelLoaded) {
   base::HistogramTester histogram_tester;
   CreateModelHandler();
 
@@ -140,7 +140,7 @@ TEST_F(ModelExecutorTest, ExecuteReturnsImmediatelyIfNoModelLoaded) {
       ExecutionStatus::kErrorModelFileNotAvailable, 1);
 }
 
-TEST_F(ModelExecutorTest, ExecuteWithLoadedModel) {
+TEST_F(TFLiteModelExecutorTest, ExecuteWithLoadedModel) {
   base::HistogramTester histogram_tester;
   CreateModelHandler();
 
@@ -196,7 +196,7 @@ TEST_F(ModelExecutorTest, ExecuteWithLoadedModel) {
       ExecutionStatus::kSuccess, 1);
 }
 
-TEST_F(ModelExecutorTest, ExecuteTwiceWithLoadedModel) {
+TEST_F(TFLiteModelExecutorTest, ExecuteTwiceWithLoadedModel) {
   base::HistogramTester histogram_tester;
   CreateModelHandler();
 
@@ -278,9 +278,9 @@ TEST_F(ModelExecutorTest, ExecuteTwiceWithLoadedModel) {
       1);
 }
 
-TEST_F(ModelExecutorTest, DoNotUnloadAfterExecution) {
+TEST_F(TFLiteModelExecutorTest, DoNotUnloadAfterExecution) {
   base::HistogramTester histogram_tester;
-  ResetModelHandler(std::make_unique<NoUnloadingTestModelHandler>(
+  ResetModelHandler(std::make_unique<NoUnloadingTestTFLiteModelHandler>(
       test_model_provider(), task_environment()->GetMainThreadTaskRunner()));
 
   proto::Any any_metadata;
