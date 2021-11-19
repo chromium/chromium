@@ -5140,7 +5140,6 @@ crbug.com/1050754 external/wpt/webrtc/RTCPeerConnection-perfect-negotiation.http
 crbug.com/1050754 external/wpt/webrtc/RTCPeerConnection-remote-track-mute.https.html [ Timeout ]
 crbug.com/1050754 external/wpt/webrtc/RTCPeerConnection-removeTrack.https.html [ Failure Pass ]
 crbug.com/1050754 external/wpt/webrtc/RTCPeerConnection-restartIce-onnegotiationneeded.https.html [ Pass Timeout ]
-crbug.com/1050754 external/wpt/webrtc/RTCPeerConnection-restartIce.https.html [ Failure Pass ]
 crbug.com/1050754 external/wpt/webrtc/RTCPeerConnection-setDescription-transceiver.html [ Failure Pass ]
 crbug.com/1050754 external/wpt/webrtc/RTCPeerConnection-setLocalDescription-answer.html [ Failure Pass ]
 crbug.com/1050754 external/wpt/webrtc/RTCPeerConnection-setLocalDescription-offer.html [ Failure Pass ]

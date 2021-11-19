@@ -139,7 +139,6 @@ crbug.com/1136690 [ Linux ] http/tests/inspector-protocol/service-worker/service
 
 # Sheriff 2021-03-02
 crbug.com/1183788 [ Linux ] external/wpt/pointerevents/pointerevent_fractional_coordinates.html?touch [ Pass Failure ]
-crbug.com/1183788 [ Linux ] external/wpt/webrtc/RTCPeerConnection-restartIce.https.html [ Pass Failure ]
 crbug.com/1183788 [ Linux ] external/wpt/webrtc/RTCRtpTransceiver.https.html [ Pass Failure ]
 
 # Sheriff 2021-05-03
