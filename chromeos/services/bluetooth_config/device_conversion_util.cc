@@ -109,6 +109,7 @@ mojom::BluetoothDevicePropertiesPtr GenerateBluetoothDeviceMojoProperties(
   properties->audio_capability = ComputeAudioOutputCapability(device);
   properties->battery_info = ComputeBatteryInfo(device);
   properties->connection_state = ComputeConnectionState(device);
+  properties->is_blocked_by_policy = device->IsBlockedByPolicy();
   return properties;
 }
 

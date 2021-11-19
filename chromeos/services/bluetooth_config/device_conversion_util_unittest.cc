@@ -35,11 +35,14 @@ class DeviceConversionUtilTest : public testing::Test {
                                       const char* name,
                                       const std::string& address,
                                       bool paired,
-                                      bool connected) {
+                                      bool connected,
+                                      bool is_blocked_by_policy) {
     mock_device_ =
         std::make_unique<testing::NiceMock<device::MockBluetoothDevice>>(
             mock_adapter_.get(), bluetooth_class, name, address, paired,
             connected);
+    mock_device_->SetIsBlockedByPolicy(is_blocked_by_policy);
+
     return mock_device_.get();
   }
 
@@ -49,9 +52,9 @@ class DeviceConversionUtilTest : public testing::Test {
 };
 
 TEST_F(DeviceConversionUtilTest, TestConversion) {
-  device::BluetoothDevice* device =
-      InitDevice(/*bluetooth_class=*/0u, /*name=*/"name", /*address=*/"address",
-                 /*paired=*/true, /*connected=*/true);
+  device::BluetoothDevice* device = InitDevice(
+      /*bluetooth_class=*/0u, /*name=*/"name", /*address=*/"address",
+      /*paired=*/true, /*connected=*/true, /*is_blocked_by_policy=*/true);
   mojom::BluetoothDevicePropertiesPtr properties =
       GenerateBluetoothDeviceMojoProperties(device);
   ASSERT_TRUE(properties);
@@ -63,6 +66,7 @@ TEST_F(DeviceConversionUtilTest, TestConversion) {
   EXPECT_FALSE(properties->battery_info);
   EXPECT_EQ(mojom::DeviceConnectionState::kConnected,
             properties->connection_state);
+  EXPECT_TRUE(properties->is_blocked_by_policy);
 }
 
 }  // namespace bluetooth_config

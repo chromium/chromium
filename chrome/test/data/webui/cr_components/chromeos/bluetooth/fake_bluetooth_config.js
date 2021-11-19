@@ -38,6 +38,7 @@ export function createDefaultBluetoothDevice(
       deviceType: opt_deviceType,
       audioCapability: opt_audioCapability,
       connectionState: connectionState,
+      isBlockedByPolicy: false,
     },
     nickname: opt_nickname,
   };

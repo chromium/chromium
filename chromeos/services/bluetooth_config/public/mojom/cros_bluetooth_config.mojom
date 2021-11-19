@@ -100,6 +100,9 @@ struct BluetoothDeviceProperties {
   DeviceBatteryInfo? battery_info;
 
   DeviceConnectionState connection_state;
+
+  // Indicates if the device is blocked by an admin policy.
+  bool is_blocked_by_policy;
 };
 
 // Properties belonging to a Bluetooth device which has been paired to this

@@ -70,6 +70,9 @@ class DeviceCacheImpl : public DeviceCache,
   void DeviceConnectedStateChanged(device::BluetoothAdapter* adapter,
                                    device::BluetoothDevice* device,
                                    bool is_now_connected) override;
+  void DeviceBlockedByPolicyChanged(device::BluetoothAdapter* adapter,
+                                    device::BluetoothDevice* device,
+                                    bool new_blocked_status) override;
   void DeviceBatteryChanged(device::BluetoothAdapter* adapter,
                             device::BluetoothDevice* device,
                             device::BluetoothDevice::BatteryType type) override;

@@ -127,6 +127,13 @@ void DeviceCacheImpl::DeviceConnectedStateChanged(
   DeviceChanged(adapter, device);
 }
 
+void DeviceCacheImpl::DeviceBlockedByPolicyChanged(
+    device::BluetoothAdapter* adapter,
+    device::BluetoothDevice* device,
+    bool new_blocked_status) {
+  DeviceChanged(adapter, device);
+}
+
 void DeviceCacheImpl::DeviceBatteryChanged(
     device::BluetoothAdapter* adapter,
     device::BluetoothDevice* device,
