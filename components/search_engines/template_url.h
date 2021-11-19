@@ -252,6 +252,10 @@ class TemplateURLRef {
     bool is_prefetch = false;
 
     ContextualSearchParams contextual_search_params;
+
+    // The cache duration to be sent as a query string parameter in the zero
+    // suggest requests, if non-zero.
+    uint32_t zero_suggest_cache_duration_sec = 0;
   };
 
   TemplateURLRef(const TemplateURL* owner, Type type);
@@ -379,18 +383,19 @@ class TemplateURLRef {
   enum ReplacementType {
     ENCODING,
     GOOGLE_ASSISTED_QUERY_STATS,
-    GOOGLE_BASE_URL,
     GOOGLE_BASE_SEARCH_BY_IMAGE_URL,
     GOOGLE_BASE_SUGGEST_URL,
-    GOOGLE_CONTEXTUAL_SEARCH_VERSION,
+    GOOGLE_BASE_URL,
+    GOOGLE_CLIENT_CACHE_TIME_TO_LIVE,
     GOOGLE_CONTEXTUAL_SEARCH_CONTEXT_DATA,
+    GOOGLE_CONTEXTUAL_SEARCH_VERSION,
     GOOGLE_CURRENT_PAGE_URL,
     GOOGLE_CURSOR_POSITION,
     GOOGLE_IMAGE_ORIGINAL_HEIGHT,
     GOOGLE_IMAGE_ORIGINAL_WIDTH,
     GOOGLE_IMAGE_SEARCH_SOURCE,
-    GOOGLE_IMAGE_THUMBNAIL,
     GOOGLE_IMAGE_THUMBNAIL_BASE64,
+    GOOGLE_IMAGE_THUMBNAIL,
     GOOGLE_IMAGE_URL,
     GOOGLE_INPUT_TYPE,
     GOOGLE_IOS_SEARCH_LANGUAGE,

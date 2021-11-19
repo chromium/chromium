@@ -714,6 +714,9 @@ bool TemplateURLRef::ParseParameter(size_t start,
                                         start));
   } else if (parameter == "google:pageClassification") {
     replacements->push_back(Replacement(GOOGLE_PAGE_CLASSIFICATION, start));
+  } else if (parameter == "google:clientCacheTimeToLive") {
+    replacements->push_back(
+        Replacement(GOOGLE_CLIENT_CACHE_TIME_TO_LIVE, start));
   } else if (parameter == "google:pathWildcard") {
     // Do nothing, we just want the path wildcard removed from the URL.
   } else if (parameter == "google:prefetchQuery") {
@@ -1130,6 +1133,17 @@ std::string TemplateURLRef::HandleReplacements(
               "pgcl",
               base::NumberToString(search_terms_args.page_classification), *i,
               &url);
+        }
+        break;
+
+      case GOOGLE_CLIENT_CACHE_TIME_TO_LIVE:
+        if (search_terms_args.search_terms.size() == 0 &&
+            search_terms_args.zero_suggest_cache_duration_sec > 0) {
+          HandleReplacement(
+              "ccttl",
+              base::NumberToString(
+                  search_terms_args.zero_suggest_cache_duration_sec),
+              *i, &url);
         }
         break;
 
