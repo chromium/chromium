@@ -56,6 +56,7 @@ absl::optional<SupportedVideoDecoderConfigs>
 GetPlatformSupportedVideoDecoderConfigs(
     gpu::GpuDriverBugWorkarounds gpu_workarounds,
     gpu::GpuPreferences gpu_preferences,
+    const gpu::GPUInfo& gpu_info,
     base::OnceCallback<SupportedVideoDecoderConfigs()> get_vda_configs) {
   SupportedVideoDecoderConfigs supported_configs;
   if (ShouldUseD3D11VideoDecoder(gpu_workarounds)) {
@@ -74,7 +75,8 @@ std::unique_ptr<AudioDecoder> CreatePlatformAudioDecoder(
 
 VideoDecoderType GetPlatformDecoderImplementationType(
     gpu::GpuDriverBugWorkarounds gpu_workarounds,
-    gpu::GpuPreferences gpu_preferences) {
+    gpu::GpuPreferences gpu_preferences,
+    const gpu::GPUInfo& gpu_info) {
   if (!ShouldUseD3D11VideoDecoder(gpu_workarounds))
     return VideoDecoderType::kVda;
   return VideoDecoderType::kD3D11;

@@ -692,28 +692,6 @@ bool VADisplayState::InitializeOnce() {
 
   if (!InitializeVaDisplay_Locked() || !InitializeVaDriver_Locked())
     return false;
-
-#if BUILDFLAG(USE_VAAPI_X11)
-  if (gl::GetGLImplementation() == gl::kGLImplementationEGLANGLE &&
-      implementation_type_ == VAImplementation::kIntelIHD) {
-    constexpr char libva_driver_impl_env[] = "LIBVA_DRIVER_NAME";
-    // TODO(crbug/1116703) The libva intel-media driver has a known segfault in
-    // vaPutSurface, so until this is fixed, fall back to the i965 driver. There
-    // is discussion of the issue here:
-    // https://github.com/intel/media-driver/issues/818
-    if (!env->HasVar(libva_driver_impl_env))
-      env->SetVar(libva_driver_impl_env, "i965");
-
-    // Re-initialize with the new driver.
-    va_display_ = nullptr;
-    va_initialized_ = false;
-    implementation_type_ = VAImplementation::kInvalid;
-
-    if (!InitializeVaDisplay_Locked() || !InitializeVaDriver_Locked())
-      return false;
-  }
-#endif  // BUILDFLAG(USE_VAAPI_X11)
-
   return true;
 }
 

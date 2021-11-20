@@ -65,6 +65,7 @@ VideoDecoderTraits::VideoDecoderTraits(
     const gfx::ColorSpace* target_color_space,
     gpu::GpuPreferences gpu_preferences,
     gpu::GpuFeatureInfo gpu_feature_info,
+    gpu::GPUInfo gpu_info,
     const gpu::GpuDriverBugWorkarounds* gpu_workarounds,
     gpu::GpuMemoryBufferFactory* gpu_memory_buffer_factory,
     GetConfigCacheCB get_cached_configs_cb,
@@ -77,6 +78,7 @@ VideoDecoderTraits::VideoDecoderTraits(
       target_color_space(target_color_space),
       gpu_preferences(gpu_preferences),
       gpu_feature_info(gpu_feature_info),
+      gpu_info(gpu_info),
       gpu_workarounds(gpu_workarounds),
       gpu_memory_buffer_factory(gpu_memory_buffer_factory),
       get_cached_configs_cb(std::move(get_cached_configs_cb)),
@@ -87,6 +89,7 @@ GpuMojoMediaClient::GpuMojoMediaClient(
     const gpu::GpuPreferences& gpu_preferences,
     const gpu::GpuDriverBugWorkarounds& gpu_workarounds,
     const gpu::GpuFeatureInfo& gpu_feature_info,
+    const gpu::GPUInfo& gpu_info,
     scoped_refptr<base::SingleThreadTaskRunner> gpu_task_runner,
     base::WeakPtr<MediaGpuChannelManager> media_gpu_channel_manager,
     gpu::GpuMemoryBufferFactory* gpu_memory_buffer_factory,
@@ -94,6 +97,7 @@ GpuMojoMediaClient::GpuMojoMediaClient(
     : gpu_preferences_(gpu_preferences),
       gpu_workarounds_(gpu_workarounds),
       gpu_feature_info_(gpu_feature_info),
+      gpu_info_(gpu_info),
       gpu_task_runner_(std::move(gpu_task_runner)),
       media_gpu_channel_manager_(std::move(media_gpu_channel_manager)),
       android_overlay_factory_cb_(std::move(android_overlay_factory_cb)),
@@ -108,14 +112,14 @@ std::unique_ptr<AudioDecoder> GpuMojoMediaClient::CreateAudioDecoder(
 
 VideoDecoderType GpuMojoMediaClient::GetDecoderImplementationType() {
   return GetPlatformDecoderImplementationType(gpu_workarounds_,
-                                              gpu_preferences_);
+                                              gpu_preferences_, gpu_info_);
 }
 
 SupportedVideoDecoderConfigs
 GpuMojoMediaClient::GetSupportedVideoDecoderConfigs() {
   if (!supported_config_cache_)
     supported_config_cache_ = GetPlatformSupportedVideoDecoderConfigs(
-        gpu_workarounds_, gpu_preferences_,
+        gpu_workarounds_, gpu_preferences_, gpu_info_,
         // GetPlatformSupportedVideoDecoderConfigs runs this callback either
         // never or immediately, and will not store it, so |this| will outlive
         // the bound function.
@@ -153,7 +157,8 @@ std::unique_ptr<VideoDecoder> GpuMojoMediaClient::CreateVideoDecoder(
   VideoDecoderTraits traits(
       task_runner, gpu_task_runner_, std::move(log),
       std::move(request_overlay_info_cb), &target_color_space, gpu_preferences_,
-      gpu_feature_info_, &gpu_workarounds_, gpu_memory_buffer_factory_,
+      gpu_feature_info_, gpu_info_, &gpu_workarounds_,
+      gpu_memory_buffer_factory_,
       // CreatePlatformVideoDecoder does not keep a reference to |traits|
       // so this bound method will not outlive |this|
       base::BindRepeating(&GpuMojoMediaClient::GetSupportedVideoDecoderConfigs,

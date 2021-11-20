@@ -5,6 +5,7 @@
 #include "media/mojo/services/gpu_mojo_media_client.h"
 
 #include "media/base/audio_decoder.h"
+#include "media/base/media_switches.h"
 #include "media/gpu/chromeos/mailbox_video_frame_converter.h"
 #include "media/gpu/chromeos/platform_video_frame_pool.h"
 #include "media/gpu/chromeos/video_decoder_pipeline.h"
@@ -18,9 +19,21 @@ namespace media {
 namespace {
 
 bool ShouldUseChromeOSDirectVideoDecoder(
-    const gpu::GpuPreferences& gpu_preferences) {
+    const gpu::GpuPreferences& gpu_preferences,
+    const gpu::GPUInfo& gpu_info) {
 #if defined(OS_CHROMEOS)
   return gpu_preferences.enable_chromeos_direct_video_decoder;
+#elif BUILDFLAG(ENABLE_VULKAN)
+  if (!base::FeatureList::IsEnabled(kVaapiVideoDecodeLinux))
+    return false;
+  for (const auto& device : gpu_info.vulkan_info->physical_devices) {
+    if (device.properties.driverVersion < VK_MAKE_VERSION(21, 1, 5))
+      return false;
+  }
+  // CL note: Should this be a "return true if any device is >21.1.5" or
+  //                           "return false if any device is <21.1.5".
+  // It's the later right now, but I'm not sure that's right.
+  return true;
 #else
   return false;
 #endif
@@ -30,7 +43,8 @@ bool ShouldUseChromeOSDirectVideoDecoder(
 
 std::unique_ptr<VideoDecoder> CreatePlatformVideoDecoder(
     const VideoDecoderTraits& traits) {
-  if (ShouldUseChromeOSDirectVideoDecoder(traits.gpu_preferences)) {
+  if (ShouldUseChromeOSDirectVideoDecoder(traits.gpu_preferences,
+                                          traits.gpu_info)) {
     auto frame_pool = std::make_unique<PlatformVideoFramePool>(
         traits.gpu_memory_buffer_factory);
     auto frame_converter = MailboxVideoFrameConverter::Create(
@@ -51,20 +65,20 @@ absl::optional<SupportedVideoDecoderConfigs>
 GetPlatformSupportedVideoDecoderConfigs(
     gpu::GpuDriverBugWorkarounds gpu_workarounds,
     gpu::GpuPreferences gpu_preferences,
+    const gpu::GPUInfo& gpu_info,
     base::OnceCallback<SupportedVideoDecoderConfigs()> get_vda_configs) {
   SupportedVideoDecoderConfigs supported_configs;
-  if (ShouldUseChromeOSDirectVideoDecoder(gpu_preferences)) {
+  if (ShouldUseChromeOSDirectVideoDecoder(gpu_preferences, gpu_info))
     return VideoDecoderPipeline::GetSupportedConfigs(gpu_workarounds);
-  }
   return std::move(get_vda_configs).Run();
 }
 
 VideoDecoderType GetPlatformDecoderImplementationType(
     gpu::GpuDriverBugWorkarounds gpu_workarounds,
-    gpu::GpuPreferences gpu_preferences) {
-  if (ShouldUseChromeOSDirectVideoDecoder(gpu_preferences)) {
+    gpu::GpuPreferences gpu_preferences,
+    const gpu::GPUInfo& gpu_info) {
+  if (ShouldUseChromeOSDirectVideoDecoder(gpu_preferences, gpu_info))
     return VideoDecoderType::kVaapi;
-  }
   return VideoDecoderType::kVda;
 }
 
