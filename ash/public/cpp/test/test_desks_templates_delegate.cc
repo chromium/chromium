@@ -4,7 +4,6 @@
 
 #include "ash/public/cpp/test/test_desks_templates_delegate.h"
 
-#include "ash/constants/app_types.h"
 #include "ash/public/cpp/desk_template.h"
 #include "components/app_restore/app_launch_info.h"
 #include "ui/aura/client/aura_constants.h"
@@ -49,16 +48,7 @@ void TestDesksTemplatesDelegate::LaunchAppsFromTemplate(
 
 bool TestDesksTemplatesDelegate::IsWindowSupportedForDeskTemplate(
     aura::Window* window) const {
-  const ash::AppType app_type =
-      static_cast<ash::AppType>(window->GetProperty(aura::client::kAppType));
-  switch (app_type) {
-    case AppType::CROSTINI_APP:
-    case AppType::LACROS:
-      return false;
-    default:
-      break;
-  }
-  return true;
+  return DeskTemplate::IsAppTypeSupported(window);
 }
 
 }  // namespace ash

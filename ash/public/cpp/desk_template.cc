@@ -4,7 +4,11 @@
 
 #include "ash/public/cpp/desk_template.h"
 
+#include "ash/constants/app_types.h"
+#include "ash/constants/ash_features.h"
 #include "base/strings/utf_string_conversions.h"
+#include "ui/aura/client/aura_constants.h"
+#include "ui/aura/window.h"
 
 namespace ash {
 
@@ -18,6 +22,30 @@ DeskTemplate::DeskTemplate(const std::string& uuid,
       template_name_(base::UTF8ToUTF16(name)) {}
 
 DeskTemplate::~DeskTemplate() = default;
+
+// static
+bool DeskTemplate::IsAppTypeSupported(aura::Window* window) {
+  // For now we'll crostini and lacros windows in desk template. We'll also
+  // ignore ARC apps unless the flag is turned on.
+  const AppType app_type =
+      static_cast<AppType>(window->GetProperty(aura::client::kAppType));
+  switch (app_type) {
+    case AppType::NON_APP:
+    case AppType::CROSTINI_APP:
+    case AppType::LACROS:
+      return false;
+    case AppType::ARC_APP:
+      if (!features::AreDesksTemplatesEnabled())
+        return false;
+      break;
+    case AppType::BROWSER:
+    case AppType::CHROME_APP:
+    case AppType::SYSTEM_APP:
+      break;
+  }
+
+  return true;
+}
 
 DeskTemplate::DeskTemplate()
     : uuid_(base::GUID::GenerateRandomV4()),

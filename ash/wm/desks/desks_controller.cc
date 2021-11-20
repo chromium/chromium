@@ -55,6 +55,7 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "components/app_restore/app_launch_info.h"
+#include "components/app_restore/full_restore_utils.h"
 #include "components/app_restore/restore_data.h"
 #include "components/app_restore/window_info.h"
 #include "components/app_restore/window_properties.h"
@@ -891,6 +892,12 @@ void DesksController::CaptureActiveDeskAsTemplate(
       continue;
     }
 
+    // Exclude window that does not asscociate with a full restore app id,
+    // silently omitting them.
+    const std::string app_id = full_restore::GetAppId(window);
+    if (app_id.empty())
+      continue;
+
     std::unique_ptr<app_restore::AppLaunchInfo> app_launch_info =
         delegate->GetAppLaunchDataForDeskTemplate(window);
     if (!app_launch_info)
@@ -898,7 +905,6 @@ void DesksController::CaptureActiveDeskAsTemplate(
 
     // We need to copy |app_launch_info->app_id| to |app_id| as the below
     // function AddAppLaunchInfo() will destroy |app_launch_info|.
-    const std::string app_id = app_launch_info->app_id;
     const int32_t window_id = window->GetProperty(app_restore::kWindowIdKey);
     restore_data->AddAppLaunchInfo(std::move(app_launch_info));
 

@@ -42,6 +42,7 @@
 #include "base/time/time.h"
 #include "components/app_restore/app_launch_info.h"
 #include "components/app_restore/window_info.h"
+#include "components/app_restore/window_properties.h"
 #include "components/prefs/pref_service.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
@@ -463,7 +464,7 @@ TEST_F(DesksTemplatesTest, HideOverviewItemsOnTemplateGridShow) {
 
   AddEntry(base::GUID::GenerateRandomV4(), "template_1", base::Time::Now());
 
-  auto test_window = CreateTestWindow();
+  auto test_window = CreateAppWindow();
 
   // Start overview mode. The window is visible in the overview mode.
   ToggleOverview();
@@ -487,7 +488,7 @@ TEST_F(DesksTemplatesTest, OverviewItemsStayHiddenInTemplateGridOnDeskClose) {
 
   // Create a test window in the current desk.
   DesksController* desks_controller = DesksController::Get();
-  auto test_window_1 = CreateTestWindow();
+  auto test_window_1 = CreateAppWindow();
   ASSERT_EQ(0, desks_controller->GetActiveDeskIndex());
   EXPECT_EQ(1ul, desks_controller->active_desk()->windows().size());
 
@@ -495,7 +496,7 @@ TEST_F(DesksTemplatesTest, OverviewItemsStayHiddenInTemplateGridOnDeskClose) {
   desks_controller->NewDesk(DesksCreationRemovalSource::kKeyboard);
   Desk* desk = desks_controller->desks().back().get();
   ActivateDesk(desk);
-  auto test_window_2 = CreateTestWindow();
+  auto test_window_2 = CreateAppWindow();
   // Check that the active desk is the second desk, and that it contains one
   // window.
   ASSERT_EQ(1, desks_controller->GetActiveDeskIndex());
@@ -639,7 +640,7 @@ TEST_F(DesksTemplatesTest, DeleteTemplate) {
   AddEntry(uuid_2, "template_2", base::Time::Now() + base::Hours(13));
 
   // This window should be hidden whenever the desk templates grid is open.
-  auto test_window = CreateTestWindow();
+  auto test_window = CreateAppWindow();
 
   OpenOverviewAndShowTemplatesGrid();
 
@@ -677,7 +678,7 @@ TEST_F(DesksTemplatesTest, DeleteTemplate) {
 // number of templates has been reached.
 TEST_F(DesksTemplatesTest, SaveDeskAsTemplateButtonDisabled) {
   // Create a test window in the current desk.
-  auto test_window = CreateTestWindow();
+  auto test_window = CreateAppWindow();
 
   aura::Window* root = Shell::GetPrimaryRootWindow();
   // Open overview and save a template.
@@ -706,7 +707,7 @@ TEST_F(DesksTemplatesTest, SaveDeskAsTemplateButtonDisabled) {
 // grid.
 TEST_F(DesksTemplatesTest, SaveDeskAsTemplateButtonShowsDesksTemplatesGrid) {
   // There are no saved template entries and one test window initially.
-  auto test_window = CreateTestWindow();
+  auto test_window = CreateAppWindow();
   ToggleOverview();
   WaitForUI();
 
@@ -732,7 +733,7 @@ TEST_F(DesksTemplatesTest, LaunchTemplate) {
   DesksController* desks_controller = DesksController::Get();
   ASSERT_EQ(0, desks_controller->GetActiveDeskIndex());
 
-  auto test_window = CreateTestWindow();
+  auto test_window = CreateAppWindow();
 
   // Capture the current desk and open the templates grid.
   OpenOverviewAndSaveTemplate(Shell::Get()->GetPrimaryRootWindow());
@@ -959,7 +960,7 @@ TEST_F(DesksTemplatesTest, EnteringInTabletMode) {
 
   // Create a window and add a test entry. Otherwise the templates UI wouldn't
   // show up in clamshell mode either.
-  auto test_window_1 = CreateTestWindow();
+  auto test_window_1 = CreateAppWindow();
   AddEntry(base::GUID::GenerateRandomV4(), "template", base::Time::Now());
 
   Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
@@ -983,7 +984,7 @@ TEST_F(DesksTemplatesTest, EnteringInTabletMode) {
 TEST_F(DesksTemplatesTest, ClamshellToTabletMode) {
   // Create a window and add a test entry. Otherwise the templates UI wouldn't
   // show up.
-  auto test_window_1 = CreateTestWindow();
+  auto test_window_1 = CreateAppWindow();
   AddEntry(base::GUID::GenerateRandomV4(), "template", base::Time::Now());
 
   // Test that on entering overview, the zero state desks templates button and
@@ -1014,7 +1015,7 @@ TEST_F(DesksTemplatesTest, ClamshellToTabletMode) {
 TEST_F(DesksTemplatesTest, ShowingTemplatesGridToTabletMode) {
   // Create a window and add a test entry. Otherwise the templates UI wouldn't
   // show up.
-  auto test_window_1 = CreateTestWindow();
+  auto test_window_1 = CreateAppWindow();
   AddEntry(base::GUID::GenerateRandomV4(), "template", base::Time::Now());
 
   OpenOverviewAndShowTemplatesGrid();
@@ -1036,7 +1037,7 @@ TEST_F(DesksTemplatesTest, ShowingTemplatesGridToTabletMode) {
 }
 
 TEST_F(DesksTemplatesTest, OverviewTabbing) {
-  auto test_window = CreateTestWindow();
+  auto test_window = CreateAppWindow();
   AddEntry(base::GUID::GenerateRandomV4(), "template1", base::Time::Now());
   AddEntry(base::GUID::GenerateRandomV4(), "template2", base::Time::Now());
 
@@ -1097,12 +1098,12 @@ TEST_F(DesksTemplatesTest, DesksBarReturnsToZeroState) {
 // an active desk with unsupported apps.
 TEST_F(DesksTemplatesTest, UnsupportedAppsDialog) {
   // Create a crostini window.
-  auto crostini_window = CreateTestWindow();
+  auto crostini_window = CreateAppWindow();
   crostini_window->SetProperty(aura::client::kAppType,
                                static_cast<int>(AppType::CROSTINI_APP));
 
   // Create a normal window.
-  auto test_window = CreateTestWindow();
+  auto test_window = CreateAppWindow();
 
   // Open overview and click on the save template button. The unsupported apps
   // dialog should show up.
@@ -1146,7 +1147,7 @@ TEST_F(DesksTemplatesTest, UnsupportedAppsDialog) {
 
 // Tests the mouse and touch hover behavior on the template item view.
 TEST_F(DesksTemplatesTest, HoverOnTemplateItemView) {
-  auto test_window = CreateTestWindow();
+  auto test_window = CreateAppWindow();
   AddEntry(base::GUID::GenerateRandomV4(), "template1", base::Time::Now());
   AddEntry(base::GUID::GenerateRandomV4(), "template2", base::Time::Now());
 
@@ -1193,6 +1194,26 @@ TEST_F(DesksTemplatesTest, HoverOnTemplateItemView) {
   event_generator->MoveMouseTo(first_item->GetBoundsInScreen().CenterPoint());
   EXPECT_TRUE(hover_container_view1->GetVisible());
   EXPECT_FALSE(hover_container_view2->GetVisible());
+}
+
+// Tests that when a supported app doesn't have any app launch info and a
+// template is saved, the unsupported apps dialog isn't shown. See
+// crbug.com/1269466.
+TEST_F(DesksTemplatesTest, DialogDoesntShowForSupportedAppsWithoutLaunchInfo) {
+  constexpr int kInvalidWindowKey = -10000;
+
+  // Create a normal window.
+  auto test_window = CreateAppWindow();
+
+  // Set its `app_restore::kWindowIdKey` to an untracked window id. This
+  // simulates a supported window not having a corresponding app launch info.
+  test_window->SetProperty(app_restore::kWindowIdKey, kInvalidWindowKey);
+
+  // Open overview and click on the save template button. The unsupported apps
+  // dialog should not show up and an entry should be saved.
+  OpenOverviewAndSaveTemplate(Shell::Get()->GetPrimaryRootWindow());
+  EXPECT_FALSE(Shell::IsSystemModalWindowOpen());
+  ASSERT_EQ(1ul, GetAllEntries().size());
 }
 
 }  // namespace ash
