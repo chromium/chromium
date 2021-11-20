@@ -94,6 +94,13 @@ void ScreenDetails::UpdateScreenInfos(LocalDOMWindow* window,
     }
   }
 
+  // screens is sorted by dimensions, x first and then y.
+  base::ranges::stable_sort(screens_, [](ScreenDetailed* a, ScreenDetailed* b) {
+    if (a->left() != b->left())
+      return a->left() < b->left();
+    return a->top() < b->top();
+  });
+
   // Update current_display_id_ so that currentScreen() is up to date
   // before we send out any events.
   current_display_id_ = new_infos.current_display_id;
