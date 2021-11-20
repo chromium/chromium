@@ -151,6 +151,7 @@ generate_grd("build_grd") {
     "os_settings_v3.html",
     "images/computer_and_bluetooth_switch.svg",
     "images/error_badge.svg",
+    "images/error_badge_dark.svg",
     "images/icon_add_circle.svg",
     "images/icon_add_wifi.svg",
     "images/icon_pair_bluetooth.svg",
