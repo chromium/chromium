@@ -391,6 +391,13 @@ export class PrintPreviewDestinationDialogCrosElement extends
   }
 }
 
+declare global {
+  interface HTMLElementTagNameMap {
+    'print-preview-destination-dialog-cros':
+        PrintPreviewDestinationDialogCrosElement;
+  }
+}
+
 customElements.define(
     PrintPreviewDestinationDialogCrosElement.is,
     PrintPreviewDestinationDialogCrosElement);

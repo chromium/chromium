@@ -245,6 +245,12 @@ export class PrintPreviewDestinationDialogElement extends
   }
 }
 
+declare global {
+  interface HTMLElementTagNameMap {
+    'print-preview-destination-dialog': PrintPreviewDestinationDialogElement;
+  }
+}
+
 customElements.define(
     PrintPreviewDestinationDialogElement.is,
     PrintPreviewDestinationDialogElement);

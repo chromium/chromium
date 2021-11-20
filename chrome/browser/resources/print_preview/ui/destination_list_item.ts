@@ -264,6 +264,13 @@ export class PrintPreviewDestinationListItemElement extends
   // </if>
 }
 
+declare global {
+  interface HTMLElementTagNameMap {
+    'print-preview-destination-list-item':
+        PrintPreviewDestinationListItemElement;
+  }
+}
+
 customElements.define(
     PrintPreviewDestinationListItemElement.is,
     PrintPreviewDestinationListItemElement);

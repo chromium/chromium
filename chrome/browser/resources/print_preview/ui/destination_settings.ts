@@ -618,6 +618,13 @@ export class PrintPreviewDestinationSettingsElement extends
   // </if>
 }
 
+declare global {
+  interface HTMLElementTagNameMap {
+    'print-preview-destination-settings':
+        PrintPreviewDestinationSettingsElement;
+  }
+}
+
 customElements.define(
     PrintPreviewDestinationSettingsElement.is,
     PrintPreviewDestinationSettingsElement);

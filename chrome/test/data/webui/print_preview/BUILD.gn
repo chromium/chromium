@@ -36,10 +36,6 @@ non_preprocessed_tests = [
   "cloud_print_interface_stub.ts",
   "copies_settings_test.ts",
   "custom_margins_test.ts",
-  "destination_dialog_cros_interactive_test.js",
-  "destination_dialog_cros_test.js",
-  "destination_dialog_interactive_test.js",
-  "destination_dialog_test.js",
   "destination_item_test.js",
   "destination_list_test.js",
   "destination_search_test.js",
@@ -76,6 +72,8 @@ non_preprocessed_tests = [
 
 if (is_chromeos) {
   non_preprocessed_tests += [
+    "destination_dialog_cros_interactive_test.ts",
+    "destination_dialog_cros_test.ts",
     "destination_dropdown_cros_test.js",
     "destination_item_test_cros.js",
     "destination_search_test_chromeos.js",
@@ -84,6 +82,11 @@ if (is_chromeos) {
     "native_layer_cros_stub.ts",
     "pin_settings_test.js",
     "print_server_store_test.js",
+  ]
+} else {
+  non_preprocessed_tests += [
+    "destination_dialog_interactive_test.ts",
+    "destination_dialog_test.ts",
   ]
 }
 

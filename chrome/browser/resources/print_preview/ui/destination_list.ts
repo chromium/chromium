@@ -184,5 +184,11 @@ export class PrintPreviewDestinationListElement extends
   }
 }
 
+declare global {
+  interface HTMLElementTagNameMap {
+    'print-preview-destination-list': PrintPreviewDestinationListElement;
+  }
+}
+
 customElements.define(
     PrintPreviewDestinationListElement.is, PrintPreviewDestinationListElement);

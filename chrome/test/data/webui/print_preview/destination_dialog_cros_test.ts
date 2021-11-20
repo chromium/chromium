@@ -2,10 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {Destination, DestinationConnectionStatus, DestinationOrigin, DestinationStore, DestinationStoreEventType, DestinationType, GooglePromotedDestinationId, makeRecentDestination, NativeLayerImpl, PrintPreviewDestinationDialogCrosElement, PrintPreviewSearchBoxElement} from 'chrome://print/print_preview.js';
+import {Destination, DestinationStore, DestinationStoreEventType, GooglePromotedDestinationId, LocalDestinationInfo, makeRecentDestination, NativeLayerImpl, PrintPreviewDestinationDialogCrosElement, PrintPreviewDestinationListItemElement, RecentDestination} from 'chrome://print/print_preview.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
-import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {keyEventOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -17,49 +16,41 @@ import {NativeLayerCrosStub, setNativeLayerCrosInstance} from './native_layer_cr
 import {NativeLayerStub} from './native_layer_stub.js';
 import {createDestinationStore, getCloudDestination, getDestinations, setupTestListenerElement} from './print_preview_test_utils.js';
 
-window.destination_dialog_cros_test = {};
-const destination_dialog_cros_test = window.destination_dialog_cros_test;
-destination_dialog_cros_test.suiteName = 'DestinationDialogCrosTest';
-/** @enum {string} */
-destination_dialog_cros_test.TestNames = {
-  PrinterList: 'PrinterList',
-  ShowProvisionalDialog: 'ShowProvisionalDialog',
-  UserAccounts: 'UserAccounts',
-  PrintServersChanged: 'PrintServersChanged',
-  PrintServerSelected: 'PrintServerSelected',
+const destination_dialog_cros_test = {
+  suiteName: 'DestinationDialogCrosTest',
+  TestNames: {
+    PrinterList: 'PrinterList',
+    ShowProvisionalDialog: 'ShowProvisionalDialog',
+    UserAccounts: 'UserAccounts',
+    PrintServersChanged: 'PrintServersChanged',
+    PrintServerSelected: 'PrintServerSelected',
+  },
 };
 
+Object.assign(
+    window, {destination_dialog_cros_test: destination_dialog_cros_test});
+
 suite(destination_dialog_cros_test.suiteName, function() {
-  /** @type {!PrintPreviewDestinationDialogCrosElement} */
-  let dialog;
+  let dialog: PrintPreviewDestinationDialogCrosElement;
 
-  /** @type {!DestinationStore} */
-  let destinationStore;
+  let destinationStore: DestinationStore;
 
-  /** @type {!NativeLayerStub} */
-  let nativeLayer;
+  let nativeLayer: NativeLayerStub;
 
-  /** @type {!NativeLayerCrosStub} */
-  let nativeLayerCros;
+  let nativeLayerCros: NativeLayerCrosStub;
 
-  /** @type {!CloudPrintInterfaceStub} */
-  let cloudPrintInterface;
+  let cloudPrintInterface: CloudPrintInterfaceStub;
 
-  /** @type {!Array<!Destination>} */
-  let destinations = [];
+  let destinations: Destination[] = [];
 
-  /** @type {!Array<!LocalDestinationInfo>} */
-  const localDestinations = [];
+  const localDestinations: LocalDestinationInfo[] = [];
 
-  /** @type {!Array<!RecentDestination>} */
-  let recentDestinations = [];
+  let recentDestinations: RecentDestination[] = [];
 
-  /** @override */
   suiteSetup(function() {
     setupTestListenerElement();
   });
 
-  /** @override */
   setup(function() {
     // Create data classes
     nativeLayer = new NativeLayerStub();
@@ -69,7 +60,7 @@ suite(destination_dialog_cros_test.suiteName, function() {
     destinationStore = createDestinationStore();
     destinationStore.setCloudPrintInterface(cloudPrintInterface);
     destinations = getDestinations(localDestinations);
-    recentDestinations = [makeRecentDestination(destinations[4])];
+    recentDestinations = [makeRecentDestination(destinations[4]!)];
     nativeLayer.setLocalDestinations(localDestinations);
     destinationStore.init(
         false /* pdfPrinterDisabled */, true /* isDriveMounted */,
@@ -78,8 +69,7 @@ suite(destination_dialog_cros_test.suiteName, function() {
         recentDestinations /* recentDestinations */);
 
     // Set up dialog
-    dialog = /** @type {!PrintPreviewDestinationDialogCrosElement} */ (
-        document.createElement('print-preview-destination-dialog-cros'));
+    dialog = document.createElement('print-preview-destination-dialog-cros');
     dialog.activeUser = '';
     dialog.users = [];
     dialog.destinationStore = destinationStore;
@@ -102,28 +92,29 @@ suite(destination_dialog_cros_test.suiteName, function() {
   test(assert(destination_dialog_cros_test.TestNames.PrinterList), async () => {
     await finishSetup();
     const list =
-        dialog.shadowRoot.querySelector('print-preview-destination-list');
+        dialog.shadowRoot!.querySelector('print-preview-destination-list')!;
 
-    const printerItems =
-        list.shadowRoot.querySelectorAll('print-preview-destination-list-item');
+    const printerItems = list.shadowRoot!.querySelectorAll(
+        'print-preview-destination-list-item');
 
-    const getDisplayedName = item =>
-        item.shadowRoot.querySelector('.name').textContent;
+    const getDisplayedName = (item: PrintPreviewDestinationListItemElement) =>
+        item.shadowRoot!.querySelector('.name')!.textContent;
     // 5 printers + Save as PDF
     assertEquals(6, printerItems.length);
     // Save as PDF shows up first.
     assertEquals(
         GooglePromotedDestinationId.SAVE_AS_PDF,
-        getDisplayedName(printerItems[0]));
+        getDisplayedName(printerItems[0]!));
     assertEquals(
         'rgb(32, 33, 36)',
         window
-            .getComputedStyle(printerItems[0].shadowRoot.querySelector('.name'))
+            .getComputedStyle(
+                printerItems[0]!.shadowRoot!.querySelector('.name')!)
             .color);
     Array.from(printerItems).slice(1, 5).forEach((item, index) => {
-      assertEquals(destinations[index].displayName, getDisplayedName(item));
+      assertEquals(destinations[index]!.displayName, getDisplayedName(item));
     });
-    assertEquals('FooName', getDisplayedName(printerItems[5]));
+    assertEquals('FooName', getDisplayedName(printerItems[5]!));
   });
 
   // Test that clicking a provisional destination shows the provisional
@@ -132,7 +123,6 @@ suite(destination_dialog_cros_test.suiteName, function() {
   test(
       assert(destination_dialog_cros_test.TestNames.ShowProvisionalDialog),
       async () => {
-        let provisionalDialog = null;
         const provisionalDestination = {
           extensionId: 'ABC123',
           extensionName: 'ABC Printing',
@@ -146,12 +136,12 @@ suite(destination_dialog_cros_test.suiteName, function() {
         nativeLayer.setExtensionDestinations([provisionalDestination]);
         await finishSetup();
         flush();
-        provisionalDialog = dialog.shadowRoot.querySelector(
-            'print-preview-provisional-destination-resolver');
-        assertFalse(provisionalDialog.shadowRoot.querySelector('#dialog').open);
+        const provisionalDialog = dialog.shadowRoot!.querySelector(
+            'print-preview-provisional-destination-resolver')!;
+        assertFalse(provisionalDialog.$.dialog.open);
         const list =
-            dialog.shadowRoot.querySelector('print-preview-destination-list');
-        const printerItems = list.shadowRoot.querySelectorAll(
+            dialog.shadowRoot!.querySelector('print-preview-destination-list')!;
+        const printerItems = list.shadowRoot!.querySelectorAll(
             'print-preview-destination-list-item');
 
         // Should have 5 local destinations, Save as PDF + extension
@@ -162,9 +152,9 @@ suite(destination_dialog_cros_test.suiteName, function() {
         });
 
         // Click the provisional destination to select it.
-        provisionalItem.click();
+        provisionalItem!.click();
         flush();
-        assertTrue(provisionalDialog.shadowRoot.querySelector('#dialog').open);
+        assertTrue(provisionalDialog.$.dialog.open);
 
         // Send escape key on provisionalDialog. Destinations dialog should
         // not close.
@@ -173,33 +163,36 @@ suite(destination_dialog_cros_test.suiteName, function() {
         flush();
         await whenClosed;
 
-        assertFalse(provisionalDialog.shadowRoot.querySelector('#dialog').open);
-        assertTrue(dialog.shadowRoot.querySelector('#dialog').open);
+        assertFalse(provisionalDialog.$.dialog.open);
+        assertTrue(dialog.$.dialog.open);
       });
 
   /**
-   * @param {string} account The current active user account.
-   * @param {number} numUsers The total number of users that are signed in.
+   * @param account The current active user account.
+   * @param numUsers The total number of users that are signed in.
    */
-  function assertSignedInState(account, numUsers) {
+  function assertSignedInState(account: string, numUsers: number) {
     const signedIn = account !== '';
     assertEquals(
-        !signedIn, dialog.shadowRoot.querySelector('.user-info').hidden);
+        !signedIn,
+        dialog.shadowRoot!.querySelector<HTMLElement>('.user-info')!.hidden);
 
     if (numUsers > 0) {
-      const userSelect = dialog.shadowRoot.querySelector('.md-select');
-      const userSelectOptions = userSelect.querySelectorAll('option');
+      const userSelect =
+          dialog.shadowRoot!.querySelector<HTMLSelectElement>('.md-select')!;
+      const userSelectOptions =
+          userSelect.querySelectorAll<HTMLOptionElement>('option');
       assertEquals(numUsers + 1, userSelectOptions.length);
-      assertEquals('', userSelectOptions[numUsers].value);
+      assertEquals('', userSelectOptions[numUsers]!.value);
       assertEquals(account, userSelect.value);
     }
   }
 
-  /** @param {number} numPrinters The total number of available printers. */
-  function assertNumPrintersVisible(numPrinters) {
+  /** @param numPrinters The total number of available printers. */
+  function assertNumPrintersVisible(numPrinters: number) {
     const list =
-        dialog.shadowRoot.querySelector('print-preview-destination-list');
-    const printerItems = list.shadowRoot.querySelectorAll(
+        dialog.shadowRoot!.querySelector('print-preview-destination-list')!;
+    const printerItems = list.shadowRoot!.querySelectorAll(
         'print-preview-destination-list-item:not([hidden])');
     assertEquals(numPrinters, printerItems.length);
   }
@@ -219,13 +212,14 @@ suite(destination_dialog_cros_test.suiteName, function() {
             user2);
         cloudPrintInterface.setPrinter(driveDestination1);
         cloudPrintInterface.setPrinter(driveDestination2);
-        let userSelect = null;
 
         await finishSetup();
         // Check that the user dropdown is hidden when there are no active
         // users.
-        assertTrue(dialog.shadowRoot.querySelector('.user-info').hidden);
-        userSelect = dialog.shadowRoot.querySelector('.md-select');
+        assertTrue(dialog.shadowRoot!.querySelector<HTMLElement>(
+                                         '.user-info')!.hidden);
+        const userSelect =
+            dialog.shadowRoot!.querySelector<HTMLSelectElement>('.md-select')!;
 
         // Enable cloud print.
         assertSignedInState('', 0);
@@ -317,14 +311,17 @@ suite(destination_dialog_cros_test.suiteName, function() {
         });
         await waitAfterNextRender(dialog);
 
-        assertFalse(
-            dialog.shadowRoot.querySelector('.server-search-box-input').hidden);
+        assertFalse(dialog.shadowRoot!
+                        .querySelector<HTMLElement>(
+                            '.server-search-box-input')!.hidden);
         const serverSelector =
-            dialog.shadowRoot.querySelector('.server-search-box-input');
+            dialog.shadowRoot!.querySelector('.server-search-box-input')!;
         const serverSelections =
-            serverSelector.shadowRoot.querySelectorAll('.list-item');
-        assertEquals('Print Server 1', serverSelections[0].textContent.trim());
-        assertEquals('Print Server 2', serverSelections[1].textContent.trim());
+            serverSelector.shadowRoot!.querySelectorAll('.list-item');
+        assertEquals(
+            'Print Server 1', serverSelections[0]!.textContent!.trim());
+        assertEquals(
+            'Print Server 2', serverSelections[1]!.textContent!.trim());
       });
 
   // Tests that choosePrintServers is called when the print server searchable
@@ -349,7 +346,7 @@ suite(destination_dialog_cros_test.suiteName, function() {
 
         const pendingPrintServerId =
             nativeLayerCros.whenCalled('choosePrintServers');
-        dialog.shadowRoot.querySelector('cr-searchable-drop-down').value =
+        dialog.shadowRoot!.querySelector('cr-searchable-drop-down')!.value =
             'Print Server 2';
         await waitAfterNextRender(dialog);
 

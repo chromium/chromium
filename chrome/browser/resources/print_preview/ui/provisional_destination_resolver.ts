@@ -188,6 +188,13 @@ export class PrintPreviewProvisionalDestinationResolverElement extends
   }
 }
 
+declare global {
+  interface HTMLElementTagNameMap {
+    'print-preview-provisional-destination-resolver':
+        PrintPreviewProvisionalDestinationResolverElement;
+  }
+}
+
 customElements.define(
     PrintPreviewProvisionalDestinationResolverElement.is,
     PrintPreviewProvisionalDestinationResolverElement);

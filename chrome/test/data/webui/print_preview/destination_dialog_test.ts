@@ -2,57 +2,47 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {Destination, DestinationConnectionStatus, DestinationOrigin, DestinationStore, DestinationStoreEventType, DestinationType, GooglePromotedDestinationId, makeRecentDestination, NativeLayerImpl, PrintPreviewDestinationDialogElement} from 'chrome://print/print_preview.js';
+import {Destination, DestinationStore, DestinationStoreEventType, GooglePromotedDestinationId, LocalDestinationInfo, makeRecentDestination, NativeLayerImpl, PrintPreviewDestinationDialogElement, PrintPreviewDestinationListItemElement, RecentDestination} from 'chrome://print/print_preview.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
-import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-import {keyEventOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
 import {CloudPrintInterfaceStub} from './cloud_print_interface_stub.js';
 import {NativeLayerStub} from './native_layer_stub.js';
 import {createDestinationStore, getDestinations, getGoogleDriveDestination, setupTestListenerElement} from './print_preview_test_utils.js';
 
-window.destination_dialog_test = {};
-const destination_dialog_test = window.destination_dialog_test;
-destination_dialog_test.suiteName = 'DestinationDialogTest';
-/** @enum {string} */
-destination_dialog_test.TestNames = {
-  PrinterList: 'PrinterList',
-  ShowProvisionalDialog: 'ShowProvisionalDialog',
-  UserAccounts: 'UserAccounts',
+const destination_dialog_test = {
+  suiteName: 'DestinationDialogTest',
+  TestNames: {
+    PrinterList: 'PrinterList',
+    ShowProvisionalDialog: 'ShowProvisionalDialog',
+    UserAccounts: 'UserAccounts',
+  },
 };
 
+Object.assign(window, {destination_dialog_test: destination_dialog_test});
+
 suite(destination_dialog_test.suiteName, function() {
-  /** @type {!PrintPreviewDestinationDialogElement} */
-  let dialog;
+  let dialog: PrintPreviewDestinationDialogElement;
 
-  /** @type {!DestinationStore} */
-  let destinationStore;
+  let destinationStore: DestinationStore;
 
-  /** @type {!NativeLayerStub} */
-  let nativeLayer;
+  let nativeLayer: NativeLayerStub;
 
-  /** @type {!CloudPrintInterfaceStub} */
-  let cloudPrintInterface;
+  let cloudPrintInterface: CloudPrintInterfaceStub;
 
-  /** @type {!Array<!Destination>} */
-  let destinations = [];
+  let destinations: Destination[] = [];
 
-  /** @type {!Array<!LocalDestinationInfo>} */
-  const localDestinations = [];
+  const localDestinations: LocalDestinationInfo[] = [];
 
-  /** @type {!Array<!RecentDestination>} */
-  let recentDestinations = [];
+  let recentDestinations: RecentDestination[] = [];
 
-  /** @override */
   suiteSetup(function() {
     setupTestListenerElement();
   });
 
-  /** @override */
   setup(function() {
     // Create data classes
     nativeLayer = new NativeLayerStub();
@@ -61,7 +51,7 @@ suite(destination_dialog_test.suiteName, function() {
     destinationStore = createDestinationStore();
     destinationStore.setCloudPrintInterface(cloudPrintInterface);
     destinations = getDestinations(localDestinations);
-    recentDestinations = [makeRecentDestination(destinations[4])];
+    recentDestinations = [makeRecentDestination(destinations[4]!)];
     nativeLayer.setLocalDestinations(localDestinations);
     destinationStore.init(
         false /* pdfPrinterDisabled */, true /* isDriveMounted */,
@@ -70,14 +60,13 @@ suite(destination_dialog_test.suiteName, function() {
         recentDestinations /* recentDestinations */);
 
     // Set up dialog
-    dialog = /** @type {!PrintPreviewDestinationDialogElement} */ (
-        document.createElement('print-preview-destination-dialog'));
+    dialog = document.createElement('print-preview-destination-dialog');
     dialog.activeUser = '';
     dialog.users = [];
     dialog.destinationStore = destinationStore;
   });
 
-  function finishSetup() {
+  function finishSetup(): Promise<void> {
     document.body.appendChild(dialog);
     return nativeLayer.whenCalled('getPrinterCapabilities')
         .then(function() {
@@ -94,108 +83,64 @@ suite(destination_dialog_test.suiteName, function() {
   test(assert(destination_dialog_test.TestNames.PrinterList), async () => {
     await finishSetup();
     const list =
-        dialog.shadowRoot.querySelector('print-preview-destination-list');
+        dialog.shadowRoot!.querySelector('print-preview-destination-list');
 
-    const printerItems =
-        list.shadowRoot.querySelectorAll('print-preview-destination-list-item');
+    const printerItems = list!.shadowRoot!.querySelectorAll(
+        'print-preview-destination-list-item');
 
-    const getDisplayedName = item =>
-        item.shadowRoot.querySelector('.name').textContent;
+    const getDisplayedName = (item: PrintPreviewDestinationListItemElement) =>
+        item.shadowRoot!.querySelector('.name')!.textContent;
     // 5 printers + Save as PDF
     assertEquals(6, printerItems.length);
     // Save as PDF shows up first.
     assertEquals(
         GooglePromotedDestinationId.SAVE_AS_PDF,
-        getDisplayedName(printerItems[0]));
+        getDisplayedName(printerItems[0]!));
     assertEquals(
         'rgb(32, 33, 36)',
         window
-            .getComputedStyle(printerItems[0].shadowRoot.querySelector('.name'))
+            .getComputedStyle(
+                printerItems[0]!.shadowRoot!.querySelector('.name')!)
             .color);
     Array.from(printerItems).slice(1, 5).forEach((item, index) => {
-      assertEquals(destinations[index].displayName, getDisplayedName(item));
+      assertEquals(destinations[index]!.displayName, getDisplayedName(item));
     });
-    assertEquals('FooName', getDisplayedName(printerItems[5]));
+    assertEquals('FooName', getDisplayedName(printerItems[5]!));
   });
 
-  // Test that clicking a provisional destination shows the provisional
-  // destinations dialog, and that the escape key closes only the provisional
-  // dialog when it is open, not the destinations dialog.
-  test(
-      assert(destination_dialog_test.TestNames.ShowProvisionalDialog),
-      async () => {
-        let provisionalDialog = null;
-        const provisionalDestination = {
-          extensionId: 'ABC123',
-          extensionName: 'ABC Printing',
-          id: 'XYZDevice',
-          name: 'XYZ',
-          provisional: true,
-        };
-
-        // Set the extension destinations and force the destination store to
-        // reload printers.
-        nativeLayer.setExtensionDestinations([provisionalDestination]);
-        await finishSetup();
-        flush();
-        provisionalDialog = dialog.shadowRoot.querySelector(
-            'print-preview-provisional-destination-resolver');
-        assertFalse(provisionalDialog.shadowRoot.querySelector('#dialog').open);
-        const list =
-            dialog.shadowRoot.querySelector('print-preview-destination-list');
-        const printerItems = list.shadowRoot.querySelectorAll(
-            'print-preview-destination-list-item');
-
-        // Should have 5 local destinations, Save as PDF + extension
-        // destination.
-        assertEquals(7, printerItems.length);
-        const provisionalItem = Array.from(printerItems).find(printerItem => {
-          return printerItem.destination.id === provisionalDestination.id;
-        });
-
-        // Click the provisional destination to select it.
-        provisionalItem.click();
-        flush();
-        assertTrue(provisionalDialog.shadowRoot.querySelector('#dialog').open);
-
-        // Send escape key on provisionalDialog. Destinations dialog should
-        // not close.
-        const whenClosed = eventToPromise('close', provisionalDialog);
-        keyEventOn(provisionalDialog, 'keydown', 19, [], 'Escape');
-        flush();
-        await whenClosed;
-
-        assertFalse(provisionalDialog.shadowRoot.querySelector('#dialog').open);
-        assertTrue(dialog.shadowRoot.querySelector('#dialog').open);
-      });
-
   /**
-   * @param {string} account The current active user account.
-   * @param {number} numUsers The total number of users that are signed in.
+   * @param account The current active user account.
+   * @param numUsers The total number of users that are signed in.
    */
-  function assertSignedInState(account, numUsers) {
+  function assertSignedInState(account: string, numUsers: number) {
     const signedIn = account !== '';
     assertEquals(
-        !signedIn, dialog.shadowRoot.querySelector('.user-info').hidden);
+        !signedIn,
+        dialog.shadowRoot!.querySelector<HTMLElement>('.user-info')!.hidden);
 
     if (numUsers > 0) {
-      const userSelect = dialog.shadowRoot.querySelector('.md-select');
-      const userSelectOptions = userSelect.querySelectorAll('option');
+      const userSelect =
+          dialog.shadowRoot!.querySelector<HTMLSelectElement>('.md-select')!;
+      const userSelectOptions =
+          userSelect.querySelectorAll<HTMLOptionElement>('option');
       assertEquals(numUsers + 1, userSelectOptions.length);
-      assertEquals('', userSelectOptions[numUsers].value);
+      assertEquals('', userSelectOptions[numUsers]!.value);
       assertEquals(account, userSelect.value);
     }
   }
 
   /**
-   * @param {number} numPrinters The total number of available printers.
-   * @param {string} account The current active user account.
+   * @param numPrinters The total number of available printers.
+   * @param account The current active user account.
    */
-  function assertNumPrintersWithDriveAccount(numPrinters, account) {
+  function assertNumPrintersWithDriveAccount(
+      numPrinters: number, account: string) {
     const list =
-        dialog.shadowRoot.querySelector('print-preview-destination-list');
-    const printerItems = list.shadowRoot.querySelectorAll(
-        'print-preview-destination-list-item:not([hidden])');
+        dialog.shadowRoot!.querySelector('print-preview-destination-list')!;
+    const printerItems =
+        list.shadowRoot!
+            .querySelectorAll<PrintPreviewDestinationListItemElement>(
+                'print-preview-destination-list-item:not([hidden])');
     assertEquals(numPrinters, printerItems.length);
 
     const drivePrinter = Array.from(printerItems).find(item => {
@@ -215,12 +160,13 @@ suite(destination_dialog_test.suiteName, function() {
     const user2 = 'bar@chromium.org';
     cloudPrintInterface.setPrinter(getGoogleDriveDestination(user1));
     cloudPrintInterface.setPrinter(getGoogleDriveDestination(user2));
-    let userSelect = null;
 
     await finishSetup();
     // Check that the user dropdown is hidden when there are no active users.
-    assertTrue(dialog.shadowRoot.querySelector('.user-info').hidden);
-    userSelect = dialog.shadowRoot.querySelector('.md-select');
+    assertTrue(
+        dialog.shadowRoot!.querySelector<HTMLElement>('.user-info')!.hidden);
+    const userSelect =
+        dialog.shadowRoot!.querySelector<HTMLSelectElement>('.md-select')!;
 
     // Enable cloud print.
     assertSignedInState('', 0);
