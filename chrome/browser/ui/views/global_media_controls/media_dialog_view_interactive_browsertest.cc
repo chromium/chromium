@@ -693,8 +693,8 @@ IN_PROC_BROWSER_TEST_F(MediaDialogViewBrowserTest,
   EXPECT_FALSE(IsDialogVisible());
 }
 
-#if defined(OS_MAC) && defined(ARCH_CPU_ARM64)
-// https://crbug.com/1222873
+// TODO(crbug.com/1225531, crbug.com/1222873): Flaky.
+#if defined(OS_LINUX) || defined(OS_MAC)
 #define MAYBE_ShowsMetadataAndControlsMediaInRTL \
   DISABLED_ShowsMetadataAndControlsMediaInRTL
 #else
@@ -950,9 +950,8 @@ IN_PROC_BROWSER_TEST_F(MediaDialogViewBrowserTest,
   EXPECT_TRUE(IsPlayingSessionDisplayedFirst());
 }
 
-#if (defined(OS_MAC) && defined(ARCH_CPU_ARM64)) || defined(OS_WIN)
-// https://crbug.com/1222873
-// https://crbug.com/1271131
+// TODO(crbug.com/1225531, crbug.com/1222873, crbug.com/1271131): Flaky.
+#if defined(OS_LINUX) || defined(OS_MAC) || defined(OS_WIN)
 #define MAYBE_LiveCaption DISABLED_LiveCaption
 #else
 #define MAYBE_LiveCaption LiveCaption
@@ -1057,8 +1056,8 @@ IN_PROC_BROWSER_TEST_F(MediaDialogViewBrowserTest,
             base::UTF16ToUTF8(GetLiveCaptionTitleLabel()->GetText()));
 }
 
-#if defined(OS_MAC) && defined(ARCH_CPU_ARM64)
-// https://crbug.com/1222873
+// TODO(crbug.com/1225531, crbug.com/1222873): Flaky.
+#if defined(OS_LINUX) || defined(OS_MAC)
 #define MAYBE_LiveCaptionShowLanguage DISABLED_LiveCaptionShowLanguage
 #else
 #define MAYBE_LiveCaptionShowLanguage LiveCaptionShowLanguage
