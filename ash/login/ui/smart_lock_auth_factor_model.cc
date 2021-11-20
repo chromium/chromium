@@ -14,12 +14,6 @@
 
 namespace ash {
 
-namespace {
-
-constexpr int kSmartLockIconSizeDp = 32;
-
-}  // namespace
-
 SmartLockAuthFactorModel::SmartLockAuthFactorModel(
     base::RepeatingCallback<void()> arrow_button_tap_callback)
     : arrow_button_tap_callback_(arrow_button_tap_callback) {}
@@ -160,26 +154,14 @@ int SmartLockAuthFactorModel::GetAccessibleNameId() const {
 }
 
 void SmartLockAuthFactorModel::UpdateIcon(AuthIconView* icon) {
-  const SkColor primary_color = AshColorProvider::Get()->GetContentLayerColor(
-      AshColorProvider::ContentLayerType::kIconColorPrimary);
-  const SkColor disabled_color =
-      AshColorProvider::Get()->GetDisabledColor(primary_color);
-
-  // TODO(crbug.com/1233614): Either find a system color to match the color in
-  // the Fingerprint animation png sequence, or upload new png files with the
-  // right color.
-  const SkColor alert_color = AshColorProvider::Get()->GetContentLayerColor(
-      AshColorProvider::ContentLayerType::kIconColorAlert);
-
   if (auth_result_.has_value() && !auth_result_.value()) {
     if (has_permanent_error_display_timed_out_) {
-      icon->SetImage(gfx::CreateVectorIcon(kLockScreenSmartLockDisabledIcon,
-                                           kSmartLockIconSizeDp,
-                                           disabled_color));
+      icon->SetIcon(kLockScreenSmartLockDisabledIcon,
+                    AuthIconView::Color::kDisabled);
     } else {
       // TODO(crbug.com/1233614): Get actual failure icon once asset is ready.
-      icon->SetImage(gfx::CreateVectorIcon(kLockScreenSmartCardFailureIcon,
-                                           kSmartLockIconSizeDp, alert_color));
+      icon->SetIcon(kLockScreenSmartCardFailureIcon,
+                    AuthIconView::Color::kError);
     }
     return;
   }
@@ -192,13 +174,12 @@ void SmartLockAuthFactorModel::UpdateIcon(AuthIconView* icon) {
     case SmartLockState::kPhoneFoundUnlockedAndDistant:
       FALLTHROUGH;
     case SmartLockState::kConnectingToPhone:
-      icon->SetImage(gfx::CreateVectorIcon(kLockScreenSmartLockBluetoothIcon,
-                                           kSmartLockIconSizeDp,
-                                           primary_color));
+      icon->SetIcon(kLockScreenSmartLockBluetoothIcon,
+                    AuthIconView::Color::kPrimary);
       return;
     case SmartLockState::kPhoneFoundLockedAndProximate:
-      icon->SetImage(gfx::CreateVectorIcon(
-          kLockScreenSmartLockPhoneIcon, kSmartLockIconSizeDp, primary_color));
+      icon->SetIcon(kLockScreenSmartLockPhoneIcon,
+                    AuthIconView::Color::kPrimary);
       return;
     case SmartLockState::kPrimaryUserAbsent:
       FALLTHROUGH;
@@ -209,9 +190,8 @@ void SmartLockAuthFactorModel::UpdateIcon(AuthIconView* icon) {
     case SmartLockState::kPhoneNotLockable:
       FALLTHROUGH;
     case SmartLockState::kBluetoothDisabled:
-      icon->SetImage(gfx::CreateVectorIcon(kLockScreenSmartLockDisabledIcon,
-                                           kSmartLockIconSizeDp,
-                                           disabled_color));
+      icon->SetIcon(kLockScreenSmartLockDisabledIcon,
+                    AuthIconView::Color::kDisabled);
       return;
     case SmartLockState::kPhoneAuthenticated:
       // Click to enter -- icon handled by parent view.

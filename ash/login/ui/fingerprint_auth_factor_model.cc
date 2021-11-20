@@ -6,21 +6,19 @@
 
 #include "ash/login/resources/grit/login_resources.h"
 #include "ash/login/ui/auth_icon_view.h"
-#include "ash/login/ui/horizontal_image_sequence_animation_decoder.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
-#include "ui/base/resource/resource_bundle.h"
+#include "base/time/time.h"
 #include "ui/gfx/geometry/size.h"
-#include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/vector_icon_types.h"
 
 namespace ash {
 
 namespace {
 
-constexpr int kFingerprintIconSizeDp = 32;
-constexpr int kFingerprintFailedAnimationDurationMs = 700;
+constexpr base::TimeDelta kFingerprintFailedAnimationDuration =
+    base::Milliseconds(700);
 constexpr int kFingerprintFailedAnimationNumFrames = 45;
 
 }  // namespace
@@ -128,23 +126,11 @@ int FingerprintAuthFactorModel::GetAccessibleNameId() const {
 
 void FingerprintAuthFactorModel::UpdateIcon(AuthIconView* icon) {
   if (auth_result_.has_value() && !auth_result_.value()) {
-    icon->SetAnimationDecoder(
-        std::make_unique<HorizontalImageSequenceAnimationDecoder>(
-            *ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
-                IDR_LOGIN_FINGERPRINT_UNLOCK_SPINNER),
-            base::Milliseconds(kFingerprintFailedAnimationDurationMs),
-            kFingerprintFailedAnimationNumFrames),
-        AnimatedRoundedImageView::Playback::kSingle);
+    icon->SetAnimation(IDR_LOGIN_FINGERPRINT_UNLOCK_SPINNER,
+                       kFingerprintFailedAnimationDuration,
+                       kFingerprintFailedAnimationNumFrames);
     return;
   }
-
-  const SkColor icon_color = AshColorProvider::Get()->GetContentLayerColor(
-      AshColorProvider::ContentLayerType::kIconColorPrimary);
-  const SkColor color =
-      state_ == FingerprintState::AVAILABLE_DEFAULT ||
-              state_ == FingerprintState::AVAILABLE_WITH_TOUCH_SENSOR_WARNING
-          ? icon_color
-          : AshColorProvider::Get()->GetDisabledColor(icon_color);
 
   switch (state_) {
     case FingerprintState::AVAILABLE_DEFAULT:
@@ -155,21 +141,17 @@ void FingerprintAuthFactorModel::UpdateIcon(AuthIconView* icon) {
     case FingerprintState::UNAVAILABLE:
       FALLTHROUGH;
     case FingerprintState::DISABLED_FROM_TIMEOUT:
-      icon->SetImage(gfx::CreateVectorIcon(kLockScreenFingerprintDisabledIcon,
-                                           kFingerprintIconSizeDp, color));
+      icon->SetIcon(kLockScreenFingerprintDisabledIcon,
+                    AuthIconView::Color::kDisabled);
       break;
     case FingerprintState::DISABLED_FROM_ATTEMPTS:
       if (has_permanent_error_display_timed_out_) {
-        icon->SetImage(gfx::CreateVectorIcon(kLockScreenFingerprintDisabledIcon,
-                                             kFingerprintIconSizeDp, color));
+        icon->SetIcon(kLockScreenFingerprintDisabledIcon,
+                      AuthIconView::Color::kDisabled);
       } else {
-        icon->SetAnimationDecoder(
-            std::make_unique<HorizontalImageSequenceAnimationDecoder>(
-                *ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
-                    IDR_LOGIN_FINGERPRINT_UNLOCK_SPINNER),
-                base::Milliseconds(kFingerprintFailedAnimationDurationMs),
-                kFingerprintFailedAnimationNumFrames),
-            AnimatedRoundedImageView::Playback::kSingle);
+        icon->SetAnimation(IDR_LOGIN_FINGERPRINT_UNLOCK_SPINNER,
+                           kFingerprintFailedAnimationDuration,
+                           kFingerprintFailedAnimationNumFrames);
       }
       break;
   }

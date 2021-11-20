@@ -21,16 +21,27 @@ namespace ash {
 // TODO(crbug.com/1252880): Add progress animation.
 class ASH_EXPORT AuthIconView : public AnimatedRoundedImageView {
  public:
+  enum class Color {
+    kPrimary,
+    kDisabled,
+    kError,
+  };
+
   AuthIconView();
   AuthIconView(AuthIconView&) = delete;
   AuthIconView& operator=(AuthIconView&) = delete;
   ~AuthIconView() override;
 
   // Show a static icon.
-  void SetIcon(const gfx::VectorIcon& icon);
+  void SetIcon(const gfx::VectorIcon& icon, Color color = Color::kPrimary);
 
-  // TODO(crbug.com/1233614): Add additional convenience methods here so that
-  // calling classes don't have to provide colors and sizes.
+  // Show a sequence of animation frames. |animation_resource_id| should refer
+  // to an image with the frames of the animation layed out horizontally.
+  // |duration| is the total duration of the animation. |num_frames| is the
+  // number of frames in the image referred to by |animation_resource_id|.
+  void SetAnimation(int animation_resource_id,
+                    base::TimeDelta duration,
+                    int num_frames);
 
   void set_on_tap_or_click_callback(base::RepeatingClosure on_tap_or_click) {
     on_tap_or_click_callback_ = on_tap_or_click;
