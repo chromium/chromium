@@ -2426,6 +2426,15 @@ source_set("browser") {
       "//components/vector_icons",
       "//content/browser/tracing:resources",
     ]
+    sources += [
+      # Non-Android platforms that don't presently support
+      # enable_screen_capture, like Fuchsia, nevertheless compile
+      # these files. This follows the pattern of #ifdef-ing around Android
+      # to restrict APK-size, but not introducing the additional complexity
+      # this produces for other feature/platform pairs.
+      "media/capture/crop_id_web_contents_helper.cc",
+      "media/capture/crop_id_web_contents_helper.h",
+    ]
   }
 
   # Desktop/Window/WebContents screen capture implementations, conditionally

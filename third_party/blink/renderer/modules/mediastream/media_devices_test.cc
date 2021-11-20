@@ -204,6 +204,16 @@ class MockMediaDevicesDispatcherHost final
 
 #if !defined(OS_ANDROID)
   void CloseFocusWindowOfOpportunity(const String& label) override {}
+
+  void ProduceCropId(ProduceCropIdCallback callback) override {
+    String next_crop_id = "";  // Empty, not null.
+    std::swap(next_crop_id_, next_crop_id);
+    std::move(callback).Run(std::move(next_crop_id));
+  }
+
+  void SetNextCropId(String next_crop_id) {
+    next_crop_id_ = std::move(next_crop_id);
+  }
 #endif
 
   void ExpectSetCaptureHandleConfig(
@@ -234,6 +244,9 @@ class MockMediaDevicesDispatcherHost final
   mojo::Remote<mojom::blink::MediaDevicesListener> listener_;
   mojo::Receiver<mojom::blink::MediaDevicesDispatcherHost> receiver_{this};
   mojom::blink::CaptureHandleConfigPtr expected_capture_handle_config_;
+#if !defined(OS_ANDROID)
+  String next_crop_id_ = "";  // Empty, not null.
+#endif
 };
 
 class MediaDevicesTest : public PageTestBase {
@@ -706,6 +719,33 @@ TEST_F(MediaDevicesTest,
             ToExceptionCode(DOMExceptionCode::kNotSupportedError));
 }
 
+// Note: This test runs on non-Android too in order to prove that the test
+// itself is sane. (Rather than, for example, an exception always being thrown.)
+TEST_F(MediaDevicesTest, ProduceCropIdUnsupportedOnAndroid) {
+  V8TestingScope scope;
+  auto* media_devices = GetMediaDevices(scope.GetWindow());
+  ASSERT_TRUE(media_devices);
+
+  SetBodyContent(R"HTML(
+    <div id='test-div'></div>
+    <iframe id='test-iframe' src="about:blank" />
+  )HTML");
+
+  Document& document = GetDocument();
+  auto div = V8UnionHTMLDivElementOrHTMLIFrameElement(
+      reinterpret_cast<HTMLDivElement*>(document.getElementById("test-div")));
+  const ScriptPromise div_promise = media_devices->produceCropId(
+      scope.GetScriptState(), &div, scope.GetExceptionState());
+  platform()->RunUntilIdle();
+#if defined(OS_ANDROID)
+  EXPECT_TRUE(scope.GetExceptionState().HadException());
+#else  // Non-Android shown to work, proving the test is sane.
+  EXPECT_FALSE(div_promise.IsEmpty());
+  EXPECT_FALSE(scope.GetExceptionState().HadException());
+#endif
+}
+
+#if !defined(OS_ANDROID)
 TEST_F(MediaDevicesTest, ProduceCropIdWithValidElement) {
   V8TestingScope scope;
   auto* media_devices = GetMediaDevices(scope.GetWindow());
@@ -739,6 +779,8 @@ TEST_F(MediaDevicesTest, ProduceCropIdDuplicate) {
   V8TestingScope scope;
   auto* media_devices = GetMediaDevices(scope.GetWindow());
   ASSERT_TRUE(media_devices);
+  dispatcher_host().SetNextCropId(
+      String(base::GUID::GenerateRandomV4().AsLowercaseString()));
 
   SetBodyContent(R"HTML(
     <div id='test-div'></div>
@@ -780,6 +822,8 @@ TEST_F(MediaDevicesTest, ProduceCropIdStringFormat) {
   Document& document = GetDocument();
   auto div = V8UnionHTMLDivElementOrHTMLIFrameElement(
       reinterpret_cast<HTMLDivElement*>(document.getElementById("test-div")));
+  dispatcher_host().SetNextCropId(
+      String(base::GUID::GenerateRandomV4().AsLowercaseString()));
   const ScriptPromise promise = media_devices->produceCropId(
       scope.GetScriptState(), &div, scope.GetExceptionState());
   ScriptPromiseTester tester(scope.GetScriptState(), promise);
@@ -792,5 +836,6 @@ TEST_F(MediaDevicesTest, ProduceCropIdStringFormat) {
   EXPECT_TRUE(result.ContainsOnlyASCIIOrEmpty());
   EXPECT_TRUE(base::GUID::ParseLowercase(result.Ascii()).is_valid());
 }
+#endif
 
 }  // namespace blink

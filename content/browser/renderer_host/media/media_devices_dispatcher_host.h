@@ -71,6 +71,7 @@ class CONTENT_EXPORT MediaDevicesDispatcherHost
       blink::mojom::CaptureHandleConfigPtr config) override;
 #if !defined(OS_ANDROID)
   void CloseFocusWindowOfOpportunity(const std::string& label) override;
+  void ProduceCropId(ProduceCropIdCallback callback) override;
 #endif
 
  private:
@@ -142,7 +143,7 @@ class CONTENT_EXPORT MediaDevicesDispatcherHost
   const int render_frame_id_;
 
   // The following fields can only be accessed on the IO thread.
-  MediaStreamManager* media_stream_manager_;
+  MediaStreamManager* const media_stream_manager_;
 
   struct AudioInputCapabilitiesRequest;
   // Queued requests for audio-input capabilities.

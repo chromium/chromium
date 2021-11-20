@@ -13,6 +13,7 @@
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
 #include "base/run_loop.h"
+#include "base/task/bind_post_task.h"
 #include "base/task/post_task.h"
 #include "base/task/task_runner_util.h"
 #include "build/build_config.h"
@@ -35,6 +36,10 @@
 #include "third_party/blink/public/common/mediastream/media_devices.h"
 #include "third_party/blink/public/common/mediastream/media_stream_request.h"
 #include "url/origin.h"
+
+#if !defined(OS_ANDROID)
+#include "content/browser/media/capture/crop_id_web_contents_helper.h"
+#endif
 
 using blink::mojom::MediaDeviceType;
 
@@ -106,6 +111,7 @@ MediaDevicesDispatcherHost::MediaDevicesDispatcherHost(
       media_stream_manager_(media_stream_manager),
       num_pending_audio_input_parameters_(0) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  DCHECK(media_stream_manager_);
 }
 
 MediaDevicesDispatcherHost::~MediaDevicesDispatcherHost() {
@@ -285,6 +291,33 @@ void MediaDevicesDispatcherHost::CloseFocusWindowOfOpportunity(
       label, /*focus=*/true,
       /*is_from_microtask=*/true,
       /*is_from_timer=*/false);
+}
+
+void MediaDevicesDispatcherHost::ProduceCropId(ProduceCropIdCallback callback) {
+  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+
+  GetUIThreadTaskRunner({})->PostTaskAndReplyWithResult(
+      FROM_HERE,
+      base::BindOnce(
+          [](int render_process_id, int render_frame_id) {
+            RenderFrameHostImpl* const rfh =
+                RenderFrameHostImpl::FromID(render_process_id, render_frame_id);
+            if (!rfh || !rfh->IsActive()) {
+              return std::string();  // Might have been asynchronously closed.
+            }
+
+            WebContents* const web_contents =
+                WebContents::FromRenderFrameHost(rfh->GetMainFrame());
+            DCHECK(web_contents);
+
+            // No-op if already created.
+            CropIdWebContentsHelper::CreateForWebContents(web_contents);
+
+            return CropIdWebContentsHelper::FromWebContents(web_contents)
+                ->ProduceCropId();
+          },
+          render_process_id_, render_frame_id_),
+      std::move(callback));
 }
 #endif
 

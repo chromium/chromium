@@ -12,6 +12,7 @@
 #include "third_party/blink/public/mojom/mediastream/media_devices.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/active_script_wrappable.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_htmldivelement_htmliframeelement.h"
+#include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/events/event_target.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/modules/event_target_modules.h"
@@ -141,6 +142,11 @@ class MODULES_EXPORT MediaDevices final
   void EnqueueMicrotaskToCloseFocusWindowOfOpportunity(const String&,
                                                        MediaStreamTrack*);
   void CloseFocusWindowOfOpportunity(const String&, MediaStreamTrack*);
+
+  // Receives a message from the browser process with the crop-ID it has
+  // assigned to |element|.
+  void ResolveProduceCropIdPromise(Element* element,
+                                   const WTF::String& crop_id);
 #endif
 
   bool stopped_;
@@ -151,6 +157,25 @@ class MODULES_EXPORT MediaDevices final
   mojo::Remote<mojom::blink::MediaDevicesDispatcherHost> dispatcher_host_;
   HeapMojoReceiver<mojom::blink::MediaDevicesListener, MediaDevices> receiver_;
   HeapHashSet<Member<ScriptPromiseResolver>> requests_;
+
+#if !defined(OS_ANDROID)
+  // 1. When produceCropId() is first called for an Element, it has no crop-ID
+  //    associated. We produce a Resolver, map the Element to it, and fire
+  //    off a message to the browser process, asking for a new crop-ID to be
+  //    generated.
+  // 2. Subsequent calls to produceCropId(), which occur before the browser
+  //    process has had time to respond, yield a copy of the original Promise
+  //    associated with this Element.
+  // 3. When the message browser process responds with a crop-ID for the
+  //    Element, we store the new crop-ID on the Element itself, resolve all
+  //    Promises returned for this Element, and eject the resolver from this
+  //    container.
+  // 4. Later calls to produceCropId() for this given Element discover that
+  //    a crop-ID is already assigned. They immediately return a resolved
+  //    Promise with the crop-ID.
+  HeapHashMap<Member<Element>, Member<ScriptPromiseResolver>>
+      crop_id_resolvers_;
+#endif
 
   EnumerateDevicesTestCallback enumerate_devices_test_callback_;
   base::OnceClosure connection_error_test_callback_;

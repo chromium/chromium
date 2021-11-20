@@ -268,6 +268,10 @@ class MockMediaDevicesDispatcherHost
   void CloseFocusWindowOfOpportunity(const String& label) override {
     NOTREACHED();
   }
+
+  void ProduceCropId(ProduceCropIdCallback callback) override {
+    std::move(callback).Run("");
+  }
 #endif
 
   void GetAllVideoInputDeviceFormats(

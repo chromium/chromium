@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/guid.h"
 #include "base/metrics/histogram_functions.h"
 #include "build/build_config.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -338,14 +339,26 @@ ScriptPromise MediaDevices::produceCropId(
     ScriptState* script_state,
     V8UnionHTMLDivElementOrHTMLIFrameElement* element_union,
     ExceptionState& exception_state) {
+  DCHECK(IsMainThread());
+
+#if defined(OS_ANDROID)
+  exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
+                                    "Unsupported.");
+  return ScriptPromise();
+#else
   if (!script_state->ContextIsValid()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
                                       "Current frame is detached.");
     return ScriptPromise();
   }
 
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
-  ScriptPromise promise = resolver->Promise();
+  LocalDOMWindow* const window = To<LocalDOMWindow>(GetExecutionContext());
+  if (!window) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
+                                      "Missing execution context.");
+    return ScriptPromise();
+  }
+
   auto* element =
       element_union->IsHTMLDivElement()
           ? static_cast<Element*>(element_union->GetAsHTMLDivElement())
@@ -353,30 +366,35 @@ ScriptPromise MediaDevices::produceCropId(
 
   const RegionCaptureCropId* const old_crop_id =
       element->GetRegionCaptureCropId();
-  if (old_crop_id) {  // produceCropId() previously called on this element.
+  if (old_crop_id) {
+    // The Element has a crop-ID which was previously produced.
     DCHECK(!old_crop_id->value().is_zero());
+    auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+    const ScriptPromise promise = resolver->Promise();
     resolver->Resolve(WTF::String(
         blink::TokenToGUID(old_crop_id->value()).AsLowercaseString()));
     return promise;
   }
 
-  // TODO(crbug.com/1247761): Produce the crop-ID in the browser process,
-  // where it's free from interference by potential malicious applications
-  // trying to produce collisions. Also, we need it there in order to
-  // validate IDs provided to cropTo() for (1) validity and (2) association
-  // with the current browsing context.
-  const base::GUID new_crop_id = base::GUID::GenerateRandomV4();
-  element->SetRegionCaptureCropId(
-      std::make_unique<RegionCaptureCropId>(blink::GUIDToToken(new_crop_id)));
+  const auto it = crop_id_resolvers_.find(element);
+  if (it != crop_id_resolvers_.end()) {
+    // The Element does not yet have a crop-ID, but the production of one
+    // has already been kicked off, and a response will soon arrive from
+    // the browser process. The Promise we return here will be resolved along
+    // with the original one.
+    return it->value->Promise();
+  }
 
-  // TODO(crbug.com/1247761): Delay resolution until ack from Viz received.
-  // Multiple calls to produceCropId() will be handled by returning distinct
-  // Promises which are all fulfilled (in sequence) when the first one is
-  // fulfilled.
-  const std::string& serialized_crop_id = new_crop_id.AsLowercaseString();
-  resolver->Resolve(
-      WTF::String(serialized_crop_id.c_str(), serialized_crop_id.length()));
+  // Mints a new crop-ID on the browser process. Resolve when it's produced
+  // and ready to be used.
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+  crop_id_resolvers_.insert(element, resolver);
+  const ScriptPromise promise = resolver->Promise();
+  GetDispatcherHost(window->GetFrame())
+      ->ProduceCropId(WTF::Bind(&MediaDevices::ResolveProduceCropIdPromise,
+                                WrapPersistent(this), WrapPersistent(element)));
   return promise;
+#endif
 }
 
 const AtomicString& MediaDevices::InterfaceName() const {
@@ -624,6 +642,9 @@ void MediaDevices::Trace(Visitor* visitor) const {
   visitor->Trace(receiver_);
   visitor->Trace(scheduled_events_);
   visitor->Trace(requests_);
+#if !defined(OS_ANDROID)
+  visitor->Trace(crop_id_resolvers_);
+#endif
   Supplement<Navigator>::Trace(visitor);
   EventTargetWithInlineData::Trace(visitor);
   ExecutionContextLifecycleObserver::Trace(visitor);
@@ -658,6 +679,29 @@ void MediaDevices::CloseFocusWindowOfOpportunity(const String& id,
   track->CloseFocusWindowOfOpportunity();
 
   GetDispatcherHost(window->GetFrame())->CloseFocusWindowOfOpportunity(id);
+}
+
+// An empty |crop_id| signals failure; anything else has to be a valid GUID
+// and signals success.
+void MediaDevices::ResolveProduceCropIdPromise(Element* element,
+                                               const WTF::String& crop_id) {
+  DCHECK(IsMainThread());
+  DCHECK(element);  // Persistent.
+
+  const auto it = crop_id_resolvers_.find(element);
+  DCHECK_NE(it, crop_id_resolvers_.end());
+  ScriptPromiseResolver* const resolver = it->value;
+  crop_id_resolvers_.erase(it);
+
+  if (crop_id.IsEmpty()) {
+    resolver->Reject();
+  } else {
+    const base::GUID guid = base::GUID::ParseLowercase(crop_id.Ascii());
+    DCHECK(guid.is_valid());
+    element->SetRegionCaptureCropId(
+        std::make_unique<RegionCaptureCropId>(blink::GUIDToToken(guid)));
+    resolver->Resolve(crop_id);
+  }
 }
 #endif
 
