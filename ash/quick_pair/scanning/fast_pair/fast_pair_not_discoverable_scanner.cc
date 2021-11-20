@@ -18,7 +18,6 @@
 #include "ash/quick_pair/repository/fast_pair/device_metadata.h"
 #include "ash/quick_pair/repository/fast_pair/pairing_metadata.h"
 #include "ash/quick_pair/repository/fast_pair_repository.h"
-#include "ash/quick_pair/scanning/range_tracker.h"
 #include "ash/services/quick_pair/public/cpp/account_key_filter.h"
 #include "ash/services/quick_pair/public/cpp/not_discoverable_advertisement.h"
 #include "ash/services/quick_pair/quick_pair_process.h"
@@ -77,11 +76,9 @@ namespace quick_pair {
 
 FastPairNotDiscoverableScanner::FastPairNotDiscoverableScanner(
     scoped_refptr<FastPairScanner> scanner,
-    std::unique_ptr<RangeTracker> range_tracker,
     DeviceCallback found_callback,
     DeviceCallback lost_callback)
     : scanner_(scanner),
-      range_tracker_(std::move(range_tracker)),
       found_callback_(std::move(found_callback)),
       lost_callback_(std::move(lost_callback)) {
   observation_.Observe(scanner.get());
@@ -119,8 +116,6 @@ void FastPairNotDiscoverableScanner::OnDeviceLost(
   // If we have an in-progess parse attempt for this device, this will ensure
   // the result is ignored.
   advertisement_parse_attempts_.erase(device->GetAddress());
-
-  range_tracker_->StopTracking(device);
 
   auto it = notified_devices_.find(device->GetAddress());
 
@@ -169,9 +164,9 @@ void FastPairNotDiscoverableScanner::OnAdvertisementParsed(
 }
 
 void FastPairNotDiscoverableScanner::OnAccountKeyFilterCheckResult(
-    device::BluetoothDevice* device,
+    device::BluetoothDevice* bluetooth_device,
     absl::optional<PairingMetadata> metadata) {
-  account_key_filters_.erase(device->GetAddress());
+  account_key_filters_.erase(bluetooth_device->GetAddress());
 
   QP_LOG(VERBOSE) << __func__ << " Metadata: " << (metadata ? "yes" : "no");
 
@@ -180,34 +175,16 @@ void FastPairNotDiscoverableScanner::OnAccountKeyFilterCheckResult(
 
   auto& details = metadata->device_metadata->GetDetails();
 
-  QP_LOG(INFO) << __func__
-               << ": Checking if device is in range, and waiting if not.  "
-                  "trigger_distance="
-               << details.trigger_distance();
-
   // Convert the integer model id to uppercase hex string.
   std::stringstream model_id_stream;
   model_id_stream << std::uppercase << std::hex << details.id();
+  std::string model_id = model_id_stream.str();
 
-  int tx_power = details.ble_tx_power();
-
-  range_tracker_->Track(
-      device, details.trigger_distance(),
-      base::BindRepeating(&FastPairNotDiscoverableScanner::NotifyDeviceFound,
-                          weak_pointer_factory_.GetWeakPtr(),
-                          model_id_stream.str(), metadata->account_key),
-      tx_power == 0 ? absl::nullopt : absl::make_optional(tx_power));
-}
-
-void FastPairNotDiscoverableScanner::NotifyDeviceFound(
-    const std::string model_id,
-    std::vector<uint8_t> account_key,
-    device::BluetoothDevice* bluetooth_device) {
   QP_LOG(VERBOSE) << __func__ << ": Id: " << model_id;
   auto device = base::MakeRefCounted<Device>(
       model_id, bluetooth_device->GetAddress(), Protocol::kFastPairSubsequent);
   device->SetAdditionalData(Device::AdditionalDataType::kAccountKey,
-                            account_key);
+                            metadata->account_key);
 
   notified_devices_[bluetooth_device->GetAddress()] = device;
 

@@ -13,7 +13,6 @@
 #include "ash/quick_pair/scanning/fast_pair/fast_pair_not_discoverable_scanner.h"
 #include "ash/quick_pair/scanning/fast_pair/fast_pair_scanner.h"
 #include "ash/quick_pair/scanning/fast_pair/fast_pair_scanner_impl.h"
-#include "ash/quick_pair/scanning/range_tracker.h"
 #include "ash/services/quick_pair/quick_pair_process_manager.h"
 #include "base/bind.h"
 #include "base/callback.h"
@@ -104,7 +103,7 @@ void ScannerBrokerImpl::StartFastPairScanning() {
 
   fast_pair_discoverable_scanner_ =
       std::make_unique<FastPairDiscoverableScanner>(
-          fast_pair_scanner, std::make_unique<RangeTracker>(adapter_),
+          fast_pair_scanner,
           base::BindRepeating(&ScannerBrokerImpl::NotifyDeviceFound,
                               weak_pointer_factory_.GetWeakPtr()),
           base::BindRepeating(&ScannerBrokerImpl::NotifyDeviceLost,
@@ -112,7 +111,7 @@ void ScannerBrokerImpl::StartFastPairScanning() {
 
   fast_pair_not_discoverable_scanner_ =
       std::make_unique<FastPairNotDiscoverableScanner>(
-          fast_pair_scanner, std::make_unique<RangeTracker>(adapter_),
+          fast_pair_scanner,
           base::BindRepeating(&ScannerBrokerImpl::NotifyDeviceFound,
                               weak_pointer_factory_.GetWeakPtr()),
           base::BindRepeating(&ScannerBrokerImpl::NotifyDeviceLost,

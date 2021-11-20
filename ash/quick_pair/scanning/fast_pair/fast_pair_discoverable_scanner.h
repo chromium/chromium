@@ -5,11 +5,9 @@
 #ifndef ASH_QUICK_PAIR_SCANNING_FAST_PAIR_FAST_PAIR_DISCOVERABLE_SCANNER_H_
 #define ASH_QUICK_PAIR_SCANNING_FAST_PAIR_FAST_PAIR_DISCOVERABLE_SCANNER_H_
 
-#include <memory>
 #include <string>
 
 #include "ash/quick_pair/scanning/fast_pair/fast_pair_scanner.h"
-#include "ash/quick_pair/scanning/range_tracker.h"
 #include "ash/services/quick_pair/quick_pair_process_manager.h"
 #include "base/callback_forward.h"
 #include "base/containers/flat_map.h"
@@ -37,7 +35,6 @@ using DeviceCallback = base::RepeatingCallback<void(scoped_refptr<Device>)>;
 class FastPairDiscoverableScanner final : public FastPairScanner::Observer {
  public:
   FastPairDiscoverableScanner(scoped_refptr<FastPairScanner> scanner,
-                              std::unique_ptr<RangeTracker> range_tracker,
                               DeviceCallback found_callback,
                               DeviceCallback lost_callback);
   FastPairDiscoverableScanner(const FastPairDiscoverableScanner&) = delete;
@@ -52,8 +49,6 @@ class FastPairDiscoverableScanner final : public FastPairScanner::Observer {
  private:
   void OnModelIdRetrieved(device::BluetoothDevice* device,
                           const absl::optional<std::string>& model_id);
-  void NotifyDeviceFound(const std::string model_id,
-                         device::BluetoothDevice* device);
   void OnDeviceMetadataRetrieved(device::BluetoothDevice* device,
                                  const std::string model_id,
                                  DeviceMetadata* device_metadata);
@@ -62,7 +57,6 @@ class FastPairDiscoverableScanner final : public FastPairScanner::Observer {
       QuickPairProcessManager::ShutdownReason shutdown_reason);
 
   scoped_refptr<FastPairScanner> scanner_;
-  std::unique_ptr<RangeTracker> range_tracker_;
   DeviceCallback found_callback_;
   DeviceCallback lost_callback_;
   base::flat_map<std::string, scoped_refptr<Device>> notified_devices_;

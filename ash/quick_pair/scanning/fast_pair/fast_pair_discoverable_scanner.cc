@@ -14,7 +14,6 @@
 #include "ash/quick_pair/common/logging.h"
 #include "ash/quick_pair/common/protocol.h"
 #include "ash/quick_pair/repository/fast_pair_repository.h"
-#include "ash/quick_pair/scanning/range_tracker.h"
 #include "ash/services/quick_pair/quick_pair_process.h"
 #include "ash/services/quick_pair/quick_pair_process_manager.h"
 #include "base/bind.h"
@@ -30,7 +29,6 @@
 namespace {
 
 constexpr char kNearbyShareModelId[] = "fc128e";
-constexpr double kDefaultRangeInMeters = 2;
 constexpr int kMaxParseModelIdRetryCount = 5;
 
 }  // namespace
@@ -40,11 +38,9 @@ namespace quick_pair {
 
 FastPairDiscoverableScanner::FastPairDiscoverableScanner(
     scoped_refptr<FastPairScanner> scanner,
-    std::unique_ptr<RangeTracker> range_tracker,
     DeviceCallback found_callback,
     DeviceCallback lost_callback)
     : scanner_(scanner),
-      range_tracker_(std::move(range_tracker)),
       found_callback_(std::move(found_callback)),
       lost_callback_(std::move(lost_callback)) {
   observation_.Observe(scanner.get());
@@ -104,7 +100,7 @@ void FastPairDiscoverableScanner::OnModelIdRetrieved(
 }
 
 void FastPairDiscoverableScanner::OnDeviceMetadataRetrieved(
-    device::BluetoothDevice* device,
+    device::BluetoothDevice* bluetooth_device,
     const std::string model_id,
     DeviceMetadata* device_metadata) {
   if (!device_metadata) {
@@ -114,27 +110,14 @@ void FastPairDiscoverableScanner::OnDeviceMetadataRetrieved(
     return;
   }
 
-  auto& details = device_metadata->GetDetails();
-  double trigger_distance;
-  if (details.trigger_distance() > 0) {
-    trigger_distance = details.trigger_distance();
-  } else {
-    NOTREACHED();
-    trigger_distance = kDefaultRangeInMeters;
-  }
+  QP_LOG(VERBOSE) << __func__ << ": Id: " << model_id;
 
-  QP_LOG(INFO) << __func__
-               << ": Checking if device is in range, and waiting if not.  "
-                  "trigger_distance="
-               << trigger_distance;
+  auto device = base::MakeRefCounted<Device>(
+      model_id, bluetooth_device->GetAddress(), Protocol::kFastPairInitial);
 
-  int tx_power = details.ble_tx_power();
+  notified_devices_[bluetooth_device->GetAddress()] = device;
 
-  range_tracker_->Track(
-      device, trigger_distance,
-      base::BindRepeating(&FastPairDiscoverableScanner::NotifyDeviceFound,
-                          weak_pointer_factory_.GetWeakPtr(), model_id),
-      tx_power == 0 ? absl::nullopt : absl::make_optional(tx_power));
+  found_callback_.Run(device);
 }
 
 void FastPairDiscoverableScanner::OnDeviceLost(
@@ -145,8 +128,6 @@ void FastPairDiscoverableScanner::OnDeviceLost(
   // from this map will ensure the result is ignored.
   model_id_parse_attempts_.erase(device->GetAddress());
 
-  range_tracker_->StopTracking(device);
-
   auto it = notified_devices_.find(device->GetAddress());
 
   // Don't invoke callback if we didn't notify this device.
@@ -156,19 +137,6 @@ void FastPairDiscoverableScanner::OnDeviceLost(
   scoped_refptr<Device> notified_device = it->second;
   notified_devices_.erase(it);
   lost_callback_.Run(std::move(notified_device));
-}
-
-void FastPairDiscoverableScanner::NotifyDeviceFound(
-    const std::string model_id,
-    device::BluetoothDevice* bluetooth_device) {
-  QP_LOG(VERBOSE) << __func__ << ": Id: " << model_id;
-
-  auto device = base::MakeRefCounted<Device>(
-      model_id, bluetooth_device->GetAddress(), Protocol::kFastPairInitial);
-
-  notified_devices_[bluetooth_device->GetAddress()] = device;
-
-  found_callback_.Run(device);
 }
 
 void FastPairDiscoverableScanner::OnUtilityProcessStopped(

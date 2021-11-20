@@ -6,6 +6,7 @@
 
 #include <cstdint>
 #include <iomanip>
+#include <memory>
 #include <sstream>
 #include <vector>
 
@@ -17,7 +18,6 @@
 #include "ash/quick_pair/repository/fast_pair/device_metadata.h"
 #include "ash/quick_pair/repository/fast_pair/pairing_metadata.h"
 #include "ash/quick_pair/scanning/fast_pair/fake_fast_pair_scanner.h"
-#include "ash/quick_pair/scanning/range_tracker.h"
 #include "ash/services/quick_pair/fast_pair_data_parser.h"
 #include "ash/services/quick_pair/mock_quick_pair_process_manager.h"
 #include "ash/services/quick_pair/quick_pair_process.h"
@@ -80,10 +80,8 @@ class FastPairNotDiscoverableScannerTest : public testing::Test {
 
     not_discoverable_scanner_ =
         std::make_unique<FastPairNotDiscoverableScanner>(
-            scanner_,
-            std::make_unique<RangeTracker>(
-                static_cast<scoped_refptr<device::BluetoothAdapter>>(adapter_)),
-            found_device_callback_.Get(), lost_device_callback_.Get());
+            scanner_, found_device_callback_.Get(),
+            lost_device_callback_.Get());
   }
 
  protected:
@@ -135,25 +133,16 @@ class FastPairNotDiscoverableScannerTest : public testing::Test {
         ->CreateServiceData();
   }
 
-  std::unique_ptr<device::BluetoothDevice> GetInRangeDevice(
+  std::unique_ptr<device::BluetoothDevice> GetDevice(
       const std::vector<uint8_t>& service_data,
       bool expect_call) {
-    testing::NiceMock<device::MockBluetoothDevice>* device =
-        new testing::NiceMock<device::MockBluetoothDevice>(
-            adapter_.get(), 0, "test_name", "test_address", /*paired=*/false,
-            /*connected=*/false);
+    auto device = std::make_unique<device::MockBluetoothDevice>(
+        adapter_.get(), 0, "test_name", "test_address", /*paired=*/false,
+        /*connected=*/false);
 
     device->SetServiceDataForUUID(kFastPairBluetoothUuid, service_data);
 
-    if (expect_call) {
-      EXPECT_CALL(*device, GetInquiryRSSI).WillOnce(testing::Return(-80));
-      EXPECT_CALL(*device, GetInquiryTxPower).WillOnce(testing::Return(-40));
-    } else {
-      EXPECT_CALL(*device, GetInquiryRSSI).Times(0);
-      EXPECT_CALL(*device, GetInquiryTxPower).Times(0);
-    }
-
-    return base::WrapUnique(static_cast<device::BluetoothDevice*>(device));
+    return device;
   }
 
   base::test::SingleThreadTaskEnvironment task_enviornment_;
@@ -185,8 +174,8 @@ TEST_F(FastPairNotDiscoverableScannerTest, NoServiceData) {
 TEST_F(FastPairNotDiscoverableScannerTest, NoParsedAdvertisement) {
   EXPECT_CALL(found_device_callback_, Run).Times(0);
   std::unique_ptr<device::BluetoothDevice> device =
-      GetInRangeDevice(GetDiscoverableAdvServicedata(),
-                       /*expect_call=*/false);
+      GetDevice(GetDiscoverableAdvServicedata(),
+                /*expect_call=*/false);
   scanner_->NotifyDeviceFound(device.get());
   base::RunLoop().RunUntilIdle();
 }
@@ -194,7 +183,7 @@ TEST_F(FastPairNotDiscoverableScannerTest, NoParsedAdvertisement) {
 TEST_F(FastPairNotDiscoverableScannerTest, DontShowUI) {
   EXPECT_CALL(found_device_callback_, Run).Times(0);
   std::unique_ptr<device::BluetoothDevice> device =
-      GetInRangeDevice(GetAdvNoUiServicedata(), /*expect_call=*/false);
+      GetDevice(GetAdvNoUiServicedata(), /*expect_call=*/false);
   scanner_->NotifyDeviceFound(device.get());
   base::RunLoop().RunUntilIdle();
 }
@@ -202,14 +191,14 @@ TEST_F(FastPairNotDiscoverableScannerTest, DontShowUI) {
 TEST_F(FastPairNotDiscoverableScannerTest, NoMetadata) {
   EXPECT_CALL(found_device_callback_, Run).Times(0);
   std::unique_ptr<device::BluetoothDevice> device =
-      GetInRangeDevice(GetAdvServicedata(), /*expect_call=*/false);
+      GetDevice(GetAdvServicedata(), /*expect_call=*/false);
   scanner_->NotifyDeviceFound(device.get());
   base::RunLoop().RunUntilIdle();
 }
 
 TEST_F(FastPairNotDiscoverableScannerTest, InvokesLostCallbackAfterFound) {
   std::unique_ptr<device::BluetoothDevice> device =
-      GetInRangeDevice(GetAdvServicedata(), /*expect_call=*/true);
+      GetDevice(GetAdvServicedata(), /*expect_call=*/true);
 
   nearby::fastpair::GetObservedDeviceResponse response;
   response.mutable_device()->set_id(kModelIdLong);
@@ -237,7 +226,7 @@ TEST_F(FastPairNotDiscoverableScannerTest,
   EXPECT_CALL(found_device_callback_, Run).Times(0);
   EXPECT_CALL(lost_device_callback_, Run).Times(0);
   std::unique_ptr<device::BluetoothDevice> device =
-      GetInRangeDevice(std::vector<uint8_t>(), /*expect_call=*/false);
+      GetDevice(std::vector<uint8_t>(), /*expect_call=*/false);
   scanner_->NotifyDeviceLost(device.get());
   base::RunLoop().RunUntilIdle();
 }
@@ -256,8 +245,8 @@ TEST_F(FastPairNotDiscoverableScannerTest, SetBatteryInfo) {
   EXPECT_CALL(found_device_callback_, Run).Times(1);
 
   std::unique_ptr<device::BluetoothDevice> device =
-      GetInRangeDevice(GetAdvBatteryServicedata(),
-                       /*expect_call=*/true);
+      GetDevice(GetAdvBatteryServicedata(),
+                /*expect_call=*/true);
   scanner_->NotifyDeviceFound(device.get());
   base::RunLoop().RunUntilIdle();
 
