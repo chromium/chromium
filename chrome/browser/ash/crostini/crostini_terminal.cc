@@ -7,10 +7,11 @@
 #include "ash/public/cpp/app_menu_constants.h"
 #include "base/bind.h"
 #include "base/containers/fixed_flat_map.h"
+#include "base/json/json_reader.h"
+#include "base/json/json_writer.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 #include "base/strings/strcat.h"
-#include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/values.h"
@@ -52,20 +53,22 @@ constexpr char kDefaultBackgroundColor[] = "#202124";
 constexpr char kSettingPassCtrlW[] = "/hterm/profiles/default/pass-ctrl-w";
 constexpr bool kDefaultPassCtrlW = false;
 
-constexpr char delimiter[] = "{.}";
+constexpr char kShortcutKey[] = "shortcut";
+constexpr char kShortcutValueTerminal[] = "terminal";
 
 std::string ShortcutIdFromContainerId(const crostini::ContainerId& id) {
-  return base::StrCat({id.vm_name, delimiter, id.container_name});
+  base::Value dict = id.ToDictValue();
+  dict.SetKey(kShortcutKey, base::Value(kShortcutValueTerminal));
+  std::string shortcut_id;
+  base::JSONWriter::Write(dict, &shortcut_id);
+  return shortcut_id;
 }
 
 base::flat_map<std::string, std::string> ExtrasFromShortcutId(
-    const std::string& shortcut_id) {
-  std::vector<std::string> pieces = base::SplitStringUsingSubstr(
-      shortcut_id, delimiter, base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
-  auto extras = base::flat_map<std::string, std::string>();
-  if (pieces.size() == 2) {
-    extras["vm_name"] = pieces[0];
-    extras["container_name"] = pieces[1];
+    const base::Value& shortcut) {
+  base::flat_map<std::string, std::string> extras;
+  for (const auto it : shortcut.DictItems()) {
+    extras[it.first] = it.second.GetString();
   }
   return extras;
 }
@@ -332,15 +335,24 @@ void AddTerminalMenuShortcuts(Profile* profile,
   }
 }
 
-void ExecuteTerminalMenuShortcutCommand(Profile* profile,
+bool ExecuteTerminalMenuShortcutCommand(Profile* profile,
                                         const std::string& shortcut_id,
                                         int64_t display_id) {
+  auto shortcut = base::JSONReader::Read(shortcut_id);
+  if (!shortcut || !shortcut->is_dict()) {
+    return false;
+  }
+  const std::string* shortcut_value = shortcut->FindStringKey(kShortcutKey);
+  if (!shortcut_value || *shortcut_value != kShortcutValueTerminal) {
+    return false;
+  }
   apps::mojom::IntentPtr intent = apps::mojom::Intent::New();
-  intent->extras = ExtrasFromShortcutId(shortcut_id);
+  intent->extras = ExtrasFromShortcutId(std::move(*shortcut));
   // TODO(crbug.com/1028898): Implement LaunchTerminalWithIntent() and call it.
   crostini::LaunchCrostiniAppWithIntent(profile,
                                         crostini::kCrostiniTerminalSystemAppId,
                                         display_id, std::move(intent));
+  return true;
 }
 
 }  // namespace crostini

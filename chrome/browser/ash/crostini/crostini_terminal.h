@@ -129,8 +129,9 @@ void AddTerminalMenuItems(Profile* profile,
 void AddTerminalMenuShortcuts(Profile* profile,
                               apps::mojom::MenuItemsPtr* menu_items);
 
-// Called when user clicks on terminal menu items.
-void ExecuteTerminalMenuShortcutCommand(Profile* profile,
+// Called when user clicks on terminal menu items. Returns true if |shortcut_id|
+// is recognized and handled.
+bool ExecuteTerminalMenuShortcutCommand(Profile* profile,
                                         const std::string& shortcut_id,
                                         int64_t display_id);
 
