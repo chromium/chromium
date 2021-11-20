@@ -12,6 +12,7 @@ source_set("public") {
     "background_download_service.h",
     "client.cc",
     "client.h",
+    "clients.cc",
     "clients.h",
     "download_metadata.cc",
     "download_metadata.h",

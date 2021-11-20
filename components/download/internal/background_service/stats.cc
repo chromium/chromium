@@ -10,6 +10,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "components/download/internal/background_service/startup_status.h"
+#include "components/download/public/background_service/clients.h"
 
 namespace download {
 namespace stats {
@@ -54,35 +55,6 @@ std::string TaskTypeToHistogramSuffix(DownloadTaskType task_type) {
     case DownloadTaskType::DOWNLOAD_LATER_TASK:
       NOTREACHED();
       return "DownloadLaterTask";
-  }
-  NOTREACHED();
-  return std::string();
-}
-
-// Converts DownloadClient to histogram suffix.
-// Should maps to suffix string in histograms.xml.
-std::string ClientToHistogramSuffix(DownloadClient client) {
-  switch (client) {
-    case DownloadClient::TEST:
-    case DownloadClient::TEST_2:
-    case DownloadClient::TEST_3:
-    case DownloadClient::INVALID:
-      return "__Test__";
-    case DownloadClient::OFFLINE_PAGE_PREFETCH:
-      return "OfflinePage";
-    case DownloadClient::BACKGROUND_FETCH:
-      return "BackgroundFetch";
-    case DownloadClient::DEBUGGING:
-      return "Debugging";
-    case DownloadClient::MOUNTAIN_INTERNAL:
-      return "MountainInternal";
-    case DownloadClient::PLUGIN_VM_IMAGE:
-      return "PluginVmImage";
-    case DownloadClient::OPTIMIZATION_GUIDE_PREDICTION_MODELS:
-      return "OptimizationGuidePredictionModels";
-    case DownloadClient::BOUNDARY:
-      NOTREACHED();
-      break;
   }
   NOTREACHED();
   return std::string();
@@ -151,7 +123,7 @@ void LogServiceApiAction(DownloadClient client, ServiceApiAction action) {
   base::UmaHistogramEnumeration(name, action, ServiceApiAction::COUNT);
 
   // Total count for each action with client suffix.
-  name.append(".").append(ClientToHistogramSuffix(client));
+  name.append(".").append(BackgroundDownloadClientToString(client));
   base::UmaHistogramEnumeration(name, action, ServiceApiAction::COUNT);
 }
 
@@ -163,7 +135,7 @@ void LogStartDownloadResult(DownloadClient client,
                                 DownloadParams::StartResult::COUNT);
 
   // Total count for each client result with client suffix.
-  name.append(".").append(ClientToHistogramSuffix(client));
+  name.append(".").append(BackgroundDownloadClientToString(client));
   base::UmaHistogramEnumeration(name, result,
                                 DownloadParams::StartResult::COUNT);
 }
@@ -177,7 +149,7 @@ void LogDownloadCompletion(DownloadClient client,
 
   // Records the file size.
   std::string name("Download.Service.Complete.FileSize.");
-  name.append(ClientToHistogramSuffix(client));
+  name.append(BackgroundDownloadClientToString(client));
   uint64_t file_size_kb = file_size_bytes / 1024;
   base::UmaHistogramCustomCounts(name, static_cast<int>(file_size_kb), 1,
                                  kMaxFileSizeKB, 50);
@@ -258,7 +230,7 @@ void LogEntryRemovedWhileWaitingForUploadResponse() {
 
 void LogHasUploadData(DownloadClient client, bool has_upload_data) {
   std::string name("Download.Service.Upload.HasUploadData");
-  name.append(".").append(ClientToHistogramSuffix(client));
+  name.append(".").append(BackgroundDownloadClientToString(client));
   base::UmaHistogramBoolean(name, has_upload_data);
 }
 

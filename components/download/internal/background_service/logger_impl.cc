@@ -39,33 +39,6 @@ std::string OptBoolToString(absl::optional<bool> value) {
   return "UNKNOWN";
 }
 
-// TODO(xingliu): Reuse ClientToHistogramSuffix in stats.cc.
-std::string ClientToString(DownloadClient client) {
-  switch (client) {
-    case DownloadClient::TEST:
-    case DownloadClient::TEST_2:
-    case DownloadClient::TEST_3:
-    case DownloadClient::INVALID:
-      return "TEST";
-    case DownloadClient::OFFLINE_PAGE_PREFETCH:
-      return "OfflinePagePrefetch";
-    case DownloadClient::BACKGROUND_FETCH:
-      return "BackgroundFetch";
-    case DownloadClient::DEBUGGING:
-      return "Debugging";
-    case DownloadClient::MOUNTAIN_INTERNAL:
-      return "MountainInternal";
-    case DownloadClient::PLUGIN_VM_IMAGE:
-      return "PluginVmImage";
-    case DownloadClient::OPTIMIZATION_GUIDE_PREDICTION_MODELS:
-      return "OptimizationGuidePredictionModels";
-    case DownloadClient::BOUNDARY:  // Intentional fallthrough.
-    default:
-      NOTREACHED();
-      return std::string();
-  }
-}
-
 std::string EntryStateToString(Entry::State state) {
   switch (state) {
     case Entry::State::NEW:
@@ -157,7 +130,8 @@ base::Value EntryToValue(
     const absl::optional<DriverEntry>& driver,
     const absl::optional<CompletionType>& completion_type) {
   base::Value serialized_entry(base::Value::Type::DICTIONARY);
-  serialized_entry.SetStringKey("client", ClientToString(entry.client));
+  serialized_entry.SetStringKey("client",
+                                BackgroundDownloadClientToString(entry.client));
   serialized_entry.SetStringKey("state", EntryStateToString(entry.state));
   serialized_entry.SetStringKey("guid", entry.guid);
 
@@ -294,7 +268,8 @@ void LoggerImpl::OnServiceRequestMade(
     return;
 
   base::Value serialized_request(base::Value::Type::DICTIONARY);
-  serialized_request.SetStringKey("client", ClientToString(client));
+  serialized_request.SetStringKey("client",
+                                  BackgroundDownloadClientToString(client));
   serialized_request.SetStringKey("guid", guid);
   serialized_request.SetStringKey("result", StartResultToString(start_result));
   for (auto& observer : observers_)
