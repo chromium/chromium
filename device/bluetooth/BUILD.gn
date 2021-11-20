@@ -9,7 +9,7 @@ if (is_android) {
   import("//build/config/android/rules.gni")  # For generate_jni().
 }
 if (is_chromeos_ash) {
-  import("//chromeos/dbus/use_real_dbus_clients.gni")
+  import("//chromeos/dbus/config/use_real_dbus_clients.gni")
 } else if (use_bluez) {
   use_real_dbus_clients = false
 }
@@ -452,7 +452,7 @@ component("bluetooth") {
         "floss/floss_manager_client.h",
       ]
       if (is_chromeos_ash) {
-        configs += [ "//chromeos/dbus:use_real_dbus_clients_config" ]
+        configs += [ "//chromeos/dbus/config:use_real_dbus_clients_config" ]
         sources += [
           "chromeos/bluetooth_connection_logger.cc",
           "chromeos/bluetooth_connection_logger.h",

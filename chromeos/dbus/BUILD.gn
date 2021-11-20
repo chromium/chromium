@@ -5,7 +5,6 @@
 import("//chromeos/components/chromebox_for_meetings/buildflags/buildflags.gni")
 import("//testing/test.gni")
 import("//third_party/protobuf/proto_library.gni")
-import("use_real_dbus_clients.gni")
 
 assert(is_chromeos, "Non-Chrome-OS builds must not depend on //chromeos")
 
@@ -75,17 +74,12 @@ component("dbus") {
   ]
 }
 
-config("use_real_dbus_clients_config") {
-  if (use_real_dbus_clients) {
-    defines = [ "USE_REAL_DBUS_CLIENTS" ]
-  }
-}
-
 component("common") {
   output_name = "chromeos_dbus_common"
   defines = [ "IS_CHROMEOS_DBUS_IMPL" ]
 
-  all_dependent_configs = [ ":use_real_dbus_clients_config" ]
+  all_dependent_configs =
+      [ "//chromeos/dbus/config:use_real_dbus_clients_config" ]
   public_deps = [ "//chromeos/dbus/constants" ]
 
   deps = [
