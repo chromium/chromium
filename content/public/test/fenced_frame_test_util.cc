@@ -19,7 +19,6 @@ namespace {
 
 constexpr char kAddFencedFrameScript[] = R"({
     const fenced_frame = document.createElement('fencedframe');
-    fenced_frame.src = $1;
     document.body.appendChild(fenced_frame);
   })";
 
@@ -60,7 +59,8 @@ FencedFrameTestHelper::~FencedFrameTestHelper() = default;
 
 RenderFrameHost* FencedFrameTestHelper::CreateFencedFrame(
     RenderFrameHost* fenced_frame_parent,
-    const GURL& url) {
+    const GURL& url,
+    net::Error expected_error_code) {
   TRACE_EVENT("test", "FencedFrameTestHelper::CreateAndGetFencedFrame",
               "fenced_frame_parent", fenced_frame_parent, "url", url);
   RenderFrameHostImpl* fenced_frame_parent_rfh =
@@ -77,25 +77,20 @@ RenderFrameHost* FencedFrameTestHelper::CreateFencedFrame(
   EXPECT_EQ(previous_fenced_frame_count + 1, fenced_frames.size());
 
   FencedFrame* fenced_frame = fenced_frames.back();
-  fenced_frame->WaitForDidStopLoadingForTesting();
   // It is possible that we got the did stop loading notification because the
   // fenced frame was actually being destroyed. Check to make sure that's not
   // the case. TODO(crbug.com/1123606): Consider weakly referencing the fenced
   // frame if the removal-and-stop-loading scenario is a useful one to test.
   EXPECT_EQ(previous_fenced_frame_count + 1,
             fenced_frame_parent_rfh->GetFencedFrames().size());
-
-  // Return the main RenderFrameHost of the most-recently added fenced frame if
-  // the navigation committed successfully.
-  if (fenced_frame->GetInnerRoot()->GetLastCommittedURL() == url)
-    return fenced_frame->GetInnerRoot();
-
-  return nullptr;
+  return NavigateFrameInFencedFrameTree(fenced_frame->GetInnerRoot(), url,
+                                        expected_error_code);
 }
 
 RenderFrameHost* FencedFrameTestHelper::NavigateFrameInFencedFrameTree(
     RenderFrameHost* rfh,
-    const GURL& url) {
+    const GURL& url,
+    net::Error expected_error_code) {
   TRACE_EVENT("test", "FencedFrameTestHelper::NavigateFrameInsideFencedFrame",
               "rfh", rfh, "url", url);
   // TODO(domfarolino): Consider adding |url| to the relevant
@@ -107,14 +102,17 @@ RenderFrameHost* FencedFrameTestHelper::NavigateFrameInFencedFrameTree(
   FrameTreeNode* target_node =
       static_cast<RenderFrameHostImpl*>(rfh)->frame_tree_node();
   EXPECT_EQ(url.spec(), EvalJs(rfh, JsReplace(kNavigateFrameScript, url)));
-  fenced_frame->WaitForDidStopLoadingForTesting();
 
-  // Return the `RenderFrameHost` that the navigation committed to, if it did
-  // indeed commit successfully. Otherwise, return `nullptr` to indicate that
-  // the navigation did not succeed, even though the old `RenderFrameHost` still
-  // exists and is still valid.
-  if (target_node->current_frame_host()->GetLastCommittedURL() != url)
-    return nullptr;
+  // TODO(crbug.com/1257133): Once this bug is fixed, we can use
+  // `TestFrameNavigationObserver` to tell us when the navigation has finished,
+  // which actually exposes net::Error codes encountered during navigation.
+  // Therefore once that bug is fixed, we can perform finer-grained error
+  // code comparisons than the crude `RenderFrameHost::IsErrorDocument()` one
+  // below.
+  fenced_frame->WaitForDidStopLoadingForTesting();
+  EXPECT_EQ(expected_error_code == net::Error::OK,
+            !target_node->current_frame_host()->IsErrorDocument());
+  EXPECT_EQ(target_node->current_frame_host()->GetLastCommittedURL(), url);
 
   return target_node->current_frame_host();
 }

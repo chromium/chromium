@@ -833,8 +833,10 @@ class AppBannerManagerFencedFrameBrowserTest
   content::test::FencedFrameTestHelper fenced_frame_helper_;
 };
 
+// TODO(crbug.com/1270942): Re-enable this test once it works with
+// `FencedFrameTestHelper` again.
 IN_PROC_BROWSER_TEST_F(AppBannerManagerFencedFrameBrowserTest,
-                       FencedFrameShouldNotUpdateState) {
+                       DISABLED_FencedFrameShouldNotUpdateState) {
   // Navigate to an initial page.
   const GURL initial_url = embedded_test_server()->GetURL("/empty.html");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), initial_url));

@@ -5035,15 +5035,14 @@ IN_PROC_BROWSER_TEST_F(WebContentsFencedFrameBrowserTest, UpdateFavicon) {
   ASSERT_TRUE(WaitForLoadStop(web_contents()));
 
   // Create fenced frame.
+  const GURL fenced_frame_url = embedded_test_server()->GetURL(
+      "fencedframe.test", "/fenced_frames/title1.html");
+
   RenderFrameHost* inner_fenced_frame_rfh =
-      fenced_frame_test_helper().CreateFencedFrame(primary_rfh, main_url);
-  const GURL fenced_frame_url =
-      embedded_test_server()->GetURL("fencedframe.test", "/title2.html");
+      fenced_frame_test_helper().CreateFencedFrame(primary_rfh,
+                                                   fenced_frame_url);
   EXPECT_CALL(observer, DidUpdateFaviconURL(inner_fenced_frame_rfh, testing::_))
       .Times(0);
-  inner_fenced_frame_rfh =
-      fenced_frame_test_helper().NavigateFrameInFencedFrameTree(
-          inner_fenced_frame_rfh, fenced_frame_url);
 }
 
 // Tests that pages are still visible after a page is navigated away
@@ -5059,8 +5058,8 @@ IN_PROC_BROWSER_TEST_F(WebContentsFencedFrameBrowserTest, RemainsVisible) {
   EXPECT_EQ(Visibility::VISIBLE, web_contents()->GetVisibility());
 
   // Create fenced frame.
-  const GURL fenced_frame_url =
-      embedded_test_server()->GetURL("fencedframe.test", "/title2.html");
+  const GURL fenced_frame_url = embedded_test_server()->GetURL(
+      "fencedframe.test", "/fenced_frames/title1.html");
   content::RenderFrameHost* fenced_frame_host =
       fenced_frame_test_helper().CreateFencedFrame(primary_rfh,
                                                    fenced_frame_url);

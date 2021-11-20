@@ -547,16 +547,17 @@ IN_PROC_BROWSER_TEST_F(
                                     1);
 
   // Create a fenced frame.
+  const GURL& fenced_frame_url =
+      GetTestURL("/fenced_frames/anchors_different_area.html");
   content::RenderFrameHost* fenced_frame_host =
       fenced_frame_test_helper().CreateFencedFrame(
-          web_contents()->GetMainFrame(), url);
+          web_contents()->GetMainFrame(), fenced_frame_url);
   // The count should not increase in DidFinishLoad method.
   histogram_tester.ExpectTotalCount("NavigationPredictor.IsPubliclyRoutable",
                                     1);
 
-  // Navigate the fenced frame.
   fenced_frame_test_helper().NavigateFrameInFencedFrameTree(fenced_frame_host,
-                                                            url);
+                                                            fenced_frame_url);
   // Histogram count should not increase after navigating the fenced frame.
   histogram_tester.ExpectTotalCount("NavigationPredictor.IsPubliclyRoutable",
                                     1);

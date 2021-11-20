@@ -130,13 +130,12 @@ IN_PROC_BROWSER_TEST_F(FencedFrameBrowserTest, Navigation) {
       .Times(0);
 
   RenderFrameHostImpl* primary_rfh = primary_main_frame_host();
-  RenderFrameHost* fenced_frame_rfh =
-      fenced_frame_test_helper().CreateFencedFrame(primary_rfh, main_url);
 
   const GURL fenced_frame_url = embedded_test_server()->GetURL(
       "fencedframe.test", "/fenced_frames/title1.html");
-  fenced_frame_rfh = fenced_frame_test_helper().NavigateFrameInFencedFrameTree(
-      fenced_frame_rfh, fenced_frame_url);
+  RenderFrameHost* fenced_frame_rfh =
+      fenced_frame_test_helper().CreateFencedFrame(primary_rfh,
+                                                   fenced_frame_url);
 
   // Test that a fenced frame navigation does not impact the primary main
   // frame...
@@ -150,12 +149,14 @@ IN_PROC_BROWSER_TEST_F(FencedFrameBrowserTest, Navigation) {
 IN_PROC_BROWSER_TEST_F(FencedFrameBrowserTest, FrameIteration) {
   const GURL main_url =
       embedded_test_server()->GetURL("fencedframe.test", "/title1.html");
-  EXPECT_TRUE(NavigateToURL(shell(), embedded_test_server()->GetURL(
-                                         "fencedframe.test", "/title1.html")));
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
   RenderFrameHostImplWrapper primary_rfh(primary_main_frame_host());
+
+  const GURL fenced_frame_url = embedded_test_server()->GetURL(
+      "fencedframe.test", "/fenced_frames/title1.html");
   RenderFrameHostImplWrapper fenced_frame_rfh(
       fenced_frame_test_helper().CreateFencedFrame(primary_rfh.get(),
-                                                   main_url));
+                                                   fenced_frame_url));
 
   // Test that the outer => inner delegate mechanism works correctly.
   EXPECT_THAT(CollectAllRenderFrameHosts(primary_rfh.get()),

@@ -57,7 +57,7 @@ IN_PROC_BROWSER_TEST_F(NFCHostBrowserTest, FencedFrameCannotCloseNFC) {
   )"));
 
   // Ensure that fenced frame insertion cannot close the NFC connection.
-  GURL inner_url(https_server_.GetURL("/title2.html"));
+  GURL inner_url(https_server_.GetURL("/fenced_frames/title1.html"));
   RenderFrameHost* fenced_frame_host = fenced_frame_helper_.CreateFencedFrame(
       web_contents()->GetMainFrame(), inner_url);
   EXPECT_NE(nullptr, fenced_frame_host);

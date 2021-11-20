@@ -896,7 +896,8 @@ IN_PROC_BROWSER_TEST_F(FencedFrameSiteDetailsBrowserTest,
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), initial_url));
 
   // Load a fenced frame.
-  GURL fenced_frame_url = embedded_test_server()->GetURL("/iframe.html");
+  GURL fenced_frame_url =
+      embedded_test_server()->GetURL("/fenced_frames/iframe.html");
   content::RenderFrameHost* fenced_frame_host =
       fenced_frame_test_helper().CreateFencedFrame(
           web_contents()->GetMainFrame(), fenced_frame_url);

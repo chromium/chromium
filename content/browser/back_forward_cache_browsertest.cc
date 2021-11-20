@@ -4293,8 +4293,10 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheFencedFrameBrowserTest,
                        FencedFramePageNotStoredInBackForwardCache) {
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL url_a(embedded_test_server()->GetURL("a.com", "/title1.html"));
-  GURL url_b(embedded_test_server()->GetURL("b.com", "/title1.html"));
-  GURL url_c(embedded_test_server()->GetURL("c.com", "/title1.html"));
+  GURL url_b(
+      embedded_test_server()->GetURL("b.com", "/fenced_frames/title1.html"));
+  GURL url_c(
+      embedded_test_server()->GetURL("c.com", "/fenced_frames/title1.html"));
 
   // 1) Navigate to A.
   EXPECT_TRUE(NavigateToURL(shell(), url_a));

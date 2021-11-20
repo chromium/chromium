@@ -173,8 +173,10 @@ class TranslateFrameBinderFencedFrameBrowserTest
   content::test::FencedFrameTestHelper fenced_frame_helper_;
 };
 
+// TODO(crbug.com/1270474): Make this test work properly with
+// `FencedFrameTestHelper`, as it appears to fail on certain platforms.
 IN_PROC_BROWSER_TEST_F(TranslateFrameBinderFencedFrameBrowserTest,
-                       NotBindingInFencedFrame) {
+                       DISABLED_NotBindingInFencedFrame) {
   TestTranslateDriverBindingContentBrowserClient test_browser_client;
   auto* old_browser_client = SetBrowserClientForTesting(&test_browser_client);
 
@@ -183,7 +185,8 @@ IN_PROC_BROWSER_TEST_F(TranslateFrameBinderFencedFrameBrowserTest,
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), initial_url));
 
   // Create a fenced frame.
-  const GURL fenced_frame_url = embedded_test_server()->GetURL("/title1.html");
+  const GURL fenced_frame_url =
+      embedded_test_server()->GetURL("/fenced_frames/title1.html");
   content::RenderFrameHost* fenced_frame_host =
       fenced_frame_test_helper().CreateFencedFrame(
           web_contents()->GetMainFrame(), fenced_frame_url);

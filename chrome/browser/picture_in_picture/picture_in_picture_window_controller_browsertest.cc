@@ -1610,8 +1610,10 @@ class PictureInPictureWindowControllerFencedFrameBrowserTest
   content::test::FencedFrameTestHelper fenced_frame_helper_;
 };
 
+// TODO(crbug.com/1269935): Make this test work properly with
+// FencedFrameTestHelper and re-enable the test.
 IN_PROC_BROWSER_TEST_F(PictureInPictureWindowControllerFencedFrameBrowserTest,
-                       FencedFrameShouldNotCloseWindow) {
+                       DISABLED_FencedFrameShouldNotCloseWindow) {
   GURL test_page_url = embedded_test_server()->GetURL(
       "example.com", "/media/picture-in-picture/window-size.html");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_page_url));

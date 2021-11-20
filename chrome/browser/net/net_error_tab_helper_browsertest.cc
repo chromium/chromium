@@ -239,8 +239,11 @@ IN_PROC_BROWSER_TEST_F(NetErrorTabHelperWithFencedFrameTest,
             result.ExtractString());
 }
 
+// TODO(crbug.com/1269931): Make this test work properly and not result in an
+// error page being navigated to in the fenced frame, and then re-enable the
+// test.
 IN_PROC_BROWSER_TEST_F(NetErrorTabHelperWithFencedFrameTest,
-                       CanRunDiagnosticsDialogOnFencedFrame) {
+                       DISABLED_CanRunDiagnosticsDialogOnFencedFrame) {
   GURL initial_url =
       net::URLRequestFailedJob::GetMockHttpUrl(net::ERR_NAME_NOT_RESOLVED);
   RenderFrameHost* inner_fenced_frame_rfh =

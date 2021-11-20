@@ -748,13 +748,10 @@ IN_PROC_BROWSER_TEST_F(NavigationPredictorFencedFrameBrowserTest,
   EXPECT_EQ(2u, anchor_entries.size());
 
   // Create a fenced frame.
-  content::RenderFrameHost* fenced_frame_host =
-      fenced_frame_test_helper().CreateFencedFrame(
-          web_contents()->GetMainFrame(), url);
-
-  // Navigate the fenced frame.
-  fenced_frame_test_helper().NavigateFrameInFencedFrameTree(fenced_frame_host,
-                                                            url);
+  const GURL& fenced_frame_url =
+      test_server()->GetURL("/fenced_frames/simple_page_with_anchors.html");
+  ignore_result(fenced_frame_test_helper().CreateFencedFrame(
+      web_contents()->GetMainFrame(), fenced_frame_url));
 
   // Make sure the fenced frame doesn't log any anchors.
   anchor_entries = test_ukm_recorder->GetEntriesByName(AnchorEntry::kEntryName);

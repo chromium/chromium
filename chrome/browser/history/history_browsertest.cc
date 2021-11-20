@@ -970,7 +970,8 @@ IN_PROC_BROWSER_TEST_F(HistoryFencedFrameBrowserTest,
             history_tab_helper->last_load_completion_);
 
   // Create a fenced frame.
-  GURL fenced_frame_url = embedded_test_server()->GetURL("/title1.html");
+  GURL fenced_frame_url =
+      embedded_test_server()->GetURL("/fenced_frames/title1.html");
   content::RenderFrameHost* fenced_frame_host =
       fenced_frame_test_helper().CreateFencedFrame(
           web_contents()->GetMainFrame(), fenced_frame_url);
