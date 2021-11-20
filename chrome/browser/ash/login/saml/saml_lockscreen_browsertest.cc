@@ -135,23 +135,23 @@ IN_PROC_BROWSER_TEST_F(LockscreenWebUiTest, Login) {
   // Lock the screen and trigger the lock screen SAML reauth dialog.
   ScreenLockerTester().Lock();
 
-  absl::optional<LockScreenReauthDialogTestHelper> lock_screen_reauth_dialog =
+  absl::optional<LockScreenReauthDialogTestHelper> reauth_dialog_helper =
       LockScreenReauthDialogTestHelper::ShowDialogAndWait();
-  ASSERT_TRUE(lock_screen_reauth_dialog);
-  lock_screen_reauth_dialog->ForceSamlRedirect();
+  ASSERT_TRUE(reauth_dialog_helper);
+  reauth_dialog_helper->ForceSamlRedirect();
 
   // Expect the 'Verify Account' screen (the first screen the dialog shows) to
   // be visible and proceed to the SAML page.
-  lock_screen_reauth_dialog->WaitForVerifyAccountScreen();
-  lock_screen_reauth_dialog->ClickVerifyButton();
+  reauth_dialog_helper->WaitForVerifyAccountScreen();
+  reauth_dialog_helper->ClickVerifyButton();
 
-  lock_screen_reauth_dialog->WaitForSamlScreen();
-  lock_screen_reauth_dialog->ExpectVerifyAccountScreenHidden();
+  reauth_dialog_helper->WaitForSamlScreen();
+  reauth_dialog_helper->ExpectVerifyAccountScreenHidden();
 
-  lock_screen_reauth_dialog->WaitForIdpPageLoad();
+  reauth_dialog_helper->WaitForIdpPageLoad();
 
   // Fill-in the SAML IdP form and submit.
-  test::JSChecker signin_frame_js = lock_screen_reauth_dialog->SigninFrameJS();
+  test::JSChecker signin_frame_js = reauth_dialog_helper->SigninFrameJS();
   signin_frame_js.CreateVisibilityWaiter(true, {"Email"})->Wait();
   signin_frame_js.TypeIntoPath(FakeGaiaMixin::kEnterpriseUser1, {"Email"});
   signin_frame_js.TypeIntoPath("actual_password", {"Password"});
@@ -166,17 +166,17 @@ IN_PROC_BROWSER_TEST_F(LockscreenWebUiTest, ShowNetworkDialog) {
   // Lock the screen and trigger the lock screen SAML reauth dialog.
   ScreenLockerTester().Lock();
 
-  absl::optional<LockScreenReauthDialogTestHelper> lock_screen_reauth_dialog =
+  absl::optional<LockScreenReauthDialogTestHelper> reauth_dialog_helper =
       LockScreenReauthDialogTestHelper::ShowDialogAndWait();
-  ASSERT_TRUE(lock_screen_reauth_dialog);
+  ASSERT_TRUE(reauth_dialog_helper);
 
-  lock_screen_reauth_dialog->ShowNetworkScreenAndWait();
+  reauth_dialog_helper->ShowNetworkScreenAndWait();
 
   // Ensures that the web element 'cr-dialog' is really visible.
-  lock_screen_reauth_dialog->ExpectNetworkDialogVisible();
+  reauth_dialog_helper->ExpectNetworkDialogVisible();
 
   // Click on the actual button to close the dialog.
-  lock_screen_reauth_dialog->ClickCloseNetworkButton();
+  reauth_dialog_helper->ClickCloseNetworkButton();
 }
 
 IN_PROC_BROWSER_TEST_F(LockscreenWebUiTest, TriggerDialogOnNetworkOff) {
@@ -185,24 +185,59 @@ IN_PROC_BROWSER_TEST_F(LockscreenWebUiTest, TriggerDialogOnNetworkOff) {
   // Lock the screen and trigger the lock screen SAML reauth dialog.
   ScreenLockerTester().Lock();
 
-  absl::optional<LockScreenReauthDialogTestHelper> lock_screen_reauth_dialog =
+  absl::optional<LockScreenReauthDialogTestHelper> reauth_dialog_helper =
       LockScreenReauthDialogTestHelper::ShowDialogAndWait();
-  ASSERT_TRUE(lock_screen_reauth_dialog);
+  ASSERT_TRUE(reauth_dialog_helper);
 
   // Disconnect from all networks in order to trigger the network screen.
   network_state_test_helper_->service_test()->ClearServices();
   base::RunLoop().RunUntilIdle();
   network_state_test_helper_->service_test()->AddService(
-      kWifiServicePath, kWifiServicePath, kWifiServicePath /* name */,
-      shill::kTypeWifi, shill::kStateOffline, true);
+      /*service_path=*/kWifiServicePath, /*guid=*/kWifiServicePath,
+      /*name=*/kWifiServicePath, /*type=*/shill::kTypeWifi,
+      /*state=*/shill::kStateOffline, /*visible=*/true);
 
-  lock_screen_reauth_dialog->WaitForNetworkDialogAndSetHandlers();
+  reauth_dialog_helper->WaitForNetworkDialogAndSetHandlers();
 
   // Ensures that the web element 'cr-dialog' is visible.
-  lock_screen_reauth_dialog->ExpectNetworkDialogVisible();
+  reauth_dialog_helper->ExpectNetworkDialogVisible();
 
   // Click on the actual button to close the dialog.
-  lock_screen_reauth_dialog->ClickCloseNetworkButton();
+  reauth_dialog_helper->ClickCloseNetworkButton();
+}
+
+IN_PROC_BROWSER_TEST_F(LockscreenWebUiTest, TriggerAndHideNetworkDialog) {
+  Login();
+
+  // Lock the screen and trigger the lock screen SAML reauth dialog.
+  ScreenLockerTester().Lock();
+
+  absl::optional<LockScreenReauthDialogTestHelper> reauth_dialog_helper =
+      LockScreenReauthDialogTestHelper::ShowDialogAndWait();
+  ASSERT_TRUE(reauth_dialog_helper);
+
+  // Disconnect from all networks in order to trigger the network screen.
+  network_state_test_helper_->service_test()->ClearServices();
+  base::RunLoop().RunUntilIdle();
+  network_state_test_helper_->service_test()->AddService(
+      /*service_path=*/kWifiServicePath, /*guid=*/kWifiServicePath,
+      /*name=*/kWifiServicePath, /*type=*/shill::kTypeWifi,
+      /*state=*/shill::kStateOffline, /*visible=*/true);
+
+  reauth_dialog_helper->WaitForNetworkDialogAndSetHandlers();
+
+  // Ensures that the web element 'cr-dialog' is visible.
+  reauth_dialog_helper->ExpectNetworkDialogVisible();
+
+  // Reconnect network.
+  network_state_test_helper_->service_test()->AddService(
+      /*service_path=*/kWifiServicePath, /*guid=*/kWifiServicePath,
+      /*name=*/kWifiServicePath, /*type=*/shill::kTypeWifi,
+      /*state=*/shill::kStateOnline, /*visible=*/true);
+  base::RunLoop().RunUntilIdle();
+
+  // Ensures that the re-auth dialog is visible.
+  reauth_dialog_helper->ExpectNetworkDialogHidden();
 }
 
 }  // namespace ash

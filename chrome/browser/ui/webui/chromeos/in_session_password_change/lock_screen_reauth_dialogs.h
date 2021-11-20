@@ -9,6 +9,7 @@
 #include "chrome/browser/ash/login/helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/chromeos/in_session_password_change/base_lock_dialog.h"
+#include "chrome/browser/ui/webui/chromeos/login/network_state_informer.h"
 #include "chromeos/network/network_state_handler.h"
 #include "chromeos/network/network_state_handler_observer.h"
 #include "ui/web_dialogs/web_dialog_ui.h"
@@ -17,8 +18,9 @@ namespace chromeos {
 
 class LockScreenNetworkDialog;
 
-class LockScreenStartReauthDialog : public BaseLockDialog,
-                                    public NetworkStateHandlerObserver {
+class LockScreenStartReauthDialog
+    : public BaseLockDialog,
+      public NetworkStateInformer::NetworkStateInformerObserver {
  public:
   LockScreenStartReauthDialog();
   LockScreenStartReauthDialog(LockScreenStartReauthDialog const&) = delete;
@@ -43,17 +45,23 @@ class LockScreenStartReauthDialog : public BaseLockDialog,
     return lock_screen_network_dialog_.get();
   }
 
+  bool is_network_dialog_visible_for_testing() {
+    return is_network_dialog_visible_;
+  }
+
  private:
   void OnProfileCreated(Profile* profile, Profile::CreateStatus status);
   void OnDialogClosed(const std::string& json_retval) override;
-
-  // NetworkStateHandlerObserver:
-  void NetworkConnectionStateChanged(const NetworkState* network) override;
-  void DefaultNetworkChanged(const NetworkState* network) override;
-
   void DeleteLockScreenNetworkDialog();
 
-  std::unique_ptr<login::NetworkStateHelper> network_state_helper_;
+  // NetworkStateInformer::NetworkStateInformerObserver:
+  void UpdateState(NetworkError::ErrorReason reason) override;
+
+  scoped_refptr<chromeos::NetworkStateInformer> network_state_informer_;
+  bool is_network_dialog_visible_ = false;
+
+  base::ScopedObservation<NetworkStateInformer, NetworkStateInformerObserver>
+      scoped_observation_{this};
 
   std::unique_ptr<LockScreenNetworkDialog> lock_screen_network_dialog_;
   Profile* profile_ = nullptr;

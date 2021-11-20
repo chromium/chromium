@@ -70,6 +70,7 @@ class LockScreenReauthDialogTestHelper {
   void CloseNetworkScreen();
 
   void ExpectNetworkDialogVisible();
+  void ExpectNetworkDialogHidden();
   void ClickCloseNetworkButton();
 
   // Wait for the SAML IdP page to load.

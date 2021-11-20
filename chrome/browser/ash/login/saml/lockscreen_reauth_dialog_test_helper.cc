@@ -229,6 +229,10 @@ void LockScreenReauthDialogTestHelper::ExpectNetworkDialogVisible() {
   NetworkJS().ExpectVisiblePath(kNetworkDialog);
 }
 
+void LockScreenReauthDialogTestHelper::ExpectNetworkDialogHidden() {
+  EXPECT_FALSE(reauth_dialog_->is_network_dialog_visible_for_testing());
+}
+
 void LockScreenReauthDialogTestHelper::ClickCloseNetworkButton() {
   NetworkJS().TapOnPath(kNetworkCancelButton);
 }
