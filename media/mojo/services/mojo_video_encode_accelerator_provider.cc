@@ -7,7 +7,6 @@
 #include <memory>
 #include <utility>
 
-#include "base/no_destructor.h"
 #include "base/task/thread_pool.h"
 #include "media/base/bind_to_current_loop.h"
 #include "media/base/limits.h"
@@ -42,17 +41,10 @@ void MojoVideoEncodeAcceleratorProvider::Create(
   // and creating encoder might take quite some time, and they might block
   // processing of other mojo calls if executed on the current runner.
   //
-  // This runner needs to use sync primitives (and be DEDICATED) because
-  // MediaFoundationVEA waits for the encoding thread to stop when
-  // destroyed. Since a dedicated runner is basically a separate thread, it's
-  // declared static to avoid creation of a new thread for each renderer with
-  // GPU factories.
-  static base::NoDestructor<scoped_refptr<base::SingleThreadTaskRunner>> runner(
-      base::ThreadPool::CreateSingleThreadTaskRunner(
-          {base::TaskPriority::USER_BLOCKING, base::WithBaseSyncPrimitives()},
-          base::SingleThreadTaskRunnerThreadMode::DEDICATED));
-
-  (*runner)->PostTask(
+  // MayBlock() because MF VEA can take long time running GetSupportedProfiles()
+  auto runner =
+      base::ThreadPool::CreateSingleThreadTaskRunner({base::MayBlock()});
+  runner->PostTask(
       FROM_HERE, base::BindOnce(BindVEAProvider, std::move(receiver),
                                 std::move(create_vea_callback), gpu_preferences,
                                 gpu_workarounds));

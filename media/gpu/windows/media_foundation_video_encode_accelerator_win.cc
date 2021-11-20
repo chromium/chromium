@@ -21,6 +21,7 @@
 #include "base/cxx17_backports.h"
 #include "base/memory/shared_memory_mapping.h"
 #include "base/memory/unsafe_shared_memory_region.h"
+#include "base/task/thread_pool.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/trace_event/trace_event.h"
 #include "base/win/scoped_co_mem.h"
@@ -186,14 +187,16 @@ MediaFoundationVideoEncodeAccelerator::MediaFoundationVideoEncodeAccelerator(
       bitrate_(Bitrate::ConstantBitrate(kDefaultTargetBitrate)),
       input_required_(false),
       main_client_task_runner_(base::SequencedTaskRunnerHandle::Get()),
-      encoder_thread_("MFEncoderThread") {}
+      encoder_thread_task_runner_(
+          base::ThreadPool::CreateCOMSTATaskRunner({})) {
+  encoder_weak_ptr_ = encoder_task_weak_factory_.GetWeakPtr();
+}
 
 MediaFoundationVideoEncodeAccelerator::
     ~MediaFoundationVideoEncodeAccelerator() {
   DVLOG(3) << __func__;
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  DCHECK(!encoder_thread_.IsRunning());
   DCHECK(!encoder_task_weak_factory_.HasWeakPtrs());
 }
 
@@ -325,12 +328,6 @@ bool MediaFoundationVideoEncodeAccelerator::Initialize(const Config& config,
     return false;
   }
 
-  encoder_thread_.init_com_with_mta(false);
-  if (!encoder_thread_.Start()) {
-    DLOG(ERROR) << "Failed spawning encoder thread.";
-    return false;
-  }
-  encoder_thread_task_runner_ = encoder_thread_.task_runner();
   IMFActivate** pp_activate = nullptr;
   uint32_t encoder_count = EnumerateHardwareEncoders(codec_, &pp_activate);
   if (!encoder_count) {
@@ -450,8 +447,7 @@ void MediaFoundationVideoEncodeAccelerator::Encode(
   encoder_thread_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(&MediaFoundationVideoEncodeAccelerator::EncodeTask,
-                     encoder_task_weak_factory_.GetWeakPtr(), std::move(frame),
-                     force_keyframe));
+                     encoder_weak_ptr_, std::move(frame), force_keyframe));
 }
 
 void MediaFoundationVideoEncodeAccelerator::UseOutputBitstreamBuffer(
@@ -483,7 +479,7 @@ void MediaFoundationVideoEncodeAccelerator::UseOutputBitstreamBuffer(
       FROM_HERE,
       base::BindOnce(
           &MediaFoundationVideoEncodeAccelerator::UseOutputBitstreamBufferTask,
-          encoder_task_weak_factory_.GetWeakPtr(), std::move(buffer_ref)));
+          encoder_weak_ptr_, std::move(buffer_ref)));
 }
 
 void MediaFoundationVideoEncodeAccelerator::RequestEncodingParametersChange(
@@ -496,8 +492,7 @@ void MediaFoundationVideoEncodeAccelerator::RequestEncodingParametersChange(
   encoder_thread_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&MediaFoundationVideoEncodeAccelerator::
                                     RequestEncodingParametersChangeTask,
-                                encoder_task_weak_factory_.GetWeakPtr(),
-                                bitrate, framerate));
+                                encoder_weak_ptr_, bitrate, framerate));
 }
 
 void MediaFoundationVideoEncodeAccelerator::Destroy() {
@@ -507,15 +502,17 @@ void MediaFoundationVideoEncodeAccelerator::Destroy() {
   // Cancel all callbacks.
   main_client_weak_factory_.reset();
 
-  if (encoder_thread_.IsRunning()) {
-    encoder_thread_task_runner_->PostTask(
-        FROM_HERE,
-        base::BindOnce(&MediaFoundationVideoEncodeAccelerator::DestroyTask,
-                       encoder_task_weak_factory_.GetWeakPtr()));
-    encoder_thread_.Stop();
-  }
-
-  delete this;
+  // MF resources need to be cleaned up on |encoder_thread_task_runner_|,
+  // but the object itself is supposed to be deleted on this runner, so when
+  // DestroyTask() is done we schedule deletion of |this|
+  auto delete_self = [](MediaFoundationVideoEncodeAccelerator* self) {
+    delete self;
+  };
+  encoder_thread_task_runner_->PostTaskAndReply(
+      FROM_HERE,
+      base::BindOnce(&MediaFoundationVideoEncodeAccelerator::DestroyTask,
+                     encoder_weak_ptr_),
+      base::BindOnce(delete_self, base::Unretained(this)));
 }
 
 bool MediaFoundationVideoEncodeAccelerator::IsGpuFrameResizeSupported() {
