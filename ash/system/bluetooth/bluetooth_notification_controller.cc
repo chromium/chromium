@@ -377,6 +377,13 @@ void BluetoothNotificationController::NotifyPairedDevice(
     }
   }
 
+  // If bluetooth revamp flag is on, do not show a notification, this is
+  // because notifications will be handled by BluetoothDeviceStatusUiHandler
+  // when flag is on.
+  if (ash::features::IsBluetoothRevampEnabled()) {
+    return;
+  }
+
   std::unique_ptr<Notification> notification = CreateSystemNotification(
       message_center::NOTIFICATION_TYPE_SIMPLE, GetPairedNotificationId(device),
       std::u16string() /* title */,

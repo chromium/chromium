@@ -103,6 +103,7 @@
 #include "ash/shutdown_controller_impl.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/system/audio/display_speaker_controller.h"
+#include "ash/system/bluetooth/bluetooth_device_status_ui_handler.h"
 #include "ash/system/bluetooth/bluetooth_notification_controller.h"
 #include "ash/system/bluetooth/bluetooth_power_controller.h"
 #include "ash/system/bluetooth/tray_bluetooth_helper_experimental.h"
@@ -1275,6 +1276,12 @@ void Shell::Init(
           user_activity_detector_.get(), std::move(fingerprint));
   video_activity_notifier_ =
       std::make_unique<VideoActivityNotifier>(video_detector_.get());
+
+  if (ash::features::IsBluetoothRevampEnabled()) {
+    bluetooth_device_status_ui_handler_ =
+        std::make_unique<BluetoothDeviceStatusUiHandler>();
+  }
+
   bluetooth_notification_controller_ =
       std::make_unique<BluetoothNotificationController>(
           message_center::MessageCenter::Get());

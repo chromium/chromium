@@ -97,6 +97,7 @@ class AssistantControllerImpl;
 class AutoclickController;
 class BackGestureEventHandler;
 class BacklightsForcedOffSetter;
+class BluetoothDeviceStatusUiHandler;
 class BluetoothNotificationController;
 class BluetoothPowerController;
 class BrightnessControlDelegate;
@@ -854,6 +855,8 @@ class ASH_EXPORT Shell : public SessionObserver,
       resolution_notification_controller_;
   std::unique_ptr<BluetoothNotificationController>
       bluetooth_notification_controller_;
+  std::unique_ptr<BluetoothDeviceStatusUiHandler>
+      bluetooth_device_status_ui_handler_;
   std::unique_ptr<BluetoothPowerController> bluetooth_power_controller_;
   std::unique_ptr<TrayBluetoothHelper> tray_bluetooth_helper_;
   std::unique_ptr<KeyboardControllerImpl> keyboard_controller_;
