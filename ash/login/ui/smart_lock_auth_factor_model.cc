@@ -168,7 +168,10 @@ void SmartLockAuthFactorModel::UpdateIcon(AuthIconView* icon) {
 
   switch (state_) {
     case SmartLockState::kPhoneNotFound:
-      FALLTHROUGH;
+      icon->SetIcon(kLockScreenSmartLockBluetoothIcon,
+                    AuthIconView::Color::kPrimary);
+      icon->RunErrorShakeAnimation();
+      return;
     case SmartLockState::kPhoneFoundLockedAndDistant:
       FALLTHROUGH;
     case SmartLockState::kPhoneFoundUnlockedAndDistant:

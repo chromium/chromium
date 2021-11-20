@@ -43,6 +43,10 @@ class ASH_EXPORT AuthIconView : public AnimatedRoundedImageView {
                     base::TimeDelta duration,
                     int num_frames);
 
+  // Cause the icon to briefly shake left and right to signify that an error has
+  // occurred.
+  void RunErrorShakeAnimation();
+
   void set_on_tap_or_click_callback(base::RepeatingClosure on_tap_or_click) {
     on_tap_or_click_callback_ = on_tap_or_click;
   }
