@@ -229,6 +229,10 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, AXMathUnder) {
   RunTypedTest<kMacAttributes>("ax-math-under.html");
 }
 
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, AXRequired) {
+  RunTypedTest<kMacAttributes>("ax-required.html");
+}
+
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, SelectAllTextarea) {
   RunTypedTest<kMacSelection>("selectall-textarea.html");
 }

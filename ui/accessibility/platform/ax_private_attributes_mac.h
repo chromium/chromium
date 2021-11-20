@@ -52,4 +52,18 @@ AX_EXPORT constexpr NSString* const NSAccessibilityMathPostscriptsAttribute =
 AX_EXPORT constexpr NSString* const NSAccessibilityMathPrescriptsAttribute =
     @"AXMathPrescripts";
 
+#if defined(MAC_OS_X_VERSION_10_12) && \
+    (MAC_OS_X_VERSION_MIN_REQUIRED >= MAC_OS_X_VERSION_10_12)
+#warning NSAccessibilityRequiredAttributeChrome \
+  should be removed since the deployment target is >= 10.12
+#endif
+
+// The following private WebKit accessibility attribute became public in 10.12,
+// but it can't be used on all OS because it has availability of 10.12. Instead,
+// define a similarly named constant with the "Chrome" suffix, and the same
+// string. This is used as the key to a dictionary, so string-comparison will
+// work.
+AX_EXPORT constexpr NSString* const NSAccessibilityRequiredAttributeChrome =
+    @"AXRequired";
+
 #endif  // UI_ACCESSIBILITY_PLATFORM_AX_PRIVATE_ATTRIBUTES_MAC_H_

@@ -715,21 +715,6 @@ AXTextEdit::~AXTextEdit() = default;
 
 }  // namespace content
 
-#if defined(MAC_OS_X_VERSION_10_12) && \
-    (MAC_OS_X_VERSION_MIN_REQUIRED >= MAC_OS_X_VERSION_10_12)
-#warning NSAccessibilityRequiredAttributeChrome \
-  should be removed since the deployment target is >= 10.12
-#endif
-
-// The following private WebKit accessibility attribute became public in 10.12,
-// but it can't be used on all OS because it has availability of 10.12. Instead,
-// define a similarly named constant with the "Chrome" suffix, and the same
-// string. This is used as the key to a dictionary, so string-comparison will
-// work.
-extern "C" {
-NSString* const NSAccessibilityRequiredAttributeChrome = @"AXRequired";
-}
-
 // Not defined in current versions of library, but may be in the future:
 #ifndef NSAccessibilityLanguageAttribute
 #define NSAccessibilityLanguageAttribute @"AXLanguage"
@@ -841,7 +826,6 @@ id content::AXTextMarkerRangeFrom(id anchor_textmarker, id focus_textmarker) {
       {NSAccessibilityOwnsAttribute, @"owns"},
       {NSAccessibilityParentAttribute, @"parent"},
       {NSAccessibilityPositionAttribute, @"position"},
-      {NSAccessibilityRequiredAttributeChrome, @"required"},
       {NSAccessibilityRoleAttribute, @"role"},
       {NSAccessibilityRowHeaderUIElementsAttribute, @"rowHeaders"},
       {NSAccessibilityRowIndexRangeAttribute, @"rowIndexRange"},
@@ -1681,12 +1665,6 @@ id content::AXTextMarkerRangeFrom(id anchor_textmarker, id focus_textmarker) {
   NSPoint pointInScreen =
       [self rectInScreen:gfx::Rect(gfx::Point(origin), gfx::Size(size))].origin;
   return [NSValue valueWithPoint:pointInScreen];
-}
-
-- (NSNumber*)required {
-  if (![self instanceActive])
-    return nil;
-  return @(GetState(_owner, ax::mojom::State::kRequired));
 }
 
 // Returns an enum indicating the role from owner_.
@@ -3365,13 +3343,6 @@ id content::AXTextMarkerRangeFrom(id anchor_textmarker, id focus_textmarker) {
   if (GetState(_owner, ax::mojom::State::kVertical) ||
       GetState(_owner, ax::mojom::State::kHorizontal)) {
     [ret addObject:NSAccessibilityOrientationAttribute];
-  }
-
-  // Anything focusable or any control:
-  if (_owner->HasIntAttribute(ax::mojom::IntAttribute::kRestriction) ||
-      _owner->HasIntAttribute(ax::mojom::IntAttribute::kInvalidState) ||
-      _owner->HasState(ax::mojom::State::kFocusable)) {
-    [ret addObject:@"AXRequired"];
   }
 
   // TODO(accessibility) What nodes should language be exposed on given new

@@ -172,7 +172,6 @@ id AXTextMarkerRangeFrom(id anchor_text_marker, id focus_text_marker);
 @property(nonatomic, readonly) NSString* orientation;
 @property(nonatomic, readonly) id parent;
 @property(nonatomic, readonly) NSValue* position;
-@property(nonatomic, readonly) NSNumber* required;
 // A string indicating the role of this object as far as accessibility
 // is concerned.
 @property(nonatomic, readonly) NSString* role;

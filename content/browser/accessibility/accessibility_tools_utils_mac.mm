@@ -57,6 +57,7 @@ bool IsValidAttribute(const std::string& attribute) {
        NSAccessibilityMathOverAttribute,
        NSAccessibilityMathPostscriptsAttribute,
        NSAccessibilityMathPrescriptsAttribute,
+       NSAccessibilityRequiredAttributeChrome,
        NSAccessibilityRoleDescriptionAttribute},
       NSStringComparator());
 
