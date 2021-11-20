@@ -1801,7 +1801,13 @@ class WebAppBrowserTest_FileHandler : public WebAppBrowserTest {
   base::test::ScopedFeatureList feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(WebAppBrowserTest_FileHandler, WebAppFileHandler) {
+// TODO(crbug.com/1270961): Flaky.
+#if defined(OS_WIN) || (defined(OS_MAC) && defined(ARCH_CPU_ARM64))
+#define MAYBE_WebAppFileHandler DISABLED_WebAppFileHandler
+#else
+#define MAYBE_WebAppFileHandler WebAppFileHandler
+#endif
+IN_PROC_BROWSER_TEST_F(WebAppBrowserTest_FileHandler, MAYBE_WebAppFileHandler) {
   os_hooks_suppress_.reset();
   base::ScopedAllowBlockingForTesting allow_blocking;
 
