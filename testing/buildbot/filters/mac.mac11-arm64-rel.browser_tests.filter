@@ -18,3 +18,4 @@
 -WebAppBrowserTest.WebAppCreateAndDeleteShortcut
 -SaveAsMhtml/SavePageOriginalVsSavedComparisonTest.NestedFrames/0
 -WorkerDevToolsTest.PauseInSharedWorkerInitialization
+-GetDisplayMediaChangeSourceBrowserTest.ChangeSource
