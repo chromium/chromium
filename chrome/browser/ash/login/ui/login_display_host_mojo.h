@@ -15,7 +15,7 @@
 #include "base/scoped_observation.h"
 #include "chrome/browser/ash/login/challenge_response_auth_keys_loader.h"
 #include "chrome/browser/ash/login/screens/user_selection_screen.h"
-#include "chrome/browser/ash/login/security_token_pin_dialog_host_impl.h"
+#include "chrome/browser/ash/login/security_token_pin_dialog_host_login_impl.h"
 #include "chrome/browser/ash/login/ui/login_display_host_common.h"
 #include "chrome/browser/ash/login/ui/oobe_ui_dialog_delegate.h"
 #include "chrome/browser/ui/ash/login_screen_client_impl.h"
@@ -221,7 +221,8 @@ class LoginDisplayHostMojo : public LoginDisplayHostCommon,
 
   ChallengeResponseAuthKeysLoader challenge_response_auth_keys_loader_;
 
-  SecurityTokenPinDialogHostImpl security_token_pin_dialog_host_impl_;
+  SecurityTokenPinDialogHostLoginImpl
+      security_token_pin_dialog_host_login_impl_;
 
   // Set if this has been added as a `OobeUI::Observer`.
   bool added_as_oobe_observer_ = false;

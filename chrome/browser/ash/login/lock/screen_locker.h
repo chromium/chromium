@@ -19,7 +19,7 @@
 #include "base/timer/wall_clock_timer.h"
 #include "chrome/browser/ash/login/challenge_response_auth_keys_loader.h"
 #include "chrome/browser/ash/login/help_app_launcher.h"
-#include "chrome/browser/ash/login/security_token_pin_dialog_host_impl.h"
+#include "chrome/browser/ash/login/security_token_pin_dialog_host_login_impl.h"
 #include "chrome/browser/ash/login/ui/login_display.h"
 #include "chromeos/login/auth/auth_status_consumer.h"
 // TODO(https://crbug.com/1164001): move to forward declaration.
@@ -328,7 +328,8 @@ class ScreenLocker
 
   ChallengeResponseAuthKeysLoader challenge_response_auth_keys_loader_;
 
-  SecurityTokenPinDialogHostImpl security_token_pin_dialog_host_impl_;
+  SecurityTokenPinDialogHostLoginImpl
+      security_token_pin_dialog_host_login_impl_;
 
   std::unique_ptr<PrefChangeRegistrar> fingerprint_pref_change_registrar_;
 

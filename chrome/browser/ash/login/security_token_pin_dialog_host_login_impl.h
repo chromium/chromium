@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ASH_LOGIN_SECURITY_TOKEN_PIN_DIALOG_HOST_IMPL_H_
-#define CHROME_BROWSER_ASH_LOGIN_SECURITY_TOKEN_PIN_DIALOG_HOST_IMPL_H_
+#ifndef CHROME_BROWSER_ASH_LOGIN_SECURITY_TOKEN_PIN_DIALOG_HOST_LOGIN_IMPL_H_
+#define CHROME_BROWSER_ASH_LOGIN_SECURITY_TOKEN_PIN_DIALOG_HOST_LOGIN_IMPL_H_
 
 #include <string>
 
@@ -15,14 +15,15 @@ namespace ash {
 
 // The Ash Login/Lock screen implementation of the security token PIN dialog
 // host. It displays the PIN request embedded into the user pod.
-class SecurityTokenPinDialogHostImpl final : public SecurityTokenPinDialogHost {
+class SecurityTokenPinDialogHostLoginImpl final
+    : public SecurityTokenPinDialogHost {
  public:
-  SecurityTokenPinDialogHostImpl();
-  SecurityTokenPinDialogHostImpl(const SecurityTokenPinDialogHostImpl&) =
-      delete;
-  SecurityTokenPinDialogHostImpl& operator=(
-      const SecurityTokenPinDialogHostImpl&) = delete;
-  ~SecurityTokenPinDialogHostImpl() override;
+  SecurityTokenPinDialogHostLoginImpl();
+  SecurityTokenPinDialogHostLoginImpl(
+      const SecurityTokenPinDialogHostLoginImpl&) = delete;
+  SecurityTokenPinDialogHostLoginImpl& operator=(
+      const SecurityTokenPinDialogHostLoginImpl&) = delete;
+  ~SecurityTokenPinDialogHostLoginImpl() override;
 
   // SecurityTokenPinDialogHost:
   void ShowSecurityTokenPinDialog(
@@ -59,9 +60,10 @@ class SecurityTokenPinDialogHostImpl final : public SecurityTokenPinDialogHost {
   // Is non-empty iff the dialog is active.
   SecurityTokenPinDialogClosedCallback pin_dialog_closed_callback_;
 
-  base::WeakPtrFactory<SecurityTokenPinDialogHostImpl> weak_ptr_factory_{this};
+  base::WeakPtrFactory<SecurityTokenPinDialogHostLoginImpl> weak_ptr_factory_{
+      this};
 };
 
 }  // namespace ash
 
-#endif  // CHROME_BROWSER_ASH_LOGIN_SECURITY_TOKEN_PIN_DIALOG_HOST_IMPL_H_
+#endif  // CHROME_BROWSER_ASH_LOGIN_SECURITY_TOKEN_PIN_DIALOG_HOST_LOGIN_IMPL_H_
