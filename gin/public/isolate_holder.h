@@ -11,6 +11,7 @@
 #include "gin/gin_export.h"
 #include "gin/public/v8_idle_task_runner.h"
 #include "v8/include/v8-array-buffer.h"
+#include "v8/include/v8-callbacks.h"
 #include "v8/include/v8-forward.h"
 
 namespace base {
@@ -68,9 +69,8 @@ class GIN_EXPORT IsolateHolder {
     kUtility
   };
 
-  explicit IsolateHolder(
-      scoped_refptr<base::SingleThreadTaskRunner> task_runner,
-      IsolateType isolate_type);
+  IsolateHolder(scoped_refptr<base::SingleThreadTaskRunner> task_runner,
+                IsolateType isolate_type);
   IsolateHolder(scoped_refptr<base::SingleThreadTaskRunner> task_runner,
                 AccessMode access_mode,
                 IsolateType isolate_type);
@@ -79,7 +79,9 @@ class GIN_EXPORT IsolateHolder {
       AccessMode access_mode,
       AllowAtomicsWaitMode atomics_wait_mode,
       IsolateType isolate_type,
-      IsolateCreationMode isolate_creation_mode = IsolateCreationMode::kNormal);
+      IsolateCreationMode isolate_creation_mode = IsolateCreationMode::kNormal,
+      v8::CreateHistogramCallback create_histogram_callback = nullptr,
+      v8::AddHistogramSampleCallback add_histogram_sample_callback = nullptr);
   IsolateHolder(const IsolateHolder&) = delete;
   IsolateHolder& operator=(const IsolateHolder&) = delete;
   ~IsolateHolder();

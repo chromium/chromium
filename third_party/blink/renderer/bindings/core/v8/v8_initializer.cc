@@ -750,6 +750,30 @@ V8PerIsolateData::V8ContextSnapshotMode GetV8ContextSnapshotMode() {
   return V8PerIsolateData::V8ContextSnapshotMode::kDontUseSnapshot;
 }
 
+void AddHistogramSample(void* hist, int sample) {
+  base::Histogram* histogram = static_cast<base::Histogram*>(hist);
+  histogram->Add(sample);
+}
+
+void* CreateHistogram(const char* name, int min, int max, size_t buckets) {
+  // Each histogram has an implicit '0' bucket (for underflow), so we can always
+  // bump the minimum to 1.
+  DCHECK_LE(0, min);
+  min = std::max(1, min);
+
+  // For boolean histograms, always include an overflow bucket [2, infinity).
+  if (max == 1 && buckets == 2) {
+    max = 2;
+    buckets = 3;
+  }
+
+  const std::string histogram_name =
+      Platform::Current()->GetNameForHistogram(name);
+  return base::Histogram::FactoryGet(
+      histogram_name, min, max, static_cast<uint32_t>(buckets),
+      base::Histogram::kUmaTargetedHistogramFlag);
+}
+
 }  // namespace
 
 void V8Initializer::InitializeMainThread(
@@ -768,7 +792,8 @@ void V8Initializer::InitializeMainThread(
   {
     SCOPED_BLINK_UMA_HISTOGRAM_TIMER("Blink.V8.InitPerIsolateData");
     isolate = V8PerIsolateData::Initialize(scheduler->V8TaskRunner(),
-                                           GetV8ContextSnapshotMode());
+                                           GetV8ContextSnapshotMode(),
+                                           CreateHistogram, AddHistogramSample);
   }
   scheduler->SetV8Isolate(isolate);
 

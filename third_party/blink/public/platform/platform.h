@@ -32,6 +32,7 @@
 #define THIRD_PARTY_BLINK_PUBLIC_PLATFORM_PLATFORM_H_
 
 #include <memory>
+#include <string>
 #include <tuple>
 #include <vector>
 
@@ -828,6 +829,14 @@ class BLINK_PLATFORM_EXPORT Platform {
   // Renderer Memory Metrics ----------------------------------------------
 
   virtual void RecordMetricsForBackgroundedRendererPurge() {}
+
+  // V8 Metrics -----------------------------------------------------------
+
+  // Called when adding a histogram entry. Allows customizing the name the
+  // histogram is logged as.
+  virtual std::string GetNameForHistogram(const char* name) {
+    return std::string{name};
+  }
 
   // V8 Context Snapshot --------------------------------------------------
 

@@ -160,6 +160,7 @@ _CONFIG = [
             'base::UmaHistogram.+',
 
             # //base/metrics/histogram.h
+            'base::Histogram',
             'base::HistogramBase',
             'base::LinearHistogram',
 
