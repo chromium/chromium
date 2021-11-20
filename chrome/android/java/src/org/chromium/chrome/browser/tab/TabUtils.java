@@ -17,9 +17,11 @@ import org.chromium.base.ApplicationStatus;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.tab.TabImpl.TabUserAgent;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge;
 import org.chromium.components.content_settings.ContentSettingValues;
 import org.chromium.components.content_settings.ContentSettingsType;
+import org.chromium.content_public.browser.ContentFeatureList;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.WindowAndroid;
@@ -91,7 +93,16 @@ public class TabUtils {
         final boolean reloadOnChange = !tab.isNativePage();
         tab.getWebContents().getNavigationController().setUseDesktopUserAgent(
                 switchToDesktop, reloadOnChange);
-        if (forcedByUser) ((TabImpl) tab).setUserForcedUserAgent();
+        if (forcedByUser) {
+            @TabUserAgent
+            int tabUserAgent = switchToDesktop ? TabUserAgent.DESKTOP : TabUserAgent.MOBILE;
+            if (ContentFeatureList.isEnabled(ContentFeatureList.REQUEST_DESKTOP_SITE_GLOBAL)
+                    && isDesktopSiteGlobalEnabled(Profile.fromWebContents(tab.getWebContents()))
+                            == switchToDesktop) {
+                tabUserAgent = TabUserAgent.DEFAULT;
+            }
+            ((TabImpl) tab).setTabUserAgent(tabUserAgent);
+        }
     }
 
     /**

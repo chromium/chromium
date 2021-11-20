@@ -13,6 +13,7 @@ import android.view.View;
 import android.view.View.OnAttachStateChangeListener;
 import android.view.accessibility.AccessibilityEvent;
 
+import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
@@ -69,6 +70,8 @@ import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.util.ColorUtils;
 import org.chromium.url.GURL;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.nio.ByteBuffer;
 
 /**
@@ -211,8 +214,21 @@ public class TabImpl implements Tab, TabObscuringHandler.Observer {
     private int mThemeColor;
     private boolean mUsedCriticalPersistedTabData;
 
-    /** Whether or not the user manually changed the user agent. */
-    private boolean mUserForcedUserAgent;
+    /** Tab level Request Desktop Site setting. */
+    private @TabUserAgent int mTabUserAgent;
+
+    // TODO(https://crbug.com/1251794): Determine if this should be defined somewhere like TabState
+    // for when we persist to disk.
+    /**
+     * Defines the tab level Request Desktop Site settings.
+     */
+    @IntDef({TabUserAgent.DEFAULT, TabUserAgent.MOBILE, TabUserAgent.DESKTOP})
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface TabUserAgent {
+        int DEFAULT = 0; /* No tab level setting */
+        int MOBILE = 1; /* Tab level setting is mobile layout */
+        int DESKTOP = 2; /* Tab level setting is desktop layout */
+    }
 
     /**
      * Creates an instance of a {@link TabImpl}.
@@ -1639,7 +1655,7 @@ public class TabImpl implements Tab, TabObscuringHandler.Observer {
 
         // We only calculate the user agent when users did not manually choose one.
         // TODO(crbug.com/1251794): Desktop site setting in app menu does not persist after restart.
-        if (!mUserForcedUserAgent
+        if (mTabUserAgent == TabUserAgent.DEFAULT
                 && ContentFeatureList.isEnabled(ContentFeatureList.REQUEST_DESKTOP_SITE_GLOBAL)) {
             // We only do the following logic to choose the desktop/mobile user agent if:
             // 1. User never manually made a choice in the app menu for requesting desktop site.
@@ -1674,8 +1690,8 @@ public class TabImpl implements Tab, TabObscuringHandler.Observer {
         return UserAgentOverrideOption.INHERIT;
     }
 
-    void setUserForcedUserAgent() {
-        mUserForcedUserAgent = true;
+    void setTabUserAgent(@TabUserAgent int tabUserAgent) {
+        mTabUserAgent = tabUserAgent;
     }
 
     private void switchUserAgentIfNeeded() {
