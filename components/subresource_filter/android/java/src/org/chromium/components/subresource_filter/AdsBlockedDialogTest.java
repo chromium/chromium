@@ -8,6 +8,7 @@ import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.never;
 
 import android.content.res.Resources;
+import android.os.Handler;
 import android.text.style.ClickableSpan;
 
 import androidx.test.core.app.ApplicationProvider;
@@ -17,6 +18,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
@@ -47,6 +49,9 @@ public class AdsBlockedDialogTest {
     @Mock
     private AdsBlockedDialog.Natives mNativeMock;
 
+    @Mock
+    private Handler mDialogHandler;
+
     private long mNativeDialog;
     private AdsBlockedDialog mDialog;
     private PropertyModel mModalDialogModel;
@@ -63,7 +68,7 @@ public class AdsBlockedDialogTest {
      */
     @Test
     public void testDialogType() {
-        createAndShowDialog();
+        createAndShowDialog(false);
         Resources resources = ApplicationProvider.getApplicationContext().getResources();
 
         Assert.assertEquals("Dialog title should match.",
@@ -89,7 +94,7 @@ public class AdsBlockedDialogTest {
      */
     @Test
     public void testDialogDismissedWithPositiveButton() {
-        createAndShowDialog();
+        createAndShowDialog(false);
         ModalDialogProperties.Controller dialogController =
                 mModalDialogModel.get(ModalDialogProperties.CONTROLLER);
         dialogController.onClick(mModalDialogModel, ModalDialogProperties.ButtonType.POSITIVE);
@@ -104,7 +109,7 @@ public class AdsBlockedDialogTest {
      */
     @Test
     public void testDialogDismissedWithNegativeButton() {
-        createAndShowDialog();
+        createAndShowDialog(false);
         ModalDialogProperties.Controller dialogController =
                 mModalDialogModel.get(ModalDialogProperties.CONTROLLER);
         dialogController.onClick(mModalDialogModel, ModalDialogProperties.ButtonType.NEGATIVE);
@@ -119,11 +124,12 @@ public class AdsBlockedDialogTest {
      */
     @Test
     public void testDialogDismissedCallsNative() {
-        createAndShowDialog();
+        createAndShowDialog(false);
         ModalDialogProperties.Controller dialogController =
                 mModalDialogModel.get(ModalDialogProperties.CONTROLLER);
         dialogController.onDismiss(
                 mModalDialogModel, DialogDismissalCause.NAVIGATE_BACK_OR_TOUCH_OUTSIDE);
+        Mockito.verify(mDialogHandler).removeCallbacksAndMessages(null);
         Mockito.verify(mNativeMock).onDismissed(anyLong());
     }
 
@@ -132,20 +138,34 @@ public class AdsBlockedDialogTest {
      * text is clicked.
      */
     @Test
-    public void tesDialogMessageLinkCallback() {
-        createAndShowDialog();
+    public void testDialogMessageLinkCallback() {
+        createAndShowDialog(false);
         mClickableSpan.onClick(null);
         Mockito.verify(mNativeMock).onLearnMoreClicked(anyLong());
+    }
+
+    /**
+     * Tests that the dialog is shown using Handler#post when shouldPostDialog is true.
+     */
+    @Test
+    public void testPostDialog() {
+        createAndShowDialog(true);
+        ArgumentCaptor<Runnable> captor = ArgumentCaptor.forClass(Runnable.class);
+        Mockito.verify(mDialogHandler).post(captor.capture());
+        captor.getValue().run();
+        Mockito.verify(mModalDialogManagerMock)
+                .showDialog(mModalDialogModel, ModalDialogManager.ModalDialogType.TAB);
     }
 
     /**
      * Helper function that creates AdsBlockedDialog, calls show() and captures the
      * property model for modal dialog view.
      */
-    private void createAndShowDialog() {
+    private void createAndShowDialog(boolean shouldPostDialog) {
         // Set nativeDialog to a non-zero value to pass assertion check
-        mDialog = new AdsBlockedDialog(1, RuntimeEnvironment.application, mModalDialogManagerMock);
-        mDialog.show();
+        mDialog = new AdsBlockedDialog(
+                1, RuntimeEnvironment.application, mModalDialogManagerMock, mDialogHandler);
+        mDialog.show(shouldPostDialog);
         mModalDialogModel = mDialog.getDialogModelForTesting();
         mClickableSpan = mDialog.getMessageClickableSpanForTesting();
     }
