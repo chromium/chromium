@@ -47,6 +47,7 @@ class BlinkPerfTest(legacy_page_test_case.LegacyPageTestCase):
     story_set.AddStory(blink_page)
     return story_set
 
+  @decorators.Disabled('chromeos')  # Flaky: https://crbug.com/1271916
   def testBlinkPerfTracingMetricsForMeasureTime(self):
     measurements = self.RunPageTest(
         self.blink_page_test, 'file://append-child-measure-time.html')
