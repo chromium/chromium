@@ -9,12 +9,15 @@
 #include <algorithm>
 #include <set>
 #include <utility>
+#include <vector>
 
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/check_op.h"
 #include "base/location.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_split.h"
+#include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -95,6 +98,9 @@ const char kSsdpLocationHeader[] = "LOCATION";
 const char kSsdpCacheControlHeader[] = "CACHE-CONTROL";
 const char kSsdpConfigIdHeader[] = "CONFIGID.UPNP.ORG";
 const char kSsdpUsnHeader[] = "USN";
+constexpr char kSsdpMaxAgeDirective[] = "max-age";
+constexpr int kSsdpMaxMaxAge = 3600;
+constexpr int kSsdpMaxConfigId = (2 << 24) - 1;
 
 // The receive buffer size, in bytes.
 const int kDialRecvBufferSize = 1500;
@@ -271,13 +277,11 @@ void DialServiceImpl::DialSocket::OnSocketWrite(int send_buffer_size,
 
 bool DialServiceImpl::DialSocket::ReadSocket() {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
-  if (!socket_) {
+  if (!socket_)
     return false;
-  }
 
-  if (is_reading_) {
+  if (is_reading_)
     return false;
-  }
 
   int result = net::OK;
   bool result_ok = true;
@@ -326,10 +330,12 @@ void DialServiceImpl::DialSocket::HandleResponse(int bytes_read) {
     dial_service_->NotifyOnDeviceDiscovered(parsed_device);
 }
 
-// static
 bool DialServiceImpl::DialSocket::ParseResponse(const std::string& response,
                                                 const base::Time& response_time,
                                                 DialDeviceData* device) {
+  device->set_ip_address(recv_address_.address());
+  device->set_response_time(response_time);
+
   size_t headers_end =
       HttpUtil::LocateEndOfHeaders(response.c_str(), response.size());
   if (headers_end == 0 || headers_end == std::string::npos) {
@@ -346,7 +352,9 @@ bool DialServiceImpl::DialSocket::ParseResponse(const std::string& response,
   }
 
   GURL device_url(device_url_str);
-  if (!DialDeviceData::IsDeviceDescriptionUrl(device_url)) {
+  if (device->IsValidUrl(device_url)) {
+    device->set_device_description_url(device_url);
+  } else {
     return false;
   }
 
@@ -355,20 +363,30 @@ bool DialServiceImpl::DialSocket::ParseResponse(const std::string& response,
       device_id.empty()) {
     return false;
   }
-
   device->set_device_id(device_id);
-  device->set_device_description_url(device_url);
-  device->set_response_time(response_time);
 
-  // TODO(mfoltz): Parse the max-age value from the cache control header.
-  // http://crbug.com/165289
   std::string cache_control;
-  GetHeader(headers.get(), kSsdpCacheControlHeader, &cache_control);
+  if (GetHeader(headers.get(), kSsdpCacheControlHeader, &cache_control) &&
+      !cache_control.empty()) {
+    std::vector<std::string> cache_control_directives = base::SplitString(
+        cache_control, "=", base::WhitespaceHandling::TRIM_WHITESPACE,
+        base::SplitResult::SPLIT_WANT_NONEMPTY);
+    if (cache_control_directives.size() == 2 &&
+        base::EqualsCaseInsensitiveASCII(cache_control_directives[0],
+                                         kSsdpMaxAgeDirective)) {
+      int max_age = 0;
+      if (base::StringToInt(cache_control_directives[1], &max_age) &&
+          max_age > 0) {
+        device->set_max_age(std::min(max_age, kSsdpMaxMaxAge));
+      }
+    }
+  }
 
   std::string config_id;
   int config_id_int;
   if (GetHeader(headers.get(), kSsdpConfigIdHeader, &config_id) &&
-      base::StringToInt(config_id, &config_id_int)) {
+      !config_id.empty() && base::StringToInt(config_id, &config_id_int) &&
+      config_id_int > 0 && config_id_int <= kSsdpMaxConfigId) {
     device->set_config_id(config_id_int);
   }
   return true;

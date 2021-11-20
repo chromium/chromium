@@ -223,10 +223,7 @@ void DialMediaSinkServiceImpl::OnDeviceDescriptionAvailable(
   DialSinkExtraData extra_data;
   extra_data.app_url = description_data.app_url;
   extra_data.model_name = description_data.model_name;
-  std::string ip_address = device_data.device_description_url().host();
-  if (!extra_data.ip_address.AssignFromIPLiteral(ip_address)) {
-    return;
-  }
+  extra_data.ip_address = device_data.ip_address();
 
   MediaSinkInternal dial_sink(sink, extra_data);
   latest_sinks_.insert_or_assign(sink_id, dial_sink);

@@ -46,6 +46,11 @@ extern const base::Feature kGlobalMediaControlsCastStartStop;
 // Presentation API. If disabled, only the allowlisted sites can do so.
 extern const base::Feature kAllowAllSitesToInitiateMirroring;
 
+// If enabled, HTTP requests for DIAL can only be made to URLs that contain the
+// target device IP address.
+// TODO(crbug.com/1270509): Remove this base::Feature once fully launched.
+extern const base::Feature kDialEnforceUrlIPAddress;
+
 namespace prefs {
 // Pref name for the enterprise policy for allowing Cast devices on all IPs.
 constexpr char kMediaRouterCastAllowAllIPs[] =

@@ -13,6 +13,7 @@
 #include "chrome/browser/media/router/discovery/dial/parsed_dial_device_description.h"
 #include "chrome/browser/media/router/discovery/dial/safe_dial_device_description_parser.h"
 #include "content/public/test/browser_task_environment.h"
+#include "net/base/ip_address.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -31,6 +32,9 @@ DialDeviceData CreateDialDeviceData(int num) {
       GURL(base::StringPrintf("http://192.168.1.%d/dd.xml", num)),
       base::Time::Now());
   device_data.set_label(base::StringPrintf("Device label %d", num));
+  net::IPAddress address;
+  CHECK(address.AssignFromIPLiteral(base::StringPrintf("192.168.1.%d", num)));
+  device_data.set_ip_address(address);
   return device_data;
 }
 

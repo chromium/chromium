@@ -25,9 +25,14 @@ namespace media_router {
 
 class DialDeviceData;
 
-// DialService accepts requests to discover devices, sends multiple M-SEARCH
-// requests via UDP multicast, and notifies observers when a DIAL-compliant
-// device responds.
+// DialService accepts requests to discover devices, sends multiple SSDP
+// M-SEARCH requests via UDP multicast, and notifies observers when a
+// DIAL-compliant device responds.
+//
+// The syntax of the M-SEARCH request and response is defined by Section 1.3
+// of the uPnP device architecture specification and related documents:
+//
+// http://upnp.org/specs/arch/UPnP-arch-DeviceArchitecture-v1.1.pdf
 //
 // Each time Discover() is called, kDialNumRequests M-SEARCH requests are sent
 // (with a delay of kDialRequestIntervalMillis in between):
@@ -167,9 +172,9 @@ class DialServiceImpl : public DialService {
     // Parses a response into a DialDeviceData object. If the DIAL response is
     // invalid or does not contain enough information, then the return
     // value will be false and |device| is not changed.
-    static bool ParseResponse(const std::string& response,
-                              const base::Time& response_time,
-                              DialDeviceData* device);
+    bool ParseResponse(const std::string& response,
+                       const base::Time& response_time,
+                       DialDeviceData* device);
 
     // The UDP socket.
     std::unique_ptr<net::UDPSocket> socket_;

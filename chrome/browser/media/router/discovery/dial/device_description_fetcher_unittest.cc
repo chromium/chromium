@@ -14,6 +14,7 @@
 #include "chrome/browser/media/router/discovery/dial/device_description_fetcher.h"
 #include "chrome/browser/media/router/discovery/dial/dial_device_data.h"
 #include "chrome/browser/media/router/test/provider_test_helpers.h"
+#include "net/base/ip_address.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -28,11 +29,11 @@ namespace media_router {
 class TestDeviceDescriptionFetcher : public DeviceDescriptionFetcher {
  public:
   TestDeviceDescriptionFetcher(
-      const GURL& device_description_url,
+      const DialDeviceData& device_data,
       base::OnceCallback<void(const DialDeviceDescriptionData&)> success_cb,
       base::OnceCallback<void(const std::string&)> error_cb,
       network::TestURLLoaderFactory* factory)
-      : DeviceDescriptionFetcher(device_description_url,
+      : DeviceDescriptionFetcher(device_data,
                                  std::move(success_cb),
                                  std::move(error_cb)),
         factory_(factory) {}
@@ -45,7 +46,7 @@ class TestDeviceDescriptionFetcher : public DeviceDescriptionFetcher {
         base::BindOnce(&DeviceDescriptionFetcher::ReportError,
                        base::Unretained(this)),
         factory_);
-    fetcher_->Get(device_description_url_);
+    fetcher_->Get(device_data_.device_description_url());
   }
 
  private:
@@ -60,8 +61,11 @@ class DeviceDescriptionFetcherTest : public testing::Test {
       delete;
 
   void StartRequest() {
+    DialDeviceData device_data;
+    device_data.set_device_description_url(url_);
+    device_data.set_ip_address(net::IPAddress::IPv4Localhost());
     description_fetcher_ = std::make_unique<TestDeviceDescriptionFetcher>(
-        url_,
+        device_data,
         base::BindOnce(&DeviceDescriptionFetcherTest::OnSuccess,
                        base::Unretained(this)),
         base::BindOnce(&DeviceDescriptionFetcherTest::OnError,

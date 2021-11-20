@@ -78,6 +78,8 @@ TEST_F(DialServiceTest, TestSendMultipleRequests) {
   EXPECT_CALL(mock_observer_, OnDiscoveryFinished(A<DialService*>())).Times(1);
   dial_service_.BindAndAddSocket(mock_ip_);
   EXPECT_EQ(1u, dial_service_.dial_sockets_.size());
+  EXPECT_TRUE(dial_service_.dial_sockets_[0]);
+  EXPECT_FALSE(dial_service_.dial_sockets_[0]->IsClosed());
   dial_service_.SendOneRequest();
   base::RunLoop().RunUntilIdle();
   dial_service_.FinishDiscovery();
@@ -139,7 +141,8 @@ TEST_F(DialServiceTest, TestOnDeviceDiscovered) {
   dial_socket_->recv_buffer_ =
       base::MakeRefCounted<net::IOBufferWithSize>(response_size);
   strncpy(dial_socket_->recv_buffer_->data(), kValidResponse, response_size);
-  dial_socket_->recv_address_ = net::IPEndPoint(mock_ip_, 12345);
+  dial_socket_->recv_address_ =
+      net::IPEndPoint(net::IPAddress::IPv4Localhost(), 12345);
 
   DialDeviceData expected_device;
   expected_device.set_device_id("some_id");
@@ -161,55 +164,121 @@ TEST_F(DialServiceTest, TestOnDiscoveryFinished) {
 TEST_F(DialServiceTest, TestResponseParsing) {
   Time now = Time::Now();
 
-  // Successful case
+  // Force the socket address to match what is expected in the response.
+  dial_socket_->recv_address_ =
+      net::IPEndPoint(net::IPAddress::IPv4Localhost(), 12345);
+
+  // Successful case, all values parsed successfully.
   DialDeviceData parsed;
-  EXPECT_TRUE(
-      DialServiceImpl::DialSocket::ParseResponse(kValidResponse, now, &parsed));
+  EXPECT_TRUE(dial_socket_->ParseResponse(kValidResponse, now, &parsed));
   EXPECT_EQ("some_id", parsed.device_id());
   EXPECT_EQ("http://127.0.0.1/dd.xml", parsed.device_description_url().spec());
   EXPECT_EQ(1, parsed.config_id());
   EXPECT_EQ(now, parsed.response_time());
+  EXPECT_EQ(1800, parsed.max_age());
+
+  // Cases where we do not fail entirely, but we are unable to extract the
+  // CACHE-CONTROL or CONFIG header values.
+
+  // Max-age is too low
+  DialDeviceData parsed_max_age_low;
+  EXPECT_TRUE(
+      dial_socket_->ParseResponse("HTTP/1.1 OK\r\n"
+                                  "LOCATION: http://127.0.0.1/dd.xml\r\n"
+                                  "USN: some_id\r\n"
+                                  "CACHE-CONTROL: max-age=-100\r\n"
+                                  "CONFIGID.UPNP.ORG: 1\r\n\r\n",
+                                  now, &parsed_max_age_low));
+  EXPECT_EQ(-1, parsed_max_age_low.max_age());
+
+  // max-age is too high
+  DialDeviceData parsed_max_age_high;
+  EXPECT_TRUE(
+      dial_socket_->ParseResponse("HTTP/1.1 OK\r\n"
+                                  "LOCATION: http://127.0.0.1/dd.xml\r\n"
+                                  "USN: some_id\r\n"
+                                  "CACHE-CONTROL: max-age=5000\r\n"
+                                  "CONFIGID.UPNP.ORG: 1\r\n\r\n",
+                                  now, &parsed_max_age_high));
+  EXPECT_EQ(3600, parsed_max_age_high.max_age());
+
+  // Invalid CACHE-CONTROL directive
+  DialDeviceData parsed_invalid_cache;
+  EXPECT_TRUE(
+      dial_socket_->ParseResponse("HTTP/1.1 OK\r\n"
+                                  "LOCATION: http://127.0.0.1/dd.xml\r\n"
+                                  "USN: some_id\r\n"
+                                  "CACHE-CONTROL: xyzzy=100,\r\n"
+                                  "CONFIGID.UPNP.ORG: 1\r\n\r\n",
+                                  now, &parsed_invalid_cache));
+  EXPECT_EQ(-1, parsed_invalid_cache.max_age());
+
+  // Extra CACHE-CONTROL directives
+  DialDeviceData parsed_extra_cache;
+  EXPECT_TRUE(
+      dial_socket_->ParseResponse("HTTP/1.1 OK\r\n"
+                                  "LOCATION: http://127.0.0.1/dd.xml\r\n"
+                                  "USN: some_id\r\n"
+                                  "CACHE-CONTROL: bar=a,max-age=1800,foo=b\r\n"
+                                  "CONFIGID.UPNP.ORG: 1\r\n\r\n",
+                                  now, &parsed_extra_cache));
+  EXPECT_EQ(-1, parsed_extra_cache.max_age());
+
+  // Invalid CONFIGID.UPNP.ORG value
+  DialDeviceData parsed_invalid_config;
+  EXPECT_TRUE(
+      dial_socket_->ParseResponse("HTTP/1.1 OK\r\n"
+                                  "LOCATION: http://127.0.0.1/dd.xml\r\n"
+                                  "USN: some_id\r\n"
+                                  "CACHE-CONTROL: max-age=1000\r\n"
+                                  "CONFIGID.UPNP.ORG: -100\r\n\r\n",
+                                  now, &parsed_invalid_config));
+  EXPECT_EQ(-1, parsed_invalid_config.config_id());
 
   // Failure cases
   DialDeviceData not_parsed;
 
   // Empty, garbage
-  EXPECT_FALSE(DialServiceImpl::DialSocket::ParseResponse(std::string(), now,
-                                                          &not_parsed));
-  EXPECT_FALSE(
-      DialServiceImpl::DialSocket::ParseResponse("\r\n\r\n", now, &not_parsed));
-  EXPECT_FALSE(
-      DialServiceImpl::DialSocket::ParseResponse("xyzzy", now, &not_parsed));
+  EXPECT_FALSE(dial_socket_->ParseResponse(std::string(), now, &not_parsed));
+  EXPECT_FALSE(dial_socket_->ParseResponse("\r\n\r\n", now, &not_parsed));
+  EXPECT_FALSE(dial_socket_->ParseResponse("xyzzy", now, &not_parsed));
 
   // No headers
-  EXPECT_FALSE(DialServiceImpl::DialSocket::ParseResponse("HTTP/1.1 OK\r\n\r\n",
-                                                          now, &not_parsed));
+  EXPECT_FALSE(
+      dial_socket_->ParseResponse("HTTP/1.1 OK\r\n\r\n", now, &not_parsed));
+
+  // Missing USN
+  EXPECT_FALSE(
+      dial_socket_->ParseResponse("HTTP/1.1 OK\r\n"
+                                  "LOCATION: http://127.0.0.1/dd.xml\r\n\r\n",
+                                  now, &not_parsed));
+
+  // Empty USN
+  EXPECT_FALSE(
+      dial_socket_->ParseResponse("HTTP/1.1 OK\r\n"
+                                  "LOCATION: http://127.0.0.1/dd.xml\r\n"
+                                  "USN:\r\n\r\n",
+                                  now, &not_parsed));
 
   // Missing LOCATION
   EXPECT_FALSE(
-      DialServiceImpl::DialSocket::ParseResponse("HTTP/1.1 OK\r\n"
-                                                 "USN: some_id\r\n\r\n",
-                                                 now, &not_parsed));
+      dial_socket_->ParseResponse("HTTP/1.1 OK\r\n"
+                                  "USN: some_id\r\n\r\n",
+                                  now, &not_parsed));
 
   // Empty LOCATION
   EXPECT_FALSE(
-      DialServiceImpl::DialSocket::ParseResponse("HTTP/1.1 OK\r\n"
-                                                 "LOCATION:\r\n"
-                                                 "USN: some_id\r\n\r\n",
-                                                 now, &not_parsed));
+      dial_socket_->ParseResponse("HTTP/1.1 OK\r\n"
+                                  "LOCATION:\r\n"
+                                  "USN: some_id\r\n\r\n",
+                                  now, &not_parsed));
 
-  // Missing USN
-  EXPECT_FALSE(DialServiceImpl::DialSocket::ParseResponse(
-      "HTTP/1.1 OK\r\n"
-      "LOCATION: http://127.0.0.1/dd.xml\r\n\r\n",
-      now, &not_parsed));
-
-  // Empty USN
-  EXPECT_FALSE(DialServiceImpl::DialSocket::ParseResponse(
-      "HTTP/1.1 OK\r\n"
-      "LOCATION: http://127.0.0.1/dd.xml\r\n"
-      "USN:\r\n\r\n",
-      now, &not_parsed));
+  // Invalid LOCATION
+  EXPECT_FALSE(
+      dial_socket_->ParseResponse("HTTP/1.1 OK\r\n"
+                                  "LOCATION: http://127.8.8.8/dd.xml\r\n"
+                                  "USN:\r\n\r\n",
+                                  now, &not_parsed));
 }
 
 }  // namespace media_router
