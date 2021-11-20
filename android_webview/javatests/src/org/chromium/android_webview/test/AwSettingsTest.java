@@ -416,6 +416,10 @@ public class AwSettingsTest {
             super(containerView, contentViewClient, true);
         }
 
+        // A string which can be encoded by UTF-8 charset but not by Latin-1 charset. Translates to
+        // "Hello world."
+        private static final String NON_LATIN_TEXT = "你好世界";
+
         @Override
         protected String getAlteredValue() {
             return "Latin-1";
@@ -439,11 +443,21 @@ public class AwSettingsTest {
         @Override
         protected void doEnsureSettingHasValue(String value) throws Throwable {
             loadDataSync(getData());
-            Assert.assertEquals(value, getTitleOnUiThread());
+
+            if ("UTF-8".equals(value)) {
+                Assert.assertEquals("Title should be decoded correctly when charset is UTF-8",
+                        NON_LATIN_TEXT, getTitleOnUiThread());
+            } else {
+                // The content seems to decode as "ä½ å¥½ä¸–ç•Œ", but it's sufficient to just
+                // enforce the text decodes incorrectly.
+                Assert.assertNotEquals(
+                        "Title should be garbled (decoded incorrectly) when charset is Latin-1",
+                        NON_LATIN_TEXT, getTitleOnUiThread());
+            }
         }
 
         private String getData() {
-            return "<html><body onload='document.title=document.defaultCharset'></body></html>";
+            return "<html><body onload='document.title=\"" + NON_LATIN_TEXT + "\"'></body></html>";
         }
     }
 
@@ -1740,12 +1754,9 @@ public class AwSettingsTest {
                     views.getContainer1(), views.getClient1(), new ImagePageGenerator(1, true)));
     }
 
-    /*
-     * @SmallTest
-     * @Feature({"AndroidWebView", "Preferences"})
-     */
     @Test
-    @DisabledTest(message = "Disabled due to document.defaultCharset removal. crbug.com/587484")
+    @SmallTest
+    @Feature({"AndroidWebView", "Preferences"})
     public void testDefaultTextEncodingWithTwoViews() throws Throwable {
         ViewPair views = createViews();
         runPerViewSettingsTest(
