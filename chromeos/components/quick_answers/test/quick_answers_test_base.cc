@@ -2,10 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/public/cpp/quick_answers/test_support/quick_answers_test_base.h"
+#include "chromeos/components/quick_answers/test/quick_answers_test_base.h"
 
 #include "ash/public/cpp/assistant/assistant_state.h"
-#include "ash/public/cpp/quick_answers/quick_answers_state.h"
 
 namespace ash {
 

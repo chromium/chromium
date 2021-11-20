@@ -2,12 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_PUBLIC_CPP_QUICK_ANSWERS_CONTROLLER_QUICK_ANSWERS_CONTROLLER_H_
-#define ASH_PUBLIC_CPP_QUICK_ANSWERS_CONTROLLER_QUICK_ANSWERS_CONTROLLER_H_
+#ifndef CHROMEOS_COMPONENTS_QUICK_ANSWERS_PUBLIC_CPP_CONTROLLER_QUICK_ANSWERS_CONTROLLER_H_
+#define CHROMEOS_COMPONENTS_QUICK_ANSWERS_PUBLIC_CPP_CONTROLLER_QUICK_ANSWERS_CONTROLLER_H_
 
 #include <string>
 
-#include "ash/public/cpp/ash_public_export.h"
 #include "ui/gfx/geometry/rect.h"
 
 namespace ash {
@@ -30,7 +29,7 @@ enum class QuickAnswersVisibility {
 };
 
 // A controller to manage quick answers UI.
-class ASH_PUBLIC_EXPORT QuickAnswersController {
+class QuickAnswersController {
  public:
   QuickAnswersController();
   virtual ~QuickAnswersController();
@@ -74,4 +73,4 @@ class ASH_PUBLIC_EXPORT QuickAnswersController {
 
 }  // namespace ash
 
-#endif  // ASH_PUBLIC_CPP_QUICK_ANSWERS_CONTROLLER_QUICK_ANSWERS_CONTROLLER_H_
+#endif  // CHROMEOS_COMPONENTS_QUICK_ANSWERS_PUBLIC_CPP_CONTROLLER_QUICK_ANSWERS_CONTROLLER_H_

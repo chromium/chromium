@@ -200,6 +200,7 @@ source_set("chromeos") {
     "//chromeos/components/multidevice/logging",
     "//chromeos/components/proximity_auth",
     "//chromeos/components/quick_answers",
+    "//chromeos/components/quick_answers/public/cpp:cpp",
     "//chromeos/components/quick_answers/public/cpp:prefs",
     "//chromeos/components/remote_apps/mojom",
     "//chromeos/components/sensors",

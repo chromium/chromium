@@ -7,13 +7,11 @@
 #include <memory>
 #include <string>
 
-#include "ash/constants/ash_features.h"
-#include "ash/public/cpp/quick_answers/quick_answers_state.h"
-#include "ash/public/cpp/quick_answers/test_support/quick_answers_test_base.h"
 #include "base/bind.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "chromeos/components/quick_answers/public/cpp/quick_answers_state.h"
 #include "chromeos/components/quick_answers/quick_answers_model.h"
+#include "chromeos/components/quick_answers/test/quick_answers_test_base.h"
 #include "chromeos/components/quick_answers/utils/quick_answers_utils.h"
 #include "chromeos/services/machine_learning/public/cpp/fake_service_connection.h"
 #include "chromeos/services/machine_learning/public/mojom/machine_learning_service.mojom.h"
@@ -82,7 +80,6 @@ class IntentGeneratorTest : public QuickAnswersTestBase {
   base::test::TaskEnvironment task_environment_;
   std::unique_ptr<IntentGenerator> intent_generator_;
   IntentInfo intent_info_;
-  base::test::ScopedFeatureList scoped_feature_list_;
   FakeServiceConnectionImpl fake_service_connection_;
 };
 

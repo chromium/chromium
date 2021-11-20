@@ -8,10 +8,10 @@
 #include <string>
 #include <vector>
 
-#include "ash/public/cpp/quick_answers/controller/quick_answers_browser_client.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "chromeos/components/quick_answers/public/cpp/controller/quick_answers_browser_client.h"
 
 class GoogleServiceAuthError;
 

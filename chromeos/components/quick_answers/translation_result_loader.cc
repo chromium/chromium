@@ -6,8 +6,8 @@
 
 #include <utility>
 
-#include "ash/public/cpp/quick_answers/controller/quick_answers_browser_client.h"
 #include "base/json/json_writer.h"
+#include "chromeos/components/quick_answers/public/cpp/controller/quick_answers_browser_client.h"
 #include "chromeos/components/quick_answers/quick_answers_model.h"
 #include "chromeos/components/quick_answers/utils/quick_answers_utils.h"
 #include "chromeos/services/assistant/public/shared/constants.h"

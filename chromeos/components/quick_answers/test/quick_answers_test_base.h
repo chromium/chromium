@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_PUBLIC_CPP_QUICK_ANSWERS_TEST_SUPPORT_QUICK_ANSWERS_TEST_BASE_H_
-#define ASH_PUBLIC_CPP_QUICK_ANSWERS_TEST_SUPPORT_QUICK_ANSWERS_TEST_BASE_H_
+#ifndef CHROMEOS_COMPONENTS_QUICK_ANSWERS_TEST_QUICK_ANSWERS_TEST_BASE_H_
+#define CHROMEOS_COMPONENTS_QUICK_ANSWERS_TEST_QUICK_ANSWERS_TEST_BASE_H_
 
 #include <memory>
 
-#include "ash/public/cpp/quick_answers/quick_answers_state.h"
+#include "chromeos/components/quick_answers/public/cpp/quick_answers_state.h"
 #include "chromeos/services/assistant/test_support/fully_initialized_assistant_state.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -35,4 +35,4 @@ class QuickAnswersTestBase : public testing::Test {
 
 }  // namespace ash
 
-#endif  // ASH_PUBLIC_CPP_QUICK_ANSWERS_TEST_SUPPORT_QUICK_ANSWERS_TEST_BASE_H_
+#endif  // CHROMEOS_COMPONENTS_QUICK_ANSWERS_TEST_QUICK_ANSWERS_TEST_BASE_H_

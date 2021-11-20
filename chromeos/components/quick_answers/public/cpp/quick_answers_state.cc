@@ -2,15 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/public/cpp/quick_answers/quick_answers_state.h"
+#include "chromeos/components/quick_answers/public/cpp/quick_answers_state.h"
 
-#include "ash/constants/ash_features.h"
-#include "ash/public/cpp/assistant/assistant_state.h"
 #include "base/bind.h"
+#include "base/containers/contains.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/stringprintf.h"
 #include "base/system/sys_info.h"
-#include "chromeos/services/assistant/public/cpp/assistant_prefs.h"
 #include "components/language/core/browser/pref_names.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
@@ -21,8 +19,6 @@ namespace ash {
 
 namespace {
 
-using chromeos::assistant::prefs::kAssistantContextEnabled;
-using chromeos::assistant::prefs::kAssistantEnabled;
 using quick_answers::prefs::ConsentStatus;
 using quick_answers::prefs::kQuickAnswersConsentStatus;
 using quick_answers::prefs::kQuickAnswersDefinitionEnabled;
@@ -47,32 +43,6 @@ bool IsQuickAnswersAllowedForLocale(const std::string& locale,
                                          "en_AU",     "en_IN", "en_NZ"};
   return base::Contains(kAllowedLocales, locale) ||
          base::Contains(kAllowedLocales, runtime_locale);
-}
-
-void MigrateQuickAnswersConsentStatus(PrefService* prefs) {
-  // If the consented status has not been set, migrate the current context
-  // enabled value.
-  if (prefs->FindPreference(kQuickAnswersConsentStatus)->IsDefaultValue()) {
-    if (!prefs->FindPreference(kAssistantContextEnabled)->IsDefaultValue()) {
-      // Set the consent status based on current feature eligibility.
-      bool consented =
-          ash::AssistantState::Get()->allowed_state() ==
-              chromeos::assistant::AssistantAllowedState::ALLOWED &&
-          prefs->GetBoolean(kAssistantEnabled) &&
-          prefs->GetBoolean(kAssistantContextEnabled);
-      prefs->SetInteger(
-          kQuickAnswersConsentStatus,
-          consented ? ConsentStatus::kAccepted : ConsentStatus::kRejected);
-      // Enable Quick Answers settings for existing users.
-      if (consented)
-        prefs->SetBoolean(kQuickAnswersEnabled, true);
-    } else {
-      // Set the consent status to unknown for new users.
-      prefs->SetInteger(kQuickAnswersConsentStatus, ConsentStatus::kUnknown);
-      // Reset the impression count for new users.
-      prefs->SetInteger(kQuickAnswersNoticeImpressionCount, 0);
-    }
-  }
 }
 
 void IncrementPrefCounter(PrefService* prefs,
@@ -175,7 +145,6 @@ void QuickAnswersState::RegisterPrefChanges(PrefService* pref_service) {
 
   prefs_initialized_ = true;
 
-  MigrateQuickAnswersConsentStatus(pref_service);
   UpdateEligibility();
 }
 

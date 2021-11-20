@@ -2481,6 +2481,7 @@ static_library("browser") {
       "//chromeos/components/local_search_service/public/cpp:cpp",
       "//chromeos/components/local_search_service/public/mojom",
       "//chromeos/components/multidevice/debug_webui",
+      "//chromeos/components/quick_answers/public/cpp:cpp",
       "//chromeos/components/quick_answers/public/cpp:prefs",
       "//chromeos/dbus/attestation",
       "//chromeos/dbus/attestation:attestation_proto",

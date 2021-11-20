@@ -8,8 +8,8 @@
 #include <memory>
 #include <string>
 
-#include "ash/public/cpp/quick_answers/controller/quick_answers_controller.h"
 #include "chrome/browser/ui/ash/quick_answers/quick_answers_state_controller.h"
+#include "chromeos/components/quick_answers/public/cpp/controller/quick_answers_controller.h"
 #include "chromeos/components/quick_answers/quick_answers_client.h"
 #include "chromeos/components/quick_answers/quick_answers_model.h"
 #include "ui/gfx/geometry/rect.h"

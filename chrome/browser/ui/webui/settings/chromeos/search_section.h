@@ -6,9 +6,9 @@
 #define CHROME_BROWSER_UI_WEBUI_SETTINGS_CHROMEOS_SEARCH_SECTION_H_
 
 #include "ash/public/cpp/assistant/assistant_state_base.h"
-#include "ash/public/cpp/quick_answers/quick_answers_state.h"
 #include "base/values.h"
 #include "chrome/browser/ui/webui/settings/chromeos/os_settings_section.h"
+#include "chromeos/components/quick_answers/public/cpp/quick_answers_state.h"
 
 namespace content {
 class WebUIDataSource;

@@ -2,13 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_PUBLIC_CPP_QUICK_ANSWERS_QUICK_ANSWERS_STATE_H_
-#define ASH_PUBLIC_CPP_QUICK_ANSWERS_QUICK_ANSWERS_STATE_H_
+#ifndef CHROMEOS_COMPONENTS_QUICK_ANSWERS_PUBLIC_CPP_QUICK_ANSWERS_STATE_H_
+#define CHROMEOS_COMPONENTS_QUICK_ANSWERS_PUBLIC_CPP_QUICK_ANSWERS_STATE_H_
 
 #include <memory>
 #include <string>
 
-#include "ash/public/cpp/ash_public_export.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "base/timer/timer.h"
@@ -35,14 +34,13 @@ enum class ConsentResultType {
 };
 
 // A checked observer which receives Quick Answers state change.
-class ASH_PUBLIC_EXPORT QuickAnswersStateObserver
-    : public base::CheckedObserver {
+class QuickAnswersStateObserver : public base::CheckedObserver {
  public:
   virtual void OnSettingsEnabled(bool enabled) {}
 };
 
 // A class that holds Quick Answers related prefs and states.
-class ASH_PUBLIC_EXPORT QuickAnswersState {
+class QuickAnswersState {
  public:
   static QuickAnswersState* Get();
 
@@ -129,4 +127,4 @@ class ASH_PUBLIC_EXPORT QuickAnswersState {
 
 }  // namespace ash
 
-#endif  // ASH_PUBLIC_CPP_QUICK_ANSWERS_QUICK_ANSWERS_STATE_H_
+#endif  // CHROMEOS_COMPONENTS_QUICK_ANSWERS_PUBLIC_CPP_QUICK_ANSWERS_STATE_H_

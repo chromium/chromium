@@ -7,9 +7,9 @@
 #include <memory>
 #include <string>
 
-#include "ash/public/cpp/quick_answers/controller/quick_answers_browser_client.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/test/task_environment.h"
+#include "chromeos/components/quick_answers/public/cpp/controller/quick_answers_browser_client.h"
 #include "chromeos/components/quick_answers/quick_answers_model.h"
 #include "chromeos/components/quick_answers/test/test_helpers.h"
 #include "chromeos/components/quick_answers/utils/quick_answers_utils.h"

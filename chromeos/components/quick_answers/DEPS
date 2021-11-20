@@ -1,5 +1,6 @@
 include_rules = [
   "+ash/public",
+  "+components/language/core/browser",
   "+services/data_decoder/public",
   "+ui/base/l10n",
   "+ui/base/resource/resource_bundle.h",
