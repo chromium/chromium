@@ -6,22 +6,24 @@
 #define ASH_SYSTEM_TIME_CALENDAR_MONTH_VIEW_H_
 
 #include "ash/ash_export.h"
+#include "ash/system/time/calendar_view_controller.h"
+#include "base/scoped_observation.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/view.h"
 
 namespace ash {
 
-class CalendarViewController;
-
 // Renders a Calendar date cell. Pass in `true` as `is_grayed_out_date` if
 // the date is not in the current month view's month.
-class CalendarDateCellView : public views::LabelButton {
+class CalendarDateCellView : public CalendarViewController::Observer,
+                             public views::LabelButton {
  public:
   METADATA_HEADER(CalendarDateCellView);
 
   CalendarDateCellView(CalendarViewController* calendar_view_controller,
                        base::Time::Exploded& date,
-                       bool is_grayed_out_date);
+                       bool is_grayed_out_date,
+                       int row_index);
   CalendarDateCellView(const CalendarDateCellView& other) = delete;
   CalendarDateCellView& operator=(const CalendarDateCellView& other) = delete;
   ~CalendarDateCellView() override;
@@ -33,11 +35,18 @@ class CalendarDateCellView : public views::LabelButton {
   // shown in its previous/next month, we won't draw this background.
   void OnPaintBackground(gfx::Canvas* canvas) override;
 
+  // CalendarViewController::Observer:
+  void OnSelectedDateUpdated() override;
+  void CloseEventList() override;
+
   // Enables focus behavior of this cell.
   void EnableFocus();
 
   // Disables focus behavior of this cell.
   void DisableFocus();
+
+  // The row index in the date's month view.
+  int row_index() const { return row_index_; }
 
  protected:
   // views::Button:
@@ -55,8 +64,18 @@ class CalendarDateCellView : public views::LabelButton {
 
   const bool grayed_out_;
 
+  // The row index in the current month for this date cell. Starts from 0.
+  const int row_index_;
+
+  // If the current cell is selected.
+  bool is_selected_ = false;
+
   // Owned by UnifiedCalendarViewController.
   CalendarViewController* const calendar_view_controller_;
+
+  base::ScopedObservation<CalendarViewController,
+                          CalendarViewController::Observer>
+      scoped_calendar_view_controller_observer_{this};
 };
 
 //  Container for `CalendarDateCellView` for a single month.
@@ -86,7 +105,8 @@ class ASH_EXPORT CalendarMonthView : public views::View {
   CalendarDateCellView* AddDateCellToLayout(
       base::Time::Exploded current_date_exploded,
       int column,
-      bool is_in_current_month);
+      bool is_in_current_month,
+      int row_index);
 
   // Owned by `CalendarView`.
   CalendarViewController* const calendar_view_controller_;
