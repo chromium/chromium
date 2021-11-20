@@ -429,6 +429,10 @@ crbug.com/angleproject/6430 [ mac passthrough angle-metal amd ] deqp/functional/
 crbug.com/angleproject/6430 [ mac passthrough angle-metal amd ] deqp/functional/gles3/texturespecification/texstorage2d_format_depth_stencil.html [ Failure ]
 crbug.com/angleproject/6430 [ mac passthrough angle-metal amd ] deqp/functional/gles3/uniformbuffers/random.html [ Failure ]
 
+# Metal AMD ASAN
+crbug.com/1270755 [ mac amd-0x6821 angle-metal passthrough asan ] deqp/functional/gles3/fborender/shared_colorbuffer_01.html [ RetryOnFailure ]
+crbug.com/1272108 [ mac amd-0x6821 angle-metal passthrough asan ] deqp/functional/gles3/texturefiltering/2d_array_combinations_05.html [ Skip ]
+
 # Metal Intel
 crbug.com/angleproject/6430 [ mac passthrough angle-metal intel ] conformance/limits/gl-max-texture-dimensions.html [ Failure ]
 crbug.com/angleproject/6430 [ mac passthrough angle-metal intel ] conformance/textures/misc/texture-size.html [ Failure ]
