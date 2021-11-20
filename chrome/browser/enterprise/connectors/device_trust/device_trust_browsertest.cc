@@ -63,6 +63,21 @@ constexpr char kChallenge[] =
     "u3W4CMboCswxIxNYRCGrIIVPElE3Yb4QS65mKrg=\""
     "}";
 
+constexpr char kChallengeV1[] =
+    "{\"challenge\": "
+    "{"
+    "\"data\": "
+    "\"ChZFbnRlcnByaXNlS2V5Q2hhbGxlbmdlEiABAZTXEb/mB+E3Ncja9cazVIg3frBMjxpc"
+    "UfyWoC+M6xjOmrvJ0y8=\","
+    "\"signature\": "
+    "\"cEA1rPdSEuBaM/4cWOv8R/OicR5c8IT+anVnVd7ain6ucZuyyy/8sjWYK4JpvVu2Diy6y"
+    "6a77/5mis+QRNsbjVQ1QkEf7TcQOaGitt618jwQyhc54cyGhKUiuCok8Q7jc2gwrN6POKmB"
+    "3Vdx+nrhmmVjzp/QAGgamPoLQmuW5XM+Cq5hSrW/U8bg12KmrZ5OHYdiZLyGGlmgE811kpxq"
+    "dKQSWWB1c2xiu5ALY0q8aa8o/Hrzqko8JJbMXcefwrr9YxcEAoVH524mjtj83Pru55WfPmDL"
+    "2ZgSJhErFEQDvWjyX0cDuFX8fO2i40aAwJsFoX+Z5fHbd3kanTcK+ty56w==\""
+    "}"
+    "}";
+
 constexpr char kFakeCustomerId[] = "fake-customer-id";
 constexpr char kFakeBrowserDMToken[] = "fake-browser-dm-token";
 constexpr char kFakeEnrollmentToken[] = "fake-enrollment-token";
@@ -80,8 +95,9 @@ constexpr char kVerifiedAccessResponseHeader[] =
 
 }  // namespace
 
-class DeviceTrustBrowserTest : public InProcessBrowserTest,
-                               public ::testing::WithParamInterface<bool> {
+class DeviceTrustBrowserTest
+    : public InProcessBrowserTest,
+      public ::testing::WithParamInterface<std::tuple<bool, bool>> {
  public:
   DeviceTrustBrowserTest() {
     browser_dm_token_storage_ =
@@ -115,8 +131,13 @@ class DeviceTrustBrowserTest : public InProcessBrowserTest,
     browser_policy_manager->core()->store()->set_policy_data_for_testing(
         std::move(browser_policy_data));
 
-    embedded_test_server()->RegisterRequestHandler(base::BindRepeating(
-        &DeviceTrustBrowserTest::HandleRequest, base::Unretained(this)));
+    // Device trust only works with VerfiedAccess v2. However make sure that v1
+    // headers are just treated like "untrusted" and nothing further.
+    const std::string header = use_v2_header() ? kChallenge : kChallengeV1;
+
+    embedded_test_server()->RegisterRequestHandler(
+        base::BindRepeating(&DeviceTrustBrowserTest::HandleRequest,
+                            base::Unretained(this), header));
     host_resolver()->AddRule("*", "127.0.0.1");
     ASSERT_TRUE(test_server_handle_ =
                     embedded_test_server()->StartAndReturnHandle());
@@ -165,6 +186,7 @@ class DeviceTrustBrowserTest : public InProcessBrowserTest,
 
   // This function needs to reflect how IdP are expected to behave.
   std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
+      const std::string& header,
       const net::test_server::HttpRequest& request) {
     auto deviceTrustHeader = request.headers.find(kDeviceTrustHeader);
     if (deviceTrustHeader != request.headers.end()) {
@@ -175,7 +197,7 @@ class DeviceTrustBrowserTest : public InProcessBrowserTest,
       auto response = std::make_unique<net::test_server::BasicHttpResponse>();
       response->set_code(net::HTTP_FOUND);
       response->AddCustomHeader("Location", GetRedirectLocationUrl().spec());
-      response->AddCustomHeader(kVerifiedAccessChallengeHeader, kChallenge);
+      response->AddCustomHeader(kVerifiedAccessChallengeHeader, header);
       return response;
     }
 
@@ -197,7 +219,8 @@ class DeviceTrustBrowserTest : public InProcessBrowserTest,
     return browser()->tab_strip_model()->GetActiveWebContents();
   }
 
-  bool is_enabled() { return GetParam(); }
+  bool is_enabled() { return std::get<0>(GetParam()); }
+  bool use_v2_header() { return std::get<1>(GetParam()); }
 
   PrefService* prefs() { return browser()->profile()->GetPrefs(); }
 
@@ -236,7 +259,6 @@ IN_PROC_BROWSER_TEST_P(DeviceTrustBrowserTest, AttestationFullFlow) {
 
   // Attestation flow should be fully done.
   EXPECT_TRUE(initial_attestation_request_);
-  EXPECT_TRUE(challenge_response_request_);
 
   // Validate that the two requests contain expected information. URLs' paths
   // have to be used for comparison due to how the HostResolver is replacing
@@ -247,14 +269,19 @@ IN_PROC_BROWSER_TEST_P(DeviceTrustBrowserTest, AttestationFullFlow) {
       initial_attestation_request_->headers.find(kDeviceTrustHeader)->second,
       kDeviceTrustHeaderValue);
 
-  EXPECT_EQ(challenge_response_request_->GetURL().path(),
-            GetRedirectLocationUrl().path());
+  EXPECT_EQ(use_v2_header(), challenge_response_request_.has_value());
 
-  // TODO(crbug.com/1241857): Add challenge-response validation.
-  const std::string& challenge_response =
-      challenge_response_request_->headers.find(kVerifiedAccessResponseHeader)
-          ->second;
-  EXPECT_TRUE(!challenge_response.empty());
+  if (use_v2_header()) {
+    EXPECT_EQ(challenge_response_request_->GetURL().path(),
+              GetRedirectLocationUrl().path());
+
+    // TODO(crbug.com/1241857): Add challenge-response validation.
+    const std::string& challenge_response =
+        challenge_response_request_->headers
+            .find(kVerifiedAccessResponseHeader)
+            ->second;
+    EXPECT_TRUE(!challenge_response.empty());
+  }
 }
 
 // Tests that the attestation flow does not get triggered when navigating to a
@@ -306,6 +333,8 @@ IN_PROC_BROWSER_TEST_P(DeviceTrustBrowserTest, AttestationPrefNotSet) {
   EXPECT_FALSE(challenge_response_request_);
 }
 
-INSTANTIATE_TEST_SUITE_P(All, DeviceTrustBrowserTest, testing::Bool());
+INSTANTIATE_TEST_SUITE_P(All,
+                         DeviceTrustBrowserTest,
+                         testing::Combine(testing::Bool(), testing::Bool()));
 
 }  // namespace enterprise_connectors

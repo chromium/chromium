@@ -13,18 +13,25 @@
 
 namespace enterprise_connectors {
 
-std::string JsonChallengeToProtobufChallenge(const std::string& challenge) {
+std::string JsonChallengeToProtobufChallenge(
+    const std::string& json_challenge) {
   absl::optional<base::Value> data = base::JSONReader::Read(
-      challenge, base::JSONParserOptions::JSON_ALLOW_TRAILING_COMMAS);
+      json_challenge, base::JSONParserOptions::JSON_ALLOW_TRAILING_COMMAS);
+  if (!data) {
+    LOG(ERROR) << "Error reading JSON challenge.";
+    return std::string();
+  }
 
   // If json is malformed or it doesn't include the needed field return
   // an empty string.
-  if (!data || !data.value().FindPath("challenge"))
+  const std::string* challenge = data.value().FindStringPath("challenge");
+  if (!challenge) {
+    LOG(ERROR) << "JSON challenge does not have required field.";
     return std::string();
+  }
 
   std::string serialized_signed_challenge;
-  if (!base::Base64Decode(data.value().FindPath("challenge")->GetString(),
-                          &serialized_signed_challenge)) {
+  if (!base::Base64Decode(*challenge, &serialized_signed_challenge)) {
     LOG(ERROR) << "Error during decoding base64 challenge.";
     return std::string();
   }
