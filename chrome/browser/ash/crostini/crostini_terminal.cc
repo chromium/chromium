@@ -4,15 +4,19 @@
 
 #include "chrome/browser/ash/crostini/crostini_terminal.h"
 
+#include "ash/public/cpp/app_menu_constants.h"
 #include "base/bind.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/values.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
+#include "chrome/browser/apps/app_service/menu_util.h"
+#include "chrome/browser/ash/crostini/crostini_features.h"
 #include "chrome/browser/ash/crostini/crostini_pref_names.h"
 #include "chrome/browser/ash/crostini/crostini_util.h"
 #include "chrome/browser/browser_process.h"
@@ -27,6 +31,7 @@
 #include "chrome/common/extensions/extension_constants.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/chrome_unscaled_resources.h"
+#include "chrome/grit/generated_resources.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "net/base/escape.h"
@@ -46,6 +51,24 @@ constexpr char kDefaultBackgroundColor[] = "#202124";
 
 constexpr char kSettingPassCtrlW[] = "/hterm/profiles/default/pass-ctrl-w";
 constexpr bool kDefaultPassCtrlW = false;
+
+constexpr char delimiter[] = "{.}";
+
+std::string ShortcutIdFromContainerId(const crostini::ContainerId& id) {
+  return base::StrCat({id.vm_name, delimiter, id.container_name});
+}
+
+base::flat_map<std::string, std::string> ExtrasFromShortcutId(
+    const std::string& shortcut_id) {
+  std::vector<std::string> pieces = base::SplitStringUsingSubstr(
+      shortcut_id, delimiter, base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
+  auto extras = base::flat_map<std::string, std::string>();
+  if (pieces.size() == 2) {
+    extras["vm_name"] = pieces[0];
+    extras["container_name"] = pieces[1];
+  }
+  return extras;
+}
 
 GURL GenerateVshInCroshUrl(Profile* profile,
                            const ContainerId& container_id,
@@ -276,6 +299,48 @@ bool GetTerminalSettingPassCtrlW(Profile* profile) {
   const base::DictionaryValue* value = profile->GetPrefs()->GetDictionary(
       crostini::prefs::kCrostiniTerminalSettings);
   return value->FindBoolKey(kSettingPassCtrlW).value_or(kDefaultPassCtrlW);
+}
+
+void AddTerminalMenuItems(Profile* profile,
+                          apps::mojom::MenuItemsPtr* menu_items) {
+  apps::AddCommandItem(ash::SETTINGS, IDS_INTERNAL_APP_SETTINGS, menu_items);
+  if (IsCrostiniRunning(profile)) {
+    apps::AddCommandItem(ash::SHUTDOWN_GUEST_OS,
+                         IDS_CROSTINI_SHUT_DOWN_LINUX_MENU_ITEM, menu_items);
+  }
+}
+
+void AddTerminalMenuShortcuts(Profile* profile,
+                              apps::mojom::MenuItemsPtr* menu_items) {
+  if (!crostini::CrostiniFeatures::Get()->IsMultiContainerAllowed(profile)) {
+    return;
+  }
+
+  const base::Value* container_list =
+      profile->GetPrefs()->GetList(crostini::prefs::kCrostiniContainers);
+  if (container_list && container_list->GetList().size() > 1) {
+    int command_id = ash::LAUNCH_APP_SHORTCUT_FIRST;
+    for (const auto& dict : container_list->GetList()) {
+      crostini::ContainerId id(dict);
+      if (!id.vm_name.empty() && !id.container_name.empty()) {
+        std::string shortcut_id = ShortcutIdFromContainerId(id);
+        std::string label = base::StrCat({id.vm_name, ":", id.container_name});
+        apps::AddShortcutCommandItem(command_id++, shortcut_id, label,
+                                     gfx::ImageSkia(), menu_items);
+      }
+    }
+  }
+}
+
+void ExecuteTerminalMenuShortcutCommand(Profile* profile,
+                                        const std::string& shortcut_id,
+                                        int64_t display_id) {
+  apps::mojom::IntentPtr intent = apps::mojom::Intent::New();
+  intent->extras = ExtrasFromShortcutId(shortcut_id);
+  // TODO(crbug.com/1028898): Implement LaunchTerminalWithIntent() and call it.
+  crostini::LaunchCrostiniAppWithIntent(profile,
+                                        crostini::kCrostiniTerminalSystemAppId,
+                                        display_id, std::move(intent));
 }
 
 }  // namespace crostini

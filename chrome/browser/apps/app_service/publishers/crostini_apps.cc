@@ -7,9 +7,6 @@
 #include <utility>
 
 #include "ash/public/cpp/app_menu_constants.h"
-#include "base/strings/strcat.h"
-#include "base/strings/string_split.h"
-#include "base/strings/stringprintf.h"
 #include "chrome/browser/apps/app_service/app_icon/app_icon_factory.h"
 #include "chrome/browser/apps/app_service/app_icon/dip_px_util.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
@@ -20,6 +17,7 @@
 #include "chrome/browser/ash/crostini/crostini_package_service.h"
 #include "chrome/browser/ash/crostini/crostini_pref_names.h"
 #include "chrome/browser/ash/crostini/crostini_shelf_utils.h"
+#include "chrome/browser/ash/crostini/crostini_terminal.h"
 #include "chrome/browser/ash/crostini/crostini_util.h"
 #include "chrome/browser/ash/guest_os/guest_os_registry_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -57,24 +55,6 @@ bool ShouldShowDisplayDensityMenuItem(const std::string& app_id,
   }
 
   return d.device_scale_factor() != 1.0;
-}
-
-constexpr char delimiter[] = "{.}";
-
-std::string ShortcutIdFromContainerId(const crostini::ContainerId& id) {
-  return base::StrCat({id.vm_name, delimiter, id.container_name});
-}
-
-base::flat_map<std::string, std::string> ExtrasFromShortcutId(
-    const std::string& shortcut_id) {
-  std::vector<std::string> pieces = base::SplitStringUsingSubstr(
-      shortcut_id, delimiter, base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
-  auto extras = base::flat_map<std::string, std::string>();
-  if (pieces.size() == 2) {
-    extras["vm_name"] = pieces[0];
-    extras["container_name"] = pieces[1];
-  }
-  return extras;
 }
 
 }  // namespace
@@ -231,23 +211,6 @@ void CrostiniApps::Uninstall(const std::string& app_id,
       ->QueueUninstallApplication(app_id);
 }
 
-void CrostiniApps::AddTerminalShortcuts(apps::mojom::MenuItemsPtr* menu_items) {
-  const base::Value* container_list =
-      profile_->GetPrefs()->GetList(crostini::prefs::kCrostiniContainers);
-  if (container_list && container_list->GetList().size() > 1) {
-    int command_id = ash::LAUNCH_APP_SHORTCUT_FIRST;
-    for (const auto& dict : container_list->GetList()) {
-      crostini::ContainerId id(dict);
-      if (!id.vm_name.empty() && !id.container_name.empty()) {
-        std::string shortcut_id = ShortcutIdFromContainerId(id);
-        std::string label = base::StrCat({id.vm_name, ":", id.container_name});
-        AddShortcutCommandItem(command_id++, shortcut_id, label,
-                               gfx::ImageSkia(), menu_items);
-      }
-    }
-  }
-}
-
 void CrostiniApps::GetMenuModel(const std::string& app_id,
                                 apps::mojom::MenuType menu_type,
                                 int64_t display_id,
@@ -263,14 +226,8 @@ void CrostiniApps::GetMenuModel(const std::string& app_id,
   }
 
   if (app_id == crostini::kCrostiniTerminalSystemAppId) {
-    AddCommandItem(ash::SETTINGS, IDS_INTERNAL_APP_SETTINGS, &menu_items);
-    if (crostini::IsCrostiniRunning(profile_)) {
-      AddCommandItem(ash::SHUTDOWN_GUEST_OS,
-                     IDS_CROSTINI_SHUT_DOWN_LINUX_MENU_ITEM, &menu_items);
-    }
-    if (crostini::CrostiniFeatures::Get()->IsMultiContainerAllowed(profile_)) {
-      AddTerminalShortcuts(&menu_items);
-    }
+    crostini::AddTerminalMenuItems(profile_, &menu_items);
+    crostini::AddTerminalMenuShortcuts(profile_, &menu_items);
   }
 
   if (ShouldAddOpenItem(app_id, menu_type, profile_)) {
@@ -308,10 +265,8 @@ void CrostiniApps::ExecuteContextMenuCommand(const std::string& app_id,
                                              const std::string& shortcut_id,
                                              int64_t display_id) {
   if (app_id == crostini::kCrostiniTerminalSystemAppId) {
-    apps::mojom::IntentPtr intent = apps::mojom::Intent::New();
-    intent->extras = ExtrasFromShortcutId(shortcut_id);
-    crostini::LaunchCrostiniAppWithIntent(profile_, app_id, display_id,
-                                          std::move(intent));
+    crostini::ExecuteTerminalMenuShortcutCommand(profile_, shortcut_id,
+                                                 display_id);
   }
 }
 

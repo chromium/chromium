@@ -9,6 +9,7 @@
 
 #include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/ash/crostini/crostini_util.h"
+#include "components/services/app_service/public/mojom/types.mojom.h"
 #include "ui/display/types/display_constants.h"
 #include "ui/gfx/geometry/point.h"
 
@@ -119,6 +120,20 @@ std::string GetTerminalSettingBackgroundColor(Profile* profile);
 
 // Returns terminal setting 'pass-ctrl-w'.
 bool GetTerminalSettingPassCtrlW(Profile* profile);
+
+// Add terminal menu items (Settings, Shut down Linux).
+void AddTerminalMenuItems(Profile* profile,
+                          apps::mojom::MenuItemsPtr* menu_items);
+
+// Add terminal shortcut items in menu.
+void AddTerminalMenuShortcuts(Profile* profile,
+                              apps::mojom::MenuItemsPtr* menu_items);
+
+// Called when user clicks on terminal menu items.
+void ExecuteTerminalMenuShortcutCommand(Profile* profile,
+                                        const std::string& shortcut_id,
+                                        int64_t display_id);
+
 }  // namespace crostini
 
 #endif  // CHROME_BROWSER_ASH_CROSTINI_CROSTINI_TERMINAL_H_

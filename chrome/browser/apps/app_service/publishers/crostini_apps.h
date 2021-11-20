@@ -110,8 +110,6 @@ class CrostiniApps : public KeyedService,
   // once it can support hiding apps.
   void OnCrostiniEnabledChanged();
 
-  void AddTerminalShortcuts(apps::mojom::MenuItemsPtr* menu_items);
-
   std::unique_ptr<App> CreateApp(
       const guest_os::GuestOsRegistryService::Registration& registration,
       bool generate_new_icon_key);
