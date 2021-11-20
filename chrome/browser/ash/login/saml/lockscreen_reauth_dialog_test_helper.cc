@@ -13,6 +13,8 @@
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/ui/webui/chromeos/in_session_password_change/lock_screen_network_dialog.h"
+#include "chrome/browser/ui/webui/chromeos/in_session_password_change/lock_screen_network_ui.h"
 #include "chrome/browser/ui/webui/chromeos/in_session_password_change/lock_screen_reauth_dialogs.h"
 #include "chrome/browser/ui/webui/chromeos/in_session_password_change/lock_screen_start_reauth_ui.h"
 #include "chrome/browser/ui/webui/signin/signin_utils.h"
@@ -23,11 +25,16 @@
 namespace ash {
 
 namespace {
+// Main dialog
 const test::UIPath kSamlContainer = {"main-element", "body"};
 const test::UIPath kMainVerifyButton = {"main-element",
                                         "nextButtonVerifyScreen"};
 const test::UIPath kMainScreen = {"main-element", "verifyAccountScreen"};
 const char kSigninFrame[] = "signin-frame";
+
+// Network dialog
+const test::UIPath kNetworkDialog = {"network-ui", "dialog"};
+const test::UIPath kNetworkCancelButton = {"network-ui", "cancelButton"};
 }  // namespace
 
 LockScreenReauthDialogTestHelper::LockScreenReauthDialogTestHelper() = default;
@@ -151,6 +158,11 @@ test::JSChecker LockScreenReauthDialogTestHelper::DialogJS() {
   return test::JSChecker(DialogWebContents());
 }
 
+test::JSChecker LockScreenReauthDialogTestHelper::NetworkJS() {
+  CHECK(network_dialog_);
+  return test::JSChecker(network_dialog_->GetWebUIForTest()->GetWebContents());
+}
+
 test::JSChecker LockScreenReauthDialogTestHelper::SigninFrameJS() {
   content::RenderFrameHost* frame =
       signin::GetAuthFrame(DialogWebContents(), kSigninFrame);
@@ -172,6 +184,53 @@ void LockScreenReauthDialogTestHelper::WaitForReauthDialogToLoad() {
           run_loop.QuitClosure())) {
     run_loop.Run();
   }
+}
+
+void LockScreenReauthDialogTestHelper::WaitForNetworkDialogToLoad() {
+  CHECK(reauth_dialog_);
+  base::RunLoop run_loop;
+  if (!reauth_dialog_->IsNetworkDialogLoadedForTesting(
+          run_loop.QuitClosure())) {
+    run_loop.Run();
+  }
+}
+
+void LockScreenReauthDialogTestHelper::WaitForNetworkDialogAndSetHandlers() {
+  WaitForNetworkDialogToLoad();
+
+  network_dialog_ = reauth_dialog_->get_network_dialog_for_testing();
+  if (!network_dialog_ || !network_dialog_->GetWebUIForTest()) {
+    ADD_FAILURE() << "Could not retrieve LockScreenNetworkDialog";
+  }
+  network_webui_controller_ = static_cast<chromeos::LockScreenNetworkUI*>(
+      network_dialog_->GetWebUIForTest()->GetController());
+  if (!network_webui_controller_) {
+    ADD_FAILURE() << "Could not retrieve LockScreenNetworkUI";
+  }
+  network_handler_ = network_webui_controller_->GetMainHandlerForTests();
+  if (!network_handler_) {
+    ADD_FAILURE() << "Could not retrieve LockScreenNetworkHandler";
+  }
+}
+
+// Makes the main dialog show its inner 'network' dialog and fetches
+// pointers to the Dialog, WebUI Controller and Message Handler.
+void LockScreenReauthDialogTestHelper::ShowNetworkScreenAndWait() {
+  reauth_dialog_->ShowLockScreenNetworkDialog();
+  WaitForNetworkDialogAndSetHandlers();
+}
+
+void LockScreenReauthDialogTestHelper::CloseNetworkScreen() {
+  reauth_dialog_->DismissLockScreenNetworkDialog();
+}
+
+void LockScreenReauthDialogTestHelper::ExpectNetworkDialogVisible() {
+  NetworkJS().CreateVisibilityWaiter(true, kNetworkDialog)->Wait();
+  NetworkJS().ExpectVisiblePath(kNetworkDialog);
+}
+
+void LockScreenReauthDialogTestHelper::ClickCloseNetworkButton() {
+  NetworkJS().TapOnPath(kNetworkCancelButton);
 }
 
 }  // namespace ash

@@ -2454,6 +2454,8 @@ static_library("ui") {
       "webui/chromeos/in_session_password_change/confirm_password_change_handler.h",
       "webui/chromeos/in_session_password_change/lock_screen_network_dialog.cc",
       "webui/chromeos/in_session_password_change/lock_screen_network_dialog.h",
+      "webui/chromeos/in_session_password_change/lock_screen_network_handler.cc",
+      "webui/chromeos/in_session_password_change/lock_screen_network_handler.h",
       "webui/chromeos/in_session_password_change/lock_screen_network_ui.cc",
       "webui/chromeos/in_session_password_change/lock_screen_network_ui.h",
       "webui/chromeos/in_session_password_change/lock_screen_reauth_dialogs.cc",

@@ -29,10 +29,19 @@ class LockScreenStartReauthDialog : public BaseLockDialog,
   bool IsRunning();
   int GetDialogWidth();
 
-  void CloseLockScreenNetworkDialog();
+  void DismissLockScreenNetworkDialog();
   void ShowLockScreenNetworkDialog();
   static gfx::Size CalculateLockScreenReauthDialogSize(
       bool is_new_layout_enabled);
+
+  // Used for waiting for the network dialog in tests.
+  // Similar methods exist for the main dialog in InSessionPasswordSyncManager.
+  bool IsNetworkDialogLoadedForTesting(base::OnceClosure callback);
+  void OnNetworkDialogReadyForTesting();
+
+  LockScreenNetworkDialog* get_network_dialog_for_testing() {
+    return lock_screen_network_dialog_.get();
+  }
 
  private:
   void OnProfileCreated(Profile* profile, Profile::CreateStatus status);
@@ -42,10 +51,16 @@ class LockScreenStartReauthDialog : public BaseLockDialog,
   void NetworkConnectionStateChanged(const NetworkState* network) override;
   void DefaultNetworkChanged(const NetworkState* network) override;
 
+  void DeleteLockScreenNetworkDialog();
+
   std::unique_ptr<login::NetworkStateHelper> network_state_helper_;
 
   std::unique_ptr<LockScreenNetworkDialog> lock_screen_network_dialog_;
   Profile* profile_ = nullptr;
+
+  // A callback that is used to notify tests that the network dialog is loaded.
+  base::OnceClosure on_network_dialog_loaded_callback_for_testing_;
+  bool is_network_dialog_loaded_for_testing_ = false;
 
   base::WeakPtrFactory<LockScreenStartReauthDialog> weak_factory_{this};
 };

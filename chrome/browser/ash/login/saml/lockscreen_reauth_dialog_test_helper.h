@@ -12,6 +12,9 @@ namespace chromeos {
 class LockScreenStartReauthDialog;
 class LockScreenStartReauthUI;
 class LockScreenReauthHandler;
+class LockScreenNetworkDialog;
+class LockScreenNetworkUI;
+class NetworkConfigMessageHandler;
 }  // namespace chromeos
 
 namespace content {
@@ -62,6 +65,13 @@ class LockScreenReauthDialogTestHelper {
   void ExpectVerifyAccountScreenHidden();
   void ExpectSamlScreenVisible();
 
+  void ShowNetworkScreenAndWait();
+  void WaitForNetworkDialogAndSetHandlers();
+  void CloseNetworkScreen();
+
+  void ExpectNetworkDialogVisible();
+  void ClickCloseNetworkButton();
+
   // Wait for the SAML IdP page to load.
   // Precondition: The SAML container is visible.
   void WaitForIdpPageLoad();
@@ -70,6 +80,9 @@ class LockScreenReauthDialogTestHelper {
   content::WebContents* DialogWebContents();
   // Returns a JSChecker for the WebContents of the dialog's WebUI.
   test::JSChecker DialogJS();
+
+  // Returns a JSChecker for the WebContents of the network dialog's WebUI.
+  test::JSChecker NetworkJS();
 
   // Returns a JSChecker for the WebContents of the signin frame webview.
   // Precondition: The SAML container is visible.
@@ -84,10 +97,20 @@ class LockScreenReauthDialogTestHelper {
   void WaitForAuthenticatorToLoad();
   void WaitForReauthDialogToLoad();
 
+  // Waits for the network dialog to load.
+  // Precondition: Main dialog must exist, since it owns the network dialog.
+  void WaitForNetworkDialogToLoad();
+
+  // Main Dialog
   InSessionPasswordSyncManager* password_sync_manager_ = nullptr;
   chromeos::LockScreenStartReauthDialog* reauth_dialog_ = nullptr;
   chromeos::LockScreenStartReauthUI* reauth_webui_controller_ = nullptr;
   chromeos::LockScreenReauthHandler* main_handler_ = nullptr;
+
+  // Network dialog which is owned by the main dialog.
+  chromeos::LockScreenNetworkDialog* network_dialog_ = nullptr;
+  chromeos::LockScreenNetworkUI* network_webui_controller_ = nullptr;
+  chromeos::NetworkConfigMessageHandler* network_handler_ = nullptr;
 };
 
 }  // namespace ash

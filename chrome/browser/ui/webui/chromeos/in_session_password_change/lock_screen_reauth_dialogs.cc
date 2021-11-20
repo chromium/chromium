@@ -105,10 +105,15 @@ int LockScreenStartReauthDialog::GetDialogWidth() {
   return ret.width();
 }
 
-void LockScreenStartReauthDialog::CloseLockScreenNetworkDialog() {
+void LockScreenStartReauthDialog::DeleteLockScreenNetworkDialog() {
   if (!lock_screen_network_dialog_)
     return;
   lock_screen_network_dialog_.reset();
+}
+
+void LockScreenStartReauthDialog::DismissLockScreenNetworkDialog() {
+  if (lock_screen_network_dialog_)
+    lock_screen_network_dialog_->Dismiss();
 }
 
 void LockScreenStartReauthDialog::ShowLockScreenNetworkDialog() {
@@ -117,9 +122,27 @@ void LockScreenStartReauthDialog::ShowLockScreenNetworkDialog() {
   DCHECK(profile_);
   lock_screen_network_dialog_ =
       std::make_unique<chromeos::LockScreenNetworkDialog>(base::BindOnce(
-          &LockScreenStartReauthDialog::CloseLockScreenNetworkDialog,
+          &LockScreenStartReauthDialog::DeleteLockScreenNetworkDialog,
           base::Unretained(this)));
   lock_screen_network_dialog_->Show(profile_);
+}
+
+bool LockScreenStartReauthDialog::IsNetworkDialogLoadedForTesting(
+    base::OnceClosure callback) {
+  if (is_network_dialog_loaded_for_testing_)
+    return true;
+  DCHECK(!on_network_dialog_loaded_callback_for_testing_);
+  on_network_dialog_loaded_callback_for_testing_ = std::move(callback);
+  return false;
+}
+
+void LockScreenStartReauthDialog::OnNetworkDialogReadyForTesting() {
+  if (is_network_dialog_loaded_for_testing_)
+    return;
+  is_network_dialog_loaded_for_testing_ = true;
+  if (on_network_dialog_loaded_callback_for_testing_) {
+    std::move(on_network_dialog_loaded_callback_for_testing_).Run();
+  }
 }
 
 LockScreenStartReauthDialog::LockScreenStartReauthDialog()
@@ -134,7 +157,7 @@ LockScreenStartReauthDialog::~LockScreenStartReauthDialog() {
   DCHECK_EQ(this, g_dialog);
   NetworkHandler::Get()->network_state_handler()->RemoveObserver(this,
                                                                  FROM_HERE);
-  CloseLockScreenNetworkDialog();
+  DeleteLockScreenNetworkDialog();
   g_dialog = nullptr;
 }
 

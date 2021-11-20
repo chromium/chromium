@@ -16,6 +16,7 @@
 #include "chrome/browser/ash/login/users/test_users.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "chromeos/dbus/shill/fake_shill_manager_client.h"
+#include "chromeos/network/network_state_test_helper.h"
 #include "components/account_id/account_id.h"
 #include "components/network_session_configurator/common/network_switches.h"
 #include "content/public/test/browser_test.h"
@@ -29,6 +30,22 @@ namespace {
 constexpr char kTestAuthSIDCookie1[] = "fake-auth-SID-cookie-1";
 constexpr char kTestAuthLSIDCookie1[] = "fake-auth-LSID-cookie-1";
 constexpr char kTestRefreshToken[] = "fake-refresh-token";
+constexpr char kWifiServicePath[] = "/service/wifi1";
+
+void ErrorCallbackFunction(base::OnceClosure run_loop_quit_closure,
+                           const std::string& error_name,
+                           const std::string& error_message) {
+  std::move(run_loop_quit_closure).Run();
+  FAIL() << "Shill Error: " << error_name << " : " << error_message;
+}
+
+void SetConnected(const std::string& service_path) {
+  base::RunLoop run_loop;
+  ShillServiceClient::Get()->Connect(
+      dbus::ObjectPath(service_path), run_loop.QuitWhenIdleClosure(),
+      base::BindOnce(&ErrorCallbackFunction, run_loop.QuitClosure()));
+  run_loop.Run();
+}
 
 }  // namespace
 
@@ -71,8 +88,18 @@ class LockscreenWebUiTest : public MixinBasedInProcessBrowserTest {
     fake_gaia_mixin()->SetupFakeGaiaForLogin(FakeGaiaMixin::kEnterpriseUser1,
                                              "", kTestRefreshToken);
 
+    // Set up fake networks.
+    network_state_test_helper_ =
+        std::make_unique<chromeos::NetworkStateTestHelper>(
+            true /*use_default_devices_and_services*/);
+    network_state_test_helper_->manager_test()->SetupDefaultEnvironment();
+    // Fake networks have been set up. Connect to WiFi network.
+    SetConnected(kWifiServicePath);
+
     MixinBasedInProcessBrowserTest::SetUpOnMainThread();
   }
+
+  void TearDownOnMainThread() override { network_state_test_helper_.reset(); }
 
   void Login() { logged_in_user_mixin_.LogInUser(); }
 
@@ -84,6 +111,7 @@ class LockscreenWebUiTest : public MixinBasedInProcessBrowserTest {
 
  protected:
   base::test::ScopedFeatureList feature_list_;
+  std::unique_ptr<NetworkStateTestHelper> network_state_test_helper_;
 
  private:
   LoggedInUserMixin logged_in_user_mixin_{
@@ -130,6 +158,51 @@ IN_PROC_BROWSER_TEST_F(LockscreenWebUiTest, Login) {
   signin_frame_js.TapOn("Submit");
 
   ScreenLockerTester().WaitForUnlock();
+}
+
+IN_PROC_BROWSER_TEST_F(LockscreenWebUiTest, ShowNetworkDialog) {
+  Login();
+
+  // Lock the screen and trigger the lock screen SAML reauth dialog.
+  ScreenLockerTester().Lock();
+
+  absl::optional<LockScreenReauthDialogTestHelper> lock_screen_reauth_dialog =
+      LockScreenReauthDialogTestHelper::ShowDialogAndWait();
+  ASSERT_TRUE(lock_screen_reauth_dialog);
+
+  lock_screen_reauth_dialog->ShowNetworkScreenAndWait();
+
+  // Ensures that the web element 'cr-dialog' is really visible.
+  lock_screen_reauth_dialog->ExpectNetworkDialogVisible();
+
+  // Click on the actual button to close the dialog.
+  lock_screen_reauth_dialog->ClickCloseNetworkButton();
+}
+
+IN_PROC_BROWSER_TEST_F(LockscreenWebUiTest, TriggerDialogOnNetworkOff) {
+  Login();
+
+  // Lock the screen and trigger the lock screen SAML reauth dialog.
+  ScreenLockerTester().Lock();
+
+  absl::optional<LockScreenReauthDialogTestHelper> lock_screen_reauth_dialog =
+      LockScreenReauthDialogTestHelper::ShowDialogAndWait();
+  ASSERT_TRUE(lock_screen_reauth_dialog);
+
+  // Disconnect from all networks in order to trigger the network screen.
+  network_state_test_helper_->service_test()->ClearServices();
+  base::RunLoop().RunUntilIdle();
+  network_state_test_helper_->service_test()->AddService(
+      kWifiServicePath, kWifiServicePath, kWifiServicePath /* name */,
+      shill::kTypeWifi, shill::kStateOffline, true);
+
+  lock_screen_reauth_dialog->WaitForNetworkDialogAndSetHandlers();
+
+  // Ensures that the web element 'cr-dialog' is visible.
+  lock_screen_reauth_dialog->ExpectNetworkDialogVisible();
+
+  // Click on the actual button to close the dialog.
+  lock_screen_reauth_dialog->ClickCloseNetworkButton();
 }
 
 }  // namespace ash
