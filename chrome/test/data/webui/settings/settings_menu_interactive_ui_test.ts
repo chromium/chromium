@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {pageVisibility} from 'chrome://settings/settings.js';
+import {pageVisibility, SettingsMenuElement} from 'chrome://settings/settings.js';
 import {assertEquals} from 'chrome://webui-test/chai_assert.js';
 
 suite('SettingsMenuInteractiveUITest', () => {
-  let settingsMenu;
+  let settingsMenu: SettingsMenuElement;
 
   setup(() => {
     document.body.innerHTML = '';
@@ -21,7 +21,7 @@ suite('SettingsMenuInteractiveUITest', () => {
       autofill: true,
     });
     settingsMenu.focusFirstItem();
-    assertEquals(settingsMenu.$.people, settingsMenu.shadowRoot.activeElement);
+    assertEquals(settingsMenu.$.people, settingsMenu.shadowRoot!.activeElement);
 
     settingsMenu.pageVisibility = Object.assign({}, pageVisibility || {}, {
       people: false,
@@ -29,6 +29,6 @@ suite('SettingsMenuInteractiveUITest', () => {
     });
     settingsMenu.focusFirstItem();
     assertEquals(
-        settingsMenu.$.autofill, settingsMenu.shadowRoot.activeElement);
+        settingsMenu.$.autofill, settingsMenu.shadowRoot!.activeElement);
   });
 });

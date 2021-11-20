@@ -5,17 +5,18 @@
 /** @fileoverview Runs tests for the settings menu. */
 
 // clang-format off
-import {isChromeOS, isLacros} from 'chrome://resources/js/cr.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {pageVisibility, Router, routes} from 'chrome://settings/settings.js';
+import {pageVisibility, Router, routes, SettingsMenuElement} from 'chrome://settings/settings.js';
+import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+
 // clang-format on
 
 suite('SettingsMenu', function() {
-  let settingsMenu = null;
+  let settingsMenu: SettingsMenuElement;
 
   setup(function() {
-    PolymerTest.clearBody();
+    document.body.innerHTML = '';
     settingsMenu = document.createElement('settings-menu');
     settingsMenu.pageVisibility = pageVisibility;
     document.body.appendChild(settingsMenu);
@@ -39,8 +40,7 @@ suite('SettingsMenu', function() {
   test('tapAdvanced', function() {
     assertFalse(settingsMenu.advancedOpened);
 
-    const advancedToggle =
-        settingsMenu.shadowRoot.querySelector('#advancedButton');
+    const advancedToggle = settingsMenu.$.advancedButton;
     assertTrue(!!advancedToggle);
 
     advancedToggle.click();
@@ -56,17 +56,17 @@ suite('SettingsMenu', function() {
     // There should be different icons for a top level menu being open
     // vs. being closed. E.g. arrow-drop-up and arrow-drop-down.
     const ironIconElement =
-        settingsMenu.shadowRoot.querySelector('#advancedButton iron-icon');
+        settingsMenu.$.advancedButton.querySelector('iron-icon');
     assertTrue(!!ironIconElement);
 
     settingsMenu.advancedOpened = true;
     flush();
-    const openIcon = ironIconElement.icon;
+    const openIcon = ironIconElement!.icon;
     assertTrue(!!openIcon);
 
     settingsMenu.advancedOpened = false;
     flush();
-    assertNotEquals(openIcon, ironIconElement.icon);
+    assertNotEquals(openIcon, ironIconElement!.icon);
   });
 
   // Test that navigating via the paper menu always clears the current
@@ -74,7 +74,8 @@ suite('SettingsMenu', function() {
   test('clearsUrlSearchParam', function() {
     // As of iron-selector 2.x, need to force iron-selector to update before
     // clicking items on it, or wait for 'iron-items-changed'
-    const ironSelector = settingsMenu.shadowRoot.querySelector('iron-selector');
+    const ironSelector =
+        settingsMenu.shadowRoot!.querySelector('iron-selector')!;
     ironSelector.forceSynchronousItemUpdate();
 
     const urlParams = new URLSearchParams('search=foo');
@@ -88,11 +89,11 @@ suite('SettingsMenu', function() {
 });
 
 suite('SettingsMenuReset', function() {
-  let settingsMenu = null;
+  let settingsMenu: SettingsMenuElement;
 
   setup(function() {
-    PolymerTest.clearBody();
-    Router.getInstance().navigateTo(routes.RESET, '');
+    document.body.innerHTML = '';
+    Router.getInstance().navigateTo(routes.RESET, undefined);
     settingsMenu = document.createElement('settings-menu');
     document.body.appendChild(settingsMenu);
     flush();
@@ -104,28 +105,28 @@ suite('SettingsMenuReset', function() {
 
   test('openResetSection', function() {
     const selector = settingsMenu.$.subMenu;
-    const path = new window.URL(selector.selected).pathname;
+    const path = new window.URL(selector.selected.toString()).pathname;
     assertEquals('/reset', path);
   });
 
   test('navigateToAnotherSection', function() {
     const selector = settingsMenu.$.subMenu;
-    let path = new window.URL(selector.selected).pathname;
+    let path = new window.URL(selector.selected.toString()).pathname;
     assertEquals('/reset', path);
 
-    Router.getInstance().navigateTo(routes.PEOPLE, '');
+    Router.getInstance().navigateTo(routes.PEOPLE, undefined);
     flush();
 
-    path = new window.URL(selector.selected).pathname;
+    path = new window.URL(selector.selected.toString()).pathname;
     assertEquals('/people', path);
   });
 
   test('navigateToBasic', function() {
     const selector = settingsMenu.$.subMenu;
-    const path = new window.URL(selector.selected).pathname;
+    const path = new window.URL(selector.selected.toString()).pathname;
     assertEquals('/reset', path);
 
-    Router.getInstance().navigateTo(routes.BASIC, '');
+    Router.getInstance().navigateTo(routes.BASIC, undefined);
     flush();
 
     // BASIC has no sub page selected.
@@ -133,37 +134,36 @@ suite('SettingsMenuReset', function() {
   });
 
   test('pageVisibility', function() {
-    function assertPagesHidden(expectedHidden) {
+    function assertPagesHidden(expectedHidden: boolean) {
+      assertEquals(expectedHidden, settingsMenu.$.people.hidden);
       assertEquals(
           expectedHidden,
-          settingsMenu.shadowRoot.querySelector('#people').hidden);
+          settingsMenu.shadowRoot!.querySelector<HTMLElement>(
+                                      '#appearance')!.hidden);
       assertEquals(
           expectedHidden,
-          settingsMenu.shadowRoot.querySelector('#appearance').hidden);
+          settingsMenu.shadowRoot!.querySelector<HTMLElement>(
+                                      '#onStartup')!.hidden);
+      assertEquals(expectedHidden, settingsMenu.$.advancedButton.hidden);
+      assertEquals(expectedHidden, settingsMenu.$.advancedSubmenu.hidden);
       assertEquals(
           expectedHidden,
-          settingsMenu.shadowRoot.querySelector('#onStartup').hidden);
-      assertEquals(
-          expectedHidden,
-          settingsMenu.shadowRoot.querySelector('#advancedButton').hidden);
-      assertEquals(
-          expectedHidden,
-          settingsMenu.shadowRoot.querySelector('#advancedSubmenu').hidden);
-      assertEquals(
-          expectedHidden,
-          settingsMenu.shadowRoot.querySelector('#reset').hidden);
+          settingsMenu.shadowRoot!.querySelector<HTMLElement>(
+                                      '#reset')!.hidden);
 
       if (!loadTimeData.getBoolean('enableLandingPageRedesign')) {
         assertEquals(
             expectedHidden,
-            settingsMenu.shadowRoot.querySelector('#safetyCheck').hidden);
+            settingsMenu.shadowRoot!.querySelector<HTMLElement>(
+                                        '#safetyCheck')!.hidden);
       }
 
-      if (!isChromeOS && !isLacros) {
-        assertEquals(
-            expectedHidden,
-            settingsMenu.shadowRoot.querySelector('#defaultBrowser').hidden);
-      }
+      // <if expr="not chromeos and not lacros">
+      assertEquals(
+          expectedHidden,
+          settingsMenu.shadowRoot!
+              .querySelector<HTMLElement>('#defaultBrowser')!.hidden);
+      // </if>
     }
 
     // The default pageVisibility should not cause menu items to be hidden.
