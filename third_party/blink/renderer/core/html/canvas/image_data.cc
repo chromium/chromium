@@ -288,7 +288,7 @@ ImageData* ImageData::CreateForTest(const IntSize& size,
 }
 
 ScriptPromise ImageData::CreateImageBitmap(ScriptState* script_state,
-                                           absl::optional<IntRect> crop_rect,
+                                           absl::optional<gfx::Rect> crop_rect,
                                            const ImageBitmapOptions* options,
                                            ExceptionState& exception_state) {
   if (IsBufferBaseDetached()) {

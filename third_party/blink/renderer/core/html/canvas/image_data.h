@@ -224,7 +224,7 @@ class CORE_EXPORT ImageData final : public ScriptWrappable,
   // ImageBitmapSource implementation
   IntSize BitmapSourceSize() const override { return size_; }
   ScriptPromise CreateImageBitmap(ScriptState*,
-                                  absl::optional<IntRect> crop_rect,
+                                  absl::optional<gfx::Rect> crop_rect,
                                   const ImageBitmapOptions*,
                                   ExceptionState&) override;
 

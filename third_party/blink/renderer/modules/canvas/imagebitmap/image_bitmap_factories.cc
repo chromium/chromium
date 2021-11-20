@@ -78,6 +78,18 @@ enum CreateImageBitmapSource {
   kMaxValue = kCreateImageBitmapSourceVideoFrame,
 };
 
+gfx::Rect NormalizedCropRect(int x, int y, int width, int height) {
+  if (width < 0) {
+    x = base::ClampAdd(x, width);
+    width = -width;
+  }
+  if (height < 0) {
+    y = base::ClampAdd(y, height);
+    height = -height;
+  }
+  return gfx::Rect(x, y, width, height);
+}
+
 }  // namespace
 
 inline ImageBitmapSource* ToImageBitmapSourceInternal(
@@ -132,7 +144,7 @@ inline ImageBitmapSource* ToImageBitmapSourceInternal(
 ScriptPromise ImageBitmapFactories::CreateImageBitmapFromBlob(
     ScriptState* script_state,
     ImageBitmapSource* bitmap_source,
-    absl::optional<IntRect> crop_rect,
+    absl::optional<gfx::Rect> crop_rect,
     const ImageBitmapOptions* options) {
   DCHECK(script_state->ContextIsValid());
   ImageBitmapFactories& factory = From(*ExecutionContext::From(script_state));
@@ -154,8 +166,8 @@ ScriptPromise ImageBitmapFactories::CreateImageBitmap(
       ToImageBitmapSourceInternal(bitmap_source, options, false);
   if (!bitmap_source_internal)
     return ScriptPromise();
-  return CreateImageBitmap(script_state, bitmap_source_internal,
-                           absl::optional<IntRect>(), options, exception_state);
+  return CreateImageBitmap(script_state, bitmap_source_internal, absl::nullopt,
+                           options, exception_state);
 }
 
 ScriptPromise ImageBitmapFactories::CreateImageBitmap(
@@ -173,7 +185,7 @@ ScriptPromise ImageBitmapFactories::CreateImageBitmap(
       ToImageBitmapSourceInternal(bitmap_source, options, true);
   if (!bitmap_source_internal)
     return ScriptPromise();
-  absl::optional<IntRect> crop_rect = IntRect(sx, sy, sw, sh);
+  gfx::Rect crop_rect = NormalizedCropRect(sx, sy, sw, sh);
   return CreateImageBitmap(script_state, bitmap_source_internal, crop_rect,
                            options, exception_state);
 }
@@ -181,7 +193,7 @@ ScriptPromise ImageBitmapFactories::CreateImageBitmap(
 ScriptPromise ImageBitmapFactories::CreateImageBitmap(
     ScriptState* script_state,
     ImageBitmapSource* bitmap_source,
-    absl::optional<IntRect> crop_rect,
+    absl::optional<gfx::Rect> crop_rect,
     const ImageBitmapOptions* options,
     ExceptionState& exception_state) {
   if (crop_rect && (crop_rect->width() == 0 || crop_rect->height() == 0)) {
@@ -239,7 +251,7 @@ void ImageBitmapFactories::Trace(Visitor* visitor) const {
 
 ImageBitmapFactories::ImageBitmapLoader::ImageBitmapLoader(
     ImageBitmapFactories& factory,
-    absl::optional<IntRect> crop_rect,
+    absl::optional<gfx::Rect> crop_rect,
     ScriptState* script_state,
     const ImageBitmapOptions* options)
     : ExecutionContextLifecycleObserver(ExecutionContext::From(script_state)),

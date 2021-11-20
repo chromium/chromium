@@ -2351,14 +2351,14 @@ String AXNodeObject::ImageDataUrl(const IntSize& max_size) const {
   ImageBitmapOptions* options = ImageBitmapOptions::Create();
   ImageBitmap* image_bitmap = nullptr;
   if (auto* image = DynamicTo<HTMLImageElement>(node)) {
-    image_bitmap = MakeGarbageCollected<ImageBitmap>(
-        image, absl::optional<IntRect>(), options);
+    image_bitmap =
+        MakeGarbageCollected<ImageBitmap>(image, absl::nullopt, options);
   } else if (auto* canvas = DynamicTo<HTMLCanvasElement>(node)) {
-    image_bitmap = MakeGarbageCollected<ImageBitmap>(
-        canvas, absl::optional<IntRect>(), options);
+    image_bitmap =
+        MakeGarbageCollected<ImageBitmap>(canvas, absl::nullopt, options);
   } else if (auto* video = DynamicTo<HTMLVideoElement>(node)) {
-    image_bitmap = MakeGarbageCollected<ImageBitmap>(
-        video, absl::optional<IntRect>(), options);
+    image_bitmap =
+        MakeGarbageCollected<ImageBitmap>(video, absl::nullopt, options);
   }
   if (!image_bitmap)
     return String();

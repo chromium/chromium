@@ -149,7 +149,7 @@ class CORE_EXPORT OffscreenCanvas final
   // ImageBitmapSource implementation
   IntSize BitmapSourceSize() const final;
   ScriptPromise CreateImageBitmap(ScriptState*,
-                                  absl::optional<IntRect>,
+                                  absl::optional<gfx::Rect>,
                                   const ImageBitmapOptions*,
                                   ExceptionState&) final;
 

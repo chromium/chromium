@@ -53,25 +53,8 @@ constexpr const char* kImageBitmapOptionResizeQualityPixelated = "pixelated";
 
 namespace {
 
-// The following two functions are helpers used in cropImage
-static inline IntRect NormalizeRect(const IntRect& rect) {
-  int x = rect.x();
-  int y = rect.y();
-  int width = rect.width();
-  int height = rect.height();
-  if (width < 0) {
-    x = base::ClampAdd(x, width);
-    width = -width;
-  }
-  if (height < 0) {
-    y = base::ClampAdd(y, height);
-    height = -height;
-  }
-  return IntRect(x, y, width, height);
-}
-
 ImageBitmap::ParsedOptions ParseOptions(const ImageBitmapOptions* options,
-                                        absl::optional<IntRect> crop_rect,
+                                        absl::optional<gfx::Rect> crop_rect,
                                         IntSize source_size) {
   ImageBitmap::ParsedOptions parsed_options;
   if (options->imageOrientation() == kImageOrientationFlipY) {
@@ -101,9 +84,9 @@ ImageBitmap::ParsedOptions ParseOptions(const ImageBitmapOptions* options,
   int source_width = source_size.width();
   int source_height = source_size.height();
   if (!crop_rect) {
-    parsed_options.crop_rect = IntRect(0, 0, source_width, source_height);
+    parsed_options.crop_rect = gfx::Rect(0, 0, source_width, source_height);
   } else {
-    parsed_options.crop_rect = NormalizeRect(*crop_rect);
+    parsed_options.crop_rect = *crop_rect;
   }
   if (!options->hasResizeWidth() && !options->hasResizeHeight()) {
     parsed_options.resize_width = parsed_options.crop_rect.width();
@@ -512,7 +495,7 @@ sk_sp<SkImage> ImageBitmap::GetSkImageFromDecoder(
 }
 
 ImageBitmap::ImageBitmap(ImageElementBase* image,
-                         absl::optional<IntRect> crop_rect,
+                         absl::optional<gfx::Rect> crop_rect,
                          const ImageBitmapOptions* options) {
   scoped_refptr<Image> input = image->CachedImage()->GetImage();
   DCHECK(!input->IsTextureBacked());
@@ -581,7 +564,7 @@ ImageBitmap::ImageBitmap(ImageElementBase* image,
 }
 
 ImageBitmap::ImageBitmap(HTMLVideoElement* video,
-                         absl::optional<IntRect> crop_rect,
+                         absl::optional<gfx::Rect> crop_rect,
                          const ImageBitmapOptions* options) {
   ParsedOptions parsed_options =
       ParseOptions(options, crop_rect, video->BitmapSourceSize());
@@ -607,7 +590,7 @@ ImageBitmap::ImageBitmap(HTMLVideoElement* video,
 }
 
 ImageBitmap::ImageBitmap(HTMLCanvasElement* canvas,
-                         absl::optional<IntRect> crop_rect,
+                         absl::optional<gfx::Rect> crop_rect,
                          const ImageBitmapOptions* options) {
   SourceImageStatus status;
   scoped_refptr<Image> image_input =
@@ -633,7 +616,7 @@ ImageBitmap::ImageBitmap(HTMLCanvasElement* canvas,
 }
 
 ImageBitmap::ImageBitmap(OffscreenCanvas* offscreen_canvas,
-                         absl::optional<IntRect> crop_rect,
+                         absl::optional<gfx::Rect> crop_rect,
                          const ImageBitmapOptions* options) {
   SourceImageStatus status;
   scoped_refptr<Image> raw_input = offscreen_canvas->GetSourceImageForCanvas(
@@ -672,7 +655,7 @@ ImageBitmap::ImageBitmap(const SkPixmap& pixmap,
 }
 
 ImageBitmap::ImageBitmap(ImageData* data,
-                         absl::optional<IntRect> crop_rect,
+                         absl::optional<gfx::Rect> crop_rect,
                          const ImageBitmapOptions* options) {
   ParsedOptions parsed_options =
       ParseOptions(options, crop_rect, data->BitmapSourceSize());
@@ -753,7 +736,7 @@ ImageBitmap::ImageBitmap(ImageData* data,
 }
 
 ImageBitmap::ImageBitmap(ImageBitmap* bitmap,
-                         absl::optional<IntRect> crop_rect,
+                         absl::optional<gfx::Rect> crop_rect,
                          const ImageBitmapOptions* options) {
   scoped_refptr<StaticBitmapImage> input = bitmap->BitmapImage();
   if (!input)
@@ -776,7 +759,7 @@ ImageBitmap::ImageBitmap(ImageBitmap* bitmap,
 }
 
 ImageBitmap::ImageBitmap(scoped_refptr<StaticBitmapImage> image,
-                         absl::optional<IntRect> crop_rect,
+                         absl::optional<gfx::Rect> crop_rect,
                          const ImageBitmapOptions* options) {
   bool origin_clean = image->OriginClean();
   ParsedOptions parsed_options =
@@ -894,7 +877,7 @@ void ImageBitmap::RasterizeImageOnBackgroundThread(
 }
 
 ScriptPromise ImageBitmap::CreateAsync(ImageElementBase* image,
-                                       absl::optional<IntRect> crop_rect,
+                                       absl::optional<gfx::Rect> crop_rect,
                                        ScriptState* script_state,
                                        const ImageBitmapOptions* options) {
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
@@ -916,7 +899,7 @@ ScriptPromise ImageBitmap::CreateAsync(ImageElementBase* image,
   // In the case when |crop_rect| doesn't intersect the source image, we return
   // a transparent black image, respecting the color_params but ignoring
   // premultiply_alpha.
-  if (!parsed_options.crop_rect.Intersects(input_rect)) {
+  if (!parsed_options.crop_rect.Intersects(ToGfxRect(input_rect))) {
     ImageBitmap* bitmap =
         MakeGarbageCollected<ImageBitmap>(MakeBlankImage(parsed_options));
     if (bitmap->BitmapImage()) {
@@ -1009,10 +992,11 @@ IntSize ImageBitmap::Size() const {
   return image_->PreferredDisplaySize();
 }
 
-ScriptPromise ImageBitmap::CreateImageBitmap(ScriptState* script_state,
-                                             absl::optional<IntRect> crop_rect,
-                                             const ImageBitmapOptions* options,
-                                             ExceptionState& exception_state) {
+ScriptPromise ImageBitmap::CreateImageBitmap(
+    ScriptState* script_state,
+    absl::optional<gfx::Rect> crop_rect,
+    const ImageBitmapOptions* options,
+    ExceptionState& exception_state) {
   return ImageBitmapSource::FulfillImageBitmap(
       script_state, MakeGarbageCollected<ImageBitmap>(this, crop_rect, options),
       exception_state);

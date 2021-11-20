@@ -758,13 +758,13 @@ TEST_P(CanvasRenderingContext2DTest, ImageResourceLifetime) {
   ImageBitmap* image_bitmap_derived = nullptr;
   {
     const ImageBitmapOptions* default_options = ImageBitmapOptions::Create();
-    absl::optional<IntRect> crop_rect =
-        IntRect(0, 0, canvas->width(), canvas->height());
+    absl::optional<gfx::Rect> crop_rect =
+        gfx::Rect(0, 0, canvas->width(), canvas->height());
     auto* image_bitmap_from_canvas =
         MakeGarbageCollected<ImageBitmap>(canvas, crop_rect, default_options);
     ASSERT_TRUE(image_bitmap_from_canvas);
 
-    crop_rect = IntRect(0, 0, 20, 20);
+    crop_rect = gfx::Rect(0, 0, 20, 20);
     image_bitmap_derived = MakeGarbageCollected<ImageBitmap>(
         image_bitmap_from_canvas, crop_rect, default_options);
     ASSERT_TRUE(image_bitmap_derived);

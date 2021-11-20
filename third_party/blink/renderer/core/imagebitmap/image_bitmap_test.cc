@@ -118,23 +118,25 @@ TEST_F(ImageBitmapTest, ImageResourceConsistency) {
           UnacceleratedStaticBitmapImage::Create(image).get());
   image_element->SetImageForTest(original_image_content);
 
-  absl::optional<IntRect> crop_rect =
-      IntRect(0, 0, image_element->width(), image_element->height());
+  absl::optional<gfx::Rect> crop_rect =
+      gfx::Rect(0, 0, image_element->width(), image_element->height());
   auto* image_bitmap_no_crop = MakeGarbageCollected<ImageBitmap>(
       image_element, crop_rect, default_options);
   ASSERT_TRUE(image_bitmap_no_crop);
-  crop_rect = IntRect(image_element->width() / 2, image_element->height() / 2,
-                      image_element->width() / 2, image_element->height() / 2);
+  crop_rect =
+      gfx::Rect(image_element->width() / 2, image_element->height() / 2,
+                image_element->width() / 2, image_element->height() / 2);
   auto* image_bitmap_interior_crop = MakeGarbageCollected<ImageBitmap>(
       image_element, crop_rect, default_options);
   ASSERT_TRUE(image_bitmap_interior_crop);
-  crop_rect = IntRect(-image_element->width() / 2, -image_element->height() / 2,
-                      image_element->width(), image_element->height());
+  crop_rect =
+      gfx::Rect(-image_element->width() / 2, -image_element->height() / 2,
+                image_element->width(), image_element->height());
   auto* image_bitmap_exterior_crop = MakeGarbageCollected<ImageBitmap>(
       image_element, crop_rect, default_options);
   ASSERT_TRUE(image_bitmap_exterior_crop);
-  crop_rect = IntRect(-image_element->width(), -image_element->height(),
-                      image_element->width(), image_element->height());
+  crop_rect = gfx::Rect(-image_element->width(), -image_element->height(),
+                        image_element->width(), image_element->height());
   auto* image_bitmap_outside_crop = MakeGarbageCollected<ImageBitmap>(
       image_element, crop_rect, default_options);
   ASSERT_TRUE(image_bitmap_outside_crop);
@@ -186,8 +188,8 @@ TEST_F(ImageBitmapTest, ImageBitmapSourceChanged) {
   image->SetImageForTest(original_image_content);
 
   const ImageBitmapOptions* default_options = ImageBitmapOptions::Create();
-  absl::optional<IntRect> crop_rect =
-      IntRect(0, 0, image->width(), image->height());
+  absl::optional<gfx::Rect> crop_rect =
+      gfx::Rect(0, 0, image->width(), image->height());
   auto* image_bitmap =
       MakeGarbageCollected<ImageBitmap>(image, crop_rect, default_options);
   ASSERT_TRUE(image_bitmap);
@@ -242,7 +244,7 @@ TEST_F(ImageBitmapTest, ImageBitmapSourceChanged) {
 
 static void TestImageBitmapTextureBacked(
     scoped_refptr<StaticBitmapImage> bitmap,
-    IntRect& rect,
+    gfx::Rect& rect,
     ImageBitmapOptions* options,
     bool is_texture_backed) {
   auto* image_bitmap = MakeGarbageCollected<ImageBitmap>(bitmap, rect, options);
@@ -266,7 +268,7 @@ TEST_F(ImageBitmapTest, AvoidGPUReadback) {
   EXPECT_TRUE(image_bitmap);
   EXPECT_TRUE(image_bitmap->BitmapImage()->IsTextureBacked());
 
-  IntRect image_bitmap_rect(25, 25, 50, 50);
+  gfx::Rect image_bitmap_rect(25, 25, 50, 50);
   {
     ImageBitmapOptions* image_bitmap_options = ImageBitmapOptions::Create();
     TestImageBitmapTextureBacked(bitmap, image_bitmap_rect,
@@ -330,7 +332,7 @@ TEST_F(ImageBitmapTest,
   ImageBitmapOptions* options = ImageBitmapOptions::Create();
   options->setColorSpaceConversion("default");
   auto* image_bitmap = MakeGarbageCollected<ImageBitmap>(
-      image_data, IntRect(gfx::Point(0, 0), image_data->Size()), options);
+      image_data, gfx::Rect(ToGfxSize(image_data->Size())), options);
   DCHECK(image_bitmap);
 }
 
