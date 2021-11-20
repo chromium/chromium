@@ -291,6 +291,9 @@ const base::Feature kCrostiniDiskResizing{"CrostiniDiskResizing",
                                           base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Enables or disables Crostini GPU support.
+// Note that this feature can be overridden by login_manager based on
+// whether a per-board build sets the USE virtio_gpu flag.
+// Refer to: chromiumos/src/platform2/login_manager/chrome_setup.cc
 const base::Feature kCrostiniGpuSupport{"CrostiniGpuSupport",
                                         base::FEATURE_DISABLED_BY_DEFAULT};
 
