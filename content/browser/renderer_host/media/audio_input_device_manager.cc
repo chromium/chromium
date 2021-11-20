@@ -25,20 +25,9 @@
 #include "third_party/blink/public/common/mediastream/media_stream_request.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom-shared.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "ash/components/audio/cras_audio_handler.h"
-#endif
-
 namespace content {
 
 namespace {
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-void SetKeyboardMicStreamActiveOnUIThread(bool active) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  ash::CrasAudioHandler::Get()->SetKeyboardMicActive(active);
-}
-#endif
 
 void SendAudioLogMessage(const std::string& message) {
   MediaStreamManager::SendMessageToNativeLog("AIDM::" + message);
@@ -88,12 +77,7 @@ std::string GetOpenLogString(const base::UnguessableToken& session_id,
 
 AudioInputDeviceManager::AudioInputDeviceManager(
     media::AudioSystem* audio_system)
-    :
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-      keyboard_mic_streams_count_(0),
-#endif
-      audio_system_(audio_system) {
-}
+    : audio_system_(audio_system) {}
 
 AudioInputDeviceManager::~AudioInputDeviceManager() {
 }
@@ -172,59 +156,6 @@ void AudioInputDeviceManager::Close(const base::UnguessableToken& session_id) {
       FROM_HERE, base::BindOnce(&AudioInputDeviceManager::ClosedOnIOThread,
                                 this, stream_type, session_id));
 }
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-AudioInputDeviceManager::KeyboardMicRegistration::KeyboardMicRegistration(
-    KeyboardMicRegistration&& other)
-    : shared_registration_count_(other.shared_registration_count_) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
-  other.shared_registration_count_ = nullptr;
-}
-
-AudioInputDeviceManager::KeyboardMicRegistration::~KeyboardMicRegistration() {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
-  DeregisterIfNeeded();
-}
-
-AudioInputDeviceManager::KeyboardMicRegistration::KeyboardMicRegistration(
-    int* shared_registration_count)
-    : shared_registration_count_(shared_registration_count) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
-}
-
-void AudioInputDeviceManager::KeyboardMicRegistration::DeregisterIfNeeded() {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
-  if (shared_registration_count_) {
-    --*shared_registration_count_;
-    DCHECK_GE(*shared_registration_count_, 0);
-    if (*shared_registration_count_ == 0) {
-      GetUIThreadTaskRunner({})->PostTask(
-          FROM_HERE,
-          base::BindOnce(&SetKeyboardMicStreamActiveOnUIThread, false));
-    }
-  }
-
-  // Since we removed our registration, we unset the counter pointer to
-  // indicate this.
-  shared_registration_count_ = nullptr;
-}
-
-void AudioInputDeviceManager::RegisterKeyboardMicStream(
-    base::OnceCallback<void(KeyboardMicRegistration)> callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
-
-  ++keyboard_mic_streams_count_;
-  if (keyboard_mic_streams_count_ == 1) {
-    GetUIThreadTaskRunner({})->PostTaskAndReply(
-        FROM_HERE, base::BindOnce(&SetKeyboardMicStreamActiveOnUIThread, true),
-        base::BindOnce(std::move(callback),
-                       KeyboardMicRegistration(&keyboard_mic_streams_count_)));
-  } else {
-    std::move(callback).Run(
-        KeyboardMicRegistration(&keyboard_mic_streams_count_));
-  }
-}
-#endif
 
 void AudioInputDeviceManager::OpenedOnIOThread(
     const base::UnguessableToken& session_id,

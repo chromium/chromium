@@ -2331,8 +2331,6 @@ source_set("browser") {
   # ChromeOS also defines linux but their memory-monitors conflict.
   if (is_chromeos_ash) {
     sources += [
-      "media/keyboard_mic_registration.cc",
-      "media/keyboard_mic_registration.h",
       "tracing/cros_tracing_agent.cc",
       "tracing/cros_tracing_agent.h",
     ]

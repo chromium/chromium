@@ -51,45 +51,6 @@ class CONTENT_EXPORT AudioInputDeviceManager : public MediaStreamProvider {
   base::UnguessableToken Open(const blink::MediaStreamDevice& device) override;
   void Close(const base::UnguessableToken& session_id) override;
 
-  // Owns a keyboard mic stream registration. Dummy implementation on platforms
-  // other than Chrome OS.
-  class KeyboardMicRegistration {
-   public:
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    // No registration.
-    KeyboardMicRegistration() = default;
-
-    KeyboardMicRegistration(KeyboardMicRegistration&& other);
-
-    ~KeyboardMicRegistration();
-
-   private:
-    friend class AudioInputDeviceManager;
-
-    explicit KeyboardMicRegistration(int* shared_registration_count);
-
-    void DeregisterIfNeeded();
-
-    // Null to indicate that there is no stream registration. This points to
-    // a member of the AudioInputDeviceManager, which lives as long as the IO
-    // thread, so the pointer will be valid for the lifetime of the
-    // registration.
-    int* shared_registration_count_ = nullptr;
-#endif
-  };
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // Registers that a stream using keyboard mic has been opened or closed.
-  // Keeps count of how many such streams are open and activates and
-  // inactivates the keyboard mic accordingly. The (in)activation is done on the
-  // UI thread and for the register case a callback must therefore be provided
-  // which is called when activated. Deregistration is done when the
-  // registration object is destructed or assigned to, which should only be
-  // done on the IO thread.
-  void RegisterKeyboardMicStream(
-      base::OnceCallback<void(KeyboardMicRegistration)> callback);
-#endif
-
  private:
   ~AudioInputDeviceManager() override;
 
@@ -113,11 +74,6 @@ class CONTENT_EXPORT AudioInputDeviceManager : public MediaStreamProvider {
   // Only accessed on Browser::IO thread.
   base::ObserverList<MediaStreamProviderListener>::Unchecked listeners_;
   blink::MediaStreamDevices devices_;
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // Keeps count of how many streams are using keyboard mic.
-  int keyboard_mic_streams_count_;
-#endif
 
   media::AudioSystem* const audio_system_;
 };

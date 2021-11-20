@@ -24,43 +24,11 @@
 #include "media/base/user_input_monitor.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "content/browser/media/keyboard_mic_registration.h"
-#endif
-
 namespace content {
 
 using DisconnectReason =
     media::mojom::AudioInputStreamObserver::DisconnectReason;
 using InputStreamErrorCode = media::mojom::InputStreamErrorCode;
-
-namespace {
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-enum KeyboardMicAction { kRegister, kDeregister };
-
-void UpdateKeyboardMicRegistration(KeyboardMicAction action) {
-  if (!BrowserThread::CurrentlyOn(BrowserThread::UI)) {
-    GetUIThreadTaskRunner({})->PostTask(
-        FROM_HERE, base::BindOnce(&UpdateKeyboardMicRegistration, action));
-    return;
-  }
-  BrowserMainLoop* browser_main_loop = BrowserMainLoop::GetInstance();
-  // May be null in unit tests.
-  if (!browser_main_loop)
-    return;
-  switch (action) {
-    case kRegister:
-      browser_main_loop->keyboard_mic_registration()->Register();
-      return;
-    case kDeregister:
-      browser_main_loop->keyboard_mic_registration()->Deregister();
-      return;
-  }
-}
-#endif
-
-}  // namespace
 
 AudioInputStreamBroker::AudioInputStreamBroker(
     int render_process_id,
@@ -96,24 +64,10 @@ AudioInputStreamBroker::AudioInputStreamBroker(
           switches::kUseFakeDeviceForMediaStream)) {
     params_.set_format(media::AudioParameters::AUDIO_FAKE);
   }
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (params_.channel_layout() ==
-      media::CHANNEL_LAYOUT_STEREO_AND_KEYBOARD_MIC) {
-    UpdateKeyboardMicRegistration(kRegister);
-  }
-#endif
 }
 
 AudioInputStreamBroker::~AudioInputStreamBroker() {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (params_.channel_layout() ==
-      media::CHANNEL_LAYOUT_STEREO_AND_KEYBOARD_MIC) {
-    UpdateKeyboardMicRegistration(kDeregister);
-  }
-#endif
 
   // This relies on CreateStream() being called synchronously right after the
   // constructor.

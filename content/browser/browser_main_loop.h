@@ -21,10 +21,6 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/buildflags.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "content/browser/media/keyboard_mic_registration.h"
-#endif
-
 #if defined(USE_AURA)
 namespace aura {
 class Env;
@@ -186,9 +182,6 @@ class CONTENT_EXPORT BrowserMainLoop {
   // be null if this process started in reduced mode.
   net::NetworkChangeNotifier* network_change_notifier() const {
     return network_change_notifier_.get();
-  }
-  KeyboardMicRegistration* keyboard_mic_registration() {
-    return &keyboard_mic_registration_;
   }
 #endif
 
@@ -392,9 +385,6 @@ class CONTENT_EXPORT BrowserMainLoop {
   scoped_refptr<responsiveness::Watcher> responsiveness_watcher_;
 
   // Members not associated with a specific phase.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  KeyboardMicRegistration keyboard_mic_registration_;
-#endif
   std::unique_ptr<SmsProvider> sms_provider_;
 
   // DO NOT add members here. Add them to the right categories above.
