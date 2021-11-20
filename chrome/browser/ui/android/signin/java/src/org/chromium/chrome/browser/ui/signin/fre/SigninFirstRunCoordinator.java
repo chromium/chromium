@@ -39,6 +39,11 @@ public class SigninFirstRunCoordinator {
         void openTermsOfService();
 
         /**
+         * Opens google privacy policy page in a CCT.
+         */
+        void openPrivacyPolicy();
+
+        /**
          * Opens a dialog to get consent for recording UMA data.
          */
         void openUmaDialog();

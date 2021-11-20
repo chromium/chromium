@@ -58,7 +58,7 @@ class SigninFirstRunMediator implements AccountsChangeObserver, ProfileDataCache
         mProfileDataCache = ProfileDataCache.createWithDefaultImageSizeAndNoBadge(mContext);
         mModel = SigninFirstRunProperties.createModel(this::onSelectedAccountClicked,
                 this::onContinueAsClicked, this::onDismissClicked,
-                ExternalAuthUtils.getInstance().canUseGooglePlayServices(), getFooterString());
+                ExternalAuthUtils.getInstance().canUseGooglePlayServices(), getFooterString(false));
 
         mProfileDataCache.addObserver(this);
 
@@ -217,17 +217,32 @@ class SigninFirstRunMediator implements AccountsChangeObserver, ProfileDataCache
     private void onChildAccountStatusReady(@Status int status, @Nullable Account childAccount) {
         final boolean isChild = ChildAccountStatus.isChild(status);
         mModel.set(SigninFirstRunProperties.IS_SELECTED_ACCOUNT_SUPERVISED, isChild);
+        mModel.set(SigninFirstRunProperties.FOOTER_STRING, getFooterString(isChild));
         // Selected account data will be updated in {@link #onProfileDataUpdated}
         mProfileDataCache.setBadge(isChild ? R.drawable.ic_account_child_20dp : 0);
     }
 
-    private SpannableString getFooterString() {
+    private SpannableString getFooterString(boolean hasChildAccount) {
         final NoUnderlineClickableSpan clickableTermsOfServiceSpan = new NoUnderlineClickableSpan(
                 mContext.getResources(), view -> mDelegate.openTermsOfService());
+        final SpanApplier.SpanInfo tosSpanInfo =
+                new SpanApplier.SpanInfo("<TOS_LINK>", "</TOS_LINK>", clickableTermsOfServiceSpan);
         final NoUnderlineClickableSpan clickableUMADialogSpan = new NoUnderlineClickableSpan(
                 mContext.getResources(), view -> mDelegate.openUmaDialog());
-        return SpanApplier.applySpans(mContext.getString(R.string.signin_fre_footer),
-                new SpanApplier.SpanInfo("<LINK1>", "</LINK1>", clickableTermsOfServiceSpan),
-                new SpanApplier.SpanInfo("<LINK2>", "</LINK2>", clickableUMADialogSpan));
+        final SpanApplier.SpanInfo umaSpanInfo =
+                new SpanApplier.SpanInfo("<UMA_LINK>", "</UMA_LINK>", clickableUMADialogSpan);
+        if (hasChildAccount) {
+            final NoUnderlineClickableSpan clickablePrivacyPolicySpan =
+                    new NoUnderlineClickableSpan(
+                            mContext.getResources(), view -> mDelegate.openPrivacyPolicy());
+            final SpanApplier.SpanInfo privacySpanInfo = new SpanApplier.SpanInfo(
+                    "<PRIVACY_LINK>", "</PRIVACY_LINK>", clickablePrivacyPolicySpan);
+            return SpanApplier.applySpans(
+                    mContext.getString(R.string.signin_fre_footer_supervised_user), tosSpanInfo,
+                    umaSpanInfo, privacySpanInfo);
+        } else {
+            return SpanApplier.applySpans(
+                    mContext.getString(R.string.signin_fre_footer), tosSpanInfo, umaSpanInfo);
+        }
     }
 }

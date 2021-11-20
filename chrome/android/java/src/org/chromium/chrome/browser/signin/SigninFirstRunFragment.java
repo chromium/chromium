@@ -157,6 +157,14 @@ public class SigninFirstRunFragment extends Fragment implements FirstRunFragment
 
     /** Implements {@link SigninFirstRunCoordinator.Delegate}. */
     @Override
+    public void openPrivacyPolicy() {
+        CustomTabActivity.showInfoPage(requireContext(),
+                LocalizationUtils.substituteLocalePlaceholder(
+                        getString(R.string.google_privacy_policy_url)));
+    }
+
+    /** Implements {@link SigninFirstRunCoordinator.Delegate}. */
+    @Override
     public void openUmaDialog() {
         new FreUMADialogCoordinator(requireContext(), mModalDialogManager, this, mAllowCrashUpload);
     }
