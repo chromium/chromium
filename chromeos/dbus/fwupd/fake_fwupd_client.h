@@ -10,7 +10,7 @@
 
 namespace chromeos {
 
-class COMPONENT_EXPORT(CHROMEOS_DBUS_FUWPD) FakeFwupdClient
+class COMPONENT_EXPORT(CHROMEOS_DBUS_FWUPD) FakeFwupdClient
     : public FwupdClient {
  public:
   FakeFwupdClient();

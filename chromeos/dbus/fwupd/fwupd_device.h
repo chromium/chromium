@@ -15,8 +15,8 @@ namespace chromeos {
 struct COMPONENT_EXPORT(CHROMEOS_DBUS_FWUPD) FwupdDevice {
   FwupdDevice();
   FwupdDevice(const std::string& id, const std::string& device_name);
-  FwupdDevice(FwupdDevice&& other);
-  FwupdDevice& operator=(FwupdDevice&& other);
+  FwupdDevice(const FwupdDevice& other);
+  FwupdDevice& operator=(const FwupdDevice& other);
   ~FwupdDevice();
 
   std::string id;

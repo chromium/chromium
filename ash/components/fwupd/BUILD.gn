@@ -26,8 +26,11 @@ source_set("unit_tests") {
 
   deps = [
     ":fwupd",
+    "//ash/constants",
+    "//base/test:test_support",
     "//chromeos/dbus/fwupd",
     "//dbus:test_support",
+    "//testing/gmock",
     "//testing/gtest",
   ]
 

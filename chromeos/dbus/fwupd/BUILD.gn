@@ -5,8 +5,8 @@
 assert(is_chromeos, "Non-ChromeOS builds cannot depend on //chromeos")
 
 component("fwupd") {
-  output_name = "chromeos_fwupd"
-  defines = [ "IS_CHROMEOS_DBUS_FUWPD_IMPL" ]
+  output_name = "chromeos_dbus_fwupd"
+  defines = [ "IS_CHROMEOS_DBUS_FWUPD_IMPL" ]
 
   deps = [
     "//ash/constants",

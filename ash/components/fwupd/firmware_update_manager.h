@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/component_export.h"
+#include "base/containers/flat_map.h"
 #include "chromeos/dbus/fwupd/fwupd_client.h"
 #include "chromeos/dbus/fwupd/fwupd_device.h"
 #include "chromeos/dbus/fwupd/fwupd_update.h"
@@ -17,6 +18,20 @@ namespace ash {
 class COMPONENT_EXPORT(ASH_FIRMWARE_UPDATE_MANAGER) FirmwareUpdateManager
     : public chromeos::FwupdClient::Observer {
  public:
+  // TODO(zentaro): Replace this struct with mojo struct when implemented.
+  struct FirmwareUpdate {
+    FirmwareUpdate();
+    FirmwareUpdate(FirmwareUpdate&& other);
+    FirmwareUpdate& operator=(FirmwareUpdate&& other);
+    ~FirmwareUpdate();
+
+    std::string device_id;
+    std::string device_name;
+    std::string version;
+    std::string description;
+    uint32_t priority;
+  };
+
   FirmwareUpdateManager();
   FirmwareUpdateManager(const FirmwareUpdateManager&) = delete;
   FirmwareUpdateManager& operator=(const FirmwareUpdateManager&) = delete;
@@ -35,18 +50,27 @@ class COMPONENT_EXPORT(ASH_FIRMWARE_UPDATE_MANAGER) FirmwareUpdateManager
   void OnUpdateListResponse(const std::string& device_id,
                             chromeos::FwupdUpdateList* updates) override;
 
+  // Query all updates for all devices.
+  void RequestAllUpdates();
+
+  // Get the currently cached set of updates.
+  // TODO(zentaro): Remove once mojo api fires observers.
+  const std::vector<FirmwareUpdate>& GetCachedUpdatesForTesting();
+
+ private:
   // Query the fwupd DBus client for currently connected devices.
   void RequestDevices();
 
   // Query the fwupd DBus client for updates for a certain device.
   void RequestUpdates(const std::string& device_id);
 
- protected:
-  friend class FirmwareUpdateManagerTest;
-  // Temporary auxiliary variables for testing.
-  // TODO(swifton): Replace with mock observers.
-  int on_device_list_response_count_for_testing_ = 0;
-  int on_update_list_response_count_for_testing_ = 0;
+  // Map of a device ID to `FwupdDevice` which is waiting for the list
+  // of updates.
+  base::flat_map<std::string, chromeos::FwupdDevice> devices_pending_update_;
+
+  // List of all available updates. If `devices_pending_update_` is not
+  // empty then this list is not yet complete.
+  std::vector<FirmwareUpdate> updates_;
 };
 }  // namespace ash
 

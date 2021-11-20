@@ -79,7 +79,7 @@ class FwupdClientTest : public testing::Test {
         .WillRepeatedly(Invoke(this, &FwupdClientTest::ConnectToSignal));
 
     fwupd_client_ = FwupdClient::Create();
-    fwupd_client_->Init(bus_.get());
+    fwupd_client_->InitForTesting(bus_.get());
     fwupd_client_->client_is_in_testing_mode_ = true;
   }
 

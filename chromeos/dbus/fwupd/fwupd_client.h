@@ -16,7 +16,7 @@
 
 namespace chromeos {
 // FwupdClient is used for handling signals from the fwupd daemon.
-class COMPONENT_EXPORT(CHROMEOS_DBUS_FUWPD) FwupdClient : public DBusClient {
+class COMPONENT_EXPORT(CHROMEOS_DBUS_FWUPD) FwupdClient : public DBusClient {
  public:
   class Observer : public base::CheckedObserver {
    public:
@@ -40,6 +40,9 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS_FUWPD) FwupdClient : public DBusClient {
 
   // Returns the global instance if initialized. May return null.
   static FwupdClient* Get();
+
+  // Used to call the protected initialization in unit tests.
+  void InitForTesting(dbus::Bus* bus) { Init(bus); }
 
   // Query fwupd for updates that are available for a particular device.
   virtual void RequestUpdates(const std::string& device_id) = 0;
