@@ -220,5 +220,7 @@ public final class ProductionSupportedFlagList {
             Flag.baseFeature(BlinkFeatures.RTC_DISALLOW_PLAN_B_OUTSIDE_DEPRECATION_TRIAL,
                     "Makes constructing an RTCPeerConnection with {sdpSemantics:'plan-b'} throw "
                             + "an exception."),
+            Flag.baseFeature(BlinkFeatures.PREFETCH_ANDROID_FONTS,
+                    "Enables prefetching Android fonts on renderer startup."),
     };
 }

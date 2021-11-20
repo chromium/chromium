@@ -55,6 +55,11 @@ class FontUniqueNameLookup {
     NOTREACHED();
   }
 
+  // Performs any global initialization needed for this renderer. This is called
+  // early in renderer startup, as opposed to PrepareFontUniqueNameLookup()
+  // which is called when sync lookup is first needed.
+  virtual void Init() {}
+
  protected:
   FontUniqueNameLookup();
 

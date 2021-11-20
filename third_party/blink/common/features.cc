@@ -1135,5 +1135,11 @@ const base::Feature kEarlyCodeCache{"EarlyCodeCache",
 const base::Feature kClientHintThirdPartyDelegation{
     "ClientHintThirdPartyDelegation", base::FEATURE_DISABLED_BY_DEFAULT};
 
+#if defined(OS_ANDROID)
+// Enables prefetching Android fonts on renderer startup.
+const base::Feature kPrefetchAndroidFonts{"PrefetchAndroidFonts",
+                                          base::FEATURE_DISABLED_BY_DEFAULT};
+#endif
+
 }  // namespace features
 }  // namespace blink
