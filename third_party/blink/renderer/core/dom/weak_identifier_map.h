@@ -6,10 +6,10 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_DOM_WEAK_IDENTIFIER_MAP_H_
 
 #include <limits>
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
-#include "third_party/blink/renderer/platform/wtf/hash_map.h"
 
 namespace blink {
 

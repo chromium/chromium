@@ -29,6 +29,7 @@
 #include "base/dcheck_is_on.h"
 #include "third_party/blink/renderer/modules/webdatabase/database_context.h"
 #include "third_party/blink/renderer/modules/webdatabase/database_error.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
