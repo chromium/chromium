@@ -89,7 +89,8 @@ void WebAppInstallManager::LoadWebAppAndCheckManifest(
     const GURL& web_app_url,
     webapps::WebappInstallSource install_source,
     WebAppManifestCheckCallback callback) {
-  DCHECK(started_);
+  if (!started_)
+    return;
 
   auto task = std::make_unique<WebAppInstallTask>(
       profile_, os_integration_manager_, finalizer_,
@@ -110,7 +111,8 @@ void WebAppInstallManager::InstallWebAppFromManifest(
     webapps::WebappInstallSource install_source,
     WebAppInstallDialogCallback dialog_callback,
     OnceInstallCallback callback) {
-  DCHECK(started_);
+  if (!started_)
+    return;
 
   auto task = std::make_unique<WebAppInstallTask>(
       profile_, os_integration_manager_, finalizer_,
@@ -130,7 +132,8 @@ void WebAppInstallManager::InstallWebAppFromManifestWithFallback(
     webapps::WebappInstallSource install_source,
     WebAppInstallDialogCallback dialog_callback,
     OnceInstallCallback callback) {
-  DCHECK(started_);
+  if (!started_)
+    return;
 
   auto task = std::make_unique<WebAppInstallTask>(
       profile_, os_integration_manager_, finalizer_,
@@ -146,7 +149,8 @@ void WebAppInstallManager::InstallWebAppFromManifestWithFallback(
 void WebAppInstallManager::InstallSubApp(const AppId& parent_app_id,
                                          const GURL& install_url,
                                          OnceInstallCallback callback) {
-  DCHECK(started_);
+  if (!started_)
+    return;
 
   // Enqueue full background installation flow. Since app_id isn't available
   // yet, duplicate installation check will be performed down the line once
@@ -195,7 +199,8 @@ void WebAppInstallManager::InstallWebAppFromInfo(
     const absl::optional<WebAppInstallParams>& install_params,
     webapps::WebappInstallSource install_source,
     OnceInstallCallback callback) {
-  DCHECK(started_);
+  if (!started_)
+    return;
 
   auto task = std::make_unique<WebAppInstallTask>(
       profile_, os_integration_manager_, finalizer_,
@@ -217,7 +222,8 @@ void WebAppInstallManager::InstallWebAppWithParams(
     const WebAppInstallParams& install_params,
     webapps::WebappInstallSource install_source,
     OnceInstallCallback callback) {
-  DCHECK(started_);
+  if (!started_)
+    return;
 
   auto task = std::make_unique<WebAppInstallTask>(
       profile_, os_integration_manager_, finalizer_,
@@ -321,7 +327,8 @@ bool WebAppInstallManager::IsAppIdAlreadyEnqueued(const AppId& app_id) const {
 void WebAppInstallManager::InstallWebAppsAfterSync(
     std::vector<WebApp*> web_apps,
     RepeatingInstallCallback callback) {
-  DCHECK(started_);
+  if (!started_)
+    return;
 
   if (disable_web_app_sync_install_for_testing_)
     return;
@@ -349,14 +356,18 @@ void WebAppInstallManager::InstallWebAppsAfterSync(
 void WebAppInstallManager::UninstallWithoutRegistryUpdateFromSync(
     const std::vector<AppId>& web_apps,
     RepeatingUninstallCallback callback) {
-  DCHECK(started_);
+  if (!started_)
+    return;
+
   finalizer_->UninstallWithoutRegistryUpdateFromSync(std::move(web_apps),
                                                      std::move(callback));
 }
 
 void WebAppInstallManager::RetryIncompleteUninstalls(
     const std::vector<AppId>& apps_to_uninstall) {
-  DCHECK(started_);
+  if (!started_)
+    return;
+
   finalizer_->RetryIncompleteUninstalls(apps_to_uninstall);
 }
 
