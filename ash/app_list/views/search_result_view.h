@@ -21,8 +21,8 @@
 #include "ui/views/context_menu_controller.h"
 
 namespace views {
+class FlexLayoutView;
 class ImageView;
-class StyledLabel;
 class Label;
 }  // namespace views
 
@@ -83,7 +83,9 @@ class ASH_EXPORT SearchResultView : public SearchResultBaseView,
   void UpdateTitleText();
   void UpdateDetailsText();
 
-  void StyleLabel(views::StyledLabel* label, const SearchResult::Tags& tags);
+  void StyleLabel(views::Label* label,
+                  bool is_title_label,
+                  const SearchResult::Tags& tags);
   void StyleTitleLabel();
   void StyleDetailsLabel();
 
@@ -144,9 +146,11 @@ class ASH_EXPORT SearchResultView : public SearchResultBaseView,
 
   MaskedImageView* icon_ = nullptr;              // Owned by views hierarchy.
   views::ImageView* badge_icon_ = nullptr;       // Owned by views hierarchy.
-  views::StyledLabel* title_label_ = nullptr;    // Owned by view hierarchy.
-  views::StyledLabel* details_label_ = nullptr;  // Owned by view hierarchy.
-  views::Label* separator_label_ = nullptr;      // Owned by view hierarchy.
+  views::FlexLayoutView* text_container_ =
+      nullptr;                               // Owned by views hierarchy.
+  views::Label* title_label_ = nullptr;      // Owned by views hierarchy.
+  views::Label* details_label_ = nullptr;    // Owned by views hierarchy.
+  views::Label* separator_label_ = nullptr;  // Owned by views hierarchy.
 
   std::unique_ptr<AppListMenuModelAdapter> context_menu_;
 

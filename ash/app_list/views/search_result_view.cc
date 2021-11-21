@@ -35,12 +35,14 @@
 #include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/image/image_skia_operations.h"
 #include "ui/views/accessibility/accessibility_paint_checks.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/menu/menu_runner.h"
-#include "ui/views/controls/styled_label.h"
 #include "ui/views/image_model_utils.h"
+#include "ui/views/layout/flex_layout.h"
+#include "ui/views/layout/flex_layout_view.h"
 #include "ui/views/style/typography.h"
 
 namespace ash {
@@ -144,26 +146,71 @@ SearchResultView::SearchResultView(
   set_context_menu_controller(this);
   SetNotifyEnterExitOnChild(true);
 
-  title_label_ = AddChildView(std::make_unique<views::StyledLabel>());
-  title_label_->SetDisplayedOnBackgroundColor(SK_ColorTRANSPARENT);
+  text_container_ = AddChildView(std::make_unique<views::FlexLayoutView>());
+  text_container_->GetViewAccessibility().OverrideIsIgnored(true);
+  text_container_->SetCrossAxisAlignment(views::LayoutAlignment::kStretch);
+
+  switch (view_type_) {
+    case SearchResultViewType::kDefault:
+      text_container_->SetOrientation(views::LayoutOrientation::kHorizontal);
+      break;
+    case SearchResultViewType::kClassic:
+    case SearchResultViewType::kInlineAnswer:
+      text_container_->SetOrientation(views::LayoutOrientation::kVertical);
+      break;
+  }
+
+  auto setup_flex_specifications = [](views::View* view) {
+    view->SetProperty(
+        views::kFlexBehaviorKey,
+        views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
+                                 views::MaximumFlexSizeRule::kScaleToMaximum));
+  };
+
+  title_label_ =
+      text_container_->AddChildView(std::make_unique<views::Label>());
+  title_label_->SetBackgroundColor(SK_ColorTRANSPARENT);
   title_label_->SetVisible(false);
+  title_label_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+  setup_flex_specifications(title_label_);
 
-  details_label_ = AddChildView(std::make_unique<views::StyledLabel>());
-  details_label_->SetDisplayedOnBackgroundColor(SK_ColorTRANSPARENT);
-  details_label_->SetVisible(false);
-
-  separator_label_ = AddChildView(std::make_unique<views::Label>(
-      l10n_util::GetStringUTF16(IDS_ASH_SEARCH_RESULT_SEPARATOR),
-      CONTEXT_SEARCH_RESULT_VIEW, STYLE_PRODUCTIVITY_LAUNCHER));
+  separator_label_ =
+      text_container_->AddChildView(std::make_unique<views::Label>(
+          l10n_util::GetStringUTF16(IDS_ASH_SEARCH_RESULT_SEPARATOR)));
   separator_label_->SetBackgroundColor(SK_ColorTRANSPARENT);
   separator_label_->SetVisible(false);
   separator_label_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+  setup_flex_specifications(separator_label_);
+
+  details_label_ =
+      text_container_->AddChildView(std::make_unique<views::Label>());
+  details_label_->SetBackgroundColor(SK_ColorTRANSPARENT);
+  details_label_->SetVisible(false);
+  details_label_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+  setup_flex_specifications(details_label_);
+
+  title_label_->SetTextContext(CONTEXT_SEARCH_RESULT_VIEW);
+  separator_label_->SetTextContext(CONTEXT_SEARCH_RESULT_VIEW);
+  details_label_->SetTextContext(CONTEXT_SEARCH_RESULT_VIEW);
+  switch (view_type_) {
+    case SearchResultViewType::kClassic:
+      title_label_->SetTextStyle(STYLE_CLASSIC_LAUNCHER);
+      separator_label_->SetTextStyle(STYLE_CLASSIC_LAUNCHER);
+      details_label_->SetTextStyle(STYLE_CLASSIC_LAUNCHER);
+      break;
+    case SearchResultViewType::kDefault:
+    case SearchResultViewType::kInlineAnswer:
+      title_label_->SetTextStyle(STYLE_PRODUCTIVITY_LAUNCHER);
+      separator_label_->SetTextStyle(STYLE_PRODUCTIVITY_LAUNCHER);
+      details_label_->SetTextStyle(STYLE_PRODUCTIVITY_LAUNCHER);
+  }
 }
 
 SearchResultView::~SearchResultView() = default;
 
 void SearchResultView::OnResultChanged() {
   OnMetadataChanged();
+  // Update tile, separator, and details text visibility.
   UpdateTitleText();
   UpdateDetailsText();
   UpdateAccessibleName();
@@ -201,25 +248,40 @@ int SearchResultView::SecondaryTextHeight() const {
 void SearchResultView::UpdateTitleText() {
   if (!result() || result()->title().empty()) {
     title_label_->SetText(std::u16string());
+    text_container_->SetVisible(false);
+    title_label_->SetVisible(false);
   } else {
     title_label_->SetText(result()->title());
     StyleTitleLabel();
+    text_container_->SetVisible(true);
+    title_label_->SetVisible(true);
   }
 }
 
 void SearchResultView::UpdateDetailsText() {
   if (!result() || result()->details().empty()) {
     details_label_->SetText(std::u16string());
+    details_label_->SetVisible(false);
+    separator_label_->SetVisible(false);
   } else {
     details_label_->SetText(result()->details());
     StyleDetailsLabel();
+    details_label_->SetVisible(true);
+    switch (view_type_) {
+      case SearchResultViewType::kDefault:
+        separator_label_->SetVisible(true);
+        break;
+      case SearchResultViewType::kClassic:
+      case SearchResultViewType::kInlineAnswer:
+
+        separator_label_->SetVisible(false);
+    }
   }
 }
 
-void SearchResultView::StyleLabel(views::StyledLabel* label,
+void SearchResultView::StyleLabel(views::Label* label,
+                                  bool is_title_label,
                                   const SearchResult::Tags& tags) {
-  label->ClearStyleRanges();
-
   // Apply font weight styles.
   bool is_url = false;
   for (const auto& tag : tags) {
@@ -227,45 +289,28 @@ void SearchResultView::StyleLabel(views::StyledLabel* label,
     bool has_match_tag = (tag.styles & SearchResult::Tag::MATCH);
     is_url = has_url_tag || is_url;
     if (has_match_tag) {
-      views::StyledLabel::RangeStyleInfo selected_text_bold;
-      selected_text_bold.text_style = ash::AshTextStyle::STYLE_EMPHASIZED;
-      selected_text_bold.disable_line_wrapping = true;
-      selected_text_bold.override_color =
-          is_url ? AshColorProvider::Get()->GetContentLayerColor(
-                       AshColorProvider::ContentLayerType::kTextColorURL)
-                 : AppListColorProvider::Get()->GetSearchBoxSecondaryTextColor(
-                       kDeprecatedSearchBoxTextDefaultColor);
-      label->AddStyleRange(tag.range, selected_text_bold);
+      label->SetTextStyleRange(AshTextStyle::STYLE_EMPHASIZED, tag.range);
     }
   }
-
   // Apply font color styles.
-  views::StyledLabel::RangeStyleInfo base_style;
-  switch (view_type_) {
-    case SearchResultViewType::kClassic:
-      label->SetTextContext(CONTEXT_SEARCH_RESULT_VIEW);
-      label->SetDefaultTextStyle(STYLE_CLASSIC_LAUNCHER);
-      break;
-    case SearchResultViewType::kInlineAnswer:
-    case SearchResultViewType::kDefault:
-      label->SetTextContext(CONTEXT_SEARCH_RESULT_VIEW);
-      label->SetDefaultTextStyle(STYLE_PRODUCTIVITY_LAUNCHER);
-  }
-  base_style.override_color =
-      is_url ? AshColorProvider::Get()->GetContentLayerColor(
-                   AshColorProvider::ContentLayerType::kTextColorURL)
-             : AppListColorProvider::Get()->GetSearchBoxSecondaryTextColor(
-                   kDeprecatedSearchBoxTextDefaultColor);
-  base_style.disable_line_wrapping = true;
-  label->AddStyleRange(gfx::Range(0, label->GetText().size()), base_style);
+  label->SetEnabledColor(
+      is_url
+          ? AshColorProvider::Get()->GetContentLayerColor(
+                AshColorProvider::ContentLayerType::kTextColorURL)
+          : is_title_label
+                ? AppListColorProvider::Get()->GetSearchBoxTextColor(
+                      kDeprecatedSearchBoxTextDefaultColor)
+                : AppListColorProvider::Get()->GetSearchBoxSecondaryTextColor(
+                      kDeprecatedSearchBoxTextDefaultColor));
 }
 
 void SearchResultView::StyleTitleLabel() {
-  StyleLabel(title_label_, result()->title_tags());
+  StyleLabel(title_label_, true /*is_title_label*/, result()->title_tags());
 }
 
 void SearchResultView::StyleDetailsLabel() {
-  StyleLabel(details_label_, result()->details_tags());
+  StyleLabel(details_label_, false /*is_title_label*/,
+             result()->details_tags());
 }
 
 void SearchResultView::OnQueryRemovalAccepted(bool accepted) {
@@ -344,31 +389,9 @@ void SearchResultView::Layout() {
     switch (view_type_) {
       case SearchResultViewType::kDefault: {
         gfx::Size label_size(text_bounds.width(), PrimaryTextHeight());
-        gfx::Rect title_rect(text_bounds);
-        title_rect.ClampToCenteredSize(label_size);
-        title_label_->SetBoundsRect(title_rect);
-        title_label_->SetVisible(true);
-
-        // Create Separator label.
-        int title_width = title_label_->CalculatePreferredSize().width();
-        gfx::Rect separator_rect(text_bounds);
-        separator_rect.ClampToCenteredSize(label_size);
-        separator_rect.set_x(title_rect.x() + title_width);
-        separator_rect.set_width(separator_rect.width() - title_width);
-        separator_label_->SetBoundsRect(separator_rect);
-        separator_label_->SetVisible(true);
-
-        // Create details label shifted to the right.
-
-        // TODO(yulunwu) Reimplement with a layout manager.
-        int title_separator_width =
-            title_width + separator_label_->CalculatePreferredSize().width();
-        gfx::Rect details_rect(text_bounds);
-        details_rect.ClampToCenteredSize(label_size);
-        details_rect.set_x(details_rect.x() + title_separator_width);
-        details_rect.set_width(details_rect.width() - title_separator_width);
-        details_label_->SetBoundsRect(details_rect);
-        details_label_->SetVisible(true);
+        gfx::Rect centered_text_bounds(text_bounds);
+        centered_text_bounds.ClampToCenteredSize(label_size);
+        text_container_->SetBoundsRect(centered_text_bounds);
         break;
       }
       case SearchResultViewType::kClassic:
@@ -376,27 +399,17 @@ void SearchResultView::Layout() {
         gfx::Size title_size(text_bounds.width(), PrimaryTextHeight());
         gfx::Size details_size(text_bounds.width(), SecondaryTextHeight());
         int total_height = title_size.height() + details_size.height();
-        int y = text_bounds.y() + (text_bounds.height() - total_height) / 2;
-
-        title_label_->SetBoundsRect(
-            gfx::Rect(gfx::Point(text_bounds.x(), y), title_size));
-        title_label_->SetVisible(true);
-
-        y += title_size.height();
-        details_label_->SetBoundsRect(
-            gfx::Rect(gfx::Point(text_bounds.x(), y), details_size));
-        details_label_->SetVisible(true);
-        separator_label_->SetVisible(false);
+        gfx::Size label_size(text_bounds.width(), total_height);
+        gfx::Rect centered_text_bounds(text_bounds);
+        centered_text_bounds.ClampToCenteredSize(label_size);
+        text_container_->SetBoundsRect(centered_text_bounds);
       }
     }
   } else if (!title_label_->GetText().empty()) {
-    gfx::Size title_size(text_bounds.width(), PrimaryTextHeight());
-    gfx::Rect centered_title_rect(text_bounds);
-    centered_title_rect.ClampToCenteredSize(title_size);
-    title_label_->SetBoundsRect(centered_title_rect);
-    title_label_->SetVisible(true);
-    details_label_->SetVisible(false);
-    separator_label_->SetVisible(false);
+    gfx::Size text_size(text_bounds.width(), PrimaryTextHeight());
+    gfx::Rect centered_text_bounds(text_bounds);
+    centered_text_bounds.ClampToCenteredSize(text_size);
+    text_container_->SetBoundsRect(centered_text_bounds);
   }
 }
 
