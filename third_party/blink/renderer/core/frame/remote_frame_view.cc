@@ -127,6 +127,7 @@ void RemoteFrameView::SetNeedsOcclusionTracking(bool needs_tracking) {
 }
 
 void RemoteFrameView::UpdateCompositingRect() {
+  remote_frame_->UpdateCompositedLayerBounds();
   IntRect previous_rect = compositing_rect_;
   compositing_rect_ = IntRect();
   LocalFrameView* local_root_view = ParentLocalRootFrameView();

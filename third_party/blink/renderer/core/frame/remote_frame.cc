@@ -369,12 +369,6 @@ void RemoteFrame::SetCcLayer(scoped_refptr<cc::Layer> layer,
         .SetHasPointerEventsNone(IsIgnoredForHitTest());
   }
 
-  // If we now have a CC layer make sure its bounds match previously sent visual
-  // properties. This is necessary for the crash ui layer to be shown.
-  if (cc_layer_ && sent_visual_properties_) {
-    cc_layer_->SetBounds(sent_visual_properties_->local_frame_size);
-  }
-
   HTMLFrameOwnerElement* owner = To<HTMLFrameOwnerElement>(Owner());
   owner->SetNeedsCompositingUpdate();
 
@@ -970,16 +964,8 @@ void RemoteFrame::ApplyReplicatedPermissionsPolicyHeader() {
 }
 
 bool RemoteFrame::SynchronizeVisualProperties(bool propagate) {
-  if (!GetFrameSinkId().is_valid())
+  if (!GetFrameSinkId().is_valid() || remote_process_gone_)
     return false;
-
-  // If the remote process is gone and we have new bounds adjust the
-  // crash ui layer so at least it tracks the new size.
-  if (remote_process_gone_) {
-    if (cc_layer_)
-      cc_layer_->SetBounds(pending_visual_properties_.local_frame_size);
-    return false;
-  }
 
   bool capture_sequence_number_changed =
       sent_visual_properties_ &&
@@ -1036,26 +1022,19 @@ bool RemoteFrame::SynchronizeVisualProperties(bool propagate) {
 
   compositing_helper_->SetSurfaceId(surface_id,
                                     capture_sequence_number_changed);
-  DCHECK(cc_layer_);
-  // Note that in pre-CompositeAfterPaint, CompositedLayerMapping/GraphicsLayer
-  // will set the bounds again with the same value.
-  cc_layer_->SetBounds(pending_visual_properties_.local_frame_size);
 
   bool rect_changed = !sent_visual_properties_ ||
                       sent_visual_properties_->screen_space_rect !=
                           pending_visual_properties_.screen_space_rect;
   bool visual_properties_changed = synchronized_props_changed || rect_changed;
 
-  if (!visual_properties_changed)
-    return false;
-
-  if (propagate) {
+  if (visual_properties_changed && propagate) {
     GetRemoteFrameHostRemote().SynchronizeVisualProperties(
         pending_visual_properties_);
     RecordSentVisualProperties();
   }
 
-  return true;
+  return visual_properties_changed;
 }
 
 void RemoteFrame::RecordSentVisualProperties() {
@@ -1096,6 +1075,11 @@ void RemoteFrame::SetViewportIntersection(
   }
   GetRemoteFrameHostRemote().UpdateViewportIntersection(
       intersection_state.Clone(), visual_properties);
+}
+
+void RemoteFrame::UpdateCompositedLayerBounds() {
+  if (cc_layer_)
+    cc_layer_->SetBounds(pending_visual_properties_.local_frame_size);
 }
 
 void RemoteFrame::DidChangeScreenInfos(

@@ -2526,13 +2526,17 @@ void LocalFrameView::UpdateLifecyclePhasesInternal(
   DisallowLayoutInvalidationScope disallow_layout_invalidation(this);
 #endif
 
+  // This needs to be done prior to paint: it will update the cc::Layer bounds
+  // for the remote frame views, which will be wrapped during paint in
+  // ForeignLayerDisplayItem's whose visual rect is set at construction based
+  // on cc::Layer bounds.
+  ForAllRemoteFrameViews(
+      [](RemoteFrameView& frame_view) { frame_view.UpdateCompositingRect(); });
+
   DCHECK_EQ(target_state, DocumentLifecycle::kPaintClean);
   RunPaintLifecyclePhase(PaintBenchmarkMode::kNormal);
   DCHECK(ShouldThrottleRendering() || AnyFrameIsPrintingOrPaintingPreview() ||
          Lifecycle().GetState() == DocumentLifecycle::kPaintClean);
-
-  ForAllRemoteFrameViews(
-      [](RemoteFrameView& frame_view) { frame_view.UpdateCompositingRect(); });
 }
 
 bool LocalFrameView::RunScrollTimelineSteps() {

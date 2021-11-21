@@ -126,6 +126,7 @@ class CORE_EXPORT RemoteFrame final : public Frame,
   bool SynchronizeVisualProperties(bool propagate = true);
   void ResendVisualProperties();
   void SetViewportIntersection(const mojom::blink::ViewportIntersectionState&);
+  void UpdateCompositedLayerBounds();
 
   // Called when the local root's screen infos change.
   void DidChangeScreenInfos(const display::ScreenInfos& screen_info);
