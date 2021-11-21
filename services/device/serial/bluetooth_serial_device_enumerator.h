@@ -6,29 +6,34 @@
 #define SERVICES_DEVICE_SERIAL_BLUETOOTH_SERIAL_DEVICE_ENUMERATOR_H_
 
 #include <map>
+#include <unordered_map>
+#include <vector>
 
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/sequence_checker.h"
+#include "base/threading/sequence_bound.h"
 #include "device/bluetooth/bluetooth_adapter.h"
 #include "services/device/public/mojom/serial.mojom-forward.h"
 #include "services/device/serial/serial_device_enumerator.h"
 
 namespace device {
 
-class BluetoothSerialDeviceEnumerator : public BluetoothAdapter::Observer,
-                                        public SerialDeviceEnumerator {
+class BluetoothSerialDeviceEnumerator : public SerialDeviceEnumerator {
  public:
-  BluetoothSerialDeviceEnumerator();
+  // `adapter_runner` is the task runner with which to access the Bluetooth
+  // adapter.
+  explicit BluetoothSerialDeviceEnumerator(
+      scoped_refptr<base::SingleThreadTaskRunner> adapter_runner);
   BluetoothSerialDeviceEnumerator(const BluetoothSerialDeviceEnumerator&) =
       delete;
   BluetoothSerialDeviceEnumerator& operator=(
       const BluetoothSerialDeviceEnumerator&) = delete;
   ~BluetoothSerialDeviceEnumerator() override;
 
-  // BluetoothAdapter::Observer methods:
-  void DeviceAdded(BluetoothAdapter* adapter, BluetoothDevice* device) override;
-  void DeviceRemoved(BluetoothAdapter* adapter,
-                     BluetoothDevice* device) override;
+  void PortAdded(const std::string& device_address,
+                 mojom::SerialPortInfoPtr port);
+  void PortRemoved(const std::string& device_address);
 
   scoped_refptr<BluetoothAdapter> GetAdapter();
 
@@ -37,14 +42,28 @@ class BluetoothSerialDeviceEnumerator : public BluetoothAdapter::Observer,
   absl::optional<std::string> GetAddressFromToken(
       const base::UnguessableToken& token);
 
- protected:
-  scoped_refptr<BluetoothAdapter> adapter_;
+  void OnGotAdapterForTesting(base::OnceClosure closure);
+  void DeviceAddedForTesting(BluetoothAdapter* adapter,
+                             BluetoothDevice* device);
+  void SynchronouslyResetHelperForTesting();
 
  private:
-  void OnGotClassicAdapter(scoped_refptr<device::BluetoothAdapter> adapter);
+  class AdapterHelper;
 
-  std::unordered_map<std::string, base::UnguessableToken> bluetooth_ports_;
+  // Map BluetoothDevice address to Port token.
+  using DevicePortsMap =
+      std::unordered_map<std::string, base::UnguessableToken>;
 
+  void SetClassicAdapter(
+      scoped_refptr<device::BluetoothAdapter> adapter,
+      std::unordered_map<std::string, base::UnguessableToken> device_ports,
+      std::vector<mojom::SerialPortInfoPtr> ports);
+
+  base::OnceClosure got_adapter_callback_;
+  scoped_refptr<BluetoothAdapter> adapter_;
+  DevicePortsMap device_ports_;
+  base::SequenceBound<AdapterHelper> helper_;
+  SEQUENCE_CHECKER(sequence_checker_);
   base::WeakPtrFactory<BluetoothSerialDeviceEnumerator> weak_ptr_factory_{this};
 };
 

@@ -98,6 +98,17 @@ class SerialPortManagerImplTest : public DeviceServiceTestBase {
 
   ~SerialPortManagerImplTest() override = default;
 
+  void TearDown() override {
+    // Resetting `manager_` will delete the BluetoothSerialDeviceEnumerator
+    // which will enqueue the deletion of a `SequenceBound` helper.
+    manager_.reset();
+    // Wait for any `SequenceBound` objects have been destroyed
+    // to avoid tripping leak detection.
+    base::RunLoop run_loop;
+    adapter_task_runner()->PostTask(FROM_HERE, run_loop.QuitClosure());
+    run_loop.Run();
+  }
+
   // Since not all functions need to use a MockBluetoothAdapter, this function
   // is called at the beginning of test cases that do require a
   // MockBluetoothAdapter.
@@ -116,11 +127,16 @@ class SerialPortManagerImplTest : public DeviceServiceTestBase {
     adapter_->AddMockDevice(std::move(mock_device));
 
     auto bluetooth_enumerator =
-        std::make_unique<BluetoothSerialDeviceEnumerator>();
+        std::make_unique<BluetoothSerialDeviceEnumerator>(
+            adapter_task_runner());
     bluetooth_enumerator_ = bluetooth_enumerator.get();
 
     manager_->SetBluetoothSerialEnumeratorForTesting(
         std::move(bluetooth_enumerator));
+
+    base::RunLoop run_loop;
+    bluetooth_enumerator_->OnGotAdapterForTesting(run_loop.QuitClosure());
+    run_loop.Run();
   }
 
   void SetupBluetoothEnumeratorWithExpectations() {
@@ -145,14 +161,23 @@ class SerialPortManagerImplTest : public DeviceServiceTestBase {
         .WillOnce(RunOnceCallback<1>(mock_socket_));
 
     auto bluetooth_enumerator =
-        std::make_unique<BluetoothSerialDeviceEnumerator>();
+        std::make_unique<BluetoothSerialDeviceEnumerator>(
+            adapter_task_runner());
     bluetooth_enumerator_ = bluetooth_enumerator.get();
 
     manager_->SetBluetoothSerialEnumeratorForTesting(
         std::move(bluetooth_enumerator));
+
+    base::RunLoop run_loop;
+    bluetooth_enumerator_->OnGotAdapterForTesting(run_loop.QuitClosure());
+    run_loop.Run();
   }
 
  protected:
+  scoped_refptr<base::SingleThreadTaskRunner> adapter_task_runner() {
+    return base::ThreadTaskRunnerHandle::Get();
+  }
+
   FakeSerialEnumerator* enumerator_;
   BluetoothSerialDeviceEnumerator* bluetooth_enumerator_;
   scoped_refptr<MockBluetoothAdapter> adapter_ =
@@ -346,8 +371,7 @@ TEST_F(SerialPortManagerImplTest, BluetoothPortRemovedAndAdded) {
   }
   ASSERT_FALSE(port1_token.is_empty());
 
-  bluetooth_enumerator_->DeviceRemoved(
-      adapter_.get(), adapter_->RemoveMockDevice(kDeviceAddress).get());
+  bluetooth_enumerator_->PortRemoved(kDeviceAddress);
   {
     base::RunLoop run_loop;
     EXPECT_CALL(client, OnPortRemoved(_))
@@ -367,7 +391,7 @@ TEST_F(SerialPortManagerImplTest, BluetoothPortRemovedAndAdded) {
   MockBluetoothDevice* mock_device_ptr = mock_device.get();
   adapter_->AddMockDevice(std::move(mock_device));
 
-  bluetooth_enumerator_->DeviceAdded(adapter_.get(), mock_device_ptr);
+  bluetooth_enumerator_->DeviceAddedForTesting(adapter_.get(), mock_device_ptr);
   {
     base::RunLoop run_loop;
     EXPECT_CALL(client, OnPortAdded(_))
@@ -396,9 +420,14 @@ TEST_F(SerialPortManagerImplTest,
 
   // Create the enumerator, which calls GetAdapter(), which is blocked waiting
   // on adapter initialization.
-  auto enumerator = std::make_unique<BluetoothSerialDeviceEnumerator>();
+  auto enumerator =
+      std::make_unique<BluetoothSerialDeviceEnumerator>(adapter_task_runner());
 
   // Delete the enumerator before adapter initialization completes.
+  // Explicitly delete its helper. This workaround is needed because this test
+  // does not mock out the BluetoothAdapterFactory singleton, which (on Linux)
+  // calls bluez::BluezDBusManager::Get() - failing a CHECK.
+  enumerator->SynchronouslyResetHelperForTesting();
   enumerator.reset();
 
   // Directly call the adapter initialization callback, which calls any saved

@@ -74,7 +74,7 @@ void SerialPortManagerImpl::GetDevices(GetDevicesCallback callback) {
           switches::kEnableBluetoothSerialPortProfileInSerialApi)) {
     if (!bluetooth_enumerator_) {
       bluetooth_enumerator_ =
-          std::make_unique<BluetoothSerialDeviceEnumerator>();
+          std::make_unique<BluetoothSerialDeviceEnumerator>(ui_task_runner_);
       observed_enumerator_.AddObservation(bluetooth_enumerator_.get());
     }
     auto bluetooth_devices = bluetooth_enumerator_->GetDevices();
@@ -113,7 +113,7 @@ void SerialPortManagerImpl::OpenPort(
           switches::kEnableBluetoothSerialPortProfileInSerialApi)) {
     if (!bluetooth_enumerator_) {
       bluetooth_enumerator_ =
-          std::make_unique<BluetoothSerialDeviceEnumerator>();
+          std::make_unique<BluetoothSerialDeviceEnumerator>(ui_task_runner_);
       observed_enumerator_.AddObservation(bluetooth_enumerator_.get());
     }
     absl::optional<std::string> address =
