@@ -368,8 +368,6 @@ static void ParseOldStyleNames(
     } else if (constraint.name_.Equals(kUseRtpMux)) {
       result.goog_use_rtp_mux.SetExact(ToBoolean(constraint.value_));
     } else if (constraint.name_.Equals(kEnableDtlsSrtp)) {
-      // This constraint has no effect since Chrome M97.
-      // It only prints a deprecation notice.
       bool value = ToBoolean(constraint.value_);
       if (value) {
         Deprecation::CountDeprecation(
@@ -378,6 +376,7 @@ static void ParseOldStyleNames(
         Deprecation::CountDeprecation(
             context, WebFeature::kRTCConstraintEnableDtlsSrtpFalse);
       }
+      result.enable_dtls_srtp.SetExact(ToBoolean(constraint.value_));
     } else if (constraint.name_.Equals(kEnableRtpDataChannels)) {
       // This constraint does not turn on RTP data channels, but we do not
       // want it to cause an error, so we parse it and ignore it.
