@@ -515,6 +515,7 @@ TEST_F(AssistiveSuggesterMultiWordTest,
                      .text = "hello there"}};
 
   assistive_suggester_->OnFocus(5);
+  assistive_suggester_->OnSurroundingTextChanged(u"", 0, 0);
   assistive_suggester_->OnExternalSuggestionsUpdated(suggestions);
 
   histogram_tester_.ExpectTotalCount("InputMethod.Assistive.Coverage", 1);
