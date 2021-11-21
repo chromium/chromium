@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/core/dom/text.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/visual_viewport.h"
+#include "third_party/blink/renderer/core/html/forms/html_form_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_input_element.h"
 #include "third_party/blink/renderer/core/html/html_head_element.h"
 #include "third_party/blink/renderer/core/html/html_meta_element.h"
@@ -121,7 +122,7 @@ void CollectFeatures(Element& root,
     features.element_count++;
     if (element.HasTagName(html_names::kATag)) {
       features.anchor_count++;
-    } else if (element.HasTagName(html_names::kFormTag)) {
+    } else if (IsA<HTMLFormElement>(element)) {
       features.form_count++;
     } else if (element.HasTagName(html_names::kInputTag)) {
       const auto& input = To<HTMLInputElement>(element);

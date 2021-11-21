@@ -7,6 +7,7 @@
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
+#include "third_party/blink/renderer/core/html/forms/html_form_element.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
@@ -62,7 +63,7 @@ bool RelList::ValidateTokenValue(const AtomicString& token_value,
     }
   } else if ((GetElement().HasTagName(html_names::kATag) ||
               GetElement().HasTagName(html_names::kAreaTag) ||
-              GetElement().HasTagName(html_names::kFormTag)) &&
+              IsA<HTMLFormElement>(GetElement())) &&
              SupportedTokensAnchorAndAreaAndForm().Contains(token_value)) {
     return true;
   }
