@@ -5,6 +5,7 @@
 #ifndef UI_EVENTS_EVENT_SINK_H_
 #define UI_EVENTS_EVENT_SINK_H_
 
+#include "base/compiler_specific.h"
 #include "ui/events/event_dispatcher.h"
 
 namespace ui {

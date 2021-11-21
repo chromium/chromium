@@ -5,6 +5,7 @@
 #ifndef CONTENT_BROWSER_RENDERER_HOST_MEDIA_SERVICE_VIDEO_CAPTURE_PROVIDER_H_
 #define CONTENT_BROWSER_RENDERER_HOST_MEDIA_SERVICE_VIDEO_CAPTURE_PROVIDER_H_
 
+#include "base/compiler_specific.h"
 #include "base/threading/sequence_bound.h"
 #include "base/threading/thread_checker.h"
 #include "build/build_config.h"

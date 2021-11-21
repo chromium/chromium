@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/callback.h"
+#include "base/compiler_specific.h"
 #include "base/component_export.h"
 #include "base/types/pass_key.h"
 #include "ui/base/models/dialog_model_field.h"

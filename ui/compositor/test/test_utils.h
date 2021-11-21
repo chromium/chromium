@@ -5,6 +5,7 @@
 #ifndef UI_COMPOSITOR_TEST_TEST_UTILS_H_
 #define UI_COMPOSITOR_TEST_TEST_UTILS_H_
 
+#include "base/compiler_specific.h"
 #include "base/time/time.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 

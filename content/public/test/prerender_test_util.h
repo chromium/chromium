@@ -6,6 +6,7 @@
 #define CONTENT_PUBLIC_TEST_PRERENDER_TEST_UTIL_H_
 
 #include "base/callback.h"
+#include "base/compiler_specific.h"
 #include "base/test/scoped_feature_list.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/test/browser_test_utils.h"

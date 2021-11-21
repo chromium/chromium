@@ -9,6 +9,7 @@
 
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "ui/gfx/buffer_types.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/gfx_export.h"

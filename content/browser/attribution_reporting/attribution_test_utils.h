@@ -10,6 +10,7 @@
 #include <iosfwd>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/guid.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/observer_list.h"

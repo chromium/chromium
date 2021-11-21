@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/compiler_specific.h"
 #include "base/containers/circular_deque.h"
 #include "content/common/content_export.h"
 #include "content/common/input/event_with_latency_info.h"

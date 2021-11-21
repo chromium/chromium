@@ -5,6 +5,7 @@
 #ifndef CONTENT_PUBLIC_TEST_FENCED_FRAME_TEST_UTIL_H_
 #define CONTENT_PUBLIC_TEST_FENCED_FRAME_TEST_UTIL_H_
 
+#include "base/compiler_specific.h"
 #include "base/test/scoped_feature_list.h"
 #include "net/base/net_errors.h"
 

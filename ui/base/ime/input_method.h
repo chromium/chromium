@@ -7,7 +7,7 @@
 
 #include <stdint.h>
 
-
+#include "base/compiler_specific.h"
 #include "build/build_config.h"
 #include "ui/base/ime/text_input_mode.h"
 #include "ui/base/ime/text_input_type.h"

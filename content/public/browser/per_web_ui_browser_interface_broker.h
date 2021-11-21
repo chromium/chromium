@@ -5,6 +5,7 @@
 #ifndef CONTENT_PUBLIC_BROWSER_PER_WEB_UI_BROWSER_INTERFACE_BROKER_H_
 #define CONTENT_PUBLIC_BROWSER_PER_WEB_UI_BROWSER_INTERFACE_BROKER_H_
 
+#include "base/compiler_specific.h"
 #include "mojo/public/cpp/bindings/binder_map.h"
 #include "mojo/public/cpp/bindings/generic_pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
