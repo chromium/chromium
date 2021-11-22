@@ -5591,11 +5591,6 @@
     "expiry_milestone": 98
   },
   {
-    "name": "wallpaper-webui",
-    "owners": [ "cowmoo@google.com", "assistive-eng@google.com" ],
-    "expiry_milestone": 98
-  },
-  {
     "name": "web-apps-crosapi",
     "owners": [ "mxcai", "raymes", "chromeos-apps-foundation-team@google.com" ],
     "expiry_milestone": 98
