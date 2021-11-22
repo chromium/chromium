@@ -6,6 +6,7 @@
 
 #include "base/strings/sys_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
+#include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "ios/chrome/browser/autofill/personal_data_manager_factory.h"
 #include "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
@@ -64,7 +65,8 @@ TEST_F(AutofillAddCreditCardMediatorTest,
                        cardNumber:@"4111111111111112"  // This is invalid
                                                        // Card number.
                   expirationMonth:@"11"
-                   expirationYear:@"2030"
+                   expirationYear:base::SysUTF8ToNSString(
+                                      autofill::test::NextYear())
                      cardNickname:@""];
 
   waiter.Wait();  // Wait for completion of the asynchronous operation.
@@ -93,7 +95,8 @@ TEST_F(AutofillAddCreditCardMediatorTest,
       addCreditCardWithHolderName:@"Test"
                        cardNumber:@"4111111111111111"
                   expirationMonth:@"15"  // This is invalid month.
-                   expirationYear:@"2030"
+                   expirationYear:base::SysUTF8ToNSString(
+                                      autofill::test::NextYear())
                      cardNickname:@""];
 
   waiter.Wait();  // Wait for completion of the asynchronous operation.
@@ -120,7 +123,9 @@ TEST_F(AutofillAddCreditCardMediatorTest, TestSavingCreditCardWithInvalidYear) {
       addCreditCardWithHolderName:@"Test"
                        cardNumber:@"4111111111111111"
                   expirationMonth:@"11"
-                   expirationYear:@"2010"  // This is invalid year.
+                   expirationYear:
+                       base::SysUTF8ToNSString(
+                           autofill::test::LastYear())  // This is invalid year.
                      cardNickname:@""];
 
   waiter.Wait();  // Wait for completion of the asynchronous operation.
@@ -148,7 +153,8 @@ TEST_F(AutofillAddCreditCardMediatorTest,
       addCreditCardWithHolderName:@"Test"
                        cardNumber:@"4111111111111111"
                   expirationMonth:@"11"
-                   expirationYear:@"2030"
+                   expirationYear:base::SysUTF8ToNSString(
+                                      autofill::test::NextYear())
                      cardNickname:@"cvc123"];  // This is an invalid nickname.
 
   waiter.Wait();  // Wait for completion of the asynchronous operation.
@@ -170,12 +176,14 @@ TEST_F(AutofillAddCreditCardMediatorTest, TestSavingValidCreditCard) {
   OCMExpect([add_credit_card_mediator_delegate_mock_
       creditCardMediatorDidFinish:[OCMArg any]]);
 
-  [add_credit_card_mediator_ addCreditCardViewController:nil
-                             addCreditCardWithHolderName:@"Test"
-                                              cardNumber:@"4111111111111111"
-                                         expirationMonth:@"11"
-                                          expirationYear:@"2030"
-                                            cardNickname:@"nickname"];
+  [add_credit_card_mediator_
+      addCreditCardViewController:nil
+      addCreditCardWithHolderName:@"Test"
+                       cardNumber:@"4111111111111111"
+                  expirationMonth:@"11"
+                   expirationYear:base::SysUTF8ToNSString(
+                                      autofill::test::NextYear())
+                     cardNickname:@"nickname"];
 
   waiter.Wait();  // Wait for completion of the asynchronous operation.
 
@@ -196,11 +204,12 @@ TEST_F(AutofillAddCreditCardMediatorTest, TestAlreadyExistsCreditCardNumber) {
   OCMExpect([add_credit_card_mediator_delegate_mock_
       creditCardMediatorDidFinish:[OCMArg any]]);
 
+  NSString* year = base::SysUTF8ToNSString(autofill::test::NextYear());
   [add_credit_card_mediator_ addCreditCardViewController:nil
                              addCreditCardWithHolderName:@"Test2"
                                               cardNumber:@"4111111111111111"
                                          expirationMonth:@"12"
-                                          expirationYear:@"2030"
+                                          expirationYear:year
                                             cardNickname:@"nickname"];
 
   waiter.Wait();  // Wait for completion of the asynchronous operation.
@@ -223,7 +232,7 @@ TEST_F(AutofillAddCreditCardMediatorTest, TestAlreadyExistsCreditCardNumber) {
             base::SysNSStringToUTF16(@"12"));
 
   EXPECT_EQ(savedCreditCard->Expiration4DigitYearAsString(),
-            base::SysNSStringToUTF16(@"2030"));
+            base::SysNSStringToUTF16(year));
 
   EXPECT_TRUE(savedCreditCard->HasNonEmptyValidNickname());
 
