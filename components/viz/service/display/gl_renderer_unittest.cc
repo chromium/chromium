@@ -2644,7 +2644,11 @@ class TestOverlayProcessor : public OverlayProcessorUsingStrategy {
                       const PrimaryPlane* primary_plane,
                       OverlayCandidateList* candidates,
                       std::vector<gfx::Rect>* content_bounds,
-                      OverlayProposedCandidate* proposed_candidate));
+                      const OverlayProposedCandidate& proposed_candidate));
+
+    MOCK_METHOD2(CommitCandidate,
+                 void(const OverlayProposedCandidate& proposed_candidate,
+                      AggregatedRenderPass* render_pass));
   };
 
   bool IsOverlaySupported() const override { return true; }
@@ -3877,11 +3881,14 @@ class ContentBoundsOverlayProcessor : public OverlayProcessorUsingStrategy {
         const PrimaryPlane* primary_plane,
         OverlayCandidateList* candidates,
         std::vector<gfx::Rect>* content_bounds,
-        OverlayProposedCandidate* proposed_candidate) override {
+        const OverlayProposedCandidate& proposed_candidate) override {
       content_bounds->insert(content_bounds->end(), content_bounds_.begin(),
                              content_bounds_.end());
       return true;
     }
+
+    void CommitCandidate(const OverlayProposedCandidate& proposed_candidate,
+                         AggregatedRenderPass* render_pass) override {}
 
    private:
     const std::vector<gfx::Rect> content_bounds_;

@@ -61,7 +61,10 @@ class VIZ_SERVICE_EXPORT OverlayStrategyUnderlayCast
       const PrimaryPlane* primary_plane,
       OverlayCandidateList* candidates,
       std::vector<gfx::Rect>* content_bounds,
-      OverlayProposedCandidate* proposed_candidate) override;
+      const OverlayProposedCandidate& proposed_candidate) override;
+
+  void CommitCandidate(const OverlayProposedCandidate& proposed_candidate,
+                       AggregatedRenderPass* render_pass) override;
 
 #if BUILDFLAG(IS_CHROMECAST)
   // In Chromecast build, OverlayStrategyUnderlayCast needs a valid mojo

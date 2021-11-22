@@ -56,7 +56,10 @@ class VIZ_SERVICE_EXPORT OverlayStrategyFullscreen
       const PrimaryPlane* primary_plane,
       OverlayCandidateList* candidates,
       std::vector<gfx::Rect>* content_bounds,
-      OverlayProposedCandidate* proposed_candidate) override;
+      const OverlayProposedCandidate& proposed_candidate) override;
+
+  void CommitCandidate(const OverlayProposedCandidate& proposed_candidate,
+                       AggregatedRenderPass* render_pass) override;
 
   bool RemoveOutputSurfaceAsOverlay() override;
   OverlayStrategy GetUMAEnum() const override;

@@ -99,7 +99,13 @@ class VIZ_SERVICE_EXPORT OverlayProcessorUsingStrategy
         const PrimaryPlane* primary_plane,
         OverlayCandidateList* candidates,
         std::vector<gfx::Rect>* content_bounds,
-        OverlayProposedCandidate* proposed_candidate) = 0;
+        const OverlayProposedCandidate& proposed_candidate) = 0;
+
+    // Commits to using the proposed candidate by updating |render_pass| as
+    // appropriate when this candidate is presented in an overlay plane.
+    virtual void CommitCandidate(
+        const OverlayProposedCandidate& proposed_candidate,
+        AggregatedRenderPass* render_pass) = 0;
 
     // Currently this is only overridden by the Underlay strategy: the underlay
     // strategy needs to enable blending for the primary plane in order to show

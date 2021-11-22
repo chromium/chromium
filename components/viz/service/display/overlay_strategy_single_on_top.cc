@@ -62,8 +62,10 @@ bool OverlayStrategySingleOnTop::Attempt(
   if (best_quad_it == quad_list->end())
     return false;
 
-  if (TryOverlay(quad_list, primary_plane, candidate_list, best_candidate,
-                 best_quad_it)) {
+  OverlayProposedCandidate proposed_candidate(best_quad_it, best_candidate,
+                                              this);
+  if (TryOverlay(render_pass, primary_plane, candidate_list,
+                 proposed_candidate)) {
     if (previous_frame_resource_id_ != best_candidate.resource_id) {
       previous_frame_resource_id_ = best_candidate.resource_id;
       same_resource_id_frames_count_ = 1;
@@ -113,27 +115,24 @@ bool OverlayStrategySingleOnTop::AttemptPrioritized(
     const PrimaryPlane* primary_plane,
     OverlayCandidateList* candidate_list,
     std::vector<gfx::Rect>* content_bounds,
-    OverlayProposedCandidate* proposed_candidate) {
+    const OverlayProposedCandidate& proposed_candidate) {
   // Before we attempt an overlay strategy, we shouldn't have a candidate.
   DCHECK(candidate_list->empty());
   auto* render_pass = render_pass_list->back().get();
-  QuadList* quad_list = &render_pass->quad_list;
-  return TryOverlay(quad_list, primary_plane, candidate_list,
-                    proposed_candidate->candidate,
-                    proposed_candidate->quad_iter);
+  return TryOverlay(render_pass, primary_plane, candidate_list,
+                    proposed_candidate);
 }
 
 bool OverlayStrategySingleOnTop::TryOverlay(
-    QuadList* quad_list,
+    AggregatedRenderPass* render_pass,
     const PrimaryPlane* primary_plane,
     OverlayCandidateList* candidate_list,
-    const OverlayCandidate& candidate,
-    QuadList::Iterator candidate_iterator) {
+    const OverlayProposedCandidate& proposed_candidate) {
   // SingleOnTop strategy means we should have one candidate.
   DCHECK(candidate_list->empty());
   // Add the overlay.
   OverlayCandidateList new_candidate_list = *candidate_list;
-  new_candidate_list.push_back(candidate);
+  new_candidate_list.push_back(proposed_candidate.candidate);
   new_candidate_list.back().plane_z_order = 1;
 
   // Check for support.
@@ -142,12 +141,19 @@ bool OverlayStrategySingleOnTop::TryOverlay(
   const OverlayCandidate& overlay_candidate = new_candidate_list.back();
   // If the candidate can be handled by an overlay, create a pass for it.
   if (overlay_candidate.overlay_handled) {
-    quad_list->EraseAndInvalidateAllPointers(candidate_iterator);
+    CommitCandidate(proposed_candidate, render_pass);
     candidate_list->swap(new_candidate_list);
     return true;
   }
 
   return false;
+}
+
+void OverlayStrategySingleOnTop::CommitCandidate(
+    const OverlayProposedCandidate& proposed_candidate,
+    AggregatedRenderPass* render_pass) {
+  render_pass->quad_list.EraseAndInvalidateAllPointers(
+      proposed_candidate.quad_iter);
 }
 
 OverlayStrategy OverlayStrategySingleOnTop::GetUMAEnum() const {

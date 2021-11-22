@@ -55,18 +55,20 @@ class VIZ_SERVICE_EXPORT OverlayStrategySingleOnTop
       const PrimaryPlane* primary_plane,
       OverlayCandidateList* candidates,
       std::vector<gfx::Rect>* content_bounds,
-      OverlayProposedCandidate* proposed_candidate) override;
+      const OverlayProposedCandidate& proposed_candidate) override;
+
+  void CommitCandidate(const OverlayProposedCandidate& proposed_candidate,
+                       AggregatedRenderPass* render_pass) override;
 
   OverlayStrategy GetUMAEnum() const override;
 
  private:
   static constexpr size_t kMaxFrameCandidateWithSameResourceId = 3;
 
-  bool TryOverlay(QuadList* quad_list,
+  bool TryOverlay(AggregatedRenderPass* render_pass,
                   const PrimaryPlane* primary_plane,
                   OverlayCandidateList* candidate_list,
-                  const OverlayCandidate& candidate,
-                  QuadList::Iterator candidate_iterator);
+                  const OverlayProposedCandidate& proposed_candidate);
 
   OverlayProcessorUsingStrategy* capability_checker_;  // Weak.
 

@@ -483,7 +483,7 @@ bool OverlayProcessorUsingStrategy::AttemptWithStrategiesPrioritized(
     bool used_overlay = candidate.strategy->AttemptPrioritized(
         output_color_matrix, render_pass_backdrop_filters, resource_provider,
         render_pass_list, surface_damage_rect_list, primary_plane, candidates,
-        content_bounds, &candidate);
+        content_bounds, candidate);
     if (!used_overlay && candidate.candidate.requires_overlay) {
       // Check if we likely failed due to scaling capabilities, and if so, try
       // to adjust things to make it work. We do this by tracking what scale
@@ -512,7 +512,7 @@ bool OverlayProcessorUsingStrategy::AttemptWithStrategiesPrioritized(
           if (candidate.strategy->AttemptPrioritized(
                   output_color_matrix, render_pass_backdrop_filters,
                   resource_provider, render_pass_list, surface_damage_rect_list,
-                  primary_plane, candidates, content_bounds, &candidate)) {
+                  primary_plane, candidates, content_bounds, candidate)) {
             used_overlay = true;
             break;
           } else {
