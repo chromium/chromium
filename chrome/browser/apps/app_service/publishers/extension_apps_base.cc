@@ -12,6 +12,7 @@
 #include "ash/public/cpp/shelf_types.h"
 #include "base/callback.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/one_shot_event.h"
 #include "base/scoped_observation.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/app_service/app_icon/app_icon_factory.h"
@@ -338,10 +339,23 @@ ExtensionAppsBase::CallbackWrapper::~CallbackWrapper() {
 void ExtensionAppsBase::Initialize() {
   RegisterPublisher(AppType::kExtension);
 
+  prefs_observation_.Observe(extensions::ExtensionPrefs::Get(profile_));
+  registry_observation_.Observe(extensions::ExtensionRegistry::Get(profile_));
+
   DCHECK(profile_);
   PublisherBase::Initialize(proxy()->AppService(),
                             apps::mojom::AppType::kExtension);
 
+  // Publish apps after all extensions have been loaded, to include all apps
+  // including the disabled apps.
+  extensions::ExtensionSystem::Get(profile_)->ready().Post(
+      FROM_HERE, base::BindOnce(&ExtensionAppsBase::OnExtensionsReady,
+                                weak_factory_.GetWeakPtr()));
+
+  app_service_ = proxy()->AppService().get();
+}
+
+void ExtensionAppsBase::OnExtensionsReady() {
   std::vector<std::unique_ptr<App>> apps;
   extensions::ExtensionRegistry* registry =
       extensions::ExtensionRegistry::Get(profile_);
@@ -357,10 +371,6 @@ void ExtensionAppsBase::Initialize() {
   //
   // If making changes to which sets are consulted, also change ShouldShow,
   // OnHideWebStoreIconPrefChanged.
-
-  prefs_observation_.Observe(extensions::ExtensionPrefs::Get(profile_));
-  registry_observation_.Observe(extensions::ExtensionRegistry::Get(profile_));
-  app_service_ = proxy()->AppService().get();
 }
 
 void ExtensionAppsBase::LoadIcon(const std::string& app_id,

@@ -133,6 +133,8 @@ class ExtensionAppsBase : public apps::PublisherBase,
   // and should therefore by handled by this publisher.
   virtual bool Accepts(const extensions::Extension* extension) = 0;
 
+  void OnExtensionsReady();
+
   // apps::AppPublisher overrides.
   void LoadIcon(const std::string& app_id,
                 const IconKey& icon_key,
