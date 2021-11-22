@@ -2278,8 +2278,9 @@ IN_PROC_BROWSER_TEST_F(NavigationRequestBrowserTest,
 
 // Check that iframe with embedded credentials are blocked.
 // See https://crbug.com/755892.
+// TODO(crbug.com/1262910): Enable the test again.
 IN_PROC_BROWSER_TEST_F(NavigationRequestBrowserTest,
-                       BlockCredentialedSubresources) {
+                       DISABLED_BlockCredentialedSubresources) {
   const struct {
     GURL main_url;
     GURL iframe_url;
@@ -2339,16 +2340,10 @@ IN_PROC_BROWSER_TEST_F(NavigationRequestBrowserTest,
     GURL iframe_url_with_redirect = GURL(embedded_test_server()->GetURL(
         "/server-redirect?" + iframe_url_final.spec()));
 
+    ASSERT_TRUE(NavigateToURL(shell(), main_url));
+
     // Blocking the request must work, even after a redirect.
     for (bool redirect : {false, true}) {
-      ASSERT_TRUE(NavigateToURL(shell(), main_url));
-      EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
-      FrameTreeNode* root =
-          static_cast<WebContentsImpl*>(shell()->web_contents())
-              ->GetPrimaryFrameTree()
-              .root();
-      ASSERT_EQ(1u, root->child_count());
-
       const GURL& iframe_url =
           redirect ? iframe_url_with_redirect : iframe_url_final;
       SCOPED_TRACE(::testing::Message()
@@ -2363,8 +2358,12 @@ IN_PROC_BROWSER_TEST_F(NavigationRequestBrowserTest,
           NavigationThrottle::PROCEED);
 
       NavigateIframeToURL(shell()->web_contents(), "child0", iframe_url);
-      EXPECT_EQ(1, installer.install_count());
 
+      FrameTreeNode* root =
+          static_cast<WebContentsImpl*>(shell()->web_contents())
+              ->GetPrimaryFrameTree()
+              .root();
+      ASSERT_EQ(1u, root->child_count());
       if (test_case.blocked) {
         EXPECT_EQ(redirect, !!installer.will_start_called());
         EXPECT_FALSE(installer.will_process_called());
