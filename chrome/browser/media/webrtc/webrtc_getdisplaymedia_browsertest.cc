@@ -844,7 +844,9 @@ class GetDisplayMediaChangeSourceBrowserTest : public WebRtcTestBase {
   }
 };
 
-IN_PROC_BROWSER_TEST_F(GetDisplayMediaChangeSourceBrowserTest, ChangeSource) {
+// TODO(crbug.com/1272023): Flaky on Linux Wayland, Win7.
+IN_PROC_BROWSER_TEST_F(GetDisplayMediaChangeSourceBrowserTest,
+                       DISABLED_ChangeSource) {
   ASSERT_TRUE(embedded_test_server()->Start());
   content::WebContents* captured_tab = OpenTestPageInNewTab(kCapturedPageMain);
   content::WebContents* other_tab = OpenTestPageInNewTab(kMainHtmlPage);
@@ -874,10 +876,7 @@ IN_PROC_BROWSER_TEST_F(GetDisplayMediaChangeSourceBrowserTest, ChangeSource) {
   // Click the secondary button, i.e., the "Share this tab instead" button
   GetDelegate(other_tab)->Cancel();
 
-  // Wait until the capture of the other tab has started.
-  while (!other_tab->IsBeingCaptured()) {
-    base::RunLoop().RunUntilIdle();
-  }
+  base::RunLoop().RunUntilIdle();
 
   EXPECT_FALSE(captured_tab->IsBeingCaptured());
   EXPECT_TRUE(other_tab->IsBeingCaptured());
