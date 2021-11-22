@@ -4,8 +4,6 @@
 
 #include "chromeos/components/quick_answers/test/quick_answers_test_base.h"
 
-#include "ash/public/cpp/assistant/assistant_state.h"
-
 namespace ash {
 
 QuickAnswersTestBase::QuickAnswersTestBase() = default;
@@ -15,19 +13,12 @@ QuickAnswersTestBase::~QuickAnswersTestBase() = default;
 void QuickAnswersTestBase::SetUp() {
   testing::Test::SetUp();
 
-  if (!AssistantState::Get()) {
-    assistant_state_ =
-        std::make_unique<chromeos::assistant::FullyInitializedAssistantState>();
-  }
-
   if (!QuickAnswersState::Get())
     quick_answers_state_ = std::make_unique<QuickAnswersState>();
 }
 
 void QuickAnswersTestBase::TearDown() {
   quick_answers_state_.reset();
-  assistant_state_.reset();
-
   testing::Test::TearDown();
 }
 

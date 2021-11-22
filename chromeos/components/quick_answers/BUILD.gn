@@ -81,12 +81,10 @@ source_set("unit_tests") {
 
   deps = [
     ":quick_answers",
-    "//ash/public/cpp",
     "//base",
     "//base/test:test_support",
     "//chromeos/components/quick_answers/public/cpp:cpp",
     "//chromeos/components/quick_answers/public/cpp:prefs",
-    "//chromeos/services/assistant:test_support",
     "//chromeos/services/assistant/public/shared",
     "//chromeos/services/machine_learning/public/cpp:stub",
     "//chromeos/services/machine_learning/public/mojom",

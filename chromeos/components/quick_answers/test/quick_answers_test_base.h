@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "chromeos/components/quick_answers/public/cpp/quick_answers_state.h"
-#include "chromeos/services/assistant/test_support/fully_initialized_assistant_state.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash {
@@ -28,8 +27,6 @@ class QuickAnswersTestBase : public testing::Test {
   void TearDown() override;
 
  private:
-  std::unique_ptr<chromeos::assistant::FullyInitializedAssistantState>
-      assistant_state_;
   std::unique_ptr<QuickAnswersState> quick_answers_state_;
 };
 
