@@ -55,8 +55,9 @@ cp out/Debug/obj/third_party/r8/custom_d8_java.javac.jar third_party/r8/custom_d
   * The bot autoruns every 6 hours. Ping a trooper or a clank build core dev to
     trigger it if you need it sooner:
     https://luci-scheduler.appspot.com/jobs/chromium/3pp-linux-amd64-packager
-  * The autoroller runs automatically when a new cipd instance is uploaded, see
-    its status here: https://autoroll.skia.org/r/r8-chromium
+  * The autoroller runs automatically when a new cipd instance is uploaded.
+    * Since r8 rolls affect downstream, the roller is only accessible to Googlers.
+    * See its status here: https://skia-autoroll.corp.goog/r/r8-chromium
 
 * If patching fails:
 git clone https://r8.googlesource.com/r8
