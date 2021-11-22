@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/core/layout/ng/ng_physical_box_fragment.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_inline_text.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_resource_container.h"
+#include "third_party/blink/renderer/core/layout/svg/layout_svg_root.h"
 #include "third_party/blink/renderer/core/layout/svg/svg_layout_support.h"
 #include "third_party/blink/renderer/core/layout/svg/svg_resources.h"
 #include "third_party/blink/renderer/core/layout/svg/transformed_hit_test_location.h"
@@ -88,12 +89,25 @@ void LayoutNGSVGText::InsertedIntoTree() {
   LayoutNGBlockFlowMixin<LayoutSVGBlock>::InsertedIntoTree();
   for (LayoutBlock* cb = ContainingBlock(); cb; cb = cb->ContainingBlock())
     cb->AddSvgTextDescendant(*this);
+
+  for (auto* ancestor = Parent(); ancestor; ancestor = ancestor->Parent()) {
+    if (auto* root = DynamicTo<LayoutSVGRoot>(ancestor)) {
+      root->AddSvgTextDescendant(*this);
+      break;
+    }
+  }
 }
 
 void LayoutNGSVGText::WillBeRemovedFromTree() {
   NOT_DESTROYED();
   for (LayoutBlock* cb = ContainingBlock(); cb; cb = cb->ContainingBlock())
     cb->RemoveSvgTextDescendant(*this);
+  for (auto* ancestor = Parent(); ancestor; ancestor = ancestor->Parent()) {
+    if (auto* root = DynamicTo<LayoutSVGRoot>(ancestor)) {
+      root->RemoveSvgTextDescendant(*this);
+      break;
+    }
+  }
   LayoutNGBlockFlowMixin<LayoutSVGBlock>::WillBeRemovedFromTree();
 }
 
