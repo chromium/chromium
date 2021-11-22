@@ -1521,13 +1521,13 @@ void RemoveFormsToBeDeleted(
 }
 
 // Scrolls the password lists such that most recently updated
-// SavedFormContentItem is in the middle of the screen.
+// SavedFormContentItem is in the top of the screen.
 - (void)scrollToLastUpdatedItem {
   if (self.mostRecentlyUpdatedItem) {
     NSIndexPath* indexPath =
         [self.tableViewModel indexPathForItem:self.mostRecentlyUpdatedItem];
     [self.tableView scrollToRowAtIndexPath:indexPath
-                          atScrollPosition:UITableViewScrollPositionMiddle
+                          atScrollPosition:UITableViewScrollPositionTop
                                   animated:NO];
     self.mostRecentlyUpdatedItem = nil;
   }

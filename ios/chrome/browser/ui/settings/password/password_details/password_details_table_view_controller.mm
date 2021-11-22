@@ -641,9 +641,9 @@ typedef NS_ENUM(NSInteger, ReauthenticationReason) {
     case ItemTypeFederation:
     case ItemTypeChangePasswordButton:
     case ItemTypeDuplicateCredentialMessage:
-    case ItemTypeDuplicateCredentialButton:
     case ItemTypeFooter:
       break;
+    case ItemTypeDuplicateCredentialButton:
     case ItemTypeChangePasswordRecommendation:
       cell.selectionStyle = UITableViewCellSelectionStyleNone;
       break;
