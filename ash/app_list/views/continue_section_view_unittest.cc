@@ -375,20 +375,22 @@ TEST_F(ContinueSectionViewTest, TabletModeLayoutWithThreeSuggestions) {
   AddSearchResult("id2", AppListSearchResultType::kDriveChip);
   AddSearchResult("id3", AppListSearchResultType::kDriveChip);
 
+  UpdateDisplay("1200x800");
   Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
   VerifyResultViewsUpdated();
 
   ASSERT_TRUE(GetContinueSectionView()->GetVisible());
   ASSERT_EQ(3u, GetContinueSectionView()->GetTasksSuggestionsCount());
 
-  const int width = GetResultViewAt(0)->width();
+  const gfx::Size size = GetResultViewAt(0)->size();
   const int vertical_position = GetResultViewAt(0)->y();
 
   for (int i = 1; i < 3; i++) {
-    EXPECT_EQ(width, GetResultViewAt(i)->width());
-    EXPECT_EQ(vertical_position, GetResultViewAt(i)->y());
-    EXPECT_GT(GetResultViewAt(i)->x(),
-              GetResultViewAt(i - 1)->bounds().right());
+    const ContinueTaskView* task_view = GetResultViewAt(i);
+    EXPECT_TRUE(task_view->GetVisible());
+    EXPECT_EQ(size, task_view->size());
+    EXPECT_EQ(vertical_position, task_view->y());
+    EXPECT_GT(task_view->x(), GetResultViewAt(i - 1)->bounds().right());
   }
 }
 
@@ -398,21 +400,53 @@ TEST_F(ContinueSectionViewTest, TabletModeLayoutWithFourSuggestions) {
   AddSearchResult("id3", AppListSearchResultType::kDriveChip);
   AddSearchResult("id4", AppListSearchResultType::kFileChip);
 
+  UpdateDisplay("1200x800");
   Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
   VerifyResultViewsUpdated();
 
   ASSERT_TRUE(GetContinueSectionView()->GetVisible());
   ASSERT_EQ(4u, GetContinueSectionView()->GetTasksSuggestionsCount());
 
-  const int width = GetResultViewAt(0)->width();
+  const gfx::Size size = GetResultViewAt(0)->size();
   const int vertical_position = GetResultViewAt(0)->y();
 
   for (int i = 1; i < 4; i++) {
-    EXPECT_EQ(width, GetResultViewAt(i)->width());
-    EXPECT_EQ(vertical_position, GetResultViewAt(i)->y());
-    EXPECT_GT(GetResultViewAt(i)->x(),
-              GetResultViewAt(i - 1)->bounds().right());
+    const ContinueTaskView* task_view = GetResultViewAt(i);
+    EXPECT_TRUE(task_view->GetVisible());
+    EXPECT_EQ(size, task_view->size());
+    EXPECT_EQ(vertical_position, task_view->y());
+    EXPECT_GT(task_view->x(), GetResultViewAt(i - 1)->bounds().right());
   }
+}
+
+// Tests that number of shown continue section items is reduced if they don't
+// all fit into the available space (while maintaining min width).
+TEST_F(ContinueSectionViewTest,
+       TabletModeLayoutWithFourSuggestionsWithRestrictedSpace) {
+  AddSearchResult("id1", AppListSearchResultType::kFileChip);
+  AddSearchResult("id2", AppListSearchResultType::kDriveChip);
+  AddSearchResult("id3", AppListSearchResultType::kDriveChip);
+  AddSearchResult("id4", AppListSearchResultType::kFileChip);
+
+  // Set the display width so only 2 continue section tasks fit into available
+  // space.
+  UpdateDisplay("800x600");
+
+  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
+  VerifyResultViewsUpdated();
+
+  ASSERT_EQ(4u, GetContinueSectionView()->GetTasksSuggestionsCount());
+
+  // Only first two tasks are visible.
+  for (int i = 0; i < 4; ++i)
+    EXPECT_EQ(i <= 1, GetResultViewAt(i)->GetVisible()) << i;
+
+  const ContinueTaskView* first_task = GetResultViewAt(0);
+  const ContinueTaskView* second_task = GetResultViewAt(1);
+
+  EXPECT_EQ(first_task->size(), second_task->size());
+  EXPECT_EQ(first_task->y(), second_task->y());
+  EXPECT_GT(second_task->x(), first_task->bounds().right());
 }
 
 }  // namespace

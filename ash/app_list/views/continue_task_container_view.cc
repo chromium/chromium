@@ -185,7 +185,7 @@ void ContinueTaskContainerView::InitializeFlexLayout() {
                   gfx::Insets(0, kColumnSpacingTablet, 0, 0))
       .SetDefault(views::kFlexBehaviorKey,
                   views::FlexSpecification(
-                      views::MinimumFlexSizeRule::kScaleToMinimum,
+                      views::MinimumFlexSizeRule::kScaleToMinimumSnapToZero,
                       views::MaximumFlexSizeRule::kScaleToMaximum));
 }
 
