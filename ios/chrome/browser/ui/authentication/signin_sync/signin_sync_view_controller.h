@@ -20,9 +20,6 @@
 @property(nonatomic, assign)
     EnterpriseSignInRestrictions enterpriseSignInRestrictions;
 
-// YES if the identity control button has to be in the top of the screen.
-@property(nonatomic, assign) BOOL identityControlInTop;
-
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_AUTHENTICATION_SIGNIN_SYNC_SIGNIN_SYNC_VIEW_CONTROLLER_H_
