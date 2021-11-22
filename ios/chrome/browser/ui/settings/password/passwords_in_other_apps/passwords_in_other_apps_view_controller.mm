@@ -70,7 +70,9 @@ CGFloat const kButtonHorizontalMargin = 4;
 @property(nonatomic, strong) UINavigationBarAppearance* defaultAppearance;
 @end
 
-@interface PasswordsInOtherAppsViewController () <UITextViewDelegate>
+@interface PasswordsInOtherAppsViewController () <
+    UIAdaptivePresentationControllerDelegate,
+    UITextViewDelegate>
 
 @end
 
@@ -602,6 +604,13 @@ CGFloat const kButtonHorizontalMargin = 4;
     l10n_util::GetNSString(IDS_IOS_SETTINGS_PASSWORDS_IN_OTHER_APPS_STEP_3),
     l10n_util::GetNSString(IDS_IOS_SETTINGS_PASSWORDS_IN_OTHER_APPS_STEP_4)
   ];
+}
+
+#pragma mark - UIAdaptivePresentationControllerDelegate
+
+- (BOOL)presentationControllerShouldDismiss:
+    (UIPresentationController*)presentationController {
+  return YES;
 }
 
 #pragma mark - UITextViewDelegate
