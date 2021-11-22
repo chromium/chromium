@@ -27,19 +27,16 @@ class LacrosDataMigrationScreen extends LacrosDataMigrationScreenElementBase {
   constructor() {
     super();
     this.progressValue_ = 0;
-    this.canCancel_ = false;
   }
 
   static get properties() {
     return {
       progressValue_: {type: Number},
-
-      canCancel_: {type: Boolean}
     };
   }
 
   get EXTERNAL_API() {
-    return ['setProgressValue', 'showSkipButton'];
+    return ['setProgressValue'];
   }
 
   /**
@@ -50,13 +47,6 @@ class LacrosDataMigrationScreen extends LacrosDataMigrationScreenElementBase {
     this.progressValue_ = progress;
   }
 
-  /**
-   * Called to make the skip button visible.
-   */
-  showSkipButton() {
-    this.canCancel_ = true;
-  }
-
   ready() {
     super.ready();
     this.initializeLoginScreen('LacrosDataMigrationScreen', {
@@ -65,7 +55,6 @@ class LacrosDataMigrationScreen extends LacrosDataMigrationScreenElementBase {
   }
 
   onCancelButtonClicked_() {
-    assert(this.canCancel_);
     this.userActed('cancel');
   }
 }
