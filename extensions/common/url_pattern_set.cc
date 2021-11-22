@@ -98,38 +98,6 @@ URLPatternSet URLPatternSet::CreateUnion(const URLPatternSet& set1,
       base::STLSetUnion<std::set<URLPattern>>(set1.patterns_, set2.patterns_));
 }
 
-// static
-URLPatternSet URLPatternSet::CreateUnion(
-    const std::vector<URLPatternSet>& sets) {
-  URLPatternSet result;
-  if (sets.empty())
-    return result;
-
-  // N-way union algorithm is basic O(nlog(n)) merge algorithm.
-  //
-  // Do the first merge step into a working set so that we don't mutate any of
-  // the input.
-  // TODO(devlin): Looks like this creates a bunch of copies; we can probably
-  // clean that up.
-  std::vector<URLPatternSet> working;
-  for (size_t i = 0; i < sets.size(); i += 2) {
-    if (i + 1 < sets.size())
-      working.push_back(CreateUnion(sets[i], sets[i + 1]));
-    else
-      working.push_back(sets[i].Clone());
-  }
-
-  for (size_t skip = 1; skip < working.size(); skip *= 2) {
-    for (size_t i = 0; i < (working.size() - skip); i += skip) {
-      URLPatternSet u = CreateUnion(working[i], working[i + skip]);
-      working[i].patterns_.swap(u.patterns_);
-    }
-  }
-
-  result.patterns_.swap(working[0].patterns_);
-  return result;
-}
-
 URLPatternSet::URLPatternSet() = default;
 
 URLPatternSet::URLPatternSet(URLPatternSet&& rhs) = default;

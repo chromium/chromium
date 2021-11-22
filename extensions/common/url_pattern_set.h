@@ -79,9 +79,6 @@ class URLPatternSet {
   static URLPatternSet CreateUnion(const URLPatternSet& set1,
                                    const URLPatternSet& set2);
 
-  // Returns the union of all sets in |sets|.
-  static URLPatternSet CreateUnion(const std::vector<URLPatternSet>& sets);
-
   URLPatternSet();
   URLPatternSet(URLPatternSet&& rhs);
   explicit URLPatternSet(const std::set<URLPattern>& patterns);
