@@ -6,14 +6,14 @@
 
 import {WallpaperLayout, WallpaperType} from 'chrome://personalization/trusted/personalization_app.mojom-webui.js';
 import {DisplayableImage} from 'chrome://personalization/trusted/personalization_reducers.js';
-import {WallpaperFullscreen} from 'chrome://personalization/trusted/wallpaper_fullscreen_element.js';
+import {WallpaperFullscreen} from 'chrome://personalization/trusted/wallpaper/wallpaper_fullscreen_element.js';
 
 import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
 import {flushTasks, waitAfterNextRender} from '../../test_util.js';
 
 import {baseSetup, initElement} from './personalization_app_test_utils.js';
-import {TestWallpaperProvider} from './test_mojo_interface_provider.js';
 import {TestPersonalizationStore} from './test_personalization_store.js';
+import {TestWallpaperProvider} from './test_wallpaper_interface_provider.js';
 
 export function WallpaperFullscreenTest() {
   /** @type {?HTMLElement} */

@@ -112,11 +112,11 @@
             on-focus="onPhotosGridRowFocused_"
             on-keydown="onPhotosGridRowKeyDown_">
             <template is="dom-repeat" items="[[row]]" as="photo">
-              <personalization-grid-item>
+              <wallpaper-grid-item>
                 <div class="photo" colindex$="[[index]]" tabindex="-1">
                   [[photo]]
                 </div>
-              </personalization-grid-item>
+              </wallpaper-grid-item>
             </template>
           </div>
         </template>
@@ -127,14 +127,14 @@
     <div id="albumsContent" hidden$="[[!isAlbumsTabSelected_(tab_)]]">
       <iron-list id="albumsGrid" items="[[albums_]]" as="album" grid>
         <template>
-            <personalization-grid-item>
+            <wallpaper-grid-item>
               <template is="dom-if" if="[[album]]">
                 <div class="album" tabindex$="[[tabIndex]]"
                   on-click="onAlbumSelected_" on-keypress="onAlbumSelected_">
                   [[album.name]]
                 </div>
               </template>
-            </personalization-grid-item>
+            </wallpaper-grid-item>
         </template>
       </iron-list>
     </div>

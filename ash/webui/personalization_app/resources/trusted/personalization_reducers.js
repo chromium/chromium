@@ -8,7 +8,6 @@
  * @see [redux tutorial]{@link https://redux.js.org/tutorials/fundamentals/part-3-state-actions-reducers}
  */
 
-import './mojo_interface_provider.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {Action} from 'chrome://resources/js/cr/ui/store.js';
 import {ActionName} from './personalization_actions.js';

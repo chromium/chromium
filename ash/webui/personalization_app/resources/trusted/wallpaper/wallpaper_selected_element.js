@@ -10,21 +10,21 @@
 import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import 'chrome://resources/polymer/v3_0/iron-iconset-svg/iron-iconset-svg.js';
+import '/common/icons.js';
 import './styles.js';
-import '../common/icons.js';
 
+import {isNonEmptyArray} from '/common/utils.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {html} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {isNonEmptyArray} from '../common/utils.js';
+import {beginLoadSelectedImageAction, setSelectedImageAction} from '../personalization_actions.js';
+import {WallpaperLayout, WallpaperObserverReceiver, WallpaperType} from '../personalization_app.mojom-webui.js';
+import {Paths} from '../personalization_router_element.js';
+import {WithPersonalizationStore} from '../personalization_store.js';
+import {getWallpaperLayoutEnum} from '../utils.js';
 
-import {getWallpaperProvider} from './mojo_interface_provider.js';
-import {beginLoadSelectedImageAction, setFullscreenEnabledAction, setSelectedImageAction} from './personalization_actions.js';
-import {WallpaperLayout, WallpaperObserverReceiver, WallpaperType} from './personalization_app.mojom-webui.js';
-import {getDailyRefreshCollectionId, setCustomWallpaperLayout, setDailyRefreshCollectionId, updateDailyRefreshWallpaper} from './personalization_controller.js';
-import {Paths} from './personalization_router_element.js';
-import {WithPersonalizationStore} from './personalization_store.js';
-import {getWallpaperLayoutEnum} from './utils.js';
+import {getDailyRefreshCollectionId, setCustomWallpaperLayout, setDailyRefreshCollectionId, updateDailyRefreshWallpaper} from './wallpaper_controller.js';
+import {getWallpaperProvider} from './wallpaper_interface_provider.js';
 
 let setTimeout = window.setTimeout;
 let clearTimeout = window.clearTimeout;

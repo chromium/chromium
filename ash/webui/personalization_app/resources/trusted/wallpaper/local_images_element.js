@@ -13,16 +13,18 @@ import 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import 'chrome://resources/polymer/v3_0/iron-iconset-svg/iron-iconset-svg.js';
 import './styles.js';
-import '../common/icons.js';
-import '../common/styles.js';
+import '/common/icons.js';
+import '/common/styles.js';
+
+import {getLoadingPlaceholderAnimationDelay} from '/common/utils.js';
+import {isSelectionEvent} from '/common/utils.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {afterNextRender, html} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {getLoadingPlaceholderAnimationDelay} from '../common/utils.js';
-import {isSelectionEvent} from '../common/utils.js';
-import {getWallpaperProvider} from './mojo_interface_provider.js';
-import {fetchLocalData, selectWallpaper} from './personalization_controller.js';
-import {DisplayableImage} from './personalization_reducers.js';
-import {WithPersonalizationStore} from './personalization_store.js';
+
+import {WithPersonalizationStore} from '../personalization_store.js';
+
+import {fetchLocalData, selectWallpaper} from './wallpaper_controller.js';
+import {getWallpaperProvider} from './wallpaper_interface_provider.js';
 
 /** @polymer */
 export class LocalImages extends WithPersonalizationStore {
@@ -202,12 +204,12 @@ export class LocalImages extends WithPersonalizationStore {
    * @return {string}
    * @private
    */
-   getAriaLabel_(image) {
-     if (!image || !image.path) {
-       return '';
-     }
+  getAriaLabel_(image) {
+    if (!image || !image.path) {
+      return '';
+    }
     const path = image.path;
-    return path.substring(path.lastIndexOf('/')+1);
+    return path.substring(path.lastIndexOf('/') + 1);
   }
 
   /**

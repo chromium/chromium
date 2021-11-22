@@ -6,11 +6,12 @@ import '../../mojo_webui_test_support.js';
 
 import * as action from 'chrome://personalization/trusted/personalization_actions.js';
 import {WallpaperCollection} from 'chrome://personalization/trusted/personalization_app.mojom-webui.js';
-import {fetchGooglePhotosAlbum, fetchLocalData, initializeBackdropData, initializeGooglePhotosData, selectWallpaper} from 'chrome://personalization/trusted/personalization_controller.js';
+import {fetchGooglePhotosAlbum, fetchLocalData, initializeBackdropData, initializeGooglePhotosData, selectWallpaper} from 'chrome://personalization/trusted/wallpaper/wallpaper_controller.js';
 
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
-import {TestWallpaperProvider} from './test_mojo_interface_provider.js';
+
 import {TestPersonalizationStore} from './test_personalization_store.js';
+import {TestWallpaperProvider} from './test_wallpaper_interface_provider.js';
 
 /**
  * Get a sub-property in obj. Splits on '.'

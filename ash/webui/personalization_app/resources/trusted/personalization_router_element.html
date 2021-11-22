@@ -24,7 +24,7 @@
   #rightspacer {
     grid-area: rightspacer;
   }
-  wallpaper-breadcrumb {
+  personalization-breadcrumb {
     grid-area: breadcrumb;
   }
   wallpaper-selected {
@@ -67,10 +67,10 @@
     <div id="wallpaperContainer">
       <!-- Prevent left margin from collapsing on narrow window in RTL -->
       <div id="leftspacer"></div>
-      <wallpaper-breadcrumb path="[[path_]]"
+      <personalization-breadcrumb path="[[path_]]"
           collection-id="[[queryParams_.id]]"
           google-photos-album-id="[[queryParams_.googlePhotosAlbumId]]">
-      </wallpaper-breadcrumb>
+      </personalization-breadcrumb>
       <wallpaper-selected path="[[path_]]" collection-id="[[queryParams_.id]]">
       </wallpaper-selected>
       <!-- do not use hidden$ here - need to listen on property change in

@@ -2,12 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {LocalImages} from 'chrome://personalization/trusted/local_images_element.js';
-import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
+import {LocalImages} from 'chrome://personalization/trusted/wallpaper/local_images_element.js';
+
+import {assertEquals, assertTrue} from '../../chai_assert.js';
 import {flushTasks, waitAfterNextRender} from '../../test_util.js';
+
 import {baseSetup, initElement, teardownElement} from './personalization_app_test_utils.js';
-import {TestWallpaperProvider} from './test_mojo_interface_provider.js';
 import {TestPersonalizationStore} from './test_personalization_store.js';
+import {TestWallpaperProvider} from './test_wallpaper_interface_provider.js';
 
 export function LocalImagesTest() {
   /** @type {?HTMLElement} */

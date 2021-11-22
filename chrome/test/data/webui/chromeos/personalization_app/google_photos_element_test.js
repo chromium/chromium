@@ -2,10 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {GooglePhotos} from 'chrome://personalization/trusted/google_photos_element.js';
+import {GooglePhotos} from 'chrome://personalization/trusted/wallpaper/google_photos_element.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
+
 import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
 import {waitAfterNextRender} from '../../test_util.js';
+
 import {baseSetup, initElement, teardownElement} from './personalization_app_test_utils.js';
 import {TestPersonalizationStore} from './test_personalization_store.js';
 

@@ -2,11 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {isNonEmptyArray} from '/common/utils.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
-import {isNonEmptyArray} from '../common/utils.js';
-import * as action from './personalization_actions.js';
-import {WallpaperCollection, WallpaperLayout, WallpaperType} from './personalization_app.mojom-webui.js';
-import {PersonalizationStore} from './personalization_store.js';
+
+import * as action from '../personalization_actions.js';
+import {WallpaperCollection, WallpaperLayout, WallpaperType} from '../personalization_app.mojom-webui.js';
+import {PersonalizationStore} from '../personalization_store.js';
 
 /**
  * @fileoverview contains all of the functions to interact with C++ side through

@@ -4,13 +4,14 @@
 
 import {WallpaperLayout, WallpaperType} from 'chrome://personalization/trusted/personalization_app.mojom-webui.js';
 import {PersonalizationRouter} from 'chrome://personalization/trusted/personalization_router_element.js';
-import {getDarkLightImageTiles, getRegularImageTiles, promisifyImagesIframeFunctionsForTesting, WallpaperImages} from 'chrome://personalization/trusted/wallpaper_images_element.js';
-import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
+import {getDarkLightImageTiles, getRegularImageTiles, promisifyImagesIframeFunctionsForTesting, WallpaperImages} from 'chrome://personalization/trusted/wallpaper/wallpaper_images_element.js';
+
+import {assertDeepEquals, assertEquals, assertFalse} from '../../chai_assert.js';
 import {flushTasks, waitAfterNextRender} from '../../test_util.js';
 
 import {assertWindowObjectsEqual, baseSetup, initElement, teardownElement} from './personalization_app_test_utils.js';
-import {TestWallpaperProvider} from './test_mojo_interface_provider.js';
 import {TestPersonalizationStore} from './test_personalization_store.js';
+import {TestWallpaperProvider} from './test_wallpaper_interface_provider.js';
 
 export function WallpaperImagesTest() {
   /** @type {?HTMLElement} */

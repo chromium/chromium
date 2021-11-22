@@ -10,18 +10,19 @@
 import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import 'chrome://resources/polymer/v3_0/iron-iconset-svg/iron-iconset-svg.js';
-import '../common/icons.js';
+import '/common/icons.js';
 
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {FilePath} from 'chrome://resources/mojo/mojo/public/mojom/base/file_path.mojom-webui.js';
 import {html} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {getWallpaperProvider} from './mojo_interface_provider.js';
-import {setFullscreenEnabledAction} from './personalization_actions.js';
-import {CurrentWallpaper, WallpaperImage, WallpaperLayout, WallpaperProviderInterface} from './personalization_app.mojom-webui.js';
-import {cancelPreviewWallpaper, confirmPreviewWallpaper, selectWallpaper} from './personalization_controller.js';
-import {WithPersonalizationStore} from './personalization_store.js';
-import {getWallpaperLayoutEnum} from './utils.js';
+import {setFullscreenEnabledAction} from '../personalization_actions.js';
+import {CurrentWallpaper, WallpaperImage, WallpaperLayout, WallpaperProviderInterface} from '../personalization_app.mojom-webui.js';
+import {WithPersonalizationStore} from '../personalization_store.js';
+import {getWallpaperLayoutEnum} from '../utils.js';
+
+import {cancelPreviewWallpaper, confirmPreviewWallpaper, selectWallpaper} from './wallpaper_controller.js';
+import {getWallpaperProvider} from './wallpaper_interface_provider.js';
 
 const fullscreenClass = 'fullscreen-preview';
 

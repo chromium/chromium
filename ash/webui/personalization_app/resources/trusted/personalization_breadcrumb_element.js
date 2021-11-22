@@ -22,9 +22,9 @@ import {isNonEmptyString} from './utils.js';
 
 
 /** @polymer */
-export class WallpaperBreadcrumb extends WithPersonalizationStore {
+export class PersonalizationBreadcrumb extends WithPersonalizationStore {
   static get is() {
-    return 'wallpaper-breadcrumb';
+    return 'personalization-breadcrumb';
   }
 
   static get template() {
@@ -173,4 +173,4 @@ export class WallpaperBreadcrumb extends WithPersonalizationStore {
   }
 }
 
-customElements.define(WallpaperBreadcrumb.is, WallpaperBreadcrumb);
+customElements.define(PersonalizationBreadcrumb.is, PersonalizationBreadcrumb);

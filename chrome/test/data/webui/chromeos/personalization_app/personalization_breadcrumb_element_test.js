@@ -5,20 +5,20 @@
 /** @fileoverview Test suite for wallpaper-breadcrumb component.  */
 
 import {WallpaperCollection} from 'chrome://personalization/trusted/personalization_app.mojom-webui.js';
+import {PersonalizationBreadcrumb} from 'chrome://personalization/trusted/personalization_breadcrumb_element.js';
 import {Paths} from 'chrome://personalization/trusted/personalization_router_element.js';
-import {WallpaperBreadcrumb} from 'chrome://personalization/trusted/wallpaper_breadcrumb_element.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 
-import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
+import {assertEquals, assertTrue} from '../../chai_assert.js';
 import {flushTasks, waitAfterNextRender} from '../../test_util.js';
 
 import {baseSetup, initElement} from './personalization_app_test_utils.js';
-import {TestWallpaperProvider} from './test_mojo_interface_provider.js';
 import {TestPersonalizationStore} from './test_personalization_store.js';
+import {TestWallpaperProvider} from './test_wallpaper_interface_provider.js';
 
-export function WallpaperBreadcrumbTest() {
+export function PersonalizationBreadcrumbTest() {
   /** @type {?HTMLElement} */
-  let wallpaperBreadcrumbElement = null;
+  let breadcrumbElement = null;
 
   /** @type {?TestWallpaperProvider} */
   let wallpaperProvider = null;
@@ -62,43 +62,40 @@ export function WallpaperBreadcrumbTest() {
   });
 
   teardown(async () => {
-    if (wallpaperBreadcrumbElement) {
-      wallpaperBreadcrumbElement.remove();
+    if (breadcrumbElement) {
+      breadcrumbElement.remove();
     }
-    wallpaperBreadcrumbElement = null;
+    breadcrumbElement = null;
     await flushTasks();
   });
 
   test('shows wallpaper label by default', async () => {
-    wallpaperBreadcrumbElement = initElement(WallpaperBreadcrumb.is);
+    breadcrumbElement = initElement(PersonalizationBreadcrumb.is);
 
     const breadcrumbContainer =
-        wallpaperBreadcrumbElement.shadowRoot.getElementById(
-            'breadcrumbContainer');
+        breadcrumbElement.shadowRoot.getElementById('breadcrumbContainer');
     assertTrue(!!breadcrumbContainer && !breadcrumbContainer.hidden);
-    assertBreadcrumbs(
-        breadcrumbContainer, [wallpaperBreadcrumbElement.i18n('title')]);
+    assertBreadcrumbs(breadcrumbContainer, [breadcrumbElement.i18n('title')]);
   });
 
   test('shows collection name when collection is selected', async () => {
     const collection = wallpaperProvider.collections[0];
-    wallpaperBreadcrumbElement = initElement(
-        WallpaperBreadcrumb.is,
+    breadcrumbElement = initElement(
+        PersonalizationBreadcrumb.is,
         {'path': Paths.CollectionImages, 'collectionId': collection.id});
 
     personalizationStore.data.backdrop.collections =
         wallpaperProvider.collections;
     personalizationStore.notifyObservers();
 
-    await waitAfterNextRender(wallpaperBreadcrumbElement);
+    await waitAfterNextRender(breadcrumbElement);
 
     const breadcrumbContainer =
-        wallpaperBreadcrumbElement.shadowRoot.getElementById(
-            'breadcrumbContainer');
+        breadcrumbElement.shadowRoot.getElementById('breadcrumbContainer');
     assertTrue(!!breadcrumbContainer && !breadcrumbContainer.hidden);
     assertBreadcrumbs(
         breadcrumbContainer,
-        [wallpaperBreadcrumbElement.i18n('title'), collection.name]);
+        [breadcrumbElement.i18n('title'), collection.name]);
   });
 
   test('show album name when Google Photos subpage is loaded', async () => {
@@ -113,19 +110,17 @@ export function WallpaperBreadcrumbTest() {
     personalizationStore.data.googlePhotos.albums = [googlePhotosAlbum];
     personalizationStore.notifyObservers();
 
-    wallpaperBreadcrumbElement = initElement(WallpaperBreadcrumb.is, {
+    breadcrumbElement = initElement(PersonalizationBreadcrumb.is, {
       'path': Paths.GooglePhotosCollection,
       'googlePhotosAlbumId': googlePhotosAlbum.id
     });
 
     const breadcrumbContainer =
-        wallpaperBreadcrumbElement.shadowRoot.getElementById(
-            'breadcrumbContainer');
+        breadcrumbElement.shadowRoot.getElementById('breadcrumbContainer');
     assertTrue(!!breadcrumbContainer && !breadcrumbContainer.hidden);
     assertBreadcrumbs(breadcrumbContainer, [
-      wallpaperBreadcrumbElement.i18n('title'),
-      wallpaperBreadcrumbElement.i18n('googlePhotosLabel'),
-      googlePhotosAlbum.name
+      breadcrumbElement.i18n('title'),
+      breadcrumbElement.i18n('googlePhotosLabel'), googlePhotosAlbum.name
     ]);
   });
 
@@ -134,35 +129,32 @@ export function WallpaperBreadcrumbTest() {
     // integration feature flag is enabled.
     loadTimeData.overrideValues({'googlePhotosLabel': 'Google Photos'});
 
-    wallpaperBreadcrumbElement = initElement(
-        WallpaperBreadcrumb.is, {'path': Paths.GooglePhotosCollection});
+    breadcrumbElement = initElement(
+        PersonalizationBreadcrumb.is, {'path': Paths.GooglePhotosCollection});
 
     const breadcrumbContainer =
-        wallpaperBreadcrumbElement.shadowRoot.getElementById(
-            'breadcrumbContainer');
+        breadcrumbElement.shadowRoot.getElementById('breadcrumbContainer');
     assertTrue(!!breadcrumbContainer && !breadcrumbContainer.hidden);
     assertBreadcrumbs(breadcrumbContainer, [
-      wallpaperBreadcrumbElement.i18n('title'),
-      wallpaperBreadcrumbElement.i18n('googlePhotosLabel')
+      breadcrumbElement.i18n('title'),
+      breadcrumbElement.i18n('googlePhotosLabel')
     ]);
   });
 
   test('show label when local images subpage is loaded', async () => {
-    wallpaperBreadcrumbElement =
-        initElement(WallpaperBreadcrumb.is, {'path': Paths.LocalCollection});
+    breadcrumbElement = initElement(
+        PersonalizationBreadcrumb.is, {'path': Paths.LocalCollection});
 
     personalizationStore.data.local.images = wallpaperProvider.localImages;
     personalizationStore.notifyObservers();
 
-    await waitAfterNextRender(wallpaperBreadcrumbElement);
+    await waitAfterNextRender(breadcrumbElement);
 
     const breadcrumbContainer =
-        wallpaperBreadcrumbElement.shadowRoot.getElementById(
-            'breadcrumbContainer');
+        breadcrumbElement.shadowRoot.getElementById('breadcrumbContainer');
     assertTrue(!!breadcrumbContainer && !breadcrumbContainer.hidden);
     assertBreadcrumbs(breadcrumbContainer, [
-      wallpaperBreadcrumbElement.i18n('title'),
-      wallpaperBreadcrumbElement.i18n('myImagesLabel')
+      breadcrumbElement.i18n('title'), breadcrumbElement.i18n('myImagesLabel')
     ]);
   });
 }

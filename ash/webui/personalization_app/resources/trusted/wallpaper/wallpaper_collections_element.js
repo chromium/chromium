@@ -10,15 +10,15 @@
 
 import './styles.js';
 
+import {kMaximumLocalImagePreviews} from '/common/constants.js';
+import {isNonEmptyArray, isNullOrArray, isNullOrNumber, promisifyOnload} from '/common/utils.js';
+import {sendCollections, sendGooglePhotosCount, sendGooglePhotosPhotos, sendImageCounts, sendLocalImageData, sendLocalImages, sendVisible} from '/trusted/iframe_api.js';
 import {afterNextRender, html} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {kMaximumLocalImagePreviews} from '../common/constants.js';
-import {isNonEmptyArray, isNullOrArray, isNullOrNumber, promisifyOnload} from '../common/utils.js';
-import {sendCollections, sendGooglePhotosCount, sendGooglePhotosPhotos, sendImageCounts, sendLocalImageData, sendLocalImages, sendVisible} from '../trusted/iframe_api.js';
+import {WithPersonalizationStore} from '../personalization_store.js';
 
-import {getWallpaperProvider} from './mojo_interface_provider.js';
-import {initializeBackdropData} from './personalization_controller.js';
-import {WithPersonalizationStore} from './personalization_store.js';
+import {initializeBackdropData} from './wallpaper_controller.js';
+import {getWallpaperProvider} from './wallpaper_interface_provider.js';
 
 let sendCollectionsFunction = sendCollections;
 let sendGooglePhotosCountFunction = sendGooglePhotosCount;

@@ -4,6 +4,7 @@
 
 import {PersonalizationRouter} from 'chrome://personalization/trusted/personalization_router_element.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
+
 import {initElement} from './personalization_app_test_utils.js';
 
 export function PersonalizationRouterTest() {

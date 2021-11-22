@@ -6,13 +6,14 @@
  * @fileoverview Polymer element that displays a single grid item.
  */
 
-import '../common/styles.js';
+import '/common/styles.js';
+
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 /** @polymer */
-export class PersonalizationGridItemElement extends PolymerElement {
+export class WallpaperGridItemElement extends PolymerElement {
   static get is() {
-    return 'personalization-grid-item';
+    return 'wallpaper-grid-item';
   }
 
   static get template() {
@@ -20,5 +21,4 @@ export class PersonalizationGridItemElement extends PolymerElement {
   }
 }
 
-customElements.define(
-    PersonalizationGridItemElement.is, PersonalizationGridItemElement);
+customElements.define(WallpaperGridItemElement.is, WallpaperGridItemElement);

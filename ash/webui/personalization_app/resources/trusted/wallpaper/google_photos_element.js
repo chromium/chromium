@@ -10,14 +10,17 @@
 import 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
 import './styles.js';
-import '../common/styles.js';
+import '/common/styles.js';
+
+import {getNumberOfGridItemsPerRow, isNonEmptyArray, isSelectionEvent, normalizeKeyForRTL} from '/common/utils.js';
 import {assert, assertNotReached} from 'chrome://resources/js/assert.m.js';
 import {afterNextRender, html} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {getNumberOfGridItemsPerRow, isNonEmptyArray, isSelectionEvent, normalizeKeyForRTL} from '../common/utils.js';
-import {getWallpaperProvider} from './mojo_interface_provider.js';
-import {initializeGooglePhotosData} from './personalization_controller.js';
-import {PersonalizationRouter} from './personalization_router_element.js';
-import {WithPersonalizationStore} from './personalization_store.js';
+
+import {PersonalizationRouter} from '../personalization_router_element.js';
+import {WithPersonalizationStore} from '../personalization_store.js';
+
+import {initializeGooglePhotosData} from './wallpaper_controller.js';
+import {getWallpaperProvider} from './wallpaper_interface_provider.js';
 
 /**
  * Enumeration of supported tabs.

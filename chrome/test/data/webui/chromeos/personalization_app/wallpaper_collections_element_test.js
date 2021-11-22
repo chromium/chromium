@@ -4,12 +4,14 @@
 
 import {kMaximumLocalImagePreviews} from 'chrome://personalization/common/constants.js';
 import {emptyState} from 'chrome://personalization/trusted/personalization_state.js';
-import {promisifyIframeFunctionsForTesting, WallpaperCollections} from 'chrome://personalization/trusted/wallpaper_collections_element.js';
+import {promisifyIframeFunctionsForTesting, WallpaperCollections} from 'chrome://personalization/trusted/wallpaper/wallpaper_collections_element.js';
+
 import {assertDeepEquals, assertFalse, assertTrue} from '../../chai_assert.js';
 import {waitAfterNextRender} from '../../test_util.js';
+
 import {assertWindowObjectsEqual, baseSetup, initElement, teardownElement} from './personalization_app_test_utils.js';
-import {TestWallpaperProvider} from './test_mojo_interface_provider.js';
 import {TestPersonalizationStore} from './test_personalization_store.js';
+import {TestWallpaperProvider} from './test_wallpaper_interface_provider.js';
 
 export function WallpaperCollectionsTest() {
   /** @type {?HTMLElement} */
