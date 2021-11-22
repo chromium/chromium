@@ -2880,7 +2880,6 @@ crbug.com/1024156 external/wpt/css/css-pseudo/highlight-cascade-002.html [ Failu
 crbug.com/1024156 external/wpt/css/css-pseudo/highlight-paired-cascade-003.html [ Failure ]
 crbug.com/1024156 external/wpt/css/css-pseudo/highlight-paired-cascade-006.html [ Failure ]
 crbug.com/1024156 external/wpt/css/css-pseudo/highlight-styling-002.html [ Failure ]
-crbug.com/1024156 external/wpt/css/css-pseudo/highlight-styling-004.html [ Failure ]
 crbug.com/1113004 external/wpt/css/css-pseudo/active-selection-043.html [ Failure ]
 crbug.com/1100119 [ Mac ] external/wpt/css/css-pseudo/active-selection-051.html [ Failure ]
 crbug.com/1100119 [ Mac ] external/wpt/css/css-pseudo/active-selection-052.html [ Failure ]
@@ -3001,6 +3000,11 @@ crbug.com/626703 fast/animation/scroll-animations/scrolltimeline-root-scroller-q
 crbug.com/626703 virtual/plz-dedicated-worker/external/wpt/service-workers/service-worker/navigation-timing-extended.https.html [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
+crbug.com/626703 external/wpt/css/css-values/ic-unit-013.html [ Failure ]
+crbug.com/626703 external/wpt/css/css-values/ic-unit-014.html [ Failure ]
+crbug.com/626703 [ Mac11-arm64 ] external/wpt/navigation-timing/nav2_test_response_end_and_duration_before_during_and_after_load_event.html [ Timeout ]
+crbug.com/626703 virtual/css-calc-infinity-and-nan-disabled/external/wpt/css/css-values/ic-unit-013.html [ Failure ]
+crbug.com/626703 virtual/css-calc-infinity-and-nan-disabled/external/wpt/css/css-values/ic-unit-014.html [ Failure ]
 crbug.com/626703 [ Linux ] external/wpt/html/browsers/browsing-the-web/navigating-across-documents/replace-before-load/location-setter-user-mouseup.html [ Timeout ]
 crbug.com/1270841 [ Mac ] external/wpt/media-capabilities/encodingInfo.any.worker.html [ Crash ]
 crbug.com/626703 [ Mac11 ] virtual/plz-dedicated-worker/external/wpt/workers/constructors/SharedWorker/setting-port-members.html [ Failure Timeout ]
@@ -3020,7 +3024,6 @@ crbug.com/626703 [ Mac11 ] virtual/scalefactor200/external/wpt/css/filter-effect
 crbug.com/626703 [ Mac11 ] virtual/scalefactor200/external/wpt/css/filter-effects/filters-drop-shadow-001.html [ Timeout ]
 crbug.com/626703 [ Mac11 ] virtual/scalefactor200/external/wpt/css/filter-effects/svg-mutation-single-to-multiple-002.html [ Timeout ]
 crbug.com/626703 [ Mac11 ] virtual/scroll-unification-unified-autoplay/external/wpt/feature-policy/feature-policy-header-policy-declined.https.sub.html [ Timeout ]
-crbug.com/626703 [ Mac11 ] virtual/scroll-unification/external/wpt/dom/events/scrolling/scrollend-event-fired-to-scrolled-element.html [ Timeout ]
 crbug.com/626703 external/wpt/css/css-backgrounds/background-clip/clip-text-multi-line.html [ Failure ]
 crbug.com/626703 virtual/threaded/external/wpt/css/css-backgrounds/background-clip/clip-text-multi-line.html [ Failure ]
 crbug.com/626703 [ Mac11 ] external/wpt/secure-payment-confirmation/authentication-accepted.https.html [ Failure Timeout ]
@@ -7269,7 +7272,7 @@ crbug.com/1180993 external/wpt/mediacapture-record/passthrough/MediaRecorder-pas
 crbug.com/1186771 [ Mac ] fast/scroll-snap/snaps-after-scrollbar-scrolling-track.html [ Crash ]
 crbug.com/1227911 [ Mac ] external/wpt/html/browsers/origin/origin-keyed-agent-clusters/2-iframes/parent-no-child1-no-subdomain1-child2-yes-subdomain2.sub.https.html [ Failure Pass ]
 crbug.com/1227911 [ Linux ] external/wpt/html/browsers/origin/origin-keyed-agent-clusters/2-iframes/parent-no-child1-no-subdomain1-child2-yes-subdomain2.sub.https.html [ Failure Pass ]
-crbug.com/894077 [ Linux ] virtual/android/fullscreen/video-fixed-background.html [ Pass Failure ]
+crbug.com/894077 [ Linux ] virtual/android/fullscreen/video-fixed-background.html [ Failure Pass ]
 crbug.com/1271336 external/wpt/native-io/detach_iframe_during_open.https.window.html [ Crash Pass ]
 crbug.com/1197465 virtual/scroll-unification/fast/events/mouse-cursor-no-mousemove.html [ Skip ]
 crbug.com/1272017 [ Mac11-arm64 ] virtual/shared_array_buffer_on_desktop/http/tests/devtools/sources/debugger-ui/reveal-not-skipped.js [ Skip ]
@@ -7277,8 +7280,8 @@ crbug.com/1272058 [ Linux ] fast/animation/request-animation-frame-cancel2.html 
 crbug.com/1272058 [ Linux ] fast/animation/request-animation-frame-cancel.html [ Failure Pass ]
 
 # Sheriff 2021-11-22
-crbug.com/1272352 virtual/threaded/http/tests/devtools/isolated-code-cache/same-origin-test.js [ Pass Crash ]
-crbug.com/1272352 virtual/threaded/http/tests/devtools/isolated-code-cache/stale-revalidation-test.js [ Pass Crash ]
+crbug.com/1272352 virtual/threaded/http/tests/devtools/isolated-code-cache/same-origin-test.js [ Crash Pass ]
+crbug.com/1272352 virtual/threaded/http/tests/devtools/isolated-code-cache/stale-revalidation-test.js [ Crash Pass ]
 crbug.com/1272376 virtual/scroll-unification/plugins/plugin-document-back-forward.html [ Failure Pass ]
 crbug.com/1272380 http/tests/devtools/bindings/bindings-multiple-frames.js [ Failure Pass ]
 

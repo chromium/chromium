@@ -8,5 +8,7 @@
 // Assume that our parent has already created a virtual authenticator device.
 createCredential().then(credential => {
   parent.postMessage({id: credential.id, rawId: credential.rawId}, '*');
+}).catch(e => {
+  parent.postMessage({error: e}, '*');
 });
 </script>
