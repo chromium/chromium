@@ -299,18 +299,6 @@ class DictationTest : public DictationBaseTest {
     ash::Shell::Get()->accessibility_controller()->dictation().SetEnabled(true);
   }
 
-  void SendSpeechResult(const std::string& result, bool is_final) {
-    if (GetParam() == speech::SpeechRecognitionType::kNetwork && !is_final) {
-      // FakeSpeechRecognitionManager can only send final results,
-      // so if this isn't final just send to Dictation directly.
-      GetManager()->dictation_->OnSpeechResult(base::ASCIIToUTF16(result),
-                                               is_final, absl::nullopt);
-      return;
-    }
-
-    SendFakeSpeechResultAndWait(result, is_final);
-  }
-
   void NotifyTextInputStateChanged(ui::TextInputClient* client) {
     GetManager()->dictation_->OnTextInputStateChanged(client);
   }
@@ -370,13 +358,13 @@ IN_PROC_BROWSER_TEST_P(DictationTest, RecognitionEnds) {
   ToggleDictation();
   EXPECT_EQ(GetLastCompositionText().text, empty_composition_text_.text);
 
-  SendSpeechResult(kFirstSpeechResult, false /* is_final */);
+  SendFakeSpeechResultAndWait(kFirstSpeechResult, false /* is_final */);
   EXPECT_EQ(kFirstSpeechResult16, GetLastCompositionText().text);
 
-  SendSpeechResult(kSecondSpeechResult, false /* is_final */);
+  SendFakeSpeechResultAndWait(kSecondSpeechResult, false /* is_final */);
   EXPECT_EQ(kSecondSpeechResult16, GetLastCompositionText().text);
 
-  SendSpeechResult(kFinalSpeechResult, true /* is_final */);
+  SendFakeSpeechResultAndWait(kFinalSpeechResult, true /* is_final */);
   // Wait for interim results to be finalized.
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(1, input_context_handler_->commit_text_call_count());
@@ -401,13 +389,13 @@ IN_PROC_BROWSER_TEST_P(DictationTest, RecognitionEndsWithChromeVoxEnabled) {
 
   EXPECT_EQ(GetLastCompositionText().text, empty_composition_text_.text);
 
-  SendSpeechResult(kFirstSpeechResult, false /* is_final */);
+  SendFakeSpeechResultAndWait(kFirstSpeechResult, false /* is_final */);
   EXPECT_EQ(GetLastCompositionText().text, empty_composition_text_.text);
 
-  SendSpeechResult(kSecondSpeechResult, false /* is_final */);
+  SendFakeSpeechResultAndWait(kSecondSpeechResult, false /* is_final */);
   EXPECT_EQ(GetLastCompositionText().text, empty_composition_text_.text);
 
-  SendSpeechResult(kFinalSpeechResult, true /* is_final */);
+  SendFakeSpeechResultAndWait(kFinalSpeechResult, true /* is_final */);
   // Wait for interim results to be finalized.
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(1, input_context_handler_->commit_text_call_count());
@@ -434,7 +422,7 @@ IN_PROC_BROWSER_TEST_P(DictationTest, RecognitionEndsWithNoSpeech) {
 IN_PROC_BROWSER_TEST_P(DictationTest, RecognitionEndsWithoutFinalizedSpeech) {
   ToggleDictation();
   EXPECT_FALSE(IsDictationOff());
-  SendSpeechResult(kFirstSpeechResult, false /* is_final */);
+  SendFakeSpeechResultAndWait(kFirstSpeechResult, false /* is_final */);
   base::OneShotTimer* timer = GetTimer();
   ASSERT_TRUE(timer);
   EXPECT_EQ(timer->GetCurrentDelay(), base::Seconds(kNoSpeechTimeoutInSeconds));
@@ -459,7 +447,7 @@ IN_PROC_BROWSER_TEST_P(DictationTest, UserEndsDictation) {
   ToggleDictation();
   EXPECT_EQ(GetLastCompositionText().text, empty_composition_text_.text);
 
-  SendSpeechResult(kFinalSpeechResult, false /* is_final */);
+  SendFakeSpeechResultAndWait(kFinalSpeechResult, false /* is_final */);
   EXPECT_EQ(kFinalSpeechResult16, GetLastCompositionText().text);
 
   ToggleDictation();
@@ -482,7 +470,7 @@ IN_PROC_BROWSER_TEST_P(DictationTest, UserEndsDictationWhenChromeVoxEnabled) {
 
   EXPECT_EQ(GetLastCompositionText().text, empty_composition_text_.text);
 
-  SendSpeechResult(kFinalSpeechResult, false /* is_final */);
+  SendFakeSpeechResultAndWait(kFinalSpeechResult, false /* is_final */);
   EXPECT_EQ(GetLastCompositionText().text, empty_composition_text_.text);
 
   // Toggle Dictation off.
@@ -498,7 +486,7 @@ IN_PROC_BROWSER_TEST_P(DictationTest, UserEndsDictationWhenChromeVoxEnabled) {
 IN_PROC_BROWSER_TEST_P(DictationTest, SwitchInputContext) {
   // Turn on dictation and say something.
   ToggleDictation();
-  SendSpeechResult(kFirstSpeechResult, true /* is final */);
+  SendFakeSpeechResultAndWait(kFirstSpeechResult, true /* is final */);
   // Wait for interim results to be finalized.
   base::RunLoop().RunUntilIdle();
 
@@ -510,7 +498,7 @@ IN_PROC_BROWSER_TEST_P(DictationTest, SwitchInputContext) {
   ui::MockIMEInputContextHandler input_context_handler2;
   ui::IMEBridge::Get()->SetInputContextHandler(&input_context_handler2);
 
-  SendSpeechResult(kSecondSpeechResult, true /* is final*/);
+  SendFakeSpeechResultAndWait(kSecondSpeechResult, true /* is final*/);
   // Wait for interim results to be finalized.
   base::RunLoop().RunUntilIdle();
 
@@ -526,7 +514,7 @@ IN_PROC_BROWSER_TEST_P(DictationTest, SwitchInputContext) {
 IN_PROC_BROWSER_TEST_P(DictationTest, ChangeInputField) {
   // Turn on dictation and start speaking.
   ToggleDictation();
-  SendSpeechResult(kFinalSpeechResult, false /* is_final */);
+  SendFakeSpeechResultAndWait(kFinalSpeechResult, false /* is_final */);
 
   // Change the input state to a new client.
   std::unique_ptr<ui::TextInputClient> new_client =
@@ -543,19 +531,19 @@ IN_PROC_BROWSER_TEST_P(DictationTest, ChangeInputField) {
 IN_PROC_BROWSER_TEST_P(DictationTest, ListensForMultipleResults) {
   // Turn on dictation and send a final result.
   ToggleDictation();
-  SendSpeechResult("Purple", true /* is final */);
+  SendFakeSpeechResultAndWait("Purple", true /* is final */);
   // Wait for interim results to be finalized.
   base::RunLoop().RunUntilIdle();
 
   EXPECT_EQ(u"Purple", input_context_handler_->last_commit_text());
   EXPECT_FALSE(IsDictationOff());
 
-  SendSpeechResult("pink", true /* is final */);
+  SendFakeSpeechResultAndWait("pink", true /* is final */);
   EXPECT_EQ(2, input_context_handler_->commit_text_call_count());
   // Space in front of the result.
   EXPECT_EQ(u" pink", input_context_handler_->last_commit_text());
 
-  SendSpeechResult(" blue", true /* is final */);
+  SendFakeSpeechResultAndWait(" blue", true /* is final */);
   EXPECT_EQ(3, input_context_handler_->commit_text_call_count());
   // Only one space in front of the result.
   EXPECT_EQ(u" blue", input_context_handler_->last_commit_text());
@@ -842,12 +830,6 @@ IN_PROC_BROWSER_TEST_P(DictationExtensionTest, IgnoresCommands) {
 // (non-finalized) speech results are returned, then commits text when the
 // speech results are finalized.
 IN_PROC_BROWSER_TEST_P(DictationExtensionTest, CompositionAndCommitText) {
-  if (GetParam() == speech::SpeechRecognitionType::kNetwork) {
-    // Interim speech results are not supported with fake network speech
-    // recognition, so skip this test.
-    return;
-  }
-
   InstallMockInputContextHandler();
 
   ToggleDictationWithKeystroke();
@@ -866,12 +848,6 @@ IN_PROC_BROWSER_TEST_P(DictationExtensionTest, CompositionAndCommitText) {
 // Tests behavior of the Dictation extension while ChromeVox is on.
 IN_PROC_BROWSER_TEST_P(DictationExtensionTest,
                        CompositionAndCommitTextWithChromeVoxEnabled) {
-  if (GetParam() == speech::SpeechRecognitionType::kNetwork) {
-    // Interim speech results are not supported with fake network speech
-    // recognition, so skip this test.
-    return;
-  }
-
   EnableChromeVox();
   EXPECT_TRUE(GetManager()->IsSpokenFeedbackEnabled());
   InstallMockInputContextHandler();

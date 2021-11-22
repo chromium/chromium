@@ -52,7 +52,7 @@ class FakeSpeechRecognitionManager : public SpeechRecognitionManager,
   void SendFakeResponse(bool end_recognition,
                         base::OnceClosure on_fake_response_sent);
 
-  void SetFakeResult(const std::string& result);
+  void SetFakeResult(const std::string& result, bool is_final);
 
   void SendFakeError(base::OnceClosure on_fake_error_sent);
 
@@ -101,6 +101,7 @@ class FakeSpeechRecognitionManager : public SpeechRecognitionManager,
   SpeechRecognitionSessionConfig session_config_;
   SpeechRecognitionSessionContext session_ctx_;
   std::string fake_result_;
+  bool is_final_ = true;
   std::string grammar_;
   bool did_cancel_all_ = false;
   bool should_send_fake_response_ = true;

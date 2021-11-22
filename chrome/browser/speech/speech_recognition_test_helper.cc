@@ -82,10 +82,7 @@ void SpeechRecognitionTestHelper::SendFakeSpeechResultAndWait(
     bool is_final) {
   base::RunLoop loop;
   if (type_ == speech::SpeechRecognitionType::kNetwork) {
-    // FakeSpeechRecognitionManager can only send final results, so this method
-    // shouldn't be called if `is_final` is false.
-    DCHECK(is_final);
-    fake_speech_recognition_manager_->SetFakeResult(transcript);
+    fake_speech_recognition_manager_->SetFakeResult(transcript, is_final);
     fake_speech_recognition_manager_->SendFakeResponse(
         false /* end recognition */, loop.QuitClosure());
     loop.Run();
