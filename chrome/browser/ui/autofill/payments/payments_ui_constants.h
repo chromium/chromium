@@ -23,6 +23,10 @@ constexpr base::TimeDelta kCardBubbleSurviveNavigationTime = base::Seconds(5);
 constexpr base::TimeDelta kDelayBeforeDismissingProgressDialog =
     base::Seconds(1);
 
+// The duration that the "Get New Code" link is disabled after it is clicked in
+// Card Unmask OTP Input Dialog.
+constexpr base::TimeDelta kNewOtpCodeLinkDisabledDuration = base::Seconds(5);
+
 }  // namespace autofill
 
 #endif  // CHROME_BROWSER_UI_AUTOFILL_PAYMENTS_PAYMENTS_UI_CONSTANTS_H_
