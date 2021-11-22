@@ -135,5 +135,14 @@ class ProtoJSONStyleGeneratorTest(unittest.TestCase, BaseStyleGeneratorTest):
         self.generator.AddJSONFileToModel('additional_colors_test.json5')
         self.expected_output_file = 'colors_test_expected.protojson'
 
+
+class InvertedStyleGeneratorTest(unittest.TestCase, BaseStyleGeneratorTest):
+    def setUp(self):
+        self.generator = CSSStyleGenerator()
+        self.generator.AddJSONFileToModel('colors_test_palette.json5')
+        self.generator.AddJSONFileToModel('inverted_colors_test.json5')
+        self.expected_output_file = 'inverted_colors_test_expected.css'
+
+
 if __name__ == '__main__':
     unittest.main()

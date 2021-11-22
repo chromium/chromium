@@ -256,5 +256,65 @@ class BaseGeneratorTest(unittest.TestCase):
                          'rgba(0, 0, 0, 1)')
 
 
+    def testInvertedColors(self):
+        # Add an inverted color.
+        self.generator.AddJSONToModel('''
+{
+  colors: {
+    alert: { light: "$white", dark: "$black", generate_inverted: true },
+  },
+}
+        ''')
+        self.assertEqual(self.ResolveRGBA('alert', Modes.LIGHT),
+                         'rgba(255, 255, 255, 1)')
+        self.assertEqual(self.ResolveRGBA('alert', Modes.DARK),
+                         'rgba(0, 0, 0, 1)')
+        self.assertEqual(self.ResolveRGBA('alert_inverted', Modes.LIGHT),
+                         'rgba(0, 0, 0, 1)')
+        self.assertEqual(self.ResolveRGBA('alert_inverted', Modes.DARK),
+                         'rgba(255, 255, 255, 1)')
+
+    def testInvertedWithSingleMode(self):
+        # Add an inverted color without a dark mode.
+        self.assertRaises(
+            ValueError, self.generator.AddJSONToModel, '''
+{
+  colors: {
+    alert: { light: "$white", generate_inverted: true },
+  },
+}
+        ''')
+
+    def testIllegalSuffix(self):
+        self.generator.AddJSONToModel('''
+{
+  colors: {
+    some_inverted: "$black",
+  }
+}
+        ''')
+        self.assertRaises(ValueError, self.generator.Validate)
+
+    def testPerModeColors(self):
+        # Add a per-mode color.
+        self.generator.AddJSONToModel('''
+{
+  colors: {
+    alert: {
+      light: "$white",
+      dark: "$black",
+      debug: "$black",
+      generate_per_mode: true
+    },
+  },
+}
+        ''')
+        self.assertEqual(self.ResolveRGBA('alert_dark'), 'rgba(0, 0, 0, 1)')
+        self.assertEqual(self.ResolveRGBA('alert_light'),
+                         'rgba(255, 255, 255, 1)')
+        self.assertEqual(self.ResolveRGBA('alert_debug'), 'rgba(0, 0, 0, 1)')
+        self.assertEqual(self.ResolveRGBA('alert'), 'rgba(255, 255, 255, 1)')
+
+
 if __name__ == '__main__':
     unittest.main()

@@ -22,11 +22,11 @@
     /* =========================================================================
      * Core colors.
      * =======================================================================*/
-    light_color_primary: "$google_grey_900",
-    dark_color_primary: "$google_grey_200",
     color_primary: {
-      light: "$light_color_primary",
-      dark: "$dark_color_primary",
+      light: "$google_grey_900",
+      dark: "$google_grey_200",
+      generate_per_mode: true,
+      generate_inverted: true,
     },
     color_secondary: {
       light: "$google_grey_700",
@@ -41,17 +41,16 @@
       dark: "$google_blue_300",
       debug: "$google_red_600",
     },
-    light_color_alert: "$google_red_600",
-    dark_color_alert: "$google_red_300",
     color_alert: {
-      light: "$light_color_alert",
-      dark: "$dark_color_alert",
+      light: "$google_red_600",
+      dark: "$google_red_300",
+      generate_inverted: true,
     },
-    light_color_warning: "$google_yellow_600",
-    dark_color_warning: "$google_yellow_300",
     color_warning: {
-      light: "$light_color_warning",
-      dark: "$dark_color_warning",
+      light: "$google_yellow_600",
+      dark: "$google_yellow_300",
+      generate_per_mode: true,
+      generate_inverted: true,
     },
     color_positive: {
       light: "$google_green_600",
@@ -74,11 +73,10 @@
       light: "$white",
       dark: "#2a2a2d", /* google_grey_900 + white 4% */
     },
-    light_bg_color_elevation_2: "$white",
-    dark_bg_color_elevation_2: "#2e2e31", /* google_grey_900 + white 6% */
     bg_color_elevation_2: {
-      light: "$light_bg_color_elevation_2",
-      dark: "$dark_bg_color_elevation_2",
+      light: "$white",
+      dark: "#2e2e31", /* google_grey_900 + white 6% */
+      generate_inverted: true,
     },
     bg_color_elevation_3: {
       light: "$white",
@@ -140,11 +138,6 @@
     icon_color_positive: "$color_positive",
     icon_color_warning: "$color_warning",
     icon_color_alert: "$color_alert",
-
-    // TODO(calamity): add attribute to allow generation of named variables for
-    // each mode.
-    dark_icon_color_primary: "$google_grey_900",
-    light_icon_color_warning: "$google_yellow_300",
 
     /*
      * App shield colors.
@@ -439,26 +432,11 @@
 
     /* toast */
     /* Toast colors are inverted for contrast. */
-    toast_background_color: {
-      light:"$dark_bg_color_elevation_2",
-      dark:"$light_bg_color_elevation_2",
-    },
-    toast_text_color: {
-      light:"$dark_color_primary",
-      dark:"$light_color_primary",
-    },
-    toast_icon_color: {
-      light:"$dark_color_primary",
-      dark:"$light_color_primary",
-    },
-    toast_icon_color_warning: {
-      light:"$dark_color_warning",
-      dark:"$light_color_warning",
-    },
-    toast_icon_color_error: {
-      light:"$dark_color_alert",
-      dark:"$light_color_alert",
-    },
+    toast_background_color: "$bg_color_elevation_2_inverted",
+    toast_text_color: "$color_primary_inverted",
+    toast_icon_color: "$color_primary_inverted",
+    toast_icon_color_warning: "$color_warning_inverted",
+    toast_icon_color_error: "$color_alert_inverted",
   },
   opacities: {
     disabled_opacity: 0.38,

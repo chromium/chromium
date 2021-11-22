@@ -35,6 +35,9 @@ class Modes:
     ALL = [LIGHT, DARK, DEBUG]
 
 
+RESERVED_SUFFIXES = ['_' + s for s in Modes.ALL + ['rgb', 'inverted']]
+
+
 class VariableType:
     COLOR = 'color'
     OPACITY = 'opacity'
@@ -49,10 +52,12 @@ class VariableType:
 
 
 class ModeKeyedModel(object):
-    def __init__(self):
+    def __init__(self, generator):
         self.variables = collections.OrderedDict()
+        self.generator = generator
 
-    def Add(self, name, value_obj):
+    def Add(self, name, value_obj, context):
+        self.generator.SetVariableContext(name, context)
         if name not in self.variables:
             self.variables[name] = {}
 
@@ -61,7 +66,7 @@ class ModeKeyedModel(object):
                 value = self._CreateValue(value_obj[mode])
                 if mode == 'default':
                     mode = Modes.DEFAULT
-                assert mode in Modes.ALL
+                assert mode in Modes.ALL and mode not in self.variables[name]
                 self.variables[name][mode] = value
         else:
             self.variables[name][Modes.DEFAULT] = self._CreateValue(value_obj)
@@ -107,8 +112,8 @@ class OpacityModel(ModeKeyedModel):
        e.g OpacityModel['disabled_opacity'][Modes.LIGHT] = Opacity(...)
     '''
 
-    def __init__(self):
-        super(OpacityModel, self).__init__()
+    def __init__(self, generator):
+        super(OpacityModel, self).__init__(generator)
 
     # Returns a float from 0-1 representing the concrete value of |opacity|.
     def ResolveOpacity(self, opacity, mode):
@@ -126,9 +131,44 @@ class ColorModel(ModeKeyedModel):
        e.g ColorModel['blue'][Modes.LIGHT] = Color(...)
     '''
 
-    def __init__(self, opacity_model):
-        super(ColorModel, self).__init__()
+    def __init__(self, generator, opacity_model):
+        super(ColorModel, self).__init__(generator)
         self.opacity_model = opacity_model
+
+    def Add(self, name, value_obj, context):
+        # If a color has generate_per_mode set, a separate variable will be
+        # created for each mode, suffixed by mode name.
+        # (e.g my_color_light, my_color_debug)
+        generate_per_mode = False
+
+        # If a color has generate_inverted set, a |color_name|_inverted will be
+        # generated which uses the dark color for light mode and vice versa.
+        generate_inverted = False
+        if isinstance(value_obj, dict):
+            generate_per_mode = value_obj.pop('generate_per_mode', None)
+            generate_inverted = value_obj.pop('generate_inverted', None)
+
+        generated_context = dict(context)
+        generated_context['generated'] = True
+
+        if generate_per_mode or generate_inverted:
+            for mode, value in value_obj.items():
+                per_mode_name = name + '_' + mode
+                ModeKeyedModel.Add(self, per_mode_name, value,
+                                   generated_context)
+                value_obj[mode] = '$' + per_mode_name
+        if generate_inverted:
+            if Modes.LIGHT not in value_obj or Modes.DARK not in value_obj:
+                raise ValueError(
+                    'generate_inverted requires both dark and light modes to be'
+                    ' set')
+            ModeKeyedModel.Add(
+                self, name + '_inverted', {
+                    Modes.LIGHT: '$' + name + '_dark',
+                    Modes.DARK: '$' + name + '_light'
+                }, generated_context)
+
+        ModeKeyedModel.Add(self, name, value_obj, context)
 
     # Returns a Color that is the final RGBA value for |name| in |mode|.
     def ResolveToRGBA(self, name, mode):
@@ -220,8 +260,8 @@ class BaseGenerator:
         # If specified, only generates the given mode.
         self.generate_single_mode = None
 
-        opacity_model = OpacityModel()
-        color_model = ColorModel(opacity_model)
+        opacity_model = OpacityModel(self)
+        color_model = ColorModel(self, opacity_model)
 
         # A dictionary of |VariableType| to models containing mappings of
         # variable names to values.
@@ -251,7 +291,7 @@ class BaseGenerator:
         # ./README.md for each generators list of options.
         self.generator_options = {}
 
-    def _SetVariableContext(self, name, context):
+    def SetVariableContext(self, name, context):
         if name in self.context_map.keys():
             raise ValueError('Variable name "%s" is reused' % name)
         self.context_map[name] = context or {}
@@ -260,9 +300,8 @@ class BaseGenerator:
         return self.GetName()
 
     def AddColor(self, name, value_obj, context=None):
-        self._SetVariableContext(name, context)
         try:
-            self.model[VariableType.COLOR].Add(name, value_obj)
+            self.model[VariableType.COLOR].Add(name, value_obj, context)
         except ValueError as err:
             raise ValueError('Error parsing color "%s": %s' % (value_obj, err))
 
@@ -292,16 +331,15 @@ class BaseGenerator:
                 color_model[name][mode] = temp_model[name][mode]
 
     def AddOpacity(self, name, value_obj, context=None):
-        self._SetVariableContext(name, context)
         try:
-            self.model[VariableType.OPACITY].Add(name, value_obj)
+            self.model[VariableType.OPACITY].Add(name, value_obj, context)
         except ValueError as err:
             raise ValueError('Error parsing opacity "%s": %s' %
                              (value_obj, err))
 
     def AddUntypedCSSGroup(self, group_name, value_obj, context=None):
         for var_name in value_obj.keys():
-            self._SetVariableContext(var_name, context)
+            self.SetVariableContext(var_name, context)
         self.model[VariableType.UNTYPED_CSS][group_name] = value_obj
 
     def AddJSONFileToModel(self, path):
@@ -341,11 +379,11 @@ class BaseGenerator:
         if typography:
             typography_model = self.model[VariableType.TYPOGRAPHY]
             for name, value in typography['font_families'].items():
-                self._SetVariableContext(name, generator_context)
+                self.SetVariableContext(name, generator_context)
                 typography_model.AddFontFamily(name, value)
 
             for name, value_obj in typography['typefaces'].items():
-                self._SetVariableContext(name, generator_context)
+                self.SetVariableContext(name, generator_context)
                 typography_model.AddTypeface(name, value_obj)
 
         for name, value in data.get('untyped_css', {}).items():
@@ -387,6 +425,12 @@ class BaseGenerator:
         # Check all colors in all modes refer to colors that exist in the
         # default mode.
         for name, mode_values in colors.items():
+            for suffix in RESERVED_SUFFIXES:
+                if not self.context_map[name].get(
+                        'generated') and name.endswith(suffix):
+                    raise ValueError(
+                        'Variable name "%s" uses a reserved suffix: %s' %
+                        (name, suffix))
             if Modes.DEFAULT not in mode_values:
                 raise ValueError("Color %s not defined for default mode" % name)
             for mode, color in mode_values.items():
