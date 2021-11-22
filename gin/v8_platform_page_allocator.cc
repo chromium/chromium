@@ -25,9 +25,13 @@ base::PageAccessibilityConfiguration GetPageConfig(
       // projects may still be using non-bti compliant code.
       return base::PageReadWriteExecute;
     case v8::PageAllocator::Permission::kReadExecute:
+#if defined(__ARM_FEATURE_BTI_DEFAULT)
       return base::CPU::GetInstanceNoAllocation().has_bti()
                  ? base::PageReadExecuteProtected
                  : base::PageReadExecute;
+#else
+      return base::PageReadExecute;
+#endif
     case v8::PageAllocator::Permission::kNoAccessWillJitLater:
       // We could use this information to conditionally set the MAP_JIT flag
       // on Mac-arm64; however this permissions value is intended to be a
