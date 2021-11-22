@@ -288,6 +288,7 @@ java_group("delegate_public_impl_java") {
     "//chrome/browser/policy/android:delegate_public_impl_java",
     "//chrome/browser/ui/android/theme:delegate_public_impl_java",
     "//components/externalauth/android:google_delegate_public_impl_java",
+    "//components/language/android:ulp_delegate_public_java",
   ]
   if (enable_new_feed_hooks) {
     deps += [ "//chrome/browser/feed/android:hooks_public_impl_java" ]
@@ -497,7 +498,7 @@ android_library("chrome_java") {
     "//components/infobars/core:infobar_enums_java",
     "//components/installedapp/android:java",
     "//components/javascript_dialogs/android:java",
-    "//components/language/android:language_bridge_java",
+    "//components/language/android:java",
     "//components/location/android:location_java",
     "//components/location/android:settings_java",
     "//components/media_router/browser/android:java",
@@ -1486,6 +1487,8 @@ android_library("chrome_test_java") {
     "//components/infobars/core:infobar_enums_java",
     "//components/installedapp/android:javatests",
     "//components/javascript_dialogs/android:java",
+    "//components/language/android:java",
+    "//components/language/android:javatests",
     "//components/location/android:location_java",
     "//components/media_router/browser/android:java",
     "//components/media_router/browser/android:test_support_java",

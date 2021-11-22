@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Interface to get ULP data from GSM Core.
+ * Default implementation of language profile delegate.
  */
 public class LanguageProfileDelegateImpl implements LanguageProfileDelegate {
     /**
