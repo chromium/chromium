@@ -19,7 +19,7 @@
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/progress_bar.h"
-#include "ui/views/layout/grid_layout.h"
+#include "ui/views/layout/box_layout_view.h"
 #include "ui/views/view.h"
 
 namespace payments {
@@ -96,31 +96,23 @@ std::unique_ptr<views::View> CreateSecurePaymentConfirmationHeaderView(
     int progress_bar_id,
     int header_icon_id,
     bool use_cart_image) {
-  auto header = std::make_unique<views::View>();
-
-  views::GridLayout* layout =
-      header->SetLayoutManager(std::make_unique<views::GridLayout>());
-  views::ColumnSet* columns = layout->AddColumnSet(0);
-  columns->AddColumn(views::GridLayout::LEADING, views::GridLayout::CENTER, 1.0,
-                     views::GridLayout::ColumnSize::kUsePreferred, 0, 0);
+  auto header = std::make_unique<views::BoxLayoutView>();
+  header->SetOrientation(views::BoxLayout::Orientation::kVertical);
+  header->SetBetweenChildSpacing(kHeaderIconTopPadding);
 
   // Progress bar
-  layout->StartRow(views::GridLayout::kFixedSize, 0, kProgressBarHeight);
   auto progress_bar = CreateSecurePaymentConfirmationProgressBarView();
   progress_bar->SetID(progress_bar_id);
   progress_bar->SetVisible(false);
-  layout->AddView(std::move(progress_bar));
-
-  layout->AddPaddingRow(views::GridLayout::kFixedSize, kHeaderIconTopPadding);
+  auto* container = header->AddChildView(std::make_unique<views::View>());
+  container->SetPreferredSize(progress_bar->GetPreferredSize());
+  container->AddChildView(std::move(progress_bar));
 
   // Header icon
-  layout->StartRow(
-      views::GridLayout::kFixedSize, 0,
-      use_cart_image ? kShoppingCartHeaderIconHeight : kHeaderIconHeight);
   auto image_view =
       std::make_unique<SecurePaymentConfirmationIconView>(use_cart_image);
   image_view->SetID(header_icon_id);
-  layout->AddView(std::move(image_view));
+  header->AddChildView(std::move(image_view));
 
   return header;
 }
