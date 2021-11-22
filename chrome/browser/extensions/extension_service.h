@@ -18,6 +18,7 @@
 #include "base/scoped_observation.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/blocklist.h"
+#include "chrome/browser/extensions/corrupted_extension_reinstaller.h"
 #include "chrome/browser/extensions/extension_allowlist.h"
 #include "chrome/browser/extensions/extension_management.h"
 #include "chrome/browser/extensions/forced_extensions/force_installed_metrics.h"
@@ -86,6 +87,9 @@ class ExtensionServiceInterface
 
   // Gets the object managing the set of pending extensions.
   virtual PendingExtensionManager* pending_extension_manager() = 0;
+
+  // Gets the object managing reinstalls of the corrupted extensions.
+  virtual CorruptedExtensionReinstaller* corrupted_extension_reinstaller() = 0;
 
   // Installs an update with the contents from |extension_path|. Returns true if
   // the install can be started. Sets |out_crx_installer| to the installer if
@@ -185,6 +189,7 @@ class ExtensionService : public ExtensionServiceInterface,
   // ExtensionServiceInterface implementation.
   //
   PendingExtensionManager* pending_extension_manager() override;
+  CorruptedExtensionReinstaller* corrupted_extension_reinstaller() override;
   bool UpdateExtension(const CRXFileInfo& file,
                        bool file_ownership_passed,
                        CrxInstaller** out_crx_installer) override;
@@ -723,6 +728,9 @@ class ExtensionService : public ExtensionServiceInterface,
 
   // Reports force-installed extension metrics to UMA.
   ForceInstalledMetrics force_installed_metrics_;
+
+  // Schedules downloads/reinstalls of the corrupted extensions.
+  CorruptedExtensionReinstaller corrupted_extension_reinstaller_;
 
   base::ScopedObservation<ProfileManager, ProfileManagerObserver>
       profile_manager_observation_{this};

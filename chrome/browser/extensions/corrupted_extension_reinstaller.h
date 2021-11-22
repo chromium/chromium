@@ -37,6 +37,10 @@ class CorruptedExtensionReinstaller {
   // Notifies this reinstaller about an extension corruption.
   void NotifyExtensionDisabledDueToCorruption();
 
+  // Called when ExtensionSystem is shutting down. Cancels already-scheduled
+  // attempts, if any, for a smoother shutdown.
+  void Shutdown();
+
   // For tests, overrides the default action to take to initiate reinstalls.
   static void set_reinstall_action_for_test(ReinstallCallback* action);
 

@@ -24,6 +24,8 @@ class TestExtensionService : public extensions::ExtensionServiceInterface {
 
   // ExtensionServiceInterface implementation.
   extensions::PendingExtensionManager* pending_extension_manager() override;
+  extensions::CorruptedExtensionReinstaller* corrupted_extension_reinstaller()
+      override;
 
   bool UpdateExtension(const extensions::CRXFileInfo& file,
                        bool file_ownership_passed,

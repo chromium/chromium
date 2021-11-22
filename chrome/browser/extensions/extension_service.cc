@@ -378,7 +378,8 @@ ExtensionService::ExtensionService(Profile* profile,
       shared_module_service_(new SharedModuleService(profile_)),
       extension_registrar_(profile_, this),
       force_installed_tracker_(registry_, profile_),
-      force_installed_metrics_(registry_, profile_, &force_installed_tracker_) {
+      force_installed_metrics_(registry_, profile_, &force_installed_tracker_),
+      corrupted_extension_reinstaller_(profile_) {
   CHECK(BrowserThread::CurrentlyOn(BrowserThread::UI));
   TRACE_EVENT0("browser,startup", "ExtensionService::ExtensionService::ctor");
 
@@ -440,6 +441,11 @@ PendingExtensionManager* ExtensionService::pending_extension_manager() {
   return &pending_extension_manager_;
 }
 
+CorruptedExtensionReinstaller*
+ExtensionService::corrupted_extension_reinstaller() {
+  return &corrupted_extension_reinstaller_;
+}
+
 ExtensionService::~ExtensionService() {
   UpgradeDetector::GetInstance()->RemoveObserver(this);
   // No need to unload extensions here because they are profile-scoped, and the
@@ -452,6 +458,7 @@ void ExtensionService::Shutdown() {
   ExtensionManagementFactory::GetForBrowserContext(profile())->RemoveObserver(
       this);
   external_install_manager_->Shutdown();
+  corrupted_extension_reinstaller_.Shutdown();
 }
 
 void ExtensionService::Init() {

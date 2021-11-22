@@ -147,10 +147,7 @@ void ChromeContentVerifierDelegate::SetDefaultModeForTesting(
 
 ChromeContentVerifierDelegate::ChromeContentVerifierDelegate(
     content::BrowserContext* context)
-    : context_(context),
-      default_mode_(GetDefaultMode()),
-      corrupted_extension_reinstaller_(
-          std::make_unique<CorruptedExtensionReinstaller>(context_)) {}
+    : context_(context), default_mode_(GetDefaultMode()) {}
 
 ChromeContentVerifierDelegate::~ChromeContentVerifierDelegate() {
 }
@@ -214,6 +211,8 @@ void ChromeContentVerifierDelegate::VerifyFailed(
   ExtensionService* service = system->extension_service();
   PendingExtensionManager* pending_manager =
       service->pending_extension_manager();
+  CorruptedExtensionReinstaller* corrupted_extension_reinstaller =
+      service->corrupted_extension_reinstaller();
 
   const VerifyInfo info = GetVerifyInfo(*extension);
 
@@ -270,7 +269,7 @@ void ChromeContentVerifierDelegate::VerifyFailed(
         extension->location());
     service->DisableExtension(extension_id, disable_reason::DISABLE_CORRUPTED);
     // Attempt to reinstall.
-    corrupted_extension_reinstaller_->NotifyExtensionDisabledDueToCorruption();
+    corrupted_extension_reinstaller->NotifyExtensionDisabledDueToCorruption();
     return;
   }
 
@@ -283,12 +282,7 @@ void ChromeContentVerifierDelegate::VerifyFailed(
                             ContentVerifyJob::FAILURE_REASON_MAX);
 }
 
-void ChromeContentVerifierDelegate::Shutdown() {
-  // Shut down |corrupted_extension_reinstaller_| on its creation thread. |this|
-  // can be destroyed through InfoMap on IO thread, we do not want to destroy
-  // |corrupted_extension_reinstaller_| there.
-  corrupted_extension_reinstaller_.reset();
-}
+void ChromeContentVerifierDelegate::Shutdown() {}
 
 bool ChromeContentVerifierDelegate::IsFromWebstore(
     const Extension& extension) const {

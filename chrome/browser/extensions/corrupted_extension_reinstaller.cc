@@ -59,6 +59,12 @@ void CorruptedExtensionReinstaller::NotifyExtensionDisabledDueToCorruption() {
   ScheduleNextReinstallAttempt();
 }
 
+void CorruptedExtensionReinstaller::Shutdown() {
+  // Cancel already scheduled attempts by invalidating weak pointers stored in
+  // postponed tasks.
+  weak_factory_.InvalidateWeakPtrs();
+}
+
 void CorruptedExtensionReinstaller::Fire() {
   scheduled_fire_pending_ = false;
   ExtensionSystem* system = ExtensionSystem::Get(context_);
