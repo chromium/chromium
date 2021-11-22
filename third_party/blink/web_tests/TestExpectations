@@ -7293,3 +7293,6 @@ crbug.com/1272575 [ Mac ] virtual/gpu-rasterization/images/color-profile-svg-fil
 # Flaky on Mac and Windows
 crbug.com/1272199 external/wpt/websockets/stream/tentative/backpressure-receive.any.serviceworker.html?wpt_flags=h2 [ Failure Pass ]
 crbug.com/1272203 external/wpt/websockets/stream/tentative/backpressure-send.any.serviceworker.html?wpt_flags=h2 [ Failure Pass ]
+
+# Times out flakily on all platforms. Previously marked slow, crbug.com/874695.
+crbug.com/1272801 http/tests/permissions/chromium/test-request-sharedworker.html [ Pass Timeout ]
