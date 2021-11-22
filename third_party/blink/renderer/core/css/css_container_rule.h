@@ -27,7 +27,7 @@ class CSSContainerRule final : public CSSConditionRule {
 
  private:
   CSSRule::Type GetType() const override { return kContainerRule; }
-  const ContainerQuery& ContainerQuery() const;
+  const class ContainerQuery& ContainerQuery() const;
 };
 
 template <>
