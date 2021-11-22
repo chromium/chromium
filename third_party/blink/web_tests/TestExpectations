@@ -7307,3 +7307,7 @@ crbug.com/1197465 virtual/scroll-unification/fast/events/mouse-cursor-no-mousemo
 crbug.com/1272017 [ Mac11-arm64 ] virtual/shared_array_buffer_on_desktop/http/tests/devtools/sources/debugger-ui/reveal-not-skipped.js [ Skip ]
 crbug.com/1272058 [ Linux ] fast/animation/request-animation-frame-cancel2.html [ Failure Pass ]
 crbug.com/1272058 [ Linux ] fast/animation/request-animation-frame-cancel.html [ Failure Pass ]
+
+# Sheriff 2021-11-22
+crbug.com/1272352 virtual/threaded/http/tests/devtools/isolated-code-cache/same-origin-test.js [ Pass Crash ]
+crbug.com/1272352 virtual/threaded/http/tests/devtools/isolated-code-cache/stale-revalidation-test.js [ Pass Crash ]
