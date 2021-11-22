@@ -113,11 +113,6 @@ const base::Feature kBackForwardCacheMemoryControls {
 #endif
 };
 
-// Block subresource requests whose URLs contain embedded credentials (e.g.
-// `https://user:pass@example.com/resource`).
-const base::Feature kBlockCredentialedSubresources{
-    "BlockCredentialedSubresources", base::FEATURE_ENABLED_BY_DEFAULT};
-
 // When this feature is enabled, private network requests initiated from
 // non-secure contexts in the `public` address space  are blocked.
 //

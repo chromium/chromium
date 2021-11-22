@@ -309,10 +309,6 @@
       name: "BlinkRuntimeCallStats",
     },
     {
-      name: "BlockCredentialedSubresources",
-      status: "stable",
-    },
-    {
       name: "BlockingFocusWithoutUserActivation",
       status: "experimental",
     },

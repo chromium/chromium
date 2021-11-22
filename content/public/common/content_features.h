@@ -34,7 +34,6 @@ CONTENT_EXPORT extern const base::Feature kBackForwardCache;
 CONTENT_EXPORT extern const base::Feature kBackForwardCacheSameSiteForBots;
 CONTENT_EXPORT extern const base::Feature kBackForwardCacheMemoryControls;
 CONTENT_EXPORT extern const base::Feature kBackForwardCacheMediaSessionService;
-CONTENT_EXPORT extern const base::Feature kBlockCredentialedSubresources;
 CONTENT_EXPORT extern const base::Feature kBlockInsecurePrivateNetworkRequests;
 CONTENT_EXPORT extern const base::Feature
     kBlockInsecurePrivateNetworkRequestsFromPrivate;

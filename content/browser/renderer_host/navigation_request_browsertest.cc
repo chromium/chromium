@@ -2281,9 +2281,6 @@ IN_PROC_BROWSER_TEST_F(NavigationRequestBrowserTest,
 // TODO(crbug.com/1262910): Enable the test again.
 IN_PROC_BROWSER_TEST_F(NavigationRequestBrowserTest,
                        DISABLED_BlockCredentialedSubresources) {
-  if (!base::FeatureList::IsEnabled(features::kBlockCredentialedSubresources))
-    return;
-
   const struct {
     GURL main_url;
     GURL iframe_url;

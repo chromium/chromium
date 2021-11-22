@@ -4908,8 +4908,6 @@ NavigationRequest::CheckCredentialedSubresource() const {
       "details.";
   parent->AddMessageToConsole(blink::mojom::ConsoleMessageLevel::kWarning,
                               console_message);
-  if (!base::FeatureList::IsEnabled(features::kBlockCredentialedSubresources))
-    return CredentialedSubresourceCheckResult::ALLOW_REQUEST;
   return CredentialedSubresourceCheckResult::BLOCK_REQUEST;
 }
 
