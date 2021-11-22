@@ -228,7 +228,13 @@ IN_PROC_BROWSER_TEST_P(MediaTest, VideoBearSilentWebm) {
 
 // We don't expect android devices to support highbit yet.
 #if defined(ARCH_CPU_X86_FAMILY) && !defined(OS_ANDROID)
-IN_PROC_BROWSER_TEST_P(MediaTest, VideoBearHighBitDepthVP9) {
+// TODO(crbug.com/1270792): Flaky on Mac.
+#if defined(OS_MAC)
+#define MAYBE_VideoBearHighBitDepthVP9 DISABLED_VideoBearHighBitDepthVP9
+#else
+#define MAYBE_VideoBearHighBitDepthVP9 VideoBearHighBitDepthVP9
+#endif
+IN_PROC_BROWSER_TEST_P(MediaTest, MAYBE_VideoBearHighBitDepthVP9) {
   PlayVideo("bear-320x180-hi10p-vp9.webm", GetParam());
 }
 
