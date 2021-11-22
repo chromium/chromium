@@ -35,6 +35,13 @@
         max-width: 200px;
         width: 100%;
       }
+
+      #subtext {
+        color: var(--cr-secondary-text-color);
+        font-size: 13px;
+        font-weight: normal;
+        padding-inline-start: 36px;
+      }
     </style>
     <div id="screen-lock-description">
       <div id="illustration"></div>
@@ -50,6 +57,9 @@
             <cr-radio-button name="pin+password"
                 label=$i18n{lockScreenPinOrPassword}>
             </cr-radio-button>
+            <div id="subtext">
+              $i18n{multideviceNotificationAccessSetupScreenLockInstruction}
+            </div>
             <template is="dom-if"
                 if="[[showConfigurePinButton_(selectedUnlockType)]]">
               <div class="list-item-end">

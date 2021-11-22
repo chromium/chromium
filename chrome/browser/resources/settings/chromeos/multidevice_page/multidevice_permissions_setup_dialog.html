@@ -15,6 +15,7 @@
 <link rel="import" href="../os_icons.html">
 <link rel="import" href="../../settings_shared_css.html">
 
+<!-- TODO(crbug.com/1272362): The layout needs to be finalized .-->
 <dom-module id="settings-multidevice-permissions-setup-dialog">
   <template>
     <style include="cr-shared-style settings-shared">
@@ -205,12 +206,9 @@
         <template is="dom-if" if="[[shouldShowSetupInstructionsSeparately_]]"
             restamp>
           <div id="instruction">
-            <iron-icon id="instruction-icon" icon="os-settings:failure-alert">
-            </iron-icon>
-            <template is="dom-if" if="[[shouldShowScreenLockInstructions_(flowState_)]]" restamp>
-              $i18n{multideviceNotificationAccessSetupScreenLockInstruction}
-            </template>
             <template is="dom-if" if="[[!shouldShowScreenLockInstructions_(flowState_)]]" restamp>
+              <iron-icon id="instruction-icon" icon="os-settings:failure-alert">
+              </iron-icon>
               $i18n{multideviceNotificationAccessSetupInstructions}
             </template>
           </div>
@@ -219,9 +217,11 @@
       <div id="buttonContainer" slot="button-container">
         <div id="half-container">
           <template is="dom-if" if="[[!hasStartedSetupAttempt_]]" restamp>
-            <cr-button id="learnMore" on-click="onLearnMoreClicked_">
-              $i18n{multideviceLearnMoreWithoutURL}
-            </cr-button>
+            <template is="dom-if" if="[[!shouldShowScreenLockInstructions_(flowState_)]]" restamp>
+              <cr-button id="learnMore" on-click="onLearnMoreClicked_">
+                $i18n{multideviceLearnMoreWithoutURL}
+              </cr-button>
+            </template>
           </template>
         </div>
         <div id="button-detail">

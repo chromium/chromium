@@ -5,6 +5,8 @@
 #include "chrome/browser/ui/webui/settings/chromeos/multidevice_section.h"
 
 #include "ash/components/phonehub/phone_hub_manager.h"
+#include "ash/components/phonehub/pref_names.h"
+#include "ash/components/phonehub/screen_lock_manager.h"
 #include "ash/components/phonehub/url_constants.h"
 #include "ash/constants/ash_features.h"
 #include "base/feature_list.h"
@@ -354,8 +356,6 @@ void MultiDeviceSection::AddLoadTimeData(
        IDS_SETTINGS_MULTIDEVICE_NOTIFICATION_ACCESS_SETUP_DIALOG_CONNECTING_TITLE},
       {"multideviceNotificationAccessSetupScreenLockTitle",
        IDS_SETTINGS_MULTIDEVICE_NOTIFICATION_ACCESS_SETUP_DIALOG_SCREEN_LOCK_TITLE},
-      {"multideviceNotificationAccessSetupScreenLockSubtitle",
-       IDS_SETTINGS_MULTIDEVICE_NOTIFICATION_ACCESS_SETUP_DIALOG_SCREEN_LOCK_SUBTITLE},
       {"multideviceNotificationAccessSetupScreenLockInstruction",
        IDS_SETTINGS_MULTIDEVICE_NOTIFICATION_ACCESS_SETUP_DIALOG_SCREEN_LOCK_INSTRUCTION},
       {"multideviceNotificationAccessSetupAwaitingResponseTitle",
@@ -411,6 +411,10 @@ void MultiDeviceSection::AddLoadTimeData(
       "multideviceNotificationAccessSetupCompletedSummary",
       ui::SubstituteChromeOSDeviceType(
           IDS_SETTINGS_MULTIDEVICE_NOTIFICATION_ACCESS_SETUP_DIALOG_COMPLETED_SUMMARY));
+  html_source->AddString(
+      "multideviceNotificationAccessSetupScreenLockSubtitle",
+      ui::SubstituteChromeOSDeviceType(
+          IDS_SETTINGS_MULTIDEVICE_NOTIFICATION_ACCESS_SETUP_DIALOG_SCREEN_LOCK_SUBTITLE));
   html_source->AddString(
       "multideviceForgetDeviceSummary",
       ui::SubstituteChromeOSDeviceType(
@@ -526,8 +530,12 @@ void MultiDeviceSection::AddLoadTimeData(
           base::FeatureList::IsEnabled(
               ::features::kNearbySharingBackgroundScanning));
   html_source->AddBoolean("isEcheAppEnabled", features::IsEcheSWAEnabled());
-  // TODO(crbug.com/1256644): Query the real value from pref.
-  html_source->AddBoolean("isPhoneScreenLockEnabled", false);
+  bool is_phone_screen_lock_enabled =
+      static_cast<phonehub::ScreenLockManager::LockStatus>(
+          pref_service_->GetInteger(phonehub::prefs::kScreenLockStatus)) ==
+      phonehub::ScreenLockManager::LockStatus::kLockedOn;
+  html_source->AddBoolean("isPhoneScreenLockEnabled",
+                          is_phone_screen_lock_enabled);
   const bool is_screen_lock_enabled =
       SessionControllerClientImpl::CanLockScreen() &&
       SessionControllerClientImpl::ShouldLockScreenAutomatically();
