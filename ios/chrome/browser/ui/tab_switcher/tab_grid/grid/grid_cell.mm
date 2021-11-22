@@ -118,6 +118,7 @@ void PositionView(UIView* view, CGPoint point) {
     _snapshotView = snapshotView;
     _closeTapTargetButton = closeTapTargetButton;
     _priceCardView = priceCardView;
+    _opacity = 1.0;
 
     self.contentView.backgroundColor = [UIColor colorNamed:kBackgroundColor];
     self.snapshotView.backgroundColor = [UIColor colorNamed:kBackgroundColor];
@@ -202,6 +203,7 @@ void PositionView(UIView* view, CGPoint point) {
   self.snapshot = nil;
   self.selected = NO;
   self.priceCardView.hidden = YES;
+  self.opacity = 1.0;
 }
 
 #pragma mark - UIAccessibility
@@ -268,6 +270,17 @@ void PositionView(UIView* view, CGPoint point) {
   _snapshot = snapshot;
 }
 
+- (void)fadeInSnapshot:(UIImage*)snapshot {
+  [UIView transitionWithView:self.snapshotView
+                    duration:0.2f
+                     options:UIViewAnimationOptionTransitionCrossDissolve
+                  animations:^{
+                    self.snapshotView.image = snapshot;
+                  }
+                  completion:nil];
+  _snapshot = snapshot;
+}
+
 - (void)setPriceDrop:(NSString*)price previousPrice:(NSString*)previousPrice {
   [self.priceCardView setPriceDrop:price previousPrice:previousPrice];
   // Only append PriceCardView accessibility text if it doesn't already exist in
@@ -299,6 +312,16 @@ void PositionView(UIView* view, CGPoint point) {
   UIDragPreviewParameters* params = [[UIDragPreviewParameters alloc] init];
   params.visiblePath = visiblePath;
   return params;
+}
+
+- (void)setOpacity:(CGFloat)opacity {
+  _opacity = opacity;
+  self.alpha = opacity;
+}
+
+- (void)setAlpha:(CGFloat)alpha {
+  // Make sure alpha is synchronized with opacity.
+  super.alpha = _opacity;
 }
 
 #pragma mark - Private
@@ -556,6 +579,7 @@ void PositionView(UIView* view, CGPoint point) {
   proxy.selected = YES;
   proxy.theme = cell.theme;
   proxy.contentView.hidden = YES;
+  proxy.opacity = cell.opacity;
   return proxy;
 }
 
@@ -580,6 +604,7 @@ void PositionView(UIView* view, CGPoint point) {
   proxy.title = cell.title;
   proxy.titleHidden = cell.titleHidden;
   proxy.priceCardView = cell.priceCardView;
+  proxy.opacity = cell.opacity;
   return proxy;
 }
 #pragma mark - GridToTabTransitionView properties.

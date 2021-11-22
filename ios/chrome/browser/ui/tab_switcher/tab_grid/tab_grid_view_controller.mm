@@ -54,6 +54,9 @@
 #endif
 
 namespace {
+// Not selected tabs opacity in thumbstrip.
+const CGFloat kNotSelectedTabsOpacity = 0.8f;
+
 // Types of configurations of this view controller.
 typedef NS_ENUM(NSUInteger, TabGridConfiguration) {
   TabGridConfigurationBottomToolbar = 1,
@@ -682,6 +685,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
                                toState:(ViewRevealState)nextViewRevealState {
   self.currentState = currentViewRevealState;
   self.scrollView.scrollEnabled = NO;
+  [self updateNotSelectedTabCellOpacityForState:currentViewRevealState];
   if (nextViewRevealState != ViewRevealState::Fullscreen) {
     // Reset tag grid mode, unless the grid is fullscreen.
     self.tabGridMode = TabGridModeNormal;
@@ -722,6 +726,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 }
 
 - (void)animateViewReveal:(ViewRevealState)nextViewRevealState {
+  [self updateNotSelectedTabCellOpacityForState:nextViewRevealState];
   GridViewController* regularViewController =
       [self gridViewControllerForPage:TabGridPageRegularTabs];
   GridViewController* incognitoViewController =
@@ -776,6 +781,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 }
 
 - (void)didAnimateViewReveal:(ViewRevealState)viewRevealState {
+  [self updateNotSelectedTabCellOpacityForState:viewRevealState];
   self.currentState = viewRevealState;
   switch (viewRevealState) {
     case ViewRevealState::Hidden:
@@ -788,6 +794,27 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
     case ViewRevealState::Fullscreen:
       self.scrollView.scrollEnabled = YES;
       [self setInsetForRemoteTabs];
+      break;
+  }
+}
+
+// Sets the expected opacity level for each view revealing state.
+- (void)updateNotSelectedTabCellOpacityForState:(ViewRevealState)state {
+  GridViewController* regularViewController =
+      [self gridViewControllerForPage:TabGridPageRegularTabs];
+  GridViewController* incognitoViewController =
+      [self gridViewControllerForPage:TabGridPageIncognitoTabs];
+  switch (state) {
+    case ViewRevealState::Hidden:
+    case ViewRevealState::Peeked:
+      regularViewController.notSelectedTabCellOpacity = kNotSelectedTabsOpacity;
+      incognitoViewController.notSelectedTabCellOpacity =
+          kNotSelectedTabsOpacity;
+      break;
+    case ViewRevealState::Revealed:
+    case ViewRevealState::Fullscreen:
+      regularViewController.notSelectedTabCellOpacity = 1.0f;
+      incognitoViewController.notSelectedTabCellOpacity = 1.0f;
       break;
   }
 }

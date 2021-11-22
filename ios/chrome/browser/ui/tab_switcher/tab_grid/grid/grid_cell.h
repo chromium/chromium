@@ -41,12 +41,17 @@ typedef NS_ENUM(NSUInteger, GridCellState) {
 @property(nonatomic, copy) NSString* title;
 @property(nonatomic, assign) BOOL titleHidden;
 @property(nonatomic, readonly) UIDragPreviewParameters* dragPreviewParameters;
+// Sets to update and keep cell alpha in sync.
+@property(nonatomic, assign) CGFloat opacity;
 // The current state which the cell should display.
 @property(nonatomic, assign) GridCellState state;
 @property(nonatomic, weak) PriceCardView* priceCardView;
 
 // Sets the price drop and displays the PriceViewCard.
 - (void)setPriceDrop:(NSString*)price previousPrice:(NSString*)previousPrice;
+
+// Fade in a new snapshot.
+- (void)fadeInSnapshot:(UIImage*)snapshot;
 @end
 
 // A GridCell for use in animated transitions that only shows selection state

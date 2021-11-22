@@ -140,6 +140,7 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
     _selectedEditingItemIDs = [[NSMutableSet<NSString*> alloc] init];
     _selectedSharableEditingItemIDs = [[NSMutableSet<NSString*> alloc] init];
     _showsSelectionUpdates = YES;
+    _notSelectedTabCellOpacity = 1.0;
     _mode = TabGridModeNormal;
   }
   return self;
@@ -759,6 +760,7 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
     self.selectedItemID = selectedItemID;
     self.lastInsertedItemID = item.identifier;
     [self.delegate gridViewController:self didChangeItemCount:self.items.count];
+    [self updateVisibleCellsOpacity];
   };
   auto collectionViewUpdates = ^{
     [self removeEmptyStateAnimated:YES];
@@ -800,6 +802,7 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
     self.selectedItemID = selectedItemID;
     [self deselectItemWithIDForEditing:removedItemID];
     [self.delegate gridViewController:self didChangeItemCount:self.items.count];
+    [self updateVisibleCellsOpacity];
   };
   auto collectionViewUpdates = ^{
     [self.collectionView deleteItemsAtIndexPaths:@[ CreateIndexPath(index) ]];
@@ -838,6 +841,7 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
       selectItemAtIndexPath:CreateIndexPath(self.selectedIndex)
                    animated:YES
              scrollPosition:UICollectionViewScrollPositionNone];
+  [self updateVisibleCellsOpacity];
 }
 
 - (void)replaceItemID:(NSString*)itemID withItem:(TabSwitcherItem*)item {
@@ -1075,8 +1079,14 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
                                    completion:^(UIImage* snapshot) {
                                      // Only update the icon if the cell is not
                                      // already reused for another item.
-                                     if (cell.itemIdentifier == itemIdentifier)
-                                       cell.snapshot = snapshot;
+                                     if (cell.itemIdentifier ==
+                                         itemIdentifier) {
+                                       if (self.thumbStripEnabled) {
+                                         [cell fadeInSnapshot:snapshot];
+                                       } else {
+                                         cell.snapshot = snapshot;
+                                       }
+                                     }
                                    }];
   if (IsPriceAlertsEnabled()) {
     [self.priceCardDataSource
@@ -1087,6 +1097,11 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
                         [cell setPriceDrop:priceCardItem.price
                              previousPrice:priceCardItem.previousPrice];
                     }];
+  }
+  if (self.thumbStripEnabled && item.identifier != self.selectedItemID) {
+    cell.opacity = self.notSelectedTabCellOpacity;
+  } else {
+    cell.opacity = 1.0f;
   }
 }
 
@@ -1202,6 +1217,33 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
     NSUInteger itemIndex = base::checked_cast<NSUInteger>(indexPath.item);
     cell.accessibilityIdentifier = [NSString
         stringWithFormat:@"%@%ld", kGridCellIdentifierPrefix, itemIndex];
+  }
+}
+
+// Setter for the not selected tab opacity. This can be used inside an
+// animation block.
+- (void)setNotSelectedTabCellOpacity:(CGFloat)opacity {
+  _notSelectedTabCellOpacity = opacity;
+  [self updateVisibleCellsOpacity];
+}
+
+// Update visible cells opacity. When thumbstrip is not enabled, all are 1.0.
+// Otherwise not selected tab are |self.notSelectedTabCellOpacity|.
+- (void)updateVisibleCellsOpacity {
+  if (!self.thumbStripEnabled) {
+    return;
+  }
+  for (NSIndexPath* indexPath in self.collectionView
+           .indexPathsForVisibleItems) {
+    if ([self isIndexPathForPlusSignCell:indexPath])
+      continue;
+    GridCell* cell = base::mac::ObjCCastStrict<GridCell>(
+        [self.collectionView cellForItemAtIndexPath:indexPath]);
+    if (cell.itemIdentifier != self.selectedItemID) {
+      cell.opacity = self.notSelectedTabCellOpacity;
+    } else {
+      cell.opacity = 1.0f;
+    }
   }
 }
 

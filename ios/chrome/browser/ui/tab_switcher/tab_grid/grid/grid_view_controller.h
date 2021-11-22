@@ -127,6 +127,9 @@
 // TabGridModeSelection.
 @property(nonatomic, readonly) BOOL allItemsSelectedForEditing;
 
+// Opacity of grid cells that are not the selected tab.
+@property(nonatomic, assign) CGFloat notSelectedTabCellOpacity;
+
 // Returns the layout of the grid for use in an animated transition.
 - (GridTransitionLayout*)transitionLayout;
 
