@@ -16,26 +16,28 @@ import sys
 from cronet.tools import cr_cronet
 
 
+# pylint: disable=inconsistent-return-statements
 def package_mac(out_dir, gn_args, build_config):
   target_dir = out_dir + '/' + build_config
   build_dir = "out/build_mac/" + build_config
-  print 'Generating Ninja ' + gn_args
+  print('Generating Ninja ' + gn_args)
   gn_result = cr_cronet.run('gn gen %s --args=\'%s\'' % (build_dir, gn_args))
   if gn_result != 0:
     return gn_result
 
-  print 'Building ' + build_dir
+  print('Building ' + build_dir)
   build_result = cr_cronet.run('ninja -C %s cronet_package -j200' % build_dir)
   if build_result != 0:
     return build_result
 
-  print 'Copying to ' + target_dir
+  print('Copying to ' + target_dir)
   if (not os.path.exists(out_dir)):
     shutil.copytree(build_dir + "/cronet", out_dir,
                     ignore=shutil.ignore_patterns('libcronet*'))
   os.mkdir(target_dir)
   for libcronet in glob.glob(build_dir + "/cronet/libcronet*"):
     shutil.copy(libcronet, target_dir)
+# pylint: enable=inconsistent-return-statements
 
 
 def main():
@@ -47,7 +49,7 @@ def main():
 
   # Make sure that the output directory does not exist
   if os.path.exists(out_dir):
-    print >>sys.stderr, 'The output directory already exists: ' + out_dir
+    print('The output directory already exists: ' + out_dir, file=sys.stderr)
     return 1
 
   return package_mac(out_dir, cr_cronet.get_mac_gn_args(True), "opt") or \

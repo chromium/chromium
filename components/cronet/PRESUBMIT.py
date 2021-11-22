@@ -7,12 +7,14 @@
 See http://dev.chromium.org/developers/how-tos/depottools/presubmit-scripts
 for more details about the presubmit API built into depot_tools.
 """
-
 import os
+
+USE_PYTHON3 = True
 
 def _PyLintChecks(input_api, output_api):
   pylint_checks = input_api.canned_checks.GetPylint(input_api, output_api,
-          extra_paths_list=_GetPathsToPrepend(input_api), pylintrc='pylintrc')
+          extra_paths_list=_GetPathsToPrepend(input_api), pylintrc='pylintrc',
+          version='2.6')
   return input_api.RunTests(pylint_checks)
 
 
@@ -69,8 +71,7 @@ def _PackageChecks(input_api, output_api):
         'API classes must be in org.chromium.net package, and implementation\n'
         'classes must not be in org.chromium.net package.',
         problems)]
-  else:
-    return []
+  return []
 
 
 def _RunToolsUnittests(input_api, output_api):
@@ -78,7 +79,9 @@ def _RunToolsUnittests(input_api, output_api):
       input_api, output_api,
       '.',
       [ r'^tools_unittest\.py$'],
-      run_on_python3=True)
+      run_on_python2 = False,
+      run_on_python3 = True,
+      skip_shebang_check = True)
 
 
 def _ChangeAffectsCronetTools(change):

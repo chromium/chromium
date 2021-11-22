@@ -11,13 +11,13 @@ import struct
 import subprocess
 import sys
 
+ # pylint: disable=wrong-import-position,inconsistent-return-statements
 REPOSITORY_ROOT = os.path.abspath(os.path.join(
     os.path.dirname(__file__), '..', '..', '..'))
 sys.path.append(os.path.join(REPOSITORY_ROOT, 'tools', 'perf'))
-from core import path_util  # pylint: disable=wrong-import-position
+from core import path_util
 sys.path.append(path_util.GetTelemetryDir())
 
-# pylint: disable=wrong-import-position
 from telemetry.core import platform
 from telemetry.internal.platform import android_device
 from telemetry.internal.util import binary_manager
@@ -29,7 +29,7 @@ import py_utils
 # pylint: enable=wrong-import-position
 
 
-class AndroidRndisForwarder(object):
+class AndroidRndisForwarder():
   """Forwards traffic using RNDIS. Assumes the device has root access."""
 
   def __init__(self, device, rndis_configurator):
@@ -129,7 +129,7 @@ class AndroidRndisForwarder(object):
         ['netcfg', self._device_iface, 'down'], check_return=True)
 
 
-class AndroidRndisConfigurator(object):
+class AndroidRndisConfigurator():
   """Configures a linux host to connect to an android device via RNDIS.
 
   Note that we intentionally leave RNDIS running on the device. This is
