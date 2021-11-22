@@ -301,7 +301,7 @@ void NoStatePrefetchManager::MoveEntryToPendingDelete(
   PostCleanupTask();
 }
 
-bool NoStatePrefetchManager::IsWebContentsPrerendering(
+bool NoStatePrefetchManager::IsWebContentsPrefetching(
     const WebContents* web_contents) const {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   return GetNoStatePrefetchContents(web_contents);

@@ -176,10 +176,9 @@ class NoStatePrefetchManager : public content::RenderProcessHostObserver,
   virtual void MoveEntryToPendingDelete(NoStatePrefetchContents* entry,
                                         FinalStatus final_status);
 
-  // Query the list of current prerender pages to see if the given web contents
-  // is prerendering a page.
-  bool IsWebContentsPrerendering(
-      const content::WebContents* web_contents) const;
+  // Query the list of current prefetches to see if the given web contents is
+  // prefetching a page.
+  bool IsWebContentsPrefetching(const content::WebContents* web_contents) const;
 
   // Returns the NoStatePrefetchContents object for the given web_contents,
   // otherwise returns NULL. Note that the NoStatePrefetchContents may have been

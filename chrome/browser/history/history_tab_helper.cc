@@ -240,14 +240,14 @@ void HistoryTabHelper::DidFinishNavigation(
   if (navigation_handle->GetWebContents()->IsPortal())
     return;
 
-  // No-state prefetchers should not update history. The prefetchers will have
-  // their own WebContents with all observers (including |this|), and go through
-  // the normal flow of a navigation, including commit.
+  // No-state prefetch should not update history. The prefetch will have its own
+  // WebContents with all observers (including |this|), and go through the
+  // normal flow of a navigation, including commit.
   prerender::NoStatePrefetchManager* no_state_prefetch_manager =
       prerender::NoStatePrefetchManagerFactory::GetForBrowserContext(
           web_contents()->GetBrowserContext());
   if (no_state_prefetch_manager &&
-      no_state_prefetch_manager->IsWebContentsPrerendering(web_contents())) {
+      no_state_prefetch_manager->IsWebContentsPrefetching(web_contents())) {
     return;
   }
 

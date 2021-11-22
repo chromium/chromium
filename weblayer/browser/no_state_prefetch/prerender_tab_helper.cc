@@ -32,7 +32,7 @@ void PrerenderTabHelper::DidFinishNavigation(
           web_contents()->GetBrowserContext());
 
   if (no_state_prefetch_manager &&
-      !no_state_prefetch_manager->IsWebContentsPrerendering(web_contents()))
+      !no_state_prefetch_manager->IsWebContentsPrefetching(web_contents()))
     no_state_prefetch_manager->RecordNavigation(navigation_handle->GetURL());
 }
 

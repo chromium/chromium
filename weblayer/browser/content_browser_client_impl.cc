@@ -627,7 +627,7 @@ void ContentBrowserClientImpl::OverridePageVisibilityState(
       NoStatePrefetchManagerFactory::GetForBrowserContext(
           web_contents->GetBrowserContext());
   if (no_state_prefetch_manager &&
-      no_state_prefetch_manager->IsWebContentsPrerendering(web_contents)) {
+      no_state_prefetch_manager->IsWebContentsPrefetching(web_contents)) {
     *visibility_state = content::PageVisibilityState::kHiddenButPainting;
   }
 }

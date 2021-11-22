@@ -355,12 +355,12 @@ void PrefetchProxyTabHelper::DidStartNavigation(
     return;
   }
 
-  // Don't take any actions during a prerender since it was probably triggered
+  // Don't take any actions during a prefetch since it was probably triggered
   // by another instance of this class and we don't want to interfere.
   prerender::NoStatePrefetchManager* no_state_prefetch_manager =
       prerender::NoStatePrefetchManagerFactory::GetForBrowserContext(profile_);
   if (no_state_prefetch_manager &&
-      no_state_prefetch_manager->IsWebContentsPrerendering(web_contents())) {
+      no_state_prefetch_manager->IsWebContentsPrefetching(web_contents())) {
     return;
   }
 
@@ -625,12 +625,12 @@ void PrefetchProxyTabHelper::DidFinishNavigation(
     return;
   }
 
-  // Don't take any actions during a prerender since it was probably triggered
+  // Don't take any actions during a prefetch since it was probably triggered
   // by another instance of this class and we don't want to interfere.
   prerender::NoStatePrefetchManager* no_state_prefetch_manager =
       prerender::NoStatePrefetchManagerFactory::GetForBrowserContext(profile_);
   if (no_state_prefetch_manager &&
-      no_state_prefetch_manager->IsWebContentsPrerendering(web_contents())) {
+      no_state_prefetch_manager->IsWebContentsPrefetching(web_contents())) {
     return;
   }
 
@@ -651,7 +651,7 @@ void PrefetchProxyTabHelper::DidFinishNavigation(
     new_page->after_srp_metrics_ =
         ComputeAfterSRPMetricsBeforeCommit(navigation_handle);
 
-    // See if the page being navigated to was prerendered. If so, copy over its
+    // See if the page being navigated to was prefetched. If so, copy over its
     // subresource manager and networking pipes.
     PrefetchProxyService* service =
         PrefetchProxyServiceFactory::GetForProfile(profile_);

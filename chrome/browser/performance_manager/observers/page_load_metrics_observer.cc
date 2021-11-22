@@ -168,7 +168,7 @@ bool PageLoadMetricsWebContentsObserver::IsPrerender() const {
           web_contents()->GetBrowserContext());
   if (!no_state_prefetch_manager)
     return false;
-  return no_state_prefetch_manager->IsWebContentsPrerendering(web_contents());
+  return no_state_prefetch_manager->IsWebContentsPrefetching(web_contents());
 }
 
 bool PageLoadMetricsWebContentsObserver::IsDevTools() const {

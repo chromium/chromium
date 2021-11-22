@@ -37,7 +37,7 @@ bool IsValidOptimizationGuideNavigation(
     // Not a NSP navigation if there is no NSP manager.
     return true;
   }
-  return !(no_state_prefetch_manager->IsWebContentsPrerendering(
+  return !(no_state_prefetch_manager->IsWebContentsPrefetching(
       navigation_handle->GetWebContents()));
 }
 
