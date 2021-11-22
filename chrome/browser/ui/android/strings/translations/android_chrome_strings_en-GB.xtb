@@ -462,7 +462,6 @@ Touch and hold any word to search. To refine your search, select more or fewer w
 <translation id="3775705724665058594">Send to your devices</translation>
 <translation id="3778956594442850293">Added to Home screen</translation>
 <translation id="3791957072666773229">{TAB_COUNT,plural, =1{1 tab}other{# tabs}}</translation>
-<translation id="3803783897442799486">By continuing, you agree to the <ph name="BEGIN_LINK1" />Terms of Service<ph name="END_LINK1" />.\nTo help improve the app, Chrome sends usage and crash data to Google. <ph name="BEGIN_LINK2" />Manage<ph name="END_LINK2" /></translation>
 <translation id="3803784507854318295">Manage auto-play</translation>
 <translation id="3810838688059735925">Video</translation>
 <translation id="3810973564298564668">Manage</translation>
@@ -1287,6 +1286,7 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="8551513938758868521">Lock incognito tabs when you leave Chrome</translation>
 <translation id="8555836665334561807">On Wi-Fi</translation>
 <translation id="8559990750235505898">Offer to translate pages in other languages</translation>
+<translation id="8560560256644480257">Creating GIF <ph name="PERCENT" />%%</translation>
 <translation id="8560602726703398413">Find your reading list in Bookmarks</translation>
 <translation id="8562452229998620586">Your saved passwords will appear here.</translation>
 <translation id="856481929701340285">Request desktop site</translation>

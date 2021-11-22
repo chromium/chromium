@@ -462,7 +462,6 @@
 <translation id="3775705724665058594">ඔබේ උපාංග වෙත යවන්න</translation>
 <translation id="3778956594442850293">මුල් තිරයට එක් කෙරිණි</translation>
 <translation id="3791957072666773229">{TAB_COUNT,plural, =1{ටැබ 1}one{ටැබ #}other{ටැබ #}}</translation>
-<translation id="3803783897442799486">ඉදිරියට යාමෙන්, ඔබ <ph name="BEGIN_LINK1" />සේවා නියම<ph name="END_LINK1" /> සමග එකඟ වේ.\nයෙදුම වැඩිදියුණු කිරීමට උදවු කිරීමට, Chrome පරිශීලන සහ බිඳ වැටීම් දත්ත Google වෙත යවයි. <ph name="BEGIN_LINK2" />කළමනාකරණය කරන්න<ph name="END_LINK2" /></translation>
 <translation id="3803784507854318295">ස්වයං ධාවනය කළමනාකරණය කරන්න</translation>
 <translation id="3810838688059735925">වීඩියෝ</translation>
 <translation id="3810973564298564668">කළමනාකරණය</translation>
@@ -1287,6 +1286,7 @@
 <translation id="8551513938758868521">ඔබ Chrome හැර යන විට අප්‍රකට ටැබ අගුලු දමන්න</translation>
 <translation id="8555836665334561807">Wi-Fi මත</translation>
 <translation id="8559990750235505898">වෙනත් භාෂාවල පිටු පරිවර්තනයට පිරිනමන්න</translation>
+<translation id="8560560256644480257">GIF තනමින් <ph name="PERCENT" />%%</translation>
 <translation id="8560602726703398413">පිටුසන් තුළ ඔබගේ කියවීම් ලැයිස්තුව සොයා ගන්න</translation>
 <translation id="8562452229998620586">සුරැකි මුරපද මෙහි පෙන්වෙනු ඇත.</translation>
 <translation id="856481929701340285">ඩෙක්ස්ටොප් අඩවිය ඉල්ලන්න</translation>

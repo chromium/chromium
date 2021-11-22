@@ -462,7 +462,6 @@
 <translation id="3775705724665058594">გააგზავნეთ თქვენს მოწყობილობებზე</translation>
 <translation id="3778956594442850293">დაემატა მთავარ ეკრანს</translation>
 <translation id="3791957072666773229">{TAB_COUNT,plural, =1{1 ჩანართი}other{# ჩანართი}}</translation>
-<translation id="3803783897442799486">გაგრძელებით თქვენ ეთანხმებით <ph name="BEGIN_LINK1" />მომსახურების პირობებს<ph name="END_LINK1" />.\nამ აპის მუშაობის გასაუმჯობესებლად, Chrome უგზავნის მოხმარების და ავარიულად გათიშვის მონაცემებს Google-ს. <ph name="BEGIN_LINK2" />მართვა<ph name="END_LINK2" /></translation>
 <translation id="3803784507854318295">ავტომატური დაკვრის მართვა</translation>
 <translation id="3810838688059735925">ვიდეო</translation>
 <translation id="3810973564298564668">მართვა</translation>

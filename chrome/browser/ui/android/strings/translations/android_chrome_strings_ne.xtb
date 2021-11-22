@@ -462,7 +462,6 @@
 <translation id="3775705724665058594">आफ्ना यन्त्रहरूमा पठाउनुहोस्</translation>
 <translation id="3778956594442850293">गृह स्क्रिनमा थपियो</translation>
 <translation id="3791957072666773229">{TAB_COUNT,plural, =1{१ ट्याब}other{# वटा ट्याब}}</translation>
-<translation id="3803783897442799486">तपाईंले जारी राख्नुभयो भने तपाईं <ph name="BEGIN_LINK1" />सेवाका सर्तहरू<ph name="END_LINK1" />मा सहमत हुनुहुन्छ भन्ने अर्थ लाग्छ।\nChrome ले Google लाई यो एपको गुणस्तर सुधार्न सघाउने प्रयोजनका लागि उक्त एपको प्रयोग र क्र्याससम्बन्धी डेटा पठाउँछ। <ph name="BEGIN_LINK2" />व्यवस्थापन गर्नुहोस्<ph name="END_LINK2" /></translation>
 <translation id="3803784507854318295">अटोप्ले सुविधा व्यवस्थापन गर्नुहोस्</translation>
 <translation id="3810838688059735925">भिडियो</translation>
 <translation id="3810973564298564668">व्यवस्थित गर्नुहोस्</translation>
@@ -1286,6 +1285,7 @@
 <translation id="8551513938758868521">Chrome बाट बाहिरिएपछि इन्कोग्निटो ट्याब लक गरियोस्</translation>
 <translation id="8555836665334561807">Wi-Fi प्रयोग गरेका बेला</translation>
 <translation id="8559990750235505898">अन्य भाषाहरूमा पृष्ठहरूको अनुवाद गर्न प्रस्ताव गर्नुहोस्</translation>
+<translation id="8560560256644480257">GIF बनाउने कार्य <ph name="PERCENT" />%% पूरा भयो</translation>
 <translation id="8560602726703398413">आफ्नो अध्ययन सूची बुकमार्कहरूमा फेला पार्नुहोस्</translation>
 <translation id="8562452229998620586">बचत गरिएका पासवर्डहरू यहाँ देखिनेछन्।</translation>
 <translation id="856481929701340285">डेस्कटप साइट अनुरोध गर्नुहोस्</translation>

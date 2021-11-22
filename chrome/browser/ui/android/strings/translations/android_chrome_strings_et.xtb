@@ -462,7 +462,6 @@ Puudutage pikalt mis tahes sõna, et seda otsida. Otsingu täpsustamiseks valige
 <translation id="3775705724665058594">Saatmine teie seadmetesse</translation>
 <translation id="3778956594442850293">Lisatud avaekraanile</translation>
 <translation id="3791957072666773229">{TAB_COUNT,plural, =1{1 vaheleht}other{# vahelehte}}</translation>
-<translation id="3803783897442799486">Jätkamisel nõustute <ph name="BEGIN_LINK1" />teenusetingimustega<ph name="END_LINK1" />.\nRakenduse täiustamiseks saadab Chrome Google'ile kokkujooksmiste ja kasutusandmeid. <ph name="BEGIN_LINK2" />Haldamine<ph name="END_LINK2" /></translation>
 <translation id="3803784507854318295">Automaatesituse haldamine</translation>
 <translation id="3810838688059735925">Video</translation>
 <translation id="3810973564298564668">Halda</translation>
