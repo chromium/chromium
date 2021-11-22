@@ -319,9 +319,9 @@ class UserMediaProcessor::RequestInfo final
                               MediaStreamRequestResult result,
                               const String& result_name)>;
   enum class State {
-    NOT_SENT_FOR_GENERATION,
-    SENT_FOR_GENERATION,
-    GENERATED,
+    kNotSentForGeneration,
+    kSentForGeneration,
+    kGenerated,
   };
 
   explicit RequestInfo(UserMediaRequest* request);
@@ -439,7 +439,7 @@ class UserMediaProcessor::RequestInfo final
   void CheckAllTracksStarted();
 
   Member<UserMediaRequest> request_;
-  State state_ = State::NOT_SENT_FOR_GENERATION;
+  State state_ = State::kNotSentForGeneration;
   blink::AudioCaptureSettings audio_capture_settings_;
   bool is_audio_content_capture_ = false;
   blink::VideoCaptureSettings video_capture_settings_;
@@ -928,7 +928,7 @@ void UserMediaProcessor::GenerateStreamForCurrentRequestInfo(
       current_request_info_->request_id(),
       current_request_info_->stream_controls()->audio.device_id.c_str(),
       current_request_info_->stream_controls()->video.device_id.c_str()));
-  current_request_info_->set_state(RequestInfo::State::SENT_FOR_GENERATION);
+  current_request_info_->set_state(RequestInfo::State::kSentForGeneration);
 
   // The browser replies to this request by invoking OnStreamGenerated().
   GetMediaStreamDispatcherHost()->GenerateStream(
@@ -985,7 +985,7 @@ void UserMediaProcessor::OnStreamGenerated(
     return;
   }
 
-  current_request_info_->set_state(RequestInfo::State::GENERATED);
+  current_request_info_->set_state(RequestInfo::State::kGenerated);
   current_request_info_->set_pan_tilt_zoom_allowed(pan_tilt_zoom_allowed);
 
   for (const auto* devices : {&audio_devices, &video_devices}) {
@@ -1837,19 +1837,19 @@ void UserMediaProcessor::StopAllProcessing() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   if (current_request_info_) {
     switch (current_request_info_->state()) {
-      case RequestInfo::State::SENT_FOR_GENERATION:
+      case RequestInfo::State::kSentForGeneration:
         // Let the browser process know that the previously sent request must be
         // canceled.
         GetMediaStreamDispatcherHost()->CancelRequest(
             current_request_info_->request_id());
         FALLTHROUGH;
 
-      case RequestInfo::State::NOT_SENT_FOR_GENERATION:
+      case RequestInfo::State::kNotSentForGeneration:
         LogUserMediaRequestWithNoResult(
             blink::MEDIA_STREAM_REQUEST_NOT_GENERATED);
         break;
 
-      case RequestInfo::State::GENERATED:
+      case RequestInfo::State::kGenerated:
         LogUserMediaRequestWithNoResult(
             blink::MEDIA_STREAM_REQUEST_PENDING_MEDIA_TRACKS);
         break;

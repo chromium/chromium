@@ -104,14 +104,14 @@ class MODULES_EXPORT MediaStreamVideoCapturerSource
   std::unique_ptr<VideoCapturerSource> source_;
 
   enum State {
-    STARTING,
-    STARTED,
-    STOPPING_FOR_RESTART,
-    STOPPING_FOR_CHANGE_SOURCE,
-    RESTARTING,
-    STOPPED
+    kStarting,
+    kStarted,
+    kStoppingForRestart,
+    kStoppingForChangeSource,
+    kRestarting,
+    kStopped
   };
-  State state_ = STOPPED;
+  State state_ = kStopped;
 
   media::VideoCaptureParams capture_params_;
   VideoCaptureDeliverFrameCB frame_callback_;

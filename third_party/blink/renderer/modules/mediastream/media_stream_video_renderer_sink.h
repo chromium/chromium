@@ -60,9 +60,9 @@ class MODULES_EXPORT MediaStreamVideoRendererSink
  private:
   friend class MediaStreamVideoRendererSinkTest;
   enum State {
-    STARTED,
-    PAUSED,
-    STOPPED,
+    kStarted,
+    kPaused,
+    kStopped,
   };
 
   // MediaStreamVideoSink implementation. Called on the main thread.

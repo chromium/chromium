@@ -32,13 +32,13 @@ class VideoRendererAlgorithmWrapper {
                  media::VideoRendererAlgorithm::ResetFlag::kEverything);
 
   size_t frames_queued() const {
-    return renderer_algorithm_ == RendererAlgorithm::Default
+    return renderer_algorithm_ == RendererAlgorithm::kDefault
                ? default_rendering_frame_buffer_->frames_queued()
                : low_latency_rendering_frame_buffer_->frames_queued();
   }
 
   base::TimeDelta average_frame_duration() const {
-    return renderer_algorithm_ == RendererAlgorithm::Default
+    return renderer_algorithm_ == RendererAlgorithm::kDefault
                ? default_rendering_frame_buffer_->average_frame_duration()
                : low_latency_rendering_frame_buffer_->average_frame_duration();
   }
@@ -46,7 +46,7 @@ class VideoRendererAlgorithmWrapper {
   bool NeedsReferenceTime() const;
 
  private:
-  enum RendererAlgorithm { Default, LowLatency };
+  enum RendererAlgorithm { kDefault, kLowLatency };
 
   const media::TimeSource::WallClockTimeCB wall_clock_time_cb_;
   media::MediaLog* media_log_;
