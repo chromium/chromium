@@ -23,6 +23,7 @@
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/browser/ui/views/chrome_typography_provider.h"
 #include "components/autofill/core/browser/autofill_experiments.h"
+#include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/ui/popup_item_ids.h"
 #include "components/autofill/core/browser/ui/popup_types.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
@@ -226,6 +227,36 @@ std::unique_ptr<views::Label> CreateLabelWithStyleAndContext(
   label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
 
   return label;
+}
+
+// Returns the name of the network for payment method icons, empty string
+// otherwise.
+std::u16string GetIconAccessibleName(const std::string& icon_text) {
+  // Networks for which icons are currently shown.
+  if (icon_text == autofill::kAmericanExpressCard)
+    return l10n_util::GetStringUTF16(IDS_AUTOFILL_CC_AMEX);
+  if (icon_text == autofill::kDinersCard)
+    return l10n_util::GetStringUTF16(IDS_AUTOFILL_CC_DINERS);
+  if (icon_text == autofill::kDiscoverCard)
+    return l10n_util::GetStringUTF16(IDS_AUTOFILL_CC_DISCOVER);
+  if (icon_text == autofill::kEloCard)
+    return l10n_util::GetStringUTF16(IDS_AUTOFILL_CC_ELO);
+  if (icon_text == autofill::kJCBCard)
+    return l10n_util::GetStringUTF16(IDS_AUTOFILL_CC_JCB);
+  if (icon_text == autofill::kMasterCard)
+    return l10n_util::GetStringUTF16(IDS_AUTOFILL_CC_MASTERCARD);
+  if (icon_text == autofill::kMirCard)
+    return l10n_util::GetStringUTF16(IDS_AUTOFILL_CC_MIR);
+  if (icon_text == autofill::kTroyCard)
+    return l10n_util::GetStringUTF16(IDS_AUTOFILL_CC_TROY);
+  if (icon_text == autofill::kUnionPay)
+    return l10n_util::GetStringUTF16(IDS_AUTOFILL_CC_UNION_PAY);
+  if (icon_text == autofill::kVisaCard)
+    return l10n_util::GetStringUTF16(IDS_AUTOFILL_CC_VISA);
+  // Other networks.
+  if (icon_text == autofill::kGenericCard)
+    return l10n_util::GetStringUTF16(IDS_AUTOFILL_CC_GENERIC);
+  return std::u16string();
 }
 
 }  // namespace
@@ -531,6 +562,11 @@ void AutofillPopupItemView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   AutofillPopupController* controller = popup_view()->controller();
   std::vector<std::u16string> text;
 
+  auto suggestion = controller->GetSuggestionAt(GetLineNumber());
+  std::u16string icon_name = GetIconAccessibleName(suggestion.icon);
+  if (!icon_name.empty())
+    text.push_back(icon_name);
+
   auto main_text = controller->GetSuggestionMainTextAt(GetLineNumber());
   text.push_back(main_text);
 
@@ -545,7 +581,6 @@ void AutofillPopupItemView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   }
 
   // TODO(siyua): GetSuggestionLabelAt should return a vector of strings.
-  auto suggestion = controller->GetSuggestionAt(GetLineNumber());
   if (!suggestion.offer_label.empty()) {
     // |offer_label| is only populated for credit card suggestions.
     text.push_back(suggestion.offer_label);
