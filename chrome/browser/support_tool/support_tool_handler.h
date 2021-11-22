@@ -15,17 +15,27 @@
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "chrome/browser/support_tool/data_collector.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 using SupportToolDataCollectedCallback =
-    base::OnceCallback<void(const PIIMap&)>;
+    base::OnceCallback<void(const PIIMap&, std::set<SupportToolError>)>;
+
+using SupportToolDataExportedCallback =
+    base::OnceCallback<void(std::set<SupportToolError>)>;
 
 // The SupportToolHandler collects debug data from a list of DataCollectors.
 //
 // EXAMPLE:
 // class Foo {
 //  public:
-//   void ProcessCollectedData(const PIIMap& detected) {
-//     // do something with the detected PII.
+//  void ProcessCollectedData(const PIIMap& detected,
+//                           std::set<SupportToolError> errors)
+//                           {
+//     // Do something with the detected PII.
+//     // Check if error is returned.
+//     if(!errors.empty()) {
+//       // do something with the error.
+//     }
 //   }
 //   void GetSupportData() {
 //     handler_.AddSource(std::make_unique<DataCollectorOne>());
@@ -33,8 +43,9 @@ using SupportToolDataCollectedCallback =
 //     handler_.CollectSupportData(base::BindOnce(&Foo::ProcessCollectedData,
 //                                           weak_ptr_factory_.GetWeakPtr()));
 //   }
-//   void OnDataExported() {
+//   void OnDataExported(std::set<SupportToolError>) {
 //     // Do something about the data that has been exported.
+//     // Check and do something if any errors returned.
 //   }
 //   void ExportSupportData() {
 //     std::set<PIIMap> pii_to_keep;
@@ -67,15 +78,17 @@ class SupportToolHandler {
 
   // Exports collected data to the `target_path` and archives the file. This
   // function should be called only once on an instance of SupportToolHandler.
-  void ExportCollectedData(std::set<PIIType> pii_types_to_keep,
-                           base::FilePath target_path,
-                           base::OnceClosure on_data_exported_callback);
+  void ExportCollectedData(
+      std::set<PIIType> pii_types_to_keep,
+      base::FilePath target_path,
+      SupportToolDataExportedCallback on_data_exported_callback);
 
  private:
   // OnDataCollected is called when a single DataCollector finished collecting
   // data. Runs `barrier_closure` to make the handler wait until all
   // DataCollectors finish collecting.
-  void OnDataCollected(base::RepeatingClosure barrier_closure);
+  void OnDataCollected(base::RepeatingClosure barrier_closure,
+                       absl::optional<SupportToolError> error);
 
   // OnAllDataCollected is called by a BarrierClosure when all DataCollectors
   // finish collecting data. Returns the detected PII by running
@@ -93,7 +106,8 @@ class SupportToolHandler {
   // OnDataCollectorDoneExporting is called when a single DataCollector finished
   // exporting data. Runs `barrier_closure` to make the handler wait until all
   // DataCollectors finish collecting.
-  void OnDataCollectorDoneExporting(base::RepeatingClosure barrier_closure);
+  void OnDataCollectorDoneExporting(base::RepeatingClosure barrier_closure,
+                                    absl::optional<SupportToolError> error);
 
   // OnAllDataCollectorsDoneExporting is called by a BarrierClosure when all
   // DataCollectors finish exporting data to their given filepaths. Archives
@@ -104,7 +118,7 @@ class SupportToolHandler {
 
   // Cleans up the temporary directory created to store the output files and
   // then calls `on_data_export_done_callback_`.
-  void OnDataExportDone();
+  void OnDataExportDone(bool success);
 
   // Cleans up `this.temp_dir_`. We need to clean-up the temporary directory
   // explicitly since SupportToolHandler will work on UI thread and all file
@@ -116,8 +130,11 @@ class SupportToolHandler {
   SEQUENCE_CHECKER(sequence_checker_);
   PIIMap detected_pii_;
   std::vector<std::unique_ptr<DataCollector>> data_collectors_;
+  // Stores the set of errors that are returned from DataCollector calls. Reset
+  // the set each time SupportToolHandler starts executing a function.
+  std::set<SupportToolError> collected_errors_;
   SupportToolDataCollectedCallback on_data_collection_done_callback_;
-  base::OnceClosure on_data_export_done_callback_;
+  SupportToolDataExportedCallback on_data_export_done_callback_;
   // Temporary directory for storing the output files. Will be deleted when the
   // data export is done or on destruction of the SupportToolHandler instance if
   // it hasn't been removed before.

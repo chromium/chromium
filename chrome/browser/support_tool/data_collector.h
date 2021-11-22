@@ -12,6 +12,7 @@
 
 #include "base/callback.h"
 #include "base/files/file_path.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 // PII (Personally Identifiable Information) types that can exist in the debug
 // data and logs DataCollector collects.
@@ -20,7 +21,20 @@ enum class PIIType {
   kUIHierarchyWindowTitles,
 };
 
+// The error code that a Support Tool component can return.
+enum class SupportToolError {
+  kUIHierarchyDataCollectorError,
+  // Error for testing.
+  kTestDataCollectorError,
+  kDataExportTempDirCreationFailed,
+  kDataExportCreateArchiveFailed,
+};
+
 using PIIMap = std::multimap<PIIType, std::string>;
+
+// Returns a SupportToolError if an error occurs to the callback.
+using DataCollectorDoneCallback =
+    base::OnceCallback<void(absl::optional<SupportToolError> error_code)>;
 
 // The DataCollector provides an interface for data sources that the
 // SupportToolHandler uses to collect debug data from multiple sources in Chrome
@@ -43,7 +57,7 @@ class DataCollector {
   // when creating it to make sure it won't be run when the caller instance is
   // deleted.
   virtual void CollectDataAndDetectPII(
-      base::OnceClosure on_data_collected_callback) = 0;
+      DataCollectorDoneCallback on_data_collected_callback) = 0;
 
   // Masks all PII found in the collected data except `pii_types_to_keep`.
   // Exports the collected data into file(s) in `target_directory`. Calls
@@ -55,7 +69,7 @@ class DataCollector {
   virtual void ExportCollectedDataWithPII(
       std::set<PIIType> pii_types_to_keep,
       base::FilePath target_directory,
-      base::OnceClosure on_exported_callback) = 0;
+      DataCollectorDoneCallback on_exported_callback) = 0;
 };
 
 #endif  // CHROME_BROWSER_SUPPORT_TOOL_DATA_COLLECTOR_H_

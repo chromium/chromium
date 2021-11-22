@@ -24,17 +24,18 @@ class UiHierarchyDataCollector : public DataCollector {
   const PIIMap& GetDetectedPII() override;
 
   void CollectDataAndDetectPII(
-      base::OnceClosure on_data_collected_callback) override;
+      DataCollectorDoneCallback on_data_collected_callback) override;
 
   void ExportCollectedDataWithPII(
       std::set<PIIType> pii_types_to_keep,
       base::FilePath target_directory,
-      base::OnceClosure on_exported_callback) override;
+      DataCollectorDoneCallback on_exported_callback) override;
 
  private:
-  void CollectUiHierarchyData();
+  void CollectUiHierarchyData(DataCollectorDoneCallback on_exported_callback);
 
-  void WriteOutputFile(base::FilePath target_directory);
+  void WriteOutputFile(base::FilePath target_directory,
+                       DataCollectorDoneCallback on_exported_callback);
 
   PIIMap pii_map_;
   base::WeakPtrFactory<UiHierarchyDataCollector> weak_ptr_factory_{this};
