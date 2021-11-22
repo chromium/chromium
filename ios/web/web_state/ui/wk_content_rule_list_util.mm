@@ -6,7 +6,6 @@
 
 #include "base/check.h"
 #include "base/strings/sys_string_conversions.h"
-#include "ios/web/public/browsing_data/cookie_blocking_mode.h"
 #include "ios/web/public/web_client.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -59,30 +58,6 @@ NSString* CreateLocalBlockingJsonRuleList() {
       dataWithJSONObject:@[ local_block, allow_crbug_block ]
                  options:NSJSONWritingPrettyPrinted
                    error:nil];
-  NSString* json_string = [[NSString alloc] initWithData:json_data
-                                                encoding:NSUTF8StringEncoding];
-  return json_string;
-}
-
-NSString* CreateCookieBlockingJsonRuleList(CookieBlockingMode block_mode) {
-  DCHECK(block_mode != CookieBlockingMode::kAllow);
-  NSMutableDictionary* overall_block = [@{
-    @"trigger" : [@{
-      @"url-filter" : @".*",
-    } mutableCopy],
-    @"action" : @{
-      @"type" : @"block-cookies",
-    },
-  } mutableCopy];
-
-  if (block_mode == CookieBlockingMode::kBlockThirdParty) {
-    overall_block[@"trigger"][@"load-type"] = @[ @"third-party" ];
-  }
-
-  NSData* json_data =
-      [NSJSONSerialization dataWithJSONObject:@[ overall_block ]
-                                      options:NSJSONWritingPrettyPrinted
-                                        error:nil];
   NSString* json_string = [[NSString alloc] initWithData:json_data
                                                 encoding:NSUTF8StringEncoding];
   return json_string;

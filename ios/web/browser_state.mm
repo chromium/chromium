@@ -17,7 +17,6 @@
 #include "base/task/post_task.h"
 #include "base/token.h"
 #include "components/leveldb_proto/public/proto_database_provider.h"
-#include "ios/web/public/browsing_data/cookie_blocking_mode.h"
 #include "ios/web/public/init/network_context_owner.h"
 #include "ios/web/public/security/certificate_policy_cache.h"
 #include "ios/web/public/thread/web_task_traits.h"
@@ -72,9 +71,7 @@ scoped_refptr<CertificatePolicyCache> BrowserState::GetCertificatePolicyCache(
   return handle->policy_cache;
 }
 
-BrowserState::BrowserState()
-    : url_data_manager_ios_backend_(nullptr),
-      cookie_blocking_mode_(CookieBlockingMode::kAllow) {
+BrowserState::BrowserState() : url_data_manager_ios_backend_(nullptr) {
   // (Refcounted)?BrowserStateKeyedServiceFactories needs to be able to convert
   // a base::SupportsUserData to a BrowserState. Moreover, since the factories
   // may be passed a content::BrowserContext instead of a BrowserState, attach
@@ -187,35 +184,6 @@ BrowserState* BrowserState::FromSupportsUserData(
     return nullptr;
   }
   return static_cast<BrowserState*>(supports_user_data);
-}
-
-CookieBlockingMode BrowserState::GetCookieBlockingMode() const {
-  return cookie_blocking_mode_;
-}
-
-void BrowserState::SetCookieBlockingMode(
-    CookieBlockingMode cookie_blocking_mode,
-    base::OnceClosure callback) {
-  if (cookie_blocking_mode == cookie_blocking_mode_) {
-    std::move(callback).Run();
-    return;
-  }
-  cookie_blocking_mode_ = cookie_blocking_mode;
-  WKWebViewConfigurationProvider& config_provider =
-      WKWebViewConfigurationProvider::FromBrowserState(this);
-  // Cookie blocking needs the injected Javascript to be updated because the
-  // source of the injected Javascript depends on the current cookie blocking
-  // mode to set up the blocking correctly.
-  config_provider.UpdateScripts();
-
-  config_provider.GetContentRuleListProvider()->UpdateContentRuleLists(
-      base::BindOnce(
-          [](base::OnceClosure callback, bool success) {
-            base::UmaHistogramBoolean(
-                "IOS.ContentRuleListProviderUpdateSuccess", success);
-            std::move(callback).Run();
-          },
-          std::move(callback)));
 }
 
 }  // namespace web

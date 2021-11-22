@@ -50,7 +50,6 @@
 #import "ios/web/security/crw_ssl_status_updater.h"
 #import "ios/web/text_fragments/text_fragments_manager_impl.h"
 #import "ios/web/web_state/page_viewport_state.h"
-#import "ios/web/web_state/ui/cookie_blocking_error_logger.h"
 #import "ios/web/web_state/ui/crw_context_menu_controller.h"
 #import "ios/web/web_state/ui/crw_legacy_context_menu_controller.h"
 #import "ios/web/web_state/ui/crw_swipe_recognizer_provider.h"
@@ -140,9 +139,6 @@ using web::wk_navigation_util::IsWKInternalUrl;
 
   // State of user interaction with web content.
   web::UserInteractionState _userInteractionState;
-
-  // Logger for cookie;.error message.
-  std::unique_ptr<web::CookieBlockingErrorLogger> _cookieBlockingErrorLogger;
 }
 
 // The WKNavigationDelegate handler class.
@@ -301,8 +297,6 @@ typedef void (^ViewportStateCompletion)(const web::PageViewportState*);
         initWithBrowserState:browserState];
     web::FindInPageManagerImpl::CreateForWebState(_webStateImpl);
     web::TextFragmentsManagerImpl::CreateForWebState(_webStateImpl);
-    _cookieBlockingErrorLogger =
-        std::make_unique<web::CookieBlockingErrorLogger>(_webStateImpl);
 
     _navigationHandler = [[CRWWKNavigationHandler alloc] initWithDelegate:self];
 

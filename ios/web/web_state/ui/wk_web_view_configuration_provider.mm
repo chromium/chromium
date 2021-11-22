@@ -77,7 +77,7 @@ WKWebViewConfigurationProvider::WKWebViewConfigurationProvider(
     BrowserState* browser_state)
     : browser_state_(browser_state),
       content_rule_list_provider_(
-          std::make_unique<WKContentRuleListProvider>(browser_state)) {}
+          std::make_unique<WKContentRuleListProvider>()) {}
 
 WKWebViewConfigurationProvider::~WKWebViewConfigurationProvider() = default;
 

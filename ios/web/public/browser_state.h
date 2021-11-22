@@ -34,7 +34,6 @@ class ProtoDatabaseProvider;
 }  // namespace leveldb_proto
 
 namespace web {
-enum class CookieBlockingMode;
 class CertificatePolicyCache;
 class NetworkContextOwner;
 class URLDataManagerIOS;
@@ -93,17 +92,6 @@ class BrowserState : public base::SupportsUserData {
   virtual void UpdateCorsExemptHeader(
       network::mojom::NetworkContextParams* params) {}
 
-  // Returns the current cookie blocking mode for this browser state.
-  CookieBlockingMode GetCookieBlockingMode() const;
-
-  // Sets the cookie blocking mode for this browser state. This will only affect
-  // WebStates that are loaded after this mode is set. WebStates with live web
-  // content will not have the mode correctly setup until they are reloaded.
-  // Some tasks here may be asynchronous, so |callback| will be called after
-  // the cookie blocking mode is set correctly. This may happen immediately.
-  void SetCookieBlockingMode(CookieBlockingMode cookie_blocking_mode,
-                             base::OnceClosure callback);
-
  protected:
   BrowserState();
 
@@ -135,8 +123,6 @@ class BrowserState : public base::SupportsUserData {
   // Created and destroyed on the IO thread, and should be accessed only from
   // the IO thread.
   URLDataManagerIOSBackend* url_data_manager_ios_backend_;
-
-  CookieBlockingMode cookie_blocking_mode_;
 };
 
 }  // namespace web

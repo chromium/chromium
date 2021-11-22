@@ -57,8 +57,6 @@ source_set("ui") {
   ]
 
   sources = [
-    "cookie_blocking_error_logger.h",
-    "cookie_blocking_error_logger.mm",
     "crw_swipe_recognizer_provider.h",
     "crw_touch_tracking_recognizer.mm",
     "crw_web_controller.mm",

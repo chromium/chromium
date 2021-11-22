@@ -14,14 +14,11 @@
 
 namespace web {
 
-class BrowserState;
-enum class CookieBlockingMode;
-
 // A provider class that handles compiling and configuring Content Blocker
 // rules.
 class WKContentRuleListProvider {
  public:
-  explicit WKContentRuleListProvider(BrowserState* browser_state);
+  explicit WKContentRuleListProvider();
   ~WKContentRuleListProvider();
 
   // Sets the WKUserContentController that this provider will install its rules
@@ -49,10 +46,7 @@ class WKContentRuleListProvider {
   // Uninstalls all content rule lists installed by this provider.
   void UninstallContentRuleLists();
 
-  BrowserState* browser_state_;
   __weak WKUserContentController* user_content_controller_;
-  WKContentRuleList* block_content_rule_list_;
-  WKContentRuleList* block_third_party_content_rule_list_;
   WKContentRuleList* block_local_rule_list_;
 
   base::OnceCallback<void(bool)> update_callback_;

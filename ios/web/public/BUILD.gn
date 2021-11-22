@@ -7,7 +7,6 @@ import("//ios/build/config.gni")
 source_set("public") {
   public_deps = [
     ":web_state_observer",
-    "//ios/web/public/browsing_data",
     "//ios/web/public/favicon",
     "//ios/web/public/navigation",
     "//ios/web/public/thread",

@@ -595,7 +595,6 @@ test("ios_web_inttests") {
   ]
   sources = [
     "browser_state_web_view_partition_inttest.mm",
-    "cookie_blocking_inttest.mm",
     "find_in_page/find_in_page_manager_inttest.mm",
     "navigation/crw_error_page_helper_inttest.mm",
     "navigation/crw_wk_navigation_handler_inttest.mm",
@@ -623,10 +622,7 @@ js_compile_bundle("all_frames_web_bundle") {
   visibility = [ ":js_resources" ]
   closure_entry_point = "__crWeb.allFramesWebBundle"
 
-  sources = [
-    "web_state/js/resources/all_frames_web_bundle.js",
-    "web_state/js/resources/cookie.js",
-  ]
+  sources = [ "web_state/js/resources/all_frames_web_bundle.js" ]
 }
 
 js_compile_bundle("plugin_placeholder_js") {
