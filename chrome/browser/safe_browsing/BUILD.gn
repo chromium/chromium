@@ -367,6 +367,8 @@ static_library("safe_browsing") {
         sources += [
           "android/services_delegate_android.cc",
           "android/services_delegate_android.h",
+          "tailored_security/consented_message_android.cc",
+          "tailored_security/consented_message_android.h",
           "tailored_security/unconsented_message_android.cc",
           "tailored_security/unconsented_message_android.h",
           "telemetry/android/android_telemetry_service.cc",

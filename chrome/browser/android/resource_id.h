@@ -54,6 +54,7 @@ DECLARE_RESOURCE_ID(IDR_ANDORID_MESSAGE_PERMISSION_STORAGE,
 DECLARE_RESOURCE_ID(IDR_ANDORID_MESSAGE_PERMISSION_CAMERA,
                     R.drawable.ic_photo_camera_black)
 DECLARE_RESOURCE_ID(IDR_ANDROID_MESSAGE_SETTINGS, R.drawable.settings_cog)
+DECLARE_RESOURCE_ID(IDR_ANDROID_MESSAGE_SAFETY_CHECK, R.drawable.safety_check)
 
 // Autofill popup and keyboard accessory images.
 // We use Android's |VectorDrawableCompat| for the following images that are

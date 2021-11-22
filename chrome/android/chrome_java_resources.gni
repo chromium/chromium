@@ -524,6 +524,7 @@ chrome_java_resources = [
   "java/res/drawable/price_tracking_enabled_filled.xml",
   "java/res/drawable/price_tracking_enabled_outline.xml",
   "java/res/drawable/qr_code.xml",
+  "java/res/drawable/safety_check.xml",
   "java/res/drawable/screenshot.xml",
   "java/res/drawable/send_tab.xml",
   "java/res/drawable/shared_clipboard_zero_state_dark.xml",
