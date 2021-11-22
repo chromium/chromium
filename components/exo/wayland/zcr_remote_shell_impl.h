@@ -84,10 +84,11 @@ class WaylandRemoteShell : public ash::TabletModeObserver,
   void SetUseDefaultScaleCancellation(bool use_default_scale);
 
   void OnRemoteSurfaceDestroyed(wl_resource* resource);
+
   // Overridden from display::DisplayObserver:
   void OnDisplayAdded(const display::Display& new_display) override;
   void OnDisplayRemoved(const display::Display& old_display) override;
-
+  void OnDisplayTabletStateChanged(display::TabletState state) override;
   void OnDisplayMetricsChanged(const display::Display& display,
                                uint32_t changed_metrics) override;
 

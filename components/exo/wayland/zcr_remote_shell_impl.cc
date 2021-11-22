@@ -522,6 +522,15 @@ void WaylandRemoteShell::OnDisplayRemoved(const display::Display& old_display) {
   ScheduleSendDisplayMetrics(0);
 }
 
+void WaylandRemoteShell::OnDisplayTabletStateChanged(
+    display::TabletState state) {
+  const bool layout_change_started =
+      state == display::TabletState::kEnteringTabletMode ||
+      state == display::TabletState::kExitingTabletMode;
+  if (layout_change_started)
+    ScheduleSendDisplayMetrics(kConfigureDelayAfterLayoutSwitchMs);
+}
+
 void WaylandRemoteShell::OnDisplayMetricsChanged(
     const display::Display& display,
     uint32_t changed_metrics) {
@@ -541,14 +550,12 @@ void WaylandRemoteShell::OnTabletModeStarted() {
   if (wl_resource_get_version(remote_shell_resource_) >=
       event_mapping_.layout_mode_since_version)
     event_mapping_.send_layout_mode(remote_shell_resource_, layout_mode_);
-  ScheduleSendDisplayMetrics(kConfigureDelayAfterLayoutSwitchMs);
 }
 void WaylandRemoteShell::OnTabletModeEnding() {
   layout_mode_ = ZCR_REMOTE_SHELL_V1_LAYOUT_MODE_WINDOWED;
   if (wl_resource_get_version(remote_shell_resource_) >=
       event_mapping_.layout_mode_since_version)
     event_mapping_.send_layout_mode(remote_shell_resource_, layout_mode_);
-  ScheduleSendDisplayMetrics(kConfigureDelayAfterLayoutSwitchMs);
 }
 void WaylandRemoteShell::OnTabletModeEnded() {}
 
