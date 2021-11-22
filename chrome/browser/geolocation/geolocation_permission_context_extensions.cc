@@ -50,7 +50,6 @@ GeolocationPermissionContextExtensions::
 bool GeolocationPermissionContextExtensions::DecidePermission(
     content::WebContents* web_contents,
     const permissions::PermissionRequestID& request_id,
-    int bridge_id,
     const GURL& requesting_frame,
     bool user_gesture,
     base::OnceCallback<void(ContentSetting)>* callback,
@@ -63,7 +62,7 @@ bool GeolocationPermissionContextExtensions::DecidePermission(
       extensions::WebViewPermissionHelper::FromWebContents(web_contents);
   if (web_view_permission_helper) {
     web_view_permission_helper->RequestGeolocationPermission(
-        bridge_id, requesting_frame, user_gesture,
+        requesting_frame, user_gesture,
         base::BindOnce(&CallbackContentSettingWrapper, std::move(*callback)));
     *permission_set = false;
     *new_permission = false;

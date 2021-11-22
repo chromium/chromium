@@ -218,7 +218,8 @@ class PermissionContextBaseTests : public content::RenderViewHostTestHarness {
 
     const PermissionRequestID id(
         web_contents()->GetMainFrame()->GetProcess()->GetID(),
-        web_contents()->GetMainFrame()->GetRoutingID(), -1);
+        web_contents()->GetMainFrame()->GetRoutingID(),
+        PermissionRequestID::RequestLocalId());
     permission_context.SetRespondPermissionCallback(base::BindOnce(
         &PermissionContextBaseTests::RespondToPermission,
         base::Unretained(this), &permission_context, id, url, decision));
@@ -317,7 +318,8 @@ class PermissionContextBaseTests : public content::RenderViewHostTestHarness {
                                                content_settings_type);
       const PermissionRequestID id(
           web_contents()->GetMainFrame()->GetProcess()->GetID(),
-          web_contents()->GetMainFrame()->GetRoutingID(), i);
+          web_contents()->GetMainFrame()->GetRoutingID(),
+          PermissionRequestID::RequestLocalId());
 
       permission_context.SetRespondPermissionCallback(
           base::BindOnce(&PermissionContextBaseTests::RespondToPermission,
@@ -369,7 +371,8 @@ class PermissionContextBaseTests : public content::RenderViewHostTestHarness {
                                              content_settings_type);
     const PermissionRequestID id(
         web_contents()->GetMainFrame()->GetProcess()->GetID(),
-        web_contents()->GetMainFrame()->GetRoutingID(), -1);
+        web_contents()->GetMainFrame()->GetRoutingID(),
+        PermissionRequestID::RequestLocalId());
 
     permission_context.SetRespondPermissionCallback(
         base::BindOnce(&PermissionContextBaseTests::RespondToPermission,
@@ -408,7 +411,8 @@ class PermissionContextBaseTests : public content::RenderViewHostTestHarness {
 
         const PermissionRequestID id(
             web_contents()->GetMainFrame()->GetProcess()->GetID(),
-            web_contents()->GetMainFrame()->GetRoutingID(), i);
+            web_contents()->GetMainFrame()->GetRoutingID(),
+            PermissionRequestID::RequestLocalId(i + 1));
 
         permission_context.SetRespondPermissionCallback(
             base::BindOnce(&PermissionContextBaseTests::RespondToPermission,
@@ -485,7 +489,8 @@ class PermissionContextBaseTests : public content::RenderViewHostTestHarness {
 
       const PermissionRequestID id(
           web_contents()->GetMainFrame()->GetProcess()->GetID(),
-          web_contents()->GetMainFrame()->GetRoutingID(), i);
+          web_contents()->GetMainFrame()->GetRoutingID(),
+          PermissionRequestID::RequestLocalId(i + 1));
       permission_context.SetRespondPermissionCallback(
           base::BindOnce(&PermissionContextBaseTests::RespondToPermission,
                          base::Unretained(this), &permission_context, id, url,
@@ -546,7 +551,8 @@ class PermissionContextBaseTests : public content::RenderViewHostTestHarness {
 
     const PermissionRequestID id(
         web_contents()->GetMainFrame()->GetProcess()->GetID(),
-        web_contents()->GetMainFrame()->GetRoutingID(), -1);
+        web_contents()->GetMainFrame()->GetRoutingID(),
+        PermissionRequestID::RequestLocalId());
     permission_context.RequestPermission(
         web_contents(), id, url, true /* user_gesture */,
         base::BindOnce(&TestPermissionContext::TrackPermissionDecision,
@@ -570,7 +576,8 @@ class PermissionContextBaseTests : public content::RenderViewHostTestHarness {
 
     const PermissionRequestID id(
         web_contents()->GetMainFrame()->GetProcess()->GetID(),
-        web_contents()->GetMainFrame()->GetRoutingID(), -1);
+        web_contents()->GetMainFrame()->GetRoutingID(),
+        PermissionRequestID::RequestLocalId());
     permission_context.SetRespondPermissionCallback(
         base::BindOnce(&PermissionContextBaseTests::RespondToPermission,
                        base::Unretained(this), &permission_context, id, url,
@@ -649,16 +656,18 @@ class PermissionContextBaseTests : public content::RenderViewHostTestHarness {
     GURL url("http://www.google.com");
     SetUpUrl(url);
 
-    const PermissionRequestID id0(
-        web_contents()->GetMainFrame()->GetProcess()->GetID(),
-        web_contents()->GetMainFrame()->GetRoutingID(), 0);
     const PermissionRequestID id1(
         web_contents()->GetMainFrame()->GetProcess()->GetID(),
-        web_contents()->GetMainFrame()->GetRoutingID(), 1);
+        web_contents()->GetMainFrame()->GetRoutingID(),
+        PermissionRequestID::RequestLocalId(1));
+    const PermissionRequestID id2(
+        web_contents()->GetMainFrame()->GetProcess()->GetID(),
+        web_contents()->GetMainFrame()->GetRoutingID(),
+        PermissionRequestID::RequestLocalId(2));
 
     // Request a permission without setting the callback to DecidePermission.
     permission_context.RequestPermission(
-        web_contents(), id0, url, true /* user_gesture */,
+        web_contents(), id1, url, true /* user_gesture */,
         base::BindOnce(&TestPermissionContext::TrackPermissionDecision,
                        base::Unretained(&permission_context)));
 
@@ -667,9 +676,9 @@ class PermissionContextBaseTests : public content::RenderViewHostTestHarness {
     // Set the callback, and make a second permission request.
     permission_context.SetRespondPermissionCallback(base::BindOnce(
         &PermissionContextBaseTests::RespondToPermission,
-        base::Unretained(this), &permission_context, id0, url, response));
+        base::Unretained(this), &permission_context, id1, url, response));
     permission_context.RequestPermission(
-        web_contents(), id1, url, true /* user_gesture */,
+        web_contents(), id2, url, true /* user_gesture */,
         base::BindOnce(&TestPermissionContext::TrackPermissionDecision,
                        base::Unretained(&permission_context)));
 

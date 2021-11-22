@@ -37,7 +37,7 @@ class PermissionContextBaseFeaturePolicyTest
     : public ChromeRenderViewHostTestHarness {
  public:
   PermissionContextBaseFeaturePolicyTest()
-      : last_request_result_(CONTENT_SETTING_DEFAULT), request_id_(0) {}
+      : last_request_result_(CONTENT_SETTING_DEFAULT) {}
 
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
@@ -104,7 +104,8 @@ class PermissionContextBaseFeaturePolicyTest
   ContentSetting RequestPermissionForFrame(
       permissions::PermissionContextBase* pcb,
       content::RenderFrameHost* rfh) {
-    permissions::PermissionRequestID id(rfh, request_id_++);
+    permissions::PermissionRequestID id(
+        rfh, permission_request_id_generator_.GenerateNextId());
     pcb->RequestPermission(
         content::WebContents::FromRenderFrameHost(rfh), id,
         rfh->GetLastCommittedURL(), /*user_gesture=*/true,
@@ -142,7 +143,8 @@ class PermissionContextBaseFeaturePolicyTest
   }
 
   ContentSetting last_request_result_;
-  int request_id_;
+  permissions::PermissionRequestID::RequestLocalId::Generator
+      permission_request_id_generator_;
 };
 
 TEST_F(PermissionContextBaseFeaturePolicyTest, DefaultPolicy) {

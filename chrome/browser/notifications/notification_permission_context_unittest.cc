@@ -272,7 +272,8 @@ TEST_F(NotificationPermissionContextTest, WebNotificationsTopLevelOriginOnly) {
 
   // Requesting permission for different origins should fail.
   permissions::PermissionRequestID fake_id(
-      0 /* render_process_id */, 0 /* render_frame_id */, 0 /* request_id */);
+      0 /* render_process_id */, 0 /* render_frame_id */,
+      permissions::PermissionRequestID::RequestLocalId());
 
   ContentSetting result = CONTENT_SETTING_DEFAULT;
   context.DecidePermission(web_contents(), fake_id, requesting_origin,
@@ -342,7 +343,8 @@ TEST_F(NotificationPermissionContextTest, MAYBE_TestDenyInIncognitoAfterDelay) {
 
   const permissions::PermissionRequestID id(
       web_contents()->GetMainFrame()->GetProcess()->GetID(),
-      web_contents()->GetMainFrame()->GetRoutingID(), -1);
+      web_contents()->GetMainFrame()->GetRoutingID(),
+      permissions::PermissionRequestID::RequestLocalId());
 
   base::TestMockTimeTaskRunner* task_runner = SwitchToMockTime();
 
@@ -407,12 +409,14 @@ TEST_F(NotificationPermissionContextTest, TestParallelDenyInIncognito) {
   NavigateAndCommit(url);
   web_contents()->WasShown();
 
-  const permissions::PermissionRequestID id0(
-      web_contents()->GetMainFrame()->GetProcess()->GetID(),
-      web_contents()->GetMainFrame()->GetRoutingID(), 0);
   const permissions::PermissionRequestID id1(
       web_contents()->GetMainFrame()->GetProcess()->GetID(),
-      web_contents()->GetMainFrame()->GetRoutingID(), 1);
+      web_contents()->GetMainFrame()->GetRoutingID(),
+      permissions::PermissionRequestID::RequestLocalId(1));
+  const permissions::PermissionRequestID id2(
+      web_contents()->GetMainFrame()->GetProcess()->GetID(),
+      web_contents()->GetMainFrame()->GetRoutingID(),
+      permissions::PermissionRequestID::RequestLocalId(2));
 
   base::TestMockTimeTaskRunner* task_runner = SwitchToMockTime();
 
@@ -422,9 +426,9 @@ TEST_F(NotificationPermissionContextTest, TestParallelDenyInIncognito) {
             permission_context.last_permission_set_setting());
 
   permission_context.RequestPermission(
-      web_contents(), id0, url, true /* user_gesture */, base::DoNothing());
-  permission_context.RequestPermission(
       web_contents(), id1, url, true /* user_gesture */, base::DoNothing());
+  permission_context.RequestPermission(
+      web_contents(), id2, url, true /* user_gesture */, base::DoNothing());
 
   EXPECT_EQ(0, permission_context.permission_set_count());
   EXPECT_EQ(CONTENT_SETTING_ASK,
@@ -514,7 +518,8 @@ TEST_F(NotificationPermissionContextTest, BlockNewNotificationRequests) {
   NotificationPermissionContext context(profile());
   const permissions::PermissionRequestID id(
       web_contents()->GetMainFrame()->GetProcess()->GetID(),
-      web_contents()->GetMainFrame()->GetRoutingID(), 1);
+      web_contents()->GetMainFrame()->GetRoutingID(),
+      permissions::PermissionRequestID::RequestLocalId());
   ContentSetting result = CONTENT_SETTING_DEFAULT;
   context.RequestPermission(web_contents(), id, url, true /* user_gesture */,
                             base::BindOnce(&StoreContentSetting, &result));
@@ -545,7 +550,8 @@ TEST_F(NotificationPermissionContextTest,
   NotificationPermissionContext context(profile());
   const permissions::PermissionRequestID id(
       web_contents()->GetMainFrame()->GetProcess()->GetID(),
-      web_contents()->GetMainFrame()->GetRoutingID(), 1);
+      web_contents()->GetMainFrame()->GetRoutingID(),
+      permissions::PermissionRequestID::RequestLocalId());
   NotificationPermissionContext::SetBlockNewNotificationRequests(web_contents(),
                                                                  true);
   ContentSetting result = CONTENT_SETTING_DEFAULT;

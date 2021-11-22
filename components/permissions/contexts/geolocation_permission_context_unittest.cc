@@ -175,14 +175,16 @@ class GeolocationPermissionContextTests
 
   // A map between renderer child id and a pair represending the bridge id and
   // whether the requested permission was allowed.
-  std::map<int, std::pair<int, bool>> responses_;
+  std::map<int, std::pair<PermissionRequestID::RequestLocalId, bool>>
+      responses_;
 };
 
 PermissionRequestID GeolocationPermissionContextTests::RequestID(
     int request_id) {
   return PermissionRequestID(
       web_contents()->GetMainFrame()->GetProcess()->GetID(),
-      web_contents()->GetMainFrame()->GetRoutingID(), request_id);
+      web_contents()->GetMainFrame()->GetRoutingID(),
+      PermissionRequestID::RequestLocalId(request_id));
 }
 
 PermissionRequestID GeolocationPermissionContextTests::RequestIDForTab(
@@ -190,7 +192,8 @@ PermissionRequestID GeolocationPermissionContextTests::RequestIDForTab(
     int request_id) {
   return PermissionRequestID(
       extra_tabs_[tab]->GetMainFrame()->GetProcess()->GetID(),
-      extra_tabs_[tab]->GetMainFrame()->GetRoutingID(), request_id);
+      extra_tabs_[tab]->GetMainFrame()->GetRoutingID(),
+      PermissionRequestID::RequestLocalId(request_id));
 }
 
 void GeolocationPermissionContextTests::RequestGeolocationPermission(
@@ -209,7 +212,8 @@ void GeolocationPermissionContextTests::PermissionResponse(
     const PermissionRequestID& id,
     ContentSetting content_setting) {
   responses_[id.render_process_id()] =
-      std::make_pair(id.request_id(), content_setting == CONTENT_SETTING_ALLOW);
+      std::make_pair(id.request_local_id_for_testing(),
+                     content_setting == CONTENT_SETTING_ALLOW);
 }
 
 void GeolocationPermissionContextTests::CheckPermissionMessageSent(
@@ -233,7 +237,8 @@ void GeolocationPermissionContextTests::CheckPermissionMessageSentInternal(
     int request_id,
     bool allowed) {
   ASSERT_EQ(responses_.count(process->GetID()), 1U);
-  EXPECT_EQ(request_id, responses_[process->GetID()].first);
+  EXPECT_EQ(PermissionRequestID::RequestLocalId(request_id),
+            responses_[process->GetID()].first);
   EXPECT_EQ(allowed, responses_[process->GetID()].second);
   responses_.erase(process->GetID());
 }

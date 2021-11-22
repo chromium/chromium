@@ -13,6 +13,7 @@
 #include "components/content_settings/core/browser/content_settings_observer.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/permissions/permission_request_id.h"
 #include "components/permissions/permission_util.h"
 #include "content/public/browser/permission_controller_delegate.h"
 #include "content/public/browser/permission_type.h"
@@ -148,8 +149,14 @@ class PermissionManager : public KeyedService,
  private:
   friend class PermissionManagerTest;
 
+  // The `PendingRequestLocalId` will be unique within the `PermissionManager`
+  // instance, thus within a `BrowserContext`, which overachieves the
+  // requirement from `PermissionRequestID` that the `RequestLocalId` be unique
+  // within each frame.
   class PendingRequest;
-  using PendingRequestsMap = base::IDMap<std::unique_ptr<PendingRequest>>;
+  using PendingRequestLocalId = PermissionRequestID::RequestLocalId;
+  using PendingRequestsMap =
+      base::IDMap<std::unique_ptr<PendingRequest>, PendingRequestLocalId>;
 
   class PermissionResponseCallback;
 
@@ -160,14 +167,15 @@ class PermissionManager : public KeyedService,
   PermissionContextBase* GetPermissionContext(ContentSettingsType type);
 
   // Called when a permission was decided for a given PendingRequest. The
-  // PendingRequest is identified by its |request_id| and the permission is
-  // identified by its |permission_id|. If the PendingRequest contains more than
-  // one permission, it will wait for the remaining permissions to be resolved.
-  // When all the permissions have been resolved, the PendingRequest's callback
-  // is run.
-  void OnPermissionsRequestResponseStatus(int request_id,
-                                          int permission_id,
-                                          ContentSetting status);
+  // PendingRequest is identified by its |request_local_id| and the permission
+  // is identified by its |permission_id|. If the PendingRequest contains more
+  // than one permission, it will wait for the remaining permissions to be
+  // resolved. When all the permissions have been resolved, the PendingRequest's
+  // callback is run.
+  void OnPermissionsRequestResponseStatus(
+      PendingRequestLocalId request_local_id,
+      int permission_id,
+      ContentSetting status);
 
   // content_settings::Observer implementation.
   void OnContentSettingChanged(const ContentSettingsPattern& primary_pattern,
@@ -185,7 +193,10 @@ class PermissionManager : public KeyedService,
       ContentSettingsType permission);
 
   content::BrowserContext* browser_context_;
+
   PendingRequestsMap pending_requests_;
+  PendingRequestLocalId::Generator request_local_id_generator_;
+
   SubscriptionsMap subscriptions_;
   SubscriptionId::Generator subscription_id_generator_;
 

@@ -68,14 +68,17 @@ class NfcPermissionContextTests : public ChromeRenderViewHostTestHarness {
 
   // A map between renderer child id and a pair represending the bridge id and
   // whether the requested permission was allowed.
-  std::map<int, std::pair<int, bool>> responses_;
+  std::map<int,
+           std::pair<permissions::PermissionRequestID::RequestLocalId, bool>>
+      responses_;
 };
 
 permissions::PermissionRequestID NfcPermissionContextTests::RequestID(
     int request_id) {
   return permissions::PermissionRequestID(
       web_contents()->GetMainFrame()->GetProcess()->GetID(),
-      web_contents()->GetMainFrame()->GetRoutingID(), request_id);
+      web_contents()->GetMainFrame()->GetRoutingID(),
+      permissions::PermissionRequestID::RequestLocalId(request_id));
 }
 
 void NfcPermissionContextTests::RequestNfcPermission(
@@ -94,7 +97,8 @@ void NfcPermissionContextTests::PermissionResponse(
     const permissions::PermissionRequestID& id,
     ContentSetting content_setting) {
   responses_[id.render_process_id()] =
-      std::make_pair(id.request_id(), content_setting == CONTENT_SETTING_ALLOW);
+      std::make_pair(id.request_local_id_for_testing(),
+                     content_setting == CONTENT_SETTING_ALLOW);
 }
 
 void NfcPermissionContextTests::CheckPermissionMessageSent(int request_id,
@@ -107,7 +111,8 @@ void NfcPermissionContextTests::CheckPermissionMessageSentInternal(
     int request_id,
     bool allowed) {
   ASSERT_EQ(responses_.count(process->GetID()), 1U);
-  EXPECT_EQ(request_id, responses_[process->GetID()].first);
+  EXPECT_EQ(permissions::PermissionRequestID::RequestLocalId(request_id),
+            responses_[process->GetID()].first);
   EXPECT_EQ(allowed, responses_[process->GetID()].second);
   responses_.erase(process->GetID());
 }
