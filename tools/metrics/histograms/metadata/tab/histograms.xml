@@ -1730,7 +1730,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Tabs.PersistedTabData.Storage.Restore.File"
-    enum="BooleanSuccess" expires_after="2021-12-05">
+    enum="BooleanSuccess" expires_after="2022-11-21">
   <owner>yusufo@chromium.org</owner>
   <owner>nyquist@chromium.org</owner>
   <owner>dtrainor@chromium.org</owner>
