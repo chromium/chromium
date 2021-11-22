@@ -514,8 +514,8 @@ class NET_EXPORT SpdySession : public BufferedSpdyFramerVisitorInterface,
   // MultiplexedSession methods:
   bool GetRemoteEndpoint(IPEndPoint* endpoint) override;
   bool GetSSLInfo(SSLInfo* ssl_info) const override;
-  base::StringPiece GetAcceptChViaAlpsForOrigin(
-      const url::Origin& origin) const override;
+  base::StringPiece GetAcceptChViaAlps(
+      const url::SchemeHostPort& scheme_host_port) const override;
 
   // Returns true if ALPN was negotiated for the underlying socket.
   bool WasAlpnNegotiated() const;
@@ -1290,7 +1290,8 @@ class NET_EXPORT SpdySession : public BufferedSpdyFramerVisitorInterface,
   Http2PriorityDependencies priority_dependency_state_;
 
   // Map of origin to Accept-CH header field values received via ALPS.
-  base::flat_map<url::Origin, std::string> accept_ch_entries_received_via_alps_;
+  base::flat_map<url::SchemeHostPort, std::string>
+      accept_ch_entries_received_via_alps_;
 
   // Network quality estimator to which the ping RTTs should be reported. May be
   // nullptr.

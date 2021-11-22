@@ -1146,21 +1146,16 @@ int SpdySession::ParseAlps() {
   bool has_valid_entry = false;
   bool has_invalid_entry = false;
   for (const auto& entry : alps_decoder.GetAcceptCh()) {
-    // |entry.origin| must be a valid origin.
-    GURL url(entry.origin);
-    if (!url.is_valid()) {
-      has_invalid_entry = true;
-      continue;
-    }
-    const url::Origin origin = url::Origin::Create(url);
-    std::string serialized = origin.Serialize();
+    const url::SchemeHostPort scheme_host_port(GURL(entry.origin));
+    // |entry.origin| must be a valid SchemeHostPort.
+    std::string serialized = scheme_host_port.Serialize();
     if (serialized.empty() || entry.origin != serialized) {
       has_invalid_entry = true;
       continue;
     }
     has_valid_entry = true;
     accept_ch_entries_received_via_alps_.insert(
-        std::make_pair(std::move(origin), entry.value));
+        std::make_pair(std::move(scheme_host_port), entry.value));
   }
 
   SpdyAcceptChEntries value;
@@ -1498,9 +1493,9 @@ bool SpdySession::GetSSLInfo(SSLInfo* ssl_info) const {
   return socket_->GetSSLInfo(ssl_info);
 }
 
-base::StringPiece SpdySession::GetAcceptChViaAlpsForOrigin(
-    const url::Origin& origin) const {
-  auto it = accept_ch_entries_received_via_alps_.find(origin);
+base::StringPiece SpdySession::GetAcceptChViaAlps(
+    const url::SchemeHostPort& scheme_host_port) const {
+  auto it = accept_ch_entries_received_via_alps_.find(scheme_host_port);
   if (it == accept_ch_entries_received_via_alps_.end()) {
     LogSpdyAcceptChForOriginHistogram(false);
     return {};

@@ -720,8 +720,8 @@ class NET_EXPORT_PRIVATE QuicChromiumClientSession
   // MultiplexedSession methods:
   bool GetRemoteEndpoint(IPEndPoint* endpoint) override;
   bool GetSSLInfo(SSLInfo* ssl_info) const override;
-  base::StringPiece GetAcceptChViaAlpsForOrigin(
-      const url::Origin& origin) const override;
+  base::StringPiece GetAcceptChViaAlps(
+      const url::SchemeHostPort& scheme_host_port) const override;
 
   // Performs a crypto handshake with the server.
   int CryptoConnect(CompletionOnceCallback callback);
@@ -1084,7 +1084,8 @@ class NET_EXPORT_PRIVATE QuicChromiumClientSession
   QuicChromiumPathValidationWriterDelegate path_validation_writer_delegate_;
 
   // Map of origin to Accept-CH header field values received via ALPS.
-  base::flat_map<url::Origin, std::string> accept_ch_entries_received_via_alps_;
+  base::flat_map<url::SchemeHostPort, std::string>
+      accept_ch_entries_received_via_alps_;
 
   base::WeakPtrFactory<QuicChromiumClientSession> weak_factory_{this};
 };

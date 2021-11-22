@@ -29,7 +29,7 @@
 #include "net/spdy/spdy_session.h"
 #include "net/third_party/quiche/src/spdy/core/spdy_header_block.h"
 #include "net/third_party/quiche/src/spdy/core/spdy_protocol.h"
-#include "url/origin.h"
+#include "url/scheme_host_port.h"
 
 namespace net {
 
@@ -721,8 +721,7 @@ base::StringPiece SpdyHttpStream::GetAcceptChViaAlps() const {
     return {};
   }
 
-  const url::Origin origin = url::Origin::Create(request_info_->url);
-  return session()->GetAcceptChViaAlpsForOrigin(origin);
+  return session()->GetAcceptChViaAlps(url::SchemeHostPort(request_info_->url));
 }
 
 }  // namespace net

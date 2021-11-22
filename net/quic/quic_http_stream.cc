@@ -449,8 +449,7 @@ base::StringPiece QuicHttpStream::GetAcceptChViaAlps() const {
     return {};
   }
 
-  const url::Origin origin = url::Origin::Create(request_info_->url);
-  return session()->GetAcceptChViaAlpsForOrigin(origin);
+  return session()->GetAcceptChViaAlps(url::SchemeHostPort(request_info_->url));
 }
 
 void QuicHttpStream::ReadTrailingHeaders() {
