@@ -164259,6 +164259,19 @@
        {}
       ]
      ],
+     "text-decoration-lines-001.html": [
+      "a87218a20efb2ea5e95514ccc6b0d0a5b1c5fd4f",
+      [
+       null,
+       [
+        [
+         "/css/css-text-decor/reference/text-decoration-lines-001-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "text-decoration-overline-wavy-covers-whole-line-length-001.html": [
       "4dfd0901733c1730a59ff3c29964938412174526",
       [
@@ -257734,6 +257747,10 @@
        "f14d25a70ba3ccfc80a99e924bb6b6a7d4694b1e",
        []
       ],
+      "text-decoration-lines-001-ref.html": [
+       "a2d0c3dca74a1699e81a0b8afa085caff48f9025",
+       []
+      ],
       "text-decoration-propagation-display-contents-ref.html": [
        "5eecc8c8b4e39c4b940e472e5e0f39e9262e10d9",
        []
@@ -300553,6 +300570,10 @@
       "c6d12e4eb7e735632515bb1894d874417eb39a35",
       []
      ],
+     "partitioned-service-worker-claim.tentative.https-expected.txt": [
+      "ed2f192b6d22edc45948643ea7d16730e56eb07b",
+      []
+     ],
      "partitioned-service-worker-getRegistrations.tentative.https-expected.txt": [
       "318c2cbf9e749e08dc509baf58046f5b9ba33921",
       []
@@ -301546,6 +301567,10 @@
        "835046d472b2b3bb46aa7e4cba2976d367b29894",
        []
       ],
+      "partitioned-service-worker-iframe-claim.html": [
+       "c0f8d76901a2a7a7ef552da13571505af9699c1d",
+       []
+      ],
       "partitioned-service-worker-third-party-iframe-getRegistrations.html": [
        "f7b99cb358a2343758fcb9d359778eb02aaf1f69",
        []
@@ -301563,7 +301588,7 @@
        []
       ],
       "partitioned-storage-sw.js": [
-       "e51cf3142f18e5fe5fa51c02f9a09a0d83e6aecb",
+       "d56b7c84d97fa90f893120091e53fd0ff0ed5477",
        []
       ],
       "partitioned-utils.js": [
@@ -484871,6 +484896,13 @@
        {}
       ]
      ],
+     "partitioned-service-worker-claim.tentative.https.html": [
+      "1f42c528e0b38f11b156f77f144daec6513c1fed",
+      [
+       null,
+       {}
+      ]
+     ],
      "partitioned-service-worker-getRegistrations.tentative.https.html": [
       "81d275194ef61ea9cff192b5d07913c32bdba8af",
       [
@@ -548957,7 +548989,7 @@
      },
      "execute_async_script": {
       "collections.py": [
-       "2dc9b9a009acd06844824f9dd173b03af34cd943",
+       "49657711e28cbc51e7bad7671031e93d73739d60",
        [
         null,
         {}
@@ -548996,7 +549028,7 @@
      },
      "execute_script": {
       "collections.py": [
-       "8291fd71388b8eedd4c1039a52bffa78ffaf7cd5",
+       "4d88d497060480043682df29298387d150bf9055",
        [
         null,
         {}
