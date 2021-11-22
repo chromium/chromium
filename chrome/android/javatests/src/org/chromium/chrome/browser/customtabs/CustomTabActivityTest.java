@@ -32,7 +32,6 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Build.VERSION_CODES;
 import android.os.Bundle;
 import android.os.SystemClock;
@@ -113,7 +112,6 @@ import org.chromium.chrome.browser.tab.TabTestUtils;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.test.ScreenShooter;
-import org.chromium.chrome.browser.toolbar.menu_button.MenuButton;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuCoordinator;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuHandler;
 import org.chromium.chrome.test.ChromeActivityTestRule;
@@ -138,7 +136,6 @@ import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.net.test.util.TestWebServer;
 import org.chromium.ui.mojom.WindowOpenDisposition;
 import org.chromium.ui.test.util.UiRestriction;
-import org.chromium.ui.util.ColorUtils;
 import org.chromium.url.GURL;
 
 import java.util.ArrayList;
@@ -306,10 +303,6 @@ public class CustomTabActivityTest {
         pageLoadFinishedHelper.waitForCallback(0);
     }
 
-    private void addToolbarColorToIntent(Intent intent, int color) {
-        intent.putExtra(CustomTabsIntent.EXTRA_TOOLBAR_COLOR, color);
-    }
-
     private Bundle makeBottomBarBundle(int id, Bitmap icon, String description) {
         Bundle bundle = new Bundle();
         PendingIntent pi = PendingIntent.getBroadcast(InstrumentationRegistry.getTargetContext(), 0,
@@ -383,43 +376,6 @@ public class CustomTabActivityTest {
 
         Assert.assertNotNull(linkMenu.findItem(R.id.contextmenu_copy_link_text));
         Assert.assertNotNull(linkMenu.findItem(R.id.contextmenu_copy_link_address));
-    }
-
-    /**
-     * Test whether the color of the toolbar is correctly customized. For L or later releases,
-     * status bar color is also tested.
-     */
-    @Test
-    @SmallTest
-    @Feature({"StatusBar"})
-    public void testToolbarColor() {
-        Intent intent = createMinimalCustomTabIntent();
-        final int expectedColor = Color.RED;
-        addToolbarColorToIntent(intent, expectedColor);
-        mCustomTabActivityTestRule.startCustomTabActivityWithIntent(intent);
-
-        View toolbarView = mCustomTabActivityTestRule.getActivity().findViewById(R.id.toolbar);
-        Assert.assertTrue(
-                "A custom tab toolbar is never shown", toolbarView instanceof CustomTabToolbar);
-        CustomTabToolbar toolbar = (CustomTabToolbar) toolbarView;
-        assertEquals(expectedColor, toolbar.getBackground().getColor());
-        Assert.assertFalse(mCustomTabActivityTestRule.getActivity()
-                                   .getToolbarManager()
-                                   .getLocationBarModelForTesting()
-                                   .shouldEmphasizeHttpsScheme());
-        // TODO(https://crbug.com/871805): Use helper class to determine whether dark status icons
-        // are supported.
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            assertEquals(expectedColor,
-                    mCustomTabActivityTestRule.getActivity().getWindow().getStatusBarColor());
-        } else {
-            assertEquals(ColorUtils.getDarkenedColorForStatusBar(expectedColor),
-                    mCustomTabActivityTestRule.getActivity().getWindow().getStatusBarColor());
-        }
-
-        MenuButton menuButtonView = toolbarView.findViewById(R.id.menu_button_wrapper);
-        assertEquals(menuButtonView.getUseLightDrawablesForTesting(),
-                ColorUtils.shouldUseLightForegroundOnBackground(expectedColor));
     }
 
     /**
