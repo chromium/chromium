@@ -127,6 +127,32 @@ class BASE_EXPORT FeatureList {
     OVERRIDE_ENABLE_FEATURE,
   };
 
+  // Accessor class, used to look up features by _name_ rather than by Feature
+  // object.
+  // Should only be used in limited cases. See ConstructAccessor() for details.
+  class BASE_EXPORT Accessor {
+   public:
+    Accessor(const Accessor&) = delete;
+    Accessor& operator=(const Accessor&) = delete;
+
+    // Looks up the feature, returning only its override state, rather than
+    // falling back on a default value (since there is no default value given).
+    // Callers of this MUST ensure that there is a consistent, compile-time
+    // default value associated.
+    FeatureList::OverrideState GetOverrideStateByFeatureName(
+        StringPiece feature_name);
+
+   private:
+    // Allow FeatureList to construct this class.
+    friend class FeatureList;
+
+    explicit Accessor(FeatureList* feature_list);
+
+    // Unowned pointer to the FeatureList object we use to look up feature
+    // enablement.
+    FeatureList* feature_list_;
+  };
+
   // Describes a feature override. The first member is a Feature that will be
   // overridden with the state given by the second member.
   using FeatureOverrideInfo =
@@ -234,6 +260,13 @@ class BASE_EXPORT FeatureList {
   // enables it.
   FieldTrial* GetEnabledFieldTrialByFeatureName(StringPiece name);
 
+  // Construct an accessor allowing access to GetOverrideStateByFeatureName().
+  // This can only be called before the FeatureList is initialized, and is
+  // intended for very narrow use.
+  // If you're tempted to use it, do so only in consultation with feature_list
+  // OWNERS.
+  std::unique_ptr<Accessor> ConstructAccessor();
+
   // Returns whether the given |feature| is enabled. Must only be called after
   // the singleton instance has been registered via SetInstance(). Additionally,
   // a feature with a given name must only have a single corresponding Feature
@@ -305,6 +338,8 @@ class BASE_EXPORT FeatureList {
                            StoreAndRetrieveFeaturesFromSharedMemory);
   FRIEND_TEST_ALL_PREFIXES(FeatureListTest,
                            StoreAndRetrieveAssociatedFeaturesFromSharedMemory);
+  // Allow Accessor to access GetOverrideStateByFeatureName().
+  friend class Accessor;
 
   struct OverrideEntry {
     // The overridden enable (on/off) state of the feature.
@@ -353,6 +388,9 @@ class BASE_EXPORT FeatureList {
   // overridden, returns OVERRIDE_USE_DEFAULT. Performs any necessary callbacks
   // for when the feature state has been observed, e.g. actvating field trials.
   OverrideState GetOverrideState(const Feature& feature);
+
+  // Same as GetOverrideState(), but without a default value.
+  OverrideState GetOverrideStateByFeatureName(StringPiece feature_name);
 
   // Returns the field trial associated with the given |feature|. This is
   // invoked by the public FeatureList::GetFieldTrial() static function on the

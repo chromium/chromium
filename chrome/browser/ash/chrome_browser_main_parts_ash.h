@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/feature_list.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "chrome/browser/ash/external_metrics.h"
 // TODO(https://crbug.com/1164001): remove and use forward declaration.
@@ -253,6 +254,11 @@ class ChromeBrowserMainPartsAsh : public ChromeBrowserMainPartsLinux {
 
   std::unique_ptr<quick_pair::QuickPairBrowserDelegateImpl>
       quick_pair_delegate_;
+
+  // Only temporarily owned, will be null after PostCreateMainMessageLoop().
+  // The Accessor is constructed before initialization of FeatureList and should
+  // only be used by ChromeFeaturesServiceProvider.
+  std::unique_ptr<base::FeatureList::Accessor> feature_list_accessor_;
 };
 
 }  // namespace ash

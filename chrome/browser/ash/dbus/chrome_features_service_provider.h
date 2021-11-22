@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_DBUS_CHROME_FEATURES_SERVICE_PROVIDER_H_
 #define CHROME_BROWSER_ASH_DBUS_CHROME_FEATURES_SERVICE_PROVIDER_H_
 
+#include "base/feature_list.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/dbus/services/cros_dbus_service.h"
@@ -45,7 +46,8 @@ namespace ash {
 class ChromeFeaturesServiceProvider
     : public CrosDBusService::ServiceProviderInterface {
  public:
-  ChromeFeaturesServiceProvider();
+  explicit ChromeFeaturesServiceProvider(
+      std::unique_ptr<base::FeatureList::Accessor> feature_list_accessor);
 
   ChromeFeaturesServiceProvider(const ChromeFeaturesServiceProvider&) = delete;
   ChromeFeaturesServiceProvider& operator=(
@@ -87,6 +89,9 @@ class ChromeFeaturesServiceProvider
       dbus::ExportedObject::ResponseSender response_sender);
   void IsDnsProxyEnabled(dbus::MethodCall* method_call,
                          dbus::ExportedObject::ResponseSender response_sender);
+
+  // Provides a way to look up features by _name_ rather than by base::Feature.
+  std::unique_ptr<base::FeatureList::Accessor> feature_list_accessor_;
 
   // Keep this last so that all weak pointers will be invalidated at the
   // beginning of destruction.

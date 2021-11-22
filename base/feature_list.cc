@@ -101,7 +101,7 @@ struct FeatureEntry {
 // are used in command-line API functions that require ASCII) and whether there
 // are any reserved characters present, returning true if the string is valid.
 // Only called in DCHECKs.
-bool IsValidFeatureOrFieldTrialName(const std::string& name) {
+bool IsValidFeatureOrFieldTrialName(StringPiece name) {
   return IsStringASCII(name) && name.find_first_of(",<*") == std::string::npos;
 }
 
@@ -547,7 +547,15 @@ FeatureList::OverrideState FeatureList::GetOverrideState(
   DCHECK(IsValidFeatureOrFieldTrialName(feature.name)) << feature.name;
   DCHECK(CheckFeatureIdentity(feature)) << feature.name;
 
-  auto it = overrides_.find(feature.name);
+  return GetOverrideStateByFeatureName(feature.name);
+}
+
+FeatureList::OverrideState FeatureList::GetOverrideStateByFeatureName(
+    StringPiece feature_name) {
+  DCHECK(initialized_);
+  DCHECK(IsValidFeatureOrFieldTrialName(feature_name)) << feature_name;
+
+  auto it = overrides_.find(feature_name);
   if (it != overrides_.end()) {
     const OverrideEntry& entry = it->second;
 
@@ -573,7 +581,7 @@ FieldTrial* FeatureList::GetAssociatedFieldTrial(const Feature& feature) {
 const base::FeatureList::OverrideEntry*
 FeatureList::GetOverrideEntryByFeatureName(StringPiece name) {
   DCHECK(initialized_);
-  DCHECK(IsValidFeatureOrFieldTrialName(std::string(name))) << name;
+  DCHECK(IsValidFeatureOrFieldTrialName(name)) << name;
 
   auto it = overrides_.find(name);
   if (it != overrides_.end()) {
@@ -605,6 +613,17 @@ FieldTrial* FeatureList::GetEnabledFieldTrialByFeatureName(StringPiece name) {
     return entry->field_trial;
   }
   return nullptr;
+}
+
+std::unique_ptr<FeatureList::Accessor> FeatureList::ConstructAccessor() {
+  if (initialized_) {
+    // This function shouldn't be called after initialization.
+    NOTREACHED();
+    return nullptr;
+  }
+  // Use new and WrapUnique because we want to restrict access to the Accessor's
+  // constructor.
+  return base::WrapUnique(new Accessor(this));
 }
 
 void FeatureList::RegisterOverridesFromCommandLine(
@@ -718,5 +737,13 @@ FeatureList::OverrideEntry::OverrideEntry(OverrideState overridden_state,
     : overridden_state(overridden_state),
       field_trial(field_trial),
       overridden_by_field_trial(field_trial != nullptr) {}
+
+FeatureList::Accessor::Accessor(FeatureList* feature_list)
+    : feature_list_(feature_list) {}
+
+FeatureList::OverrideState FeatureList::Accessor::GetOverrideStateByFeatureName(
+    StringPiece feature_name) {
+  return feature_list_->GetOverrideStateByFeatureName(feature_name);
+}
 
 }  // namespace base
