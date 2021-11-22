@@ -1149,6 +1149,23 @@ void TargetHandler::CreateBrowserContext(
     }
   }
 
+  // Pre-process universal network access origins before actual context creation
+  // in case we need to bail out with error.
+  std::vector<url::Origin> originsToGrantUniversalNetworkAccess;
+  if (in_originsToGrantUniversalNetworkAccess.isJust()) {
+    for (const auto& origin_str :
+         *in_originsToGrantUniversalNetworkAccess.fromJust()) {
+      GURL url(origin_str);
+      url::Origin origin = url::Origin::Create(url);
+      if (!url.is_valid() || origin.opaque()) {
+        callback->sendFailure(
+            Response::InvalidParams("Invalid origin " + origin_str));
+        return;
+      }
+      originsToGrantUniversalNetworkAccess.push_back(std::move(origin));
+    }
+  }
+
   BrowserContext* context = delegate->CreateBrowserContext();
   if (!context) {
     callback->sendFailure(
@@ -1157,7 +1174,7 @@ void TargetHandler::CreateBrowserContext(
     return;
   }
 
-  if (in_originsToGrantUniversalNetworkAccess.isJust()) {
+  for (const auto& origin : originsToGrantUniversalNetworkAccess) {
     std::vector<network::mojom::CorsOriginPatternPtr> allow_patterns;
     allow_patterns.push_back(network::mojom::CorsOriginPattern::New());
     allow_patterns.back()->protocol = "http";
@@ -1168,19 +1185,10 @@ void TargetHandler::CreateBrowserContext(
     allow_patterns.back()->priority =
         network::mojom::CorsOriginAccessMatchPriority::kMaxPriority;
 
-    for (const auto& origin_str :
-         *in_originsToGrantUniversalNetworkAccess.fromJust()) {
-      GURL url(origin_str);
-      url::Origin origin = url::Origin::Create(url);
-      if (!url.is_valid() || origin.opaque()) {
-        delegate->DisposeBrowserContext(context, base::DoNothing());
-        callback->sendFailure(Response::InvalidParams("Invalid origin"));
-        return;
-      }
-      content::CorsOriginPatternSetter::Set(context, std::move(origin),
-                                            mojo::Clone(allow_patterns), {},
-                                            base::DoNothing());
-    }
+    // It's fine to not await the completion here -- this is implicitly
+    // serialized with the actual URLLoaderFactory / URLLoader creation.
+    content::CorsOriginPatternSetter::Set(
+        context, origin, std::move(allow_patterns), {}, base::DoNothing());
   }
 
   if (pending_proxy_config_) {
