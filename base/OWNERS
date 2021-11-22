@@ -3,7 +3,6 @@
 set noparent
 # NOTE: keep this in sync with lsc-owners-override@chromium.org owners
 # by emailing lsc-policy@chromium.org when this list changes.
-ajwong@chromium.org
 danakj@chromium.org
 dcheng@chromium.org
 fdoray@chromium.org
