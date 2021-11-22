@@ -5,16 +5,25 @@
 #ifndef UI_LOTTIE_ANIMATION_H_
 #define UI_LOTTIE_ANIMATION_H_
 
+#include <functional>
 #include <memory>
 
 #include "base/component_export.h"
+#include "base/containers/flat_map.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/time/time.h"
+#include "cc/paint/skottie_frame_data.h"
+#include "cc/paint/skottie_frame_data_provider.h"
+#include "cc/paint/skottie_resource_metadata.h"
 #include "cc/paint/skottie_wrapper.h"
+#include "third_party/skia/include/core/SkRefCnt.h"
 #include "third_party/skia/include/core/SkStream.h"
 #include "third_party/skia/modules/skottie/include/Skottie.h"
 #include "ui/gfx/geometry/size.h"
+
+class SkImage;
+struct SkSamplingOptions;
 
 namespace gfx {
 class Canvas;
@@ -81,7 +90,11 @@ class COMPONENT_EXPORT(UI_LOTTIE) Animation final {
     kLoop         // Same as LINEAR, except the animation repeats after it ends.
   };
 
-  explicit Animation(scoped_refptr<cc::SkottieWrapper> skottie);
+  // |frame_data_provider| may be null if it's known that the incoming skottie
+  // animation does not contain any image assets.
+  explicit Animation(
+      scoped_refptr<cc::SkottieWrapper> skottie,
+      cc::SkottieFrameDataProvider* frame_data_provider = nullptr);
   Animation(const Animation&) = delete;
   Animation& operator=(const Animation&) = delete;
   ~Animation();
@@ -215,6 +228,13 @@ class COMPONENT_EXPORT(UI_LOTTIE) Animation final {
 
   void InitTimer(const base::TimeTicks& timestamp);
   void UpdateState(const base::TimeTicks& timestamp);
+  cc::SkottieWrapper::FrameDataFetchResult LoadImageForAsset(
+      gfx::Canvas* canvas,
+      cc::SkottieFrameDataMap& all_frame_data,
+      cc::SkottieResourceIdHash asset_id,
+      float t,
+      sk_sp<SkImage>&,
+      SkSamplingOptions&);
 
   // Manages the timeline for the current playing animation.
   std::unique_ptr<TimerControl> timer_control_;
@@ -233,6 +253,9 @@ class COMPONENT_EXPORT(UI_LOTTIE) Animation final {
   AnimationObserver* observer_ = nullptr;
 
   scoped_refptr<cc::SkottieWrapper> skottie_;
+  base::flat_map<cc::SkottieResourceIdHash,
+                 scoped_refptr<cc::SkottieFrameDataProvider::ImageAsset>>
+      image_assets_;
 };
 
 }  // namespace lottie

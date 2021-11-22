@@ -4,20 +4,44 @@
 
 #include "ui/lottie/animation.h"
 
+#include <map>
 #include <string>
 
+#include "base/check.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/test/simple_test_tick_clock.h"
+#include "cc/paint/display_item_list.h"
+#include "cc/paint/paint_op_buffer.h"
+#include "cc/paint/paint_record.h"
+#include "cc/paint/record_paint_canvas.h"
+#include "cc/paint/skottie_frame_data.h"
+#include "cc/paint/skottie_frame_data_provider.h"
+#include "cc/paint/skottie_resource_metadata.h"
 #include "cc/paint/skottie_wrapper.h"
+#include "cc/test/lottie_test_data.h"
+#include "cc/test/skia_common.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkBitmap.h"
+#include "third_party/skia/include/core/SkRect.h"
 #include "third_party/skia/include/core/SkStream.h"
 #include "ui/gfx/canvas.h"
+#include "ui/gfx/geometry/rect.h"
 #include "ui/lottie/animation_observer.h"
 
 namespace lottie {
 namespace {
+
+using ::testing::Eq;
+using ::testing::FloatEq;
+using ::testing::FloatNear;
+using ::testing::IsEmpty;
+using ::testing::NotNull;
+using ::testing::Pair;
+using ::testing::SizeIs;
+using ::testing::UnorderedElementsAre;
 
 // A skottie animation with solid green color for the first 2.5 seconds and then
 // a solid blue color for the next 2.5 seconds.
@@ -53,6 +77,8 @@ constexpr char kData[] =
 constexpr float kAnimationWidth = 400.f;
 constexpr float kAnimationHeight = 200.f;
 constexpr auto kAnimationDuration = base::Seconds(5);
+constexpr float kCanvasImageScale = 2.f;
+constexpr float kFrameTimestampToleranceSec = 0.1f;
 
 class TestAnimationObserver : public AnimationObserver {
  public:
@@ -89,6 +115,65 @@ class TestAnimationObserver : public AnimationObserver {
   bool animation_cycle_ended_ = false;
   bool animation_will_start_playing_ = false;
   bool animation_resuming_ = false;
+};
+
+class TestSkottieFrameDataProvider : public cc::SkottieFrameDataProvider {
+ public:
+  class ImageAssetImpl : public cc::SkottieFrameDataProvider::ImageAsset {
+   public:
+    ImageAssetImpl() = default;
+    ImageAssetImpl(const ImageAssetImpl& other) = delete;
+    ImageAssetImpl& operator=(const ImageAssetImpl& other) = delete;
+
+    absl::optional<cc::SkottieFrameData> GetFrameData(
+        float t,
+        float scale_factor) override {
+      last_frame_t_ = t;
+      last_frame_scale_factor_ = scale_factor;
+      return current_frame_data_;
+    }
+
+    void set_current_frame_data(
+        absl::optional<cc::SkottieFrameData> current_frame_data) {
+      current_frame_data_ = std::move(current_frame_data);
+    }
+
+    const absl::optional<float>& last_frame_t() const { return last_frame_t_; }
+    const absl::optional<float>& last_frame_scale_factor() const {
+      return last_frame_scale_factor_;
+    }
+
+   private:
+    friend class TestSkottieFrameDataProvider;
+
+    ~ImageAssetImpl() override = default;
+
+    absl::optional<cc::SkottieFrameData> current_frame_data_;
+    absl::optional<float> last_frame_t_;
+    absl::optional<float> last_frame_scale_factor_;
+  };
+
+  TestSkottieFrameDataProvider() = default;
+  TestSkottieFrameDataProvider(const TestSkottieFrameDataProvider&) = delete;
+  TestSkottieFrameDataProvider& operator=(const TestSkottieFrameDataProvider&) =
+      delete;
+  ~TestSkottieFrameDataProvider() override = default;
+
+  scoped_refptr<ImageAsset> LoadImageAsset(
+      base::StringPiece resource_id,
+      const base::FilePath& resource_path) override {
+    auto new_asset = base::MakeRefCounted<ImageAssetImpl>();
+    CHECK(current_assets_.emplace(std::string(resource_id), new_asset).second);
+    return new_asset;
+  }
+
+  ImageAssetImpl* GetLoadedImageAsset(const std::string& resource_id) {
+    auto iter = current_assets_.find(resource_id);
+    return iter == current_assets_.end() ? nullptr : iter->second.get();
+  }
+
+ private:
+  std::map<std::string, scoped_refptr<ImageAssetImpl>> current_assets_;
 };
 
 }  // namespace
@@ -186,12 +271,44 @@ class AnimationTest : public testing::Test {
   }
 
  protected:
+  std::unique_ptr<gfx::Canvas> canvas_;
   std::unique_ptr<Animation> animation_;
   scoped_refptr<cc::SkottieWrapper> skottie_;
 
  private:
-  std::unique_ptr<gfx::Canvas> canvas_;
   base::SimpleTestTickClock test_clock_;
+};
+
+class AnimationWithImageAssetsTest : public AnimationTest {
+ protected:
+  AnimationWithImageAssetsTest()
+      : display_list_(base::MakeRefCounted<cc::DisplayItemList>(
+            cc::DisplayItemList::kToBeReleasedAsPaintOpBuffer)),
+        record_canvas_(display_list_.get(),
+                       SkRect::MakeIWH(cc::kLottieDataWith2AssetsWidth,
+                                       cc::kLottieDataWith2AssetsHeight)) {}
+
+  void SetUp() override {
+    canvas_ = std::make_unique<gfx::Canvas>(&record_canvas_, kCanvasImageScale);
+    skottie_ = cc::CreateSkottieFromString(cc::kLottieDataWith2Assets);
+    animation_ = std::make_unique<Animation>(skottie_, &frame_data_provider_);
+    asset_0_ = frame_data_provider_.GetLoadedImageAsset("image_0");
+    asset_1_ = frame_data_provider_.GetLoadedImageAsset("image_1");
+    ASSERT_THAT(asset_0_, NotNull());
+    ASSERT_THAT(asset_1_, NotNull());
+  }
+
+  cc::SkottieFrameData CreateHighQualityTestFrameData() {
+    return {
+        .image = cc::CreateDiscardablePaintImage(animation_->GetOriginalSize()),
+        .quality = cc::PaintFlags::FilterQuality::kHigh};
+  }
+
+  const scoped_refptr<cc::DisplayItemList> display_list_;
+  cc::RecordPaintCanvas record_canvas_;
+  TestSkottieFrameDataProvider frame_data_provider_;
+  TestSkottieFrameDataProvider::ImageAssetImpl* asset_0_;
+  TestSkottieFrameDataProvider::ImageAssetImpl* asset_1_;
 };
 
 TEST_F(AnimationTest, InitializationAndLoadingData) {
@@ -827,6 +944,142 @@ TEST_F(AnimationTest, PaintTest) {
   AdvanceClock(base::Milliseconds(1400));
   animation_->Paint(&canvas, NowTicks(), animation_->GetOriginalSize());
   IsAllSameColor(SK_ColorBLUE, canvas.GetBitmap());
+}
+
+TEST_F(AnimationWithImageAssetsTest, PaintsAnimationImagesToCanvas) {
+  AdvanceClock(base::Milliseconds(300));
+
+  animation_->Start(Animation::Style::kLoop);
+
+  TestSkottieFrameDataProvider::ImageAssetImpl* asset_0 =
+      frame_data_provider_.GetLoadedImageAsset("image_0");
+  TestSkottieFrameDataProvider::ImageAssetImpl* asset_1 =
+      frame_data_provider_.GetLoadedImageAsset("image_1");
+  ASSERT_THAT(asset_0, NotNull());
+  ASSERT_THAT(asset_1, NotNull());
+
+  cc::SkottieFrameData frame_0 = CreateHighQualityTestFrameData();
+  cc::SkottieFrameData frame_1 = CreateHighQualityTestFrameData();
+  asset_0->set_current_frame_data(frame_0);
+  asset_1->set_current_frame_data(frame_1);
+
+  display_list_->StartPaint();
+  animation_->Paint(canvas(), NowTicks(), animation_->GetOriginalSize());
+  display_list_->EndPaintOfUnpaired(gfx::Rect(animation_->GetOriginalSize()));
+
+  sk_sp<cc::PaintRecord> paint_record = display_list_->ReleaseAsRecord();
+  ASSERT_THAT(paint_record, NotNull());
+  ASSERT_THAT(paint_record->size(), Eq(1u));
+  const cc::DrawSkottieOp* op =
+      paint_record->GetOpAtForTesting<cc::DrawSkottieOp>(0);
+  ASSERT_THAT(op, NotNull());
+  EXPECT_THAT(op->images, UnorderedElementsAre(Pair(
+                              cc::HashSkottieResourceId("image_0"), frame_0)));
+
+  AdvanceClock(animation_->GetAnimationDuration() * .75);
+
+  display_list_->StartPaint();
+  animation_->Paint(canvas(), NowTicks(), animation_->GetOriginalSize());
+  display_list_->EndPaintOfUnpaired(gfx::Rect(animation_->GetOriginalSize()));
+
+  paint_record = display_list_->ReleaseAsRecord();
+  ASSERT_THAT(paint_record, NotNull());
+  ASSERT_THAT(paint_record->size(), Eq(1u));
+  op = paint_record->GetOpAtForTesting<cc::DrawSkottieOp>(0);
+  ASSERT_THAT(op, NotNull());
+  EXPECT_THAT(op->images, UnorderedElementsAre(Pair(
+                              cc::HashSkottieResourceId("image_1"), frame_1)));
+}
+
+TEST_F(AnimationWithImageAssetsTest, SkipsNullAnimationImages) {
+  AdvanceClock(base::Milliseconds(300));
+
+  animation_->Start(Animation::Style::kLoop);
+
+  asset_0_->set_current_frame_data(CreateHighQualityTestFrameData());
+
+  display_list_->StartPaint();
+  animation_->Paint(canvas(), NowTicks(), animation_->GetOriginalSize());
+  display_list_->EndPaintOfUnpaired(gfx::Rect(animation_->GetOriginalSize()));
+  display_list_->ReleaseAsRecord();
+
+  AdvanceClock(animation_->GetAnimationDuration() / 4);
+
+  asset_0_->set_current_frame_data(absl::nullopt);
+
+  display_list_->StartPaint();
+  animation_->Paint(canvas(), NowTicks(), animation_->GetOriginalSize());
+  display_list_->EndPaintOfUnpaired(gfx::Rect(animation_->GetOriginalSize()));
+  sk_sp<cc::PaintRecord> paint_record = display_list_->ReleaseAsRecord();
+  ASSERT_THAT(paint_record, NotNull());
+  ASSERT_THAT(paint_record->size(), Eq(1u));
+  const cc::DrawSkottieOp* op =
+      paint_record->GetOpAtForTesting<cc::DrawSkottieOp>(0);
+  ASSERT_THAT(op, NotNull());
+  EXPECT_THAT(op->images, IsEmpty());
+}
+
+TEST_F(AnimationWithImageAssetsTest, LoadsCorrectFrameTimestamp) {
+  AdvanceClock(base::Milliseconds(300));
+
+  animation_->Start(Animation::Style::kLoop);
+
+  asset_0_->set_current_frame_data(CreateHighQualityTestFrameData());
+  asset_1_->set_current_frame_data(CreateHighQualityTestFrameData());
+
+  display_list_->StartPaint();
+  animation_->Paint(canvas(), NowTicks(), animation_->GetOriginalSize());
+  display_list_->EndPaintOfUnpaired(gfx::Rect(animation_->GetOriginalSize()));
+
+  ASSERT_TRUE(asset_0_->last_frame_t().has_value());
+  EXPECT_THAT(asset_0_->last_frame_t().value(), FloatEq(0));
+
+  base::TimeDelta three_quarter_duration =
+      animation_->GetAnimationDuration() * .75;
+  AdvanceClock(three_quarter_duration);
+
+  display_list_->StartPaint();
+  animation_->Paint(canvas(), NowTicks(), animation_->GetOriginalSize());
+  display_list_->EndPaintOfUnpaired(gfx::Rect(animation_->GetOriginalSize()));
+
+  // The timestamp is "relative to the image layer timeline origin" (see
+  // SkResources.h). The test animation used in this case has 2 layers for the
+  // first and second halves of the animation. So the 3/4 point of the animation
+  // is half way into the second layer, or 1/4 the duration of the whole
+  // animation.
+  base::TimeDelta half_duration = animation_->GetAnimationDuration() * .5;
+  ASSERT_TRUE(asset_1_->last_frame_t().has_value());
+  EXPECT_THAT(asset_1_->last_frame_t().value(),
+              FloatNear((three_quarter_duration - half_duration).InSecondsF(),
+                        kFrameTimestampToleranceSec));
+
+  AdvanceClock(half_duration);
+
+  display_list_->StartPaint();
+  animation_->Paint(canvas(), NowTicks(), animation_->GetOriginalSize());
+  display_list_->EndPaintOfUnpaired(gfx::Rect(animation_->GetOriginalSize()));
+
+  base::TimeDelta quarter_duration = animation_->GetAnimationDuration() / 4;
+  ASSERT_TRUE(asset_0_->last_frame_t().has_value());
+  EXPECT_THAT(
+      asset_0_->last_frame_t().value(),
+      FloatNear(quarter_duration.InSecondsF(), kFrameTimestampToleranceSec));
+}
+
+TEST_F(AnimationWithImageAssetsTest, LoadsCorrectImageScale) {
+  AdvanceClock(base::Milliseconds(300));
+
+  animation_->Start(Animation::Style::kLoop);
+
+  asset_0_->set_current_frame_data(CreateHighQualityTestFrameData());
+
+  display_list_->StartPaint();
+  animation_->Paint(canvas(), NowTicks(), animation_->GetOriginalSize());
+  display_list_->EndPaintOfUnpaired(gfx::Rect(animation_->GetOriginalSize()));
+
+  ASSERT_TRUE(asset_0_->last_frame_scale_factor().has_value());
+  EXPECT_THAT(asset_0_->last_frame_scale_factor().value(),
+              FloatEq(kCanvasImageScale));
 }
 
 }  // namespace lottie

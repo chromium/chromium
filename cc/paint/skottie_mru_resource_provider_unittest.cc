@@ -48,6 +48,7 @@ class FrameDataStub {
 
   SkottieWrapper::FrameDataFetchResult GetFrameDataForAsset(
       SkottieResourceIdHash asset_id,
+      float t,
       sk_sp<SkImage>& image_out,
       SkSamplingOptions& sampling_out) const {
     if (asset_to_frame_data_.contains(asset_id)) {

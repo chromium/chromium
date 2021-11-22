@@ -30,7 +30,7 @@ class ImageAssetImpl : public skresources::ImageAsset {
   FrameData getFrameData(float t) override {
     FrameData new_frame_data;
     SkottieWrapper::FrameDataFetchResult result = frame_data_cb_.Run(
-        asset_id_, new_frame_data.image, new_frame_data.sampling);
+        asset_id_, t, new_frame_data.image, new_frame_data.sampling);
     switch (result) {
       case SkottieWrapper::FrameDataFetchResult::NEW_DATA_AVAILABLE:
         current_frame_data_ = std::move(new_frame_data);

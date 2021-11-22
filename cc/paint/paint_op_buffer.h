@@ -832,6 +832,7 @@ class CC_PAINT_EXPORT DrawSkottieOp final : public PaintOp {
       SkCanvas* canvas,
       const PlaybackParams& params,
       SkottieResourceIdHash asset_id,
+      float t_frame,
       sk_sp<SkImage>& image_out,
       SkSamplingOptions& sampling_out) const;
 

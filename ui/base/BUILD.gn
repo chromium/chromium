@@ -1167,7 +1167,12 @@ test("ui_base_unittests") {
 
   if (skia_support_skottie && !is_ios) {
     sources += [ "//ui/lottie/animation_unittest.cc" ]
-    deps += [ "//ui/lottie" ]
+    deps += [
+      "//cc:test_support",
+      "//cc/paint",
+      "//third_party/abseil-cpp:absl",
+      "//ui/lottie",
+    ]
   }
 }
 

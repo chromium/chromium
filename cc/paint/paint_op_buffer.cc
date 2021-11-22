@@ -1651,6 +1651,7 @@ SkottieWrapper::FrameDataFetchResult DrawSkottieOp::GetImageAssetForRaster(
     SkCanvas* canvas,
     const PlaybackParams& params,
     SkottieResourceIdHash asset_id,
+    float t_frame,
     sk_sp<SkImage>& sk_image,
     SkSamplingOptions& sampling_out) const {
   auto images_iter = images.find(asset_id);

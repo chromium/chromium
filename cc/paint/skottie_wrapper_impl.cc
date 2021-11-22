@@ -121,11 +121,13 @@ class SkottieWrapperImpl : public SkottieWrapper {
 
   FrameDataFetchResult RunCurrentFrameDataCallback(
       SkottieResourceIdHash asset_id_hash,
+      float t,
       sk_sp<SkImage>& image_out,
       SkSamplingOptions& sampling_out) EXCLUSIVE_LOCKS_REQUIRED(lock_) {
     lock_.AssertAcquired();
     DCHECK(current_frame_data_cb_);
-    return current_frame_data_cb_.Run(asset_id_hash, image_out, sampling_out);
+    return current_frame_data_cb_.Run(asset_id_hash, t, image_out,
+                                      sampling_out);
   }
 
   base::Lock lock_;

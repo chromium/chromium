@@ -42,6 +42,7 @@ class MockFrameDataCallback {
   MOCK_METHOD(SkottieWrapper::FrameDataFetchResult,
               OnAssetLoaded,
               (SkottieResourceIdHash asset_id_hash,
+               float t,
                sk_sp<SkImage>& image_out,
                SkSamplingOptions& sampling_out));
 
@@ -129,13 +130,13 @@ TEST(SkottieWrapperTest, LoadsCorrectAssetsForDraw) {
   ::testing::NiceMock<MockCanvas> canvas;
   MockFrameDataCallback mock_callback;
   EXPECT_CALL(mock_callback,
-              OnAssetLoaded(HashSkottieResourceId("image_0"), _, _));
+              OnAssetLoaded(HashSkottieResourceId("image_0"), _, _, _));
   skottie->Draw(&canvas, /*t=*/0.25, SkRect::MakeWH(500, 500),
                 mock_callback.Get());
   Mock::VerifyAndClearExpectations(&mock_callback);
 
   EXPECT_CALL(mock_callback,
-              OnAssetLoaded(HashSkottieResourceId("image_1"), _, _));
+              OnAssetLoaded(HashSkottieResourceId("image_1"), _, _, _));
   skottie->Draw(&canvas, /*t=*/0.75, SkRect::MakeWH(500, 500),
                 mock_callback.Get());
   Mock::VerifyAndClearExpectations(&mock_callback);
@@ -158,12 +159,12 @@ TEST(SkottieWrapperTest, LoadsCorrectAssetsForSeek) {
   ::testing::NiceMock<MockCanvas> canvas;
   MockFrameDataCallback mock_callback;
   EXPECT_CALL(mock_callback,
-              OnAssetLoaded(HashSkottieResourceId("image_0"), _, _));
+              OnAssetLoaded(HashSkottieResourceId("image_0"), _, _, _));
   skottie->Seek(/*t=*/0.25, mock_callback.Get());
   Mock::VerifyAndClearExpectations(&mock_callback);
 
   EXPECT_CALL(mock_callback,
-              OnAssetLoaded(HashSkottieResourceId("image_1"), _, _));
+              OnAssetLoaded(HashSkottieResourceId("image_1"), _, _, _));
   skottie->Seek(/*t=*/0.75, mock_callback.Get());
   Mock::VerifyAndClearExpectations(&mock_callback);
 }

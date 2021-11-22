@@ -72,9 +72,11 @@ class CC_PAINT_EXPORT SkottieWrapper
   };
   // The callback's implementation must synchronously fill the output
   // arguments. |asset_id| is guaranteed to be a valid asset that's present
-  // in GetImageAssetMetadata().
+  // in GetImageAssetMetadata(). See skresources::ImageAsset::getFrame() for
+  // the semantics of |t|.
   using FrameDataCallback = base::RepeatingCallback<FrameDataFetchResult(
       SkottieResourceIdHash asset_id,
+      float t,
       sk_sp<SkImage>& image_out,
       SkSamplingOptions& sampling_out)>;
 

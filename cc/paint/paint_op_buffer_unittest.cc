@@ -1544,9 +1544,10 @@ SkottieFrameDataMap GetTestImagesForSkottie(SkottieWrapper& skottie,
                                             float t) {
   SkottieFrameDataMap images;
   skottie.Seek(
-      t, base::BindLambdaForTesting([&](SkottieResourceIdHash asset_id,
-                                        sk_sp<SkImage>& image_out,
-                                        SkSamplingOptions& sampling_out) {
+      t,
+      base::BindLambdaForTesting([&](SkottieResourceIdHash asset_id,
+                                     float t_frame, sk_sp<SkImage>& image_out,
+                                     SkSamplingOptions& sampling_out) {
         SkottieFrameData frame_data;
         frame_data.image = CreateBitmapImage(
             gfx::Size(skottie_rect.width() / 2, skottie_rect.height() / 2));
