@@ -57,17 +57,17 @@ class StartupBrowserCreatorImpl {
   static void MaybeToggleFullscreen(Browser* browser);
 
   // Creates the necessary windows for startup. Returns true on success,
-  // false on failure. process_startup is true if Chrome is just
-  // starting up. If process_startup is false, it indicates Chrome was
-  // already running and the user wants to launch another instance.
+  // false on failure. |process_startup| indicates whether Chrome is just
+  // starting up or already running and the user wants to launch another
+  // instance.
   bool Launch(Profile* profile,
-              bool process_startup,
+              chrome::startup::IsProcessStartup process_startup,
               std::unique_ptr<LaunchModeRecorder> launch_mode_recorder);
 
   // Convenience for OpenTabsInBrowser that converts |urls| into a set of
   // Tabs.
   Browser* OpenURLsInBrowser(Browser* browser,
-                             bool process_startup,
+                             chrome::startup::IsProcessStartup process_startup,
                              const std::vector<GURL>& urls);
 
  private:
@@ -144,13 +144,14 @@ class StartupBrowserCreatorImpl {
   // are added to is returned, which is either |browser|, the newly created
   // browser, or nullptr if browser could not be created.
   Browser* OpenTabsInBrowser(Browser* browser,
-                             bool process_startup,
+                             chrome::startup::IsProcessStartup process_startup,
                              const StartupTabs& tabs);
 
   // Determines the URLs to be shown at startup by way of various policies
   // (welcome, pinned tabs, etc.), determines whether a session restore
   // is necessary, and opens the URLs in a new or restored browser accordingly.
-  LaunchResult DetermineURLsAndLaunch(bool process_startup);
+  LaunchResult DetermineURLsAndLaunch(
+      chrome::startup::IsProcessStartup process_startup);
 
   // Returns a tuple of
   // - the tabs to be shown on startup, based on the policy functions in
@@ -159,7 +160,7 @@ class StartupBrowserCreatorImpl {
   // - Whether there's launch tabs.
   DetermineStartupTabsResult DetermineStartupTabs(
       const StartupTabProvider& provider,
-      bool process_startup,
+      chrome::startup::IsProcessStartup process_startup,
       bool is_ephemeral_profile,
       bool is_post_crash_launch,
       bool has_incompatible_applications,
@@ -173,7 +174,7 @@ class StartupBrowserCreatorImpl {
   // should continue (either synchronously, or asynchronously without
   // restoring).
   bool MaybeAsyncRestore(const StartupTabs& tabs,
-                         bool process_startup,
+                         chrome::startup::IsProcessStartup process_startup,
                          bool is_post_crash_launch);
 
   // Returns a browser displaying the contents of |tabs|. Based on |behavior|,
@@ -183,13 +184,13 @@ class StartupBrowserCreatorImpl {
       const StartupTabs& tabs,
       BrowserOpenBehavior behavior,
       SessionRestore::BehaviorBitmask restore_options,
-      bool process_startup,
+      chrome::startup::IsProcessStartup process_startup,
       bool is_post_crash_launch);
 
   // Adds any startup infobars to the selected tab of the given browser.
   void AddInfoBarsIfNecessary(
       Browser* browser,
-      chrome::startup::IsProcessStartup is_process_startup);
+      chrome::startup::IsProcessStartup process_startup);
 
   // Determines how the launch flow should obtain a Browser.
   static BrowserOpenBehavior DetermineBrowserOpenBehavior(
@@ -210,7 +211,7 @@ class StartupBrowserCreatorImpl {
   const base::CommandLine& command_line_;
   Profile* profile_ = nullptr;
   StartupBrowserCreator* browser_creator_;
-  bool is_first_run_;
+  chrome::startup::IsFirstRun is_first_run_;
 };
 
 #endif  // CHROME_BROWSER_UI_STARTUP_STARTUP_BROWSER_CREATOR_IMPL_H_

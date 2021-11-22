@@ -57,6 +57,7 @@
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/startup/startup_browser_creator.h"
+#include "chrome/browser/ui/startup/startup_types.h"
 #include "chrome/browser/ui/tabs/tab_group.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -1048,7 +1049,8 @@ void SessionRestore::OpenStartupPagesAfterCrash(Browser* browser) {
   if (HasSingleNewTabPage(browser))
     tab_to_clobber = browser->tab_strip_model()->GetActiveWebContents();
 
-  StartupBrowserCreator::OpenStartupPages(browser, true);
+  StartupBrowserCreator::OpenStartupPages(
+      browser, chrome::startup::IsProcessStartup::kYes);
   if (tab_to_clobber && browser->tab_strip_model()->count() > 1)
     chrome::CloseWebContents(browser, tab_to_clobber, true);
 }

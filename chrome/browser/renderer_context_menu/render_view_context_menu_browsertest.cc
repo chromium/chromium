@@ -1377,8 +1377,8 @@ IN_PROC_BROWSER_TEST_F(ContextMenuBrowserTest, DISABLED_OpenLinkInProfileEntryPr
   }
 
   profiles::FindOrCreateNewWindowForProfile(
-      profile, chrome::startup::IS_NOT_PROCESS_STARTUP,
-      chrome::startup::IS_NOT_FIRST_RUN, false);
+      profile, chrome::startup::IsProcessStartup::kNo,
+      chrome::startup::IsFirstRun::kNo, false);
 
   {
     std::unique_ptr<TestRenderViewContextMenu> menu(
@@ -1460,8 +1460,8 @@ IN_PROC_BROWSER_TEST_F(ContextMenuBrowserTest, MAYBE_OpenLinkInProfile) {
       entry->LockForceSigninProfile(true);
     } else {
       profiles::FindOrCreateNewWindowForProfile(
-          profile, chrome::startup::IS_NOT_PROCESS_STARTUP,
-          chrome::startup::IS_NOT_FIRST_RUN, false);
+          profile, chrome::startup::IsProcessStartup::kNo,
+          chrome::startup::IsFirstRun::kNo, false);
       profiles_in_menu.push_back(profile);
     }
   }

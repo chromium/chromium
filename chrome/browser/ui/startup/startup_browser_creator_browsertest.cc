@@ -63,6 +63,7 @@
 #include "chrome/browser/ui/startup/startup_browser_creator.h"
 #include "chrome/browser/ui/startup/startup_browser_creator_impl.h"
 #include "chrome/browser/ui/startup/startup_tab_provider.h"
+#include "chrome/browser/ui/startup/startup_types.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
@@ -208,8 +209,8 @@ void DisableWelcomePages(const std::vector<Profile*>& profiles) {
 Browser* OpenNewBrowser(Profile* profile) {
   base::CommandLine dummy(base::CommandLine::NO_PROGRAM);
   StartupBrowserCreatorImpl creator(base::FilePath(), dummy,
-                                    chrome::startup::IS_FIRST_RUN);
-  creator.Launch(profile, false, nullptr);
+                                    chrome::startup::IsFirstRun::kYes);
+  creator.Launch(profile, chrome::startup::IsProcessStartup::kNo, nullptr);
   return chrome::FindBrowserWithProfile(profile);
 }
 
@@ -382,12 +383,13 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTest, OpenURLsPopup) {
   ASSERT_EQ(popup, observer.added_browser_);
 
   base::CommandLine dummy(base::CommandLine::NO_PROGRAM);
-  chrome::startup::IsFirstRun first_run = first_run::IsChromeFirstRun() ?
-      chrome::startup::IS_FIRST_RUN : chrome::startup::IS_NOT_FIRST_RUN;
+  chrome::startup::IsFirstRun first_run =
+      first_run::IsChromeFirstRun() ? chrome::startup::IsFirstRun::kYes
+                                    : chrome::startup::IsFirstRun::kNo;
   StartupBrowserCreatorImpl launch(base::FilePath(), dummy, first_run);
   // This should create a new window, but re-use the profile from |popup|. If
   // it used a null or invalid profile, it would crash.
-  launch.OpenURLsInBrowser(popup, false, urls);
+  launch.OpenURLsInBrowser(popup, chrome::startup::IsProcessStartup::kNo, urls);
   ASSERT_NE(popup, observer.added_browser_);
   BrowserList::RemoveObserver(&observer);
 }
@@ -485,7 +487,7 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTest, OpenAppUrlShortcut) {
   command_line.AppendSwitchASCII(switches::kApp, url.spec());
 
   ASSERT_TRUE(StartupBrowserCreator().ProcessCmdLineImpl(
-      command_line, base::FilePath(), /*process_startup=*/false,
+      command_line, base::FilePath(), chrome::startup::IsProcessStartup::kNo,
       browser()->profile(), {}));
 
   Browser* new_browser = FindOneOtherBrowser(browser());
@@ -531,7 +533,7 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTest, OpenAppUrlIncognitoShortcut) {
   Browser* incognito = CreateIncognitoBrowser();
 
   ASSERT_TRUE(StartupBrowserCreator().ProcessCmdLineImpl(
-      command_line, base::FilePath(), /*process_startup=*/false,
+      command_line, base::FilePath(), chrome::startup::IsProcessStartup::kNo,
       incognito->profile(), {}));
 
   Browser* new_browser = FindOneOtherBrowser(incognito);
@@ -711,7 +713,7 @@ IN_PROC_BROWSER_TEST_P(StartupBrowserCreatorChromeAppShortcutTest,
   command_line.AppendSwitchASCII(switches::kAppId, extension_app->id());
 
   ASSERT_TRUE(StartupBrowserCreator().ProcessCmdLineImpl(
-      command_line, base::FilePath(), /*process_startup=*/false,
+      command_line, base::FilePath(), chrome::startup::IsProcessStartup::kNo,
       browser()->profile(), {}));
 
   if (IsExpectedToAllowLaunch()) {
@@ -749,7 +751,7 @@ IN_PROC_BROWSER_TEST_P(StartupBrowserCreatorChromeAppShortcutTest,
   base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
   command_line.AppendSwitchASCII(switches::kAppId, extension_app->id());
   ASSERT_TRUE(StartupBrowserCreator().ProcessCmdLineImpl(
-      command_line, base::FilePath(), /*process_startup=*/false,
+      command_line, base::FilePath(), chrome::startup::IsProcessStartup::kNo,
       browser()->profile(), {}));
 
   if (IsExpectedToAllowLaunch()) {
@@ -788,7 +790,7 @@ IN_PROC_BROWSER_TEST_P(StartupBrowserCreatorChromeAppShortcutTest,
   base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
   command_line.AppendSwitchASCII(switches::kAppId, extension_app->id());
   ASSERT_TRUE(StartupBrowserCreator().ProcessCmdLineImpl(
-      command_line, base::FilePath(), /*process_startup=*/false,
+      command_line, base::FilePath(), chrome::startup::IsProcessStartup::kNo,
       browser()->profile(), {}));
 
   if (IsExpectedToAllowLaunch()) {
@@ -840,7 +842,7 @@ IN_PROC_BROWSER_TEST_P(StartupBrowserCreatorChromeAppShortcutTest,
   command_line.AppendSwitchASCII(switches::kAppId, extension_app->id());
 
   ASSERT_TRUE(StartupBrowserCreator().ProcessCmdLineImpl(
-      command_line, base::FilePath(), /*process_startup=*/false,
+      command_line, base::FilePath(), chrome::startup::IsProcessStartup::kNo,
       browser()->profile(), {}));
   tab_waiter.Wait();
 
@@ -897,7 +899,7 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTest, ValidNotificationLaunchId) {
       L"1|1|0|Default|0|https://example.com/|notification_id");
 
   ASSERT_TRUE(StartupBrowserCreator().ProcessCmdLineImpl(
-      command_line, base::FilePath(), /*process_startup=*/false,
+      command_line, base::FilePath(), chrome::startup::IsProcessStartup::kNo,
       browser()->profile(), {}));
 
   // The launch delegates to the notification system and doesn't open any new
@@ -911,7 +913,7 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTest, InvalidNotificationLaunchId) {
   command_line.AppendSwitchNative(switches::kNotificationLaunchId, L"");
   StartupBrowserCreator browser_creator;
   ASSERT_FALSE(StartupBrowserCreator().ProcessCmdLineImpl(
-      command_line, base::FilePath(), /*process_startup=*/false,
+      command_line, base::FilePath(), chrome::startup::IsProcessStartup::kNo,
       browser()->profile(), {}));
 
   // No new browser window is open.
@@ -1690,8 +1692,8 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorRestartTest,
   SessionRestoreTestHelper restore_waiter;
   base::CommandLine dummy(base::CommandLine::NO_PROGRAM);
   StartupBrowserCreatorImpl creator(base::FilePath(), dummy,
-                                    chrome::startup::IS_NOT_FIRST_RUN);
-  creator.Launch(test_profile, false, nullptr);
+                                    chrome::startup::IsFirstRun::kNo);
+  creator.Launch(test_profile, chrome::startup::IsProcessStartup::kNo, nullptr);
   restore_waiter.Wait();
 
   // We expect a browser to open, but we should NOT get a duplicate app.
@@ -2048,9 +2050,10 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserWithRealWebAppTest,
   // Trigger the restore via StartupBrowserCreator.
   base::CommandLine dummy(base::CommandLine::NO_PROGRAM);
   StartupBrowserCreatorImpl launch(base::FilePath(), dummy,
-                                   chrome::startup::IS_NOT_FIRST_RUN);
+                                   chrome::startup::IsFirstRun::kNo);
   // Fake |process_startup| true.
-  EXPECT_TRUE(launch.Launch(profile1, /* process_startup */ true, nullptr));
+  EXPECT_TRUE(launch.Launch(profile1, chrome::startup::IsProcessStartup::kYes,
+                            nullptr));
 
   // We should get two windows from profile1.
   ASSERT_EQ(3u, BrowserList::GetInstance()->size());
@@ -2964,8 +2967,9 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorFirstRunTest, AddFirstRunTab) {
   base::CommandLine dummy(base::CommandLine::NO_PROGRAM);
 
   StartupBrowserCreatorImpl launch(base::FilePath(), dummy, &browser_creator,
-                                   chrome::startup::IS_FIRST_RUN);
-  ASSERT_TRUE(launch.Launch(browser()->profile(), false, nullptr));
+                                   chrome::startup::IsFirstRun::kYes);
+  ASSERT_TRUE(launch.Launch(browser()->profile(),
+                            chrome::startup::IsProcessStartup::kNo, nullptr));
 
   // This should have created a new browser window.
   Browser* new_browser = FindOneOtherBrowser(browser());
@@ -3020,8 +3024,9 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorFirstRunTest,
   // Do a process-startup browser launch.
   base::CommandLine dummy(base::CommandLine::NO_PROGRAM);
   StartupBrowserCreatorImpl launch(base::FilePath(), dummy, &browser_creator,
-                                   chrome::startup::IS_FIRST_RUN);
-  ASSERT_TRUE(launch.Launch(browser()->profile(), true, nullptr));
+                                   chrome::startup::IsFirstRun::kYes);
+  ASSERT_TRUE(launch.Launch(browser()->profile(),
+                            chrome::startup::IsProcessStartup::kYes, nullptr));
 
   // This should have created a new browser window.
   Browser* new_browser = FindOneOtherBrowser(browser());
@@ -3066,8 +3071,9 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorFirstRunTest,
   // Do a process-startup browser launch.
   base::CommandLine dummy(base::CommandLine::NO_PROGRAM);
   StartupBrowserCreatorImpl launch(base::FilePath(), dummy, &browser_creator,
-                                   chrome::startup::IS_FIRST_RUN);
-  ASSERT_TRUE(launch.Launch(browser()->profile(), true, nullptr));
+                                   chrome::startup::IsFirstRun::kYes);
+  ASSERT_TRUE(launch.Launch(browser()->profile(),
+                            chrome::startup::IsProcessStartup::kYes, nullptr));
 
   // This should have created a new browser window.
   Browser* new_browser = FindOneOtherBrowser(browser());
@@ -3287,8 +3293,9 @@ class StartupBrowserCreatorInfobarsTest
       const base::CommandLine& command_line) {
     Profile* profile = browser()->profile();
     StartupBrowserCreatorImpl launch(base::FilePath(), command_line,
-                                     chrome::startup::IS_NOT_FIRST_RUN);
-    EXPECT_TRUE(launch.Launch(profile, true, nullptr));
+                                     chrome::startup::IsFirstRun::kNo);
+    EXPECT_TRUE(launch.Launch(profile, chrome::startup::IsProcessStartup::kYes,
+                              nullptr));
 
     // This should have created a new browser window.
     Browser* new_browser = FindOneOtherBrowser(browser());
@@ -3397,8 +3404,9 @@ class StartupBrowserCreatorInfobarsKioskTest : public InProcessBrowserTest {
     command_line.AppendSwitch(switches::kKioskMode);
     command_line.AppendSwitch(extra_switch);
     StartupBrowserCreatorImpl launch(base::FilePath(), command_line,
-                                     chrome::startup::IS_NOT_FIRST_RUN);
-    EXPECT_TRUE(launch.Launch(profile, true, nullptr));
+                                     chrome::startup::IsFirstRun::kNo);
+    EXPECT_TRUE(launch.Launch(profile, chrome::startup::IsProcessStartup::kYes,
+                              nullptr));
 
     // This should have created a new browser window.
     Browser* new_browser = FindOneOtherBrowser(browser());

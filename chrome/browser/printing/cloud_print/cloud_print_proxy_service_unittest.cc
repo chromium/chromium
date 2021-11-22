@@ -20,6 +20,7 @@
 #include "chrome/browser/printing/cloud_print/cloud_print_proxy_service_factory.h"
 #include "chrome/browser/service_process/service_process_control.h"
 #include "chrome/browser/ui/startup/startup_browser_creator.h"
+#include "chrome/browser/ui/startup/startup_types.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/cloud_print.mojom.h"
 #include "chrome/common/cloud_print/cloud_print_proxy_info.h"
@@ -214,8 +215,8 @@ class CloudPrintProxyPolicyTest : public ::testing::Test {
   bool LaunchBrowser(const base::CommandLine& command_line, Profile* profile) {
     StartupBrowserCreator browser_creator;
     return browser_creator.ProcessCmdLineImpl(
-        command_line, base::FilePath(), false, profile,
-        StartupBrowserCreator::Profiles());
+        command_line, base::FilePath(), chrome::startup::IsProcessStartup::kNo,
+        profile, StartupBrowserCreator::Profiles());
   }
 
  protected:

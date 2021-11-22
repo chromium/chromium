@@ -11,6 +11,7 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/startup/startup_tab.h"
+#include "chrome/browser/ui/startup/startup_types.h"
 #include "url/gurl.h"
 
 class Profile;
@@ -41,9 +42,10 @@ class StartupTabProvider {
 #if defined(OS_WIN)
   // Returns a "welcome back" tab to be shown if requested for a specific
   // launch.
-  virtual StartupTabs GetWelcomeBackTabs(Profile* profile,
-                                         StartupBrowserCreator* browser_creator,
-                                         bool process_startup) const = 0;
+  virtual StartupTabs GetWelcomeBackTabs(
+      Profile* profile,
+      StartupBrowserCreator* browser_creator,
+      chrome::startup::IsProcessStartup process_startup) const = 0;
 #endif  // defined(OS_WIN)
 
   // Checks for the presence of a trigger indicating the need to offer a Profile
@@ -190,9 +192,10 @@ class StartupTabProviderImpl : public StartupTabProvider {
   StartupTabs GetOnboardingTabs(Profile* profile) const override;
 
 #if defined(OS_WIN)
-  StartupTabs GetWelcomeBackTabs(Profile* profile,
-                                 StartupBrowserCreator* browser_creator,
-                                 bool process_startup) const override;
+  StartupTabs GetWelcomeBackTabs(
+      Profile* profile,
+      StartupBrowserCreator* browser_creator,
+      chrome::startup::IsProcessStartup process_startup) const override;
 #endif  // defined(OS_WIN)
 
   StartupTabs GetDistributionFirstRunTabs(

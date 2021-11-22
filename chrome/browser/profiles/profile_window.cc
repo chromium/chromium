@@ -148,14 +148,14 @@ void OpenBrowserWindowForProfile(CreateOnceCallback callback,
   if (status != Profile::CREATE_STATUS_INITIALIZED)
     return;
 
-  chrome::startup::IsProcessStartup is_process_startup =
-      chrome::startup::IS_NOT_PROCESS_STARTUP;
-  chrome::startup::IsFirstRun is_first_run = chrome::startup::IS_NOT_FIRST_RUN;
+  chrome::startup::IsProcessStartup process_startup =
+      chrome::startup::IsProcessStartup::kNo;
+  chrome::startup::IsFirstRun is_first_run = chrome::startup::IsFirstRun::kNo;
 
   // If this is a brand new profile, then start a first run window.
   if (is_new_profile) {
-    is_process_startup = chrome::startup::IS_PROCESS_STARTUP;
-    is_first_run = chrome::startup::IS_FIRST_RUN;
+    process_startup = chrome::startup::IsProcessStartup::kYes;
+    is_first_run = chrome::startup::IsFirstRun::kYes;
   }
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
@@ -212,7 +212,7 @@ void OpenBrowserWindowForProfile(CreateOnceCallback callback,
   // existed, which means that here a browser definitely needs to be created.
   // Passing true for |always_create| means we won't duplicate the code that
   // tries to find a browser.
-  profiles::FindOrCreateNewWindowForProfile(profile, is_process_startup,
+  profiles::FindOrCreateNewWindowForProfile(profile, process_startup,
                                             is_first_run, true);
 }
 

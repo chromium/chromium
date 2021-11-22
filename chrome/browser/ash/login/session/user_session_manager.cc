@@ -2305,13 +2305,13 @@ void UserSessionManager::RespectLocalePreferenceWrapper(
 void UserSessionManager::LaunchBrowser(Profile* profile) {
   StartupBrowserCreator browser_creator;
   chrome::startup::IsFirstRun first_run =
-      ::first_run::IsChromeFirstRun() ? chrome::startup::IS_FIRST_RUN
-                                      : chrome::startup::IS_NOT_FIRST_RUN;
+      ::first_run::IsChromeFirstRun() ? chrome::startup::IsFirstRun::kYes
+                                      : chrome::startup::IsFirstRun::kNo;
 
-  browser_creator.LaunchBrowser(*base::CommandLine::ForCurrentProcess(),
-                                profile, base::FilePath(),
-                                chrome::startup::IS_PROCESS_STARTUP, first_run,
-                                std::make_unique<LaunchModeRecorder>());
+  browser_creator.LaunchBrowser(
+      *base::CommandLine::ForCurrentProcess(), profile, base::FilePath(),
+      chrome::startup::IsProcessStartup::kYes, first_run,
+      std::make_unique<LaunchModeRecorder>());
 }
 
 // static

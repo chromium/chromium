@@ -24,6 +24,7 @@
 #include "chrome/browser/ui/startup/launch_mode_recorder.h"
 #include "chrome/browser/ui/startup/startup_browser_creator.h"
 #include "chrome/browser/ui/startup/startup_browser_creator_impl.h"
+#include "chrome/browser/ui/startup/startup_types.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/chrome_version.h"
@@ -146,8 +147,9 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTriggeredResetTest,
   // Do a simple non-process-startup browser launch.
   base::CommandLine dummy(base::CommandLine::NO_PROGRAM);
   StartupBrowserCreatorImpl launch(base::FilePath(), dummy,
-                                   chrome::startup::IS_NOT_FIRST_RUN);
-  ASSERT_TRUE(launch.Launch(profile, false, nullptr));
+                                   chrome::startup::IsFirstRun::kNo);
+  ASSERT_TRUE(
+      launch.Launch(profile, chrome::startup::IsProcessStartup::kNo, nullptr));
 
   // This should have created a new browser window.  |browser()| is still
   // around at this point, even though we've closed its window.
@@ -193,8 +195,9 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTriggeredResetFirstRunTest,
   // Do a process-startup browser launch.
   base::CommandLine dummy(base::CommandLine::NO_PROGRAM);
   StartupBrowserCreatorImpl launch(base::FilePath(), dummy, &browser_creator,
-                                   chrome::startup::IS_FIRST_RUN);
-  ASSERT_TRUE(launch.Launch(browser()->profile(), true, nullptr));
+                                   chrome::startup::IsFirstRun::kYes);
+  ASSERT_TRUE(launch.Launch(browser()->profile(),
+                            chrome::startup::IsProcessStartup::kYes, nullptr));
 
   // This should have created a new browser window.
   Browser* new_browser = FindOneOtherBrowser(browser());
@@ -229,8 +232,9 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTriggeredResetTest,
   base::CommandLine dummy(base::CommandLine::NO_PROGRAM);
   {
     StartupBrowserCreatorImpl launch(base::FilePath(), dummy,
-                                     chrome::startup::IS_NOT_FIRST_RUN);
-    ASSERT_TRUE(launch.Launch(browser()->profile(), false, nullptr));
+                                     chrome::startup::IsFirstRun::kNo);
+    ASSERT_TRUE(launch.Launch(browser()->profile(),
+                              chrome::startup::IsProcessStartup::kNo, nullptr));
   }
 
   // This should have created a new browser window.  |browser()| is still
@@ -268,8 +272,9 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTriggeredResetTest,
   // Same kind of simple non-process-startup browser launch.
   {
     StartupBrowserCreatorImpl launch(base::FilePath(), dummy,
-                                     chrome::startup::IS_NOT_FIRST_RUN);
-    ASSERT_TRUE(launch.Launch(other_profile_ptr, false, nullptr));
+                                     chrome::startup::IsFirstRun::kNo);
+    ASSERT_TRUE(launch.Launch(other_profile_ptr,
+                              chrome::startup::IsProcessStartup::kNo, nullptr));
   }
 
   Browser* other_profile_browser =

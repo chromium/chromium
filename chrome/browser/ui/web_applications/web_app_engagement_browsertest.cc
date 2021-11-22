@@ -16,6 +16,7 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/startup/startup_browser_creator.h"
+#include "chrome/browser/ui/startup/startup_types.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
@@ -498,7 +499,7 @@ IN_PROC_BROWSER_TEST_F(WebAppEngagementBrowserTest, CommandLineWindowByUrl) {
 
   // The app should open as a window.
   EXPECT_TRUE(StartupBrowserCreator().ProcessCmdLineImpl(
-      command_line, base::FilePath(), /*process_startup=*/false,
+      command_line, base::FilePath(), chrome::startup::IsProcessStartup::kNo,
       browser()->profile(), {}));
   app_loaded_observer.Wait();
 
@@ -549,7 +550,7 @@ IN_PROC_BROWSER_TEST_F(WebAppEngagementBrowserTest, CommandLineWindowByAppId) {
 
   // The app should open as a window.
   EXPECT_TRUE(StartupBrowserCreator().ProcessCmdLineImpl(
-      command_line, base::FilePath(), /*process_startup=*/false,
+      command_line, base::FilePath(), chrome::startup::IsProcessStartup::kNo,
       browser()->profile(), {}));
   app_loaded_observer.Wait();
 
@@ -604,7 +605,7 @@ IN_PROC_BROWSER_TEST_F(WebAppEngagementBrowserTest, CommandLineTab) {
 
   // The app should open as a tab.
   EXPECT_TRUE(StartupBrowserCreator().ProcessCmdLineImpl(
-      command_line, base::FilePath(), /*process_startup=*/false,
+      command_line, base::FilePath(), chrome::startup::IsProcessStartup::kNo,
       browser()->profile(), {}));
   app_loaded_observer.Wait();
 

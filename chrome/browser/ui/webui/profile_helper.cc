@@ -54,8 +54,8 @@ void OpenNewWindowForProfile(Profile* profile) {
   }
 
   profiles::FindOrCreateNewWindowForProfile(
-      profile, chrome::startup::IS_PROCESS_STARTUP,
-      chrome::startup::IS_FIRST_RUN, false);
+      profile, chrome::startup::IsProcessStartup::kYes,
+      chrome::startup::IsFirstRun::kYes, false);
 }
 
 void DeleteProfileAtPath(base::FilePath file_path,

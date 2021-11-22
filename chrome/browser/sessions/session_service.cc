@@ -506,8 +506,8 @@ bool SessionService::RestoreIfNecessary(const std::vector<GURL>& urls_to_open,
       StartupBrowserCreator browser_creator;
       browser_creator.LaunchBrowser(*base::CommandLine::ForCurrentProcess(),
                                     profile(), base::FilePath(),
-                                    chrome::startup::IS_PROCESS_STARTUP,
-                                    chrome::startup::IS_NOT_FIRST_RUN,
+                                    chrome::startup::IsProcessStartup::kYes,
+                                    chrome::startup::IsFirstRun::kNo,
                                     std::make_unique<LaunchModeRecorder>());
       return true;
     } else {

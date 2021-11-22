@@ -51,6 +51,7 @@
 #include "chrome/browser/ui/startup/obsolete_system_infobar_delegate.h"
 #include "chrome/browser/ui/startup/startup_browser_creator.h"
 #include "chrome/browser/ui/startup/startup_tab_provider.h"
+#include "chrome/browser/ui/startup/startup_types.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/webui/welcome/helpers.h"
 #include "chrome/browser/ui/webui/whats_new/whats_new_util.h"
@@ -169,7 +170,7 @@ StartupBrowserCreatorImpl::StartupBrowserCreatorImpl(
       command_line_(command_line),
       profile_(nullptr),
       browser_creator_(nullptr),
-      is_first_run_(is_first_run == chrome::startup::IS_FIRST_RUN) {}
+      is_first_run_(is_first_run) {}
 
 StartupBrowserCreatorImpl::StartupBrowserCreatorImpl(
     const base::FilePath& cur_dir,
@@ -179,7 +180,7 @@ StartupBrowserCreatorImpl::StartupBrowserCreatorImpl(
     : cur_dir_(cur_dir),
       command_line_(command_line),
       browser_creator_(browser_creator),
-      is_first_run_(is_first_run == chrome::startup::IS_FIRST_RUN) {}
+      is_first_run_(is_first_run) {}
 
 // static
 void StartupBrowserCreatorImpl::MaybeToggleFullscreen(Browser* browser) {
@@ -193,7 +194,7 @@ void StartupBrowserCreatorImpl::MaybeToggleFullscreen(Browser* browser) {
 
 bool StartupBrowserCreatorImpl::Launch(
     Profile* profile,
-    bool process_startup,
+    chrome::startup::IsProcessStartup process_startup,
     std::unique_ptr<LaunchModeRecorder> launch_mode_recorder) {
   DCHECK(profile);
   profile_ = profile;
@@ -220,7 +221,7 @@ bool StartupBrowserCreatorImpl::Launch(
   }
 
 #if defined(OS_MAC)
-  if (process_startup) {
+  if (process_startup == chrome::startup::IsProcessStartup::kYes) {
     // Check whether the auto-update system needs to be promoted from user
     // to system.
     KeystoneInfoBar::PromotionInfoBar(profile);
@@ -239,16 +240,17 @@ bool StartupBrowserCreatorImpl::Launch(
 
 Browser* StartupBrowserCreatorImpl::OpenURLsInBrowser(
     Browser* browser,
-    bool process_startup,
+    chrome::startup::IsProcessStartup process_startup,
     const std::vector<GURL>& urls) {
   StartupTabs tabs;
   UrlsToTabs(urls, &tabs);
   return OpenTabsInBrowser(browser, process_startup, tabs);
 }
 
-Browser* StartupBrowserCreatorImpl::OpenTabsInBrowser(Browser* browser,
-                                                      bool process_startup,
-                                                      const StartupTabs& tabs) {
+Browser* StartupBrowserCreatorImpl::OpenTabsInBrowser(
+    Browser* browser,
+    chrome::startup::IsProcessStartup process_startup,
+    const StartupTabs& tabs) {
   DCHECK(!tabs.empty());
 
   // If we don't yet have a profile, try to use the one we're given from
@@ -286,8 +288,10 @@ Browser* StartupBrowserCreatorImpl::OpenTabsInBrowser(Browser* browser,
     // asking us to open such a URL should really ask the handler directly.
     bool handled_by_chrome = ProfileIOData::IsHandledURL(tabs[i].url) ||
         (registry && registry->IsHandledProtocol(tabs[i].url.scheme()));
-    if (!process_startup && !handled_by_chrome)
+    if (process_startup == chrome::startup::IsProcessStartup::kNo &&
+        !handled_by_chrome) {
       continue;
+    }
 
     int add_types = first_tab ? TabStripModel::ADD_ACTIVE :
                                 TabStripModel::ADD_NONE;
@@ -302,7 +306,8 @@ Browser* StartupBrowserCreatorImpl::OpenTabsInBrowser(Browser* browser,
     params.tabstrip_add_types = add_types;
 
 #if BUILDFLAG(ENABLE_RLZ)
-    if (process_startup && google_util::IsGoogleHomePageUrl(tabs[i].url)) {
+    if (process_startup == chrome::startup::IsProcessStartup::kYes &&
+        google_util::IsGoogleHomePageUrl(tabs[i].url)) {
       params.extra_headers = rlz::RLZTracker::GetAccessPointHttpHeader(
           rlz::RLZTracker::ChromeHomePage());
     }
@@ -326,7 +331,8 @@ Browser* StartupBrowserCreatorImpl::OpenTabsInBrowser(Browser* browser,
 }
 
 StartupBrowserCreatorImpl::LaunchResult
-StartupBrowserCreatorImpl::DetermineURLsAndLaunch(bool process_startup) {
+StartupBrowserCreatorImpl::DetermineURLsAndLaunch(
+    chrome::startup::IsProcessStartup process_startup) {
   if (!ShouldLaunch(command_line_))
     return LaunchResult::kNormally;
 
@@ -389,7 +395,7 @@ StartupBrowserCreatorImpl::DetermineURLsAndLaunch(bool process_startup) {
     return result.launch_result;
 
   BrowserOpenBehaviorOptions behavior_options = 0;
-  if (process_startup)
+  if (process_startup == chrome::startup::IsProcessStartup::kYes)
     behavior_options |= PROCESS_STARTUP;
   if (is_post_crash_launch)
     behavior_options |= IS_POST_CRASH_LAUNCH;
@@ -421,9 +427,7 @@ StartupBrowserCreatorImpl::DetermineURLsAndLaunch(bool process_startup) {
       tabs, behavior, restore_options, process_startup, is_post_crash_launch);
 
   // Finally, add info bars.
-  AddInfoBarsIfNecessary(
-      browser, process_startup ? chrome::startup::IS_PROCESS_STARTUP
-                               : chrome::startup::IS_NOT_PROCESS_STARTUP);
+  AddInfoBarsIfNecessary(browser, process_startup);
   return result.launch_result;
 }
 
@@ -444,7 +448,7 @@ StartupBrowserCreatorImpl::DetermineStartupTabsResult::
 StartupBrowserCreatorImpl::DetermineStartupTabsResult
 StartupBrowserCreatorImpl::DetermineStartupTabs(
     const StartupTabProvider& provider,
-    bool process_startup,
+    chrome::startup::IsProcessStartup process_startup,
     bool is_incognito_or_guest,
     bool is_post_crash_launch,
     bool has_incompatible_applications,
@@ -553,13 +557,16 @@ StartupBrowserCreatorImpl::DetermineStartupTabs(
   return {std::move(tabs), launch_result};
 }
 
-bool StartupBrowserCreatorImpl::MaybeAsyncRestore(const StartupTabs& tabs,
-                                                  bool process_startup,
-                                                  bool is_post_crash_launch) {
+bool StartupBrowserCreatorImpl::MaybeAsyncRestore(
+    const StartupTabs& tabs,
+    chrome::startup::IsProcessStartup process_startup,
+    bool is_post_crash_launch) {
   // Restore is performed synchronously on startup, and is never performed when
   // launching after crashing.
-  if (process_startup || is_post_crash_launch)
+  if (process_startup == chrome::startup::IsProcessStartup::kYes ||
+      is_post_crash_launch) {
     return false;
+  }
 
   // Note: there's no session service in incognito or guest mode.
   if (!SessionServiceFactory::GetForProfileForSessionRestore(profile_))
@@ -578,7 +585,7 @@ Browser* StartupBrowserCreatorImpl::RestoreOrCreateBrowser(
     const StartupTabs& tabs,
     BrowserOpenBehavior behavior,
     SessionRestore::BehaviorBitmask restore_options,
-    bool process_startup,
+    chrome::startup::IsProcessStartup process_startup,
     bool is_post_crash_launch) {
   Browser* browser = nullptr;
   if (behavior == BrowserOpenBehavior::SYNCHRONOUS_RESTORE) {
@@ -594,7 +601,8 @@ Browser* StartupBrowserCreatorImpl::RestoreOrCreateBrowser(
     if (browser)
       return browser;
   } else if (behavior == BrowserOpenBehavior::USE_EXISTING) {
-    browser = chrome::FindTabbedBrowser(profile_, process_startup);
+    browser = chrome::FindTabbedBrowser(
+        profile_, process_startup == chrome::startup::IsProcessStartup::kYes);
   }
 
   base::AutoReset<bool> synchronous_launch_resetter(
@@ -622,7 +630,7 @@ Browser* StartupBrowserCreatorImpl::RestoreOrCreateBrowser(
 
 void StartupBrowserCreatorImpl::AddInfoBarsIfNecessary(
     Browser* browser,
-    chrome::startup::IsProcessStartup is_process_startup) {
+    chrome::startup::IsProcessStartup process_startup) {
   if (!browser || !profile_ || browser->tab_strip_model()->count() == 0)
     return;
 
@@ -649,7 +657,7 @@ void StartupBrowserCreatorImpl::AddInfoBarsIfNecessary(
   // These info bars are not shown when the browser is being controlled by
   // automated tests, so that they don't interfere with tests that assume no
   // info bars.
-  if (is_process_startup == chrome::startup::IS_PROCESS_STARTUP &&
+  if (process_startup == chrome::startup::IsProcessStartup::kYes &&
       !command_line_.HasSwitch(switches::kTestType) &&
       !command_line_.HasSwitch(switches::kEnableAutomation)) {
     content::WebContents* web_contents =
@@ -675,11 +683,10 @@ void StartupBrowserCreatorImpl::AddInfoBarsIfNecessary(
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
     if (!command_line_.HasSwitch(switches::kNoDefaultBrowserCheck)) {
       // The default browser prompt should only be shown after the first run.
-      if (!is_first_run_)
+      if (is_first_run_ == chrome::startup::IsFirstRun::kNo)
         ShowDefaultBrowserPrompt(profile_);
     }
 #endif
-
   }
 }
 
