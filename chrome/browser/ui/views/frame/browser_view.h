@@ -63,7 +63,6 @@ class BookmarkBarView;
 class Browser;
 class ContentsLayoutManager;
 class ExclusiveAccessBubbleViews;
-class ExtensionsSidePanelController;
 class FeaturePromoControllerViews;
 class FullscreenControlHost;
 class InfoBarContainerView;
@@ -192,10 +191,6 @@ class BrowserView : public BrowserWindow,
 
   SidePanel* left_aligned_side_panel_for_testing() {
     return left_aligned_side_panel_;
-  }
-
-  ExtensionsSidePanelController* extensions_side_panel_controller() {
-    return extensions_side_panel_controller_.get();
   }
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
@@ -962,10 +957,6 @@ class BrowserView : public BrowserWindow,
   // The side panel aligned to the left side of the browser window.
   SidePanel* left_aligned_side_panel_ = nullptr;
   views::View* left_aligned_side_panel_separator_ = nullptr;
-
-  // A controller that handles extensions hosted in the left aligned side panel.
-  std::unique_ptr<ExtensionsSidePanelController>
-      extensions_side_panel_controller_;
 
   // The Lens side panel.
   SidePanel* lens_side_panel_ = nullptr;

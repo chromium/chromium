@@ -91,7 +91,6 @@
 #include "chrome/browser/ui/views/download/download_shelf_web_view.h"
 #include "chrome/browser/ui/views/exclusive_access_bubble_views.h"
 #include "chrome/browser/ui/views/extensions/extension_keybinding_registry_views.h"
-#include "chrome/browser/ui/views/extensions/extensions_side_panel_controller.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_container.h"
 #include "chrome/browser/ui/views/eye_dropper/eye_dropper.h"
 #include "chrome/browser/ui/views/find_bar_host.h"
@@ -771,34 +770,16 @@ BrowserView::BrowserView(std::unique_ptr<Browser> browser)
   }
 #endif
 
-  // Only either Side Search or the extensions side panel experiment should be
-  // occupying the left aligned side panel at a given time.
-  const bool side_search_enabled =
 #if BUILDFLAG(ENABLE_SIDE_SEARCH)
-      IsSideSearchEnabled(browser_->profile());
-#else
-      false;
-#endif  // BUILDFLAG(ENABLE_SIDE_SEARCH)
-
-  if (browser_->is_type_normal() &&
-      (side_search_enabled ||
-       base::FeatureList::IsEnabled(features::kExtensionsSidePanel))) {
+  if (browser_->is_type_normal() && IsSideSearchEnabled(browser_->profile())) {
     left_aligned_side_panel_ = AddChildView(std::make_unique<SidePanel>(this));
     left_aligned_side_panel_separator_ =
         AddChildView(std::make_unique<ContentsSeparator>());
 
-#if BUILDFLAG(ENABLE_SIDE_SEARCH)
-    if (side_search_enabled) {
-      side_search_controller_ = std::make_unique<SideSearchBrowserController>(
-          left_aligned_side_panel_, this);
-    }
-#endif  // BUILDFLAG(ENABLE_SIDE_SEARCH)
-    if (!side_search_enabled) {
-      extensions_side_panel_controller_ =
-          std::make_unique<ExtensionsSidePanelController>(
-              left_aligned_side_panel_, this);
-    }
+    side_search_controller_ = std::make_unique<SideSearchBrowserController>(
+        left_aligned_side_panel_, this);
   }
+#endif  // BUILDFLAG(ENABLE_SIDE_SEARCH)
 
   // InfoBarContainer needs to be added as a child here for drop-shadow, but
   // needs to come after toolbar in focus order (see EnsureFocusOrder()).

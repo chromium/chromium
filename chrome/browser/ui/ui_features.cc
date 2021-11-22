@@ -63,14 +63,6 @@ const base::Feature kEvDetailsInPageInfo{"EvDetailsInPageInfo",
 const base::Feature kExtensionsMenuAccessControl{
     "ExtensionsMenuAccessControl", base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Enables the hosting of an extension in the left aligned side panel of the
-// browser window. Currently used for a hosted extension experiment.
-const base::Feature kExtensionsSidePanel{"ExtensionsSidePanel",
-                                         base::FEATURE_DISABLED_BY_DEFAULT};
-
-const base::FeatureParam<std::string> kExtensionsSidePanelId{
-    &kExtensionsSidePanel, "ExtensionsSidePanelId", ""};
-
 // Enables the reauth flow for authenticated profiles with invalid credentials
 // when the force sign-in policy is enabled.
 const base::Feature kForceSignInReauth{"ForceSignInReauth",
