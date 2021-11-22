@@ -435,7 +435,11 @@ MinMaxSizesResult NGGridLayoutAlgorithm::ComputeMinMaxSizes(
   MinMaxSizes sizes{ComputeTotalColumnSize(SizingConstraint::kMinContent),
                     ComputeTotalColumnSize(SizingConstraint::kMaxContent)};
   sizes += BorderScrollbarPadding().InlineSum();
-  return MinMaxSizesResult(sizes, depends_on_block_constraints);
+
+  // TODO(crbug.com/1272533): This should be |depends_on_block_constraints|
+  // (rather than false). However we need more cache slots to handle the
+  // performance degredation we currently experience. See bug for more details.
+  return MinMaxSizesResult(sizes, /* depends_on_block_constraints */ false);
 }
 
 const TrackSpanProperties& GridItemData::GetTrackSpanProperties(
