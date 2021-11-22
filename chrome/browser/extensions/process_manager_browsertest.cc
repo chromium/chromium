@@ -401,9 +401,13 @@ IN_PROC_BROWSER_TEST_F(ProcessManagerBrowserTest,
 // Test that loading an extension with a browser action does not create a
 // background page and that clicking on the action creates the appropriate
 // ExtensionHost.
-// Disabled due to flake, see http://crbug.com/315242
-IN_PROC_BROWSER_TEST_F(ProcessManagerBrowserTest,
-                       DISABLED_PopupHostCreation) {
+// TODO(http://crbug.com/1271329): Times out frequently on Lacros.
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#define MAYBE_PopupHostCreation DISABLED_PopupHostCreation
+#else
+#define MAYBE_PopupHostCreation PopupHostCreation
+#endif
+IN_PROC_BROWSER_TEST_F(ProcessManagerBrowserTest, MAYBE_PopupHostCreation) {
   ProcessManager* pm = ProcessManager::Get(profile());
 
   // Load an extension with the ability to open a popup but no background
@@ -444,7 +448,6 @@ IN_PROC_BROWSER_TEST_F(ProcessManagerBrowserTest,
   EXPECT_TRUE(pm->GetSiteInstanceForURL(popup->url()));
   EXPECT_FALSE(pm->IsBackgroundHostClosing(popup->id()));
   EXPECT_EQ(-1, pm->GetLazyKeepaliveCount(popup.get()));
-  EXPECT_TRUE(pm->GetLazyKeepaliveActivities(popup.get()).empty());
   EXPECT_TRUE(pm->GetLazyKeepaliveActivities(popup.get()).empty());
 }
 
