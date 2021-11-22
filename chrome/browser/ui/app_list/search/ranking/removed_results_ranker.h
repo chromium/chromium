@@ -34,14 +34,6 @@ class RemovedResultsRanker : public Ranker {
 
   void Remove(ChromeSearchResult* result) override;
 
-  // Returns whether result removal requests for results from type |provider|
-  // should be delegated to the result, as opposed to handled by this class.
-  // Currently this returns true in one case:
-  //   1) Omnibox results, whose removal requests are handled by the omnibox
-  //      autocomplete controller. The Omnibox is unique amongst our search
-  //      providers in that it has a backend which supports result removal.
-  static bool ShouldDelegateToResult(ProviderType provider);
-
  private:
   friend class RemovedResultsRankerTest;
 

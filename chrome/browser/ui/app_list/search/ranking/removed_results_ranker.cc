@@ -9,11 +9,6 @@
 
 namespace app_list {
 
-// static
-bool RemovedResultsRanker::ShouldDelegateToResult(ProviderType provider) {
-  return provider == ash::AppListSearchResultType::kOmnibox;
-}
-
 RemovedResultsRanker::RemovedResultsRanker(const base::FilePath& path,
                                            const base::TimeDelta write_delay)
     : write_delay_(write_delay) {
@@ -25,9 +20,7 @@ RemovedResultsRanker::~RemovedResultsRanker() = default;
 void RemovedResultsRanker::Rank(ResultsMap& results,
                                 CategoriesMap& categories,
                                 ProviderType provider) {
-  // Results with delegated removal are handled in
-  // SearchController::InvokeResultAction().
-  if (!initialized() || ShouldDelegateToResult(provider))
+  if (!initialized())
     return;
 
   const auto it = results.find(provider);

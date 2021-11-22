@@ -129,6 +129,7 @@ TEST_F(RemovedResultsRankerTest, RankResults) {
   // Request to remove some results.
   ranker.Remove(make_result("A").get());
   ranker.Remove(make_result("C").get());
+  ranker.Remove(make_result("E").get());
   Wait();
 
   CategoriesMap categories;
@@ -147,18 +148,22 @@ TEST_F(RemovedResultsRankerTest, RankResults) {
   EXPECT_TRUE(results_map[ResultType::kInternalApp][0]->scoring().filter);
   EXPECT_FALSE(results_map[ResultType::kInternalApp][1]->scoring().filter);
 
-  // Omnibox: Ranking has no effect on omnibox results.
+  // Omnibox: The 0th result ("C") is marked to be filtered.
+  //
+  // TODO(crbug.com/1272361): Ranking here should not affect Omnibox results,
+  // after support is added to the autocomplete controller for removal of
+  // non-zero state Omnibox results.
   ranker.Rank(results_map, categories, ResultType::kOmnibox);
-  EXPECT_FALSE(results_map[ResultType::kOmnibox][0]->scoring().filter);
+  EXPECT_TRUE(results_map[ResultType::kOmnibox][0]->scoring().filter);
 
   // Check proto for record of removed results.
   RemovedResultsProto proto = ReadFromDisk();
-  EXPECT_EQ(proto.removed_ids_size(), 2);
+  EXPECT_EQ(proto.removed_ids_size(), 3);
 
   std::vector<std::string> recorded_ids;
   for (const auto& result : proto.removed_ids())
     recorded_ids.push_back(result.first);
-  EXPECT_THAT(recorded_ids, UnorderedElementsAre("A", "C"));
+  EXPECT_THAT(recorded_ids, UnorderedElementsAre("A", "C", "E"));
 }
 
 TEST_F(RemovedResultsRankerTest, RankEmptyResults) {
