@@ -7311,3 +7311,4 @@ crbug.com/1272058 [ Linux ] fast/animation/request-animation-frame-cancel.html [
 # Sheriff 2021-11-22
 crbug.com/1272352 virtual/threaded/http/tests/devtools/isolated-code-cache/same-origin-test.js [ Pass Crash ]
 crbug.com/1272352 virtual/threaded/http/tests/devtools/isolated-code-cache/stale-revalidation-test.js [ Pass Crash ]
+crbug.com/1272376 virtual/scroll-unification/plugins/plugin-document-back-forward.html [ Failure Pass ]
