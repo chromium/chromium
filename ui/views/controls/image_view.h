@@ -120,7 +120,7 @@ BuilderT&& SetImage(const gfx::ImageSkia& value) && {
 }
 BuilderT& SetImage(const gfx::ImageSkia* value) & {
   auto setter = std::make_unique<::views::internal::PropertySetter<
-      ViewClass_, gfx::ImageSkia*,
+      ViewClass_, const gfx::ImageSkia*,
       decltype((static_cast<void (ViewClass_::*)(const gfx::ImageSkia*)>(
           &ViewClass_::SetImage))),
       &ViewClass_::SetImage>>(value);
