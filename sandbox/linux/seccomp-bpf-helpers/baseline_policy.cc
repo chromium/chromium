@@ -122,12 +122,6 @@ ResultExpr EvaluateSyscallImpl(int fs_denied_errno,
   if (sysno == __NR_getrusage) {
     return RestrictGetrusage();
   }
-
-  if (sysno == __NR_sigaltstack) {
-    // Required for better stack overflow detection in ASan. Disallowed in
-    // non-ASan builds.
-    return Allow();
-  }
 #endif  // defined(ADDRESS_SANITIZER) || defined(THREAD_SANITIZER) ||
         // defined(MEMORY_SANITIZER)
 
@@ -155,12 +149,6 @@ ResultExpr EvaluateSyscallImpl(int fs_denied_errno,
   if (IsBaselinePolicyAllowed(sysno)) {
     return Allow();
   }
-
-#if defined(OS_ANDROID)
-  // Needed for thread creation.
-  if (sysno == __NR_sigaltstack)
-    return Allow();
-#endif
 
 #if defined(__NR_rseq) && !defined(OS_ANDROID)
   // See https://crbug.com/1104160. Rseq can only be disabled right before an

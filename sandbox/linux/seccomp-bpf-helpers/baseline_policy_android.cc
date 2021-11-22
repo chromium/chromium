@@ -128,7 +128,6 @@ ResultExpr BaselinePolicyAndroid::EvaluateSyscall(int sysno) const {
     case __NR_set_thread_area:
 #endif
     case __NR_set_tid_address:
-    case __NR_sigaltstack:
 #if defined(__i386__) || defined(__arm__)
     case __NR_ugetrlimit:
 #else
