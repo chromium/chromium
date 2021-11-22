@@ -13,14 +13,16 @@ export class TabGroupElement extends CustomElement {
     return `{__html_template__}`;
   }
 
+  private tabsApi_: TabsApiProxy;
+  private chip_: HTMLElement;
+  private isValidDragOverTarget_: boolean;
+
   constructor() {
     super();
 
-    /** @private @const {!TabsApiProxy} */
     this.tabsApi_ = TabsApiProxyImpl.getInstance();
 
-    /** @private @const {!HTMLElement} */
-    this.chip_ = /** @type {!HTMLElement} */ (this.$('#chip'));
+    this.chip_ = this.$('#chip') as HTMLElement;
     this.chip_.addEventListener('click', () => this.onClickChip_());
     this.chip_.addEventListener(
         'keydown', e => this.onKeydownChip_(/** @type {!KeyboardEvent} */ (e)));
@@ -28,57 +30,46 @@ export class TabGroupElement extends CustomElement {
     /**
      * Flag indicating if this element can accept dragover events. This flag
      * is updated by TabListElement while animating.
-     * @private {boolean}
      */
     this.isValidDragOverTarget_ = true;
   }
 
-  /** @return {boolean} */
-  get isValidDragOverTarget() {
+  get isValidDragOverTarget(): boolean {
     return !this.hasAttribute('dragging_') && this.isValidDragOverTarget_;
   }
 
-  /** @param {boolean} isValid */
-  set isValidDragOverTarget(isValid) {
+  set isValidDragOverTarget(isValid: boolean) {
     this.isValidDragOverTarget_ = isValid;
   }
 
-  /** @return {!HTMLElement} */
-  getDragImage() {
-    return /** @type {!HTMLElement} */ (this.$('#dragImage'));
+  getDragImage(): HTMLElement {
+    return this.$('#dragImage') as HTMLElement;
   }
 
-  /** @return {!HTMLElement} */
-  getDragImageCenter() {
+  getDragImageCenter(): HTMLElement {
     // Since the drag handle is #dragHandle, the drag image should be
     // centered relatively to it.
-    return /** @type {!HTMLElement} */ (this.$('#dragHandle'));
+    return this.$('#dragHandle') as HTMLElement;
   }
 
-  /** @private */
-  onClickChip_() {
+  private onClickChip_() {
     if (!this.dataset.groupId) {
       return;
     }
 
-    const boundingBox = this.$('#chip').getBoundingClientRect();
+    const boundingBox = this.$('#chip')!.getBoundingClientRect();
     this.tabsApi_.showEditDialogForGroup(
         this.dataset.groupId, boundingBox.left, boundingBox.top,
         boundingBox.width, boundingBox.height);
   }
 
-  /**
-   * @param {!KeyboardEvent} event
-   * @private
-   */
-  onKeydownChip_(event) {
+  private onKeydownChip_(event: KeyboardEvent) {
     if (event.key === 'Enter' || event.key === ' ') {
       this.onClickChip_();
     }
   }
 
-  /** @param {boolean} enabled */
-  setDragging(enabled) {
+  setDragging(enabled: boolean) {
     // Since the draggable target is the #chip, if the #chip moves and is no
     // longer under the pointer while the dragstart event is happening, the drag
     // will get canceled. This is unfortunately the behavior of the native drag
@@ -92,26 +83,20 @@ export class TabGroupElement extends CustomElement {
     });
   }
 
-  /** @param {boolean} isDraggedOut */
-  setDraggedOut(isDraggedOut) {
+  setDraggedOut(isDraggedOut: boolean) {
     this.toggleAttribute('dragged-out_', isDraggedOut);
   }
 
-  /** @return {boolean} */
-  isDraggedOut() {
+  isDraggedOut(): boolean {
     return this.hasAttribute('dragged-out_');
   }
 
-  /** @param {boolean} isTouchPressed */
-  setTouchPressed(isTouchPressed) {
+  setTouchPressed(isTouchPressed: boolean) {
     this.toggleAttribute('touch_pressed_', isTouchPressed);
   }
 
-  /**
-   * @param {!TabGroupVisualData} visualData
-   */
-  updateVisuals(visualData) {
-    this.$('#title').innerText = visualData.title;
+  updateVisuals(visualData: TabGroupVisualData) {
+    (this.$('#title') as HTMLElement).innerText = visualData.title;
     this.style.setProperty('--tabstrip-tab-group-color-rgb', visualData.color);
     this.style.setProperty(
         '--tabstrip-tab-group-text-color-rgb', visualData.textColor);
@@ -129,20 +114,18 @@ export class TabGroupElement extends CustomElement {
   }
 }
 
+declare global {
+  interface HTMLElementTagNameMap {
+    'tabstrip-tab-group': TabGroupElement;
+  }
+}
+
 customElements.define('tabstrip-tab-group', TabGroupElement);
 
-/**
- * @param {!Element} element
- * @return {boolean}
- */
-export function isTabGroupElement(element) {
+export function isTabGroupElement(element: Element): boolean {
   return element.tagName === 'TABSTRIP-TAB-GROUP';
 }
 
-/**
- * @param {!Element} element
- * @return {boolean}
- */
-export function isDragHandle(element) {
+export function isDragHandle(element: Element): boolean {
   return element.id === 'dragHandle';
 }

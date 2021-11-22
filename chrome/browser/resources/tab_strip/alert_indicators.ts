@@ -14,16 +14,17 @@ export class AlertIndicatorsElement extends CustomElement {
     return `{__html_template__}`;
   }
 
+  private containerEl_: HTMLElement;
+  private alertIndicators_: Map<TabAlertState, AlertIndicatorElement>;
+
   constructor() {
     super();
 
-    /** @private {!HTMLElement} */
-    this.containerEl_ = /** @type {!HTMLElement} */ (this.$('#container'));
+    this.containerEl_ = this.$('#container') as HTMLElement;
 
     const audioIndicator = new AlertIndicatorElement();
     const recordingIndicator = new AlertIndicatorElement();
 
-    /** @private {!Map<!TabAlertState, !AlertIndicatorElement>} */
     this.alertIndicators_ = new Map([
       [TabAlertState.kMediaRecording, recordingIndicator],
       [TabAlertState.kTabCapturing, new AlertIndicatorElement()],
@@ -40,17 +41,16 @@ export class AlertIndicatorsElement extends CustomElement {
   }
 
   /**
-   * @param {!Array<!TabAlertState>} alertStates
-   * @return {!Promise<number>} A promise that resolves with the number of
-   *     AlertIndicatorElements that are currently visible.
+   * @return A promise that resolves with the number of AlertIndicatorElements
+   *     that are currently visible.
    */
-  updateAlertStates(alertStates) {
+  updateAlertStates(alertStates: TabAlertState[]): Promise<number> {
     const alertIndicators =
         alertStates.map(alertState => this.alertIndicators_.get(alertState));
 
     let alertIndicatorCount = 0;
     for (const [index, alertState] of alertStates.entries()) {
-      const alertIndicator = alertIndicators[/** @type {number} */ (index)];
+      const alertIndicator = alertIndicators[index];
 
       // Don't show unsupported indicators.
       if (!alertIndicator) {
@@ -68,14 +68,18 @@ export class AlertIndicatorsElement extends CustomElement {
       alertIndicator.alertState = alertState;
 
       this.containerEl_.insertBefore(
-          alertIndicator, this.containerEl_.children[alertIndicatorCount]);
+          alertIndicator,
+          this.containerEl_.children[alertIndicatorCount] as Node);
       // Only fade in if this is just being added to the DOM.
       alertIndicator.show();
 
       alertIndicatorCount++;
     }
 
-    const animationPromises = Array.from(this.containerEl_.children)
+    const animationPromises = Array
+                                  .from(
+                                      this.containerEl_.children as
+                                      HTMLCollectionOf<AlertIndicatorElement>)
                                   .slice(alertIndicatorCount)
                                   .map(indicator => indicator.hide());
     return Promise.all(animationPromises)
@@ -84,9 +88,10 @@ export class AlertIndicatorsElement extends CustomElement {
               return this.containerEl_.childElementCount;
             },
             () => {
-                // A failure in the animation promises means an animation was
-                // canceled and therefore there is a new set of alertStates
-                // being animated.
+              // A failure in the animation promises means an animation was
+              // canceled and therefore there is a new set of alertStates
+              // being animated.
+              return -1;
             });
   }
 }

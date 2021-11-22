@@ -63,7 +63,7 @@ suite('Tab', function() {
     document.body.style.setProperty('--tabstrip-tab-spacing', '20px');
 
     testTabsApiProxy = new TestTabsApiProxy();
-    TabsApiProxyImpl.instance_ = testTabsApiProxy;
+    TabsApiProxyImpl.setInstance(testTabsApiProxy);
 
     tabElement =
         /** @type {!TabElement} */ (document.createElement('tabstrip-tab'));

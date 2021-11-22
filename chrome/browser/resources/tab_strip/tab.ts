@@ -17,13 +17,9 @@ import {Tab, TabNetworkState} from './tab_strip.mojom-webui.js';
 import {TabSwiper} from './tab_swiper.js';
 import {CloseTabAction, TabsApiProxy, TabsApiProxyImpl} from './tabs_api_proxy.js';
 
-const DEFAULT_ANIMATION_DURATION = 125;
+const DEFAULT_ANIMATION_DURATION: number = 125;
 
-/**
- * @param {!Tab} tab
- * @return {string}
- */
-function getAccessibleTitle(tab) {
+function getAccessibleTitle(tab: Tab): string {
   const tabTitle = tab.title;
 
   if (tab.crashed) {
@@ -39,9 +35,8 @@ function getAccessibleTitle(tab) {
 
 /**
  * TODO(crbug.com/1025390): padding-inline-end cannot be animated yet.
- * @return {string}
  */
-function getPaddingInlineEndProperty() {
+function getPaddingInlineEndProperty(): string {
   return isRTL() ? 'paddingLeft' : 'paddingRight';
 }
 
@@ -50,78 +45,73 @@ export class TabElement extends CustomElement {
     return `{__html_template__}`;
   }
 
+  private alertIndicatorsEl_: AlertIndicatorsElement;
+  private closeButtonEl_: HTMLElement;
+  private dragImageEl_: HTMLElement;
+  private tabEl_: HTMLElement;
+  private faviconEl_: HTMLElement;
+  private thumbnailContainer_: HTMLElement;
+  private thumbnail_: HTMLImageElement;
+  private tab_: Tab;
+  private tabsApi_: TabsApiProxy;
+  private titleTextEl_: HTMLElement;
+  private isValidDragOverTarget_: boolean;
+  private tabSwiper_: TabSwiper;
+  private onTabActivating_: (tabId: number) => void;
+
   constructor() {
     super();
 
-    this.alertIndicatorsEl_ = /** @type {!AlertIndicatorsElement} */
-        (this.$('tabstrip-alert-indicators'));
+    this.alertIndicatorsEl_ =
+        this.$('tabstrip-alert-indicators') as AlertIndicatorsElement;
     // Normally, custom elements will get upgraded automatically once added to
     // the DOM, but TabElement may need to update properties on
     // AlertIndicatorElement before this happens, so upgrade it manually.
     customElements.upgrade(this.alertIndicatorsEl_);
 
-    /** @private {!HTMLElement} */
-    this.closeButtonEl_ = /** @type {!HTMLElement} */ (this.$('#close'));
+    this.closeButtonEl_ = this.$('#close') as HTMLElement;
     this.closeButtonEl_.setAttribute(
         'aria-label', loadTimeData.getString('closeTab'));
 
-    /** @private {!HTMLElement} */
-    this.dragImageEl_ = /** @type {!HTMLElement} */ (this.$('#dragImage'));
+    this.dragImageEl_ = this.$('#dragImage') as HTMLElement;
 
-    /** @private {!HTMLElement} */
-    this.tabEl_ = /** @type {!HTMLElement} */ (this.$('#tab'));
+    this.tabEl_ = this.$('#tab') as HTMLElement;
 
-    /** @private {!HTMLElement} */
-    this.faviconEl_ = /** @type {!HTMLElement} */ (this.$('#favicon'));
+    this.faviconEl_ = this.$('#favicon') as HTMLElement;
 
-    /** @private {!HTMLElement} */
-    this.thumbnailContainer_ =
-        /** @type {!HTMLElement} */ (this.$('#thumbnail'));
+    this.thumbnailContainer_ = this.$('#thumbnail') as HTMLElement;
 
-    /** @private {!Image} */
-    this.thumbnail_ = /** @type {!Image} */ (this.$('#thumbnailImg'));
+    this.thumbnail_ = this.$('#thumbnailImg') as HTMLImageElement;
 
-    /** @private {!Tab} */
-    this.tab_;
-
-    /** @private {!TabsApiProxy} */
     this.tabsApi_ = TabsApiProxyImpl.getInstance();
 
-    /** @private {!HTMLElement} */
-    this.titleTextEl_ = /** @type {!HTMLElement} */ (this.$('#titleText'));
+    this.titleTextEl_ = this.$('#titleText') as HTMLElement;
 
     /**
      * Flag indicating if this TabElement can accept dragover events. This
      * is used to pause dragover events while animating as animating causes
      * the elements below the pointer to shift.
-     * @private {boolean}
      */
     this.isValidDragOverTarget_ = true;
 
     this.tabEl_.addEventListener('click', () => this.onClick_());
     this.tabEl_.addEventListener('contextmenu', e => this.onContextMenu_(e));
-    this.tabEl_.addEventListener(
-        'keydown', e => this.onKeyDown_(/** @type {!KeyboardEvent} */ (e)));
-    this.tabEl_.addEventListener(
-        'pointerup', e => this.onPointerUp_(/** @type {!PointerEvent} */ (e)));
+    this.tabEl_.addEventListener('keydown', e => this.onKeyDown_(e));
+    this.tabEl_.addEventListener('pointerup', e => this.onPointerUp_(e));
 
     this.closeButtonEl_.addEventListener('click', e => this.onClose_(e));
     this.addEventListener('swipe', () => this.onSwipe_());
 
-    /** @private @const {!TabSwiper} */
     this.tabSwiper_ = new TabSwiper(this);
 
-    /** @private {!Function} */
-    this.onTabActivating_ = (tabId) => {};
+    this.onTabActivating_ = (tabId: number) => {};
   }
 
-  /** @return {!Tab} */
-  get tab() {
+  get tab(): Tab {
     return this.tab_;
   }
 
-  /** @param {!Tab} tab */
-  set tab(tab) {
+  set tab(tab: Tab) {
     this.toggleAttribute('active', tab.active);
     this.tabEl_.setAttribute('aria-selected', tab.active.toString());
     this.toggleAttribute('hide-icon_', !tab.showIcon);
@@ -135,7 +125,7 @@ export class TabElement extends CustomElement {
             tab.networkState === TabNetworkState.kLoading);
     this.toggleAttribute('pinned', tab.pinned);
     this.toggleAttribute('blocked_', tab.blocked);
-    this.setAttribute('draggable', true);
+    this.setAttribute('draggable', String(true));
     this.toggleAttribute('crashed_', tab.crashed);
 
     if (tab.title) {
@@ -161,7 +151,7 @@ export class TabElement extends CustomElement {
     }
 
     // Expose the ID to an attribute to allow easy querySelector use
-    this.setAttribute('data-tab-id', tab.id);
+    this.setAttribute('data-tab-id', tab.id.toString());
 
     this.alertIndicatorsEl_.updateAlertStates(tab.alertStates)
         .then((alertIndicatorsCount) => {
@@ -177,18 +167,15 @@ export class TabElement extends CustomElement {
     this.tab_ = Object.freeze(tab);
   }
 
-  /** @return {boolean} */
-  get isValidDragOverTarget() {
+  get isValidDragOverTarget(): boolean {
     return !this.hasAttribute('dragging_') && this.isValidDragOverTarget_;
   }
 
-  /** @param {boolean} isValid */
-  set isValidDragOverTarget(isValid) {
+  set isValidDragOverTarget(isValid: boolean) {
     this.isValidDragOverTarget_ = isValid;
   }
 
-  /** @param {!Function} callback */
-  set onTabActivating(callback) {
+  set onTabActivating(callback: (tabId: number) => void) {
     this.onTabActivating_ = callback;
   }
 
@@ -196,27 +183,21 @@ export class TabElement extends CustomElement {
     this.tabEl_.focus();
   }
 
-  /** @return {!HTMLElement} */
-  getDragImage() {
+  getDragImage(): HTMLElement {
     return this.dragImageEl_;
   }
 
-  /** @return {!HTMLElement} */
-  getDragImageCenter() {
+  getDragImageCenter(): HTMLElement {
     // dragImageEl_ has padding, so the drag image should be centered relative
     // to tabEl_, the element within the padding.
     return this.tabEl_;
   }
 
-  /**
-   * @param {string} imgData
-   */
-  updateThumbnail(imgData) {
+  updateThumbnail(imgData: string) {
     this.thumbnail_.src = imgData;
   }
 
-  /** @private */
-  onClick_() {
+  private onClick_() {
     if (!this.tab_ || this.tabSwiper_.wasSwiping()) {
       return;
     }
@@ -228,46 +209,29 @@ export class TabElement extends CustomElement {
     this.tabsApi_.closeContainer();
   }
 
-  /**
-   * @param {!Event} event
-   * @private
-   */
-  onContextMenu_(event) {
+  private onContextMenu_(event: Event) {
     event.preventDefault();
     event.stopPropagation();
   }
 
-  /**
-   * @param {!Event} event
-   * @private
-   */
-  onClose_(event) {
+  private onClose_(event: Event) {
     assert(this.tab_);
     event.stopPropagation();
     this.tabsApi_.closeTab(this.tab_.id, CloseTabAction.CLOSE_BUTTON);
   }
 
-  /** @private */
-  onSwipe_() {
+  private onSwipe_() {
     assert(this.tab_);
     this.tabsApi_.closeTab(this.tab_.id, CloseTabAction.SWIPED_TO_CLOSE);
   }
 
-  /**
-   * @param {!KeyboardEvent} event
-   * @private
-   */
-  onKeyDown_(event) {
+  private onKeyDown_(event: KeyboardEvent) {
     if (event.key === 'Enter' || event.key === ' ') {
       this.onClick_();
     }
   }
 
-  /**
-   * @param {!PointerEvent} event
-   * @private
-   */
-  onPointerUp_(event) {
+  private onPointerUp_(event: PointerEvent) {
     event.stopPropagation();
     if (event.pointerType !== 'touch' && event.button === 2) {
       this.tabsApi_.showTabContextMenu(
@@ -279,32 +243,23 @@ export class TabElement extends CustomElement {
     this.tabSwiper_.reset();
   }
 
-  /**
-   * @param {boolean} isDragging
-   */
-  setDragging(isDragging) {
+  setDragging(isDragging: boolean) {
     this.toggleAttribute('dragging_', isDragging);
   }
 
-  /** @param {boolean} isDraggedOut */
-  setDraggedOut(isDraggedOut) {
+  setDraggedOut(isDraggedOut: boolean) {
     this.toggleAttribute('dragged-out_', isDraggedOut);
   }
 
-  /** @return {boolean} */
-  isDraggedOut() {
+  isDraggedOut(): boolean {
     return this.hasAttribute('dragged-out_');
   }
 
-  /** @param {boolean} isTouchPressed */
-  setTouchPressed(isTouchPressed) {
+  setTouchPressed(isTouchPressed: boolean) {
     this.toggleAttribute('touch_pressed_', isTouchPressed);
   }
 
-  /**
-   * @return {!Promise}
-   */
-  slideIn() {
+  slideIn(): Promise<void> {
     const paddingInlineEnd = getPaddingInlineEndProperty();
 
     // If this TabElement is the last tab, there needs to be enough space for
@@ -315,15 +270,14 @@ export class TabElement extends CustomElement {
     const startState = {
       maxWidth: isLastChild ? 'var(--tabstrip-tab-width)' : 0,
       transform: `scale(0)`,
+      [paddingInlineEnd]: isLastChild ? 'var(--tabstrip-tab-spacing)' : 0,
     };
-    startState[paddingInlineEnd] =
-        isLastChild ? 'var(--tabstrip-tab-spacing)' : 0;
 
     const finishState = {
       maxWidth: `var(--tabstrip-tab-width)`,
       transform: `scale(1)`,
+      [paddingInlineEnd]: 'var(--tabstrip-tab-spacing)',
     };
-    finishState[paddingInlineEnd] = 'var(--tabstrip-tab-spacing)';
 
     return new Promise(resolve => {
       const animation = this.animate([startState, finishState], {
@@ -348,10 +302,7 @@ export class TabElement extends CustomElement {
     });
   }
 
-  /**
-   * @return {!Promise}
-   */
-  slideOut() {
+  slideOut(): Promise<void> {
     if (!this.tabsApi_.isVisible() || this.tab_.pinned ||
         this.tabSwiper_.wasSwiping()) {
       this.remove();
@@ -385,10 +336,11 @@ export class TabElement extends CustomElement {
 
       const widthAnimationKeyframes = {
         maxWidth: ['var(--tabstrip-tab-width)', 0],
+        [getPaddingInlineEndProperty()]: ['var(--tabstrip-tab-spacing)', 0],
       };
-      widthAnimationKeyframes[getPaddingInlineEndProperty()] =
-          ['var(--tabstrip-tab-spacing)', 0];
-      const widthAnimation = this.animate(widthAnimationKeyframes, {
+      // TODO(dpapad): Figure out why TypeScript compiler does not understand
+      // the alternative keyframe syntax. Seems to work in the TS playground.
+      const widthAnimation = this.animate(widthAnimationKeyframes as any, {
         delay: 97.5,
         duration: 300,
         easing: 'cubic-bezier(.4, 0, 0, 1)',
@@ -421,12 +373,14 @@ export class TabElement extends CustomElement {
   }
 }
 
+declare global {
+  interface HTMLElementTagNameMap {
+    'tabstrip-tab': TabElement;
+  }
+}
+
 customElements.define('tabstrip-tab', TabElement);
 
-/**
- * @param {!Element} element
- * @return {boolean}
- */
-export function isTabElement(element) {
+export function isTabElement(element: Element): boolean {
   return element.tagName === 'TABSTRIP-TAB';
 }

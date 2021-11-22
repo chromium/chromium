@@ -23,25 +23,19 @@ import {TabsApiProxy, TabsApiProxyImpl} from './tabs_api_proxy.js';
  * The amount of padding to leave between the edge of the screen and the active
  * tab when auto-scrolling. This should leave some room to show the previous or
  * next tab to afford to users that there more tabs if the user scrolls.
- * @const {number}
  */
-const SCROLL_PADDING = 32;
+const SCROLL_PADDING: number = 32;
 
-/** @type {boolean} */
-let scrollAnimationEnabled = true;
+let scrollAnimationEnabled: boolean = true;
 
-/** @const {number} */
-const TOUCH_CONTEXT_MENU_OFFSET_X = 8;
+const TOUCH_CONTEXT_MENU_OFFSET_X: number = 8;
 
-/** @const {number} */
-const TOUCH_CONTEXT_MENU_OFFSET_Y = -40;
+const TOUCH_CONTEXT_MENU_OFFSET_Y: number = -40;
 
 /**
  * Context menu should position below the element for touch.
- * @param {!Element} element
- * @return {!Object<{x: number, y: number}>}
  */
-function getContextMenuPosition(element) {
+function getContextMenuPosition(element: Element): {x: number, y: number} {
   const rect = element.getBoundingClientRect();
   return {
     x: rect.left + TOUCH_CONTEXT_MENU_OFFSET_X,
@@ -49,26 +43,20 @@ function getContextMenuPosition(element) {
   };
 }
 
-/** @param {boolean} enabled */
-export function setScrollAnimationEnabledForTesting(enabled) {
+export function setScrollAnimationEnabledForTesting(enabled: boolean) {
   scrollAnimationEnabled = enabled;
 }
 
-/**
- * @enum {string}
- */
-const LayoutVariable = {
-  VIEWPORT_WIDTH: '--tabstrip-viewport-width',
-  TAB_WIDTH: '--tabstrip-tab-thumbnail-width',
-};
+enum LayoutVariable {
+  VIEWPORT_WIDTH = '--tabstrip-viewport-width',
+  TAB_WIDTH = '--tabstrip-tab-thumbnail-width',
+}
 
 /**
  * Animates a series of elements to indicate that tabs have moved position.
- * @param {!Element} movedElement
- * @param {number} prevIndex
- * @param {number} newIndex
  */
-function animateElementMoved(movedElement, prevIndex, newIndex) {
+function animateElementMoved(
+    movedElement: Element, prevIndex: number, newIndex: number) {
   // Direction is -1 for moving towards a lower index, +1 for moving
   // towards a higher index. If moving towards a lower index, the TabList needs
   // to animate everything from the movedElement's current index to its prev
@@ -78,11 +66,7 @@ function animateElementMoved(movedElement, prevIndex, newIndex) {
   // traverse the previousElementSiblings.
   const direction = Math.sign(newIndex - prevIndex);
 
-  /**
-   * @param {!Element} element
-   * @return {?Element}
-   */
-  function getSiblingToAnimate(element) {
+  function getSiblingToAnimate(element: Element): Element|null {
     return direction === -1 ? element.nextElementSibling :
                               element.previousElementSibling;
   }
@@ -101,15 +85,12 @@ function animateElementMoved(movedElement, prevIndex, newIndex) {
 /**
  * Animates the slide of an element across the tab strip (both vertically and
  * horizontally for pinned tabs, and horizontally for other tabs and groups).
- * @param {!Element} element
- * @param {number} prevIndex
- * @param {number} newIndex
  */
-function slideElement(element, prevIndex, newIndex) {
+function slideElement(element: Element, prevIndex: number, newIndex: number) {
   let horizontalMovement = newIndex - prevIndex;
   let verticalMovement = 0;
 
-  if (isTabElement(element) && element.tab.pinned) {
+  if (isTabElement(element) && (element as TabElement).tab.pinned) {
     const pinnedTabsPerColumn = 3;
     const columnChange = Math.floor(newIndex / pinnedTabsPerColumn) -
         Math.floor(prevIndex / pinnedTabsPerColumn);
@@ -125,7 +106,7 @@ function slideElement(element, prevIndex, newIndex) {
   const translateY = `calc(${verticalMovement * -1} * ` +
       '(var(--tabstrip-tab-height) + var(--tabstrip-tab-spacing)))';
 
-  element.isValidDragOverTarget = false;
+  (element as TabElement | TabGroupElement).isValidDragOverTarget = false;
   const animation = element.animate(
       [
         {transform: `translate(${translateX}, ${translateY})`},
@@ -136,14 +117,36 @@ function slideElement(element, prevIndex, newIndex) {
         easing: 'ease-out',
       });
   function onComplete() {
-    element.isValidDragOverTarget = true;
+    (element as TabElement | TabGroupElement).isValidDragOverTarget = true;
   }
   animation.oncancel = onComplete;
   animation.onfinish = onComplete;
 }
 
-/** @implements {DragManagerDelegate} */
-export class TabListElement extends CustomElement {
+export class TabListElement extends CustomElement implements
+    DragManagerDelegate {
+  animationPromises: Promise<void>;
+  private currentScrollUpdateFrame_: number|null;
+  private documentVisibilityChangeListener_: () => void;
+  private draggedItem_?: TabElement|TabGroupElement;
+  private dropPlaceholder_: HTMLElement;
+  private focusOutlineManager_: FocusOutlineManager;
+  private thumbnailTracker_: Map<number, boolean>;
+  private intersectionObserver_: IntersectionObserver;
+
+  private activatingTabId_?: number;
+  private activatingTabIdTimestamp_?: number;  // In ms.
+  private eventTracker_: EventTracker;
+  private lastTargetedItem_: TabElement|TabGroupElement|null = null;
+  private lastTouchPoint_?: {clientX: number, clientY: number};
+  private pinnedTabsElement_: Element;
+  private tabsApi_: TabsApiProxy;
+  private unpinnedTabsElement_: Element;
+  private webUIListeners_: WebUIListener[];
+  private windowBlurListener_: () => void;
+  private scrollingTimeoutId_: number;
+  private scrollListener_: (e: Event) => void;
+
   static get template() {
     return `{__html_template__}`;
   }
@@ -156,37 +159,30 @@ export class TabListElement extends CustomElement {
      * is useful in cases when the list needs to wait for all animations to
      * finish in order to get accurate pixels (such as getting the position of a
      * tab) or accurate element counts.
-     * @type {!Promise}
      */
     this.animationPromises = Promise.resolve();
 
     /**
      * The ID of the current animation frame that is in queue to update the
      * scroll position.
-     * @private {?number}
      */
     this.currentScrollUpdateFrame_ = null;
 
-    /** @private {!Function} */
     this.documentVisibilityChangeListener_ = () =>
         this.onDocumentVisibilityChange_();
 
     /**
      * The element that is currently being dragged.
-     * @private {!TabElement|!TabGroupElement|undefined}
      */
     this.draggedItem_;
 
-    /** @private {!Element} */
     this.dropPlaceholder_ = document.createElement('div');
     this.dropPlaceholder_.id = 'dropPlaceholder';
 
-    /** @private @const {!FocusOutlineManager} */
     this.focusOutlineManager_ = FocusOutlineManager.forDocument(document);
 
     /**
      * Map of tab IDs to whether or not the tab's thumbnail should be tracked.
-     * @private {!Map<number, boolean>}
      */
     this.thumbnailTracker_ = new Map();
 
@@ -195,11 +191,11 @@ export class TabListElement extends CustomElement {
      * currently in view or close to being in view, which will help determine
      * which thumbnails need to be tracked to stay fresh and which can be
      * untracked until they become visible.
-     * @private {!IntersectionObserver}
      */
     this.intersectionObserver_ = new IntersectionObserver(entries => {
       for (const entry of entries) {
-        this.thumbnailTracker_.set(entry.target.tab.id, entry.isIntersecting);
+        this.thumbnailTracker_.set(
+            (entry.target as TabElement).tab.id, entry.isIntersecting);
       }
 
       if (this.scrollingTimeoutId_ === -1) {
@@ -214,46 +210,25 @@ export class TabListElement extends CustomElement {
       rootMargin: '0% 100%',
     });
 
-    /** @private {number|undefined} */
-    this.activatingTabId_;
-
-    /** @private {number|undefined} Timestamp in ms */
-    this.activatingTabIdTimestamp_;
-
-    /** @private @const {!EventTracker} */
     this.eventTracker_ = new EventTracker();
 
-    /** @private {!TabElement|!TabGroupElement|null} */
-    this.lastTargetedItem_;
+    this.pinnedTabsElement_ = this.$('#pinnedTabs')!;
 
-    /** @private {!Object<{x: number, y: number}>|undefined} */
-    this.lastTouchPoint_;
-
-    /** @private {!Element} */
-    this.pinnedTabsElement_ = /** @type {!Element} */ (this.$('#pinnedTabs'));
-
-    /** @private {!TabsApiProxy} */
     this.tabsApi_ = TabsApiProxyImpl.getInstance();
 
-    /** @private {!Element} */
-    this.unpinnedTabsElement_ =
-        /** @type {!Element} */ (this.$('#unpinnedTabs'));
+    this.unpinnedTabsElement_ = this.$('#unpinnedTabs')!;
 
-    /** @private {!Array<!WebUIListener>} */
     this.webUIListeners_ = [];
 
-    /** @private {!Function} */
     this.windowBlurListener_ = () => this.onWindowBlur_();
 
     /**
      * Timeout that is created at every scroll event and is either canceled at
      * each subsequent scroll event or resolves after a few milliseconds after
      * the last scroll event.
-     * @private {number}
      */
     this.scrollingTimeoutId_ = -1;
 
-    /** @private {!Function} */
     this.scrollListener_ = (e) => this.onScroll_(e);
 
     this.addWebUIListener_('theme-changed', () => {
@@ -266,7 +241,7 @@ export class TabListElement extends CustomElement {
 
     const callbackRouter = this.tabsApi_.getCallbackRouter();
     callbackRouter.layoutChanged.addListener(
-        layout => this.applyCSSDictionary_(layout));
+        this.applyCSSDictionary_.bind(this));
 
     callbackRouter.tabThumbnailUpdated.addListener(
         this.tabThumbnailUpdated_.bind(this));
@@ -282,14 +257,13 @@ export class TabListElement extends CustomElement {
     this.eventTracker_.add(
         document, 'contextmenu', e => this.onContextMenu_(e));
     this.eventTracker_.add(
-        document, 'pointerup',
-        e => this.onPointerUp_(/** @type {!PointerEvent} */ (e)));
+        document, 'pointerup', e => this.onPointerUp_(e as PointerEvent));
     this.eventTracker_.add(
         document, 'visibilitychange', () => this.onDocumentVisibilityChange_());
     this.eventTracker_.add(window, 'blur', () => this.onWindowBlur_());
     this.eventTracker_.add(this, 'scroll', e => this.onScroll_(e));
     this.eventTracker_.add(
-        document, 'touchstart', (e) => this.onTouchStart_(e));
+        document, 'touchstart', e => this.onTouchStart_(e as TouchEvent));
     // Touchmove events happen when a user has started a touch gesture sequence
     // and proceeded to move their touch pointer across the screen. Ensure that
     // we clear the `last_targeted_item_` in these cases to ensure the pressed
@@ -301,28 +275,15 @@ export class TabListElement extends CustomElement {
     dragManager.startObserving();
   }
 
-  /**
-   * @param {!Promise} promise
-   * @private
-   */
-  addAnimationPromise_(promise) {
+  private addAnimationPromise_(promise: Promise<void>) {
     this.animationPromises = this.animationPromises.then(() => promise);
   }
 
-  /**
-   * @param {string} eventName
-   * @param {!Function} callback
-   * @private
-   */
-  addWebUIListener_(eventName, callback) {
+  private addWebUIListener_(eventName: string, callback: Function) {
     this.webUIListeners_.push(addWebUIListener(eventName, callback));
   }
 
-  /**
-   * @param {number} scrollBy
-   * @private
-   */
-  animateScrollPosition_(scrollBy) {
+  private animateScrollPosition_(scrollBy: number) {
     if (this.currentScrollUpdateFrame_) {
       cancelAnimationFrame(this.currentScrollUpdateFrame_);
       this.currentScrollUpdateFrame_ = null;
@@ -336,9 +297,9 @@ export class TabListElement extends CustomElement {
     }
 
     const duration = 350;
-    let startTime;
+    let startTime: number;
 
-    const onAnimationFrame = (currentTime) => {
+    const onAnimationFrame = (currentTime: number) => {
       const startScroll = this.scrollLeft;
       if (!startTime) {
         startTime = currentTime;
@@ -362,18 +323,13 @@ export class TabListElement extends CustomElement {
     this.currentScrollUpdateFrame_ = requestAnimationFrame(onAnimationFrame);
   }
 
-  /**
-   * @param {!Object<string, string>} dictionary
-   * @private
-   */
-  applyCSSDictionary_(dictionary) {
+  private applyCSSDictionary_(dictionary: {[key: string]: string}) {
     for (const [cssVariable, value] of Object.entries(dictionary)) {
       this.style.setProperty(cssVariable, value);
     }
   }
 
-  /** @private */
-  clearScrollTimeout_() {
+  private clearScrollTimeout_() {
     clearTimeout(this.scrollingTimeoutId_);
     this.scrollingTimeoutId_ = -1;
   }
@@ -397,28 +353,23 @@ export class TabListElement extends CustomElement {
       const callbackRouter = this.tabsApi_.getCallbackRouter();
       callbackRouter.showContextMenu.addListener(
           () => this.onShowContextMenu_());
-      callbackRouter.tabCreated.addListener(tab => this.onTabCreated_(tab));
-      callbackRouter.tabMoved.addListener(
-          (tabId, newIndex, pinned) =>
-              this.onTabMoved_(tabId, newIndex, pinned));
-      callbackRouter.tabRemoved.addListener(tabId => this.onTabRemoved_(tabId));
-      callbackRouter.tabReplaced.addListener(
-          (oldId, newId) => this.onTabReplaced_(oldId, newId));
-      callbackRouter.tabUpdated.addListener(tab => this.onTabUpdated_(tab));
+      callbackRouter.tabCreated.addListener(this.onTabCreated_.bind(this));
+      callbackRouter.tabMoved.addListener(this.onTabMoved_.bind(this));
+      callbackRouter.tabRemoved.addListener(this.onTabRemoved_.bind(this));
+      callbackRouter.tabReplaced.addListener(this.onTabReplaced_.bind(this));
+      callbackRouter.tabUpdated.addListener(this.onTabUpdated_.bind(this));
       callbackRouter.tabActiveChanged.addListener(
-          tabId => this.onTabActivated_(tabId));
+          this.onTabActivated_.bind(this));
       callbackRouter.tabCloseCancelled.addListener(
-          tabId => this.onTabCloseCancelled_(tabId));
+          this.onTabCloseCancelled_.bind(this));
       callbackRouter.tabGroupStateChanged.addListener(
-          (tabId, index, groupId) =>
-              this.onTabGroupStateChanged_(tabId, index, groupId));
+          this.onTabGroupStateChanged_.bind(this));
       callbackRouter.tabGroupClosed.addListener(
-          groupId => this.onTabGroupClosed_(groupId));
+          this.onTabGroupClosed_.bind(this));
       callbackRouter.tabGroupMoved.addListener(
-          (groupId, index) => this.onTabGroupMoved_(groupId, index));
+          this.onTabGroupMoved_.bind(this));
       callbackRouter.tabGroupVisualsChanged.addListener(
-          (groupId, visualData) =>
-              this.onTabGroupVisualsChanged_(groupId, visualData));
+          this.onTabGroupVisualsChanged_.bind(this));
     });
   }
 
@@ -427,12 +378,7 @@ export class TabListElement extends CustomElement {
     this.eventTracker_.removeAll();
   }
 
-  /**
-   * @param {!Tab} tab
-   * @return {!TabElement}
-   * @private
-   */
-  createTabElement_(tab) {
+  private createTabElement_(tab: Tab): TabElement {
     const tabElement = new TabElement();
     tabElement.tab = tab;
     tabElement.onTabActivating = (id) => {
@@ -441,95 +387,63 @@ export class TabListElement extends CustomElement {
     return tabElement;
   }
 
-  /**
-   * @param {number} tabId
-   * @return {?TabElement}
-   * @private
-   */
-  findTabElement_(tabId) {
-    return /** @type {?TabElement} */ (
-        this.$(`tabstrip-tab[data-tab-id="${tabId}"]`));
+  private findTabElement_(tabId: number): TabElement|null {
+    return this.$(`tabstrip-tab[data-tab-id="${tabId}"]`) as TabElement | null;
   }
 
-  /**
-   * @param {string} groupId
-   * @return {?TabGroupElement}
-   * @private
-   */
-  findTabGroupElement_(groupId) {
-    return /** @type {?TabGroupElement} */ (
-        this.$(`tabstrip-tab-group[data-group-id="${groupId}"]`));
+  private findTabGroupElement_(groupId: string): TabGroupElement|null {
+    return this.$(`tabstrip-tab-group[data-group-id="${groupId}"]`) as
+        TabGroupElement |
+        null;
   }
 
-  /** @private */
-  fetchAndUpdateColors_() {
+  private fetchAndUpdateColors_() {
     this.tabsApi_.getColors().then(
         ({colors}) => this.applyCSSDictionary_(colors));
   }
 
-  /** @private */
-  fetchAndUpdateGroupData_() {
-    const tabGroupElements = this.$all('tabstrip-tab-group');
+  private fetchAndUpdateGroupData_() {
+    const tabGroupElements =
+        this.$all('tabstrip-tab-group') as NodeListOf<TabGroupElement>;
     this.tabsApi_.getGroupVisualData().then(({data}) => {
       tabGroupElements.forEach(tabGroupElement => {
         tabGroupElement.updateVisuals(
-            assert(data[tabGroupElement.dataset.groupId]));
+            assert(data[tabGroupElement.dataset.groupId!])!);
       });
     });
   }
 
-  /** @private */
-  fetchAndUpdateTabs_() {
+  private fetchAndUpdateTabs_() {
     this.tabsApi_.getTabs().then(({tabs}) => {
       tabs.forEach(tab => this.onTabUpdated_(tab));
     });
   }
 
-  /**
-   * @return {?TabElement}
-   * @private
-   */
-  getActiveTab_() {
-    return /** @type {?TabElement} */ (this.$('tabstrip-tab[active]'));
+  private getActiveTab_(): TabElement|null {
+    return this.$('tabstrip-tab[active]') as TabElement | null;
   }
 
-  /**
-   * @param {!TabElement} tabElement
-   * @return {number}
-   */
-  getIndexOfTab(tabElement) {
+  getIndexOfTab(tabElement: TabElement): number {
     return Array.prototype.indexOf.call(this.$all('tabstrip-tab'), tabElement);
   }
 
-  /**
-   * @param {!LayoutVariable} variable
-   * @return {number} in pixels
-   */
-  getLayoutVariable_(variable) {
+  /** @return in pixels */
+  private getLayoutVariable_(variable: LayoutVariable): number {
     return parseInt(this.style.getPropertyValue(variable), 10);
   }
 
-  /** @private */
-  handleLongPress_() {
+  private handleLongPress_() {
     if (this.lastTargetedItem_) {
       this.lastTargetedItem_.setTouchPressed(true);
     }
   }
 
-  /**
-   * @param {!Event} event
-   * @private
-   */
-  onContextMenu_(event) {
+  private onContextMenu_(event: Event) {
     // Prevent the default context menu from triggering.
     event.preventDefault();
   }
 
-  /**
-   * @param {!PointerEvent} event
-   * @private
-   */
-  onPointerUp_(event) {
+  private onPointerUp_(event: PointerEvent) {
     event.stopPropagation();
     if (event.pointerType !== 'touch' && event.button === 2) {
       // If processing an uncaught right click event show the background context
@@ -538,41 +452,34 @@ export class TabListElement extends CustomElement {
     }
   }
 
-  /** @private */
-  onDocumentVisibilityChange_() {
+  private onDocumentVisibilityChange_() {
     if (!this.tabsApi_.isVisible()) {
       this.scrollToActiveTab_();
     }
 
     this.unpinnedTabsElement_.childNodes.forEach(element => {
-      if (isTabGroupElement(/** @type {!Element} */ (element))) {
+      if (isTabGroupElement(element as Element)) {
         element.childNodes.forEach(
-            tabElement => this.updateThumbnailTrackStatus_(
-                /** @type {!TabElement} */ (tabElement)));
+            tabElement =>
+                this.updateThumbnailTrackStatus_(tabElement as TabElement));
       } else {
-        this.updateThumbnailTrackStatus_(
-            /** @type {!TabElement} */ (element));
+        this.updateThumbnailTrackStatus_(element as TabElement);
       }
     });
   }
 
-  /** @private */
-  onReceivedKeyboardFocus_() {
+  private onReceivedKeyboardFocus_() {
     // FocusOutlineManager relies on the most recent event fired on the
     // document. When the tab strip first gains keyboard focus, no such event
     // exists yet, so the outline needs to be explicitly set to visible.
     this.focusOutlineManager_.visible = true;
-    this.$('tabstrip-tab').focus();
+    (this.$('tabstrip-tab') as HTMLElement).focus();
   }
 
-  /**
-   * @param {number} tabId
-   * @private
-   */
-  onTabActivated_(tabId) {
+  private onTabActivated_(tabId: number) {
     if (this.activatingTabId_ === tabId) {
       this.tabsApi_.reportTabActivationDuration(
-          Date.now() - this.activatingTabIdTimestamp_);
+          Date.now() - this.activatingTabIdTimestamp_!);
     }
     this.activatingTabId_ = undefined;
     this.activatingTabIdTimestamp_ = undefined;
@@ -581,28 +488,25 @@ export class TabListElement extends CustomElement {
     // have updated a Tab to have an active state. For example, if a
     // tab is created with an already active state, there may be 2 active
     // TabElements: the newly created tab and the previously active tab.
-    this.$all('tabstrip-tab[active]').forEach((previouslyActiveTab) => {
-      if (previouslyActiveTab.tab.id !== tabId) {
-        previouslyActiveTab.tab = /** @type {!Tab} */ (
-            Object.assign({}, previouslyActiveTab.tab, {active: false}));
-      }
-    });
+    (this.$all('tabstrip-tab[active]') as NodeListOf<TabElement>)
+        .forEach((previouslyActiveTab) => {
+          if (previouslyActiveTab.tab.id !== tabId) {
+            previouslyActiveTab.tab = /** @type {!Tab} */ (
+                Object.assign({}, previouslyActiveTab.tab, {active: false}));
+          }
+        });
 
     const newlyActiveTab = this.findTabElement_(tabId);
     if (newlyActiveTab) {
-      newlyActiveTab.tab = /** @type {!Tab} */ (
-          Object.assign({}, newlyActiveTab.tab, {active: true}));
+      newlyActiveTab.tab =
+          Object.assign({}, newlyActiveTab.tab, {active: true});
       if (!this.tabsApi_.isVisible()) {
         this.scrollToTab_(newlyActiveTab);
       }
     }
   }
 
-  /**
-   * @param {number} id The tab ID
-   * @private
-   */
-  onTabActivating_(id) {
+  private onTabActivating_(id: number) {
     assert(this.activatingTabId_ === undefined);
     const activeTab = this.getActiveTab_();
     if (activeTab && activeTab.tab.id === id) {
@@ -612,11 +516,7 @@ export class TabListElement extends CustomElement {
     this.activatingTabIdTimestamp_ = Date.now();
   }
 
-  /**
-   * @param {number} id
-   * @private
-   */
-  onTabCloseCancelled_(id) {
+  private onTabCloseCancelled_(id: number) {
     const tabElement = this.findTabElement_(id);
     if (!tabElement) {
       return;
@@ -624,8 +524,7 @@ export class TabListElement extends CustomElement {
     tabElement.resetSwipe();
   }
 
-  /** @private */
-  onShowContextMenu_() {
+  private onShowContextMenu_() {
     // If we do not have a touch point don't show the context menu.
     if (!this.lastTouchPoint_) {
       return;
@@ -634,18 +533,15 @@ export class TabListElement extends CustomElement {
     if (this.lastTargetedItem_ && isTabElement(this.lastTargetedItem_)) {
       const position = getContextMenuPosition(this.lastTargetedItem_);
       this.tabsApi_.showTabContextMenu(
-          this.lastTargetedItem_.tab.id, position.x, position.y);
+          (this.lastTargetedItem_ as TabElement).tab.id, position.x,
+          position.y);
     } else {
       this.tabsApi_.showBackgroundContextMenu(
           this.lastTouchPoint_.clientX, this.lastTouchPoint_.clientY);
     }
   }
 
-  /**
-   * @param {!Tab} tab
-   * @private
-   */
-  onTabCreated_(tab) {
+  private onTabCreated_(tab: Tab) {
     const droppedTabElement = this.findTabElement_(tab.id);
     if (droppedTabElement) {
       droppedTabElement.tab = tab;
@@ -662,11 +558,7 @@ export class TabListElement extends CustomElement {
     }
   }
 
-  /**
-   * @param {string} groupId
-   * @private
-   */
-  onTabGroupClosed_(groupId) {
+  private onTabGroupClosed_(groupId: string) {
     const tabGroupElement = this.findTabGroupElement_(groupId);
     if (!tabGroupElement) {
       return;
@@ -674,12 +566,7 @@ export class TabListElement extends CustomElement {
     tabGroupElement.remove();
   }
 
-  /**
-   * @param {string} groupId
-   * @param {number} index
-   * @private
-   */
-  onTabGroupMoved_(groupId, index) {
+  private onTabGroupMoved_(groupId: string, index: number) {
     const tabGroupElement = this.findTabGroupElement_(groupId);
     if (!tabGroupElement) {
       return;
@@ -687,36 +574,20 @@ export class TabListElement extends CustomElement {
     this.placeTabGroupElement(tabGroupElement, index);
   }
 
-  /**
-   * @param {number} tabId
-   * @param {number} index
-   * @param {string} groupId
-   * @private
-   */
-  onTabGroupStateChanged_(tabId, index, groupId) {
-    const tabElement = this.findTabElement_(tabId);
-    tabElement.tab = /** @type {!Tab} */ (
-        Object.assign({}, tabElement.tab, {groupId: groupId}));
+  private onTabGroupStateChanged_(
+      tabId: number, index: number, groupId: string) {
+    const tabElement = this.findTabElement_(tabId)!;
+    tabElement.tab = Object.assign({}, tabElement.tab, {groupId: groupId});
     this.placeTabElement(tabElement, index, false, groupId);
   }
 
-  /**
-   * @param {string} groupId
-   * @param {!TabGroupVisualData} visualData
-   * @private
-   */
-  onTabGroupVisualsChanged_(groupId, visualData) {
-    const tabGroupElement = this.findTabGroupElement_(groupId);
+  private onTabGroupVisualsChanged_(
+      groupId: string, visualData: TabGroupVisualData) {
+    const tabGroupElement = this.findTabGroupElement_(groupId)!;
     tabGroupElement.updateVisuals(visualData);
   }
 
-  /**
-   * @param {number} tabId
-   * @param {number} newIndex
-   * @param {boolean} pinned
-   * @private
-   */
-  onTabMoved_(tabId, newIndex, pinned) {
+  private onTabMoved_(tabId: number, newIndex: number, pinned: boolean) {
     const movedTab = this.findTabElement_(tabId);
     if (movedTab) {
       this.placeTabElement(movedTab, newIndex, pinned, movedTab.tab.groupId);
@@ -726,37 +597,23 @@ export class TabListElement extends CustomElement {
     }
   }
 
-  /**
-   * @param {number} tabId
-   * @private
-   */
-  onTabRemoved_(tabId) {
+  private onTabRemoved_(tabId: number) {
     const tabElement = this.findTabElement_(tabId);
     if (tabElement) {
       this.addAnimationPromise_(tabElement.slideOut());
     }
   }
 
-  /**
-   * @param {number} oldId
-   * @param {number} newId
-   * @private
-   */
-  onTabReplaced_(oldId, newId) {
+  private onTabReplaced_(oldId: number, newId: number) {
     const tabElement = this.findTabElement_(oldId);
     if (!tabElement) {
       return;
     }
 
-    tabElement.tab =
-        /** @type {!Tab} */ (Object.assign({}, tabElement.tab, {id: newId}));
+    tabElement.tab = Object.assign({}, tabElement.tab, {id: newId});
   }
 
-  /**
-   * @param {!Tab} tab
-   * @private
-   */
-  onTabUpdated_(tab) {
+  private onTabUpdated_(tab: Tab) {
     const tabElement = this.findTabElement_(tab.id);
     if (!tabElement) {
       return;
@@ -776,21 +633,16 @@ export class TabListElement extends CustomElement {
     }
   }
 
-  /** @private */
-  onWindowBlur_() {
-    if (this.shadowRoot.activeElement) {
+  private onWindowBlur_() {
+    if (this.shadowRoot!.activeElement) {
       // Blur the currently focused element when the window is blurred. This
       // prevents the screen reader from momentarily reading out the
       // previously focused element when the focus returns to this window.
-      this.shadowRoot.activeElement.blur();
+      (this.shadowRoot!.activeElement as HTMLElement).blur();
     }
   }
 
-  /**
-   * @param {!Event} e
-   * @private
-   */
-  onScroll_(e) {
+  private onScroll_(e: Event) {
     this.clearScrollTimeout_();
     this.scrollingTimeoutId_ = setTimeout(() => {
       this.flushThumbnailTracker_();
@@ -798,16 +650,12 @@ export class TabListElement extends CustomElement {
     }, 100);
   }
 
-  /**
-   * @param {!Event} event
-   * @private
-   */
-  onTouchStart_(event) {
-    const composedPath = /** @type {!Array<!Element>} */ (event.composedPath());
+  private onTouchStart_(event: TouchEvent) {
+    const composedPath = event.composedPath() as Element[];
     const dragOverTabElement =
-        /** @type {!TabElement|!TabGroupElement|null} */ (
-            composedPath.find(isTabElement) ||
-            composedPath.find(isTabGroupElement));
+        (composedPath.find(isTabElement) ||
+         composedPath.find(isTabGroupElement) || null) as TabElement |
+        TabGroupElement | null;
 
     // Make sure drag handle is under touch point when dragging a tab group.
     if (dragOverTabElement && isTabGroupElement(dragOverTabElement) &&
@@ -816,12 +664,11 @@ export class TabListElement extends CustomElement {
     }
 
     this.lastTargetedItem_ = dragOverTabElement;
-    const touch = event.changedTouches[0];
+    const touch = event.changedTouches[0]!;
     this.lastTouchPoint_ = {clientX: touch.clientX, clientY: touch.clientY};
   }
 
-  /** @private */
-  clearLastTargetedItem_() {
+  private clearLastTargetedItem_() {
     if (this.lastTargetedItem_) {
       this.lastTargetedItem_.setTouchPressed(false);
     }
@@ -829,13 +676,8 @@ export class TabListElement extends CustomElement {
     this.lastTouchPoint_ = undefined;
   }
 
-  /**
-   * @param {!TabElement} element
-   * @param {number} index
-   * @param {boolean} pinned
-   * @param {string=} groupId
-   */
-  placeTabElement(element, index, pinned, groupId) {
+  placeTabElement(
+      element: TabElement, index: number, pinned: boolean, groupId?: string) {
     const isInserting = !element.isConnected;
 
     const previousIndex = isInserting ? -1 : this.getIndexOfTab(element);
@@ -853,16 +695,11 @@ export class TabListElement extends CustomElement {
     }
   }
 
-  /**
-   * @param {!TabGroupElement} element
-   * @param {number} index
-   */
-  placeTabGroupElement(element, index) {
+  placeTabGroupElement(element: TabGroupElement, index: number) {
     const previousDomIndex =
         Array.from(this.unpinnedTabsElement_.children).indexOf(element);
     if (element.isConnected && element.childElementCount &&
-        this.getIndexOfTab(
-            /** @type {!TabElement} */ (element.firstElementChild)) < index) {
+        this.getIndexOfTab(element.firstElementChild as TabElement) < index) {
       // If moving after its original position, the index value needs to be
       // offset by 1 to consider itself already attached to the DOM.
       index++;
@@ -885,16 +722,14 @@ export class TabListElement extends CustomElement {
         Array.from(this.unpinnedTabsElement_.children).indexOf(element));
   }
 
-  /** @private */
-  flushThumbnailTracker_() {
+  private flushThumbnailTracker_() {
     this.thumbnailTracker_.forEach((shouldTrack, tabId) => {
       this.tabsApi_.setThumbnailTracked(tabId, shouldTrack);
     });
     this.thumbnailTracker_.clear();
   }
 
-  /** @private */
-  scrollToActiveTab_() {
+  private scrollToActiveTab_() {
     const activeTab = this.getActiveTab_();
     if (!activeTab) {
       return;
@@ -903,11 +738,7 @@ export class TabListElement extends CustomElement {
     this.scrollToTab_(activeTab);
   }
 
-  /**
-   * @param {!TabElement} tabElement
-   * @private
-   */
-  scrollToTab_(tabElement) {
+  private scrollToTab_(tabElement: TabElement) {
     const tabElementWidth = this.getLayoutVariable_(LayoutVariable.TAB_WIDTH);
     const tabElementRect = tabElement.getBoundingClientRect();
     // In RTL languages, the TabElement's scale animation scales from right to
@@ -942,31 +773,19 @@ export class TabListElement extends CustomElement {
     this.animateScrollPosition_(scrollBy);
   }
 
-  /** @return {boolean} */
-  shouldPreventDrag() {
+  shouldPreventDrag(): boolean {
     return this.$all('tabstrip-tab').length === 1;
   }
 
-  /**
-   * @param {number} tabId
-   * @param {string} imgData
-   * @private
-   */
-  tabThumbnailUpdated_(tabId, imgData) {
+  private tabThumbnailUpdated_(tabId: number, imgData: string) {
     const tab = this.findTabElement_(tabId);
     if (tab) {
       tab.updateThumbnail(imgData);
     }
   }
 
-  /**
-   * @param {!TabElement} element
-   * @param {number} index
-   * @param {boolean} pinned
-   * @param {string=} groupId
-   * @private
-   */
-  updateTabElementDomPosition_(element, index, pinned, groupId) {
+  private updateTabElementDomPosition_(
+      element: TabElement, index: number, pinned: boolean, groupId?: string) {
     // Remove the element if it already exists in the DOM. This simplifies
     // the way indices work as it does not have to count its old index in
     // the initial layout of the DOM.
@@ -974,9 +793,9 @@ export class TabListElement extends CustomElement {
 
     if (pinned) {
       this.pinnedTabsElement_.insertBefore(
-          element, this.pinnedTabsElement_.childNodes[index]);
+          element, this.pinnedTabsElement_.childNodes[index]!);
     } else {
-      let elementToInsert = element;
+      let elementToInsert: TabElement|TabGroupElement = element;
       let elementAtIndex = this.$all('tabstrip-tab').item(index);
       let parentElement = this.unpinnedTabsElement_;
 
@@ -1016,11 +835,7 @@ export class TabListElement extends CustomElement {
     }
   }
 
-  /**
-   * @param {!TabElement} tabElement
-   * @private
-   */
-  updateThumbnailTrackStatus_(tabElement) {
+  private updateThumbnailTrackStatus_(tabElement: TabElement) {
     if (!tabElement.tab) {
       return;
     }

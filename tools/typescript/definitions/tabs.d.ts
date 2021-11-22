@@ -60,7 +60,23 @@ declare namespace chrome {
       openerTabId?: number;
     }
 
-    export function create(createProperties: CreateProperties,
-                           callback?: (p1: Tab) => void): void;
+    type UpdateProperties = {
+      url?: string,
+      active?: boolean,
+      highlighted?: boolean,
+      selected?: boolean,
+      pinned?: boolean,
+      muted?: boolean,
+      openerTabId?: number,
+      autoDiscardable?: boolean,
+    }
+
+    export function
+    create(createProperties: CreateProperties, callback?: (p1: Tab) => void):
+        void;
+
+    export function update(
+        tabId: number|undefined, updateProperties: UpdateProperties,
+        callback?: (p1?: Tab) => void): void;
   }
 }

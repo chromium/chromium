@@ -9,14 +9,9 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 
 import {TabAlertState} from './tabs.mojom-webui.js';
 
-/** @const {string} */
-const MAX_WIDTH = '16px';
+const MAX_WIDTH: string = '16px';
 
-/**
- * @param {!TabAlertState} alertState
- * @return {string}
- */
-function getAriaLabel(alertState) {
+function getAriaLabel(alertState: TabAlertState): string {
   // The existing labels for alert states currently expects to format itself
   // using the title of the tab (eg. "Website - Audio is playing"). The WebUI
   // tab strip will provide the title of the tab elsewhere outside of this
@@ -51,8 +46,7 @@ function getAriaLabel(alertState) {
   }
 }
 
-/** @type {!Map<!TabAlertState, string>} */
-const ALERT_STATE_MAP = new Map([
+const ALERT_STATE_MAP: Map<TabAlertState, string> = new Map([
   [TabAlertState.kMediaRecording, 'media-recording'],
   [TabAlertState.kTabCapturing, 'tab-capturing'],
   [TabAlertState.kAudioPlaying, 'audio-playing'],
@@ -68,10 +62,8 @@ const ALERT_STATE_MAP = new Map([
 
 /**
  * Use for mapping to CSS attributes.
- * @param {!TabAlertState} alertState
- * @return {string}
  */
-function getAlertStateAttribute(alertState) {
+function getAlertStateAttribute(alertState: TabAlertState): string {
   return ALERT_STATE_MAP.get(alertState) || '';
 }
 
@@ -80,49 +72,43 @@ export class AlertIndicatorElement extends CustomElement {
     return `{__html_template__}`;
   }
 
+  private alertState_: TabAlertState;
+  private fadeDurationMs_: number = 125;
+  private fadeInAnimation_: Animation|null;
+  private fadeOutAnimation_: Animation|null;
+  private fadeOutAnimationPromise_: Promise<void>|null;
+
   constructor() {
     super();
 
-    /** @private {!TabAlertState} */
-    this.alertState_;
-
-    /** @private {number} */
-    this.fadeDurationMs_ = 125;
-
     /**
      * An animation that is currently in-flight to fade the element in.
-     * @private {?Animation}
      */
     this.fadeInAnimation_ = null;
 
     /**
      * An animation that is currently in-flight to fade the element out.
-     * @private {?Animation}
      */
     this.fadeOutAnimation_ = null;
 
     /**
      * A promise that resolves when the fade out animation finishes or rejects
      * if a fade out animation is canceled.
-     * @private {?Promise}
      */
     this.fadeOutAnimationPromise_ = null;
   }
 
-  /** @return {!TabAlertState} */
-  get alertState() {
+  get alertState(): TabAlertState {
     return this.alertState_;
   }
 
-  /** @param {!TabAlertState} alertState */
-  set alertState(alertState) {
+  set alertState(alertState: TabAlertState) {
     this.setAttribute('alert-state_', getAlertStateAttribute(alertState));
     this.setAttribute('aria-label', getAriaLabel(alertState));
     this.alertState_ = alertState;
   }
 
-  /** @param {number} duration */
-  overrideFadeDurationForTesting(duration) {
+  overrideFadeDurationForTesting(duration: number) {
     this.fadeDurationMs_ = duration;
   }
 
@@ -174,8 +160,7 @@ export class AlertIndicatorElement extends CustomElement {
     }
   }
 
-  /** @return {!Promise} */
-  hide() {
+  hide(): Promise<void> {
     if (this.fadeInAnimation_) {
       // Cancel any fade in animations to prevent the element from fading in. At
       // this point, the tab's alertStates have changed to a state in which this

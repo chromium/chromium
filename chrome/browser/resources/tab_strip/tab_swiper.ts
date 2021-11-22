@@ -7,17 +7,15 @@ import {isRTL} from 'chrome://resources/js/util.m.js';
 /**
  * The minimum amount of pixels needed for the user to swipe for the position
  * (controlled by transform property) to start animating to 0.
- * @const {number}
  */
-export const TRANSLATE_ANIMATION_THRESHOLD_PX = 30;
+export const TRANSLATE_ANIMATION_THRESHOLD_PX: number = 30;
 
 /**
  * The minimum amount of pixels needed for the user to swipe to actually close
  * the tab. This also triggers animating other properties to suggest more that
  * the tab will close, such as animating the max-width.
- * @const {number}
  */
-export const SWIPE_START_THRESHOLD_PX = 100;
+export const SWIPE_START_THRESHOLD_PX: number = 100;
 
 /**
  * The maximum amount of pixels needed to swipe a tab away. This is how many
@@ -25,55 +23,47 @@ export const SWIPE_START_THRESHOLD_PX = 100;
  * animation to complete such that the tab is gone from the screen.
  * TODO(johntlee): Make this relative to the height of the tab, not a
  * hard-coded value.
- * @const {number}
  */
-export const SWIPE_FINISH_THRESHOLD_PX = 200;
+export const SWIPE_FINISH_THRESHOLD_PX: number = 200;
 
 /**
  * The minimum velocity of pixels per milliseconds required for the tab to
  * register the set of pointer events as an intended swipe.
- * @const {number}
  */
-const SWIPE_VELOCITY_THRESHOLD = 0.2;
+const SWIPE_VELOCITY_THRESHOLD: number = 0.2;
 
 export class TabSwiper {
-  /** @param {!HTMLElement} element */
-  constructor(element) {
-    /** @private @const {!HTMLElement} */
+  private element_: HTMLElement;
+  private animation_: Animation;
+  private animationInitiated_: boolean;
+  private currentPointerDownEvent_: PointerEvent|null = null;
+
+  private pointerDownListener_: (e: PointerEvent) => void;
+  private pointerMoveListener_: (e: PointerEvent) => void;
+  private pointerLeaveListener_: (e: PointerEvent) => void;
+  private pointerUpListener_: (e: PointerEvent) => void;
+
+  constructor(element: HTMLElement) {
     this.element_ = element;
 
-    /** @private @const {!Animation} */
     this.animation_ = this.createAnimation_();
 
     /**
      * Whether any part of the animation that updates properties has begun since
      * the last pointerdown event.
-     * @private {boolean}
      */
     this.animationInitiated_ = false;
 
-    /** @private {?PointerEvent} */
-    this.currentPointerDownEvent_ = null;
+    this.pointerDownListener_ = e => this.onPointerDown_(e);
 
-    /** @private @const {!Function} */
-    this.pointerDownListener_ = e =>
-        this.onPointerDown_(/** @type {!PointerEvent} */ (e));
+    this.pointerMoveListener_ = e => this.onPointerMove_(e);
 
-    /** @private @const {!Function} */
-    this.pointerMoveListener_ = e =>
-        this.onPointerMove_(/** @type {!PointerEvent} */ (e));
+    this.pointerLeaveListener_ = e => this.onPointerLeave_(e);
 
-    /** @private @const {!Function} */
-    this.pointerLeaveListener_ = e =>
-        this.onPointerLeave_(/** @type {!PointerEvent} */ (e));
-
-    /** @private @const {!Function} */
-    this.pointerUpListener_ = e =>
-        this.onPointerUp_(/** @type {!PointerEvent} */ (e));
+    this.pointerUpListener_ = e => this.onPointerUp_(e);
   }
 
-  /** @private */
-  clearPointerEvents_() {
+  private clearPointerEvents_() {
     this.currentPointerDownEvent_ = null;
     this.element_.removeEventListener(
         'pointerleave', this.pointerLeaveListener_);
@@ -81,8 +71,7 @@ export class TabSwiper {
     this.element_.removeEventListener('pointerup', this.pointerUpListener_);
   }
 
-  /** @private */
-  createAnimation_() {
+  private createAnimation_() {
     // TODO(crbug.com/1025390): padding-inline-end does not work with
     // animations built using JS.
     const paddingInlineEnd = isRTL() ? 'paddingLeft' : 'paddingRight';
@@ -128,11 +117,7 @@ export class TabSwiper {
     return animation;
   }
 
-  /**
-   * @param {!PointerEvent} event
-   * @private
-   */
-  onPointerDown_(event) {
+  private onPointerDown_(event: PointerEvent) {
     if (this.currentPointerDownEvent_ || event.pointerType !== 'touch') {
       return;
     }
@@ -146,29 +131,21 @@ export class TabSwiper {
     this.element_.addEventListener('pointerup', this.pointerUpListener_);
   }
 
-  /**
-   * @param {!PointerEvent} event
-   * @private
-   */
-  onPointerLeave_(event) {
-    if (this.currentPointerDownEvent_.pointerId !== event.pointerId) {
+  private onPointerLeave_(event: PointerEvent) {
+    if (this.currentPointerDownEvent_!.pointerId !== event.pointerId) {
       return;
     }
 
     this.clearPointerEvents_();
   }
 
-  /**
-   * @param {!PointerEvent} event
-   * @private
-   */
-  onPointerMove_(event) {
-    if (this.currentPointerDownEvent_.pointerId !== event.pointerId ||
+  private onPointerMove_(event: PointerEvent) {
+    if (this.currentPointerDownEvent_!.pointerId !== event.pointerId ||
         event.movementY === 0) {
       return;
     }
 
-    const yDiff = this.currentPointerDownEvent_.clientY - event.clientY;
+    const yDiff = this.currentPointerDownEvent_!.clientY - event.clientY;
     const animationTime = yDiff;
     this.animation_.currentTime =
         Math.max(0, Math.min(SWIPE_FINISH_THRESHOLD_PX, animationTime));
@@ -180,19 +157,15 @@ export class TabSwiper {
     }
   }
 
-  /**
-   * @param {!PointerEvent} event
-   * @private
-   */
-  onPointerUp_(event) {
-    if (this.currentPointerDownEvent_.pointerId !== event.pointerId) {
+  private onPointerUp_(event: PointerEvent) {
+    if (this.currentPointerDownEvent_!.pointerId !== event.pointerId) {
       return;
     }
 
-    const pixelsSwiped = this.animation_.currentTime;
+    const pixelsSwiped = this.animation_.currentTime!;
     const swipedEnoughToClose = pixelsSwiped > SWIPE_START_THRESHOLD_PX;
     const wasHighVelocity = pixelsSwiped /
-            (event.timeStamp - this.currentPointerDownEvent_.timeStamp) >
+            (event.timeStamp - this.currentPointerDownEvent_!.timeStamp) >
         SWIPE_VELOCITY_THRESHOLD;
 
     if (pixelsSwiped === SWIPE_FINISH_THRESHOLD_PX) {
@@ -222,8 +195,7 @@ export class TabSwiper {
     this.element_.removeEventListener('pointerdown', this.pointerDownListener_);
   }
 
-  /** @return {boolean} */
-  wasSwiping() {
+  wasSwiping(): boolean {
     return this.animationInitiated_;
   }
 }

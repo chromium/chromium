@@ -125,7 +125,7 @@ suite('TabList', () => {
 
     testTabsApiProxy = new TestTabsApiProxy();
     testTabsApiProxy.setTabs(tabs);
-    TabsApiProxyImpl.instance_ = testTabsApiProxy;
+    TabsApiProxyImpl.setInstance(testTabsApiProxy);
     callbackRouter = testTabsApiProxy.getCallbackRouterRemote();
 
     testTabsApiProxy.setColors({

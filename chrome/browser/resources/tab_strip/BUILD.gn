@@ -3,12 +3,14 @@
 # found in the LICENSE file.
 
 import("//chrome/common/features.gni")
-import("//third_party/closure_compiler/compile_js.gni")
 import("//tools/grit/grit_rule.gni")
 import("//tools/grit/preprocess_if_expr.gni")
 import("//tools/polymer/html_to_js.gni")
 import("//tools/typescript/ts_library.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
+import("//ui/webui/webui_features.gni")
+
+assert(enable_webui_tab_strip)
 
 preprocess_folder = "preprocessed"
 
@@ -52,10 +54,9 @@ preprocess_if_expr("preprocess") {
   in_folder = "./"
   out_folder = "$target_gen_dir/$preprocess_folder"
   in_files = [
-    "drag_manager.js",
-    "tabs_api_proxy.js",
-    "tab_strip_embedder_proxy.js",
-    "tab_swiper.js",
+    "drag_manager.ts",
+    "tabs_api_proxy.ts",
+    "tab_swiper.ts",
   ]
 }
 
@@ -64,11 +65,11 @@ preprocess_if_expr("preprocess_generated") {
   in_folder = target_gen_dir
   out_folder = "$target_gen_dir/$preprocess_folder"
   in_files = [
-    "alert_indicator.js",
-    "alert_indicators.js",
-    "tab_group.js",
-    "tab_list.js",
-    "tab.js",
+    "alert_indicator.ts",
+    "alert_indicators.ts",
+    "tab_group.ts",
+    "tab_list.ts",
+    "tab.ts",
   ]
 }
 
@@ -89,114 +90,13 @@ grit("resources") {
   output_dir = "$root_gen_dir/chrome"
 }
 
-js_type_check("closure_compile") {
-  closure_flags =
-      default_closure_args + mojom_js_args + [
-        "js_module_root=" + rebase_path(".", root_build_dir),
-        "js_module_root=" + rebase_path(
-                "$root_gen_dir/mojom-webui/chrome/browser/ui/webui/tab_strip",
-                root_build_dir),
-        "js_module_root=" + rebase_path(
-                "$root_gen_dir/mojom-webui/chrome/browser/ui/webui/tabs",
-                root_build_dir),
-      ]
-  deps = [
-    ":alert_indicator",
-    ":alert_indicators",
-    ":drag_manager",
-    ":tab",
-    ":tab_group",
-    ":tab_list",
-    ":tab_swiper",
-    ":tabs_api_proxy",
-  ]
-}
-
-js_library("alert_indicator") {
-  deps = [
-    ":tabs_api_proxy",
-    "//chrome/browser/ui/webui/tabs:mojo_bindings_webui_js",
-    "//ui/webui/resources/js:custom_element",
-    "//ui/webui/resources/js:load_time_data.m",
-  ]
-}
-
-js_library("alert_indicators") {
-  deps = [
-    ":alert_indicator",
-    ":tabs_api_proxy",
-    "//chrome/browser/ui/webui/tabs:mojo_bindings_webui_js",
-    "//ui/webui/resources/js:custom_element",
-  ]
-}
-
-js_library("drag_manager") {
-  deps = [
-    ":tab",
-    ":tab_group",
-    ":tabs_api_proxy",
-    "//ui/webui/resources/js:assert.m",
-    "//ui/webui/resources/js:load_time_data.m",
-  ]
-}
-
-js_library("tabs_api_proxy") {
-  deps = [
-    "//chrome/browser/ui/webui/tab_strip:mojo_bindings_webui_js",
-    "//ui/webui/resources/js:cr.m",
-  ]
-  externs_list = [
-    "$externs_path/chrome_extensions.js",
-    "$externs_path/metrics_private.js",
-  ]
-}
-
-js_library("tab") {
-  deps = [
-    ":alert_indicators",
-    ":tab_swiper",
-    ":tabs_api_proxy",
-    "//ui/webui/resources/js:custom_element",
-    "//ui/webui/resources/js:icon",
-    "//ui/webui/resources/js:load_time_data.m",
-    "//ui/webui/resources/js:util.m",
-  ]
-  externs_list = [ "$externs_path/metrics_private.js" ]
-}
-
-js_library("tab_group") {
-  deps = [
-    ":tabs_api_proxy",
-    "//ui/webui/resources/js:custom_element",
-    "//ui/webui/resources/js:load_time_data.m",
-  ]
-}
-
-js_library("tab_list") {
-  deps = [
-    ":drag_manager",
-    ":tab",
-    ":tab_group",
-    ":tabs_api_proxy",
-    "//ui/webui/resources/js:cr.m",
-    "//ui/webui/resources/js:custom_element",
-    "//ui/webui/resources/js:event_tracker.m",
-    "//ui/webui/resources/js:load_time_data.m",
-    "//ui/webui/resources/js:util.m",
-    "//ui/webui/resources/js/cr/ui:focus_outline_manager.m",
-  ]
-}
-
-js_library("tab_swiper") {
-}
-
 html_to_js("web_components") {
   js_files = [
-    "alert_indicator.js",
-    "alert_indicators.js",
-    "tab_group.js",
-    "tab_list.js",
-    "tab.js",
+    "alert_indicator.ts",
+    "alert_indicators.ts",
+    "tab_group.ts",
+    "tab_list.ts",
+    "tab.ts",
   ]
 }
 
@@ -205,21 +105,25 @@ ts_library("build_ts") {
   out_dir = "$target_gen_dir/tsc"
   tsconfig_base = "tsconfig_base.json"
   in_files = [
-    "alert_indicator.js",
-    "alert_indicators.js",
-    "drag_manager.js",
-    "tab_group.js",
-    "tab.js",
-    "tab_list.js",
-    "tabs_api_proxy.js",
+    "alert_indicator.ts",
+    "alert_indicators.ts",
+    "drag_manager.ts",
+    "tab_group.ts",
+    "tab.ts",
+    "tab_list.ts",
+    "tabs_api_proxy.ts",
     "tabs.mojom-webui.js",
-    "tab_strip_embedder_proxy.js",
     "tab_strip.mojom-webui.js",
-    "tab_swiper.js",
+    "tab_swiper.ts",
   ]
   deps = [
     "//third_party/polymer/v3_0:library",
     "//ui/webui/resources:library",
+  ]
+  definitions = [
+    "//tools/typescript/definitions/chrome_send.d.ts",
+    "//tools/typescript/definitions/metrics_private.d.ts",
+    "//tools/typescript/definitions/tabs.d.ts",
   ]
   extra_deps = [
     ":preprocess",

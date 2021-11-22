@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 import {isChromeOS} from 'chrome://resources/js/cr.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-import {DragManager, DragManagerDelegate, PLACEHOLDER_GROUP_ID, PLACEHOLDER_TAB_ID} from 'chrome://tab-strip.top-chrome/drag_manager.js';
+import {DragManager, PLACEHOLDER_GROUP_ID, PLACEHOLDER_TAB_ID} from 'chrome://tab-strip.top-chrome/drag_manager.js';
 import {TabElement} from 'chrome://tab-strip.top-chrome/tab.js';
 import {TabGroupElement} from 'chrome://tab-strip.top-chrome/tab_group.js';
 import {Tab} from 'chrome://tab-strip.top-chrome/tab_strip.mojom-webui.js';
@@ -137,7 +137,7 @@ suite('DragManager', () => {
   setup(() => {
     loadTimeData.overrideValues(strings);
     testTabsApiProxy = new TestTabsApiProxy();
-    TabsApiProxyImpl.instance_ = testTabsApiProxy;
+    TabsApiProxyImpl.setInstance(testTabsApiProxy);
 
     delegate = new MockDelegate();
     tabs.forEach(tab => {

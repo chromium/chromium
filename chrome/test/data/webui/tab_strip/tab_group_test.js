@@ -22,7 +22,7 @@ suite('TabGroup', () => {
 
   setup(() => {
     testTabsApiProxy = new TestTabsApiProxy();
-    TabsApiProxyImpl.instance_ = testTabsApiProxy;
+    TabsApiProxyImpl.setInstance(testTabsApiProxy);
 
     document.body.innerHTML = '';
     tabGroupElement = /** @type {!TabGroupElement} */ (

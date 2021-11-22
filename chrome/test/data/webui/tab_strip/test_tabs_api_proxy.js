@@ -4,7 +4,6 @@
 
 import {PageCallbackRouter, PageRemote} from 'chrome://tab-strip.top-chrome/tab_strip.mojom-webui.js';
 import {Tab, TabGroupVisualData} from 'chrome://tab-strip.top-chrome/tab_strip.mojom-webui.js';
-import {ExtensionsApiTab, TabsApiProxy} from 'chrome://tab-strip.top-chrome/tabs_api_proxy.js';
 
 import {TestBrowserProxy} from '../test_browser_proxy.js';
 
