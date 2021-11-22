@@ -194,8 +194,10 @@ void ReportViolation(CSPContext* context,
   GURL blocked_url = (directive_name == CSPDirectiveName::FrameAncestors)
                          ? GURL(ToString(*policy->self_origin))
                          : url;
+  std::string blocked_url_scheme = blocked_url.scheme();
   auto safe_source_location =
       source_location ? source_location->Clone() : mojom::SourceLocation::New();
+
   context->SanitizeDataForUseInCspViolation(has_followed_redirect,
                                             directive_name, &blocked_url,
                                             safe_source_location.get());
@@ -216,6 +218,18 @@ void ReportViolation(CSPContext* context,
     message << " Note that '" << ToString(directive_name)
             << "' was not explicitly set, so '"
             << ToString(effective_directive_name) << "' is used as a fallback.";
+  }
+
+  // Wildcards match network schemes ('http', 'https', 'ws', 'wss'), and the
+  // scheme of the protected resource:
+  // https://w3c.github.io/webappsec-csp/#match-url-to-source-expression. Other
+  // schemes, including custom schemes, must be explicitly listed in a source
+  // list.
+  if (policy->directives[effective_directive_name]->allow_star) {
+    message << " Note that '*' matches only URLs with network schemes ('http', "
+               "'https', 'ws', 'wss'), or URLs whose scheme matches `self`'s "
+               "scheme. "
+            << blocked_url_scheme << ":' must be added explicitely.";
   }
 
   message << "\n";

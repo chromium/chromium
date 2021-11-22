@@ -574,6 +574,19 @@ bool CheckSourceAndReportViolation(
              "' is used as a fallback.";
   }
 
+  // Wildcards match network schemes ('http', 'https', 'ws', 'wss'), and the
+  // scheme of the protected resource:
+  // https://w3c.github.io/webappsec-csp/#match-url-to-source-expression. Other
+  // schemes, including custom schemes, must be explicitly listed in a source
+  // list.
+  if (directive.source_list->allow_star) {
+    suffix = suffix +
+             " Note that '*' matches only URLs with network schemes ('http', "
+             "'https', 'ws', 'wss'), or URLs whose scheme matches `self`'s "
+             "scheme. " +
+             url.Protocol() + ":' must be added explicitely.";
+  }
+
   String raw_directive =
       GetRawDirectiveForMessage(csp.raw_directives, directive.type);
   ReportViolation(csp, policy, raw_directive, effective_type,

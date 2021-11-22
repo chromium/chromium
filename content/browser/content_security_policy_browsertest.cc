@@ -100,6 +100,46 @@ IN_PROC_BROWSER_TEST_F(ContentSecurityPolicyBrowserTest,
   console_observer.Wait();
 }
 
+IN_PROC_BROWSER_TEST_F(ContentSecurityPolicyBrowserTest,
+                       WildcardNotMatchingNonNetworkSchemeBrowserSide) {
+  const char* page = R"(
+    data:text/html,
+    <meta http-equiv="Content-Security-Policy" content="frame-src *">
+    <iframe src="mailto:arthursonzogni@chromium.org"></iframe>
+  )";
+
+  GURL url(page);
+  WebContentsConsoleObserver console_observer(web_contents());
+  console_observer.SetPattern(
+      "Refused to frame '' because it violates the following Content Security "
+      "Policy directive: \"frame-src *\". Note that '*' matches only URLs with "
+      "network schemes ('http', 'https', 'ws', 'wss'), or URLs whose scheme "
+      "matches `self`'s scheme. mailto:' must be added explicitely.\n");
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+  console_observer.Wait();
+}
+
+IN_PROC_BROWSER_TEST_F(ContentSecurityPolicyBrowserTest,
+                       WildcardNotMatchingNonNetworkSchemeRendererSide) {
+  const char* page = R"(
+    data:text/html,
+    <meta http-equiv="Content-Security-Policy" content="script-src *">
+    <script src="mailto:arthursonzogni@chromium.org"></script>
+  )";
+
+  GURL url(page);
+  WebContentsConsoleObserver console_observer(web_contents());
+  console_observer.SetPattern(
+      "Refused to load the script 'mailto:arthursonzogni@chromium.org' because "
+      "it violates the following Content Security Policy directive: "
+      "\"script-src *\". Note that 'script-src-elem' was not explicitly set, "
+      "so 'script-src' is used as a fallback. Note that '*' matches only URLs "
+      "with network schemes ('http', 'https', 'ws', 'wss'), or URLs whose "
+      "scheme matches `self`'s scheme. mailto:' must be added explicitely.\n");
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+  console_observer.Wait();
+}
+
 namespace {
 
 base::FilePath TestFilePath(const char* filename) {
