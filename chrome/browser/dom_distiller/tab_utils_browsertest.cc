@@ -242,8 +242,17 @@ IN_PROC_BROWSER_TEST_F(DomDistillerTabUtilsBrowserTest, UMATimesAreLogged) {
   histogram_tester.ExpectTotalCount(kDistillablePageHistogram, 1);
 }
 
-IN_PROC_BROWSER_TEST_F(DomDistillerTabUtilsBrowserTest,
-                       DistillAndViewCreatesNewWebContentsAndPreservesOld) {
+// TODO(crbug.com/1272152): Flaky on linux.
+#if defined(OS_LINUX)
+#define MAYBE_DistillAndViewCreatesNewWebContentsAndPreservesOld \
+  DISABLED_DistillAndViewCreatesNewWebContentsAndPreservesOld
+#else
+#define MAYBE_DistillAndViewCreatesNewWebContentsAndPreservesOld \
+  DistillAndViewCreatesNewWebContentsAndPreservesOld
+#endif
+IN_PROC_BROWSER_TEST_F(
+    DomDistillerTabUtilsBrowserTest,
+    MAYBE_DistillAndViewCreatesNewWebContentsAndPreservesOld) {
   content::WebContents* source_web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
 
