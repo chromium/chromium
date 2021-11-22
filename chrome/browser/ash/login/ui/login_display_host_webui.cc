@@ -791,6 +791,11 @@ void LoginDisplayHostWebUI::UpScaleOobe() {
   }
 }
 
+void LoginDisplayHostWebUI::OnShowWebUITimeout() {
+  VLOG(1) << "Login WebUI >> Show WebUI because of timeout";
+  ShowWebUI();
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 // LoginDisplayHostWebUI, ui::InputDeviceEventObserver
 void LoginDisplayHostWebUI::OnInputDeviceConfigurationChanged(
@@ -874,6 +879,9 @@ void LoginDisplayHostWebUI::LoadURL(const GURL& url) {
 }
 
 void LoginDisplayHostWebUI::ShowWebUI() {
+  session_observation_.Reset();
+  show_webui_guard_.AbandonAndStop();
+
   DCHECK(login_window_);
   DCHECK(login_view_);
 
@@ -935,6 +943,10 @@ void LoginDisplayHostWebUI::InitLoginWindowAndView() {
   // Delay showing the window until the login webui is ready.
   VLOG(1) << "Login WebUI >> login window is hidden on create";
   login_view_->set_is_hidden(true);
+
+  // A minute should be enough time for the UI to load.
+  show_webui_guard_.Start(FROM_HERE, base::Minutes(1), this,
+                          &LoginDisplayHostWebUI::OnShowWebUITimeout);
 }
 
 void LoginDisplayHostWebUI::ResetLoginWindowAndView() {
@@ -1087,13 +1099,11 @@ void LoginDisplayHostWebUI::RemoveObserver(
 void LoginDisplayHostWebUI::OnNetworkErrorScreenShown() {
   VLOG(1) << "Login WebUI >> WEBUI_VISIBLE(ERROR_SCREEN)";
   ShowWebUI();
-  session_observation_.Reset();
 }
 
 void LoginDisplayHostWebUI::OnLoginOrLockScreenVisible() {
   VLOG(1) << "Login WebUI >> WEBUI_VISIBLE";
   ShowWebUI();
-  session_observation_.Reset();
 }
 
 SigninUI* LoginDisplayHostWebUI::GetSigninUI() {
