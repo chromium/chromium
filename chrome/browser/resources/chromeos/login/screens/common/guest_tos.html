@@ -110,16 +110,18 @@ found in the LICENSE file. -->
         <!-- Usage stats toggle row -->
         <div class="layout horizontal center oobe-optin-row">
           <div class="oobe-optin-content">
-            <span class="oobe-optin-title">
+            <span id="usageTitle" class="oobe-optin-title">
               [[i18nDynamic(locale, 'guestTosUsageOptinTitle')]]
             </span>
             [[i18nDynamic(locale, 'guestTosUsageOptin')]]
             <a id="usageLearnMore" on-click="onUsageLearnMoreClick_"
-                class="oobe-local-link" is="action-link">
+                class="oobe-local-link" is="action-link"
+                aria-describedby="usageTitle">
               [[i18nDynamic(locale, 'guestTosLearnMore')]]
             </a>
           </div>
-          <cr-toggle id="usageOptin" checked="{{usageChecked}}">
+          <cr-toggle id="usageOptin" checked="{{usageChecked}}"
+              aria-describedby="usageTitle">
           </cr-toggle>
         </div>
       </div>
