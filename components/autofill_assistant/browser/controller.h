@@ -32,6 +32,7 @@
 #include "components/autofill_assistant/browser/user_data.h"
 #include "components/autofill_assistant/browser/user_model.h"
 #include "components/autofill_assistant/browser/web/web_controller.h"
+#include "components/autofill_assistant/content/browser/annotate_dom_model_service.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
@@ -68,7 +69,8 @@ class Controller : public ScriptExecutorDelegate,
              base::WeakPtr<RuntimeManagerImpl> runtime_manager,
              std::unique_ptr<Service> service,
              std::unique_ptr<AutofillAssistantTtsController> tts_controller,
-             ukm::UkmRecorder* ukm_recorder);
+             ukm::UkmRecorder* ukm_recorder,
+             AnnotateDomModelService* annotate_dom_model_service);
 
   Controller(const Controller&) = delete;
   Controller& operator=(const Controller&) = delete;
@@ -639,6 +641,10 @@ class Controller : public ScriptExecutorDelegate,
   ProcessedActionStatusDetailsProto log_info_;
 
   ukm::UkmRecorder* ukm_recorder_;
+
+  // If instantiated, will start delivering the required model for annotating
+  // DOM nodes. May be nullptr.
+  AnnotateDomModelService* const annotate_dom_model_service_;
 
   base::WeakPtrFactory<Controller> weak_ptr_factory_{this};
 };

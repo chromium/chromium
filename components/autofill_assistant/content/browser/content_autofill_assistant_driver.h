@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_AUTOFILL_ASSISTANT_CONTENT_BROWSER_CONTENT_AUTOFILL_ASSISTANT_DRIVER_H_
 #define COMPONENTS_AUTOFILL_ASSISTANT_CONTENT_BROWSER_CONTENT_AUTOFILL_ASSISTANT_DRIVER_H_
 
+#include "base/memory/weak_ptr.h"
+#include "components/autofill_assistant/content/browser/annotate_dom_model_service.h"
 #include "components/autofill_assistant/content/common/autofill_assistant_agent.mojom.h"
 #include "components/autofill_assistant/content/common/autofill_assistant_driver.mojom.h"
 #include "content/public/browser/document_user_data.h"
@@ -35,6 +37,12 @@ class ContentAutofillAssistantDriver
   const mojo::AssociatedRemote<mojom::AutofillAssistantAgent>&
   GetAutofillAssistantAgent();
 
+  void SetAnnotateDomModelService(
+      AnnotateDomModelService* annotate_dom_model_service);
+
+  // autofill_assistant::mojom::AutofillAssistantDriver:
+  void GetAnnotateDomModel(GetAnnotateDomModelCallback callback) override;
+
  private:
   explicit ContentAutofillAssistantDriver(
       content::RenderFrameHost* render_frame_host);
@@ -42,10 +50,18 @@ class ContentAutofillAssistantDriver
   friend DocumentUserData;
   DOCUMENT_USER_DATA_KEY_DECL();
 
+  void OnModelAvailabilityChanged(GetAnnotateDomModelCallback callback,
+                                  bool is_available);
+
+  AnnotateDomModelService* annotate_dom_model_service_ = nullptr;
+
   mojo::AssociatedReceiver<mojom::AutofillAssistantDriver> receiver_{this};
 
   mojo::AssociatedRemote<mojom::AutofillAssistantAgent>
       autofill_assistant_agent_;
+
+  base::WeakPtrFactory<ContentAutofillAssistantDriver> weak_pointer_factory_{
+      this};
 };
 
 }  // namespace autofill_assistant

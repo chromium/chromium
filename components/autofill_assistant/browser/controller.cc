@@ -73,7 +73,8 @@ Controller::Controller(
     base::WeakPtr<RuntimeManagerImpl> runtime_manager,
     std::unique_ptr<Service> service,
     std::unique_ptr<AutofillAssistantTtsController> tts_controller,
-    ukm::UkmRecorder* ukm_recorder)
+    ukm::UkmRecorder* ukm_recorder,
+    AnnotateDomModelService* annotate_dom_model_service)
     : content::WebContentsObserver(web_contents),
       client_(client),
       tick_clock_(tick_clock),
@@ -83,7 +84,8 @@ Controller::Controller(
                                              client_)),
       navigating_to_new_document_(web_contents->IsWaitingForResponse()),
       tts_controller_(std::move(tts_controller)),
-      ukm_recorder_(ukm_recorder) {
+      ukm_recorder_(ukm_recorder),
+      annotate_dom_model_service_(annotate_dom_model_service) {
   user_model_.AddObserver(this);
   tts_controller_->SetTtsEventDelegate(weak_ptr_factory_.GetWeakPtr());
 }

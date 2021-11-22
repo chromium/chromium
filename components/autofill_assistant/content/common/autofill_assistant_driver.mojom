@@ -4,7 +4,12 @@
 
 module autofill_assistant.mojom;
 
+import "mojo/public/mojom/base/read_only_file.mojom";
+
 // There is one instance of this interface per render frame host in the browser
 // process. All methods are called by renderer on browser.
 interface AutofillAssistantDriver {
+  // Request that the annotate DOM model is being loaded and returned for use
+  // by the AutofillAssistantAgent.
+  GetAnnotateDomModel() => (mojo_base.mojom.ReadOnlyFile? model_file);
 };

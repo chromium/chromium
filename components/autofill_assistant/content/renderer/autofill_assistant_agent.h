@@ -5,8 +5,11 @@
 #ifndef COMPONENTS_AUTOFILL_ASSISTANT_CONTENT_RENDERER_AUTOFILL_ASSISTANT_AGENT_H_
 #define COMPONENTS_AUTOFILL_ASSISTANT_CONTENT_RENDERER_AUTOFILL_ASSISTANT_AGENT_H_
 
+#include "base/callback_forward.h"
+#include "base/files/file.h"
 #include "base/memory/weak_ptr.h"
 #include "components/autofill_assistant/content/common/autofill_assistant_agent.mojom.h"
+#include "components/autofill_assistant/content/common/autofill_assistant_driver.mojom.h"
 #include "components/autofill_assistant/content/common/node_data.h"
 #include "content/public/renderer/render_frame_observer.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
@@ -37,9 +40,15 @@ class AutofillAssistantAgent : public content::RenderFrameObserver,
                         int32_t objective,
                         GetSemanticNodesCallback callback) override;
 
+  void GetAnnotateDomModel(base::OnceCallback<void(base::File)> callback);
+
  private:
   // content::RenderFrameObserver:
   void OnDestruct() override;
+
+  const mojo::Remote<mojom::AutofillAssistantDriver>& GetDriver();
+
+  mojo::Remote<mojom::AutofillAssistantDriver> driver_;
 
   mojo::AssociatedReceiver<mojom::AutofillAssistantAgent> receiver_{this};
   base::WeakPtrFactory<AutofillAssistantAgent> weak_ptr_factory_{this};

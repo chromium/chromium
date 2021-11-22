@@ -119,7 +119,8 @@ class ControllerTest : public testing::Test {
     controller_ = std::make_unique<Controller>(
         web_contents(), &mock_client_, task_environment()->GetMockTickClock(),
         mock_runtime_manager_->GetWeakPtr(), std::move(service),
-        std::move(tts_controller), &ukm_recorder_);
+        std::move(tts_controller), &ukm_recorder_,
+        /* annotate_dom_model_service= */ nullptr);
     controller_->SetWebControllerForTest(std::move(web_controller));
 
     ON_CALL(mock_client_, AttachUI()).WillByDefault(Invoke([this]() {
