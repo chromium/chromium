@@ -6876,12 +6876,6 @@ crbug.com/1236558 [ Mac ] virtual/off-main-thread-css-paint/external/wpt/css/css
 crbug.com/1233766 [ Mac ] virtual/threaded/external/wpt/animation-worklet/worklet-animation-local-time-before-start.https.html [ Crash Failure Pass ]
 crbug.com/1233766 [ Mac ] virtual/threaded/external/wpt/animation-worklet/worklet-animation-get-timing-on-worklet-thread.https.html [ Crash Failure Pass ]
 
-# Temporarily disable to fix DevTools issue reporting
-crbug.com/1241860 http/tests/inspector-protocol/issues/content-security-policy-issue-trusted-types-exception.js [ Skip ]
-crbug.com/1241860 http/tests/inspector-protocol/issues/content-security-policy-issue-trusted-types-policy-exception.js [ Skip ]
-crbug.com/1241860 http/tests/inspector-protocol/issues/cors-issues.js [ Skip ]
-crbug.com/1241860 http/tests/inspector-protocol/issues/renderer-cors-issues.js [ Skip ]
-
 # [CompositeClipPathAnimations] failing test
 crbug.com/1249071 virtual/composite-clip-path-animation/external/wpt/css/css-masking/clip-path/animations/clip-path-animation-filter.html [ Crash Failure Pass ]
 
