@@ -82,6 +82,16 @@ bool VerifyTrustTokenParamsIntegrityIfPresent(
   return true;
 }
 
+// Glorified ternary operator, only defined to appease the compiler.
+absl::optional<mojom::PrivateNetworkRequestPolicy>
+GetPrivateNetworkRequestPolicy(const mojom::URLLoaderFactoryParams& params) {
+  if (!params.client_security_state) {
+    return absl::nullopt;
+  }
+
+  return params.client_security_state->private_network_request_policy;
+}
+
 }  // namespace
 
 class CorsURLLoaderFactory::FactoryOverride final {
@@ -178,6 +188,7 @@ CorsURLLoaderFactory::CorsURLLoaderFactory(
               ? params->client_security_state->cross_origin_embedder_policy
               : CrossOriginEmbedderPolicy()),
       coep_reporter_(std::move(params->coep_reporter)),
+      private_network_request_policy_(GetPrivateNetworkRequestPolicy(*params)),
       origin_access_list_(origin_access_list) {
   DCHECK(context_);
   DCHECK(origin_access_list_);
@@ -294,7 +305,7 @@ void CorsURLLoaderFactory::CreateLoaderAndStart(
         context_->cors_exempt_header_list(),
         GetAllowAnyCorsExemptHeaderForBrowser(),
         context_->cors_non_wildcard_request_headers_support(), isolation_info_,
-        std::move(devtools_observer));
+        std::move(devtools_observer), private_network_request_policy_);
     auto* raw_loader = loader.get();
     OnLoaderCreated(std::move(loader));
     raw_loader->Start();

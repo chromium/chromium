@@ -274,6 +274,8 @@ std::unique_ptr<PreflightResult> CreatePreflightResult(
     const mojom::URLResponseHead& head,
     const ResourceRequest& original_request,
     bool tainted,
+    PreflightController::EnforcePrivateNetworkAccessHeader
+        enforce_private_network_access_header,
     absl::optional<CorsErrorStatus>* detected_error_status) {
   DCHECK(detected_error_status);
 
@@ -298,8 +300,9 @@ std::unique_ptr<PreflightResult> CreatePreflightResult(
   // See the CORS-preflight fetch algorithm modifications laid out in the
   // Private Network Access spec, in step 4 of the CORS preflight section as of
   // writing: https://wicg.github.io/private-network-access/#cors-preflight
-  if (original_request.target_ip_address_space !=
-      mojom::IPAddressSpace::kUnknown) {
+  if (enforce_private_network_access_header &&
+      original_request.target_ip_address_space !=
+          mojom::IPAddressSpace::kUnknown) {
     *detected_error_status = CheckExternalPreflight(GetHeaderString(
         head.headers, header_names::kAccessControlAllowPrivateNetwork));
     if (*detected_error_status)
@@ -344,6 +347,7 @@ class PreflightController::PreflightLoader final {
       const ResourceRequest& request,
       WithTrustedHeaderClient with_trusted_header_client,
       NonWildcardRequestHeadersSupport non_wildcard_request_headers_support,
+      EnforcePrivateNetworkAccessHeader enforce_private_network_access_header,
       bool tainted,
       const net::NetworkTrafficAnnotationTag& annotation_tag,
       const net::NetworkIsolationKey& network_isolation_key,
@@ -354,6 +358,8 @@ class PreflightController::PreflightLoader final {
         original_request_(request),
         non_wildcard_request_headers_support_(
             non_wildcard_request_headers_support),
+        enforce_private_network_access_header_(
+            enforce_private_network_access_header),
         tainted_(tainted),
         network_isolation_key_(network_isolation_key),
         devtools_observer_(std::move(devtools_observer)),
@@ -434,7 +440,8 @@ class PreflightController::PreflightLoader final {
     absl::optional<CorsErrorStatus> detected_error_status;
     bool has_authorization_covered_by_wildcard = false;
     std::unique_ptr<PreflightResult> result = CreatePreflightResult(
-        final_url, head, original_request_, tainted_, &detected_error_status);
+        final_url, head, original_request_, tainted_,
+        enforce_private_network_access_header_, &detected_error_status);
 
     if (result) {
       // Only log if there is a result to log.
@@ -505,6 +512,8 @@ class PreflightController::PreflightLoader final {
   const ResourceRequest original_request_;
 
   const NonWildcardRequestHeadersSupport non_wildcard_request_headers_support_;
+  const EnforcePrivateNetworkAccessHeader
+      enforce_private_network_access_header_;
   const bool tainted_;
   absl::optional<base::UnguessableToken> devtools_request_id_;
   const net::NetworkIsolationKey network_isolation_key_;
@@ -531,8 +540,10 @@ PreflightController::CreatePreflightResultForTesting(
     const mojom::URLResponseHead& head,
     const ResourceRequest& original_request,
     bool tainted,
+    EnforcePrivateNetworkAccessHeader enforce_private_network_access_header,
     absl::optional<CorsErrorStatus>* detected_error_status) {
   return CreatePreflightResult(final_url, head, original_request, tainted,
+                               enforce_private_network_access_header,
                                detected_error_status);
 }
 
@@ -567,6 +578,7 @@ void PreflightController::PerformPreflightCheck(
     const ResourceRequest& request,
     WithTrustedHeaderClient with_trusted_header_client,
     NonWildcardRequestHeadersSupport non_wildcard_request_headers_support,
+    EnforcePrivateNetworkAccessHeader enforce_private_network_access_header,
     bool tainted,
     const net::NetworkTrafficAnnotationTag& annotation_tag,
     mojom::URLLoaderFactory* loader_factory,
@@ -597,7 +609,8 @@ void PreflightController::PerformPreflightCheck(
 
   auto emplaced_pair = loaders_.emplace(std::make_unique<PreflightLoader>(
       this, std::move(callback), request, with_trusted_header_client,
-      non_wildcard_request_headers_support, tainted, annotation_tag,
+      non_wildcard_request_headers_support,
+      enforce_private_network_access_header, tainted, annotation_tag,
       network_isolation_key, std::move(devtools_observer), net_log));
   (*emplaced_pair.first)->Request(loader_factory);
 }

@@ -38,20 +38,29 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) PreflightController final {
  public:
   using CompletionCallback = base::OnceCallback<
       void(int net_error, absl::optional<CorsErrorStatus>, bool)>;
+
   using WithTrustedHeaderClient =
       base::StrongAlias<class WithTrustedHeaderClientTag, bool>;
+
+  // TODO(https://crbug.com/1268378): Remove this once enforcement is always on.
+  using EnforcePrivateNetworkAccessHeader =
+      base::StrongAlias<class EnforcePrivateNetworkAccessHeaderTag, bool>;
+
   // Creates a CORS-preflight ResourceRequest for a specified |request| for a
   // URL that is originally requested.
   static std::unique_ptr<ResourceRequest> CreatePreflightRequestForTesting(
       const ResourceRequest& request,
       bool tainted = false);
+
   // Creates a PreflightResult for a specified response parameters for testing.
   static std::unique_ptr<PreflightResult> CreatePreflightResultForTesting(
       const GURL& final_url,
       const mojom::URLResponseHead& head,
       const ResourceRequest& original_request,
       bool tainted,
+      EnforcePrivateNetworkAccessHeader enforce_private_network_access_header,
       absl::optional<CorsErrorStatus>* detected_error_status);
+
   // Checks CORS aceess on the CORS-preflight response parameters for testing.
   static absl::optional<CorsErrorStatus> CheckPreflightAccessForTesting(
       const GURL& response_url,
@@ -60,6 +69,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) PreflightController final {
       const absl::optional<std::string>& allow_credentials_header,
       mojom::CredentialsMode actual_credentials_mode,
       const url::Origin& origin);
+
   // Checks errors for the currently experimental
   // "Access-Control-Allow-External" header for testing.
   static absl::optional<CorsErrorStatus> CheckExternalPreflightForTesting(
@@ -80,6 +90,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) PreflightController final {
       const ResourceRequest& resource_request,
       WithTrustedHeaderClient with_trusted_header_client,
       NonWildcardRequestHeadersSupport non_wildcard_request_headers_support,
+      EnforcePrivateNetworkAccessHeader enforce_private_network_access_header,
       bool tainted,
       const net::NetworkTrafficAnnotationTag& traffic_annotation,
       mojom::URLLoaderFactory* loader_factory,

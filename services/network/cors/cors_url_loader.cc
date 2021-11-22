@@ -224,6 +224,29 @@ absl::optional<CorsErrorStatus> CheckRedirectLocation(
   return absl::nullopt;
 }
 
+// Computes the policy to use, given the factory and request-specific policies.
+absl::optional<mojom::PrivateNetworkRequestPolicy>
+CombinePrivateNetworkRequestPolicies(
+    absl::optional<mojom::PrivateNetworkRequestPolicy> factory_policy,
+    const ResourceRequest& request) {
+  if (factory_policy.has_value()) {
+    return factory_policy;
+  }
+
+  if (request.trusted_params && request.trusted_params->client_security_state) {
+    return request.trusted_params->client_security_state
+        ->private_network_request_policy;
+  }
+
+  return absl::nullopt;
+}
+
+bool ShouldIgnorePrivateNetworkAccessErrors(
+    absl::optional<mojom::PrivateNetworkRequestPolicy> policy) {
+  return policy &&
+         *policy == mojom::PrivateNetworkRequestPolicy::kPreflightWarn;
+}
+
 constexpr const char kTimingAllowOrigin[] = "Timing-Allow-Origin";
 }  // namespace
 
@@ -246,7 +269,9 @@ CorsURLLoader::CorsURLLoader(
     bool allow_any_cors_exempt_header,
     NonWildcardRequestHeadersSupport non_wildcard_request_headers_support,
     const net::IsolationInfo& isolation_info,
-    mojo::PendingRemote<mojom::DevToolsObserver> devtools_observer)
+    mojo::PendingRemote<mojom::DevToolsObserver> devtools_observer,
+    absl::optional<mojom::PrivateNetworkRequestPolicy>
+        factory_private_network_request_policy)
     : receiver_(this, std::move(loader_receiver)),
       process_id_(process_id),
       request_id_(request_id),
@@ -265,6 +290,11 @@ CorsURLLoader::CorsURLLoader(
       non_wildcard_request_headers_support_(
           non_wildcard_request_headers_support),
       isolation_info_(isolation_info),
+      should_ignore_private_network_access_errors_(
+          ShouldIgnorePrivateNetworkAccessErrors(
+              CombinePrivateNetworkRequestPolicies(
+                  factory_private_network_request_policy,
+                  request_))),
       devtools_observer_(std::move(devtools_observer)),
       // CORS preflight related events are logged in a series of URL_REQUEST
       // logs.
@@ -718,8 +748,10 @@ void CorsURLLoader::StartRequest() {
       request_,
       PreflightController::WithTrustedHeaderClient(
           options_ & mojom::kURLLoadOptionUseHeaderClient),
-      non_wildcard_request_headers_support_, tainted_,
-      net::NetworkTrafficAnnotationTag(traffic_annotation_),
+      non_wildcard_request_headers_support_,
+      PreflightController::EnforcePrivateNetworkAccessHeader(
+          !should_ignore_private_network_access_errors_),
+      tainted_, net::NetworkTrafficAnnotationTag(traffic_annotation_),
       network_loader_factory_, isolation_info_, std::move(devtools_observer),
       net_log_);
 }
@@ -731,12 +763,13 @@ void CorsURLLoader::OnPreflightRequestComplete(
   has_authorization_covered_by_wildcard_ =
       has_authorization_covered_by_wildcard;
 
-  if (net_error != net::OK) {
+  if (net_error == net::OK) {
+    DCHECK(!status) << *status;
+  } else if (!should_ignore_preflight_errors_) {
     HandleComplete(status.has_value() ? URLLoaderCompletionStatus(*status)
                                       : URLLoaderCompletionStatus(net_error));
     return;
   }
-  DCHECK(!status) << *status;
 
   StartNetworkRequest();
 }
@@ -797,6 +830,17 @@ void CorsURLLoader::HandleComplete(const URLLoaderCompletionStatus& status) {
           mojom::CorsError::kUnexpectedPrivateNetworkAccess) {
     DCHECK(status.cors_error_status->resource_address_space !=
            mojom::IPAddressSpace::kUnknown);
+
+    // If we only send a preflight because of Private Network Access, and we are
+    // configured to ignore errors caused by Private Network Access, then we
+    // should ignore any preflight error, as if we had never sent the preflight.
+    // Otherwise, if we had sent a preflight before we noticed the private
+    // network access, then we rely on `PreflightController` to ignore
+    // PNA-specific preflight errors during this second preflight request.
+    should_ignore_preflight_errors_ =
+        should_ignore_private_network_access_errors_ &&
+        !NeedsPreflight(request_).has_value();
+
     network_client_receiver_.reset();
     request_.target_ip_address_space =
         status.cors_error_status->resource_address_space;

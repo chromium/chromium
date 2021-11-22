@@ -2622,15 +2622,10 @@ IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTestSendPreflights,
 
   // Check that the page can load a local resource.
   //
-  // TODO(https://crbug.com/1256775): The page should be able to load this
-  // resource, since in this feature flag configuration we should send CORS
-  // preflight requests but not gate the actual request based on the preflight's
-  // outcome.
-  //
   // We load the resource from a secure origin to avoid running afoul of mixed
   // content restrictions.
-  EXPECT_EQ(false, EvalJs(root_frame_host(),
-                          FetchSubresourceScript(SecureLocalURL(kCorsPath))));
+  EXPECT_EQ(true, EvalJs(root_frame_host(),
+                         FetchSubresourceScript(SecureLocalURL(kCorsPath))));
 }
 
 // This test verifies that when preflights are sent and enforced, requests:
@@ -2673,15 +2668,10 @@ IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTestSendPreflights,
 
   // Check that the page can load a local resource.
   //
-  // TODO(https://crbug.com/1256775): The page should be able to load this
-  // resource, since in this feature flag configuration we should send CORS
-  // preflight requests but not gate the actual request based on the preflight's
-  // outcome.
-  //
   // We load it from a secure origin to avoid running afoul of mixed content
   // restrictions.
-  EXPECT_EQ(false, EvalJs(root_frame_host(),
-                          FetchSubresourceScript(SecureLocalURL(kCorsPath))));
+  EXPECT_EQ(true, EvalJs(root_frame_host(),
+                         FetchSubresourceScript(SecureLocalURL(kCorsPath))));
 }
 
 // This test verifies that when preflights are sent and enforced, requests:

@@ -42,6 +42,8 @@ namespace cors {
 namespace {
 
 using WithTrustedHeaderClient = PreflightController::WithTrustedHeaderClient;
+using EnforcePrivateNetworkAccessHeader =
+    PreflightController::EnforcePrivateNetworkAccessHeader;
 
 TEST(PreflightControllerCreatePreflightRequestTest, LexicographicalOrder) {
   ResourceRequest request;
@@ -229,14 +231,16 @@ TEST(PreflightControllerOptionsTest, CheckOptions) {
   preflight_controller.PerformPreflightCheck(
       base::BindOnce([](int, absl::optional<CorsErrorStatus>, bool) {}),
       request, WithTrustedHeaderClient(false),
-      NonWildcardRequestHeadersSupport(false), false /* tainted */,
+      NonWildcardRequestHeadersSupport(false),
+      EnforcePrivateNetworkAccessHeader(false), false /* tainted */,
       TRAFFIC_ANNOTATION_FOR_TESTS, &url_loader_factory, net::IsolationInfo(),
       /*devtools_observer=*/mojo::NullRemote(), net_log);
 
   preflight_controller.PerformPreflightCheck(
       base::BindOnce([](int, absl::optional<CorsErrorStatus>, bool) {}),
       request, WithTrustedHeaderClient(true),
-      NonWildcardRequestHeadersSupport(false), false /* tainted */,
+      NonWildcardRequestHeadersSupport(false),
+      EnforcePrivateNetworkAccessHeader(false), false /* tainted */,
       TRAFFIC_ANNOTATION_FOR_TESTS, &url_loader_factory, net::IsolationInfo(),
       /*devtools_observer=*/mojo::NullRemote(), net_log);
 
@@ -443,7 +447,8 @@ class PreflightControllerTest : public testing::Test {
         base::BindOnce(&PreflightControllerTest::HandleRequestCompletion,
                        base::Unretained(this)),
         request, WithTrustedHeaderClient(false),
-        non_wildcard_request_headers_support_, tainted,
+        non_wildcard_request_headers_support_,
+        EnforcePrivateNetworkAccessHeader(false), tainted,
         TRAFFIC_ANNOTATION_FOR_TESTS, url_loader_factory_remote_.get(),
         isolation_info, devtools_observer_->Bind(),
         net::NetLogWithSource::Make(net::NetLog::Get(),
@@ -683,7 +688,9 @@ TEST_F(PreflightControllerTest, CheckResponseWithNullHeaders) {
 
   std::unique_ptr<PreflightResult> result =
       PreflightController::CreatePreflightResultForTesting(
-          url, response_head, request, tainted, &detected_error_status);
+          url, response_head, request, tainted,
+          PreflightController::EnforcePrivateNetworkAccessHeader(true),
+          &detected_error_status);
 
   EXPECT_FALSE(result);
 }

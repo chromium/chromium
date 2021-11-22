@@ -14,6 +14,7 @@
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/cors/preflight_controller.h"
 #include "services/network/public/cpp/cors/cors_error_status.h"
+#include "services/network/public/mojom/client_security_state.mojom.h"
 #include "services/network/public/mojom/devtools_observer.mojom.h"
 #include "services/network/public/mojom/fetch_api.mojom.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
@@ -60,7 +61,9 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CorsURLLoader
       bool allow_any_cors_exempt_header,
       NonWildcardRequestHeadersSupport non_wildcard_request_headers_support,
       const net::IsolationInfo& isolation_info,
-      mojo::PendingRemote<mojom::DevToolsObserver> devtools_observer);
+      mojo::PendingRemote<mojom::DevToolsObserver> devtools_observer,
+      absl::optional<mojom::PrivateNetworkRequestPolicy>
+          factory_private_network_request_policy);
 
   CorsURLLoader(const CorsURLLoader&) = delete;
   CorsURLLoader& operator=(const CorsURLLoader&) = delete;
@@ -213,7 +216,33 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CorsURLLoader
 
   net::IsolationInfo isolation_info_;
 
+  // If set to true, then preflight errors due exclusively to Private Network
+  // Access checks are ignored. This is used to soft-launch Private Betwork
+  // Access preflights: we send preflights but do not require them to succeed.
+  //
+  // NOTE: A default value is set here in order to avoid any risk of undefined
+  // behavior, but it should never be used since the constructor always
+  // initializes this member explicitly.
+  //
+  // TODO(https://crbug.com/1268378): Remove this once it is never set to true.
+  const bool should_ignore_private_network_access_errors_ = false;
+
   bool has_authorization_covered_by_wildcard_ = false;
+
+  // If set to true, then any and all errors raised by subsequent preflight
+  // requests are ignored.
+  //
+  // This is used to soft-launch Private Network Access preflights. In some
+  // cases, the only reason we send a preflight is because of Private Network
+  // Access. Errors that arise then would never have been noticed if we had not
+  // sent the preflight, so we ignore them all.
+  //
+  // INVARIANT: if this is true, then
+  // `should_ignore_private_network_access_errors_` is also true.
+  //
+  // TODO(https://crbug.com/1268378): Remove this along with
+  // `should_ignore_private_network_access_errors_`.
+  bool should_ignore_preflight_errors_ = false;
 
   mojo::Remote<mojom::DevToolsObserver> devtools_observer_;
 
