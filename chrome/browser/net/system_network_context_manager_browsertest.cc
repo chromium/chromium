@@ -10,7 +10,6 @@
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/threading/sequenced_task_runner_handle.h"
-#include "base/time/time.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -58,47 +57,24 @@ int64_t GetFirstPartySetEntriesCountFromNetworkService() {
   mojo::Remote<network::mojom::NetworkServiceTest> network_service_test;
   content::GetNetworkService()->BindTestInterface(
       network_service_test.BindNewPipeAndPassReceiver());
-  network_service_test.FlushForTesting();
-
-  mojo::ScopedAllowSyncCallForTesting allow_sync_call;
 
   int64_t count = 0;
-  EXPECT_TRUE(network_service_test->GetFirstPartySetEntriesCount(&count));
+  base::RunLoop run_loop;
+  network_service_test->GetFirstPartySetEntriesCount(
+      base::BindLambdaForTesting([&](int64_t count_from_network_service) {
+        count = count_from_network_service;
+        run_loop.Quit();
+      }));
+  run_loop.Run();
 
   return count;
 }
 
-void Sleep(base::TimeDelta duration) {
-  base::RunLoop run_loop;
-  base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
-      FROM_HERE, run_loop.QuitClosure(), duration);
-  run_loop.Run();
-}
-
-// Calls a predicate periodically until it becomes true, or until a timeout
-// elapses. The predicate is expected to be monotonic (i.e. once it becomes
-// true, it will remain true until the next time `predicate` is invoked).
-// Returns true if the predicate became true; false otherwise.
-bool PollWithTimeout(base::TimeDelta timeout,
-                     base::RepeatingCallback<bool()> predicate) {
-  base::TimeTicks deadline = base::TimeTicks::Now() + timeout;
-  while (base::TimeTicks::Now() <= deadline) {
-    if (predicate.Run())
-      return true;
-    Sleep(base::Milliseconds(5));
-  }
-  return false;
-}
-
-void PollForFirstPartySetEntryCount(base::TimeDelta timeout,
-                                    int64_t expected_count) {
-  if (!PollWithTimeout(
-          timeout, base::BindLambdaForTesting([expected_count]() {
-            return GetFirstPartySetEntriesCountFromNetworkService() ==
-                   expected_count;
-          }))) {
-    FAIL() << "Polled for " << timeout << " but never found exactly "
-           << expected_count << " First-Party Set entries.";
+void PollForFirstPartySetEntryCount(int64_t expected_count) {
+  auto has_expected_count = base::BindLambdaForTesting([expected_count]() {
+    return GetFirstPartySetEntriesCountFromNetworkService() == expected_count;
+  });
+  while (!has_expected_count.Run()) {
   }
 }
 
@@ -269,27 +245,18 @@ class SystemNetworkContextManagerWithFirstPartySetComponentBrowserTest
   base::ScopedTempDir component_dir_;
 };
 
-// Flaky on Windows + Linux, crbug.com/1272198
-#if defined(OS_WIN) || defined(OS_LINUX)
-#define MAYBE_ReloadsFirstPartySetsAfterCrash \
-  DISABLED_ReloadsFirstPartySetsAfterCrash
-#else
-#define MAYBE_ReloadsFirstPartySetsAfterCrash ReloadsFirstPartySetsAfterCrash
-#endif
 IN_PROC_BROWSER_TEST_P(
     SystemNetworkContextManagerWithFirstPartySetComponentBrowserTest,
-    MAYBE_ReloadsFirstPartySetsAfterCrash) {
+    ReloadsFirstPartySetsAfterCrash) {
   // Network service is not running out of process, so cannot be crashed.
   if (!content::IsOutOfProcessNetworkService())
     return;
 
-  PollForFirstPartySetEntryCount(base::Seconds(5),
-                                 /*expected_count=*/6);
+  PollForFirstPartySetEntryCount(/*expected_count=*/6);
 
   SimulateNetworkServiceCrash();
 
-  PollForFirstPartySetEntryCount(base::Seconds(5),
-                                 /*expected_count=*/6);
+  PollForFirstPartySetEntryCount(/*expected_count=*/6);
 }
 
 INSTANTIATE_TEST_SUITE_P(

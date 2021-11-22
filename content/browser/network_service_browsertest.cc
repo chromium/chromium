@@ -514,12 +514,15 @@ int64_t GetFirstPartySetCountFromNetworkService() {
   mojo::Remote<network::mojom::NetworkServiceTest> network_service_test;
   content::GetNetworkService()->BindTestInterface(
       network_service_test.BindNewPipeAndPassReceiver());
-  network_service_test.FlushForTesting();
-
-  mojo::ScopedAllowSyncCallForTesting allow_sync_call;
 
   int64_t count = 0;
-  EXPECT_TRUE(network_service_test->GetFirstPartySetEntriesCount(&count));
+  base::RunLoop run_loop;
+  network_service_test->GetFirstPartySetEntriesCount(
+      base::BindLambdaForTesting([&](int64_t count_from_network_service) {
+        count = count_from_network_service;
+        run_loop.Quit();
+      }));
+  run_loop.Run();
 
   return count;
 }
