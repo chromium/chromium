@@ -533,7 +533,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Browser.PaintPreview.TabbedPlayer.UpTime{TabbedPaintPreviewPlayerUptime}"
-    units="ms" expires_after="2022-01-02">
+    units="ms" expires_after="2022-03-31">
   <owner>ckitagawa@chromium.org</owner>
   <owner>yashard@chromium.org</owner>
   <owner>fredmello@chromium.org</owner>
