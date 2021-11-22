@@ -7,7 +7,7 @@
 #include "third_party/blink/renderer/platform/heap/heap_test_utilities.h"
 #include <memory>
 
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "v8/include/cppgc/platform.h"
 
 namespace blink {

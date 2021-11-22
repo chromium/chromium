@@ -8,7 +8,6 @@
 #include "third_party/blink/public/mojom/frame/back_forward_cache_controller.mojom-forward.h"
 #include "third_party/blink/public/mojom/navigation/renderer_eviction_reason.mojom-forward.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 
