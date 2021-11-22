@@ -30,6 +30,7 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_list_observer.h"
+#include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/web_applications/system_web_app_ui_utils.h"
 #include "chrome/browser/web_applications/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
@@ -206,6 +207,17 @@ content::EvalJsResult WaitForImageAlt(content::WebContents* web_ui,
 
   return MediaAppUiBrowserTest::EvalJsInAppFrame(
       web_ui, base::ReplaceStringPlaceholders(kScript, {alt}, nullptr));
+}
+
+// Runs the provided `script` in a non-isolated JS world that can access
+// variables defined in global scope (otherwise only DOM queries are allowed).
+// The script must call `domAutomationController.send(result)` to return.
+std::string ExtractStringInGlobalScope(content::WebContents* web_ui,
+                                       const std::string& script) {
+  std::string result;
+  content::RenderFrameHost* app = MediaAppUiBrowserTest::GetAppFrame(web_ui);
+  EXPECT_TRUE(content::ExecuteScriptAndExtractString(app, script, &result));
+  return result;
 }
 
 // Waits for the "shownav" attribute to show up in the MediaApp's current
@@ -1143,23 +1155,40 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationWithFilesAppTest,
   folder.Open(reserved_file);
 
   content::WebContents* web_ui = PrepareActiveBrowserForTest();
-  content::RenderFrameHost* app = MediaAppUiBrowserTest::GetAppFrame(web_ui);
 
   EXPECT_EQ("640x480", WaitForImageAlt(web_ui, "thumbs.db"));
 
-  std::string result;
   constexpr char kScript[] =
       "lastLoadedReceivedFileList().item(0).deleteOriginalFile()"
       ".then(() => domAutomationController.send('bad-success'))"
       ".catch(e => domAutomationController.send(e.name));";
-  EXPECT_EQ(true,
-            content::ExecuteScriptAndExtractString(app, kScript, &result));
-  EXPECT_EQ("InvalidModificationError", result);
+  EXPECT_EQ("InvalidModificationError",
+            ExtractStringInGlobalScope(web_ui, kScript));
 
   // The file should still be there.
   folder.Refresh();
   EXPECT_EQ(1u, folder.files().size());
   EXPECT_EQ("thumbs.db", folder.files()[0].BaseName().value());
+}
+
+IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest, ToggleBrowserFullscreen) {
+  content::WebContents* web_ui = LaunchWithOneTestFile(kFileVideoVP9);
+  Browser* app_browser = chrome::FindBrowserWithActiveWindow();
+
+  constexpr char kToggleFullscreen[] = R"(
+      (async function toggleFullscreen() {
+        await customLaunchData.delegate.toggleBrowserFullscreenMode();
+        domAutomationController.send("success");
+      })();
+  )";
+
+  EXPECT_FALSE(app_browser->window()->IsFullscreen());
+
+  EXPECT_EQ("success", ExtractStringInGlobalScope(web_ui, kToggleFullscreen));
+  EXPECT_TRUE(app_browser->window()->IsFullscreen());
+
+  EXPECT_EQ("success", ExtractStringInGlobalScope(web_ui, kToggleFullscreen));
+  EXPECT_FALSE(app_browser->window()->IsFullscreen());
 }
 
 INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_REGULAR_PROFILE_P(

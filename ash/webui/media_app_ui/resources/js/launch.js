@@ -179,6 +179,10 @@ guestMessagePipe.registerHandler(Message.OPEN_FEEDBACK_DIALOG, () => {
   return response;
 });
 
+guestMessagePipe.registerHandler(Message.TOGGLE_BROWSER_FULLSCREEN_MODE, () => {
+  mediaAppPageHandler.toggleBrowserFullscreenMode();
+});
+
 guestMessagePipe.registerHandler(Message.OVERWRITE_FILE, async (message) => {
   const overwrite = /** @type {!OverwriteFileMessage} */ (message);
   const originalHandle = fileHandleForToken(overwrite.token);

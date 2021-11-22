@@ -183,6 +183,12 @@ mediaApp.ClientApiDelegate = function() {};
  */
 mediaApp.ClientApiDelegate.prototype.openFeedbackDialog = function() {};
 /**
+ * Toggles browser fullscreen mode.
+ * @type {undefined|function():!Promise<undefined>}
+ */
+mediaApp.ClientApiDelegate.prototype.toggleBrowserFullscreenMode =
+    function() {};
+/**
  * Request for the user to be prompted with a save file dialog. Once the user
  * selects a location a new file handle is created and a new AbstractFile
  * representing that file will be returned. This can be then used in a save as

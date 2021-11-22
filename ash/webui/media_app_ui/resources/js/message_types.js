@@ -26,6 +26,7 @@ export const Message = {
   REQUEST_SAVE_FILE: 'request-save-file',
   SAVE_AS: 'save-as',
   OPEN_ALLOWED_FILE: 'open-allowed-file',
+  TOGGLE_BROWSER_FULLSCREEN_MODE: 'toggle-browser-fullscreen-mode',
 };
 
 /**

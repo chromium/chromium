@@ -282,6 +282,9 @@ const DELEGATE = {
         await parentMessagePipe.sendMessage(Message.OPEN_FEEDBACK_DIALOG);
     return /** @type {?string} */ (response['errorMessage']);
   },
+  async toggleBrowserFullscreenMode() {
+    await parentMessagePipe.sendMessage(Message.TOGGLE_BROWSER_FULLSCREEN_MODE);
+  },
   /**
    * @param {string} suggestedName
    * @param {string} mimeType

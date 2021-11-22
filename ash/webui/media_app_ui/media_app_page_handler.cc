@@ -24,4 +24,10 @@ void MediaAppPageHandler::OpenFeedbackDialog(
   std::move(callback).Run(std::move(error_message));
 }
 
+void MediaAppPageHandler::ToggleBrowserFullscreenMode(
+    ToggleBrowserFullscreenModeCallback callback) {
+  media_app_ui_->delegate()->ToggleBrowserFullscreenMode();
+  std::move(callback).Run();
+}
+
 }  // namespace ash
