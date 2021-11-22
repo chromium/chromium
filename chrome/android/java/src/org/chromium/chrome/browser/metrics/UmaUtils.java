@@ -97,11 +97,6 @@ public class UmaUtils {
         return ApiHelperForN.getStartUptimeMillis();
     }
 
-    public static long getForegroundStartTicks() {
-        assert sForegroundStartTimeMs != 0;
-        return sForegroundStartTimeMs;
-    }
-
     @NativeMethods
     interface Natives {
         boolean isClientInMetricsReportingSample();
