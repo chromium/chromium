@@ -52,6 +52,10 @@ constexpr char kZoomRange[] = "com.google.control.zoomRange";
 constexpr int32_t kColorTemperatureStep = 100;
 constexpr int32_t kMicroToNano = 1000;
 
+constexpr char kIntelPowerMode[] = "intel.vendorCamera.powerMode";
+constexpr uint8_t kIntelPowerModeLowPower = 0;
+constexpr uint8_t kIntelPowerModeHighQuality = 1;
+
 using AwbModeTemperatureMap = std::map<uint8_t, int32_t>;
 
 const AwbModeTemperatureMap& GetAwbModeTemperatureMap() {
@@ -819,6 +823,20 @@ void CameraDeviceDelegate::Initialize() {
       std::move(callback_ops),
       base::BindOnce(&CameraDeviceDelegate::OnInitialized, GetWeakPtr()));
   request_manager_->AddResultMetadataObserver(this);
+
+  // For Intel IPU6 platform, set power mode to high quality for CCA and low
+  // power mode for others.
+  const VendorTagInfo* info =
+      camera_hal_delegate_->GetVendorTagInfoByName(kIntelPowerMode);
+  if (info != nullptr) {
+    bool is_cca =
+        CameraAppDeviceBridgeImpl::GetInstance()->GetWeakCameraAppDevice(
+            device_descriptor_.device_id) != nullptr;
+    uint8_t power_mode =
+        is_cca ? kIntelPowerModeHighQuality : kIntelPowerModeLowPower;
+    request_manager_->SetRepeatingCaptureMetadata(
+        info->tag, info->type, 1, std::vector<uint8_t>{power_mode});
+  }
 }
 
 void CameraDeviceDelegate::OnInitialized(int32_t result) {
