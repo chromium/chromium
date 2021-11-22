@@ -165,6 +165,19 @@ void PeerConnectionTrackerHost::GetUserMedia(
   }
 }
 
+void PeerConnectionTrackerHost::GetUserMediaSuccess(
+    int request_id,
+    const std::string& stream_id,
+    const std::string& audio_track_info,
+    const std::string& video_track_info) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+
+  for (auto& observer : GetObserverList()) {
+    observer.OnGetUserMediaSuccess(frame_id_, peer_pid_, request_id, stream_id,
+                                   audio_track_info, video_track_info);
+  }
+}
+
 void PeerConnectionTrackerHost::WebRtcEventLogWrite(
     int lid,
     const std::vector<uint8_t>& output) {

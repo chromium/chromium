@@ -84,6 +84,12 @@ class CONTENT_EXPORT WebRTCInternals : public PeerConnectionTrackerHostObserver,
                       bool video,
                       const std::string& audio_constraints,
                       const std::string& video_constraints) override;
+  void OnGetUserMediaSuccess(GlobalRenderFrameHostId frame_id,
+                             base::ProcessId pid,
+                             int request_id,
+                             const std::string& stream_id,
+                             const std::string& audio_track_info,
+                             const std::string& video_track_info) override;
 
   // Methods for adding or removing WebRTCInternalsUIObserver.
   void AddObserver(WebRTCInternalsUIObserver* observer);
@@ -202,13 +208,18 @@ class CONTENT_EXPORT WebRTCInternals : public PeerConnectionTrackerHostObserver,
   // are strings representing the event.
   base::ListValue peer_connection_data_;
 
-  // A list of getUserMedia requests. Each item is a DictionaryValue that
-  // contains these fields:
+  // A list of getUserMedia requests or updates.
+  // Each item is a DictionaryValue that contains some of these fields
+  // depending on the type:
   // "rid" -- the renderer id.
-  // "pid" -- proceddId of the renderer.
+  // "pid" -- OS process id of the renderer that creates the PeerConnection.
   // "origin" -- the security origin of the request.
   // "audio" -- the serialized audio constraints if audio is requested.
   // "video" -- the serialized video constraints if video is requested.
+  // "timestamp" -- time of the request
+  // "stream_id" -- the resulting stream id.
+  // "audio_track_info" -- the serialized audio track (track id and label).
+  // "video_track_info" -- the serialized video track (track id and label).
   base::ListValue get_user_media_requests_;
 
   // For managing select file dialog.

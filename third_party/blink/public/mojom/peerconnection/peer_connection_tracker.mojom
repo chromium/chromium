@@ -99,6 +99,18 @@ interface PeerConnectionTrackerHost {
   GetUserMedia(string origin, int32 request_id, bool audio, bool video, string
                audio_constraints, string video_constraints);
 
+  // Lets WebRTCInternals know that a getUserMedia() call has resolved.
+  // |request_id| is an id assigned to the getusermedia call and its
+  //   callback/error
+  // |stream_id| is information about the stream such as the stream id.
+  // |audio_track_info| describes the streams audio track (if any).
+  // |video_track_info| describes the streams video track (if any).
+  // The stream_id, audio_track_info and video_track_info strings are
+  // for display only and should not be parsed by the browser for
+  // security reasons.
+  GetUserMediaSuccess(int32 request_id, string stream_id,
+    string audio_track_info, string video_track_info);
+
   // Logs WebRtc log for the connection id.
   WebRtcEventLogWrite(int32 lid, array<uint8> output);
 

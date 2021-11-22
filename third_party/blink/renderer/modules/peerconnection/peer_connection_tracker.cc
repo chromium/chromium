@@ -1253,6 +1253,29 @@ void PeerConnectionTracker::TrackGetUserMedia(
       SerializeMediaConstraints(user_media_request->VideoConstraints()));
 }
 
+void PeerConnectionTracker::TrackGetUserMediaSuccess(
+    UserMediaRequest* user_media_request,
+    MediaStream* stream) {
+  DCHECK_CALLED_ON_VALID_THREAD(main_thread_);
+
+  // Serialize audio and video track information (id and label) or an
+  // empty string when there is no such track.
+  String audio_track_info =
+      stream->getAudioTracks().IsEmpty()
+          ? String("")
+          : String("id:") + stream->getAudioTracks()[0]->id() +
+                String(" label:") + stream->getAudioTracks()[0]->label();
+  String video_track_info =
+      stream->getVideoTracks().IsEmpty()
+          ? String("")
+          : String("id:") + stream->getVideoTracks()[0]->id() +
+                String(" label:") + stream->getVideoTracks()[0]->label();
+
+  peer_connection_tracker_host_->GetUserMediaSuccess(
+      user_media_request->request_id(), stream->id(), audio_track_info,
+      video_track_info);
+}
+
 void PeerConnectionTracker::TrackRtcEventLogWrite(
     RTCPeerConnectionHandler* pc_handler,
     const WTF::Vector<uint8_t>& output) {

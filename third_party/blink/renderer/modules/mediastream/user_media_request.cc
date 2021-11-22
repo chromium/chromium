@@ -52,6 +52,7 @@
 #include "third_party/blink/renderer/modules/mediastream/media_stream.h"
 #include "third_party/blink/renderer/modules/mediastream/overconstrained_error.h"
 #include "third_party/blink/renderer/modules/mediastream/user_media_controller.h"
+#include "third_party/blink/renderer/modules/peerconnection/peer_connection_tracker.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_descriptor.h"
@@ -566,6 +567,9 @@ void UserMediaRequest::OnMediaStreamInitialized(MediaStream* stream) {
 
   RecordIdentifiabilityMetric(surface_, GetExecutionContext(),
                               IdentifiabilityBenignStringToken(g_empty_string));
+  if (auto* window = GetWindow()) {
+    PeerConnectionTracker::From(*window).TrackGetUserMediaSuccess(this, stream);
+  }
   // After this call, the execution context may be invalid.
   callbacks_->OnSuccess(stream);
   is_resolved_ = true;

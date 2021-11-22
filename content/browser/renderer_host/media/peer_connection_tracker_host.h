@@ -91,6 +91,10 @@ class PeerConnectionTrackerHost
                     bool video,
                     const std::string& audio_constraints,
                     const std::string& video_constraints) override;
+  void GetUserMediaSuccess(int request_id,
+                           const std::string& stream_id,
+                           const std::string& audio_track_info,
+                           const std::string& video_track_info) override;
   void WebRtcEventLogWrite(int lid,
                            const std::vector<uint8_t>& output) override;
   void AddStandardStats(int lid, base::Value value) override;

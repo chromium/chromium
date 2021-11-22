@@ -37,6 +37,10 @@ const char* const kWakeLockDisconnectingValues[] = {"disconnected", "closed",
 const char kAudioConstraint[] = "aaa";
 const char kVideoConstraint[] = "vvv";
 
+const char kStreamId[] = "streamid";
+const char kAudioTrackInfo[] = "id:audio label:fancy device";
+const char kVideoTrackInfo[] = "id:audio label:fancy device";
+
 class MockWebRtcInternalsProxy : public WebRTCInternalsUIObserver {
  public:
   MockWebRtcInternalsProxy() = default;
@@ -169,6 +173,25 @@ class WebRtcInternalsTest : public testing::Test {
     VerifyInt(dict, "request_id", request_id);
     VerifyString(dict, "audio", audio);
     VerifyString(dict, "video", video);
+  }
+
+  void VerifyGetUserMediaSuccessData(base::Value* actual_data,
+                                     GlobalRenderFrameHostId frame_id,
+                                     int pid,
+                                     int request_id,
+                                     const std::string& stream_id,
+                                     const std::string& audio_track_info,
+                                     const std::string& video_track_info) {
+    ASSERT_TRUE(actual_data->is_dict());
+    const base::DictionaryValue& dict =
+        base::Value::AsDictionaryValue(*actual_data);
+
+    VerifyInt(dict, "rid", frame_id.child_id);
+    VerifyInt(dict, "pid", pid);
+    VerifyInt(dict, "request_id", request_id);
+    VerifyString(dict, "stream_id", stream_id);
+    VerifyString(dict, "audio_track_info", audio_track_info);
+    VerifyString(dict, "video_track_info", video_track_info);
   }
 
   BrowserTaskEnvironment task_environment_;
@@ -365,6 +388,29 @@ TEST_F(WebRtcInternalsTest, AddGetUserMedia) {
   ASSERT_EQ("add-get-user-media", observer.event_name());
   VerifyGetUserMediaData(observer.event_data(), kFrameId, kPid, kUrl,
                          kRequestId, kAudioConstraint, kVideoConstraint);
+
+  webrtc_internals.RemoveObserver(&observer);
+
+  base::RunLoop().RunUntilIdle();
+}
+
+TEST_F(WebRtcInternalsTest, UpdateGetUserMedia) {
+  base::RunLoop loop;
+  MockWebRtcInternalsProxy observer(&loop);
+  WebRTCInternalsForTest webrtc_internals;
+
+  // Add one observer before "getUserMediaSuccess".
+  webrtc_internals.AddObserver(&observer);
+
+  webrtc_internals.OnGetUserMediaSuccess(kFrameId, kPid, kRequestId, kStreamId,
+                                         kAudioTrackInfo, kVideoTrackInfo);
+
+  loop.Run();
+
+  ASSERT_EQ("update-get-user-media", observer.event_name());
+  VerifyGetUserMediaSuccessData(observer.event_data(), kFrameId, kPid,
+                                kRequestId, kStreamId, kAudioTrackInfo,
+                                kVideoTrackInfo);
 
   webrtc_internals.RemoveObserver(&observer);
 

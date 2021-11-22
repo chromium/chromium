@@ -12,6 +12,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/public/mojom/peerconnection/peer_connection_tracker.mojom-blink.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
+#include "third_party/blink/renderer/modules/mediastream/media_stream.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/peerconnection/rtc_peer_connection_handler_client.h"
 #include "third_party/blink/renderer/platform/peerconnection/rtc_rtp_transceiver_platform.h"
@@ -243,6 +244,9 @@ class MODULES_EXPORT PeerConnectionTracker
 
   // Sends an update when getUserMedia is called.
   virtual void TrackGetUserMedia(UserMediaRequest* user_media_request);
+  // Sends an update when getUserMedia resolveѕ with a stream.
+  virtual void TrackGetUserMediaSuccess(UserMediaRequest* user_media_request,
+                                        MediaStream* stream);
 
   // Sends a new fragment on an RtcEventLog.
   virtual void TrackRtcEventLogWrite(RTCPeerConnectionHandler* pc_handler,
