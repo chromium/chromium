@@ -539,10 +539,12 @@ void ElementRuleCollector::DidMatchRule(
          dynamic_pseudo == kPseudoIdAfter) &&
         !rule_data->Rule()->Properties().HasProperty(CSSPropertyID::kContent))
       return;
-    if (!rule_data->Rule()->Properties().IsEmpty())
+    if (!rule_data->Rule()->Properties().IsEmpty()) {
       style_->SetHasPseudoElementStyle(dynamic_pseudo);
-    if (result.custom_highlight_name) {
-      style_->SetHasCustomHighlightName(result.custom_highlight_name);
+      if (dynamic_pseudo == kPseudoIdHighlight) {
+        DCHECK(result.custom_highlight_name);
+        style_->SetHasCustomHighlightName(result.custom_highlight_name);
+      }
     }
   } else {
     matched_rules_.push_back(MatchedRule(rule_data, layer_order,
