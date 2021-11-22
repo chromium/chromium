@@ -4,8 +4,14 @@
 async function onLoad() {
   const scope = self.origin + '/cookies/resources/postToParent.py?with-sw';
   const reg = await navigator.serviceWorker.getRegistration(scope);
-  await reg.unregister();
-  window.opener.postMessage({ type: 'SW-UNREGISTERED' }, '*');
+  if (reg) {
+    await reg.unregister();
+  }
+  if (window.opener) {
+    window.opener.postMessage({ type: 'SW-UNREGISTERED' }, '*');
+  } else {
+    window.top.postMessage({ type: 'SW-UNREGISTERED' }, '*');
+  }
 }
 self.addEventListener('load', onLoad);
 </script>

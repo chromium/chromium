@@ -10,9 +10,21 @@
 <body>
 <script>
 'use strict';
-async function unregister_service_worker(origin) {
-  const w = window.open(origin +
-      '/service-workers/service-worker/resources/same-site-cookies-unregister.html');
+
+function make_nested_url(nested_origins, target_url) {
+  for (let i = nested_origins.length - 1; i >= 0; --i) {
+    target_url = new URL(
+      `./resources/nested-parent.html?target=${encodeURIComponent(target_url)}`,
+      nested_origins[i] + self.location.pathname);
+  }
+  return target_url;
+}
+
+async function unregister_service_worker(origin, nested_origins=[]) {
+  let target_url = origin +
+      '/service-workers/service-worker/resources/same-site-cookies-unregister.html';
+  target_url = make_nested_url(nested_origins, target_url);
+  const w = window.open(target_url);
   try {
     await wait_for_message('SW-UNREGISTERED');
   } finally {
@@ -20,9 +32,11 @@ async function unregister_service_worker(origin) {
   }
 }
 
-async function register_service_worker(origin) {
-  const w = window.open(origin +
-      '/service-workers/service-worker/resources/same-site-cookies-register.html');
+async function register_service_worker(origin, nested_origins=[]) {
+  let target_url = origin +
+      '/service-workers/service-worker/resources/same-site-cookies-register.html';
+  target_url = make_nested_url(nested_origins, target_url);
+  const w = window.open(target_url);
   try {
     await wait_for_message('SW-REGISTERED');
   } finally {
@@ -31,7 +45,7 @@ async function register_service_worker(origin) {
 }
 
 async function run_test(t, origin, navaction, swaction, expected,
-                        redirect_origins=[]) {
+                        redirect_origins=[], nested_origins=[]) {
   const value = 'COOKIE_VALUE';
   await resetSameSiteCookies(origin, value);
   if (swaction === 'navpreload') {
@@ -59,23 +73,32 @@ async function run_test(t, origin, navaction, swaction, expected,
   }
 
   if (navaction === 'window.open') {
-    const w = window.open(target_url);
-    t.add_cleanup(() => w.close());
+    target_url = new URL(
+        `./resources/window-opener.html?target=${encodeURIComponent(target_url)}`,
+        self.origin + self.location.pathname);
   } else if (navaction === 'form post') {
-    const poster_url =
-        `./resources/form-poster.html?target=${encodeURIComponent(target_url)}`;
-    const w = window.open(poster_url);
-    t.add_cleanup(() => w.close());
+    target_url = new URL(
+        `./resources/form-poster.html?target=${encodeURIComponent(target_url)}`,
+        self.origin + self.location.pathname);
+  } else if (navaction === 'set location') {
+    target_url = new URL(
+        `./resources/location-setter.html?target=${encodeURIComponent(target_url)}`,
+        self.origin + self.location.pathname);
   }
+
+  const w = window.open(make_nested_url(nested_origins, target_url));
+  t.add_cleanup(() => w.close());
+
   const result = await wait_for_message('COOKIES');
-  verifySameSiteCookieState(expected, value, result.data,
-                            DomSameSiteStatus.SAME_SITE);
+  verifySameSiteCookieState(expected, value, result.data);
 }
 
 promise_test(async t => {
   await register_service_worker(self.origin);
   await register_service_worker(SECURE_SUBDOMAIN_ORIGIN);
   await register_service_worker(SECURE_CROSS_SITE_ORIGIN);
+  await register_service_worker(self.origin,
+      [self.origin, SECURE_CROSS_SITE_ORIGIN]);
 }, 'Setup service workers');
 
 promise_test(t => {
@@ -237,6 +260,82 @@ promise_test(t => {
    'same-origin redirect');
 
 //
+// Double-nested frame calling open.window() tests
+//
+promise_test(t => {
+  return run_test(t, self.origin, 'window.open', 'no-sw',
+                  SameSiteStatus.STRICT, [],
+                  [self.origin, SECURE_CROSS_SITE_ORIGIN]);
+}, 'same-origin, nested window.open with cross-site middle frame and ' +
+   'no service worker');
+
+promise_test(t => {
+  return run_test(t, self.origin, 'window.open', 'fallback',
+                  SameSiteStatus.STRICT, [],
+                  [self.origin, SECURE_CROSS_SITE_ORIGIN]);
+}, 'same-origin, nested window.open with cross-site middle frame and ' +
+   'fallback service worker');
+
+promise_test(t => {
+  return run_test(t, self.origin, 'window.open', 'passthrough',
+                  SameSiteStatus.STRICT, [],
+                  [self.origin, SECURE_CROSS_SITE_ORIGIN]);
+}, 'same-origin, nested window.open with cross-site middle frame and ' +
+   'passthrough service worker');
+
+promise_test(t => {
+  return run_test(t, self.origin, 'window.open', 'change-request',
+                  SameSiteStatus.STRICT, [],
+                  [self.origin, SECURE_CROSS_SITE_ORIGIN]);
+}, 'same-origin, nested window.open with cross-site middle frame and ' +
+   'change-request service worker');
+
+promise_test(t => {
+  return run_test(t, self.origin, 'window.open', 'navpreload',
+                  SameSiteStatus.STRICT, [],
+                  [self.origin, SECURE_CROSS_SITE_ORIGIN]);
+}, 'same-origin, nested window.open with cross-site middle frame and ' +
+   'navpreload service worker');
+
+//
+// Double-nested frame setting location tests
+//
+promise_test(t => {
+  return run_test(t, self.origin, 'set location', 'no-sw',
+                  SameSiteStatus.CROSS_SITE, [],
+                  [self.origin, SECURE_CROSS_SITE_ORIGIN]);
+}, 'same-origin, nested set location with cross-site middle frame and ' +
+   'no service worker');
+
+promise_test(t => {
+  return run_test(t, self.origin, 'set location', 'fallback',
+                  SameSiteStatus.CROSS_SITE, [],
+                  [self.origin, SECURE_CROSS_SITE_ORIGIN]);
+}, 'same-origin, nested set location with cross-site middle frame and ' +
+   'fallback service worker');
+
+promise_test(t => {
+  return run_test(t, self.origin, 'set location', 'passthrough',
+                  SameSiteStatus.CROSS_SITE, [],
+                  [self.origin, SECURE_CROSS_SITE_ORIGIN]);
+}, 'same-origin, nested set location with cross-site middle frame and ' +
+   'passthrough service worker');
+
+promise_test(t => {
+  return run_test(t, self.origin, 'set location', 'change-request',
+                  SameSiteStatus.CROSS_SITE, [],
+                  [self.origin, SECURE_CROSS_SITE_ORIGIN]);
+}, 'same-origin, nested set location with cross-site middle frame and ' +
+   'change-request service worker');
+
+promise_test(t => {
+  return run_test(t, self.origin, 'set location', 'navpreload',
+                  SameSiteStatus.CROSS_SITE, [],
+                  [self.origin, SECURE_CROSS_SITE_ORIGIN]);
+}, 'same-origin, nested set location with cross-site middle frame and ' +
+   'navpreload service worker');
+
+//
 // Form POST tests
 //
 promise_test(t => {
@@ -379,6 +478,8 @@ promise_test(async t => {
   await unregister_service_worker(self.origin);
   await unregister_service_worker(SECURE_SUBDOMAIN_ORIGIN);
   await unregister_service_worker(SECURE_CROSS_SITE_ORIGIN);
+  await unregister_service_worker(self.origin,
+      [self.origin, SECURE_CROSS_SITE_ORIGIN]);
 }, 'Cleanup service workers');
 
 </script>
