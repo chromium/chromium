@@ -58,6 +58,18 @@ class CONTENT_EXPORT PageImpl : public Page {
     is_on_load_completed_in_main_document_ = completed;
   }
 
+  bool is_document_available_in_main_document() const {
+    return is_document_available_in_main_document_;
+  }
+  void set_is_document_available_in_main_document(bool completed) {
+    is_document_available_in_main_document_ = completed;
+  }
+
+  bool uses_temporary_zoom_level() const { return uses_temporary_zoom_level_; }
+  void set_uses_temporary_zoom_level(bool level) {
+    uses_temporary_zoom_level_ = level;
+  }
+
   void OnFirstVisuallyNonEmptyPaint();
   bool did_first_visually_non_empty_paint() const {
     return did_first_visually_non_empty_paint_;
@@ -151,6 +163,13 @@ class CONTENT_EXPORT PageImpl : public Page {
   // True if we've received a notification that the onload() handler has
   // run for the main document.
   bool is_on_load_completed_in_main_document_ = false;
+
+  // True if we've received a notification that the window.document was created
+  // for the main document.
+  bool is_document_available_in_main_document_ = false;
+
+  // True if plugin zoom level is set for the main document.
+  bool uses_temporary_zoom_level_ = false;
 
   // Overall load progress of this Page. Initial load progress value is 0.0
   // before the load has begun.

@@ -5417,6 +5417,16 @@ void RenderFrameHostImpl::DocumentAvailableInMainFrame(
         GetProcess(), bad_message::RFH_INVALID_CALL_FROM_NOT_MAIN_FRAME);
     return;
   }
+
+  GetPage().set_is_document_available_in_main_document(true);
+  GetPage().set_uses_temporary_zoom_level(uses_temporary_zoom_level);
+
+  // In case of prerendering, we dispatch DocumentAvailableInMainFrame on
+  // activation. This is done to avoid notifying observers about a load event
+  // triggered from an inactive RenderFrameHost.
+  if (lifecycle_state() == LifecycleStateImpl::kPrerendering)
+    return;
+
   delegate_->DocumentAvailableInMainFrame(this);
 
   if (!uses_temporary_zoom_level)

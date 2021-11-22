@@ -3487,6 +3487,48 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ(web_contents()->GetURL(), kPrerenderingUrl);
 }
 
+// Test that WebContentsObserver::DocumentAvailableInMainFrame is not
+// invoked when the page gets loaded while prerendering but it is deferred and
+// invoked on prerender activation.
+IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
+                       DocumentAvailableInMainFrameInvokedAfterActivation) {
+  const GURL kInitialUrl = GetUrl("/empty.html");
+  const GURL kPrerenderingUrl = GetUrl("/page_with_iframe.html");
+
+  // Navigate to an initial page.
+  ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
+
+  // Initialize a MockWebContentsObserver and ensure that
+  // DocumentAvailableInMainFrame is not invoked while prerendering.
+  testing::NiceMock<MockWebContentsObserver> observer(shell()->web_contents());
+  EXPECT_CALL(observer, DocumentAvailableInMainFrame(testing::_)).Times(0);
+
+  // AddPrerender() below waits until WebContentsObserver::DidStopLoading() is
+  // called and RenderFrameHostImpl::DocumentAvailableInMainFrame() call is
+  // expected before it returns.
+  int prerender_host_id = AddPrerender(kPrerenderingUrl);
+  RenderFrameHostImpl* prerender_frame_host =
+      GetPrerenderedMainFrameHost(prerender_host_id);
+  EXPECT_EQ(prerender_frame_host->child_count(), 1u);
+  ASSERT_NE(prerender_host_id, RenderFrameHost::kNoFrameTreeNodeId);
+
+  // Verify and clear all expectations on the mock observer before setting new
+  // ones.
+  testing::Mock::VerifyAndClearExpectations(&observer);
+  testing::InSequence s;
+
+  // Activate the prerendered page. This should result in invoking
+  // DocumentOnLoadCompletedInMainFrame only for main RenderFrameHost.
+  // Verify that DidFinishNavigation is invoked before
+  // DocumentAvailableInMainFrame on activation.
+  EXPECT_CALL(observer, DidFinishNavigation(testing::_));
+
+  EXPECT_CALL(observer, DocumentAvailableInMainFrame(prerender_frame_host))
+      .Times(1);
+  NavigatePrimaryPage(kPrerenderingUrl);
+  EXPECT_EQ(web_contents()->GetURL(), kPrerenderingUrl);
+}
+
 // Test that WebContentsObserver::LoadProgressChanged is not invoked when the
 // page gets loaded while prerendering but is invoked on prerender activation.
 // Check that LoadProgressChanged is only called once for
