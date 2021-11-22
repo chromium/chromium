@@ -5620,6 +5620,7 @@ test("unit_tests") {
       "../browser/signin/dice_signed_in_profile_creator_unittest.cc",
       "../browser/signin/dice_tab_helper_unittest.cc",
       "../browser/signin/dice_web_signin_interceptor_unittest.cc",
+      "../browser/signin/logout_tab_helper_unittest.cc",
       "../browser/signin/process_dice_header_delegate_impl_unittest.cc",
       "../browser/signin/signin_manager_unittest.cc",
       "../browser/ui/passwords/account_storage_auth_helper_unittest.cc",

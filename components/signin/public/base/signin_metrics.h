@@ -398,9 +398,9 @@ enum class SourceForRefreshTokenOperation {
   kTokenService_ExtractCredentials = 17,
   // DEPRECATED on 09/2021 (used for force migration to DICE)
   // kAccountReconcilor_RevokeTokensNotInCookies = 18,
-  kLogoutTabHelper_DidFinishNavigation = 19,
+  kLogoutTabHelper_PrimaryPageChanged = 19,
 
-  kMaxValue = kLogoutTabHelper_DidFinishNavigation,
+  kMaxValue = kLogoutTabHelper_PrimaryPageChanged,
 };
 
 // Different types of reporting. This is used as a histogram suffix.
