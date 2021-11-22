@@ -2592,6 +2592,10 @@ const char kTurnOffStreamingMediaCachingAlwaysDescription[] =
     "Reduces disk activity during media playback, which can result in "
     "power savings.";
 
+const char kUnifiedSidePanelFlagId[] = "unified-side-panel";
+const char kUnifiedSidePanelName[] = "Unified side panel";
+const char kUnifiedSidePanelDescription[] = "Revamp the side panel experience.";
+
 const char kUnifiedPasswordManagerAndroidName[] =
     "Google Mobile Services for passwords";
 const char kUnifiedPasswordManagerAndroidDescription[] =

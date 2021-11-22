@@ -1496,6 +1496,10 @@ extern const char kTurnOffStreamingMediaCachingOnBatteryDescription[];
 extern const char kTurnOffStreamingMediaCachingAlwaysName[];
 extern const char kTurnOffStreamingMediaCachingAlwaysDescription[];
 
+extern const char kUnifiedSidePanelFlagId[];
+extern const char kUnifiedSidePanelName[];
+extern const char kUnifiedSidePanelDescription[];
+
 extern const char kUnifiedPasswordManagerAndroidName[];
 extern const char kUnifiedPasswordManagerAndroidDescription[];
 

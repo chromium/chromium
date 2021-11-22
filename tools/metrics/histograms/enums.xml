@@ -50358,6 +50358,7 @@ from previous Chrome versions.
   <int value="-823165021" label="MaterialDesignUserMenu:enabled"/>
   <int value="-822712881"
       label="ContextualSearchThinWebViewImplementation:enabled"/>
+  <int value="-822237807" label="UnifiedSidePanel:enabled"/>
   <int value="-821635312" label="EyeDropper:enabled"/>
   <int value="-820041355" label="enable-transition-compositing"/>
   <int value="-819165158" label="ScrollableTabStripButtons:enabled"/>
@@ -52281,6 +52282,7 @@ from previous Chrome versions.
   <int value="644084236" label="CloseButtonsInactiveTabs:enabled"/>
   <int value="644189071" label="PermissionsBlacklist:enabled"/>
   <int value="646252875" label="ReadItLaterInMenu:enabled"/>
+  <int value="646269021" label="UnifiedSidePanel:disabled"/>
   <int value="646738320" label="disable-gesture-editing"/>
   <int value="647662142" label="use-angle"/>
   <int value="649111851" label="MidiManagerCros:enabled"/>

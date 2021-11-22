@@ -4943,6 +4943,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kSidePanelDragAndDropDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(features::kSidePanelDragAndDrop)},
 
+    {flag_descriptions::kUnifiedSidePanelFlagId,
+     flag_descriptions::kUnifiedSidePanelName,
+     flag_descriptions::kUnifiedSidePanelDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(features::kUnifiedSidePanel)},
+
     {"tab-outlines-in-low-contrast-themes",
      flag_descriptions::kTabOutlinesInLowContrastThemesName,
      flag_descriptions::kTabOutlinesInLowContrastThemesDescription, kOsDesktop,
