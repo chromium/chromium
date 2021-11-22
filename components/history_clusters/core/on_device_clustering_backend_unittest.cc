@@ -77,7 +77,8 @@ class OnDeviceClusteringWithoutContentBackendTest : public ::testing::Test {
 
   void SetUp() override {
     clustering_backend_ = std::make_unique<OnDeviceClusteringBackend>(
-        /*template_url_service=*/nullptr, /*entity_metadata_provider=*/nullptr);
+        /*template_url_service=*/nullptr, /*entity_metadata_provider=*/nullptr,
+        /*engagement_score_provider=*/nullptr);
   }
 
   void TearDown() override { clustering_backend_.reset(); }
@@ -484,7 +485,8 @@ class OnDeviceClusteringWithAllTheBackendsTest
         task_environment_.GetMainThreadTaskRunner());
 
     clustering_backend_ = std::make_unique<OnDeviceClusteringBackend>(
-        template_url_service_.get(), entity_metadata_provider_.get());
+        template_url_service_.get(), entity_metadata_provider_.get(),
+        /*engagement_score_provider=*/nullptr);
   }
 
  private:

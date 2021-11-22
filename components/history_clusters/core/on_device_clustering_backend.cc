@@ -18,6 +18,7 @@
 #include "components/history/core/browser/history_types.h"
 #include "components/history_clusters/core/content_annotations_cluster_processor.h"
 #include "components/history_clusters/core/content_visibility_cluster_finalizer.h"
+#include "components/history_clusters/core/noisy_cluster_finalizer.h"
 #include "components/history_clusters/core/on_device_clustering_features.h"
 #include "components/history_clusters/core/ranking_cluster_finalizer.h"
 #include "components/history_clusters/core/similar_visit_deduper_cluster_finalizer.h"
@@ -26,6 +27,7 @@
 #include "components/optimization_guide/core/batch_entity_metadata_task.h"
 #include "components/optimization_guide/core/entity_metadata_provider.h"
 #include "components/search_engines/template_url_service.h"
+#include "components/site_engagement/core/site_engagement_score_provider.h"
 
 namespace history_clusters {
 
@@ -68,9 +70,11 @@ absl::optional<GURL> GetNormalizedURLForSearchVisit(
 
 OnDeviceClusteringBackend::OnDeviceClusteringBackend(
     TemplateURLService* template_url_service,
-    optimization_guide::EntityMetadataProvider* entity_metadata_provider)
+    optimization_guide::EntityMetadataProvider* entity_metadata_provider,
+    site_engagement::SiteEngagementScoreProvider* engagement_score_provider)
     : template_url_service_(template_url_service),
       entity_metadata_provider_(entity_metadata_provider),
+      engagement_score_provider_(engagement_score_provider),
       background_task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
           {base::MayBlock(), base::TaskPriority::USER_VISIBLE})) {}
 
@@ -157,6 +161,11 @@ void OnDeviceClusteringBackend::OnBatchEntityMetadataRetrieved(
     cluster_visit.is_search_visit = maybe_normalized_url.has_value();
     cluster_visit.normalized_url =
         maybe_normalized_url.value_or(visit.url_row.url());
+
+    if (engagement_score_provider_) {
+      cluster_visit.engagement_score =
+          engagement_score_provider_->GetScore(visit.url_row.url());
+    }
 
     // Rewrite the entities for the visit, but only if it is possible that we
     // had additional metadata for it.
@@ -257,6 +266,10 @@ OnDeviceClusteringBackend::ClusterVisitsOnBackgroundThread(
   if (features::ShouldHideSingleVisitClustersOnProminentUISurfaces()) {
     cluster_finalizers.push_back(
         std::make_unique<SingleVisitClusterFinalizer>());
+  }
+  // Add feature to turn on/off site engagement score filter.
+  if (engagement_score_provider_ && features::ShouldFilterNoisyClusters()) {
+    cluster_finalizers.push_back(std::make_unique<NoisyClusterFinalizer>());
   }
 
   // Group visits into clusters.

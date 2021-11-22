@@ -73,6 +73,23 @@ bool ShouldDedupeSimilarVisits() {
                                            "dedupe_similar_visits", true);
 }
 
+bool ShouldFilterNoisyClusters() {
+  return GetFieldTrialParamByFeatureAsBool(kOnDeviceClustering,
+                                           "filter_noisy_clusters", true);
+}
+
+float NoisyClusterVisitEngagementThreshold() {
+  float threshold = GetFieldTrialParamByFeatureAsDouble(
+      kOnDeviceClustering, "noisy_cluster_visit_engagement_threshold", 15.0);
+  return threshold;
+}
+
+size_t NumberInterestingVisitsFilterThreshold() {
+  int threshold = GetFieldTrialParamByFeatureAsInt(
+      kOnDeviceClustering, "num_interesting_visits_filter_threshold", 1);
+  return threshold;
+}
+
 float VisitDurationRankingWeight() {
   float weight = GetFieldTrialParamByFeatureAsDouble(
       kOnDeviceClustering, "visit_duration_ranking_weight", 1.0);

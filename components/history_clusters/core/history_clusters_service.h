@@ -35,6 +35,10 @@ namespace optimization_guide {
 class EntityMetadataProvider;
 }  // namespace optimization_guide
 
+namespace site_engagement {
+class SiteEngagementScoreProvider;
+}  // namespace site_engagement
+
 namespace history_clusters {
 
 class HistoryClustersService;
@@ -83,7 +87,8 @@ class HistoryClustersService : public KeyedService {
       history::HistoryService* history_service,
       TemplateURLService* template_url_service,
       optimization_guide::EntityMetadataProvider* entity_metadata_provider,
-      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+      site_engagement::SiteEngagementScoreProvider* engagement_score_provider);
   HistoryClustersService(const HistoryClustersService&) = delete;
   HistoryClustersService& operator=(const HistoryClustersService&) = delete;
   ~HistoryClustersService() override;

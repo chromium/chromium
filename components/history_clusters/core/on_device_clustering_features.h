@@ -52,6 +52,19 @@ bool ShouldHideSingleVisitClustersOnProminentUISurfaces();
 // same way.
 bool ShouldDedupeSimilarVisits();
 
+// Whether to filter clusters that are noisy from the UI. This will
+// heuristically remove clusters that are unlikely to be "interesting".
+bool ShouldFilterNoisyClusters();
+
+// Returns the threshold used to determine if a cluster, and its visits, has
+// too high site engagement to be likely useful.
+float NoisyClusterVisitEngagementThreshold();
+
+// Returns the number of visits considered interesting, or not noisy, required
+// to prevent the cluster from being filtered out (i.e., marked as not visible
+// on the zero state UI).
+size_t NumberInterestingVisitsFilterThreshold();
+
 // Returns the weight to use for the visit duration when ranking visits within a
 // cluster. Will always be greater than or equal to 0.
 float VisitDurationRankingWeight();

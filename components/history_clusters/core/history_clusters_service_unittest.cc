@@ -103,6 +103,7 @@ class HistoryClustersServiceTest : public testing::Test {
     history_clusters_service_ = std::make_unique<HistoryClustersService>(
         history_service_.get(), /*template_url_service=*/nullptr,
         /*entity_metadata_provider=*/nullptr,
+        /*engagement_score_provider=*/nullptr,
         /*url_loader_factory=*/nullptr);
 
     history_clusters_service_test_api_ =

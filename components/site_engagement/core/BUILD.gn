@@ -6,5 +6,6 @@ static_library("core") {
   sources = [
     "pref_names.cc",
     "pref_names.h",
+    "site_engagement_score_provider.h",
   ]
 }

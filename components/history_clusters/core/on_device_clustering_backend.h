@@ -25,6 +25,10 @@ struct EntityMetadata;
 class EntityMetadataProvider;
 }  // namespace optimization_guide
 
+namespace site_engagement {
+class SiteEngagementScoreProvider;
+}  // namespace site_engagement
+
 namespace history_clusters {
 
 // A clustering backend that clusters visits on device.
@@ -32,7 +36,8 @@ class OnDeviceClusteringBackend : public ClusteringBackend {
  public:
   OnDeviceClusteringBackend(
       TemplateURLService* template_url_service,
-      optimization_guide::EntityMetadataProvider* entity_metadata_provider);
+      optimization_guide::EntityMetadataProvider* entity_metadata_provider,
+      site_engagement::SiteEngagementScoreProvider* engagement_score_provider);
   ~OnDeviceClusteringBackend() override;
 
   // ClusteringBackend:
@@ -60,6 +65,9 @@ class OnDeviceClusteringBackend : public ClusteringBackend {
 
   // The object to fetch entity metadata from. Not owned. Must outlive |this|.
   optimization_guide::EntityMetadataProvider* entity_metadata_provider_;
+
+  // The object to get engagement scores from. Not owned. Must outlive |this|.
+  site_engagement::SiteEngagementScoreProvider* engagement_score_provider_;
 
   // The set of batch entity metadata tasks currently in flight.
   base::flat_set<std::unique_ptr<optimization_guide::BatchEntityMetadataTask>,

@@ -38,6 +38,7 @@
 #include "components/history_clusters/core/remote_clustering_backend.h"
 #include "components/optimization_guide/core/entity_metadata_provider.h"
 #include "components/search_engines/template_url_service.h"
+#include "components/site_engagement/core/site_engagement_score_provider.h"
 #include "components/url_formatter/url_formatter.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/time_format.h"
@@ -285,7 +286,8 @@ HistoryClustersService::HistoryClustersService(
     history::HistoryService* history_service,
     TemplateURLService* template_url_service,
     optimization_guide::EntityMetadataProvider* entity_metadata_provider,
-    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+    site_engagement::SiteEngagementScoreProvider* engagement_score_provider)
     : history_service_(history_service),
       visit_deletion_observer_(this),
       post_processing_task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
@@ -297,7 +299,8 @@ HistoryClustersService::HistoryClustersService(
 #if BUILDFLAG(BUILD_WITH_ON_DEVICE_CLUSTERING_BACKEND)
   if (kUseOnDeviceClusteringBackend.Get()) {
     backend_ = std::make_unique<OnDeviceClusteringBackend>(
-        template_url_service, entity_metadata_provider);
+        template_url_service, entity_metadata_provider,
+        engagement_score_provider);
   }
 #endif
 
