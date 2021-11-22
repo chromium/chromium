@@ -26322,7 +26322,7 @@ If you disable this policy, web page scrolling to specific text fragments via UR
       'owners': ['miketaylr@google.com', 'mreichhoff@chromium.org', 'file://components/client_hints/OWNERS'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
-      'future_on': ['chrome_os', 'chrome.*', 'android'],
+      'supported_on': ['chrome_os:98-', 'chrome.*:98-', 'android:98-'],
       'features': {
         'per_profile': False,
         'dynamic_refresh': True,
@@ -26344,7 +26344,8 @@ If you disable this policy, web page scrolling to specific text fragments via UR
       'tags': [],
       'desc': '''When enabled the User-Agent Client Hints GREASE Update feature aligns the User-Agent GREASE algorithm with the latest spec.
       The updated spec may break some websites that restrict the characters that requests may contain. See the spec for more information: https://wicg.github.io/ua-client-hints/#grease
-      If this policy is enabled or not set the User-Agent Client Hints GREASE Update feature is enabled. If the policy is disabled the prior User-Agent GREASE algorithm is used.''',
+      If this policy is enabled or not set, the browser will decide which User-Agent GREASE algorithm to use. If the policy is disabled the prior User-Agent GREASE algorithm is used.
+      This policy is a temporary measure and will be removed in a future release.''',
     },
     {
       'name': 'SuggestedContentEnabled',
