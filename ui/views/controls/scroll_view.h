@@ -385,6 +385,10 @@ class VIEWS_EXPORT ScrollView : public View, public ScrollBarController {
   ScrollViewCallbackList on_contents_scroll_ended_;
 };
 
+// When building with GCC this ensures that an instantiation of the
+// ScrollView::SetContents<View> template is available with which to link.
+template View* ScrollView::SetContents<View>(std::unique_ptr<View> a_view);
+
 BEGIN_VIEW_BUILDER(VIEWS_EXPORT, ScrollView, View)
 VIEW_BUILDER_VIEW_TYPE_PROPERTY(View, Contents)
 VIEW_BUILDER_PROPERTY(ui::LayerType, ContentsLayerType)
