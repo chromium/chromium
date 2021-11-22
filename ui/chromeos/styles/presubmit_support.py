@@ -29,8 +29,8 @@ def _CheckSemanticColors(input_api, output_api):
     # stylesheets.
     css_prefixes = set()
     style_generator = CSSStyleGenerator()
+    style_generator.AddJSONFilesToModel(cros_styles)
     for file_path in cros_styles:
-        style_generator.AddJSONFileToModel(file_path)
         context = style_generator.in_file_to_context.get(file_path,
                                                          {}).get('CSS')
         if (not context or 'prefix' not in context):
