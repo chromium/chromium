@@ -269,9 +269,16 @@ class SystemNetworkContextManagerWithFirstPartySetComponentBrowserTest
   base::ScopedTempDir component_dir_;
 };
 
+// Flaky on Windows + Linux, crbug.com/1272198
+#if defined(OS_WIN) || defined(OS_LINUX)
+#define MAYBE_ReloadsFirstPartySetsAfterCrash \
+  DISABLED_ReloadsFirstPartySetsAfterCrash
+#else
+#define MAYBE_ReloadsFirstPartySetsAfterCrash ReloadsFirstPartySetsAfterCrash
+#endif
 IN_PROC_BROWSER_TEST_P(
     SystemNetworkContextManagerWithFirstPartySetComponentBrowserTest,
-    ReloadsFirstPartySetsAfterCrash) {
+    MAYBE_ReloadsFirstPartySetsAfterCrash) {
   // Network service is not running out of process, so cannot be crashed.
   if (!content::IsOutOfProcessNetworkService())
     return;
