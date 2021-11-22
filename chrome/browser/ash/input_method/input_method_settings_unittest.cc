@@ -24,6 +24,7 @@ namespace mojom = chromeos::ime::mojom;
 constexpr char kUsEnglishEngineId[] = "xkb:us::eng";
 constexpr char kKoreanEngineId[] = "ko-t-i0-und";
 constexpr char kPinyinEngineId[] = "zh-t-i0-pinyin";
+constexpr char kZhuyinEngineId[] = "zh-hant-t-i0-und";
 
 void RegisterTestingPrefs(TestingPrefServiceSimple& prefs,
                           const base::DictionaryValue& dict) {
@@ -257,6 +258,41 @@ TEST(CreateSettingsFromPrefsTest, CreatePinyinSettings) {
   EXPECT_FALSE(pinyin_settings.default_to_chinese);
   EXPECT_TRUE(pinyin_settings.default_to_full_width_characters);
   EXPECT_FALSE(pinyin_settings.default_to_full_width_punctuation);
+}
+
+TEST(CreateSettingsFromPrefsTest, CreateZhuyinSettingsDefault) {
+  base::DictionaryValue dict;
+  TestingPrefServiceSimple prefs;
+  RegisterTestingPrefs(prefs, dict);
+
+  const auto settings =
+      CreateSettingsFromPrefs(prefs, kZhuyinEngineId, InputFieldContext{});
+
+  ASSERT_TRUE(settings->is_zhuyin_settings());
+  const auto& zhuyin_settings = *settings->get_zhuyin_settings();
+  EXPECT_EQ(zhuyin_settings.layout, mojom::ZhuyinLayout::kStandard);
+  EXPECT_EQ(zhuyin_settings.selection_keys,
+            mojom::ZhuyinSelectionKeys::k1234567890);
+  EXPECT_EQ(zhuyin_settings.page_size, 10);
+}
+
+TEST(CreateSettingsFromPrefsTest, CreateZhuyinSettings) {
+  base::DictionaryValue dict;
+  dict.SetStringPath("zhuyin.zhuyinKeyboardLayout", "IBM");
+  dict.SetStringPath("zhuyin.zhuyinSelectKeys", "asdfghjkl;");
+  dict.SetStringPath("zhuyin.zhuyinPageSize", "8");
+  TestingPrefServiceSimple prefs;
+  RegisterTestingPrefs(prefs, dict);
+
+  const auto settings =
+      CreateSettingsFromPrefs(prefs, kZhuyinEngineId, InputFieldContext{});
+
+  ASSERT_TRUE(settings->is_zhuyin_settings());
+  const auto& zhuyin_settings = *settings->get_zhuyin_settings();
+  EXPECT_EQ(zhuyin_settings.layout, mojom::ZhuyinLayout::kIbm);
+  EXPECT_EQ(zhuyin_settings.selection_keys,
+            mojom::ZhuyinSelectionKeys::kAsdfghjkl);
+  EXPECT_EQ(zhuyin_settings.page_size, 8);
 }
 
 }  // namespace

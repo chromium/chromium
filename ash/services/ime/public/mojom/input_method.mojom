@@ -6,7 +6,7 @@
 // the Chromium repo. This file should be updated first, before syncing in the
 // other repos.
 
-// Next MinVersion: 7
+// Next MinVersion: 8
 
 module chromeos.ime.mojom;
 
@@ -331,9 +331,46 @@ struct PinyinSettings {
   [MinVersion=6] bool default_to_full_width_punctuation@6;
 };
 
-// Next ordinal: 0
+// Next ordinal: 3
+[Stable, Extensible, MinVersion=7]
+enum ZhuyinLayout {
+  [Default] kStandard = 0,
+  kIbm = 1,
+  kEten = 2,
+};
+
+// The keys used to select candidates for Zhuyin.
+// There is a limited set of possible shortcut schemes.
+// Each scheme can be represented by a string, where the 1st character of the
+// string is used to select the 1st candidate, the 2nd character for the 2nd
+// candidate and so on.
+// See the default enum value for an example.
+//
+// Next ordinal: 5
+[Stable, Extensible, MinVersion=7]
+enum ZhuyinSelectionKeys {
+  // Corresponds to '1234567890'.
+  // '1' selects the 1st candidate, '2' selects the 2nd, and so on, and '0'
+  // selects the 10th candidate.
+  [Default] k1234567890 = 0,
+  // Corresponds to 'asdfghjkl;'.
+  kAsdfghjkl = 1,
+  // Corresponds to 'asdfzxcv89'.
+  kAsdfzxcv89 = 2,
+  // Corresponds to 'asdfjkl789'.
+  kAsdfjkl789 = 3,
+  // Corresponds to '1234qweras'.
+  k1234Qweras = 4,
+};
+
+// Next ordinal: 3
 [Stable]
 struct ZhuyinSettings {
+  [MinVersion=7] ZhuyinLayout layout@0;
+  [MinVersion=7] ZhuyinSelectionKeys selection_keys@1;
+
+  // Maximum number of candidates to display per page.
+  [MinVersion=7] uint32 page_size@2;
 };
 
 // An input method that is provided natively by the IME Service.
