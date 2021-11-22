@@ -910,7 +910,6 @@ NSMutableDictionary* CreateExperimentalTestingPolicies() {
     [testing_policies addEntriesFromDictionary:@{
       Sync_types_list_disabled_key : Sync_types_list_disabled_values
     }];
-    [allowed_experimental_policies addObject:Sync_types_list_disabled_key];
   }
 
   // If an incognito mode availability is set, set the value.
