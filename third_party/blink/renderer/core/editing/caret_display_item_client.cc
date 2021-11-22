@@ -109,7 +109,8 @@ CaretDisplayItemClient::ComputeCaretRectAndPainterBlock(
     return {};
 
   // First compute a rect local to the layoutObject at the selection start.
-  const LocalCaretRect& caret_rect = LocalCaretRectOfPosition(caret_position);
+  const LocalCaretRect& caret_rect =
+      LocalCaretRectOfPosition(caret_position, kCannotCrossEditingBoundary);
   if (!caret_rect.layout_object)
     return {};
 

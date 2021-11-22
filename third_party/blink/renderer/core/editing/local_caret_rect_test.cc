@@ -1269,6 +1269,8 @@ TEST_P(ParameterizedLocalCaretRectTest,
 
   // TODO(jfernandez): It should be 89, but LayoutBox::LocalCaretRect is buggy
   // and it adds the padding-left twice.
+  // TODO(jfernandez): As a matter of fact, 69 would be better result IMHO,
+  // positioning the caret at the end of the non-editable area.
   // TODO(jfernandez): We might avoid using LayoutBox::LocalCaretRect when using
   // LayoutNG
   const Position& position = Position::LastPositionInNode(*target);
@@ -1318,6 +1320,8 @@ TEST_P(ParameterizedLocalCaretRectTest, AbsoluteCaretAtEndOfNonEditable) {
                 .ToString());
   // TODO(jfernandez): It should be 84, but LayoutBox::LocalCaretRect is buggy
   // and it adds the padding-left twice.
+  // TODO(jfernandez): As a matter of fact, 69 would be better result IMHO,
+  // positioning the caret at the end of the non-editable area.
   // TODO(jfernandez): We might avoid using LayoutBox::LocalCaretRect when using
   // LayoutNG
   EXPECT_EQ("94,5 1x10",
