@@ -175,8 +175,6 @@ std::string GetIpcTagAsString(IpcTag service) {
       return "NtOpenProcessToken";
     case IpcTag::NTOPENPROCESSTOKENEX:
       return "NtOpenProcessTokenEx";
-    case IpcTag::CREATEPROCESSW:
-      return "CreateProcessW";
     case IpcTag::NTCREATEKEY:
       return "NtCreateKey";
     case IpcTag::NTOPENKEY:

@@ -7,8 +7,6 @@
 
 #include <stdint.h>
 
-#include <string>
-
 #include "sandbox/win/src/crosscall_server.h"
 #include "sandbox/win/src/ipc_tags.h"
 #include "sandbox/win/src/sandbox_policy_base.h"
@@ -18,7 +16,7 @@ namespace sandbox {
 // This class handles process and thread-related IPC calls.
 class ThreadProcessDispatcher : public Dispatcher {
  public:
-  explicit ThreadProcessDispatcher(PolicyBase* policy_base);
+  explicit ThreadProcessDispatcher();
 
   ThreadProcessDispatcher(const ThreadProcessDispatcher&) = delete;
   ThreadProcessDispatcher& operator=(const ThreadProcessDispatcher&) = delete;
@@ -48,22 +46,12 @@ class ThreadProcessDispatcher : public Dispatcher {
                             uint32_t desired_access,
                             uint32_t attributes);
 
-  // Processes IPC requests coming from calls to CreateProcessW() in the target.
-  bool CreateProcessW(IPCInfo* ipc,
-                      std::wstring* name,
-                      std::wstring* cmd_line,
-                      std::wstring* cur_dir,
-                      std::wstring* target_cur_dir,
-                      CountedBuffer* info);
-
   // Processes IPC requests coming from calls to CreateThread() in the target.
   bool CreateThread(IPCInfo* ipc,
                     SIZE_T stack_size,
                     LPTHREAD_START_ROUTINE start_address,
                     LPVOID parameter,
                     DWORD creation_flags);
-
-  PolicyBase* policy_base_;
 };
 
 }  // namespace sandbox

@@ -44,14 +44,6 @@ class TargetPolicy {
     FILES_ALLOW_DIR_ANY,   // Allows open or create with directory semantics
                            // only.
     NAMEDPIPES_ALLOW_ANY,  // Allows creation of a named pipe.
-    PROCESS_MIN_EXEC,      // Allows to create a process with minimal rights
-                           // over the resulting process and thread handles.
-                           // No other parameters besides the command line are
-                           // passed to the child process.
-    PROCESS_ALL_EXEC,      // Allows the creation of a process and return full
-                           // access on the returned handles.
-                           // This flag can be used only when the main token of
-                           // the sandboxed application is at least INTERACTIVE.
     REG_ALLOW_READONLY,    // Allows readonly access to a registry key.
     REG_ALLOW_ANY,         // Allows read and write access to a registry key.
     FAKE_USER_GDI_INIT,    // Fakes user32 and gdi32 initialization. This can

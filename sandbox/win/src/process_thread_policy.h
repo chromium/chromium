@@ -7,8 +7,6 @@
 
 #include <stdint.h>
 
-#include <string>
-
 #include "sandbox/win/src/crosscall_server.h"
 #include "sandbox/win/src/policy_low_level.h"
 #include "sandbox/win/src/sandbox_policy.h"
@@ -18,15 +16,6 @@ namespace sandbox {
 // This class centralizes most of the knowledge related to process execution.
 class ProcessPolicy {
  public:
-  // Creates the required low-level policy rules to evaluate a high-level.
-  // policy rule for process creation
-  // 'name' is the executable to be spawn.
-  // 'semantics' is the desired semantics.
-  // 'policy' is the policy generator to which the rules are going to be added.
-  static bool GenerateRules(const wchar_t* name,
-                            TargetPolicy::Semantics semantics,
-                            LowLevelPolicy* policy);
-
   // Opens a thread from the child process and returns the handle.
   // client_info contains the information about the child process,
   // desired_access is the access requested by the child and thread_id
@@ -61,19 +50,6 @@ class ProcessPolicy {
                                            uint32_t desired_access,
                                            uint32_t attributes,
                                            HANDLE* handle);
-
-  // Processes a 'CreateProcessW()' request from the target.
-  // 'client_info' : the target process that is making the request.
-  // 'eval_result' : The desired policy action to accomplish.
-  // 'app_name' : The full path of the process to be created.
-  // 'command_line' : The command line passed to the created process.
-  // 'current_dir' : The CWD with which to spawn the child process.
-  static DWORD CreateProcessWAction(EvalResult eval_result,
-                                    const ClientInfo& client_info,
-                                    const std::wstring& app_name,
-                                    const std::wstring& command_line,
-                                    const std::wstring& current_dir,
-                                    PROCESS_INFORMATION* process_info);
 
   // Processes a 'CreateThread()' request from the target.
   // 'client_info' : the target process that is making the request.

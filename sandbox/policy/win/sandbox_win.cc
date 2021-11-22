@@ -371,27 +371,6 @@ ResultCode AddGenericPolicy(sandbox::TargetPolicy* policy) {
   if (result != SBOX_ALL_OK)
     return result;
 
-// Add the policy for debug message only in debug
-#ifndef NDEBUG
-  base::FilePath app_dir;
-  if (!base::PathService::Get(base::DIR_MODULE, &app_dir))
-    return SBOX_ERROR_GENERIC;
-
-  wchar_t long_path_buf[MAX_PATH];
-  DWORD long_path_return_value =
-      GetLongPathName(app_dir.value().c_str(), long_path_buf, MAX_PATH);
-  if (long_path_return_value == 0 || long_path_return_value >= MAX_PATH)
-    return SBOX_ERROR_NO_SPACE;
-
-  base::FilePath debug_message(long_path_buf);
-  debug_message = debug_message.AppendASCII("debug_message.exe");
-  result = policy->AddRule(TargetPolicy::SUBSYS_PROCESS,
-                           TargetPolicy::PROCESS_MIN_EXEC,
-                           debug_message.value().c_str());
-  if (result != SBOX_ALL_OK)
-    return result;
-#endif  // NDEBUG
-
 // Add the policy for read-only PDB file access for stack traces.
 #if !defined(OFFICIAL_BUILD)
   base::FilePath exe;

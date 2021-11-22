@@ -712,19 +712,6 @@ ResultCode PolicyBase::AddRuleInternal(SubSystem subsystem,
       }
       break;
     }
-    case SUBSYS_PROCESS: {
-      if (lockdown_level_ < USER_INTERACTIVE &&
-          TargetPolicy::PROCESS_ALL_EXEC == semantics) {
-        // This is unsupported. This is a huge security risk to give full access
-        // to a process handle.
-        return SBOX_ERROR_UNSUPPORTED;
-      }
-      if (!ProcessPolicy::GenerateRules(pattern, semantics, policy_maker_)) {
-        NOTREACHED();
-        return SBOX_ERROR_BAD_PARAMS;
-      }
-      break;
-    }
     case SUBSYS_NAMED_PIPES: {
       if (!NamedPipePolicy::GenerateRules(pattern, semantics, policy_maker_)) {
         NOTREACHED();

@@ -146,32 +146,6 @@ TargetNtOpenProcessTokenEx64(HANDLE process,
                              ULONG handle_attributes,
                              PHANDLE token);
 
-// Interception of CreateProcessW in kernel32.dll.
-SANDBOX_INTERCEPT BOOL WINAPI
-TargetCreateProcessW64(LPCWSTR application_name,
-                       LPWSTR command_line,
-                       LPSECURITY_ATTRIBUTES process_attributes,
-                       LPSECURITY_ATTRIBUTES thread_attributes,
-                       BOOL inherit_handles,
-                       DWORD flags,
-                       LPVOID environment,
-                       LPCWSTR current_directory,
-                       LPSTARTUPINFOW startup_info,
-                       LPPROCESS_INFORMATION process_information);
-
-// Interception of CreateProcessA in kernel32.dll.
-SANDBOX_INTERCEPT BOOL WINAPI
-TargetCreateProcessA64(LPCSTR application_name,
-                       LPSTR command_line,
-                       LPSECURITY_ATTRIBUTES process_attributes,
-                       LPSECURITY_ATTRIBUTES thread_attributes,
-                       BOOL inherit_handles,
-                       DWORD flags,
-                       LPVOID environment,
-                       LPCSTR current_directory,
-                       LPSTARTUPINFOA startup_info,
-                       LPPROCESS_INFORMATION process_information);
-
 // Interception of CreateThread in kernel32.dll.
 SANDBOX_INTERCEPT HANDLE WINAPI
 TargetCreateThread64(LPSECURITY_ATTRIBUTES thread_attributes,

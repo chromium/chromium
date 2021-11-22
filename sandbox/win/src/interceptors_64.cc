@@ -217,44 +217,6 @@ TargetNtOpenProcessTokenEx64(HANDLE process,
                                     handle_attributes, token);
 }
 
-SANDBOX_INTERCEPT BOOL WINAPI
-TargetCreateProcessW64(LPCWSTR application_name,
-                       LPWSTR command_line,
-                       LPSECURITY_ATTRIBUTES process_attributes,
-                       LPSECURITY_ATTRIBUTES thread_attributes,
-                       BOOL inherit_handles,
-                       DWORD flags,
-                       LPVOID environment,
-                       LPCWSTR current_directory,
-                       LPSTARTUPINFOW startup_info,
-                       LPPROCESS_INFORMATION process_information) {
-  CreateProcessWFunction orig_fn =
-      reinterpret_cast<CreateProcessWFunction>(g_originals[CREATE_PROCESSW_ID]);
-  return TargetCreateProcessW(
-      orig_fn, application_name, command_line, process_attributes,
-      thread_attributes, inherit_handles, flags, environment, current_directory,
-      startup_info, process_information);
-}
-
-SANDBOX_INTERCEPT BOOL WINAPI
-TargetCreateProcessA64(LPCSTR application_name,
-                       LPSTR command_line,
-                       LPSECURITY_ATTRIBUTES process_attributes,
-                       LPSECURITY_ATTRIBUTES thread_attributes,
-                       BOOL inherit_handles,
-                       DWORD flags,
-                       LPVOID environment,
-                       LPCSTR current_directory,
-                       LPSTARTUPINFOA startup_info,
-                       LPPROCESS_INFORMATION process_information) {
-  CreateProcessAFunction orig_fn =
-      reinterpret_cast<CreateProcessAFunction>(g_originals[CREATE_PROCESSA_ID]);
-  return TargetCreateProcessA(
-      orig_fn, application_name, command_line, process_attributes,
-      thread_attributes, inherit_handles, flags, environment, current_directory,
-      startup_info, process_information);
-}
-
 SANDBOX_INTERCEPT HANDLE WINAPI
 TargetCreateThread64(LPSECURITY_ATTRIBUTES thread_attributes,
                      SIZE_T stack_size,
