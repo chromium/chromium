@@ -239,7 +239,7 @@ Refer to README.md for content description and update process.
  <item id="pepper_tcp_socket" added_in_milestone="65" hash_code="120623198" type="0" content_hash_code="27489892" os_list="linux,windows,chromeos" file_path="content/browser/renderer_host/pepper/pepper_socket_utils.cc"/>
  <item id="pepper_udp_socket" added_in_milestone="70" hash_code="53512439" type="0" content_hash_code="7268418" os_list="linux,windows,chromeos" file_path="content/browser/renderer_host/pepper/pepper_socket_utils.cc"/>
  <item id="per_user_topic_registration_request" added_in_milestone="68" hash_code="10498172" type="0" content_hash_code="57098847" os_list="linux,windows,chromeos" file_path="components/invalidation/impl/per_user_topic_subscription_request.cc"/>
- <item id="permission_predictions" added_in_milestone="88" hash_code="89492280" type="0" content_hash_code="806663" os_list="linux,windows,chromeos" file_path="components/permissions/prediction_service/prediction_service.cc"/>
+ <item id="permission_predictions" added_in_milestone="88" hash_code="89492280" type="0" content_hash_code="89577975" os_list="linux,windows,chromeos" file_path="components/permissions/prediction_service/prediction_service.cc"/>
  <item id="permission_reporting" added_in_milestone="62" hash_code="131741641" type="0" deprecated="2018-03-06" content_hash_code="7213535" file_path=""/>
  <item id="permission_request_creator" added_in_milestone="62" hash_code="43206794" type="0" deprecated="2019-07-30" content_hash_code="73571699" file_path=""/>
  <item id="persist_blob_to_indexed_db" added_in_milestone="62" hash_code="32030464" type="0" deprecated="2018-08-13" content_hash_code="35410079" file_path=""/>

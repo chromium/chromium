@@ -80,7 +80,7 @@ net::NetworkTrafficAnnotationTag GetTrafficAnnotationTag() {
         "the user with a different UI; a less intrusive one."
       trigger:
         "A permission prompt is about to be shown to the user, and the user "
-        "has opted into Safe Browsing's Enhanced Protection."
+        "has opted into Safe Browsing."
       data:
         "User stats helpful for attempting to predict the user's likelihood "
         "of granting the permission: the permission type, the presence of a "
@@ -92,11 +92,11 @@ net::NetworkTrafficAnnotationTag GetTrafficAnnotationTag() {
     policy {
       cookies_allowed: NO
       setting:
-        "This can be disabled by disabling Enhanced Protection by going to "
+        "This can be disabled by disabling Safe Browsing by going to "
         "Settings and then to the Security sub-menu."
       chrome_policy {
         SafeBrowsingProtectionLevel {
-          SafeBrowsingProtectionLevel: 1
+          SafeBrowsingProtectionLevel: 0
         }
       }
     })");

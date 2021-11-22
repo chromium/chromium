@@ -2025,8 +2025,8 @@ const char kPermissionPredictionsDescription[] =
     "Use the Permission Predictions Service to surface permission requests "
     "using a quieter UI when the likelihood of the user granting the "
     "permission is predicted to be low. Requires "
-    "chrome://flags/#quiet-notification-prompts and `Safe Browsing Enhanced "
-    "Protection` to be enabled.";
+    "chrome://flags/#quiet-notification-prompts and `Safe Browsing` to be "
+    "enabled.";
 
 const char kPermissionQuietChipName[] = "Quiet Permission Chip Experiment";
 const char kPermissionQuietChipDescription[] =
