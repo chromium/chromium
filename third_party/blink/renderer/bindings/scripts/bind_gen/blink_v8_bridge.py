@@ -221,6 +221,7 @@ def blink_type_info(idl_type):
                         ref_fmt="{}&",
                         const_ref_fmt="const {}&",
                         has_null_value=True,
+                        is_move_effective=True,
                         clear_member_var_fmt="{} = String()")
 
     if real_type.is_array_buffer:
