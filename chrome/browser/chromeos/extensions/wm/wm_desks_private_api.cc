@@ -9,7 +9,7 @@
 #include "ash/public/cpp/desk_template.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
-#include "chrome/browser/ui/ash/desks_client.h"
+#include "chrome/browser/ui/ash/desks_templates/desks_templates_client.h"
 #include "chrome/common/extensions/api/wm_desks_private.h"
 
 namespace extensions {
@@ -34,7 +34,7 @@ WmDesksPrivateCaptureActiveDeskAndSaveTemplateFunction::
 
 ExtensionFunction::ResponseAction
 WmDesksPrivateCaptureActiveDeskAndSaveTemplateFunction::Run() {
-  DesksClient::Get()->CaptureActiveDeskAndSaveTemplate(
+  DesksTemplatesClient::Get()->CaptureActiveDeskAndSaveTemplate(
       base::BindOnce(&WmDesksPrivateCaptureActiveDeskAndSaveTemplateFunction::
                          OnCaptureActiveDeskAndSaveTemplateCompleted,
                      this));
@@ -68,7 +68,7 @@ WmDesksPrivateUpdateDeskTemplateFunction::Run() {
       api::wm_desks_private::UpdateDeskTemplate::Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params);
 
-  DesksClient::Get()->UpdateDeskTemplate(
+  DesksTemplatesClient::Get()->UpdateDeskTemplate(
       params->desk_template.template_uuid,
       base::UTF8ToUTF16(params->desk_template.template_name),
       base::BindOnce(&WmDesksPrivateUpdateDeskTemplateFunction::
@@ -94,7 +94,7 @@ WmDesksPrivateGetSavedDeskTemplatesFunction::
 
 ExtensionFunction::ResponseAction
 WmDesksPrivateGetSavedDeskTemplatesFunction::Run() {
-  DesksClient::Get()->GetDeskTemplates(base::BindOnce(
+  DesksTemplatesClient::Get()->GetDeskTemplates(base::BindOnce(
       &WmDesksPrivateGetSavedDeskTemplatesFunction::OnGetSavedDeskTemplate,
       this));
   return RespondLater();
@@ -132,7 +132,7 @@ WmDesksPrivateDeleteDeskTemplateFunction::Run() {
       api::wm_desks_private::DeleteDeskTemplate::Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params);
 
-  DesksClient::Get()->DeleteDeskTemplate(
+  DesksTemplatesClient::Get()->DeleteDeskTemplate(
       params->template_uuid,
       base::BindOnce(&WmDesksPrivateDeleteDeskTemplateFunction::
                          OnDeleteDeskTemplateCompleted,
@@ -161,7 +161,7 @@ WmDesksPrivateLaunchDeskTemplateFunction::Run() {
       api::wm_desks_private::LaunchDeskTemplate::Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params);
 
-  DesksClient::Get()->LaunchDeskTemplate(
+  DesksTemplatesClient::Get()->LaunchDeskTemplate(
       params->template_uuid,
       base::BindOnce(
           &WmDesksPrivateLaunchDeskTemplateFunction::OnLaunchDeskTemplate,

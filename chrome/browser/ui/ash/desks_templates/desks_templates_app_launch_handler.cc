@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/ash/desk_template_app_launch_handler.h"
+#include "chrome/browser/ui/ash/desks_templates/desks_templates_app_launch_handler.h"
 
 #include <string>
 
@@ -36,13 +36,13 @@ constexpr base::TimeDelta kClearRestoreDataDuration = base::Seconds(5);
 
 }  // namespace
 
-DeskTemplateAppLaunchHandler::DeskTemplateAppLaunchHandler(Profile* profile)
+DesksTemplatesAppLaunchHandler::DesksTemplatesAppLaunchHandler(Profile* profile)
     : ash::AppLaunchHandler(profile),
       read_handler_(app_restore::DeskTemplateReadHandler::Get()) {}
 
-DeskTemplateAppLaunchHandler::~DeskTemplateAppLaunchHandler() = default;
+DesksTemplatesAppLaunchHandler::~DesksTemplatesAppLaunchHandler() = default;
 
-void DeskTemplateAppLaunchHandler::SetRestoreDataAndLaunch(
+void DesksTemplatesAppLaunchHandler::SetRestoreDataAndLaunch(
     std::unique_ptr<app_restore::RestoreData> new_restore_data) {
   // Another desk template is underway.
   // TODO(sammiequon): Checking the read handler for restore data is temporary.
@@ -66,13 +66,13 @@ void DeskTemplateAppLaunchHandler::SetRestoreDataAndLaunch(
 
   base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
       FROM_HERE,
-      base::BindOnce(&DeskTemplateAppLaunchHandler::
+      base::BindOnce(&DesksTemplatesAppLaunchHandler::
                          ClearDeskTemplateReadHandlerRestoreData,
                      weak_ptr_factory_.GetWeakPtr()),
       kClearRestoreDataDuration);
 }
 
-bool DeskTemplateAppLaunchHandler::ShouldLaunchSystemWebAppOrChromeApp(
+bool DesksTemplatesAppLaunchHandler::ShouldLaunchSystemWebAppOrChromeApp(
     const std::string& app_id,
     const app_restore::RestoreData::LaunchList& launch_list) {
   // Find out if the app can have multiple instances. Apps that can have
@@ -124,17 +124,17 @@ bool DeskTemplateAppLaunchHandler::ShouldLaunchSystemWebAppOrChromeApp(
       app_id, launch_list);
 }
 
-void DeskTemplateAppLaunchHandler::OnExtensionLaunching(
+void DesksTemplatesAppLaunchHandler::OnExtensionLaunching(
     const std::string& app_id) {
   read_handler_->SetNextRestoreWindowIdForChromeApp(app_id);
 }
 
 base::WeakPtr<ash::AppLaunchHandler>
-DeskTemplateAppLaunchHandler::GetWeakPtrAppLaunchHandler() {
+DesksTemplatesAppLaunchHandler::GetWeakPtrAppLaunchHandler() {
   return weak_ptr_factory_.GetWeakPtr();
 }
 
-void DeskTemplateAppLaunchHandler::LaunchBrowsers() {
+void DesksTemplatesAppLaunchHandler::LaunchBrowsers() {
   DCHECK(restore_data());
 
   const auto& launch_list = restore_data()->app_id_to_launch_list();
@@ -202,7 +202,7 @@ void DeskTemplateAppLaunchHandler::LaunchBrowsers() {
   restore_data()->RemoveApp(extension_misc::kChromeAppId);
 }
 
-void DeskTemplateAppLaunchHandler::MaybeLaunchArcApps() {
+void DesksTemplatesAppLaunchHandler::MaybeLaunchArcApps() {
   if (!ash::features::AreDesksTemplatesEnabled())
     return;
 
@@ -217,11 +217,11 @@ void DeskTemplateAppLaunchHandler::MaybeLaunchArcApps() {
   }
 }
 
-void DeskTemplateAppLaunchHandler::ClearDeskTemplateReadHandlerRestoreData() {
+void DesksTemplatesAppLaunchHandler::ClearDeskTemplateReadHandlerRestoreData() {
   read_handler_->SetRestoreData(nullptr);
 }
 
-void DeskTemplateAppLaunchHandler::RecordRestoredAppLaunch(
+void DesksTemplatesAppLaunchHandler::RecordRestoredAppLaunch(
     apps::AppTypeName app_type_name) {
   // TODO: Add UMA Histogram.
   NOTIMPLEMENTED();

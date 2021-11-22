@@ -37,7 +37,7 @@ namespace ash {
 class DeskTemplate;
 
 // This delegate is owned by Shell and used by ash/ to communicate with
-// DesksClient in chrome/.
+// DesksTemplatesClient in chrome/.
 class ASH_PUBLIC_EXPORT DesksTemplatesDelegate {
  public:
   virtual ~DesksTemplatesDelegate() = default;

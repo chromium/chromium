@@ -28,7 +28,7 @@ class AppListClientImpl;
 class AshShellInit;
 class AshWebViewFactoryImpl;
 class CastConfigControllerMediaRouter;
-class DesksClient;
+class DesksTemplatesClient;
 class ImeControllerClientImpl;
 class InSessionAuthDialogClient;
 class LoginScreenClientImpl;
@@ -113,7 +113,7 @@ class ChromeBrowserMainExtraPartsAsh : public ChromeBrowserMainExtraParts {
 
   std::unique_ptr<internal::ChromeShelfControllerInitializer>
       chrome_shelf_controller_initializer_;
-  std::unique_ptr<DesksClient> desks_client_;
+  std::unique_ptr<DesksTemplatesClient> desks_templates_client_;
 
 #if BUILDFLAG(ENABLE_WAYLAND_SERVER)
   std::unique_ptr<ExoParts> exo_parts_;

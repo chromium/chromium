@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_ASH_DESKS_CLIENT_H_
-#define CHROME_BROWSER_UI_ASH_DESKS_CLIENT_H_
+#ifndef CHROME_BROWSER_UI_ASH_DESKS_TEMPLATES_DESKS_TEMPLATES_CLIENT_H_
+#define CHROME_BROWSER_UI_ASH_DESKS_TEMPLATES_DESKS_TEMPLATES_CLIENT_H_
 
 #include <memory>
 
@@ -14,7 +14,7 @@
 #include "base/memory/weak_ptr.h"
 #include "components/desks_storage/core/desk_model.h"
 
-class DeskTemplateAppLaunchHandler;
+class DesksTemplatesAppLaunchHandler;
 
 namespace ash {
 class DeskTemplate;
@@ -24,27 +24,27 @@ class DesksController;
 namespace desks_storage {
 class DeskModel;
 class LocalDeskDataManager;
-}
+}  // namespace desks_storage
 
 class Profile;
 
 // Class to handle all Desks in-browser functionalities. Will call into
 // ash::DesksController to do actual desk related operations.
-class DesksClient : public ash::SessionObserver {
+class DesksTemplatesClient : public ash::SessionObserver {
  public:
-  DesksClient();
-  DesksClient(const DesksClient&) = delete;
-  DesksClient& operator=(const DesksClient&) = delete;
-  ~DesksClient() override;
+  DesksTemplatesClient();
+  DesksTemplatesClient(const DesksTemplatesClient&) = delete;
+  DesksTemplatesClient& operator=(const DesksTemplatesClient&) = delete;
+  ~DesksTemplatesClient() override;
 
-  static DesksClient* Get();
+  static DesksTemplatesClient* Get();
 
   // ash::SessionObserver:
   void OnActiveUserSessionChanged(const AccountId& account_id) override;
 
   // TODO: Change the callback to accept a ash::DeskTemplate* type parameter
-  // later when DesksClient (or DesksController) hooks up with storage and can
-  // hold an in-memory captured desk template instance.
+  // later when DesksTemplatesClient (or DesksController) hooks up with storage
+  // and can hold an in-memory captured desk template instance.
   using CaptureActiveDeskAndSaveTemplateCallback =
       base::OnceCallback<void(std::unique_ptr<ash::DeskTemplate>,
                               std::string error)>;
@@ -107,8 +107,8 @@ class DesksClient : public ash::SessionObserver {
   void RemovePolicyPreconfiguredTemplate(const AccountId& account_id);
 
  private:
-  friend class DesksClientTest;
-  friend class ScopedDeskClientAppLaunchHandlerSetter;
+  friend class DesksTemplatesClientTest;
+  friend class ScopedDesksTemplatesAppLaunchHandlerSetter;
 
   // Attempts to create `app_launch_handler_` if it doesn't already exist.
   void MaybeCreateAppLaunchHandler();
@@ -133,32 +133,32 @@ class DesksClient : public ash::SessionObserver {
   // Callback function that allows the |CaptureActiveDeskAndSaveTemplate|
   // |callback| to be called as a |desks_storage::AddOrUpdateEntryCallback|.
   void OnCaptureActiveDeskAndSaveTemplate(
-      DesksClient::CaptureActiveDeskAndSaveTemplateCallback callback,
+      CaptureActiveDeskAndSaveTemplateCallback callback,
       std::unique_ptr<ash::DeskTemplate> desk_template,
       desks_storage::DeskModel::AddOrUpdateEntryStatus status);
 
   // Callback function that allows for the |DeleteDeskTemplateCallback| to be
   // called as a |desks_storage::DeleteEntryCallback|
-  void OnDeleteDeskTemplate(DesksClient::DeleteDeskTemplateCallback callback,
+  void OnDeleteDeskTemplate(DeleteDeskTemplateCallback callback,
                             desks_storage::DeskModel::DeleteEntryStatus status);
 
   // Callback function that allows the |UpdateDeskTemplateCallback| to be called
   // as a |desks_storage::AddOrUpdateEntryCallback|.
   void OnUpdateDeskTemplate(
-      DesksClient::UpdateDeskTemplateCallback callback,
+      UpdateDeskTemplateCallback callback,
       desks_storage::DeskModel::AddOrUpdateEntryStatus status);
 
   // Callback function that handles finding a template to be updated in
   // |UpdateDeskTemplate|
   void OnGetTemplateToBeUpdated(
       const std::u16string& template_name,
-      DesksClient::UpdateDeskTemplateCallback callback,
+      UpdateDeskTemplateCallback callback,
       desks_storage::DeskModel::GetEntryByUuidStatus status,
       std::unique_ptr<ash::DeskTemplate> entry);
 
   // Callback function that handles getting all DeskTemplates from
   // storage.
-  void OnGetAllTemplates(DesksClient::GetDeskTemplatesCallback callback,
+  void OnGetAllTemplates(GetDeskTemplatesCallback callback,
                          desks_storage::DeskModel::GetAllEntriesStatus status,
                          std::vector<ash::DeskTemplate*> entries);
 
@@ -175,7 +175,7 @@ class DesksClient : public ash::SessionObserver {
   Profile* active_profile_ = nullptr;
 
   // The object that handles launching apps.
-  std::unique_ptr<DeskTemplateAppLaunchHandler> app_launch_handler_;
+  std::unique_ptr<DesksTemplatesAppLaunchHandler> app_launch_handler_;
 
   // A test only template for testing `LaunchDeskTemplate`.
   std::unique_ptr<ash::DeskTemplate> launch_template_for_test_;
@@ -186,7 +186,7 @@ class DesksClient : public ash::SessionObserver {
   // The stored JSON values of preconfigured desk templates
   base::flat_map<AccountId, std::string> preconfigured_desk_templates_json_;
 
-  base::WeakPtrFactory<DesksClient> weak_ptr_factory_{this};
+  base::WeakPtrFactory<DesksTemplatesClient> weak_ptr_factory_{this};
 };
 
-#endif  // CHROME_BROWSER_UI_ASH_DESKS_CLIENT_H_
+#endif  // CHROME_BROWSER_UI_ASH_DESKS_TEMPLATES_DESKS_TEMPLATES_CLIENT_H_
