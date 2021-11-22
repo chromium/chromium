@@ -7259,7 +7259,7 @@ crbug.com/1267734 [ Win7 ] virtual/scroll-unification/fast/forms/suggestion-pick
 crbug.com/1191846 virtual/prerender/external/wpt/speculation-rules/prerender/local-storage.html [ Failure Pass ]
 
 # Sheriff 2021-11-10
-crbug.com/1268963 [ Linux ] virtual/plz-dedicated-worker/external/wpt/resource-timing/object-not-found-after-TAO-cross-origin-redirect.html [ Failure Pass ]
+crbug.com/1268963 [ Linux ] external/wpt/resource-timing/object-not-found-after-TAO-cross-origin-redirect.html [ Failure Pass ]
 
 # Sheriff 2021-11-12
 crbug.com/1268594 [ Linux ] css3/filters/composited-layer-bounds-after-sw-blur-animation.html [ Failure Pass ]
