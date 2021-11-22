@@ -92,7 +92,6 @@ void MultiWordSuggester::OnSurroundingTextChanged(const std::u16string& text,
       .cursor_at_end_of_text =
           (cursor_pos == anchor_pos && cursor_pos == text.length())};
   state_.UpdateSurroundingText(surrounding_text);
-  state_.ReconcileSuggestionWithText();
   DisplaySuggestionIfAvailable();
 }
 
@@ -114,7 +113,6 @@ void MultiWordSuggester::OnExternalSuggestionsUpdated(
       .text = base::UTF8ToUTF16(multi_word_suggestion->text),
       .time_first_shown = base::TimeTicks::Now()};
   state_.UpdateSuggestion(suggestion);
-  state_.ReconcileSuggestionWithText();
   DisplaySuggestionIfAvailable();
 }
 
@@ -255,6 +253,7 @@ void MultiWordSuggester::SuggestionState::UpdateSurroundingText(
     const MultiWordSuggester::SuggestionState::SurroundingText&
         surrounding_text) {
   surrounding_text_ = surrounding_text;
+  ReconcileSuggestionWithText();
 }
 
 void MultiWordSuggester::SuggestionState::UpdateSuggestion(
@@ -263,6 +262,8 @@ void MultiWordSuggester::SuggestionState::UpdateSuggestion(
   UpdateState(suggestion.mode == TextSuggestionMode::kCompletion
                   ? State::kCompletionSuggestionShown
                   : State::kPredictionSuggestionShown);
+  if (suggestion.mode == TextSuggestionMode::kCompletion)
+    ReconcileSuggestionWithText();
 }
 
 void MultiWordSuggester::SuggestionState::ReconcileSuggestionWithText() {

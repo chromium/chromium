@@ -181,6 +181,46 @@ TEST(MultiWordSuggesterTest, CalculatesConfirmedLengthGreedily) {
   EXPECT_EQ(suggestion_handler.GetConfirmedLength(), 6);  // hohoho
 }
 
+TEST(MultiWordSuggesterTest, CalculatesConfirmedLengthForPredictions) {
+  FakeSuggestionHandler suggestion_handler;
+  MultiWordSuggester suggester(&suggestion_handler);
+
+  std::vector<TextSuggestion> suggestions = {
+      TextSuggestion{.mode = TextSuggestionMode::kPrediction,
+                     .type = TextSuggestionType::kMultiWord,
+                     .text = "is the next task"},
+  };
+
+  suggester.OnFocus(kFocusedContextId);
+  suggester.OnSurroundingTextChanged(u"this ",
+                                     /*cursor_pos=*/5, /*anchor_pos=*/5);
+  suggester.OnExternalSuggestionsUpdated(suggestions);
+
+  EXPECT_TRUE(suggestion_handler.GetShowingSuggestion());
+  EXPECT_EQ(suggestion_handler.GetSuggestionText(), u"is the next task");
+  EXPECT_EQ(suggestion_handler.GetConfirmedLength(), 0);
+}
+
+TEST(MultiWordSuggesterTest, HandlesNewlinesWhenCalculatingConfirmedLength) {
+  FakeSuggestionHandler suggestion_handler;
+  MultiWordSuggester suggester(&suggestion_handler);
+
+  std::vector<TextSuggestion> suggestions = {
+      TextSuggestion{.mode = TextSuggestionMode::kCompletion,
+                     .type = TextSuggestionType::kMultiWord,
+                     .text = "how are you"},
+  };
+
+  suggester.OnFocus(kFocusedContextId);
+  suggester.OnSurroundingTextChanged(u"\nh",
+                                     /*cursor_pos=*/2, /*anchor_pos=*/2);
+  suggester.OnExternalSuggestionsUpdated(suggestions);
+
+  EXPECT_TRUE(suggestion_handler.GetShowingSuggestion());
+  EXPECT_EQ(suggestion_handler.GetSuggestionText(), u"how are you");
+  EXPECT_EQ(suggestion_handler.GetConfirmedLength(), 1);  // h
+}
+
 TEST(MultiWordSuggesterTest, TracksLastSuggestionOnSurroundingTextChange) {
   FakeSuggestionHandler suggestion_handler;
   MultiWordSuggester suggester(&suggestion_handler);
