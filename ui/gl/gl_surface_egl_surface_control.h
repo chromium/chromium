@@ -102,6 +102,7 @@ class GL_EXPORT GLSurfaceEGLSurfaceControl : public GLSurfaceEGL {
     gfx::OverlayTransform transform = gfx::OVERLAY_TRANSFORM_NONE;
     bool opaque = true;
     gfx::ColorSpace color_space;
+    absl::optional<gfx::HDRMetadata> hdr_metadata;
 
     // Indicates whether buffer for this layer was updated in the currently
     // pending transaction, or the last transaction submitted if there isn't

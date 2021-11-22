@@ -450,6 +450,15 @@ bool GLSurfaceEGLSurfaceControl::ScheduleOverlayPlane(
                                         image_color_space);
   }
 
+  if (uninitialized ||
+      surface_state.hdr_metadata != overlay_plane_data.hdr_metadata) {
+    DCHECK(!overlay_plane_data.hdr_metadata ||
+           surface_state.color_space.IsHDR());
+    surface_state.hdr_metadata = overlay_plane_data.hdr_metadata;
+    pending_transaction_->SetHDRMetadata(*surface_state.surface,
+                                         surface_state.hdr_metadata);
+  }
+
   if (frame_rate_update_pending_)
     pending_transaction_->SetFrameRate(*surface_state.surface, frame_rate_);
 
