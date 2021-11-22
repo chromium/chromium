@@ -533,8 +533,8 @@ bool GetOptionalBool(const base::DictionaryValue* dict,
                      base::StringPiece path,
                      bool* out_value,
                      bool* has_value) {
-  return GetOptionalValueDeprecated(dict, path, out_value, has_value,
-                                    &base::Value::GetAsBoolean);
+  return GetOptionalValue(dict, path, out_value, has_value,
+                          &base::Value::GetIfBool);
 }
 
 bool GetOptionalInt(const base::DictionaryValue* dict,
