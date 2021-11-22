@@ -57,9 +57,23 @@ Yes, but not by default and with some caveats.
 
 Any team that requires extra capabilities granted to `chrome-untrusted://` should consult with the security team to ensure they are non-dangerous. In this context, we consider non-dangerous any API that we would expose to the renderer process, e.g. UMA.
 
-We currently use `postMessage()` to expose certain APIs to `chrome-untrusted://`. For example, the Media App uses `postMessage()` to pass a read-only file handle to `chrome-untrusted://media-app` from `chrome-untrusted://`. Teams are encouraged to get a review from someone in [SECURITY_OWNERS](https://source.chromium.org/chromium/chromium/src/+/main:ipc/SECURITY_OWNERS) when exposing capabilities over postMessage.
+We recommend using Mojo to expose APIs to `chrome-untrusted://`. Mojo for `chrome-untrusted://` works similarly to how it works for `chrome://` with a few key differences:
 
-We are hoping to move to Mojo to improve auditability of these APIs and to make the security review required.
+* Unlike chrome:// pages, chrome-untrusted:// pages don't get access to all renderer exposed Mojo interfaces by default. Use `PopulateChromeWebUIFrameInterfaceBrokers` to expose WebUI specific interfaces to your WebUI. See [this CL](https://crrev.com/c/3138688/5/chrome/browser/chrome_browser_interface_binders.cc) for example.
+* The exposed interface has a different threat model: a compromised `chrome-untrusted://` page could try to exploit the interface (e.g. sending malformed messages, closing the Mojo pipe).
+
+When exposing extra capabilities to chrome-untrusted://, keep in mind:
+
+* Don't grant any capabilities that we wouldn't grant to a regular renderer. For example, don't expose unrestricted access to Bluetooth devices, but expose a method that opens a browser-controlled dialog where the user chooses a device.
+* What you received (from the WebUI page) is untrustworthy. You must sanitize and verify its content before processing.
+* What you send (to the WebUI page) could be exfiltrated to the Web. Don't send sensitive information (e.g. user credentials). Only send what you actually need.
+* The difference in Mojo interface lifetimes could lead to use-after-free bugs (e.g. a page reloads itself when it shouldn't). We recommend you create and reinitialize the interface on each page load (using [WebUIPrimaryPageChanged](https://source.chromium.org/chromium/chromium/src/+/main:content/public/browser/web_ui_controller.h;l=54?q=WebUIPrimaryPageChanged&ss=chromium)), and have the JavaScript bind the interface on page load.
+
+We also recommend using Mojo to communicate between parent and child frames whenever possible. See [this CL](https://crrev.com/c/3222406) for example. 
+
+You should only use `postMessage()` when transferring objects unsupported by Mojo. For example, Media App uses `postMessage()` to pass a read-only [`FileSystemHandle`](https://developer.mozilla.org/en-US/docs/Web/API/File_System_Access_API) file handle to `chrome-untrusted://media-app` from its parent `chrome://media-app`.
+
+We encourage teams to engage with [SECURITY_OWNERS](https://source.chromium.org/chromium/chromium/src/+/main:ipc/SECURITY_OWNERS) early and get the reviews required.
 
 ## Can chrome-untrusted:// be the main document or does it need to be embedded in a `chrome://` page?
 Yes, `chrome-untrusted://` can be the main document, although the most common case is for a `chrome://` page to embed a `chrome-untrusted://` subframe.
@@ -118,11 +132,13 @@ class UntrustedExampleUI : public ui::UntrustedWebUIController {
 
 2. Register the WebUIConfig
 
-Add the `WebUIConfig` to the list of WebUIConfigs in `[ChromeUntrustedWebUIControllerFactory](https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/ui/webui/chrome_untrusted_web_ui_controller_factory.cc)`.
+Add the `WebUIConfig` to the list of WebUIConfigs in [`ChromeUntrustedWebUIControllerFactory`](https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/ui/webui/chrome_untrusted_web_ui_controller_factory.cc).
 
 ```cpp
 register_config(std::make_unique<chromeos::UntrustedExampleUIConfig>());
 ```
+
+3. If needed, implement and register the necessary Mojo interfaces. See [this CL](https://crrev.com/c/3138688/5/chrome/browser/chrome_browser_interface_binders.cc) for example.
 
 ### Embed chrome-untrusted:// in chrome:// WebUIs
 
@@ -143,4 +159,4 @@ web_ui->AddRequestableScheme(content::kChromeUIUntrustedScheme)
 trusted_data_source->OverrideContentSecurityPolicy(
     “frame-src ” + kUntrustedExampleURL);
 ```
-5. Add communication mechanism to `chrome-untrusted://` frames. For example, `iframe.postMessage()` and `window.onmessage`.
+5. Add communication mechanism to `chrome-untrusted://` frames. For example, [using Mojo](https://crrev.com/c/3222406), or `postMessage` the JavaScript object is not supported by Mojo.
