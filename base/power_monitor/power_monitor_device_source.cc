@@ -7,13 +7,13 @@
 namespace base {
 
 PowerMonitorDeviceSource::PowerMonitorDeviceSource() {
-#if defined(OS_APPLE)
+#if defined(OS_APPLE) || defined(OS_WIN)
   PlatformInit();
 #endif
 }
 
 PowerMonitorDeviceSource::~PowerMonitorDeviceSource() {
-#if defined(OS_APPLE)
+#if defined(OS_APPLE) || defined(OS_WIN)
   PlatformDestroy();
 #endif
 }

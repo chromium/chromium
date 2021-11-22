@@ -27,7 +27,7 @@ void PowerMonitor::Initialize(std::unique_ptr<PowerMonitorSource> source) {
       PowerMonitor::Source()->GetCurrentThermalState());
 
   PowerMonitor::PowerMonitor::NotifySpeedLimitChange(
-      PowerMonitor::Source()->GetCurrentSpeedLimit());
+      PowerMonitor::Source()->GetInitialSpeedLimit());
 }
 
 bool PowerMonitor::IsInitialized() {

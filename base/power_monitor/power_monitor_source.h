@@ -34,9 +34,12 @@ class BASE_EXPORT PowerMonitorSource {
   // Otherwise, returns kUnknown.
   virtual PowerThermalObserver::DeviceThermalState GetCurrentThermalState();
 
-  // Reads the current operating system CPU speed limit, if available on the
+  // Reads the initial operating system CPU speed limit, if available on the
   // platform. Otherwise returns PowerThermalObserver::kSpeedLimitMax.
-  virtual int GetCurrentSpeedLimit();
+  // Only called on the main thead in PowerMonitor::Initialize().
+  // The actual speed limit value will be updated asynchronosulsy via the
+  // ProcessSpeedLimitEvent() if/when the value changes.
+  virtual int GetInitialSpeedLimit();
 
   // Update the result of thermal state.
   virtual void SetCurrentThermalState(

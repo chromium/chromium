@@ -72,7 +72,7 @@ PowerMonitorDeviceSource::GetCurrentThermalState() {
   return thermal_state_observer_->GetCurrentThermalState();
 }
 
-int PowerMonitorDeviceSource::GetCurrentSpeedLimit() {
+int PowerMonitorDeviceSource::GetInitialSpeedLimit() {
   return thermal_state_observer_->GetCurrentSpeedLimit();
 }
 
