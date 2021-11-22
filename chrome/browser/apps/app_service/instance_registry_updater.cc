@@ -107,10 +107,7 @@ void InstanceRegistryUpdater::OnInstance(
     InstanceState state) {
   auto instance = std::make_unique<apps::Instance>(app_id, instance_id, window);
   instance->UpdateState(state, base::Time::Now());
-
-  std::vector<std::unique_ptr<apps::Instance>> deltas;
-  deltas.push_back(std::move(instance));
-  instance_registry_.OnInstances(std::move(deltas));
+  instance_registry_.OnInstance(std::move(instance));
 }
 
 }  // namespace apps

@@ -3771,9 +3771,7 @@ TEST_F(LegacyDeviceStatusCollectorTest, GenerateAppInfo) {
   auto instance = std::make_unique<apps::Instance>(
       "id", apps::Instance::InstanceKey::ForWindowBasedApp(window.get()));
   instance->UpdateState(apps::InstanceState::kStarted, start_time);
-  std::vector<std::unique_ptr<apps::Instance>> deltas;
-  deltas.push_back(std::move(instance));
-  app_proxy->InstanceRegistry().OnInstances(std::move(deltas));
+  app_proxy->InstanceRegistry().OnInstance(std::move(instance));
 
   base::Time report_time;
   EXPECT_TRUE(base::Time::FromString("30-MAR-2020 2:30pm", &report_time));

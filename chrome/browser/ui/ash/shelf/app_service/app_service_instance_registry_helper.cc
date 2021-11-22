@@ -191,9 +191,6 @@ void AppServiceInstanceRegistryHelper::OnInstances(
   instance->SetLaunchId(launch_id);
   instance->UpdateState(state, base::Time::Now());
 
-  std::vector<std::unique_ptr<apps::Instance>> deltas;
-  deltas.push_back(std::move(instance));
-
   // The window could be teleported from the inactive user's profile to the
   // current active user, so search all proxies. If the instance is found from a
   // proxy, still save to that proxy, otherwise, save to the current active user
@@ -207,7 +204,7 @@ void AppServiceInstanceRegistryHelper::OnInstances(
       break;
     }
   }
-  proxy->InstanceRegistry().OnInstances(std::move(deltas));
+  proxy->InstanceRegistry().OnInstance(std::move(instance));
 }
 
 void AppServiceInstanceRegistryHelper::OnSetShelfIDForBrowserWindowContents(
