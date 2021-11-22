@@ -160,7 +160,8 @@ std::unique_ptr<TestSearchResult> CreateOmniboxSuggestionResult(
   suggestion_result->set_best_match(true);
   suggestion_result->set_display_type(SearchResultDisplayType::kList);
   SearchResultActions actions;
-  actions.push_back(SearchResultAction(gfx::ImageSkia(), u"Remove",
+  actions.push_back(SearchResultAction(SearchResultActionType::kRemove,
+                                       gfx::ImageSkia(), u"Remove",
                                        true /*visible_on_hover*/));
   suggestion_result->SetActions(actions);
 

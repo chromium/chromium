@@ -20,19 +20,6 @@ AppListItemMetadata::AppListItemMetadata(const AppListItemMetadata& rhs) =
     default;
 AppListItemMetadata::~AppListItemMetadata() = default;
 
-// TODO: This method could be eliminated, by passing the action with result
-// action metadata instead of implicitly relying on order in which actions are
-// listed in SearchResult::actions().
-SearchResultActionType GetSearchResultActionType(int button_index) {
-  if (button_index < 0 ||
-      button_index >= static_cast<int>(
-                          SearchResultActionType::kSearchResultActionTypeMax)) {
-    return SearchResultActionType::kSearchResultActionTypeMax;
-  }
-
-  return static_cast<SearchResultActionType>(button_index);
-}
-
 ////////////////////////////////////////////////////////////////////////////////
 // SearchResultIconInfo:
 
@@ -66,10 +53,12 @@ SearchResultTag::SearchResultTag(int styles, uint32_t start, uint32_t end)
 
 SearchResultAction::SearchResultAction() {}
 
-SearchResultAction::SearchResultAction(const gfx::ImageSkia& image,
+SearchResultAction::SearchResultAction(SearchResultActionType type,
+                                       const gfx::ImageSkia& image,
                                        const std::u16string& tooltip_text,
                                        bool visible_on_hover)
-    : image(image),
+    : type(type),
+      image(image),
       tooltip_text(tooltip_text),
       visible_on_hover(visible_on_hover) {}
 

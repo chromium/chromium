@@ -585,7 +585,7 @@ void SearchResultView::OnSearchResultActionActivated(size_t index) {
   DCHECK_LT(index, result()->actions().size());
 
   if (result()->is_omnibox_search()) {
-    SearchResultActionType button_action = GetSearchResultActionType(index);
+    SearchResultActionType button_action = result()->actions()[index].type;
 
     switch (button_action) {
       case SearchResultActionType::kRemove: {

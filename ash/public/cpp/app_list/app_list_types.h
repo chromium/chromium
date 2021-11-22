@@ -314,10 +314,6 @@ struct ASH_PUBLIC_EXPORT SearchResultIconInfo {
   SearchResultIconShape shape = SearchResultIconShape::kDefault;
 };
 
-// Returns SearchResultActionType mapped for |button_index|.
-ASH_PUBLIC_EXPORT SearchResultActionType
-GetSearchResultActionType(int button_index);
-
 // A tagged range in search result text.
 struct ASH_PUBLIC_EXPORT SearchResultTag {
   // Similar to ACMatchClassification::Style, the style values are not
@@ -343,12 +339,14 @@ using SearchResultTags = std::vector<SearchResultTag>;
 // button with the label text will be used.
 struct ASH_PUBLIC_EXPORT SearchResultAction {
   SearchResultAction();
-  SearchResultAction(const gfx::ImageSkia& image,
+  SearchResultAction(SearchResultActionType type,
+                     const gfx::ImageSkia& image,
                      const std::u16string& tooltip_text,
                      bool visible_on_hover);
   SearchResultAction(const SearchResultAction& other);
   ~SearchResultAction();
 
+  SearchResultActionType type;
   gfx::ImageSkia image;
   std::u16string tooltip_text;
   // Visible when button or its parent row in hover state.

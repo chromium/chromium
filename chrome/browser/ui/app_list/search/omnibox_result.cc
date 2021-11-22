@@ -515,11 +515,9 @@ void OmniboxResult::OnFaviconFetched(const gfx::Image& icon) {
 void OmniboxResult::SetZeroSuggestionActions() {
   Actions zero_suggestion_actions;
 
-  constexpr int kMaxButtons =
-      ash::SearchResultActionType::kSearchResultActionTypeMax;
-  for (int i = 0; i < kMaxButtons; ++i) {
-    ash::SearchResultActionType button_action =
-        ash::GetSearchResultActionType(i);
+  for (ash::SearchResultActionType button_action :
+       {ash::SearchResultActionType::kRemove,
+        ash::SearchResultActionType::kAppend}) {
     gfx::ImageSkia button_image;
     std::u16string button_tooltip;
     bool visible_on_hover = false;
@@ -544,7 +542,8 @@ void OmniboxResult::SetZeroSuggestionActions() {
       default:
         NOTREACHED();
     }
-    Action search_action(button_image, button_tooltip, visible_on_hover);
+    Action search_action(button_action, button_image, button_tooltip,
+                         visible_on_hover);
     zero_suggestion_actions.emplace_back(search_action);
   }
 
