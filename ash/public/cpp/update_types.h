@@ -32,13 +32,6 @@ enum class UpdateType {
   kSystem,
 };
 
-// Notification style for system updates, set by different policies.
-enum class NotificationStyle {
-  kDefault,
-  kAdminRecommended,  // Relaunch Notification policy
-  kAdminRequired,     // Relaunch Notification policy
-};
-
 // Notification state for system updates, set by policies.
 struct RelaunchNotificationState {
   enum {

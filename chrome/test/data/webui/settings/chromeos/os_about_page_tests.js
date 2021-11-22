@@ -176,6 +176,34 @@ cr.define('settings_about_page', function() {
       return lifetimeBrowserProxy.whenCalled('relaunch');
     });
 
+    test('Rollback', async () => {
+      loadTimeData.overrideValues({
+        deviceManager: 'google.com',
+        isManaged: true,
+      });
+      await initNewPage();
+      const statusMessageEl = page.$$('#updateStatusMessage div');
+
+      const progress = 90;
+      fireStatusChanged(
+          UpdateStatus.UPDATING,
+          {progress: progress, powerwash: true, rollback: true});
+
+      assertEquals(
+          page.i18nAdvanced(
+              'aboutRollbackInProgress',
+              {substitutions: [page.deviceManager_, progress + '%']}),
+          statusMessageEl.innerHTML);
+
+      fireStatusChanged(
+          UpdateStatus.NEARLY_UPDATED, {powerwash: true, rollback: true});
+
+      assertEquals(
+          page.i18nAdvanced(
+              'aboutRollbackSuccess', {substitutions: [page.deviceManager_]}),
+          statusMessageEl.innerHTML);
+    });
+
     test('NoInternet', function() {
       assertTrue(page.$.updateStatusMessage.hidden);
       aboutBrowserProxy.sendStatusNoInternet();

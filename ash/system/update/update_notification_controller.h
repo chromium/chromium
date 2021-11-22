@@ -10,6 +10,13 @@
 #include "base/files/file_path.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
+namespace gfx {
+struct VectorIcon;
+}
+namespace message_center {
+enum class SystemNotificationWarningLevel;
+}
+
 namespace ash {
 
 class ShutdownConfirmationDialog;
@@ -38,8 +45,10 @@ class ASH_EXPORT UpdateNotificationController : public UpdateObserver {
   friend class UpdateNotificationControllerTest;
 
   bool ShouldShowUpdate() const;
-  std::u16string GetNotificationTitle() const;
-  std::u16string GetNotificationMessage() const;
+  std::u16string GetTitle() const;
+  std::u16string GetMessage() const;
+  const gfx::VectorIcon& GetIcon() const;
+  message_center::SystemNotificationWarningLevel GetWarningLevel() const;
   void HandleNotificationClick(absl::optional<int> index);
   void GenerateUpdateNotification(
       absl::optional<bool> slow_boot_file_path_exists);
