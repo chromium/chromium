@@ -1506,6 +1506,7 @@ source_set("unit_tests") {
     "svg/animation/smil_time_container_test.cc",
     "svg/animation/svg_smil_element_test.cc",
     "svg/graphics/svg_image_test.cc",
+    "svg/svg_element_test.cc",
     "svg/svg_foreign_object_element_test.cc",
     "svg/svg_path_parser_test.cc",
     "svg/svg_path_query_test.cc",

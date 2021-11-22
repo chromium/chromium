@@ -284,6 +284,9 @@ class CORE_EXPORT SVGElement : public Element {
   void AccessKeyAction(SimulatedClickCreationScope creation_scope) override;
 
  private:
+  FRIEND_TEST_ALL_PREFIXES(SVGElementTest,
+                           BaseComputedStyleForSMILWithContainerQueries);
+
   bool IsSVGElement() const =
       delete;  // This will catch anyone doing an unnecessary check.
   bool IsStyledElement() const =
