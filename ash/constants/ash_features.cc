@@ -624,7 +624,7 @@ const base::Feature kHideShelfControlsInTabletMode{
 // transfer or access it later.
 const base::Feature kHoldingSpaceInProgressDownloadsIntegration{
     "HoldingSpaceInProgressDownloadsIntegration",
-    base::FEATURE_ENABLED_BY_DEFAULT};
+    base::FEATURE_DISABLED_BY_DEFAULT};
 
 // Enables incognito profile integration with the productivity feature that
 // aims to reduce context switching by enabling users to collect content and
