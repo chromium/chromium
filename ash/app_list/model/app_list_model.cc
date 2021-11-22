@@ -273,8 +273,6 @@ void AppListModel::DeleteItem(const std::string& id) {
           static_cast<AppListFolderItem*>(item)->item_list());
     }
     top_level_item_list_->DeleteItem(id);
-    for (auto& observer : observers_)
-      observer.OnAppListItemDeleted(id);
     return;
   }
 
@@ -312,8 +310,6 @@ void AppListModel::DeleteAllItems() {
           static_cast<AppListFolderItem*>(item)->item_list());
     }
     top_level_item_list_->DeleteItemAt(0);
-    for (auto& observer : observers_)
-      observer.OnAppListItemDeleted(id);
   }
 }
 
@@ -428,8 +424,6 @@ void AppListModel::ReparentOrDeleteItemInFolder(
       observer.OnAppListItemWillBeDeleted(item);
     std::string id = removed_item->id();
     removed_item.reset();  // Deletes item.
-    for (auto& observer : observers_)
-      observer.OnAppListItemDeleted(id);
   }
 
   // Delete the folder if the folder becomes empty after child removal.
