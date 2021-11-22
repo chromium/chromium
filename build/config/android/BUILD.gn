@@ -48,8 +48,6 @@ config("compiler") {
   ]
 
   if (current_cpu == "arm64") {
-    # For outline atomics on AArch64 (can't pass this unconditionally
-    # due to unused flag warning on other targets).
     if (arm_control_flow_integrity == "standard") {
       cflags += [ "-mbranch-protection=standard" ]
     }
