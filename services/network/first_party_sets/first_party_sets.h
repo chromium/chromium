@@ -13,6 +13,7 @@
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/sequence_checker.h"
+#include "base/thread_annotations.h"
 #include "net/base/schemeful_site.h"
 #include "net/cookies/cookie_constants.h"
 #include "net/cookies/same_party_context.h"
@@ -101,7 +102,10 @@ class FirstPartySets {
   // non-singleton) First-Party Set.
   bool IsInNontrivialFirstPartySet(const net::SchemefulSite& site) const;
 
-  int64_t size() const { return sets_.size(); }
+  int64_t size() const {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    return sets_.size();
+  }
 
   // Returns a mapping from owner to set members. For convenience of iteration,
   // the members of the set includes the owner.
@@ -151,21 +155,22 @@ class FirstPartySets {
   // Represents the mapping of site -> site, where keys are members of sets, and
   // values are owners of the sets. Owners are explicitly represented as members
   // of the set.
-  base::flat_map<net::SchemefulSite, net::SchemefulSite> sets_;
+  base::flat_map<net::SchemefulSite, net::SchemefulSite> sets_
+      GUARDED_BY_CONTEXT(sequence_checker_);
   absl::optional<
       std::pair<net::SchemefulSite, base::flat_set<net::SchemefulSite>>>
-      manually_specified_set_;
+      manually_specified_set_ GUARDED_BY_CONTEXT(sequence_checker_);
 
-  std::string raw_persisted_sets_;
+  std::string raw_persisted_sets_ GUARDED_BY_CONTEXT(sequence_checker_);
 
-  bool persisted_sets_ready_ = false;
-  bool component_sets_ready_ = false;
-  bool manual_sets_ready_ = false;
+  bool persisted_sets_ready_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
+  bool component_sets_ready_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
+  bool manual_sets_ready_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
+  // The callback runs after the site state clearing is completed.
+  base::OnceCallback<void(const std::string&)> on_site_data_cleared_
+      GUARDED_BY_CONTEXT(sequence_checker_);
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  // The callback runs after the site state clearing is completed.
-  base::OnceCallback<void(const std::string&)> on_site_data_cleared_;
 
   FRIEND_TEST_ALL_PREFIXES(FirstPartySetsTest, ComputeSetsDiff_SitesJoined);
   FRIEND_TEST_ALL_PREFIXES(FirstPartySetsTest, ComputeSetsDiff_SitesLeft);
