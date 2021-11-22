@@ -261,8 +261,9 @@ GREYLayoutConstraint* BelowConstraint() {
   [self scrollToElementAndAssertVisibility:GetAcceptButton()];
 }
 
+// TODO(crbug.com/1272857): Adapt this test to the sign-in & sync UI.
 // Checks that the Sign In screen is displayed correctly.
-- (void)testSignInScreenUI {
+- (void)DISABLED_testSignInScreenUI {
   [self verifyWelcomeScreenIsDisplayed];
 
   // Go to the sign-in screen.
@@ -359,8 +360,9 @@ GREYLayoutConstraint* BelowConstraint() {
                                      kSigninSyncScreenAccessibilityIdentifier)];
 }
 
+// TODO(crbug.com/1272857): Adapt this test to the sign-in & sync UI.
 // Checks that the default browser screen is displayed correctly.
-- (void)testDefaultBrowserScreenUI {
+- (void)DISABLED_testDefaultBrowserScreenUI {
   if ([self isDefaultBrowserTestDisabled]) {
     return;
   }
@@ -503,10 +505,11 @@ GREYLayoutConstraint* BelowConstraint() {
   [self verifyFREIsDismissed];
 }
 
+// TODO(crbug.com/1272857): Adapt this test to the sign-in & sync UI.
 // Checks that when opening the app no accounts are here and the primary button
 // allows to create a new account and that it is updated if a new account is
 // added.
-- (void)testSignInNoAccount {
+- (void)DISABLED_testSignInNoAccount {
   [self scrollToElementAndAssertVisibility:GetAcceptButton()];
   [[EarlGrey selectElementWithMatcher:GetAcceptButton()]
       performAction:grey_tap()];
@@ -543,10 +546,11 @@ GREYLayoutConstraint* BelowConstraint() {
       assertWithMatcher:grey_nil()];
 }
 
+// TODO(crbug.com/1272857): Adapt this test to the sign-in & sync UI.
 // Checks that it is possible to add an account even if there is already account
 // and that it is possible to switch accounts when multiple accounts are
 // present.
-- (void)testSignInSelectAccount {
+- (void)DISABLED_testSignInSelectAccount {
   FakeChromeIdentity* fakeIdentity1 = [SigninEarlGrey fakeIdentity1];
   FakeChromeIdentity* fakeIdentity2 = [SigninEarlGrey fakeIdentity2];
   [SigninEarlGrey addFakeIdentity:fakeIdentity1];
@@ -581,8 +585,9 @@ GREYLayoutConstraint* BelowConstraint() {
       assertWithMatcher:grey_sufficientlyVisible()];
 }
 
+// TODO(crbug.com/1272857): Adapt this test to the sign-in & sync UI.
 // Checks that pressing "No thanks" on SignIn screen doesn't sign in the user.
-- (void)testNoSignIn {
+- (void)DISABLED_testNoSignIn {
   FakeChromeIdentity* fakeIdentity = [SigninEarlGrey fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
 
