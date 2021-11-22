@@ -128,7 +128,7 @@ class SymbolFetcherTestBase(unittest.TestCase):
 
 class MacAndLinuxTestCase(SymbolFetcherTestBase):
   def setUp(self):
-    super(MacAndLinuxTestCase, self).setUp()
+    super().setUp()
 
     cloud_storage.Get = mock.Mock()
     # Default: Cloud storage has |gcs_file|.zip file. We use |side_effect|
@@ -257,7 +257,7 @@ class MacAndLinuxTestCase(SymbolFetcherTestBase):
 
 class AndroidTestCase(SymbolFetcherTestBase):
   def setUp(self):
-    super(AndroidTestCase, self).setUp()
+    super().setUp()
 
     # Base directories for Android symbols.
     self.out = tempfile.mkdtemp(dir=self.breakpad_output_dir)

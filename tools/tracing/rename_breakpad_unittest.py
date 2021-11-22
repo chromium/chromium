@@ -38,11 +38,11 @@ class RenameBreakpadFilesTestCase(unittest.TestCase):
     """
     files = set()
     dirs = set()
-    for root, subdirs, filenames in os.walk(root):
+    for topdir, subdirs, filenames in os.walk(root):
       for filename in filenames:
-        files.add(os.path.join(root, filename))
+        files.add(os.path.join(topdir, filename))
       for subdir in subdirs:
-        dirs.add(os.path.join(root, subdir))
+        dirs.add(os.path.join(topdir, subdir))
     return dirs, files
 
   def _assertFilesInInputDir(self,
