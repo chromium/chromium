@@ -271,10 +271,12 @@ void Metrics::RecordContactMetrics(ukm::UkmRecorder* ukm_recorder,
                                    ukm::SourceId source_id,
                                    int complete_count,
                                    int incomplete_count,
+                                   int initially_selected_field_bitmask,
                                    UserDataSelectionState selection_state) {
   ukm::builders::AutofillAssistant_CollectContact(source_id)
       .SetCompleteContactProfilesCount(ToEntryCountBucket(complete_count))
       .SetIncompleteContactProfilesCount(ToEntryCountBucket(incomplete_count))
+      .SetInitialContactFieldsStatus(initially_selected_field_bitmask)
       .SetContactModified(static_cast<int64_t>(selection_state))
       .Record(ukm_recorder);
 }

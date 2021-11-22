@@ -84,18 +84,25 @@ class CollectUserDataAction : public Action,
     bool initially_prefilled = false;
     bool personal_data_changed = false;
     bool action_successful = false;
+
+    // Selection states.
     Metrics::UserDataSelectionState contact_selection_state =
         Metrics::UserDataSelectionState::NO_CHANGE;
     Metrics::UserDataSelectionState credit_card_selection_state =
         Metrics::UserDataSelectionState::NO_CHANGE;
     Metrics::UserDataSelectionState shipping_selection_state =
         Metrics::UserDataSelectionState::NO_CHANGE;
+
+    // Initial counts of complete/incomplete entries.
     int complete_contacts_initial_count;
     int incomplete_contacts_initial_count;
     int complete_credit_cards_initial_count;
     int incomplete_credit_cards_initial_count;
     int complete_shipping_addresses_initial_count;
     int incomplete_shipping_addresses_initial_count;
+
+    // Bitmasks of fields present in the initially selected entries.
+    int selected_contact_field_bitmask;
   };
 
   void InternalProcessAction(ProcessActionCallback callback) override;
@@ -128,6 +135,8 @@ class CollectUserDataAction : public Action,
       const std::vector<std::unique_ptr<Address>>& addresses,
       const std::vector<std::unique_ptr<PaymentInstrument>>&
           payment_instruments);
+
+  void FillInitiallySelectedDataStateForMetrics(UserData* user_data);
 
   void WriteProcessedAction(UserData* user_data, const UserModel* user_model);
   void UpdateProfileAndCardUse(UserData* user_data);

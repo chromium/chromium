@@ -141,6 +141,12 @@ Metrics::UserDataSelectionState GetNewSelectionState(
     Metrics::UserDataSelectionState old_state,
     UserDataEventType event_type);
 
+// Returns the bit array describing which fields are present in |profile|, using
+// Metrics::AutofillAssistantProfileFields as columns.
+// If |profile| is nullptr, returns zero (i.e. all fields are considered
+// missing).
+int GetFieldBitArrayForAddress(const autofill::AutofillProfile* profile);
+
 }  // namespace user_data
 }  // namespace autofill_assistant
 

@@ -1434,6 +1434,42 @@ TEST_F(UserDataUtilTextValueTest, TextValueClientMemoryKey) {
                                   base::Unretained(this)));
 }
 
+TEST_F(UserDataUtilTextValueTest, GetFieldBitArray) {
+  EXPECT_EQ(0, GetFieldBitArrayForAddress(nullptr));
+
+  autofill::AutofillProfile empty_profile;
+  EXPECT_EQ(0, GetFieldBitArrayForAddress(&empty_profile));
+
+  autofill::AutofillProfile name_only;
+  autofill::test::SetProfileInfo(&name_only, "Adam", "", "West", "", "", "", "",
+                                 "", "", "", "", "");
+  EXPECT_EQ(Metrics::AutofillAssistantProfileFields::NAME_FIRST |
+                Metrics::AutofillAssistantProfileFields::NAME_LAST |
+                Metrics::AutofillAssistantProfileFields::NAME_FULL,
+            GetFieldBitArrayForAddress(&name_only));
+
+  autofill::AutofillProfile full_profile;
+  autofill::test::SetProfileInfo(&full_profile, "Adam", "", "West",
+                                 "adam.west@gmail.com", "", "Baker Street 221b",
+                                 "", "Chicago", "Illinois", "10000", "US",
+                                 "+1 23 456 789 01");
+
+  EXPECT_EQ(
+      Metrics::AutofillAssistantProfileFields::NAME_FIRST |
+          Metrics::AutofillAssistantProfileFields::NAME_LAST |
+          Metrics::AutofillAssistantProfileFields::NAME_FULL |
+          Metrics::AutofillAssistantProfileFields::EMAIL_ADDRESS |
+          Metrics::AutofillAssistantProfileFields::ADDRESS_HOME_LINE1 |
+          Metrics::AutofillAssistantProfileFields::ADDRESS_HOME_CITY |
+          Metrics::AutofillAssistantProfileFields::ADDRESS_HOME_STATE |
+          Metrics::AutofillAssistantProfileFields::ADDRESS_HOME_ZIP |
+          Metrics::AutofillAssistantProfileFields::ADDRESS_HOME_COUNTRY |
+          Metrics::AutofillAssistantProfileFields::PHONE_HOME_NUMBER |
+          Metrics::AutofillAssistantProfileFields::PHONE_HOME_COUNTRY_CODE |
+          Metrics::AutofillAssistantProfileFields::PHONE_HOME_WHOLE_NUMBER,
+      GetFieldBitArrayForAddress(&full_profile));
+}
+
 }  // namespace
 }  // namespace user_data
 }  // namespace autofill_assistant

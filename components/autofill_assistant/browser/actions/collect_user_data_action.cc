@@ -465,6 +465,7 @@ void CollectUserDataAction::MaybeLogMetrics() {
         delegate_->GetUkmRecorder(), metrics_data_.source_id,
         metrics_data_.complete_contacts_initial_count,
         metrics_data_.incomplete_contacts_initial_count,
+        metrics_data_.selected_contact_field_bitmask,
         metrics_data_.contact_selection_state);
   }
 
@@ -682,6 +683,7 @@ void CollectUserDataAction::OnShowToUser(UserData* user_data,
     FillInitialDataStateForMetrics(user_data->available_contacts_,
                                    user_data->available_addresses_,
                                    user_data->available_payment_instruments_);
+    FillInitiallySelectedDataStateForMetrics(user_data);
   }
 
   if (collect_user_data.has_prompt()) {
@@ -1106,6 +1108,18 @@ void CollectUserDataAction::FillInitialDataStateForMetrics(
     if (complete_count == 0) {
       metrics_data_.initially_prefilled = false;
     }
+  }
+}
+
+void CollectUserDataAction::FillInitiallySelectedDataStateForMetrics(
+    UserData* user_data) {
+  DCHECK(collect_user_data_options_);
+  DCHECK(user_data);
+
+  if (RequiresContact(*collect_user_data_options_)) {
+    metrics_data_.selected_contact_field_bitmask =
+        user_data::GetFieldBitArrayForAddress(user_data->selected_address(
+            collect_user_data_options_->contact_details_name));
   }
 }
 

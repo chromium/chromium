@@ -480,6 +480,23 @@ class Metrics {
     kMaxValue = FAILURE
   };
 
+  // Used for bitmasks for the InitialContactFieldsStatus,
+  // InitialBillingFieldsStatus and InitialShippingFieldsStatus metrics.
+  enum AutofillAssistantProfileFields {
+    NAME_FIRST = 1 << 0,
+    NAME_LAST = 1 << 1,
+    NAME_FULL = 1 << 2,
+    EMAIL_ADDRESS = 1 << 3,
+    PHONE_HOME_NUMBER = 1 << 4,
+    PHONE_HOME_COUNTRY_CODE = 1 << 5,
+    PHONE_HOME_WHOLE_NUMBER = 1 << 6,
+    ADDRESS_HOME_COUNTRY = 1 << 7,
+    ADDRESS_HOME_STATE = 1 << 8,
+    ADDRESS_HOME_CITY = 1 << 9,
+    ADDRESS_HOME_ZIP = 1 << 10,
+    ADDRESS_HOME_LINE1 = 1 << 11,
+  };
+
   static void RecordDropOut(DropOutReason reason, const std::string& intent);
   static void RecordPaymentRequestPrefilledSuccess(bool initially_complete,
                                                    bool success);
@@ -525,6 +542,7 @@ class Metrics {
                                    ukm::SourceId source_id,
                                    int complete_count,
                                    int incomplete_count,
+                                   int initially_selected_field_bitmask,
                                    UserDataSelectionState selection_state);
   static void RecordCreditCardMetrics(ukm::UkmRecorder* ukm_recorder,
                                       ukm::SourceId source_id,

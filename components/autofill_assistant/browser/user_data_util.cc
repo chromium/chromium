@@ -274,6 +274,13 @@ bool CompletenessComparePaymentInstruments(
   return a.card->use_date() > b.card->use_date();
 }
 
+bool EvaluateNotEmpty(
+    const base::flat_map<field_formatter::Key, std::string>& mapping,
+    autofill::ServerFieldType field_type) {
+  auto it = mapping.find(field_formatter::Key(static_cast<int>(field_type)));
+  return it != mapping.end() && !it->second.empty();
+}
+
 }  // namespace
 
 std::vector<std::string> GetContactValidationErrors(
@@ -681,6 +688,54 @@ Metrics::UserDataSelectionState GetNewSelectionState(
     case NO_NOTIFICATION:
       return old_state;
   }
+}
+
+int GetFieldBitArrayForAddress(const autofill::AutofillProfile* profile) {
+  // If the profile is nullptr, we consider all fields as missing.
+  if (!profile) {
+    return 0;
+  }
+
+  auto mapping =
+      field_formatter::CreateAutofillMappings(*profile, kDefaultLocale);
+
+  // Maps from the autofill field type to the respective position in the metrics
+  // bitarray.
+  static const base::NoDestructor<std::vector<std::pair<
+      autofill::ServerFieldType, Metrics::AutofillAssistantProfileFields>>>
+      fields_to_log(
+          {{autofill::NAME_FIRST,
+            Metrics::AutofillAssistantProfileFields::NAME_FIRST},
+           {autofill::NAME_LAST,
+            Metrics::AutofillAssistantProfileFields::NAME_LAST},
+           {autofill::NAME_FULL,
+            Metrics::AutofillAssistantProfileFields::NAME_FULL},
+           {autofill::EMAIL_ADDRESS,
+            Metrics::AutofillAssistantProfileFields::EMAIL_ADDRESS},
+           {autofill::PHONE_HOME_NUMBER,
+            Metrics::AutofillAssistantProfileFields::PHONE_HOME_NUMBER},
+           {autofill::PHONE_HOME_COUNTRY_CODE,
+            Metrics::AutofillAssistantProfileFields::PHONE_HOME_COUNTRY_CODE},
+           {autofill::PHONE_HOME_WHOLE_NUMBER,
+            Metrics::AutofillAssistantProfileFields::PHONE_HOME_WHOLE_NUMBER},
+           {autofill::ADDRESS_HOME_COUNTRY,
+            Metrics::AutofillAssistantProfileFields::ADDRESS_HOME_COUNTRY},
+           {autofill::ADDRESS_HOME_STATE,
+            Metrics::AutofillAssistantProfileFields::ADDRESS_HOME_STATE},
+           {autofill::ADDRESS_HOME_CITY,
+            Metrics::AutofillAssistantProfileFields::ADDRESS_HOME_CITY},
+           {autofill::ADDRESS_HOME_ZIP,
+            Metrics::AutofillAssistantProfileFields::ADDRESS_HOME_ZIP},
+           {autofill::ADDRESS_HOME_STREET_ADDRESS,
+            Metrics::AutofillAssistantProfileFields::ADDRESS_HOME_LINE1}});
+
+  int bit_array = 0;
+  for (auto fields_pair : *fields_to_log) {
+    if (EvaluateNotEmpty(mapping, fields_pair.first)) {
+      bit_array |= fields_pair.second;
+    }
+  }
+  return bit_array;
 }
 
 }  // namespace user_data

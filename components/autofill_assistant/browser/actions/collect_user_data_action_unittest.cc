@@ -3428,7 +3428,7 @@ TEST_F(CollectUserDataActionTest, LogsUkmCreditCardsCount) {
                   ukm::kInvalidSourceId, kIncompleteCreditCardsCount, 2)}));
 }
 
-TEST_F(CollectUserDataActionTest, LogsUkmmMoreThanFiveProfilesCount) {
+TEST_F(CollectUserDataActionTest, LogsUkmMoreThanFiveProfilesCount) {
   ON_CALL(mock_personal_data_manager_, IsAutofillProfileEnabled)
       .WillByDefault(Return(true));
 
@@ -3545,5 +3545,84 @@ TEST_F(CollectUserDataActionTest, LogUkmFailure) {
       GetUkmTimeTakenMs(ukm_recorder_),
       ElementsAreArray({ToHumanReadableEntry(source_id_, kTimeTakenMs, 3000)}));
 }
+
+TEST_F(CollectUserDataActionTest, LogsUkmInitialSelectionFieldBitArray) {
+  ON_CALL(mock_personal_data_manager_, IsAutofillProfileEnabled)
+      .WillByDefault(Return(true));
+
+  autofill::AutofillProfile incomplete;
+  autofill::test::SetProfileInfo(&incomplete, "Adam", "", "",
+                                 "adam.west@gmail.com", "", "Baker Street 221b",
+                                 "", "", "", "", "", "");
+
+  int expected_bitarray =
+      Metrics::AutofillAssistantProfileFields::NAME_FIRST |
+      Metrics::AutofillAssistantProfileFields::NAME_FULL |
+      Metrics::AutofillAssistantProfileFields::EMAIL_ADDRESS |
+      Metrics::AutofillAssistantProfileFields::ADDRESS_HOME_LINE1;
+
+  ON_CALL(mock_personal_data_manager_, GetProfiles)
+      .WillByDefault(
+          Return(std::vector<autofill::AutofillProfile*>({&incomplete})));
+
+  ON_CALL(mock_action_delegate_, CollectUserData(_))
+      .WillByDefault(
+          Invoke([=](CollectUserDataOptions* collect_user_data_options) {
+            // We can't submit here since the user data is not complete.
+          }));
+
+  ActionProto action_proto;
+  auto* user_data = action_proto.mutable_collect_user_data();
+  user_data->set_request_terms_and_conditions(false);
+  auto* contact_details = user_data->mutable_contact_details();
+  contact_details->set_request_payer_name(true);
+  contact_details->set_request_payer_email(true);
+  contact_details->set_contact_details_name("contact");
+
+  {
+    CollectUserDataAction action(&mock_action_delegate_, action_proto);
+    action.ProcessAction(callback_.Get());
+
+    // The CollectUserDataAction destructor is called, this simulates the user
+    // closing the bottom sheet or the tab.
+  }
+
+  EXPECT_THAT(GetUkmInitialContactFieldsStatus(ukm_recorder_),
+              ElementsAreArray({ToHumanReadableEntry(
+                  ukm::kInvalidSourceId, kInitialContactFieldsStatus,
+                  expected_bitarray)}));
+}
+
+TEST_F(CollectUserDataActionTest, NoDefaultProfileLogsAllFieldsAsEmpty) {
+  ON_CALL(mock_personal_data_manager_, IsAutofillProfileEnabled)
+      .WillByDefault(Return(true));
+
+  ON_CALL(mock_action_delegate_, CollectUserData(_))
+      .WillByDefault(
+          Invoke([=](CollectUserDataOptions* collect_user_data_options) {
+            // We can't submit here since the user data is not complete.
+          }));
+
+  ActionProto action_proto;
+  auto* user_data = action_proto.mutable_collect_user_data();
+  user_data->set_request_terms_and_conditions(false);
+  auto* contact_details = user_data->mutable_contact_details();
+  contact_details->set_request_payer_name(true);
+  contact_details->set_request_payer_email(true);
+  contact_details->set_contact_details_name("contact");
+
+  {
+    CollectUserDataAction action(&mock_action_delegate_, action_proto);
+    action.ProcessAction(callback_.Get());
+
+    // The CollectUserDataAction destructor is called, this simulates the user
+    // closing the bottom sheet or the tab.
+  }
+
+  EXPECT_THAT(GetUkmInitialContactFieldsStatus(ukm_recorder_),
+              ElementsAreArray({ToHumanReadableEntry(
+                  ukm::kInvalidSourceId, kInitialContactFieldsStatus, 0)}));
+}
+
 }  // namespace
 }  // namespace autofill_assistant

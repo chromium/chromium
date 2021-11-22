@@ -55,6 +55,11 @@ GetUkmIncompleteContactProfilesCount(
   return ukm_recorder.GetEntries(kAutofillAssistantCollectContact,
                                  {kIncompleteContactProfilesCount});
 }
+std::vector<ukm::TestUkmRecorder::HumanReadableUkmEntry>
+GetUkmInitialContactFieldsStatus(ukm::TestAutoSetUkmRecorder& ukm_recorder) {
+  return ukm_recorder.GetEntries(kAutofillAssistantCollectContact,
+                                 {kInitialContactFieldsStatus});
+}
 std::vector<ukm::TestUkmRecorder::HumanReadableUkmEntry> GetUkmContactModified(
     ukm::TestAutoSetUkmRecorder& ukm_recorder) {
   return ukm_recorder.GetEntries(kAutofillAssistantCollectContact,
@@ -93,12 +98,12 @@ std::vector<ukm::TestUkmRecorder::HumanReadableUkmEntry> GetUkmShippingModified(
   return ukm_recorder.GetEntries(kAutofillAssistantCollectShippingAddress,
                                  {kShippingModified});
 }
+
 std::vector<ukm::TestUkmRecorder::HumanReadableUkmEntry>
 GetUkmCollectUserDataResult(ukm::TestAutoSetUkmRecorder& ukm_recorder) {
   return ukm_recorder.GetEntries(kAutofillAssistantCollectUserDataResult,
                                  {kResult});
 }
-
 std::vector<ukm::TestUkmRecorder::HumanReadableUkmEntry> GetUkmTimeTakenMs(
     ukm::TestAutoSetUkmRecorder& ukm_recorder) {
   return ukm_recorder.GetEntries(kAutofillAssistantCollectUserDataResult,

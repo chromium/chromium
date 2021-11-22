@@ -46,6 +46,7 @@ const char kInChromeTriggerAction[] = "InChromeTriggerAction";
 const char kTriggerConditionTimingMs[] = "TriggerConditionEvaluationMs";
 const char kCompleteContactProfilesCount[] = "CompleteContactProfilesCount";
 const char kContactModified[] = "ContactModified";
+const char kInitialContactFieldsStatus[] = "InitialContactFieldsStatus";
 const char kIncompleteContactProfilesCount[] = "IncompleteContactProfilesCount";
 const char kCompleteCreditCardsCount[] = "CompleteCreditCardsCount";
 const char kIncompleteCreditCardsCount[] = "IncompleteCreditCardsCount";
@@ -74,6 +75,8 @@ std::vector<ukm::TestUkmRecorder::HumanReadableUkmEntry>
 GetUkmCompleteContactProfilesCount(ukm::TestAutoSetUkmRecorder& ukm_recorder);
 std::vector<ukm::TestUkmRecorder::HumanReadableUkmEntry>
 GetUkmIncompleteContactProfilesCount(ukm::TestAutoSetUkmRecorder& ukm_recorder);
+std::vector<ukm::TestUkmRecorder::HumanReadableUkmEntry>
+GetUkmInitialContactFieldsStatus(ukm::TestAutoSetUkmRecorder& ukm_recorder);
 std::vector<ukm::TestUkmRecorder::HumanReadableUkmEntry> GetUkmContactModified(
     ukm::TestAutoSetUkmRecorder& ukm_recorder);
 std::vector<ukm::TestUkmRecorder::HumanReadableUkmEntry>
