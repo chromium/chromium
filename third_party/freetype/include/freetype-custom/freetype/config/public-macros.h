@@ -112,11 +112,16 @@ FT_BEGIN_HEADER
    * Support for casts in both C and C++.
    */
 #ifdef __cplusplus
-#define FT_STATIC_CAST( type )       static_cast<type>
-#define FT_REINTERPRET_CAST( type )  reinterpret_cast<type>
+#define FT_STATIC_CAST( type, var )       static_cast<type>(var)
+#define FT_REINTERPRET_CAST( type, var )  reinterpret_cast<type>(var)
+
+#define FT_STATIC_BYTE_CAST( type, var )                         \
+          static_cast<type>( static_cast<unsigned char>( var ) )
 #else
-#define FT_STATIC_CAST( type )       (type)
-#define FT_REINTERPRET_CAST( type )  (type)
+#define FT_STATIC_CAST( type, var )       (type)(var)
+#define FT_REINTERPRET_CAST( type, var )  (type)(var)
+
+#define FT_STATIC_BYTE_CAST( type, var )  (type)(unsigned char)(var)
 #endif
 
 
