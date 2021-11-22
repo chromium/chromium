@@ -3530,6 +3530,7 @@ crbug.com/626703 [ Mac11 ] external/wpt/websockets/stream/tentative/backpressure
 crbug.com/626703 [ Mac11-arm64 ] external/wpt/websockets/stream/tentative/backpressure-send.any.worker.html?wpt_flags=h2 [ Crash Failure ]
 crbug.com/626703 [ Mac11 ] external/wpt/websockets/stream/tentative/backpressure-send.any.html?wpt_flags=h2 [ Failure Skip Timeout ]
 crbug.com/626703 [ Mac11-arm64 ] external/wpt/websockets/stream/tentative/backpressure-send.any.html?wpt_flags=h2 [ Failure Skip Timeout ]
+crbug.com/626703 [ Mac10.15 ] external/wpt/websockets/stream/tentative/backpressure-receive.any.html?wpt_flags=h2 [ Failure Pass ]
 crbug.com/626703 [ Mac ] external/wpt/websockets/bufferedAmount-unchanged-by-sync-xhr.any.worker.html?wpt_flags=h2 [ Failure Pass ]
 crbug.com/626703 [ Mac ] external/wpt/websockets/basic-auth.any.html?wpt_flags=h2 [ Failure Pass ]
 crbug.com/626703 [ Mac10.15 ] external/wpt/worklets/audio-worklet-credentials.https.html [ Crash Failure ]
