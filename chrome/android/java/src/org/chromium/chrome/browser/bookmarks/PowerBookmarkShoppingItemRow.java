@@ -14,6 +14,8 @@ import android.widget.TextView;
 
 import androidx.annotation.VisibleForTesting;
 
+import com.google.common.primitives.UnsignedLongs;
+
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.Callback;
 import org.chromium.chrome.R;
@@ -75,8 +77,9 @@ public class PowerBookmarkShoppingItemRow extends BookmarkItemRow {
         PowerBookmarkMeta meta = mBookmarkModel.getPowerBookmarkMeta(bookmarkId);
         // TODO(crbug.com/1243383): Pull price updates once they're available.
         ProductPrice currentPrice = meta.getShoppingSpecifics().getCurrentPrice();
+        // Use UnsignedLongs to convert ProductClusterId to avoid overflow.
         mSubscription = new CommerceSubscription(CommerceSubscriptionType.PRICE_TRACK,
-                Long.toString(meta.getShoppingSpecifics().getProductClusterId()),
+                UnsignedLongs.toString(meta.getShoppingSpecifics().getProductClusterId()),
                 SubscriptionManagementType.USER_MANAGED, TrackingIdType.PRODUCT_CLUSTER_ID);
 
         mCurrencyFormatter =

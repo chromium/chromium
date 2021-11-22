@@ -11,6 +11,7 @@ import android.text.TextUtils;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
+import com.google.common.primitives.UnsignedLongs;
 import com.google.protobuf.ByteString;
 import com.google.protobuf.InvalidProtocolBufferException;
 
@@ -108,8 +109,8 @@ public class PriceTrackingNotificationBridge {
         String text = context.getString(R.string.price_drop_notification_content_text,
                 buildDisplayPrice(priceDropPayload.getCurrentPrice()), productUrl.getHost());
 
-        // TODO(crbug.com/1257380): Figure out how to serialize offer id correctly.
-        String offerId = String.valueOf(priceDropPayload.getOfferId());
+        // Use UnsignedLongs to convert OfferId to avoid overflow.
+        String offerId = UnsignedLongs.toString(priceDropPayload.getOfferId());
         ChromeMessage chromeMessage = chromeNotification.getChromeMessage();
         PriceDropNotifier.NotificationData notificationData =
                 new PriceDropNotifier.NotificationData(title, text,
