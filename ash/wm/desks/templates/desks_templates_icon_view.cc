@@ -128,11 +128,12 @@ void DesksTemplatesIconView::Layout() {
 void DesksTemplatesIconView::OnFaviconLoaded(
     const favicon_base::FaviconRawBitmapResult& image_result) {
   if (image_result.is_valid()) {
-    icon_view_->SetImage(
+    icon_view_->SetImage(gfx::ImageSkiaOperations::CreateResizedImage(
         favicon_base::SelectFaviconFramesFromPNGs(
             std::vector<favicon_base::FaviconRawBitmapResult>{image_result},
             favicon_base::GetFaviconScales(), kIconSize)
-            .AsImageSkia());
+            .AsImageSkia(),
+        skia::ImageOperations::RESIZE_BEST, gfx::Size(kIconSize, kIconSize)));
     return;
   }
   LoadDefaultIcon();
@@ -146,7 +147,9 @@ void DesksTemplatesIconView::OnAppIconLoaded(apps::IconValuePtr icon_value) {
 
   gfx::ImageSkia image_result = icon_value->uncompressed;
   if (!icon_value->is_placeholder_icon && !image_result.isNull()) {
-    icon_view_->SetImage(image_result, gfx::Size(kIconSize, kIconSize));
+    icon_view_->SetImage(gfx::ImageSkiaOperations::CreateResizedImage(
+        image_result, skia::ImageOperations::RESIZE_BEST,
+        gfx::Size(kIconSize, kIconSize)));
     return;
   }
   LoadDefaultIcon();
