@@ -470,7 +470,7 @@ absl::optional<FeatureConfig> GetClientSideFeatureConfig(
     config->session_rate = Comparator(ANY, 0);
     config->trigger = EventConfig("iph_shared_highlighting_receiver_trigger",
                                   Comparator(LESS_THAN, 5), 360, 360);
-    config->used = EventConfig("iph_shared_highlighting_button_clicked",
+    config->used = EventConfig("iph_shared_highlighting_used",
                                Comparator(LESS_THAN, 2), 360, 360);
     config->event_configs.insert(
         EventConfig("iph_shared_highlighting_receiver_trigger",

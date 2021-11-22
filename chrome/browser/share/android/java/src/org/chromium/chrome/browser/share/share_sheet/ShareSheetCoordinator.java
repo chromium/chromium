@@ -23,6 +23,7 @@ import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.task.PostTask;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.ConfigurationChangedObserver;
@@ -47,6 +48,7 @@ import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.components.browser_ui.share.ShareParams;
 import org.chromium.components.favicon.LargeIconBridge;
+import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.ui.base.WindowAndroid;
@@ -531,11 +533,23 @@ public class ShareSheetCoordinator implements ActivityStateObserver, ChromeOptio
         recordTimeToShare(shareStartTime);
     }
 
+    private static void recordSharedHighlightingUsage() {
+        Tracker tracker = TrackerFactory.getTrackerForProfile(Profile.getLastUsedRegularProfile());
+        tracker.notifyEvent(EventConstants.IPH_SHARED_HIGHLIGHTING_USED);
+    }
+
     private static void recordShareMetrics(String featureName,
             @LinkGeneration int linkGenerationStatus,
             LinkToggleMetricsDetails linkToggleMetricsDetails) {
         RecordUserAction.record(featureName);
         LinkToTextMetricsHelper.recordSharedHighlightStateMetrics(linkGenerationStatus);
+
+        if (linkGenerationStatus == LinkGeneration.LINK
+                || linkGenerationStatus == LinkGeneration.TEXT) {
+            // Record usage for Shared Highlighting promo
+            recordSharedHighlightingUsage();
+        }
+
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.SHARING_HUB_LINK_TOGGLE)) {
             ShareSheetLinkToggleMetricsHelper.recordLinkToggleSharedStateMetric(
                     linkToggleMetricsDetails);

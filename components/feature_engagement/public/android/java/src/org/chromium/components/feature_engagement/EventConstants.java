@@ -268,8 +268,7 @@ public final class EventConstants {
             "start_surface_tab_switcher_home_button_clicked";
 
     /** Shared Highlighting button event */
-    public static final String IPH_SHARED_HIGHLIGHTING_BUTTON_CLICKED =
-            "iph_shared_highlighting_button_clicked";
+    public static final String IPH_SHARED_HIGHLIGHTING_USED = "iph_shared_highlighting_used";
 
     /** Webnotes Stylize feature used from Sharing Hub */
     public static final String SHARING_HUB_WEBNOTES_STYLIZE_USED =
