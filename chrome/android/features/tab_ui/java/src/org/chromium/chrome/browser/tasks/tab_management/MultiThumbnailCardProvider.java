@@ -185,6 +185,11 @@ public class MultiThumbnailCardProvider implements TabListMediator.ThumbnailProv
                     new Rect(0, 0, thumbnail.getWidth(), thumbnail.getHeight()),
                     mThumbnailRects.get(index), mThumbnailBasePaint);
             thumbnail.recycle();
+
+            if (!TabUiThemeProvider.themeRefactorEnabled()) {
+                mCanvas.drawRoundRect(
+                        mThumbnailRects.get(index), mRadius, mRadius, mThumbnailFramePaint);
+            }
         }
 
         private void drawFaviconDrawableOnCanvasWithFrame(Drawable favicon, int index) {
@@ -273,7 +278,7 @@ public class MultiThumbnailCardProvider implements TabListMediator.ThumbnailProv
                 resource.getDimension(R.dimen.tab_grid_thumbnail_favicon_background_down_shift),
                 resource.getColor(R.color.modern_grey_800_alpha_38));
 
-        initializedThumbnailRects(context);
+        initializedThumbnailRects(context, expectedThumbnailAspectRatio);
 
         // Initialize Rects for favicons and favicon frame.
         final float halfFaviconFrameSize =
@@ -336,26 +341,39 @@ public class MultiThumbnailCardProvider implements TabListMediator.ThumbnailProv
     }
 
     /**
-     * Initialize rects used for thumbnails.
+     * Initialize rects used for thumbnails. Depending on whether thene refacotr is enabled, the
+     * padding around the thumbnail is different.
      */
-    private void initializedThumbnailRects(Context context) {
+    private void initializedThumbnailRects(Context context, float expectedThumbnailAspectRatio) {
+        boolean themeRefactorEnabled = TabUiThemeProvider.themeRefactorEnabled();
+
         float thumbnailHorizontalPadding =
                 TabUiThemeProvider.getTabMiniThumbnailPaddingDimension(context);
-        float thumbnailVerticalPadding = thumbnailHorizontalPadding;
+        float thumbnailVerticalPadding = themeRefactorEnabled
+                ? thumbnailHorizontalPadding
+                : thumbnailHorizontalPadding / expectedThumbnailAspectRatio;
+        float multiThumbnailHorizontalPadding =
+                themeRefactorEnabled ? 0 : thumbnailHorizontalPadding;
+        float multiThumbnailVerticalPadding = themeRefactorEnabled ? 0 : thumbnailVerticalPadding;
 
         float centerX = mThumbnailWidth * 0.5f;
         float centerY = mThumbnailHeight * 0.5f;
         float halfThumbnailHorizontalPadding = thumbnailHorizontalPadding / 2;
         float halfThumbnailVerticalPadding = thumbnailVerticalPadding / 2;
 
-        mThumbnailRects.add(new RectF(0, 0, centerX - halfThumbnailHorizontalPadding,
+        mThumbnailRects.add(new RectF(multiThumbnailHorizontalPadding,
+                multiThumbnailVerticalPadding, centerX - halfThumbnailHorizontalPadding,
                 centerY - halfThumbnailVerticalPadding));
-        mThumbnailRects.add(new RectF(centerX + halfThumbnailHorizontalPadding, 0, mThumbnailWidth,
-                centerY - halfThumbnailVerticalPadding));
-        mThumbnailRects.add(new RectF(0, centerY + halfThumbnailVerticalPadding,
-                centerX - halfThumbnailHorizontalPadding, mThumbnailHeight));
         mThumbnailRects.add(new RectF(centerX + halfThumbnailHorizontalPadding,
-                centerY + halfThumbnailVerticalPadding, mThumbnailWidth, mThumbnailHeight));
+                multiThumbnailVerticalPadding, mThumbnailWidth - multiThumbnailHorizontalPadding,
+                centerY - halfThumbnailVerticalPadding));
+        mThumbnailRects.add(new RectF(multiThumbnailHorizontalPadding,
+                centerY + halfThumbnailVerticalPadding, centerX - halfThumbnailHorizontalPadding,
+                mThumbnailHeight - multiThumbnailVerticalPadding));
+        mThumbnailRects.add(new RectF(centerX + halfThumbnailHorizontalPadding,
+                centerY + halfThumbnailVerticalPadding,
+                mThumbnailWidth - multiThumbnailHorizontalPadding,
+                mThumbnailHeight - multiThumbnailVerticalPadding));
     }
 
     @Override

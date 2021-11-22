@@ -7,16 +7,19 @@ package org.chromium.chrome.browser.tasks.tab_management;
 import static org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties.CARD_ALPHA;
 
 import android.content.res.ColorStateList;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.InsetDrawable;
 import android.text.TextUtils;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import androidx.annotation.ColorInt;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
+import androidx.core.content.res.ResourcesCompat;
 import androidx.core.graphics.drawable.DrawableCompat;
 import androidx.core.view.ViewCompat;
 import androidx.vectordrawable.graphics.drawable.AnimatedVectorDrawableCompat;
@@ -104,10 +107,21 @@ class TabGridViewBinder {
             tabTitleView.setContentDescription(
                     view.getResources().getString(R.string.accessibility_tabstrip_tab, title));
         } else if (TabProperties.IS_SELECTED == propertyKey) {
-            updateColor(view, model.get(TabProperties.IS_INCOGNITO),
-                    model.get(TabProperties.IS_SELECTED));
-            updateThumbnail(view, model);
-            updateFavicon(view, model);
+            if (TabUiThemeProvider.themeRefactorEnabled()) {
+                updateColor(view, model.get(TabProperties.IS_INCOGNITO),
+                        model.get(TabProperties.IS_SELECTED));
+                updateThumbnail(view, model);
+                updateFavicon(view, model);
+            } else {
+                int selectedTabBackground =
+                        model.get(TabProperties.SELECTED_TAB_BACKGROUND_DRAWABLE_ID);
+                Resources res = view.getResources();
+                Resources.Theme theme = view.getContext().getTheme();
+                Drawable drawable = new InsetDrawable(
+                        ResourcesCompat.getDrawable(res, selectedTabBackground, theme),
+                        (int) res.getDimension(R.dimen.tab_list_selected_inset));
+                view.setForeground(model.get(TabProperties.IS_SELECTED) ? drawable : null);
+            }
             if (TabUiFeatureUtilities.ENABLE_SEARCH_CHIP.getValue()) {
                 ChipView pageInfoButton = (ChipView) view.fastFindViewById(R.id.page_info_button);
                 pageInfoButton.getPrimaryTextView().setTextAlignment(
@@ -366,7 +380,7 @@ class TabGridViewBinder {
                 (ChromeImageView) rootView.fastFindViewById(R.id.background_view);
 
         cardView.getBackground().mutate();
-        final @ColorInt int backgroundColor = TabUiThemeProvider.getCardViewBackgroundColor(
+        int backgroundColor = TabUiThemeProvider.getCardViewBackgroundColor(
                 cardView.getContext(), isIncognito, isSelected);
         ViewCompat.setBackgroundTintList(cardView, ColorStateList.valueOf(backgroundColor));
 

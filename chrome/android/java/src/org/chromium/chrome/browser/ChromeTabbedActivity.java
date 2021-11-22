@@ -1628,12 +1628,18 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
 
     @Override
     protected int getToolbarShadowResource() {
-        return R.drawable.toolbar_hairline;
+        final boolean themeRefactorEnabled =
+                CachedFeatureFlags.isEnabled(ChromeFeatureList.THEME_REFACTOR_ANDROID);
+        return themeRefactorEnabled ? R.drawable.toolbar_hairline
+                                    : R.drawable.modern_toolbar_shadow;
     }
 
     @Override
     protected int getToolbarShadowLayoutHeight() {
-        return getResources().getDimensionPixelSize(R.dimen.toolbar_hairline_height);
+        final int res = CachedFeatureFlags.isEnabled(ChromeFeatureList.THEME_REFACTOR_ANDROID)
+                ? R.dimen.toolbar_hairline_height
+                : R.dimen.toolbar_shadow_height;
+        return getResources().getDimensionPixelSize(res);
     }
 
     @Override

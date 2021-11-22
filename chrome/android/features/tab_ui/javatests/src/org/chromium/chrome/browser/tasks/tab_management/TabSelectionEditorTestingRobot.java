@@ -28,10 +28,7 @@ import static org.chromium.chrome.browser.tasks.tab_management.RecyclerViewMatch
 import static org.chromium.chrome.browser.tasks.tab_management.RecyclerViewMatcherUtils.withItemType;
 
 import android.view.View;
-import android.view.ViewGroup;
 
-import androidx.annotation.ColorInt;
-import androidx.core.view.ViewCompat;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.test.espresso.NoMatchingRootException;
 import androidx.test.espresso.NoMatchingViewException;
@@ -69,7 +66,7 @@ public class TabSelectionEditorTestingRobot {
                 mSelectableTabGridView = selectableTabGridView;
 
                 return mSelectableTabGridView.isChecked() && actionButtonSelected()
-                        && isTabViewSelected(mSelectableTabGridView);
+                        && mSelectableTabGridView.getForeground() != null;
             }
 
             @Override
@@ -86,43 +83,6 @@ public class TabSelectionEditorTestingRobot {
                                    .getLevel();
             }
         };
-    }
-
-    /**
-     * Infers whether the tab is currently selected, by making assumptions about what the view state
-     * should look like. This method is fairly fragile to changes in implementation.
-     * @param holder The root of the tab {@link View} objects.
-     * @return Whether the tab is currently selected.
-     */
-    public static boolean isTabViewSelected(ViewGroup holder) {
-        // Tab list was not migrated to use new color scheme/logic. Instead having a foreground
-        // Drawable means it is selected.
-        if (holder.getId() == org.chromium.chrome.tab_ui.R.id.selectable_tab_list_card_item) {
-            return holder.getForeground() != null;
-        }
-
-        View cardView = holder.findViewById(org.chromium.chrome.tab_ui.R.id.card_view);
-        final @ColorInt int actualColor =
-                ViewCompat.getBackgroundTintList(cardView).getDefaultColor();
-
-        final @ColorInt int incogSelected = TabUiThemeProvider.getCardViewBackgroundColor(
-                holder.getContext(), /*isIncognito*/ true, /*isSelected*/ true);
-        final @ColorInt int normalSelected = TabUiThemeProvider.getCardViewBackgroundColor(
-                holder.getContext(), /*isIncognito*/ false, /*isSelected*/ true);
-        final @ColorInt int incogNotSelected = TabUiThemeProvider.getCardViewBackgroundColor(
-                holder.getContext(), /*isIncognito*/ true, /*isSelected*/ false);
-        final @ColorInt int normalNotSelected = TabUiThemeProvider.getCardViewBackgroundColor(
-                holder.getContext(), /*isIncognito*/ false, /*isSelected*/ false);
-
-        // This approach only works when there is no overlap between selected and unselected colors.
-        // If this assertion stops holding true, we could try requiring incognito information to be
-        // passed into this method.
-        Assert.assertNotEquals(incogSelected, incogNotSelected);
-        Assert.assertNotEquals(incogSelected, normalNotSelected);
-        Assert.assertNotEquals(normalSelected, incogNotSelected);
-        Assert.assertNotEquals(normalSelected, normalNotSelected);
-
-        return actualColor == incogSelected || actualColor == normalSelected;
     }
 
     /**

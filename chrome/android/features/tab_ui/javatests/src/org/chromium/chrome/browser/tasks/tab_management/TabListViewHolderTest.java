@@ -11,6 +11,7 @@ import static org.mockito.Matchers.anyBoolean;
 import static org.mockito.Matchers.anyInt;
 import static org.mockito.Matchers.anyLong;
 import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
@@ -301,9 +302,9 @@ public class TabListViewHolderTest extends DummyUiActivityTestCase {
 
     private void testGridSelected(ViewGroup holder, PropertyModel model) {
         model.set(TabProperties.IS_SELECTED, true);
-        Assert.assertTrue(TabSelectionEditorTestingRobot.isTabViewSelected(holder));
+        Assert.assertNotNull(holder.getForeground());
         model.set(TabProperties.IS_SELECTED, false);
-        Assert.assertFalse(TabSelectionEditorTestingRobot.isTabViewSelected(holder));
+        Assert.assertNull(holder.getForeground());
     }
 
     private void testSelectableTabClickToSelect(
@@ -374,7 +375,8 @@ public class TabListViewHolderTest extends DummyUiActivityTestCase {
                 () -> !((ClosableTabGridView) mTabGridView).getIsAnimatingForTesting());
 
         Assert.assertEquals(View.GONE, backgroundView.getVisibility());
-        Assert.assertTrue(TabSelectionEditorTestingRobot.isTabViewSelected(mTabGridView));
+        Drawable selectedDrawable = mTabGridView.getForeground();
+        Assert.assertNotNull(selectedDrawable);
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mGridModel.set(TabProperties.IS_SELECTED, false);
@@ -384,7 +386,9 @@ public class TabListViewHolderTest extends DummyUiActivityTestCase {
         CriteriaHelper.pollUiThread(
                 () -> !((ClosableTabGridView) mTabGridView).getIsAnimatingForTesting());
         Assert.assertEquals(View.GONE, backgroundView.getVisibility());
-        Assert.assertFalse(TabSelectionEditorTestingRobot.isTabViewSelected(mTabGridView));
+
+        selectedDrawable = mTabGridView.getForeground();
+        Assert.assertNull(selectedDrawable);
     }
 
     @Test

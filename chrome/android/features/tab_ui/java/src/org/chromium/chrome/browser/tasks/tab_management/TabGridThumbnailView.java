@@ -55,6 +55,11 @@ public class TabGridThumbnailView extends RoundedCornerImageView {
      * @param isSelected Whether the thumbnail is on a selected tab.
      */
     void setColorThumbnailPlaceHolder(boolean isIncognito, boolean isSelected) {
+        if (!TabUiThemeProvider.themeRefactorEnabled()) {
+            setImageResource(TabUiThemeProvider.getThumbnailPlaceHolderColorResource(isIncognito));
+            return;
+        }
+
         ColorDrawable placeHolder =
                 new ColorDrawable(TabUiThemeProvider.getMiniThumbnailPlaceHolderColor(
                         getContext(), isIncognito, isSelected));

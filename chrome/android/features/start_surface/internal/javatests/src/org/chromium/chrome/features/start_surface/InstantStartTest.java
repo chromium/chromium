@@ -505,7 +505,8 @@ public class InstantStartTest {
     // clang-format off
     @EnableFeatures({ChromeFeatureList.TAB_GROUPS_ANDROID,
             ChromeFeatureList.TAB_SWITCHER_ON_RETURN + "<Study",
-            ChromeFeatureList.START_SURFACE_ANDROID + "<Study"})
+            ChromeFeatureList.START_SURFACE_ANDROID + "<Study",
+            ChromeFeatureList.THEME_REFACTOR_ANDROID})
     @CommandLineFlags.Add({ChromeSwitches.DISABLE_NATIVE_INITIALIZATION,
             "force-fieldtrials=Study/Group",
             IMMEDIATE_RETURN_PARAMS + "/start_surface_variation/single"})

@@ -28,12 +28,6 @@ import android.text.TextWatcher;
 import android.view.View;
 import android.widget.EditText;
 
-import androidx.annotation.AttrRes;
-import androidx.annotation.ColorInt;
-import androidx.annotation.NonNull;
-
-import com.google.android.material.color.MaterialColors;
-
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -44,8 +38,6 @@ import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
-import org.robolectric.annotation.Implementation;
-import org.robolectric.annotation.Implements;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
@@ -85,43 +77,12 @@ import java.util.List;
  */
 @SuppressWarnings({"ArraysAsListWithZeroOrOneArgument", "ResultOfMethodCallIgnored"})
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE,
-        shadows = {TabGridDialogMediatorUnitTest.ShadowMaterialColors.class})
+@Config(manifest = Config.NONE)
 // clang-format off
 @Features.EnableFeatures({ChromeFeatureList.TAB_GROUPS_ANDROID})
 @Features.DisableFeatures(ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID)
-// clang-format on
 public class TabGridDialogMediatorUnitTest {
-    // Cannot easily mock Theme because it is a final class. Instead shadow MaterialColors. The
-    // actual color value doesn't matter, just need to not NPE with Context/Theme/TypedValue object
-    // interactions.
-    @Implements(MaterialColors.class)
-    static class ShadowMaterialColors {
-        @Implementation
-        @ColorInt
-        public static int getColor(@NonNull View view, @AttrRes int colorAttributeResId) {
-            return 0;
-        }
-
-        @ColorInt
-        public static int getColor(
-                Context context, @AttrRes int colorAttributeResId, String errorMessageComponent) {
-            return 0;
-        }
-
-        @ColorInt
-        public static int getColor(
-                @NonNull View view, @AttrRes int colorAttributeResId, @ColorInt int defaultValue) {
-            return 0;
-        }
-
-        @ColorInt
-        public static int getColor(@NonNull Context context, @AttrRes int colorAttributeResId,
-                @ColorInt int defaultValue) {
-            return 0;
-        }
-    }
-
+    // clang-format on
     @Rule
     public TestRule mProcessor = new Features.JUnitProcessor();
 
@@ -184,6 +145,7 @@ public class TabGridDialogMediatorUnitTest {
 
     @Before
     public void setUp() {
+
         MockitoAnnotations.initMocks(this);
 
         mTab1 = prepareTab(TAB1_ID, TAB1_TITLE);

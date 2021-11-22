@@ -9,6 +9,7 @@
     <dimen name="tab_list_selected_margin">7dp</dimen>
     <dimen name="tab_list_card_padding">8dp</dimen>
     <dimen name="tab_list_card_radius">4dp</dimen>
+    <dimen name="tab_list_card_title_height">32dp</dimen>
     <dimen name="tab_grid_price_card_radius">4dp</dimen>
     <dimen name="tab_list_mini_card_radius">4dp</dimen>
     <dimen name="tab_list_mini_card_frame_size">1dp</dimen>
@@ -58,6 +59,7 @@
     <dimen name="tab_grid_card_thumbnail_corner_radius_top">4dp</dimen>
     <dimen name="tab_grid_card_thumbnail_corner_radius_bottom">12dp</dimen>
     <dimen name="tab_grid_card_thumbnail_margin">4dp</dimen>
+    <dimen name="tab_list_card_margin">2dp</dimen>
     <dimen name="tab_list_card_action_button_size">48dp</dimen>
     <dimen name="tab_list_card_action_button_margin">4dp</dimen>
     <dimen name="tab_list_card_title_fading_length">24dp</dimen>
