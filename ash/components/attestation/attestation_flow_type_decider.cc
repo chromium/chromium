@@ -2,17 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/attestation/attestation_flow_type_decider.h"
+#include "ash/components/attestation/attestation_flow_type_decider.h"
 
 #include <utility>
 
+#include "ash/components/attestation/attestation_flow.h"
+#include "ash/components/attestation/attestation_flow_status_reporter.h"
 #include "base/bind.h"
-#include "chromeos/attestation/attestation_flow.h"
-#include "chromeos/attestation/attestation_flow_status_reporter.h"
 
 #include "base/logging.h"
 
-namespace chromeos {
+namespace ash {
 namespace attestation {
 
 AttestationFlowTypeDecider::AttestationFlowTypeDecider() = default;
@@ -41,4 +41,4 @@ void AttestationFlowTypeDecider::OnCheckProxyPresence(
 }
 
 }  // namespace attestation
-}  // namespace chromeos
+}  // namespace ash

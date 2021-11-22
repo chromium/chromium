@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/attestation/attestation_flow_status_reporter.h"
+#include "ash/components/attestation/attestation_flow_status_reporter.h"
 
 #include "base/metrics/histogram_functions.h"
 
-namespace chromeos {
+namespace ash {
 namespace attestation {
 
 namespace {
@@ -65,4 +65,4 @@ void AttestationFlowStatusReporter::Report() {
 }
 
 }  // namespace attestation
-}  // namespace chromeos
+}  // namespace ash

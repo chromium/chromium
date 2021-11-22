@@ -7,6 +7,8 @@
 #include <memory>
 #include <string>
 
+#include "ash/components/attestation/attestation_flow.h"
+#include "ash/components/attestation/attestation_flow_adaptive.h"
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/callback_helpers.h"
@@ -14,8 +16,6 @@
 #include "chrome/browser/ash/attestation/attestation_ca_client.h"
 #include "chrome/browser/ash/attestation/attestation_key_payload.pb.h"
 #include "chrome/browser/ash/attestation/certificate_util.h"
-#include "chromeos/attestation/attestation_flow.h"
-#include "chromeos/attestation/attestation_flow_adaptive.h"
 #include "chromeos/cryptohome/cryptohome_parameters.h"
 #include "chromeos/dbus/attestation/attestation_client.h"
 #include "chromeos/dbus/attestation/interface.pb.h"

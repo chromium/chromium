@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "ash/components/attestation/attestation_flow.h"
 #include "base/base64.h"
 #include "base/bind.h"
 #include "base/command_line.h"
@@ -28,7 +29,6 @@
 #include "chrome/browser/policy/enrollment_status.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/pref_names.h"
-#include "chromeos/attestation/attestation_flow.h"
 #include "chromeos/dbus/authpolicy/authpolicy_client.h"
 #include "chromeos/dbus/cryptohome/rpc.pb.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
@@ -221,7 +221,7 @@ EnrollmentHandler::EnrollmentHandler(
     DeviceCloudPolicyStoreAsh* store,
     chromeos::InstallAttributes* install_attributes,
     ServerBackedStateKeysBroker* state_keys_broker,
-    chromeos::attestation::AttestationFlow* attestation_flow,
+    ash::attestation::AttestationFlow* attestation_flow,
     std::unique_ptr<SigningService> signing_service,
     std::unique_ptr<CloudPolicyClient> client,
     scoped_refptr<base::SequencedTaskRunner> background_task_runner,
@@ -473,7 +473,7 @@ void EnrollmentHandler::StartRegistration() {
 }
 
 void EnrollmentHandler::StartAttestationBasedEnrollmentFlow() {
-  chromeos::attestation::AttestationFlow::CertificateCallback callback =
+  ash::attestation::AttestationFlow::CertificateCallback callback =
       base::BindOnce(&EnrollmentHandler::HandleRegistrationCertificateResult,
                      weak_ptr_factory_.GetWeakPtr());
   attestation_flow_->GetCertificate(

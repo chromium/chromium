@@ -2,18 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_ATTESTATION_ATTESTATION_FLOW_INTEGRATED_H_
-#define CHROMEOS_ATTESTATION_ATTESTATION_FLOW_INTEGRATED_H_
+#ifndef ASH_COMPONENTS_ATTESTATION_ATTESTATION_FLOW_INTEGRATED_H_
+#define ASH_COMPONENTS_ATTESTATION_ATTESTATION_FLOW_INTEGRATED_H_
 
 #include <memory>
 #include <string>
 
+#include "ash/components/attestation/attestation_flow.h"
 #include "base/callback_forward.h"
 #include "base/component_export.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
-#include "chromeos/attestation/attestation_flow.h"
+// TODO(https://crbug.com/1164001): forward declare after it moved to ash.
+#include "chromeos/dbus/attestation/attestation_client.h"
 #include "chromeos/dbus/attestation/interface.pb.h"
 #include "chromeos/dbus/constants/attestation_constants.h"
 #include "chromeos/dbus/dbus_method_call_status.h"
@@ -21,10 +23,7 @@
 
 class AccountId;
 
-namespace chromeos {
-
-class AttestationClient;
-
+namespace ash {
 namespace attestation {
 
 // Implements the message flow for Chrome OS attestation tasks by checking the
@@ -34,7 +33,7 @@ namespace attestation {
 // removed.
 //
 // Note: This class is not thread safe.
-class COMPONENT_EXPORT(CHROMEOS_ATTESTATION) AttestationFlowIntegrated
+class COMPONENT_EXPORT(ASH_ATTESTATION) AttestationFlowIntegrated
     : public AttestationFlow {
  public:
   AttestationFlowIntegrated();
@@ -150,6 +149,6 @@ class COMPONENT_EXPORT(CHROMEOS_ATTESTATION) AttestationFlowIntegrated
 };
 
 }  // namespace attestation
-}  // namespace chromeos
+}  // namespace ash
 
-#endif  // CHROMEOS_ATTESTATION_ATTESTATION_FLOW_INTEGRATED_H_
+#endif  // ASH_COMPONENTS_ATTESTATION_ATTESTATION_FLOW_INTEGRATED_H_

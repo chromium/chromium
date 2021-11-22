@@ -5,6 +5,10 @@
 #include <memory>
 #include <utility>
 
+#include "ash/components/attestation/attestation_flow_factory.h"
+#include "ash/components/attestation/attestation_flow_integrated.h"
+#include "ash/components/attestation/attestation_flow_utils.h"
+#include "ash/components/attestation/mock_attestation_flow.h"
 #include "base/bind.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
@@ -13,10 +17,6 @@
 #include "base/test/task_environment.h"
 #include "base/time/tick_clock.h"
 #include "base/timer/timer.h"
-#include "chromeos/attestation/attestation_flow_factory.h"
-#include "chromeos/attestation/attestation_flow_integrated.h"
-#include "chromeos/attestation/attestation_flow_utils.h"
-#include "chromeos/attestation/mock_attestation_flow.h"
 #include "chromeos/cryptohome/cryptohome_parameters.h"
 #include "chromeos/dbus/attestation/attestation_client.h"
 #include "components/account_id/account_id.h"
@@ -33,7 +33,7 @@ using testing::Sequence;
 using testing::StrictMock;
 using testing::WithArgs;
 
-namespace chromeos {
+namespace ash {
 namespace attestation {
 
 namespace {
@@ -1039,4 +1039,4 @@ TEST_F(AttestationFlowTest, GetCertificate_LookupMachineKeyWithAccountId) {
 }
 
 }  // namespace attestation
-}  // namespace chromeos
+}  // namespace ash

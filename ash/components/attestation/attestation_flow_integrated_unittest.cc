@@ -2,12 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/attestation/attestation_flow_integrated.h"
+#include "ash/components/attestation/attestation_flow_integrated.h"
 
 #include <memory>
 #include <string>
 #include <utility>
 
+#include "ash/components/attestation/attestation_flow_factory.h"
+#include "ash/components/attestation/attestation_flow_utils.h"
+#include "ash/components/attestation/mock_attestation_flow.h"
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/logging.h"
@@ -16,9 +19,6 @@
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
 #include "base/timer/timer.h"
-#include "chromeos/attestation/attestation_flow_factory.h"
-#include "chromeos/attestation/attestation_flow_utils.h"
-#include "chromeos/attestation/mock_attestation_flow.h"
 #include "chromeos/cryptohome/cryptohome_parameters.h"
 #include "chromeos/dbus/attestation/attestation_client.h"
 #include "chromeos/dbus/attestation/interface.pb.h"
@@ -29,7 +29,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace chromeos {
+namespace ash {
 namespace attestation {
 
 namespace {
@@ -500,4 +500,4 @@ TEST_F(AttestationFlowIntegratedTest,
 }
 
 }  // namespace attestation
-}  // namespace chromeos
+}  // namespace ash

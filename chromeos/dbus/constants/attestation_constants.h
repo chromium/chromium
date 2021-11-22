@@ -109,6 +109,7 @@ using ::chromeos::attestation::AttestationKeyType;
 using ::chromeos::attestation::AttestationStatus;
 using ::chromeos::attestation::DEFAULT_PCA;
 using ::chromeos::attestation::kContentProtectionKeyPrefix;
+using ::chromeos::attestation::kEnterpriseEnrollmentKey;
 using ::chromeos::attestation::kEnterpriseMachineKey;
 using ::chromeos::attestation::kEnterpriseUserKey;
 using ::chromeos::attestation::KEY_DEVICE;

@@ -2,16 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_ATTESTATION_FAKE_ATTESTATION_FLOW_H_
-#define CHROMEOS_ATTESTATION_FAKE_ATTESTATION_FLOW_H_
+#ifndef ASH_COMPONENTS_ATTESTATION_FAKE_ATTESTATION_FLOW_H_
+#define ASH_COMPONENTS_ATTESTATION_FAKE_ATTESTATION_FLOW_H_
 
 #include <string>
 
-#include "chromeos/attestation/attestation_flow.h"
+#include "ash/components/attestation/attestation_flow.h"
 
 class AccountId;
 
-namespace chromeos {
+namespace ash {
 namespace attestation {
 
 // This fake class always returns a fake certificate.
@@ -29,6 +29,6 @@ class FakeAttestationFlow : public AttestationFlow {
 };
 
 }  // namespace attestation
-}  // namespace chromeos
+}  // namespace ash
 
-#endif  // CHROMEOS_ATTESTATION_FAKE_ATTESTATION_FLOW_H_
+#endif  // ASH_COMPONENTS_ATTESTATION_FAKE_ATTESTATION_FLOW_H_

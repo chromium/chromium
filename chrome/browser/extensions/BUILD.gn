@@ -1113,6 +1113,7 @@ static_library("extensions") {
     }
     deps += [
       "//ash",
+      "//ash/components/attestation",
       "//ash/components/enhanced_network_tts/mojom",
       "//ash/components/settings",
       "//ash/constants",
@@ -1127,7 +1128,6 @@ static_library("extensions") {
       "//chrome/browser/nearby_sharing/common",
       "//chrome/browser/ui/webui/settings/chromeos/constants:mojom",
       "//chromeos",
-      "//chromeos/attestation",
       "//chromeos/components/chromebox_for_meetings/buildflags",
       "//chromeos/components/proximity_auth",
       "//chromeos/components/quick_answers/public/cpp:prefs",

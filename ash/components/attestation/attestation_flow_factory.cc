@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/attestation/attestation_flow_factory.h"
+#include "ash/components/attestation/attestation_flow_factory.h"
 
 #include <memory>
 #include <utility>
 
-#include "chromeos/attestation/attestation_flow.h"
-#include "chromeos/attestation/attestation_flow_integrated.h"
+#include "ash/components/attestation/attestation_flow.h"
+#include "ash/components/attestation/attestation_flow_integrated.h"
 
-namespace chromeos {
+namespace ash {
 namespace attestation {
 
 AttestationFlowFactory::AttestationFlowFactory() = default;
@@ -42,4 +42,4 @@ AttestationFlow* AttestationFlowFactory::GetFallback() {
 }
 
 }  // namespace attestation
-}  // namespace chromeos
+}  // namespace ash

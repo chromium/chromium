@@ -2,18 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_ATTESTATION_ATTESTATION_FLOW_STATUS_REPORTER_H_
-#define CHROMEOS_ATTESTATION_ATTESTATION_FLOW_STATUS_REPORTER_H_
+#ifndef ASH_COMPONENTS_ATTESTATION_ATTESTATION_FLOW_STATUS_REPORTER_H_
+#define ASH_COMPONENTS_ATTESTATION_ATTESTATION_FLOW_STATUS_REPORTER_H_
 
 #include "base/component_export.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace chromeos {
+namespace ash {
 namespace attestation {
 
 // This class is used to record various attributes and execution results of an
 // adaptive attestation flow instance.
-class COMPONENT_EXPORT(CHROMEOS_ATTESTATION) AttestationFlowStatusReporter {
+class COMPONENT_EXPORT(ASH_ATTESTATION) AttestationFlowStatusReporter {
  public:
   AttestationFlowStatusReporter();
   ~AttestationFlowStatusReporter();
@@ -49,6 +49,6 @@ class COMPONENT_EXPORT(CHROMEOS_ATTESTATION) AttestationFlowStatusReporter {
 };
 
 }  // namespace attestation
-}  // namespace chromeos
+}  // namespace ash
 
-#endif  // CHROMEOS_ATTESTATION_ATTESTATION_FLOW_STATUS_REPORTER_H_
+#endif  // ASH_COMPONENTS_ATTESTATION_ATTESTATION_FLOW_STATUS_REPORTER_H_

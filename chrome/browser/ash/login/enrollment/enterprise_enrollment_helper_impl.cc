@@ -202,7 +202,7 @@ void EnterpriseEnrollmentHelperImpl::DoEnroll(policy::DMAuth auth_data) {
       connector->GetDeviceCloudPolicyManager();
   // Obtain attestation_flow from the connector because it can be fake
   // attestation flow for testing.
-  chromeos::attestation::AttestationFlow* attestation_flow =
+  attestation::AttestationFlow* attestation_flow =
       connector->GetAttestationFlow();
   auto signing_service =
       std::make_unique<policy::TpmEnrollmentKeySigningService>();

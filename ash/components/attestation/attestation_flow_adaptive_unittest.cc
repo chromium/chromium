@@ -2,16 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/attestation/attestation_flow_adaptive.h"
+#include "ash/components/attestation/attestation_flow_adaptive.h"
 
 #include <utility>
 
+#include "ash/components/attestation/mock_attestation_flow.h"
 #include "base/bind.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
-#include "chromeos/attestation/mock_attestation_flow.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -20,7 +20,7 @@ using testing::Invoke;
 using testing::StrictMock;
 using testing::WithArg;
 
-namespace chromeos {
+namespace ash {
 namespace attestation {
 
 namespace {
@@ -302,4 +302,4 @@ TEST_F(AttestationFlowAdaptiveTest, FallbackTwice) {
 }
 
 }  // namespace attestation
-}  // namespace chromeos
+}  // namespace ash

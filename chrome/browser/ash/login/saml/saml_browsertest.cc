@@ -7,6 +7,7 @@
 #include <string>
 #include <utility>
 
+#include "ash/components/attestation/mock_attestation_flow.h"
 #include "ash/components/settings/cros_settings_names.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
@@ -64,7 +65,6 @@
 #include "chrome/common/chrome_switches.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/in_process_browser_test.h"
-#include "chromeos/attestation/mock_attestation_flow.h"
 #include "chromeos/cryptohome/system_salt_getter.h"
 #include "chromeos/dbus/attestation/fake_attestation_client.h"
 #include "chromeos/dbus/attestation/interface.pb.h"
@@ -1545,7 +1545,7 @@ class SAMLDeviceAttestationTest : public SamlTest {
   StubCrosSettingsProvider* settings_provider_ = nullptr;
 
   attestation::MockMachineCertificateUploader mock_cert_uploader_;
-  NiceMock<chromeos::attestation::MockAttestationFlow> mock_attestation_flow_;
+  NiceMock<attestation::MockAttestationFlow> mock_attestation_flow_;
   chromeos::ScopedStubInstallAttributes stub_install_attributes_;
 };
 

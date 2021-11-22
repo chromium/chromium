@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_ATTESTATION_ATTESTATION_FLOW_H_
-#define CHROMEOS_ATTESTATION_ATTESTATION_FLOW_H_
+#ifndef ASH_COMPONENTS_ATTESTATION_ATTESTATION_FLOW_H_
+#define ASH_COMPONENTS_ATTESTATION_ATTESTATION_FLOW_H_
 
 #include <memory>
 #include <string>
@@ -13,6 +13,8 @@
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+// TODO(https://crbug.com/1164001): forward declare after it moved to ash.
+#include "chromeos/dbus/attestation/attestation_client.h"
 #include "chromeos/dbus/attestation/interface.pb.h"
 #include "chromeos/dbus/constants/attestation_constants.h"
 #include "chromeos/dbus/dbus_method_call_status.h"
@@ -20,14 +22,11 @@
 
 class AccountId;
 
-namespace chromeos {
-
-class AttestationClient;
-
+namespace ash {
 namespace attestation {
 
 // Interface for access to the Privacy CA server.
-class COMPONENT_EXPORT(CHROMEOS_ATTESTATION) ServerProxy {
+class COMPONENT_EXPORT(ASH_ATTESTATION) ServerProxy {
  public:
   using DataCallback =
       base::OnceCallback<void(bool success, const std::string& data)>;
@@ -59,7 +58,7 @@ class COMPONENT_EXPORT(CHROMEOS_ATTESTATION) ServerProxy {
 //    flow.GetCertificate(ENTERPRISE_USER_CERTIFICATE, false, callback);
 //
 // This class is not thread safe.
-class COMPONENT_EXPORT(CHROMEOS_ATTESTATION) AttestationFlow {
+class COMPONENT_EXPORT(ASH_ATTESTATION) AttestationFlow {
  public:
   using CertificateCallback =
       base::OnceCallback<void(AttestationStatus status,
@@ -290,15 +289,6 @@ class COMPONENT_EXPORT(CHROMEOS_ATTESTATION) AttestationFlow {
 };
 
 }  // namespace attestation
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove when //chromeos/attestation
-// moved to ash
-namespace ash {
-namespace attestation {
-using ::chromeos::attestation::AttestationFlow;
-using ::chromeos::attestation::ServerProxy;
-}  // namespace attestation
 }  // namespace ash
 
-#endif  // CHROMEOS_ATTESTATION_ATTESTATION_FLOW_H_
+#endif  // ASH_COMPONENTS_ATTESTATION_ATTESTATION_FLOW_H_

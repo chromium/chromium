@@ -2,19 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/attestation/attestation_flow_type_decider.h"
+#include "ash/components/attestation/attestation_flow_type_decider.h"
 
 #include <memory>
 #include <utility>
 
+#include "ash/components/attestation/attestation_flow_status_reporter.h"
+#include "ash/components/attestation/mock_attestation_flow.h"
 #include "base/bind.h"
 #include "base/location.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
-#include "chromeos/attestation/attestation_flow_status_reporter.h"
-#include "chromeos/attestation/mock_attestation_flow.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -22,7 +22,7 @@ using testing::_;
 using testing::Invoke;
 using testing::StrictMock;
 
-namespace chromeos {
+namespace ash {
 namespace attestation {
 
 class AttestationFlowTypeDeciderTest : public testing::Test {
@@ -101,4 +101,4 @@ TEST_F(AttestationFlowTypeDeciderTest,
 }
 
 }  // namespace attestation
-}  // namespace chromeos
+}  // namespace ash

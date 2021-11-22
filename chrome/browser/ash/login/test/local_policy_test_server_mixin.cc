@@ -7,6 +7,7 @@
 #include <string>
 #include <utility>
 
+#include "ash/components/attestation/fake_attestation_flow.h"
 #include "base/guid.h"
 #include "base/json/values_util.h"
 #include "base/values.h"
@@ -15,7 +16,6 @@
 #include "chrome/browser/ash/policy/enrollment/device_cloud_policy_initializer.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
-#include "chromeos/attestation/fake_attestation_flow.h"
 #include "chromeos/system/fake_statistics_provider.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/core/common/cloud/test/policy_builder.h"
@@ -158,7 +158,7 @@ void LocalPolicyTestServerMixin::SetFakeAttestationFlow() {
   g_browser_process->platform_part()
       ->browser_policy_connector_ash()
       ->SetAttestationFlowForTesting(
-          std::make_unique<chromeos::attestation::FakeAttestationFlow>());
+          std::make_unique<attestation::FakeAttestationFlow>());
 }
 
 void LocalPolicyTestServerMixin::SetExpectedPsmParamsInDeviceRegisterRequest(

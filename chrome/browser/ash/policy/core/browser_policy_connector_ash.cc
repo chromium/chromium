@@ -8,6 +8,7 @@
 #include <string>
 #include <utility>
 
+#include "ash/components/attestation/attestation_flow_adaptive.h"
 #include "ash/components/settings/cros_settings_names.h"
 #include "ash/components/settings/cros_settings_provider.h"
 #include "ash/components/settings/timezone_settings.h"
@@ -69,7 +70,6 @@
 #include "chrome/browser/policy/device_management_service_configuration.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
-#include "chromeos/attestation/attestation_flow_adaptive.h"
 #include "chromeos/cryptohome/system_salt_getter.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/session_manager/session_manager_client.h"
@@ -116,9 +116,8 @@ bool IsForcedReEnrollmentEnabled() {
   return ash::AutoEnrollmentController::IsFREEnabled();
 }
 
-std::unique_ptr<chromeos::attestation::AttestationFlow>
-CreateAttestationFlow() {
-  return std::make_unique<chromeos::attestation::AttestationFlowAdaptive>(
+std::unique_ptr<ash::attestation::AttestationFlow> CreateAttestationFlow() {
+  return std::make_unique<ash::attestation::AttestationFlowAdaptive>(
       std::make_unique<ash::attestation::AttestationCAClient>());
 }
 
@@ -492,7 +491,7 @@ BrowserPolicyConnectorAsh::GetGlobalUserCloudPolicyProvider() {
 }
 
 void BrowserPolicyConnectorAsh::SetAttestationFlowForTesting(
-    std::unique_ptr<chromeos::attestation::AttestationFlow> attestation_flow) {
+    std::unique_ptr<ash::attestation::AttestationFlow> attestation_flow) {
   attestation_flow_ = std::move(attestation_flow);
 }
 

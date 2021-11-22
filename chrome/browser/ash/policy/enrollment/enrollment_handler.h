@@ -27,15 +27,15 @@
 #include "google_apis/gaia/gaia_oauth_client.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace base {
-class SequencedTaskRunner;
-}
-
-namespace chromeos {
+namespace ash {
 namespace attestation {
 class AttestationFlow;
-}
-}  // namespace chromeos
+}  // namespace attestation
+}  // namespace ash
+
+namespace base {
+class SequencedTaskRunner;
+}  // namespace base
 
 namespace policy {
 class ActiveDirectoryJoinDelegate;
@@ -68,7 +68,7 @@ class EnrollmentHandler : public CloudPolicyClient::Observer,
       DeviceCloudPolicyStoreAsh* store,
       chromeos::InstallAttributes* install_attributes,
       ServerBackedStateKeysBroker* state_keys_broker,
-      chromeos::attestation::AttestationFlow* attestation_flow,
+      ash::attestation::AttestationFlow* attestation_flow,
       std::unique_ptr<SigningService> signing_service,
       std::unique_ptr<CloudPolicyClient> client,
       scoped_refptr<base::SequencedTaskRunner> background_task_runner,
@@ -215,7 +215,7 @@ class EnrollmentHandler : public CloudPolicyClient::Observer,
   DeviceCloudPolicyStoreAsh* store_;
   chromeos::InstallAttributes* install_attributes_;
   ServerBackedStateKeysBroker* state_keys_broker_;
-  chromeos::attestation::AttestationFlow* attestation_flow_;
+  ash::attestation::AttestationFlow* attestation_flow_;
   // SigningService to be used by |client_| to register with.
   std::unique_ptr<SigningService> signing_service_;
   std::unique_ptr<CloudPolicyClient> client_;

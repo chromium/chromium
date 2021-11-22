@@ -4,6 +4,8 @@
 
 #include <string>
 
+#include "ash/components/attestation/attestation_flow_utils.h"
+#include "ash/components/attestation/mock_attestation_flow.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/login_screen_test_api.h"
 #include "base/bind.h"
@@ -45,8 +47,6 @@
 #include "chrome/browser/ui/webui/chromeos/login/signin_screen_handler.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
-#include "chromeos/attestation/attestation_flow_utils.h"
-#include "chromeos/attestation/mock_attestation_flow.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/session_manager/fake_session_manager_client.h"
 #include "chromeos/system/fake_statistics_provider.h"
@@ -86,7 +86,7 @@ void AllowlistSimpleChallengeSigningKey() {
       ->GetTestInterface()
       ->AllowlistSignSimpleChallengeKey(
           /*username=*/"",
-          chromeos::attestation::GetKeyNameForProfile(
+          attestation::GetKeyNameForProfile(
               chromeos::attestation::PROFILE_ENTERPRISE_ENROLLMENT_CERTIFICATE,
               ""));
 }

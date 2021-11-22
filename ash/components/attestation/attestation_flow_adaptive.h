@@ -2,30 +2,29 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_ATTESTATION_ATTESTATION_FLOW_ADAPTIVE_H_
-#define CHROMEOS_ATTESTATION_ATTESTATION_FLOW_ADAPTIVE_H_
+#ifndef ASH_COMPONENTS_ATTESTATION_ATTESTATION_FLOW_ADAPTIVE_H_
+#define ASH_COMPONENTS_ATTESTATION_ATTESTATION_FLOW_ADAPTIVE_H_
 
 #include <memory>
 #include <string>
 
+#include "ash/components/attestation/attestation_flow.h"
+#include "ash/components/attestation/attestation_flow_factory.h"
+#include "ash/components/attestation/attestation_flow_status_reporter.h"
+#include "ash/components/attestation/attestation_flow_type_decider.h"
 #include "base/component_export.h"
 #include "base/memory/weak_ptr.h"
-#include "chromeos/attestation/attestation_flow.h"
-#include "chromeos/attestation/attestation_flow_factory.h"
-#include "chromeos/attestation/attestation_flow_status_reporter.h"
-#include "chromeos/attestation/attestation_flow_type_decider.h"
 #include "chromeos/dbus/attestation/interface.pb.h"
 #include "chromeos/dbus/constants/attestation_constants.h"
 #include "components/account_id/account_id.h"
 
-namespace chromeos {
-
+namespace ash {
 namespace attestation {
 
 // An attestation flow that adaptively chooses the preferred attestation flow
 // object to perform the attestation flow, and falls back to the legacy
 // attestation if the default (platform-side integrated) attestation flow fails.
-class COMPONENT_EXPORT(CHROMEOS_ATTESTATION) AttestationFlowAdaptive
+class COMPONENT_EXPORT(ASH_ATTESTATION) AttestationFlowAdaptive
     : public AttestationFlow {
  public:
   explicit AttestationFlowAdaptive(std::unique_ptr<ServerProxy> server_proxy);
@@ -108,15 +107,6 @@ class COMPONENT_EXPORT(CHROMEOS_ATTESTATION) AttestationFlowAdaptive
 };
 
 }  // namespace attestation
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove when //chromeos/attestation
-// moved to ash
-namespace ash {
-namespace attestation {
-using ::chromeos::attestation::AttestationFlowAdaptive;
-using ::chromeos::attestation::ServerProxy;
-}  // namespace attestation
 }  // namespace ash
 
-#endif  // CHROMEOS_ATTESTATION_ATTESTATION_FLOW_ADAPTIVE_H_
+#endif  // ASH_COMPONENTS_ATTESTATION_ATTESTATION_FLOW_ADAPTIVE_H_

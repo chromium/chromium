@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/attestation/attestation_flow_utils.h"
+#include "ash/components/attestation/attestation_flow_utils.h"
 
 #include <string>
 
 #include "base/notreached.h"
 #include "chromeos/dbus/constants/attestation_constants.h"
 
-namespace chromeos {
+namespace ash {
 namespace attestation {
 
 std::string GetKeyNameForProfile(
@@ -32,4 +32,4 @@ std::string GetKeyNameForProfile(
 }
 
 }  // namespace attestation
-}  // namespace chromeos
+}  // namespace ash

@@ -2,25 +2,25 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/attestation/attestation_flow.h"
+#include "ash/components/attestation/attestation_flow.h"
 
 #include <algorithm>
 #include <utility>
 
+#include "ash/components/attestation/attestation_flow_utils.h"
 #include "base/bind.h"
 #include "base/compiler_specific.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/timer/timer.h"
-#include "chromeos/attestation/attestation_flow_utils.h"
 #include "chromeos/cryptohome/cryptohome_parameters.h"
 #include "chromeos/dbus/attestation/attestation_client.h"
 #include "chromeos/dbus/attestation/interface.pb.h"
 #include "components/account_id/account_id.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace chromeos {
+namespace ash {
 namespace attestation {
 
 namespace {
@@ -375,4 +375,4 @@ PrivacyCAType ServerProxy::GetType() {
 }
 
 }  // namespace attestation
-}  // namespace chromeos
+}  // namespace ash

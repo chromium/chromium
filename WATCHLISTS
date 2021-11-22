@@ -716,7 +716,7 @@
       'filepath': 'chromeos/',
     },
     'chromeos_attestation': {
-      'filepath': 'chromeos/attestation/|'\
+      'filepath': 'ash/components/attestation/|'\
                   'chrome/browser/ash/attestation/|'\
                   'chrome/browser/extensions/api/enterprise_platform_keys_private/',
     },

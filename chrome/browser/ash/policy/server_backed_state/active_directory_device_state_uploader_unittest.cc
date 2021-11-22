@@ -7,6 +7,7 @@
 #include <string>
 #include <utility>
 
+#include "ash/components/attestation/mock_attestation_flow.h"
 #include "base/bind.h"
 #include "base/logging.h"
 #include "base/task/post_task.h"
@@ -18,7 +19,6 @@
 #include "chrome/browser/ash/settings/device_settings_test_helper.h"
 #include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
-#include "chromeos/attestation/mock_attestation_flow.h"
 #include "chromeos/dbus/attestation/fake_attestation_client.h"
 #include "chromeos/dbus/constants/attestation_constants.h"
 #include "chromeos/dbus/session_manager/fake_session_manager_client.h"

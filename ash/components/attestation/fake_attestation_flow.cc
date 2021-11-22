@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/attestation/fake_attestation_flow.h"
+#include "ash/components/attestation/fake_attestation_flow.h"
 
 #include <string>
 #include <utility>
@@ -12,7 +12,7 @@
 #include "chromeos/dbus/constants/attestation_constants.h"
 #include "components/account_id/account_id.h"
 
-namespace chromeos {
+namespace ash {
 namespace attestation {
 
 namespace {
@@ -45,4 +45,4 @@ void FakeAttestationFlow::GetCertificate(
 }
 
 }  // namespace attestation
-}  // namespace chromeos
+}  // namespace ash

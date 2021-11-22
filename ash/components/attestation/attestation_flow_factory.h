@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_ATTESTATION_ATTESTATION_FLOW_FACTORY_H_
-#define CHROMEOS_ATTESTATION_ATTESTATION_FLOW_FACTORY_H_
+#ifndef ASH_COMPONENTS_ATTESTATION_ATTESTATION_FLOW_FACTORY_H_
+#define ASH_COMPONENTS_ATTESTATION_ATTESTATION_FLOW_FACTORY_H_
 
 #include <memory>
 
 #include "base/component_export.h"
 #include "chromeos/dbus/attestation/interface.pb.h"
 
-namespace chromeos {
+namespace ash {
 namespace attestation {
 
 class AttestationFlow;
@@ -18,7 +18,7 @@ class ServerProxy;
 
 // A factory that creates a default attestation flow we should try first and a
 // fallback solution if necessary.
-class COMPONENT_EXPORT(CHROMEOS_ATTESTATION) AttestationFlowFactory {
+class COMPONENT_EXPORT(ASH_ATTESTATION) AttestationFlowFactory {
  public:
   AttestationFlowFactory();
   virtual ~AttestationFlowFactory();
@@ -48,6 +48,6 @@ class COMPONENT_EXPORT(CHROMEOS_ATTESTATION) AttestationFlowFactory {
 };
 
 }  // namespace attestation
-}  // namespace chromeos
+}  // namespace ash
 
-#endif  // CHROMEOS_ATTESTATION_ATTESTATION_FLOW_FACTORY_H_
+#endif  // ASH_COMPONENTS_ATTESTATION_ATTESTATION_FLOW_FACTORY_H_

@@ -2,19 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_ATTESTATION_MOCK_ATTESTATION_FLOW_H_
-#define CHROMEOS_ATTESTATION_MOCK_ATTESTATION_FLOW_H_
+#ifndef ASH_COMPONENTS_ATTESTATION_MOCK_ATTESTATION_FLOW_H_
+#define ASH_COMPONENTS_ATTESTATION_MOCK_ATTESTATION_FLOW_H_
 
 #include <string>
 
-#include "chromeos/attestation/attestation_flow.h"
-
+#include "ash/components/attestation/attestation_flow.h"
 #include "base/callback.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 class AccountId;
 
-namespace chromeos {
+namespace ash {
 namespace attestation {
 
 // A fake server proxy which just appends "_response" to every request if no
@@ -97,14 +96,6 @@ class MockAttestationFlow : public AttestationFlow {
 };
 
 }  // namespace attestation
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove when //chromeos/attestation
-// moved to ash
-namespace ash {
-namespace attestation {
-using ::chromeos::attestation::MockAttestationFlow;
-}  // namespace attestation
 }  // namespace ash
 
-#endif  // CHROMEOS_ATTESTATION_MOCK_ATTESTATION_FLOW_H_
+#endif  // ASH_COMPONENTS_ATTESTATION_MOCK_ATTESTATION_FLOW_H_

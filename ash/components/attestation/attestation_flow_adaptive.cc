@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/attestation/attestation_flow_adaptive.h"
+#include "ash/components/attestation/attestation_flow_adaptive.h"
 
 #include <memory>
 #include <utility>
@@ -10,7 +10,7 @@
 #include "base/logging.h"
 #include "chromeos/dbus/constants/attestation_constants.h"
 
-namespace chromeos {
+namespace ash {
 namespace attestation {
 
 struct AttestationFlowAdaptive::GetCertificateParams {
@@ -149,4 +149,4 @@ void AttestationFlowAdaptive::OnGetCertificateWithFallbackFlow(
 }
 
 }  // namespace attestation
-}  // namespace chromeos
+}  // namespace ash

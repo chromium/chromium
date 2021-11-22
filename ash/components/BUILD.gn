@@ -11,6 +11,7 @@ assert(is_chromeos_ash, "Non-ChromeOS builds cannot depend on //ash")
 source_set("unit_tests") {
   testonly = true
   deps = [
+    "//ash/components/attestation:unit_tests",
     "//ash/components/audio:unit_tests",
     "//ash/components/device_activity:unit_tests",
     "//ash/components/drivefs:unit_tests",

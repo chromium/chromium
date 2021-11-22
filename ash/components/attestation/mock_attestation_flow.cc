@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/attestation/mock_attestation_flow.h"
+#include "ash/components/attestation/mock_attestation_flow.h"
 
 #include <memory>
 
@@ -12,7 +12,7 @@ using testing::_;
 using testing::DefaultValue;
 using testing::Invoke;
 
-namespace chromeos {
+namespace ash {
 namespace attestation {
 
 FakeServerProxy::FakeServerProxy() : result_(true) {}
@@ -60,4 +60,4 @@ MockAttestationFlow::MockAttestationFlow()
 MockAttestationFlow::~MockAttestationFlow() = default;
 
 }  // namespace attestation
-}  // namespace chromeos
+}  // namespace ash

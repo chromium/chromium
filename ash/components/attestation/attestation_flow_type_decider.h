@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_ATTESTATION_ATTESTATION_FLOW_TYPE_DECIDER_H_
-#define CHROMEOS_ATTESTATION_ATTESTATION_FLOW_TYPE_DECIDER_H_
+#ifndef ASH_COMPONENTS_ATTESTATION_ATTESTATION_FLOW_TYPE_DECIDER_H_
+#define ASH_COMPONENTS_ATTESTATION_ATTESTATION_FLOW_TYPE_DECIDER_H_
 
 #include "base/callback_forward.h"
 #include "base/component_export.h"
 #include "base/memory/weak_ptr.h"
 
-namespace chromeos {
+namespace ash {
 namespace attestation {
 
 class AttestationFlowStatusReporter;
@@ -17,7 +17,7 @@ class ServerProxy;
 
 // An object that decides if the default (platform-side integrated) flow is a
 // valid option.
-class COMPONENT_EXPORT(CHROMEOS_ATTESTATION) AttestationFlowTypeDecider {
+class COMPONENT_EXPORT(ASH_ATTESTATION) AttestationFlowTypeDecider {
  public:
   using AttestationFlowTypeCheckCallback =
       base::OnceCallback<void(bool is_integrated_flow_valid)>;
@@ -40,6 +40,6 @@ class COMPONENT_EXPORT(CHROMEOS_ATTESTATION) AttestationFlowTypeDecider {
 };
 
 }  // namespace attestation
-}  // namespace chromeos
+}  // namespace ash
 
-#endif  // CHROMEOS_ATTESTATION_ATTESTATION_FLOW_TYPE_DECIDER_H_
+#endif  // ASH_COMPONENTS_ATTESTATION_ATTESTATION_FLOW_TYPE_DECIDER_H_
