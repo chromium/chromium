@@ -1194,12 +1194,6 @@
           'shards': 15,
         },
       },
-      # https://crbug.com/1077181
-      'Linux Tests (Wayland)': {
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/ozone-linux.wayland_content_browsertests.filter',
-        ],
-      },
       'Mac ASan 64 Tests (1)': { # https://crbug.com/1200640
         'experiment_percentage': 100,
       },

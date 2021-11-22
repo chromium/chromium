@@ -128,7 +128,6 @@ source_set("content_browsertests_filters") {
     "//testing/buildbot/filters/linux-lacros.content_browsertests.filter",
     "//testing/buildbot/filters/site_isolation_android.content_browsertests.filter",
     "//testing/buildbot/filters/vulkan.content_browsertests.filter",
-    "//testing/buildbot/filters/ozone-linux.wayland_content_browsertests.filter",
   ]
 }
 

@@ -7015,8 +7015,7 @@
         "args": [
           "--no-xvfb",
           "--use-weston",
-          "--ozone-platform=wayland",
-          "--test-launcher-filter-file=../../testing/buildbot/filters/ozone-linux.wayland_content_browsertests.filter"
+          "--ozone-platform=wayland"
         ],
         "merge": {
           "args": [],
