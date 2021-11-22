@@ -3,7 +3,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import argparse
 import contextlib
 import copy
 import glob
@@ -185,13 +184,8 @@ class IntegrationTest(unittest.TestCase):
         _TEST_MINIMAL_APKS_PATH,
     ])
 
-  def _CreateTestArgs(self):
-    parser = argparse.ArgumentParser()
-    archive.AddArguments(parser)
-    ret = parser.parse_args(['foo'])
-    return ret
-
   def _CloneSizeInfo(self,
+                     *,
                      use_output_directory=True,
                      use_elf=False,
                      use_apk=False,
@@ -201,120 +195,109 @@ class IntegrationTest(unittest.TestCase):
                      ignore_linker_map=False):
     assert not use_elf or use_output_directory
     assert not (use_apk and use_pak)
+    assert not (use_apk and use_minimal_apks)
     cache_key = (use_output_directory, use_elf, use_apk, use_minimal_apks,
                  use_pak, use_aux_elf, ignore_linker_map)
     if cache_key not in IntegrationTest.cached_size_info:
-      knobs = archive.SectionSizeKnobs()
-      # Override for testing. Lower the bar for compacting symbols, to allow
-      # smaller test cases to be created.
-      knobs.max_same_name_alias_count = 3
+      output_directory = _TEST_OUTPUT_DIR if use_output_directory else None
 
-      args = self._CreateTestArgs()
-      if ignore_linker_map:
-        args.ignore_linker_map = ignore_linker_map
+      def iter_specs():
+        native_spec = archive.NativeSpec(tool_prefix=_TEST_TOOL_PREFIX)
+
         # TODO(crbug.com/1193507): Remove when we implement string literal
         #     tracking without map files.
-        args.track_string_literals = False
-      else:
-        args.map_file = _TEST_MAP_PATH
-      args.elf_file = _TEST_ELF_PATH if use_elf or use_aux_elf else None
-      args.output_directory = _TEST_OUTPUT_DIR if use_output_directory else None
-      args.source_directory = _TEST_SOURCE_DIR
-      args.tool_prefix = _TEST_TOOL_PREFIX
-      apk_so_path = None
-      size_info_prefix = None
-      extracted_minimal_apk_path = None
-      container_name = ''
-      if use_apk or use_minimal_apks:
-        args.apk_file = _TEST_APK_PATH
-      if use_minimal_apks:
-        args.minimal_apks_file = _TEST_MINIMAL_APKS_PATH
-        args.split_name = 'base'
-        extracted_minimal_apk_path = _TEST_APK_PATH
-        container_name = 'Bundle.minimal.apks'
-      if use_apk or use_minimal_apks:
-        apk_so_path = _TEST_APK_SO_PATH
-        if args.output_directory:
-          if use_apk:
-            orig_path = _TEST_APK_PATH
-          else:
-            orig_path = _TEST_MINIMAL_APKS_PATH.replace('.minimal.apks', '.aab')
-          size_info_prefix = os.path.join(args.output_directory, 'size-info',
-                                          os.path.basename(orig_path))
-      pak_files = None
-      pak_info_file = None
-      if use_pak:
-        pak_files = [_TEST_APK_LOCALE_PAK_PATH, _TEST_APK_PAK_PATH]
-        pak_info_file = _TEST_PAK_INFO_PATH
-      linker_name = None if ignore_linker_map else 'gold'
+        if ignore_linker_map:
+          native_spec.track_string_literals = False
+        else:
+          native_spec.map_path = _TEST_MAP_PATH
+          native_spec.linker_name = 'gold'
 
-      # For simplicity, using |args| for both params. This is okay since
-      # |args.ssargs_file| is unassigned.
-      opts = archive.ContainerArchiveOptions(args, args)
-      with _AddMocksToPath():
-        build_config = {}
-        metadata = archive.CreateMetadata(args, linker_name, build_config)
-        container_list = []
-        raw_symbols_list = []
-        container, raw_symbols = archive.CreateContainerAndSymbols(
-            knobs=knobs,
-            opts=opts,
-            container_name='{}/base.apk'.format(container_name)
-            if container_name else '',
-            metadata=metadata,
-            map_path=args.map_file,
-            tool_prefix=args.tool_prefix,
-            output_directory=args.output_directory,
-            source_directory=args.source_directory,
-            elf_path=args.elf_file,
-            apk_path=args.apk_file or extracted_minimal_apk_path,
-            apk_so_path=apk_so_path,
-            pak_files=pak_files,
-            pak_info_file=pak_info_file,
-            linker_name=linker_name,
-            size_info_prefix=size_info_prefix)
-        container_list.append(container)
-        raw_symbols_list.append(raw_symbols)
+        if use_elf or use_aux_elf:
+          native_spec.elf_path = _TEST_ELF_PATH
+
+        apk_spec = None
+        if use_apk or use_minimal_apks:
+          apk_spec = archive.ApkSpec(apk_path=_TEST_APK_PATH)
         if use_minimal_apks:
-          opts.analyze_native = False
-          args.split_name = 'not_on_demand'
-          args.apk_file = _TEST_NOT_ON_DEMAND_SPLIT_APK_PATH
-          args.elf_file = None
-          args.map_file = None
-          metadata = archive.CreateMetadata(args, None, build_config)
+          apk_spec.minimal_apks_path = _TEST_MINIMAL_APKS_PATH
+          apk_spec.split_name = 'base'
+
+        if use_apk or use_minimal_apks:
+          native_spec.apk_so_path = _TEST_APK_SO_PATH
+          if output_directory:
+            if use_apk:
+              orig_path = _TEST_APK_PATH
+            else:
+              orig_path = _TEST_MINIMAL_APKS_PATH.replace(
+                  '.minimal.apks', '.aab')
+            apk_spec.size_info_prefix = os.path.join(
+                output_directory, 'size-info', os.path.basename(orig_path))
+        pak_files = None
+        pak_info_file = None
+        if use_pak:
+          pak_files = [_TEST_APK_LOCALE_PAK_PATH, _TEST_APK_PAK_PATH]
+          pak_info_file = _TEST_PAK_INFO_PATH
+
+        container_name = ''
+        if use_minimal_apks:
+          container_name = 'Bundle.minimal.apks/base.apk'
+        yield container_name, apk_spec, native_spec, pak_files, pak_info_file
+
+        if use_minimal_apks:
+          for split_name, apk_path in [
+              ('not_on_demand', _TEST_NOT_ON_DEMAND_SPLIT_APK_PATH),
+              ('on_demand', _TEST_ON_DEMAND_SPLIT_APK_PATH),
+          ]:
+            apk_spec = archive.ApkSpec(
+                minimal_apks_path=_TEST_MINIMAL_APKS_PATH,
+                apk_path=apk_path,
+                split_name=split_name,
+                size_info_prefix=apk_spec.size_info_prefix)
+            native_spec = None
+            container_name = 'Bundle.minimal.apks/%s.apk' % split_name
+            if split_name == 'on_demand':
+              container_name += '?'
+            yield container_name, apk_spec, native_spec, None, None
+
+      container_list = []
+      raw_symbols_list = []
+      build_config = {}
+      opts = archive.ContainerArchiveOptions()
+
+      # Override for testing. Lower the bar for compacting symbols, to allow
+      # smaller test cases to be created.
+      knobs = archive.SectionSizeKnobs()
+      knobs.max_same_name_alias_count = 3
+
+      with _AddMocksToPath():
+        for (container_name, apk_spec, native_spec, pak_files,
+             pak_info_file) in iter_specs():
+          metadata = archive.CreateMetadata(build_config=build_config,
+                                            apk_spec=apk_spec,
+                                            native_spec=native_spec,
+                                            source_directory=_TEST_SOURCE_DIR,
+                                            output_directory=output_directory)
           container, raw_symbols = archive.CreateContainerAndSymbols(
               knobs=knobs,
               opts=opts,
-              container_name='{}/not_on_demand.apk'.format(container_name),
+              container_name=container_name,
               metadata=metadata,
-              tool_prefix=args.tool_prefix,
-              output_directory=args.output_directory,
-              source_directory=args.source_directory,
-              apk_path=_TEST_NOT_ON_DEMAND_SPLIT_APK_PATH,
-              size_info_prefix=size_info_prefix)
+              apk_spec=apk_spec,
+              native_spec=native_spec,
+              source_directory=_TEST_SOURCE_DIR,
+              output_directory=output_directory,
+              pak_files=pak_files,
+              pak_info_file=pak_info_file)
           container_list.append(container)
           raw_symbols_list.append(raw_symbols)
-          args.split_name = 'on_demand'
-          args.apk_file = _TEST_ON_DEMAND_SPLIT_APK_PATH
-          metadata = archive.CreateMetadata(args, None, build_config)
-          container, raw_symbols = archive.CreateContainerAndSymbols(
-              knobs=knobs,
-              opts=opts,
-              container_name='{}/on_demand.apk?'.format(container_name),
-              metadata=metadata,
-              tool_prefix=args.tool_prefix,
-              output_directory=args.output_directory,
-              source_directory=args.source_directory,
-              apk_path=_TEST_ON_DEMAND_SPLIT_APK_PATH,
-              size_info_prefix=size_info_prefix)
-          container_list.append(container)
-          raw_symbols_list.append(raw_symbols)
+
         IntegrationTest.cached_size_info[cache_key] = archive.CreateSizeInfo(
             build_config, container_list, raw_symbols_list)
     return copy.deepcopy(IntegrationTest.cached_size_info[cache_key])
 
   def _DoArchive(self,
                  archive_path,
+                 *,
                  use_output_directory=True,
                  use_elf=False,
                  use_apk=False,
@@ -363,6 +346,7 @@ class IntegrationTest(unittest.TestCase):
     _RunApp('archive', args, debug_measures=debug_measures)
 
   def _DoArchiveTest(self,
+                     *,
                      use_output_directory=True,
                      use_elf=False,
                      use_apk=False,
@@ -466,9 +450,8 @@ class IntegrationTest(unittest.TestCase):
     orig_delta.raw_symbols = orig_delta.raw_symbols.WhereDiffStatusIs(
         models.DIFF_STATUS_UNCHANGED).Inverted()
 
-    self.assertEqual(
-        '\n'.join(describe.GenerateLines(orig_delta, verbose=True)),
-        '\n'.join(describe.GenerateLines(new_delta, verbose=True)))
+    self.assertEqual(list(describe.GenerateLines(orig_delta, verbose=True)),
+                     list(describe.GenerateLines(new_delta, verbose=True)))
 
   @_CompareWithGolden()
   def test_Console(self):

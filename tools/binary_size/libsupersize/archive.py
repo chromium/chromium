@@ -8,7 +8,7 @@ import argparse
 import bisect
 import calendar
 import collections
-import copy
+import dataclasses
 import datetime
 import functools
 import gzip
@@ -122,20 +122,32 @@ class SectionSizeKnobs:
 
 
 # Parameters and states for archiving a container.
+@dataclasses.dataclass
 class ContainerArchiveOptions:
-  def __init__(self, top_args, sub_args):
-    # Whether to count number of relative relocations instead of binary size.
-    self.relocations_mode = top_args.relocations
+  # Whether to count number of relative relocations instead of binary size.
+  relocations_mode: bool = False
+  # Whether to break down .so files.
+  analyze_native: bool = True
 
-    self.analyze_java = not (sub_args.native_only or sub_args.no_java
-                             or top_args.native_only or top_args.no_java
-                             or self.relocations_mode)
-    # This may be further disabled downstream, e.g., for the case where an APK
-    # is specified, but it contains no .so files.
-    self.analyze_native = not (sub_args.java_only or sub_args.no_native
-                               or top_args.java_only or top_args.no_native)
 
-    self.track_string_literals = sub_args.track_string_literals
+@dataclasses.dataclass
+class NativeSpec:
+  tool_prefix: str  # Never None.
+  apk_so_path: str = None
+  map_path: str = None
+  elf_path: str = None
+  linker_name: str = None
+  track_string_literals: bool = True
+
+
+@dataclasses.dataclass
+class ApkSpec:
+  apk_path: str  # Never None.
+  minimal_apks_path: str = None
+  mapping_path: str = None
+  split_name: str = None
+  size_info_prefix: str = None
+  analyze_dex: bool = True
 
 
 def _OpenMaybeGzAsText(path):
@@ -656,20 +668,20 @@ def LoadAndPostProcessDeltaSizeInfo(path, file_obj=None):
   return before_size_info, after_size_info
 
 
-def _FindSplitNamesAndSizes(minimal_apks_path):
+def _ListSplits(minimal_apks_path):
   ret = []
   with zipfile.ZipFile(minimal_apks_path) as z:
-    for info in z.infolist():
+    for filename in z.namelist():
       # E.g.:
       # splits/base-master.apk
       # splits/base-en.apk
       # splits/vr-master.apk
       # splits/vr-en.apk
-      # TODO(agrieve): Might be worth measuring a non-en locale as well.
-      m = re.match(r'splits/(.*)-master\.apk', info.filename)
+      m = re.match(r'splits/(.*)-master\.apk', filename)
       if m:
-        ret.append((m.group(1), info.file_size))
-  return sorted(ret)
+        ret.append(m.group(1))
+  # Make "base" comes first since that's the main chunk of work.
+  return sorted(ret, key=lambda x: (x != 'base', x))
 
 
 def _ExtendSectionRange(section_range_by_name, section_name, delta_size):
@@ -677,14 +689,9 @@ def _ExtendSectionRange(section_range_by_name, section_name, delta_size):
   section_range_by_name[section_name] = (prev_address, prev_size + delta_size)
 
 
-def CreateMetadata(args, linker_name, build_config):
+def CreateMetadata(*, build_config, apk_spec, native_spec, source_directory,
+                   output_directory):
   """Creates metadata dict while updating |build_config|.
-
-  Args:
-    args: Resolved command-line args.
-    linker_name: A coded linker name (see linker_map_parser.py).
-    build_config: Common build configurations to update or to undergo
-        consistency checks.
 
   Returns:
     A dict of models.METADATA_* -> values. Performs "best effort" extraction
@@ -704,52 +711,61 @@ def CreateMetadata(args, linker_name, build_config):
   metadata = {}
 
   # Ensure all paths are relative to output directory to make them hermetic.
-  if args.output_directory:
-    shorten_path = lambda path: os.path.relpath(path, args.output_directory)
-    gn_args = _ParseGnArgs(os.path.join(args.output_directory, 'args.gn'))
+  if output_directory:
+    shorten_path = lambda path: os.path.relpath(path, output_directory)
+    gn_args = _ParseGnArgs(os.path.join(output_directory, 'args.gn'))
     update_build_config(models.BUILD_CONFIG_GN_ARGS, gn_args)
   else:
     # If output directory is unavailable, just store basenames.
     shorten_path = os.path.basename
 
-  if args.tool_prefix:
-    relative_tool_prefix = path_util.ToToolsSrcRootRelative(args.tool_prefix)
-    update_build_config(models.BUILD_CONFIG_TOOL_PREFIX, relative_tool_prefix)
-
-  if linker_name:
-    update_build_config(models.BUILD_CONFIG_LINKER_NAME, linker_name)
-
   # Deduce GIT revision (cached via @lru_cache).
-  git_rev = _DetectGitRevision(args.source_directory)
+  git_rev = _DetectGitRevision(source_directory)
   if git_rev:
     update_build_config(models.BUILD_CONFIG_GIT_REVISION, git_rev)
 
-  if args.elf_file:
-    metadata[models.METADATA_ELF_FILENAME] = shorten_path(args.elf_file)
-    architecture = readelf.ArchFromElf(args.elf_file, args.tool_prefix)
-    metadata[models.METADATA_ELF_ARCHITECTURE] = architecture
-    timestamp_obj = datetime.datetime.utcfromtimestamp(
-        os.path.getmtime(args.elf_file))
-    timestamp = calendar.timegm(timestamp_obj.timetuple())
-    metadata[models.METADATA_ELF_MTIME] = timestamp
-    build_id = readelf.BuildIdFromElf(args.elf_file, args.tool_prefix)
-    metadata[models.METADATA_ELF_BUILD_ID] = build_id
-    relocations_count = _CountRelocationsFromElf(args.elf_file,
-                                                 args.tool_prefix)
-    metadata[models.METADATA_ELF_RELOCATIONS_COUNT] = relocations_count
+  if native_spec:
+    relative_tool_prefix = path_util.ToToolsSrcRootRelative(
+        native_spec.tool_prefix)
+    update_build_config(models.BUILD_CONFIG_TOOL_PREFIX, relative_tool_prefix)
 
-  if args.map_file:
-    metadata[models.METADATA_MAP_FILENAME] = shorten_path(args.map_file)
+    if native_spec.linker_name:
+      update_build_config(models.BUILD_CONFIG_LINKER_NAME,
+                          native_spec.linker_name)
 
-  if args.apk_file:
-    metadata[models.METADATA_APK_SIZE] = os.path.getsize(args.apk_file)
-    if args.minimal_apks_file:
+    if native_spec.elf_path:
+      metadata[models.METADATA_ELF_FILENAME] = shorten_path(
+          native_spec.elf_path)
+      architecture = readelf.ArchFromElf(native_spec.elf_path,
+                                         native_spec.tool_prefix)
+      # TODO(agrieve): We could add these in when elf_path=None and apk_so_path.
+      metadata[models.METADATA_ELF_ARCHITECTURE] = architecture
+      timestamp_obj = datetime.datetime.utcfromtimestamp(
+          os.path.getmtime(native_spec.elf_path))
+      timestamp = calendar.timegm(timestamp_obj.timetuple())
+      metadata[models.METADATA_ELF_MTIME] = timestamp
+      build_id = readelf.BuildIdFromElf(native_spec.elf_path,
+                                        native_spec.tool_prefix)
+      metadata[models.METADATA_ELF_BUILD_ID] = build_id
+
+      relocations_count = _CountRelocationsFromElf(native_spec.elf_path,
+                                                   native_spec.tool_prefix)
+      metadata[models.METADATA_ELF_RELOCATIONS_COUNT] = relocations_count
+
+    if native_spec.map_path:
+      metadata[models.METADATA_MAP_FILENAME] = shorten_path(
+          native_spec.map_path)
+
+  if apk_spec:
+    metadata[models.METADATA_APK_SIZE] = os.path.getsize(apk_spec.apk_path)
+    if apk_spec.minimal_apks_path:
       metadata[models.METADATA_APK_FILENAME] = shorten_path(
-          args.minimal_apks_file)
-      metadata[models.METADATA_APK_SPLIT_NAME] = args.split_name
+          apk_spec.minimal_apks_path)
+      metadata[models.METADATA_APK_SPLIT_NAME] = apk_spec.split_name
     else:
-      metadata[models.METADATA_APK_FILENAME] = shorten_path(args.apk_file)
+      metadata[models.METADATA_APK_FILENAME] = shorten_path(apk_spec.apk_path)
 
+  logging.debug('Constructing metadata (done)')
   return metadata
 
 
@@ -821,25 +837,23 @@ def _NameStringLiterals(raw_symbols, elf_path, tool_prefix):
       sym.full_name = models.STRING_LITERAL_NAME
 
 
-def _ParseElfInfo(map_path,
-                  elf_path,
-                  tool_prefix,
-                  track_string_literals,
-                  outdir_context=None,
-                  linker_name=None):
+def _ParseElfInfo(native_spec, outdir_context=None):
   """Adds ELF section ranges and symbols."""
-  assert map_path or elf_path, 'Need a linker map or an ELF file.'
-  assert map_path or not track_string_literals, (
+  assert native_spec.map_path or native_spec.elf_path, (
+      'Need a linker map or an ELF file.')
+  assert native_spec.map_path or not native_spec.track_string_literals, (
       'track_string_literals not yet implemented without map file')
-  if elf_path:
-    elf_section_ranges = readelf.SectionInfoFromElf(elf_path, tool_prefix)
+  if native_spec.elf_path:
+    elf_section_ranges = readelf.SectionInfoFromElf(native_spec.elf_path,
+                                                    native_spec.tool_prefix)
 
     # Run nm on the elf file to retrieve the list of symbol names per-address.
     # This list is required because the .map file contains only a single name
     # for each address, yet multiple symbols are often coalesced when they are
     # identical. This coalescing happens mainly for small symbols and for C++
     # templates. Such symbols make up ~500kb of libchrome.so on Android.
-    elf_nm_result = nm.CollectAliasesByAddressAsync(elf_path, tool_prefix)
+    elf_nm_result = nm.CollectAliasesByAddressAsync(native_spec.elf_path,
+                                                    native_spec.tool_prefix)
 
     # Run nm on all .o/.a files to retrieve the symbol names within them.
     # The list is used to detect when mutiple .o files contain the same symbol
@@ -849,27 +863,28 @@ def _ParseElfInfo(map_path,
     # single path for these symbols.
     # Rather than record all paths for each symbol, set the paths to be the
     # common ancestor of all paths.
-    if outdir_context and map_path:
+    if outdir_context and native_spec.map_path:
       bulk_analyzer = obj_analyzer.BulkObjectFileAnalyzer(
-          tool_prefix,
+          native_spec.tool_prefix,
           outdir_context.output_directory,
-          track_string_literals=track_string_literals)
+          track_string_literals=native_spec.track_string_literals)
       bulk_analyzer.AnalyzePaths(outdir_context.elf_object_paths)
 
-  if map_path:
+  if native_spec.map_path:
     logging.info('Parsing Linker Map')
-    with _OpenMaybeGzAsText(map_path) as f:
+    with _OpenMaybeGzAsText(native_spec.map_path) as f:
       map_section_ranges, raw_symbols, linker_map_extras = (
-          linker_map_parser.MapFileParser().Parse(linker_name, f))
+          linker_map_parser.MapFileParser().Parse(native_spec.linker_name, f))
 
       if outdir_context and outdir_context.thin_archives:
         _ResolveThinArchivePaths(raw_symbols, outdir_context.thin_archives)
   else:
     logging.info('Collecting symbols from nm')
-    raw_symbols = nm.CreateUniqueSymbols(elf_path, tool_prefix,
+    raw_symbols = nm.CreateUniqueSymbols(native_spec.elf_path,
+                                         native_spec.tool_prefix,
                                          elf_section_ranges)
 
-  if elf_path and map_path:
+  if native_spec.elf_path and native_spec.map_path:
     logging.debug('Validating section sizes')
     differing_elf_section_sizes = {}
     differing_map_section_sizes = {}
@@ -886,14 +901,14 @@ def _ParseElfInfo(map_path,
       logging.error('.map file: %r', differing_map_section_sizes)
       sys.exit(1)
 
-  if elf_path and map_path and outdir_context:
+  if native_spec.elf_path and native_spec.map_path and outdir_context:
     missed_object_paths = _DiscoverMissedObjectPaths(
         raw_symbols, outdir_context.known_inputs)
     missed_object_paths = ar.ExpandThinArchives(
         missed_object_paths, outdir_context.output_directory)[0]
     bulk_analyzer.AnalyzePaths(missed_object_paths)
     bulk_analyzer.SortPaths()
-    if track_string_literals:
+    if native_spec.track_string_literals:
       merge_string_syms = [s for s in raw_symbols if
                            s.full_name == '** merge strings' or
                            s.full_name == '** lld merge strings']
@@ -901,14 +916,14 @@ def _ParseElfInfo(map_path,
       # single string literal.
       assert merge_string_syms
       string_ranges = [(s.address, s.size) for s in merge_string_syms]
-      bulk_analyzer.AnalyzeStringLiterals(elf_path, string_ranges)
+      bulk_analyzer.AnalyzeStringLiterals(native_spec.elf_path, string_ranges)
 
   # Map file for some reason doesn't demangle all names.
   # Demangle prints its own log statement.
-  demangle.DemangleRemainingSymbols(raw_symbols, tool_prefix)
+  demangle.DemangleRemainingSymbols(raw_symbols, native_spec.tool_prefix)
 
   object_paths_by_name = {}
-  if elf_path:
+  if native_spec.elf_path:
     logging.info(
         'Adding symbols removed by identical code folding (as reported by nm)')
     # This normally does not block (it's finished by this time).
@@ -917,7 +932,7 @@ def _ParseElfInfo(map_path,
 
     raw_symbols = _AddNmAliases(raw_symbols, names_by_address)
 
-    if map_path and outdir_context:
+    if native_spec.map_path and outdir_context:
       object_paths_by_name = bulk_analyzer.GetSymbolNames()
       logging.debug(
           'Fetched path information for %d symbols from %d files',
@@ -929,12 +944,12 @@ def _ParseElfInfo(map_path,
       raw_symbols = _AssignNmAliasPathsAndCreatePathAliases(
           raw_symbols, object_paths_by_name)
 
-      if track_string_literals:
+      if native_spec.track_string_literals:
         logging.info('Waiting for string literal extraction to complete.')
         list_of_positions_by_object_path = bulk_analyzer.GetStringPositions()
       bulk_analyzer.Close()
 
-      if track_string_literals:
+      if native_spec.track_string_literals:
         logging.info('Deconstructing ** merge strings into literals')
         replacements = _CreateMergeStringsReplacements(merge_string_syms,
             list_of_positions_by_object_path)
@@ -947,17 +962,18 @@ def _ParseElfInfo(map_path,
             # is fast enough since len(merge_string_syms) < 10.
             raw_symbols[idx:idx + 1] = literal_syms
 
-  if map_path:
+  if native_spec.map_path:
     linker_map_parser.DeduceObjectPathsFromThinMap(raw_symbols,
                                                    linker_map_extras)
 
-  if elf_path and track_string_literals:
-    _NameStringLiterals(raw_symbols, elf_path, tool_prefix)
+  if native_spec.elf_path and native_spec.track_string_literals:
+    _NameStringLiterals(raw_symbols, native_spec.elf_path,
+                        native_spec.tool_prefix)
 
   # If we have an ELF file, use its ranges as the source of truth, since some
   # sections can differ from the .map.
-  return (elf_section_ranges if elf_path else map_section_ranges, raw_symbols,
-          object_paths_by_name)
+  return (elf_section_ranges if native_spec.elf_path else map_section_ranges,
+          raw_symbols, object_paths_by_name)
 
 
 def _ComputePakFileSymbols(file_name, contents, res_info, symbols_by_id):
@@ -1123,16 +1139,16 @@ class _ResourcePathDeobfuscator:
     return path
 
 
-def _ParseApkOtherSymbols(section_ranges, apk_path, apk_so_path,
-                          resources_pathmap_path, size_info_prefix, metadata,
-                          knobs):
-  res_source_mapper = _ResourceSourceMapper(size_info_prefix, knobs)
+def _ParseApkOtherSymbols(*, apk_spec, native_spec, section_ranges,
+                          resources_pathmap_path, metadata, knobs):
+  apk_so_path = native_spec and native_spec.apk_so_path
+  res_source_mapper = _ResourceSourceMapper(apk_spec.size_info_prefix, knobs)
   resource_deobfuscator = _ResourcePathDeobfuscator(resources_pathmap_path)
   apk_symbols = []
   dex_size = 0
   zip_info_total = 0
   zipalign_total = 0
-  with zipfile.ZipFile(apk_path) as z:
+  with zipfile.ZipFile(apk_spec.apk_path) as z:
     signing_block_size = zip_util.MeasureApkSignatureBlock(z)
     for zip_info in z.infolist():
       zip_info_total += zip_info.compress_size
@@ -1142,12 +1158,13 @@ def _ParseApkOtherSymbols(section_ranges, apk_path, apk_so_path,
       # Happens when python aligns entries in apkbuilder.py, but does not
       # exist when using Android's zipalign. E.g. for bundle .apks files.
       zipalign_total += len(zip_info.extra)
-      # Skip main shared library, pak, and dex files as they are accounted for.
-      if (zip_info.filename == apk_so_path
-          or zip_info.filename.endswith('.pak')):
+      # Skip files that we explicitly analyze: .so, .dex, and .pak.
+      if zip_info.filename == apk_so_path:
         continue
-      if zip_info.filename.endswith('.dex'):
+      if apk_spec.analyze_dex and zip_info.filename.endswith('.dex'):
         dex_size += zip_info.file_size
+        continue
+      if zip_info.filename.endswith('.pak'):
         continue
 
       resource_filename = resource_deobfuscator.MaybeRemapPath(
@@ -1173,8 +1190,8 @@ def _ParseApkOtherSymbols(section_ranges, apk_path, apk_so_path,
   # Overhead includes:
   #  * Size of all local zip headers (minus zipalign padding).
   #  * Size of central directory & end of central directory.
-  overhead_size = (os.path.getsize(apk_path) - zip_info_total - zipalign_total -
-                   signing_block_size)
+  overhead_size = (os.path.getsize(apk_spec.apk_path) - zip_info_total -
+                   zipalign_total - signing_block_size)
   assert overhead_size >= 0, 'Apk overhead must be non-negative'
   zip_overhead_symbol = models.Symbol(
       models.SECTION_OTHER, overhead_size, full_name='Overhead: APK file')
@@ -1348,7 +1365,9 @@ def _ParseNinjaFiles(output_directory, elf_path=None):
   source_mapper, ninja_elf_object_paths = ninja_parser.Parse(
       output_directory, linker_elf_path)
 
-  logging.debug('Parsed %d .ninja files.', source_mapper.parsed_file_count)
+  logging.debug('Parsed %d .ninja files. Linker inputs=%d',
+                source_mapper.parsed_file_count,
+                len(ninja_elf_object_paths or []))
   if elf_path:
     assert ninja_elf_object_paths, (
         'Failed to find link command in ninja files for ' +
@@ -1357,23 +1376,18 @@ def _ParseNinjaFiles(output_directory, elf_path=None):
   return source_mapper, ninja_elf_object_paths
 
 
-def CreateContainerAndSymbols(knobs=None,
-                              opts=None,
-                              container_name=None,
-                              metadata=None,
-                              map_path=None,
-                              tool_prefix=None,
+def CreateContainerAndSymbols(*,
+                              knobs,
+                              opts,
+                              container_name,
+                              metadata,
+                              apk_spec,
+                              native_spec,
+                              source_directory,
                               output_directory=None,
-                              source_directory=None,
-                              elf_path=None,
-                              apk_path=None,
-                              mapping_path=None,
                               resources_pathmap_path=None,
-                              apk_so_path=None,
                               pak_files=None,
-                              pak_info_file=None,
-                              linker_name=None,
-                              size_info_prefix=None):
+                              pak_info_file=None):
   """Creates a Container (with sections sizes) and symbols for a SizeInfo.
 
   Args:
@@ -1382,22 +1396,15 @@ def CreateContainerAndSymbols(knobs=None,
     container_name: Name for the created Container. May be '' if only one
         Container exists.
     metadata: Metadata dict from CreateMetadata().
-    map_path: Path to the linker .map(.gz) file to parse.
-    tool_prefix: Prefix for c++filt & nm (required).
+    apk_spec: Instance of ApkSpec.
+    native_spec: Instance of NativeSpec.
     output_directory: Build output directory. If None, source_paths and symbol
         alias information will not be recorded.
     source_directory: Path to source root.
-    elf_path: Path to the corresponding unstripped ELF file. Used to find symbol
-        aliases and inlined functions. Can be None.
-    apk_path: Path to the .apk file to measure.
-    mapping_path: Path to the .mapping file for DEX symbol processing.
     resources_pathmap_path: Path to the pathmap file that maps original
         resource paths to shortened resource paths.
-    apk_so_path: Path to an .so file within an APK file.
     pak_files: List of paths to .pak files.
     pak_info_file: Path to a .pak.info file.
-    linker_name: A coded linker name (see linker_map_parser.py).
-    size_info_prefix: Path to $out/size-info/$ApkName.
 
   Returns:
     A tuple of (container, raw_symbols).
@@ -1405,36 +1412,35 @@ def CreateContainerAndSymbols(knobs=None,
     (section_sizes maps section names to respective sizes).
     raw_symbols is a list of Symbol objects.
   """
-  assert elf_path or not opts.relocations_mode, (
-      '--relocations-mode requires a ELF file')
+  if opts.relocations_mode and not (native_spec and native_spec.elf_path):
+    raise Exception('--relocations-mode requires an ELF file')
 
   knobs = knobs or SectionSizeKnobs()
-  if apk_path and apk_so_path:
+  apk_elf_result = None
+  if apk_spec and native_spec and native_spec.apk_so_path:
     # Extraction takes around 1 second, so do it in parallel.
-    apk_elf_result = parallel.ForkAndCall(_ElfInfoFromApk,
-                                          (apk_path, apk_so_path, tool_prefix))
-  else:
-    apk_elf_result = None
+    apk_elf_result = parallel.ForkAndCall(
+        _ElfInfoFromApk,
+        (apk_spec.apk_path, native_spec.apk_so_path, native_spec.tool_prefix))
 
-  outdir_context = None
   ninja_source_mapper = None
   dwarf_source_mapper = None
   section_ranges = {}
   raw_symbols = []
-  if opts.analyze_native:
+  object_paths_by_name = None
+  if native_spec:
     ninja_elf_object_paths = None
-    if map_path and output_directory:
+    if output_directory and native_spec.map_path:
       # Finds all objects passed to the linker and creates a map of .o -> .cc.
       ninja_source_mapper, ninja_elf_object_paths = _ParseNinjaFiles(
-          output_directory, elf_path)
-    elif elf_path:
+          output_directory, native_spec.elf_path)
+    elif native_spec.elf_path:
       logging.info('Parsing source path info via dwarfdump')
       dwarf_source_mapper = dwarfdump.CreateAddressSourceMapper(
-          elf_path, tool_prefix)
-      if logging.getLogger().isEnabledFor(logging.DEBUG):
-        logging.debug('Found %d source paths across %s ranges',
-                      address_source_mapper.NumberOfPaths(),
-                      address_source_mapper.num_ranges)
+          native_spec.elf_path, native_spec.tool_prefix)
+      logging.info('Found %d source paths across %s ranges',
+                   dwarf_source_mapper.NumberOfPaths(),
+                   dwarf_source_mapper.num_ranges)
 
     # Start by finding elf_object_paths so that nm can run on them while the
     # linker .map is being parsed.
@@ -1455,19 +1461,16 @@ def CreateContainerAndSymbols(knobs=None,
       else:
         thin_archives = None
 
-    outdir_context = _OutputDirectoryContext(elf_object_paths=elf_object_paths,
-                                             known_inputs=known_inputs,
-                                             output_directory=output_directory,
-                                             thin_archives=thin_archives)
+    outdir_context = None
+    if output_directory:
+      outdir_context = _OutputDirectoryContext(
+          elf_object_paths=elf_object_paths,
+          known_inputs=known_inputs,
+          output_directory=output_directory,
+          thin_archives=thin_archives)
 
-  if opts.analyze_native:
     section_ranges, raw_symbols, object_paths_by_name = _ParseElfInfo(
-        map_path,
-        elf_path,
-        tool_prefix,
-        opts.track_string_literals,
-        outdir_context=outdir_context,
-        linker_name=linker_name)
+        native_spec, outdir_context=outdir_context)
 
   if apk_elf_result:
     logging.debug('Extracting section sizes from .so within .apk')
@@ -1475,36 +1478,44 @@ def CreateContainerAndSymbols(knobs=None,
     if metadata and models.METADATA_ELF_BUILD_ID in metadata:
       assert apk_build_id == metadata[models.METADATA_ELF_BUILD_ID], (
           'BuildID from apk_elf_result did not match')
-  elif elf_path:
+  elif native_spec and native_spec.elf_path:
     # Strip ELF before capturing section information to avoid recording
     # debug sections.
-    with tempfile.NamedTemporaryFile(suffix=os.path.basename(elf_path)) as f:
-      strip_path = path_util.GetStripPath(tool_prefix)
-      subprocess.run([strip_path, '-o', f.name, elf_path], check=True)
-      section_ranges = readelf.SectionInfoFromElf(f.name, tool_prefix)
+    with tempfile.NamedTemporaryFile(
+        suffix=os.path.basename(native_spec.elf_path)) as f:
+      strip_path = path_util.GetStripPath(native_spec.tool_prefix)
+      subprocess.run([strip_path, '-o', f.name, native_spec.elf_path],
+                     check=True)
+      section_ranges = readelf.SectionInfoFromElf(f.name,
+                                                  native_spec.tool_prefix)
       elf_overhead_size = _CalculateElfOverhead(section_ranges, f.name)
 
-  if elf_path or map_path:
+  if native_spec:
     raw_symbols, other_elf_symbols = _AddUnattributedSectionSymbols(
         raw_symbols, section_ranges)
 
   pak_symbols_by_id = None
   other_symbols = []
-  if apk_path and size_info_prefix and not opts.relocations_mode:
+  if apk_spec and apk_spec.size_info_prefix and not opts.relocations_mode:
     # Can modify |section_ranges|.
-    pak_symbols_by_id = _FindPakSymbolsFromApk(section_ranges, apk_path,
-                                               size_info_prefix)
+    pak_symbols_by_id = _FindPakSymbolsFromApk(section_ranges,
+                                               apk_spec.apk_path,
+                                               apk_spec.size_info_prefix)
 
     # Can modify |section_ranges|.
-    dex_size, other_symbols = _ParseApkOtherSymbols(section_ranges, apk_path,
-                                                    apk_so_path,
-                                                    resources_pathmap_path,
-                                                    size_info_prefix, metadata,
-                                                    knobs)
+    dex_size, other_symbols = _ParseApkOtherSymbols(
+        apk_spec=apk_spec,
+        native_spec=native_spec,
+        section_ranges=section_ranges,
+        resources_pathmap_path=resources_pathmap_path,
+        metadata=metadata,
+        knobs=knobs)
 
-    if opts.analyze_java:
-      dex_symbols = apkanalyzer.CreateDexSymbols(apk_path, mapping_path,
-                                                 size_info_prefix)
+    if apk_spec.analyze_dex:
+      logging.info('Analyzing Dex')
+      dex_symbols = apkanalyzer.CreateDexSymbols(apk_spec.apk_path,
+                                                 apk_spec.mapping_path,
+                                                 apk_spec.size_info_prefix)
 
       # We can't meaningfully track section size of dex methods vs other, so
       # just fake the size of dex methods as the sum of symbols, and make
@@ -1537,19 +1548,20 @@ def CreateContainerAndSymbols(knobs=None,
     pak_symbols_by_id = _FindPakSymbolsFromFiles(
         section_ranges, pak_files, pak_info_file, output_directory)
 
-  if elf_path:
-    elf_overhead_symbol = models.Symbol(models.SECTION_OTHER,
-                                        elf_overhead_size,
-                                        full_name='Overhead: ELF file')
-    _ExtendSectionRange(section_ranges, models.SECTION_OTHER, elf_overhead_size)
-    other_symbols.append(elf_overhead_symbol)
-  if elf_path or map_path:
+  if native_spec:
     other_symbols.extend(other_elf_symbols)
+    if native_spec.elf_path:
+      elf_overhead_symbol = models.Symbol(models.SECTION_OTHER,
+                                          elf_overhead_size,
+                                          full_name='Overhead: ELF file')
+      _ExtendSectionRange(section_ranges, models.SECTION_OTHER,
+                          elf_overhead_size)
+      other_symbols.append(elf_overhead_symbol)
 
   if pak_symbols_by_id:
     logging.debug('Extracting pak IDs from symbol names, and creating symbols')
     object_paths_by_pak_id = {}
-    if opts.analyze_native:
+    if object_paths_by_name:
       object_paths_by_pak_id = _CreatePakObjectMap(object_paths_by_name)
     pak_raw_symbols = _ParsePakSymbols(
         pak_symbols_by_id, object_paths_by_pak_id)
@@ -1569,12 +1581,14 @@ def CreateContainerAndSymbols(knobs=None,
   dir_metadata.PopulateComponents(raw_symbols, source_directory)
   logging.info('Converting excessive aliases into shared-path symbols')
   _CompactLargeAliasesIntoSharedSymbols(raw_symbols, knobs)
-  logging.debug('Connecting nm aliases')
-  _ConnectNmAliases(raw_symbols)
 
-  if opts.relocations_mode:
-    raw_symbols = _OverwriteSymbolSizesWithRelocationCount(
-        raw_symbols, tool_prefix, elf_path)
+  if native_spec:
+    logging.debug('Connecting nm aliases')
+    _ConnectNmAliases(raw_symbols)
+
+    if opts.relocations_mode:
+      raw_symbols = _OverwriteSymbolSizesWithRelocationCount(
+          raw_symbols, native_spec.tool_prefix, native_spec.elf_path)
 
   section_sizes = {k: size for k, (address, size) in section_ranges.items()}
   container = models.Container(name=container_name,
@@ -1742,9 +1756,6 @@ def _AddContainerArguments(parser):
       action='store_true',
       help='Perform sanity checks to ensure there is no missing data.')
 
-  # The --split-name arg is used for bundles to identify DFMs.
-  parser.set_defaults(split_name=None)
-
 
 def AddArguments(parser):
   parser.add_argument('size_file', help='Path to output .size file.')
@@ -1848,8 +1859,27 @@ def ParseSsargs(lines):
   return sub_args_list
 
 
-def _DeduceNativeInfo(tentative_output_dir, apk_path, elf_path, map_path,
-                      ignore_linker_map, tool_prefix, on_config_error):
+def _UpdateLinkerNameAndToolPrefix(tentative_output_dir, native_spec):
+  if not native_spec.map_path:
+    return native_spec
+  native_spec.linker_name = _DetectLinkerName(native_spec.map_path)
+  logging.info('Linker name: %s', native_spec.linker_name)
+
+  tool_prefix_finder = path_util.ToolPrefixFinder(
+      value=native_spec.tool_prefix,
+      output_directory=tentative_output_dir,
+      linker_name=native_spec.linker_name)
+  native_spec.tool_prefix = tool_prefix_finder.Finalized()
+  return native_spec
+
+
+def _CreateNativeSpecs(tentative_output_dir, apk_path, elf_path, map_path,
+                       track_string_literals, ignore_linker_map, tool_prefix,
+                       on_config_error):
+  if (map_path and not map_path.endswith('.map')
+      and not map_path.endswith('.map.gz')):
+    on_config_error('Expected --map-file to end with .map or .map.gz')
+
   apk_so_path = None
   if apk_path:
     with zipfile.ZipFile(apk_path) as z:
@@ -1857,45 +1887,54 @@ def _DeduceNativeInfo(tentative_output_dir, apk_path, elf_path, map_path,
           f for f in z.infolist()
           if f.filename.endswith('.so') and f.file_size > 0
       ]
-    if not lib_infos:
-      return None, map_path, None
+    if lib_infos:
+      # TODO(agrieve): Analyze more than just one library.
+      apk_so_path = max(lib_infos, key=lambda x: x.file_size).filename
 
-    # TODO(agrieve): Add support for multiple .so files, and take into account
-    #     secondary architectures.
-    apk_so_path = max(lib_infos, key=lambda x: x.file_size).filename
-    logging.debug('Sub-apk path=%s', apk_so_path)
-    if not elf_path and tentative_output_dir:
-      elf_path = os.path.join(
-          tentative_output_dir, 'lib.unstripped',
-          os.path.basename(apk_so_path.replace('crazy.', '')))
-      logging.debug('Detected --elf-file=%s', elf_path)
+    if apk_so_path:
+      if apk_so_path.endswith('_partition.so'):
+        # TODO(agrieve): Support symbol breakdowns for partitions (they exist in
+        #     the __combined .map file. Debug information (nm output) is shared
+        #     with base partition.
+        logging.debug('Not breaking down %s: partitioned library', apk_so_path)
+        return []
 
-  if map_path:
-    if not map_path.endswith('.map') and not map_path.endswith('.map.gz'):
-      on_config_error('Expected --map-file to end with .map or .map.gz')
-  elif elf_path:
-    # TODO(agrieve): Support breaking down partitions.
-    is_partition = elf_path.endswith('_partition.so')
-    if is_partition:
-      on_config_error('Found unexpected _partition.so: ' + elf_path)
+      if not elf_path and tentative_output_dir:
+        elf_path = os.path.join(
+            tentative_output_dir, 'lib.unstripped',
+            posixpath.basename(apk_so_path.replace('crazy.', '')))
 
-    if not ignore_linker_map:
-      if _ElfIsMainPartition(elf_path, tool_prefix):
-        map_path = elf_path.replace('.so', '__combined.so') + '.map'
-      else:
-        map_path = elf_path + '.map'
+        logging.debug('Detected --elf-file=%s', elf_path)
+
+  if not tentative_output_dir:
+    logging.warning('Cannot break down native symbols without output_dir')
+
+  if ignore_linker_map:
+    map_path = None
+  elif elf_path and not map_path:
+    if _ElfIsMainPartition(elf_path, tool_prefix):
+      map_path = elf_path.replace('.so', '__combined.so') + '.map'
+    else:
+      map_path = elf_path + '.map'
+    if not os.path.exists(map_path):
+      map_path += '.gz'
       if not os.path.exists(map_path):
-        map_path += '.gz'
+        map_path = None
 
-  if not ignore_linker_map and not os.path.exists(map_path):
-    # Consider a missing linker map fatal only for the base split. For .so
-    # files in feature splits, allow skipping breakdowns.
-    on_config_error(
-        'Could not find .map(.gz)? file. Ensure you have built with '
-        'is_official_build=true and generate_linker_map=true, or use '
-        '--map-file to point me a linker map file, or use --no-map-file.')
+    if map_path:
+      logging.debug('Detected --map-file=%s', map_path)
 
-  return elf_path, map_path, apk_so_path
+  if not map_path and not elf_path:
+    return []
+  # TODO(crbug.com/1193507): Implement string literal tracking without map
+  #     files. nm emits some string literal symbols, but most are missing.
+  track_string_literals = bool(track_string_literals and map_path)
+  native_spec = NativeSpec(tool_prefix=tool_prefix,
+                           apk_so_path=apk_so_path,
+                           map_path=map_path,
+                           elf_path=elf_path,
+                           track_string_literals=track_string_literals)
+  return [_UpdateLinkerNameAndToolPrefix(tentative_output_dir, native_spec)]
 
 
 def _DeduceAuxPaths(args, apk_prefix):
@@ -1943,78 +1982,79 @@ def _ReadMultipleArgsFromFile(ssargs_file, on_config_error):
                                      on_config_error)
 
 
-def _ProcessContainerArgs(top_args, sub_args, container_name, on_config_error):
+def _ProcessContainerArgs(top_args,
+                          sub_args,
+                          container_name,
+                          on_config_error,
+                          apk_path=None,
+                          split_name=None):
   # Copy output_directory, tool_prefix, etc. into sub_args.
+  # Since |sub_args| gets modified, the caller should provide a fresh copy if
+  # this function is called from a loop.
   for k, v in top_args.__dict__.items():
     sub_args.__dict__.setdefault(k, v)
 
-  opts = ContainerArchiveOptions(top_args, sub_args)
+  opts = ContainerArchiveOptions()
+  opts.relocations_mode = top_args.relocations
+  opts.analyze_native = not (sub_args.java_only or sub_args.no_native
+                             or top_args.java_only or top_args.no_native)
+
+  apk_path = apk_path or sub_args.apk_file
+  if split_name:
+    container_name = '{}/{}.apk'.format(container_name, split_name)
+    # Make on-demand a part of the name so that:
+    # * It's obvious from the name which DFMs are on-demand.
+    # * Diffs that change an on-demand status show as adds/removes.
+    if _IsOnDemand(apk_path):
+      container_name += '?'
+    if split_name != 'base':
+      # TODO(crbug.com/1143690): Fix native analysis for split APKs.
+      opts.analyze_native = False
+
   apk_prefix = sub_args.minimal_apks_file or sub_args.apk_file
   if apk_prefix:
     # Allow either .minimal.apks or just .apks.
     apk_prefix = apk_prefix.replace('.minimal.apks', '.aab')
     apk_prefix = apk_prefix.replace('.apks', '.aab')
 
-  sub_args.mapping_path, resources_pathmap_path = _DeduceAuxPaths(
-      sub_args, apk_prefix)
-  linker_name = None
-  if opts.analyze_native:
-    is_base_split = sub_args.split_name in (None, 'base')
-    # We don't yet support analyzing .so files outside of base split.
-    if not is_base_split:
-      opts.analyze_native = False
-    else:
-      tool_prefix_finder = path_util.ToolPrefixFinder(
-          value=sub_args.tool_prefix,
-          output_directory=top_args.output_directory,
-          linker_name='lld')
-      sub_args.elf_file, sub_args.map_file, apk_so_path = _DeduceNativeInfo(
-          tentative_output_dir=top_args.output_directory,
-          apk_path=sub_args.apk_file,
-          elf_path=sub_args.elf_file or sub_args.aux_elf_file,
-          map_path=sub_args.map_file,
-          ignore_linker_map=sub_args.ignore_linker_map,
-          tool_prefix=tool_prefix_finder.Finalized(),
-          on_config_error=on_config_error)
+  mapping_path, resources_pathmap_path = _DeduceAuxPaths(sub_args, apk_prefix)
 
-    if sub_args.ignore_linker_map:
-      sub_args.map_file = None
+  apk_spec = None
+  if apk_prefix:
+    apk_spec = ApkSpec(minimal_apks_path=sub_args.minimal_apks_file,
+                       apk_path=apk_path,
+                       mapping_path=mapping_path,
+                       split_name=split_name)
+    if top_args.output_directory:
+      apk_spec.size_info_prefix = os.path.join(top_args.output_directory,
+                                               'size-info',
+                                               os.path.basename(apk_prefix))
+    apk_spec.analyze_dex = not (sub_args.native_only or sub_args.no_java
+                                or top_args.native_only or top_args.no_java
+                                or opts.relocations_mode)
 
   if opts.analyze_native:
-    if sub_args.map_file:
-      linker_name = _DetectLinkerName(sub_args.map_file)
-      logging.info('Linker name: %s', linker_name)
-    else:
-      # TODO(crbug.com/1193507): Remove when we implement string literal
-      #     tracking without map files.
-      #     nm emits some string literal symbols, but most exist in symbol gaps.
-      opts.track_string_literals = False
-
     tool_prefix_finder = path_util.ToolPrefixFinder(
         value=sub_args.tool_prefix,
         output_directory=top_args.output_directory,
-        linker_name=linker_name)
-    sub_args.tool_prefix = tool_prefix_finder.Finalized()
+        linker_name='lld')
+    native_specs = _CreateNativeSpecs(
+        tentative_output_dir=top_args.output_directory,
+        apk_path=apk_path,
+        elf_path=sub_args.elf_file or sub_args.aux_elf_file,
+        map_path=sub_args.map_file,
+        track_string_literals=top_args.track_string_literals,
+        ignore_linker_map=sub_args.ignore_linker_map,
+        tool_prefix=tool_prefix_finder.Finalized(),
+        on_config_error=on_config_error)
   else:
-    # Trust that these values will not be used, and set to None.
-    sub_args.elf_file = None
-    sub_args.map_file = None
-    apk_so_path = None
-
-  size_info_prefix = None
-  if top_args.output_directory and apk_prefix:
-    size_info_prefix = os.path.join(top_args.output_directory, 'size-info',
-                                    os.path.basename(apk_prefix))
-
-  # Need one or the other to have native symbols.
-  if not sub_args.elf_file and not sub_args.map_file:
-    opts.analyze_native = False
+    native_specs = []
 
   container_args = sub_args.__dict__.copy()
   container_args.update(opts.__dict__)
   logging.info('Container Params: %r', container_args)
-  return (sub_args, opts, container_name, apk_so_path, resources_pathmap_path,
-          linker_name, size_info_prefix)
+  return (sub_args, apk_spec, native_specs, opts, container_name,
+          resources_pathmap_path)
 
 
 def _IsOnDemand(apk_path):
@@ -2084,24 +2124,16 @@ def _IterSubArgs(top_args, on_config_error):
 
     # If needed, extract .apk file to a temp file and process that instead.
     if sub_args.minimal_apks_file:
-      for split_name, _ in _FindSplitNamesAndSizes(sub_args.minimal_apks_file):
+      for split_name in _ListSplits(sub_args.minimal_apks_file):
         with zip_util.UnzipToTemp(
             sub_args.minimal_apks_file,
             'splits/{}-master.apk'.format(split_name)) as temp:
-          split_sub_args = copy.copy(sub_args)
-          split_sub_args.apk_file = temp
-          split_sub_args.split_name = split_name
-          split_sub_args.name = '{}/{}.apk'.format(container_name, split_name)
-          # Make on-demand a part of the name so that:
-          # * It's obvious from the name which DFMs are on-demand.
-          # * Diffs that change an on-demand status show as adds/removes.
-          if _IsOnDemand(temp):
-            split_sub_args.name += '?'
-          if split_name != 'base':
-            # TODO(crbug.com/1143690): Fix native analysis for split APKs.
-            split_sub_args.map_file = None
-          yield _ProcessContainerArgs(top_args, split_sub_args,
-                                      split_sub_args.name, on_config_error)
+          yield _ProcessContainerArgs(top_args,
+                                      sub_args,
+                                      container_name,
+                                      on_config_error,
+                                      apk_path=temp,
+                                      split_name=split_name)
     else:
       yield _ProcessContainerArgs(top_args, sub_args, container_name,
                                   on_config_error)
@@ -2120,36 +2152,36 @@ def Run(top_args, on_config_error):
   raw_symbols_list = []
 
   # Iterate over each container.
-  for (sub_args, opts, container_name, apk_so_path, resources_pathmap_path,
-       linker_name, size_info_prefix) in _IterSubArgs(top_args,
-                                                      on_config_error):
+  for (sub_args, apk_spec, native_specs, opts, container_name,
+       resources_pathmap_path) in _IterSubArgs(top_args, on_config_error):
+    if not native_specs:
+      native_specs = [None]
+    for native_spec in native_specs:
+      if container_name in seen_container_names:
+        raise ValueError('Duplicate container name: {}'.format(container_name))
+      seen_container_names.add(container_name)
+      logging.info('Starting on container %s', container_name)
 
-    if container_name in seen_container_names:
-      raise ValueError('Duplicate container name: {}'.format(container_name))
-    seen_container_names.add(container_name)
+      metadata = CreateMetadata(build_config=build_config,
+                                apk_spec=apk_spec,
+                                native_spec=native_spec,
+                                source_directory=sub_args.source_directory,
+                                output_directory=sub_args.output_directory)
+      container, raw_symbols = CreateContainerAndSymbols(
+          knobs=knobs,
+          opts=opts,
+          container_name=container_name,
+          metadata=metadata,
+          apk_spec=apk_spec,
+          native_spec=native_spec,
+          source_directory=sub_args.source_directory,
+          output_directory=sub_args.output_directory,
+          resources_pathmap_path=resources_pathmap_path,
+          pak_files=sub_args.pak_file,
+          pak_info_file=sub_args.pak_info_file)
 
-    metadata = CreateMetadata(sub_args, linker_name, build_config)
-    container, raw_symbols = CreateContainerAndSymbols(
-        knobs=knobs,
-        opts=opts,
-        container_name=container_name,
-        metadata=metadata,
-        map_path=sub_args.map_file,
-        tool_prefix=sub_args.tool_prefix,
-        elf_path=sub_args.elf_file,
-        apk_path=sub_args.apk_file,
-        mapping_path=sub_args.mapping_path,
-        output_directory=sub_args.output_directory,
-        source_directory=sub_args.source_directory,
-        resources_pathmap_path=resources_pathmap_path,
-        apk_so_path=apk_so_path,
-        pak_files=sub_args.pak_file,
-        pak_info_file=sub_args.pak_info_file,
-        linker_name=linker_name,
-        size_info_prefix=size_info_prefix)
-
-    container_list.append(container)
-    raw_symbols_list.append(raw_symbols)
+      container_list.append(container)
+      raw_symbols_list.append(raw_symbols)
 
   size_info = CreateSizeInfo(build_config,
                              container_list,
