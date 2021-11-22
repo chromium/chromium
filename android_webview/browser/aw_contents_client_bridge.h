@@ -71,10 +71,7 @@ class AwContentsClientBridge {
   static void Dissociate(content::WebContents* web_contents);
   static AwContentsClientBridge* FromWebContents(
       content::WebContents* web_contents);
-  static AwContentsClientBridge* FromWebContentsGetter(
-      const content::WebContents::Getter& web_contents_getter);
-  static AwContentsClientBridge* FromID(int render_process_id,
-                                        int render_frame_id);
+
   AwContentsClientBridge(JNIEnv* env,
                          const base::android::JavaRef<jobject>& obj);
   ~AwContentsClientBridge();
