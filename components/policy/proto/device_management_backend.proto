@@ -4383,6 +4383,7 @@ message DeviceManagementResponse {
   optional BrowserPublicKeyUploadResponse browser_public_key_upload_response =
       36;
 
+  // Response to EUICC info upload request.
   optional UploadEuiccInfoResponse upload_euicc_info_response = 37;
 
   // Next id: 38.
