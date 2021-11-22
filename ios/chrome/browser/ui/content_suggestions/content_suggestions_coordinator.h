@@ -81,9 +81,6 @@ class WebState;
 // Tell location bar has taken focus.
 - (void)locationBarDidBecomeFirstResponder;
 
-// Constrains the named layout guide for the Discover header menu button.
-- (void)constrainDiscoverHeaderMenuButtonNamedGuide;
-
 // Configure Content Suggestions if showing the Start Surface.
 - (void)configureStartSurfaceIfNeeded;
 @end

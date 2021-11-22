@@ -295,10 +295,6 @@ const NSInteger kMaxNumMostVisitedTiles = 4;
 
   [sectionsInfo addObject:self.mostVisitedSectionInfo];
 
-  if (self.contentSuggestionsEnabled) {
-    [sectionsInfo addObject:self.discoverSectionInfo];
-  }
-
   return sectionsInfo;
 }
 

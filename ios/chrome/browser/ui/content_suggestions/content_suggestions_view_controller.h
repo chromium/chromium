@@ -18,7 +18,6 @@
 @protocol ContentSuggestionsMenuProvider;
 @protocol ContentSuggestionsViewControllerAudience;
 @protocol DiscoverFeedHeaderChanging;
-@protocol DiscoverFeedMenuCommands;
 @protocol SnackbarCommands;
 @protocol SuggestedContent;
 @protocol ThemeChangeDelegate;
@@ -45,7 +44,6 @@
         collectionViewModel;
 // Delegate for handling theme changes (dark/light theme).
 @property(nonatomic, weak) id<ThemeChangeDelegate> themeChangeDelegate;
-@property(nonatomic, weak) id<DiscoverFeedMenuCommands> discoverFeedMenuHandler;
 @property(nonatomic, weak, readonly) id<DiscoverFeedHeaderChanging>
     discoverFeedHeaderDelegate;
 // Whether or not the contents section should be hidden completely.

@@ -14,6 +14,8 @@
 @class ContentSuggestionsViewController;
 @class DiscoverFeedMetricsRecorder;
 @class DiscoverFeedWrapperViewController;
+@class FeedHeaderViewController;
+@protocol FeedMenuCommands;
 @protocol NewTabPageContentDelegate;
 @protocol OverscrollActionsControllerDelegate;
 @class ViewRevealingVerticalPanHandler;
@@ -62,6 +64,12 @@
 // Whether or not the feed is visible.
 @property(nonatomic, assign, getter=isFeedVisible) BOOL feedVisible;
 
+// The view controller representing the NTP feed header.
+@property(nonatomic, assign) FeedHeaderViewController* feedHeaderViewController;
+
+// The handler for feed menu commands.
+@property(nonatomic, weak) id<FeedMenuCommands> feedMenuHandler;
+
 // Initializes the new tab page view controller.
 - (instancetype)init NS_DESIGNATED_INITIALIZER;
 
@@ -89,14 +97,17 @@
 // of a header.
 - (void)updateContentSuggestionForCurrentLayout;
 
-// Returns the current height of the content suggestions content.
-- (CGFloat)contentSuggestionsContentHeight;
-
 // Scrolls up the collection view enough to focus the omnibox.
 - (void)focusFakebox;
 
 // Returns whether the NTP is scrolled to the top or not.
 - (BOOL)isNTPScrolledToTop;
+
+// Returns the height of the content above the feed. The views above the feed
+// (like the content suggestions) are added through a content inset in the feed
+// collection view, so this property is used to track the total height of those
+// additional views.
+- (CGFloat)heightAboveFeed;
 
 @end
 

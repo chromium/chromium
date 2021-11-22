@@ -17,6 +17,7 @@ extern NSString* const kContentSuggestionsLearnMoreIdentifier;
 extern NSString* const
     kContentSuggestionsMostVisitedAccessibilityIdentifierPrefix;
 
+// TODO(crbug.com/1261554): Remove this after moving the header.
 // Represents the menu button in the Discover feed header.
 extern NSString* const kContentSuggestionsDiscoverHeaderButtonIdentifier;
 

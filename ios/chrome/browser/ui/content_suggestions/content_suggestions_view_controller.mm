@@ -274,13 +274,11 @@ const CGFloat kDiscoverFeedFeaderHeight = 30;
   UICollectionReusableView* cell = [super collectionView:collectionView
                        viewForSupplementaryElementOfKind:kind
                                              atIndexPath:indexPath];
+  // TODO(crbug.com/1261554): Clean this out after moving the header.
   if ([kind isEqualToString:UICollectionElementKindSectionHeader] &&
       [self.collectionUpdater isDiscoverSection:indexPath.section]) {
     ContentSuggestionsDiscoverHeaderCell* discoverFeedHeader =
         base::mac::ObjCCastStrict<ContentSuggestionsDiscoverHeaderCell>(cell);
-    [discoverFeedHeader.menuButton addTarget:self
-                                      action:@selector(openDiscoverFeedMenu)
-                            forControlEvents:UIControlEventTouchUpInside];
     [self.audience discoverHeaderMenuButtonShown:discoverFeedHeader.menuButton];
   }
   return cell;
@@ -506,11 +504,6 @@ const CGFloat kDiscoverFeedFeaderHeight = 30;
       [self.collectionUpdater addEmptyItemForSection:section];
   if (emptyItem)
     [self.collectionView insertItemsAtIndexPaths:@[ emptyItem ]];
-}
-
-// Opens top-level feed menu when pressing |menuButton|.
-- (void)openDiscoverFeedMenu {
-  [self.discoverFeedMenuHandler openDiscoverFeedMenu];
 }
 
 @end

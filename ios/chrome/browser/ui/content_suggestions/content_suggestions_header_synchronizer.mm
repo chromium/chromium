@@ -97,7 +97,7 @@ initWithCollectionController:
     return;
   }
 
-  self.collectionController.scrolledToTop = NO;
+  self.collectionController.scrolledToMinimumHeight = NO;
 
   // CADisplayLink is used for this animation instead of the standard UIView
   // animation because the standard animation did not properly convert the
@@ -125,7 +125,7 @@ initWithCollectionController:
                                  animated:NO];
   }
 
-  if (self.collectionController.scrolledToTop) {
+  if (self.collectionController.scrolledToMinimumHeight) {
     self.shouldAnimateHeader = NO;
     if (completion)
       completion(UIViewAnimatingPositionEnd);
@@ -139,7 +139,7 @@ initWithCollectionController:
   self.collectionShiftingOffset =
       MAX(-self.additionalOffset, pinnedOffsetY - [self adjustedOffset].y);
 
-  self.collectionController.scrolledToTop = YES;
+  self.collectionController.scrolledToMinimumHeight = YES;
   self.shouldAnimateHeader = YES;
 
   __weak __typeof(self) weakSelf = self;

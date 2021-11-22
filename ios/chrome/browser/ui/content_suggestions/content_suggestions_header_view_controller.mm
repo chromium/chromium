@@ -532,7 +532,7 @@ const NSString* kScribbleFakeboxElementId = @"fakebox";
     return;
 
   void (^animations)() = nil;
-  if (![self.delegate isScrolledToTop]) {
+  if (![self.delegate isScrolledToMinimumHeight]) {
     // Only trigger the fake omnibox animation if the header isn't scrolled to
     // the top. Otherwise just rely on the normal animation.
     self.disableScrollAnimation = YES;
@@ -585,7 +585,7 @@ const NSString* kScribbleFakeboxElementId = @"fakebox";
         self.headerView.voiceSearchButton.alpha = 1;
         self.disableScrollAnimation = NO;
         if (finalPosition == UIViewAnimatingPositionEnd &&
-            [self.delegate isScrolledToTop]) {
+            [self.delegate isScrolledToMinimumHeight]) {
           // Check to see if the collection are still scrolled to the top --
           // it's possible (and difficult) to unfocus the omnibox and initiate a
           // -shiftTilesDown before the animation here completes.
@@ -702,7 +702,7 @@ const NSString* kScribbleFakeboxElementId = @"fakebox";
 }
 
 - (void)locationBarResignsFirstResponder {
-  if (!self.isShowing && ![self.delegate isScrolledToTop])
+  if (!self.isShowing && ![self.delegate isScrolledToMinimumHeight])
     return;
 
   self.omniboxFocused = NO;

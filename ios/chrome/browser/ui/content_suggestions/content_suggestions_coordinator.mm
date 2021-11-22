@@ -9,8 +9,6 @@
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
 #include "base/strings/sys_string_conversions.h"
-#import "components/feature_engagement/public/event_constants.h"
-#import "components/feature_engagement/public/tracker.h"
 #include "components/feed/core/v2/public/ios/pref_names.h"
 #include "components/ntp_tiles/most_visited_sites.h"
 #include "components/prefs/pref_service.h"
@@ -23,7 +21,6 @@
 #include "ios/chrome/browser/favicon/ios_chrome_large_icon_cache_factory.h"
 #include "ios/chrome/browser/favicon/ios_chrome_large_icon_service_factory.h"
 #include "ios/chrome/browser/favicon/large_icon_cache.h"
-#import "ios/chrome/browser/feature_engagement/tracker_factory.h"
 #import "ios/chrome/browser/main/browser.h"
 #include "ios/chrome/browser/ntp_tiles/ios_most_visited_sites_factory.h"
 #import "ios/chrome/browser/policy/policy_util.h"
@@ -72,7 +69,6 @@
 #import "ios/chrome/browser/ui/start_surface/start_surface_recent_tab_browser_agent.h"
 #import "ios/chrome/browser/ui/start_surface/start_surface_util.h"
 #include "ios/chrome/browser/ui/ui_feature_flags.h"
-#import "ios/chrome/browser/ui/util/named_guide.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/url_loading/url_loading_browser_agent.h"
 #import "ios/chrome/browser/url_loading/url_loading_params.h"
@@ -92,7 +88,6 @@
     ContentSuggestionsHeaderCommands,
     ContentSuggestionsMenuProvider,
     ContentSuggestionsViewControllerAudience,
-    DiscoverFeedMenuCommands,
     ThemeChangeDelegate,
     URLDropDelegate> {
   // Observer bridge for mediator to listen to
@@ -243,7 +238,6 @@
   id<SnackbarCommands> dispatcher =
       static_cast<id<SnackbarCommands>>(self.browser->GetCommandDispatcher());
   self.suggestionsViewController.dispatcher = dispatcher;
-  self.suggestionsViewController.discoverFeedMenuHandler = self;
   self.suggestionsViewController.bubblePresenter = self.bubblePresenter;
 
   self.discoverFeedHeaderDelegate =
@@ -312,14 +306,6 @@
   return self.suggestionsViewController;
 }
 
-- (void)constrainDiscoverHeaderMenuButtonNamedGuide {
-  NamedGuide* menuButtonGuide =
-      [NamedGuide guideWithName:kDiscoverFeedHeaderMenuGuide
-                           view:self.discoverFeedHeaderMenuButton];
-
-  menuButtonGuide.constrainedView = self.discoverFeedHeaderMenuButton;
-}
-
 #pragma mark - ContentSuggestionsViewControllerAudience
 
 - (void)promoShown {
@@ -357,75 +343,6 @@
 - (void)view:(UIView*)view didDropURL:(const GURL&)URL atPoint:(CGPoint)point {
   UrlLoadingBrowserAgent::FromBrowser(self.browser)
       ->Load(UrlLoadParams::InCurrentTab(URL));
-}
-
-#pragma mark - DiscoverFeedMenuCommands
-
-- (void)openDiscoverFeedMenu {
-  [self.alertCoordinator stop];
-  self.alertCoordinator = nil;
-
-  self.alertCoordinator = [[ActionSheetCoordinator alloc]
-      initWithBaseViewController:self.suggestionsViewController
-                         browser:self.browser
-                           title:nil
-                         message:nil
-                            rect:self.discoverFeedHeaderMenuButton.frame
-                            view:self.discoverFeedHeaderMenuButton.superview];
-  __weak ContentSuggestionsCoordinator* weakSelf = self;
-
-  if ([self.contentSuggestionsExpanded value]) {
-    [self.alertCoordinator
-        addItemWithTitle:l10n_util::GetNSString(
-                             IDS_IOS_DISCOVER_FEED_MENU_TURN_OFF_ITEM)
-                  action:^{
-                    [weakSelf setDiscoverFeedVisible:NO];
-                    [weakSelf.ntpCommandHandler updateNTPForDiscoverFeed];
-                  }
-                   style:UIAlertActionStyleDestructive];
-  } else {
-    [self.alertCoordinator
-        addItemWithTitle:l10n_util::GetNSString(
-                             IDS_IOS_DISCOVER_FEED_MENU_TURN_ON_ITEM)
-                  action:^{
-                    [weakSelf setDiscoverFeedVisible:YES];
-                    [weakSelf.ntpCommandHandler updateNTPForDiscoverFeed];
-                  }
-                   style:UIAlertActionStyleDefault];
-  }
-
-  if (self.authService->HasPrimaryIdentity(signin::ConsentLevel::kSignin)) {
-    [self.alertCoordinator
-        addItemWithTitle:l10n_util::GetNSString(
-                             IDS_IOS_DISCOVER_FEED_MENU_MANAGE_ACTIVITY_ITEM)
-                  action:^{
-                    [weakSelf.ntpMediator handleFeedManageActivityTapped];
-                  }
-                   style:UIAlertActionStyleDefault];
-
-    [self.alertCoordinator
-        addItemWithTitle:l10n_util::GetNSString(
-                             IDS_IOS_DISCOVER_FEED_MENU_MANAGE_INTERESTS_ITEM)
-                  action:^{
-                    [weakSelf.ntpMediator handleFeedManageInterestsTapped];
-                  }
-                   style:UIAlertActionStyleDefault];
-  }
-
-  [self.alertCoordinator
-      addItemWithTitle:l10n_util::GetNSString(
-                           IDS_IOS_DISCOVER_FEED_MENU_LEARN_MORE_ITEM)
-                action:^{
-                  [weakSelf.ntpMediator handleFeedLearnMoreTapped];
-                }
-                 style:UIAlertActionStyleDefault];
-  [self.alertCoordinator start];
-}
-
-- (void)notifyFeedLoadedForHeaderMenu {
-  feature_engagement::TrackerFactory::GetForBrowserState(
-      self.browser->GetBrowserState())
-      ->NotifyEvent(feature_engagement::events::kDiscoverFeedLoaded);
 }
 
 #pragma mark - ContentSuggestionsHeaderCommands
@@ -616,15 +533,6 @@
                                                       params:params
                                                   originView:view];
   [self.sharingCoordinator start];
-}
-
-// Toggles Discover feed visibility between hidden or expanded.
-- (void)setDiscoverFeedVisible:(BOOL)visible {
-  [self.contentSuggestionsExpanded setValue:visible];
-  [self.discoverFeedHeaderDelegate changeDiscoverFeedHeaderVisibility:visible];
-  [self.contentSuggestionsMediator reloadAllData];
-  [self.discoverFeedMetricsRecorder
-      recordDiscoverFeedVisibilityChanged:visible];
 }
 
 #pragma mark - AppStateObserver

@@ -437,8 +437,8 @@ const char kFeedLearnMoreURL[] = "https://support.google.com/chrome/"
   return self.alertCoordinator.isVisible;
 }
 
-- (BOOL)isScrolledToTop {
-  return self.primaryViewController.scrolledToTop;
+- (BOOL)isScrolledToMinimumHeight {
+  return [self.ntpViewController isScrolledToMinimumHeight];
 }
 
 - (void)registerImageUpdater:(id<UserAccountImageUpdateDelegate>)imageUpdater {
@@ -609,10 +609,7 @@ const char kFeedLearnMoreURL[] = "https://support.google.com/chrome/"
   web::NavigationItem* item = navigationManager->GetVisibleItem();
   CGFloat offset =
       item ? item->GetPageDisplayState().scroll_state().content_offset().y : 0;
-  CGFloat minimumOffset =
-      -self.ntpViewController.contentSuggestionsContentHeight;
-  // TODO(crbug.com/1114792): Create a protocol to stop having references to
-  // both of these ViewControllers directly.
+  CGFloat minimumOffset = -[self.ntpViewController heightAboveFeed];
   if (offset > minimumOffset) {
     [self.ntpViewController setSavedContentOffset:offset];
     if (IsSingleNtpEnabled()) {

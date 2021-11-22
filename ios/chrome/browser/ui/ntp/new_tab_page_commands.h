@@ -8,9 +8,9 @@
 // Commands to communicate back to the NewTabPageCoordinator
 @protocol NewTabPageCommands
 
-// Updates the NTP to take into account a new Discover feed, or a change in feed
+// Updates the NTP to take into account a new feed, or a change in feed
 // visibility.
-- (void)updateNTPForDiscoverFeed;
+- (void)updateNTPForFeed;
 
 // Called when the Discover Feed layout needs updating. e.g. An inner view like
 // ContentSuggestions height might have changed and the Feed needs to update its
