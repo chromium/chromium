@@ -7245,10 +7245,6 @@ crbug.com/1264775 [ Mac10.14 ] external/wpt/webrtc-stats/supported-stats.html [ 
 # Sheriff 2021-11-02
 crbug.com/1265924 [ Fuchsia ] synthetic_gestures/smooth-scroll-tiny-delta.html [ Failure Pass ]
 
-# V8 roll
-crbug.com/1257806 http/tests/devtools/console/console-external-array.js [ Skip ]
-crbug.com/1257806 http/tests/devtools/console/console-log-side-effects.js [ Skip ]
-
 # TODO(https://crbug.com/1265311): Make the test behave the same way on all platforms
 crbug.com/1265311 http/tests/navigation/location-change-repeated-from-blank.html [ Failure Pass ]
 
