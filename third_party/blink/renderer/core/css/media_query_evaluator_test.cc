@@ -319,7 +319,7 @@ MediaQueryEvaluatorTestCase g_dynamic_range_standard_cases[] = {
 };
 
 MediaQueryEvaluatorTestCase g_dynamic_range_high_cases[] = {
-    {"(dynamic-range: standard)", false},
+    {"(dynamic-range: standard)", true},
     {"(dynamic-range: high)", true},
     {"(dynamic-range: invalid)", false},
     {nullptr, false}  // Do not remove the terminator line.
@@ -340,7 +340,7 @@ MediaQueryEvaluatorTestCase g_video_dynamic_range_standard_cases[] = {
 };
 
 MediaQueryEvaluatorTestCase g_video_dynamic_range_high_cases[] = {
-    {"(video-dynamic-range: standard)", false},
+    {"(video-dynamic-range: standard)", true},
     {"(video-dynamic-range: high)", true},
     {"(video-dynamic-range: invalid)", false},
     {nullptr, false}  // Do not remove the terminator line.

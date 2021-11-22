@@ -387,14 +387,12 @@ static bool DynamicRangeMediaFeatureEval(const MediaQueryExpValue& value,
   if (!value.IsId())
     return false;
 
-  bool const supports_hdr = media_values.DeviceSupportsHDR();
-
   switch (value.Id()) {
     case CSSValueID::kStandard:
-      return !supports_hdr;
+      return true;
 
     case CSSValueID::kHigh:
-      return supports_hdr;
+      return media_values.DeviceSupportsHDR();
 
     default:
       NOTREACHED();
