@@ -74,6 +74,10 @@ mojom::DefaultPathsPtr EnvironmentProvider::GetDefaultPaths() {
   const user_manager::User* user =
       user_manager::UserManager::Get()->GetPrimaryUser();
   Profile* profile = chromeos::ProfileHelper::Get()->GetProfileByUser(user);
+
+  default_paths->user_nss_database =
+      crypto::GetSoftwareNSSDBPath(profile->GetPath());
+
   if (base::SysInfo::IsRunningOnChromeOS()) {
     // Typically /home/chronos/u-<hash>/MyFiles.
     default_paths->documents =
@@ -81,8 +85,6 @@ mojom::DefaultPathsPtr EnvironmentProvider::GetDefaultPaths() {
     // Typically /home/chronos/u-<hash>/MyFiles/Downloads.
     default_paths->downloads =
         file_manager::util::GetDownloadsFolderForProfile(profile);
-    default_paths->user_nss_database =
-        crypto::GetSoftwareNSSDBPath(profile->GetPath());
     auto* integration_service =
         drive::DriveIntegrationServiceFactory::FindForProfile(profile);
     if (integration_service && integration_service->is_enabled() &&
@@ -98,6 +100,7 @@ mojom::DefaultPathsPtr EnvironmentProvider::GetDefaultPaths() {
     default_paths->downloads = home.Append("Downloads");
     default_paths->drivefs = home.Append("Drive");
   }
+
   return default_paths;
 }
 

@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/crosapi/cert_database_ash.h"
 
 #include "base/bind.h"
+#include "base/system/sys_info.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/net/nss_service.h"
 #include "chrome/browser/net/nss_service_factory.h"
@@ -118,7 +119,8 @@ void CertDatabaseAsh::GetCertDatabaseInfo(
   // token.
   mojom::GetCertDatabaseInfoResultPtr result =
       mojom::GetCertDatabaseInfoResult::New();
-  result->should_load_chaps = user->IsAffiliated();
+  result->should_load_chaps =
+      user->IsAffiliated() && base::SysInfo::IsRunningOnChromeOS();
   result->private_slot_id = private_slot_id_;
   result->enable_system_slot = system_slot_id_.has_value();
   result->system_slot_id =

@@ -34,14 +34,12 @@ CertDbInitializerFactory::CertDbInitializerFactory()
 }
 
 bool CertDbInitializerFactory::ServiceIsCreatedWithBrowserContext() const {
-  // Here `IsRunningOnChromeOS()` is equivalent to "is not running in a test".
-  // In production the service must be created together with its profile. But
-  // most tests don't need it. If they do, this still allows to create it
-  // manually.
-  // TODO(b/202098971): When certificate verification is blocked on the NSS
-  // database being loaded in lacros, there will need to be a
-  // FakeCertDbInitializer in lacros tests by default.
-  return base::SysInfo::IsRunningOnChromeOS();
+  return should_create_with_browser_context_;
+}
+
+void CertDbInitializerFactory::SetCreateWithBrowserContextForTesting(
+    bool should_create) {
+  should_create_with_browser_context_ = should_create;
 }
 
 KeyedService* CertDbInitializerFactory::BuildServiceInstanceFor(
@@ -51,4 +49,8 @@ KeyedService* CertDbInitializerFactory::BuildServiceInstanceFor(
   CertDbInitializerImpl* result = new CertDbInitializerImpl(profile);
   result->Start();
   return result;
+}
+
+bool CertDbInitializerFactory::ServiceIsNULLWhileTesting() const {
+  return true;
 }

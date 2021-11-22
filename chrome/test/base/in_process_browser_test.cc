@@ -128,6 +128,7 @@
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chrome/browser/lacros/cert_db_initializer_factory.h"
 #include "components/account_manager_core/chromeos/account_manager.h"
 #include "components/account_manager_core/chromeos/account_manager_facade_factory.h"  // nogncheck
 #include "components/account_manager_core/chromeos/fake_account_manager_ui.h"  // nogncheck
@@ -421,6 +422,11 @@ void InProcessBrowserTest::SetUp() {
   // rely on the ability to open any files via file: scheme.
   ChromeNetworkDelegate::EnableAccessToAllFilesForTesting(true);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  CertDbInitializerFactory::GetInstance()
+      ->SetCreateWithBrowserContextForTesting(/*should_create=*/false);
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // Device sync (for multidevice "Better Together") is ash specific.
