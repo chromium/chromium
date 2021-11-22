@@ -99,6 +99,12 @@ GetUkmCollectUserDataResult(ukm::TestAutoSetUkmRecorder& ukm_recorder) {
                                  {kResult});
 }
 
+std::vector<ukm::TestUkmRecorder::HumanReadableUkmEntry> GetUkmTimeTakenMs(
+    ukm::TestAutoSetUkmRecorder& ukm_recorder) {
+  return ukm_recorder.GetEntries(kAutofillAssistantCollectUserDataResult,
+                                 {kTimeTakenMs});
+}
+
 std::vector<ukm::TestUkmRecorder::HumanReadableUkmEntry> ToHumanReadableMetrics(
     const std::vector<std::pair<ukm::SourceId, std::vector<UkmEnumVariant>>>&
         input) {

@@ -49,6 +49,16 @@ const char kFakePassword[] = "example_password";
 
 const char kMemoryLocation[] = "address";
 
+class TimeTicksOverride {
+ public:
+  static base::TimeTicks Now() { return now_ticks_; }
+
+  static base::TimeTicks now_ticks_;
+};
+
+// static
+base::TimeTicks TimeTicksOverride::now_ticks_ = base::TimeTicks::Now();
+
 MATCHER_P(MatchingAutofillVariant, guid, "") {
   if (absl::holds_alternative<const autofill::AutofillProfile*>(arg)) {
     return absl::get<const autofill::AutofillProfile*>(arg)->guid() == guid;
@@ -3465,7 +3475,9 @@ TEST_F(CollectUserDataActionTest, LogsUkmmMoreThanFiveProfilesCount) {
           static_cast<int64_t>(Metrics::UserDataEntryCount::FIVE_OR_MORE))}));
 }
 
-TEST_F(CollectUserDataActionTest, LogUkmSuccesss) {
+TEST_F(CollectUserDataActionTest, LogUkmSuccess) {
+  base::subtle::ScopedTimeClockOverrides overrides(
+      nullptr, &TimeTicksOverride::Now, nullptr);
   ActionProto action_proto;
   auto* collect_user_data_proto = action_proto.mutable_collect_user_data();
   collect_user_data_proto->set_privacy_notice_text("privacy");
@@ -3478,6 +3490,7 @@ TEST_F(CollectUserDataActionTest, LogUkmSuccesss) {
   ON_CALL(mock_action_delegate_, CollectUserData(_))
       .WillByDefault([&](CollectUserDataOptions* collect_user_data_options) {
         user_data_.terms_and_conditions_ = ACCEPTED;
+        TimeTicksOverride::now_ticks_ += base::Seconds(4);
 
         std::move(collect_user_data_options->confirm_callback)
             .Run(&user_data_, &user_model_);
@@ -3494,9 +3507,14 @@ TEST_F(CollectUserDataActionTest, LogUkmSuccesss) {
       ElementsAreArray({ToHumanReadableEntry(
           source_id_, kResult,
           static_cast<int64_t>(Metrics::CollectUserDataResult::SUCCESS))}));
+  EXPECT_THAT(
+      GetUkmTimeTakenMs(ukm_recorder_),
+      ElementsAreArray({ToHumanReadableEntry(source_id_, kTimeTakenMs, 4000)}));
 }
 
 TEST_F(CollectUserDataActionTest, LogUkmFailure) {
+  base::subtle::ScopedTimeClockOverrides overrides(
+      nullptr, &TimeTicksOverride::Now, nullptr);
   ActionProto action_proto;
   auto* collect_user_data_proto = action_proto.mutable_collect_user_data();
   collect_user_data_proto->set_privacy_notice_text("privacy");
@@ -3510,6 +3528,7 @@ TEST_F(CollectUserDataActionTest, LogUkmFailure) {
     CollectUserDataAction action(&mock_action_delegate_, action_proto);
     ON_CALL(mock_action_delegate_, CollectUserData(_))
         .WillByDefault([&](CollectUserDataOptions* collect_user_data_options) {
+          TimeTicksOverride::now_ticks_ += base::Seconds(3);
           // The continue button is never pressed.
         });
     action.ProcessAction(callback_.Get());
@@ -3522,7 +3541,9 @@ TEST_F(CollectUserDataActionTest, LogUkmFailure) {
       ElementsAreArray({ToHumanReadableEntry(
           source_id_, kResult,
           static_cast<int64_t>(Metrics::CollectUserDataResult::FAILURE))}));
+  EXPECT_THAT(
+      GetUkmTimeTakenMs(ukm_recorder_),
+      ElementsAreArray({ToHumanReadableEntry(source_id_, kTimeTakenMs, 3000)}));
 }
-
 }  // namespace
 }  // namespace autofill_assistant

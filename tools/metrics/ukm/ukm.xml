@@ -2178,6 +2178,12 @@ be describing additional metrics about the same event.
       The result of the CollectUserData action.
     </summary>
   </metric>
+  <metric name="TimeTakenMs">
+    <summary>
+      The time it took the user to complete the action, from when it was
+      prompted to them to when the action finished, either succesfully or not.
+    </summary>
+  </metric>
 </event>
 
 <event name="AutofillAssistant.InChromeTriggering">

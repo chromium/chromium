@@ -538,7 +538,8 @@ class Metrics {
                                     UserDataSelectionState selection_state);
   static void RecordCollectUserDataSuccess(ukm::UkmRecorder* ukm_recorder,
                                            ukm::SourceId source_id,
-                                           bool success);
+                                           bool success,
+                                           int64_t time_taken_ms);
 
   // Intended for debugging: writes string representation of |reason| to
   // |out|.
