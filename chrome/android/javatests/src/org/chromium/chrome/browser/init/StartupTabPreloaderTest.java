@@ -64,12 +64,89 @@ public class StartupTabPreloaderTest {
             "Android.StartupTabPreloader.LoadDecisionToFirstVisibleContent.LoadAndMismatch";
     private static final String PRELOAD_TRIGGER_TO_FIRST_VISIBLE_CONTENT_NO_PRELOAD =
             "Android.StartupTabPreloader.LoadDecisionToFirstVisibleContent.NoLoad";
+    private static final String PRELOAD_TRIGGER_TO_FIRST_NAVIGATION_COMMIT_PRELOAD_BEFORE_MATCH =
+            "Android.StartupTabPreloader.LoadDecisionToFirstNavigationCommit.LoadPreMatch";
+    private static final String PRELOAD_TRIGGER_TO_FIRST_NAVIGATION_COMMIT_PRELOAD_AND_TAKE =
+            "Android.StartupTabPreloader.LoadDecisionToFirstNavigationCommit.LoadAndMatch";
+    private static final String PRELOAD_TRIGGER_TO_FIRST_NAVIGATION_COMMIT_PRELOAD_AND_DROP =
+            "Android.StartupTabPreloader.LoadDecisionToFirstNavigationCommit.LoadAndMismatch";
+    private static final String PRELOAD_TRIGGER_TO_FIRST_NAVIGATION_COMMIT_NO_PRELOAD =
+            "Android.StartupTabPreloader.LoadDecisionToFirstNavigationCommit.NoLoad";
+    private static final String PRELOAD_TRIGGER_TO_FIRST_CONTENTFUL_PAINT_PRELOAD_BEFORE_MATCH =
+            "Android.StartupTabPreloader.LoadDecisionToFirstContentfulPaint.LoadPreMatch";
+    private static final String PRELOAD_TRIGGER_TO_FIRST_CONTENTFUL_PAINT_PRELOAD_AND_TAKE =
+            "Android.StartupTabPreloader.LoadDecisionToFirstContentfulPaint.LoadAndMatch";
+    private static final String PRELOAD_TRIGGER_TO_FIRST_CONTENTFUL_PAINT_PRELOAD_AND_DROP =
+            "Android.StartupTabPreloader.LoadDecisionToFirstContentfulPaint.LoadAndMismatch";
+    private static final String PRELOAD_TRIGGER_TO_FIRST_CONTENTFUL_PAINT_NO_PRELOAD =
+            "Android.StartupTabPreloader.LoadDecisionToFirstContentfulPaint.NoLoad";
+
+    // Used for verifying expected histogram counts.
+    private static final int NO_PRELOAD = 0;
+    private static final int PRELOAD = 1;
+    private static final int NO_PRELOAD_MATCH = 0;
+    private static final int PRELOAD_MATCH = 1;
 
     @Rule
     public ChromeTabbedActivityTestRule mActivityRule = new ChromeTabbedActivityTestRule();
 
     @Rule
     public EmbeddedTestServerRule mServerRule = new EmbeddedTestServerRule();
+
+    // Verifies the state of various startup metrics being recorded appropriately for the varues of
+    // |preload| and |preloadMatch| (specified by the constants above).
+    private void assertStartupMetricsRecorded(int preload, int preloadMatch) {
+        int noPreload = 1 - preload;
+        int preloadMismatch = (preload == 1 && preloadMatch == 0) ? 1 : 0;
+
+        Assert.assertEquals(preload,
+                RecordHistogram.getHistogramTotalCountForTesting(
+                        PRELOAD_TRIGGER_TO_FIRST_NAVIGATION_START_PRELOAD));
+        Assert.assertEquals(noPreload,
+                RecordHistogram.getHistogramTotalCountForTesting(
+                        PRELOAD_TRIGGER_TO_FIRST_NAVIGATION_START_NO_PRELOAD));
+
+        Assert.assertEquals(preloadMatch,
+                RecordHistogram.getHistogramTotalCountForTesting(
+                        PRELOAD_TRIGGER_TO_FIRST_VISIBLE_CONTENT_PRELOAD_AND_TAKE));
+        Assert.assertEquals(preloadMismatch,
+                RecordHistogram.getHistogramTotalCountForTesting(
+                        PRELOAD_TRIGGER_TO_FIRST_VISIBLE_CONTENT_PRELOAD_AND_DROP));
+        Assert.assertEquals(noPreload,
+                RecordHistogram.getHistogramTotalCountForTesting(
+                        PRELOAD_TRIGGER_TO_FIRST_VISIBLE_CONTENT_NO_PRELOAD));
+
+        Assert.assertEquals(preloadMatch,
+                RecordHistogram.getHistogramTotalCountForTesting(
+                        PRELOAD_TRIGGER_TO_FIRST_NAVIGATION_COMMIT_PRELOAD_AND_TAKE));
+        Assert.assertEquals(preloadMismatch,
+                RecordHistogram.getHistogramTotalCountForTesting(
+                        PRELOAD_TRIGGER_TO_FIRST_NAVIGATION_COMMIT_PRELOAD_AND_DROP));
+        Assert.assertEquals(noPreload,
+                RecordHistogram.getHistogramTotalCountForTesting(
+                        PRELOAD_TRIGGER_TO_FIRST_NAVIGATION_COMMIT_NO_PRELOAD));
+
+        Assert.assertEquals(preloadMatch,
+                RecordHistogram.getHistogramTotalCountForTesting(
+                        PRELOAD_TRIGGER_TO_FIRST_CONTENTFUL_PAINT_PRELOAD_AND_TAKE));
+        Assert.assertEquals(preloadMismatch,
+                RecordHistogram.getHistogramTotalCountForTesting(
+                        PRELOAD_TRIGGER_TO_FIRST_CONTENTFUL_PAINT_PRELOAD_AND_DROP));
+        Assert.assertEquals(noPreload,
+                RecordHistogram.getHistogramTotalCountForTesting(
+                        PRELOAD_TRIGGER_TO_FIRST_CONTENTFUL_PAINT_NO_PRELOAD));
+
+        // This case never triggers in these tests.
+        Assert.assertEquals(0,
+                RecordHistogram.getHistogramTotalCountForTesting(
+                        PRELOAD_TRIGGER_TO_FIRST_VISIBLE_CONTENT_PRELOAD_BEFORE_MATCH));
+        Assert.assertEquals(0,
+                RecordHistogram.getHistogramTotalCountForTesting(
+                        PRELOAD_TRIGGER_TO_FIRST_NAVIGATION_COMMIT_PRELOAD_BEFORE_MATCH));
+        Assert.assertEquals(0,
+                RecordHistogram.getHistogramTotalCountForTesting(
+                        PRELOAD_TRIGGER_TO_FIRST_CONTENTFUL_PAINT_PRELOAD_BEFORE_MATCH));
+    }
 
     @Test
     @LargeTest
@@ -119,24 +196,7 @@ public class StartupTabPreloaderTest {
                 1, RecordHistogram.getHistogramTotalCountForTesting(VISIBLE_CONTENT_HISTOGRAM));
 
         // Startup tab preload-specific startup metrics should also have been recorded.
-        Assert.assertEquals(1,
-                RecordHistogram.getHistogramTotalCountForTesting(
-                        PRELOAD_TRIGGER_TO_FIRST_NAVIGATION_START_PRELOAD));
-        Assert.assertEquals(0,
-                RecordHistogram.getHistogramTotalCountForTesting(
-                        PRELOAD_TRIGGER_TO_FIRST_NAVIGATION_START_NO_PRELOAD));
-        Assert.assertEquals(1,
-                RecordHistogram.getHistogramTotalCountForTesting(
-                        PRELOAD_TRIGGER_TO_FIRST_VISIBLE_CONTENT_PRELOAD_AND_TAKE));
-        Assert.assertEquals(0,
-                RecordHistogram.getHistogramTotalCountForTesting(
-                        PRELOAD_TRIGGER_TO_FIRST_VISIBLE_CONTENT_PRELOAD_AND_DROP));
-        Assert.assertEquals(0,
-                RecordHistogram.getHistogramTotalCountForTesting(
-                        PRELOAD_TRIGGER_TO_FIRST_VISIBLE_CONTENT_NO_PRELOAD));
-        Assert.assertEquals(0,
-                RecordHistogram.getHistogramTotalCountForTesting(
-                        PRELOAD_TRIGGER_TO_FIRST_VISIBLE_CONTENT_PRELOAD_BEFORE_MATCH));
+        assertStartupMetricsRecorded(PRELOAD, PRELOAD_MATCH);
     }
 
     @Test
@@ -174,24 +234,7 @@ public class StartupTabPreloaderTest {
                 1, RecordHistogram.getHistogramTotalCountForTesting(VISIBLE_CONTENT_HISTOGRAM));
 
         // Startup tab preload-specific startup metrics should also have been recorded.
-        Assert.assertEquals(1,
-                RecordHistogram.getHistogramTotalCountForTesting(
-                        PRELOAD_TRIGGER_TO_FIRST_NAVIGATION_START_PRELOAD));
-        Assert.assertEquals(0,
-                RecordHistogram.getHistogramTotalCountForTesting(
-                        PRELOAD_TRIGGER_TO_FIRST_NAVIGATION_START_NO_PRELOAD));
-        Assert.assertEquals(0,
-                RecordHistogram.getHistogramTotalCountForTesting(
-                        PRELOAD_TRIGGER_TO_FIRST_VISIBLE_CONTENT_PRELOAD_AND_TAKE));
-        Assert.assertEquals(1,
-                RecordHistogram.getHistogramTotalCountForTesting(
-                        PRELOAD_TRIGGER_TO_FIRST_VISIBLE_CONTENT_PRELOAD_AND_DROP));
-        Assert.assertEquals(0,
-                RecordHistogram.getHistogramTotalCountForTesting(
-                        PRELOAD_TRIGGER_TO_FIRST_VISIBLE_CONTENT_NO_PRELOAD));
-        Assert.assertEquals(0,
-                RecordHistogram.getHistogramTotalCountForTesting(
-                        PRELOAD_TRIGGER_TO_FIRST_VISIBLE_CONTENT_PRELOAD_BEFORE_MATCH));
+        assertStartupMetricsRecorded(PRELOAD, NO_PRELOAD_MATCH);
     }
 
     @Test
@@ -227,24 +270,7 @@ public class StartupTabPreloaderTest {
                 1, RecordHistogram.getHistogramTotalCountForTesting(VISIBLE_CONTENT_HISTOGRAM));
 
         // Startup tab preload-specific startup metrics should also have been recorded.
-        Assert.assertEquals(0,
-                RecordHistogram.getHistogramTotalCountForTesting(
-                        PRELOAD_TRIGGER_TO_FIRST_NAVIGATION_START_PRELOAD));
-        Assert.assertEquals(1,
-                RecordHistogram.getHistogramTotalCountForTesting(
-                        PRELOAD_TRIGGER_TO_FIRST_NAVIGATION_START_NO_PRELOAD));
-        Assert.assertEquals(0,
-                RecordHistogram.getHistogramTotalCountForTesting(
-                        PRELOAD_TRIGGER_TO_FIRST_VISIBLE_CONTENT_PRELOAD_AND_TAKE));
-        Assert.assertEquals(0,
-                RecordHistogram.getHistogramTotalCountForTesting(
-                        PRELOAD_TRIGGER_TO_FIRST_VISIBLE_CONTENT_PRELOAD_AND_DROP));
-        Assert.assertEquals(1,
-                RecordHistogram.getHistogramTotalCountForTesting(
-                        PRELOAD_TRIGGER_TO_FIRST_VISIBLE_CONTENT_NO_PRELOAD));
-        Assert.assertEquals(0,
-                RecordHistogram.getHistogramTotalCountForTesting(
-                        PRELOAD_TRIGGER_TO_FIRST_VISIBLE_CONTENT_PRELOAD_BEFORE_MATCH));
+        assertStartupMetricsRecorded(NO_PRELOAD, NO_PRELOAD_MATCH);
     }
 
     @Test
@@ -282,24 +308,7 @@ public class StartupTabPreloaderTest {
         // Startup tab preload-specific startup metrics should also have been recorded, with the
         // state reflecting what it would have been if startup tab preloading were not prevented by
         // the base::Feature.
-        Assert.assertEquals(1,
-                RecordHistogram.getHistogramTotalCountForTesting(
-                        PRELOAD_TRIGGER_TO_FIRST_NAVIGATION_START_PRELOAD));
-        Assert.assertEquals(0,
-                RecordHistogram.getHistogramTotalCountForTesting(
-                        PRELOAD_TRIGGER_TO_FIRST_NAVIGATION_START_NO_PRELOAD));
-        Assert.assertEquals(1,
-                RecordHistogram.getHistogramTotalCountForTesting(
-                        PRELOAD_TRIGGER_TO_FIRST_VISIBLE_CONTENT_PRELOAD_AND_TAKE));
-        Assert.assertEquals(0,
-                RecordHistogram.getHistogramTotalCountForTesting(
-                        PRELOAD_TRIGGER_TO_FIRST_VISIBLE_CONTENT_PRELOAD_AND_DROP));
-        Assert.assertEquals(0,
-                RecordHistogram.getHistogramTotalCountForTesting(
-                        PRELOAD_TRIGGER_TO_FIRST_VISIBLE_CONTENT_NO_PRELOAD));
-        Assert.assertEquals(0,
-                RecordHistogram.getHistogramTotalCountForTesting(
-                        PRELOAD_TRIGGER_TO_FIRST_VISIBLE_CONTENT_PRELOAD_BEFORE_MATCH));
+        assertStartupMetricsRecorded(PRELOAD, PRELOAD_MATCH);
     }
 
     @Test
@@ -340,24 +349,7 @@ public class StartupTabPreloaderTest {
         // Startup tab preload-specific startup metrics should also have been recorded, with the
         // state reflecting what it would have been if startup tab preloading were not prevented by
         // the base::Feature.
-        Assert.assertEquals(1,
-                RecordHistogram.getHistogramTotalCountForTesting(
-                        PRELOAD_TRIGGER_TO_FIRST_NAVIGATION_START_PRELOAD));
-        Assert.assertEquals(0,
-                RecordHistogram.getHistogramTotalCountForTesting(
-                        PRELOAD_TRIGGER_TO_FIRST_NAVIGATION_START_NO_PRELOAD));
-        Assert.assertEquals(0,
-                RecordHistogram.getHistogramTotalCountForTesting(
-                        PRELOAD_TRIGGER_TO_FIRST_VISIBLE_CONTENT_PRELOAD_AND_TAKE));
-        Assert.assertEquals(1,
-                RecordHistogram.getHistogramTotalCountForTesting(
-                        PRELOAD_TRIGGER_TO_FIRST_VISIBLE_CONTENT_PRELOAD_AND_DROP));
-        Assert.assertEquals(0,
-                RecordHistogram.getHistogramTotalCountForTesting(
-                        PRELOAD_TRIGGER_TO_FIRST_VISIBLE_CONTENT_NO_PRELOAD));
-        Assert.assertEquals(0,
-                RecordHistogram.getHistogramTotalCountForTesting(
-                        PRELOAD_TRIGGER_TO_FIRST_VISIBLE_CONTENT_PRELOAD_BEFORE_MATCH));
+        assertStartupMetricsRecorded(PRELOAD, NO_PRELOAD_MATCH);
     }
 
     @Test

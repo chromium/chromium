@@ -2877,6 +2877,64 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="Android.StartupTabPreloader.LoadDecisionToFirstContentfulPaint.{LoadAndMatchResult}"
+    units="ms" expires_after="2022-09-01">
+  <owner>blundell@chromium.org</owner>
+  <owner>yfriedman@chromium.org</owner>
+  <summary>
+    The time in a cold start between the triggerpoint for a startup tab being
+    preloaded and Android.Startup.Cold.TimeToFirstContentfulPaint being
+    recorded, recorded in the case where a startup tab preload is determined
+    {LoadAndMatchResult}. In the case where the ElideTabPreloadAtStartup feature
+    is enabled, this metric will be segmented to reflect the state that would
+    have resulted if tab preloading was not disabled by the feature.
+  </summary>
+  <token key="LoadAndMatchResult">
+    <variant name="LoadAndMatch"
+        summary="to be viable and the preload is a match for the actual
+                 initial load"/>
+    <variant name="LoadAndMismatch"
+        summary="to be viable and the preload is not a match for the actual
+                 initial load"/>
+    <variant name="LoadPreMatch"
+        summary="to be viable and first contentful paint is recorded before
+                 it was determined whether the preload was a match for the
+                 actual initial load. Note that it is not expected that this
+                 case occurs in practice, but it is theoretically possible"/>
+    <variant name="NoLoad" summary="not to be viable"/>
+  </token>
+</histogram>
+
+<histogram
+    name="Android.StartupTabPreloader.LoadDecisionToFirstNavigationCommit.{LoadAndMatchResult}"
+    units="ms" expires_after="2022-09-01">
+  <owner>blundell@chromium.org</owner>
+  <owner>yfriedman@chromium.org</owner>
+  <summary>
+    The time in a cold start between the triggerpoint for a startup tab being
+    preloaded and Android.Startup.Cold.TimeToFirstNavigationCommit being
+    recorded, recorded in the case where a startup tab preload is determined
+    {LoadAndMatchResult}. In the case where the ElideTabPreloadAtStartup feature
+    is enabled, this metric will be segmented to reflect the state that would
+    have resulted if tab preloading was not disabled by the feature.
+  </summary>
+  <token key="LoadAndMatchResult">
+    <variant name="LoadAndMatch"
+        summary="to be viable and the preload is a match for the actual
+                 initial load"/>
+    <variant name="LoadAndMismatch"
+        summary="to be viable and the preload is not a match for the actual
+                 initial load"/>
+    <variant name="LoadPreMatch"
+        summary="to be viable and first navigation commit is recorded before
+                 it was determined whether the preload was a match for the
+                 actual initial load. Note that it is not expected that this
+                 case occurs in practice, but it is theoretically possible"/>
+    <variant name="NoLoad" summary="not to be viable"/>
+  </token>
+</histogram>
+
+<histogram
     name="Android.StartupTabPreloader.LoadDecisionToFirstNavigationStart.{LoadDecision}"
     units="ms" expires_after="2022-09-01">
   <owner>blundell@chromium.org</owner>
