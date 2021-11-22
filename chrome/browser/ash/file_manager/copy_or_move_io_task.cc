@@ -144,8 +144,12 @@ bool CopyOrMoveIOTask::IsCrossFileSystem(
       volume_manager->FindVolumeFromPath(destination_url.path());
 
   if (!(source_volume && destination_volume)) {
-    // Use the chosen copy/move operation.
-    return false;
+    // When either volume is unavailable, fallback to only checking the
+    // filesystem_id, which uniquely maps a URL to its ExternalMountPoints
+    // instance. NOTE: different volumes (e.g. for removables), might share the
+    // same ExternalMountPoints. NOTE 2: if either volume is unavailable, the
+    // operation itself is likely to fail.
+    return source_url.filesystem_id() != destination_url.filesystem_id();
   }
 
   if (source_volume->volume_id() != destination_volume->volume_id()) {
@@ -257,14 +261,12 @@ void CopyOrMoveIOTask::GotFreeDiskSpace(int64_t free_space) {
   }
 
   int64_t required_bytes = progress_.total_bytes;
+
+  // Move operations that are same-filesystem do not require disk space.
   if (progress_.type == OperationType::kMove) {
-    // Ignore source files that are on the same volume when calculating size for
-    // moves.
-    // TODO(crbug.com/1200251): This needs some special handling for moves
-    // between "Downloads" and "My Files" due to the bind mount.
     for (int i = 0; i < source_sizes_.size(); i++) {
-      if (progress_.sources[i].url.filesystem_id() ==
-          progress_.destination_folder.filesystem_id()) {
+      if (!IsCrossFileSystem(progress_.sources[i].url,
+                             progress_.destination_folder)) {
         required_bytes -= source_sizes_[i];
       }
     }

@@ -403,10 +403,7 @@ class CopyOrMoveIsCrossFileSystemTest : public testing::Test {
         PathToFileSystemURL(destination_path);
     // Define a dummy CopyOrMoveOITask on which
     // CopyOrMoveIOTask::IsCrossFileSystem can be called.
-    CopyOrMoveIOTask task(OperationType::kCopy,
-                          std::vector<storage::FileSystemURL>(),
-                          storage::FileSystemURL(), &profile_,
-                          scoped_refptr<storage::FileSystemContext>());
+    CopyOrMoveIOTask task({}, {}, {}, &profile_, {});
     return task.IsCrossFileSystemForTesting(source_url, destination_url);
   }
 
@@ -419,15 +416,37 @@ class CopyOrMoveIsCrossFileSystemTest : public testing::Test {
       blink::StorageKey::CreateFromStringForTesting("chrome://abc");
 };
 
-TEST_F(CopyOrMoveIsCrossFileSystemTest, InvalidSourceOrDestination) {
-  // The profile path is not on any registered volume. For unrecognized paths,
-  // false is returned by default.
-  base::FilePath source_path = profile_.GetPath().Append("a.txt");
-  base::FilePath destination_path = test_volume_path_.Append("a.txt");
-  ASSERT_FALSE(IsCrossFileSystem(source_path, destination_path));
-  source_path = downloads_volume_path_.Append("a.txt");
-  destination_path = base::FilePath("invalid_path").Append("a.txt");
-  ASSERT_FALSE(IsCrossFileSystem(source_path, destination_path));
+TEST_F(CopyOrMoveIsCrossFileSystemTest, NoRegisteredVolume) {
+  // Define a dummy CopyOrMoveOITask on which
+  // CopyOrMoveIOTask::IsCrossFileSystem can be called.
+  CopyOrMoveIOTask task({}, {}, {}, &profile_, {});
+  // The profile path is not on any registered volume. When no volume is
+  // registered for a given path, the result of IsCrossFileSystem is based on
+  // the filesystem_ids of the source and the destination URLs.
+  base::FilePath path = profile_.GetPath().Append("a.txt");
+
+  // Define filesystem URLs with different filesystem_id().
+  std::string source_mount_name = "mount-name-a";
+  std::string destination_mount_name = "mount-name-b";
+  storage::FileSystemURL source_url = storage::FileSystemURL::CreateForTest(
+      {}, {}, /* virtual_path */ path, {}, {}, /* cracked_path */ path,
+      /* filesystem_id */ source_mount_name, {});
+  storage::FileSystemURL destination_url =
+      storage::FileSystemURL::CreateForTest(
+          {}, {}, /* virtual_path */ path, {}, {}, /* cracked_path */ path,
+          /* filesystem_id */ destination_mount_name, {});
+  ASSERT_TRUE(task.IsCrossFileSystemForTesting(source_url, destination_url));
+
+  // Define filesystem URLs with identical filesystem_id().
+  source_mount_name = "mount-name-c";
+  destination_mount_name = "mount-name-c";
+  source_url = storage::FileSystemURL::CreateForTest(
+      {}, {}, /* virtual_path */ path, {}, {}, /* cracked_path */ path,
+      /* filesystem_id */ source_mount_name, {});
+  destination_url = storage::FileSystemURL::CreateForTest(
+      {}, {}, /* virtual_path */ path, {}, {}, /* cracked_path */ path,
+      /* filesystem_id */ destination_mount_name, {});
+  ASSERT_FALSE(task.IsCrossFileSystemForTesting(source_url, destination_url));
 }
 
 TEST_F(CopyOrMoveIsCrossFileSystemTest, DifferentVolumes) {
