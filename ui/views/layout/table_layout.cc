@@ -370,6 +370,12 @@ TableLayout& TableLayout::SetMinimumSize(const gfx::Size& size) {
   return *this;
 }
 
+TableLayout& TableLayout::SetIncludeHidden(bool include_hidden) {
+  include_hidden_ = include_hidden;
+  OnLayoutChanged();
+  return *this;
+}
+
 ProposedLayout TableLayout::CalculateProposedLayout(
     const SizeBounds& size_bounds) const {
   ProposedLayout layout;
@@ -419,7 +425,7 @@ void TableLayout::SetViewStates() const {
   size_t col = 0, row = 0;
   std::vector<ViewState*> row_spans;
   for (View* child : GetChildViewsInPaintOrder(host_view())) {
-    if (!IsChildIncludedInLayout(child))
+    if (!IsChildIncludedInLayout(child, include_hidden_))
       continue;
 
     // Move (col, row) to next open cell.
