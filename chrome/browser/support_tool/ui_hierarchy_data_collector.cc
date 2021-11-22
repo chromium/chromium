@@ -19,8 +19,24 @@
 UiHierarchyDataCollector::UiHierarchyDataCollector() = default;
 UiHierarchyDataCollector::~UiHierarchyDataCollector() = default;
 
+namespace {
+absl::optional<PIIMap> CollectUiHierarchyData() {
+  // Just an empty function to create the skeleton for the DataCollector.
+  // Data will be collected and PIIMap will be filled here.
+  PIIMap map;
+  return map;
+}
+
+bool WriteOutputFile(std::string data, base::FilePath target_directory) {
+  // Just an empty function. This will create output file in given
+  // `target_directory` and write the data to it. Return success for now.
+  return true;
+}
+
+}  // namespace
+
 std::string UiHierarchyDataCollector::GetName() const {
-  return "Ui Hierarchy";
+  return "UI Hierarchy";
 }
 
 std::string UiHierarchyDataCollector::GetDescription() const {
@@ -33,35 +49,49 @@ const PIIMap& UiHierarchyDataCollector::GetDetectedPII() {
 
 void UiHierarchyDataCollector::CollectDataAndDetectPII(
     DataCollectorDoneCallback on_data_collected_callback) {
-  // This function Will be filled later.
-  base::ThreadPool::PostTask(
-      FROM_HERE,
-      base::BindOnce(&UiHierarchyDataCollector::CollectUiHierarchyData,
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, base::BindOnce(&CollectUiHierarchyData),
+      base::BindOnce(&UiHierarchyDataCollector::OnDataCollectedAndPIIDetected,
                      weak_ptr_factory_.GetWeakPtr(),
                      std::move(on_data_collected_callback)));
 }
 
-void UiHierarchyDataCollector::CollectUiHierarchyData(
-    DataCollectorDoneCallback on_data_collected_callback) {
-  // Just an empty function to create the skeleton for the DataCollector.
-  // Data will be collected and this.pii_map_ will be filled here.
-  std::move(on_data_collected_callback).Run(absl::nullopt);
+void UiHierarchyDataCollector::OnDataCollectedAndPIIDetected(
+    DataCollectorDoneCallback on_data_collected_callback,
+    absl::optional<PIIMap> pii_map) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (pii_map) {
+    pii_map_ = pii_map.value();
+    std::move(on_data_collected_callback).Run(absl::nullopt);
+  } else {
+    std::move(on_data_collected_callback)
+        .Run(SupportToolError::kUIHierarchyDataCollectorError);
+  }
 }
 
 void UiHierarchyDataCollector::ExportCollectedDataWithPII(
     std::set<PIIType> pii_types_to_keep,
     base::FilePath target_directory,
     DataCollectorDoneCallback on_exported_callback) {
-  base::ThreadPool::PostTask(
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock()},
-      base::BindOnce(&UiHierarchyDataCollector::WriteOutputFile,
-                     weak_ptr_factory_.GetWeakPtr(), target_directory,
+      base::BindOnce(&WriteOutputFile, "some place holder data",
+                     target_directory),
+      base::BindOnce(&UiHierarchyDataCollector::OnDataExportDone,
+                     weak_ptr_factory_.GetWeakPtr(),
                      std::move(on_exported_callback)));
 }
 
-void UiHierarchyDataCollector::WriteOutputFile(
-    base::FilePath target_directory,
-    DataCollectorDoneCallback on_exported_callback) {
-  // Opens a file under `target_directory` and writes the output to the file.
-  std::move(on_exported_callback).Run(absl::nullopt);
+void UiHierarchyDataCollector::OnDataExportDone(
+    DataCollectorDoneCallback on_exported_callback,
+    bool success) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (success) {
+    std::move(on_exported_callback).Run(absl::nullopt);
+  } else {
+    std::move(on_exported_callback)
+        .Run(SupportToolError::kUIHierarchyDataCollectorError);
+  }
 }
