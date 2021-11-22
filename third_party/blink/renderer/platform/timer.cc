@@ -67,7 +67,7 @@ void TimerBase::Stop() {
 
   repeat_interval_ = base::TimeDelta();
   next_fire_time_ = base::TimeTicks();
-  weak_ptr_factory_.InvalidateWeakPtrs();
+  delayed_task_handle_.CancelTask();
 }
 
 base::TimeDelta TimerBase::NextFireInterval() const {
@@ -90,7 +90,7 @@ void TimerBase::MoveToNewTaskRunner(
   }
 
   bool active = IsActive();
-  weak_ptr_factory_.InvalidateWeakPtrs();
+  delayed_task_handle_.CancelTask();
   web_task_runner_ = std::move(task_runner);
 
   if (!active)
@@ -114,16 +114,16 @@ void TimerBase::SetNextFireTime(base::TimeTicks now, base::TimeDelta delay) {
     next_fire_time_ = new_time;
 
     // Cancel any previously posted task.
-    weak_ptr_factory_.InvalidateWeakPtrs();
+    delayed_task_handle_.CancelTask();
 
-    web_task_runner_->PostDelayedTask(
-        location_, BindTimerClosure(weak_ptr_factory_.GetWeakPtr()), delay);
+    delayed_task_handle_ = web_task_runner_->PostCancelableDelayedTask(
+        location_, BindTimerClosure(), delay);
   }
 }
 
 NO_SANITIZE_ADDRESS
 void TimerBase::RunInternal() {
-  weak_ptr_factory_.InvalidateWeakPtrs();
+  DCHECK(!delayed_task_handle_.IsValid());
 
   TRACE_EVENT0("blink", "TimerBase::run");
 #if DCHECK_IS_ON()
