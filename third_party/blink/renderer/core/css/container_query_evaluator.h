@@ -20,12 +20,13 @@ class Document;
 class Element;
 class MatchResult;
 class StyleRecalcContext;
+class ContainerSelector;
 
 class CORE_EXPORT ContainerQueryEvaluator final
     : public GarbageCollected<ContainerQueryEvaluator> {
  public:
   static Element* FindContainer(const StyleRecalcContext& context,
-                                const AtomicString& container_name);
+                                const ContainerSelector&);
 
   // Creates an evaluator with no containment, hence all queries evaluated
   // against it will fail.

@@ -21,7 +21,7 @@
   }
 
   function test_query_invalid(query) {
-    test(function(t) {
+    test(t => {
       t.add_cleanup(cleanup_main);
       let style = set_style(`@container ${query} {}`);
       assert_equals(style.sheet.rules.length, 0);
@@ -30,7 +30,7 @@
 
   // Tests that 1) the query parses, and 2) it does not evaluate to "unknown".
   function test_query_known(query) {
-    test(function(t) {
+    test(t => {
       t.add_cleanup(cleanup_main);
       let style = set_style(`
         @container ${query} {}
@@ -39,6 +39,22 @@
       assert_equals(style.sheet.rules.length, 2);
       assert_equals(getComputedStyle(main).getPropertyValue('--match'), 'true');
     }, query);
+  }
+
+  function test_container_selector_invalid(container_selector) {
+    test(t => {
+      t.add_cleanup(cleanup_main);
+      let style = set_style(`@container ${container_selector} (width) {}`);
+      assert_equals(style.sheet.rules.length, 0);
+    }, `Container selector: ${container_selector}`);
+  }
+
+  function test_container_selector_valid(container_selector) {
+    test(t => {
+      t.add_cleanup(cleanup_main);
+      let style = set_style(`@container ${container_selector} (width) {}`);
+      assert_equals(style.sheet.rules.length, 1);
+    }, `Container selector: ${container_selector}`);
   }
 
   test_query_known('(width: 100px)');
@@ -60,4 +76,28 @@
   test_query_invalid('not screen or (width: 100px)');
   test_query_invalid('(width: 100px), (height: 100px)');
 
+  test_container_selector_valid(' foo');
+  test_container_selector_valid(' foo ');
+  test_container_selector_valid('name(foo)');
+  test_container_selector_valid('name( foo )');
+  test_container_selector_valid('type(size)');
+  test_container_selector_valid('type( size )');
+  test_container_selector_valid('type(inline-size)');
+  test_container_selector_valid('type(block-size)');
+  test_container_selector_valid('name(bar) type(block-size)');
+  test_container_selector_valid('type(block-size) name(bar)');
+
+  test_container_selector_invalid('foo foo');
+  test_container_selector_invalid('1px');
+  test_container_selector_invalid('50gil');
+  test_container_selector_invalid('name(1px)');
+  test_container_selector_invalid('type(1px)');
+  test_container_selector_invalid('type(red)');
+  test_container_selector_invalid('type(size) type(size)');
+  test_container_selector_invalid('type(inline-size) type(block-size)');
+  test_container_selector_invalid('name(foo) name(bar)');
+  test_container_selector_invalid('type(inline-size) name(foo) type(block-size)');
+  test_container_selector_invalid('name(foo) type(size) name(bar)');
+  test_container_selector_invalid('name(type(size))');
+  test_container_selector_invalid('type(name(bar))');
 </script>

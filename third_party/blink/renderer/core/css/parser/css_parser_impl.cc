@@ -68,14 +68,6 @@ AtomicString ConsumeStringOrURI(CSSParserTokenStream& stream) {
   return result;
 }
 
-AtomicString ConsumeContainerName(CSSParserTokenRange& range,
-                                  const CSSParserContext& context) {
-  CSSValue* name = css_parsing_utils::ConsumeContainerName(range, context);
-  if (auto* custom_ident = DynamicTo<CSSCustomIdentValue>(name))
-    return custom_ident->Value();
-  return g_null_atom;
-}
-
 // Finds the longest prefix of |range| that matches a <layer-name> and parses
 // it. Returns an empty result with |range| unmodified if parsing fails.
 StyleRuleBase::LayerName ConsumeCascadeLayerName(CSSParserTokenRange& range) {
@@ -1071,14 +1063,18 @@ StyleRuleContainer* CSSParserImpl::ConsumeContainerRule(
     observer_->StartRuleBody(stream.Offset());
   }
 
-  AtomicString name = ConsumeContainerName(prelude, *context_);
-
   ContainerQueryParser query_parser(*context_);
+
+  absl::optional<ContainerSelector> selector =
+      query_parser.ConsumeSelector(prelude);
+  if (!selector)
+    return nullptr;
+
   std::unique_ptr<MediaQueryExpNode> query = query_parser.ParseQuery(prelude);
   if (!query)
     return nullptr;
   ContainerQuery* container_query =
-      MakeGarbageCollected<ContainerQuery>(name, std::move(query));
+      MakeGarbageCollected<ContainerQuery>(*selector, std::move(query));
 
   HeapVector<Member<StyleRuleBase>> rules;
   ConsumeRuleList(stream, kRegularRuleList,

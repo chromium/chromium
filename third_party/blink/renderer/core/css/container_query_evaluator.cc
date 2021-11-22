@@ -15,30 +15,6 @@
 
 namespace blink {
 
-// static
-Element* ContainerQueryEvaluator::FindContainer(
-    const StyleRecalcContext& context,
-    const AtomicString& container_name) {
-  Element* container = context.container;
-  if (!container)
-    return nullptr;
-
-  if (container_name == g_null_atom)
-    return container;
-
-  // TODO(crbug.com/1213888): Cache results.
-  for (Element* element = container; element;
-       element = LayoutTreeBuilderTraversal::ParentElement(*element)) {
-    if (const ComputedStyle* style = element->GetComputedStyle()) {
-      if (style->IsContainerForContainerQueries() &&
-          style->ContainerName() == container_name)
-        return element;
-    }
-  }
-
-  return nullptr;
-}
-
 namespace {
 
 bool IsSufficientlyContained(PhysicalAxes contained_axes,
@@ -46,7 +22,50 @@ bool IsSufficientlyContained(PhysicalAxes contained_axes,
   return (contained_axes & queried_axes) == queried_axes;
 }
 
+bool NameMatches(const ComputedStyle& style,
+                 const ContainerSelector& container_selector) {
+  const AtomicString& name = container_selector.Name();
+  return name.IsNull() || (style.ContainerName() == name);
+}
+
+bool TypeMatches(const ComputedStyle& style,
+                 const ContainerSelector& container_selector) {
+  unsigned type = container_selector.Type();
+  return !type || ((style.ContainerType() & type) == type);
+}
+
+bool Matches(const ComputedStyle& style,
+             const ContainerSelector& container_selector) {
+  return NameMatches(style, container_selector) &&
+         TypeMatches(style, container_selector);
+}
+
 }  // namespace
+
+// static
+Element* ContainerQueryEvaluator::FindContainer(
+    const StyleRecalcContext& context,
+    const ContainerSelector& container_selector) {
+  Element* container = context.container;
+  if (!container)
+    return nullptr;
+
+  if (container_selector.IsNearest())
+    return container;
+
+  // TODO(crbug.com/1213888): Cache results.
+  for (Element* element = container; element;
+       element = LayoutTreeBuilderTraversal::ParentElement(*element)) {
+    if (const ComputedStyle* style = element->GetComputedStyle()) {
+      if (style->IsContainerForContainerQueries() &&
+          Matches(*style, container_selector)) {
+        return element;
+      }
+    }
+  }
+
+  return nullptr;
+}
 
 double ContainerQueryEvaluator::Width() const {
   return size_.width.ToDouble();
@@ -147,7 +166,7 @@ ContainerQueryEvaluator::Change ContainerQueryEvaluator::ComputeChange() const {
 
   for (const auto& result : results_) {
     if (Eval(*result.key) != result.value) {
-      change = std::max(change, result.key->Name() == g_null_atom
+      change = std::max(change, result.key->Selector().IsNearest()
                                     ? Change::kNearestContainer
                                     : Change::kDescendantContainers);
     }

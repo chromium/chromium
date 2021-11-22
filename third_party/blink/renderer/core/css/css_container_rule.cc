@@ -19,11 +19,12 @@ CSSContainerRule::~CSSContainerRule() = default;
 String CSSContainerRule::cssText() const {
   StringBuilder result;
   result.Append("@container ");
-  if (!Name().IsNull()) {
-    result.Append(Name());
+  const ContainerSelector& selector = ContainerQuery().Selector();
+  if (!selector.IsNearest()) {
+    result.Append(selector.ToString());
     result.Append(' ');
   }
-  ContainerQuery().Query().SerializeTo(result);
+  result.Append(ContainerQuery().ToString());
   result.Append(' ');
   result.Append("{\n");
   AppendCSSTextForItems(result);
@@ -32,7 +33,7 @@ String CSSContainerRule::cssText() const {
 }
 
 const AtomicString& CSSContainerRule::Name() const {
-  return ContainerQuery().Name();
+  return ContainerQuery().Selector().Name();
 }
 
 void CSSContainerRule::SetConditionText(

@@ -720,6 +720,7 @@ blink_core_tests_css = [
   "parser/media_condition_test.cc",
   "parser/sizes_attribute_parser_test.cc",
   "parser/sizes_math_function_parser_test.cc",
+  "parser/container_query_parser_test.cc",
   "properties/computed_style_utils_test.cc",
   "properties/css_bitset_test.cc",
   "properties/css_exposure_test.cc",

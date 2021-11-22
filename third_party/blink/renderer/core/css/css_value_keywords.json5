@@ -1331,6 +1331,10 @@
     "block-size",
     "inline-size",
 
+    // @container
+    "name",
+    "type",
+
     // grid auto-repeat
     "auto-fill",
     "auto-fit",

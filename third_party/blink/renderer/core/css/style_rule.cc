@@ -596,7 +596,7 @@ void StyleRuleContainer::SetConditionText(
   if (auto exp_node = parser.ParseQuery(value)) {
     condition_text_ = exp_node->Serialize();
     container_query_ = MakeGarbageCollected<ContainerQuery>(
-        container_query_->Name(), std::move(exp_node));
+        container_query_->Selector(), std::move(exp_node));
   }
 }
 

@@ -63,10 +63,10 @@ unsigned AdjustLinkMatchType(EInsideLink inside_link,
 }
 
 ContainerQueryEvaluator* FindContainerQueryEvaluator(
-    const AtomicString& name,
+    const ContainerSelector& selector,
     const StyleRecalcContext& style_recalc_context) {
-  if (auto* element =
-          ContainerQueryEvaluator::FindContainer(style_recalc_context, name)) {
+  if (auto* element = ContainerQueryEvaluator::FindContainer(
+          style_recalc_context, selector)) {
     return element->GetContainerQueryEvaluator();
   }
 
@@ -302,8 +302,8 @@ void ElementRuleCollector::CollectMatchingRulesForList(
           result.dynamic_pseudo == kPseudoIdNone) {
         result_.SetDependsOnContainerQueries();
 
-        auto* evaluator = FindContainerQueryEvaluator(container_query->Name(),
-                                                      style_recalc_context_);
+        auto* evaluator = FindContainerQueryEvaluator(
+            container_query->Selector(), style_recalc_context_);
 
         if (!evaluator || !evaluator->EvalAndAdd(*container_query, result_)) {
           rejected++;
