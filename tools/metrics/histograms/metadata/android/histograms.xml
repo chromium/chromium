@@ -268,6 +268,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.AutofillAssistant.GetClientToken"
+    enum="AutofillAssistantGetClientTokenResult" expires_after="2022-11-19">
+  <owner>sandromaggi@google.com</owner>
+  <owner>autofill_assistant@google.com</owner>
+  <summary>
+    Reports the result of a GetClientToken call to GMS Core. This is recorded
+    every time a call is made. For each call two records are made, one that the
+    call was executed and a second to record it's result status (success or
+    failure). This is done to ensure all calls are properly recorded and none
+    are accidentally dropped.
+  </summary>
+</histogram>
+
 <histogram name="Android.AutofillAssistant.OnboardingFetcher.ResultStatus"
     enum="AutofillAssistantOnboardingFetcherResultStatus"
     expires_after="2022-06-08">

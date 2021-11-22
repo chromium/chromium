@@ -5559,6 +5559,12 @@ others/histograms.xml -->
   <int value="3" label="Already installed"/>
 </enum>
 
+<enum name="AutofillAssistantGetClientTokenResult">
+  <int value="0" label="Called"/>
+  <int value="1" label="Success"/>
+  <int value="2" label="Failure"/>
+</enum>
+
 <enum name="AutofillAssistantInChromeTriggerAction">
   <int value="0" label="Other"/>
   <int value="1" label="User denylisted domain"/>
