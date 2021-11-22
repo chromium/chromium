@@ -56,33 +56,32 @@ TEST(AboutThisSiteValidation, InvalidSiteInfoProto) {
   proto::AboutThisSiteMetadata metadata;
   EXPECT_EQ(ValidateMetadata(metadata), ProtoValidation::kMissingSiteInfo);
   metadata.mutable_site_info();
-  EXPECT_EQ(ValidateMetadata(metadata), ProtoValidation::kEmptySiteData);
+  EXPECT_EQ(ValidateMetadata(metadata), ProtoValidation::kEmptySiteInfo);
   metadata = GetSampleMetaData();
   metadata.mutable_site_info()->clear_description();
-  EXPECT_EQ(ValidateMetadata(metadata),
-            ProtoValidation::kIncompleteDescription);
+  EXPECT_EQ(ValidateMetadata(metadata), ProtoValidation::kMissingDescription);
 }
 
 TEST(AboutThisSiteValidation, InvalidDescription) {
   proto::SiteDescription description = GetSampleDescription();
   description.clear_description();
   EXPECT_EQ(ValidateDescription(description),
-            ProtoValidation::kIncompleteDescription);
+            ProtoValidation::kMissingDescriptionDescription);
 
   description = GetSampleDescription();
   description.clear_name();
   EXPECT_EQ(ValidateDescription(description),
-            ProtoValidation::kIncompleteDescription);
+            ProtoValidation::kMissingDescriptionName);
 
   description = GetSampleDescription();
   description.clear_lang();
   EXPECT_EQ(ValidateDescription(description),
-            ProtoValidation::kIncompleteDescription);
+            ProtoValidation::kMissingDescriptionLang);
 
   description = GetSampleDescription();
   description.clear_source();
   EXPECT_EQ(ValidateDescription(description),
-            ProtoValidation::kIncompleteDescription);
+            ProtoValidation::kMissingDescriptionSource);
 }
 
 TEST(AboutThisSiteValidation, InvalidSource) {

@@ -52,16 +52,27 @@ uploading your change for review.  These are checked by presubmit scripts.
 
 <enum name="AboutThisSiteStatus">
   <summary>Tracks status of AboutThisSite queries.</summary>
-  <int value="0" label="kValid">kValid</int>
-  <int value="1" label="kNoResult">kNoResult</int>
-  <int value="2" label="kMissingSiteInfo">kMissingSiteInfo</int>
-  <int value="3" label="kEmptySiteData">kEmptySiteData</int>
-  <int value="4" label="kIncompleteDescription">kIncompleteDescription</int>
-  <int value="5" label="kIncompleteSource">kIncompleteSource</int>
-  <int value="6" label="kInvalidSource">kInvalidSource</int>
-  <int value="7" label="kIncompleteTimeStamp">kIncompleteTimeStamp</int>
-  <int value="8" label="kInvalidTimeStamp">kInvalidTimeStamp</int>
-  <int value="9" label="kUnknown">kUnknown</int>
+  <int value="0" label="kValid">A valid response.</int>
+  <int value="1" label="kNoResult">No result received.</int>
+  <int value="2" label="kMissingSiteInfo">SiteInfo is missing.</int>
+  <int value="3" label="kEmptySiteInfo">SiteInfo is empty.</int>
+  <int value="4" label="kIncompleteDescription (deprecated)">
+    kIncompleteDescription - deprecated.
+  </int>
+  <int value="5" label="kIncompleteSource">Source is incomplete.</int>
+  <int value="6" label="kInvalidSource">Source URL is invalid.</int>
+  <int value="7" label="kIncompleteTimeStamp">Timestamp is incomplete.</int>
+  <int value="8" label="kInvalidTimeStamp">Timestamp is invalid.</int>
+  <int value="9" label="kUnknown">
+    User has not opted in to Optimization guide.
+  </int>
+  <int value="10" label="kMissingDescription">Description is missing.</int>
+  <int value="11" label="kMissingDescriptionDescription">
+    Description field in description is missing.
+  </int>
+  <int value="12" label="kMissingDescriptionName">Name is missing.</int>
+  <int value="13" label="kMissingDescriptionLang">Lang is missing.</int>
+  <int value="14" label="kMissingDescriptionSource">Source is missing.</int>
 </enum>
 
 <enum name="AcceleratedFixedRootBackground">
@@ -90788,6 +90799,8 @@ Called by update_scheduler_enums.py.-->
   <int value="25" label="Chooser object deleted"/>
   <int value="26" label="Reset certificate decisions clicked"/>
   <int value="27" label="Store info clicked"/>
+  <int value="28" label="AboutThisSite section clicked"/>
+  <int value="29" label="AboutThisSite source link clicked"/>
 </enum>
 
 <enum name="WebSiteSettingsAllSitesAction">
