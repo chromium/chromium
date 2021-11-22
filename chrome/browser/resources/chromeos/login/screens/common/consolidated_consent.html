@@ -66,7 +66,8 @@ found in the LICENSE file. -->
 
     <!-- LOADING DIALOG -->
     <oobe-loading-dialog id="progressDialog" for-step="loading"
-        role="dialog" title-key="consolidatedConsentLoading">
+        role="dialog" title-key="consolidatedConsentLoading"
+        aria-label$="[[i18nDynamic(locale, 'consolidatedConsentLoading')]]">
       <iron-icon slot="icon" icon="oobe-32:googleg"></iron-icon>
     </oobe-loading-dialog>
 
@@ -94,7 +95,7 @@ found in the LICENSE file. -->
     <oobe-adaptive-dialog id="googleEulaDialog" for-step="google-eula"
         role="dialog"
         aria-label$="[[i18nDynamic(locale,
-            'consolidatedConsentGoogleEulaTitle')]]">
+                     'consolidatedConsentGoogleEulaTitle')]]">
       <iron-icon slot="icon" icon="oobe-32:googleg"></iron-icon>
       <h1 slot="title">
         [[i18nDynamic(locale, 'consolidatedConsentGoogleEulaTitle')]]
@@ -116,7 +117,7 @@ found in the LICENSE file. -->
     <oobe-adaptive-dialog id="crosEulaDialog" for-step="cros-eula"
         role="dialog"
         aria-label$="[[i18nDynamic(locale,
-            'consolidatedConsentCrosEulaTitle')]]">
+                     'consolidatedConsentCrosEulaTitle')]]">
       <iron-icon slot="icon" icon="oobe-32:googleg"></iron-icon>
       <h1 slot="title">
         [[i18nDynamic(locale, 'consolidatedConsentCrosEulaTitle')]]
@@ -137,7 +138,7 @@ found in the LICENSE file. -->
     <!-- ARC Terms Dialog -->
     <oobe-adaptive-dialog id="arcTosDialog" for-step="arc" role="dialog"
         aria-label$="[[i18nDynamic(locale,
-            'consolidatedConsentArcTermsTitle')]]">
+                     'consolidatedConsentArcTermsTitle')]]">
       <iron-icon slot="icon" icon="oobe-32:googleg"></iron-icon>
       <h1 slot="title">
         [[i18nDynamic(locale, 'consolidatedConsentArcTermsTitle')]]
@@ -158,7 +159,7 @@ found in the LICENSE file. -->
     <!-- Privacy Policy Dialog -->
     <oobe-adaptive-dialog id="privacyPolicyDialog" for-step="privacy"
         role="dialog" aria-label$="[[i18nDynamic(locale,
-                          'consolidatedConsentPrivacyTitle')]]">
+                                   'consolidatedConsentPrivacyTitle')]]">
       <iron-icon slot="icon" icon="oobe-32:googleg"></iron-icon>
       <h1 slot="title">
         [[i18nDynamic(locale, 'consolidatedConsentPrivacyTitle')]]
@@ -207,19 +208,20 @@ found in the LICENSE file. -->
         <!-- Usage stats toggle row -->
         <div class="layout horizontal center oobe-optin-row">
           <div class="oobe-optin-content flex">
-            <span class="oobe-optin-title">
+            <span id="usageTitle" class="oobe-optin-title">
               [[i18nDynamic(locale, 'consolidatedConsentUsageOptInTitle')]]
             </span>
             [[getUsageText_(locale, isChildAccount_, isArcEnabled_,  isDemo_)]]
             <a id="usageLearnMore" on-click="onUsageLearnMoreClick_"
-                class="oobe-local-link" is="action-link">
+                class="oobe-local-link" is="action-link"
+                aria-describedby="usageTitle">
               [[i18nDynamic(locale, 'consolidatedConsentLearnMore')]]
             </a>
           </div>
           <iron-icon class="managed-icon" icon="oobe-32:enterprise"
               hidden="[[!usageManaged_]]"></iron-icon>
           <cr-toggle id="usageOptin" checked="{{usageChecked}}"
-              disabled="[[usageManaged_]]">
+              disabled="[[usageManaged_]]" aria-describedby="usageTitle">
           </cr-toggle>
         </div>
 
@@ -227,7 +229,7 @@ found in the LICENSE file. -->
         <div class="layout horizontal center oobe-optin-row"
             hidden="[[isArcOptInsHidden_(isArcEnabled_, isDemo_)]]">
           <div class="oobe-optin-content flex">
-            <span class="oobe-optin-title">
+            <span id="backupTitle" class="oobe-optin-title">
               [[i18nDynamic(locale, 'consolidatedConsentBackupOptInTitle')]]
             </span>
             <span hidden="[[isChildAccount_]]">
@@ -237,15 +239,16 @@ found in the LICENSE file. -->
               [[i18nDynamic(locale, 'consolidatedConsentBackupOptInChild')]]
             </span>
             <a id="backupLearnMore" on-click="onBackupLearnMoreClick_"
-                class="oobe-local-link" is="action-link">
-                [[i18nDynamic(locale, 'consolidatedConsentLearnMore')]]
+                class="oobe-local-link" is="action-link"
+                aria-describedby="backupTitle">
+              [[i18nDynamic(locale, 'consolidatedConsentLearnMore')]]
             </a>
           </div>
           <iron-icon class="managed-icon" icon="oobe-32:enterprise"
               hidden="[[!backupManaged_]]">
           </iron-icon>
           <cr-toggle id="backupOptIn" checked="{{backupChecked}}"
-              disabled="[[backupManaged_]]">
+              disabled="[[backupManaged_]]" aria-describedby="backupTitle">
           </cr-toggle>
         </div>
 
@@ -253,7 +256,7 @@ found in the LICENSE file. -->
         <div class="layout horizontal center oobe-optin-row"
             hidden="[[isArcOptInsHidden_(isArcEnabled_, isDemo_)]]">
           <div class="oobe-optin-content flex">
-            <span class="oobe-optin-title">
+            <span id="locationTitle" class="oobe-optin-title">
               [[i18nDynamic(locale, 'consolidatedConsentLocationOptInTitle')]]
             </span>
             <span hidden="[[isChildAccount_]]">
@@ -263,28 +266,32 @@ found in the LICENSE file. -->
               [[i18nDynamic(locale, 'consolidatedConsentLocationOptInChild')]]
             </span>
             <a id="locationLearnMore" on-click="onLocationLearnMoreClick_"
-                class="oobe-local-link" is="action-link">
-                [[i18nDynamic(locale, 'consolidatedConsentLearnMore')]]
+                class="oobe-local-link" is="action-link"
+                aria-describedby="locationTitle">
+              [[i18nDynamic(locale, 'consolidatedConsentLearnMore')]]
             </a>
           </div>
           <iron-icon class="managed-icon" icon="oobe-32:enterprise"
               hidden="[[!locationManaged_]]">
           </iron-icon>
           <cr-toggle id="locationOptIn" checked="{{locationChecked}}"
-              disabled="[[locationManaged_]]">
+              disabled="[[locationManaged_]]" aria-describedby="locationTitle">
           </cr-toggle>
         </div>
         <div id="footer" hidden="[[isArcOptInsHidden_(isArcEnabled_, isDemo_)]]"
             class="oobe-optin-row">
-          <span hidden="[[isChildAccount_]]">
-            [[i18nDynamic(locale, 'consolidatedConsentFooter')]]
-          </span>
-          <span hidden="[[!isChildAccount_]]">
-            [[i18nDynamic(locale, 'consolidatedConsentFooterChild')]]
+          <span id="footerText">
+            <span hidden="[[isChildAccount_]]">
+              [[i18nDynamic(locale, 'consolidatedConsentFooter')]]
+            </span>
+            <span hidden="[[!isChildAccount_]]">
+              [[i18nDynamic(locale, 'consolidatedConsentFooterChild')]]
+            </span>
           </span>
           <a id="footerLearMore"
               on-click="onFooterLearnMoreClick_"
-              class="oobe-local-link" is="action-link">
+              class="oobe-local-link" is="action-link"
+              aria-describedby="footerText">
             [[i18nDynamic(locale, 'consolidatedConsentLearnMore')]]
           </a>
         </div>
@@ -295,6 +302,7 @@ found in the LICENSE file. -->
       </div>
       <div slot="bottom-buttons">
         <oobe-next-button id="acceptButton" inverse on-click="onAcceptClick_"
+            class="focus-on-show"
             text-key="consolidatedConsentAcceptAndContinue">
         </oobe-next-button>
       </div>
@@ -313,7 +321,7 @@ found in the LICENSE file. -->
         <span
             inner-h-t-m-l=
                 "[[getUsageLearnMoreText_(locale, isChildAccount_,
-                    isArcEnabled_, isDemo_)]]">
+                                          isArcEnabled_, isDemo_)]]">
         </span>
       </div>
     </oobe-modal-dialog>
@@ -330,7 +338,7 @@ found in the LICENSE file. -->
       <div slot="content">
         <span
             inner-h-t-m-l="[[getLocationLearnMoreText_(locale,
-                              isChildAccount_)]]">
+                                                       isChildAccount_)]]">
         </span>
       </div>
     </oobe-modal-dialog>
