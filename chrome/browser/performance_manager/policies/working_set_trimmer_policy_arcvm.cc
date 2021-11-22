@@ -6,6 +6,7 @@
 
 #include "ash/components/arc/arc_browser_context_keyed_service_factory_base.h"
 #include "ash/components/arc/arc_util.h"
+#include "ash/components/arc/session/arc_service_manager.h"
 #include "ash/public/cpp/app_types_util.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
@@ -13,7 +14,6 @@
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "components/arc/session/arc_service_manager.h"
 #include "components/exo/wm_helper.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
@@ -68,7 +68,7 @@ WorkingSetTrimmerPolicyArcVm::WorkingSetTrimmerPolicyArcVm() {
 
   // If app() is already connected to the AppInstance in the guest, the
   // OnConnectionReady() function is synchronously called before returning
-  // from AddObserver. See components/arc/session/connection_holder.h for
+  // from AddObserver. See ash/components/arc/session/connection_holder.h for
   // more details, especially its AddObserver() function.
   auto* arc_service_manager = arc::ArcServiceManager::Get();
   // ArcServiceManager and objects owned by the manager are created very early

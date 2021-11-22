@@ -9,9 +9,9 @@
 #include <string>
 
 #include "ash/components/arc/pay/arc_payment_app_bridge.h"
+#include "ash/components/arc/session/arc_service_manager.h"
 #include "ash/components/arc/test/test_browser_context.h"
 #include "components/arc/mojom/payment_app.mojom.h"
-#include "components/arc/session/arc_service_manager.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 

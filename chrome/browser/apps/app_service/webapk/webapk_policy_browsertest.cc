@@ -5,6 +5,8 @@
 #include <memory>
 
 #include "ash/components/arc/arc_features_parser.h"
+#include "ash/components/arc/session/arc_bridge_service.h"
+#include "ash/components/arc/session/arc_service_manager.h"
 #include "ash/components/arc/test/arc_util_test_support.h"
 #include "ash/components/arc/test/fake_webapk_instance.h"
 #include "ash/constants/ash_features.h"
@@ -19,8 +21,6 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/test/base/in_process_browser_test.h"
-#include "components/arc/session/arc_bridge_service.h"
-#include "components/arc/session/arc_service_manager.h"
 #include "components/policy/policy_constants.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "content/public/test/browser_test.h"

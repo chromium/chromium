@@ -6,10 +6,10 @@
 
 #include <memory>
 
+#include "ash/components/arc/session/arc_bridge_service.h"
 #include "ash/components/arc/test/connection_holder_util.h"
 #include "base/metrics/field_trial.h"
 #include "base/test/scoped_field_trial_list_resetter.h"
-#include "components/arc/session/arc_bridge_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace arc {

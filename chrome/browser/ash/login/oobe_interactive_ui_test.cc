@@ -4,6 +4,8 @@
 
 #include <memory>
 
+#include "ash/components/arc/session/arc_service_manager.h"
+#include "ash/components/arc/session/arc_session_runner.h"
 #include "ash/components/arc/test/arc_util_test_support.h"
 #include "ash/components/arc/test/fake_arc_session.h"
 #include "ash/components/attestation/attestation_flow_utils.h"
@@ -59,8 +61,6 @@
 #include "chromeos/assistant/buildflags.h"
 #include "chromeos/dbus/update_engine/update_engine_client.h"
 #include "chromeos/system/fake_statistics_provider.h"
-#include "components/arc/session/arc_service_manager.h"
-#include "components/arc/session/arc_session_runner.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_utils.h"

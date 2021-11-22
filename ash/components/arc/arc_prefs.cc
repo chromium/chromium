@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 #include "ash/components/arc/arc_prefs.h"
-#include "components/arc/session/arc_management_transition.h"
+#include "ash/components/arc/session/arc_management_transition.h"
 
 #include <string>
 

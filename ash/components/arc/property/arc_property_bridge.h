@@ -7,9 +7,9 @@
 
 #include <vector>
 
+#include "ash/components/arc/session/connection_observer.h"
 #include "base/threading/thread_checker.h"
 #include "components/arc/mojom/property.mojom.h"
-#include "components/arc/session/connection_observer.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 namespace content {

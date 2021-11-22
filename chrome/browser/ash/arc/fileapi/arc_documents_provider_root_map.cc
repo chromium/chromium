@@ -4,11 +4,11 @@
 
 #include "chrome/browser/ash/arc/fileapi/arc_documents_provider_root_map.h"
 
+#include "ash/components/arc/session/arc_service_manager.h"
 #include "chrome/browser/ash/arc/fileapi/arc_documents_provider_root.h"
 #include "chrome/browser/ash/arc/fileapi/arc_documents_provider_root_map_factory.h"
 #include "chrome/browser/ash/arc/fileapi/arc_documents_provider_util.h"
 #include "chrome/browser/profiles/profile.h"
-#include "components/arc/session/arc_service_manager.h"
 #include "content/public/browser/browser_thread.h"
 
 using content::BrowserThread;

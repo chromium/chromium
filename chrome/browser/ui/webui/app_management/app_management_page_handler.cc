@@ -34,8 +34,8 @@
 #include "mojo/public/cpp/bindings/remote.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/components/arc/session/connection_holder.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_utils.h"
-#include "components/arc/session/connection_holder.h"
 #endif
 
 using apps::mojom::OptionalBool;

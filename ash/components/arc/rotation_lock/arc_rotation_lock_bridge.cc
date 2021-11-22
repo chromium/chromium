@@ -5,10 +5,10 @@
 #include "ash/components/arc/rotation_lock/arc_rotation_lock_bridge.h"
 
 #include "ash/components/arc/arc_browser_context_keyed_service_factory_base.h"
+#include "ash/components/arc/session/arc_bridge_service.h"
 #include "ash/shell.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/memory/singleton.h"
-#include "components/arc/session/arc_bridge_service.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 

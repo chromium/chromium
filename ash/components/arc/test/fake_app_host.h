@@ -5,8 +5,8 @@
 #ifndef ASH_COMPONENTS_ARC_TEST_FAKE_APP_HOST_H_
 #define ASH_COMPONENTS_ARC_TEST_FAKE_APP_HOST_H_
 
+#include "ash/components/arc/session/connection_holder.h"
 #include "components/arc/mojom/app.mojom.h"
-#include "components/arc/session/connection_holder.h"
 
 namespace arc {
 

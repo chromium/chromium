@@ -5,11 +5,11 @@
 #ifndef ASH_COMPONENTS_ARC_ROTATION_LOCK_ARC_ROTATION_LOCK_BRIDGE_H_
 #define ASH_COMPONENTS_ARC_ROTATION_LOCK_ARC_ROTATION_LOCK_BRIDGE_H_
 
+#include "ash/components/arc/session/connection_observer.h"
 #include "ash/display/screen_orientation_controller.h"
 #include "ash/public/cpp/tablet_mode_observer.h"
 #include "base/threading/thread_checker.h"
 #include "components/arc/mojom/rotation_lock.mojom.h"
-#include "components/arc/session/connection_observer.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 namespace content {

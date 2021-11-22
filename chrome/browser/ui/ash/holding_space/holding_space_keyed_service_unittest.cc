@@ -6,6 +6,7 @@
 
 #include <vector>
 
+#include "ash/components/arc/session/arc_service_manager.h"
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/file_icon_util.h"
 #include "ash/public/cpp/holding_space/holding_space_constants.h"
@@ -46,7 +47,6 @@
 #include "chromeos/disks/disk_mount_manager.h"
 #include "components/account_id/account_id.h"
 #include "components/arc/intent_helper/arc_intent_helper_bridge.h"
-#include "components/arc/session/arc_service_manager.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/sync_preferences/pref_service_mock_factory.h"
 #include "components/sync_preferences/pref_service_syncable.h"

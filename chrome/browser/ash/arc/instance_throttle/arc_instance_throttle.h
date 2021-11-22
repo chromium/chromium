@@ -10,9 +10,9 @@
 #include <utility>
 
 #include "ash/components/arc/arc_util.h"
+#include "ash/components/arc/session/connection_observer.h"
 #include "chrome/browser/ash/throttle_observer.h"
 #include "chrome/browser/ash/throttle_service.h"
-#include "components/arc/session/connection_observer.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 namespace base {

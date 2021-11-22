@@ -5,10 +5,10 @@
 #ifndef ASH_COMPONENTS_ARC_SENSOR_ARC_IIO_SENSOR_BRIDGE_H_
 #define ASH_COMPONENTS_ARC_SENSOR_ARC_IIO_SENSOR_BRIDGE_H_
 
+#include "ash/components/arc/session/connection_observer.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "components/arc/mojom/iio_sensor.mojom.h"
-#include "components/arc/session/connection_observer.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 

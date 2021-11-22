@@ -6,11 +6,11 @@
 
 #include "ash/components/arc/arc_browser_context_keyed_service_factory_base.h"
 #include "ash/components/arc/arc_features.h"
+#include "ash/components/arc/session/arc_bridge_service.h"
 #include "base/logging.h"
 #include "base/memory/singleton.h"
 #include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
-#include "components/arc/session/arc_bridge_service.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 

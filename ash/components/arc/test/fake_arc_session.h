@@ -8,8 +8,8 @@
 #include <memory>
 #include <string>
 
-#include "components/arc/session/arc_session.h"
-#include "components/arc/session/arc_stop_reason.h"
+#include "ash/components/arc/session/arc_session.h"
+#include "ash/components/arc/session/arc_stop_reason.h"
 
 namespace cryptohome {
 class Identification;

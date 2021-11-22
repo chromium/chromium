@@ -4,8 +4,8 @@
 
 #include "ash/components/arc/audio/arc_audio_bridge.h"
 
+#include "ash/components/arc/session/arc_service_manager.h"
 #include "ash/components/arc/test/test_browser_context.h"
-#include "components/arc/session/arc_service_manager.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

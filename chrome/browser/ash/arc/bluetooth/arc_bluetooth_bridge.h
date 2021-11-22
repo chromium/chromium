@@ -15,6 +15,7 @@
 #include <unordered_set>
 #include <vector>
 
+#include "ash/components/arc/session/connection_observer.h"
 #include "base/callback_forward.h"
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/files/file.h"
@@ -24,7 +25,6 @@
 #include "chrome/browser/ash/arc/bluetooth/arc_bluetooth_task_queue.h"
 #include "components/arc/mojom/bluetooth.mojom.h"
 #include "components/arc/mojom/intent_helper.mojom-forward.h"
-#include "components/arc/session/connection_observer.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "device/bluetooth/bluetooth_adapter.h"
 #include "device/bluetooth/bluetooth_adapter_factory.h"

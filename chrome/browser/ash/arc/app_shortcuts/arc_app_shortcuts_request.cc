@@ -7,6 +7,8 @@
 #include <string>
 #include <utility>
 
+#include "ash/components/arc/session/arc_bridge_service.h"
+#include "ash/components/arc/session/arc_service_manager.h"
 #include "base/barrier_closure.h"
 #include "base/bind.h"
 #include "base/metrics/histogram_macros.h"
@@ -15,8 +17,6 @@
 #include "chrome/browser/apps/app_service/menu_item_constants.h"
 #include "chrome/browser/apps/app_service/menu_util.h"
 #include "chrome/browser/ash/arc/icon_decode_request.h"
-#include "components/arc/session/arc_bridge_service.h"
-#include "components/arc/session/arc_service_manager.h"
 
 namespace arc {
 

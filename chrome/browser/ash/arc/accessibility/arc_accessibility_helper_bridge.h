@@ -11,6 +11,7 @@
 #include <string>
 #include <tuple>
 
+#include "ash/components/arc/session/connection_observer.h"
 #include "ash/public/cpp/external_arc/message_center/arc_notification_surface_manager.h"
 #include "base/callback_list.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
@@ -18,7 +19,6 @@
 #include "chrome/browser/ash/arc/accessibility/arc_accessibility_tree_tracker.h"
 #include "chrome/browser/ash/arc/accessibility/ax_tree_source_arc.h"
 #include "components/arc/mojom/accessibility_helper.mojom-forward.h"
-#include "components/arc/session/connection_observer.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 class PrefService;

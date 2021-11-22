@@ -10,6 +10,8 @@
 #include <string>
 #include <utility>
 
+#include "ash/components/arc/session/arc_session_runner.h"
+#include "ash/components/arc/session/arc_stop_reason.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/timer/timer.h"
@@ -20,8 +22,6 @@
 #include "chrome/browser/ash/policy/arc/android_management_client.h"
 #include "chromeos/dbus/concierge/concierge_client.h"
 #include "chromeos/dbus/session_manager/session_manager_client.h"
-#include "components/arc/session/arc_session_runner.h"
-#include "components/arc/session/arc_stop_reason.h"
 #include "components/policy/core/common/policy_service.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"

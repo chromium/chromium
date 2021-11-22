@@ -8,10 +8,10 @@
 #include <string>
 #include <vector>
 
+#include "ash/components/arc/session/arc_bridge_service.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/net/network_diagnostics/network_diagnostics_routine.h"
 #include "components/arc/mojom/net.mojom.h"
-#include "components/arc/session/arc_bridge_service.h"
 
 namespace chromeos {
 namespace network_diagnostics {

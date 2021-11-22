@@ -11,6 +11,7 @@
 #include <string>
 #include <vector>
 
+#include "ash/components/arc/session/connection_observer.h"
 #include "base/callback_forward.h"
 #include "base/files/scoped_file.h"
 #include "base/memory/weak_ptr.h"
@@ -20,7 +21,6 @@
 #include "chromeos/network/network_profile_handler.h"
 #include "chromeos/network/network_state_handler_observer.h"
 #include "components/arc/mojom/net.mojom.h"
-#include "components/arc/session/connection_observer.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 namespace content {

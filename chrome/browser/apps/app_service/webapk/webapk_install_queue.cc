@@ -6,6 +6,8 @@
 
 #include <utility>
 
+#include "ash/components/arc/session/arc_bridge_service.h"
+#include "ash/components/arc/session/arc_service_manager.h"
 #include "base/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
@@ -14,8 +16,6 @@
 #include "chrome/browser/apps/app_service/webapk/webapk_install_task.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/arc/mojom/webapk.mojom.h"
-#include "components/arc/session/arc_bridge_service.h"
-#include "components/arc/session/arc_service_manager.h"
 
 namespace apps {
 

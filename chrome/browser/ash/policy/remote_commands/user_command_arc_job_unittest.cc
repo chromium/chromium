@@ -7,6 +7,9 @@
 #include <memory>
 #include <string>
 
+#include "ash/components/arc/session/arc_bridge_service.h"
+#include "ash/components/arc/session/arc_service_manager.h"
+#include "ash/components/arc/session/connection_holder.h"
 #include "ash/components/arc/test/fake_policy_instance.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
@@ -14,9 +17,6 @@
 #include "base/time/time.h"
 #include "chrome/browser/ash/arc/policy/arc_policy_bridge.h"
 #include "chrome/test/base/testing_profile.h"
-#include "components/arc/session/arc_bridge_service.h"
-#include "components/arc/session/arc_service_manager.h"
-#include "components/arc/session/connection_holder.h"
 #include "components/policy/core/common/remote_commands/remote_command_job.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "content/public/test/browser_task_environment.h"

@@ -8,10 +8,10 @@
 
 #include "ash/components/arc/arc_browser_context_keyed_service_factory_base.h"
 #include "ash/components/arc/arc_features.h"
+#include "ash/components/arc/session/arc_bridge_service.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/no_destructor.h"
-#include "components/arc/session/arc_bridge_service.h"
 #include "content/public/browser/media_session_service.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/media_session/public/cpp/features.h"

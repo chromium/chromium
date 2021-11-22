@@ -474,9 +474,9 @@ test("components_unittests") {
     deps += [
       # TODO(b/206686476): Move this target to //ash/components:unit_tests
       "//ash/components/arc:unit_tests",
+      "//ash/components/arc/session:unit_tests",
       "//components/arc:unit_tests",
       "//components/arc/mojom:unit_tests",
-      "//components/arc/session:unit_tests",
       "//components/desks_storage:unit_tests",
       "//components/guest_os:unit_tests",
       "//components/metrics/structured:unit_tests",

@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "ash/components/arc/session/arc_bridge_service.h"
 #include "base/barrier_closure.h"
 #include "base/callback_helpers.h"
 #include "base/run_loop.h"
@@ -14,7 +15,6 @@
 #include "chrome/browser/ui/app_list/arc/arc_app_list_prefs.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_test.h"
 #include "chrome/test/base/testing_profile.h"
-#include "components/arc/session/arc_bridge_service.h"
 #include "components/policy/core/common/mock_policy_service.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/core/common/policy_service.h"

@@ -5,10 +5,10 @@
 #include "ash/components/arc/memory_pressure/arc_memory_pressure_bridge.h"
 
 #include "ash/components/arc/arc_browser_context_keyed_service_factory_base.h"
+#include "ash/components/arc/session/arc_bridge_service.h"
 #include "base/logging.h"
 #include "base/memory/singleton.h"
 #include "components/arc/mojom/process.mojom.h"
-#include "components/arc/session/arc_bridge_service.h"
 
 namespace arc {
 namespace {

@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "ash/components/arc/session/mojo_channel.h"
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/arc_app_id_provider.h"
 #include "ash/public/cpp/external_arc/message_center/arc_notification_delegate.h"
@@ -19,7 +20,6 @@
 #include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/strings/utf_string_conversions.h"
-#include "components/arc/session/mojo_channel.h"
 #include "ui/message_center/lock_screen/lock_screen_controller.h"
 #include "ui/message_center/message_center_impl.h"
 #include "ui/message_center/message_center_observer.h"

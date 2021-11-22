@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/webui/chromeos/arc_power_control/arc_power_control_handler.h"
 
+#include "ash/components/arc/session/arc_bridge_service.h"
+#include "ash/components/arc/session/arc_service_manager.h"
 #include "base/bind.h"
 #include "base/linux_util.h"
 #include "base/process/launch.h"
@@ -19,8 +21,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "components/arc/mojom/power.mojom.h"
-#include "components/arc/session/arc_bridge_service.h"
-#include "components/arc/session/arc_service_manager.h"
 
 namespace chromeos {
 

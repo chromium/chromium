@@ -7,12 +7,12 @@
 #include <utility>
 
 #include "ash/components/arc/arc_browser_context_keyed_service_factory_base.h"
+#include "ash/components/arc/session/arc_bridge_service.h"
 #include "base/logging.h"
 #include "base/memory/singleton.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "chrome/browser/speech/tts_chromeos.h"
-#include "components/arc/session/arc_bridge_service.h"
 #include "content/public/browser/tts_controller.h"
 #include "third_party/icu/source/common/unicode/uloc.h"
 

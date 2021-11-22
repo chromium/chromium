@@ -186,8 +186,8 @@ static_library("prefs") {
   defines = [ "ARC_IMPLEMENTATION" ]
 
   deps = [
+    "//ash/components/arc/session:arc_base_enums",
     "//build:chromeos_buildflags",
-    "//components/arc/session:arc_base_enums",
     "//components/guest_os:prefs",
     "//components/prefs",
   ]
@@ -239,10 +239,10 @@ static_library("arc_base") {
 
   public_deps = [
     ":arc_base_utils",
+    "//ash/components/arc/session",
+    "//ash/components/arc/session:arc_base_enums",
+    "//ash/components/arc/session:connection_holder",
     "//components/arc/mojom",
-    "//components/arc/session",
-    "//components/arc/session:arc_base_enums",
-    "//components/arc/session:connection_holder",
     "//dbus",
   ]
 }
@@ -276,8 +276,8 @@ static_library("notification_test_support") {
   ]
 
   public_deps = [
+    "//ash/components/arc/session:connection_holder",
     "//components/arc/mojom:notifications",
-    "//components/arc/session:connection_holder",
   ]
 }
 

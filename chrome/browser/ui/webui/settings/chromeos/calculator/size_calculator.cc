@@ -6,6 +6,8 @@
 
 #include <numeric>
 
+#include "ash/components/arc/session/arc_bridge_service.h"
+#include "ash/components/arc/session/arc_service_manager.h"
 #include "ash/components/arc/storage_manager/arc_storage_manager.h"
 #include "base/callback_helpers.h"
 #include "base/memory/scoped_refptr.h"
@@ -21,8 +23,6 @@
 #include "chromeos/cryptohome/userdataauth_util.h"
 #include "chromeos/dbus/spaced/spaced_client.h"
 #include "chromeos/dbus/userdataauth/userdataauth_client.h"
-#include "components/arc/session/arc_bridge_service.h"
-#include "components/arc/session/arc_service_manager.h"
 #include "components/browsing_data/content/cache_storage_helper.h"
 #include "components/browsing_data/content/conditional_cache_counting_helper.h"
 #include "components/browsing_data/content/cookie_helper.h"

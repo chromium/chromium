@@ -7,6 +7,8 @@
 #include <memory>
 #include <vector>
 
+#include "ash/components/arc/session/arc_bridge_service.h"
+#include "ash/components/arc/session/arc_service_manager.h"
 #include "ash/constants/ash_pref_names.h"
 #include "base/bind.h"
 #include "base/values.h"
@@ -22,8 +24,6 @@
 #include "chromeos/network/network_state.h"
 #include "chromeos/network/network_state_handler.h"
 #include "components/arc/mojom/net.mojom.h"
-#include "components/arc/session/arc_bridge_service.h"
-#include "components/arc/session/arc_service_manager.h"
 #include "components/onc/onc_constants.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/web_contents.h"

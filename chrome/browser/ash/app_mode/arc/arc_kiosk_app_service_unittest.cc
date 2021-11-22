@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ash/app_mode/arc/arc_kiosk_app_service.h"
 
+#include "ash/components/arc/session/arc_service_manager.h"
+#include "ash/components/arc/session/arc_stop_reason.h"
 #include "ash/components/arc/test/fake_app_instance.h"
 #include "ash/components/arc/test/fake_arc_session.h"
 #include "ash/test/ash_test_helper.h"
@@ -21,8 +23,6 @@
 #include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
-#include "components/arc/session/arc_service_manager.h"
-#include "components/arc/session/arc_stop_reason.h"
 #include "components/exo/shell_surface_util.h"
 #include "components/exo/wm_helper.h"
 #include "components/exo/wm_helper_chromeos.h"

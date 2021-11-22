@@ -10,12 +10,12 @@
 #include <string>
 #include <vector>
 
+#include "ash/components/arc/session/connection_observer.h"
 #include "ash/components/arc/volume_mounter/arc_volume_mounter_bridge.h"
 #include "base/callback.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "components/arc/mojom/file_system.mojom-forward.h"
-#include "components/arc/session/connection_observer.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 namespace base {

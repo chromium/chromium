@@ -7,13 +7,13 @@
 #include <utility>
 
 #include "ash/components/arc/arc_browser_context_keyed_service_factory_base.h"
+#include "ash/components/arc/session/arc_bridge_service.h"
 #include "base/bind.h"
 #include "base/files/scoped_file.h"
 #include "base/memory/singleton.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "chromeos/dbus/arc/arc_camera_client.h"
-#include "components/arc/session/arc_bridge_service.h"
 #include "crypto/random.h"
 #include "media/capture/video/chromeos/camera_hal_dispatcher_impl.h"
 #include "mojo/public/cpp/bindings/remote.h"
