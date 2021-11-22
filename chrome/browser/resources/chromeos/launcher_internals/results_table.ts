@@ -10,7 +10,7 @@ export interface LauncherResultsTableElement {
   $: {
     'headerRow': HTMLTableRowElement,
     'resultsSection': HTMLTableSectionElement,
-    'scoreHeader': HTMLTableCellElement,
+    'displayScoreHeader': HTMLTableCellElement,
   };
 }
 
@@ -30,9 +30,10 @@ export class LauncherResultsTableElement extends PolymerElement {
   // header row in insertion order.
   private headerCells: Map<string, HTMLTableCellElement> = new Map();
 
-  // The result property used to sort the table. 'Score' is the default key, and
-  // this will change whenever the user clicks on a new header to sort by.
-  private sortKey: string = 'Score';
+  // The result property used to sort the table. 'Display score' is the default
+  // key, and this will change whenever the user clicks on a new header to sort
+  // by.
+  private sortKey: string = 'Display score';
 
   // The IDs of results that are currently selected. This is used to persist
   // formatting when the table is sorted.
@@ -40,8 +41,9 @@ export class LauncherResultsTableElement extends PolymerElement {
 
   connectedCallback() {
     super.connectedCallback();
-    this.$.scoreHeader.addEventListener(
-        'click', () => this.sortTable('Score', /*resultsChanged=*/ false));
+    this.$.displayScoreHeader.addEventListener(
+        'click',
+        () => this.sortTable('Display score', /*resultsChanged=*/ false));
   }
 
   clearResults() {
@@ -86,7 +88,7 @@ export class LauncherResultsTableElement extends PolymerElement {
     this.sortKey = sortKey;
 
     let sortedResults = Array.from(this.results.values());
-    if (this.sortKey === 'Score') {
+    if (this.sortKey === 'Display score') {
       sortedResults.sort((a, b) => b.score - a.score);
     } else {
       const getSortValue = (result: Result): number => {
