@@ -82,6 +82,11 @@ class ExtensionsToolbarContainer : public ToolbarIconContainerView,
   // Gets the extension menu button for the toolbar.
   ExtensionsToolbarButton* GetExtensionsButton() const;
 
+  // Gets the extensions toolbar controls.
+  ExtensionsToolbarControls* GetExtensionsToolbarControls() const {
+    return extensions_controls_;
+  }
+
   // Get the view corresponding to the extension |id|, if any.
   ToolbarActionView* GetViewForId(const std::string& id);
 

@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/extensions/extensions_menu_view.h"
 
 #include "base/containers/contains.h"
+#include "base/feature_list.h"
 #include "base/i18n/case_conversion.h"
 #include "base/memory/ptr_util.h"
 #include "base/ranges/algorithm.h"
@@ -14,6 +15,7 @@
 #include "chrome/browser/ui/extensions/extension_action_view_controller.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/toolbar/toolbar_action_view_controller.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/bubble_menu_item_factory.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
@@ -494,6 +496,9 @@ views::Widget* ExtensionsMenuView::ShowBubble(
     ExtensionsContainer* extensions_container,
     bool allow_pinning) {
   DCHECK(!g_extensions_dialog);
+  // Experiment `kExtensionsMenuAccessControl` is introducing a new menu. Check
+  // `ExtensionsMenuView` is only constructed when the experiment is disabled.
+  DCHECK(!base::FeatureList::IsEnabled(features::kExtensionsMenuAccessControl));
   g_extensions_dialog = new ExtensionsMenuView(
       anchor_view, browser, extensions_container, allow_pinning);
   views::Widget* widget =
