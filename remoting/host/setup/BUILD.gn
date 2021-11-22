@@ -76,3 +76,79 @@ source_set("common") {
     ]
   }
 }
+
+source_set("start_host_main_headers") {
+  sources = [ "start_host_main.h" ]
+  deps = [ "//remoting/host:host_main_headers" ]
+}
+
+source_set("start_host_main") {
+  sources = [
+    "host_starter.cc",
+    "host_starter.h",
+    "host_stopper.cc",
+    "host_stopper.h",
+    "start_host_main.cc",
+  ]
+
+  if (!is_win) {
+    sources += [
+      "start_host_as_root.cc",
+      "start_host_as_root.h",
+    ]
+  }
+
+  deps = [
+    "//google_apis",
+    "//mojo/core/embedder",
+    "//net",
+    "//remoting/base:base",
+    "//remoting/host:common",
+    "//remoting/host/setup",
+    "//remoting/host/setup:start_host_main_headers",
+    "//services/network:network_service",
+    "//services/network/public/cpp:cpp",
+    "//third_party/libjingle_xmpp",
+    "//third_party/webrtc_overrides:webrtc_component",
+  ]
+
+  configs += [
+    "//build/config/compiler:wexit_time_destructors",
+    "//remoting/build/config:host_implementation",
+    "//remoting/build/config:version",
+  ]
+}
+
+source_set("native_messaging_host_main_headers") {
+  sources = [ "me2me_native_messaging_host_main.h" ]
+  deps = [ "//remoting/host:host_main_headers" ]
+}
+
+source_set("native_messaging_host_main") {
+  configs += [
+    "//build/config/compiler:wexit_time_destructors",
+    "//remoting/build/config:host_implementation",
+    "//remoting/build/config:version",
+  ]
+
+  sources = [ "me2me_native_messaging_host_main.cc" ]
+
+  deps = [
+    ":native_messaging_host_main_headers",
+    "//base",
+    "//build:chromeos_buildflags",
+    "//mojo/core/embedder",
+    "//net",
+    "//remoting/base",
+    "//remoting/base:authorization",
+    "//remoting/base:breakpad",
+    "//remoting/host",
+    "//remoting/host:base",
+    "//remoting/host:common",
+    "//remoting/host/native_messaging",
+    "//remoting/host/setup",
+    "//services/network:network_service",
+    "//services/network/public/cpp",
+    "//services/network/public/mojom",
+  ]
+}
