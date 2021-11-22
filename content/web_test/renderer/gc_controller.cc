@@ -89,7 +89,8 @@ void GCController::AsyncCollectAllWithEmptyStack(
   v8::Isolate* const isolate = blink::MainThreadIsolate();
 
   for (int i = 0; i < kNumberOfGCsForFullCollection; i++) {
-    isolate->GetEmbedderHeapTracer()->GarbageCollectionForTesting(
+    isolate->RequestGarbageCollectionForTesting(
+        v8::Isolate::kFullGarbageCollection,
         v8::EmbedderHeapTracer::EmbedderStackState::kNoHeapPointers);
   }
 
