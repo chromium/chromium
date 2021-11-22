@@ -19,34 +19,9 @@ def _CommonChecks(input_api, output_api):
   affected = input_api.AffectedFiles()
   if any(f for f in affected if f.LocalPath().endswith('.html')):
     results += _CheckHtml(input_api, output_api)
-  results += _CheckWebDevStyle(input_api, output_api)
   return results
 
 
 def _CheckHtml(input_api, output_api):
   return input_api.canned_checks.CheckLongLines(
       input_api, output_api, 80, lambda x: x.LocalPath().endswith('.html'))
-
-
-SKIP_PRESUBMIT_FILES = set([
-  'ash/webui/camera_app_ui/resources/js/lib/ffmpeg.js'
-])
-
-
-def _CheckWebDevStyle(input_api, output_api):
-  results = []
-
-  try:
-    import sys
-    old_sys_path = sys.path[:]
-    cwd = input_api.PresubmitLocalPath()
-    sys.path += [input_api.os_path.join(cwd, '..', '..', '..', 'tools')]
-    from web_dev_style import presubmit_support
-    results += presubmit_support.CheckStyle(
-        input_api,
-        output_api,
-        lambda x: x.LocalPath() not in SKIP_PRESUBMIT_FILES)
-  finally:
-    sys.path = old_sys_path
-
-  return results
