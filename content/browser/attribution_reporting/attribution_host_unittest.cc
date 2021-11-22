@@ -49,6 +49,12 @@ class AttributionHostTestPeer {
 
 namespace {
 
+using testing::AllOf;
+using testing::ElementsAre;
+using testing::IsEmpty;
+using testing::Property;
+using testing::SizeIs;
+
 const char kConversionUrl[] = "https://b.com";
 const char kConversionUrlWithFragment[] = "https://b.com/#fragment";
 const char kConversionUrlWithSubDomain[] = "https://sub.b.com";
@@ -124,10 +130,11 @@ TEST_F(AttributionHostTest, ValidConversionInSubframe_NoBadMessage) {
   // triggered.
   base::RunLoop().RunUntilIdle();
   EXPECT_FALSE(bad_message_observer.got_bad_message());
-  EXPECT_EQ(1u, test_manager_.num_triggers());
 
-  EXPECT_EQ(net::SchemefulSite(GURL("https://www.example.com")),
-            test_manager_.last_conversion_destination());
+  EXPECT_THAT(test_manager_.handled_triggers(),
+              ElementsAre(Property(
+                  &StorableTrigger::conversion_destination,
+                  net::SchemefulSite(GURL("https://www.example.com")))));
 }
 
 TEST_F(AttributionHostTest,
@@ -156,10 +163,11 @@ TEST_F(AttributionHostTest,
   // triggered.
   base::RunLoop().RunUntilIdle();
   EXPECT_FALSE(bad_message_observer.got_bad_message());
-  EXPECT_EQ(1u, test_manager_.num_triggers());
 
-  EXPECT_EQ(net::SchemefulSite(GURL("https://www.example.com")),
-            test_manager_.last_conversion_destination());
+  EXPECT_THAT(test_manager_.handled_triggers(),
+              ElementsAre(Property(
+                  &StorableTrigger::conversion_destination,
+                  net::SchemefulSite(GURL("https://www.example.com")))));
 }
 
 TEST_F(AttributionHostTest, ConversionInSubframeOnInsecurePage_BadMessage) {
@@ -186,7 +194,7 @@ TEST_F(AttributionHostTest, ConversionInSubframeOnInsecurePage_BadMessage) {
       "blink.mojom.ConversionHost can only be used in secure contexts with a "
       "secure conversion registration origin.",
       bad_message_observer.WaitForBadMessage());
-  EXPECT_EQ(0u, test_manager_.num_triggers());
+  EXPECT_THAT(test_manager_.handled_triggers(), IsEmpty());
 }
 
 TEST_F(AttributionHostTest,
@@ -233,8 +241,8 @@ TEST_F(AttributionHostTest,
         url::Origin::Create(test_case.reporting_origin);
     conversion_host_mojom()->RegisterConversion(std::move(conversion));
 
-    EXPECT_EQ(static_cast<size_t>(test_case.conversion_allowed),
-              test_manager_.num_triggers())
+    EXPECT_THAT(test_manager_.handled_triggers(),
+                SizeIs(test_case.conversion_allowed))
         << "Top frame url: " << test_case.top_frame_url
         << ", reporting origin: " << test_case.reporting_origin;
 
@@ -261,7 +269,7 @@ TEST_F(AttributionHostTest, ConversionOnInsecurePage_BadMessage) {
       "blink.mojom.ConversionHost can only be used in secure contexts with a "
       "secure conversion registration origin.",
       bad_message_observer.WaitForBadMessage());
-  EXPECT_EQ(0u, test_manager_.num_triggers());
+  EXPECT_THAT(test_manager_.handled_triggers(), IsEmpty());
 }
 
 TEST_F(AttributionHostTest, ConversionWithInsecureReportingOrigin_BadMessage) {
@@ -280,7 +288,7 @@ TEST_F(AttributionHostTest, ConversionWithInsecureReportingOrigin_BadMessage) {
       "blink.mojom.ConversionHost can only be used in secure contexts with a "
       "secure conversion registration origin.",
       bad_message_observer.WaitForBadMessage());
-  EXPECT_EQ(0u, test_manager_.num_triggers());
+  EXPECT_THAT(test_manager_.handled_triggers(), IsEmpty());
 }
 
 TEST_F(AttributionHostTest, ValidConversion_NoBadMessage) {
@@ -301,7 +309,7 @@ TEST_F(AttributionHostTest, ValidConversion_NoBadMessage) {
   // triggered.
   base::RunLoop().RunUntilIdle();
   EXPECT_FALSE(bad_message_observer.got_bad_message());
-  EXPECT_EQ(1u, test_manager_.num_triggers());
+  EXPECT_THAT(test_manager_.handled_triggers(), SizeIs(1));
 }
 
 TEST_F(AttributionHostTest, ValidConversionWithEmbedderDisable_NoConversion) {
@@ -318,7 +326,7 @@ TEST_F(AttributionHostTest, ValidConversionWithEmbedderDisable_NoConversion) {
       url::Origin::Create(GURL("https://secure.com"));
   conversion_host_mojom()->RegisterConversion(std::move(conversion));
 
-  EXPECT_EQ(0u, test_manager_.num_triggers());
+  EXPECT_THAT(test_manager_.handled_triggers(), IsEmpty());
   SetBrowserClientForTesting(old_browser_client);
 }
 
@@ -351,8 +359,8 @@ TEST_F(AttributionHostTest, EmbedderDisabledContext_ConversionDisallowed) {
         url::Origin::Create(test_case.reporting_origin);
     conversion_host_mojom()->RegisterConversion(std::move(conversion));
 
-    EXPECT_EQ(static_cast<size_t>(test_case.conversion_allowed),
-              test_manager_.num_triggers())
+    EXPECT_THAT(test_manager_.handled_triggers(),
+                SizeIs(test_case.conversion_allowed))
         << "Top frame url: " << test_case.top_frame_url
         << ", reporting origin: " << test_case.reporting_origin;
 
@@ -396,8 +404,8 @@ TEST_F(AttributionHostTest, EmbedderDisabledContext_ImpressionDisallowed) {
     navigation->set_impression(std::move(impression));
     navigation->Commit();
 
-    EXPECT_EQ(static_cast<size_t>(test_case.impression_allowed),
-              test_manager_.num_sources())
+    EXPECT_THAT(test_manager_.handled_sources(),
+                SizeIs(test_case.impression_allowed))
         << "Top frame url: " << test_case.top_frame_url
         << ", reporting origin: " << test_case.reporting_origin;
 
@@ -419,7 +427,7 @@ TEST_F(AttributionHostTest, ValidImpressionWithEmbedderDisable_NoImpression) {
   navigation->set_impression(CreateValidImpression());
   navigation->Commit();
 
-  EXPECT_EQ(0u, test_manager_.num_sources());
+  EXPECT_THAT(test_manager_.handled_sources(), IsEmpty());
   SetBrowserClientForTesting(old_browser_client);
 }
 
@@ -432,12 +440,13 @@ TEST_F(AttributionHostTest, Conversion_AssociatedWithConversionSite) {
   conversion->reporting_origin =
       url::Origin::Create(GURL("https://secure.com"));
   conversion_host_mojom()->RegisterConversion(std::move(conversion));
-  EXPECT_EQ(1u, test_manager_.num_triggers());
 
   // Verify that we use the domain of the page where the conversion occurred
   // instead of the origin.
-  EXPECT_EQ(net::SchemefulSite(GURL("https://conversion.com")),
-            test_manager_.last_conversion_destination());
+  EXPECT_THAT(test_manager_.handled_triggers(),
+              ElementsAre(Property(
+                  &StorableTrigger::conversion_destination,
+                  net::SchemefulSite(GURL("https://conversion.com")))));
 }
 
 TEST_F(AttributionHostTest, PerPageConversionMetrics) {
@@ -457,14 +466,14 @@ TEST_F(AttributionHostTest, PerPageConversionMetrics) {
 
   for (size_t i = 0u; i < 8u; i++) {
     conversion_host_mojom()->RegisterConversion(conversion->Clone());
-    EXPECT_EQ(1u, test_manager_.num_triggers());
+    EXPECT_THAT(test_manager_.handled_triggers(), SizeIs(1));
     test_manager_.Reset();
   }
 
   conversion->reporting_origin =
       url::Origin::Create(GURL("https://anothersecure.com"));
   conversion_host_mojom()->RegisterConversion(conversion->Clone());
-  EXPECT_EQ(1u, test_manager_.num_triggers());
+  EXPECT_THAT(test_manager_.handled_triggers(), SizeIs(1));
   test_manager_.Reset();
 
   // Same document navs should not reset the counter.
@@ -530,7 +539,7 @@ TEST_F(AttributionHostTest, PerPageImpressionMetrics) {
     // Run loop to allow the bad message code to run if a bad message was
     // triggered.
     base::RunLoop().RunUntilIdle();
-    EXPECT_EQ(1u, test_manager_.num_sources());
+    EXPECT_THAT(test_manager_.handled_sources(), SizeIs(1));
     test_manager_.Reset();
   }
 
@@ -540,7 +549,7 @@ TEST_F(AttributionHostTest, PerPageImpressionMetrics) {
   // Run loop to allow the bad message code to run if a bad message was
   // triggered.
   base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(1u, test_manager_.num_sources());
+  EXPECT_THAT(test_manager_.handled_sources(), SizeIs(1));
   test_manager_.Reset();
 
   // Same document navs should not reset the counter.
@@ -605,7 +614,7 @@ TEST_F(AttributionHostTest, NavigationWithNoImpression_Ignored) {
   NavigationSimulatorImpl::NavigateAndCommitFromDocument(GURL(kConversionUrl),
                                                          main_rfh());
 
-  EXPECT_EQ(0u, test_manager_.num_sources());
+  EXPECT_THAT(test_manager_.handled_sources(), IsEmpty());
 }
 
 TEST_F(AttributionHostTest, ValidImpression_ForwardedToManager) {
@@ -616,7 +625,7 @@ TEST_F(AttributionHostTest, ValidImpression_ForwardedToManager) {
   navigation->set_impression(CreateValidImpression());
   navigation->Commit();
 
-  EXPECT_EQ(1u, test_manager_.num_sources());
+  EXPECT_THAT(test_manager_.handled_sources(), SizeIs(1));
 }
 
 TEST_F(AttributionHostTest, ImpressionWithNoManagerAvilable_NoCrash) {
@@ -648,7 +657,7 @@ TEST_F(AttributionHostTest, ImpressionInSubframe_Ignored) {
   navigation->set_impression(CreateValidImpression());
   navigation->Commit();
 
-  EXPECT_EQ(0u, test_manager_.num_sources());
+  EXPECT_THAT(test_manager_.handled_sources(), IsEmpty());
 }
 
 // Test that if we cannot access the initiator frame of the navigation, we
@@ -665,7 +674,7 @@ TEST_F(AttributionHostTest, ImpressionNavigationWithDeadInitiator_Ignored) {
   navigation->set_impression(CreateValidImpression());
   navigation->Commit();
 
-  EXPECT_EQ(0u, test_manager_.num_sources());
+  EXPECT_THAT(test_manager_.handled_sources(), IsEmpty());
 
   histograms.ExpectUniqueSample(
       "Conversions.ImpressionNavigationHasDeadInitiator", true, 2);
@@ -681,7 +690,7 @@ TEST_F(AttributionHostTest, ImpressionNavigationCommitsToErrorPage_Ignored) {
   navigation->Fail(net::ERR_FAILED);
   navigation->CommitErrorPage();
 
-  EXPECT_EQ(0u, test_manager_.num_sources());
+  EXPECT_THAT(test_manager_.handled_sources(), IsEmpty());
 }
 
 TEST_F(AttributionHostTest, ImpressionNavigationAborts_Ignored) {
@@ -693,7 +702,7 @@ TEST_F(AttributionHostTest, ImpressionNavigationAborts_Ignored) {
   navigation->set_impression(CreateValidImpression());
   navigation->AbortCommit();
 
-  EXPECT_EQ(0u, test_manager_.num_sources());
+  EXPECT_THAT(test_manager_.handled_sources(), IsEmpty());
 }
 
 TEST_F(AttributionHostTest,
@@ -706,7 +715,7 @@ TEST_F(AttributionHostTest,
   navigation->set_impression(CreateValidImpression());
   navigation->Commit();
 
-  EXPECT_EQ(0u, test_manager_.num_sources());
+  EXPECT_THAT(test_manager_.handled_sources(), IsEmpty());
 }
 
 TEST_F(AttributionHostTest,
@@ -759,7 +768,8 @@ TEST_F(AttributionHostTest,
     navigation->SetInitiatorFrame(main_rfh());
     navigation->Commit();
 
-    EXPECT_EQ(test_case.impression_expected, test_manager_.num_sources())
+    EXPECT_THAT(test_manager_.handled_sources(),
+                SizeIs(test_case.impression_expected))
         << "For test case: " << test_case.impression_origin << " | "
         << test_case.conversion_origin << " | " << test_case.reporting_origin;
     test_manager_.Reset();
@@ -790,10 +800,11 @@ TEST_F(AttributionHostTest,
   // triggered.
   base::RunLoop().RunUntilIdle();
   EXPECT_FALSE(bad_message_observer.got_bad_message());
-  EXPECT_EQ(1u, test_manager_.num_sources());
 
-  EXPECT_EQ(url::Origin::Create(GURL("https://www.example.com")),
-            test_manager_.last_impression_origin());
+  EXPECT_THAT(test_manager_.handled_sources(),
+              ElementsAre(Property(
+                  &StorableSource::impression_origin,
+                  url::Origin::Create(GURL("https://www.example.com")))));
 }
 
 TEST_F(AttributionHostTest, ValidImpression_NoBadMessage) {
@@ -812,10 +823,10 @@ TEST_F(AttributionHostTest, ValidImpression_NoBadMessage) {
   // triggered.
   base::RunLoop().RunUntilIdle();
   EXPECT_FALSE(bad_message_observer.got_bad_message());
-  EXPECT_EQ(1u, test_manager_.num_sources());
-  EXPECT_EQ(StorableSource::SourceType::kEvent,
-            test_manager_.last_impression_source_type());
-  EXPECT_EQ(10, test_manager_.last_attribution_source_priority());
+  EXPECT_THAT(test_manager_.handled_sources(),
+              ElementsAre(AllOf(Property(&StorableSource::source_type,
+                                         StorableSource::SourceType::kEvent),
+                                Property(&StorableSource::priority, 10))));
 }
 
 TEST_F(AttributionHostTest, RegisterImpression_RecordsAllowedMetric) {
@@ -896,16 +907,16 @@ TEST_F(AttributionHostTest, AndroidConversion_DuringNavigation) {
       GURL(kConversionUrl), contents());
   navigation->Start();
 
-  EXPECT_EQ(0u, test_manager_.num_sources());
+  EXPECT_THAT(test_manager_.handled_sources(), IsEmpty());
 
   conversion_host()->ReportAttributionForCurrentNavigation(
       url::Origin::Create(GURL(origin)), CreateValidImpression());
 
-  EXPECT_EQ(0u, test_manager_.num_sources());
+  EXPECT_THAT(test_manager_.handled_sources(), IsEmpty());
 
   navigation->Commit();
 
-  EXPECT_EQ(1u, test_manager_.num_sources());
+  EXPECT_THAT(test_manager_.handled_sources(), SizeIs(1));
 }
 
 // In pre-loaded CCT navigations, the attribution can arrive after the
@@ -925,18 +936,18 @@ TEST_F(AttributionHostTest, AndroidConversion_AfterNavigation) {
       GURL(kConversionUrl), contents());
   navigation->Commit();
 
-  EXPECT_EQ(0u, test_manager_.num_sources());
+  EXPECT_THAT(test_manager_.handled_sources(), IsEmpty());
 
   conversion_host()->ReportAttributionForCurrentNavigation(
       url::Origin::Create(GURL(origin)), CreateValidImpression());
 
-  EXPECT_EQ(1u, test_manager_.num_sources());
+  EXPECT_THAT(test_manager_.handled_sources(), SizeIs(1));
 
   // Make sure we don't allow repeated attributions for the same navigation.
   conversion_host()->ReportAttributionForCurrentNavigation(
       url::Origin::Create(GURL(origin)), CreateValidImpression());
 
-  EXPECT_EQ(1u, test_manager_.num_sources());
+  EXPECT_THAT(test_manager_.handled_sources(), SizeIs(1));
 }
 
 TEST_F(AttributionHostTest, AndroidConversion_AfterNavigation_SubDomain) {
@@ -956,7 +967,7 @@ TEST_F(AttributionHostTest, AndroidConversion_AfterNavigation_SubDomain) {
   conversion_host()->ReportAttributionForCurrentNavigation(
       url::Origin::Create(GURL(origin)), CreateValidImpression());
 
-  EXPECT_EQ(1u, test_manager_.num_sources());
+  EXPECT_THAT(test_manager_.handled_sources(), SizeIs(1));
 }
 
 // In pre-loaded CCT navigations, the attribution can arrive after the
@@ -979,7 +990,7 @@ TEST_F(AttributionHostTest,
   conversion_host()->ReportAttributionForCurrentNavigation(
       url::Origin::Create(GURL(origin)), CreateValidImpression());
 
-  EXPECT_EQ(0u, test_manager_.num_sources());
+  EXPECT_THAT(test_manager_.handled_sources(), IsEmpty());
 
   // Navigating to the correct URL after navigation to the wrong one still
   // shouldn't allow the attribution.
@@ -987,7 +998,7 @@ TEST_F(AttributionHostTest,
       GURL(kConversionUrl), contents());
   good_navigation->Commit();
 
-  EXPECT_EQ(0u, test_manager_.num_sources());
+  EXPECT_THAT(test_manager_.handled_sources(), IsEmpty());
 }
 
 // Ensure we don't re-use pending Impressions after an aborted commit. Currently
@@ -1011,14 +1022,14 @@ TEST_F(AttributionHostTest, AndroidConversion_NavigationAborted) {
 
   navigation_abort->AbortCommit();
 
-  EXPECT_EQ(0u, test_manager_.num_sources());
+  EXPECT_THAT(test_manager_.handled_sources(), IsEmpty());
 
   auto navigation_commit = NavigationSimulatorImpl::CreateBrowserInitiated(
       GURL(kConversionUrl), contents());
 
   navigation_commit->Commit();
 
-  EXPECT_EQ(0u, test_manager_.num_sources());
+  EXPECT_THAT(test_manager_.handled_sources(), IsEmpty());
 }
 
 // Ensure we don't re-use pending Impressions after an Error page commit.
@@ -1043,14 +1054,14 @@ TEST_F(AttributionHostTest, AndroidConversion_NavigationError) {
   navigation_error->Fail(net::ERR_UNEXPECTED);
   navigation_error->CommitErrorPage();
 
-  EXPECT_EQ(0u, test_manager_.num_sources());
+  EXPECT_THAT(test_manager_.handled_sources(), IsEmpty());
 
   auto navigation_commit = NavigationSimulatorImpl::CreateBrowserInitiated(
       GURL(kConversionUrl), contents());
 
   navigation_commit->Commit();
 
-  EXPECT_EQ(0u, test_manager_.num_sources());
+  EXPECT_THAT(test_manager_.handled_sources(), IsEmpty());
 }
 
 // We don't allow attributions before a navigation begins. Currently only used
@@ -1073,7 +1084,7 @@ TEST_F(AttributionHostTest, AndroidConversion_BeforeNavigation) {
 
   navigation->Commit();
 
-  EXPECT_EQ(0u, test_manager_.num_sources());
+  EXPECT_THAT(test_manager_.handled_sources(), IsEmpty());
 }
 
 // We ignore same-document navigations.
@@ -1096,7 +1107,7 @@ TEST_F(AttributionHostTest, AndroidConversion_SameDocument) {
   conversion_host()->ReportAttributionForCurrentNavigation(
       url::Origin::Create(GURL(origin)), CreateValidImpression());
 
-  EXPECT_EQ(1u, test_manager_.num_sources());
+  EXPECT_THAT(test_manager_.handled_sources(), SizeIs(1));
 }
 
 #if defined(OS_ANDROID)
@@ -1110,7 +1121,7 @@ TEST_F(AttributionHostTest, AndroidConversion) {
   navigation->set_impression(CreateValidImpression());
   navigation->Commit();
 
-  EXPECT_EQ(1u, test_manager_.num_sources());
+  EXPECT_THAT(test_manager_.handled_sources(), SizeIs(1));
 }
 
 TEST_F(AttributionHostTest, AndroidConversion_BadScheme) {
@@ -1121,7 +1132,7 @@ TEST_F(AttributionHostTest, AndroidConversion_BadScheme) {
   navigation->set_impression(CreateValidImpression());
   navigation->Commit();
 
-  EXPECT_EQ(0u, test_manager_.num_sources());
+  EXPECT_THAT(test_manager_.handled_sources(), IsEmpty());
 }
 #endif
 

@@ -24,6 +24,7 @@
 #include "content/browser/attribution_reporting/rate_limit_table.h"
 #include "content/browser/attribution_reporting/sent_report_info.h"
 #include "content/browser/attribution_reporting/storable_source.h"
+#include "content/browser/attribution_reporting/storable_trigger.h"
 #include "content/test/test_content_browser_client.h"
 #include "net/base/schemeful_site.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -201,37 +202,21 @@ class TestAttributionManager : public AttributionManager {
   // Resets all counters on this.
   void Reset();
 
-  size_t num_sources() const { return num_sources_; }
-  size_t num_triggers() const { return num_triggers_; }
-
-  const net::SchemefulSite& last_conversion_destination() {
-    return last_conversion_destination_;
+  const std::vector<StorableSource>& handled_sources() const
+      WARN_UNUSED_RESULT {
+    return handled_sources_;
   }
 
-  const absl::optional<StorableSource::SourceType>&
-  last_impression_source_type() {
-    return last_impression_source_type_;
-  }
-
-  const absl::optional<url::Origin>& last_impression_origin() {
-    return last_impression_origin_;
-  }
-
-  const base::Time last_impression_time() { return last_impression_time_; }
-
-  const absl::optional<int64_t>& last_attribution_source_priority() {
-    return last_attribution_source_priority_;
+  const std::vector<StorableTrigger>& handled_triggers() const
+      WARN_UNUSED_RESULT {
+    return handled_triggers_;
   }
 
  private:
   AttributionPolicy policy_;
-  net::SchemefulSite last_conversion_destination_;
-  absl::optional<StorableSource::SourceType> last_impression_source_type_;
-  absl::optional<url::Origin> last_impression_origin_;
-  absl::optional<int64_t> last_attribution_source_priority_;
-  base::Time last_impression_time_;
-  size_t num_sources_ = 0;
-  size_t num_triggers_ = 0;
+
+  std::vector<StorableSource> handled_sources_;
+  std::vector<StorableTrigger> handled_triggers_;
 
   std::vector<StorableSource> sources_;
   std::vector<AttributionReport> reports_;

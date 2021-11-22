@@ -16,7 +16,6 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/task/task_runner_util.h"
 #include "base/test/bind.h"
-#include "content/browser/attribution_reporting/storable_trigger.h"
 #include "url/gurl.h"
 
 namespace content {
@@ -162,17 +161,11 @@ void TestAttributionManager::RemoveObserver(Observer* observer) {
 }
 
 void TestAttributionManager::HandleSource(StorableSource source) {
-  num_sources_++;
-  last_impression_source_type_ = source.source_type();
-  last_impression_origin_ = source.impression_origin();
-  last_attribution_source_priority_ = source.priority();
-  last_impression_time_ = source.impression_time();
+  handled_sources_.push_back(std::move(source));
 }
 
 void TestAttributionManager::HandleTrigger(StorableTrigger trigger) {
-  num_triggers_++;
-
-  last_conversion_destination_ = trigger.conversion_destination();
+  handled_triggers_.push_back(std::move(trigger));
 }
 
 void TestAttributionManager::GetActiveSourcesForWebUI(
@@ -232,8 +225,8 @@ void TestAttributionManager::NotifyReportDropped(
 }
 
 void TestAttributionManager::Reset() {
-  num_sources_ = 0u;
-  num_triggers_ = 0u;
+  handled_sources_.clear();
+  handled_triggers_.clear();
 }
 
 // Builds an impression with default values. This is done as a builder because

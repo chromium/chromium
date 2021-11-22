@@ -18,6 +18,12 @@
 
 namespace content {
 
+namespace {
+using testing::AllOf;
+using testing::ElementsAre;
+using testing::IsEmpty;
+using testing::Property;
+
 const char kPackageName[] = "org.chromium.chrome.test";
 const char kConversionUrl[] = "https://b.com";
 const char kInvalidUrl[] = "http://insecure.com";
@@ -32,8 +38,6 @@ class AttributionReporterTest : public ::testing::Test {
     url::AddStandardScheme(kAndroidAppScheme, url::SCHEME_WITH_HOST);
   }
 
-  void TearDown() override {}
-
  protected:
   TestAttributionManager test_manager_;
 
@@ -47,13 +51,13 @@ TEST_F(AttributionReporterTest, ValidImpression_Allowed) {
       test_manager_, nullptr, kPackageName, kEventId, kConversionUrl,
       kReportToUrl, 56789, time);
 
-  EXPECT_EQ(1u, test_manager_.num_sources());
-
-  EXPECT_EQ(OriginFromAndroidPackageName(kPackageName),
-            test_manager_.last_impression_origin());
-  EXPECT_EQ(StorableSource::SourceType::kEvent,
-            test_manager_.last_impression_source_type());
-  EXPECT_EQ(time, test_manager_.last_impression_time());
+  EXPECT_THAT(
+      test_manager_.handled_sources(),
+      ElementsAre(AllOf(Property(&StorableSource::impression_origin,
+                                 OriginFromAndroidPackageName(kPackageName)),
+                        Property(&StorableSource::source_type,
+                                 StorableSource::SourceType::kEvent),
+                        Property(&StorableSource::impression_time, time))));
 }
 
 TEST_F(AttributionReporterTest, ValidImpression_Allowed_NoOptionals) {
@@ -61,12 +65,12 @@ TEST_F(AttributionReporterTest, ValidImpression_Allowed_NoOptionals) {
       test_manager_, nullptr, kPackageName, kEventId, kConversionUrl, "", 0,
       base::Time::Now());
 
-  EXPECT_EQ(1u, test_manager_.num_sources());
-
-  EXPECT_EQ(OriginFromAndroidPackageName(kPackageName),
-            test_manager_.last_impression_origin());
-  EXPECT_EQ(StorableSource::SourceType::kEvent,
-            test_manager_.last_impression_source_type());
+  EXPECT_THAT(
+      test_manager_.handled_sources(),
+      ElementsAre(AllOf(Property(&StorableSource::impression_origin,
+                                 OriginFromAndroidPackageName(kPackageName)),
+                        Property(&StorableSource::source_type,
+                                 StorableSource::SourceType::kEvent))));
 }
 
 TEST_F(AttributionReporterTest, ValidImpression_Disallowed) {
@@ -79,7 +83,7 @@ TEST_F(AttributionReporterTest, ValidImpression_Disallowed) {
       test_manager_, nullptr, kPackageName, kEventId, kConversionUrl,
       kReportToUrl, 56789, base::Time::Now());
 
-  EXPECT_EQ(0u, test_manager_.num_sources());
+  EXPECT_THAT(test_manager_.handled_sources(), IsEmpty());
 
   SetBrowserClientForTesting(old_browser_client);
 }
@@ -89,7 +93,8 @@ TEST_F(AttributionReporterTest, InvalidImpression) {
       test_manager_, nullptr, kPackageName, kEventId, kInvalidUrl, kReportToUrl,
       56789, base::Time::Now());
 
-  EXPECT_EQ(0u, test_manager_.num_sources());
+  EXPECT_THAT(test_manager_.handled_sources(), IsEmpty());
 }
 
+}  // namespace
 }  // namespace content
