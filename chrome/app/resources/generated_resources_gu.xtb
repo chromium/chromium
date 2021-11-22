@@ -419,7 +419,7 @@
 <translation id="1431432486300429272">Google, Search અને અન્ય Googleની સેવાઓને મનગમતી બનાવવા માટે તમારા બ્રાઉઝિંગ ઇતિહાસનો ઉપયોગ કરી શકે છે. તમે કે તમારા માતાપિતા કોઈપણ સમયે myaccount.google.com/activitycontrols/search પર જઈને આમાં ફેરફાર કરી શકે છે</translation>
 <translation id="1432581352905426595">શોધ એન્જિન મેનેજ કરો</translation>
 <translation id="1433811987160647649">ઍક્સેસ કરતાં પહેલાં પૂછો</translation>
-<translation id="1434696352799406980">આ તમારા સ્ટાર્ટઅપ પેજ, નવું ટેબ પેજ, શોધ એંજિન અને પિન કરેલ ટેબને રીસેટ કરશે. તે તમામ એક્સટેન્શનને પણ બંધ કરશે અને કુકી જેવો અસ્થાયી ડેટા પણ કાઢી નાંખશે. તમારા બુકમાર્ક, ઇતિહાસ અને સાચવેલાં પાસવર્ડ કાઢી નાંખવામાં આવશે નહિ.</translation>
+<translation id="1434696352799406980">આ તમારા સ્ટાર્ટઅપ પેજ, નવું ટૅબ પેજ, શોધ એન્જિન અને પિન કરેલા ટૅબને રીસેટ કરશે. તે તમામ એક્સટેન્શનને પણ બંધ કરશે અને કુકી જેવો અસ્થાયી ડેટા પણ કાઢી નાખશે. તમારા બુકમાર્ક, ઇતિહાસ અને સાચવેલાં પાસવર્ડ કાઢી નાખવામાં આવશે નહીં.</translation>
 <translation id="1434886155212424586">હોમપેજ એ નવું ટૅબ પેજ છે</translation>
 <translation id="1436390408194692385"><ph name="TICKET_TIME_LEFT" /> માટે માન્ય</translation>
 <translation id="1436784010935106834">દૂર કરેલું</translation>
@@ -1808,7 +1808,7 @@
 <translation id="2841837950101800123">પ્રદાતા</translation>
 <translation id="2844169650293029770">USB-C ઉપકરણ (ડાબી બાજુનું આગળનું પોર્ટ)</translation>
 <translation id="2844809857160214557">પ્રિન્ટ કરવાના કામો જુઓ અને મેનેજ કરો</translation>
-<translation id="2845382757467349449">બુકમાર્ક્સ બાર હંમેશા બતાવો</translation>
+<translation id="2845382757467349449">હંમેશાં બુકમાર્ક બાર બતાવો</translation>
 <translation id="284805635805850872">નુકસાનકારક સૉફ્ટવેર દૂર કરીએ?</translation>
 <translation id="2849035674501872372">શોધો</translation>
 <translation id="284970761985428403"><ph name="ASCII_NAME" /> (<ph name="UNICODE_NAME" />)</translation>
@@ -3098,7 +3098,7 @@
 <translation id="4209251085232852247">બંધ છે</translation>
 <translation id="4209464433672152343">દસ્તાવેજોને પ્રિન્ટિંગ માટે તૈયાર કરવા માટે તે <ph name="BEGIN_LINK_HELP" />Googleને મોકલવામાં આવે છે<ph name="END_LINK_HELP" />. <ph name="BEGIN_LINK_DASHBOARD" />Google ક્લાઉડ પ્રિન્ટ ડૅશબોર્ડ<ph name="END_LINK_DASHBOARD" /> પર તમારા પ્રિન્ટર અને પ્રિન્ટરનો ઇતિહાસ જુઓ, તેમાં ફેરફાર કરો અને મેનેજ કરો.</translation>
 <translation id="4210048056321123003">વર્ચ્યુઅલ મશીન ડાઉનલોડ કરી રહ્યાં છીએ</translation>
-<translation id="421182450098841253">બુકમાર્ક્સ બાર &amp;બતાવો</translation>
+<translation id="421182450098841253">&amp;બુકમાર્ક બાર બતાવો</translation>
 <translation id="4211851069413100178">વપરાશ અને નિદાનનો ડેટા મોકલો. Googleને નિદાન, ડિવાઇસ અને ઍપ વપરાશનો ડેટા ઑટોમૅટિક રીતે મોકલીને તમારા Android અનુભવને બહેતર બનાવવામાં સહાય કરો. આ સિસ્ટમ અને ઍપની સ્થિરતા અને અન્ય સુધારણાઓમાં સહાય કરશે. એકત્રીકરણ કરેલો કેટલોક ડેટા Google ઍપ અને ભાગીદારોને પણ મદદ કરશે, જેમ કે Android ડેવલપર. આ <ph name="BEGIN_LINK1" />સેટિંગ<ph name="END_LINK1" /> માલિક દ્વારા લાગુ કરવામાં આવેલ છે. માલિક, Googleને આ ડિવાઇસ માટે નિદાન અને વપરાશ ડેટા મોકલવાનું પસંદ કરી શકે છે. જો તમારી વધારાની વેબ અને ઍપ પ્રવૃત્તિ સેટિંગ ચાલુ હોય, તો આ ડેટા તમારા Google એકાઉન્ટમાં સાચવવામાં આવી શકે છે. <ph name="BEGIN_LINK2" />વધુ જાણો<ph name="END_LINK2" /></translation>
 <translation id="42126664696688958">નિકાસ કરો</translation>
 <translation id="42137655013211669">સર્વર દ્વારા આ સંસાધનની અ‍ૅક્સેસ નિષિદ્ધ હતી.</translation>
@@ -3512,7 +3512,7 @@
 <translation id="4660465405448977105">{COUNT,plural, =1{છબી}one{# છબી}other{# છબી}}</translation>
 <translation id="4660476621274971848">અપેક્ષિત વર્ઝન "<ph name="EXPECTED_VERSION" />" છે, પરંતુ વર્ઝન "<ph name="NEW_ID" />" હતું.</translation>
 <translation id="4660540330091848931">કદ બદલી રહ્યાં છીએ</translation>
-<translation id="4661407454952063730">ઍપનો ડેટા એ (ડેવલપર સેટિંગના આધારે) ઍપમાં સાચવેલો કોઈપણ ડેટા હોઈ શકે છે, જેમાં સંપર્કો, સંદેશા અને ફોટા જેવો સંભવિત રૂપે સંવેદનશીલ ડેટાનો સમાવેશ થાય છે.</translation>
+<translation id="4661407454952063730">ઍપનો ડેટા એ (ડેવલપર સેટિંગના આધારે) ઍપમાં સાચવેલો કોઈપણ ડેટા હોઈ શકે છે, જેમાં સંપર્કો, મેસેજ અને ફોટા જેવો સંભવિત રીતે સંવેદનશીલ ડેટાનો સમાવેશ થાય છે.</translation>
 <translation id="4662373422909645029">ઉપનામમાં સંખ્યા ન હોઈ શકે</translation>
 <translation id="4662788913887017617">તમારા iPhone સાથે આ બુકમાર્ક શેર કરો</translation>
 <translation id="4663373278480897665">કૅમેરાને મંજૂરી</translation>
@@ -4223,7 +4223,7 @@
 <translation id="5461050611724244538">તમારા ફોન સાથે સંપર્ક ખોરવાઈ ગયો</translation>
 <translation id="5463275305984126951"><ph name="LOCATION" />ની અનુક્રમણિકા</translation>
 <translation id="5463625433003343978">ડિવાઇસ શોધી રહ્યાં છીએ...</translation>
-<translation id="5463856536939868464">મેનૂમાં છુપાયેલા બુકમાર્ક્સ છે</translation>
+<translation id="5463856536939868464">મેનૂમાં છુપાયેલા બુકમાર્ક છે</translation>
 <translation id="5464632865477611176">આ વખતે ચલાવો</translation>
 <translation id="5464660706533281090">બાળ વપરાશકર્તા આ સેટિંગમાં ફેરફાર કરી શકતા નથી.</translation>
 <translation id="5466374726908360271">“<ph name="SEARCH_TERMS" />” પેસ્ટ કરો અને શોધો</translation>
@@ -4368,7 +4368,7 @@
 <translation id="5600706100022181951">અપડેટ ડાઉનલોડ કરવામાં <ph name="UPDATE_SIZE_MB" /> MB મોબાઇલ ડેટા વપરાશે. શું તમે ચાલુ રાખવા માગો છો?</translation>
 <translation id="5601503069213153581">PIN</translation>
 <translation id="5601823921345337195">MIDI ડિવાઇસ સાથે કનેક્ટ કરવાની મંજૂરી આપેલી નથી</translation>
-<translation id="5602765853043467355">આ ઉપકરણમાંથી બુકમાર્ક, ઇતિહાસ, પાસવર્ડ અને વધુ સાફ કરો</translation>
+<translation id="5602765853043467355">આ ડિવાઇસમાંથી બુકમાર્ક, ઇતિહાસ, પાસવર્ડ અને વધુ સાફ કરો</translation>
 <translation id="5604884720628869833"><ph name="DEVICE_COUNT" />માંથી ડિવાઇસ <ph name="DEVICE_INDEX" />, <ph name="DEVICE_NAME" />, કીબોર્ડ</translation>
 <translation id="5605623530403479164">અન્ય શોધ એંજીન્સ</translation>
 <translation id="5605758115928394442">તમે જ છો તે કન્ફર્મ કરવા માટે તમારા ફોન પર નોટિફિકેશન મોકલવામાં આવ્યું હતું.</translation>
@@ -5162,7 +5162,7 @@ USB ડિવાઇસ</translation>
 <translation id="6464825623202322042">આ ઉપકરણ</translation>
 <translation id="6465841119675156448">ઇન્ટરનેટ વિના</translation>
 <translation id="6466258437571594570">નોટિફિકેશન મોકલવાનું પૂછીને સાઇટ તમને ખલેલ પહોંચાડી શકશે નહીં</translation>
-<translation id="6466988389784393586">બધાં બુકમાર્ક્સ &amp;ખોલો</translation>
+<translation id="6466988389784393586">&amp;બધાં બુકમાર્ક ખોલો</translation>
 <translation id="6467304607960172345">પૂર્ણસ્ક્રીન વીડિયો ઑપ્ટિમાઇઝ કરો</translation>
 <translation id="6468485451923838994">ફૉન્ટ</translation>
 <translation id="6468773105221177474"><ph name="FILE_COUNT" /> ફાઇલ</translation>
@@ -6706,7 +6706,7 @@ USB ડિવાઇસ</translation>
 <translation id="8068253693380742035">સાઇન ઇન કરવા માટે ટચ કરો</translation>
 <translation id="8069615408251337349">Google Cloud Print</translation>
 <translation id="8071432093239591881">ફોટો તરીકે પ્રિન્ટ</translation>
-<translation id="8073499153683482226"><ph name="BEGIN_PARAGRAPH1" />ઍપ ડેટા એ સંપર્કો, સંદેશા અને ફોટા જેવા ડેટા સહિત, ઍપ દ્વારા (ડેવલપર સેટિંગના આધારે) સાચવવામાં આવેલ કોઈપણ ડેટા હોય શકે છે.<ph name="END_PARAGRAPH1" />
+<translation id="8073499153683482226"><ph name="BEGIN_PARAGRAPH1" />ઍપ ડેટા એ સંપર્કો, મેસેજ અને ફોટા જેવા ડેટા સહિત, ઍપ દ્વારા (ડેવલપર સેટિંગના આધારે) સાચવવામાં આવેલો કોઈપણ ડેટા હોય શકે છે.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />બૅકઅપ ડેટાની ગણતરી તમારા બાળકના ડ્રાઇવ સ્ટોરેજના ક્વોટામાં નહીં થાય.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />તમે સેટિંગમાંથી આ સેવા બંધ કરી શકશો.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="8074127646604999664">ડેટા મોકલવાનું અને પ્રાપ્ત કરવાનું સમાપ્ત કરવા માટે તાજેતરમાં બંધ કરેલ સાઇટ્સને મંજૂરી આપો</translation>
@@ -6724,9 +6724,9 @@ USB ડિવાઇસ</translation>
 <translation id="808894953321890993">પાસવર્ડ બદલો</translation>
 <translation id="8090234456044969073">તમારી મોટાભાગની અવારનાવર મુલાકાત લીધેલ વેબસાઇટ્સની સૂચિ વાંચો</translation>
 <translation id="8093359998839330381"><ph name="PLUGIN_NAME" /> પ્રતિસાદ આપી રહ્યું નથી</translation>
-<translation id="8095105960962832018"><ph name="BEGIN_PARAGRAPH1" />Google ડ્રાઇવમાં બૅકઅપ લો. કોઈપણ સમયે તમારો ડેટા સરળતાથી પાછો મેળવો અથવા ડિવાઇસ સ્વિચ કરો. તમારા બૅકઅપમાં ઍપનો ડેટા શામેલ હોય છે.<ph name="END_PARAGRAPH1" />
+<translation id="8095105960962832018"><ph name="BEGIN_PARAGRAPH1" />Google Driveમાં બૅકઅપ લો. કોઈપણ સમયે તમારો ડેટા સરળતાથી પાછો મેળવો અથવા ડિવાઇસ સ્વિચ કરો. તમારા બૅકઅપમાં ઍપનો ડેટા શામેલ હોય છે.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />તમારા બૅકઅપ Google પર અપલોડ કરવામાં આવે છે અને Google એકાઉન્ટ પાસવર્ડનો ઉપયોગ કરીને એન્ક્રિપ્ટ કરવામાં આવે છે.<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" />ઍપ ડેટા એ સંપર્કો, સંદેશા અને ફોટા જેવા ડેટા સહિત, ઍપ દ્વારા (ડેવલપર સેટિંગના આધારે) સાચવવામાં આવેલો કોઈપણ ડેટા હોય શકે છે.<ph name="END_PARAGRAPH3" />
+    <ph name="BEGIN_PARAGRAPH3" />ઍપ ડેટા એ સંપર્કો, મેસેજ અને ફોટા જેવા ડેટા સહિત, ઍપ દ્વારા (ડેવલપર સેટિંગના આધારે) સાચવવામાં આવેલો કોઈપણ ડેટા હોય શકે છે.<ph name="END_PARAGRAPH3" />
     <ph name="BEGIN_PARAGRAPH4" />બૅકઅપ ડેટાની ગણતરી તમારા ડ્રાઇવ સ્ટોરેજના ક્વોટામાં નહીં થાય.<ph name="END_PARAGRAPH4" />
     <ph name="BEGIN_PARAGRAPH5" />તમે સેટિંગમાં આ સેવા બંધ કરી શકો છો.<ph name="END_PARAGRAPH5" /></translation>
 <translation id="8096740438774030488">બૅટરી પર હોય ત્યારે નિષ્ક્રિય કરો</translation>
@@ -6868,7 +6868,7 @@ USB ડિવાઇસ</translation>
 <translation id="8239932336306009582">આને નોટિફિકેશન મોકલવાની મંજૂરી આપી નથી</translation>
 <translation id="8241040075392580210">શૅડી</translation>
 <translation id="8241806945692107836">ઉપકરણ ગોઠવણી નક્કી કરી રહ્યાં છે...</translation>
-<translation id="8241868517363889229">તમારા બુકમાર્ક્સ વાંચો અને બદલો</translation>
+<translation id="8241868517363889229">તમારા બુકમાર્ક વાંચો અને બદલો</translation>
 <translation id="8242370300221559051">Play Store ચાલુ કરો</translation>
 <translation id="8242426110754782860">આગળ વધો</translation>
 <translation id="8243948765190375130">મીડિયાની ક્વૉલિટીમાં ઘટાડો થઈ શકે છે</translation>
@@ -7495,7 +7495,7 @@ USB ડિવાઇસ</translation>
 <translation id="8907906903932240086">Chrome હાનિકારક સૉફ્ટવેર માટે તમારું કમ્પ્યુટર ચેક કરી શકે છે</translation>
 <translation id="8909298138148012791"><ph name="APP_NAME" />ને અનઇન્સ્ટૉલ કરવામાં આવી છે</translation>
 <translation id="8909833622202089127">સાઇટ તમારા સ્થાનને ટ્રૅક કરી રહી છે</translation>
-<translation id="8910222113987937043">તમારા બુકમાર્ક, ઇતિહાસ, પાસવર્ડ અને બીજા સેટિંગ પરના ફેરફારો હવે તમારો અસ્તિત્વમાંનો ડેટા, તમારા Google એકાઉન્ટમાં સ્ટોર રહેશે અને તે <ph name="BEGIN_LINK" />Google ડૅશબોર્ડ<ph name="END_LINK" /> પર મેનેજ કરવામાં આવી શકે છે.</translation>
+<translation id="8910222113987937043">તમારા બુકમાર્ક, ઇતિહાસ, પાસવર્ડ અને બીજા સેટિંગ પરના ફેરફારને હવે તમારા Google એકાઉન્ટ પર સિંક કરવામાં આવશે નહીં. જોકે, તમારો હાલનો ડેટા, તમારા Google એકાઉન્ટમાં સ્ટોર રહેશે અને તે <ph name="BEGIN_LINK" />Google ડૅશબોર્ડ<ph name="END_LINK" /> પર મેનેજ કરવામાં આવી શકે છે.</translation>
 <translation id="8910987510378294980">ડિવાઇસની સૂચિ છુપાવો</translation>
 <translation id="8912362522468806198">Google એકાઉન્ટ</translation>
 <translation id="8912793549644936705">ખેંચો</translation>

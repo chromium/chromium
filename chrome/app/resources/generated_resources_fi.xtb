@@ -601,7 +601,7 @@
 <translation id="1618102204889321535"><ph name="CURRENT_CHARACTER_COUNT" />/<ph name="MAX_CHARACTER_COUNT" /></translation>
 <translation id="1618268899808219593">Ohj&amp;ekeskus</translation>
 <translation id="1619879934359211038">Google Playhin ei saatu yhteyttä. Tarkista verkkoyhteys ja yritä uudelleen. Virhekoodi: <ph name="ERROR_CODE" />.</translation>
-<translation id="1620307519959413822">Väärä salasana. Yritä uudelleen tai nollaa se valitsemalla Unohtunut salasana.</translation>
+<translation id="1620307519959413822">Väärä salasana. Yritä uudelleen tai vaihda salasana kohdasta "Unohditko salasanasi?".</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1621485112342885423">Ostoskorisi</translation>
 <translation id="1621729191093924223">Mikrofonia edellyttävät ominaisuudet eivät enää toimi</translation>

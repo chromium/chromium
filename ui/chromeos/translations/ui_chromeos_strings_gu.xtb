@@ -232,7 +232,7 @@
 <translation id="3029114385395636667">Google Docs ઑફલાઇનની સુવિધા ચાલુ કરો જેથી Docs, Sheets અને Slides ઑફલાઇન ઉપલબ્ધ રહી શકે.</translation>
 <translation id="303198083543495566">સ્થાન માહિતી</translation>
 <translation id="3047197340186497470">ચાઇનીઝ ડાયી</translation>
-<translation id="3057861065630527966">તમારા ફોટો અને વિડિઓઝનો બેકઅપ લો</translation>
+<translation id="3057861065630527966">તમારા ફોટા અને વીડિયોનો બૅકઅપ લો</translation>
 <translation id="3067790092342515856">Windows ફાઇલો</translation>
 <translation id="3078461028045006476"><ph name="EXTENSION_NAME" /> સાથે શેર કરો</translation>
 <translation id="3083975830683400843">Chromebits</translation>
@@ -280,7 +280,7 @@
 <translation id="343907260260897561">ઝટપટ કૅમેરા</translation>
 <translation id="3455931012307786678">એસ્ટોનિયન</translation>
 <translation id="3466147780910026086">તમારા મીડિયા ઉપકરણને સ્કેન કરી રહ્યું છે...</translation>
-<translation id="3468522857997926824"><ph name="BEGIN_LINK" />Google ડ્રાઇવ<ph name="END_LINK" /> પર <ph name="FILE_COUNT" /> ફોટાનો બેક અપ લેવાયો</translation>
+<translation id="3468522857997926824"><ph name="BEGIN_LINK" />Google Drive<ph name="END_LINK" /> પર <ph name="FILE_COUNT" /> ફોટાનો બૅકઅપ લેવાયો</translation>
 <translation id="3475447146579922140">Google સ્પ્રેડશીટ</translation>
 <translation id="3479552764303398839">હમણાં નહીં</translation>
 <translation id="3486821258960016770">મૉંગોલિયન</translation>
@@ -310,7 +310,7 @@
 <translation id="3691184985318546178">સિંહાલા</translation>
 <translation id="3726463242007121105">આ ઉપકરણ ખોલી શકાતું નથી કારણ કે તેની ફાઇલસિસ્ટમને સપોર્ટ નથી.</translation>
 <translation id="3727148787322499904">આ સેટિંગને બદલવું તમામ શેર કરેલ નેટવર્કને પ્રભાવિત કરશે</translation>
-<translation id="3741243925913727067">Google ડ્રાઇવ પર તમારા મીડિયા ડિવાઇસના ફોટા અને વીડિયોનો બૅકઅપ લો.</translation>
+<translation id="3741243925913727067">Google Drive પર તમારા મીડિયા ડિવાઇસના ફોટા અને વીડિયોનો બૅકઅપ લો.</translation>
 <translation id="3749289110408117711">ફાઇલનું નામ</translation>
 <translation id="3780536599611287598">તમને ફાઇલોને '<ph name="FOLDER_NAME" />'માં ખસેડવાની પરવાનગી નથી.</translation>
 <translation id="3786301125658655746">તમે ઑફલાઇન છો</translation>
@@ -776,9 +776,9 @@
 <translation id="7805768142964895445">સ્થિતિ</translation>
 <translation id="7806708061868529807">હીબ્રુ</translation>
 <translation id="78104721049218340">થાઇ, Kedmanee કીબોર્ડ સાથે</translation>
-<translation id="7821462174190887129"><ph name="FILE_COUNT" /> મળી.
+<translation id="7821462174190887129"><ph name="FILE_COUNT" /> મળ્યા.
     <ph name="LINE_BREAK1" />
-    તમારો Google ડ્રાઇવ ક્વોટા પૂરતો મોટો નથી. વધારાની <ph name="FILE_SIZE" /> જરૂર છે.
+    તમારો Google Drive ક્વોટા પૂરતો મોટો નથી. વધારાની <ph name="FILE_SIZE" />ની જરૂર છે.
     <ph name="LINE_BREAK2" />
     ઓછા ફોટા પસંદ કરવાનો પ્રયાસ કરો.</translation>
 <translation id="7827012282502221009"><ph name="NUMBER_OF_TB" /> TB</translation>
