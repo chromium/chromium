@@ -44,10 +44,11 @@ enum class EventPageShowPersisted {
   // `should_dispatch_pageshow_for_debugging` set to true.
   kYesInBrowserAck = 9,
 
+  kYesInBrowserDisconnected = 10,
   // There is not kNoInBrowser as we don't have to compare the counts of
   // pageshow events without persisted between browser and renderer so far.
 
-  kMaxValue = kYesInBrowserAck,
+  kMaxValue = kYesInBrowserDisconnected,
 };
 
 BLINK_COMMON_EXPORT void RecordUMAEventPageShowPersisted(

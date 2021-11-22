@@ -27623,6 +27623,7 @@ Called by update_document_policy_enum.py.-->
   <int value="7" label="Yes in browser seen in renderer"/>
   <int value="8" label="Yes in browser seen in renderer with Page"/>
   <int value="9" label="Yes in browser seen in ACK to browser"/>
+  <int value="10" label="Yes in browser while disconnected"/>
 </enum>
 
 <enum name="EventPreFilterResult">

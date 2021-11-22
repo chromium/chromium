@@ -176,8 +176,18 @@ void PageLifecycleStateManager::SendUpdatesToRendererIfNeeded(
     DCHECK(last_state_sent_to_renderer_);
     if (blink::IsRestoredFromBackForwardCache(last_state_sent_to_renderer_,
                                               new_state)) {
-      blink::RecordUMAEventPageShowPersisted(
-          blink::EventPageShowPersisted::kYesInBrowser);
+      // We see that IPCs are not received by the renderer. Check that we are
+      // about to send and IPC to a live RVH.
+      DCHECK(render_view_host_impl_->IsRenderViewLive());
+      if (!render_view_host_impl_->GetAssociatedPageBroadcast()
+               .is_connected()) {
+        blink::RecordUMAEventPageShowPersisted(
+            blink::EventPageShowPersisted::kYesInBrowserDisconnected);
+        NOTREACHED();
+      } else {
+        blink::RecordUMAEventPageShowPersisted(
+            blink::EventPageShowPersisted::kYesInBrowser);
+      }
       new_state->should_dispatch_pageshow_for_debugging = true;
     } else {
       NOTREACHED();
