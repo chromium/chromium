@@ -168,10 +168,10 @@ void EraseCdmService(const ServiceKey& key) {
   GetServiceMap<T>().EraseRemote(key);
 }
 
-// Gets an instance of the service for `guid`, `browser_context` and `site`.
+// Gets an instance of the service for `cdm_type`, `browser_context` and `site`.
 // Instances are started lazily as needed.
 template <typename T>
-T& GetService(const base::Token& guid,
+T& GetService(const base::Token& cdm_type,
               BrowserContext* browser_context,
               const GURL& site,
               const std::string& service_name,
@@ -180,14 +180,14 @@ T& GetService(const base::Token& guid,
   std::string display_name = service_name;
 
   if (base::FeatureList::IsEnabled(media::kCdmProcessSiteIsolation)) {
-    key = {guid, browser_context, site};
+    key = {cdm_type, browser_context, site};
     auto site_display_name =
         GetContentClient()->browser()->GetSiteDisplayNameForCdmProcess(
             browser_context, site);
     if (!site_display_name.empty())
       display_name += " (" + site_display_name + ")";
   } else {
-    key = {guid, nullptr, GURL()};
+    key = {cdm_type, nullptr, GURL()};
   }
   DVLOG(2) << __func__ << ": key=" << key;
 
@@ -224,11 +224,11 @@ T& GetService(const base::Token& guid,
 
 }  // namespace
 
-media::mojom::CdmService& GetCdmService(const base::Token& guid,
+media::mojom::CdmService& GetCdmService(const base::Token& cdm_type,
                                         BrowserContext* browser_context,
                                         const GURL& site,
                                         const CdmInfo& cdm_info) {
-  return GetService<media::mojom::CdmService>(guid, browser_context, site,
+  return GetService<media::mojom::CdmService>(cdm_type, browser_context, site,
                                               cdm_info.name, cdm_info.path);
 }
 

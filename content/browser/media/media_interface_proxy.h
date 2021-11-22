@@ -105,18 +105,18 @@ class MediaInterfaceProxy final : public DocumentUserData<MediaInterfaceProxy>,
   // error happened.
   media::mojom::CdmFactory* GetCdmFactory(const std::string& key_system);
 
-  // Connects to the CDM service associated with |cdm_guid|, adds the new
+  // Connects to the CDM service associated with |cdm_type|, adds the new
   // CdmFactoryPtr to the |cdm_factory_map_|, and returns the newly created
   // CdmFactory pointer. Returns nullptr if unexpected error happened.
   // |cdm_path| will be used to preload the CDM, if necessary.
   // |cdm_file_system_id| is used when creating the matching storage interface.
   // |cdm_name| is used as the display name of the CDM (utility) process.
-  media::mojom::CdmFactory* ConnectToCdmService(const base::Token& cdm_guid,
+  media::mojom::CdmFactory* ConnectToCdmService(const base::Token& cdm_type,
                                                 const CdmInfo& cdm_info);
 
   // Callback for connection error from the CdmFactoryPtr in the
-  // |cdm_factory_map_| associated with |cdm_guid|.
-  void OnCdmServiceConnectionError(const base::Token& cdm_guid);
+  // |cdm_factory_map_| associated with |cdm_type|.
+  void OnCdmServiceConnectionError(const base::Token& cdm_type);
 #endif  // BUILDFLAG(ENABLE_LIBRARY_CDMS)
 
 #if defined(OS_CHROMEOS)
@@ -160,7 +160,7 @@ class MediaInterfaceProxy final : public DocumentUserData<MediaInterfaceProxy>,
   std::unique_ptr<MediaInterfaceFactoryHolder> secondary_interface_factory_;
 
 #if BUILDFLAG(ENABLE_LIBRARY_CDMS)
-  // CDM GUID to CDM InterfaceFactory Remotes mapping, where the
+  // CDM type to CDM InterfaceFactory Remotes mapping, where the
   // InterfaceFactory instances live in the standalone CdmService instances.
   // These map entries effectively own the corresponding CDM processes.
   // Only using the GUID to identify the CdmFactory is sufficient because the

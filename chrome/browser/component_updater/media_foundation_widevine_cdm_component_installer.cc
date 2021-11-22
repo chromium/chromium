@@ -105,7 +105,7 @@ void MediaFoundationWidevineCdmComponentInstallerPolicy::ComponentReady(
   content::CdmInfo cdm_info(
       kWidevineKeySystem, content::CdmInfo::Robustness::kHardwareSecure,
       /*capability=*/absl::nullopt, /*supports_sub_key_systems=*/false,
-      kMediaFoundationWidevineCdmDisplayName, kMediaFoundationWidevineCdmGuid,
+      kMediaFoundationWidevineCdmDisplayName, kMediaFoundationWidevineCdmType,
       version, GetCdmPath(install_dir), /*file_system_id=*/"");
   content::CdmRegistry::GetInstance()->RegisterCdm(cdm_info);
 }

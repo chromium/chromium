@@ -35,7 +35,7 @@ const char kWidevineCdmLibraryName[] = "widevinecdm";
 
 const char kWidevineCdmDisplayName[] = "Widevine Content Decryption Module";
 
-const base::Token kWidevineCdmGuid{0x05d908e5dcca9960ull,
+const base::Token kWidevineCdmType{0x05d908e5dcca9960ull,
                                    0xcd92d30eac98157aull};
 
 // Identifier used by the PluginPrivateFileSystem to identify the files stored
@@ -50,7 +50,7 @@ const char kWidevineCdmFileSystemId[] = "application_x-ppapi-widevine-cdm";
 const char kMediaFoundationWidevineCdmLibraryName[] = "Google.Widevine.CDM";
 const char kMediaFoundationWidevineCdmDisplayName[] =
     "Google Widevine Windows CDM";
-const base::Token kMediaFoundationWidevineCdmGuid{0x8e73dec793bf5adcull,
+const base::Token kMediaFoundationWidevineCdmType{0x8e73dec793bf5adcull,
                                                   0x27e572c9a1fd930eull};
 #endif  // defined(OS_WIN)
 

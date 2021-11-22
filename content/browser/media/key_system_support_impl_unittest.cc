@@ -43,7 +43,7 @@ using base::test::RunOnceCallback;
 using testing::_;
 
 const char kTestCdmName[] = "Test Content Decryption Module";
-const base::Token kTestCdmGuid{1234, 5678};
+const base::Token kTestCdmType{1234, 5678};
 const char kVersion[] = "1.1.1.1";
 const char kTestPath[] = "/aa/bb";
 const char kTestFileSystemId[] = "file_system_id";
@@ -129,7 +129,7 @@ class KeySystemSupportImplTest : public testing::Test {
 
     CdmRegistry::GetInstance()->RegisterCdm(
         CdmInfo(key_system, robustness, std::move(capability),
-                /*supports_sub_key_systems=*/false, kTestCdmName, kTestCdmGuid,
+                /*supports_sub_key_systems=*/false, kTestCdmName, kTestCdmType,
                 base::Version(kVersion),
                 base::FilePath::FromUTF8Unsafe(kTestPath), kTestFileSystemId));
   }

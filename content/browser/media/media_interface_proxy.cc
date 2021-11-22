@@ -520,45 +520,45 @@ media::mojom::CdmFactory* MediaInterfaceProxy::GetCdmFactory(
     return nullptr;
   }
 
-  auto& cdm_guid = cdm_info->guid;
+  auto& cdm_type = cdm_info->type;
 
-  auto found = cdm_factory_map_.find(cdm_guid);
+  auto found = cdm_factory_map_.find(cdm_type);
   if (found != cdm_factory_map_.end())
     return found->second.get();
 
-  return ConnectToCdmService(cdm_guid, *cdm_info);
+  return ConnectToCdmService(cdm_type, *cdm_info);
 }
 
 media::mojom::CdmFactory* MediaInterfaceProxy::ConnectToCdmService(
-    const base::Token& cdm_guid,
+    const base::Token& cdm_type,
     const CdmInfo& cdm_info) {
   DVLOG(1) << __func__ << ": cdm_name = " << cdm_info.name;
 
-  DCHECK(!cdm_factory_map_.count(cdm_guid));
+  DCHECK(!cdm_factory_map_.count(cdm_type));
 
   auto* browser_context = render_frame_host().GetBrowserContext();
   auto& site = render_frame_host().GetSiteInstance()->GetSiteURL();
-  auto& cdm_service = GetCdmService(cdm_guid, browser_context, site, cdm_info);
+  auto& cdm_service = GetCdmService(cdm_type, browser_context, site, cdm_info);
 
   mojo::Remote<media::mojom::CdmFactory> cdm_factory_remote;
   cdm_service.CreateCdmFactory(cdm_factory_remote.BindNewPipeAndPassReceiver(),
                                GetFrameServices(cdm_info.file_system_id));
   cdm_factory_remote.set_disconnect_handler(
       base::BindOnce(&MediaInterfaceProxy::OnCdmServiceConnectionError,
-                     base::Unretained(this), cdm_guid));
+                     base::Unretained(this), cdm_type));
 
   auto* cdm_factory = cdm_factory_remote.get();
-  cdm_factory_map_.emplace(cdm_guid, std::move(cdm_factory_remote));
+  cdm_factory_map_.emplace(cdm_type, std::move(cdm_factory_remote));
   return cdm_factory;
 }
 
 void MediaInterfaceProxy::OnCdmServiceConnectionError(
-    const base::Token& cdm_guid) {
+    const base::Token& cdm_type) {
   DVLOG(1) << __func__;
   DCHECK(thread_checker_.CalledOnValidThread());
 
-  DCHECK(cdm_factory_map_.count(cdm_guid));
-  cdm_factory_map_.erase(cdm_guid);
+  DCHECK(cdm_factory_map_.count(cdm_type));
+  cdm_factory_map_.erase(cdm_type);
 }
 #endif  // BUILDFLAG(ENABLE_LIBRARY_CDMS)
 

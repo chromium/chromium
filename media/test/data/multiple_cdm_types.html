@@ -12,8 +12,8 @@
     console.log(message);
   }
 
-  const EXTERNAL_CLEARKEY_DIFFERENTGUID
-      = 'org.chromium.externalclearkey.differentguid';
+  const EXTERNAL_CLEARKEY_DIFFERENTCDMTYPE
+      = 'org.chromium.externalclearkey.differentcdmtype';
   const crashKeyId = 'crash';
   const normalJwkSet = Utils.createJWKData(KEY_ID, KEY);
   const crashJwkSet = Utils.createJWKData(crashKeyId, KEY);
@@ -49,31 +49,31 @@
   // Using EXTERNAL_CLEARKEY
   var session1;
 
-  // Both using EXTERNAL_CLEARKEY_DIFFERENTGUID
+  // Both using EXTERNAL_CLEARKEY_DIFFERENTCDMTYPE
   var session2;
   var session3;
 
   // The following creates 3 MediaKeys instances each with a MediaKeySession.
-  // MediaKeys using different CDM GUID will run in different processes.
-  // |session1| uses EXTERNAL_CLEARKEY that is registered with the default GUID
-  // for Clear Key CDM. |session2/3| use EXTERNAL_CLEARKEY_DIFFERENTGUID that is
-  // registered with a different GUID. So |session1| will run in process1, and
-  // |session2/3| will run in process2.
+  // MediaKeys using different CDM type will run in different processes.
+  // |session1| uses EXTERNAL_CLEARKEY that is registered with the default type
+  // for Clear Key CDM. |session2/3| use EXTERNAL_CLEARKEY_DIFFERENTCDMTYPE that
+  // is registered with a different type. So |session1| will run in process1,
+  // and |session2/3| will run in process2.
   //
   // Then we send a special response |crashJwkSet| to session2 which will cause
   // the process2 to crash. This will close both |session2/3| as they run in the
   // same process. |session1| should not be affected. Then we try to create
-  // another MediaKeySession using EXTERNAL_CLEARKEY_DIFFERENTGUID, and the
+  // another MediaKeySession using EXTERNAL_CLEARKEY_DIFFERENTCDMTYPE, and the
   // creation should work as a new process should be started.
 
   createMediaKeySession(EXTERNAL_CLEARKEY).then(function(session) {
     log('Session1 created');
     session1 = session;
-    return createMediaKeySession(EXTERNAL_CLEARKEY_DIFFERENTGUID);
+    return createMediaKeySession(EXTERNAL_CLEARKEY_DIFFERENTCDMTYPE);
   }).then(function(session) {
     log('Session2 created');
     session2 = session;
-    return createMediaKeySession(EXTERNAL_CLEARKEY_DIFFERENTGUID);
+    return createMediaKeySession(EXTERNAL_CLEARKEY_DIFFERENTCDMTYPE);
   }).then(function(session) {
     log('Session3 created');
     session3 = session;
@@ -92,7 +92,7 @@
     return session1.update(normalJwkSet);
   }).then(function() {
     log('Session1 still works');
-    return createMediaKeySession(EXTERNAL_CLEARKEY_DIFFERENTGUID);
+    return createMediaKeySession(EXTERNAL_CLEARKEY_DIFFERENTCDMTYPE);
   }).then(function(session) {
     log('Can still create a session after crash');
     Utils.setResultInTitle('ENDED');

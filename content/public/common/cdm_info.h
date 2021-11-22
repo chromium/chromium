@@ -32,10 +32,11 @@ struct CONTENT_EXPORT CdmInfo {
           absl::optional<media::CdmCapability> capability,
           bool supports_sub_key_systems,
           const std::string& name,
-          const base::Token& guid,
+          const base::Token& type,
           const base::Version& version,
           const base::FilePath& path,
           const std::string& file_system_id);
+  // TODO(xhwang): Always require the `type`.
   CdmInfo(const std::string& key_system,
           Robustness robustness,
           absl::optional<media::CdmCapability> capability);
@@ -66,8 +67,10 @@ struct CONTENT_EXPORT CdmInfo {
   // Display name of the CDM (e.g. Widevine Content Decryption Module).
   std::string name;
 
-  // A token to uniquely identify this type of CDM.
-  base::Token guid;
+  // A token to uniquely identify the type of the CDM. Used for per-CDM-type
+  // isolation, e.g. for running different CDMs in different child processes,
+  // and per-CDM-type storage.
+  base::Token type;
 
   // Version of the CDM. May be empty if the version is not known.
   base::Version version;

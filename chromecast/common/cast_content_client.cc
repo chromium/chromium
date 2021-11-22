@@ -70,7 +70,7 @@ std::unique_ptr<content::CdmInfo> CreateWidevineCdmInfo(
   return std::make_unique<content::CdmInfo>(
       kWidevineKeySystem, content::CdmInfo::Robustness::kSoftwareSecure,
       std::move(capability), /*supports_sub_key_systems=*/false,
-      kWidevineCdmDisplayName, kWidevineCdmGuid, version, cdm_library_path,
+      kWidevineCdmDisplayName, kWidevineCdmType, version, cdm_library_path,
       kWidevineCdmFileSystemId);
 }
 

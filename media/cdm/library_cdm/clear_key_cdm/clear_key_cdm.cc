@@ -81,9 +81,9 @@ const char kExternalClearKeyVerifyCdmHostTestKeySystem[] =
 const char kExternalClearKeyStorageIdTestKeySystem[] =
     "org.chromium.externalclearkey.storageidtest";
 
-// A sub key system that is registered with a different CDM GUID.
-const char kExternalClearKeyDifferentGuidTestKeySystem[] =
-    "org.chromium.externalclearkey.differentguid";
+// A sub key system that is registered with a different CDM type.
+const char kkExternalClearKeyDifferentCdmTypeTestKeySystem[] =
+    "org.chromium.externalclearkey.differentcdmtype";
 
 const int64_t kMsPerSecond = 1000;
 const int64_t kMaxTimerDelayMs = 5 * kMsPerSecond;
@@ -195,7 +195,7 @@ void* CreateCdmInstance(int cdm_interface_version,
       key_system_string != kExternalClearKeyCrashKeySystem &&
       key_system_string != kExternalClearKeyVerifyCdmHostTestKeySystem &&
       key_system_string != kExternalClearKeyStorageIdTestKeySystem &&
-      key_system_string != kExternalClearKeyDifferentGuidTestKeySystem) {
+      key_system_string != kkExternalClearKeyDifferentCdmTypeTestKeySystem) {
     DVLOG(1) << "Unsupported key system:" << key_system_string;
     return nullptr;
   }

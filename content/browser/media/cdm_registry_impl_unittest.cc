@@ -33,7 +33,7 @@ using CdmSessionType = media::CdmSessionType;
 
 const char kTestCdmName[] = "Test CDM";
 const char kAlternateCdmName[] = "Alternate CDM";
-const base::Token kTestCdmGuid{1234, 5678};
+const base::Token kTestCdmType{1234, 5678};
 const char kTestPath[] = "/aa/bb";
 const char kVersion1[] = "1.1.1.1";
 const char kVersion2[] = "1.1.1.2";
@@ -90,7 +90,7 @@ class CdmRegistryImplTest : public testing::Test {
     return CdmInfo(kTestKeySystem, CdmInfo::Robustness::kSoftwareSecure,
                    GetTestCdmCapability(),
                    /*supports_sub_key_systems=*/true, kTestCdmName,
-                   kTestCdmGuid, base::Version(kVersion1),
+                   kTestCdmType, base::Version(kVersion1),
                    base::FilePath::FromUTF8Unsafe(kTestPath),
                    kTestFileSystemId);
   }
@@ -117,10 +117,10 @@ class CdmRegistryImplTest : public testing::Test {
     return false;
   }
 
-  std::vector<std::string> GetVersions(const base::Token& guid) {
+  std::vector<std::string> GetVersions(const base::Token& cdm_type) {
     std::vector<std::string> versions;
     for (const auto& cdm : cdm_registry_.GetRegisteredCdms()) {
-      if (cdm.guid == guid)
+      if (cdm.type == cdm_type)
         versions.push_back(cdm.version.GetString());
     }
     return versions;
@@ -183,7 +183,7 @@ TEST_F(CdmRegistryImplTest, NewVersionInsertedLast) {
   cdm_info.version = base::Version(kVersion2);
   Register(cdm_info);
 
-  const std::vector<std::string> versions = GetVersions(kTestCdmGuid);
+  const std::vector<std::string> versions = GetVersions(kTestCdmType);
   EXPECT_EQ(2u, versions.size());
   EXPECT_EQ(kVersion1, versions[0]);
   EXPECT_EQ(kVersion2, versions[1]);
