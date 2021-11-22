@@ -92,7 +92,7 @@ std::string GetUniversalApiContractVersion() {
     } else {
       base::win::RegKey version_key(HKEY_LOCAL_MACHINE,
                                     kWindowsRuntimeWellKnownContractsRegKeyName,
-                                    KEY_QUERY_VALUE);
+                                    KEY_QUERY_VALUE | KEY_WOW64_64KEY);
       if (version_key.Valid()) {
         DWORD universal_api_contract_version = 0;
         LONG result = version_key.ReadValueDW(kUniversalApiContractName,
