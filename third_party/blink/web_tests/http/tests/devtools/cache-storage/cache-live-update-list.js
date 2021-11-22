@@ -12,7 +12,7 @@
 
   var cacheStorageModel = TestRunner.mainTarget.model(SDK.ServiceWorkerCacheModel);
   cacheStorageModel.enable();
-  cacheStorageModel.throttler._timeout = 0;
+  cacheStorageModel.setThrottlerSchedulesAsSoonAsPossibleForTest();
 
   await ApplicationTestRunner.clearAllCaches();
   await ApplicationTestRunner.dumpCacheTree();

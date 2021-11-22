@@ -7161,9 +7161,6 @@ crbug.com/1255221 http/tests/devtools/elements/styles-4/svg-style.js [ Failure P
 # Sheriff 2021-10-04
 crbug.com/1226112 [ Win ] http/tests/text-autosizing/wide-iframe.html [ Pass Timeout ]
 
-# DevTools roll
-crbug.com/1222126 http/tests/devtools/cache-storage/cache-live-update-list.js [ Skip ]
-
 # Skip devtools test hitting an unexpected tracing infrastructure exception 2021-10-04
 crbug.com/1255679 http/tests/devtools/service-workers/service-workers-wasm-test.js [ Skip ]
 
