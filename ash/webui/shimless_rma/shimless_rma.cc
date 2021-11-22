@@ -247,6 +247,26 @@ void AddShimlessRmaStrings(content::WebUIDataSource* html_source) {
        IDS_SHIMLESS_RMA_CONFIRM_DEVICE_INFO_RESET_BUTTON_LABEL},
       {"confirmDeviceInfoSkuWarning",
        IDS_SHIMLESS_RMA_CONFIRM_DEVICE_INFO_SKU_WARNING},
+      // Firmware reimaging page
+      {"firmwareReimagingTitleReimageRequired",
+       IDS_SHIMLESS_RMA_REIMAGING_FIRMWARE_TITLE_REIMAGE_REQUIRED},
+      {"firmwareReimagingTitleReimageNotRequired",
+       IDS_SHIMLESS_RMA_REIMAGING_FIRMWARE_TITLE_REIMAGE_NOT_REQUIRED},
+      {"firmwareReimagingInternetAccess",
+       IDS_SHIMLESS_RMA_REIMAGING_FIRMWARE_INTERNET_ACCESS},
+      {"firmwareReimagingThumbdrive1",
+       IDS_SHIMLESS_RMA_REIMAGING_FIRMWARE_THUMBDRIVE_1},
+      {"firmwareReimagingThumbdrive2",
+       IDS_SHIMLESS_RMA_REIMAGING_FIRMWARE_THUMBDRIVE_2},
+      {"firmwareReimagingSkip", IDS_SHIMLESS_RMA_REIMAGING_FIRMWARE_SKIP},
+      {"firmwareReimagingDownloadReimageRequired",
+       IDS_SHIMLESS_RMA_REIMAGING_FIRMWARE_DOWNLOAD_REIMAGE_REQUIRED},
+      {"firmwareReimagingDownloadReimageNotRequired",
+       IDS_SHIMLESS_RMA_REIMAGING_FIRMWARE_DOWNLOAD_REIMAGE_NOT_REQUIRED},
+      {"firmwareReimagingRecoveryReimageRequired",
+       IDS_SHIMLESS_RMA_REIMAGING_FIRMWARE_RECOVERY_REIMAGE_REQUIRED},
+      {"firmwareReimagingRecoveryReimageNotRequired",
+       IDS_SHIMLESS_RMA_REIMAGING_FIRMWARE_RECOVERY_REIMAGE_NOT_REQUIRED},
   };
 
   html_source->AddLocalizedStrings(kLocalizedStrings);

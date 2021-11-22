@@ -2422,6 +2422,38 @@ Try tapping the mic to ask me anything.
       <message name="IDS_SHIMLESS_RMA_CONFIRM_DEVICE_INFO_SKU_WARNING" translateable="false" desc="The text warning explaining when the device's SKU should be changed.">
         The SKU should only be changed if the new component(s) are different from the ones they replaced. For example, a touchscreen replacing a non-touchscreen, or memory being upgraded from 8GB to 16GB.
       </message>
+      <!-- Firmware reimaging page -->
+      <message name="IDS_SHIMLESS_RMA_REIMAGING_FIRMWARE_TITLE_REIMAGE_REQUIRED" translateable="false" desc="The title for the page when reimaging is required.">
+        Select an option for firmware reimaging
+      </message>
+      <message name="IDS_SHIMLESS_RMA_REIMAGING_FIRMWARE_TITLE_REIMAGE_NOT_REQUIRED" translateable="false" desc="The title for the page when reimaging is not required.">
+        This device doesn't require firmware reimaging.
+        Would you like to reimage the firmware anyway?
+      </message>
+      <message name="IDS_SHIMLESS_RMA_REIMAGING_FIRMWARE_INTERNET_ACCESS" translateable="false" desc="The label that says that internet access is required.">
+        Requires internet access
+      </message>
+      <message name="IDS_SHIMLESS_RMA_REIMAGING_FIRMWARE_THUMBDRIVE_1" translateable="false" desc="Part 1 of the label that says that a thumbdrive is required.">
+        Requires a Thumbdrive configured for
+      </message>
+      <message name="IDS_SHIMLESS_RMA_REIMAGING_FIRMWARE_THUMBDRIVE_2" translateable="false" desc="Part 2 of the label that says that a thumbdrive is required.">
+        Chromebook Recovery
+      </message>
+      <message name="IDS_SHIMLESS_RMA_REIMAGING_FIRMWARE_SKIP" translateable="false" desc="The label that offers to skip reimaging.">
+        No, skip it for now.
+      </message>
+      <message name="IDS_SHIMLESS_RMA_REIMAGING_FIRMWARE_DOWNLOAD_REIMAGE_REQUIRED" translateable="false" desc="The label that offers to download if reimaging is required.">
+        Download the firmware image
+      </message>
+      <message name="IDS_SHIMLESS_RMA_REIMAGING_FIRMWARE_DOWNLOAD_REIMAGE_NOT_REQUIRED" translateable="false" desc="The label that offers to download if reimaging is not required.">
+        Yes, download the firmware image
+      </message>
+      <message name="IDS_SHIMLESS_RMA_REIMAGING_FIRMWARE_RECOVERY_REIMAGE_REQUIRED" translateable="false" desc="The label that offers to use the recovery utility if reimaging is required.">
+        Use the Chromebook Recovery Utility
+      </message>
+      <message name="IDS_SHIMLESS_RMA_REIMAGING_FIRMWARE_RECOVERY_REIMAGE_NOT_REQUIRED" translateable="false" desc="The label that offers to use the recovery utility if reimaging is not required.">
+        Yes, use the Chromebook Recovery Utility
+      </message>
 
       <!-- Firmware Update -->
       <message name="IDS_FIRMWARE_TITLE_TEXT" desc="The title of the Firmware update app.">

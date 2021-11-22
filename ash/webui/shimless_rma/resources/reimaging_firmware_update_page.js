@@ -5,7 +5,8 @@
 import './shimless_rma_shared_css.js';
 import './base_page.js';
 
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/js/i18n_behavior.m.js';
+import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getShimlessRmaService} from './mojo_interface_provider.js';
 import {ShimlessRmaServiceInterface, StateResult} from './shimless_rma_types.js';
@@ -16,7 +17,18 @@ import {ShimlessRmaServiceInterface, StateResult} from './shimless_rma_types.js'
  * internet or recovery shim.
  * The reimage may be optional in which case skip reimage will be available.
  */
-export class ReimagingFirmwareUpdatePageElement extends PolymerElement {
+
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {I18nBehaviorInterface}
+ */
+const ReimagingFirmwareUpdatePageBase =
+    mixinBehaviors([I18nBehavior], PolymerElement);
+
+/** @polymer */
+export class ReimagingFirmwareUpdatePageElement extends
+    ReimagingFirmwareUpdatePageBase {
   static get is() {
     return 'reimaging-firmware-update-page';
   }
@@ -75,11 +87,10 @@ export class ReimagingFirmwareUpdatePageElement extends PolymerElement {
    * @returns {string}
    */
   firmwareReimageDownloadMessage_(reimageRequired) {
-    // TODO(gavindodd): Update text for i18n
     if (reimageRequired) {
-      return 'Download the firmware image';
+      return this.i18n('firmwareReimagingDownloadReimageRequired');
     } else {
-      return 'Yes, download the firmware image';
+      return this.i18n('firmwareReimagingDownloadReimageNotRequired');
     }
   }
 
@@ -89,11 +100,10 @@ export class ReimagingFirmwareUpdatePageElement extends PolymerElement {
    * @returns {string}
    */
   firmwareReimageUsbMessage_(reimageRequired) {
-    // TODO(gavindodd): Update text for i18n
     if (reimageRequired) {
-      return 'Use the Chromebook Recovery Utility';
+      return this.i18n('firmwareReimagingRecoveryReimageRequired');
     } else {
-      return 'Yes, use the Chromebook Recovery Utility';
+      return this.i18n('firmwareReimagingRecoveryReimageNotRequired');
     }
   }
 
