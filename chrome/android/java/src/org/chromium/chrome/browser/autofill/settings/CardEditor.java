@@ -723,7 +723,8 @@ public class CardEditor extends EditorBase<AutofillPaymentInstrument> implements
                     profile = findTargetProfile(mProfilesForBillingAddress, eventData.first);
                 }
 
-                final AutofillAddress editAddress = new AutofillAddress(mContext, profile);
+                final AutofillAddress editAddress = new AutofillAddress(
+                        mContext, profile, mAddressEditor.getCompletenessCheckType());
                 mAddressEditor.edit(editAddress, new Callback<AutofillAddress>() {
                     @Override
                     public void onResult(AutofillAddress billingAddress) {

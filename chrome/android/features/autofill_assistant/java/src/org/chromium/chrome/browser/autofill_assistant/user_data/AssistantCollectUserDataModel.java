@@ -21,6 +21,7 @@ import org.chromium.chrome.browser.autofill_assistant.user_data.additional_secti
 import org.chromium.chrome.browser.autofill_assistant.user_data.additional_sections.AssistantTextInputSection.TextInputFactory;
 import org.chromium.chrome.browser.autofill_assistant.user_data.additional_sections.AssistantTextInputType;
 import org.chromium.chrome.browser.payments.AutofillAddress;
+import org.chromium.chrome.browser.payments.AutofillAddress.CompletenessCheckType;
 import org.chromium.chrome.browser.payments.AutofillContact;
 import org.chromium.chrome.browser.payments.AutofillPaymentInstrument;
 import org.chromium.chrome.browser.payments.ContactEditor;
@@ -671,7 +672,7 @@ public class AssistantCollectUserDataModel extends PropertyModel {
         if (profile == null) {
             return null;
         }
-        return new AutofillAddress(context, profile);
+        return new AutofillAddress(context, profile, CompletenessCheckType.IGNORE_PHONE);
     }
 
     @CalledByNative

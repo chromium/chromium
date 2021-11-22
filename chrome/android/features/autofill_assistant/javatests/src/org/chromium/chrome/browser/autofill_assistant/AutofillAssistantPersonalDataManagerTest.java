@@ -907,7 +907,6 @@ public class AutofillAssistantPersonalDataManagerTest {
         onView(withContentDescription("City*")).perform(scrollTo(), typeText("Mountain View"));
         onView(withContentDescription("State*")).perform(scrollTo(), typeText("California"));
         onView(withContentDescription("ZIP code*")).perform(scrollTo(), typeText("1234"));
-        onView(withContentDescription("Phone*")).perform(scrollTo(), typeText("8008080808"));
         onView(withText("Done")).perform(scrollTo(), click());
         waitUntilViewMatchesCondition(withText("Continue"), isCompletelyDisplayed());
         // Wait for the address to appear in the UI. From this point on it should be available in
@@ -976,7 +975,6 @@ public class AutofillAssistantPersonalDataManagerTest {
         onView(withContentDescription("City*")).perform(scrollTo(), typeText("Mountain View"));
         onView(withContentDescription("State*")).perform(scrollTo(), typeText("Invalid"));
         onView(withContentDescription("ZIP code*")).perform(scrollTo(), typeText("1234"));
-        onView(withContentDescription("Phone*")).perform(scrollTo(), typeText("8008080808"));
         Espresso.closeSoftKeyboard();
         onView(withId(org.chromium.chrome.R.id.editor_dialog_done_button))
                 .perform(scrollTo(), click());
@@ -1095,7 +1093,6 @@ public class AutofillAssistantPersonalDataManagerTest {
         onView(withContentDescription("City*")).perform(scrollTo(), typeText("Mountain View"));
         onView(withContentDescription("State*")).perform(scrollTo(), typeText("CA"));
         onView(withContentDescription("ZIP code*")).perform(scrollTo(), typeText("94043"));
-        onView(withContentDescription("Phone*")).perform(scrollTo(), typeText("8008080808"));
         Espresso.closeSoftKeyboard();
         onView(withText("Done")).perform(scrollTo(), click());
         waitUntilViewMatchesCondition(withText("Billing address*"), isDisplayed());

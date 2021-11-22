@@ -270,8 +270,8 @@ public class AutofillAssistantCollectUserDataTestHelper {
         return new PersonalDataManager.AutofillProfile(/* guid= */ "", "https://www.example.com",
                 /* honorificPrefix= */ "", fullName, "Acme Inc.", "123 Main", "California",
                 "Los Angeles",
-                /* dependentLocality= */ "", postcode, /* sortingCode= */ "", "UZ", "555 123-4567",
-                email, /* languageCode= */ "");
+                /* dependentLocality= */ "", postcode, /* sortingCode= */ "", "UZ",
+                /* phoneNumber= */ "", email, /* languageCode= */ "");
     }
 
     /**
