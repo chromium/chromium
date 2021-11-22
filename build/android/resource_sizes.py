@@ -401,8 +401,13 @@ def _AnalyzeInternal(apk_path,
   is_webview = 'WebView' in orig_filename
   is_monochrome = 'Monochrome' in orig_filename
   is_library = 'Library' in orig_filename
+  is_trichrome = 'TrichromeChrome' in orig_filename
+  # WebView is always a shared APK since other apps load it.
+  # Library is always shared since it's used by chrome and webview
+  # Chrome is always shared since renderers can't access dex otherwise
+  # (see DexFixer).
   is_shared_apk = sdk_version >= 24 and (is_monochrome or is_webview
-                                         or is_library)
+                                         or is_library or is_trichrome)
   # Dex decompression overhead varies by Android version.
   if sdk_version < 21:
     # JellyBean & KitKat
@@ -427,8 +432,14 @@ def _AnalyzeInternal(apk_path,
       should_extract_lib = not skip_extract_lib and basename.startswith('lib')
       native_code.AddZipInfo(
           member, extracted_multiplier=int(should_extract_lib))
-    elif filename.endswith('.dex'):
-      java_code.AddZipInfo(member, extracted_multiplier=dex_multiplier)
+    elif filename.startswith('classes') and filename.endswith('.dex'):
+      # Android P+, uncompressed dex does not need to be extracted.
+      compressed = member.compress_type != zipfile.ZIP_STORED
+      multiplier = dex_multiplier
+      if not compressed and sdk_version >= 28:
+        multiplier -= 1
+
+      java_code.AddZipInfo(member, extracted_multiplier=multiplier)
     elif re.search(_RE_NON_LANGUAGE_PAK, filename):
       native_resources_no_translations.AddZipInfo(member)
     elif filename.endswith('.pak') or filename.endswith('.lpak'):
@@ -493,9 +504,15 @@ def _AnalyzeInternal(apk_path,
       report_func('Uncompressed', group.name + ' size', uncompressed_size,
                   'bytes')
 
-    if group is java_code and is_shared_apk:
+    if group is java_code:
       # Updates are compiled using quicken, but system image uses speed-profile.
-      extracted_size = int(uncompressed_size * speed_profile_dex_multiplier)
+      multiplier = speed_profile_dex_multiplier
+
+      # Android P+, uncompressed dex does not need to be extracted.
+      compressed = uncompressed_size != actual_size
+      if not compressed and sdk_version >= 28:
+        multiplier -= 1
+      extracted_size = int(uncompressed_size * multiplier)
       total_install_size_android_go += extracted_size
       report_func('InstallBreakdownGo', group.name + ' size',
                   actual_size + extracted_size, 'bytes')
@@ -513,9 +530,8 @@ def _AnalyzeInternal(apk_path,
   report_func('InstallSize', 'APK size', total_apk_size, 'bytes')
   report_func('InstallSize', 'Estimated installed size',
               int(total_install_size), 'bytes')
-  if is_shared_apk:
-    report_func('InstallSize', 'Estimated installed size (Android Go)',
-                int(total_install_size_android_go), 'bytes')
+  report_func('InstallSize', 'Estimated installed size (Android Go)',
+              int(total_install_size_android_go), 'bytes')
   transfer_size = _CalculateCompressedSize(apk_path)
   report_func('TransferSize', 'Transfer size (deflate)', transfer_size, 'bytes')
 
