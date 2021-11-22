@@ -18,6 +18,7 @@ enum class ColorName {
   kGoogleGrey900,
   kTextColorPrimary,
   kToggleColor,
+  kBgColorElevation1,
 };
 
 enum class OpacityName {
@@ -56,6 +57,10 @@ constexpr SkColor ResolveColor(ColorName color_name,
       if (is_dark_mode)
         return SkColorSetA(ResolveColor(ColorName::kTextColorPrimary, is_dark_mode, use_debug_colors), GetOpacity(OpacityName::kDisabledOpacity, is_dark_mode));
       return SkColorSetA(ResolveColor(ColorName::kTextColorPrimary, is_dark_mode, use_debug_colors), 0x19);
+    case ColorName::kBgColorElevation1:
+      if (is_dark_mode)
+        return SkColorSetRGB(0x29, 0x2A, 0x2D);
+      return SkColorSetRGB(0xFF, 0xFF, 0xFF);
   }
 }
 

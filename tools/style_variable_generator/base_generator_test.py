@@ -255,6 +255,15 @@ class BaseGeneratorTest(unittest.TestCase):
         self.assertEqual(self.ResolveRGBA('expect_color_black'),
                          'rgba(0, 0, 0, 1)')
 
+    def testMissingBlendColor(self):
+        self.generator.AddJSONToModel('''
+{
+  colors: {
+    bg_color_elevation_10: "blend($white, $google_grey_900)",
+  }
+}
+        ''')
+        self.assertRaises(ValueError, self.generator.Validate)
 
     def testInvertedColors(self):
         # Add an inverted color.

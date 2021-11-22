@@ -58,8 +58,7 @@ def main():
         if args.generator == g.GetName():
             style_generator = g()
 
-    for t in args.targets:
-        style_generator.AddJSONFileToModel(t)
+    style_generator.AddJSONFilesToModel(args.targets)
 
     style_generator.generate_single_mode = args.generate_single_mode
     style_generator.out_file_path = args.out_file

@@ -27,6 +27,9 @@ html:not(body) {
   --cros-toggle-color-rgb: var(--cros-text-color-primary-rgb);
   --cros-toggle-color: rgba(var(--cros-toggle-color-rgb), 0.1);
 
+  --cros-bg-color-elevation-1-rgb: 255, 255, 255;
+  --cros-bg-color-elevation-1: rgb(var(--cros-bg-color-elevation-1-rgb));
+
   --cros-disabled-opacity: 0.38;
 
   --cros-reference-opacity: var(--cros-disabled-opacity);
@@ -58,6 +61,9 @@ html:not(body) {
 
   --cros-toggle-color-rgb: var(--cros-text-color-primary-rgb);
   --cros-toggle-color: rgba(var(--cros-toggle-color-rgb), var(--cros-disabled-opacity));
+
+  --cros-bg-color-elevation-1-rgb: 41, 42, 45;
+  --cros-bg-color-elevation-1: rgb(var(--cros-bg-color-elevation-1-rgb));
 
   --cros-reference-opacity: 1;
 }
@@ -98,6 +104,7 @@ export function getColorsCSS(options?: GetColorsCSSOptions) {
 export const GOOGLE_GREY_900 = css`var(--google-grey-900)`;
 export const TEXT_COLOR_PRIMARY = css`var(--cros-text-color-primary)`;
 export const TOGGLE_COLOR = css`var(--cros-toggle-color)`;
+export const BG_COLOR_ELEVATION_1 = css`var(--cros-bg-color-elevation-1)`;
 export const DISABLED_OPACITY = css`var(--cros-disabled-opacity)`;
 export const REFERENCE_OPACITY = css`var(--cros-reference-opacity)`;
 

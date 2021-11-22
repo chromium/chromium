@@ -312,8 +312,9 @@ class BaseGenerator:
                 raise ValueError(
                     '%s is not a valid variable name (lower case, 0-9, _)' %
                     name)
-
             self.AddColor(name, value, generator_context)
+
+    def _ResolveBlendedColors(self):
         # Calculate the final RGBA for all blended colors because the
         # generator's subclasses can't blend yet.
         color_model = self.model[VariableType.COLOR]
@@ -342,12 +343,19 @@ class BaseGenerator:
             self.SetVariableContext(var_name, context)
         self.model[VariableType.UNTYPED_CSS][group_name] = value_obj
 
-    def AddJSONFileToModel(self, path):
-        try:
-            with open(path, 'r') as f:
-                return self.AddJSONToModel(f.read(), path)
-        except ValueError as err:
-            raise ValueError('\n%s:\n    %s' % (path, err))
+    def AddJSONFilesToModel(self, paths):
+        '''Adds one or more JSON files to the model.
+        '''
+        for path in paths:
+            try:
+                with open(path, 'r') as f:
+                    self.AddJSONToModel(f.read(), path)
+            except ValueError as err:
+                raise ValueError('\n%s:\n    %s' % (path, err))
+
+        # Resolve blended colors after all the files are added because some
+        # color dependencies are between different files.
+        self._ResolveBlendedColors()
 
     def AddJSONToModel(self, json_string, in_file=None):
         '''Adds a |json_string| with variable definitions to the model.
@@ -440,6 +448,10 @@ class BaseGenerator:
                     CheckColorReference(color.RGBVarToVar(), name)
                 if color.opacity and color.opacity.var:
                     CheckOpacityReference(color.opacity.var, name)
+                if color.blended_colors:
+                    assert len(color.blended_colors) == 2
+                    CheckColorReference(color.blended_colors[0], name)
+                    CheckColorReference(color.blended_colors[1], name)
 
         for name, mode_values in opacities.items():
             for mode, opacity in mode_values.items():
