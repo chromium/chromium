@@ -157,6 +157,14 @@ class SettingsBluetoothDevicesSubpageElement extends
   shouldShowDeviceList_(devices) {
     return devices.length > 0;
   }
+
+  /**
+   * @return {boolean}
+   * @private
+   */
+  shouldShowNoDevicesFound_() {
+    return !this.connectedDevices_.length && !this.unconnectedDevices_.length;
+  }
 }
 
 customElements.define(

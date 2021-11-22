@@ -38,6 +38,13 @@
 <div class="device-lists-separator"></div>
 <div id="container">
   <template is="dom-if"
+      if="[[shouldShowNoDevicesFound_(unconnectedDevices_.length,
+          connectedDevices_.length)]]" restamp>
+    <div id="noDevices" class="settings-box-text">
+      $i18n{bluetoothDeviceListNoConnectedDevices}
+    </div>
+  </template>
+  <template is="dom-if"
       if="[[shouldShowDeviceList_(connectedDevices_,
           connectedDevices_.length)]]" restamp>
     <div class="settings-box-text">

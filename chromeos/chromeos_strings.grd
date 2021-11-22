@@ -2014,6 +2014,9 @@ Try tapping the mic to ask me anything.
       <message name="IDS_BLUETOOTH_DEVICE_LIST_PREVIOUSLY_CONNECTED" desc="Title for list displaying paired Bluetooth devices that have previously been connected.">
         Previously connected
       </message>
+      <message name="IDS_BLUETOOTH_DEVICE_LIST_NO_CONNECTED_DEVICES" desc="Text displayed indicating there are currently no paired Bluetooth devices.">
+        No device connected
+      </message>
 
       <!-- Shimless RMA -->
       <!-- Component names. Used by select components and calibration pages-->

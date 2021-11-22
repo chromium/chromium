@@ -124,6 +124,9 @@ suite('OsBluetoothDevicesSubpageTest', function() {
   test('Device lists states', async function() {
     init();
 
+    const getNoDeviceText = () =>
+        bluetoothDevicesSubpage.shadowRoot.querySelector('#noDevices');
+
     const getDeviceList = (connected) => {
       return bluetoothDevicesSubpage.shadowRoot.querySelector(
           connected ? '#connectedDeviceList' : '#unconnectedDeviceList');
@@ -131,6 +134,10 @@ suite('OsBluetoothDevicesSubpageTest', function() {
     // No lists should be showing at first.
     assertFalse(!!getDeviceList(/*connected=*/ true));
     assertFalse(!!getDeviceList(/*connected=*/ false));
+    assertTrue(!!getNoDeviceText());
+    assertEquals(
+        getNoDeviceText().textContent.trim(),
+        bluetoothDevicesSubpage.i18n('bluetoothDeviceListNoConnectedDevices'));
 
     const connectedDevice = createDefaultBluetoothDevice(
         /*id=*/ '123456789', /*publicName=*/ 'BeatsX',
@@ -148,6 +155,7 @@ suite('OsBluetoothDevicesSubpageTest', function() {
     assertTrue(!!getDeviceList(/*connected=*/ true));
     assertEquals(getDeviceList(/*connected=*/ true).devices.length, 1);
     assertFalse(!!getDeviceList(/*connected=*/ false));
+    assertFalse(!!getNoDeviceText());
 
     // Pair unconnected device
     bluetoothConfig.appendToPairedDeviceList([unconnectedDevice]);
@@ -157,5 +165,6 @@ suite('OsBluetoothDevicesSubpageTest', function() {
     assertEquals(getDeviceList(/*connected=*/ true).devices.length, 1);
     assertTrue(!!getDeviceList(/*connected=*/ false));
     assertEquals(getDeviceList(/*connected=*/ false).devices.length, 1);
+    assertFalse(!!getNoDeviceText());
   });
 });

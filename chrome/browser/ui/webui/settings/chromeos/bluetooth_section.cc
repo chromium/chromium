@@ -322,6 +322,8 @@ void BluetoothSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
        IDS_BLUETOOTH_DEVICE_LIST_CURRENTLY_CONNECTED},
       {"bluetoothDeviceListPreviouslyConnected",
        IDS_BLUETOOTH_DEVICE_LIST_PREVIOUSLY_CONNECTED},
+      {"bluetoothDeviceListNoConnectedDevices",
+       IDS_BLUETOOTH_DEVICE_LIST_NO_CONNECTED_DEVICES},
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
   html_source->AddBoolean("enableFastPairFlag", features::IsFastPairEnabled());
