@@ -41,7 +41,6 @@ blink_platform_sources("heap") {
     "gc_task_runner.h",
     "handle.h",
     "heap.h",
-    "heap_allocator.h",
     "heap_allocator_impl.h",
     "heap_traits.h",
     "member.h",

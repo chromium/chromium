@@ -92,7 +92,8 @@ def collect_forward_decls_and_include_headers(idl_types):
         elif (idl_type.is_sequence or idl_type.is_frozen_array
               or idl_type.is_record or idl_type.is_variadic):
             header_include_headers.add(
-                "third_party/blink/renderer/platform/heap/heap_allocator.h")
+                "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
+            )
         elif idl_type.is_string:
             header_include_headers.add(
                 "third_party/blink/renderer/platform/wtf/text/wtf_string.h")

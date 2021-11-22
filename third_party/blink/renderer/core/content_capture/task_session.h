@@ -14,7 +14,6 @@
 #include "third_party/blink/public/platform/web_vector.h"
 #include "third_party/blink/renderer/core/content_capture/content_holder.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
-#include "third_party/blink/renderer/platform/heap/heap_allocator.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
