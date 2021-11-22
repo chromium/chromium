@@ -229,7 +229,7 @@ void UpdateServiceImpl::RegisterApp(
   crx_component.version = request.version;
   crx_component.requires_network_encryption = false;
   crx_component.ap = request.ap;
-  // TODO(crbug.com/1259972): Set brand.
+  crx_component.brand = request.brand_code;
   update_client_->SendRegistrationPing(
       crx_component,
       base::BindOnce(
