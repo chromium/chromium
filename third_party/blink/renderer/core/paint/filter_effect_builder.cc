@@ -46,7 +46,7 @@
 #include "third_party/blink/renderer/platform/graphics/filters/paint_filter_builder.h"
 #include "third_party/blink/renderer/platform/graphics/filters/source_graphic.h"
 #include "third_party/blink/renderer/platform/graphics/interpolation_space.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 #include "ui/gfx/geometry/point_conversions.h"
 

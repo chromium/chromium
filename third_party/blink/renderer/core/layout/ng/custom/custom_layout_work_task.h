@@ -7,8 +7,8 @@
 
 #include "third_party/blink/renderer/bindings/core/v8/v8_custom_layout_constraints_options.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
 
 namespace blink {
 

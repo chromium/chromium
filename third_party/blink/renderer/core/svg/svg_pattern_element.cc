@@ -31,7 +31,7 @@
 #include "third_party/blink/renderer/core/svg/svg_animated_preserve_aspect_ratio.h"
 #include "third_party/blink/renderer/core/svg/svg_animated_rect.h"
 #include "third_party/blink/renderer/core/svg/svg_animated_transform_list.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/transforms/affine_transform.h"
 
 namespace blink {

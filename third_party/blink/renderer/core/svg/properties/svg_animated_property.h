@@ -36,7 +36,7 @@
 #include "third_party/blink/renderer/core/svg/properties/svg_property_info.h"
 #include "third_party/blink/renderer/core/svg/properties/svg_property_tear_off.h"
 #include "third_party/blink/renderer/core/svg/svg_parsing_error.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 
 namespace blink {

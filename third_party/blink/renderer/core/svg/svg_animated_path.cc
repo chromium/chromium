@@ -31,7 +31,7 @@
 #include "third_party/blink/renderer/core/svg/svg_animated_path.h"
 
 #include "third_party/blink/renderer/core/css/css_identifier_value.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace blink {
 

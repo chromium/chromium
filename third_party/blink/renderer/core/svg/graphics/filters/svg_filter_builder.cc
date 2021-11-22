@@ -32,7 +32,7 @@
 #include "third_party/blink/renderer/platform/graphics/filters/paint_filter_effect.h"
 #include "third_party/blink/renderer/platform/graphics/filters/source_alpha.h"
 #include "third_party/blink/renderer/platform/graphics/filters/source_graphic.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace blink {
 

@@ -26,7 +26,7 @@
 #include "third_party/blink/renderer/core/svg/svg_rect.h"
 #include "third_party/blink/renderer/core/svg/svg_transform_list.h"
 #include "third_party/blink/renderer/core/svg/svg_view_element.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/text/character_visitor.h"
 #include "third_party/blink/renderer/platform/wtf/text/parsing_utilities.h"
 
