@@ -31,6 +31,8 @@ class PasswordManagerClient;
 
 // Delegate for registering view controller and displaying its view. Used to
 // add views to BVC.
+// TODO(crbug.com/1272487): Refactor this API to not be coupled to the BVC and
+// to use the UI command patterns.
 @protocol PasswordControllerDelegate
 
 // Adds |viewController| as child controller in order to display auto sign-in
@@ -44,6 +46,8 @@ class PasswordManagerClient;
 @end
 
 // Per-tab password controller. Handles password autofill and saving.
+// TODO(crbug.com/1272487): Refactor this into an appropriately-scoped object,
+// such as a browser agent.
 @interface PasswordController
     : NSObject <CRWWebStateObserver, IOSChromePasswordManagerClientBridge>
 

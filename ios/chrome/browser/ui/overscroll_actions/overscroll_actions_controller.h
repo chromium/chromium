@@ -40,6 +40,8 @@ extern NSString* const kOverscrollActionsDidEnd;
 // Called when an action has been triggered.
 // The action index holds the current triggered action which are numbered left
 // to right.
+// TODO(crbug.com/1272486) : Separate action handling for overscroll from UI
+// management.
 - (void)overscrollActionsController:(OverscrollActionsController*)controller
                    didTriggerAction:(OverscrollAction)action;
 // Should return true when the delegate wants to enable the overscroll actions.
