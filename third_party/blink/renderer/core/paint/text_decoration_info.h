@@ -60,7 +60,7 @@ class CORE_EXPORT TextDecorationInfo {
   // Set data for one of the text decoration lines: over, under or
   // through. Must be called before trying to paint or compute bounds
   // for a line.
-  void SetPerLineData(TextDecorationLine line, float line_offset);
+  void SetLineData(TextDecorationLine line, float line_offset);
 
   // These methods do not depend on SetDecorationIndex
   LayoutUnit Width() const { return width_; }
@@ -88,42 +88,28 @@ class CORE_EXPORT TextDecorationInfo {
   }
   enum StrokeStyle StrokeStyle() const;
 
-  // SetPerLineData must be called with the line argument before using
-  // the remaining methods.
-  gfx::PointF StartPoint(TextDecorationLine line) const;
-  float DoubleOffset(TextDecorationLine line) const;
+  // SetLineData must be called before using the remaining methods.
+  gfx::PointF StartPoint() const;
+  float DoubleOffset() const;
 
   // Compute bounds for the given line and the current decoration.
-  FloatRect BoundsForLine(TextDecorationLine line) const;
+  FloatRect Bounds() const;
 
   // Return a path for current decoration.
-  absl::optional<Path> StrokePathForLine(TextDecorationLine line) const;
+  absl::optional<Path> StrokePath() const;
 
  private:
   float ComputeUnderlineThickness(
       const TextDecorationThickness& applied_decoration_thickness,
       const ComputedStyle* decorating_box_style);
 
-  FloatRect BoundsForDottedOrDashed(TextDecorationLine line) const;
-  FloatRect BoundsForWavy(TextDecorationLine line) const;
+  FloatRect BoundsForDottedOrDashed() const;
+  FloatRect BoundsForWavy() const;
   float WavyDecorationSizing() const;
   float ControlPointDistanceFromResolvedThickness() const;
   float StepFromResolvedThickness() const;
-  Path PrepareDottedOrDashedStrokePath(TextDecorationLine line) const;
-  Path PrepareWavyStrokePath(TextDecorationLine line) const;
-
-  /* We need to store data for up to 3 lines: Underline, Overline and
-     LineThrough. Unfortunately the enum for these are bitfield indices, not
-     directly useful as indexes. So explicitly convert in place
-     when necessary.
-  */
-  struct PerLineData {
-    float line_offset;
-    float double_offset;
-    int wavy_offset_factor;
-    absl::optional<Path> stroke_path;
-  };
-  PerLineData LineDataForLine(TextDecorationLine line) const;
+  Path PrepareDottedOrDashedStrokePath() const;
+  Path PrepareWavyStrokePath() const;
 
   const ComputedStyle& style_;
   const absl::optional<AppliedTextDecoration> selection_text_decoration_;
@@ -138,7 +124,14 @@ class CORE_EXPORT TextDecorationInfo {
   bool antialias_;
   Vector<float> applied_decorations_thickness_;
   int decoration_index_;
-  PerLineData line_data_[3];
+
+  struct LineData {
+    float line_offset;
+    float double_offset;
+    int wavy_offset_factor;
+    absl::optional<Path> stroke_path;
+  };
+  LineData line_data_;
 };
 
 }  // namespace blink

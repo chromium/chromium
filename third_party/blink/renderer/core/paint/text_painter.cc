@@ -110,8 +110,8 @@ void TextPainter::PaintDecorationsExceptLineThrough(
           decoration_offset.ComputeUnderlineOffset(
               underline_position, decoration_info.Style().ComputedFontSize(),
               decoration_info.FontData(), line_offset, resolved_thickness);
-      decoration_info.SetPerLineData(TextDecorationLine::kUnderline,
-                                     paint_underline_offset);
+      decoration_info.SetLineData(TextDecorationLine::kUnderline,
+                                  paint_underline_offset);
       PaintDecorationUnderOrOverLine(context, decoration_info,
                                      TextDecorationLine::kUnderline);
     }
@@ -128,8 +128,8 @@ void TextPainter::PaintDecorationsExceptLineThrough(
           decoration_offset.ComputeUnderlineOffsetForUnder(
               line_offset, decoration_info.Style().ComputedFontSize(),
               decoration_info.FontData(), resolved_thickness, position);
-      decoration_info.SetPerLineData(TextDecorationLine::kOverline,
-                                     paint_overline_offset);
+      decoration_info.SetLineData(TextDecorationLine::kOverline,
+                                  paint_overline_offset);
       PaintDecorationUnderOrOverLine(context, decoration_info,
                                      TextDecorationLine::kOverline);
     }
@@ -175,10 +175,9 @@ void TextPainter::PaintDecorationsOnlyLineThrough(
       // it centered at the same origin.
       const float line_through_offset =
           2 * decoration_info.Baseline() / 3 - resolved_thickness / 2;
-      decoration_info.SetPerLineData(TextDecorationLine::kLineThrough,
-                                     line_through_offset);
-      AppliedDecorationPainter decoration_painter(
-          context, decoration_info, TextDecorationLine::kLineThrough);
+      decoration_info.SetLineData(TextDecorationLine::kLineThrough,
+                                  line_through_offset);
+      AppliedDecorationPainter decoration_painter(context, decoration_info);
       // No skip: ink for line-through,
       // compare https://github.com/w3c/csswg-drafts/issues/711
       decoration_painter.Paint();

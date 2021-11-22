@@ -555,10 +555,9 @@ LayoutRect NGInkOverflow::ComputeTextDecorationOverflow(
           decoration_offset.ComputeUnderlineOffset(
               underline_position, decoration_info.Style().ComputedFontSize(),
               decoration_info.FontData(), line_offset, resolved_thickness);
-      decoration_info.SetPerLineData(TextDecorationLine::kUnderline,
-                                     paint_underline_offset);
-      accumulated_bound.Union(
-          decoration_info.BoundsForLine(TextDecorationLine::kUnderline));
+      decoration_info.SetLineData(TextDecorationLine::kUnderline,
+                                  paint_underline_offset);
+      accumulated_bound.Union(decoration_info.Bounds());
     }
     if (has_overline) {
       // Don't apply text-underline-offset to overline.
@@ -572,10 +571,9 @@ LayoutRect NGInkOverflow::ComputeTextDecorationOverflow(
           decoration_offset.ComputeUnderlineOffsetForUnder(
               line_offset, decoration_info.Style().ComputedFontSize(),
               decoration_info.FontData(), resolved_thickness, position);
-      decoration_info.SetPerLineData(TextDecorationLine::kOverline,
-                                     paint_overline_offset);
-      accumulated_bound.Union(
-          decoration_info.BoundsForLine(TextDecorationLine::kOverline));
+      decoration_info.SetLineData(TextDecorationLine::kOverline,
+                                  paint_overline_offset);
+      accumulated_bound.Union(decoration_info.Bounds());
     }
     if (EnumHasFlags(lines, TextDecorationLine::kLineThrough)) {
       // For increased line thickness, the line-through decoration needs to grow
@@ -583,10 +581,9 @@ LayoutRect NGInkOverflow::ComputeTextDecorationOverflow(
       // it centered at the same origin.
       const float line_through_offset =
           2 * decoration_info.Baseline() / 3 - resolved_thickness / 2;
-      decoration_info.SetPerLineData(TextDecorationLine::kLineThrough,
-                                     line_through_offset);
-      accumulated_bound.Union(
-          decoration_info.BoundsForLine(TextDecorationLine::kLineThrough));
+      decoration_info.SetLineData(TextDecorationLine::kLineThrough,
+                                  line_through_offset);
+      accumulated_bound.Union(decoration_info.Bounds());
     }
   }
   return EnclosingLayoutRect(accumulated_bound);

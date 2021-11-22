@@ -25,13 +25,13 @@ void AppliedDecorationPainter::Paint(const PaintFlags* flags) {
       context_.SetShouldAntialias(decoration_info_.ShouldAntialias());
       FALLTHROUGH;
     default:
-      context_.DrawLineForText(decoration_info_.StartPoint(line_),
+      context_.DrawLineForText(decoration_info_.StartPoint(),
                                decoration_info_.Width(), auto_dark_mode, flags);
 
       if (decoration_info_.DecorationStyle() == ETextDecorationStyle::kDouble) {
         context_.DrawLineForText(
-            decoration_info_.StartPoint(line_) +
-                gfx::Vector2dF(0, decoration_info_.DoubleOffset(line_)),
+            decoration_info_.StartPoint() +
+                gfx::Vector2dF(0, decoration_info_.DoubleOffset()),
             decoration_info_.Width(), auto_dark_mode, flags);
       }
   }
@@ -48,9 +48,9 @@ void AppliedDecorationPainter::StrokeWavyTextDecoration(
 
   // The wavy line is larger than the line, as we add whole waves before and
   // after the line in TextDecorationInfo::PrepareWavyStrokePath().
-  context_.Clip(decoration_info_.BoundsForLine(line_));
+  context_.Clip(decoration_info_.Bounds());
 
-  absl::optional<Path> path = decoration_info_.StrokePathForLine(line_);
+  absl::optional<Path> path = decoration_info_.StrokePath();
   AutoDarkMode auto_dark_mode(PaintAutoDarkMode(
       decoration_info_.Style(), DarkModeFilter::ElementRole::kForeground));
   if (flags)
