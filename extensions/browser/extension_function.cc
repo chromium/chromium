@@ -763,10 +763,7 @@ void ExtensionFunction::WriteToConsole(blink::mojom::ConsoleMessageLevel level,
   // RenderFrameHost.
   if (!render_frame_host_)
     return;
-  // Only the main frame handles dev tools messages.
-  WebContents::FromRenderFrameHost(render_frame_host_)
-      ->GetMainFrame()
-      ->AddMessageToConsole(level, message);
+  render_frame_host_->AddMessageToConsole(level, message);
 }
 
 void ExtensionFunction::SetTransferredBlobUUIDs(
