@@ -85,7 +85,9 @@ public class ExternalNavigationHandler {
     private static final String TAG = "UrlHandler";
 
     // Enables debug logging on a local build.
-    private static final boolean DEBUG = false;
+    // NOTE: Temporarily enabled on trunk to debug an issue that is happening on prod devices.
+    // TODO(crbug.com/1272553): Revert back to being disabled before 98 ships to beta.
+    private static final boolean DEBUG = true;
 
     private static final String WTAI_URL_PREFIX = "wtai://wp/";
     private static final String WTAI_MC_URL_PREFIX = "wtai://wp/mc;";
