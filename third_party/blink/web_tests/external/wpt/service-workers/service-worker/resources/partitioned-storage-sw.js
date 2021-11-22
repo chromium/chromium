@@ -17,18 +17,23 @@ self.addEventListener('fetch', function(event) {
 })
 
 self.addEventListener('message', (event) => {
-  if(!event.data)
-    return;
+  event.waitUntil(async function() {
+    if(!event.data)
+      return;
 
-  if (event.data.type === "get-id") {
-    event.source.postMessage({ID: ID});
-  }
-  else if(event.data.type === "get-match-all") {
-    clients.matchAll({includeUncontrolled: true}).then(clients_list => {
-      const url_list = clients_list.map(item => item.url);
-      event.source.postMessage({urls_list: url_list});
-    });
-  }
+    if (event.data.type === "get-id") {
+      event.source.postMessage({ID: ID});
+    }
+    else if(event.data.type === "get-match-all") {
+      clients.matchAll({includeUncontrolled: true}).then(clients_list => {
+        const url_list = clients_list.map(item => item.url);
+        event.source.postMessage({urls_list: url_list});
+      });
+    }
+    else if(event.data.type === "claim") {
+      await clients.claim();
+    }
+  }());
 });
 
 async function fetchEventHandler(event){
