@@ -1126,6 +1126,9 @@ ci.android_fyi_builder(
         category = "webview",
         short_name = "p-rel",
     ),
+    goma_backend = None,
+    reclient_jobs = rbe_jobs.DEFAULT,
+    reclient_instance = rbe_instance.DEFAULT,
 )
 
 # TODO(crbug.com/1022533#c40): Remove this builder once there are no associated
@@ -3464,6 +3467,9 @@ ci.fyi_builder(
         category = "site_isolation",
     ),
     notifies = ["Site Isolation Android"],
+    goma_backend = None,
+    reclient_jobs = rbe_jobs.DEFAULT,
+    reclient_instance = rbe_instance.DEFAULT,
 )
 
 ci.fyi_builder(
@@ -4715,6 +4721,9 @@ ci.gpu_linux_builder(
     ),
     cq_mirrors_console_view = "mirrors",
     main_console_view = main_console_if_on_branch(),
+    goma_backend = None,
+    reclient_jobs = rbe_jobs.DEFAULT,
+    reclient_instance = rbe_instance.DEFAULT,
 )
 
 ci.gpu_linux_builder(
@@ -6358,6 +6367,9 @@ ci.mojo_builder(
     console_view_entry = consoles.console_view_entry(
         short_name = "and",
     ),
+    goma_backend = None,
+    reclient_jobs = rbe_jobs.DEFAULT,
+    reclient_instance = rbe_instance.DEFAULT,
 )
 
 ci.mojo_builder(

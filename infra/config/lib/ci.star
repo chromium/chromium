@@ -205,12 +205,16 @@ def android_builder(
         **kwargs
     )
 
-def android_fyi_builder(*, name, **kwargs):
+def android_fyi_builder(
+        *,
+        name,
+        goma_backend = builders.goma.backend.RBE_PROD,
+        **kwargs):
     kwargs.setdefault("os", os.LINUX_BIONIC_REMOVE)
     return ci_builder(
         name = name,
         builder_group = "chromium.android.fyi",
-        goma_backend = builders.goma.backend.RBE_PROD,
+        goma_backend = goma_backend,
         **kwargs
     )
 
