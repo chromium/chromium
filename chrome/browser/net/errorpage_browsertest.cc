@@ -1083,7 +1083,7 @@ class ErrorPageOfflineAppLaunchTest
 };
 
 // TODO(https://crbug.com/1267299): Re-enable.
-#if defined(ADDRESS_SANITIZER)
+#if defined(ADDRESS_SANITIZER) | defined(OS_CHROMEOS)
 #define MAYBE_DiagnosticsConnectivity DISABLED_DiagnosticsConnectivity
 #else
 #define MAYBE_DiagnosticsConnectivity DiagnosticsConnectivity
