@@ -24,6 +24,7 @@ import org.chromium.components.policy.test.annotations.Policies;
 import org.chromium.content_public.browser.test.ContentJUnit4ClassRunner;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.gms.ChromiumPlayServicesAvailability;
+import org.chromium.ui.test.util.DisableAnimationsTestRule;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -56,7 +57,8 @@ public class ChromeJUnit4ClassRunner extends ContentJUnit4ClassRunner {
 
     @Override
     protected List<TestRule> getDefaultTestRules() {
-        return addToList(super.getDefaultTestRules(), new Features.InstrumentationProcessor());
+        return addToList(super.getDefaultTestRules(), new Features.InstrumentationProcessor(),
+                new DisableAnimationsTestRule());
     }
 
     private static class ChromeRestrictionSkipCheck extends RestrictionSkipCheck {
