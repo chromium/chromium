@@ -4464,6 +4464,8 @@ static_library("ui") {
       "views/sharing_hub/sharing_hub_bubble_view_impl.h",
       "views/sharing_hub/sharing_hub_icon_view.cc",
       "views/sharing_hub/sharing_hub_icon_view.h",
+      "views/side_panel/read_later_side_panel_web_view.cc",
+      "views/side_panel/read_later_side_panel_web_view.h",
       "views/side_panel/side_panel.cc",
       "views/side_panel/side_panel.h",
       "views/ssl_client_certificate_selector.cc",
