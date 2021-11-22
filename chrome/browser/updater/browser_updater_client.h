@@ -77,7 +77,7 @@ class BrowserUpdaterClient
   void HandleStatusUpdate(
       base::RepeatingCallback<void(updater::UpdateService::UpdateState)>
           callback,
-      updater::UpdateService::UpdateState update_state);
+      const updater::UpdateService::UpdateState& update_state);
 
   // Handles status update from Chromium updater when registration is completed.
   void RegistrationCompleted(updater::UpdateService::Result result);
