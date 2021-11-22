@@ -138,12 +138,11 @@ class EPKChallengeKeyTestBase : public BrowserWithTestWindowTest {
                        extensions::api_test_utils::NONE);
     EXPECT_TRUE(function->GetError().empty())
         << "Unexpected error: " << function->GetError();
-    const base::Value* single_result = NULL;
-    if (function->GetResultList() != NULL &&
-        function->GetResultList()->Get(0, &single_result)) {
-      return single_result->DeepCopy();
+    if (function->GetResultList() &&
+        !function->GetResultList()->GetList().empty()) {
+      return function->GetResultList()->GetList()[0].DeepCopy();
     }
-    return NULL;
+    return nullptr;
   }
 
   scoped_refptr<const extensions::Extension> extension_;

@@ -288,10 +288,9 @@ testing::AssertionResult DeveloperPrivateApiUnitTest::TestPackExtensionFunction(
 
   // Extract the result. We don't have to test this here, since it's verified as
   // part of the general extension api system.
-  const base::Value* response_value = nullptr;
-  CHECK(function->GetResultList()->Get(0u, &response_value));
+  const base::Value& response_value = function->GetResultList()->GetList()[0];
   std::unique_ptr<api::developer_private::PackDirectoryResponse> response =
-      api::developer_private::PackDirectoryResponse::FromValue(*response_value);
+      api::developer_private::PackDirectoryResponse::FromValue(response_value);
   CHECK(response);
 
   if (response->status != expected_status) {
@@ -328,10 +327,9 @@ void DeveloperPrivateApiUnitTest::GetProfileConfiguration(
 
   ASSERT_TRUE(function->GetResultList());
   ASSERT_EQ(1u, function->GetResultList()->GetList().size());
-  const base::Value* response_value = nullptr;
-  function->GetResultList()->Get(0u, &response_value);
+  const base::Value& response_value = function->GetResultList()->GetList()[0];
   *profile_info =
-      api::developer_private::ProfileInfo::FromValue(*response_value);
+      api::developer_private::ProfileInfo::FromValue(response_value);
 }
 
 void DeveloperPrivateApiUnitTest::RunUpdateHostAccess(
@@ -1013,11 +1011,10 @@ TEST_F(DeveloperPrivateApiUnitTest, DeveloperPrivateRequestFileSource) {
   file_source_args.Append(properties.ToValue());
   EXPECT_TRUE(RunFunction(function, file_source_args)) << function->GetError();
 
-  const base::Value* response_value = nullptr;
-  ASSERT_TRUE(function->GetResultList()->Get(0u, &response_value));
+  const base::Value& response_value = function->GetResultList()->GetList()[0];
   std::unique_ptr<api::developer_private::RequestFileSourceResponse> response =
       api::developer_private::RequestFileSourceResponse::FromValue(
-          *response_value);
+          response_value);
   EXPECT_FALSE(response->before_highlight.empty());
   EXPECT_EQ("\"name\": \"foo\"", response->highlight);
   EXPECT_FALSE(response->after_highlight.empty());

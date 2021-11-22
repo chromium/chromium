@@ -132,9 +132,8 @@ class EventServiceListSizeMatcher
     }
     const base::ListValue* services = nullptr;
     {
-      const base::Value* out;
-      e.event_args->Get(0, &out);
-      services = static_cast<const base::ListValue*>(out);
+      const base::Value& out = e.event_args->GetList()[0];
+      services = static_cast<const base::ListValue*>(&out);
     }
     if (!services) {
       *listener << "event's service list argument is not a ListValue";

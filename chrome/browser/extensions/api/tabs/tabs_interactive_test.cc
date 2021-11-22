@@ -273,11 +273,11 @@ int ExtensionWindowLastFocusedTest::GetTabId(
   const base::ListValue* tabs = nullptr;
   if (!value->GetList(keys::kTabsKey, &tabs))
     return -2;
-  const base::Value* tab = nullptr;
-  if (!tabs->Get(0, &tab))
+  if (tabs->GetList().empty())
     return -2;
+  const base::Value& tab = tabs->GetList()[0];
   const base::DictionaryValue* tab_dict = nullptr;
-  if (!tab->GetAsDictionary(&tab_dict))
+  if (!tab.GetAsDictionary(&tab_dict))
     return -2;
   absl::optional<int> tab_id = tab_dict->FindIntKey(keys::kIdKey);
   if (!tab_id)
