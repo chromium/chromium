@@ -75,7 +75,10 @@ def _PackageChecks(input_api, output_api):
 
 def _RunToolsUnittests(input_api, output_api):
   return input_api.canned_checks.RunUnitTestsInDirectory(
-      input_api, output_api, '.', [ r'^tools_unittest\.py$'])
+      input_api, output_api,
+      '.',
+      [ r'^tools_unittest\.py$'],
+      run_on_python3=True)
 
 
 def _ChangeAffectsCronetTools(change):
