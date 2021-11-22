@@ -30,6 +30,7 @@
 #include "components/webapps/browser/installable/installable_metrics.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/app_menu_constants.h"
 #include "ash/webui/projector_app/public/cpp/projector_app_constants.h"  // nogncheck
 #include "base/bind.h"
@@ -37,6 +38,8 @@
 #include "chrome/browser/apps/app_service/menu_item_constants.h"
 #include "chrome/browser/apps/app_service/menu_util.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
+#include "chrome/browser/ash/crostini/crostini_terminal.h"
+#include "chrome/browser/ash/crostini/crostini_util.h"
 #include "chrome/browser/web_applications/web_app_icon_manager.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
@@ -381,6 +384,11 @@ void WebApps::GetMenuModel(const std::string& app_id,
                                &menu_items);
   }
 
+  if (app_id == crostini::kCrostiniTerminalSystemAppId) {
+    DCHECK(base::FeatureList::IsEnabled(chromeos::features::kTerminalSSH));
+    crostini::AddTerminalMenuItems(profile_, &menu_items);
+  }
+
   if (menu_type == apps::mojom::MenuType::kShelf &&
       instance_registry_->ContainsAppId(app_id)) {
     apps::AddCommandItem(ash::MENU_CLOSE, IDS_SHELF_CONTEXT_MENU_CLOSE,
@@ -480,6 +488,13 @@ void WebApps::OnShortcutsMenuIconsRead(
     ++menu_item_index;
   }
 
+  if (app_id == crostini::kCrostiniTerminalSystemAppId) {
+    DCHECK(base::FeatureList::IsEnabled(chromeos::features::kTerminalSSH));
+    crostini::AddTerminalMenuShortcuts(
+        profile_, &menu_items,
+        ash::LAUNCH_APP_SHORTCUT_FIRST + menu_item_index);
+  }
+
   std::move(callback).Run(std::move(menu_items));
 }
 
@@ -487,6 +502,13 @@ void WebApps::ExecuteContextMenuCommand(const std::string& app_id,
                                         int command_id,
                                         const std::string& shortcut_id,
                                         int64_t display_id) {
+  if (app_id == crostini::kCrostiniTerminalSystemAppId) {
+    DCHECK(base::FeatureList::IsEnabled(chromeos::features::kTerminalSSH));
+    if (crostini::ExecuteTerminalMenuShortcutCommand(profile_, shortcut_id,
+                                                     display_id)) {
+      return;
+    }
+  }
   publisher_helper().ExecuteContextMenuCommand(app_id, shortcut_id, display_id);
 }
 

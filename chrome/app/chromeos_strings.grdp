@@ -4272,6 +4272,12 @@
   <message name="IDS_CROSTINI_TERMINAL_STATUS_READY" desc="Text shown in the crostini terminal when it just finished the initialization and it is ready to use.">
     Ready
   </message>
+  <message name="IDS_CROSTINI_TERMINAL_CONNECT_TO_LINUX" desc="Text shown in the right-click menu to allow users to open terminal and use Linux.">
+    Connect to Linux
+  </message>
+  <message name="IDS_CROSTINI_TERMINAL_CONNECT_TO_SSH" desc="Text shown in the right-click menu to allow users to open terminal and connect to a remote machine using SSH. SSH is 'Secure SHell' and should probably not be translated since users of all languages likley know it as 'SSH'.">
+    Connect to SSH
+  </message>
   <message name="IDS_CROSTINI_INSTALLER_TITLE" desc="Title of the Crostini installer, a dialog for installing Linux.">
     Set up Linux development environment
   </message>

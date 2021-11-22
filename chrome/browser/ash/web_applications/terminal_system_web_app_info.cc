@@ -16,6 +16,7 @@
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/chrome_unscaled_resources.h"
 #include "chrome/grit/generated_resources.h"
+#include "extensions/browser/api/file_handlers/mime_util.h"
 #include "extensions/common/constants.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -33,7 +34,8 @@ constexpr gfx::Size TERMINAL_SETTINGS_DEFAULT_SIZE(768, 512);
 std::unique_ptr<WebApplicationInfo> CreateWebAppInfoForTerminalSystemWebApp() {
   auto info = std::make_unique<WebApplicationInfo>();
   // URL used for crostini::kCrostiniTerminalSystemAppId.
-  info->start_url = GURL("chrome-untrusted://terminal/html/terminal.html");
+  const GURL terminal_url("chrome-untrusted://terminal/html/terminal.html");
+  info->start_url = terminal_url;
   info->scope = GURL(chrome::kChromeUIUntrustedTerminalURL);
   info->title = l10n_util::GetStringUTF16(IDS_CROSTINI_TERMINAL_APP_NAME);
   web_app::CreateIconInfoForSystemWebApp(
@@ -41,6 +43,30 @@ std::unique_ptr<WebApplicationInfo> CreateWebAppInfoForTerminalSystemWebApp() {
       *info);
   info->background_color = 0xFF202124;
   info->display_mode = blink::mojom::DisplayMode::kStandalone;
+  {
+    apps::FileHandler handler;
+    handler.accept.emplace_back();
+    handler.accept.back().mime_type =
+        extensions::app_file_handler_util::kMimeTypeInodeDirectory;
+    info->file_handlers.push_back(std::move(handler));
+  }
+  info->additional_search_terms = {
+      "linux", "terminal", "crostini", "ssh",
+      l10n_util::GetStringUTF8(IDS_CROSTINI_TERMINAL_APP_SEARCH_TERMS)};
+  {
+    WebApplicationShortcutsMenuItemInfo shortcut_terminal;
+    shortcut_terminal.name =
+        l10n_util::GetStringUTF16(IDS_CROSTINI_TERMINAL_CONNECT_TO_LINUX);
+    shortcut_terminal.url = terminal_url;
+    info->shortcuts_menu_item_infos.push_back(std::move(shortcut_terminal));
+  }
+  {
+    WebApplicationShortcutsMenuItemInfo shortcut_ssh;
+    shortcut_ssh.name =
+        l10n_util::GetStringUTF16(IDS_CROSTINI_TERMINAL_CONNECT_TO_SSH);
+    shortcut_ssh.url = GURL("chrome-untrusted://terminal/html/nassh.html");
+    info->shortcuts_menu_item_infos.push_back(std::move(shortcut_ssh));
+  }
   return info;
 }
 
@@ -68,6 +94,11 @@ std::unique_ptr<WebApplicationInfo> TerminalSystemAppDelegate::GetWebAppInfo()
 bool TerminalSystemAppDelegate::ShouldReuseExistingWindow() const {
   return false;
 }
+
+bool TerminalSystemAppDelegate::ShouldShowNewWindowMenuOption() const {
+  return true;
+}
+
 bool TerminalSystemAppDelegate::ShouldHaveTabStrip() const {
   return true;
 }

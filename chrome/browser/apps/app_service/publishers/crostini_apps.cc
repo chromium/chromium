@@ -227,7 +227,8 @@ void CrostiniApps::GetMenuModel(const std::string& app_id,
 
   if (app_id == crostini::kCrostiniTerminalSystemAppId) {
     crostini::AddTerminalMenuItems(profile_, &menu_items);
-    crostini::AddTerminalMenuShortcuts(profile_, &menu_items);
+    crostini::AddTerminalMenuShortcuts(profile_, &menu_items,
+                                       ash::LAUNCH_APP_SHORTCUT_FIRST);
   }
 
   if (ShouldAddOpenItem(app_id, menu_type, profile_)) {

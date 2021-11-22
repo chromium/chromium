@@ -60,7 +60,9 @@
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/constants/ash_features.h"
 #include "chrome/browser/ash/arc/arc_web_contents_data.h"
+#include "chrome/browser/ash/crostini/crostini_terminal.h"
 #include "chrome/browser/ash/crostini/crostini_util.h"
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
 #include "chrome/browser/web_applications/system_web_apps/system_web_app_manager.h"
@@ -283,7 +285,8 @@ WebAppPublisherHelper::ConvertUninstallSourceToWebAppUninstallSource(
 bool WebAppPublisherHelper::Accepts(const std::string& app_id) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // Crostini Terminal System App is handled by Crostini Apps.
-  return app_id != crostini::kCrostiniTerminalSystemAppId;
+  return app_id != crostini::kCrostiniTerminalSystemAppId ||
+         base::FeatureList::IsEnabled(chromeos::features::kTerminalSSH);
 #else
   return true;
 #endif
@@ -623,6 +626,16 @@ content::WebContents* WebAppPublisherHelper::Launch(
     return nullptr;
   }
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  if (app_id == crostini::kCrostiniTerminalSystemAppId) {
+    DCHECK(base::FeatureList::IsEnabled(chromeos::features::kTerminalSSH));
+    crostini::LaunchTerminal(profile_, window_info
+                                           ? window_info->display_id
+                                           : display::kInvalidDisplayId);
+    return nullptr;
+  }
+#endif
+
   const WebApp* web_app = GetWebApp(app_id);
   if (!web_app) {
     return nullptr;
@@ -721,6 +734,21 @@ void WebAppPublisherHelper::LaunchAppWithIntent(
     apps::mojom::WindowInfoPtr window_info,
     apps::mojom::Publisher::LaunchAppWithIntentCallback callback) {
   CHECK(intent);
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // TODO(crbug.com/1028898): Implement LaunchTerminalWithIntent() and call it.
+  // It must include support for sharing any open-with directory before terminal
+  // starts.
+  if (app_id == crostini::kCrostiniTerminalSystemAppId) {
+    DCHECK(base::FeatureList::IsEnabled(chromeos::features::kTerminalSSH));
+    crostini::LaunchTerminal(profile_, window_info
+                                           ? window_info->display_id
+                                           : display::kInvalidDisplayId);
+    std::move(callback).Run(true);
+    return;
+  }
+#endif
+
   LaunchAppWithIntentImpl(
       app_id, event_flags, std::move(intent), launch_source,
       window_info ? window_info->display_id : display::kInvalidDisplayId,

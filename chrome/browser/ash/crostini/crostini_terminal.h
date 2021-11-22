@@ -127,7 +127,8 @@ void AddTerminalMenuItems(Profile* profile,
 
 // Add terminal shortcut items in menu.
 void AddTerminalMenuShortcuts(Profile* profile,
-                              apps::mojom::MenuItemsPtr* menu_items);
+                              apps::mojom::MenuItemsPtr* menu_items,
+                              int next_command_id);
 
 // Called when user clicks on terminal menu items. Returns true if |shortcut_id|
 // is recognized and handled.

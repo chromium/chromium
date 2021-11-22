@@ -6,8 +6,10 @@
 
 #include <utility>
 
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/app_list/app_list_config.h"
 #include "base/bind.h"
+#include "base/feature_list.h"
 #include "base/files/file_util.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_number_conversions.h"
@@ -562,12 +564,12 @@ GuestOsRegistryService::GetAllRegisteredApps() const {
       prefs_->GetDictionary(guest_os::prefs::kGuestOsRegistry);
   std::map<std::string, GuestOsRegistryService::Registration> result;
   // Register Terminal by merging optional prefs with app values.
-  // TODO(crbug.com/1028898): Register Terminal as a System App rather than a
-  // crostini app.
-  result.emplace(crostini::kCrostiniTerminalSystemAppId,
-                 GetTerminalRegistration(
-                     apps->FindKeyOfType(crostini::kCrostiniTerminalSystemAppId,
-                                         base::Value::Type::DICTIONARY)));
+  if (!base::FeatureList::IsEnabled(chromeos::features::kTerminalSSH)) {
+    result.emplace(crostini::kCrostiniTerminalSystemAppId,
+                   GetTerminalRegistration(apps->FindKeyOfType(
+                       crostini::kCrostiniTerminalSystemAppId,
+                       base::Value::Type::DICTIONARY)));
+  }
   for (const auto item : apps->DictItems()) {
     if (item.first != crostini::kCrostiniTerminalSystemAppId) {
       result.emplace(item.first, Registration(item.first, item.second.Clone()));

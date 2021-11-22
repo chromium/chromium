@@ -314,7 +314,8 @@ void AddTerminalMenuItems(Profile* profile,
 }
 
 void AddTerminalMenuShortcuts(Profile* profile,
-                              apps::mojom::MenuItemsPtr* menu_items) {
+                              apps::mojom::MenuItemsPtr* menu_items,
+                              int next_command_id) {
   if (!crostini::CrostiniFeatures::Get()->IsMultiContainerAllowed(profile)) {
     return;
   }
@@ -322,13 +323,14 @@ void AddTerminalMenuShortcuts(Profile* profile,
   const base::Value* container_list =
       profile->GetPrefs()->GetList(crostini::prefs::kCrostiniContainers);
   if (container_list && container_list->GetList().size() > 1) {
-    int command_id = ash::LAUNCH_APP_SHORTCUT_FIRST;
+    apps::AddSeparator(ui::DOUBLE_SEPARATOR, menu_items);
+
     for (const auto& dict : container_list->GetList()) {
       crostini::ContainerId id(dict);
       if (!id.vm_name.empty() && !id.container_name.empty()) {
         std::string shortcut_id = ShortcutIdFromContainerId(id);
         std::string label = base::StrCat({id.vm_name, ":", id.container_name});
-        apps::AddShortcutCommandItem(command_id++, shortcut_id, label,
+        apps::AddShortcutCommandItem(next_command_id++, shortcut_id, label,
                                      gfx::ImageSkia(), menu_items);
       }
     }

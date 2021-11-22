@@ -22,6 +22,7 @@ class TerminalSystemAppDelegate : public web_app::SystemWebAppDelegate {
   // web_app::SystemWebAppDelegate overrides:
   std::unique_ptr<WebApplicationInfo> GetWebAppInfo() const override;
   bool ShouldReuseExistingWindow() const override;
+  bool ShouldShowNewWindowMenuOption() const override;
   bool ShouldHaveTabStrip() const override;
   bool HasTitlebarTerminalSelectNewTabButton() const override;
   gfx::Rect GetDefaultBounds(Browser* browser) const override;
