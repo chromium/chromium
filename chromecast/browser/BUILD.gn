@@ -248,6 +248,7 @@ cast_source_set("browser_base") {
     "//components/cast/message_port:message_port_cast",
     "//components/cdm/browser",
     "//components/download/public/common:public",
+    "//components/heap_profiling/multi_process",
     "//components/media_control/browser",
     "//components/memory_pressure",
     "//components/metrics",
@@ -267,6 +268,9 @@ cast_source_set("browser_base") {
     "//components/proxy_config",
     "//components/safe_search_api",
     "//components/safe_search_api:safe_search_client",
+    "//components/services/heap_profiling",
+    "//components/services/heap_profiling/public/cpp",
+    "//components/services/heap_profiling/public/mojom",
     "//components/viz/service",
     "//content/public/browser",
     "//content/public/common",
@@ -363,15 +367,6 @@ cast_source_set("browser_base") {
     deps += [
       "//components/crash/content/browser",
       "//components/crash/core/app",
-    ]
-
-    # TODO(crbug.com/933142): Fuchsia needs its own methods to bridge with heap
-    # profiling service
-    deps += [
-      "//components/heap_profiling/multi_process",
-      "//components/services/heap_profiling",
-      "//components/services/heap_profiling/public/cpp",
-      "//components/services/heap_profiling/public/mojom",
     ]
   }
 

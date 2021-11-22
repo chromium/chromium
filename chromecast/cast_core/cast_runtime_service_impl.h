@@ -11,13 +11,9 @@
 #include "chromecast/cast_core/cast_runtime_service.h"
 #include "chromecast/cast_core/runtime_application_dispatcher.h"
 
-namespace content {
-class BrowserContext;
-}  // namespace content
-
 namespace chromecast {
 
-class CastWindowManager;
+class CastWebService;
 
 class CastEventBuilder;
 
@@ -28,8 +24,7 @@ class CastRuntimeServiceImpl
     : public CastRuntimeService,
       public CastRuntimeMetricsRecorder::EventBuilderFactory {
  public:
-  CastRuntimeServiceImpl(content::BrowserContext* browser_context,
-                         CastWindowManager* window_manager,
+  CastRuntimeServiceImpl(CastWebService* web_service,
                          NetworkContextGetter network_context_getter);
   ~CastRuntimeServiceImpl() override;
 
@@ -44,6 +39,7 @@ class CastRuntimeServiceImpl
   std::unique_ptr<CastEventBuilder> CreateEventBuilder() override;
 
  private:
+  CastWebService* const web_service_;
   RuntimeApplicationDispatcher app_dispatcher_;
 };
 

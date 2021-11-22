@@ -26,7 +26,8 @@ class CastRuntimeContentBrowserClient : public shell::CastContentBrowserClient {
       CastSystemMemoryPressureEvaluatorAdjuster* memory_pressure_adjuster,
       PrefService* pref_service,
       media::VideoPlaneController* video_plane_controller,
-      CastWindowManager* window_manager) final;
+      CastWindowManager* window_manager,
+      CastWebService* web_service) final;
   void OverrideWebkitPrefs(content::WebContents* web_contents,
                            blink::web_pref::WebPreferences* prefs) override;
   std::unique_ptr<::media::CdmFactory> CreateCdmFactory(

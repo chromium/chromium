@@ -26,7 +26,8 @@ std::unique_ptr<CastService> CastRuntimeContentBrowserClient::CreateCastService(
     CastSystemMemoryPressureEvaluatorAdjuster* memory_pressure_adjuster,
     PrefService* pref_service,
     media::VideoPlaneController* video_plane_controller,
-    CastWindowManager* window_manager) {
+    CastWindowManager* window_manager,
+    CastWebService* web_service) {
   auto network_context_getter = base::BindRepeating(
       [](CastRuntimeContentBrowserClient* client)
           -> network::mojom::NetworkContext* {
@@ -34,9 +35,8 @@ std::unique_ptr<CastService> CastRuntimeContentBrowserClient::CreateCastService(
       },
       this);
   return CastRuntimeService::Create(
-      GetMediaTaskRunner(), browser_context, window_manager,
-      media_pipeline_backend_manager(), std::move(network_context_getter),
-      pref_service, video_plane_controller);
+      GetMediaTaskRunner(), web_service, media_pipeline_backend_manager(),
+      std::move(network_context_getter), pref_service, video_plane_controller);
 }
 
 void CastRuntimeContentBrowserClient::OverrideWebkitPrefs(

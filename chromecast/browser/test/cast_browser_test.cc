@@ -13,7 +13,6 @@
 #include "chromecast/browser/cast_browser_process.h"
 #include "chromecast/browser/cast_content_window.h"
 #include "chromecast/browser/cast_web_service.h"
-#include "chromecast/browser/cast_web_view_factory.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
@@ -45,11 +44,9 @@ void CastBrowserTest::PreRunTestOnMainThread() {
   base::RunLoop().RunUntilIdle();
 
   metrics::CastMetricsHelper::GetInstance()->SetDummySessionIdForTesting();
-  web_view_factory_ = std::make_unique<CastWebViewFactory>(
-      CastBrowserProcess::GetInstance()->browser_context());
   web_service_ = std::make_unique<CastWebService>(
       CastBrowserProcess::GetInstance()->browser_context(),
-      web_view_factory_.get(), nullptr /* window_manager */);
+      nullptr /* window_manager */);
 }
 
 void CastBrowserTest::PostRunTestOnMainThread() {

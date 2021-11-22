@@ -36,6 +36,7 @@ class ViewsDelegate;
 
 namespace chromecast {
 class CastSystemMemoryPressureEvaluatorAdjuster;
+class CastWebService;
 class ServiceConnector;
 class ServiceManagerContext;
 class WaylandServerController;
@@ -50,6 +51,15 @@ class CastUIDevTools;
 #else
 class CastWindowManager;
 #endif  // #if defined(USE_AURA)
+
+namespace external_mojo {
+class BrokerService;
+}  // namespace external_mojo
+
+namespace external_service_support {
+class ExternalConnector;
+class ExternalService;
+}  // namespace external_service_support
 
 namespace media {
 class MediaCapsImpl;
@@ -86,17 +96,20 @@ class CastBrowserMainParts : public content::BrowserMainParts {
   media::MediaCapsImpl* media_caps();
   metrics::MetricsHelperImpl* metrics_helper();
   content::BrowserContext* browser_context();
+  external_mojo::BrokerService* broker_service();
+  external_service_support::ExternalConnector* connector();
+  external_service_support::ExternalConnector* media_connector();
 
   // content::BrowserMainParts implementation:
   void PreCreateMainMessageLoop() override;
   void PostCreateMainMessageLoop() override;
   void ToolkitInitialized() override;
   int PreCreateThreads() override;
+  void PostCreateThreads() override;
   int PreMainMessageLoopRun() override;
   void WillRunMainMessageLoop(
       std::unique_ptr<base::RunLoop>& run_loop) override;
   void PostMainMessageLoopRun() override;
-  void PostCreateThreads() override;
   void PostDestroyThreads() override;
 
  private:
@@ -110,6 +123,14 @@ class CastBrowserMainParts : public content::BrowserMainParts {
   std::unique_ptr<metrics::MetricsHelperImpl> metrics_helper_;
   std::unique_ptr<ServiceConnector> service_connector_;
 
+  // Created in CastBrowserMainParts::PostCreateThreads():
+  std::unique_ptr<external_mojo::BrokerService> broker_service_;
+  std::unique_ptr<external_service_support::ExternalService> browser_service_;
+  // ExternalConnectors should be destroyed before registered services.
+  std::unique_ptr<external_service_support::ExternalConnector> connector_;
+  // ExternalConnector for running on the media task runner.
+  std::unique_ptr<external_service_support::ExternalConnector> media_connector_;
+
 #if defined(USE_AURA)
   std::unique_ptr<views::ViewsDelegate> views_delegate_;
   std::unique_ptr<CastScreen> cast_screen_;
@@ -119,6 +140,7 @@ class CastBrowserMainParts : public content::BrowserMainParts {
 #else
   std::unique_ptr<CastWindowManager> window_manager_;
 #endif  //  defined(USE_AURA)
+  std::unique_ptr<CastWebService> web_service_;
 
 #if defined(OS_ANDROID)
   void StartPeriodicCrashReportUpload();

@@ -12,8 +12,7 @@ namespace chromecast {
 // static
 std::unique_ptr<CastRuntimeService> CastRuntimeService::Create(
     scoped_refptr<base::SingleThreadTaskRunner> task_runner,
-    content::BrowserContext* browser_context,
-    CastWindowManager* window_manager,
+    CastWebService* web_service,
     media::MediaPipelineBackendManager* media_pipeline_backend_manager,
     CastRuntimeService::NetworkContextGetter network_context_getter,
     PrefService* pref_service,

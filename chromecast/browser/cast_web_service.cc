@@ -42,27 +42,35 @@ uint32_t remove_data_mask =
 }  // namespace
 
 CastWebService::CastWebService(content::BrowserContext* browser_context,
-                               CastWebViewFactory* web_view_factory,
                                CastWindowManager* window_manager)
     : browser_context_(browser_context),
-      web_view_factory_(web_view_factory),
       window_manager_(window_manager),
+      default_web_view_factory_(browser_context),
+      override_web_view_factory_(nullptr),
       overlay_renderer_cache_(
           std::make_unique<LRURendererCache>(browser_context_, 1)),
       task_runner_(base::SequencedTaskRunnerHandle::Get()),
       weak_factory_(this) {
   DCHECK(browser_context_);
-  DCHECK(web_view_factory_);
   DCHECK(task_runner_);
   weak_ptr_ = weak_factory_.GetWeakPtr();
 }
 
 CastWebService::~CastWebService() = default;
 
+void CastWebService::OverrideWebViewFactory(
+    CastWebViewFactory* web_view_factory) {
+  override_web_view_factory_ = web_view_factory;
+}
+
 CastWebView::Scoped CastWebService::CreateWebViewInternal(
     mojom::CastWebViewParamsPtr params) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  auto web_view = web_view_factory_->CreateWebView(std::move(params), this);
+  CastWebViewFactory* web_view_factory = override_web_view_factory_;
+  if (!web_view_factory) {
+    web_view_factory = &default_web_view_factory_;
+  }
+  auto web_view = web_view_factory->CreateWebView(std::move(params), this);
   CastWebView::Scoped scoped(web_view.release(), [this](CastWebView* web_view) {
     OwnerDestroyed(web_view);
   });
@@ -75,7 +83,11 @@ void CastWebService::CreateWebView(
     mojo::PendingReceiver<mojom::CastWebContents> web_contents,
     mojo::PendingReceiver<mojom::CastContentWindow> window) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  auto web_view = web_view_factory_->CreateWebView(std::move(params), this);
+  CastWebViewFactory* web_view_factory = override_web_view_factory_;
+  if (!web_view_factory) {
+    web_view_factory = &default_web_view_factory_;
+  }
+  auto web_view = web_view_factory->CreateWebView(std::move(params), this);
   web_view->cast_web_contents()->SetDisconnectCallback(base::BindOnce(
       &CastWebService::OwnerDestroyed, base::Unretained(this), web_view.get()));
   web_view->BindReceivers(std::move(web_contents), std::move(window));

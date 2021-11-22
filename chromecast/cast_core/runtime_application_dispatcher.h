@@ -19,15 +19,9 @@
 #include "third_party/cast_core/public/src/proto/metrics/metrics_recorder.grpc.pb.h"
 #include "third_party/grpc/src/include/grpcpp/server.h"
 
-namespace content {
-class BrowserContext;
-}  // namespace content
-
 namespace chromecast {
 
 class CastWebService;
-class CastWebViewFactory;
-class CastWindowManager;
 class RuntimeApplication;
 
 class RuntimeApplicationDispatcher final : public GrpcServer,
@@ -35,8 +29,7 @@ class RuntimeApplicationDispatcher final : public GrpcServer,
                                            public MetricsRecorderGrpc {
  public:
   RuntimeApplicationDispatcher(
-      content::BrowserContext* browser_context,
-      CastWindowManager* window_manager,
+      CastWebService* web_service,
       CastRuntimeMetricsRecorder::EventBuilderFactory* event_builder_factory,
       cast_streaming::NetworkContextGetter network_context_getter);
   ~RuntimeApplicationDispatcher() override;
@@ -68,7 +61,6 @@ class RuntimeApplicationDispatcher final : public GrpcServer,
       GrpcMethod* callback) override;
 
   const std::string& GetCastMediaServiceGrpcEndpoint() const;
-  CastWebService* GetCastWebService() const { return web_service_.get(); }
 
  private:
   // This class handles asynchronously calling MetricsRecorderService->Record
@@ -102,8 +94,7 @@ class RuntimeApplicationDispatcher final : public GrpcServer,
   // MetricsRecorderGrpc implementation:
   void Record(const cast::metrics::RecordRequest& request) override;
 
-  const std::unique_ptr<CastWebViewFactory> web_view_factory_;
-  const std::unique_ptr<CastWebService> web_service_;
+  CastWebService* const web_service_;
 
   cast_streaming::NetworkContextGetter network_context_getter_;
 

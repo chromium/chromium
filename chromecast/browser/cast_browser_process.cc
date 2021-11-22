@@ -11,6 +11,7 @@
 #include "chromecast/browser/cast_browser_context.h"
 #include "chromecast/browser/cast_content_browser_client.h"
 #include "chromecast/browser/cast_network_contexts.h"
+#include "chromecast/browser/cast_web_service.h"
 #include "chromecast/browser/devtools/remote_debugging_server.h"
 #include "chromecast/browser/metrics/cast_browser_metrics.h"
 #include "chromecast/metrics/cast_metrics_service_client.h"
@@ -41,13 +42,7 @@ CastBrowserProcess* CastBrowserProcess::GetInstance() {
   return g_instance;
 }
 
-CastBrowserProcess::CastBrowserProcess()
-    :
-#if defined(USE_AURA)
-      cast_screen_(nullptr),
-#endif
-      web_view_factory_(nullptr),
-      cast_content_browser_client_(nullptr) {
+CastBrowserProcess::CastBrowserProcess() {
   DCHECK(!g_instance);
   g_instance = this;
 }
@@ -136,12 +131,6 @@ void CastBrowserProcess::SetConnectivityChecker(
     scoped_refptr<ConnectivityChecker> connectivity_checker) {
   DCHECK(!connectivity_checker_);
   connectivity_checker_.swap(connectivity_checker);
-}
-
-void CastBrowserProcess::SetWebViewFactory(
-    CastWebViewFactory* web_view_factory) {
-  DCHECK(!web_view_factory_);
-  web_view_factory_ = web_view_factory;
 }
 
 #if BUILDFLAG(ENABLE_CHROMECAST_EXTENSIONS)

@@ -16,6 +16,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "chromecast/browser/cast_web_view.h"
+#include "chromecast/browser/cast_web_view_factory.h"
 #include "chromecast/browser/mojom/cast_web_service.mojom.h"
 #include "chromecast/common/identification_settings_manager.h"
 #include "chromecast/common/mojom/identification_settings.mojom.h"
@@ -32,7 +33,6 @@ class StoragePartition;
 
 namespace chromecast {
 
-class CastWebViewFactory;
 class CastWindowManager;
 class LRURendererCache;
 
@@ -45,11 +45,14 @@ class CastWebService : public mojom::CastWebService,
                        public mojom::BrowserIdentificationSettingsManager {
  public:
   CastWebService(content::BrowserContext* browser_context,
-                 CastWebViewFactory* web_view_factory,
                  CastWindowManager* window_manager);
   CastWebService(const CastWebService&) = delete;
   CastWebService& operator=(const CastWebService&) = delete;
   ~CastWebService() override;
+
+  // Allow a client to use its own CastWebViewFactory implementation instead of
+  // |default_web_view_factory_| below.
+  void OverrideWebViewFactory(CastWebViewFactory* web_view_factory);
 
   // These are temporary methods to allow in-process embedders to directly own
   // the CastWebView. This will be removed once the lifetime of CastWebview is
@@ -110,8 +113,11 @@ class CastWebService : public mojom::CastWebService,
       const std::string& session_id);
 
   content::BrowserContext* const browser_context_;
-  CastWebViewFactory* const web_view_factory_;
+  // This is used on Aura platforms.
   CastWindowManager* const window_manager_;
+  CastWebViewFactory default_web_view_factory_;
+
+  CastWebViewFactory* override_web_view_factory_ = nullptr;
 
   // These CastWebViews are owned by CastWebService. This happens in two
   // scenarios:
