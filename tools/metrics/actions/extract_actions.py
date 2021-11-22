@@ -97,21 +97,13 @@ QUOTED_STRING_RE = re.compile(r"""('[^']+'|"[^"]+")$""")
 # generate the known actions to AddComputedActions() below.
 KNOWN_COMPUTED_USERS = (
     'back_forward_menu_model.cc',
-    'options_page_view.cc',
-    'render_view_host.cc',  # called using webkit identifiers
     'user_metrics.cc',  # method definition
-    'new_tab_ui.cc',  # most visited clicks 1-9
-    'extension_metrics_module.cc',  # extensions hook for user metrics
     'external_metrics.cc',  # see AddChromeOSActions()
-    'core_options_handler.cc',  # see AddWebUIActions()
-    'browser_render_process_host.cc',  # see AddRendererActions()
     'render_thread_impl.cc',  # impl of RenderThread::RecordComputedAction()
     'render_process_host_impl.cc',  # browser side impl for
     # RenderThread::RecordComputedAction()
     'mock_render_thread.cc',  # mock of RenderThread::RecordComputedAction()
-    'ppb_pdf_impl.cc',  # see AddClosedSourceActions()
     'pepper_pdf_host.cc',  # see AddClosedSourceActions()
-    'record_user_action.cc',  # see RecordUserAction.java
     'blink_platform_impl.cc',  # see WebKit/public/platform/Platform.h
     'devtools_ui_bindings.cc',  # see AddDevToolsActions()
     'sharing_hub_bubble_controller.cc',  # share targets
@@ -149,10 +141,6 @@ def AddComputedActions(actions):
     for i in range(1, 20):
       actions.add(dir + 'HistoryClick' + str(i))
       actions.add(dir + 'ChapterClick' + str(i))
-
-  # Actions for new_tab_ui.cc.
-  for i in range(1, 10):
-    actions.add('MostVisited%d' % i)
 
   # Actions for sharing_hub_bubble_controller.cc and
   # sharing_hub_sub_menu_model.cc.
