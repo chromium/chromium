@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ui/base/cursor/win/win_cursor_factory.h"
+#include "ui/base/win/win_cursor_factory.h"
 
 #include <windows.h>
 

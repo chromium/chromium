@@ -235,6 +235,10 @@ component("base") {
       "win/shell.h",
       "win/touch_input.cc",
       "win/touch_input.h",
+      "win/win_cursor.cc",
+      "win/win_cursor.h",
+      "win/win_cursor_factory.cc",
+      "win/win_cursor_factory.h",
       "win/window_event_target.cc",
       "win/window_event_target.h",
     ]
@@ -487,6 +491,14 @@ component("base") {
       "//ui/events",
       "//ui/events/devices",
     ]
+  }
+
+  if (is_win) {
+    public_deps += [
+      "//ui/base/cursor:cursor_base",
+      "//ui/base/cursor/mojom:cursor_type_shared",
+    ]
+    deps += [ "//ui/resources:ui_unscaled_resources_grd" ]
   }
 
   if (toolkit_views) {

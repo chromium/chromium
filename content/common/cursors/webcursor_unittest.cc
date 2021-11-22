@@ -17,7 +17,7 @@
 #if defined(OS_WIN)
 #include <windows.h>
 
-#include "ui/base/cursor/win/win_cursor.h"
+#include "ui/base/win/win_cursor.h"
 #endif
 
 namespace content {

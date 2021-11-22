@@ -66,16 +66,6 @@ if (use_aura) {
       "//ui/gfx/geometry",
       "//ui/resources:ui_resources_grd",
     ]
-
-    if (is_win) {
-      sources += [
-        "win/win_cursor.cc",
-        "win/win_cursor.h",
-        "win/win_cursor_factory.cc",
-        "win/win_cursor_factory.h",
-      ]
-      deps += [ "//ui/resources:ui_unscaled_resources_grd" ]
-    }
   }
 }
 
@@ -107,6 +97,10 @@ source_set("unittests") {
       "//skia",
       "//ui/gfx/geometry",
     ]
+
+    if (is_win) {
+      deps += [ "//ui/base" ]
+    }
 
     if (use_ozone) {
       deps += [ "//ui/ozone/common" ]

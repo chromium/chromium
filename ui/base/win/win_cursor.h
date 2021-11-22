@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef UI_BASE_CURSOR_WIN_WIN_CURSOR_H_
-#define UI_BASE_CURSOR_WIN_WIN_CURSOR_H_
+#ifndef UI_BASE_WIN_WIN_CURSOR_H_
+#define UI_BASE_WIN_WIN_CURSOR_H_
 
 #include "base/component_export.h"
 #include "base/win/windows_types.h"
@@ -16,7 +16,7 @@ namespace ui {
 
 // Ref counted class to hold a Windows cursor, i.e. an HCURSOR. Clears the
 // resources on destruction.
-class COMPONENT_EXPORT(UI_BASE_CURSOR) WinCursor : public PlatformCursor {
+class COMPONENT_EXPORT(UI_BASE) WinCursor : public PlatformCursor {
  public:
   static scoped_refptr<WinCursor> FromPlatformCursor(
       scoped_refptr<PlatformCursor> platform_cursor);
@@ -38,4 +38,4 @@ class COMPONENT_EXPORT(UI_BASE_CURSOR) WinCursor : public PlatformCursor {
 
 }  // namespace ui
 
-#endif  // UI_BASE_CURSOR_WIN_WIN_CURSOR_H_
+#endif  // UI_BASE_WIN_WIN_CURSOR_H_

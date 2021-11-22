@@ -23,7 +23,7 @@
 #include "ui/events/platform/platform_event_source.h"
 
 #if defined(OS_WIN)
-#include "ui/base/cursor/win/win_cursor_factory.h"
+#include "ui/base/win/win_cursor_factory.h"
 #endif
 
 #if defined(USE_OZONE)

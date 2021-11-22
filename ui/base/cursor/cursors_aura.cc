@@ -19,7 +19,7 @@
 
 #if defined(OS_WIN)
 #include "ui/base/cursor/cursor_loader.h"
-#include "ui/base/cursor/win/win_cursor.h"
+#include "ui/base/win/win_cursor.h"
 #include "ui/gfx/icon_util.h"
 #endif
 

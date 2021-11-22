@@ -12,8 +12,8 @@
 #include "ui/base/cursor/platform_cursor.h"
 
 #if defined(OS_WIN)
-#include "ui/base/cursor/win/win_cursor.h"
-#include "ui/base/cursor/win/win_cursor_factory.h"
+#include "ui/base/win/win_cursor.h"
+#include "ui/base/win/win_cursor_factory.h"
 #endif
 
 #if defined(USE_OZONE)

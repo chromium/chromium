@@ -2643,7 +2643,7 @@ test("content_unittests") {
       "//third_party/blink/public/common",
       "//third_party/blink/public/common:font_unique_name_table_proto",
       "//third_party/iaccessible2",
-      "//ui/base/cursor",
+      "//ui/base",
     ]
     libs = [
       "dwrite.lib",

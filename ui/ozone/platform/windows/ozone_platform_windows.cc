@@ -10,12 +10,12 @@
 #include "base/files/file_path.h"
 #include "base/memory/ptr_util.h"
 #include "ui/base/cursor/cursor_factory.h"
+#include "ui/base/win/win_cursor_factory.h"
 #include "ui/display/fake/fake_display_delegate.h"
 #include "ui/events/ozone/layout/keyboard_layout_engine_manager.h"
 #include "ui/events/ozone/layout/stub/stub_keyboard_layout_engine.h"
 #include "ui/events/platform/platform_event_source.h"
 #include "ui/gfx/native_widget_types.h"
-#include "ui/ozone/common/bitmap_cursor_factory.h"
 #include "ui/ozone/common/stub_overlay_manager.h"
 #include "ui/ozone/platform/windows/windows_surface_factory.h"
 #include "ui/ozone/platform/windows/windows_window.h"
@@ -98,7 +98,7 @@ class OzonePlatformWindows : public OzonePlatform {
 
     overlay_manager_ = std::make_unique<StubOverlayManager>();
     input_controller_ = CreateStubInputController();
-    cursor_factory_ = std::make_unique<BitmapCursorFactory>();
+    cursor_factory_ = std::make_unique<WinCursorFactory>();
     gpu_platform_support_host_.reset(CreateStubGpuPlatformSupportHost());
   }
 

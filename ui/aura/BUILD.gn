@@ -156,7 +156,6 @@ component("aura") {
 
     deps += [
       "//ipc",
-      "//ui/base/cursor",
       "//ui/platform_window/win",
     ]
   }
