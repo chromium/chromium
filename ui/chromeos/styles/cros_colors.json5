@@ -71,28 +71,28 @@
     },
     bg_color_elevation_1: {
       light: "$white",
-      dark: "#2a2a2d", /* google_grey_900 + white 4% */
+      dark: "blend(rgba($white_rgb, 0.04), $google_grey_900)",
     },
     bg_color_elevation_2: {
       light: "$white",
-      dark: "#2e2e31", /* google_grey_900 + white 6% */
+      dark: "blend(rgba($white_rgb, 0.06), $google_grey_900)",
       generate_inverted: true,
     },
     bg_color_elevation_3: {
       light: "$white",
-      dark: "#333336", /* google_grey_900 + white 8% */
+      dark: "blend(rgba($white_rgb, 0.08), $google_grey_900)",
     },
     bg_color_elevation_4: {
       light: "$white",
-      dark: "#37373a", /* google_grey_900 + white 10% */
+      dark: "blend(rgba($white_rgb, 0.1), $google_grey_900)",
     },
     bg_color_elevation_5: {
       light: "$white",
-      dark: "#3c3c3e", /* google_grey_900 + white 12% */
+      dark: "blend(rgba($white_rgb, 0.12), $google_grey_900)",
     },
     bg_color_dropped_elevation_1: {
       light: "$google_grey_50",
-      dark: "#1a1a1d", /* google_grey_900 + black 20% */
+      dark: "blend(rgba($black_rgb, 0.2), $google_grey_900)",
     },
     bg_color_dropped_elevation_2: {
       light: "$google_grey_200",
