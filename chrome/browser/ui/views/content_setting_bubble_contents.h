@@ -94,8 +94,7 @@ class ContentSettingBubbleContents : public content::WebContentsObserver,
   void OnPerformAction(views::Combobox* combobox);
 
   // content::WebContentsObserver:
-  void DidFinishNavigation(
-      content::NavigationHandle* navigation_handle) override;
+  void PrimaryPageChanged(content::Page& page) override;
   void OnVisibilityChanged(content::Visibility visibility) override;
   void WebContentsDestroyed() override;
 

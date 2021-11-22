@@ -91,6 +91,7 @@ class ContentSettingImageView : public IconLabelBubbleView,
   void AnimationEnded(const gfx::Animation* animation) override;
 
   ContentSettingImageModel::ImageType GetTypeForTesting() const;
+  views::Widget* GetBubbleWidgetForTesting() const;
 
   void reset_animation_for_testing() {
     IconLabelBubbleView::ResetSlideAnimation(true);

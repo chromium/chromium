@@ -225,6 +225,13 @@ ContentSettingImageModel::ImageType ContentSettingImageView::GetTypeForTesting()
   return content_setting_image_model_->image_type();
 }
 
+views::Widget* ContentSettingImageView::GetBubbleWidgetForTesting() const {
+  if (!bubble_view_)
+    return nullptr;
+
+  return bubble_view_->GetWidget();
+}
+
 void ContentSettingImageView::OnWidgetDestroying(views::Widget* widget) {
   if (!bubble_view_ || bubble_view_->GetWidget() != widget)
     return;
