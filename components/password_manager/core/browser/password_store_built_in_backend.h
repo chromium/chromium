@@ -113,7 +113,6 @@ class PasswordStoreBuiltInBackend : protected PasswordStoreSync,
   FieldInfoStore* GetFieldInfoStore() override;
   std::unique_ptr<syncer::ProxyModelTypeControllerDelegate>
   CreateSyncControllerDelegate() override;
-  void GetSyncStatus(base::OnceCallback<void(bool)> callback) override;
 
   // SmartBubbleStatsStore:
   void AddSiteStats(const InteractionsStats& stats) override;
@@ -189,8 +188,6 @@ class PasswordStoreBuiltInBackend : protected PasswordStoreSync,
   // StoreMetricsReporter. Namely, metrics related to inaccessible passwords,
   // and bubble statistics.
   void ReportMetrics();
-
-  bool IsSyncEnabled() const;
 
   // Used to trigger DCHECKs if tasks are posted after shut down.
   bool was_shutdown_{false};

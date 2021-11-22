@@ -20,8 +20,10 @@ class PasswordStoreProxyBackend : public PasswordStoreBackend {
  public:
   // `main_backend` and `shadow_backend` must not be null and must outlive this
   // object as long as Shutdown() is not called.
-  PasswordStoreProxyBackend(PasswordStoreBackend* main_backend,
-                            PasswordStoreBackend* shadow_backend);
+  PasswordStoreProxyBackend(
+      PasswordStoreBackend* main_backend,
+      PasswordStoreBackend* shadow_backend,
+      base::RepeatingCallback<bool()> is_syncing_passwords_callback);
   PasswordStoreProxyBackend(const PasswordStoreProxyBackend&) = delete;
   PasswordStoreProxyBackend(PasswordStoreProxyBackend&&) = delete;
   PasswordStoreProxyBackend& operator=(const PasswordStoreProxyBackend&) =
@@ -66,10 +68,9 @@ class PasswordStoreProxyBackend : public PasswordStoreBackend {
   std::unique_ptr<syncer::ProxyModelTypeControllerDelegate>
   CreateSyncControllerDelegate() override;
 
-  void GetSyncStatus(base::OnceCallback<void(bool)> callback) override;
-
   PasswordStoreBackend* const main_backend_;
   PasswordStoreBackend* const shadow_backend_;
+  base::RepeatingCallback<bool()> is_syncing_passwords_callback_;
   base::WeakPtrFactory<PasswordStoreProxyBackend> weak_ptr_factory_{this};
 };
 

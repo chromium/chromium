@@ -87,10 +87,6 @@ class MockPasswordStoreBackend : public PasswordStoreBackend {
               CreateSyncControllerDelegate,
               (),
               (override));
-  MOCK_METHOD(void,
-              GetSyncStatus,
-              (base::OnceCallback<void(bool)>),
-              (override));
 
  private:
   base::WeakPtrFactory<MockPasswordStoreBackend> weak_ptr_factory_{this};

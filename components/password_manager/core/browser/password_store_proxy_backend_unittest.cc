@@ -30,6 +30,7 @@ using ::testing::AtMost;
 using ::testing::Eq;
 using ::testing::Invoke;
 using ::testing::Pointer;
+using ::testing::Return;
 using ::testing::StrictMock;
 using ::testing::WithArg;
 using Type = PasswordStoreChange::Type;
@@ -67,7 +68,7 @@ class PasswordStoreProxyBackendTest : public testing::Test {
  protected:
   PasswordStoreProxyBackendTest() {
     proxy_backend_ = std::make_unique<PasswordStoreProxyBackend>(
-        &main_backend_, &shadow_backend_);
+        &main_backend_, &shadow_backend_, is_syncing_passwords_callback_.Get());
 
     feature_list_.InitAndEnableFeature(
         features::kUnifiedPasswordManagerShadowAndroid);
@@ -84,6 +85,9 @@ class PasswordStoreProxyBackendTest : public testing::Test {
   PasswordStoreBackend& proxy_backend() { return *proxy_backend_; }
   MockPasswordStoreBackend& main_backend() { return main_backend_; }
   MockPasswordStoreBackend& shadow_backend() { return shadow_backend_; }
+
+  base::MockCallback<base::RepeatingCallback<bool(void)>>
+      is_syncing_passwords_callback_;
 
  private:
   base::test::ScopedFeatureList feature_list_;
@@ -140,9 +144,7 @@ TEST_F(PasswordStoreProxyBackendTest, UseMainBackendToGetAllLoginsAsync) {
       .WillOnce(WithArg<0>(Invoke([](LoginsOrErrorReply reply) -> void {
         std::move(reply).Run(CreateTestLogins());
       })));
-  EXPECT_CALL(main_backend(), GetSyncStatus)
-      .WillOnce(WithArg<0>(
-          Invoke([](auto callback) { std::move(callback).Run(true); })));
+  EXPECT_CALL(is_syncing_passwords_callback_, Run).WillRepeatedly(Return(true));
   EXPECT_CALL(shadow_backend(), GetAllLoginsAsync)
       .WillOnce(WithArg<0>(Invoke([](LoginsOrErrorReply reply) -> void {
         std::move(reply).Run(CreateTestLogins());
@@ -296,9 +298,8 @@ TEST_F(PasswordStoreProxyBackendTest, NoShadowGetAllLoginsWhenSyncDisabled) {
       .WillOnce(WithArg<0>(Invoke([](LoginsOrErrorReply reply) -> void {
         std::move(reply).Run(CreateTestLogins());
       })));
-  EXPECT_CALL(main_backend(), GetSyncStatus)
-      .WillOnce(WithArg<0>(
-          Invoke([](auto callback) { std::move(callback).Run(false); })));
+  EXPECT_CALL(is_syncing_passwords_callback_, Run)
+      .WillRepeatedly(Return(false));
   EXPECT_CALL(shadow_backend(), GetAllLoginsAsync).Times(0);
   proxy_backend().GetAllLoginsAsync(mock_reply.Get());
 
@@ -368,9 +369,8 @@ TEST_P(PasswordStoreProxyBackendTestWithLoginsParams,
         .WillOnce(WithArg<0>(Invoke([&p](LoginsOrErrorReply reply) -> void {
           std::move(reply).Run(p.GetMainLogins());
         })));
-    EXPECT_CALL(main_backend(), GetSyncStatus)
-        .WillOnce(WithArg<0>(
-            Invoke([](auto callback) { std::move(callback).Run(true); })));
+    EXPECT_CALL(is_syncing_passwords_callback_, Run)
+        .WillRepeatedly(Return(true));
     EXPECT_CALL(shadow_backend(), GetAllLoginsAsync)
         .WillOnce(WithArg<0>(Invoke([&p](LoginsOrErrorReply reply) -> void {
           std::move(reply).Run(p.GetShadowLogins());

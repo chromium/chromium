@@ -128,10 +128,6 @@ class PasswordStoreBackend {
   virtual std::unique_ptr<syncer::ProxyModelTypeControllerDelegate>
   CreateSyncControllerDelegate() = 0;
 
-  // Tells whether backend is actively syncing data. Callback is called on a
-  // main sequence.
-  virtual void GetSyncStatus(base::OnceCallback<void(bool)> callback) = 0;
-
   // Factory function for creating the backend. The Local backend requires the
   // provided `login_db` for storage and Android backend for migration purposes.
   static std::unique_ptr<PasswordStoreBackend> Create(

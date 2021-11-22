@@ -257,10 +257,6 @@ TestPasswordStore::CreateSyncControllerDelegate() {
   return nullptr;
 }
 
-void TestPasswordStore::GetSyncStatus(base::OnceCallback<void(bool)> callback) {
-  NOTIMPLEMENTED();
-}
-
 bool TestPasswordStore::IsAccountStore() const {
   return is_account_store_.value();
 }

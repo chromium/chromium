@@ -439,17 +439,6 @@ PasswordStoreBuiltInBackend::CreateSyncControllerDelegate() {
           weak_ptr_factory_.GetWeakPtr()));
 }
 
-void PasswordStoreBuiltInBackend::GetSyncStatus(
-    base::OnceCallback<void(bool)> callback) {
-  DCHECK(!was_shutdown_);
-  DCHECK(main_task_runner_->RunsTasksInCurrentSequence());
-  background_task_runner_->PostTaskAndReplyWithResult(
-      FROM_HERE,
-      base::BindOnce(&PasswordStoreBuiltInBackend::IsSyncEnabled,
-                     base::Unretained(this)),  // Safe until `Shutdown()`.
-      std::move(callback));
-}
-
 void PasswordStoreBuiltInBackend::AddSiteStats(const InteractionsStats& stats) {
   DCHECK(!was_shutdown_);
   DCHECK(main_task_runner_->RunsTasksInCurrentSequence());
@@ -752,13 +741,6 @@ void PasswordStoreBuiltInBackend::RemoveFieldInfoByTimeInternal(
     base::Time remove_end) {
   if (login_db_)
     login_db_->field_info_table().RemoveRowsByTime(remove_begin, remove_end);
-}
-
-bool PasswordStoreBuiltInBackend::IsSyncEnabled() const {
-  DCHECK(background_task_runner_->RunsTasksInCurrentSequence());
-  if (!sync_bridge_ || !sync_bridge_->change_processor())
-    return false;
-  return sync_bridge_->change_processor()->IsTrackingMetadata();
 }
 
 }  // namespace password_manager

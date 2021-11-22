@@ -131,20 +131,16 @@ class GetAllLoginsAsyncMetricsRecorder
   absl::optional<LoginsResult> first_result_;
 };
 
-void InvokeCallbackIfShadowingAllowed(base::OnceClosure callback,
-                                      bool sync_enabled) {
-  if (sync_enabled && base::FeatureList::IsEnabled(
-                          features::kUnifiedPasswordManagerShadowAndroid)) {
-    std::move(callback).Run();
-  }
-}
-
 }  // namespace
 
 PasswordStoreProxyBackend::PasswordStoreProxyBackend(
     PasswordStoreBackend* main_backend,
-    PasswordStoreBackend* shadow_backend)
-    : main_backend_(main_backend), shadow_backend_(shadow_backend) {}
+    PasswordStoreBackend* shadow_backend,
+    base::RepeatingCallback<bool()> is_syncing_passwords_callback)
+    : main_backend_(main_backend),
+      shadow_backend_(shadow_backend),
+      is_syncing_passwords_callback_(std::move(is_syncing_passwords_callback)) {
+}
 
 PasswordStoreProxyBackend::~PasswordStoreProxyBackend() = default;
 
@@ -183,13 +179,12 @@ void PasswordStoreProxyBackend::GetAllLoginsAsync(LoginsOrErrorReply callback) {
                      handler)
           .Then(std::move(callback)));
 
-  auto sync_status_callback = base::BindOnce(
-      &PasswordStoreBackend::GetAllLoginsAsync, shadow_backend_->GetWeakPtr(),
-      base::BindOnce(&GetAllLoginsAsyncMetricsRecorder::RecordShadowResult,
-                     handler));
-
-  GetSyncStatus(base::BindOnce(&InvokeCallbackIfShadowingAllowed,
-                               std::move(sync_status_callback)));
+  if (is_syncing_passwords_callback_.Run() &&
+      base::FeatureList::IsEnabled(
+          features::kUnifiedPasswordManagerShadowAndroid)) {
+    shadow_backend_->GetAllLoginsAsync(base::BindOnce(
+        &GetAllLoginsAsyncMetricsRecorder::RecordShadowResult, handler));
+  }
 }
 
 void PasswordStoreProxyBackend::GetAutofillableLoginsAsync(
@@ -276,11 +271,6 @@ PasswordStoreProxyBackend::CreateSyncControllerDelegate() {
   }
 
   return main_backend_->CreateSyncControllerDelegate();
-}
-
-void PasswordStoreProxyBackend::GetSyncStatus(
-    base::OnceCallback<void(bool)> callback) {
-  return main_backend_->GetSyncStatus(std::move(callback));
 }
 
 }  // namespace password_manager

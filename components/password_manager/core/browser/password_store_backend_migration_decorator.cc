@@ -34,7 +34,8 @@ PasswordStoreBackendMigrationDecorator::PasswordStoreBackendMigrationDecorator(
   DCHECK(built_in_backend_);
   DCHECK(android_backend_);
   active_backend_ = std::make_unique<PasswordStoreProxyBackend>(
-      built_in_backend_.get(), android_backend_.get());
+      built_in_backend_.get(), android_backend_.get(),
+      is_syncing_passwords_callback_);
 }
 
 PasswordStoreBackendMigrationDecorator::
@@ -157,11 +158,6 @@ FieldInfoStore* PasswordStoreBackendMigrationDecorator::GetFieldInfoStore() {
 std::unique_ptr<syncer::ProxyModelTypeControllerDelegate>
 PasswordStoreBackendMigrationDecorator::CreateSyncControllerDelegate() {
   return active_backend_->CreateSyncControllerDelegate();
-}
-
-void PasswordStoreBackendMigrationDecorator::GetSyncStatus(
-    base::OnceCallback<void(bool)> callback) {
-  return active_backend_->GetSyncStatus(std::move(callback));
 }
 
 void PasswordStoreBackendMigrationDecorator::StartMigration() {
