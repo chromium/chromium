@@ -273,9 +273,6 @@ const char kAuraLegacyPowerButton[] = "aura-legacy-power-button";
 //    data connections.
 const char kCellularFirst[] = "cellular-first";
 
-// Indicates that CloudReady UI in OOBE should be shown.
-const char kCloudReadyOobe[] = "cloud-ready-oobe";
-
 // Default large wallpaper to use for kids accounts (as path to trusted,
 // non-user-writable JPEG file).
 const char kChildWallpaperLarge[] = "child-wallpaper-large";
@@ -723,6 +720,9 @@ const char kPublicAccountsSamlAclUrl[] = "public-accounts-saml-acl-url";
 // "/usr/share/chromeos-assets/regulatory_labels/".
 const char kRegulatoryLabelDir[] = "regulatory-label-dir";
 
+// Indicates that reven UI strings and features should be shown.
+const char kRevenBranding[] = "reven-branding";
+
 // The rlz ping delay (in seconds) that overwrites the default value.
 const char kRlzPingDelay[] = "rlz-ping-delay";
 
@@ -846,8 +846,8 @@ bool IsCellularFirstDevice() {
   return base::CommandLine::ForCurrentProcess()->HasSwitch(kCellularFirst);
 }
 
-bool IsCloudReadyOobe() {
-  return base::CommandLine::ForCurrentProcess()->HasSwitch(kCloudReadyOobe);
+bool IsRevenBranding() {
+  return base::CommandLine::ForCurrentProcess()->HasSwitch(kRevenBranding);
 }
 
 bool IsSigninFrameClientCertsEnabled() {

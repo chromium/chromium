@@ -87,7 +87,6 @@ COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kAshUiModeClamshell[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kAshUiModeTablet[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kAuraLegacyPowerButton[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kCellularFirst[];
-COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kCloudReadyOobe[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kChildWallpaperLarge[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kChildWallpaperSmall[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kCrosRegion[];
@@ -229,6 +228,7 @@ extern const char kOobeTriggerSyncTimeoutForTests[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kProfileRequiresPolicy[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kPublicAccountsSamlAclUrl[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kRegulatoryLabelDir[];
+COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kRevenBranding[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kRlzPingDelay[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kSafeMode[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
@@ -276,8 +276,8 @@ COMPONENT_EXPORT(ASH_CONSTANTS) bool IsAuthSessionCryptohomeEnabled();
 // Returns true if this is a Cellular First device.
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsCellularFirstDevice();
 
-// Returns true if this is CloudReady.
-COMPONENT_EXPORT(ASH_CONSTANTS) bool IsCloudReadyOobe();
+// Returns true if this is reven board.
+COMPONENT_EXPORT(ASH_CONSTANTS) bool IsRevenBranding();
 
 // Returns true if client certificate authentication for the sign-in frame on
 // the Chrome OS sign-in screen is enabled.
