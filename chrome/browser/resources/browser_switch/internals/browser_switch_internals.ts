@@ -129,7 +129,7 @@ function getAltBrowserName(): string {
   // TODO (crbug.com/1258133): if you change the AlternativeBrowserPath
   // policy, then loadTimeData can contain stale data. It won't update
   // until you refresh (despite the rest of the page auto-updating).
-  return loadTimeData.getString('altBrowserName');
+  return loadTimeData.getString('altBrowserName') || 'alternative browser';
 }
 
 /**
