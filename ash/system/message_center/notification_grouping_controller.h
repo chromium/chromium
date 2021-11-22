@@ -78,6 +78,10 @@ class NotificationGroupingController
   message_center::NotificationViewController*
   GetActiveNotificationViewController();
 
+  // Whether a grouped parent notification is being added to MessageCenter. Used
+  // to prevent an infinite loop.
+  bool adding_parent_grouped_notification_ = false;
+
   UnifiedSystemTray* const tray_;
 
   // A data structure that holds all grouped notifications along with their
