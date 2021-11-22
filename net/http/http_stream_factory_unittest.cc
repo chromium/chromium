@@ -3632,41 +3632,6 @@ TEST_F(ProcessAlternativeServicesTest, ProcessAltSvcQuicOldFormat) {
   }
 }
 
-// Regression test for https://crbug.com/1044694.
-TEST_F(ProcessAlternativeServicesTest, AltSvcQuicDoesNotSupportTLSHandshake) {
-  // In this example, QUIC v50 is only supported with TLS handshake.
-  // Note that this test only covers the Google-specific AltSvc format
-  // which is now deprecated.
-  quic_context_.params()->supported_versions = {
-      quic::ParsedQuicVersion::Q043(), quic::ParsedQuicVersion::T051()};
-  session_ =
-      std::make_unique<HttpNetworkSession>(session_params_, session_context_);
-  url::SchemeHostPort origin(url::kHttpsScheme, "example.com", 443);
-
-  NetworkIsolationKey network_isolation_key(
-      SchemefulSite(GURL("https://example.com")),
-      SchemefulSite(GURL("https://example.com")));
-
-  scoped_refptr<HttpResponseHeaders> headers(
-      base::MakeRefCounted<HttpResponseHeaders>(""));
-  headers->AddHeader("alt-svc", "quic=\":443\"; v=\"51,43\"");
-
-  session_->http_stream_factory()->ProcessAlternativeServices(
-      session_.get(), network_isolation_key, headers.get(), origin);
-
-  AlternativeServiceInfoVector alternatives =
-      http_server_properties_.GetAlternativeServiceInfos(origin,
-                                                         network_isolation_key);
-  ASSERT_EQ(1u, alternatives.size());
-  EXPECT_EQ(kProtoQUIC, alternatives[0].protocol());
-  EXPECT_EQ(HostPortPair("example.com", 443), alternatives[0].host_port_pair());
-  EXPECT_EQ(1u, alternatives[0].advertised_versions().size());
-  // Q043 and T051 are supported.  Q043 and Q050 are advertised in the Alt-Svc
-  // header.  Therefore only Q043 is parsed.
-  EXPECT_EQ(quic::ParsedQuicVersion::Q043(),
-            alternatives[0].advertised_versions()[0]);
-}
-
 TEST_F(ProcessAlternativeServicesTest, ProcessAltSvcQuicIetf) {
   quic_context_.params()->supported_versions = quic::AllSupportedVersions();
   session_ =
