@@ -391,10 +391,6 @@ const base::Feature kDisableIdleSocketsCloseOnMemoryPressure{
 const base::Feature kDisableOfficeEditingComponentApp{
     "DisableOfficeEditingComponentApp", base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Disables translation services of the Quick Answers V2.
-const base::Feature kDisableQuickAnswersV2Translation{
-    "DisableQuickAnswersV2Translation", base::FEATURE_DISABLED_BY_DEFAULT};
-
 // Enables indicators to hint where displays are connected.
 const base::Feature kDisplayAlignAssist{"DisplayAlignAssist",
                                         base::FEATURE_DISABLED_BY_DEFAULT};
@@ -979,10 +975,6 @@ const base::Feature kProjectorFeaturePod{"ProjectorFeaturePod",
 // We are deprecating the old marker tools in favor of the annotator tools.
 const base::Feature kProjectorAnnotator{"ProjectorAnnotator",
                                         base::FEATURE_ENABLED_BY_DEFAULT};
-
-// Controls whether to enable quick answers V2 settings sub-toggles.
-const base::Feature kQuickAnswersV2SettingsSubToggle{
-    "QuickAnswersV2SettingsSubToggle", base::FEATURE_DISABLED_BY_DEFAULT};
 
 // Enables or disables the Quick Settings Network revamp, which updates Network
 // Quick Settings UI and related infrastructure. See https://crbug.com/1169479.
@@ -1723,14 +1715,6 @@ bool IsProjectorFeaturePodEnabled() {
 bool IsProjectorAnnotatorEnabled() {
   return IsProjectorEnabled() &&
          base::FeatureList::IsEnabled(kProjectorAnnotator);
-}
-
-bool IsQuickAnswersV2TranslationDisabled() {
-  return base::FeatureList::IsEnabled(kDisableQuickAnswersV2Translation);
-}
-
-bool IsQuickAnswersV2SettingsSubToggleEnabled() {
-  return base::FeatureList::IsEnabled(kQuickAnswersV2SettingsSubToggle);
 }
 
 bool IsQuickSettingsNetworkRevampEnabled() {

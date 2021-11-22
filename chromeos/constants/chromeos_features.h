@@ -18,14 +18,26 @@ extern const base::Feature kLacrosTtsSupport;
 
 namespace features {
 
-COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
-extern const base::Feature kBluetoothAdvertisementMonitoring;
+// All features in alphabetical order. The features should be documented
+// alongside the definition of their values in the .cc file. If a feature is
+// being rolled out via Finch, add a comment in the .cc file.
 
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
+extern const base::Feature kBluetoothAdvertisementMonitoring;
+COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 extern const base::Feature kBluetoothPhoneFilter;
+COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
+extern const base::Feature kDisableQuickAnswersV2Translation;
+COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
+extern const base::Feature kQuickAnswersV2SettingsSubToggle;
+
+// Keep alphabetized.
 
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 bool IsBluetoothAdvertisementMonitoringEnabled();
+COMPONENT_EXPORT(CHROMEOS_CONSTANTS) bool IsQuickAnswersV2TranslationDisabled();
+COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
+bool IsQuickAnswersV2SettingsSubToggleEnabled();
 
 }  // namespace features
 }  // namespace chromeos

@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ui/ash/quick_answers/ui/quick_answers_view.h"
 
-#include "ash/constants/ash_features.h"
 #include "chrome/browser/ui/ash/quick_answers/quick_answers_controller_impl.h"
 #include "chrome/browser/ui/ash/quick_answers/quick_answers_ui_controller.h"
 #include "chrome/browser/ui/ash/quick_answers/test/chrome_quick_answers_test_base.h"

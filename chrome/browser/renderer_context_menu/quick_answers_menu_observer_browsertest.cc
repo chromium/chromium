@@ -4,7 +4,6 @@
 
 #include "chrome/browser/renderer_context_menu/quick_answers_menu_observer.h"
 
-#include "ash/constants/ash_features.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "chrome/browser/renderer_context_menu/mock_render_view_context_menu.h"

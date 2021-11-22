@@ -7,7 +7,6 @@
 #include <memory>
 #include <vector>
 
-#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/assistant/assistant_state.h"
 #include "base/no_destructor.h"
 #include "base/strings/string_util.h"
@@ -21,6 +20,7 @@
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/generated_resources.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/services/assistant/public/cpp/assistant_prefs.h"
 #include "chromeos/services/assistant/public/cpp/features.h"
 #include "components/language/core/browser/pref_names.h"
@@ -194,11 +194,12 @@ void AddQuickAnswersStrings(content::WebUIDataSource* html_source) {
 
   html_source->AddLocalizedStrings(kLocalizedStrings);
 
-  html_source->AddBoolean("quickAnswersTranslationDisabled",
-                          ash::features::IsQuickAnswersV2TranslationDisabled());
+  html_source->AddBoolean(
+      "quickAnswersTranslationDisabled",
+      chromeos::features::IsQuickAnswersV2TranslationDisabled());
   html_source->AddBoolean(
       "quickAnswersSubToggleEnabled",
-      ash::features::IsQuickAnswersV2SettingsSubToggleEnabled());
+      chromeos::features::IsQuickAnswersV2SettingsSubToggleEnabled());
 }
 
 void AddGoogleAssistantStrings(content::WebUIDataSource* html_source) {
@@ -442,7 +443,7 @@ void SearchSection::UpdateQuickAnswersSearchTags() {
   SearchTagRegistry::ScopedTagUpdater updater = registry()->StartUpdate();
   updater.RemoveSearchTags(GetQuickAnswersOnSearchConcepts());
 
-  if (ash::features::IsQuickAnswersV2SettingsSubToggleEnabled() &&
+  if (chromeos::features::IsQuickAnswersV2SettingsSubToggleEnabled() &&
       ash::QuickAnswersState::Get()->settings_enabled()) {
     updater.AddSearchTags(GetQuickAnswersOnSearchConcepts());
   }

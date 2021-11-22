@@ -23,8 +23,24 @@ const base::Feature kBluetoothAdvertisementMonitoring{
 const base::Feature kBluetoothPhoneFilter{"BluetoothPhoneFilter",
                                           base::FEATURE_ENABLED_BY_DEFAULT};
 
+// Disables translation services of the Quick Answers V2.
+const base::Feature kDisableQuickAnswersV2Translation{
+    "DisableQuickAnswersV2Translation", base::FEATURE_DISABLED_BY_DEFAULT};
+
+// Controls whether to enable quick answers V2 settings sub-toggles.
+const base::Feature kQuickAnswersV2SettingsSubToggle{
+    "QuickAnswersV2SettingsSubToggle", base::FEATURE_DISABLED_BY_DEFAULT};
+
 bool IsBluetoothAdvertisementMonitoringEnabled() {
   return base::FeatureList::IsEnabled(kBluetoothAdvertisementMonitoring);
+}
+
+bool IsQuickAnswersV2TranslationDisabled() {
+  return base::FeatureList::IsEnabled(kDisableQuickAnswersV2Translation);
+}
+
+bool IsQuickAnswersV2SettingsSubToggleEnabled() {
+  return base::FeatureList::IsEnabled(kQuickAnswersV2SettingsSubToggle);
 }
 
 }  // namespace features

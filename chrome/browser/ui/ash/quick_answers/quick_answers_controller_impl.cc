@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ui/ash/quick_answers/quick_answers_controller_impl.h"
 
-#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/new_window_delegate.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
