@@ -18,8 +18,6 @@ CHROME_NATIVE_MESSAGING_DIR = $(DESTDIR)/etc/opt/chrome/native-messaging-hosts
 FIREFOX_NATIVE_MESSAGING_DIR = $(DESTDIR)/usr/lib/mozilla/native-messaging-hosts
 SYSTEM_WIDE_DESKTOP_ENTRIES_DIR = $(DESTDIR)/usr/share/applications
 
-CORE_LIBNAME = $(BUILD_DIR)/libremoting_core.so
-CORE_DEBUGFILE = $(CORE_LIBNAME).debug
 ME2ME_PROGNAME = $(BUILD_DIR)/remoting_me2me_host
 ME2ME_DEBUGFILE = $(ME2ME_PROGNAME).debug
 START_PROGNAME = $(BUILD_DIR)/remoting_start_host
@@ -69,9 +67,6 @@ install:
 	install -m 0644 \
 	  "$(BUILD_DIR)/remoting/com.google.chrome.remote_assistance-firefox.json" \
 	  "$(FIREFOX_NATIVE_MESSAGING_DIR)/com.google.chrome.remote_assistance.json"
-
-	install "$(CORE_LIBNAME)" "$(INSTALL_DIR)/libremoting_core.so"
-	eu-strip -f "$(CORE_DEBUGFILE)" "$(INSTALL_DIR)/libremoting_core.so"
 
 	install "$(ME2ME_PROGNAME)" \
 	  "$(INSTALL_DIR)/chrome-remote-desktop-host"

@@ -56,7 +56,11 @@ source_set("security_key") {
 }
 
 source_set("main") {
-  configs += [ "//remoting/build/config:host_implementation" ]
+  defines = [ "HOST_IMPLEMENTATION" ]
+
+  if (is_win) {
+    defines += host_predefines
+  }
 
   sources = [ "remote_security_key_main.cc" ]
   deps = [

@@ -69,7 +69,6 @@ action("remoting_me2me_host_deb_installer") {
   ]
 
   deps = [
-    "//remoting/host:remoting_core",
     "//remoting/host:remoting_me2me_host",
     "//remoting/host:remoting_native_messaging_host",
     "//remoting/host:remoting_native_messaging_manifests",

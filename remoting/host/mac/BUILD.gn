@@ -108,7 +108,8 @@ target("mac_app_bundle", "remoting_me2me_host") {
   deps = [
     ":permission_checking",
     "//remoting/base:breakpad",
-    "//remoting/host:entry_point",
+    "//remoting/host:main",
+    "//remoting/host:remoting_me2me_host_static",
     "//remoting/host/installer:credits",
     "//remoting/resources",
   ]
@@ -179,13 +180,30 @@ target("mac_app_bundle", "remoting_native_messaging_host") {
     "HOST_NAME=$host_name",
   ]
 
-  sources = [ "../setup/me2me_native_messaging_host_entry_point.cc" ]
+  sources = [
+    "../setup/me2me_native_messaging_host_entry_point.cc",
+    "../setup/me2me_native_messaging_host_main.cc",
+    "../setup/me2me_native_messaging_host_main.h",
+  ]
 
   deps = [
     ":remoting_native_messaging_host_resources",
+    "//base",
+    "//build:chromeos_buildflags",
+    "//mojo/core/embedder:embedder",
+    "//net",
+    "//remoting/base:authorization",
+    "//remoting/base:base",
+    "//remoting/base:breakpad",
+    "//remoting/host",
+    "//remoting/host:base",
+    "//remoting/host:host_main_headers",
     "//remoting/host:remoting_infoplist_strings",
-    "//remoting/host/setup:native_messaging_host_main",
-    "//remoting/host/setup:native_messaging_host_main_headers",
+    "//remoting/host/native_messaging",
+    "//remoting/host/setup",
+    "//services/network:network_service",
+    "//services/network/public/cpp:cpp",
+    "//services/network/public/mojom",
   ]
   foreach(locale, remoting_locales_with_underscores) {
     deps += [

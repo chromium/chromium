@@ -257,3 +257,9 @@ int HostMain(int argc, char** argv) {
 }
 
 }  // namespace remoting
+
+#if !defined(OS_WIN)
+int main(int argc, char** argv) {
+  return remoting::HostMain(argc, argv);
+}
+#endif  // !defined(OS_WIN)
