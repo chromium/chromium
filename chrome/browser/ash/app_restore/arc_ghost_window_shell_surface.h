@@ -10,6 +10,10 @@
 #include "components/exo/client_controlled_shell_surface.h"
 #include "ui/gfx/geometry/rect.h"
 
+namespace app_restore {
+struct AppRestoreData;
+}  // namespace app_restore
+
 namespace ash {
 namespace full_restore {
 
@@ -19,13 +23,8 @@ std::unique_ptr<exo::ClientControlledShellSurface> InitArcGhostWindow(
     ArcWindowHandler* window_handler,
     const std::string& app_id,
     int window_id,
-    absl::optional<int64_t> display_id,
     gfx::Rect bounds,
-    absl::optional<chromeos::WindowStateType> window_state,
-    absl::optional<gfx::Size> maximum_size,
-    absl::optional<gfx::Size> minimum_size,
-    absl::optional<std::u16string> title,
-    absl::optional<uint32_t> color,
+    app_restore::AppRestoreData* restore_data,
     base::RepeatingClosure close_callback);
 
 // ArcGhostWindowShellSurface class is a shell surface which controlled its

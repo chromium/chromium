@@ -79,7 +79,7 @@ void ArcWindowHandler::LaunchArcGhostWindow(
   DCHECK(restore_data->current_bounds.has_value());
   DCHECK(restore_data->display_id.has_value());
 
-  gfx::Rect adjust_bounds = restore_data->current_bounds.value();
+  gfx::Rect adjust_bounds = restore_data->current_bounds.value_or(gfx::Rect());
 
   // Replace the screen bounds by root bounds if there is.
   if (restore_data->bounds_in_root.has_value())
@@ -96,15 +96,12 @@ void ArcWindowHandler::LaunchArcGhostWindow(
                         0, 0);
   }
 
-  session_id_to_shell_surface_.emplace(
-      session_id,
-      InitArcGhostWindow(
-          this, app_id, session_id, restore_data->display_id, adjust_bounds,
-          restore_data->window_state_type, restore_data->maximum_size,
-          restore_data->minimum_size, restore_data->title,
-          restore_data->status_bar_color,
-          base::BindRepeating(&ArcWindowHandler::CloseWindow,
-                              weak_ptr_factory_.GetWeakPtr(), session_id)));
+  auto shell_surface = InitArcGhostWindow(
+      this, app_id, session_id, adjust_bounds, restore_data,
+      base::BindRepeating(&ArcWindowHandler::CloseWindow,
+                          weak_ptr_factory_.GetWeakPtr(), session_id));
+  if (shell_surface)
+    session_id_to_shell_surface_.emplace(session_id, std::move(shell_surface));
 }
 
 void ArcWindowHandler::CloseWindow(int session_id) {
