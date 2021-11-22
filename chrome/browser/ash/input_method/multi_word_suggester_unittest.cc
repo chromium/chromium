@@ -327,7 +327,7 @@ TEST(MultiWordSuggesterTest,
   MultiWordSuggester suggester(&suggestion_handler);
 
   std::vector<TextSuggestion> suggestions = {
-      TextSuggestion{.mode = TextSuggestionMode::kCompletion,
+      TextSuggestion{.mode = TextSuggestionMode::kPrediction,
                      .type = TextSuggestionType::kMultiWord,
                      .text = " for the example"},
   };
@@ -348,6 +348,31 @@ TEST(MultiWordSuggesterTest,
   suggester.OnSurroundingTextChanged(u"this is some text", 17, 17);
 
   EXPECT_FALSE(suggester.Suggest(u"this is some text", 17, 17));
+}
+
+TEST(MultiWordSuggesterTest, DoesNotTrackSuggestionPastSuggestionPoint) {
+  FakeSuggestionHandler suggestion_handler;
+  MultiWordSuggester suggester(&suggestion_handler);
+
+  std::vector<TextSuggestion> suggestions = {
+      TextSuggestion{.mode = TextSuggestionMode::kCompletion,
+                     .type = TextSuggestionType::kMultiWord,
+                     .text = " for the example"},
+  };
+
+  suggester.OnFocus(kFocusedContextId);
+  suggester.OnSurroundingTextChanged(u"this is some text fo", 20, 20);
+  suggester.OnExternalSuggestionsUpdated(suggestions);
+  suggester.OnSurroundingTextChanged(u"this is some text for", 21, 21);
+  suggester.Suggest(u"this is some text for", 21, 21);
+  suggester.OnSurroundingTextChanged(u"this is some text fo", 20, 20);
+  bool at_suggestion_point = suggester.Suggest(u"this is some text fo", 20, 20);
+  suggester.OnSurroundingTextChanged(u"this is some text f", 19, 19);
+  bool before_suggestion_point =
+      suggester.Suggest(u"this is some text f", 19, 19);
+
+  EXPECT_TRUE(at_suggestion_point);
+  EXPECT_FALSE(before_suggestion_point);
 }
 
 TEST(MultiWordSuggesterTest, ReturnsGenericActionIfNoSuggestionHasBeenShown) {

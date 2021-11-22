@@ -63,6 +63,7 @@ class MultiWordSuggester : public Suggester {
       ime::TextSuggestionMode mode;
       std::u16string text;
       size_t confirmed_length;
+      size_t initial_confirmed_length;
       base::TimeTicks time_first_shown;
     };
 

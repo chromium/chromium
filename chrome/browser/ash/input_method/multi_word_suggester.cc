@@ -273,8 +273,16 @@ void MultiWordSuggester::SuggestionState::ReconcileSuggestionWithText() {
   size_t new_confirmed_length =
       CalculateConfirmedLength(surrounding_text_.text, suggestion_->text);
 
+  // Save the calculated confirmed length on first showing of a completion
+  // suggestion. This will be used later when determining if a suggestion
+  // should be dismissed or not.
+  auto initial_confirmed_length = state_ == State::kCompletionSuggestionShown
+                                      ? new_confirmed_length
+                                      : suggestion_->initial_confirmed_length;
+
   if (state_ == State::kTrackingLastSuggestionShown &&
-      new_confirmed_length == 0) {
+      (new_confirmed_length == 0 ||
+       new_confirmed_length < suggestion_->initial_confirmed_length)) {
     UpdateState(State::kSuggestionDismissed);
     ResetSuggestion();
     return;
@@ -287,6 +295,7 @@ void MultiWordSuggester::SuggestionState::ReconcileSuggestionWithText() {
 
   suggestion_ = Suggestion{.text = suggestion_->text,
                            .confirmed_length = new_confirmed_length,
+                           .initial_confirmed_length = initial_confirmed_length,
                            .time_first_shown = suggestion_->time_first_shown};
 }
 
