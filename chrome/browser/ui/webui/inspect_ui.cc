@@ -372,10 +372,8 @@ void InspectMessageHandler::HandleBooleanPrefChanged(
     return;
 
   const auto& list = args->GetList();
-  const bool enabled =
-      list.size() == 1 && list[0].is_bool() && list[0].GetBool();
-  if (enabled)
-    profile->GetPrefs()->SetBoolean(pref_name, enabled);
+  if (list.size() == 1 && list[0].is_bool())
+    profile->GetPrefs()->SetBoolean(pref_name, list[0].GetBool());
 }
 
 void InspectMessageHandler::HandlePortForwardingConfigCommand(
