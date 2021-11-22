@@ -38,6 +38,8 @@ import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.init.FirstDrawDetector;
 import org.chromium.chrome.browser.multiwindow.MultiWindowModeStateDispatcher;
+import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
+import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabHidingType;
@@ -616,19 +618,7 @@ class TabSwitcherMediator implements TabSwitcher.Controller, TabListRecyclerView
         if (mRegisteredFirstMeaningfulPaintRecorder) return;
         mRegisteredFirstMeaningfulPaintRecorder = true;
 
-        boolean hasTabs = false;
-        if (mTabModelSelector.isTabStateInitialized()) {
-            hasTabs = mTabModelSelector.getTabModelFilterProvider()
-                              .getCurrentTabModelFilter()
-                              .getCount()
-                    > 0;
-        } else {
-            List<PseudoTab> allTabs;
-            try (StrictModeContext ignored = StrictModeContext.allowDiskReads()) {
-                allTabs = PseudoTab.getAllPseudoTabsFromStateFile(mContext);
-            }
-            hasTabs = allTabs != null && !allTabs.isEmpty();
-        }
+        boolean hasTabs = getTabCount() > 0;
 
         if (!hasTabs) {
             FirstDrawDetector.waitForFirstDraw(
@@ -889,5 +879,16 @@ class TabSwitcherMediator implements TabSwitcher.Controller, TabListRecyclerView
                 mTabModelSelector.getTabModelFilterProvider().getCurrentTabModelFilter();
         if (filter == null) return;
         RecordHistogram.recordCountHistogram(TAB_ENTRIES_HISTOGRAM, filter.getCount());
+    }
+
+    private int getTabCount() {
+        if (mTabModelSelector.isTabStateInitialized()) {
+            return mTabModelSelector.getTabModelFilterProvider()
+                    .getCurrentTabModelFilter()
+                    .getCount();
+        } else {
+            return SharedPreferencesManager.getInstance().readInt(
+                    ChromePreferenceKeys.REGULAR_TAB_COUNT);
+        }
     }
 }

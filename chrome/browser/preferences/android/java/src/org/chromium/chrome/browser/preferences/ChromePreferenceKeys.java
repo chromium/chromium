@@ -781,6 +781,9 @@ public final class ChromePreferenceKeys {
     public static final String SHOW_START_SEGMENTATION_RESULT =
             "Chrome.StartSurface.ShowSegmentationResult";
 
+    public static final String REGULAR_TAB_COUNT = "Chrome.StartSurface.RegularTabCount";
+    public static final String INCOGNITO_TAB_COUNT = "Chrome.StartSurface.IncognitoTabCount";
+
     /**
      * Contains a trial group that was used to determine whether the reached code profiler should be
      * enabled.
@@ -1072,9 +1075,10 @@ public final class ChromePreferenceKeys {
                 FLAGS_LAST_CACHED_MINIMAL_BROWSER_FLAGS_TIME_MILLIS,
                 HOMEPAGE_LOCATION_POLICY,
                 HOMEPAGE_USE_CHROME_NTP,
-            HOMEPAGE_PARTNER_CUSTOMIZED_DEFAULT_URI,
+                HOMEPAGE_PARTNER_CUSTOMIZED_DEFAULT_URI,
                 IMAGE_DESCRIPTIONS_JUST_ONCE_COUNT,
                 IMAGE_DESCRIPTIONS_DONT_ASK_AGAIN,
+                INCOGNITO_TAB_COUNT,
                 ISOLATED_SPLITS_DEX_COMPILE_VERSION,
                 LAST_SESSION_BROWSER_PID,
                 LAST_SESSION_APPLICATION_STATE,
@@ -1117,6 +1121,7 @@ public final class ChromePreferenceKeys {
                 QUERY_TILES_NUM_RECENT_MV_TILE_CLICKS,
                 QUERY_TILES_NUM_RECENT_QUERY_TILE_CLICKS,
                 QUERY_TILES_SHOW_ON_NTP,
+                REGULAR_TAB_COUNT,
                 SETTINGS_SAFETY_CHECK_LAST_RUN_TIMESTAMP,
                 SETTINGS_SAFETY_CHECK_RUN_COUNTER,
                 SHARING_LAST_SHARED_COMPONENT_NAME,

@@ -35,6 +35,8 @@ import org.chromium.base.test.UiThreadTest;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
+import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
+import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabImpl;
 import org.chromium.chrome.browser.tab.TabLaunchType;
@@ -339,6 +341,13 @@ public class TabPersistentStoreUnitTest {
                 metadata.incognitoModelMetadata.urls.get(0));
         Assert.assertEquals("Incorrect URL for second incognito tab.", INCOGNITO_TAB_STRING_2,
                 metadata.incognitoModelMetadata.urls.get(1));
+
+        Assert.assertEquals("Incorrect number of cached normal tab count.", 1,
+                SharedPreferencesManager.getInstance().readInt(
+                        ChromePreferenceKeys.REGULAR_TAB_COUNT));
+        Assert.assertEquals("Incorrect number of cached incognito tab count.", 2,
+                SharedPreferencesManager.getInstance().readInt(
+                        ChromePreferenceKeys.INCOGNITO_TAB_COUNT));
     }
 
     @Test
@@ -405,6 +414,8 @@ public class TabPersistentStoreUnitTest {
         when(incognitoTab2.getUrl()).thenReturn(gurl);
         when(incognitoTab2.isIncognito()).thenReturn(true);
         when(mIncognitoTabModel.getTabAt(1)).thenReturn(incognitoTab2);
+
+        when(mTabModelSelector.getTotalTabCount()).thenReturn(3);
     }
 
     private static class LoadUrlParamsUrlMatcher implements ArgumentMatcher<LoadUrlParams> {

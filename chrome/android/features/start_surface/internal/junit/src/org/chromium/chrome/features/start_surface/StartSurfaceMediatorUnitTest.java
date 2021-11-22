@@ -331,6 +331,7 @@ public class StartSurfaceMediatorUnitTest {
                 createStartSurfaceMediator(/* isStartSurfaceEnabled= */ true, false);
 
         doReturn(2).when(mNormalTabModel).getCount();
+        doReturn(true).when(mTabModelSelector).isTabStateInitialized();
         mediator.setOverviewState(StartSurfaceState.SHOWING_HOMEPAGE);
         mediator.showOverview(false);
         mediator.setOverviewState(StartSurfaceState.SHOWN_HOMEPAGE);
@@ -507,6 +508,7 @@ public class StartSurfaceMediatorUnitTest {
         assertThat(mediator.getStartSurfaceState(), equalTo(StartSurfaceState.NOT_SHOWN));
 
         doReturn(2).when(mNormalTabModel).getCount();
+        doReturn(true).when(mTabModelSelector).isTabStateInitialized();
         mediator.setOverviewState(StartSurfaceState.SHOWING_HOMEPAGE);
         mediator.showOverview(false);
         assertThat(mediator.getStartSurfaceState(), equalTo(StartSurfaceState.SHOWN_HOMEPAGE));
@@ -588,6 +590,7 @@ public class StartSurfaceMediatorUnitTest {
         assertThat(mediator.getStartSurfaceState(), equalTo(StartSurfaceState.NOT_SHOWN));
 
         doReturn(2).when(mNormalTabModel).getCount();
+        doReturn(true).when(mTabModelSelector).isTabStateInitialized();
         mediator.setOverviewState(StartSurfaceState.SHOWING_HOMEPAGE);
         mediator.showOverview(false);
         verify(mTabModelSelector).addObserver(mTabModelSelectorObserverCaptor.capture());
@@ -629,6 +632,7 @@ public class StartSurfaceMediatorUnitTest {
 
         doReturn(2).when(mNormalTabModel).getCount();
         doReturn(true).when(mActivityStateChecker).isFinishingOrDestroyed();
+        doReturn(true).when(mTabModelSelector).isTabStateInitialized();
         mediator.setOverviewState(StartSurfaceState.SHOWING_HOMEPAGE);
         mediator.showOverview(false);
         assertThat(mediator.getStartSurfaceState(), equalTo(StartSurfaceState.SHOWN_HOMEPAGE));

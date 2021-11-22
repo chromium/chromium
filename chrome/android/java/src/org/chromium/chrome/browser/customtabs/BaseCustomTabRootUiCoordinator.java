@@ -89,6 +89,8 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
      * @param snackbarManagerSupplier Supplies the {@link SnackbarManager}.
      * @param activityType The {@link ActivityType} for the activity.
      * @param isInOverviewModeSupplier Supplies whether the app is in overview mode.
+     * @param shouldShowOverviewPageOnStartSupplier Supplies whether the overview page should be
+     *         shown on start.
      * @param isWarmOnResumeSupplier Supplies whether the app was warm on resume.
      * @param appMenuDelegate The app menu delegate.
      * @param statusBarColorProvider Provides the status bar color.
@@ -122,6 +124,7 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
             @NonNull OneshotSupplier<OverviewModeBehavior> overviewModeBehaviorSupplier,
             @NonNull Supplier<SnackbarManager> snackbarManagerSupplier,
             @ActivityType int activityType, @NonNull Supplier<Boolean> isInOverviewModeSupplier,
+            @NonNull Supplier<Boolean> shouldShowOverviewPageOnStartSupplier,
             @NonNull Supplier<Boolean> isWarmOnResumeSupplier,
             @NonNull AppMenuDelegate appMenuDelegate,
             @NonNull StatusBarColorProvider statusBarColorProvider,
@@ -141,8 +144,9 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
                 supportsAppMenuSupplier, supportsFindInPage, tabCreatorManagerSupplier,
                 fullscreenManager, compositorViewHolderSupplier, tabContentManagerSupplier,
                 overviewModeBehaviorSupplier, snackbarManagerSupplier, activityType,
-                isInOverviewModeSupplier, isWarmOnResumeSupplier, appMenuDelegate,
-                statusBarColorProvider, intentRequestTracker, new OneshotSupplierImpl<>(), false);
+                isInOverviewModeSupplier, shouldShowOverviewPageOnStartSupplier,
+                isWarmOnResumeSupplier, appMenuDelegate, statusBarColorProvider,
+                intentRequestTracker, new OneshotSupplierImpl<>(), false);
         // clang-format on
         mToolbarCoordinator = customTabToolbarCoordinator;
         mNavigationController = customTabNavigationController;

@@ -34,7 +34,6 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ObserverList;
-import org.chromium.base.StrictModeContext;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.jank_tracker.JankScenario;
 import org.chromium.base.jank_tracker.JankTracker;
@@ -51,21 +50,19 @@ import org.chromium.chrome.browser.omnibox.OmniboxStub;
 import org.chromium.chrome.browser.omnibox.UrlFocusChangeListener;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.Pref;
+import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
-import org.chromium.chrome.browser.tasks.pseudotab.PseudoTab;
 import org.chromium.chrome.browser.tasks.tab_management.TabSwitcher;
 import org.chromium.chrome.start_surface.R;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.content_public.browser.BrowserStartupController;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.util.ColorUtils;
-
-import java.util.List;
 
 /** The mediator implements the logic to interact with the surfaces and caller. */
 class StartSurfaceMediator
@@ -463,17 +460,7 @@ class StartSurfaceMediator
                     /* isVisible= */ true, /* skipUpdateController = */ true);
         } else if (mStartSurfaceState == StartSurfaceState.SHOWN_HOMEPAGE) {
             setExploreSurfaceVisibility(!mIsIncognito && mExploreSurfaceCoordinatorFactory != null);
-            boolean hasNormalTab;
-            if (CachedFeatureFlags.isEnabled(ChromeFeatureList.INSTANT_START)
-                    && !mTabModelSelector.isTabStateInitialized()) {
-                List<PseudoTab> allTabs;
-                try (StrictModeContext ignored = StrictModeContext.allowDiskReads()) {
-                    allTabs = PseudoTab.getAllPseudoTabsFromStateFile(mContext);
-                }
-                hasNormalTab = allTabs != null && !allTabs.isEmpty();
-            } else {
-                hasNormalTab = mTabModelSelector.getModel(false).getCount() > 0;
-            }
+            boolean hasNormalTab = getNormalTabCount() > 0;
 
             // If new home surface for home button is enabled, MV tiles and carousel tab switcher
             // will not show.
@@ -928,6 +915,15 @@ class StartSurfaceMediator
     private boolean isShownState(@StartSurfaceState int state) {
         return state == StartSurfaceState.SHOWN_HOMEPAGE
                 || state == StartSurfaceState.SHOWN_TABSWITCHER;
+    }
+
+    private int getNormalTabCount() {
+        if (!mTabModelSelector.isTabStateInitialized()) {
+            return SharedPreferencesManager.getInstance().readInt(
+                    ChromePreferenceKeys.REGULAR_TAB_COUNT);
+        } else {
+            return mTabModelSelector.getModel(false).getCount();
+        }
     }
 
     TabSwitcher.Controller getSecondaryTasksSurfaceController() {

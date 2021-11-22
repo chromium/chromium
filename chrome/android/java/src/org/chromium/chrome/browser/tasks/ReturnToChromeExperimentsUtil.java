@@ -17,7 +17,6 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.Log;
-import org.chromium.base.StrictModeContext;
 import org.chromium.base.TimeUtils;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.library_loader.LibraryLoader;
@@ -27,7 +26,6 @@ import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.ChromeInactivityTracker;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.app.ChromeActivity;
-import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.IntCachedFieldTrialParameter;
 import org.chromium.chrome.browser.homepage.HomepageManager;
@@ -43,7 +41,6 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
-import org.chromium.chrome.browser.tasks.pseudotab.PseudoTab;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.chrome.features.start_surface.StartSurfaceConfiguration;
@@ -60,7 +57,6 @@ import org.chromium.ui.base.PageTransition;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
-import java.util.List;
 
 /**
  * This is a utility class for managing experiments related to returning to Chrome.
@@ -445,22 +441,17 @@ public final class ReturnToChromeExperimentsUtil {
     }
 
     /**
-     *
-     * @param context The activity context.
      * @param tabModelSelector The tab model selector.
      * @return the total tab count, and works before native initialization.
      */
-    public static int getTotalTabCount(Context context, TabModelSelector tabModelSelector) {
-        if ((CachedFeatureFlags.isEnabled(ChromeFeatureList.INSTANT_START)
-                    || CachedFeatureFlags.isEnabled(
-                            ChromeFeatureList.PAINT_PREVIEW_SHOW_ON_STARTUP))
-                && !tabModelSelector.isTabStateInitialized()) {
-            List<PseudoTab> allTabs;
-            try (StrictModeContext ignored = StrictModeContext.allowDiskReads()) {
-                allTabs = PseudoTab.getAllPseudoTabsFromStateFile(context);
-            }
-            return allTabs != null ? allTabs.size() : 0;
+    public static int getTotalTabCount(TabModelSelector tabModelSelector) {
+        if (!tabModelSelector.isTabStateInitialized()) {
+            return SharedPreferencesManager.getInstance().readInt(
+                           ChromePreferenceKeys.REGULAR_TAB_COUNT)
+                    + SharedPreferencesManager.getInstance().readInt(
+                            ChromePreferenceKeys.INCOGNITO_TAB_COUNT);
         }
+
         return tabModelSelector.getTotalTabCount();
     }
 
@@ -489,7 +480,7 @@ public final class ReturnToChromeExperimentsUtil {
         }
         if (ReturnToChromeExperimentsUtil.isStartSurfaceEnabled(context)
                 && IntentUtils.isMainIntentFromLauncher(intent)
-                && ReturnToChromeExperimentsUtil.getTotalTabCount(context, tabModelSelector) <= 0) {
+                && ReturnToChromeExperimentsUtil.getTotalTabCount(tabModelSelector) <= 0) {
             // Handle initial tab creation.
             return true;
         }
