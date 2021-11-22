@@ -53,7 +53,7 @@ void FakeHpsDBusClient::DisableHpsNotify() {}
 void FakeHpsDBusClient::WaitForServiceToBeAvailable(
     dbus::ObjectProxy::WaitForServiceToBeAvailableCallback cb) {
   base::ThreadTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE, base::BindOnce(std::move(cb), hps_service_is_avaible_));
+      FROM_HERE, base::BindOnce(std::move(cb), hps_service_is_available_));
 }
 
 }  // namespace chromeos

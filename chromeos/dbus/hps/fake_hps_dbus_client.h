@@ -43,14 +43,14 @@ class COMPONENT_EXPORT(HPS) FakeHpsDBusClient : public HpsDBusClient {
   int hps_notify_count() const { return hps_notify_count_; }
 
   // Methods for co-ordinating WaitForServiceToBeAvailable calls in tests.
-  void set_hps_service_is_avaible_(bool is_available) {
-    hps_service_is_avaible_ = is_available;
+  void set_hps_service_is_available(bool is_available) {
+    hps_service_is_available_ = is_available;
   }
 
  private:
   absl::optional<bool> hps_notify_result_;
   int hps_notify_count_ = 0;
-  bool hps_service_is_avaible_ = false;
+  bool hps_service_is_available_ = false;
 };
 
 }  // namespace chromeos
