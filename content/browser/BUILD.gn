@@ -5,6 +5,7 @@
 import("//build/buildflag_header.gni")
 import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/chromeos/ui_mode.gni")
+import("//build/config/compiler/pgo/pgo.gni")
 import("//build/config/features.gni")
 import("//build/config/linux/pangocairo/pangocairo.gni")
 import("//build/config/ozone.gni")
@@ -54,6 +55,7 @@ source_set("browser") {
     "//build:branding_buildflags",
     "//build:chromecast_buildflags",
     "//build:chromeos_buildflags",
+    "//build/config/compiler:compiler_buildflags",
     "//cc",
     "//cc/animation",
     "//cc/mojo_embedder",
@@ -3049,6 +3051,16 @@ source_set("browser") {
       "//device/vr/buildflags",
       "//device/vr/orientation",
       "//services/metrics/public/cpp:ukm_builders",
+    ]
+  }
+
+  if (use_clang_profiling_inside_sandbox && chrome_pgo_phase == 1) {
+    sources += [
+      "$target_gen_dir/devtools/protocol/native_profiling.cc",
+      "$target_gen_dir/devtools/protocol/native_profiling.h",
+      "devtools/protocol/native_profiling_handler.cc",
+      "devtools/protocol/native_profiling_handler.h",
+      "profiling_utils.cc",
     ]
   }
 }

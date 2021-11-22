@@ -5,11 +5,13 @@
 #include "content/browser/devtools/browser_devtools_agent_host.h"
 
 #include "base/bind.h"
+#include "base/clang_profiling_buildflags.h"
 #include "base/guid.h"
 #include "base/json/json_reader.h"
 #include "base/memory/ptr_util.h"
 #include "base/no_destructor.h"
 #include "base/task/single_thread_task_runner.h"
+#include "build/config/compiler/compiler_buildflags.h"
 #include "components/viz/common/buildflags.h"
 #include "content/browser/devtools/devtools_session.h"
 #include "content/browser/devtools/protocol/browser_handler.h"
@@ -30,6 +32,10 @@
 
 #if BUILDFLAG(USE_VIZ_DEBUGGER)
 #include "content/browser/devtools/protocol/visual_debugger_handler.h"
+#endif
+
+#if BUILDFLAG(CLANG_PROFILING_INSIDE_SANDBOX) && BUILDFLAG(CLANG_PGO)
+#include "content/browser/devtools/protocol/native_profiling_handler.h"
 #endif
 
 namespace content {
@@ -188,6 +194,11 @@ bool BrowserDevToolsAgentHost::AttachSession(DevToolsSession* session,
   }
   session->AddHandler(
       std::make_unique<protocol::TracingHandler>(GetIOContext()));
+
+#if BUILDFLAG(CLANG_PROFILING_INSIDE_SANDBOX) && BUILDFLAG(CLANG_PGO)
+  session->AddHandler(std::make_unique<protocol::NativeProfilingHandler>());
+#endif
+
   return true;
 }
 

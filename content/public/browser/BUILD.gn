@@ -601,6 +601,10 @@ source_set("browser_sources") {
       "//device/vr/public/mojom:isolated_xr_service",
     ]
   }
+
+  if (use_clang_profiling_inside_sandbox) {
+    sources += [ "profiling_utils.h" ]
+  }
 }
 
 if (is_android) {

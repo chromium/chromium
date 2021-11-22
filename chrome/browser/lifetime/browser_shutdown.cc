@@ -74,14 +74,8 @@
 #endif
 
 #if BUILDFLAG(CLANG_PROFILING_INSIDE_SANDBOX) && BUILDFLAG(CLANG_PGO)
-#include "content/public/browser/browser_child_process_host_iterator.h"
-#include "content/public/browser/browser_task_traits.h"
-#include "content/public/browser/browser_thread.h"
-#include "content/public/browser/gpu_utils.h"
-#include "content/public/common/child_process_host.h"
-#include "content/public/common/profiling_utils.h"
+#include "content/public/browser/profiling_utils.h"
 #endif
-
 
 namespace browser_shutdown {
 namespace {
@@ -147,41 +141,7 @@ void OnShutdownStarting(ShutdownType type) {
   // TODO(https://crbug.com/1071664): Check if this should also be enabled for
   // coverage builds.
 #if BUILDFLAG(CLANG_PROFILING_INSIDE_SANDBOX) && BUILDFLAG(CLANG_PGO)
-  if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kSingleProcess)) {
-    content::WaitForProcessesToDumpProfilingInfo wait_for_profiling_data;
-
-    // Ask all the renderer processes to dump their profiling data.
-    for (content::RenderProcessHost::iterator i(
-             content::RenderProcessHost::AllHostsIterator());
-         !i.IsAtEnd(); i.Advance()) {
-      DCHECK(!i.GetCurrentValue()->GetProcess().is_current());
-      if (!i.GetCurrentValue()->IsInitializedAndNotDead())
-        continue;
-      i.GetCurrentValue()->DumpProfilingData(base::BindOnce(
-          &base::WaitableEvent::Signal,
-          base::Unretained(wait_for_profiling_data.GetNewWaitableEvent())));
-    }
-
-    // Ask all the other child processes to dump their profiling data
-    for (content::BrowserChildProcessHostIterator browser_child_iter;
-         !browser_child_iter.Done(); ++browser_child_iter) {
-      browser_child_iter.GetHost()->DumpProfilingData(base::BindOnce(
-          &base::WaitableEvent::Signal,
-          base::Unretained(wait_for_profiling_data.GetNewWaitableEvent())));
-    }
-
-    if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
-            switches::kInProcessGPU)) {
-      content::DumpGpuProfilingData(base::BindOnce(
-          &base::WaitableEvent::Signal,
-          base::Unretained(wait_for_profiling_data.GetNewWaitableEvent())));
-    }
-
-    // This will block until all the child processes have saved their profiling
-    // data to disk.
-    wait_for_profiling_data.WaitForAll();
-  }
+  content::WaitForAllChildrenToDumpProfilingData();
 #endif  // BUILDFLAG(CLANG_PROFILING_INSIDE_SANDBOX) && BUILDFLAG(CLANG_PGO)
 
   // Call FastShutdown on all of the RenderProcessHosts.  This will be
@@ -190,7 +150,7 @@ void OnShutdownStarting(ShutdownType type) {
   g_shutdown_num_processes = 0;
   g_shutdown_num_processes_slow = 0;
   for (content::RenderProcessHost::iterator i(
-          content::RenderProcessHost::AllHostsIterator());
+           content::RenderProcessHost::AllHostsIterator());
        !i.IsAtEnd(); i.Advance()) {
     ++g_shutdown_num_processes;
     if (!i.GetCurrentValue()->FastShutdownIfPossible())

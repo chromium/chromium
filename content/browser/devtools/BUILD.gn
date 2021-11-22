@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/compiler/pgo/pgo.gni")
 import("//build/config/devtools.gni")
 import("//components/viz/common/debugger/viz_debugger.gni")
 import("//third_party/inspector_protocol/inspector_protocol.gni")
@@ -40,8 +41,9 @@ if (!is_android) {
   }
 }
 
-# Here we concatenate the viz_debugger.pdl into our browser protocol.
-# This technique is nearly identical to what is done for cros_protocol.pdl in chrome/browser/devtools
+# Here we concatenate the viz_debugger.pdl and native_profiling.pdl
+# into our browser protocol. This technique is nearly identical to what is
+# done for cros_protocol.pdl in chrome/browser/devtools
 _concatenated_protocol_path =
     "$root_gen_dir/content/browser/devtools/protocol.json"
 action("concatenate_protocols") {
@@ -59,6 +61,12 @@ action("concatenate_protocols") {
     _visual_debugger_pdl = "//components/viz/common/debugger/viz_debugger.pdl"
     inputs += [ _visual_debugger_pdl ]
     args += [ rebase_path(_visual_debugger_pdl, root_build_dir) ]
+  }
+
+  if (use_clang_profiling_inside_sandbox && chrome_pgo_phase == 1) {
+    native_profiling_pdl = "//content/browser/native_profiling.pdl"
+    inputs += [ native_profiling_pdl ]
+    args += [ rebase_path(native_profiling_pdl, root_build_dir) ]
   }
 
   args += [ rebase_path(output_file, root_build_dir) ]
@@ -139,6 +147,13 @@ inspector_protocol_generate("protocol_sources") {
     outputs += [
       "protocol/visual_debugger.cc",
       "protocol/visual_debugger.h",
+    ]
+  }
+
+  if (chrome_pgo_phase == 1) {
+    outputs += [
+      "protocol/native_profiling.cc",
+      "protocol/native_profiling.h",
     ]
   }
 }
