@@ -84,7 +84,6 @@ OobeWelcomeDialogBase.$;
   }
 
   onBeforeShow() {
-    document.documentElement.setAttribute('new-layout', '');
     this.setVideoPlay_(true);
   }
 
