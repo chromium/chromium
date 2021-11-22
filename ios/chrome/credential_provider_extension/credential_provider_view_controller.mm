@@ -144,10 +144,8 @@
       removeObjectForKey:kUserDefaultsCredentialProviderConsentVerified];
   if (IsCredentialProviderExtensionPromoEnabled()) {
     self.consentCoordinator = [[ConsentCoordinator alloc]
-           initWithBaseViewController:self
-                              context:self.extensionContext
-              reauthenticationHandler:self.reauthenticationHandler
-        isInitialConfigurationRequest:YES];
+        initWithBaseViewController:self
+                           context:self.extensionContext];
     [self.consentCoordinator start];
   } else {
     self.consentLegacyCoordinator = [[ConsentLegacyCoordinator alloc]

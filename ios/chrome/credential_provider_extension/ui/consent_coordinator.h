@@ -12,27 +12,13 @@
 @class ReauthenticationHandler;
 @class UIViewController;
 
-@protocol ConsentCoordinatorDelegate <NSObject>
-
-// Called when the user accepts the consent shown by this coordinator.
-- (void)consentCoordinatorDidAcceptConsent:
-    (ConsentCoordinator*)consentCoordinator;
-
-@end
-
 @interface ConsentCoordinator : NSObject
-
-// Delegate to handle the coordinator.
-@property(nonatomic, weak) id<ConsentCoordinatorDelegate> delegate;
 
 // Default initializer. When the coordinator is started it will present on
 // |baseViewController|.
 - (instancetype)
-       initWithBaseViewController:(UIViewController*)baseViewController
-                          context:(ASCredentialProviderExtensionContext*)context
-          reauthenticationHandler:
-              (ReauthenticationHandler*)reauthenticationHandler
-    isInitialConfigurationRequest:(BOOL)isInitialConfigurationRequest
+    initWithBaseViewController:(UIViewController*)baseViewController
+                       context:(ASCredentialProviderExtensionContext*)context
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;

@@ -7,7 +7,6 @@
 #import <AuthenticationServices/AuthenticationServices.h>
 
 #include "ios/chrome/common/app_group/app_group_constants.h"
-#import "ios/chrome/common/credential_provider/constants.h"
 #import "ios/chrome/common/ui/elements/popover_label_view_controller.h"
 #import "ios/chrome/common/ui/promo_style/promo_style_view_controller_delegate.h"
 #import "ios/chrome/credential_provider_extension/reauthentication_handler.h"
@@ -32,29 +31,17 @@
 // The extension context for the credential provider.
 @property(nonatomic, weak) ASCredentialProviderExtensionContext* context;
 
-// Interface for |reauthenticationModule|, handling mostly the case when no
-// hardware for authentication is available.
-@property(nonatomic, weak) ReauthenticationHandler* reauthenticationHandler;
-
-// Indicates if the extension should finish after consent is given.
-@property(nonatomic) BOOL isInitialConfigurationRequest;
-
 @end
 
 @implementation ConsentCoordinator
 
 - (instancetype)
-       initWithBaseViewController:(UIViewController*)baseViewController
-                          context:(ASCredentialProviderExtensionContext*)context
-          reauthenticationHandler:
-              (ReauthenticationHandler*)reauthenticationHandler
-    isInitialConfigurationRequest:(BOOL)isInitialConfigurationRequest {
+    initWithBaseViewController:(UIViewController*)baseViewController
+                       context:(ASCredentialProviderExtensionContext*)context {
   self = [super init];
   if (self) {
     _baseViewController = baseViewController;
     _context = context;
-    _reauthenticationHandler = reauthenticationHandler;
-    _isInitialConfigurationRequest = isInitialConfigurationRequest;
   }
   return self;
 }
@@ -63,12 +50,10 @@
   self.viewController = [[ConsentViewController alloc] init];
   self.viewController.delegate = self;
   self.viewController.modalInPresentation = YES;
-  self.viewController.modalPresentationStyle =
-      self.isInitialConfigurationRequest ? UIModalPresentationFullScreen
-                                         : UIModalPresentationAutomatic;
-  BOOL animated = !self.isInitialConfigurationRequest;
+  self.viewController.modalPresentationStyle = UIModalPresentationFullScreen;
+
   [self.baseViewController presentViewController:self.viewController
-                                        animated:animated
+                                        animated:NO
                                       completion:nil];
 }
 
@@ -83,21 +68,7 @@
 
 // Invoked when the primary action button is tapped.
 - (void)didTapPrimaryActionButton {
-  [self.reauthenticationHandler
-      verifyUserWithCompletionHandler:^(ReauthenticationResult result) {
-        if (result != ReauthenticationResult::kFailure) {
-          NSUserDefaults* user_defaults = [NSUserDefaults standardUserDefaults];
-          [user_defaults
-              setBool:YES
-               forKey:kUserDefaultsCredentialProviderConsentVerified];
-          if (self.isInitialConfigurationRequest) {
-            [self.context completeExtensionConfigurationRequest];
-          } else {
-            [self.delegate consentCoordinatorDidAcceptConsent:self];
-          }
-        }
-      }
-      presentReminderOnViewController:self.viewController];
+  [self.context completeExtensionConfigurationRequest];
 }
 
 // Invoked when the learn more button is tapped.
