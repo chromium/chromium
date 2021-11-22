@@ -690,13 +690,8 @@ void PageInfo::ComputeUIInputs(const GURL& url) {
   // Identity section.
   certificate_ = visible_security_state.certificate;
 
-  // TODO(crbug.com/1044747): This conditional special-cases
-  // CERT_STATUS_LEGACY_TLS to avoid marking the certificate as "Invalid" in
-  // Page Info, but once we clean up the overloading of CertStatus for Legacy
-  // TLS we can remove this.
   if (certificate_ &&
-      (!net::IsCertStatusError(visible_security_state.cert_status &
-                               ~net::CERT_STATUS_LEGACY_TLS))) {
+      (!net::IsCertStatusError(visible_security_state.cert_status))) {
     // HTTPS with no or minor errors.
     if (security_level == security_state::SECURE_WITH_POLICY_INSTALLED_CERT) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -852,10 +847,6 @@ void PageInfo::ComputeUIInputs(const GURL& url) {
       site_connection_details_.assign(l10n_util::GetStringFUTF16(
           IDS_PAGE_INFO_SECURITY_TAB_WEAK_ENCRYPTION_CONNECTION_TEXT,
           subject_name));
-    }
-
-    if (visible_security_state.cert_status & net::CERT_STATUS_LEGACY_TLS) {
-      site_connection_status_ = SITE_CONNECTION_STATUS_LEGACY_TLS;
     }
 
     ReportAnyInsecureContent(visible_security_state, &site_connection_status_,

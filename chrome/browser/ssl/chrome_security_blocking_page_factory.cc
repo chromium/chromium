@@ -239,30 +239,6 @@ ChromeSecurityBlockingPageFactory::CreateBadClockBlockingPage(
   return page;
 }
 
-std::unique_ptr<LegacyTLSBlockingPage>
-ChromeSecurityBlockingPageFactory::CreateLegacyTLSBlockingPage(
-    content::WebContents* web_contents,
-    int cert_error,
-    const GURL& request_url,
-    std::unique_ptr<SSLCertReporter> ssl_cert_reporter,
-    const net::SSLInfo& ssl_info) {
-  LogSafeBrowsingSecuritySensitiveAction(
-      safe_browsing::SafeBrowsingMetricsCollectorFactory::GetForProfile(
-          Profile::FromBrowserContext(web_contents->GetBrowserContext())));
-
-  auto page = std::make_unique<LegacyTLSBlockingPage>(
-      web_contents, cert_error, request_url, std::move(ssl_cert_reporter),
-      /*can_show_enhanced_protection_message=*/true, ssl_info,
-      std::make_unique<SSLErrorControllerClient>(
-          web_contents, ssl_info, cert_error, request_url,
-          CreateMetricsHelperAndStartRecording(web_contents, request_url,
-                                               "legacy_tls", false),
-          CreateSettingsPageHelper()));
-
-  DoChromeSpecificSetup(page.get());
-  return page;
-}
-
 std::unique_ptr<MITMSoftwareBlockingPage>
 ChromeSecurityBlockingPageFactory::CreateMITMSoftwareBlockingPage(
     content::WebContents* web_contents,

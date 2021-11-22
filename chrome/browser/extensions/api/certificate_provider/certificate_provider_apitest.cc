@@ -734,41 +734,6 @@ IN_PROC_BROWSER_TEST_F(CertificateProviderApiMockedExtensionTest,
   EXPECT_TRUE(GetAllProvidedCertificates().empty());
 }
 
-// Tests the RSA MD5/SHA-1 signature algorithm. Note that TLS 1.1 is used in
-// order to make this algorithm employed.
-IN_PROC_BROWSER_TEST_F(CertificateProviderApiMockedExtensionTest, RsaMd5Sha1) {
-  ASSERT_TRUE(StartHttpsServer(net::SSL_PROTOCOL_VERSION_TLS1_1));
-
-  // Bypass the legacy TLS interstitial. Future connections to the test server
-  // will now succeed.
-  SetInterstitialBypass();
-
-  ExecuteJavascript("supportedAlgorithms = ['RSASSA_PKCS1_v1_5_MD5_SHA1'];");
-  ExecuteJavascript("registerForSignatureRequests();");
-  ExecuteJavascriptAndWaitForCallback("setCertificates();");
-  TestNavigationToCertificateRequestingWebPage("RSASSA_PKCS1_v1_5_MD5_SHA1",
-                                               SSL_SIGN_RSA_PKCS1_MD5_SHA1,
-                                               /*is_raw_data=*/true);
-}
-
-// Tests the RSA MD5/SHA-1 signature algorithm using the legacy version of the
-// API. Note that TLS 1.1 is used in order to make this algorithm employed.
-IN_PROC_BROWSER_TEST_F(CertificateProviderApiMockedExtensionTest,
-                       LegacyRsaMd5Sha1) {
-  ASSERT_TRUE(StartHttpsServer(net::SSL_PROTOCOL_VERSION_TLS1_1));
-
-  // Bypass the legacy TLS interstitial. Future connections to the test server
-  // will now succeed.
-  SetInterstitialBypass();
-
-  ExecuteJavascript("supportedLegacyHashes = ['MD5_SHA1'];");
-  ExecuteJavascript("registerAsLegacyCertificateProvider();");
-  ExecuteJavascript("registerForLegacySignatureRequests();");
-  TestNavigationToCertificateRequestingWebPage("MD5_SHA1",
-                                               SSL_SIGN_RSA_PKCS1_MD5_SHA1,
-                                               /*is_raw_data=*/false);
-}
-
 // Tests the RSA SHA-1 signature algorithm.
 IN_PROC_BROWSER_TEST_F(CertificateProviderApiMockedExtensionTest, RsaSha1) {
   ASSERT_TRUE(StartHttpsServer(net::SSL_PROTOCOL_VERSION_TLS1_2));
@@ -875,27 +840,6 @@ IN_PROC_BROWSER_TEST_F(CertificateProviderApiMockedExtensionTest,
   ExecuteJavascriptAndWaitForCallback("setCertificates();");
   TestNavigationToCertificateRequestingWebPage("RSASSA_PKCS1_v1_5_SHA512",
                                                SSL_SIGN_RSA_PKCS1_SHA512,
-                                               /*is_raw_data=*/true);
-}
-
-// Tests that the RSA MD5/SHA-1 signature algorithm is used in case of TLS 1.1,
-// even when there are other algorithms specified (which are stronger but aren't
-// supported on TLS 1.1).
-IN_PROC_BROWSER_TEST_F(CertificateProviderApiMockedExtensionTest,
-                       RsaMd5Sha1AndOthers) {
-  ASSERT_TRUE(StartHttpsServer(net::SSL_PROTOCOL_VERSION_TLS1_1));
-
-  // Bypass the legacy TLS interstitial. Future connections to the test server
-  // will now succeed.
-  SetInterstitialBypass();
-
-  ExecuteJavascript(
-      "supportedAlgorithms = ['RSASSA_PKCS1_v1_5_SHA512', "
-      "'RSASSA_PKCS1_v1_5_SHA1', 'RSASSA_PKCS1_v1_5_MD5_SHA1'];");
-  ExecuteJavascript("registerForSignatureRequests();");
-  ExecuteJavascriptAndWaitForCallback("setCertificates();");
-  TestNavigationToCertificateRequestingWebPage("RSASSA_PKCS1_v1_5_MD5_SHA1",
-                                               SSL_SIGN_RSA_PKCS1_MD5_SHA1,
                                                /*is_raw_data=*/true);
 }
 

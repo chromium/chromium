@@ -54,9 +54,6 @@
 #import "ios/chrome/browser/web/session_state/web_session_state_tab_helper.h"
 #import "ios/chrome/browser/web/web_performance_metrics/web_performance_metrics_java_script_feature.h"
 #import "ios/components/security_interstitials/ios_blocking_page_tab_helper.h"
-#import "ios/components/security_interstitials/legacy_tls/legacy_tls_blocking_page.h"
-#import "ios/components/security_interstitials/legacy_tls/legacy_tls_controller_client.h"
-#import "ios/components/security_interstitials/legacy_tls/legacy_tls_tab_allow_list.h"
 #import "ios/components/security_interstitials/lookalikes/lookalike_url_blocking_page.h"
 #import "ios/components/security_interstitials/lookalikes/lookalike_url_container.h"
 #import "ios/components/security_interstitials/lookalikes/lookalike_url_controller_client.h"
@@ -149,34 +146,6 @@ NSString* GetLookalikeUrlErrorPageHtml(web::WebState* web_state,
   std::string error_page_content = page->GetHtmlContents();
   security_interstitials::IOSBlockingPageTabHelper::FromWebState(web_state)
       ->AssociateBlockingPage(navigation_id, std::move(page));
-
-  return base::SysUTF8ToNSString(error_page_content);
-}
-
-// Returns the legacy TLS error page HTML.
-NSString* GetLegacyTLSErrorPageHTML(web::WebState* web_state,
-                                    int64_t navigation_id) {
-  std::string error_page_content;
-  security_interstitials::IOSBlockingPageTabHelper* blocking_page_tab_helper =
-      security_interstitials::IOSBlockingPageTabHelper::FromWebState(web_state);
-
-  // WebStates that are not in the WebStateList (e.g., WebStates used for
-  // reading list sync) do not have an IOSBlockingPageTabHelper. Since such
-  // WebStates are not used for displaying web contents to a user, it is not
-  // necessary to produce an actual error page, and instead an empty string is
-  // used.
-  if (blocking_page_tab_helper) {
-    // Construct the blocking page and associate it with the WebState.
-    std::unique_ptr<security_interstitials::IOSSecurityInterstitialPage> page =
-        std::make_unique<LegacyTLSBlockingPage>(
-            web_state, web_state->GetVisibleURL() /*request_url*/,
-            std::make_unique<LegacyTLSControllerClient>(
-                web_state, web_state->GetVisibleURL(),
-                GetApplicationContext()->GetApplicationLocale()));
-    error_page_content = page->GetHtmlContents();
-    blocking_page_tab_helper->AssociateBlockingPage(navigation_id,
-                                                    std::move(page));
-  }
 
   return base::SysUTF8ToNSString(error_page_content);
 }
@@ -352,14 +321,6 @@ NSString* ChromeWebClient::GetDocumentStartScriptForMainFrame(
   return [scripts componentsJoinedByString:@";"];
 }
 
-bool ChromeWebClient::IsLegacyTLSAllowedForHost(web::WebState* web_state,
-                                                const std::string& hostname) {
-  auto* allowlist = LegacyTLSTabAllowList::FromWebState(web_state);
-  if (!allowlist)
-    return false;
-  return allowlist->IsDomainAllowed(hostname);
-}
-
 void ChromeWebClient::PrepareErrorPage(
     web::WebState* web_state,
     const GURL& url,
@@ -402,10 +363,6 @@ void ChromeWebClient::PrepareErrorPage(
     DCHECK_EQ(kLookalikeUrlErrorCode, final_underlying_error.code);
     std::move(error_html_callback)
         .Run(GetLookalikeUrlErrorPageHtml(web_state, navigation_id));
-  } else if ([final_underlying_error.domain isEqual:net::kNSErrorDomain] &&
-             final_underlying_error.code == net::ERR_SSL_OBSOLETE_VERSION) {
-    std::move(error_html_callback)
-        .Run(GetLegacyTLSErrorPageHTML(web_state, navigation_id));
   } else if (info.has_value()) {
     base::OnceCallback<void(NSString*)> blocking_page_callback =
         base::BindOnce(^(NSString* blocking_page_html) {

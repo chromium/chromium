@@ -50590,6 +50590,7 @@ from previous Chrome versions.
   <int value="-645455405" label="MacViewsNativeDialogs:enabled"/>
   <int value="-643217597" label="EduCoexistenceConsentLog:enabled"/>
   <int value="-642346675" label="DesktopPWAsAttentionBadgingCrOS:enabled"/>
+  <int value="-641846393" label="WebViewLegacyTlsSupport:enabled"/>
   <int value="-641820371" label="EnableCustomMacPaperSizes:enabled"/>
   <int value="-641719457" label="disable-compositor-touch-hit-testing"/>
   <int value="-641423897" label="CompositeAfterPaint:disabled"/>
@@ -52548,6 +52549,7 @@ from previous Chrome versions.
       label="DesktopPWAsLocalUpdatingThrottlePersistence:disabled"/>
   <int value="845659238" label="DevicePosture:enabled"/>
   <int value="846951416" label="CopylessPaste:enabled"/>
+  <int value="848005486" label="WebViewLegacyTlsSupport:disabled"/>
   <int value="848324390" label="enable-lock-screen-apps"/>
   <int value="849980462" label="RemoveNtpFakebox:disabled"/>
   <int value="850779988" label="allow-popups-during-page-unload"/>

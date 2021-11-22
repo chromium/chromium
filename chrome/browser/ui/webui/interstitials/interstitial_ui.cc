@@ -33,7 +33,6 @@
 #include "components/security_interstitials/content/blocked_interception_blocking_page.h"
 #include "components/security_interstitials/content/https_only_mode_blocking_page.h"
 #include "components/security_interstitials/content/insecure_form_blocking_page.h"
-#include "components/security_interstitials/content/legacy_tls_blocking_page.h"
 #include "components/security_interstitials/content/mitm_software_blocking_page.h"
 #include "components/security_interstitials/content/origin_policy_ui.h"
 #include "components/security_interstitials/content/security_interstitial_page.h"
@@ -200,18 +199,6 @@ CreateBlockedInterceptionBlockingPage(content::WebContents* web_contents) {
   ssl_info.cert = ssl_info.unverified_cert = CreateFakeCert();
   ChromeSecurityBlockingPageFactory blocking_page_factory;
   return blocking_page_factory.CreateBlockedInterceptionBlockingPage(
-      web_contents, cert_error, request_url, nullptr, ssl_info);
-}
-
-std::unique_ptr<LegacyTLSBlockingPage> CreateLegacyTLSBlockingPage(
-    content::WebContents* web_contents) {
-  const int cert_error = net::ERR_SSL_OBSOLETE_VERSION;
-  const GURL request_url("https://example.com");
-
-  net::SSLInfo ssl_info;
-  ssl_info.cert = ssl_info.unverified_cert = CreateFakeCert();
-  ChromeSecurityBlockingPageFactory blocking_page_factory;
-  return blocking_page_factory.CreateLegacyTLSBlockingPage(
       web_contents, cert_error, request_url, nullptr, ssl_info);
 }
 
@@ -505,8 +492,6 @@ void InterstitialHTMLSource::StartDataRequest(
     interstitial_delegate = CreateMITMSoftwareBlockingPage(web_contents);
   } else if (path_without_query == "/blocked-interception") {
     interstitial_delegate = CreateBlockedInterceptionBlockingPage(web_contents);
-  } else if (path_without_query == "/legacy-tls") {
-    interstitial_delegate = CreateLegacyTLSBlockingPage(web_contents);
   } else if (path_without_query == "/safebrowsing") {
     interstitial_delegate = CreateSafeBrowsingBlockingPage(web_contents);
   } else if (path_without_query == "/clock") {

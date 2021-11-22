@@ -33,8 +33,6 @@ static_library("security_interstitial_page") {
     "insecure_form_tab_storage.h",
     "known_interception_disclosure_ui.cc",
     "known_interception_disclosure_ui.h",
-    "legacy_tls_blocking_page.cc",
-    "legacy_tls_blocking_page.h",
     "mitm_software_blocking_page.cc",
     "mitm_software_blocking_page.h",
     "origin_policy_interstitial_page.cc",

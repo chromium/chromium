@@ -222,5 +222,7 @@ public final class ProductionSupportedFlagList {
                             + "an exception."),
             Flag.baseFeature(BlinkFeatures.PREFETCH_ANDROID_FONTS,
                     "Enables prefetching Android fonts on renderer startup."),
+            Flag.baseFeature(AwFeatures.WEBVIEW_LEGACY_TLS_SUPPORT,
+                    "Whether legacy TLS versions (TLS 1.0/1.1) conections are allowed."),
     };
 }

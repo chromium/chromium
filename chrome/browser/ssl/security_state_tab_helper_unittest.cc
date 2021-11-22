@@ -8,7 +8,6 @@
 
 #include "base/command_line.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "chrome/browser/ssl/tls_deprecation_test_utils.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/test/mock_navigation_handle.h"

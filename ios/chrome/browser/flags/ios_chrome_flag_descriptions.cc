@@ -306,12 +306,6 @@ const char kInProductHelpDemoModeDescription[] =
     "an individual promotion causes that promotion but no other promotions to "
     "occur.";
 
-const char kIOSLegacyTLSInterstitialsName[] = "Show legacy TLS interstitials";
-const char kIOSLegacyTLSInterstitialsDescription[] =
-    "When enabled, an interstitial will be shown on main-frame navigations "
-    "that use legacy TLS connections, and subresources using legacy TLS "
-    "connections will be blocked.";
-
 const char kIOSPersistCrashRestoreName[] = "Persist Crash Restore Infobar";
 const char kIOSPersistCrashRestoreDescription[] =
     "When enabled, the Crash Restore Infobar will persist through navigations "

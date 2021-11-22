@@ -105,7 +105,7 @@ class SSLErrorHandler : public content::WebContentsUserData<SSLErrorHandler>,
     SHOW_MITM_SOFTWARE_INTERSTITIAL = 11,
     OS_REPORTS_CAPTIVE_PORTAL = 12,
     SHOW_BLOCKED_INTERCEPTION_INTERSTITIAL = 13,
-    SHOW_LEGACY_TLS_INTERSTITIAL = 14,
+    SHOW_LEGACY_TLS_INTERSTITIAL = 14,  // Deprecated in M98.
     SSL_ERROR_HANDLER_EVENT_COUNT
   };
 
@@ -133,8 +133,6 @@ class SSLErrorHandler : public content::WebContentsUserData<SSLErrorHandler>,
     virtual void ShowBlockedInterceptionInterstitial() = 0;
     virtual void ReportNetworkConnectivity(base::OnceClosure callback) = 0;
     virtual bool HasBlockedInterception() const = 0;
-    virtual void ShowLegacyTLSInterstitial() = 0;
-    virtual bool HasLegacyTLS() const = 0;
   };
 
   // Entry point for the class. Most parameters are the same as
@@ -222,7 +220,6 @@ class SSLErrorHandler : public content::WebContentsUserData<SSLErrorHandler>,
                                 ssl_errors::ClockState clock_state);
   void ShowDynamicInterstitial(const DynamicInterstitialInfo interstitial);
   void ShowBlockedInterceptionInterstitial();
-  void ShowLegacyTLSInterstitial();
 
   // Gets the result of whether the suggested URL is valid. Displays
   // common name mismatch interstitial or ssl interstitial accordingly.

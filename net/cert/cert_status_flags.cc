@@ -50,8 +50,6 @@ CertStatus MapNetErrorToCertStatus(int error) {
       return CERT_STATUS_SYMANTEC_LEGACY;
     case ERR_CERT_KNOWN_INTERCEPTION_BLOCKED:
       return (CERT_STATUS_KNOWN_INTERCEPTION_BLOCKED | CERT_STATUS_REVOKED);
-    case ERR_SSL_OBSOLETE_VERSION:
-      return CERT_STATUS_LEGACY_TLS;
     default:
       return 0;
   }
@@ -96,8 +94,6 @@ int MapCertStatusToNetError(CertStatus cert_status) {
     return ERR_CERT_UNABLE_TO_CHECK_REVOCATION;
   if (cert_status & CERT_STATUS_NO_REVOCATION_MECHANISM)
     return ERR_CERT_NO_REVOCATION_MECHANISM;
-  if (cert_status & CERT_STATUS_LEGACY_TLS)
-    return ERR_SSL_OBSOLETE_VERSION;
 
   // Unknown status. The assumption is 0 (an OK status) won't be used here.
   NOTREACHED();

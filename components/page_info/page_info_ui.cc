@@ -479,12 +479,6 @@ PageInfoUI::GetSecurityDescription(const IdentityInfo& identity_info) const {
               IDS_PAGE_INFO_MIXED_CONTENT_SUMMARY_SHORT,
               IDS_PAGE_INFO_MIXED_CONTENT_DETAILS,
               SecurityDescriptionType::CONNECTION);
-        case PageInfo::SITE_CONNECTION_STATUS_LEGACY_TLS:
-          return CreateSecurityDescription(
-              SecuritySummaryColor::RED,
-              IDS_PAGE_INFO_MIXED_CONTENT_SUMMARY_SHORT,
-              IDS_PAGE_INFO_LEGACY_TLS_DETAILS,
-              SecurityDescriptionType::CONNECTION);
         default:
           // Do not show details for secure connections.
           return CreateSecurityDescription(SecuritySummaryColor::GREEN,
@@ -523,11 +517,6 @@ PageInfoUI::GetSecurityDescription(const IdentityInfo& identity_info) const {
           return CreateSecurityDescription(SecuritySummaryColor::RED,
                                            IDS_PAGE_INFO_MIXED_CONTENT_SUMMARY,
                                            IDS_PAGE_INFO_MIXED_CONTENT_DETAILS,
-                                           SecurityDescriptionType::CONNECTION);
-        case PageInfo::SITE_CONNECTION_STATUS_LEGACY_TLS:
-          return CreateSecurityDescription(SecuritySummaryColor::RED,
-                                           IDS_PAGE_INFO_MIXED_CONTENT_SUMMARY,
-                                           IDS_PAGE_INFO_LEGACY_TLS_DETAILS,
                                            SecurityDescriptionType::CONNECTION);
         default:
 
@@ -925,7 +914,6 @@ int PageInfoUI::GetConnectionIconID(PageInfo::SiteConnectionStatus status) {
       return IDR_PAGEINFO_GOOD;
     case PageInfo::SITE_CONNECTION_STATUS_INSECURE_PASSIVE_SUBRESOURCE:
     case PageInfo::SITE_CONNECTION_STATUS_INSECURE_FORM_ACTION:
-    case PageInfo::SITE_CONNECTION_STATUS_LEGACY_TLS:
     case PageInfo::SITE_CONNECTION_STATUS_UNENCRYPTED:
     case PageInfo::SITE_CONNECTION_STATUS_INSECURE_ACTIVE_SUBRESOURCE:
     case PageInfo::SITE_CONNECTION_STATUS_ENCRYPTED_ERROR:
@@ -961,7 +949,6 @@ int PageInfoUI::GetConnectionIconColorID(
       return IDR_PAGEINFO_GOOD_COLOR;
     case PageInfo::SITE_CONNECTION_STATUS_INSECURE_PASSIVE_SUBRESOURCE:
     case PageInfo::SITE_CONNECTION_STATUS_INSECURE_FORM_ACTION:
-    case PageInfo::SITE_CONNECTION_STATUS_LEGACY_TLS:
     case PageInfo::SITE_CONNECTION_STATUS_UNENCRYPTED:
       return IDR_PAGEINFO_WARNING_COLOR;
     case PageInfo::SITE_CONNECTION_STATUS_INSECURE_ACTIVE_SUBRESOURCE:

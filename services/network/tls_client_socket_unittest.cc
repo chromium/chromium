@@ -483,8 +483,8 @@ TEST_P(TLSClientSocketTest, UpgradeToTLSWithCustomSSLConfig) {
   data_provider.set_connect_data(net::MockConnect(net::SYNCHRONOUS, net::OK));
   mock_client_socket_factory()->AddSocketDataProvider(&data_provider);
   net::SSLSocketDataProvider ssl_socket(net::ASYNC, net::OK);
-  ssl_socket.expected_ssl_version_min = net::SSL_PROTOCOL_VERSION_TLS1_1;
-  ssl_socket.expected_ssl_version_max = net::SSL_PROTOCOL_VERSION_TLS1_2;
+  ssl_socket.expected_ssl_version_min = net::SSL_PROTOCOL_VERSION_TLS1_2;
+  ssl_socket.expected_ssl_version_max = net::SSL_PROTOCOL_VERSION_TLS1_3;
   mock_client_socket_factory()->AddSSLSocketDataProvider(&ssl_socket);
 
   SocketHandle client_socket;
@@ -500,8 +500,8 @@ TEST_P(TLSClientSocketTest, UpgradeToTLSWithCustomSSLConfig) {
   base::RunLoop run_loop;
   mojom::TLSClientSocketOptionsPtr options =
       mojom::TLSClientSocketOptions::New();
-  options->version_min = mojom::SSLVersion::kTLS11;
-  options->version_max = mojom::SSLVersion::kTLS12;
+  options->version_min = mojom::SSLVersion::kTLS12;
+  options->version_max = mojom::SSLVersion::kTLS13;
   int net_error = net::ERR_FAILED;
   auto upgrade_callback = base::BindLambdaForTesting(
       [&](int result, mojo::ScopedDataPipeConsumerHandle receive_pipe_handle,

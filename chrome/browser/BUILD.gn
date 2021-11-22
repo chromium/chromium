@@ -7489,8 +7489,6 @@ static_library("test_support") {
     "ssl/ssl_browsertest_util.h",
     "ssl/ssl_client_auth_requestor_mock.cc",
     "ssl/ssl_client_auth_requestor_mock.h",
-    "ssl/tls_deprecation_test_utils.cc",
-    "ssl/tls_deprecation_test_utils.h",
     "translate/translate_test_utils.cc",
     "translate/translate_test_utils.h",
   ]

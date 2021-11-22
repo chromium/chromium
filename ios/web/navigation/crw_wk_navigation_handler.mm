@@ -1025,25 +1025,15 @@ void ReportOutOfSyncURLInDidStartProvisionalNavigation(
   DCHECK(challenge);
   DCHECK(decisionHandler);
 
-  // If the legacy TLS interstitial is not enabled, don't cause errors. The
-  // interstitial is also dependent on committed interstitials being enabled.
-  if (!base::FeatureList::IsEnabled(web::features::kIOSLegacyTLSInterstitial)) {
-    decisionHandler(YES);
-    return;
-  }
-
-  if (web::GetWebClient()->IsLegacyTLSAllowedForHost(
-          self.webStateImpl,
-          base::SysNSStringToUTF8(challenge.protectionSpace.host))) {
-    decisionHandler(YES);
-    return;
-  }
-
+  // TLS 1.0/1.1 is no longer supported in Chrome. When a connection occurs that
+  // uses deprecated TLS versions, reject it. For navigations (which are user
+  // visible), cancel the navigation and set the error code to
+  // ERR_SSL_VERSION_OR_CIPHER_MISMATCH.
   if (self.pendingNavigationInfo) {
     self.pendingNavigationInfo.cancelled = YES;
     self.pendingNavigationInfo.cancellationError =
         [NSError errorWithDomain:net::kNSErrorDomain
-                            code:net::ERR_SSL_OBSOLETE_VERSION
+                            code:net::ERR_SSL_VERSION_OR_CIPHER_MISMATCH
                         userInfo:nil];
   }
   decisionHandler(NO);

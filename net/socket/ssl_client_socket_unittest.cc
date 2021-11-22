@@ -1000,24 +1000,14 @@ class ClientSocketFactoryWithoutReadIfReady : public ClientSocketFactory {
 };
 
 std::vector<uint16_t> GetTLSVersions() {
-  return {SSL_PROTOCOL_VERSION_TLS1, SSL_PROTOCOL_VERSION_TLS1_1,
-          SSL_PROTOCOL_VERSION_TLS1_2, SSL_PROTOCOL_VERSION_TLS1_3};
+  return {SSL_PROTOCOL_VERSION_TLS1_2, SSL_PROTOCOL_VERSION_TLS1_3};
 }
 
 class SSLClientSocketVersionTest
     : public SSLClientSocketTest,
       public ::testing::WithParamInterface<uint16_t> {
  protected:
-  SSLClientSocketVersionTest() {
-    // If the test is using legacy TLS versions, explicitly disable warnings
-    // (e.g., to cover cases like post-interstitial or when legacy TLS is
-    // explicitly allowed via configuration).
-    if (version() < SSL_PROTOCOL_VERSION_TLS1_2) {
-      SSLContextConfig config;
-      config.version_min_warn = SSL_PROTOCOL_VERSION_TLS1;
-      ssl_config_service_->UpdateSSLConfigAndNotify(config);
-    }
-  }
+  SSLClientSocketVersionTest() = default;
 
   uint16_t version() const { return GetParam(); }
 
@@ -1041,14 +1031,6 @@ class SSLClientSocketReadTest
           std::make_unique<ClientSocketFactoryWithoutReadIfReady>(
               socket_factory_);
       socket_factory_ = wrapped_socket_factory_.get();
-    }
-    // If the test is using legacy TLS versions, explicitly disable warnings
-    // (e.g., to cover cases like post-interstitial or when legacy TLS is
-    // explicitly allowed via configuration).
-    if (version() < SSL_PROTOCOL_VERSION_TLS1_2) {
-      SSLContextConfig config;
-      config.version_min_warn = SSL_PROTOCOL_VERSION_TLS1;
-      ssl_config_service_->UpdateSSLConfigAndNotify(config);
     }
   }
 
@@ -2499,6 +2481,30 @@ TEST_F(SSLClientSocketTest, CipherSuiteDisables) {
   ssl_context_config.disabled_cipher_suites.push_back(kModernTLS12Cipher);
   ssl_config_service_->UpdateSSLConfigAndNotify(ssl_context_config);
 
+  int rv;
+  ASSERT_TRUE(CreateAndConnectSSLClientSocket(SSLConfig(), &rv));
+  EXPECT_THAT(rv, IsError(ERR_SSL_VERSION_OR_CIPHER_MISMATCH));
+}
+
+// Test that connecting to a server only supporting TLS 1.0 will fail and
+// results in ERR_SSL_VERSION_OR_CIPHER_MISMATCH.
+TEST_F(SSLClientSocketTest, TLS1_NotSupported) {
+  SSLServerConfig config;
+  config.version_max = SSL_PROTOCOL_VERSION_TLS1;
+  config.version_min = SSL_PROTOCOL_VERSION_TLS1;
+  ASSERT_TRUE(StartEmbeddedTestServer(EmbeddedTestServer::CERT_OK, config));
+  int rv;
+  ASSERT_TRUE(CreateAndConnectSSLClientSocket(SSLConfig(), &rv));
+  EXPECT_THAT(rv, IsError(ERR_SSL_VERSION_OR_CIPHER_MISMATCH));
+}
+
+// Test that connecting to a server only supporting TLS 1.1 will fail and
+// results in ERR_SSL_VERSION_OR_CIPHER_MISMATCH.
+TEST_F(SSLClientSocketTest, TLS1_1_NotSupported) {
+  SSLServerConfig config;
+  config.version_max = SSL_PROTOCOL_VERSION_TLS1_1;
+  config.version_min = SSL_PROTOCOL_VERSION_TLS1_1;
+  ASSERT_TRUE(StartEmbeddedTestServer(EmbeddedTestServer::CERT_OK, config));
   int rv;
   ASSERT_TRUE(CreateAndConnectSSLClientSocket(SSLConfig(), &rv));
   EXPECT_THAT(rv, IsError(ERR_SSL_VERSION_OR_CIPHER_MISMATCH));
@@ -5349,38 +5355,6 @@ TEST_F(SSLClientSocketTest, ECHFallbackBadCert) {
   EXPECT_THAT(rv, IsError(ERR_ECH_FALLBACK_CERTIFICATE_INVALID));
 }
 
-// Test that the ECH fallback handshake rejects legacy TLS versions.
-TEST_F(SSLClientSocketTest, ECHFallbackLegacyVersion) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kEncryptedClientHello);
-
-  static const char kPublicName[] = "public.example";
-  std::vector<uint8_t> ech_config_list;
-  bssl::UniquePtr<SSL_ECH_KEYS> keys =
-      MakeTestECHKeys(kPublicName, /*max_name_len=*/64, &ech_config_list);
-  ASSERT_TRUE(keys);
-
-  // Configure TLS 1.1 as allowed, but with a bypassable error.
-  SSLContextConfig context_config;
-  context_config.version_min = SSL_PROTOCOL_VERSION_TLS1;
-  context_config.version_min_warn = SSL_PROTOCOL_VERSION_TLS1_2;
-  ssl_config_service_->UpdateSSLConfigAndNotify(context_config);
-
-  SSLServerConfig server_config;
-  server_config.version_max = SSL_PROTOCOL_VERSION_TLS1_1;
-  ASSERT_TRUE(
-      StartEmbeddedTestServer(EmbeddedTestServer::CERT_OK, server_config));
-
-  // We do not implement bypassable errors for the fallback handshake, so this
-  // should report a fatal ERR_SSL_VERSION_OR_CIPHER_MISMATCH, not
-  // ERR_SSL_OBSOLETE_VERSION.
-  SSLConfig client_config;
-  client_config.ech_config_list = std::move(ech_config_list);
-  int rv;
-  ASSERT_TRUE(CreateAndConnectSSLClientSocket(client_config, &rv));
-  EXPECT_THAT(rv, IsError(ERR_SSL_VERSION_OR_CIPHER_MISMATCH));
-}
-
 TEST_F(SSLClientSocketTest, InvalidECHConfigList) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(features::kEncryptedClientHello);
@@ -5500,11 +5474,6 @@ TEST_P(SSLHandshakeDetailsTest, Metrics) {
   SSLContextConfig client_context_config;
   client_context_config.version_min = GetParam().version;
   client_context_config.version_max = GetParam().version;
-  // If the test is using legacy TLS versions, explicitly disable warnings
-  // (e.g., to cover cases like post-interstitial or when legacy TLS is
-  // explicitly allowed via configuration).
-  if (GetParam().version < SSL_PROTOCOL_VERSION_TLS1_2)
-    client_context_config.version_min_warn = SSL_PROTOCOL_VERSION_TLS1;
   ssl_config_service_->UpdateSSLConfigAndNotify(client_context_config);
 
   SSLConfig client_config;
@@ -5572,151 +5541,6 @@ TEST_P(SSLHandshakeDetailsTest, Metrics) {
     histograms.ExpectUniqueSample("Net.SSLHandshakeDetails",
                                   GetParam().expected_resume, 1);
   }
-}
-
-// Set version_min_warn to TLS 1.2 and check that TLS 1.0 and 1.1 fail (with the
-// expected error and cert status) but TLS 1.2 and 1.3 pass.
-TEST_F(SSLClientSocketTest, SetVersionMinWarnToTLS12) {
-  const struct TestCase {
-    uint16_t ssl_version;
-    int expected_net_error;
-    CertStatus expected_cert_status;
-  } kTestCases[]{
-      {SSL_PROTOCOL_VERSION_TLS1, ERR_SSL_OBSOLETE_VERSION,
-       CERT_STATUS_LEGACY_TLS},
-      {SSL_PROTOCOL_VERSION_TLS1_1, ERR_SSL_OBSOLETE_VERSION,
-       CERT_STATUS_LEGACY_TLS},
-      {SSL_PROTOCOL_VERSION_TLS1_2, OK, 0},
-      {SSL_PROTOCOL_VERSION_TLS1_3, OK, 0},
-  };
-
-  for (const auto& test_case : kTestCases) {
-    SCOPED_TRACE(test_case.ssl_version);
-
-    SSLServerConfig server_config;
-    server_config.version_min = test_case.ssl_version;
-    server_config.version_max = test_case.ssl_version;
-    ASSERT_TRUE(
-        StartEmbeddedTestServer(EmbeddedTestServer::CERT_OK, server_config));
-
-    SSLContextConfig client_context_config;
-    client_context_config.version_min = SSL_PROTOCOL_VERSION_TLS1;
-    client_context_config.version_max = SSL_PROTOCOL_VERSION_TLS1_3;
-    client_context_config.version_min_warn = SSL_PROTOCOL_VERSION_TLS1_2;
-    ssl_config_service_->UpdateSSLConfigAndNotify(client_context_config);
-
-    SSLConfig client_config;
-
-    // Try to connect, then check that the expected error is returned and no
-    // unexpected cert_status are set.
-    int rv;
-    ASSERT_TRUE(CreateAndConnectSSLClientSocket(client_config, &rv));
-    EXPECT_THAT(rv, IsError(test_case.expected_net_error));
-    SSLInfo info;
-    ASSERT_TRUE(sock_->GetSSLInfo(&info));
-    EXPECT_EQ(test_case.expected_cert_status,
-              info.cert_status & test_case.expected_cert_status);
-    net::CertStatus extra_cert_errors =
-        test_case.expected_cert_status ^
-        (info.cert_status & CERT_STATUS_ALL_ERRORS);
-    EXPECT_FALSE(extra_cert_errors);
-  }
-}
-
-// Check that TLS 1.0 and TLS 1.1 failure is bypassed when you add
-// allowed_bad_certs (with the expected error and cert status).
-TEST_F(SSLClientSocketTest, NoErrorWhenAddedToAllowedBadCerts) {
-  SSLServerConfig server_config;
-  server_config.version_min = SSL_PROTOCOL_VERSION_TLS1;
-  server_config.version_max = SSL_PROTOCOL_VERSION_TLS1;
-  ASSERT_TRUE(
-      StartEmbeddedTestServer(EmbeddedTestServer::CERT_OK, server_config));
-
-  SSLConfig client_config;
-  client_config.allowed_bad_certs.emplace_back(
-      embedded_test_server()->GetCertificate(), CERT_STATUS_LEGACY_TLS);
-
-  // Connection should proceed without a net error but with
-  // CERT_STATUS_LEGACY_TLS.
-  int rv;
-  ASSERT_TRUE(CreateAndConnectSSLClientSocket(client_config, &rv));
-  EXPECT_THAT(rv, IsOk());
-  SSLInfo info;
-  ASSERT_TRUE(sock_->GetSSLInfo(&info));
-  EXPECT_EQ(CERT_STATUS_LEGACY_TLS, info.cert_status);
-}
-
-// Check that if the we have bypassed a certificate error previously and then
-// the server responded with TLS 1.0, we fill in both cert status flags.
-TEST_F(SSLClientSocketTest, BypassedCertShouldSetLegacyTLSStatus) {
-  SSLServerConfig server_config;
-  server_config.version_min = SSL_PROTOCOL_VERSION_TLS1;
-  server_config.version_max = SSL_PROTOCOL_VERSION_TLS1;
-  ASSERT_TRUE(StartEmbeddedTestServer(EmbeddedTestServer::CERT_MISMATCHED_NAME,
-                                      server_config));
-  cert_verifier_->set_default_result(ERR_CERT_COMMON_NAME_INVALID);
-
-  SSLConfig client_config;
-  client_config.allowed_bad_certs.emplace_back(
-      embedded_test_server()->GetCertificate(),
-      CERT_STATUS_COMMON_NAME_INVALID);
-
-  // Connection should proceed, and CERT_STATUS_LEGACY_TLS and
-  // CERT_STATUS_COMMON_NAME_INVALID should be set.
-  int rv;
-  ASSERT_TRUE(CreateAndConnectSSLClientSocket(client_config, &rv));
-  EXPECT_THAT(rv, IsOk());
-  SSLInfo info;
-  ASSERT_TRUE(sock_->GetSSLInfo(&info));
-  EXPECT_TRUE(info.cert_status & CERT_STATUS_LEGACY_TLS);
-  EXPECT_TRUE(info.cert_status & CERT_STATUS_COMMON_NAME_INVALID);
-}
-
-// Checks that other errors are prioritized over legacy TLS errors.
-TEST_F(SSLClientSocketTest, PrioritizeCertErrorsOverLegacyTLS) {
-  SSLServerConfig server_config;
-  server_config.version_min = SSL_PROTOCOL_VERSION_TLS1;
-  server_config.version_max = SSL_PROTOCOL_VERSION_TLS1;
-  ASSERT_TRUE(
-      StartEmbeddedTestServer(EmbeddedTestServer::CERT_EXPIRED, server_config));
-  cert_verifier_->set_default_result(ERR_CERT_DATE_INVALID);
-
-  SSLConfig client_config;
-
-  // Connection should fail with ERR_CERT_DATE_INVALID and only the date invalid
-  // cert status.
-  int rv;
-  ASSERT_TRUE(CreateAndConnectSSLClientSocket(client_config, &rv));
-  EXPECT_THAT(rv, IsError(ERR_CERT_DATE_INVALID));
-  SSLInfo info;
-  ASSERT_TRUE(sock_->GetSSLInfo(&info));
-  EXPECT_FALSE(info.cert_status & CERT_STATUS_LEGACY_TLS);
-  EXPECT_TRUE(info.cert_status & CERT_STATUS_DATE_INVALID);
-}
-
-// Checks that legacy TLS errors are not fatal.
-TEST_F(SSLClientSocketTest, LegacyTLSErrorsNotFatal) {
-  SSLServerConfig server_config;
-  server_config.version_min = SSL_PROTOCOL_VERSION_TLS1;
-  server_config.version_max = SSL_PROTOCOL_VERSION_TLS1;
-  ASSERT_TRUE(
-      StartEmbeddedTestServer(EmbeddedTestServer::CERT_OK, server_config));
-
-  SSLConfig client_config;
-
-  // Connection should fail with ERR_SSL_OBSOLETE_VERSION and the legacy TLS
-  // cert status.
-  int rv;
-  const base::Time expiry = base::Time::Now() + base::Seconds(1000);
-  transport_security_state_->AddHSTS(host_port_pair().host(), expiry, true);
-  ASSERT_TRUE(CreateAndConnectSSLClientSocket(client_config, &rv));
-  EXPECT_THAT(rv, IsError(ERR_SSL_OBSOLETE_VERSION));
-  SSLInfo info;
-  ASSERT_TRUE(sock_->GetSSLInfo(&info));
-  EXPECT_TRUE(info.cert_status & CERT_STATUS_LEGACY_TLS);
-
-  // The error should not be marked as fatal.
-  EXPECT_FALSE(info.is_fatal_cert_error);
 }
 
 TEST_F(SSLClientSocketZeroRTTTest, EarlyDataReasonNewSession) {

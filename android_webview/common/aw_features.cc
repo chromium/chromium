@@ -51,6 +51,10 @@ const base::Feature kWebViewExtraHeadersSameOriginOnly{
 const base::Feature kWebViewJavaJsBridgeMojo{"WebViewJavaJsBridgeMojo",
                                              base::FEATURE_DISABLED_BY_DEFAULT};
 
+// When enabled, connections using legacy TLS 1.0/1.1 versions are allowed.
+const base::Feature kWebViewLegacyTlsSupport{"WebViewLegacyTlsSupport",
+                                             base::FEATURE_ENABLED_BY_DEFAULT};
+
 // Enables logging whether it was a first party page when logging PageTimeSpent.
 const base::Feature kWebViewLogFirstPartyPageTimeSpent{
     "WebViewLogFirstPartyPageTimeSpent", base::FEATURE_DISABLED_BY_DEFAULT};

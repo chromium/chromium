@@ -19,7 +19,6 @@
 #include "chrome/browser/download/download_history.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ssl/security_state_tab_helper.h"
-#include "chrome/browser/ssl/tls_deprecation_test_utils.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/download/public/common/mock_download_item.h"
 #include "components/history/core/browser/download_row.h"

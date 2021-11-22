@@ -511,10 +511,6 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(
          optimization_guide::features::
              kRemoteOptimizationGuideFetchingAnonymousDataConsent)},
-    {"legacy-tls-interstitial",
-     flag_descriptions::kIOSLegacyTLSInterstitialsName,
-     flag_descriptions::kIOSLegacyTLSInterstitialsDescription, flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(web::features::kIOSLegacyTLSInterstitial)},
 #if BUILDFLAG(IOS_SCREEN_TIME_ENABLED)
     {"screen-time-integration-ios",
      flag_descriptions::kScreenTimeIntegrationName,

@@ -28,7 +28,6 @@ typedef NS_OPTIONS(NSInteger, CWVCertStatus) {
   CWVCertStatusCertificateTransparencyRequired = 1 << 24,
   CWVCertStatusSymantecLegacy = 1 << 25,
   CWVCertStatusKnownInterceptionBlocked = 1 << 26,
-  CWVCertStatusLegacyTLS = 1 << 27,
 };
 
 #endif  // IOS_WEB_VIEW_PUBLIC_CWV_CERT_STATUS_H_

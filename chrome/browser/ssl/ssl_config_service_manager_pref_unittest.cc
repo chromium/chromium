@@ -211,9 +211,7 @@ TEST_F(SSLConfigServiceManagerPrefTest, NoTLS10) {
       SetUpConfigServiceManager(&local_state);
 
   // The command-line option must not have been honored.
-  EXPECT_LE(network::mojom::SSLVersion::kTLS1, initial_config_->version_min);
-  EXPECT_LE(network::mojom::SSLVersion::kTLS12,
-            initial_config_->version_min_warn);
+  EXPECT_LE(network::mojom::SSLVersion::kTLS12, initial_config_->version_min);
 }
 
 // Tests that "tls1.1" is not treated as a valid minimum version.
@@ -229,9 +227,7 @@ TEST_F(SSLConfigServiceManagerPrefTest, NoTLS11) {
       SetUpConfigServiceManager(&local_state);
 
   // The command-line option must not have been honored.
-  EXPECT_LE(network::mojom::SSLVersion::kTLS1, initial_config_->version_min);
-  EXPECT_LE(network::mojom::SSLVersion::kTLS12,
-            initial_config_->version_min_warn);
+  EXPECT_LE(network::mojom::SSLVersion::kTLS12, initial_config_->version_min);
 }
 
 // Tests that SSLVersionMin correctly sets the minimum version.

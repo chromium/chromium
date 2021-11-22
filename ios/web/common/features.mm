@@ -37,9 +37,6 @@ const base::Feature kUseDefaultUserAgentInWebClient{
 const base::Feature kPreserveScrollViewProperties{
     "PreserveScrollViewProperties", base::FEATURE_ENABLED_BY_DEFAULT};
 
-const base::Feature kIOSLegacyTLSInterstitial{"IOSLegacyTLSInterstitial",
-                                              base::FEATURE_ENABLED_BY_DEFAULT};
-
 const base::Feature kRecordSnapshotSize{"RecordSnapshotSize",
                                         base::FEATURE_DISABLED_BY_DEFAULT};
 

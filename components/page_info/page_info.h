@@ -57,7 +57,6 @@ class PageInfo {
     SITE_CONNECTION_STATUS_UNENCRYPTED,      // Connection is not encrypted.
     SITE_CONNECTION_STATUS_ENCRYPTED_ERROR,  // Connection error occurred.
     SITE_CONNECTION_STATUS_INTERNAL_PAGE,    // Internal site.
-    SITE_CONNECTION_STATUS_LEGACY_TLS,  // Connection used a legacy TLS version.
   };
 
   // Validation status of a website's identity.

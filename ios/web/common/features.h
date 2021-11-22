@@ -44,9 +44,6 @@ extern const base::Feature kUseDefaultUserAgentInWebClient;
 // of properties using hard coded logic.
 extern const base::Feature kPreserveScrollViewProperties;
 
-// When enabled, display an interstitial on legacy TLS connections.
-extern const base::Feature kIOSLegacyTLSInterstitial;
-
 // Records snapshot size of image (IOS.Snapshots.ImageSize histogram) and PDF
 // (IOS.Snapshots.PDFSize histogram) if enabled. Enabling this flag will
 // generate PDF when Page Snapshot is taken just to record PDF size.

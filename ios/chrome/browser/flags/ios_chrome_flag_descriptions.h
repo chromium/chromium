@@ -270,11 +270,6 @@ extern const char
 extern const char kInProductHelpDemoModeName[];
 extern const char kInProductHelpDemoModeDescription[];
 
-// Title and description for the flag to enable interstitials on legacy TLS
-// connections.
-extern const char kIOSLegacyTLSInterstitialsName[];
-extern const char kIOSLegacyTLSInterstitialsDescription[];
-
 // Title and description for the flag to persist the Crash Restore Infobar
 // across navigations.
 extern const char kIOSPersistCrashRestoreName[];

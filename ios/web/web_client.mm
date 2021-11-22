@@ -81,11 +81,6 @@ NSString* WebClient::GetDocumentStartScriptForMainFrame(
   return @"";
 }
 
-bool WebClient::IsLegacyTLSAllowedForHost(WebState* web_state,
-                                          const std::string& hostname) {
-  return false;
-}
-
 void WebClient::PrepareErrorPage(WebState* web_state,
                                  const GURL& url,
                                  NSError* error,

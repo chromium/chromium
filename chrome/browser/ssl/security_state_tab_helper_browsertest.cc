@@ -31,7 +31,6 @@
 #include "chrome/browser/reputation/reputation_web_contents_observer.h"
 #include "chrome/browser/safe_browsing/chrome_password_protection_service.h"
 #include "chrome/browser/ssl/cert_verifier_browser_test.h"
-#include "chrome/browser/ssl/tls_deprecation_test_utils.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -1363,48 +1362,6 @@ IN_PROC_BROWSER_TEST_F(DidChangeVisibleSecurityStateTest,
 
   EXPECT_EQ(security_state::SecurityLevel::SECURE,
             observer.latest_security_level());
-}
-
-// Tests that legacy TLS pages show the correct security descriptions.
-class BrowserTestNonsecureURLRequestWithLegacyTLSWarnings
-    : public InProcessBrowserTest {
- public:
-  BrowserTestNonsecureURLRequestWithLegacyTLSWarnings() {}
-
-  BrowserTestNonsecureURLRequestWithLegacyTLSWarnings(
-      const BrowserTestNonsecureURLRequestWithLegacyTLSWarnings&) = delete;
-  BrowserTestNonsecureURLRequestWithLegacyTLSWarnings& operator=(
-      const BrowserTestNonsecureURLRequestWithLegacyTLSWarnings&) = delete;
-
-  void SetUpOnMainThread() override {
-    net::SSLServerConfig config;
-    config.version_max = net::SSL_PROTOCOL_VERSION_TLS1_1;
-    config.version_min = net::SSL_PROTOCOL_VERSION_TLS1_1;
-    https_server()->SetSSLConfig(net::EmbeddedTestServer::CERT_OK, config);
-    ASSERT_TRUE(https_server()->Start());
-  }
-
- protected:
-  net::EmbeddedTestServer* https_server() { return &https_server_; }
-
- private:
-  net::EmbeddedTestServer https_server_{
-      net::test_server::EmbeddedTestServer::TYPE_HTTPS};
-};
-
-// Tests that a connection with legacy TLS versions (TLS 1.0/1.1) gets
-// downgraded to SecurityLevel WARNING and |connection_used_legacy_tls| is set.
-IN_PROC_BROWSER_TEST_F(BrowserTestNonsecureURLRequestWithLegacyTLSWarnings,
-                       LegacyTLSDowngradesSecurityLevel) {
-  auto* tab = browser()->tab_strip_model()->GetActiveWebContents();
-  auto* helper = SecurityStateTabHelper::FromWebContents(tab);
-
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), https_server()->GetURL("/ssl/google.html")));
-  WaitForInterstitial(tab);
-  ProceedThroughInterstitial(tab);
-
-  EXPECT_EQ(security_state::DANGEROUS, helper->GetSecurityLevel());
 }
 
 // Tests that the Not Secure chip does not show for error pages on http:// URLs.

@@ -559,8 +559,8 @@ NET_ERROR(CERT_SYMANTEC_LEGACY, -215)
 // the device owner.
 NET_ERROR(CERT_KNOWN_INTERCEPTION_BLOCKED, -217)
 
-// The connection uses an obsolete version of SSL/TLS.
-NET_ERROR(SSL_OBSOLETE_VERSION, -218)
+// -218 was SSL_OBSOLETE_VERSION which is not longer used. TLS 1.0/1.1 instead
+// cause SSL_VERSION_OR_CIPHER_MISMATCH now.
 
 // Add new certificate error codes here.
 //

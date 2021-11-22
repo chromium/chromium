@@ -18,7 +18,7 @@ interface TLSClientSocket {
 // Represents the options that consumers can specify when requesting a
 // TLSClientSocket.
 struct TLSClientSocketOptions {
-  SSLVersion version_min = kTLS1;
+  SSLVersion version_min = kTLS12;
   SSLVersion version_max = kTLS13;
 
   // If true, the SSLInfo will be returned in the UpgradeToTLS callback on

@@ -154,27 +154,6 @@ WebLayerSecurityBlockingPageFactory::CreateBadClockBlockingPage(
   return interstitial_page;
 }
 
-std::unique_ptr<LegacyTLSBlockingPage>
-WebLayerSecurityBlockingPageFactory::CreateLegacyTLSBlockingPage(
-    content::WebContents* web_contents,
-    int cert_error,
-    const GURL& request_url,
-    std::unique_ptr<SSLCertReporter> ssl_cert_reporter,
-    const net::SSLInfo& ssl_info) {
-  auto controller_client = std::make_unique<SSLErrorControllerClient>(
-      web_contents, cert_error, ssl_info, request_url,
-      CreateMetricsHelperAndStartRecording(web_contents, request_url,
-                                           "legacy_tls", false),
-      CreateSettingsPageHelper());
-
-  auto interstitial_page = std::make_unique<LegacyTLSBlockingPage>(
-      web_contents, cert_error, request_url, std::move(ssl_cert_reporter),
-      /*can_show_enhanced_protection_message=*/false, ssl_info,
-      std::move(controller_client));
-
-  return interstitial_page;
-}
-
 std::unique_ptr<MITMSoftwareBlockingPage>
 WebLayerSecurityBlockingPageFactory::CreateMITMSoftwareBlockingPage(
     content::WebContents* web_contents,

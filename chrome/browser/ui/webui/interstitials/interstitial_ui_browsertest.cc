@@ -191,11 +191,6 @@ IN_PROC_BROWSER_TEST_F(InterstitialUITest, BlockedInterceptionInterstitial) {
                    u"Anything you type");
 }
 
-IN_PROC_BROWSER_TEST_F(InterstitialUITest, LegacyTLSInterstitial) {
-  TestInterstitial(GURL("chrome://interstitials/legacy-tls"), "Privacy error",
-                   u"outdated security configuration");
-}
-
 // Tests that back button works after opening an interstitial from
 // chrome://interstitials.
 IN_PROC_BROWSER_TEST_F(InterstitialUITest, InterstitialBackButton) {

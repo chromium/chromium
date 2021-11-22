@@ -26,7 +26,6 @@
 #include "components/security_interstitials/content/blocked_interception_blocking_page.h"
 #include "components/security_interstitials/content/captive_portal_blocking_page.h"
 #include "components/security_interstitials/content/captive_portal_helper.h"
-#include "components/security_interstitials/content/legacy_tls_blocking_page.h"
 #include "components/security_interstitials/content/mitm_software_blocking_page.h"
 #include "components/security_interstitials/content/security_blocking_page_factory.h"
 #include "components/security_interstitials/content/security_interstitial_page.h"
@@ -388,8 +387,6 @@ class SSLErrorHandlerDelegateImpl : public SSLErrorHandler::Delegate {
   void ShowBlockedInterceptionInterstitial() override;
   void ReportNetworkConnectivity(base::OnceClosure callback) override;
   bool HasBlockedInterception() const override;
-  void ShowLegacyTLSInterstitial() override;
-  bool HasLegacyTLS() const override;
 
  private:
   // Calls the |blocking_page_ready_callback_| if it's not null, else calls
@@ -509,13 +506,6 @@ void SSLErrorHandlerDelegateImpl::ShowBlockedInterceptionInterstitial() {
           std::move(ssl_cert_reporter_), ssl_info_));
 }
 
-void SSLErrorHandlerDelegateImpl::ShowLegacyTLSInterstitial() {
-  // Show legacy TLS blocking page. The interstitial owns the blocking page.
-  OnBlockingPageReady(blocking_page_factory_->CreateLegacyTLSBlockingPage(
-      web_contents_, cert_error_, request_url_, std::move(ssl_cert_reporter_),
-      ssl_info_));
-}
-
 void SSLErrorHandlerDelegateImpl::ReportNetworkConnectivity(
     base::OnceClosure callback) {
 #if defined(OS_ANDROID)
@@ -531,11 +521,6 @@ void SSLErrorHandlerDelegateImpl::ReportNetworkConnectivity(
 bool SSLErrorHandlerDelegateImpl::HasBlockedInterception() const {
   return ssl_errors::ErrorInfo::NetErrorToErrorType(cert_error_) ==
          ssl_errors::ErrorInfo::CERT_KNOWN_INTERCEPTION_BLOCKED;
-}
-
-bool SSLErrorHandlerDelegateImpl::HasLegacyTLS() const {
-  return ssl_errors::ErrorInfo::NetErrorToErrorType(cert_error_) ==
-         ssl_errors::ErrorInfo::LEGACY_TLS;
 }
 
 void SSLErrorHandlerDelegateImpl::OnBlockingPageReady(
@@ -682,12 +667,6 @@ void SSLErrorHandler::StartHandlingError() {
 
   if (delegate_->HasBlockedInterception()) {
     return ShowBlockedInterceptionInterstitial();
-  }
-
-  // The legacy TLS interstitial is only shown if no other errors were found.
-  if (ssl_errors::ErrorInfo::NetErrorToErrorType(cert_error_) ==
-      ssl_errors::ErrorInfo::LEGACY_TLS) {
-    return ShowLegacyTLSInterstitial();
   }
 
   if (ssl_errors::ErrorInfo::NetErrorToErrorType(cert_error_) ==
@@ -883,15 +862,6 @@ void SSLErrorHandler::ShowBlockedInterceptionInterstitial() {
   // Show a blocking page. The interstitial owns the blocking page.
   RecordUMA(SHOW_BLOCKED_INTERCEPTION_INTERSTITIAL);
   delegate_->ShowBlockedInterceptionInterstitial();
-  // Once an interstitial is displayed, no need to keep the handler around.
-  // This is the equivalent of "delete this".
-  web_contents()->RemoveUserData(UserDataKey());
-}
-
-void SSLErrorHandler::ShowLegacyTLSInterstitial() {
-  // Show a blocking page. The interstitial owns the blocking page.
-  RecordUMA(SHOW_LEGACY_TLS_INTERSTITIAL);
-  delegate_->ShowLegacyTLSInterstitial();
   // Once an interstitial is displayed, no need to keep the handler around.
   // This is the equivalent of "delete this".
   web_contents()->RemoveUserData(UserDataKey());

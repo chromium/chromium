@@ -52,9 +52,6 @@ bool IsShowingBadClockInterstitial(content::WebContents* tab);
 // Returns true if |tab| is displaying a known-interception interstitial.
 bool IsShowingBlockedInterceptionInterstitial(content::WebContents* tab);
 
-// Returns true if |tab| is displaying a legacy TLS interstitial.
-bool IsShowingLegacyTLSInterstitial(content::WebContents* tab);
-
 // Returns true if `tab` is displaying an HTTPS-First Mode interstitial.
 bool IsShowingHttpsFirstModeInterstitial(content::WebContents* tab);
 

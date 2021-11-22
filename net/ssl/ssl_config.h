@@ -36,9 +36,6 @@ enum {
 // Default minimum protocol version.
 NET_EXPORT extern const uint16_t kDefaultSSLVersionMin;
 
-// Default minimum protocol version to warn about.
-NET_EXPORT extern const uint16_t kDefaultSSLVersionMinWarn;
-
 // Default maximum protocol version.
 NET_EXPORT extern const uint16_t kDefaultSSLVersionMax;
 

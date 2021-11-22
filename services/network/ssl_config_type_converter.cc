@@ -30,8 +30,6 @@ net::SSLContextConfig MojoSSLConfigToSSLContextConfig(
 
   net_config.version_min =
       MojoSSLVersionToNetSSLVersion(mojo_config->version_min);
-  net_config.version_min_warn =
-      MojoSSLVersionToNetSSLVersion(mojo_config->version_min_warn);
   net_config.version_max =
       MojoSSLVersionToNetSSLVersion(mojo_config->version_max);
   DCHECK_LE(net_config.version_min, net_config.version_max);

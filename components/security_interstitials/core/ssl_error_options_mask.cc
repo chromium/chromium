@@ -25,7 +25,6 @@ int IsCertErrorFatal(int cert_error) {
     case net::ERR_CERTIFICATE_TRANSPARENCY_REQUIRED:
     case net::ERR_CERT_SYMANTEC_LEGACY:
     case net::ERR_CERT_KNOWN_INTERCEPTION_BLOCKED:
-    case net::ERR_SSL_OBSOLETE_VERSION:
       return false;
     case net::ERR_CERT_CONTAINS_ERRORS:
     case net::ERR_CERT_REVOKED:

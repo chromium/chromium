@@ -24,14 +24,9 @@ struct NET_EXPORT SSLContextConfig {
 
   // The minimum and maximum protocol versions that are enabled.
   // (Use the SSL_PROTOCOL_VERSION_xxx enumerators defined in ssl_config.h.)
-  // SSL 2.0 and SSL 3.0 are not supported. If version_max < version_min, it
-  // means no protocol versions are enabled.
-  //
-  // version_min_warn is the minimum protocol version that won't cause cert
-  // errors (e.g., in Chrome we'll show a security interstitial for connections
-  // using a version lower than version_min_warn).
+  // SSL 2.0/3.0 and TLS 1.0/1.1 are not supported. If version_max <
+  // version_min, it means no protocol versions are enabled.
   uint16_t version_min = kDefaultSSLVersionMin;
-  uint16_t version_min_warn = kDefaultSSLVersionMinWarn;
   uint16_t version_max = kDefaultSSLVersionMax;
 
   // Presorted list of cipher suites which should be explicitly prevented from
