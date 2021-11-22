@@ -54,7 +54,7 @@ TEST_F(IcuUtilTest, ExtraFileInitializedAfterInit) {
   ASSERT_NE(file, kInvalidPlatformFile);
 }
 
-TEST_F(IcuUtilTest, InitializeExtraIcuFromFdSucceeds) {
+TEST_F(IcuUtilTest, DISABLED_InitializeExtraIcuFromFdSucceeds) {
   InitializeExtraICU(std::string());
   MemoryMappedFile::Region region;
   PlatformFile pf = GetIcuExtraDataFileHandle(&region);
