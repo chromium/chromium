@@ -1,6 +1,4 @@
 # This is the filter for browser_tests that supports pixel tests.
-*EyeDropperBrowserTest.*
-*PasswordBubbleBrowserTest.*
 AccuracyTipBubbleViewDialogBrowserTest.*
 AppInfoDialogBrowserTest.*
 AskGoogleForSuggestionsDialogTest.*
@@ -15,6 +13,7 @@ CryptoModulePasswordDialogTest.*
 DeepScanningFailureModalDialogTest.*
 ExtensionInstallDialogViewInteractiveBrowserTest.*
 ExtensionUninstallDialogViewInteractiveBrowserTest.*
+*EyeDropperBrowserTest.*
 FeaturePromoDialogTest.*
 FileSystemAccessUsageBubbleViewTest.*
 FirstRunDialogTest.*
@@ -28,18 +27,20 @@ OneTimePermissionPromptBubbleViewBrowserTest.*
 OutdatedUpgradeBubbleTest.*
 PageInfoBubbleViewAboutThisSiteDialogBrowserTest.*
 PageInfoBubbleViewDialogBrowserTest.*
+*PasswordBubbleBrowserTest.*
 PasswordReuseModalWarningTest.*
 PermissionRequestChipDialogBrowserTest.*
-All/PermissionPromptBubbleViewBrowserTest.*
+*PermissionPromptBubbleViewBrowserTest.*
 ProfileSigninConfirmationDialogTest.*
 PromptForScanningModalDialogTest.*
+QRCodeGeneratorBubbleBrowserTest.*
 RelaunchRecommendedBubbleViewDialogTest.*
 RelaunchRequiredDialogViewDialogTest.*
 ReopenTabPromoControllerDialogBrowserTest.*
 SafetyTipPageInfoBubbleViewDialogTest.*
 ScreenCaptureNotificationUiBrowserTest.*
 SecurePaymentConfirmationDialogViewTest.InvokeUi_*
-All/SendTabToSelfBubbleTest.*
+*SendTabToSelfBubbleTest.*
 SessionCrashedBubbleViewTest.*
 TabGroupEditorBubbleViewDialogBrowserTest.*
 TabHoverCardBubbleViewBrowserTest.*

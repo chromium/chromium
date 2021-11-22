@@ -46,7 +46,8 @@
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/textfield/textfield.h"
-#include "ui/views/layout/grid_layout.h"
+#include "ui/views/layout/box_layout_view.h"
+#include "ui/views/layout/flex_layout.h"
 #include "ui/views/layout/layout_provider.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
@@ -80,13 +81,6 @@ gfx::ImageSkia CreateBackgroundImageSkia(const gfx::Size& size) {
   bitmap.allocN32Pixels(size.width(), size.height());
   bitmap.eraseColor(SK_ColorWHITE);
   return gfx::ImageSkia::CreateFromBitmap(bitmap, 1.0f);
-}
-
-// Adds a new small vertical padding row to the current bottom of |layout|.
-void AddSmallPaddingRow(views::GridLayout* layout) {
-  layout->AddPaddingRow(views::GridLayout::kFixedSize,
-                        ChromeLayoutProvider::Get()->GetDistanceMetric(
-                            DISTANCE_UNRELATED_CONTROL_VERTICAL_LARGE));
 }
 
 }  // namespace
@@ -216,24 +210,11 @@ void QRCodeGeneratorBubble::Init() {
           views::DialogContentType::kControl, views::DialogContentType::kText);
   set_margins(insets);
 
-  // Internal IDs for column layout; no effect on UI.
-  constexpr int kQRImageColumnSetId = 0;
-  constexpr int kCenterErrorLabelColumnSetId = 1;
-  constexpr int kTextFieldColumnSetId = 2;
-  constexpr int kBottomErrorLabelColumnSetId = 3;
-  constexpr int kDownloadRowColumnSetId = 4;
-
   // Add top-level Grid Layout manager for this dialog.
-  views::GridLayout* const layout =
-      SetLayoutManager(std::make_unique<views::GridLayout>());
+  auto* const layout = SetLayoutManager(std::make_unique<views::FlexLayout>());
+  layout->SetOrientation(views::LayoutOrientation::kVertical);
 
   // QR Code image, with padding and border.
-  views::ColumnSet* column_set_qr_image =
-      layout->AddColumnSet(kQRImageColumnSetId);
-  column_set_qr_image->AddColumn(
-      views::GridLayout::CENTER,  // Center horizontally, do not resize.
-      views::GridLayout::CENTER,  // Align center vertically, do not resize.
-      1.0, views::GridLayout::ColumnSize::kUsePreferred, 0, 0);
   using Alignment = views::ImageView::Alignment;
   auto qr_code_image = std::make_unique<views::ImageView>();
   const int border_radius = views::LayoutProvider::Get()->GetCornerRadiusMetric(
@@ -247,55 +228,41 @@ void QRCodeGeneratorBubble::Init() {
                                   gfx::Size(border_radius, border_radius));
   qr_code_image->SetBackground(
       views::CreateRoundedRectBackground(SK_ColorWHITE, border_radius));
+  qr_code_image->SetProperty(views::kCrossAxisAlignmentKey,
+                             views::LayoutAlignment::kCenter);
 
-  layout->StartRow(views::GridLayout::kFixedSize, kQRImageColumnSetId);
-  qr_code_image_ = layout->AddView(std::move(qr_code_image));
+  qr_code_image_ = AddChildView(std::move(qr_code_image));
 
   // Center error message.
-  views::ColumnSet* column_set_center_error_label =
-      layout->AddColumnSet(kCenterErrorLabelColumnSetId);
-  column_set_center_error_label->AddColumn(
-      views::GridLayout::CENTER, views::GridLayout::CENTER, 1.0,
-      views::GridLayout::ColumnSize::kUsePreferred, 0, 0);
   auto center_error_label = std::make_unique<views::Label>(
       l10n_util::GetStringUTF16(
           IDS_BROWSER_SHARING_QR_CODE_DIALOG_ERROR_UNKNOWN),
       views::style::CONTEXT_LABEL, views::style::STYLE_SECONDARY);
   center_error_label->SetHorizontalAlignment(gfx::ALIGN_CENTER);
   center_error_label->SetVerticalAlignment(gfx::ALIGN_MIDDLE);
-  layout->StartRow(views::GridLayout::kFixedSize, kCenterErrorLabelColumnSetId);
-  center_error_label_ = layout->AddView(std::move(center_error_label));
+  center_error_label_ = AddChildView(std::move(center_error_label));
   ShrinkAndHideDisplay(center_error_label_);
 
-  // Padding
-  AddSmallPaddingRow(layout);
-
   // Text box to edit URL
-  views::ColumnSet* column_set_textfield =
-      layout->AddColumnSet(kTextFieldColumnSetId);
-  int textfield_min_width = ChromeLayoutProvider::Get()->GetDistanceMetric(
-                                views::DISTANCE_BUBBLE_PREFERRED_WIDTH) -
-                            insets.left() - insets.right();
-  column_set_textfield->AddColumn(
-      views::GridLayout::FILL,    // Fill text field horizontally.
-      views::GridLayout::CENTER,  // Align center vertically, do not resize.
-      1.0, views::GridLayout::ColumnSize::kUsePreferred, 0,
-      textfield_min_width);
   auto textfield_url = std::make_unique<views::Textfield>();
   textfield_url->SetAccessibleName(l10n_util::GetStringUTF16(
       IDS_BROWSER_SHARING_QR_CODE_DIALOG_URL_TEXTFIELD_ACCESSIBLE_NAME));
   textfield_url->SetText(
       base::ASCIIToUTF16(url_.spec()));  // TODO(skare): check
   textfield_url->set_controller(this);
-  layout->StartRow(views::GridLayout::kFixedSize, kTextFieldColumnSetId);
-  textfield_url_ = layout->AddView(std::move(textfield_url));
+  textfield_url->SetProperty(
+      views::kMarginsKey,
+      gfx::Insets(ChromeLayoutProvider::Get()->GetDistanceMetric(
+                      DISTANCE_UNRELATED_CONTROL_VERTICAL_LARGE),
+                  0, 0, 0));
+  int textfield_min_width = ChromeLayoutProvider::Get()->GetDistanceMetric(
+                                views::DISTANCE_BUBBLE_PREFERRED_WIDTH) -
+                            insets.left() - insets.right();
+  textfield_url->SetPreferredSize(gfx::Size(
+      textfield_min_width, textfield_url->GetPreferredSize().height()));
+  textfield_url_ = AddChildView(std::move(textfield_url));
 
   // Lower error message.
-  views::ColumnSet* column_set_bottom_error_label =
-      layout->AddColumnSet(kBottomErrorLabelColumnSetId);
-  column_set_bottom_error_label->AddColumn(
-      views::GridLayout::FILL, views::GridLayout::CENTER, 1.0,
-      views::GridLayout::ColumnSize::kUsePreferred, 0, 0);
   // User-facing limit rounded down to 250 characters for readability.
   auto bottom_error_label = std::make_unique<views::Label>(
       l10n_util::GetStringFUTF16Int(
@@ -303,39 +270,26 @@ void QRCodeGeneratorBubble::Init() {
       views::style::CONTEXT_LABEL, views::style::STYLE_SECONDARY);
   bottom_error_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   bottom_error_label->SetVisible(false);
-  layout->StartRow(views::GridLayout::kFixedSize, kBottomErrorLabelColumnSetId);
-  bottom_error_label_ = layout->AddView(std::move(bottom_error_label));
+  auto* bottom_error_container = AddChildView(std::make_unique<views::View>());
+  bottom_error_container->SetUseDefaultFillLayout(true);
+  bottom_error_label_ =
+      bottom_error_container->AddChildView(std::move(bottom_error_label));
   // Updating the image requires both error labels to be initialized.
   DisplayPlaceholderImage();
 
   // Padding - larger between controls and action buttons.
-  layout->AddPaddingRow(
-      views::GridLayout::kFixedSize,
-      ChromeLayoutProvider::Get()->GetDistanceMetric(
-          views::DISTANCE_DIALOG_CONTENT_MARGIN_BOTTOM_CONTROL) -
-          bottom_error_label_->GetPreferredSize().height());
+  bottom_error_container->SetProperty(
+      views::kMarginsKey,
+      gfx::Insets(0, 0,
+                  ChromeLayoutProvider::Get()->GetDistanceMetric(
+                      views::DISTANCE_DIALOG_CONTENT_MARGIN_BOTTOM_CONTROL) -
+                      bottom_error_label_->GetPreferredSize().height(),
+                  0));
 
-  // Controls row: tooltip and download button.
-  views::ColumnSet* control_columns =
-      layout->AddColumnSet(kDownloadRowColumnSetId);
-  // Column for tooltip.
-  control_columns->AddColumn(
-      views::GridLayout::LEADING,  // View is aligned to leading edge, not
-                                   // resized.
-      views::GridLayout::CENTER,   // View moves to center of vertical space.
-      1.0,                         // This column has a resize weight of 1.
-      views::GridLayout::ColumnSize::kUsePreferred,  // Use the preferred size
-                                                     // of the view.
-      0,                                             // Ignored for USE_PREF.
-      0);                                            // Minimum width of 0.
-  // Spacing between tooltip and download button.
-  control_columns->AddPaddingColumn(views::GridLayout::kFixedSize,
-                                    kPaddingTooltipDownloadButtonPx);
-  // Column for download button.
-  control_columns->AddColumn(
-      views::GridLayout::TRAILING, views::GridLayout::CENTER, 1.0,
-      views::GridLayout::ColumnSize::kUsePreferred, 0, 0);
-  layout->StartRow(views::GridLayout::kFixedSize, kDownloadRowColumnSetId);
+  auto* button_container =
+      AddChildView(std::make_unique<views::BoxLayoutView>());
+  button_container->SetCrossAxisAlignment(
+      views::BoxLayout::CrossAxisAlignment::kCenter);
 
   // "More info" tooltip; looks like (i).
   auto tooltip_icon = std::make_unique<views::TooltipIcon>(
@@ -344,14 +298,21 @@ void QRCodeGeneratorBubble::Init() {
       views::DISTANCE_BUBBLE_PREFERRED_WIDTH));
   tooltip_icon->set_anchor_point_arrow(
       views::BubbleBorder::Arrow::BOTTOM_RIGHT);
-  tooltip_icon_ = layout->AddView(std::move(tooltip_icon));
+  tooltip_icon->SetProperty(
+      views::kMarginsKey,
+      gfx::Insets(0, 0, 0, kPaddingTooltipDownloadButtonPx));
+  tooltip_icon_ = button_container->AddChildView(std::move(tooltip_icon));
+
+  auto* flex = button_container->AddChildView(std::make_unique<views::View>());
+  button_container->SetFlexForView(flex, 1);
 
   // Download button.
-  download_button_ = layout->AddView(std::make_unique<views::MdTextButton>(
-      base::BindRepeating(&QRCodeGeneratorBubble::DownloadButtonPressed,
-                          base::Unretained(this)),
-      l10n_util::GetStringUTF16(
-          IDS_BROWSER_SHARING_QR_CODE_DIALOG_DOWNLOAD_BUTTON_LABEL)));
+  download_button_ =
+      button_container->AddChildView(std::make_unique<views::MdTextButton>(
+          base::BindRepeating(&QRCodeGeneratorBubble::DownloadButtonPressed,
+                              base::Unretained(this)),
+          l10n_util::GetStringUTF16(
+              IDS_BROWSER_SHARING_QR_CODE_DIALOG_DOWNLOAD_BUTTON_LABEL)));
   download_button_->SetHorizontalAlignment(gfx::ALIGN_CENTER);
   // End controls row
 
