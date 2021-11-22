@@ -505,7 +505,7 @@ TEST_F(AttributionManagerImplTest, QueuedReportSent_ObserversNotified) {
   task_environment_.FastForwardBy(kFirstReportingWindow -
                                   kAttributionManagerQueueReportsInterval);
 
-  // This one shouldn't be stored, as its status is `kDropped`.
+  // This one should be stored, as its status is `kDropped`.
   test_reporter_->SetSentReportInfoStatus(SentReportInfo::Status::kDropped);
   attribution_manager_->HandleSource(SourceBuilder(clock().Now())
                                          .SetSourceEventId(2)
@@ -541,6 +541,9 @@ TEST_F(AttributionManagerImplTest, QueuedReportSent_ObserversNotified) {
           Field(&SentReportInfo::report,
                 Field(&AttributionReport::impression,
                       Property(&StorableSource::source_event_id, 1u))),
+          Field(&SentReportInfo::report,
+                Field(&AttributionReport::impression,
+                      Property(&StorableSource::source_event_id, 2u))),
           Field(&SentReportInfo::report,
                 Field(&AttributionReport::impression,
                       Property(&StorableSource::source_event_id, 3u)))));

@@ -480,8 +480,10 @@ void AttributionManagerImpl::OnReportSent(SentReportInfo info) {
 
   // TODO(apaseltiner): Consider surfacing retry attempts in internals UI.
   if (info.status != SentReportInfo::Status::kSent &&
-      info.status != SentReportInfo::Status::kFailure)
+      info.status != SentReportInfo::Status::kFailure &&
+      info.status != SentReportInfo::Status::kDropped) {
     return;
+  }
 
   for (Observer& observer : observers_)
     observer.OnReportSent(info);

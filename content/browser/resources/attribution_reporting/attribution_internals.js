@@ -400,6 +400,9 @@ class Report {
       case WebUIAttributionReport_Status.kDroppedForNoise:
         this.status = 'Dropped for noise';
         break;
+      case WebUIAttributionReport_Status.kProhibitedByBrowserPolicy:
+        this.status = 'Prohibited by browser policy';
+        break;
     }
   }
 }

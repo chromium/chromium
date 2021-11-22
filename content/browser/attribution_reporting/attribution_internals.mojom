@@ -28,6 +28,7 @@ struct WebUIAttributionReport {
     kPending,
     kDroppedDueToLowPriority,
     kDroppedForNoise,
+    kProhibitedByBrowserPolicy,
     kSent,
   };
 

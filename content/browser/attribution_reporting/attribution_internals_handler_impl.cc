@@ -211,9 +211,25 @@ void AttributionInternalsHandlerImpl::OnSourceDeactivated(
 }
 
 void AttributionInternalsHandlerImpl::OnReportSent(const SentReportInfo& info) {
+  mojom::WebUIAttributionReport::Status status;
+  switch (info.status) {
+    case SentReportInfo::Status::kSent:
+    case SentReportInfo::Status::kFailure:
+      status = mojom::WebUIAttributionReport::Status::kSent;
+      break;
+    case SentReportInfo::Status::kDropped:
+      status =
+          mojom::WebUIAttributionReport::Status::kProhibitedByBrowserPolicy;
+      break;
+    case SentReportInfo::Status::kTransientFailure:
+    case SentReportInfo::Status::kOffline:
+    case SentReportInfo::Status::kRemovedFromQueue:
+      NOTREACHED();
+      return;
+  }
+
   auto report =
-      WebUIAttributionReport(info.report, info.http_response_code,
-                             mojom::WebUIAttributionReport::Status::kSent);
+      WebUIAttributionReport(info.report, info.http_response_code, status);
 
   for (auto& observer : observers_) {
     observer->OnReportSent(report.Clone());
