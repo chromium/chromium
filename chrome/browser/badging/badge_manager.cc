@@ -89,8 +89,7 @@ void BadgeManager::BindFrameReceiver(
     mojo::PendingReceiver<blink::mojom::BadgeService> receiver) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  auto* profile = Profile::FromBrowserContext(
-      content::WebContents::FromRenderFrameHost(frame)->GetBrowserContext());
+  auto* profile = Profile::FromBrowserContext(frame->GetBrowserContext());
 
   auto* badge_manager =
       badging::BadgeManagerFactory::GetInstance()->GetForProfile(profile);
@@ -257,13 +256,8 @@ BadgeManager::FrameBindingContext::GetAppIdsAndUrlsForBadging() const {
   if (!frame)
     return std::vector<std::tuple<web_app::AppId, GURL>>{};
 
-  content::WebContents* contents =
-      content::WebContents::FromRenderFrameHost(frame);
-  if (!contents)
-    return std::vector<std::tuple<web_app::AppId, GURL>>{};
-
   const WebAppProvider* provider = WebAppProvider::GetForLocalAppsUnchecked(
-      Profile::FromBrowserContext(contents->GetBrowserContext()));
+      Profile::FromBrowserContext(frame->GetBrowserContext()));
   if (!provider)
     return std::vector<std::tuple<web_app::AppId, GURL>>{};
 
