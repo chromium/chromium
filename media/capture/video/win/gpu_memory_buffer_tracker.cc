@@ -5,6 +5,8 @@
 #include "media/capture/video/win/gpu_memory_buffer_tracker.h"
 
 #include "base/check.h"
+#include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/unguessable_token.h"
 #include "base/win/scoped_handle.h"
@@ -95,6 +97,11 @@ bool GpuMemoryBufferTracker::CreateBufferInternal() {
       CreateNV12Texture(d3d_device_.Get(), buffer_size_);
   buffer_handle.dxgi_token = gfx::DXGIHandleToken();
 
+  if (!buffer_handle.dxgi_handle.IsValid()) {
+    LOG(ERROR) << "Failed to create NV12 texture";
+    return false;
+  }
+
   buffer_ = gpu::GpuMemoryBufferImplDXGI::CreateFromHandle(
       std::move(buffer_handle), buffer_size_,
       gfx::BufferFormat::YUV_420_BIPLANAR, gfx::BufferUsage::GPU_READ,
@@ -109,26 +116,26 @@ bool GpuMemoryBufferTracker::CreateBufferInternal() {
   return true;
 }
 
-bool GpuMemoryBufferTracker::EnsureD3DDevice() {
+bool GpuMemoryBufferTracker::IsD3DDeviceChanged() {
   // Check for and handle device loss by recreating the texture
-  if (FAILED(d3d_device_->GetDeviceRemovedReason())) {
-    DVLOG(1) << "Detected device loss.";
-    dxgi_device_manager_->ResetDevice();
-    d3d_device_ = dxgi_device_manager_->GetDevice();
-    if (!d3d_device_) {
-      return false;
-    }
-
-    return CreateBufferInternal();
+  Microsoft::WRL::ComPtr<ID3D11Device> recreated_d3d_device;
+  HRESULT hr = dxgi_device_manager_->CheckDeviceRemovedAndGetDevice(
+      &recreated_d3d_device);
+  if (FAILED(hr)) {
+    LOG(ERROR) << "Detected device loss: "
+               << logging::SystemErrorCodeToString(hr);
+    base::UmaHistogramSparse("Media.VideoCapture.Win.D3DDeviceRemovedReason",
+                             hr);
   }
-  return true;
+  return recreated_d3d_device != d3d_device_;
 }
 
 bool GpuMemoryBufferTracker::IsReusableForFormat(
     const gfx::Size& dimensions,
     VideoPixelFormat format,
     const mojom::PlaneStridesPtr& strides) {
-  return (format == PIXEL_FORMAT_NV12) && (dimensions == buffer_->GetSize());
+  return !IsD3DDeviceChanged() && (format == PIXEL_FORMAT_NV12) &&
+         (dimensions == buffer_->GetSize());
 }
 
 std::unique_ptr<VideoCaptureBufferHandle>
@@ -160,7 +167,7 @@ mojo::ScopedSharedBufferHandle GpuMemoryBufferTracker::DuplicateAsMojoBuffer() {
 }
 
 gfx::GpuMemoryBufferHandle GpuMemoryBufferTracker::GetGpuMemoryBufferHandle() {
-  if (!EnsureD3DDevice()) {
+  if (IsD3DDeviceChanged()) {
     return gfx::GpuMemoryBufferHandle();
   }
   auto handle = buffer_->CloneHandle();

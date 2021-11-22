@@ -279,8 +279,17 @@ VideoCaptureBufferPoolImpl::ReserveForProducerInternal(
   // Create the new tracker.
   const int new_buffer_id = next_buffer_id_++;
 
+  VideoCaptureBufferType buffer_type = buffer_type_;
+#if defined(OS_WIN)
+  // If the MediaFoundationD3D11VideoCapture path fails, a shared memory buffer
+  // is sent instead.
+  if (buffer_type == VideoCaptureBufferType::kGpuMemoryBuffer &&
+      pixel_format != PIXEL_FORMAT_NV12) {
+    buffer_type = VideoCaptureBufferType::kSharedMemory;
+  }
+#endif
   std::unique_ptr<VideoCaptureBufferTracker> tracker =
-      buffer_tracker_factory_->CreateTracker(buffer_type_);
+      buffer_tracker_factory_->CreateTracker(buffer_type);
   if (!tracker || !tracker->Init(dimensions, pixel_format, strides)) {
     DLOG(ERROR) << "Error initializing VideoCaptureBufferTracker";
     *buffer_id = kInvalidId;

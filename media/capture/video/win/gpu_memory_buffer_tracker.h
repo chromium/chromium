@@ -51,7 +51,7 @@ class CAPTURE_EXPORT GpuMemoryBufferTracker final
   Microsoft::WRL::ComPtr<ID3D11Texture2D> staging_texture_;
   gfx::Size buffer_size_;
   bool CreateBufferInternal();
-  bool EnsureD3DDevice();
+  bool IsD3DDeviceChanged();
 };
 
 }  // namespace media

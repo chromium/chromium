@@ -43,7 +43,14 @@ class MF_INITIALIZER_EXPORT DXGIDeviceManager
   static scoped_refptr<DXGIDeviceManager> Create();
 
   // Associates a new D3D device with the DXGI Device Manager
-  virtual HRESULT ResetDevice();
+  // returns it in the parameter, which can't be nullptr.
+  virtual HRESULT ResetDevice(Microsoft::WRL::ComPtr<ID3D11Device>& d3d_device);
+
+  // Checks if the local device was removed, recreates it if needed.
+  // Returns DeviceRemovedReason HRESULT value.
+  // Returns the local device in |new_device|, if it's not nullptr.
+  virtual HRESULT CheckDeviceRemovedAndGetDevice(
+      Microsoft::WRL::ComPtr<ID3D11Device>* new_device);
 
   // Registers this manager in capture engine attributes.
   HRESULT RegisterInCaptureEngineAttributes(IMFAttributes* attributes);
