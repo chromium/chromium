@@ -123,11 +123,6 @@ void WebrtcVideoStream::SetObserver(Observer* observer) {
   observer_ = observer;
 }
 
-void WebrtcVideoStream::OnEncoderReady() {
-  DCHECK(thread_checker_.CalledOnValidThread());
-  scheduler_->OnEncoderReady();
-}
-
 void WebrtcVideoStream::OnKeyFrameRequested() {
   DCHECK(thread_checker_.CalledOnValidThread());
   scheduler_->OnKeyFrameRequested();
@@ -187,7 +182,6 @@ void WebrtcVideoStream::CaptureNextFrame() {
 
 void WebrtcVideoStream::OnSinkAddedOrUpdated(const rtc::VideoSinkWants& wants) {
   DCHECK(thread_checker_.CalledOnValidThread());
-  OnEncoderReady();
 
   VLOG(0) << "WebRTC requested max framerate: " << wants.max_framerate_fps
           << " FPS";

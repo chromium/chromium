@@ -36,7 +36,7 @@ class WebrtcFrameSchedulerTest : public ::testing::Test {
     scheduler_->Start(
         base::BindRepeating(&WebrtcFrameSchedulerTest::CaptureCallback,
                             base::Unretained(this)));
-    scheduler_->OnEncoderReady();
+    scheduler_->SetMaxFramerateFps(30);
   }
   ~WebrtcFrameSchedulerTest() override = default;
 

@@ -13,10 +13,6 @@ namespace protocol {
 
 class VideoChannelStateObserver {
  public:
-  // Signals to the video-scheduler that the encoder is ready to accept captured
-  // frames for encoding and sending.
-  virtual void OnEncoderReady() = 0;
-
   virtual void OnKeyFrameRequested() = 0;
   virtual void OnTargetBitrateChanged(int bitrate_kbps) = 0;
 
