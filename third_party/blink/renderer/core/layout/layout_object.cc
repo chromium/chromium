@@ -2203,8 +2203,7 @@ bool LayoutObject::IsSelected() const {
 
 bool LayoutObject::IsSelectable() const {
   NOT_DESTROYED();
-  return !IsInert() && !(StyleRef().UserSelect() == EUserSelect::kNone &&
-                         StyleRef().UserModify() == EUserModify::kReadOnly);
+  return StyleRef().IsSelectable();
 }
 
 const ComputedStyle& LayoutObject::SlowEffectiveStyle(
@@ -4345,14 +4344,6 @@ bool LayoutObject::IsOutsideListMarker() const {
   return (IsListMarkerForNormalContent() &&
           !To<LayoutListMarker>(this)->IsInside()) ||
          IsOutsideListMarkerForCustomContent();
-}
-
-bool LayoutObject::IsInert() const {
-  NOT_DESTROYED();
-  const LayoutObject* layout_object = this;
-  while (!layout_object->GetNode())
-    layout_object = layout_object->Parent();
-  return layout_object->GetNode()->IsInert();
 }
 
 void LayoutObject::ImageChanged(ImageResourceContent* image,

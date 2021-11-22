@@ -3729,8 +3729,6 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
 
   void ClearLayoutRootIfNeeded() const;
 
-  bool IsInert() const;
-
   void ScheduleRelayout();
 
   void AddAsImageObserver(StyleImage*);

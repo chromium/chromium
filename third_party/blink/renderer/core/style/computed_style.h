@@ -2195,6 +2195,11 @@ class ComputedStyle : public ComputedStyleBase,
     return PointerEventsInternal();
   }
 
+  bool IsSelectable() const {
+    return !IsInert() && !(UserSelect() == EUserSelect::kNone &&
+                           UserModify() == EUserModify::kReadOnly);
+  }
+
   // Text decoration utility functions.
   bool TextDecorationVisualOverflowEqual(const ComputedStyle& o) const;
   void ApplyTextDecorations(const Color& parent_text_decoration_color,

@@ -27,11 +27,6 @@ namespace blink {
 
 namespace {
 
-bool NodeIsSelectable(const ComputedStyle& style, Node* node) {
-  return !node->IsInert() && !(style.UserSelect() == EUserSelect::kNone &&
-                               style.UserModify() == EUserModify::kReadOnly);
-}
-
 bool NodeIsReplaced(Node* node) {
   return node && node->GetLayoutObject() &&
          node->GetLayoutObject()->IsLayoutReplaced();
@@ -232,7 +227,7 @@ Color HighlightColor(const Document& document,
   if (pseudo == kPseudoIdSelection) {
     // If the element is unselectable, or we are only painting the selection,
     // don't override the foreground color with the selection foreground color.
-    if ((node && !NodeIsSelectable(style, node)) ||
+    if ((node && !style.IsSelectable()) ||
         (global_paint_flags & kGlobalPaintSelectionDragImageOnly)) {
       return style.VisitedDependentColor(color_property);
     }
@@ -265,7 +260,7 @@ Color HighlightPaintingUtils::HighlightBackgroundColor(
     PseudoId pseudo,
     const AtomicString& pseudo_argument) {
   if (pseudo == kPseudoIdSelection) {
-    if (node && !NodeIsSelectable(style, node))
+    if (node && !style.IsSelectable())
       return Color::kTransparent;
   }
 
