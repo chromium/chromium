@@ -1052,7 +1052,7 @@ bool HTMLDocumentParser::PumpTokenizer() {
   }
 
 
-  if (IsStopped()) {
+  if (IsStopped() || IsParsingFragment()) {
     if (metrics_reporter_ && tokens_parsed) {
       metrics_reporter_->AddChunk(chunk_parsing_timer_.Elapsed(),
                                   tokens_parsed);
@@ -1500,6 +1500,14 @@ TextPosition HTMLDocumentParser::GetTextPosition() const {
 }
 
 bool HTMLDocumentParser::IsWaitingForScripts() const {
+  if (IsParsingFragment()) {
+    // HTMLTreeBuilder may have a parser blocking script element, but we
+    // ignore it during fragment parsing.
+    DCHECK(!(tree_builder_->HasParserBlockingScript() || (script_runner_ &&
+    script_runner_->HasParserBlockingScript()) || reentry_permit_->ParserPauseFlag()));
+    return false;
+  }
+
   // When the TreeBuilder encounters a </script> tag, it returns to the
   // HTMLDocumentParser where the script is transfered from the treebuilder to
   // the script runner. The script runner will hold the script until its loaded
