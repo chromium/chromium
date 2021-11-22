@@ -116,20 +116,15 @@ void AddRAILModeToProto(perfetto::protos::pbzero::TrackEvent* event,
   event->set_chrome_renderer_scheduler_state()->set_rail_mode(proto_mode);
 }
 
-const char* BackgroundStateToString(bool is_backgrounded) {
-  if (is_backgrounded) {
-    return "renderer_backgrounded";
-  } else {
-    return "renderer_foregrounded";
-  }
+void AddBackgroundedToProto(perfetto::protos::pbzero::TrackEvent* event,
+                            bool is_backgrounded) {
+  event->set_chrome_renderer_scheduler_state()->set_is_backgrounded(
+      is_backgrounded);
 }
 
-const char* HiddenStateToString(bool is_hidden) {
-  if (is_hidden) {
-    return "hidden";
-  } else {
-    return "visible";
-  }
+void AddHiddenToProto(perfetto::protos::pbzero::TrackEvent* event,
+                      bool is_hidden) {
+  event->set_chrome_renderer_scheduler_state()->set_is_hidden(is_hidden);
 }
 
 const char* AudioPlayingStateToString(bool is_audio_playing) {
@@ -305,7 +300,7 @@ MainThreadSchedulerImpl::MainThreadSchedulerImpl(
   }
 
   internal::ProcessState::Get()->is_process_backgrounded =
-      main_thread_only().renderer_backgrounded;
+      main_thread_only().renderer_backgrounded.get();
 
   if (initial_virtual_time) {
     main_thread_only().initial_virtual_time = *initial_virtual_time;
@@ -384,11 +379,11 @@ MainThreadSchedulerImpl::MainThreadOnly::MainThreadOnly(
       renderer_hidden(false,
                       "RendererVisibility",
                       &main_thread_scheduler_impl->tracing_controller_,
-                      HiddenStateToString),
+                      &AddHiddenToProto),
       renderer_backgrounded(kLaunchingProcessIsBackgrounded,
                             "RendererPriority",
                             &main_thread_scheduler_impl->tracing_controller_,
-                            BackgroundStateToString),
+                            &AddBackgroundedToProto),
       blocking_input_expected_soon(
           false,
           "Scheduler.BlockingInputExpectedSoon",
@@ -440,7 +435,7 @@ MainThreadSchedulerImpl::MainThreadOnly::MainThreadOnly(
           main_thread_scheduler_impl,
           main_thread_scheduler_impl->helper_.HasCPUTimingForEachTask(),
           now,
-          renderer_backgrounded),
+          renderer_backgrounded.get()),
       process_type(WebRendererProcessType::kRenderer,
                    "RendererProcessType",
                    &main_thread_scheduler_impl->tracing_controller_,
@@ -987,8 +982,10 @@ void MainThreadSchedulerImpl::SetAllRenderWidgetsHidden(bool hidden) {
 
   helper_.CheckOnValidThread();
 
-  if (helper_.IsShutdown() || main_thread_only().renderer_hidden == hidden)
+  if (helper_.IsShutdown() ||
+      main_thread_only().renderer_hidden.get() == hidden) {
     return;
+  }
 
   end_renderer_hidden_idle_period_closure_.Cancel();
 
@@ -1051,7 +1048,7 @@ void MainThreadSchedulerImpl::SetRendererBackgrounded(bool backgrounded) {
   helper_.SetTimerSlack(timer_slack);
 
   if (helper_.IsShutdown() ||
-      main_thread_only().renderer_backgrounded == backgrounded)
+      main_thread_only().renderer_backgrounded.get() == backgrounded)
     return;
   if (backgrounded) {
     TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("renderer.scheduler"),
@@ -1586,7 +1583,7 @@ void MainThreadSchedulerImpl::UpdatePolicyLocked(UpdateType update_type) {
   }
 
   // TODO(skyostil): Add an idle state for foreground tabs too.
-  if (main_thread_only().renderer_hidden)
+  if (main_thread_only().renderer_hidden.get())
     new_policy.rail_mode() = RAILMode::kIdle;
 
   if (main_thread_only().renderer_pause_count != 0) {
@@ -2010,7 +2007,7 @@ void MainThreadSchedulerImpl::WriteIntoTraceLocked(
            main_thread_only().blocking_input_expected_soon);
   dict.Add("idle_period_state", IdleHelper::IdlePeriodStateToString(
                                     idle_helper_.SchedulerIdlePeriodState()));
-  dict.Add("renderer_hidden", main_thread_only().renderer_hidden);
+  dict.Add("renderer_hidden", main_thread_only().renderer_hidden.get());
   dict.Add("waiting_for_any_main_frame_contentful_paint",
            any_thread().waiting_for_any_main_frame_contentful_paint);
   dict.Add("waiting_for_any_main_frame_meaningful_paint",
@@ -2023,7 +2020,8 @@ void MainThreadSchedulerImpl::WriteIntoTraceLocked(
   dict.Add(
       "have_reported_blocking_intervention_since_navigation",
       main_thread_only().have_reported_blocking_intervention_since_navigation);
-  dict.Add("renderer_backgrounded", main_thread_only().renderer_backgrounded);
+  dict.Add("renderer_backgrounded",
+           main_thread_only().renderer_backgrounded.get());
   dict.Add("now", (optional_now - base::TimeTicks()).InMillisecondsF());
   dict.Add(
       "fling_compositor_escalation_deadline",
@@ -2624,8 +2622,9 @@ UkmRecordingStatus MainThreadSchedulerImpl::RecordTaskUkmImpl(
   builder.SetVersion(kUkmMetricVersion);
   builder.SetPageSchedulers(main_thread_only().page_schedulers.size());
 
-  builder.SetRendererBackgrounded(main_thread_only().renderer_backgrounded);
-  builder.SetRendererHidden(main_thread_only().renderer_hidden);
+  builder.SetRendererBackgrounded(
+      main_thread_only().renderer_backgrounded.get());
+  builder.SetRendererHidden(main_thread_only().renderer_hidden.get());
   builder.SetRendererAudible(main_thread_only().is_audio_playing);
   builder.SetUseCase(
       static_cast<int>(main_thread_only().current_use_case.get()));
@@ -2637,7 +2636,7 @@ UkmRecordingStatus MainThreadSchedulerImpl::RecordTaskUkmImpl(
   builder.SetTaskDuration(task_timing.wall_duration().InMicroseconds());
   builder.SetIsOOPIF(!frame_scheduler->GetPageScheduler()->IsMainFrameLocal());
 
-  if (main_thread_only().renderer_backgrounded) {
+  if (main_thread_only().renderer_backgrounded.get()) {
     base::TimeDelta time_since_backgrounded =
         (task_timing.end_time() -
          main_thread_only().background_status_changed_at);

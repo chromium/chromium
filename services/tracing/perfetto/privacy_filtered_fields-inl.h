@@ -182,7 +182,7 @@ constexpr MessageInfo kChromeApplicationStateInfo = {
     kChromeApplicationStateInfoIndices, nullptr};
 
 // Proto Message: ChromeRendererSchedulerState
-constexpr int kChromeRendererSchedulerStateIndices[] = {1, -1};
+constexpr int kChromeRendererSchedulerStateIndices[] = {1, 2, 3, -1};
 constexpr MessageInfo kChromeRendererSchedulerState = {
     kChromeRendererSchedulerStateIndices, nullptr};
 

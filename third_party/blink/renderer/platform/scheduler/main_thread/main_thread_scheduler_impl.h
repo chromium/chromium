@@ -835,9 +835,10 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
                          TracingCategoryName::kTopLevel>
         rail_mode_for_tracing;  // Don't use except for tracing.
 
-    TraceableState<bool, TracingCategoryName::kTopLevel> renderer_hidden;
+    TraceableObjectState<bool, TracingCategoryName::kTopLevel> renderer_hidden;
     absl::optional<base::ScopedSampleMetadata> renderer_hidden_metadata;
-    TraceableState<bool, TracingCategoryName::kTopLevel> renderer_backgrounded;
+    TraceableObjectState<bool, TracingCategoryName::kTopLevel>
+        renderer_backgrounded;
     TraceableState<bool, TracingCategoryName::kDefault>
         blocking_input_expected_soon;
     TraceableState<bool, TracingCategoryName::kDebug>
