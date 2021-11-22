@@ -127,6 +127,8 @@ std::ostream& operator<<(std::ostream& os, InstallResultCode code) {
       return os << "kSuccessOfflineOnlyInstall";
     case InstallResultCode::kSuccessOfflineFallbackInstall:
       return os << "kSuccessOfflineFallbackInstall";
+    case InstallResultCode::kUpdateTaskFailed:
+      return os << "kUpdateTaskFailed";
   }
 }
 

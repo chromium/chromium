@@ -67,6 +67,10 @@ using InstallOsHooksCallback =
 using UninstallOsHooksCallback =
     base::OnceCallback<void(OsHooksErrors os_hooks_errors)>;
 
+// Callback made after UpdateOsHooks is finished.
+using UpdateOsHooksCallback =
+    base::OnceCallback<void(OsHooksErrors os_hooks_errors)>;
+
 // Used to suppress OS hooks within this object's lifetime.
 using ScopedOsHooksSuppress = std::unique_ptr<base::AutoReset<bool>>;
 
@@ -124,7 +128,8 @@ class OsIntegrationManager : public AppRegistrarObserver {
       const AppId& app_id,
       base::StringPiece old_name,
       FileHandlerUpdateAction file_handlers_need_os_update,
-      const WebApplicationInfo& web_app_info);
+      const WebApplicationInfo& web_app_info,
+      UpdateOsHooksCallback callback);
 
   // Proxy calls for WebAppShortcutManager.
   // virtual for testing

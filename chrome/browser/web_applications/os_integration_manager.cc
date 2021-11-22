@@ -257,16 +257,39 @@ void OsIntegrationManager::UpdateOsHooks(
     const AppId& app_id,
     base::StringPiece old_name,
     FileHandlerUpdateAction file_handlers_need_os_update,
-    const WebApplicationInfo& web_app_info) {
-  if (g_suppress_os_hooks_for_testing_)
+    const WebApplicationInfo& web_app_info,
+    UpdateOsHooksCallback callback) {
+  if (g_suppress_os_hooks_for_testing_) {
+    OsHooksErrors os_hooks_errors;
+    base::SequencedTaskRunnerHandle::Get()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), os_hooks_errors));
     return;
+  }
 
-  UpdateFileHandlers(app_id, file_handlers_need_os_update, base::DoNothing());
-  UpdateShortcuts(app_id, old_name, base::DoNothing());
+  OsHooksErrors os_hooks_errors;
+  scoped_refptr<OsHooksBarrier> barrier = base::MakeRefCounted<OsHooksBarrier>(
+      os_hooks_errors, std::move(callback));
+
+  UpdateFileHandlers(app_id, file_handlers_need_os_update,
+                     base::BindOnce(barrier->CreateBarrierCallbackForType(
+                                        OsHookType::kFileHandlers),
+                                    Result::kOk));
+  UpdateShortcuts(app_id, old_name,
+                  base::BindOnce(barrier->CreateBarrierCallbackForType(
+                                     OsHookType::kShortcuts),
+                                 Result::kOk));
   UpdateShortcutsMenu(app_id, web_app_info);
-  UpdateUrlHandlers(app_id, base::DoNothing());
+  UpdateUrlHandlers(
+      app_id,
+      base::BindOnce(
+          [](ResultCallback callback, bool success) {
+            std::move(callback).Run(success ? Result::kOk : Result::kError);
+          },
+          barrier->CreateBarrierCallbackForType(OsHookType::kUrlHandlers)));
   UpdateProtocolHandlers(app_id, /*force_shortcut_updates_if_needed=*/false,
-                         base::DoNothing());
+                         base::BindOnce(barrier->CreateBarrierCallbackForType(
+                                            OsHookType::kProtocolHandlers),
+                                        Result::kOk));
 }
 
 void OsIntegrationManager::GetAppExistingShortCutLocation(

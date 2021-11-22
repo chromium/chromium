@@ -117,9 +117,14 @@ void FakeOsIntegrationManager::UpdateOsHooks(
     const AppId& app_id,
     base::StringPiece old_name,
     FileHandlerUpdateAction file_handlers_need_os_update,
-    const WebApplicationInfo& web_app_info) {
+    const WebApplicationInfo& web_app_info,
+    UninstallOsHooksCallback callback) {
   if (file_handlers_need_os_update != FileHandlerUpdateAction::kNoUpdate)
     ++num_update_file_handlers_calls_;
+
+  OsHooksErrors os_hooks_errors;
+  base::SequencedTaskRunnerHandle::Get()->PostTask(
+      FROM_HERE, base::BindOnce(std::move(callback), os_hooks_errors));
 }
 
 void FakeOsIntegrationManager::SetFileHandlerManager(

@@ -541,10 +541,9 @@ void WebAppInstallFinalizer::SetWebAppManifestFieldsAndWriteData(
                      std::move(web_app)));
 }
 
-void WebAppInstallFinalizer::OnIconsDataWritten(
-    CommitCallback commit_callback,
-    std::unique_ptr<WebApp> web_app,
-    bool success) {
+void WebAppInstallFinalizer::OnIconsDataWritten(CommitCallback commit_callback,
+                                                std::unique_ptr<WebApp> web_app,
+                                                bool success) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (!success) {
     std::move(commit_callback).Run(success);
@@ -610,10 +609,27 @@ void WebAppInstallFinalizer::OnDatabaseCommitCompletedForUpdate(
 
   if (should_update_os_hooks) {
     os_integration_manager().UpdateOsHooks(
-        app_id, old_name, file_handlers_need_os_update, web_app_info);
+        app_id, old_name, file_handlers_need_os_update, web_app_info,
+        base::BindOnce(&WebAppInstallFinalizer::OnUpdateHooksFinished,
+                       weak_ptr_factory_.GetWeakPtr(), std::move(callback),
+                       app_id, old_name));
+  } else {
+    std::move(callback).Run(app_id,
+                            InstallResultCode::kSuccessAlreadyInstalled);
   }
+}
+
+void WebAppInstallFinalizer::OnUpdateHooksFinished(
+    InstallFinalizedCallback callback,
+    AppId app_id,
+    std::string old_name,
+    web_app::OsHooksErrors os_hooks_errors) {
   registrar().NotifyWebAppManifestUpdated(app_id, old_name);
-  std::move(callback).Run(app_id, InstallResultCode::kSuccessAlreadyInstalled);
+
+  std::move(callback).Run(app_id,
+                          os_hooks_errors.any()
+                              ? InstallResultCode::kUpdateTaskFailed
+                              : InstallResultCode::kSuccessAlreadyInstalled);
 }
 
 WebAppRegistrar& WebAppInstallFinalizer::GetWebAppRegistrar() const {

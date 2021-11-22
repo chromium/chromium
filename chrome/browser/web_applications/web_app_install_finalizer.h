@@ -197,6 +197,11 @@ class WebAppInstallFinalizer {
       const WebApplicationInfo& web_app_info,
       bool success);
 
+  void OnUpdateHooksFinished(InstallFinalizedCallback callback,
+                             AppId app_id,
+                             std::string old_name,
+                             web_app::OsHooksErrors os_hooks_errors);
+
   WebAppRegistrar* registrar_ = nullptr;
   WebAppSyncBridge* sync_bridge_ = nullptr;
   WebAppUiManager* ui_manager_ = nullptr;

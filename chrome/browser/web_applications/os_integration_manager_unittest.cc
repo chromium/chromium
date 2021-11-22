@@ -207,7 +207,7 @@ TEST_F(OsIntegrationManagerTest, UpdateOsHooksEverything) {
       .Times(1);
 
   manager.UpdateOsHooks(app_id, old_name, FileHandlerUpdateAction::kUpdate,
-                        web_app_info);
+                        web_app_info, base::DoNothing());
 }
 
 TEST_F(OsIntegrationManagerTest, UpdateProtocolHandlers) {

@@ -120,7 +120,10 @@ enum class InstallResultCode {
   // shutdown.
   kInstallTaskDestroyed = 25,
 
-  kMaxValue = kInstallTaskDestroyed,
+  // Web App update due to manifest change failed.
+  kUpdateTaskFailed = 26,
+
+  kMaxValue = kUpdateTaskFailed,
 };
 
 // Checks if InstallResultCode is not a failure.

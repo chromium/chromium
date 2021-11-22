@@ -41,7 +41,8 @@ class FakeOsIntegrationManager : public OsIntegrationManager {
   void UpdateOsHooks(const AppId& app_id,
                      base::StringPiece old_name,
                      FileHandlerUpdateAction file_handlers_need_os_update,
-                     const WebApplicationInfo& web_app_info) override;
+                     const WebApplicationInfo& web_app_info,
+                     UpdateOsHooksCallback callback) override;
 
   size_t num_create_shortcuts_calls() const {
     return num_create_shortcuts_calls_;
