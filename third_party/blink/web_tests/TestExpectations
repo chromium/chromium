@@ -7288,6 +7288,7 @@ crbug.com/1272352 virtual/threaded/http/tests/devtools/isolated-code-cache/same-
 crbug.com/1272352 virtual/threaded/http/tests/devtools/isolated-code-cache/stale-revalidation-test.js [ Crash Pass ]
 crbug.com/1272376 virtual/scroll-unification/plugins/plugin-document-back-forward.html [ Failure Pass ]
 crbug.com/1272380 http/tests/devtools/bindings/bindings-multiple-frames.js [ Failure Pass ]
+crbug.com/1272575 [ Mac ] virtual/gpu-rasterization/images/color-profile-svg-fill-text.html [ Failure Pass ]
 
 # Flaky on Mac and Windows
 crbug.com/1272199 external/wpt/websockets/stream/tentative/backpressure-receive.any.serviceworker.html?wpt_flags=h2 [ Failure Pass ]
