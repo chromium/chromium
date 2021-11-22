@@ -34,10 +34,13 @@
 #include "third_party/blink/renderer/core/html/parser/html_parser_idioms.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
+#include "third_party/blink/renderer/core/loader/frame_client_hints_preferences_context.h"
+#include "third_party/blink/renderer/core/loader/frame_fetch_context.h"
 #include "third_party/blink/renderer/core/loader/http_equiv.h"
 #include "third_party/blink/renderer/core/page/chrome_client.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/loader/fetch/client_hints_preferences.h"
 #include "third_party/blink/renderer/platform/weborigin/security_policy.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_to_number.h"
 
@@ -612,6 +615,8 @@ void HTMLMetaElement::ProcessContent() {
       UseCounter::Count(&GetDocument(),
                         WebFeature::kHTMLMetaElementMonetization);
     }
+  } else if (EqualIgnoringASCIICase(name_value, http_names::kAcceptCH)) {
+    ProcessMetaAcceptCH(GetDocument(), content_value, /*is_http_equiv*/ false);
   }
 }
 
@@ -638,4 +643,38 @@ const AtomicString& HTMLMetaElement::Media() const {
 const AtomicString& HTMLMetaElement::GetName() const {
   return FastGetAttribute(html_names::kNameAttr);
 }
+
+// static
+void HTMLMetaElement::ProcessMetaAcceptCH(Document& document,
+                                          const AtomicString& content,
+                                          bool is_http_equiv) {
+  if (is_http_equiv
+          ? !RuntimeEnabledFeatures::ClientHintsMetaHTTPEquivAcceptCHEnabled()
+          : !RuntimeEnabledFeatures::ClientHintsMetaNameAcceptCHEnabled()) {
+    return;
+  }
+
+  LocalFrame* frame = document.GetFrame();
+  if (!frame)
+    return;
+
+  if (!frame->IsMainFrame()) {
+    return;
+  }
+
+  if (!FrameFetchContext::AllowScriptFromSourceWithoutNotifying(
+          document.Url(), frame->GetContentSettingsClient(),
+          frame->GetSettings())) {
+    // Do not allow configuring client hints if JavaScript is disabled.
+    return;
+  }
+
+  UseCounter::Count(
+      document, is_http_equiv ? WebFeature::kClientHintsMetaHTTPEquivAcceptCH
+                              : WebFeature::kClientHintsMetaNameAcceptCH);
+  FrameClientHintsPreferencesContext hints_context(frame);
+  frame->GetClientHintsPreferences().UpdateFromMetaTagAcceptCH(
+      content, document.Url(), &hints_context);
+}
+
 }  // namespace blink

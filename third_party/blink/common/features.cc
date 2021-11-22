@@ -1135,6 +1135,14 @@ const base::Feature kAutoExpandDetailsElement{"AutoExpandDetailsElement",
 const base::Feature kEarlyCodeCache{"EarlyCodeCache",
                                     base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Allow use of an http-equiv meta tag to set client hints.
+const base::Feature kClientHintsMetaHTTPEquivAcceptCH{
+    "ClientHintsMetaHTTPEquivAcceptCH", base::FEATURE_ENABLED_BY_DEFAULT};
+
+// Allow use of a named meta tag to set client hints.
+const base::Feature kClientHintsMetaNameAcceptCH{
+    "ClientHintsMetaNameAcceptCH", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Allow third-party delegation of client hint information.
 const base::Feature kClientHintThirdPartyDelegation{
     "ClientHintThirdPartyDelegation", base::FEATURE_DISABLED_BY_DEFAULT};

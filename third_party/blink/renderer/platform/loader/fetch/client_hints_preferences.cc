@@ -40,7 +40,7 @@ void ClientHintsPreferences::CombineWith(
   }
 }
 
-void ClientHintsPreferences::UpdateFromHttpEquivAcceptCH(
+void ClientHintsPreferences::UpdateFromMetaTagAcceptCH(
     const String& header_value,
     const KURL& url,
     Context* context) {
@@ -62,7 +62,7 @@ void ClientHintsPreferences::UpdateFromHttpEquivAcceptCH(
   if (!parsed_ch.has_value())
     return;
 
-  // The renderer only handles http-equiv, so this merges.
+  // The renderer only handles meta tags, so this merges.
   for (network::mojom::WebClientHintsType newly_enabled : parsed_ch.value())
     enabled_hints_.SetIsEnabled(newly_enabled, true);
 

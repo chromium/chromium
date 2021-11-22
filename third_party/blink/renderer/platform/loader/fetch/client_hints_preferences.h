@@ -33,13 +33,13 @@ class PLATFORM_EXPORT ClientHintsPreferences {
   void UpdateFrom(const ClientHintsPreferences&);
   void CombineWith(const ClientHintsPreferences&);
 
-  // Parses <meta http-equiv="accept-ch"> value |header_value|, and updates
-  // |this| to enable the requested client hints. |url| is the URL of the page.
-  // |context| may be null. If client hints are not allowed for |url|, then
-  // |this| would not be updated.
-  void UpdateFromHttpEquivAcceptCH(const String& header_value,
-                                   const KURL& url,
-                                   Context* context);
+  // Parses <meta http-equiv="accept-ch"> or <meta name="accept-ch"> value
+  // `header_value`, and updates `this` to enable the requested client hints.
+  // `url` is the URL of the page. `context` may be null. If client hints are
+  // not allowed for `url`, then `this` would not be updated.
+  void UpdateFromMetaTagAcceptCH(const String& header_value,
+                                 const KURL& url,
+                                 Context* context);
 
   bool ShouldSend(network::mojom::WebClientHintsType type) const;
   void SetShouldSend(network::mojom::WebClientHintsType type);

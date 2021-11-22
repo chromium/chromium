@@ -536,6 +536,11 @@ BLINK_COMMON_EXPORT extern const base::Feature kAutoExpandDetailsElement;
 
 BLINK_COMMON_EXPORT extern const base::Feature kEarlyCodeCache;
 
+BLINK_COMMON_EXPORT extern const base::Feature
+    kClientHintsMetaHTTPEquivAcceptCH;
+
+BLINK_COMMON_EXPORT extern const base::Feature kClientHintsMetaNameAcceptCH;
+
 BLINK_COMMON_EXPORT extern const base::Feature kClientHintThirdPartyDelegation;
 
 #if defined(OS_ANDROID)

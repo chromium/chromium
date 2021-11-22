@@ -66,6 +66,17 @@ class WebContentSettingsClient;
 class CORE_EXPORT FrameFetchContext final : public BaseFetchContext,
                                             public LoadingBehaviorObserver {
  public:
+  // Returns true if execution of scripts from the url are allowed. Compared to
+  // AllowScriptFromSource(), this method does not generate any
+  // notification to the `WebContentSettingsClient` that the execution of the
+  // script was blocked. This method should be called only when there is a need
+  // to check the settings, and where blocked setting doesn't really imply that
+  // JavaScript was blocked from being executed.
+  static bool AllowScriptFromSourceWithoutNotifying(
+      const KURL& url,
+      WebContentSettingsClient* settings_client,
+      Settings* settings);
+
   static ResourceFetcher* CreateFetcherForCommittedDocument(DocumentLoader&,
                                                             Document&);
   FrameFetchContext(DocumentLoader& document_loader,
@@ -198,14 +209,6 @@ class CORE_EXPORT FrameFetchContext final : public BaseFetchContext,
                             network::mojom::blink::WebClientHintsType,
                             const ClientHintsPreferences&) const;
   void SetFirstPartyCookie(ResourceRequest&);
-
-  // Returns true if execution of scripts from the url are allowed. Compared to
-  // AllowScriptFromSource(), this method does not generate any
-  // notification to the |WebContentSettingsClient| that the execution of the
-  // script was blocked. This method should be called only when there is a need
-  // to check the settings, and where blocked setting doesn't really imply that
-  // JavaScript was blocked from being executed.
-  bool AllowScriptFromSourceWithoutNotifying(const KURL&) const;
 
   // Returns true if the origin of |url| is same as the origin of the top level
   // frame's main resource.

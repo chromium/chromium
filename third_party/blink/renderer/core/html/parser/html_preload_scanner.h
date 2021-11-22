@@ -113,6 +113,10 @@ class TokenPreloadScanner {
   class StartTagScanner;
 
   template <typename Token>
+  void HandleMetaNameAttribute(const Token& token,
+                               absl::optional<ViewportDescription>* viewport);
+
+  template <typename Token>
   inline void ScanCommon(const Token&,
                          const SegmentedString&,
                          PreloadRequestStream& requests,

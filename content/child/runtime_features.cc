@@ -408,6 +408,10 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
            blink::features::kAutoExpandDetailsElement},
           {"UserAgentClientHintFullVersionList",
            blink::features::kUserAgentClientHintFullVersionList},
+          {"ClientHintsMetaHTTPEquivAcceptCH",
+           blink::features::kClientHintsMetaHTTPEquivAcceptCH},
+          {"ClientHintsMetaNameAcceptCH",
+           blink::features::kClientHintsMetaNameAcceptCH},
       };
   for (const auto& mapping : runtimeFeatureNameToChromiumFeatureMapping) {
     SetRuntimeFeatureFromChromiumFeature(

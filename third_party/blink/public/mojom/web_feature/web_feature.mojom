@@ -574,7 +574,7 @@ enum WebFeature {
   kLinkRelPreload = 901,
   kLinkHeaderDnsPrefetch = 902,
   kLinkHeaderPreconnect = 903,
-  kClientHintsMetaAcceptCH = 904,
+  kClientHintsMetaHTTPEquivAcceptCH = 904,
   kHTMLElementDeprecatedWidth = 905,
   kClientHintsContentDPR = 906,
   kElementAttachShadowOpen = 907,
@@ -3387,6 +3387,7 @@ enum WebFeature {
   kV8Navigator_AdAuctionComponents_Method = 4078,
   kClientHintsUAFullVersionList = 4079,
   kWebAppManifestLaunchHandler = 4080,
+  kClientHintsMetaNameAcceptCH = 4081,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.

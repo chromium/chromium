@@ -994,11 +994,8 @@ static void HandleMetaReferrer(const String& attribute_value,
 }
 
 template <typename Token>
-static void HandleMetaNameAttribute(
+void TokenPreloadScanner::HandleMetaNameAttribute(
     const Token& token,
-    CachedDocumentParameters* document_parameters,
-    MediaValuesCached* media_values,
-    CSSPreloadScanner* css_scanner,
     absl::optional<ViewportDescription>* viewport) {
   const typename Token::Attribute* name_attribute =
       token.GetAttributeItem(html_names::kNameAttr);
@@ -1013,14 +1010,20 @@ static void HandleMetaNameAttribute(
 
   String content_attribute_value(content_attribute->Value());
   if (EqualIgnoringASCIICase(name_attribute_value, "viewport")) {
-    HandleMetaViewport(content_attribute_value, document_parameters,
-                       media_values, viewport);
+    HandleMetaViewport(content_attribute_value, document_parameters_.get(),
+                       media_values_.Get(), viewport);
     return;
   }
 
   if (EqualIgnoringASCIICase(name_attribute_value, "referrer")) {
-    HandleMetaReferrer(content_attribute_value, document_parameters,
-                       css_scanner);
+    HandleMetaReferrer(content_attribute_value, document_parameters_.get(),
+                       &css_scanner_);
+  }
+
+  if (EqualIgnoringASCIICase(name_attribute_value, http_names::kAcceptCH) &&
+      RuntimeEnabledFeatures::ClientHintsMetaNameAcceptCHEnabled()) {
+    client_hints_preferences_.UpdateFromMetaTagAcceptCH(
+        content_attribute->Value(), document_url_, nullptr);
   }
 }
 
@@ -1117,19 +1120,20 @@ void TokenPreloadScanner::ScanCommon(
                                      "content-security-policy")) {
             *is_csp_meta_tag = true;
           } else if (EqualIgnoringASCIICase(equiv_attribute_value,
-                                            "accept-ch")) {
+                                            http_names::kAcceptCH) &&
+                     RuntimeEnabledFeatures::
+                         ClientHintsMetaHTTPEquivAcceptCHEnabled()) {
             const typename Token::Attribute* content_attribute =
                 token.GetAttributeItem(html_names::kContentAttr);
             if (content_attribute) {
-              client_hints_preferences_.UpdateFromHttpEquivAcceptCH(
+              client_hints_preferences_.UpdateFromMetaTagAcceptCH(
                   content_attribute->Value(), document_url_, nullptr);
             }
           }
           return;
         }
 
-        HandleMetaNameAttribute(token, document_parameters_.get(),
-                                media_values_.Get(), &css_scanner_, viewport);
+        HandleMetaNameAttribute(token, viewport);
       }
 
       if (Match(tag_impl, html_names::kBodyTag)) {

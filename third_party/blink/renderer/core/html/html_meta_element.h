@@ -49,6 +49,10 @@ class CORE_EXPORT HTMLMetaElement final : public HTMLElement {
       Document*,
       bool viewport_meta_zero_values_quirk);
 
+  static void ProcessMetaAcceptCH(Document&,
+                                  const AtomicString& content,
+                                  bool is_http_equiv);
+
   explicit HTMLMetaElement(Document&);
 
   // Encoding computed from processing the http-equiv, charset and content

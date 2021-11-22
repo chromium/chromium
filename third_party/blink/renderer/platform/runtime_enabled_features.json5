@@ -383,6 +383,14 @@
       status: "experimental",
     },
     {
+      name: "ClientHintsMetaHTTPEquivAcceptCH",
+      status: "stable",
+    },
+    {
+      name: "ClientHintsMetaNameAcceptCH",
+      status: "experimental",
+    },
+    {
       name: "ClipboardCustomFormats",
       status: "experimental",
     },

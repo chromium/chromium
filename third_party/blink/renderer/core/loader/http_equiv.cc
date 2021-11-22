@@ -14,14 +14,13 @@
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
+#include "third_party/blink/renderer/core/html/html_meta_element.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/loader/document_loader.h"
-#include "third_party/blink/renderer/core/loader/frame_client_hints_preferences_context.h"
 #include "third_party/blink/renderer/core/origin_trials/origin_trial_context.h"
 #include "third_party/blink/renderer/platform/bindings/v8_binding.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
-#include "third_party/blink/renderer/platform/loader/fetch/client_hints_preferences.h"
 #include "third_party/blink/renderer/platform/network/http_names.h"
 #include "third_party/blink/renderer/platform/network/http_parsers.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
@@ -29,26 +28,6 @@
 #include "third_party/blink/renderer/platform/weborigin/reporting_disposition.h"
 
 namespace blink {
-
-namespace {
-
-// Returns true if execution of scripts from the url are allowed. Compared to
-// AllowScriptFromSource(), this method does not generate any
-// notification to the |ContentSettingsClient| that the execution of the
-// script was blocked. This method should be called only when there is a need
-// to check the settings, and where blocked setting doesn't really imply that
-// JavaScript was blocked from being executed.
-bool AllowScriptFromSourceWithoutNotifying(
-    const KURL& url,
-    WebContentSettingsClient* settings_client,
-    Settings* settings) {
-  bool allow_script = !settings || settings->GetScriptEnabled();
-  if (settings_client)
-    allow_script = settings_client->AllowScriptFromSource(allow_script, url);
-  return allow_script;
-}
-
-}  // namespace
 
 void HttpEquiv::Process(Document& document,
                         const AtomicString& equiv,
@@ -75,7 +54,8 @@ void HttpEquiv::Process(Document& document,
         "X-Frame-Options may only be set via an HTTP header sent along with a "
         "document. It may not be set inside <meta>."));
   } else if (EqualIgnoringASCIICase(equiv, http_names::kAcceptCH)) {
-    ProcessHttpEquivAcceptCH(document, content);
+    HTMLMetaElement::ProcessMetaAcceptCH(document, content,
+                                         /*is_http_equiv*/ true);
   } else if (EqualIgnoringASCIICase(equiv, "content-security-policy") ||
              EqualIgnoringASCIICase(equiv,
                                     "content-security-policy-report-only")) {
@@ -114,29 +94,6 @@ void HttpEquiv::ProcessHttpEquivContentSecurityPolicy(
   } else {
     NOTREACHED();
   }
-}
-
-void HttpEquiv::ProcessHttpEquivAcceptCH(Document& document,
-                                         const AtomicString& content) {
-  LocalFrame* frame = document.GetFrame();
-  if (!frame)
-    return;
-
-  if (!document.GetFrame()->IsMainFrame()) {
-    return;
-  }
-
-  if (!AllowScriptFromSourceWithoutNotifying(
-          document.Url(), document.GetFrame()->GetContentSettingsClient(),
-          document.GetFrame()->GetSettings())) {
-    // Do not allow configuring client hints if JavaScript is disabled.
-    return;
-  }
-
-  UseCounter::Count(document, WebFeature::kClientHintsMetaAcceptCH);
-  FrameClientHintsPreferencesContext hints_context(frame);
-  frame->GetClientHintsPreferences().UpdateFromHttpEquivAcceptCH(
-      content, document.Url(), &hints_context);
 }
 
 void HttpEquiv::ProcessHttpEquivDefaultStyle(Document& document,

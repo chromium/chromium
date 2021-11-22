@@ -85,8 +85,8 @@ TEST_F(ClientHintsPreferencesTest, BasicSecure) {
     SCOPED_TRACE(testing::Message() << test_case.header_value);
     ClientHintsPreferences preferences;
     const KURL kurl(String::FromUTF8("https://www.google.com/"));
-    preferences.UpdateFromHttpEquivAcceptCH(test_case.header_value, kurl,
-                                            nullptr);
+    preferences.UpdateFromMetaTagAcceptCH(test_case.header_value, kurl,
+                                          nullptr);
     EXPECT_EQ(
         test_case.expectation_resource_width_DEPRECATED,
         preferences.ShouldSend(
@@ -130,9 +130,9 @@ TEST_F(ClientHintsPreferencesTest, BasicSecure) {
               preferences.ShouldSend(
                   network::mojom::WebClientHintsType::kPrefersColorScheme));
 
-    // Calling UpdateFromHttpEquivAcceptCH with an invalid header should
+    // Calling UpdateFromMetaTagAcceptCH with an invalid header should
     // have no impact on client hint preferences.
-    preferences.UpdateFromHttpEquivAcceptCH("1, 42,", kurl, nullptr);
+    preferences.UpdateFromMetaTagAcceptCH("1, 42,", kurl, nullptr);
     EXPECT_EQ(
         test_case.expectation_resource_width_DEPRECATED,
         preferences.ShouldSend(
@@ -153,10 +153,10 @@ TEST_F(ClientHintsPreferencesTest, BasicSecure) {
               preferences.ShouldSend(
                   network::mojom::WebClientHintsType::kViewportWidth));
 
-    // Calling UpdateFromHttpEquivAcceptCH with empty header is also a
-    // no-op, since ClientHintsPreferences only deals with http-equiv, and
+    // Calling UpdateFromMetaTagAcceptCH with empty header is also a
+    // no-op, since ClientHintsPreferences only deals with meta tags, and
     // hence merge.
-    preferences.UpdateFromHttpEquivAcceptCH("", kurl, nullptr);
+    preferences.UpdateFromMetaTagAcceptCH("", kurl, nullptr);
     EXPECT_EQ(
         test_case.expectation_resource_width_DEPRECATED,
         preferences.ShouldSend(
@@ -184,7 +184,7 @@ TEST_F(ClientHintsPreferencesTest, BasicSecure) {
 TEST_F(ClientHintsPreferencesTest, SecureEnabledTypesMerge) {
   ClientHintsPreferences preferences;
   const KURL kurl(String::FromUTF8("https://www.google.com/"));
-  preferences.UpdateFromHttpEquivAcceptCH("rtt, downlink", kurl, nullptr);
+  preferences.UpdateFromMetaTagAcceptCH("rtt, downlink", kurl, nullptr);
 
   EXPECT_FALSE(preferences.ShouldSend(
       network::mojom::WebClientHintsType::kResourceWidth_DEPRECATED));
@@ -214,9 +214,9 @@ TEST_F(ClientHintsPreferencesTest, SecureEnabledTypesMerge) {
   EXPECT_FALSE(preferences.ShouldSend(
       network::mojom::WebClientHintsType::kPrefersColorScheme));
 
-  // Calling UpdateFromHttpEquivAcceptCH with an invalid header should
+  // Calling UpdateFromMetaTagAcceptCH with an invalid header should
   // have no impact on client hint preferences.
-  preferences.UpdateFromHttpEquivAcceptCH("1,,42", kurl, nullptr);
+  preferences.UpdateFromMetaTagAcceptCH("1,,42", kurl, nullptr);
   EXPECT_FALSE(preferences.ShouldSend(
       network::mojom::WebClientHintsType::kResourceWidth_DEPRECATED));
   EXPECT_FALSE(preferences.ShouldSend(
@@ -237,9 +237,9 @@ TEST_F(ClientHintsPreferencesTest, SecureEnabledTypesMerge) {
   EXPECT_FALSE(preferences.ShouldSend(
       network::mojom::WebClientHintsType::kPrefersColorScheme));
 
-  // Calling UpdateFromHttpEquivAcceptCH with "width" header should
+  // Calling UpdateFromMetaTagAcceptCH with "width" header should
   // replace add width to preferences
-  preferences.UpdateFromHttpEquivAcceptCH("width,sec-ch-width", kurl, nullptr);
+  preferences.UpdateFromMetaTagAcceptCH("width,sec-ch-width", kurl, nullptr);
   EXPECT_TRUE(preferences.ShouldSend(
       network::mojom::WebClientHintsType::kResourceWidth_DEPRECATED));
   EXPECT_TRUE(preferences.ShouldSend(
@@ -260,9 +260,9 @@ TEST_F(ClientHintsPreferencesTest, SecureEnabledTypesMerge) {
   EXPECT_FALSE(preferences.ShouldSend(
       network::mojom::WebClientHintsType::kPrefersColorScheme));
 
-  // Calling UpdateFromHttpEquivAcceptCH with empty header should not
+  // Calling UpdateFromMetaTagAcceptCH with empty header should not
   // change anything.
-  preferences.UpdateFromHttpEquivAcceptCH("", kurl, nullptr);
+  preferences.UpdateFromMetaTagAcceptCH("", kurl, nullptr);
   EXPECT_TRUE(preferences.ShouldSend(
       network::mojom::WebClientHintsType::kResourceWidth_DEPRECATED));
   EXPECT_TRUE(preferences.ShouldSend(
@@ -290,8 +290,8 @@ TEST_F(ClientHintsPreferencesTest, Insecure) {
     const KURL kurl = use_secure_url
                           ? KURL(String::FromUTF8("https://www.google.com/"))
                           : KURL(String::FromUTF8("http://www.google.com/"));
-    preferences.UpdateFromHttpEquivAcceptCH("dpr", kurl, nullptr);
-    preferences.UpdateFromHttpEquivAcceptCH("sec-ch-dpr", kurl, nullptr);
+    preferences.UpdateFromMetaTagAcceptCH("dpr", kurl, nullptr);
+    preferences.UpdateFromMetaTagAcceptCH("sec-ch-dpr", kurl, nullptr);
     EXPECT_EQ(use_secure_url,
               preferences.ShouldSend(
                   network::mojom::WebClientHintsType::kDpr_DEPRECATED));
@@ -386,8 +386,8 @@ TEST_F(ClientHintsPreferencesTest, ParseHeaders) {
         network::mojom::WebClientHintsType::kPrefersColorScheme));
 
     const KURL kurl(String::FromUTF8("https://www.google.com/"));
-    preferences.UpdateFromHttpEquivAcceptCH(test.accept_ch_header_value, kurl,
-                                            nullptr);
+    preferences.UpdateFromMetaTagAcceptCH(test.accept_ch_header_value, kurl,
+                                          nullptr);
 
     enabled_types = preferences.GetEnabledClientHints();
 
