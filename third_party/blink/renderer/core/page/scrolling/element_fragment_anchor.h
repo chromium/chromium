@@ -61,8 +61,6 @@ class CORE_EXPORT ElementFragmentAnchor final : public FragmentAnchor {
 
   void Trace(Visitor*) const override;
 
-  bool IsTextFragmentAnchor() override { return false; }
-
  private:
   FRIEND_TEST_ALL_PREFIXES(ElementFragmentAnchorTest,
                            AnchorRemovedBeforeBeginFrameCrash);
@@ -70,7 +68,6 @@ class CORE_EXPORT ElementFragmentAnchor final : public FragmentAnchor {
   void ApplyFocusIfNeeded();
 
   WeakMember<Node> anchor_node_;
-  Member<LocalFrame> frame_;
   bool needs_focus_;
 
   // While this is true, the fragment is still "active" in the sense that we

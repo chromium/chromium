@@ -4,7 +4,7 @@
 
 #include "third_party/blink/renderer/core/paint/highlight_painting_utils.h"
 
-#include "components/shared_highlighting/core/common/text_fragments_constants.h"
+#include "components/shared_highlighting/core/common/fragment_directives_constants.h"
 #include "third_party/blink/renderer/core/css/style_engine.h"
 #include "third_party/blink/renderer/core/css/style_request.h"
 #include "third_party/blink/renderer/core/dom/element.h"

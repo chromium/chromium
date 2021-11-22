@@ -4,8 +4,7 @@
 
 #include "third_party/blink/renderer/core/fragment_directive/text_fragment_anchor.h"
 
-#include "components/shared_highlighting/core/common/shared_highlighting_features.h"
-#include "components/shared_highlighting/core/common/text_fragments_utils.h"
+#include "components/shared_highlighting/core/common/fragment_directives_utils.h"
 #include "third_party/blink/renderer/core/display_lock/display_lock_document_state.h"
 #include "third_party/blink/renderer/core/display_lock/display_lock_utilities.h"
 #include "third_party/blink/renderer/core/dom/document.h"
@@ -15,6 +14,7 @@
 #include "third_party/blink/renderer/core/editing/ephemeral_range.h"
 #include "third_party/blink/renderer/core/editing/markers/document_marker_controller.h"
 #include "third_party/blink/renderer/core/editing/visible_units.h"
+#include "third_party/blink/renderer/core/fragment_directive/fragment_directive_utils.h"
 #include "third_party/blink/renderer/core/fragment_directive/text_directive.h"
 #include "third_party/blink/renderer/core/fragment_directive/text_fragment_handler.h"
 #include "third_party/blink/renderer/core/fragment_directive/text_fragment_selector.h"
@@ -158,8 +158,7 @@ TextFragmentAnchor::TextFragmentAnchor(
     HeapVector<Member<TextDirective>>& text_directives,
     LocalFrame& frame,
     bool should_scroll)
-    : frame_(&frame),
-      should_scroll_(should_scroll),
+    : SelectorFragmentAnchor(frame, should_scroll),
       metrics_(MakeGarbageCollected<TextFragmentAnchorMetrics>(
           frame_->GetDocument())) {
   DCHECK(!text_directives.IsEmpty());
@@ -179,13 +178,7 @@ TextFragmentAnchor::TextFragmentAnchor(
   }
 }
 
-bool TextFragmentAnchor::Invoke() {
-  // Wait until the page has been made visible before searching.
-  if (!frame_->GetPage()->IsPageVisible() && !page_has_been_visible_)
-    return true;
-  else
-    page_has_been_visible_ = true;
-
+bool TextFragmentAnchor::InvokeSelector() {
   // We need to keep this TextFragmentAnchor alive if we're proxying an
   // element fragment anchor.
   if (element_fragment_anchor_) {
@@ -262,17 +255,11 @@ bool TextFragmentAnchor::Invoke() {
 void TextFragmentAnchor::Installed() {}
 
 void TextFragmentAnchor::DidScroll(mojom::blink::ScrollType type) {
-  if (type != mojom::blink::ScrollType::kUser &&
-      type != mojom::blink::ScrollType::kCompositor) {
-    return;
-  }
+  SelectorFragmentAnchor::DidScroll(type);
 
-  if (ShouldDismissOnScrollOrClick() && Dismiss())
-    TextFragmentHandler::RemoveSelectorsFromUrl(frame_);
-
-  user_scrolled_ = true;
-
-  if (did_non_zero_scroll_ &&
+  if ((type == mojom::blink::ScrollType::kUser ||
+       type == mojom::blink::ScrollType::kCompositor) &&
+      did_non_zero_scroll_ &&
       frame_->View()->GetScrollableArea()->GetScrollOffset().IsZero()) {
     metrics_->DidScrollToTop();
   }
@@ -301,11 +288,10 @@ void TextFragmentAnchor::PerformPreRafActions() {
 }
 
 void TextFragmentAnchor::Trace(Visitor* visitor) const {
-  visitor->Trace(frame_);
   visitor->Trace(element_fragment_anchor_);
   visitor->Trace(metrics_);
   visitor->Trace(directive_finder_pairs_);
-  FragmentAnchor::Trace(visitor);
+  SelectorFragmentAnchor::Trace(visitor);
 }
 
 void TextFragmentAnchor::DidFindMatch(
@@ -487,10 +473,9 @@ bool TextFragmentAnchor::Dismiss() {
 
   frame_->GetDocument()->Markers().RemoveMarkersOfTypes(
       DocumentMarker::MarkerTypes::TextFragment());
-  dismissed_ = true;
   metrics_->Dismissed();
 
-  return dismissed_;
+  return SelectorFragmentAnchor::Dismiss();
 }
 
 void TextFragmentAnchor::ApplyTargetToCommonAncestor(
@@ -537,11 +522,6 @@ bool TextFragmentAnchor::HasSearchEngineSource() {
 
   return IsKnownSearchEngine(
       frame_->GetDocument()->Loader()->GetRequestorOrigin()->ToString());
-}
-
-bool TextFragmentAnchor::ShouldDismissOnScrollOrClick() {
-  return !base::FeatureList::IsEnabled(
-      shared_highlighting::kSharedHighlightingV2);
 }
 
 }  // namespace blink

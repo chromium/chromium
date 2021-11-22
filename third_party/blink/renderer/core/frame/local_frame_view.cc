@@ -62,6 +62,7 @@
 #include "third_party/blink/renderer/core/editing/markers/document_marker_controller.h"
 #include "third_party/blink/renderer/core/events/error_event.h"
 #include "third_party/blink/renderer/core/exported/web_plugin_container_impl.h"
+#include "third_party/blink/renderer/core/fragment_directive/fragment_directive_utils.h"
 #include "third_party/blink/renderer/core/fragment_directive/text_fragment_handler.h"
 #include "third_party/blink/renderer/core/frame/browser_controls.h"
 #include "third_party/blink/renderer/core/frame/find_in_page.h"
@@ -1824,7 +1825,7 @@ void LocalFrameView::DismissFragmentAnchor() {
     return;
 
   if (fragment_anchor_->Dismiss()) {
-    TextFragmentHandler::RemoveSelectorsFromUrl(frame_);
+    FragmentDirectiveUtils::RemoveSelectorsFromUrl(frame_);
     fragment_anchor_ = nullptr;
   }
 }

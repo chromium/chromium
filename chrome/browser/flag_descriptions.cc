@@ -1202,6 +1202,12 @@ const char kReduceHorizontalFlingVelocityDescription[] =
     "Reduces the velocity of horizontal flings to 20\% of their original"
     "velocity.";
 
+const char kEnableCssSelectorFragmentAnchorName[] =
+    "Enables CSS selector fragment anchors";
+const char kEnableCssSelectorFragmentAnchorDescription[] =
+    "Similar to text directives, CSS selector directives can be specified "
+    "in a url which is to be scrolled into view and highlighted.";
+
 const char kRetailCouponsName[] = "Enable to fetch for retail coupons";
 const char kRetailCouponsDescription[] =
     "Allow to fetch retail coupons for consented users";

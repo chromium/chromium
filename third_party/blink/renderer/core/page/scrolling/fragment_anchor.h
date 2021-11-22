@@ -10,9 +10,10 @@
 #include "third_party/blink/renderer/platform/heap/handle.h"
 
 namespace blink {
-
-class LocalFrame;
+class Element;
 class KURL;
+class LocalFrame;
+class ScrollIntoViewOptions;
 
 // This class is an interface for the concept of a "fragment anchor". A
 // fragment anchor allows a page to link to a specific part of a page by using
@@ -34,6 +35,7 @@ class CORE_EXPORT FragmentAnchor : public GarbageCollected<FragmentAnchor> {
                                    LocalFrame& frame,
                                    bool should_scroll);
 
+  explicit FragmentAnchor(LocalFrame& frame) : frame_(frame) {}
   FragmentAnchor() = default;
   virtual ~FragmentAnchor() = default;
 
@@ -56,9 +58,14 @@ class CORE_EXPORT FragmentAnchor : public GarbageCollected<FragmentAnchor> {
   // dismissed and can be disposed.
   virtual bool Dismiss() = 0;
 
-  virtual void Trace(Visitor*) const {}
+  virtual void Trace(Visitor*) const;
 
-  virtual bool IsTextFragmentAnchor() = 0;
+  virtual bool IsTextFragmentAnchor() { return false; }
+
+  virtual void ScrollElementIntoViewWithOptions(Element* element_to_scroll,
+                                                ScrollIntoViewOptions* options);
+
+  Member<LocalFrame> frame_;
 };
 
 }  // namespace blink

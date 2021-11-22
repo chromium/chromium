@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/shared_highlighting/core/common/text_fragments_utils.h"
+#include "components/shared_highlighting/core/common/fragment_directives_utils.h"
 
+#include "components/shared_highlighting/core/common/fragment_directives_constants.h"
 #include "components/shared_highlighting/core/common/text_fragment.h"
-#include "components/shared_highlighting/core/common/text_fragments_constants.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
@@ -93,46 +93,47 @@ TEST(TextFragmentsUtilsTest, ExtractTextFragments) {
 TEST(TextFragmentsUtilsTest, RemoveTextFragments) {
   GURL url_with_fragment(
       "https://www.example.com/#idFrag:~:text=text%201&text=text%202");
-  GURL result = RemoveTextFragments(url_with_fragment);
+  GURL result = RemoveFragmentSelectorDirectives(url_with_fragment);
   EXPECT_EQ("https://www.example.com/#idFrag", result.spec());
 }
 
-TEST(TextFragmentsUtilsTest, RemoveTextFragmentsAndKeepOtherSelectors) {
+TEST(TextFragmentsUtilsTest,
+     RemoveTextFragmentsAndSelectorFragmentsAndKeepOtherSelectors) {
   GURL url_with_fragment(R"(
-      https://www.example.org#:~:text=foo&selector(type=CssSelector,value=img[src$="example.org"]))");
+      https://www.example.org#:~:text=foo&lorem_directive_string&selector(type=CssSelector,value=img[src$="example.org"]))");
   GURL url_with_fragment_removed(R"(
-      https://www.example.org#:~:selector(type=CssSelector,value=img[src$="example.org"]))");
-  GURL result = RemoveTextFragments(url_with_fragment);
+      https://www.example.org#:~:lorem_directive_string)");
+  GURL result = RemoveFragmentSelectorDirectives(url_with_fragment);
   EXPECT_EQ(url_with_fragment_removed.spec(), result.spec());
 
   url_with_fragment = GURL{
-      R"(https://www.example.org#:~:selector(type=CssSelector,value=img[src$="example.org"]))"};
-  result = RemoveTextFragments(url_with_fragment);
+      R"(https://www.example.org#:~:lorem_directive_string&selector(type=CssSelector,value=img[src$="example.org"]))"};
+  result = RemoveFragmentSelectorDirectives(url_with_fragment);
   EXPECT_EQ(url_with_fragment_removed.spec(), result.spec());
 }
 
 TEST(TextFragmentsUtilsTest, RemoveTextFragmentsWithNoFragments) {
   GURL url_without_fragment("https://www.example.com/no_fragment");
-  GURL result = RemoveTextFragments(url_without_fragment);
+  GURL result = RemoveFragmentSelectorDirectives(url_without_fragment);
   EXPECT_EQ("https://www.example.com/no_fragment", result.spec());
 }
 
 TEST(TextFragmentsUtilsTest, RemoveTextFragmentsParameterBeforeDelimiter) {
   GURL url("https://www.example.com/?text=foo#:~:bar");
-  GURL result = RemoveTextFragments(url);
+  GURL result = RemoveFragmentSelectorDirectives(url);
   EXPECT_EQ("https://www.example.com/?text=foo#:~:bar", result.spec());
 }
 
 TEST(TextFragmentsUtilsTest, RemoveTextFragmentsParameterIsSubstring) {
   GURL url("https://www.example.com/#:~:case_insensitive_text=foo");
-  GURL result = RemoveTextFragments(url);
+  GURL result = RemoveFragmentSelectorDirectives(url);
   EXPECT_EQ("https://www.example.com/#:~:case_insensitive_text=foo",
             result.spec());
 }
 
 TEST(TextFragmentsUtilsTest, RemoveTextFragmentsWithNonTextFragment) {
   GURL url("https://example.com/?not_a_frag_directive:~:#no_text_fragments");
-  GURL result = RemoveTextFragments(url);
+  GURL result = RemoveFragmentSelectorDirectives(url);
   EXPECT_EQ("https://example.com/?not_a_frag_directive:~:#no_text_fragments",
             result.spec());
 }
@@ -141,7 +142,7 @@ TEST(TextFragmentsUtilsTest, RemoveTextFragmentsMultipleDelimiters) {
   GURL url(
       "https://example.com/"
       "?not_a_frag_directive:~:#no_text_fragments:~:text=test,frag");
-  GURL result = RemoveTextFragments(url);
+  GURL result = RemoveFragmentSelectorDirectives(url);
   EXPECT_EQ("https://example.com/?not_a_frag_directive:~:#no_text_fragments",
             result.spec());
 }

@@ -9,10 +9,10 @@
 #include "third_party/blink/public/web/web_frame_load_type.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/editing/forward.h"
+#include "third_party/blink/renderer/core/fragment_directive/selector_fragment_anchor.h"
 #include "third_party/blink/renderer/core/fragment_directive/text_fragment_anchor_metrics.h"
 #include "third_party/blink/renderer/core/fragment_directive/text_fragment_finder.h"
 #include "third_party/blink/renderer/core/page/scrolling/element_fragment_anchor.h"
-#include "third_party/blink/renderer/core/page/scrolling/fragment_anchor.h"
 #include "third_party/blink/renderer/core/scroll/scroll_types.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -24,7 +24,7 @@ class LocalFrame;
 class KURL;
 class TextDirective;
 
-class CORE_EXPORT TextFragmentAnchor final : public FragmentAnchor,
+class CORE_EXPORT TextFragmentAnchor final : public SelectorFragmentAnchor,
                                              public TextFragmentFinder::Client {
  public:
   // When a document is loaded, this method will be called to see if it meets
@@ -54,7 +54,7 @@ class CORE_EXPORT TextFragmentAnchor final : public FragmentAnchor,
   TextFragmentAnchor& operator=(const TextFragmentAnchor&) = delete;
   ~TextFragmentAnchor() override = default;
 
-  bool Invoke() override;
+  bool InvokeSelector() override;
 
   void Installed() override;
 
@@ -75,8 +75,6 @@ class CORE_EXPORT TextFragmentAnchor final : public FragmentAnchor,
                     bool is_unique) override;
 
   void NoMatchFound() override {}
-
-  static bool ShouldDismissOnScrollOrClick();
 
   using DirectiveFinderPair =
       std::pair<Member<TextDirective>, Member<TextFragmentFinder>>;
@@ -103,11 +101,7 @@ class CORE_EXPORT TextFragmentAnchor final : public FragmentAnchor,
   // performing the search for the specified text in the Document.
   HeapVector<DirectiveFinderPair> directive_finder_pairs_;
 
-  Member<LocalFrame> frame_;
-
   bool search_finished_ = false;
-  // Whether the user has scrolled the page.
-  bool user_scrolled_ = false;
   // Indicates that we should scroll into view the first match that we find, set
   // to true each time the anchor is invoked if the user hasn't scrolled.
   bool first_match_needs_scroll_ = false;
@@ -120,17 +114,6 @@ class CORE_EXPORT TextFragmentAnchor final : public FragmentAnchor,
   // If the text fragment anchor is defined as a fragment directive and we don't
   // find a match, we fall back to the element anchor if it is present.
   Member<ElementFragmentAnchor> element_fragment_anchor_;
-  // Whether the text fragment anchor has been dismissed yet. This should be
-  // kept alive until dismissed so we can remove text highlighting.
-  bool dismissed_ = false;
-  // Whether we should scroll the anchor into view. This will be false for
-  // history navigations and reloads, where we want to restore the highlight but
-  // not scroll into view again.
-  bool should_scroll_ = false;
-  // Whether the page has been made visible. Used to ensure we wait until the
-  // page has been made visible to start matching, to help prevent brute force
-  // search attacks.
-  bool page_has_been_visible_ = false;
   // Whether we performed a non-zero scroll to scroll a match into view. Used
   // to determine whether the user subsequently scrolls back to the top.
   bool did_non_zero_scroll_ = false;

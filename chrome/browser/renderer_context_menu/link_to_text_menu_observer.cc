@@ -15,9 +15,9 @@
 #include "components/feature_engagement/public/tracker.h"
 #include "components/renderer_context_menu/render_view_context_menu_proxy.h"
 #include "components/shared_highlighting/core/common/disabled_sites.h"
+#include "components/shared_highlighting/core/common/fragment_directives_utils.h"
 #include "components/shared_highlighting/core/common/shared_highlighting_features.h"
 #include "components/shared_highlighting/core/common/shared_highlighting_metrics.h"
-#include "components/shared_highlighting/core/common/text_fragments_utils.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/context_menu_params.h"
 #include "content/public/browser/render_view_host.h"
@@ -246,7 +246,8 @@ void LinkToTextMenuObserver::OnGetExistingSelectorsComplete(
   ui::ScopedClipboardWriter scw(ui::ClipboardBuffer::kCopyPaste,
                                 std::move(data_transfer_endpoint));
 
-  GURL url_to_share = shared_highlighting::RemoveTextFragments(url_);
+  GURL url_to_share =
+      shared_highlighting::RemoveFragmentSelectorDirectives(url_);
   url_to_share = shared_highlighting::AppendSelectors(url_to_share, selectors);
 
   scw.WriteText(base::UTF8ToUTF16(url_to_share.spec()));

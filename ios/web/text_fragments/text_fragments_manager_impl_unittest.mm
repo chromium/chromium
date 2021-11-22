@@ -9,8 +9,8 @@
 #import "base/strings/utf_string_conversions.h"
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/scoped_feature_list.h"
+#import "components/shared_highlighting/core/common/fragment_directives_constants.h"
 #import "components/shared_highlighting/core/common/shared_highlighting_metrics.h"
-#import "components/shared_highlighting/core/common/text_fragments_constants.h"
 #import "components/ukm/test_ukm_recorder.h"
 #import "ios/web/common/features.h"
 #import "ios/web/navigation/navigation_item_impl.h"
@@ -44,7 +44,7 @@ const char kValidFragmentsURL[] =
 const char kSingleFragmentURL[] = "https://chromium.org#:~:text=text";
 const char kTwoFragmentsURL[] =
     "https://chromium.org#:~:text=text&text=other%20text";
-const char kFragmentsRemovedURL[] = "https://chromium.org#";
+const char kFragmentsRemovedURL[] = "https://chromium.org";
 
 const char kSearchEngineURL[] = "https://google.com";
 const char kNonSearchEngineURL[] = "https://notasearchengine.com";

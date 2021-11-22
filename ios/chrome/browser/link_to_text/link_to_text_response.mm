@@ -6,8 +6,8 @@
 
 #import "base/strings/sys_string_conversions.h"
 #import "base/values.h"
+#import "components/shared_highlighting/core/common/fragment_directives_utils.h"
 #import "components/shared_highlighting/core/common/text_fragment.h"
-#import "components/shared_highlighting/core/common/text_fragments_utils.h"
 #import "components/ukm/ios/ukm_url_recorder.h"
 #import "ios/chrome/browser/link_to_text/link_to_text_payload.h"
 #import "ios/chrome/browser/link_to_text/link_to_text_utils.h"

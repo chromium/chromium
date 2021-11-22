@@ -19,7 +19,7 @@ class Directive : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  enum Type { kText, kUnknown };
+  enum Type { kUnknown, kText, kSelector };
 
   explicit Directive(Type type);
   ~Directive() override;

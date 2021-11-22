@@ -5430,6 +5430,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kReduceHorizontalFlingVelocityDescription, kOsAll,
      FEATURE_VALUE_TYPE(features::kReduceHorizontalFlingVelocity)},
 
+    {"enable-css-selector-fragment-anchor",
+     flag_descriptions::kEnableCssSelectorFragmentAnchorName,
+     flag_descriptions::kEnableCssSelectorFragmentAnchorDescription, kOsAll,
+     FEATURE_VALUE_TYPE(blink::features::kCssSelectorFragmentAnchor)},
+
     {"enable-resampling-input-events",
      flag_descriptions::kEnableResamplingInputEventsName,
      flag_descriptions::kEnableResamplingInputEventsDescription, kOsAll,

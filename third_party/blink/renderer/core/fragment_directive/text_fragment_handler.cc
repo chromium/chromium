@@ -7,8 +7,8 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "components/shared_highlighting/core/common/disabled_sites.h"
+#include "components/shared_highlighting/core/common/fragment_directives_utils.h"
 #include "components/shared_highlighting/core/common/shared_highlighting_features.h"
-#include "components/shared_highlighting/core/common/text_fragments_utils.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/renderer/core/editing/markers/document_marker.h"
 #include "third_party/blink/renderer/core/editing/markers/document_marker_controller.h"
@@ -16,6 +16,7 @@
 #include "third_party/blink/renderer/core/editing/range_in_flat_tree.h"
 #include "third_party/blink/renderer/core/editing/selection_editor.h"
 #include "third_party/blink/renderer/core/editing/visible_units.h"
+#include "third_party/blink/renderer/core/fragment_directive/fragment_directive_utils.h"
 #include "third_party/blink/renderer/core/fragment_directive/text_fragment_anchor.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
@@ -95,7 +96,7 @@ void TextFragmentHandler::RemoveFragments() {
     // text fragment anchor, the selectors still need to be removed from the
     // URL. This is because dismissing the text fragment anchors is a page-wide
     // operation, and the URL might have selectors for a subframe.
-    RemoveSelectorsFromUrl(frame);
+    FragmentDirectiveUtils::RemoveSelectorsFromUrl(frame);
   }
 }
 
@@ -277,19 +278,6 @@ TextFragmentAnchor* TextFragmentHandler::GetTextFragmentAnchor() {
     return nullptr;
   }
   return static_cast<TextFragmentAnchor*>(fragmentAnchor);
-}
-
-// static
-void TextFragmentHandler::RemoveSelectorsFromUrl(LocalFrame* frame) {
-  KURL url(
-      shared_highlighting::RemoveTextFragments(frame->GetDocument()->Url()));
-  // Replace the current history entry with the new url, so that the text
-  // fragment shown in the URL matches the state of the highlight on the page.
-  // This is equivalent to history.replaceState in javascript.
-  frame->DomWindow()->document()->Loader()->RunURLAndHistoryUpdateSteps(
-      url, mojom::blink::SameDocumentNavigationType::kFragment,
-      /*data=*/nullptr, WebFrameLoadType::kReplaceCurrentItem,
-      mojom::blink::ScrollRestorationType::kAuto);
 }
 
 }  // namespace blink

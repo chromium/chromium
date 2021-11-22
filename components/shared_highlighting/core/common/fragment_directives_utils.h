@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_SHARED_HIGHLIGHTING_CORE_COMMON_TEXT_FRAGMENTS_UTILS_H_
-#define COMPONENTS_SHARED_HIGHLIGHTING_CORE_COMMON_TEXT_FRAGMENTS_UTILS_H_
+#ifndef COMPONENTS_SHARED_HIGHLIGHTING_CORE_COMMON_FRAGMENT_DIRECTIVES_UTILS_H_
+#define COMPONENTS_SHARED_HIGHLIGHTING_CORE_COMMON_FRAGMENT_DIRECTIVES_UTILS_H_
 
 #include <vector>
 
@@ -27,14 +27,14 @@ bool SplitUrlTextFragmentDirective(const std::string& full_url,
 
 // Checks the fragment portion of the URL for Text Fragments. Returns zero or
 // more dictionaries containing the parsed parameters used by the fragment-
-// finding algorithm, as defined in the spec.J
+// finding algorithm, as defined in the spec.
 base::Value ParseTextFragments(const GURL& url);
 
 // Extracts the text fragments, if any, from a ref string.
 std::vector<std::string> ExtractTextFragments(std::string ref_string);
 
-// Remove the text fragment selectors, if any, from url.
-GURL RemoveTextFragments(const GURL& url);
+// Remove fragment selector directives, if any, from url.
+GURL RemoveFragmentSelectorDirectives(const GURL& url);
 
 // Appends a set of text |fragments| with the correct format to the given
 // |base_url|. Returns an empty GURL if |base_url| is invalid.
@@ -66,4 +66,4 @@ GURL AppendSelectors(const GURL& base_url, std::vector<std::string> selectors);
 
 }  // namespace shared_highlighting
 
-#endif  // COMPONENTS_SHARED_HIGHLIGHTING_CORE_COMMON_TEXT_FRAGMENTS_UTILS_H_
+#endif  // COMPONENTS_SHARED_HIGHLIGHTING_CORE_COMMON_FRAGMENT_DIRECTIVES_UTILS_H_

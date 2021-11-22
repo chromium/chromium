@@ -17,13 +17,16 @@ Directive::Type Directive::GetType() const {
 
 String Directive::type() const {
   DEFINE_STATIC_LOCAL(const String, text, ("text"));
+  DEFINE_STATIC_LOCAL(const String, selector, ("selector"));
 
   switch (type_) {
-    case kText:
-      return text;
     case kUnknown:
       NOTREACHED();
       return String();
+    case kText:
+      return text;
+    case kSelector:
+      return selector;
   }
 
   NOTREACHED();

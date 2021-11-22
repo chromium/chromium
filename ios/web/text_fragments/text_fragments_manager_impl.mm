@@ -8,9 +8,9 @@
 
 #import "base/strings/string_util.h"
 #import "base/strings/utf_string_conversions.h"
+#import "components/shared_highlighting/core/common/fragment_directives_constants.h"
+#import "components/shared_highlighting/core/common/fragment_directives_utils.h"
 #import "components/shared_highlighting/core/common/shared_highlighting_metrics.h"
-#import "components/shared_highlighting/core/common/text_fragments_constants.h"
-#import "components/shared_highlighting/core/common/text_fragments_utils.h"
 #import "ios/web/common/features.h"
 #import "ios/web/public/js_messaging/web_frame.h"
 #import "ios/web/public/js_messaging/web_frame_util.h"
@@ -68,9 +68,9 @@ TextFragmentsManagerImpl* TextFragmentsManagerImpl::FromWebState(
 
 void TextFragmentsManagerImpl::RemoveHighlights() {
   // Remove the fragments that are visible on the page and update the URL.
-  GetJSFeature()->RemoveHighlights(web_state_,
-                                   shared_highlighting::RemoveTextFragments(
-                                       web_state_->GetLastCommittedURL()));
+  GetJSFeature()->RemoveHighlights(
+      web_state_, shared_highlighting::RemoveFragmentSelectorDirectives(
+                      web_state_->GetLastCommittedURL()));
 }
 
 void TextFragmentsManagerImpl::RegisterDelegate(

@@ -130,6 +130,7 @@ BLINK_COMMON_EXPORT extern const base::Feature
     kFreezeBackgroundTabOnNetworkIdle;
 BLINK_COMMON_EXPORT extern const base::Feature kStorageAccessAPI;
 BLINK_COMMON_EXPORT extern const base::Feature kTextFragmentAnchor;
+BLINK_COMMON_EXPORT extern const base::Feature kCssSelectorFragmentAnchor;
 BLINK_COMMON_EXPORT extern const base::Feature kFontAccess;
 BLINK_COMMON_EXPORT extern const base::Feature kFontAccessPersistent;
 BLINK_COMMON_EXPORT extern const base::Feature kComputePressure;

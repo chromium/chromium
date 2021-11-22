@@ -26,7 +26,7 @@
 #include "third_party/blink/renderer/core/events/mouse_event.h"
 #include "third_party/blink/renderer/core/events/pointer_event_factory.h"
 #include "third_party/blink/renderer/core/events/web_input_event_conversion.h"
-#include "third_party/blink/renderer/core/fragment_directive/text_fragment_anchor.h"
+#include "third_party/blink/renderer/core/fragment_directive/selector_fragment_anchor.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
@@ -677,7 +677,7 @@ WebInputEventResult MouseEventManager::HandleMousePressEvent(
 
   mouse_down_ = event.Event();
 
-  if (frame_->View() && TextFragmentAnchor::ShouldDismissOnScrollOrClick())
+  if (frame_->View() && SelectorFragmentAnchor::ShouldDismissOnScrollOrClick())
     frame_->View()->DismissFragmentAnchor();
 
   if (frame_->GetDocument()->IsSVGDocument() &&

@@ -1292,6 +1292,7 @@ source_set("unit_tests") {
     "fetch/readable_stream_bytes_consumer_test.cc",
     "fetch/request_test.cc",
     "fetch/response_test.cc",
+    "fragment_directive/css_selector_fragment_anchor_test.cc",
     "fragment_directive/text_fragment_anchor_metrics_test.cc",
     "fragment_directive/text_fragment_anchor_test.cc",
     "fragment_directive/text_fragment_finder_test.cc",

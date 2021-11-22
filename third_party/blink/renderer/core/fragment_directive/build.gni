@@ -3,8 +3,16 @@
 # found in the LICENSE file.
 
 blink_core_sources_fragment_directive = [
+  "css_selector_directive.cc",
+  "css_selector_directive.h",
+  "css_selector_fragment_anchor.cc",
+  "css_selector_fragment_anchor.h",
   "fragment_directive.cc",
   "fragment_directive.h",
+  "fragment_directive_utils.cc",
+  "fragment_directive_utils.h",
+  "selector_fragment_anchor.cc",
+  "selector_fragment_anchor.h",
   "text_directive.cc",
   "text_directive.h",
   "text_fragment_anchor.cc",

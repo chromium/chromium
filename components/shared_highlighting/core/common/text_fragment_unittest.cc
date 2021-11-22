@@ -5,7 +5,7 @@
 #include "components/shared_highlighting/core/common/text_fragment.h"
 
 #include "base/values.h"
-#include "components/shared_highlighting/core/common/text_fragments_constants.h"
+#include "components/shared_highlighting/core/common/fragment_directives_constants.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 

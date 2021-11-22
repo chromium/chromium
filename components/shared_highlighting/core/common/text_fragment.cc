@@ -8,7 +8,7 @@
 
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
-#include "components/shared_highlighting/core/common/text_fragments_constants.h"
+#include "components/shared_highlighting/core/common/fragment_directives_constants.h"
 #include "net/base/escape.h"
 
 namespace {
@@ -137,7 +137,7 @@ std::string TextFragment::ToEscapedString() const {
     return std::string();
   }
   std::stringstream ss;
-  ss << kFragmentParameterName;
+  ss << kTextDirectiveParameterName;
 
   if (!prefix_.empty()) {
     ss << Escape(prefix_) << "-,";

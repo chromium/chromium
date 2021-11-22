@@ -50111,6 +50111,7 @@ from previous Chrome versions.
   <int value="-1010588306" label="SlideTopChromeWithPageScrolls:disabled"/>
   <int value="-1008511612" label="EnableCustomMacPaperSizes:disabled"/>
   <int value="-1007961880" label="PrivacySandboxSettings:enabled"/>
+  <int value="-1007856269" label="CssSelectorFragmentAnchor:disabled"/>
   <int value="-1005937042" label="ArcVmBalloonPolicy:enabled"/>
   <int value="-1005164075" label="ContextualSearchTranslations:enabled"/>
   <int value="-1002537430" label="HudDisplayForPerformanceMetrics:disabled"/>
@@ -53669,6 +53670,7 @@ from previous Chrome versions.
   <int value="1698089268" label="WebXRMultiGpu:disabled"/>
   <int value="1699180023" label="PaymentRequestOptionalTotal:disabled"/>
   <int value="1699182601" label="DockedMagnifier:disabled"/>
+  <int value="1699290689" label="CssSelectorFragmentAnchor:enabled"/>
   <int value="1700117535" label="MediaFeedsBackgroundFetching:disabled"/>
   <int value="1700394127" label="OverlayScrollbar:disabled"/>
   <int value="1701972870" label="NTPSnippetsIncreasedVisibility:enabled"/>

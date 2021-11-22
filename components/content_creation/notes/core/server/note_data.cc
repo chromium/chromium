@@ -4,7 +4,7 @@
 
 #include "components/content_creation/notes/core/server/note_data.h"
 
-#include "components/shared_highlighting/core/common/text_fragments_utils.h"
+#include "components/shared_highlighting/core/common/fragment_directives_utils.h"
 #include "url/gurl.h"
 
 namespace content_creation {

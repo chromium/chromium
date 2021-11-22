@@ -756,6 +756,10 @@
       status: "experimental",
     },
     {
+      name: "CSSSelectorFragmentAnchor",
+      status: "experimental",
+    },
+    {
       name: "CSSSnapSize",
       status: "experimental",
     },
