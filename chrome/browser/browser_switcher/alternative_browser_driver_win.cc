@@ -334,7 +334,7 @@ void AlternativeBrowserDriverImpl::TryLaunch(const GURL& url,
 std::string AlternativeBrowserDriverImpl::GetBrowserName() const {
   std::wstring path = base::UTF8ToWide(prefs_->GetAlternativeBrowserPath());
   const auto* mapping = FindBrowserMapping(path, false);
-  return mapping ? mapping->browser_name : "alternative browser";
+  return mapping ? mapping->browser_name : std::string();
 }
 
 BrowserType AlternativeBrowserDriverImpl::GetBrowserType() const {

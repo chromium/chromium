@@ -107,14 +107,14 @@ TEST_F(AlternativeBrowserDriverTest, GetBrowserName) {
 #elif defined(OS_MAC)
   std::string expected = "Safari";
 #else
-  std::string expected = "alternative browser";
+  std::string expected;
 #endif
   std::string actual = driver()->GetBrowserName();
   EXPECT_EQ(expected, actual);
 
   SetBrowserPath("bogus.exe");
   actual = driver()->GetBrowserName();
-  EXPECT_EQ("alternative browser", actual);
+  EXPECT_EQ("", actual);
 
 #if defined(OS_WIN)
   SetBrowserPath("${ie}");

@@ -48,9 +48,9 @@ class AlternativeBrowserDriver {
   // method is most appropriate.
   virtual void TryLaunch(const GURL& url, LaunchCallback cb) = 0;
 
-  // Returns the string for the name of the alternative browser, if it was
-  // auto-detected. If the name couldn't be auto-detected, returns
-  // "alternative browser"
+  // Returns the localized string for the name of the alternative browser, if it
+  // was auto-detected. If the name couldn't be auto-detected, returns an empty
+  // string.
   virtual std::string GetBrowserName() const = 0;
 
   // Returns the type of browser as an enum, if it was auto-detected. Otherwise,
