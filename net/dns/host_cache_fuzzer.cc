@@ -9,6 +9,7 @@
 #include "base/json/json_reader.h"
 #include "base/logging.h"
 #include "base/numerics/clamped_math.h"
+#include "base/numerics/ostream_operators.h"
 #include "base/strings/string_piece_forward.h"
 #include "net/dns/host_cache.h"
 #include "net/dns/host_cache_fuzzer.pb.h"

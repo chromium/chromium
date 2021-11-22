@@ -9,4 +9,8 @@
 #include "base/numerics/clamped_math.h"
 #include "base/numerics/safe_conversions.h"
 
+#if !BASE_NUMERICS_DISABLE_OSTREAM_OPERATORS
+#include "base/numerics/ostream_operators.h"
+#endif
+
 #endif  // BASE_NUMERICS_SAFE_MATH_H_

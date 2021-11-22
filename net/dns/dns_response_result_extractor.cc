@@ -19,6 +19,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/numerics/checked_math.h"
+#include "base/numerics/ostream_operators.h"
 #include "base/rand_util.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
