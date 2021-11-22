@@ -65,6 +65,10 @@ public class StartupTabPreloader implements ProfileManager.Observer, DestroyObse
     boolean mTriggerPreload;
     // Records whether a preloaded tab matched.
     boolean mTabMatches;
+    // Records whether we have already recorded the histogram for the duration between the load
+    // decision and the match decision; this histogram should be recorded only on the first match
+    // decision.
+    private boolean mRecordedLoadDecisionToMatchDecisionHistogram;
 
     // Whether a tab preload was prevented only by the ElideTabPreloadAtStartup feature.
     private boolean mPreloadPreventedOnlyByFeature;
@@ -122,40 +126,45 @@ public class StartupTabPreloader implements ProfileManager.Observer, DestroyObse
 
     @Override
     public void onFirstNavigationStart() {
-        if (mLoadDecisionMs == 0) return;
-
-        long currentTimeMs = SystemClock.uptimeMillis();
-        long triggerpointToFirstNavigationStartMs = currentTimeMs - mLoadDecisionMs;
-
-        // Note that we don't use recordDurationFromLoadDecisionIntoHistogram() here as this
-        // point is reached before tab matching occurs.
-        String suffix = preloadWasViable() ? ".Load" : ".NoLoad";
-        RecordHistogram.recordMediumTimesHistogram(
-                "Android.StartupTabPreloader.LoadDecisionToFirstNavigationStart" + suffix,
-                triggerpointToFirstNavigationStartMs);
+        recordDurationFromLoadDecisionIntoPreTabMatchHistogram(
+                "Android.StartupTabPreloader.LoadDecisionToFirstNavigationStart");
     }
 
     @Override
     public void onFirstVisibleContent() {
-        recordDurationFromLoadDecisionIntoHistogram(
+        recordDurationFromLoadDecisionIntoPostTabMatchHistogram(
                 "Android.StartupTabPreloader.LoadDecisionToFirstVisibleContent");
     }
 
     @Override
     public void onFirstNavigationCommit() {
-        recordDurationFromLoadDecisionIntoHistogram(
+        recordDurationFromLoadDecisionIntoPostTabMatchHistogram(
                 "Android.StartupTabPreloader.LoadDecisionToFirstNavigationCommit");
     }
 
     @Override
     public void onFirstContentfulPaint() {
-        recordDurationFromLoadDecisionIntoHistogram(
+        recordDurationFromLoadDecisionIntoPostTabMatchHistogram(
                 "Android.StartupTabPreloader.LoadDecisionToFirstContentfulPaint");
     }
 
     // Records the duration from the load decision to the current time into |histogram| (suffixed
-    // by the state of the tab preload and match decisions).
-    private void recordDurationFromLoadDecisionIntoHistogram(String histogram) {
+    // by the state of the tab preload decision). To be used when the current time is before the
+    // tab match decision has occurred.
+    private void recordDurationFromLoadDecisionIntoPreTabMatchHistogram(String histogram) {
+        if (mLoadDecisionMs == 0) return;
+
+        long currentTimeMs = SystemClock.uptimeMillis();
+        long triggerpointToCurrentTimeMs = currentTimeMs - mLoadDecisionMs;
+
+        String suffix = preloadWasViable() ? ".Load" : ".NoLoad";
+        RecordHistogram.recordMediumTimesHistogram(histogram + suffix, triggerpointToCurrentTimeMs);
+    }
+
+    // Records the duration from the load decision to the current time into |histogram| (suffixed
+    // by the state of the tab preload and match decisions). To be used when the tab match decision
+    // may have already occurred at the present time.
+    private void recordDurationFromLoadDecisionIntoPostTabMatchHistogram(String histogram) {
         if (mLoadDecisionMs == 0) return;
 
         long currentTimeMs = SystemClock.uptimeMillis();
@@ -190,12 +199,19 @@ public class StartupTabPreloader implements ProfileManager.Observer, DestroyObse
     /**
      * Returns the Tab if loadUrlParams and type match, otherwise the Tab is discarded.
      *
-     * @param loadUrlParams The actual parameters of the url load.
-     * @param type The actual launch type type.
-     * @return The results of maybeNavigate() if they match loadUrlParams and type or null
-     *         otherwise.
+     * @param loadUrlParams The actual parameters of the url load.  @param type The actual launch
+     * type type.  @return The results of maybeNavigate() if they match loadUrlParams and type or
+     * null otherwise.
      */
     public Tab takeTabIfMatchingOrDestroy(LoadUrlParams loadUrlParams, @TabLaunchType int type) {
+        if (!mRecordedLoadDecisionToMatchDecisionHistogram) {
+            // NOTE: This histogram is segmented only by state of the load decision as it covers
+            // the duration from the load decision *up to* the tab match decision.
+            recordDurationFromLoadDecisionIntoPreTabMatchHistogram(
+                    "Android.StartupTabPreloader.LoadDecisionToMatchDecision");
+            mRecordedLoadDecisionToMatchDecisionHistogram = true;
+        }
+
         if (mTab == null) {
             if (mUrlForPreloadPreventedOnlyByFeature != null) {
                 // Construct a LoadUrlParams object for the preload that would have occurred.
@@ -269,6 +285,9 @@ public class StartupTabPreloader implements ProfileManager.Observer, DestroyObse
             ProfileManager.removeObserver(this);
             mTriggerPreload = shouldLoadTab();
             mLoadDecisionMs = SystemClock.uptimeMillis();
+            RecordHistogram.recordMediumTimesHistogram(
+                    "Android.StartupTabPreloader.ActivityStartToLoadDecision",
+                    mLoadDecisionMs - mStartupMetricsTracker.getActivityStartTimeMs());
             if (mTriggerPreload) loadTab();
             RecordHistogram.recordBooleanHistogram(
                     "Startup.Android.StartupTabPreloader.TabLoaded", mTriggerPreload);

@@ -125,6 +125,12 @@ public class ActivityTabStartupMetricsTracker {
         tabModelSelectorSupplier.addObserver((selector) -> registerObservers(selector));
     }
 
+    // Returns the time since the activity was started (relative to which metrics such as time to
+    // first visible content are calculated).
+    public long getActivityStartTimeMs() {
+        return mActivityStartTimeMs;
+    }
+
     private void registerObservers(TabModelSelector tabModelSelector) {
         if (!mShouldTrackStartupMetrics) return;
         mTabModelSelectorTabObserver =

@@ -52,6 +52,12 @@ public class StartupTabPreloaderTest {
             "Startup.Android.Cold.TimeToFirstVisibleContent";
     private static final String VISIBLE_CONTENT_HISTOGRAM =
             "Startup.Android.Cold.TimeToVisibleContent";
+    private static final String ACTIVITY_START_TO_PRELOAD_TRIGGER =
+            "Android.StartupTabPreloader.ActivityStartToLoadDecision";
+    private static final String PRELOAD_TRIGGER_TO_MATCH_DECISION_PRELOAD =
+            "Android.StartupTabPreloader.LoadDecisionToMatchDecision.Load";
+    private static final String PRELOAD_TRIGGER_TO_MATCH_DECISION_NO_PRELOAD =
+            "Android.StartupTabPreloader.LoadDecisionToMatchDecision.NoLoad";
     private static final String PRELOAD_TRIGGER_TO_FIRST_NAVIGATION_START_PRELOAD =
             "Android.StartupTabPreloader.LoadDecisionToFirstNavigationStart.Load";
     private static final String PRELOAD_TRIGGER_TO_FIRST_NAVIGATION_START_NO_PRELOAD =
@@ -99,12 +105,23 @@ public class StartupTabPreloaderTest {
         int noPreload = 1 - preload;
         int preloadMismatch = (preload == 1 && preloadMatch == 0) ? 1 : 0;
 
+        Assert.assertEquals(1,
+                RecordHistogram.getHistogramTotalCountForTesting(
+                        ACTIVITY_START_TO_PRELOAD_TRIGGER));
+
         Assert.assertEquals(preload,
                 RecordHistogram.getHistogramTotalCountForTesting(
                         PRELOAD_TRIGGER_TO_FIRST_NAVIGATION_START_PRELOAD));
         Assert.assertEquals(noPreload,
                 RecordHistogram.getHistogramTotalCountForTesting(
                         PRELOAD_TRIGGER_TO_FIRST_NAVIGATION_START_NO_PRELOAD));
+
+        Assert.assertEquals(preload,
+                RecordHistogram.getHistogramTotalCountForTesting(
+                        PRELOAD_TRIGGER_TO_MATCH_DECISION_PRELOAD));
+        Assert.assertEquals(noPreload,
+                RecordHistogram.getHistogramTotalCountForTesting(
+                        PRELOAD_TRIGGER_TO_MATCH_DECISION_NO_PRELOAD));
 
         Assert.assertEquals(preloadMatch,
                 RecordHistogram.getHistogramTotalCountForTesting(
@@ -431,6 +448,15 @@ public class StartupTabPreloaderTest {
                 1, RecordHistogram.getHistogramValueCountForTesting(TAB_LOADED_HISTOGRAM, 1));
         Assert.assertEquals(
                 1, RecordHistogram.getHistogramValueCountForTesting(TAB_TAKEN_HISTOGRAM, 1));
+        Assert.assertEquals(1,
+                RecordHistogram.getHistogramTotalCountForTesting(
+                        ACTIVITY_START_TO_PRELOAD_TRIGGER));
+        Assert.assertEquals(1,
+                RecordHistogram.getHistogramTotalCountForTesting(
+                        PRELOAD_TRIGGER_TO_MATCH_DECISION_PRELOAD));
+        Assert.assertEquals(0,
+                RecordHistogram.getHistogramTotalCountForTesting(
+                        PRELOAD_TRIGGER_TO_MATCH_DECISION_NO_PRELOAD));
 
         Tab currentTab = mActivityRule.getActivity().getActivityTab();
 
@@ -447,6 +473,15 @@ public class StartupTabPreloaderTest {
                 1, RecordHistogram.getHistogramValueCountForTesting(TAB_LOADED_HISTOGRAM, 1));
         Assert.assertEquals(
                 1, RecordHistogram.getHistogramValueCountForTesting(TAB_TAKEN_HISTOGRAM, 1));
+        Assert.assertEquals(1,
+                RecordHistogram.getHistogramTotalCountForTesting(
+                        ACTIVITY_START_TO_PRELOAD_TRIGGER));
+        Assert.assertEquals(1,
+                RecordHistogram.getHistogramTotalCountForTesting(
+                        PRELOAD_TRIGGER_TO_MATCH_DECISION_PRELOAD));
+        Assert.assertEquals(0,
+                RecordHistogram.getHistogramTotalCountForTesting(
+                        PRELOAD_TRIGGER_TO_MATCH_DECISION_NO_PRELOAD));
     }
 
     @Test
