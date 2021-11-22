@@ -113,6 +113,10 @@
     if (self.thumbStripPanHandler.currentState == ViewRevealState::Revealed) {
       self.view.transform = CGAffineTransformMakeTranslation(
           0, self.thumbStripPanHandler.revealedHeight);
+    } else if (self.thumbStripPanHandler.currentState ==
+               ViewRevealState::Fullscreen) {
+      self.view.transform = CGAffineTransformMakeTranslation(
+          0, self.thumbStripPanHandler.baseViewHeight);
     }
   }
 }
@@ -156,6 +160,10 @@
     case ViewRevealState::Revealed:
       self.view.transform = CGAffineTransformMakeTranslation(
           0, self.thumbStripPanHandler.revealedHeight);
+      break;
+    case ViewRevealState::Fullscreen:
+      self.view.transform = CGAffineTransformMakeTranslation(
+          0, self.thumbStripPanHandler.baseViewHeight);
       break;
   }
 }

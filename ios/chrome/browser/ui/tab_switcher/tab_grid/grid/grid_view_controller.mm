@@ -1283,7 +1283,8 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
         addGestureRecognizer:self.thumbStripDismissRecognizer];
   }
 
-  if (panHandler.currentState == ViewRevealState::Revealed) {
+  if (panHandler.currentState == ViewRevealState::Revealed ||
+      panHandler.currentState == ViewRevealState::Fullscreen) {
     self.thumbStripDismissRecognizer.enabled = NO;
     collectionView.collectionViewLayout = self.gridLayout;
     self.currentLayout = self.gridLayout;

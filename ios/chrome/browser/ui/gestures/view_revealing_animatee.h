@@ -8,9 +8,10 @@
 // The 3 stages or steps of the transitions handled by the view revealing
 // vertical pan handler class.
 enum class ViewRevealState {
-  Hidden,    // The view is not revealed.
-  Peeked,    // The view is only partially revealed.
-  Revealed,  // The view is completely revealed.
+  Hidden,      // The view is not revealed.
+  Peeked,      // The view is only partially revealed.
+  Revealed,    // The view is mostly revealed.
+  Fullscreen,  // The view is fully revealed - under software control only.
 };
 
 // Protocol defining an interface to handle animations from the view revealing

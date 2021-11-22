@@ -261,6 +261,7 @@
   // A modal may be presented on top of the Recent Tabs or tab grid.
   [self.baseViewController dismissModals];
   self.baseViewController.tabGridMode = TabGridModeNormal;
+  [self showFullscreen:NO];
 
   [self dismissPopovers];
 
@@ -292,8 +293,10 @@
 
 - (BOOL)isTabGridActive {
   if (self.isThumbStripEnabled) {
-    return self.thumbStripCoordinator.panHandler.currentState ==
-           ViewRevealState::Revealed;
+    ViewRevealState currentState =
+        self.thumbStripCoordinator.panHandler.currentState;
+    return currentState == ViewRevealState::Revealed ||
+           currentState == ViewRevealState::Fullscreen;
   }
   return self.bvcContainer == nil && !self.firstPresentation;
 }
@@ -896,6 +899,20 @@
   [handler openURLInNewTab:[OpenNewTabCommand commandWithURLFromChrome:URL]];
 }
 
+- (void)showFullscreen:(BOOL)fullscreen {
+  if (![self isThumbStripEnabled]) {
+    return;
+  }
+  ViewRevealingVerticalPanHandler* panHandler =
+      self.thumbStripCoordinator.panHandler;
+  if (fullscreen && panHandler.currentState == ViewRevealState::Revealed) {
+    [panHandler setNextState:ViewRevealState::Fullscreen animated:YES];
+  } else if (!fullscreen &&
+             panHandler.currentState == ViewRevealState::Fullscreen) {
+    [panHandler setNextState:ViewRevealState::Revealed animated:YES];
+  }
+}
+
 #pragma mark - RecentTabsPresentationDelegate
 
 - (void)showHistoryFromRecentTabs {
@@ -1012,6 +1029,7 @@
   base::RecordAction(
       base::UserMetricsAction("MobileTabGridTabContextMenuSelectTabs"));
   self.baseViewController.tabGridMode = TabGridModeSelection;
+  [self showFullscreen:YES];
 }
 
 - (void)removeSessionAtTableSectionWithIdentifier:(NSInteger)sectionIdentifier {

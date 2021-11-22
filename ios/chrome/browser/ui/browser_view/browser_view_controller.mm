@@ -2691,7 +2691,8 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   self.view.backgroundColor = UIColor.clearColor;
 
   CGRect webStateViewFrame = self.contentArea.bounds;
-  if (self.thumbStripPanHandler.currentState == ViewRevealState::Revealed) {
+  if (self.thumbStripPanHandler.currentState == ViewRevealState::Revealed ||
+      self.thumbStripPanHandler.currentState == ViewRevealState::Fullscreen) {
     CGFloat toolbarHeight = [self expandedTopToolbarHeight];
     webStateViewFrame = UIEdgeInsetsInsetRect(
         webStateViewFrame, UIEdgeInsetsMake(toolbarHeight, 0, 0, 0));
@@ -2842,7 +2843,8 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   }
 
   // Close all keyboards if the thumb strip is transitioning to the tab grid.
-  if (nextViewRevealState == ViewRevealState::Revealed) {
+  if (nextViewRevealState == ViewRevealState::Revealed ||
+      nextViewRevealState == ViewRevealState::Fullscreen) {
     [self.view endEditing:YES];
   }
 
@@ -2881,6 +2883,7 @@ NSString* const kBrowserViewControllerSnackbarCategory =
       }
       break;
     case ViewRevealState::Revealed:
+    case ViewRevealState::Fullscreen:
       self.view.transform = CGAffineTransformMakeTranslation(0, -hideHeight);
       if (!base::FeatureList::IsEnabled(kModernTabStrip)) {
         CGAffineTransform transform =
@@ -2894,7 +2897,8 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 
 - (void)didAnimateViewReveal:(ViewRevealState)viewRevealState {
   [self.tabStripSnapshot removeFromSuperview];
-  self.bottomPosition = (viewRevealState == ViewRevealState::Revealed);
+  self.bottomPosition = (viewRevealState == ViewRevealState::Revealed ||
+                         viewRevealState == ViewRevealState::Fullscreen);
 
   if (viewRevealState == ViewRevealState::Hidden) {
     // Stop disabling fullscreen.

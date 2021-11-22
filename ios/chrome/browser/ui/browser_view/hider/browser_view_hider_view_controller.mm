@@ -109,7 +109,11 @@
 
 - (void)willAnimateViewRevealFromState:(ViewRevealState)currentViewRevealState
                                toState:(ViewRevealState)nextViewRevealState {
-  self.view.alpha = currentViewRevealState == ViewRevealState::Revealed ? 1 : 0;
+  self.view.alpha =
+      currentViewRevealState == ViewRevealState::Revealed ||
+              currentViewRevealState == ViewRevealState::Fullscreen
+          ? 1
+          : 0;
   self.view.hidden = NO;
 }
 
@@ -122,13 +126,15 @@
       self.view.alpha = 0;
       break;
     case ViewRevealState::Revealed:
+    case ViewRevealState::Fullscreen:
       self.view.alpha = 1;
       break;
   }
 }
 
 - (void)didAnimateViewReveal:(ViewRevealState)viewRevealState {
-  self.view.hidden = viewRevealState != ViewRevealState::Revealed;
+  self.view.hidden = viewRevealState != ViewRevealState::Revealed &&
+                     viewRevealState != ViewRevealState::Fullscreen;
 }
 
 @end

@@ -250,9 +250,11 @@ enum class LayoutTransitionState {
     return;
   }
 
-  if (self.nextState == ViewRevealState::Revealed) {
+  if (self.nextState == ViewRevealState::Revealed ||
+      self.nextState == ViewRevealState::Fullscreen) {
     [self willTransitionToLayout:LayoutSwitcherState::Grid];
-  } else if (self.currentState == ViewRevealState::Revealed &&
+  } else if ((self.currentState == ViewRevealState::Revealed ||
+              self.currentState == ViewRevealState::Fullscreen) &&
              (self.nextState == ViewRevealState::Peeked ||
               self.nextState == ViewRevealState::Hidden)) {
     [self willTransitionToLayout:LayoutSwitcherState::Horizontal];
@@ -377,6 +379,9 @@ enum class LayoutTransitionState {
         return ViewRevealState::Revealed;
       }
       return self.currentState;
+    case ViewRevealState::Fullscreen:
+      NOTREACHED();
+      return ViewRevealState::Fullscreen;
   }
 }
 
@@ -397,6 +402,9 @@ enum class LayoutTransitionState {
       break;
     case ViewRevealState::Revealed:
       progress = translation / (-self.remainingHeight);
+      break;
+    case ViewRevealState::Fullscreen:
+      progress = translation / (self.baseViewHeight - self.revealedHeight);
       break;
   }
 
@@ -535,6 +543,7 @@ enum class LayoutTransitionState {
       break;
     }
     case ViewRevealState::Revealed:
+    case ViewRevealState::Fullscreen:
       // The scroll views should be covered in Revealed state, so should not
       // be able to be scrolled.
       NOTREACHED();
