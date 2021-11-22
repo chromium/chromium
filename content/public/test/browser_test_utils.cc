@@ -1449,9 +1449,13 @@ bool ExecuteScriptAndExtractBool(const ToRenderFrameHost& adapter,
   // Prerendering pages will never have user gesture.
   bool user_gesture = adapter.render_frame_host()->GetLifecycleState() !=
                       RenderFrameHost::LifecycleState::kPrerendering;
-  return ExecuteScriptHelper(adapter.render_frame_host(), script, user_gesture,
-                             ISOLATED_WORLD_ID_GLOBAL, &value) &&
-         value && value->GetAsBoolean(result);
+  if (ExecuteScriptHelper(adapter.render_frame_host(), script, user_gesture,
+                          ISOLATED_WORLD_ID_GLOBAL, &value) &&
+      value && value->is_bool()) {
+    *result = value->GetBool();
+    return true;
+  }
+  return false;
 }
 
 bool ExecuteScriptAndExtractString(const ToRenderFrameHost& adapter,
@@ -1473,9 +1477,13 @@ bool ExecuteScriptWithoutUserGestureAndExtractBool(
     bool* result) {
   DCHECK(result);
   std::unique_ptr<base::Value> value;
-  return ExecuteScriptHelper(adapter.render_frame_host(), script, false,
-                             ISOLATED_WORLD_ID_GLOBAL, &value) &&
-         value && value->GetAsBoolean(result);
+  if (ExecuteScriptHelper(adapter.render_frame_host(), script, false,
+                          ISOLATED_WORLD_ID_GLOBAL, &value) &&
+      value && value->is_bool()) {
+    *result = value->GetBool();
+    return true;
+  }
+  return false;
 }
 
 bool ExecuteScriptWithoutUserGestureAndExtractString(
