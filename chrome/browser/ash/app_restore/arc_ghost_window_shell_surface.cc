@@ -28,7 +28,7 @@ std::unique_ptr<exo::ClientControlledShellSurface> InitArcGhostWindow(
     ArcWindowHandler* window_handler,
     const std::string& app_id,
     int window_id,
-    gfx::Rect bounds,
+    const gfx::Rect& bounds,
     app_restore::AppRestoreData* restore_data,
     base::RepeatingClosure close_callback) {
   int64_t display_id_value =
@@ -59,7 +59,7 @@ std::unique_ptr<exo::ClientControlledShellSurface> InitArcGhostWindow(
       bounds));
   shell_surface->set_close_callback(std::move(close_callback));
 
-  shell_surface->SetAppId(app_id.c_str());
+  shell_surface->SetAppId(app_id);
   shell_surface->SetBounds(display_id_value, bounds);
 
   if (restore_data->maximum_size.has_value())

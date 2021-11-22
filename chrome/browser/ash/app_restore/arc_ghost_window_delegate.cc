@@ -20,7 +20,7 @@ ArcGhostWindowDelegate::ArcGhostWindowDelegate(
     ArcWindowHandler* handler,
     int window_id,
     int64_t display_id,
-    gfx::Rect bounds)
+    const gfx::Rect& bounds)
     : window_id_(window_id),
       bounds_(gfx::Rect(bounds)),
       pending_close_(false),

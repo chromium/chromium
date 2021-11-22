@@ -64,7 +64,9 @@ class ArcWindowHandler : public exo::WMHelper::LifetimeManager::Observer {
   ArcWindowHandler& operator=(const ArcWindowHandler&) = delete;
   ~ArcWindowHandler() override;
 
-  void LaunchArcGhostWindow(const std::string& app_id,
+  // Returns true if the ghost window is created and launched. Otherwise,
+  // returns false.
+  bool LaunchArcGhostWindow(const std::string& app_id,
                             int32_t session_id,
                             ::app_restore::AppRestoreData* restore_data);
 

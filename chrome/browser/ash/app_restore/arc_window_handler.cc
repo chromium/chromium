@@ -71,7 +71,7 @@ void ArcWindowHandler::OnDestroyed() {
   session_id_to_pending_window_info_.clear();
 }
 
-void ArcWindowHandler::LaunchArcGhostWindow(
+bool ArcWindowHandler::LaunchArcGhostWindow(
     const std::string& app_id,
     int32_t session_id,
     app_restore::AppRestoreData* restore_data) {
@@ -100,8 +100,11 @@ void ArcWindowHandler::LaunchArcGhostWindow(
       this, app_id, session_id, adjust_bounds, restore_data,
       base::BindRepeating(&ArcWindowHandler::CloseWindow,
                           weak_ptr_factory_.GetWeakPtr(), session_id));
-  if (shell_surface)
-    session_id_to_shell_surface_.emplace(session_id, std::move(shell_surface));
+  if (!shell_surface)
+    return false;
+
+  session_id_to_shell_surface_.emplace(session_id, std::move(shell_surface));
+  return true;
 }
 
 void ArcWindowHandler::CloseWindow(int session_id) {

@@ -423,19 +423,19 @@ void ArcAppLaunchHandler::PrepareAppLaunching(const std::string& app_id) {
 
     bool launch_ghost_window = false;
 #if BUILDFLAG(ENABLE_WAYLAND_SERVER)
-    if (window_handler_ && (data_it.second->bounds_in_root.has_value() ||
-                            data_it.second->current_bounds.has_value())) {
-      RecordArcGhostWindowLaunch(/*is_arc_ghost_window=*/true);
-      window_handler_->LaunchArcGhostWindow(app_id, arc_session_id,
-                                            data_it.second.get());
+    if (window_handler_ &&
+        (data_it.second->bounds_in_root.has_value() ||
+         data_it.second->current_bounds.has_value()) &&
+        window_handler_->LaunchArcGhostWindow(app_id, arc_session_id,
+                                              data_it.second.get())) {
       launch_ghost_window = true;
     } else {
-      RecordArcGhostWindowLaunch(/*is_arc_ghost_window=*/false);
       // Only record bounds state when no ghost window launch.
       RecordLaunchBoundsState(data_it.second->bounds_in_root.has_value(),
                               data_it.second->current_bounds.has_value());
     }
 #endif
+    RecordArcGhostWindowLaunch(launch_ghost_window);
 
     const auto& file_path = handler_->profile()->GetPath();
     int32_t event_flags = data_it.second->event_flag.value();

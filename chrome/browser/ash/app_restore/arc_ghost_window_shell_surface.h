@@ -23,7 +23,7 @@ std::unique_ptr<exo::ClientControlledShellSurface> InitArcGhostWindow(
     ArcWindowHandler* window_handler,
     const std::string& app_id,
     int window_id,
-    gfx::Rect bounds,
+    const gfx::Rect& bounds,
     app_restore::AppRestoreData* restore_data,
     base::RepeatingClosure close_callback);
 
