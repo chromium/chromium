@@ -524,6 +524,10 @@ class CONTENT_EXPORT ChildProcessSecurityPolicyImpl
     browsing_instance_cleanup_delay_ = base::Seconds(delay_in_seconds);
   }
 
+  // Allows tests to query the number of BrowsingInstanceIds associated with a
+  // child process.
+  size_t BrowsingInstanceIdCountForTesting(int child_id);
+
  private:
   friend class ChildProcessSecurityPolicyInProcessBrowserTest;
   friend class ChildProcessSecurityPolicyTest;

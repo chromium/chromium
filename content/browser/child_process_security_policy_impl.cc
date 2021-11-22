@@ -153,7 +153,7 @@ base::debug::CrashKeyString* GetKilledProcessOriginLockKey() {
 
 base::debug::CrashKeyString* GetCanAccessDataFailureReasonKey() {
   static auto* crash_key = base::debug::AllocateCrashKeyString(
-      "can_access_data_failure_reason", base::debug::CrashKeySize::Size64);
+      "can_access_data_failure_reason", base::debug::CrashKeySize::Size256);
   return crash_key;
 }
 
@@ -1453,6 +1453,15 @@ bool ChildProcessSecurityPolicyImpl::ChildProcessHasPermissionsForFile(
   return state->HasPermissionsForFile(file, permissions);
 }
 
+size_t ChildProcessSecurityPolicyImpl::BrowsingInstanceIdCountForTesting(
+    int child_id) {
+  base::AutoLock lock(lock_);
+  SecurityState* security_state = GetSecurityState(child_id);
+  if (security_state)
+    return security_state->browsing_instance_ids().size();
+  return 0;
+}
+
 CanCommitStatus ChildProcessSecurityPolicyImpl::CanCommitOriginAndUrl(
     int child_id,
     const IsolationContext& isolation_context,
@@ -1544,9 +1553,6 @@ bool ChildProcessSecurityPolicyImpl::CanAccessDataForOrigin(
   DCHECK(IsRunningOnExpectedThread());
   base::AutoLock lock(lock_);
 
-  // TODO(wjmaclean): The following call to GetSecurityState can retrieve the
-  // wrong one if there are multiple browsing instances in one renderer process.
-  // https://crbug.com/1099718
   SecurityState* security_state = GetSecurityState(child_id);
   BrowserOrResourceContext browser_or_resource_context;
   if (security_state)
@@ -1576,7 +1582,53 @@ bool ChildProcessSecurityPolicyImpl::CanAccessDataForOrigin(
       // do not agree, the check might be slightly weaker (as the least common
       // denominator), but the differences must never violate the ProcessLock.
       if (security_state->browsing_instance_ids().empty()) {
-        failure_reason = "No BrowsingInstanceIDs.";
+        // If no BrowsingInstances are found, then the some of the state we need
+        // to perform an accurate check is unexpectedly missing, because there
+        // should always be a BrowsingInstance for such requests, even from
+        // workers. Thus, we should usually kill the process in this case, so
+        // that a compromised renderer can't bypass checks by sending IPCs when
+        // no BrowsingInstances are left.
+        //
+        // However, if the requested `url` is compatible with the current
+        // ProcessLock, then there is no need to kill the process because the
+        // checks would have passed anyway. To reduce the number of crashes
+        // while we debug why no BrowsingInstances were found (in
+        // https://crbug.com/1148542), we'll allow requests with an acceptable
+        // process lock to proceed.
+        // TODO(1148542): Remove this when known cases of having no
+        // BrowsingInstance IDs are solved.
+        url::Origin origin(url::Origin::Create(url));
+        bool matches_origin_keyed_process =
+            actual_process_lock.is_origin_keyed_process() &&
+            actual_process_lock.lock_url() == origin.GetURL();
+        bool matches_site_keyed_process =
+            !actual_process_lock.is_origin_keyed_process() &&
+            actual_process_lock.lock_url() ==
+                SiteInfo::GetSiteForOrigin(origin);
+        // ProcessLocks with is_pdf() = true actually means that the process is
+        // not supposed to access certain resources from the lock's site/origin,
+        // so it's safest here to fall through in that case. See discussion of
+        // https://crbug.com/1271197 below.
+        if (!actual_process_lock.is_pdf()) {
+          // If the ProcessLock isn't locked to a site, we should fall through
+          // since we have no way of knowing if the requested url was expecting
+          // to be in a locked process.
+          if (actual_process_lock.is_locked_to_site()) {
+            if (matches_origin_keyed_process || matches_site_keyed_process) {
+              return true;
+            } else {
+              failure_reason = base::StringPrintf(
+                  "No BrowsingInstanceIDs: Lock Mismatch. lock = %s vs. "
+                  "requested_url = %s ",
+                  actual_process_lock.ToString().c_str(), url.spec().c_str());
+            }
+          } else {
+            failure_reason =
+                "No BrowsingInstanceIDs: process not locked to site";
+          }
+        } else {
+          failure_reason = "No BrowsingInstanceIDs: process lock is_pdf";
+        }
         // This will fall through to the call to
         // LogCanAccessDataForOriginCrashKeys below, then return false.
       }
@@ -1618,6 +1670,10 @@ bool ChildProcessSecurityPolicyImpl::CanAccessDataForOrigin(
         // require COOP/COEP handling, to pass in their COOP/COEP information
         // so it can be used here instead of the values in
         // |actual_process_lock|.
+        // TODO(crbug.com/1271197): The code below is subtly incorrect in cases
+        // where actual_process_lock.is_pdf() is true, since in the case of PDFs
+        // the lock is intended to prevent access to the lock's site/origin,
+        // while still allowing the navigation to commit.
         expected_process_lock = ProcessLock::Create(
             isolation_context,
             UrlInfo(UrlInfoInit(url)

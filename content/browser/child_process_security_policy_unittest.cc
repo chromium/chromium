@@ -13,16 +13,22 @@
 #include "base/synchronization/waitable_event.h"
 #include "base/test/bind.h"
 #include "base/test/mock_log.h"
+#include "base/test/scoped_command_line.h"
+#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "content/browser/child_process_security_policy_impl.h"
 #include "content/browser/isolated_origin_util.h"
+#include "content/browser/origin_agent_cluster_isolation_state.h"
 #include "content/browser/process_lock.h"
 #include "content/browser/site_info.h"
 #include "content/browser/site_instance_impl.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/site_isolation_policy.h"
 #include "content/public/common/bindings_policy.h"
 #include "content/public/common/content_client.h"
+#include "content/public/common/content_features.h"
+#include "content/public/common/content_switches.h"
 #include "content/public/common/url_constants.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_browser_context.h"
@@ -119,6 +125,7 @@ class ChildProcessSecurityPolicyTest : public testing::Test {
     // protocols as this is the responsibility of the browser (which is
     // responsible for adding the appropriate ProtocolHandler).
     test_browser_client_.AddScheme(url::kFileScheme);
+    SiteIsolationPolicy::DisableFlagCachingForTesting();
   }
 
   void TearDown() override {
@@ -3009,6 +3016,188 @@ TEST_F(ChildProcessSecurityPolicyTest,
   EXPECT_TRUE(IsIsolatedOrigin(&context, future_id.value() + 42, foo));
 
   p->ClearIsolatedOriginsForTesting();
+}
+
+// This test verifies that CanAccessDataForOrigin returns true for a process id
+// even if all BrowsingInstanceIDs for that process have been deleted, so long
+// as the request matches the process' lock. This test sets an origin-keyed
+// lock.
+TEST_F(ChildProcessSecurityPolicyTest, NoBrowsingInstanceIDs_OriginKeyed) {
+  url::Origin foo = url::Origin::Create(GURL("https://sub.foo.com/"));
+  ChildProcessSecurityPolicyImpl* p =
+      ChildProcessSecurityPolicyImpl::GetInstance();
+  p->SetBrowsingInstanceCleanupDelayForTesting(0);
+
+  // Create a SiteInstance for sub.foo.com in a new BrowsingInstance.
+  TestBrowserContext context;
+  {
+    auto origin_isolation_request =
+        static_cast<UrlInfo::OriginIsolationRequest>(
+            UrlInfo::OriginIsolationRequest::kOriginAgentCluster |
+            UrlInfo::OriginIsolationRequest::kRequiresOriginKeyedProcess);
+    UrlInfo url_info(UrlInfoInit(foo.GetURL())
+                         .WithOrigin(foo)
+                         .WithOriginIsolationRequest(origin_isolation_request));
+    scoped_refptr<SiteInstanceImpl> foo_instance =
+        SiteInstanceImpl::CreateForUrlInfo(&context, url_info);
+
+    p->Add(kRendererID, &context);
+    p->LockProcess(foo_instance->GetIsolationContext(), kRendererID,
+                   foo_instance->GetProcessLock());
+
+    EXPECT_TRUE(p->GetProcessLock(kRendererID).is_locked_to_site());
+    EXPECT_TRUE(p->GetProcessLock(kRendererID).is_origin_keyed_process());
+    EXPECT_EQ(foo.GetURL(), p->GetProcessLock(kRendererID).lock_url());
+
+    EXPECT_TRUE(foo_instance->GetProcessLock().is_origin_keyed_process());
+    EXPECT_TRUE(p->DetermineOriginAgentClusterIsolation(
+                     foo_instance->GetIsolationContext(), foo,
+                     OriginAgentClusterIsolationState::CreateNonIsolated())
+                    .requires_origin_keyed_process());
+  }
+  // At this point foo_instance has gone away, and all BrowsingInstanceIDs
+  // associated with kRendererID have been cleaned up.
+  EXPECT_EQ(static_cast<size_t>(0),
+            p->BrowsingInstanceIdCountForTesting(kRendererID));
+
+  // Because the ProcessLock is origin-keyed, we expect sub.foo.com to match but
+  // not foo.com.
+  EXPECT_TRUE(p->CanAccessDataForOrigin(kRendererID, foo));
+  EXPECT_FALSE(p->CanAccessDataForOrigin(
+      kRendererID, url::Origin::Create(GURL("https://foo.com/"))));
+  EXPECT_FALSE(p->CanAccessDataForOrigin(
+      kRendererID, url::Origin::Create(GURL("https://bar.com/"))));
+
+  // We need to remove it otherwise other tests may fail.
+  p->Remove(kRendererID);
+}
+
+// This test verifies that CanAccessDataForOrigin returns true for a process id
+// even if all BrowsingInstanceIDs for that process have been deleted, so long
+// as the request matches the process' lock. This test sets a site-keyed lock.
+TEST_F(ChildProcessSecurityPolicyTest, NoBrowsingInstanceIDs_SiteKeyed) {
+  url::Origin foo = url::Origin::Create(GURL("https://sub.foo.com/"));
+  ChildProcessSecurityPolicyImpl* p =
+      ChildProcessSecurityPolicyImpl::GetInstance();
+  p->SetBrowsingInstanceCleanupDelayForTesting(0);
+
+  // Create a SiteInstance for sub.foo.com in a new BrowsingInstance.
+  TestBrowserContext context;
+  {
+    p->Add(kRendererID, &context);
+    // Isolate foo.com so we can't get a default SiteInstance. This will mean
+    // that https://sub.foo.com will end up in a site-keyed SiteInstance, which
+    // is what we need.
+    p->AddFutureIsolatedOrigins({url::Origin::Create(GURL("https://foo.com"))},
+                                IsolatedOriginSource::TEST, &context);
+
+    UrlInfo url_info(UrlInfoInit(foo.GetURL()).WithOrigin(foo));
+    scoped_refptr<SiteInstanceImpl> foo_instance =
+        SiteInstanceImpl::CreateForUrlInfo(&context, url_info);
+    p->LockProcess(foo_instance->GetIsolationContext(), kRendererID,
+                   foo_instance->GetProcessLock());
+
+    EXPECT_TRUE(p->GetProcessLock(kRendererID).is_locked_to_site());
+    EXPECT_FALSE(p->GetProcessLock(kRendererID).is_origin_keyed_process());
+    EXPECT_EQ(SiteInfo::GetSiteForOrigin(foo),
+              p->GetProcessLock(kRendererID).lock_url());
+
+    EXPECT_FALSE(foo_instance->GetProcessLock().is_origin_keyed_process());
+    EXPECT_FALSE(p->DetermineOriginAgentClusterIsolation(
+                      foo_instance->GetIsolationContext(), foo,
+                      OriginAgentClusterIsolationState::CreateNonIsolated())
+                     .requires_origin_keyed_process());
+  }
+  // At this point foo_instance has gone away, and all BrowsingInstanceIDs
+  // associated with kRendererID have been cleaned up.
+  EXPECT_EQ(static_cast<size_t>(0),
+            p->BrowsingInstanceIdCountForTesting(kRendererID));
+
+  // Because the ProcessLock is site-keyed, it should match foo.com and all
+  // sub-origins.
+  EXPECT_TRUE(p->CanAccessDataForOrigin(kRendererID, foo));
+  EXPECT_TRUE(p->CanAccessDataForOrigin(
+      kRendererID, url::Origin::Create(GURL("https://foo.com/"))));
+  EXPECT_FALSE(p->CanAccessDataForOrigin(
+      kRendererID, url::Origin::Create(GURL("https://bar.com/"))));
+
+  // We need to remove it otherwise other tests may fail.
+  p->Remove(kRendererID);
+}
+
+// This test verifies that CanAccessDataForOrigin returns false for a process id
+// when all BrowsingInstanceIDs for that process have been deleted, and the
+// ProcessLock has is_locked_to_site() = false, regardless of the url requested.
+TEST_F(ChildProcessSecurityPolicyTest, NoBrowsingInstanceIDs_UnlockedProcess) {
+  GURL foo_url = GURL("https://foo.com/");
+  url::Origin foo = url::Origin::Create(foo_url);
+
+  ChildProcessSecurityPolicyImpl* p =
+      ChildProcessSecurityPolicyImpl::GetInstance();
+  p->SetBrowsingInstanceCleanupDelayForTesting(0);
+
+  // Make sure feature list command-line options are set in a way that forces
+  // default SiteInstance creation on all platforms.
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /* enable */ {features::kProcessSharingWithDefaultSiteInstances},
+      /* disable */ {features::kProcessSharingWithStrictSiteInstances});
+  EXPECT_TRUE(base::FeatureList::IsEnabled(
+      features::kProcessSharingWithDefaultSiteInstances));
+  EXPECT_FALSE(base::FeatureList::IsEnabled(
+      features::kProcessSharingWithStrictSiteInstances));
+
+  base::test::ScopedCommandLine scoped_command_line;
+  // Disable site isolation so we can get default SiteInstances on all
+  // platforms.
+  scoped_command_line.GetProcessCommandLine()->AppendSwitch(
+      switches::kDisableSiteIsolation);
+  // If --site-per-process was manually appended, remove it; this interferes
+  // with default SiteInstances.
+  scoped_command_line.GetProcessCommandLine()->RemoveSwitch(
+      switches::kSitePerProcess);
+
+  EXPECT_FALSE(SiteIsolationPolicy::UseDedicatedProcessesForAllSites());
+  EXPECT_EQ(static_cast<size_t>(0),
+            p->BrowsingInstanceIdCountForTesting(kRendererID));
+
+  TestBrowserContext context;
+  {
+    scoped_refptr<SiteInstanceImpl> foo_instance =
+        SiteInstanceImpl::CreateForUrlInfo(&context,
+                                           UrlInfo::CreateForTesting(foo_url));
+    // Adds the process with an "allow_any_site" lock.
+    // The next two statements are basically AddForTesting(...), but with a
+    // BrowsingInstanceId based on `foo_instance` and not pinned to '1'.
+    // This is important when this test is run with other tests, as then
+    // BrowsingInstanceId will not be '1' in general.
+    p->Add(kRendererID, &context);
+    p->LockProcess(foo_instance->GetIsolationContext(), kRendererID,
+                   ProcessLock::CreateAllowAnySite(
+                       StoragePartitionConfig::CreateDefault(&context),
+                       WebExposedIsolationInfo::CreateNonIsolated()));
+
+    EXPECT_TRUE(foo_instance->IsDefaultSiteInstance());
+    EXPECT_TRUE(foo_instance->HasSite());
+    EXPECT_EQ(foo_instance->GetSiteInfo(),
+              SiteInfo::CreateForDefaultSiteInstance(
+                  &context, StoragePartitionConfig::CreateDefault(&context),
+                  WebExposedIsolationInfo::CreateNonIsolated()));
+    EXPECT_FALSE(foo_instance->RequiresDedicatedProcess());
+  }
+  // At this point foo_instance has gone away, and all BrowsingInstanceIDs
+  // associated with kRendererID have been cleaned up.
+  EXPECT_EQ(static_cast<size_t>(0),
+            p->BrowsingInstanceIdCountForTesting(kRendererID));
+
+  EXPECT_FALSE(p->GetProcessLock(kRendererID).is_locked_to_site());
+  // Ensure that we don't allow the process to keep accessing data for foo after
+  // all of the BrowsingInstances are gone, since that would require checking
+  // whether foo itself requires a dedicated process.
+  EXPECT_FALSE(p->CanAccessDataForOrigin(kRendererID, foo));
+
+  // We need to remove it otherwise other tests may fail.
+  p->Remove(kRendererID);
 }
 
 }  // namespace content
