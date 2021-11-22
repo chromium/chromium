@@ -29,9 +29,6 @@ struct BLINK_COMMON_EXPORT
   static mojo::PendingRemote<network::mojom::URLLoaderFactory> default_factory(
       BundleInfoType& bundle);
 
-  static mojo::PendingRemote<network::mojom::URLLoaderFactory> appcache_factory(
-      BundleInfoType& bundle);
-
   static blink::PendingURLLoaderFactoryBundle::SchemeMap
   scheme_specific_factories(BundleInfoType& bundle);
 

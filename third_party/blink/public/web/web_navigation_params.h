@@ -359,8 +359,6 @@ struct BLINK_EXPORT WebNavigationParams {
   // document.
   std::unique_ptr<blink::WebServiceWorkerNetworkProvider>
       service_worker_network_provider;
-  // The AppCache host id for this navigation.
-  base::UnguessableToken appcache_host_id;
 
   // This is `true` only for commit requests coming from
   // `RenderFrameImpl::SynchronouslyConmmitAboutBlankForBug778318`.
