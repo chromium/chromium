@@ -1125,8 +1125,7 @@ bool TabImpl::CheckMediaAccessPermission(
           ? ContentSettingsType::MEDIASTREAM_MIC
           : ContentSettingsType::MEDIASTREAM_CAMERA;
   return PermissionManagerFactory::GetForBrowserContext(
-             content::WebContents::FromRenderFrameHost(render_frame_host)
-                 ->GetBrowserContext())
+             render_frame_host->GetBrowserContext())
              ->GetPermissionStatusForFrame(content_settings_type,
                                            render_frame_host, security_origin)
              .content_setting == CONTENT_SETTING_ALLOW;
