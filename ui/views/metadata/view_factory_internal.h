@@ -47,7 +47,11 @@ class PropertySetterBase {
   virtual void SetProperty(View* obj) = 0;
 };
 
-template <typename TClass, typename TValue, typename TSig, TSig Set>
+template <typename TClass,
+          typename TValue,
+          typename TSig,
+          TSig Set,
+          typename FType = typename std::remove_reference<TValue>::type>
 class PropertySetter : public PropertySetterBase {
  public:
   explicit PropertySetter(ui::metadata::ArgType<TValue> value)
@@ -61,7 +65,7 @@ class PropertySetter : public PropertySetterBase {
   }
 
  private:
-  TValue value_;
+  FType value_;
 };
 
 template <typename TClass, typename TValue>
@@ -140,7 +144,7 @@ class ClassMethodCaller : public PropertySetterBase {
   }
 
  private:
-  using Parameters = std::tuple<Args...>;
+  using Parameters = std::tuple<typename std::remove_reference<Args>::type...>;
   Parameters args_;
 };
 

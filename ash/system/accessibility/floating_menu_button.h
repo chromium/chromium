@@ -77,7 +77,9 @@ BEGIN_VIEW_BUILDER(/* no export */, FloatingMenuButton, views::ImageButton)
 VIEW_BUILDER_PROPERTY(bool, A11yTogglable)
 VIEW_BUILDER_PROPERTY(bool, DrawHighlight)
 VIEW_BUILDER_PROPERTY(bool, Toggled)
-VIEW_BUILDER_PROPERTY(const gfx::VectorIcon&, VectorIcon)
+VIEW_BUILDER_PROPERTY(const gfx::VectorIcon&,
+                      VectorIcon,
+                      const gfx::VectorIcon&)
 END_VIEW_BUILDER
 
 }  // namespace ash
