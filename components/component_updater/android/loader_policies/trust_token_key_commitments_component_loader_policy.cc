@@ -5,7 +5,6 @@
 #include "components/component_updater/android/loader_policies/trust_token_key_commitments_component_loader_policy.h"
 
 #include <stdint.h>
-#include <stdio.h>
 
 #include <memory>
 #include <string>

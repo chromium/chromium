@@ -7,7 +7,7 @@
 #include <jni.h>
 #include <stdio.h>
 
-#include <cstddef>
+#include <stddef.h>
 #include <map>
 #include <memory>
 #include <string>
@@ -58,7 +58,8 @@ std::unique_ptr<base::DictionaryValue> ReadManifest(
 
 std::unique_ptr<base::DictionaryValue> ReadManifestFromFd(int fd) {
   std::string content;
-  base::ScopedFILE file_stream(fdopen(fd, "r"));
+  base::ScopedFILE file_stream(
+      base::FileToFILE(base::File(std::move(fd)), "r"));
   return base::ReadStreamToString(file_stream.get(), &content)
              ? ReadManifest(content)
              : nullptr;
