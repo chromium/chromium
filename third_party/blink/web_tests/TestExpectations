@@ -6457,11 +6457,6 @@ crbug.com/1210658 [ Win ] virtual/jxl-enabled/images/jxl/jxl-images.html [ Failu
 # Temporarily disabled to unblock https://crrev.com/c/3099011
 crbug.com/1199701 http/tests/devtools/console/console-big-array.js [ Skip ]
 
-# Sheriff 2021-5-19
-# Flaky on Webkit Linux Leak
-crbug.com/1210731 [ Linux ] http/tests/devtools/sources/debugger-step/debugger-step-out-document-write.js [ Failure Pass ]
-crbug.com/1210731 [ Linux ] http/tests/devtools/sources/debugger-breakpoints/dynamic-scripts-breakpoints.js [ Failure Pass ]
-
 # Sheriff 2021-11-15
 crbug.com/1270362 http/tests/devtools/sources/debugger-ui/debugger-inline-values.js [ Skip ]
 crbug.com/1270362 http/tests/devtools/sources/debugger/debug-inlined-scripts-fragment-id.js [ Skip ]
