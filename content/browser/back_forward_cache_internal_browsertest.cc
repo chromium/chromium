@@ -3579,10 +3579,12 @@ IN_PROC_BROWSER_TEST_F(
 // Test that a series of cross-site navigations (which use different processes)
 // use the background limit.
 //
-// TODO(crbug.com/1203418): This test is flaky.
+// TODO(crbug.com/1203418): This test is flaky. It has been reenabled with
+// improved failure output (https://crrev.com/c/2862346). It's OK to disable it
+// again when it fails.
 IN_PROC_BROWSER_TEST_F(
     BackgroundForegroundProcessLimitBackForwardCacheBrowserTest,
-    DISABLED_CacheEvictionCrossSite) {
+    CacheEvictionCrossSite) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
   std::vector<RenderFrameHostImplWrapper> rfhs;
