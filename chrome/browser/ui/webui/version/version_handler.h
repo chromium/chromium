@@ -22,6 +22,7 @@ class VersionHandler : public content::WebUIMessageHandler {
   ~VersionHandler() override;
 
   // content::WebUIMessageHandler implementation.
+  void OnJavascriptDisallowed() override;
   void RegisterMessages() override;
 
   // Callback for the "requestVersionInfo" message sent by |chrome.send| in JS.

@@ -57,6 +57,10 @@ VersionHandler::VersionHandler() {}
 
 VersionHandler::~VersionHandler() {}
 
+void VersionHandler::OnJavascriptDisallowed() {
+  weak_ptr_factory_.InvalidateWeakPtrs();
+}
+
 void VersionHandler::RegisterMessages() {
   web_ui()->RegisterDeprecatedMessageCallback(
       version_ui::kRequestVersionInfo,
