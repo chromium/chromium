@@ -75,11 +75,14 @@ constexpr struct {
     {0x1038, 0x1830},  // SteelSeries Rival 3 Wireless (USB dongle)
     {0x1050, 0x0010},  // Yubico.com Yubikey
     {0x1050, 0x0407},  // Yubico.com Yubikey 4 OTP+U2F+CCID
+    {0x1532, 0x007a},  // Razer Viper Ultimate (Wired)
+    {0x1532, 0x007b},  // Razer Viper Ultimate (Wireless)
     {0x17ef, 0x6123},  // Lenovo USB-C Wired Compact Mouse
     {0x1b1c, 0x1b94},  // Corsair Katar Pro Wireless (USB dongle)
     {0x1bae, 0x1b1c},  // Corsair Katar Pro Wireless (Bluetooth)
     {0x1bcf, 0x08a0},  // Kensington Pro Fit Full-size
     {0x256c, 0x006d},  // Huion HS64
+    {0x258a, 0x1007},  // Acer Cestus 330
     {0x28bd, 0x0914},  // XP-Pen Star G640
     {0x28bd, 0x091f},  // XP-Pen Artist 12 Pro
     {0x28bd, 0x0928},  // XP-Pen Deco mini7W
