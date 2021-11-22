@@ -96,9 +96,9 @@ void TestCaptureModeDelegate::CheckCaptureModeInitRestrictionByDlp(
   std::move(callback).Run(/*proceed=*/is_allowed_by_dlp_);
 }
 
-bool TestCaptureModeDelegate::IsCaptureAllowedByDlp(const aura::Window* window,
-                                                    const gfx::Rect& bounds,
-                                                    bool for_video) const {
+bool TestCaptureModeDelegate::IsCaptureAllowedByDlp(
+    const aura::Window* window,
+    const gfx::Rect& bounds) const {
   return is_allowed_by_dlp_;
 }
 

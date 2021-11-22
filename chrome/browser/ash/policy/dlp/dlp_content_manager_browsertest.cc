@@ -63,12 +63,6 @@ const DlpContentRestrictionSet kPrintRestricted(DlpContentRestriction::kPrint,
                                                 DlpRulesManager::Level::kBlock);
 const DlpContentRestrictionSet kPrintReported(DlpContentRestriction::kPrint,
                                               DlpRulesManager::Level::kReport);
-const DlpContentRestrictionSet kVideoCaptureRestricted(
-    DlpContentRestriction::kVideoCapture,
-    DlpRulesManager::Level::kBlock);
-const DlpContentRestrictionSet kVideoCaptureReported(
-    DlpContentRestriction::kVideoCapture,
-    DlpRulesManager::Level::kReport);
 const DlpContentRestrictionSet kScreenShareRestricted(
     DlpContentRestriction::kScreenShare,
     DlpRulesManager::Level::kBlock);
@@ -363,7 +357,7 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerBrowserTest,
   browser2->window()->SetBounds(gfx::Rect(0, 0, 700, 700));
 
   // Make first window content as confidential.
-  helper_.ChangeConfidentiality(web_contents1, kVideoCaptureRestricted);
+  helper_.ChangeConfidentiality(web_contents1, kScreenshotRestricted);
 
   // Start capture of the whole screen.
   base::RunLoop run_loop;
@@ -411,7 +405,7 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerBrowserTest, VideoCaptureReported) {
   browser2->window()->SetBounds(gfx::Rect(0, 0, 700, 700));
 
   // Make first window content as confidential.
-  helper_.ChangeConfidentiality(web_contents1, kVideoCaptureReported);
+  helper_.ChangeConfidentiality(web_contents1, kScreenshotReported);
 
   // Start capture of the whole screen.
   base::RunLoop run_loop;
@@ -460,7 +454,7 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerBrowserTest,
   browser2->window()->SetBounds(gfx::Rect(0, 0, 700, 700));
 
   // Make first window content as confidential.
-  helper_.ChangeConfidentiality(web_contents1, kVideoCaptureRestricted);
+  helper_.ChangeConfidentiality(web_contents1, kScreenshotRestricted);
 
   // Start capture of the whole screen.
   base::RunLoop run_loop;
@@ -509,7 +503,7 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerBrowserTest,
   browser2->window()->SetBounds(gfx::Rect(0, 0, 700, 700));
 
   // Make first window content as confidential.
-  helper_.ChangeConfidentiality(web_contents1, kVideoCaptureRestricted);
+  helper_.ChangeConfidentiality(web_contents1, kScreenshotRestricted);
 
   // Start capture of the whole screen.
   base::RunLoop run_loop;

@@ -17,16 +17,14 @@ namespace policy {
 // These values are used in bitmask in DlpContentRestrictionSet and should
 // correspond to the type in which the mask is stored.
 enum DlpContentRestriction {
-  // Do not allow any screenshots of the corresponding content.
+  // Do not allow any screenshots or video capture of the corresponding content.
   kScreenshot = 0,
   // Enforce ePrivacy screen when content is visible.
   kPrivacyScreen = 1,
   // Do not allow printing.
   kPrint = 2,
-  // Do not allow video capturing of the content.
-  kVideoCapture = 3,
   // Do not allow screen share.
-  kScreenShare = 4,
+  kScreenShare = 3,
   // Should be equal to the last restriction.
   kMaxValue = kScreenShare,
 };

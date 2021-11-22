@@ -87,8 +87,7 @@ class ASH_PUBLIC_EXPORT CaptureModeDelegate {
   // Returns whether capture of the region defined by |window| and |bounds|
   // is currently allowed by Data Leak Prevention feature.
   virtual bool IsCaptureAllowedByDlp(const aura::Window* window,
-                                     const gfx::Rect& bounds,
-                                     bool for_video) const = 0;
+                                     const gfx::Rect& bounds) const = 0;
 
   // Returns whether screen capture is allowed by an enterprise policy.
   virtual bool IsCaptureAllowedByPolicy() const = 0;

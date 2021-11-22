@@ -144,13 +144,9 @@ void ChromeCaptureModeDelegate::CheckCaptureModeInitRestrictionByDlp(
 
 bool ChromeCaptureModeDelegate::IsCaptureAllowedByDlp(
     const aura::Window* window,
-    const gfx::Rect& bounds,
-    bool for_video) const {
-  policy::DlpContentManager* dlp_content_manager =
-      policy::DlpContentManager::Get();
-  const ScreenshotArea area = ConvertToScreenshotArea(window, bounds);
-  return for_video ? !dlp_content_manager->IsVideoCaptureRestricted(area)
-                   : !dlp_content_manager->IsScreenshotRestricted(area);
+    const gfx::Rect& bounds) const {
+  return !policy::DlpContentManager::Get()->IsScreenshotRestricted(
+      ConvertToScreenshotArea(window, bounds));
 }
 
 bool ChromeCaptureModeDelegate::IsCaptureAllowedByPolicy() const {

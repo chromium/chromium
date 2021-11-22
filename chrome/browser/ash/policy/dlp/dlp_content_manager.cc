@@ -144,28 +144,6 @@ void DlpContentManager::CheckScreenshotRestriction(
   CheckScreenCaptureRestriction(info, std::move(callback));
 }
 
-bool DlpContentManager::IsVideoCaptureRestricted(const ScreenshotArea& area) {
-  const ConfidentialContentsInfo info = GetAreaConfidentialContentsInfo(
-      area, DlpContentRestriction::kVideoCapture);
-  MaybeReportEvent(info.restriction_info,
-                   DlpRulesManager::Restriction::kScreenshot);
-  DlpBooleanHistogram(dlp::kVideoCaptureBlockedUMA,
-                      IsBlocked(info.restriction_info));
-  return IsBlocked(info.restriction_info);
-}
-
-void DlpContentManager::CheckVideoCaptureRestriction(
-    const ScreenshotArea& area,
-    ash::OnCaptureModeDlpRestrictionChecked callback) {
-  const ConfidentialContentsInfo info = GetAreaConfidentialContentsInfo(
-      area, DlpContentRestriction::kVideoCapture);
-  MaybeReportEvent(info.restriction_info,
-                   DlpRulesManager::Restriction::kScreenshot);
-  DlpBooleanHistogram(dlp::kVideoCaptureBlockedUMA,
-                      IsBlocked(info.restriction_info));
-  CheckScreenCaptureRestriction(info, std::move(callback));
-}
-
 void DlpContentManager::CheckPrintingRestriction(
     content::WebContents* web_contents,
     OnDlpRestrictionCheckedCallback callback) {
@@ -246,7 +224,7 @@ void DlpContentManager::CheckScreenShareRestriction(
 }
 
 void DlpContentManager::OnVideoCaptureStarted(const ScreenshotArea& area) {
-  if (IsVideoCaptureRestricted(area)) {
+  if (IsScreenshotRestricted(area)) {
     InterruptVideoRecording();
     return;
   }
@@ -272,16 +250,9 @@ void DlpContentManager::CheckStoppedVideoCapture(
 }
 
 bool DlpContentManager::IsCaptureModeInitRestricted() {
-  const RestrictionLevelAndUrl screenshot_restriction_info =
+  const RestrictionLevelAndUrl restriction_info =
       GetOnScreenPresentRestrictions().GetRestrictionLevelAndUrl(
           DlpContentRestriction::kScreenshot);
-  const RestrictionLevelAndUrl videocapture_restriction_info =
-      GetOnScreenPresentRestrictions().GetRestrictionLevelAndUrl(
-          DlpContentRestriction::kVideoCapture);
-  const RestrictionLevelAndUrl restriction_info =
-      screenshot_restriction_info.level >= videocapture_restriction_info.level
-          ? screenshot_restriction_info
-          : videocapture_restriction_info;
   MaybeReportEvent(restriction_info, DlpRulesManager::Restriction::kScreenshot);
   DlpBooleanHistogram(dlp::kCaptureModeInitBlockedUMA,
                       IsBlocked(restriction_info));
@@ -290,25 +261,8 @@ bool DlpContentManager::IsCaptureModeInitRestricted() {
 
 void DlpContentManager::CheckCaptureModeInitRestriction(
     ash::OnCaptureModeDlpRestrictionChecked callback) {
-  const ConfidentialContentsInfo screenshot_info =
+  const ConfidentialContentsInfo info =
       GetConfidentialContentsOnScreen(DlpContentRestriction::kScreenshot);
-  const ConfidentialContentsInfo videocapture_info =
-      GetConfidentialContentsOnScreen(DlpContentRestriction::kVideoCapture);
-  ConfidentialContentsInfo info;
-
-  if (screenshot_info.restriction_info.level >
-      videocapture_info.restriction_info.level) {
-    info = screenshot_info;
-  } else if (screenshot_info.restriction_info.level <
-             videocapture_info.restriction_info.level) {
-    info = videocapture_info;
-  } else {
-    // Both screenshot and video capture have the same restriction level, so a
-    // union is needed.
-    info = screenshot_info;
-    info.confidential_contents.UnionWith(
-        videocapture_info.confidential_contents);
-  }
 
   MaybeReportEvent(info.restriction_info,
                    DlpRulesManager::Restriction::kScreenshot);
@@ -718,7 +672,7 @@ void DlpContentManager::CheckRunningVideoCapture() {
   if (!running_video_capture_info_.has_value())
     return;
   ConfidentialContentsInfo info = GetAreaConfidentialContentsInfo(
-      running_video_capture_info_->area, DlpContentRestriction::kVideoCapture);
+      running_video_capture_info_->area, DlpContentRestriction::kScreenshot);
   MaybeReportEvent(info.restriction_info,
                    DlpRulesManager::Restriction::kScreenshot);
   if (IsBlocked(info.restriction_info)) {

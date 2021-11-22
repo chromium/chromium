@@ -111,14 +111,12 @@ DlpContentRestrictionSet DlpContentRestrictionSet::GetForURL(const GURL& url) {
   if (!dlp_rules_manager)
     return set;
 
-  const size_t kRestrictionsCount = 5;
+  const size_t kRestrictionsCount = 4;
   static constexpr std::array<
       std::pair<DlpRulesManager::Restriction, DlpContentRestriction>,
       kRestrictionsCount>
       kRestrictionsArray = {{{DlpRulesManager::Restriction::kScreenshot,
                               DlpContentRestriction::kScreenshot},
-                             {DlpRulesManager::Restriction::kScreenshot,
-                              DlpContentRestriction::kVideoCapture},
                              {DlpRulesManager::Restriction::kPrivacyScreen,
                               DlpContentRestriction::kPrivacyScreen},
                              {DlpRulesManager::Restriction::kPrinting,

@@ -81,17 +81,6 @@ class DlpContentManager : public DlpContentObserver,
       const ScreenshotArea& area,
       ash::OnCaptureModeDlpRestrictionChecked callback);
 
-  // Returns whether video capture should be restricted.
-  // TODO(crbug.com/1257493): Remove when it won't be used anymore.
-  bool IsVideoCaptureRestricted(const ScreenshotArea& area);
-
-  // Checks whether video capture of |area| is restricted or not advised.
-  // Depending on the result, calls |callback| and passes an indicator whether
-  // to proceed or not.
-  void CheckVideoCaptureRestriction(
-      const ScreenshotArea& area,
-      ash::OnCaptureModeDlpRestrictionChecked callback);
-
   // Checks whether printing of |web_contents| is restricted or not advised.
   // Depending on the result, calls |callback| and passes an indicator whether
   // to proceed or not.

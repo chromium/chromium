@@ -28,9 +28,9 @@
 
 namespace {
 
-// Defines a warning-level restriction type for video captures.
-const policy::DlpContentRestrictionSet kVideoCaptureWarned{
-    policy::DlpContentRestriction::kVideoCapture,
+// Defines a warning-level restriction type for screen captures.
+const policy::DlpContentRestrictionSet kScreenCaptureWarned{
+    policy::DlpContentRestriction::kScreenshot,
     policy::DlpRulesManager::Level::kWarn};
 
 // Returns the native window of the given `browser`.
@@ -79,7 +79,7 @@ void StartVideoRecording() {
 
 // Marks the active web contents of the given `browser` as DLP restricted with a
 // warning level.
-void MarkActiveTabAsDlpWarnedForVideoCapture(Browser* browser) {
+void MarkActiveTabAsDlpWarnedForScreenCapture(Browser* browser) {
   auto* dlp_content_observer = policy::DlpContentObserver::Get();
   ASSERT_TRUE(dlp_content_observer);
 
@@ -87,7 +87,7 @@ void MarkActiveTabAsDlpWarnedForVideoCapture(Browser* browser) {
       browser->tab_strip_model()->GetActiveWebContents();
   ASSERT_TRUE(web_contents);
   dlp_content_observer->OnConfidentialityChanged(web_contents,
-                                                 kVideoCaptureWarned);
+                                                 kScreenCaptureWarned);
 }
 
 // Stops the video recording and waits for the DLP warning dialog to be added.
@@ -136,7 +136,7 @@ IN_PROC_BROWSER_TEST_F(CaptureModeBrowserTest,
   ASSERT_TRUE(browser());
   StartVideoRecording();
 
-  MarkActiveTabAsDlpWarnedForVideoCapture(browser());
+  MarkActiveTabAsDlpWarnedForScreenCapture(browser());
   ash::CaptureModeTestApi test_api;
   // Video recording should not end as a result of adding a restriction of a
   // warning level type.
@@ -164,7 +164,7 @@ IN_PROC_BROWSER_TEST_F(CaptureModeBrowserTest,
   ASSERT_TRUE(browser());
   StartVideoRecording();
 
-  MarkActiveTabAsDlpWarnedForVideoCapture(browser());
+  MarkActiveTabAsDlpWarnedForScreenCapture(browser());
   ash::CaptureModeTestApi test_api;
   // Video recording should not end as a result of adding a restriction of a
   // warning level type.
@@ -190,7 +190,7 @@ IN_PROC_BROWSER_TEST_F(CaptureModeBrowserTest,
                        DlpWarningDialogOnSessionInitDismissed) {
   ASSERT_TRUE(browser());
 
-  MarkActiveTabAsDlpWarnedForVideoCapture(browser());
+  MarkActiveTabAsDlpWarnedForScreenCapture(browser());
   ash::CaptureModeTestApi test_api;
   EXPECT_FALSE(test_api.IsPendingDlpCheckOnSessionInit());
 
@@ -211,7 +211,7 @@ IN_PROC_BROWSER_TEST_F(CaptureModeBrowserTest,
                        DlpWarningDialogOnSessionInitAccepted) {
   ASSERT_TRUE(browser());
 
-  MarkActiveTabAsDlpWarnedForVideoCapture(browser());
+  MarkActiveTabAsDlpWarnedForScreenCapture(browser());
   ash::CaptureModeTestApi test_api;
   EXPECT_FALSE(test_api.IsPendingDlpCheckOnSessionInit());
 

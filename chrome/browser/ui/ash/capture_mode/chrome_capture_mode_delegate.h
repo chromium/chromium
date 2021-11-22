@@ -40,8 +40,7 @@ class ChromeCaptureModeDelegate : public ash::CaptureModeDelegate {
   void CheckCaptureModeInitRestrictionByDlp(
       ash::OnCaptureModeDlpRestrictionChecked callback) override;
   bool IsCaptureAllowedByDlp(const aura::Window* window,
-                             const gfx::Rect& bounds,
-                             bool for_video) const override;
+                             const gfx::Rect& bounds) const override;
   bool IsCaptureAllowedByPolicy() const override;
   void StartObservingRestrictedContent(
       const aura::Window* window,

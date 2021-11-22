@@ -955,12 +955,17 @@ chromium-metrics-reviews@google.com.
   <owner>poromov@chromium.org</owner>
   <owner>chromeos-dlp@google.com</owner>
   <summary>
-    Result of Data Leak Prevention evaluation for taking a screenshot.
+    Result of Data Leak Prevention evaluation for taking a screenshot or a video
+    capture.
   </summary>
 </histogram>
 
 <histogram name="Enterprise.Dlp.VideoCaptureBlocked" enum="BooleanBlocked"
-    expires_after="2022-05-01">
+    expires_after="M98">
+  <obsolete>
+    Deprecated after M98. Events of this type are now included in
+    Enterprise.Dlp.ScreenshotBlocked.
+  </obsolete>
   <owner>poromov@chromium.org</owner>
   <owner>chromeos-dlp@google.com</owner>
   <summary>
