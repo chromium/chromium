@@ -75,16 +75,53 @@ mojom::AudioOutputCapability ComputeAudioOutputCapability(
   return mojom::AudioOutputCapability::kNotCapableOfAudioOutput;
 }
 
-mojom::DeviceBatteryInfoPtr ComputeBatteryInfo(
-    const device::BluetoothDevice* device) {
+mojom::BatteryPropertiesPtr ComputeBatteryInfoForBatteryType(
+    const device::BluetoothDevice* device,
+    device::BluetoothDevice::BatteryType battery_type) {
   const absl::optional<device::BluetoothDevice::BatteryInfo> battery_info =
-      device->GetBatteryInfo(device::BluetoothDevice::BatteryType::kDefault);
+      device->GetBatteryInfo(battery_type);
 
   if (!battery_info || !battery_info->percentage.has_value())
     return nullptr;
 
-  return mojom::DeviceBatteryInfo::New(
-      mojom::BatteryProperties::New(battery_info->percentage.value()));
+  return mojom::BatteryProperties::New(battery_info->percentage.value());
+}
+
+mojom::DeviceBatteryInfoPtr ComputeBatteryInfo(
+    const device::BluetoothDevice* device) {
+  mojom::BatteryPropertiesPtr default_battery =
+      ComputeBatteryInfoForBatteryType(
+          device, device::BluetoothDevice::BatteryType::kDefault);
+  mojom::BatteryPropertiesPtr left_bud_battery =
+      ComputeBatteryInfoForBatteryType(
+          device, device::BluetoothDevice::BatteryType::kLeftBudTrueWireless);
+  mojom::BatteryPropertiesPtr right_bud_battery =
+      ComputeBatteryInfoForBatteryType(
+          device, device::BluetoothDevice::BatteryType::kRightBudTrueWireless);
+  mojom::BatteryPropertiesPtr case_battery = ComputeBatteryInfoForBatteryType(
+      device, device::BluetoothDevice::BatteryType::kCaseTrueWireless);
+
+  if (!default_battery && !left_bud_battery && !right_bud_battery &&
+      !case_battery) {
+    return nullptr;
+  }
+
+  mojom::DeviceBatteryInfoPtr device_battery_info =
+      mojom::DeviceBatteryInfo::New();
+
+  if (default_battery)
+    device_battery_info->default_properties = std::move(default_battery);
+
+  if (left_bud_battery)
+    device_battery_info->left_bud_info = std::move(left_bud_battery);
+
+  if (right_bud_battery)
+    device_battery_info->right_bud_info = std::move(right_bud_battery);
+
+  if (case_battery)
+    device_battery_info->case_info = std::move(case_battery);
+
+  return device_battery_info;
 }
 
 mojom::DeviceConnectionState ComputeConnectionState(

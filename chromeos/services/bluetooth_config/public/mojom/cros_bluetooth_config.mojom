@@ -72,12 +72,15 @@ struct BatteryProperties {
   uint8 battery_percentage;
 };
 
-// Battery info belonging to a device. Initially contains an optional
-// "default" set of properties, but will eventually contain information
-// about multiple batteries per device (e.g., Pixel Buds include battery
-// info about the left earbud, right earbud, and case).
+// Battery info belonging to a device. Contains an optional "default" set of
+// properties, and may contain information about multiple batteries per device
+// (e.g., Pixel Buds include battery info about the left earbud, right earbud,
+// and case).
 struct DeviceBatteryInfo {
   BatteryProperties? default_properties;
+  BatteryProperties? left_bud_info;
+  BatteryProperties? right_bud_info;
+  BatteryProperties? case_info;
 };
 
 // Properties belonging to a Bluetooth device.
