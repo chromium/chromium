@@ -35,11 +35,13 @@
 #include "ui/base/interaction/interaction_sequence.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/ui_base_features.h"
+#include "ui/events/base_event_utils.h"
 #include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/views/controls/button/menu_button.h"
 #include "ui/views/controls/combobox/combobox.h"
 #include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/interaction/interaction_sequence_views.h"
+#include "ui/views/test/button_test_api.h"
 
 namespace translate {
 
@@ -80,6 +82,16 @@ void ElementClickCallback(ui::InteractionSequence* sequence,
   action_data.action = ax::mojom::Action::kDoDefault;
   views::View* view = ElementToView(element);
   view->HandleAccessibleAction(action_data);
+}
+
+void ButtonClickCallBack(ui::InteractionSequence* sequence,
+                         ui::TrackedElement* element) {
+  // The button might be ignored by HandleAccessibleAction() because it has a
+  // bound of size 0 (not yet laid out). Hence, notify click directly.
+  views::test::ButtonTestApi(
+      static_cast<views::Button*>(ElementToView(element)))
+      .NotifyClick(ui::MouseEvent(ui::ET_MOUSE_PRESSED, gfx::Point(),
+                                  gfx::Point(), ui::EventTimeForNow(), 0, 0));
 }
 
 }  // namespace
@@ -249,7 +261,7 @@ IN_PROC_BROWSER_TEST_P(TranslateBubbleViewUITest, ClickLanguageTab) {
       // P4.Tap on cancel button option in the translate bubble popup box.
       .AddStep(ui::InteractionSequence::StepBuilder()
                    .SetElementID(TranslateBubbleView::kCloseButton)
-                   .SetStartCallback(base::BindOnce(ElementClickCallback))
+                   .SetStartCallback(base::BindOnce(ButtonClickCallBack))
                    .SetMustRemainVisible(false)
                    .Build())
       // V4.Tapping the close button dismisses the translate bubble.
@@ -316,7 +328,7 @@ IN_PROC_BROWSER_TEST_P(TranslateBubbleViewUITest, ChooseAnotherLanguage) {
               .Build())
       .AddStep(ui::InteractionSequence::StepBuilder()
                    .SetElementID(TranslateBubbleView::kTargetLanguageDoneButton)
-                   .SetStartCallback(base::BindOnce(ElementClickCallback))
+                   .SetStartCallback(base::BindOnce(ButtonClickCallBack))
                    .SetMustRemainVisible(false)
                    .Build())
       // V2. Verify that the language list will be dismissed, the target
@@ -419,7 +431,7 @@ IN_PROC_BROWSER_TEST_P(TranslateBubbleViewUITest,
                    .Build())
       .AddStep(ui::InteractionSequence::StepBuilder()
                    .SetElementID(TranslateBubbleView::kSourceLanguageDoneButton)
-                   .SetStartCallback(base::BindOnce(ElementClickCallback))
+                   .SetStartCallback(base::BindOnce(ButtonClickCallBack))
                    .SetMustRemainVisible(false)
                    .Build())
       // V2. The language list will be dismissed, the source language tab

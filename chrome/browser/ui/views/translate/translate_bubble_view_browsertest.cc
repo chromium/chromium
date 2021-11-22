@@ -17,6 +17,8 @@
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/test/test_browser_dialog.h"
+#include "chrome/browser/ui/translate/translate_bubble_model.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -161,6 +163,40 @@ IN_PROC_BROWSER_TEST_F(TranslateBubbleViewBrowserTest, AlertAccessibleEvent) {
 
   // TODO(crbug.com/1082217): This should produce one event instead of two.
   EXPECT_LT(0, counter.GetCount(ax::mojom::Event::kAlert));
+}
+
+class TranslateBubbleVisualTest
+    : public SupportsTestDialog<TranslateBubbleViewBrowserTest> {
+ public:
+  TranslateBubbleVisualTest(const TranslateBubbleVisualTest&) = delete;
+  TranslateBubbleVisualTest& operator=(const TranslateBubbleVisualTest&) =
+      delete;
+
+ protected:
+  TranslateBubbleVisualTest() = default;
+
+  // TestBrowserDialog:
+  void ShowUi(const std::string& name) override {
+    GURL french_url = GURL(embedded_test_server()->GetURL("/french_page.html"));
+    NavigateAndWaitForLanguageDetection(french_url, "fr");
+    DCHECK(TranslateBubbleView::GetCurrentBubble());
+    TranslateBubbleView::GetCurrentBubble()->SwitchView(state_);
+  }
+
+  void set_state(TranslateBubbleModel::ViewState state) { state_ = state; }
+
+ private:
+  TranslateBubbleModel::ViewState state_;
+};
+
+IN_PROC_BROWSER_TEST_F(TranslateBubbleVisualTest, InvokeUi_error) {
+  set_state(TranslateBubbleModel::ViewState::VIEW_STATE_ERROR);
+  ShowAndVerifyUi();
+}
+
+IN_PROC_BROWSER_TEST_F(TranslateBubbleVisualTest, InvokeUi_advanced) {
+  set_state(TranslateBubbleModel::ViewState::VIEW_STATE_SOURCE_LANGUAGE);
+  ShowAndVerifyUi();
 }
 
 }  // namespace translate

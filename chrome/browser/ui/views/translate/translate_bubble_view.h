@@ -32,6 +32,10 @@
 
 class Browser;
 
+namespace translate {
+class TranslateBubbleVisualTest;
+}  // namespace translate
+
 namespace views {
 class Checkbox;
 class Combobox;
@@ -136,6 +140,7 @@ class TranslateBubbleView : public LocationBarBubbleDelegateView,
   };
 
   friend class TranslateBubbleViewTest;
+  friend class translate::TranslateBubbleVisualTest;
   friend void ::translate::test_utils::PressTranslate(::Browser*);
   friend void ::translate::test_utils::PressRevert(::Browser*);
   friend void ::translate::test_utils::SelectTargetLanguageByDisplayName(
