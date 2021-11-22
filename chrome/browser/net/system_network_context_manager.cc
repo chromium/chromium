@@ -728,6 +728,8 @@ SystemNetworkContextManager::GetNetExportFileWriter() {
 // static
 bool SystemNetworkContextManager::IsNetworkSandboxEnabled() {
 #if defined(OS_WIN)
+  if (!sandbox::policy::features::IsWinNetworkServiceSandboxSupported())
+    return false;
   auto* local_state = g_browser_process->local_state();
   if (local_state &&
       local_state->HasPrefPath(prefs::kNetworkServiceSandboxEnabled)) {

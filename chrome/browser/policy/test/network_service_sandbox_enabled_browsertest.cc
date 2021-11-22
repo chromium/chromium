@@ -17,6 +17,10 @@
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+#if defined(OS_WIN)
+#include "sandbox/policy/features.h"
+#endif
+
 namespace policy {
 
 class NetworkServiceSandboxEnabledTest
@@ -58,6 +62,12 @@ IN_PROC_BROWSER_TEST_P(NetworkServiceSandboxEnabledTest, IsRespected) {
   // Policy always overrides the default.
   bool expected_value =
       GetParam().value_or(content_client.ShouldSandboxNetworkService());
+#if defined(OS_WIN)
+  // On Windows, the policy is ignored if the platform does not support
+  // sandboxing at all, e.g. pre Windows 10.
+  if (!sandbox::policy::features::IsWinNetworkServiceSandboxSupported())
+    expected_value = false;
+#endif
   ChromeContentBrowserClient client;
   EXPECT_EQ(expected_value, client.ShouldSandboxNetworkService());
 }
