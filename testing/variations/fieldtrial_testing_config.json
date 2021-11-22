@@ -9023,29 +9023,6 @@
             ]
         }
     ],
-    "WebRtcDistinctWorkerThread": [
-        {
-            "platforms": [
-                "windows",
-                "mac",
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "ios",
-                "android",
-                "android_weblayer",
-                "android_webview"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "WebRtcDistinctWorkerThread"
-                    ]
-                }
-            ]
-        }
-    ],
     "WebUICodeCache": [
         {
             "platforms": [
