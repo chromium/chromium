@@ -1216,4 +1216,27 @@ TEST_F(DesksTemplatesTest, DialogDoesntShowForSupportedAppsWithoutLaunchInfo) {
   ASSERT_EQ(1ul, GetAllEntries().size());
 }
 
+// Tests that if there is a window minimized in overview, we don't crash when
+// launching a template. Regression test for https://crbug.com/1271337.
+TEST_F(DesksTemplatesTest, LaunchTemplateWithMinimizedOverviewWindow) {
+  // Create a test minimized window.
+  auto window = CreateAppWindow();
+  WindowState::Get(window.get())->Minimize();
+
+  // Open overview and save a template.
+  OpenOverviewAndSaveTemplate(Shell::Get()->GetPrimaryRootWindow());
+  ASSERT_EQ(1ul, GetAllEntries().size());
+
+  // Click on the grid item to launch the template. We should exit overview and
+  // there should be no crash.
+  DeskSwitchAnimationWaiter waiter;
+  ClickOnView(GetItemViewFromOverviewGrid(/*grid_item_index=*/0));
+  // Launching a template fetches it from the desk model asynchronously. Make
+  // sure the async call is done before waiting.
+  WaitForUI();
+  waiter.Wait();
+
+  EXPECT_FALSE(InOverviewSession());
+}
+
 }  // namespace ash

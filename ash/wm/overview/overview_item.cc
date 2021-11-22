@@ -208,7 +208,7 @@ bool OverviewItem::Contains(const aura::Window* target) const {
 }
 
 void OverviewItem::HideForDesksTemplatesGrid() {
-  transform_window_.window()->layer()->SetOpacity(0.0f);
+  DCHECK(item_widget_);
   item_widget_->GetLayer()->SetOpacity(0.0f);
 
   for (aura::Window* transient_child :
@@ -222,8 +222,9 @@ void OverviewItem::HideForDesksTemplatesGrid() {
 }
 
 void OverviewItem::RevertHideForDesksTemplatesGrid() {
-  transform_window_.window()->layer()->SetOpacity(1.0f);
-  item_widget_->GetLayer()->SetOpacity(1.0f);
+  // `item_widget_` may be null during shutdown if the window is minimized.
+  if (item_widget_)
+    item_widget_->GetLayer()->SetOpacity(1.0f);
 
   for (aura::Window* transient_child :
        GetTransientTreeIterator(transform_window_.window())) {
