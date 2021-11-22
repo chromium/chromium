@@ -316,6 +316,7 @@ class CreditCard : public AutofillDataModel {
   std::u16string ExpirationDateForDisplay() const;
   // Expiration functions.
   std::u16string Expiration2DigitMonthAsString() const;
+  std::u16string Expiration2DigitYearAsString() const;
   std::u16string Expiration4DigitYearAsString() const;
 
   // Whether the cardholder name was created from separate first name and last
@@ -352,8 +353,6 @@ class CreditCard : public AutofillDataModel {
  private:
   FRIEND_TEST_ALL_PREFIXES(CreditCardTest, SetExpirationDateFromString);
   FRIEND_TEST_ALL_PREFIXES(CreditCardTest, SetExpirationYearFromString);
-
-  std::u16string Expiration2DigitYearAsString() const;
 
   // FormGroup:
   void GetSupportedTypes(ServerFieldTypeSet* supported_types) const override;

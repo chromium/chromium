@@ -983,6 +983,10 @@ std::u16string CreditCard::Expiration2DigitMonthAsString() const {
   return data_util::Expiration2DigitMonthAsString(expiration_month_);
 }
 
+std::u16string CreditCard::Expiration2DigitYearAsString() const {
+  return data_util::Expiration2DigitYearAsString(expiration_year_);
+}
+
 std::u16string CreditCard::Expiration4DigitYearAsString() const {
   return data_util::Expiration4DigitYearAsString(expiration_year_);
 }
@@ -1019,10 +1023,6 @@ std::unique_ptr<CreditCard> CreditCard::CreateVirtualCard(
   // server card.
   virtual_card->set_guid(card.guid() + kVirtualCardIdentifierSuffix);
   return virtual_card;
-}
-
-std::u16string CreditCard::Expiration2DigitYearAsString() const {
-  return data_util::Expiration2DigitYearAsString(expiration_year_);
 }
 
 void CreditCard::GetSupportedTypes(ServerFieldTypeSet* supported_types) const {
