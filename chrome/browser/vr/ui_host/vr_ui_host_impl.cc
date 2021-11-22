@@ -359,27 +359,27 @@ void VRUiHostImpl::InitCapturingStates() {
   permissions::PermissionManager* permission_manager =
       PermissionManagerFactory::GetForProfile(
           Profile::FromBrowserContext(web_contents_->GetBrowserContext()));
-  const GURL& origin = web_contents_->GetLastCommittedURL();
-  content::RenderFrameHost* rfh = web_contents_->GetMainFrame();
   potential_capturing_.audio_capture_enabled =
       permission_manager
-          ->GetPermissionStatusForFrame(ContentSettingsType::MEDIASTREAM_MIC,
-                                        rfh, origin)
+          ->GetPermissionStatusForCurrentDocument(
+              ContentSettingsType::MEDIASTREAM_MIC,
+              web_contents_->GetMainFrame())
           .content_setting == CONTENT_SETTING_ALLOW;
   potential_capturing_.video_capture_enabled =
       permission_manager
-          ->GetPermissionStatusForFrame(ContentSettingsType::MEDIASTREAM_CAMERA,
-                                        rfh, origin)
+          ->GetPermissionStatusForCurrentDocument(
+              ContentSettingsType::MEDIASTREAM_CAMERA,
+              web_contents_->GetMainFrame())
           .content_setting == CONTENT_SETTING_ALLOW;
   potential_capturing_.location_access_enabled =
       permission_manager
-          ->GetPermissionStatusForFrame(ContentSettingsType::GEOLOCATION, rfh,
-                                        origin)
+          ->GetPermissionStatusForCurrentDocument(
+              ContentSettingsType::GEOLOCATION, web_contents_->GetMainFrame())
           .content_setting == CONTENT_SETTING_ALLOW;
   potential_capturing_.midi_connected =
       permission_manager
-          ->GetPermissionStatusForFrame(ContentSettingsType::MIDI_SYSEX, rfh,
-                                        origin)
+          ->GetPermissionStatusForCurrentDocument(
+              ContentSettingsType::MIDI_SYSEX, web_contents_->GetMainFrame())
           .content_setting == CONTENT_SETTING_ALLOW;
 
   indicators_shown_start_time_ = base::Time::Now();
