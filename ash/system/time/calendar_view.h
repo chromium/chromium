@@ -27,7 +27,6 @@ class Label;
 
 namespace ash {
 
-class CalendarEventListView;
 class CalendarMonthView;
 
 // The header of the calendar view, which shows the current month and year.
@@ -73,8 +72,6 @@ class ASH_EXPORT CalendarView : public CalendarViewController::Observer,
   // CalendarViewController::Observer:
   void OnMonthChanged(const base::Time::Exploded current_month) override;
   void OnEventsFetched(const google_apis::calendar::EventList* events) override;
-  void OpenEventList() override;
-  void CloseEventList() override;
 
   // views::ViewObserver:
   void OnViewBoundsChanged(views::View* observed_view) override;
@@ -109,13 +106,10 @@ class ASH_EXPORT CalendarView : public CalendarViewController::Observer,
   void SetMonthViews();
 
   // Returns the current month first row position.
-  int PositionOfCurrentMonth() const;
+  int PositionOfCurrentMonth();
 
   // Returns the today's row position.
-  int PositionOfToday() const;
-
-  // Returns the selected date's row position.
-  int PositionOfSelectedDate() const;
+  int PositionOfToday();
 
   // Adds a month label.
   views::View* AddLabelWithId(LabelType type, bool add_at_front = false);
@@ -195,7 +189,6 @@ class ASH_EXPORT CalendarView : public CalendarViewController::Observer,
   views::Button* settings_button_ = nullptr;
   TopShortcutButton* up_button_ = nullptr;
   TopShortcutButton* down_button_ = nullptr;
-  CalendarEventListView* event_list_ = nullptr;
 
   // If it `is_resetting_scroll_`, we don't calculate the scroll position and we
   // don't need to check if we need to update the month or not.
