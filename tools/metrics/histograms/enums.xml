@@ -3720,11 +3720,12 @@ Unknown properties are collapsed to zero. -->
   <summary>Defines ARC ANR types.</summary>
   <int value="0" label="Unknown">ANR type cannot be determined.</int>
   <int value="1" label="Input">ANR while handling input event dispatching.</int>
-  <int value="2" label="Service">ANR in service.</int>
+  <int value="2" label="ForegroundService">ANR in foreground service.</int>
   <int value="3" label="Broadcast">ANR handling broadcast.</int>
   <int value="4" label="ContentProvider">ANR from ContentProvider.</int>
   <int value="5" label="AppRequested">ANR requested explicitly by app.</int>
   <int value="6" label="Process">ANR in process.</int>
+  <int value="7" label="BackgroundService">ANR in background service.</int>
 </enum>
 
 <enum name="ArcAppShortcutStatus">

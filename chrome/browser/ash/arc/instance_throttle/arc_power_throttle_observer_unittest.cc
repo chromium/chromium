@@ -55,6 +55,8 @@ class ArcPowerThrottleObserverTest : public testing::Test {
     testing_profile_.reset();
     session_manager_.reset();
     service_manager_.reset();
+    chromeos::DBusThreadManager::Shutdown();
+    chromeos::PowerManagerClient::Shutdown();
   }
 
  protected:
@@ -81,7 +83,7 @@ TEST_F(ArcPowerThrottleObserverTest, Default) {
   EXPECT_EQ(0, call_count);
   EXPECT_FALSE(observer.active());
 
-  observer.OnPreAnr(mojom::AnrType::SERVICE);
+  observer.OnPreAnr(mojom::AnrType::CONTENT_PROVIDER);
   EXPECT_EQ(1, call_count);
   EXPECT_TRUE(observer.active());
 
@@ -107,7 +109,7 @@ TEST_F(ArcPowerThrottleObserverTest, Default) {
   EXPECT_FALSE(observer.active());
 
   // Timer is not fired after stopping observing.
-  observer.OnPreAnr(mojom::AnrType::SERVICE);
+  observer.OnPreAnr(mojom::AnrType::CONTENT_PROVIDER);
   EXPECT_EQ(3, call_count);
   EXPECT_TRUE(observer.active());
 
@@ -115,6 +117,71 @@ TEST_F(ArcPowerThrottleObserverTest, Default) {
   task_environment().FastForwardBy(base::Milliseconds(11000));
   EXPECT_EQ(3, call_count);
   EXPECT_TRUE(observer.active());
+}
+
+// Test verifies that new preANR extends active time of the lock in the case
+// new preANR type requires more time for handling.
+TEST_F(ArcPowerThrottleObserverTest, ActiveTimeExtended) {
+  ArcPowerThrottleObserver observer;
+  int call_count = 0;
+  observer.StartObserving(
+      profile(),
+      base::BindRepeating([](int* counter) { (*counter)++; }, &call_count));
+
+  observer.OnPreAnr(mojom::AnrType::PROCESS);
+  EXPECT_EQ(1, call_count);
+  EXPECT_TRUE(observer.active());
+
+  task_environment().FastForwardBy(base::Milliseconds(5000));
+  // Timer not yet fired
+  EXPECT_TRUE(observer.active());
+
+  observer.OnPreAnr(mojom::AnrType::FOREGROUND_SERVICE);
+  EXPECT_EQ(1, call_count);
+  EXPECT_TRUE(observer.active());
+
+  task_environment().FastForwardBy(base::Milliseconds(19000));
+  // Without FOREGROUND_SERVICE preANR timer would be already fired.
+  // So it is still active now.
+  EXPECT_EQ(1, call_count);
+  EXPECT_TRUE(observer.active());
+
+  task_environment().FastForwardBy(base::Milliseconds(1000));
+  EXPECT_EQ(2, call_count);
+  EXPECT_FALSE(observer.active());
+}
+
+// Test verifies that new preANR does not change active time of the lock in
+// the case new preANR type requires less time that currently remained from the
+// previous preANR handling.
+TEST_F(ArcPowerThrottleObserverTest, ActiveTimePreserved) {
+  ArcPowerThrottleObserver observer;
+  int call_count = 0;
+  observer.StartObserving(
+      profile(),
+      base::BindRepeating([](int* counter) { (*counter)++; }, &call_count));
+
+  observer.OnPreAnr(mojom::AnrType::FOREGROUND_SERVICE);
+  EXPECT_EQ(1, call_count);
+  EXPECT_TRUE(observer.active());
+
+  task_environment().FastForwardBy(base::Milliseconds(9000));
+  // Timer not yet fired
+  EXPECT_TRUE(observer.active());
+
+  // Process has shorter active time. It should not change the previous timeout.
+  observer.OnPreAnr(mojom::AnrType::PROCESS);
+  EXPECT_EQ(1, call_count);
+  EXPECT_TRUE(observer.active());
+
+  task_environment().FastForwardBy(base::Milliseconds(10000));
+  EXPECT_EQ(1, call_count);
+  EXPECT_TRUE(observer.active());
+
+  // Only now the lock becomes inactive.
+  task_environment().FastForwardBy(base::Milliseconds(1000));
+  EXPECT_EQ(2, call_count);
+  EXPECT_FALSE(observer.active());
 }
 
 }  // namespace arc

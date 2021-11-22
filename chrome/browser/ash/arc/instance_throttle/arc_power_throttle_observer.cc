@@ -8,7 +8,10 @@ namespace arc {
 
 namespace {
 
-constexpr base::TimeDelta kHandleAnrTime = base::Seconds(10);
+// Time to recover ANR by default.
+constexpr base::TimeDelta kHandleDefaultAnrTime = base::Seconds(10);
+// Time to recover ANR in services.
+constexpr base::TimeDelta kHandleServiceAnrTime = base::Seconds(20);
 
 }  // namespace
 
@@ -40,21 +43,35 @@ void ArcPowerThrottleObserver::StopObserving() {
 }
 
 void ArcPowerThrottleObserver::OnPreAnr(mojom::AnrType type) {
-  VLOG(1) << "Handle pre-ANR state";
+  VLOG(1) << "Handle pre-ANR state in " << type;
   // Android system server detects the situation that ANR crash may happen
   // soon. This might be caused by ARC throttling when Android does not have
   // enough CPU power to flash pending requests. Disable throttling in this
   // case for kHandleAnrTime| period in order to let the system server to flash
   // requests.
   SetActive(true);
-  // Automatically inactivate this lock in |kHandleAnrTime|. Note, if we
-  // would receive another pre-ANR event, timer would be re-activated and
-  // this lock would be extended.
+
+  base::TimeDelta delta;
+  switch (type) {
+    case mojom::AnrType::FOREGROUND_SERVICE:
+    case mojom::AnrType::BACKGROUND_SERVICE:
+      delta = kHandleServiceAnrTime;
+      break;
+    default:
+      delta = kHandleDefaultAnrTime;
+  }
+
+  // Automatically inactivate this lock in |delta| time. Note, if we
+  // would receive another pre-ANR event, timer might be re-activated and
+  // this lock might be extended.
   // base::Unretained(this) is safe here due to |timer_| is owned by this
-  // class and timer is automatically canceled on DTOR.
-  timer_.Start(FROM_HERE, kHandleAnrTime,
-               base::BindOnce(&ArcPowerThrottleObserver::SetActive,
-                              base::Unretained(this), false));
+  // class and timer is autoatically canceled on DTOR.
+  const base::TimeTicks new_expected = base::TimeTicks::Now() + delta;
+  if (timer_.desired_run_time() < new_expected) {
+    timer_.Start(FROM_HERE, delta,
+                 base::BindOnce(&ArcPowerThrottleObserver::SetActive,
+                                base::Unretained(this), false));
+  }
 }
 
 }  // namespace arc

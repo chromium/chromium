@@ -10,8 +10,8 @@ enum AnrType {
   UNKNOWN = 0,
   // ANR while handling input events.
   INPUT = 1,
-  // ANR in services.
-  SERVICE = 2,
+  // ANR in foreground services.
+  FOREGROUND_SERVICE = 2,
   // ANR in broadcasts.
   BROADCAST = 3,
   // ANR in content provider.
@@ -19,7 +19,9 @@ enum AnrType {
   // App custom ANR.
   APP_REQUESTED = 5,
   // ANR in processes.
-  PROCESS = 6
+  PROCESS = 6,
+  // ANR in background services.
+  BACKGROUND_SERVICE = 7
 };
 
 [Extensible]
