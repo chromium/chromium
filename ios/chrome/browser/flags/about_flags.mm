@@ -942,7 +942,6 @@ NSMutableDictionary* CreateExperimentalTestingPolicies() {
     [testing_policies addEntriesFromDictionary:@{
       restrict_key : @[ restriction_pattern ]
     }];
-    [allowed_experimental_policies addObject:restrict_key];
   }
 
   // If the sign-in policy is set (not "None"), add the policy key to the list
