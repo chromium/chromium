@@ -282,6 +282,11 @@ void WaylandConnection::ScheduleFlush() {
 }
 
 void WaylandConnection::RoundTripQueue() {
+  if (roundtrip_closure_for_testing_) {
+    roundtrip_closure_for_testing_.Run();
+    return;
+  }
+
   DCHECK(event_queue_.get());
   wl_display_roundtrip_queue(display(), event_queue_.get());
 }

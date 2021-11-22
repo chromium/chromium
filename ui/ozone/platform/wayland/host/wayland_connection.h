@@ -10,6 +10,7 @@
 #include <string>
 #include <vector>
 
+#include "base/callback_forward.h"
 #include "base/containers/flat_map.h"
 #include "base/time/time.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -456,6 +457,8 @@ class WaylandConnection {
   // Global Wayland interfaces available in the current session, with their
   // versions.
   std::vector<std::pair<std::string, uint32_t>> available_globals_;
+
+  base::RepeatingClosure roundtrip_closure_for_testing_;
 };
 
 }  // namespace ui
