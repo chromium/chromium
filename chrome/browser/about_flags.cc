@@ -6699,6 +6699,12 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kLiteVideoForceOverrideDecisionDescription, kOsAll,
      SINGLE_VALUE_TYPE(lite_video::switches::kLiteVideoForceOverrideDecision)},
 
+    {"add-passwords-in-settings",
+     flag_descriptions::kAddPasswordsInSettingsName,
+     flag_descriptions::kAddPasswordsInSettingsDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(
+         password_manager::features::kSupportForAddPasswordsInSettings)},
+
     {"edit-passwords-in-settings",
      flag_descriptions::kEditPasswordsInSettingsName,
      flag_descriptions::kEditPasswordsInSettingsDescription, kOsAll,

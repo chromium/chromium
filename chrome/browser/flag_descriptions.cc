@@ -45,6 +45,10 @@ const char kAccountIdMigrationDescription[] =
     "Migrate to use Gaia ID instead of the email as the account identifer for "
     "the Identity Manager.";
 
+const char kAddPasswordsInSettingsName[] = "Add passwords in settings";
+const char kAddPasswordsInSettingsDescription[] =
+    "Enables manual password adding in settings.";
+
 const char kLauncherAppSortName[] = "Productivity experiment: Reorder Apps";
 const char kLauncherAppSortDescription[] =
     "To evaluate an enhanced Launcher experience that enables users to reorder "

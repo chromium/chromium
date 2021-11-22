@@ -66,6 +66,9 @@ extern const char kAccessiblePDFFormDescription[];
 extern const char kAccountIdMigrationName[];
 extern const char kAccountIdMigrationDescription[];
 
+extern const char kAddPasswordsInSettingsName[];
+extern const char kAddPasswordsInSettingsDescription[];
+
 extern const char kAlignFontDisplayAutoTimeoutWithLCPGoalName[];
 extern const char kAlignFontDisplayAutoTimeoutWithLCPGoalDescription[];
 
