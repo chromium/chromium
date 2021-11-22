@@ -132,6 +132,15 @@ def get_ios_gn_args(is_release, bundle_id_prefix, target_cpu):
       'target_cpu="%s" ') % (bundle_id_prefix, target_cpu)
 
 
+def get_android_gn_args(is_release):
+  return (get_mobile_gn_args('android', is_release) +
+          # Keep in sync with //tools/mb/mb_config.pyl cronet_android config.
+          'default_min_sdk_version = 16 ' +
+          'use_errorprone_java_compiler=true ' +
+          'enable_reporting=true ' +
+          'use_hashed_jni_names=true ')
+
+
 def get_mac_gn_args(is_release):
   return get_default_gn_args('mac', is_release) + \
       'disable_histogram_support=true ' + \
@@ -191,9 +200,7 @@ def main():
   else:
     test_target = 'cronet_test_instrumentation_apk'
     unit_target = 'cronet_unittests_android'
-    gn_args = get_mobile_gn_args('android', options.release) + \
-              'use_errorprone_java_compiler=true enable_reporting=true ' + \
-              'use_hashed_jni_names=true '
+    gn_args = get_android_gn_args(options.release)
     gn_extra = []
     out_dir_suffix = ''
     if options.x86:
