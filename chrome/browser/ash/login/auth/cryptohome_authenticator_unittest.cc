@@ -299,7 +299,8 @@ class CryptohomeAuthenticatorTest : public testing::Test {
     SystemSaltGetter::Initialize();
 
     auth_ = new ChromeCryptohomeAuthenticator(&consumer_);
-    state_ = std::make_unique<TestAttemptState>(user_context_);
+    state_ = std::make_unique<TestAttemptState>(
+        std::make_unique<UserContext>(user_context_));
   }
 
   // Tears down the test fixture.
@@ -580,7 +581,8 @@ TEST_F(CryptohomeAuthenticatorTest, ResolveOwnerNeededFailedMount) {
   // verification.
   content::RunAllTasksUntilIdle();
 
-  state_ = std::make_unique<TestAttemptState>(user_context_);
+  state_ = std::make_unique<TestAttemptState>(
+      std::make_unique<UserContext>(user_context_));
   state_->PresetCryptohomeStatus(cryptohome::MOUNT_ERROR_NONE);
 
   // The owner key util should not have found the owner key, so login should
@@ -630,7 +632,8 @@ TEST_F(CryptohomeAuthenticatorTest, ResolveOwnerNeededSuccess) {
   // verification.
   content::RunAllTasksUntilIdle();
 
-  state_ = std::make_unique<TestAttemptState>(user_context_);
+  state_ = std::make_unique<TestAttemptState>(
+      std::make_unique<UserContext>(user_context_));
   state_->PresetCryptohomeStatus(cryptohome::MOUNT_ERROR_NONE);
 
   // The owner key util should find the owner key, so login should succeed.

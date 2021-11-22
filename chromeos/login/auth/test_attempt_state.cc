@@ -4,13 +4,15 @@
 
 #include "chromeos/login/auth/test_attempt_state.h"
 
+#include <utility>
+
 #include "components/user_manager/user_type.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
 namespace chromeos {
 
-TestAttemptState::TestAttemptState(const UserContext& credentials)
-    : AuthAttemptState(credentials, false /* unlock */) {}
+TestAttemptState::TestAttemptState(std::unique_ptr<UserContext> credentials)
+    : AuthAttemptState(std::move(credentials)) {}
 
 TestAttemptState::~TestAttemptState() = default;
 

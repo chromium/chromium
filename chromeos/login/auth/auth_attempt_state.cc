@@ -4,12 +4,14 @@
 
 #include "chromeos/login/auth/auth_attempt_state.h"
 
-
+#include <utility>
 
 namespace chromeos {
 
-AuthAttemptState::AuthAttemptState(const UserContext& user_context, bool unlock)
-    : user_context(user_context), unlock(unlock) {}
+AuthAttemptState::AuthAttemptState(std::unique_ptr<UserContext> user_context)
+    : user_context(std::move(user_context)) {
+  DCHECK(this->user_context);
+}
 
 AuthAttemptState::~AuthAttemptState() = default;
 
@@ -24,7 +26,7 @@ void AuthAttemptState::RecordCryptohomeStatus(
 }
 
 void AuthAttemptState::RecordUsernameHash(const std::string& username_hash) {
-  user_context.SetUserIDHash(username_hash);
+  user_context->SetUserIDHash(username_hash);
   username_hash_obtained_ = true;
   username_hash_valid_ = true;
 }
