@@ -174,6 +174,15 @@ IN_PROC_BROWSER_TEST_P(NonPersistentExtensionTabsTest,
   ASSERT_TRUE(RunExtensionTest("tabs/last_focused_window")) << message_;
 }
 
+// TODO(http://crbug.com/58229): The Linux and Lacros window managers
+// behave differently, which complicates the test. A separate  test should
+// be written for them to avoid complicating this one.
+#if !defined(OS_LINUX) && !BUILDFLAG(IS_CHROMEOS_LACROS)
+IN_PROC_BROWSER_TEST_P(NonPersistentExtensionTabsTest, WindowSetFocus) {
+  ASSERT_TRUE(RunExtensionTest("window_update/set_focus")) << message_;
+}
+#endif
+
 INSTANTIATE_TEST_SUITE_P(EventPage,
                          NonPersistentExtensionTabsTest,
                          ::testing::Values(ContextType::kEventPage));

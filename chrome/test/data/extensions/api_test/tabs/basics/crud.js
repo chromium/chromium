@@ -142,18 +142,4 @@ chrome.test.runTests([
       }));
     }));
   }
-
-  /* Disabled -- see http://crbug.com/58229.
-  function windowSetFocused() {
-    chrome.windows.getCurrent(function(oldWin) {
-      chrome.windows.create({}, function(newWin) {
-        assertTrue(newWin.focused);
-        chrome.windows.update(oldWin.id, {focused:true});
-        chrome.windows.get(oldWin.id, pass(function(oldWin2) {
-          assertTrue(oldWin2.focused);
-        }));
-      });
-    });
-  },
-  */
 ]);
