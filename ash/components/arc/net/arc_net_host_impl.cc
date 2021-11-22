@@ -16,6 +16,8 @@
 #include "base/memory/singleton.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/stl_util.h"
+#include "base/strings/string_number_conversions.h"
+#include "chromeos/dbus/shill/shill_manager_client.h"
 #include "chromeos/login/login_state/login_state.h"
 #include "chromeos/network/device_state.h"
 #include "chromeos/network/managed_network_configuration_handler.h"
@@ -30,6 +32,7 @@
 #include "components/arc/session/arc_bridge_service.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/user_manager.h"
+#include "dbus/object_path.h"
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
 
 namespace {
@@ -49,6 +52,15 @@ chromeos::NetworkConnectionHandler* GetNetworkConnectionHandler() {
   return chromeos::NetworkHandler::Get()->network_connection_handler();
 }
 
+chromeos::NetworkProfileHandler* GetNetworkProfileHandler() {
+  return chromeos::NetworkHandler::Get()->network_profile_handler();
+}
+
+const chromeos::NetworkProfile* GetNetworkProfile() {
+  return GetNetworkProfileHandler()->GetProfileForUserhash(
+      chromeos::LoginState::Get()->primary_user_hash());
+}
+
 std::vector<const chromeos::NetworkState*> GetActiveNetworks() {
   std::vector<const chromeos::NetworkState*> active_networks;
   GetStateHandler()->GetActiveNetworkListByType(
@@ -63,6 +75,58 @@ bool IsDeviceOwner() {
   // settle down this is guranteed to reflect the correct user account state.
   return user_manager::UserManager::Get()->GetActiveUser()->GetAccountId() ==
          user_manager::UserManager::Get()->GetOwnerAccountId();
+}
+
+std::string TranslateEapMethod(arc::mojom::EapMethod method) {
+  switch (method) {
+    case arc::mojom::EapMethod::kLeap:
+      return shill::kEapMethodLEAP;
+    case arc::mojom::EapMethod::kPeap:
+      return shill::kEapMethodPEAP;
+    case arc::mojom::EapMethod::kTls:
+      return shill::kEapMethodTLS;
+    case arc::mojom::EapMethod::kTtls:
+      return shill::kEapMethodTTLS;
+    case arc::mojom::EapMethod::kNone:
+      return "";
+  }
+  NET_LOG(ERROR) << "Unknown EAP method";
+  return "";
+}
+
+std::string TranslateEapPhase2Method(arc::mojom::EapPhase2Method method) {
+  switch (method) {
+    case arc::mojom::EapPhase2Method::kPap:
+      return shill::kEapPhase2AuthTTLSPAP;
+    case arc::mojom::EapPhase2Method::kMschap:
+      return shill::kEapPhase2AuthTTLSMSCHAP;
+    case arc::mojom::EapPhase2Method::kMschapv2:
+      return shill::kEapPhase2AuthTTLSMSCHAPV2;
+    case arc::mojom::EapPhase2Method::kNone:
+      return "";
+  }
+  NET_LOG(ERROR) << "Unknown EAP phase 2 method";
+  return "";
+}
+
+std::string TranslateKeyManagement(arc::mojom::KeyManagement management) {
+  switch (management) {
+    case arc::mojom::KeyManagement::kIeee8021X:
+      return shill::kKeyManagementIEEE8021X;
+    case arc::mojom::KeyManagement::kFtEap:
+    case arc::mojom::KeyManagement::kFtPsk:
+    case arc::mojom::KeyManagement::kFtSae:
+    case arc::mojom::KeyManagement::kWpaEap:
+    case arc::mojom::KeyManagement::kWpaEapSha256:
+    case arc::mojom::KeyManagement::kWpaPsk:
+    case arc::mojom::KeyManagement::kSae:
+    case arc::mojom::KeyManagement::kNone:
+      // Currently these key managements are not handled.
+      NET_LOG(ERROR) << "Key management is not supported";
+      return "";
+  }
+  NET_LOG(ERROR) << "Unknown key management";
+  return "";
 }
 
 arc::mojom::SecurityType TranslateWiFiSecurity(const std::string& type) {
@@ -348,6 +412,12 @@ void ArcVpnErrorCallback(const std::string& operation,
                          const std::string& error_name,
                          std::unique_ptr<base::DictionaryValue> error_data) {
   LOG(ERROR) << "ArcVpnErrorCallback: " << operation << ": " << error_name;
+}
+
+void AddPasspointCredentialsFailureCallback(const std::string& error_name,
+                                            const std::string& error_message) {
+  LOG(ERROR) << "Failed to add passpoint credentials, error:" << error_name
+             << ", message: " << error_message;
 }
 
 }  // namespace
@@ -710,11 +780,19 @@ void ArcNetHostImpl::ConnectArcVpn(const std::string& service_path,
       chromeos::ConnectCallbackMode::ON_COMPLETED);
 }
 
-std::unique_ptr<base::Value> ArcNetHostImpl::TranslateStringListToValue(
+base::Value ArcNetHostImpl::TranslateStringListToValue(
     const std::vector<std::string>& string_list) {
-  auto result = std::make_unique<base::Value>(base::Value::Type::LIST);
+  base::Value result(base::Value::Type::LIST);
   for (const auto& item : string_list)
-    result->Append(item);
+    result.Append(item);
+  return result;
+}
+
+base::Value ArcNetHostImpl::TranslateLongListToStringValue(
+    const std::vector<uint64_t>& long_list) {
+  base::Value result(base::Value::Type::LIST);
+  for (const auto& item : long_list)
+    result.Append(base::NumberToString(item));
   return result;
 }
 
@@ -744,17 +822,13 @@ ArcNetHostImpl::TranslateVpnConfigurationToOnc(
   ip_dict->SetKey(onc::ipconfig::kGateway, base::Value(cfg.ipv4_gateway));
 
   ip_dict->SetKey(onc::ipconfig::kNameServers,
-                  base::Value::FromUniquePtrValue(
-                      TranslateStringListToValue(cfg.nameservers)));
-  ip_dict->SetKey(
-      onc::ipconfig::kSearchDomains,
-      base::Value::FromUniquePtrValue(TranslateStringListToValue(cfg.domains)));
+                  TranslateStringListToValue(cfg.nameservers));
+  ip_dict->SetKey(onc::ipconfig::kSearchDomains,
+                  TranslateStringListToValue(cfg.domains));
   ip_dict->SetKey(onc::ipconfig::kIncludedRoutes,
-                  base::Value::FromUniquePtrValue(
-                      TranslateStringListToValue(cfg.split_include)));
+                  TranslateStringListToValue(cfg.split_include));
   ip_dict->SetKey(onc::ipconfig::kExcludedRoutes,
-                  base::Value::FromUniquePtrValue(
-                      TranslateStringListToValue(cfg.split_exclude)));
+                  TranslateStringListToValue(cfg.split_exclude));
 
   top_dict->SetKey(onc::network_config::kStaticIPConfig,
                    base::Value::FromUniquePtrValue(std::move(ip_dict)));
@@ -819,9 +893,94 @@ void ArcNetHostImpl::AndroidVpnStateChanged(mojom::ConnectionStateType state) {
       base::BindOnce(&ArcVpnErrorCallback, "disconnecting ARC VPN"));
 }
 
+base::Value ArcNetHostImpl::TranslateEapCredentialsToDict(
+    const mojom::EapCredentials& cred) {
+  base::Value dict(base::Value::Type::DICTIONARY);
+
+  dict.SetStringKey(shill::kEapMethodProperty, TranslateEapMethod(cred.method));
+  dict.SetStringKey(shill::kEapPhase2AuthProperty,
+                    TranslateEapPhase2Method(cred.phase2_method));
+  if (cred.anonymous_identity.has_value()) {
+    dict.SetStringKey(shill::kEapAnonymousIdentityProperty,
+                      cred.anonymous_identity.value());
+  }
+  if (cred.identity.has_value()) {
+    dict.SetStringKey(shill::kEapIdentityProperty, cred.identity.value());
+  }
+  if (cred.password.has_value()) {
+    dict.SetStringKey(shill::kEapPasswordProperty, cred.password.value());
+  }
+  dict.SetStringKey(shill::kEapKeyMgmtProperty,
+                    TranslateKeyManagement(cred.key_management));
+  // TODO(195262431): Provision and fill in certificates.
+  if (cred.subject_match.has_value()) {
+    dict.SetStringKey(shill::kEapSubjectMatchProperty,
+                      cred.subject_match.value());
+  }
+  if (cred.subject_alternative_name_match_list.has_value()) {
+    dict.SetKey(shill::kEapSubjectAlternativeNameMatchProperty,
+                TranslateStringListToValue(
+                    cred.subject_alternative_name_match_list.value()));
+  }
+  if (cred.domain_suffix_match_list.has_value()) {
+    dict.SetKey(
+        shill::kEapDomainSuffixMatchProperty,
+        TranslateStringListToValue(cred.domain_suffix_match_list.value()));
+  }
+  if (cred.tls_version_max.has_value()) {
+    dict.SetStringKey(shill::kEapTLSVersionMaxProperty,
+                      cred.tls_version_max.value());
+  }
+  dict.SetBoolKey(shill::kEapUseSystemCasProperty, cred.use_system_cas);
+  dict.SetBoolKey(shill::kEapUseProactiveKeyCachingProperty,
+                  cred.use_proactive_key_caching);
+  dict.SetBoolKey(shill::kEapUseLoginPasswordProperty, cred.use_login_password);
+
+  return dict;
+}
+
+base::Value ArcNetHostImpl::TranslatePasspointCredentialsToDict(
+    const mojom::PasspointCredentials& cred) {
+  // Fill in EAP credentials fields.
+  if (!cred.eap) {
+    LOG(ERROR) << "Failed to get EAP credentials for passpoint credentials";
+  }
+  auto dict = TranslateEapCredentialsToDict(*cred.eap);
+
+  // Fill in Passpoint credentials fields.
+  dict.SetKey(shill::kPasspointCredentialsDomainsProperty,
+              TranslateStringListToValue(cred.domains));
+  dict.SetStringKey(shill::kPasspointCredentialsRealmProperty, cred.realm);
+  dict.SetKey(shill::kPasspointCredentialsHomeOIsProperty,
+              TranslateLongListToStringValue(cred.home_ois));
+  dict.SetKey(shill::kPasspointCredentialsRequiredHomeOIsProperty,
+              TranslateLongListToStringValue(cred.required_home_ois));
+  dict.SetKey(shill::kPasspointCredentialsRoamingConsortiaProperty,
+              TranslateLongListToStringValue(cred.roaming_consortium_ois));
+  dict.SetBoolKey(shill::kPasspointCredentialsMeteredOverrideProperty,
+                  cred.metered);
+  dict.SetStringKey(shill::kPasspointCredentialsAndroidPackageNameProperty,
+                    cred.package_name);
+
+  return dict;
+}
+
 void ArcNetHostImpl::AddPasspointCredentials(
     mojom::PasspointCredentialsPtr credentials) {
-  // TODO(b/195262431) Call shill Manager AddPasspointCredentials method.
+  // TODO(195262431): Support EAP-TLS.
+  if (credentials->eap->method != mojom::EapMethod::kTtls)
+    return;
+
+  const auto properties = TranslatePasspointCredentialsToDict(*credentials);
+  const auto* profile = GetNetworkProfile();
+  if (!profile || profile->path.empty()) {
+    LOG(ERROR) << "Unable to get network profile path";
+    return;
+  }
+
+  ash::ShillManagerClient::Get()->AddPasspointCredentials(
+      dbus::ObjectPath(profile->path), properties, base::DoNothing(),
+      base::BindOnce(&AddPasspointCredentialsFailureCallback));
   return;
 }
 

@@ -17,6 +17,7 @@
 #include "base/threading/thread_checker.h"
 #include "base/values.h"
 #include "chromeos/network/network_connection_observer.h"
+#include "chromeos/network/network_profile_handler.h"
 #include "chromeos/network/network_state_handler_observer.h"
 #include "components/arc/mojom/net.mojom.h"
 #include "components/arc/session/connection_observer.h"
@@ -94,7 +95,12 @@ class ArcNetHostImpl : public KeyedService,
   std::unique_ptr<base::DictionaryValue> TranslateVpnConfigurationToOnc(
       const mojom::AndroidVpnConfiguration& cfg);
 
-  // Overriden from chromeos::NetworkStateHandlerObserver.
+  base::Value TranslateEapCredentialsToDict(const mojom::EapCredentials& cred);
+
+  base::Value TranslatePasspointCredentialsToDict(
+      const mojom::PasspointCredentials& cred);
+
+  // Overridden from chromeos::NetworkStateHandlerObserver.
   void ScanCompleted(const chromeos::DeviceState* /*unused*/) override;
   void OnShuttingDown() override;
   void NetworkConnectionStateChanged(
@@ -103,7 +109,7 @@ class ArcNetHostImpl : public KeyedService,
   void DeviceListChanged() override;
   void NetworkPropertiesUpdated(const chromeos::NetworkState* network) override;
 
-  // Overriden from chromeos::NetworkConnectionObserver.
+  // Overridden from chromeos::NetworkConnectionObserver.
   void DisconnectRequested(const std::string& service_path) override;
 
   // Overridden from ConnectionObserver<mojom::NetInstance>:
@@ -134,8 +140,16 @@ class ArcNetHostImpl : public KeyedService,
   // Convert a vector of strings, |string_list|, to a base::Value
   // that can be added to an ONC dictionary.  This is used for fields
   // like NameServers, SearchDomains, etc.
-  std::unique_ptr<base::Value> TranslateStringListToValue(
+  base::Value TranslateStringListToValue(
       const std::vector<std::string>& string_list);
+
+  // Convert a vector of uint64_t, |long_list|, to a base::Value of type list
+  // that can be passed to shill. This is because 64-bit integer values are not
+  // supported for base::Value.
+  // The translated values will be a list of decimal string and not a single
+  // string.
+  base::Value TranslateLongListToStringValue(
+      const std::vector<uint64_t>& long_list);
 
   // Ask Shill to connect to the Android VPN with name |service_path|.
   // |service_path| and |guid| are stored locally for future reference.
