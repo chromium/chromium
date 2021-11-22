@@ -13,6 +13,7 @@
 #import "ios/chrome/common/ui/util/button_util.h"
 #include "ios/chrome/common/ui/util/device_util.h"
 #include "ios/chrome/common/ui/util/dynamic_type_util.h"
+#include "ios/chrome/common/ui/util/image_util.h"
 #import "ios/chrome/common/ui/util/pointer_interaction_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -397,12 +398,7 @@ constexpr CGFloat kLearnMoreButtonSide = 40;
   if (CGSizeEqualToSize(newSize, currentImage.size)) {
     return currentImage;
   }
-
-  UIGraphicsBeginImageContextWithOptions(newSize, NO, 0.0);
-  [sourceImage drawInRect:CGRectMake(0, 0, newSize.width, newSize.height)];
-  UIImage* newImage = UIGraphicsGetImageFromCurrentImageContext();
-  UIGraphicsEndImageContext();
-  return newImage;
+  return ResizeImage(sourceImage, newSize, ProjectionMode::kAspectFit);
 }
 
 // Determines which font text style to use depending on the device size, the
@@ -601,7 +597,7 @@ constexpr CGFloat kLearnMoreButtonSide = 40;
   return _tertiaryActionButton;
 }
 
-// Helper to create the learn more button
+// Helper to create the learn more button.
 - (UIButton*)learnMoreButton {
   if (!_learnMoreButton) {
     DCHECK(self.shouldShowLearnMoreButton);

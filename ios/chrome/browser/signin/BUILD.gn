@@ -91,6 +91,7 @@ source_set("signin") {
     "//ios/chrome/browser/ui/util",
     "//ios/chrome/browser/webdata_services",
     "//ios/chrome/common",
+    "//ios/chrome/common/ui/util:image_util",
     "//ios/net",
     "//ios/public/provider/chrome/browser",
     "//ios/public/provider/chrome/browser/signin",

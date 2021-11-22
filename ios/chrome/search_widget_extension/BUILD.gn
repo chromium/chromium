@@ -73,6 +73,7 @@ source_set("search_widget") {
     "//ios/chrome/common/crash_report",
     "//ios/chrome/common/ui/elements",
     "//ios/chrome/common/ui/util",
+    "//ios/chrome/common/ui/util:image_util",
   ]
 
   frameworks = [

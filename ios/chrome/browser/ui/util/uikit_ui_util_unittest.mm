@@ -68,35 +68,6 @@ UIImage* testImage(CGSize imageSize) {
   return image;
 }
 
-TEST_F(UIKitUIUtilTest, TestResizeImageOpacity) {
-  UIImage* actual;
-  UIImage* image = testImage(CGSizeMake(100, 100));
-  actual =
-      ResizeImage(image, CGSizeMake(50, 50), ProjectionMode::kAspectFit, YES);
-  EXPECT_TRUE(actual);
-
-  actual =
-      ResizeImage(image, CGSizeMake(50, 50), ProjectionMode::kAspectFit, NO);
-  EXPECT_TRUE(actual);
-}
-
-TEST_F(UIKitUIUtilTest, TestResizeImageInvalidInput) {
-  UIImage* actual;
-  UIImage* image = testImage(CGSizeMake(100, 50));
-  actual = ResizeImage(image, CGSizeZero, ProjectionMode::kAspectFit);
-  EXPECT_FALSE(actual);
-
-  actual = ResizeImage(image, CGSizeMake(0.1, 0.1), ProjectionMode::kAspectFit);
-  EXPECT_FALSE(actual);
-
-  actual =
-      ResizeImage(image, CGSizeMake(-100, -100), ProjectionMode::kAspectFit);
-  EXPECT_FALSE(actual);
-
-  actual = ResizeImage(nil, CGSizeMake(100, 100), ProjectionMode::kAspectFit);
-  EXPECT_FALSE(actual);
-}
-
 TEST_F(UIKitUIUtilTest, TintImageKeepsImageProperties) {
   UIImage* image = testImage(CGSizeMake(100, 75));
   UIImage* tintedImage = TintImage(image, [UIColor blueColor]);

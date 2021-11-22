@@ -114,35 +114,6 @@ UIImage* NativeImage(int imageID) {
   return NativeReversableImage(imageID, NO);
 }
 
-UIImage* ResizeImage(UIImage* image,
-                     CGSize targetSize,
-                     ProjectionMode projectionMode) {
-  return ResizeImage(image, targetSize, projectionMode, NO);
-}
-
-UIImage* ResizeImage(UIImage* image,
-                     CGSize targetSize,
-                     ProjectionMode projectionMode,
-                     BOOL opaque) {
-  CGSize revisedTargetSize;
-  CGRect projectTo;
-
-  CalculateProjection([image size], targetSize, projectionMode,
-                      revisedTargetSize, projectTo);
-
-  if (CGRectEqualToRect(projectTo, CGRectZero))
-    return nil;
-
-  // Resize photo. Use UIImage drawing methods because they respect
-  // UIImageOrientation as opposed to CGContextDrawImage().
-  UIGraphicsBeginImageContextWithOptions(revisedTargetSize, opaque,
-                                         /* scale = */ 0);
-  [image drawInRect:projectTo];
-  UIImage* resizedPhoto = UIGraphicsGetImageFromCurrentImageContext();
-  UIGraphicsEndImageContext();
-  return resizedPhoto;
-}
-
 UIImage* TintImage(UIImage* image, UIColor* color) {
   DCHECK(image);
   DCHECK(image.CGImage);
