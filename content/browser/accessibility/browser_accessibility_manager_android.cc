@@ -593,4 +593,14 @@ BrowserAccessibilityManagerAndroid::GetWebContentsAXFromRootManager() {
   return parent_manager->GetWebContentsAXFromRootManager();
 }
 
+std::u16string
+BrowserAccessibilityManagerAndroid::GenerateAccessibilityNodeInfoString(
+    int32_t unique_id) {
+  WebContentsAccessibilityAndroid* wcax = GetWebContentsAXFromRootManager();
+  if (!wcax)
+    return nullptr;
+
+  return wcax->GenerateAccessibilityNodeInfoString(unique_id);
+}
+
 }  // namespace content

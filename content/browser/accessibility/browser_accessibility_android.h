@@ -195,6 +195,11 @@ class CONTENT_EXPORT BrowserAccessibilityAndroid : public BrowserAccessibility {
   void GetSuggestions(std::vector<int>* suggestion_starts,
                       std::vector<int>* suggestion_ends) const;
 
+  // Used for tree dumps, generate a string representation of the
+  // AccessibilityNodeInfo object for this node by calling through the
+  // manager to the web_contents_accessibility_android JNI.
+  std::u16string GenerateAccessibilityNodeInfoString() const;
+
  protected:
   BrowserAccessibilityAndroid(BrowserAccessibilityManager* manager,
                               ui::AXNode* node);

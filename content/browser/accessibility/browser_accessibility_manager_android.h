@@ -130,6 +130,8 @@ class CONTENT_EXPORT BrowserAccessibilityManagerAndroid
   void EnableTouchPassthrough() { touch_passthrough_enabled_ = true; }
   bool touch_passthrough_enabled() const { return touch_passthrough_enabled_; }
 
+  std::u16string GenerateAccessibilityNodeInfoString(int32_t unique_id);
+
  private:
   // AXTreeObserver overrides.
   void OnAtomicUpdateFinished(

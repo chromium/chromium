@@ -375,6 +375,7 @@ class CONTENT_EXPORT WebContentsAccessibilityAndroid
   void HandleNavigate();
   void ClearNodeInfoCacheForGivenId(int32_t unique_id);
   void HandleEndOfTestSignal();
+  std::u16string GenerateAccessibilityNodeInfoString(int32_t unique_id);
 
   base::WeakPtr<WebContentsAccessibilityAndroid> GetWeakPtr();
 

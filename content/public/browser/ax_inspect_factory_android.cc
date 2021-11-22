@@ -7,6 +7,7 @@
 #include "base/notreached.h"
 #include "content/browser/accessibility/accessibility_event_recorder.h"
 #include "content/browser/accessibility/accessibility_tree_formatter_android.h"
+#include "content/browser/accessibility/accessibility_tree_formatter_android_external.h"
 #include "content/browser/accessibility/accessibility_tree_formatter_blink.h"
 
 namespace content {
@@ -14,7 +15,11 @@ namespace content {
 // static
 std::unique_ptr<ui::AXTreeFormatter>
 AXInspectFactory::CreatePlatformFormatter() {
-  return AXInspectFactory::CreateFormatter(ui::AXApiType::kAndroid);
+  // The default platform tree formatter for Android uses the "external" tree,
+  // i.e. pulling from the AccessibilityNodeInfo objects in the Java-side code.
+  // If the internal tree is desired, then CreateFormatter() should be called
+  // with the appropriate tree type.
+  return AXInspectFactory::CreateFormatter(ui::AXApiType::kAndroidExternal);
 }
 
 // static
@@ -32,6 +37,8 @@ std::unique_ptr<ui::AXTreeFormatter> AXInspectFactory::CreateFormatter(
   switch (type) {
     case ui::AXApiType::kAndroid:
       return std::make_unique<AccessibilityTreeFormatterAndroid>();
+    case ui::AXApiType::kAndroidExternal:
+      return std::make_unique<AccessibilityTreeFormatterAndroidExternal>();
     case ui::AXApiType::kBlink:
       return std::make_unique<AccessibilityTreeFormatterBlink>();
     default:

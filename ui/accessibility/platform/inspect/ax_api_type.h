@@ -15,7 +15,8 @@ class AX_EXPORT AXApiType {
  public:
   // Inspect types for all platforms.
   enum TypeConstant {
-    kAndroid,
+    kAndroid,          // For the platform specific Android tree (internal).
+    kAndroidExternal,  // For the Java-side "external" Android tree.
     kBlink,
     kFuchsia,
     kMac,

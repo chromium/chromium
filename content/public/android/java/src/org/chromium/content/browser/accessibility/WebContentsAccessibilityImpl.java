@@ -174,7 +174,7 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProvider
     private boolean mUserHasTouchExplored;
     private boolean mPendingScrollToMakeNodeVisible;
     private boolean mNotifyFrameInfoInitializedCalled;
-    private boolean mAccessibilityEnabledForTesting;
+    private boolean mAccessibilityEnabledOverride;
     private int mSelectionGranularity;
     private int mAccessibilityFocusId;
     private int mSelectionNodeId;
@@ -396,7 +396,7 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProvider
     @VisibleForTesting
     @Override
     public void setAccessibilityEnabledForTesting() {
-        mAccessibilityEnabledForTesting = true;
+        mAccessibilityEnabledOverride = true;
     }
 
     @VisibleForTesting
@@ -580,6 +580,17 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProvider
         mNativeObj = WebContentsAccessibilityImplJni.get().initWithAXTree(
                 WebContentsAccessibilityImpl.this, nativeAxTree);
         onNativeInit();
+    }
+
+    @CalledByNative
+    public String generateAccessibilityNodeInfoString(int virtualViewId) {
+        // If accessibility isn't enabled, all the AccessibilityNodeInfo objects will be null, so
+        // temporarily set the |mAccessibilityEnabledOverride| flag to true, then disable it.
+        mAccessibilityEnabledOverride = true;
+        String returnString =
+                AccessibilityNodeInfoUtils.toString(createAccessibilityNodeInfo(virtualViewId));
+        mAccessibilityEnabledOverride = false;
+        return returnString;
     }
 
     @CalledByNative
@@ -1404,7 +1415,7 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProvider
     @Override
     public boolean isAccessibilityEnabled() {
         return isNativeInitialized()
-                && (mAccessibilityEnabledForTesting || mAccessibilityManager.isEnabled());
+                && (mAccessibilityEnabledOverride || mAccessibilityManager.isEnabled());
     }
 
     private AccessibilityNodeInfo createNodeForHost(int rootId) {

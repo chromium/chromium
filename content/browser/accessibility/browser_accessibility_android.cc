@@ -2564,4 +2564,11 @@ std::u16string BrowserAccessibilityAndroid::GetContentInvalidErrorMessage()
   return std::u16string();
 }
 
+std::u16string
+BrowserAccessibilityAndroid::GenerateAccessibilityNodeInfoString() const {
+  auto* manager =
+      static_cast<BrowserAccessibilityManagerAndroid*>(this->manager());
+  return manager->GenerateAccessibilityNodeInfoString(unique_id());
+}
+
 }  // namespace content

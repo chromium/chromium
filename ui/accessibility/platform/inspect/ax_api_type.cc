@@ -10,6 +10,8 @@ AXApiType::Type::operator std::string() const {
   switch (type_) {
     case kAndroid:
       return "android";
+    case kAndroidExternal:
+      return "android_external";
     case kBlink:
       return "blink";
     case kFuchsia:

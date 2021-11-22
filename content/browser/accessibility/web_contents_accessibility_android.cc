@@ -612,6 +612,19 @@ void WebContentsAccessibilityAndroid::ClearNodeInfoCacheForGivenId(
                                                                  unique_id);
 }
 
+std::u16string
+WebContentsAccessibilityAndroid::GenerateAccessibilityNodeInfoString(
+    int32_t unique_id) {
+  JNIEnv* env = AttachCurrentThread();
+  ScopedJavaLocalRef<jobject> obj = java_ref_.get(env);
+  if (obj.is_null())
+    return nullptr;
+
+  return base::android::ConvertJavaStringToUTF16(
+      Java_WebContentsAccessibilityImpl_generateAccessibilityNodeInfoString(
+          env, obj, unique_id));
+}
+
 base::android::ScopedJavaLocalRef<jstring>
 WebContentsAccessibilityAndroid::GetSupportedHtmlElementTypes(
     JNIEnv* env,
