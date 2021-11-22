@@ -406,7 +406,6 @@ source_set("tests") {
       "//net/tools/testserver/",
       "//services/test/data",
       "//third_party/pywebsocket3/src/mod_pywebsocket/",
-      "//third_party/tlslite/",
     ]
   }
 

@@ -148,8 +148,6 @@ std::string BaseTestServer::GetScheme() const {
   switch (type_) {
     case TYPE_HTTP:
       return "http";
-    case TYPE_HTTPS:
-      return "https";
     case TYPE_WS:
       return "ws";
     case TYPE_WSS:
@@ -433,10 +431,6 @@ bool BaseTestServer::GenerateArguments(base::DictionaryValue* arguments) const {
       arguments->SetKey("ssl-client-ca",
                         base::Value(std::move(ssl_client_certs)));
     }
-  }
-
-  if (type_ == TYPE_HTTPS) {
-    arguments->SetKey("https", base::Value());
   }
 
   return GenerateAdditionalArguments(arguments);

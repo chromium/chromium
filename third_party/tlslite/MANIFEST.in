@@ -1,6 +1,0 @@
-recursive-include tests *
-recursive-include docs *
-include LICENSE
-include README
-include Makefile
-include MANIFEST.in

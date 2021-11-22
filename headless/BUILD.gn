@@ -767,7 +767,6 @@ test("headless_browsertests") {
     "//net/tools/testserver/",
     "//third_party/blink/web_tests/http/tests/inspector-protocol/",
     "//third_party/pywebsocket3/",
-    "//third_party/tlslite/",
   ]
 
   if (is_fuchsia) {

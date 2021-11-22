@@ -1418,7 +1418,6 @@ if (!is_android && !is_fuchsia) {
       "//third_party/polymer/v1_0/components-chromium/iron-test-helpers/mock-interactions.js",
       "//third_party/pywebsocket3/src/mod_pywebsocket/",
       "//third_party/simplejson/",
-      "//third_party/tlslite/",
       "//ui/webui/resources/",
     ]
     data += js2gtest_js_libraries
@@ -5204,7 +5203,6 @@ test("unit_tests") {
     "//google_apis/test/data/",
     "//net/tools/testserver/",
     "//third_party/pywebsocket3/src/mod_pywebsocket/",
-    "//third_party/tlslite/",
     "//tools/metrics/histograms/enums.xml",
   ]
 
@@ -8399,7 +8397,6 @@ if (!is_android && !is_fuchsia) {
       "//third_party/mocha/mocha.js",
       "//third_party/polymer/v1_0/components-chromium/iron-test-helpers/mock-interactions.js",
       "//third_party/pywebsocket3/src/mod_pywebsocket/",
-      "//third_party/tlslite/",
       "//tools/metrics/histograms/enums.xml",
       "//ui/webui/resources/html/test_loader.html",
       "//ui/webui/resources/js/",
@@ -9090,7 +9087,6 @@ if (!is_android && !is_fuchsia) {
       "//chrome/test/data/banners/",
       "//net/tools/testserver/",
       "//third_party/pywebsocket3/src/mod_pywebsocket/",
-      "//third_party/tlslite/",
     ]
 
     # TODO(phajdan.jr): Only temporary, to make transition easier.

@@ -10,8 +10,6 @@ It supports several test URLs, as specified by the handlers in TestPageHandler.
 By default, it listens on an ephemeral port and sends the port number back to
 the originating process over a pipe. The originating process can specify an
 explicit port if necessary.
-It can use https if you specify the flag --https=CERT where CERT is the path
-to a pem file containing the certificate and private key that should be used.
 """
 
 from __future__ import print_function
@@ -33,15 +31,11 @@ ROOT_DIR = os.path.dirname(os.path.dirname(os.path.dirname(BASE_DIR)))
 # unconditionally (since they contain modifications from anything that might be
 # obtained from e.g. PyPi).
 sys.path.insert(0, os.path.join(ROOT_DIR, 'third_party', 'pywebsocket3', 'src'))
-sys.path.insert(0, os.path.join(ROOT_DIR, 'third_party', 'tlslite'))
 
 import mod_pywebsocket.standalone
 from mod_pywebsocket.standalone import WebSocketServer
 # import manually
 mod_pywebsocket.standalone.ssl = ssl
-
-import tlslite
-import tlslite.api
 
 import testserver_base
 
@@ -91,64 +85,6 @@ class ThreadingHTTPServer(socketserver.ThreadingMixIn, HTTPServer):
   should only be used with handlers that are known to be threadsafe."""
 
   pass
-
-
-class HTTPSServer(tlslite.api.TLSSocketServerMixIn,
-                  testserver_base.ClientRestrictingServerMixIn,
-                  testserver_base.BrokenPipeHandlerMixIn,
-                  testserver_base.StoppableHTTPServer):
-  """This is a specialization of StoppableHTTPServer that add https support and
-  client verification."""
-
-  def __init__(self, server_address, request_hander_class, pem_cert_and_key,
-               ssl_client_auth, ssl_client_cas):
-    self.cert_chain = tlslite.api.X509CertChain()
-    self.cert_chain.parsePemList(pem_cert_and_key)
-    # Force using only python implementation - otherwise behavior is different
-    # depending on whether m2crypto Python module is present (error is thrown
-    # when it is). m2crypto uses a C (based on OpenSSL) implementation under
-    # the hood.
-    self.private_key = tlslite.api.parsePEMKey(pem_cert_and_key,
-                                               private=True,
-                                               implementations=['python'])
-    self.ssl_client_auth = ssl_client_auth
-    self.ssl_client_cas = []
-
-    if ssl_client_auth:
-      for ca_file in ssl_client_cas:
-        s = open(ca_file).read()
-        x509 = tlslite.api.X509()
-        x509.parse(s)
-        self.ssl_client_cas.append(x509.subject)
-
-    self.ssl_handshake_settings = tlslite.api.HandshakeSettings()
-    # Enable SSLv3 for testing purposes.
-    self.ssl_handshake_settings.minVersion = (3, 0)
-
-    self.session_cache = tlslite.api.SessionCache()
-    testserver_base.StoppableHTTPServer.__init__(self,
-                                                 server_address,
-                                                 request_hander_class)
-
-  def handshake(self, tlsConnection):
-    """Creates the SSL connection."""
-
-    try:
-      self.tlsConnection = tlsConnection
-      tlsConnection.handshakeServer(certChain=self.cert_chain,
-                                    privateKey=self.private_key,
-                                    sessionCache=self.session_cache,
-                                    reqCert=self.ssl_client_auth,
-                                    settings=self.ssl_handshake_settings,
-                                    reqCAs=self.ssl_client_cas)
-      tlsConnection.ignoreAbruptClose = True
-      return True
-    except tlslite.api.TLSAbruptCloseError:
-      # Ignore abrupt close.
-      return True
-    except tlslite.api.TLSError as error:
-      print("Handshake failure:", str(error))
-      return False
 
 
 class TestPageHandler(testserver_base.BasePageHandler):
@@ -372,30 +308,9 @@ class ServerRunner(testserver_base.TestServerRunner):
       dns_sans = [host]
 
     if self.options.server_type == SERVER_HTTP:
-      if self.options.https:
-        if not self.options.cert_and_key_file:
-          raise testserver_base.OptionError('server cert file not specified')
-        if not os.path.isfile(self.options.cert_and_key_file):
-          raise testserver_base.OptionError(
-              'specified server cert file not found: ' +
-              self.options.cert_and_key_file + ' exiting...')
-        pem_cert_and_key = open(self.options.cert_and_key_file, 'r').read()
-
-        for ca_cert in self.options.ssl_client_ca:
-          if not os.path.isfile(ca_cert):
-            raise testserver_base.OptionError(
-                'specified trusted client CA file not found: ' + ca_cert +
-                ' exiting...')
-
-        server = HTTPSServer((host, port), TestPageHandler, pem_cert_and_key,
-                             self.options.ssl_client_auth,
-                             self.options.ssl_client_ca)
-        print('HTTPS server started on https://%s:%d...' %
-              (host, server.server_port))
-      else:
-        server = HTTPServer((host, port), TestPageHandler)
-        print('HTTP server started on http://%s:%d...' %
-              (host, server.server_port))
+      server = HTTPServer((host, port), TestPageHandler)
+      print('HTTP server started on http://%s:%d...' %
+            (host, server.server_port))
 
       server.data_dir = self.__make_data_dir()
       server.file_root_url = self.options.file_root_url
@@ -468,9 +383,6 @@ class ServerRunner(testserver_base.TestServerRunner):
                                   const=SERVER_WEBSOCKET, default=SERVER_HTTP,
                                   dest='server_type',
                                   help='start up a WebSocket server.')
-    self.option_parser.add_option('--https', action='store_true',
-                                  dest='https', help='Specify that https '
-                                  'should be used.')
     self.option_parser.add_option('--cert-and-key-file',
                                   dest='cert_and_key_file', help='specify the '
                                   'path to the file containing the certificate '

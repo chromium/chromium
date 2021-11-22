@@ -40,7 +40,6 @@ class BaseTestServer {
   enum Type {
     TYPE_BASIC_AUTH_PROXY,
     TYPE_HTTP,
-    TYPE_HTTPS,
     TYPE_WS,
     TYPE_WSS,
     TYPE_PROXY,
@@ -167,10 +166,7 @@ class BaseTestServer {
       const std::vector<StringPair>& text_to_replace,
       std::string* replacement_path);
 
-  static bool UsingSSL(Type type) {
-    return type == BaseTestServer::TYPE_HTTPS ||
-           type == BaseTestServer::TYPE_WSS;
-  }
+  static bool UsingSSL(Type type) { return type == BaseTestServer::TYPE_WSS; }
 
   // Enable HTTP basic authentication. Currently this only works for TYPE_WS and
   // TYPE_WSS.

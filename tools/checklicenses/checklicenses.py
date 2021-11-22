@@ -505,9 +505,6 @@ PATH_SPECIFIC_ALLOWLISTED_LICENSES = {
     'third_party/tcmalloc': [
         'UNKNOWN',  # http://crbug.com/98589
     ],
-    'third_party/tlslite': [
-        'UNKNOWN',
-    ],
     # MIT license but some files contain no licensing info. e.g. autogen.sh.
     # Files missing licensing info are not shipped.
     'third_party/wayland': [  #  http://crbug.com/553573

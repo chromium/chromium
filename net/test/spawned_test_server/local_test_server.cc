@@ -174,7 +174,6 @@ absl::optional<std::vector<base::FilePath>> LocalTestServer::GetPythonPath()
   third_party_dir = third_party_dir.AppendASCII("third_party");
 
   std::vector<base::FilePath> ret = {
-      third_party_dir.AppendASCII("tlslite"),
       third_party_dir.AppendASCII("pywebsocket3").AppendASCII("src"),
   };
 
@@ -218,9 +217,6 @@ bool LocalTestServer::AddCommandLineArguments(
   // Append the appropriate server type argument.
   switch (type()) {
     case TYPE_HTTP:  // The default type is HTTP, no argument required.
-      break;
-    case TYPE_HTTPS:
-      command_line->AppendArg("--https");
       break;
     case TYPE_WS:
     case TYPE_WSS:

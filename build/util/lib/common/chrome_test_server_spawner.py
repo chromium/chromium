@@ -38,10 +38,9 @@ _logger = logging.getLogger(__name__)
 
 
 # Path that are needed to import necessary modules when launching a testserver.
-os.environ['PYTHONPATH'] = os.environ.get('PYTHONPATH', '') + (':%s:%s:%s'
-    % (os.path.join(_DIR_SOURCE_ROOT, 'third_party'),
-       os.path.join(_DIR_SOURCE_ROOT, 'third_party', 'tlslite'),
-       os.path.join(_DIR_SOURCE_ROOT, 'net', 'tools', 'testserver')))
+os.environ['PYTHONPATH'] = os.environ.get('PYTHONPATH', '') + (
+    ':%s:%s' % (os.path.join(_DIR_SOURCE_ROOT, 'third_party'),
+                os.path.join(_DIR_SOURCE_ROOT, 'net', 'tools', 'testserver')))
 
 
 def _GetServerTypeCommandLine(server_type):

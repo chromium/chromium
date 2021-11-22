@@ -52,14 +52,13 @@ int main(int argc, const char* argv[]) {
   }
 
   // If populated, EmbeddedTestServer is used instead of the SpawnedTestServer.
-  absl::optional<net::test_server::EmbeddedTestServer::Type>
-      embedded_test_server_type;
+  absl::optional<net::EmbeddedTestServer::Type> embedded_test_server_type;
 
   net::SpawnedTestServer::Type server_type;
   if (command_line->HasSwitch("http")) {
-    embedded_test_server_type = net::test_server::EmbeddedTestServer::TYPE_HTTP;
+    embedded_test_server_type = net::EmbeddedTestServer::TYPE_HTTP;
   } else if (command_line->HasSwitch("https")) {
-    server_type = net::SpawnedTestServer::TYPE_HTTPS;
+    embedded_test_server_type = net::EmbeddedTestServer::TYPE_HTTPS;
   } else if (command_line->HasSwitch("ws")) {
     server_type = net::SpawnedTestServer::TYPE_WS;
   } else if (command_line->HasSwitch("wss")) {
@@ -68,17 +67,19 @@ int main(int argc, const char* argv[]) {
     // If no scheme switch is specified, select http or https scheme.
     // TODO(toyoshim): Remove this estimation.
     if (command_line->HasSwitch("ssl-cert")) {
-      server_type = net::SpawnedTestServer::TYPE_HTTPS;
+      embedded_test_server_type = net::EmbeddedTestServer::TYPE_HTTPS;
     } else {
-      embedded_test_server_type =
-          net::test_server::EmbeddedTestServer::TYPE_HTTP;
+      embedded_test_server_type = net::EmbeddedTestServer::TYPE_HTTP;
     }
   }
 
   net::SpawnedTestServer::SSLOptions ssl_options;
+  net::EmbeddedTestServer::ServerCertificate server_certificate;
   if (command_line->HasSwitch("ssl-cert")) {
-    if (!net::SpawnedTestServer::UsingSSL(server_type) ||
-        embedded_test_server_type.has_value()) {
+    if ((embedded_test_server_type.has_value() &&
+         *embedded_test_server_type != net::EmbeddedTestServer::TYPE_HTTPS) ||
+        (!embedded_test_server_type.has_value() &&
+         !net::SpawnedTestServer::UsingSSL(server_type))) {
       printf("Error: --ssl-cert is specified on non-secure scheme\n");
       PrintUsage();
       return -1;
@@ -87,12 +88,15 @@ int main(int argc, const char* argv[]) {
     if (cert_option == "ok") {
       ssl_options.server_certificate =
           net::SpawnedTestServer::SSLOptions::CERT_OK;
+      server_certificate = net::EmbeddedTestServer::CERT_OK;
     } else if (cert_option == "mismatched-name") {
       ssl_options.server_certificate =
           net::SpawnedTestServer::SSLOptions::CERT_MISMATCHED_NAME;
+      server_certificate = net::EmbeddedTestServer::CERT_MISMATCHED_NAME;
     } else if (cert_option == "expired") {
       ssl_options.server_certificate =
           net::SpawnedTestServer::SSLOptions::CERT_EXPIRED;
+      server_certificate = net::EmbeddedTestServer::CERT_EXPIRED;
     } else {
       printf("Error: --ssl-cert has invalid value %s\n", cert_option.c_str());
       PrintUsage();
@@ -118,8 +122,11 @@ int main(int argc, const char* argv[]) {
 
   // Use EmbeddedTestServer, if it supports the provided configuration.
   if (embedded_test_server_type.has_value()) {
-    net::test_server::EmbeddedTestServer embedded_test_server(
-        *embedded_test_server_type);
+    net::EmbeddedTestServer embedded_test_server(*embedded_test_server_type);
+    if (*embedded_test_server_type == net::EmbeddedTestServer::TYPE_HTTPS) {
+      embedded_test_server.SetSSLConfig(server_certificate);
+    }
+
     embedded_test_server.AddDefaultHandlers(doc_root);
     if (!embedded_test_server.Start()) {
       printf("Error: failed to start embedded test server. Exiting.\n");

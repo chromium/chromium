@@ -37,7 +37,6 @@ namespace {
 std::string GetServerTypeString(BaseTestServer::Type type) {
   switch (type) {
     case BaseTestServer::TYPE_HTTP:
-    case BaseTestServer::TYPE_HTTPS:
       return "http";
     case BaseTestServer::TYPE_WS:
     case BaseTestServer::TYPE_WSS:
