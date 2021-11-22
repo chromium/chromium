@@ -244,11 +244,10 @@ void OfflineInternalsUIMessageHandler::HandleSetRecordPageModel(
 void OfflineInternalsUIMessageHandler::HandleGetNetworkStatus(
     const base::ListValue* args) {
   AllowJavascript();
-  const base::Value* callback_id;
-  CHECK(args->Get(0, &callback_id));
+  const base::Value& callback_id = args->GetList()[0];
 
   ResolveJavascriptCallback(
-      *callback_id,
+      callback_id,
       base::Value(net::NetworkChangeNotifier::IsOffline() ? "Offline"
                                                           : "Online"));
 }
@@ -256,16 +255,15 @@ void OfflineInternalsUIMessageHandler::HandleGetNetworkStatus(
 void OfflineInternalsUIMessageHandler::HandleScheduleNwake(
     const base::ListValue* args) {
   AllowJavascript();
-  const base::Value* callback_id;
-  CHECK(args->Get(0, &callback_id));
+  const base::Value& callback_id = args->GetList()[0];
 
   if (prefetch_service_) {
     prefetch_service_->ForceRefreshSuggestions();
     prefetch_service_->GetPrefetchBackgroundTaskHandler()
         ->EnsureTaskScheduled();
-    ResolveJavascriptCallback(*callback_id, base::Value("Scheduled."));
+    ResolveJavascriptCallback(callback_id, base::Value("Scheduled."));
   } else {
-    RejectJavascriptCallback(*callback_id,
+    RejectJavascriptCallback(callback_id,
                              base::Value("No prefetch service available."));
   }
 }
@@ -273,15 +271,14 @@ void OfflineInternalsUIMessageHandler::HandleScheduleNwake(
 void OfflineInternalsUIMessageHandler::HandleCancelNwake(
     const base::ListValue* args) {
   AllowJavascript();
-  const base::Value* callback_id;
-  CHECK(args->Get(0, &callback_id));
+  const base::Value& callback_id = args->GetList()[0];
 
   if (prefetch_service_) {
     prefetch_service_->GetPrefetchBackgroundTaskHandler()
         ->CancelBackgroundTask();
-    ResolveJavascriptCallback(*callback_id, base::Value("Cancelled."));
+    ResolveJavascriptCallback(callback_id, base::Value("Cancelled."));
   } else {
-    RejectJavascriptCallback(*callback_id,
+    RejectJavascriptCallback(callback_id,
                              base::Value("No prefetch service available."));
   }
 }
@@ -401,15 +398,13 @@ void OfflineInternalsUIMessageHandler::HandleSetLimitlessPrefetchingEnabled(
 void OfflineInternalsUIMessageHandler::HandleGetLimitlessPrefetchingEnabled(
     const base::ListValue* args) {
   AllowJavascript();
-  const base::Value* callback_id;
-  bool got_callback_id = args->Get(0, &callback_id);
-  DCHECK(got_callback_id);
+  const base::Value& callback_id = args->GetList()[0];
 
   PrefService* prefs = Profile::FromWebUI(web_ui())->GetPrefs();
   bool enabled =
       offline_pages::prefetch_prefs::IsLimitlessPrefetchingEnabled(prefs);
 
-  ResolveJavascriptCallback(*callback_id, base::Value(enabled));
+  ResolveJavascriptCallback(callback_id, base::Value(enabled));
 }
 
 void OfflineInternalsUIMessageHandler::HandleSetPrefetchTestingHeader(
@@ -460,8 +455,7 @@ void OfflineInternalsUIMessageHandler::HandleGetPrefetchTestingHeader(
 void OfflineInternalsUIMessageHandler::HandleGetLoggingState(
     const base::ListValue* args) {
   AllowJavascript();
-  const base::Value* callback_id;
-  CHECK(args->Get(0, &callback_id));
+  const base::Value& callback_id = args->GetList()[0];
 
   base::DictionaryValue result;
   result.SetBoolean("modelIsLogging",
@@ -477,14 +471,13 @@ void OfflineInternalsUIMessageHandler::HandleGetLoggingState(
     prefetch_logging = prefetch_service_->GetLogger()->GetIsLogging();
   }
   result.SetBoolean("prefetchIsLogging", prefetch_logging);
-  ResolveJavascriptCallback(*callback_id, result);
+  ResolveJavascriptCallback(callback_id, result);
 }
 
 void OfflineInternalsUIMessageHandler::HandleGetEventLogs(
     const base::ListValue* args) {
   AllowJavascript();
-  const base::Value* callback_id;
-  CHECK(args->Get(0, &callback_id));
+  const base::Value& callback_id = args->GetList()[0];
 
   std::vector<std::string> logs;
   if (offline_page_model_)
@@ -500,7 +493,7 @@ void OfflineInternalsUIMessageHandler::HandleGetEventLogs(
     result.Append(log);
   }
 
-  ResolveJavascriptCallback(*callback_id, result);
+  ResolveJavascriptCallback(callback_id, result);
 }
 
 void OfflineInternalsUIMessageHandler::HandleAddToRequestQueue(
