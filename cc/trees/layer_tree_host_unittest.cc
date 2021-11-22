@@ -275,7 +275,7 @@ class LayerTreeHostTestRequestedMainFrame : public LayerTreeHostTest {
 
   void NextStep() {
     // The MainFrame request is cleared once a MainFrame happens.
-    EXPECT_FALSE(layer_tree_host()->RequestedMainFramePendingForTesting());
+    EXPECT_FALSE(layer_tree_host()->RequestedMainFramePending());
     switch (layer_tree_host()->SourceFrameNumber()) {
       case 0:
         ADD_FAILURE()
@@ -295,7 +295,7 @@ class LayerTreeHostTestRequestedMainFrame : public LayerTreeHostTest {
         return;
     }
     // SetNeeds{Animate,UpdateLayers,Commit}() will mean a MainFrame is pending.
-    EXPECT_TRUE(layer_tree_host()->RequestedMainFramePendingForTesting());
+    EXPECT_TRUE(layer_tree_host()->RequestedMainFramePending());
   }
 };
 
@@ -6079,7 +6079,7 @@ class TestSwapPromise : public SwapPromise {
 
   void set_action(DidNotSwapAction action) { action_ = action; }
 
-  int64_t TraceId() const override { return 0; }
+  int64_t GetTraceId() const override { return 0; }
 
  private:
   // Not owned.

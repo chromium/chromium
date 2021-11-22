@@ -57,7 +57,7 @@ class SimCompositor final {
   // Returns true if a main frame has been requested from blink, until the
   // BeginFrame() step occurs.
   bool NeedsBeginFrame() const {
-    return LayerTreeHost()->RequestedMainFramePendingForTesting();
+    return LayerTreeHost()->RequestedMainFramePending();
   }
   // Returns true if commits are deferred in the compositor. Since these tests
   // use synchronous compositing through BeginFrame(), the deferred state has no

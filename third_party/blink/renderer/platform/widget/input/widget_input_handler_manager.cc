@@ -299,6 +299,27 @@ bool WidgetInputHandlerManager::HandleInputEvent(
   return true;
 }
 
+void WidgetInputHandlerManager::InputEventsDispatched(bool raf_aligned) {
+  DCHECK(main_thread_task_runner_->BelongsToCurrentThread());
+
+  // Immediately after dispatching rAF-aligned events, a frame is still in
+  // progress. There is no need to check and break swap promises here, because
+  // when the frame is finished, they will be broken if there is no update (see
+  // `LayerTreeHostImpl::BeginMainFrameAborted`). Also, unlike non-rAF-aligned
+  // events, checking `RequestedMainFramePending()` would not work here, because
+  // it is reset before dispatching rAF-aligned events.
+  if (raf_aligned)
+    return;
+
+  // If no main frame request is pending after dispatching non-rAF-aligned
+  // events, there will be no updated frame to submit to Viz; so, break
+  // outstanding swap promises here due to no update.
+  if (widget_ && !widget_->LayerTreeHost()->RequestedMainFramePending()) {
+    widget_->LayerTreeHost()->GetSwapPromiseManager()->BreakSwapPromises(
+        cc::SwapPromise::DidNotSwapReason::COMMIT_NO_UPDATE);
+  }
+}
+
 void WidgetInputHandlerManager::SetNeedsMainFrame() {
   widget_->RequestAnimationAfterDelay(base::TimeDelta());
 }
@@ -730,6 +751,7 @@ void WidgetInputHandlerManager::DispatchDirectlyToWidget(
 
   widget_->input_handler().HandleInputEvent(*event, std::move(metrics),
                                             std::move(send_callback));
+  InputEventsDispatched(/*raf_aligned=*/false);
 }
 
 void WidgetInputHandlerManager::FindScrollTargetReply(

@@ -30,7 +30,7 @@ class CC_EXPORT LatencyInfoSwapPromise : public SwapPromise {
   DidNotSwapAction DidNotSwap(DidNotSwapReason reason) override;
   void OnCommit() override;
 
-  int64_t TraceId() const override;
+  int64_t GetTraceId() const override;
 
  private:
   ui::LatencyInfo latency_;

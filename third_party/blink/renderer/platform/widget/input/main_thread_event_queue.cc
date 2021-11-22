@@ -495,6 +495,9 @@ void MainThreadEventQueue::DispatchEvents() {
   }
 
   PossiblyScheduleMainFrame();
+
+  if (client_)
+    client_->InputEventsDispatched(/*raf_aligned=*/false);
 }
 
 static bool IsAsyncTouchMove(
@@ -562,6 +565,9 @@ void MainThreadEventQueue::DispatchRafAlignedInput(base::TimeTicks frame_time) {
   }
 
   PossiblyScheduleMainFrame();
+
+  if (client_)
+    client_->InputEventsDispatched(/*raf_aligned=*/true);
 }
 
 void MainThreadEventQueue::PostTaskToMainThread() {

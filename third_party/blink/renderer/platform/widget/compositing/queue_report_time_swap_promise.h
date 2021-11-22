@@ -35,7 +35,7 @@ class QueueReportTimeSwapPromise : public cc::SwapPromise {
   cc::SwapPromise::DidNotSwapAction DidNotSwap(
       DidNotSwapReason reason) override;
   void DidActivate() override;
-  int64_t TraceId() const override { return 0; }
+  int64_t GetTraceId() const override { return 0; }
 
  private:
   int source_frame_number_;
