@@ -774,6 +774,13 @@ void VaapiVideoDecoder::ApplyResolutionChangeWithScreenSizes(
       {.fourcc = *format_fourcc,
        .size = decoder_pic_size,
        .modifier = gfx::NativePixmapHandle::kNoModifier}};
+#elif BUILDFLAG(IS_CHROMEOS_LACROS)
+  absl::optional<DmabufVideoFramePool::CreateFrameCB> allocator = absl::nullopt;
+
+  std::vector<ImageProcessor::PixelLayoutCandidate> candidates = {
+      {.fourcc = *format_fourcc,
+       .size = decoder_pic_size,
+       .modifier = gfx::NativePixmapHandle::kNoModifier}};
 #else
   absl::optional<DmabufVideoFramePool::CreateFrameCB> allocator = absl::nullopt;
 

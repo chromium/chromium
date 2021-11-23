@@ -644,16 +644,30 @@ VideoDecoderPipeline::PickDecoderOutputFormat(
     }
   }
 
-  if (allocator.has_value() && main_frame_pool_->AsPlatformVideoFramePool()) {
-    // The only client likely to be sending a non-nullopt allocator is linux,
-    // which is always using a PlatformVideoFramePool.
-    main_frame_pool_->AsPlatformVideoFramePool()->SetCustomFrameAllocator(
-        *allocator);
-  }
-
 #if defined(OS_LINUX)
+  // Linux should always use a custom allocator (to allocate buffers using
+  // libva) and a PlatformVideoFramePool.
+  CHECK(allocator.has_value());
+  CHECK(main_frame_pool_->AsPlatformVideoFramePool());
+  main_frame_pool_->AsPlatformVideoFramePool()->SetCustomFrameAllocator(
+      *allocator);
+#elif BUILDFLAG(IS_CHROMEOS_LACROS)
+  // Lacros should always use a PlatformVideoFramePool (because it doesn't need
+  // to handle ARC++/ARCVM requests) with no custom allocator (because buffers
+  // are allocated with minigbm).
+  CHECK(!allocator.has_value());
+  CHECK(main_frame_pool_->AsPlatformVideoFramePool());
+#elif BUILDFLAG(IS_CHROMEOS_ASH)
+  // Ash Chrome can use any type of frame pool (because it may get requests from
+  // ARC++/ARCVM) but never a custom allocator.
+  CHECK(!allocator.has_value());
+#else
+#error "Unsupported platform"
+#endif
+
+#if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
   // viable_candidate should always be set unless using L1 protected content,
-  // which isn't an option on linux.
+  // which isn't an option on linux or lacros.
   CHECK(viable_candidate);
 #endif
 
@@ -666,8 +680,9 @@ VideoDecoderPipeline::PickDecoderOutputFormat(
     if (status_or_layout.has_error())
       return std::move(status_or_layout).error();
 
-#if BUILDFLAG(USE_VAAPI) && !defined(OS_LINUX)
-    // Linux does not check the modifiers, since it does not set any.
+#if BUILDFLAG(USE_VAAPI) && BUILDFLAG(IS_CHROMEOS_ASH)
+    // Linux and Lacros do not check the modifiers,
+    // since they do not set any.
     const GpuBufferLayout layout(std::move(status_or_layout).value());
     if (layout.modifier() == viable_candidate->modifier) {
       return *viable_candidate;
@@ -684,7 +699,7 @@ VideoDecoderPipeline::PickDecoderOutputFormat(
     }
 #else
     return *viable_candidate;
-#endif  // BUILDFLAG(USE_VAAPI) && !defined(OS_LINUX)
+#endif  // BUILDFLAG(USE_VAAPI) && BUILDFLAG(IS_CHROMEOS_ASH)
   }
 
   std::unique_ptr<ImageProcessor> image_processor;
