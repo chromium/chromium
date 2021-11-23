@@ -209,13 +209,11 @@ bool IsWebViewContainingElement(web::WebState* web_state,
   std::string script = base::SysNSStringToUTF8(
       [NSString stringWithFormat:@"!!(%@)", selector.selectorScript]);
 
-  bool did_succeed = false;
   std::unique_ptr<base::Value> value =
       web::test::ExecuteJavaScript(web_state, script);
-  if (value) {
-    value->GetAsBoolean(&did_succeed);
-  }
-  return did_succeed;
+  if (!value)
+    return false;
+  return value->GetIfBool().value_or(false);
 }
 
 bool WaitForWebViewContainingElement(web::WebState* web_state,
