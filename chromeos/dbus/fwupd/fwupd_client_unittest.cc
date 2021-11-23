@@ -5,6 +5,7 @@
 #include "chromeos/dbus/fwupd/fwupd_client.h"
 
 #include "ash/constants/ash_features.h"
+#include "base/files/scoped_file.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -51,6 +52,7 @@ class MockObserver : public chromeos::FwupdClient::Observer {
               (const std::string& device_id,
                chromeos::FwupdUpdateList* updates),
               (override));
+  MOCK_METHOD(void, OnInstallResponse, (bool success), (override));
 };
 
 }  // namespace
@@ -119,6 +121,10 @@ class FwupdClientTest : public testing::Test {
              (*updates)[0].priority);
   }
 
+  void CheckInstallState(bool success) { CHECK_EQ(install_success_, success); }
+
+  void SetInstallState(bool success) { install_success_ = success; }
+
   void AddDbusMethodCallResultSimulation(
       std::unique_ptr<dbus::Response> response,
       std::unique_ptr<dbus::ErrorResponse> error_response) {
@@ -170,6 +176,8 @@ class FwupdClientTest : public testing::Test {
   using MethodCallResult = std::pair<std::unique_ptr<dbus::Response>,
                                      std::unique_ptr<dbus::ErrorResponse>>;
   std::deque<MethodCallResult> dbus_method_call_simulated_results_;
+
+  bool install_success_ = false;
 };
 
 // TODO (swifton): Rewrite this test with an observer when it's available.
@@ -268,6 +276,36 @@ TEST_F(FwupdClientTest, RequestUpgrades) {
   AddDbusMethodCallResultSimulation(std::move(response), nullptr);
 
   fwupd_client_->RequestUpdates(kFakeDeviceIdForTesting);
+
+  base::RunLoop().RunUntilIdle();
+}
+
+TEST_F(FwupdClientTest, Install) {
+  // The observer will check that the update description is parsed and passed
+  // correctly.
+  MockObserver observer;
+  EXPECT_CALL(observer, OnInstallResponse(_))
+      .Times(1)
+      .WillRepeatedly(Invoke(this, &FwupdClientTest::CheckInstallState));
+  fwupd_client_->AddObserver(&observer);
+
+  EXPECT_CALL(*proxy_, DoCallMethodWithErrorResponse(_, _, _))
+      .WillRepeatedly(Invoke(this, &FwupdClientTest::OnMethodCalled));
+
+  auto response = dbus::Response::CreateEmpty();
+
+  dbus::MessageWriter response_writer(response.get());
+
+  // The response is an boolean for whether the install request was successful
+  // or not.
+  const bool install_success = true;
+  SetInstallState(install_success);
+  response_writer.AppendBool(install_success);
+
+  AddDbusMethodCallResultSimulation(std::move(response), nullptr);
+
+  fwupd_client_->InstallUpdate(kFakeDeviceIdForTesting, base::ScopedFD(0),
+                               std::map<std::string, bool>());
 
   base::RunLoop().RunUntilIdle();
 }

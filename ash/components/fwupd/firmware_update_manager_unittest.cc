@@ -5,7 +5,9 @@
 #include "ash/components/fwupd/firmware_update_manager.h"
 
 #include <deque>
+#include <map>
 #include <memory>
+#include <string>
 
 #include "ash/constants/ash_features.h"
 #include "base/test/scoped_feature_list.h"
@@ -89,6 +91,11 @@ class FirmwareUpdateManagerTest : public testing::Test {
   }
 
  protected:
+  void InstallUpdate(base::ScopedFD fd, std::map<std::string, bool> options) {
+    firmware_update_manager_->InstallUpdate(
+        kFakeDeviceIdForTesting, std::move(fd), std::map<std::string, bool>());
+  }
+
   std::unique_ptr<dbus::Response> CreateEmptyDeviceResponse() {
     auto response = dbus::Response::CreateEmpty();
 
@@ -235,6 +242,18 @@ class FirmwareUpdateManagerTest : public testing::Test {
     return response;
   }
 
+  std::unique_ptr<dbus::Response> CreateBoolResponse(bool success) {
+    auto response = dbus::Response::CreateEmpty();
+    dbus::MessageWriter response_writer(response.get());
+    response_writer.AppendBool(success);
+    return response;
+  }
+
+  int GetOnInstallResponseCallbackCallCountForTesting() {
+    return firmware_update_manager_
+        ->on_install_update_response_count_for_testing_;
+  }
+
   // `FwupdClient` must be be before `FirmwareUpdateManager`.
   std::unique_ptr<FwupdClient> dbus_client_;
   std::unique_ptr<FirmwareUpdateManager> firmware_update_manager_;
@@ -322,6 +341,20 @@ TEST_F(FirmwareUpdateManagerTest, RequestAllUpdatesTwoDeviceOneWithUpdate) {
   EXPECT_EQ(kFakeUpdateVersionForTesting, updates[0].version);
   EXPECT_EQ(kFakeUpdateDescriptionForTesting, updates[0].description);
   EXPECT_EQ(kFakeUpdatePriorityForTesting, updates[0].priority);
+}
+
+// TODO(jimmyxgong): Rewrite this test with an observer.
+TEST_F(FirmwareUpdateManagerTest, RequestUpdateList) {
+  EXPECT_CALL(*proxy_, DoCallMethodWithErrorResponse(_, _, _))
+      .WillRepeatedly(Invoke(this, &FirmwareUpdateManagerTest::OnMethodCalled));
+
+  dbus_responses_.push_back(CreateBoolResponse(/**install_success=*/true));
+
+  EXPECT_EQ(0, GetOnInstallResponseCallbackCallCountForTesting());
+  InstallUpdate(base::ScopedFD(0), std::map<std::string, bool>());
+
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(1, GetOnInstallResponseCallbackCallCountForTesting());
 }
 
 }  // namespace ash

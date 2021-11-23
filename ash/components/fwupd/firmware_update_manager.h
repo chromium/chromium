@@ -9,6 +9,7 @@
 
 #include "base/component_export.h"
 #include "base/containers/flat_map.h"
+#include "base/files/scoped_file.h"
 #include "chromeos/dbus/fwupd/fwupd_client.h"
 #include "chromeos/dbus/fwupd/fwupd_device.h"
 #include "chromeos/dbus/fwupd/fwupd_update.h"
@@ -49,6 +50,7 @@ class COMPONENT_EXPORT(ASH_FIRMWARE_UPDATE_MANAGER) FirmwareUpdateManager
   // it calls this function and passes the response.
   void OnUpdateListResponse(const std::string& device_id,
                             chromeos::FwupdUpdateList* updates) override;
+  void OnInstallResponse(bool success) override;
 
   // Query all updates for all devices.
   void RequestAllUpdates();
@@ -58,11 +60,17 @@ class COMPONENT_EXPORT(ASH_FIRMWARE_UPDATE_MANAGER) FirmwareUpdateManager
   const std::vector<FirmwareUpdate>& GetCachedUpdatesForTesting();
 
  private:
+  friend class FirmwareUpdateManagerTest;
   // Query the fwupd DBus client for currently connected devices.
   void RequestDevices();
 
   // Query the fwupd DBus client for updates for a certain device.
   void RequestUpdates(const std::string& device_id);
+
+  // Query the fwupd DBus client to install an update for a certain device.
+  void InstallUpdate(const std::string& device_id,
+                     base::ScopedFD file_descriptor,
+                     chromeos::FirmwareInstallOptions options);
 
   // Map of a device ID to `FwupdDevice` which is waiting for the list
   // of updates.
@@ -71,6 +79,14 @@ class COMPONENT_EXPORT(ASH_FIRMWARE_UPDATE_MANAGER) FirmwareUpdateManager
   // List of all available updates. If `devices_pending_update_` is not
   // empty then this list is not yet complete.
   std::vector<FirmwareUpdate> updates_;
+
+ protected:
+  friend class FirmwareUpdateManagerTest;
+  // Temporary auxiliary variables for testing.
+  // TODO(swifton): Replace with mock observers.
+  int on_device_list_response_count_for_testing_ = 0;
+  int on_update_list_response_count_for_testing_ = 0;
+  int on_install_update_response_count_for_testing_ = 0;
 };
 }  // namespace ash
 

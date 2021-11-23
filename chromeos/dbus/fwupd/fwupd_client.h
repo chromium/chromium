@@ -5,16 +5,20 @@
 #ifndef CHROMEOS_DBUS_FWUPD_FWUPD_CLIENT_H_
 #define CHROMEOS_DBUS_FWUPD_FWUPD_CLIENT_H_
 
+#include <map>
 #include <memory>
 #include <string>
 
 #include "base/component_export.h"
+#include "base/files/scoped_file.h"
 #include "base/observer_list.h"
 #include "chromeos/dbus/dbus_client.h"
 #include "chromeos/dbus/fwupd/fwupd_device.h"
 #include "chromeos/dbus/fwupd/fwupd_update.h"
 
 namespace chromeos {
+using FirmwareInstallOptions = std::map<std::string, bool>;
+
 // FwupdClient is used for handling signals from the fwupd daemon.
 class COMPONENT_EXPORT(CHROMEOS_DBUS_FWUPD) FwupdClient : public DBusClient {
  public:
@@ -24,6 +28,7 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS_FWUPD) FwupdClient : public DBusClient {
     virtual void OnDeviceListResponse(FwupdDeviceList* devices) = 0;
     virtual void OnUpdateListResponse(const std::string& device_id,
                                       FwupdUpdateList* updates) = 0;
+    virtual void OnInstallResponse(bool success) = 0;
   };
 
   void AddObserver(Observer* observer);
@@ -49,6 +54,10 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS_FWUPD) FwupdClient : public DBusClient {
 
   // Query fwupd for devices that are currently connected.
   virtual void RequestDevices() = 0;
+
+  virtual void InstallUpdate(const std::string& device_id,
+                             base::ScopedFD file_descriptor,
+                             FirmwareInstallOptions options) = 0;
 
  protected:
   friend class FwupdClientTest;

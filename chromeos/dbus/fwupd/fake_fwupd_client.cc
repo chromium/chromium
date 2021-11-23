@@ -40,4 +40,16 @@ void FakeFwupdClient::RequestUpdates(const std::string& device_id) {
     observer.OnUpdateListResponse(device_id, &updates);
 }
 
+void FakeFwupdClient::InstallUpdate(const std::string& device_id,
+                                    base::ScopedFD file_descriptor,
+                                    FirmwareInstallOptions options) {
+  // This matches the behavior of the real class. I.e. if you send an unknown
+  // id, nothing happens.
+  if (device_id != kFakeDeviceIdForTesting)
+    return;
+
+  for (auto& observer : observers_)
+    observer.OnInstallResponse(install_success_);
+}
+
 }  // namespace chromeos

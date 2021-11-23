@@ -25,6 +25,7 @@ const char kFwupdServiceInterface[] = "org.freedesktop.fwupd";
 const char kFwupdDeviceAddedSignalName[] = "DeviceAdded";
 const char kFwupdGetUpgradesMethodName[] = "GetUpgrades";
 const char kFwupdGetDevicesMethodName[] = "GetDevices";
+const char kFwupdInstallMethodName[] = "Install";
 
 }  // namespace
 
@@ -71,6 +72,34 @@ class FwupdClientImpl : public FwupdClient {
     proxy_->CallMethodWithErrorResponse(
         &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
         base::BindOnce(&FwupdClientImpl::RequestDevicesCallback,
+                       weak_ptr_factory_.GetWeakPtr()));
+  }
+
+  void InstallUpdate(const std::string& device_id,
+                     base::ScopedFD file_descriptor,
+                     FirmwareInstallOptions options) override {
+    dbus::MethodCall method_call(kFwupdServiceInterface,
+                                 kFwupdInstallMethodName);
+    dbus::MessageWriter writer(&method_call);
+
+    writer.AppendString(device_id);
+    writer.AppendFileDescriptor(file_descriptor.get());
+
+    // Write the options in form of "a{sv}".
+    dbus::MessageWriter array_writer(nullptr);
+    writer.OpenArray("{sv}", &array_writer);
+    for (const auto& option : options) {
+      dbus::MessageWriter dict_entry_writer(nullptr);
+      array_writer.OpenDictEntry(&dict_entry_writer);
+      dict_entry_writer.AppendString(option.first);
+      dict_entry_writer.AppendVariantOfBool(option.second);
+      array_writer.CloseContainer(&dict_entry_writer);
+    }
+    writer.CloseContainer(&array_writer);
+
+    proxy_->CallMethodWithErrorResponse(
+        &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
+        base::BindOnce(&FwupdClientImpl::InstallUpdateCallback,
                        weak_ptr_factory_.GetWeakPtr()));
   }
 
@@ -207,6 +236,24 @@ class FwupdClientImpl : public FwupdClient {
 
     for (auto& observer : observers_)
       observer.OnDeviceListResponse(&devices);
+  }
+
+  void InstallUpdateCallback(dbus::Response* response,
+                             dbus::ErrorResponse* error_response) {
+    if (!response) {
+      LOG(ERROR) << "No Dbus response received from fwupd.";
+      return;
+    }
+
+    bool success;
+    dbus::MessageReader reader(response);
+    if (!reader.PopBool(&success)) {
+      LOG(ERROR) << "Failed to parse bool from DBus Signal";
+      return;
+    }
+
+    for (auto& observer : observers_)
+      observer.OnInstallResponse(success);
   }
 
   void OnSignalConnected(const std::string& interface_name,

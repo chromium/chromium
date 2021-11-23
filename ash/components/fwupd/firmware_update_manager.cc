@@ -4,8 +4,11 @@
 
 #include "ash/components/fwupd/firmware_update_manager.h"
 
+#include <utility>
+
 #include "base/check_op.h"
 #include "base/containers/contains.h"
+#include "base/files/scoped_file.h"
 #include "chromeos/dbus/fwupd/fwupd_client.h"
 #include "dbus/message.h"
 
@@ -59,6 +62,14 @@ void FirmwareUpdateManager::RequestUpdates(const std::string& device_id) {
   chromeos::FwupdClient::Get()->RequestUpdates(device_id);
 }
 
+void FirmwareUpdateManager::InstallUpdate(
+    const std::string& device_id,
+    base::ScopedFD file_descriptor,
+    chromeos::FirmwareInstallOptions options) {
+  chromeos::FwupdClient::Get()->InstallUpdate(
+      device_id, std::move(file_descriptor), options);
+}
+
 void FirmwareUpdateManager::OnDeviceListResponse(
     chromeos::FwupdDeviceList* devices) {
   DCHECK(devices);
@@ -103,6 +114,10 @@ const std::vector<FirmwareUpdateManager::FirmwareUpdate>&
 FirmwareUpdateManager::GetCachedUpdatesForTesting() {
   DCHECK(devices_pending_update_.empty());
   return updates_;
+}
+
+void FirmwareUpdateManager::OnInstallResponse(bool success) {
+  ++on_install_update_response_count_for_testing_;
 }
 
 }  // namespace ash
