@@ -250,7 +250,7 @@ def write_annotations_tsv_file(file_path: Path, annotations: List["Annotation"],
   lines = []
   title = "Unique ID\tLast Update\tSender\tDescription\tTrigger\tData\t" + \
   "Destination\tCookies Allowed\tCookies Store\tSetting\tChrome Policy\t" + \
-  "Comments\tSource File\tID Hash Code\tContent Hash Code"
+  "Comments\tSource File"
 
   column_count = title.count("\t")
   for missing_id in missing_ids:
@@ -315,10 +315,6 @@ def write_annotations_tsv_file(file_path: Path, annotations: List["Annotation"],
     source = annotation.proto.source
     code_search_link = "https://cs.chromium.org/chromium/src/"
     line += "\t{}{}?l={}".format(code_search_link, source.file, source.line)
-    # ID Hash code.
-    line += "\t{}".format(annotation.unique_id_hash_code)
-    # Content Hash code.
-    line += "\t{}".format(annotation.get_content_hash_code())
     lines.append(line)
 
   lines.sort()
@@ -353,8 +349,6 @@ class AuditorError:
     NO_ANNOTATION = auto()
     # An id has a hash code equal to a reserved word.
     RESERVED_ID_HASH_CODE = auto()
-    # An id has a hash code equal to a deprecated one.
-    DEPRECATED_ID_HASH_CODE = auto()
     # An id contains an invalid character (not alphanumeric or underscore).
     ID_INVALID_CHARACTER = auto()
     # An id is used in two places without matching conditions. Proper conditions
@@ -365,8 +359,6 @@ class AuditorError:
     MISSING_SECOND_ID = auto()
     # Two ids have equal hash codes.
     HASH_CODE_COLLISION = auto()
-    # Marked deprecated, but "os_list" is non-empty in annotations.xml.
-    DEPRECATED_WITH_OS = auto()
     # "os_list" is invalid in annotations.xml.
     INVALID_OS = auto()
     # "added_in_milestone" is invalid in annotations.xml.
@@ -453,12 +445,6 @@ class AuditorError:
               "to a reserved word and should be changed.".format(
                   self._details[0], self.file_path, self.line))
 
-    if self.type == AuditorError.Type.DEPRECATED_ID_HASH_CODE:
-      assert self._details
-      return ("DEPRECATED_ID_HASH_CODE: Id '{}' in '{}:{}' has a hash code "
-              "equal to a deprecated id and should be changed.".format(
-                  self._details[0], self.file_path, self.line))
-
     if self.type == AuditorError.Type.HASH_CODE_COLLISION:
       assert len(self._details) == 2
       return ("HASH_CODE_COLLISION: The following annotations have colliding "
@@ -485,12 +471,6 @@ class AuditorError:
       assert len(self._details) == 2
       return ("INVALID_OS: Invalid OS '{}' in annotation '{}' at {}.".format(
           self._details[0], self._details[1], self.file_path))
-
-    if self.type == AuditorError.Type.DEPRECATED_WITH_OS:
-      assert self._details
-      return ("DEPRECATED_WITH_OS: Annotation '{}' has a deprecation date and "
-              "at least one active OS at {}.".format(self._details[0],
-                                                     self.file_path))
 
     if self.type == AuditorError.Type.INVALID_ADDED_IN:
       assert len(self._details) == 2
@@ -555,40 +535,16 @@ class Annotation:
   """
 
   class Type(Enum):
-    COMPLETE = (0, "Definition")
-    PARTIAL = (1, "Partial")
-    COMPLETING = (2, "Completing")
-    BRANCHED_COMPLETING = (3, "BranchedCompleting")
-
-    def __str__(self):
-      return self.value[1]
-
-    @classmethod
-    def from_int(cls, n: int) -> "Annotation.Type":
-      for t in Annotation.Type:
-        if t.value[0] == n:
-          return t
-      raise ValueError("{} is not a valid Annotation.Type".format(n))
-
-    @classmethod
-    def from_string(cls, name: str) -> "Annotation.Type":
-      for t in Annotation.Type:
-        if t.value[1] == name:
-          return t
-      raise ValueError("'{}' is not a valid Annotation.Type".format(name))
+    COMPLETE = "definition"
+    PARTIAL = "partial"
+    COMPLETING = "completing"
+    BRANCHED_COMPLETING = "branchedcompleting"
 
   def __init__(self):
     self.type = Annotation.Type.COMPLETING
     self.proto = traffic_annotation_pb2.NetworkTrafficAnnotation()
 
-    # TODO(nicolaso): Remove hash_code="" from annotations.xml, and instead
-    # compute its value from unique_id.
-
     self.second_id: UniqueId = ""
-    self.second_id_hash_code: HashCode = -1
-    # TODO(nicolaso): Store the second_id instead of its hashcode in
-    # annotations.xml. Then, make second_id_hash_code a computed property like
-    # unique_id_hash_code.
 
     # TODO(nicolaso): Remove file and line from the proto in
     # traffic_annotation.proto.
@@ -615,15 +571,16 @@ class Annotation:
   def unique_id_hash_code(self) -> HashCode:
     return compute_hash_value(self.unique_id)
 
-  def get_ids(self) -> List[Tuple[UniqueId, HashCode]]:
-    """Returns the ids/hashcodes used by this annotation (up to 2 tuples)."""
+  @property
+  def second_id_hash_code(self) -> HashCode:
+    return compute_hash_value(self.second_id)
+
+  def get_ids(self) -> List[UniqueId]:
+    """Returns the ids used by this annotation (up to 2 strings)."""
     if self.needs_two_ids():
-      return [
-          (self.unique_id, self.unique_id_hash_code),
-          (self.second_id, self.second_id_hash_code),
-      ]
+      return [self.unique_id, self.second_id]
     else:
-      return [(self.unique_id, self.unique_id_hash_code)]
+      return [self.unique_id]
 
   @classmethod
   def load_from_archive(cls, archived: "ArchivedAnnotation") -> "Annotation":
@@ -637,11 +594,7 @@ class Annotation:
     annotation.archived_added_in_milestone = archived.added_in_milestone
 
     if annotation.needs_two_ids():
-      # We don't have the actual second id, so write a generated value to make
-      # it non-empty. This is only relevant in tests.
-      annotation.second_id = UniqueId("ARCHIVED_ID_{}".format(
-          annotation.second_id))
-      annotation.second_id_hash_code = archived.second_id
+      annotation.second_id = archived.second_id
 
     fill_proto_with_bogus(annotation.proto.semantics, archived.semantics_fields)
 
@@ -688,7 +641,6 @@ class Annotation:
     combination.is_merged = True
     combination.type = Annotation.Type.COMPLETE
     combination.second_id = UniqueId("")
-    combination.second_id_hash_code = HashCode(-1)
 
     # Update comment.
     merge_string_field(other.proto, combination.proto, "comments")
@@ -755,9 +707,9 @@ class Annotation:
     if self.type != Annotation.Type.PARTIAL or not self.second_id:
       return False
     if other.type == Annotation.Type.COMPLETING:
-      return self.second_id_hash_code == other.unique_id_hash_code
+      return self.second_id == other.unique_id
     if other.type == Annotation.Type.BRANCHED_COMPLETING:
-      return self.second_id_hash_code == other.second_id_hash_code
+      return self.second_id == other.second_id
     return False
 
   def get_semantics_field_numbers(self) -> List[int]:
@@ -816,11 +768,9 @@ class Annotation:
                        line_number)
       ]
 
-    self.type = Annotation.Type.from_string(
-        serialized_annotation.type_name.value)
+    self.type = Annotation.Type(serialized_annotation.type_name.value.lower())
     self.unique_id = serialized_annotation.unique_id
     self.second_id = serialized_annotation.extra_id
-    self.second_id_hash_code = compute_hash_value(self.second_id)
 
     # Check for reserved IDs first, before trying to parse the Proto.
     if self.unique_id in TEST_IDS:
@@ -1024,14 +974,10 @@ class IdChecker:
 
   Attributes:
     reserved_ids: List of IDs that shouldn't be used in code (e.g. test,
-        missing, no_traffic_annotation_yet ids).
-    deprecated_ids: List of IDs that were used in code before, but shouldn't be
-        anymore."""
+        missing, no_traffic_annotation_yet ids)."""
 
-  def __init__(self, reserved_ids: List[UniqueId],
-               deprecated_ids: List[UniqueId]):
+  def __init__(self, reserved_ids: List[UniqueId]):
     self.reserved_ids = reserved_ids
-    self.deprecated_ids = deprecated_ids
 
     self._annotations: Set[Annotation] = set()
 
@@ -1045,9 +991,6 @@ class IdChecker:
     errors.extend(
         self._check_for_invalid_values(self.reserved_ids,
                                        AuditorError.Type.RESERVED_ID_HASH_CODE))
-    errors.extend(
-        self._check_for_invalid_values(
-            self.deprecated_ids, AuditorError.Type.DEPRECATED_ID_HASH_CODE))
     errors.extend(self._check_for_hash_collisions())
     errors.extend(self._check_for_invalid_repeated_ids())
 
@@ -1058,7 +1001,7 @@ class IdChecker:
     errors = []
 
     for annotation in self._annotations:
-      for id, hash_code in annotation.get_ids():
+      for id in annotation.get_ids():
         if not re.match(r"^[0-9a-zA-Z_]*$", id):
           errors.append(
               AuditorError(AuditorError.Type.ID_INVALID_CHARACTER, id,
@@ -1071,9 +1014,9 @@ class IdChecker:
     errors = []
 
     for annotation in self._annotations:
-      if (annotation.needs_two_ids() and
-          (not annotation.second_id or
-           annotation.second_id_hash_code == annotation.unique_id_hash_code)):
+      if (annotation.needs_two_ids()
+          and (not annotation.second_id
+               or annotation.second_id == annotation.unique_id)):
         errors.append(
             AuditorError(AuditorError.Type.MISSING_SECOND_ID, "",
                          annotation.file, annotation.line))
@@ -1089,7 +1032,7 @@ class IdChecker:
     errors = []
 
     for annotation in self._annotations:
-      for id, hash_code in annotation.get_ids():
+      for id in annotation.get_ids():
         if id in invalid_ids:
           errors.append(
               AuditorError(error_type, id, annotation.file, annotation.line))
@@ -1102,21 +1045,14 @@ class IdChecker:
     collisions: Dict[HashCode, UniqueId] = {}
 
     for annotation in self._annotations:
-      for id, hash_code in annotation.get_ids():
+      for id in annotation.get_ids():
+        hash_code = compute_hash_value(id)
         if hash_code not in collisions:
-          # If item is loaded from archive, do not keep the second ID for
-          # checks. The archive only keeps the hash code, not the second ID
-          # itself.
-          if (not annotation.is_loaded_from_archive
-              or id == annotation.unique_id):
-            collisions[hash_code] = id
-        else:
-          if annotation.is_loaded_from_archive and id == annotation.second_id:
-            continue
-          if id != collisions[hash_code]:
-            errors.append(
-                AuditorError(AuditorError.Type.HASH_CODE_COLLISION, id, None, 0,
-                             collisions[hash_code]))
+          collisions[hash_code] = id
+        elif id != collisions[hash_code]:
+          errors.append(
+              AuditorError(AuditorError.Type.HASH_CODE_COLLISION, id, None, 0,
+                           collisions[hash_code]))
 
     return errors
 
@@ -1124,26 +1060,25 @@ class IdChecker:
     """Check that there are no invalid repeated ids."""
     errors = []
 
-    first_ids: Dict[HashCode, Annotation] = {}
-    second_ids: Dict[HashCode, Annotation] = {}
+    first_ids: Dict[UniqueId, Annotation] = {}
+    second_ids: Dict[UniqueId, Annotation] = {}
 
     # Check if first ids are unique.
     for annotation in self._annotations:
-      if annotation.unique_id_hash_code not in first_ids:
-        first_ids[annotation.unique_id_hash_code] = annotation
+      if annotation.unique_id not in first_ids:
+        first_ids[annotation.unique_id] = annotation
       else:
         errors.append(
             IdChecker._create_repeated_id_error(
                 annotation.unique_id, annotation,
-                first_ids[annotation.unique_id_hash_code]))
+                first_ids[annotation.unique_id]))
 
     # If a second id is equal to a first id, the second id should be PARTIAL and
     # the first id should be COMPLETING.
     for annotation in self._annotations:
-      if (annotation.needs_two_ids()
-          and annotation.second_id_hash_code in first_ids):
+      if annotation.needs_two_ids() and annotation.second_id in first_ids:
         partial = annotation
-        completing: Annotation = first_ids[partial.second_id_hash_code]
+        completing: Annotation = first_ids[partial.second_id]
         if (completing != partial
             and (partial.type != Annotation.Type.PARTIAL
                  or completing.type != Annotation.Type.COMPLETING)):
@@ -1156,10 +1091,10 @@ class IdChecker:
     for annotation in self._annotations:
       if not annotation.needs_two_ids():
         continue
-      if annotation.second_id_hash_code not in second_ids:
-        second_ids[annotation.second_id_hash_code] = annotation
+      if annotation.second_id not in second_ids:
+        second_ids[annotation.second_id] = annotation
       else:
-        other = second_ids[annotation.second_id_hash_code]
+        other = second_ids[annotation.second_id]
         allowed_types = [
             Annotation.Type.PARTIAL, Annotation.Type.BRANCHED_COMPLETING
         ]
@@ -1191,36 +1126,30 @@ class ArchivedAnnotation:
   # Make sure the names and order are exactly the same as the attributes in
   # the XML. This is used to serialize/deserialize the XML.
   FIELDS = [
-      "id", "added_in_milestone", "hash_code", "type", "second_id",
-      "deprecated", "reserved", "content_hash_code", "os_list",
-      "semantics_fields", "policy_fields", "file_path"
+      "id", "added_in_milestone", "type", "second_id", "reserved",
+      "content_hash_code", "os_list", "semantics_fields", "policy_fields",
+      "file_path"
   ]
 
   # Throw an error in Exporter if any of these fields is missing.
-  REQUIRED_FIELDS = [
-      "id", "hash_code", "type", "file_path", "added_in_milestone"
-  ]
+  REQUIRED_FIELDS = ["id", "file_path", "added_in_milestone"]
 
   def __init__(self,
                id: UniqueId,
-               hash_code: HashCode,
                type: Annotation.Type,
                file_path: Union[Path, str, None],
                added_in_milestone: int,
-               second_id: HashCode = HashCode(-1),
-               deprecated: str = "",
+               second_id: UniqueId = UniqueId(""),
                reserved: bool = False,
                content_hash_code: HashCode = HashCode(-1),
                os_list: Optional[List[str]] = None,
                semantics_fields: Optional[List[int]] = None,
                policy_fields: Optional[List[int]] = None):
     self.id = id
-    self.hash_code = hash_code
     self.type = type
     self.file_path = Path(file_path) if file_path else None
     self.added_in_milestone = added_in_milestone
     self.second_id = second_id
-    self.deprecated = deprecated
     self.reserved = reserved
     self.content_hash_code = content_hash_code
     if os_list is None:
@@ -1232,6 +1161,10 @@ class ArchivedAnnotation:
     if policy_fields is None:
       policy_fields = []
     self.policy_fields = policy_fields
+
+  @property
+  def hash_code(self) -> HashCode:
+    return compute_hash_value(self.id)
 
   def __str__(self):
     return "ArchivedAnnotation({})".format(",".join(
@@ -1303,14 +1236,12 @@ class Exporter:
             field, xml.etree.ElementTree.tostring(item, "unicode")))
 
       # Perform some type conversions.
-      int_fields = [
-          "hash_code", "second_id", "content_hash_code", "added_in_milestone"
-      ]
-      for field in int_fields:
-        if field in kwargs:
-          kwargs[field] = int(kwargs[field])
+      kwargs["added_in_milestone"] = int(kwargs["added_in_milestone"])
 
-      kwargs["type"] = Annotation.Type.from_int(int(kwargs["type"]))
+      kwargs["type"] = Annotation.Type(kwargs.get("type", "definition"))
+
+      if "content_hash_code" in kwargs:
+        kwargs["content_hash_code"] = int(kwargs["content_hash_code"], 16)
 
       if "os_list" in kwargs:
         kwargs["os_list"] = kwargs["os_list"].split(",")
@@ -1348,7 +1279,7 @@ class Exporter:
       # fields have changed.
       if annotation.unique_id in self.archive:
         archived = self.archive[annotation.unique_id]
-        archived.second_id = annotation.second_id_hash_code
+        archived.second_id = annotation.second_id
         archived.file_path = annotation.file
         if not self.matches_current_platform(archived):
           archived.os_list.append(self._current_platform)
@@ -1360,13 +1291,12 @@ class Exporter:
         new_item = ArchivedAnnotation(
             type=annotation.type,
             id=annotation.unique_id,
-            hash_code=annotation.unique_id_hash_code,
             content_hash_code=annotation.get_content_hash_code(),
             os_list=default_os_list,
             added_in_milestone=self._current_milestone,
             file_path=annotation.file)
         if annotation.needs_two_ids():
-          new_item.second_id = annotation.second_id_hash_code
+          new_item.second_id = annotation.second_id
         if annotation.type != Annotation.Type.COMPLETE:
           new_item.semantics_fields = annotation.get_semantics_field_numbers()
           new_item.policy_fields = annotation.get_policy_field_numbers()
@@ -1389,19 +1319,18 @@ class Exporter:
             id=reserved_id,
             type=Annotation.Type.COMPLETE,
             added_in_milestone=self._current_milestone,
-            hash_code=compute_hash_value(reserved_id),
             reserved=True,
             os_list=default_os_list,
             file_path="")
 
-    # If there are annotations that are not used on any OS, set the deprecation
-    # flag.
-    for unique_id, archived in self.archive.items():
-      if not archived.os_list and not archived.deprecated:
-        archived.deprecated = datetime.date.today().strftime("%Y-%m-%d")
-        archived.file_path = None
-        archived.semantics_fields = []
-        archived.policy_fields = []
+    # If there are annotations that are not used on any OS, remove them from
+    # annotations.xml.
+    annotations_to_remove = [
+        unique_id for unique_id, archived in self.archive.items()
+        if not archived.os_list
+    ]
+    for unique_id in annotations_to_remove:
+      del self.archive[unique_id]
 
     return self.check_archived_annotations()
 
@@ -1437,11 +1366,16 @@ class Exporter:
             node.attrib[field] = "1"
         elif isinstance(value, int):
           # Filter out integers that are <= 0.
+          # "content_hash_code" is hexadecimal.
+          format_string = "{:08x}" if field == "content_hash_code" else "{}"
           if value > 0:
-            node.attrib[field] = str(value)
+            node.attrib[field] = format_string.format(value)
         elif isinstance(value, Annotation.Type):
-          # Use the integer value for enums.
-          node.attrib[field] = str(value.value[0])
+          # Use the string value for the Annotation.Type enum. Absent if
+          # 'complete', since that's the vast majority of annotations and it
+          # would get redundant.
+          if value != Annotation.Type.COMPLETE:
+            node.attrib[field] = value.value
         elif isinstance(value, list):
           # Lists are comma-separated, and absent if empty.
           #
@@ -1460,10 +1394,7 @@ class Exporter:
     lines.append("</annotations>")
     lines.append("")
 
-    # Replace ' />' with '/>' so output is exactly the same as the C++
-    # auditor (i.e., remove the space in self-closing tags).
-    # TODO(nicolaso): Remove this dirty 'replace' hack.
-    return "\n".join(re.sub(" />$", "/>", l) for l in lines)
+    return "\n".join(lines)
 
   def check_archived_annotations(self) -> List[AuditorError]:
     """Runs tests on the contents of self.archive."""
@@ -1479,13 +1410,6 @@ class Exporter:
                          str(archived.hash_code), None, 0, unique_id))
       else:
         used_codes[archived.hash_code] = unique_id
-
-    # Check for coexistence of OS(es) and deprecation date.
-    for unique_id, archived in self.archive.items():
-      if archived.deprecated and archived.os_list:
-        errors.append(
-            AuditorError(AuditorError.Type.DEPRECATED_WITH_OS, unique_id,
-                         self.annotations_xml_path))
 
     # Check that listed OSes are valid.
     for unique_id, archived in self.archive.items():
@@ -1512,18 +1436,12 @@ class Exporter:
     xml_str = self._generate_serialized_xml()
     self.annotations_xml_path.write_text(xml_str, encoding="utf-8")
 
-  def get_deprecated_ids(self) -> List[UniqueId]:
-    """Produces the list of deprecated unique ids. Requires that annotations.xml
-    is loaded, i.e. into self.archive."""
-    assert self.archive
-    return [a.id for a in self.archive.values() if a.deprecated]
-
   def get_other_platforms_annotation_ids(self) -> List[UniqueId]:
     """Returns a list of annotations that are not defined on this platform."""
     assert self.archive
     return [
         a.id for a in self.archive.values()
-        if not a.deprecated and self._current_platform not in a.os_list
+        if self._current_platform not in a.os_list
     ]
 
   @classmethod
@@ -1858,8 +1776,7 @@ class Auditor:
     extracted_ids = set()
     accepted_types = [Annotation.Type.PARTIAL, Annotation.Type.COMPLETE]
     for unique_id, archived in self.exporter.archive.items():
-      if (archived.type in accepted_types and not archived.deprecated
-          and not archived.reserved):
+      if archived.type in accepted_types and not archived.reserved:
         extracted_ids.add(archived.id)
 
     errors = []
@@ -1893,13 +1810,11 @@ class Auditor:
     """Adds all archived annotations (from annotations.xml) that match the
     following features, to self.extracted_annotations:
 
-    1- Not deprecated
-    2- OS list includes current platform.
-    3- Has a path (is not a reserved word).
-    4- Path does not match an item in path_filters."""
+    1- OS list includes current platform.
+    2- Has a path (is not a reserved word).
+    3- Path does not match an item in path_filters."""
     for unique_id, archived in self.exporter.archive.items():
-      if (not archived.deprecated
-          and self.exporter.matches_current_platform(archived)
+      if (self.exporter.matches_current_platform(archived)
           and archived.file_path is not None
           and not self._path_filters_match(path_filters, archived.file_path)):
         self.extracted_annotations.append(
@@ -1922,8 +1837,7 @@ class Auditor:
     logger.info("Checking the validity of annotations extracted from {} "
                 "files.".format(suffixes))
 
-    deprecated_ids = self.exporter.get_deprecated_ids()
-    id_checker = IdChecker(RESERVED_IDS, deprecated_ids)
+    id_checker = IdChecker(RESERVED_IDS)
     errors.extend(id_checker.check_ids(self.extracted_annotations))
 
     # Only check annotation contents if IDs are all OK, because if there are
