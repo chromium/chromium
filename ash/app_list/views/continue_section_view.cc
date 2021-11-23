@@ -40,9 +40,9 @@ constexpr int kSectionHorizontalPadding = 20;
 constexpr int kHeaderVerticalSpacing = 4;
 constexpr int kHeaderHorizontalPadding = 12;
 
-// Suggested tasks layout constants. Should this change, we should update the
-// Layout to leave out empty rows.
-constexpr size_t kMinFilesForContinueSection = 3;
+// Suggested tasks layout constants.
+constexpr size_t kMinFilesForContinueSectionClamshellMode = 3;
+constexpr size_t kMinFilesForContinueSectionTabletMode = 2;
 
 std::unique_ptr<views::Label> CreateContinueLabel(const std::u16string& text) {
   auto label = std::make_unique<views::Label>(text);
@@ -54,7 +54,8 @@ std::unique_ptr<views::Label> CreateContinueLabel(const std::u16string& text) {
 
 ContinueSectionView::ContinueSectionView(AppListViewDelegate* view_delegate,
                                          int columns,
-                                         bool tablet_mode) {
+                                         bool tablet_mode)
+    : tablet_mode_(tablet_mode) {
   DCHECK(view_delegate);
 
   AppListModelProvider::Get()->AddObserver(this);
@@ -121,7 +122,8 @@ void ContinueSectionView::UpdateSuggestionTasks() {
 
 void ContinueSectionView::OnSearchResultContainerResultsChanged() {
   SetVisible(suggestions_container_->num_results() >=
-             kMinFilesForContinueSection);
+             (tablet_mode_ ? kMinFilesForContinueSectionTabletMode
+                           : kMinFilesForContinueSectionClamshellMode));
 }
 
 BEGIN_METADATA(ContinueSectionView, views::View)

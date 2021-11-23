@@ -47,6 +47,8 @@ class ASH_EXPORT ContinueSectionView : public views::View,
   ContinueTaskView* GetTaskViewAtForTesting(size_t index) const;
 
  private:
+  bool tablet_mode_ = false;
+
   ContinueTaskContainerView* suggestions_container_ = nullptr;
 };
 

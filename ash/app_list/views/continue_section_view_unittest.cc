@@ -247,21 +247,28 @@ TEST_P(ContinueSectionViewTest, ModelObservers) {
 TEST_P(ContinueSectionViewTest, HideContinueSectionWhenResultRemoved) {
   AddSearchResult("id1", AppListSearchResultType::kFileChip);
   AddSearchResult("id2", AppListSearchResultType::kDriveChip);
-  AddSearchResult("id3", AppListSearchResultType::kDriveChip);
+
+  // Minimum files for clamshell mode are 3.
+  if (!tablet_mode_param())
+    AddSearchResult("id3", AppListSearchResultType::kDriveChip);
 
   EnsureLauncherShown();
   VerifyResultViewsUpdated();
   EXPECT_TRUE(GetContinueSectionView()->GetVisible());
 
-  RemoveSearchResultAt(2);
+  RemoveSearchResultAt(1);
   VerifyResultViewsUpdated();
+  ASSERT_LE(GetContinueSectionView()->GetTasksSuggestionsCount(), 2u);
 
   EXPECT_FALSE(GetContinueSectionView()->GetVisible());
 }
 
 TEST_P(ContinueSectionViewTest, ShowContinueSectionWhenResultAdded) {
   AddSearchResult("id1", AppListSearchResultType::kFileChip);
-  AddSearchResult("id2", AppListSearchResultType::kDriveChip);
+
+  // Minimum files for clamshell mode are 3.
+  if (!tablet_mode_param())
+    AddSearchResult("id2", AppListSearchResultType::kDriveChip);
 
   EnsureLauncherShown();
   VerifyResultViewsUpdated();
@@ -621,6 +628,37 @@ TEST_P(ContinueSectionViewTest, AllTasksShareTheSameWidth) {
     EXPECT_TRUE(task_view->GetVisible());
     EXPECT_EQ(size, task_view->size());
   }
+}
+
+TEST_P(ContinueSectionViewTest, HideContinueSectionWhithLessThanMinimumFiles) {
+  AddSearchResult("id1", AppListSearchResultType::kFileChip);
+
+  // Minimum files for clamshell mode are 3.
+  if (!tablet_mode_param())
+    AddSearchResult("id2", AppListSearchResultType::kDriveChip);
+
+  EnsureLauncherShown();
+
+  // Wait for the view to update any pending SearchResults.
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_FALSE(GetContinueSectionView()->GetVisible());
+}
+
+TEST_P(ContinueSectionViewTest, ShowContinueSectionWhithMinimumFiles) {
+  AddSearchResult("id1", AppListSearchResultType::kFileChip);
+  AddSearchResult("id2", AppListSearchResultType::kDriveChip);
+
+  // Minimum files for clamshell mode are 3.
+  if (!tablet_mode_param())
+    AddSearchResult("id3", AppListSearchResultType::kDriveChip);
+
+  EnsureLauncherShown();
+
+  // Wait for the view to update any pending SearchResults.
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_TRUE(GetContinueSectionView()->GetVisible());
 }
 
 }  // namespace
