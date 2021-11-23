@@ -4776,6 +4776,10 @@ void RenderFrameHostImpl::ContentsPreferredSizeChanged(
     return;
   }
 
+  // Ignore the request if we are aren't the outermost main frame.
+  if (GetParentOrOuterDocument())
+    return;
+
   delegate_->UpdateWindowPreferredSize(pref_size);
 }
 
@@ -4856,7 +4860,9 @@ void RenderFrameHostImpl::SetWindowRect(const gfx::Rect& bounds,
     return;
   }
 
-  delegate_->SetWindowRect(bounds);
+  // Only listen to SetWindowRects from the outermost document.
+  if (!GetParentOrOuterDocument())
+    delegate_->SetWindowRect(bounds);
   std::move(callback).Run();
 }
 
