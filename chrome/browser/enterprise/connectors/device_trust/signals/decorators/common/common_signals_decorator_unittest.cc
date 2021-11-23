@@ -86,6 +86,16 @@ TEST_F(CommonSignalsDecoratorTest, Decorate_StaticValuesPresent) {
 #else   // defined(OS_WIN)
   EXPECT_FALSE(signals.has_chrome_cleanup_enabled());
 #endif  // defined(OS_WIN)
+
+  // Run a second time to exercise the caching code.
+  base::RunLoop second_run_loop;
+  SignalsType second_signals;
+  decorator_->Decorate(second_signals, second_run_loop.QuitClosure());
+  second_run_loop.Run();
+
+  EXPECT_EQ(signals.device_model(), second_signals.device_model());
+  EXPECT_EQ(signals.device_manufacturer(),
+            second_signals.device_manufacturer());
 }
 
 }  // namespace enterprise_connectors

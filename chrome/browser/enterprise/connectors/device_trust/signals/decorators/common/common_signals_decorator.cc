@@ -9,7 +9,6 @@
 #include "chrome/browser/enterprise/signals/signals_utils.h"
 #include "components/policy/core/common/cloud/cloud_policy_util.h"
 #include "components/version_info/version_info.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace enterprise_connectors {
 
@@ -58,6 +57,12 @@ void CommonSignalsDecorator::Decorate(SignalsType& signals,
         static_cast<int32_t>(password_protection_warning_trigger.value()));
   }
 
+  if (cached_device_model_ && cached_device_manufacturer_) {
+    UpdateFromCache(signals);
+    std::move(done_closure).Run();
+    return;
+  }
+
   auto callback =
       base::BindOnce(&CommonSignalsDecorator::OnHardwareInfoRetrieved,
                      weak_ptr_factory_.GetWeakPtr(), std::ref(signals),
@@ -70,12 +75,17 @@ void CommonSignalsDecorator::OnHardwareInfoRetrieved(
     SignalsType& signals,
     base::OnceClosure done_closure,
     base::SysInfo::HardwareInfo hardware_info) {
-  // TODO(b/178421844): Look into adding caching support for these signals, as
-  // they will never change throughout the browser's lifetime.
-  signals.set_device_model(hardware_info.model);
-  signals.set_device_manufacturer(hardware_info.manufacturer);
+  cached_device_model_ = hardware_info.model;
+  cached_device_manufacturer_ = hardware_info.manufacturer;
+
+  UpdateFromCache(signals);
 
   std::move(done_closure).Run();
+}
+
+void CommonSignalsDecorator::UpdateFromCache(SignalsType& signals) {
+  signals.set_device_model(cached_device_model_.value());
+  signals.set_device_manufacturer(cached_device_manufacturer_.value());
 }
 
 }  // namespace enterprise_connectors
