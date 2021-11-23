@@ -32,7 +32,6 @@ namespace android_sms {
 class AndroidSmsAppManager;
 class AndroidSmsAppSetupController;
 class ConnectionManager;
-class PairingLostNotifier;
 
 // KeyedService which manages Android Messages integration. This service
 // has four main responsibilities:
@@ -79,7 +78,6 @@ class AndroidSmsService : public KeyedService,
   std::unique_ptr<AndroidSmsAppManager> android_sms_app_manager_;
   std::unique_ptr<AndroidSmsPairingStateTrackerImpl>
       android_sms_pairing_state_tracker_;
-  std::unique_ptr<PairingLostNotifier> pairing_lost_notifier_;
   std::unique_ptr<ConnectionManager> connection_manager_;
 };
 

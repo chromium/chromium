@@ -692,6 +692,9 @@ const char kNearbySharingFastInitiationNotificationEnabledPrefName[] =
 // Deprecated 10/2021.
 const char kAppCacheForceEnabled[] = "app_cache_force_enabled";
 
+// Deprecated 11/2021.
+const char kWasPreviouslySetUpPrefName[] = "android_sms.was_previously_set_up";
+
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
@@ -902,6 +905,7 @@ void RegisterProfilePrefsForMigration(
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   registry->RegisterBooleanPref(kAppCacheForceEnabled, false);
+  registry->RegisterBooleanPref(kWasPreviouslySetUpPrefName, false);
 }
 
 }  // namespace
@@ -1780,6 +1784,7 @@ void MigrateObsoleteProfilePrefs(Profile* profile) {
 
   // Added 11/2021.
   syncer::ClearObsoleteKeystoreBootstrapTokenPref(profile_prefs);
+  profile_prefs->ClearPref(kWasPreviouslySetUpPrefName);
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_PROFILE_PREFS

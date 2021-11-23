@@ -190,14 +190,6 @@
     Offer new features as they become available
   </message>
 
-  <!-- Android Messages notification strings. -->
-  <message name="IDS_ANDROID_MESSAGES_PAIRING_LOST_NOTIFICATION_TITLE" desc="Title of the notification which alerts the user that they can set up their phones to sync text messages with their Chromebook.">
-    Pair your phone with Messages
-  </message>
-  <message name="IDS_ANDROID_MESSAGES_PAIRING_LOST_NOTIFICATION_MESSAGE" desc="Message for the body of the notification which alerts the user that they can set up their phones to sync text messages with their Chromebook.">
-    Send and receive text messages from your Chromebook
-  </message>
-
   <!-- Update Screen Strings -->
   <message name="IDS_CHECKING_FOR_UPDATES" desc="Notification for checking for update">
     Checking for updates
