@@ -62,6 +62,7 @@
 #include "chrome/browser/ui/webui/chromeos/login/gaia_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/gesture_navigation_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/guest_tos_screen_handler.h"
+#include "chrome/browser/ui/webui/chromeos/login/hardware_data_collection_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/hid_detection_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/kiosk_autolaunch_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/kiosk_enable_screen_handler.h"
@@ -562,6 +563,9 @@ void OobeUI::ConfigureOobeDisplay() {
     AddScreenHandler(
         std::make_unique<OsTrialScreenHandler>(js_calls_container_.get()));
   }
+
+  AddScreenHandler(std::make_unique<HWDataCollectionScreenHandler>(
+      js_calls_container_.get()));
 
   AddScreenHandler(std::make_unique<ConsolidatedConsentScreenHandler>(
       js_calls_container_.get()));

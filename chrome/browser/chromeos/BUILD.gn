@@ -1945,6 +1945,8 @@ source_set("chromeos") {
     "../ash/login/screens/gesture_navigation_screen.h",
     "../ash/login/screens/guest_tos_screen.cc",
     "../ash/login/screens/guest_tos_screen.h",
+    "../ash/login/screens/hardware_data_collection_screen.cc",
+    "../ash/login/screens/hardware_data_collection_screen.h",
     "../ash/login/screens/hid_detection_screen.cc",
     "../ash/login/screens/hid_detection_screen.h",
     "../ash/login/screens/kiosk_autolaunch_screen.cc",

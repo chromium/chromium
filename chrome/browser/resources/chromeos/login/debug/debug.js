@@ -1025,6 +1025,10 @@ cr.define('cr.ui.login.debug', function() {
       ]
     },
     {
+      id: 'hw-data-collection',
+      kind: ScreenKind.OTHER,
+    },
+    {
       id: 'fingerprint-setup',
       kind: ScreenKind.NORMAL,
       defaultState: 'default',

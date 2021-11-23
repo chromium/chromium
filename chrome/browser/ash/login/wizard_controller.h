@@ -34,6 +34,7 @@
 #include "chrome/browser/ash/login/screens/gaia_screen.h"
 #include "chrome/browser/ash/login/screens/gesture_navigation_screen.h"
 #include "chrome/browser/ash/login/screens/guest_tos_screen.h"
+#include "chrome/browser/ash/login/screens/hardware_data_collection_screen.h"
 #include "chrome/browser/ash/login/screens/hid_detection_screen.h"
 #include "chrome/browser/ash/login/screens/kiosk_autolaunch_screen.h"
 #include "chrome/browser/ash/login/screens/locale_switch_screen.h"
@@ -344,6 +345,7 @@ class WizardController {
   void OnConsolidatedConsentScreenExit(
       ConsolidatedConsentScreen::Result result);
   void OnGuestTosScreenExit(GuestTosScreen::Result result);
+  void OnHWDataCollectionScreenExit(HWDataCollectionScreen::Result result);
 
   // Callback invoked once it has been determined whether the device is disabled
   // or not.

@@ -26,6 +26,7 @@ import 'chrome://oobe/screens/common/wrong_hwid.m.js';
 import 'chrome://oobe/screens/login/active_directory_password_change.m.js';
 import 'chrome://oobe/screens/login/encryption_migration.m.js';
 import 'chrome://oobe/screens/login/gaia_password_changed.m.js';
+import 'chrome://oobe/screens/login/hw_data_collection.m.js';
 import 'chrome://oobe/screens/login/lacros_data_migration.m.js';
 import 'chrome://oobe/screens/login/management_transition.m.js';
 import 'chrome://oobe/screens/login/offline_login.m.js';

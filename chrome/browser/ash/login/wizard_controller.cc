@@ -78,6 +78,7 @@
 #include "chrome/browser/ash/login/screens/gaia_password_changed_screen.h"
 #include "chrome/browser/ash/login/screens/gaia_screen.h"
 #include "chrome/browser/ash/login/screens/gesture_navigation_screen.h"
+#include "chrome/browser/ash/login/screens/hardware_data_collection_screen.h"
 #include "chrome/browser/ash/login/screens/hid_detection_screen.h"
 #include "chrome/browser/ash/login/screens/kiosk_autolaunch_screen.h"
 #include "chrome/browser/ash/login/screens/kiosk_enable_screen.h"
@@ -146,6 +147,7 @@
 #include "chrome/browser/ui/webui/chromeos/login/gaia_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/gesture_navigation_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/guest_tos_screen_handler.h"
+#include "chrome/browser/ui/webui/chromeos/login/hardware_data_collection_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/hid_detection_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/kiosk_autolaunch_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/kiosk_enable_screen_handler.h"
@@ -233,6 +235,7 @@ const StaticOobeScreenId kResumableOobeScreens[] = {
 const StaticOobeScreenId kResumablePostLoginScreens[] = {
     chromeos::TermsOfServiceScreenView::kScreenId,
     chromeos::SyncConsentScreenView::kScreenId,
+    chromeos::HWDataCollectionView::kScreenId,
     chromeos::FingerprintSetupScreenView::kScreenId,
     chromeos::GestureNavigationScreenView::kScreenId,
     chromeos::ArcTermsOfServiceScreenView::kScreenId,
@@ -748,6 +751,13 @@ std::vector<std::unique_ptr<BaseScreen>> WizardController::CreateScreens() {
                             weak_factory_.GetWeakPtr())));
   }
 
+  if (switches::IsRevenBranding()) {
+    append(std::make_unique<HWDataCollectionScreen>(
+        oobe_ui->GetView<HWDataCollectionScreenHandler>(),
+        base::BindRepeating(&WizardController::OnHWDataCollectionScreenExit,
+                            weak_factory_.GetWeakPtr())));
+  }
+
   return result;
 }
 
@@ -1154,6 +1164,13 @@ void WizardController::OnOsTrialScreenExit(OsTrialScreen::Result result) {
       ShowOsInstallScreen();
       break;
   }
+}
+
+void WizardController::OnHWDataCollectionScreenExit(
+    HWDataCollectionScreen::Result result) {
+  OnScreenExit(HWDataCollectionView::kScreenId,
+               HWDataCollectionScreen::GetResultString(result));
+  ShowFingerprintSetupScreen();
 }
 
 void WizardController::OnGuestTosScreenExit(GuestTosScreen::Result result) {
@@ -1573,6 +1590,10 @@ void WizardController::OnSyncConsentScreenExit(
     SyncConsentScreen::Result result) {
   OnScreenExit(SyncConsentScreenView::kScreenId,
                SyncConsentScreen::GetResultString(result));
+  if (switches::IsRevenBranding()) {
+    AdvanceToScreen(HWDataCollectionView::kScreenId);
+    return;
+  }
   ShowFingerprintSetupScreen();
 }
 
@@ -2083,7 +2104,8 @@ void WizardController::AdvanceToScreen(OobeScreenId screen_id) {
              screen_id == OfflineLoginView::kScreenId ||
              screen_id == OsInstallScreenView::kScreenId ||
              screen_id == OsTrialScreenView::kScreenId ||
-             screen_id == ParentalHandoffScreenView::kScreenId) {
+             screen_id == ParentalHandoffScreenView::kScreenId ||
+             screen_id == HWDataCollectionView::kScreenId) {
     SetCurrentScreen(GetScreen(screen_id));
   } else {
     NOTREACHED();

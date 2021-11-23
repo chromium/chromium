@@ -24,6 +24,7 @@ group("polymer3_elements") {
     ":fingerprint_setup_module",
     ":gesture_navigation_module",
     ":guest_tos_module",
+    ":hw_data_collection_module",
     ":managed_terms_of_service_module",
     ":marketing_opt_in_module",
     ":oobe_reset_module",
@@ -64,6 +65,7 @@ js_type_check("closure_compile_module") {
     ":fingerprint_setup.m",
     ":gesture_navigation.m",
     ":guest_tos.m",
+    ":hw_data_collection.m",
     ":managed_terms_of_service.m",
     ":marketing_opt_in.m",
     ":oobe_reset.m",
@@ -268,6 +270,17 @@ js_library("guest_tos.m") {
     "$externs_path/chrome_extensions.js",
     "$externs_path/webview_tag.js",
   ]
+}
+
+js_library("hw_data_collection.m") {
+  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/common/hw_data_collection.m.js" ]
+  deps = [
+    "../../components/behaviors:login_screen_behavior.m",
+    "../../components/behaviors:oobe_dialog_host_behavior.m",
+    "../../components/behaviors:oobe_i18n_behavior.m",
+    "../../components/buttons:oobe_text_button.m",
+  ]
+  extra_deps = [ ":hw_data_collection_module" ]
 }
 
 js_library("managed_terms_of_service.m") {
@@ -502,6 +515,14 @@ polymer_modulizer("gesture_navigation") {
 polymer_modulizer("guest_tos") {
   js_file = "guest_tos.js"
   html_file = "guest_tos.html"
+  html_type = "dom-module"
+  auto_imports = oobe_auto_imports
+  namespace_rewrites = oobe_namespace_rewrites
+}
+
+polymer_modulizer("hw_data_collection") {
+  js_file = "hw_data_collection.js"
+  html_file = "hw_data_collection.html"
   html_type = "dom-module"
   auto_imports = oobe_auto_imports
   namespace_rewrites = oobe_namespace_rewrites
