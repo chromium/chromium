@@ -1906,3 +1906,14 @@ TEST_F(CartServiceCouponTest, TestCartFeatureStatusUpdate) {
   ListPrefUpdate(profile_->GetPrefs(), prefs::kNtpDisabledModules)
       ->EraseListValue(base::Value("chrome_cart"));
 }
+
+TEST_F(CartServiceCouponTest, TestModuleFeatureStatusUpdate) {
+  // prefs::kNtpModulesVisible is true by default.
+  profile_->GetPrefs()->SetBoolean(prefs::kCartDiscountEnabled, true);
+
+  EXPECT_CALL(coupon_service_, MaybeFeatureStatusChanged(false)).Times(1);
+  profile_->GetPrefs()->SetBoolean(prefs::kNtpModulesVisible, false);
+
+  EXPECT_CALL(coupon_service_, MaybeFeatureStatusChanged(true)).Times(1);
+  profile_->GetPrefs()->SetBoolean(prefs::kNtpModulesVisible, true);
+}
