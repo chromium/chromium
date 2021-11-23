@@ -11,7 +11,9 @@ function simulateMiddleClick(target) {
 }
 
 function simulateClickWithButton(target, button) {
-  target = document.getElementById(target);
+  if (typeof target === 'string')
+    target = document.getElementById(target);
+
   let evt = new MouseEvent('click', {'button': button});
   return target.dispatchEvent(evt);
 }
@@ -29,7 +31,7 @@ function createImpressionTag({
   left,
   top,
 } = {}) {
-  let anchor = document.createElement('a');
+  const anchor = document.createElement('a');
   anchor.href = url;
   anchor.setAttribute('attributionsourceeventid', data);
   anchor.setAttribute('attributiondestination', destination);
@@ -56,12 +58,15 @@ function createImpressionTag({
     anchor.setAttribute('style', style);
   }
 
-  // Create the text node for anchor element.
-  let link = document.createTextNode('This is link');
+  anchor.innerText = 'This is link';
 
-  // Append the text node to anchor element.
-  anchor.appendChild(link);
   document.body.appendChild(anchor);
 
+  return anchor;
+}
+
+function createAndClickImpressionTag(params) {
+  const anchor = createImpressionTag(params);
+  simulateClick(anchor);
   return anchor;
 }

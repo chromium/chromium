@@ -176,11 +176,9 @@ IN_PROC_BROWSER_TEST_F(AttributionSourceDisabledBrowserTest,
       https_server()->GetURL("b.test", "/page_with_impression_creator.html")));
 
   EXPECT_TRUE(ExecJs(web_contents(), R"(
-    createImpressionTag({id: 'link',
-                        url: 'page_with_conversion_redirect.html',
+    createAndClickImpressionTag({url: 'page_with_conversion_redirect.html',
                         data: '1',
                         destination: 'https://a.com'});)"));
-  EXPECT_TRUE(ExecJs(shell(), "simulateClick('link');"));
 
   // No impression should be observed.
   EXPECT_TRUE(source_observer.WaitForNavigationWithNoImpression());
@@ -211,13 +209,11 @@ IN_PROC_BROWSER_TEST_F(AttributionSourceDeclarationBrowserTest,
   // Create an anchor tag with impression attributes and click the link. By
   // default the target is set to "_top".
   EXPECT_TRUE(ExecJs(web_contents(), R"(
-    createImpressionTag({id: 'link',
-                        url: 'page_with_conversion_redirect.html',
+    createAndClickImpressionTag({url: 'page_with_conversion_redirect.html',
                         data: '1',
                         destination: 'https://a.com',
                         reportOrigin: 'https://report.com',
                         expiry: 1000});)"));
-  EXPECT_TRUE(ExecJs(shell(), "simulateClick('link');"));
 
   // Wait for the impression to be seen by the observer.
   blink::Impression last_impression = source_observer.Wait();
@@ -303,11 +299,9 @@ IN_PROC_BROWSER_TEST_F(AttributionSourceDeclarationBrowserTest,
   // The provided data underflows an unsigned 64 bit int, and should be handled
   // properly.
   EXPECT_TRUE(ExecJs(web_contents(), R"(
-    createImpressionTag({id: 'link',
-                        url: 'page_with_conversion_redirect.html',
+    createAndClickImpressionTag({url: 'page_with_conversion_redirect.html',
                         data: '-1',
                         destination: 'https://a.com'});)"));
-  EXPECT_TRUE(ExecJs(shell(), "simulateClick('link');"));
 
   // Wait for the impression to be seen by the observer.
   blink::Impression last_impression = source_observer.Wait();
@@ -415,11 +409,9 @@ IN_PROC_BROWSER_TEST_F(AttributionSourceDeclarationBrowserTest,
 
   SourceObserver source_observer(web_contents());
   EXPECT_TRUE(ExecJs(web_contents(), R"(
-    createImpressionTag({id: 'link',
-                        url: 'page_with_conversion_redirect.html',
+    createAndClickImpressionTag({url: 'page_with_conversion_redirect.html',
                         data: '1',
                         destination: 'https://a.com'});)"));
-  EXPECT_TRUE(ExecJs(shell(), "simulateClick('link');"));
 
   // We should see a null impression on the navigation
   EXPECT_TRUE(source_observer.WaitForNavigationWithNoImpression());
@@ -434,11 +426,9 @@ IN_PROC_BROWSER_TEST_F(AttributionSourceDeclarationBrowserTest,
 
   SourceObserver source_observer(web_contents());
   EXPECT_TRUE(ExecJs(web_contents(), R"(
-    createImpressionTag({id: 'link',
-                        url: 'page_with_conversion_redirect.html',
+    createAndClickImpressionTag({url: 'page_with_conversion_redirect.html',
                         data: '1',
                         destination: 'http://a.com'});)"));
-  EXPECT_TRUE(ExecJs(shell(), "simulateClick('link');"));
 
   // We should see a null impression on the navigation
   EXPECT_TRUE(source_observer.WaitForNavigationWithNoImpression());
@@ -453,13 +443,11 @@ IN_PROC_BROWSER_TEST_F(AttributionSourceDeclarationBrowserTest,
 
   SourceObserver source_observer(web_contents());
   EXPECT_TRUE(ExecJs(web_contents(), R"(
-    createImpressionTag({id: 'link',
-                        url: 'page_with_conversion_redirect.html',
+    createAndClickImpressionTag({url: 'page_with_conversion_redirect.html',
                         data: '1',
                         destination: 'https://a.com',
                         reportOrigin: 'http://reporting.com',
                         expiry: 1000});)"));
-  EXPECT_TRUE(ExecJs(shell(), "simulateClick('link');"));
 
   // We should see a null impression on the navigation
   EXPECT_TRUE(source_observer.WaitForNavigationWithNoImpression());
@@ -474,11 +462,9 @@ IN_PROC_BROWSER_TEST_F(AttributionSourceDeclarationBrowserTest,
 
   SourceObserver source_observer(web_contents());
   EXPECT_TRUE(ExecJs(web_contents(), R"(
-    createImpressionTag({id: 'link',
-                        url: 'page_with_conversion_redirect.html',
+    createAndClickImpressionTag({url: 'page_with_conversion_redirect.html',
                         data: '1',
                         destination: 'https://a.com'});)"));
-  EXPECT_TRUE(ExecJs(shell(), "simulateClick('link');"));
 
   // We should see a null impression on the navigation
   EXPECT_TRUE(source_observer.WaitForNavigationWithNoImpression());
@@ -497,11 +483,9 @@ IN_PROC_BROWSER_TEST_F(
   SourceObserver source_observer(web_contents());
   RenderFrameHost* subframe = ChildFrameAt(web_contents()->GetMainFrame(), 0);
   EXPECT_TRUE(ExecJs(subframe, R"(
-    createImpressionTag({id: 'link',
-                        url: 'page_with_conversion_redirect.html',
+    createAndClickImpressionTag({url: 'page_with_conversion_redirect.html',
                         data: '1',
                         destination: 'https://a.com'});)"));
-  EXPECT_TRUE(ExecJs(subframe, "simulateClick('link');"));
 
   // We should see a null impression on the navigation
   EXPECT_TRUE(source_observer.WaitForNavigationWithNoImpression());
@@ -522,11 +506,9 @@ IN_PROC_BROWSER_TEST_F(AttributionSourceDeclarationBrowserTest,
   SourceObserver source_observer(web_contents());
   RenderFrameHost* subframe = ChildFrameAt(web_contents()->GetMainFrame(), 0);
   EXPECT_TRUE(ExecJs(subframe, R"(
-    createImpressionTag({id: 'link',
-                        url: 'page_with_conversion_redirect.html',
+    createAndClickImpressionTag({url: 'page_with_conversion_redirect.html',
                         data: '1',
                         destination: 'https://a.com'});)"));
-  EXPECT_TRUE(ExecJs(subframe, "simulateClick('link');"));
 
   // We should see a null impression on the navigation
   EXPECT_EQ(1u, source_observer.Wait().impression_data);
@@ -582,11 +564,9 @@ IN_PROC_BROWSER_TEST_F(AttributionSourceDeclarationBrowserTest,
 
   SourceObserver source_observer(web_contents());
   EXPECT_TRUE(ExecJs(web_contents(), R"(
-    createImpressionTag({id: 'link',
-                        url: 'page_with_conversion_redirect.html',
+    createAndClickImpressionTag({url: 'page_with_conversion_redirect.html',
                         data: '1',
                         destination: 'https://a.com'});)"));
-  EXPECT_TRUE(ExecJs(shell(), "simulateClick('link');"));
   EXPECT_EQ(1UL, source_observer.Wait().impression_data);
 
   SourceObserver reload_observer(web_contents());
@@ -605,11 +585,9 @@ IN_PROC_BROWSER_TEST_F(AttributionSourceDeclarationBrowserTest,
 
   SourceObserver source_observer(web_contents());
   EXPECT_TRUE(ExecJs(web_contents(), R"(
-    createImpressionTag({id: 'link',
-                        url: 'page_with_conversion_redirect.html',
+    createAndClickImpressionTag({url: 'page_with_conversion_redirect.html',
                         data: '1',
                         destination: 'https://a.com'});)"));
-  EXPECT_TRUE(ExecJs(shell(), "simulateClick('link');"));
   EXPECT_EQ(1UL, source_observer.Wait().impression_data);
 
   SourceObserver reload_observer(web_contents());
@@ -664,25 +642,19 @@ IN_PROC_BROWSER_TEST_F(
   // Create an anchor tag with impression attributes and click the link. By
   // default the target is set to "_top".
   EXPECT_TRUE(ExecJs(web_contents(), R"(
-    createImpressionTag({id: 'link1',
-                        url: 'page_with_impression_creator.html',
+    createAndClickImpressionTag({url: 'page_with_impression_creator.html',
                         data: '1',
                         destination: 'https://a.com',
                         reportOrigin: 'https://example1.test'});)"));
 
-  // Click the impression on the page.
-  EXPECT_TRUE(ExecJs(shell(), "simulateClick('link1');"));
   WaitForLoadStop(web_contents());
 
   EXPECT_TRUE(ExecJs(web_contents(), R"(
-    createImpressionTag({id: 'link2',
-                        url: 'page_with_impression_creator.html',
+    createAndClickImpressionTag({url: 'page_with_impression_creator.html',
                         data: '2',
                         destination: 'https://a.com',
                         reortOrigin: 'https://example2.test'});)"));
 
-  // Click the impression on the page.
-  EXPECT_TRUE(ExecJs(shell(), "simulateClick('link2');"));
   WaitForLoadStop(web_contents());
 
   // Navigate away to have the data captured.
@@ -706,31 +678,25 @@ IN_PROC_BROWSER_TEST_F(
   // Create an impression tag with a target frame that does not exist, which
   // will open a new window to navigate.
   EXPECT_TRUE(ExecJs(web_contents(), R"(
-    createImpressionTag({id: 'link1',
-                        url: 'page_with_conversion_redirect.html',
+    createAndClickImpressionTag({url: 'page_with_conversion_redirect.html',
                         data: '1',
                         destination: 'https://a.com',
                         reportOrigin: 'https://example1.test',
                         target: 'target'});)"));
-  EXPECT_TRUE(ExecJs(shell(), "simulateClick('link1');"));
 
   EXPECT_TRUE(ExecJs(web_contents(), R"(
-    createImpressionTag({id: 'link2',
-                        url: 'page_with_conversion_redirect.html',
+    createAndClickImpressionTag({url: 'page_with_conversion_redirect.html',
                         data: '2',
                         destination: 'https://a.com',
                         reportOrigin: 'https://example2.test',
                         target: 'target'});)"));
-  EXPECT_TRUE(ExecJs(shell(), "simulateClick('link2');"));
 
   EXPECT_TRUE(ExecJs(web_contents(), R"(
-    createImpressionTag({id: 'link3',
-                        url: 'page_with_conversion_redirect.html',
+    createAndClickImpressionTag({url: 'page_with_conversion_redirect.html',
                         data: '3',
                         destination: 'https://a.com',
                         reportOrigin: 'https://example1.test',
                         target: 'target'});)"));
-  EXPECT_TRUE(ExecJs(shell(), "simulateClick('link3');"));
 
   // Navigate away to have the data captured.
   EXPECT_TRUE(NavigateToURL(shell(), GURL("about:blank")));
@@ -925,13 +891,11 @@ IN_PROC_BROWSER_TEST_F(AttributionSourceDeclarationBrowserTest,
   // Create an anchor tag with impression attributes and click the link. By
   // default the target is set to "_top".
   EXPECT_TRUE(ExecJs(web_contents(), R"(
-    createImpressionTag({id: 'link',
-                        url: 'page_with_conversion_redirect.html',
+    createAndClickImpressionTag({url: 'page_with_conversion_redirect.html',
                         data: '1',
                         destination: 'https://a.com',
                         reportOrigin: 'https://report.com',
                         priority: 1000});)"));
-  EXPECT_TRUE(ExecJs(shell(), "simulateClick('link');"));
 
   // Wait for the impression to be seen by the observer.
   blink::Impression last_impression = source_observer.Wait();
@@ -1051,11 +1015,9 @@ IN_PROC_BROWSER_TEST_F(AttributionSourceDeclarationBrowserTest,
   SourceObserver source_observer(web_contents());
   RenderFrameHost* innermost_iframe = ChildFrameAt(middle_iframe, 0);
   EXPECT_TRUE(ExecJs(innermost_iframe, R"(
-    createImpressionTag({id: 'link',
-                        url: 'page_with_conversion_redirect.html',
+    createAndClickImpressionTag({url: 'page_with_conversion_redirect.html',
                         data: '1',
                         destination: 'https://a.com'});)"));
-  EXPECT_TRUE(ExecJs(innermost_iframe, "simulateClick('link');"));
 
   // We should see a null impression on the navigation.
   EXPECT_TRUE(source_observer.WaitForNavigationWithNoImpression());
