@@ -18,9 +18,7 @@
 namespace {
 
 SerialChooserContext* GetChooserContext(content::RenderFrameHost* frame) {
-  auto* web_contents = content::WebContents::FromRenderFrameHost(frame);
-  auto* profile =
-      Profile::FromBrowserContext(web_contents->GetBrowserContext());
+  auto* profile = Profile::FromBrowserContext(frame->GetBrowserContext());
   return SerialChooserContextFactory::GetForProfile(profile);
 }
 
