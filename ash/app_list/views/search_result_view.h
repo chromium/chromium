@@ -82,6 +82,7 @@ class ASH_EXPORT SearchResultView : public SearchResultBaseView,
 
   void UpdateTitleText();
   void UpdateDetailsText();
+  void UpdateRating();
 
   void StyleLabel(views::Label* label,
                   bool is_title_label,
@@ -151,6 +152,8 @@ class ASH_EXPORT SearchResultView : public SearchResultBaseView,
   views::Label* title_label_ = nullptr;      // Owned by views hierarchy.
   views::Label* details_label_ = nullptr;    // Owned by views hierarchy.
   views::Label* separator_label_ = nullptr;  // Owned by views hierarchy.
+  views::Label* rating_ = nullptr;           // Owned by views hierarchy.
+  views::ImageView* rating_star_ = nullptr;  // Owned by views hierarchy.
 
   std::unique_ptr<AppListMenuModelAdapter> context_menu_;
 

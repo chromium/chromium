@@ -22,10 +22,12 @@
 #include "ash/public/cpp/app_list/app_list_features.h"
 #include "ash/public/cpp/app_list/app_list_switches.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
+#include "ash/public/cpp/app_list/vector_icons/vector_icons.h"
 #include "ash/public/cpp/ash_typography.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
 #include "base/bind.h"
+#include "base/i18n/number_formatting.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/compositor/layer.h"
@@ -34,6 +36,7 @@
 #include "ui/gfx/font.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/image/image_skia_operations.h"
+#include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/accessibility/accessibility_paint_checks.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/button/image_button.h"
@@ -63,6 +66,9 @@ constexpr int kInlineAnswerDetailsLineHeight = 18;
 
 // Corner radius for downloaded image icons.
 constexpr int kImageIconCornerRadius = 4;
+
+constexpr int kSearchRatingStarPadding = 4;
+constexpr int kSearchRatingStarSize = 16;
 }  // namespace
 
 // static
@@ -189,20 +195,41 @@ SearchResultView::SearchResultView(
   details_label_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   setup_flex_specifications(details_label_);
 
+  rating_ = text_container_->AddChildView(std::make_unique<views::Label>());
+  rating_->SetBackgroundColor(SK_ColorTRANSPARENT);
+  rating_->SetVisible(false);
+  rating_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+  setup_flex_specifications(rating_);
+
+  rating_star_ =
+      text_container_->AddChildView(std::make_unique<views::ImageView>());
+  rating_star_->SetCanProcessEventsWithinSubtree(false);
+  rating_star_->SetVerticalAlignment(views::ImageView::Alignment::kCenter);
+  rating_star_->SetVisible(false);
+  rating_star_->SetImage(gfx::CreateVectorIcon(
+      kBadgeRatingIcon, kSearchRatingStarSize,
+      AppListColorProvider::Get()->GetSearchBoxSecondaryTextColor(
+          kDeprecatedSearchBoxTextDefaultColor)));
+  rating_star_->SetBorder(
+      views::CreateEmptyBorder(0, kSearchRatingStarPadding, 0, 0));
+
   title_label_->SetTextContext(CONTEXT_SEARCH_RESULT_VIEW);
   separator_label_->SetTextContext(CONTEXT_SEARCH_RESULT_VIEW);
   details_label_->SetTextContext(CONTEXT_SEARCH_RESULT_VIEW);
+  rating_->SetTextContext(CONTEXT_SEARCH_RESULT_VIEW);
   switch (view_type_) {
     case SearchResultViewType::kClassic:
       title_label_->SetTextStyle(STYLE_CLASSIC_LAUNCHER);
       separator_label_->SetTextStyle(STYLE_CLASSIC_LAUNCHER);
       details_label_->SetTextStyle(STYLE_CLASSIC_LAUNCHER);
+      rating_->SetTextStyle(STYLE_CLASSIC_LAUNCHER);
       break;
     case SearchResultViewType::kDefault:
     case SearchResultViewType::kInlineAnswer:
       title_label_->SetTextStyle(STYLE_PRODUCTIVITY_LAUNCHER);
       separator_label_->SetTextStyle(STYLE_PRODUCTIVITY_LAUNCHER);
       details_label_->SetTextStyle(STYLE_PRODUCTIVITY_LAUNCHER);
+      rating_->SetTextStyle(STYLE_PRODUCTIVITY_LAUNCHER);
   }
 }
 
@@ -213,6 +240,7 @@ void SearchResultView::OnResultChanged() {
   // Update tile, separator, and details text visibility.
   UpdateTitleText();
   UpdateDetailsText();
+  UpdateRating();
   UpdateAccessibleName();
   SchedulePaint();
 }
@@ -277,6 +305,19 @@ void SearchResultView::UpdateDetailsText() {
         separator_label_->SetVisible(false);
     }
   }
+}
+
+void SearchResultView::UpdateRating() {
+  if (!result() || !result()->rating() || result()->rating() < 0) {
+    rating_->SetText(std::u16string());
+    rating_->SetVisible(false);
+    rating_star_->SetVisible(false);
+    return;
+  }
+
+  rating_->SetText(base::FormatDouble(result()->rating(), 1));
+  rating_->SetVisible(true);
+  rating_star_->SetVisible(true);
 }
 
 void SearchResultView::StyleLabel(views::Label* label,
@@ -493,6 +534,13 @@ void SearchResultView::OnThemeChanged() {
   separator_label_->SetEnabledColor(
       AppListColorProvider::Get()->GetSearchBoxSecondaryTextColor(
           kDeprecatedSearchBoxTextDefaultColor));
+  rating_->SetEnabledColor(
+      AppListColorProvider::Get()->GetSearchBoxSecondaryTextColor(
+          kDeprecatedSearchBoxTextDefaultColor));
+  rating_star_->SetImage(gfx::CreateVectorIcon(
+      kBadgeRatingIcon, kSearchRatingStarSize,
+      AppListColorProvider::Get()->GetSearchBoxSecondaryTextColor(
+          kDeprecatedSearchBoxTextDefaultColor)));
   views::View::OnThemeChanged();
 }
 
