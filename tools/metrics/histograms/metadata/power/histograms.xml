@@ -134,7 +134,7 @@ Also used in tools/metrics/histograms/metadata/others/histograms.xml
 </histogram>
 
 <histogram name="Power.BatteryDischargeMode{UsageScenario}"
-    enum="BatteryDischargeMode" expires_after="2021-11-26">
+    enum="BatteryDischargeMode" expires_after="2022-11-30">
   <owner>etiennep@chromium.org</owner>
   <owner>olivierli@chromium.org</owner>
   <summary>
@@ -147,7 +147,7 @@ Also used in tools/metrics/histograms/metadata/others/histograms.xml
 </histogram>
 
 <histogram name="Power.BatteryDischargeRate" units="mW"
-    expires_after="2022-04-10">
+    expires_after="2022-11-30">
   <owner>puthik@chromium.org</owner>
   <owner>chromeos-platform-power@google.com</owner>
   <summary>
@@ -157,7 +157,7 @@ Also used in tools/metrics/histograms/metadata/others/histograms.xml
 </histogram>
 
 <histogram name="Power.BatteryDischargeRate2{UsageScenario}"
-    units="hundredth of percent" expires_after="2021-11-26">
+    units="hundredth of percent" expires_after="2022-11-30">
   <owner>etiennep@chromium.org</owner>
   <owner>olivierli@chromium.org</owner>
   <owner>lgrey@chromium.org</owner>
@@ -260,7 +260,7 @@ Also used in tools/metrics/histograms/metadata/others/histograms.xml
 </histogram>
 
 <histogram name="Power.BatterySamplingDelay" units="microseconds"
-    expires_after="2022-04-10">
+    expires_after="2022-11-30">
   <owner>etiennep@chromium.org</owner>
   <owner>fdoray@chromium.org</owner>
   <summary>
@@ -983,7 +983,7 @@ Also used in tools/metrics/histograms/metadata/others/histograms.xml
   </summary>
 </histogram>
 
-<histogram base="true" name="Power.Mac" units="mW" expires_after="2022-07-03">
+<histogram base="true" name="Power.Mac" units="mW" expires_after="2022-11-30">
   <owner>olivierli@chromium.org</owner>
   <owner>markchang@chromium.org</owner>
   <summary>
@@ -1049,7 +1049,7 @@ Also used in tools/metrics/histograms/metadata/others/histograms.xml
 </histogram>
 
 <histogram name="Power.Mac.ThermalState" enum="MacThermalState"
-    expires_after="2022-05-13">
+    expires_after="2022-11-30">
   <owner>lgrey@chromium.org</owner>
   <owner>olivierli@chromium.org</owner>
   <summary>
