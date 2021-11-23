@@ -190,7 +190,8 @@ void StreamingSearchPrefetchURLLoader::OnDataComplete() {
   drain_complete_ = true;
 
   // Disconnect if all content is served.
-  if (bytes_of_raw_data_to_transfer_ - write_position_ == 0) {
+  if (bytes_of_raw_data_to_transfer_ - write_position_ == 0 &&
+      forwarding_client_) {
     Finish();
   }
 }
@@ -268,6 +269,8 @@ void StreamingSearchPrefetchURLLoader::PushData() {
 }
 
 void StreamingSearchPrefetchURLLoader::Finish() {
+  DCHECK(forwarding_client_);
+
   serving_from_data_ = false;
   handle_watcher_.reset();
   producer_handle_.reset();
