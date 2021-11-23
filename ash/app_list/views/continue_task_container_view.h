@@ -64,12 +64,6 @@ class ASH_EXPORT ContinueTaskContainerView : public ui::ListModelObserver,
  private:
   void ScheduleUpdate();
 
-  // Adds a new row to `table_layout_` to make space for extra views. A new row
-  // need to be added if the number of views for the current row is already
-  // filling up the available `columns_`. This will be no-op if `table_layout_`
-  // is nullptr.
-  void MaybeAddNewRowToLayout(int task_index);
-
   // Initializes the view's layout manager to use |flex_layout_|. FlexLayout is
   // used in tablet mode only. Views will be laid out in a single row centered
   // in the container. Number of items displayed will depend on available space.

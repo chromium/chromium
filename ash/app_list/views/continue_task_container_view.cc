@@ -119,7 +119,6 @@ void ContinueTaskContainerView::Update() {
     task->set_index_in_container(i);
     task->SetResult(tasks[i]);
     suggestion_tasks_views_.emplace_back(task.get());
-    MaybeAddNewRowToLayout(i);
     AddChildView(std::move(task));
   }
 
@@ -162,19 +161,6 @@ void ContinueTaskContainerView::ScheduleUpdate() {
   }
 }
 
-void ContinueTaskContainerView::MaybeAddNewRowToLayout(int task_index) {
-  if (!table_layout_)
-    return;
-
-  // Only adds a new row if the columns have been filled by previous views.
-  if (task_index % columns_)
-    return;
-
-  if (task_index > 0)
-    table_layout_->AddPaddingRow(views::TableLayout::kFixedSize, kRowSpacing);
-  table_layout_->AddRows(1, views::TableLayout::kFixedSize);
-}
-
 void ContinueTaskContainerView::InitializeFlexLayout() {
   DCHECK(tablet_mode_);
   DCHECK(!table_layout_);
@@ -205,11 +191,16 @@ void ContinueTaskContainerView::InitializeTableLayout() {
     }
     table_layout_->AddColumn(
         views::LayoutAlignment::kStretch, views::LayoutAlignment::kCenter,
-        /*resize_percent=*/1.0f, views::TableLayout::ColumnSize::kFixed,
+        /*horizontal_resize=*/1.0f, views::TableLayout::ColumnSize::kFixed,
         /*fixed_width=*/0, /*min_width=*/0);
     linked_columns.push_back(2 * i);
   }
   table_layout_->LinkColumnSizes(linked_columns);
+  // Continue section only shows if there are 3 or more suggestions, so there
+  // are always 2 rows.
+  table_layout_->AddRows(1, views::TableLayout::kFixedSize);
+  table_layout_->AddPaddingRow(views::TableLayout::kFixedSize, kRowSpacing);
+  table_layout_->AddRows(1, views::TableLayout::kFixedSize);
 }
 
 BEGIN_METADATA(ContinueTaskContainerView, views::View)

@@ -24,9 +24,11 @@
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
+#include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/events/event.h"
+#include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/views/controls/textfield/textfield.h"
 
 namespace ash {
@@ -53,9 +55,6 @@ class ContinueSectionViewTestBase : public AshTestBase {
     scoped_feature_list_.InitAndEnableFeature(features::kProductivityLauncher);
   }
   ~ContinueSectionViewTestBase() override = default;
-
-  // testing::Test:
-  void SetUp() override { AshTestBase::SetUp(); }
 
   // Whether we should run the test in tablet mode.
   bool tablet_mode_param() { return tablet_mode_; }
@@ -182,8 +181,16 @@ class ContinueSectionViewTest : public ContinueSectionViewTestBase,
                                 public testing::WithParamInterface<bool> {
  public:
   ContinueSectionViewTest()
-      : ContinueSectionViewTestBase(/*tablet_mode*/ GetParam()) {}
+      : ContinueSectionViewTestBase(/*tablet_mode=*/GetParam()) {}
   ~ContinueSectionViewTest() override = default;
+};
+
+class ContinueSectionViewClamshellModeTest
+    : public ContinueSectionViewTestBase {
+ public:
+  ContinueSectionViewClamshellModeTest()
+      : ContinueSectionViewTestBase(/*tablet_mode=*/false) {}
+  ~ContinueSectionViewClamshellModeTest() override = default;
 };
 
 class ContinueSectionViewTabletModeTest : public ContinueSectionViewTestBase {
@@ -325,11 +332,7 @@ TEST_P(ContinueSectionViewTest, TapOpensSearchResult) {
   EXPECT_EQ("id1", client->last_opened_search_result());
 }
 
-TEST_P(ContinueSectionViewTest, PressEnterOpensSearchResult) {
-  // Ignore keyboard tests for tablet mode.
-  if (tablet_mode_param())
-    return;
-
+TEST_F(ContinueSectionViewClamshellModeTest, PressEnterOpensSearchResult) {
   AddSearchResult("id1", AppListSearchResultType::kFileChip);
   AddSearchResult("id2", AppListSearchResultType::kDriveChip);
   AddSearchResult("id3", AppListSearchResultType::kDriveChip);
@@ -352,6 +355,41 @@ TEST_P(ContinueSectionViewTest, PressEnterOpensSearchResult) {
   // The item was activated.
   TestAppListClient* client = GetAppListTestHelper()->app_list_client();
   EXPECT_EQ("id1", client->last_opened_search_result());
+}
+
+// Regression test for https://crbug.com/1273170.
+TEST_F(ContinueSectionViewClamshellModeTest, SearchAndCancelDoesNotChangeSize) {
+  AddSearchResult("id1", AppListSearchResultType::kFileChip);
+  AddSearchResult("id2", AppListSearchResultType::kDriveChip);
+  AddSearchResult("id3", AppListSearchResultType::kDriveChip);
+  EnsureLauncherShown();
+
+  auto* apps_grid_view = GetAppListTestHelper()->GetScrollableAppsGridView();
+  const gfx::Point apps_grid_origin = apps_grid_view->origin();
+
+  auto* continue_section_view = GetContinueSectionView();
+  const gfx::Rect continue_section_bounds = continue_section_view->bounds();
+  auto* widget = continue_section_view->GetWidget();
+
+  // Start a search.
+  PressAndReleaseKey(ui::VKEY_A);
+
+  // Simulate the suggestions changing.
+  GetResults()->RemoveAll();
+  AddSearchResult("id3", AppListSearchResultType::kFileChip);
+  AddSearchResult("id4", AppListSearchResultType::kDriveChip);
+  AddSearchResult("id5", AppListSearchResultType::kDriveChip);
+
+  // Cancel the search.
+  PressAndReleaseKey(ui::VKEY_ESCAPE);
+  base::RunLoop().RunUntilIdle();  // Wait for SearchResult updates to views.
+  widget->LayoutRootViewIfNecessary();
+
+  // Continue section bounds did not grow.
+  EXPECT_EQ(continue_section_bounds, continue_section_view->bounds());
+
+  // Apps grid view position did not change.
+  EXPECT_EQ(apps_grid_origin, apps_grid_view->origin());
 }
 
 TEST_P(ContinueSectionViewTest, RightClickOpensContextMenu) {
