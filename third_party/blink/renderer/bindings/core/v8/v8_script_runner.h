@@ -46,7 +46,6 @@ class ModuleScript;
 class ModuleScriptCreationParams;
 class ReferrerScriptInfo;
 class ScriptEvaluationResult;
-class ScriptSourceCode;
 class ScriptState;
 
 enum class ExecuteScriptPolicy {
@@ -111,8 +110,7 @@ class CORE_EXPORT V8ScriptRunner final {
   // a HandleScope and a ContextScope.
   static v8::MaybeLocal<v8::Script> CompileScript(
       ScriptState*,
-      const ScriptSourceCode&,
-      SanitizeScriptErrors,
+      const ClassicScript&,
       v8::ScriptCompiler::CompileOptions,
       v8::ScriptCompiler::NoCacheReason,
       v8::Local<v8::Data> host_defined_options);

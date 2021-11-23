@@ -54,7 +54,7 @@ class DocumentLoader;
 class InspectedFrames;
 class InspectorResourceContentLoader;
 class LocalFrame;
-class ScriptSourceCode;
+class ClassicScript;
 enum class ResourceType : uint8_t;
 
 using blink::protocol::Maybe;
@@ -223,10 +223,10 @@ class CORE_EXPORT InspectorPageAgent final
                   const AtomicString&,
                   const WebWindowFeatures&,
                   bool);
-  void ApplyCompilationModeOverride(const ScriptSourceCode& source,
+  void ApplyCompilationModeOverride(const ClassicScript&,
                                     v8::ScriptCompiler::CachedData**,
                                     v8::ScriptCompiler::CompileOptions*);
-  void DidProduceCompilationCache(const ScriptSourceCode& source,
+  void DidProduceCompilationCache(const ClassicScript&,
                                   v8::Local<v8::Script> script);
   void FileChooserOpened(LocalFrame* frame,
                          HTMLInputElement* element,

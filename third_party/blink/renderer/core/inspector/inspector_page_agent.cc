@@ -1685,17 +1685,19 @@ Response InspectorPageAgent::setFontSizes(
 }
 
 void InspectorPageAgent::ApplyCompilationModeOverride(
-    const ScriptSourceCode& source,
+    const ClassicScript& classic_script,
     v8::ScriptCompiler::CachedData** cached_data,
     v8::ScriptCompiler::CompileOptions* compile_options) {
-  if (source.SourceLocationType() != ScriptSourceLocationType::kExternalFile)
+  if (classic_script.GetScriptSourceCode().SourceLocationType() !=
+      ScriptSourceLocationType::kExternalFile)
     return;
-  if (source.Url().IsEmpty())
+  if (classic_script.GetScriptSourceCode().Url().IsEmpty())
     return;
-  auto it = compilation_cache_.find(source.Url().GetString());
+  auto it = compilation_cache_.find(
+      classic_script.GetScriptSourceCode().Url().GetString());
   if (it == compilation_cache_.end()) {
-    auto requested =
-        requested_compilation_cache_.find(source.Url().GetString());
+    auto requested = requested_compilation_cache_.find(
+        classic_script.GetScriptSourceCode().Url().GetString());
     if (requested != requested_compilation_cache_.end() && requested->value)
       *compile_options = v8::ScriptCompiler::kEagerCompile;
     return;
@@ -1707,9 +1709,9 @@ void InspectorPageAgent::ApplyCompilationModeOverride(
 }
 
 void InspectorPageAgent::DidProduceCompilationCache(
-    const ScriptSourceCode& source,
+    const ClassicScript& classic_script,
     v8::Local<v8::Script> script) {
-  KURL url = source.Url();
+  KURL url = classic_script.GetScriptSourceCode().Url();
   if (url.IsEmpty())
     return;
   String url_string = url.GetString();
@@ -1717,13 +1719,15 @@ void InspectorPageAgent::DidProduceCompilationCache(
   if (requested == requested_compilation_cache_.end())
     return;
   requested_compilation_cache_.erase(requested);
-  if (source.SourceLocationType() != ScriptSourceLocationType::kExternalFile)
+  if (classic_script.GetScriptSourceCode().SourceLocationType() !=
+      ScriptSourceLocationType::kExternalFile)
     return;
   // TODO(caseq): should we rather issue updates if compiled code differs?
   if (compilation_cache_.Contains(url_string))
     return;
   static const int kMinimalCodeLength = 1024;
-  if (source.Source().length() < kMinimalCodeLength)
+  if (classic_script.GetScriptSourceCode().Source().length() <
+      kMinimalCodeLength)
     return;
   std::unique_ptr<v8::ScriptCompiler::CachedData> cached_data(
       v8::ScriptCompiler::CreateCodeCache(script->GetUnboundScript()));

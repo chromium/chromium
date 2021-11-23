@@ -172,8 +172,8 @@ interface CoreProbes {
   void DidCloseAudioContext(Document*);
   void DidResumeAudioContext(Document*);
   void DidSuspendAudioContext(Document*);
-  void DidProduceCompilationCache(CoreProbeSink*, const ScriptSourceCode& source, v8::Local<v8::Script> script);
-  void ApplyCompilationModeOverride(ExecutionContext*, const ScriptSourceCode& source, v8::ScriptCompiler::CachedData** cached_data, v8::ScriptCompiler::CompileOptions*);
+  void DidProduceCompilationCache(CoreProbeSink*, const ClassicScript&, v8::Local<v8::Script> script);
+  void ApplyCompilationModeOverride(ExecutionContext*, const ClassicScript&, v8::ScriptCompiler::CachedData** cached_data, v8::ScriptCompiler::CompileOptions*);
   void NodeCreated([Keep] Node* node);
   void PortalRemoteFrameCreated(Document*, HTMLPortalElement* portal_element);
   void FileChooserOpened([Keep] LocalFrame* frame, HTMLInputElement* element, bool* intercepted);

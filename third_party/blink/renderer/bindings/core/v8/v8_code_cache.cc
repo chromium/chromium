@@ -15,6 +15,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_initializer.h"
 #include "third_party/blink/renderer/core/inspector/inspector_trace_events.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
+#include "third_party/blink/renderer/core/script/classic_script.h"
 #include "third_party/blink/renderer/platform/instrumentation/histogram.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/blink/renderer/platform/loader/fetch/cached_metadata.h"
@@ -103,7 +104,8 @@ std::tuple<v8::ScriptCompiler::CompileOptions,
            V8CodeCache::ProduceCacheOptions,
            v8::ScriptCompiler::NoCacheReason>
 V8CodeCache::GetCompileOptions(mojom::blink::V8CacheOptions cache_options,
-                               const ScriptSourceCode& source) {
+                               const ClassicScript& classic_script) {
+  const ScriptSourceCode& source = classic_script.GetScriptSourceCode();
   return GetCompileOptions(cache_options, source.CacheHandler(),
                            source.Source().length(),
                            source.SourceLocationType());
