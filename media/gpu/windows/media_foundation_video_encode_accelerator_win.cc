@@ -335,7 +335,8 @@ bool MediaFoundationVideoEncodeAccelerator::Initialize(const Config& config,
     return false;
   }
 
-  if (!ActivateAsyncEncoder(pp_activate, encoder_count)) {
+  if (!ActivateAsyncEncoder(pp_activate, encoder_count,
+                            config.is_constrained_h264)) {
     DLOG(ERROR) << "Failed activating an async hardware encoder MFT.";
 
     if (pp_activate) {
@@ -578,7 +579,8 @@ uint32_t MediaFoundationVideoEncodeAccelerator::EnumerateHardwareEncoders(
 
 bool MediaFoundationVideoEncodeAccelerator::ActivateAsyncEncoder(
     IMFActivate** pp_activate,
-    uint32_t encoder_count) {
+    uint32_t encoder_count,
+    bool is_constrained_h264) {
   DVLOG(3) << __func__;
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -591,6 +593,25 @@ bool MediaFoundationVideoEncodeAccelerator::ActivateAsyncEncoder(
       hr = pp_activate[i]->ActivateObject(IID_PPV_ARGS(&encoder_));
       if (encoder_.Get() != nullptr) {
         DCHECK(SUCCEEDED(hr));
+
+        // Skip NVIDIA GPU due to https://crbug.com/1088650 for constrained
+        // baseline profile H.264 encoding, and go to the next instance
+        // according to merit value.
+        if (codec_ == VideoCodec::kH264 && is_constrained_h264) {
+          // Get the vendor id.
+          base::win::ScopedCoMem<WCHAR> vendor_id;
+          UINT32 id_length;
+          pp_activate[i]->GetAllocatedString(
+              MFT_ENUM_HARDWARE_VENDOR_ID_Attribute, &vendor_id, &id_length);
+          if (!_wcsnicmp(vendor_id, L"VEN_10DE", id_length)) {
+            DLOG(WARNING)
+                << "Skipped NVIDIA GPU due to https://crbug.com/1088650";
+            pp_activate[i]->ShutdownObject();
+            encoder_.Reset();
+            hr = E_FAIL;
+            continue;
+          }
+        }
 
         activate_ = pp_activate[i];
         pp_activate[i] = nullptr;

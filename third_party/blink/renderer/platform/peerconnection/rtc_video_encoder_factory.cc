@@ -170,6 +170,16 @@ SupportedFormats GetSupportedFormatsInternal(
       supported_formats.profiles.push_back(profile.profile);
       supported_formats.scalability_modes.push_back(profile.scalability_modes);
       supported_formats.sdp_formats.push_back(std::move(*format));
+
+#if defined(OS_WIN)
+      if (profile.profile == media::VideoCodecProfile::H264PROFILE_BASELINE) {
+        supported_formats.profiles.push_back(profile.profile);
+        supported_formats.scalability_modes.push_back(
+            profile.scalability_modes);
+        cricket::AddH264ConstrainedBaselineProfileToSupportedFormats(
+            &supported_formats.sdp_formats);
+      }
+#endif
     }
   }
 
