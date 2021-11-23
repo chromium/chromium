@@ -69,6 +69,10 @@ namespace device_reauth {
 class BiometricAuthenticator;
 }
 
+namespace version_info {
+enum class Channel;
+}
+
 namespace password_manager {
 
 class FieldInfoManager;
@@ -431,6 +435,9 @@ class PasswordManagerClient {
 
   // Returns the WebAuthnCredentialsDelegate, if available.
   virtual WebAuthnCredentialsDelegate* GetWebAuthnCredentialsDelegate();
+
+  // Returns the Chrome channel for the installation.
+  virtual version_info::Channel GetChannel() const;
 };
 
 }  // namespace password_manager

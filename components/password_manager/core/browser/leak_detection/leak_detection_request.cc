@@ -39,6 +39,7 @@ void RecordLookupResponseResult(
       "PasswordManager.LeakDetection.LookupSingleLeakResponseResult", result);
 }
 
+constexpr char kAuthHeaderApiKey[] = "x-goog-api-key";
 constexpr char kAuthHeaderBearer[] = "Bearer ";
 constexpr char kPostMethod[] = "POST";
 constexpr char kProtobufContentType[] = "application/x-protobuf";
@@ -64,6 +65,7 @@ LeakDetectionRequest::~LeakDetectionRequest() = default;
 void LeakDetectionRequest::LookupSingleLeak(
     network::mojom::URLLoaderFactory* url_loader_factory,
     const absl::optional<std::string>& access_token,
+    const absl::optional<std::string>& api_key,
     LookupSingleLeakPayload payload,
     LookupSingleLeakCallback callback) {
   net::NetworkTrafficAnnotationTag traffic_annotation =
@@ -116,6 +118,9 @@ void LeakDetectionRequest::LookupSingleLeak(
     resource_request->headers.SetHeader(
         net::HttpRequestHeaders::kAuthorization,
         base::StrCat({kAuthHeaderBearer, access_token.value()}));
+  }
+  if (api_key.has_value()) {
+    resource_request->headers.SetHeader(kAuthHeaderApiKey, api_key.value());
   }
 
   simple_url_loader_ = network::SimpleURLLoader::Create(

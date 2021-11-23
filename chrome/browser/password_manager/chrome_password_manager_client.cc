@@ -989,6 +989,10 @@ ChromePasswordManagerClient::GetWebAuthnCredentialsDelegate() {
   return &webauthn_credentials_delegate_;
 }
 
+version_info::Channel ChromePasswordManagerClient::GetChannel() const {
+  return chrome::GetChannel();
+}
+
 void ChromePasswordManagerClient::AutomaticGenerationAvailable(
     const autofill::password_generation::PasswordGenerationUIData& ui_data) {
   if (!password_manager::bad_message::CheckChildProcessSecurityPolicyForURL(

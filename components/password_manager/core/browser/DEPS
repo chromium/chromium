@@ -20,6 +20,7 @@ include_rules = [
   "+components/variations",
   "+components/webdata/common",
   "+components/variations/net",
+  "+components/version_info",
   "+crypto",
   "+google_apis",
   "+grit",

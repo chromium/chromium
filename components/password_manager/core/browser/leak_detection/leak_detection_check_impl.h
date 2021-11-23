@@ -40,7 +40,8 @@ class LeakDetectionCheckImpl : public LeakDetectionCheck {
   LeakDetectionCheckImpl(
       LeakDetectionDelegateInterface* delegate,
       signin::IdentityManager* identity_manager,
-      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+      absl::optional<std::string> api_key);
   ~LeakDetectionCheckImpl() override;
 
   // Returns true if there is a Google account to use for the leak detection
@@ -74,6 +75,7 @@ class LeakDetectionCheckImpl : public LeakDetectionCheck {
   void DoLeakRequest(
       LookupSingleLeakData data,
       absl::optional<std::string> access_token,
+      absl::optional<std::string> api_key,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
 
   // Called when the single leak lookup request is done. |response| is null in

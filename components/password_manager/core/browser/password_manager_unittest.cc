@@ -209,6 +209,7 @@ class MockPasswordManagerClient : public StubPasswordManagerClient {
               GetProfileType,
               (),
               (const, override));
+  MOCK_METHOD(version_info::Channel, GetChannel, (), (const override));
 
   // Workaround for std::unique_ptr<> lacking a copy constructor.
   bool PromptUserToSaveOrUpdatePassword(

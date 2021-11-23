@@ -18,17 +18,20 @@ class MockLeakDetectionCheckFactory : public LeakDetectionCheckFactory {
   ~MockLeakDetectionCheckFactory() override;
 
   // LeakDetectionCheckFactory:
-  MOCK_CONST_METHOD3(TryCreateLeakCheck,
-                     std::unique_ptr<LeakDetectionCheck>(
-                         LeakDetectionDelegateInterface*,
-                         signin::IdentityManager*,
-                         scoped_refptr<network::SharedURLLoaderFactory>));
+  MOCK_METHOD(std::unique_ptr<LeakDetectionCheck>,
+              TryCreateLeakCheck,
+              (LeakDetectionDelegateInterface*,
+               signin::IdentityManager*,
+               scoped_refptr<network::SharedURLLoaderFactory>,
+               version_info::Channel),
+              (const, override));
 
-  MOCK_CONST_METHOD3(TryCreateBulkLeakCheck,
-                     std::unique_ptr<BulkLeakCheck>(
-                         BulkLeakCheckDelegateInterface*,
-                         signin::IdentityManager*,
-                         scoped_refptr<network::SharedURLLoaderFactory>));
+  MOCK_METHOD(std::unique_ptr<BulkLeakCheck>,
+              TryCreateBulkLeakCheck,
+              (BulkLeakCheckDelegateInterface*,
+               signin::IdentityManager*,
+               scoped_refptr<network::SharedURLLoaderFactory>),
+              (const, override));
 };
 
 }  // namespace password_manager

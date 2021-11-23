@@ -70,6 +70,7 @@ class StubPasswordManagerClient : public PasswordManagerClient {
   const MockPasswordFeatureManager* GetPasswordFeatureManager() const override;
   MockPasswordFeatureManager* GetPasswordFeatureManager();
   bool IsAutofillAssistantUIVisible() const override;
+  version_info::Channel GetChannel() const override;
 
   safe_browsing::PasswordProtectionService* GetPasswordProtectionService()
       const override;

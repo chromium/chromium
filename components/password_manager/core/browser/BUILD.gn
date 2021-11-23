@@ -294,6 +294,7 @@ static_library("browser") {
     "//components/sync_preferences",
     "//components/url_formatter",
     "//components/variations/net",
+    "//components/version_info:channel",
     "//components/webdata/common",
     "//google_apis",
     "//net",
@@ -559,6 +560,7 @@ static_library("test_support") {
     ":affiliation",
     "//base",
     "//components/autofill/core/common",
+    "//components/version_info:channel",
     "//net:net",
     "//services/network:test_support",
   ]
@@ -765,6 +767,7 @@ source_set("unit_tests") {
     "//components/ukm:test_support",
     "//components/url_formatter",
     "//components/variations:test_support",
+    "//components/version_info:channel",
     "//google_apis:google_apis",
     "//net:test_support",
     "//services/metrics/public/cpp:ukm_builders",

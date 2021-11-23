@@ -25,6 +25,7 @@
 #include "components/prefs/testing_pref_service.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
+#include "components/version_info/channel.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -66,6 +67,7 @@ class MockPasswordManagerClient : public StubPasswordManagerClient {
               GetProfilePasswordStore,
               (),
               (const override));
+  MOCK_METHOD(version_info::Channel, GetChannel, (), (const override));
 };
 
 class MockLeakDetectionCheck : public LeakDetectionCheck {
@@ -191,7 +193,7 @@ TEST_F(LeakDetectionDelegateTest, StartCheck) {
   auto check_instance = std::make_unique<MockLeakDetectionCheck>();
   EXPECT_CALL(*check_instance,
               Start(form.url, form.username_value, form.password_value));
-  EXPECT_CALL(factory(), TryCreateLeakCheck(&delegate(), _, _))
+  EXPECT_CALL(factory(), TryCreateLeakCheck(&delegate(), _, _, _))
       .WillOnce(Return(ByMove(std::move(check_instance))));
   delegate().StartLeakCheck(form);
 
@@ -217,7 +219,7 @@ TEST_F(LeakDetectionDelegateTest, StartCheckWithStandardProtection) {
   auto check_instance = std::make_unique<MockLeakDetectionCheck>();
   EXPECT_CALL(*check_instance,
               Start(form.url, form.username_value, form.password_value));
-  EXPECT_CALL(factory(), TryCreateLeakCheck(&delegate(), _, _))
+  EXPECT_CALL(factory(), TryCreateLeakCheck(&delegate(), _, _, _))
       .WillOnce(Return(ByMove(std::move(check_instance))));
   delegate().StartLeakCheck(form);
 
@@ -233,7 +235,7 @@ TEST_F(LeakDetectionDelegateTest, StartCheckWithEnhancedProtection) {
   auto check_instance = std::make_unique<MockLeakDetectionCheck>();
   EXPECT_CALL(*check_instance,
               Start(form.url, form.username_value, form.password_value));
-  EXPECT_CALL(factory(), TryCreateLeakCheck(&delegate(), _, _))
+  EXPECT_CALL(factory(), TryCreateLeakCheck(&delegate(), _, _, _))
       .WillOnce(Return(ByMove(std::move(check_instance))));
   delegate().StartLeakCheck(form);
 
@@ -376,7 +378,7 @@ TEST_F(LeakDetectionDelegateTest, CallStartTwice) {
       .WillRepeatedly(testing::Return(store()));
   ExpectPasswords({});
   auto check_instance = std::make_unique<NiceMock<MockLeakDetectionCheck>>();
-  EXPECT_CALL(factory(), TryCreateLeakCheck(&delegate(), _, _))
+  EXPECT_CALL(factory(), TryCreateLeakCheck(&delegate(), _, _, _))
       .WillOnce(Return(ByMove(std::move(check_instance))));
   PasswordForm form = CreateTestForm();
   delegate().StartLeakCheck(form);
@@ -390,7 +392,7 @@ TEST_F(LeakDetectionDelegateTest, CallStartTwice) {
   // Start the check again on another form in the mean time.
   check_instance = std::make_unique<NiceMock<MockLeakDetectionCheck>>();
   ExpectPasswords({});
-  EXPECT_CALL(factory(), TryCreateLeakCheck(&delegate(), _, _))
+  EXPECT_CALL(factory(), TryCreateLeakCheck(&delegate(), _, _, _))
       .WillOnce(Return(ByMove(std::move(check_instance))));
   form.username_value = u"username";
   form.password_value = u"password";
@@ -405,6 +407,22 @@ TEST_F(LeakDetectionDelegateTest, CallStartTwice) {
   delegate_interface->OnLeakDetectionDone(
       /*is_leaked=*/true, form.url, form.username_value, form.password_value);
   WaitForPasswordStore();
+}
+
+TEST_F(LeakDetectionDelegateTest, PassesChromeChannel) {
+  SetLeakDetectionEnabled(true);
+  EXPECT_CALL(client(), IsIncognito).WillOnce(Return(false));
+  const PasswordForm form = CreateTestForm();
+  auto check_instance = std::make_unique<MockLeakDetectionCheck>();
+  EXPECT_CALL(*check_instance,
+              Start(form.url, form.username_value, form.password_value));
+  const version_info::Channel channel = version_info::Channel::STABLE;
+  EXPECT_CALL(client(), GetChannel).WillOnce(Return(channel));
+  EXPECT_CALL(factory(), TryCreateLeakCheck(&delegate(), _, _, channel))
+      .WillOnce(Return(ByMove(std::move(check_instance))));
+  delegate().StartLeakCheck(form);
+
+  EXPECT_TRUE(delegate().leak_check());
 }
 
 }  // namespace password_manager

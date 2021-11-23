@@ -59,7 +59,8 @@ void LeakDetectionDelegate::StartLeakCheck(const PasswordForm& form) {
 
   DCHECK(!form.password_value.empty());
   leak_check_ = leak_factory_->TryCreateLeakCheck(
-      this, client_->GetIdentityManager(), client_->GetURLLoaderFactory());
+      this, client_->GetIdentityManager(), client_->GetURLLoaderFactory(),
+      client_->GetChannel());
   // Reset the helper to avoid notifications from the currently running check.
   helper_.reset();
   if (leak_check_) {

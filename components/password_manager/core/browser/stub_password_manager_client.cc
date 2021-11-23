@@ -9,6 +9,7 @@
 #include "base/stl_util.h"
 #include "components/password_manager/core/browser/credentials_filter.h"
 #include "components/password_manager/core/browser/password_form_manager_for_ui.h"
+#include "components/version_info/channel.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace password_manager {
@@ -170,6 +171,10 @@ FieldInfoManager* StubPasswordManagerClient::GetFieldInfoManager() const {
 
 bool StubPasswordManagerClient::IsAutofillAssistantUIVisible() const {
   return false;
+}
+
+version_info::Channel StubPasswordManagerClient::GetChannel() const {
+  return version_info::Channel::UNKNOWN;
 }
 
 }  // namespace password_manager

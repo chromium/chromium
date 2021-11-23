@@ -10,6 +10,7 @@
 #include "components/password_manager/core/browser/password_form_manager_for_ui.h"
 #include "components/password_manager/core/browser/password_manager_client.h"
 #include "components/signin/public/base/signin_metrics.h"
+#include "components/version_info/channel.h"
 #include "url/origin.h"
 
 namespace password_manager {
@@ -153,4 +154,9 @@ WebAuthnCredentialsDelegate*
 PasswordManagerClient::GetWebAuthnCredentialsDelegate() {
   return nullptr;
 }
+
+version_info::Channel PasswordManagerClient::GetChannel() const {
+  return version_info::Channel::UNKNOWN;
+}
+
 }  // namespace password_manager
