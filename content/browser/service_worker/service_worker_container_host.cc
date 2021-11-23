@@ -18,9 +18,9 @@
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
 #include "content/browser/service_worker/service_worker_object_host.h"
 #include "content/browser/service_worker/service_worker_registration_object_host.h"
+#include "content/browser/service_worker/service_worker_security_utils.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/common/content_navigation_policy.h"
-#include "content/common/service_worker/service_worker_utils.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/origin_util.h"
@@ -185,7 +185,8 @@ void ServiceWorkerContainerHost::Register(
   }
 
   std::vector<GURL> urls = {url_, options->scope, script_url};
-  if (!ServiceWorkerUtils::AllOriginsMatchAndCanAccessServiceWorkers(urls)) {
+  if (!service_worker_security_utils::AllOriginsMatchAndCanAccessServiceWorkers(
+          urls)) {
     mojo::ReportBadMessage(ServiceWorkerConsts::kBadMessageImproperOrigins);
     // ReportBadMessage() will kill the renderer process, but Mojo complains if
     // the callback is not run. Just run it with nonsense arguments.
@@ -1581,7 +1582,8 @@ bool ServiceWorkerContainerHost::IsValidGetRegistrationMessage(
     return false;
   }
   std::vector<GURL> urls = {url_, client_url};
-  if (!ServiceWorkerUtils::AllOriginsMatchAndCanAccessServiceWorkers(urls)) {
+  if (!service_worker_security_utils::AllOriginsMatchAndCanAccessServiceWorkers(
+          urls)) {
     *out_error = ServiceWorkerConsts::kBadMessageImproperOrigins;
     return false;
   }
@@ -1664,7 +1666,7 @@ bool ServiceWorkerContainerHost::CanServeContainerHostMethods(
 blink::StorageKey
 ServiceWorkerContainerHost::GetCorrectStorageKeyForWebSecurityState(
     const GURL& url) const {
-  if (ServiceWorkerUtils::IsWebSecurityDisabled()) {
+  if (service_worker_security_utils::IsWebSecurityDisabled()) {
     url::Origin other_origin = url::Origin::Create(url);
 
     if (key_.origin() != other_origin)

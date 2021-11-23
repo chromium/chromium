@@ -38,8 +38,8 @@
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
 #include "content/browser/service_worker/service_worker_host.h"
 #include "content/browser/service_worker/service_worker_installed_scripts_sender.h"
+#include "content/browser/service_worker/service_worker_security_utils.h"
 #include "content/common/content_navigation_policy.h"
-#include "content/common/service_worker/service_worker_utils.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/page_navigator.h"
@@ -2349,7 +2349,7 @@ bool ServiceWorkerVersion::IsStartWorkerAllowed() const {
   // Check that the worker is allowed on this origin. It's possible a
   // worker was previously allowed and installed, but later the embedder's
   // policy or binary changed to disallow this origin.
-  if (!ServiceWorkerUtils::AllOriginsMatchAndCanAccessServiceWorkers(
+  if (!service_worker_security_utils::AllOriginsMatchAndCanAccessServiceWorkers(
           {script_url_})) {
     return false;
   }

@@ -5,14 +5,9 @@
 #include "content/common/service_worker/service_worker_utils.h"
 
 #include "base/check.h"
-#include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/notreached.h"
-#include "base/numerics/safe_math.h"
 #include "base/strings/string_util.h"
-#include "content/public/common/content_features.h"
-#include "content/public/common/content_switches.h"
-#include "content/public/common/origin_util.h"
 #include "net/base/load_flags.h"
 #include "net/http/http_byte_range.h"
 #include "services/network/public/cpp/features.h"
@@ -73,32 +68,6 @@ bool ServiceWorkerUtils::ContainsDisallowedCharacter(
 }
 
 // static
-bool ServiceWorkerUtils::AllOriginsMatchAndCanAccessServiceWorkers(
-    const std::vector<GURL>& urls) {
-  // (A) Check if all origins can access service worker. Every URL must be
-  // checked despite the same-origin check below in (B), because GetOrigin()
-  // uses the inner URL for filesystem URLs so that https://foo/ and
-  // filesystem:https://foo/ are considered equal, but filesystem URLs cannot
-  // access service worker.
-  for (const GURL& url : urls) {
-    if (!OriginCanAccessServiceWorkers(url))
-      return false;
-  }
-
-  // (B) Check if all origins are equal. Cross-origin access is permitted when
-  // --disable-web-security is set.
-  if (IsWebSecurityDisabled()) {
-    return true;
-  }
-  const GURL& first = urls.front();
-  for (const GURL& url : urls) {
-    if (first.DeprecatedGetOriginAsURL() != url.DeprecatedGetOriginAsURL())
-      return false;
-  }
-  return true;
-}
-
-// static
 blink::mojom::FetchCacheMode ServiceWorkerUtils::GetCacheModeFromLoadFlags(
     int load_flags) {
   if (load_flags & net::LOAD_DISABLE_CACHE)
@@ -143,12 +112,6 @@ const char* ServiceWorkerUtils::FetchResponseSourceToSuffix(
   }
   NOTREACHED();
   return ".Unknown";
-}
-
-// static
-bool ServiceWorkerUtils::IsWebSecurityDisabled() {
-  return base::CommandLine::ForCurrentProcess()->HasSwitch(
-      switches::kDisableWebSecurity);
 }
 
 }  // namespace content

@@ -14,7 +14,7 @@
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
 #include "content/browser/service_worker/service_worker_host.h"
 #include "content/browser/service_worker/service_worker_object_host.h"
-#include "content/common/service_worker/service_worker_utils.h"
+#include "content/browser/service_worker/service_worker_security_utils.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "net/http/http_util.h"
@@ -476,7 +476,8 @@ bool ServiceWorkerRegistrationObjectHost::CanServeRegistrationObjectHostMethods(
   }
 
   std::vector<GURL> urls = {container_host_->url(), registration_->scope()};
-  if (!ServiceWorkerUtils::AllOriginsMatchAndCanAccessServiceWorkers(urls)) {
+  if (!service_worker_security_utils::AllOriginsMatchAndCanAccessServiceWorkers(
+          urls)) {
     receivers_.ReportBadMessage(
         ServiceWorkerConsts::kBadMessageImproperOrigins);
     return false;
