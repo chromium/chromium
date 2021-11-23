@@ -3026,7 +3026,6 @@ crbug.com/626703 [ Mac11 ] virtual/scroll-unification-unified-autoplay/external/
 crbug.com/626703 external/wpt/css/css-backgrounds/background-clip/clip-text-multi-line.html [ Failure ]
 crbug.com/626703 virtual/threaded/external/wpt/css/css-backgrounds/background-clip/clip-text-multi-line.html [ Failure ]
 crbug.com/626703 [ Mac11 ] external/wpt/secure-payment-confirmation/authentication-accepted.https.html [ Failure Timeout ]
-crbug.com/626703 [ Mac10.15 ] wpt_internal/fenced_frame/create-credential.https.html [ Skip Timeout ]
 crbug.com/626703 [ Mac11-arm64 ] external/wpt/css/css-shapes/shape-outside/shape-image/shape-image-004.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-contain/contain-layout-019.html [ Failure ]
 crbug.com/626703 [ Linux ] virtual/layout_ng_block_frag/external/wpt/css/css-contain/contain-layout-019.html [ Failure ]
@@ -3042,7 +3041,6 @@ crbug.com/626703 [ Win10.20h2 ] external/wpt/web-locks/bfcache/abort.tentative.h
 crbug.com/626703 [ Linux ] external/wpt/custom-elements/form-associated/ElementInternals-validation.html [ Crash Failure ]
 crbug.com/626703 [ Mac ] external/wpt/custom-elements/form-associated/ElementInternals-validation.html [ Crash Failure ]
 crbug.com/626703 [ Win10.20h2 ] external/wpt/custom-elements/form-associated/ElementInternals-validation.html [ Crash Failure ]
-crbug.com/626703 [ Mac11 ] virtual/fenced-frame-mparch/wpt_internal/fenced_frame/create-credential.https.html [ Crash ]
 crbug.com/626703 [ Mac10.13 ] external/wpt/html/semantics/forms/the-input-element/show-picker.tentative.html [ Timeout ]
 crbug.com/626703 [ Mac10.14 ] external/wpt/html/semantics/forms/the-input-element/show-picker.tentative.html [ Timeout ]
 crbug.com/626703 [ Mac10.15 ] external/wpt/html/semantics/forms/the-input-element/show-picker.tentative.html [ Timeout ]
@@ -7289,3 +7287,6 @@ crbug.com/1272203 external/wpt/websockets/stream/tentative/backpressure-send.any
 
 # Times out flakily on all platforms. Previously marked slow, crbug.com/874695.
 crbug.com/1272801 http/tests/permissions/chromium/test-request-sharedworker.html [ Pass Timeout ]
+
+# Sheriff 2021-11-23
+crbug.com/1270963 wpt_internal/fenced_frame/create-credential.https.html [ Skip ]
