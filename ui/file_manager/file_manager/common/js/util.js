@@ -13,6 +13,7 @@ import {decorate} from 'chrome://resources/js/cr/ui.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {queryRequiredElement} from 'chrome://resources/js/util.m.js';
 
+import {promisify} from '../../common/js/api.js';
 import {EntryLocation} from '../../externs/entry_location.js';
 import {FakeEntry, FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
 import {VolumeInfo} from '../../externs/volume_info.js';
@@ -1615,16 +1616,24 @@ util.getEntries = volumeInfo => {
 
 /**
  * Executes a functions only when the context is not the incognito one in a
- * regular session.
- * @param {function()} callback
+ * regular session. Returns a promise that when fulfilled informs us whether or
+ * not the callback was invoked.
+ * @param {function():void} callback
+ * @return {!Promise<boolean>}
  */
-util.doIfPrimaryContext = callback => {
-  chrome.fileManagerPrivate.getProfiles((profiles) => {
-    if ((profiles[0] && profiles[0].profileId == '$guest') ||
-        !chrome.extension.inIncognitoContext) {
+util.doIfPrimaryContext = async (callback) => {
+  const guestMode = await util.isInGuestMode();
+  if (guestMode) {
+    callback();
+    return true;
+  }
+  if (!window.isSWA) {
+    if (!chrome.extension.inIncognitoContext) {
       callback();
+      return true;
     }
-  });
+  }
+  return false;
 };
 
 /**
@@ -1828,6 +1837,20 @@ util.descriptorEqual = function(left, right) {
  */
 util.makeTaskID = function({appId, taskType, actionId}) {
   return `${appId}|${taskType}|${actionId}`;
+};
+
+/**
+ * Returns a new promise which, when fulfilled carries a boolean indicating
+ * whether the app is in the guest mode. Typical use:
+ *
+ * util.isInGuestMode().then(
+ *     (guest) => { if (guest) { ... in guest mode } }
+ * );
+ * @return {Promise<boolean>}
+ */
+util.isInGuestMode = async () => {
+  const profiles = await promisify(chrome.fileManagerPrivate.getProfiles);
+  return profiles.length > 0 && profiles[0].profileId === '$guest';
 };
 
 export {util};

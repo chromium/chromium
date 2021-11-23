@@ -2912,9 +2912,15 @@ CommandHandler.COMMANDS_['show-providers-submenu'] =
 
   /** @override */
   canExecute(event, fileManager) {
-    event.canExecute =
-        (fileManager.dialogType === DialogType.FULL_PAGE &&
-         !chrome.extension.inIncognitoContext);
+    if (fileManager.dialogType !== DialogType.FULL_PAGE) {
+      event.canExecute = false;
+    } else {
+      if (window.isSWA) {
+        event.canExecute = !fileManager.guestMode;
+      } else {
+        event.canExecute = !chrome.extension.inIncognitoContext;
+      }
+    }
   }
 };
 
