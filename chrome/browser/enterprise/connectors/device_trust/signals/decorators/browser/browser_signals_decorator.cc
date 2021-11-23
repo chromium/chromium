@@ -7,9 +7,7 @@
 #include <functional>
 
 #include "base/check.h"
-#include "base/task/bind_post_task.h"
 #include "base/task/thread_pool.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "chrome/browser/enterprise/signals/device_info_fetcher.h"
 #include "chrome/browser/enterprise/signals/signals_common.h"
 #include "components/enterprise/browser/controller/browser_dm_token_storage.h"
@@ -25,14 +23,11 @@ using policy::CloudPolicyStore;
 
 BrowserSignalsDecorator::BrowserSignalsDecorator(
     BrowserDMTokenStorage* dm_token_storage,
-    CloudPolicyStore* cloud_policy_store,
-    std::unique_ptr<enterprise_signals::DeviceInfoFetcher> device_info_fetcher)
+    CloudPolicyStore* cloud_policy_store)
     : dm_token_storage_(dm_token_storage),
-      cloud_policy_store_(cloud_policy_store),
-      device_info_fetcher_(std::move(device_info_fetcher)) {
+      cloud_policy_store_(cloud_policy_store) {
   DCHECK(dm_token_storage_);
   DCHECK(cloud_policy_store_);
-  DCHECK(device_info_fetcher_);
 }
 
 BrowserSignalsDecorator::~BrowserSignalsDecorator() = default;
@@ -49,31 +44,44 @@ void BrowserSignalsDecorator::Decorate(DeviceTrustSignals& signals,
                                       : policy->display_domain());
   }
 
-  // Wrap the done closure to ensure it gets invoked on the calling sequence.
-  base::OnceClosure wrapped_done = base::BindPostTask(
-      base::SequencedTaskRunnerHandle::Get(), std::move(done_closure));
-
-  base::ThreadPool::PostTask(
-      FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
-      base::BindOnce(&BrowserSignalsDecorator::DecorateOnBackgroundThread,
-                     weak_ptr_factory_.GetWeakPtr(), std::ref(signals),
-                     std::move(wrapped_done)));
-}
-
-void BrowserSignalsDecorator::DecorateOnBackgroundThread(
-    DeviceTrustSignals& signals,
-    base::OnceClosure done_closure) {
-  // TODO(b/178421844): Look into adding caching support for these signals, as
-  // they will never change throughout the browser's lifetime.
-  enterprise_signals::DeviceInfo device_info = device_info_fetcher_->Fetch();
-  signals.set_serial_number(device_info.serial_number);
-  absl::optional<bool> is_disk_encrypted =
-      enterprise_signals::SettingValueToBool(device_info.disk_encrypted);
-  if (is_disk_encrypted.has_value()) {
-    signals.set_is_disk_encrypted(is_disk_encrypted.value());
+  if (cache_initialized_) {
+    UpdateFromCache(signals);
+    std::move(done_closure).Run();
+    return;
   }
 
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_BLOCKING},
+      base::BindOnce(&enterprise_signals::DeviceInfoFetcher::Fetch,
+                     enterprise_signals::DeviceInfoFetcher::CreateInstance()),
+      base::BindOnce(&BrowserSignalsDecorator::OnDeviceInfoFetched,
+                     weak_ptr_factory_.GetWeakPtr(), std::ref(signals),
+                     std::move(done_closure)));
+}
+
+void BrowserSignalsDecorator::OnDeviceInfoFetched(
+    DeviceTrustSignals& signals,
+    base::OnceClosure done_closure,
+    const enterprise_signals::DeviceInfo& device_info) {
+  cached_serial_number_ = device_info.serial_number;
+  cached_is_disk_encrypted_ =
+      enterprise_signals::SettingValueToBool(device_info.disk_encrypted);
+
+  cache_initialized_ = true;
+  UpdateFromCache(signals);
+
   std::move(done_closure).Run();
+}
+
+void BrowserSignalsDecorator::UpdateFromCache(DeviceTrustSignals& signals) {
+  DCHECK(cache_initialized_);
+  if (cached_serial_number_) {
+    signals.set_serial_number(cached_serial_number_.value());
+  }
+
+  if (cached_is_disk_encrypted_.has_value()) {
+    signals.set_is_disk_encrypted(cached_is_disk_encrypted_.value());
+  }
 }
 
 }  // namespace enterprise_connectors
