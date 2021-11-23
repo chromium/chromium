@@ -264,7 +264,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Translate.DeclineTranslateCloseInfobar" units="units"
-    expires_after="M105">
+    expires_after="2022-06-30">
   <owner>megjablon@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
@@ -394,7 +394,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Translate.LanguageDetection.LanguageVerification"
-    enum="TranslateLanguageVerification" expires_after="M94">
+    enum="TranslateLanguageVerification" expires_after="2022-06-30">
   <owner>curranmax@google.com</owner>
   <owner>megjablon@google.com</owner>
   <owner>chrome-language@google.com</owner>
@@ -559,7 +559,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Translate.NeverTranslateSite" units="units"
-    expires_after="M105">
+    expires_after="2022-06-30">
   <owner>megjablon@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
@@ -865,7 +865,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Translate.Ranker.QueryResult" enum="BooleanAccepted"
-    expires_after="M85">
+    expires_after="2022-06-30">
   <owner>rogerm@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
@@ -978,13 +978,13 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Translate.SimilarLanguageMatch" enum="BooleanMatched"
-    expires_after="M77">
+    expires_after="2022-06-30">
   <owner>megjablon@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
     This metrics is logged whenever a page is loaded. The logged value is
     &quot;Mathced&quot; when the CLD-detected language differs from the page
-    language code , and the two languages are such similar languages. In that
+    language code, and the two languages are such similar languages. In that
     case, Chrome ignore the CLD-determined language and instead uses the page
     language code. The page language code is decided by Content-Language and
     HTML lang attribute.
@@ -1088,7 +1088,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Translate.TranslateFrameCount" units="frames"
-    expires_after="M88">
+    expires_after="2022-06-30">
   <owner>sclittle@google.com</owner>
   <owner>megjablon@google.com</owner>
   <owner>chrome-language@google.com</owner>
