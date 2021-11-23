@@ -299,6 +299,11 @@ FeaturePromoControllerViews::CloseBubbleAndContinuePromo(
   return PromoHandle(weak_ptr_factory_.GetWeakPtr());
 }
 
+base::WeakPtr<FeaturePromoController>
+FeaturePromoControllerViews::GetAsWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 // static
 void FeaturePromoControllerViews::BlockActiveWindowCheckForTesting() {
   active_window_check_blocked_for_testing = true;

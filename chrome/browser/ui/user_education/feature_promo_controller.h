@@ -59,6 +59,10 @@ class FeaturePromoController {
   // called for |iph_feature|.
   virtual bool CloseBubble(const base::Feature& iph_feature) = 0;
 
+  // Returns a weak pointer to this object in case you need to access it from
+  // an object which is not guaranteed not to outlive this service.
+  virtual base::WeakPtr<FeaturePromoController> GetAsWeakPtr() = 0;
+
   class PromoHandle;
 
   // Like CloseBubble() but does not end the promo yet. The caller takes

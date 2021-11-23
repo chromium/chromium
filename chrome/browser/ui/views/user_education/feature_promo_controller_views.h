@@ -98,6 +98,7 @@ class FeaturePromoControllerViews : public FeaturePromoController {
   bool CloseBubble(const base::Feature& iph_feature) override;
   PromoHandle CloseBubbleAndContinuePromo(
       const base::Feature& iph_feature) override;
+  base::WeakPtr<FeaturePromoController> GetAsWeakPtr() override;
 
   // Gets the IPH backend. Provided for convenience.
   feature_engagement::Tracker* feature_engagement_tracker() { return tracker_; }
