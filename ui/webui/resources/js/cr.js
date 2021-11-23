@@ -61,7 +61,7 @@ var cr = cr || function(global) {
   }
 
   /**
-   * The kind of property to define in {@code defineProperty}.
+   * The kind of property to define in {@code Object.defineProperty}.
    * @enum {string}
    * @const
    */
@@ -184,42 +184,6 @@ var cr = cr || function(global) {
     // TODO(dbeam): replace with assertNotReached() in assert.js when I can coax
     // the browser/unit tests to preprocess this file through grit.
     throw 'not reached';
-  }
-
-  /**
-   * Defines a property on an object. When the setter changes the value a
-   * property change event with the type {@code name + 'Change'} is fired.
-   * @param {!Object} obj The object to define the property for.
-   * @param {string} name The name of the property.
-   * @param {PropertyKind=} opt_kind What kind of underlying storage to use.
-   * @param {function(*, *):void=} opt_setHook A function to run after the
-   *     property is set, but before the propertyChange event is fired.
-   *
-   * TODO(crbug.com/425829): This function makes use of deprecated getter or
-   * setter functions.
-   * @suppress {deprecated}
-   */
-  function defineProperty(obj, name, opt_kind, opt_setHook) {
-    if (typeof obj === 'function') {
-      obj = obj.prototype;
-    }
-
-    const kind = /** @type {PropertyKind} */ (opt_kind || PropertyKind.JS);
-
-    // TODO(crbug.com/425829): Remove above suppression once we no longer use
-    // deprecated functions lookupGetter, defineGetter, lookupSetter, and
-    // defineSetter.
-    // eslint-disable-next-line no-restricted-properties
-    if (!obj.__lookupGetter__(name)) {
-      // eslint-disable-next-line no-restricted-properties
-      obj.__defineGetter__(name, getGetter(name, kind));
-    }
-
-    // eslint-disable-next-line no-restricted-properties
-    if (!obj.__lookupSetter__(name)) {
-      // eslint-disable-next-line no-restricted-properties
-      obj.__defineSetter__(name, getSetter(name, kind, opt_setHook));
-    }
   }
 
   /**
@@ -433,7 +397,6 @@ var cr = cr || function(global) {
   return {
     addSingletonGetter: addSingletonGetter,
     define: define,
-    defineProperty: defineProperty,
     getPropertyDescriptor: getPropertyDescriptor,
     dispatchPropertyChange: dispatchPropertyChange,
     dispatchSimpleEvent: dispatchSimpleEvent,
