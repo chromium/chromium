@@ -262,7 +262,8 @@ class PasswordManagerSyncTest : public SyncTest {
     scoped_refptr<password_manager::PasswordStoreInterface> password_store =
         passwords_helper::GetProfilePasswordStoreInterface(0);
     PasswordStoreResultsObserver syncer;
-    password_store->GetAllLoginsWithAffiliationAndBrandingInformation(&syncer);
+    password_store->GetAllLoginsWithAffiliationAndBrandingInformation(
+        syncer.GetWeakPtr());
     return syncer.WaitForResults();
   }
 
@@ -273,7 +274,8 @@ class PasswordManagerSyncTest : public SyncTest {
     scoped_refptr<password_manager::PasswordStoreInterface> password_store =
         passwords_helper::GetAccountPasswordStoreInterface(0);
     PasswordStoreResultsObserver syncer;
-    password_store->GetAllLoginsWithAffiliationAndBrandingInformation(&syncer);
+    password_store->GetAllLoginsWithAffiliationAndBrandingInformation(
+        syncer.GetWeakPtr());
     return syncer.WaitForResults();
   }
 

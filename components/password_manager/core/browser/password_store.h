@@ -16,6 +16,7 @@
 #include "base/cancelable_callback.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
@@ -103,11 +104,12 @@ class PasswordStore : public PasswordStoreInterface {
   void Unblocklist(const PasswordFormDigest& form_digest,
                    base::OnceClosure completion) override;
   void GetLogins(const PasswordFormDigest& form,
-                 PasswordStoreConsumer* consumer) override;
-  void GetAutofillableLogins(PasswordStoreConsumer* consumer) override;
-  void GetAllLogins(PasswordStoreConsumer* consumer) override;
+                 base::WeakPtr<PasswordStoreConsumer> consumer) override;
+  void GetAutofillableLogins(
+      base::WeakPtr<PasswordStoreConsumer> consumer) override;
+  void GetAllLogins(base::WeakPtr<PasswordStoreConsumer> consumer) override;
   void GetAllLoginsWithAffiliationAndBrandingInformation(
-      PasswordStoreConsumer* consumer) override;
+      base::WeakPtr<PasswordStoreConsumer> consumer) override;
   void AddObserver(Observer* observer) override;
   void RemoveObserver(Observer* observer) override;
   SmartBubbleStatsStore* GetSmartBubbleStatsStore() override;

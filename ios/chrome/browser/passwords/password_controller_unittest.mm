@@ -1362,8 +1362,9 @@ TEST_F(PasswordControllerTest, SendingToStoreDynamicallyAddedFormsOnFocus) {
   // parser is gone.
   EXPECT_CALL(*store_, GetLogins(expected_form_digest, _))
       .WillRepeatedly(testing::Invoke(
-          [&get_logins_called](const password_manager::PasswordFormDigest&,
-                               password_manager::PasswordStoreConsumer*) {
+          [&get_logins_called](
+              const password_manager::PasswordFormDigest&,
+              base::WeakPtr<password_manager::PasswordStoreConsumer>) {
             get_logins_called = true;
           }));
 

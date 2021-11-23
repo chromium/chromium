@@ -62,13 +62,13 @@ void PostSaveCompromisedHelper::AnalyzeLeakedCredentials(
           &PostSaveCompromisedHelper::AnalyzeLeakedCredentialsInternal,
           base::Unretained(this)));
 
-  profile_store->GetAutofillableLogins(this);
+  profile_store->GetAutofillableLogins(weak_ptr_factory_.GetWeakPtr());
   if (account_store)
-    account_store->GetAutofillableLogins(this);
+    account_store->GetAutofillableLogins(weak_ptr_factory_.GetWeakPtr());
 }
 
 void PostSaveCompromisedHelper::OnGetPasswordStoreResults(
-    std::vector<std::unique_ptr<password_manager::PasswordForm>> results) {
+    std::vector<std::unique_ptr<PasswordForm>> results) {
   base::ranges::move(results, std::back_inserter(passwords_));
   forms_received_.Run();
 }

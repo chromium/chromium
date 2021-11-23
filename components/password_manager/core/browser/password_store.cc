@@ -221,15 +221,15 @@ void PasswordStore::Unblocklist(const PasswordFormDigest& form_digest,
 }
 
 void PasswordStore::GetLogins(const PasswordFormDigest& form,
-                              PasswordStoreConsumer* consumer) {
+                              base::WeakPtr<PasswordStoreConsumer> consumer) {
   DCHECK(main_task_runner_->RunsTasksInCurrentSequence());
   if (!backend_)
     return;  // Once the shutdown started, ignore new requests.
   TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("passwords", "PasswordStore::GetLogins",
-                                    consumer);
+                                    consumer.get());
 
   scoped_refptr<GetLoginsWithAffiliationsRequestHandler> request_handler =
-      new GetLoginsWithAffiliationsRequestHandler(form, consumer->GetWeakPtr(),
+      new GetLoginsWithAffiliationsRequestHandler(form, consumer,
                                                   /*store=*/this);
 
   if (affiliated_match_helper_) {
@@ -256,17 +256,19 @@ void PasswordStore::GetLogins(const PasswordFormDigest& form,
                                     FormSupportsPSL(form), {form});
 }
 
-void PasswordStore::GetAutofillableLogins(PasswordStoreConsumer* consumer) {
+void PasswordStore::GetAutofillableLogins(
+    base::WeakPtr<PasswordStoreConsumer> consumer) {
   DCHECK(main_task_runner_->RunsTasksInCurrentSequence());
   if (!backend_)
     return;  // Once the shutdown started, ignore new requests.
 
   backend_->GetAutofillableLoginsAsync(
       base::BindOnce(&PasswordStoreConsumer::OnGetPasswordStoreResultsFrom,
-                     consumer->GetWeakPtr(), base::RetainedRef(this)));
+                     consumer, base::RetainedRef(this)));
 }
 
-void PasswordStore::GetAllLogins(PasswordStoreConsumer* consumer) {
+void PasswordStore::GetAllLogins(
+    base::WeakPtr<PasswordStoreConsumer> consumer) {
   DCHECK(main_task_runner_->RunsTasksInCurrentSequence());
   if (!backend_)
     return;  // Once the shutdown started, ignore new requests.
@@ -274,19 +276,19 @@ void PasswordStore::GetAllLogins(PasswordStoreConsumer* consumer) {
   backend_->GetAllLoginsAsync(
       base::BindOnce(&GetLoginsOrEmptyListOnFailure)
           .Then(base::BindOnce(
-              &PasswordStoreConsumer::OnGetPasswordStoreResultsFrom,
-              consumer->GetWeakPtr(), base::RetainedRef(this))));
+              &PasswordStoreConsumer::OnGetPasswordStoreResultsFrom, consumer,
+              base::RetainedRef(this))));
 }
 
 void PasswordStore::GetAllLoginsWithAffiliationAndBrandingInformation(
-    PasswordStoreConsumer* consumer) {
+    base::WeakPtr<PasswordStoreConsumer> consumer) {
   DCHECK(main_task_runner_->RunsTasksInCurrentSequence());
   if (!backend_)
     return;  // Once the shutdown started, ignore new requests.
 
   auto consumer_reply =
       base::BindOnce(&PasswordStoreConsumer::OnGetPasswordStoreResultsFrom,
-                     consumer->GetWeakPtr(), base::RetainedRef(this));
+                     consumer, base::RetainedRef(this));
 
   auto affiliation_injection =
       base::BindOnce(&PasswordStore::InjectAffiliationAndBrandingInformation,

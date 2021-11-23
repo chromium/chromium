@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/password_manager/core/browser/password_reuse_manager.h"
 #include "components/password_manager/core/browser/password_store_consumer.h"
@@ -108,6 +109,8 @@ class PasswordReuseManagerImpl : public PasswordReuseManager,
   // Responsible for saving, clearing, retrieving and encryption of a password
   // hash data in preferences.
   HashPasswordManager hash_password_manager_;
+
+  base::WeakPtrFactory<PasswordReuseManagerImpl> weak_ptr_factory_{this};
 };
 
 }  // namespace password_manager

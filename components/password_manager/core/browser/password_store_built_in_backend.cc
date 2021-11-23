@@ -459,7 +459,7 @@ void PasswordStoreBuiltInBackend::RemoveSiteStats(const GURL& origin_domain) {
 
 void PasswordStoreBuiltInBackend::GetSiteStats(
     const GURL& origin_domain,
-    PasswordStoreConsumer* consumer) {
+    base::WeakPtr<PasswordStoreConsumer> consumer) {
   DCHECK(!was_shutdown_);
   DCHECK(main_task_runner_->RunsTasksInCurrentSequence());
   consumer->cancelable_task_tracker()->PostTaskAndReplyWithResult(
@@ -467,8 +467,7 @@ void PasswordStoreBuiltInBackend::GetSiteStats(
       base::BindOnce(&PasswordStoreBuiltInBackend::GetSiteStatsInternal,
                      base::Unretained(this),  // Safe until `Shutdown()`.
                      origin_domain),
-      base::BindOnce(&PasswordStoreConsumer::OnGetSiteStatistics,
-                     consumer->GetWeakPtr()));
+      base::BindOnce(&PasswordStoreConsumer::OnGetSiteStatistics, consumer));
 }
 
 void PasswordStoreBuiltInBackend::RemoveStatisticsByOriginAndTime(
@@ -497,15 +496,14 @@ void PasswordStoreBuiltInBackend::AddFieldInfo(const FieldInfo& field_info) {
 }
 
 void PasswordStoreBuiltInBackend::GetAllFieldInfo(
-    PasswordStoreConsumer* consumer) {
+    base::WeakPtr<PasswordStoreConsumer> consumer) {
   DCHECK(!was_shutdown_);
   DCHECK(main_task_runner_->RunsTasksInCurrentSequence());
   consumer->cancelable_task_tracker()->PostTaskAndReplyWithResult(
       background_task_runner_.get(), FROM_HERE,
       base::BindOnce(&PasswordStoreBuiltInBackend::GetAllFieldInfoInternal,
                      base::Unretained(this)),  // Safe until `Shutdown()`.
-      base::BindOnce(&PasswordStoreConsumer::OnGetAllFieldInfo,
-                     consumer->GetWeakPtr()));
+      base::BindOnce(&PasswordStoreConsumer::OnGetAllFieldInfo, consumer));
 }
 
 void PasswordStoreBuiltInBackend::RemoveFieldInfoByTime(

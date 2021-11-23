@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_PASSWORD_MANAGER_ANDROID_ALL_PASSWORDS_BOTTOM_SHEET_HELPER_H_
 
 #include "base/callback_forward.h"
+#include "base/memory/weak_ptr.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
 #include "components/password_manager/core/browser/password_store_consumer.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -53,6 +54,8 @@ class AllPasswordsBottomSheetHelper
   // triggered if the store returns suggestions.
   autofill::mojom::FocusedFieldType last_focused_field_type_ =
       autofill::mojom::FocusedFieldType::kUnknown;
+
+  base::WeakPtrFactory<AllPasswordsBottomSheetHelper> weak_ptr_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_PASSWORD_MANAGER_ANDROID_ALL_PASSWORDS_BOTTOM_SHEET_HELPER_H_

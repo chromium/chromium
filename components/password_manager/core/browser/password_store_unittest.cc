@@ -107,6 +107,18 @@ class MockPasswordStoreConsumer : public PasswordStoreConsumer {
       std::vector<std::unique_ptr<PasswordForm>> results) override {
     OnGetPasswordStoreResultsConstRef(results);
   }
+
+  base::WeakPtr<PasswordStoreConsumer> GetWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
+  void CancelAllRequests() {
+    cancelable_task_tracker()->TryCancelAll();
+    weak_ptr_factory_.InvalidateWeakPtrs();
+  }
+
+ private:
+  base::WeakPtrFactory<MockPasswordStoreConsumer> weak_ptr_factory_{this};
 };
 
 class MockPasswordStoreSigninNotifier : public PasswordStoreSigninNotifier {
@@ -320,7 +332,7 @@ TEST_F(PasswordStoreTest, UpdateLoginPrimaryKeyFields) {
   EXPECT_CALL(mock_consumer,
               OnGetPasswordStoreResultsConstRef(
                   UnorderedPasswordFormElementsAre(&expected_forms)));
-  store->GetAutofillableLogins(&mock_consumer);
+  store->GetAutofillableLogins(mock_consumer.GetWeakPtr());
   WaitForPasswordStore();
 
   store->RemoveObserver(&mock_observer);
@@ -400,7 +412,7 @@ TEST_F(PasswordStoreTest, InsecureCredentialsObserverOnLoginUpdated) {
   EXPECT_CALL(mock_consumer,
               OnGetPasswordStoreResultsConstRef(
                   UnorderedPasswordFormElementsAre(&expected_forms)));
-  store->GetAllLogins(&mock_consumer);
+  store->GetAllLogins(mock_consumer.GetWeakPtr());
   WaitForPasswordStore();
 
   store->ShutdownOnUIThread();
@@ -445,7 +457,7 @@ TEST_F(PasswordStoreTest, InsecureCredentialsObserverOnLoginAdded) {
   EXPECT_CALL(mock_consumer,
               OnGetPasswordStoreResultsConstRef(
                   UnorderedPasswordFormElementsAre(&expected_forms)));
-  store->GetAllLogins(&mock_consumer);
+  store->GetAllLogins(mock_consumer.GetWeakPtr());
   WaitForPasswordStore();
 
   store->ShutdownOnUIThread();
@@ -589,7 +601,7 @@ TEST_F(PasswordStoreTest, GetLoginsWithPSL) {
               OnGetPasswordStoreResultsConstRef(
                   UnorderedPasswordFormElementsAre(&expected_results)));
 
-  store->GetLogins(observed_form, &mock_consumer);
+  store->GetLogins(observed_form, mock_consumer.GetWeakPtr());
   WaitForPasswordStore();
   store->ShutdownOnUIThread();
 }
@@ -624,7 +636,7 @@ TEST_F(PasswordStoreTest, GetLoginsPSLDisabled) {
   EXPECT_CALL(mock_consumer, OnGetPasswordStoreResultsConstRef(
                                  ElementsAre(Pointee(*all_credentials[0]))));
 
-  store->GetLogins(observed_form, &mock_consumer);
+  store->GetLogins(observed_form, mock_consumer.GetWeakPtr());
   WaitForPasswordStore();
   store->ShutdownOnUIThread();
 }
@@ -691,7 +703,7 @@ TEST_F(PasswordStoreTest, GetLoginsWithoutAffiliations) {
   EXPECT_CALL(mock_consumer,
               OnGetPasswordStoreResultsConstRef(
                   UnorderedPasswordFormElementsAre(&expected_results)));
-  store->GetLogins(observed_form, &mock_consumer);
+  store->GetLogins(observed_form, mock_consumer.GetWeakPtr());
   WaitForPasswordStore();
   store->ShutdownOnUIThread();
 }
@@ -810,7 +822,7 @@ TEST_F(PasswordStoreTest, GetLoginsWithAffiliations) {
               OnGetPasswordStoreResultsConstRef(
                   UnorderedPasswordFormElementsAre(&expected_results)));
 
-  store->GetLogins(observed_form, &mock_consumer);
+  store->GetLogins(observed_form, mock_consumer.GetWeakPtr());
   WaitForPasswordStore();
   store->ShutdownOnUIThread();
 }
@@ -858,7 +870,7 @@ TEST_F(PasswordStoreTest, GetLoginsWithBrandingInformationForExactMatch) {
               OnGetPasswordStoreResultsConstRef(
                   UnorderedPasswordFormElementsAre(&expected_results)));
 
-  store->GetLogins(observed_form, &mock_consumer);
+  store->GetLogins(observed_form, mock_consumer.GetWeakPtr());
   WaitForPasswordStore();
   store->ShutdownOnUIThread();
 }
@@ -910,7 +922,7 @@ TEST_F(PasswordStoreTest, GetLoginsWithBrandingInformationForAffiliatedLogins) {
               OnGetPasswordStoreResultsConstRef(
                   UnorderedPasswordFormElementsAre(&expected_results)));
 
-  store->GetLogins(observed_form, &mock_consumer);
+  store->GetLogins(observed_form, mock_consumer.GetWeakPtr());
   WaitForPasswordStore();
   store->ShutdownOnUIThread();
 }
@@ -995,7 +1007,7 @@ TEST_P(PasswordStoreFederationTest, GetLoginsWithWebAffiliations) {
               OnGetPasswordStoreResultsConstRef(
                   UnorderedPasswordFormElementsAre(&expected_results)));
 
-  store->GetLogins(observed_form, &mock_consumer);
+  store->GetLogins(observed_form, mock_consumer.GetWeakPtr());
   WaitForPasswordStore();
   store->ShutdownOnUIThread();
 }
@@ -1016,7 +1028,7 @@ TEST_F(PasswordStoreTest, DelegatesGetAllLoginsToBackend) {
 
   MockPasswordStoreConsumer mock_consumer;
   EXPECT_CALL(*mock_backend, GetAllLoginsAsync(_));
-  store->GetAllLogins(&mock_consumer);
+  store->GetAllLogins(mock_consumer.GetWeakPtr());
   WaitForPasswordStore();
   store->ShutdownOnUIThread();
 }
@@ -1033,7 +1045,7 @@ TEST_F(PasswordStoreTest, DelegatesGetAutofillableLoginsToBackend) {
 
   MockPasswordStoreConsumer mock_consumer;
   EXPECT_CALL(*mock_backend, GetAutofillableLoginsAsync(_));
-  store->GetAutofillableLogins(&mock_consumer);
+  store->GetAutofillableLogins(mock_consumer.GetWeakPtr());
   WaitForPasswordStore();
   store->ShutdownOnUIThread();
 }
@@ -1072,7 +1084,7 @@ TEST_F(PasswordStoreTest, GetAllLogins) {
   EXPECT_CALL(mock_consumer,
               OnGetPasswordStoreResultsConstRef(
                   UnorderedPasswordFormElementsAre(&expected_results)));
-  store->GetAllLogins(&mock_consumer);
+  store->GetAllLogins(mock_consumer.GetWeakPtr());
   WaitForPasswordStore();
   store->ShutdownOnUIThread();
 }
@@ -1153,7 +1165,8 @@ TEST_F(PasswordStoreTest, GetAllLoginsWithAffiliationAndBrandingInformation) {
       .WillOnce([&all_credentials](LoginsOrErrorReply callback) {
         std::move(callback).Run(std::move(all_credentials));
       });
-  store->GetAllLoginsWithAffiliationAndBrandingInformation(&mock_consumer);
+  store->GetAllLoginsWithAffiliationAndBrandingInformation(
+      mock_consumer.GetWeakPtr());
 
   // Since GetAutofillableLoginsWithAffiliationAndBrandingInformation
   // schedules a request for affiliation information to UI thread, don't
@@ -1224,7 +1237,7 @@ TEST_F(PasswordStoreTest, Unblocklisting) {
   EXPECT_CALL(mock_consumer,
               OnGetPasswordStoreResultsConstRef(
                   UnorderedPasswordFormElementsAre(&all_credentials)));
-  store->GetAllLogins(&mock_consumer);
+  store->GetAllLogins(mock_consumer.GetWeakPtr());
   WaitForPasswordStore();
 
   store->RemoveObserver(&mock_observer);
@@ -1265,7 +1278,7 @@ TEST_F(PasswordStoreTest, RemoveInsecureCredentialsSyncOnUpdate) {
   std::vector<std::unique_ptr<PasswordForm>> expected_forms;
   expected_forms.push_back(std::move(form));
 
-  store->GetAllLogins(&mock_consumer);
+  store->GetAllLogins(mock_consumer.GetWeakPtr());
   EXPECT_CALL(mock_consumer,
               OnGetPasswordStoreResultsConstRef(
                   UnorderedPasswordFormElementsAre(&expected_forms)));
@@ -1295,7 +1308,7 @@ TEST_F(PasswordStoreTest, GetAllFieldInfo) {
   MockPasswordStoreConsumer consumer;
   EXPECT_CALL(consumer, OnGetAllFieldInfo(
                             UnorderedElementsAre(field_info1, field_info2)));
-  field_info_store->GetAllFieldInfo(&consumer);
+  field_info_store->GetAllFieldInfo(consumer.GetWeakPtr());
   WaitForPasswordStore();
 
   store->ShutdownOnUIThread();
@@ -1325,7 +1338,7 @@ TEST_F(PasswordStoreTest, RemoveFieldInfo) {
   MockPasswordStoreConsumer consumer;
   EXPECT_CALL(consumer, OnGetAllFieldInfo(UnorderedElementsAre(
                             field_info1, field_info2, field_info3)));
-  field_info_store->GetAllFieldInfo(&consumer);
+  field_info_store->GetAllFieldInfo(consumer.GetWeakPtr());
   WaitForPasswordStore();
   testing::Mock::VerifyAndClearExpectations(&consumer);
 
@@ -1335,7 +1348,7 @@ TEST_F(PasswordStoreTest, RemoveFieldInfo) {
 
   EXPECT_CALL(consumer, OnGetAllFieldInfo(
                             UnorderedElementsAre(field_info1, field_info3)));
-  field_info_store->GetAllFieldInfo(&consumer);
+  field_info_store->GetAllFieldInfo(consumer.GetWeakPtr());
   WaitForPasswordStore();
 
   store->ShutdownOnUIThread();
@@ -1363,7 +1376,7 @@ TEST_F(PasswordStoreTest, TestGetLoginRequestCancelable) {
 
   MockPasswordStoreConsumer mock_consumer;
   EXPECT_CALL(mock_consumer, OnGetPasswordStoreResultsConstRef).Times(0);
-  store->GetLogins(observed_form, &mock_consumer);
+  store->GetLogins(observed_form, mock_consumer.GetWeakPtr());
   mock_consumer.CancelAllRequests();
   WaitForPasswordStore();
 

@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
 #include "chrome/browser/ssl/cert_verifier_browser_test.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -156,6 +157,8 @@ class PasswordStoreResultsObserver
   // Waits for OnGetPasswordStoreResults() and returns the result.
   std::vector<std::unique_ptr<password_manager::PasswordForm>> WaitForResults();
 
+  base::WeakPtr<PasswordStoreConsumer> GetWeakPtr();
+
  private:
   void OnGetPasswordStoreResults(
       std::vector<std::unique_ptr<password_manager::PasswordForm>> results)
@@ -163,6 +166,7 @@ class PasswordStoreResultsObserver
 
   base::RunLoop run_loop_;
   std::vector<std::unique_ptr<password_manager::PasswordForm>> results_;
+  base::WeakPtrFactory<PasswordStoreResultsObserver> weak_ptr_factory_{this};
 };
 
 class PasswordManagerBrowserTestBase : public CertVerifierBrowserTest {

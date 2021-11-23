@@ -62,9 +62,14 @@ class PasswordStoreConsumerHelper
     return std::move(result_);
   }
 
+  base::WeakPtr<password_manager::PasswordStoreConsumer> GetWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
  private:
   base::RunLoop run_loop_;
   std::vector<std::unique_ptr<PasswordForm>> result_;
+  base::WeakPtrFactory<PasswordStoreConsumerHelper> weak_ptr_factory_{this};
 };
 
 sync_pb::EntitySpecifics EncryptPasswordSpecifics(
@@ -103,7 +108,7 @@ std::vector<std::unique_ptr<PasswordForm>> GetLogins(
   password_manager::PasswordFormDigest matcher_form = {
       PasswordForm::Scheme::kHtml, kFakeSignonRealm, GURL()};
   PasswordStoreConsumerHelper consumer;
-  store->GetLogins(matcher_form, &consumer);
+  store->GetLogins(matcher_form, consumer.GetWeakPtr());
   return consumer.WaitForResult();
 }
 
@@ -111,7 +116,7 @@ std::vector<std::unique_ptr<PasswordForm>> GetAllLogins(
     PasswordStoreInterface* store) {
   EXPECT_TRUE(store);
   PasswordStoreConsumerHelper consumer;
-  store->GetAllLogins(&consumer);
+  store->GetAllLogins(consumer.GetWeakPtr());
   return consumer.WaitForResult();
 }
 

@@ -253,7 +253,8 @@ void PasswordManagerPresenter::UpdatePasswordLists() {
     PasswordStoreInterface* store =
         GetPasswordStore(password_view_->GetProfile(), use_account_store);
     if (store) {
-      store->GetAllLoginsWithAffiliationAndBrandingInformation(this);
+      store->GetAllLoginsWithAffiliationAndBrandingInformation(
+          weak_ptr_factory_.GetWeakPtr());
     }
   }
 }
@@ -512,6 +513,11 @@ void PasswordManagerPresenter::OnGetPasswordStoreResults(FormVector results) {
 
   SetPasswordList();
   SetPasswordExceptionList();
+}
+
+void PasswordManagerPresenter::CancelAllRequests() {
+  cancelable_task_tracker()->TryCancelAll();
+  weak_ptr_factory_.InvalidateWeakPtrs();
 }
 
 void PasswordManagerPresenter::SetPasswordList() {

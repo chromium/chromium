@@ -1929,7 +1929,7 @@ TEST_P(PasswordManagerTest, SaveFormFetchedAfterSubmit) {
 
   // GetLogins calls remain unanswered to emulate that PasswordStore did not
   // fetch a form in time before submission.
-  PasswordStoreConsumer* store_consumer = nullptr;
+  base::WeakPtr<PasswordStoreConsumer> store_consumer;
   EXPECT_CALL(*store_, GetLogins(_, _)).WillOnce(SaveArg<1>(&store_consumer));
   manager()->OnPasswordFormsParsed(&driver_, observed);
   manager()->OnPasswordFormsRendered(&driver_, observed, true);
@@ -2533,7 +2533,7 @@ TEST_P(PasswordManagerTest, ManualFallbackForSaving_SlowBackend) {
   std::vector<FormData> observed;
   FormData form_data(MakeSimpleFormData());
   observed.push_back(form_data);
-  PasswordStoreConsumer* store_consumer = nullptr;
+  base::WeakPtr<PasswordStoreConsumer> store_consumer;
   EXPECT_CALL(client_, IsSavingAndFillingEnabled(form_data.url))
       .WillRepeatedly(Return(true));
   // TODO(https://crbug.com/949519): replace WillRepeatedly with WillOnce when

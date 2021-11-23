@@ -115,11 +115,13 @@ void PasswordReuseManagerImpl::Init(PrefService* prefs,
 
   profile_store_ = profile_store;
   profile_store_->AddObserver(this);
-  profile_store_->GetAutofillableLogins(/*consumer=*/this);
+  profile_store_->GetAutofillableLogins(
+      /*consumer=*/weak_ptr_factory_.GetWeakPtr());
   if (account_store) {
     account_store_ = account_store;
     account_store_->AddObserver(this);
-    account_store_->GetAutofillableLogins(/*consumer=*/this);
+    account_store_->GetAutofillableLogins(
+        /*consumer=*/weak_ptr_factory_.GetWeakPtr());
   }
 }
 
@@ -128,7 +130,7 @@ void PasswordReuseManagerImpl::AccountStoreStateChanged() {
   ScheduleTask(
       base::BindOnce(&PasswordReuseDetector::ClearCachedAccountStorePasswords,
                      base::Unretained(reuse_detector_)));
-  account_store_->GetAutofillableLogins(this);
+  account_store_->GetAutofillableLogins(weak_ptr_factory_.GetWeakPtr());
 }
 
 void PasswordReuseManagerImpl::ReportMetrics(

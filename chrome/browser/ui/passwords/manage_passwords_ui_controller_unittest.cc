@@ -1580,12 +1580,11 @@ TEST_F(ManagePasswordsUIControllerTest, OpenSafeStateBubble) {
   // password not anymore.
   EXPECT_CALL(*test_form_manager_raw, GetInsecureCredentials())
       .WillOnce(Return(saved));
-  password_manager::PasswordStoreConsumer* post_save_helper = nullptr;
+  base::WeakPtr<password_manager::PasswordStoreConsumer> post_save_helper;
 
   EXPECT_CALL(*client().GetProfilePasswordStore(), GetAutofillableLogins)
-      .WillOnce(testing::WithArg<0>([&post_save_helper](auto* consumer) {
-        post_save_helper = consumer;
-      }));
+      .WillOnce(testing::WithArg<0>(
+          [&post_save_helper](auto consumer) { post_save_helper = consumer; }));
   controller()->SavePassword(submitted_form().username_value,
                              submitted_form().password_value);
   // The bubble gets hidden after the user clicks on save.
@@ -1623,12 +1622,11 @@ TEST_F(ManagePasswordsUIControllerTest, OpenMoreToFixBubble) {
   EXPECT_CALL(*test_form_manager_raw, GetInsecureCredentials())
       .WillOnce(Return(saved));
 
-  password_manager::PasswordStoreConsumer* post_save_helper = nullptr;
+  base::WeakPtr<password_manager::PasswordStoreConsumer> post_save_helper;
 
   EXPECT_CALL(*client().GetProfilePasswordStore(), GetAutofillableLogins)
-      .WillOnce(testing::WithArg<0>([&post_save_helper](auto* consumer) {
-        post_save_helper = consumer;
-      }));
+      .WillOnce(testing::WithArg<0>(
+          [&post_save_helper](auto consumer) { post_save_helper = consumer; }));
   controller()->SavePassword(submitted_form().username_value,
                              submitted_form().password_value);
   // There are more insecure credentials to fix.

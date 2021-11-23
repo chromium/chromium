@@ -43,10 +43,10 @@ void LeakDetectionDelegateHelper::ProcessLeakedPassword(
       wait_counter, base::BindOnce(&LeakDetectionDelegateHelper::ProcessResults,
                                    base::Unretained(this)));
 
-  profile_store_->GetAutofillableLogins(this);
+  profile_store_->GetAutofillableLogins(weak_ptr_factory_.GetWeakPtr());
 
   if (account_store_) {
-    account_store_->GetAutofillableLogins(this);
+    account_store_->GetAutofillableLogins(weak_ptr_factory_.GetWeakPtr());
   }
 
   if (scripts_fetcher_) {

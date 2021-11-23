@@ -212,10 +212,15 @@ class PasswordStoreConsumerVerifier
     return password_entries_;
   }
 
+  base::WeakPtr<password_manager::PasswordStoreConsumer> GetWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
  private:
   base::RunLoop run_loop_;
   std::vector<std::unique_ptr<password_manager::PasswordForm>>
       password_entries_;
+  base::WeakPtrFactory<PasswordStoreConsumerVerifier> weak_ptr_factory_{this};
 };
 
 base::FilePath GetFirstNonSigninNonLockScreenAppProfile(
@@ -721,7 +726,7 @@ IN_PROC_BROWSER_TEST_P(ProfileManagerBrowserTest, DeletePasswords) {
 
   password_store->AddLogin(form);
   PasswordStoreConsumerVerifier verify_add;
-  password_store->GetAutofillableLogins(&verify_add);
+  password_store->GetAutofillableLogins(verify_add.GetWeakPtr());
   verify_add.Wait();
   EXPECT_EQ(1u, verify_add.GetPasswords().size());
 
@@ -733,7 +738,7 @@ IN_PROC_BROWSER_TEST_P(ProfileManagerBrowserTest, DeletePasswords) {
   run_loop.Run();
 
   PasswordStoreConsumerVerifier verify_delete;
-  password_store->GetAutofillableLogins(&verify_delete);
+  password_store->GetAutofillableLogins(verify_delete.GetWeakPtr());
   verify_delete.Wait();
   EXPECT_EQ(0u, verify_delete.GetPasswords().size());
 }

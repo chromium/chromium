@@ -118,7 +118,7 @@ class PasswordStoreBuiltInBackend : protected PasswordStoreSync,
   void AddSiteStats(const InteractionsStats& stats) override;
   void RemoveSiteStats(const GURL& origin_domain) override;
   void GetSiteStats(const GURL& origin_domain,
-                    PasswordStoreConsumer* consumer) override;
+                    base::WeakPtr<PasswordStoreConsumer> consumer) override;
   void RemoveStatisticsByOriginAndTime(
       const base::RepeatingCallback<bool(const GURL&)>& origin_filter,
       base::Time delete_begin,
@@ -127,7 +127,7 @@ class PasswordStoreBuiltInBackend : protected PasswordStoreSync,
 
   // FieldInfoStore:
   void AddFieldInfo(const FieldInfo& field_info) override;
-  void GetAllFieldInfo(PasswordStoreConsumer* consumer) override;
+  void GetAllFieldInfo(base::WeakPtr<PasswordStoreConsumer> consumer) override;
   void RemoveFieldInfoByTime(base::Time remove_begin,
                              base::Time remove_end,
                              base::OnceClosure completion) override;

@@ -68,7 +68,8 @@ AllPasswordsBottomSheetController::~AllPasswordsBottomSheetController() {
 }
 
 void AllPasswordsBottomSheetController::Show() {
-  store_->GetAllLoginsWithAffiliationAndBrandingInformation(this);
+  store_->GetAllLoginsWithAffiliationAndBrandingInformation(
+      weak_ptr_factory_.GetWeakPtr());
 }
 
 void AllPasswordsBottomSheetController::OnGetPasswordStoreResults(

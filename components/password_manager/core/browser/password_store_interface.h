@@ -7,6 +7,7 @@
 
 #include <vector>
 
+#include "base/memory/weak_ptr.h"
 #include "base/observer_list_types.h"
 #include "components/keyed_service/core/refcounted_keyed_service.h"
 #include "components/password_manager/core/browser/password_form_digest.h"
@@ -119,24 +120,25 @@ class PasswordStoreInterface : public RefcountedKeyedService {
   // completion.
   // TODO(crbug.com/1217070): Use a smart pointer for consumer.
   virtual void GetLogins(const PasswordFormDigest& form,
-                         PasswordStoreConsumer* consumer) = 0;
+                         base::WeakPtr<PasswordStoreConsumer> consumer) = 0;
 
   // Gets the complete list of non-blocklist PasswordForms.`consumer` will be
   // notified on completion.
   // TODO(crbug.com/1217070): Use a smart pointer for consumer.
-  virtual void GetAutofillableLogins(PasswordStoreConsumer* consumer) = 0;
+  virtual void GetAutofillableLogins(
+      base::WeakPtr<PasswordStoreConsumer> consumer) = 0;
 
   // Gets the complete list of PasswordForms (regardless of their blocklist
   // status) and notify `consumer` on completion.
   // TODO(crbug.com/1217070): Use a smart pointer for consumer.
-  virtual void GetAllLogins(PasswordStoreConsumer* consumer) = 0;
+  virtual void GetAllLogins(base::WeakPtr<PasswordStoreConsumer> consumer) = 0;
 
   // Gets the complete list of PasswordForms, regardless of their blocklist
   // status. Also fills in affiliation and branding information for Android
   // credentials.
   // TODO(crbug.com/1217070): Use a smart pointer for consumer.
   virtual void GetAllLoginsWithAffiliationAndBrandingInformation(
-      PasswordStoreConsumer* consumer) = 0;
+      base::WeakPtr<PasswordStoreConsumer> consumer) = 0;
 
   // Adds an observer to be notified when the password store data changes.
   virtual void AddObserver(Observer* observer) = 0;

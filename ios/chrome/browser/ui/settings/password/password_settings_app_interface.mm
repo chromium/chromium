@@ -58,7 +58,7 @@ class FakeStoreConsumer : public password_manager::PasswordStoreConsumer {
   bool FetchStoreResults() {
     results_.clear();
     ResetObtained();
-    GetPasswordStore()->GetAllLogins(this);
+    GetPasswordStore()->GetAllLogins(weak_ptr_factory_.GetWeakPtr());
     bool responded = base::test::ios::WaitUntilConditionOrTimeout(2.0, ^bool {
       return !AreObtainedReset();
     });
@@ -95,6 +95,8 @@ class FakeStoreConsumer : public password_manager::PasswordStoreConsumer {
 
   // Combination of fillable and blocked credentials from the store.
   std::vector<password_manager::PasswordForm> results_;
+
+  base::WeakPtrFactory<FakeStoreConsumer> weak_ptr_factory_{this};
 };
 
 // Saves |form| to the password store and waits until the async processing is

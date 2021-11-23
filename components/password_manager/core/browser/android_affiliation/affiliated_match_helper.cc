@@ -67,7 +67,7 @@ void AffiliatedMatchHelper::DoDeferredInitialization() {
   // Must start observing for changes at the same time as when the snapshot is
   // taken to avoid inconsistencies due to any changes taking place in-between.
   password_store_->AddObserver(this);
-  password_store_->GetAllLogins(this);
+  password_store_->GetAllLogins(weak_ptr_factory_.GetWeakPtr());
 }
 
 void AffiliatedMatchHelper::CompleteGetAffiliatedAndroidAndWebRealms(

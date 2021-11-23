@@ -66,7 +66,7 @@ class TestStoreConsumer : public password_manager::PasswordStoreConsumer {
   const std::vector<password_manager::PasswordForm>& GetStoreResults() {
     results_.clear();
     ResetObtained();
-    GetPasswordStore()->GetAllLogins(this);
+    GetPasswordStore()->GetAllLogins(weak_ptr_factory_.GetWeakPtr());
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wunused-result"
     base::test::ios::WaitUntilConditionOrTimeout(
@@ -101,6 +101,8 @@ class TestStoreConsumer : public password_manager::PasswordStoreConsumer {
 
   // Combination of fillable and blocked credentials from the store.
   std::vector<password_manager::PasswordForm> results_;
+
+  base::WeakPtrFactory<TestStoreConsumer> weak_ptr_factory_{this};
 };
 
 // Saves |form| to the password store and waits until the async processing is

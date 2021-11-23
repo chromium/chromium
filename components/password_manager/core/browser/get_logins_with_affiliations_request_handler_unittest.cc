@@ -68,6 +68,18 @@ class MockPasswordStoreConsumer : public PasswordStoreConsumer {
                             [](auto& result) { return std::move(*result); });
     OnGetPasswordStoreResultsConstRef(forms);
   }
+
+  base::WeakPtr<PasswordStoreConsumer> GetWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
+  void CancelAllRequests() {
+    cancelable_task_tracker()->TryCancelAll();
+    weak_ptr_factory_.InvalidateWeakPtrs();
+  }
+
+ private:
+  base::WeakPtrFactory<MockPasswordStoreConsumer> weak_ptr_factory_{this};
 };
 
 }  // namespace

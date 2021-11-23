@@ -106,12 +106,13 @@ class PasswordStoreObserverBridge
 
 - (void)fetchLogins {
   if (_URL.is_empty()) {
-    _passwordStore->GetAutofillableLogins(_savedPasswordsConsumer.get());
+    _passwordStore->GetAutofillableLogins(
+        _savedPasswordsConsumer->GetWeakPtr());
   } else {
     password_manager::PasswordFormDigest digest = {
         password_manager::PasswordForm::Scheme::kHtml, std::string(), _URL};
     digest.signon_realm = _URL.spec();
-    _passwordStore->GetLogins(digest, _savedPasswordsConsumer.get());
+    _passwordStore->GetLogins(digest, _savedPasswordsConsumer->GetWeakPtr());
   }
 }
 

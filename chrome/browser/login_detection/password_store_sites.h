@@ -8,6 +8,7 @@
 #include <set>
 
 #include "base/memory/scoped_refptr.h"
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/password_manager/password_store_factory.h"
 #include "components/password_manager/core/browser/password_store_consumer.h"
 #include "components/password_manager/core/browser/password_store_interface.h"
@@ -51,6 +52,8 @@ class PasswordStoreSites
   absl::optional<std::set<std::string>> password_sites_;
 
   SEQUENCE_CHECKER(sequence_checker_);
+
+  base::WeakPtrFactory<PasswordStoreSites> weak_ptr_factory_{this};
 };
 
 }  // namespace login_detection

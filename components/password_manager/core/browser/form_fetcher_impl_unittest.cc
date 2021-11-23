@@ -40,7 +40,9 @@ using base::StringPiece;
 using testing::_;
 using testing::IsEmpty;
 using testing::Pointee;
+using testing::Property;
 using testing::Return;
+using testing::SaveArg;
 using testing::UnorderedElementsAre;
 using testing::UnorderedElementsAreArray;
 using testing::WithArg;
@@ -224,8 +226,11 @@ std::vector<std::unique_ptr<PasswordForm>> MakeResults(
   return results;
 }
 
-ACTION_P(GetAndAssignWeakPtr, ptr) {
-  *ptr = arg0->GetWeakPtr();
+// Accepts a WeakPtr<T> and succeeds WeakPtr<T>::get() matches |m|.
+// Analogous to testing::Address.
+template <typename T, typename Matcher>
+auto WeakAddress(Matcher m) {
+  return Property(&base::WeakPtr<T>::get, m);
 }
 
 }  // namespace
@@ -268,10 +273,12 @@ class FormFetcherImplTestBase : public testing::Test {
   // A wrapper around form_fetcher_.Fetch(), adding the call expectations.
   void Fetch() {
     EXPECT_CALL(*profile_mock_store_,
-                GetLogins(form_digest_, form_fetcher_.get()));
+                GetLogins(form_digest_, WeakAddress<PasswordStoreConsumer>(
+                                            form_fetcher_.get())));
     if (account_mock_store_) {
       EXPECT_CALL(*account_mock_store_,
-                  GetLogins(form_digest_, form_fetcher_.get()));
+                  GetLogins(form_digest_, WeakAddress<PasswordStoreConsumer>(
+                                              form_fetcher_.get())));
     }
     form_fetcher_->Fetch();
     task_environment_.RunUntilIdle();
@@ -537,7 +544,8 @@ TEST_P(FormFetcherImplTest, Update_Reentrance) {
   // Delivering the first results will trigger the new GetLogins call, because
   // of the Fetch() above.
   EXPECT_CALL(*profile_mock_store_,
-              GetLogins(form_digest_, form_fetcher_.get()));
+              GetLogins(form_digest_, WeakAddress<PasswordStoreConsumer>(
+                                          form_fetcher_.get())));
   DeliverPasswordStoreResults(/*profile_store_results=*/std::move(old_results),
                               /*account_store_results=*/{});
 
@@ -566,14 +574,15 @@ TEST_P(FormFetcherImplTest, FetchStatistics) {
   stats.dismissal_count = 5;
   std::vector<InteractionsStats> db_stats = {stats};
   EXPECT_CALL(*profile_mock_store_,
-              GetLogins(form_digest_, form_fetcher_.get()));
+              GetLogins(form_digest_, WeakAddress<PasswordStoreConsumer>(
+                                          form_fetcher_.get())));
   EXPECT_CALL(mock_smart_bubble_stats_store_,
               GetSiteStats(stats.origin_domain, _))
-      .WillOnce(
-          testing::WithArg<1>([db_stats](PasswordStoreConsumer* consumer) {
+      .WillOnce(testing::WithArg<1>(
+          [db_stats](base::WeakPtr<PasswordStoreConsumer> consumer) {
             base::ThreadTaskRunnerHandle::Get()->PostTask(
                 FROM_HERE, base::BindOnce(
-                               [](PasswordStoreConsumer* con,
+                               [](base::WeakPtr<PasswordStoreConsumer> con,
                                   const std::vector<InteractionsStats>& stats) {
                                  con->OnGetSiteStatistics(
                                      std::vector<InteractionsStats>(stats));
@@ -589,7 +598,8 @@ TEST_P(FormFetcherImplTest, FetchStatistics) {
 #else
 TEST_P(FormFetcherImplTest, DontFetchStatistics) {
   EXPECT_CALL(*profile_mock_store_,
-              GetLogins(form_digest_, form_fetcher_.get()));
+              GetLogins(form_digest_, WeakAddress<PasswordStoreConsumer>(
+                                          form_fetcher_.get())));
   EXPECT_CALL(mock_smart_bubble_stats_store_, GetSiteStats).Times(0);
   form_fetcher_->Fetch();
   task_environment_.RunUntilIdle();
@@ -719,10 +729,10 @@ TEST_P(FormFetcherImplTest, TryToMigrateHTTPPasswordsOnHTTPSSites) {
   base::WeakPtr<PasswordStoreConsumer> profile_store_migrator;
   base::WeakPtr<PasswordStoreConsumer> account_store_migrator;
   EXPECT_CALL(*profile_mock_store_, GetLogins(http_form_digest, _))
-      .WillOnce(WithArg<1>(GetAndAssignWeakPtr(&profile_store_migrator)));
+      .WillOnce(SaveArg<1>(&profile_store_migrator));
   if (account_mock_store_) {
     EXPECT_CALL(*account_mock_store_, GetLogins(http_form_digest, _))
-        .WillOnce(WithArg<1>(GetAndAssignWeakPtr(&account_store_migrator)));
+        .WillOnce(SaveArg<1>(&account_store_migrator));
   }
   DeliverPasswordStoreResults(/*profile_store_results=*/{},
                               /*account_store_results=*/{});
@@ -823,10 +833,10 @@ TEST_P(FormFetcherImplTest, StateIsWaitingDuringMigration) {
   base::WeakPtr<PasswordStoreConsumer> profile_store_migrator;
   base::WeakPtr<PasswordStoreConsumer> account_store_migrator;
   EXPECT_CALL(*profile_mock_store_, GetLogins(http_form_digest, _))
-      .WillOnce(WithArg<1>(GetAndAssignWeakPtr(&profile_store_migrator)));
+      .WillOnce(SaveArg<1>(&profile_store_migrator));
   if (account_mock_store_) {
     EXPECT_CALL(*account_mock_store_, GetLogins(http_form_digest, _))
-        .WillOnce(WithArg<1>(GetAndAssignWeakPtr(&account_store_migrator)));
+        .WillOnce(SaveArg<1>(&account_store_migrator));
   }
   DeliverPasswordStoreResults(/*profile_store_results=*/{},
                               /*account_store_results=*/{});

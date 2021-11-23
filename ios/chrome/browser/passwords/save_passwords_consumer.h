@@ -35,9 +35,11 @@ class SavePasswordsConsumer : public password_manager::PasswordStoreConsumer {
   void OnGetPasswordStoreResults(
       std::vector<std::unique_ptr<password_manager::PasswordForm>> results)
       override;
+  base::WeakPtr<password_manager::PasswordStoreConsumer> GetWeakPtr();
 
  private:
   __weak id<SavePasswordsConsumerDelegate> delegate_ = nil;
+  base::WeakPtrFactory<SavePasswordsConsumer> weak_ptr_factory_{this};
 };
 
 }  // namespace ios

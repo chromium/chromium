@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_PASSWORD_MANAGER_ANDROID_ALL_PASSWORDS_BOTTOM_SHEET_CONTROLLER_H_
 
 #include "base/callback.h"
+#include "base/memory/weak_ptr.h"
 #include "base/types/pass_key.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom-forward.h"
 #include "components/device_reauth/biometric_authenticator.h"
@@ -107,6 +108,9 @@ class AllPasswordsBottomSheetController
   // Used to tell `PasswordReuseDetectionManager` that a password has been
   // reused.
   password_manager::PasswordManagerClient* client_ = nullptr;
+
+  base::WeakPtrFactory<AllPasswordsBottomSheetController> weak_ptr_factory_{
+      this};
 };
 
 #endif  // CHROME_BROWSER_PASSWORD_MANAGER_ANDROID_ALL_PASSWORDS_BOTTOM_SHEET_CONTROLLER_H_

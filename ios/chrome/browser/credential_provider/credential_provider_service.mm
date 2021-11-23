@@ -193,7 +193,7 @@ void CredentialProviderService::Shutdown() {
 void CredentialProviderService::RequestSyncAllCredentials() {
   UpdateAccountId();
   UpdateUserEmail();
-  password_store_->GetAutofillableLogins(this);
+  password_store_->GetAutofillableLogins(weak_ptr_factory_.GetWeakPtr());
 }
 
 void CredentialProviderService::RequestSyncAllCredentialsIfNeeded() {
@@ -285,7 +285,7 @@ void CredentialProviderService::UpdateUserEmail() {
 void CredentialProviderService::OnGetPasswordStoreResults(
     std::vector<std::unique_ptr<PasswordForm>> results) {
   auto callback = base::BindOnce(&CredentialProviderService::SyncAllCredentials,
-                                 weak_factory_.GetWeakPtr());
+                                 weak_ptr_factory_.GetWeakPtr());
   if (affiliation_service_) {
     affiliation_service_->InjectAffiliationAndBrandingInformation(
         std::move(results),
@@ -342,7 +342,7 @@ void CredentialProviderService::OnLoginsChanged(
 
   auto callback = base::BindOnce(
       &CredentialProviderService::OnInjectedAffiliationAfterLoginsChanged,
-      weak_factory_.GetWeakPtr());
+      weak_ptr_factory_.GetWeakPtr());
 
   if (affiliation_service_) {
     affiliation_service_->InjectAffiliationAndBrandingInformation(

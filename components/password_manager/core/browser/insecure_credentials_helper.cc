@@ -45,6 +45,8 @@ class InsecureCredentialsHelper : public PasswordStoreConsumer {
   base::OnceCallback<void(LoginsResult)> operation_;
 
   PasswordStoreInterface* store_;
+
+  base::WeakPtrFactory<InsecureCredentialsHelper> weak_ptr_factory_{this};
 };
 
 InsecureCredentialsHelper::InsecureCredentialsHelper(
@@ -61,7 +63,7 @@ void InsecureCredentialsHelper::AddPhishedCredentials(
   operation_ =
       base::BindOnce(&InsecureCredentialsHelper::AddPhishedCredentialsInternal,
                      base::Owned(this), credential);
-  store_->GetLogins(digest, this);
+  store_->GetLogins(digest, weak_ptr_factory_.GetWeakPtr());
 }
 
 void InsecureCredentialsHelper::RemovePhishedCredentials(
@@ -72,7 +74,7 @@ void InsecureCredentialsHelper::RemovePhishedCredentials(
   operation_ = base::BindOnce(
       &InsecureCredentialsHelper::RemovePhishedCredentialsInternal,
       base::Owned(this), credential);
-  store_->GetLogins(digest, this);
+  store_->GetLogins(digest, weak_ptr_factory_.GetWeakPtr());
 }
 
 void InsecureCredentialsHelper::OnGetPasswordStoreResults(

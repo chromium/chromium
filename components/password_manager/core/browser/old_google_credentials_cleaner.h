@@ -6,6 +6,7 @@
 #define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_OLD_GOOGLE_CREDENTIALS_CLEANER_H_
 
 #include "base/memory/ref_counted.h"
+#include "base/memory/weak_ptr.h"
 #include "components/password_manager/core/browser/credentials_cleaner.h"
 #include "components/password_manager/core/browser/password_store_consumer.h"
 
@@ -50,6 +51,8 @@ class OldGoogleCredentialCleaner : public PasswordStoreConsumer,
   // Used to signal completion of the clean-up. It is null until
   // StartCleaning is called.
   Observer* observer_ = nullptr;
+
+  base::WeakPtrFactory<OldGoogleCredentialCleaner> weak_ptr_factory_{this};
 };
 
 }  // namespace password_manager

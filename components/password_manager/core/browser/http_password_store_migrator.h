@@ -8,6 +8,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "components/password_manager/core/browser/hsts_query.h"
 #include "components/password_manager/core/browser/password_store_consumer.h"
@@ -90,6 +91,7 @@ class HttpPasswordStoreMigrator : public PasswordStoreConsumer {
   std::vector<std::unique_ptr<PasswordForm>> results_;
   url::Origin http_origin_domain_;
   SEQUENCE_CHECKER(sequence_checker_);
+  base::WeakPtrFactory<HttpPasswordStoreMigrator> weak_ptr_factory_{this};
 };
 
 }  // namespace password_manager

@@ -12,7 +12,8 @@
 AllPasswordsBottomSheetHelper::AllPasswordsBottomSheetHelper(
     password_manager::PasswordStoreInterface* store) {
   DCHECK(store);
-  store->GetAllLoginsWithAffiliationAndBrandingInformation(this);
+  store->GetAllLoginsWithAffiliationAndBrandingInformation(
+      weak_ptr_factory_.GetWeakPtr());
 }
 
 AllPasswordsBottomSheetHelper::~AllPasswordsBottomSheetHelper() = default;

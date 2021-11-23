@@ -9,6 +9,7 @@
 
 #include "base/callback.h"
 #include "base/containers/span.h"
+#include "base/memory/weak_ptr.h"
 #include "components/password_manager/core/browser/insecure_credentials_table.h"
 #include "components/password_manager/core/browser/password_store_consumer.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -78,6 +79,8 @@ class PostSaveCompromisedHelper
   base::RepeatingClosure forms_received_;
 
   std::vector<std::unique_ptr<PasswordForm>> passwords_;
+
+  base::WeakPtrFactory<PostSaveCompromisedHelper> weak_ptr_factory_{this};
 };
 
 }  // namespace password_manager

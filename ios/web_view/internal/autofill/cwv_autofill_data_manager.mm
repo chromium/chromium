@@ -89,6 +89,7 @@ class WebViewPasswordStoreConsumer
  public:
   explicit WebViewPasswordStoreConsumer(CWVAutofillDataManager* data_manager)
       : data_manager_(data_manager) {}
+
   void OnGetPasswordStoreResults(
       std::vector<std::unique_ptr<password_manager::PasswordForm>> results)
       override {
@@ -100,8 +101,13 @@ class WebViewPasswordStoreConsumer
     [data_manager_ handlePasswordStoreResults:passwords];
   }
 
+  base::WeakPtr<password_manager::PasswordStoreConsumer> GetWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
  private:
   __weak CWVAutofillDataManager* data_manager_;
+  base::WeakPtrFactory<WebViewPasswordStoreConsumer> weak_ptr_factory_{this};
 };
 
 // C++ to ObjC bridge for PasswordStoreInterface::Observer.
@@ -263,7 +269,7 @@ class WebViewPasswordStoreObserver
 
   _passwordStoreConsumer.reset(
       new ios_web_view::WebViewPasswordStoreConsumer(self));
-  _passwordStore->GetAllLogins(_passwordStoreConsumer.get());
+  _passwordStore->GetAllLogins(_passwordStoreConsumer->GetWeakPtr());
 }
 
 - (void)updatePassword:(CWVPassword*)password

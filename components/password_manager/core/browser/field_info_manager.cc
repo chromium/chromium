@@ -18,7 +18,7 @@ FieldInfoManagerImpl::FieldInfoManagerImpl(
     : store_(store) {
   FieldInfoStore* info_store = store_->GetFieldInfoStore();
   if (info_store) {
-    info_store->GetAllFieldInfo(this);
+    info_store->GetAllFieldInfo(weak_ptr_factory_.GetWeakPtr());
   }
 }
 

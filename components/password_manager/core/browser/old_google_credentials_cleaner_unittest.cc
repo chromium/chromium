@@ -48,13 +48,14 @@ class OldGoogleCredentialCleanerTest : public testing::Test {
 
   void ExpectPasswords(std::vector<PasswordForm> password_forms) {
     EXPECT_CALL(*store_, GetAutofillableLogins)
-        .WillOnce(testing::WithArg<0>([password_forms](
-                                          PasswordStoreConsumer* consumer) {
-          std::vector<std::unique_ptr<PasswordForm>> results;
-          for (auto& form : password_forms)
-            results.push_back(std::make_unique<PasswordForm>(std::move(form)));
-          consumer->OnGetPasswordStoreResults(std::move(results));
-        }));
+        .WillOnce(testing::WithArg<0>(
+            [password_forms](base::WeakPtr<PasswordStoreConsumer> consumer) {
+              std::vector<std::unique_ptr<PasswordForm>> results;
+              for (auto& form : password_forms)
+                results.push_back(
+                    std::make_unique<PasswordForm>(std::move(form)));
+              consumer->OnGetPasswordStoreResults(std::move(results));
+            }));
   }
 
   void RunUntilIdle() { task_environment_.RunUntilIdle(); }
