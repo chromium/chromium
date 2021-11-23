@@ -41,21 +41,13 @@ namespace blink {
 
 // static
 absl::optional<StorageKey> StorageKey::Deserialize(base::StringPiece in) {
-  StorageKey result(url::Origin::Create(GURL(in)));
-  return result.origin_.opaque() ? absl::nullopt
-                                 : absl::make_optional(std::move(result));
-}
-
-// static
-absl::optional<StorageKey> StorageKey::DeserializeForServiceWorker(
-    base::StringPiece in) {
   using EncodedAttribute = StorageKey::EncodedAttribute;
-  // As per the SerializeForServiceWorker() call, we have to expect the
-  // following structure: <StorageKey 'key'.origin> + [ "^0" + <StorageKey
+  // As per the Serialize() call, we have to expect the
+  // following structure: <StorageKey 'key'.origin> + "/" + [ "^0" + <StorageKey
   // `key`.top_level_site> ] The brackets indicate an optional component.
   // - or -
-  // <StorageKey 'key'.origin> + "^1" + <StorageKey 'nonce'.High64Bits> + "^2" +
-  // <StorageKey 'nonce'.Low64Bits>
+  // <StorageKey 'key'.origin> + "/" + "^1" + <StorageKey 'nonce'.High64Bits> +
+  // "^2" + <StorageKey 'nonce'.Low64Bits>
 
   // Let's check for a delimiting caret. The presence of a caret means this key
   // is partitioned.
@@ -209,19 +201,6 @@ blink::StorageKey StorageKey::FromNetIsolationInfo(
 }
 
 std::string StorageKey::Serialize() const {
-  DCHECK(!origin_.opaque());
-  return origin_.GetURL().spec();
-}
-
-std::string StorageKey::SerializeForLocalStorage() const {
-  // TODO(https://crbug.com/1199077): Figure out how to include `nonce_` in the
-  // serialization.
-  // TODO(https://crbug.com/1199077): Add top_level_site_ behind a feature.
-  DCHECK(!origin_.opaque());
-  return origin_.Serialize();
-}
-
-std::string StorageKey::SerializeForServiceWorker() const {
   using EncodedAttribute = StorageKey::EncodedAttribute;
   DCHECK(!origin_.opaque());
   DCHECK(!top_level_site_.opaque());
@@ -229,8 +208,8 @@ std::string StorageKey::SerializeForServiceWorker() const {
   // If the storage key has a nonce then we need to serialize the key to fit the
   // following scheme:
   //
-  // <StorageKey 'key'.origin> + "^1" + <StorageKey 'nonce'.High64Bits> + "^2" +
-  // <StorageKey 'nonce'.Low64Bits>
+  // <StorageKey 'key'.origin> + "/" + "^1" + <StorageKey 'nonce'.High64Bits> +
+  // "^2" + <StorageKey 'nonce'.Low64Bits>
   if (nonce_.has_value()) {
     return origin_.GetURL().spec() +
            SerializeAttributeSeparator(EncodedAttribute::kNonceHigh) +
@@ -242,7 +221,8 @@ std::string StorageKey::SerializeForServiceWorker() const {
   // Else if storage partitioning is enabled we need to serialize the key to fit
   // the following scheme:
   //
-  // <StorageKey 'key'.origin> + [ "^0" + <StorageKey `key`.top_level_site> ]
+  // <StorageKey 'key'.origin> + "/" + [ "^0" + <StorageKey
+  // `key`.top_level_site> ]
   //
   // The top_level_site is optional (indicated by the square brackets) if it's
   // the same site as the origin in order to enable backwards compatibility for
@@ -257,6 +237,28 @@ std::string StorageKey::SerializeForServiceWorker() const {
   }
 
   return origin_.GetURL().spec();
+}
+
+std::string StorageKey::SerializeForLocalStorage() const {
+  DCHECK(!origin_.opaque());
+
+  // If this is a third-party StorageKey we'll use the standard serialization
+  // scheme.
+  if (nonce_.has_value())
+    return Serialize();
+
+  if (IsThirdPartyStoragePartitioningEnabled() &&
+      top_level_site_ != net::SchemefulSite(origin_)) {
+    return Serialize();
+  }
+
+  // Otherwise localStorage expects a slightly different scheme, so call that.
+  //
+  // TODO(https://crbug.com/1199077): Since the deserialization function can
+  // handle Serialize() or SerializeForLocalStorage(), investigate whether we
+  // can change the serialization scheme for 1p localStorage without a
+  // migration.
+  return origin_.Serialize();
 }
 
 std::string StorageKey::GetDebugString() const {

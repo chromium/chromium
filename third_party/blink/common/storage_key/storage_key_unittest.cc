@@ -152,59 +152,87 @@ TEST(StorageKeyTest, EquivalencePartitioned) {
   EXPECT_NE(TwoArgKey1_origin1_origin2, TwoArgKey_origin2_origin1);
 }
 
-// Test that StorageKeys Serialize to the expected value. Both Serialize() and
-// SerializeForServiceWorker().
-TEST(StorageKeyTest, SerializeLegacy) {
-  struct {
-    const char* origin_str;
-    const char* expected_serialization;
-  } kTestCases[] = {
-      {"https://example.com/", "https://example.com/"},
-      // Trailing slash is added.
-      {"https://example.com", "https://example.com/"},
-      // Subdomains are preserved.
-      {"http://sub.test.example/", "http://sub.test.example/"},
-      // file: origins all serialize to "file:///"
-      {"file:///", "file:///"},
-      {"file:///foo/bar", "file:///"},
-      {"file://example.fileshare.com/foo/bar", "file:///"},
-  };
+// Test that StorageKeys Serialize to the expected value with partitioning
+// enabled and disabled.
+TEST(StorageKeyTest, SerializeFirstParty) {
+  for (const bool toggle : {false, true}) {
+    base::test::ScopedFeatureList scope_feature_list;
+    scope_feature_list.InitWithFeatureState(
+        features::kThirdPartyStoragePartitioning, toggle);
 
-  for (const auto& test : kTestCases) {
-    SCOPED_TRACE(test.origin_str);
-    StorageKey key(url::Origin::Create(GURL(test.origin_str)));
-    EXPECT_EQ(test.expected_serialization, key.Serialize());
-    EXPECT_EQ(test.expected_serialization, key.SerializeForServiceWorker());
+    struct {
+      const char* origin_str;
+      const char* expected_serialization;
+    } kTestCases[] = {
+        {"https://example.com/", "https://example.com/"},
+        // Trailing slash is added.
+        {"https://example.com", "https://example.com/"},
+        // Subdomains are preserved.
+        {"http://sub.test.example/", "http://sub.test.example/"},
+        // file: origins all serialize to "file:///"
+        {"file:///", "file:///"},
+        {"file:///foo/bar", "file:///"},
+        {"file://example.fileshare.com/foo/bar", "file:///"},
+    };
+
+    for (const auto& test : kTestCases) {
+      SCOPED_TRACE(test.origin_str);
+      StorageKey key(url::Origin::Create(GURL(test.origin_str)));
+      EXPECT_EQ(test.expected_serialization, key.Serialize());
+    }
+  }
+}
+
+TEST(StorageKeyTest, SerializeFirstPartyForLocalStorage) {
+  for (const bool toggle : {false, true}) {
+    base::test::ScopedFeatureList scope_feature_list;
+    scope_feature_list.InitWithFeatureState(
+        features::kThirdPartyStoragePartitioning, toggle);
+
+    struct {
+      const char* origin_str;
+      const char* expected_serialization;
+    } kTestCases[] = {
+        // Trailing slash is removed.
+        {"https://example.com/", "https://example.com"},
+        {"https://example.com", "https://example.com"},
+        // Subdomains are preserved.
+        {"http://sub.test.example/", "http://sub.test.example"},
+        // file: origins all serialize to "file://"
+        {"file://", "file://"},
+        {"file:///foo/bar", "file://"},
+        {"file://example.fileshare.com/foo/bar", "file://"},
+    };
+
+    for (const auto& test : kTestCases) {
+      SCOPED_TRACE(test.origin_str);
+      StorageKey key(url::Origin::Create(GURL(test.origin_str)));
+      EXPECT_EQ(test.expected_serialization, key.SerializeForLocalStorage());
+    }
   }
 }
 
 // Tests that the top-level site is correctly serialized for service workers
-// when kThirdPartyStoragePartitioning is enabled.
-TEST(StorageKeyTest, SerializeForServiceWorkerPartitioned) {
+// when kThirdPartyStoragePartitioning is enabled. This is expected to be the
+// same for localStorage.
+TEST(StorageKeyTest, SerializePartitioned) {
   base::test::ScopedFeatureList scope_feature_list;
   scope_feature_list.InitAndEnableFeature(
       features::kThirdPartyStoragePartitioning);
 
   net::SchemefulSite SiteExample(GURL("https://example.com"));
   net::SchemefulSite SiteTest(GURL("https://test.example"));
-  net::SchemefulSite SiteFile(GURL("file:///"));
 
   struct {
     const std::pair<const char*, const net::SchemefulSite&>
         origin_and_top_level_site;
     const char* expected_serialization;
   } kTestCases[] = {
-      // 1p context case.
-      {{"https://example.com/", SiteExample}, "https://example.com/"},
-      {{"https://test.example", SiteTest}, "https://test.example/"},
-      {{"https://sub.test.example/", SiteTest}, "https://sub.test.example/"},
       // 3p context case
       {{"https://example.com/", SiteTest},
        "https://example.com/^0https://test.example"},
       {{"https://sub.test.example/", SiteExample},
        "https://sub.test.example/^0https://example.com"},
-      // File case.
-      {{"file:///foo/bar", SiteFile}, "file:///"},
   };
 
   for (const auto& test : kTestCases) {
@@ -213,7 +241,8 @@ TEST(StorageKeyTest, SerializeForServiceWorkerPartitioned) {
         url::Origin::Create(GURL(test.origin_and_top_level_site.first));
     const net::SchemefulSite& site = test.origin_and_top_level_site.second;
     StorageKey key(origin, site);
-    EXPECT_EQ(test.expected_serialization, key.SerializeForServiceWorker());
+    EXPECT_EQ(test.expected_serialization, key.Serialize());
+    EXPECT_EQ(test.expected_serialization, key.SerializeForLocalStorage());
   }
 }
 
@@ -242,70 +271,31 @@ TEST(StorageKeyTest, SerializeNonce) {
         url::Origin::Create(GURL(test.origin_and_nonce.first));
     const base::UnguessableToken& nonce = test.origin_and_nonce.second;
     StorageKey key = StorageKey::CreateWithNonce(origin, nonce);
-    EXPECT_EQ(test.expected_serialization, key.SerializeForServiceWorker());
-  }
-}
-
-TEST(StorageKeyTest, SerializeForLocalStorage) {
-  struct {
-    const char* origin_str;
-    const char* expected_serialization;
-  } kTestCases[] = {
-      // Trailing slash is removed.
-      {"https://example.com/", "https://example.com"},
-      {"https://example.com", "https://example.com"},
-      // Subdomains are preserved.
-      {"http://sub.test.example/", "http://sub.test.example"},
-      // file: origins all serialize to "file://"
-      {"file://", "file://"},
-      {"file:///foo/bar", "file://"},
-      {"file://example.fileshare.com/foo/bar", "file://"},
-  };
-
-  for (const auto& test : kTestCases) {
-    SCOPED_TRACE(test.origin_str);
-    StorageKey key(url::Origin::Create(GURL(test.origin_str)));
-    EXPECT_EQ(test.expected_serialization, key.SerializeForLocalStorage());
+    EXPECT_EQ(test.expected_serialization, key.Serialize());
   }
 }
 
 // Test that deserialized StorageKeys are valid/opaque as expected.
 TEST(StorageKeyTest, Deserialize) {
   std::string example = "https://example.com/";
+  // Localstorage serialization doesn't have a trailing slash
+  std::string example_local_storage = "https://example.com";
   std::string test = "https://test.example/";
   std::string wrong = "I'm not a valid URL.";
 
+  // TODO(https://crbug.com/1199077): Refactor this test to use a for loop
+  // across an array of structs. See SerializeNonce for an example.
   absl::optional<StorageKey> key1 = StorageKey::Deserialize(example);
+  absl::optional<StorageKey> key1a =
+      StorageKey::Deserialize(example_local_storage);
   absl::optional<StorageKey> key2 = StorageKey::Deserialize(test);
   absl::optional<StorageKey> key3 = StorageKey::Deserialize(wrong);
   absl::optional<StorageKey> key4 = StorageKey::Deserialize(std::string());
 
   ASSERT_TRUE(key1.has_value());
   EXPECT_FALSE(IsOpaque(*key1));
-  ASSERT_TRUE(key2.has_value());
-  EXPECT_FALSE(IsOpaque(*key2));
-  EXPECT_FALSE(key3.has_value());
-  EXPECT_FALSE(key4.has_value());
-}
-
-// Test that deserialized service worker StorageKeys are valid/opaque as
-// expected.
-TEST(StorageKeyTest, DeserializeForServiceWorker) {
-  std::string example = "https://example.com/";
-  std::string test = "https://test.example/";
-  std::string wrong = "I'm not a valid URL.";
-
-  absl::optional<StorageKey> key1 =
-      StorageKey::DeserializeForServiceWorker(example);
-  absl::optional<StorageKey> key2 =
-      StorageKey::DeserializeForServiceWorker(test);
-  absl::optional<StorageKey> key3 =
-      StorageKey::DeserializeForServiceWorker(wrong);
-  absl::optional<StorageKey> key4 =
-      StorageKey::DeserializeForServiceWorker(std::string());
-
-  ASSERT_TRUE(key1.has_value());
-  EXPECT_FALSE(IsOpaque(*key1));
+  ASSERT_TRUE(key1a.has_value());
+  EXPECT_FALSE(IsOpaque(*key1a));
   ASSERT_TRUE(key2.has_value());
   EXPECT_FALSE(IsOpaque(*key2));
   EXPECT_FALSE(key3.has_value());
@@ -318,16 +308,12 @@ TEST(StorageKeyTest, DeserializeForServiceWorker) {
   std::string example_with_wrong = "https://example.com/^0I'm not a valid URL.";
   std::string wrong_with_example = "I'm not a valid URL.^0https://example.com";
 
-  absl::optional<StorageKey> key5 =
-      StorageKey::DeserializeForServiceWorker(example_with_test);
-  absl::optional<StorageKey> key5b = StorageKey::DeserializeForServiceWorker(
-      example_with_wrong_seperator_site);
-  absl::optional<StorageKey> key6 =
-      StorageKey::DeserializeForServiceWorker(test_with_example);
-  absl::optional<StorageKey> key7 =
-      StorageKey::DeserializeForServiceWorker(example_with_wrong);
-  absl::optional<StorageKey> key8 =
-      StorageKey::DeserializeForServiceWorker(wrong_with_example);
+  absl::optional<StorageKey> key5 = StorageKey::Deserialize(example_with_test);
+  absl::optional<StorageKey> key5b =
+      StorageKey::Deserialize(example_with_wrong_seperator_site);
+  absl::optional<StorageKey> key6 = StorageKey::Deserialize(test_with_example);
+  absl::optional<StorageKey> key7 = StorageKey::Deserialize(example_with_wrong);
+  absl::optional<StorageKey> key8 = StorageKey::Deserialize(wrong_with_example);
 
   ASSERT_TRUE(key5.has_value());
   EXPECT_FALSE(IsOpaque(*key5));
@@ -345,16 +331,14 @@ TEST(StorageKeyTest, DeserializeForServiceWorker) {
   std::string example_with_wrong_nonce = "https://example.com/^1nota^2nonce";
   std::string wrong_with_nonce = "I'm not a valid URL.^112345^267890";
 
-  absl::optional<StorageKey> key9 =
-      StorageKey::DeserializeForServiceWorker(example_with_nonce);
-  absl::optional<StorageKey> key9b = StorageKey::DeserializeForServiceWorker(
-      example_with_wrong_seperator_nonce_1);
-  absl::optional<StorageKey> key9c = StorageKey::DeserializeForServiceWorker(
-      example_with_wrong_seperator_nonce_2);
+  absl::optional<StorageKey> key9 = StorageKey::Deserialize(example_with_nonce);
+  absl::optional<StorageKey> key9b =
+      StorageKey::Deserialize(example_with_wrong_seperator_nonce_1);
+  absl::optional<StorageKey> key9c =
+      StorageKey::Deserialize(example_with_wrong_seperator_nonce_2);
   absl::optional<StorageKey> key10 =
-      StorageKey::DeserializeForServiceWorker(example_with_wrong_nonce);
-  absl::optional<StorageKey> key11 =
-      StorageKey::DeserializeForServiceWorker(wrong_with_nonce);
+      StorageKey::Deserialize(example_with_wrong_nonce);
+  absl::optional<StorageKey> key11 = StorageKey::Deserialize(wrong_with_nonce);
 
   ASSERT_TRUE(key9.has_value());
   EXPECT_FALSE(IsOpaque(*key9));
@@ -369,14 +353,13 @@ TEST(StorageKeyTest, DeserializeForServiceWorker) {
   std::string malformed_first_party =
       "https://www.example.com/^0https://example.com";
 
-  absl::optional<StorageKey> key12 =
-      StorageKey::DeserializeForServiceWorker(nonce_low_first);
+  absl::optional<StorageKey> key12 = StorageKey::Deserialize(nonce_low_first);
   absl::optional<StorageKey> key13 =
-      StorageKey::DeserializeForServiceWorker(malformed_3_carets);
+      StorageKey::Deserialize(malformed_3_carets);
   absl::optional<StorageKey> key14 =
-      StorageKey::DeserializeForServiceWorker(malformed_seperators_too_close);
+      StorageKey::Deserialize(malformed_seperators_too_close);
   absl::optional<StorageKey> key15 =
-      StorageKey::DeserializeForServiceWorker(malformed_first_party);
+      StorageKey::Deserialize(malformed_first_party);
 
   EXPECT_FALSE(key12.has_value());
   EXPECT_FALSE(key13.has_value());
@@ -431,34 +414,9 @@ TEST(StorageKeyTest, SerializeDeserialize) {
   }
 }
 
-// Test that a StorageKey, constructed by deserializing another serialized
-// StorageKey, is equivalent to the original for service workers.
-TEST(StorageKeyTest, SerializeDeserializeForServiceWorkers) {
-  const char* kTestCases[] = {"https://example.com", "https://sub.test.example",
-                              "file://", "file://example.fileshare.com"};
-
-  for (const char* test : kTestCases) {
-    SCOPED_TRACE(test);
-    url::Origin origin = url::Origin::Create(GURL(test));
-    StorageKey key(origin);
-    std::string key_string = key.SerializeForServiceWorker();
-    absl::optional<StorageKey> key_deserialized =
-        StorageKey::DeserializeForServiceWorker(key_string);
-
-    ASSERT_TRUE(key_deserialized.has_value());
-    if (origin.scheme() != "file") {
-      EXPECT_EQ(key, *key_deserialized);
-    } else {
-      // file origins are all collapsed to file:// by serialization.
-      EXPECT_EQ(StorageKey(url::Origin::Create(GURL("file://"))),
-                *key_deserialized);
-    }
-  }
-}
-
-// Same as SerializeDeserializeForServiceWorkers but for partitioned StorageKeys
-// when kThirdPartyStoragePartitioning is enabled.
-TEST(StorageKeyTest, SerializeDeserializeForServiceWorkersPartitioned) {
+// Same as SerializeDeserialize but for partitioned StorageKeys when
+// kThirdPartyStoragePartitioning is enabled.
+TEST(StorageKeyTest, SerializeDeserializePartitioned) {
   base::test::ScopedFeatureList scope_feature_list;
   scope_feature_list.InitAndEnableFeature(
       features::kThirdPartyStoragePartitioning);
@@ -488,23 +446,31 @@ TEST(StorageKeyTest, SerializeDeserializeForServiceWorkersPartitioned) {
     const net::SchemefulSite& site = test.site;
 
     StorageKey key(origin, site);
-    std::string key_string = key.SerializeForServiceWorker();
+    std::string key_string = key.Serialize();
+    std::string key_string_for_local_storage = key.SerializeForLocalStorage();
     absl::optional<StorageKey> key_deserialized =
-        StorageKey::DeserializeForServiceWorker(key_string);
-    ASSERT_TRUE(key_deserialized.has_value());
+        StorageKey::Deserialize(key_string);
+    absl::optional<StorageKey> key_deserialized_from_local_storage =
+        StorageKey::Deserialize(key_string_for_local_storage);
 
+    ASSERT_TRUE(key_deserialized.has_value());
+    ASSERT_TRUE(key_deserialized_from_local_storage.has_value());
     if (origin.scheme() != "file") {
       EXPECT_EQ(key, *key_deserialized);
+      EXPECT_EQ(key, *key_deserialized_from_local_storage);
     } else {
       // file origins are all collapsed to file:// by serialization.
       EXPECT_EQ(StorageKey(url::Origin::Create(GURL("file://")),
                            net::SchemefulSite(GURL("file://"))),
                 *key_deserialized);
+      EXPECT_EQ(StorageKey(url::Origin::Create(GURL("file://")),
+                           net::SchemefulSite(GURL("file://"))),
+                *key_deserialized_from_local_storage);
     }
   }
 }
 
-TEST(StorageKeyTest, SerializeDeserializeForServiceWorkersNonce) {
+TEST(StorageKeyTest, SerializeDeserializeNonce) {
   struct {
     const char* origin;
     const base::UnguessableToken nonce;
@@ -526,11 +492,18 @@ TEST(StorageKeyTest, SerializeDeserializeForServiceWorkersNonce) {
     const base::UnguessableToken& nonce = test.nonce;
 
     StorageKey key = StorageKey::CreateWithNonce(origin, nonce);
-    std::string key_string = key.SerializeForServiceWorker();
+    std::string key_string = key.Serialize();
+    std::string key_string_for_local_storage = key.SerializeForLocalStorage();
     absl::optional<StorageKey> key_deserialized =
-        StorageKey::DeserializeForServiceWorker(key_string);
+        StorageKey::Deserialize(key_string);
+    absl::optional<StorageKey> key_deserialized_from_local_storage =
+        StorageKey::Deserialize(key_string_for_local_storage);
+
     ASSERT_TRUE(key_deserialized.has_value());
+    ASSERT_TRUE(key_deserialized_from_local_storage.has_value());
+
     EXPECT_EQ(key, *key_deserialized);
+    EXPECT_EQ(key, *key_deserialized_from_local_storage);
   }
 }
 
