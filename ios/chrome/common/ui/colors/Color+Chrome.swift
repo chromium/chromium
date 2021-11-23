@@ -6,6 +6,11 @@ import SwiftUI
 
 // Adds easy SwiftUI access to the Chrome color palette.
 extension Color {
+  /// The primary text color.
+  public static var cr_textPrimaryColor: Color {
+    return Color(kTextPrimaryColor)
+  }
+
   /// The secondary grouped background color.
   public static var cr_groupedSecondaryBackground: Color {
     return Color(kGroupedSecondaryBackgroundColor)
