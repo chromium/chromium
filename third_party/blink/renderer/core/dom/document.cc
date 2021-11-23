@@ -4036,7 +4036,6 @@ void Document::SetURL(const KURL& url) {
   new_url = fragment_directive_->ConsumeFragmentDirective(new_url);
 
   url_ = new_url;
-  access_entry_from_url_ = nullptr;
   UpdateBaseURL();
   GetContextFeatures().UrlDidChange(this);
 
@@ -5245,14 +5244,6 @@ void Document::DispatchEventsForPrinting() {
 Document::EventFactorySet& Document::EventFactories() {
   DEFINE_STATIC_LOCAL(EventFactorySet, event_factory, ());
   return event_factory;
-}
-
-const OriginAccessEntry& Document::AccessEntryFromURL() {
-  if (!access_entry_from_url_) {
-    access_entry_from_url_ = std::make_unique<OriginAccessEntry>(
-        Url(), network::mojom::CorsDomainMatchMode::kAllowRegistrableDomains);
-  }
-  return *access_entry_from_url_;
 }
 
 void Document::RegisterEventFactory(

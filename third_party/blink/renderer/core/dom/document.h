@@ -179,7 +179,6 @@ class MediaQueryListListener;
 class MediaQueryMatcher;
 class NodeIterator;
 class NthIndexCache;
-class OriginAccessEntry;
 class Page;
 class PendingAnimations;
 class ProcessingInstruction;
@@ -1875,8 +1874,6 @@ class CORE_EXPORT Document : public ContainerNode,
     has_matched_cache_scope_ = has_matched_cache_scope;
   }
 
-  const OriginAccessEntry& AccessEntryFromURL();
-
   void UpdateActiveState(bool is_active, bool update_active_chain, Element*);
   void UpdateHoverState(Element*);
 
@@ -1954,7 +1951,6 @@ class CORE_EXPORT Document : public ContainerNode,
                             // over base_url_ (but not base_element_url_).
   KURL base_element_url_;   // The URL set by the <base> element.
   KURL cookie_url_;         // The URL to use for cookie access.
-  std::unique_ptr<OriginAccessEntry> access_entry_from_url_;
 
   KURL web_bundle_claimed_url_;
 
