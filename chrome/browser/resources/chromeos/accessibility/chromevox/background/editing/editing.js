@@ -293,9 +293,11 @@ const AutomationEditableText = class extends ChromeVoxEditableTextBase {
       lineText = '\n';
     }
 
-    const spannable = new Spannable(lineText, new OutputNodeSpan(this.node_));
+    const value = new Spannable(lineText, new OutputNodeSpan(this.node_));
+    value.setSpan(new ValueSpan(0), 0, lineText.length);
+    value.setSpan(new ValueSelectionSpan(), startIndex, endIndex);
     ChromeVox.braille.write(
-        new NavBraille({text: spannable, startIndex, endIndex}));
+        new NavBraille({text: value, startIndex, endIndex}));
   }
 
   /**
