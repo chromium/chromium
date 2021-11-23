@@ -49,11 +49,4 @@ if (current_toolchain == default_toolchain &&
     # SPVRemapper.cpp (initializer offset 0xcf2924 size 0x64)
     expected_static_initializer_count += 2
   }
-
-  if (target_cpu == "arm64") {
-    # TODO(https://crbug.com/1184398): Switching from libgcc to compiler-rt
-    # adds an init_have_lse_atomics constructor, which supports more efficient
-    # atomic operations on Arm processors.
-    expected_static_initializer_count += 1
-  }
 }
