@@ -110,12 +110,14 @@ content::WebContents* WebAppLaunchProcess::Run() {
   bool is_new_browser;
   std::tie(browser, is_new_browser) = EnsureBrowser();
 
-  web_contents =
-      NavigateBrowser(browser, is_new_browser, launch_url, share_target);
+  NavigateResult navigate_result =
+      MaybeNavigateBrowser(browser, is_new_browser, launch_url, share_target);
+  web_contents = navigate_result.web_contents;
   if (!web_contents)
     return nullptr;
 
-  MaybeEnqueueWebLaunchParams(launch_url, is_file_handling, web_contents);
+  MaybeEnqueueWebLaunchParams(launch_url, is_file_handling, web_contents,
+                              navigate_result.did_navigate);
 
   RecordMetrics(launch_url, web_contents);
 
@@ -210,6 +212,14 @@ LaunchHandler::RouteTo WebAppLaunchProcess::GetLaunchRouteTo() const {
   return launch_handler.route_to;
 }
 
+LaunchHandler::NavigateExistingClient
+WebAppLaunchProcess::GetLaunchNavigateExistingClient() const {
+  DCHECK(web_app_);
+  return web_app_->launch_handler()
+      .value_or(LaunchHandler())
+      .navigate_existing_client;
+}
+
 content::WebContents* WebAppLaunchProcess::MaybeLaunchSystemWebApp(
     const GURL& launch_url) {
   absl::optional<SystemAppType> system_app_type =
@@ -269,7 +279,7 @@ Browser* WebAppLaunchProcess::CreateBrowserForLaunch() {
                                     params_.disposition, params_.restore_id);
 }
 
-content::WebContents* WebAppLaunchProcess::NavigateBrowser(
+WebAppLaunchProcess::NavigateResult WebAppLaunchProcess::MaybeNavigateBrowser(
     Browser* browser,
     bool is_new_browser,
     const GURL& launch_url,
@@ -278,21 +288,36 @@ content::WebContents* WebAppLaunchProcess::NavigateBrowser(
       GetNavigationDisposition(is_new_browser);
 
   if (share_target) {
+    // TODO(crbug.com/1213776): Expose share target in the LaunchParams and
+    // don't navigate if navigate_existing_client: never is in effect.
     NavigateParams nav_params =
         NavigateParamsForShareTarget(browser, *share_target, *params_.intent);
     nav_params.disposition = navigation_disposition;
-    return NavigateWebAppUsingParams(params_.app_id, nav_params);
+    return {
+        .web_contents = NavigateWebAppUsingParams(params_.app_id, nav_params),
+        .did_navigate = true};
   }
 
   TabStripModel* const tab_strip = browser->tab_strip_model();
   if (tab_strip->empty() ||
       navigation_disposition != WindowOpenDisposition::CURRENT_TAB) {
-    return NavigateWebApplicationWindow(browser, params_.app_id, launch_url,
-                                        navigation_disposition);
+    return {.web_contents = NavigateWebApplicationWindow(
+                browser, params_.app_id, launch_url, navigation_disposition),
+            .did_navigate = true};
   }
 
   content::WebContents* existing_tab = tab_strip->GetActiveWebContents();
   DCHECK(existing_tab);
+  if (GetLaunchNavigateExistingClient() ==
+          LaunchHandler::NavigateExistingClient::kNever &&
+      provider_.registrar().IsUrlInAppScope(existing_tab->GetLastCommittedURL(),
+                                            params_.app_id)) {
+    // If the web contents is currently navigating then interrupt it. The
+    // current page is now being used for this app launch.
+    existing_tab->Stop();
+    return {.web_contents = existing_tab, .did_navigate = false};
+  }
+
   const int tab_index = tab_strip->GetIndexOfWebContents(existing_tab);
 
   existing_tab->OpenURL(content::OpenURLParams(
@@ -307,17 +332,18 @@ content::WebContents* WebAppLaunchProcess::NavigateBrowser(
   content::WebContents* web_contents = tab_strip->GetActiveWebContents();
   tab_strip->ActivateTabAt(tab_index, {TabStripModel::GestureType::kOther});
   WebAppTabHelper::FromWebContents(web_contents)->SetAppId(params_.app_id);
-  return web_contents;
+  return {.web_contents = web_contents, .did_navigate = true};
 }
 
 void WebAppLaunchProcess::MaybeEnqueueWebLaunchParams(
     const GURL& launch_url,
     bool is_file_handling,
-    content::WebContents* web_contents) {
+    content::WebContents* web_contents,
+    bool is_navigating) {
   if (is_file_handling || web_app_->launch_handler().has_value()) {
     web_launch::WebLaunchFilesHelper::EnqueueLaunchParams(
         web_contents, provider_.registrar().GetAppScope(web_app_->app_id()),
-        /*await_navigation=*/true, launch_url,
+        /*await_navigation=*/is_navigating, launch_url,
         /*launch_dir=*/{},
         is_file_handling ? params_.launch_files
                          : std::vector<base::FilePath>());

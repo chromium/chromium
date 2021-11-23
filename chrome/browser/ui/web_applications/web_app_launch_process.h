@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_WEB_APPLICATIONS_WEB_APP_LAUNCH_PROCESS_H_
 
 #include "base/memory/raw_ptr.h"
+#include "chrome/browser/web_applications/web_app_constants.h"
 #include "third_party/blink/public/common/manifest/manifest.h"
 
 class Browser;
@@ -41,24 +42,31 @@ class WebAppLaunchProcess {
   content::WebContents* Run();
 
  private:
-  using RouteTo = blink::Manifest::LaunchHandler::RouteTo;
   const apps::ShareTarget* MaybeGetShareTarget() const;
   std::tuple<GURL, bool /*is_file_handling*/> GetLaunchUrl(
       const apps::ShareTarget* share_target) const;
   WindowOpenDisposition GetNavigationDisposition(bool is_new_browser) const;
   content::WebContents* MaybeLaunchSystemWebApp(const GURL& launch_url);
   std::tuple<Browser*, bool /*is_new_browser*/> EnsureBrowser();
-  RouteTo GetLaunchRouteTo() const;
+  LaunchHandler::RouteTo GetLaunchRouteTo() const;
+  LaunchHandler::NavigateExistingClient GetLaunchNavigateExistingClient() const;
 
   Browser* MaybeFindBrowserForLaunch() const;
   Browser* CreateBrowserForLaunch();
-  content::WebContents* NavigateBrowser(Browser* browser,
-                                        bool is_new_browser,
-                                        const GURL& launch_url,
-                                        const apps::ShareTarget* share_target);
+
+  struct NavigateResult {
+    raw_ptr<content::WebContents> web_contents;
+    bool did_navigate;
+  };
+  NavigateResult MaybeNavigateBrowser(Browser* browser,
+                                      bool is_new_browser,
+                                      const GURL& launch_url,
+                                      const apps::ShareTarget* share_target);
+
   void MaybeEnqueueWebLaunchParams(const GURL& launch_url,
                                    bool is_file_handling,
-                                   content::WebContents* web_contents);
+                                   content::WebContents* web_contents,
+                                   bool is_navigating);
   void RecordMetrics(const GURL& launch_url,
                      content::WebContents* web_contents);
 
