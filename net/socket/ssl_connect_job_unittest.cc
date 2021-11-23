@@ -54,6 +54,7 @@
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/boringssl/src/include/openssl/ssl.h"
+#include "url/gurl.h"
 #include "url/scheme_host_port.h"
 #include "url/url_constants.h"
 
@@ -144,8 +145,8 @@ class SSLConnectJobTest : public WithTaskEnvironment, public testing::Test {
     const std::u16string kFoo(u"foo");
     const std::u16string kBar(u"bar");
     session_->http_auth_cache()->Add(
-        GURL("http://proxy:443/"), HttpAuth::AUTH_PROXY, "MyRealm1",
-        HttpAuth::AUTH_SCHEME_BASIC, NetworkIsolationKey(),
+        url::SchemeHostPort(GURL("http://proxy:443/")), HttpAuth::AUTH_PROXY,
+        "MyRealm1", HttpAuth::AUTH_SCHEME_BASIC, NetworkIsolationKey(),
         "Basic realm=MyRealm1", AuthCredentials(kFoo, kBar), "/");
   }
 

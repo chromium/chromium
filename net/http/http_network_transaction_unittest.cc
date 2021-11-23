@@ -3675,8 +3675,9 @@ TEST_F(HttpNetworkTransactionTest, BasicAuthProxyNoKeepAliveHttp10) {
 
   // Check that credentials were successfully cached, with the right target.
   HttpAuthCache::Entry* entry = session->http_auth_cache()->Lookup(
-      GURL("http://myproxy:70"), HttpAuth::AUTH_PROXY, "MyRealm1",
-      HttpAuth::AUTH_SCHEME_BASIC, NetworkIsolationKey());
+      url::SchemeHostPort(url::SchemeHostPort(GURL("http://myproxy:70"))),
+      HttpAuth::AUTH_PROXY, "MyRealm1", HttpAuth::AUTH_SCHEME_BASIC,
+      NetworkIsolationKey());
   ASSERT_TRUE(entry);
   ASSERT_EQ(kFoo, entry->credentials().username());
   ASSERT_EQ(kBar, entry->credentials().password());
@@ -4454,14 +4455,16 @@ TEST_F(HttpNetworkTransactionTest, BasicAuthProxyMatchesServerAuthNoTunnel) {
 
   // Check that the credentials were cached correctly.
   HttpAuthCache::Entry* entry = session->http_auth_cache()->Lookup(
-      GURL("http://myproxy:70"), HttpAuth::AUTH_PROXY, "MyRealm1",
-      HttpAuth::AUTH_SCHEME_BASIC, NetworkIsolationKey());
+      url::SchemeHostPort(url::SchemeHostPort(GURL("http://myproxy:70"))),
+      HttpAuth::AUTH_PROXY, "MyRealm1", HttpAuth::AUTH_SCHEME_BASIC,
+      NetworkIsolationKey());
   ASSERT_TRUE(entry);
   ASSERT_EQ(kFoo, entry->credentials().username());
   ASSERT_EQ(kBar, entry->credentials().password());
   entry = session->http_auth_cache()->Lookup(
-      GURL("http://myproxy:70"), HttpAuth::AUTH_SERVER, "MyRealm1",
-      HttpAuth::AUTH_SCHEME_BASIC, NetworkIsolationKey());
+      url::SchemeHostPort(url::SchemeHostPort(GURL("http://myproxy:70"))),
+      HttpAuth::AUTH_SERVER, "MyRealm1", HttpAuth::AUTH_SCHEME_BASIC,
+      NetworkIsolationKey());
   ASSERT_TRUE(entry);
   ASSERT_EQ(kFoo2, entry->credentials().username());
   ASSERT_EQ(kBar2, entry->credentials().password());
@@ -4651,28 +4654,29 @@ TEST_F(HttpNetworkTransactionTest,
   // Check that the proxy credentials were cached correctly. The should be
   // accessible with any NetworkIsolationKey.
   HttpAuthCache::Entry* entry = session->http_auth_cache()->Lookup(
-      GURL("http://myproxy:70"), HttpAuth::AUTH_PROXY, "MyRealm1",
-      HttpAuth::AUTH_SCHEME_BASIC, kNetworkIsolationKey1);
+      url::SchemeHostPort(url::SchemeHostPort(GURL("http://myproxy:70"))),
+      HttpAuth::AUTH_PROXY, "MyRealm1", HttpAuth::AUTH_SCHEME_BASIC,
+      kNetworkIsolationKey1);
   ASSERT_TRUE(entry);
   ASSERT_EQ(kFoo, entry->credentials().username());
   ASSERT_EQ(kBar, entry->credentials().password());
-  EXPECT_EQ(entry,
-            session->http_auth_cache()->Lookup(
-                GURL("http://myproxy:70"), HttpAuth::AUTH_PROXY, "MyRealm1",
-                HttpAuth::AUTH_SCHEME_BASIC, kNetworkIsolationKey2));
+  EXPECT_EQ(entry, session->http_auth_cache()->Lookup(
+                       url::SchemeHostPort(GURL("http://myproxy:70")),
+                       HttpAuth::AUTH_PROXY, "MyRealm1",
+                       HttpAuth::AUTH_SCHEME_BASIC, kNetworkIsolationKey2));
 
   // Check that the server credentials were cached correctly. The should be
   // accessible with only kNetworkIsolationKey1.
   entry = session->http_auth_cache()->Lookup(
-      GURL("http://myproxy:70"), HttpAuth::AUTH_SERVER, "MyRealm1",
-      HttpAuth::AUTH_SCHEME_BASIC, kNetworkIsolationKey1);
+      url::SchemeHostPort(GURL("http://myproxy:70")), HttpAuth::AUTH_SERVER,
+      "MyRealm1", HttpAuth::AUTH_SCHEME_BASIC, kNetworkIsolationKey1);
   ASSERT_TRUE(entry);
   ASSERT_EQ(kFoo2, entry->credentials().username());
   ASSERT_EQ(kBar2, entry->credentials().password());
   // Looking up the server entry with another NetworkIsolationKey should fail.
   EXPECT_FALSE(session->http_auth_cache()->Lookup(
-      GURL("http://myproxy:70"), HttpAuth::AUTH_SERVER, "MyRealm1",
-      HttpAuth::AUTH_SCHEME_BASIC, kNetworkIsolationKey2));
+      url::SchemeHostPort(GURL("http://myproxy:70")), HttpAuth::AUTH_SERVER,
+      "MyRealm1", HttpAuth::AUTH_SCHEME_BASIC, kNetworkIsolationKey2));
 
   // Make another request with a different NetworkIsolationKey. It should use
   // another socket, reuse the cached proxy credentials, but result in a server
@@ -4704,27 +4708,27 @@ TEST_F(HttpNetworkTransactionTest,
 
   // Check that the proxy credentials are still cached.
   entry = session->http_auth_cache()->Lookup(
-      GURL("http://myproxy:70"), HttpAuth::AUTH_PROXY, "MyRealm1",
-      HttpAuth::AUTH_SCHEME_BASIC, kNetworkIsolationKey1);
+      url::SchemeHostPort(GURL("http://myproxy:70")), HttpAuth::AUTH_PROXY,
+      "MyRealm1", HttpAuth::AUTH_SCHEME_BASIC, kNetworkIsolationKey1);
   ASSERT_TRUE(entry);
   ASSERT_EQ(kFoo, entry->credentials().username());
   ASSERT_EQ(kBar, entry->credentials().password());
-  EXPECT_EQ(entry,
-            session->http_auth_cache()->Lookup(
-                GURL("http://myproxy:70"), HttpAuth::AUTH_PROXY, "MyRealm1",
-                HttpAuth::AUTH_SCHEME_BASIC, kNetworkIsolationKey2));
+  EXPECT_EQ(entry, session->http_auth_cache()->Lookup(
+                       url::SchemeHostPort(GURL("http://myproxy:70")),
+                       HttpAuth::AUTH_PROXY, "MyRealm1",
+                       HttpAuth::AUTH_SCHEME_BASIC, kNetworkIsolationKey2));
 
   // Check that the correct server credentials are cached for each
   // NetworkIsolationKey.
   entry = session->http_auth_cache()->Lookup(
-      GURL("http://myproxy:70"), HttpAuth::AUTH_SERVER, "MyRealm1",
-      HttpAuth::AUTH_SCHEME_BASIC, kNetworkIsolationKey1);
+      url::SchemeHostPort(GURL("http://myproxy:70")), HttpAuth::AUTH_SERVER,
+      "MyRealm1", HttpAuth::AUTH_SCHEME_BASIC, kNetworkIsolationKey1);
   ASSERT_TRUE(entry);
   ASSERT_EQ(kFoo2, entry->credentials().username());
   ASSERT_EQ(kBar2, entry->credentials().password());
   entry = session->http_auth_cache()->Lookup(
-      GURL("http://myproxy:70"), HttpAuth::AUTH_SERVER, "MyRealm1",
-      HttpAuth::AUTH_SCHEME_BASIC, kNetworkIsolationKey2);
+      url::SchemeHostPort(GURL("http://myproxy:70")), HttpAuth::AUTH_SERVER,
+      "MyRealm1", HttpAuth::AUTH_SCHEME_BASIC, kNetworkIsolationKey2);
   ASSERT_TRUE(entry);
   ASSERT_EQ(kFoo3, entry->credentials().username());
   ASSERT_EQ(kBar3, entry->credentials().password());
@@ -4923,28 +4927,29 @@ TEST_F(HttpNetworkTransactionTest,
   // Check that the proxy credentials were cached correctly. The should be
   // accessible with any NetworkIsolationKey.
   HttpAuthCache::Entry* entry = session->http_auth_cache()->Lookup(
-      GURL("https://myproxy:70"), HttpAuth::AUTH_PROXY, "MyRealm1",
-      HttpAuth::AUTH_SCHEME_BASIC, kNetworkIsolationKey1);
+      url::SchemeHostPort(url::SchemeHostPort(GURL("https://myproxy:70"))),
+      HttpAuth::AUTH_PROXY, "MyRealm1", HttpAuth::AUTH_SCHEME_BASIC,
+      kNetworkIsolationKey1);
   ASSERT_TRUE(entry);
   ASSERT_EQ(kFoo, entry->credentials().username());
   ASSERT_EQ(kBar, entry->credentials().password());
-  EXPECT_EQ(entry,
-            session->http_auth_cache()->Lookup(
-                GURL("https://myproxy:70"), HttpAuth::AUTH_PROXY, "MyRealm1",
-                HttpAuth::AUTH_SCHEME_BASIC, kNetworkIsolationKey2));
+  EXPECT_EQ(entry, session->http_auth_cache()->Lookup(
+                       url::SchemeHostPort(GURL("https://myproxy:70")),
+                       HttpAuth::AUTH_PROXY, "MyRealm1",
+                       HttpAuth::AUTH_SCHEME_BASIC, kNetworkIsolationKey2));
 
   // Check that the server credentials were cached correctly. The should be
   // accessible with only kNetworkIsolationKey1.
   entry = session->http_auth_cache()->Lookup(
-      GURL("https://myproxy:70"), HttpAuth::AUTH_SERVER, "MyRealm1",
-      HttpAuth::AUTH_SCHEME_BASIC, kNetworkIsolationKey1);
+      url::SchemeHostPort(GURL("https://myproxy:70")), HttpAuth::AUTH_SERVER,
+      "MyRealm1", HttpAuth::AUTH_SCHEME_BASIC, kNetworkIsolationKey1);
   ASSERT_TRUE(entry);
   ASSERT_EQ(kFoo2, entry->credentials().username());
   ASSERT_EQ(kBar2, entry->credentials().password());
   // Looking up the server entry with another NetworkIsolationKey should fail.
   EXPECT_FALSE(session->http_auth_cache()->Lookup(
-      GURL("https://myproxy:70"), HttpAuth::AUTH_SERVER, "MyRealm1",
-      HttpAuth::AUTH_SCHEME_BASIC, kNetworkIsolationKey2));
+      url::SchemeHostPort(GURL("https://myproxy:70")), HttpAuth::AUTH_SERVER,
+      "MyRealm1", HttpAuth::AUTH_SCHEME_BASIC, kNetworkIsolationKey2));
 
   // Make another request with a different NetworkIsolationKey. It should use
   // another socket, reuse the cached proxy credentials, but result in a server
@@ -4976,27 +4981,27 @@ TEST_F(HttpNetworkTransactionTest,
 
   // Check that the proxy credentials are still cached.
   entry = session->http_auth_cache()->Lookup(
-      GURL("https://myproxy:70"), HttpAuth::AUTH_PROXY, "MyRealm1",
-      HttpAuth::AUTH_SCHEME_BASIC, kNetworkIsolationKey1);
+      url::SchemeHostPort(GURL("https://myproxy:70")), HttpAuth::AUTH_PROXY,
+      "MyRealm1", HttpAuth::AUTH_SCHEME_BASIC, kNetworkIsolationKey1);
   ASSERT_TRUE(entry);
   ASSERT_EQ(kFoo, entry->credentials().username());
   ASSERT_EQ(kBar, entry->credentials().password());
-  EXPECT_EQ(entry,
-            session->http_auth_cache()->Lookup(
-                GURL("https://myproxy:70"), HttpAuth::AUTH_PROXY, "MyRealm1",
-                HttpAuth::AUTH_SCHEME_BASIC, kNetworkIsolationKey2));
+  EXPECT_EQ(entry, session->http_auth_cache()->Lookup(
+                       url::SchemeHostPort(GURL("https://myproxy:70")),
+                       HttpAuth::AUTH_PROXY, "MyRealm1",
+                       HttpAuth::AUTH_SCHEME_BASIC, kNetworkIsolationKey2));
 
   // Check that the correct server credentials are cached for each
   // NetworkIsolationKey.
   entry = session->http_auth_cache()->Lookup(
-      GURL("https://myproxy:70"), HttpAuth::AUTH_SERVER, "MyRealm1",
-      HttpAuth::AUTH_SCHEME_BASIC, kNetworkIsolationKey1);
+      url::SchemeHostPort(GURL("https://myproxy:70")), HttpAuth::AUTH_SERVER,
+      "MyRealm1", HttpAuth::AUTH_SCHEME_BASIC, kNetworkIsolationKey1);
   ASSERT_TRUE(entry);
   ASSERT_EQ(kFoo2, entry->credentials().username());
   ASSERT_EQ(kBar2, entry->credentials().password());
   entry = session->http_auth_cache()->Lookup(
-      GURL("https://myproxy:70"), HttpAuth::AUTH_SERVER, "MyRealm1",
-      HttpAuth::AUTH_SCHEME_BASIC, kNetworkIsolationKey2);
+      url::SchemeHostPort(GURL("https://myproxy:70")), HttpAuth::AUTH_SERVER,
+      "MyRealm1", HttpAuth::AUTH_SCHEME_BASIC, kNetworkIsolationKey2);
   ASSERT_TRUE(entry);
   ASSERT_EQ(kFoo3, entry->credentials().username());
   ASSERT_EQ(kBar3, entry->credentials().password());
@@ -19555,8 +19560,8 @@ TEST_F(HttpNetworkTransactionTest, ProxyHeadersNotSentOverWsTunnel) {
   session_deps_.socket_factory->AddSocketDataProvider(&data);
 
   session->http_auth_cache()->Add(
-      GURL("http://myproxy:70/"), HttpAuth::AUTH_PROXY, "MyRealm1",
-      HttpAuth::AUTH_SCHEME_BASIC, NetworkIsolationKey(),
+      url::SchemeHostPort(GURL("http://myproxy:70/")), HttpAuth::AUTH_PROXY,
+      "MyRealm1", HttpAuth::AUTH_SCHEME_BASIC, NetworkIsolationKey(),
       "Basic realm=MyRealm1", AuthCredentials(kFoo, kBar), "/");
 
   TestWebSocketHandshakeStreamCreateHelper websocket_stream_create_helper;

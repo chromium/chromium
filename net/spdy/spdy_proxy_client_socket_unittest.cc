@@ -50,6 +50,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/platform_test.h"
+#include "url/gurl.h"
 #include "url/scheme_host_port.h"
 
 using net::test::IsError;
@@ -169,7 +170,7 @@ class SpdyProxyClientSocketTest : public PlatformTest,
     const std::u16string kFoo(u"foo");
     const std::u16string kBar(u"bar");
     session_->http_auth_cache()->Add(
-        GURL(kProxyUrl), HttpAuth::AUTH_PROXY, "MyRealm1",
+        url::SchemeHostPort{GURL(kProxyUrl)}, HttpAuth::AUTH_PROXY, "MyRealm1",
         HttpAuth::AUTH_SCHEME_BASIC, NetworkIsolationKey(),
         "Basic realm=MyRealm1", AuthCredentials(kFoo, kBar), "/");
   }

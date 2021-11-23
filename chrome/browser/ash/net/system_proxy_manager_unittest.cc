@@ -39,6 +39,8 @@
 #include "services/network/network_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "url/gurl.h"
+#include "url/scheme_host_port.h"
 
 using testing::_;
 using testing::Invoke;
@@ -246,7 +248,8 @@ TEST_F(SystemProxyManagerTest, UserCredentialsRequestedFromNetworkService) {
       ->http_transaction_factory()
       ->GetSession()
       ->http_auth_cache()
-      ->Add(GURL(kProxyAuthEmptyPath), net::HttpAuth::AUTH_PROXY, kRealm,
+      ->Add(url::SchemeHostPort(GURL(kProxyAuthEmptyPath)),
+            net::HttpAuth::AUTH_PROXY, kRealm,
             net::HttpAuth::AUTH_SCHEME_DIGEST, net::NetworkIsolationKey(),
             kProxyAuthChallenge,
             net::AuthCredentials(kBrowserUsername16, kBrowserPassword16),

@@ -147,6 +147,7 @@
 #include "ui/gfx/favicon_size.h"
 #include "url/gurl.h"
 #include "url/origin.h"
+#include "url/scheme_host_port.h"
 
 #if defined(OS_ANDROID)
 #include "chrome/browser/android/customtabs/origin_verifier.h"
@@ -2622,12 +2623,12 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest,
   DCHECK(http_session);
 
   net::HttpAuthCache* http_auth_cache = http_session->http_auth_cache();
-  const GURL kOrigin1("http://host1.com:1");
-  http_auth_cache->Add(kOrigin1, net::HttpAuth::AUTH_SERVER, kTestRealm,
+  const url::SchemeHostPort kSchemeHostPort(GURL("http://host1.com:1"));
+  http_auth_cache->Add(kSchemeHostPort, net::HttpAuth::AUTH_SERVER, kTestRealm,
                        net::HttpAuth::AUTH_SCHEME_BASIC,
                        net::NetworkIsolationKey(), "test challenge",
                        net::AuthCredentials(u"foo", u"bar"), "/");
-  CHECK(http_auth_cache->Lookup(kOrigin1, net::HttpAuth::AUTH_SERVER,
+  CHECK(http_auth_cache->Lookup(kSchemeHostPort, net::HttpAuth::AUTH_SERVER,
                                 kTestRealm, net::HttpAuth::AUTH_SCHEME_BASIC,
                                 net::NetworkIsolationKey()));
 
@@ -2636,7 +2637,7 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest,
 
   EXPECT_EQ(nullptr,
             http_auth_cache->Lookup(
-                kOrigin1, net::HttpAuth::AUTH_SERVER, kTestRealm,
+                kSchemeHostPort, net::HttpAuth::AUTH_SERVER, kTestRealm,
                 net::HttpAuth::AUTH_SCHEME_BASIC, net::NetworkIsolationKey()));
 }
 

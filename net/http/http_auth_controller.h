@@ -19,6 +19,7 @@
 #include "net/log/net_log_with_source.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
+#include "url/scheme_host_port.h"
 
 namespace net {
 
@@ -195,7 +196,7 @@ class NET_EXPORT_PRIVATE HttpAuthController
   const GURL auth_url_;
 
   // Holds the {scheme, host, port} for the authentication target.
-  const GURL auth_origin_;
+  const url::SchemeHostPort auth_scheme_host_port_;
 
   // The absolute path of the resource needing authentication.
   // For proxy authentication, the path is empty.

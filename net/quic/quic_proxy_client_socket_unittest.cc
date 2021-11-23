@@ -59,6 +59,7 @@
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "url/gurl.h"
 #include "url/scheme_host_port.h"
 #include "url/url_constants.h"
 
@@ -765,10 +766,10 @@ TEST_P(QuicProxyClientSocketTest, ConnectWithAuthCredentials) {
   // Add auth to cache
   const std::u16string kFoo(u"foo");
   const std::u16string kBar(u"bar");
-  http_auth_cache_.Add(GURL(kProxyUrl), HttpAuth::AUTH_PROXY, "MyRealm1",
-                       HttpAuth::AUTH_SCHEME_BASIC, NetworkIsolationKey(),
-                       "Basic realm=MyRealm1", AuthCredentials(kFoo, kBar),
-                       "/");
+  http_auth_cache_.Add(
+      url::SchemeHostPort(GURL(kProxyUrl)), HttpAuth::AUTH_PROXY, "MyRealm1",
+      HttpAuth::AUTH_SCHEME_BASIC, NetworkIsolationKey(),
+      "Basic realm=MyRealm1", AuthCredentials(kFoo, kBar), "/");
 
   AssertConnectSucceeds();
 

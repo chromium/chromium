@@ -1948,7 +1948,9 @@ void NetworkContext::AddAuthCacheEntry(
           ->GetSession()
           ->http_auth_cache();
   http_auth_cache->Add(
-      challenge.challenger.GetURL(),
+      // TODO(https://crbug.com/): Convert AuthCredentials::challenger field to
+      // a SchemeHostPort.
+      challenge.challenger.GetTupleOrPrecursorTupleIfOpaque(),
       challenge.is_proxy ? net::HttpAuth::AUTH_PROXY
                          : net::HttpAuth::AUTH_SERVER,
       challenge.realm, net::HttpAuth::StringToScheme(challenge.scheme),
@@ -1974,7 +1976,7 @@ void NetworkContext::LookupServerBasicAuthCredentials(
           ->GetSession()
           ->http_auth_cache();
   net::HttpAuthCache::Entry* entry = http_auth_cache->LookupByPath(
-      url.DeprecatedGetOriginAsURL(), net::HttpAuth::AUTH_SERVER,
+      url::SchemeHostPort(url), net::HttpAuth::AUTH_SERVER,
       network_isolation_key, url.path());
   if (entry && entry->scheme() == net::HttpAuth::AUTH_SCHEME_BASIC)
     std::move(callback).Run(entry->credentials());
@@ -2002,8 +2004,9 @@ void NetworkContext::LookupProxyAuthCredentials(
   // lossy conversion, shouldn't do this.
   const char* scheme =
       proxy_server.is_secure_http_like() ? "https://" : "http://";
-  GURL proxy_url(scheme + proxy_server.host_port_pair().ToString());
-  if (!proxy_url.is_valid()) {
+  url::SchemeHostPort scheme_host_port(
+      GURL(scheme + proxy_server.host_port_pair().ToString()));
+  if (!scheme_host_port.IsValid()) {
     std::move(callback).Run(absl::nullopt);
     return;
   }
@@ -2011,8 +2014,8 @@ void NetworkContext::LookupProxyAuthCredentials(
   //  Unlike server credentials, proxy credentials are not keyed on
   //  NetworkIsolationKey.
   net::HttpAuthCache::Entry* entry =
-      http_auth_cache->Lookup(proxy_url, net::HttpAuth::AUTH_PROXY, realm,
-                              net_scheme, net::NetworkIsolationKey());
+      http_auth_cache->Lookup(scheme_host_port, net::HttpAuth::AUTH_PROXY,
+                              realm, net_scheme, net::NetworkIsolationKey());
   if (entry)
     std::move(callback).Run(entry->credentials());
   else

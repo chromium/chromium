@@ -40,6 +40,8 @@
 #include "net/test/test_with_task_environment.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "url/gurl.h"
+#include "url/scheme_host_port.h"
 
 namespace net {
 
@@ -770,13 +772,13 @@ TEST_P(HttpProxyConnectJobTest, HaveAuth) {
   // Prepopulate auth cache.
   const std::u16string kFoo(u"foo");
   const std::u16string kBar(u"bar");
-  GURL proxy_url(GetParam() == HTTP
-                     ? (std::string("http://") + kHttpProxyHost)
-                     : (std::string("https://") + kHttpsProxyHost));
+  url::SchemeHostPort proxy_scheme_host_port(
+      GetParam() == HTTP ? GURL(std::string("http://") + kHttpProxyHost)
+                         : GURL(std::string("https://") + kHttpsProxyHost));
   session_->http_auth_cache()->Add(
-      proxy_url, HttpAuth::AUTH_PROXY, "MyRealm1", HttpAuth::AUTH_SCHEME_BASIC,
-      NetworkIsolationKey(), "Basic realm=MyRealm1",
-      AuthCredentials(kFoo, kBar), "/");
+      proxy_scheme_host_port, HttpAuth::AUTH_PROXY, "MyRealm1",
+      HttpAuth::AUTH_SCHEME_BASIC, NetworkIsolationKey(),
+      "Basic realm=MyRealm1", AuthCredentials(kFoo, kBar), "/");
 
   for (IoMode io_mode : {SYNCHRONOUS, ASYNC}) {
     SCOPED_TRACE(io_mode);
