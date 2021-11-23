@@ -25,6 +25,8 @@ import static org.chromium.chrome.browser.autofill_assistant.MiniActionTestUtil.
 import static org.chromium.chrome.browser.autofill_assistant.ProtoTestUtil.toCssSelector;
 import static org.chromium.chrome.browser.autofill_assistant.ProtoTestUtil.toIFrameCssSelector;
 
+import android.os.Build.VERSION_CODES;
+
 import androidx.test.filters.MediumTest;
 
 import org.junit.Rule;
@@ -34,6 +36,7 @@ import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.chrome.browser.autofill_assistant.proto.ActionProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.ChipProto;
@@ -131,7 +134,10 @@ public class AutofillAssistantKeyboardIntegrationTest {
 
     @Test
     @MediumTest
-    public void keyboardDoesNotShowOnKeyStrokes() throws Exception {
+    @DisableIf.Build(message = "Fails on Marshmallow, https://crbug.com/1272863",
+            sdk_is_greater_than = VERSION_CODES.LOLLIPOP_MR1, sdk_is_less_than = VERSION_CODES.N)
+    public void
+    keyboardDoesNotShowOnKeyStrokes() throws Exception {
         ArrayList<ActionProto> list = new ArrayList<>();
 
         SelectorProto nameSelector = toCssSelector("#profile_name");
