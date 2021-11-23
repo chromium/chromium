@@ -32140,7 +32140,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="901" label="LinkRelPreload"/>
   <int value="902" label="LinkHeaderDnsPrefetch"/>
   <int value="903" label="LinkHeaderPreconnect"/>
-  <int value="904" label="ClientHintsMetaAcceptCH"/>
+  <int value="904" label="ClientHintsMetaHTTPEquivAcceptCH"/>
   <int value="905" label="HTMLElementDeprecatedWidth"/>
   <int value="906" label="ClientHintsContentDPR"/>
   <int value="907" label="ElementAttachShadowOpen"/>
@@ -35467,6 +35467,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4078" label="V8Navigator_AdAuctionComponents_Method"/>
   <int value="4079" label="ClientHintsUAFullVersionList"/>
   <int value="4080" label="WebAppManifestLaunchHandler"/>
+  <int value="4081" label="ClientHintsMetaNameAcceptCH"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">
