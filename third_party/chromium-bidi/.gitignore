@@ -5,3 +5,5 @@ package-lock.json
 src/.build/
 log.txt
 .local-chromium/
+/.idea/
+/chromium-bidi.iml
