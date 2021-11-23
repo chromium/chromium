@@ -115,10 +115,9 @@ class AutofillAgent : public content::RenderFrameObserver,
   void SetSecureContextRequired(bool required) override;
   void SetFocusRequiresScroll(bool require) override;
   void SetQueryPasswordSuggestion(bool required) override;
-  void GetElementFormAndFieldDataAtIndex(
-      const std::string& selector,
-      int index,
-      GetElementFormAndFieldDataAtIndexCallback callback) override;
+  void GetElementFormAndFieldDataForDevToolsNodeId(
+      int backend_node_id,
+      GetElementFormAndFieldDataForDevToolsNodeIdCallback callback) override;
   void SetAssistantKeyboardSuppressState(bool suppress) override;
   void EnableHeavyFormDataScraping() override;
   void SetFieldsEligibleForManualFilling(

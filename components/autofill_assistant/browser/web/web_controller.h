@@ -426,35 +426,21 @@ class WebController {
                               autofill::ContentAutofillDriver* driver,
                               const autofill::FormData&,
                               const autofill::FormFieldData&)> callback);
-  void GetUniqueElementSelector(
-      const ElementFinder::Result& element,
-      base::OnceCallback<void(const ClientStatus&, const std::string&, int)>
-          callback);
-  void OnGetElementTagForUniqueSelector(
-      const ElementFinder::Result& element,
-      base::OnceCallback<void(const ClientStatus&, const std::string&, int)>
-          callback,
-      const ClientStatus& tag_status,
-      const std::string& tag);
-  void GetElementQueryIndex(
-      const std::string& query_selector,
+  void GetBackendNodeId(
       const ElementFinder::Result& element,
       base::OnceCallback<void(const ClientStatus&, int)> callback);
-  void OnGetElementQueryIndexForUniqueSelector(
-      base::OnceCallback<void(const ClientStatus&, const std::string&, int)>
-          callback,
-      const std::string& query_selector,
-      const ClientStatus& index_status,
-      int index);
-  void OnGetUniqueSelectorForFormAndFieldData(
+  void OnGetBackendNodeId(
+      base::OnceCallback<void(const ClientStatus&, int)> callback,
+      const DevtoolsClient::ReplyStatus& reply_status,
+      std::unique_ptr<dom::DescribeNodeResult> result);
+  void OnGetBackendNodeIdForFormAndFieldData(
       const ElementFinder::Result& element,
       base::OnceCallback<void(const ClientStatus&,
                               autofill::ContentAutofillDriver* driver,
                               const autofill::FormData&,
                               const autofill::FormFieldData&)> callback,
-      const ClientStatus& selector_status,
-      const std::string& query_selector,
-      int index);
+      const ClientStatus& node_status,
+      int backend_node_id);
   void OnGetFormAndFieldData(
       base::OnceCallback<void(const ClientStatus&,
                               autofill::ContentAutofillDriver* driver,

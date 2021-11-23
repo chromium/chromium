@@ -318,13 +318,6 @@ const char* const kDispatchEventToDocumentScript =
     R"(const event = new Event('duplexweb');
        document.dispatchEvent(event);)";
 
-// Find the index of the calling element (|this|) in the |nodeList| result of
-// the |querySelector|.
-const char* const kGetElementQueryIndexScript =
-    R"(function(querySelector) {
-    return [].indexOf.call(document.querySelectorAll(querySelector), this);
-  })";
-
 // Converts a int that correspond to the DocumentReadyState enum into an
 // equivalent quoted Javascript string.
 std::string DocumentReadyStateToQuotedJsString(int state) {
@@ -946,85 +939,50 @@ void WebController::GetElementFormAndFieldData(
                             ContentAutofillDriver* driver,
                             const autofill::FormData&,
                             const autofill::FormFieldData&)> callback) {
-  GetUniqueElementSelector(
+  GetBackendNodeId(
       element,
-      base::BindOnce(&WebController::OnGetUniqueSelectorForFormAndFieldData,
+      base::BindOnce(&WebController::OnGetBackendNodeIdForFormAndFieldData,
                      weak_ptr_factory_.GetWeakPtr(), element,
                      std::move(callback)));
 }
 
-void WebController::GetUniqueElementSelector(
-    const ElementFinder::Result& element,
-    base::OnceCallback<void(const ClientStatus&, const std::string&, int)>
-        callback) {
-  GetElementTag(element,
-                base::BindOnce(&WebController::OnGetElementTagForUniqueSelector,
-                               weak_ptr_factory_.GetWeakPtr(), element,
-                               std::move(callback)));
-}
-
-void WebController::OnGetElementTagForUniqueSelector(
-    const ElementFinder::Result& element,
-    base::OnceCallback<void(const ClientStatus&, const std::string&, int)>
-        callback,
-    const ClientStatus& tag_status,
-    const std::string& tag) {
-  if (!tag_status.ok()) {
-    std::move(callback).Run(tag_status, std::string(), -1);
-    return;
-  }
-
-  GetElementQueryIndex(
-      tag, element,
-      base::BindOnce(&WebController::OnGetElementQueryIndexForUniqueSelector,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback), tag));
-}
-
-void WebController::GetElementQueryIndex(
-    const std::string& query_selector,
+void WebController::GetBackendNodeId(
     const ElementFinder::Result& element,
     base::OnceCallback<void(const ClientStatus&, int)> callback) {
-  std::vector<std::unique_ptr<runtime::CallArgument>> argument;
-  AddRuntimeCallArgument(query_selector, &argument);
-  devtools_client_->GetRuntime()->CallFunctionOn(
-      runtime::CallFunctionOnParams::Builder()
+  devtools_client_->GetDOM()->DescribeNode(
+      dom::DescribeNodeParams::Builder()
           .SetObjectId(element.object_id())
-          .SetArguments(std::move(argument))
-          .SetFunctionDeclaration(std::string(kGetElementQueryIndexScript))
-          .SetReturnByValue(true)
           .Build(),
       element.node_frame_id(),
-      base::BindOnce(&WebController::OnJavaScriptResultForInt,
+      base::BindOnce(&WebController::OnGetBackendNodeId,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
-void WebController::OnGetElementQueryIndexForUniqueSelector(
-    base::OnceCallback<void(const ClientStatus&, const std::string&, int)>
-        callback,
-    const std::string& query_selector,
-    const ClientStatus& index_status,
-    int index) {
-  if (index < 0) {
-    // TODO(b/181209327): This may happen if the element is in a shadow DOM. We
-    // currently do not support this.
-    std::move(callback).Run(UnexpectedErrorStatus(__FILE__, __LINE__),
-                            query_selector, index);
+void WebController::OnGetBackendNodeId(
+    base::OnceCallback<void(const ClientStatus&, int)> callback,
+    const DevtoolsClient::ReplyStatus& reply_status,
+    std::unique_ptr<dom::DescribeNodeResult> result) {
+  if (!result || !result->GetNode()) {
+    VLOG(1) << __func__ << " Failed to describe the node";
+    std::move(callback).Run(
+        UnexpectedDevtoolsErrorStatus(reply_status, __FILE__, __LINE__), 0);
     return;
   }
-  std::move(callback).Run(index_status, query_selector, index);
+
+  std::move(callback).Run(OkClientStatus(),
+                          result->GetNode()->GetBackendNodeId());
 }
 
-void WebController::OnGetUniqueSelectorForFormAndFieldData(
+void WebController::OnGetBackendNodeIdForFormAndFieldData(
     const ElementFinder::Result& element,
     base::OnceCallback<void(const ClientStatus&,
                             ContentAutofillDriver* driver,
                             const autofill::FormData&,
                             const autofill::FormFieldData&)> callback,
-    const ClientStatus& selector_status,
-    const std::string& query_selector,
-    int index) {
-  if (!selector_status.ok()) {
-    std::move(callback).Run(selector_status, nullptr, autofill::FormData(),
+    const ClientStatus& node_status,
+    const int backend_node_id) {
+  if (!node_status.ok()) {
+    std::move(callback).Run(node_status, nullptr, autofill::FormData(),
                             autofill::FormFieldData());
     return;
   }
@@ -1038,11 +996,10 @@ void WebController::OnGetUniqueSelectorForFormAndFieldData(
     return;
   }
 
-  driver->GetAutofillAgent()->GetElementFormAndFieldDataAtIndex(
-      query_selector, index,
-      base::BindOnce(&WebController::OnGetFormAndFieldData,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback),
-                     driver));
+  driver->GetAutofillAgent()->GetElementFormAndFieldDataForDevToolsNodeId(
+      backend_node_id, base::BindOnce(&WebController::OnGetFormAndFieldData,
+                                      weak_ptr_factory_.GetWeakPtr(),
+                                      std::move(callback), driver));
 }
 
 void WebController::OnGetFormAndFieldData(

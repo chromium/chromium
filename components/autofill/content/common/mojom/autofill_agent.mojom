@@ -76,9 +76,10 @@ interface AutofillAgent {
   SetQueryPasswordSuggestion(bool query);
 
   // Get form element's form and field data. The form field is given by a
-  // selector returning an arbitrary number of results and an index for
-  // selecting the specified result.
-  GetElementFormAndFieldDataAtIndex(string selector, int32 index) => (
+  // stable devtools node identifier in the backend node id.
+  // https://chromedevtools.github.io/devtools-protocol/tot/DOM/#type-BackendNodeId
+  // The corresponding entity in the renderer is the DOMNodeIds.
+  GetElementFormAndFieldDataForDevToolsNodeId(int32 backend_node_id) => (
       autofill.mojom.FormData form, autofill.mojom.FormFieldData field);
 
   // Set whether or not the Autofill Assistant currently wants to suppress the

@@ -823,21 +823,15 @@ void AutofillAgent::SetFocusRequiresScroll(bool require) {
   focus_requires_scroll_ = require;
 }
 
-void AutofillAgent::GetElementFormAndFieldDataAtIndex(
-    const std::string& selector,
-    int index,
-    GetElementFormAndFieldDataAtIndexCallback callback) {
+void AutofillAgent::GetElementFormAndFieldDataForDevToolsNodeId(
+    const int backend_node_id,
+    GetElementFormAndFieldDataForDevToolsNodeIdCallback callback) {
   blink::WebLocalFrame* frame = render_frame()->GetWebFrame();
   if (!frame)
     return;
 
-  blink::WebElement target_element;
-  blink::WebVector<blink::WebElement> elements =
-      render_frame()->GetWebFrame()->GetDocument().QuerySelectorAll(
-          blink::WebString::FromUTF8(selector));
-  if (index >= 0 && static_cast<size_t>(index) < elements.size()) {
-    target_element = elements[index];
-  }
+  blink::WebElement target_element =
+      frame->GetDocument().GetElementByDevToolsNodeId(backend_node_id);
 
   FormData form;
   FormFieldData field;

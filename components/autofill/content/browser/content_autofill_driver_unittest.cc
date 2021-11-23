@@ -244,10 +244,9 @@ class FakeAutofillAgent : public mojom::AutofillAgent {
 
   void SetQueryPasswordSuggestion(bool query) override {}
 
-  void GetElementFormAndFieldDataAtIndex(
-      const std::string& selector,
-      int index,
-      GetElementFormAndFieldDataAtIndexCallback callback) override {}
+  void GetElementFormAndFieldDataForDevToolsNodeId(
+      int backend_node_id,
+      GetElementFormAndFieldDataForDevToolsNodeIdCallback callback) override {}
 
   void SetAssistantKeyboardSuppressState(bool suppress) override {}
 
