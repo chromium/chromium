@@ -47,11 +47,13 @@ KNOWN_TYP_TEST_RUNNERS = {
     'run_blinkpy_tests.py',
     'run_mac_signing_tests.py',
     'run_mini_installer_tests.py',
+    'test_suite_all.py',  # //tools/grit:grit_python_unittests
 }
 
 KNOWN_TYP_VPYTHON3_TEST_RUNNERS = {
     'monochrome_python_tests.py',
     'run_polymer_tools_tests.py',
+    'test_suite_all.py',  # //tools/grit:grit_python_unittests
 }
 
 class IsolatedScriptTestAdapter(common.BaseIsolatedScriptArgsAdapter):
