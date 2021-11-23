@@ -17,6 +17,8 @@ This script uses your chromium/src checkout, so you must keep it updated if you
 want this to be able to cancel recent builds.
 """
 
+from __future__ import print_function
+
 import argparse
 import datetime
 import functools
@@ -55,7 +57,13 @@ def _get_build_running_time(build):
   Returns:
     The build's current runtime as a datetime.timedelta.
   """
-  date = datetime.datetime.strptime(build['startTime'], '%Y-%m-%dT%H:%M:%S.%fZ')
+  # The timestamp strings buildbucket gives us have a '.123123' bit at the end,
+  # which is the microseconds. For some reason, python3 doesn't allow that in
+  # datetime timestamps. We don't need this anyways, so just get rid of it and
+  # parse the rest of the string.
+  t = build['startTime']
+  t = t.split('.')[0]
+  date = datetime.datetime.strptime(t, '%Y-%m-%dT%H:%M:%S')
   return datetime.datetime.now(tzlocal()) - pytz.timezone('UTC').localize(date)
 
 
