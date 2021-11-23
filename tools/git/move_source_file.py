@@ -80,7 +80,7 @@ def UpdateIncludes(from_path, to_path):
   # . Object-C imports
   # . Imports in mojom files.
   files_with_changed_includes = mffr.MultiFileFindReplace(
-      r'(#?(include|import)\s*["<])%s([>"]);?' % re.escape(from_path),
+      r'(#?(include|import)\s*["<])%s([>"])' % re.escape(from_path),
       r'\1%s\3' % to_path, ['*.cc', '*.h', '*.m', '*.mm', '*.cpp', '*.mojom'])
 
 
