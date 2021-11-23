@@ -250,6 +250,8 @@ suite('SidePanelBookmarkDragManagerTest', () => {
     assertEquals('1', calledId);
     assertEquals(0, calledIndex);
 
+    draggedBookmark.dispatchEvent(new DragEvent(
+        'dragstart', {bubbles: true, composed: true, clientX: 0, clientY: 0}));
     const dragBelowBookmark = draggableElements[1];
     const dragBelowRect = dragBelowBookmark.getBoundingClientRect();
     dragBelowBookmark.dispatchEvent(new DragEvent('dragover', {

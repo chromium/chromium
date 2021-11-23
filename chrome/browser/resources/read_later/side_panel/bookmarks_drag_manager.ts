@@ -29,6 +29,7 @@ interface BookmarksDragDelegate extends HTMLElement {
   getAscendants(bookmarkId: string): string[];
   getIndex(bookmark: chrome.bookmarks.BookmarkTreeNode): number;
   isFolderOpen(bookmark: chrome.bookmarks.BookmarkTreeNode): boolean;
+  onFinishDrop(bookmarks: chrome.bookmarks.BookmarkTreeNode[]): void;
   openFolder(folderId: string): void;
 }
 
@@ -137,14 +138,15 @@ class DragSession {
         dropPosition === DropPosition.INTO) {
       chrome.bookmarkManagerPrivate.drop(
           dropTargetBookmark.id, /* index */ undefined,
-          /* callback */ undefined);
+          () => this.delegate_.onFinishDrop(this.dragData_.elements!));
       return;
     }
 
     let toIndex = this.delegate_.getIndex(dropTargetBookmark);
     toIndex += dropPosition === DropPosition.BELOW ? 1 : 0;
     chrome.bookmarkManagerPrivate.drop(
-        dropTargetBookmark.parentId!, toIndex, /* callback */ undefined);
+        dropTargetBookmark.parentId!, toIndex,
+        () => this.delegate_.onFinishDrop(this.dragData_.elements!));
   }
 
   private resetState_() {
@@ -262,5 +264,6 @@ export class BookmarksDragManager {
 
     e.preventDefault();
     this.dragSession_.finish();
+    this.dragSession_ = null;
   }
 }

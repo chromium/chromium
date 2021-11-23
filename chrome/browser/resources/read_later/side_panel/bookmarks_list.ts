@@ -109,9 +109,19 @@ export class BookmarksListElement extends PolymerElement {
     }
     return parent.children.findIndex((child) => child.id === bookmark.id);
   }
+
   /** BookmarksDragDelegate */
   isFolderOpen(bookmark: chrome.bookmarks.BookmarkTreeNode): boolean {
     return this.openFolders_.some(id => bookmark.id === id);
+  }
+
+  /** BookmarksDragDelegate */
+  onFinishDrop(bookmarks: chrome.bookmarks.BookmarkTreeNode[]): void {
+    if (bookmarks.length === 0 || bookmarks[0]!.id === undefined) {
+      return;
+    }
+
+    this.focusBookmark_(bookmarks[0]!.id);
   }
 
   /** BookmarksDragDelegate */
