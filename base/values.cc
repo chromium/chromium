@@ -809,14 +809,6 @@ void Value::MergeDictionary(const Value* dictionary) {
   }
 }
 
-bool Value::GetAsBoolean(bool* out_value) const {
-  if (out_value && is_bool()) {
-    *out_value = GetBool();
-    return true;
-  }
-  return is_bool();
-}
-
 bool Value::GetAsString(std::string* out_value) const {
   if (out_value && is_string()) {
     *out_value = GetString();
@@ -1210,7 +1202,11 @@ bool DictionaryValue::GetBoolean(StringPiece path, bool* bool_value) const {
   if (!Get(path, &value))
     return false;
 
-  return value->GetAsBoolean(bool_value);
+  if (bool_value && value->is_bool()) {
+    *bool_value = value->GetBool();
+    return true;
+  }
+  return value->is_bool();
 }
 
 bool DictionaryValue::GetInteger(StringPiece path, int* out_value) const {
@@ -1409,7 +1405,11 @@ bool ListValue::GetBoolean(size_t index, bool* bool_value) const {
   if (!Get(index, &value))
     return false;
 
-  return value->GetAsBoolean(bool_value);
+  if (bool_value && value->is_bool()) {
+    *bool_value = value->GetBool();
+    return true;
+  }
+  return value->is_bool();
 }
 
 bool ListValue::GetString(size_t index, std::string* out_value) const {

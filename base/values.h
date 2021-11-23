@@ -530,8 +530,6 @@ class BASE_EXPORT Value {
   // If the current object can be converted into the given type, the value is
   // returned through the `out_value` parameter and true is returned;
   // otherwise, false is returned and `out_value` is unchanged.
-  // DEPRECATED, use `GetIfBool()` instead.
-  bool GetAsBoolean(bool* out_value) const;
   // DEPRECATED, use `GetIfString()` instead.
   bool GetAsString(std::string* out_value) const;
   bool GetAsString(std::u16string* out_value) const;
