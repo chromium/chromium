@@ -4973,7 +4973,7 @@
   {
     "name": "shelf-drag-to-pin",
     "owners": ["tbarzic", "//ash/shelf/OWNERS" ],
-    "expiry_milestone": 94
+    "expiry_milestone": 106
   },
   {
     "name": "shelf-hide-buttons-in-tablet",
