@@ -53,6 +53,11 @@ extern ContentType const ContentTypeImage;
 // Otherwise, returns nil.
 - (UIImage*)recentImageFromClipboard;
 
+// Returns the set of content types being currently used on the clipboard; will
+// be nil if the current pasteboard contents are unknown, or if the clipboard
+// content age is expired.
+- (NSSet<ContentType>*)cachedClipboardContentTypes;
+
 // Uses the new iOS 14 pasteboard detection pattern API to asynchronously detect
 // if the clipboard contains content (that has not been suppressed) of the
 // requested types without actually getting the contents.

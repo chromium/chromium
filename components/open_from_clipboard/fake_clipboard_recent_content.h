@@ -26,6 +26,8 @@ class FakeClipboardRecentContent : public ClipboardRecentContent {
   absl::optional<GURL> GetRecentURLFromClipboard() override;
   absl::optional<std::u16string> GetRecentTextFromClipboard() override;
   void GetRecentImageFromClipboard(GetRecentImageCallback callback) override;
+  absl::optional<std::set<ClipboardContentType>>
+  GetCachedClipboardContentTypes() override;
   bool HasRecentImageFromClipboard() override;
   void HasRecentContentFromClipboard(std::set<ClipboardContentType> types,
                                      HasDataCallback callback) override;

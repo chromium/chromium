@@ -52,6 +52,9 @@ const base::Feature kIOSNewOmniboxImplementation{
 const base::Feature kIOSOmniboxAllowEditsDuringDictation{
     "IOSOmniboxAllowEditsDuringDictation", base::FEATURE_ENABLED_BY_DEFAULT};
 
+const base::Feature kIOSLocationBarUseNativeContextMenu{
+    "IOSLocationBarUseNativeContextMenu", base::FEATURE_ENABLED_BY_DEFAULT};
+
 const base::Feature kIOSPersistCrashRestore{"IOSPersistCrashRestore",
                                             base::FEATURE_ENABLED_BY_DEFAULT};
 

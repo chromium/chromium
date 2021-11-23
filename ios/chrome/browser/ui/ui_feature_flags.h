@@ -53,6 +53,10 @@ extern const base::Feature kDefaultBrowserFullscreenPromoExperiment;
 // Manager.
 extern const base::Feature kIOSEnablePasswordManagerBrandingUpdate;
 
+// Feature flag that shows iOS 15 context menu, instead of tooltip popover,
+// during a location bar long press gesture.
+extern const base::Feature kIOSLocationBarUseNativeContextMenu;
+
 // Feature flag that swaps the omnibox textfield implementation.
 extern const base::Feature kIOSNewOmniboxImplementation;
 

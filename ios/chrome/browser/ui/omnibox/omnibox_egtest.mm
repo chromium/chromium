@@ -12,6 +12,7 @@
 #import "ios/chrome/browser/ui/content_suggestions/ntp_home_constant.h"
 #import "ios/chrome/browser/ui/omnibox/omnibox_app_interface.h"
 #import "ios/chrome/browser/ui/omnibox/popup/omnibox_popup_accessibility_identifier_constants.h"
+#include "ios/chrome/browser/ui/ui_feature_flags.h"
 #include "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
@@ -186,6 +187,7 @@ id<GREYMatcher> SearchCopiedTextButton() {
 #pragma mark - Steady state tests
 
 @interface LocationBarSteadyStateTestCase : ChromeTestCase
+- (void)testFocusingOmniboxDismissesEditMenu;
 @end
 
 @implementation LocationBarSteadyStateTestCase
@@ -203,6 +205,16 @@ id<GREYMatcher> SearchCopiedTextButton() {
   // Clear the pasteboard in case there is a URL copied.
   UIPasteboard* pasteboard = UIPasteboard.generalPasteboard;
   [pasteboard setValue:@"" forPasteboardType:UIPasteboardNameGeneral];
+}
+
+- (AppLaunchConfiguration)appConfigurationForTestCase {
+  AppLaunchConfiguration config;
+
+  if ([self isRunningTest:@selector(testFocusingOmniboxDismissesEditMenu)]) {
+    config.features_disabled.push_back(kIOSLocationBarUseNativeContextMenu);
+  }
+
+  return config;
 }
 
 // Tapping on steady view starts editing.

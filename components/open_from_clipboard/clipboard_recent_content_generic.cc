@@ -142,6 +142,27 @@ void ClipboardRecentContentGeneric::GetRecentImageFromClipboard(
       base::BindOnce(&OnGetRecentImageFromClipboard, std::move(callback)));
 }
 
+absl::optional<std::set<ClipboardContentType>>
+ClipboardRecentContentGeneric::GetCachedClipboardContentTypes() {
+  if (GetClipboardContentAge() > MaximumAgeOfClipboard()) {
+    return absl::nullopt;
+  }
+
+  std::set<ClipboardContentType> clipboard_content_types;
+
+  if (HasRecentURLFromClipboard()) {
+    clipboard_content_types.insert(ClipboardContentType::URL);
+  }
+  if (HasRecentTextFromClipboard()) {
+    clipboard_content_types.insert(ClipboardContentType::Text);
+  }
+  if (HasRecentImageFromClipboard()) {
+    clipboard_content_types.insert(ClipboardContentType::Image);
+  }
+
+  return clipboard_content_types;
+}
+
 bool ClipboardRecentContentGeneric::HasRecentImageFromClipboard() {
   if (GetClipboardContentAge() > MaximumAgeOfClipboard())
     return false;
