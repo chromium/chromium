@@ -15,4 +15,12 @@ const base::Feature kImprovedCookieControls{"ImprovedCookieControls",
                                             base::FEATURE_DISABLED_BY_DEFAULT};
 #endif  // defined(OS_IOS)
 
+// Enables auto dark feature in theme settings.
+#if defined(OS_ANDROID)
+const base::Feature kDarkenWebsitesCheckboxInThemesSetting{
+    "DarkenWebsitesCheckboxInThemesSetting", base::FEATURE_DISABLED_BY_DEFAULT};
+constexpr base::FeatureParam<bool> kDarkenWebsitesCheckboxOptOut{
+    &kDarkenWebsitesCheckboxInThemesSetting, "opt_out", true};
+#endif  // defined(OS_ANDROID)
+
 }  // namespace content_settings

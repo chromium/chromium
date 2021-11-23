@@ -14,6 +14,7 @@
 #include "components/content_settings/core/browser/content_settings_utils.h"
 #include "components/content_settings/core/browser/website_settings_registry.h"
 #include "components/content_settings/core/common/content_settings.h"
+#include "components/content_settings/core/common/features.h"
 
 #if defined(OS_ANDROID)
 #include "media/base/android/media_drm_bridge.h"
@@ -619,8 +620,17 @@ void ContentSettingsRegistry::Init() {
            ContentSettingsInfo::PERSISTENT,
            ContentSettingsInfo::EXCEPTIONS_ON_SECURE_AND_INSECURE_ORIGINS);
 
+  const auto auto_dark_web_content_setting =
+#if defined(OS_ANDROID)
+      content_settings::kDarkenWebsitesCheckboxOptOut.Get()
+          ? CONTENT_SETTING_ALLOW
+          : CONTENT_SETTING_BLOCK;
+#else
+      CONTENT_SETTING_ALLOW;
+#endif  // defined(OS_ANDROID)
+
   Register(ContentSettingsType::AUTO_DARK_WEB_CONTENT, "auto-dark-web-content",
-           CONTENT_SETTING_ALLOW, WebsiteSettingsInfo::UNSYNCABLE,
+           auto_dark_web_content_setting, WebsiteSettingsInfo::UNSYNCABLE,
            AllowlistedSchemes(),
            ValidSettings(CONTENT_SETTING_ALLOW, CONTENT_SETTING_BLOCK),
            WebsiteSettingsInfo::SINGLE_ORIGIN_ONLY_SCOPE,

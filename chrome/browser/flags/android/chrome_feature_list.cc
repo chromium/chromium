@@ -30,6 +30,7 @@
 #include "components/browser_ui/photo_picker/android/features.h"
 #include "components/content_creation/notes/core/note_features.h"
 #include "components/content_creation/reactions/core/reactions_features.h"
+#include "components/content_settings/core/common/features.h"
 #include "components/data_reduction_proxy/core/common/data_reduction_proxy_features.h"
 #include "components/download/public/common/download_features.h"
 #include "components/embedder_support/android/util/cdn_utils.h"
@@ -105,6 +106,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &commerce::kCommercePriceTracking,
     &commerce::kShoppingList,
     &content_creation::kLightweightReactions,
+    &content_settings::kDarkenWebsitesCheckboxInThemesSetting,
     &device::kWebAuthPhoneSupport,
     &download::features::kDownloadAutoResumptionNative,
     &download::features::kDownloadLater,
@@ -192,7 +194,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kCCTResizableForFirstParties,
     &kCCTResizableForThirdParties,
     &kCCTResourcePrefetch,
-    &kDarkenWebsitesCheckboxInThemesSetting,
     &kQuickActionSearchWidgetAndroidDinoVariant,
     &kDontAutoHideBrowserControls,
     &kChromeShareLongScreenshot,
@@ -565,9 +566,6 @@ const base::Feature kContextualSearchThinWebViewImplementation{
 
 const base::Feature kContextualSearchTranslations{
     "ContextualSearchTranslations", base::FEATURE_DISABLED_BY_DEFAULT};
-
-const base::Feature kDarkenWebsitesCheckboxInThemesSetting{
-    "DarkenWebsitesCheckboxInThemesSetting", base::FEATURE_DISABLED_BY_DEFAULT};
 
 const base::Feature kQuickActionSearchWidgetAndroidDinoVariant{
     "QuickActionSearchWidgetAndroidDinoVariant",

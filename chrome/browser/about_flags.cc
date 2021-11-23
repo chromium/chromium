@@ -84,6 +84,7 @@
 #include "components/cloud_devices/common/cloud_devices_switches.h"
 #include "components/component_updater/component_updater_command_line_config_policy.h"
 #include "components/component_updater/component_updater_switches.h"
+#include "components/content_settings/core/common/features.h"
 #include "components/contextual_search/core/browser/public.h"
 #include "components/data_reduction_proxy/core/common/data_reduction_proxy_features.h"
 #include "components/data_reduction_proxy/core/common/data_reduction_proxy_switches.h"
@@ -6045,7 +6046,7 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kDarkenWebsitesCheckboxInThemesSettingDescription,
      kOsAndroid,
      FEATURE_VALUE_TYPE(
-         chrome::android::kDarkenWebsitesCheckboxInThemesSetting)},
+         content_settings::kDarkenWebsitesCheckboxInThemesSetting)},
 #endif  // defined(OS_ANDROID)
 
     {"enable-autofill-upi-vpa", flag_descriptions::kAutofillSaveAndFillVPAName,
