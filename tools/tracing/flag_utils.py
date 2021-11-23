@@ -42,7 +42,8 @@ def GeneralOptions(parser):
                              '--verbose',
                              help='Increase output verbosity.',
                              action='count',
-                             dest='verbosity')
+                             dest='verbosity',
+                             default=0)
   general_options.add_option('--view',
                              help='Open resulting trace file in a '
                              'browser.',

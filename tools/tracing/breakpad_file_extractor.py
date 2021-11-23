@@ -69,9 +69,9 @@ def ExtractBreakpadFiles(dump_syms_path,
   breakpad_file_count = 0
   for file_iter in os.listdir(symbol_dir):
     input_file_path = os.path.join(symbol_dir, file_iter)
-    if os.path.isfile(input_file_path) and _IsValidBinaryPath(input_file_path):
-      if not _IsModuleNeededForSymbolization(dump_syms_path, module_ids,
-                                             input_file_path):
+    if os.path.isfile(input_file_path) and IsValidBinaryPath(input_file_path):
+      if not IsModuleNeededForSymbolization(dump_syms_path, module_ids,
+                                            input_file_path):
         continue
       # Construct absolute file paths for input and output files.
       output_file_path = os.path.join(breakpad_output_dir,
@@ -149,7 +149,7 @@ def GetModuleIdsToSymbolize(metadata):
   return module_ids
 
 
-def _IsModuleNeededForSymbolization(dump_syms_path, module_ids, symbol_binary):
+def IsModuleNeededForSymbolization(dump_syms_path, module_ids, symbol_binary):
   """Determines if we should extract breakpad from symbol binary.
 
   If module_ids is None, then we extract breakpad on all symbol binaries.
@@ -253,7 +253,7 @@ def _GetDumpSyms(dump_syms_path, build_dir):
   return None
 
 
-def _IsValidBinaryPath(path):
+def IsValidBinaryPath(path):
   # Get the file name from the full file path.
   file_name = os.path.basename(path)
   if file_name.endswith('partition.so') or file_name.endswith(

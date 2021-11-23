@@ -47,7 +47,7 @@ def GetTraceBreakpadSymbols(cloud_storage_bucket,
 
   # Obtain breakpad symbols by platform.
   if metadata.os_name == OSName.ANDROID:
-    _GetAndroidSymbols(cloud_storage_bucket, metadata, breakpad_output_dir)
+    GetAndroidSymbols(cloud_storage_bucket, metadata, breakpad_output_dir)
     breakpad_file_extractor.ExtractBreakpadOnSubtree(breakpad_output_dir,
                                                      metadata, dump_syms_path)
     rename_breakpad.RenameBreakpadFiles(breakpad_output_dir,
@@ -67,7 +67,7 @@ def GetTraceBreakpadSymbols(cloud_storage_bucket,
                                      os.path.abspath(breakpad_output_dir))
 
 
-def _GetAndroidSymbols(cloud_storage_bucket, metadata, breakpad_output_dir):
+def GetAndroidSymbols(cloud_storage_bucket, metadata, breakpad_output_dir):
   """Fetches Android symbols from GCS.
 
   Args:
