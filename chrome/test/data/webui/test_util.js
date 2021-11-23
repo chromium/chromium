@@ -128,7 +128,7 @@ export function flushTasks() {
   // Promises have microtask timing, so we use setTimeout to explicitly force
   // a new task.
   return new Promise(function(resolve, reject) {
-    window.setTimeout(resolve, 0);
+    window.setTimeout(resolve, 1);
   });
 }
 
