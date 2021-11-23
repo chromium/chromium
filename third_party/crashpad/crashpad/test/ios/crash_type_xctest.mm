@@ -85,12 +85,8 @@
 
 - (void)testSegv {
   [rootObject_ crashSegv];
-#if defined(NDEBUG)
-#if TARGET_OS_SIMULATOR
+#if defined(NDEBUG) && TARGET_OS_SIMULATOR
   [self verifyCrashReportException:SIGINT];
-#else
-  [self verifyCrashReportException:SIGABRT];
-#endif
 #else
   [self verifyCrashReportException:SIGHUP];
 #endif
@@ -117,12 +113,8 @@
 
 - (void)testBadAccess {
   [rootObject_ crashBadAccess];
-#if defined(NDEBUG)
-#if TARGET_OS_SIMULATOR
+#if defined(NDEBUG) && TARGET_OS_SIMULATOR
   [self verifyCrashReportException:SIGINT];
-#else
-  [self verifyCrashReportException:SIGABRT];
-#endif
 #else
   [self verifyCrashReportException:SIGHUP];
 #endif
@@ -221,6 +213,7 @@
   XCTAssertTrue([dict[@"ver"] isEqualToString:@"42"]);
 }
 
+#if TARGET_OS_SIMULATOR
 - (void)testCrashWithCrashInfoMessage {
   if (@available(iOS 15.0, *)) {
     // Figure out how to test this on iOS15.
@@ -232,9 +225,10 @@
   NSString* dyldMessage = dict[@"vector"][0];
   XCTAssertTrue([dyldMessage isEqualToString:@"dyld: in dlsym()"]);
 }
+#endif
 
 // TODO(justincohen): Codesign crashy_initializer.so so it can run on devices.
-#if !TARGET_OS_SIMULATOR
+#if TARGET_OS_SIMULATOR
 - (void)testCrashWithDyldErrorString {
   if (@available(iOS 15.0, *)) {
     // iOS 15 uses dyld4, which doesn't use CRSetCrashLogMessage2

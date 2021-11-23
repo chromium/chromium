@@ -403,20 +403,22 @@ id ObjcExceptionPreprocessor(id exception) {
     // internally and also has has non-sinkhole handlers. While all the
     // calling methods in UIKit are marked <redacted> starting in iOS14, it's
     // currently true that all callers to _UIGestureEnvironmentUpdate are within
-    // UIGestureEnvironment.  That means a very hacky way to detect this are to
-    // check if the calling method IMP is within the range of all
-    // UIGestureEnvironment methods.
+    // UIWindow sendEvent -> UIGestureEnvironment.  That means a very hacky way
+    // to detect this is to check if the calling (2x) method IMP is within the
+    // range of all UIWindow methods.
     static constexpr const char kUIKitCorePath[] =
         "/System/Library/PrivateFrameworks/UIKitCore.framework/UIKitCore";
     if (ModulePathMatchesSinkhole(dl_info.dli_fname, kUIKitCorePath)) {
       unw_proc_info_t caller_frame_info;
       if (LoggingUnwStep(&cursor) > 0 &&
+          unw_get_proc_info(&cursor, &caller_frame_info) == UNW_ESUCCESS &&
+          LoggingUnwStep(&cursor) > 0 &&
           unw_get_proc_info(&cursor, &caller_frame_info) == UNW_ESUCCESS) {
-        auto uigestureimp_lambda = [](IMP* max) {
+        auto uiwindowimp_lambda = [](IMP* max) {
           IMP min = *max = bit_cast<IMP>(nullptr);
           unsigned int method_count = 0;
           std::unique_ptr<Method[], base::FreeDeleter> method_list(
-              class_copyMethodList(NSClassFromString(@"UIGestureEnvironment"),
+              class_copyMethodList(NSClassFromString(@"UIWindow"),
                                    &method_count));
           if (method_count > 0) {
             min = *max = method_getImplementation(method_list[0]);
@@ -431,15 +433,14 @@ id ObjcExceptionPreprocessor(id exception) {
           return min;
         };
 
-        static IMP gesture_environment_max_imp;
-        static IMP gesture_environment_min_imp =
-            uigestureimp_lambda(&gesture_environment_max_imp);
+        static IMP uiwindow_max_imp;
+        static IMP uiwindow_min_imp = uiwindowimp_lambda(&uiwindow_max_imp);
 
-        if (gesture_environment_min_imp && gesture_environment_max_imp &&
+        if (uiwindow_min_imp && uiwindow_max_imp &&
             caller_frame_info.start_ip >=
-                reinterpret_cast<unw_word_t>(gesture_environment_min_imp) &&
+                reinterpret_cast<unw_word_t>(uiwindow_min_imp) &&
             caller_frame_info.start_ip <=
-                reinterpret_cast<unw_word_t>(gesture_environment_max_imp)) {
+                reinterpret_cast<unw_word_t>(uiwindow_max_imp)) {
           return HANDLE_UNCAUGHT_NSEXCEPTION(exception,
                                              "_UIGestureEnvironmentUpdate");
         }

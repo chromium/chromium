@@ -178,7 +178,7 @@ void InProcessHandler::ProcessIntermediateDump(
   INITIALIZATION_STATE_DCHECK_VALID(initialized_);
 
   ProcessSnapshotIOSIntermediateDump process_snapshot;
-  if (process_snapshot.Initialize(file, annotations)) {
+  if (process_snapshot.InitializeWithFilePath(file, annotations)) {
     SaveSnapshot(process_snapshot);
   }
 }
@@ -200,6 +200,12 @@ void InProcessHandler::SaveSnapshot(
         Metrics::CaptureResult::kPrepareNewCrashReportFailed);
   }
   process_snapshot.SetReportID(new_report->ReportID());
+
+  UUID client_id;
+  Settings* const settings = database_->GetSettings();
+  if (settings && settings->GetClientID(&client_id)) {
+    process_snapshot.SetClientID(client_id);
+  }
 
   MinidumpFileWriter minidump;
   minidump.InitializeFromSnapshot(&process_snapshot);
@@ -308,12 +314,21 @@ InProcessHandler::ScopedReport::ScopedReport(
     const std::map<std::string, std::string>& annotations,
     const uint64_t* frames,
     const size_t num_frames)
-    : rootMap_(writer) {
+    : writer_(writer),
+      frames_(frames),
+      num_frames_(num_frames),
+      rootMap_(writer) {
   InProcessIntermediateDumpHandler::WriteHeader(writer);
   InProcessIntermediateDumpHandler::WriteProcessInfo(writer, annotations);
   InProcessIntermediateDumpHandler::WriteSystemInfo(writer, system_data);
-  InProcessIntermediateDumpHandler::WriteThreadInfo(writer, frames, num_frames);
-  InProcessIntermediateDumpHandler::WriteModuleInfo(writer);
+}
+
+InProcessHandler::ScopedReport::~ScopedReport() {
+  // Write threads and modules last (after the exception itself is written by
+  // DumpExceptionFrom*.)
+  InProcessIntermediateDumpHandler::WriteThreadInfo(
+      writer_, frames_, num_frames_);
+  InProcessIntermediateDumpHandler::WriteModuleInfo(writer_);
 }
 
 bool InProcessHandler::OpenNewFile() {

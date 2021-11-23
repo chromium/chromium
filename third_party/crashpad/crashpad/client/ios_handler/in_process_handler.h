@@ -159,11 +159,14 @@ class InProcessHandler {
                  const std::map<std::string, std::string>& annotations,
                  const uint64_t* frames = nullptr,
                  const size_t num_frames = 0);
-    ~ScopedReport() {}
+    ~ScopedReport();
     ScopedReport(const ScopedReport&) = delete;
     ScopedReport& operator=(const ScopedReport&) = delete;
 
    private:
+    IOSIntermediateDumpWriter* writer_;
+    const uint64_t* frames_;
+    const size_t num_frames_;
     IOSIntermediateDumpWriter::ScopedRootMap rootMap_;
   };
 

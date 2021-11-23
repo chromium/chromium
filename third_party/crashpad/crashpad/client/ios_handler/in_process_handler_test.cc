@@ -142,7 +142,6 @@ TEST_F(InProcessHandlerTest, TestPendingFileLimit) {
   handler().ProcessIntermediateDumps({});
   VerifyRemainingFileCount(0, 0);
   ClearFiles();
-
 }
 
 }  // namespace
