@@ -2846,7 +2846,7 @@ class GcpGaiaCredentialBasePasswordRecoveryTest
     : public GcpGaiaCredentialBaseTest,
       public ::testing::WithParamInterface<std::tuple<int, int, int>> {};
 
-TEST_P(GcpGaiaCredentialBasePasswordRecoveryTest, PasswordRecovery) {
+TEST_P(GcpGaiaCredentialBasePasswordRecoveryTest, DISABLED_PasswordRecovery) {
   USES_CONVERSION;
 
   int generate_public_key_result = std::get<0>(GetParam());
