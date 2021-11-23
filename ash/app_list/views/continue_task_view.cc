@@ -152,11 +152,7 @@ gfx::Size ContinueTaskView::GetMinimumSize() const {
 }
 
 gfx::Size ContinueTaskView::CalculatePreferredSize() const {
-  gfx::Size preferred_size = GetLayoutManager()->GetPreferredSize(this);
-
-  return gfx::Size(
-      base::clamp(preferred_size.width(), kTaskMinWidth, kTaskMaxWidth),
-      preferred_size.height());
+  return GetMinimumSize();
 }
 
 void ContinueTaskView::OnButtonPressed(const ui::Event& event) {

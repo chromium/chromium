@@ -36,9 +36,11 @@ using test::AppListTestViewDelegate;
 
 void AddSearchResultToModel(const std::string& id,
                             AppListSearchResultType type,
-                            SearchModel* model) {
+                            SearchModel* model,
+                            const std::string& title) {
   auto result = std::make_unique<TestSearchResult>();
   result->set_result_id(id);
+  result->set_title(base::ASCIIToUTF16(title));
   result->set_result_type(type);
   result->set_display_type(SearchResultDisplayType::kContinue);
   model->results()->Add(std::move(result));
@@ -77,8 +79,15 @@ class ContinueSectionViewTestBase : public AshTestBase {
   }
 
   void AddSearchResult(const std::string& id, AppListSearchResultType type) {
+    AddSearchResultToModel(
+        id, type, AppListModelProvider::Get()->search_model(), "Fake Title");
+  }
+
+  void AddSearchResultWithTitle(const std::string& id,
+                                AppListSearchResultType type,
+                                const std::string& title) {
     AddSearchResultToModel(id, type,
-                           AppListModelProvider::Get()->search_model());
+                           AppListModelProvider::Get()->search_model(), title);
   }
 
   void RemoveSearchResultAt(size_t index) {
@@ -433,11 +442,11 @@ TEST_P(ContinueSectionViewTest, UpdateAppsOnModelChange) {
   auto search_model_override = std::make_unique<SearchModel>();
 
   AddSearchResultToModel("id21", AppListSearchResultType::kFileChip,
-                         search_model_override.get());
+                         search_model_override.get(), "Fake Title");
   AddSearchResultToModel("id22", AppListSearchResultType::kFileChip,
-                         search_model_override.get());
+                         search_model_override.get(), "Fake Title");
   AddSearchResultToModel("id23", AppListSearchResultType::kFileChip,
-                         search_model_override.get());
+                         search_model_override.get(), "Fake Title");
 
   Shell::Get()->app_list_controller()->SetActiveModel(
       /*profile_id=*/1, model_override.get(), search_model_override.get());
@@ -588,6 +597,30 @@ TEST_F(ContinueSectionViewTabletModeTest,
   EXPECT_EQ(first_task->size(), second_task->size());
   EXPECT_EQ(first_task->y(), second_task->y());
   EXPECT_GT(second_task->x(), first_task->bounds().right());
+}
+
+TEST_P(ContinueSectionViewTest, AllTasksShareTheSameWidth) {
+  AddSearchResultWithTitle("id1", AppListSearchResultType::kFileChip, "title");
+  AddSearchResultWithTitle(
+      "id2", AppListSearchResultType::kDriveChip,
+      "Really really really long title text for the label");
+  AddSearchResultWithTitle("id3", AppListSearchResultType::kDriveChip, "-");
+  AddSearchResultWithTitle("id4", AppListSearchResultType::kFileChip,
+                           "medium title");
+
+  UpdateDisplay("1200x800");
+  EnsureLauncherShown();
+  VerifyResultViewsUpdated();
+
+  ASSERT_EQ(4u, GetContinueSectionView()->GetTasksSuggestionsCount());
+
+  const gfx::Size size = GetResultViewAt(0)->size();
+
+  for (int i = 1; i < 4; i++) {
+    const ContinueTaskView* task_view = GetResultViewAt(i);
+    EXPECT_TRUE(task_view->GetVisible());
+    EXPECT_EQ(size, task_view->size());
+  }
 }
 
 }  // namespace
