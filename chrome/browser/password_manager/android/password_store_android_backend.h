@@ -123,6 +123,8 @@ class PasswordStoreAndroidBackend
   // like a bulk deletion just as well as the normal, rather small job load.
   using JobMap = base::small_map<
       std::unordered_map<JobId, JobReturnHandler, JobId::Hasher>>;
+  using AccumulatedPasswordStoreChangeListReply =
+      base::OnceCallback<void(std::unique_ptr<PasswordStoreChangeList>)>;
 
   // Implements PasswordStoreBackend interface.
   base::WeakPtr<PasswordStoreBackend> GetWeakPtr() override;
@@ -173,6 +175,29 @@ class PasswordStoreAndroidBackend
 
   void QueueNewJob(JobId job_id, JobReturnHandler return_handler);
   JobReturnHandler GetAndEraseJob(JobId job_id);
+
+  // Filters |logins| created between |delete_begin| and |delete_end| time
+  // that match |url_filer| and asynchronously removes them.
+  void FilterAndRemoveLogins(
+      const base::RepeatingCallback<bool(const GURL&)>& url_filter,
+      base::Time delete_begin,
+      base::Time delete_end,
+      PasswordStoreChangeListReply reply,
+      LoginsResultOrError result);
+
+  // Removes the next login in |logins_to_delete| queue.
+  void RemoveNextLogin(
+      std::queue<PasswordForm> logins_to_remove,
+      AccumulatedPasswordStoreChangeListReply logins_removed_callback,
+      std::unique_ptr<PasswordStoreChangeList> accumulated_changelist);
+
+  // Accumulates store changes in |accumulated_changelist| and triggers
+  // removal of the next login in |logins_to_remove|.
+  void AccumulateStoreChangesAndContinueRemovingLogins(
+      std::queue<PasswordForm> logins_to_remove,
+      AccumulatedPasswordStoreChangeListReply logins_removed_callback,
+      std::unique_ptr<PasswordStoreChangeList> accumulated_changelist,
+      const PasswordStoreChangeList& changelist);
 
   // Observer to propagate remote form changes to.
   RemoteChangesReceived remote_form_changes_received_;

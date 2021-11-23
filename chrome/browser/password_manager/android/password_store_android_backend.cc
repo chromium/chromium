@@ -42,6 +42,12 @@ std::vector<std::unique_ptr<PasswordForm>> WrapPasswordsIntoPointers(
   return password_ptrs;
 }
 
+void InvokeReplyWithAccumulatedChanges(
+    PasswordStoreChangeListReply reply,
+    std::unique_ptr<PasswordStoreChangeList> changelist) {
+  std::move(reply).Run(std::move(*changelist));
+}
+
 }  // namespace
 
 PasswordStoreAndroidBackend::JobReturnHandler::JobReturnHandler() = default;
@@ -230,20 +236,101 @@ void PasswordStoreAndroidBackend::RemoveLoginAsync(
                           JobReturnHandler::MetricInfix("RemoveLoginAsync")));
 }
 
+void PasswordStoreAndroidBackend::FilterAndRemoveLogins(
+    const base::RepeatingCallback<bool(const GURL&)>& url_filter,
+    base::Time delete_begin,
+    base::Time delete_end,
+    PasswordStoreChangeListReply reply,
+    LoginsResultOrError result) {
+  if (absl::holds_alternative<PasswordStoreBackendError>(result)) {
+    std::move(reply).Run({});
+    return;
+  }
+
+  LoginsResult logins = std::move(absl::get<LoginsResult>(result));
+  std::queue<PasswordForm> logins_to_remove;
+  for (const auto& login : logins) {
+    if (login->date_created >= delete_begin &&
+        login->date_created < delete_end && url_filter.Run(login->url)) {
+      logins_to_remove.push(std::move(*login));
+    }
+  }
+
+  // Start removing logins one by one and invoke |reply| when all
+  // |logins_to_remove| are removed.
+  RemoveNextLogin(
+      logins_to_remove,
+      base::BindOnce(&InvokeReplyWithAccumulatedChanges, std::move(reply)),
+      std::make_unique<PasswordStoreChangeList>());
+}
+
+void PasswordStoreAndroidBackend::RemoveNextLogin(
+    std::queue<PasswordForm> logins_to_remove,
+    AccumulatedPasswordStoreChangeListReply logins_removed_callback,
+    std::unique_ptr<PasswordStoreChangeList> accumulated_changelist) {
+  if (logins_to_remove.empty()) {
+    std::move(logins_removed_callback).Run(std::move(accumulated_changelist));
+    return;
+  }
+
+  PasswordForm login_to_remove = std::move(logins_to_remove.front());
+  logins_to_remove.pop();
+
+  RemoveLoginAsync(
+      login_to_remove,
+      base::BindOnce(&PasswordStoreAndroidBackend::
+                         AccumulateStoreChangesAndContinueRemovingLogins,
+                     weak_ptr_factory_.GetWeakPtr(),
+                     std::move(logins_to_remove),
+                     std::move(logins_removed_callback),
+                     std::move(accumulated_changelist)));
+}
+
+void PasswordStoreAndroidBackend::
+    AccumulateStoreChangesAndContinueRemovingLogins(
+        std::queue<PasswordForm> logins_to_remove,
+        AccumulatedPasswordStoreChangeListReply logins_removed_callback,
+        std::unique_ptr<PasswordStoreChangeList> accumulated_changelist,
+        const PasswordStoreChangeList& changelist) {
+  // Add the last changes to the accumulated changelist.
+  base::ranges::copy(changelist.begin(), changelist.end(),
+                     std::back_inserter(*accumulated_changelist));
+
+  RemoveNextLogin(std::move(logins_to_remove),
+                  std::move(logins_removed_callback),
+                  std::move(accumulated_changelist));
+}
+
 void PasswordStoreAndroidBackend::RemoveLoginsByURLAndTimeAsync(
     const base::RepeatingCallback<bool(const GURL&)>& url_filter,
     base::Time delete_begin,
     base::Time delete_end,
     base::OnceCallback<void(bool)> sync_completion,
     PasswordStoreChangeListReply callback) {
-  // TODO(https://crbug.com/1229655):Implement.
+  JobId get_logins_job_id = bridge_->GetAllLogins();
+  QueueNewJob(
+      get_logins_job_id,
+      JobReturnHandler(
+          base::BindOnce(&PasswordStoreAndroidBackend::FilterAndRemoveLogins,
+                         weak_ptr_factory_.GetWeakPtr(), std::move(url_filter),
+                         delete_begin, delete_end, std::move(callback)),
+          JobReturnHandler::MetricInfix("GetAllLoginsAsync")));
 }
 
 void PasswordStoreAndroidBackend::RemoveLoginsCreatedBetweenAsync(
     base::Time delete_begin,
     base::Time delete_end,
     PasswordStoreChangeListReply callback) {
-  // TODO(https://crbug.com/1229655):Implement.
+  JobId get_logins_job_id = bridge_->GetAllLogins();
+  QueueNewJob(
+      get_logins_job_id,
+      JobReturnHandler(
+          base::BindOnce(&PasswordStoreAndroidBackend::FilterAndRemoveLogins,
+                         weak_ptr_factory_.GetWeakPtr(),
+                         // Include all urls.
+                         base::BindRepeating([](const GURL&) { return true; }),
+                         delete_begin, delete_end, std::move(callback)),
+          JobReturnHandler::MetricInfix("GetAllLoginsAsync")));
 }
 
 void PasswordStoreAndroidBackend::DisableAutoSignInForOriginsAsync(
@@ -305,6 +392,12 @@ void PasswordStoreAndroidBackend::OnError(JobId job_id,
     main_task_runner_->PostTask(
         FROM_HERE, base::BindOnce(std::move(reply).Get<LoginsOrErrorReply>(),
                                   PasswordStoreBackendError::kUnspecified));
+  } else if (reply.Holds<PasswordStoreChangeListReply>()) {
+    // Run callback with empty resulting changelist.
+    main_task_runner_->PostTask(
+        FROM_HERE,
+        base::BindOnce(std::move(reply).Get<PasswordStoreChangeListReply>(),
+                       PasswordStoreChangeList()));
   }
 
   base::UmaHistogramEnumeration(
