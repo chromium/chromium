@@ -288,7 +288,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Storage.FileSystemAccess.PersistedPermissions.Age.{Type}"
-    units="ms" expires_after="2022-01-01">
+    units="ms" expires_after="2023-01-01">
   <owner>asully@chromium.org</owner>
   <owner>src/content/browser/file_system_access/OWNERS</owner>
   <summary>
@@ -302,7 +302,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Storage.FileSystemAccess.PersistedPermissions.Count"
-    units="paths" expires_after="2022-01-01">
+    units="paths" expires_after="2023-01-01">
   <owner>asully@chromium.org</owner>
   <owner>src/content/browser/file_system_access/OWNERS</owner>
   <summary>
@@ -317,7 +317,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Storage.FileSystemAccess.PersistedPermissions.SweepTime.{Type}"
-    units="ms" expires_after="2022-01-01">
+    units="ms" expires_after="2023-01-01">
   <owner>asully@chromium.org</owner>
   <owner>src/content/browser/file_system_access/OWNERS</owner>
   <summary>
