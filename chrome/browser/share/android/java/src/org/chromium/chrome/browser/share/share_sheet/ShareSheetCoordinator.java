@@ -219,7 +219,9 @@ public class ShareSheetCoordinator implements ActivityStateObserver, ChromeOptio
     void updateShareSheetForLinkToggle(LinkToggleMetricsDetails linkToggleMetricsDetails,
             @LinkGeneration int linkGenerationState) {
         if (mLinkToTextCoordinator == null
-                && (!ChromeFeatureList.isEnabled(ChromeFeatureList.SHARING_HUB_LINK_TOGGLE)
+                && (!(ChromeFeatureList.isEnabled(ChromeFeatureList.SHARING_HUB_LINK_TOGGLE)
+                            || ChromeFeatureList.isEnabled(
+                                    ChromeFeatureList.UPCOMING_SHARING_FEATURES))
                         || mShareSheetLinkToggleCoordinator == null)) {
             return;
         }
@@ -550,7 +552,8 @@ public class ShareSheetCoordinator implements ActivityStateObserver, ChromeOptio
             recordSharedHighlightingUsage();
         }
 
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.SHARING_HUB_LINK_TOGGLE)) {
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.SHARING_HUB_LINK_TOGGLE)
+                || ChromeFeatureList.isEnabled(ChromeFeatureList.UPCOMING_SHARING_FEATURES)) {
             ShareSheetLinkToggleMetricsHelper.recordLinkToggleSharedStateMetric(
                     linkToggleMetricsDetails);
         }

@@ -65,7 +65,8 @@ public class ShareSheetLinkToggleCoordinator {
                 && chromeShareExtras.getDetailedContentType()
                         == DetailedContentType.HIGHLIGHTED_TEXT;
         mShouldEnableGenericToggle =
-                ChromeFeatureList.isEnabled(ChromeFeatureList.SHARING_HUB_LINK_TOGGLE)
+                (ChromeFeatureList.isEnabled(ChromeFeatureList.SHARING_HUB_LINK_TOGGLE)
+                        || ChromeFeatureList.isEnabled(ChromeFeatureList.UPCOMING_SHARING_FEATURES))
                 && mChromeShareExtras.getDetailedContentType() != DetailedContentType.NOT_SPECIFIED
                 && mUrl != null && !mUrl.isEmpty();
     }

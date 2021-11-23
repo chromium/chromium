@@ -266,7 +266,8 @@ public class ChromeProvidedSharingOptionsProvider {
                 || enableAllUpcomingSharingFeatures) {
             mOrderedFirstPartyOptions.add(createLongScreenshotsFirstPartyOption());
         }
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.LIGHTWEIGHT_REACTIONS)) {
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.LIGHTWEIGHT_REACTIONS)
+                || enableAllUpcomingSharingFeatures) {
             mOrderedFirstPartyOptions.add(createLightweightReactionsFirstPartyOption());
         }
         mOrderedFirstPartyOptions.add(createCopyLinkFirstPartyOption());
