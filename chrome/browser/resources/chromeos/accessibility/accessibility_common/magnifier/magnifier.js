@@ -36,12 +36,18 @@ export class Magnifier {
 
     /** @private {!EventHandler} */
     this.focusHandler_ = new EventHandler(
-        [], chrome.automation.EventType.FOCUS, event => this.onFocus_(event));
+        [], chrome.automation.EventType.FOCUS,
+        event => this.onFocusOrSelectionChanged_(event));
 
     /** @private {!EventHandler} */
     this.activeDescendantHandler_ = new EventHandler(
         [], chrome.automation.EventType.ACTIVE_DESCENDANT_CHANGED,
         event => this.onActiveDescendantChanged_(event));
+
+    /** @private {!EventHandler} */
+    this.selectionHandler_ = new EventHandler(
+        [], chrome.automation.EventType.SELECTION,
+        event => this.onFocusOrSelectionChanged_(event));
 
     /** @private {!EventHandler} */
     this.onCaretBoundsChangedHandler = new EventHandler(
@@ -65,6 +71,7 @@ export class Magnifier {
   onMagnifierDisabled() {
     this.focusHandler_.stop();
     this.activeDescendantHandler_.stop();
+    this.selectionHandler_.stop();
     this.onCaretBoundsChangedHandler.stop();
     this.onMagnifierBoundsChangedHandler_.stop();
     this.updateFromPrefsHandler_.stop();
@@ -83,6 +90,8 @@ export class Magnifier {
       this.focusHandler_.start();
       this.activeDescendantHandler_.setNodes(desktop);
       this.activeDescendantHandler_.start();
+      this.selectionHandler_.setNodes(desktop);
+      this.selectionHandler_.start();
       this.onCaretBoundsChangedHandler.setNodes(desktop);
       this.onCaretBoundsChangedHandler.start();
     });
@@ -168,7 +177,7 @@ export class Magnifier {
    * @param {!chrome.automation.AutomationEvent} event
    * @private
    */
-  onFocus_(event) {
+  onFocusOrSelectionChanged_(event) {
     const {location} = event.target;
     if (!location || !this.shouldFollowFocus()) {
       return;

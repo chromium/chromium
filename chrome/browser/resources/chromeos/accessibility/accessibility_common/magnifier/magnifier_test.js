@@ -181,6 +181,47 @@ TEST_F(
       });
     });
 
+TEST_F(
+    'MagnifierE2ETest', 'MovesFullscreenMagnifierSelectionEvent', function() {
+      this.runWithLoadedTree('', async function(root) {
+        const magnifier = accessibilityCommon.getMagnifierForTest();
+        magnifier.setIsInitializingForTest(false);
+
+        const moveMenuSelectionAssertBounds = async (targetBounds) => {
+          return new Promise(resolve => {
+            const boundsChangedListener = newBounds => {
+              // Verify new magnifier bounds include |targetBounds|.
+              if (RectUtil.contains(newBounds, targetBounds)) {
+                chrome.accessibilityPrivate.onMagnifierBoundsChanged
+                    .removeListener(boundsChangedListener);
+                resolve();
+              }
+            };
+            chrome.accessibilityPrivate.onMagnifierBoundsChanged.addListener(
+                boundsChangedListener);
+
+            // Arrow up
+            chrome.accessibilityPrivate.sendSyntheticKeyEvent({
+              type: chrome.accessibilityPrivate.SyntheticKeyboardEventType
+                        .KEYDOWN,
+              keyCode: KeyCode.UP
+            });
+          });
+        };
+
+        // Open Chrome Menu
+        chrome.accessibilityPrivate.sendSyntheticKeyEvent({
+          type: chrome.accessibilityPrivate.SyntheticKeyboardEventType.KEYDOWN,
+          keyCode: KeyCode.E,
+          modifiers: {alt: true}
+        });
+
+        // Move menu selection to end of menu, and await new magnifier bounds.
+        await moveMenuSelectionAssertBounds(
+            {left: 650, top: 450, width: 0, height: 0});
+      });
+    });
+
 TEST_F('MagnifierE2ETest', 'MagnifierCenterOnPoint', function() {
   this.runWithLoadedTree('', async function(root) {
     const magnifier = accessibilityCommon.getMagnifierForTest();
