@@ -2,9 +2,9 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//remoting/build/config/remoting_build.gni")
-
 import("//build/config/zip.gni")
+import("//remoting/build/config/remoting_build.gni")
+import("//remoting/remoting_locales.gni")
 
 build_deb_script = "build_deb.py"
 deb_filename =
@@ -59,10 +59,33 @@ action("remoting_me2me_host_deb_installer") {
     "debian/rules",
     "debian/triggers",
 
-    # TODO(yuweih): Include all files to be packaged into the deb here. This
-    # ensures that we don't miss out a dependency that is needed by the script.
+    # Files to be packaged into the deb.
+    "//remoting/host/installer/linux/Xsession",
+    "//remoting/host/installer/linux/chrome-remote-desktop@.service",
+    "//remoting/host/installer/linux/is-remoting-session",
+    "//remoting/host/linux/configure_url_forwarder.py",
+    "//remoting/host/linux/linux_me2me_host.py",
     "$root_gen_dir/remoting/CREDITS.txt",
+    "$root_out_dir/icudtl.dat",
+    "$root_out_dir/libremoting_core.so",
+    "$root_out_dir/remote_assistance_host",
+    "$root_out_dir/remote_open_url",
+    "$root_out_dir/remote_webauthn",
+    "$root_out_dir/remoting_me2me_host",
+    "$root_out_dir/remoting_native_messaging_host",
+    "$root_out_dir/remoting_start_host",
+    "$root_out_dir/remoting_user_session",
+    "$root_out_dir/remoting/com.google.chrome.remote_assistance-firefox.json",
+    "$root_out_dir/remoting/com.google.chrome.remote_assistance.json",
+    "$root_out_dir/remoting/com.google.chrome.remote_desktop-firefox.json",
+    "$root_out_dir/remoting/com.google.chrome.remote_desktop.json",
+    "$root_out_dir/remoting/crd-url-forwarder.desktop",
   ]
+
+  inputs += process_file_template(
+          remoting_locales,
+          [ "$root_gen_dir/remoting/resources/{{source_name_part}}.pak" ])
+
   outputs = packaging_outputs
   sources = [ "build-deb.sh" ]
   args = [

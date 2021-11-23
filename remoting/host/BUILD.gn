@@ -1075,7 +1075,7 @@ if (enable_me2me_host) {
       }
     } else {
       group("remoting_native_messaging_host") {
-        deps = [ "//remoting/host/linux:remoting_native_messaging_host" ]
+        public_deps = [ "//remoting/host/linux:remoting_native_messaging_host" ]
       }
     }
   }

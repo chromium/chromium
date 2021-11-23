@@ -37,6 +37,9 @@ REMOTE_WEBAUTHN_DEBUGFILE = $(REMOTE_WEBAUTHN_PROGNAME).debug
 
 all:
 
+# Make sure you list files to be installed in |inputs| in BUILD.gn, so that you
+# don't accidentally miss a dependency, which may cause nondeterministic build
+# behavior.
 install:
 	install -d "$(CRON_DIR)"
 	install -d "$(DOC_DIR)"
