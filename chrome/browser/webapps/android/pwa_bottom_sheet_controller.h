@@ -107,6 +107,8 @@ class PwaBottomSheetController {
       a2hs_event_callback_;
   // Whether the bottom sheet has been expanded.
   bool sheet_expanded_ = false;
+  // Whether the bottom sheet has been closed.
+  bool sheet_closed_ = false;
   // Whether the install flow was triggered.
   bool install_triggered_ = false;
 };

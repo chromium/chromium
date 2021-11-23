@@ -114,8 +114,8 @@ void PwaBottomSheetController::Destroy(JNIEnv* env) {
   // When the bottom sheet hasn't been expanded, it is considered equivalent to
   // the regular install infobar and the expanded state equivalent
   // to the regular install dialog prompt. Therefore, we send UI_CANCELLED
-  // only if the bottom sheet was ever expanded.
-  if (!install_triggered_ && sheet_expanded_) {
+  // only if the bottom sheet was ever expanded and not closed.
+  if (!install_triggered_ && !sheet_closed_ && sheet_expanded_) {
     a2hs_event_callback_.Run(AddToHomescreenInstaller::Event::UI_CANCELLED,
                              *a2hs_params_);
   }
@@ -131,6 +131,7 @@ void PwaBottomSheetController::UpdateInstallSource(JNIEnv* env,
 void PwaBottomSheetController::OnSheetClosedWithSwipe(JNIEnv* env) {
   a2hs_event_callback_.Run(AddToHomescreenInstaller::Event::UI_CANCELLED,
                            *a2hs_params_);
+  sheet_closed_ = true;
 }
 
 void PwaBottomSheetController::OnSheetExpanded(JNIEnv* env) {
