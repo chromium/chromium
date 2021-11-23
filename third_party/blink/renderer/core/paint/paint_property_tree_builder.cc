@@ -1427,7 +1427,11 @@ void FragmentPaintPropertyTreeBuilder::UpdateEffect() {
       // doing a full rebuild.
       if (effective_change_type ==
               PaintPropertyChangeType::kChangedOnlySimpleValues &&
-          properties_->Effect()->HasDirectCompositingReasons()) {
+          properties_->Effect()->HasDirectCompositingReasons() &&
+          // TODO(crbug.com/1253797): Due to the bug, we may create multiple
+          // cc effect nodes for one blink effect node of a fragmented object,
+          // and direct update would be incomplete in the case.
+          !object_.FirstFragment().NextFragment()) {
         if (auto* paint_artifact_compositor =
                 object_.GetFrameView()->GetPaintArtifactCompositor()) {
           bool updated =

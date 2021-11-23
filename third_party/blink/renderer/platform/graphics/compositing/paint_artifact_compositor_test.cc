@@ -1915,6 +1915,33 @@ TEST_P(PaintArtifactCompositorTest, EffectWithElementId) {
   EXPECT_EQ(2, ElementIdToEffectNodeIndex(effect->GetCompositorElementId()));
 }
 
+TEST_P(PaintArtifactCompositorTest, NonContiguousEffectWithElementId) {
+  if (!RuntimeEnabledFeatures::CompositeAfterPaintEnabled())
+    return;
+
+  auto effect = CreateSampleEffectNodeWithElementId();
+  TestPaintArtifact artifact;
+  artifact.Chunk(t0(), c0(), *effect)
+      .RectDrawing(gfx::Rect(100, 100, 200, 100), Color::kBlack)
+      .Chunk(t0(), c0(), e0())
+      .RectDrawing(gfx::Rect(100, 100, 300, 100), Color::kBlack)
+      .Chunk(t0(), c0(), *effect)
+      .RectDrawing(gfx::Rect(100, 100, 400, 100), Color::kBlack);
+  Update(artifact.Build());
+
+  ASSERT_EQ(3u, LayerCount());
+  EXPECT_EQ(2, LayerAt(0)->effect_tree_index());
+  uint64_t stable_id = effect->GetCompositorElementId().GetStableId();
+  EXPECT_EQ(stable_id, GetPropertyTrees()
+                           .effect_tree.Node(LayerAt(0)->effect_tree_index())
+                           ->stable_id);
+  EXPECT_EQ(1, LayerAt(1)->effect_tree_index());
+  EXPECT_EQ(3, LayerAt(2)->effect_tree_index());
+  EXPECT_NE(stable_id, GetPropertyTrees()
+                           .effect_tree.Node(LayerAt(2)->effect_tree_index())
+                           ->stable_id);
+}
+
 TEST_P(PaintArtifactCompositorTest, EffectWithElementIdWithAlias) {
   auto real_effect = CreateSampleEffectNodeWithElementId();
   auto effect = EffectPaintPropertyNodeAlias::Create(*real_effect);

@@ -1086,6 +1086,8 @@ void PropertyTreeManager::BuildEffectNodesRecursively(
       // the current FragmentClip implementation. This can only be fixed by
       // LayoutNG block fragments. For now we'll create multiple cc effect
       // nodes in the case.
+      // TODO(crbug.com/1253797): Actually this still happens with LayoutNG
+      // block fragments due to paint order issue.
       has_multiple_groups = true;
     } else {
       NOTREACHED() << "Malformed paint artifact. Paint chunks under the same"
@@ -1129,8 +1131,17 @@ void PropertyTreeManager::BuildEffectNodesRecursively(
     effect_node.stable_id = next_effect.GetCompositorElementId().GetStableId();
   }
 
-  if (!has_multiple_groups)
+  if (has_multiple_groups) {
+    if (effect_node.stable_id != cc::EffectNode::INVALID_STABLE_ID) {
+      // We are creating more than one cc effect nodes for one blink effect.
+      // Give the extra cc effect node a unique stable id.
+      effect_node.stable_id =
+          CompositorElementIdFromUniqueObjectId(NewUniqueObjectId())
+              .GetStableId();
+    }
+  } else {
     next_effect.SetCcNodeId(new_sequence_number_, real_effect_node_id);
+  }
 
   CompositorElementId compositor_element_id =
       next_effect.GetCompositorElementId();
