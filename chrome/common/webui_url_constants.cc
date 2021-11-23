@@ -349,6 +349,7 @@ const char kChromeUIUrgentPasswordExpiryNotificationUrl[] =
 const char kOsUICroshURL[] = "os://crosh";
 const char kOsUIFileManagerURL[] = "os://file-manager";
 const char kOsUITerminalURL[] = "os://terminal";
+const char kOsUIAboutURL[] = "os://about";
 const char kOsUIAccountManagerErrorURL[] = "os://account-manager-error";
 const char kOsUIAccountManagerWelcomeURL[] = "os://account-manager-welcome";
 const char kOsUIAccountMigrationWelcomeURL[] = "os://account-migration-welcome";

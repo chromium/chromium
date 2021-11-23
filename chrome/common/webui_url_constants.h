@@ -332,6 +332,7 @@ extern const char kChromeUIVmUrl[];
 extern const char kOsUICroshURL[];
 extern const char kOsUIFileManagerURL[];
 extern const char kOsUITerminalURL[];
+extern const char kOsUIAboutURL[];
 extern const char kOsUIAccountManagerErrorURL[];
 extern const char kOsUIAccountManagerWelcomeURL[];
 extern const char kOsUIAccountMigrationWelcomeURL[];

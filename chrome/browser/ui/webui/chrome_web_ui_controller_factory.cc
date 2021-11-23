@@ -1378,7 +1378,7 @@ std::vector<GURL> ChromeWebUIControllerFactory::GetListOfAcceptableURLs() {
       GURL(chrome::kChromeUIOsCroshAppURL), GURL(chrome::kOsUICroshURL),
       GURL(ash::file_manager::kChromeUIFileManagerUntrustedURL),
       GURL(chrome::kChromeUIUntrustedTerminalURL),
-      GURL(chrome::kOsUITerminalURL),
+      GURL(chrome::kOsUITerminalURL), GURL(chrome::kOsUIAboutURL),
       GURL(chrome::kChromeUIAccountManagerErrorURL),
       GURL(chrome::kOsUIAccountManagerErrorURL),
       GURL(chrome::kChromeUIAccountManagerWelcomeURL),

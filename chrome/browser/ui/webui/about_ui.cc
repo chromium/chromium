@@ -64,12 +64,14 @@
 #include "base/base64.h"
 #include "base/cxx17_backports.h"
 #include "base/strings/strcat.h"
+#include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/crostini/crostini_manager.h"
 #include "chrome/browser/ash/customization/customization_document.h"
 #include "chrome/browser/ash/login/demo_mode/demo_setup_controller.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/browser_process_platform_part_chromeos.h"
 #include "chrome/browser/component_updater/cros_component_manager.h"
+#include "chrome/browser/ui/webui/chrome_web_ui_controller_factory.h"
 #include "chromeos/system/statistics_provider.h"
 #include "components/language/core/common/locale_util.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
@@ -522,30 +524,73 @@ std::string ChromeURLs() {
       chrome::kChromeHostURLs,
       chrome::kChromeHostURLs + chrome::kNumberOfChromeHostURLs);
   std::sort(hosts.begin(), hosts.end());
-  for (const std::string& host : hosts) {
-    html +=
-        "<li><a href='chrome://" + host + "/'>chrome://" + host + "</a></li>\n";
-  }
 
-  html +=
-      "</ul><a id=\"internals\"><h2>List of chrome://internals "
-      "pages</h2></a>\n<ul>\n";
-  std::vector<std::string> internals_paths(
-      chrome::kChromeInternalsPathURLs,
-      chrome::kChromeInternalsPathURLs +
-          chrome::kNumberOfChromeInternalsPathURLs);
-  std::sort(internals_paths.begin(), internals_paths.end());
-  for (const std::string& path : internals_paths) {
-    html += "<li><a href='chrome://internals/" + path +
-            "'>chrome://internals/" + path + "</a></li>\n";
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // If Lacros is active, the user can navigate by hand to os:// URL's but
+  // internally we will still navigate to chrome:// URL's. Note also that
+  // only a subset of URLs might be available in this mode - so we have to
+  // make sure that only allowed URLs are being presented.
+  if (crosapi::browser_util::IsLacrosPrimaryBrowser()) {
+    auto* WebUiControllerFactory = ChromeWebUIControllerFactory::GetInstance();
+    for (const std::string& host : hosts) {
+      // TODO(crbug/1271718): The refactor should make sure that the provided
+      // list can be shown as is without filtering.
+      if (WebUiControllerFactory->CanHandleUrl(GURL("os://" + host)) ||
+          WebUiControllerFactory->CanHandleUrl(GURL("chrome://" + host))) {
+        html +=
+            "<li><a href='chrome://" + host + "/'>os://" + host + "</a></li>\n";
+      }
+    }
+  } else {
+#else
+  {
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+    for (const std::string& host : hosts) {
+      html += "<li><a href='chrome://" + host + "/'>chrome://" + host +
+              "</a></li>\n";
+    }
+
+    html +=
+        "</ul><a id=\"internals\"><h2>List of chrome://internals "
+        "pages</h2></a>\n<ul>\n";
+    std::vector<std::string> internals_paths(
+        chrome::kChromeInternalsPathURLs,
+        chrome::kChromeInternalsPathURLs +
+            chrome::kNumberOfChromeInternalsPathURLs);
+    std::sort(internals_paths.begin(), internals_paths.end());
+    for (const std::string& path : internals_paths) {
+      html += "<li><a href='chrome://internals/" + path +
+              "'>chrome://internals/" + path + "</a></li>\n";
+    }
   }
 
   html += "</ul>\n<h2>For Debug</h2>\n"
       "<p>The following pages are for debugging purposes only. Because they "
       "crash or hang the renderer, they're not linked directly; you can type "
       "them into the address bar if you need them.</p>\n<ul>";
-  for (size_t i = 0; i < chrome::kNumberOfChromeDebugURLs; i++)
-    html += "<li>" + std::string(chrome::kChromeDebugURLs[i]) + "</li>\n";
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // If Lacros is active, the user can navigate by hand to os:// URL's but
+  // internally we will still navigate to chrome:// URL's. Note also that
+  // only a subset of URLs might be available in this mode - so we have to
+  // make sure that only allowed URLs are being presented.
+  if (crosapi::browser_util::IsLacrosPrimaryBrowser()) {
+    auto* WebUiControllerFactory = ChromeWebUIControllerFactory::GetInstance();
+    for (size_t i = 0; i < chrome::kNumberOfChromeDebugURLs; i++) {
+      // TODO(crbug/1271718): The refactor should make sure that the provided
+      // list can be shown as is without filtering.
+      const std::string host = GURL(chrome::kChromeDebugURLs[i]).host();
+      if (WebUiControllerFactory->CanHandleUrl(GURL("os://" + host)) ||
+          WebUiControllerFactory->CanHandleUrl(GURL("chrome://" + host))) {
+        html += "<li>os://" + host + "</li>\n";
+      }
+    }
+  } else {
+#else
+  {
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+    for (size_t i = 0; i < chrome::kNumberOfChromeDebugURLs; i++)
+      html += "<li>" + std::string(chrome::kChromeDebugURLs[i]) + "</li>\n";
+  }
   html += "</ul>\n";
 
   AppendFooter(&html);
