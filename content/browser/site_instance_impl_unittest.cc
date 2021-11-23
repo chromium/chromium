@@ -1980,4 +1980,26 @@ TEST_F(SiteInstanceTest, GetNonOriginKeyedEquivalentPreservesIsPdf) {
   EXPECT_FALSE(site_info_pdf_no_origin_key.requires_origin_keyed_process());
 }
 
+// This test makes sure that if we create a SiteInfo with a UrlInfo where
+// kOriginAgentCluster is set but kRequiresOriginKeyedProcess is not, that the
+// resulting SiteInfo does not have `requires_origin_keyed_process_` true.
+TEST_F(SiteInstanceTest, SiteInfoDetermineProcessLock_OriginAgentCluster) {
+  GURL a_foo_url("https://a.foo.com/");
+  GURL foo_url("https://foo.com");
+
+  // In the test below, it's important for the IsolationContext to have a
+  // non-null BrowsingInstanceId, otherwise the call to
+  // ChildProcessSecurityPolicyImpl::GetMatchingProcessIsolatedOrigin() will
+  // skip over the check for OAC process isolated origins, which is required for
+  // this test to operate.
+  SiteInfo site_info_for_a_foo = SiteInfo::Create(
+      IsolationContext(BrowsingInstanceId::FromUnsafeValue(42), context()),
+      UrlInfo(UrlInfoInit(a_foo_url).WithOriginIsolationRequest(
+          UrlInfo::OriginIsolationRequest::kOriginAgentCluster)));
+  EXPECT_TRUE(
+      SiteIsolationPolicy::IsProcessIsolationForOriginAgentClusterEnabled());
+  EXPECT_EQ(foo_url, site_info_for_a_foo.process_lock_url());
+  EXPECT_FALSE(site_info_for_a_foo.requires_origin_keyed_process());
+}
+
 }  // namespace content

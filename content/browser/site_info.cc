@@ -757,7 +757,7 @@ GURL SiteInfo::GetSiteForURLInternal(const IsolationContext& isolation_context,
     url::Origin isolated_origin;
     if (policy->GetMatchingProcessIsolatedOrigin(
             isolation_context, origin,
-            real_url_info.requests_origin_agent_cluster(), site_url,
+            real_url_info.requests_origin_keyed_process(), site_url,
             &isolated_origin)) {
       return isolated_origin.GetURL();
     }
