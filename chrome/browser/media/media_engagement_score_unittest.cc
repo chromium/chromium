@@ -18,10 +18,13 @@
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/site_engagement/content/site_engagement_service.h"
 #include "media/base/media_switches.h"
+#include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
 namespace {
+
+using ::testing::Optional;
 
 base::Time GetReferenceTime() {
   base::Time::Exploded exploded_reference_time;
@@ -269,7 +272,6 @@ TEST_F(MediaEngagementScoreTest, ContentSettings) {
   int stored_visits;
   int stored_media_playbacks;
   absl::optional<double> stored_last_media_playback_time;
-  bool stored_has_high_score;
   std::unique_ptr<base::DictionaryValue> values =
       base::DictionaryValue::From(settings_map->GetWebsiteSetting(
           origin.GetURL(), GURL(), ContentSettingsType::MEDIA_ENGAGEMENT,
@@ -279,8 +281,9 @@ TEST_F(MediaEngagementScoreTest, ContentSettings) {
                      &stored_media_playbacks);
   stored_last_media_playback_time =
       values->FindDoubleKey(MediaEngagementScore::kLastMediaPlaybackTimeKey);
-  values->GetBoolean(MediaEngagementScore::kHasHighScoreKey,
-                     &stored_has_high_score);
+
+  EXPECT_THAT(values->FindBoolPath(MediaEngagementScore::kHasHighScoreKey),
+              Optional(true));
   EXPECT_EQ(stored_visits, example_num_visits + 1);
   EXPECT_EQ(stored_media_playbacks, example_media_playbacks + 2);
   EXPECT_EQ(*stored_last_media_playback_time,
@@ -384,10 +387,8 @@ TEST_F(MediaEngagementScoreTest, HighScoreUpdated) {
             origin.GetURL(), GURL(), ContentSettingsType::MEDIA_ENGAGEMENT,
             nullptr));
 
-    bool stored_high_score = false;
-    dict->GetBoolean(MediaEngagementScore::kHasHighScoreKey,
-                     &stored_high_score);
-    EXPECT_FALSE(stored_high_score);
+    EXPECT_THAT(dict->FindBoolPath(MediaEngagementScore::kHasHighScoreKey),
+                Optional(false));
   }
 }
 
