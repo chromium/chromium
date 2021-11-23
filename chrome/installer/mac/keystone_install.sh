@@ -851,6 +851,9 @@ framework_${update_version_app_old}_${update_version_app}.dirpatch"
   if [[ -n "${GOOGLE_CHROME_UPDATER_TEST_PATH}" ]]; then
     note "test mode: not calling Keystone, installed_app is from environment"
     installed_app="${GOOGLE_CHROME_UPDATER_TEST_PATH}"
+  elif [[ -n "${KS_TICKET_XC_PATH}" ]]; then
+    note "installed_app is from KS_TICKET_XC_PATH"
+    installed_app="${KS_TICKET_XC_PATH}"
   elif ! installed_app="$(ksadmin -pP "${product_id}" | sed -Ene \
       "s%^[[:space:]]+xc=<KSPathExistenceChecker:.* path=(/.+)>\$%\\1%p")" ||
       [[ -z "${installed_app}" ]]; then
