@@ -4858,4 +4858,169 @@ TEST_F(StyleEngineTest, ScrollbarStyleNoExcessiveCaching) {
                            .Serialized());
 }
 
+TEST_F(StyleEngineTest, HasPseudoClassInvalidationSkipIrrelevantClassChange) {
+  GetDocument().body()->setInnerHTML(R"HTML(
+    <style>.a:has(.b) { background-color: lime; }</style>
+    <div id=div1>
+      <div id=div2 class='a'>
+        <div id=div3>
+          <div id=div4></div>
+        </div>
+      </div>
+    </div>
+  )HTML");
+
+  UpdateAllLifecyclePhases();
+
+  unsigned start_count = GetStyleEngine().StyleForElementCount();
+  GetDocument().getElementById("div4")->setAttribute(html_names::kClassAttr,
+                                                     "c");
+  UpdateAllLifecyclePhases();
+  unsigned element_count =
+      GetStyleEngine().StyleForElementCount() - start_count;
+  ASSERT_EQ(0U, element_count);
+
+  start_count = GetStyleEngine().StyleForElementCount();
+  GetDocument().getElementById("div4")->setAttribute(html_names::kClassAttr,
+                                                     "b");
+  UpdateAllLifecyclePhases();
+  element_count = GetStyleEngine().StyleForElementCount() - start_count;
+  ASSERT_EQ(1U, element_count);
+}
+
+TEST_F(StyleEngineTest, HasPseudoClassInvalidationSkipIrrelevantIdChange) {
+  GetDocument().body()->setInnerHTML(R"HTML(
+    <style>.a:has(#b) { background-color: lime; }</style>
+    <div id=div1>
+      <div id=div2 class='a'>
+        <div id=div3>
+          <div id=div4></div>
+        </div>
+      </div>
+    </div>
+  )HTML");
+
+  UpdateAllLifecyclePhases();
+
+  unsigned start_count = GetStyleEngine().StyleForElementCount();
+  GetDocument().getElementById("div4")->setAttribute(html_names::kIdAttr, "c");
+  UpdateAllLifecyclePhases();
+  unsigned element_count =
+      GetStyleEngine().StyleForElementCount() - start_count;
+  ASSERT_EQ(0U, element_count);
+
+  start_count = GetStyleEngine().StyleForElementCount();
+  GetDocument().getElementById("c")->setAttribute(html_names::kIdAttr, "b");
+  UpdateAllLifecyclePhases();
+  element_count = GetStyleEngine().StyleForElementCount() - start_count;
+  ASSERT_EQ(1U, element_count);
+}
+
+TEST_F(StyleEngineTest,
+       HasPseudoClassInvalidationSkipIrrelevantAttributeChange) {
+  GetDocument().body()->setInnerHTML(R"HTML(
+    <style>.a:has([b]) { background-color: lime; }</style>
+    <div id=div1>
+      <div id=div2 class='a'>
+        <div id=div3>
+          <div id=div4></div>
+        </div>
+      </div>
+    </div>
+  )HTML");
+
+  UpdateAllLifecyclePhases();
+
+  unsigned start_count = GetStyleEngine().StyleForElementCount();
+  GetDocument().getElementById("div4")->setAttribute(QualifiedName("", "c", ""),
+                                                     "C");
+  UpdateAllLifecyclePhases();
+  unsigned element_count =
+      GetStyleEngine().StyleForElementCount() - start_count;
+  ASSERT_EQ(0U, element_count);
+
+  start_count = GetStyleEngine().StyleForElementCount();
+  GetDocument().getElementById("div4")->setAttribute(QualifiedName("", "b", ""),
+                                                     "B");
+  UpdateAllLifecyclePhases();
+  element_count = GetStyleEngine().StyleForElementCount() - start_count;
+  ASSERT_EQ(1U, element_count);
+}
+
+TEST_F(StyleEngineTest,
+       HasPseudoClassInvalidationSkipIrrelevantInsertionRemoval) {
+  GetDocument().body()->setInnerHTML(R"HTML(
+    <style>.a:has(.b) { background-color: lime; }</style>
+    <div id=div1>
+      <div id=div2 class='a'>
+        <div id=div3></div>
+        <div id=div4></div>
+      </div>
+    </div>
+  )HTML");
+
+  UpdateAllLifecyclePhases();
+
+  unsigned start_count = GetStyleEngine().StyleForElementCount();
+  auto* div5 = MakeGarbageCollected<HTMLDivElement>(GetDocument());
+  div5->setAttribute(html_names::kIdAttr, "div5");
+  div5->setInnerHTML(R"HTML(<div class='c'></div>)HTML");
+  GetDocument().getElementById("div3")->AppendChild(div5);
+  UpdateAllLifecyclePhases();
+  unsigned element_count =
+      GetStyleEngine().StyleForElementCount() - start_count;
+  ASSERT_EQ(2U, element_count);
+
+  start_count = GetStyleEngine().StyleForElementCount();
+  auto* div6 = MakeGarbageCollected<HTMLDivElement>(GetDocument());
+  div6->setAttribute(html_names::kIdAttr, "div6");
+  div6->setInnerHTML(R"HTML(<div class='b'></div>)HTML");
+  GetDocument().getElementById("div4")->AppendChild(div6);
+  UpdateAllLifecyclePhases();
+  element_count = GetStyleEngine().StyleForElementCount() - start_count;
+  ASSERT_EQ(3U, element_count);
+
+  start_count = GetStyleEngine().StyleForElementCount();
+  GetDocument().getElementById("div3")->RemoveChild(
+      GetDocument().getElementById("div5"));
+  UpdateAllLifecyclePhases();
+  element_count = GetStyleEngine().StyleForElementCount() - start_count;
+  ASSERT_EQ(0U, element_count);
+
+  start_count = GetStyleEngine().StyleForElementCount();
+  GetDocument().getElementById("div4")->RemoveChild(
+      GetDocument().getElementById("div6"));
+  UpdateAllLifecyclePhases();
+  element_count = GetStyleEngine().StyleForElementCount() - start_count;
+  ASSERT_EQ(1U, element_count);
+}
+
+TEST_F(StyleEngineTest, HasPseudoClassInvalidationUniversalInArgument) {
+  GetDocument().body()->setInnerHTML(R"HTML(
+    <style>.a:has(*) { background-color: lime; }</style>
+    <div id=div1>
+      <div id=div2 class='a'>
+      </div>
+    </div>
+  )HTML");
+
+  UpdateAllLifecyclePhases();
+
+  unsigned start_count = GetStyleEngine().StyleForElementCount();
+  auto* div3 = MakeGarbageCollected<HTMLDivElement>(GetDocument());
+  div3->setAttribute(html_names::kIdAttr, "div3");
+  GetDocument().getElementById("div2")->AppendChild(div3);
+  UpdateAllLifecyclePhases();
+  unsigned element_count =
+      GetStyleEngine().StyleForElementCount() - start_count;
+  ASSERT_EQ(2U, element_count);
+
+  start_count = GetStyleEngine().StyleForElementCount();
+  GetDocument().getElementById("div2")->RemoveChild(
+      GetDocument().getElementById("div3"));
+  UpdateAllLifecyclePhases();
+  element_count = GetStyleEngine().StyleForElementCount() - start_count;
+  ASSERT_EQ(1U, element_count);
+}
+
 }  // namespace blink

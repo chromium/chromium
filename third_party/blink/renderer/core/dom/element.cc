@@ -4018,13 +4018,15 @@ void Element::ChildrenChanged(const ChildrenChange& change) {
                            change.sibling_after_change);
 
   if (!change.ByParser() && change.IsChildElementChange()) {
+    Element* changed_element = To<Element>(change.sibling_changed);
     CheckForSiblingStyleChanges(
         change.type == ChildrenChangeType::kElementRemoved
             ? kSiblingElementRemoved
             : kSiblingElementInserted,
-        To<Element>(change.sibling_changed), change.sibling_before_change,
+        changed_element, change.sibling_before_change,
         change.sibling_after_change);
-    GetDocument().GetStyleEngine().ChildElementInsertedOrRemoved(this);
+    GetDocument().GetStyleEngine().SubtreeInsertedOrRemoved(this,
+                                                            *changed_element);
   }
 
   if (ShadowRoot* shadow_root = GetShadowRoot())
@@ -4036,7 +4038,8 @@ void Element::FinishParsingChildren() {
   CheckForEmptyStyleChange(this, this);
   CheckForSiblingStyleChanges(kFinishedParsingChildren, nullptr, lastChild(),
                               nullptr);
-  GetDocument().GetStyleEngine().ChildElementInsertedOrRemoved(parentElement());
+  GetDocument().GetStyleEngine().ElementInsertedOrRemoved(parentElement(),
+                                                          *this);
 }
 
 AttrNodeList* Element::GetAttrNodeList() {

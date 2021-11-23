@@ -145,6 +145,13 @@ class CORE_EXPORT RuleFeatureSet {
   void CollectPartInvalidationSet(InvalidationLists&) const;
   void CollectTypeRuleInvalidationSet(InvalidationLists&, ContainerNode&) const;
 
+  bool NeedsHasInvalidationForClass(const AtomicString& class_name) const;
+  bool NeedsHasInvalidationForAttribute(
+      const QualifiedName& attribute_name) const;
+  bool NeedsHasInvalidationForId(const AtomicString& id) const;
+  bool NeedsHasInvalidationForTagName(const AtomicString& tag_name) const;
+  bool NeedsHasInvalidationForElement(Element&) const;
+
   bool HasIdsInSelectors() const { return id_invalidation_sets_.size() > 0; }
   bool InvalidatesParts() const { return metadata_.invalidates_parts; }
 
@@ -196,6 +203,7 @@ class CORE_EXPORT RuleFeatureSet {
               scoped_refptr<InvalidationSet>,
               WTF::IntHash<unsigned>,
               WTF::UnsignedWithZeroKeyHashTraits<unsigned>>;
+  using ValuesInHasArgument = HashSet<AtomicString>;
 
   struct FeatureMetadata {
     DISALLOW_NEW();
@@ -433,8 +441,11 @@ class CORE_EXPORT RuleFeatureSet {
   void AddFeaturesToUniversalSiblingInvalidationSet(
       const InvalidationSetFeatures& sibling_features,
       const InvalidationSetFeatures& descendant_features);
+  bool AddValueOfSimpleSelectorInHasArgument(
+      const CSSSelector& has_pseudo_class);
 
   void UpdateRuleSetInvalidation(const InvalidationSetFeatures&);
+  void CollectValuesInHasArgument(const CSSSelector& has_pseudo_class);
 
   static InvalidationSet& EnsureMutableInvalidationSet(
       scoped_refptr<InvalidationSet>&,
@@ -474,6 +485,11 @@ class CORE_EXPORT RuleFeatureSet {
   scoped_refptr<DescendantInvalidationSet> type_rule_invalidation_set_;
   MediaQueryResultList viewport_dependent_media_query_results_;
   MediaQueryResultList device_dependent_media_query_results_;
+  ValuesInHasArgument classes_in_has_argument_;
+  ValuesInHasArgument attributes_in_has_argument_;
+  ValuesInHasArgument ids_in_has_argument_;
+  ValuesInHasArgument tag_names_in_has_argument_;
+  bool universal_in_has_argument_{false};
 
   // If true, the RuleFeatureSet is alive and can be used.
   unsigned is_alive_ : 1;

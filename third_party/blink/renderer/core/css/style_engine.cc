@@ -956,10 +956,17 @@ void StyleEngine::ClassChangedForElement(
   if (ShouldSkipInvalidationFor(element))
     return;
 
+  const RuleFeatureSet& features = GetRuleFeatureSet();
+
   if (RuntimeEnabledFeatures::CSSPseudoHasEnabled() &&
       PossiblyAffectingHasState(element)) {
-    // TODO(blee@igalia.com) Need filtering for irrelevant mutations
-    InvalidateAncestorsAffectedByHas(element.parentElement());
+    unsigned changed_size = changed_classes.size();
+    for (unsigned i = 0; i < changed_size; ++i) {
+      if (features.NeedsHasInvalidationForClass(changed_classes[i])) {
+        InvalidateAncestorsAffectedByHas(element.parentElement());
+        break;
+      }
+    }
   }
 
   if (IsSubtreeAndSiblingsStyleDirty(element))
@@ -967,7 +974,6 @@ void StyleEngine::ClassChangedForElement(
 
   InvalidationLists invalidation_lists;
   unsigned changed_size = changed_classes.size();
-  const RuleFeatureSet& features = GetRuleFeatureSet();
   for (unsigned i = 0; i < changed_size; ++i) {
     features.CollectInvalidationSetsForClass(invalidation_lists, element,
                                              changed_classes[i]);
@@ -987,13 +993,11 @@ void StyleEngine::ClassChangedForElement(const SpaceSplitString& old_classes,
     return;
   }
 
-  if (RuntimeEnabledFeatures::CSSPseudoHasEnabled() &&
-      PossiblyAffectingHasState(element)) {
-    // TODO(blee@igalia.com) Need filtering for irrelevant mutations
-    InvalidateAncestorsAffectedByHas(element.parentElement());
-  }
-
-  if (IsSubtreeAndSiblingsStyleDirty(element))
+  bool needs_schedule_invalidation = !IsSubtreeAndSiblingsStyleDirty(element);
+  bool possibly_affecting_has_state =
+      RuntimeEnabledFeatures::CSSPseudoHasEnabled() &&
+      PossiblyAffectingHasState(element);
+  if (!needs_schedule_invalidation && !possibly_affecting_has_state)
     return;
 
   // Class vectors tend to be very short. This is faster than using a hash
@@ -1001,6 +1005,7 @@ void StyleEngine::ClassChangedForElement(const SpaceSplitString& old_classes,
   WTF::Vector<bool> remaining_class_bits(old_classes.size());
 
   InvalidationLists invalidation_lists;
+  bool affecting_has_state = false;
   const RuleFeatureSet& features = GetRuleFeatureSet();
 
   for (unsigned i = 0; i < new_classes.size(); ++i) {
@@ -1016,8 +1021,16 @@ void StyleEngine::ClassChangedForElement(const SpaceSplitString& old_classes,
     }
     // Class was added.
     if (!found) {
-      features.CollectInvalidationSetsForClass(invalidation_lists, element,
-                                               new_classes[i]);
+      if (LIKELY(needs_schedule_invalidation)) {
+        features.CollectInvalidationSetsForClass(invalidation_lists, element,
+                                                 new_classes[i]);
+      }
+      if (UNLIKELY(possibly_affecting_has_state)) {
+        if (features.NeedsHasInvalidationForClass(new_classes[i])) {
+          affecting_has_state = true;
+          possibly_affecting_has_state = false;  // Clear to skip check
+        }
+      }
     }
   }
 
@@ -1025,11 +1038,24 @@ void StyleEngine::ClassChangedForElement(const SpaceSplitString& old_classes,
     if (remaining_class_bits[i])
       continue;
     // Class was removed.
-    features.CollectInvalidationSetsForClass(invalidation_lists, element,
-                                             old_classes[i]);
+    if (LIKELY(needs_schedule_invalidation)) {
+      features.CollectInvalidationSetsForClass(invalidation_lists, element,
+                                               old_classes[i]);
+    }
+    if (UNLIKELY(possibly_affecting_has_state)) {
+      if (features.NeedsHasInvalidationForClass(old_classes[i])) {
+        affecting_has_state = true;
+        possibly_affecting_has_state = false;  // Clear to skip check
+      }
+    }
   }
-  pending_invalidations_.ScheduleInvalidationSetsForNode(invalidation_lists,
-                                                         element);
+  if (needs_schedule_invalidation) {
+    pending_invalidations_.ScheduleInvalidationSetsForNode(invalidation_lists,
+                                                           element);
+  }
+  if (affecting_has_state) {
+    InvalidateAncestorsAffectedByHas(element.parentElement());
+  }
 }
 
 namespace {
@@ -1058,8 +1084,8 @@ void StyleEngine::AttributeChangedForElement(
 
   if (RuntimeEnabledFeatures::CSSPseudoHasEnabled() &&
       PossiblyAffectingHasState(element)) {
-    // TODO(blee@igalia.com) Need filtering for irrelevant mutations
-    InvalidateAncestorsAffectedByHas(element.parentElement());
+    if (GetRuleFeatureSet().NeedsHasInvalidationForAttribute(attribute_name))
+      InvalidateAncestorsAffectedByHas(element.parentElement());
   }
 
   if (IsSubtreeAndSiblingsStyleDirty(element))
@@ -1085,17 +1111,20 @@ void StyleEngine::IdChangedForElement(const AtomicString& old_id,
   if (ShouldSkipInvalidationFor(element))
     return;
 
+  const RuleFeatureSet& features = GetRuleFeatureSet();
+
   if (RuntimeEnabledFeatures::CSSPseudoHasEnabled() &&
       PossiblyAffectingHasState(element)) {
-    // TODO(blee@igalia.com) Need filtering for irrelevant mutations
-    InvalidateAncestorsAffectedByHas(element.parentElement());
+    if ((!old_id.IsEmpty() && features.NeedsHasInvalidationForId(old_id)) ||
+        (!new_id.IsEmpty() && features.NeedsHasInvalidationForId(new_id))) {
+      InvalidateAncestorsAffectedByHas(element.parentElement());
+    }
   }
 
   if (IsSubtreeAndSiblingsStyleDirty(element))
     return;
 
   InvalidationLists invalidation_lists;
-  const RuleFeatureSet& features = GetRuleFeatureSet();
   if (!old_id.IsEmpty())
     features.CollectInvalidationSetsForId(invalidation_lists, element, old_id);
   if (!new_id.IsEmpty())
@@ -1315,11 +1344,33 @@ void StyleEngine::ScheduleCustomElementInvalidations(
                                                          *document_);
 }
 
-void StyleEngine::ChildElementInsertedOrRemoved(Element* parent) {
-  if (!RuntimeEnabledFeatures::CSSPseudoHasEnabled())
+void StyleEngine::ElementInsertedOrRemoved(Element* parent, Element& element) {
+  if (!RuntimeEnabledFeatures::CSSPseudoHasEnabled() || !parent)
     return;
-  // TODO(blee@igalia.com) Need filtering for irrelevant insertion or removal
-  InvalidateAncestorsAffectedByHas(parent);
+
+  if (ShouldSkipInvalidationFor(*parent))
+    return;
+
+  if (GetRuleFeatureSet().NeedsHasInvalidationForElement(element))
+    InvalidateAncestorsAffectedByHas(parent);
+}
+
+void StyleEngine::SubtreeInsertedOrRemoved(Element* parent,
+                                           Element& subtree_root) {
+  if (!RuntimeEnabledFeatures::CSSPseudoHasEnabled() || !parent)
+    return;
+
+  if (ShouldSkipInvalidationFor(*parent))
+    return;
+
+  const RuleFeatureSet& features = GetRuleFeatureSet();
+  for (Element& element :
+       ElementTraversal::InclusiveDescendantsOf(subtree_root)) {
+    if (features.NeedsHasInvalidationForElement(element)) {
+      InvalidateAncestorsAffectedByHas(parent);
+      return;
+    }
+  }
 }
 
 void StyleEngine::InvalidateStyle() {

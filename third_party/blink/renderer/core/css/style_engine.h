@@ -385,7 +385,8 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
                                         InvalidationScope =
                                             kInvalidateCurrentScope);
   void ScheduleCustomElementInvalidations(HashSet<AtomicString> tag_names);
-  void ChildElementInsertedOrRemoved(Element* parent);
+  void ElementInsertedOrRemoved(Element* parent, Element& element);
+  void SubtreeInsertedOrRemoved(Element* parent, Element& subtree_root);
 
   void NodeWillBeRemoved(Node&);
   void ChildrenRemoved(ContainerNode& parent);
