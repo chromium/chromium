@@ -2507,8 +2507,9 @@ def CheckUniquePtrOnUpload(input_api, output_api):
         problems_nullptr))
   if problems_constructor:
     errors.append(output_api.PresubmitError(
-        'The following files use explicit std::unique_ptr constructor.'
-        'Use std::make_unique<T>() instead.',
+        'The following files use explicit std::unique_ptr constructor. '
+        'Use std::make_unique<T>() instead, or use base::WrapUnique if '
+        'std::make_unique is not an option.',
         problems_constructor))
   return errors
 
