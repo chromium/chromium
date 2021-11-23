@@ -497,6 +497,18 @@ class Metrics {
     ADDRESS_HOME_LINE1 = 1 << 11,
   };
 
+  enum AutofillAssistantCreditCardFields {
+    CREDIT_CARD_NAME_FULL = 1 << 0,
+    CREDIT_CARD_EXP_MONTH = 1 << 1,
+    CREDIT_CARD_EXP_2_DIGIT_YEAR = 1 << 2,
+    CREDIT_CARD_EXP_4_DIGIT_YEAR = 1 << 3,
+    MASKED = 1 << 4,
+    // If the card is masked, this is always logged as present, to match what
+    // CollectUserData considers complete for the purposes of enabling the
+    // "Continue" button.
+    VALID_NUMBER = 1 << 5,
+  };
+
   static void RecordDropOut(DropOutReason reason, const std::string& intent);
   static void RecordPaymentRequestPrefilledSuccess(bool initially_complete,
                                                    bool success);
@@ -544,15 +556,19 @@ class Metrics {
                                    int incomplete_count,
                                    int initially_selected_field_bitmask,
                                    UserDataSelectionState selection_state);
-  static void RecordCreditCardMetrics(ukm::UkmRecorder* ukm_recorder,
-                                      ukm::SourceId source_id,
-                                      int complete_count,
-                                      int incomplete_count,
-                                      UserDataSelectionState selection_state);
+  static void RecordCreditCardMetrics(
+      ukm::UkmRecorder* ukm_recorder,
+      ukm::SourceId source_id,
+      int complete_count,
+      int incomplete_count,
+      int initially_selected_card_field_bitmask,
+      int initially_selected_billing_address_field_bitmask,
+      UserDataSelectionState selection_state);
   static void RecordShippingMetrics(ukm::UkmRecorder* ukm_recorder,
                                     ukm::SourceId source_id,
                                     int complete_count,
                                     int incomplete_count,
+                                    int initially_selected_field_bitmask,
                                     UserDataSelectionState selection_state);
   static void RecordCollectUserDataSuccess(ukm::UkmRecorder* ukm_recorder,
                                            ukm::SourceId source_id,

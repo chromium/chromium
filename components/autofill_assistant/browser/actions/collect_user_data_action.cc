@@ -474,6 +474,8 @@ void CollectUserDataAction::MaybeLogMetrics() {
         delegate_->GetUkmRecorder(), metrics_data_.source_id,
         metrics_data_.complete_credit_cards_initial_count,
         metrics_data_.incomplete_credit_cards_initial_count,
+        metrics_data_.selected_credit_card_field_bitmask,
+        metrics_data_.selected_billing_address_field_bitmask,
         metrics_data_.credit_card_selection_state);
   }
 
@@ -482,6 +484,7 @@ void CollectUserDataAction::MaybeLogMetrics() {
         delegate_->GetUkmRecorder(), metrics_data_.source_id,
         metrics_data_.complete_shipping_addresses_initial_count,
         metrics_data_.incomplete_shipping_addresses_initial_count,
+        metrics_data_.selected_shipping_address_field_bitmask,
         metrics_data_.shipping_selection_state);
   }
 }
@@ -1120,6 +1123,20 @@ void CollectUserDataAction::FillInitiallySelectedDataStateForMetrics(
     metrics_data_.selected_contact_field_bitmask =
         user_data::GetFieldBitArrayForAddress(user_data->selected_address(
             collect_user_data_options_->contact_details_name));
+  }
+
+  if (RequiresShipping(*collect_user_data_options_)) {
+    metrics_data_.selected_shipping_address_field_bitmask =
+        user_data::GetFieldBitArrayForAddress(user_data->selected_address(
+            collect_user_data_options_->shipping_address_name));
+  }
+
+  if (RequiresPaymentMethod(*collect_user_data_options_)) {
+    metrics_data_.selected_credit_card_field_bitmask =
+        user_data::GetFieldBitArrayForCreditCard(user_data->selected_card());
+    metrics_data_.selected_billing_address_field_bitmask =
+        user_data::GetFieldBitArrayForAddress(user_data->selected_address(
+            collect_user_data_options_->billing_address_name));
   }
 }
 

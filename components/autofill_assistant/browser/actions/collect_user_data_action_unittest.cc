@@ -3333,17 +3333,16 @@ TEST_F(CollectUserDataActionTest, LogsUkmProfilesCount) {
 
   EXPECT_THAT(GetUkmCompleteContactProfilesCount(ukm_recorder_),
               ElementsAreArray({ToHumanReadableEntry(
-                  ukm::kInvalidSourceId, kCompleteContactProfilesCount, 2)}));
+                  source_id_, kCompleteContactProfilesCount, 2)}));
   EXPECT_THAT(GetUkmIncompleteContactProfilesCount(ukm_recorder_),
               ElementsAreArray({ToHumanReadableEntry(
-                  ukm::kInvalidSourceId, kIncompleteContactProfilesCount, 1)}));
+                  source_id_, kIncompleteContactProfilesCount, 1)}));
   EXPECT_THAT(GetUkmCompleteShippingProfilesCount(ukm_recorder_),
               ElementsAreArray({ToHumanReadableEntry(
-                  ukm::kInvalidSourceId, kCompleteShippingProfilesCount, 1)}));
-  EXPECT_THAT(
-      GetUkmIncompleteShippingProfilesCount(ukm_recorder_),
-      ElementsAreArray({ToHumanReadableEntry(
-          ukm::kInvalidSourceId, kIncompleteShippingProfilesCount, 2)}));
+                  source_id_, kCompleteShippingProfilesCount, 1)}));
+  EXPECT_THAT(GetUkmIncompleteShippingProfilesCount(ukm_recorder_),
+              ElementsAreArray({ToHumanReadableEntry(
+                  source_id_, kIncompleteShippingProfilesCount, 2)}));
 }
 
 TEST_F(CollectUserDataActionTest, LogsUkmCreditCardsCount) {
@@ -3422,10 +3421,10 @@ TEST_F(CollectUserDataActionTest, LogsUkmCreditCardsCount) {
 
   EXPECT_THAT(GetUkmCompleteCreditCardsCount(ukm_recorder_),
               ElementsAreArray({ToHumanReadableEntry(
-                  ukm::kInvalidSourceId, kCompleteCreditCardsCount, 1)}));
+                  source_id_, kCompleteCreditCardsCount, 1)}));
   EXPECT_THAT(GetUkmIncompleteCreditCardsCount(ukm_recorder_),
               ElementsAreArray({ToHumanReadableEntry(
-                  ukm::kInvalidSourceId, kIncompleteCreditCardsCount, 2)}));
+                  source_id_, kIncompleteCreditCardsCount, 2)}));
 }
 
 TEST_F(CollectUserDataActionTest, LogsUkmMoreThanFiveProfilesCount) {
@@ -3471,7 +3470,7 @@ TEST_F(CollectUserDataActionTest, LogsUkmMoreThanFiveProfilesCount) {
   EXPECT_THAT(
       GetUkmCompleteContactProfilesCount(ukm_recorder_),
       ElementsAreArray({ToHumanReadableEntry(
-          ukm::kInvalidSourceId, kCompleteContactProfilesCount,
+          source_id_, kCompleteContactProfilesCount,
           static_cast<int64_t>(Metrics::UserDataEntryCount::FIVE_OR_MORE))}));
 }
 
@@ -3549,21 +3548,61 @@ TEST_F(CollectUserDataActionTest, LogUkmFailure) {
 TEST_F(CollectUserDataActionTest, LogsUkmInitialSelectionFieldBitArray) {
   ON_CALL(mock_personal_data_manager_, IsAutofillProfileEnabled)
       .WillByDefault(Return(true));
+  ON_CALL(mock_personal_data_manager_, IsAutofillCreditCardEnabled)
+      .WillByDefault(Return(true));
+  ON_CALL(mock_personal_data_manager_, ShouldSuggestServerCards)
+      .WillByDefault(Return(true));
 
-  autofill::AutofillProfile incomplete;
-  autofill::test::SetProfileInfo(&incomplete, "Adam", "", "",
+  // We add artificial constraints on the fields in the CUD proto below to make
+  // sure that we get a different profile as default for each kind of entry.
+  autofill::AutofillProfile default_contact;
+  autofill::test::SetProfileInfo(&default_contact, "Adam", "", "",
                                  "adam.west@gmail.com", "", "Baker Street 221b",
                                  "", "", "", "", "", "");
-
-  int expected_bitarray =
+  int expected_contact_bitarray =
       Metrics::AutofillAssistantProfileFields::NAME_FIRST |
       Metrics::AutofillAssistantProfileFields::NAME_FULL |
       Metrics::AutofillAssistantProfileFields::EMAIL_ADDRESS |
       Metrics::AutofillAssistantProfileFields::ADDRESS_HOME_LINE1;
 
-  ON_CALL(mock_personal_data_manager_, GetProfiles)
+  autofill::AutofillProfile default_shipping;
+  autofill::test::SetProfileInfo(&default_shipping, "", "", "West",
+                                 "adam.west@gmail.com", "", "Baker Street 221b",
+                                 "", "", "", "", "", "");
+  int expected_shipping_bitarray =
+      Metrics::AutofillAssistantProfileFields::NAME_LAST |
+      Metrics::AutofillAssistantProfileFields::NAME_FULL |
+      Metrics::AutofillAssistantProfileFields::EMAIL_ADDRESS |
+      Metrics::AutofillAssistantProfileFields::ADDRESS_HOME_LINE1;
+
+  autofill::AutofillProfile default_billing;
+  autofill::test::SetProfileInfo(&default_billing, "", "", "",
+                                 "adam.west@gmail.com", "", "Baker Street 221b",
+                                 "", "", "", "", "", "");
+  int expected_billing_bitarray =
+      Metrics::AutofillAssistantProfileFields::EMAIL_ADDRESS |
+      Metrics::AutofillAssistantProfileFields::ADDRESS_HOME_LINE1;
+
+  ON_CALL(mock_personal_data_manager_, GetProfileByGUID("GUID"))
+      .WillByDefault(Return(&default_billing));
+
+  autofill::CreditCard default_card;
+  autofill::test::SetCreditCardInfo(&default_card, "Jim West",
+                                    "4111111111111111", "1",
+                                    /* expiration_year= */ "",
+                                    /* billing_address_id= */ "GUID");
+  int expected_credit_card_bitarray =
+      Metrics::AutofillAssistantCreditCardFields::CREDIT_CARD_NAME_FULL |
+      Metrics::AutofillAssistantCreditCardFields::CREDIT_CARD_EXP_MONTH |
+      Metrics::AutofillAssistantCreditCardFields::VALID_NUMBER;
+
+  ON_CALL(mock_personal_data_manager_, GetCreditCards())
       .WillByDefault(
-          Return(std::vector<autofill::AutofillProfile*>({&incomplete})));
+          Return(std::vector<autofill::CreditCard*>({&default_card})));
+
+  ON_CALL(mock_personal_data_manager_, GetProfiles)
+      .WillByDefault(Return(std::vector<autofill::AutofillProfile*>(
+          {&default_contact, &default_shipping, &default_billing})));
 
   ON_CALL(mock_action_delegate_, CollectUserData(_))
       .WillByDefault(
@@ -3574,10 +3613,18 @@ TEST_F(CollectUserDataActionTest, LogsUkmInitialSelectionFieldBitArray) {
   ActionProto action_proto;
   auto* user_data = action_proto.mutable_collect_user_data();
   user_data->set_request_terms_and_conditions(false);
+  user_data->add_supported_basic_card_networks("visa");
+  user_data->set_request_payment_method(true);
+  user_data->set_billing_address_name("billing");
   auto* contact_details = user_data->mutable_contact_details();
   contact_details->set_request_payer_name(true);
   contact_details->set_request_payer_email(true);
   contact_details->set_contact_details_name("contact");
+  *contact_details->add_required_data_piece() =
+      MakeRequiredDataPiece(autofill::ServerFieldType::NAME_FIRST);
+  user_data->set_shipping_address_name("shipping-address");
+  *user_data->add_required_shipping_address_data_piece() =
+      MakeRequiredDataPiece(autofill::ServerFieldType::NAME_LAST);
 
   {
     CollectUserDataAction action(&mock_action_delegate_, action_proto);
@@ -3588,13 +3635,29 @@ TEST_F(CollectUserDataActionTest, LogsUkmInitialSelectionFieldBitArray) {
   }
 
   EXPECT_THAT(GetUkmInitialContactFieldsStatus(ukm_recorder_),
+              ElementsAreArray(
+                  {ToHumanReadableEntry(source_id_, kInitialContactFieldsStatus,
+                                        expected_contact_bitarray)}));
+  EXPECT_THAT(GetUkmInitialShippingFieldsStatus(ukm_recorder_),
               ElementsAreArray({ToHumanReadableEntry(
-                  ukm::kInvalidSourceId, kInitialContactFieldsStatus,
-                  expected_bitarray)}));
+                  source_id_, kInitialShippingFieldsStatus,
+                  expected_shipping_bitarray)}));
+  EXPECT_THAT(GetUkmInitialBillingAddressFieldsStatus(ukm_recorder_),
+              ElementsAreArray({ToHumanReadableEntry(
+                  source_id_, kInitialBillingAddressFieldsStatus,
+                  expected_billing_bitarray)}));
+  EXPECT_THAT(GetUkmInitialCreditCardFieldsStatus(ukm_recorder_),
+              ElementsAreArray({ToHumanReadableEntry(
+                  source_id_, kInitialCreditCardFieldsStatus,
+                  expected_credit_card_bitarray)}));
 }
 
 TEST_F(CollectUserDataActionTest, NoDefaultProfileLogsAllFieldsAsEmpty) {
   ON_CALL(mock_personal_data_manager_, IsAutofillProfileEnabled)
+      .WillByDefault(Return(true));
+  ON_CALL(mock_personal_data_manager_, IsAutofillCreditCardEnabled)
+      .WillByDefault(Return(true));
+  ON_CALL(mock_personal_data_manager_, ShouldSuggestServerCards)
       .WillByDefault(Return(true));
 
   ON_CALL(mock_action_delegate_, CollectUserData(_))
@@ -3606,10 +3669,13 @@ TEST_F(CollectUserDataActionTest, NoDefaultProfileLogsAllFieldsAsEmpty) {
   ActionProto action_proto;
   auto* user_data = action_proto.mutable_collect_user_data();
   user_data->set_request_terms_and_conditions(false);
+  user_data->set_request_payment_method(true);
+  user_data->set_billing_address_name("billing");
   auto* contact_details = user_data->mutable_contact_details();
   contact_details->set_request_payer_name(true);
   contact_details->set_request_payer_email(true);
   contact_details->set_contact_details_name("contact");
+  user_data->set_shipping_address_name("shipping-address");
 
   {
     CollectUserDataAction action(&mock_action_delegate_, action_proto);
@@ -3621,7 +3687,16 @@ TEST_F(CollectUserDataActionTest, NoDefaultProfileLogsAllFieldsAsEmpty) {
 
   EXPECT_THAT(GetUkmInitialContactFieldsStatus(ukm_recorder_),
               ElementsAreArray({ToHumanReadableEntry(
-                  ukm::kInvalidSourceId, kInitialContactFieldsStatus, 0)}));
+                  source_id_, kInitialContactFieldsStatus, 0)}));
+  EXPECT_THAT(GetUkmInitialShippingFieldsStatus(ukm_recorder_),
+              ElementsAreArray({ToHumanReadableEntry(
+                  source_id_, kInitialShippingFieldsStatus, 0)}));
+  EXPECT_THAT(GetUkmInitialBillingAddressFieldsStatus(ukm_recorder_),
+              ElementsAreArray({ToHumanReadableEntry(
+                  source_id_, kInitialBillingAddressFieldsStatus, 0)}));
+  EXPECT_THAT(GetUkmInitialCreditCardFieldsStatus(ukm_recorder_),
+              ElementsAreArray({ToHumanReadableEntry(
+                  source_id_, kInitialCreditCardFieldsStatus, 0)}));
 }
 
 }  // namespace

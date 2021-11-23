@@ -103,6 +103,9 @@ class CollectUserDataAction : public Action,
 
     // Bitmasks of fields present in the initially selected entries.
     int selected_contact_field_bitmask;
+    int selected_shipping_address_field_bitmask;
+    int selected_credit_card_field_bitmask;
+    int selected_billing_address_field_bitmask;
   };
 
   void InternalProcessAction(ProcessActionCallback callback) override;

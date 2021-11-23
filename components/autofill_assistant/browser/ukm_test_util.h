@@ -45,15 +45,19 @@ const char kTriggerScriptOnboarding[] = "LiteScriptOnboarding";
 const char kInChromeTriggerAction[] = "InChromeTriggerAction";
 const char kTriggerConditionTimingMs[] = "TriggerConditionEvaluationMs";
 const char kCompleteContactProfilesCount[] = "CompleteContactProfilesCount";
-const char kContactModified[] = "ContactModified";
-const char kInitialContactFieldsStatus[] = "InitialContactFieldsStatus";
 const char kIncompleteContactProfilesCount[] = "IncompleteContactProfilesCount";
+const char kInitialContactFieldsStatus[] = "InitialContactFieldsStatus";
+const char kContactModified[] = "ContactModified";
 const char kCompleteCreditCardsCount[] = "CompleteCreditCardsCount";
 const char kIncompleteCreditCardsCount[] = "IncompleteCreditCardsCount";
+const char kInitialCreditCardFieldsStatus[] = "InitialCreditCardFieldsStatus";
+const char kInitialBillingAddressFieldsStatus[] =
+    "InitialBillingAddressFieldsStatus";
 const char kCreditCardModified[] = "CreditCardModified";
 const char kCompleteShippingProfilesCount[] = "CompleteShippingProfilesCount";
 const char kIncompleteShippingProfilesCount[] =
     "IncompleteShippingProfilesCount";
+const char kInitialShippingFieldsStatus[] = "InitialShippingFieldsStatus";
 const char kShippingModified[] = "ShippingModified";
 const char kResult[] = "Result";
 const char kTimeTakenMs[] = "TimeTakenMs";
@@ -71,6 +75,7 @@ std::vector<ukm::TestUkmRecorder::HumanReadableUkmEntry>
 GetUkmInChromeTriggering(ukm::TestAutoSetUkmRecorder& ukm_recorder);
 std::vector<ukm::TestUkmRecorder::HumanReadableUkmEntry>
 GetUkmTriggerConditionEvaluationTime(ukm::TestAutoSetUkmRecorder& ukm_recorder);
+
 std::vector<ukm::TestUkmRecorder::HumanReadableUkmEntry>
 GetUkmCompleteContactProfilesCount(ukm::TestAutoSetUkmRecorder& ukm_recorder);
 std::vector<ukm::TestUkmRecorder::HumanReadableUkmEntry>
@@ -79,19 +84,29 @@ std::vector<ukm::TestUkmRecorder::HumanReadableUkmEntry>
 GetUkmInitialContactFieldsStatus(ukm::TestAutoSetUkmRecorder& ukm_recorder);
 std::vector<ukm::TestUkmRecorder::HumanReadableUkmEntry> GetUkmContactModified(
     ukm::TestAutoSetUkmRecorder& ukm_recorder);
+
 std::vector<ukm::TestUkmRecorder::HumanReadableUkmEntry>
 GetUkmCompleteCreditCardsCount(ukm::TestAutoSetUkmRecorder& ukm_recorder);
 std::vector<ukm::TestUkmRecorder::HumanReadableUkmEntry>
 GetUkmIncompleteCreditCardsCount(ukm::TestAutoSetUkmRecorder& ukm_recorder);
 std::vector<ukm::TestUkmRecorder::HumanReadableUkmEntry>
+GetUkmInitialCreditCardFieldsStatus(ukm::TestAutoSetUkmRecorder& ukm_recorder);
+std::vector<ukm::TestUkmRecorder::HumanReadableUkmEntry>
+GetUkmInitialBillingAddressFieldsStatus(
+    ukm::TestAutoSetUkmRecorder& ukm_recorder);
+std::vector<ukm::TestUkmRecorder::HumanReadableUkmEntry>
 GetUkmCreditCardModified(ukm::TestAutoSetUkmRecorder& ukm_recorder);
+
 std::vector<ukm::TestUkmRecorder::HumanReadableUkmEntry>
 GetUkmCompleteShippingProfilesCount(ukm::TestAutoSetUkmRecorder& ukm_recorder);
 std::vector<ukm::TestUkmRecorder::HumanReadableUkmEntry>
 GetUkmIncompleteShippingProfilesCount(
     ukm::TestAutoSetUkmRecorder& ukm_recorder);
+std::vector<ukm::TestUkmRecorder::HumanReadableUkmEntry>
+GetUkmInitialShippingFieldsStatus(ukm::TestAutoSetUkmRecorder& ukm_recorder);
 std::vector<ukm::TestUkmRecorder::HumanReadableUkmEntry> GetUkmShippingModified(
     ukm::TestAutoSetUkmRecorder& ukm_recorder);
+
 std::vector<ukm::TestUkmRecorder::HumanReadableUkmEntry>
 GetUkmCollectUserDataResult(ukm::TestAutoSetUkmRecorder& ukm_recorder);
 std::vector<ukm::TestUkmRecorder::HumanReadableUkmEntry> GetUkmTimeTakenMs(

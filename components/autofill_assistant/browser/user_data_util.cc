@@ -738,5 +738,48 @@ int GetFieldBitArrayForAddress(const autofill::AutofillProfile* profile) {
   return bit_array;
 }
 
+int GetFieldBitArrayForCreditCard(const autofill::CreditCard* card) {
+  // If the card is nullptr, we consider all fields as missing.
+  if (!card) {
+    return 0;
+  }
+
+  auto mapping = field_formatter::CreateAutofillMappings(*card, kDefaultLocale);
+  // Maps from the autofill field type to the respective position in the metrics
+  // bitarray.
+  static const base::NoDestructor<std::vector<std::pair<
+      autofill::ServerFieldType, Metrics::AutofillAssistantCreditCardFields>>>
+      fields_to_log(
+          {{autofill::CREDIT_CARD_NAME_FULL,
+            Metrics::AutofillAssistantCreditCardFields::CREDIT_CARD_NAME_FULL},
+           {autofill::CREDIT_CARD_EXP_MONTH,
+            Metrics::AutofillAssistantCreditCardFields::CREDIT_CARD_EXP_MONTH},
+           {autofill::CREDIT_CARD_EXP_2_DIGIT_YEAR,
+            Metrics::AutofillAssistantCreditCardFields::
+                CREDIT_CARD_EXP_2_DIGIT_YEAR},
+           {autofill::CREDIT_CARD_EXP_4_DIGIT_YEAR,
+            Metrics::AutofillAssistantCreditCardFields::
+                CREDIT_CARD_EXP_4_DIGIT_YEAR}});
+
+  int bit_array = 0;
+  for (auto fields_pair : *fields_to_log) {
+    if (EvaluateNotEmpty(mapping, fields_pair.first)) {
+      bit_array |= fields_pair.second;
+    }
+  }
+
+  if (card->record_type() == autofill::CreditCard::MASKED_SERVER_CARD) {
+    bit_array |= Metrics::AutofillAssistantCreditCardFields::MASKED;
+    // If the card is masked, we log the number as valid, to match what
+    // CollectUserData considers complete for the purposes of enabling the
+    // "Continue" button.
+    bit_array |= Metrics::AutofillAssistantCreditCardFields::VALID_NUMBER;
+  } else if (card->HasValidCardNumber()) {
+    bit_array |= Metrics::AutofillAssistantCreditCardFields::VALID_NUMBER;
+  }
+
+  return bit_array;
+}
+
 }  // namespace user_data
 }  // namespace autofill_assistant

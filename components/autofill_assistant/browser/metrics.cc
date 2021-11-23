@@ -281,14 +281,20 @@ void Metrics::RecordContactMetrics(ukm::UkmRecorder* ukm_recorder,
       .Record(ukm_recorder);
 }
 
-void Metrics::RecordCreditCardMetrics(ukm::UkmRecorder* ukm_recorder,
-                                      ukm::SourceId source_id,
-                                      int complete_count,
-                                      int incomplete_count,
-                                      UserDataSelectionState selection_state) {
+void Metrics::RecordCreditCardMetrics(
+    ukm::UkmRecorder* ukm_recorder,
+    ukm::SourceId source_id,
+    int complete_count,
+    int incomplete_count,
+    int initially_selected_card_field_bitmask,
+    int initially_selected_billing_address_field_bitmask,
+    UserDataSelectionState selection_state) {
   ukm::builders::AutofillAssistant_CollectPayment(source_id)
       .SetCompleteCreditCardsCount(ToEntryCountBucket(complete_count))
       .SetIncompleteCreditCardsCount(ToEntryCountBucket(incomplete_count))
+      .SetInitialCreditCardFieldsStatus(initially_selected_card_field_bitmask)
+      .SetInitialBillingAddressFieldsStatus(
+          initially_selected_billing_address_field_bitmask)
       .SetCreditCardModified(static_cast<int64_t>(selection_state))
       .Record(ukm_recorder);
 }
@@ -297,10 +303,12 @@ void Metrics::RecordShippingMetrics(ukm::UkmRecorder* ukm_recorder,
                                     ukm::SourceId source_id,
                                     int complete_count,
                                     int incomplete_count,
+                                    int initially_selected_field_bitmask,
                                     UserDataSelectionState selection_state) {
   ukm::builders::AutofillAssistant_CollectShippingAddress(source_id)
       .SetCompleteShippingProfilesCount(ToEntryCountBucket(complete_count))
       .SetIncompleteShippingProfilesCount(ToEntryCountBucket(incomplete_count))
+      .SetInitialShippingFieldsStatus(initially_selected_field_bitmask)
       .SetShippingModified(static_cast<int64_t>(selection_state))
       .Record(ukm_recorder);
 }

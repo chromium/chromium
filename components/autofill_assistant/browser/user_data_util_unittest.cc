@@ -1434,7 +1434,7 @@ TEST_F(UserDataUtilTextValueTest, TextValueClientMemoryKey) {
                                   base::Unretained(this)));
 }
 
-TEST_F(UserDataUtilTextValueTest, GetFieldBitArray) {
+TEST_F(UserDataUtilTextValueTest, GetAddressFieldBitArray) {
   EXPECT_EQ(0, GetFieldBitArrayForAddress(nullptr));
 
   autofill::AutofillProfile empty_profile;
@@ -1468,6 +1468,49 @@ TEST_F(UserDataUtilTextValueTest, GetFieldBitArray) {
           Metrics::AutofillAssistantProfileFields::PHONE_HOME_COUNTRY_CODE |
           Metrics::AutofillAssistantProfileFields::PHONE_HOME_WHOLE_NUMBER,
       GetFieldBitArrayForAddress(&full_profile));
+}
+
+TEST_F(UserDataUtilTextValueTest, GetCreditCardFieldBitArray) {
+  EXPECT_EQ(0, GetFieldBitArrayForCreditCard(nullptr));
+
+  autofill::CreditCard empty_card;
+  EXPECT_EQ(0, GetFieldBitArrayForCreditCard(&empty_card));
+
+  autofill::CreditCard name_only;
+  autofill::test::SetCreditCardInfo(&name_only, "Adam West", "4111", "", "",
+                                    /* billing_address_id= */ "");
+  EXPECT_EQ(Metrics::AutofillAssistantCreditCardFields::CREDIT_CARD_NAME_FULL,
+            GetFieldBitArrayForCreditCard(&name_only));
+
+  autofill::CreditCard complete;
+  autofill::test::SetCreditCardInfo(&complete, "Adam West", "4111111111111111",
+                                    "1", "50",
+                                    /* billing_address_id= */ "");
+  EXPECT_EQ(
+      Metrics::AutofillAssistantCreditCardFields::CREDIT_CARD_NAME_FULL |
+          Metrics::AutofillAssistantCreditCardFields::CREDIT_CARD_EXP_MONTH |
+          Metrics::AutofillAssistantCreditCardFields::
+              CREDIT_CARD_EXP_2_DIGIT_YEAR |
+          Metrics::AutofillAssistantCreditCardFields::
+              CREDIT_CARD_EXP_4_DIGIT_YEAR |
+          Metrics::AutofillAssistantCreditCardFields::VALID_NUMBER,
+      GetFieldBitArrayForCreditCard(&complete));
+
+  autofill::CreditCard masked;
+  autofill::test::SetCreditCardInfo(&masked, "Adam West", "4111111111111111",
+                                    "1", "50",
+                                    /* billing_address_id= */ "");
+  masked.set_record_type(autofill::CreditCard::MASKED_SERVER_CARD);
+  EXPECT_EQ(
+      Metrics::AutofillAssistantCreditCardFields::CREDIT_CARD_NAME_FULL |
+          Metrics::AutofillAssistantCreditCardFields::CREDIT_CARD_EXP_MONTH |
+          Metrics::AutofillAssistantCreditCardFields::
+              CREDIT_CARD_EXP_2_DIGIT_YEAR |
+          Metrics::AutofillAssistantCreditCardFields::
+              CREDIT_CARD_EXP_4_DIGIT_YEAR |
+          Metrics::AutofillAssistantCreditCardFields::MASKED |
+          Metrics::AutofillAssistantCreditCardFields::VALID_NUMBER,
+      GetFieldBitArrayForCreditCard(&masked));
 }
 
 }  // namespace
