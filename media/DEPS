@@ -14,6 +14,7 @@ include_rules = [
   "+services/device/public",
   "+services/viz/public/cpp/gpu/context_provider_command_buffer.h",
   "+skia/ext",
+  "+third_party/re2",
   "+third_party/dav1d",
   "+third_party/ffmpeg",
   "+third_party/libdrm",
