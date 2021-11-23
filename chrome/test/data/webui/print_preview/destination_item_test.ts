@@ -10,33 +10,29 @@ import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_as
 
 import {createDestinationWithCertificateStatus} from './print_preview_test_utils.js';
 
-window.destination_item_test = {};
-const destination_item_test = window.destination_item_test;
-destination_item_test.suiteName = 'DestinationItemTest';
-/** @enum {string} */
-destination_item_test.TestNames = {
-  Online: 'online',
-  Offline: 'offline',
-  BadCertificate: 'bad certificate',
-  QueryName: 'query name',
-  QueryDescription: 'query description',
+const destination_item_test = {
+  suiteName: 'DestinationItemTest',
+  TestNames: {
+    Online: 'online',
+    Offline: 'offline',
+    BadCertificate: 'bad certificate',
+    QueryName: 'query name',
+    QueryDescription: 'query description',
+  },
 };
 
+Object.assign(window, {destination_item_test: destination_item_test});
+
 suite(destination_item_test.suiteName, function() {
-  /** @type {!PrintPreviewDestinationListItemElement} */
-  let item;
+  let item: PrintPreviewDestinationListItemElement;
 
-  /** @type {string} */
-  const printerId = 'FooDevice';
+  const printerId: string = 'FooDevice';
 
-  /** @type {string} */
-  const printerName = 'FooName';
+  const printerName: string = 'FooName';
 
-  /** @override */
   setup(function() {
     document.body.innerHTML = '';
-    item = /** @type {!PrintPreviewDestinationListItemElement} */ (
-        document.createElement('print-preview-destination-list-item'));
+    item = document.createElement('print-preview-destination-list-item');
 
     // Create destination
     item.destination = new Destination(
@@ -49,17 +45,21 @@ suite(destination_item_test.suiteName, function() {
   // Test that the destination is displayed correctly for the basic case of an
   // online destination with no search query.
   test(assert(destination_item_test.TestNames.Online), function() {
-    const name = item.shadowRoot.querySelector('.name');
+    const name = item.shadowRoot!.querySelector('.name')!;
     assertEquals(printerName, name.textContent);
     assertEquals('1', window.getComputedStyle(name).opacity);
     assertEquals(
-        '', item.shadowRoot.querySelector('.search-hint').textContent.trim());
+        '',
+        item.shadowRoot!.querySelector('.search-hint')!.textContent!.trim());
     assertEquals(
         '',
-        item.shadowRoot.querySelector('.connection-status').textContent.trim());
-    assertTrue(item.shadowRoot.querySelector('.learn-more-link').hidden);
-    assertTrue(item.shadowRoot.querySelector('.extension-controlled-indicator')
-                   .hidden);
+        item.shadowRoot!.querySelector(
+                            '.connection-status')!.textContent!.trim());
+    assertTrue(item.shadowRoot!.querySelector<HTMLElement>(
+                                   '.learn-more-link')!.hidden);
+    assertTrue(item.shadowRoot!
+                   .querySelector<HTMLElement>(
+                       '.extension-controlled-indicator')!.hidden);
   });
 
   // Test that the destination is opaque and the correct status shows up if
@@ -78,17 +78,21 @@ suite(destination_item_test.suiteName, function() {
         printerName, DestinationConnectionStatus.OFFLINE,
         {lastAccessTime: twoMonthsAgo.getTime()});
 
-    const name = item.shadowRoot.querySelector('.name');
+    const name = item.shadowRoot!.querySelector('.name')!;
     assertEquals(printerName, name.textContent);
     assertEquals('0.4', window.getComputedStyle(name).opacity);
     assertEquals(
-        '', item.shadowRoot.querySelector('.search-hint').textContent.trim());
+        '',
+        item.shadowRoot!.querySelector('.search-hint')!.textContent!.trim());
     assertEquals(
         loadTimeData.getString('offlineForMonth'),
-        item.shadowRoot.querySelector('.connection-status').textContent.trim());
-    assertTrue(item.shadowRoot.querySelector('.learn-more-link').hidden);
-    assertTrue(item.shadowRoot.querySelector('.extension-controlled-indicator')
-                   .hidden);
+        item.shadowRoot!.querySelector(
+                            '.connection-status')!.textContent!.trim());
+    assertTrue(item.shadowRoot!.querySelector<HTMLElement>(
+                                   '.learn-more-link')!.hidden);
+    assertTrue(item.shadowRoot!
+                   .querySelector<HTMLElement>(
+                       '.extension-controlled-indicator')!.hidden);
   });
 
   // Test that the destination is opaque and the correct status shows up if
@@ -98,17 +102,21 @@ suite(destination_item_test.suiteName, function() {
     item.destination =
         createDestinationWithCertificateStatus(printerId, printerName, true);
 
-    const name = item.shadowRoot.querySelector('.name');
+    const name = item.shadowRoot!.querySelector('.name')!;
     assertEquals(printerName, name.textContent);
     assertEquals('0.4', window.getComputedStyle(name).opacity);
     assertEquals(
-        '', item.shadowRoot.querySelector('.search-hint').textContent.trim());
+        '',
+        item.shadowRoot!.querySelector('.search-hint')!.textContent!.trim());
     assertEquals(
         loadTimeData.getString('noLongerSupported'),
-        item.shadowRoot.querySelector('.connection-status').textContent.trim());
-    assertFalse(item.shadowRoot.querySelector('.learn-more-link').hidden);
-    assertTrue(item.shadowRoot.querySelector('.extension-controlled-indicator')
-                   .hidden);
+        item.shadowRoot!.querySelector(
+                            '.connection-status')!.textContent!.trim());
+    assertFalse(item.shadowRoot!.querySelector<HTMLElement>(
+                                    '.learn-more-link')!.hidden);
+    assertTrue(item.shadowRoot!
+                   .querySelector<HTMLElement>(
+                       '.extension-controlled-indicator')!.hidden);
   });
 
   // Test that the destination is displayed correctly when the search query
@@ -116,17 +124,18 @@ suite(destination_item_test.suiteName, function() {
   test(assert(destination_item_test.TestNames.QueryName), function() {
     item.searchQuery = /(Foo)/ig;
 
-    const name = item.shadowRoot.querySelector('.name');
+    const name = item.shadowRoot!.querySelector('.name')!;
     assertEquals(printerName + printerName, name.textContent);
 
     // Name should be highlighted.
     const searchHits = name.querySelectorAll('.search-highlight-hit');
     assertEquals(1, searchHits.length);
-    assertEquals('Foo', searchHits[0].textContent);
+    assertEquals('Foo', searchHits[0]!.textContent);
 
     // No hints.
     assertEquals(
-        '', item.shadowRoot.querySelector('.search-hint').textContent.trim());
+        '',
+        item.shadowRoot!.querySelector('.search-hint')!.textContent!.trim());
   });
 
   // Test that the destination is displayed correctly when the search query
@@ -142,16 +151,16 @@ suite(destination_item_test.suiteName, function() {
     item.searchQuery = /(ABC)/ig;
 
     // No highlighting on name.
-    const name = item.shadowRoot.querySelector('.name');
+    const name = item.shadowRoot!.querySelector('.name')!;
     assertEquals(printerName, name.textContent);
     assertEquals(0, name.querySelectorAll('.search-highlight-hit').length);
 
     // Search hint should be have the description and be highlighted.
-    const hint = item.shadowRoot.querySelector('.search-hint');
-    assertTrue(hint.textContent.includes(params.description));
-    assertFalse(hint.textContent.includes(params.location));
+    const hint = item.shadowRoot!.querySelector('.search-hint')!;
+    assertTrue(hint.textContent!.includes(params.description));
+    assertFalse(hint.textContent!.includes(params.location));
     const searchHits = hint.querySelectorAll('.search-highlight-hit');
     assertEquals(1, searchHits.length);
-    assertEquals('ABC', searchHits[0].textContent);
+    assertEquals('ABC', searchHits[0]!.textContent);
   });
 });

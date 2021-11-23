@@ -1,15 +1,15 @@
 <style include="cr-shared-style cr-hidden-style">
-  #destination-dropdown {
+  #destinationDropdown {
     outline: none;
     position: relative;
   }
 
-  #destination-dropdown:focus {
+  #destinationDropdown:focus {
     border-radius: 4px;
     box-shadow: 0 0 0 2px rgba(var(--google-blue-600-rgb), .4);
   }
 
-  #destination-dropdown,
+  #destinationDropdown,
   iron-dropdown {
     width: var(--print-preview-dropdown-width);
   }
@@ -98,7 +98,7 @@
     width: 100%;
   }
 </style>
-<div id="destination-dropdown" on-keydown="onKeyDown_" tabindex="0"
+<div id="destinationDropdown" on-keydown="onKeyDown_" tabindex="0"
     on-blur="onBlur_" on-click="onClick_" role="button" aria-haspopup="true"
     aria-label="$i18n{destinationLabel} [[value.displayName]]"
     aria-description$="[[destinationStatusText]]">

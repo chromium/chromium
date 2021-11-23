@@ -31,6 +31,19 @@ index 8dc9834e50cc9..3f76923548e7f 100644
    /**
     * Remove an icon from the given element by undoing the changes effected
     * by `applyIcon`.
+diff --git a/components-chromium/iron-overlay-behavior/iron-overlay-behavior.d.ts b/components-chromium/iron-overlay-behavior/iron-overlay-behavior.d.ts
+index a1a4c1fdc485c..67634c9abb81c 100644
+--- a/components-chromium/iron-overlay-behavior/iron-overlay-behavior.d.ts
++++ b/components-chromium/iron-overlay-behavior/iron-overlay-behavior.d.ts
+@@ -23,7 +23,7 @@ interface IronOverlayBehaviorImpl {
+   /**
+    * True if the overlay is currently displayed.
+    */
+-  opened: boolean|null|undefined;
++  opened: boolean;
+
+   /**
+    * True if the overlay was canceled when it was last closed.
 diff --git a/components-chromium/paper-tooltip/paper-tooltip.d.ts b/components-chromium/paper-tooltip/paper-tooltip.d.ts
 index ed159e50ca1dd..7ef18f0bc7cc8 100644
 --- a/components-chromium/paper-tooltip/paper-tooltip.d.ts

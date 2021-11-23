@@ -23,6 +23,12 @@ declare global {
   }
 }
 
+export interface PrintPreviewDestinationDropdownCrosElement {
+  $: {
+    destinationDropdown: HTMLDivElement,
+  }
+}
+
 const PrintPreviewDestinationDropdownCrosElementBase =
     I18nMixin(PolymerElement);
 
@@ -82,6 +88,7 @@ export class PrintPreviewDestinationDropdownCrosElement extends
   disabled: boolean;
   driveDestinationKey: string;
   noDestinations: boolean;
+  pdfDestinationKey: string;
   pdfPrinterDisabled: boolean;
   destinationStatusText: string;
   private highlightedIndex_: number;
@@ -103,8 +110,7 @@ export class PrintPreviewDestinationDropdownCrosElement extends
   }
 
   focus() {
-    this.shadowRoot!.querySelector<HTMLElement>(
-                        '#destination-dropdown')!.focus();
+    this.$.destinationDropdown.focus();
   }
 
   private fireDropdownValueSelected_(element: Element) {
@@ -183,10 +189,10 @@ export class PrintPreviewDestinationDropdownCrosElement extends
   private onKeyDown_(event: KeyboardEvent) {
     event.stopPropagation();
     const dropdown = this.shadowRoot!.querySelector('iron-dropdown')!;
-    switch (event.code) {
+    switch (event.key) {
       case 'ArrowUp':
       case 'ArrowDown':
-        this.onArrowKeyPress_(event.code);
+        this.onArrowKeyPress_(event.key);
         break;
       case 'Enter': {
         if (dropdown.opened) {
@@ -207,7 +213,7 @@ export class PrintPreviewDestinationDropdownCrosElement extends
     }
   }
 
-  private onArrowKeyPress_(eventCode: string) {
+  private onArrowKeyPress_(eventKey: string) {
     const dropdown = this.shadowRoot!.querySelector('iron-dropdown')!;
     const items = this.getButtonListFromDropdown_();
     if (items.length === 0) {
@@ -219,7 +225,7 @@ export class PrintPreviewDestinationDropdownCrosElement extends
     // press to change the selected destination.
     if (dropdown.opened) {
       const nextIndex = this.getNextItemIndexInList_(
-          eventCode, this.highlightedIndex_, items.length);
+          eventKey, this.highlightedIndex_, items.length);
       if (nextIndex === -1) {
         return;
       }
@@ -230,7 +236,7 @@ export class PrintPreviewDestinationDropdownCrosElement extends
 
     const currentIndex = items.findIndex(item => item.value === this.value.key);
     const nextIndex =
-        this.getNextItemIndexInList_(eventCode, currentIndex, items.length);
+        this.getNextItemIndexInList_(eventKey, currentIndex, items.length);
     if (nextIndex === -1) {
       return;
     }
@@ -241,9 +247,9 @@ export class PrintPreviewDestinationDropdownCrosElement extends
    * @return -1 when the next item would be outside the list.
    */
   private getNextItemIndexInList_(
-      eventCode: string, currentIndex: number, numItems: number): number {
+      eventKey: string, currentIndex: number, numItems: number): number {
     const nextIndex =
-        eventCode === 'ArrowDown' ? currentIndex + 1 : currentIndex - 1;
+        eventKey === 'ArrowDown' ? currentIndex + 1 : currentIndex - 1;
     return nextIndex >= 0 && nextIndex < numItems ? nextIndex : -1;
   }
 
@@ -252,8 +258,7 @@ export class PrintPreviewDestinationDropdownCrosElement extends
     if (dropdownItem) {
       this.fireDropdownValueSelected_(dropdownItem);
     }
-    this.shadowRoot!.querySelector<HTMLElement>(
-                        '#destination-dropdown')!.focus();
+    this.$.destinationDropdown.focus();
   }
 
   /**
@@ -275,7 +280,7 @@ export class PrintPreviewDestinationDropdownCrosElement extends
    * being focusable.
    */
   private updateTabIndex_() {
-    this.shadowRoot!.querySelector('#destination-dropdown')!.setAttribute(
+    this.$.destinationDropdown.setAttribute(
         'tabindex', this.disabled ? '-1' : '0');
   }
 

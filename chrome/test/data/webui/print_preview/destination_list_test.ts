@@ -10,20 +10,19 @@ import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
-window.destination_list_test = {};
-const destination_list_test = window.destination_list_test;
-destination_list_test.suiteName = 'DestinationListTest';
-/** @enum {string} */
-destination_list_test.TestNames = {
-  FilterDestinations: 'FilterDestinations',
-  FireDestinationSelected: 'FireDestinationSelected',
+const destination_list_test = {
+  suiteName: 'DestinationListTest',
+  TestNames: {
+    FilterDestinations: 'FilterDestinations',
+    FireDestinationSelected: 'FireDestinationSelected',
+  },
 };
 
-suite(destination_list_test.suiteName, function() {
-  /** @type {!PrintPreviewDestinationListElement} */
-  let list;
+Object.assign(window, {destination_list_test: destination_list_test});
 
-  /** @override */
+suite(destination_list_test.suiteName, function() {
+  let list: PrintPreviewDestinationListElement;
+
   setup(function() {
     // Create destinations
     const destinations = [
@@ -52,8 +51,8 @@ suite(destination_list_test.suiteName, function() {
           <print-preview-destination-list id="testList" has-action-link=true
               loading-destinations=false list-name="test">
           </print-preview-destination-list>`;
-    list = /** @type {!PrintPreviewDestinationListElement} */ (
-        document.body.querySelector('#testList'));
+    list = document.body.querySelector<PrintPreviewDestinationListElement>(
+        '#testList')!;
     list.searchQuery = null;
     list.destinations = destinations;
     list.loadingDestinations = false;
@@ -63,16 +62,16 @@ suite(destination_list_test.suiteName, function() {
   // Tests that the list correctly shows and hides destinations based on the
   // value of the search query.
   test(assert(destination_list_test.TestNames.FilterDestinations), function() {
-    const items =
-        list.shadowRoot.querySelectorAll('print-preview-destination-list-item');
-    const noMatchHint =
-        list.shadowRoot.querySelector('.no-destinations-message');
+    const items = list.shadowRoot!.querySelectorAll(
+        'print-preview-destination-list-item');
+    const noMatchHint = list.shadowRoot!.querySelector<HTMLElement>(
+        '.no-destinations-message')!;
     const ironList = list.$.list;
 
     // Query is initialized to null. All items are shown and the hint is
     // hidden.
     assertFalse(ironList.hidden);
-    items.forEach(item => assertFalse(item.parentNode.hidden));
+    items.forEach(item => assertFalse((item.parentNode as HTMLElement).hidden));
     assertTrue(noMatchHint.hidden);
 
     // Searching for "e" should show "One", "Three", and "Five".
@@ -80,7 +79,7 @@ suite(destination_list_test.suiteName, function() {
     flush();
     assertFalse(ironList.hidden);
     assertEquals(undefined, Array.from(items).find(item => {
-      return !item.parentNode.hidden &&
+      return !(item.parentNode as HTMLElement).hidden &&
           (item.destination.displayName === 'Two' ||
            item.destination.displayName === 'Four');
     }));
@@ -91,7 +90,7 @@ suite(destination_list_test.suiteName, function() {
     flush();
     assertFalse(ironList.hidden);
     assertEquals(undefined, Array.from(items).find(item => {
-      return !item.parentNode.hidden &&
+      return !(item.parentNode as HTMLElement).hidden &&
           item.destination.displayName !== 'One' &&
           item.destination.displayName !== 'Three';
     }));
@@ -102,7 +101,7 @@ suite(destination_list_test.suiteName, function() {
     flush();
     assertFalse(ironList.hidden);
     assertEquals(undefined, Array.from(items).find(item => {
-      return !item.parentNode.hidden &&
+      return !(item.parentNode as HTMLElement).hidden &&
           item.destination.displayName !== 'Four' &&
           item.destination.displayName !== 'Five';
     }));
@@ -120,7 +119,7 @@ suite(destination_list_test.suiteName, function() {
     flush();
     assertFalse(ironList.hidden);
     assertEquals(undefined, Array.from(items).find(item => {
-      return !item.parentNode.hidden &&
+      return !(item.parentNode as HTMLElement).hidden &&
           (item.destination.displayName === 'One' ||
            item.destination.displayName === 'Two');
     }));
@@ -130,7 +129,8 @@ suite(destination_list_test.suiteName, function() {
     list.searchQuery = null;
     flush();
     assertFalse(ironList.hidden);
-    items.forEach(item => assertFalse(item.parentNode.hidden));
+    items.forEach(
+        item => assertFalse((item!.parentNode! as HTMLElement).hidden));
     assertTrue(noMatchHint.hidden);
   });
 
@@ -139,21 +139,21 @@ suite(destination_list_test.suiteName, function() {
   test(
       assert(destination_list_test.TestNames.FireDestinationSelected),
       function() {
-        const items = list.shadowRoot.querySelectorAll(
+        const items = list.shadowRoot!.querySelectorAll(
             'print-preview-destination-list-item');
         let whenDestinationSelected =
             eventToPromise('destination-selected', list);
-        items[0].click();
+        items[0]!.click();
         return whenDestinationSelected
             .then(event => {
-              assertEquals(items[0], event.detail);
+              assertEquals(items[0]!, event.detail);
               whenDestinationSelected =
                   eventToPromise('destination-selected', list);
-              keyEventOn(items[1], 'keydown', 13, undefined, 'Enter');
+              keyEventOn(items[1]!, 'keydown', 13, undefined, 'Enter');
               return whenDestinationSelected;
             })
             .then(event => {
-              assertEquals(items[1], event.detail);
+              assertEquals(items[1]!, event.detail);
             });
       });
 });
