@@ -330,12 +330,11 @@ void ExtensionKeyPermissionsService::KeyEntriesFromState(
     const base::Value& state) {
   state_store_entries_.clear();
 
-  const base::ListValue* entries = nullptr;
-  if (!state.GetAsList(&entries)) {
+  if (!state.is_list()) {
     LOG(ERROR) << "Found a state store of wrong type.";
     return;
   }
-  for (const auto& entry : entries->GetList()) {
+  for (const auto& entry : state.GetList()) {
     std::string spki_b64;
     const base::DictionaryValue* dict_entry = nullptr;
     if (entry.GetAsString(&spki_b64)) {

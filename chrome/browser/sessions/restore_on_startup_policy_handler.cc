@@ -56,9 +56,8 @@ bool RestoreOnStartupPolicyHandler::CheckPolicySettings(
         // session is not cleared so we have to warn the user in that case.
         const base::Value* cookies_policy =
             policies.GetValue(key::kCookiesSessionOnlyForUrls);
-        const base::ListValue* cookies_value;
-        if (cookies_policy && cookies_policy->GetAsList(&cookies_value) &&
-            !cookies_value->GetList().empty()) {
+        if (cookies_policy && cookies_policy->is_list() &&
+            !cookies_policy->GetList().empty()) {
           errors->AddError(key::kCookiesSessionOnlyForUrls,
                            IDS_POLICY_OVERRIDDEN,
                            key::kRestoreOnStartup);

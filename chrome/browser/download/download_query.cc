@@ -70,16 +70,14 @@ bool GetAs(const base::Value& in, std::u16string* out) {
 template <>
 bool GetAs(const base::Value& in, std::vector<std::u16string>* out) {
   out->clear();
-  const base::ListValue* list = NULL;
-  if (!in.GetAsList(&list))
+  if (!in.is_list())
     return false;
-  for (size_t i = 0; i < list->GetList().size(); ++i) {
-    std::u16string element;
-    if (!list->GetString(i, &element)) {
+  for (const auto& value : in.GetList()) {
+    if (!value.is_string()) {
       out->clear();
       return false;
     }
-    out->push_back(element);
+    out->push_back(base::UTF8ToUTF16(value.GetString()));
   }
   return true;
 }
