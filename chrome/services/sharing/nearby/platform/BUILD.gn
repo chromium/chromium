@@ -54,6 +54,8 @@ source_set("platform") {
     "system_clock.cc",
     "webrtc.cc",
     "webrtc.h",
+    "wifi_lan_server_socket.cc",
+    "wifi_lan_server_socket.h",
     "wifi_lan_socket.cc",
     "wifi_lan_socket.h",
   ]
@@ -95,6 +97,8 @@ source_set("unit_tests") {
     "crypto_unittest.cc",
     "fake_tcp_connected_socket.cc",
     "fake_tcp_connected_socket.h",
+    "fake_tcp_server_socket.cc",
+    "fake_tcp_server_socket.h",
     "input_file_unittest.cc",
     "input_stream_impl_unittest.cc",
     "multi_thread_executor_unittest.cc",
@@ -104,6 +108,7 @@ source_set("unit_tests") {
     "scheduled_executor_unittest.cc",
     "single_thread_executor_unittest.cc",
     "webrtc_test.cc",
+    "wifi_lan_server_socket_unittest.cc",
     "wifi_lan_socket_unittest.cc",
   ]
 
