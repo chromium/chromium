@@ -106,6 +106,9 @@ class CORE_EXPORT OffscreenCanvas final
     allow_high_performance_power_preference_ = true;
   }
 
+  DEFINE_ATTRIBUTE_EVENT_LISTENER(contextlost, kContextlost)
+  DEFINE_ATTRIBUTE_EVENT_LISTENER(contextrestored, kContextrestored)
+
   // CanvasRenderingContextHost implementation.
   void PreFinalizeFrame() override {}
   void PostFinalizeFrame() override {}

@@ -6,7 +6,7 @@
 
 [
     Exposed=(Window,Worker),
-    Transferable    
+    Transferable
 ] interface OffscreenCanvas : EventTarget {
     [CallWith=ExecutionContext, MeasureAs=OffscreenCanvas] constructor([EnforceRange] unsigned long width, [EnforceRange] unsigned long height);
     attribute [EnforceRange] unsigned long width;
@@ -14,4 +14,7 @@
 
     [CallWith=ScriptState, HighEntropy, MeasureAs=OffscreenCanvasTransferToImageBitmap, RaisesException] ImageBitmap transferToImageBitmap();
     [CallWith=ScriptState, HighEntropy, MeasureAs=OffscreenCanvasConvertToBlob, RaisesException] Promise<Blob> convertToBlob(optional ImageEncodeOptions options = {});
+
+    [RuntimeEnabled=NewCanvas2DAPI] attribute EventHandler oncontextlost;
+    [RuntimeEnabled=NewCanvas2DAPI] attribute EventHandler oncontextrestored;
 };

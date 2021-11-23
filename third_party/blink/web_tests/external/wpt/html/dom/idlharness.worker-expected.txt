@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 816 tests; 804 PASS, 12 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 816 tests; 806 PASS, 10 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS idl_test setup
 PASS idl_test validation
 PASS Partial interface Document: original interface defined
@@ -332,8 +332,8 @@ PASS OffscreenCanvas interface: attribute height
 PASS OffscreenCanvas interface: operation getContext(OffscreenRenderingContextId, optional any)
 PASS OffscreenCanvas interface: operation transferToImageBitmap()
 PASS OffscreenCanvas interface: operation convertToBlob(optional ImageEncodeOptions)
-FAIL OffscreenCanvas interface: attribute oncontextlost assert_true: The prototype object must have a property "oncontextlost" expected true got false
-FAIL OffscreenCanvas interface: attribute oncontextrestored assert_true: The prototype object must have a property "oncontextrestored" expected true got false
+PASS OffscreenCanvas interface: attribute oncontextlost
+PASS OffscreenCanvas interface: attribute oncontextrestored
 PASS OffscreenCanvasRenderingContext2D interface: existence and properties of interface object
 PASS OffscreenCanvasRenderingContext2D interface object length
 PASS OffscreenCanvasRenderingContext2D interface object name

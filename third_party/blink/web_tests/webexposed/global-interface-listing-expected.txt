@@ -1815,7 +1815,9 @@ interface Document : Node
     getter onchange
     getter onclick
     getter onclose
+    getter oncontextlost
     getter oncontextmenu
+    getter oncontextrestored
     getter oncopy
     getter oncuechange
     getter oncut
@@ -2018,7 +2020,9 @@ interface Document : Node
     setter onchange
     setter onclick
     setter onclose
+    setter oncontextlost
     setter oncontextmenu
+    setter oncontextrestored
     setter oncopy
     setter oncuechange
     setter oncut
@@ -3206,7 +3210,9 @@ interface HTMLElement : Element
     getter onchange
     getter onclick
     getter onclose
+    getter oncontextlost
     getter oncontextmenu
+    getter oncontextrestored
     getter oncopy
     getter oncuechange
     getter oncut
@@ -3328,7 +3334,9 @@ interface HTMLElement : Element
     setter onchange
     setter onclick
     setter onclose
+    setter oncontextlost
     setter oncontextmenu
+    setter oncontextrestored
     setter oncopy
     setter oncuechange
     setter oncut
@@ -5094,7 +5102,9 @@ interface MathMLElement : Element
     getter onchange
     getter onclick
     getter onclose
+    getter oncontextlost
     getter oncontextmenu
+    getter oncontextrestored
     getter oncopy
     getter oncuechange
     getter oncut
@@ -5198,7 +5208,9 @@ interface MathMLElement : Element
     setter onchange
     setter onclick
     setter onclose
+    setter oncontextlost
     setter oncontextmenu
+    setter oncontextrestored
     setter oncopy
     setter oncuechange
     setter oncut
@@ -5987,12 +5999,16 @@ interface OfflineAudioContext : BaseAudioContext
 interface OffscreenCanvas : EventTarget
     attribute @@toStringTag
     getter height
+    getter oncontextlost
+    getter oncontextrestored
     getter width
     method constructor
     method convertToBlob
     method getContext
     method transferToImageBitmap
     setter height
+    setter oncontextlost
+    setter oncontextrestored
     setter width
 interface OffscreenCanvasRenderingContext2D
     attribute @@toStringTag
@@ -7220,7 +7236,9 @@ interface SVGElement : Element
     getter onchange
     getter onclick
     getter onclose
+    getter oncontextlost
     getter oncontextmenu
+    getter oncontextrestored
     getter oncopy
     getter oncuechange
     getter oncut
@@ -7326,7 +7344,9 @@ interface SVGElement : Element
     setter onchange
     setter onclick
     setter onclose
+    setter oncontextlost
     setter oncontextmenu
+    setter oncontextrestored
     setter oncopy
     setter oncuechange
     setter oncut
@@ -11419,7 +11439,9 @@ namespace CSS
     getter onchange
     getter onclick
     getter onclose
+    getter oncontextlost
     getter oncontextmenu
+    getter oncontextrestored
     getter oncuechange
     getter ondblclick
     getter ondevicemotion
@@ -11637,7 +11659,9 @@ namespace CSS
     setter onchange
     setter onclick
     setter onclose
+    setter oncontextlost
     setter oncontextmenu
+    setter oncontextrestored
     setter oncuechange
     setter ondblclick
     setter ondevicemotion

@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 1459 tests; 1420 PASS, 39 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 1459 tests; 1422 PASS, 37 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS idl_test setup
 PASS idl_test validation
 PASS Partial interface Document: original interface defined
@@ -1374,9 +1374,9 @@ PASS SVGElement interface: attribute oncanplaythrough
 PASS SVGElement interface: attribute onchange
 PASS SVGElement interface: attribute onclick
 PASS SVGElement interface: attribute onclose
-FAIL SVGElement interface: attribute oncontextlost assert_true: The prototype object must have a property "oncontextlost" expected true got false
+PASS SVGElement interface: attribute oncontextlost
 PASS SVGElement interface: attribute oncontextmenu
-FAIL SVGElement interface: attribute oncontextrestored assert_true: The prototype object must have a property "oncontextrestored" expected true got false
+PASS SVGElement interface: attribute oncontextrestored
 PASS SVGElement interface: attribute oncuechange
 PASS SVGElement interface: attribute ondblclick
 PASS SVGElement interface: attribute ondrag

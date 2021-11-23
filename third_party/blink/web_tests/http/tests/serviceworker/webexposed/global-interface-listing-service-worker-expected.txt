@@ -955,12 +955,16 @@ interface NotificationEvent : ExtendableEvent
 interface OffscreenCanvas : EventTarget
     attribute @@toStringTag
     getter height
+    getter oncontextlost
+    getter oncontextrestored
     getter width
     method constructor
     method convertToBlob
     method getContext
     method transferToImageBitmap
     setter height
+    setter oncontextlost
+    setter oncontextrestored
     setter width
 interface OffscreenCanvasRenderingContext2D
     attribute @@toStringTag

@@ -1015,12 +1015,16 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker] interface OffscreenCanvas : EventTarget
 [Worker]     attribute @@toStringTag
 [Worker]     getter height
+[Worker]     getter oncontextlost
+[Worker]     getter oncontextrestored
 [Worker]     getter width
 [Worker]     method constructor
 [Worker]     method convertToBlob
 [Worker]     method getContext
 [Worker]     method transferToImageBitmap
 [Worker]     setter height
+[Worker]     setter oncontextlost
+[Worker]     setter oncontextrestored
 [Worker]     setter width
 [Worker] interface OffscreenCanvasRenderingContext2D
 [Worker]     attribute @@toStringTag
