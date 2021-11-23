@@ -36,8 +36,6 @@ class GURL;
                            DefaultPromoCommands>
 
 // Closes the current tab.
-// TODO(crbug.com/1272498): Refactor this command away; call sites should close
-// via the WebStateList.
 - (void)closeCurrentTab;
 
 // Bookmarks the current page.
@@ -45,7 +43,6 @@ class GURL;
 - (void)bookmarkCurrentPage;
 
 // Adds a page to the reading list using data in |command|.
-// TODO(crbug.com/1272540): Remove this command.
 - (void)addToReadingList:(ReadingListAddCommand*)command;
 
 // Shows an IPH pointing to where the Reading List entry point is, if
@@ -70,8 +67,6 @@ class GURL;
 // Shows the dialog for sending the current tab between a user's devices.
 - (void)showSendTabToSelfUI;
 
-// TODO(crbug.com/1272497): Move requestDesktopSite and requestMobileSite to the
-// WebNavigationBrowserAgent, eliminating them as commands.
 // Requests the "desktop" version of the current page in the active tab.
 - (void)requestDesktopSite;
 

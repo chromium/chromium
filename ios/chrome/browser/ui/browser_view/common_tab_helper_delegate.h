@@ -19,21 +19,14 @@
 // This protocol is scaffolding for refactoring these delegate responsibilities
 // out of the BVC. The goal is to reduce the number of these delegate protocols
 // that the BVC conforms to to zero.
-@protocol CommonTabHelperDelegate <
-    BubblePresenterDelegate,
-    // TODO(crbug.com/1272473): Factor this out of the BVC.
-    CaptivePortalDetectorTabHelperDelegate,
-    // TODO(crbug.com/1272476): Factor this out of the BVC.
-    ManageAccountsDelegate,
-    // TODO(crbug.com/1272483): Factor this out of the BVC.
-    NetExportTabHelperDelegate,
-    // TODO(crbug.com/1173610): Factor this out of the BVC.
-    NewTabPageTabHelperDelegate,
-    OverscrollActionsControllerDelegate,
-    // TODO(crbug.com/1272487): Factor this out of the BVC.
-    PasswordControllerDelegate,
-    // TODO(crbug.com/1272491): Factor this out of the BVC.
-    SnapshotGeneratorDelegate>
+@protocol CommonTabHelperDelegate <BubblePresenterDelegate,
+                                   CaptivePortalDetectorTabHelperDelegate,
+                                   ManageAccountsDelegate,
+                                   NetExportTabHelperDelegate,
+                                   NewTabPageTabHelperDelegate,
+                                   OverscrollActionsControllerDelegate,
+                                   PasswordControllerDelegate,
+                                   SnapshotGeneratorDelegate>
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_BROWSER_VIEW_COMMON_TAB_HELPER_DELEGATE_H_
