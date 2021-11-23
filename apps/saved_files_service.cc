@@ -128,8 +128,8 @@ std::vector<SavedFileEntry> GetSavedFileEntries(
         base::ValueToFilePath(*path_value);
     if (!file_path)
       continue;
-    bool is_directory = false;
-    file_entry->GetBoolean(kFileEntryIsDirectory, &is_directory);
+    bool is_directory =
+        file_entry->FindBoolPath(kFileEntryIsDirectory).value_or(false);
     int sequence_number = 0;
     if (!file_entry->GetInteger(kFileEntrySequenceNumber, &sequence_number))
       continue;
