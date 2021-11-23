@@ -117,8 +117,7 @@ void ElementInternals::setValidity(ValidityStateFlags* flags,
   // Custom element authors should provide a message. They can omit the message
   // argument only if nothing if | flags| is true.
   if (!IsValidityStateFlagsValid(flags) && message.IsEmpty()) {
-    exception_state.ThrowDOMException(
-        DOMExceptionCode::kTypeMismatchError,
+    exception_state.ThrowTypeError(
         "The second argument should not be empty if one or more flags in the "
         "first argument are true.");
     return;

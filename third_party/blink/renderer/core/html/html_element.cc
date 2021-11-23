@@ -755,14 +755,18 @@ const AtomicString& HTMLElement::EventNameForAttributeName(
 void HTMLElement::AttributeChanged(const AttributeModificationParams& params) {
   Element::AttributeChanged(params);
   if (params.name == html_names::kDisabledAttr &&
+      IsFormAssociatedCustomElement() &&
       params.old_value.IsNull() != params.new_value.IsNull()) {
-    if (IsFormAssociatedCustomElement()) {
-      EnsureElementInternals().DisabledAttributeChanged();
-      if (params.reason == AttributeModificationReason::kDirectly &&
-          IsDisabledFormControl() &&
-          AdjustedFocusedElementInTreeScope() == this)
-        blur();
-    }
+    EnsureElementInternals().DisabledAttributeChanged();
+    if (params.reason == AttributeModificationReason::kDirectly &&
+        IsDisabledFormControl() && AdjustedFocusedElementInTreeScope() == this)
+      blur();
+    return;
+  }
+  if (params.name == html_names::kReadonlyAttr &&
+      IsFormAssociatedCustomElement() &&
+      params.old_value.IsNull() != params.new_value.IsNull()) {
+    EnsureElementInternals().ReadonlyAttributeChanged();
     return;
   }
   if (params.reason != AttributeModificationReason::kDirectly)

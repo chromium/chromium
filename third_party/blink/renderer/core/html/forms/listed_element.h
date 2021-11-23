@@ -137,6 +137,8 @@ class CORE_EXPORT ListedElement : public GarbageCollectedMixin {
 
   // This should be called when |disabled| content attribute is changed.
   virtual void DisabledAttributeChanged();
+  // This should be called when |readonly| content attribute is changed.
+  void ReadonlyAttributeChanged();
   // Override this if you want to know 'disabled' state changes immediately.
   virtual void DisabledStateMightBeChanged() {}
   // This should be called when |form| content attribute is changed.

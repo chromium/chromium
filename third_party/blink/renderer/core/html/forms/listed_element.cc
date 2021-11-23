@@ -592,6 +592,10 @@ void ListedElement::DisabledAttributeChanged() {
   DisabledStateMightBeChanged();
 }
 
+void ListedElement::ReadonlyAttributeChanged() {
+  UpdateWillValidateCache();
+}
+
 void ListedElement::UpdateAncestorDisabledState() const {
   if (!may_have_field_set_ancestor_) {
     ancestor_disabled_state_ = AncestorDisabledState::kEnabled;
