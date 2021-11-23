@@ -614,91 +614,12 @@ class WebAppDeclarativeLinkCapturingOriginTrialBrowserTest
   base::test::ScopedFeatureList features_;
 };
 
-namespace {
-
-// Using localhost to avoid the HTTPS requirement for InstallableManager to even
-// load the manifest.
-constexpr char kTestWebAppUrl[] = "http://127.0.0.1:8000/";
-constexpr char kTestWebAppHeaders[] =
-    "HTTP/1.1 200 OK\nContent-Type: text/html; charset=utf-8\n";
-constexpr char kTestWebAppBody[] = R"(
-  <!DOCTYPE html>
-  <head>
-    <link rel="manifest" href="manifest.webmanifest">
-    <meta http-equiv="origin-trial" content="$1">
-  </head>
-)";
-
-constexpr char kTestIconUrl[] = "http://127.0.0.1:8000/icon.png";
-constexpr char kTestManifestUrl[] =
-    "http://127.0.0.1:8000/manifest.webmanifest";
-constexpr char kTestManifestHeaders[] =
-    "HTTP/1.1 200 OK\nContent-Type: application/json; charset=utf-8\n";
-constexpr char kTestManifestBody[] = R"({
-  "name": "Test app",
-  "display": "standalone",
-  "start_url": "/",
-  "scope": "/",
-  "icons": [{
-    "src": "icon.png",
-    "sizes": "192x192",
-    "type": "image/png"
-  }],
-  "capture_links": "new-client"
-})";
-
-// Generated from script:
-// $ tools/origin_trials/generate_token.py http://127.0.0.1:8000 \
-// WebAppLinkCapturing --expire-timestamp=2000000000
-constexpr char kOriginTrialToken[] =
-    "A9FvND2pz57gueYZNHgjh4f5vPfcFyck04vOsOOO+OMqj2naHRG9RwO92Vv1C/"
-    "X32R39B+"
-    "EaMCn7r3imGvWVvAsAAABbeyJvcmlnaW4iOiAiaHR0cDovLzEyNy4wLjAuMTo4MDAwIiwgIm"
-    "ZlYXR1cmUiOiAiV2ViQXBwTGlua0NhcHR1cmluZyIsICJleHBpcnkiOiAyMDAwMDAwMDAwfQ"
-    "==";
-
-}  // namespace
-
-// The origin trial migration is not needed in Lacros as it will be removed
-// long before Lacros ships.
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#define MAYBE_OriginTrialDisabled DISABLED_OriginTrialDisabled
-#else
-#define MAYBE_OriginTrialDisabled OriginTrialDisabled
-#endif
-// Tests that the DLC origin trial works and that we can migrate off it into
-// the intent handling persistence user preference model seamlessly.
+// Tests that the DLC origin trial has been disabled from M98.
 IN_PROC_BROWSER_TEST_F(WebAppDeclarativeLinkCapturingOriginTrialBrowserTest,
-                       MAYBE_OriginTrialDisabled) {
-  ManifestUpdateTask::BypassWindowCloseWaitingForTesting() = true;
-
-  content::URLLoaderInterceptor interceptor(base::BindLambdaForTesting(
-      [](content::URLLoaderInterceptor::RequestParams* params) -> bool {
-        if (params->url_request.url.spec() == kTestWebAppUrl) {
-          content::URLLoaderInterceptor::WriteResponse(
-              kTestWebAppHeaders,
-              base::ReplaceStringPlaceholders(kTestWebAppBody,
-                                              {kOriginTrialToken}, nullptr),
-              params->client.get());
-          return true;
-        }
-
-        if (params->url_request.url.spec() == kTestManifestUrl) {
-          content::URLLoaderInterceptor::WriteResponse(
-              kTestManifestHeaders, kTestManifestBody, params->client.get());
-          return true;
-        }
-
-        if (params->url_request.url.spec() == kTestIconUrl) {
-          content::URLLoaderInterceptor::WriteResponse(
-              "chrome/test/data/web_apps/basic-192.png", params->client.get());
-          return true;
-        }
-
-        return false;
-      }));
-
-  InstallTestApp(GURL(kTestWebAppUrl), /*await_metric=*/false);
+                       OriginTrialDisabled) {
+  InstallTestApp(embedded_test_server()->GetURL(
+                     "/web_apps/capture_links_origin_trial.html"),
+                 /*await_metric=*/false);
 
   // The origin trial is not available as of M98:
   // https://groups.google.com/a/chromium.org/g/blink-dev/c/2c4bul4V3GQ/m/Anluh1txBQAJ
