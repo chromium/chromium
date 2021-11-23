@@ -119,7 +119,6 @@ IN_PROC_BROWSER_TEST_F(TwoClientSendTabToSelfSyncTest, IsActive) {
   EXPECT_TRUE(send_tab_to_self_helper::SendTabToSelfActiveChecker(
                   SendTabToSelfSyncServiceFactory::GetForProfile(GetProfile(0)))
                   .Wait());
-  EXPECT_TRUE(send_tab_to_self::IsUserSyncTypeActive(GetProfile(0)));
 }
 
 IN_PROC_BROWSER_TEST_F(TwoClientSendTabToSelfSyncTest,
@@ -227,8 +226,12 @@ IN_PROC_BROWSER_TEST_F(TwoClientSendTabToSelfSyncTest,
 
   EXPECT_EQ(1u, profile1_target_devices.size());
   EXPECT_EQ(1u, profile2_target_devices.size());
-  EXPECT_TRUE(send_tab_to_self::HasValidTargetDevice(GetProfile(0)));
-  EXPECT_TRUE(send_tab_to_self::HasValidTargetDevice(GetProfile(1)));
+  EXPECT_TRUE(SendTabToSelfSyncServiceFactory::GetForProfile(GetProfile(0))
+                  ->GetSendTabToSelfModel()
+                  ->HasValidTargetDevice());
+  EXPECT_TRUE(SendTabToSelfSyncServiceFactory::GetForProfile(GetProfile(1))
+                  ->GetSendTabToSelfModel()
+                  ->HasValidTargetDevice());
 }
 
 IN_PROC_BROWSER_TEST_F(TwoClientSendTabToSelfSyncTest,

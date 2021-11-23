@@ -73,6 +73,7 @@
 #include "chrome/browser/sharing/shared_clipboard/shared_clipboard_context_menu_observer.h"
 #include "chrome/browser/sharing/shared_clipboard/shared_clipboard_utils.h"
 #include "chrome/browser/spellchecker/spellcheck_service.h"
+#include "chrome/browser/sync/send_tab_to_self_sync_service_factory.h"
 #include "chrome/browser/translate/chrome_translate_client.h"
 #include "chrome/browser/translate/translate_service.h"
 #include "chrome/browser/ui/autofill/chrome_autofill_client.h"
@@ -1407,9 +1408,11 @@ void RenderViewContextMenu::AppendLinkItems() {
     if (!ShouldUseShareMenu() && params_.has_image_contents)
       AppendQRCodeGeneratorItem(/*for_image=*/true, /*draw_icon=*/true);
 
-    if (browser && !ShouldUseShareMenu() &&
-        send_tab_to_self::ShouldOfferFeatureForLink(active_web_contents,
-                                                    params_.link_url)) {
+    const bool should_offer_to_share_url =
+        send_tab_to_self::ShouldOfferToShareUrl(
+            SendTabToSelfSyncServiceFactory::GetForProfile(profile),
+            params_.link_url);
+    if (browser && !ShouldUseShareMenu() && should_offer_to_share_url) {
       if (send_tab_to_self::GetValidDeviceCount(GetBrowser()->profile()) == 1) {
 #if defined(OS_MAC)
         menu_model_.AddItem(IDC_CONTENT_LINK_SEND_TAB_TO_SELF_SINGLE_TARGET,
@@ -2381,6 +2384,8 @@ bool RenderViewContextMenu::IsCommandIdEnabled(int id) const {
     case IDC_CONTENT_CONTEXT_LANGUAGE_SETTINGS:
     case IDC_SEND_TAB_TO_SELF:
     case IDC_SEND_TAB_TO_SELF_SINGLE_TARGET:
+    case IDC_CONTENT_LINK_SEND_TAB_TO_SELF:
+    case IDC_CONTENT_LINK_SEND_TAB_TO_SELF_SINGLE_TARGET:
       return true;
 
     case IDC_CONTENT_CONTEXT_LENS_REGION_SEARCH:
@@ -2394,11 +2399,6 @@ bool RenderViewContextMenu::IsCommandIdEnabled(int id) const {
 
     case IDC_CONTENT_CONTEXT_SHARING_SUBMENU:
       return true;
-
-    case IDC_CONTENT_LINK_SEND_TAB_TO_SELF:
-    case IDC_CONTENT_LINK_SEND_TAB_TO_SELF_SINGLE_TARGET:
-      return send_tab_to_self::AreContentRequirementsMet(
-          params_.link_url, GetBrowser()->profile());
 
     case IDC_CHECK_SPELLING_WHILE_TYPING:
       return prefs->GetBoolean(spellcheck::prefs::kSpellCheckEnable);

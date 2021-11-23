@@ -126,7 +126,7 @@ IN_PROC_BROWSER_TEST_F(LocalSyncTest, ShouldStart) {
   EXPECT_FALSE(service->GetActiveDataTypes().Has(syncer::SECURITY_EVENTS));
   EXPECT_FALSE(service->GetActiveDataTypes().Has(syncer::SEND_TAB_TO_SELF));
   EXPECT_FALSE(service->GetActiveDataTypes().Has(syncer::SHARING_MESSAGE));
-  EXPECT_FALSE(send_tab_to_self::IsUserSyncTypeActive(browser()->profile()));
+  EXPECT_FALSE(service->GetActiveDataTypes().Has(syncer::SEND_TAB_TO_SELF));
 }
 #endif  // defined(OS_WIN) || defined(OS_MAC) || (defined(OS_LINUX) ||
         // BUILDFLAG(IS_CHROMEOS_LACROS))

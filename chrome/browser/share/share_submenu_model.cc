@@ -15,6 +15,7 @@
 #include "chrome/browser/sharing_hub/sharing_hub_model.h"
 #include "chrome/browser/sharing_hub/sharing_hub_service.h"
 #include "chrome/browser/sharing_hub/sharing_hub_service_factory.h"
+#include "chrome/browser/sync/send_tab_to_self_sync_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/qrcode_generator/qrcode_generator_bubble_controller.h"
 #include "chrome/browser/ui/send_tab_to_self/send_tab_to_self_bubble_controller.h"
@@ -166,7 +167,9 @@ void ShareSubmenuModel::AddSendTabToSelfItem() {
   if (!browser_)
     return;
 
-  if (!send_tab_to_self::ShouldOfferFeatureForPage(browser_->profile(), url_))
+  send_tab_to_self::SendTabToSelfSyncService* service =
+      SendTabToSelfSyncServiceFactory::GetForProfile(browser_->profile());
+  if (!send_tab_to_self::ShouldOfferToShareUrl(service, url_))
     return;
 
   // Only offer STTS when the context is actually the entire page; STTS can't
