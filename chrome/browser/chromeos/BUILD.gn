@@ -1673,6 +1673,8 @@ source_set("chromeos") {
     "../ash/input_method/ui/candidate_window_constants.h",
     "../ash/input_method/ui/candidate_window_view.cc",
     "../ash/input_method/ui/candidate_window_view.h",
+    "../ash/input_method/ui/colors.cc",
+    "../ash/input_method/ui/colors.h",
     "../ash/input_method/ui/grammar_suggestion_window.cc",
     "../ash/input_method/ui/grammar_suggestion_window.h",
     "../ash/input_method/ui/infolist_window.cc",

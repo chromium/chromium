@@ -7,6 +7,7 @@
 
 #include "base/gtest_prod_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/chromeos/styles/cros_styles.h"
 #include "ui/chromeos/ui_chromeos_export.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/label.h"
@@ -37,11 +38,8 @@ constexpr int kAnnotationPaddingLeft = 12;
 constexpr int kAnnotationPaddingBottom = 16;
 constexpr int kAnnotationPaddingTop = 6;
 constexpr char kTabKey[] = "tab";
-constexpr SkColor kConfirmedTextColor = gfx::kGoogleGrey900;
-constexpr SkColor kSuggestionColor =
-    SkColorSetA(gfx::kGoogleGrey700, 0xB3);  // 70% opacity
-constexpr SkColor kButtonHighlightColor =
-    SkColorSetA(SK_ColorBLACK, 0x0F);  // 6% Black.
+constexpr cros_styles::ColorName kButtonHighlightColor =
+    cros_styles::ColorName::kRippleColor;
 
 // SuggestionView renders a suggestion.
 class UI_CHROMEOS_EXPORT SuggestionView : public views::Button {
@@ -78,8 +76,7 @@ class UI_CHROMEOS_EXPORT SuggestionView : public views::Button {
   // child views will be deleted when |this| is deleted.
 
   void SetSuggestionText(const std::u16string& text,
-                         const size_t confirmed_length,
-                         SkColor text_color);
+                         const size_t confirmed_length);
 
   views::Label* index_label_ = nullptr;
   // The suggestion label renders suggestions.

@@ -5,8 +5,10 @@
 #include "chrome/browser/ash/input_method/ui/grammar_suggestion_window.h"
 
 #include "chrome/browser/ash/input_method/ui/border_factory.h"
+#include "chrome/browser/ash/input_method/ui/colors.h"
 #include "chrome/browser/ash/input_method/ui/suggestion_details.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/chromeos/styles/cros_styles.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/bubble/bubble_border.h"
@@ -21,7 +23,6 @@ namespace ime {
 
 namespace {
 
-constexpr SkColor kGrammarColor = gfx::kGoogleGrey700;
 constexpr int kGrammarPaddingSize = 4;
 constexpr float kSuggestionBorderRadius = 2;
 // Large enough to make the background a circle.
@@ -81,10 +82,10 @@ GrammarSuggestionWindow::GrammarSuggestionWindow(gfx::NativeView parent,
 
   // Highlights buttons when they are hovered or pressed.
   const auto update_button_highlight = [](views::Button* button) {
-    button->SetBackground(
-        ShouldHighlight(*button)
-            ? views::CreateSolidBackground(kButtonHighlightColor)
-            : nullptr);
+    button->SetBackground(ShouldHighlight(*button)
+                              ? views::CreateSolidBackground(
+                                    ResolveSemanticColor(kButtonHighlightColor))
+                              : nullptr);
   };
   subscriptions_.insert(
       {suggestion_button_,
@@ -105,7 +106,9 @@ void GrammarSuggestionWindow::OnThemeChanged() {
 
   ignore_button_->SetImage(
       views::Button::ButtonState::STATE_NORMAL,
-      gfx::CreateVectorIcon(views::kCloseIcon, kGrammarColor));
+      gfx::CreateVectorIcon(
+          views::kCloseIcon,
+          ResolveSemanticColor(cros_styles::ColorName::kTextColorPrimary)));
 
   BubbleDialogDelegateView::OnThemeChanged();
 }
@@ -131,10 +134,7 @@ void GrammarSuggestionWindow::Hide() {
 }
 
 void GrammarSuggestionWindow::SetSuggestion(const std::u16string& suggestion) {
-  suggestion_button_->SetView(SuggestionDetails{
-      .text = suggestion,
-      .text_color = kGrammarColor,
-  });
+  suggestion_button_->SetView(SuggestionDetails{.text = suggestion});
 }
 
 void GrammarSuggestionWindow::SetButtonHighlighted(
@@ -151,11 +151,12 @@ void GrammarSuggestionWindow::SetButtonHighlighted(
     switch (button.id) {
       case ButtonId::kSuggestion:
         suggestion_button_->SetBackground(views::CreateRoundedRectBackground(
-            kButtonHighlightColor, kSuggestionBorderRadius));
+            ResolveSemanticColor(kButtonHighlightColor),
+            kSuggestionBorderRadius));
         break;
       case ButtonId::kIgnoreSuggestion:
         ignore_button_->SetBackground(views::CreateRoundedRectBackground(
-            kButtonHighlightColor, kIconBorderRadius));
+            ResolveSemanticColor(kButtonHighlightColor), kIconBorderRadius));
         break;
       default:
         break;

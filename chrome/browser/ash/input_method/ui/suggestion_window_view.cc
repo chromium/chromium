@@ -13,6 +13,7 @@
 #include "chrome/browser/ash/input_method/assistive_window_properties.h"
 #include "chrome/browser/ash/input_method/ui/assistive_delegate.h"
 #include "chrome/browser/ash/input_method/ui/border_factory.h"
+#include "chrome/browser/ash/input_method/ui/colors.h"
 #include "chrome/browser/ash/input_method/ui/suggestion_details.h"
 #include "chrome/browser/ash/input_method/ui/suggestion_view.h"
 #include "chrome/grit/generated_resources.h"
@@ -56,7 +57,8 @@ bool ShouldHighlight(const views::Button& button) {
 void SetHighlighted(views::View& view, bool highlighted) {
   if (!!view.background() != highlighted) {
     view.SetBackground(highlighted
-                           ? views::CreateSolidBackground(kButtonHighlightColor)
+                           ? views::CreateSolidBackground(
+                                 ResolveSemanticColor(kButtonHighlightColor))
                            : nullptr);
   }
 }
