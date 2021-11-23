@@ -18,6 +18,7 @@
 #include "base/mac/foundation_util.h"
 #include "base/mac/scoped_cftyperef.h"
 #include "base/notreached.h"
+#include "base/numerics/ostream_operators.h"
 #include "base/numerics/safe_math.h"
 #include "base/strings/sys_string_conversions.h"
 #include "chrome/utility/safe_browsing/mac/convert_big_endian.h"

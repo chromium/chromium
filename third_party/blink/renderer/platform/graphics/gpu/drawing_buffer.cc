@@ -37,6 +37,7 @@
 #include "base/logging.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/numerics/checked_math.h"
+#include "base/numerics/ostream_operators.h"
 #include "build/build_config.h"
 #include "cc/layers/texture_layer.h"
 #include "components/viz/common/resources/bitmap_allocation.h"

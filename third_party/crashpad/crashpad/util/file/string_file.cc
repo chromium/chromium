@@ -20,6 +20,7 @@
 #include <limits>
 
 #include "base/logging.h"
+#include "base/numerics/ostream_operators.h"
 #include "base/numerics/safe_math.h"
 #include "util/misc/implicit_cast.h"
 #include "util/numeric/safe_assignment.h"

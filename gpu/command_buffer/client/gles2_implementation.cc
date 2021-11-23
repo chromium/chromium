@@ -27,6 +27,7 @@
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/cxx17_backports.h"
+#include "base/numerics/ostream_operators.h"
 #include "base/numerics/safe_math.h"
 #include "base/strings/string_split.h"
 #include "base/system/sys_info.h"

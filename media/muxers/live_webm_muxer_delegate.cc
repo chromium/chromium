@@ -4,6 +4,8 @@
 
 #include "media/muxers/live_webm_muxer_delegate.h"
 
+#include "base/numerics/ostream_operators.h"
+
 namespace media {
 
 LiveWebmMuxerDelegate::LiveWebmMuxerDelegate(WriteDataCB write_data_callback)

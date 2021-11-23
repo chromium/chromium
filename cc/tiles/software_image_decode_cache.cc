@@ -14,6 +14,7 @@
 #include "base/debug/stack_trace.h"
 #include "base/format_macros.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/numerics/ostream_operators.h"
 #include "base/strings/stringprintf.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/trace_event/memory_dump_manager.h"
