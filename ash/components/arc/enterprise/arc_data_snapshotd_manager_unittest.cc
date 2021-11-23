@@ -2,13 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/arc/enterprise/arc_data_snapshotd_manager.h"
+#include "ash/components/arc/enterprise/arc_data_snapshotd_manager.h"
 
 #include <memory>
 #include <string>
 #include <vector>
 
 #include "ash/components/arc/arc_prefs.h"
+#include "ash/components/arc/enterprise/arc_data_snapshotd_bridge.h"
+#include "ash/components/arc/enterprise/snapshot_session_controller.h"
 #include "ash/components/arc/test/fake_apps_tracker.h"
 #include "ash/components/arc/test/fake_snapshot_reboot_notification.h"
 #include "ash/constants/ash_switches.h"
@@ -22,8 +24,6 @@
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/tpm_manager/tpm_manager_client.h"
 #include "chromeos/dbus/upstart/fake_upstart_client.h"
-#include "components/arc/enterprise/arc_data_snapshotd_bridge.h"
-#include "components/arc/enterprise/snapshot_session_controller.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/user_manager/fake_user_manager.h"

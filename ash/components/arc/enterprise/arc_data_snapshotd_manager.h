@@ -2,22 +2,22 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_ARC_ENTERPRISE_ARC_DATA_SNAPSHOTD_MANAGER_H_
-#define COMPONENTS_ARC_ENTERPRISE_ARC_DATA_SNAPSHOTD_MANAGER_H_
+#ifndef ASH_COMPONENTS_ARC_ENTERPRISE_ARC_DATA_SNAPSHOTD_MANAGER_H_
+#define ASH_COMPONENTS_ARC_ENTERPRISE_ARC_DATA_SNAPSHOTD_MANAGER_H_
 
 #include <memory>
 #include <string>
 #include <vector>
 
+#include "ash/components/arc/enterprise/arc_apps_tracker.h"
+#include "ash/components/arc/enterprise/snapshot_hours_policy_service.h"
+#include "ash/components/arc/enterprise/snapshot_reboot_controller.h"
+#include "ash/components/arc/enterprise/snapshot_session_controller.h"
 #include "base/callback.h"
 #include "base/command_line.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
 #include "chromeos/dbus/tpm_manager/tpm_manager.pb.h"
-#include "components/arc/enterprise/arc_apps_tracker.h"
-#include "components/arc/enterprise/snapshot_hours_policy_service.h"
-#include "components/arc/enterprise/snapshot_reboot_controller.h"
-#include "components/arc/enterprise/snapshot_session_controller.h"
 #include "components/session_manager/core/session_manager_observer.h"
 
 class PrefService;
@@ -429,4 +429,4 @@ class ArcDataSnapshotdManager final
 }  // namespace data_snapshotd
 }  // namespace arc
 
-#endif  // COMPONENTS_ARC_ENTERPRISE_ARC_DATA_SNAPSHOTD_MANAGER_H_
+#endif  // ASH_COMPONENTS_ARC_ENTERPRISE_ARC_DATA_SNAPSHOTD_MANAGER_H_

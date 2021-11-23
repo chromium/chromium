@@ -36,6 +36,7 @@ static_library("arc") {
   # TODO(b/129295708): Clean up unused deps. Update users of this target.
   deps = [
     "//ash:ash",
+    "//ash/components/arc/enterprise",
     "//ash/components/arc/input_overlay/resources:resources_grit",
     "//ash/components/audio",
     "//ash/constants",
@@ -61,7 +62,6 @@ static_library("arc") {
     "//chromeos/ui/base",
     "//chromeos/ui/frame",
     "//components/account_id",
-    "//components/arc/enterprise",
     "//components/arc/vector_icons",
     "//components/exo",
     "//components/google/core/common",

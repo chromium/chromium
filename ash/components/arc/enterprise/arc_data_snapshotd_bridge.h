@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_ARC_ENTERPRISE_ARC_DATA_SNAPSHOTD_BRIDGE_H_
-#define COMPONENTS_ARC_ENTERPRISE_ARC_DATA_SNAPSHOTD_BRIDGE_H_
+#ifndef ASH_COMPONENTS_ARC_ENTERPRISE_ARC_DATA_SNAPSHOTD_BRIDGE_H_
+#define ASH_COMPONENTS_ARC_ENTERPRISE_ARC_DATA_SNAPSHOTD_BRIDGE_H_
 
 #include <string>
 
@@ -86,4 +86,4 @@ class ArcDataSnapshotdBridge {
 }  // namespace data_snapshotd
 }  // namespace arc
 
-#endif  // COMPONENTS_ARC_ENTERPRISE_ARC_DATA_SNAPSHOTD_BRIDGE_H_
+#endif  // ASH_COMPONENTS_ARC_ENTERPRISE_ARC_DATA_SNAPSHOTD_BRIDGE_H_

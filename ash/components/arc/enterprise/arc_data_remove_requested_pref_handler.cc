@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/arc/enterprise/arc_data_remove_requested_pref_handler.h"
+#include "ash/components/arc/enterprise/arc_data_remove_requested_pref_handler.h"
 
 #include "ash/components/arc/arc_prefs.h"
 #include "base/memory/ptr_util.h"

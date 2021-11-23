@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_ARC_ENTERPRISE_ARC_SNAPSHOT_REBOOT_NOTIFICATION_H_
-#define COMPONENTS_ARC_ENTERPRISE_ARC_SNAPSHOT_REBOOT_NOTIFICATION_H_
+#ifndef ASH_COMPONENTS_ARC_ENTERPRISE_ARC_SNAPSHOT_REBOOT_NOTIFICATION_H_
+#define ASH_COMPONENTS_ARC_ENTERPRISE_ARC_SNAPSHOT_REBOOT_NOTIFICATION_H_
 
 #include "base/callback_forward.h"
 
@@ -29,4 +29,4 @@ class ArcSnapshotRebootNotification {
 }  // namespace data_snapshotd
 }  // namespace arc
 
-#endif  // COMPONENTS_ARC_ENTERPRISE_ARC_SNAPSHOT_REBOOT_NOTIFICATION_H_
+#endif  // ASH_COMPONENTS_ARC_ENTERPRISE_ARC_SNAPSHOT_REBOOT_NOTIFICATION_H_

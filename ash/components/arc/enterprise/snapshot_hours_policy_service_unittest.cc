@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/arc/enterprise/snapshot_hours_policy_service.h"
+#include "ash/components/arc/enterprise/snapshot_hours_policy_service.h"
 
 #include <memory>
 #include <string>

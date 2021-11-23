@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_ARC_ENTERPRISE_SNAPSHOT_SESSION_CONTROLLER_H_
-#define COMPONENTS_ARC_ENTERPRISE_SNAPSHOT_SESSION_CONTROLLER_H_
+#ifndef ASH_COMPONENTS_ARC_ENTERPRISE_SNAPSHOT_SESSION_CONTROLLER_H_
+#define ASH_COMPONENTS_ARC_ENTERPRISE_SNAPSHOT_SESSION_CONTROLLER_H_
 
+#include "ash/components/arc/enterprise/arc_apps_tracker.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list_types.h"
 #include "base/timer/timer.h"
-#include "components/arc/enterprise/arc_apps_tracker.h"
 #include "components/session_manager/core/session_manager_observer.h"
 
 namespace base {
@@ -54,4 +54,4 @@ class SnapshotSessionController {
 }  // namespace data_snapshotd
 }  // namespace arc
 
-#endif  // COMPONENTS_ARC_ENTERPRISE_SNAPSHOT_SESSION_CONTROLLER_H_
+#endif  // ASH_COMPONENTS_ARC_ENTERPRISE_SNAPSHOT_SESSION_CONTROLLER_H_

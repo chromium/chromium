@@ -2,11 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/arc/enterprise/arc_data_snapshotd_manager.h"
+#include "ash/components/arc/enterprise/arc_data_snapshotd_manager.h"
 
 #include <utility>
 
 #include "ash/components/arc/arc_prefs.h"
+#include "ash/components/arc/enterprise/arc_data_remove_requested_pref_handler.h"
+#include "ash/components/arc/enterprise/arc_data_snapshotd_bridge.h"
 #include "ash/constants/ash_switches.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
@@ -22,8 +24,6 @@
 #include "chromeos/dbus/constants/dbus_switches.h"
 #include "chromeos/dbus/tpm_manager/tpm_manager_client.h"
 #include "chromeos/dbus/upstart/upstart_client.h"
-#include "components/arc/enterprise/arc_data_remove_requested_pref_handler.h"
-#include "components/arc/enterprise/arc_data_snapshotd_bridge.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"

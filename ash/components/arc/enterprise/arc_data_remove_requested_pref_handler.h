@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_ARC_ENTERPRISE_ARC_DATA_REMOVE_REQUESTED_PREF_HANDLER_H_
-#define COMPONENTS_ARC_ENTERPRISE_ARC_DATA_REMOVE_REQUESTED_PREF_HANDLER_H_
+#ifndef ASH_COMPONENTS_ARC_ENTERPRISE_ARC_DATA_REMOVE_REQUESTED_PREF_HANDLER_H_
+#define ASH_COMPONENTS_ARC_ENTERPRISE_ARC_DATA_REMOVE_REQUESTED_PREF_HANDLER_H_
 
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
@@ -51,4 +51,4 @@ class ArcDataRemoveRequestedPrefHandler final {
 }  // namespace data_snapshotd
 }  // namespace arc
 
-#endif  // COMPONENTS_ARC_ENTERPRISE_ARC_DATA_REMOVE_REQUESTED_PREF_HANDLER_H_
+#endif  // ASH_COMPONENTS_ARC_ENTERPRISE_ARC_DATA_REMOVE_REQUESTED_PREF_HANDLER_H_
