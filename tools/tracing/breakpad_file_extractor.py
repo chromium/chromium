@@ -226,10 +226,9 @@ def _RunDumpSyms(dump_syms_binary,
     proc = subprocess.Popen(cmd, stdout=f, stderr=subprocess.PIPE)
   stderr = proc.communicate()[1]
   if proc.returncode != 0:
-    flag_utils.GetTracingLogger().warning('%s', str(stderr))
-    flag_utils.GetTracingLogger().debug(
-        'Dump_syms failed to extract information from symbol binary: %s',
-        input_file_path)
+    flag_utils.GetTracingLogger().info(
+        'Dump_syms failed to extract information from symbol binary: %s. '
+        'Error: %s', input_file_path, str(stderr))
     return False
   return True
 
