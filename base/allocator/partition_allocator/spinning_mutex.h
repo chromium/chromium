@@ -270,24 +270,38 @@ ALWAYS_INLINE void SpinningMutex::ReleaseSpinLock() {
 #pragma clang diagnostic ignored "-Wunguarded-availability"
 
 ALWAYS_INLINE bool SpinningMutex::Try() {
+  // ARM64 macOS is macOS 11.x at least, guaranteed to have os_unfair_lock().
+#if defined(OS_MAC) && defined(ARCH_CPU_ARM64)
+  return os_unfair_lock_trylock(&unfair_lock_);
+#else
   if (LIKELY(os_unfair_lock_trylock))
     return os_unfair_lock_trylock(&unfair_lock_);
 
   return TrySpinLock();
+#endif  // defined(OS_MAC) && defined(ARCH_CPU_ARM64)
 }
 
 ALWAYS_INLINE void SpinningMutex::Release() {
+#if defined(OS_MAC) && defined(ARCH_CPU_ARM64)
+  return os_unfair_lock_unlock(&unfair_lock_);
+#else
   // Always testing trylock(), since the definitions are all or nothing.
   if (LIKELY(os_unfair_lock_trylock))
     return os_unfair_lock_unlock(&unfair_lock_);
 
   return ReleaseSpinLock();
+#endif  // defined(OS_MAC) && defined(ARCH_CPU_ARM64)
 }
 
 ALWAYS_INLINE void SpinningMutex::LockSlow() {
+#if defined(OS_MAC) && defined(ARCH_CPU_ARM64)
+  return os_unfair_lock_lock(&unfair_lock_);
+#else
   if (LIKELY(os_unfair_lock_trylock))
     return os_unfair_lock_lock(&unfair_lock_);
+
   return LockSlowSpinLock();
+#endif  // defined(OS_MAC) && defined(ARCH_CPU_ARM64)
 }
 
 #pragma clang diagnostic pop
