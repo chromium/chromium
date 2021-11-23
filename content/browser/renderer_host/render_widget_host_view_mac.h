@@ -370,7 +370,8 @@ class CONTENT_EXPORT RenderWidgetHostViewMac
                      const gfx::Range& replacement_range) override;
   void ImeFinishComposingText() override;
   void ImeCancelCompositionFromCocoa() override;
-  void LookUpDictionaryOverlayAtPoint(const gfx::PointF& root_point) override;
+  void LookUpDictionaryOverlayAtPoint(
+      const gfx::PointF& root_point_in_dips) override;
   void LookUpDictionaryOverlayFromRange(const gfx::Range& range) override;
   void SyncGetCharacterIndexAtPoint(
       const gfx::PointF& root_point,
@@ -517,7 +518,7 @@ class CONTENT_EXPORT RenderWidgetHostViewMac
       int32_t targetWidgetProcessId,
       int32_t targetWidgetRoutingId,
       ui::mojom::AttributedStringPtr attributed_string,
-      const gfx::Point& baselinePoint);
+      const gfx::Point& baseline_point_in_layout_space);
 
   // RenderWidgetHostViewBase:
   void UpdateBackgroundColor() override;
