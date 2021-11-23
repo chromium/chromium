@@ -236,10 +236,6 @@ class ProfileManager : public Profile::Delegate {
   void ScheduleProfileForDeletion(const base::FilePath& profile_dir,
                                   ProfileLoadedCallback callback);
 
-  // Schedules the ephemeral profile at the given path to be deleted on
-  // shutdown. New profiles will not be created.
-  void ScheduleEphemeralProfileForDeletion(const base::FilePath& profile_dir);
-
   // Deletes Guest profile's browsing data.
   static void CleanUpGuestProfile();
 #endif
@@ -506,6 +502,11 @@ class ProfileManager : public Profile::Delegate {
       ProfileLoadedCallback* callback,
       Profile* loaded_profile,
       Profile::CreateStatus status);
+
+  // Schedules the forced ephemeral profile at the given path to be deleted on
+  // shutdown. New profiles will not be created.
+  void ScheduleForcedEphemeralProfileForDeletion(
+      const base::FilePath& profile_dir);
 
   void OnClosingAllBrowsersChanged(bool closing);
 #endif  // !defined(OS_ANDROID)
