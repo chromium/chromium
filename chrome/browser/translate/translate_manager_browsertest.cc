@@ -1086,8 +1086,16 @@ IN_PROC_BROWSER_TEST_F(TranslateManagerBrowserTest,
 }
 
 // Test if there was an error during translate library initialization.
+// Flaky on Linux and ChromeOS: crbug.com/1273043
+#if defined(OS_LINUX) || defined(OS_CHROMEOS) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#define MAYBE_PageTranslationInitializationError \
+  DISABLED_PageTranslationInitializationError
+#else
+#define MAYBE_PageTranslationInitializationError \
+  PageTranslationInitializationError
+#endif
 IN_PROC_BROWSER_TEST_F(TranslateManagerBrowserTest,
-                       PageTranslationInitializationError) {
+                       MAYBE_PageTranslationInitializationError) {
   SetTranslateScript(kTestScriptInitializationError);
 
   ChromeTranslateClient* chrome_translate_client = GetChromeTranslateClient();
