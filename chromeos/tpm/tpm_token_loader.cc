@@ -15,7 +15,6 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/task_runner_util.h"
 #include "base/threading/thread_task_runner_handle.h"
-#include "chromeos/tpm/buildflags.h"
 #include "chromeos/tpm/tpm_token_info_getter.h"
 #include "crypto/nss_util.h"
 
@@ -27,15 +26,6 @@ void PostResultToTaskRunner(scoped_refptr<base::SequencedTaskRunner> runner,
                             base::OnceCallback<void(bool)> callback,
                             bool success) {
   runner->PostTask(FROM_HERE, base::BindOnce(std::move(callback), success));
-}
-
-// Checks if the build flag system_slot_software_fallback is enabled.
-bool IsSystemSlotSoftwareFallbackEnabled() {
-#if BUILDFLAG(SYSTEM_SLOT_SOFTWARE_FALLBACK)
-  return true;
-#else
-  return false;
-#endif
 }
 
 }  // namespace
@@ -81,9 +71,6 @@ TPMTokenLoader::TPMTokenLoader(bool initialized_for_test)
           base::ThreadTaskRunnerHandle::Get())),
       tpm_token_slot_id_(-1),
       can_start_before_login_(false) {
-  tpm_token_info_getter_->SetSystemSlotSoftwareFallback(
-      IsSystemSlotSoftwareFallbackEnabled());
-
   if (!initialized_for_test_ && LoginState::IsInitialized())
     LoginState::Get()->AddObserver(this);
 

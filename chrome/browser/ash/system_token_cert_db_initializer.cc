@@ -41,7 +41,7 @@ namespace {
 constexpr base::TimeDelta kInitialRequestDelay = base::Milliseconds(100);
 constexpr base::TimeDelta kMaxRequestDelay = base::Minutes(5);
 
-#if BUILDFLAG(SYSTEM_SLOT_SOFTWARE_FALLBACK)
+#if BUILDFLAG(NSS_SLOTS_SOFTWARE_FALLBACK)
 constexpr bool kIsSystemSlotSoftwareFallbackAllowed = true;
 #else
 constexpr bool kIsSystemSlotSoftwareFallbackAllowed = false;
@@ -95,7 +95,7 @@ constexpr base::TimeDelta
 
 SystemTokenCertDBInitializer::SystemTokenCertDBInitializer()
     : tpm_request_delay_(kInitialRequestDelay),
-      is_system_slot_software_fallback_allowed_(
+      is_nss_slots_software_fallback_allowed_(
           kIsSystemSlotSoftwareFallbackAllowed) {
   // Only start loading the system token once cryptohome is available and only
   // if the TPM is ready (available && owned && not being owned).
@@ -173,7 +173,7 @@ void SystemTokenCertDBInitializer::OnGetTpmNonsensitiveStatus(
   // allowed. Note that we don't fall back to software solution as long as TPM
   // is enabled.
   if (reply.is_owned() ||
-      (!reply.is_enabled() && is_system_slot_software_fallback_allowed_)) {
+      (!reply.is_enabled() && is_nss_slots_software_fallback_allowed_)) {
     VLOG_IF(1, !reply.is_owned())
         << "Initializing database when TPM is not owned.";
     MaybeStartInitializingDatabase();

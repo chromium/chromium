@@ -55,7 +55,10 @@ class COMPONENT_EXPORT(CHROMEOS_TPM) TPMTokenInfoGetter {
   // called).
   void Start(TpmTokenInfoCallback callback);
 
-  void SetSystemSlotSoftwareFallback(bool use_system_slot_software_fallback);
+  void set_nss_slots_software_fallback_for_testing(
+      bool use_nss_slots_software_fallback) {
+    use_nss_slots_software_fallback_ = use_nss_slots_software_fallback;
+  }
 
  private:
   enum Type {
@@ -67,7 +70,7 @@ class COMPONENT_EXPORT(CHROMEOS_TPM) TPMTokenInfoGetter {
     STATE_INITIAL,
     STATE_STARTED,
     STATE_TPM_ENABLED,
-    STATE_SYSTEM_SLOT_SOFTWARE_FALLBACK,
+    STATE_NSS_SLOTS_SOFTWARE_FALLBACK,
     STATE_DONE
   };
 
@@ -106,11 +109,11 @@ class COMPONENT_EXPORT(CHROMEOS_TPM) TPMTokenInfoGetter {
 
   TpmTokenInfoCallback callback_;
 
-  // If set and the TPM is disabled, TPMTokenInfoGetter will still get the token
-  // info using cryptohome's Pkcs11GetTpmTokenInfo query. The token info is
-  // needed for falling back to a software-backed initialization of the system
-  // token.
-  bool use_system_slot_software_fallback_ = false;
+  // If set and the TPM is not owned, TPMTokenInfoGetter will still get the
+  // token info using cryptohome's Pkcs11GetTpmTokenInfo query. The token info
+  // is needed for falling back to a software-backed initialization of the
+  // system token.
+  bool use_nss_slots_software_fallback_ = false;
 
   // The current request delay before the next attempt to initialize the
   // TPM. Will be adapted after each attempt.

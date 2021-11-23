@@ -16,11 +16,18 @@
 #include "chromeos/dbus/tpm_manager/tpm_manager.pb.h"
 #include "chromeos/dbus/tpm_manager/tpm_manager_client.h"
 #include "chromeos/dbus/userdataauth/userdataauth_client.h"
+#include "chromeos/tpm/buildflags.h"
 
 namespace {
 
 const int64_t kInitialRequestDelayMs = 100;
 const int64_t kMaxRequestDelayMs = 300000;  // 5 minutes
+
+#if BUILDFLAG(NSS_SLOTS_SOFTWARE_FALLBACK)
+constexpr bool kIsSystemSlotSoftwareFallbackAllowed = true;
+#else
+constexpr bool kIsSystemSlotSoftwareFallbackAllowed = false;
+#endif
 
 // Calculates the delay before running next attempt to initiatialize the TPM
 // token, if |last_delay| was the last or initial delay.
@@ -70,11 +77,6 @@ void TPMTokenInfoGetter::Start(TpmTokenInfoCallback callback) {
   Continue();
 }
 
-void TPMTokenInfoGetter::SetSystemSlotSoftwareFallback(
-    bool use_system_slot_software_fallback) {
-  use_system_slot_software_fallback_ = use_system_slot_software_fallback;
-}
-
 TPMTokenInfoGetter::TPMTokenInfoGetter(
     TPMTokenInfoGetter::Type type,
     const AccountId& account_id,
@@ -84,6 +86,7 @@ TPMTokenInfoGetter::TPMTokenInfoGetter(
       type_(type),
       state_(TPMTokenInfoGetter::STATE_INITIAL),
       account_id_(account_id),
+      use_nss_slots_software_fallback_(kIsSystemSlotSoftwareFallbackAllowed),
       tpm_request_delay_(base::Milliseconds(kInitialRequestDelayMs)),
       cryptohome_pkcs11_client_(cryptohome_pkcs11_client) {}
 
@@ -100,6 +103,7 @@ void TPMTokenInfoGetter::Continue() {
                          weak_factory_.GetWeakPtr()));
       break;
     case STATE_TPM_ENABLED:
+    case STATE_NSS_SLOTS_SOFTWARE_FALLBACK:
       // For system token, we don't need to supply the username, and with an
       // empty username, cryptohomed will return the system token information.
       if (type_ == TYPE_USER) {
@@ -110,17 +114,6 @@ void TPMTokenInfoGetter::Continue() {
       cryptohome_pkcs11_client_->Pkcs11GetTpmTokenInfo(
           request, base::BindOnce(&TPMTokenInfoGetter::OnPkcs11GetTpmTokenInfo,
                                   weak_factory_.GetWeakPtr()));
-      break;
-    case STATE_SYSTEM_SLOT_SOFTWARE_FALLBACK:
-      if (type_ == TYPE_SYSTEM) {
-        // Leave request.username empty for system token.
-        cryptohome_pkcs11_client_->Pkcs11GetTpmTokenInfo(
-            request,
-            base::BindOnce(&TPMTokenInfoGetter::OnPkcs11GetTpmTokenInfo,
-                           weak_factory_.GetWeakPtr()));
-      } else {  // if (type_ == TYPE_USER)
-        NOTREACHED();
-      }
       break;
     case STATE_DONE:
       NOTREACHED();
@@ -143,16 +136,16 @@ void TPMTokenInfoGetter::OnGetTpmStatus(
     return;
   }
 
-  if (!reply.is_enabled()) {
-    // In case the TPM is disabled and use_system_slot_software_fallback_ is
-    // true, we continue the token info retrieval for the system slot in order
-    // to fall back to a software-backed initialization.
-    if (use_system_slot_software_fallback_) {
-      state_ = STATE_SYSTEM_SLOT_SOFTWARE_FALLBACK;
-      Continue();
-      return;
-    }
+  // In case the use_nss_slots_software_fallback_ is true and the TPM is not
+  // owned, we continue the token info retrieval for the nss slots in order to
+  // fall back to a software-backed initialization.
+  if (use_nss_slots_software_fallback_ && !reply.is_owned()) {
+    state_ = STATE_NSS_SLOTS_SOFTWARE_FALLBACK;
+    Continue();
+    return;
+  }
 
+  if (!reply.is_enabled()) {
     state_ = STATE_DONE;
     std::move(callback_).Run(absl::nullopt);
     return;

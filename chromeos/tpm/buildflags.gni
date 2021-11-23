@@ -3,7 +3,7 @@
 # found in the LICENSE file.
 
 declare_args() {
-  # True if the system slot should fall back to software-backed initialization
+  # True if the NSS slots should fall back to software-backed initialization
   # in case of a disabled TPM.
-  system_slot_software_fallback = false
+  nss_slots_software_fallback = false
 }

@@ -10,7 +10,7 @@ assert(is_chromeos, "Non-Chrome-OS builds must not depend on //chromeos")
 
 buildflag_header("buildflags") {
   header = "buildflags.h"
-  flags = [ "SYSTEM_SLOT_SOFTWARE_FALLBACK=$system_slot_software_fallback" ]
+  flags = [ "NSS_SLOTS_SOFTWARE_FALLBACK=$nss_slots_software_fallback" ]
 }
 
 component("tpm") {

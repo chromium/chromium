@@ -88,7 +88,7 @@ TEST_F(SystemTokenCertDbInitializerTest, GetDatabaseSuccessSoftwareFallback) {
       ->mutable_nonsensitive_status_reply()
       ->set_is_owned(false);
   system_token_cert_db_initializer()
-      ->set_is_system_slot_software_fallback_allowed(true);
+      ->set_is_nss_slots_software_fallback_allowed_for_testing(true);
 
   GetSystemTokenCertDbCallbackWrapper get_system_token_cert_db_callback_wrapper;
   SystemTokenCertDbStorage::Get()->GetDatabase(
@@ -126,7 +126,7 @@ TEST_F(SystemTokenCertDbInitializerTest, GetDatabaseFailureDisabledTPM) {
       ->mutable_nonsensitive_status_reply()
       ->set_is_owned(false);
   system_token_cert_db_initializer()
-      ->set_is_system_slot_software_fallback_allowed(false);
+      ->set_is_nss_slots_software_fallback_allowed_for_testing(false);
 
   GetSystemTokenCertDbCallbackWrapper get_system_token_cert_db_callback_wrapper;
   SystemTokenCertDbStorage::Get()->GetDatabase(
