@@ -426,6 +426,9 @@
 #pragma mark - Public Methods
 
 - (void)setWebState:(web::WebState*)webState {
+  if (_webState == webState) {
+    return;
+  }
   self.ntpMediator.webState = webState;
   _webState = webState;
 }

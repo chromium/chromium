@@ -4639,6 +4639,9 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   if (IsSingleNtpEnabled()) {
     if (NTPHelper->IsActive()) {
       self.ntpCoordinator.webState = webState;
+    } else {
+      // Set to nullptr to save NTP scroll offset before navigation.
+      self.ntpCoordinator.webState = nullptr;
     }
   } else {
     if (NTPHelper->IsActive()) {

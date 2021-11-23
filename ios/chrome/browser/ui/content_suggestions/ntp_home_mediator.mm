@@ -564,6 +564,14 @@ const char kFeedLearnMoreURL[] = "https://support.google.com/chrome/"
           kChromeUINewTabURL) {
     return;
   }
+  if (IsSingleNtpEnabled() &&
+      (webState->GetLastCommittedURL().DeprecatedGetOriginAsURL() !=
+           kChromeUINewTabURL &&
+       webState->GetVisibleURL().DeprecatedGetOriginAsURL() !=
+           kChromeUINewTabURL)) {
+    // Do nothing if the current page is not the NTP.
+    return;
+  }
 
   web::NavigationManager* manager = webState->GetNavigationManager();
   web::NavigationItem* item =
@@ -612,9 +620,6 @@ const char kFeedLearnMoreURL[] = "https://support.google.com/chrome/"
   CGFloat minimumOffset = -[self.ntpViewController heightAboveFeed];
   if (offset > minimumOffset) {
     [self.ntpViewController setSavedContentOffset:offset];
-    if (IsSingleNtpEnabled()) {
-      return;
-    }
   } else if (IsSingleNtpEnabled()) {
     // Remove this if NTPs are ever scoped back to the WebState.
     [self.ntpViewController setContentOffsetToTop];
