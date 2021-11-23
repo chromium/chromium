@@ -1,16 +1,14 @@
 # Copyright 2021 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
-"""
-This script provides the necessary flags to symbolize proto traces.
+"""This script provides the necessary flags to symbolize proto traces.
 """
 
+import logging
+import optparse
 import os
 import sys
-import optparse
-import logging
-import webbrowser
-import subprocess
+
 
 sys.path.insert(
     0,
@@ -19,6 +17,8 @@ sys.path.insert(
 from systrace import util
 
 _DEFAULT_CHROME_CATEGORIES = '_DEFAULT_CHROME_CATEGORIES'
+
+TRACING_LOGGER_NAME = 'chromium:tools/tracing'
 
 
 def GeneralOptions(parser):
@@ -200,7 +200,7 @@ def SetupProfilingCategories(options):
   specific profiling options.
 
   Args:
-    The command-line options given.
+    options: The command-line options given.
   """
   if options.enable_profiler is None:
     return
@@ -223,18 +223,27 @@ def SetupProfilingCategories(options):
       options.chrome_categories += 'disabled-by-default-memory-infra,-*'
 
 
+def GetTracingLogger():
+  """Returns the logger for tools/tracing."""
+  return logging.getLogger(TRACING_LOGGER_NAME)
+
+
 def SetupLogging(verbosity):
   """Setup logging levels.
 
   Sets default level to warning.
 
   Args:
-    verbosity: None or integer type that specifies the
-      logging level. (options.verbosity)
+    verbosity: None or integer type that specifies the logging level.
+      (options.verbosity)
   """
+  logger = GetTracingLogger()
   if verbosity == 1:
     logging.basicConfig(level=logging.INFO)
+    logger.setLevel(level=logging.INFO)
   elif verbosity >= 2:
     logging.basicConfig(level=logging.DEBUG)
+    logger.setLevel(level=logging.DEBUG)
   else:
     logging.basicConfig(level=logging.WARNING)
+    logger.setLevel(level=logging.WARNING)

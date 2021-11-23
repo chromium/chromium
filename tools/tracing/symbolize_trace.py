@@ -1,27 +1,25 @@
 # Copyright 2021 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
-"""
-Symbolizes a perfetto trace file.
-"""
+"""Symbolizes a perfetto trace file."""
 
-import os
-import sys
-import shutil
-import tempfile
 import logging
+import os
+import shutil
 import subprocess
+import sys
+import tempfile
 
 sys.path.insert(
     0,
     os.path.join(os.path.dirname(__file__), os.pardir, os.pardir, 'third_party',
                  'catapult', 'systrace'))
 
-from systrace import util
-import metadata_extractor
-import symbol_fetcher
 import breakpad_file_extractor
+import flag_utils
+import metadata_extractor
 import rename_breakpad
+import symbol_fetcher
 
 
 def SymbolizeTrace(trace_file, options):
@@ -45,7 +43,8 @@ def SymbolizeTrace(trace_file, options):
       # Temp dir must be cleaned up later.
       options.breakpad_output_dir = tempfile.mkdtemp()
       need_cleanup = True
-      logging.debug('Created temporary directory to hold symbol files.')
+      flag_utils.GetTracingLogger().debug(
+          'Created temporary directory to hold symbol files.')
     else:
       if os.path.isdir(options.breakpad_output_dir):
         if os.listdir(options.breakpad_output_dir):
@@ -53,7 +52,8 @@ def SymbolizeTrace(trace_file, options):
                           options.breakpad_output_dir)
       else:
         os.makedirs(options.breakpad_output_dir)
-        logging.debug('Created directory to hold symbol files.')
+        flag_utils.GetTracingLogger().debug(
+            'Created directory to hold symbol files.')
   else:
     if not os.path.isdir(options.local_breakpad_dir):
       raise Exception('Local breakpad directory is not valid.')
@@ -74,7 +74,7 @@ def SymbolizeTrace(trace_file, options):
 
   # Cleanup
   if need_cleanup:
-    logging.debug('Cleaning up symbol files.')
+    flag_utils.GetTracingLogger().debug('Cleaning up symbol files.')
     shutil.rmtree(options.breakpad_output_dir)
 
 
@@ -95,11 +95,11 @@ def _EnsureBreakpadSymbols(trace_file, options):
     return
 
   # Extract Metadata
-  logging.info('Extracting proto trace metadata.')
+  flag_utils.GetTracingLogger().info('Extracting proto trace metadata.')
   trace_metadata = metadata_extractor.MetadataExtractor(
       options.trace_processor_path, trace_file)
   trace_metadata.Initialize()
-  logging.info(trace_metadata)
+  flag_utils.GetTracingLogger().info(trace_metadata)
 
   if options.local_build_dir is not None:
     # Extract breakpad symbol files from binaries in |options.local_build_dir|.
@@ -120,7 +120,8 @@ def _EnsureBreakpadSymbols(trace_file, options):
     return
 
   # Fetch trace breakpad symbols from GCS
-  logging.info('Fetching and extracting trace breakpad symbols.')
+  flag_utils.GetTracingLogger().info(
+      'Fetching and extracting trace breakpad symbols.')
   symbol_fetcher.GetTraceBreakpadSymbols(options.cloud_storage_bucket,
                                          trace_metadata,
                                          options.breakpad_output_dir,
@@ -156,15 +157,15 @@ def _Symbolize(trace_file, symbolizer_path, breakpad_output_dir, output_file):
     with open(output_file, 'w') as f:
       f.write(trace_data)
       f.write(symbol_data)
-      logging.info('Symbolized %s(%d bytes) with %d bytes of symbol data',
-                   os.path.abspath(trace_file), len(trace_data),
-                   len(symbol_data))
+      flag_utils.GetTracingLogger().info(
+          'Symbolized %s(%d bytes) with %d bytes of symbol data',
+          os.path.abspath(trace_file), len(trace_data), len(symbol_data))
 
 
 def _RunSymbolizer(cmd, env, stdout):
   proc = subprocess.Popen(cmd, env=env, stdout=stdout, stderr=subprocess.PIPE)
   out, stderr = proc.communicate()
-  logging.debug('STDOUT:%s', str(out))
-  logging.debug('STDERR:%s', str(stderr))
+  flag_utils.GetTracingLogger().debug('STDOUT:%s', str(out))
+  flag_utils.GetTracingLogger().debug('STDERR:%s', str(stderr))
   if proc.returncode != 0:
     raise RuntimeError(str(stderr))
