@@ -7,6 +7,10 @@
 namespace autofill_assistant {
 namespace switches {
 
+// Enables annotating DOM when set to true.
+const char kAutofillAssistantAnnotateDom[] =
+    "autofill-assistant-enable-annotate-dom";
+
 // Disables authentication when set to false. This is only useful
 // during development, as prod instances require authentication.
 const char kAutofillAssistantAuth[] = "autofill-assistant-auth";

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/android/autofill_assistant/annotate_dom_model_service_factory.h"
 
+#include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/task/sequenced_task_runner.h"
@@ -13,6 +14,7 @@
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/autofill_assistant/browser/features.h"
+#include "components/autofill_assistant/browser/switches.h"
 #include "components/autofill_assistant/content/browser/annotate_dom_model_service.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/translate/content/browser/translate_model_service.h"
@@ -40,7 +42,9 @@ AnnotateDomModelServiceFactory::GetForBrowserContext(
 
 KeyedService* AnnotateDomModelServiceFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
-  if (!base::FeatureList::IsEnabled(
+  if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
+          autofill_assistant::switches::kAutofillAssistantAnnotateDom) &&
+      !base::FeatureList::IsEnabled(
           autofill_assistant::features::kAutofillAssistantAnnotateDom)) {
     return nullptr;
   }
