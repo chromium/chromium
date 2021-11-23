@@ -9,6 +9,7 @@
 #include "base/memory/discardable_memory.h"
 #include "base/memory/discardable_memory_allocator.h"
 #include "base/system/sys_info.h"
+#include "base/task/thread_pool.h"
 #include "build/build_config.h"
 #include "content/public/utility/utility_thread.h"
 #include "third_party/skia/include/core/SkFontMgr.h"
@@ -68,6 +69,10 @@ PaintPreviewCompositorCollectionImpl::PaintPreviewCompositorCollectionImpl(
   // codecs for images. This is a huge overhead and shouldn't be necessary for
   // us. However, this may break some formats (WEBP?) so we may need to force
   // encoding to PNG or we could provide our own codec implementations.
+
+  // Init this on the background thread for a startup performance improvement.
+  base::ThreadPool::PostTask(FROM_HERE,
+                             base::BindOnce([] { SkFontMgr::RefDefault(); }));
 
   // Sanity check that fonts are working.
 #if defined(OS_LINUX) || defined(OS_CHROMEOS)
