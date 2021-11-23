@@ -48,6 +48,12 @@ class AppListSyncableServiceTestBase : public AppListTestBase {
   // Gets the names of the items ordered by the positions stored in sync data.
   std::vector<std::string> GetNamesOfSortedItemsFromSyncableService();
 
+  // Gets the names of items ordered by the positions stored in sync data,
+  // grouped in pages (as defined by page break items). Lists themselves will
+  // not contain page breaks.
+  std::vector<std::vector<std::string>>
+  GetNamesOfSortedItemsPerPageFromSyncableService();
+
   // Gets the specified item's position from sync data.
   syncer::StringOrdinal GetPositionFromSyncData(const std::string& id) const;
 

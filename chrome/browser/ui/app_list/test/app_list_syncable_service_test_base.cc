@@ -107,6 +107,27 @@ AppListSyncableServiceTestBase::GetNamesOfSortedItemsFromSyncableService() {
   return names;
 }
 
+std::vector<std::vector<std::string>> AppListSyncableServiceTestBase::
+    GetNamesOfSortedItemsPerPageFromSyncableService() {
+  std::vector<std::vector<std::string>> pages;
+  pages.emplace_back();
+
+  const std::vector<std::string> ids = GetOrderedItemIdsFromSyncableService();
+  for (const auto& id : ids) {
+    const app_list::AppListSyncableService::SyncItem* item =
+        app_list_syncable_service()->GetSyncItem(id);
+    if (!item->parent_id.empty())
+      continue;
+    if (item->item_type == sync_pb::AppListSpecifics::TYPE_PAGE_BREAK) {
+      pages.emplace_back();
+      continue;
+    }
+    pages.back().push_back(
+        app_list_syncable_service()->GetSyncItem(id)->item_name);
+  }
+  return pages;
+}
+
 syncer::StringOrdinal AppListSyncableServiceTestBase::GetPositionFromSyncData(
     const std::string& id) const {
   return app_list_syncable_service_->GetSyncItem(id)->item_ordinal;

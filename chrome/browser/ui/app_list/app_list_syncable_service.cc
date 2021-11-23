@@ -11,6 +11,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
+#include "ash/public/cpp/app_list/app_list_config.h"
 #include "base/bind.h"
 #include "base/check.h"
 #include "base/command_line.h"
@@ -955,8 +956,6 @@ void AppListSyncableService::SetSyncItemOrder(ash::AppListSortOrder order) {
 
   // Delete all the page breakers so that empty spaces are removed on the
   // devices with the old OS version.
-  // TODO(https://crbug.com/1242649): add page breaks to avoid page overflow
-  // on devices that expect at most 20 items per page.
   std::vector<std::string> page_breaker_ids;
   for (const auto& id_item_pair : sync_items_) {
     if (id_item_pair.second->item_type ==
@@ -966,6 +965,33 @@ void AppListSyncableService::SetSyncItemOrder(ash::AppListSortOrder order) {
   }
   for (const auto& page_break_id : page_breaker_ids)
     DeleteSyncItem(page_break_id);
+
+  // Launcher pre kProductivityLauncher launch (early 2022), had restriction on
+  // the app list page size - update the page structure among sync items to
+  // respect the lagacy page size (as items may get synced to devices that do
+  // not have kProductivityLauncher feature disabled). The page breaks are
+  // ignored with kProductivityLauncher feature enabled.
+  std::vector<SyncItem*> items = GetSortedTopLevelSyncItems();
+  const size_t kLegacyItemsPerPage =
+      ash::SharedAppListConfig::instance().GetMaxNumOfItemsPerPage();
+  std::vector<syncer::StringOrdinal> required_page_breaks;
+  for (size_t i = kLegacyItemsPerPage; i < items.size();
+       i += kLegacyItemsPerPage) {
+    const SyncItem* item_after_page_break = items[i];
+    const SyncItem* item_before_page_break = items[i - 1];
+    required_page_breaks.push_back(
+        item_before_page_break->item_ordinal.CreateBetween(
+            item_after_page_break->item_ordinal));
+  }
+
+  for (const auto& page_break_position : required_page_breaks) {
+    SyncItem* page_break_item = CreateSyncItem(
+        base::GenerateGUID(), sync_pb::AppListSpecifics::TYPE_PAGE_BREAK);
+    page_break_item->item_ordinal = page_break_position;
+    ProcessNewSyncItem(page_break_item);
+    UpdateSyncItemInLocalStorage(profile_, page_break_item);
+    SendSyncChange(page_break_item, SyncChange::ACTION_ADD);
+  }
 }
 
 void AppListSyncableService::RemoveItem(const std::string& id) {
