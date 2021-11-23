@@ -58,12 +58,10 @@ export class BookmarkFolderElement extends PolymerElement {
       open_: {
         type: Boolean,
         value: false,
+        computed: 'computeIsOpen_(openFolders, folder.id)'
       },
 
-      openFolders: {
-        type: Array,
-        observer: 'onOpenFoldersChanged_',
-      },
+      openFolders: Array,
     };
   }
 
@@ -160,13 +158,12 @@ export class BookmarkFolderElement extends PolymerElement {
       return;
     }
 
-    this.open_ = !this.open_;
     this.dispatchEvent(new CustomEvent(FOLDER_OPEN_CHANGED_EVENT, {
       bubbles: true,
       composed: true,
       detail: {
         id: this.folder.id,
-        open: this.open_,
+        open: !this.open_,
       }
     }));
 
@@ -175,9 +172,9 @@ export class BookmarkFolderElement extends PolymerElement {
                      'SidePanel.Bookmarks.FolderClose');
   }
 
-  private onOpenFoldersChanged_() {
-    this.open_ =
-        Boolean(this.openFolders) && this.openFolders.includes(this.folder.id);
+  private computeIsOpen_() {
+    return Boolean(this.openFolders) &&
+        this.openFolders.includes(this.folder.id);
   }
 
   private getFocusableRows_(): HTMLElement[] {

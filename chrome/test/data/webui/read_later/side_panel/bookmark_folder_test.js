@@ -128,9 +128,14 @@ suite('SidePanelBookmarkFolderTest', () => {
     const eventPromise =
         eventToPromise(FOLDER_OPEN_CHANGED_EVENT, document.body);
     bookmarkFolder.shadowRoot.querySelector('.row').click();
-    assertFalse(arrowIcon.hasAttribute('open'));
-    assertEquals(3, getChildElements().length);
     await eventPromise;
+
+    // Normally, the event listener for FOLDER_OPEN_CHANGED_EVENT will update
+    // the openFolders property.
+    bookmarkFolder.openFolders = [];
+    await waitAfterNextRender();
+    assertFalse(arrowIcon.hasAttribute('open'));
+    assertEquals(0, getChildElements().length);
   });
 
   test('UpdatesOpenStateBasedOnOpenFolders', async () => {
