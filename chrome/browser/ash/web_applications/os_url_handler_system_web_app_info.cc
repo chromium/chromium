@@ -20,8 +20,6 @@
 
 namespace {
 
-const char kOsUrlPrefix[] = "os://";
-
 SkColor GetBgColor(bool use_dark_mode) {
   return cros_styles::ResolveColor(
       cros_styles::ColorName::kBgColor, use_dark_mode,
@@ -106,6 +104,7 @@ bool OsUrlHandlerSystemWebAppDelegate::IsUrlInSystemAppScope(
   // been replaced by the chrome:// scheme. As the user cannot enter in ash
   // chrome:// scheme urls anymore, we should be safely able to assume that they
   // might have been os:// schemed URLs when being called from Lacros.
-  target_url = GURL(kOsUrlPrefix + target_url.host());
+  target_url =
+      crosapi::gurl_os_handler_utils::GetSystemUrlFromChromeUrl(target_url);
   return ChromeWebUIControllerFactory::GetInstance()->CanHandleUrl(target_url);
 }

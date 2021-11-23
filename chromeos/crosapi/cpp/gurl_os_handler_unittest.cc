@@ -6,6 +6,7 @@
 
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
+#include "url/url_util.h"
 
 namespace crosapi {
 
@@ -109,6 +110,26 @@ TEST(GurlOsHandlerUtilsTest, AshOsUrlHost) {
   EXPECT_EQ(AshOsUrlHost(GURL("")), "");
   EXPECT_EQ(AshOsUrlHost(GURL("foo")), "");
   EXPECT_EQ(AshOsUrlHost(GURL("://")), "");
+}
+
+TEST(GurlOsHandlerUtilsTest, GetSystemUrlFromChromeUrl) {
+  url::ScopedSchemeRegistryForTests scoped_registry;
+  url::AddStandardScheme("chrome", url::SCHEME_WITH_HOST);
+  EXPECT_EQ(GetSystemUrlFromChromeUrl(GURL("chrome://flags/")),
+            GURL("os://flags"));
+  EXPECT_EQ(GetSystemUrlFromChromeUrl(GURL("chrome://flags/abc")),
+            GURL("os://flags"));
+  EXPECT_EQ(GetSystemUrlFromChromeUrl(GURL("chrome://flags?foo")),
+            GURL("os://flags"));
+  EXPECT_EQ(GetSystemUrlFromChromeUrl(GURL("chrome://foo")), GURL("os://foo"));
+}
+
+TEST(GurlOsHandlerUtilsTest, GetChromeUrlFromSystemUrl) {
+  EXPECT_EQ(GetChromeUrlFromSystemUrl(GURL("os://flags/abc")),
+            GURL("chrome://flags"));
+  EXPECT_EQ(GetChromeUrlFromSystemUrl(GURL("os://flags?foo")),
+            GURL("chrome://flags"));
+  EXPECT_EQ(GetChromeUrlFromSystemUrl(GURL("os://foo")), GURL("chrome://foo"));
 }
 
 }  // namespace gurl_os_handler_utils

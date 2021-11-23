@@ -51,6 +51,12 @@ COMPONENT_EXPORT(CROSAPI) bool IsAshOsAsciiScheme(const base::StringPiece& url);
 // Get the host from the given os:// URL.
 COMPONENT_EXPORT(CROSAPI) std::string AshOsUrlHost(const GURL& url);
 
+// Convert a passed GURL from os:// scheme to chrome:// scheme.
+COMPONENT_EXPORT(CROSAPI) GURL GetSystemUrlFromChromeUrl(const GURL& url);
+
+// Convert a passed GURL from chrome:// scheme to os:// scheme.
+COMPONENT_EXPORT(CROSAPI) GURL GetChromeUrlFromSystemUrl(const GURL& url);
+
 }  // namespace gurl_os_handler_utils
 
 }  // namespace crosapi

@@ -13,6 +13,8 @@ namespace {
 
 const char kOsScheme[] = "os";
 const char kOsUrlPrefix[] = "os://";
+const char kChromeUIScheme[] = "chrome";
+const char kChromeUrlPrefix[] = "chrome://";
 
 // The start of the host portion of a GURL which starts with the os scheme.
 const size_t kHostStart = sizeof(kOsUrlPrefix) - 1;
@@ -104,6 +106,18 @@ std::string AshOsUrlHost(const GURL& url) {
     return base::ToLowerASCII(url_part);
 
   return base::ToLowerASCII(url_part.substr(0, cut_off));
+}
+
+// Convert a passed GURL from os:// to chrome://.
+GURL GetSystemUrlFromChromeUrl(const GURL& url) {
+  DCHECK(url.SchemeIs(kChromeUIScheme));
+  return GURL(kOsUrlPrefix + url.host());
+}
+
+// Convert a passed GURL from chrome:// to os://.
+GURL GetChromeUrlFromSystemUrl(const GURL& url) {
+  DCHECK(IsAshOsUrl(url));
+  return GURL(kChromeUrlPrefix + AshOsUrlHost(url));
 }
 
 }  // namespace gurl_os_handler_utils
