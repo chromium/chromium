@@ -526,19 +526,19 @@ bool FormDataImporter::ImportAddressProfileForSection(
 
   // Go through each |form| field and attempt to constitute a valid profile.
   for (const auto& field : form) {
-    // TODO(crbug/1213301): Remove this. This hack replaces the UNKNOWN_TYPE
-    // (due to autocomplete) of fields of a specific signature with their server
-    // or heuristic type. The changed value is reset below.
-    bool is_autocomplete_workaround =
-        base::FeatureList::IsEnabled(
-            features::kAutofillIgnoreAutocompleteForImport) &&
-        field->GetFieldSignature() == FieldSignature(2281611779) &&
-        field->Type().IsUnknown();
-
     // Reject fields that are not within the specified |section|.
     // If section is empty, use all fields.
     if (field->section != section && !section.empty())
       continue;
+
+    // TODO(crbug/1213301): Remove this. This hack replaces the UNKNOWN_TYPE
+    // (due to autocomplete) of fields of a specific signature with their server
+    // or heuristic type. The changed value is reset below.
+    bool is_autocomplete_workaround =
+        field->GetFieldSignature() == FieldSignature(2281611779) &&
+        field->Type().IsUnknown() &&
+        base::FeatureList::IsEnabled(
+            features::kAutofillIgnoreAutocompleteForImport);
 
     std::u16string value;
     base::TrimWhitespace(field->value, base::TRIM_ALL, &value);
