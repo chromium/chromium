@@ -2,18 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/app_list/reorder/app_list_reorder_delegate.h"
+#include "chrome/browser/ui/app_list/reorder/app_list_reorder_core.h"
 
-#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/app_list/app_list_model_updater.h"
-#include "chrome/browser/ui/app_list/app_list_syncable_service.h"
 #include "chrome/browser/ui/app_list/chrome_app_list_item.h"
-#include "chrome/common/pref_names.h"
-#include "components/prefs/pref_service.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace app_list {
-
+namespace reorder {
 namespace {
 
 using SyncItem = AppListSyncableService::SyncItem;
@@ -445,132 +440,15 @@ syncer::StringOrdinal CalculatePositionBetweenNeighbors(
   return next.CreateBefore();
 }
 
-}  // namespace
-
-// AppListReorderDelegate::AppListReorderDelegate ------------------------------
-
-AppListReorderDelegate::TestApi::TestApi(
-    AppListReorderDelegate* reorder_delegate)
-    : reorder_delegate_(reorder_delegate) {}
-
-AppListReorderDelegate::TestApi::~TestApi() = default;
-
-float AppListReorderDelegate::TestApi::CalculateEntropy(
-    ash::AppListSortOrder order) const {
-  switch (order) {
-    case ash::AppListSortOrder::kCustom:
-      NOTREACHED();
-      return 0.f;
-    case ash::AppListSortOrder::kNameAlphabetical:
-    case ash::AppListSortOrder::kNameReverseAlphabetical:
-      std::vector<reorder::SyncItemWrapper<std::string>> local_item_wrappers =
-          reorder::GenerateStringWrappersFromAppListItems(
-              reorder_delegate_->app_list_syncable_service_->GetModelUpdater()
-                  ->GetItems());
-      float entropy = 0.f;
-      CalculateEntropyAndGetSortedSubsequence(
-          order, &local_item_wrappers, &entropy,
-          static_cast<std::vector<reorder::SyncItemWrapper<std::string>>*>(
-              nullptr));
-      return entropy;
-  }
-}
-
-// AppListReorderDelegate ------------------------------------------------------
-
-AppListReorderDelegate::AppListReorderDelegate(AppListSyncableService* service)
-    : app_list_syncable_service_(service) {}
-
-AppListReorderDelegate::~AppListReorderDelegate() = default;
-
-std::vector<reorder::ReorderParam>
-AppListReorderDelegate::GenerateReorderParamsForSyncItems(
-    ash::AppListSortOrder order,
-    const AppListSyncableService::SyncItemMap& sync_item_map) const {
-  DCHECK_GT(sync_item_map.size(), 1);
-  switch (order) {
-    case ash::AppListSortOrder::kNameAlphabetical:
-    case ash::AppListSortOrder::kNameReverseAlphabetical: {
-      std::vector<reorder::SyncItemWrapper<std::string>> wrappers =
-          reorder::GenerateStringWrappersFromSyncItems(sync_item_map);
-      return GenerateReorderParamsImpl(order, &wrappers);
-    }
-    case ash::AppListSortOrder::kCustom:
-      NOTREACHED();
-      return std::vector<reorder::ReorderParam>();
-  }
-}
-
-std::vector<reorder::ReorderParam>
-AppListReorderDelegate::GenerateReorderParamsForAppListItems(
-    ash::AppListSortOrder order,
-    const std::vector<const ChromeAppListItem*>& app_list_items) const {
-  DCHECK_GT(app_list_items.size(), 1);
-  switch (order) {
-    case ash::AppListSortOrder::kNameAlphabetical:
-    case ash::AppListSortOrder::kNameReverseAlphabetical: {
-      std::vector<reorder::SyncItemWrapper<std::string>> wrappers =
-          reorder::GenerateStringWrappersFromAppListItems(app_list_items);
-      return GenerateReorderParamsImpl(order, &wrappers);
-    }
-    case ash::AppListSortOrder::kCustom:
-      NOTREACHED();
-      return std::vector<reorder::ReorderParam>();
-  }
-}
-
-bool AppListReorderDelegate::CalculateNewItemPosition(
+// Similar to `CalculateNewItemPosition()` but `order` is either
+// kNameAlphabetical or kNameReverseAlphabetical. Read the comment of
+// `CalculateNewItemPosition()` for parameters' meanings.
+bool CalculatePositionInNameOrder(
     ash::AppListSortOrder order,
     const ChromeAppListItem& new_item,
     const std::vector<const ChromeAppListItem*>& local_items,
     const AppListSyncableService::SyncItemMap* global_items,
-    syncer::StringOrdinal* target_position) const {
-  // TODO(https://crbug.com/1260875): handle the case that `new_item` is a
-  // folder.
-  DCHECK(!new_item.is_folder());
-
-  switch (order) {
-    case ash::AppListSortOrder::kCustom:
-      // Insert `item` at the front when the sort order is kCustom.
-      DCHECK(global_items);
-      *target_position = CalculateFrontPosition(*global_items);
-      return true;
-    case ash::AppListSortOrder::kNameAlphabetical:
-    case ash::AppListSortOrder::kNameReverseAlphabetical:
-      return CalculatePositionInNameOrder(order, new_item, local_items,
-                                          global_items, target_position);
-  }
-}
-
-syncer::StringOrdinal AppListReorderDelegate::CalculateFrontPosition(
-    const AppListSyncableService::SyncItemMap& sync_item_map) const {
-  syncer::StringOrdinal minimum_valid_ordinal;
-  for (auto iter = sync_item_map.cbegin(); iter != sync_item_map.cend();
-       ++iter) {
-    const syncer::StringOrdinal& ordinal = iter->second->item_ordinal;
-
-    // `ordinal` may be invalid (especially in tests).
-    if (!ordinal.IsValid())
-      continue;
-
-    if (!minimum_valid_ordinal.IsValid() ||
-        ordinal.LessThan(minimum_valid_ordinal)) {
-      minimum_valid_ordinal = ordinal;
-    }
-  }
-
-  if (minimum_valid_ordinal.IsValid())
-    return minimum_valid_ordinal.CreateBefore();
-
-  return syncer::StringOrdinal::CreateInitialOrdinal();
-}
-
-bool AppListReorderDelegate::CalculatePositionInNameOrder(
-    ash::AppListSortOrder order,
-    const ChromeAppListItem& new_item,
-    const std::vector<const ChromeAppListItem*>& local_items,
-    const AppListSyncableService::SyncItemMap* global_items,
-    syncer::StringOrdinal* target_position) const {
+    syncer::StringOrdinal* target_position) {
   DCHECK(order == ash::AppListSortOrder::kNameAlphabetical ||
          order == ash::AppListSortOrder::kNameReverseAlphabetical);
 
@@ -609,4 +487,107 @@ bool AppListReorderDelegate::CalculatePositionInNameOrder(
   return true;
 }
 
+}  // namespace
+
+std::vector<reorder::ReorderParam> GenerateReorderParamsForSyncItems(
+    ash::AppListSortOrder order,
+    const AppListSyncableService::SyncItemMap& sync_item_map) {
+  DCHECK_GT(sync_item_map.size(), 1);
+  switch (order) {
+    case ash::AppListSortOrder::kNameAlphabetical:
+    case ash::AppListSortOrder::kNameReverseAlphabetical: {
+      std::vector<reorder::SyncItemWrapper<std::string>> wrappers =
+          reorder::GenerateStringWrappersFromSyncItems(sync_item_map);
+      return GenerateReorderParamsImpl(order, &wrappers);
+    }
+    case ash::AppListSortOrder::kCustom:
+      NOTREACHED();
+      return std::vector<reorder::ReorderParam>();
+  }
+}
+
+std::vector<reorder::ReorderParam> GenerateReorderParamsForAppListItems(
+    ash::AppListSortOrder order,
+    const std::vector<const ChromeAppListItem*>& app_list_items) {
+  DCHECK_GT(app_list_items.size(), 1);
+  switch (order) {
+    case ash::AppListSortOrder::kNameAlphabetical:
+    case ash::AppListSortOrder::kNameReverseAlphabetical: {
+      std::vector<reorder::SyncItemWrapper<std::string>> wrappers =
+          reorder::GenerateStringWrappersFromAppListItems(app_list_items);
+      return GenerateReorderParamsImpl(order, &wrappers);
+    }
+    case ash::AppListSortOrder::kCustom:
+      NOTREACHED();
+      return std::vector<reorder::ReorderParam>();
+  }
+}
+
+bool CalculateNewItemPosition(
+    ash::AppListSortOrder order,
+    const ChromeAppListItem& new_item,
+    const std::vector<const ChromeAppListItem*>& local_items,
+    const AppListSyncableService::SyncItemMap* global_items,
+    syncer::StringOrdinal* target_position) {
+  // TODO(https://crbug.com/1260875): handle the case that `new_item` is a
+  // folder.
+  DCHECK(!new_item.is_folder());
+
+  switch (order) {
+    case ash::AppListSortOrder::kCustom:
+      // Insert `item` at the front when the sort order is kCustom.
+      DCHECK(global_items);
+      *target_position = CalculateFrontPosition(*global_items);
+      return true;
+    case ash::AppListSortOrder::kNameAlphabetical:
+    case ash::AppListSortOrder::kNameReverseAlphabetical:
+      return CalculatePositionInNameOrder(order, new_item, local_items,
+                                          global_items, target_position);
+  }
+}
+
+syncer::StringOrdinal CalculateFrontPosition(
+    const AppListSyncableService::SyncItemMap& sync_item_map) {
+  syncer::StringOrdinal minimum_valid_ordinal;
+  for (auto iter = sync_item_map.cbegin(); iter != sync_item_map.cend();
+       ++iter) {
+    const syncer::StringOrdinal& ordinal = iter->second->item_ordinal;
+
+    // `ordinal` may be invalid (especially in tests).
+    if (!ordinal.IsValid())
+      continue;
+
+    if (!minimum_valid_ordinal.IsValid() ||
+        ordinal.LessThan(minimum_valid_ordinal)) {
+      minimum_valid_ordinal = ordinal;
+    }
+  }
+
+  if (minimum_valid_ordinal.IsValid())
+    return minimum_valid_ordinal.CreateBefore();
+
+  return syncer::StringOrdinal::CreateInitialOrdinal();
+}
+
+float CalculateEntropyForTest(ash::AppListSortOrder order,
+                              AppListModelUpdater* model_updater) {
+  switch (order) {
+    case ash::AppListSortOrder::kCustom:
+      NOTREACHED();
+      return 0.f;
+    case ash::AppListSortOrder::kNameAlphabetical:
+    case ash::AppListSortOrder::kNameReverseAlphabetical:
+      std::vector<reorder::SyncItemWrapper<std::string>> local_item_wrappers =
+          reorder::GenerateStringWrappersFromAppListItems(
+              model_updater->GetItems());
+      float entropy = 0.f;
+      CalculateEntropyAndGetSortedSubsequence(
+          order, &local_item_wrappers, &entropy,
+          static_cast<std::vector<reorder::SyncItemWrapper<std::string>>*>(
+              nullptr));
+      return entropy;
+  }
+}
+
+}  // namespace reorder
 }  // namespace app_list

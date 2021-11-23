@@ -19,6 +19,7 @@
 #include "base/one_shot_event.h"
 #include "build/build_config.h"
 #include "chrome/browser/sync/glue/sync_start_util.h"
+#include "chrome/browser/ui/app_list/reorder/app_list_reorder_delegate.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/sync/model/string_ordinal.h"
 #include "components/sync/model/sync_change.h"
@@ -54,7 +55,8 @@ class AppListReorderDelegate;
 
 // Keyed Service that owns, stores, and syncs an AppListModel for a profile.
 class AppListSyncableService : public syncer::SyncableService,
-                               public KeyedService {
+                               public KeyedService,
+                               public reorder::AppListReorderDelegate {
  public:
   struct SyncItem {
     SyncItem(const std::string& id,
@@ -87,7 +89,7 @@ class AppListSyncableService : public syncer::SyncableService,
   // An app list model updater factory function used by tests.
   using ModelUpdaterFactoryCallback =
       base::RepeatingCallback<std::unique_ptr<AppListModelUpdater>(
-          AppListReorderDelegate*)>;
+          reorder::AppListReorderDelegate*)>;
 
   // Sets and resets an app list model updater factory function for tests.
   class ScopedModelUpdaterFactoryForTest {
@@ -146,9 +148,6 @@ class AppListSyncableService : public syncer::SyncableService,
   // Gets a string ordinal that would position an app after the item with the
   // provided `id`.
   syncer::StringOrdinal GetPositionAfterApp(const std::string& id) const;
-
-  // Sets sync item order. Sorts items if `order` is not kCustom.
-  void SetSyncItemOrder(ash::AppListSortOrder order);
 
   // Called when properties of an item may have changed, e.g. default/oem state.
   void UpdateItem(const ChromeAppListItem* app_item);
@@ -213,10 +212,6 @@ class AppListSyncableService : public syncer::SyncableService,
 
   virtual const SyncItemMap& sync_items() const;
 
-  AppListReorderDelegate* reorder_delegate_for_test() {
-    return reorder_delegate_.get();
-  }
-
   // syncer::SyncableService
   void WaitUntilReadyToSync(base::OnceClosure done) override;
   absl::optional<syncer::ModelError> MergeDataAndStartSyncing(
@@ -232,6 +227,9 @@ class AppListSyncableService : public syncer::SyncableService,
 
   // KeyedService
   void Shutdown() override;
+
+  // reorder::AppListReorderDelegate:
+  void SetAppListPreferredOrder(ash::AppListSortOrder order) override;
 
  private:
   class ModelUpdaterObserver;
@@ -416,8 +414,6 @@ class AppListSyncableService : public syncer::SyncableService,
   // Only set for first time user for tablet form devices.
   base::OnceClosure install_default_page_breaks_;
   base::OnceClosure wait_until_ready_to_sync_cb_;
-
-  std::unique_ptr<AppListReorderDelegate> reorder_delegate_;
 
   // List of observers.
   base::ObserverList<Observer> observer_list_;

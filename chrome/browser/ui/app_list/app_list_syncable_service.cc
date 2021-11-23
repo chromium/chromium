@@ -39,7 +39,7 @@
 #include "chrome/browser/ui/app_list/chrome_app_list_model_updater.h"
 #include "chrome/browser/ui/app_list/page_break_app_item.h"
 #include "chrome/browser/ui/app_list/page_break_constants.h"
-#include "chrome/browser/ui/app_list/reorder/app_list_reorder_delegate.h"
+#include "chrome/browser/ui/app_list/reorder/app_list_reorder_core.h"
 #include "chrome/browser/ui/app_list/reorder/app_list_reorder_util.h"
 #include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "chrome/common/chrome_switches.h"
@@ -313,13 +313,6 @@ class AppListSyncableService::ModelUpdaterObserver
     owner_->UpdateSyncItem(item);
   }
 
-  void OnAppListPreferredOrderChanged(ash::AppListSortOrder order) override {
-    if (!active_)
-      return;
-    VLOG(2) << owner_ << " OnAppListSortRequested";
-    owner_->SetSyncItemOrder(order);
-  }
-
   AppListSyncableService* const owner_;
   std::string adding_item_id_;
 
@@ -359,15 +352,14 @@ AppListSyncableService::AppListSyncableService(Profile* profile)
     : profile_(profile),
       extension_system_(extensions::ExtensionSystem::Get(profile)),
       extension_registry_(extensions::ExtensionRegistry::Get(profile)) {
-  if (ash::features::IsLauncherAppSortEnabled())
-    reorder_delegate_ = std::make_unique<AppListReorderDelegate>(this);
-
+  reorder::AppListReorderDelegate* reorder_delegate =
+      ash::features::IsLauncherAppSortEnabled() ? this : nullptr;
   if (g_model_updater_factory_callback_for_test_) {
-    model_updater_ = g_model_updater_factory_callback_for_test_->Run(
-        reorder_delegate_.get());
+    model_updater_ =
+        g_model_updater_factory_callback_for_test_->Run(reorder_delegate);
   } else {
-    model_updater_ = std::make_unique<ChromeAppListModelUpdater>(
-        profile, reorder_delegate_.get());
+    model_updater_ =
+        std::make_unique<ChromeAppListModelUpdater>(profile, reorder_delegate);
   }
 
   model_updater_observer_ = std::make_unique<ModelUpdaterObserver>(this);
@@ -393,10 +385,7 @@ AppListSyncableService::~AppListSyncableService() {
   // Remove observers.
   model_updater_observer_.reset();
 
-  // Ensure that `reorder_delegate_` outlives `model_updater_` to eliminate
-  // potential risks.
   model_updater_.reset();
-  reorder_delegate_.reset();
 }
 
 bool AppListSyncableService::IsExtensionServiceReady() const {
@@ -921,79 +910,6 @@ syncer::StringOrdinal AppListSyncableService::GetPositionAfterApp(
   return app_item->item_ordinal.CreateAfter();
 }
 
-void AppListSyncableService::SetSyncItemOrder(ash::AppListSortOrder order) {
-  // Update the preferred order that is shared among syncable devices.
-  profile_->GetPrefs()->SetInteger(prefs::kAppListPreferredOrder,
-                                   static_cast<int>(order));
-
-  if (order == ash::AppListSortOrder::kCustom)
-    return;
-
-  // Too few sync items. Return early.
-  if (sync_items_.size() < 2)
-    return;
-
-  const auto reorder_params =
-      reorder_delegate_->GenerateReorderParamsForSyncItems(order, sync_items_);
-  for (const auto& reorder_param : reorder_params) {
-    sync_pb::AppListSpecifics specifics;
-    const SyncItem* sync_item = GetSyncItem(reorder_param.sync_item_id);
-    const syncer::StringOrdinal& old_ordinal = sync_item->item_ordinal;
-    const syncer::StringOrdinal& new_ordinal = reorder_param.ordinal;
-
-    // If the old ordinal is valid, the new ordinal should be different.
-    DCHECK(!old_ordinal.IsValid() || !old_ordinal.Equals(new_ordinal));
-
-    // The new ordinal should be valid.
-    DCHECK(new_ordinal.IsValid());
-
-    GetSyncSpecificsFromSyncItem(sync_item, &specifics);
-    specifics.set_item_ordinal(new_ordinal.ToInternalValue());
-    ProcessSyncItemSpecifics(specifics);
-    SendSyncChange(FindSyncItem(reorder_param.sync_item_id),
-                   SyncChange::ACTION_UPDATE);
-  }
-
-  // Delete all the page breakers so that empty spaces are removed on the
-  // devices with the old OS version.
-  std::vector<std::string> page_breaker_ids;
-  for (const auto& id_item_pair : sync_items_) {
-    if (id_item_pair.second->item_type ==
-        sync_pb::AppListSpecifics::TYPE_PAGE_BREAK) {
-      page_breaker_ids.push_back(id_item_pair.first);
-    }
-  }
-  for (const auto& page_break_id : page_breaker_ids)
-    DeleteSyncItem(page_break_id);
-
-  // Launcher pre kProductivityLauncher launch (early 2022), had restriction on
-  // the app list page size - update the page structure among sync items to
-  // respect the lagacy page size (as items may get synced to devices that do
-  // not have kProductivityLauncher feature disabled). The page breaks are
-  // ignored with kProductivityLauncher feature enabled.
-  std::vector<SyncItem*> items = GetSortedTopLevelSyncItems();
-  const size_t kLegacyItemsPerPage =
-      ash::SharedAppListConfig::instance().GetMaxNumOfItemsPerPage();
-  std::vector<syncer::StringOrdinal> required_page_breaks;
-  for (size_t i = kLegacyItemsPerPage; i < items.size();
-       i += kLegacyItemsPerPage) {
-    const SyncItem* item_after_page_break = items[i];
-    const SyncItem* item_before_page_break = items[i - 1];
-    required_page_breaks.push_back(
-        item_before_page_break->item_ordinal.CreateBetween(
-            item_after_page_break->item_ordinal));
-  }
-
-  for (const auto& page_break_position : required_page_breaks) {
-    SyncItem* page_break_item = CreateSyncItem(
-        base::GenerateGUID(), sync_pb::AppListSpecifics::TYPE_PAGE_BREAK);
-    page_break_item->item_ordinal = page_break_position;
-    ProcessNewSyncItem(page_break_item);
-    UpdateSyncItemInLocalStorage(profile_, page_break_item);
-    SendSyncChange(page_break_item, SyncChange::ACTION_ADD);
-  }
-}
-
 void AppListSyncableService::RemoveItem(const std::string& id) {
   RemoveSyncItem(id);
   model_updater_->RemoveItem(id);
@@ -1291,6 +1207,80 @@ absl::optional<syncer::ModelError> AppListSyncableService::ProcessSyncChanges(
 
 void AppListSyncableService::Shutdown() {
   app_service_apps_builder_.reset();
+}
+
+void AppListSyncableService::SetAppListPreferredOrder(
+    ash::AppListSortOrder order) {
+  // Update the preferred order that is shared among syncable devices.
+  profile_->GetPrefs()->SetInteger(prefs::kAppListPreferredOrder,
+                                   static_cast<int>(order));
+
+  if (order == ash::AppListSortOrder::kCustom)
+    return;
+
+  // Too few sync items. Return early.
+  if (sync_items_.size() < 2)
+    return;
+
+  const auto reorder_params =
+      reorder::GenerateReorderParamsForSyncItems(order, sync_items_);
+  for (const auto& reorder_param : reorder_params) {
+    sync_pb::AppListSpecifics specifics;
+    const SyncItem* sync_item = GetSyncItem(reorder_param.sync_item_id);
+    const syncer::StringOrdinal& old_ordinal = sync_item->item_ordinal;
+    const syncer::StringOrdinal& new_ordinal = reorder_param.ordinal;
+
+    // If the old ordinal is valid, the new ordinal should be different.
+    DCHECK(!old_ordinal.IsValid() || !old_ordinal.Equals(new_ordinal));
+
+    // The new ordinal should be valid.
+    DCHECK(new_ordinal.IsValid());
+
+    GetSyncSpecificsFromSyncItem(sync_item, &specifics);
+    specifics.set_item_ordinal(new_ordinal.ToInternalValue());
+    ProcessSyncItemSpecifics(specifics);
+    SendSyncChange(FindSyncItem(reorder_param.sync_item_id),
+                   SyncChange::ACTION_UPDATE);
+  }
+
+  // Delete all the page breakers so that empty spaces are removed on the
+  // devices with the old OS version.
+  std::vector<std::string> page_breaker_ids;
+  for (const auto& id_item_pair : sync_items_) {
+    if (id_item_pair.second->item_type ==
+        sync_pb::AppListSpecifics::TYPE_PAGE_BREAK) {
+      page_breaker_ids.push_back(id_item_pair.first);
+    }
+  }
+  for (const auto& page_break_id : page_breaker_ids)
+    DeleteSyncItem(page_break_id);
+
+  // Launcher pre kProductivityLauncher launch (early 2022), had restriction on
+  // the app list page size - update the page structure among sync items to
+  // respect the lagacy page size (as items may get synced to devices that do
+  // not have kProductivityLauncher feature disabled). The page breaks are
+  // ignored with kProductivityLauncher feature enabled.
+  std::vector<SyncItem*> items = GetSortedTopLevelSyncItems();
+  const size_t kLegacyItemsPerPage =
+      ash::SharedAppListConfig::instance().GetMaxNumOfItemsPerPage();
+  std::vector<syncer::StringOrdinal> required_page_breaks;
+  for (size_t i = kLegacyItemsPerPage; i < items.size();
+       i += kLegacyItemsPerPage) {
+    const SyncItem* item_after_page_break = items[i];
+    const SyncItem* item_before_page_break = items[i - 1];
+    required_page_breaks.push_back(
+        item_before_page_break->item_ordinal.CreateBetween(
+            item_after_page_break->item_ordinal));
+  }
+
+  for (const auto& page_break_position : required_page_breaks) {
+    SyncItem* page_break_item = CreateSyncItem(
+        base::GenerateGUID(), sync_pb::AppListSpecifics::TYPE_PAGE_BREAK);
+    page_break_item->item_ordinal = page_break_position;
+    ProcessNewSyncItem(page_break_item);
+    UpdateSyncItemInLocalStorage(profile_, page_break_item);
+    SendSyncChange(page_break_item, SyncChange::ACTION_ADD);
+  }
 }
 
 // AppListSyncableService private
@@ -1666,15 +1656,14 @@ void AppListSyncableService::InitNewItemPosition(ChromeAppListItem* new_item) {
 
   // TODO(https://crbug.com/1260877): ideally we would not have to create a
   // one-off vector of items using `GetItems()`.
-  bool is_successful = reorder_delegate_->CalculateNewItemPosition(
+  bool is_successful = reorder::CalculateNewItemPosition(
       order, *new_item, model_updater_->GetItems(), &sync_items_, &position);
 
   // If `new_item` cannot be placed following the specified order, `new_item`
   // should be placed at front. Also reset the sorting order.
   if (!is_successful) {
     DCHECK(!position.IsValid());
-    position = reorder_delegate_->CalculateFrontPosition(sync_items_);
-
+    position = reorder::CalculateFrontPosition(sync_items_);
     profile()->GetPrefs()->SetInteger(
         prefs::kAppListPreferredOrder,
         static_cast<int>(ash::AppListSortOrder::kCustom));

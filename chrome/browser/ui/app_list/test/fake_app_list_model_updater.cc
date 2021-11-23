@@ -11,13 +11,12 @@
 #include "base/logging.h"
 #include "base/run_loop.h"
 #include "chrome/browser/ui/app_list/chrome_app_list_item.h"
-#include "chrome/browser/ui/app_list/reorder/app_list_reorder_delegate.h"
 #include "extensions/common/constants.h"
 
 FakeAppListModelUpdater::FakeAppListModelUpdater(
     Profile* profile,
-    app_list::AppListReorderDelegate* order_delegate)
-    : profile_(profile), order_delegate_(order_delegate) {}
+    app_list::reorder::AppListReorderDelegate* order_delegate)
+    : profile_(profile) {}
 
 FakeAppListModelUpdater::~FakeAppListModelUpdater() = default;
 

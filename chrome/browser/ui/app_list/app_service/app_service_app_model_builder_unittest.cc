@@ -796,7 +796,7 @@ class CrostiniAppTest : public AppServiceAppModelBuilderTest {
         app_list::AppListSyncableService::ScopedModelUpdaterFactoryForTest>(
         base::BindRepeating(
             [](Profile* profile,
-               app_list::AppListReorderDelegate* reorder_delegate)
+               app_list::reorder::AppListReorderDelegate* reorder_delegate)
                 -> std::unique_ptr<AppListModelUpdater> {
               return std::make_unique<FakeAppListModelUpdater>(
                   profile, reorder_delegate);

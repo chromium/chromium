@@ -17,6 +17,7 @@
 #include "chrome/browser/ui/app_list/app_list_controller_delegate.h"
 #include "chrome/browser/ui/app_list/chrome_app_list_item.h"
 #include "chrome/browser/ui/app_list/chrome_app_list_item_manager.h"
+#include "chrome/browser/ui/app_list/reorder/app_list_reorder_core.h"
 #include "chrome/browser/ui/app_list/reorder/app_list_reorder_delegate.h"
 #include "chrome/browser/ui/app_list/search/chrome_search_result.h"
 #include "extensions/common/constants.h"
@@ -116,7 +117,7 @@ class ChromeAppListModelUpdater::TemporarySortManager {
 
 ChromeAppListModelUpdater::ChromeAppListModelUpdater(
     Profile* profile,
-    app_list::AppListReorderDelegate* order_delegate)
+    app_list::reorder::AppListReorderDelegate* order_delegate)
     : profile_(profile),
       order_delegate_(order_delegate),
       item_manager_(std::make_unique<ChromeAppListItemManager>()),
@@ -700,7 +701,8 @@ void ChromeAppListModelUpdater::RequestAppListSort(
 
   // Calculate item positions under temporary sort order.
   std::vector<app_list::reorder::ReorderParam> reorder_params =
-      order_delegate_->GenerateReorderParamsForAppListItems(order, GetItems());
+      app_list::reorder::GenerateReorderParamsForAppListItems(order,
+                                                              GetItems());
 
   // Notify the ash side of the new positions. Updates are local-only because
   // `temporary_sort_manager_` is active.
@@ -777,14 +779,15 @@ void ChromeAppListModelUpdater::EndTemporarySortAndTakeAction(
   switch (action) {
     case EndAction::kCommit:
       CommitTemporaryPositions();
-      CommitOrder();
+      order_delegate_->SetAppListPreferredOrder(
+          temporary_sort_manager_->temporary_order());
       break;
     case EndAction::kRevert:
       RevertTemporaryPositions();
       break;
     case EndAction::kCommitAndClearSort:
       CommitTemporaryPositions();
-      ClearOrder();
+      order_delegate_->SetAppListPreferredOrder(ash::AppListSortOrder::kCustom);
       break;
   }
 
@@ -859,22 +862,4 @@ void ChromeAppListModelUpdater::CommitTemporaryPositions() {
     MaybeNotifyObserversOfItemChange(id_item_pair.second.get(),
                                      ItemChangeType::kUpdate);
   }
-}
-
-void ChromeAppListModelUpdater::CommitOrder() {
-  // TODO(https://crbug.com/1264839): it is confusing to rely on the observer
-  // to notify `AppListSyncableService` of order change. Create an interface
-  // to access sorting methods from here.
-  for (AppListModelUpdaterObserver& observer : observers_) {
-    observer.OnAppListPreferredOrderChanged(
-        temporary_sort_manager_->temporary_order());
-  }
-}
-
-void ChromeAppListModelUpdater::ClearOrder() {
-  // TODO(https://crbug.com/1264839): it is confusing to rely on the observer
-  // to notify `AppListSyncableService` of order change. Create an interface
-  // to access sorting methods from here.
-  for (AppListModelUpdaterObserver& observer : observers_)
-    observer.OnAppListPreferredOrderChanged(ash::AppListSortOrder::kCustom);
 }

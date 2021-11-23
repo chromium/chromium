@@ -18,8 +18,9 @@ class ChromeAppListItem;
 
 class FakeAppListModelUpdater : public AppListModelUpdater {
  public:
-  FakeAppListModelUpdater(Profile* profile,
-                          app_list::AppListReorderDelegate* order_delegate);
+  FakeAppListModelUpdater(
+      Profile* profile,
+      app_list::reorder::AppListReorderDelegate* order_delegate);
   FakeAppListModelUpdater(const FakeAppListModelUpdater&) = delete;
   FakeAppListModelUpdater& operator=(const FakeAppListModelUpdater&) = delete;
   ~FakeAppListModelUpdater() override;
@@ -81,7 +82,6 @@ class FakeAppListModelUpdater : public AppListModelUpdater {
 
  private:
   Profile* profile_;
-  app_list::AppListReorderDelegate* const order_delegate_;
 
   bool search_engine_is_google_ = false;
   std::vector<std::unique_ptr<ChromeAppListItem>> items_;

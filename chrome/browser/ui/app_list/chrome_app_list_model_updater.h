@@ -19,7 +19,9 @@
 #include "chrome/browser/ui/app_list/app_list_model_updater.h"
 
 namespace app_list {
+namespace reorder {
 class AppListReorderDelegate;
+}  // namespace reorder
 }  // namespace app_list
 
 class ChromeAppListItem;
@@ -29,8 +31,9 @@ class ChromeAppListModelUpdater : public AppListModelUpdater,
                                   public ash::AppListModelDelegate,
                                   public ash::AppListModelObserver {
  public:
-  ChromeAppListModelUpdater(Profile* profile,
-                            app_list::AppListReorderDelegate* order_delegate);
+  ChromeAppListModelUpdater(
+      Profile* profile,
+      app_list::reorder::AppListReorderDelegate* order_delegate);
   ChromeAppListModelUpdater(const ChromeAppListModelUpdater&) = delete;
   ChromeAppListModelUpdater& operator=(const ChromeAppListModelUpdater&) =
       delete;
@@ -172,17 +175,11 @@ class ChromeAppListModelUpdater : public AppListModelUpdater,
   // Commits item positions under the temporary sort.
   void CommitTemporaryPositions();
 
-  // Commits the temporary sort order.
-  void CommitOrder();
-
-  // Clears the permanent sort order.
-  void ClearOrder();
-
   // Indicates the profile that the model updater is associated with.
   Profile* const profile_ = nullptr;
 
   // Provides the access to the methods for ordering app list items.
-  app_list::AppListReorderDelegate* const order_delegate_;
+  app_list::reorder::AppListReorderDelegate* const order_delegate_;
 
   // A helper class to manage app list items. It never talks to ash.
   std::unique_ptr<ChromeAppListItemManager> item_manager_;

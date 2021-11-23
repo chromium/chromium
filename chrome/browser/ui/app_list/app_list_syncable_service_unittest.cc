@@ -23,7 +23,7 @@
 #include "chrome/browser/ui/app_list/app_list_test_util.h"
 #include "chrome/browser/ui/app_list/chrome_app_list_item.h"
 #include "chrome/browser/ui/app_list/page_break_constants.h"
-#include "chrome/browser/ui/app_list/reorder/app_list_reorder_delegate.h"
+#include "chrome/browser/ui/app_list/reorder/app_list_reorder_core.h"
 #include "chrome/browser/ui/app_list/test/app_list_syncable_service_test_base.h"
 #include "chrome/browser/ui/app_list/test/fake_app_list_model_updater.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
@@ -198,7 +198,7 @@ class AppListSyncableServiceTest : public test::AppListSyncableServiceTestBase {
     model_updater_factory_scope_ = std::make_unique<
         app_list::AppListSyncableService::ScopedModelUpdaterFactoryForTest>(
         base::BindRepeating(
-            [](app_list::AppListReorderDelegate* reorder_delegate)
+            [](app_list::reorder::AppListReorderDelegate* reorder_delegate)
                 -> std::unique_ptr<AppListModelUpdater> {
               return std::make_unique<FakeAppListModelUpdater>(
                   /*profile=*/nullptr, reorder_delegate);
@@ -1538,12 +1538,12 @@ TEST_F(AppListSortUnitTest, SortMixedPositionValidityItems) {
                    ->GetSyncItem(kItemId3)
                    ->item_ordinal.IsValid());
 
-  app_list_syncable_service()->SetSyncItemOrder(
+  app_list_syncable_service()->SetAppListPreferredOrder(
       ash::AppListSortOrder::kNameReverseAlphabetical);
   EXPECT_EQ(GetOrderedItemIdsFromSyncableService(),
             std::vector<std::string>({kItemId3, kItemId2, kItemId1}));
 
-  app_list_syncable_service()->SetSyncItemOrder(
+  app_list_syncable_service()->SetAppListPreferredOrder(
       ash::AppListSortOrder::kNameAlphabetical);
   EXPECT_EQ(GetOrderedItemIdsFromSyncableService(),
             std::vector<std::string>({kItemId1, kItemId2, kItemId3}));
@@ -1586,12 +1586,12 @@ TEST_F(AppListSortUnitTest, SortInvalidPositionItems) {
                    ->GetSyncItem(kItemId3)
                    ->item_ordinal.IsValid());
 
-  app_list_syncable_service()->SetSyncItemOrder(
+  app_list_syncable_service()->SetAppListPreferredOrder(
       ash::AppListSortOrder::kNameReverseAlphabetical);
   EXPECT_EQ(GetOrderedItemIdsFromSyncableService(),
             std::vector<std::string>({kItemId3, kItemId2, kItemId1}));
 
-  app_list_syncable_service()->SetSyncItemOrder(
+  app_list_syncable_service()->SetAppListPreferredOrder(
       ash::AppListSortOrder::kNameAlphabetical);
   EXPECT_EQ(GetOrderedItemIdsFromSyncableService(),
             std::vector<std::string>({kItemId1, kItemId2, kItemId3}));
@@ -1656,7 +1656,7 @@ TEST_F(AppListSortUnitTest, VerifyAlphabeticalOrderForFolderItems) {
                                 kChildItemId1_2, kFolderId2, kChildItemId2_1,
                                 kChildItemId2_2, kChildItemId2_3}));
 
-  app_list_syncable_service()->SetSyncItemOrder(
+  app_list_syncable_service()->SetAppListPreferredOrder(
       ash::AppListSortOrder::kNameReverseAlphabetical);
 
   // Folders should be in front of apps.
@@ -1705,7 +1705,7 @@ TEST_F(AppListSortUnitTest, VerifyAlphabeticalOrderSort) {
   EXPECT_EQ(GetOrderedItemIdsFromSyncableService(),
             std::vector<std::string>(
                 {kItemId1, kItemId2, kItemId3, kItemId4, kItemId5}));
-  app_list_syncable_service()->SetSyncItemOrder(
+  app_list_syncable_service()->SetAppListPreferredOrder(
       ash::AppListSortOrder::kNameAlphabetical);
   for (const auto& id_item_pair : app_list_syncable_service()->sync_items()) {
     EXPECT_EQ(id_ordinal_mappings[id_item_pair.first],
@@ -1713,7 +1713,7 @@ TEST_F(AppListSortUnitTest, VerifyAlphabeticalOrderSort) {
   }
 
   // Sort in reverse alphabetical order. Verify the app order after sorting.
-  app_list_syncable_service()->SetSyncItemOrder(
+  app_list_syncable_service()->SetAppListPreferredOrder(
       ash::AppListSortOrder::kNameReverseAlphabetical);
   EXPECT_EQ(GetOrderedItemIdsFromSyncableService(),
             std::vector<std::string>(
@@ -1742,7 +1742,7 @@ TEST_F(AppListSortUnitTest, VerifyAlphabeticalOrderSort) {
   }
 
   // Sort and then verify the app order.
-  app_list_syncable_service()->SetSyncItemOrder(
+  app_list_syncable_service()->SetAppListPreferredOrder(
       ash::AppListSortOrder::kNameReverseAlphabetical);
   EXPECT_EQ(GetOrderedItemIdsFromSyncableService(),
             std::vector<std::string>(
@@ -1790,12 +1790,12 @@ TEST_F(AppListSortUnitTest, VerifyAlphabeticalSortWithDuplicateNames) {
       std::make_unique<syncer::SyncErrorFactoryMock>());
   content::RunAllTasksUntilIdle();
 
-  app_list_syncable_service()->SetSyncItemOrder(
+  app_list_syncable_service()->SetAppListPreferredOrder(
       ash::AppListSortOrder::kNameAlphabetical);
   EXPECT_EQ(GetNamesOfSortedItemsFromSyncableService(),
             std::vector<std::string>({"A", "A", "B", "C", "C", "D"}));
 
-  app_list_syncable_service()->SetSyncItemOrder(
+  app_list_syncable_service()->SetAppListPreferredOrder(
       ash::AppListSortOrder::kNameReverseAlphabetical);
   EXPECT_EQ(GetNamesOfSortedItemsFromSyncableService(),
             std::vector<std::string>({"D", "C", "C", "B", "A", "A"}));
@@ -1825,7 +1825,7 @@ TEST_F(AppListSortUnitTest, NewAppPlacement) {
       MakeApp("E", kItemId4, extensions::Extension::NO_FLAGS);
   InstallExtension(app4.get());
 
-  app_list_syncable_service()->SetSyncItemOrder(
+  app_list_syncable_service()->SetAppListPreferredOrder(
       ash::AppListSortOrder::kNameReverseAlphabetical);
   EXPECT_EQ(ash::AppListSortOrder::kNameReverseAlphabetical,
             GetSortOrderFromPrefs());
@@ -1840,21 +1840,20 @@ TEST_F(AppListSortUnitTest, NewAppPlacement) {
   EXPECT_EQ(GetNamesOfSortedItemsFromSyncableService(),
             std::vector<std::string>({"E", "D", "C", "B", "A"}));
 
-  app_list::AppListReorderDelegate::TestApi test_api(
-      app_list_syncable_service()->reorder_delegate_for_test());
-
   // The longest subsequence in reverse alphabetical order is the whole
   // sequence. Therefore the entropy is (1 - 5/5), which is 0.
+  AppListModelUpdater* model_updater = GetModelUpdater();
   EXPECT_TRUE(cc::MathUtil::IsWithinEpsilon(
-      0.f, test_api.CalculateEntropy(
-               ash::AppListSortOrder::kNameReverseAlphabetical)));
+      0.f,
+      app_list::reorder::CalculateEntropyForTest(
+          ash::AppListSortOrder::kNameReverseAlphabetical, model_updater)));
 
   // The longest subsequence in alphabetical order has one element so the
   // entropy is (1 - 1/5) which is 0.8.
-  EXPECT_EQ(0.8f, test_api.CalculateEntropy(
-                      ash::AppListSortOrder::kNameAlphabetical));
+  EXPECT_EQ(0.8f, app_list::reorder::CalculateEntropyForTest(
+                      ash::AppListSortOrder::kNameAlphabetical, model_updater));
 
-  app_list_syncable_service()->SetSyncItemOrder(
+  app_list_syncable_service()->SetAppListPreferredOrder(
       ash::AppListSortOrder::kNameAlphabetical);
   EXPECT_EQ(ash::AppListSortOrder::kNameAlphabetical, GetSortOrderFromPrefs());
   EXPECT_EQ(GetNamesOfSortedItemsFromSyncableService(),
@@ -1867,8 +1866,8 @@ TEST_F(AppListSortUnitTest, NewAppPlacement) {
   // The longest subsequence in order is ["A", "B", "D", "E"] so the entropy is
   // (1 - 4/5) which is 0.2.
   EXPECT_TRUE(cc::MathUtil::IsWithinEpsilon(
-      0.2f,
-      test_api.CalculateEntropy(ash::AppListSortOrder::kNameAlphabetical)));
+      0.2f, app_list::reorder::CalculateEntropyForTest(
+                ash::AppListSortOrder::kNameAlphabetical, model_updater)));
 
   // Install a new app. Verify its location.
   const std::string kItemId6 = CreateNextAppId(kItemId5);
@@ -1886,8 +1885,8 @@ TEST_F(AppListSortUnitTest, NewAppPlacement) {
   // The longest subsequence in order is ["A", "C", "D", "E"] so the entropy is
   // (1 - 4/6).
   EXPECT_TRUE(cc::MathUtil::IsWithinEpsilon(
-      1 / 3.f,
-      test_api.CalculateEntropy(ash::AppListSortOrder::kNameAlphabetical)));
+      1 / 3.f, app_list::reorder::CalculateEntropyForTest(
+                   ash::AppListSortOrder::kNameAlphabetical, model_updater)));
 
   // Install a new app.
   EXPECT_EQ(ash::AppListSortOrder::kNameAlphabetical, GetSortOrderFromPrefs());
@@ -1954,7 +1953,7 @@ TEST_F(AppListSortUnitTest, NewAppPlacementInitiallyOnlyFolders) {
   app_list_syncable_service()->AddItem(std::move(folder_item3));
 
   // Sort sync items then verify the item order.
-  app_list_syncable_service()->SetSyncItemOrder(
+  app_list_syncable_service()->SetAppListPreferredOrder(
       ash::AppListSortOrder::kNameAlphabetical);
   EXPECT_EQ(GetNamesOfSortedItemsFromSyncableService(),
             std::vector<std::string>({"", "Folder1", "Folder2"}));
@@ -1971,9 +1970,8 @@ TEST_F(AppListSortUnitTest, NewAppPlacementInitiallyOnlyFolders) {
 
   // Verify that the entropy is zero.
   EXPECT_TRUE(cc::MathUtil::IsWithinEpsilon(
-      0.f, app_list::AppListReorderDelegate::TestApi(
-               app_list_syncable_service()->reorder_delegate_for_test())
-               .CalculateEntropy(ash::AppListSortOrder::kNameAlphabetical)));
+      0.f, app_list::reorder::CalculateEntropyForTest(
+               ash::AppListSortOrder::kNameAlphabetical, model_updater)));
 
   // Install the second app.
   const std::string kNewAppId2 = CreateNextAppId(GenerateId("app_id2"));
@@ -1993,9 +1991,8 @@ TEST_F(AppListSortUnitTest, NewAppPlacementInitiallyOnlyFolders) {
 
   // There is one folder item out of order so the entropy should be 1/5 = 0.2.
   EXPECT_TRUE(cc::MathUtil::IsWithinEpsilon(
-      0.2f, app_list::AppListReorderDelegate::TestApi(
-                app_list_syncable_service()->reorder_delegate_for_test())
-                .CalculateEntropy(ash::AppListSortOrder::kNameAlphabetical)));
+      0.2f, app_list::reorder::CalculateEntropyForTest(
+                ash::AppListSortOrder::kNameAlphabetical, model_updater)));
 
   // Install the third app. Verify the item order after installation.
   const std::string kNewAppId3 = CreateNextAppId(GenerateId("app_id3"));
@@ -2041,7 +2038,7 @@ TEST_F(AppListSortUnitTest, VerifyNewAppPositionInGlobalScope) {
   EXPECT_EQ(GetNamesOfSortedItemsFromSyncableService(),
             std::vector<std::string>({"D", "A", "C"}));
 
-  app_list_syncable_service()->SetSyncItemOrder(
+  app_list_syncable_service()->SetAppListPreferredOrder(
       ash::AppListSortOrder::kNameAlphabetical);
   EXPECT_EQ(ash::AppListSortOrder::kNameAlphabetical, GetSortOrderFromPrefs());
   EXPECT_EQ(GetNamesOfSortedItemsFromSyncableService(),
@@ -2119,7 +2116,7 @@ TEST_F(AppListSortUnitTest, RemovePageBreaksIfAppsDontFillUpAPage) {
       MakeApp("C", kItemId3, extensions::Extension::NO_FLAGS);
   InstallExtension(app1.get());
 
-  app_list_syncable_service()->SetSyncItemOrder(
+  app_list_syncable_service()->SetAppListPreferredOrder(
       ash::AppListSortOrder::kNameAlphabetical);
   EXPECT_EQ(ash::AppListSortOrder::kNameAlphabetical, GetSortOrderFromPrefs());
   EXPECT_EQ(GetNamesOfSortedItemsFromSyncableService(),
@@ -2153,7 +2150,7 @@ TEST_F(AppListSortUnitTest, RemovePageBreaksIfAppCountMatchesLegacyPageSize) {
       std::make_unique<syncer::SyncErrorFactoryMock>());
   content::RunAllTasksUntilIdle();
 
-  app_list_syncable_service()->SetSyncItemOrder(
+  app_list_syncable_service()->SetAppListPreferredOrder(
       ash::AppListSortOrder::kNameAlphabetical);
   EXPECT_EQ(ash::AppListSortOrder::kNameAlphabetical, GetSortOrderFromPrefs());
   EXPECT_EQ(GetNamesOfSortedItemsPerPageFromSyncableService(),
@@ -2192,7 +2189,7 @@ TEST_F(AppListSortUnitTest, PageBreaksAfterSortWithTwoPagesInSync) {
       std::make_unique<syncer::SyncErrorFactoryMock>());
   content::RunAllTasksUntilIdle();
 
-  app_list_syncable_service()->SetSyncItemOrder(
+  app_list_syncable_service()->SetAppListPreferredOrder(
       ash::AppListSortOrder::kNameAlphabetical);
   EXPECT_EQ(ash::AppListSortOrder::kNameAlphabetical, GetSortOrderFromPrefs());
   EXPECT_EQ(GetNamesOfSortedItemsPerPageFromSyncableService(),
@@ -2240,7 +2237,7 @@ TEST_F(AppListSortUnitTest, PageBreaksAfterSortWithTwoPagesAndAFolderInSync) {
       std::make_unique<syncer::SyncErrorFactoryMock>());
   content::RunAllTasksUntilIdle();
 
-  app_list_syncable_service()->SetSyncItemOrder(
+  app_list_syncable_service()->SetAppListPreferredOrder(
       ash::AppListSortOrder::kNameAlphabetical);
   EXPECT_EQ(ash::AppListSortOrder::kNameAlphabetical, GetSortOrderFromPrefs());
   // Note that items Item 15 - Item 19 are in the folder.
@@ -2284,7 +2281,7 @@ TEST_F(AppListSortUnitTest, PageBreaksAfterSortWithTwoFullPagesInSync) {
       std::make_unique<syncer::SyncErrorFactoryMock>());
   content::RunAllTasksUntilIdle();
 
-  app_list_syncable_service()->SetSyncItemOrder(
+  app_list_syncable_service()->SetAppListPreferredOrder(
       ash::AppListSortOrder::kNameAlphabetical);
   EXPECT_EQ(ash::AppListSortOrder::kNameAlphabetical, GetSortOrderFromPrefs());
   EXPECT_EQ(GetNamesOfSortedItemsPerPageFromSyncableService(),
