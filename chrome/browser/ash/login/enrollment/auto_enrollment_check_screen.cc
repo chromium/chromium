@@ -104,8 +104,10 @@ void AutoEnrollmentCheckScreen::ShowImpl() {
           policy::AUTO_ENROLLMENT_STATE_CONNECTION_ERROR ||
       auto_enrollment_controller_->state() ==
           policy::AUTO_ENROLLMENT_STATE_SERVER_ERROR) {
-    VLOG(1) << "AutoEnrollmentCheckScreen::ShowImpl() retrying enrollment"
-            << " check due to failure.";
+    // TODO(crbug.com/1271134): Logging as "WARNING" to make sure it's preserved
+    // in the logs.
+    LOG(WARNING) << "AutoEnrollmentCheckScreen::ShowImpl() retrying enrollment"
+                 << " check due to failure.";
     auto_enrollment_controller_->Retry();
   } else {
     auto_enrollment_controller_->Start();
@@ -166,7 +168,9 @@ void AutoEnrollmentCheckScreen::UpdateState() {
   if (retry)
     auto_enrollment_controller_->Retry();
 
-  VLOG(1) << "AutoEnrollmentCheckScreen::UpdateState() retry = " << retry;
+  // TODO(crbug.com/1271134): Logging as "WARNING" to make sure it's preserved
+  // in the logs.
+  LOG(WARNING) << "AutoEnrollmentCheckScreen::UpdateState() retry = " << retry;
 }
 
 bool AutoEnrollmentCheckScreen::UpdateCaptivePortalStatus(

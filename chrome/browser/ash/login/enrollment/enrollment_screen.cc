@@ -189,10 +189,12 @@ void EnrollmentScreen::SetConfig() {
                        ? policy::EnrollmentConfig::MODE_ATTESTATION_LOCAL_FORCED
                        : policy::EnrollmentConfig::MODE_ATTESTATION;
   }
-  VLOG(1) << "EnrollmentScreen::SetConfig()"
-          << " config_.mode = " << static_cast<int>(config_.mode)
-          << ", config_.auth_mechanism = "
-          << static_cast<int>(config_.auth_mechanism);
+  // TODO(crbug.com/1271134): Logging as "WARNING" to make sure it's preserved
+  // in the logs.
+  LOG(WARNING) << "EnrollmentScreen::SetConfig()"
+               << " config_.mode = " << static_cast<int>(config_.mode)
+               << ", config_.auth_mechanism = "
+               << static_cast<int>(config_.auth_mechanism);
   if (view_)
     view_->SetEnrollmentConfig(config_);
   enrollment_helper_ = nullptr;
@@ -236,10 +238,12 @@ void EnrollmentScreen::OnAuthCleared(base::OnceClosure callback) {
 }
 
 bool EnrollmentScreen::MaybeSkip(WizardContext* context) {
-  VLOG(1) << "EnrollmentScreen::MaybeSkip("
-          << "config_.is_forced = " << config_.is_forced()
-          << ", skip_to_login_for_tests = " << context->skip_to_login_for_tests
-          << ").";
+  // TODO(crbug.com/1271134): Logging as "WARNING" to make sure it's preserved
+  // in the logs.
+  LOG(WARNING) << "EnrollmentScreen::MaybeSkip("
+               << "config_.is_forced = " << config_.is_forced()
+               << ", skip_to_login_for_tests = "
+               << context->skip_to_login_for_tests << ").";
   if (context->skip_to_login_for_tests && !config_.is_forced()) {
     exit_callback_.Run(Result::SKIPPED_FOR_TESTS);
     return true;
@@ -271,7 +275,10 @@ void EnrollmentScreen::ShowImpl() {
     TakeTpmOwnership();
     return;
   }
-  VLOG(1) << "Show enrollment screen";
+
+  // TODO(crbug.com/1271134): Logging as "WARNING" to make sure it's preserved
+  // in the logs.
+  LOG(WARNING) << "Show enrollment screen";
   if (view_)
     view_->SetEnrollmentController(this);
   UMA(policy::kMetricEnrollmentTriggered);
@@ -319,7 +326,10 @@ void EnrollmentScreen::OnTpmStatusResponse(
     return;
   }
   tpm_checked_ = true;
-  VLOG(1) << "OnTpmStatusResponse: status=" << reply.status();
+
+  // TODO(crbug.com/1271134): Logging as "WARNING" to make sure it's preserved
+  // in the logs.
+  LOG(WARNING) << "OnTpmStatusResponse: status=" << reply.status();
   switch (reply.status()) {
     case ::tpm_manager::STATUS_NOT_AVAILABLE:
       ShowImpl();
@@ -343,7 +353,10 @@ void EnrollmentScreen::CheckInstallAttributesState() {
   }
   user_data_auth::InstallAttributesState state =
       chromeos::install_attributes_util::InstallAttributesGetStatus();
-  VLOG(1) << "InstallAttributesState: state = " << static_cast<int>(state);
+
+  // TODO(crbug.com/1271134): Logging as "WARNING" to make sure it's preserved
+  // in the logs.
+  LOG(WARNING) << "InstallAttributesState: state = " << static_cast<int>(state);
   if (state == user_data_auth::InstallAttributesState::TPM_NOT_OWNED) {
     // There may be some processes running in the background, we need to try
     // again and set a reasonable timeout here to show an error if nothing
@@ -386,7 +399,9 @@ void EnrollmentScreen::HideImpl() {
 }
 
 void EnrollmentScreen::AuthenticateUsingAttestation() {
-  VLOG(1) << "Authenticating using attestation.";
+  // TODO(crbug.com/1271134): Logging as "WARNING" to make sure it's preserved
+  // in the logs.
+  LOG(WARNING) << "Authenticating using attestation.";
   elapsed_timer_ = std::make_unique<base::ElapsedTimer>();
   if (view_)
     view_->Show();
@@ -468,7 +483,9 @@ void EnrollmentScreen::OnCancel() {
 }
 
 void EnrollmentScreen::OnConfirmationClosed() {
-  VLOG(1) << "Confirmation closed.";
+  // TODO(crbug.com/1271134): Logging as "WARNING" to make sure it's preserved
+  // in the logs.
+  LOG(WARNING) << "Confirmation closed.";
   // The callback passed to ClearAuth is called either immediately or gets
   // wrapped in a callback bound to a weak pointer from `weak_factory_` - in
   // either case, passing exit_callback_ directly should be safe.
@@ -517,7 +534,9 @@ void EnrollmentScreen::OnOtherError(
 }
 
 void EnrollmentScreen::OnDeviceEnrolled() {
-  VLOG(1) << "Device enrolled.";
+  // TODO(crbug.com/1271134): Logging as "WARNING" to make sure it's preserved
+  // in the logs.
+  LOG(WARNING) << "Device enrolled.";
   enrollment_succeeded_ = true;
   // Some info to be shown on the success screen.
   if (view_)
@@ -632,15 +651,17 @@ void EnrollmentScreen::ShowAttributePromptScreen() {
     auto* asset_id_value = context()->configuration.FindKeyOfType(
         configuration::kEnrollmentAssetId, base::Value::Type::STRING);
     if (asset_id_value) {
-      VLOG(1) << "Using Asset ID from configuration "
-              << asset_id_value->GetString();
+      // TODO(crbug.com/1271134): Logging as "WARNING" to make sure it's
+      // preserved in the logs.
+      LOG(WARNING) << "Using Asset ID from configuration "
+                   << asset_id_value->GetString();
       asset_id = asset_id_value->GetString();
     }
     auto* location_value = context()->configuration.FindKeyOfType(
         configuration::kEnrollmentLocation, base::Value::Type::STRING);
     if (location_value) {
-      VLOG(1) << "Using Location from configuration "
-              << location_value->GetString();
+      LOG(WARNING) << "Using Location from configuration "
+                   << location_value->GetString();
       location = location_value->GetString();
     }
   }
@@ -658,7 +679,7 @@ void EnrollmentScreen::ShowAttributePromptScreen() {
     auto* auto_attributes = context()->configuration.FindKeyOfType(
         configuration::kEnrollmentAutoAttributes, base::Value::Type::BOOLEAN);
     if (auto_attributes && auto_attributes->GetBool()) {
-      VLOG(1) << "Automatically accept attributes";
+      LOG(WARNING) << "Automatically accept attributes";
       OnDeviceAttributeProvided(asset_id, location);
       return;
     }
@@ -725,7 +746,9 @@ void EnrollmentScreen::OnActiveDirectoryJoined(
     authpolicy::ErrorType error,
     const std::string& machine_domain) {
   if (error == authpolicy::ERROR_NONE) {
-    VLOG(1) << "Joined active directory";
+    // TODO(crbug.com/1271134): Logging as "WARNING" to make sure it's preserved
+    // in the logs.
+    LOG(WARNING) << "Joined active directory";
     if (view_)
       view_->ShowEnrollmentWorkingScreen();
     std::move(on_joined_callback_).Run(machine_domain);
