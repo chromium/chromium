@@ -48,9 +48,7 @@ class BuiltInBackendToAndroidBackendMigratorTest : public testing::Test {
         prefs::kCurrentMigrationVersionToGoogleMobileServices, 0);
     migrator_ = std::make_unique<BuiltInBackendToAndroidBackendMigrator>(
         &built_in_backend_, &android_backend_, prefs_.get(),
-        /*is_syncing_passwords_callback=*/base::BindRepeating([]() {
-          return false;
-        }));
+        /*is_syncing_passwords_callback=*/is_sync_enabled_callback_.Get());
   }
 
   ~BuiltInBackendToAndroidBackendMigratorTest() override = default;
@@ -64,6 +62,11 @@ class BuiltInBackendToAndroidBackendMigratorTest : public testing::Test {
 
   void RunUntilIdle() { task_env_.RunUntilIdle(); }
 
+  void ExpectSyncCallbackAndSetResult(bool enabled) {
+    EXPECT_CALL(is_sync_enabled_callback_, Run())
+        .WillOnce(testing::Return(enabled));
+  }
+
  private:
   base::test::SingleThreadTaskEnvironment task_env_;
   base::test::ScopedFeatureList feature_list_;
@@ -71,12 +74,15 @@ class BuiltInBackendToAndroidBackendMigratorTest : public testing::Test {
   FakePasswordStoreBackend built_in_backend_;
   FakePasswordStoreBackend android_backend_;
   std::unique_ptr<BuiltInBackendToAndroidBackendMigrator> migrator_;
+  base::MockCallback<base::RepeatingCallback<bool(void)>>
+      is_sync_enabled_callback_;
 };
 
 TEST_F(BuiltInBackendToAndroidBackendMigratorTest,
-       PrefUpdatedToNewerVersionWhenMigrationIsNecessary) {
+       PrefUpdatedToNewerVersionWhenMigrationIsNecessary_SyncOn) {
   feature_list().InitAndEnableFeatureWithParameters(
       features::kUnifiedPasswordManagerMigration, {{"migration_version", "1"}});
+  ExpectSyncCallbackAndSetResult(true);
 
   migrator()->StartMigrationIfNecessary();
   RunUntilIdle();
@@ -90,6 +96,8 @@ TEST_F(BuiltInBackendToAndroidBackendMigratorTest,
   feature_list().InitAndEnableFeatureWithParameters(
       features::kUnifiedPasswordManagerMigration, {{"migration_version", "1"}});
   prefs()->SetInteger(prefs::kCurrentMigrationVersionToGoogleMobileServices, 2);
+  ExpectSyncCallbackAndSetResult(false);
+
   migrator()->StartMigrationIfNecessary();
   RunUntilIdle();
 
@@ -150,6 +158,8 @@ class BuiltInBackendToAndroidBackendMigratorTestWithMigrationParams
 // Tests the initial migration result.
 TEST_P(BuiltInBackendToAndroidBackendMigratorTestWithMigrationParams,
        InitialMigration) {
+  ExpectSyncCallbackAndSetResult(false);
+
   feature_list().InitAndEnableFeatureWithParameters(
       features::kUnifiedPasswordManagerMigration, {{"migration_version", "1"}});
 

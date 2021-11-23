@@ -19,6 +19,12 @@ namespace password_manager {
 
 namespace {
 
+struct IsLess {
+  bool operator()(const PasswordForm* lhs, const PasswordForm* rhs) const {
+    return PasswordFormUniqueKey(*lhs) < PasswordFormUniqueKey(*rhs);
+  }
+};
+
 base::OnceCallback<void(const PasswordStoreChangeList&)>
 IgnoreChangeListAndRunCallback(base::OnceClosure callback) {
   return base::BindOnce(
@@ -27,12 +33,6 @@ IgnoreChangeListAndRunCallback(base::OnceClosure callback) {
       },
       std::move(callback));
 }
-
-struct IsLess {
-  bool operator()(const PasswordForm* lhs, const PasswordForm* rhs) const {
-    return PasswordFormUniqueKey(*lhs) < PasswordFormUniqueKey(*rhs);
-  }
-};
 
 }  // namespace
 
@@ -79,11 +79,27 @@ BuiltInBackendToAndroidBackendMigrator::
     ~BuiltInBackendToAndroidBackendMigrator() = default;
 
 void BuiltInBackendToAndroidBackendMigrator::StartMigrationIfNecessary() {
-  if (features::kMigrationVersion.Get() >
-      prefs_->GetInteger(
-          prefs::kCurrentMigrationVersionToGoogleMobileServices)) {
-    // TODO:(crbug.com/1252443) Check for the sync status.
+  bool is_initial_migration_needed =
+      features::kMigrationVersion.Get() >
+      prefs_->GetInteger(prefs::kCurrentMigrationVersionToGoogleMobileServices);
+
+  // For syncing users, we don't need to move passwords between the built-in
+  // and the Android backends, since both backends should be able to
+  // retrieve the same passwords from the sync server.
+  if (is_syncing_passwords_callback_.Run()) {
+    if (is_initial_migration_needed) {
+      // TODO:(crbug.com/1252443) Drop metadata and only then update pref.
+      UpdateMigrationVersionInPref();
+    }
+    return;
+  }
+
+  // For non-syncing user migrate password from |built_in_backend_| to
+  // |android_backend_|.
+  if (is_initial_migration_needed) {
     PrepareForMigration();
+  } else {
+    // TODO:(crbug.com/1252443) Start rolling migration.
   }
 }
 
