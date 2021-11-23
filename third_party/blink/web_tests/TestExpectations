@@ -7277,8 +7277,8 @@ crbug.com/1272058 [ Linux ] fast/animation/request-animation-frame-cancel2.html 
 crbug.com/1272058 [ Linux ] fast/animation/request-animation-frame-cancel.html [ Failure Pass ]
 
 # Sheriff 2021-11-22
-crbug.com/1272352 virtual/threaded/http/tests/devtools/isolated-code-cache/same-origin-test.js [ Crash Pass ]
-crbug.com/1272352 virtual/threaded/http/tests/devtools/isolated-code-cache/stale-revalidation-test.js [ Crash Pass ]
+crbug.com/1272352 virtual/threaded/http/tests/devtools/isolated-code-cache/same-origin-test.js [ Skip ]
+crbug.com/1272352 virtual/threaded/http/tests/devtools/isolated-code-cache/stale-revalidation-test.js [ Skip ]
 crbug.com/1272376 virtual/scroll-unification/plugins/plugin-document-back-forward.html [ Failure Pass ]
 crbug.com/1272380 http/tests/devtools/bindings/bindings-multiple-frames.js [ Failure Pass ]
 crbug.com/1272575 [ Mac ] virtual/gpu-rasterization/images/color-profile-svg-fill-text.html [ Failure Pass ]
