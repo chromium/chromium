@@ -95,8 +95,11 @@ MessageResponse LoadTestMessageHandler::HandleStructuredMessage(
     std::string message;
     if (!msg->GetString("message", &message))
       return MissingField(type, "message");
-    if (!msg->GetBoolean("passed", &test_passed_))
+    if (absl::optional<bool> passed = msg->FindBoolKey("passed")) {
+      test_passed_ = *passed;
+    } else {
       return MissingField(type, "passed");
+    }
     Log("SHUTDOWN", message);
     return DONE;
   } else {
@@ -152,8 +155,11 @@ MessageResponse NaClIntegrationMessageHandler::HandleStructuredMessage(
     std::string message;
     if (!msg->GetString("message", &message))
       return MissingField(type, "message");
-    if (!msg->GetBoolean("passed", &test_passed_))
+    if (absl::optional<bool> passed = msg->FindBoolKey("passed")) {
+      test_passed_ = *passed;
+    } else {
       return MissingField(type, "passed");
+    }
     Log(message);
     return DONE;
   } else if (type == "Ping") {
