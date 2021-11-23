@@ -217,11 +217,6 @@ RegistrationState* GetRegistrationState() {
 void RegisterForCloudMessages() {
   DCHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
 
-  if (!base::FeatureList::IsEnabled(device::kWebAuthCableSecondFactor) &&
-      !base::FeatureList::IsEnabled(device::kWebAuthPhoneSupport)) {
-    return;
-  }
-
   GetRegistrationState()->Register();
 }
 
@@ -233,8 +228,7 @@ absl::optional<syncer::DeviceInfo::PhoneAsASecurityKeyInfo>
 GetSyncDataIfRegistered() {
   DCHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
 
-  if (!base::FeatureList::IsEnabled(device::kWebAuthCableSecondFactor) ||
-      !Java_CableAuthenticatorModuleProvider_canDeviceSupportCable(
+  if (!Java_CableAuthenticatorModuleProvider_canDeviceSupportCable(
           base::android::AttachCurrentThread())) {
     return absl::nullopt;
   }
