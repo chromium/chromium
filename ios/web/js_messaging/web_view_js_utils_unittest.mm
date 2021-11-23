@@ -64,11 +64,9 @@ TEST_F(WebViewJsUtilsTest, ValueResultFromDoubleWKResult) {
 // Tests that ValueResultFromWKResult converts bool to Value::Type::BOOLEAN.
 TEST_F(WebViewJsUtilsTest, ValueResultFromBoolWKResult) {
   std::unique_ptr<base::Value> value(web::ValueResultFromWKResult(@YES));
-  EXPECT_TRUE(value);
-  EXPECT_EQ(base::Value::Type::BOOLEAN, value->type());
-  bool converted_result = false;
-  value->GetAsBoolean(&converted_result);
-  EXPECT_TRUE(converted_result);
+  ASSERT_TRUE(value);
+  ASSERT_TRUE(value->is_bool());
+  EXPECT_TRUE(value->GetBool());
 }
 
 // Tests that ValueResultFromWKResult converts null to Value::Type::NONE.
