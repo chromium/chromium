@@ -431,6 +431,7 @@ source_set("unit_tests") {
   deps = [
     "//ash/components/arc:arc_test_support",
     "//ash/components/arc/enterprise",
+    "//ash/components/arc/media_session",
     "//ash/components/arc/video_accelerator:common",
     "//ash/constants",
     "//ash/keyboard/ui",
@@ -454,7 +455,6 @@ source_set("unit_tests") {
     "//chromeos/policy",
     "//chromeos/ui/frame",
     "//components/account_id",
-    "//components/arc/media_session",
     "//components/exo",
     "//components/exo:test_support",
     "//components/keyed_service/content",

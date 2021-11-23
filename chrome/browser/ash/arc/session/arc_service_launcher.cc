@@ -20,6 +20,7 @@
 #include "ash/components/arc/ime/arc_ime_service.h"
 #include "ash/components/arc/keyboard_shortcut/arc_keyboard_shortcut_bridge.h"
 #include "ash/components/arc/lock_screen/arc_lock_screen_bridge.h"
+#include "ash/components/arc/media_session/arc_media_session_bridge.h"
 #include "ash/components/arc/memory_pressure/arc_memory_pressure_bridge.h"
 #include "ash/components/arc/metrics/arc_metrics_service.h"
 #include "ash/components/arc/midis/arc_midis_bridge.h"
@@ -95,7 +96,6 @@
 #include "chrome/browser/ui/ash/multi_user/multi_user_util.h"
 #include "chrome/common/channel_info.h"
 #include "components/arc/intent_helper/arc_intent_helper_bridge.h"
-#include "components/arc/media_session/arc_media_session_bridge.h"
 #include "components/prefs/pref_member.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/arc/media_session/arc_media_session_bridge.h"
+#include "ash/components/arc/media_session/arc_media_session_bridge.h"
 
 #include "ash/components/arc/session/arc_service_manager.h"
 #include "ash/components/arc/test/test_browser_context.h"
