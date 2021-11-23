@@ -24,6 +24,10 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_capture_types.h"
 
+#if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ui/ozone/buildflags.h"
+#endif  // OS_LINUX || BUILDFLAG(IS_CHROMEOS_ASH)
+
 using content::DesktopMediaID;
 using content::WebContentsMediaCaptureId;
 
@@ -139,8 +143,24 @@ IN_PROC_BROWSER_TEST_F(DesktopCaptureApiTest, MAYBE_ChooseDesktopMedia) {
   ASSERT_TRUE(RunExtensionTest("desktop_capture")) << message_;
 }
 
-// Test is flaky http://crbug.com/301887.
-IN_PROC_BROWSER_TEST_F(DesktopCaptureApiTest, DISABLED_Delegation) {
+// The build flag OZONE_PLATFORM_WAYLAND is only available on
+// Linux or ChromeOS, so this simplifies the next set of ifdefs.
+#if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(OZONE_PLATFORM_WAYLAND)
+#define OZONE_PLATFORM_WAYLAND
+#endif  // BUILDFLAG(OZONE_PLATFORM_WAYLAND)
+#endif  // OS_LINUX || BUILDFLAG(IS_CHROMEOS_ASH)
+
+// TODO(https://crbug.com/1271673): Crashes on Lacros.
+// TODO(https://crbug.com/1271680): Fails on the linux-wayland-rel bot.
+// TODO(https://crbug.com/1271711): Fails on Mac.
+#if defined(OS_MAC) || defined(OZONE_PLATFORM_WAYLAND) || \
+    BUILDFLAG(IS_CHROMEOS_LACROS)
+#define MAYBE_Delegation DISABLED_Delegation
+#else
+#define MAYBE_Delegation Delegation
+#endif
+IN_PROC_BROWSER_TEST_F(DesktopCaptureApiTest, MAYBE_Delegation) {
   // Initialize test server.
   base::FilePath test_data;
   EXPECT_TRUE(base::PathService::Get(chrome::DIR_TEST_DATA, &test_data));
@@ -155,16 +175,22 @@ IN_PROC_BROWSER_TEST_F(DesktopCaptureApiTest, DISABLED_Delegation) {
   ASSERT_TRUE(extension);
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), GetURLForPath("example.com", "/example.com.html")));
+      browser(), GetURLForPath("localhost", "/example.com.html")));
 
-  FakeDesktopMediaPickerFactory::TestFlags test_flags[] = {
-      {true, true, false, false, false,
-       DesktopMediaID(DesktopMediaID::TYPE_SCREEN, DesktopMediaID::kNullId)},
-      {true, true, false, false, false,
-       DesktopMediaID(DesktopMediaID::TYPE_SCREEN, DesktopMediaID::kNullId)},
-      {true, true, false, false, false,
-       DesktopMediaID(DesktopMediaID::TYPE_SCREEN, DesktopMediaID::kNullId),
-       true},
+  static FakeDesktopMediaPickerFactory::TestFlags test_flags[] = {
+      {.expect_screens = true,
+       .expect_windows = true,
+       .selected_source = DesktopMediaID(DesktopMediaID::TYPE_SCREEN,
+                                         webrtc::kFullDesktopScreenId)},
+      {.expect_screens = true,
+       .expect_windows = true,
+       .selected_source = DesktopMediaID(DesktopMediaID::TYPE_SCREEN,
+                                         DesktopMediaID::kNullId)},
+      {.expect_screens = true,
+       .expect_windows = true,
+       .selected_source =
+           DesktopMediaID(DesktopMediaID::TYPE_SCREEN, DesktopMediaID::kNullId),
+       .cancelled = true},
   };
   picker_factory_.SetTestFlags(test_flags, base::size(test_flags));
 

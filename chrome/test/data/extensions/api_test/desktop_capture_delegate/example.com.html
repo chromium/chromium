@@ -11,6 +11,11 @@ function sendToBrowser(msg) {
   domAutomationController.send(msg);
 }
 
+function onMediaStreamError(mediaStreamError) {
+  console.log(mediaStreamError.message);
+  sendToBrowser(false);
+}
+
 function requestStreamId(callback) {
   function onResponse(response) {
     if (chrome.runtime.lastError) {
@@ -35,7 +40,7 @@ function getStream() {
       audio:false,
       video: { mandatory: { chromeMediaSource: "desktop",
                             chromeMediaSourceId: id } }
-    }, sendToBrowser.bind(null, true), sendToBrowser.bind(null, false));
+    }, sendToBrowser.bind(null, true), onMediaStreamError);
   };
   requestStreamId(onStreamId);
 }
