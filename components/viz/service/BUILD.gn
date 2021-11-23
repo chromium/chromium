@@ -266,7 +266,7 @@ viz_component("service") {
       "display_embedder/gl_output_surface_chromeos.cc",
       "display_embedder/gl_output_surface_chromeos.h",
     ]
-    deps += [ "//components/arc/video_accelerator" ]
+    deps += [ "//ash/components/arc/video_accelerator" ]
   }
 
   if (is_chromecast) {
@@ -442,7 +442,7 @@ viz_source_set("gpu_service_dependencies") {
 
   if (is_chromeos_ash) {
     deps += [
-      "//components/arc/video_accelerator",
+      "//ash/components/arc/video_accelerator",
       "//components/chromeos_camera:jpeg_encode_accelerator_service",
       "//components/chromeos_camera:mjpeg_decode_accelerator_service",
       "//gpu/command_buffer/service:gles2",

@@ -2,10 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/arc/video_accelerator/gpu_arc_video_encode_accelerator.h"
+#include "ash/components/arc/video_accelerator/gpu_arc_video_encode_accelerator.h"
 
 #include <utility>
 
+#include "ash/components/arc/video_accelerator/arc_video_accelerator_util.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/memory/platform_shared_memory_region.h"
@@ -14,7 +15,6 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/system/sys_info.h"
-#include "components/arc/video_accelerator/arc_video_accelerator_util.h"
 #include "media/base/bitrate.h"
 #include "media/base/color_plane_layout.h"
 #include "media/base/format_utils.h"

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_ARC_VIDEO_ACCELERATOR_VIDEO_FRAME_PLANE_H_
-#define COMPONENTS_ARC_VIDEO_ACCELERATOR_VIDEO_FRAME_PLANE_H_
+#ifndef ASH_COMPONENTS_ARC_VIDEO_ACCELERATOR_VIDEO_FRAME_PLANE_H_
+#define ASH_COMPONENTS_ARC_VIDEO_ACCELERATOR_VIDEO_FRAME_PLANE_H_
 
 #include <stdint.h>
 
@@ -16,4 +16,4 @@ struct VideoFramePlane {
 
 }  // namespace arc
 
-#endif  // COMPONENTS_ARC_VIDEO_ACCELERATOR_VIDEO_FRAME_PLANE_H_
+#endif  // ASH_COMPONENTS_ARC_VIDEO_ACCELERATOR_VIDEO_FRAME_PLANE_H_

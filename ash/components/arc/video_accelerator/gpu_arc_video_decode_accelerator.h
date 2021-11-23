@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_ARC_VIDEO_ACCELERATOR_GPU_ARC_VIDEO_DECODE_ACCELERATOR_H_
-#define COMPONENTS_ARC_VIDEO_ACCELERATOR_GPU_ARC_VIDEO_DECODE_ACCELERATOR_H_
+#ifndef ASH_COMPONENTS_ARC_VIDEO_ACCELERATOR_GPU_ARC_VIDEO_DECODE_ACCELERATOR_H_
+#define ASH_COMPONENTS_ARC_VIDEO_ACCELERATOR_GPU_ARC_VIDEO_DECODE_ACCELERATOR_H_
 
 #include <memory>
 #include <queue>
@@ -84,6 +84,7 @@ class GpuArcVideoDecodeAccelerator
   void ReusePictureBuffer(int32_t picture_buffer_id) override;
   void Flush(FlushCallback callback) override;
   void Reset(ResetCallback callback) override;
+
  private:
   using PendingCallback =
       base::OnceCallback<void(mojom::VideoDecodeAccelerator::Result)>;
@@ -196,4 +197,4 @@ class GpuArcVideoDecodeAccelerator
 
 }  // namespace arc
 
-#endif  // COMPONENTS_ARC_VIDEO_ACCELERATOR_GPU_ARC_VIDEO_DECODE_ACCELERATOR_H_
+#endif  // ASH_COMPONENTS_ARC_VIDEO_ACCELERATOR_GPU_ARC_VIDEO_DECODE_ACCELERATOR_H_

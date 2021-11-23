@@ -77,11 +77,11 @@
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "components/arc/video_accelerator/gpu_arc_video_decode_accelerator.h"
-#include "components/arc/video_accelerator/gpu_arc_video_encode_accelerator.h"
-#include "components/arc/video_accelerator/gpu_arc_video_protected_buffer_allocator.h"
-#include "components/arc/video_accelerator/protected_buffer_manager.h"
-#include "components/arc/video_accelerator/protected_buffer_manager_proxy.h"
+#include "ash/components/arc/video_accelerator/gpu_arc_video_decode_accelerator.h"
+#include "ash/components/arc/video_accelerator/gpu_arc_video_encode_accelerator.h"
+#include "ash/components/arc/video_accelerator/gpu_arc_video_protected_buffer_allocator.h"
+#include "ash/components/arc/video_accelerator/protected_buffer_manager.h"
+#include "ash/components/arc/video_accelerator/protected_buffer_manager_proxy.h"
 #include "components/chromeos_camera/gpu_mjpeg_decode_accelerator_factory.h"
 #include "components/chromeos_camera/mojo_jpeg_encode_accelerator_service.h"
 #include "components/chromeos_camera/mojo_mjpeg_decode_accelerator_service.h"

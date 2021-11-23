@@ -2,16 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_ARC_VIDEO_ACCELERATOR_GPU_ARC_VIDEO_ENCODE_ACCELERATOR_H_
-#define COMPONENTS_ARC_VIDEO_ACCELERATOR_GPU_ARC_VIDEO_ENCODE_ACCELERATOR_H_
+#ifndef ASH_COMPONENTS_ARC_VIDEO_ACCELERATOR_GPU_ARC_VIDEO_ENCODE_ACCELERATOR_H_
+#define ASH_COMPONENTS_ARC_VIDEO_ACCELERATOR_GPU_ARC_VIDEO_ENCODE_ACCELERATOR_H_
 
 #include <memory>
 #include <unordered_map>
 #include <vector>
 
+#include "ash/components/arc/video_accelerator/video_frame_plane.h"
 #include "base/files/scoped_file.h"
 #include "components/arc/mojom/video_encode_accelerator.mojom.h"
-#include "components/arc/video_accelerator/video_frame_plane.h"
 #include "gpu/config/gpu_driver_bug_workarounds.h"
 #include "gpu/config/gpu_preferences.h"
 #include "gpu/ipc/common/gpu_memory_buffer_support.h"
@@ -100,4 +100,4 @@ class GpuArcVideoEncodeAccelerator
 
 }  // namespace arc
 
-#endif  // COMPONENTS_ARC_VIDEO_ACCELERATOR_GPU_ARC_VIDEO_ENCODE_ACCELERATOR_H_
+#endif  // ASH_COMPONENTS_ARC_VIDEO_ACCELERATOR_GPU_ARC_VIDEO_ENCODE_ACCELERATOR_H_

@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/arc/video_accelerator/protected_buffer_manager_proxy.h"
+#include "ash/components/arc/video_accelerator/protected_buffer_manager_proxy.h"
 
-#include "components/arc/video_accelerator/arc_video_accelerator_util.h"
-#include "components/arc/video_accelerator/protected_buffer_manager.h"
+#include "ash/components/arc/video_accelerator/arc_video_accelerator_util.h"
+#include "ash/components/arc/video_accelerator/protected_buffer_manager.h"
 #include "media/gpu/macros.h"
 #include "mojo/public/cpp/system/platform_handle.h"
 

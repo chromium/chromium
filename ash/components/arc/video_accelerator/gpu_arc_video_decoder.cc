@@ -2,18 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/arc/video_accelerator/gpu_arc_video_decoder.h"
+#include "ash/components/arc/video_accelerator/gpu_arc_video_decoder.h"
 
 #include <utility>
 
+#include "ash/components/arc/video_accelerator/arc_video_accelerator_util.h"
+#include "ash/components/arc/video_accelerator/protected_buffer_manager.h"
 #include "base/bind.h"
 #include "base/files/scoped_file.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "build/build_config.h"
-#include "components/arc/video_accelerator/arc_video_accelerator_util.h"
-#include "components/arc/video_accelerator/protected_buffer_manager.h"
 #include "media/base/media_util.h"
 #include "media/base/video_codecs.h"
 #include "media/base/video_frame.h"

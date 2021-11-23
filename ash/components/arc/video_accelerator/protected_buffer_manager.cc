@@ -2,10 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/arc/video_accelerator/protected_buffer_manager.h"
+#include "ash/components/arc/video_accelerator/protected_buffer_manager.h"
 
 #include <utility>
 
+#include "ash/components/arc/video_accelerator/protected_buffer_allocator.h"
 #include "base/bind.h"
 #include "base/bits.h"
 #include "base/logging.h"
@@ -14,7 +15,6 @@
 #include "base/posix/eintr_wrapper.h"
 #include "base/system/sys_info.h"
 #include "base/threading/thread_checker.h"
-#include "components/arc/video_accelerator/protected_buffer_allocator.h"
 #include "media/gpu/macros.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/ozone/public/ozone_platform.h"

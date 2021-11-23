@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/arc/video_accelerator/arc_video_accelerator_util.h"
+#include "ash/components/arc/video_accelerator/arc_video_accelerator_util.h"
 
 #include "base/files/scoped_file.h"
 #include "testing/gtest/include/gtest/gtest.h"

@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/arc/video_accelerator/arc_video_accelerator_util.h"
+#include "ash/components/arc/video_accelerator/arc_video_accelerator_util.h"
 
+#include "ash/components/arc/video_accelerator/protected_buffer_manager.h"
 #include "base/files/file_util.h"
 #include "base/files/platform_file.h"
 #include "base/numerics/checked_math.h"
 #include "base/numerics/safe_conversions.h"
-#include "components/arc/video_accelerator/protected_buffer_manager.h"
 #include "media/base/video_frame.h"
 #include "media/gpu/buffer_validation.h"
 #include "media/gpu/macros.h"

@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_ARC_VIDEO_ACCELERATOR_ARC_VIDEO_ACCELERATOR_UTIL_H_
-#define COMPONENTS_ARC_VIDEO_ACCELERATOR_ARC_VIDEO_ACCELERATOR_UTIL_H_
+#ifndef ASH_COMPONENTS_ARC_VIDEO_ACCELERATOR_ARC_VIDEO_ACCELERATOR_UTIL_H_
+#define ASH_COMPONENTS_ARC_VIDEO_ACCELERATOR_ARC_VIDEO_ACCELERATOR_UTIL_H_
 
 #include <string>
 #include <vector>
 
+#include "ash/components/arc/video_accelerator/video_frame_plane.h"
 #include "base/files/scoped_file.h"
-#include "components/arc/video_accelerator/video_frame_plane.h"
 #include "media/base/color_plane_layout.h"
 #include "media/base/video_types.h"
 #include "mojo/public/cpp/system/handle.h"
@@ -53,4 +53,4 @@ bool IsBufferSecure(ProtectedBufferManager* protected_buffer_manager,
                     const base::ScopedFD& fd);
 
 }  // namespace arc
-#endif  // COMPONENTS_ARC_VIDEO_ACCELERATOR_ARC_VIDEO_ACCELERATOR_UTIL_H_
+#endif  // ASH_COMPONENTS_ARC_VIDEO_ACCELERATOR_ARC_VIDEO_ACCELERATOR_UTIL_H_

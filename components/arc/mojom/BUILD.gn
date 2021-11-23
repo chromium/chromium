@@ -353,7 +353,7 @@ if (is_chromeos_ash) {
         traits_headers = [ "video_accelerator_mojom_traits.h" ]
         traits_sources = [ "video_accelerator_mojom_traits.cc" ]
         traits_public_deps = [
-          "//components/arc/video_accelerator:common",
+          "//ash/components/arc/video_accelerator:common",
           "//media",
           "//ui/gfx/geometry",
         ]

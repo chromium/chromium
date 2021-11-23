@@ -2,17 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/arc/video_accelerator/gpu_arc_video_protected_buffer_allocator.h"
+#include "ash/components/arc/video_accelerator/gpu_arc_video_protected_buffer_allocator.h"
 
 #include <limits>
 #include <utility>
 
+#include "ash/components/arc/video_accelerator/arc_video_accelerator_util.h"
+#include "ash/components/arc/video_accelerator/protected_buffer_allocator.h"
+#include "ash/components/arc/video_accelerator/protected_buffer_manager.h"
 #include "base/files/platform_file.h"
 #include "base/files/scoped_file.h"
 #include "base/numerics/safe_conversions.h"
-#include "components/arc/video_accelerator/arc_video_accelerator_util.h"
-#include "components/arc/video_accelerator/protected_buffer_allocator.h"
-#include "components/arc/video_accelerator/protected_buffer_manager.h"
 #include "media/base/format_utils.h"
 #include "media/gpu/macros.h"
 #include "mojo/public/c/system/types.h"
@@ -29,9 +29,8 @@ GpuArcVideoProtectedBufferAllocator::Create(
           protected_buffer_manager);
   if (!protected_buffer_allocator)
     return nullptr;
-  return std::unique_ptr<GpuArcVideoProtectedBufferAllocator>(
-      new GpuArcVideoProtectedBufferAllocator(
-          std::move(protected_buffer_allocator)));
+  return base::WrapUnique(new GpuArcVideoProtectedBufferAllocator(
+      std::move(protected_buffer_allocator)));
 }
 
 GpuArcVideoProtectedBufferAllocator::GpuArcVideoProtectedBufferAllocator(
