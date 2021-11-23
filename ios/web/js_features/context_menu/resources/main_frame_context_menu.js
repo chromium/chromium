@@ -8,7 +8,7 @@
 
 goog.provide('__crWeb.mainFrameContextMenu');
 
-// Requires __crWeb.allFramesContextMenu provided by __crWeb.allFramesWebBundle.
+// Requires __crWeb.allFramesContextMenu
 
 /** Beginning of anonymous object */
 (function() {

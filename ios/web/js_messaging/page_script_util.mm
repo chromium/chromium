@@ -60,10 +60,7 @@ NSString* GetDocumentStartScriptForAllFrames(BrowserState* browser_state) {
   NSString* embedder_page_script =
       GetWebClient()->GetDocumentStartScriptForAllFrames(browser_state);
   DCHECK(embedder_page_script);
-  NSString* web_bundle = GetPageScript(@"all_frames_web_bundle");
-  NSString* script =
-      [NSString stringWithFormat:@"%@; %@", web_bundle, embedder_page_script];
-  return MakeScriptInjectableOnce(@"start_all_frames", script);
+  return MakeScriptInjectableOnce(@"start_all_frames", embedder_page_script);
 }
 
 }  // namespace web

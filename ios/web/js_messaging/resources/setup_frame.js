@@ -12,7 +12,7 @@
 
 goog.provide('__crWeb.setupFrame');
 
-// Requires __crWeb.message provided by __crWeb.allFramesWebBundle.
+// Requires __crWeb.message
 
 /* Beginning of anonymous object. */
 (function() {
