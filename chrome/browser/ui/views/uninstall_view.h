@@ -11,12 +11,12 @@
 #include "base/callback.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/models/combobox_model.h"
+#include "ui/views/metadata/view_factory.h"
 #include "ui/views/window/dialog_delegate.h"
 
 namespace views {
 class Checkbox;
 class Combobox;
-class Label;
 }
 
 // UninstallView implements the dialog that confirms Chrome uninstallation
@@ -45,13 +45,17 @@ class UninstallView : public views::DialogDelegateView,
   void OnDialogAccepted();
   void OnDialogCancelled();
 
-  views::Label* confirm_label_;
-  views::Checkbox* delete_profile_;
-  views::Checkbox* change_default_browser_;
-  views::Combobox* browsers_combo_;
+  views::Checkbox* delete_profile_ = nullptr;
+  views::Checkbox* change_default_browser_ = nullptr;
+  views::Combobox* browsers_combo_ = nullptr;
   std::unique_ptr<BrowsersMap> browsers_;
   int& user_selection_;
   base::RepeatingClosure quit_closure_;
 };
+
+BEGIN_VIEW_BUILDER(, UninstallView, views::DialogDelegateView)
+END_VIEW_BUILDER
+
+DEFINE_VIEW_BUILDER(, UninstallView)
 
 #endif  // CHROME_BROWSER_UI_VIEWS_UNINSTALL_VIEW_H_
