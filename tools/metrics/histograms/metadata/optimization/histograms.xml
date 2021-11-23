@@ -339,7 +339,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="OptimizationGuide.ModelExecutor.ExecutionLatency.{OptimizationTarget}"
-    units="ms" expires_after="M96">
+    units="ms" expires_after="M106">
   <owner>mcrouse@chromium.org</owner>
   <owner>chrome-intelligence-core@google.com</owner>
   <summary>
@@ -477,7 +477,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram base="true" name="OptimizationGuide.OptimizationFilterStatus"
-    enum="OptimizationGuideOptimizationFilterStatus" expires_after="2022-01-02">
+    enum="OptimizationGuideOptimizationFilterStatus" expires_after="M106">
   <owner>mcrouse@chromium.org</owner>
   <owner>sophiechang@chromium.org</owner>
   <summary>
