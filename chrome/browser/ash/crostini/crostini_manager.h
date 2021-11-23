@@ -200,7 +200,9 @@ class CrostiniManager : public KeyedService,
   struct RestartOptions {
     bool start_vm_only = false;
     bool stop_after_lxd_available = false;
-    // These two options only affect new containers.
+    // Paths to share with VM on startup.
+    std::vector<base::FilePath> share_paths;
+    // These four options only affect new containers.
     absl::optional<std::string> container_username;
     absl::optional<int64_t> disk_size_bytes;
     absl::optional<std::string> image_server_url;

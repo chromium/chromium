@@ -618,6 +618,18 @@ class CrostiniManager::CrostiniRestarter
           base::BindOnce(&CrostiniRestarter::GetTerminaVmKernelVersionFinished,
                          weak_ptr_factory_.GetWeakPtr()));
     }
+
+    // Share any non-persisted paths for the VM.
+    guest_os::GuestOsSharePath::GetForProfile(profile_)->SharePaths(
+        container_id_.vm_name, options_.share_paths, /*persist=*/false,
+        base::BindOnce(&CrostiniRestarter::SharePathsFinished,
+                       weak_ptr_factory_.GetWeakPtr()));
+  }
+
+  void SharePathsFinished(bool success, const std::string& failure_reason) {
+    if (!success) {
+      LOG(WARNING) << "Failed to share paths: " << failure_reason;
+    }
     StartStage(mojom::InstallerState::kStartLxd);
     crostini_manager_->StartLxd(
         container_id_.vm_name,

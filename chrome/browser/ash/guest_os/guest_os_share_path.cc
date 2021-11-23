@@ -484,6 +484,10 @@ void GuestOsSharePath::SharePaths(const std::string& vm_name,
                                   std::vector<base::FilePath> paths,
                                   bool persist,
                                   SuccessCallback callback) {
+  if (paths.empty()) {
+    std::move(callback).Run(true, "");
+    return;
+  }
   base::RepeatingCallback<void(const base::FilePath&, const base::FilePath&,
                                bool, const std::string&)>
       barrier = base::BindRepeating(
