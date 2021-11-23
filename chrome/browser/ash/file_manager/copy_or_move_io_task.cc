@@ -168,8 +168,14 @@ bool CopyOrMoveIOTask::IsCrossFileSystem(
   base::FilePath my_files_path =
       file_manager::util::GetMyFilesFolderForProfile(profile_);
   base::FilePath downloads_path = my_files_path.Append("Downloads");
-  return downloads_path.IsParent(source_url.path()) !=
-         downloads_path.IsParent(destination_url.path());
+
+  bool source_in_downloads = downloads_path.IsParent(source_url.path());
+  // The destination_url can be the destination folder, so Downloads is a valid
+  // destination.
+  bool destination_in_downloads =
+      downloads_path == destination_url.path() ||
+      downloads_path.IsParent(destination_url.path());
+  return source_in_downloads != destination_in_downloads;
 }
 
 void CopyOrMoveIOTask::Execute(IOTask::ProgressCallback progress_callback,

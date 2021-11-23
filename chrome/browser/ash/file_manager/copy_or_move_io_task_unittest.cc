@@ -455,7 +455,7 @@ TEST_F(CopyOrMoveIsCrossFileSystemTest, DifferentVolumes) {
   ASSERT_TRUE(IsCrossFileSystem(source_path, destination_path));
 
   source_path = downloads_volume_path_.Append("a.txt");
-  destination_path = test_volume_path_.Append("a.txt");
+  destination_path = test_volume_path_;
   ASSERT_TRUE(IsCrossFileSystem(source_path, destination_path));
 }
 
@@ -465,7 +465,7 @@ TEST_F(CopyOrMoveIsCrossFileSystemTest, SameVolumeNotDownloads) {
   ASSERT_FALSE(IsCrossFileSystem(source_path, destination_path));
 
   source_path = test_volume_path_.Append("a/b.txt");
-  destination_path = test_volume_path_.Append("b.txt");
+  destination_path = test_volume_path_;
   ASSERT_FALSE(IsCrossFileSystem(source_path, destination_path));
 }
 
@@ -478,7 +478,7 @@ TEST_F(CopyOrMoveIsCrossFileSystemTest, MyFilesToMyFiles) {
   ASSERT_FALSE(IsCrossFileSystem(source_path, destination_path));
 
   source_path = downloads_volume_path_.Append("a.txt");
-  destination_path = downloads_volume_path_.Append("Downloadss/a.txt");
+  destination_path = downloads_volume_path_.Append("Downloadss");
   ASSERT_FALSE(IsCrossFileSystem(source_path, destination_path));
 }
 
@@ -489,7 +489,7 @@ TEST_F(CopyOrMoveIsCrossFileSystemTest, MyFileToDownloads) {
   ASSERT_TRUE(IsCrossFileSystem(source_path, destination_path));
 
   source_path = downloads_volume_path_.Append("a/b.txt");
-  destination_path = downloads_volume_path_.Append("Downloads/b.txt");
+  destination_path = downloads_volume_path_.Append("Downloads");
   ASSERT_TRUE(IsCrossFileSystem(source_path, destination_path));
 }
 
@@ -499,18 +499,18 @@ TEST_F(CopyOrMoveIsCrossFileSystemTest, DownloadsToMyFiles) {
   ASSERT_TRUE(IsCrossFileSystem(source_path, destination_path));
 
   source_path = downloads_volume_path_.Append("Downloads/a/b.txt");
-  destination_path = downloads_volume_path_.Append("b.txt");
+  destination_path = downloads_volume_path_;
   ASSERT_TRUE(IsCrossFileSystem(source_path, destination_path));
 }
 
 TEST_F(CopyOrMoveIsCrossFileSystemTest, DownloadsToDownloads) {
   base::FilePath source_path = downloads_volume_path_.Append("Downloads/a.txt");
   base::FilePath destination_path =
-      downloads_volume_path_.Append("Downloads/b/a.txt");
+      downloads_volume_path_.Append("Downloads/b/a (1).txt");
   ASSERT_FALSE(IsCrossFileSystem(source_path, destination_path));
 
   source_path = downloads_volume_path_.Append("Downloads/a.txt");
-  destination_path = downloads_volume_path_.Append("Downloads/a (1).txt");
+  destination_path = downloads_volume_path_.Append("Downloads");
   ASSERT_FALSE(IsCrossFileSystem(source_path, destination_path));
 }
 
