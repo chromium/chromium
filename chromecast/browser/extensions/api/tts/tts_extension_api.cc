@@ -219,10 +219,10 @@ ExtensionFunction::ResponseAction TtsSpeakFunction::Run() {
     }
   }
 
-  bool can_enqueue = false;
-  if (options->HasKey(constants::kEnqueueKey)) {
-    EXTENSION_FUNCTION_VALIDATE(
-        options->GetBoolean(constants::kEnqueueKey, &can_enqueue));
+  bool can_enqueue =
+      options->FindBoolKey(constants::kEnqueueKey).value_or(false);
+  if (base::Value* value = options->FindKey(constants::kEnqueueKey)) {
+    EXTENSION_FUNCTION_VALIDATE(value->is_bool());
   }
 
   std::set<content::TtsEventType> required_event_types;
