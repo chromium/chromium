@@ -1163,7 +1163,6 @@ public class SiteSettingsTest {
         new TwoStatePermissionTestCase("AutoDarkWebContent",
                 SiteSettingsCategory.Type.AUTO_DARK_WEB_CONTENT,
                 ContentSettingsType.AUTO_DARK_WEB_CONTENT, true)
-                .withExpectedPrefKeys(SingleCategorySettings.ADD_EXCEPTION_KEY)
                 .run();
 
         Assert.assertTrue("Auto dark should be enabled.", observer.mDefaultValue);
