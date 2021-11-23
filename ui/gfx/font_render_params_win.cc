@@ -28,20 +28,34 @@ FontRenderParams::SubpixelRendering GetSubpixelRenderingGeometry() {
           HKEY_LOCAL_MACHINE,
           (L"SOFTWARE\\Microsoft\\Avalon.Graphics\\" + trimmed.value()).c_str(),
           KEY_READ);
-      DWORD pixel_structure;
-      if (key.ReadValueDW(L"PixelStructure", &pixel_structure) ==
-          ERROR_SUCCESS) {
-        if (pixel_structure == 1)
-          return FontRenderParams::SUBPIXEL_RENDERING_RGB;
-        if (pixel_structure == 2)
-          return FontRenderParams::SUBPIXEL_RENDERING_BGR;
+      DWORD structure;
+      if (key.ReadValueDW(L"PixelStructure", &structure) == ERROR_SUCCESS) {
+        switch (structure) {
+          case 0:
+            return FontRenderParams::SUBPIXEL_RENDERING_NONE;
+          case 1:
+            return FontRenderParams::SUBPIXEL_RENDERING_RGB;
+          case 2:
+            return FontRenderParams::SUBPIXEL_RENDERING_BGR;
+        }
+        return FontRenderParams::SUBPIXEL_RENDERING_NONE;
       }
       break;
     }
   }
 
-  // No explicit ClearType settings, default to RGB.
-  return FontRenderParams::SUBPIXEL_RENDERING_RGB;
+  UINT structure = 0;
+  if (SystemParametersInfo(SPI_GETFONTSMOOTHINGORIENTATION, 0, &structure, 0)) {
+    switch (structure) {
+      case FE_FONTSMOOTHINGORIENTATIONRGB:
+        return FontRenderParams::SUBPIXEL_RENDERING_RGB;
+      case FE_FONTSMOOTHINGORIENTATIONBGR:
+        return FontRenderParams::SUBPIXEL_RENDERING_BGR;
+    }
+  }
+
+  // No explicit ClearType settings, default to none.
+  return FontRenderParams::SUBPIXEL_RENDERING_NONE;
 }
 
 // Caches font render params and updates them on system notifications.
