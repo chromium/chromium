@@ -197,18 +197,10 @@ version_info::Channel GetChannel(version_info::Channel channel) {
 // only some channels. If assigned to an experiment group, returns the name of
 // the group name, e.g. "Control"; otherwise, returns the empty string.
 std::string SetUpExtendedSafeModeTrial(version_info::Channel channel) {
-// For desktop and iOS, the Extended Variations Safe Mode experiment is enabled
-// on pre-stable channels; for Android Chrome, on canary and dev.
-#if defined(OS_ANDROID)
-  if (channel != version_info::Channel::UNKNOWN &&
-      channel != version_info::Channel::CANARY &&
-      channel != version_info::Channel::DEV) {
-#else
   if (channel != version_info::Channel::UNKNOWN &&
       channel != version_info::Channel::CANARY &&
       channel != version_info::Channel::DEV &&
       channel != version_info::Channel::BETA) {
-#endif  // defined(OS_ANDROID)
     return std::string();
   }
 
