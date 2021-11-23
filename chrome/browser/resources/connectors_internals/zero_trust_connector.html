@@ -1,15 +1,22 @@
 <style>
-  #enabled-string {
+  .bold {
     font-weight: bold;
   }
 
   div ~ div {
     margin-top: 5px;
   }
+
+  .hidden {
+    display: none;
+  }
 </style>
 <h2>Zero Trust Connector</h2>
 <div>
-  Is Enabled: <span id="enabled-string"></span>
+  Is Enabled: <span id="enabled-string" class="bold"></span>
+</div>
+<div id="key-manager-row">
+  Key Manager Initialized: <span id="key-manager-state" class="bold"></span>
 </div>
 <div>
   Signals:

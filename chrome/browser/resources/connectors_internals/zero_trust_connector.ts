@@ -3,7 +3,8 @@
 // found in the LICENSE file.
 
 import {CustomElement} from 'chrome://resources/js/custom_element.js';
-import {PageHandler, PageHandlerInterface, ZeroTrustState} from './connectors_internals.mojom-webui.js';
+
+import {KeyManagerInitializedValue, PageHandler, PageHandlerInterface, ZeroTrustState} from './connectors_internals.mojom-webui.js';
 
 export class ZeroTrustConnectorElement extends CustomElement {
   static get is() {
@@ -21,6 +22,23 @@ export class ZeroTrustConnectorElement extends CustomElement {
     } else {
       console.error('Could not find #enabled-string element.');
     }
+  }
+
+  private _keyManagerInitialized: string = '';
+  public set keyManagerInitialized(val: KeyManagerInitializedValue) {
+    const rowEl = (this.$('#key-manager-row') as HTMLElement);
+    const stateEl = (this.$('#key-manager-state') as HTMLElement);
+
+    if (val === KeyManagerInitializedValue.UNSUPPORTED) {
+      this._keyManagerInitialized = 'unsupported';
+      this.hideElement(rowEl);
+    } else {
+      this._keyManagerInitialized =
+          val === KeyManagerInitializedValue.KEY_LOADED ? 'true' : 'false';
+      this.showElement(rowEl);
+    }
+
+    stateEl.innerText = this._keyManagerInitialized;
   }
 
   private _signalsString: string = '';
@@ -67,6 +85,8 @@ export class ZeroTrustConnectorElement extends CustomElement {
 
     this.enabledString = `${state.isEnabled}`;
 
+    this.keyManagerInitialized = state.isKeyManagerInitialized;
+
     // Pretty print the dictionary as a JSON string.
     this.signalsString = JSON.stringify(state.signalsDictionary, null, 2);
   }
@@ -84,6 +104,14 @@ export class ZeroTrustConnectorElement extends CustomElement {
     copyButton.disabled = true;
     navigator.clipboard.writeText(this.signalsString)
         .finally(() => copyButton.disabled = false);
+  }
+
+  private showElement(element: Element) {
+    element?.classList.remove('hidden');
+  }
+
+  private hideElement(element: HTMLElement) {
+    element?.classList.add('hidden');
   }
 }
 

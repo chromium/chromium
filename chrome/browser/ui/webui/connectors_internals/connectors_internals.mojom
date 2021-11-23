@@ -4,9 +4,20 @@
 
 module connectors_internals.mojom;
 
+// Set of values to represent whether the key manager is supported and, if so,
+// fully initialized or not.
+enum KeyManagerInitializedValue {
+  UNSUPPORTED = 0,
+  KEY_LOADED = 1,
+  NO_KEY = 2,
+};
+
 struct ZeroTrustState {
   // Whether the connector is enabled or not.
   bool is_enabled;
+
+  // Whether the key manager has loaded a key successfully.
+  KeyManagerInitializedValue is_key_manager_initialized;
 
   // Dictionary containing device signals.
   map<string, string> signals_dictionary;

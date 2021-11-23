@@ -30,6 +30,8 @@ class MockDeviceTrustKeyManager : public DeviceTrustKeyManager {
               (const std::string&,
                base::OnceCallback<void(absl::optional<std::vector<uint8_t>>)>),
               (override));
+
+  MOCK_METHOD(bool, IsFullyInitialized, (), (const, override));
 };
 
 }  // namespace test

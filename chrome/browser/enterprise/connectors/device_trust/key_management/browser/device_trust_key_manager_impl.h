@@ -39,10 +39,7 @@ class DeviceTrustKeyManagerImpl : public DeviceTrustKeyManager {
   void ExportPublicKeyAsync(ExportPublicKeyCallback callback) override;
   void SignStringAsync(const std::string& str,
                        SignStringCallback callback) override;
-
-  bool is_fully_initialized() {
-    return state_ == InitializationState::kDefault && key_pair_;
-  }
+  bool IsFullyInitialized() const override;
 
  private:
   enum class InitializationState { kDefault, kLoadingKey, kRotatingKey };

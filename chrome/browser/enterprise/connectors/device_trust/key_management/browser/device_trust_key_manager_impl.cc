@@ -68,7 +68,7 @@ void DeviceTrustKeyManagerImpl::StartKeyRotation(const std::string& nonce) {
 void DeviceTrustKeyManagerImpl::ExportPublicKeyAsync(
     ExportPublicKeyCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (is_fully_initialized()) {
+  if (IsFullyInitialized()) {
     auto public_key_info = key_pair_->key()->GetSubjectPublicKeyInfo();
     std::string public_key(public_key_info.begin(), public_key_info.end());
     std::move(callback).Run(public_key);
@@ -83,7 +83,7 @@ void DeviceTrustKeyManagerImpl::ExportPublicKeyAsync(
 void DeviceTrustKeyManagerImpl::SignStringAsync(const std::string& str,
                                                 SignStringCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (is_fully_initialized()) {
+  if (IsFullyInitialized()) {
     background_task_runner_->PostTaskAndReplyWithResult(
         FROM_HERE, base::BindOnce(&SignString, str, key_pair_->key()),
         std::move(callback));
@@ -93,6 +93,11 @@ void DeviceTrustKeyManagerImpl::SignStringAsync(const std::string& str,
   AddPendingRequest(base::BindOnce(&DeviceTrustKeyManagerImpl::ResumeSignString,
                                    weak_factory_.GetWeakPtr(), str,
                                    std::move(callback)));
+}
+
+bool DeviceTrustKeyManagerImpl::IsFullyInitialized() const {
+  return state_ == InitializationState::kDefault && key_pair_ &&
+         key_pair_->key();
 }
 
 void DeviceTrustKeyManagerImpl::AddPendingRequest(
@@ -130,7 +135,7 @@ void DeviceTrustKeyManagerImpl::OnKeyLoaded(
 
   state_ = InitializationState::kDefault;
 
-  if (!is_fully_initialized() && create_on_fail) {
+  if (!IsFullyInitialized() && create_on_fail) {
     // Key loading failed, so we can kick-off the key creation. This is
     // guarded by a flag to make sure not to loop infinitely over:
     // create succeeds -> load fails -> create again...
@@ -189,7 +194,7 @@ void DeviceTrustKeyManagerImpl::ResumePendingCallbacks() {
 void DeviceTrustKeyManagerImpl::ResumeExportPublicKey(
     ExportPublicKeyCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (is_fully_initialized()) {
+  if (IsFullyInitialized()) {
     ExportPublicKeyAsync(std::move(callback));
   } else {
     std::move(callback).Run(absl::nullopt);
@@ -199,7 +204,7 @@ void DeviceTrustKeyManagerImpl::ResumeExportPublicKey(
 void DeviceTrustKeyManagerImpl::ResumeSignString(const std::string& str,
                                                  SignStringCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (is_fully_initialized()) {
+  if (IsFullyInitialized()) {
     SignStringAsync(str, std::move(callback));
   } else {
     std::move(callback).Run(absl::nullopt);

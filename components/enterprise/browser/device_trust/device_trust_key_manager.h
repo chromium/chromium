@@ -39,6 +39,10 @@ class DeviceTrustKeyManager {
       const std::string& str,
       base::OnceCallback<void(absl::optional<std::vector<uint8_t>>)>
           callback) = 0;
+
+  // Returns true if the manager has loaded a key successfully and is ready
+  // to handle client requests.
+  virtual bool IsFullyInitialized() const = 0;
 };
 
 }  // namespace enterprise_connectors

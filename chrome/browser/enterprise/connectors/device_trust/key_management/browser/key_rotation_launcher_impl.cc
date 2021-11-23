@@ -55,8 +55,15 @@ void KeyRotationLauncherImpl::LaunchKeyRotation(
   std::string dm_server_url = config.GetResourceRequest(false, 0)->url.spec();
 
   KeyRotationCommand::Params params{dm_token.value(), dm_server_url, nonce};
-  KeyRotationCommandFactory::GetInstance()->CreateCommand()->Trigger(
-      params, std::move(callback));
+  auto command = KeyRotationCommandFactory::GetInstance()->CreateCommand();
+  if (!command) {
+    // Command can be nullptr if trying to create a key on a unsupported
+    // platform.
+    std::move(callback).Run(KeyRotationCommand::Status::FAILED);
+    return;
+  }
+
+  command->Trigger(params, std::move(callback));
 }
 
 }  // namespace enterprise_connectors

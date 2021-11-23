@@ -40,7 +40,6 @@ std::unique_ptr<KeyRotationCommand> KeyRotationCommandFactory::CreateCommand() {
 #if defined(OS_WIN)
   return std::make_unique<WinKeyRotationCommand>();
 #else
-  NOTREACHED();
   return nullptr;
 #endif  // defined(OS_WIN)
 }
