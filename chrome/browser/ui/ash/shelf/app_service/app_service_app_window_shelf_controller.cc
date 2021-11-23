@@ -38,6 +38,7 @@
 #include "chrome/browser/ui/ash/shelf/crostini_app_window.h"
 #include "chrome/browser/ui/ash/shelf/lacros_app_window.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
@@ -67,6 +68,26 @@ std::string GetAppId(const std::string& id) {
   if (!arc_app_shelf_id.valid() || !arc_app_shelf_id.has_shelf_group_id())
     return id;
   return arc_app_shelf_id.app_id();
+}
+
+bool IgnoreWindow(aura::Window* window) {
+  if (!web_app::IsWebAppsCrosapiEnabled()) {
+    return false;
+  }
+
+  // Ignore windows already handled by BrowserAppShelfController.
+
+  // Lacros browser windows:
+  if (crosapi::browser_util::IsLacrosWindow(window)) {
+    return true;
+  }
+
+  // Ash browser windows:
+  if (chrome::FindBrowserWithWindow(window)) {
+    return true;
+  }
+
+  return false;
 }
 
 }  // namespace
@@ -170,9 +191,11 @@ void AppServiceAppWindowShelfController::OnWindowInitialized(
   if (!widget || !widget->is_top_level())
     return;
 
-  if (web_app::IsWebAppsCrosapiEnabled() &&
-      crosapi::browser_util::IsLacrosWindow(window)) {
-    // Ignore all Lacros windows, handled by BrowserAppShelfController.
+  if (IgnoreWindow(window)) {
+    // Ash browser windows won't be ignored here (as they ideally should),
+    // because on window initialization, the window is not associated with a
+    // browser yet. They will be handled in OnWindowPropertyChanged,
+    // OnWindowVisibilityChanged, and OnWindowDestroying callbacks instead.
     return;
   }
 
@@ -208,6 +231,10 @@ void AppServiceAppWindowShelfController::OnWindowPropertyChanged(
     aura::Window* window,
     const void* key,
     intptr_t old) {
+  if (IgnoreWindow(window)) {
+    observed_windows_.RemoveObservation(window);
+    return;
+  }
   if (key != ash::kShelfIDKey)
     return;
 
@@ -232,6 +259,11 @@ void AppServiceAppWindowShelfController::OnWindowVisibilityChanged(
   // Skip OnWindowVisibilityChanged for ancestors/descendants.
   if (!observed_windows_.IsObservingSource(window))
     return;
+
+  if (IgnoreWindow(window)) {
+    observed_windows_.RemoveObservation(window);
+    return;
+  }
 
   if (arc_tracker_)
     arc_tracker_->HandleWindowVisibilityChanged(window);
@@ -282,6 +314,10 @@ void AppServiceAppWindowShelfController::OnWindowDestroying(
     aura::Window* window) {
   DCHECK(observed_windows_.IsObservingSource(window));
   observed_windows_.RemoveObservation(window);
+  if (IgnoreWindow(window)) {
+    return;
+  }
+
   if (arc_tracker_)
     arc_tracker_->RemoveCandidateWindow(window);
   if (crostini_tracker_)
@@ -340,8 +376,12 @@ void AppServiceAppWindowShelfController::OnWindowActivated(
   if (arc_tracker_)
     arc_tracker_->HandleWindowActivatedChanged(new_active);
 
-  SetWindowActivated(new_active, /*active*/ true);
-  SetWindowActivated(old_active, /*active*/ false);
+  if (new_active && !IgnoreWindow(new_active)) {
+    SetWindowActivated(new_active, /*active*/ true);
+  }
+  if (old_active && !IgnoreWindow(old_active)) {
+    SetWindowActivated(old_active, /*active*/ false);
+  }
 }
 
 void AppServiceAppWindowShelfController::OnInstanceUpdate(

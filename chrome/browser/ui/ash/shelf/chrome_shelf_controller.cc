@@ -255,11 +255,12 @@ ChromeShelfController::ChromeShelfController(Profile* profile,
       std::make_unique<AppServiceAppWindowShelfController>(this);
   app_service_app_window_controller_ = app_service_controller.get();
   app_window_controllers_.emplace_back(std::move(app_service_controller));
-  // Create the browser monitor which will inform the shelf of status changes.
-  browser_status_monitor_ = std::make_unique<BrowserStatusMonitor>(this);
   if (web_app::IsWebAppsCrosapiEnabled()) {
     browser_app_shelf_controller_ = std::make_unique<BrowserAppShelfController>(
         profile, *model_, *shelf_item_factory_, *shelf_spinner_controller_);
+  } else {
+    // Create the browser monitor which will inform the shelf of status changes.
+    browser_status_monitor_ = std::make_unique<BrowserStatusMonitor>(this);
   }
 }
 
@@ -306,7 +307,9 @@ void ChromeShelfController::Init() {
   }
 
   UpdatePinnedAppsFromSync();
-  browser_status_monitor_->Initialize();
+  if (browser_status_monitor_) {
+    browser_status_monitor_->Initialize();
+  }
 }
 
 ash::ShelfID ChromeShelfController::CreateAppItem(
@@ -557,8 +560,10 @@ void ChromeShelfController::ActiveUserChanged(const AccountId& account_id) {
   // When coming here, the active user has already be changed so that we can
   // set it as active.
   AttachProfile(ProfileManager::GetActiveUserProfile());
-  // Update the V1 applications.
-  browser_status_monitor_->ActiveUserChanged(account_id.GetUserEmail());
+  if (browser_status_monitor_) {
+    // Update the V1 applications.
+    browser_status_monitor_->ActiveUserChanged(account_id.GetUserEmail());
+  }
   // Save/restore spinners belonging to the old/new user. Must be called before
   // notifying the AppWindowControllers, as some of them assume spinners owned
   // by the new user have already been added to the shelf.
