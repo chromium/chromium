@@ -79,7 +79,7 @@ class MEDIA_EXPORT AudioDebugRecordingManager {
       const AudioParameters& params);
 
  protected:
-  // Creates a AudioDebugRecordingHelper. Overridden by test.
+  // Creates an AudioDebugRecordingHelper. Overridden by test.
   virtual std::unique_ptr<AudioDebugRecordingHelper>
   CreateAudioDebugRecordingHelper(
       const AudioParameters& params,

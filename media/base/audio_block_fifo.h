@@ -27,7 +27,7 @@ class MEDIA_EXPORT AudioBlockFifo {
   virtual ~AudioBlockFifo();
 
   // Pushes interleaved audio data from |source| to the FIFO.
-  // The method will deinterleave the data into a audio bus.
+  // The method will deinterleave the data into an audio bus.
   // Push() will crash if the allocated space is insufficient.
   void Push(const void* source, int frames, int bytes_per_sample);
 
