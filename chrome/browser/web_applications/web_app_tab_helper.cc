@@ -107,21 +107,6 @@ void WebAppTabHelper::DidFinishNavigation(
   ReinstallPlaceholderAppIfNecessary(navigation_handle->GetURL());
 }
 
-void WebAppTabHelper::DOMContentLoaded(
-    content::RenderFrameHost* render_frame_host) {
-  if (render_frame_host != web_contents()->GetMainFrame())
-    return;
-
-  // Don't try and update the expiry time if this is an error page.
-  if (is_error_page_)
-    return;
-
-  // Don't try and manage file handlers unless this page is for an installed
-  // app.
-  if (app_id_.empty())
-    return;
-}
-
 void WebAppTabHelper::DidCloneToNewWebContents(
     content::WebContents* old_web_contents,
     content::WebContents* new_web_contents) {

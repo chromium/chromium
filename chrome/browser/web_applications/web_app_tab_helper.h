@@ -43,7 +43,6 @@ class WebAppTabHelper : public content::WebContentsUserData<WebAppTabHelper>,
       content::NavigationHandle* navigation_handle) override;
   void DidFinishNavigation(
       content::NavigationHandle* navigation_handle) override;
-  void DOMContentLoaded(content::RenderFrameHost* render_frame_host) override;
   void DidCloneToNewWebContents(
       content::WebContents* old_web_contents,
       content::WebContents* new_web_contents) override;
