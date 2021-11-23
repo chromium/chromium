@@ -50,8 +50,9 @@ void ConnectorSettings::InitFrom(ServiceProcessPrefs* prefs) {
     print_system_settings_.reset(print_system_settings->DeepCopy());
     // TODO(vitalybuka) : Consider to rename and move out option from
     // print_system_settings.
-    print_system_settings_->GetBoolean(kDeleteOnEnumFail,
-                                       &delete_on_enum_fail_);
+    delete_on_enum_fail_ =
+        print_system_settings_->FindBoolPath(kDeleteOnEnumFail)
+            .value_or(delete_on_enum_fail_);
   }
 
   // Check if there is an override for the cloud print server URL.

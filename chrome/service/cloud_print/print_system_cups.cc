@@ -420,9 +420,8 @@ PrintSystemCUPS::PrintSystemCUPS(
     if (print_system_settings->GetInteger(kCUPSEncryption, &encryption))
       cups_encryption_ = static_cast<http_encryption_t>(encryption);
 
-    bool notify_delete = true;
-    if (print_system_settings->GetBoolean(kCUPSNotifyDelete, &notify_delete))
-      notify_delete_ = notify_delete;
+    notify_delete_ = print_system_settings->FindBoolPath(kCUPSNotifyDelete)
+                         .value_or(notify_delete_);
 
     std::string types;
     if (print_system_settings->GetString(kCUPSSupportedMimeTipes, &types))
