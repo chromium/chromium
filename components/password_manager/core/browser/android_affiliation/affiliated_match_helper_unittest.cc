@@ -87,6 +87,10 @@ class OverloadedMockAffiliationService : public MockAffiliationService {
                            expected_facet_uri_spec)))
         .RetiresOnSaturation();
   }
+
+  void ExpectCallToTrimUnusedCache() {
+    EXPECT_CALL(*this, TrimUnusedCache).RetiresOnSaturation();
+  }
 };
 
 const char kTestWebFacetURIAlpha1[] = "https://one.alpha.example.com";
@@ -181,6 +185,7 @@ class AffiliatedMatchHelperTest : public testing::Test,
     mock_time_task_runner_->RunUntilIdle();
     ASSERT_EQ(AffiliatedMatchHelper::kInitializationDelayOnStartup,
               mock_time_task_runner_->NextPendingTaskDelay());
+    mock_affiliation_service()->ExpectCallToTrimUnusedCache();
     mock_time_task_runner_->FastForwardBy(
         AffiliatedMatchHelper::kInitializationDelayOnStartup);
   }

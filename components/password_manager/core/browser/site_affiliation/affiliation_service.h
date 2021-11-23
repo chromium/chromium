@@ -84,6 +84,10 @@ class AffiliationService : public KeyedService {
   // long as the data is no longer needed.
   virtual void TrimCacheForFacetURI(const FacetURI& facet_uri) = 0;
 
+  // Wipes results from cache which don't correspond to the any facet from
+  // |facet_uris|.
+  virtual void TrimUnusedCache(std::vector<FacetURI> facet_uris) = 0;
+
   // Retrieves affiliation and branding information about the Android
   // credentials in |forms|, sets |affiliated_web_realm|, |app_display_name| and
   // |app_icon_url| of forms, and invokes |result_callback|.

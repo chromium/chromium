@@ -80,6 +80,7 @@ class TestAffiliationService : public password_manager::AffiliationService {
   void CancelPrefetch(const FacetURI& facet_uri,
                       const base::Time& keep_fresh_until) override {}
   void TrimCacheForFacetURI(const FacetURI& facet_uri) override {}
+  void TrimUnusedCache(std::vector<FacetURI> facet_uris) override {}
   void InjectAffiliationAndBrandingInformation(
       std::vector<std::unique_ptr<password_manager::PasswordForm>> forms,
       AffiliationService::StrategyOnCacheMiss strategy_on_cache_miss,

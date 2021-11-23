@@ -8,11 +8,14 @@
 
 #include <memory>
 
+#include <set>
 #include <vector>
 
 #include "base/bind.h"
+#include "base/containers/flat_set.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
+#include "build/build_config.h"
 #include "sql/database.h"
 #include "sql/error_delegate_util.h"
 #include "sql/meta_table.h"
@@ -235,6 +238,43 @@ void AffiliationDatabase::StoreAndRemoveConflicting(
 
   if (!Store(affiliation))
     NOTREACHED();
+
+  transaction.Commit();
+}
+
+void AffiliationDatabase::RemoveMissingFacetURI(
+    std::vector<FacetURI> facet_uris) {
+  sql::Transaction transaction(sql_connection_.get());
+  if (!transaction.Begin())
+    return;
+
+  auto current_facets = base::MakeFlatSet<std::string>(
+      facet_uris, {}, &FacetURI::potentially_invalid_spec);
+
+  std::set<int64_t> all_ids, found_ids;
+  sql::Statement statement(sql_connection_->GetUniqueStatement(
+      "SELECT m.facet_uri, m.set_id FROM eq_class_members m"));
+
+  // For every facet in the database check if it exists in |current_facets|.
+  while (statement.Step()) {
+    std::string facet_uri = statement.ColumnString(0);
+    int64_t eq_class_id = statement.ColumnInt64(1);
+
+    all_ids.insert(eq_class_id);
+    if (current_facets.contains(facet_uri)) {
+      found_ids.insert(eq_class_id);
+    }
+  }
+
+  // Remove any equivalence class which aren't represented in |current_facets|.
+  for (const auto id : all_ids) {
+    if (found_ids.find(id) == found_ids.end()) {
+      sql::Statement statement_parent(sql_connection_->GetCachedStatement(
+          SQL_FROM_HERE, "DELETE FROM eq_classes WHERE eq_classes.id = ?"));
+      statement_parent.BindInt64(0, id);
+      statement_parent.Run();
+    }
+  }
 
   transaction.Commit();
 }

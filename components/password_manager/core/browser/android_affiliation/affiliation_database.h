@@ -74,6 +74,10 @@ class AffiliationDatabase {
       const AffiliatedFacetsWithUpdateTime& affiliated_facets,
       std::vector<AffiliatedFacetsWithUpdateTime>* removed_affiliations);
 
+  // Removes all the stored equivalence classes and branding information which
+  // aren't represented by |facet_uris|.
+  void RemoveMissingFacetURI(std::vector<FacetURI> facet_uris);
+
   // Deletes the database file at |path| along with all its auxiliary files. The
   // database must be closed before calling this.
   static void Delete(const base::FilePath& path);

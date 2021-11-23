@@ -90,6 +90,7 @@ class AffiliationBackend : public FacetManagerHost,
   void CancelPrefetch(const FacetURI& facet_uri,
                       const base::Time& keep_fresh_until);
   void TrimCacheForFacetURI(const FacetURI& facet_uri);
+  void TrimUnusedCache(std::vector<FacetURI> facet_uris);
 
   // Deletes the cache database file at |db_path|, and all auxiliary files. The
   // database must be closed before calling this.

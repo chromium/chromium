@@ -111,6 +111,12 @@ void AffiliationBackend::TrimCacheForFacetURI(const FacetURI& facet_uri) {
     DiscardCachedDataIfNoLongerNeeded(affiliation.facets);
 }
 
+void AffiliationBackend::TrimUnusedCache(std::vector<FacetURI> facet_uris) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  cache_->RemoveMissingFacetURI(std::move(facet_uris));
+}
+
 // static
 void AffiliationBackend::DeleteCache(const base::FilePath& db_path) {
   AffiliationDatabase::Delete(db_path);

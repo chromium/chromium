@@ -27,6 +27,8 @@ void FakeAffiliationService::CancelPrefetch(
     const FacetURI& facet_uri,
     const base::Time& keep_fresh_until) {}
 void FakeAffiliationService::TrimCacheForFacetURI(const FacetURI& facet_uri) {}
+void FakeAffiliationService::TrimUnusedCache(std::vector<FacetURI> facet_uris) {
+}
 
 void FakeAffiliationService::InjectAffiliationAndBrandingInformation(
     std::vector<std::unique_ptr<PasswordForm>> forms,

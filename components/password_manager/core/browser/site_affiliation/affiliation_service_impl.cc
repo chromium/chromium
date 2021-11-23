@@ -264,6 +264,15 @@ void AffiliationServiceImpl::TrimCacheForFacetURI(const FacetURI& facet_uri) {
                                 base::Unretained(backend_), facet_uri));
 }
 
+void AffiliationServiceImpl::TrimUnusedCache(std::vector<FacetURI> facet_uris) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(backend_);
+  backend_task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(&AffiliationBackend::TrimUnusedCache,
+                     base::Unretained(backend_), std::move(facet_uris)));
+}
+
 void AffiliationServiceImpl::InjectAffiliationAndBrandingInformation(
     std::vector<std::unique_ptr<PasswordForm>> forms,
     AffiliationService::StrategyOnCacheMiss strategy_on_cache_miss,

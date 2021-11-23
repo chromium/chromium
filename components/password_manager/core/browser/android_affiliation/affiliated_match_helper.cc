@@ -143,6 +143,7 @@ void AffiliatedMatchHelper::OnLoginsRetained(
 
 void AffiliatedMatchHelper::OnGetPasswordStoreResults(
     std::vector<std::unique_ptr<PasswordForm>> results) {
+  std::vector<FacetURI> facets;
   for (const auto& form : results) {
     FacetURI facet_uri =
         FacetURI::FromPotentiallyInvalidSpec(form->signon_realm);
@@ -153,7 +154,10 @@ void AffiliatedMatchHelper::OnGetPasswordStoreResults(
         base::FeatureList::IsEnabled(
             password_manager::features::kFillingAcrossAffiliatedWebsites))
       affiliation_service_->Prefetch(facet_uri, base::Time::Max());
+
+    facets.push_back(std::move(facet_uri));
   }
+  affiliation_service_->TrimUnusedCache(std::move(facets));
 }
 
 }  // namespace password_manager
