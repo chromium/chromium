@@ -27,7 +27,6 @@ class PermissionQuietChip : public PermissionChip {
  private:
   // PermissionChip:
   views::View* CreateBubble() override;
-  bool ShouldCloseBubbleOnLostFocus() const override;
 
   void RecordChipButtonPressed();
   LocationBarView* GetLocationBarView();

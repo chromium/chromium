@@ -122,18 +122,6 @@ views::View* PermissionRequestChip::CreateBubble() {
   return prompt_bubble;
 }
 
-void PermissionRequestChip::Collapse(bool allow_restart) {
-  PermissionChip::Collapse(allow_restart);
-  if (!IsBubbleShowing()) {
-    ShowBlockedIcon();
-  }
-}
-
-void PermissionRequestChip::OnPromptBubbleDismissed() {
-  PermissionChip::OnPromptBubbleDismissed();
-  ShowBlockedIcon();
-}
-
 void PermissionRequestChip::RecordChipButtonPressed() {
   base::UmaHistogramMediumTimes("Permissions.Chip.TimeToInteraction",
                                 base::TimeTicks::Now() - chip_shown_time_);
