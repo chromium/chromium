@@ -9,6 +9,7 @@
 #include "ash/system/time/calendar_utils.h"
 #include "ash/system/time/calendar_view_controller.h"
 #include "base/bind.h"
+#include "base/callback_helpers.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -52,16 +53,22 @@ void MoveToNextDay(int& column,
 CalendarDateCellView::CalendarDateCellView(
     CalendarViewController* calendar_view_controller,
     base::Time::Exploded& date,
-    bool is_grayed_out_date)
+    bool is_grayed_out_date,
+    int row_index)
     : views::LabelButton(
-          views::Button::PressedCallback(base::BindRepeating([]() {
-            // TODO(https://crbug.com/1238927): Add a menthod in the
-            // controller to open the expandable view and call it here.
-          })),
+          views::Button::PressedCallback(
+              is_grayed_out_date
+                  ? base::DoNothing()
+                  : base::BindRepeating(
+                        &CalendarViewController::ShowEventListView,
+                        base::Unretained(calendar_view_controller),
+                        date,
+                        row_index)),
           base::UTF8ToUTF16(base::NumberToString(date.day_of_month)),
           CONTEXT_CALENDAR_DATE),
       date_(date),
       grayed_out_(is_grayed_out_date),
+      row_index_(row_index),
       calendar_view_controller_(calendar_view_controller) {
   SetHorizontalAlignment(gfx::ALIGN_CENTER);
   SetBorder(views::CreateEmptyBorder(calendar_utils::kDateCellInsets));
@@ -76,6 +83,8 @@ CalendarDateCellView::CalendarDateCellView(
                 gfx::Insets(kFocusCirclePadding)));
 
   DisableFocus();
+
+  scoped_calendar_view_controller_observer_.Observe(calendar_view_controller_);
 }
 
 CalendarDateCellView::~CalendarDateCellView() = default;
@@ -91,14 +100,19 @@ void CalendarDateCellView::OnThemeChanged() {
 // Draws the background for 'today'. If today is a grayed out date, which is
 // shown in its previous/next month, we won't draw this background.
 void CalendarDateCellView::OnPaintBackground(gfx::Canvas* canvas) {
+  if (grayed_out_)
+    return;
+
   const AshColorProvider* color_provider = AshColorProvider::Get();
   const SkColor bg_color = color_provider->GetControlsLayerColor(
       AshColorProvider::ControlsLayerType::kControlBackgroundColorInactive);
   const SkColor border_color = color_provider->GetControlsLayerColor(
       AshColorProvider::ControlsLayerType::kFocusRingColor);
 
-  // If the view is focused, paint a solid background.
-  if (views::View::HasFocus()) {
+  // If the view is focused or selected, paint a solid background.
+  is_selected_ = calendar_utils::IsTheSameDay(
+      date_, calendar_view_controller_->selected_date());
+  if (views::View::HasFocus() || is_selected_) {
     // Change text color to the background color.
     const SkColor text_color = color_provider->GetBaseLayerColor(
         AshColorProvider::BaseLayerType::kTransparent90);
@@ -121,7 +135,7 @@ void CalendarDateCellView::OnPaintBackground(gfx::Canvas* canvas) {
   SetEnabledTextColors(grayed_out_ ? calendar_utils::GetSecondaryTextColor()
                                    : calendar_utils::GetPrimaryTextColor());
 
-  if (grayed_out_ || !calendar_utils::IsToday(date_))
+  if (!calendar_utils::IsToday(date_))
     return;
 
   cc::PaintFlags highlight_background;
@@ -141,6 +155,25 @@ void CalendarDateCellView::OnPaintBackground(gfx::Canvas* canvas) {
   highlight_border.setStyle(cc::PaintFlags::kStroke_Style);
   highlight_border.setStrokeWidth(kLineThickness);
   canvas->DrawCircle(center, kTodayRoundedRadius, highlight_border);
+}
+
+void CalendarDateCellView::OnSelectedDateUpdated() {
+  bool is_selected = calendar_utils::IsTheSameDay(
+      date_, calendar_view_controller_->selected_date());
+  // If the selected day changes, repaint the background.
+  if (is_selected_ != is_selected) {
+    is_selected_ = is_selected;
+    SchedulePaint();
+  }
+}
+
+void CalendarDateCellView::CloseEventList() {
+  if (!is_selected_)
+    return;
+
+  // If this date is selected, repaint the background.
+  is_selected_ = false;
+  SchedulePaint();
 }
 
 void CalendarDateCellView::EnableFocus() {
@@ -210,20 +243,23 @@ CalendarMonthView::CalendarMonthView(
   while (current_date_exploded.month % 12 ==
          (first_day_of_month_exploded.month - 1) % 12) {
     AddDateCellToLayout(current_date_exploded, column,
-                        /*is_in_current_month=*/false);
+                        /*is_in_current_month=*/false, /*row_index=*/0);
     MoveToNextDay(column, current_date, current_date_exploded);
   }
 
   int row_number = 0;
   // Builds non-gray-out dates of the current month.
   while (current_date_exploded.month == first_day_of_month_exploded.month) {
+    // Count a row when a new row starts.
+    if (column == 0 || current_date_exploded.day_of_month == 1) {
+      ++row_number;
+    }
     auto* cell = AddDateCellToLayout(current_date_exploded, column,
-                                     /*is_in_current_month=*/true);
+                                     /*is_in_current_month=*/true,
+                                     /*row_index=*/row_number - 1);
     // Add the first non-grayed-out cell of the row to the `focused_cells_`.
     if (column == 0 || current_date_exploded.day_of_month == 1) {
       focused_cells_.push_back(cell);
-      // Count a row when a new row starts.
-      ++row_number;
     }
     // If this row has today, updates today's row number and replaces today to
     // the last element in the `focused_cells_`.
@@ -254,7 +290,8 @@ CalendarMonthView::CalendarMonthView(
          end_of_row_exploded.day_of_month) {
     // Next column is generated.
     AddDateCellToLayout(current_date_exploded, column,
-                        /*is_in_current_month=*/false);
+                        /*is_in_current_month=*/false,
+                        /*row_index=*/row_number);
     MoveToNextDay(column, current_date, current_date_exploded);
   }
 }
@@ -264,13 +301,14 @@ CalendarMonthView::~CalendarMonthView() = default;
 CalendarDateCellView* CalendarMonthView::AddDateCellToLayout(
     base::Time::Exploded current_date_exploded,
     int column,
-    bool is_in_current_month) {
+    bool is_in_current_month,
+    int row_index) {
   auto* layout_manager = static_cast<views::TableLayout*>(GetLayoutManager());
   if (column == 0)
     layout_manager->AddRows(1, views::TableLayout::kFixedSize);
   return AddChildView(std::make_unique<CalendarDateCellView>(
       calendar_view_controller_, current_date_exploded,
-      /*is_grayed_out_date=*/!is_in_current_month));
+      /*is_grayed_out_date=*/!is_in_current_month, /*row_index=*/row_index));
 }
 
 void CalendarMonthView::EnableFocus() {

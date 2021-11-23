@@ -7,8 +7,10 @@
 #include <string>
 #include <utility>
 
+#include "ash/system/time/calendar_unittest_utils.h"
 #include "ash/test/ash_test_base.h"
 #include "base/time/time.h"
+#include "google_apis/calendar/calendar_api_response_types.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace ash {
@@ -178,30 +180,7 @@ class CalendarViewControllerEventsTest : public AshTestBase {
     AshTestBase::TearDown();
   }
 
-  std::unique_ptr<google_apis::calendar::CalendarEvent> CreateEvent(
-      const char* id,
-      const char* summary,
-      const char* start_time,
-      const char* end_time) {
-    std::unique_ptr<google_apis::calendar::CalendarEvent> event =
-        std::make_unique<google_apis::calendar::CalendarEvent>();
-    base::Time start_time_base, end_time_base;
-    google_apis::calendar::DateTime start_time_date, end_time_date;
-    event->set_id(id);
-    event->set_summary(summary);
-    bool result = base::Time::FromString(start_time, &start_time_base);
-    DCHECK(result);
-    result = base::Time::FromString(end_time, &end_time_base);
-    DCHECK(result);
-    start_time_date.set_date_time(start_time_base);
-    end_time_date.set_date_time(end_time_base);
-    event->set_start_time(start_time_date);
-    event->set_end_time(end_time_date);
-    return event;
-  }
-
-  bool IsDayWithEvents(const char* day,
-                       CalendarViewController::SingleDayEventList* events) {
+  bool IsDayWithEvents(const char* day, SingleDayEventList* events) {
     base::Time day_base;
 
     bool result = base::Time::FromString(day, &day_base);
@@ -213,9 +192,8 @@ class CalendarViewControllerEventsTest : public AshTestBase {
     return controller_->IsDayWithEvents(day_base, events);
   }
 
-  bool IsDayWithEventsInternal(
-      const char* day,
-      CalendarViewController::SingleDayEventList* events) const {
+  bool IsDayWithEventsInternal(const char* day,
+                               SingleDayEventList* events) const {
     base::Time day_base;
 
     bool result = base::Time::FromString(day, &day_base);
@@ -227,8 +205,7 @@ class CalendarViewControllerEventsTest : public AshTestBase {
     return controller_->IsDayWithEventsInternal(day_base, events);
   }
 
-  bool IsEventPresent(const char* event_id,
-                      CalendarViewController::SingleDayEventList& events) {
+  bool IsEventPresent(const char* event_id, SingleDayEventList& events) {
     const auto it =
         std::find_if(events.begin(), events.end(),
                      [event_id](google_apis::calendar::CalendarEvent event) {
@@ -268,8 +245,8 @@ TEST_F(CalendarViewControllerEventsTest, IsDayWithEvents_OneDay) {
       std::make_unique<google_apis::calendar::EventList>();
   event_list->set_time_zone("America/Los_Angeles");
   std::unique_ptr<google_apis::calendar::CalendarEvent> event =
-      CreateEvent(kId, kSummary, kStartTime, kEndTime);
-  CalendarViewController::SingleDayEventList events;
+      calendar_test_utils::CreateEvent(kId, kSummary, kStartTime, kEndTime);
+  SingleDayEventList events;
 
   // Haven't injected anything yet, so no events on kStartTime0.
   events.clear();
@@ -317,10 +294,10 @@ TEST_F(CalendarViewControllerEventsTest, IsDayWithEvents_TwoDays) {
       std::make_unique<google_apis::calendar::EventList>();
   event_list->set_time_zone("America/Los_Angeles");
   std::unique_ptr<google_apis::calendar::CalendarEvent> event0 =
-      CreateEvent(kId0, kSummary0, kStartTime0, kEndTime0);
+      calendar_test_utils::CreateEvent(kId0, kSummary0, kStartTime0, kEndTime0);
   std::unique_ptr<google_apis::calendar::CalendarEvent> event1 =
-      CreateEvent(kId1, kSummary1, kStartTime1, kEndTime1);
-  CalendarViewController::SingleDayEventList events;
+      calendar_test_utils::CreateEvent(kId1, kSummary1, kStartTime1, kEndTime1);
+  SingleDayEventList events;
 
   // Haven't injected anything yet, so no events on kStartTime0 or kStartTime1.
   events.clear();
@@ -375,8 +352,8 @@ TEST_F(CalendarViewControllerEventsTest, OnlyFetchOnce) {
       std::make_unique<google_apis::calendar::EventList>();
   event_list->set_time_zone("America/Los_Angeles");
   std::unique_ptr<google_apis::calendar::CalendarEvent> event =
-      CreateEvent(kId0, kSummary0, kStartTime0, kEndTime0);
-  CalendarViewController::SingleDayEventList events;
+      calendar_test_utils::CreateEvent(kId0, kSummary0, kStartTime0, kEndTime0);
+  SingleDayEventList events;
 
   // No events at kStartTime0.
   events.clear();
@@ -407,9 +384,9 @@ TEST_F(CalendarViewControllerEventsTest, OnlyFetchOnce) {
   event_list = std::make_unique<google_apis::calendar::EventList>();
   event_list->set_time_zone("America/Los_Angeles");
   std::unique_ptr<google_apis::calendar::CalendarEvent> event1 =
-      CreateEvent(kId1, kSummary1, kStartTime1, kEndTime1);
+      calendar_test_utils::CreateEvent(kId1, kSummary1, kStartTime1, kEndTime1);
   std::unique_ptr<google_apis::calendar::CalendarEvent> event2 =
-      CreateEvent(kId2, kSummary2, kStartTime2, kEndTime2);
+      calendar_test_utils::CreateEvent(kId2, kSummary2, kStartTime2, kEndTime2);
   event_list->InjectItemForTesting(std::move(event1));
   event_list->InjectItemForTesting(std::move(event2));
   controller_->InjectEvents(std::move(event_list));
@@ -457,12 +434,12 @@ TEST_F(CalendarViewControllerEventsTest, EventsDifferentMonths) {
       std::make_unique<google_apis::calendar::EventList>();
   event_list->set_time_zone("America/Los_Angeles");
   std::unique_ptr<google_apis::calendar::CalendarEvent> event0 =
-      CreateEvent(kId0, kSummary0, kStartTime0, kEndTime0);
+      calendar_test_utils::CreateEvent(kId0, kSummary0, kStartTime0, kEndTime0);
   std::unique_ptr<google_apis::calendar::CalendarEvent> event1 =
-      CreateEvent(kId1, kSummary1, kStartTime1, kEndTime1);
+      calendar_test_utils::CreateEvent(kId1, kSummary1, kStartTime1, kEndTime1);
   std::unique_ptr<google_apis::calendar::CalendarEvent> event2 =
-      CreateEvent(kId2, kSummary2, kStartTime2, kEndTime2);
-  CalendarViewController::SingleDayEventList events;
+      calendar_test_utils::CreateEvent(kId2, kSummary2, kStartTime2, kEndTime2);
+  SingleDayEventList events;
 
   // No events on any day.
   events.clear();
@@ -564,24 +541,24 @@ TEST_F(CalendarViewControllerEventsTest, PruneEvents) {
 
   // A series of events, one in each successive month.
   std::unique_ptr<google_apis::calendar::CalendarEvent> event0 =
-      CreateEvent(kId0, kSummary0, kStartTime0, kEndTime0);
+      calendar_test_utils::CreateEvent(kId0, kSummary0, kStartTime0, kEndTime0);
   std::unique_ptr<google_apis::calendar::CalendarEvent> event1 =
-      CreateEvent(kId1, kSummary1, kStartTime1, kEndTime1);
+      calendar_test_utils::CreateEvent(kId1, kSummary1, kStartTime1, kEndTime1);
   std::unique_ptr<google_apis::calendar::CalendarEvent> event2 =
-      CreateEvent(kId2, kSummary2, kStartTime2, kEndTime2);
+      calendar_test_utils::CreateEvent(kId2, kSummary2, kStartTime2, kEndTime2);
   std::unique_ptr<google_apis::calendar::CalendarEvent> event3 =
-      CreateEvent(kId3, kSummary3, kStartTime3, kEndTime3);
+      calendar_test_utils::CreateEvent(kId3, kSummary3, kStartTime3, kEndTime3);
   std::unique_ptr<google_apis::calendar::CalendarEvent> event4 =
-      CreateEvent(kId4, kSummary4, kStartTime4, kEndTime4);
+      calendar_test_utils::CreateEvent(kId4, kSummary4, kStartTime4, kEndTime4);
   std::unique_ptr<google_apis::calendar::CalendarEvent> event5 =
-      CreateEvent(kId5, kSummary5, kStartTime5, kEndTime5);
+      calendar_test_utils::CreateEvent(kId5, kSummary5, kStartTime5, kEndTime5);
   std::unique_ptr<google_apis::calendar::CalendarEvent> event6 =
-      CreateEvent(kId6, kSummary6, kStartTime6, kEndTime6);
+      calendar_test_utils::CreateEvent(kId6, kSummary6, kStartTime6, kEndTime6);
   std::unique_ptr<google_apis::calendar::CalendarEvent> event7 =
-      CreateEvent(kId7, kSummary7, kStartTime7, kEndTime7);
+      calendar_test_utils::CreateEvent(kId7, kSummary7, kStartTime7, kEndTime7);
   std::unique_ptr<google_apis::calendar::CalendarEvent> event8 =
-      CreateEvent(kId8, kSummary8, kStartTime8, kEndTime8);
-  CalendarViewController::SingleDayEventList events;
+      calendar_test_utils::CreateEvent(kId8, kSummary8, kStartTime8, kEndTime8);
+  SingleDayEventList events;
 
   // Inject all events, i.e. pretend the user added all these at some point.
   event_list->InjectItemForTesting(std::move(event0));

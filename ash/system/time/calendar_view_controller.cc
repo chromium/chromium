@@ -5,6 +5,7 @@
 #include "ash/system/time/calendar_view_controller.h"
 
 #include <stdlib.h>
+#include <cstddef>
 
 #include "ash/calendar/calendar_client.h"
 #include "ash/calendar/calendar_controller.h"
@@ -244,25 +245,21 @@ void CalendarViewController::FetchEvents() {
   MaybeFetchMonth(GetNextMonthFirstDayUTC(1).UTCMidnight());
 }
 
+SingleDayEventList CalendarViewController::SelectedDateEvents() {
+  if (!selected_date_.has_value())
+    return std::list<google_apis::calendar::CalendarEvent>();
+
+  base::Time date;
+  const bool result =
+      base::Time::FromLocalExploded(selected_date_.value(), &date);
+  DCHECK(result);
+  return FindEvents(date);
+}
+
 bool CalendarViewController::IsDayWithEventsInternal(
     base::Time day,
     SingleDayEventList* events) const {
-  // Early return if we know we have no events for this month.
-  base::Time start_of_month = calendar_utils::GetStartOfMonthUTC(day);
-  auto it = event_months_.find(start_of_month);
-  if (it == event_months_.end())
-    return false;
-
-  // Early return if we know we have no events for this day.
-  base::Time midnight = day.UTCMidnight();
-  const SingleMonthEventMap& month = it->second;
-  auto it2 = month.find(midnight);
-  if (it2 == month.end())
-    return false;
-
-  // Early return if there was a chance that have some events for this day, but
-  // in fact we don't.
-  const SingleDayEventList& list = it2->second;
+  const SingleDayEventList& list = FindEvents(day);
   if (list.empty())
     return false;
 
@@ -282,6 +279,50 @@ bool CalendarViewController::IsDayWithEvents(base::Time day,
     QueuePrunableMonth(calendar_utils::GetStartOfMonthUTC(day));
   }
   return has_events;
+}
+
+void CalendarViewController::ShowEventListView(
+    base::Time::Exploded selected_date,
+    int row_index) {
+  // Do nothing if selecting on the same date.
+  if (is_event_list_showing_ &&
+      calendar_utils::IsTheSameDay(selected_date, selected_date_)) {
+    return;
+  }
+  selected_date_ = selected_date;
+  selected_date_row_index_ = row_index;
+
+  // Notify observers.
+  for (auto& observer : observers_)
+    observer.OnSelectedDateUpdated();
+
+  if (!is_event_list_showing_) {
+    for (auto& observer : observers_)
+      observer.OpenEventList();
+  }
+}
+
+void CalendarViewController::CloseEventListView() {
+  selected_date_ = absl::nullopt;
+  for (auto& observer : observers_)
+    observer.CloseEventList();
+}
+
+void CalendarViewController::OnEventListOpened() {
+  is_event_list_showing_ = true;
+}
+
+void CalendarViewController::OnEventListClosed() {
+  is_event_list_showing_ = false;
+}
+
+bool CalendarViewController::IsSelectedDateInCurrentMonth() {
+  if (!selected_date_.has_value())
+    return false;
+
+  auto current = calendar_utils::GetExplodedLocal(current_date_);
+  return current.month == selected_date_->month &&
+         current.year == selected_date_->year;
 }
 
 void CalendarViewController::OnCalendarEventsFetched(
@@ -346,6 +387,25 @@ void CalendarViewController::InsertEvents(
     const std::unique_ptr<google_apis::calendar::EventList>& events) {
   for (const auto& event : events->items())
     InsertEvent(event.get());
+}
+
+SingleDayEventList CalendarViewController::FindEvents(base::Time day) const {
+  SingleDayEventList event_list;
+
+  // Early return if we know we have no events for this month.
+  base::Time start_of_month = calendar_utils::GetStartOfMonthUTC(day);
+  auto it = event_months_.find(start_of_month);
+  if (it == event_months_.end())
+    return event_list;
+
+  // Early return if we know we have no events for this day.
+  base::Time midnight = day.UTCMidnight();
+  const SingleMonthEventMap& month = it->second;
+  auto it2 = month.find(midnight);
+  if (it2 == month.end())
+    return event_list;
+
+  return it2->second;
 }
 
 void CalendarViewController::PruneEventCache() {

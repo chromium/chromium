@@ -6,6 +6,7 @@
 #define ASH_SYSTEM_TIME_CALENDAR_UTILS_H_
 
 #include "base/time/time.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/geometry/insets.h"
 
@@ -33,6 +34,10 @@ constexpr gfx::Insets kDateCellInsets{kDateVerticalPadding,
 
 // Checks if the `selected_date` is local time today.
 bool IsToday(const base::Time::Exploded& selected_date);
+
+// Checks if the two exploded are in the same day.
+bool IsTheSameDay(absl::optional<base::Time::Exploded> date_a,
+                  absl::optional<base::Time::Exploded> date_b);
 
 // Gets the given `date`'s `Exploded` instance, in local time.
 base::Time::Exploded GetExplodedLocal(const base::Time& date);

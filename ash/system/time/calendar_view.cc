@@ -7,6 +7,7 @@
 #include "ash/public/cpp/ash_typography.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/pill_button.h"
+#include "ash/system/time/calendar_event_list_view.h"
 #include "ash/system/time/calendar_month_view.h"
 #include "ash/system/time/calendar_utils.h"
 #include "ash/system/tray/tray_popup_utils.h"
@@ -46,6 +47,11 @@ constexpr gfx::Insets kContentInsets{kContentVerticalPadding};
 // The pixel that will be applied to indicate that we can see this is the view's
 // bottom if there's this much pixel left.
 constexpr int kPrepareEndOfView = 30;
+
+// The percentage of a normal row height, which (percentage * row_height) will
+// be used as the `CalendarView` height when the `CalendarEventListView` is
+// expanded.
+constexpr float kExpandedCalendarViewHeightScale = 1.3;
 
 // After the user is finished navigating to a different month, this is how long
 // we wait before fetchiung more events.
@@ -334,7 +340,14 @@ CalendarView::CalendarView(DetailedViewDelegate* delegate,
   scoped_view_observer_.AddObservation(content_view_);
 }
 
-CalendarView::~CalendarView() = default;
+CalendarView::~CalendarView() {
+  // Removes the month views to remove its dependency from
+  // `CalendarViewController`, since these views are destructed after the
+  // controller.
+  content_view_->RemoveChildViewT(previous_month_);
+  content_view_->RemoveChildViewT(current_month_);
+  content_view_->RemoveChildViewT(next_month_);
+}
 
 void CalendarView::Init() {
   calendar_view_controller_->FetchEvents();
@@ -385,19 +398,35 @@ void CalendarView::SetMonthViews() {
       AddMonth(calendar_view_controller_->GetNextMonthFirstDayLocal(1));
 }
 
-int CalendarView::PositionOfCurrentMonth() {
+int CalendarView::PositionOfCurrentMonth() const {
   return kContentVerticalPadding +
          previous_label_->GetPreferredSize().height() +
          previous_month_->GetPreferredSize().height() +
          current_label_->GetPreferredSize().height();
 }
 
-int CalendarView::PositionOfToday() {
+int CalendarView::PositionOfToday() const {
   return PositionOfCurrentMonth() +
          calendar_view_controller_->GetTodayRowTopHeight();
 }
 
+int CalendarView::PositionOfSelectedDate() const {
+  DCHECK(calendar_view_controller_->selected_date().has_value());
+  const int row_height = calendar_view_controller_->selected_date_row_index() *
+                         calendar_view_controller_->row_height();
+  // The selected date should be either in the current month or the next month.
+  if (calendar_view_controller_->IsSelectedDateInCurrentMonth())
+    return PositionOfCurrentMonth() + row_height;
+
+  return PositionOfCurrentMonth() +
+         current_month_->GetPreferredSize().height() +
+         next_label_->GetPreferredSize().height() + row_height;
+}
+
 void CalendarView::ResetToToday() {
+  if (event_list_)
+    return;
+
   calendar_view_controller_->UpdateMonth(base::Time::Now());
   content_view_->RemoveChildViewT(previous_label_);
   content_view_->RemoveChildViewT(previous_month_);
@@ -672,6 +701,34 @@ void CalendarView::OnEventsFetched(
   SchedulePaint();
 }
 
+void CalendarView::OpenEventList() {
+  if (event_list_)
+    return;
+
+  if (!calendar_view_controller_->IsSelectedDateInCurrentMonth())
+    ScrollDownOneMonth();
+  base::AutoReset<bool> is_resetting_scrolling(&is_resetting_scroll_, true);
+  scroll_view_->ScrollToPosition(scroll_view_->vertical_scroll_bar(),
+                                 PositionOfSelectedDate());
+
+  scroll_view_->ClipHeightTo(0, kExpandedCalendarViewHeightScale *
+                                    calendar_view_controller_->row_height());
+  scroll_view_->SetVerticalScrollBarMode(
+      views::ScrollView::ScrollBarMode::kDisabled);
+  event_list_ = AddChildView(
+      std::make_unique<CalendarEventListView>(calendar_view_controller_.get()));
+  calendar_view_controller_->OnEventListOpened();
+}
+
+void CalendarView::CloseEventList() {
+  scroll_view_->ClipHeightTo(0, INT_MAX);
+  scroll_view_->SetVerticalScrollBarMode(
+      views::ScrollView::ScrollBarMode::kHiddenButEnabled);
+  RemoveChildViewT(event_list_);
+  event_list_ = nullptr;
+  calendar_view_controller_->OnEventListClosed();
+}
+
 void CalendarView::ScrollUpOneMonth() {
   calendar_view_controller_->UpdateMonth(
       calendar_view_controller_->GetPreviousMonthFirstDayLocal(1));
@@ -762,6 +819,11 @@ void CalendarView::ScrollDownOneMonthAndAutoScroll() {
 }
 
 void CalendarView::ScrollOneMonthWithAnimation(bool is_scrolling_up) {
+  // TODO(https://crbug.com/1238927). Scroll the height of one row each time if
+  // the event list is shown.
+  if (event_list_)
+    return;
+
   if (is_resetting_scroll_)
     return;
 
