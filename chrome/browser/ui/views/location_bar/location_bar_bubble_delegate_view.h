@@ -13,6 +13,7 @@
 #include "ui/events/event_observer.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/event_monitor.h"
+#include "ui/views/metadata/view_factory.h"
 
 namespace content {
 class WebContents;
@@ -117,5 +118,12 @@ class LocationBarBubbleDelegateView : public views::BubbleDialogDelegateView,
 
   DisplayReason display_reason_ = AUTOMATIC;
 };
+
+BEGIN_VIEW_BUILDER(,
+                   LocationBarBubbleDelegateView,
+                   views::BubbleDialogDelegateView)
+END_VIEW_BUILDER
+
+DEFINE_VIEW_BUILDER(, LocationBarBubbleDelegateView)
 
 #endif  // CHROME_BROWSER_UI_VIEWS_LOCATION_BAR_LOCATION_BAR_BUBBLE_DELEGATE_VIEW_H_
