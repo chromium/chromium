@@ -54,13 +54,6 @@ const char kLauncherAppSortDescription[] =
     "To evaluate an enhanced Launcher experience that enables users to reorder "
     "their apps in order to find them more easily.";
 
-const char kAlignFontDisplayAutoTimeoutWithLCPGoalName[] =
-    "Align 'font-display: auto' timeout with LCP goal";
-const char kAlignFontDisplayAutoTimeoutWithLCPGoalDescription[] =
-    "Make pending 'display: auto' web fonts enter the swap or failure period "
-    "immediately before reaching the LCP time limit (~2500ms), so that web "
-    "fonts do not become a source of bad LCP (Largest Contentful Paint).";
-
 const char kAllowInsecureLocalhostName[] =
     "Allow invalid certificates for resources loaded from localhost.";
 const char kAllowInsecureLocalhostDescription[] =

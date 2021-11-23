@@ -69,9 +69,6 @@ extern const char kAccountIdMigrationDescription[];
 extern const char kAddPasswordsInSettingsName[];
 extern const char kAddPasswordsInSettingsDescription[];
 
-extern const char kAlignFontDisplayAutoTimeoutWithLCPGoalName[];
-extern const char kAlignFontDisplayAutoTimeoutWithLCPGoalDescription[];
-
 extern const char kAllowInsecureLocalhostName[];
 extern const char kAllowInsecureLocalhostDescription[];
 

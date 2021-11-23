@@ -2232,100 +2232,6 @@ const FeatureEntry::FeatureVariation kBackForwardCacheVariations[] = {
      base::size(kBackForwardCache_ForceCaching), nullptr},
 };
 
-const FeatureEntry::FeatureParam
-    kAlignFontDisplayAutoTimeoutWithLCPGoalFailure2250[] = {
-        {"lcp-limit-in-ms", "2250"},
-        {"intervention-mode", "failure"}};
-const FeatureEntry::FeatureParam
-    kAlignFontDisplayAutoTimeoutWithLCPGoalFailure2000[] = {
-        {"lcp-limit-in-ms", "2000"},
-        {"intervention-mode", "failure"}};
-const FeatureEntry::FeatureParam
-    kAlignFontDisplayAutoTimeoutWithLCPGoalFailure1750[] = {
-        {"lcp-limit-in-ms", "1750"},
-        {"intervention-mode", "failure"}};
-const FeatureEntry::FeatureParam
-    kAlignFontDisplayAutoTimeoutWithLCPGoalFailure1500[] = {
-        {"lcp-limit-in-ms", "1500"},
-        {"intervention-mode", "failure"}};
-const FeatureEntry::FeatureParam
-    kAlignFontDisplayAutoTimeoutWithLCPGoalFailure1250[] = {
-        {"lcp-limit-in-ms", "1250"},
-        {"intervention-mode", "failure"}};
-const FeatureEntry::FeatureParam
-    kAlignFontDisplayAutoTimeoutWithLCPGoalFailure1000[] = {
-        {"lcp-limit-in-ms", "1000"},
-        {"intervention-mode", "failure"}};
-const FeatureEntry::FeatureParam
-    kAlignFontDisplayAutoTimeoutWithLCPGoalSwap2250[] = {
-        {"lcp-limit-in-ms", "2250"},
-        {"intervention-mode", "swap"}};
-const FeatureEntry::FeatureParam
-    kAlignFontDisplayAutoTimeoutWithLCPGoalSwap2000[] = {
-        {"lcp-limit-in-ms", "2000"},
-        {"intervention-mode", "swap"}};
-const FeatureEntry::FeatureParam
-    kAlignFontDisplayAutoTimeoutWithLCPGoalSwap1750[] = {
-        {"lcp-limit-in-ms", "1750"},
-        {"intervention-mode", "swap"}};
-const FeatureEntry::FeatureParam
-    kAlignFontDisplayAutoTimeoutWithLCPGoalSwap1500[] = {
-        {"lcp-limit-in-ms", "1500"},
-        {"intervention-mode", "swap"}};
-const FeatureEntry::FeatureParam
-    kAlignFontDisplayAutoTimeoutWithLCPGoalSwap1250[] = {
-        {"lcp-limit-in-ms", "1250"},
-        {"intervention-mode", "swap"}};
-const FeatureEntry::FeatureParam
-    kAlignFontDisplayAutoTimeoutWithLCPGoalSwap1000[] = {
-        {"lcp-limit-in-ms", "1000"},
-        {"intervention-mode", "swap"}};
-const FeatureEntry::FeatureVariation
-    kAlignFontDisplayAutoTimeoutWithLCPGoalVariations[] = {
-        {"switch to failure after 2250ms since navigation",
-         kAlignFontDisplayAutoTimeoutWithLCPGoalFailure2250,
-         base::size(kAlignFontDisplayAutoTimeoutWithLCPGoalFailure2250),
-         nullptr},
-        {"switch to failure after 2000ms since navigation",
-         kAlignFontDisplayAutoTimeoutWithLCPGoalFailure2000,
-         base::size(kAlignFontDisplayAutoTimeoutWithLCPGoalFailure2000),
-         nullptr},
-        {"switch to failure after 1750ms since navigation",
-         kAlignFontDisplayAutoTimeoutWithLCPGoalFailure1750,
-         base::size(kAlignFontDisplayAutoTimeoutWithLCPGoalFailure1750),
-         nullptr},
-        {"switch to failure after 1500ms since navigation",
-         kAlignFontDisplayAutoTimeoutWithLCPGoalFailure1500,
-         base::size(kAlignFontDisplayAutoTimeoutWithLCPGoalFailure1500),
-         nullptr},
-        {"switch to failure after 1250ms since navigation",
-         kAlignFontDisplayAutoTimeoutWithLCPGoalFailure1250,
-         base::size(kAlignFontDisplayAutoTimeoutWithLCPGoalFailure1250),
-         nullptr},
-        {"switch to failure after 1000ms since navigation",
-         kAlignFontDisplayAutoTimeoutWithLCPGoalFailure1000,
-         base::size(kAlignFontDisplayAutoTimeoutWithLCPGoalFailure1000),
-         nullptr},
-        {"switch to swap after 2250ms since navigation",
-         kAlignFontDisplayAutoTimeoutWithLCPGoalSwap2250,
-         base::size(kAlignFontDisplayAutoTimeoutWithLCPGoalSwap2250), nullptr},
-        {"switch to swap after 2000ms since navigation",
-         kAlignFontDisplayAutoTimeoutWithLCPGoalSwap2000,
-         base::size(kAlignFontDisplayAutoTimeoutWithLCPGoalSwap2000), nullptr},
-        {"switch to swap after 1750ms since navigation",
-         kAlignFontDisplayAutoTimeoutWithLCPGoalSwap1750,
-         base::size(kAlignFontDisplayAutoTimeoutWithLCPGoalSwap1750), nullptr},
-        {"switch to swap after 1500ms since navigation",
-         kAlignFontDisplayAutoTimeoutWithLCPGoalSwap1500,
-         base::size(kAlignFontDisplayAutoTimeoutWithLCPGoalSwap1500), nullptr},
-        {"switch to swap after 1250ms since navigation",
-         kAlignFontDisplayAutoTimeoutWithLCPGoalSwap1250,
-         base::size(kAlignFontDisplayAutoTimeoutWithLCPGoalSwap1250), nullptr},
-        {"switch to swap after 1000ms since navigation",
-         kAlignFontDisplayAutoTimeoutWithLCPGoalSwap1000,
-         base::size(kAlignFontDisplayAutoTimeoutWithLCPGoalSwap1000), nullptr},
-};
-
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 const FeatureEntry::Choice kEnableCrOSActionRecorderChoices[] = {
     {flags_ui::kGenericExperimentChoiceDefault, "", ""},
@@ -6571,15 +6477,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kNearbySharingBackgroundScanningDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(features::kNearbySharingBackgroundScanning)},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-    {"align-font-display-auto-lcp",
-     flag_descriptions::kAlignFontDisplayAutoTimeoutWithLCPGoalName,
-     flag_descriptions::kAlignFontDisplayAutoTimeoutWithLCPGoalDescription,
-     kOsAll,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(
-         blink::features::kAlignFontDisplayAutoTimeoutWithLCPGoal,
-         kAlignFontDisplayAutoTimeoutWithLCPGoalVariations,
-         "AlignFontDisplayAutoTimeoutWithLCPGoal")},
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     {"enable-palm-suppression", flag_descriptions::kEnablePalmSuppressionName,

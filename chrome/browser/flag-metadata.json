@@ -64,11 +64,6 @@
     "expiry_milestone": 100
   },
   {
-    "name": "align-font-display-auto-lcp",
-    "owners": [ "xiaochengh" ],
-    "expiry_milestone": 87
-  },
-  {
     "name": "allow-all-sites-to-initiate-mirroring",
     "owners": [ "takumif", "openscreen-eng@google.com" ],
     // This flag is used in regular manual QA and should not be removed.
