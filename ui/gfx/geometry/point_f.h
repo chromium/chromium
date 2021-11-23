@@ -39,12 +39,12 @@ class GEOMETRY_EXPORT PointF {
     y_ += delta_y;
   }
 
-  void operator+=(const Vector2dF& vector) {
+  constexpr void operator+=(const Vector2dF& vector) {
     x_ += vector.x();
     y_ += vector.y();
   }
 
-  void operator-=(const Vector2dF& vector) {
+  constexpr void operator-=(const Vector2dF& vector) {
     x_ -= vector.x();
     y_ -= vector.y();
   }
@@ -54,7 +54,7 @@ class GEOMETRY_EXPORT PointF {
 
   bool IsOrigin() const { return x_ == 0 && y_ == 0; }
 
-  Vector2dF OffsetFromOrigin() const { return Vector2dF(x_, y_); }
+  constexpr Vector2dF OffsetFromOrigin() const { return Vector2dF(x_, y_); }
 
   // A point is less than another point if its y-value is closer
   // to the origin. If the y-values are the same, then point with
@@ -89,21 +89,21 @@ class GEOMETRY_EXPORT PointF {
   float y_;
 };
 
-inline bool operator==(const PointF& lhs, const PointF& rhs) {
+constexpr bool operator==(const PointF& lhs, const PointF& rhs) {
   return lhs.x() == rhs.x() && lhs.y() == rhs.y();
 }
 
-inline bool operator!=(const PointF& lhs, const PointF& rhs) {
+constexpr bool operator!=(const PointF& lhs, const PointF& rhs) {
   return !(lhs == rhs);
 }
 
-inline PointF operator+(const PointF& lhs, const Vector2dF& rhs) {
+constexpr PointF operator+(const PointF& lhs, const Vector2dF& rhs) {
   PointF result(lhs);
   result += rhs;
   return result;
 }
 
-inline PointF operator-(const PointF& lhs, const Vector2dF& rhs) {
+constexpr PointF operator-(const PointF& lhs, const Vector2dF& rhs) {
   PointF result(lhs);
   result -= rhs;
   return result;
