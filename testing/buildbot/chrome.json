@@ -3164,25 +3164,6 @@
           ],
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
-        "test": "nacl_helper_nonsfi_unittests",
-        "test_id_prefix": "ninja://components/nacl/loader:nacl_helper_nonsfi_unittests/"
-      },
-      {
-        "merge": {
-          "args": [],
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "os": "Ubuntu-18.04",
-              "pool": "chrome.tests",
-              "ssd": "0"
-            }
-          ],
-          "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
         "test": "nacl_loader_unittests",
         "test_id_prefix": "ninja://components/nacl/loader:nacl_loader_unittests/"
       },

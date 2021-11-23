@@ -1319,10 +1319,6 @@
     "skip_usage_check": True,
     "type": "additional_compile_target",
   },
-  "nacl_helper_nonsfi_unittests": {
-    "label": "//components/nacl/loader:nacl_helper_nonsfi_unittests",
-    "type": "console_test_launcher",
-  },
   "nacl_loader_unittests": {
     "label": "//components/nacl/loader:nacl_loader_unittests",
     "type": "console_test_launcher",

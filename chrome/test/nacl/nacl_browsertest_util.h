@@ -188,28 +188,9 @@ class NaClBrowserTestGLibcExtension : public NaClBrowserTestGLibc {
 #  define MAYBE_GLIBC(test_name) test_name
 #endif
 
-// Currently, we only support it on x86-32 or ARM architecture.
-// TODO(hidehiko,mazda): Enable this on x86-64, too, when it is supported.
-#if (defined(OS_LINUX) || defined(OS_CHROMEOS)) &&               \
-    !defined(ADDRESS_SANITIZER) && !defined(THREAD_SANITIZER) && \
-    !defined(MEMORY_SANITIZER) && !defined(LEAK_SANITIZER) &&    \
-    (defined(ARCH_CPU_X86) || defined(ARCH_CPU_ARMEL))
-#  define MAYBE_NONSFI(test_case) test_case
-#else
-#  define MAYBE_NONSFI(test_case) DISABLED_##test_case
-#endif
-
-// Similar to MAYBE_NONSFI, this is available only on x86-32, x86-64 or
-// ARM linux.
-#if (defined(OS_LINUX) || defined(OS_CHROMEOS)) &&               \
-    !defined(ADDRESS_SANITIZER) && !defined(THREAD_SANITIZER) && \
-    !defined(MEMORY_SANITIZER) && !defined(LEAK_SANITIZER) &&    \
-    (defined(ARCH_CPU_X86_FAMILY) || defined(ARCH_CPU_ARMEL))
-#  define MAYBE_PNACL_NONSFI(test_case) test_case
-#else
-#  define MAYBE_PNACL_NONSFI(test_case) DISABLED_##test_case
-#endif
-
+// TODO(crbug.com/1273132): Remove all code referenced by this.
+#define MAYBE_NONSFI(test_case) DISABLED_##test_case
+#define MAYBE_PNACL_NONSFI(test_case) DISABLED_##test_case
 
 #define NACL_BROWSER_TEST_F(suite, name, body) \
 IN_PROC_BROWSER_TEST_F(suite##Newlib, name) \
