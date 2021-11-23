@@ -114,7 +114,7 @@ const base::Feature kSafeBrowsingDisableConsumerCsdForEnterprise{
 
 const base::Feature kRealTimeUrlLookupReferrerChainForEnterprise{
     "SafeBrowsingRealTimeUrlLookupReferrerChainForEnterprise",
-    base::FEATURE_DISABLED_BY_DEFAULT};
+    base::FEATURE_ENABLED_BY_DEFAULT};
 
 const base::Feature kSafeBrowsingPageLoadToken{
     "SafeBrowsingPageLoadToken", base::FEATURE_DISABLED_BY_DEFAULT};
