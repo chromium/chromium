@@ -293,6 +293,15 @@ Browser* StartupBrowserCreatorImpl::OpenTabsInBrowser(
       continue;
     }
 
+    // Start the What's New fetch but don't add the tab at this point. The tab
+    // will open as the foreground tab only if the remote content can be
+    // retrieved successfully. This prevents needing to automatically close the
+    // tab after opening it in the case where What's New does not load.
+    if (tabs[i].url == whats_new::GetWebUIStartupURL()) {
+      whats_new::StartWhatsNewFetch(browser);
+      continue;
+    }
+
     int add_types = first_tab ? TabStripModel::ADD_ACTIVE :
                                 TabStripModel::ADD_NONE;
     add_types |= TabStripModel::ADD_FORCE_INDEX;
@@ -505,13 +514,14 @@ StartupBrowserCreatorImpl::DetermineStartupTabs(
 
     StartupTabs onboarding_tabs;
     if (promotional_tabs_enabled) {
+      StartupTabs welcome_back_tabs;
 #if defined(OS_WIN)
       // This is a launch from a prompt presented to an inactive user who chose
       // to open Chrome and is being brought to a specific URL for this one
       // launch. Launch the browser with the desired welcome back URL in the
       // foreground and the other ordinary URLs (e.g., a restored session) in
       // the background.
-      StartupTabs welcome_back_tabs = provider.GetWelcomeBackTabs(
+      welcome_back_tabs = provider.GetWelcomeBackTabs(
           profile_, browser_creator_, process_startup);
       AppendTabs(welcome_back_tabs, &tabs);
 #endif  // defined(OS_WIN)
@@ -526,8 +536,10 @@ StartupBrowserCreatorImpl::DetermineStartupTabs(
 
       // Potentially add the What's New Page. Note that the What's New page
       // should never be shown in the same session as any first-run onboarding
-      // tabs.
-      if (onboarding_tabs.empty()) {
+      // tabs. It also shouldn't be shown with reset tabs or welcome back tabs
+      // that are required to always be the first foreground tab.
+      if (onboarding_tabs.empty() && reset_tabs.empty() &&
+          welcome_back_tabs.empty()) {
         StartupTabs new_features_tabs;
         new_features_tabs = provider.GetNewFeaturesTabs(whats_new_enabled);
         AppendTabs(new_features_tabs, &tabs);

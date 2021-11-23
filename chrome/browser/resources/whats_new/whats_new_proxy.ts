@@ -5,12 +5,12 @@
 import {sendWithPromise} from 'chrome://resources/js/cr.m.js';
 
 export interface WhatsNewProxy {
-  initialize(isAutoOpen: boolean): Promise<string>;
+  initialize(): Promise<string>;
 }
 
 export class WhatsNewProxyImpl implements WhatsNewProxy {
-  initialize(isAutoOpen: boolean): Promise<string> {
-    return sendWithPromise('initialize', isAutoOpen);
+  initialize(): Promise<string> {
+    return sendWithPromise('initialize');
   }
 
   static getInstance(): WhatsNewProxy {

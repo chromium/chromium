@@ -8,7 +8,10 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/json/json_writer.h"
+#include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_timeouts.h"
+#include "base/threading/thread_task_runner_handle.h"
 #include "base/values.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/policy/policy_test_utils.h"
@@ -214,6 +217,11 @@ class PromotionalTabsEnabledPolicyWhatsNewTest
 };
 
 IN_PROC_BROWSER_TEST_P(PromotionalTabsEnabledPolicyWhatsNewTest, RunTest) {
+  // Delay to allow the network request simulation to finish.
+  base::RunLoop run_loop;
+  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+      FROM_HERE, run_loop.QuitClosure(), TestTimeouts::action_timeout());
+  run_loop.Run();
   TabStripModel* tab_strip = browser()->tab_strip_model();
   ASSERT_GE(tab_strip->count(), 1);
   const auto& url = tab_strip->GetWebContentsAt(0)->GetURL();
@@ -264,6 +272,11 @@ class PromotionalTabsEnabledPolicyWhatsNewInvalidTest
 
 IN_PROC_BROWSER_TEST_P(PromotionalTabsEnabledPolicyWhatsNewInvalidTest,
                        RunTest) {
+  // Delay to allow the network request simulation to finish.
+  base::RunLoop run_loop;
+  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+      FROM_HERE, run_loop.QuitClosure(), TestTimeouts::action_timeout());
+  run_loop.Run();
   TabStripModel* tab_strip = browser()->tab_strip_model();
   ASSERT_GE(tab_strip->count(), 1);
   const auto& url = tab_strip->GetWebContentsAt(0)->GetURL();

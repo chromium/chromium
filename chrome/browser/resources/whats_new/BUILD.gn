@@ -37,10 +37,7 @@ generate_grd("build_grd") {
 }
 
 html_to_js("web_components") {
-  js_files = [
-    "whats_new_app.ts",
-    "whats_new_error_page.ts",
-  ]
+  js_files = [ "whats_new_app.ts" ]
 }
 
 copy("copy_proxy") {
@@ -54,7 +51,6 @@ ts_library("build_ts") {
   tsconfig_base = "tsconfig_base.json"
   in_files = [
     "whats_new_app.ts",
-    "whats_new_error_page.ts",
     "whats_new_proxy.ts",
   ]
   deps = [

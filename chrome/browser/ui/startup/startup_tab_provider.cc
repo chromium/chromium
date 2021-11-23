@@ -32,6 +32,7 @@
 #include "chrome/browser/ui/tabs/pinned_tab_codec.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/webui/settings/reset_settings_handler.h"
+#include "chrome/browser/ui/webui/whats_new/whats_new_util.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
 #include "components/prefs/pref_service.h"
@@ -370,10 +371,8 @@ StartupTabs StartupTabProviderImpl::GetPostCrashTabsForState(
 StartupTabs StartupTabProviderImpl::GetNewFeaturesTabsForState(
     bool whats_new_enabled) {
   StartupTabs tabs;
-  if (whats_new_enabled) {
-    GURL url(chrome::kChromeUIWhatsNewURL);
-    tabs.emplace_back(net::AppendQueryParameter(url, "auto", "true"), false);
-  }
+  if (whats_new_enabled)
+    tabs.emplace_back(whats_new::GetWebUIStartupURL(), false);
   return tabs;
 }
 #endif
