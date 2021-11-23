@@ -195,7 +195,8 @@ def _WriteXmlFile(root, path):
             root, encoding='utf-8')).toprettyxml(indent='  ').encode('utf-8'))
 
 
-def _RunLint(lint_binary_path,
+def _RunLint(create_cache,
+             lint_binary_path,
              backported_methods_path,
              config_path,
              manifest_path,
@@ -215,6 +216,13 @@ def _RunLint(lint_binary_path,
              testonly_target=False,
              warnings_as_errors=False):
   logging.info('Lint starting')
+
+  if create_cache:
+    # Occasionally lint may crash due to re-using intermediate files from older
+    # lint runs. See https://crbug.com/1258178 for context.
+    logging.info('Clearing cache dir %s before creating cache.', cache_dir)
+    shutil.rmtree(cache_dir, ignore_errors=True)
+    os.makedirs(cache_dir)
 
   cmd = [
       lint_binary_path,
@@ -467,7 +475,8 @@ def main():
                            ])
   depfile_deps = [p for p in possible_depfile_deps if p]
 
-  _RunLint(args.lint_binary_path,
+  _RunLint(args.create_cache,
+           args.lint_binary_path,
            args.backported_methods,
            args.config_path,
            args.manifest_path,
