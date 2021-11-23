@@ -464,6 +464,7 @@ test("web_engine_browsertests") {
     "browser/frame_impl_browsertest.cc",
     "browser/headless_browsertest.cc",
     "browser/input_browsertest.cc",
+    "browser/javascript_browsertest.cc",
     "browser/media_browsertest.cc",
     "browser/mock_virtual_keyboard.cc",
     "browser/mock_virtual_keyboard.h",
