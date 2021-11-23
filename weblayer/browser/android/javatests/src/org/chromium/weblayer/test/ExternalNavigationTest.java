@@ -28,6 +28,7 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.DisableIf;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.weblayer.Browser;
 import org.chromium.weblayer.Callback;
@@ -928,6 +929,7 @@ public class ExternalNavigationTest {
     @Test
     @SmallTest
     @MinWebLayerVersion(97)
+    @DisabledTest(message = "crbug.com/1273004") // Failing on android-arm64-proguard-rel
     public void
     testExternalIntentWithNoRedirectBlockedIfIntentProcessingDisabledOnNavigationStarted()
             throws Throwable {
@@ -983,6 +985,7 @@ public class ExternalNavigationTest {
     @Test
     @SmallTest
     @MinWebLayerVersion(97)
+    @DisabledTest(message = "crbug.com/1273004") // Failing on android-arm64-proguard-rel
     public void
     testExternalIntentAfterRedirectBlockedIfIntentProcessingDisabledOnNavigationStarted()
             throws Throwable {
