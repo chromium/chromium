@@ -248,9 +248,6 @@ void SharedImageStub::OnCreateSharedImage(
     return;
   }
 
-  SyncToken sync_token(sync_point_client_state_->namespace_id(),
-                       sync_point_client_state_->command_buffer_id(),
-                       params->release_id);
   sync_point_client_state_->ReleaseFenceSync(params->release_id);
 }
 
@@ -305,9 +302,6 @@ void SharedImageStub::OnCreateSharedImageWithData(
     upload_memory_ = base::ReadOnlySharedMemoryRegion();
   }
 
-  SyncToken sync_token(sync_point_client_state_->namespace_id(),
-                       sync_point_client_state_->command_buffer_id(),
-                       params->release_id);
   sync_point_client_state_->ReleaseFenceSync(params->release_id);
 }
 
@@ -325,9 +319,6 @@ void SharedImageStub::OnCreateGMBSharedImage(
     return;
   }
 
-  SyncToken sync_token(sync_point_client_state_->namespace_id(),
-                       sync_point_client_state_->command_buffer_id(),
-                       params->release_id);
   sync_point_client_state_->ReleaseFenceSync(params->release_id);
 }
 
@@ -339,9 +330,6 @@ void SharedImageStub::OnUpdateSharedImage(const Mailbox& mailbox,
   if (!UpdateSharedImage(mailbox, std::move(in_fence_handle)))
     return;
 
-  SyncToken sync_token(sync_point_client_state_->namespace_id(),
-                       sync_point_client_state_->command_buffer_id(),
-                       release_id);
   sync_point_client_state_->ReleaseFenceSync(release_id);
 }
 
@@ -355,9 +343,6 @@ void SharedImageStub::OnCreateSharedImageWithAHB(const Mailbox& out_mailbox,
   if (!CreateSharedImageWithAHB(out_mailbox, in_mailbox, usage))
     return;
 
-  SyncToken sync_token(sync_point_client_state_->namespace_id(),
-                       sync_point_client_state_->command_buffer_id(),
-                       release_id);
   sync_point_client_state_->ReleaseFenceSync(release_id);
 }
 #endif
