@@ -31,6 +31,7 @@ import {SiteException} from './site_settings_prefs_browser_proxy.js';
 export interface SiteListEntryElement {
   $: {
     actionMenuButton: HTMLElement,
+    resetSite: HTMLElement,
   }
 }
 

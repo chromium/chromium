@@ -25,7 +25,7 @@ import {ChooserType, ContentSettingsTypes} from './constants.js';
 import {SiteSettingsMixin} from './site_settings_mixin.js';
 import {ChooserException, RawChooserException, SiteException} from './site_settings_prefs_browser_proxy.js';
 
-interface ChooserExceptionListElement {
+export interface ChooserExceptionListElement {
   $: {
     tooltip: PaperTooltipElement,
   };
@@ -34,7 +34,8 @@ interface ChooserExceptionListElement {
 const ChooserExceptionListElementBase = ListPropertyUpdateMixin(
     SiteSettingsMixin(WebUIListenerMixin(I18nMixin(PolymerElement))));
 
-class ChooserExceptionListElement extends ChooserExceptionListElementBase {
+export class ChooserExceptionListElement extends
+    ChooserExceptionListElementBase {
   static get is() {
     return 'chooser-exception-list';
   }
@@ -213,6 +214,12 @@ class ChooserExceptionListElement extends ChooserExceptionListElementBase {
         this.updateList(propertyPath, siteUidGetter, exception.sites);
       }, this);
     }
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'chooser-exception-list': ChooserExceptionListElement;
   }
 }
 

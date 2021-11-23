@@ -9,39 +9,37 @@ import 'chrome://test/cr_elements/cr_policy_strings.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {ChooserType,ContentSettingsTypes,SiteSettingSource,SiteSettingsPrefsBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
+import {ChooserException, ChooserExceptionListElement, ChooserType, ContentSettingsTypes, RawChooserException, RawSiteException, SiteException, SiteSettingSource, SiteSettingsPrefsBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
+import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+
 import {TestSiteSettingsPrefsBrowserProxy} from './test_site_settings_prefs_browser_proxy.js';
-import {createContentSettingTypeToValuePair,createRawChooserException,createRawSiteException,createSiteSettingsPrefs} from './test_util.js';
+import { createContentSettingTypeToValuePair,createRawChooserException,createRawSiteException,createSiteSettingsPrefs,SiteSettingsPref} from './test_util.js';
 // clang-format on
 
 /** @fileoverview Suite of tests for chooser-exception-list. */
 
 /**
  * An example pref that does not contain any entries.
- * @type {SiteSettingsPref}
  */
-let prefsEmpty;
+let prefsEmpty: SiteSettingsPref;
 
 /**
  * An example pref with only user granted USB exception.
- * @type {SiteSettingsPref}
  */
-let prefsUserProvider;
+let prefsUserProvider: SiteSettingsPref;
 
 /**
  * An example pref with only policy granted USB exception.
- * @type {SiteSettingsPref}
  */
-let prefsPolicyProvider;
+let prefsPolicyProvider: SiteSettingsPref;
 
 /**
  * An example pref with 3 USB exception items. The first item will have a user
  * granted site exception and a policy granted site exception. The second item
  * will only have a policy granted site exception. The last item will only have
  * a user granted site exception.
- * @type {SiteSettingsPref}
  */
-let prefsUsb;
+let prefsUsb: SiteSettingsPref;
 
 /**
  * Creates all the test
@@ -101,17 +99,12 @@ function populateTestExceptions() {
 }
 
 suite('ChooserExceptionList', function() {
-  /**
-   * A site list element created before each test.
-   * @type {ChooserExceptionList}
-   */
-  let testElement;
+  let testElement: ChooserExceptionListElement;
 
   /**
    * The mock proxy object to use during test.
-   * @type {TestSiteSettingsPrefsBrowserProxy}
    */
-  let browserProxy;
+  let browserProxy: TestSiteSettingsPrefsBrowserProxy;
 
   // Initialize a chooser-exception-list before each test.
   setup(function() {
@@ -119,29 +112,32 @@ suite('ChooserExceptionList', function() {
 
     browserProxy = new TestSiteSettingsPrefsBrowserProxy();
     SiteSettingsPrefsBrowserProxyImpl.setInstance(browserProxy);
-    PolymerTest.clearBody();
+    document.body.innerHTML = '';
     testElement = document.createElement('chooser-exception-list');
     document.body.appendChild(testElement);
   });
 
   /**
    * Configures the test element for a particular category.
-   * @param {ChooserType} chooserType The chooser type to set up the
-   *     element for.
-   * @param {Array<dictionary>} prefs The prefs to use.
+   * @param chooserType The chooser type to set up the element for.
+   * @param prefs The prefs to use.
    */
-  function setUpChooserType(contentType, chooserType, prefs) {
+  function setUpChooserType(
+      contentType: ContentSettingsTypes, chooserType: ChooserType,
+      prefs: SiteSettingsPref) {
     browserProxy.setPrefs(prefs);
     testElement.category = contentType;
     testElement.chooserType = chooserType;
   }
 
-  function assertSiteOriginsEquals(site, actualSite) {
+  function assertSiteOriginsEquals(
+      site: RawSiteException, actualSite: SiteException) {
     assertEquals(site.origin, actualSite.origin);
     assertEquals(site.embeddingOrigin, actualSite.embeddingOrigin);
   }
 
-  function assertChooserExceptionEquals(exception, actualException) {
+  function assertChooserExceptionEquals(
+      exception: RawChooserException, actualException: ChooserException) {
     assertEquals(exception.displayName, actualException.displayName);
     assertEquals(exception.chooserType, actualException.chooserType);
     assertDeepEquals(exception.object, actualException.object);
@@ -150,7 +146,7 @@ suite('ChooserExceptionList', function() {
     const actualSites = actualException.sites;
     assertEquals(sites.length, actualSites.length);
     for (let i = 0; i < sites.length; ++i) {
-      assertSiteOriginsEquals(sites[i], actualSites[i]);
+      assertSiteOriginsEquals(sites[i]!, actualSites[i]!);
     }
   }
 
@@ -169,34 +165,36 @@ suite('ChooserExceptionList', function() {
           // Ensure that each chooser exception is rendered with a
           // chooser-exception-list-entry.
           const chooserExceptionListEntries =
-              testElement.root.querySelectorAll('chooser-exception-list-entry');
+              testElement.shadowRoot!.querySelectorAll(
+                  'chooser-exception-list-entry');
           assertEquals(3, chooserExceptionListEntries.length);
           for (let i = 0; i < chooserExceptionListEntries.length; ++i) {
             assertChooserExceptionEquals(
-                prefsUsb.chooserExceptions[ContentSettingsTypes.USB_DEVICES][i],
-                chooserExceptionListEntries[i].exception);
+                prefsUsb.chooserExceptions[ContentSettingsTypes.USB_DEVICES][i]!
+                ,
+                chooserExceptionListEntries[i]!.exception);
           }
 
           // The first chooser exception should render two site exceptions with
           // site-list-entry elements.
           const firstSiteListEntries =
-              chooserExceptionListEntries[0].root.querySelectorAll(
+              chooserExceptionListEntries[0]!.shadowRoot!.querySelectorAll(
                   'site-list-entry');
           assertEquals(2, firstSiteListEntries.length);
 
           // The second chooser exception should render one site exception with
           // a site-list-entry element.
           const secondSiteListEntries =
-              chooserExceptionListEntries[1].root.querySelectorAll(
+              chooserExceptionListEntries[1]!.shadowRoot!.querySelectorAll(
                   'site-list-entry');
           assertEquals(1, secondSiteListEntries.length);
 
           // The last chooser exception should render one site exception with a
           // site-list-entry element.
           const thirdSiteListEntries =
-              chooserExceptionListEntries[2].root.querySelectorAll(
+              chooserExceptionListEntries[2]!.shadowRoot!.querySelectorAll(
                   'site-list-entry');
-          assertEquals(1, secondSiteListEntries.length);
+          assertEquals(1, thirdSiteListEntries.length);
         });
   });
 
@@ -210,33 +208,30 @@ suite('ChooserExceptionList', function() {
         assertEquals(ChooserType.USB_DEVICES, testElement.chooserType);
         return browserProxy.whenCalled('getChooserExceptionList')
             .then(function(chooserType) {
+              assertEquals(ChooserType.USB_DEVICES, chooserType);
               // Flush the container to ensure that the container is populated.
               flush();
 
               const chooserExceptionListEntry =
-                  testElement.shadowRoot.querySelector(
+                  testElement.shadowRoot!.querySelector(
                       'chooser-exception-list-entry');
               assertTrue(!!chooserExceptionListEntry);
 
               const siteListEntry =
-                  chooserExceptionListEntry.shadowRoot.querySelector(
+                  chooserExceptionListEntry!.shadowRoot!.querySelector(
                       'site-list-entry');
               assertTrue(!!siteListEntry);
 
               // Ensure that the action menu container is hidden.
-              const dotsMenu =
-                  siteListEntry.shadowRoot.querySelector('#actionMenuButton');
-              assertTrue(!!dotsMenu);
+              const dotsMenu = siteListEntry!.$.actionMenuButton;
               assertTrue(dotsMenu.hidden);
 
               // Ensure that the reset button is not hidden.
-              const resetButton =
-                  siteListEntry.shadowRoot.querySelector('#resetSite');
-              assertTrue(!!resetButton);
+              const resetButton = siteListEntry!.$.resetSite;
               assertFalse(resetButton.hidden);
 
               // Ensure that the policy enforced indicator is hidden.
-              const policyIndicator = siteListEntry.shadowRoot.querySelector(
+              const policyIndicator = siteListEntry!.shadowRoot!.querySelector(
                   'cr-policy-pref-indicator');
               assertFalse(!!policyIndicator);
             });
@@ -252,33 +247,31 @@ suite('ChooserExceptionList', function() {
         assertEquals(ChooserType.USB_DEVICES, testElement.chooserType);
         return browserProxy.whenCalled('getChooserExceptionList')
             .then(function(chooserType) {
+              assertEquals(ChooserType.USB_DEVICES, chooserType);
               // Flush the container to ensure that the container is populated.
               flush();
 
               const chooserExceptionListEntry =
-                  testElement.shadowRoot.querySelector(
+                  testElement.shadowRoot!.querySelector(
                       'chooser-exception-list-entry');
               assertTrue(!!chooserExceptionListEntry);
 
               const siteListEntry =
-                  chooserExceptionListEntry.shadowRoot.querySelector(
+                  chooserExceptionListEntry!.shadowRoot!.querySelector(
                       'site-list-entry');
               assertTrue(!!siteListEntry);
 
               // Ensure that the action menu container is hidden.
-              const dotsMenu =
-                  siteListEntry.shadowRoot.querySelector('#actionMenuButton');
+              const dotsMenu = siteListEntry!.$.actionMenuButton;
               assertTrue(!!dotsMenu);
               assertTrue(dotsMenu.hidden);
 
               // Ensure that the reset button is hidden.
-              const resetButton =
-                  siteListEntry.shadowRoot.querySelector('#resetSite');
-              assertTrue(!!resetButton);
+              const resetButton = siteListEntry!.$.resetSite;
               assertTrue(resetButton.hidden);
 
               // Ensure that the policy enforced indicator not is hidden.
-              const policyIndicator = siteListEntry.shadowRoot.querySelector(
+              const policyIndicator = siteListEntry!.shadowRoot!.querySelector(
                   'cr-policy-pref-indicator');
               assertTrue(!!policyIndicator);
             });
@@ -293,54 +286,51 @@ suite('ChooserExceptionList', function() {
         assertEquals(ChooserType.USB_DEVICES, testElement.chooserType);
         return browserProxy.whenCalled('getChooserExceptionList')
             .then(function(chooserType) {
+              assertEquals(ChooserType.USB_DEVICES, chooserType);
               // Flush the container to ensure that the container is populated.
               flush();
 
               const chooserExceptionListEntries =
-                  testElement.root.querySelectorAll(
+                  testElement.shadowRoot!.querySelectorAll(
                       'chooser-exception-list-entry');
               assertEquals(3, chooserExceptionListEntries.length);
 
               // The first chooser exception contains mixed provider site
               // exceptions.
               const siteListEntries =
-                  chooserExceptionListEntries[0].root.querySelectorAll(
+                  chooserExceptionListEntries[0]!.shadowRoot!.querySelectorAll(
                       'site-list-entry');
               assertEquals(2, siteListEntries.length);
 
               // The first site exception is a policy provided exception, so
               // only the policy indicator should be visible;
               const policyProvidedDotsMenu =
-                  siteListEntries[0].shadowRoot.querySelector(
-                      '#actionMenuButton');
+                  siteListEntries[0]!.$.actionMenuButton;
               assertTrue(!!policyProvidedDotsMenu);
               assertTrue(policyProvidedDotsMenu.hidden);
 
-              const policyProvidedResetButton =
-                  siteListEntries[0].shadowRoot.querySelector('#resetSite');
+              const policyProvidedResetButton = siteListEntries[0]!.$.resetSite;
               assertTrue(!!policyProvidedResetButton);
               assertTrue(policyProvidedResetButton.hidden);
 
               const policyProvidedPolicyIndicator =
-                  siteListEntries[0].shadowRoot.querySelector(
+                  siteListEntries[0]!.shadowRoot!.querySelector(
                       'cr-policy-pref-indicator');
               assertTrue(!!policyProvidedPolicyIndicator);
 
               // The second site exception is a user provided exception, so only
               // the reset button should be visible.
               const userProvidedDotsMenu =
-                  siteListEntries[1].shadowRoot.querySelector(
-                      '#actionMenuButton');
+                  siteListEntries[1]!.$.actionMenuButton;
               assertTrue(!!userProvidedDotsMenu);
               assertTrue(userProvidedDotsMenu.hidden);
 
-              const userProvidedResetButton =
-                  siteListEntries[1].shadowRoot.querySelector('#resetSite');
+              const userProvidedResetButton = siteListEntries[1]!.$.resetSite;
               assertTrue(!!userProvidedResetButton);
               assertFalse(userProvidedResetButton.hidden);
 
               const userProvidedPolicyIndicator =
-                  siteListEntries[1].shadowRoot.querySelector(
+                  siteListEntries[1]!.shadowRoot!.querySelector(
                       'cr-policy-pref-indicator');
               assertFalse(!!userProvidedPolicyIndicator);
             });
@@ -356,10 +346,11 @@ suite('ChooserExceptionList', function() {
           assertEquals(ChooserType.USB_DEVICES, chooserType);
           assertEquals(0, testElement.chooserExceptions.length);
           const emptyListMessage =
-              testElement.shadowRoot.querySelector('#empty-list-message');
+              testElement.shadowRoot!.querySelector<HTMLElement>(
+                  '#empty-list-message')!;
           assertFalse(emptyListMessage.hidden);
           assertEquals(
-              'No USB devices found', emptyListMessage.textContent.trim());
+              'No USB devices found', emptyListMessage.textContent!.trim());
         });
   });
 
@@ -376,32 +367,29 @@ suite('ChooserExceptionList', function() {
 
           assertChooserExceptionEquals(
               prefsUserProvider
-                  .chooserExceptions[ContentSettingsTypes.USB_DEVICES][0],
-              testElement.chooserExceptions[0]);
+                  .chooserExceptions[ContentSettingsTypes.USB_DEVICES][0]!,
+              testElement.chooserExceptions[0]!);
 
           // Flush the container to ensure that the container is populated.
           flush();
 
           const chooserExceptionListEntry =
-              testElement.shadowRoot.querySelector(
+              testElement.shadowRoot!.querySelector(
                   'chooser-exception-list-entry');
           assertTrue(!!chooserExceptionListEntry);
 
           const siteListEntry =
-              chooserExceptionListEntry.shadowRoot.querySelector(
+              chooserExceptionListEntry!.shadowRoot!.querySelector(
                   'site-list-entry');
           assertTrue(!!siteListEntry);
 
           // Assert that the action button is hidden.
-          const dotsMenu =
-              siteListEntry.shadowRoot.querySelector('#actionMenuButton');
+          const dotsMenu = siteListEntry!.$.actionMenuButton;
           assertTrue(!!dotsMenu);
           assertTrue(dotsMenu.hidden);
 
           // Assert that the reset button is visible.
-          const resetButton =
-              siteListEntry.shadowRoot.querySelector('#resetSite');
-          assertTrue(!!resetButton);
+          const resetButton = siteListEntry!.$.resetSite;
           assertFalse(resetButton.hidden);
 
           resetButton.click();
@@ -431,26 +419,27 @@ suite('ChooserExceptionList', function() {
 
               assertChooserExceptionEquals(
                   prefsPolicyProvider
-                      .chooserExceptions[ContentSettingsTypes.USB_DEVICES][0],
-                  testElement.chooserExceptions[0]);
+                      .chooserExceptions[ContentSettingsTypes.USB_DEVICES][0]!,
+                  testElement.chooserExceptions[0]!);
 
               // Flush the container to ensure that the container is populated.
               flush();
 
               const chooserExceptionListEntry =
-                  testElement.shadowRoot.querySelector(
+                  testElement.shadowRoot!.querySelector(
                       'chooser-exception-list-entry');
               assertTrue(!!chooserExceptionListEntry);
 
               const siteListEntry =
-                  chooserExceptionListEntry.shadowRoot.querySelector(
+                  chooserExceptionListEntry!.shadowRoot!.querySelector(
                       'site-list-entry');
               assertTrue(!!siteListEntry);
 
               const tooltip = testElement.$.tooltip;
               assertTrue(!!tooltip);
 
-              const innerTooltip = tooltip.$.tooltip;
+              const innerTooltip =
+                  tooltip.shadowRoot!.querySelector('#tooltip');
               assertTrue(!!innerTooltip);
 
               /**
@@ -471,12 +460,13 @@ suite('ChooserExceptionList', function() {
                 const text = params.text;
                 const eventTarget = params.el;
 
-                siteListEntry.fire('show-tooltip', {target: testElement, text});
-                assertFalse(innerTooltip.classList.contains('hidden'));
+                siteListEntry!.fire(
+                    'show-tooltip', {target: testElement, text});
+                assertFalse(innerTooltip!.classList.contains('hidden'));
                 assertEquals(text, tooltip.innerHTML.trim());
 
                 eventTarget.dispatchEvent(new MouseEvent(params.eventType));
-                assertTrue(innerTooltip.classList.contains('hidden'));
+                assertTrue(innerTooltip!.classList.contains('hidden'));
               });
             });
       });
@@ -494,8 +484,8 @@ suite('ChooserExceptionList', function() {
 
           assertChooserExceptionEquals(
               prefsUserProvider
-                  .chooserExceptions[ContentSettingsTypes.USB_DEVICES][0],
-              testElement.chooserExceptions[0]);
+                  .chooserExceptions[ContentSettingsTypes.USB_DEVICES][0]!,
+              testElement.chooserExceptions[0]!);
 
           browserProxy.resetResolver('getChooserExceptionList');
 
@@ -517,8 +507,8 @@ suite('ChooserExceptionList', function() {
 
           assertChooserExceptionEquals(
               prefsPolicyProvider
-                  .chooserExceptions[ContentSettingsTypes.USB_DEVICES][0],
-              testElement.chooserExceptions[0]);
+                  .chooserExceptions[ContentSettingsTypes.USB_DEVICES][0]!,
+              testElement.chooserExceptions[0]!);
         });
   });
 
@@ -532,21 +522,22 @@ suite('ChooserExceptionList', function() {
         assertEquals(ChooserType.USB_DEVICES, testElement.chooserType);
         return browserProxy.whenCalled('getChooserExceptionList')
             .then(function(chooserType) {
+              assertEquals(ChooserType.USB_DEVICES, chooserType);
               // Flush the container to ensure that the container is populated.
               flush();
 
               const chooserExceptionListEntry =
-                  testElement.shadowRoot.querySelector(
+                  testElement.shadowRoot!.querySelector(
                       'chooser-exception-list-entry');
               assertTrue(!!chooserExceptionListEntry);
 
               const siteListEntry =
-                  chooserExceptionListEntry.shadowRoot.querySelector(
+                  chooserExceptionListEntry!.shadowRoot!.querySelector(
                       'site-list-entry');
               assertTrue(!!siteListEntry);
               // Ensure that the incognito tooltip is hidden.
               const incognitoTooltip =
-                  siteListEntry.shadowRoot.querySelector('#incognitoTooltip');
+                  siteListEntry!.shadowRoot!.querySelector('#incognitoTooltip');
               assertFalse(!!incognitoTooltip);
 
               // Simulate an incognito session being created.
@@ -555,19 +546,20 @@ suite('ChooserExceptionList', function() {
               return browserProxy.whenCalled('getChooserExceptionList');
             })
             .then(function(chooserType) {
+              assertEquals(ChooserType.USB_DEVICES, chooserType);
               // Flush the container to ensure that the container is populated.
               flush();
 
               const chooserExceptionListEntry =
-                  testElement.shadowRoot.querySelector(
+                  testElement.shadowRoot!.querySelector(
                       'chooser-exception-list-entry');
               assertTrue(!!chooserExceptionListEntry);
-              assertTrue(chooserExceptionListEntry.$.listContainer
-                             .querySelector('iron-list')
-                             .items.some(item => item.incognito));
+              assertTrue(chooserExceptionListEntry!.$.listContainer
+                             .querySelector('iron-list')!.items!.some(
+                                 item => item.incognito));
 
               const siteListEntries =
-                  chooserExceptionListEntry.root.querySelectorAll(
+                  chooserExceptionListEntry!.shadowRoot!.querySelectorAll(
                       'site-list-entry');
               assertEquals(2, siteListEntries.length);
               assertTrue(Array.from(siteListEntries)
@@ -575,7 +567,8 @@ suite('ChooserExceptionList', function() {
 
               const tooltip = testElement.$.tooltip;
               assertTrue(!!tooltip);
-              const innerTooltip = tooltip.$.tooltip;
+              const innerTooltip =
+                  tooltip.shadowRoot!.querySelector('#tooltip');
               assertTrue(!!innerTooltip);
               const text = loadTimeData.getString('incognitoSiteExceptionDesc');
               // This filtered array should be non-empty due to above test that
@@ -584,14 +577,14 @@ suite('ChooserExceptionList', function() {
                   .filter(entry => entry.model.incognito)
                   .forEach(entry => {
                     const incognitoTooltip =
-                        entry.shadowRoot.querySelector('#incognitoTooltip');
+                        entry.shadowRoot!.querySelector('#incognitoTooltip');
                     // Make sure it is not hidden if it is an incognito
                     // exception
                     assertTrue(!!incognitoTooltip);
                     // Trigger mouse enter and check tooltip text
-                    incognitoTooltip.dispatchEvent(
+                    incognitoTooltip!.dispatchEvent(
                         new MouseEvent('mouseenter'));
-                    assertFalse(innerTooltip.classList.contains('hidden'));
+                    assertFalse(innerTooltip!.classList.contains('hidden'));
                     assertEquals(text, tooltip.innerHTML.trim());
                   });
             });

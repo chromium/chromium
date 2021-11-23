@@ -128,6 +128,8 @@ export {AllSitesElement} from './site_settings/all_sites.js';
 export {AndroidInfoBrowserProxy, AndroidInfoBrowserProxyImpl, AndroidSmsInfo} from './site_settings/android_info_browser_proxy.js';
 // </if>
 export {CategorySettingExceptionsElement} from './site_settings/category_setting_exceptions.js';
+export {ChooserExceptionListElement} from './site_settings/chooser_exception_list.js';
+export {ChooserExceptionListEntryElement} from './site_settings/chooser_exception_list_entry.js';
 export {ChooserType, ContentSetting, ContentSettingsTypes, CookieControlsMode, NotificationSetting, SITE_EXCEPTION_WILDCARD, SiteSettingSource, SortMethod} from './site_settings/constants.js';
 export {CookieDetails, cookieInfo} from './site_settings/cookie_info.js';
 export {SettingsEditExceptionDialogElement} from './site_settings/edit_exception_dialog.js';
@@ -139,7 +141,7 @@ export {SiteDetailsPermissionElement} from './site_settings/site_details_permiss
 export {SiteEntryElement} from './site_settings/site_entry.js';
 export {SiteListElement} from './site_settings/site_list.js';
 export {SiteListEntryElement} from './site_settings/site_list_entry.js';
-export {ContentSettingProvider, CookiePrimarySetting, DefaultContentSetting, OriginInfo, RawChooserException, RawSiteException, RecentSitePermissions, SiteException, SiteGroup, SiteSettingsPrefsBrowserProxy, SiteSettingsPrefsBrowserProxyImpl, ZoomLevelEntry} from './site_settings/site_settings_prefs_browser_proxy.js';
+export {ChooserException, ContentSettingProvider, CookiePrimarySetting, DefaultContentSetting, OriginInfo, RawChooserException, RawSiteException, RecentSitePermissions, SiteException, SiteGroup, SiteSettingsPrefsBrowserProxy, SiteSettingsPrefsBrowserProxyImpl, ZoomLevelEntry} from './site_settings/site_settings_prefs_browser_proxy.js';
 export {WebsiteUsageBrowserProxy, WebsiteUsageBrowserProxyImpl} from './site_settings/website_usage_browser_proxy.js';
 export {ZoomLevelsElement} from './site_settings/zoom_levels.js';
 export {SettingsRecentSitePermissionsElement} from './site_settings_page/recent_site_permissions.js';

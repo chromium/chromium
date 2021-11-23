@@ -3,11 +3,9 @@
 // found in the LICENSE file.
 
 // clang-format off
-import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {ContentSetting, ContentSettingProvider, ContentSettingsTypes, SettingsCategoryDefaultRadioGroupElement, SiteSettingsPrefsBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
 
 import {assertEquals, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {flushTasks} from 'chrome://webui-test/test_util.js';
 
 import {TestSiteSettingsPrefsBrowserProxy} from './test_site_settings_prefs_browser_proxy.js';
 import {createContentSettingTypeToValuePair, createDefaultContentSetting, createSiteSettingsPrefs, SiteSettingsPref} from './test_util.js';
@@ -17,23 +15,21 @@ import {createContentSettingTypeToValuePair, createDefaultContentSetting, create
 suite('SettingsCategoryDefaultRadioGroup', function() {
   /**
    * A settings-category-default-radio-group created before each test.
-   * @type {SettingsCategoryDefaultRadioGroupElement}
    */
-  let testElement;
+  let testElement: SettingsCategoryDefaultRadioGroupElement;
 
   /**
    * The mock proxy object to use during test.
-   * @type {TestSiteSettingsPrefsBrowserProxy}
    */
-  let browserProxy = null;
+  let browserProxy: TestSiteSettingsPrefsBrowserProxy;
 
   // Initialize a settings-category-default-radio-group before each test.
   setup(function() {
     browserProxy = new TestSiteSettingsPrefsBrowserProxy();
     SiteSettingsPrefsBrowserProxyImpl.setInstance(browserProxy);
     document.body.innerHTML = '';
-    testElement = /** @type {!SettingsCategoryDefaultRadioGroupElement} */
-        (document.createElement('settings-category-default-radio-group'));
+    testElement =
+        document.createElement('settings-category-default-radio-group');
     document.body.appendChild(testElement);
   });
 
@@ -42,11 +38,13 @@ suite('SettingsCategoryDefaultRadioGroup', function() {
   });
 
   /**
-   * @param {!ContentSettingsTypes} category The preference category.
-   * @param {!ContentSetting} contentSetting The preference content setting.
-   * @return {SiteSettingsPref} The created preference object.
+   * @param category The preference category.
+   * @param contentSetting The preference content setting.
+   * @return The created preference object.
    */
-  function createPref(category, contentSetting) {
+  function createPref(
+      category: ContentSettingsTypes,
+      contentSetting: ContentSetting): SiteSettingsPref {
     return createSiteSettingsPrefs(
         [
           createContentSettingTypeToValuePair(
@@ -59,26 +57,25 @@ suite('SettingsCategoryDefaultRadioGroup', function() {
   /**
    * Verifies that the widget works as expected for a given |category|,
    * initial |prefs|, and given expectations.
-   * @param {SettingsCategoryDefaultRadioGroupElement} element The
-   * settings-category-default-radio-group element to test.
-   * @param {TestSiteSettingsPrefsBrowserProxy} proxy The mock proxy object.
-   * @param {SiteSettingsPref} prefs The preference object.
-   * @param {ContentSettingsTypes} expectedCategory The category of the
-   * |element|.
-   * @param {boolean} expectedEnabled If the category is enabled by default.
-   * @param {ContentSetting} expectedEnabledContentSetting The enabled content
-   * setting value of the |expectedCategory|.
+   * @param element The settings-category-default-radio-group element to test.
+   * @param proxy The mock proxy object.
+   * @param prefs The preference object.
+   * @param expectedCategory The category of the |element|.
+   * @param expectedEnabled If the category is enabled by default.
+   * @param expectedEnabledContentSetting The enabled content setting value of
+   *     the |expectedCategory|.
    */
   async function testCategoryEnabled(
-      element, proxy, prefs, expectedCategory, expectedEnabled,
-      expectedEnabledContentSetting) {
+      element: SettingsCategoryDefaultRadioGroupElement,
+      proxy: TestSiteSettingsPrefsBrowserProxy, prefs: SiteSettingsPref,
+      expectedCategory: ContentSettingsTypes, expectedEnabled: boolean,
+      expectedEnabledContentSetting: ContentSetting) {
     proxy.reset();
     proxy.setPrefs(prefs);
     element.set('category', expectedCategory);
 
     let category = await proxy.whenCalled('getDefaultValueForContentType');
-    let categoryEnabled =
-        element.shadowRoot.querySelector('#enabledRadioOption').checked;
+    let categoryEnabled = element.$.enabledRadioOption.checked;
     assertEquals(expectedCategory, category);
     assertEquals(expectedEnabled, categoryEnabled);
 
@@ -87,7 +84,8 @@ suite('SettingsCategoryDefaultRadioGroup', function() {
     proxy.resetResolver('setDefaultValueForContentType');
     const oppositeRadioButton =
         expectedEnabled ? '#disabledRadioOption' : '#enabledRadioOption';
-    element.shadowRoot.querySelector(oppositeRadioButton).click();
+    element.shadowRoot!.querySelector<HTMLElement>(
+                           oppositeRadioButton)!.click();
 
     let setting;
     [category, setting] =
@@ -95,8 +93,7 @@ suite('SettingsCategoryDefaultRadioGroup', function() {
     assertEquals(expectedCategory, category);
     const oppositeSetting =
         expectedEnabled ? ContentSetting.BLOCK : expectedEnabledContentSetting;
-    categoryEnabled =
-        element.shadowRoot.querySelector('#enabledRadioOption').checked;
+    categoryEnabled = element.$.enabledRadioOption.checked;
     assertEquals(oppositeSetting, setting);
     assertNotEquals(expectedEnabled, categoryEnabled);
 
@@ -105,15 +102,14 @@ suite('SettingsCategoryDefaultRadioGroup', function() {
     proxy.resetResolver('setDefaultValueForContentType');
     const initialRadioButton =
         expectedEnabled ? '#enabledRadioOption' : '#disabledRadioOption';
-    element.shadowRoot.querySelector(initialRadioButton).click();
+    element.shadowRoot!.querySelector<HTMLElement>(initialRadioButton)!.click();
 
     [category, setting] =
         await proxy.whenCalled('setDefaultValueForContentType');
     assertEquals(expectedCategory, category);
     const initialSetting =
         expectedEnabled ? expectedEnabledContentSetting : ContentSetting.BLOCK;
-    categoryEnabled =
-        element.shadowRoot.querySelector('#enabledRadioOption').checked;
+    categoryEnabled = element.$.enabledRadioOption.checked;
     assertEquals(initialSetting, setting);
     assertEquals(expectedEnabled, categoryEnabled);
   }
@@ -168,9 +164,7 @@ suite('SettingsCategoryDefaultRadioGroup', function() {
     testElement.category = ContentSettingsTypes.GEOLOCATION;
 
     await browserProxy.whenCalled('getDefaultValueForContentType');
-    assertTrue(
-        testElement.shadowRoot.querySelector('#enabledRadioOption').disabled);
-    assertTrue(
-        testElement.shadowRoot.querySelector('#disabledRadioOption').disabled);
+    assertTrue(testElement.$.enabledRadioOption.disabled);
+    assertTrue(testElement.$.disabledRadioOption.disabled);
   });
 });

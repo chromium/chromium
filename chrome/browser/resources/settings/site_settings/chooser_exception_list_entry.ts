@@ -18,7 +18,13 @@ import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/poly
 
 import {ChooserException} from './site_settings_prefs_browser_proxy.js';
 
-class ChooserExceptionListEntryElement extends PolymerElement {
+export interface ChooserExceptionListEntryElement {
+  $: {
+    listContainer: HTMLElement,
+  };
+}
+
+export class ChooserExceptionListEntryElement extends PolymerElement {
   static get is() {
     return 'chooser-exception-list-entry';
   }
@@ -40,6 +46,12 @@ class ChooserExceptionListEntryElement extends PolymerElement {
 
   exception: ChooserException;
   private lastFocused_: HTMLElement|null;
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'chooser-exception-list-entry': ChooserExceptionListEntryElement;
+  }
 }
 
 customElements.define(
