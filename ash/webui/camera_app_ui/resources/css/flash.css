@@ -25,3 +25,17 @@ body.view-flash #view-flash {
   font: 14px/20px Roboto;
   margin-top: 16px;
 }
+
+@keyframes show-processing-indicator-with-delay {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+body.gif-capture-post-processing.view-flash #processing-indicator {
+  animation: show-processing-indicator-with-delay var(--fast1-duration) ease-in 500ms 1 normal forwards;
+  opacity: 0;
+}

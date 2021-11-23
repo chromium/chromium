@@ -930,7 +930,9 @@ export class Camera extends View {
   /**
    * @override
    */
-  async handleResultGif({blob, name, resolution, duration}) {
+  async handleResultGif({name, getBlob, resolution, duration}) {
+    nav.open(ViewName.FLASH);
+    const blob = await getBlob();
     const sendEvent = (gifResult) => {
       metrics.sendCaptureEvent({
         recordType: metrics.RecordType.GIF,
@@ -956,6 +958,7 @@ export class Camera extends View {
       );
       const negative = new review.Options(
           new review.Option(I18nString.LABEL_RETAKE, {exitValue: null}));
+      nav.close(ViewName.FLASH);
       result = await this.review_.startReview({positive, negative});
     });
     if (result) {

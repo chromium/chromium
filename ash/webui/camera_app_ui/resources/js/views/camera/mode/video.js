@@ -152,7 +152,7 @@ export class VideoResult {
 /**
  * @typedef {{
  *   name: string,
- *   blob: !Blob,
+ *   getBlob: function(): !Promise<!Blob>,
  *   resolution: !Resolution,
  *   duration: number,
  * }}
@@ -560,17 +560,18 @@ export class Video extends ModeBase {
       state.set(state.State.RECORDING, false);
       this.gifRecordTime_.stop({pause: false});
 
-      // Measure the latency of gif encoder finishing rest of the encoding
-      // works.
-      state.set(PerfEvent.GIF_CAPTURE_POST_PROCESSING, true);
-      const blob = await gifSaver.endWrite();
-      state.set(PerfEvent.GIF_CAPTURE_POST_PROCESSING, false);
-
       // TODO(b:191950622): Close capture stream before handleResultGif()
       // opening preview page when multi-stream recording enabled.
       await this.handler_.handleResultGif({
-        blob,
         name: gifName,
+        getBlob: async () => {
+          // Measure the latency of gif encoder finishing rest of the encoding
+          // works.
+          state.set(PerfEvent.GIF_CAPTURE_POST_PROCESSING, true);
+          const blob = await gifSaver.endWrite();
+          state.set(PerfEvent.GIF_CAPTURE_POST_PROCESSING, false);
+          return blob;
+        },
         resolution: this.captureResolution_,
         duration: this.gifRecordTime_.inMilliseconds(),
       });
