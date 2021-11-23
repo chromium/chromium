@@ -22,12 +22,6 @@ SharesheetBubbleViewDelegate::SharesheetBubbleViewDelegate(
           new SharesheetBubbleView(native_window,
                                    sharesheet_service_delegator)) {}
 
-SharesheetBubbleViewDelegate::~SharesheetBubbleViewDelegate() {
-  // Delete the bubble view if not owned by the view tree yet.
-  if (!sharesheet_bubble_view_->parent())
-    delete sharesheet_bubble_view_;
-}
-
 void SharesheetBubbleViewDelegate::ShowBubble(
     std::vector<::sharesheet::TargetInfo> targets,
     apps::mojom::IntentPtr intent,
@@ -91,6 +85,7 @@ void SharesheetBubbleViewDelegate::CloseBubble(
   } else if (result == ::sharesheet::SharesheetResult::kCancel) {
     reason = views::Widget::ClosedReason::kCancelButtonClicked;
   }
+
   DCHECK(sharesheet_bubble_view_);
   sharesheet_bubble_view_->CloseBubble(reason);
 }
