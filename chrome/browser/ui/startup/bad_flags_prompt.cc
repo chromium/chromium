@@ -146,6 +146,11 @@ static const char* kBadFlags[] = {
 
     // A flag to bypass the WebHID blocklist for testing purposes.
     switches::kDisableHidBlocklist,
+
+    // This flag enables restricted APIs (which unlock capabilities
+    // with a high potential for security / privacy abuse) for specified
+    // origins.
+    switches::kRestrictedApiOrigins,
 };
 #endif  // OS_ANDROID
 
