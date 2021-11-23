@@ -90,9 +90,8 @@ WebViewActionRequest.prototype.handleActionRequestEvent = function() {
 
   if (defaultPrevented) {
     // Track the lifetime of |request| with the garbage collector.
-    var portId = -1;  // (hack) there is no Extension Port to release
     MessagingNatives.BindToGC(
-        request, $Function.bind(this.defaultAction, this), portId);
+        request, $Function.bind(this.defaultAction, this));
   } else {
     this.defaultAction();
   }
