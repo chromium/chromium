@@ -10,7 +10,6 @@ import 'chrome://resources/cr_elements/mwb_element_shared_style.js';
 import 'chrome://resources/cr_elements/mwb_shared_style.js';
 import 'chrome://resources/cr_elements/mwb_shared_vars.js';
 import 'chrome://resources/polymer/v3_0/iron-selector/iron-selector.js';
-
 import './strings.m.js';
 
 import {assertNotReached} from 'chrome://resources/js/assert.m.js';
@@ -18,6 +17,7 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {listenOnce} from 'chrome://resources/js/util.m.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {CurrentPageActionButtonState, ReadLaterEntriesByStatus, ReadLaterEntry} from './read_later.mojom-webui.js';
 import {ReadLaterApiProxy, ReadLaterApiProxyImpl} from './read_later_api_proxy.js';
 import {ReadLaterItemElement} from './read_later_item.js';
 
@@ -35,22 +35,22 @@ export class ReadLaterAppElement extends PolymerElement {
 
   static get properties() {
     return {
-      /** @private {!Array<!readLater.mojom.ReadLaterEntry>} */
+      /** @private {!Array<!ReadLaterEntry>} */
       unreadItems_: {
         type: Array,
         value: [],
       },
 
-      /** @private {!Array<!readLater.mojom.ReadLaterEntry>} */
+      /** @private {!Array<!ReadLaterEntry>} */
       readItems_: {
         type: Array,
         value: [],
       },
 
-      /** @private {!readLater.mojom.CurrentPageActionButtonState} */
+      /** @private {!CurrentPageActionButtonState} */
       currentPageActionButtonState_: {
         type: Number,
-        value: readLater.mojom.CurrentPageActionButtonState.kDisabled,
+        value: CurrentPageActionButtonState.kDisabled,
       },
 
       /** @type {boolean} */
@@ -144,7 +144,7 @@ export class ReadLaterAppElement extends PolymerElement {
   }
 
   /**
-   * @param {!readLater.mojom.ReadLaterEntriesByStatus} entries
+   * @param {!ReadLaterEntriesByStatus} entries
    * @private
    */
   updateItems_(entries) {
@@ -154,7 +154,7 @@ export class ReadLaterAppElement extends PolymerElement {
   }
 
   /**
-   * @param {!readLater.mojom.CurrentPageActionButtonState} state
+   * @param {!CurrentPageActionButtonState} state
    * @private
    */
   updateCurrentPageActionButton_(state) {
@@ -162,7 +162,7 @@ export class ReadLaterAppElement extends PolymerElement {
   }
 
   /**
-   * @param {!readLater.mojom.ReadLaterEntry} item
+   * @param {!ReadLaterEntry} item
    * @return {string}
    * @private
    */
@@ -196,7 +196,7 @@ export class ReadLaterAppElement extends PolymerElement {
    */
   getCurrentPageActionButtonDisabled_() {
     return this.currentPageActionButtonState_ ===
-        readLater.mojom.CurrentPageActionButtonState.kDisabled;
+        CurrentPageActionButtonState.kDisabled;
   }
 
   /**

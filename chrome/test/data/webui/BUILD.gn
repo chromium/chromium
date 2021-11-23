@@ -407,7 +407,6 @@ if (include_js_tests) {
       "media/media_engagement_browsertest.js",
       "media/media_history_webui_browsertest.js",
       "new_tab_page/new_tab_page_browsertest.js",
-      "read_later/read_later_browsertest.js",
       "read_later/side_panel/side_panel_browsertest.js",
     ]
 
@@ -439,6 +438,7 @@ if (include_js_tests) {
       "cr_components/cr_components_mojo_browsertest.js",
       "downloads/downloads_browsertest.js",
       "engagement/site_engagement_browsertest.js",
+      "read_later/read_later_browsertest.js",
       "usb_internals_browsertest.js",
     ]
     if (is_chromeos_ash) {

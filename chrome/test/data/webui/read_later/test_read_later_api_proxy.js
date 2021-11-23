@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://read-later.top-chrome/read_later.mojom-lite.js';
+import {PageCallbackRouter, ReadLaterEntriesByStatus} from 'chrome://read-later.top-chrome/read_later.mojom-webui.js';
 
 import {ReadLaterApiProxy} from 'chrome://read-later.top-chrome/read_later_api_proxy.js';
 import {TestBrowserProxy} from '../test_browser_proxy.js';
@@ -22,10 +22,10 @@ export class TestReadLaterApiProxy extends TestBrowserProxy {
       'closeUI',
     ]);
 
-    /** @type {!readLater.mojom.PageCallbackRouter} */
-    this.callbackRouter = new readLater.mojom.PageCallbackRouter();
+    /** @type {!PageCallbackRouter} */
+    this.callbackRouter = new PageCallbackRouter();
 
-    /** @private {!readLater.mojom.ReadLaterEntriesByStatus} */
+    /** @private {!ReadLaterEntriesByStatus} */
     this.entries_;
   }
 
@@ -80,7 +80,7 @@ export class TestReadLaterApiProxy extends TestBrowserProxy {
     return this.callbackRouter;
   }
 
-  /** @param {!readLater.mojom.ReadLaterEntriesByStatus} entries */
+  /** @param {!ReadLaterEntriesByStatus} entries */
   setEntries(entries) {
     this.entries_ = entries;
   }

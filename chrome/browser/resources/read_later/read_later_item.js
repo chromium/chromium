@@ -15,6 +15,7 @@ import {assertNotReached} from 'chrome://resources/js/assert.m.js';
 import {getFaviconForPageURL} from 'chrome://resources/js/icon.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {ReadLaterEntry} from './read_later.mojom-webui.js';
 import {ReadLaterApiProxy, ReadLaterApiProxyImpl} from './read_later_api_proxy.js';
 
 /** @type {!Set<string>} */
@@ -40,7 +41,7 @@ export class ReadLaterItemElement extends ReadLaterItemElementBase {
 
   static get properties() {
     return {
-      /** @type {!readLater.mojom.ReadLaterEntry} */
+      /** @type {!ReadLaterEntry} */
       data: Object,
 
       /** @type {boolean} */

@@ -6,10 +6,14 @@ import("//third_party/closure_compiler/compile_js.gni")
 
 js_type_check("closure_compile") {
   is_polymer3 = true
-  closure_flags = default_closure_args + [
+  closure_flags = default_closure_args + mojom_js_args + [
                     "browser_resolver_prefix_replacements=\"chrome://read-later.top-chrome/=../../chrome/browser/resources/read_later/\"",
-                    "js_module_root=../../chrome/test/data/webui/",
-                    "js_module_root=./gen/chrome/test/data/webui/",
+                    "js_module_root=" +
+                        rebase_path("//chrome/browser/resources/read_later",
+                                    root_build_dir),
+                    "js_module_root=" + rebase_path(
+                            "$root_gen_dir/mojom-webui/chrome/browser/ui/webui/read_later",
+                            root_build_dir),
                   ]
   deps = [
     ":read_later_app_test",
@@ -31,6 +35,6 @@ js_library("test_read_later_api_proxy") {
   deps = [
     "..:test_browser_proxy",
     "//chrome/browser/resources/read_later:read_later_api_proxy",
-    "//chrome/browser/ui/webui/read_later:mojo_bindings_js_library_for_compile",
+    "//chrome/browser/ui/webui/read_later:mojo_bindings_webui_js",
   ]
 }

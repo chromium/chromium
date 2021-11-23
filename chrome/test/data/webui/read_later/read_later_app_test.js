@@ -2,7 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import '../mojo_webui_test_support.js';
+
 import {ReadLaterAppElement} from 'chrome://read-later.top-chrome/app.js';
+import {ReadLaterEntriesByStatus} from 'chrome://read-later.top-chrome/read_later.mojom-webui.js';
 import {ReadLaterApiProxy, ReadLaterApiProxyImpl} from 'chrome://read-later.top-chrome/read_later_api_proxy.js';
 import {keyDownOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
 
@@ -38,7 +41,7 @@ suite('ReadLaterAppTest', () => {
     readLaterApp.shadowRoot.querySelector(`[data-url="${url}"]`).click();
   }
 
-  /** @return {!readLater.mojom.ReadLaterEntriesByStatus} */
+  /** @return {!ReadLaterEntriesByStatus} */
   function getSampleData() {
     const entries = {
       unreadEntries: [
