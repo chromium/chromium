@@ -13,8 +13,9 @@
 
 namespace ui {
 
-// ClipboardOzone is not yet shipped in production. It is a work in progress
-// for desktop Linux Wayland support.
+// Clipboard implementation for Ozone-based ports. It delegates the platform
+// specifics to the PlatformClipboard instance provided by the Ozone platform.
+// Currently, used on Linux Desktop, i.e: X11 and Wayland, and Lacros platforms.
 class ClipboardOzone : public Clipboard {
  public:
   ClipboardOzone(const ClipboardOzone&) = delete;
