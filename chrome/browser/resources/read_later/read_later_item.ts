@@ -18,18 +18,19 @@ import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/poly
 import {ReadLaterEntry} from './read_later.mojom-webui.js';
 import {ReadLaterApiProxy, ReadLaterApiProxyImpl} from './read_later_api_proxy.js';
 
-/** @type {!Set<string>} */
-const navigationKeys = new Set([' ', 'Enter', 'ArrowRight', 'ArrowLeft']);
+const navigationKeys: Set<string> =
+    new Set([' ', 'Enter', 'ArrowRight', 'ArrowLeft']);
 
-/**
- * @constructor
- * @extends PolymerElement
- * @implements {MouseHoverableMixinInterface}
- * @appliesMixin MouseHoverableMixin
- */
-const ReadLaterItemElementBase = MouseHoverableMixin(PolymerElement);
+export interface ReadLaterItemElement {
+  $: {
+    updateStatusButton: HTMLElement,
+    deleteButton: HTMLElement,
+  },
+}
 
-/** @polymer */
+const ReadLaterItemElementBase = MouseHoverableMixin(PolymerElement) as
+    {new (): PolymerElement & MouseHoverableMixinInterface};
+
 export class ReadLaterItemElement extends ReadLaterItemElementBase {
   static get is() {
     return 'read-later-item';
@@ -41,34 +42,24 @@ export class ReadLaterItemElement extends ReadLaterItemElementBase {
 
   static get properties() {
     return {
-      /** @type {!ReadLaterEntry} */
       data: Object,
-
-      /** @type {boolean} */
       buttonRipples: Boolean,
     };
   }
 
-  constructor() {
-    super();
-    /** @private {!ReadLaterApiProxy} */
-    this.apiProxy_ = ReadLaterApiProxyImpl.getInstance();
-  }
+  data: ReadLaterEntry;
+  buttonRipples: boolean;
+  private apiProxy_: ReadLaterApiProxy = ReadLaterApiProxyImpl.getInstance();
 
-  /** @override */
   ready() {
     super.ready();
     this.addEventListener('click', this.onClick_);
-    this.addEventListener('auxclick', e => this.onAuxClick_(e));
+    this.addEventListener('auxclick', this.onAuxClick_.bind(this));
     this.addEventListener('contextmenu', this.onContextMenu_.bind(this));
     this.addEventListener('keydown', this.onKeyDown_.bind(this));
   }
 
-  /**
-   * @param {!Event} e
-   * @private
-   */
-  onAuxClick_(e) {
+  private onAuxClick_(e: MouseEvent) {
     if (e.button !== 1) {
       // Not a middle click.
       return;
@@ -83,11 +74,7 @@ export class ReadLaterItemElement extends ReadLaterItemElementBase {
     });
   }
 
-  /**
-   * @param {!Event} e
-   * @private
-   */
-  onClick_(e) {
+  private onClick_(e: MouseEvent|KeyboardEvent) {
     this.apiProxy_.openURL(this.data.url, true, {
       middleButton: false,
       altKey: e.altKey,
@@ -97,19 +84,11 @@ export class ReadLaterItemElement extends ReadLaterItemElementBase {
     });
   }
 
-  /**
-   * @param {!Event} e
-   * @private
-   */
-  onContextMenu_(e) {
+  private onContextMenu_(e: MouseEvent) {
     this.apiProxy_.showContextMenuForURL(this.data.url, e.clientX, e.clientY);
   }
 
-  /**
-   * @param {!Event} e
-   * @private
-   */
-  onKeyDown_(e) {
+  private onKeyDown_(e: KeyboardEvent) {
     if (e.shiftKey || !navigationKeys.has(e.key)) {
       return;
     }
@@ -119,19 +98,22 @@ export class ReadLaterItemElement extends ReadLaterItemElementBase {
         this.onClick_(e);
         break;
       case 'ArrowRight':
-        if (!this.shadowRoot.activeElement) {
-          this.shadowRoot.getElementById('updateStatusButton').focus();
-        } else if (this.shadowRoot.activeElement.nextElementSibling) {
-          this.shadowRoot.activeElement.nextElementSibling.focus();
+        if (!this.shadowRoot!.activeElement) {
+          this.$.updateStatusButton.focus();
+        } else if (this.shadowRoot!.activeElement.nextElementSibling) {
+          (this.shadowRoot!.activeElement.nextElementSibling as HTMLElement)
+              .focus();
         } else {
           this.focus();
         }
         break;
       case 'ArrowLeft':
-        if (!this.shadowRoot.activeElement) {
-          this.shadowRoot.getElementById('deleteButton').focus();
-        } else if (this.shadowRoot.activeElement.previousElementSibling) {
-          this.shadowRoot.activeElement.previousElementSibling.focus();
+        if (!this.shadowRoot!.activeElement) {
+          this.$.deleteButton.focus();
+        } else if (this.shadowRoot!.activeElement.nextElementSibling) {
+        } else if (this.shadowRoot!.activeElement.previousElementSibling) {
+          (this.shadowRoot!.activeElement.previousElementSibling as HTMLElement)
+              .focus();
         } else {
           this.focus();
         }
@@ -144,50 +126,33 @@ export class ReadLaterItemElement extends ReadLaterItemElementBase {
     e.stopPropagation();
   }
 
-  /**
-   * @param {!Event} e
-   * @private
-   */
-  onUpdateStatusClick_(e) {
+  private onUpdateStatusClick_(e: Event) {
     e.stopPropagation();
     this.apiProxy_.updateReadStatus(this.data.url, !this.data.read);
   }
 
-  /**
-   * @param {!Event} e
-   * @private
-   */
-  onItemDeleteClick_(e) {
+  private onItemDeleteClick_(e: Event) {
     e.stopPropagation();
     this.apiProxy_.removeEntry(this.data.url);
   }
 
-  /**
-   * @param {string} url
-   * @return {string}
-   * @private
-   */
-  getFaviconUrl_(url) {
+  private getFaviconUrl_(url: string): string {
     return getFaviconForPageURL(url, false);
   }
 
   /**
-   * @param {string} markAsUnreadIcon
-   * @param {string} markAsReadIcon
-   * @return {string} The appropriate icon for the current state
-   * @private
+   * @return The appropriate icon for the current state
    */
-  getUpdateStatusButtonIcon_(markAsUnreadIcon, markAsReadIcon) {
+  private getUpdateStatusButtonIcon_(
+      markAsUnreadIcon: string, markAsReadIcon: string): string {
     return this.data.read ? markAsUnreadIcon : markAsReadIcon;
   }
 
   /**
-   * @param {string} markAsUnreadTooltip
-   * @param {string} markAsReadTooltip
-   * @return {string} The appropriate tooltip for the current state
-   * @private
+   * @return The appropriate tooltip for the current state
    */
-  getUpdateStatusButtonTooltip_(markAsUnreadTooltip, markAsReadTooltip) {
+  private getUpdateStatusButtonTooltip_(
+      markAsUnreadTooltip: string, markAsReadTooltip: string): string {
     return this.data.read ? markAsUnreadTooltip : markAsReadTooltip;
   }
 }

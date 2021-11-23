@@ -503,7 +503,6 @@ group("closure_compile") {
     "js/cr:closure_compile",
     "media_router:closure_compile",
     "new_tab_page:closure_compile",
-    "read_later:closure_compile",
     "tab_search:closure_compile",
 
     # TODO(crbug.com/1000989): Add page specific targets here.

@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 import("//chrome/common/features.gni")
-import("//third_party/closure_compiler/compile_js.gni")
 import("//tools/grit/grit_rule.gni")
 import("//tools/grit/preprocess_if_expr.gni")
 import("//tools/polymer/html_to_js.gni")
@@ -61,68 +60,17 @@ preprocess_if_expr("preprocess_web_components") {
   in_folder = target_gen_dir
   out_folder = "$target_gen_dir/$preprocess_folder"
   in_files = [
-    "app.js",
-    "icons.js",
-    "read_later_item.js",
-  ]
-}
-
-js_type_check("closure_compile") {
-  closure_flags =
-      default_closure_args + mojom_js_args + [
-        "js_module_root=" + rebase_path(".", root_build_dir),
-        "js_module_root=" + rebase_path(
-                "$root_gen_dir/mojom-webui/chrome/browser/ui/webui/read_later",
-                root_build_dir),
-      ]
-  is_polymer3 = true
-  deps = [
-    ":app",
-    ":read_later_api_proxy",
-    ":read_later_item",
-  ]
-}
-
-js_library("app") {
-  deps = [
-    ":read_later_api_proxy",
-    ":read_later_item",
-    "//chrome/browser/ui/webui/read_later:mojo_bindings_webui_js",
-    "//third_party/polymer/v3_0/components-chromium/iron-selector:iron-selector",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/cr_elements/cr_button:cr_button.m",
-    "//ui/webui/resources/cr_elements/cr_icon_button:cr_icon_button.m",
-    "//ui/webui/resources/js:assert.m",
-    "//ui/webui/resources/js:load_time_data.m",
-    "//ui/webui/resources/js:util.m",
-  ]
-  externs_list = [ "$externs_path/metrics_private.js" ]
-}
-
-js_library("read_later_api_proxy") {
-  deps = [
-    "//chrome/browser/ui/webui/read_later:mojo_bindings_webui_js",
-    "//ui/webui/resources/js:cr.m",
-  ]
-}
-
-js_library("read_later_item") {
-  deps = [
-    ":read_later_api_proxy",
-    "//chrome/browser/ui/webui/read_later:mojo_bindings_webui_js",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/cr_elements:mouse_hoverable_mixin",
-    "//ui/webui/resources/cr_elements/cr_icon_button:cr_icon_button.m",
-    "//ui/webui/resources/js:assert.m",
-    "//ui/webui/resources/js:icon",
+    "app.ts",
+    "icons.ts",
+    "read_later_item.ts",
   ]
 }
 
 html_to_js("web_components") {
   js_files = [
-    "app.js",
-    "icons.js",
-    "read_later_item.js",
+    "app.ts",
+    "icons.ts",
+    "read_later_item.ts",
   ]
 }
 
@@ -131,10 +79,10 @@ ts_library("build_ts") {
   root_dir = "$target_gen_dir/$preprocess_folder"
   out_dir = "$target_gen_dir/tsc"
   in_files = [
-    "app.js",
-    "icons.js",
+    "app.ts",
+    "icons.ts",
     "read_later_api_proxy.js",
-    "read_later_item.js",
+    "read_later_item.ts",
     "read_later.mojom-webui.js",
 
     # SidePanel resources

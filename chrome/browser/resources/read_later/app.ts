@@ -16,14 +16,21 @@ import './strings.m.js';
 import {assertNotReached} from 'chrome://resources/js/assert.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {listenOnce} from 'chrome://resources/js/util.m.js';
+import {IronSelectorElement} from 'chrome://resources/polymer/v3_0/iron-selector/iron-selector.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {CurrentPageActionButtonState, ReadLaterEntriesByStatus, ReadLaterEntry} from './read_later.mojom-webui.js';
 import {ReadLaterApiProxy, ReadLaterApiProxyImpl} from './read_later_api_proxy.js';
 import {ReadLaterItemElement} from './read_later_item.js';
 
-/** @type {!Set<string>} */
-const navigationKeys = new Set(['ArrowDown', 'ArrowUp']);
+const navigationKeys: Set<string> = new Set(['ArrowDown', 'ArrowUp']);
+
+export interface ReadLaterAppElement {
+  $: {
+    readLaterList: HTMLElement,
+    selector: IronSelectorElement,
+  },
+}
 
 export class ReadLaterAppElement extends PolymerElement {
   static get is() {
@@ -36,31 +43,26 @@ export class ReadLaterAppElement extends PolymerElement {
 
   static get properties() {
     return {
-      /** @private {!Array<!ReadLaterEntry>} */
       unreadItems_: {
         type: Array,
         value: [],
       },
 
-      /** @private {!Array<!ReadLaterEntry>} */
       readItems_: {
         type: Array,
         value: [],
       },
 
-      /** @private {!CurrentPageActionButtonState} */
       currentPageActionButtonState_: {
         type: Number,
         value: CurrentPageActionButtonState.kDisabled,
       },
 
-      /** @type {boolean} */
       buttonRipples: {
         type: Boolean,
         value: () => loadTimeData.getBoolean('useRipples'),
       },
 
-      /** @private {boolean} */
       loadingContent_: {
         type: Boolean,
         value: true,
@@ -68,15 +70,18 @@ export class ReadLaterAppElement extends PolymerElement {
     };
   }
 
+  private unreadItems_: ReadLaterEntry[];
+  private readItems_: ReadLaterEntry[];
+  private currentPageActionButtonState_: CurrentPageActionButtonState;
+  buttonRipples: boolean;
+  private loadingContent_: boolean;
+  private apiProxy_: ReadLaterApiProxy = ReadLaterApiProxyImpl.getInstance();
+  private listenerIds_: number[] = [];
+  private visibilityChangedListener_: () => void;
+
   constructor() {
     super();
-    /** @private {!ReadLaterApiProxy} */
-    this.apiProxy_ = ReadLaterApiProxyImpl.getInstance();
 
-    /** @private {!Array<number>} */
-    this.listenerIds_ = [];
-
-    /** @private {!Function} */
     this.visibilityChangedListener_ = () => {
       // Refresh Read Later's list data when transitioning into a visible state.
       if (document.visibilityState === 'visible') {
@@ -85,7 +90,6 @@ export class ReadLaterAppElement extends PolymerElement {
     };
   }
 
-  /** @override */
   connectedCallback() {
     super.connectedCallback();
 
@@ -95,9 +99,10 @@ export class ReadLaterAppElement extends PolymerElement {
     const callbackRouter = this.apiProxy_.getCallbackRouter();
     this.listenerIds_.push(
         callbackRouter.itemsChanged.addListener(
-            entries => this.updateItems_(entries)),
+            (entries: ReadLaterEntriesByStatus) => this.updateItems_(entries)),
         callbackRouter.currentPageActionButtonStateChanged.addListener(
-            (state) => this.updateCurrentPageActionButton_(state)));
+            (state: CurrentPageActionButtonState) =>
+                this.updateCurrentPageActionButton_(state)));
 
     // If added in a visible state update current read later items.
     if (document.visibilityState === 'visible') {
@@ -106,7 +111,6 @@ export class ReadLaterAppElement extends PolymerElement {
     }
   }
 
-  /** @override */
   disconnectedCallback() {
     super.disconnectedCallback();
 
@@ -119,9 +123,8 @@ export class ReadLaterAppElement extends PolymerElement {
 
   /**
    * Fetches the latest read later entries from the browser.
-   * @private
    */
-  async updateReadLaterEntries_() {
+  private async updateReadLaterEntries_() {
     const getEntriesStartTimestamp = Date.now();
 
     const {entries} = await this.apiProxy_.getReadLaterEntries();
@@ -144,47 +147,29 @@ export class ReadLaterAppElement extends PolymerElement {
     this.updateItems_(entries);
   }
 
-  /**
-   * @param {!ReadLaterEntriesByStatus} entries
-   * @private
-   */
-  updateItems_(entries) {
+  private updateItems_(entries: ReadLaterEntriesByStatus) {
     this.unreadItems_ = entries.unreadEntries;
     this.readItems_ = entries.readEntries;
     this.loadingContent_ = false;
   }
 
-  /**
-   * @param {!CurrentPageActionButtonState} state
-   * @private
-   */
-  updateCurrentPageActionButton_(state) {
+  private updateCurrentPageActionButton_(state: CurrentPageActionButtonState) {
     this.currentPageActionButtonState_ = state;
   }
 
-  /**
-   * @param {!ReadLaterEntry} item
-   * @return {string}
-   * @private
-   */
-  ariaLabel_(item) {
+  private ariaLabel_(item: ReadLaterEntry): string {
     return `${item.title} - ${item.displayUrl} - ${
         item.displayTimeSinceUpdate}`;
   }
 
-  /**
-   * @return {boolean}
-   * @private
-   */
-  shouldShowCurrentPageActionButton_() {
+  private shouldShowCurrentPageActionButton_(): boolean {
     return loadTimeData.getBoolean('currentPageActionButtonEnabled');
   }
 
   /**
-   * @return {string} The appropriate text for the empty state subheader
-   * @private
+   * @return The appropriate text for the empty state subheader
    */
-  getEmptyStateSubheaderText_() {
+  private getEmptyStateSubheaderText_(): string {
     if (this.shouldShowCurrentPageActionButton_()) {
       return loadTimeData.getString('emptyStateAddFromDialogSubheader');
     }
@@ -192,44 +177,33 @@ export class ReadLaterAppElement extends PolymerElement {
   }
 
   /**
-   * @return {boolean} Whether the current page action button should be disabled
-   * @private
+   * @return Whether the current page action button should be disabled
    */
-  getCurrentPageActionButtonDisabled_() {
+  private getCurrentPageActionButtonDisabled_(): boolean {
     return this.currentPageActionButtonState_ ===
         CurrentPageActionButtonState.kDisabled;
   }
 
-  /**
-   * @return {boolean}
-   * @private
-   */
-  isReadingListEmpty_() {
+  private isReadingListEmpty_(): boolean {
     return this.unreadItems_.length === 0 && this.readItems_.length === 0;
   }
 
-  /** @private */
-  onCurrentPageActionButtonClick_() {
+  private onCurrentPageActionButtonClick_() {
     this.apiProxy_.addCurrentTab();
   }
 
-  /**
-   * @param {!Event} e
-   * @private
-   */
-  onItemKeyDown_(e) {
+  private onItemKeyDown_(e: KeyboardEvent) {
     if (e.shiftKey || !navigationKeys.has(e.key)) {
       return;
     }
-    const selector = /** @type {!IronSelectorElement} */ (this.$.selector);
     switch (e.key) {
       case 'ArrowDown':
-        selector.selectNext();
-        /** @type {!ReadLaterItemElement} */ (selector.selectedItem).focus();
+        this.$.selector.selectNext();
+        (this.$.selector.selectedItem as ReadLaterItemElement).focus();
         break;
       case 'ArrowUp':
-        selector.selectPrevious();
-        /** @type {!ReadLaterItemElement} */ (selector.selectedItem).focus();
+        this.$.selector.selectPrevious();
+        (this.$.selector.selectedItem as ReadLaterItemElement).focus();
         break;
       default:
         assertNotReached();
@@ -239,29 +213,17 @@ export class ReadLaterAppElement extends PolymerElement {
     e.stopPropagation();
   }
 
-  /**
-   * @param {!Event} e
-   * @private
-   */
-  onItemFocus_(e) {
+  private onItemFocus_(e: Event) {
     this.$.selector.selected =
-        /** @type {!ReadLaterItemElement} */ (e.currentTarget).dataset.url;
+        (e.currentTarget as ReadLaterItemElement).dataset.url!;
   }
 
-  /**
-   * @param {!Event} e
-   * @private
-   */
-  onCloseClick_(e) {
+  private onCloseClick_(e: Event) {
     e.stopPropagation();
     this.apiProxy_.closeUI();
   }
 
-  /**
-   * @return {boolean}
-   * @private
-   */
-  shouldShowHr_() {
+  private shouldShowHr_(): boolean {
     return this.unreadItems_.length > 0 && this.readItems_.length > 0;
   }
 }
