@@ -93,8 +93,9 @@ class BaseWptScriptAdapterTest(unittest.TestCase):
 
     def _create_json_output(self, json_dict):
         """Writing some json output for processing."""
-        self.host.filesystem.write_text_file(OUTPUT_JSON_FILENAME,
-                                             json.dumps(json_dict))
+        with self.host.filesystem.open_text_file_for_writing(
+            OUTPUT_JSON_FILENAME) as f:
+            json.dump(json_dict, f)
 
     def _load_json_output(self, filename=OUTPUT_JSON_FILENAME):
         """Loads the json output after post-processing."""
