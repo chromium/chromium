@@ -17,8 +17,29 @@
 #include "base/sequence_checker.h"
 #include "components/services/app_service/public/cpp/instance.h"
 #include "components/services/app_service/public/cpp/instance_update.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/aura/window.h"
+
+class InstanceRegistryTest;
 
 namespace apps {
+
+// The parameters to create or update the instance for the `app_id` and
+// `window`, when calling InstanceRegistry::CreateOrUpdateInstance.
+struct InstanceParams {
+  InstanceParams(const std::string& app_id, aura::Window* window);
+
+  InstanceParams(const InstanceParams&) = delete;
+  InstanceParams& operator=(const InstanceParams&) = delete;
+
+  ~InstanceParams();
+
+  const std::string app_id;
+  aura::Window* window;
+  absl::optional<std::string> launch_id;
+  absl::optional<std::pair<InstanceState, base::Time>> state;
+  absl::optional<content::BrowserContext*> browser_context;
+};
 
 // InstanceRegistry keeps all of the Instances seen by AppServiceProxy.
 // It also keeps the "sum" of those previous deltas, so that observers of this
@@ -75,6 +96,18 @@ class InstanceRegistry {
   void RemoveObserver(Observer* observer);
 
   using InstancePtr = std::unique_ptr<Instance>;
+  using InstanceIds = std::set<base::UnguessableToken>;
+
+  // Creates a new instance for the `app_id` and `window` with a new instance id
+  // if there is no exist instance. Otherwise, reuse the existing instance id
+  // with `param` to update the instance.
+  //
+  // This function calls OnInstance to add the new instance or update the
+  // existing instance.
+  //
+  // Note: For Lacros windows having multiple tabs/nstances, this interface
+  // should not be called, since `window` might have multiple instances.
+  void CreateOrUpdateInstance(InstanceParams&& param);
 
   // Notification and merging might be delayed until after OnInstance returns.
   // For example, suppose that the initial set of states is (a0, b0, c0) for
@@ -101,7 +134,11 @@ class InstanceRegistry {
   ash::ShelfID GetShelfId(const Instance::InstanceKey& instance_key) const;
 
   // Return true if there is an instance for the |instance_key|.
+  // TODO(crbug.com/1251501): Will be removed soon.
   bool Exists(const Instance::InstanceKey& instance_key) const;
+
+  // Return true if there is an instance for the `window`.
+  bool Exists(const aura::Window* window) const;
 
   // Return true if there is any instance in the InstanceRegistry for |app_id|.
   bool ContainsAppId(const std::string& app_id) const;
@@ -124,7 +161,7 @@ class InstanceRegistry {
     DCHECK_CALLED_ON_VALID_SEQUENCE(my_sequence_checker_);
 
     for (const auto& s_iter : instance_key_states_) {
-      apps::Instance* state = s_iter.second.get();
+      apps::Instance* state = s_iter.second;
       f(apps::InstanceUpdate(state, nullptr));
     }
   }
@@ -145,7 +182,7 @@ class InstanceRegistry {
 
     auto s_iter = instance_key_states_.find(instance_key);
     apps::Instance* state =
-        (s_iter != instance_key_states_.end()) ? s_iter->second.get() : nullptr;
+        (s_iter != instance_key_states_.end()) ? s_iter->second : nullptr;
     if (state) {
       f(apps::InstanceUpdate(state, nullptr));
       return true;
@@ -154,7 +191,12 @@ class InstanceRegistry {
   }
 
  private:
+  friend class InstanceRegistryTest;
+
   void DoOnInstance(InstancePtr deltas);
+
+  void MaybeRemoveInstanceId(const base::UnguessableToken& instance_id,
+                             aura::Window* window);
 
   base::ObserverList<Observer> observers_;
 
@@ -173,12 +215,29 @@ class InstanceRegistry {
 
   // Maps from instance key to the latest state: the "sum" of all previous
   // deltas.
-  std::map<const Instance::InstanceKey, InstancePtr> instance_key_states_;
+  // TODO(crbug.com/1251501): Will be removed soon.
+  std::map<const Instance::InstanceKey, Instance*> instance_key_states_;
+
+  // Maps from the instance id to the latest state: the "sum" of all previous
+  // deltas.
+  std::map<const base::UnguessableToken, InstancePtr> states_;
+
   std::list<InstancePtr> deltas_pending_;
 
   // Maps from app id to app instance key.
+  // TODO(crbug.com/1251501): Will be removed soon.
   std::map<const std::string, std::set<const Instance::InstanceKey>>
       app_id_to_app_instance_key_;
+
+  // Maps from window to a set of instance id.
+  std::map<const aura::Window*, InstanceIds> window_to_instance_ids_;
+
+  // Maps from instance id to window, to check whether the window is changed for
+  // the instance id. When a tab is pulled to a new Lacros window, the window
+  // might be changed, and the instance id should be removed from
+  // `window_to_instance_ids_`. `states_` can't be used to check window, because
+  // some instances might be in `deltas_pending_`.
+  std::map<base::UnguessableToken, aura::Window*> instance_id_to_window_;
 
   SEQUENCE_CHECKER(my_sequence_checker_);
 };

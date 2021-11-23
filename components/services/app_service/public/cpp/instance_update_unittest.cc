@@ -5,6 +5,7 @@
 #include "components/services/app_service/public/cpp/instance_update.h"
 
 #include "base/strings/string_util.h"
+#include "base/unguessable_token.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/services/app_service/public/cpp/instance.h"
 #include "content/public/test/browser_task_environment.h"
@@ -134,42 +135,11 @@ class InstanceUpdateTest : public testing::Test {
   TestingProfile profile_;
 };
 
-// TODO(crbug.com/1251501): Remove test cases with InstanceKey.
-TEST_F(InstanceUpdateTest, StateIsNonNullWithInstanceKey) {
-  aura::Window window(nullptr);
-  window.Init(ui::LAYER_NOT_DRAWN);
-  std::unique_ptr<apps::Instance> state = std::make_unique<apps::Instance>(
-      app_id, apps::Instance::InstanceKey::ForWindowBasedApp(&window));
-  EXPECT_TRUE(apps::InstanceUpdate::Equals(state.get(), nullptr));
-  TestInstanceUpdate(state.get(), nullptr);
-}
-
-TEST_F(InstanceUpdateTest, DeltaIsNonNullWithInstanceKey) {
-  aura::Window window(nullptr);
-  window.Init(ui::LAYER_NOT_DRAWN);
-  std::unique_ptr<apps::Instance> delta = std::make_unique<apps::Instance>(
-      app_id, apps::Instance::InstanceKey::ForWindowBasedApp(&window));
-  EXPECT_FALSE(apps::InstanceUpdate::Equals(nullptr, delta.get()));
-  TestInstanceUpdate(nullptr, delta.get());
-}
-
-TEST_F(InstanceUpdateTest, BothAreNonNullWithInstanceKey) {
-  aura::Window window(nullptr);
-  window.Init(ui::LAYER_NOT_DRAWN);
-  std::unique_ptr<apps::Instance> state = std::make_unique<apps::Instance>(
-      app_id, apps::Instance::InstanceKey::ForWindowBasedApp(&window));
-  std::unique_ptr<apps::Instance> delta = std::make_unique<apps::Instance>(
-      app_id, apps::Instance::InstanceKey::ForWindowBasedApp(&window));
-  EXPECT_TRUE(apps::InstanceUpdate::Equals(state.get(), delta.get()));
-  TestInstanceUpdate(state.get(), delta.get());
-}
-
 TEST_F(InstanceUpdateTest, StateIsNonNull) {
   aura::Window window(nullptr);
   window.Init(ui::LAYER_NOT_DRAWN);
-  base::UnguessableToken instance_id = base::UnguessableToken::Create();
-  std::unique_ptr<apps::Instance> state =
-      std::make_unique<apps::Instance>(app_id, instance_id, &window);
+  auto state = std::make_unique<apps::Instance>(
+      app_id, base::UnguessableToken::Create(), &window);
   EXPECT_TRUE(apps::InstanceUpdate::Equals(state.get(), nullptr));
   TestInstanceUpdate(state.get(), nullptr);
 }
@@ -177,9 +147,8 @@ TEST_F(InstanceUpdateTest, StateIsNonNull) {
 TEST_F(InstanceUpdateTest, DeltaIsNonNull) {
   aura::Window window(nullptr);
   window.Init(ui::LAYER_NOT_DRAWN);
-  base::UnguessableToken instance_id = base::UnguessableToken::Create();
-  std::unique_ptr<apps::Instance> delta =
-      std::make_unique<apps::Instance>(app_id, instance_id, &window);
+  auto delta = std::make_unique<apps::Instance>(
+      app_id, base::UnguessableToken::Create(), &window);
   EXPECT_FALSE(apps::InstanceUpdate::Equals(nullptr, delta.get()));
   TestInstanceUpdate(nullptr, delta.get());
 }
@@ -188,10 +157,8 @@ TEST_F(InstanceUpdateTest, BothAreNonNull) {
   aura::Window window(nullptr);
   window.Init(ui::LAYER_NOT_DRAWN);
   base::UnguessableToken instance_id = base::UnguessableToken::Create();
-  std::unique_ptr<apps::Instance> state =
-      std::make_unique<apps::Instance>(app_id, instance_id, &window);
-  std::unique_ptr<apps::Instance> delta =
-      std::make_unique<apps::Instance>(app_id, instance_id, &window);
+  auto state = std::make_unique<apps::Instance>(app_id, instance_id, &window);
+  auto delta = std::make_unique<apps::Instance>(app_id, instance_id, &window);
   EXPECT_TRUE(apps::InstanceUpdate::Equals(state.get(), delta.get()));
   TestInstanceUpdate(state.get(), delta.get());
 }
@@ -200,10 +167,8 @@ TEST_F(InstanceUpdateTest, LaunchIdIsUpdated) {
   aura::Window window(nullptr);
   window.Init(ui::LAYER_NOT_DRAWN);
   base::UnguessableToken instance_id = base::UnguessableToken::Create();
-  std::unique_ptr<apps::Instance> state =
-      std::make_unique<apps::Instance>(app_id, instance_id, &window);
-  std::unique_ptr<apps::Instance> delta =
-      std::make_unique<apps::Instance>(app_id, instance_id, &window);
+  auto state = std::make_unique<apps::Instance>(app_id, instance_id, &window);
+  auto delta = std::make_unique<apps::Instance>(app_id, instance_id, &window);
   delta->SetLaunchId("abc");
   EXPECT_FALSE(apps::InstanceUpdate::Equals(state.get(), delta.get()));
 }
@@ -212,11 +177,9 @@ TEST_F(InstanceUpdateTest, LaunchIdIsNotUpdated) {
   aura::Window window(nullptr);
   window.Init(ui::LAYER_NOT_DRAWN);
   base::UnguessableToken instance_id = base::UnguessableToken::Create();
-  std::unique_ptr<apps::Instance> state =
-      std::make_unique<apps::Instance>(app_id, instance_id, &window);
+  auto state = std::make_unique<apps::Instance>(app_id, instance_id, &window);
   state->SetLaunchId("abc");
-  std::unique_ptr<apps::Instance> delta =
-      std::make_unique<apps::Instance>(app_id, instance_id, &window);
+  auto delta = std::make_unique<apps::Instance>(app_id, instance_id, &window);
   EXPECT_TRUE(apps::InstanceUpdate::Equals(state.get(), delta.get()));
 }
 
@@ -224,10 +187,8 @@ TEST_F(InstanceUpdateTest, StateIsUpdated) {
   aura::Window window(nullptr);
   window.Init(ui::LAYER_NOT_DRAWN);
   base::UnguessableToken instance_id = base::UnguessableToken::Create();
-  std::unique_ptr<apps::Instance> state =
-      std::make_unique<apps::Instance>(app_id, instance_id, &window);
-  std::unique_ptr<apps::Instance> delta =
-      std::make_unique<apps::Instance>(app_id, instance_id, &window);
+  auto state = std::make_unique<apps::Instance>(app_id, instance_id, &window);
+  auto delta = std::make_unique<apps::Instance>(app_id, instance_id, &window);
   delta->UpdateState(apps::InstanceState::kStarted, base::Time::Now());
   EXPECT_FALSE(apps::InstanceUpdate::Equals(state.get(), delta.get()));
 }
@@ -236,11 +197,9 @@ TEST_F(InstanceUpdateTest, StateIsNotUpdated) {
   aura::Window window(nullptr);
   window.Init(ui::LAYER_NOT_DRAWN);
   base::UnguessableToken instance_id = base::UnguessableToken::Create();
-  std::unique_ptr<apps::Instance> state =
-      std::make_unique<apps::Instance>(app_id, instance_id, &window);
+  auto state = std::make_unique<apps::Instance>(app_id, instance_id, &window);
   state->UpdateState(apps::InstanceState::kStarted, base::Time::Now());
-  std::unique_ptr<apps::Instance> delta =
-      std::make_unique<apps::Instance>(app_id, instance_id, &window);
+  auto delta = std::make_unique<apps::Instance>(app_id, instance_id, &window);
   EXPECT_TRUE(apps::InstanceUpdate::Equals(state.get(), delta.get()));
 }
 
@@ -248,12 +207,10 @@ TEST_F(InstanceUpdateTest, BothLaunchAndStateIsUpdated) {
   aura::Window window(nullptr);
   window.Init(ui::LAYER_NOT_DRAWN);
   base::UnguessableToken instance_id = base::UnguessableToken::Create();
-  std::unique_ptr<apps::Instance> state =
-      std::make_unique<apps::Instance>(app_id, instance_id, &window);
+  auto state = std::make_unique<apps::Instance>(app_id, instance_id, &window);
   state->SetLaunchId("aaa");
   state->UpdateState(apps::InstanceState::kStarted, base::Time::Now());
-  std::unique_ptr<apps::Instance> delta =
-      std::make_unique<apps::Instance>(app_id, instance_id, &window);
+  auto delta = std::make_unique<apps::Instance>(app_id, instance_id, &window);
   delta->SetLaunchId("bbb");
   delta->UpdateState(apps::InstanceState::kRunning, base::Time::Now());
   EXPECT_FALSE(apps::InstanceUpdate::Equals(state.get(), delta.get()));
@@ -263,10 +220,8 @@ TEST_F(InstanceUpdateTest, BrowserContextIsUpdated) {
   aura::Window window(nullptr);
   window.Init(ui::LAYER_NOT_DRAWN);
   base::UnguessableToken instance_id = base::UnguessableToken::Create();
-  std::unique_ptr<apps::Instance> state =
-      std::make_unique<apps::Instance>(app_id, instance_id, &window);
-  std::unique_ptr<apps::Instance> delta =
-      std::make_unique<apps::Instance>(app_id, instance_id, &window);
+  auto state = std::make_unique<apps::Instance>(app_id, instance_id, &window);
+  auto delta = std::make_unique<apps::Instance>(app_id, instance_id, &window);
   delta->SetBrowserContext(&profile_);
   EXPECT_FALSE(apps::InstanceUpdate::Equals(state.get(), delta.get()));
 }
@@ -275,11 +230,9 @@ TEST_F(InstanceUpdateTest, BrowserContextIsNotUpdated) {
   aura::Window window(nullptr);
   window.Init(ui::LAYER_NOT_DRAWN);
   base::UnguessableToken instance_id = base::UnguessableToken::Create();
-  std::unique_ptr<apps::Instance> state =
-      std::make_unique<apps::Instance>(app_id, instance_id, &window);
+  auto state = std::make_unique<apps::Instance>(app_id, instance_id, &window);
   state->SetBrowserContext(&profile_);
-  std::unique_ptr<apps::Instance> delta =
-      std::make_unique<apps::Instance>(app_id, instance_id, &window);
+  auto delta = std::make_unique<apps::Instance>(app_id, instance_id, &window);
   EXPECT_TRUE(apps::InstanceUpdate::Equals(state.get(), delta.get()));
 }
 
@@ -289,10 +242,9 @@ TEST_F(InstanceUpdateTest, WindowIsUpdated) {
   aura::Window window2(nullptr);
   window2.Init(ui::LAYER_NOT_DRAWN);
   base::UnguessableToken instance_id = base::UnguessableToken::Create();
-  std::unique_ptr<apps::Instance> state =
-      std::make_unique<apps::Instance>(app_id, instance_id, &window1);
+  auto state = std::make_unique<apps::Instance>(app_id, instance_id, &window1);
   state->SetBrowserContext(&profile_);
-  std::unique_ptr<apps::Instance> delta =
-      std::make_unique<apps::Instance>(app_id, instance_id, &window2);
+  auto delta = std::make_unique<apps::Instance>(app_id, instance_id, &window2);
   EXPECT_FALSE(apps::InstanceUpdate::Equals(state.get(), delta.get()));
+  apps::InstanceUpdate::Merge(state.get(), delta.get());
 }

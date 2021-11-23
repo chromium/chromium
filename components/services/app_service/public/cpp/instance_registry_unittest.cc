@@ -6,6 +6,7 @@
 #include <set>
 #include <vector>
 
+#include "base/containers/contains.h"
 #include "components/services/app_service/public/cpp/instance.h"
 #include "components/services/app_service/public/cpp/instance_registry.h"
 #include "components/services/app_service/public/cpp/instance_update.h"
@@ -16,25 +17,21 @@
 class InstanceRegistryTest : public testing::Test,
                              public apps::InstanceRegistry::Observer {
  protected:
-  static std::unique_ptr<apps::Instance> MakeInstanceWithWindow(
+  void MakeInstanceWithWindow(
       const char* app_id,
       aura::Window* window,
       apps::InstanceState state = apps::InstanceState::kUnknown,
       base::Time time = base::Time()) {
-    return MakeInstance(app_id,
-                        apps::Instance::InstanceKey::ForWindowBasedApp(window),
-                        state, time);
+    MakeInstance(app_id, window, state, time);
   }
 
-  static std::unique_ptr<apps::Instance> MakeInstance(
-      const char* app_id,
-      apps::Instance::InstanceKey&& instance_key,
-      apps::InstanceState state = apps::InstanceState::kUnknown,
-      base::Time time = base::Time()) {
-    std::unique_ptr<apps::Instance> instance =
-        std::make_unique<apps::Instance>(app_id, std::move(instance_key));
-    instance->UpdateState(state, time);
-    return instance;
+  void MakeInstance(const char* app_id,
+                    aura::Window* window,
+                    apps::InstanceState state = apps::InstanceState::kUnknown,
+                    base::Time time = base::Time()) {
+    apps::InstanceParams params(app_id, window);
+    params.state = std::make_pair(state, time);
+    instance_registry_.CreateOrUpdateInstance(std::move(params));
   }
 
   static apps::Instance::InstanceKey MakeInstanceKey(aura::Window* window) {
@@ -71,9 +68,13 @@ class InstanceRegistryTest : public testing::Test,
     NOTREACHED();
   }
 
+  apps::InstanceRegistry& instance_registry() { return instance_registry_; }
+
   int num_running_apps_ = 0;
   std::set<std::string> updated_ids_;
   std::set<const aura::Window*> updated_enclosing_windows_;
+
+  apps::InstanceRegistry instance_registry_;
 };
 
 // In the tests below, just "recursive" means that instance_registry.OnInstance
@@ -91,7 +92,7 @@ class InstanceRecursiveObserver : public apps::InstanceRegistry::Observer {
   ~InstanceRecursiveObserver() override = default;
 
   void PrepareForOnInstances(int expected_num_instances,
-                             std::vector<std::unique_ptr<apps::Instance>>*
+                             std::vector<std::unique_ptr<apps::InstanceParams>>*
                                  super_recursive_instances = nullptr) {
     expected_num_instances_ = expected_num_instances;
     num_instances_seen_on_instance_update_ = 0;
@@ -127,14 +128,14 @@ class InstanceRecursiveObserver : public apps::InstanceRegistry::Observer {
     }
 
     while (!super_recursive_instances_.empty()) {
-      std::unique_ptr<apps::Instance> instance =
+      std::unique_ptr<apps::InstanceParams> params =
           std::move(super_recursive_instances_.back());
-      if (instance.get() == nullptr) {
+      if (params.get() == nullptr) {
         // This is the placeholder 'punctuation'.
         super_recursive_instances_.pop_back();
         break;
       }
-      instance_registry_->OnInstance(std::move(instance));
+      instance_registry_->CreateOrUpdateInstance(std::move(*params));
       super_recursive_instances_.pop_back();
     }
 
@@ -167,16 +168,14 @@ class InstanceRecursiveObserver : public apps::InstanceRegistry::Observer {
   // until a nullptr 'punctuation' element (a group terminator) is seen. If that
   // group of popped elements (in LIFO order) is non-empty, that group forms the
   // vector of App's passed to instance_registry_.OnInstance.
-  std::vector<std::unique_ptr<apps::Instance>> super_recursive_instances_;
+  std::vector<std::unique_ptr<apps::InstanceParams>> super_recursive_instances_;
 };
 
 TEST_F(InstanceRegistryTest, ForEachInstance) {
-  apps::InstanceRegistry instance_registry;
-
   updated_enclosing_windows_.clear();
   updated_ids_.clear();
 
-  CallForEachInstance(instance_registry);
+  CallForEachInstance(instance_registry());
 
   EXPECT_EQ(0u, updated_enclosing_windows_.size());
   EXPECT_EQ(0u, updated_ids_.size());
@@ -187,13 +186,13 @@ TEST_F(InstanceRegistryTest, ForEachInstance) {
   window2.Init(ui::LAYER_NOT_DRAWN);
   aura::Window window3(nullptr);
   window3.Init(ui::LAYER_NOT_DRAWN);
-  instance_registry.OnInstance(MakeInstanceWithWindow("a", &window1));
-  instance_registry.OnInstance(MakeInstanceWithWindow("b", &window2));
-  instance_registry.OnInstance(MakeInstanceWithWindow("c", &window3));
+  MakeInstanceWithWindow("a", &window1);
+  MakeInstanceWithWindow("b", &window2);
+  MakeInstanceWithWindow("c", &window3);
 
   updated_enclosing_windows_.clear();
   updated_ids_.clear();
-  CallForEachInstance(instance_registry);
+  CallForEachInstance(instance_registry());
 
   EXPECT_EQ(3u, updated_enclosing_windows_.size());
   EXPECT_EQ(3u, updated_ids_.size());
@@ -209,13 +208,12 @@ TEST_F(InstanceRegistryTest, ForEachInstance) {
 
   aura::Window window4(nullptr);
   window4.Init(ui::LAYER_NOT_DRAWN);
-  instance_registry.OnInstance(
-      MakeInstanceWithWindow("a", &window1, apps::InstanceState::kRunning));
-  instance_registry.OnInstance(MakeInstanceWithWindow("c", &window4));
+  MakeInstanceWithWindow("a", &window1, apps::InstanceState::kRunning);
+  MakeInstanceWithWindow("c", &window4);
 
   updated_enclosing_windows_.clear();
   updated_ids_.clear();
-  CallForEachInstance(instance_registry);
+  CallForEachInstance(instance_registry());
 
   EXPECT_EQ(4u, updated_enclosing_windows_.size());
   EXPECT_EQ(3u, updated_ids_.size());
@@ -234,7 +232,7 @@ TEST_F(InstanceRegistryTest, ForEachInstance) {
   // Test that ForOneApp succeeds for window4 and fails for window5.
 
   bool found_window4 = false;
-  EXPECT_TRUE(instance_registry.ForOneInstance(
+  EXPECT_TRUE(instance_registry().ForOneInstance(
       MakeInstanceKey(&window4),
       [&found_window4](const apps::InstanceUpdate& update) {
         found_window4 = true;
@@ -245,7 +243,7 @@ TEST_F(InstanceRegistryTest, ForEachInstance) {
   bool found_window5 = false;
   aura::Window window5(nullptr);
   window5.Init(ui::LAYER_NOT_DRAWN);
-  EXPECT_FALSE(instance_registry.ForOneInstance(
+  EXPECT_FALSE(instance_registry().ForOneInstance(
       MakeInstanceKey(&window5),
       [&found_window5](const apps::InstanceUpdate& update) {
         found_window5 = true;
@@ -254,15 +252,11 @@ TEST_F(InstanceRegistryTest, ForEachInstance) {
 }
 
 TEST_F(InstanceRegistryTest, Observer) {
-  std::vector<std::unique_ptr<apps::Instance>> deltas;
-  apps::InstanceRegistry instance_registry;
-
-  instance_registry.AddObserver(this);
+  instance_registry().AddObserver(this);
 
   num_running_apps_ = 0;
   updated_enclosing_windows_.clear();
   updated_ids_.clear();
-  deltas.clear();
 
   aura::Window window1(nullptr);
   window1.Init(ui::LAYER_NOT_DRAWN);
@@ -271,9 +265,9 @@ TEST_F(InstanceRegistryTest, Observer) {
   aura::Window window3(nullptr);
   window3.Init(ui::LAYER_NOT_DRAWN);
 
-  instance_registry.OnInstance(MakeInstanceWithWindow("a", &window1));
-  instance_registry.OnInstance(MakeInstanceWithWindow("c", &window2));
-  instance_registry.OnInstance(MakeInstanceWithWindow("a", &window3));
+  MakeInstanceWithWindow("a", &window1);
+  MakeInstanceWithWindow("c", &window2);
+  MakeInstanceWithWindow("a", &window3);
 
   EXPECT_EQ(0, num_running_apps_);
   EXPECT_EQ(3u, updated_enclosing_windows_.size());
@@ -289,17 +283,12 @@ TEST_F(InstanceRegistryTest, Observer) {
 
   num_running_apps_ = 0;
   updated_ids_.clear();
-  deltas.clear();
 
   aura::Window window4(nullptr);
   window4.Init(ui::LAYER_NOT_DRAWN);
 
-  deltas.push_back(MakeInstanceWithWindow("b", &window4));
-  deltas.push_back(
-      MakeInstanceWithWindow("c", &window2, apps::InstanceState::kRunning));
-  instance_registry.OnInstance(MakeInstanceWithWindow("b", &window4));
-  instance_registry.OnInstance(
-      MakeInstanceWithWindow("c", &window2, apps::InstanceState::kRunning));
+  MakeInstanceWithWindow("b", &window4);
+  MakeInstanceWithWindow("c", &window2, apps::InstanceState::kRunning);
 
   EXPECT_EQ(1, num_running_apps_);
   EXPECT_EQ(2u, updated_ids_.size());
@@ -310,17 +299,15 @@ TEST_F(InstanceRegistryTest, Observer) {
   EXPECT_NE(updated_ids_.end(), updated_ids_.find("b"));
   EXPECT_NE(updated_ids_.end(), updated_ids_.find("c"));
 
-  instance_registry.RemoveObserver(this);
+  instance_registry().RemoveObserver(this);
 
   num_running_apps_ = 0;
   updated_enclosing_windows_.clear();
   updated_ids_.clear();
-  deltas.clear();
 
   aura::Window window5(nullptr);
   window5.Init(ui::LAYER_NOT_DRAWN);
-  instance_registry.OnInstance(
-      MakeInstanceWithWindow("f", &window5, apps::InstanceState::kRunning));
+  MakeInstanceWithWindow("f", &window5, apps::InstanceState::kRunning);
 
   EXPECT_EQ(0, num_running_apps_);
   EXPECT_EQ(0u, updated_enclosing_windows_.size());
@@ -328,23 +315,21 @@ TEST_F(InstanceRegistryTest, Observer) {
 }
 
 TEST_F(InstanceRegistryTest, WholeProcessForOneWindow) {
-  apps::InstanceRegistry instance_registry;
-  InstanceRecursiveObserver observer(&instance_registry);
+  InstanceRecursiveObserver observer(&instance_registry());
 
   apps::InstanceState instance_state = apps::InstanceState::kStarted;
   aura::Window window(nullptr);
   window.Init(ui::LAYER_NOT_DRAWN);
   observer.PrepareForOnInstances(1);
-  instance_registry.OnInstance(
-      MakeInstanceWithWindow("p", &window, instance_state));
+  MakeInstanceWithWindow("p", &window, instance_state);
+  // Instance is updated twice, for creation and state modification.
   EXPECT_EQ(1, observer.NumInstancesSeenOnInstanceUpdate());
 
   instance_state = static_cast<apps::InstanceState>(
       instance_state | apps::InstanceState::kRunning |
       apps::InstanceState::kActive | apps::InstanceState::kVisible);
   observer.PrepareForOnInstances(1);
-  instance_registry.OnInstance(
-      MakeInstanceWithWindow("p", &window, instance_state));
+  MakeInstanceWithWindow("p", &window, instance_state);
   EXPECT_EQ(1, observer.NumInstancesSeenOnInstanceUpdate());
 
   apps::InstanceState state1 = static_cast<apps::InstanceState>(
@@ -361,12 +346,12 @@ TEST_F(InstanceRegistryTest, WholeProcessForOneWindow) {
       apps::InstanceState::kVisible);
   apps::InstanceState state6 = apps::InstanceState::kDestroyed;
   observer.PrepareForOnInstances(1);
-  instance_registry.OnInstance(MakeInstanceWithWindow("p", &window, state1));
-  instance_registry.OnInstance(MakeInstanceWithWindow("p", &window, state2));
-  instance_registry.OnInstance(MakeInstanceWithWindow("p", &window, state3));
-  instance_registry.OnInstance(MakeInstanceWithWindow("p", &window, state4));
-  instance_registry.OnInstance(MakeInstanceWithWindow("p", &window, state5));
-  instance_registry.OnInstance(MakeInstanceWithWindow("p", &window, state6));
+  MakeInstanceWithWindow("p", &window, state1);
+  MakeInstanceWithWindow("p", &window, state2);
+  MakeInstanceWithWindow("p", &window, state3);
+  MakeInstanceWithWindow("p", &window, state4);
+  MakeInstanceWithWindow("p", &window, state5);
+  MakeInstanceWithWindow("p", &window, state6);
 
   // OnInstanceUpdate is called for state1, because state1 is different with
   // previous instance_state. state2 and state3 is not changed, so
@@ -374,10 +359,10 @@ TEST_F(InstanceRegistryTest, WholeProcessForOneWindow) {
   // state5, and state6 separately, because they are different. So
   // OnInstanceUpdate is called 4 times, for state1, state4, state5, and state6.
   EXPECT_EQ(4, observer.NumInstancesSeenOnInstanceUpdate());
-  EXPECT_FALSE(instance_registry.ContainsAppId("p"));
+  EXPECT_FALSE(instance_registry().ContainsAppId("p"));
 
   bool found_window = false;
-  EXPECT_FALSE(instance_registry.ForOneInstance(
+  EXPECT_FALSE(instance_registry().ForOneInstance(
       MakeInstanceKey(&window),
       [&found_window](const apps::InstanceUpdate& update) {
         found_window = true;
@@ -385,11 +370,11 @@ TEST_F(InstanceRegistryTest, WholeProcessForOneWindow) {
   EXPECT_FALSE(found_window);
 
   observer.PrepareForOnInstances(1);
-  instance_registry.OnInstance(MakeInstanceWithWindow("p", &window, state5));
+  MakeInstanceWithWindow("p", &window, state5);
   EXPECT_EQ(1, observer.NumInstancesSeenOnInstanceUpdate());
 
   found_window = false;
-  EXPECT_TRUE(instance_registry.ForOneInstance(
+  EXPECT_TRUE(instance_registry().ForOneInstance(
       MakeInstanceKey(&window),
       [&found_window](const apps::InstanceUpdate& update) {
         found_window = true;
@@ -398,8 +383,7 @@ TEST_F(InstanceRegistryTest, WholeProcessForOneWindow) {
 }
 
 TEST_F(InstanceRegistryTest, Recursive) {
-  apps::InstanceRegistry instance_registry;
-  InstanceRecursiveObserver observer(&instance_registry);
+  InstanceRecursiveObserver observer(&instance_registry());
 
   apps::InstanceState instance_state1 = static_cast<apps::InstanceState>(
       apps::InstanceState::kStarted | apps::InstanceState::kRunning);
@@ -410,10 +394,8 @@ TEST_F(InstanceRegistryTest, Recursive) {
   aura::Window window2(nullptr);
   window2.Init(ui::LAYER_NOT_DRAWN);
   observer.PrepareForOnInstances(-1);
-  instance_registry.OnInstance(
-      MakeInstanceWithWindow("o", &window1, instance_state1));
-  instance_registry.OnInstance(
-      MakeInstanceWithWindow("p", &window2, instance_state2));
+  MakeInstanceWithWindow("o", &window1, instance_state1);
+  MakeInstanceWithWindow("p", &window2, instance_state2);
   EXPECT_EQ(2, observer.NumInstancesSeenOnInstanceUpdate());
 
   apps::InstanceState instance_state3 = static_cast<apps::InstanceState>(
@@ -428,12 +410,9 @@ TEST_F(InstanceRegistryTest, Recursive) {
   aura::Window window4(nullptr);
   window4.Init(ui::LAYER_NOT_DRAWN);
   observer.PrepareForOnInstances(-1);
-  instance_registry.OnInstance(
-      MakeInstanceWithWindow("p", &window2, instance_state3));
-  instance_registry.OnInstance(
-      MakeInstanceWithWindow("q", &window3, instance_state4));
-  instance_registry.OnInstance(
-      MakeInstanceWithWindow("p", &window4, instance_state3));
+  MakeInstanceWithWindow("p", &window2, instance_state3);
+  MakeInstanceWithWindow("q", &window3, instance_state4);
+  MakeInstanceWithWindow("p", &window4, instance_state3);
   EXPECT_EQ(2, observer.NumInstancesSeenOnInstanceUpdate());
 
   apps::InstanceState instance_state5 = static_cast<apps::InstanceState>(
@@ -445,32 +424,25 @@ TEST_F(InstanceRegistryTest, Recursive) {
       apps::InstanceState::kActive);
 
   observer.PrepareForOnInstances(4);
-  instance_registry.OnInstance(
-      MakeInstanceWithWindow("p", &window2, instance_state5));
-  instance_registry.OnInstance(
-      MakeInstanceWithWindow("p", &window2, instance_state6));
-  instance_registry.OnInstance(
-      MakeInstanceWithWindow("p", &window2, instance_state7));
+  MakeInstanceWithWindow("p", &window2, instance_state5);
+  MakeInstanceWithWindow("p", &window2, instance_state6);
+  MakeInstanceWithWindow("p", &window2, instance_state7);
   EXPECT_EQ(1, observer.NumInstancesSeenOnInstanceUpdate());
 
   apps::InstanceState instance_state8 =
       static_cast<apps::InstanceState>(apps::InstanceState::kDestroyed);
   observer.PrepareForOnInstances(-1);
-  instance_registry.OnInstance(
-      MakeInstanceWithWindow("p", &window2, instance_state8));
-  instance_registry.OnInstance(
-      MakeInstanceWithWindow("p", &window4, instance_state8));
-  instance_registry.OnInstance(
-      MakeInstanceWithWindow("q", &window3, instance_state8));
-  instance_registry.OnInstance(
-      MakeInstanceWithWindow("o", &window1, instance_state8));
+  MakeInstanceWithWindow("p", &window2, instance_state8);
+  MakeInstanceWithWindow("p", &window4, instance_state8);
+  MakeInstanceWithWindow("q", &window3, instance_state8);
+  MakeInstanceWithWindow("o", &window1, instance_state8);
   EXPECT_EQ(4, observer.NumInstancesSeenOnInstanceUpdate());
-  EXPECT_FALSE(instance_registry.ContainsAppId("o"));
-  EXPECT_FALSE(instance_registry.ContainsAppId("p"));
-  EXPECT_FALSE(instance_registry.ContainsAppId("q"));
+  EXPECT_FALSE(instance_registry().ContainsAppId("o"));
+  EXPECT_FALSE(instance_registry().ContainsAppId("p"));
+  EXPECT_FALSE(instance_registry().ContainsAppId("q"));
 
   bool found_window = false;
-  EXPECT_FALSE(instance_registry.ForOneInstance(
+  EXPECT_FALSE(instance_registry().ForOneInstance(
       MakeInstanceKey(&window2),
       [&found_window](const apps::InstanceUpdate& update) {
         found_window = true;
@@ -478,7 +450,7 @@ TEST_F(InstanceRegistryTest, Recursive) {
   EXPECT_FALSE(found_window);
 
   found_window = false;
-  EXPECT_FALSE(instance_registry.ForOneInstance(
+  EXPECT_FALSE(instance_registry().ForOneInstance(
       MakeInstanceKey(&window4),
       [&found_window](const apps::InstanceUpdate& update) {
         found_window = true;
@@ -486,7 +458,7 @@ TEST_F(InstanceRegistryTest, Recursive) {
   EXPECT_FALSE(found_window);
 
   found_window = false;
-  EXPECT_FALSE(instance_registry.ForOneInstance(
+  EXPECT_FALSE(instance_registry().ForOneInstance(
       MakeInstanceKey(&window3),
       [&found_window](const apps::InstanceUpdate& update) {
         found_window = true;
@@ -494,7 +466,7 @@ TEST_F(InstanceRegistryTest, Recursive) {
   EXPECT_FALSE(found_window);
 
   found_window = false;
-  EXPECT_FALSE(instance_registry.ForOneInstance(
+  EXPECT_FALSE(instance_registry().ForOneInstance(
       MakeInstanceKey(&window1),
       [&found_window](const apps::InstanceUpdate& update) {
         found_window = true;
@@ -502,12 +474,11 @@ TEST_F(InstanceRegistryTest, Recursive) {
   EXPECT_FALSE(found_window);
 
   observer.PrepareForOnInstances(1);
-  instance_registry.OnInstance(
-      MakeInstanceWithWindow("p", &window2, instance_state7));
+  MakeInstanceWithWindow("p", &window2, instance_state7);
   EXPECT_EQ(1, observer.NumInstancesSeenOnInstanceUpdate());
 
   found_window = false;
-  EXPECT_TRUE(instance_registry.ForOneInstance(
+  EXPECT_TRUE(instance_registry().ForOneInstance(
       MakeInstanceKey(&window2),
       [&found_window](const apps::InstanceUpdate& update) {
         found_window = true;
@@ -516,8 +487,7 @@ TEST_F(InstanceRegistryTest, Recursive) {
 }
 
 TEST_F(InstanceRegistryTest, SuperRecursive) {
-  apps::InstanceRegistry instance_registry;
-  InstanceRecursiveObserver observer(&instance_registry);
+  InstanceRecursiveObserver observer(&instance_registry());
 
   // Set up a series of OnInstance to be called during
   // observer.OnInstanceUpdate:
@@ -535,7 +505,7 @@ TEST_F(InstanceRegistryTest, SuperRecursive) {
   // The vector is processed in LIFO order with nullptr punctuation to
   // terminate each group. See the comment on the
   // RecursiveObserver::super_recursive_apps_ field.
-  std::vector<std::unique_ptr<apps::Instance>> super_recursive_apps;
+  std::vector<std::unique_ptr<apps::InstanceParams>> super_recursive_apps;
   aura::Window window1(nullptr);
   window1.Init(ui::LAYER_NOT_DRAWN);
   aura::Window window2(nullptr);
@@ -547,51 +517,72 @@ TEST_F(InstanceRegistryTest, SuperRecursive) {
   aura::Window window5(nullptr);
   window5.Init(ui::LAYER_NOT_DRAWN);
   super_recursive_apps.push_back(nullptr);
-  super_recursive_apps.push_back(
-      MakeInstanceWithWindow("a", &window1, apps::InstanceState::kStarted));
-  super_recursive_apps.push_back(nullptr);
-  super_recursive_apps.push_back(nullptr);
-  super_recursive_apps.push_back(MakeInstanceWithWindow("a", &window2));
-  super_recursive_apps.push_back(nullptr);
-  super_recursive_apps.push_back(MakeInstanceWithWindow("b", &window3));
-  super_recursive_apps.push_back(
-      MakeInstanceWithWindow("a", &window2, apps::InstanceState::kDestroyed));
-  super_recursive_apps.push_back(
-      MakeInstanceWithWindow("a", &window2, apps::InstanceState::kRunning));
-  super_recursive_apps.push_back(
-      MakeInstanceWithWindow("b", &window3, apps::InstanceState::kRunning));
-  super_recursive_apps.push_back(nullptr);
-  super_recursive_apps.push_back(nullptr);
-  super_recursive_apps.push_back(
-      MakeInstanceWithWindow("c", &window4, apps::InstanceState::kVisible));
-  super_recursive_apps.push_back(
-      MakeInstanceWithWindow("b", &window5, apps::InstanceState::kVisible));
 
-  instance_registry.OnInstance(
-      MakeInstanceWithWindow("a", &window2, apps::InstanceState::kActive));
-  instance_registry.OnInstance(
-      MakeInstanceWithWindow("b", &window3, apps::InstanceState::kActive));
+  std::unique_ptr<apps::InstanceParams> params =
+      std::make_unique<apps::InstanceParams>("a", &window1);
+  params->state = std::make_pair(apps::InstanceState::kStarted, base::Time());
+  super_recursive_apps.push_back(std::move(params));
+
+  super_recursive_apps.push_back(nullptr);
+  super_recursive_apps.push_back(nullptr);
+  super_recursive_apps.push_back(
+      std::make_unique<apps::InstanceParams>("a", &window2));
+  super_recursive_apps.push_back(nullptr);
+  super_recursive_apps.push_back(
+      std::make_unique<apps::InstanceParams>("b", &window3));
+
+  params = std::make_unique<apps::InstanceParams>("a", &window2);
+  params->state = std::make_pair(apps::InstanceState::kDestroyed, base::Time());
+  super_recursive_apps.push_back(std::move(params));
+
+  params = std::make_unique<apps::InstanceParams>("a", &window2);
+  params->state = std::make_pair(apps::InstanceState::kRunning, base::Time());
+  super_recursive_apps.push_back(std::move(params));
+
+  params = std::make_unique<apps::InstanceParams>("b", &window3);
+  params->state = std::make_pair(apps::InstanceState::kRunning, base::Time());
+  super_recursive_apps.push_back(std::move(params));
+
+  super_recursive_apps.push_back(nullptr);
+  super_recursive_apps.push_back(nullptr);
+
+  params = std::make_unique<apps::InstanceParams>("c", &window4);
+  params->state = std::make_pair(apps::InstanceState::kVisible, base::Time());
+  super_recursive_apps.push_back(std::move(params));
+
+  params = std::make_unique<apps::InstanceParams>("b", &window5);
+  params->state = std::make_pair(apps::InstanceState::kVisible, base::Time());
+  super_recursive_apps.push_back(std::move(params));
+
+  params = std::make_unique<apps::InstanceParams>("a", &window2);
+  params->state = std::make_pair(apps::InstanceState::kActive, base::Time());
+  MakeInstanceWithWindow("a", &window2, apps::InstanceState::kActive);
+
+  params = std::make_unique<apps::InstanceParams>("b", &window3);
+  params->state = std::make_pair(apps::InstanceState::kActive, base::Time());
+  MakeInstanceWithWindow("b", &window3, apps::InstanceState::kActive);
+
   observer.PrepareForOnInstances(-1, &super_recursive_apps);
-  instance_registry.OnInstance(
-      MakeInstanceWithWindow("c", &window4, apps::InstanceState::kActive));
+
+  params = std::make_unique<apps::InstanceParams>("c", &window4);
+  params->state = std::make_pair(apps::InstanceState::kActive, base::Time());
+  MakeInstanceWithWindow("c", &window4, apps::InstanceState::kActive);
   EXPECT_EQ(8, observer.NumInstancesSeenOnInstanceUpdate());
 
   // After all of that, check that for each window, the last delta won.
   EXPECT_EQ(apps::InstanceState::kStarted,
-            GetState(instance_registry, &window1));
+            GetState(instance_registry(), &window1));
   EXPECT_EQ(apps::InstanceState::kUnknown,
-            GetState(instance_registry, &window2));
+            GetState(instance_registry(), &window2));
   EXPECT_EQ(apps::InstanceState::kRunning,
-            GetState(instance_registry, &window3));
+            GetState(instance_registry(), &window3));
   EXPECT_EQ(apps::InstanceState::kVisible,
-            GetState(instance_registry, &window4));
+            GetState(instance_registry(), &window4));
   EXPECT_EQ(apps::InstanceState::kVisible,
-            GetState(instance_registry, &window5));
+            GetState(instance_registry(), &window5));
 }
 
 TEST_F(InstanceRegistryTest, GetInstanceKeys) {
-  apps::InstanceRegistry instance_registry;
-
   aura::Window window1(nullptr);
   window1.Init(ui::LAYER_NOT_DRAWN);
   aura::Window window2(nullptr);
@@ -599,32 +590,28 @@ TEST_F(InstanceRegistryTest, GetInstanceKeys) {
   aura::Window window3(nullptr);
   window3.Init(ui::LAYER_NOT_DRAWN);
 
-  instance_registry.OnInstance(MakeInstanceWithWindow("a", &window1));
-  instance_registry.OnInstance(MakeInstanceWithWindow("b", &window2));
-  instance_registry.OnInstance(MakeInstanceWithWindow("a", &window3));
+  MakeInstanceWithWindow("a", &window1);
+  MakeInstanceWithWindow("b", &window2);
+  MakeInstanceWithWindow("a", &window3);
 
-  EXPECT_TRUE(instance_registry.GetInstanceKeys("a") ==
+  EXPECT_TRUE(instance_registry().GetInstanceKeys("a") ==
               (std::set<const apps::Instance::InstanceKey>{
                   MakeInstanceKey(&window1), MakeInstanceKey(&window3)}));
   EXPECT_TRUE(
-      instance_registry.GetInstanceKeys("b") ==
+      instance_registry().GetInstanceKeys("b") ==
       (std::set<const apps::Instance::InstanceKey>{MakeInstanceKey(&window2)}));
 
-  instance_registry.OnInstance(
-      MakeInstanceWithWindow("a", &window1, apps::InstanceState::kDestroyed));
-  instance_registry.OnInstance(
-      MakeInstanceWithWindow("b", &window2, apps::InstanceState::kDestroyed));
+  MakeInstanceWithWindow("a", &window1, apps::InstanceState::kDestroyed);
+  MakeInstanceWithWindow("b", &window2, apps::InstanceState::kDestroyed);
 
   EXPECT_TRUE(
-      instance_registry.GetInstanceKeys("a") ==
+      instance_registry().GetInstanceKeys("a") ==
       (std::set<const apps::Instance::InstanceKey>{MakeInstanceKey(&window3)}));
-  EXPECT_TRUE(instance_registry.GetInstanceKeys("b") ==
+  EXPECT_TRUE(instance_registry().GetInstanceKeys("b") ==
               (std::set<const apps::Instance::InstanceKey>()));
 }
 
 TEST_F(InstanceRegistryTest, ContainsAppId) {
-  apps::InstanceRegistry instance_registry;
-
   aura::Window window1(nullptr);
   window1.Init(ui::LAYER_NOT_DRAWN);
   aura::Window window2(nullptr);
@@ -632,54 +619,53 @@ TEST_F(InstanceRegistryTest, ContainsAppId) {
   aura::Window window3(nullptr);
   window3.Init(ui::LAYER_NOT_DRAWN);
 
-  instance_registry.OnInstance(MakeInstanceWithWindow("a", &window1));
-  instance_registry.OnInstance(MakeInstanceWithWindow("b", &window2));
-  instance_registry.OnInstance(MakeInstanceWithWindow("a", &window3));
+  MakeInstanceWithWindow("a", &window1);
+  MakeInstanceWithWindow("b", &window2);
+  MakeInstanceWithWindow("a", &window3);
 
-  EXPECT_TRUE(instance_registry.ContainsAppId("a"));
-  EXPECT_TRUE(instance_registry.ContainsAppId("b"));
-  EXPECT_FALSE(instance_registry.ContainsAppId("c"));
+  EXPECT_TRUE(instance_registry().ContainsAppId("a"));
+  EXPECT_TRUE(instance_registry().ContainsAppId("b"));
+  EXPECT_FALSE(instance_registry().ContainsAppId("c"));
 
-  instance_registry.OnInstance(
-      MakeInstanceWithWindow("a", &window1, apps::InstanceState::kDestroyed));
-  instance_registry.OnInstance(
-      MakeInstanceWithWindow("b", &window2, apps::InstanceState::kDestroyed));
+  MakeInstanceWithWindow("a", &window1, apps::InstanceState::kDestroyed);
+  MakeInstanceWithWindow("b", &window2, apps::InstanceState::kDestroyed);
 
-  EXPECT_TRUE(instance_registry.ContainsAppId("a"));
-  EXPECT_FALSE(instance_registry.ContainsAppId("b"));
+  EXPECT_TRUE(instance_registry().ContainsAppId("a"));
+  EXPECT_FALSE(instance_registry().ContainsAppId("b"));
 }
 
-TEST_F(InstanceRegistryTest, GetEnclosingAppWindows) {
-  apps::InstanceRegistry instance_registry;
+TEST_F(InstanceRegistryTest, WindowIsChanged) {
+  aura::Window window1(nullptr);
+  window1.Init(ui::LAYER_NOT_DRAWN);
+  aura::Window window2(nullptr);
+  window2.Init(ui::LAYER_NOT_DRAWN);
 
-  aura::test::TestWindowDelegate window_delegate;
-  aura::Window parent1(&window_delegate);
-  parent1.Init(ui::LAYER_NOT_DRAWN);
+  auto instance_id1 = base::UnguessableToken::Create();
+  auto delta = std::make_unique<apps::Instance>("a", instance_id1, &window1);
+  instance_registry().OnInstance(std::move(delta));
+  EXPECT_TRUE(instance_registry().Exists(&window1));
 
-  aura::Window child1(&window_delegate);
-  child1.Init(ui::LAYER_NOT_DRAWN);
-  parent1.AddChild(&child1);
-  EXPECT_TRUE(child1.GetToplevelWindow() == &parent1);
+  // Modify window for the instance of `a`.
+  delta = std::make_unique<apps::Instance>("a", instance_id1, &window2);
+  instance_registry().OnInstance(std::move(delta));
+  EXPECT_FALSE(instance_registry().Exists(&window1));
+  EXPECT_TRUE(instance_registry().Exists(&window2));
 
-  aura::Window child2(&window_delegate);
-  child2.Init(ui::LAYER_NOT_DRAWN);
-  parent1.AddChild(&child2);
-  EXPECT_TRUE(child2.GetToplevelWindow() == &parent1);
+  // Create an instance of `window2` for `b`.
+  auto instance_id2 = base::UnguessableToken::Create();
+  delta = std::make_unique<apps::Instance>("b", instance_id2, &window2);
+  instance_registry().OnInstance(std::move(delta));
+  EXPECT_TRUE(instance_registry().Exists(&window2));
 
-  aura::Window parent2(&window_delegate);
-  parent2.Init(ui::LAYER_NOT_DRAWN);
+  // Close window for the instance of `a`.
+  delta = std::make_unique<apps::Instance>("a", instance_id1, &window2);
+  delta->UpdateState(apps::InstanceState::kDestroyed, base::Time());
+  instance_registry().OnInstance(std::move(delta));
+  EXPECT_TRUE(instance_registry().Exists(&window2));
 
-  instance_registry.OnInstance(MakeInstance("a", MakeInstanceKey(&child1)));
-  instance_registry.OnInstance(MakeInstance("b", MakeInstanceKey(&child2)));
-  instance_registry.OnInstance(MakeInstance("c", MakeInstanceKey(&parent2)));
-
-  EXPECT_TRUE(
-      instance_registry.GetInstanceKeys("a") ==
-      (std::set<const apps::Instance::InstanceKey>{MakeInstanceKey(&child1)}));
-  EXPECT_TRUE(
-      instance_registry.GetInstanceKeys("b") ==
-      (std::set<const apps::Instance::InstanceKey>{MakeInstanceKey(&child2)}));
-  EXPECT_TRUE(
-      instance_registry.GetInstanceKeys("c") ==
-      (std::set<const apps::Instance::InstanceKey>{MakeInstanceKey(&parent2)}));
+  // Close window for the instance of `b`.
+  delta = std::make_unique<apps::Instance>("b", instance_id2, &window2);
+  delta->UpdateState(apps::InstanceState::kDestroyed, base::Time());
+  instance_registry().OnInstance(std::move(delta));
+  EXPECT_FALSE(instance_registry().Exists(&window2));
 }

@@ -18,15 +18,11 @@ void InstanceUpdate::Merge(Instance* state, const Instance* delta) {
     return;
   }
 
-  // TODO(crbug.com/1251501): Remove GetInstanceKey.
   if ((delta->AppId() != state->AppId()) ||
-      delta->InstanceId() != state->InstanceId() ||
-      delta->GetInstanceKey() != state->GetInstanceKey()) {
-    LOG(ERROR) << "inconsistent (app_id, instance_id, instance_key): ("
-               << delta->AppId() << ", " << delta->InstanceId() << ", "
-               << delta->GetInstanceKey() << ") vs (" << state->AppId() << ", "
-               << state->InstanceId() << ", " << state->GetInstanceKey()
-               << ") ";
+      delta->InstanceId() != state->InstanceId()) {
+    LOG(ERROR) << "inconsistent (app_id, instance_id): (" << delta->AppId()
+               << ", " << delta->InstanceId() << ") vs (" << state->AppId()
+               << ", " << state->InstanceId() << ") ";
     DCHECK(false);
     return;
   }
@@ -63,9 +59,9 @@ bool InstanceUpdate::Equals(const Instance* state, const Instance* delta) {
 
   if ((delta->AppId() != state->AppId()) ||
       delta->InstanceId() != state->InstanceId()) {
-    LOG(ERROR) << "inconsistent (app_id, instance_id, instance_key): ("
-               << delta->AppId() << ", " << delta->InstanceId() << ") vs ("
-               << state->AppId() << ", " << state->InstanceId() << ") ";
+    LOG(ERROR) << "inconsistent (app_id, instance_id): (" << delta->AppId()
+               << ", " << delta->InstanceId() << ") vs (" << state->AppId()
+               << ", " << state->InstanceId() << ") ";
     DCHECK(false);
     return false;
   }
@@ -95,7 +91,7 @@ InstanceUpdate::InstanceUpdate(Instance* state, Instance* delta)
   DCHECK(state_ || delta_);
   if (state_ && delta_) {
     DCHECK(state_->AppId() == delta->AppId());
-    DCHECK(state_->GetInstanceKey() == delta->GetInstanceKey());
+    DCHECK(state_->InstanceId() == delta->InstanceId());
   }
 }
 

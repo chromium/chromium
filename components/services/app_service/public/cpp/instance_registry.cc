@@ -8,10 +8,16 @@
 #include <utility>
 
 #include "base/containers/contains.h"
+#include "base/unguessable_token.h"
 #include "components/services/app_service/public/cpp/instance.h"
 #include "components/services/app_service/public/cpp/instance_update.h"
 
 namespace apps {
+
+InstanceParams::InstanceParams(const std::string& app_id, aura::Window* window)
+    : app_id(app_id), window(window) {}
+
+InstanceParams::~InstanceParams() = default;
 
 InstanceRegistry::Observer::Observer(InstanceRegistry* instance_registry) {
   Observe(instance_registry);
@@ -56,17 +62,62 @@ void InstanceRegistry::RemoveObserver(Observer* observer) {
   observers_.RemoveObserver(observer);
 }
 
+void InstanceRegistry::CreateOrUpdateInstance(InstanceParams&& params) {
+  base::UnguessableToken instance_id;
+  auto it = window_to_instance_ids_.find(params.window);
+  if (it == window_to_instance_ids_.end()) {
+    instance_id = base::UnguessableToken::Create();
+  } else {
+    instance_id = *it->second.begin();
+  }
+
+  auto instance =
+      std::make_unique<Instance>(params.app_id, instance_id, params.window);
+
+  if (params.launch_id.has_value()) {
+    instance->SetLaunchId(params.launch_id.value());
+  }
+
+  if (params.state.has_value()) {
+    instance->UpdateState(params.state.value().first,
+                          params.state.value().second);
+  }
+
+  if (params.browser_context.has_value()) {
+    instance->SetBrowserContext(params.browser_context.value());
+  }
+  OnInstance(std::move(instance));
+}
+
 void InstanceRegistry::OnInstance(InstancePtr delta) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(my_sequence_checker_);
 
-  if (!delta || delta->InstanceId()) {
-    // TODO(crbug.com/1251501): Implement updating the instance registry using
-    // instance ID as a key.
+  if (!delta || !delta->InstanceId()) {
     return;
   }
+
+  // If the instance state is not kDestroyed, adds to
+  // `window_to_instance_ids_`, otherwise removes the instance key from
+  // `window_to_instance_ids_`.
+  if (static_cast<InstanceState>(delta->State() & InstanceState::kDestroyed) ==
+      InstanceState::kUnknown) {
+    auto it = instance_id_to_window_.find(delta->InstanceId());
+    // If `window` is changed, remove the instance id from
+    // `window_to_instance_ids_`.
+    if (it != instance_id_to_window_.end() && it->second != delta->Window()) {
+      MaybeRemoveInstanceId(/*instance_id=*/it->first, /*window=*/it->second);
+    }
+    window_to_instance_ids_[delta->Window()].insert(delta->InstanceId());
+    instance_id_to_window_[delta->InstanceId()] = delta->Window();
+  } else {
+    MaybeRemoveInstanceId(delta->InstanceId(), delta->Window());
+    instance_id_to_window_.erase(delta->InstanceId());
+  }
+
   // If the instance state is not kDestroyed, adds to
   // |app_id_to_app_instance_key_|, otherwise removes the instance key from
   // |app_id_to_app_instance_key_|.
+  // TODO(crbug.com/1251501): Will be removed soon.
   if (static_cast<InstanceState>(delta->State() & InstanceState::kDestroyed) ==
       InstanceState::kUnknown) {
     app_id_to_app_instance_key_[delta->AppId()].insert(delta->GetInstanceKey());
@@ -85,8 +136,8 @@ void InstanceRegistry::OnInstance(InstancePtr delta) {
   DoOnInstance(std::move(delta));
   while (!deltas_pending_.empty()) {
     InstancePtr instance = std::move(*deltas_pending_.begin());
-    DoOnInstance(std::move(instance));
     deltas_pending_.pop_front();
+    DoOnInstance(std::move(instance));
   }
 }
 
@@ -101,7 +152,7 @@ std::set<const Instance::InstanceKey> InstanceRegistry::GetInstanceKeys(
 InstanceState InstanceRegistry::GetState(
     const Instance::InstanceKey& instance_key) const {
   auto s_iter = instance_key_states_.find(instance_key);
-  return (s_iter != instance_key_states_.end()) ? s_iter->second.get()->State()
+  return (s_iter != instance_key_states_.end()) ? s_iter->second->State()
                                                 : InstanceState::kUnknown;
 }
 
@@ -109,13 +160,16 @@ ash::ShelfID InstanceRegistry::GetShelfId(
     const Instance::InstanceKey& instance_key) const {
   auto s_iter = instance_key_states_.find(instance_key);
   return (s_iter != instance_key_states_.end())
-             ? ash::ShelfID(s_iter->second.get()->AppId(),
-                            s_iter->second.get()->LaunchId())
+             ? ash::ShelfID(s_iter->second->AppId(), s_iter->second->LaunchId())
              : ash::ShelfID();
 }
 
 bool InstanceRegistry::Exists(const Instance::InstanceKey& instance_key) const {
   return instance_key_states_.find(instance_key) != instance_key_states_.end();
+}
+
+bool InstanceRegistry::Exists(const aura::Window* window) const {
+  return base::Contains(window_to_instance_ids_, window);
 }
 
 bool InstanceRegistry::ContainsAppId(const std::string& app_id) const {
@@ -125,15 +179,8 @@ bool InstanceRegistry::ContainsAppId(const std::string& app_id) const {
 void InstanceRegistry::DoOnInstance(InstancePtr delta) {
   in_progress_ = true;
 
-  if (delta->InstanceId()) {
-    // TODO(crbug.com/1251501): Implement updating the instance registry using
-    // instance ID as a key.
-    in_progress_ = false;
-    return;
-  }
-  auto s_iter = instance_key_states_.find(delta->GetInstanceKey());
-  Instance* state =
-      (s_iter != instance_key_states_.end()) ? s_iter->second.get() : nullptr;
+  auto s_iter = states_.find(delta->InstanceId());
+  Instance* state = (s_iter != states_.end()) ? s_iter->second.get() : nullptr;
   if (InstanceUpdate::Equals(state, delta.get())) {
     in_progress_ = false;
     return;
@@ -143,12 +190,15 @@ void InstanceRegistry::DoOnInstance(InstancePtr delta) {
   Instance* new_delta = delta.get();
   if (state) {
     old_state = state->Clone();
-    InstanceUpdate::Merge(state, delta.get());
+    InstanceUpdate::Merge(state, new_delta);
   } else {
-    // The content of `delta` is moved, however, `new_delta` is still valid,
-    // because `new_delta` is the pointer to the content of `delta`.
+    // TODO(crbug.com/1251501): Will be removed soon.
     instance_key_states_.insert(
-        std::make_pair(delta->GetInstanceKey(), std::move(delta)));
+        std::make_pair(delta->GetInstanceKey(), new_delta));
+
+    // `new_delta` is still valid, though `delta` is moved, because `new_delta`
+    // is the pointer to the content of `delta`.
+    states_.insert(std::make_pair(delta->InstanceId(), std::move(delta)));
   }
 
   for (auto& obs : observers_) {
@@ -159,8 +209,18 @@ void InstanceRegistry::DoOnInstance(InstancePtr delta) {
                                  InstanceState::kDestroyed) !=
       InstanceState::kUnknown) {
     instance_key_states_.erase(new_delta->GetInstanceKey());
+    states_.erase(new_delta->InstanceId());
   }
   in_progress_ = false;
+}
+
+void InstanceRegistry::MaybeRemoveInstanceId(
+    const base::UnguessableToken& instance_id,
+    aura::Window* window) {
+  window_to_instance_ids_[window].erase(instance_id);
+  if (window_to_instance_ids_[window].empty()) {
+    window_to_instance_ids_.erase(window);
+  }
 }
 
 }  // namespace apps

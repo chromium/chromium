@@ -367,25 +367,21 @@ class AppPlatformMetricsServiceTest : public testing::Test {
   void ModifyInstance(const std::string& app_id,
                       aura::Window* window,
                       apps::InstanceState state) {
-    std::unique_ptr<apps::Instance> instance = std::make_unique<apps::Instance>(
-        app_id, apps::Instance::InstanceKey::ForWindowBasedApp(window));
-    instance->UpdateState(state, base::Time::Now());
-
+    apps::InstanceParams params(app_id, window);
+    params.state = std::make_pair(state, base::Time::Now());
     apps::AppServiceProxyFactory::GetForProfile(testing_profile_.get())
         ->InstanceRegistry()
-        .OnInstance(std::move(instance));
+        .CreateOrUpdateInstance(std::move(params));
   }
 
   void ModifyWebAppInstance(const std::string& app_id,
                             aura::Window* window,
                             apps::InstanceState state) {
-    std::unique_ptr<apps::Instance> instance = std::make_unique<apps::Instance>(
-        app_id, apps::Instance::InstanceKey(window));
-    instance->UpdateState(state, base::Time::Now());
-
+    apps::InstanceParams params(app_id, window);
+    params.state = std::make_pair(state, base::Time::Now());
     apps::AppServiceProxyFactory::GetForProfile(testing_profile_.get())
         ->InstanceRegistry()
-        .OnInstance(std::move(instance));
+        .CreateOrUpdateInstance(std::move(params));
   }
 
   std::unique_ptr<Browser> CreateBrowserWithAuraWindow1() {

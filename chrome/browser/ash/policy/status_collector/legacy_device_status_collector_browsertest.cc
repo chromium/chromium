@@ -3768,10 +3768,9 @@ TEST_F(LegacyDeviceStatusCollectorTest, GenerateAppInfo) {
   auto env = aura::Env::CreateInstance();
   std::unique_ptr<aura::Window> window(
       aura::test::CreateTestWindowWithId(/*id=*/0, nullptr));
-  auto instance = std::make_unique<apps::Instance>(
-      "id", apps::Instance::InstanceKey::ForWindowBasedApp(window.get()));
-  instance->UpdateState(apps::InstanceState::kStarted, start_time);
-  app_proxy->InstanceRegistry().OnInstance(std::move(instance));
+  apps::InstanceParams params("id", window.get());
+  params.state = std::make_pair(apps::InstanceState::kStarted, start_time);
+  app_proxy->InstanceRegistry().CreateOrUpdateInstance(std::move(params));
 
   base::Time report_time;
   EXPECT_TRUE(base::Time::FromString("30-MAR-2020 2:30pm", &report_time));

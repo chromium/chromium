@@ -183,11 +183,6 @@ void AppServiceInstanceRegistryHelper::OnInstances(
   if (app_id.empty() || !instance_key.IsValid())
     return;
 
-  std::unique_ptr<apps::Instance> instance = std::make_unique<apps::Instance>(
-      app_id, apps::Instance::InstanceKey(instance_key));
-  instance->SetLaunchId(launch_id);
-  instance->UpdateState(state, base::Time::Now());
-
   // The window could be teleported from the inactive user's profile to the
   // current active user, so search all proxies. If the instance is found from a
   // proxy, still save to that proxy, otherwise, save to the current active user
@@ -201,7 +196,11 @@ void AppServiceInstanceRegistryHelper::OnInstances(
       break;
     }
   }
-  proxy->InstanceRegistry().OnInstance(std::move(instance));
+
+  apps::InstanceParams params(app_id, instance_key.Window());
+  params.launch_id = launch_id;
+  params.state = std::make_pair(state, base::Time::Now());
+  proxy->InstanceRegistry().CreateOrUpdateInstance(std::move(params));
 }
 
 void AppServiceInstanceRegistryHelper::OnSetShelfIDForBrowserWindowContents(

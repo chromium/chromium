@@ -27,6 +27,11 @@ enum InstanceState {
 };
 
 // Instance is used to represent an App Instance, or a running app.
+// `instance_id_` is the unique id for instance. For any two instances, if the
+// instance id is the same, the app id must be the same, well, the window might
+// be different. For example, When a web app opened in tab is pulled to a new
+// Lacros window, the window might be changed. Instance should exist on Ash side
+// only.
 class Instance {
  public:
   // InstanceKey is the unique key for the instance.
@@ -65,10 +70,6 @@ class Instance {
            const base::UnguessableToken& instance_id,
            aura::Window* window);
 
-  // TODO(crbug.com/1251501): Deprecated. Implement updating the instance
-  // registry using instance ID as a key.
-  Instance(const std::string& app_id, InstanceKey&& instance_key);
-
   Instance(const Instance&) = delete;
   Instance& operator=(const Instance&) = delete;
   ~Instance();
@@ -77,8 +78,10 @@ class Instance {
 
   void SetLaunchId(const std::string& launch_id) { launch_id_ = launch_id; }
   void UpdateState(InstanceState state, const base::Time& last_updated_time);
-  void SetBrowserContext(content::BrowserContext* browser_context);
-  void SetWindow(aura::Window* window);
+  void SetBrowserContext(content::BrowserContext* browser_context) {
+    browser_context_ = browser_context;
+  }
+  void SetWindow(aura::Window* window) { window_ = window; }
 
   const std::string& AppId() const { return app_id_; }
   const base::UnguessableToken& InstanceId() const { return instance_id_; }
@@ -90,10 +93,14 @@ class Instance {
   content::BrowserContext* BrowserContext() const { return browser_context_; }
 
  private:
+  friend class InstanceRegistry;
   friend class InstanceTest;
 
   const std::string app_id_;
+
+  // The unique id for instance.
   base::UnguessableToken instance_id_;
+
   aura::Window* window_ = nullptr;
 
   // TODO(crbug.com/1251501): Deprecated field. Implement updating the instance

@@ -8,6 +8,7 @@
 
 #include "base/test/bind.h"
 #include "base/test/simple_test_clock.h"
+#include "base/unguessable_token.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/app_service_test.h"
@@ -161,8 +162,7 @@ class AppInfoGeneratorTest : public ::testing::Test {
       window_ = std::make_unique<aura::Window>(nullptr);
       window_->Init(ui::LAYER_NOT_DRAWN);
       instance_ = std::make_unique<apps::Instance>(
-          app_id,
-          apps::Instance::InstanceKey::ForWindowBasedApp(window_.get()));
+          app_id, base::UnguessableToken::Create(), window_.get());
     }
 
     apps::Instance* instance() const { return instance_.get(); }

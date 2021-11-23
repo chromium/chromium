@@ -199,10 +199,8 @@ class FamilyUserAppMetricsTest
             ->InstanceRegistry();
     window_ = std::make_unique<aura::Window>(nullptr);
     window_->Init(ui::LAYER_NOT_DRAWN);
-    auto instance = std::make_unique<apps::Instance>(
-        /*app_id=*/"a",
-        apps::Instance::InstanceKey::ForWindowBasedApp(window_.get()));
-    instance_registry.OnInstance(std::move(instance));
+    instance_registry.CreateOrUpdateInstance(
+        apps::InstanceParams(/*app_id=*/"a", window_.get()));
   }
 
   SupervisedUserService* supervised_user_service() {

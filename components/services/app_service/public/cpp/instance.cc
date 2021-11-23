@@ -39,11 +39,6 @@ bool Instance::InstanceKey::operator!=(const InstanceKey& other) const {
   return window_ != other.window_;
 }
 
-Instance::Instance(const std::string& app_id, InstanceKey&& instance_key)
-    : app_id_(app_id), instance_key_(std::move(instance_key)) {
-  window_ = instance_key_.Window();
-}
-
 Instance::Instance(const std::string& app_id,
                    const base::UnguessableToken& instance_id,
                    aura::Window* window)
@@ -69,14 +64,6 @@ void Instance::UpdateState(InstanceState state,
                            const base::Time& last_updated_time) {
   state_ = state;
   last_updated_time_ = last_updated_time;
-}
-
-void Instance::SetBrowserContext(content::BrowserContext* browser_context) {
-  browser_context_ = browser_context;
-}
-
-void Instance::SetWindow(aura::Window* window) {
-  window_ = window;
 }
 
 std::ostream& operator<<(std::ostream& os,
