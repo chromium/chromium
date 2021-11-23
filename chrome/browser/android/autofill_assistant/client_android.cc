@@ -63,13 +63,28 @@ const char kDisabledGroupName[] = "Disabled";
 }  // namespace
 
 static base::android::ScopedJavaLocalRef<jobject>
+JNI_AutofillAssistantClient_CreateForWebContents(
+    JNIEnv* env,
+    const base::android::JavaParamRef<jobject>& jweb_contents,
+    const base::android::JavaParamRef<jobject>& jdependencies) {
+  auto* web_contents = content::WebContents::FromJavaWebContents(jweb_contents);
+  ClientAndroid::CreateForWebContents(web_contents, jdependencies);
+  return ClientAndroid::FromWebContents(web_contents)->GetJavaObject();
+}
+
+static base::android::ScopedJavaLocalRef<jobject>
 JNI_AutofillAssistantClient_FromWebContents(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& jweb_contents) {
   auto* web_contents = content::WebContents::FromJavaWebContents(jweb_contents);
-  ClientAndroid::CreateForWebContents(web_contents);
-  return ClientAndroid::FromWebContents(web_contents)->GetJavaObject();
+  auto* client_android = ClientAndroid::FromWebContents(web_contents);
+  if (client_android == nullptr) {
+    return nullptr;
+  }
+
+  return client_android->GetJavaObject();
 }
+
 static void JNI_AutofillAssistantClient_OnOnboardingUiChange(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& jweb_contents,
@@ -80,8 +95,11 @@ static void JNI_AutofillAssistantClient_OnOnboardingUiChange(
     runtime_manager->SetUIState(shown ? UIState::kShown : UIState::kNotShown);
 }
 
-ClientAndroid::ClientAndroid(content::WebContents* web_contents)
+ClientAndroid::ClientAndroid(
+    content::WebContents* web_contents,
+    const base::android::JavaRef<jobject>& jdependencies)
     : web_contents_(web_contents),
+      jdependencies_(jdependencies),
       java_object_(Java_AutofillAssistantClient_Constructor(
           AttachCurrentThread(),
           reinterpret_cast<intptr_t>(this))) {}
@@ -423,7 +441,7 @@ void ClientAndroid::AttachUI(
     const base::android::JavaRef<jobject>& joverlay_coordinator) {
   if (!ui_controller_android_) {
     ui_controller_android_ = UiControllerAndroid::CreateFromWebContents(
-        web_contents_, joverlay_coordinator);
+        web_contents_, jdependencies_, joverlay_coordinator);
     if (!ui_controller_android_) {
       // The activity is not or not yet in a mode where attaching the UI is
       // possible.

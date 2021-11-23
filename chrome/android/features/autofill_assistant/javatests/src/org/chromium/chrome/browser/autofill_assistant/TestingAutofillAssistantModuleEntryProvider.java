@@ -7,17 +7,12 @@ package org.chromium.chrome.browser.autofill_assistant;
 import android.content.Context;
 import android.view.View;
 
-import androidx.annotation.NonNull;
-
 import org.chromium.base.Callback;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.autofill_assistant.onboarding.OnboardingCoordinatorFactory;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
-import org.chromium.content_public.browser.WebContents;
-import org.chromium.ui.base.ActivityKeyboardVisibilityDelegate;
-import org.chromium.ui.base.ApplicationViewportInsetSupplier;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -41,10 +36,11 @@ class TestingAutofillAssistantModuleEntryProvider extends AutofillAssistantModul
         public MockAutofillAssistantActionHandler(Context context,
                 BottomSheetController bottomSheetController,
                 BrowserControlsStateProvider browserControls, View rootView,
-                ActivityTabProvider activityTabProvider) {
+                ActivityTabProvider activityTabProvider,
+                AssistantDependenciesFactory dependenciesFactory) {
             super(new OnboardingCoordinatorFactory(
                           context, bottomSheetController, browserControls, rootView),
-                    activityTabProvider);
+                    activityTabProvider, dependenciesFactory);
         }
 
         @Override
@@ -63,12 +59,13 @@ class TestingAutofillAssistantModuleEntryProvider extends AutofillAssistantModul
     /** Mock module entry. */
     static class MockAutofillAssistantModuleEntry implements AutofillAssistantModuleEntry {
         @Override
-        public AssistantDependencies createDependencies(BottomSheetController bottomSheetController,
-                BrowserControlsStateProvider browserControls, View rootView, Context context,
-                @NonNull WebContents webContents,
-                ActivityKeyboardVisibilityDelegate keyboardVisibilityDelegate,
-                ApplicationViewportInsetSupplier bottomInsetProvider,
-                ActivityTabProvider activityTabProvider) {
+        public AssistantDependenciesFactory createDependenciesFactory() {
+            return new AssistantDependenciesFactoryChrome();
+        }
+
+        @Override
+        public AssistantOnboardingHelper createOnboardingHelper(
+                AssistantDependencies dependencies) {
             return null;
         }
 
@@ -76,9 +73,10 @@ class TestingAutofillAssistantModuleEntryProvider extends AutofillAssistantModul
         public AutofillAssistantActionHandler createActionHandler(Context context,
                 BottomSheetController bottomSheetController,
                 BrowserControlsStateProvider browserControls, View rootView,
-                ActivityTabProvider activityTabProvider) {
-            return new MockAutofillAssistantActionHandler(
-                    context, bottomSheetController, browserControls, rootView, activityTabProvider);
+                ActivityTabProvider activityTabProvider,
+                AssistantDependenciesFactory dependenciesFactory) {
+            return new MockAutofillAssistantActionHandler(context, bottomSheetController,
+                    browserControls, rootView, activityTabProvider, dependenciesFactory);
         }
     }
 

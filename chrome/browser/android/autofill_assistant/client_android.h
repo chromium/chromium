@@ -136,7 +136,8 @@ class ClientAndroid : public Client,
  private:
   friend class content::WebContentsUserData<ClientAndroid>;
 
-  explicit ClientAndroid(content::WebContents* web_contents);
+  explicit ClientAndroid(content::WebContents* web_contents,
+                         const base::android::JavaRef<jobject>& jdependencies);
 
   void CreateController(
       std::unique_ptr<Service> service,
@@ -161,6 +162,7 @@ class ClientAndroid : public Client,
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 
   content::WebContents* web_contents_;
+  const base::android::ScopedJavaGlobalRef<jobject> jdependencies_;
 
   base::android::ScopedJavaGlobalRef<jobject> java_object_;
   std::unique_ptr<Controller> controller_;

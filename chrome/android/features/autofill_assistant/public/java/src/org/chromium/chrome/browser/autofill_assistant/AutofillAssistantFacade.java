@@ -18,7 +18,6 @@ import androidx.annotation.Nullable;
 import org.chromium.base.Callback;
 import org.chromium.base.Function;
 import org.chromium.base.Log;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.autofill_assistant.metrics.DropOutReason;
@@ -29,7 +28,6 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.metrics.UmaSessionStats;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
-import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvider;
 import org.chromium.components.external_intents.ExternalNavigationDelegate.IntentToAutofillAllowingAppResult;
 
 /** Facade for starting Autofill Assistant on a tab. */
@@ -124,14 +122,9 @@ public class AutofillAssistantFacade {
             Activity activity, AutofillAssistantModuleEntry module) {
         assert activity instanceof ChromeActivity;
         ChromeActivity chromeActivity = (ChromeActivity) activity;
-        Supplier<View> rootView = chromeActivity.getCompositorViewHolderSupplier();
-        return module.createDependencies(
-                BottomSheetControllerProvider.from(chromeActivity.getWindowAndroid()),
-                chromeActivity.getBrowserControlsManager(), rootView.get(), chromeActivity,
-                chromeActivity.getCurrentWebContents(),
-                chromeActivity.getWindowAndroid().getKeyboardDelegate(),
-                chromeActivity.getWindowAndroid().getApplicationBottomInsetProvider(),
-                chromeActivity.getActivityTabProvider());
+
+        return module.createDependenciesFactory().createDependencies(
+                chromeActivity.getCurrentWebContents());
     }
 
     /**

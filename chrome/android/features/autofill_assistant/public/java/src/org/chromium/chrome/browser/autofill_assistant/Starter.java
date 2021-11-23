@@ -51,9 +51,13 @@ public class Starter extends EmptyTabObserver implements UserData {
     @Nullable
     private AssistantDependencies mDependencies;
 
+    /** A helper to show and hide the onboarding. */
+    @Nullable
+    private AssistantOnboardingHelper mOnboardingHelper;
+
     /**
-     * A field to temporarily hold a startup request's trigger context while the tab is being
-     * initialized.
+     * A field to temporarily hold a startup request's trigger context while the tab is
+     * being initialized.
      */
     @Nullable
     private TriggerContext mPendingTriggerContext;
@@ -230,8 +234,9 @@ public class Starter extends EmptyTabObserver implements UserData {
     }
 
     @CalledByNative
-    private void showOnboarding(AssistantDependencies dependencies, boolean useDialogOnboarding,
-            String experimentIds, String[] parameterKeys, String[] parameterValues) {
+    private void showOnboarding(AssistantOnboardingHelper onboardingHelper,
+            boolean useDialogOnboarding, String experimentIds, String[] parameterKeys,
+            String[] parameterValues) {
         if (!AutofillAssistantPreferencesUtil.getShowOnboarding()) {
             safeNativeOnOnboardingFinished(
                     /* shown = */ false, 3 /* AssistantOnboardingResult.ACCEPTED*/);
@@ -243,13 +248,13 @@ public class Starter extends EmptyTabObserver implements UserData {
         for (int i = 0; i < parameterKeys.length; i++) {
             parameters.put(parameterKeys[i], parameterValues[i]);
         }
-        dependencies.showOnboarding(useDialogOnboarding, experimentIds, parameters,
+        onboardingHelper.showOnboarding(useDialogOnboarding, experimentIds, parameters,
                 result -> safeNativeOnOnboardingFinished(true, result));
     }
 
     @CalledByNative
-    private void hideOnboarding(AssistantDependencies dependencies) {
-        dependencies.hideOnboarding();
+    private void hideOnboarding(AssistantOnboardingHelper onboardingHelper) {
+        onboardingHelper.hideOnboarding();
     }
 
     private void safeNativeOnOnboardingFinished(boolean shown, int result) {
@@ -276,19 +281,30 @@ public class Starter extends EmptyTabObserver implements UserData {
                 Profile.getLastUsedRegularProfile());
     }
 
-    @CalledByNative
-    private @Nullable AssistantDependencies getOrCreateDependencies() {
-        if (mDependencies != null) return mDependencies;
+    private AutofillAssistantModuleEntry getModuleOrThrow() {
         if (!getFeatureModuleInstalled()) {
             throw new RuntimeException(
-                    "failed to create dependencies: feature module not installed");
+                    "Failed to create dependencies: Feature module not installed");
         }
 
-        AutofillAssistantModuleEntry module =
-                AutofillAssistantModuleEntryProvider.INSTANCE.getModuleEntryIfInstalled();
-        mDependencies =
-                AutofillAssistantFacade.createDependencies(TabUtils.getActivity(mTab), module);
-        return mDependencies;
+        return AutofillAssistantModuleEntryProvider.INSTANCE.getModuleEntryIfInstalled();
+    }
+
+    /**
+     * Returns and optionally refreshes the dependencies and the onboarding helper. Since the
+     * onboarding helper gets invalidated when the dependencies are invalidated we use the same
+     * method to refresh them.
+     * */
+    @CalledByNative
+    private @Nullable Object[] getOrCreateDependenciesAndOnboardingHelper() {
+        if (mDependencies == null) {
+            AutofillAssistantModuleEntry module = getModuleOrThrow();
+            mDependencies =
+                    AutofillAssistantFacade.createDependencies(TabUtils.getActivity(mTab), module);
+            mOnboardingHelper = module.createOnboardingHelper(mDependencies);
+        }
+
+        return new Object[] {mDependencies, mOnboardingHelper};
     }
 
     @CalledByNative

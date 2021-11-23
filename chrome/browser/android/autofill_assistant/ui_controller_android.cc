@@ -272,6 +272,7 @@ absl::optional<bool> GetPreviousFormSelectionResult(
 // static
 std::unique_ptr<UiControllerAndroid> UiControllerAndroid::CreateFromWebContents(
     content::WebContents* web_contents,
+    const base::android::JavaRef<jobject>& jdependencies,
     const base::android::JavaRef<jobject>& joverlay_coordinator) {
   JNIEnv* env = AttachCurrentThread();
   auto jactivity = Java_AutofillAssistantUiController_findAppropriateActivity(
@@ -279,13 +280,14 @@ std::unique_ptr<UiControllerAndroid> UiControllerAndroid::CreateFromWebContents(
   if (!jactivity) {
     return nullptr;
   }
-  return std::make_unique<UiControllerAndroid>(env, jactivity,
+  return std::make_unique<UiControllerAndroid>(env, jactivity, jdependencies,
                                                joverlay_coordinator);
 }
 
 UiControllerAndroid::UiControllerAndroid(
     JNIEnv* env,
     const base::android::JavaRef<jobject>& jactivity,
+    const base::android::JavaRef<jobject>& jdependencies,
     const base::android::JavaRef<jobject>& joverlay_coordinator)
     : overlay_delegate_(this),
       header_delegate_(this),
@@ -297,7 +299,7 @@ UiControllerAndroid::UiControllerAndroid(
       env, jactivity,
       /* allowTabSwitching= */
       base::FeatureList::IsEnabled(features::kAutofillAssistantChromeEntry),
-      reinterpret_cast<intptr_t>(this), joverlay_coordinator);
+      reinterpret_cast<intptr_t>(this), jdependencies, joverlay_coordinator);
   header_model_ = std::make_unique<AssistantHeaderModel>(
       Java_AssistantModel_getHeaderModel(env, GetModel()));
 

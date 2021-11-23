@@ -43,11 +43,11 @@ import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import java.util.Collections;
 
 /**
- * Tests for AssistantDependencies.
+ * Tests for AssistantOnboardingHelper.
  */
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @RunWith(ChromeJUnit4ClassRunner.class)
-public class AssistantDependenciesTest {
+public class AssistantOnboardingHelperTest {
     @Rule
     public ChromeTabbedActivityTestRule mTestRule = new ChromeTabbedActivityTestRule();
 
@@ -58,7 +58,7 @@ public class AssistantDependenciesTest {
     Callback<Integer> mOnboardingCallback;
 
     private AutofillAssistantModuleEntry mModuleEntry;
-    private AssistantDependencies mAssistantDependencies;
+    private AssistantOnboardingHelper mOnboardingHelper;
 
     @Before
     public void setUp() {
@@ -67,8 +67,9 @@ public class AssistantDependenciesTest {
             mModuleEntry =
                     AutofillAssistantModuleEntryProvider.INSTANCE.getModuleEntryIfInstalled();
             assert mModuleEntry != null;
-            mAssistantDependencies = AutofillAssistantFacade.createDependencies(
+            AssistantDependencies dependencies = AutofillAssistantFacade.createDependencies(
                     mTestRule.getActivity(), mModuleEntry);
+            mOnboardingHelper = mModuleEntry.createOnboardingHelper(dependencies);
         });
     }
 
@@ -77,8 +78,8 @@ public class AssistantDependenciesTest {
     public void testBottomSheetOnboarding() {
         TestThreadUtils.runOnUiThreadBlocking(
                 ()
-                        -> mAssistantDependencies.showOnboarding(/* useDialogOnboarding = */ false,
-                                "", Collections.emptyMap(), mOnboardingCallback));
+                        -> mOnboardingHelper.showOnboarding(/* useDialogOnboarding = */ false, "",
+                                Collections.emptyMap(), mOnboardingCallback));
         waitUntilViewMatchesCondition(withId(R.id.button_init_ok), isCompletelyDisplayed());
 
         onView(withId(R.id.button_init_ok)).perform(click());
@@ -90,8 +91,8 @@ public class AssistantDependenciesTest {
     public void testDialogOnboarding() {
         TestThreadUtils.runOnUiThreadBlocking(
                 ()
-                        -> mAssistantDependencies.showOnboarding(/* useDialogOnboarding = */ true,
-                                "", Collections.emptyMap(), mOnboardingCallback));
+                        -> mOnboardingHelper.showOnboarding(/* useDialogOnboarding = */ true, "",
+                                Collections.emptyMap(), mOnboardingCallback));
         waitUntilViewMatchesCondition(withId(R.id.button_init_ok), isCompletelyDisplayed());
 
         // Check that the UI is shown in a dialog.
@@ -108,11 +109,11 @@ public class AssistantDependenciesTest {
     public void hideBottomSheetOnboarding() {
         TestThreadUtils.runOnUiThreadBlocking(
                 ()
-                        -> mAssistantDependencies.showOnboarding(/* useDialogOnboarding = */ false,
-                                "", Collections.emptyMap(), mOnboardingCallback));
+                        -> mOnboardingHelper.showOnboarding(/* useDialogOnboarding = */ false, "",
+                                Collections.emptyMap(), mOnboardingCallback));
         waitUntilViewMatchesCondition(withId(R.id.button_init_ok), isCompletelyDisplayed());
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> mAssistantDependencies.hideOnboarding());
+        TestThreadUtils.runOnUiThreadBlocking(() -> mOnboardingHelper.hideOnboarding());
         waitUntilViewAssertionTrue(
                 withId(R.id.button_init_ok), doesNotExist(), DEFAULT_MAX_TIME_TO_POLL);
         verify(mOnboardingCallback, never()).onResult(anyInt());
@@ -123,11 +124,11 @@ public class AssistantDependenciesTest {
     public void hideDialogOnboarding() {
         TestThreadUtils.runOnUiThreadBlocking(
                 ()
-                        -> mAssistantDependencies.showOnboarding(/* useDialogOnboarding = */ true,
-                                "", Collections.emptyMap(), mOnboardingCallback));
+                        -> mOnboardingHelper.showOnboarding(/* useDialogOnboarding = */ true, "",
+                                Collections.emptyMap(), mOnboardingCallback));
         waitUntilViewMatchesCondition(withId(R.id.button_init_ok), isCompletelyDisplayed());
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> mAssistantDependencies.hideOnboarding());
+        TestThreadUtils.runOnUiThreadBlocking(() -> mOnboardingHelper.hideOnboarding());
         waitUntilViewAssertionTrue(
                 withId(R.id.button_init_ok), doesNotExist(), DEFAULT_MAX_TIME_TO_POLL);
         // TODO(b/185209881): the dialog onboarding should not call the callback in this case.

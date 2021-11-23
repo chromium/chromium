@@ -10,7 +10,7 @@ import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.chrome.browser.autofill_assistant.AssistantCoordinator;
-import org.chromium.chrome.browser.autofill_assistant.AssistantDependenciesImpl;
+import org.chromium.chrome.browser.autofill_assistant.AssistantDependencies;
 import org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUiController;
 import org.chromium.chrome.browser.autofill_assistant.carousel.AssistantChip;
 import org.chromium.chrome.browser.autofill_assistant.header.AssistantHeaderModel;
@@ -26,16 +26,16 @@ import java.util.List;
  */
 @JNINamespace("autofill_assistant")
 public class AssistantTriggerScriptBridge {
-    private final AssistantDependenciesImpl mStartupDependencies;
+    private final AssistantDependencies mDependencies;
 
     private final AssistantTriggerScript mTriggerScript;
     private long mNativeBridge;
     private KeyboardVisibilityDelegate.KeyboardVisibilityListener mKeyboardVisibilityListener;
 
     @CalledByNative
-    public AssistantTriggerScriptBridge(AssistantDependenciesImpl startupDependencies) {
-        mStartupDependencies = startupDependencies;
-        mTriggerScript = new AssistantTriggerScript(mStartupDependencies.getContext(),
+    public AssistantTriggerScriptBridge(AssistantDependencies dependencies) {
+        mDependencies = dependencies;
+        mTriggerScript = new AssistantTriggerScript(mDependencies.getContext(),
                 new AssistantTriggerScript.Delegate() {
                     @Override
                     public void onTriggerScriptAction(int action) {
@@ -55,16 +55,15 @@ public class AssistantTriggerScriptBridge {
                     @Override
                     public void onFeedbackButtonClicked() {
                         HelpAndFeedbackLauncherImpl.getInstance().showFeedback(
-                                TabUtils.getActivity(TabUtils.fromWebContents(
-                                        mStartupDependencies.getWebContents())),
+                                TabUtils.getActivity(
+                                        TabUtils.fromWebContents(mDependencies.getWebContents())),
                                 AutofillAssistantUiController.getProfile(),
-                                mStartupDependencies.getWebContents().getVisibleUrl().getSpec(),
+                                mDependencies.getWebContents().getVisibleUrl().getSpec(),
                                 AssistantCoordinator.FEEDBACK_CATEGORY_TAG);
                     }
                 },
-                mStartupDependencies.getWebContents(),
-                mStartupDependencies.getBottomSheetController(),
-                mStartupDependencies.getBottomInsetProvider());
+                mDependencies.getWebContents(), mDependencies.getBottomSheetController(),
+                mDependencies.getBottomInsetProvider());
 
         mKeyboardVisibilityListener = this::safeNativeOnKeyboardVisibilityChanged;
     }
@@ -81,7 +80,7 @@ public class AssistantTriggerScriptBridge {
 
     @CalledByNative
     private Context getContext() {
-        return mStartupDependencies.getContext();
+        return mDependencies.getContext();
     }
 
     /**
@@ -96,8 +95,8 @@ public class AssistantTriggerScriptBridge {
             boolean resizeVisualViewport, boolean scrollToHide) {
         // Trigger scripts currently do not support switching activities (such as CCT->tab).
         // TODO(b/171776026): Re-inject dependencies on activity change to support CCT->tab.
-        if (TabUtils.getActivity(TabUtils.fromWebContents(mStartupDependencies.getWebContents()))
-                != mStartupDependencies.getContext()) {
+        if (TabUtils.getActivity(TabUtils.fromWebContents(mDependencies.getWebContents()))
+                != mDependencies.getContext()) {
             return false;
         }
 
@@ -109,9 +108,9 @@ public class AssistantTriggerScriptBridge {
 
         // Track keyboard visibility while a trigger script is being shown.
         if (shown) {
-            mStartupDependencies.getKeyboardVisibilityDelegate().removeKeyboardVisibilityListener(
+            mDependencies.getKeyboardVisibilityDelegate().removeKeyboardVisibilityListener(
                     mKeyboardVisibilityListener);
-            mStartupDependencies.getKeyboardVisibilityDelegate().addKeyboardVisibilityListener(
+            mDependencies.getKeyboardVisibilityDelegate().addKeyboardVisibilityListener(
                     mKeyboardVisibilityListener);
         }
         return shown;
@@ -131,7 +130,7 @@ public class AssistantTriggerScriptBridge {
     private void clearNativePtr() {
         mNativeBridge = 0;
         mTriggerScript.destroy();
-        mStartupDependencies.getKeyboardVisibilityDelegate().removeKeyboardVisibilityListener(
+        mDependencies.getKeyboardVisibilityDelegate().removeKeyboardVisibilityListener(
                 mKeyboardVisibilityListener);
     }
 

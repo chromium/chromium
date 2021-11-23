@@ -85,7 +85,6 @@ public class DirectActionsIntegrationTest {
     Callback<Bundle> mDirectActionResultCallback;
 
     private AutofillAssistantModuleEntry mModuleEntry;
-    private AssistantDependenciesImpl mAssistantDependencies;
     private DirectActionHandler mDirectActionHandler;
     private FakeDirectActionReporter mDirectActionReporter;
 
@@ -96,14 +95,12 @@ public class DirectActionsIntegrationTest {
             mModuleEntry =
                     AutofillAssistantModuleEntryProvider.INSTANCE.getModuleEntryIfInstalled();
             assert mModuleEntry != null;
-            mAssistantDependencies =
-                    (AssistantDependenciesImpl) AutofillAssistantFacade.createDependencies(
-                            mTestRule.getActivity(), mModuleEntry);
+            AssistantDependencies dependencies = AutofillAssistantFacade.createDependencies(
+                    mTestRule.getActivity(), mModuleEntry);
             mDirectActionHandler = AutofillAssistantFacade.createDirectActionHandler(
-                    mTestRule.getActivity(), mAssistantDependencies.getBottomSheetController(),
-                    mAssistantDependencies.getBrowserControls(),
-                    mAssistantDependencies.getRootView(),
-                    mAssistantDependencies.getActivityTabProvider());
+                    mTestRule.getActivity(), dependencies.getBottomSheetController(),
+                    dependencies.getBrowserControls(), dependencies.getRootView(),
+                    dependencies.getActivityTabProvider());
         });
     }
 

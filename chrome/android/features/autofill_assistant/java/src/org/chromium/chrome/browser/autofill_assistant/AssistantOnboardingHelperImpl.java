@@ -4,47 +4,26 @@
 
 package org.chromium.chrome.browser.autofill_assistant;
 
-import android.content.Context;
-import android.view.View;
-
 import androidx.annotation.Nullable;
 
 import org.chromium.base.Callback;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
-import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.autofill_assistant.onboarding.AssistantOnboardingResult;
 import org.chromium.chrome.browser.autofill_assistant.onboarding.BaseOnboardingCoordinator;
 import org.chromium.chrome.browser.autofill_assistant.onboarding.OnboardingCoordinatorFactory;
 import org.chromium.chrome.browser.autofill_assistant.overlay.AssistantOverlayCoordinator;
 import org.chromium.chrome.browser.autofill_assistant.trigger_scripts.AssistantTriggerScriptBridge;
-import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
-import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
-import org.chromium.content_public.browser.WebContents;
-import org.chromium.ui.base.ActivityKeyboardVisibilityDelegate;
-import org.chromium.ui.base.ApplicationViewportInsetSupplier;
 
 import java.util.Map;
 
 /**
- * Concrete implementation of the AssistantDependencies interface. Provides the dependencies
- * necessary to start an autofill-assistant flow.
+ * Concrete implementation of the OnboardingHelper interface.
  */
 @JNINamespace("autofill_assistant")
-public class AssistantDependenciesImpl implements AssistantDependencies {
-    // Dependencies tied to the activity.
-    private final Context mContext;
-    private final BottomSheetController mBottomSheetController;
-    private final BrowserControlsStateProvider mBrowserControls;
-    private final ActivityKeyboardVisibilityDelegate mKeyboardVisibilityDelegate;
-    private final ApplicationViewportInsetSupplier mBottomInsetProvider;
-    private final ActivityTabProvider mActivityTabProvider;
-    private final View mRootView;
-
-    // Dependencies tied to the web_contents.
+public class AssistantOnboardingHelperImpl implements AssistantOnboardingHelper {
     private final OnboardingCoordinatorFactory mOnboardingCoordinatorFactory;
     private final AssistantTriggerScriptBridge mTriggerScriptBridge;
-    private final WebContents mWebContents;
 
     /**
      * The currently shown onboarding coordinator, if any. Only set while the onboarding is shown.
@@ -54,22 +33,11 @@ public class AssistantDependenciesImpl implements AssistantDependencies {
     /** The most recently shown onboarding overlay coordinator, if any. */
     private @Nullable AssistantOverlayCoordinator mOnboardingOverlayCoordinator;
 
-    AssistantDependenciesImpl(BottomSheetController bottomSheetController,
-            BrowserControlsStateProvider browserControls, View rootView, Context context,
-            WebContents webContents, ActivityKeyboardVisibilityDelegate keyboardVisibilityDelegate,
-            ApplicationViewportInsetSupplier bottomInsetProvider,
-            ActivityTabProvider activityTabProvider) {
-        mOnboardingCoordinatorFactory = new OnboardingCoordinatorFactory(
-                context, bottomSheetController, browserControls, rootView);
-        mContext = context;
-        mWebContents = webContents;
-        mBottomSheetController = bottomSheetController;
-        mBrowserControls = browserControls;
-        mKeyboardVisibilityDelegate = keyboardVisibilityDelegate;
-        mBottomInsetProvider = bottomInsetProvider;
-        mActivityTabProvider = activityTabProvider;
-        mRootView = rootView;
-        mTriggerScriptBridge = new AssistantTriggerScriptBridge(this);
+    AssistantOnboardingHelperImpl(AssistantDependencies dependencies) {
+        mOnboardingCoordinatorFactory = new OnboardingCoordinatorFactory(dependencies.getContext(),
+                dependencies.getBottomSheetController(), dependencies.getBrowserControls(),
+                dependencies.getRootView());
+        mTriggerScriptBridge = new AssistantTriggerScriptBridge(dependencies);
     }
 
     /**
@@ -117,33 +85,5 @@ public class AssistantDependenciesImpl implements AssistantDependencies {
         AssistantOverlayCoordinator overlayCoordinator = mOnboardingOverlayCoordinator;
         mOnboardingOverlayCoordinator = null;
         return overlayCoordinator;
-    }
-
-    public WebContents getWebContents() {
-        return mWebContents;
-    }
-    public AssistantTriggerScriptBridge getTriggerScriptBridge() {
-        return mTriggerScriptBridge;
-    }
-    public Context getContext() {
-        return mContext;
-    }
-    public BottomSheetController getBottomSheetController() {
-        return mBottomSheetController;
-    }
-    public BrowserControlsStateProvider getBrowserControls() {
-        return mBrowserControls;
-    }
-    public ActivityKeyboardVisibilityDelegate getKeyboardVisibilityDelegate() {
-        return mKeyboardVisibilityDelegate;
-    }
-    public ApplicationViewportInsetSupplier getBottomInsetProvider() {
-        return mBottomInsetProvider;
-    }
-    public ActivityTabProvider getActivityTabProvider() {
-        return mActivityTabProvider;
-    }
-    public View getRootView() {
-        return mRootView;
     }
 }

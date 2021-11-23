@@ -27,13 +27,16 @@ import java.util.Map;
  * A handler that provides Autofill Assistant actions for a specific activity.
  */
 class AutofillAssistantActionHandlerImpl implements AutofillAssistantActionHandler {
-    private final ActivityTabProvider mActivityTabProvider;
     private final OnboardingCoordinatorFactory mOnboardingCoordinatorFactory;
+    private final AssistantDependenciesFactory mDependenciesFactory;
+    private final ActivityTabProvider mActivityTabProvider;
 
     AutofillAssistantActionHandlerImpl(OnboardingCoordinatorFactory onboardingCoordinatorFactory,
-            ActivityTabProvider activityTabProvider) {
-        mActivityTabProvider = activityTabProvider;
+            ActivityTabProvider activityTabProvider,
+            AssistantDependenciesFactory dependenciesFactory) {
         mOnboardingCoordinatorFactory = onboardingCoordinatorFactory;
+        mActivityTabProvider = activityTabProvider;
+        mDependenciesFactory = dependenciesFactory;
     }
 
     @Override
@@ -142,7 +145,8 @@ class AutofillAssistantActionHandlerImpl implements AutofillAssistantActionHandl
         if (webContents == null) {
             return null;
         }
-        return AutofillAssistantClient.fromWebContents(webContents);
+        return AutofillAssistantClient.createForWebContents(
+                webContents, mDependenciesFactory.createDependencies(webContents));
     }
 
     /** Extracts string arguments from a bundle. */

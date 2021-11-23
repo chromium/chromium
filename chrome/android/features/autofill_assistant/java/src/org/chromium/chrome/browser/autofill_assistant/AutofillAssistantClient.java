@@ -73,9 +73,15 @@ public class AutofillAssistantClient {
     /** If set, fetch the access token once the accounts are fetched. */
     private boolean mShouldFetchAccessToken;
 
-    /** Returns the client for the given web contents, creating it if necessary. */
+    /** Returns the client for the given web contents, null if it does not exist. */
     public static AutofillAssistantClient fromWebContents(WebContents webContents) {
         return AutofillAssistantClientJni.get().fromWebContents(webContents);
+    }
+
+    /** Returns the client for the given web contents, creating it if necessary. */
+    public static @Nullable AutofillAssistantClient createForWebContents(
+            WebContents webContents, AssistantDependencies dependencies) {
+        return AutofillAssistantClientJni.get().createForWebContents(webContents, dependencies);
     }
 
     /**
@@ -378,6 +384,8 @@ public class AutofillAssistantClient {
     @NativeMethods
     interface Natives {
         AutofillAssistantClient fromWebContents(WebContents webContents);
+        AutofillAssistantClient createForWebContents(
+                WebContents webContents, AssistantDependencies dependencies);
         void onOnboardingUiChange(WebContents webContents, boolean shown);
         void onAccessToken(long nativeClientAndroid, AutofillAssistantClient caller,
                 boolean success, String accessToken);
