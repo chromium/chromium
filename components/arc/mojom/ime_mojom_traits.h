@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_COMPONENTS_ARC_MOJOM_IME_MOJOM_TRAITS_H_
-#define ASH_COMPONENTS_ARC_MOJOM_IME_MOJOM_TRAITS_H_
+#ifndef COMPONENTS_ARC_MOJOM_IME_MOJOM_TRAITS_H_
+#define COMPONENTS_ARC_MOJOM_IME_MOJOM_TRAITS_H_
 
 #include "components/arc/mojom/ime.mojom-shared.h"
 #include "ui/base/ime/text_input_type.h"
@@ -139,4 +139,4 @@ struct StructTraits<arc::mojom::KeyEventDataDataView, KeyEventUniquePtr> {
 
 }  // namespace mojo
 
-#endif  // ASH_COMPONENTS_ARC_MOJOM_IME_MOJOM_TRAITS_H_
+#endif  // COMPONENTS_ARC_MOJOM_IME_MOJOM_TRAITS_H_

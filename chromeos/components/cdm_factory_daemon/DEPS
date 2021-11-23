@@ -1,5 +1,4 @@
 include_rules = [
-  "+ash/components/arc/mojom",
   "+ash/shell.h",
   "+components/arc/mojom",
   "+content/public/browser",

@@ -77,10 +77,10 @@ if (is_chromeos_ash) {
     ]
 
     public_deps = [
+      ":camera_intent",
       ":media",
-      "//ash/components/arc/mojom:camera_intent",
-      "//ash/components/arc/mojom:notifications",
-      "//ash/components/arc/mojom:oemcrypto",
+      ":notifications",
+      ":oemcrypto",
       "//chromeos/components/sensors/mojom:mojom",
       "//components/payments/mojom:mojom",
       "//media/capture/video/chromeos/mojom:cros_camera",
@@ -166,7 +166,7 @@ if (is_chromeos_ash) {
             move_only = true
           },
         ]
-        traits_headers = [ "//ash/components/arc/mojom/ime_mojom_traits.h" ]
+        traits_headers = [ "ime_mojom_traits.h" ]
         traits_public_deps = [
           "//ui/base/ime",
           "//ui/events",
@@ -253,6 +253,34 @@ if (is_chromeos_ash) {
     ]
   }
 
+  mojom("camera_intent") {
+    sources = [ "camera_intent.mojom" ]
+    webui_module_path = "/components/arc/mojom"
+  }
+
+  mojom("notifications") {
+    sources = [
+      "bitmap.mojom",
+      "notifications.mojom",
+    ]
+
+    deps = [ ":media" ]  # for gfx.mojom
+
+    cpp_typemaps = [
+      {
+        types = [
+          {
+            mojom = "arc.mojom.ArcBitmap"
+            cpp = "::SkBitmap"
+          },
+        ]
+        traits_headers = [ "//components/arc/bitmap/bitmap_mojom_traits.h" ]
+        traits_sources = [ "//components/arc/bitmap/bitmap_mojom_traits.cc" ]
+        traits_public_deps = [ "//skia" ]
+      },
+    ]
+  }
+
   # Media related mojo interfaces. These are used by
   # //services/viz/public/mojom. We have this separate mojom target to
   # avoid pulling in unnecessary interfaces.
@@ -267,7 +295,7 @@ if (is_chromeos_ash) {
     ]
 
     public_deps = [
-      "//ash/components/arc/mojom:protected_buffer_manager",
+      ":protected_buffer_manager",
       "//sandbox/policy/mojom",
       "//ui/gfx/geometry/mojom",
     ]
@@ -360,6 +388,45 @@ if (is_chromeos_ash) {
           "//media/gpu",
         ]
       },
+    ]
+  }
+
+  mojom("oemcrypto") {
+    sources = [ "oemcrypto.mojom" ]
+  }
+
+  mojom("protected_buffer_manager") {
+    sources = [ "protected_buffer_manager.mojom" ]
+    public_deps = [ "//sandbox/policy/mojom" ]
+  }
+
+  source_set("mojom_traits") {
+    sources = [
+      "ime_mojom_traits.cc",
+      "ime_mojom_traits.h",
+    ]
+
+    deps = [
+      ":mojom",
+      "//ui/base/ime:text_input_types",
+      "//ui/events",
+      "//ui/events/ozone/layout",
+    ]
+  }
+
+  source_set("unit_tests") {
+    testonly = true
+    sources = [
+      "ime_mojom_traits_unittest.cc",
+      "video_accelerator_mojom_traits_unittest.cc",
+    ]
+
+    deps = [
+      ":mojom",
+      ":mojom_traits",
+      "//media",
+      "//mojo/public/cpp/test_support:test_utils",
+      "//testing/gtest",
     ]
   }
 }

@@ -6,8 +6,8 @@
 
 module arc.mojom;
 
-import "ash/components/arc/mojom/bitmap.mojom";
 import "components/arc/mojom/app.mojom";
+import "components/arc/mojom/bitmap.mojom";
 import "components/arc/mojom/gfx.mojom";
 import "components/arc/mojom/intent_common.mojom";
 import "components/arc/mojom/video_common.mojom";

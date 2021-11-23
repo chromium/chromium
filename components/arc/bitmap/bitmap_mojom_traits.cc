@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/components/arc/bitmap/bitmap_mojom_traits.h"
+#include "components/arc/bitmap/bitmap_mojom_traits.h"
 
 namespace mojo {
 

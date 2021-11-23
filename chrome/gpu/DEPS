@@ -1,5 +1,4 @@
 include_rules = [
-  "+ash/components/arc/mojom",
   "+ash/components/arc/video_accelerator",
   "+chromeos/components/cdm_factory_daemon",
   "+components/arc/mojom",

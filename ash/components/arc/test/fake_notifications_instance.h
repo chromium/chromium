@@ -9,7 +9,7 @@
 #include <utility>
 #include <vector>
 
-#include "ash/components/arc/mojom/notifications.mojom.h"
+#include "components/arc/mojom/notifications.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 
 namespace arc {

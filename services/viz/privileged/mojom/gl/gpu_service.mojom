@@ -5,7 +5,7 @@
 module viz.mojom;
 
 [EnableIf=is_chromeos_ash]
-import "ash/components/arc/mojom/protected_buffer_manager.mojom";
+import "components/arc/mojom/protected_buffer_manager.mojom";
 [EnableIf=is_chromeos_ash]
 import "components/arc/mojom/video_decode_accelerator.mojom";
 [EnableIf=is_chromeos_ash]
