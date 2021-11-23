@@ -10,6 +10,8 @@
 #include "chromeos/dbus/cryptohome/UserDataAuth.pb.h"
 #include "chromeos/login/auth/authenticator.h"
 #include "chromeos/login/auth/safe_mode_delegate.h"
+#include "components/account_id/account_id.h"
+#include "components/user_manager/user_type.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 class AuthFailure;
@@ -212,6 +214,10 @@ class COMPONENT_EXPORT(CHROMEOS_LOGIN_AUTH) AuthSessionAuthenticator
                         ContextCallback continuation,
                         std::unique_ptr<UserContext> context,
                         absl::optional<user_data_auth::UnmountReply> reply);
+
+  void LoginAsKioskImpl(const AccountId& app_account_id,
+                        user_manager::UserType user_type,
+                        bool force_dircrypto);
 
   void PrepareForNewAttempt(const std::string& method_id,
                             const std::string& long_desc);

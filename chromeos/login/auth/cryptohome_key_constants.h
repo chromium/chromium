@@ -16,6 +16,9 @@ COMPONENT_EXPORT(CHROMEOS_LOGIN_AUTH)
 extern const char kCryptohomePinLabel[];
 
 COMPONENT_EXPORT(CHROMEOS_LOGIN_AUTH)
+extern const char kCryptohomePublicMountLabel[];
+
+COMPONENT_EXPORT(CHROMEOS_LOGIN_AUTH)
 extern const char kCryptohomeWildcardLabel[];
 
 }  // namespace chromeos

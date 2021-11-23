@@ -14,6 +14,7 @@
 #include "chromeos/cryptohome/userdataauth_util.h"
 #include "chromeos/dbus/cryptohome/UserDataAuth.pb.h"
 #include "chromeos/dbus/userdataauth/userdataauth_client.h"
+#include "chromeos/login/auth/cryptohome_key_constants.h"
 #include "chromeos/login/auth/cryptohome_parameter_utils.h"
 #include "chromeos/login/auth/user_context.h"
 #include "components/device_event_log/device_event_log.h"
@@ -23,7 +24,7 @@ namespace chromeos {
 
 namespace {
 
-// -- TransformCryotohomeKeyCallback implementations
+// -- TransformCryptohomeKeyCallback implementations
 void TransformToLabeledKey(const UserContext& context, cryptohome::Key* key) {
   cryptohome::KeyDefinitionToKey(
       cryptohome_parameter_utils::CreateKeyDefFromUserContext(context), key);
@@ -34,6 +35,18 @@ void TransformToWildcardKey(const UserContext& context, cryptohome::Key* key) {
       cryptohome_parameter_utils::CreateAuthorizationKeyDefFromUserContext(
           context),
       key);
+}
+
+void CreateKioskKey(const UserContext& context, cryptohome::Key* key) {
+  cryptohome::KeyData* data = key->mutable_data();
+  data->set_label(kCryptohomePublicMountLabel);
+  data->set_type(cryptohome::KeyData::KEY_TYPE_KIOSK);
+}
+
+void CreateKioskWildcardKey(const UserContext& context, cryptohome::Key* key) {
+  cryptohome::KeyData* data = key->mutable_data();
+  // Do not set label
+  data->set_type(cryptohome::KeyData::KEY_TYPE_KIOSK);
 }
 
 // -- ConfigureAuthSessionCallback implementations
@@ -63,19 +76,18 @@ user_data_auth::MountRequest ConfigureGenericMount(
   return request;
 }
 
-user_data_auth::MountRequest ConfigureCreateMount(
-    const UserContext& context,
-    user_data_auth::MountRequest request) {
-  // Explicitly mark request as a create request. Do not add any keys.
-  request.mutable_create();
-  return ConfigureGenericMount(context, std::move(request));
-}
-
 user_data_auth::MountRequest ConfigureGuestMount(
     const UserContext& context,
     user_data_auth::MountRequest request) {
   request.set_guest_mount(true);
   return request;
+}
+
+user_data_auth::MountRequest ConfigureKioskMount(
+    const UserContext& context,
+    user_data_auth::MountRequest request) {
+  request.set_public_mount(true);
+  return ConfigureGenericMount(context, std::move(request));
 }
 
 // -- KeyHashingCallback implementations
@@ -154,7 +166,6 @@ void AuthSessionAuthenticator::CompleteLogin(const UserContext& user_context) {
   //     (2) Authenticate AuthSession
   //       (2.1) Password mismatch means that password changed
   //     (3) Mount directory
-  //         (3.1) with regular flags
   //     (4) (Safe mode) Check ownership
   //     (#) Notify success
   //   For new users:
@@ -162,7 +173,6 @@ void AuthSessionAuthenticator::CompleteLogin(const UserContext& user_context) {
   //     (6) Add user key
   //     (7) Authenticate session with same key
   //     (8) Mount home directory
-  //        (8.1) with create request
   //     (#) Notify success
   // (*) Errors are notified as COULD_NOT_MOUNT_CRYPTOHOME
 
@@ -172,44 +182,43 @@ void AuthSessionAuthenticator::CompleteLogin(const UserContext& user_context) {
   auto error_handler_repeating = base::BindRepeating(
       &AuthSessionAuthenticator::ProcessCryptohomeError,
       weak_factory_.GetWeakPtr(),
-      /* default_error */ AuthFailure::COULD_NOT_MOUNT_CRYPTOHOME);
+      /*default_reason=*/AuthFailure::COULD_NOT_MOUNT_CRYPTOHOME);
 
   // (#)
   auto success_split = base::SplitOnceCallback(
       base::BindOnce(&AuthSessionAuthenticator::NotifyAuthSuccess,
                      weak_factory_.GetWeakPtr()));
   // (8.1)
-  ConfigureMountCallback mount_create_cfg =
-      base::BindOnce(&ConfigureCreateMount);
+  ConfigureMountCallback mount_cfg = base::BindOnce(&ConfigureGenericMount);
   // (8)
   ContextCallback mount_create = base::BindOnce(
       &AuthSessionAuthenticator::MountGeneric, weak_factory_.GetWeakPtr(),
-      /* error_handler */ base::BindOnce(error_handler_repeating),
-      /* configurator */ std::move(mount_create_cfg),
-      /* continunation */ std::move(success_split.first));
+      /*error_handler=*/base::BindOnce(error_handler_repeating),
+      /*configurator=*/std::move(mount_cfg),
+      /*continuation=*/std::move(success_split.first));
   // (7)
-  ContextCallback authenticate_same_key = base::BindOnce(
-      &AuthSessionAuthenticator::AuthenticateSessionGeneric,
-      weak_factory_.GetWeakPtr(),
-      /* error_handler */ base::BindOnce(error_handler_repeating),
-      /* key_transformer */ base::BindOnce(&TransformToWildcardKey),
-      /* continuation */ std::move(mount_create));
+  ContextCallback authenticate_same_key =
+      base::BindOnce(&AuthSessionAuthenticator::AuthenticateSessionGeneric,
+                     weak_factory_.GetWeakPtr(),
+                     /*error_handler=*/base::BindOnce(error_handler_repeating),
+                     /*transformer=*/base::BindOnce(&TransformToWildcardKey),
+                     /*continuation=*/std::move(mount_create));
 
   // (6)
-  ContextCallback add_credentials = base::BindOnce(
-      &AuthSessionAuthenticator::AddInitialCredentialsGeneric,
-      weak_factory_.GetWeakPtr(),
-      /* error_handler */ base::BindOnce(error_handler_repeating),
-      /* key_transformer */ base::BindOnce(&TransformToLabeledKey),
-      /* continuation */ std::move(authenticate_same_key));
+  ContextCallback add_credentials =
+      base::BindOnce(&AuthSessionAuthenticator::AddInitialCredentialsGeneric,
+                     weak_factory_.GetWeakPtr(),
+                     /*error_handler=*/base::BindOnce(error_handler_repeating),
+                     /*transformer=*/base::BindOnce(&TransformToLabeledKey),
+                     /*continuation=*/std::move(authenticate_same_key));
   // (5)
   NewUserAuthSessionCallback new_user_flow = base::BindOnce(
       &AuthSessionAuthenticator::FailIfInSafeMode, weak_factory_.GetWeakPtr(),
-      /* continuation */ std::move(add_credentials));
+      /*continuation=*/std::move(add_credentials));
   // (4)
   ContextCallback safe_mode_check = base::BindOnce(
       &AuthSessionAuthenticator::RunSafeModeChecks, weak_factory_.GetWeakPtr(),
-      /* continuation */ std::move(success_split.second));
+      /*continuation=*/std::move(success_split.second));
 
   // (3.1)
   ConfigureMountCallback mount_regular_cfg =
@@ -217,24 +226,24 @@ void AuthSessionAuthenticator::CompleteLogin(const UserContext& user_context) {
   // (3)
   ContextCallback mount_existing = base::BindOnce(
       &AuthSessionAuthenticator::MountGeneric, weak_factory_.GetWeakPtr(),
-      /* error_handler */ base::BindOnce(error_handler_repeating),
-      /* configurator */ std::move(mount_regular_cfg),
-      /* continuation */ std::move(safe_mode_check));
+      /*error_handler=*/base::BindOnce(error_handler_repeating),
+      /*configurator=*/std::move(mount_regular_cfg),
+      /*continuation=*/std::move(safe_mode_check));
 
   // (2.1)
   ErrorHandlingCallback auth_error_handler =
       base::BindOnce(&AuthSessionAuthenticator::
                          ExistingUserPasswordAuthenticationErrorHandling,
                      weak_factory_.GetWeakPtr(),
-                     /* fallback */ base::BindOnce(error_handler_repeating),
-                     /* verified password */ true);
+                     /*fallback=*/base::BindOnce(error_handler_repeating),
+                     /*verified_password=*/true);
   // (2)
   ExistingUserAuthSessionCallback existing_user_flow = base::BindOnce(
       &AuthSessionAuthenticator::AuthenticateSessionGeneric,
       weak_factory_.GetWeakPtr(),
-      /* error_handler */ std::move(auth_error_handler),
-      /* key_transformer */ base::BindOnce(&TransformToWildcardKey),
-      /* continuation */ std::move(mount_existing));
+      /*error_handler=*/std::move(auth_error_handler),
+      /*key_transformer=*/base::BindOnce(&TransformToWildcardKey),
+      /*continuation=*/std::move(mount_existing));
 
   // (1.2)
   auto password_hasher = base::BindOnce(&HashPassword);
@@ -243,11 +252,10 @@ void AuthSessionAuthenticator::CompleteLogin(const UserContext& user_context) {
   // (1)
   CreateAuthSessionGeneric(
       "RegularUser", base::BindOnce(error_handler_repeating),
-      /* configurator */ std::move(regular_session_configurator),
-      /* password_hasher */ std::move(password_hasher),
-      /* new_user_flow */ std::move(new_user_flow),
-      /* existing_user_flow */ std::move(existing_user_flow),
-      std::move(context));
+      /*configurator=*/std::move(regular_session_configurator),
+      /*key_hasher=*/std::move(password_hasher),
+      /*new_user_flow=*/std::move(new_user_flow),
+      /*existing_user_flow=*/std::move(existing_user_flow), std::move(context));
 }
 
 // Authentication from user pod.
@@ -295,7 +303,7 @@ void AuthSessionAuthenticator::AuthenticateToLogin(
   auto error_handler_repeating = base::BindRepeating(
       &AuthSessionAuthenticator::ProcessCryptohomeError,
       weak_factory_.GetWeakPtr(),
-      /* default_error */ AuthFailure::COULD_NOT_MOUNT_CRYPTOHOME);
+      /*default_reason=*/AuthFailure::COULD_NOT_MOUNT_CRYPTOHOME);
 
   // (#)
   ContextCallback success = base::BindOnce(
@@ -307,23 +315,23 @@ void AuthSessionAuthenticator::AuthenticateToLogin(
   // (4)
   ContextCallback safe_mode_check = base::BindOnce(
       &AuthSessionAuthenticator::RunSafeModeChecks, weak_factory_.GetWeakPtr(),
-      /* continuation */ std::move(success));
+      /*continuation=*/std::move(success));
   // (3.1)
   ConfigureMountCallback mount_regular_cfg =
       base::BindOnce(&ConfigureGenericMount);
   // (3)
   ContextCallback mount_existing = base::BindOnce(
       &AuthSessionAuthenticator::MountGeneric, weak_factory_.GetWeakPtr(),
-      /* error_handler */ base::BindOnce(error_handler_repeating),
-      /* configurator */ std::move(mount_regular_cfg),
-      /* continuation */ std::move(safe_mode_check));
+      /*error_handler=*/base::BindOnce(error_handler_repeating),
+      /*configurator=*/std::move(mount_regular_cfg),
+      /*continuation=*/std::move(safe_mode_check));
   // (2)
   ExistingUserAuthSessionCallback existing_user_flow = base::BindOnce(
       &AuthSessionAuthenticator::AuthenticateSessionGeneric,
       weak_factory_.GetWeakPtr(),
-      /* error_handler */ base::BindOnce(error_handler_repeating),
-      /* key_transformer */ base::BindOnce(&TransformToWildcardKey),
-      /* continuation */ std::move(mount_existing));
+      /*error_handler=*/base::BindOnce(error_handler_repeating),
+      /*key_transformer=*/base::BindOnce(&TransformToWildcardKey),
+      /*continuation=*/std::move(mount_existing));
   // (1.2)
   auto password_hasher = base::BindOnce(&HashPassword);
   // (1.1)
@@ -331,12 +339,11 @@ void AuthSessionAuthenticator::AuthenticateToLogin(
   // (1)
   CreateAuthSessionGeneric(
       "RegularReturningUser",
-      /* error_handler */ base::BindOnce(error_handler_repeating),
-      /* configurator */ std::move(regular_session),
-      /* key_hasher */ std::move(password_hasher),
-      /* new_user_flow */ std::move(no_cryptohome),
-      /* existing_user_flow */ std::move(existing_user_flow),
-      std::move(context));
+      /*error_handler=*/base::BindOnce(error_handler_repeating),
+      /*configurator=*/std::move(regular_session),
+      /*key_hasher=*/std::move(password_hasher),
+      /*new_user_flow=*/std::move(no_cryptohome),
+      /*existing_user_flow=*/std::move(existing_user_flow), std::move(context));
 }
 
 void AuthSessionAuthenticator::LoginOffTheRecord() {
@@ -366,7 +373,7 @@ void AuthSessionAuthenticator::LoginOffTheRecord() {
   auto error_handler_repeating = base::BindRepeating(
       &AuthSessionAuthenticator::ProcessCryptohomeError,
       weak_factory_.GetWeakPtr(),
-      /* default_error */ AuthFailure::COULD_NOT_MOUNT_TMPFS);
+      /*default_reason=*/AuthFailure::COULD_NOT_MOUNT_TMPFS);
   // (#) Notify success
   ContextCallback success_callback =
       base::BindOnce(&AuthSessionAuthenticator::NotifyGuestSuccess,
@@ -377,9 +384,9 @@ void AuthSessionAuthenticator::LoginOffTheRecord() {
   // (3)
   NewUserAuthSessionCallback guest_mount = base::BindOnce(
       &AuthSessionAuthenticator::MountGeneric, weak_factory_.GetWeakPtr(),
-      /* error_handler */ base::BindOnce(error_handler_repeating),
-      /* configurator */ std::move(guest_configurator),
-      /* continuation */ std::move(success_callback));
+      /*error_handler=*/base::BindOnce(error_handler_repeating),
+      /*configurator=*/std::move(guest_configurator),
+      /*continuation=*/std::move(success_callback));
   // (2)
   ExistingUserAuthSessionCallback guest_exists = base::BindOnce(
       &AuthSessionAuthenticator::NotifyFailure, weak_factory_.GetWeakPtr(),
@@ -388,11 +395,11 @@ void AuthSessionAuthenticator::LoginOffTheRecord() {
   KeyHashingCallback password_hasher = base::BindOnce(&IgnoreHashing);
   // (1)
   CreateAuthSessionGeneric(
-      "Guest", /* error_handler */ base::BindOnce(error_handler_repeating),
-      /* configurator */ base::BindOnce(&ConfigureEphemeralSession),
-      /* key_hasher */ std::move(password_hasher),
-      /* new_user_flow */ std::move(guest_mount),
-      /* existing_user_flow */ std::move(guest_exists), std::move(context));
+      "Guest", /*error_handler=*/base::BindOnce(error_handler_repeating),
+      /*configurator=*/base::BindOnce(&ConfigureEphemeralSession),
+      /*key_hasher=*/std::move(password_hasher),
+      /*new_user_flow=*/std::move(guest_mount),
+      /*existing_user_flow=*/std::move(guest_exists), std::move(context));
 }
 
 // Public sessions aka Managed Guest Sessions are always ephemeral.
@@ -421,7 +428,6 @@ void AuthSessionAuthenticator::LoginAsPublicSession(
   //     (3) Add user key (even if it is empty, this is current limitation)
   //     (4) Authenticate session with same key
   //     (5) Mount home directory
-  //        (5.1) with create request (ephemeral is implied by session flag)
   //     (#) Notify success
   // (*) Errors are notified as COULD_NOT_MOUNT_TMPFS
 
@@ -431,33 +437,32 @@ void AuthSessionAuthenticator::LoginAsPublicSession(
   auto error_handler_repeating = base::BindRepeating(
       &AuthSessionAuthenticator::ProcessCryptohomeError,
       weak_factory_.GetWeakPtr(),
-      /* default_error */ AuthFailure::COULD_NOT_MOUNT_TMPFS);
+      /*default_reason=*/AuthFailure::COULD_NOT_MOUNT_TMPFS);
   // (#)
   ContextCallback success = base::BindOnce(
       &AuthSessionAuthenticator::NotifyAuthSuccess, weak_factory_.GetWeakPtr());
   // (5.1)
-  ConfigureMountCallback mount_create_cfg =
-      base::BindOnce(&ConfigureCreateMount);
+  ConfigureMountCallback mount_cfg = base::BindOnce(&ConfigureGenericMount);
   // (5)
   NewUserAuthSessionCallback mgs_mount = base::BindOnce(
       &AuthSessionAuthenticator::MountGeneric, weak_factory_.GetWeakPtr(),
-      /* error_handler */ base::BindOnce(error_handler_repeating),
-      /* configurator */ std::move(mount_create_cfg),
-      /* continuation */ std::move(success));
+      /*error_handler=*/base::BindOnce(error_handler_repeating),
+      /*configurator=*/std::move(mount_cfg),
+      /*continuation=*/std::move(success));
   // (4)
-  ContextCallback authenticate_same_key = base::BindOnce(
-      &AuthSessionAuthenticator::AuthenticateSessionGeneric,
-      weak_factory_.GetWeakPtr(),
-      /* error_handler */ base::BindOnce(error_handler_repeating),
-      /* key_transformer */ base::BindOnce(&TransformToLabeledKey),
-      /* continuation */ std::move(mgs_mount));
+  ContextCallback authenticate_same_key =
+      base::BindOnce(&AuthSessionAuthenticator::AuthenticateSessionGeneric,
+                     weak_factory_.GetWeakPtr(),
+                     /*error_handler=*/base::BindOnce(error_handler_repeating),
+                     /*key_transformer=*/base::BindOnce(&TransformToLabeledKey),
+                     /*continuation=*/std::move(mgs_mount));
   // (3)
-  NewUserAuthSessionCallback new_user_flow = base::BindOnce(
-      &AuthSessionAuthenticator::AddInitialCredentialsGeneric,
-      weak_factory_.GetWeakPtr(),
-      /* error_handler */ base::BindOnce(error_handler_repeating),
-      /* key_transformer */ base::BindOnce(&TransformToLabeledKey),
-      /* continuation */ std::move(authenticate_same_key));
+  NewUserAuthSessionCallback new_user_flow =
+      base::BindOnce(&AuthSessionAuthenticator::AddInitialCredentialsGeneric,
+                     weak_factory_.GetWeakPtr(),
+                     /*error_handler=*/base::BindOnce(error_handler_repeating),
+                     /*key_transformer=*/base::BindOnce(&TransformToLabeledKey),
+                     /*continuation=*/std::move(authenticate_same_key));
   // (2)
   ExistingUserAuthSessionCallback mgs_exists = base::BindOnce(
       &AuthSessionAuthenticator::NotifyFailure, weak_factory_.GetWeakPtr(),
@@ -470,26 +475,130 @@ void AuthSessionAuthenticator::LoginAsPublicSession(
   // (1)
   CreateAuthSessionGeneric(
       "ManagedGuest",
-      /* error_handler */ base::BindOnce(error_handler_repeating),
-      /* configurator */ std::move(ephemeral_session_configurator),
-      /* key_hasher */ std::move(password_hasher),
-      /* new_user_flow */ std::move(new_user_flow),
-      /* existing_user_flow */ std::move(mgs_exists), std::move(context));
+      /*error_handler=*/base::BindOnce(error_handler_repeating),
+      /*configurator=*/std::move(ephemeral_session_configurator),
+      /*key_hasher=*/std::move(password_hasher),
+      /*new_user_flow=*/std::move(new_user_flow),
+      /*existing_user_flow=*/std::move(mgs_exists), std::move(context));
 }
 
 void AuthSessionAuthenticator::LoginAsKioskAccount(
     const AccountId& app_account_id) {
-  NOTIMPLEMENTED();
+  LoginAsKioskImpl(app_account_id, user_manager::USER_TYPE_KIOSK_APP,
+                   /*force_dircrypto=*/false);
 }
 
 void AuthSessionAuthenticator::LoginAsArcKioskAccount(
     const AccountId& app_account_id) {
-  NOTIMPLEMENTED();
+  LoginAsKioskImpl(app_account_id, user_manager::USER_TYPE_ARC_KIOSK_APP,
+                   /*force_dircrypto=*/true);
 }
 
 void AuthSessionAuthenticator::LoginAsWebKioskAccount(
     const AccountId& app_account_id) {
-  NOTIMPLEMENTED();
+  LoginAsKioskImpl(app_account_id, user_manager::USER_TYPE_WEB_KIOSK_APP,
+                   /*force_dircrypto=*/false);
+}
+
+void AuthSessionAuthenticator::LoginAsKioskImpl(
+    const AccountId& app_account_id,
+    user_manager::UserType user_type,
+    bool force_dircrypto) {
+  PrepareForNewAttempt("LoginAs*Kiosk", "Kiosk user");
+
+  std::unique_ptr<UserContext> context =
+      std::make_unique<UserContext>(user_type, app_account_id);
+  context->SetIsForcingDircrypto(force_dircrypto);
+
+  // Guest can not be be an owner.
+  if (safe_mode_delegate_->IsSafeMode()) {
+    LOGIN_LOG(EVENT) << "Kiosks can not sign-in in safe mode";
+    NotifyFailure(AuthFailure::OWNER_REQUIRED, std::move(context));
+    return;
+  }
+
+  // (1) Initialize AuthSession
+  //   (1.1) For kiosks users
+  //   (1.2) Ignore hashing, as there is no password
+  //   For existing users:
+  //     (2) Authenticate AuthSession
+  //       (2.1) Use Kiosk-specific key w/o label
+  //     (3) Mount directory
+  //         (3.1) Usual mount (dircrypto enforcement is passed via context)
+  //     (#) Notify success
+  //   For new users:
+  //     (4) Add user key
+  //       (4.1) Use Kiosk-specific key
+  //     (5) Authenticate session with same key
+  //       (5.1) Use Kiosk-specific key
+  //     (6) Mount home directory
+  //        (6.1) with create request
+  //     (#) Notify success
+  // (*) Errors are notified as COULD_NOT_MOUNT_CRYPTOHOME
+
+  // Callbacks are created in reverse order:
+
+  // (*)
+  auto error_handler_repeating = base::BindRepeating(
+      &AuthSessionAuthenticator::ProcessCryptohomeError,
+      weak_factory_.GetWeakPtr(),
+      /*default_reason=*/AuthFailure::COULD_NOT_MOUNT_CRYPTOHOME);
+  // (#)
+  auto success_split = base::SplitOnceCallback(
+      base::BindOnce(&AuthSessionAuthenticator::NotifyAuthSuccess,
+                     weak_factory_.GetWeakPtr()));
+  // (6.1)
+  ConfigureMountCallback mount_create_cfg =
+      base::BindOnce(&ConfigureKioskMount);
+  // (6)
+  ContextCallback mount_create = base::BindOnce(
+      &AuthSessionAuthenticator::MountGeneric, weak_factory_.GetWeakPtr(),
+      /*error_handler=*/base::BindOnce(error_handler_repeating),
+      /*configurator=*/std::move(mount_create_cfg),
+      /*continuation=*/std::move(success_split.first));
+  // (5)
+  ContextCallback authenticate_same_key =
+      base::BindOnce(&AuthSessionAuthenticator::AuthenticateSessionGeneric,
+                     weak_factory_.GetWeakPtr(),
+                     /*error_handler=*/base::BindOnce(error_handler_repeating),
+                     /*key_transformer=*/base::BindOnce(&CreateKioskKey),
+                     /*continuation=*/std::move(mount_create));
+  // (4)
+  NewUserAuthSessionCallback new_user_flow =
+      base::BindOnce(&AuthSessionAuthenticator::AddInitialCredentialsGeneric,
+                     weak_factory_.GetWeakPtr(),
+                     /*error_handler=*/base::BindOnce(error_handler_repeating),
+                     /*key_transformer=*/base::BindOnce(&CreateKioskKey),
+                     /*continuation=*/std::move(authenticate_same_key));
+
+  // (3.1)
+  ConfigureMountCallback mount_kiosk_cfg = base::BindOnce(&ConfigureKioskMount);
+  // (3)
+  ContextCallback mount_existing = base::BindOnce(
+      &AuthSessionAuthenticator::MountGeneric, weak_factory_.GetWeakPtr(),
+      /*error_handler=*/base::BindOnce(error_handler_repeating),
+      /*configurator=*/std::move(mount_kiosk_cfg),
+      /*continuation=*/std::move(success_split.second));
+
+  // (2)
+  ExistingUserAuthSessionCallback existing_user_flow = base::BindOnce(
+      &AuthSessionAuthenticator::AuthenticateSessionGeneric,
+      weak_factory_.GetWeakPtr(),
+      /*error_handler=*/base::BindOnce(error_handler_repeating),
+      /*key_transformer=*/base::BindOnce(&CreateKioskWildcardKey),
+      /*continuation=*/std::move(mount_existing));
+
+  // (1.2)
+  auto password_hasher = base::BindOnce(&IgnoreHashing);
+  // (1.1)
+  auto kiosk_session = base::BindOnce(&ConfigureRegularSession);
+  // (1)
+  CreateAuthSessionGeneric(
+      "Kiosk", /*error_handler=*/base::BindOnce(error_handler_repeating),
+      /*configurator=*/std::move(kiosk_session),
+      /*key_hasher=*/std::move(password_hasher),
+      /*new_user_flow=*/std::move(new_user_flow),
+      /*existing_user_flow=*/std::move(existing_user_flow), std::move(context));
 }
 
 void AuthSessionAuthenticator::OnAuthSuccess() {
