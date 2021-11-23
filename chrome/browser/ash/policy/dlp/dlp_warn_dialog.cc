@@ -15,11 +15,12 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/ui_base_types.h"
+#include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/scroll_view.h"
-#include "ui/views/layout/grid_layout.h"
+#include "ui/views/layout/box_layout.h"
 #include "ui/views/widget/widget.h"
 
 namespace policy {
@@ -29,8 +30,20 @@ namespace {
 // The corner radius.
 constexpr int kDialogCornerRadius = 12;
 
-// The insets of the margins (top, left, bottom, right).
-constexpr gfx::Insets kMarginInsets(20, 24, 20, 24);
+// The dialog insets.
+constexpr gfx::Insets kMarginInsets(20, 0, 20, 0);
+
+// The insets in the upper part of the dialog.
+constexpr gfx::Insets kTopPanelInsets(0, 24, 16, 24);
+
+// The insests in the container holding the list of confidential contents.
+constexpr gfx::Insets kConfidentialListInsets(8, 24, 8, 24);
+
+// The insets of a single confidential content row.
+constexpr gfx::Insets kConfidentialRowInsets(6, 0, 6, 0);
+
+// The spacing between the elements in a box layout.
+constexpr int kBetweenChildSpacing = 16;
 
 // The size of the managed icon.
 constexpr int kManagedIconSize = 32;
@@ -56,37 +69,12 @@ constexpr int kTitleLineHeight = 24;
 // The width of the dialog.
 constexpr int kDialogWidth = 360;
 
-// Id of the column in the grid layout.
-constexpr int kColumnSetId = 0;
-
-// The spacing between the managed icon and the title.
-constexpr int kAfterIconSpacing = 16;
-
-// The spacing between the title and the body.
-constexpr int kAfterTitleSpacing = 16;
-
-// The spacing between the body and the confidential content list.
-constexpr int kBodyContentSpacing = 16;
-
-// The width of the padding column between the icon and the title of the
-// confidential content list.
-constexpr int kConfidentialContentListHorizontalPadding = 16;
-
-// The padding on the top and bottom of the confidential list.
-constexpr int kConfidentialContentListTopBottomPadding = 8;
-
-// The padding on the top and bottom of each confidential content row.
-constexpr int kConfidentialContentListVerticalPadding = 6;
-
 // The line height of the confidential content title label.
 constexpr int kConfidentialContentLineHeight = 20;
 
 // Maximum height of the confidential content scrollable list.
 // This can hold seven rows.
 constexpr int kConfidentialContentListMaxHeight = 240;
-
-// The spacing between body label and the buttons.
-constexpr int kAfterBodySpacing = 20;
 
 // Returns the OK button label for |restriction|.
 const std::u16string GetDialogButtonOkLabel(
@@ -160,29 +148,28 @@ const std::u16string GetMessage(DlpWarnDialog::DlpWarnDialogOptions options) {
   }
 }
 
-// Adds a managed icon and a padding row to the warn dialog's layout.
-void AddManagedIcon(views::GridLayout* layout) {
+// Constructs and adds the top part of the dialog, containing the managed
+// icon, dialog title and the informative text.
+void AddGeneralInformation(views::View* upper_panel,
+                           DlpWarnDialog::DlpWarnDialogOptions options) {
   ash::ColorProvider* color_provider = ash::ColorProvider::Get();
-  layout->StartRow(views::GridLayout::kFixedSize, kColumnSetId);
-  // Add the managed icon
+
+  views::BoxLayout* layout =
+      upper_panel->SetLayoutManager(std::make_unique<views::BoxLayout>(
+          views::BoxLayout::Orientation::kVertical, kTopPanelInsets,
+          kBetweenChildSpacing));
+  layout->set_cross_axis_alignment(
+      views::BoxLayout::CrossAxisAlignment::kStart);
+
   views::ImageView* managed_icon =
-      layout->AddView(std::make_unique<views::ImageView>());
+      upper_panel->AddChildView(std::make_unique<views::ImageView>());
   managed_icon->SetImage(gfx::CreateVectorIcon(
       vector_icons::kBusinessIcon, kManagedIconSize,
       color_provider->GetContentLayerColor(
           ash::ColorProvider::ContentLayerType::kIconColorPrimary)));
-  // Add the padding after the managed icon
-  layout->AddPaddingRow(views::GridLayout::kFixedSize, kAfterIconSpacing);
-}
 
-// Adds a title label and a padding row to the warn dialog's layout.
-void AddTitle(views::GridLayout* layout,
-              DlpWarnDialog::Restriction restriction) {
-  ash::ColorProvider* color_provider = ash::ColorProvider::Get();
-  layout->StartRow(views::GridLayout::kFixedSize, kColumnSetId);
-  // Add the title
-  views::Label* title_label =
-      layout->AddView(std::make_unique<views::Label>(GetTitle(restriction)));
+  views::Label* title_label = upper_panel->AddChildView(
+      std::make_unique<views::Label>(GetTitle(options.restriction)));
   title_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   title_label->SetAllowCharacterBreak(true);
   title_label->SetEnabledColor(color_provider->GetContentLayerColor(
@@ -191,89 +178,9 @@ void AddTitle(views::GridLayout* layout,
                                          kTitleFontSize,
                                          gfx::Font::Weight::MEDIUM));
   title_label->SetLineHeight(kTitleLineHeight);
-  // Add padding after the title
-  layout->AddPaddingRow(views::GridLayout::kFixedSize, kAfterTitleSpacing);
-}
 
-// Adds icon and title pair of the |confidential_content| to the container's
-// layout.
-void AddConfidentialContentRow(views::GridLayout* layout,
-                               DlpConfidentialContent confidential_content) {
-  layout->AddPaddingRow(views::GridLayout::kFixedSize,
-                        kConfidentialContentListVerticalPadding);
-  ash::ColorProvider* color_provider = ash::ColorProvider::Get();
-  // Add the icon
-  layout->StartRow(views::GridLayout::kFixedSize, kColumnSetId);
-  views::ImageView* icon =
-      layout->AddView(std::make_unique<views::ImageView>());
-  icon->SetImageSize(gfx::Size(kFaviconSize, kFaviconSize));
-  icon->SetImage(confidential_content.icon);
-  // Add the title
-  views::Label* title = layout->AddView(
-      std::make_unique<views::Label>(confidential_content.title));
-  title->SetMultiLine(true);
-  title->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-  title->SetAllowCharacterBreak(true);
-  title->SetEnabledColor(color_provider->GetContentLayerColor(
-      ash::ColorProvider::ContentLayerType::kTextColorSecondary));
-  title->SetFontList(gfx::FontList({kFontName}, gfx::Font::NORMAL,
-                                   kBodyFontSize, gfx::Font::Weight::NORMAL));
-  title->SetLineHeight(kConfidentialContentLineHeight);
-  title->SizeToFit(360);
-  layout->AddPaddingRow(views::GridLayout::kFixedSize,
-                        kConfidentialContentListVerticalPadding);
-}
-
-// If the |confidential_contents| is not empty, adds a padding row and a
-// scrollable view listing the given contents to the warn dialog's layout.
-// TODO(crbug.com/1264464): Adjust the width of the scrollable list
-void MaybeAddConfidentialContent(
-    views::GridLayout* layout,
-    const DlpConfidentialContents& confidential_contents) {
-  if (confidential_contents.IsEmpty())
-    return;
-  // First add padding between the message and the list
-  layout->AddPaddingRow(views::GridLayout::kFixedSize, kBodyContentSpacing);
-  // Create a scrollable view to hold the list and add all the items
-  layout->StartRow(views::GridLayout::kFixedSize, kColumnSetId);
-  views::ScrollView* scroll_view =
-      layout->AddView(std::make_unique<views::ScrollView>());
-  scroll_view->ClipHeightTo(0, kConfidentialContentListMaxHeight);
-  views::View* container =
-      scroll_view->SetContents(std::make_unique<views::View>());
-  views::GridLayout* scrollable_layout =
-      container->SetLayoutManager(std::make_unique<views::GridLayout>());
-  views::ColumnSet* column_set = scrollable_layout->AddColumnSet(kColumnSetId);
-  column_set->AddColumn(views::GridLayout::FILL, views::GridLayout::FILL,
-                        views::GridLayout::kFixedSize,
-                        views::GridLayout::ColumnSize::kUsePreferred,
-                        /*fixed_width=*/kFaviconSize, /*min_width=*/0);
-  column_set->AddPaddingColumn(views::GridLayout::kFixedSize,
-                               kConfidentialContentListHorizontalPadding);
-  column_set->AddColumn(views::GridLayout::FILL, views::GridLayout::FILL,
-                        /*resize_percent=*/1.0,
-                        views::GridLayout::ColumnSize::kUsePreferred,
-                        /*fixed_width=*/0, /*min_width=*/0);
-
-  scrollable_layout->AddPaddingRow(views::GridLayout::kFixedSize,
-                                   kConfidentialContentListTopBottomPadding);
-  for (const DlpConfidentialContent& confidential_content :
-       confidential_contents.GetContents())
-    AddConfidentialContentRow(scrollable_layout, confidential_content);
-  scrollable_layout->AddPaddingRow(views::GridLayout::kFixedSize,
-                                   kConfidentialContentListTopBottomPadding);
-}
-
-// Adds dialog body to the warn dialog's layout, that consists of the main
-// message determined by |restriction| and optionally a scrollable list of
-// confidential content.
-void AddBody(views::GridLayout* layout,
-             DlpWarnDialog::DlpWarnDialogOptions options) {
-  ash::ColorProvider* color_provider = ash::ColorProvider::Get();
-  // Add the message
-  layout->StartRow(views::GridLayout::kFixedSize, kColumnSetId);
-  views::Label* message =
-      layout->AddView(std::make_unique<views::Label>(GetMessage(options)));
+  views::Label* message = upper_panel->AddChildView(
+      std::make_unique<views::Label>(GetMessage(options)));
   message->SetMultiLine(true);
   message->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   message->SetAllowCharacterBreak(true);
@@ -283,10 +190,61 @@ void AddBody(views::GridLayout* layout,
                                      kBodyFontSize, gfx::Font::Weight::NORMAL));
   message->SetLineHeight(kBodyLineHeight);
   message->SizeToFit(kDialogWidth);
-  // Add the confidential content list, if applicable
-  MaybeAddConfidentialContent(layout, options.confidential_contents);
-  // Add padding after the entire dialog body
-  layout->AddPaddingRow(views::GridLayout::kFixedSize, kAfterBodySpacing);
+}
+
+// Adds icon and title pair of the |confidential_content| to the container.
+void AddConfidentialContentRow(
+    views::View* container,
+    const DlpConfidentialContent& confidential_content) {
+  ash::ColorProvider* color_provider = ash::ColorProvider::Get();
+
+  views::View* row = container->AddChildView(std::make_unique<views::View>());
+  row->SetLayoutManager(std::make_unique<views::BoxLayout>(
+      views::BoxLayout::Orientation::kHorizontal, kConfidentialRowInsets,
+      kBetweenChildSpacing));
+
+  views::ImageView* icon =
+      row->AddChildView(std::make_unique<views::ImageView>());
+  icon->SetImageSize(gfx::Size(kFaviconSize, kFaviconSize));
+  icon->SetImage(confidential_content.icon);
+
+  views::Label* title = row->AddChildView(
+      std::make_unique<views::Label>(confidential_content.title));
+  title->SetMultiLine(true);
+  title->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+  title->SetAllowCharacterBreak(true);
+  title->SetEnabledColor(color_provider->GetContentLayerColor(
+      ash::ColorProvider::ContentLayerType::kTextColorSecondary));
+  title->SetFontList(gfx::FontList({kFontName}, gfx::Font::NORMAL,
+                                   kBodyFontSize, gfx::Font::Weight::NORMAL));
+  title->SetLineHeight(kConfidentialContentLineHeight);
+  title->SizeToFit(kDialogWidth);
+}
+
+// Adds a scrollable child view to |parent| that lists the information from
+// |confidential_contents|. No-op if no contents are given.
+void MaybeAddConfidentialContent(
+    views::View* parent,
+    const DlpConfidentialContents& confidential_contents) {
+  if (confidential_contents.IsEmpty())
+    return;
+
+  views::ScrollView* scroll_view =
+      parent->AddChildView(std::make_unique<views::ScrollView>());
+  scroll_view->ClipHeightTo(0, kConfidentialContentListMaxHeight);
+  views::View* container =
+      scroll_view->SetContents(std::make_unique<views::View>());
+  views::BoxLayout* layout =
+      container->SetLayoutManager(std::make_unique<views::BoxLayout>(
+          views::BoxLayout::Orientation::kVertical, kConfidentialListInsets,
+          kBetweenChildSpacing));
+  layout->set_cross_axis_alignment(
+      views::BoxLayout::CrossAxisAlignment::kStart);
+
+  for (const DlpConfidentialContent& confidential_content :
+       confidential_contents.GetContents()) {
+    AddConfidentialContentRow(container, confidential_content);
+  }
 }
 
 }  // namespace
@@ -335,15 +293,11 @@ DlpWarnDialog::DlpWarnDialog(OnDlpRestrictionCheckedCallback callback,
   set_corner_radius(kDialogCornerRadius);
   set_margins(kMarginInsets);
 
-  views::GridLayout* layout_manager =
-      SetLayoutManager(std::make_unique<views::GridLayout>());
-  views::ColumnSet* cs = layout_manager->AddColumnSet(kColumnSetId);
-  cs->AddColumn(views::GridLayout::LEADING, views::GridLayout::LEADING,
-                views::GridLayout::kFixedSize,
-                views::GridLayout::ColumnSize::kUsePreferred, kDialogWidth, 0);
-  AddManagedIcon(layout_manager);
-  AddTitle(layout_manager, options.restriction);
-  AddBody(layout_manager, options);
+  SetLayoutManager(std::make_unique<views::BoxLayout>(
+      views::BoxLayout::Orientation::kVertical));
+
+  AddGeneralInformation(AddChildView(std::make_unique<views::View>()), options);
+  MaybeAddConfidentialContent(this, options.confidential_contents);
 }
 
 BEGIN_METADATA(DlpWarnDialog, views::DialogDelegateView)
