@@ -13,6 +13,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/values.h"
+#include "components/feed/core/proto/v2/ui.pb.h"
 #include "components/feed/core/v2/public/types.h"
 
 // Note: This file contains implementation for both types.h and public/types.h.
@@ -224,8 +225,27 @@ LaunchResult::~LaunchResult() = default;
 LaunchResult& LaunchResult::operator=(const LaunchResult& other) = default;
 
 bool LoggingParameters::operator==(const LoggingParameters& rhs) const {
-  return std::tie(email, session_id, client_instance_id) ==
-         std::tie(rhs.email, rhs.session_id, rhs.client_instance_id);
+  return std::tie(email, client_instance_id, logging_enabled,
+                  view_actions_enabled) ==
+         std::tie(rhs.email, rhs.client_instance_id, logging_enabled,
+                  view_actions_enabled);
+}
+
+LoggingParameters FromProto(const feedui::LoggingParameters& proto) {
+  LoggingParameters result;
+  result.email = proto.email();
+  result.client_instance_id = proto.client_instance_id();
+  result.logging_enabled = proto.logging_enabled();
+  result.view_actions_enabled = proto.view_actions_enabled();
+  return result;
+}
+
+void ToProto(const LoggingParameters& logging_parameters,
+             feedui::LoggingParameters& proto) {
+  proto.set_email(logging_parameters.email);
+  proto.set_client_instance_id(logging_parameters.client_instance_id);
+  proto.set_logging_enabled(logging_parameters.logging_enabled);
+  proto.set_view_actions_enabled(logging_parameters.view_actions_enabled);
 }
 
 }  // namespace feed

@@ -133,7 +133,13 @@ class FeedStream : public FeedApi,
   bool RejectEphemeralChange(const StreamType& stream_type,
                              EphemeralChangeId id) override;
   void ProcessThereAndBackAgain(base::StringPiece data) override;
+  void ProcessThereAndBackAgain(
+      base::StringPiece data,
+      const feedui::LoggingParameters& logging_parameters) override;
   void ProcessViewAction(base::StringPiece data) override;
+  void ProcessViewAction(
+      base::StringPiece data,
+      const feedui::LoggingParameters& logging_parameters) override;
   bool WasUrlRecentlyNavigatedFromFeed(const GURL& url) override;
   DebugStreamData GetDebugStreamData() override;
   void ForceRefreshForDebugging(const StreamType& stream_type) override;

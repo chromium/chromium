@@ -59,10 +59,10 @@ public class NtpListContentManagerTest implements ListContentManagerObserver {
     private int mItemMovedCurIndex;
     private int mItemMovedNewIndex;
     private String mObservedChanges = "";
-    private final FeedLoggingParameters mLoggingParametersA =
-            new FeedLoggingParameters("instance-id", "A", "");
-    private final FeedLoggingParameters mLoggingParametersB =
-            new FeedLoggingParameters("instance-id", "", "B");
+    private final FeedLoggingParameters mLoggingParametersA = new FeedLoggingParameters(
+            "instance-id", "A", /*loggingEnabled=*/true, /*viewActionsEnabled=*/true);
+    private final FeedLoggingParameters mLoggingParametersB = new FeedLoggingParameters(
+            "instance-id", "B", /*loggingEnabled=*/true, /*viewActionsEnabled=*/true);
 
     @Before
     public void setUp() {

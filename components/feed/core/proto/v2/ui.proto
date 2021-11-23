@@ -50,6 +50,11 @@ message LoggingParameters {
 
   // A client ID used for reliability logging.
   string client_instance_id = 3;
+
+  // Whether attention / interaction logging is enabled.
+  bool logging_enabled = 4;
+  // Whether view actions may be recorded.
+  bool view_actions_enabled = 5;
 }
 
 // A horizontal slice of UI to be presented in the vertical-scrolling feed.

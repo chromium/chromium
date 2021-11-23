@@ -23,25 +23,39 @@ public final class FeedLoggingParametersTest {
     @Test
     @SmallTest
     public void testEquality() {
-        FeedLoggingParameters allNull = new FeedLoggingParameters(null, null, null);
+        FeedLoggingParameters allNull = new FeedLoggingParameters(null, null, false, false);
 
         assertFalse(allNull.loggingParametersEquals(null));
 
         // Null and empty string are considered equivalent.
-        assertTrue(new FeedLoggingParameters("", "", "").loggingParametersEquals(allNull));
-        assertTrue(allNull.loggingParametersEquals(new FeedLoggingParameters("", "", "")));
-        assertFalse(new FeedLoggingParameters(null, null, "a").loggingParametersEquals(allNull));
-        assertFalse(new FeedLoggingParameters(null, "a", null).loggingParametersEquals(allNull));
-        assertFalse(new FeedLoggingParameters("a", null, null).loggingParametersEquals(allNull));
+        assertTrue(
+                new FeedLoggingParameters("", "", false, false).loggingParametersEquals(allNull));
+        assertTrue(
+                allNull.loggingParametersEquals(new FeedLoggingParameters("", "", false, false)));
+        assertFalse(new FeedLoggingParameters(null, null, false, true)
+                            .loggingParametersEquals(allNull));
+        assertFalse(new FeedLoggingParameters(null, null, true, false)
+                            .loggingParametersEquals(allNull));
+        assertFalse(new FeedLoggingParameters(null, "a", false, false)
+                            .loggingParametersEquals(allNull));
+        assertFalse(new FeedLoggingParameters("a", null, false, false)
+                            .loggingParametersEquals(allNull));
 
-        assertTrue(new FeedLoggingParameters("a", "b", "c")
-                           .loggingParametersEquals(new FeedLoggingParameters("a", "b", "c")));
-        assertFalse(new FeedLoggingParameters("a", "b", "c")
-                            .loggingParametersEquals(new FeedLoggingParameters("x", "b", "c")));
-        assertFalse(new FeedLoggingParameters("a", "b", "c")
-                            .loggingParametersEquals(new FeedLoggingParameters("a", "x", "c")));
-        assertFalse(new FeedLoggingParameters("a", "b", "c")
-                            .loggingParametersEquals(new FeedLoggingParameters("a", "x", "x")));
+        assertTrue(
+                new FeedLoggingParameters("a", "b", true, true)
+                        .loggingParametersEquals(new FeedLoggingParameters("a", "b", true, true)));
+        assertFalse(
+                new FeedLoggingParameters("a", "b", true, true)
+                        .loggingParametersEquals(new FeedLoggingParameters("x", "b", true, true)));
+        assertFalse(
+                new FeedLoggingParameters("a", "b", true, true)
+                        .loggingParametersEquals(new FeedLoggingParameters("a", "x", true, true)));
+        assertFalse(
+                new FeedLoggingParameters("a", "b", true, true)
+                        .loggingParametersEquals(new FeedLoggingParameters("a", "b", false, true)));
+        assertFalse(
+                new FeedLoggingParameters("a", "b", true, true)
+                        .loggingParametersEquals(new FeedLoggingParameters("a", "b", true, false)));
     }
 
     @Test
@@ -50,9 +64,10 @@ public final class FeedLoggingParametersTest {
         FeedUiProto.LoggingParameters proto = FeedUiProto.LoggingParameters.newBuilder()
                                                       .setEmail("user@foo.com")
                                                       .setClientInstanceId("cid")
-                                                      .setSessionId("session")
+                                                      .setLoggingEnabled(true)
+                                                      .setViewActionsEnabled(false)
                                                       .build();
         assertTrue(new FeedLoggingParameters(proto).loggingParametersEquals(
-                new FeedLoggingParameters("cid", "user@foo.com", "session")));
+                new FeedLoggingParameters("cid", "user@foo.com", true, false)));
     }
 }

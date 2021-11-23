@@ -23,6 +23,7 @@ import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManager;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.xsurface.ImageFetchClient;
+import org.chromium.chrome.browser.xsurface.LoggingParameters;
 import org.chromium.chrome.browser.xsurface.PersistentKeyValueCache;
 import org.chromium.chrome.browser.xsurface.ProcessScopeDependencyProvider;
 import org.chromium.chrome.browser.xsurface.ProcessScopeDependencyProvider.VisibilityLogType;
@@ -199,6 +200,11 @@ public class FeedProcessScopeDependencyProvider implements ProcessScopeDependenc
     public void processViewAction(byte[] data) {
         FeedProcessScopeDependencyProviderJni.get().processViewAction(data);
     }
+    @Override
+    public void processViewAction(byte[] data, LoggingParameters loggingParameters) {
+        FeedProcessScopeDependencyProviderJni.get().processViewActionWithLoggingParameters(
+                data, FeedLoggingParameters.convertToProto(loggingParameters).toByteArray());
+    }
 
     @Override
     public void reportOnUploadVisibilityLog(@VisibilityLogType int logType, boolean success) {
@@ -232,5 +238,6 @@ public class FeedProcessScopeDependencyProvider implements ProcessScopeDependenc
         int[] getExperimentIds();
         String getSessionId();
         void processViewAction(byte[] data);
+        void processViewActionWithLoggingParameters(byte[] actionData, byte[] loggingParameters);
     }
 }

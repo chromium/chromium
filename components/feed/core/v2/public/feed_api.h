@@ -22,6 +22,7 @@
 
 namespace feedui {
 class StreamUpdate;
+class LoggingParameters;
 }  // namespace feedui
 namespace feedstore {
 class DataOperation;
@@ -139,9 +140,16 @@ class FeedApi {
   // Sends 'ThereAndBackAgainData' back to the server. |data| is a serialized
   // |feedwire::ThereAndBackAgainData| message.
   virtual void ProcessThereAndBackAgain(base::StringPiece data) = 0;
+  virtual void ProcessThereAndBackAgain(
+      base::StringPiece data,
+      const feedui::LoggingParameters& logging_parameters) = 0;
   // Saves a view action for eventual upload. |data| is a serialized
-  //|feedwire::FeedAction| message.
+  //|feedwire::FeedAction| message. `logging_parameters` are the logging
+  // parameters associated with this item, see `feedui::StreamUpdate`.
   virtual void ProcessViewAction(base::StringPiece data) = 0;
+  virtual void ProcessViewAction(
+      base::StringPiece data,
+      const feedui::LoggingParameters& logging_parameters) = 0;
 
   // Returns whether `url` is a suggested Feed URLs, recently
   // navigated to by the user.

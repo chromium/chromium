@@ -227,14 +227,20 @@ std::string TestSurfaceBase::CurrentState() {
   std::string parameter_change_description;
   if (!update->updated_slices().empty()) {
     std::string logging_parameters_description;
-    if (!update->logging_parameters().email().empty()) {
+    if (update->logging_parameters().logging_enabled()) {
+      // View actions will always be enabled if logging is enabled.
+      CHECK(update->logging_parameters().view_actions_enabled());
       logging_parameters_description = update->logging_parameters().email();
+    } else if (!update->logging_parameters().email().empty()) {
+      if (update->logging_parameters().view_actions_enabled()) {
+        logging_parameters_description =
+            "View logging only " + update->logging_parameters().email();
+      } else {
+        logging_parameters_description =
+            "NO logging " + update->logging_parameters().email();
+      }
     }
-    if (!update->logging_parameters().session_id().empty()) {
-      CHECK(logging_parameters_description.empty());
-      logging_parameters_description =
-          update->logging_parameters().session_id();
-    }
+
     if (last_logging_parameters_description_ !=
         logging_parameters_description) {
       last_logging_parameters_description_ = logging_parameters_description;

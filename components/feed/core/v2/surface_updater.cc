@@ -139,16 +139,8 @@ StreamUpdateAndType MakeStreamUpdate(
         model->GetLastAddedTime().ToDeltaSinceWindowsEpoch().InMilliseconds());
   }
 
-  auto& proto_logging_params =
-      *update.stream_update.mutable_logging_parameters();
-  if (!logging_parameters.email.empty()) {
-    proto_logging_params.set_email(logging_parameters.email);
-  }
-  if (!logging_parameters.session_id.empty()) {
-    proto_logging_params.set_session_id(logging_parameters.session_id);
-  }
-  proto_logging_params.set_client_instance_id(
-      logging_parameters.client_instance_id);
+  ToProto(logging_parameters,
+          *update.stream_update.mutable_logging_parameters());
 
   return update;
 }

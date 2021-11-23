@@ -333,12 +333,12 @@ LoggingParameters FeedStream::GetLoggingParameters(
     const StreamType& stream_type) {
   LoggingParameters logging_params;
   logging_params.client_instance_id = GetClientInstanceId();
-  if (IsActivityLoggingEnabled(stream_type)) {
-    logging_params.email = delegate_->GetSyncSignedInEmail();
-    if (logging_params.email.empty()) {
-      logging_params.session_id = GetSessionId();
-    }
-  }
+  logging_params.logging_enabled = IsActivityLoggingEnabled(stream_type);
+  logging_params.view_actions_enabled = CanLogViews();
+  // We provide account name even if logging is disabled, so that account name
+  // can be verified for action uploads.
+  logging_params.email = delegate_->GetSyncSignedInEmail();
+
   return logging_params;
 }
 
@@ -657,6 +657,14 @@ void FeedStream::ProcessThereAndBackAgain(base::StringPiece data) {
   }
 }
 
+void FeedStream::ProcessThereAndBackAgain(
+    base::StringPiece data,
+    const feedui::LoggingParameters& logging_parameters) {
+  // TODO(crbug.com/1268575): Thread logging parameters to UploadActionTask when
+  // it's always available.
+  ProcessThereAndBackAgain(data);
+}
+
 void FeedStream::ProcessViewAction(base::StringPiece data) {
   if (!CanLogViews()) {
     return;
@@ -667,6 +675,14 @@ void FeedStream::ProcessViewAction(base::StringPiece data) {
   UploadAction(std::move(msg), /*upload_now=*/false,
                base::BindOnce(&FeedStream::UploadActionsComplete,
                               base::Unretained(this)));
+}
+
+void FeedStream::ProcessViewAction(
+    base::StringPiece data,
+    const feedui::LoggingParameters& logging_parameters) {
+  // TODO(crbug.com/1268575): Thread logging parameters to UploadActionTask when
+  // it's always available.
+  ProcessViewAction(data);
 }
 
 void FeedStream::UploadActionsComplete(UploadActionsTask::Result result) {

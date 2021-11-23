@@ -19,6 +19,9 @@
 #include "components/feed/core/v2/public/common_enums.h"
 #include "components/feed/core/v2/public/types.h"
 
+namespace feedui {
+class LoggingParameters;
+}
 namespace feed {
 
 // Make sure public types are included here too.
@@ -147,16 +150,21 @@ struct LaunchResult {
 };
 
 struct LoggingParameters {
-  // User ID. Either `email` or `session_id`. If both are empty, activity
-  // logging is not  enabled.
+  // User ID, if the user is signed-in.
   std::string email;
-  std::string session_id;
-
   // A unique ID for this client. Used for reliability logging.
   std::string client_instance_id;
+  // Whether attention / interaction logging is enabled.
+  bool logging_enabled = false;
+  // Whether view actions may be recorded.
+  bool view_actions_enabled = false;
 
   bool operator==(const LoggingParameters& rhs) const;
 };
+
+LoggingParameters FromProto(const feedui::LoggingParameters& proto);
+void ToProto(const LoggingParameters& logging_parameters,
+             feedui::LoggingParameters& proto);
 
 }  // namespace feed
 

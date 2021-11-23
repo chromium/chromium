@@ -9,6 +9,7 @@
 #include "chrome/browser/feed/android/jni_headers/FeedProcessScopeDependencyProvider_jni.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "components/feed/core/proto/v2/ui.pb.h"
 #include "components/feed/core/v2/public/feed_api.h"
 #include "components/feed/core/v2/public/feed_service.h"
 #include "components/feed/core/v2/public/feed_stream_surface.h"
@@ -34,6 +35,28 @@ static void JNI_FeedProcessScopeDependencyProvider_ProcessViewAction(
   std::string data_string;
   base::android::JavaByteArrayToString(env, data, &data_string);
   feed_stream_api->ProcessViewAction(data_string);
+}
+
+static void
+JNI_FeedProcessScopeDependencyProvider_ProcessViewActionWithLoggingParameters(
+    JNIEnv* env,
+    const base::android::JavaParamRef<jbyteArray>& action_data,
+    const base::android::JavaParamRef<jbyteArray>& logging_parameters) {
+  FeedApi* feed_stream_api = GetFeedApi();
+  if (!feed_stream_api)
+    return;
+  std::string action_data_string;
+  base::android::JavaByteArrayToString(env, action_data, &action_data_string);
+  std::string logging_parameters_string;
+  base::android::JavaByteArrayToString(env, logging_parameters,
+                                       &logging_parameters_string);
+  feedui::LoggingParameters logging_parameters_value;
+  if (!logging_parameters_value.ParseFromString(logging_parameters_string)) {
+    DLOG(ERROR) << "Error parsing logging parameters";
+    return;
+  }
+  feed_stream_api->ProcessViewAction(action_data_string,
+                                     logging_parameters_value);
 }
 
 static base::android::ScopedJavaLocalRef<jstring>

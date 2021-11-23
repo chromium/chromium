@@ -64,7 +64,13 @@ class StubFeedApi : public FeedApi {
   bool RejectEphemeralChange(const StreamType& stream_type,
                              EphemeralChangeId id) override;
   void ProcessThereAndBackAgain(base::StringPiece data) override {}
+  void ProcessThereAndBackAgain(
+      base::StringPiece data,
+      const feedui::LoggingParameters& logging_parameters) override {}
   void ProcessViewAction(base::StringPiece data) override {}
+  void ProcessViewAction(
+      base::StringPiece data,
+      const feedui::LoggingParameters& logging_parameters) override {}
   bool WasUrlRecentlyNavigatedFromFeed(const GURL& url) override;
   void ReportSliceViewed(SurfaceId surface_id,
                          const StreamType& stream_type,

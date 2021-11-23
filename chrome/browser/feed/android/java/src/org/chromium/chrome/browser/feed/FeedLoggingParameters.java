@@ -13,21 +13,34 @@ import org.chromium.components.feed.proto.FeedUiProto;
  */
 class FeedLoggingParameters implements LoggingParameters {
     private final String mClientInstanceId;
-    private final String mSignedOutSessionId;
     private final String mAccountName;
+    private final boolean mLoggingEnabled;
+    private final boolean mViewActionsEnabled;
 
     /**
      * Creates logging parameters. Creation of this implies that logging is enabled.
      */
-    public FeedLoggingParameters(
-            String clientInstanceId, String accountName, String signedOutSessionId) {
+    public FeedLoggingParameters(String clientInstanceId, String accountName,
+            boolean loggingEnabled, boolean viewActionsEnabled) {
         mClientInstanceId = clientInstanceId;
-        mSignedOutSessionId = signedOutSessionId;
         mAccountName = accountName;
+        mLoggingEnabled = loggingEnabled;
+        mViewActionsEnabled = viewActionsEnabled;
     }
 
     public FeedLoggingParameters(FeedUiProto.LoggingParameters proto) {
-        this(proto.getClientInstanceId(), proto.getEmail(), proto.getSessionId());
+        this(proto.getClientInstanceId(), proto.getEmail(), proto.getLoggingEnabled(),
+                proto.getViewActionsEnabled());
+    }
+
+    public static FeedUiProto.LoggingParameters convertToProto(
+            LoggingParameters loggingParameters) {
+        return FeedUiProto.LoggingParameters.newBuilder()
+                .setEmail(loggingParameters.accountName())
+                .setClientInstanceId(loggingParameters.clientInstanceId())
+                .setLoggingEnabled(loggingParameters.loggingEnabled())
+                .setViewActionsEnabled(loggingParameters.viewActionsEnabled())
+                .build();
     }
 
     @Override
@@ -39,18 +52,23 @@ class FeedLoggingParameters implements LoggingParameters {
         return mClientInstanceId;
     }
     @Override
-    public String signedOutSessionId() {
-        return mSignedOutSessionId;
-    }
-    @Override
     public boolean loggingParametersEquals(LoggingParameters otherObject) {
         if (otherObject == null) {
             return false;
         }
         FeedLoggingParameters rhs = (FeedLoggingParameters) otherObject;
-        return nullableStringEqual(mAccountName, rhs.mAccountName)
-                && nullableStringEqual(mClientInstanceId, rhs.mClientInstanceId)
-                && nullableStringEqual(mSignedOutSessionId, rhs.mSignedOutSessionId);
+        return mLoggingEnabled == rhs.mLoggingEnabled
+                && mViewActionsEnabled == rhs.mViewActionsEnabled
+                && nullableStringEqual(mAccountName, rhs.mAccountName)
+                && nullableStringEqual(mClientInstanceId, rhs.mClientInstanceId);
+    }
+    @Override
+    public boolean loggingEnabled() {
+        return mLoggingEnabled;
+    }
+    @Override
+    public boolean viewActionsEnabled() {
+        return mViewActionsEnabled;
     }
     static boolean nullableStringEqual(@Nullable String a, @Nullable String b) {
         return (a == null ? "" : a).equals(b == null ? "" : b);

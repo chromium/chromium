@@ -197,7 +197,8 @@ TEST_F(FeedApiTest, SurfaceReceivesUpdatedContent) {
   const feedui::StreamUpdate& initial_state = surface.initial_state.value();
   const feedui::StreamUpdate& update = surface.update.value();
 
-  ASSERT_EQ("2 slices -> 2 slices", surface.DescribeUpdates());
+  ASSERT_EQ("[View logging only user@foo] 2 slices -> 2 slices",
+            surface.DescribeUpdates());
   // First slice is just an ID that matches the old 1st slice ID.
   EXPECT_EQ(initial_state.updated_slices(0).slice().slice_id(),
             update.updated_slices(0).slice_id());
@@ -232,7 +233,8 @@ TEST_F(FeedApiTest, SurfaceReceivesSecondUpdatedContent) {
 
   // The last update should have only one new piece of content.
   // This verifies the current content set is tracked properly.
-  ASSERT_EQ("2 slices -> 3 slices -> 4 slices", surface.DescribeUpdates());
+  ASSERT_EQ("[View logging only user@foo] 2 slices -> 3 slices -> 4 slices",
+            surface.DescribeUpdates());
 
   ASSERT_EQ(4, surface.update->updated_slices().size());
   EXPECT_FALSE(surface.update->updated_slices(0).has_slice());
@@ -785,7 +787,10 @@ TEST_F(FeedApiTest, ForceSignedOutRequestAfterHistoryIsDeleted) {
                   .empty());
 
   // Validate the downstream consumption of the response.
-  EXPECT_EQ("loading -> 2 slices", surface.DescribeUpdates());
+  // TODO(crbug.com/1268575): We should disable view logging for the signed-out
+  // feed even if the user is signed-in.
+  EXPECT_EQ("loading -> [View logging only user@foo] 2 slices",
+            surface.DescribeUpdates());
   EXPECT_EQ(kSessionId, stream_->GetMetadata().session_id().token());
   EXPECT_FALSE(stream_->GetModel(surface.GetStreamType())->signed_in());
 
@@ -1467,7 +1472,7 @@ TEST_F(FeedApiTest, ClearAllWhileLoadingMoreDoesNotLoadMore) {
   EXPECT_EQ(false, cr.GetResult());
   EXPECT_EQ(
       "loading -> [user@foo] 2 slices -> 2 slices +spinner -> 2 slices -> "
-      "loading -> [NO Logging] 2 slices",
+      "loading -> [NO logging user@foo] 2 slices",
       surface.DescribeUpdates());
 }
 
