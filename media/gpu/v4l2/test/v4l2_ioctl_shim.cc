@@ -21,8 +21,9 @@ namespace v4l2_test {
 
 constexpr int kIoctlOk = 0;
 
+// TODO(stevecho): this might need to be changed for other platforms.
 static const base::FilePath kDecodeDevice("/dev/video-dec0");
-static const base::FilePath kMediaDevice("/dev/media0");
+static const base::FilePath kMediaDevice("/dev/media-dec0");
 
 #define V4L2_REQUEST_CODE_AND_STRING(x) \
   { x, #x }
