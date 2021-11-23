@@ -14,6 +14,7 @@
 #include "base/values.h"
 #include "chrome/browser/ash/arc/extensions/arc_support_message_host.h"
 #include "chrome/browser/profiles/profile.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
 
@@ -192,20 +193,26 @@ void FakeArcSupport::PostMessageFromNativeHost(
   } else if (action == "showErrorPage") {
     ui_page_ = ArcSupportHost::UIPage::ERROR;
   } else if (action == "setMetricsMode") {
-    if (!message->GetBoolean("enabled", &metrics_mode_)) {
+    absl::optional<bool> opt = message->FindBoolKey("enabled");
+    if (!opt) {
       NOTREACHED() << message_string;
       return;
     }
+    metrics_mode_ = opt.value();
   } else if (action == "setBackupAndRestoreMode") {
-    if (!message->GetBoolean("enabled", &backup_and_restore_mode_)) {
+    absl::optional<bool> opt = message->FindBoolKey("enabled");
+    if (!opt) {
       NOTREACHED() << message_string;
       return;
     }
+    backup_and_restore_mode_ = opt.value();
   } else if (action == "setLocationServiceMode") {
-    if (!message->GetBoolean("enabled", &location_service_mode_)) {
+    absl::optional<bool> opt = message->FindBoolKey("enabled");
+    if (!opt) {
       NOTREACHED() << message_string;
       return;
     }
+    location_service_mode_ = opt.value();
   } else if (action == "closeWindow") {
     // Do nothing as emulation.
   } else if (action == "setWindowBounds") {
