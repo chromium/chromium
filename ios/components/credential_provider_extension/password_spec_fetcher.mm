@@ -58,6 +58,10 @@ const NSTimeInterval kPasswordSpecTimeout = 10;
 - (instancetype)initWithHost:(NSString*)host APIKey:(NSString*)APIKey {
   self = [super init];
   if (self) {
+    // Replace a nil host with the empty string.
+    if (!host) {
+      host = @"";
+    }
     _host = [host stringByAddingPercentEncodingWithAllowedCharacters:
                       NSCharacterSet.URLQueryAllowedCharacterSet];
     _APIKey = APIKey;
