@@ -7,7 +7,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "components/permissions/chooser_title_util.h"
 #include "content/public/browser/render_frame_host.h"
-#include "content/public/browser/web_contents.h"
 #include "extensions/buildflags/buildflags.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "url/origin.h"
@@ -27,10 +26,8 @@ std::u16string CreateExtensionAwareChooserTitle(
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   url::Origin origin = render_frame_host->GetLastCommittedOrigin();
   if (origin.scheme() == extensions::kExtensionScheme) {
-    content::WebContents* web_contents =
-        content::WebContents::FromRenderFrameHost(render_frame_host);
     content::BrowserContext* browser_context =
-        web_contents->GetBrowserContext();
+        render_frame_host->GetBrowserContext();
     extensions::ExtensionRegistry* extension_registry =
         extensions::ExtensionRegistry::Get(browser_context);
     if (extension_registry) {
