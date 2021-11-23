@@ -28,7 +28,6 @@ class BASE_EXPORT MovingAverage {
   MovingAverage& operator=(const MovingAverage&) = delete;
 
   // Adds new sample. If the window is full, the oldest element is pushed out.
-  // Returns false if `sample` causes an overflow.
   void AddSample(int sample);
 
   // Returns rounded down average of last `window_size` elements or all
