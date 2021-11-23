@@ -68,11 +68,7 @@ source_set("remote_open_url_main_headers") {
 }
 
 source_set("main") {
-  defines = [ "HOST_IMPLEMENTATION" ]
-
-  if (is_win) {
-    defines += host_predefines
-  }
+  configs += [ "//remoting/build/config:host_implementation" ]
 
   sources = [ "remote_open_url_main.cc" ]
   deps = [
@@ -131,7 +127,10 @@ source_set("unit_tests") {
 if (enable_me2me_host && (is_linux || is_win)) {
   executable("remote_open_url") {
     sources = [ "remote_open_url_entry_point.cc" ]
-    deps = [ ":remote_open_url_main_headers" ]
+    deps = [
+      ":remote_open_url_main_headers",
+      "//remoting/host:remoting_core",
+    ]
     configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
     if (is_win) {
@@ -142,11 +141,8 @@ if (enable_me2me_host && (is_linux || is_win)) {
 
       deps += [
         "//build/win:default_exe_manifest",
-        "//remoting/host/win:remoting_core",
         "//remoting/host/win:remoting_windows_resources",
       ]
-    } else {
-      deps += [ ":main" ]
     }
   }
 }

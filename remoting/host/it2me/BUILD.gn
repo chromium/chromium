@@ -172,11 +172,54 @@ if (is_chromeos_ash || is_chromeos_lacros) {
 }
 
 if (!is_chromeos_ash && enable_remoting_host) {
+  source_set("main_headers") {
+    sources = [ "it2me_native_messaging_host_main.h" ]
+    deps = [ "//remoting/host:host_main_headers" ]
+  }
+
+  source_set("main") {
+    configs += [
+      "//build/config/compiler:wexit_time_destructors",
+      "//remoting/build/config:host_implementation",
+      "//remoting/build/config:version",
+    ]
+    sources = [ "it2me_native_messaging_host_main.cc" ]
+    deps = [
+      ":common",
+      ":main_headers",
+      "//mojo/core/embedder",
+      "//net",
+      "//remoting/base",
+      "//remoting/base:breakpad",
+      "//remoting/host",
+      "//remoting/host:base",
+      "//remoting/host:logging",
+      "//remoting/host:resources",
+      "//remoting/host:settings",
+      "//remoting/host/native_messaging",
+      "//remoting/proto",
+      "//third_party/webrtc_overrides:webrtc_component",
+      "//ui/gfx",
+    ]
+
+    if (is_linux && !is_chromeos_lacros) {
+      deps += [
+        "//build/config/linux/gtk",
+        "//ui/events/platform/x11",
+      ]
+    }
+
+    if (is_mac) {
+      deps += [ "//remoting/host/mac:permission_checking" ]
+    }
+  }
+
   if (is_win) {
     executable("remote_assistance_host") {
       configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
       deps = [
+        ":main_headers",
         "//base/allocator",
         "//remoting/host/win:dpi_aware_exe_manifest",
         "//remoting/host/win:remoting_core",
@@ -202,6 +245,7 @@ if (!is_chromeos_ash && enable_remoting_host) {
       configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
       deps = [
+        ":main_headers",
         "//base/allocator",
         "//remoting/host/win:remoting_core",
         "//remoting/host/win:remoting_windows_resources",
@@ -285,22 +329,15 @@ if (!is_chromeos_ash && enable_remoting_host) {
         ]
       }
 
-      sources = [
-        "it2me_native_messaging_host_entry_point.cc",
-        "it2me_native_messaging_host_main.cc",
-        "it2me_native_messaging_host_main.h",
-      ]
+      sources = [ "it2me_native_messaging_host_entry_point.cc" ]
 
-      deps = [
-        ":common",
-        "//remoting/host",
-        "//remoting/host:host_main_headers",
-        "//remoting/host:resources",
-        "//remoting/host/native_messaging",
-        "//remoting/proto",
-        "//third_party/webrtc_overrides:webrtc_component",
-        "//ui/gfx",
-      ]
+      deps = [ ":main_headers" ]
+      if (is_mac) {
+        deps += [ ":main" ]
+      } else {
+        deps += [ "//remoting/host:remoting_core" ]
+      }
+
       if (is_mac) {
         foreach(locale, remoting_locales_with_underscores) {
           deps += [
@@ -310,33 +347,12 @@ if (!is_chromeos_ash && enable_remoting_host) {
         }
         deps += [
           ":remote_assistance_host_icons",
-          "//mojo/core/embedder:embedder",
-          "//net:net",
-          "//remoting/base:base",
-          "//remoting/base:breakpad",
-          "//remoting/host:base",
-          "//remoting/host:logging",
           "//remoting/host:remoting_infoplist_strings",
-          "//remoting/host:settings",
-          "//remoting/host/mac:permission_checking",
           "//remoting/resources:copy_locales",
         ]
         if (icu_use_data_file) {
           deps += [ ":remote_assistance_host_resources" ]
         }
-      }
-
-      if (is_linux && !is_chromeos_lacros) {
-        deps += [
-          "//build/config/linux/gtk",
-          "//mojo/core/embedder:embedder",
-          "//net:net",
-          "//remoting/base:base",
-          "//remoting/base:breakpad",
-          "//remoting/host:base",
-          "//remoting/host:settings",
-          "//ui/events/platform/x11:x11",
-        ]
       }
     }
   }

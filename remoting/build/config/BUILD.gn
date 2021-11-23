@@ -6,6 +6,11 @@ import("//build/config/features.gni")
 import("//build/util/version.gni")
 import("//remoting/remoting_options.gni")
 
+if (is_win) {
+  import("//remoting/host/installer/win/generate_clsids.gni")
+  import("//remoting/host/predefines_win.gni")
+}
+
 # TODO(nicholss): Move this and other defines to version.h.in.
 # Various remoting targets need this version definition.
 config("version") {
@@ -32,5 +37,37 @@ config("remoting_me2me_host") {
 
   if (remoting_multi_process != 0) {
     defines += [ "REMOTING_MULTI_PROCESS" ]
+  }
+}
+
+config("host_implementation") {
+  defines = []
+  if (is_win || is_linux) {
+    defines += [ "HOST_IMPLEMENTATION" ]
+  }
+  if (is_win) {
+    defines += host_predefines
+    defines += [
+      "_ATL_APARTMENT_THREADED",
+      "_ATL_CSTRING_EXPLICIT_CONSTRUCTORS",
+      "_ATL_NO_AUTOMATIC_NAMESPACE",
+      "_ATL_NO_EXCEPTIONS",
+      "REMOTING_HOST_BINARY=BINARY_CORE",
+      "RDP_DESKTOP_SESSION_CLSID=\"$rdp_desktop_session_clsid\"",
+      "HOST_IMPLEMENTATION",
+      "ISOLATION_AWARE_ENABLED=1",
+      "STRICT",
+    ]
+    if (is_chrome_branded && is_official_build) {
+      defines += [ "REMOTING_ENABLE_BREAKPAD" ]
+    }
+
+    if (remoting_multi_process != 0 && remoting_rdp_session != 0) {
+      defines += [ "REMOTING_RDP_SESSION" ]
+    }
+
+    if (remoting_multi_process != 0) {
+      defines += [ "REMOTING_MULTI_PROCESS" ]
+    }
   }
 }

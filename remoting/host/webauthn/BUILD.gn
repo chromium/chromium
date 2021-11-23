@@ -31,11 +31,7 @@ source_set("remote_webauthn_main_headers") {
 }
 
 source_set("main") {
-  defines = [ "HOST_IMPLEMENTATION" ]
-
-  if (is_win) {
-    defines += host_predefines
-  }
+  configs += [ "//remoting/build/config:host_implementation" ]
 
   sources = [ "remote_webauthn_main.cc" ]
   deps = [
@@ -53,6 +49,12 @@ executable("remote_webauthn") {
 
   deps = [ ":remote_webauthn_main_headers" ]
 
+  if (is_win || is_linux) {
+    deps += [ "//remoting/host:remoting_core" ]
+  } else {
+    deps += [ ":main" ]
+  }
+
   if (is_win) {
     sources += [ "$root_gen_dir/remoting/version.rc" ]
 
@@ -61,10 +63,7 @@ executable("remote_webauthn") {
 
     deps += [
       "//build/win:default_exe_manifest",
-      "//remoting/host/win:remoting_core",
       "//remoting/host/win:remoting_windows_resources",
     ]
-  } else {
-    deps += [ ":main" ]
   }
 }

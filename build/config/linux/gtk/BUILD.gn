@@ -43,7 +43,7 @@ group("gtk") {
     "//remoting/host:remoting_me2me_host_static",
     "//remoting/host/file_transfer",
     "//remoting/host/it2me:common",
-    "//remoting/host/it2me:remote_assistance_host",
+    "//remoting/host/it2me:main",
     "//remoting/host/linux",
     "//remoting/host/remote_open_url:common",
     "//remoting/test:it2me_standalone_host_main",
