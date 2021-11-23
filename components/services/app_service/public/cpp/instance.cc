@@ -10,28 +10,12 @@
 namespace apps {
 
 // static
-Instance::InstanceKey Instance::InstanceKey::ForWebBasedApp(
-    aura::Window* window) {
-  return InstanceKey(window,
-                     /*is_web_contents_backed=*/true);
-}
-
-// static
 Instance::InstanceKey Instance::InstanceKey::ForWindowBasedApp(
     aura::Window* window) {
-  return InstanceKey(window,
-                     /*is_web_contents_backed=*/false);
+  return InstanceKey(window);
 }
 
-Instance::InstanceKey::InstanceKey(aura::Window* window,
-                                   bool is_web_contents_backed)
-    : window_(window), is_web_contents_backed_(is_web_contents_backed) {}
-
-aura::Window* Instance::InstanceKey::GetEnclosingAppWindow() const {
-  if (is_web_contents_backed_)
-    return window_->GetToplevelWindow();
-  return window_;
-}
+Instance::InstanceKey::InstanceKey(aura::Window* window) : window_(window) {}
 
 bool Instance::InstanceKey::operator<(const InstanceKey& other) const {
   return window_ < other.window_;
@@ -63,7 +47,10 @@ Instance::Instance(const std::string& app_id, InstanceKey&& instance_key)
 Instance::Instance(const std::string& app_id,
                    const base::UnguessableToken& instance_id,
                    aura::Window* window)
-    : app_id_(app_id), instance_id_(instance_id), window_(window) {}
+    : app_id_(app_id),
+      instance_id_(instance_id),
+      window_(window),
+      instance_key_(window) {}
 
 Instance::~Instance() = default;
 
@@ -94,9 +81,7 @@ void Instance::SetWindow(aura::Window* window) {
 
 std::ostream& operator<<(std::ostream& os,
                          const apps::Instance::InstanceKey& instance_key) {
-  return os << "InstanceKey {window: " << instance_key.window_
-            << ", is_web_contents_backed: "
-            << instance_key.is_web_contents_backed_ << "}";
+  return os << "InstanceKey {window: " << instance_key.window_ << "}";
 }
 
 size_t InstanceKeyHash::operator()(

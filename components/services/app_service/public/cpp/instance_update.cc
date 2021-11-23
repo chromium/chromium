@@ -61,15 +61,11 @@ bool InstanceUpdate::Equals(const Instance* state, const Instance* delta) {
     return false;
   }
 
-  // TODO(crbug.com/1251501): Remove GetInstanceKey.
   if ((delta->AppId() != state->AppId()) ||
-      delta->InstanceId() != state->InstanceId() ||
-      delta->GetInstanceKey() != state->GetInstanceKey()) {
+      delta->InstanceId() != state->InstanceId()) {
     LOG(ERROR) << "inconsistent (app_id, instance_id, instance_key): ("
-               << delta->AppId() << ", " << delta->InstanceId() << ", "
-               << delta->GetInstanceKey() << ") vs (" << state->AppId() << ", "
-               << state->InstanceId() << ", " << state->GetInstanceKey()
-               << ") ";
+               << delta->AppId() << ", " << delta->InstanceId() << ") vs ("
+               << state->AppId() << ", " << state->InstanceId() << ") ";
     DCHECK(false);
     return false;
   }

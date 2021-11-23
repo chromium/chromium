@@ -90,10 +90,6 @@ class InstanceRegistry {
   // The caller presumably calls OnInstance(std::move(delta)).
   void OnInstance(InstancePtr delta);
 
-  // Return enclosing app windows for the |app_id|. If the app is in a browser
-  // tab, the window returned will be the window of the browser.
-  std::set<aura::Window*> GetEnclosingAppWindows(const std::string& app_id);
-
   // Return instance keys for the |app_id|.
   std::set<const Instance::InstanceKey> GetInstanceKeys(
       const std::string& app_id);

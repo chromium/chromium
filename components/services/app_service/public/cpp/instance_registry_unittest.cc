@@ -37,14 +37,8 @@ class InstanceRegistryTest : public testing::Test,
     return instance;
   }
 
-  static apps::Instance::InstanceKey MakeInstanceKeyNonWebApp(
-      aura::Window* window) {
-    return apps::Instance::InstanceKey::ForWindowBasedApp(window);
-  }
-
-  static apps::Instance::InstanceKey MakeInstanceKeyWebApp(
-      aura::Window* window) {
-    return apps::Instance::InstanceKey::ForWebBasedApp(window);
+  static apps::Instance::InstanceKey MakeInstanceKey(aura::Window* window) {
+    return apps::Instance::InstanceKey(window);
   }
 
   void CallForEachInstance(apps::InstanceRegistry& instance_registry) {
@@ -68,8 +62,7 @@ class InstanceRegistryTest : public testing::Test,
       num_running_apps_++;
     }
     updated_ids_.insert(update.AppId());
-    updated_enclosing_windows_.insert(
-        update.InstanceKey().GetEnclosingAppWindow());
+    updated_enclosing_windows_.insert(update.InstanceKey().Window());
   }
 
   void OnInstanceRegistryWillBeDestroyed(
@@ -197,12 +190,6 @@ TEST_F(InstanceRegistryTest, ForEachInstance) {
   instance_registry.OnInstance(MakeInstanceWithWindow("a", &window1));
   instance_registry.OnInstance(MakeInstanceWithWindow("b", &window2));
   instance_registry.OnInstance(MakeInstanceWithWindow("c", &window3));
-  EXPECT_TRUE(instance_registry.GetEnclosingAppWindows("a") ==
-              std::set<aura::Window*>{&window1});
-  EXPECT_TRUE(instance_registry.GetEnclosingAppWindows("b") ==
-              std::set<aura::Window*>{&window2});
-  EXPECT_TRUE(instance_registry.GetEnclosingAppWindows("c") ==
-              std::set<aura::Window*>{&window3});
 
   updated_enclosing_windows_.clear();
   updated_ids_.clear();
@@ -225,10 +212,6 @@ TEST_F(InstanceRegistryTest, ForEachInstance) {
   instance_registry.OnInstance(
       MakeInstanceWithWindow("a", &window1, apps::InstanceState::kRunning));
   instance_registry.OnInstance(MakeInstanceWithWindow("c", &window4));
-  EXPECT_TRUE(instance_registry.GetEnclosingAppWindows("a") ==
-              std::set<aura::Window*>{&window1});
-  EXPECT_TRUE(instance_registry.GetEnclosingAppWindows("c") ==
-              (std::set<aura::Window*>{&window3, &window4}));
 
   updated_enclosing_windows_.clear();
   updated_ids_.clear();
@@ -252,7 +235,7 @@ TEST_F(InstanceRegistryTest, ForEachInstance) {
 
   bool found_window4 = false;
   EXPECT_TRUE(instance_registry.ForOneInstance(
-      MakeInstanceKeyNonWebApp(&window4),
+      MakeInstanceKey(&window4),
       [&found_window4](const apps::InstanceUpdate& update) {
         found_window4 = true;
         EXPECT_EQ("c", update.AppId());
@@ -263,7 +246,7 @@ TEST_F(InstanceRegistryTest, ForEachInstance) {
   aura::Window window5(nullptr);
   window5.Init(ui::LAYER_NOT_DRAWN);
   EXPECT_FALSE(instance_registry.ForOneInstance(
-      MakeInstanceKeyNonWebApp(&window5),
+      MakeInstanceKey(&window5),
       [&found_window5](const apps::InstanceUpdate& update) {
         found_window5 = true;
       }));
@@ -363,8 +346,6 @@ TEST_F(InstanceRegistryTest, WholeProcessForOneWindow) {
   instance_registry.OnInstance(
       MakeInstanceWithWindow("p", &window, instance_state));
   EXPECT_EQ(1, observer.NumInstancesSeenOnInstanceUpdate());
-  EXPECT_TRUE(instance_registry.GetEnclosingAppWindows("p") ==
-              std::set<aura::Window*>{&window});
 
   apps::InstanceState state1 = static_cast<apps::InstanceState>(
       apps::InstanceState::kStarted | apps::InstanceState::kRunning);
@@ -397,7 +378,7 @@ TEST_F(InstanceRegistryTest, WholeProcessForOneWindow) {
 
   bool found_window = false;
   EXPECT_FALSE(instance_registry.ForOneInstance(
-      MakeInstanceKeyNonWebApp(&window),
+      MakeInstanceKey(&window),
       [&found_window](const apps::InstanceUpdate& update) {
         found_window = true;
       }));
@@ -406,12 +387,10 @@ TEST_F(InstanceRegistryTest, WholeProcessForOneWindow) {
   observer.PrepareForOnInstances(1);
   instance_registry.OnInstance(MakeInstanceWithWindow("p", &window, state5));
   EXPECT_EQ(1, observer.NumInstancesSeenOnInstanceUpdate());
-  EXPECT_TRUE(instance_registry.GetEnclosingAppWindows("p") ==
-              std::set<aura::Window*>{&window});
 
   found_window = false;
   EXPECT_TRUE(instance_registry.ForOneInstance(
-      MakeInstanceKeyNonWebApp(&window),
+      MakeInstanceKey(&window),
       [&found_window](const apps::InstanceUpdate& update) {
         found_window = true;
       }));
@@ -436,10 +415,6 @@ TEST_F(InstanceRegistryTest, Recursive) {
   instance_registry.OnInstance(
       MakeInstanceWithWindow("p", &window2, instance_state2));
   EXPECT_EQ(2, observer.NumInstancesSeenOnInstanceUpdate());
-  EXPECT_TRUE(instance_registry.GetEnclosingAppWindows("o") ==
-              std::set<aura::Window*>{&window1});
-  EXPECT_TRUE(instance_registry.GetEnclosingAppWindows("p") ==
-              std::set<aura::Window*>{&window2});
 
   apps::InstanceState instance_state3 = static_cast<apps::InstanceState>(
       apps::InstanceState::kStarted | apps::InstanceState::kRunning);
@@ -460,10 +435,6 @@ TEST_F(InstanceRegistryTest, Recursive) {
   instance_registry.OnInstance(
       MakeInstanceWithWindow("p", &window4, instance_state3));
   EXPECT_EQ(2, observer.NumInstancesSeenOnInstanceUpdate());
-  EXPECT_TRUE(instance_registry.GetEnclosingAppWindows("p") ==
-              (std::set<aura::Window*>{&window2, &window4}));
-  EXPECT_TRUE(instance_registry.GetEnclosingAppWindows("q") ==
-              std::set<aura::Window*>{&window3});
 
   apps::InstanceState instance_state5 = static_cast<apps::InstanceState>(
       apps::InstanceState::kStarted | apps::InstanceState::kRunning);
@@ -481,8 +452,6 @@ TEST_F(InstanceRegistryTest, Recursive) {
   instance_registry.OnInstance(
       MakeInstanceWithWindow("p", &window2, instance_state7));
   EXPECT_EQ(1, observer.NumInstancesSeenOnInstanceUpdate());
-  EXPECT_TRUE(instance_registry.GetEnclosingAppWindows("p") ==
-              (std::set<aura::Window*>{&window2, &window4}));
 
   apps::InstanceState instance_state8 =
       static_cast<apps::InstanceState>(apps::InstanceState::kDestroyed);
@@ -502,7 +471,7 @@ TEST_F(InstanceRegistryTest, Recursive) {
 
   bool found_window = false;
   EXPECT_FALSE(instance_registry.ForOneInstance(
-      MakeInstanceKeyNonWebApp(&window2),
+      MakeInstanceKey(&window2),
       [&found_window](const apps::InstanceUpdate& update) {
         found_window = true;
       }));
@@ -510,7 +479,7 @@ TEST_F(InstanceRegistryTest, Recursive) {
 
   found_window = false;
   EXPECT_FALSE(instance_registry.ForOneInstance(
-      MakeInstanceKeyNonWebApp(&window4),
+      MakeInstanceKey(&window4),
       [&found_window](const apps::InstanceUpdate& update) {
         found_window = true;
       }));
@@ -518,7 +487,7 @@ TEST_F(InstanceRegistryTest, Recursive) {
 
   found_window = false;
   EXPECT_FALSE(instance_registry.ForOneInstance(
-      MakeInstanceKeyNonWebApp(&window3),
+      MakeInstanceKey(&window3),
       [&found_window](const apps::InstanceUpdate& update) {
         found_window = true;
       }));
@@ -526,7 +495,7 @@ TEST_F(InstanceRegistryTest, Recursive) {
 
   found_window = false;
   EXPECT_FALSE(instance_registry.ForOneInstance(
-      MakeInstanceKeyNonWebApp(&window1),
+      MakeInstanceKey(&window1),
       [&found_window](const apps::InstanceUpdate& update) {
         found_window = true;
       }));
@@ -536,12 +505,10 @@ TEST_F(InstanceRegistryTest, Recursive) {
   instance_registry.OnInstance(
       MakeInstanceWithWindow("p", &window2, instance_state7));
   EXPECT_EQ(1, observer.NumInstancesSeenOnInstanceUpdate());
-  EXPECT_TRUE(instance_registry.GetEnclosingAppWindows("p") ==
-              std::set<aura::Window*>{&window2});
 
   found_window = false;
   EXPECT_TRUE(instance_registry.ForOneInstance(
-      MakeInstanceKeyNonWebApp(&window2),
+      MakeInstanceKey(&window2),
       [&found_window](const apps::InstanceUpdate& update) {
         found_window = true;
       }));
@@ -608,12 +575,6 @@ TEST_F(InstanceRegistryTest, SuperRecursive) {
   instance_registry.OnInstance(
       MakeInstanceWithWindow("c", &window4, apps::InstanceState::kActive));
   EXPECT_EQ(8, observer.NumInstancesSeenOnInstanceUpdate());
-  EXPECT_TRUE(instance_registry.GetEnclosingAppWindows("a") ==
-              (std::set<aura::Window*>{&window1, &window2}));
-  EXPECT_TRUE(instance_registry.GetEnclosingAppWindows("b") ==
-              (std::set<aura::Window*>{&window3, &window5}));
-  EXPECT_TRUE(instance_registry.GetEnclosingAppWindows("c") ==
-              std::set<aura::Window*>{&window4});
 
   // After all of that, check that for each window, the last delta won.
   EXPECT_EQ(apps::InstanceState::kStarted,
@@ -644,20 +605,19 @@ TEST_F(InstanceRegistryTest, GetInstanceKeys) {
 
   EXPECT_TRUE(instance_registry.GetInstanceKeys("a") ==
               (std::set<const apps::Instance::InstanceKey>{
-                  MakeInstanceKeyNonWebApp(&window1),
-                  MakeInstanceKeyNonWebApp(&window3)}));
-  EXPECT_TRUE(instance_registry.GetInstanceKeys("b") ==
-              (std::set<const apps::Instance::InstanceKey>{
-                  MakeInstanceKeyNonWebApp(&window2)}));
+                  MakeInstanceKey(&window1), MakeInstanceKey(&window3)}));
+  EXPECT_TRUE(
+      instance_registry.GetInstanceKeys("b") ==
+      (std::set<const apps::Instance::InstanceKey>{MakeInstanceKey(&window2)}));
 
   instance_registry.OnInstance(
       MakeInstanceWithWindow("a", &window1, apps::InstanceState::kDestroyed));
   instance_registry.OnInstance(
       MakeInstanceWithWindow("b", &window2, apps::InstanceState::kDestroyed));
 
-  EXPECT_TRUE(instance_registry.GetInstanceKeys("a") ==
-              (std::set<const apps::Instance::InstanceKey>{
-                  MakeInstanceKeyNonWebApp(&window3)}));
+  EXPECT_TRUE(
+      instance_registry.GetInstanceKeys("a") ==
+      (std::set<const apps::Instance::InstanceKey>{MakeInstanceKey(&window3)}));
   EXPECT_TRUE(instance_registry.GetInstanceKeys("b") ==
               (std::set<const apps::Instance::InstanceKey>()));
 }
@@ -709,27 +669,17 @@ TEST_F(InstanceRegistryTest, GetEnclosingAppWindows) {
   aura::Window parent2(&window_delegate);
   parent2.Init(ui::LAYER_NOT_DRAWN);
 
-  instance_registry.OnInstance(
-      MakeInstance("a", MakeInstanceKeyWebApp(&child1)));
-  instance_registry.OnInstance(
-      MakeInstance("b", MakeInstanceKeyWebApp(&child2)));
-  instance_registry.OnInstance(
-      MakeInstance("c", MakeInstanceKeyWebApp(&parent2)));
+  instance_registry.OnInstance(MakeInstance("a", MakeInstanceKey(&child1)));
+  instance_registry.OnInstance(MakeInstance("b", MakeInstanceKey(&child2)));
+  instance_registry.OnInstance(MakeInstance("c", MakeInstanceKey(&parent2)));
 
-  EXPECT_TRUE(instance_registry.GetInstanceKeys("a") ==
-              (std::set<const apps::Instance::InstanceKey>{
-                  MakeInstanceKeyWebApp(&child1)}));
-  EXPECT_TRUE(instance_registry.GetInstanceKeys("b") ==
-              (std::set<const apps::Instance::InstanceKey>{
-                  MakeInstanceKeyWebApp(&child2)}));
-  EXPECT_TRUE(instance_registry.GetInstanceKeys("c") ==
-              (std::set<const apps::Instance::InstanceKey>{
-                  MakeInstanceKeyWebApp(&parent2)}));
-
-  EXPECT_TRUE(instance_registry.GetEnclosingAppWindows("a") ==
-              (std::set<aura::Window*>{&parent1}));
-  EXPECT_TRUE(instance_registry.GetEnclosingAppWindows("b") ==
-              (std::set<aura::Window*>{&parent1}));
-  EXPECT_TRUE(instance_registry.GetEnclosingAppWindows("c") ==
-              std::set<aura::Window*>{&parent2});
+  EXPECT_TRUE(
+      instance_registry.GetInstanceKeys("a") ==
+      (std::set<const apps::Instance::InstanceKey>{MakeInstanceKey(&child1)}));
+  EXPECT_TRUE(
+      instance_registry.GetInstanceKeys("b") ==
+      (std::set<const apps::Instance::InstanceKey>{MakeInstanceKey(&child2)}));
+  EXPECT_TRUE(
+      instance_registry.GetInstanceKeys("c") ==
+      (std::set<const apps::Instance::InstanceKey>{MakeInstanceKey(&parent2)}));
 }

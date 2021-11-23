@@ -59,8 +59,8 @@ void AppServiceInstanceRegistryHelper::OnActiveTabChanged(
     content::WebContents* old_contents,
     content::WebContents* new_contents) {
   if (old_contents) {
-    auto instance_key = apps::Instance::InstanceKey::ForWebBasedApp(
-        old_contents->GetNativeView());
+    auto instance_key =
+        apps::Instance::InstanceKey(old_contents->GetNativeView());
 
     // Get the app_id from the existed instance first. If there is no record for
     // the window, get the app_id from contents. Because when Chrome app open
@@ -80,15 +80,14 @@ void AppServiceInstanceRegistryHelper::OnActiveTabChanged(
           apps::InstanceState::kUnknown) {
         state = static_cast<apps::InstanceState>(state &
                                                  ~apps::InstanceState::kActive);
-        OnInstances(GetInstanceKeyForWebContents(old_contents), app_id,
-                    std::string(), state);
+        OnInstances(apps::Instance::InstanceKey(GetWindow(old_contents)),
+                    app_id, std::string(), state);
       }
     }
   }
 
   if (new_contents) {
-    apps::Instance::InstanceKey instance_key =
-        GetInstanceKeyForWebContents(new_contents);
+    auto instance_key = apps::Instance::InstanceKey(GetWindow(new_contents));
 
     // Get the app_id from the existed instance first. If there is no record for
     // the window, get the app_id from contents. Because when Chrome app open
@@ -122,8 +121,7 @@ void AppServiceInstanceRegistryHelper::OnTabReplaced(
 void AppServiceInstanceRegistryHelper::OnTabInserted(
     content::WebContents* contents) {
   std::string app_id = GetAppId(contents);
-  apps::Instance::InstanceKey instance_key =
-      GetInstanceKeyForWebContents(contents);
+  auto instance_key = apps::Instance::InstanceKey(GetWindow(contents));
 
   // When the user drags a tab to a new browser, or to an other browser, it
   // could generate a temp instance for this window with the Chrome application
@@ -147,8 +145,7 @@ void AppServiceInstanceRegistryHelper::OnTabInserted(
 
 void AppServiceInstanceRegistryHelper::OnTabClosing(
     content::WebContents* contents) {
-  apps::Instance::InstanceKey instance_key =
-      GetInstanceKeyForWebContents(contents);
+  auto instance_key = apps::Instance::InstanceKey(GetWindow(contents));
 
   // When the tab is closed, if the window does not exists in the AppService
   // InstanceRegistry, we don't need to update the status.
@@ -215,15 +212,14 @@ void AppServiceInstanceRegistryHelper::OnSetShelfIDForBrowserWindowContents(
   if (browser_shutdown::HasShutdownStarted())
     return;
 
-  apps::Instance::InstanceKey instance_key =
-      GetInstanceKeyForWebContents(contents);
-  if (!instance_key.IsValid() || !instance_key.GetEnclosingAppWindow())
+  auto* window = GetWindow(contents);
+  if (!window || !window->GetToplevelWindow())
     return;
 
   // If the app id is changed, call OnTabInserted to remove the old app id in
   // AppService InstanceRegistry, and insert the new app id.
   std::string app_id = GetAppId(contents);
-  const std::string old_app_id = GetAppId(instance_key);
+  const std::string old_app_id = GetAppId(apps::Instance::InstanceKey(window));
   if (app_id != old_app_id)
     OnTabInserted(contents);
 
@@ -233,9 +229,8 @@ void AppServiceInstanceRegistryHelper::OnSetShelfIDForBrowserWindowContents(
   // OnWindowActivated. Also web apps are ready at the very late phase which
   // delays the shelf id setting for windows. So check the top window's visible
   // and activated status when we have the shelf id.
-  aura::Window* window = instance_key.GetEnclosingAppWindow();
-  const std::string top_app_id =
-      GetAppId(apps::Instance::InstanceKey::ForWindowBasedApp(window));
+  window = window->GetToplevelWindow();
+  const std::string top_app_id = GetAppId(apps::Instance::InstanceKey(window));
   if (!top_app_id.empty()) {
     app_id = top_app_id;
   } else if (static_cast<ash::AppType>(window->GetProperty(
@@ -310,8 +305,7 @@ void AppServiceInstanceRegistryHelper::SetWindowActivated(
     // state for the tab window to keep one instance for the Web app.
     auto instance_keys = GetInstanceKeys(shelf_id.app_id);
     for (const apps::Instance::InstanceKey& instance_key_it : instance_keys) {
-      if (instance_key_it.GetEnclosingAppWindow()->GetToplevelWindow() !=
-          window) {
+      if (instance_key_it.Window()->GetToplevelWindow() != window) {
         continue;
       }
 
@@ -350,8 +344,7 @@ void AppServiceInstanceRegistryHelper::SetWindowActivated(
     apps::InstanceState state = static_cast<apps::InstanceState>(
         apps::InstanceState::kStarted | apps::InstanceState::kRunning |
         apps::InstanceState::kActive | apps::InstanceState::kVisible);
-    apps::Instance::InstanceKey contents_instance_key =
-        GetInstanceKeyForWebContents(contents);
+    apps::Instance::InstanceKey contents_instance_key(GetWindow(contents));
 
     // Get the app_id from the existed instance first. The app_id for PWAs could
     // be changed based on the URL, e.g. google photos, which might cause
@@ -483,19 +476,16 @@ std::string AppServiceInstanceRegistryHelper::GetAppId(
   return extension_misc::kChromeAppId;
 }
 
-apps::Instance::InstanceKey
-AppServiceInstanceRegistryHelper::GetInstanceKeyForWebContents(
+aura::Window* AppServiceInstanceRegistryHelper::GetWindow(
     content::WebContents* contents) {
   std::string app_id = shelf_controller_helper_->GetAppID(contents);
   aura::Window* window = contents->GetNativeView();
 
   // If |app_id| is empty, it is a browser tab. Returns the toplevel window in
   // this case.
-  if (app_id.empty()) {
-    return apps::Instance::InstanceKey::ForWindowBasedApp(
-        window->GetToplevelWindow());
-  }
-  return apps::Instance::InstanceKey::ForWebBasedApp(window);
+  if (app_id.empty())
+    window = window->GetToplevelWindow();
+  return window;
 }
 
 std::set<apps::Instance::InstanceKey>
@@ -527,8 +517,7 @@ void AppServiceInstanceRegistryHelper::AddTabInstance(
   if (app_id == extension_misc::kChromeAppId)
     return;
 
-  aura::Window* top_level_window =
-      instance_key.GetEnclosingAppWindow()->GetToplevelWindow();
+  aura::Window* top_level_window = instance_key.Window()->GetToplevelWindow();
   browser_window_to_tab_instances_[top_level_window].insert(instance_key);
   tab_instance_to_browser_window_[instance_key] = top_level_window;
 }

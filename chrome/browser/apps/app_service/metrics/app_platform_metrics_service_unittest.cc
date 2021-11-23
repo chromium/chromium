@@ -380,7 +380,7 @@ class AppPlatformMetricsServiceTest : public testing::Test {
                             aura::Window* window,
                             apps::InstanceState state) {
     std::unique_ptr<apps::Instance> instance = std::make_unique<apps::Instance>(
-        app_id, apps::Instance::InstanceKey::ForWebBasedApp(window));
+        app_id, apps::Instance::InstanceKey(window));
     instance->UpdateState(state, base::Time::Now());
 
     apps::AppServiceProxyFactory::GetForProfile(testing_profile_.get())
