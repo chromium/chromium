@@ -87175,6 +87175,7 @@ Full version information for the fingerprint enum values:
   <int value="-1656677225" label="file"/>
   <int value="-1632474908" label="viz"/>
   <int value="-1615505903" label="media_gallery_util"/>
+  <int value="-1468742076" label="storage.mojom.StorageService"/>
   <int value="-1450594275" label="identity"/>
   <int value="-1307090589" label="ui"/>
   <int value="-1289115149" label="device"/>
@@ -87184,6 +87185,7 @@ Full version information for the fingerprint enum values:
   <int value="-740182636" label="audio.mojom.AudioService"/>
   <int value="-732644393" label="chrome.mojom.FileUtilService"/>
   <int value="-725144915" label="local_state"/>
+  <int value="-678751616" label="media.mojom.SpeechRecognitionService"/>
   <int value="-657129659" label="printing.mojom.PrintCompositor"/>
   <int value="-461949820" label="heap_profiling"/>
   <int value="-407184831" label="catalog"/>
