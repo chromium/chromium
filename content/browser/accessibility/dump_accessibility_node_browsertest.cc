@@ -137,6 +137,16 @@ class DumpAccessibilityAccNameTest : public DumpAccessibilityNodeTest {
   }
 };
 
+class DumpAccessibilityNodeWithoutMathMLTest
+    : public DumpAccessibilityNodeTest {
+ public:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    DumpAccessibilityNodeTest::SetUpCommandLine(command_line);
+    command_line->AppendSwitchASCII(switches::kDisableBlinkFeatures,
+                                    "MathMLCore");
+  }
+};
+
 // Parameterize the tests so that each test-pass is run independently.
 struct TestPassToString {
   std::string operator()(
@@ -154,6 +164,12 @@ INSTANTIATE_TEST_SUITE_P(
 INSTANTIATE_TEST_SUITE_P(
     All,
     DumpAccessibilityAccNameTest,
+    ::testing::ValuesIn(DumpAccessibilityTestHelper::TreeTestPasses()),
+    TestPassToString());
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    DumpAccessibilityNodeWithoutMathMLTest,
     ::testing::ValuesIn(DumpAccessibilityTestHelper::TreeTestPasses()),
     TestPassToString());
 
@@ -192,6 +208,9 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityNodeTest, MathMLIdentifier) {
 }
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityNodeTest, MathMLMath) {
   RunMathMLTest(FILE_PATH_LITERAL("math.html"));
+}
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityNodeWithoutMathMLTest, MathMLMath) {
+  RunMathMLTest(FILE_PATH_LITERAL("math-disabled.html"));
 }
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityNodeTest, MathMLMultiscripts) {
   RunMathMLTest(FILE_PATH_LITERAL("mmultiscripts.html"));
