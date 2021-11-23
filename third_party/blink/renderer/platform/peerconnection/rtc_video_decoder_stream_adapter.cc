@@ -711,10 +711,12 @@ void RTCVideoDecoderStreamAdapter::DecodeOnMediaThread(
     // Update the max recorded pending buffers.  This is kept up-to-date on the
     // decoder thread when the buffer is queued.
     RecordMaxInFlightDecodesLockedOnMedia();
-
-    // Remember that this timestamp has already been added to the list.
-    demuxer_stream_->EnqueueBuffer(std::move(pending_buffer));
   }
+
+  // Remember that this timestamp has already been added to the list.
+  // Do not call with the lock held, since it might call us back with decoded
+  // frames before returning.
+  demuxer_stream_->EnqueueBuffer(std::move(pending_buffer));
 
   // Kickstart reading output, if we're not already.
   AttemptRead();
