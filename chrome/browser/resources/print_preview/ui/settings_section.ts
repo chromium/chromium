@@ -7,7 +7,7 @@ import './print_preview_shared_css.js';
 
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-class PrintPreviewSettingsSectionElement extends PolymerElement {
+export class PrintPreviewSettingsSectionElement extends PolymerElement {
   static get is() {
     return 'print-preview-settings-section';
   }

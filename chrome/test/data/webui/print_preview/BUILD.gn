@@ -38,8 +38,6 @@ non_preprocessed_tests = [
   "custom_margins_test.ts",
   "destination_item_test.ts",
   "destination_list_test.ts",
-  "destination_search_test.js",
-  "destination_select_test.js",
   "dpi_settings_test.js",
   "duplex_settings_test.js",
   "header_test.js",
@@ -76,8 +74,8 @@ if (is_chromeos) {
     "destination_dialog_cros_test.ts",
     "destination_dropdown_cros_test.ts",
     "destination_item_test_cros.ts",
-    "destination_search_test_chromeos.js",
-    "destination_select_test_cros.js",
+    "destination_search_test_chromeos.ts",
+    "destination_select_test_cros.ts",
     "destination_settings_test_cros.js",
     "native_layer_cros_stub.ts",
     "pin_settings_test.js",
@@ -87,6 +85,8 @@ if (is_chromeos) {
   non_preprocessed_tests += [
     "destination_dialog_interactive_test.ts",
     "destination_dialog_test.ts",
+    "destination_search_test.ts",
+    "destination_select_test.ts",
   ]
 }
 

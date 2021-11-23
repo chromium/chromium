@@ -21,7 +21,16 @@ import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/poly
 import {CloudOrigins, Destination, DestinationOrigin, GooglePromotedDestinationId, PDF_DESTINATION_KEY, RecentDestination, SAVE_TO_DRIVE_CROS_DESTINATION_KEY} from '../data/destination.js';
 import {ERROR_STRING_KEY_MAP, getPrinterStatusIcon, PrinterStatusReason} from '../data/printer_status_cros.js';
 
+import {PrintPreviewDestinationDropdownCrosElement} from './destination_dropdown_cros.js';
 import {SelectMixin} from './select_mixin.js';
+import {PrintPreviewSettingsSectionElement} from './settings_section.js';
+
+export interface PrintPreviewDestinationSelectCrosElement {
+  $: {
+    destinationEulaWrapper: PrintPreviewSettingsSectionElement,
+    dropdown: PrintPreviewDestinationDropdownCrosElement,
+  };
+}
 
 const PrintPreviewDestinationSelectCrosElementBase =
     I18nMixin(SelectMixin(PolymerElement));
@@ -269,6 +278,13 @@ export class PrintPreviewDestinationSelectCrosElement extends
   getVisibleItemsForTest(): NodeListOf<Element> {
     return this.shadowRoot!.querySelector('#dropdown')!.shadowRoot!
         .querySelectorAll('.list-item:not([hidden])');
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'print-preview-destination-select-cros':
+        PrintPreviewDestinationSelectCrosElement;
   }
 }
 

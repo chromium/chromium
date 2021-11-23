@@ -85,6 +85,7 @@ export class PrintPreviewDestinationDropdownCrosElement extends
 
   value: Destination;
   itemList: Destination[];
+  destinationIcon: string;
   disabled: boolean;
   driveDestinationKey: string;
   noDestinations: boolean;

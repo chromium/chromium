@@ -4,6 +4,7 @@
 
 export {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
 export {PluralStringProxyImpl as PrintPreviewPluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.js';
+export {IronMeta} from 'chrome://resources/polymer/v3_0/iron-meta/iron-meta.js';
 export {CloudPrintInterface, CloudPrintInterfaceEventType} from './cloud_print_interface.js';
 export {CloudPrintInterfaceImpl} from './cloud_print_interface_impl.js';
 export {Cdd, MediaSizeCapability, MediaSizeOption, VendorCapabilityValueType} from './data/cdd.js';

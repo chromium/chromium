@@ -2,47 +2,40 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {Destination, DestinationConnectionStatus, DestinationOrigin, DestinationType, getSelectDropdownBackground, PrintPreviewDestinationSelectElement} from 'chrome://print/print_preview.js';
+import {Destination, DestinationConnectionStatus, DestinationOrigin, DestinationType, getSelectDropdownBackground, IronMeta, PrintPreviewDestinationSelectElement} from 'chrome://print/print_preview.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-import {Base} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {waitAfterNextRender} from 'chrome://webui-test/test_util.js';
 
 import {getGoogleDriveDestination, selectOption} from './print_preview_test_utils.js';
 
-window.destination_select_test = {};
-const destination_select_test = window.destination_select_test;
-destination_select_test.suiteName = 'DestinationSelectTest';
-/** @enum {string} */
-destination_select_test.TestNames = {
-  UpdateStatus: 'update status',
-  ChangeIcon: 'change icon',
+const destination_select_test = {
+  suiteName: 'DestinationSelectTest',
+  TestNames: {
+    UpdateStatus: 'update status',
+    ChangeIcon: 'change icon',
+  },
 };
 
+Object.assign(window, {destination_select_test: destination_select_test});
+
 suite(destination_select_test.suiteName, function() {
-  /** @type {!PrintPreviewDestinationSelectElement} */
-  let destinationSelect;
+  let destinationSelect: PrintPreviewDestinationSelectElement;
 
-  /** @type {string} */
-  const account = 'foo@chromium.org';
+  const account: string = 'foo@chromium.org';
 
-  /** @type {!DestinationOrigin} */
-  const cookieOrigin = DestinationOrigin.COOKIES;
+  const cookieOrigin: DestinationOrigin = DestinationOrigin.COOKIES;
 
-  /** @type {!Array<!Destination>} */
-  let recentDestinationList = [];
+  let recentDestinationList: Destination[] = [];
 
-  const meta = /** @type {!IronMetaElement} */ (
-      Base.create('iron-meta', {type: 'iconset'}));
+  const meta = new IronMeta({type: 'iconset', value: undefined});
 
-  /** @override */
   setup(function() {
     document.body.innerHTML = '';
     destinationSelect =
-        /** @type {!PrintPreviewDestinationSelectElement} */ (
-            document.createElement('print-preview-destination-select'));
+        document.createElement('print-preview-destination-select');
     destinationSelect.activeUser = account;
     destinationSelect.disabled = false;
     destinationSelect.loaded = false;
@@ -78,34 +71,36 @@ suite(destination_select_test.suiteName, function() {
     ];
   }
 
-  function compareIcon(selectEl, expectedIcon) {
-    const icon = selectEl.style['background-image'].replace(/ /gi, '');
+  function compareIcon(selectEl: HTMLSelectElement, expectedIcon: string) {
+    const icon =
+        selectEl.style.getPropertyValue('background-image').replace(/ /gi, '');
     const expected = getSelectDropdownBackground(
-        /** @type {!IronIconsetSvgElement} */ (meta.byKey('print-preview')),
-        expectedIcon, destinationSelect);
+        meta.byKey('print-preview'), expectedIcon, destinationSelect);
     assertEquals(expected, icon);
   }
 
   /**
    * Test that changing different destinations results in the correct icon being
    * shown.
-   * @return {!Promise} Promise that resolves when the test finishes.
+   * @return Promise that resolves when the test finishes.
    */
-  function testChangeIcon() {
-    const destination = recentDestinationList[0];
+  function testChangeIcon(): Promise<void> {
+    const destination = recentDestinationList[0]!;
     destinationSelect.destination = destination;
     destinationSelect.updateDestination();
     destinationSelect.loaded = true;
-    const selectEl = destinationSelect.shadowRoot.querySelector('.md-select');
+    const selectEl =
+        destinationSelect.shadowRoot!.querySelector<HTMLSelectElement>(
+            '.md-select')!;
     compareIcon(selectEl, 'print');
 
-    return selectOption(destinationSelect, recentDestinationList[1].key)
+    return selectOption(destinationSelect, recentDestinationList[1]!.key)
         .then(() => {
           // Icon updates early based on the ID.
           compareIcon(selectEl, 'save-to-drive');
 
           // Update the destination.
-          destinationSelect.destination = recentDestinationList[1];
+          destinationSelect.destination = recentDestinationList[1]!;
 
           // Still Save to Drive icon.
           compareIcon(selectEl, 'save-to-drive');
@@ -119,7 +114,7 @@ suite(destination_select_test.suiteName, function() {
           compareIcon(selectEl, 'printer-shared');
 
           // Update destination.
-          destinationSelect.destination = recentDestinationList[2];
+          destinationSelect.destination = recentDestinationList[2]!;
           compareIcon(selectEl, 'printer-shared');
 
           // Select a destination with a standard printer icon.
@@ -130,7 +125,7 @@ suite(destination_select_test.suiteName, function() {
           compareIcon(selectEl, 'print');
 
           // Update destination.
-          destinationSelect.destination = recentDestinationList[3];
+          destinationSelect.destination = recentDestinationList[3]!;
           compareIcon(selectEl, 'print');
 
           // Select a destination with the enterprise printer icon.
@@ -142,7 +137,7 @@ suite(destination_select_test.suiteName, function() {
           compareIcon(selectEl, enterpriseIcon);
 
           // Update destination.
-          destinationSelect.destination = recentDestinationList[4];
+          destinationSelect.destination = recentDestinationList[4]!;
           compareIcon(selectEl, enterpriseIcon);
 
           // Select a destination with the mobile printer icon.
@@ -154,7 +149,7 @@ suite(destination_select_test.suiteName, function() {
           compareIcon(selectEl, mobileIcon);
 
           // Update destination.
-          destinationSelect.destination = recentDestinationList[5];
+          destinationSelect.destination = recentDestinationList[5]!;
           compareIcon(selectEl, mobileIcon);
         });
   }
@@ -168,38 +163,39 @@ suite(destination_select_test.suiteName, function() {
       offline: 'offline',
     });
 
-    assertFalse(
-        destinationSelect.shadowRoot.querySelector('.throbber-container')
-            .hidden);
-    assertTrue(destinationSelect.shadowRoot.querySelector('.md-select').hidden);
+    assertFalse(destinationSelect.shadowRoot!
+                    .querySelector<HTMLElement>('.throbber-container')!.hidden);
+    assertTrue(destinationSelect.shadowRoot!
+                   .querySelector<HTMLSelectElement>('.md-select')!.hidden);
 
     destinationSelect.loaded = true;
-    assertTrue(destinationSelect.shadowRoot.querySelector('.throbber-container')
-                   .hidden);
-    assertFalse(
-        destinationSelect.shadowRoot.querySelector('.md-select').hidden);
+    assertTrue(destinationSelect.shadowRoot!
+                   .querySelector<HTMLElement>('.throbber-container')!.hidden);
+    assertFalse(destinationSelect.shadowRoot!
+                    .querySelector<HTMLSelectElement>('.md-select')!.hidden);
 
-    const additionalInfoEl = destinationSelect.shadowRoot.querySelector(
-        '.destination-additional-info');
-    const statusEl =
-        destinationSelect.shadowRoot.querySelector('.destination-status');
+    const additionalInfoEl =
+        destinationSelect.shadowRoot!.querySelector<HTMLElement>(
+            '.destination-additional-info')!;
+    const statusEl = destinationSelect.shadowRoot!.querySelector<HTMLElement>(
+        '.destination-status')!;
 
-    destinationSelect.destination = recentDestinationList[1];
+    destinationSelect.destination = recentDestinationList[1]!;
     destinationSelect.updateDestination();
     assertTrue(additionalInfoEl.hidden);
     assertEquals('', statusEl.innerHTML);
 
-    destinationSelect.destination = recentDestinationList[0];
+    destinationSelect.destination = recentDestinationList[0]!;
     destinationSelect.updateDestination();
     assertTrue(additionalInfoEl.hidden);
     assertEquals('', statusEl.innerHTML);
 
-    destinationSelect.destination = recentDestinationList[2];
+    destinationSelect.destination = recentDestinationList[2]!;
     destinationSelect.updateDestination();
     assertFalse(additionalInfoEl.hidden);
     assertEquals('offline', statusEl.innerHTML);
 
-    destinationSelect.destination = recentDestinationList[3];
+    destinationSelect.destination = recentDestinationList[3]!;
     destinationSelect.updateDestination();
     assertTrue(additionalInfoEl.hidden);
     assertEquals('', statusEl.innerHTML);

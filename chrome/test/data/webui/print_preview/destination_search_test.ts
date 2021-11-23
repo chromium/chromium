@@ -4,7 +4,6 @@
 
 import {Destination, DestinationConnectionStatus, DestinationOrigin, DestinationStore, DestinationStoreEventType, DestinationType, NativeLayerImpl, PrintPreviewDestinationDialogElement} from 'chrome://print/print_preview.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
-import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_target.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {assertEquals, assertNotEquals} from 'chrome://webui-test/chai_assert.js';
@@ -13,31 +12,27 @@ import {eventToPromise} from 'chrome://webui-test/test_util.js';
 import {NativeLayerStub} from './native_layer_stub.js';
 import {createDestinationStore, getCddTemplate, setupTestListenerElement} from './print_preview_test_utils.js';
 
-window.destination_search_test = {};
-const destination_search_test = window.destination_search_test;
-destination_search_test.suiteName = 'DestinationSearchTest';
-/** @enum {string} */
-destination_search_test.TestNames = {
-  GetCapabilitiesSucceeds: 'get capabilities succeeds',
-  GetCapabilitiesFails: 'get capabilities fails',
+const destination_search_test = {
+  suiteName: 'DestinationSearchTest',
+  TestNames: {
+    GetCapabilitiesSucceeds: 'get capabilities succeeds',
+    GetCapabilitiesFails: 'get capabilities fails',
+  },
 };
 
+Object.assign(window, {destination_search_test: destination_search_test});
+
 suite(destination_search_test.suiteName, function() {
-  /** @type {PrintPreviewDestinationDialogElement} */
-  let dialog;
+  let dialog: PrintPreviewDestinationDialogElement;
 
-  /** @type {DestinationStore} */
-  let destinationStore;
+  let destinationStore: DestinationStore;
 
-  /** @type {NativeLayerStub} */
-  let nativeLayer;
+  let nativeLayer: NativeLayerStub;
 
-  /** @override */
   suiteSetup(function() {
     setupTestListenerElement();
   });
 
-  /** @override */
   setup(function() {
     // Create data classes
     nativeLayer = new NativeLayerStub();
@@ -51,9 +46,7 @@ suite(destination_search_test.suiteName, function() {
         '' /* serializedDefaultDestinationSelectionRulesStr */,
         [] /* recentDestinations */);
 
-    // Set up dialog
-    dialog = /** @type {!PrintPreviewDestinationDialogElement} */ (
-        document.createElement('print-preview-destination-dialog'));
+    dialog = document.createElement('print-preview-destination-dialog');
     dialog.users = [];
     dialog.activeUser = '';
     dialog.destinationStore = destinationStore;
@@ -66,18 +59,15 @@ suite(destination_search_test.suiteName, function() {
     });
   });
 
-  /**
-   * @param {!Destination} destination The destination to
-   *     simulate selection of.
-   */
-  function simulateDestinationSelect(destination) {
+  /** @param destination The destination to simulate selection of. */
+  function simulateDestinationSelect(destination: Destination) {
     // Fake destinationListItem.
     const item = document.createElement('print-preview-destination-list-item');
     item.destination = destination;
 
     // Get print list and fire event.
     const list =
-        dialog.shadowRoot.querySelector('print-preview-destination-list');
+        dialog.shadowRoot!.querySelector('print-preview-destination-list')!;
     list.dispatchEvent(new CustomEvent(
         'destination-selected', {bubbles: true, composed: true, detail: item}));
   }
@@ -85,9 +75,9 @@ suite(destination_search_test.suiteName, function() {
   /**
    * Adds a destination to the dialog and simulates selection of the
    * destination.
-   * @param {string} destId The ID for the destination.
+   * @param destId The ID for the destination.
    */
-  function requestSetup(destId) {
+  function requestSetup(destId: string) {
     const dest = new Destination(
         destId, DestinationType.LOCAL, DestinationOrigin.LOCAL, 'displayName',
         DestinationConnectionStatus.ONLINE);
@@ -105,8 +95,7 @@ suite(destination_search_test.suiteName, function() {
         nativeLayer.setLocalDestinationCapabilities(getCddTemplate(destId));
 
         const waiter = eventToPromise(
-            DestinationStoreEventType.DESTINATION_SELECT,
-            /** @type {!EventTarget} */ (destinationStore));
+            DestinationStoreEventType.DESTINATION_SELECT, destinationStore);
         requestSetup(destId);
         return Promise
             .all([nativeLayer.whenCalled('getPrinterCapabilities'), waiter])
@@ -116,7 +105,7 @@ suite(destination_search_test.suiteName, function() {
               // After setup or capabilities fetch succeeds, the destination
               // should be selected.
               assertNotEquals(null, destinationStore.selectedDestination);
-              assertEquals(destId, destinationStore.selectedDestination.id);
+              assertEquals(destId, destinationStore.selectedDestination!.id);
             });
       });
 
@@ -134,7 +123,7 @@ suite(destination_search_test.suiteName, function() {
               assertEquals(destId, args.destinationId);
               // The destination is selected even though capabilities cannot be
               // retrieved.
-              assertEquals(destId, destinationStore.selectedDestination.id);
+              assertEquals(destId, destinationStore.selectedDestination!.id);
             });
       });
 });

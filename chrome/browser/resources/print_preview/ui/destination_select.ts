@@ -199,6 +199,12 @@ export class PrintPreviewDestinationSelectElement extends
   }
 }
 
+declare global {
+  interface HTMLElementTagNameMap {
+    'print-preview-destination-select': PrintPreviewDestinationSelectElement;
+  }
+}
+
 customElements.define(
     PrintPreviewDestinationSelectElement.is,
     PrintPreviewDestinationSelectElement);
