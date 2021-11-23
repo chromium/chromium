@@ -1138,14 +1138,15 @@ class _Generator(object):
     cpp_type_namespace = ''
     if type_.namespace != self._namespace:
       cpp_type_namespace = '%s::' % type_.namespace.unix_name
-    (c.Append('std::string %s;' % enum_as_string)
-      .Sblock('if (!%s.GetAsString(&%s)) {' % (src_var, enum_as_string))
+    (c.Append('const std::string* %s = %s.GetIfString();' % (enum_as_string,
+                                                            src_var))
+      .Sblock('if (!%s) {' % enum_as_string)
       .Concat(self._AppendError16(
         'u"\'%%(key)s\': expected string, got " + ' +
         self._util_cc_helper.GetValueTypeString('%%(src_var)s')))
       .Append('return %s;' % failure_value)
       .Eblock('}')
-      .Append('%s = %sParse%s(%s);' % (dst_var,
+      .Append('%s = %sParse%s(*%s);' % (dst_var,
                                        cpp_type_namespace,
                                        cpp_util.Classname(type_.name),
                                        enum_as_string))
@@ -1157,7 +1158,7 @@ class _Generator(object):
         '\\" or \\"'.join(
             enum_value.name
             for enum_value in self._type_helper.FollowRef(type_).enum_values) +
-        '\\", got \\"" + UTF8ToUTF16(%s) + u"\\""' % enum_as_string))
+        '\\", got \\"" + UTF8ToUTF16(*%s) + u"\\""' % enum_as_string))
       .Append('return %s;' % failure_value)
       .Eblock('}')
       .Substitute({'src_var': src_var, 'key': type_.name})
