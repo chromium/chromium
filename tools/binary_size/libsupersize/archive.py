@@ -5,7 +5,6 @@
 """Main Python API for analyzing binary size."""
 
 import argparse
-import bisect
 import calendar
 import collections
 import dataclasses
@@ -119,15 +118,6 @@ class SectionSizeKnobs:
         'lib/arm64-v8a/libelements.so':
         '../../chrome/android/feed/BUILD.gn',
     }
-
-
-# Parameters and states for archiving a container.
-@dataclasses.dataclass
-class ContainerArchiveOptions:
-  # Whether to count number of relative relocations instead of binary size.
-  relocations_mode: bool = False
-  # Whether to break down .so files.
-  analyze_native: bool = True
 
 
 @dataclasses.dataclass
@@ -1264,40 +1254,6 @@ def _CalculateElfOverhead(section_ranges, elf_path):
   return 0
 
 
-def _OverwriteSymbolSizesWithRelocationCount(raw_symbols, tool_prefix,
-                                             elf_path):
-  logging.info('Removing non-native symbols')
-  raw_symbols = [sym for sym in raw_symbols if sym.IsNative()]
-
-  logging.info('Overwriting symbol sizes with relocation count')
-  # Last symbol address is the end of the last symbol, so we don't misattribute
-  # all relros after the last symbol to that symbol.
-  symbol_addresses = [s.address for s in raw_symbols]
-  symbol_addresses.append(raw_symbols[-1].end_address)
-
-  for symbol in raw_symbols:
-    symbol.address = 0
-    symbol.size = 0
-    symbol.padding = 0
-
-  relro_addresses = readelf.CollectRelocationAddresses(elf_path, tool_prefix)
-  # More likely for there to be a bug in supersize than an ELF to have any
-  # relative relocations.
-  assert relro_addresses
-
-  logging.info('Adding %d relocations', len(relro_addresses))
-  for addr in relro_addresses:
-    # Attribute relros to largest symbol start address that precede them.
-    idx = bisect.bisect_right(symbol_addresses, addr) - 1
-    if 0 <= idx < len(raw_symbols):
-      symbol = raw_symbols[idx]
-      for alias in symbol.aliases or [symbol]:
-        alias.size += 1
-
-  raw_symbols = [sym for sym in raw_symbols if sym.size]
-  return raw_symbols
-
-
 def _AddUnattributedSectionSymbols(raw_symbols, section_ranges):
   # Create symbols for ELF sections not covered by existing symbols.
   logging.info('Searching for symbol gaps...')
@@ -1378,7 +1334,6 @@ def _ParseNinjaFiles(output_directory, elf_path=None):
 
 def CreateContainerAndSymbols(*,
                               knobs,
-                              opts,
                               container_name,
                               metadata,
                               apk_spec,
@@ -1392,7 +1347,6 @@ def CreateContainerAndSymbols(*,
 
   Args:
     knobs: Instance of SectionSizeKnobs.
-    opts: Instance of ContainerArchiveOptions.
     container_name: Name for the created Container. May be '' if only one
         Container exists.
     metadata: Metadata dict from CreateMetadata().
@@ -1412,9 +1366,6 @@ def CreateContainerAndSymbols(*,
     (section_sizes maps section names to respective sizes).
     raw_symbols is a list of Symbol objects.
   """
-  if opts.relocations_mode and not (native_spec and native_spec.elf_path):
-    raise Exception('--relocations-mode requires an ELF file')
-
   knobs = knobs or SectionSizeKnobs()
   apk_elf_result = None
   if apk_spec and native_spec and native_spec.apk_so_path:
@@ -1496,7 +1447,7 @@ def CreateContainerAndSymbols(*,
 
   pak_symbols_by_id = None
   other_symbols = []
-  if apk_spec and apk_spec.size_info_prefix and not opts.relocations_mode:
+  if apk_spec and apk_spec.size_info_prefix:
     # Can modify |section_ranges|.
     pak_symbols_by_id = _FindPakSymbolsFromApk(section_ranges,
                                                apk_spec.apk_path,
@@ -1586,10 +1537,6 @@ def CreateContainerAndSymbols(*,
     logging.debug('Connecting nm aliases')
     _ConnectNmAliases(raw_symbols)
 
-    if opts.relocations_mode:
-      raw_symbols = _OverwriteSymbolSizesWithRelocationCount(
-          raw_symbols, native_spec.tool_prefix, native_spec.elf_path)
-
   section_sizes = {k: size for k, (address, size) in section_ranges.items()}
   container = models.Container(name=container_name,
                                metadata=metadata,
@@ -1597,10 +1544,7 @@ def CreateContainerAndSymbols(*,
   for symbol in raw_symbols:
     symbol.container = container
 
-  # Sorting for relocations mode causes .data and .data.rel.ro to be interleaved
-  # due to setting all addresses to 0.
-  if not opts.relocations_mode:
-    file_format.SortSymbols(raw_symbols, check_already_mostly_sorted=True)
+  file_format.SortSymbols(raw_symbols, check_already_mostly_sorted=True)
 
   return container, raw_symbols
 
@@ -1733,11 +1677,6 @@ def _AddContainerArguments(parser):
                       action='store_true',
                       help='Use debug information to capture symbol sizes '
                       'instead of linker map file.')
-  parser.add_argument(
-      '--relocations',
-      action='store_true',
-      help='Instead of counting binary size, count number of relative '
-      'relocation instructions in ELF code.')
   parser.add_argument(
       '--java-only', action='store_true', help='Run on only Java symbols')
   parser.add_argument(
@@ -1994,10 +1933,8 @@ def _ProcessContainerArgs(top_args,
   for k, v in top_args.__dict__.items():
     sub_args.__dict__.setdefault(k, v)
 
-  opts = ContainerArchiveOptions()
-  opts.relocations_mode = top_args.relocations
-  opts.analyze_native = not (sub_args.java_only or sub_args.no_native
-                             or top_args.java_only or top_args.no_native)
+  analyze_native = not (sub_args.java_only or sub_args.no_native
+                        or top_args.java_only or top_args.no_native)
 
   apk_path = apk_path or sub_args.apk_file
   if split_name:
@@ -2009,7 +1946,7 @@ def _ProcessContainerArgs(top_args,
       container_name += '?'
     if split_name != 'base':
       # TODO(crbug.com/1143690): Fix native analysis for split APKs.
-      opts.analyze_native = False
+      analyze_native = False
 
   apk_prefix = sub_args.minimal_apks_file or sub_args.apk_file
   if apk_prefix:
@@ -2030,10 +1967,9 @@ def _ProcessContainerArgs(top_args,
                                                'size-info',
                                                os.path.basename(apk_prefix))
     apk_spec.analyze_dex = not (sub_args.native_only or sub_args.no_java
-                                or top_args.native_only or top_args.no_java
-                                or opts.relocations_mode)
+                                or top_args.native_only or top_args.no_java)
 
-  if opts.analyze_native:
+  if analyze_native:
     tool_prefix_finder = path_util.ToolPrefixFinder(
         value=sub_args.tool_prefix,
         output_directory=top_args.output_directory,
@@ -2050,10 +1986,8 @@ def _ProcessContainerArgs(top_args,
   else:
     native_specs = []
 
-  container_args = sub_args.__dict__.copy()
-  container_args.update(opts.__dict__)
-  logging.info('Container Params: %r', container_args)
-  return (sub_args, apk_spec, native_specs, opts, container_name,
+  logging.info('Container Params: %r', sub_args.__dict__)
+  return (sub_args, apk_spec, native_specs, container_name,
           resources_pathmap_path)
 
 
@@ -2152,7 +2086,7 @@ def Run(top_args, on_config_error):
   raw_symbols_list = []
 
   # Iterate over each container.
-  for (sub_args, apk_spec, native_specs, opts, container_name,
+  for (sub_args, apk_spec, native_specs, container_name,
        resources_pathmap_path) in _IterSubArgs(top_args, on_config_error):
     if not native_specs:
       native_specs = [None]
@@ -2169,7 +2103,6 @@ def Run(top_args, on_config_error):
                                 output_directory=sub_args.output_directory)
       container, raw_symbols = CreateContainerAndSymbols(
           knobs=knobs,
-          opts=opts,
           container_name=container_name,
           metadata=metadata,
           apk_spec=apk_spec,

@@ -5,6 +5,7 @@
 """An interactive console for looking analyzing .size files."""
 
 import argparse
+import bisect
 import code
 import contextlib
 import itertools
@@ -93,6 +94,7 @@ class _Session:
         'SaveSizeInfo': self._SaveSizeInfo,
         'SaveDeltaSizeInfo': self._SaveDeltaSizeInfo,
         'ReadStringLiterals': self._ReadStringLiterals,
+        'ReplaceWithRelocations': self._ReplaceWithRelocations,
         'Disassemble': self._DisassembleFunc,
         'ExpandRegex': match_util.ExpandRegexIdentifierPlaceholder,
         'SizeStats': self._SizeStats,
@@ -282,13 +284,13 @@ class _Session:
         '--tool-prefix, or setting --output-directory')
     return tool_prefix
 
-  def _ElfPathForSymbol(self, size_info, container, tool_prefix, elf_path):
+  def _ElfPathForSymbol(self, size_info, container, tool_prefix, elf_path=None):
     def build_id_matches(elf_path):
       found_build_id = readelf.BuildIdFromElf(elf_path, tool_prefix)
       expected_build_id = container.metadata.get(models.METADATA_ELF_BUILD_ID)
       return found_build_id == expected_build_id
 
-    filename = container.metadata.get(models.METADATA_ELF_FILENAME)
+    filename = container.metadata[models.METADATA_ELF_FILENAME]
     paths_to_try = []
     if elf_path:
       paths_to_try.append(elf_path)
@@ -404,6 +406,68 @@ class _Session:
     _WriteToStream(lines, use_pager=use_pager, to_file=to_file)
     proc.kill()
 
+  def _ReplaceWithRelocations(self, size_info=None):
+    """Replace all symbol sizes with counts of native relocations.
+
+    Removes all symbols that do not contain relocations.
+
+    Args:
+      size_info: The size_info to filter. Defaults to size_infos[0].
+
+    Returns:
+      A new SizeInfo.
+    """
+    size_info = size_info or self._size_infos[0]
+    tool_prefix = self._ToolPrefixForSymbol(size_info)
+
+    new_syms = []
+    new_containers = []
+
+    for container, group in itertools.groupby(
+        size_info.raw_symbols, lambda s: s.container):
+      if models.METADATA_ELF_FILENAME not in container.metadata:
+        continue
+
+      raw_symbols = [s for s in group if s.IsNative()]
+      if not raw_symbols:
+        continue
+
+      new_containers.append(container)
+
+      elf_path = self._ElfPathForSymbol(size_info, container, tool_prefix)
+      relro_addresses = readelf.CollectRelocationAddresses(
+          elf_path, tool_prefix)
+
+      # More likely for there to be a bug in supersize than an ELF to have any
+      # relative relocations.
+      assert relro_addresses
+
+      # Last symbol address is the end of the last symbol, so we don't
+      # misattribute all relros after the last symbol to that symbol.
+      symbol_addresses = [s.address for s in raw_symbols]
+      symbol_addresses.append(raw_symbols[-1].end_address)
+
+      for symbol in raw_symbols:
+        symbol.address = 0
+        symbol.size = 0
+        symbol.padding = 0
+
+      logging.info('Adding %d relocations', len(relro_addresses))
+      for addr in relro_addresses:
+        # Attribute relros to largest symbol start address that precede them.
+        idx = bisect.bisect_right(symbol_addresses, addr) - 1
+        if 0 <= idx < len(raw_symbols):
+          symbol = raw_symbols[idx]
+          for alias in symbol.aliases or [symbol]:
+            alias.size += 1
+
+      new_syms.extend(s for s in raw_symbols if s.size)
+
+    return models.SizeInfo(size_info.build_config,
+                           new_containers,
+                           models.SymbolGroup(new_syms),
+                           size_path=size_info.size_path)
+
   def _ShowExamplesFunc(self):
     print(self._CreateBanner())
     print('\n'.join([
@@ -493,7 +557,9 @@ class _Session:
       if isinstance(value, types.ModuleType):
         continue
       if key.startswith('size_info'):
-        lines.append('  {}: Loaded from {}'.format(key, value.size_path))  # pylint: disable=no-member
+        # pylint: disable=no-member
+        lines.append(f'  {key}: Loaded from {value.size_path}')
+        # pylint: enable=no-member
     lines.append('*' * 80)
     return '\n'.join(lines)
 

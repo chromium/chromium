@@ -262,7 +262,6 @@ class IntegrationTest(unittest.TestCase):
       container_list = []
       raw_symbols_list = []
       build_config = {}
-      opts = archive.ContainerArchiveOptions()
 
       # Override for testing. Lower the bar for compacting symbols, to allow
       # smaller test cases to be created.
@@ -279,7 +278,6 @@ class IntegrationTest(unittest.TestCase):
                                             output_directory=output_directory)
           container, raw_symbols = archive.CreateContainerAndSymbols(
               knobs=knobs,
-              opts=opts,
               container_name=container_name,
               metadata=metadata,
               apk_spec=apk_spec,

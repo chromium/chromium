@@ -12,7 +12,7 @@ DeltaSymbolGroup (extends SymbolGroup): CountsByDiffStatus, WhereDiffStatusIs, d
 
 canned_queries: CategorizeByChromeComponent, CategorizeGenerated, LargeFiles, PakByPath, StaticInitializers, TemplatesByName
 
-Functions: CheckDataQuality(), Csv(), Diff(), Disassemble(), ExpandRegex(), Print(), ReadStringLiterals(), SaveDeltaSizeInfo(), SaveSizeInfo(), ShowExamples(), SizeStats()
+Functions: CheckDataQuality(), Csv(), Diff(), Disassemble(), ExpandRegex(), Print(), ReadStringLiterals(), ReplaceWithRelocations(), SaveDeltaSizeInfo(), SaveSizeInfo(), ShowExamples(), SizeStats()
 Variables:
   printed: List of objects passed to Print().
   size_info: Loaded from {redacted}
