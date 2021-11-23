@@ -51,9 +51,10 @@ class CORE_EXPORT HTMLMetaElement final : public HTMLElement {
 
   static void ProcessMetaAcceptCH(Document&,
                                   const AtomicString& content,
-                                  bool is_http_equiv);
+                                  bool is_http_equiv,
+                                  bool is_preload_or_parser);
 
-  explicit HTMLMetaElement(Document&);
+  explicit HTMLMetaElement(Document&, const CreateElementFlags);
 
   // Encoding computed from processing the http-equiv, charset and content
   // attributes.
@@ -123,6 +124,9 @@ class CORE_EXPORT HTMLMetaElement final : public HTMLElement {
   void ProcessViewportContentAttribute(const String& content,
                                        ViewportDescription::Type origin);
   void ProcessColorScheme(const AtomicString& content);
+  void FinishParsingChildren() final;
+
+  bool is_being_created_by_parser_with_sync_flag_;
 };
 
 }  // namespace blink

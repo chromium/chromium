@@ -46,8 +46,11 @@
 
 namespace blink {
 
-HTMLMetaElement::HTMLMetaElement(Document& document)
-    : HTMLElement(html_names::kMetaTag, document) {}
+HTMLMetaElement::HTMLMetaElement(Document& document,
+                                 const CreateElementFlags flags)
+    : HTMLElement(html_names::kMetaTag, document),
+      is_being_created_by_parser_with_sync_flag_(
+          flags.IsCreatedByParser() && !flags.IsAsyncCustomElements()) {}
 
 static bool IsInvalidSeparator(UChar c) {
   return c == ';';
@@ -616,7 +619,8 @@ void HTMLMetaElement::ProcessContent() {
                         WebFeature::kHTMLMetaElementMonetization);
     }
   } else if (EqualIgnoringASCIICase(name_value, http_names::kAcceptCH)) {
-    ProcessMetaAcceptCH(GetDocument(), content_value, /*is_http_equiv*/ false);
+    ProcessMetaAcceptCH(GetDocument(), content_value, /*is_http_equiv*/ false,
+                        is_being_created_by_parser_with_sync_flag_);
   }
 }
 
@@ -647,7 +651,8 @@ const AtomicString& HTMLMetaElement::GetName() const {
 // static
 void HTMLMetaElement::ProcessMetaAcceptCH(Document& document,
                                           const AtomicString& content,
-                                          bool is_http_equiv) {
+                                          bool is_http_equiv,
+                                          bool is_preload_or_sync_parser) {
   if (is_http_equiv
           ? !RuntimeEnabledFeatures::ClientHintsMetaHTTPEquivAcceptCHEnabled()
           : !RuntimeEnabledFeatures::ClientHintsMetaNameAcceptCHEnabled()) {
@@ -674,7 +679,14 @@ void HTMLMetaElement::ProcessMetaAcceptCH(Document& document,
                               : WebFeature::kClientHintsMetaNameAcceptCH);
   FrameClientHintsPreferencesContext hints_context(frame);
   frame->GetClientHintsPreferences().UpdateFromMetaTagAcceptCH(
-      content, document.Url(), &hints_context);
+      content, document.Url(), &hints_context, is_http_equiv,
+      is_preload_or_sync_parser);
+}
+
+void HTMLMetaElement::FinishParsingChildren() {
+  // Flag the tag was parsed so if it's re-read we know it was modified.
+  is_being_created_by_parser_with_sync_flag_ = false;
+  HTMLElement::FinishParsingChildren();
 }
 
 }  // namespace blink

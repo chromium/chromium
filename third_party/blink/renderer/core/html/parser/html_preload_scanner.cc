@@ -1023,7 +1023,9 @@ void TokenPreloadScanner::HandleMetaNameAttribute(
   if (EqualIgnoringASCIICase(name_attribute_value, http_names::kAcceptCH) &&
       RuntimeEnabledFeatures::ClientHintsMetaNameAcceptCHEnabled()) {
     client_hints_preferences_.UpdateFromMetaTagAcceptCH(
-        content_attribute->Value(), document_url_, nullptr);
+        content_attribute->Value(), document_url_, nullptr,
+        /*is_http_equiv*/ false,
+        /*is_preload_or_parser*/ scanner_type_ == ScannerType::kMainDocument);
   }
 }
 
@@ -1127,7 +1129,10 @@ void TokenPreloadScanner::ScanCommon(
                 token.GetAttributeItem(html_names::kContentAttr);
             if (content_attribute) {
               client_hints_preferences_.UpdateFromMetaTagAcceptCH(
-                  content_attribute->Value(), document_url_, nullptr);
+                  content_attribute->Value(), document_url_, nullptr,
+                  /*is_http_equiv*/ true,
+                  /*is_preload_or_parser*/ scanner_type_ ==
+                      ScannerType::kMainDocument);
             }
           }
           return;

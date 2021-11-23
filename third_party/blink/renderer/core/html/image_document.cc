@@ -235,7 +235,8 @@ void ImageDocument::CreateDocumentStructure(
     return;  // runScriptsAtDocumentElementAvailable can detach the frame.
 
   auto* head = MakeGarbageCollected<HTMLHeadElement>(*this);
-  auto* meta = MakeGarbageCollected<HTMLMetaElement>(*this);
+  auto* meta =
+      MakeGarbageCollected<HTMLMetaElement>(*this, CreateElementFlags());
   meta->setAttribute(html_names::kNameAttr, "viewport");
   meta->setAttribute(html_names::kContentAttr,
                      "width=device-width, minimum-scale=0.1");

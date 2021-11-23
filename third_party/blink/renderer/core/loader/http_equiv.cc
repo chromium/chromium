@@ -55,7 +55,8 @@ void HttpEquiv::Process(Document& document,
         "document. It may not be set inside <meta>."));
   } else if (EqualIgnoringASCIICase(equiv, http_names::kAcceptCH)) {
     HTMLMetaElement::ProcessMetaAcceptCH(document, content,
-                                         /*is_http_equiv*/ true);
+                                         /*is_http_equiv*/ true,
+                                         /*is_preload_or_sync_parser*/ true);
   } else if (EqualIgnoringASCIICase(equiv, "content-security-policy") ||
              EqualIgnoringASCIICase(equiv,
                                     "content-security-policy-report-only")) {

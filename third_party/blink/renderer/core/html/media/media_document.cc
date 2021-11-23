@@ -82,7 +82,8 @@ void MediaDocumentParser::CreateDocumentStructure() {
     return;  // runScriptsAtDocumentElementAvailable can detach the frame.
 
   auto* head = MakeGarbageCollected<HTMLHeadElement>(*GetDocument());
-  auto* meta = MakeGarbageCollected<HTMLMetaElement>(*GetDocument());
+  auto* meta = MakeGarbageCollected<HTMLMetaElement>(*GetDocument(),
+                                                     CreateElementFlags());
   meta->setAttribute(html_names::kNameAttr, "viewport");
   meta->setAttribute(html_names::kContentAttr, "width=device-width");
   head->AppendChild(meta);

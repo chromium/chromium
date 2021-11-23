@@ -67,7 +67,8 @@ constexpr char kDocumentTransitionToken[] =
   EXPECT_FALSE(RuntimeEnabledFeatures::DocumentTransitionEnabled(
       document.GetExecutionContext()));
 
-  HTMLMetaElement* meta = MakeGarbageCollected<HTMLMetaElement>(document);
+  HTMLMetaElement* meta =
+      MakeGarbageCollected<HTMLMetaElement>(document, CreateElementFlags());
   meta->setAttribute(html_names::kHttpEquivAttr, "Origin-Trial");
   meta->setAttribute(html_names::kContentAttr, trial_token);
   document.head()->appendChild(meta);

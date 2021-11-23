@@ -35,11 +35,16 @@ class PLATFORM_EXPORT ClientHintsPreferences {
 
   // Parses <meta http-equiv="accept-ch"> or <meta name="accept-ch"> value
   // `header_value`, and updates `this` to enable the requested client hints.
-  // `url` is the URL of the page. `context` may be null. If client hints are
-  // not allowed for `url`, then `this` would not be updated.
+  // `url` is the URL of the page. `context` may be null. `is_http_equiv` is
+  // true if 'accept-ch' is an 'http-equiv' attribute and not 'name'.
+  // `is_preload_or_sync_parser` is true if the HTML preloader saw the element
+  // or if the element was created by the parser. If client hints are not
+  // allowed for `url`, then `this` would not be updated.
   void UpdateFromMetaTagAcceptCH(const String& header_value,
                                  const KURL& url,
-                                 Context* context);
+                                 Context* context,
+                                 bool is_http_equiv,
+                                 bool is_preload_or_sync_parser);
 
   bool ShouldSend(network::mojom::WebClientHintsType type) const;
   void SetShouldSend(network::mojom::WebClientHintsType type);

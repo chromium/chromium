@@ -346,6 +346,10 @@ class ClientHintsBrowserTest : public policy::PolicyTest,
     redirect_url_ = https_cross_origin_server_.GetURL("/redirect.html");
 
     accept_ch_empty_ = https_server_.GetURL("/accept_ch_empty.html");
+    http_equiv_accept_ch_injection_ =
+        https_server_.GetURL("/http_equiv_accept_ch_injection.html");
+    meta_name_accept_ch_injection_ =
+        https_server_.GetURL("/meta_name_accept_ch_injection.html");
     http_equiv_accept_ch_merge_ =
         https_server_.GetURL("/http_equiv_accept_ch_merge.html");
     meta_name_accept_ch_merge_ =
@@ -558,6 +562,14 @@ class ClientHintsBrowserTest : public policy::PolicyTest,
 
   // A URL to a page with a response containing an empty accept_ch header.
   const GURL& accept_ch_empty() const { return accept_ch_empty_; }
+
+  // A page where hints are injected via javascript into an http-equiv meta tag.
+  const GURL& http_equiv_accept_ch_injection() const {
+    return http_equiv_accept_ch_injection_;
+  }
+  const GURL& meta_name_accept_ch_injection() const {
+    return meta_name_accept_ch_injection_;
+  }
 
   // A page where some hints are in accept-ch header, some in http-equiv.
   const GURL& http_equiv_accept_ch_merge() const {
@@ -1022,6 +1034,8 @@ class ClientHintsBrowserTest : public policy::PolicyTest,
   GURL meta_name_accept_ch_with_lifetime_;
   GURL redirect_url_;
   GURL accept_ch_empty_;
+  GURL http_equiv_accept_ch_injection_;
+  GURL meta_name_accept_ch_injection_;
   GURL http_equiv_accept_ch_merge_;
   GURL meta_name_accept_ch_merge_;
   GURL without_accept_ch_without_lifetime_cross_origin_;
@@ -1527,6 +1541,27 @@ IN_PROC_BROWSER_TEST_F(ClientHintsBrowserTest, EmptyAcceptCH) {
   // Visiting again should not expect them since we opted out again.
   SetClientHintExpectationsOnMainFrame(false);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), gurl));
+}
+
+IN_PROC_BROWSER_TEST_F(ClientHintsBrowserTest, InjectAcceptCH_HttpEquiv) {
+  // Go to page where hints are injected via javascript into an http-equiv meta
+  // tag. It shouldn't get hints itself (due to first visit),
+  // but subresources should get all the client hints.
+  GURL gurl = http_equiv_accept_ch_injection();
+  SetClientHintExpectationsOnMainFrame(false);
+  SetClientHintExpectationsOnSubresources(true);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), gurl));
+  EXPECT_EQ(expected_client_hints_number, count_client_hints_headers_seen());
+}
+IN_PROC_BROWSER_TEST_F(ClientHintsBrowserTest, InjectAcceptCH_MetaName) {
+  // Go to page where hints are injected via javascript into an named meta
+  // tag. It shouldn't get hints itself (due to first visit),
+  // but subresources should get all the client hints.
+  GURL gurl = meta_name_accept_ch_injection();
+  SetClientHintExpectationsOnMainFrame(false);
+  SetClientHintExpectationsOnSubresources(false);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), gurl));
+  EXPECT_EQ(0u, count_client_hints_headers_seen());
 }
 
 IN_PROC_BROWSER_TEST_F(ClientHintsBrowserTest, MergeAcceptCH_HttpEquiv) {

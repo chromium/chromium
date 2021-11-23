@@ -48,7 +48,8 @@ class HTMLMetaElementTest : public PageTestBase,
 
  protected:
   HTMLMetaElement* CreateColorSchemeMeta(const AtomicString& content) {
-    auto* meta = MakeGarbageCollected<HTMLMetaElement>(GetDocument());
+    auto* meta = MakeGarbageCollected<HTMLMetaElement>(GetDocument(),
+                                                       CreateElementFlags());
     meta->setAttribute(html_names::kNameAttr, "color-scheme");
     meta->setAttribute(html_names::kContentAttr, content);
     return meta;
