@@ -257,7 +257,7 @@ bool ArcSupportHost::GetShouldShowRunNetworkTests() {
 }
 
 void ArcSupportHost::SetArcManaged(bool is_arc_managed) {
-  DCHECK(!message_host_);
+  DCHECK(!message_host_ || (is_arc_managed_ == is_arc_managed));
   is_arc_managed_ = is_arc_managed;
 }
 
