@@ -26,6 +26,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_web_ui.h"
+#include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace chromeos {
@@ -33,6 +34,8 @@ namespace chromeos {
 namespace settings {
 
 namespace {
+
+using ::testing::Optional;
 
 class TestMultideviceHandler : public MultideviceHandler {
  public:
@@ -173,25 +176,15 @@ void VerifyPageContentDict(
         page_content_dict->GetString("hostDeviceName", &host_device_name));
   }
 
-  bool is_nearby_share_disallowed_by_policy;
-  EXPECT_TRUE(
-      page_content_dict->GetBoolean("isNearbyShareDisallowedByPolicy",
-                                    &is_nearby_share_disallowed_by_policy));
-  EXPECT_EQ(expected_is_nearby_share_disallowed_by_policy_,
-            is_nearby_share_disallowed_by_policy);
+  EXPECT_THAT(page_content_dict->FindBoolKey("isNearbyShareDisallowedByPolicy"),
+              Optional(expected_is_nearby_share_disallowed_by_policy_));
 
-  bool is_phone_hub_apps_access_granted;
-  EXPECT_TRUE(
-      page_content_dict->GetBoolean("isPhoneHubAppsAccessGranted",
-                                    &is_phone_hub_apps_access_granted));
-  EXPECT_EQ(expected_is_phone_hub_apps_access_granted_,
-            is_phone_hub_apps_access_granted);
+  EXPECT_THAT(page_content_dict->FindBoolKey("isPhoneHubAppsAccessGranted"),
+              Optional(expected_is_phone_hub_apps_access_granted_));
 
-  bool is_phone_hub_permissions_dialog_supported;
-  EXPECT_TRUE(page_content_dict->GetBoolean(
-      "isPhoneHubPermissionsDialogSupported",
-      &is_phone_hub_permissions_dialog_supported));
-  EXPECT_TRUE(is_phone_hub_permissions_dialog_supported);
+  EXPECT_THAT(
+      page_content_dict->FindBoolKey("isPhoneHubPermissionsDialogSupported"),
+      Optional(true));
 }
 
 }  // namespace
