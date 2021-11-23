@@ -377,7 +377,9 @@ class TranslateManagerBrowserTest : public InProcessBrowserTest {
 // TODO(crbug.com/1258185): Migrate to better mechanism for testing around
 // language detection. Seeding the TFLite model can racy/flaky on browsertests
 // so we override the response.
-IN_PROC_BROWSER_TEST_F(TranslateManagerBrowserTest, PageLanguageDetection) {
+// Disabled due to https://crbug.com/1273043.
+IN_PROC_BROWSER_TEST_F(TranslateManagerBrowserTest,
+                       DISABLED_PageLanguageDetection) {
   ChromeTranslateClient* chrome_translate_client = GetChromeTranslateClient();
 
   // Open a new tab with a page in French.
@@ -779,8 +781,9 @@ IN_PROC_BROWSER_TEST_F(TranslateManagerBrowserTest,
 
 // Test that hrefTranslate doesn't translate if the target language is in the
 // user's language blocklist.
+// Disabled due to https://crbug.com/1273043.
 IN_PROC_BROWSER_TEST_F(TranslateManagerBrowserTest,
-                       HrefTranslateLanguageBlocked) {
+                       DISABLED_HrefTranslateLanguageBlocked) {
   base::HistogramTester histograms;
   GetChromeTranslateClient()
       ->GetTranslateManager()
@@ -1168,8 +1171,9 @@ IN_PROC_BROWSER_TEST_F(TranslateManagerBrowserTest,
 }
 
 // Test if there was an error during translatePage script execution.
+// Disabled due to https://crbug.com/1273043.
 IN_PROC_BROWSER_TEST_F(TranslateManagerBrowserTest,
-                       PageTranslationUnexpectedScriptError) {
+                       DISABLED_PageTranslationUnexpectedScriptError) {
   SetTranslateScript(kTestScriptUnexpectedScriptError);
 
   ChromeTranslateClient* chrome_translate_client = GetChromeTranslateClient();
@@ -1198,8 +1202,9 @@ IN_PROC_BROWSER_TEST_F(TranslateManagerBrowserTest,
 }
 
 // Test if securityOrigin mentioned in url is valid.
+// Disabled due to https://crbug.com/1273043.
 IN_PROC_BROWSER_TEST_F(TranslateManagerBrowserTest,
-                       PageTranslationBadOriginError) {
+                       DISABLED_PageTranslationBadOriginError) {
   SetTranslateScript(kTestScriptBadOrigin);
 
   ChromeTranslateClient* chrome_translate_client = GetChromeTranslateClient();
@@ -1295,8 +1300,9 @@ IN_PROC_BROWSER_TEST_F(TranslateManagerBrowserTest, TranslateSessionRestore) {
 }
 
 // Test that hrefTranslate overrides manual translate
+// Disabled due to https://crbug.com/1273043.
 IN_PROC_BROWSER_TEST_F(TranslateManagerBrowserTest,
-                       HrefTranslateOverridesManualTranslate) {
+                       DISABLED_HrefTranslateOverridesManualTranslate) {
   ChromeTranslateClient* chrome_translate_client = GetChromeTranslateClient();
   TranslateManager* manager = chrome_translate_client->GetTranslateManager();
   manager->SetIgnoreMissingKeyForTesting(true);
@@ -1589,6 +1595,7 @@ IN_PROC_BROWSER_TEST_F(TranslateManagerWithSubFrameSupportBrowserTest,
 }
 
 // Test that hrefTranslate with an unsupported language doesn't trigger.
+// Disabled due to https://crbug.com/1273043.
 IN_PROC_BROWSER_TEST_F(TranslateManagerWithSubFrameSupportBrowserTest,
                        DISABLED_HrefTranslateUnsupported) {
   base::HistogramTester histograms;
@@ -1640,6 +1647,7 @@ IN_PROC_BROWSER_TEST_F(TranslateManagerWithSubFrameSupportBrowserTest,
 }
 
 // Test an href translate link to a conflicted page
+// Disabled due to https://crbug.com/1273043.
 IN_PROC_BROWSER_TEST_F(TranslateManagerWithSubFrameSupportBrowserTest,
                        DISABLED_HrefTranslateConflict) {
   base::HistogramTester histograms;
@@ -1821,6 +1829,7 @@ IN_PROC_BROWSER_TEST_F(TranslateManagerWithSubFrameSupportBrowserTest,
 }
 
 // Test if there was an error during translate library initialization.
+// Disabled due to https://crbug.com/1273043.
 IN_PROC_BROWSER_TEST_F(TranslateManagerWithSubFrameSupportBrowserTest,
                        DISABLED_PageTranslationInitializationError) {
   SetTranslateScript(kTestScriptInitializationError);
@@ -1996,6 +2005,7 @@ IN_PROC_BROWSER_TEST_F(TranslateManagerWithSubFrameSupportBrowserTest,
 }
 
 // Test if there was an error during script load.
+// Disabled due to https://crbug.com/1273043.
 IN_PROC_BROWSER_TEST_F(TranslateManagerWithSubFrameSupportBrowserTest,
                        DISABLED_PageTranslationScriptLoadError) {
   SetTranslateScript(kTestScriptLoadError);
