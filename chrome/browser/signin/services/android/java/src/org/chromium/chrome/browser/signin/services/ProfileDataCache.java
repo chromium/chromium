@@ -156,6 +156,13 @@ public class ProfileDataCache implements AccountInfoService.Observer {
     }
 
     /**
+     * @return Whether the cache contains non-default profile data for the given account.
+     */
+    public boolean hasProfileData(String accountEmail) {
+        return mCachedProfileData.containsKey(accountEmail);
+    }
+
+    /**
      * Sets a {@link BadgeConfig} and then populates the cache with the new Badge.
      * @param badgeResId Resource id of the badge to be attached. If 0 then the current Badge is
      * removed.
@@ -201,7 +208,9 @@ public class ProfileDataCache implements AccountInfoService.Observer {
      */
     @Override
     public void onAccountInfoUpdated(AccountInfo accountInfo) {
-        if (accountInfo != null && accountInfo.hasDisplayableInfo()) {
+        // We don't update the cache if the account information and ProfileDataCache config mean
+        // that we would just be returning the default profile data.
+        if (accountInfo != null && (accountInfo.hasDisplayableInfo() || mBadgeConfig != null)) {
             updateCacheAndNotifyObservers(accountInfo.getEmail(), accountInfo.getAccountImage(),
                     accountInfo.getFullName(), accountInfo.getGivenName());
         }

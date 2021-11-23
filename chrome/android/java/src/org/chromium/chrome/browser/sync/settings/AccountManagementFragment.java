@@ -179,6 +179,14 @@ public class AccountManagementFragment extends PreferenceFragmentCompat
         AccountManagerFacadeProvider.getInstance().getAccounts().then(this::updateAccountsList);
     }
 
+    /**
+     * The ProfileDataCache object needs to be accessible in some tests, for example in order to
+     * await the completion of async population of the cache.
+     */
+    public ProfileDataCache getProfileDataCacheForTesting() {
+        return mProfileDataCache;
+    }
+
     private boolean canAddAccounts() {
         UserManager userManager =
                 (UserManager) getActivity().getSystemService(Context.USER_SERVICE);

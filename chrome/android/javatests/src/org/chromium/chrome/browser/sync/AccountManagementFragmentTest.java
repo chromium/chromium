@@ -37,6 +37,7 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.SettingsActivityTestRule;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
+import org.chromium.chrome.browser.signin.services.ProfileDataCache;
 import org.chromium.chrome.browser.sync.settings.AccountManagementFragment;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
@@ -109,6 +110,11 @@ public class AccountManagementFragmentTest {
                 Profile::getLastUsedRegularProfile);
         CriteriaHelper.pollUiThread(profile::isChild);
         mSettingsActivityTestRule.startSettingsActivity();
+        CriteriaHelper.pollUiThread(() -> {
+            return mSettingsActivityTestRule.getFragment()
+                    .getProfileDataCacheForTesting()
+                    .hasProfileData(CHILD_ACCOUNT.name);
+        });
         View view = mSettingsActivityTestRule.getFragment().getView();
         onViewWaiting(allOf(is(view), isDisplayed()));
         mRenderTestRule.render(view, "account_management_fragment_for_child_account");
@@ -128,6 +134,12 @@ public class AccountManagementFragmentTest {
                 Profile::getLastUsedRegularProfile);
         CriteriaHelper.pollUiThread(profile::isChild);
         mSettingsActivityTestRule.startSettingsActivity();
+        ProfileDataCache profileDataCache =
+                mSettingsActivityTestRule.getFragment().getProfileDataCacheForTesting();
+        CriteriaHelper.pollUiThread(() -> {
+            return profileDataCache.hasProfileData(CHILD_ACCOUNT.name)
+                    && profileDataCache.hasProfileData("account@school.com");
+        });
         View view = mSettingsActivityTestRule.getFragment().getView();
         onViewWaiting(allOf(is(view), isDisplayed()));
         mRenderTestRule.render(view, "account_management_fragment_for_child_and_edu_accounts");
