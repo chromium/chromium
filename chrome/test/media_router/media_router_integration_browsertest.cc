@@ -296,7 +296,7 @@ void MediaRouterIntegrationBrowserTest::CheckStartFailed(
 base::FilePath MediaRouterIntegrationBrowserTest::GetResourceFile(
     base::FilePath::StringPieceType relative_path) const {
   const base::FilePath full_path =
-      base::PathService::CheckedGet(base::DIR_MODULE)
+      base::PathService::CheckedGet(base::DIR_ASSETS)
           .Append(kResourcePath)
           .Append(relative_path);
   {

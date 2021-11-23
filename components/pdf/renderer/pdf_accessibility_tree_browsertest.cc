@@ -114,7 +114,7 @@ class PdfAccessibilityTreeTest : public content::RenderViewTest {
     content::RenderViewTest::SetUp();
 
     base::FilePath pak_dir;
-    base::PathService::Get(base::DIR_MODULE, &pak_dir);
+    base::PathService::Get(base::DIR_ASSETS, &pak_dir);
     base::FilePath pak_file =
         pak_dir.Append(FILE_PATH_LITERAL("components_tests_resources.pak"));
     ui::ResourceBundle::GetSharedInstance().AddDataPackFromPath(

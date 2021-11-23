@@ -277,7 +277,13 @@ void HeadlessContentMainDelegate::InitLogging(
 
   // Otherwise we log to where the executable is.
   if (log_path.empty()) {
+#if defined(OS_FUCHSIA)
+    // TODO(crbug.com/1262330): Use the same solution as used for LOG_DIR.
+    // Use -1 to allow this to compile.
+    if (base::PathService::Get(-1, &log_path)) {
+#else
     if (base::PathService::Get(base::DIR_MODULE, &log_path)) {
+#endif
       log_path = log_path.Append(log_filename);
     } else {
       log_path = log_filename;

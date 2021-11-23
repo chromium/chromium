@@ -95,7 +95,7 @@ class PdfTestSuite final : public base::TestSuite {
     ui::ResourceBundle::InitSharedInstanceWithPakPath(ui_test_pak_path);
 
     base::FilePath pdf_tests_pak_path;
-    ASSERT_TRUE(base::PathService::Get(base::DIR_MODULE, &pdf_tests_pak_path));
+    ASSERT_TRUE(base::PathService::Get(base::DIR_ASSETS, &pdf_tests_pak_path));
     pdf_tests_pak_path =
         pdf_tests_pak_path.AppendASCII("pdf_tests_resources.pak");
     ui::ResourceBundle::GetSharedInstance().AddDataPackFromPath(

@@ -104,7 +104,7 @@ void InitializeKeyboardResources() {
   initialized = true;
 
   base::FilePath pak_dir;
-  base::PathService::Get(base::DIR_MODULE, &pak_dir);
+  base::PathService::Get(base::DIR_ASSETS, &pak_dir);
   base::FilePath pak_file =
       pak_dir.Append(FILE_PATH_LITERAL("keyboard_resources.pak"));
   ui::ResourceBundle::GetSharedInstance().AddDataPackFromPath(pak_file,

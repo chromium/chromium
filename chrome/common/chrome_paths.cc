@@ -136,15 +136,14 @@ bool PathProvider(int key, base::FilePath* result) {
       return base::PathService::Get(chrome::DIR_USER_DATA, result);
 #else
       // Debug builds write next to the binary (in the build tree)
+      // TODO(crbug.com/1262330): implement workable solution for Fuchsia.
 #if defined(OS_MAC)
       // Apps may not write into their own bundle.
       if (base::mac::AmIBundled()) {
         return base::PathService::Get(chrome::DIR_USER_DATA, result);
       }
-      return base::PathService::Get(base::DIR_EXE, result);
-#else
-      return base::PathService::Get(base::DIR_EXE, result);
 #endif  // defined(OS_MAC)
+      return base::PathService::Get(base::DIR_EXE, result);
 #endif  // NDEBUG
   }
 

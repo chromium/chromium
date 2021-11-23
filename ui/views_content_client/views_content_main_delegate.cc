@@ -70,7 +70,7 @@ void ViewsContentMainDelegate::PreSandboxStartup() {
 
   // Load content resources to provide, e.g., sandbox configuration data on Mac.
   base::FilePath content_resources_pak_path;
-  base::PathService::Get(base::DIR_MODULE, &content_resources_pak_path);
+  base::PathService::Get(base::DIR_ASSETS, &content_resources_pak_path);
   ui::ResourceBundle::GetSharedInstance().AddDataPackFromPath(
       content_resources_pak_path.AppendASCII("content_resources.pak"),
       ui::k100Percent);

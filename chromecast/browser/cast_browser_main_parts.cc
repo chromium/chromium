@@ -286,13 +286,13 @@ base::FilePath GetApplicationFontsDir() {
   std::string fontconfig_sysroot;
   if (env->GetVar("FONTCONFIG_SYSROOT", &fontconfig_sysroot)) {
     // Running with hermetic fontconfig; using the full path will not work.
-    // Assume the root is base::DIR_MODULE as set by
+    // Assume the root is base::DIR_ASSETS as set by
     // test_fonts::SetUpFontconfig().
     return base::FilePath("/fonts");
   } else {
-    base::FilePath dir_module;
-    base::PathService::Get(base::DIR_MODULE, &dir_module);
-    return dir_module.Append("fonts");
+    base::FilePath dir_assets;
+    base::PathService::Get(base::DIR_ASSETS, &dir_assets);
+    return dir_assets.Append("fonts");
   }
 }
 

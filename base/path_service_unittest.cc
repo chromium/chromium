@@ -130,9 +130,7 @@ TEST_F(PathServiceTest, Get) {
 #elif defined(OS_FUCHSIA)
   constexpr std::array<int, 3> kUnsupportedKeys = {
       // TODO(crbug.com/1231928): Implement DIR_USER_DESKTOP.
-      DIR_USER_DESKTOP,
-      // TODO(crbug.com/1184980), Do not define FILE_MODULE and DIR_MODULE.
-      FILE_MODULE, DIR_MODULE};
+      DIR_USER_DESKTOP};
 #else
   constexpr std::array<int, 0> kUnsupportedKeys = {};
 #endif  // defined(OS_ANDROID)

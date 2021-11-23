@@ -16,6 +16,7 @@
 #include "base/environment.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/logging.h"
 #include "base/path_service.h"
 #include "base/strings/string_split.h"
 #include "base/strings/utf_string_conversions.h"
@@ -149,12 +150,21 @@ bool FindChrome(base::FilePath* browser_exe) {
 #endif
   };
 
+  LOG_IF(ERROR, browser_exes_array[0].empty()) << "Unsupported platform.";
+
   std::vector<base::FilePath> browser_exes(
       browser_exes_array, browser_exes_array + base::size(browser_exes_array));
   base::FilePath module_dir;
+#if defined(OS_FUCHSIA)
+  // Use -1 to allow this to compile.
+  // TODO(crbug.com/1262176): Determine whether Fuchsia should support this and
+  // if so provide an appropriate implementation for this function.
+  if (base::PathService::Get(-1, &module_dir)) {
+#else
   if (base::PathService::Get(base::DIR_MODULE, &module_dir)) {
-    for (size_t i = 0; i < browser_exes.size(); ++i) {
-      base::FilePath path = module_dir.Append(browser_exes[i]);
+#endif
+    for (const base::FilePath& file_path : browser_exes) {
+      base::FilePath path = module_dir.Append(file_path);
       if (base::PathExists(path)) {
         *browser_exe = path;
         return true;

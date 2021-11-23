@@ -27,7 +27,7 @@ namespace {
 
 void OnResourcesLoaded() {
   base::FilePath views_examples_resources_pak_path;
-  CHECK(base::PathService::Get(base::DIR_MODULE,
+  CHECK(base::PathService::Get(base::DIR_ASSETS,
                                &views_examples_resources_pak_path));
   ui::ResourceBundle::GetSharedInstance().AddDataPackFromPath(
       views_examples_resources_pak_path.AppendASCII(
