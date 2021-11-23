@@ -455,7 +455,6 @@ IN_PROC_BROWSER_TEST_P(DictationTest, UserEndsDictation) {
   EXPECT_EQ(kFinalSpeechResult16, input_context_handler_->last_commit_text());
 }
 
-// TODO(crbug.com/1216111): add a DictationExtensionTest variant of this test.
 IN_PROC_BROWSER_TEST_P(DictationTest, UserEndsDictationWhenChromeVoxEnabled) {
   AccessibilityManager* manager = GetManager();
 
@@ -867,6 +866,22 @@ IN_PROC_BROWSER_TEST_P(DictationExtensionTest,
   ASSERT_EQ(0, GetUpdatePreeditTextCallCount());
   GetManager()->ToggleDictation();
   WaitForRecognitionStopped();
+}
+
+IN_PROC_BROWSER_TEST_P(DictationExtensionTest,
+                       UserEndsDictationWhenChromeVoxEnabled) {
+  EnableChromeVox();
+  EXPECT_TRUE(GetManager()->IsSpokenFeedbackEnabled());
+  InstallMockInputContextHandler();
+
+  GetManager()->ToggleDictation();
+  WaitForRecognitionStarted();
+  SendFakeSpeechResultAndWait(kFinalSpeechResult, /*is_final=*/false);
+  GetManager()->ToggleDictation();
+  WaitForRecognitionStopped();
+
+  WaitForCommitText(kFinalSpeechResult16);
+  ASSERT_EQ(0, GetUpdatePreeditTextCallCount());
 }
 
 // Ensures that the correct metrics are recorded when Dictation is toggled.

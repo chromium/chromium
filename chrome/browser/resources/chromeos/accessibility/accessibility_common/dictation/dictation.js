@@ -237,13 +237,19 @@ export class Dictation {
    * @private
    */
   async processSpeechRecognitionResult_(transcript, isFinal) {
+    // TODO(crbug.com/1216111): Make dictation.js store the current composition
+    // (we already have a member called interimText_) and remove the
+    // currentComposition_ member from input_controller.js. This aligns more
+    // closely with the model-view-controller design pattern.
+    this.inputController_.setCurrentComposition(transcript);
+
     if (!isFinal) {
       if (this.commandsFeatureEnabled_) {
         this.setInterimText_(transcript);
       } else if (!this.chromeVoxEnabled_) {
-        // When ChromeVox is enabled, we shouldn't populate interim
+        // When ChromeVox is enabled, we shouldn't display interim
         // composition results because it will increase the verbosity too much.
-        this.inputController_.setCompositionText(transcript);
+        this.inputController_.displayCurrentComposition();
       }
       return;
     }
