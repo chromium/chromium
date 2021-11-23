@@ -30,6 +30,7 @@
 #include "base/no_destructor.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/process/kill.h"
+#include "base/ranges/algorithm.h"
 #include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
@@ -4298,8 +4299,6 @@ void RenderFrameHostImpl::Unload(RenderFrameProxyHost* proxy, bool is_loading) {
 
   if (web_ui())
     web_ui()->RenderFrameHostUnloading();
-
-  web_bluetooth_services_.clear();
 
   StartPendingDeletionOnSubtree();
   // Some children with no unload handler may be eligible for deletion. Cut the
@@ -9220,40 +9219,33 @@ void RenderFrameHostImpl::CreatePaymentManager(
       BackForwardCacheDisablingFeature::kPaymentManager);
 }
 
+WebBluetoothServiceImpl*
+RenderFrameHostImpl::GetWebBluetoothServiceForTesting() {
+  if (!document_associated_data_ || !last_web_bluetooth_service_for_testing_)
+    return nullptr;
+
+  // Checking the list of services to make sure the last WebBluetoothServiceImpl
+  // instance has not been invalidated since then.
+  auto it = base::ranges::find(document_associated_data_->services,
+                               last_web_bluetooth_service_for_testing_);
+  if (document_associated_data_->services.end() == it) {
+    last_web_bluetooth_service_for_testing_ = nullptr;
+  }
+
+  return last_web_bluetooth_service_for_testing_;
+}
+
 void RenderFrameHostImpl::CreateWebBluetoothService(
     mojo::PendingReceiver<blink::mojom::WebBluetoothService> receiver) {
   BackForwardCache::DisableForRenderFrameHost(
       this, BackForwardCacheDisable::DisabledReason(
                 BackForwardCacheDisable::DisabledReasonId::kWebBluetooth));
-  // RFHI owns |web_bluetooth_services_| and |web_bluetooth_service| owns the
-  // |receiver_| which may run the error handler. |receiver_| can't run the
-  // error handler after it's destroyed so it can't run after the RFHI is
-  // destroyed.
-  auto web_bluetooth_service =
-      std::make_unique<WebBluetoothServiceImpl>(this, std::move(receiver));
-  web_bluetooth_service->SetClientConnectionErrorHandler(
-      base::BindOnce(&RenderFrameHostImpl::DeleteWebBluetoothService,
-                     base::Unretained(this), web_bluetooth_service.get()));
-  web_bluetooth_services_.push_back(std::move(web_bluetooth_service));
-}
 
-WebBluetoothServiceImpl*
-RenderFrameHostImpl::GetWebBluetoothServiceForTesting() {
-  if (web_bluetooth_services_.empty())
-    return nullptr;
-  return web_bluetooth_services_.back().get();
-}
-
-void RenderFrameHostImpl::DeleteWebBluetoothService(
-    WebBluetoothServiceImpl* web_bluetooth_service) {
-  auto it = std::find_if(
-      web_bluetooth_services_.begin(), web_bluetooth_services_.end(),
-      [web_bluetooth_service](
-          const std::unique_ptr<WebBluetoothServiceImpl>& service) {
-        return web_bluetooth_service == service.get();
-      });
-  DCHECK(it != web_bluetooth_services_.end());
-  web_bluetooth_services_.erase(it);
+  // Although the returned pointer is being stored for test support, this is not
+  // a test-only function, and the call of WebBluetoothServiceImpl::Create below
+  // is how the WebBluetoothServiceImpl instance gets created.
+  last_web_bluetooth_service_for_testing_ =
+      WebBluetoothServiceImpl::Create(this, std::move(receiver));
 }
 
 void RenderFrameHostImpl::CreateWebUsbService(

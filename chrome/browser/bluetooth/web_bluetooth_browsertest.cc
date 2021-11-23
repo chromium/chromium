@@ -35,6 +35,7 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/prerender_test_util.h"
 #include "content/public/test/test_navigation_observer.h"
+#include "content/public/test/test_utils.h"
 #include "content/public/test/url_loader_interceptor.h"
 #include "device/bluetooth/bluetooth_adapter.h"
 #include "device/bluetooth/bluetooth_adapter_factory.h"
@@ -1239,10 +1240,16 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ(observer.num_is_connected_to_bluetooth_device_changed(), 1);
   EXPECT_FALSE(observer.last_is_connected_to_bluetooth_device().has_value());
 
+  content::RenderFrameDeletedObserver rfh_observer(
+      GetWebContents()->GetMainFrame());
+
   // Navigates the primary page to the URL.
   prerender_helper()->NavigatePrimaryPage(prerender_url);
   // The page should be activated from the prerendering.
   EXPECT_TRUE(host_observer.was_activated());
+
+  // Wait until the previous RFH to be disposed of.
+  rfh_observer.WaitUntilDeleted();
 
   // During prerendering activation, the connection from the previous
   // RenderFrameHost to Web Bluetooth is closed, while the connection attempt

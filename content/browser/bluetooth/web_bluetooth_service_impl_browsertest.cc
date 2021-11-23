@@ -19,6 +19,7 @@
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/public/test/prerender_test_util.h"
+#include "content/public/test/test_utils.h"
 #include "content/shell/browser/shell.h"
 #include "content/test/test_web_contents.h"
 #include "device/bluetooth/public/cpp/bluetooth_uuid.h"
@@ -421,10 +422,17 @@ IN_PROC_BROWSER_TEST_F(WebBluetoothServiceImplBrowserTest,
   // Loading a new primary page removes observer and stops scanning.
   EXPECT_CALL(*adapter(), RemoveObserver(_));
 
+  RenderFrameDeletedObserver rfh_observer(GetWebContents()->GetMainFrame());
+
   // Navigates the primary page to the URL.
   prerender_helper()->NavigatePrimaryPage(prerender_url);
   // The page should be activated from the prerendering.
   EXPECT_TRUE(host_observer.was_activated());
+
+  // Wait until the previous RFH to be disposed of, so a new bluetooth adapter
+  // can be set after that.
+  rfh_observer.WaitUntilDeleted();
+
   // Sets BluetoothAdapter for the new primary page since the previous
   // adapter is released by BluetoothAdapterFactoryWrapper::ReleaseAdapter().
   BluetoothAdapterFactoryWrapper::Get().SetBluetoothAdapterForTesting(
@@ -456,14 +464,8 @@ IN_PROC_BROWSER_TEST_F(WebBluetoothServiceImplBrowserTest,
 
 // Tests that navigator.bluetooth.requestDevice() has an error without a user
 // gesture in the prerendering and works in the prerendering activation.
-// TODO(crbug.com/1269285): Fix flakiness on Linux and ChromeOS then reenable.
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
-#define MAYBE_RequestDeviceInPrerendering DISABLED_RequestDeviceInPrerendering
-#else
-#define MAYBE_RequestDeviceInPrerendering RequestDeviceInPrerendering
-#endif
 IN_PROC_BROWSER_TEST_F(WebBluetoothServiceImplBrowserTest,
-                       MAYBE_RequestDeviceInPrerendering) {
+                       RequestDeviceInPrerendering) {
   GURL url = embedded_test_server()->GetURL("/hello.html");
   EXPECT_TRUE(NavigateToURL(shell(), url));
 
@@ -514,10 +516,16 @@ IN_PROC_BROWSER_TEST_F(WebBluetoothServiceImplBrowserTest,
   // Loading a new primary page removes observer.
   EXPECT_CALL(*adapter(), RemoveObserver(_));
 
+  RenderFrameDeletedObserver rfh_observer(GetWebContents()->GetMainFrame());
+
   // Navigate to the prerendered page.
   prerender_helper()->NavigatePrimaryPage(prerender_url);
   // The page should be activated from the prerendering.
   EXPECT_TRUE(host_observer.was_activated());
+
+  // Wait until the previous RFH to be disposed of, so a new bluetooth adapter
+  // can be set after that.
+  rfh_observer.WaitUntilDeleted();
 
   // Sets BluetoothAdapter for the new primary page since the previous
   // adapter is released by BluetoothAdapterFactoryWrapper::ReleaseAdapter().
@@ -539,16 +547,8 @@ IN_PROC_BROWSER_TEST_F(WebBluetoothServiceImplBrowserTest,
 
 // Tests that GetBluetoothAllowed() only works with the main page in order to
 // ensure that it's no problem to get the main frame from the WebContents.
-// TODO(crbug.com/1269285): Fix flakiness on Linux and ChromeOS then reenable.
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
-#define MAYBE_GetBluetoothAllowedNotCalledInPrerendering \
-  DISABLED_GetBluetoothAllowedNotCalledInPrerendering
-#else
-#define MAYBE_GetBluetoothAllowedNotCalledInPrerendering \
-  GetBluetoothAllowedNotCalledInPrerendering
-#endif
 IN_PROC_BROWSER_TEST_F(WebBluetoothServiceImplBrowserTest,
-                       MAYBE_GetBluetoothAllowedNotCalledInPrerendering) {
+                       GetBluetoothAllowedNotCalledInPrerendering) {
   GURL url = embedded_test_server()->GetURL("/hello.html");
   EXPECT_TRUE(NavigateToURL(shell(), url));
 

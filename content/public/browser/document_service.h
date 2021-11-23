@@ -75,6 +75,8 @@ class DocumentService : public Interface, public internal::DocumentServiceBase {
     return render_frame_host()->GetLastCommittedOrigin();
   }
 
+  mojo::Receiver<Interface>* receiver() { return &receiver_; }
+
   // Returns the RenderFrameHost tracked by this object. Guaranteed to never be
   // null.
   using DocumentServiceBase::render_frame_host;

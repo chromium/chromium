@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/test/bind.h"
+#include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "content/browser/bluetooth/bluetooth_adapter_factory_wrapper.h"
 #include "content/browser/bluetooth/bluetooth_allowed_devices.h"
@@ -641,18 +642,17 @@ class WebBluetoothServiceImplBondingTest : public WebBluetoothServiceImplTest {
   base::test::ScopedFeatureList feature_list_;
 };
 
-TEST_F(WebBluetoothServiceImplTest, ClearStateDuringRequestDevice) {
+TEST_F(WebBluetoothServiceImplTest, DestroyedDuringRequestDevice) {
   auto options = blink::mojom::WebBluetoothRequestDeviceOptions::New();
   options->accept_all_devices = true;
 
+  base::MockCallback<WebBluetoothServiceImpl::RequestDeviceCallback> callback;
+  EXPECT_CALL(callback, Run).Times(0);
+  service_->RequestDevice(std::move(options), callback.Get());
+
   base::RunLoop loop;
-  service_->RequestDevice(
-      std::move(options),
-      base::BindLambdaForTesting(
-          [&loop](blink::mojom::WebBluetoothResult,
-                  blink::mojom::WebBluetoothDevicePtr) { loop.Quit(); }));
-  service_->ClearState();
-  loop.Run();
+  delete service_;
+  loop.RunUntilIdle();
 }
 
 TEST_F(WebBluetoothServiceImplTest, PermissionAllowed) {
@@ -671,7 +671,7 @@ TEST_F(WebBluetoothServiceImplTest, PermissionAllowed) {
   EXPECT_TRUE(service_->AreScanFiltersAllowed(filters));
 }
 
-TEST_F(WebBluetoothServiceImplTest, ClearStateDuringRequestScanningStart) {
+TEST_F(WebBluetoothServiceImplTest, DestroyedDuringRequestScanningStart) {
   blink::mojom::WebBluetoothLeScanFilterPtr filter = CreateScanFilter("a", "b");
   absl::optional<WebBluetoothServiceImpl::ScanFilters> filters;
 
@@ -684,33 +684,22 @@ TEST_F(WebBluetoothServiceImplTest, ClearStateDuringRequestScanningStart) {
   options->filters.emplace();
   options->filters->push_back(std::move(filter));
 
-  // Use two RunLoops to guarantee the order of operations for this test.
-  // |callback_loop| guarantees that RequestScanningStartCallback has finished
-  // executing and |result| has been populated. |request_loop| ensures that the
-  // entire RequestScanningStart flow has finished before |result| is checked.
-  base::RunLoop callback_loop, request_loop;
-  blink::mojom::WebBluetoothResult result;
-  service_->RequestScanningStart(
-      std::move(client), std::move(options),
-      base::BindLambdaForTesting(
-          [&callback_loop, &result](blink::mojom::WebBluetoothResult r) {
-            result = std::move(r);
-            callback_loop.Quit();
-          }));
+  // Check that a the callback is never called, as the service gets deleted
+  // during the scanning request.
+  base::RunLoop loop;
+  base::MockCallback<WebBluetoothServiceImpl::RequestScanningStartCallback>
+      callback;
+  EXPECT_CALL(callback, Run).Times(0);
+  service_->RequestScanningStart(std::move(client), std::move(options),
+                                 callback.Get());
 
-  // Post a task to clear the WebBluetoothService state during a call to
-  // RequestScanningStart(). This should cause the RequestScanningStartCallback
-  // to be run with an error result.
+  // Post a task to delete the WebBluetoothService state during a call to
+  // RequestScanningStart(). This should cause the callback to be dropped
+  // without being called.
   base::ThreadTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE,
-      base::BindLambdaForTesting([&callback_loop, this, &request_loop]() {
-        service_->ClearState();
-        callback_loop.Run();
-        request_loop.Quit();
-      }));
-  request_loop.Run();
+      FROM_HERE, base::BindLambdaForTesting([this]() { delete service_; }));
 
-  EXPECT_NE(result, blink::mojom::WebBluetoothResult::SUCCESS);
+  loop.RunUntilIdle();
 }
 
 TEST_F(WebBluetoothServiceImplTest, PermissionPromptCanceled) {
