@@ -117,56 +117,6 @@ class AppListSortBrowserTest : public extensions::ExtensionBrowserTest {
   base::test::ScopedFeatureList feature_list_;
 };
 
-// Verifies that the apps on the root launcher page can be arranged in the
-// (reverse) alphabetical order.
-IN_PROC_BROWSER_TEST_F(AppListSortBrowserTest, AlphabeticSort) {
-  // Sort apps with the alphabetical order.
-  event_generator_->GestureTapAt(
-      app_list_test_api_
-          .GetViewForAppListSort(ash::AppListSortOrder::kNameAlphabetical)
-          ->GetBoundsInScreen()
-          .CenterPoint());
-  EXPECT_EQ(GetAppIdsInOrdinalOrder(),
-            std::vector<std::string>({app1_id_, app2_id_, app3_id_}));
-
-  // Sort apps with the reverse alphabetical order.
-  event_generator_->GestureTapAt(
-      app_list_test_api_
-          .GetViewForAppListSort(
-              ash::AppListSortOrder::kNameReverseAlphabetical)
-          ->GetBoundsInScreen()
-          .CenterPoint());
-  EXPECT_EQ(GetAppIdsInOrdinalOrder(),
-            std::vector<std::string>({app3_id_, app2_id_, app1_id_}));
-}
-
-// Verifies that the apps in a folder can be arranged in the (reverse)
-// alphabetical order.
-IN_PROC_BROWSER_TEST_F(AppListSortBrowserTest, AlphabeticSortFolderItems) {
-  // Move apps to one folder.
-  const std::string folder_id =
-      app_list_test_api_.CreateFolderWithApps({app1_id_, app2_id_, app3_id_});
-
-  // Sort apps with the alphabetical order.
-  event_generator_->GestureTapAt(
-      app_list_test_api_
-          .GetViewForAppListSort(ash::AppListSortOrder::kNameAlphabetical)
-          ->GetBoundsInScreen()
-          .CenterPoint());
-  EXPECT_EQ(GetAppIdsInOrdinalOrder(),
-            std::vector<std::string>({app1_id_, app2_id_, app3_id_}));
-
-  // Sort apps with the reverse alphabetical order.
-  event_generator_->GestureTapAt(
-      app_list_test_api_
-          .GetViewForAppListSort(
-              ash::AppListSortOrder::kNameReverseAlphabetical)
-          ->GetBoundsInScreen()
-          .CenterPoint());
-  EXPECT_EQ(GetAppIdsInOrdinalOrder(),
-            std::vector<std::string>({app3_id_, app2_id_, app1_id_}));
-}
-
 // Verifies that the apps in the top level apps grid can be arranged in the
 // (reverse) alphabetical order using the context menu in apps grid view.
 // TODO(crbug.com/1267369): Also add a test that verifies the behavior in tablet

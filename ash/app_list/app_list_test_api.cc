@@ -42,16 +42,6 @@ PagedAppsGridView* GetAppsGridView() {
   return AppListView::TestApi(app_list_view).GetRootAppsGridView();
 }
 
-AppsContainerView* GetAppsContainerView() {
-  return Shell::Get()
-      ->app_list_controller()
-      ->presenter()
-      ->GetView()
-      ->app_list_main_view()
-      ->contents_view()
-      ->apps_container_view();
-}
-
 AppListModel* GetAppListModel() {
   return AppListModelProvider::Get()->model();
 }
@@ -193,20 +183,6 @@ PaginationModel* AppListTestApi::GetPaginationModel() {
 
 void AppListTestApi::UpdatePagedViewStructure() {
   GetAppsGridView()->UpdatePagedViewStructure();
-}
-
-views::View* AppListTestApi::GetViewForAppListSort(AppListSortOrder order) {
-  views::View* sort_button_container =
-      GetAppsContainerView()->sort_button_container_for_test();
-  switch (order) {
-    case AppListSortOrder::kCustom:
-      NOTREACHED();
-      return nullptr;
-    case AppListSortOrder::kNameAlphabetical:
-      return sort_button_container->children()[0];
-    case AppListSortOrder::kNameReverseAlphabetical:
-      return sort_button_container->children()[1];
-  }
 }
 
 AppsGridView* AppListTestApi::GetTopLevelAppsGridView() {

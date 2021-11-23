@@ -190,6 +190,16 @@ class AppListControllerImplTest : public AshTestBase {
     return widget_layer && widget_layer->GetAnimator()->is_animating();
   }
 
+  int CountPageBreakItems() {
+    auto* top_list = GetAppListModel()->top_level_item_list();
+    int count = 0;
+    for (size_t index = 0; index < top_list->item_count(); ++index) {
+      if (top_list->item_at(index)->is_page_break())
+        ++count;
+    }
+    return count;
+  }
+
  private:
   // The count of the items created by `PopulateItem()`.
   int populated_item_count_ = 0;
@@ -872,6 +882,21 @@ TEST_F(AppListControllerImplTest,
       Shell::Get()->app_list_controller()->GetHomeScreenWindow()->IsVisible());
 }
 
+TEST_F(AppListControllerImplTest, CreatePage) {
+  ShowAppListNow(AppListViewState::kFullscreenAllApps);
+  PagedAppsGridView* apps_grid_view = GetAppsGridView();
+  test::AppsGridViewTestApi test_api(apps_grid_view);
+  PopulateItem(test_api.TilesPerPage(0));
+  EXPECT_EQ(1, apps_grid_view->pagination_model()->total_pages());
+
+  // Add an extra item and verify that the page count is 2 now.
+  PopulateItem(1);
+  EXPECT_EQ(2, apps_grid_view->pagination_model()->total_pages());
+
+  // Verify that there is no page break items.
+  EXPECT_EQ(0, CountPageBreakItems());
+}
+
 // The test parameter indicates whether the shelf should auto-hide. In either
 // case the animation behaviors should be the same.
 class AppListAnimationTest : public AshTestBase,
@@ -1358,73 +1383,6 @@ TEST_F(AppListControllerWithAssistantTest, TriggerSearchKeyWhenAppListClosing) {
 
   // The Assistant should be closed.
   EXPECT_EQ(AssistantVisibility::kClosed, GetAssistantVisibility());
-}
-
-class AppListSortTest : public AppListControllerImplTest {
- public:
-  AppListSortTest() {
-    feature_list_.InitWithFeatures(
-        {ash::features::kLauncherAppSort, ash::features::kProductivityLauncher},
-        {});
-  }
-  ~AppListSortTest() override = default;
-
-  views::View* GetLeftSortButton() {
-    return GetAppsContainerView()
-        ->sort_button_container_for_test()
-        ->children()[0];
-  }
-
-  views::View* GetRightSortButton() {
-    return GetAppsContainerView()
-        ->sort_button_container_for_test()
-        ->children()[1];
-  }
-
-  int CountPageBreakItems() {
-    auto* top_list = GetAppListModel()->top_level_item_list();
-    int count = 0;
-    for (size_t index = 0; index < top_list->item_count(); ++index) {
-      if (top_list->item_at(index)->is_page_break())
-        ++count;
-    }
-    return count;
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-// Verifies basic UI elements for the app list sort.
-TEST_F(AppListSortTest, BasicUI) {
-  // Verify sort buttons in the peeking state.
-  ShowAppListNow(AppListViewState::kPeeking);
-  ASSERT_EQ(AppListViewState::kPeeking, GetAppListView()->app_list_state());
-  EXPECT_TRUE(GetLeftSortButton()->GetVisible());
-  EXPECT_TRUE(GetRightSortButton()->GetVisible());
-  DismissAppListNow();
-
-  // Verify sort buttons in the full screen state.
-  ShowAppListNow(AppListViewState::kFullscreenAllApps);
-  ASSERT_EQ(AppListViewState::kFullscreenAllApps,
-            GetAppListView()->app_list_state());
-  EXPECT_TRUE(GetLeftSortButton()->GetVisible());
-  EXPECT_TRUE(GetRightSortButton()->GetVisible());
-}
-
-TEST_F(AppListSortTest, CreatePage) {
-  ShowAppListNow(AppListViewState::kFullscreenAllApps);
-  PagedAppsGridView* apps_grid_view = GetAppsGridView();
-  test::AppsGridViewTestApi test_api(apps_grid_view);
-  PopulateItem(test_api.TilesPerPage(0));
-  EXPECT_EQ(1, apps_grid_view->pagination_model()->total_pages());
-
-  // Add an extra item and verify that the page count is 2 now.
-  PopulateItem(1);
-  EXPECT_EQ(2, apps_grid_view->pagination_model()->total_pages());
-
-  // Verify that there is no page break items.
-  EXPECT_EQ(0, CountPageBreakItems());
 }
 
 }  // namespace ash

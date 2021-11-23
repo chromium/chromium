@@ -216,52 +216,6 @@ class RedoButton : public SortUiControl {
 BEGIN_METADATA(RedoButton, views::View)
 END_METADATA
 
-// SortButton ------------------------------------------------------------------
-
-// A button for sorting the app icons on the launcher. Shown only when the
-// launcher apps sort is enabled.
-// TODO(https://crbug.com/1263999): remove `SortButton` when the app list sort
-// is enabled as default.
-class SortButton : public SortUiControl {
- public:
-  METADATA_HEADER(SortButton);
-
-  SortButton(bool is_alphabetical, AppListViewDelegate* delegate)
-      : SortUiControl(delegate,
-                      base::BindRepeating(&SortButton::LauncherSortTriggered,
-                                          base::Unretained(this))),
-        is_alphabetical_(is_alphabetical) {}
-  SortButton(const SortButton&) = delete;
-  SortButton& operator=(const SortButton&) = delete;
-  ~SortButton() override = default;
-
- private:
-  void OnThemeChanged() override {
-    SortUiControl::OnThemeChanged();
-    const SkColor icon_color = AshColorProvider::Get()->GetContentLayerColor(
-        AshColorProvider::ContentLayerType::kButtonIconColor);
-    SetImage(views::Button::STATE_NORMAL,
-             gfx::CreateVectorIcon(is_alphabetical_ ? kOverflowShelfLeftIcon
-                                                    : kOverflowShelfRightIcon,
-                                   GetPreferredSize().width(), icon_color));
-  }
-
-  void LauncherSortTriggered() {
-    views::InkDrop::Get(this)->GetInkDrop()->AnimateToState(
-        views::InkDropState::ACTION_TRIGGERED);
-    AppListModelProvider::Get()->model()->delegate()->RequestAppListSort(
-        is_alphabetical_ ? AppListSortOrder::kNameAlphabetical
-                         : AppListSortOrder::kNameReverseAlphabetical);
-  }
-
-  // If true, apps are sorted by the app name alphabetical order; otherwise,
-  // apps are sorted by the app name reverse alphabetical order.
-  const bool is_alphabetical_;
-};
-
-BEGIN_METADATA(SortButton, views::View)
-END_METADATA
-
 // SortUiControlContainer ------------------------------------------------------
 
 class SortUiControlContainer : public views::View {
@@ -284,10 +238,6 @@ class SortUiControlContainer : public views::View {
     SetLayoutManager(std::move(box_layout));
 
     // Add children.
-    AddChildView(
-        std::make_unique<SortButton>(/*is_alphabetical_=*/true, delegate));
-    AddChildView(
-        std::make_unique<SortButton>(/*is_alphabetical_=*/false, delegate));
     AddChildView(std::make_unique<RedoButton>(delegate));
 
     GetViewAccessibility().OverrideIsIgnored(true);
