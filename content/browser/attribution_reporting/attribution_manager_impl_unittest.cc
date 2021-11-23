@@ -44,6 +44,7 @@ using CreateReportStatus =
     ::content::AttributionStorage::CreateReportResult::Status;
 using DeactivatedSource = ::content::AttributionStorage::DeactivatedSource;
 
+using ::testing::_;
 using ::testing::ElementsAre;
 using ::testing::Field;
 using ::testing::IsEmpty;
@@ -114,10 +115,8 @@ class TestAttributionReporter
     if (reports.empty())
       return;
 
-    num_reports_ += reports.size();
-    last_report_time_ = reports.back().report_time;
-
     for (auto& report : reports) {
+      added_reports_.push_back(report);
       SentReportInfo info(std::move(report), sent_report_info_status_,
                           /*http_response_code=*/0);
 
@@ -128,7 +127,7 @@ class TestAttributionReporter
       }
     }
 
-    if (quit_closure_ && num_reports_ >= expected_num_reports_)
+    if (quit_closure_ && added_reports_.size() >= expected_num_reports_)
       std::move(quit_closure_).Run();
   }
 
@@ -154,12 +153,12 @@ class TestAttributionReporter
     sent_report_info_status_ = status;
   }
 
-  size_t num_reports() { return num_reports_; }
-
-  base::Time last_report_time() { return last_report_time_; }
+  const std::vector<AttributionReport>& added_reports() const {
+    return added_reports_;
+  }
 
   void WaitForNumReports(size_t expected_num_reports) {
-    if (num_reports_ >= expected_num_reports)
+    if (added_reports_.size() >= expected_num_reports)
       return;
 
     expected_num_reports_ = expected_num_reports;
@@ -179,10 +178,8 @@ class TestAttributionReporter
   SentReportInfo::Status sent_report_info_status_ =
       SentReportInfo::Status::kSent;
   size_t expected_num_reports_ = 0u;
-  size_t num_reports_ = 0u;
-  base::Time last_report_time_;
+  std::vector<AttributionReport> added_reports_;
   base::OnceClosure quit_closure_;
-
   std::vector<SentReportInfo> deferred_callbacks_;
 };
 
@@ -306,10 +303,10 @@ TEST_F(AttributionManagerImplTest, ImpressionConverted_ReportQueued) {
   task_environment_.FastForwardBy(kFirstReportingWindow -
                                   kAttributionManagerQueueReportsInterval -
                                   base::Minutes(1));
-  EXPECT_EQ(0u, test_reporter_->num_reports());
+  EXPECT_THAT(test_reporter_->added_reports(), IsEmpty());
 
   task_environment_.FastForwardBy(base::Minutes(1));
-  EXPECT_EQ(1u, test_reporter_->num_reports());
+  EXPECT_THAT(test_reporter_->added_reports(), SizeIs(1));
 }
 
 TEST_F(AttributionManagerImplTest, QueuedReportNotSent_NotQueuedAgain) {
@@ -318,12 +315,12 @@ TEST_F(AttributionManagerImplTest, QueuedReportNotSent_NotQueuedAgain) {
   attribution_manager_->HandleTrigger(DefaultTrigger());
   task_environment_.FastForwardBy(kFirstReportingWindow -
                                   kAttributionManagerQueueReportsInterval);
-  EXPECT_EQ(1u, test_reporter_->num_reports());
+  EXPECT_THAT(test_reporter_->added_reports(), SizeIs(1));
 
   // If the report is not sent, it should not be added to the queue again as
   // long as the reporter is still handling it.
   task_environment_.FastForwardBy(kAttributionManagerQueueReportsInterval);
-  EXPECT_EQ(1u, test_reporter_->num_reports());
+  EXPECT_THAT(test_reporter_->added_reports(), SizeIs(1));
 }
 
 TEST_F(AttributionManagerImplTest,
@@ -341,7 +338,7 @@ TEST_F(AttributionManagerImplTest,
                                   kAttributionManagerQueueReportsInterval);
   // This is 3 instead of 1 because the failed report is directly added back
   // into the queue 2 times.
-  EXPECT_EQ(3u, test_reporter_->num_reports());
+  EXPECT_THAT(test_reporter_->added_reports(), SizeIs(3));
 
   // kFailed = 1.
   histograms.ExpectUniqueSample("Conversion.ReportSendOutcome", 1, 1);
@@ -359,11 +356,11 @@ TEST_F(AttributionManagerImplTest,
 
   task_environment_.FastForwardBy(kFirstReportingWindow -
                                   kAttributionManagerQueueReportsInterval);
-  EXPECT_EQ(1u, test_reporter_->num_reports());
+  EXPECT_THAT(test_reporter_->added_reports(), SizeIs(1));
 
   // If the report indicated retry, it should be added to the queue again.
   task_environment_.FastForwardBy(kAttributionManagerQueueReportsInterval);
-  EXPECT_EQ(1u, test_reporter_->num_reports());
+  EXPECT_THAT(test_reporter_->added_reports(), SizeIs(1));
 
   // kFailed = 1.
   histograms.ExpectUniqueSample("Conversion.ReportSendOutcome", 1, 1);
@@ -384,11 +381,13 @@ TEST_F(AttributionManagerImplTest, QueuedReportAlwaysFails_StopsSending) {
   task_environment_.FastForwardBy(kFirstReportingWindow -
                                   kAttributionManagerQueueReportsInterval -
                                   base::Milliseconds(1));
-  EXPECT_EQ(base::Time(), test_reporter_->last_report_time());
+  EXPECT_THAT(test_reporter_->added_reports(), IsEmpty());
 
   // The report is first in the queuing window.
   task_environment_.FastForwardBy(base::Milliseconds(1));
-  EXPECT_EQ(expected_report_time, test_reporter_->last_report_time());
+  EXPECT_THAT(test_reporter_->added_reports(),
+              ElementsAre(Field(&AttributionReport::report_time,
+                                expected_report_time)));
 
   // Simulate the reporter sending the report only once the actual report time
   // has been reached.
@@ -399,20 +398,30 @@ TEST_F(AttributionManagerImplTest, QueuedReportAlwaysFails_StopsSending) {
   // At this point, the report has been added directly to the reporter with the
   // updated report time of +5 minutes.
   expected_report_time += base::Minutes(5);
-  EXPECT_EQ(expected_report_time, test_reporter_->last_report_time());
+  EXPECT_THAT(test_reporter_->added_reports(),
+              ElementsAre(_, Field(&AttributionReport::report_time,
+                                   expected_report_time)));
 
   task_environment_.FastForwardBy(base::Minutes(5));
-  EXPECT_EQ(expected_report_time, test_reporter_->last_report_time());
+  EXPECT_THAT(test_reporter_->added_reports(),
+              ElementsAre(_, Field(&AttributionReport::report_time,
+                                   expected_report_time)));
   test_reporter_->RunDeferredCallbacks();
 
   test_reporter_->WaitForNumReports(3);
   // At this point, the report has been added directly to the reporter with the
   // updated report time of +15 minutes.
   expected_report_time += base::Minutes(15);
-  EXPECT_EQ(expected_report_time, test_reporter_->last_report_time());
+  EXPECT_THAT(
+      test_reporter_->added_reports(),
+      ElementsAre(
+          _, _, Field(&AttributionReport::report_time, expected_report_time)));
 
   task_environment_.FastForwardBy(base::Minutes(15));
-  EXPECT_EQ(expected_report_time, test_reporter_->last_report_time());
+  EXPECT_THAT(
+      test_reporter_->added_reports(),
+      ElementsAre(
+          _, _, Field(&AttributionReport::report_time, expected_report_time)));
   test_reporter_->RunDeferredCallbacks();
 
   // At this point, the report has reached the maximum number of attempts and it
@@ -437,14 +446,14 @@ TEST_F(AttributionManagerImplTest, QueuedReportOffline_NoFailureIncrement) {
                                   kAttributionManagerQueueReportsInterval);
   // This is 3 instead of 1 because the failed report is directly added back
   // into the queue 2 times.
-  EXPECT_EQ(3u, test_reporter_->num_reports());
+  EXPECT_THAT(test_reporter_->added_reports(), SizeIs(3));
 
   test_reporter_->SetSentReportInfoStatus(SentReportInfo::Status::kOffline);
   task_environment_.FastForwardBy(base::Minutes(30));
-  EXPECT_EQ(3u, test_reporter_->num_reports());
+  EXPECT_THAT(test_reporter_->added_reports(), SizeIs(3));
 
   task_environment_.FastForwardBy(base::Minutes(30));
-  EXPECT_EQ(3u, test_reporter_->num_reports());
+  EXPECT_THAT(test_reporter_->added_reports(), SizeIs(3));
 
   // kFailed =1.
   histograms.ExpectUniqueSample("Conversion.ReportSendOutcome", 1, 1);
@@ -466,7 +475,7 @@ TEST_F(AttributionManagerImplTest, ReportExpiredAtStartup_Sent) {
   CreateManager();
 
   test_reporter_->WaitForNumReports(1);
-  EXPECT_EQ(1u, test_reporter_->num_reports());
+  EXPECT_THAT(test_reporter_->added_reports(), SizeIs(1));
 }
 
 TEST_F(AttributionManagerImplTest, QueuedReportSent_NotQueuedAgain) {
@@ -477,11 +486,11 @@ TEST_F(AttributionManagerImplTest, QueuedReportSent_NotQueuedAgain) {
   attribution_manager_->HandleTrigger(DefaultTrigger());
   task_environment_.FastForwardBy(kFirstReportingWindow -
                                   kAttributionManagerQueueReportsInterval);
-  EXPECT_EQ(1u, test_reporter_->num_reports());
+  EXPECT_THAT(test_reporter_->added_reports(), SizeIs(1));
 
   // The report should not be added to the queue again.
   task_environment_.FastForwardBy(kAttributionManagerQueueReportsInterval);
-  EXPECT_EQ(1u, test_reporter_->num_reports());
+  EXPECT_THAT(test_reporter_->added_reports(), SizeIs(1));
 
   // kSent = 0.
   histograms.ExpectUniqueSample("Conversion.ReportSendOutcome", 0, 1);
@@ -652,7 +661,7 @@ TEST_F(AttributionManagerImplTest, ExpiredReportsAtStartup_Queued) {
       SourceBuilder(clock().Now()).SetExpiry(kImpressionExpiry).Build());
   attribution_manager_->HandleTrigger(DefaultTrigger());
 
-  EXPECT_EQ(0u, test_reporter_->num_reports());
+  EXPECT_THAT(test_reporter_->added_reports(), IsEmpty());
 
   // Reset the manager to simulate shutdown.
   attribution_manager_.reset();
@@ -667,11 +676,11 @@ TEST_F(AttributionManagerImplTest, ExpiredReportsAtStartup_Queued) {
   CreateManager();
   test_reporter_->ShouldRunReportSentCallbacks(true);
   test_reporter_->WaitForNumReports(1);
-  EXPECT_EQ(1u, test_reporter_->num_reports());
+  EXPECT_THAT(test_reporter_->added_reports(), SizeIs(1));
 
   // The second report is still queued at the correct time.
   task_environment_.FastForwardBy(kAttributionManagerQueueReportsInterval);
-  EXPECT_EQ(2u, test_reporter_->num_reports());
+  EXPECT_THAT(test_reporter_->added_reports(), SizeIs(2));
 }
 
 // This functionality is tested more thoroughly in the AttributionStorageSql
@@ -694,7 +703,7 @@ TEST_F(AttributionManagerImplTest, ClearData) {
     task_environment_.FastForwardBy(kFirstReportingWindow -
                                     kAttributionManagerQueueReportsInterval);
     size_t expected_reports = match_url ? 0u : 1u;
-    EXPECT_EQ(expected_reports, test_reporter_->num_reports());
+    EXPECT_THAT(test_reporter_->added_reports(), SizeIs(expected_reports));
   }
 }
 
@@ -702,11 +711,11 @@ TEST_F(AttributionManagerImplTest, ConversionsSentFromUI_ReportedImmediately) {
   attribution_manager_->HandleSource(
       SourceBuilder(clock().Now()).SetExpiry(kImpressionExpiry).Build());
   attribution_manager_->HandleTrigger(DefaultTrigger());
-  EXPECT_EQ(0u, test_reporter_->num_reports());
+  EXPECT_THAT(test_reporter_->added_reports(), IsEmpty());
 
   attribution_manager_->SendReportsForWebUI(base::DoNothing());
   task_environment_.FastForwardBy(base::Minutes(0));
-  EXPECT_EQ(1u, test_reporter_->num_reports());
+  EXPECT_THAT(test_reporter_->added_reports(), SizeIs(1));
 }
 
 // TODO(crbug.com/1088449): Flaky on Linux and Android.
@@ -722,7 +731,7 @@ TEST_F(AttributionManagerImplTest, MAYBE_ExpiredReportsAtStartup_Delayed) {
   attribution_manager_->HandleSource(
       SourceBuilder(clock().Now()).SetExpiry(kImpressionExpiry).Build());
   attribution_manager_->HandleTrigger(DefaultTrigger());
-  EXPECT_EQ(0u, test_reporter_->num_reports());
+  EXPECT_THAT(test_reporter_->added_reports(), IsEmpty());
 
   // Reset the manager to simulate shutdown.
   attribution_manager_.reset();
@@ -736,9 +745,10 @@ TEST_F(AttributionManagerImplTest, MAYBE_ExpiredReportsAtStartup_Delayed) {
 
   // Ensure that the expired report is delayed based on the time the browser
   // started.
-  EXPECT_EQ(start_time + kFirstReportingWindow + base::Minutes(1) +
-                kExpiredReportOffset,
-            test_reporter_->last_report_time());
+  EXPECT_THAT(test_reporter_->added_reports(),
+              ElementsAre(Field(&AttributionReport::report_time,
+                                start_time + kFirstReportingWindow +
+                                    base::Minutes(1) + kExpiredReportOffset)));
 }
 
 TEST_F(AttributionManagerImplTest,
@@ -748,7 +758,7 @@ TEST_F(AttributionManagerImplTest,
   attribution_manager_->HandleSource(
       SourceBuilder(clock().Now()).SetExpiry(kImpressionExpiry).Build());
   attribution_manager_->HandleTrigger(DefaultTrigger());
-  EXPECT_EQ(0u, test_reporter_->num_reports());
+  EXPECT_THAT(test_reporter_->added_reports(), IsEmpty());
 
   // Reset the manager to simulate shutdown.
   attribution_manager_.reset();
@@ -759,9 +769,9 @@ TEST_F(AttributionManagerImplTest,
   // Ensure that this report does not receive additional delay.
   CreateManager();
   test_reporter_->WaitForNumReports(1);
-  EXPECT_EQ(1u, test_reporter_->num_reports());
-  EXPECT_EQ(start_time + kFirstReportingWindow,
-            test_reporter_->last_report_time());
+  EXPECT_THAT(test_reporter_->added_reports(),
+              ElementsAre(Field(&AttributionReport::report_time,
+                                start_time + kFirstReportingWindow)));
 }
 
 TEST_F(AttributionManagerImplTest, SessionOnlyOrigins_DataDeletedAtShutdown) {
@@ -841,12 +851,12 @@ TEST_F(AttributionManagerImplTest, ConversionPrioritization_OneReportSent) {
   EXPECT_THAT(StoredReports(), SizeIs(3));
 
   task_environment_.FastForwardBy(base::Days(7) - base::Minutes(30));
-  EXPECT_EQ(3u, test_reporter_->num_reports());
+  EXPECT_THAT(test_reporter_->added_reports(), SizeIs(3));
 
   task_environment_.FastForwardBy(base::Minutes(5));
   attribution_manager_->HandleTrigger(TriggerBuilder().SetPriority(2).Build());
   task_environment_.FastForwardBy(base::Hours(1));
-  EXPECT_EQ(3u, test_reporter_->num_reports());
+  EXPECT_THAT(test_reporter_->added_reports(), SizeIs(3));
 }
 
 TEST_F(AttributionManagerImplTest, HandleTrigger_RecordsMetric) {
@@ -895,13 +905,13 @@ TEST_F(AttributionManagerImplTest, ClearData_RequeuesReports) {
   attribution_manager_->HandleTrigger(
       TriggerBuilder().SetReportingOrigin(origin_b).Build());
 
-  EXPECT_EQ(0u, test_reporter_->num_reports());
+  EXPECT_THAT(test_reporter_->added_reports(), IsEmpty());
 
   task_environment_.FastForwardBy(kFirstReportingWindow -
                                   kAttributionManagerQueueReportsInterval);
 
   test_reporter_->WaitForNumReports(2);
-  EXPECT_EQ(2u, test_reporter_->num_reports());
+  EXPECT_THAT(test_reporter_->added_reports(), SizeIs(2));
 
   attribution_manager_->ClearData(
       base::Time::Min(), base::Time::Max(),
@@ -910,7 +920,7 @@ TEST_F(AttributionManagerImplTest, ClearData_RequeuesReports) {
       base::DoNothing());
 
   test_reporter_->WaitForNumReports(3);
-  EXPECT_EQ(3u, test_reporter_->num_reports());
+  EXPECT_THAT(test_reporter_->added_reports(), SizeIs(3));
 }
 
 TEST_F(AttributionManagerImplTest, ClearData_NoDeleteForRemovedFromQueue) {
@@ -930,7 +940,7 @@ TEST_F(AttributionManagerImplTest, ClearData_NoDeleteForRemovedFromQueue) {
                                   kAttributionManagerQueueReportsInterval);
 
   test_reporter_->WaitForNumReports(1);
-  EXPECT_EQ(1u, test_reporter_->num_reports());
+  EXPECT_THAT(test_reporter_->added_reports(), SizeIs(1));
   EXPECT_THAT(StoredReports(), SizeIs(1));
 
   attribution_manager_->ClearData(
