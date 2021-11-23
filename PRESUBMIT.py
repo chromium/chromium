@@ -1221,6 +1221,11 @@ def _IsProtoFile(input_api, file_path):
   return input_api.os_path.splitext(file_path)[1] == ".proto"
 
 
+def _IsXmlOrGrdFile(input_api, file_path):
+  ext = input_api.os_path.splitext(file_path)[1]
+  return ext in ('.grd', '.xml')
+
+
 def CheckNoUpstreamDepsOnClank(input_api, output_api):
   """Prevent additions of dependencies from the upstream repo on //clank."""
   # clank can depend on clank
@@ -1801,6 +1806,15 @@ def CheckUnwantedDependencies(input_api, output_api):
   change. Breaking - rules is an error, breaking ! rules is a
   warning.
   """
+  # Return early if no relevant file types were modified.
+  for f in input_api.AffectedFiles():
+    path = f.LocalPath()
+    if (_IsCPlusPlusFile(input_api, path) or _IsProtoFile(input_api, path) or
+        _IsJavaFile(input_api, path)):
+      break
+  else:
+    return []
+
   import sys
   # We need to wait until we have an input_api object and use this
   # roundabout construct to import checkdeps because this file is
@@ -2633,6 +2647,12 @@ def CheckParseErrors(input_api, output_api):
 
 def CheckJavaStyle(input_api, output_api):
   """Runs checkstyle on changed java files and returns errors if any exist."""
+
+  # Return early if no java files were modified.
+  if not any(_IsJavaFile(input_api, f.LocalPath()) for f in
+             input_api.AffectedFiles()):
+    return []
+
   import sys
   original_sys_path = sys.path
   try:
@@ -2989,6 +3009,11 @@ def CheckSetNoParent(input_api, output_api):
      //build/OWNERS.setnoparent (see also
      //docs/code_reviews.md#owners-files-details)
   """
+  # Return early if no OWNERS files were modified.
+  if not any(f.LocalPath().endswith('OWNERS') for f in
+             input_api.AffectedFiles(include_deletes=False)):
+    return []
+
   errors = []
 
   allowed_owners_files_file = 'build/OWNERS.setnoparent'
@@ -3419,6 +3444,12 @@ def _CheckAndroidWebkitImports(input_api, output_api):
 
 def _CheckAndroidXmlStyle(input_api, output_api, is_check_on_upload):
   """Checks Android XML styles """
+
+  # Return early if no relevant files were modified.
+  if not any(_IsXmlOrGrdFile(input_api, f.LocalPath()) for f in
+             input_api.AffectedFiles(include_deletes=False)):
+    return []
+
   import sys
   original_sys_path = sys.path
   try:
@@ -3535,9 +3566,14 @@ def CheckPydepsNeedsUpdating(input_api, output_api, checker_for_tests=None):
   """Checks if a .pydeps file needs to be regenerated."""
   # This check is for Python dependency lists (.pydeps files), and involves
   # paths not only in the PRESUBMIT.py, but also in the .pydeps files. It
-  # doesn't work on Windows and Mac, so skip it on other platforms.
+  # doesn't work on Windows and Mac, so skip it on other platforms and skip if
+  # no pydeps files are affected.
   if not input_api.platform.startswith('linux'):
     return []
+  if not any(f.LocalPath().endswith('.pydeps') for f in input_api.AffectedFiles(
+             include_deletes=True)):
+    return []
+
   is_android = _ParseGclientArgs().get('checkout_android', 'false') == 'true'
   pydeps_to_check = _ALL_PYDEPS_FILES if is_android else _GENERIC_PYDEPS_FILES
   results = []
@@ -5166,6 +5202,10 @@ def CheckStableMojomChanges(input_api, output_api):
   changed_mojoms = input_api.AffectedFiles(
       include_deletes=True,
       file_filter=lambda f: f.LocalPath().endswith(('.mojom')))
+
+  if not changed_mojoms:
+    return []
+
   delta = []
   for mojom in changed_mojoms:
     old_contents = ''.join(mojom.OldContents()) or None
