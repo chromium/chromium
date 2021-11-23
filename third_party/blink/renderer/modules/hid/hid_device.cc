@@ -15,7 +15,7 @@
 #include "third_party/blink/renderer/modules/event_target_modules.h"
 #include "third_party/blink/renderer/modules/hid/hid.h"
 #include "third_party/blink/renderer/modules/hid/hid_input_report_event.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 
 namespace blink {

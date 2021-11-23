@@ -20,7 +20,7 @@
 #include "third_party/blink/renderer/modules/peerconnection/test_webrtc_stats_report_obtainer.h"
 #include "third_party/blink/renderer/modules/peerconnection/testing/mock_rtp_sender.h"
 #include "third_party/blink/renderer/modules/peerconnection/webrtc_media_stream_track_adapter_map.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_audio_source.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_component.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_source.h"

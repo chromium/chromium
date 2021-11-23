@@ -21,7 +21,7 @@
 #include "third_party/blink/renderer/modules/event_target_modules.h"
 #include "third_party/blink/renderer/modules/hid/hid_connection_event.h"
 #include "third_party/blink/renderer/modules/hid/hid_device.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace blink {
 

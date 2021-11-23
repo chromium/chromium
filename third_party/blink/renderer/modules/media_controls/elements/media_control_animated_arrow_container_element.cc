@@ -9,7 +9,7 @@
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/html/html_style_element.h"
 #include "third_party/blink/renderer/modules/media_controls/media_controls_resource_loader.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace blink {
 

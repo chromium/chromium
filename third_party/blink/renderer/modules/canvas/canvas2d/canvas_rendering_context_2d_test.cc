@@ -47,7 +47,7 @@
 #include "third_party/blink/renderer/platform/graphics/test/gpu_memory_buffer_test_platform.h"
 #include "third_party/blink/renderer/platform/graphics/test/gpu_test_utils.h"
 #include "third_party/blink/renderer/platform/graphics/unaccelerated_static_bitmap_image.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/loader/fetch/memory_cache.h"
 #include "third_party/blink/renderer/platform/testing/paint_test_configurations.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"

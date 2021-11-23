@@ -19,7 +19,7 @@
 #include "third_party/blink/renderer/core/html/canvas/canvas_image_source.h"
 #include "third_party/blink/renderer/core/workers/worker_thread.h"
 #include "third_party/blink/renderer/modules/shapedetection/shape_detection_type_converter.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {

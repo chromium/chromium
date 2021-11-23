@@ -24,7 +24,7 @@
 #include "third_party/blink/renderer/modules/bluetooth/bluetooth_uuid.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/microtask.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 
 namespace blink {

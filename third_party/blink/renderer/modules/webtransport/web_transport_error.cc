@@ -8,7 +8,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_web_transport_error_init.h"
 #include "third_party/blink/renderer/platform/bindings/exception_code.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace blink {
 

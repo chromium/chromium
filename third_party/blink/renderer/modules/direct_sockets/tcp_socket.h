@@ -17,7 +17,7 @@
 #include "third_party/blink/renderer/modules/direct_sockets/tcp_writable_stream_wrapper.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/scheduler/public/frame_or_worker_scheduler.h"
 

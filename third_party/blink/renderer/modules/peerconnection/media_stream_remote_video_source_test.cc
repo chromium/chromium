@@ -25,7 +25,7 @@
 #include "third_party/blink/renderer/modules/mediastream/mock_media_stream_video_sink.h"
 #include "third_party/blink/renderer/modules/peerconnection/adapters/web_rtc_cross_thread_copier.h"
 #include "third_party/blink/renderer/modules/peerconnection/mock_peer_connection_dependency_factory.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_source.h"
 #include "third_party/blink/renderer/platform/testing/io_task_runner_testing_platform_support.h"
 #include "third_party/blink/renderer/platform/webrtc/track_observer.h"

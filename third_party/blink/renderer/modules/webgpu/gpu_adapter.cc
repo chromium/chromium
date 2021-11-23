@@ -15,7 +15,7 @@
 #include "third_party/blink/renderer/modules/webgpu/gpu_device.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_supported_features.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_supported_limits.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace blink {
 

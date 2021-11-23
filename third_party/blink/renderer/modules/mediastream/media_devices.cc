@@ -43,7 +43,7 @@
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/microtask.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/mediastream/webrtc_uma_histograms.h"
 #include "third_party/blink/renderer/platform/privacy_budget/identifiability_digest_helpers.h"
 #include "third_party/blink/renderer/platform/region_capture_crop_id.h"

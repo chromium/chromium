@@ -98,7 +98,7 @@
 #include "third_party/blink/renderer/modules/webgl/webgl_rendering_context.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_canvas_context.h"
 #include "third_party/blink/renderer/modules/worklet/animation_and_paint_worklet_thread.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/mojo/mojo_helper.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"

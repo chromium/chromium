@@ -64,7 +64,7 @@
 #include "third_party/blink/renderer/modules/credentialmanager/public_key_credential.h"
 #include "third_party/blink/renderer/modules/credentialmanager/scoped_promise_resolver.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/weborigin/origin_access_entry.h"

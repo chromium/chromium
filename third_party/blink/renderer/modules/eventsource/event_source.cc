@@ -51,7 +51,7 @@
 #include "third_party/blink/renderer/core/loader/threadable_loader.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_error.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_loader_options.h"

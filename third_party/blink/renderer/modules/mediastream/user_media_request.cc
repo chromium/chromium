@@ -54,7 +54,7 @@
 #include "third_party/blink/renderer/modules/mediastream/user_media_controller.h"
 #include "third_party/blink/renderer/modules/peerconnection/peer_connection_tracker.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_descriptor.h"
 #include "third_party/blink/renderer/platform/privacy_budget/identifiability_digest_helpers.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"

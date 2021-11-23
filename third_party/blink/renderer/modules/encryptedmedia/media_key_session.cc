@@ -53,7 +53,7 @@
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/bindings/v8_throw_exception.h"
 #include "third_party/blink/renderer/platform/content_decryption_module_result.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/instrumentation/instance_counters.h"
 #include "third_party/blink/renderer/platform/network/mime/content_type.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"

@@ -38,7 +38,7 @@
 #include "third_party/blink/renderer/modules/mediastream/mock_constraint_factory.h"
 #include "third_party/blink/renderer/modules/mediastream/mock_media_stream_video_source.h"
 #include "third_party/blink/renderer/modules/mediastream/mock_mojo_media_stream_dispatcher_host.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_audio_processor_options.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_audio_source.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_audio_track.h"

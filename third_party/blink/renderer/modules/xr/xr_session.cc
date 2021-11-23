@@ -60,7 +60,7 @@
 #include "third_party/blink/renderer/platform/bindings/enumeration_base.h"
 #include "third_party/blink/renderer/platform/bindings/v8_throw_exception.h"
 #include "third_party/blink/renderer/platform/geometry/float_point_3d.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/transforms/transformation_matrix.h"
 
 namespace blink {

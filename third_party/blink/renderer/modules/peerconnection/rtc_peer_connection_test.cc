@@ -31,7 +31,7 @@
 #include "third_party/blink/renderer/modules/mediastream/media_stream_track.h"
 #include "third_party/blink/renderer/modules/peerconnection/mock_rtc_peer_connection_handler_platform.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/peerconnection/rtc_rtp_receiver_platform.h"
 #include "third_party/blink/renderer/platform/peerconnection/rtc_rtp_sender_platform.h"
 #include "third_party/blink/renderer/platform/peerconnection/rtc_session_description_platform.h"

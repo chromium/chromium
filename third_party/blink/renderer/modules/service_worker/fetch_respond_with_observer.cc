@@ -30,7 +30,7 @@
 #include "third_party/blink/renderer/modules/service_worker/service_worker_global_scope.h"
 #include "third_party/blink/renderer/modules/service_worker/wait_until_observer.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/loader/fetch/bytes_consumer.h"
 #include "v8/include/v8.h"
 

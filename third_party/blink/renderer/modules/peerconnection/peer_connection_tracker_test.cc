@@ -16,7 +16,7 @@
 #include "third_party/blink/renderer/modules/peerconnection/mock_peer_connection_dependency_factory.h"
 #include "third_party/blink/renderer/modules/peerconnection/mock_rtc_peer_connection_handler_client.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_peer_connection_handler.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/mediastream/media_constraints.h"
 #include "third_party/blink/renderer/platform/peerconnection/rtc_offer_options_platform.h"
 #include "third_party/blink/renderer/platform/peerconnection/rtc_rtp_receiver_platform.h"

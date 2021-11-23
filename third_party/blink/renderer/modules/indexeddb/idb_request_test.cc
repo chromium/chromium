@@ -30,6 +30,7 @@
 
 #include "base/bind.h"
 #include "base/memory/scoped_refptr.h"
+#include "build/build_config.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
@@ -60,7 +61,7 @@
 #include "third_party/blink/renderer/modules/indexeddb/web_idb_database.h"
 #include "third_party/blink/renderer/modules/indexeddb/web_idb_transaction.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/testing/testing_platform_support.h"
 #include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"

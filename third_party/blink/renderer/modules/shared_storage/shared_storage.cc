@@ -28,7 +28,7 @@
 #include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/modules/shared_storage/shared_storage_worklet.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"

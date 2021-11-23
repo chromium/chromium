@@ -9,7 +9,7 @@
 #include "third_party/blink/renderer/core/fileapi/blob.h"
 #include "third_party/blink/renderer/core/fileapi/file_reader_loader_client.h"
 #include "third_party/blink/renderer/modules/clipboard/clipboard_promise.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/self_keep_alive.h"
 #include "third_party/skia/include/core/SkImage.h"
 

@@ -15,7 +15,7 @@
 #include "third_party/blink/renderer/modules/device_orientation/device_orientation_event.h"
 #include "third_party/blink/renderer/modules/device_orientation/device_orientation_event_pump.h"
 #include "third_party/blink/renderer/modules/event_modules.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 #include "third_party/blink/renderer/platform/wtf/assertions.h"
 

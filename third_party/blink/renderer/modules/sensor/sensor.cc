@@ -17,7 +17,7 @@
 #include "third_party/blink/renderer/core/timing/window_performance.h"
 #include "third_party/blink/renderer/modules/sensor/sensor_error_event.h"
 #include "third_party/blink/renderer/modules/sensor/sensor_provider_proxy.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/web_test_support.h"
 
 namespace blink {

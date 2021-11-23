@@ -36,7 +36,7 @@
 #include "third_party/blink/renderer/modules/webdatabase/database_tracker.h"
 #include "third_party/blink/renderer/modules/webdatabase/storage_log.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 
 namespace blink {

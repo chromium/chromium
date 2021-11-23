@@ -33,8 +33,8 @@
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/modules/webmidi/midi_access.h"
 #include "third_party/blink/renderer/modules/webmidi/midi_message_event.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 

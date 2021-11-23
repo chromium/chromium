@@ -39,7 +39,7 @@
 #include "third_party/blink/renderer/modules/speech/speech_recognition_error_event.h"
 #include "third_party/blink/renderer/modules/speech/speech_recognition_event.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace blink {
 

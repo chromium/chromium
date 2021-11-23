@@ -30,7 +30,7 @@
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/bindings/v8_throw_exception.h"
 #include "third_party/blink/renderer/platform/encrypted_media_request.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/network/mime/content_type.h"
 #include "third_party/blink/renderer/platform/network/parsed_content_type.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"

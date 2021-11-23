@@ -8,7 +8,7 @@
 #include "third_party/blink/renderer/modules/mediastream/media_stream_track.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_video_track.h"
 #include "third_party/blink/renderer/modules/mediastream/mock_media_stream_video_source.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_source.h"
 
 namespace blink {

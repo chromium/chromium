@@ -6,7 +6,7 @@
 
 #include "third_party/blink/public/mojom/content_index/content_index.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_content_icon_definition.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 
 namespace mojo {

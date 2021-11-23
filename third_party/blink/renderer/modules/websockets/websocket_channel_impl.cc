@@ -63,7 +63,7 @@
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer.h"
 #include "third_party/blink/renderer/modules/websockets/inspector_websocket_events.h"
 #include "third_party/blink/renderer/modules/websockets/websocket_channel_client.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_fetcher.h"
 #include "third_party/blink/renderer/platform/loader/fetch/unique_identifier.h"
 #include "third_party/blink/renderer/platform/scheduler/public/frame_scheduler.h"

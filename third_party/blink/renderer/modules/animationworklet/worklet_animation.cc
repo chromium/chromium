@@ -25,7 +25,7 @@
 #include "third_party/blink/renderer/core/layout/layout_box.h"
 #include "third_party/blink/renderer/modules/animationworklet/css_animation_worklet.h"
 #include "third_party/blink/renderer/platform/animation/compositor_animation_timeline.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 

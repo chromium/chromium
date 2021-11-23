@@ -44,7 +44,7 @@
 #include "third_party/blink/renderer/modules/indexeddb/idb_value.h"
 #include "third_party/blink/renderer/modules/indexeddb/web_idb_cursor.h"
 #include "third_party/blink/renderer/modules/indexeddb/web_idb_database.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 

@@ -9,7 +9,7 @@
 #include "third_party/blink/renderer/modules/mediastream/mock_media_stream_registry.h"
 #include "third_party/blink/renderer/modules/mediastream/video_track_adapter_settings.h"
 #include "third_party/blink/renderer/modules/peerconnection/mock_peer_connection_dependency_factory.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_component.h"
 #include "third_party/blink/renderer/platform/testing/io_task_runner_testing_platform_support.h"
 

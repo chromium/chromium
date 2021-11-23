@@ -18,7 +18,7 @@
 #include "third_party/blink/renderer/modules/event_target_modules.h"
 #include "third_party/blink/renderer/modules/mediarecorder/blob_event.h"
 #include "third_party/blink/renderer/platform/blob/blob_data.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_descriptor.h"
 #include "third_party/blink/renderer/platform/network/mime/content_type.h"
 #include "third_party/blink/renderer/platform/privacy_budget/identifiability_digest_helpers.h"

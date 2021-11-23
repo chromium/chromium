@@ -38,7 +38,7 @@
 #include "third_party/blink/renderer/modules/xr/xr_session_viewport_scaler.h"
 #include "third_party/blink/renderer/platform/bindings/v8_throw_exception.h"
 #include "third_party/blink/renderer/platform/graphics/static_bitmap_image.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_view.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"

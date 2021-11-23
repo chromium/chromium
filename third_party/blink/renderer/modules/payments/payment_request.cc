@@ -56,7 +56,7 @@
 #include "third_party/blink/renderer/modules/payments/update_payment_details_function.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/mojo/mojo_helper.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"

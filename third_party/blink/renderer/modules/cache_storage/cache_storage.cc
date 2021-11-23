@@ -28,7 +28,7 @@
 #include "third_party/blink/renderer/modules/cache_storage/cache_utils.h"
 #include "third_party/blink/renderer/modules/service_worker/service_worker_global_scope.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/traced_value.h"
 #include "third_party/blink/renderer/platform/network/http_names.h"

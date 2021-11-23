@@ -25,7 +25,7 @@
 #include "third_party/blink/renderer/modules/clipboard/clipboard_reader.h"
 #include "third_party/blink/renderer/modules/clipboard/clipboard_writer.h"
 #include "third_party/blink/renderer/modules/permissions/permission_utils.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread.h"
 #include "third_party/blink/renderer/platform/scheduler/public/worker_pool.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"

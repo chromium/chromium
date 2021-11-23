@@ -7,7 +7,7 @@
 #include "third_party/blink/renderer/modules/background_sync/periodic_sync_manager.h"
 #include "third_party/blink/renderer/modules/background_sync/sync_manager.h"
 #include "third_party/blink/renderer/modules/service_worker/service_worker_registration.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace blink {
 

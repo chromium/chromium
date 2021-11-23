@@ -51,7 +51,7 @@
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/modules/mediastream/media_error_state.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"

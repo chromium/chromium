@@ -28,7 +28,7 @@
 #include "third_party/blink/renderer/platform/graphics/paint/paint_canvas.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_flags.h"
 #include "third_party/blink/renderer/platform/graphics/skia/skia_utils.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/skia/include/effects/SkDashPathEffect.h"
 
 static const char defaultFont[] = "10px sans-serif";

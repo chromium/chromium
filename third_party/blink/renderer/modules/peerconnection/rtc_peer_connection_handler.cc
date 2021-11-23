@@ -35,7 +35,7 @@
 #include "third_party/blink/renderer/modules/peerconnection/speed_limit_uma_listener.h"
 #include "third_party/blink/renderer/modules/peerconnection/webrtc_set_description_observer.h"
 #include "third_party/blink/renderer/modules/webrtc/webrtc_audio_device_impl.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/mediastream/media_constraints.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_component.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_track_platform.h"

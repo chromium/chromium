@@ -21,7 +21,7 @@
 #include "third_party/blink/renderer/modules/mediarecorder/buildflags.h"
 #include "third_party/blink/renderer/modules/mediarecorder/media_recorder.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_video_track.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/media_capabilities/web_media_capabilities_info.h"
 #include "third_party/blink/renderer/platform/media_capabilities/web_media_configuration.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_component.h"

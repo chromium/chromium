@@ -35,7 +35,7 @@
 #include "third_party/blink/renderer/modules/indexeddb/idb_database.h"
 #include "third_party/blink/renderer/modules/indexeddb/idb_tracing.h"
 #include "third_party/blink/renderer/modules/indexeddb/idb_version_change_event.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace blink {
 

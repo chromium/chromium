@@ -20,7 +20,7 @@
 #include "third_party/blink/renderer/modules/manifest/manifest_fetcher.h"
 #include "third_party/blink/renderer/modules/manifest/manifest_parser.h"
 #include "third_party/blink/renderer/modules/manifest/manifest_uma_util.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_response.h"
 
 namespace blink {

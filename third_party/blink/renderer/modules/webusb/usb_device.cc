@@ -22,7 +22,7 @@
 #include "third_party/blink/renderer/modules/webusb/usb_isochronous_in_transfer_result.h"
 #include "third_party/blink/renderer/modules/webusb/usb_isochronous_out_transfer_result.h"
 #include "third_party/blink/renderer/modules/webusb/usb_out_transfer_result.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/mojo/mojo_helper.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 

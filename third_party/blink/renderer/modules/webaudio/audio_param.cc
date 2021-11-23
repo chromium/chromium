@@ -33,7 +33,7 @@
 #include "third_party/blink/renderer/platform/audio/audio_utilities.h"
 #include "third_party/blink/renderer/platform/audio/vector_math.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 
 #if defined(ARCH_CPU_X86_FAMILY)

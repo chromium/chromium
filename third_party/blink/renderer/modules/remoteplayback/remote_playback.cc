@@ -25,7 +25,7 @@
 #include "third_party/blink/renderer/modules/presentation/presentation_controller.h"
 #include "third_party/blink/renderer/modules/remoteplayback/availability_callback_wrapper.h"
 #include "third_party/blink/renderer/modules/remoteplayback/remote_playback_metrics.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/instrumentation/memory_pressure_listener.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/base64.h"

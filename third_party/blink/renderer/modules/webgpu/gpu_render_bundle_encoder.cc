@@ -12,7 +12,7 @@
 #include "third_party/blink/renderer/modules/webgpu/gpu_device.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_render_bundle.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_render_pipeline.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace blink {
 

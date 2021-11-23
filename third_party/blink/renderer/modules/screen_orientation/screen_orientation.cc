@@ -15,7 +15,7 @@
 #include "third_party/blink/renderer/modules/event_target_modules.h"
 #include "third_party/blink/renderer/modules/screen_orientation/lock_orientation_callback.h"
 #include "third_party/blink/renderer/modules/screen_orientation/screen_orientation_controller.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/assertions.h"
 
 // This code assumes that display::mojom::blink::ScreenOrientation values are

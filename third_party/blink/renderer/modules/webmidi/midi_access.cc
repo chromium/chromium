@@ -45,7 +45,7 @@
 #include "third_party/blink/renderer/modules/webmidi/midi_output.h"
 #include "third_party/blink/renderer/modules/webmidi/midi_output_map.h"
 #include "third_party/blink/renderer/modules/webmidi/midi_port.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/privacy_budget/identifiability_digest_helpers.h"
 
 namespace blink {

@@ -25,7 +25,7 @@
 #include "third_party/blink/renderer/modules/mediastream/mock_media_stream_registry.h"
 #include "third_party/blink/renderer/modules/mediastream/mock_media_stream_video_source.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/thread_state.h"
 #include "third_party/blink/renderer/platform/testing/io_task_runner_testing_platform_support.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
