@@ -39,7 +39,7 @@ class TestOptions():
 class SymbolizeTraceTestCase(unittest.TestCase):
   def side_effect(self, cmd, env, stdout):
     if cmd and env:
-      stdout.write('Symbol data.')
+      stdout.write(b'Symbol data.')
 
   def setUp(self):
     self.options = TestOptions()

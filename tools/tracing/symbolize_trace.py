@@ -146,15 +146,15 @@ def _Symbolize(trace_file, symbolizer_path, breakpad_output_dir, output_file):
   cmd = [symbolizer_path, 'symbolize', trace_file]
 
   # Open temporary file where symbols can be stored.
-  with tempfile.TemporaryFile(mode='w+') as temp_symbol_file:
+  with tempfile.TemporaryFile(mode='wb+') as temp_symbol_file:
     _RunSymbolizer(cmd, symbolize_env, temp_symbol_file)
 
     # Write trace data and symbol data to the same file.
     temp_symbol_file.seek(0)
     symbol_data = temp_symbol_file.read()
-    with open(trace_file, 'r') as f:
+    with open(trace_file, 'rb') as f:
       trace_data = f.read()
-    with open(output_file, 'w') as f:
+    with open(output_file, 'wb') as f:
       f.write(trace_data)
       f.write(symbol_data)
       flag_utils.GetTracingLogger().info(

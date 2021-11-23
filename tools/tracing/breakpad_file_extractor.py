@@ -48,8 +48,8 @@ def ExtractBreakpadFiles(dump_syms_path,
       directories cannot be found.
   """
   # Check to see if |dump_syms_path| is a file.
-  dump_syms_binary = _GetDumpSyms(dump_syms_path, build_dir)
-  if dump_syms_binary is None:
+  dump_syms_path = _GetDumpSyms(dump_syms_path, build_dir)
+  if dump_syms_path is None:
     raise Exception(
         'dump_syms is missing. you can build dump_syms in the {build_dir} by'
         'running ninja -C {build_dir} dump_syms'.format(build_dir=build_dir))
@@ -79,7 +79,7 @@ def ExtractBreakpadFiles(dump_syms_path,
 
       flag_utils.GetTracingLogger().debug('Extracting breakpad file from: %s',
                                           input_file_path)
-      if _RunDumpSyms(dump_syms_binary, input_file_path, output_file_path):
+      if _RunDumpSyms(dump_syms_path, input_file_path, output_file_path):
         flag_utils.GetTracingLogger().debug('Extracted breakpad to: %s',
                                             output_file_path)
         breakpad_file_count += 1
