@@ -2802,27 +2802,6 @@
             ]
         }
     ],
-    "D3D11VideoDecoder": [
-        {
-            "platforms": [
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Disabled",
-                    "disable_features": [
-                        "D3D11VideoDecoder"
-                    ]
-                },
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "D3D11VideoDecoder"
-                    ]
-                }
-            ]
-        }
-    ],
     "DataReductionProxyFREPromo": [
         {
             "platforms": [
