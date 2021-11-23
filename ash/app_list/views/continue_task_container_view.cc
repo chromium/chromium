@@ -114,6 +114,8 @@ void ContinueTaskContainerView::Update() {
   for (size_t i = 0; i < num_results_; ++i) {
     auto task =
         std::make_unique<ContinueTaskView>(view_delegate_, tablet_mode_);
+    if (i == 0)
+      task->SetProperty(views::kMarginsKey, gfx::Insets());
     task->set_index_in_container(i);
     task->SetResult(tasks[i]);
     suggestion_tasks_views_.emplace_back(task.get());

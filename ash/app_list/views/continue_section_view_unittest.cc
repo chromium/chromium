@@ -14,7 +14,11 @@
 #include "ash/app_list/model/search/search_model.h"
 #include "ash/app_list/model/search/test_search_result.h"
 #include "ash/app_list/test/app_list_test_helper.h"
+#include "ash/app_list/views/apps_container_view.h"
+#include "ash/app_list/views/apps_grid_view_test_api.h"
 #include "ash/app_list/views/continue_task_view.h"
+#include "ash/app_list/views/recent_apps_view.h"
+#include "ash/app_list/views/scrollable_apps_grid_view.h"
 #include "ash/app_list/views/search_box_view.h"
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
@@ -40,24 +44,36 @@ void AddSearchResultToModel(const std::string& id,
   model->results()->Add(std::move(result));
 }
 
-void ShowAppList() {
-  Shell::Get()->app_list_controller()->ShowAppList();
-}
-
-class ContinueSectionViewTest : public AshTestBase {
+class ContinueSectionViewTestBase : public AshTestBase {
  public:
-  ContinueSectionViewTest() {
+  explicit ContinueSectionViewTestBase(bool tablet_mode)
+      : tablet_mode_(tablet_mode) {
     scoped_feature_list_.InitAndEnableFeature(features::kProductivityLauncher);
   }
-  ~ContinueSectionViewTest() override = default;
+  ~ContinueSectionViewTestBase() override = default;
 
   // testing::Test:
   void SetUp() override { AshTestBase::SetUp(); }
+
+  // Whether we should run the test in tablet mode.
+  bool tablet_mode_param() { return tablet_mode_; }
 
   ContinueSectionView* GetContinueSectionView() {
     if (Shell::Get()->tablet_mode_controller()->InTabletMode())
       return GetAppListTestHelper()->GetFullscreenContinueSectionView();
     return GetAppListTestHelper()->GetBubbleContinueSectionView();
+  }
+
+  views::View* GetRecentAppsView() {
+    if (Shell::Get()->tablet_mode_controller()->InTabletMode())
+      return GetAppListTestHelper()->GetFullscreenRecentAppsView();
+    return GetAppListTestHelper()->GetBubbleRecentAppsView();
+  }
+
+  views::View* GetAppsGridView() {
+    if (Shell::Get()->tablet_mode_controller()->InTabletMode())
+      return GetAppListTestHelper()->GetRootPagedAppsGridView();
+    return GetAppListTestHelper()->GetScrollableAppsGridView();
   }
 
   void AddSearchResult(const std::string& id, AppListSearchResultType type) {
@@ -73,7 +89,21 @@ class ContinueSectionViewTest : public AshTestBase {
     return GetAppListTestHelper()->GetSearchResults();
   }
 
+  std::vector<SearchResult*> GetContinueResults() {
+    auto continue_filter = [](const SearchResult& r) -> bool {
+      return r.display_type() == SearchResultDisplayType::kContinue;
+    };
+    std::vector<SearchResult*> continue_results;
+    continue_results = SearchModel::FilterSearchResultsByFunction(
+        GetResults(), base::BindRepeating(continue_filter),
+        /*max_results=*/4);
+
+    return continue_results;
+  }
+
   SearchBoxView* GetSearchBoxView() {
+    if (Shell::Get()->tablet_mode_controller()->InTabletMode())
+      return GetAppListTestHelper()->GetSearchBoxView();
     return GetAppListTestHelper()->GetBubbleSearchBoxView();
   }
 
@@ -94,31 +124,86 @@ class ContinueSectionViewTest : public AshTestBase {
     // Wait for the view to update any pending SearchResults.
     base::RunLoop().RunUntilIdle();
 
-    SearchModel::SearchResults* results = GetResults();
-    for (size_t i = 0; i < results->item_count(); ++i)
-      EXPECT_EQ(results->GetItemAt(i), GetResultViewAt(i)->result());
+    std::vector<SearchResult*> results = GetContinueResults();
+    for (size_t i = 0; i < results.size(); ++i)
+      EXPECT_EQ(results[i], GetResultViewAt(i)->result()) << i;
   }
 
+  void EnsureLauncherShown() {
+    if (tablet_mode_param()) {
+      // Convert to tablet mode to show fullscren launcher.
+      Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
+      test_api_ = std::make_unique<test::AppsGridViewTestApi>(
+          GetAppListTestHelper()->GetRootPagedAppsGridView());
+    } else {
+      Shell::Get()->app_list_controller()->ShowAppList();
+      test_api_ = std::make_unique<test::AppsGridViewTestApi>(
+          GetAppListTestHelper()->GetScrollableAppsGridView());
+    }
+    ASSERT_TRUE(GetAppsGridView());
+  }
+
+  void SimulateRightClickOrLongPressAt(gfx::Point location) {
+    ui::test::EventGenerator* generator = GetEventGenerator();
+    if (tablet_mode_param()) {
+      generator->set_current_screen_location(location);
+      generator->PressTouch();
+      ui::GestureEventDetails event_details(ui::ET_GESTURE_LONG_PRESS);
+      ui::GestureEvent long_press(location.x(), location.y(), 0,
+                                  base::TimeTicks::Now(), event_details);
+      generator->Dispatch(&long_press);
+      generator->ReleaseTouch();
+      GetAppListTestHelper()->WaitUntilIdle();
+    } else {
+      generator->MoveMouseTo(location);
+      generator->ClickRightButton();
+    }
+  }
+
+  test::AppsGridViewTestApi* test_api() { return test_api_.get(); }
+
  private:
+  bool tablet_mode_ = false;
+
+  std::unique_ptr<test::AppsGridViewTestApi> test_api_;
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-TEST_F(ContinueSectionViewTest, CreatesViewsForTasks) {
+class ContinueSectionViewTest : public ContinueSectionViewTestBase,
+                                public testing::WithParamInterface<bool> {
+ public:
+  ContinueSectionViewTest()
+      : ContinueSectionViewTestBase(/*tablet_mode*/ GetParam()) {}
+  ~ContinueSectionViewTest() override = default;
+};
+
+class ContinueSectionViewTabletModeTest : public ContinueSectionViewTestBase {
+ public:
+  ContinueSectionViewTabletModeTest()
+      : ContinueSectionViewTestBase(/*tablet_mode*/ true) {}
+  ~ContinueSectionViewTabletModeTest() override = default;
+};
+
+// Instantiate the values in the parameterized tests. Used to toggle tablet
+// mode.
+INSTANTIATE_TEST_SUITE_P(All, ContinueSectionViewTest, testing::Bool());
+
+TEST_P(ContinueSectionViewTest, CreatesViewsForTasks) {
   AddSearchResult("id1", AppListSearchResultType::kFileChip);
   AddSearchResult("id2", AppListSearchResultType::kDriveChip);
 
-  ShowAppList();
+  EnsureLauncherShown();
 
   ContinueSectionView* view = GetContinueSectionView();
   EXPECT_EQ(view->GetTasksSuggestionsCount(), 2u);
 }
 
-TEST_F(ContinueSectionViewTest, VerifyAddedViewsOrder) {
+TEST_P(ContinueSectionViewTest, VerifyAddedViewsOrder) {
   AddSearchResult("id1", AppListSearchResultType::kFileChip);
   AddSearchResult("id2", AppListSearchResultType::kDriveChip);
   AddSearchResult("id3", AppListSearchResultType::kDriveChip);
 
-  ShowAppList();
+  EnsureLauncherShown();
   VerifyResultViewsUpdated();
 
   ContinueSectionView* view = GetContinueSectionView();
@@ -128,12 +213,12 @@ TEST_F(ContinueSectionViewTest, VerifyAddedViewsOrder) {
   EXPECT_EQ(GetResultViewAt(2)->result()->id(), "id3");
 }
 
-TEST_F(ContinueSectionViewTest, ModelObservers) {
+TEST_P(ContinueSectionViewTest, ModelObservers) {
   AddSearchResult("id1", AppListSearchResultType::kFileChip);
   AddSearchResult("id2", AppListSearchResultType::kDriveChip);
   AddSearchResult("id3", AppListSearchResultType::kDriveChip);
 
-  ShowAppList();
+  EnsureLauncherShown();
 
   VerifyResultViewsUpdated();
 
@@ -150,12 +235,12 @@ TEST_F(ContinueSectionViewTest, ModelObservers) {
   VerifyResultViewsUpdated();
 }
 
-TEST_F(ContinueSectionViewTest, HideContinueSectionWhenResultRemoved) {
+TEST_P(ContinueSectionViewTest, HideContinueSectionWhenResultRemoved) {
   AddSearchResult("id1", AppListSearchResultType::kFileChip);
   AddSearchResult("id2", AppListSearchResultType::kDriveChip);
   AddSearchResult("id3", AppListSearchResultType::kDriveChip);
 
-  ShowAppList();
+  EnsureLauncherShown();
   VerifyResultViewsUpdated();
   EXPECT_TRUE(GetContinueSectionView()->GetVisible());
 
@@ -165,11 +250,11 @@ TEST_F(ContinueSectionViewTest, HideContinueSectionWhenResultRemoved) {
   EXPECT_FALSE(GetContinueSectionView()->GetVisible());
 }
 
-TEST_F(ContinueSectionViewTest, ShowContinueSectionWhenResultAdded) {
+TEST_P(ContinueSectionViewTest, ShowContinueSectionWhenResultAdded) {
   AddSearchResult("id1", AppListSearchResultType::kFileChip);
   AddSearchResult("id2", AppListSearchResultType::kDriveChip);
 
-  ShowAppList();
+  EnsureLauncherShown();
   VerifyResultViewsUpdated();
   EXPECT_FALSE(GetContinueSectionView()->GetVisible());
 
@@ -179,12 +264,12 @@ TEST_F(ContinueSectionViewTest, ShowContinueSectionWhenResultAdded) {
   EXPECT_TRUE(GetContinueSectionView()->GetVisible());
 }
 
-TEST_F(ContinueSectionViewTest, ClickOpensSearchResult) {
+TEST_P(ContinueSectionViewTest, ClickOpensSearchResult) {
   AddSearchResult("id1", AppListSearchResultType::kFileChip);
   AddSearchResult("id2", AppListSearchResultType::kDriveChip);
   AddSearchResult("id3", AppListSearchResultType::kDriveChip);
 
-  ShowAppList();
+  EnsureLauncherShown();
 
   VerifyResultViewsUpdated();
 
@@ -202,12 +287,12 @@ TEST_F(ContinueSectionViewTest, ClickOpensSearchResult) {
   EXPECT_EQ("id1", client->last_opened_search_result());
 }
 
-TEST_F(ContinueSectionViewTest, TapOpensSearchResult) {
+TEST_P(ContinueSectionViewTest, TapOpensSearchResult) {
   AddSearchResult("id1", AppListSearchResultType::kFileChip);
   AddSearchResult("id2", AppListSearchResultType::kDriveChip);
   AddSearchResult("id3", AppListSearchResultType::kDriveChip);
 
-  ShowAppList();
+  EnsureLauncherShown();
 
   VerifyResultViewsUpdated();
 
@@ -224,12 +309,16 @@ TEST_F(ContinueSectionViewTest, TapOpensSearchResult) {
   EXPECT_EQ("id1", client->last_opened_search_result());
 }
 
-TEST_F(ContinueSectionViewTest, PressEnterOpensSearchResult) {
+TEST_P(ContinueSectionViewTest, PressEnterOpensSearchResult) {
+  // Ignore keyboard tests for tablet mode.
+  if (tablet_mode_param())
+    return;
+
   AddSearchResult("id1", AppListSearchResultType::kFileChip);
   AddSearchResult("id2", AppListSearchResultType::kDriveChip);
   AddSearchResult("id3", AppListSearchResultType::kDriveChip);
 
-  ShowAppList();
+  EnsureLauncherShown();
 
   VerifyResultViewsUpdated();
 
@@ -249,12 +338,12 @@ TEST_F(ContinueSectionViewTest, PressEnterOpensSearchResult) {
   EXPECT_EQ("id1", client->last_opened_search_result());
 }
 
-TEST_F(ContinueSectionViewTest, RightClickOpensContextMenu) {
+TEST_P(ContinueSectionViewTest, RightClickOpensContextMenu) {
   AddSearchResult("id1", AppListSearchResultType::kFileChip);
   AddSearchResult("id2", AppListSearchResultType::kDriveChip);
   AddSearchResult("id3", AppListSearchResultType::kDriveChip);
 
-  ShowAppList();
+  EnsureLauncherShown();
 
   VerifyResultViewsUpdated();
 
@@ -262,18 +351,17 @@ TEST_F(ContinueSectionViewTest, RightClickOpensContextMenu) {
   EXPECT_EQ(continue_task_view->result()->id(), "id1");
 
   GetContinueSectionView()->GetWidget()->LayoutRootViewIfNecessary();
-  GetEventGenerator()->MoveMouseTo(
+  SimulateRightClickOrLongPressAt(
       continue_task_view->GetBoundsInScreen().CenterPoint());
-  GetEventGenerator()->ClickRightButton();
   EXPECT_TRUE(continue_task_view->IsMenuShowing());
 }
 
-TEST_F(ContinueSectionViewTest, OpenWithContextMenuOption) {
+TEST_P(ContinueSectionViewTest, OpenWithContextMenuOption) {
   AddSearchResult("id1", AppListSearchResultType::kFileChip);
   AddSearchResult("id2", AppListSearchResultType::kDriveChip);
   AddSearchResult("id3", AppListSearchResultType::kDriveChip);
 
-  ShowAppList();
+  EnsureLauncherShown();
 
   VerifyResultViewsUpdated();
 
@@ -281,9 +369,9 @@ TEST_F(ContinueSectionViewTest, OpenWithContextMenuOption) {
   EXPECT_EQ(continue_task_view->result()->id(), "id1");
 
   GetContinueSectionView()->GetWidget()->LayoutRootViewIfNecessary();
-  GetEventGenerator()->MoveMouseTo(
+  SimulateRightClickOrLongPressAt(
       continue_task_view->GetBoundsInScreen().CenterPoint());
-  GetEventGenerator()->ClickRightButton();
+  EXPECT_TRUE(continue_task_view->IsMenuShowing());
   continue_task_view->ExecuteCommand(ContinueTaskCommandId::kOpenResult,
                                      ui::EventFlags::EF_NONE);
 
@@ -292,29 +380,28 @@ TEST_F(ContinueSectionViewTest, OpenWithContextMenuOption) {
   EXPECT_EQ("id1", client->last_opened_search_result());
 }
 
-TEST_F(ContinueSectionViewTest, ResultRemovedContextMenuCloses) {
+TEST_P(ContinueSectionViewTest, ResultRemovedContextMenuCloses) {
   AddSearchResult("id1", AppListSearchResultType::kFileChip);
   AddSearchResult("id2", AppListSearchResultType::kDriveChip);
   AddSearchResult("id3", AppListSearchResultType::kDriveChip);
   AddSearchResult("id4", AppListSearchResultType::kFileChip);
 
-  ShowAppList();
+  EnsureLauncherShown();
 
   VerifyResultViewsUpdated();
 
-  ContinueTaskView* continue_task_view = GetResultViewAt(3);
-  EXPECT_EQ(continue_task_view->result()->id(), "id4");
+  ContinueTaskView* continue_task_view = GetResultViewAt(1);
+  EXPECT_EQ(continue_task_view->result()->id(), "id2");
 
   GetContinueSectionView()->GetWidget()->LayoutRootViewIfNecessary();
-  GetEventGenerator()->MoveMouseTo(
+  SimulateRightClickOrLongPressAt(
       continue_task_view->GetBoundsInScreen().CenterPoint());
-  GetEventGenerator()->ClickRightButton();
   EXPECT_TRUE(continue_task_view->IsMenuShowing());
 
-  RemoveSearchResultAt(3);
+  RemoveSearchResultAt(1);
   VerifyResultViewsUpdated();
 
-  ASSERT_EQ(std::vector<std::string>({"id1", "id2", "id3"}), GetResultIds());
+  ASSERT_EQ(std::vector<std::string>({"id1", "id3", "id4"}), GetResultIds());
 
   // Click on another result and verify it activates the item to confirm the
   // event is not consumed by a context menu.
@@ -329,12 +416,13 @@ TEST_F(ContinueSectionViewTest, ResultRemovedContextMenuCloses) {
   EXPECT_EQ("id1", client->last_opened_search_result());
 }
 
-TEST_F(ContinueSectionViewTest, UpdateAppsOnModelChange) {
+TEST_P(ContinueSectionViewTest, UpdateAppsOnModelChange) {
   AddSearchResult("id11", AppListSearchResultType::kFileChip);
   AddSearchResult("id12", AppListSearchResultType::kDriveChip);
   AddSearchResult("id13", AppListSearchResultType::kDriveChip);
   AddSearchResult("id14", AppListSearchResultType::kFileChip);
-  ShowAppList();
+  UpdateDisplay("1200x800");
+  EnsureLauncherShown();
 
   EXPECT_EQ(std::vector<std::string>({"id11", "id12", "id13", "id14"}),
             GetResultIds());
@@ -370,13 +458,14 @@ TEST_F(ContinueSectionViewTest, UpdateAppsOnModelChange) {
   EXPECT_EQ(std::vector<std::string>{}, GetResultIds());
 }
 
-TEST_F(ContinueSectionViewTest, TabletModeLayoutWithThreeSuggestions) {
+TEST_F(ContinueSectionViewTabletModeTest,
+       TabletModeLayoutWithThreeSuggestions) {
   AddSearchResult("id1", AppListSearchResultType::kFileChip);
   AddSearchResult("id2", AppListSearchResultType::kDriveChip);
   AddSearchResult("id3", AppListSearchResultType::kDriveChip);
 
   UpdateDisplay("1200x800");
-  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
+  EnsureLauncherShown();
   VerifyResultViewsUpdated();
 
   ASSERT_TRUE(GetContinueSectionView()->GetVisible());
@@ -392,17 +481,25 @@ TEST_F(ContinueSectionViewTest, TabletModeLayoutWithThreeSuggestions) {
     EXPECT_EQ(vertical_position, task_view->y());
     EXPECT_GT(task_view->x(), GetResultViewAt(i - 1)->bounds().right());
   }
+
+  views::View* parent_view = GetResultViewAt(0)->parent();
+
+  EXPECT_EQ(std::abs(parent_view->GetContentsBounds().x() -
+                     GetResultViewAt(0)->bounds().x()),
+            std::abs(parent_view->GetContentsBounds().right() -
+                     GetResultViewAt(2)->bounds().right()));
 }
 
-TEST_F(ContinueSectionViewTest, TabletModeLayoutWithFourSuggestions) {
+TEST_F(ContinueSectionViewTabletModeTest, TabletModeLayoutWithFourSuggestions) {
   AddSearchResult("id1", AppListSearchResultType::kFileChip);
   AddSearchResult("id2", AppListSearchResultType::kDriveChip);
   AddSearchResult("id3", AppListSearchResultType::kDriveChip);
   AddSearchResult("id4", AppListSearchResultType::kFileChip);
 
   UpdateDisplay("1200x800");
-  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
+  EnsureLauncherShown();
   VerifyResultViewsUpdated();
+  GetContinueSectionView()->GetWidget()->LayoutRootViewIfNecessary();
 
   ASSERT_TRUE(GetContinueSectionView()->GetVisible());
   ASSERT_EQ(4u, GetContinueSectionView()->GetTasksSuggestionsCount());
@@ -417,11 +514,55 @@ TEST_F(ContinueSectionViewTest, TabletModeLayoutWithFourSuggestions) {
     EXPECT_EQ(vertical_position, task_view->y());
     EXPECT_GT(task_view->x(), GetResultViewAt(i - 1)->bounds().right());
   }
+
+  views::View* parent_view = GetResultViewAt(0)->parent();
+
+  EXPECT_EQ(std::abs(parent_view->GetContentsBounds().x() -
+                     GetResultViewAt(0)->bounds().x()),
+            std::abs(parent_view->GetContentsBounds().right() -
+                     GetResultViewAt(3)->bounds().right()));
+}
+
+TEST_P(ContinueSectionViewTest, NoOverlapsWithRecentApps) {
+  AddSearchResult("id1", AppListSearchResultType::kFileChip);
+  AddSearchResult("id2", AppListSearchResultType::kDriveChip);
+  AddSearchResult("id3", AppListSearchResultType::kDriveChip);
+  AddSearchResult("id4", AppListSearchResultType::kFileChip);
+  GetAppListTestHelper()->AddRecentApps(5);
+  GetAppListTestHelper()->AddAppItems(5);
+
+  EnsureLauncherShown();
+
+  VerifyResultViewsUpdated();
+  GetContinueSectionView()->GetWidget()->LayoutRootViewIfNecessary();
+
+  EXPECT_FALSE(GetContinueSectionView()->bounds().Intersects(
+      GetRecentAppsView()->bounds()));
+}
+
+TEST_P(ContinueSectionViewTest, NoOverlapsWithAppsGridItems) {
+  AddSearchResult("id1", AppListSearchResultType::kFileChip);
+  AddSearchResult("id2", AppListSearchResultType::kDriveChip);
+  AddSearchResult("id3", AppListSearchResultType::kDriveChip);
+  AddSearchResult("id4", AppListSearchResultType::kFileChip);
+  GetAppListTestHelper()->AddAppItems(5);
+
+  EnsureLauncherShown();
+
+  VerifyResultViewsUpdated();
+  GetContinueSectionView()->GetWidget()->LayoutRootViewIfNecessary();
+
+  gfx::Rect continue_bounds = GetContinueSectionView()->GetBoundsInScreen();
+  for (size_t i = 0; i < test_api()->GetItemList()->item_count(); i++) {
+    gfx::Rect app_bounds =
+        test_api()->GetViewAtModelIndex(i)->GetBoundsInScreen();
+    EXPECT_FALSE(continue_bounds.Intersects(app_bounds)) << i;
+  }
 }
 
 // Tests that number of shown continue section items is reduced if they don't
 // all fit into the available space (while maintaining min width).
-TEST_F(ContinueSectionViewTest,
+TEST_F(ContinueSectionViewTabletModeTest,
        TabletModeLayoutWithFourSuggestionsWithRestrictedSpace) {
   AddSearchResult("id1", AppListSearchResultType::kFileChip);
   AddSearchResult("id2", AppListSearchResultType::kDriveChip);
@@ -432,7 +573,7 @@ TEST_F(ContinueSectionViewTest,
   // space.
   UpdateDisplay("800x600");
 
-  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
+  EnsureLauncherShown();
   VerifyResultViewsUpdated();
 
   ASSERT_EQ(4u, GetContinueSectionView()->GetTasksSuggestionsCount());
