@@ -38,7 +38,11 @@ SafeBrowsingVerdictHandler::SafeBrowsingVerdictHandler(
     ExtensionService* extension_service)
     : extension_prefs_(extension_prefs),
       registry_(registry),
-      extension_service_(extension_service) {}
+      extension_service_(extension_service) {
+  extension_registry_observation_.Observe(registry_);
+}
+
+SafeBrowsingVerdictHandler::~SafeBrowsingVerdictHandler() = default;
 
 void SafeBrowsingVerdictHandler::Init() {
   TRACE_EVENT0("browser,startup", "SafeBrowsingVerdictHandler::Init");
@@ -71,7 +75,14 @@ void SafeBrowsingVerdictHandler::ManageBlocklist(
   ExtensionIdSet greylist;
   ExtensionIdSet unchanged;
 
+  ExtensionIdSet installed_ids =
+      registry_->GenerateInstalledExtensionsSet()->GetIDs();
   for (const auto& it : state_map) {
+    // It is possible that an extension is uninstalled when the blocklist is
+    // fetching asynchronously. In this case, we should ignore this extension.
+    if (!base::Contains(installed_ids, it.first)) {
+      continue;
+    }
     switch (it.second) {
       case NOT_BLOCKLISTED:
         break;
@@ -116,11 +127,8 @@ void SafeBrowsingVerdictHandler::UpdateBlocklistedExtensions(
   for (const auto& id : not_yet_blocked) {
     scoped_refptr<const Extension> extension =
         registry_->GetInstalledExtension(id);
-    if (!extension.get()) {
-      NOTREACHED() << "Extension " << id << " needs to be "
-                   << "blocklisted, but it's not installed.";
-      continue;
-    }
+    DCHECK(extension.get()) << "Extension " << id << " needs to be "
+                            << "blocklisted, but it's not installed.";
 
     blocklist_.Insert(extension);
     blocklist_prefs::SetSafeBrowsingExtensionBlocklistState(
@@ -142,11 +150,8 @@ void SafeBrowsingVerdictHandler::UpdateGreylistedExtensions(
 
   for (const auto& id : no_longer_greylisted) {
     scoped_refptr<const Extension> extension = greylist_.GetByID(id);
-    if (!extension.get()) {
-      NOTREACHED() << "Extension " << id << " no longer greylisted, "
-                   << "but it was not marked as greylisted.";
-      continue;
-    }
+    DCHECK(extension.get()) << "Extension " << id << " no longer greylisted, "
+                            << "but it was not marked as greylisted.";
 
     greylist_.Remove(id);
     blocklist_prefs::SetSafeBrowsingExtensionBlocklistState(
@@ -163,11 +168,8 @@ void SafeBrowsingVerdictHandler::UpdateGreylistedExtensions(
   for (const auto& id : greylist) {
     scoped_refptr<const Extension> extension =
         registry_->GetInstalledExtension(id);
-    if (!extension.get()) {
-      NOTREACHED() << "Extension " << id << " needs to be "
-                   << "disabled, but it's not installed.";
-      continue;
-    }
+    DCHECK(extension.get()) << "Extension " << id << " needs to be "
+                            << "disabled, but it's not installed.";
 
     greylist_.Insert(extension);
     BlocklistState greylist_state = state_map.find(id)->second;
@@ -179,6 +181,14 @@ void SafeBrowsingVerdictHandler::UpdateGreylistedExtensions(
     UMA_HISTOGRAM_ENUMERATION("Extensions.Greylist.Disabled",
                               extension->location());
   }
+}
+
+void SafeBrowsingVerdictHandler::OnExtensionUninstalled(
+    content::BrowserContext* browser_context,
+    const extensions::Extension* extension,
+    extensions::UninstallReason reason) {
+  blocklist_.Remove(extension->id());
+  greylist_.Remove(extension->id());
 }
 
 }  // namespace extensions
