@@ -17,6 +17,7 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/side_panel/read_later_side_panel_web_view.h"
 #include "chrome/browser/ui/views/side_panel/side_panel.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
 #include "chrome/grit/generated_resources.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/views/accessibility/view_accessibility.h"
@@ -97,6 +98,11 @@ void SidePanelToolbarButton::ButtonPressed() {
   BrowserView* const browser_view =
       BrowserView::GetBrowserViewForBrowser(browser_);
   DCHECK(browser_view->right_aligned_side_panel());
+
+  if (browser_view->side_panel_coordinator()) {
+    browser_view->side_panel_coordinator()->Toggle();
+    return;
+  }
 
   if (!side_panel_webview_) {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)

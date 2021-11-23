@@ -125,6 +125,7 @@
 #include "chrome/browser/ui/views/sharing_hub/sharing_hub_bubble_view_impl.h"
 #include "chrome/browser/ui/views/sharing_hub/sharing_hub_icon_view.h"
 #include "chrome/browser/ui/views/side_panel/side_panel.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
 #include "chrome/browser/ui/views/status_bubble_views.h"
 #include "chrome/browser/ui/views/tab_contents/chrome_web_contents_view_focus_helper.h"
 #include "chrome/browser/ui/views/tab_search_bubble_host.h"
@@ -755,6 +756,8 @@ BrowserView::BrowserView(std::unique_ptr<Browser> browser)
     right_aligned_side_panel_ = AddChildView(std::make_unique<SidePanel>(this));
     right_aligned_side_panel_separator_ =
         AddChildView(std::make_unique<ContentsSeparator>());
+    if (base::FeatureList::IsEnabled(features::kUnifiedSidePanel))
+      side_panel_coordinator_ = std::make_unique<SidePanelCoordinator>(this);
   }
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)

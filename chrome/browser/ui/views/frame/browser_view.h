@@ -68,6 +68,7 @@ class FullscreenControlHost;
 class InfoBarContainerView;
 class LocationBarView;
 class SidePanel;
+class SidePanelCoordinator;
 class StatusBubbleViews;
 class TabSearchBubbleHost;
 class TabStrip;
@@ -191,6 +192,10 @@ class BrowserView : public BrowserWindow,
 
   SidePanel* left_aligned_side_panel_for_testing() {
     return left_aligned_side_panel_;
+  }
+
+  SidePanelCoordinator* side_panel_coordinator() {
+    return side_panel_coordinator_.get();
   }
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
@@ -960,6 +965,8 @@ class BrowserView : public BrowserWindow,
 
   // The Lens side panel.
   SidePanel* lens_side_panel_ = nullptr;
+
+  std::unique_ptr<SidePanelCoordinator> side_panel_coordinator_;
 
   // TODO(pbos): Move this functionality into SidePanel when multiple "panels"
   // are managed within the same object.
