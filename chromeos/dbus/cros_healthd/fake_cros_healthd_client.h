@@ -119,6 +119,9 @@ class COMPONENT_EXPORT(CROS_HEALTHD) FakeCrosHealthdClient
   // Calls the Thunderbolt event OnAdd on all registered Thunderbolt observers.
   void EmitThunderboltAddEventForTesting();
 
+  // Calls the USB event OnAdd on all registered USB observers.
+  void EmitUsbAddEventForTesting();
+
   // Calls the network event OnConnectionStateChangedEvent on all registered
   // network observers.
   void EmitConnectionStateChangedEventForTesting(

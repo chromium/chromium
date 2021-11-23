@@ -78,3 +78,29 @@ interface CrosHealthdThunderboltObserver {
   OnUnAuthorized@3();
 };
 
+// USB event info.
+//
+// NextMinVersion: 1, NextIndex: 5
+struct UsbEventInfo {
+  // Vendor name.
+  string vendor@0;
+  // Name, model name, product name.
+  string name@1;
+  // Vendor ID.
+  uint16 vid@2;
+  // Product ID.
+  uint16 pid@3;
+  // USB device categories.
+  // https://www.usb.org/defined-class-codes
+  array<string> categories@4;
+};
+
+// Implemented by clients who desire USB notifications.
+//
+// NextMinVersion: 1, NextIndex: 2
+interface CrosHealthdUsbObserver {
+  // Fired when the USB plug in.
+  OnAdd@0(UsbEventInfo info);
+  // Fired when the USB plug out.
+  OnRemove@1(UsbEventInfo info);
+};

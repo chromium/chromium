@@ -380,6 +380,11 @@ void FakeCrosHealthdService::AddThunderboltObserver(
   thunderbolt_observers_.Add(std::move(observer));
 }
 
+void FakeCrosHealthdService::AddUsbObserver(
+    mojo::PendingRemote<mojom::CrosHealthdUsbObserver> observer) {
+  usb_observers_.Add(std::move(observer));
+}
+
 void FakeCrosHealthdService::ProbeTelemetryInfo(
     const std::vector<mojom::ProbeCategoryEnum>& categories,
     ProbeTelemetryInfoCallback callback) {
@@ -499,6 +504,12 @@ void FakeCrosHealthdService::EmitAudioSevereUnderrunEventForTesting() {
 void FakeCrosHealthdService::EmitThunderboltAddEventForTesting() {
   for (auto& observer : thunderbolt_observers_)
     observer->OnAdd();
+}
+
+void FakeCrosHealthdService::EmitUsbAddEventForTesting() {
+  mojom::UsbEventInfo info;
+  for (auto& observer : usb_observers_)
+    observer->OnAdd(info.Clone());
 }
 
 void FakeCrosHealthdService::EmitConnectionStateChangedEventForTesting(

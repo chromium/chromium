@@ -159,6 +159,8 @@ class FakeCrosHealthdService final
   void AddThunderboltObserver(
       mojo::PendingRemote<mojom::CrosHealthdThunderboltObserver> observer)
       override;
+  void AddUsbObserver(
+      mojo::PendingRemote<mojom::CrosHealthdUsbObserver> observer) override;
 
   // CrosHealthdProbeService overrides:
   void ProbeTelemetryInfo(
@@ -247,6 +249,9 @@ class FakeCrosHealthdService final
   // Calls the Thunderbolt event OnAdd on all registered Thunderbolt observers.
   void EmitThunderboltAddEventForTesting();
 
+  // Calls the USB event OnAdd on all registered USB observers.
+  void EmitUsbAddEventForTesting();
+
   // Calls the network event OnConnectionStateChangedEvent on all registered
   // network observers.
   void EmitConnectionStateChangedEventForTesting(
@@ -317,6 +322,8 @@ class FakeCrosHealthdService final
   mojo::RemoteSet<mojom::CrosHealthdAudioObserver> audio_observers_;
   // Collection of registered Thunderbolt observers.
   mojo::RemoteSet<mojom::CrosHealthdThunderboltObserver> thunderbolt_observers_;
+  // Collection of registered USB observers.
+  mojo::RemoteSet<mojom::CrosHealthdUsbObserver> usb_observers_;
 
   // Contains the most recent params passed to `GetRoutineUpdate`, if it has
   // been called.
