@@ -174,7 +174,8 @@ Polymer({
    * @private
    */
   isPhoneHubAppsSetupRequired_() {
-    return !this.pageContentData.isPhoneHubAppsAccessGranted;
+    return this.isFeatureSupported(settings.MultiDeviceFeature.ECHE) &&
+        !this.pageContentData.isPhoneHubAppsAccessGranted;
   },
 
   /**
