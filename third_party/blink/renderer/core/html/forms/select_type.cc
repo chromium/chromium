@@ -443,6 +443,10 @@ void MenuListSelectType::DidRecalcStyle(const StyleRecalcChange change) {
   if (change.ReattachLayoutTree())
     return;
   UpdateTextStyle();
+  if (auto* layout_object = select_->GetLayoutObject()) {
+    // Invalidate paint to ensure that the focus ring is updated.
+    layout_object->SetShouldDoFullPaintInvalidation();
+  }
   if (PopupIsVisible())
     popup_->UpdateFromElement(PopupMenu::kByStyleChange);
 }
