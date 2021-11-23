@@ -2898,7 +2898,7 @@
     },
     {
       'name': 'PrintingAllowedColorModes',
-      'owners': ['bmalcolm@chromium.org', 'skau@chromium.org'],
+      'owners': ['srad@google.com', 'pawliczek@chromium.org'],
       'type': 'string-enum',
       'schema': {
         'type': 'string',
@@ -2939,7 +2939,7 @@
     },
     {
       'name': 'PrintingAllowedDuplexModes',
-      'owners': ['bmalcolm@chromium.org', 'skau@chromium.org'],
+      'owners': ['srad@google.com', 'pawliczek@chromium.org'],
       'type': 'string-enum',
       'schema': {
         'type': 'string',
@@ -2982,7 +2982,7 @@
     },
     {
       'name': 'PrintingAllowedPinModes',
-      'owners': ['bmalcolm@chromium.org', 'skau@chromium.org'],
+      'owners': ['srad@google.com', 'pawliczek@chromium.org'],
       'type': 'string-enum',
       'schema': {
         'type': 'string',
@@ -3023,7 +3023,7 @@
     },
     {
       'name': 'PrintingAllowedBackgroundGraphicsModes',
-      'owners': ['bmalcolm@chromium.org', 'skau@chromium.org'],
+      'owners': ['srad@google.com', 'pawliczek@chromium.org'],
       'type': 'string-enum',
       'schema': {
         'type': 'string',
@@ -3064,7 +3064,7 @@
     },
     {
       'name': 'PrintingColorDefault',
-      'owners': ['bmalcolm@chromium.org', 'skau@chromium.org'],
+      'owners': ['srad@google.com', 'pawliczek@chromium.org'],
       'type': 'string-enum',
       'schema': {
         'type': 'string',
@@ -3099,7 +3099,7 @@
     },
     {
       'name': 'PrintingDuplexDefault',
-      'owners': ['bmalcolm@chromium.org', 'skau@chromium.org'],
+      'owners': ['srad@google.com', 'pawliczek@chromium.org'],
       'type': 'string-enum',
       'schema': {
         'type': 'string',
@@ -3140,7 +3140,7 @@
     },
     {
       'name': 'PrintingPinDefault',
-      'owners': ['bmalcolm@chromium.org', 'skau@chromium.org'],
+      'owners': ['srad@google.com', 'pawliczek@chromium.org'],
       'type': 'string-enum',
       'schema': {
         'type': 'string',
@@ -3175,7 +3175,7 @@
     },
     {
       'name': 'PrintingBackgroundGraphicsDefault',
-      'owners': ['bmalcolm@chromium.org', 'skau@chromium.org'],
+      'owners': ['srad@google.com', 'pawliczek@chromium.org'],
       'type': 'string-enum',
       'schema': {
         'type': 'string',
@@ -3210,7 +3210,7 @@
     },
     {
       'name': 'PrintingPaperSizeDefault',
-      'owners': ['bmalcolm@chromium.org', 'skau@chromium.org'],
+      'owners': ['srad@google.com', 'pawliczek@chromium.org'],
       'type': 'dict',
       'schema': {
         'type': 'object',
@@ -3396,7 +3396,7 @@
     },
     {
       'name': 'PrintingSendUsernameAndFilenameEnabled',
-      'owners': ['bmalcolm@chromium.org', 'skau@chromium.org'],
+      'owners': ['srad@google.com', 'pawliczek@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome_os:72-'],
@@ -3425,7 +3425,7 @@
     },
     {
       'name': 'PrintingMaxSheetsAllowed',
-      'owners': ['bmalcolm@chromium.org', 'skau@chromium.org'],
+      'owners': ['srad@google.com', 'pawliczek@chromium.org'],
       'type': 'int',
       'schema': { 'type': 'integer', 'minimum': 1 },
       'supported_on': ['chrome_os:84-'],
@@ -3472,7 +3472,7 @@
     },
     {
       'name': 'PrintJobHistoryExpirationPeriod',
-      'owners': ['bmalcolm@chromium.org', 'skau@chromium.org'],
+      'owners': ['srad@google.com', 'pawliczek@chromium.org'],
       'type': 'int',
       'schema': { 'type': 'integer', 'minimum': -1 },
       'supported_on': ['chrome_os:79-'],
@@ -3494,7 +3494,7 @@
     },
     {
       'name': 'PrintingAPIExtensionsWhitelist',
-      'owners': ['bmalcolm@chromium.org', 'skau@chromium.org'],
+      'owners': ['srad@google.com', 'pawliczek@chromium.org'],
       'type': 'list',
       'schema': {
         'type': 'array',
@@ -3518,7 +3518,7 @@
     },
     {
       'name': 'PrintingAPIExtensionsAllowlist',
-      'owners': ['bmalcolm@chromium.org', 'skau@chromium.org'],
+      'owners': ['srad@google.com', 'pawliczek@chromium.org'],
       'type': 'list',
       'schema': {
         'type': 'array',
@@ -17787,7 +17787,7 @@
     },
     {
       'name': 'DeviceNativePrinters',
-      'owners': ['skau@chromium.org', 'bmalcolm@chromium.org'],
+      'owners': ['srad@google.com', 'pawliczek@chromium.org'],
       'id': 386,
       'device_only': True,
       'type': 'external',
@@ -17825,7 +17825,7 @@
     },
     {
       'name': 'DeviceNativePrintersAccessMode',
-      'owners': ['skau@chromium.org', 'bmalcolm@chromium.org'],
+      'owners': ['srad@google.com', 'pawliczek@chromium.org'],
       'id': 387,
       'device_only': True,
       'supported_on': ['chrome_os:73-'],
@@ -17873,7 +17873,7 @@
     },
     {
       'name': 'DeviceNativePrintersBlacklist',
-      'owners': ['skau@chromium.org', 'bmalcolm@chromium.org'],
+      'owners': ['srad@google.com', 'pawliczek@chromium.org'],
       'supported_on': ['chrome_os:73-'],
       'device_only': True,
       'id': 388,
@@ -17895,7 +17895,7 @@
     },
     {
       'name': 'DeviceNativePrintersWhitelist',
-      'owners': ['skau@chromium.org', 'bmalcolm@chromium.org'],
+      'owners': ['srad@google.com', 'pawliczek@chromium.org'],
       'supported_on': ['chrome_os:73-'],
       'device_only': True,
       'id': 389,
@@ -17918,7 +17918,7 @@
     },
     {
       'name': 'DevicePrinters',
-      'owners': ['skau@chromium.org', 'bmalcolm@chromium.org'],
+      'owners': ['srad@google.com', 'pawliczek@chromium.org'],
       'id': 743,
       'device_only': True,
       'type': 'external',
@@ -17953,7 +17953,7 @@
     },
     {
       'name': 'DevicePrintersAccessMode',
-      'owners': ['skau@chromium.org', 'bmalcolm@chromium.org'],
+      'owners': ['srad@google.com', 'pawliczek@chromium.org'],
       'id': 733,
       'device_only': True,
       'supported_on': ['chrome_os:87-'],
@@ -17998,7 +17998,7 @@
     },
     {
       'name': 'DevicePrintersBlocklist',
-      'owners': ['skau@chromium.org', 'bmalcolm@chromium.org'],
+      'owners': ['srad@google.com', 'pawliczek@chromium.org'],
       'supported_on': ['chrome_os:87-'],
       'device_only': True,
       'id': 734,
@@ -18017,7 +18017,7 @@
     },
     {
       'name': 'DevicePrintersAllowlist',
-      'owners': ['skau@chromium.org', 'bmalcolm@chromium.org'],
+      'owners': ['srad@google.com', 'pawliczek@chromium.org'],
       'supported_on': ['chrome_os:87-'],
       'device_only': True,
       'id': 735,
