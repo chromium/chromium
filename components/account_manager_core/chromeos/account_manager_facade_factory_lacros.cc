@@ -48,7 +48,7 @@ class AccountManagerFacadeFactoryLacros {
         std::move(account_manager_ui));
   }
 
-  account_manager::AccountManagerFacade* GetAccountManagerFacade() {
+  account_manager::AccountManagerFacadeImpl* GetAccountManagerFacade() {
     if (!account_manager_facade_) {
       InitializeAccountManagerFacade();
     }
@@ -61,11 +61,6 @@ class AccountManagerFacadeFactoryLacros {
 
   account_manager::AccountManagerUI* MaybeGetAshAccountManagerUIForTests() {
     return account_manager_ui_;
-  }
-
-  crosapi::AccountManagerMojoService*
-  MaybeGetAshAccountManagerMojoServiceForTests() {
-    return account_manager_mojo_service_.get();
   }
 
   // Reset the pointers.
@@ -104,7 +99,7 @@ class AccountManagerFacadeFactoryLacros {
             /*account_manager_for_tests=*/nullptr);
   }
 
-  std::unique_ptr<account_manager::AccountManagerFacade>
+  std::unique_ptr<account_manager::AccountManagerFacadeImpl>
       account_manager_facade_;
 
   // Set only in tests:
@@ -148,10 +143,4 @@ account_manager::AccountManager* MaybeGetAshAccountManagerForTests() {
 account_manager::AccountManagerUI* MaybeGetAshAccountManagerUIForTests() {
   return GetAccountManagerFacadeFactoryLacros()
       ->MaybeGetAshAccountManagerUIForTests();  // IN-TEST
-}
-
-crosapi::AccountManagerMojoService*
-MaybeGetAshAccountManagerMojoServiceForTests() {
-  return GetAccountManagerFacadeFactoryLacros()
-      ->MaybeGetAshAccountManagerMojoServiceForTests();  // IN-TEST
 }

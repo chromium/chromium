@@ -4092,7 +4092,6 @@ if (is_chromeos_lacros) {
       "../browser/ui/browser_navigator_browsertest.cc",
       "../browser/ui/browser_navigator_browsertest.h",
       "../browser/ui/browser_navigator_browsertest_chromeos.cc",
-      "../browser/ui/views/profiles/profile_picker_view_browsertest.cc",
     ]
 
     deps = [
@@ -4106,11 +4105,8 @@ if (is_chromeos_lacros) {
       "//chromeos/services/machine_learning/public/cpp",
       "//chromeos/services/machine_learning/public/cpp:stub",
       "//chromeos/services/machine_learning/public/mojom",
-      "//components/account_manager_core:test_support",
       "//components/captive_portal/content:content",
       "//components/captive_portal/core:buildflags",
-      "//components/feature_engagement/public:public",
-      "//components/feature_engagement/test:test_support",
       "//components/metrics/structured",
       "//components/metrics/structured:structured_events",
       "//components/proxy_config:proxy_config",
@@ -8214,7 +8210,7 @@ if (!is_android) {
         "../browser/password_manager/password_manager_signin_intercept_test_helper.h",
       ]
     }
-    if (is_win || is_mac || is_linux || is_chromeos_lacros) {
+    if (is_win || is_mac || (is_linux && !is_chromeos_lacros)) {
       sources += [
         "../browser/ui/views/profiles/profile_picker_test_base.cc",
         "../browser/ui/views/profiles/profile_picker_test_base.h",
@@ -8826,15 +8822,10 @@ if (!is_android && !is_fuchsia) {
           [ "../browser/ui/views/frame/webui_tab_strip_interactive_uitest.cc" ]
     }
 
-    if (is_win || is_mac || is_linux || is_chromeos_lacros) {
-      sources += [
-        "../browser/ui/views/profiles/profile_picker_interactive_uitest.cc",
-      ]
-    }
-
     if (is_win || is_mac || (is_linux && !is_chromeos_lacros)) {
       sources += [
         "../browser/ui/views/profiles/profile_bubble_interactive_uitest.cc",
+        "../browser/ui/views/profiles/profile_picker_interactive_uitest.cc",
       ]
     }
   }

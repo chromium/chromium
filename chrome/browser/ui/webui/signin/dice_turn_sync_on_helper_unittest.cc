@@ -42,7 +42,6 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/signin/public/identity_manager/primary_account_mutator.h"
-#include "components/sync/base/user_selectable_type.h"
 #include "components/sync/driver/mock_sync_service.h"
 #include "components/sync/driver/sync_user_settings_mock.h"
 #include "components/unified_consent/url_keyed_data_collection_consent_helper.h"
@@ -344,40 +343,6 @@ class DiceTurnSyncOnHelperTest : public testing::Test {
             syncer::SyncService::DISABLE_REASON_ENTERPRISE_POLICY)));
   }
 
-  void SetExpectationsForSyncAborted() {
-// TODO(crbug.com/1263553): Get rid of the lacros special casing once sync
-// disabled is fully supported on lacros.
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    EXPECT_CALL(*GetMockSyncService()->GetMockUserSettings(),
-                SetSelectedTypes(/*sync_everything=*/false,
-                                 /*types=*/syncer::UserSelectableTypeSet()));
-    EXPECT_CALL(*GetMockSyncService()->GetMockUserSettings(),
-                SetFirstSetupComplete(
-                    syncer::SyncFirstSetupCompleteSource::BASIC_FLOW));
-#else
-    EXPECT_CALL(
-        *GetMockSyncService()->GetMockUserSettings(),
-        SetFirstSetupComplete(syncer::SyncFirstSetupCompleteSource::BASIC_FLOW))
-        .Times(0);
-#endif
-  }
-
-  void CheckSyncAborted() {
-// TODO(crbug.com/1263553): Get rid of the lacros special casing once sync
-// disabled is fully supported on lacros.
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    // Disabling all data types is asserted in
-    // `SetExpectationsForSyncAborted()`.
-    EXPECT_TRUE(
-        identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSync));
-    EXPECT_TRUE(identity_manager()->HasAccountWithRefreshToken(account_id()));
-#else
-    EXPECT_FALSE(
-        identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSync));
-    EXPECT_FALSE(identity_manager()->HasAccountWithRefreshToken(account_id()));
-#endif
-  }
-
   void CheckDelegateCalls() {
     EXPECT_EQ(expected_login_error_, login_error_);
     EXPECT_EQ(expected_merge_data_previous_email_, merge_data_previous_email_);
@@ -644,7 +609,9 @@ TEST_F(DiceTurnSyncOnHelperTest, SyncDisabledAbortRemoveAccount) {
       DiceTurnSyncOnHelper::SigninAbortedMode::REMOVE_ACCOUNT);
   base::RunLoop().RunUntilIdle();
   // Check expectations.
-  CheckSyncAborted();
+  EXPECT_FALSE(
+      identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSync));
+  EXPECT_FALSE(identity_manager()->HasAccountWithRefreshToken(account_id()));
   CheckDelegateCalls();
 }
 
@@ -665,7 +632,9 @@ TEST_F(DiceTurnSyncOnHelperTest, SyncDisabledAbortKeepAccount) {
       DiceTurnSyncOnHelper::SigninAbortedMode::KEEP_ACCOUNT);
   base::RunLoop().RunUntilIdle();
   // Check expectations.
-  CheckSyncAborted();
+  EXPECT_FALSE(
+      identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSync));
+  EXPECT_FALSE(identity_manager()->HasAccountWithRefreshToken(account_id()));
   CheckDelegateCalls();
 }
 
@@ -750,7 +719,9 @@ TEST_F(DiceTurnSyncOnHelperTest, CrossAccountContinue) {
   CreateDiceTurnOnSyncHelper(
       DiceTurnSyncOnHelper::SigninAbortedMode::REMOVE_ACCOUNT);
   // Check expectations.
-  CheckSyncAborted();
+  EXPECT_FALSE(
+      identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSync));
+  EXPECT_FALSE(identity_manager()->HasAccountWithRefreshToken(account_id()));
   CheckDelegateCalls();
 }
 
@@ -878,7 +849,10 @@ TEST_F(DiceTurnSyncOnHelperTest, UndoSync) {
   // Set expectations.
   expected_sync_confirmation_shown_ = true;
   SetExpectationsForSyncStartupCompleted(profile());
-  SetExpectationsForSyncAborted();
+  EXPECT_CALL(
+      *GetMockSyncService()->GetMockUserSettings(),
+      SetFirstSetupComplete(syncer::SyncFirstSetupCompleteSource::BASIC_FLOW))
+      .Times(0);
 
   // Signin flow.
   EXPECT_FALSE(
@@ -886,7 +860,9 @@ TEST_F(DiceTurnSyncOnHelperTest, UndoSync) {
   CreateDiceTurnOnSyncHelper(
       DiceTurnSyncOnHelper::SigninAbortedMode::REMOVE_ACCOUNT);
   // Check expectations.
-  CheckSyncAborted();
+  EXPECT_FALSE(
+      identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSync));
+  EXPECT_FALSE(identity_manager()->HasAccountWithRefreshToken(account_id()));
   CheckDelegateCalls();
 }
 
