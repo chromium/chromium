@@ -64,6 +64,7 @@
 #include "third_party/blink/renderer/core/layout/ng/ng_constraint_space.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_length_utils.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_physical_box_fragment.h"
+#include "third_party/blink/renderer/core/layout/ng/svg/layout_ng_svg_text.h"
 #include "third_party/blink/renderer/core/layout/text_autosizer.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/page/scrolling/root_scroller_controller.h"
@@ -118,6 +119,16 @@ static TrackedDescendantsMap& GetPercentHeightDescendantsMap() {
   return *map;
 }
 
+// This map keeps track of SVG <text> descendants.
+// LayoutNGSVGText needs to do re-layout on transform changes of any ancestor
+// because LayoutNGSVGText's layout result depends on scaling factors computed
+// with ancestor transforms.
+TrackedDescendantsMap& GetSvgTextDescendantsMap() {
+  DEFINE_STATIC_LOCAL(Persistent<TrackedDescendantsMap>, map,
+                      (MakeGarbageCollected<TrackedDescendantsMap>()));
+  return *map;
+}
+
 LayoutBlock::LayoutBlock(ContainerNode* node)
     : LayoutBox(node),
       has_margin_before_quirk_(false),
@@ -129,6 +140,7 @@ LayoutBlock::LayoutBlock(ContainerNode* node)
       descendants_with_floats_marked_for_layout_(false),
       has_positioned_objects_(false),
       has_percent_height_descendants_(false),
+      has_svg_text_descendants_(false),
       pagination_state_changed_(false),
       is_legacy_initiated_out_of_flow_layout_(false) {
   if (node)
@@ -162,6 +174,10 @@ void LayoutBlock::RemoveFromGlobalMaps() {
       DCHECK_EQ(descendant->PercentHeightContainer(), this);
       descendant->SetPercentHeightContainer(nullptr);
     }
+  }
+  if (has_svg_text_descendants_) {
+    GetSvgTextDescendantsMap().erase(this);
+    has_svg_text_descendants_ = false;
   }
 }
 
@@ -259,6 +275,14 @@ void LayoutBlock::StyleDidChange(StyleDifference diff,
       old_style && diff.NeedsFullLayout() && NeedsLayout() &&
       BorderOrPaddingLogicalDimensionChanged(*old_style, new_style,
                                              kLogicalHeight);
+
+  if (diff.TransformChanged() && has_svg_text_descendants_) {
+    for (LayoutBox* box : *GetSvgTextDescendantsMap().at(this)) {
+      box->SetNeedsLayout(layout_invalidation_reason::kStyleChange,
+                          kMarkContainerChain);
+      To<LayoutNGSVGText>(box)->SetNeedsTextMetricsUpdate();
+    }
+  }
 }
 
 void LayoutBlock::UpdateFromStyle() {
@@ -1220,6 +1244,33 @@ void LayoutBlock::RemovePercentHeightDescendant(LayoutBox* descendant) {
       GetPercentHeightDescendantsMap().erase(this);
       has_percent_height_descendants_ = false;
     }
+  }
+}
+
+void LayoutBlock::AddSvgTextDescendant(LayoutBox& svg_text) {
+  NOT_DESTROYED();
+  DCHECK(IsA<LayoutNGSVGText>(svg_text));
+  auto result = GetSvgTextDescendantsMap().insert(this, nullptr);
+  if (result.is_new_entry) {
+    result.stored_value->value =
+        MakeGarbageCollected<TrackedLayoutBoxLinkedHashSet>();
+  }
+  result.stored_value->value->insert(&svg_text);
+  has_svg_text_descendants_ = true;
+}
+
+void LayoutBlock::RemoveSvgTextDescendant(LayoutBox& svg_text) {
+  NOT_DESTROYED();
+  DCHECK(IsA<LayoutNGSVGText>(svg_text));
+  TrackedDescendantsMap& map = GetSvgTextDescendantsMap();
+  auto it = map.find(this);
+  if (it == map.end())
+    return;
+  TrackedLayoutBoxLinkedHashSet* descendants = &*it->value;
+  descendants->erase(&svg_text);
+  if (descendants->IsEmpty()) {
+    map.erase(this);
+    has_svg_text_descendants_ = false;
   }
 }
 

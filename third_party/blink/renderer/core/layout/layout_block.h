@@ -212,6 +212,9 @@ class CORE_EXPORT LayoutBlock : public LayoutBox {
     return has_percent_height_descendants_;
   }
 
+  void AddSvgTextDescendant(LayoutBox& svg_text);
+  void RemoveSvgTextDescendant(LayoutBox& svg_text);
+
   void NotifyScrollbarThicknessChanged() {
     NOT_DESTROYED();
     width_available_to_children_changed_ = true;
@@ -633,6 +636,7 @@ class CORE_EXPORT LayoutBlock : public LayoutBox {
 
   unsigned has_positioned_objects_ : 1;
   unsigned has_percent_height_descendants_ : 1;
+  unsigned has_svg_text_descendants_ : 1;
 
   // When an object ceases to establish a fragmentation context (e.g. the
   // LayoutView when we're no longer printing), we need a deep layout
