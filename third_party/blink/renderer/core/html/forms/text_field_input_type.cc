@@ -558,6 +558,13 @@ void TextFieldInputType::SubtreeHasChanged() {
   DidSetValueByUserEdit();
 }
 
+void TextFieldInputType::OpenPopupView() {
+  if (GetElement().IsDisabledOrReadOnly())
+    return;
+  if (ChromeClient* chrome_client = GetChromeClient())
+    chrome_client->OpenTextDataListChooser(GetElement());
+}
+
 void TextFieldInputType::DidSetValueByUserEdit() {
   if (!GetElement().IsFocused())
     return;
