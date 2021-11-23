@@ -300,7 +300,7 @@ public class DownloadCollectionBridge {
 
     /**
      * Gets the content URI of the download that has the given file name.
-     * @param pendingUri name of the file.
+     * @param fileName name of the file.
      * @return Uri of the download with the given display name.
      */
     @TargetApi(29)
