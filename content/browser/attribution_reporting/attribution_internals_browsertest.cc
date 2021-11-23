@@ -322,6 +322,13 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
                          .Build(),
                      SentReportInfo::Status::kDropped,
                      /*http_response_code=*/0));
+  manager_.NotifyReportSent(
+      SentReportInfo(ReportBuilder(SourceBuilder(now).Build())
+                         .SetReportTime(now + base::Hours(5))
+                         .SetPriority(-2)
+                         .Build(),
+                     SentReportInfo::Status::kFailure,
+                     /*http_response_code=*/0));
   manager_.SetReportsForWebUI(
       {ReportBuilder(
            SourceBuilder(now)
@@ -348,7 +355,7 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
     static constexpr char wait_script[] = R"(
       let table = document.querySelector("#report-table-wrapper tbody");
       let obs = new MutationObserver(() => {
-        if (table.children.length === 5 &&
+        if (table.children.length === 6 &&
             table.children[0].children[1].innerText === "https://conversion.test" &&
             table.children[0].children[2].innerText ===
               "https://report.test/.well-known/attribution-reporting/report-attribution" &&
@@ -362,7 +369,8 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
             table.children[3].children[5].innerText === "0" &&
             table.children[3].children[6].innerText === "no" &&
             table.children[3].children[7].innerText === "Sent: HTTP 200" &&
-            table.children[4].children[7].innerText === "Prohibited by browser policy") {
+            table.children[4].children[7].innerText === "Prohibited by browser policy" &&
+            table.children[5].children[7].innerText === "Network error") {
           document.title = $1;
         }
       });
@@ -378,21 +386,22 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
     static constexpr char wait_script[] = R"(
       let table = document.querySelector("#report-table-wrapper tbody");
       let obs = new MutationObserver(() => {
-        if (table.children.length === 5 &&
-            table.children[4].children[1].innerText === "https://conversion.test" &&
-            table.children[4].children[2].innerText ===
+        if (table.children.length === 6 &&
+            table.children[5].children[1].innerText === "https://conversion.test" &&
+            table.children[5].children[2].innerText ===
               "https://report.test/.well-known/attribution-reporting/report-attribution" &&
-            table.children[4].children[5].innerText === "13" &&
-            table.children[4].children[6].innerText === "yes" &&
-            table.children[4].children[7].innerText === "Pending" &&
-            table.children[3].children[5].innerText === "12" &&
-            table.children[3].children[7].innerText === "Dropped for noise" &&
-            table.children[2].children[5].innerText === "11" &&
-            table.children[2].children[7].innerText === "Dropped due to low priority" &&
-            table.children[1].children[5].innerText === "0" &&
-            table.children[1].children[6].innerText === "no" &&
-            table.children[1].children[7].innerText === "Sent: HTTP 200" &&
-            table.children[0].children[7].innerText === "Prohibited by browser policy") {
+            table.children[5].children[5].innerText === "13" &&
+            table.children[5].children[6].innerText === "yes" &&
+            table.children[5].children[7].innerText === "Pending" &&
+            table.children[4].children[5].innerText === "12" &&
+            table.children[4].children[7].innerText === "Dropped for noise" &&
+            table.children[3].children[5].innerText === "11" &&
+            table.children[3].children[7].innerText === "Dropped due to low priority" &&
+            table.children[2].children[5].innerText === "0" &&
+            table.children[2].children[6].innerText === "no" &&
+            table.children[2].children[7].innerText === "Sent: HTTP 200" &&
+            table.children[1].children[7].innerText === "Prohibited by browser policy" &&
+            table.children[0].children[7].innerText === "Network error") {
           document.title = $1;
         }
       });
@@ -410,7 +419,7 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
     static constexpr char wait_script[] = R"(
       let table = document.querySelector("#report-table-wrapper tbody");
       let obs = new MutationObserver(() => {
-        if (table.children.length === 5 &&
+        if (table.children.length === 6 &&
             table.children[0].children[1].innerText === "https://conversion.test" &&
             table.children[0].children[2].innerText ===
               "https://report.test/.well-known/attribution-reporting/report-attribution" &&
@@ -424,7 +433,8 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
             table.children[3].children[5].innerText === "0" &&
             table.children[3].children[6].innerText === "no" &&
             table.children[3].children[7].innerText === "Sent: HTTP 200" &&
-            table.children[4].children[7].innerText === "Prohibited by browser policy") {
+            table.children[4].children[7].innerText === "Prohibited by browser policy" &&
+            table.children[5].children[7].innerText === "Network error") {
           document.title = $1;
         }
       });

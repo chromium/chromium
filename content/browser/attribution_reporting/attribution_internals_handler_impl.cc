@@ -214,12 +214,14 @@ void AttributionInternalsHandlerImpl::OnReportSent(const SentReportInfo& info) {
   mojom::WebUIAttributionReport::Status status;
   switch (info.status) {
     case SentReportInfo::Status::kSent:
-    case SentReportInfo::Status::kFailure:
       status = mojom::WebUIAttributionReport::Status::kSent;
       break;
     case SentReportInfo::Status::kDropped:
       status =
           mojom::WebUIAttributionReport::Status::kProhibitedByBrowserPolicy;
+      break;
+    case SentReportInfo::Status::kFailure:
+      status = mojom::WebUIAttributionReport::Status::kNetworkError;
       break;
     case SentReportInfo::Status::kTransientFailure:
     case SentReportInfo::Status::kOffline:

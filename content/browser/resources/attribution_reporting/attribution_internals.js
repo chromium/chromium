@@ -403,6 +403,9 @@ class Report {
       case WebUIAttributionReport_Status.kProhibitedByBrowserPolicy:
         this.status = 'Prohibited by browser policy';
         break;
+      case WebUIAttributionReport_Status.kNetworkError:
+        this.status = 'Network error';
+        break;
     }
   }
 }

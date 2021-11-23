@@ -30,6 +30,7 @@ struct WebUIAttributionReport {
     kDroppedForNoise,
     kProhibitedByBrowserPolicy,
     kSent,
+    kNetworkError,
   };
 
   Status status;
