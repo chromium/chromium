@@ -5332,8 +5332,14 @@ const ComputedStyle* Element::EnsureOwnComputedStyle(
   style_request.layout_parent_override = layout_parent_style;
   style_request.pseudo_argument = pseudo_argument;
 
+  StyleRecalcContext child_recalc_context = style_recalc_context;
+  if (RuntimeEnabledFeatures::CSSContainerQueriesEnabled() &&
+      element_style->IsContainerForContainerQueries()) {
+    child_recalc_context.container = this;
+  }
+
   scoped_refptr<ComputedStyle> result =
-      GetDocument().GetStyleResolver().ResolveStyle(this, style_recalc_context,
+      GetDocument().GetStyleResolver().ResolveStyle(this, child_recalc_context,
                                                     style_request);
   DCHECK(result);
   result->SetIsEnsuredInDisplayNone();
