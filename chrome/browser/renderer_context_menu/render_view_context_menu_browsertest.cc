@@ -1608,8 +1608,8 @@ IN_PROC_BROWSER_TEST_F(SearchByImageBrowserTest, ImageSearchWithCorruptImage) {
   ASSERT_TRUE(response_received);
 }
 
-// Flaky on Linux. http://crbug.com/1234671
-#if defined(OS_LINUX)
+// Flaky on Linux and LaCros. http://crbug.com/1234671
+#if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
 #define MAYBE_LensImageSearchWithValidImage \
   DISABLED_LensImageSearchWithValidImage
 #else
