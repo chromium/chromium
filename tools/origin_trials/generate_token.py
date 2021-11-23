@@ -80,6 +80,8 @@ def HostnameFromArg(arg):
     return None
   if all(DNS_LABEL_REGEX.match(label) for label in arg.split(".")):
     return arg.lower()
+  return None
+
 
 def OriginFromArg(arg):
   """Constructs the origin for the token from a command line argument.
@@ -102,8 +104,9 @@ def OriginFromArg(arg):
   # Add default port if it is not specified
   try:
     port = origin.port
-  except ValueError:
-    raise argparse.ArgumentTypeError("%s is not a hostname or a URL" % arg)
+  except ValueError as e:
+    raise argparse.ArgumentTypeError("%s is not a hostname or a URL" %
+                                     arg) from e
   if not port:
     port = {"https": 443, "http": 80}[origin.scheme]
   # Strip any extra components and return the origin URL:

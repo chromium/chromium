@@ -63,7 +63,7 @@ DEFAULT_KEY_FILE = 'eftest.key'
 
 class OverrideKeyFileAction(argparse.Action):
   def __init__(self, option_strings, dest, **kwargs):
-    super(OverrideKeyFileAction, self).__init__(option_strings, dest, **kwargs)
+    super().__init__(option_strings, dest, **kwargs)
 
   def __call__(self, parser, namespace, values, option_string=None):
     setattr(namespace, "use_chrome_key", None)
@@ -146,7 +146,7 @@ def main():
   for x in version:
     version_number <<= 8
     version_number += ord(x)
-  if (version != VERSION2 and version != VERSION3):
+  if (version not in (VERSION2, VERSION3)):
     print("Token has wrong version: %d" % version_number)
     sys.exit(1)
 
