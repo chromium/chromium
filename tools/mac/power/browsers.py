@@ -6,6 +6,7 @@ import abc
 import logging
 import subprocess
 import time
+import os
 
 import utils
 
@@ -50,8 +51,11 @@ class SafariDriver(BrowserDriver):
     subprocess.call(["open", "-a", "Safari"])
     # Call prep_safari.scpt to make sure the run starts clean. See file
     # comment for details.
-    subprocess.call(
-        ["osascript", './driver_scripts_templates/prep_safari.scpt'])
+    subprocess.call([
+        "osascript",
+        os.path.join(os.path.dirname(__file__), "driver_scripts_templates",
+                     "prep_safari.scpt")
+    ])
     subprocess.call(["open", "-a", "Safari", "--args"] + self.extra_args)
 
     self._EnsureStarted()

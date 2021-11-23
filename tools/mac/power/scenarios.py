@@ -8,6 +8,7 @@ import tempfile
 import datetime
 import logging
 import typing
+import os
 
 import utils
 import browsers
@@ -60,10 +61,12 @@ class ScenarioOSADriver:
     """Compiles script `template_file`, feeding `extra_args` into a temporary
        file.
     """
-    env = jinja2.Environment()
-    env.loader = jinja2.FileSystemLoader('.')
-    template = env.get_template("driver_scripts_templates/" + template_file)
+    loader = jinja2.FileSystemLoader(
+        os.path.join(os.path.dirname(__file__), "driver_scripts_templates"))
+    env = jinja2.Environment(loader=loader)
+    template = env.get_template(template_file)
     self.osa_script = tempfile.NamedTemporaryFile('w+t')
+    print(self.osa_script)
     self.osa_script.write(template.render(**extra_args))
     self.osa_script.flush()
 
