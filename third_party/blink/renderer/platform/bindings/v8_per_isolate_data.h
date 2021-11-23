@@ -284,6 +284,17 @@ class PLATFORM_EXPORT V8PerIsolateData final {
   size_t gc_callback_depth_ = 0;
 };
 
+// Creates a histogram for V8. The returned value is a base::Histogram, but
+// typed to void* for v8.
+PLATFORM_EXPORT void* CreateHistogram(const char* name,
+                                      int min,
+                                      int max,
+                                      size_t buckets);
+
+// Adds an entry to the supplied histogram. `hist` was previously returned from
+// CreateHistogram().
+PLATFORM_EXPORT void AddHistogramSample(void* hist, int sample);
+
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_BINDINGS_V8_PER_ISOLATE_DATA_H_
