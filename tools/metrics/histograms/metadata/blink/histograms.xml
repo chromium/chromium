@@ -2547,7 +2547,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.Navigator.ReducedUserAgent" enum="Boolean"
-    expires_after="M100">
+    expires_after="2022-05-22">
   <owner>abeyad@chromium.org</owner>
   <owner>aarontag@chromium.org</owner>
   <summary>
