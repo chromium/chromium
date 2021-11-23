@@ -17,6 +17,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 
 import android.accounts.Account;
+import android.os.Build.VERSION_CODES;
 import android.view.View;
 
 import androidx.test.filters.MediumTest;
@@ -31,6 +32,7 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -123,7 +125,10 @@ public class AccountManagementFragmentTest {
     @Test
     @MediumTest
     @Feature("RenderTest")
-    public void testAccountManagementViewForChildAccountWithSecondaryEduAccount() throws Exception {
+    @DisableIf.Build(message = "Fails on Marshmallow, https://crbug.com/1272911",
+            sdk_is_greater_than = VERSION_CODES.LOLLIPOP_MR1, sdk_is_less_than = VERSION_CODES.N)
+    public void
+    testAccountManagementViewForChildAccountWithSecondaryEduAccount() throws Exception {
         mAccountManagerTestRule.addAccount(CHILD_ACCOUNT);
         // The code under test doesn't care what account type this is, though in practice only
         // EDU accounts are supported on devices where the primary account is a child account.
