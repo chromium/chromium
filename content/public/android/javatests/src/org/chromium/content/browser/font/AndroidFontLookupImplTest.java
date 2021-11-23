@@ -157,7 +157,8 @@ public final class AndroidFontLookupImplTest {
         mAndroidFontLookup.fetchAllFontFiles(mFetchAllFontFilesCallback);
 
         mMojoTestRule.runLoop(RUN_LOOP_TIMEOUT_MS);
-        verify(mFetchAllFontFilesCallback).call(mFontMapCaptor.capture());
+        verify(mFetchAllFontFilesCallback, timeout(CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL))
+                .call(mFontMapCaptor.capture());
 
         Map<String, ReadOnlyFile> response = mFontMapCaptor.getValue();
         assertEquals(3, response.size());
@@ -185,7 +186,8 @@ public final class AndroidFontLookupImplTest {
         mAndroidFontLookup.fetchAllFontFiles(mFetchAllFontFilesCallback);
 
         mMojoTestRule.runLoop(RUN_LOOP_TIMEOUT_MS);
-        verify(mFetchAllFontFilesCallback).call(mFontMapCaptor.capture());
+        verify(mFetchAllFontFilesCallback, timeout(CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL))
+                .call(mFontMapCaptor.capture());
 
         Map<String, ReadOnlyFile> response = mFontMapCaptor.getValue();
         assertEquals(2, response.size());
@@ -212,7 +214,8 @@ public final class AndroidFontLookupImplTest {
         mAndroidFontLookup.fetchAllFontFiles(mFetchAllFontFilesCallback);
 
         mMojoTestRule.runLoop(RUN_LOOP_TIMEOUT_MS);
-        verify(mFetchAllFontFilesCallback).call(mFontMapCaptor.capture());
+        verify(mFetchAllFontFilesCallback, timeout(CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL))
+                .call(mFontMapCaptor.capture());
 
         Map<String, ReadOnlyFile> response = mFontMapCaptor.getValue();
         assertTrue(response.isEmpty());
