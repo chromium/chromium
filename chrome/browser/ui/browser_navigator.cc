@@ -60,6 +60,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chrome/browser/lacros/lacros_url_handling.h"
+#include "chromeos/crosapi/cpp/gurl_os_handler_utils.h"
 #endif
 
 #if defined(USE_AURA)
@@ -584,6 +585,14 @@ base::WeakPtr<content::NavigationHandle> Navigate(NavigateParams* params) {
   if (source_browser &&
       lacros_url_handling::MaybeInterceptNavigation(params->url)) {
     return nullptr;
+  }
+  // If Lacros comes here with an internal os:// redirect scheme to Ash, and Ash
+  // does not accept the URL, we convert it into a Lacros chrome:// url instead.
+  // This will most likely end in a 404 inside the Lacros browser. Note that we
+  // do not want to create a "404 SWA application".
+  if (crosapi::gurl_os_handler_utils::IsAshOsUrl(params->url)) {
+    params->url =
+        crosapi::gurl_os_handler_utils::GetChromeUrlFromSystemUrl(params->url);
   }
 #endif
 

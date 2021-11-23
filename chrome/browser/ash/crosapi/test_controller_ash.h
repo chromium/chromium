@@ -57,6 +57,9 @@ class TestControllerAsh : public mojom::TestController,
                       uint8_t pointer_id,
                       const gfx::PointF& location_in_window,
                       SendTouchEventCallback cb) override;
+  void GetOpenAshBrowserWindows(
+      GetOpenAshBrowserWindowsCallback callback) override;
+  void CloseAllBrowserWindows(CloseAllBrowserWindowsCallback callback) override;
 
  private:
   class OverviewWaiter;

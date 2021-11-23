@@ -264,8 +264,6 @@ metrics::OmniboxInputType AutocompleteInput::Parse(
     // become inaccessible (e.g. the flags page which allows to disable Lacros).
     // The os:// scheme is able to forward a keyed set of pages to Ash, hence
     // making them accessible again.
-    // TODO(crbug/1269355): Treat all os:// input as valid destination and add
-    // 404 handler if Ash does not handle the request.
     return metrics::OmniboxInputType::URL;
   }
 #endif

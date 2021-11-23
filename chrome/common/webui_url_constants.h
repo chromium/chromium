@@ -353,7 +353,6 @@ extern const char kOsUIDeviceLogUrl[];
 extern const char kOsUIDiagnosticsAppURL[];
 extern const char kOsUIDriveInternalsUrl[];
 extern const char kOsUIEmojiPickerURL[];
-extern const char kOsUIFlagsURL[];
 extern const char kOsUIGpuURL[];
 extern const char kOsUIHistogramsURL[];
 extern const char kOsUIIntenetConfigDialogURL[];
@@ -393,6 +392,7 @@ bool IsSystemWebUIHost(base::StringPiece host);
 extern const char kChromeUIAppDisabledHost[];
 extern const char kChromeUIOSSettingsHost[];
 extern const char kChromeUIOSSettingsURL[];
+extern const char kOsUIFlagsURL[];
 #endif
 
 #if defined(OS_LINUX) || defined(OS_CHROMEOS)

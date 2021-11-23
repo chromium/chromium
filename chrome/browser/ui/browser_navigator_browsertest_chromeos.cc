@@ -4,6 +4,7 @@
 
 #include "ash/constants/ash_switches.h"
 #include "base/command_line.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/ash/login/chrome_restart_request.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ui/ash/multi_user/multi_user_util.h"
@@ -24,13 +25,22 @@
 #include "content/public/test/browser_test.h"
 #include "ui/aura/window.h"
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chromeos/crosapi/mojom/crosapi.mojom.h"
+#include "chromeos/crosapi/mojom/test_controller.mojom-test-utils.h"
+#include "chromeos/lacros/lacros_service.h"
+#include "chromeos/lacros/lacros_test_helper.h"
+#endif
+
 namespace {
+
+using BrowserNavigatorTestChromeOS = BrowserNavigatorTest;
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 
 GURL GetGoogleURL() {
   return GURL("http://www.google.com/");
 }
-
-using BrowserNavigatorTestChromeOS = BrowserNavigatorTest;
 
 // Verifies that new browser is not opened for Signin profile.
 IN_PROC_BROWSER_TEST_F(BrowserNavigatorTestChromeOS, RestrictSigninProfile) {
@@ -177,5 +187,98 @@ IN_PROC_BROWSER_TEST_F(BrowserGuestSessionNavigatorTest,
     ASSERT_FALSE(window_manager->created_window());
   }
 }
+
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+// Verifies that the navigation is trying to open the os:// scheme page in
+// Ash, will fail and then open it as chrome:// in Lacros to show a 404 error.
+IN_PROC_BROWSER_TEST_F(BrowserNavigatorTestChromeOS, OsSchemeRedirectFail) {
+  EXPECT_EQ(1u, chrome::GetTotalBrowserCount());
+  EXPECT_EQ(1, browser()->tab_strip_model()->count());
+
+  // Navigate to an unknown page with an os:// scheme.
+  NavigateParams params(MakeNavigateParams(browser()));
+  params.disposition = WindowOpenDisposition::SINGLETON_TAB;
+  params.url = GURL("os://foobar");
+  params.window_action = NavigateParams::SHOW_WINDOW;
+  params.path_behavior = NavigateParams::IGNORE_AND_NAVIGATE;
+  Navigate(&params);
+
+  // A new 404 page should be shown in the browser.
+  EXPECT_EQ(browser(), params.browser);
+  EXPECT_EQ(2, browser()->tab_strip_model()->count());
+  EXPECT_EQ(GURL("chrome://foobar"),
+            browser()->tab_strip_model()->GetActiveWebContents()->GetURL());
+}
+
+// Verifies that the navigation of an os:// scheme page is opening an app on
+// the ash side and does not produce a navigation on the Lacros side.
+IN_PROC_BROWSER_TEST_F(BrowserNavigatorTestChromeOS, OsSchemeRedirectSucceed) {
+  if (chromeos::LacrosService::Get()->GetInterfaceVersion(
+          crosapi::mojom::TestController::Uuid_) <
+      static_cast<int>(crosapi::mojom::TestController::MethodMinVersions::
+                           kGetOpenAshBrowserWindowsMinVersion)) {
+    LOG(WARNING) << "Unsupported ash version.";
+    return;
+  }
+
+  crosapi::mojom::TestControllerAsyncWaiter waiter(
+      chromeos::LacrosService::Get()
+          ->GetRemote<crosapi::mojom::TestController>()
+          .get());
+
+  // Ash shouldn't have a browser window open by now.
+  uint32_t number = 1;
+  waiter.GetOpenAshBrowserWindows(&number);
+  EXPECT_EQ(0u, number);
+
+  // First we make sure that the GURL we are interested in is in our allow list.
+  chromeos::LacrosService* lacros_service = chromeos::LacrosService::Get();
+  auto init_params = crosapi::mojom::BrowserInitParams::New();
+  init_params->accepted_internal_ash_urls =
+      std::vector<GURL>{GURL(chrome::kOsUIFlagsURL)};
+  lacros_service->SetInitParamsForTests(std::move(init_params));
+
+  EXPECT_EQ(1u, chrome::GetTotalBrowserCount());
+  EXPECT_EQ(1, browser()->tab_strip_model()->count());
+  GURL url_before_navigation =
+      browser()->tab_strip_model()->GetActiveWebContents()->GetURL();
+
+  // Navigate to a known Ash page.
+  NavigateParams params(MakeNavigateParams(browser()));
+  params.disposition = WindowOpenDisposition::SINGLETON_TAB;
+  params.url = GURL(chrome::kOsUIFlagsURL);
+  params.window_action = NavigateParams::SHOW_WINDOW;
+  params.path_behavior = NavigateParams::IGNORE_AND_NAVIGATE;
+  Navigate(&params);
+
+  // No change should have happened on the Lacros side.
+  EXPECT_EQ(browser(), params.browser);
+  EXPECT_EQ(1, browser()->tab_strip_model()->count());
+  EXPECT_EQ(url_before_navigation,
+            browser()->tab_strip_model()->GetActiveWebContents()->GetURL());
+
+  // Clean up the window we have created.
+
+  // Wait until we have the app running.
+  while (0 == number) {
+    usleep(25000);
+    waiter.GetOpenAshBrowserWindows(&number);
+  }
+
+  // Close it.
+  bool success = false;
+  waiter.CloseAllBrowserWindows(&success);
+  EXPECT_TRUE(success);
+
+  // Wait until all are gone.
+  while (0 != number) {
+    usleep(25000);
+    waiter.GetOpenAshBrowserWindows(&number);
+  }
+}
+
+#endif
 
 }  // namespace

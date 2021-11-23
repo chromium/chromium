@@ -30,8 +30,8 @@ enum OptionalBoolean {
 // This interface is implemented by Ash-Chrome.
 // This interface provides tests a mechanism to mutate or query ash.
 // In the future, this interface may merge with an automation or a11y interface.
-// Next version: 7
-// Next method id: 13
+// Next version: 9
+// Next method id: 16
 [Stable, Uuid="1f93f9d7-e466-466c-a675-c21b48cf30d3"]
 interface TestController {
   // Clicks the middle of the window. Assumes that the window exists and is
@@ -114,4 +114,13 @@ interface TestController {
   SendTouchEvent@7(string window_id, TouchEventType type, uint8 pointer_id,
                    gfx.mojom.PointF location_in_window) => ();
 
+  // Get the number of open Ash browser windows.
+  [MinVersion=8]
+  GetOpenAshBrowserWindows@14() => (uint32 number);
+
+  // Close all browser windows.
+  // Note: Usually there should be no Ash window open unless the test opened
+  // one.
+  [MinVersion=8]
+  CloseAllBrowserWindows@15() => (bool success);
 };

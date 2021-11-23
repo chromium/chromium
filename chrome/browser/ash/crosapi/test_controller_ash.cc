@@ -17,6 +17,9 @@
 #include "base/task/post_task.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/ash/crosapi/window_util.h"
+#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/browser_window.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_event_dispatcher.h"
@@ -270,6 +273,20 @@ void TestControllerAsh::OnGetContextMenuForShelfItem(
     items.push_back(base::UTF16ToUTF8(model->GetLabelAt(i)));
   }
   std::move(callback).Run(std::move(items));
+}
+
+void TestControllerAsh::GetOpenAshBrowserWindows(
+    GetOpenAshBrowserWindowsCallback callback) {
+  std::move(callback).Run(BrowserList::GetInstance()->size());
+}
+
+void TestControllerAsh::CloseAllBrowserWindows(
+    CloseAllBrowserWindowsCallback callback) {
+  for (auto* browser : *BrowserList::GetInstance()) {
+    browser->window()->Close();
+  }
+
+  std::move(callback).Run(/*success*/ true);
 }
 
 // This class waits for overview mode to either enter or exit and fires a
