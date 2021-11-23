@@ -544,7 +544,9 @@ class LocalDeviceInstrumentationTestRun(
           for i in range(0, len(tests), _TEST_BATCH_MAX_GROUP_SIZE)
       ])
     all_tests.extend(other_tests)
-    return all_tests
+    # Sort all tests by hash.
+    # TODO(crbug.com/1257820): Add sorting logic back to _PartitionTests.
+    return self._SortTests(all_tests)
 
   #override
   def _GetUniqueTestName(self, test):
