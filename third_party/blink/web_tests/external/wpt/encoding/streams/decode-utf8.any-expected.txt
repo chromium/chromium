@@ -3,7 +3,7 @@ PASS decoding one UTF-8 chunk should give one output string - ArrayBuffer
 PASS decoding an empty chunk should give no output chunks - ArrayBuffer
 PASS an initial empty chunk should be ignored - ArrayBuffer
 PASS a trailing empty chunk should be ignored - ArrayBuffer
-FAIL UTF-8 EOF handling - ArrayBuffer assert_array_equals: expected property 0 to be "\ufffd" but got "\ufffd\ufffd\ufffd" (expected array ["\ufffd"] got ["\ufffd\ufffd\ufffd"])
+PASS UTF-8 EOF handling - ArrayBuffer
 FAIL decoding one UTF-8 chunk should give one output string - SharedArrayBuffer promise_test: Unhandled rejection with value: object "TypeError: The provided ArrayBufferView value must not be shared."
 FAIL decoding an empty chunk should give no output chunks - SharedArrayBuffer promise_test: Unhandled rejection with value: object "TypeError: The provided ArrayBufferView value must not be shared."
 FAIL an initial empty chunk should be ignored - SharedArrayBuffer promise_test: Unhandled rejection with value: object "TypeError: The provided ArrayBufferView value must not be shared."

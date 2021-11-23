@@ -3935,8 +3935,6 @@ crbug.com/626703 external/wpt/css/CSS2/text/white-space-mixed-001.xht [ Failure 
 crbug.com/626703 external/wpt/css/css-tables/floats/floats-wrap-bfc-006b.xht [ Failure ]
 crbug.com/626703 external/wpt/css/css-tables/floats/floats-wrap-bfc-006c.xht [ Failure ]
 crbug.com/626703 external/wpt/css/vendor-imports/mozilla/mozilla-central-reftests/writing-modes-3/logical-physical-mapping-001.html [ Failure ]
-crbug.com/626703 external/wpt/encoding/eof-utf-8-three.html [ Failure ]
-crbug.com/626703 external/wpt/encoding/eof-utf-8-two.html [ Failure ]
 crbug.com/626703 external/wpt/html/browsers/windows/noreferrer-window-name.html [ Skip Timeout ]
 crbug.com/626703 external/wpt/IndexedDB/request-abort-ordering.html [ Failure Pass ]
 crbug.com/626703 external/wpt/media-source/mediasource-avtracks.html [ Crash Failure ]
