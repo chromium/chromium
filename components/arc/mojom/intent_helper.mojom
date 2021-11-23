@@ -6,9 +6,9 @@
 
 module arc.mojom;
 
+import "ash/components/arc/mojom/bitmap.mojom";
+import "ash/components/arc/mojom/camera_intent.mojom";
 import "components/arc/mojom/app.mojom";
-import "components/arc/mojom/bitmap.mojom";
-import "components/arc/mojom/camera_intent.mojom";
 import "components/arc/mojom/intent_common.mojom";
 import "components/arc/mojom/scale_factor.mojom";
 import "mojo/public/mojom/base/safe_base_name.mojom";

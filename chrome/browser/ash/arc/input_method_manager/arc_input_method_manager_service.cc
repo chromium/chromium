@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "ash/components/arc/arc_browser_context_keyed_service_factory_base.h"
+#include "ash/components/arc/mojom/ime_mojom_traits.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/keyboard/arc/arc_input_method_bounds_tracker.h"
 #include "ash/public/cpp/keyboard/keyboard_switches.h"
@@ -23,7 +24,6 @@
 #include "chrome/browser/ash/arc/input_method_manager/arc_input_method_manager_bridge_impl.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/keyboard/chrome_keyboard_controller_client.h"
-#include "components/arc/mojom/ime_mojom_traits.h"
 #include "components/crx_file/id_util.h"
 #include "components/prefs/pref_service.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"

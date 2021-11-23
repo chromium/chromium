@@ -1,0 +1,2 @@
+# Prefer ARC++ security owners for changes to ARC++ IPC.
+file://chromeos/SECURITY_OWNERS

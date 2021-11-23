@@ -4,8 +4,8 @@
 
 module ash.camera_app.mojom;
 
+import "ash/components/arc/mojom/camera_intent.mojom";
 import "chromeos/services/machine_learning/public/mojom/document_scanner_param_types.mojom";
-import "components/arc/mojom/camera_intent.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 
 // Interface for monitoring tablet mode state of device. The state is detected

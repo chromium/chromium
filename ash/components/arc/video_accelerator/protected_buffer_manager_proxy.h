@@ -5,7 +5,7 @@
 #ifndef ASH_COMPONENTS_ARC_VIDEO_ACCELERATOR_PROTECTED_BUFFER_MANAGER_PROXY_H_
 #define ASH_COMPONENTS_ARC_VIDEO_ACCELERATOR_PROTECTED_BUFFER_MANAGER_PROXY_H_
 
-#include "components/arc/mojom/protected_buffer_manager.mojom.h"
+#include "ash/components/arc/mojom/protected_buffer_manager.mojom.h"
 
 namespace arc {
 
