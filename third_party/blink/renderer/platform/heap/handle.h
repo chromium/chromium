@@ -34,7 +34,6 @@
 // TODO(chromium:1269227): Clean up the following catch-all includes and require
 // IWYU for users of platform/heap.
 
-#include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/heap/thread_state.h"

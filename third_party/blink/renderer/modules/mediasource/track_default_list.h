@@ -7,6 +7,7 @@
 
 #include "third_party/blink/renderer/modules/mediasource/track_default.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 
 namespace blink {

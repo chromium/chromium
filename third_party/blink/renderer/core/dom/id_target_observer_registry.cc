@@ -26,6 +26,7 @@
 #include "third_party/blink/renderer/core/dom/id_target_observer_registry.h"
 
 #include "third_party/blink/renderer/core/dom/id_target_observer.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 
 namespace blink {
 

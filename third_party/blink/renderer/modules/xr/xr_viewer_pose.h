@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_XR_XR_VIEWER_POSE_H_
 
 #include "third_party/blink/renderer/modules/xr/xr_pose.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 
 #include "third_party/blink/renderer/core/typed_arrays/dom_typed_array.h"
 

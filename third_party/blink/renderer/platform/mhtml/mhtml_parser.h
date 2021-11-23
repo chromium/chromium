@@ -32,12 +32,10 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_MHTML_MHTML_PARSER_H_
 
 #include "base/memory/scoped_refptr.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/mhtml/shared_buffer_chunk_reader.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
-
-#include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace WTF {
 class String;

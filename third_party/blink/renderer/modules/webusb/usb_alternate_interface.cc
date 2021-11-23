@@ -7,6 +7,7 @@
 #include "third_party/blink/renderer/modules/webusb/usb_endpoint.h"
 #include "third_party/blink/renderer/modules/webusb/usb_interface.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 
 namespace blink {
 

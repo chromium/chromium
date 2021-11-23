@@ -27,6 +27,7 @@
 
 #include "third_party/blink/renderer/modules/peerconnection/rtc_legacy_stats_report.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/peerconnection/rtc_stats_response_base.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
