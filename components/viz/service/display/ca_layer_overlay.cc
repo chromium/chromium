@@ -25,9 +25,9 @@ namespace {
 // The CoreAnimation renderer's performance starts suffering when too many
 // quads are promoted to CALayers. At extremes, corruption can occur.
 // https://crbug.com/1022116
-// This number can be assigned by kMacCAOverlayQuadMaxNum when
+// This number can be re-assigned by kMacCAOverlayQuadMaxNum when
 // feature kMacCAOverlayQuad is enabled.
-constexpr size_t kTooManyQuads = 200;
+constexpr size_t kTooManyQuads = 128;
 
 // If there are too many RenderPassDrawQuads, we shouldn't use Core
 // Animation to present them as individual layers, since that potentially
