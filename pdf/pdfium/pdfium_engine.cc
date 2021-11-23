@@ -2184,12 +2184,14 @@ std::string PDFiumEngine::GetSelectedText() {
 
   std::u16string result;
   for (size_t i = 0; i < selection_.size(); ++i) {
-    static constexpr char16_t kNewLineChar = L'\n';
     std::u16string current_selection_text = selection_[i].GetText();
     if (i != 0) {
       if (selection_[i - 1].page_index() > selection_[i].page_index())
         std::swap(current_selection_text, result);
-      result.push_back(kNewLineChar);
+#if defined(OS_WIN)
+      result.push_back(L'\r');
+#endif
+      result.push_back(L'\n');
     }
     result.append(current_selection_text);
   }

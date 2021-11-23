@@ -166,7 +166,6 @@ using ::guest_view::TestGuestViewManagerFactory;
 using ::pdf_extension_test_util::ConvertPageCoordToScreenCoord;
 using ::testing::Contains;
 using ::testing::IsEmpty;
-using ::testing::MatchesRegex;
 using ::testing::Not;
 using ::testing::StartsWith;
 using ::ui::AXTreeFormatter;
@@ -1679,8 +1678,12 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionTest, SelectAllShortcut) {
                             /*alt=*/false, command);
   run_loop.Run();
 
-  EXPECT_THAT(base::UTF16ToUTF8(view->GetSelectedText()),
-              MatchesRegex("this is some text\r?\nsome more text"));
+#if defined(OS_WIN)
+  constexpr char kExpectedText[] = "this is some text\r\nsome more text";
+#else
+  constexpr char kExpectedText[] = "this is some text\nsome more text";
+#endif
+  EXPECT_EQ(base::UTF16ToUTF8(view->GetSelectedText()), kExpectedText);
 }
 
 // TODO(crbug.com/1253714): Add tests for using space and shift+space shortcuts

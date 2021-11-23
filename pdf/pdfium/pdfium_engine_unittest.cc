@@ -663,9 +663,8 @@ TEST_F(PDFiumEngineTest, SelectText) {
 
   engine->SelectAll();
 #if defined(OS_WIN)
-  // TODO(crbug.com/1269974): Make line endings more consistent.
   constexpr char kExpectedText[] =
-      "Hello, world!\r\nGoodbye, world!\nHello, world!\r\nGoodbye, world!";
+      "Hello, world!\r\nGoodbye, world!\r\nHello, world!\r\nGoodbye, world!";
 #else
   constexpr char kExpectedText[] =
       "Hello, world!\nGoodbye, world!\nHello, world!\nGoodbye, world!";
