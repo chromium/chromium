@@ -891,15 +891,12 @@ void IdentityGetAuthTokenFunction::StartGaiaRequest(
 }
 
 void IdentityGetAuthTokenFunction::ShowExtensionLoginPrompt() {
-  Profile* profile = GetProfile();
-  AccountInfo account = IdentityManagerFactory::GetForProfile(profile)
-                            ->FindExtendedAccountInfoByAccountId(
-                                token_key_.account_info.account_id);
+  const CoreAccountInfo& account = token_key_.account_info;
   std::string email_hint =
       account.IsEmpty() ? email_for_default_web_account_ : account.email;
 
-  signin_ui_util::ShowExtensionSigninPrompt(profile, IsPrimaryAccountOnly(),
-                                            email_hint);
+  signin_ui_util::ShowExtensionSigninPrompt(GetProfile(),
+                                            IsPrimaryAccountOnly(), email_hint);
 }
 
 void IdentityGetAuthTokenFunction::ShowRemoteConsentDialog(
