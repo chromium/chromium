@@ -634,7 +634,7 @@ DlpContentManager::GetScreenShareConfidentialContentsInfo(
                 media_id.web_contents_id.render_process_id,
                 media_id.web_contents_id.main_render_frame_id));
     ConfidentialContentsInfo info;
-    if (web_contents) {
+    if (web_contents && !web_contents->IsBeingDestroyed()) {
       info.restriction_info =
           GetConfidentialRestrictions(web_contents)
               .GetRestrictionLevelAndUrl(DlpContentRestriction::kScreenShare);
