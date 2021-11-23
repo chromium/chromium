@@ -189,6 +189,15 @@ StorageKey StorageKey::CreateWithNonce(const url::Origin& origin,
 }
 
 // static
+StorageKey StorageKey::CreateWithOptionalNonce(
+    const url::Origin& origin,
+    const net::SchemefulSite& top_level_site,
+    const base::UnguessableToken* nonce) {
+  DCHECK(!nonce || !nonce->is_empty());
+  return StorageKey(origin, top_level_site, nonce);
+}
+
+// static
 blink::StorageKey StorageKey::FromNetIsolationInfo(
     const net::IsolationInfo& isolation_info) {
   DCHECK(isolation_info.frame_origin().has_value());

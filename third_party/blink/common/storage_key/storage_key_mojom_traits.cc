@@ -4,6 +4,7 @@
 
 #include "third_party/blink/public/common/storage_key/storage_key_mojom_traits.h"
 
+#include "base/stl_util.h"
 #include "base/unguessable_token.h"
 #include "mojo/public/cpp/base/unguessable_token_mojom_traits.h"
 #include "net/base/schemeful_site.h"
@@ -29,20 +30,8 @@ bool StructTraits<blink::mojom::StorageKeyDataView, blink::StorageKey>::Read(
   if (!data.ReadNonce(&nonce))
     return false;
 
-  if (nonce.has_value()) {
-    // This call does not need or use the top_level_site. But since the
-    // implementation sets the top_level_site to be same-site with the origin we
-    // should confirm that's still the case.
-    //
-    // TODO(crbug.com/1199077): This should be represented by a union since the
-    // usages of top_level_site and nonce are mutally exclusive.
-    if (top_level_site != net::SchemefulSite(origin))
-      return false;
-
-    *out = blink::StorageKey::CreateWithNonce(origin, *nonce);
-  } else {
-    *out = blink::StorageKey(origin, top_level_site);
-  }
+  *out = blink::StorageKey::CreateWithOptionalNonce(
+      origin, top_level_site, base::OptionalOrNullptr(nonce));
   return true;
 }
 

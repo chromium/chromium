@@ -6,6 +6,7 @@
 
 #include <ostream>
 
+#include "base/stl_util.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/renderer/platform/network/blink_schemeful_site.h"
 
@@ -60,11 +61,9 @@ BlinkStorageKey::BlinkStorageKey(const StorageKey& storage_key)
           storage_key.nonce() ? &storage_key.nonce().value() : nullptr) {}
 
 BlinkStorageKey::operator StorageKey() const {
-  return nonce_.has_value()
-             ? StorageKey::CreateWithNonce(origin_->ToUrlOrigin(),
-                                           nonce_.value())
-             : StorageKey(origin_->ToUrlOrigin(),
-                          static_cast<net::SchemefulSite>(top_level_site_));
+  return StorageKey::CreateWithOptionalNonce(
+      origin_->ToUrlOrigin(), static_cast<net::SchemefulSite>(top_level_site_),
+      base::OptionalOrNullptr(nonce_));
 }
 
 String BlinkStorageKey::ToDebugString() const {

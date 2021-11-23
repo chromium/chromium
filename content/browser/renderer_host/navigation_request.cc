@@ -1291,13 +1291,14 @@ NavigationRequest::CreateForSynchronousRendererCommit(
       ChildProcessHost::kInvalidUniqueID /* initiator_process_id */,
       false /* was_opener_suppressed */, false /* is_pdf */));
 
-  // TODO(https://crbug.com/1199077): Initialize the StorageKey also with the
-  // top frame origin.
   absl::optional<base::UnguessableToken> nonce =
       render_frame_host->ComputeNonce(navigation_request->anonymous());
+  url::Origin top_level_origin =
+      render_frame_host->ComputeTopFrameOrigin(origin);
   navigation_request->commit_params_->storage_key =
-      nonce ? blink::StorageKey::CreateWithNonce(origin, nonce.value())
-            : blink::StorageKey(origin);
+      blink::StorageKey::CreateWithOptionalNonce(
+          origin, net::SchemefulSite(top_level_origin),
+          base::OptionalOrNullptr(nonce));
   navigation_request->web_bundle_navigation_info_ =
       std::move(web_bundle_navigation_info);
   if (subresource_web_bundle_navigation_info) {
@@ -4286,17 +4287,16 @@ void NavigationRequest::CommitNavigation() {
           origin, anonymous());
   DCHECK(!isolation_info_for_subresources_.IsEmpty());
 
-  // TODO(https://crbug.com/1199077): Initialize the StorageKey also with the
-  // top frame origin.
-  //
   // TODO(https://crbug.com/888079): The storage key's origin is ignored at the
   // moment. We will be able to use it once the browser can compute the origin
   // to commit.
   absl::optional<base::UnguessableToken> nonce =
       render_frame_host_->ComputeNonce(anonymous());
-  commit_params_->storage_key = nonce ? blink::StorageKey::CreateWithNonce(
-                                            GetOriginToCommit(), nonce.value())
-                                      : blink::StorageKey(GetOriginToCommit());
+  url::Origin top_level_origin =
+      render_frame_host_->ComputeTopFrameOrigin(GetOriginToCommit());
+  commit_params_->storage_key = blink::StorageKey::CreateWithOptionalNonce(
+      GetOriginToCommit(), net::SchemefulSite(top_level_origin),
+      base::OptionalOrNullptr(nonce));
 
   if (IsServedFromBackForwardCache() || IsPrerenderedPageActivation()) {
     CommitPageActivation();

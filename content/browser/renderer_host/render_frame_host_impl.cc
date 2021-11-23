@@ -3685,14 +3685,7 @@ void RenderFrameHostImpl::SetOriginDependentStateOfNewFrame(
   isolation_info_ = ComputeIsolationInfoInternal(
       new_frame_origin, net::IsolationInfo::RequestType::kOther, anonymous());
   SetLastCommittedOrigin(new_frame_origin);
-
-  absl::optional<base::UnguessableToken> nonce = ComputeNonce(anonymous());
-
-  // TODO(https://crbug.com/1199077): Initialize the StorageKey also with the
-  // top frame origin.
-  SetStorageKey(nonce ? blink::StorageKey::CreateWithNonce(new_frame_origin,
-                                                           nonce.value())
-                      : blink::StorageKey(new_frame_origin));
+  SetStorageKey(blink::StorageKey::FromNetIsolationInfo(isolation_info_));
 
   // Apply private network request policy according to our new origin.
   if (GetContentClient()->browser()->ShouldAllowInsecurePrivateNetworkRequests(
@@ -10659,11 +10652,9 @@ void RenderFrameHostImpl::TakeNewDocumentPropertiesFromNavigation(
   const blink::StorageKey& provisional_storage_key =
       navigation_request->commit_params().storage_key;
   blink::StorageKey storage_key_to_commit =
-      provisional_storage_key.nonce().has_value()
-          ? blink::StorageKey::CreateWithNonce(
-                GetLastCommittedOrigin(),
-                provisional_storage_key.nonce().value())
-          : blink::StorageKey(GetLastCommittedOrigin());
+      blink::StorageKey::CreateWithOptionalNonce(
+          GetLastCommittedOrigin(), provisional_storage_key.top_level_site(),
+          base::OptionalOrNullptr(provisional_storage_key.nonce()));
   SetStorageKey(storage_key_to_commit);
 
   coep_reporter_ = navigation_request->TakeCoepReporter();

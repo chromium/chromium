@@ -34,6 +34,7 @@
 
 #include "base/auto_reset.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/stl_util.h"
 #include "base/time/default_tick_clock.h"
 #include "build/chromeos_buildflags.h"
 #include "services/network/public/cpp/client_hints.h"
@@ -2158,11 +2159,11 @@ void DocumentLoader::InitializeWindow(Document* owner_document) {
 
   // TODO(https://crbug.com/888079): Just use the storage key sent by the
   // browser once the browser will be able to compute the origin in all cases.
+  // TODO(https://crbug.com/1271402): Make sure we have the intended behavior
+  // for initial about:blank navigations, where storage_key_ might be unset.
   frame_->DomWindow()->SetStorageKey(
-      storage_key_.GetNonce().has_value()
-          ? BlinkStorageKey::CreateWithNonce(security_origin,
-                                             storage_key_.GetNonce().value())
-          : BlinkStorageKey(security_origin));
+      BlinkStorageKey(security_origin, storage_key_.GetTopLevelSite(),
+                      base::OptionalOrNullptr(storage_key_.GetNonce())));
 
   // Conceptually, SecurityOrigin doesn't have to be initialized after sandbox
   // flags are applied, but there's a UseCounter in SetSecurityOrigin() that

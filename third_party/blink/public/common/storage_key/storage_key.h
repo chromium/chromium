@@ -43,6 +43,8 @@ class BLINK_COMMON_EXPORT StorageKey {
   // StorageKey without a top-level site specified. Eventually these will all
   // merge into a static function(s) that will require the caller to explicitly
   // specify that they do not want a top-level site.
+  // TODO(https://crbug.com/1271615): Remove or mark as test-only most of these
+  // constructors and factory methods.
   explicit StorageKey(const url::Origin& origin)
       : StorageKey(origin, net::SchemefulSite(origin), nullptr) {}
 
@@ -58,6 +60,12 @@ class BLINK_COMMON_EXPORT StorageKey {
   // the `origin`'s site.
   static StorageKey CreateWithNonce(const url::Origin& origin,
                                     const base::UnguessableToken& nonce);
+
+  // Same to the above, but this method does take a top-level site.
+  static StorageKey CreateWithOptionalNonce(
+      const url::Origin& origin,
+      const net::SchemefulSite& top_level_site,
+      const base::UnguessableToken* nonce);
 
   // Copyable and Moveable.
   StorageKey(const StorageKey& other) = default;

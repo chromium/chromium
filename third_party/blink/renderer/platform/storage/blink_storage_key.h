@@ -32,12 +32,21 @@ class PLATFORM_EXPORT BlinkStorageKey {
   // Creates a BlinkStorageKey with the given origin. `origin` must not be null.
   // `origin` can be opaque. This implicitly sets `top_level_site_` to the same
   // origin.
+  // TODO(https://crbug.com/1271615): Remove or mark as test-only most of these
+  // constructors and factory methods.
   explicit BlinkStorageKey(scoped_refptr<const SecurityOrigin> origin);
 
   // Creates a BlinkStorageKey with the given origin and top-level site.
   // `origin` must not be null. `origin` can be opaque.
   BlinkStorageKey(scoped_refptr<const SecurityOrigin> origin,
                   const BlinkSchemefulSite& top_level_site);
+
+  // Creates a BlinkStorageKey with the given origin, top-level site and nonce.
+  // `origin` must not be null. `origin` can be opaque.
+  // `nonce` can be null to create a key without a nonce.
+  BlinkStorageKey(scoped_refptr<const SecurityOrigin> origin,
+                  const BlinkSchemefulSite& top_level_site,
+                  const base::UnguessableToken* nonce);
 
   // Creates a BlinkStorageKey converting the given StorageKey `storage_key`.
   BlinkStorageKey(const StorageKey& storage_key);
@@ -72,9 +81,6 @@ class PLATFORM_EXPORT BlinkStorageKey {
 
  private:
   BlinkStorageKey(scoped_refptr<const SecurityOrigin> origin,
-                  const base::UnguessableToken* nonce);
-  BlinkStorageKey(scoped_refptr<const SecurityOrigin> origin,
-                  const BlinkSchemefulSite& top_level_site,
                   const base::UnguessableToken* nonce);
 
   scoped_refptr<const SecurityOrigin> origin_;
