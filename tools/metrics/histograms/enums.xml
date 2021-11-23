@@ -27138,6 +27138,7 @@ Called by update_document_policy_enum.py.-->
   <int value="926" label="HistoryClustersVisible"/>
   <int value="927" label="ChromadToCloudMigrationEnabled"/>
   <int value="928" label="CopyPreventionSettings"/>
+  <int value="929" label="ReportDeviceAudioStatusCheckingRateMs"/>
 </enum>
 
 <enum name="EnterprisePolicyDeviceIdValidity">

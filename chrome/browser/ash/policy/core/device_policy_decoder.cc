@@ -887,6 +887,11 @@ void DecodeReportingPolicies(const em::ChromeDeviceSettingsProto& policy,
           policies, key::kReportDeviceNetworkTelemetryEventCheckingRateMs,
           container.report_network_telemetry_event_checking_rate_ms());
     }
+    if (container.has_report_device_audio_status_checking_rate_ms()) {
+      DecodeIntegerReportingPolicy(
+          policies, key::kReportDeviceAudioStatusCheckingRateMs,
+          container.report_device_audio_status_checking_rate_ms());
+    }
   }
 
   if (policy.has_device_heartbeat_settings()) {

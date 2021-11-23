@@ -118,6 +118,7 @@ class DeviceSettingsProviderTest : public DeviceSettingsTestBase {
     proto->set_report_network_telemetry_collection_rate_ms(frequency);
     proto->set_report_network_telemetry_event_checking_rate_ms(frequency);
     proto->set_device_status_frequency(frequency);
+    proto->set_report_device_audio_status_checking_rate_ms(frequency);
     BuildAndInstallDevicePolicy();
   }
 
@@ -214,6 +215,7 @@ class DeviceSettingsProviderTest : public DeviceSettingsTestBase {
         kReportUploadFrequency,
         kReportDeviceNetworkTelemetryCollectionRateMs,
         kReportDeviceNetworkTelemetryEventCheckingRateMs,
+        kReportDeviceAudioStatusCheckingRateMs,
     };
     const base::Value expected_frequency_value(expected_frequency);
     for (auto* frequency_setting : reporting_frequency_settings) {

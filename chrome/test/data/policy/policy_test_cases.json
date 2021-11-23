@@ -160,7 +160,7 @@
       "chromeos_lacros"
     ],
     "can_be_recommended": true,
-    "policy_pref_mapping_tests": [      
+    "policy_pref_mapping_tests": [
       {
         "note": "Checking default value (no policies set).",
         "prefs": {
@@ -11605,6 +11605,9 @@
     "reason_for_missing_test": "Maps into CrosSettings"
   },
   "ReportDeviceNetworkTelemetryEventCheckingRateMs": {
+    "reason_for_missing_test": "Maps into CrosSettings"
+  },
+  "ReportDeviceAudioStatusCheckingRateMs": {
     "reason_for_missing_test": "Maps into CrosSettings"
   },
   "DeviceAllowNewUsers": {

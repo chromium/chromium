@@ -169,6 +169,10 @@ message DeviceReportingProto {
       [default = 600000];
   optional int64 report_network_telemetry_event_checking_rate_ms = 34
       [default = 60000];
+
+  // Audio telemetry policy
+  optional int64 report_device_audio_status_checking_rate_ms = 35
+      [default = 600000];
 }
 
 message EphemeralUsersEnabledProto {

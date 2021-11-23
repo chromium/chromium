@@ -690,6 +690,7 @@ void OwnerSettingsServiceAsh::UpdateDeviceSettings(
     //   kDeviceDisabledMessage
     //   ReportDeviceNetworkTelemetryCollectionRateMs
     //   ReportDeviceNetworkTelemetryEventCheckingRateMs
+    //   ReportDeviceAudioStatusCheckingRateMs
 
     LOG(FATAL) << "Device setting " << path << " is read-only.";
   }

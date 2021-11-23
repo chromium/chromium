@@ -980,6 +980,7 @@
         'DeviceMetricsReportingEnabled',
         'ReportDeviceNetworkTelemetryCollectionRateMs',
         'ReportDeviceNetworkTelemetryEventCheckingRateMs',
+        'ReportDeviceAudioStatusCheckingRateMs',
       ],
     },
     {
@@ -10477,6 +10478,27 @@
       'desc': '''Setting the policy to enabled or leaving it unset has enrolled devices report device audio volume.
 
       Setting the policy to Disabled means enrolled devices don't record or report audio status.''',
+      'arc_support': 'This policy has no effect on the logging done by Android.',
+    },
+    {
+      'name': 'ReportDeviceAudioStatusCheckingRateMs',
+      'owners': ['cros-reporting-team@google.com', 'albertojuarez@google.com'],
+      'type': 'int',
+      'schema': { 'type': 'integer', 'minimum': 60000 },
+      'future_on': ['chrome_os'],
+      'supported_chrome_os_management': ['google_cloud'],
+      'device_only': True,
+      'features': {
+        'dynamic_refresh': True,
+      },
+      'example_value': 600000,
+      'default': 600000,
+      'id': 929,
+      'caption': '''Audio telemetry collection rate in milliseconds.''',
+      'tags': ['admin-sharing'],
+      'desc': '''Rate at which audio data is sampled and collected. The minimum allowed is 1 minute.
+
+      If not set, the default rate of 10 minutes applies.''',
       'arc_support': 'This policy has no effect on the logging done by Android.',
     },
     {
@@ -29227,6 +29249,7 @@ The recommended way to configure policy on Windows is via GPO, although provisio
     'ReportDeviceLoginLogout': 'device_reporting.report_login_logout',
     'ReportDeviceNetworkTelemetryCollectionRateMs': 'device_reporting.report_network_telemetry_collection_rate_ms',
     'ReportDeviceNetworkTelemetryEventCheckingRateMs': 'device_reporting.report_network_telemetry_event_checking_rate_ms',
+    'ReportDeviceAudioStatusCheckingRateMs': 'device_reporting.report_device_audio_status_checking_rate_ms',
     'ReportUploadFrequency': 'device_reporting.device_status_frequency',
     'DeviceLoginScreenPowerManagement': 'login_screen_power_management.login_screen_power_management',
     'DeviceChromeVariations': 'device_chrome_variations_type.value',
@@ -29806,6 +29829,6 @@ The recommended way to configure policy on Windows is via GPO, although provisio
   'placeholders': [],
   'deleted_policy_ids': [114, 115, 204, 205, 206, 412, 476, 544, 546, 562, 569, 578, 583, 585, 586, 587, 588, 589, 590, 591, 600, 668, 669, 872],
   'deleted_atomic_policy_group_ids': [19],
-  'highest_id_currently_used': 928,
+  'highest_id_currently_used': 929,
   'highest_atomic_group_id_currently_used': 41
 }

@@ -124,6 +124,7 @@ const char* const kKnownSettings[] = {
     kDeviceChannelDowngradeBehavior,
     kReportDeviceActivityTimes,
     kReportDeviceAudioStatus,
+    kReportDeviceAudioStatusCheckingRateMs,
     kReportDeviceBluetoothInfo,
     kReportDeviceBoardStatus,
     kReportDeviceBootMode,
@@ -786,6 +787,11 @@ void DecodeReportingPolicies(const em::ChromeDeviceSettingsProto& policy,
       new_values_cache->SetInteger(
           kReportDeviceNetworkTelemetryEventCheckingRateMs,
           reporting_policy.report_network_telemetry_event_checking_rate_ms());
+    }
+    if (reporting_policy.has_report_device_audio_status_checking_rate_ms()) {
+      new_values_cache->SetInteger(
+          kReportDeviceAudioStatusCheckingRateMs,
+          reporting_policy.report_device_audio_status_checking_rate_ms());
     }
   }
 }

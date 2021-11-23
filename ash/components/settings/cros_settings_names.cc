@@ -262,6 +262,10 @@ const char kReportDeviceNetworkTelemetryCollectionRateMs[] =
 const char kReportDeviceNetworkTelemetryEventCheckingRateMs[] =
     "cros.telemetry_reporting.report_network_telemetry_event_checking_rate_ms";
 
+// How frequently the audio data are checked for events.
+const char kReportDeviceAudioStatusCheckingRateMs[] =
+    "cros.telemetry_reporting.report_device_audio_status_checking_rate_ms";
+
 // This policy should not appear in the protobuf ever but is used internally to
 // signal that we are running in a "safe-mode" for policy recovery.
 const char kPolicyMissingMitigationMode[] =
