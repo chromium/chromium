@@ -356,10 +356,8 @@ class OnDeviceClusteringWithContentBackendTest
  public:
   OnDeviceClusteringWithContentBackendTest() {
     scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        features::kOnDeviceClustering,
-        {{"content_clustering_enabled", "true"},
-         {"dedupe_similar_visits", "false"},
-         {"content_clustering_similarity_threshold", "0.5"}});
+        features::kOnDeviceClustering, {{"content_clustering_enabled", "true"},
+                                        {"dedupe_similar_visits", "false"}});
   }
 
  private:
@@ -393,7 +391,8 @@ TEST_F(OnDeviceClusteringWithContentBackendTest, ClusterOnContent) {
   history::AnnotatedVisit visit4 =
       testing::CreateDefaultAnnotatedVisit(4, GURL("https://github.com/"));
   visit4.content_annotations.model_annotations.entities = {{"github", 1}};
-  visit4.content_annotations.model_annotations.categories = {{"category", 1}};
+  visit4.content_annotations.model_annotations.categories = {{"category", 1},
+                                                             {"category2", 1}};
   visits.push_back(visit4);
 
   // After the context clustering, visit5 will not be in the same cluster as
@@ -402,7 +401,8 @@ TEST_F(OnDeviceClusteringWithContentBackendTest, ClusterOnContent) {
   history::AnnotatedVisit visit5 = testing::CreateDefaultAnnotatedVisit(
       10, GURL("https://nonexistentreferrer.com/"));
   visit5.content_annotations.model_annotations.entities = {{"github", 1}};
-  visit5.content_annotations.model_annotations.categories = {{"category", 1}};
+  visit5.content_annotations.model_annotations.categories = {{"category", 1},
+                                                             {"category2", 1}};
   visit5.referring_visit_of_redirect_chain_start = 6;
   visits.push_back(visit5);
 

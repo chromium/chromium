@@ -65,6 +65,35 @@ float CalculateJaccardSimilarity(
              : intersection_size / (1.0 * cluster_union.size());
 }
 
+// Calculates the similarity of two clusters using an intersection similarity.
+// Returns 1 if the clusters share more than a threshold number of tokens in
+// common and 0 otherwise.
+float CalculateIntersectionSimilarity(
+    const base::flat_set<std::u16string>& cluster1,
+    const base::flat_set<std::u16string>& cluster2) {
+  // If both clusters are empty, we don't know if they're the same so just say
+  // they're completely different.
+  if (cluster1.empty() && cluster2.empty())
+    return 0.0;
+
+  int intersection_size = 0;
+  for (const auto& token : cluster1) {
+    if (cluster2.find(token) != cluster2.end()) {
+      intersection_size++;
+    }
+  }
+  return intersection_size >= features::ClusterIntersectionThreshold() ? 1.0
+                                                                       : 0.0;
+}
+
+// Returns the similarity score based on the configured similarity metric.
+float CalculateSimilarityScore(const base::flat_set<std::u16string>& cluster1,
+                               const base::flat_set<std::u16string>& cluster2) {
+  if (features::ContentClusterOnIntersectionSimilarity())
+    return CalculateIntersectionSimilarity(cluster1, cluster2);
+  return CalculateJaccardSimilarity(cluster1, cluster2);
+}
+
 // Returns whether two clusters should be merged together based on their
 // |entity_similarity| and |category_similarity|. Both |entity_similarity| and
 // |category_similarity| are expected to be between 0 and 1, inclusive.
@@ -119,9 +148,9 @@ ContentAnnotationsClusterProcessor::ProcessClusters(
       if (merged_cluster_indices.find(j) != merged_cluster_indices.end()) {
         continue;
       }
-      float entity_similarity = CalculateJaccardSimilarity(
+      float entity_similarity = CalculateSimilarityScore(
           cluster_idx_to_entity_bows[i], cluster_idx_to_entity_bows[j]);
-      float category_similarity = CalculateJaccardSimilarity(
+      float category_similarity = CalculateSimilarityScore(
           cluster_idx_to_category_bows[i], cluster_idx_to_category_bows[j]);
       if (ShouldMergeClusters(entity_similarity, category_similarity)) {
         // Add the visits and keywords to the aggregated cluster.

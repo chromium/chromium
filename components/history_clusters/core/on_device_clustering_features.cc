@@ -114,5 +114,16 @@ float SearchResultsPageRankingWeight() {
   return std::max(0.f, weight);
 }
 
+bool ContentClusterOnIntersectionSimilarity() {
+  return GetFieldTrialParamByFeatureAsBool(
+      kOnDeviceClustering, "use_content_clustering_intersection_similarity",
+      true);
+}
+
+int ClusterIntersectionThreshold() {
+  return GetFieldTrialParamByFeatureAsInt(
+      kOnDeviceClustering, "content_clustering_intersection_threshold", 2);
+}
+
 }  // namespace features
 }  // namespace history_clusters

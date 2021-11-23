@@ -81,6 +81,17 @@ float BookmarkRankingWeight();
 // visits within a cluster. Will always be greater than or equal to 0.
 float SearchResultsPageRankingWeight();
 
+// Returns true if content clustering should use the intersection similarity
+// score. Note, if this is used, the threshold used for clustering by content
+// score should be < .5 (see ContentClusteringSimilarityThreshold above) or the
+// weightings between entity and category content similarity scores should be
+// adjusted.
+bool ContentClusterOnIntersectionSimilarity();
+
+// Returns the threshold, in terms of the number of overlapping keywords, to use
+// when clustering based on intersection score.
+int ClusterIntersectionThreshold();
+
 }  // namespace features
 }  // namespace history_clusters
 
