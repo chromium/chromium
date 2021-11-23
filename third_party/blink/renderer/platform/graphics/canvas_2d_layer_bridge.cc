@@ -390,9 +390,6 @@ bool Canvas2DLayerBridge::WritePixels(const SkImageInfo& orig_info,
 void Canvas2DLayerBridge::SkipQueuedDrawCommands() {
   ResourceProvider()->SkipQueuedDrawCommands();
   have_recorded_draw_commands_ = false;
-
-  if (rate_limiter_)
-    rate_limiter_->Reset();
 }
 
 void Canvas2DLayerBridge::ClearPendingRasterTimers() {
