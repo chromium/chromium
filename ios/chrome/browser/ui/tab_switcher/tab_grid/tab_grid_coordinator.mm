@@ -362,6 +362,7 @@
 
   // Record when the tab switcher is presented.
   base::RecordAction(base::UserMetricsAction("MobileTabGridEntered"));
+  [self.priceCardMediator logMetrics:TAB_SWITCHER];
 }
 
 - (void)reportTabGridUsageTime {
