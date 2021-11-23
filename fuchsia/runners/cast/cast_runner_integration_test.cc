@@ -48,6 +48,7 @@
 #include "fuchsia/runners/cast/fake_api_bindings.h"
 #include "fuchsia/runners/cast/fake_application_config_manager.h"
 #include "fuchsia/runners/cast/fidl/fidl/chromium/cast/cpp/fidl.h"
+#include "media/fuchsia/audio/fake_audio_device_enumerator.h"
 #include "net/test/embedded_test_server/default_handlers.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -404,6 +405,11 @@ class TestCastComponent {
     test_port_ = nullptr;
   }
 
+  void OnComponentStateCreated(base::OnceClosure callback) {
+    ASSERT_FALSE(component_state_created_callback_);
+    component_state_created_callback_ = std::move(callback);
+  }
+
   FakeApplicationConfigManager* app_config_manager() {
     return &app_config_manager_;
   }
@@ -456,7 +462,14 @@ class TestCastComponent {
 
   void WaitComponentStateCreated() {
     base::RunLoop run_loop;
-    component_state_created_callback_ = run_loop.QuitClosure();
+    base::OnceClosure old_component_state_created_callback =
+        std::move(component_state_created_callback_);
+    component_state_created_callback_ = base::BindLambdaForTesting([&] {
+      if (old_component_state_created_callback) {
+        std::move(old_component_state_created_callback).Run();
+      }
+      run_loop.Quit();
+    });
     run_loop.Run();
   }
 
@@ -886,6 +899,17 @@ TEST_F(CastRunnerIntegrationTest, MicrophoneRedirect) {
   app_config.mutable_permissions()->push_back(std::move(mic_permission));
   component.app_config_manager()->AddAppConfig(std::move(app_config));
 
+  // Register a fake AudioDeviceEnumerator.
+  std::unique_ptr<media::FakeAudioDeviceEnumerator>
+      fake_audio_device_enumerator;
+  component.OnComponentStateCreated(base::BindLambdaForTesting([&] {
+    fake_audio_device_enumerator =
+        std::make_unique<media::FakeAudioDeviceEnumerator>(
+            component.component_state()
+                ->outgoing_directory()
+                ->GetOrCreateDirectory("svc"));
+  }));
+
   component.CreateComponentContextAndStartComponent();
 
   // Expect fuchsia.media.Audio connection to be redirected to the agent.
@@ -899,7 +923,6 @@ TEST_F(CastRunnerIntegrationTest, MicrophoneRedirect) {
               }),
           fuchsia::media::Audio::Name_),
       ZX_OK);
-
   component.ExecuteJavaScript("connectMicrophone();");
 
   // Will quit once AudioCapturer is connected.

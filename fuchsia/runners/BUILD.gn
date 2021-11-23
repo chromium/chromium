@@ -218,6 +218,7 @@ test("cast_runner_integration_tests") {
     "//components/cast/message_port",
     "//fuchsia/base:run_all_integration_tests",
     "//fuchsia/base/test:test_support",
+    "//media/fuchsia/audio:test_support",
     "//net:test_support",
     "//testing/gtest",
     "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.camera3",

@@ -348,7 +348,7 @@ class AudioManagerTest : public ::testing::Test {
 #endif  // defined(USE_CRAS) && BUILDFLAG(IS_CHROMEOS_ASH)
 
  protected:
-  AudioManagerTest() {
+  AudioManagerTest() : message_loop_(base::MessagePumpType::IO) {
     CreateAudioManagerForTesting();
   }
   ~AudioManagerTest() override { audio_manager_->Shutdown(); }

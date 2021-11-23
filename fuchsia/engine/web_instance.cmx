@@ -19,6 +19,7 @@
       "fuchsia.legacymetrics.MetricsRecorder",
       "fuchsia.logger.LogSink",
       "fuchsia.media.Audio",
+      "fuchsia.media.AudioDeviceEnumerator",
       "fuchsia.media.ProfileProvider",
       "fuchsia.media.SessionAudioConsumerFactory",
       "fuchsia.media.drm.PlayReady",

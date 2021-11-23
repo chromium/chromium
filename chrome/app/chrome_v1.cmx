@@ -20,6 +20,7 @@
       "fuchsia.intl.PropertyProvider",
       "fuchsia.logger.LogSink",
       "fuchsia.media.Audio",
+      "fuchsia.media.AudioDeviceEnumerator",
       "fuchsia.media.ProfileProvider",
       "fuchsia.memorypressure.Provider",
       "fuchsia.net.interfaces.State",

@@ -24,6 +24,7 @@
 #include "fuchsia/engine/web_engine_integration_test_base.h"
 #include "media/base/media_switches.h"
 #include "media/fuchsia/audio/fake_audio_consumer.h"
+#include "media/fuchsia/audio/fake_audio_device_enumerator.h"
 #include "media/fuchsia/camera/fake_fuchsia_camera.h"
 #include "net/http/http_request_headers.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -67,7 +68,10 @@ class WebEngineIntegrationMediaTest : public WebEngineIntegrationTest {
   WebEngineIntegrationMediaTest()
       : fake_audio_consumer_service_(filtered_service_directory()
                                          .outgoing_directory()
-                                         ->GetOrCreateDirectory("svc")) {}
+                                         ->GetOrCreateDirectory("svc")),
+        fake_audio_device_enumerator_(filtered_service_directory()
+                                          .outgoing_directory()
+                                          ->GetOrCreateDirectory("svc")) {}
 
   // Returns a CreateContextParams that has AUDIO feature, and the "testdata"
   // content directory provider configured.
@@ -79,6 +83,7 @@ class WebEngineIntegrationMediaTest : public WebEngineIntegrationTest {
   }
 
   media::FakeAudioConsumerService fake_audio_consumer_service_;
+  media::FakeAudioDeviceEnumerator fake_audio_device_enumerator_;
 };
 
 class WebEngineIntegrationUserAgentTest : public WebEngineIntegrationTest {

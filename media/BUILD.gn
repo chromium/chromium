@@ -273,6 +273,11 @@ test("audio_unittests") {
       "//ui/android:ui_java",
     ]
   }
+
+  if (is_fuchsia) {
+    additional_manifest_fragments =
+        [ "//build/config/fuchsia/test/audio_capabilities.test-cmx" ]
+  }
 }
 
 # Note: Most external components should just depend on //media unless they

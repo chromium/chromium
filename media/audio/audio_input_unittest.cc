@@ -121,9 +121,11 @@ class AudioInputTest : public testing::Test {
  protected:
   bool InputDevicesAvailable() {
 #if BUILDFLAG(IS_FUCHSIA)
-    // TODO(crbug.com/852834): On Fuchsia HasAudioInputDevices() returns true
-    // unconditionally, so the tests will fail on any device having no input
-    // device.
+    if (AudioDeviceInfoAccessorForTests(audio_manager_.get())
+            .HasAudioInputDevices()) {
+      return true;
+    }
+    // If the device has no audio input device, fake it.
     if (!fake_audio_) {
       fake_audio_ = std::make_unique<FakeAudio>();
     }

@@ -86,6 +86,8 @@ class CastComponent final : public WebComponent,
   void ConnectMetricsRecorder(
       fidl::InterfaceRequest<fuchsia::legacymetrics::MetricsRecorder> request);
   void ConnectAudio(fidl::InterfaceRequest<fuchsia::media::Audio> request);
+  void ConnectAudioDeviceEnumerator(
+      fidl::InterfaceRequest<fuchsia::media::AudioDeviceEnumerator> request);
   void ConnectDeviceWatcher(
       fidl::InterfaceRequest<fuchsia::camera3::DeviceWatcher> request);
 

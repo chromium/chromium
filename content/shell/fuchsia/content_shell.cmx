@@ -15,6 +15,7 @@
       "fuchsia.intl.PropertyProvider",
       "fuchsia.logger.LogSink",
       "fuchsia.media.Audio",
+      "fuchsia.media.AudioDeviceEnumerator",
       "fuchsia.media.ProfileProvider",
       "fuchsia.media.SessionAudioConsumerFactory",
       "fuchsia.media.drm.Widevine",

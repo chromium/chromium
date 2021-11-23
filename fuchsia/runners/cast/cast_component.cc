@@ -107,6 +107,12 @@ void CastComponent::ConnectAudio(
                                         std::move(request));
 }
 
+void CastComponent::ConnectAudioDeviceEnumerator(
+    fidl::InterfaceRequest<fuchsia::media::AudioDeviceEnumerator> request) {
+  agent_manager_->ConnectToAgentService(application_config_.agent_url(),
+                                        std::move(request));
+}
+
 void CastComponent::ConnectDeviceWatcher(
     fidl::InterfaceRequest<fuchsia::camera3::DeviceWatcher> request) {
   agent_manager_->ConnectToAgentService(application_config_.agent_url(),
