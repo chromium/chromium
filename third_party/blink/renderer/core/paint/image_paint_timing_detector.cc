@@ -253,11 +253,10 @@ void ImageRecordsManager::AssignPaintTimeToRegisteredQueuedRecords(
     images_queued_for_paint_time_.pop_front();
     // A record may be in |images_queued_for_paint_time_| twice, for instance if
     // is already loaded by the time of its first paint.
-    if (!record->loaded || !record->paint_time.is_null()) {
+    if (!record->loaded || !record->paint_time.is_null() ||
+        it == pending_images_.end()) {
       continue;
     }
-    CHECK(it != pending_images_.end());
-    CHECK(it->value);
     record->paint_time = timestamp;
     size_ordered_set_.erase(it->value->AsWeakPtr());
     if (!largest_painted_image_ ||
