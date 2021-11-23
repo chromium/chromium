@@ -157,7 +157,7 @@ ResultExpr BaselinePolicyAndroid::EvaluateSyscall(int sysno) const {
   if (sysno == __NR_sched_setaffinity || sysno == __NR_sched_getaffinity) {
     if (allow_sched_affinity_)
       return Allow();
-    // Otherwise, fall back to the baseline policy.
+    return Error(EPERM);
   }
 
   // Ptrace is allowed so the crash reporter can fork in a renderer
