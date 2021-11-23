@@ -45,3 +45,17 @@ source_set("unit_tests") {
     sources += [ "crash_reporter_breadcrumb_observer_unittest.cc" ]
   }
 }
+
+if (!is_android) {
+  source_set("browser_tests") {
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+    testonly = true
+    deps = [
+      ":breadcrumbs",
+      "//chrome/test:test_support",
+      "//components/breadcrumbs/core",
+    ]
+
+    sources = [ "breadcrumb_manager_tab_helper_desktop_browsertest.cc" ]
+  }
+}
