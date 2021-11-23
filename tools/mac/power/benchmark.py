@@ -6,23 +6,32 @@
 
 import argparse
 import logging
-import os
-import psutil
-import signal
-import subprocess
 import sys
-import time
+import typing
 
-import utils
 from driver import Driver
-import generate_scripts
+import scenarios
+import browsers
 
 
-def SignalHandler(sig, frame, driver):
-  """Handle the run being aborted.
-  """
-  driver.Teardown()
-  sys.exit(0)
+def IterScenarios(scenario_names: typing.List[str],
+                  browser_driver: browsers.BrowserDriver, **kwargs):
+  for scenario_name in scenario_names:
+    scenario_driver = scenarios.MakeScenarioDriver(scenario_name,
+                                                   browser_driver, **kwargs)
+    if scenario_driver is None:
+      logging.error(f"Skipping invalid scenario {scenario_name}.")
+    else:
+      yield scenario_driver
+
+
+def IterBrowsers(browser_names: typing.List[str], **kwargs):
+  for browser_name in browser_names:
+    scenario_driver = browsers.MakeBrowserDriver(browser_name, **kwargs)
+    if scenario_driver is None:
+      logging.error(f"Skipping invalid browser {browser_name}.")
+    else:
+      yield scenario_driver
 
 
 def main():
@@ -45,6 +54,18 @@ def main():
       action='store',
       choices=["wakeups", "cpu_time"],
       help="Profile the application in one of two modes: wakeups, cpu_time.")
+  parser.add_argument('--scenarios',
+                      dest='scenarios',
+                      action='store',
+                      required=True,
+                      nargs='+',
+                      help='List of scenarios to run.')
+  parser.add_argument('--browsers',
+                      dest='browsers',
+                      action='store',
+                      required=True,
+                      nargs='+',
+                      help='List of browsers to run scenarios with.')
   parser.add_argument('--meet-meeting-id',
                       dest='meet_meeting_id',
                       action='store',
@@ -68,42 +89,28 @@ def main():
     log_level = logging.WARNING
   logging.basicConfig(format='%(levelname)s: %(message)s', level=log_level)
 
+  if not args.profile_mode and not args.run_measure:
+    logging.error("One of measure or profile mode must be provided.")
+    sys.exit(-1)
   if args.profile_mode and args.run_measure:
     logging.error("Cannot measure and profile at the same time, choose one.")
     sys.exit(-1)
 
-  # Generate the runner scripts
-  extra_args = {}
-  if args.meet_meeting_id:
-    extra_args["meeting_id"] = args.meet_meeting_id
-  generate_scripts.generate_all(extra_args)
-
   driver = Driver(args.output_dir)
   driver.CheckEnv(not args.no_checks)
 
-  signal.signal(
-      signal.SIGINT, lambda sig, frame: SignalHandler(sig, frame, driver))
-
-  if args.chrome_user_dir:
-    chrome_extra_arg = "--user-data-dir=%s" % args.chrome_user_dir
-  else:
-    chrome_extra_arg = "--guest"
-
-  # Measure or Profile all defined scenarios. To add/remove some change their
-  # "skip" attribute in utils.SCENARIOS.
-  for scenario in utils.SCENARIOS:
-
-    if scenario["browser"] != "Safari":
-      scenario["extra_args"].append(chrome_extra_arg)
-
-    # TODO(crbug.com/1224994): Allow scenario filtering like gtest_filter.
-    if not scenario["skip"]:
+  # Measure or Profile all defined scenarios.
+  for browser in IterBrowsers(args.browsers,
+                              chrome_user_dir=args.chrome_user_dir):
+    for scenario in IterScenarios(args.scenarios,
+                                  browser,
+                                  meet_meeting_id=args.meet_meeting_id):
       if args.run_measure:
-        logging.info(f'Recording scenario {scenario["name"]} ...')
+        logging.info(f'Recording scenario {scenario.name} ...')
         driver.Record(scenario)
 
       if args.profile_mode:
-        logging.info(f'Profiling scenario {scenario["name"]} ...')
+        logging.info(f'Profiling scenario {scenario.name} ...')
         driver.Profile(scenario, profile_mode=args.profile_mode)
 
 

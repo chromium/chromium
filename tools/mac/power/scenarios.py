@@ -1,0 +1,213 @@
+# Copyright 2021 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import subprocess
+import jinja2
+import tempfile
+import datetime
+import logging
+import typing
+
+import utils
+import browsers
+
+
+def GetTemplateFileForBrowser(browser_driver: browsers.BrowserDriver,
+                              template_file: str) -> str:
+  if browser_driver.name == "safari":
+    return f"safari_{template_file}"
+  else:
+    return template_file
+
+
+class ScenarioOSADriver:
+  """Base Class encapsulating OSA script driving a scenario, with setup and tear
+     down.
+  """
+
+  def __init__(self, scenario_name):
+    self.name = scenario_name
+
+  def Launch(self):
+    """Starts the driver script.
+    """
+    assert self.osa_script is not None
+    logging.info(f"Starting scenario {self.name}")
+    self.script_process = subprocess.Popen(['osascript', self.osa_script.name])
+
+  def Wait(self):
+    """Waits for the script to complete.
+    """
+    assert self.script_process is not None, "Driver wasn't launched."
+    self.script_process.wait()
+
+  def TearDown(self):
+    """Terminates the script if currently running and ensures related processes
+       are cleaned up.
+    """
+    logging.info(f"Tearing down scenario {self.name}")
+    if self.script_process:
+      utils.TerminateProcess(self.script_process)
+    self.osa_script.close()
+
+  def IsRunning(self) -> bool:
+    """Returns true if the script is currently running.
+    """
+    return self.script_process.poll() is None
+
+  def _CompileTemplate(self, template_file: str, extra_args: typing.List[str]):
+    """Compiles script `template_file`, feeding `extra_args` into a temporary
+       file.
+    """
+    env = jinja2.Environment()
+    env.loader = jinja2.FileSystemLoader('.')
+    template = env.get_template("driver_scripts_templates/" + template_file)
+    self.osa_script = tempfile.NamedTemporaryFile('w+t')
+    self.osa_script.write(template.render(**extra_args))
+    self.osa_script.flush()
+
+
+class ScenarioWithBrowserOSADriver(ScenarioOSADriver):
+  """Specialisation for OSA script that runs with a browser.
+  """
+
+  def __init__(self, scenario_name, browser_driver: browsers.BrowserDriver):
+    super().__init__(f"{browser_driver.name}_{scenario_name}")
+    self.browser = browser_driver
+
+  def Launch(self):
+    self.browser.Launch()
+    super().Launch()
+
+  def TearDown(self):
+    super().TearDown()
+    self.browser.TearDown()
+
+  def _CompileTemplate(self, template_file, extra_args):
+    return super()._CompileTemplate(template_file, {
+        "browser": self.browser.process_name,
+        **extra_args
+    })
+
+
+class IdleScenario(ScenarioOSADriver):
+  """Scenario that lets the system idle.
+  """
+
+  def __init__(self, duration: datetime.timedelta, scenario_name="idle"):
+    super().__init__(scenario_name)
+    self._CompileTemplate("idle", {
+        "delay": duration.total_seconds(),
+    })
+
+
+class IdleOnSiteScenario(ScenarioWithBrowserOSADriver):
+  """Scenario that lets a browser idle on a web page.
+  """
+
+  def __init__(self, browser_driver: browsers.BrowserDriver,
+               duration: datetime.timedelta, site_url: str, scenario_name):
+    super().__init__(scenario_name, browser_driver)
+    self._CompileTemplate(
+        GetTemplateFileForBrowser(browser_driver, "idle_on_site"), {
+            "idle_site": site_url,
+            "delay": duration.total_seconds(),
+        })
+
+  @staticmethod
+  def Wiki(browser_driver: browsers.BrowserDriver,
+           duration: datetime.timedelta):
+    return IdleOnSiteScenario(browser_driver, duration,
+                              "http://www.wikipedia.com/wiki/Alessandro_Volta",
+                              "idle_on_wiki")
+
+  @staticmethod
+  def Youtube(browser_driver: browsers.BrowserDriver,
+              duration: datetime.timedelta):
+    return IdleOnSiteScenario(
+        browser_driver, duration,
+        "https://www.youtube.com/watch?v=9EE_ICC_wFw?autoplay=1",
+        "idle_on_youtube")
+
+
+class ZeroWindowScenario(ScenarioWithBrowserOSADriver):
+  """Scenario that lets a browser idle with no window.
+  """
+
+  def __init__(self,
+               browser_driver: browsers.BrowserDriver,
+               duration: datetime.timedelta,
+               scenario_name="zero_window"):
+    super().__init__(scenario_name, browser_driver)
+    self._CompileTemplate(
+        GetTemplateFileForBrowser(browser_driver, "zero_window"), {
+            "delay": duration.total_seconds(),
+        })
+
+
+class NavigationScenario(ScenarioWithBrowserOSADriver):
+  """Scenario that has a browser navigating on web pages in a loop.
+  """
+
+  def __init__(self,
+               browser_driver: browsers.BrowserDriver,
+               navigation_duration: datetime.timedelta,
+               navigation_cycles: int,
+               scenario_name="navigation"):
+    super().__init__(scenario_name, browser_driver)
+    self._CompileTemplate(
+        GetTemplateFileForBrowser(browser_driver, "navigation"), {
+            "per_navigation_delay": navigation_duration.total_seconds(),
+            "navigation_cycles": navigation_cycles
+        })
+
+
+class MeetScenario(ScenarioWithBrowserOSADriver):
+  """Scenario that has the browser join a Google Meet room.
+  """
+
+  def __init__(self,
+               browser_driver: browsers.BrowserDriver,
+               duration: datetime.timedelta,
+               meeting_id: int,
+               scenario_name="meet"):
+    super().__init__(scenario_name, browser_driver)
+    self._CompileTemplate(GetTemplateFileForBrowser(browser_driver, "meet"), {
+        "delay": duration.total_seconds(),
+        "meeting_id": meeting_id
+    })
+
+
+def MakeScenarioDriver(scenario_name, browser_driver,
+                       meet_meeting_id=None) -> ScenarioOSADriver:
+  """Creates scenario driver by name.
+
+  Args:
+    scenario_name: Identifier for the scenario to create. Supported scenarios
+      are: meet, idle_on_wiki, idle_on_youtube, navigation, zero_window and
+      idle.
+    browser_driver: Browser the scenario is created with.
+    meet_meeting_id: Optional meeting id used for meet scenario.
+  """
+
+  if "meet" == scenario_name:
+    return MeetScenario(browser_driver,
+                        datetime.timedelta(minutes=60),
+                        meeting_id=meet_meeting_id)
+  if "idle_on_wiki" == scenario_name:
+    return IdleOnSiteScenario.Wiki(browser_driver,
+                                   datetime.timedelta(minutes=60))
+  if "idle_on_youtube" == scenario_name:
+    return IdleOnSiteScenario.Youtube(browser_driver,
+                                      datetime.timedelta(minutes=60))
+  if "navigation" == scenario_name:
+    return NavigationScenario(
+        browser_driver,
+        navigation_duration=datetime.timedelta(seconds=60),
+        navigation_cycles=10)
+  if "zero_window" == scenario_name:
+    return ZeroWindowScenario(browser_driver, datetime.timedelta(minutes=60))
+  if "idle" == scenario_name:
+    return IdleScenario(datetime.timedelta(minutes=60))
+  return None

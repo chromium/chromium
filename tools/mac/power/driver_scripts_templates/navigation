@@ -31,8 +31,8 @@ tell application "{{ browser }}"
       -- Each cycles takes about 2 mins. Aim for a test that takes an hour.
       repeat with i from 1 to {{ navigation_cycles }}
 
-      set sites to {"https://amazon.com", "https://www.youtube.com"} & ¬
-        {"https://www.google.com", "https://github.com/chromium/chromium"}
+        set sites to {"https://amazon.com", "https://www.youtube.com"} & ¬
+          {"https://www.google.com", "https://github.com/chromium/chromium"}
 
         repeat with site in sites
           open location site
