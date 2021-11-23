@@ -13,14 +13,12 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_controller.h"
-#include "content/public/common/content_client.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/shell/browser/shell.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 
@@ -86,8 +84,6 @@ class AttributionInternalsWebUiBrowserTest : public ContentBrowserTest {
   }
 
  protected:
-  AttributionDisallowingContentBrowserClient disallowed_browser_client_;
-
   // The manager must outlive the `AttributionInternalsHandler` so that the
   // latter can remove itself as an observer of the former on the latter's
   // destruction.
@@ -132,8 +128,9 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
                        DisabledByEmbedder_MeasurementConsideredDisabled) {
-  ContentBrowserClient* old_browser_client =
-      SetBrowserClientForTesting(&disallowed_browser_client_);
+  AttributionDisallowingContentBrowserClient disallowed_browser_client;
+  ScopedContentBrowserClientSetting setting(&disallowed_browser_client);
+
   EXPECT_TRUE(NavigateToURL(shell(), GURL(kAttributionInternalsUrl)));
 
   OverrideWebUIAttributionManager();
@@ -154,7 +151,6 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
   TitleWatcher title_watcher(shell()->web_contents(), kCompleteTitle);
   ClickRefreshButton();
   EXPECT_EQ(kCompleteTitle, title_watcher.WaitAndGetTitle());
-  SetBrowserClientForTesting(old_browser_client);
 }
 
 IN_PROC_BROWSER_TEST_F(

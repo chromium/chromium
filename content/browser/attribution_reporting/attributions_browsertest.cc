@@ -12,7 +12,6 @@
 #include "base/values.h"
 #include "content/browser/attribution_reporting/attribution_manager_impl.h"
 #include "content/browser/attribution_reporting/attribution_test_utils.h"
-#include "content/public/common/content_client.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -146,9 +145,6 @@ class AttributionsBrowserTest : public ContentBrowserTest {
   WebContents* web_contents() { return shell()->web_contents(); }
 
   net::EmbeddedTestServer* https_server() { return https_server_.get(); }
-
- protected:
-  AttributionDisallowingContentBrowserClient disallowed_browser_client_;
 
  private:
   std::unique_ptr<net::EmbeddedTestServer> https_server_;
@@ -577,8 +573,8 @@ IN_PROC_BROWSER_TEST_F(
 
 IN_PROC_BROWSER_TEST_F(AttributionsBrowserTest,
                        ConversionRegisteredWithEmbedderDisallow_NoData) {
-  ContentBrowserClient* old_browser_client =
-      SetBrowserClientForTesting(&disallowed_browser_client_);
+  AttributionDisallowingContentBrowserClient disallowed_browser_client;
+  ScopedContentBrowserClientSetting setting(&disallowed_browser_client);
 
   // Expected reports must be registered before the server starts.
   ExpectedReportWaiter expected_report(
@@ -622,8 +618,6 @@ IN_PROC_BROWSER_TEST_F(AttributionsBrowserTest,
       FROM_HERE, run_loop.QuitClosure(), base::Milliseconds(100));
   run_loop.Run();
   EXPECT_FALSE(expected_report.HasRequest());
-
-  SetBrowserClientForTesting(old_browser_client);
 }
 
 IN_PROC_BROWSER_TEST_F(AttributionsBrowserTest,

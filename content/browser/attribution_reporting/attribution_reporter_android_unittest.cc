@@ -9,7 +9,6 @@
 #include "content/browser/attribution_reporting/attribution_test_utils.h"
 #include "content/browser/attribution_reporting/storable_source.h"
 #include "content/common/url_utils.h"
-#include "content/public/common/content_client.h"
 #include "content/public/common/url_constants.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -75,17 +74,13 @@ TEST_F(AttributionReporterTest, ValidImpression_Allowed_NoOptionals) {
 
 TEST_F(AttributionReporterTest, ValidImpression_Disallowed) {
   AttributionDisallowingContentBrowserClient browser_client;
-
-  ContentBrowserClient* old_browser_client =
-      SetBrowserClientForTesting(&browser_client);
+  ScopedContentBrowserClientSetting setting(&browser_client);
 
   attribution_reporter_android::ReportAppImpression(
       test_manager_, nullptr, kPackageName, kEventId, kConversionUrl,
       kReportToUrl, 56789, base::Time::Now());
 
   EXPECT_THAT(test_manager_.handled_sources(), IsEmpty());
-
-  SetBrowserClientForTesting(old_browser_client);
 }
 
 TEST_F(AttributionReporterTest, InvalidImpression) {

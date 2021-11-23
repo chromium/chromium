@@ -203,8 +203,7 @@ TEST_F(AttributionHostTest,
   // checking if the operation is allowed by the embedded.
 
   ConfigurableAttributionTestBrowserClient browser_client;
-  ContentBrowserClient* old_browser_client =
-      SetBrowserClientForTesting(&browser_client);
+  ScopedContentBrowserClientSetting setting(&browser_client);
 
   browser_client.BlockConversionMeasurementInContext(
       /*impression_origin=*/absl::nullopt,
@@ -248,8 +247,6 @@ TEST_F(AttributionHostTest,
 
     test_manager_.Reset();
   }
-
-  SetBrowserClientForTesting(old_browser_client);
 }
 
 TEST_F(AttributionHostTest, ConversionOnInsecurePage_BadMessage) {
@@ -314,8 +311,7 @@ TEST_F(AttributionHostTest, ValidConversion_NoBadMessage) {
 
 TEST_F(AttributionHostTest, ValidConversionWithEmbedderDisable_NoConversion) {
   AttributionDisallowingContentBrowserClient disallowed_browser_client;
-  ContentBrowserClient* old_browser_client =
-      SetBrowserClientForTesting(&disallowed_browser_client);
+  ScopedContentBrowserClientSetting setting(&disallowed_browser_client);
 
   // Create a page with a secure origin.
   contents()->NavigateAndCommit(GURL("https://www.example.com"));
@@ -327,13 +323,11 @@ TEST_F(AttributionHostTest, ValidConversionWithEmbedderDisable_NoConversion) {
   conversion_host_mojom()->RegisterConversion(std::move(conversion));
 
   EXPECT_THAT(test_manager_.handled_triggers(), IsEmpty());
-  SetBrowserClientForTesting(old_browser_client);
 }
 
 TEST_F(AttributionHostTest, EmbedderDisabledContext_ConversionDisallowed) {
   ConfigurableAttributionTestBrowserClient browser_client;
-  ContentBrowserClient* old_browser_client =
-      SetBrowserClientForTesting(&browser_client);
+  ScopedContentBrowserClientSetting setting(&browser_client);
 
   browser_client.BlockConversionMeasurementInContext(
       /*impression_origin=*/absl::nullopt,
@@ -366,14 +360,11 @@ TEST_F(AttributionHostTest, EmbedderDisabledContext_ConversionDisallowed) {
 
     test_manager_.Reset();
   }
-
-  SetBrowserClientForTesting(old_browser_client);
 }
 
 TEST_F(AttributionHostTest, EmbedderDisabledContext_ImpressionDisallowed) {
   ConfigurableAttributionTestBrowserClient browser_client;
-  ContentBrowserClient* old_browser_client =
-      SetBrowserClientForTesting(&browser_client);
+  ScopedContentBrowserClientSetting setting(&browser_client);
 
   browser_client.BlockConversionMeasurementInContext(
       absl::make_optional(url::Origin::Create(GURL("https://top.example"))),
@@ -411,14 +402,11 @@ TEST_F(AttributionHostTest, EmbedderDisabledContext_ImpressionDisallowed) {
 
     test_manager_.Reset();
   }
-
-  SetBrowserClientForTesting(old_browser_client);
 }
 
 TEST_F(AttributionHostTest, ValidImpressionWithEmbedderDisable_NoImpression) {
   AttributionDisallowingContentBrowserClient disallowed_browser_client;
-  ContentBrowserClient* old_browser_client =
-      SetBrowserClientForTesting(&disallowed_browser_client);
+  ScopedContentBrowserClientSetting setting(&disallowed_browser_client);
 
   contents()->NavigateAndCommit(GURL("https://secure_impression.com"));
   auto navigation = NavigationSimulatorImpl::CreateRendererInitiated(
@@ -428,7 +416,6 @@ TEST_F(AttributionHostTest, ValidImpressionWithEmbedderDisable_NoImpression) {
   navigation->Commit();
 
   EXPECT_THAT(test_manager_.handled_sources(), IsEmpty());
-  SetBrowserClientForTesting(old_browser_client);
 }
 
 TEST_F(AttributionHostTest, Conversion_AssociatedWithConversionSite) {
@@ -846,15 +833,12 @@ TEST_F(AttributionHostTest, RegisterImpression_RecordsAllowedMetric) {
   };
 
   for (const auto& test_case : kTestCases) {
-    ContentBrowserClient* old_browser_client =
-        SetBrowserClientForTesting(test_case.browser_client);
+    ScopedContentBrowserClientSetting setting(test_case.browser_client);
 
     base::HistogramTester histograms;
     conversion_host_mojom()->RegisterImpression(CreateValidImpression());
     histograms.ExpectUniqueSample("Conversions.RegisterImpressionAllowed",
                                   test_case.want_allowed, 1);
-
-    SetBrowserClientForTesting(old_browser_client);
   }
 }
 
@@ -875,8 +859,7 @@ TEST_F(AttributionHostTest, RegisterConversion_RecordsAllowedMetric) {
   };
 
   for (const auto& test_case : kTestCases) {
-    ContentBrowserClient* old_browser_client =
-        SetBrowserClientForTesting(test_case.browser_client);
+    ScopedContentBrowserClientSetting setting(test_case.browser_client);
 
     base::HistogramTester histograms;
     blink::mojom::ConversionPtr conversion = blink::mojom::Conversion::New();
@@ -885,8 +868,6 @@ TEST_F(AttributionHostTest, RegisterConversion_RecordsAllowedMetric) {
     conversion_host_mojom()->RegisterConversion(std::move(conversion));
     histograms.ExpectUniqueSample("Conversions.RegisterConversionAllowed",
                                   test_case.want_allowed, 1);
-
-    SetBrowserClientForTesting(old_browser_client);
   }
 }
 

@@ -19,7 +19,6 @@
 #include "content/browser/storage_partition_impl.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/network_service_instance.h"
-#include "content/public/common/content_client.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_browser_context.h"
 #include "services/network/test/test_network_connection_tracker.h"
@@ -251,8 +250,7 @@ TEST_F(AttributionReporterImplTest, ManyReportsAddedSeparately_SentInOrder) {
 TEST_F(AttributionReporterImplTest,
        EmbedderDisallowsConversions_ReportNotSent) {
   AttributionDisallowingContentBrowserClient disallowed_browser_client;
-  ContentBrowserClient* old_browser_client =
-      SetBrowserClientForTesting(&disallowed_browser_client);
+  ScopedContentBrowserClientSetting setting(&disallowed_browser_client);
   reporter_->AddReportsToQueue(
       {GetReport(clock().Now(), clock().Now(), AttributionReport::Id(1))});
 
@@ -263,13 +261,11 @@ TEST_F(AttributionReporterImplTest,
   EXPECT_EQ(1L, *last_sent_report_info()->report.conversion_id.value());
   // Verify that the report was not sent to the NetworkSender.
   EXPECT_EQ(0, last_sent_report_info()->http_response_code);
-  SetBrowserClientForTesting(old_browser_client);
 }
 
 TEST_F(AttributionReporterImplTest, EmbedderDisallowedContext_ReportNotSent) {
   ConfigurableAttributionTestBrowserClient browser_client;
-  ContentBrowserClient* old_browser_client =
-      SetBrowserClientForTesting(&browser_client);
+  ScopedContentBrowserClientSetting setting(&browser_client);
 
   browser_client.BlockConversionMeasurementInContext(
       url::Origin::Create(GURL("https://impression.example")),
@@ -320,8 +316,6 @@ TEST_F(AttributionReporterImplTest, EmbedderDisallowedContext_ReportNotSent) {
 
     sender_->Reset();
   }
-
-  SetBrowserClientForTesting(old_browser_client);
 }
 
 TEST_F(AttributionReporterImplTest, NetworkConnectionTrackerSkipsSends) {
