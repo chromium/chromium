@@ -67,9 +67,6 @@ class POLICY_EXPORT PolicyLoaderLacros
       const enterprise_management::PolicyData& policy_data);
 
  private:
-  // Task runner for running background jobs.
-  const scoped_refptr<base::SequencedTaskRunner> task_runner_;
-
   // The filter for policy data to install.
   const PolicyPerProfileFilter per_profile_;
 

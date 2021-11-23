@@ -42,7 +42,6 @@ PolicyLoaderLacros::PolicyLoaderLacros(
     scoped_refptr<base::SequencedTaskRunner> task_runner,
     PolicyPerProfileFilter per_profile)
     : AsyncPolicyLoader(task_runner, /*periodic_updates=*/false),
-      task_runner_(task_runner),
       per_profile_(per_profile) {
   auto* lacros_service = chromeos::LacrosService::Get();
   const crosapi::mojom::BrowserInitParams* init_params =
@@ -67,7 +66,7 @@ PolicyLoaderLacros::~PolicyLoaderLacros() {
 }
 
 void PolicyLoaderLacros::InitOnBackgroundThread() {
-  DCHECK(task_runner_->RunsTasksInCurrentSequence());
+  DCHECK(task_runner()->RunsTasksInCurrentSequence());
   DETACH_FROM_SEQUENCE(sequence_checker_);
   // We add this as observer on background thread to avoid a situation when
   // notification comes after the object is destroyed, but not removed from the
