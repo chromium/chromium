@@ -24,7 +24,7 @@ import {html, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bun
 import {SettingsToggleButtonElement} from '../controls/settings_toggle_button.js';
 import {loadTimeData} from '../i18n_setup.js';
 import {LifetimeBrowserProxyImpl} from '../lifetime_browser_proxy.js';
-
+import {PrivacyPageVisibility} from '../page_visibility.js';
 import {SettingsSignoutDialogElement} from '../people_page/signout_dialog.js';
 import {StatusAction, SyncStatus} from '../people_page/sync_browser_proxy.js';
 import {PrefsMixin} from '../prefs/prefs_mixin.js';
@@ -103,6 +103,7 @@ export class SettingsPersonalizationOptionsElement extends
     };
   }
 
+  pageVisibility: PrivacyPageVisibility;
   syncStatus: SyncStatus;
 
   // <if expr="_google_chrome and not chromeos">
@@ -189,6 +190,21 @@ export class SettingsPersonalizationOptionsElement extends
     }
   }
   // </if>
+
+  private showSearchSuggestToggle_(): boolean {
+    // <if expr="chromeos">
+    if (loadTimeData.getBoolean('syncSettingsCategorizationEnabled') &&
+        loadTimeData.getBoolean('isOSSettings')) {
+      // Should be hidden in OS settings.
+      return false;
+    }
+    // </if>
+    if (this.pageVisibility === undefined) {
+      // Happens in tests.
+      return false;
+    }
+    return this.pageVisibility.searchPrediction;
+  }
 
   private showUrlCollectionToggle_(): boolean {
     // <if expr="chromeos">
