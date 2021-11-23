@@ -116,6 +116,7 @@ class VIEWS_EXPORT DesktopWindowTreeHostLinux
   void AddAdditionalInitProperties(
       const Widget::InitParams& params,
       ui::PlatformWindowInitProperties* properties) override;
+  base::flat_map<std::string, std::string> GetKeyboardLayoutMap() override;
 
   // Called back by compositor_observer_ if the latter is set.
   virtual void OnCompleteSwapWithNewSize(const gfx::Size& size);
