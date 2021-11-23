@@ -16,7 +16,6 @@ group("closure_compile") {
     "dialogs:closure_compile",
     "oobe_carousel:closure_compile",
     "oobe_slide:closure_compile",
-    "throbber_notice:closure_compile",
   ]
 }
 
@@ -58,6 +57,7 @@ group("closure_compile_module") {
     ":oobe_network_icons.m",
     ":oobe_select.m",
     ":oobe_types.m",
+    ":throbber_notice.m",
     ":web_view_helper.m",
     ":web_view_loader.m",
   ]
@@ -75,6 +75,9 @@ group("polymer3_elements") {
                   "progress_list_item:polymer3_elements",
 
                   # Local targets
+                  ":gaia_button_module",
+                  ":gaia_header_module",
+                  ":gaia_input_form_module",
                   ":hd_iron_icon_module",
                   ":html_echo_module",
                   ":long_touch_detector_module",
@@ -82,13 +85,10 @@ group("polymer3_elements") {
                   ":oobe_a11y_option_module",
                   ":oobe_icons_module",
                   ":oobe_i18n_dropdown_module",
-                  ":gaia_button_module",
-                  ":gaia_header_module",
-                  ":gaia_input_form_module",
-                  ":oobe_i18n_dropdown_module",
                   ":oobe_a11y_option_module",
                   ":oobe_icons_module",
                   ":oobe_network_icons_module",
+                  ":throbber_notice_module",
                 ] + [ ":modulize" ]
 }
 
@@ -146,6 +146,31 @@ js_library("display_manager_types.m") {
   sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/components/display_manager_types.m.js" ]
   deps = []
   extra_deps = [ ":modulize" ]
+}
+
+js_library("gaia_button.m") {
+  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/components/gaia_button.m.js" ]
+  deps = [
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/cr_elements/cr_button:cr_button.m",
+  ]
+  extra_deps = [ ":gaia_button_module" ]
+}
+
+js_library("gaia_header.m") {
+  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/components/gaia_header.m.js" ]
+  deps = [
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
+  extra_deps = [ ":gaia_header_module" ]
+}
+
+js_library("gaia_input_form.m") {
+  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/components/gaia_input_form.m.js" ]
+  deps = [
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
+  extra_deps = [ ":gaia_input_form_module" ]
 }
 
 js_library("hd_iron_icon.m") {
@@ -220,6 +245,14 @@ js_library("oobe_types.m") {
   extra_deps = [ ":modulize" ]
 }
 
+js_library("throbber_notice.m") {
+  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/components/throbber_notice.m.js" ]
+  deps = [
+    "./behaviors:oobe_i18n_behavior",
+  ]
+  extra_deps = [ ":throbber_notice_module" ]
+}
+
 js_library("web_view_helper.m") {
   sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/components/web_view_helper.m.js" ]
   deps = []
@@ -232,29 +265,28 @@ js_library("web_view_loader.m") {
   extra_deps = [ ":modulize" ]
 }
 
-js_library("gaia_header.m") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/components/gaia_header.m.js" ]
-  deps = [
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-  ]
-  extra_deps = [ ":gaia_header_module" ]
+polymer_modulizer("gaia_button") {
+  js_file = "gaia_button.js"
+  html_file = "gaia_button.html"
+  html_type = "dom-module"
+  auto_imports = oobe_auto_imports
+  namespace_rewrites = oobe_namespace_rewrites
 }
 
-js_library("gaia_input_form.m") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/components/gaia_input_form.m.js" ]
-  deps = [
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-  ]
-  extra_deps = [ ":gaia_input_form_module" ]
+polymer_modulizer("gaia_header") {
+  js_file = "gaia_header.js"
+  html_file = "gaia_header.html"
+  html_type = "dom-module"
+  auto_imports = oobe_auto_imports
+  namespace_rewrites = oobe_namespace_rewrites
 }
 
-js_library("gaia_button.m") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/components/gaia_button.m.js" ]
-  deps = [
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/cr_elements/cr_button:cr_button.m",
-  ]
-  extra_deps = [ ":gaia_button_module" ]
+polymer_modulizer("gaia_input_form") {
+  js_file = "gaia_input_form.js"
+  html_file = "gaia_input_form.html"
+  html_type = "dom-module"
+  auto_imports = oobe_auto_imports
+  namespace_rewrites = oobe_namespace_rewrites
 }
 
 polymer_modulizer("hd_iron_icon") {
@@ -311,25 +343,9 @@ polymer_modulizer("oobe_network_icons") {
   html_type = "iron-iconset"
 }
 
-polymer_modulizer("gaia_header") {
-  js_file = "gaia_header.js"
-  html_file = "gaia_header.html"
-  html_type = "dom-module"
-  auto_imports = oobe_auto_imports
-  namespace_rewrites = oobe_namespace_rewrites
-}
-
-polymer_modulizer("gaia_input_form") {
-  js_file = "gaia_input_form.js"
-  html_file = "gaia_input_form.html"
-  html_type = "dom-module"
-  auto_imports = oobe_auto_imports
-  namespace_rewrites = oobe_namespace_rewrites
-}
-
-polymer_modulizer("gaia_button") {
-  js_file = "gaia_button.js"
-  html_file = "gaia_button.html"
+polymer_modulizer("throbber_notice") {
+  js_file = "throbber_notice.js"
+  html_file = "throbber_notice.html"
   html_type = "dom-module"
   auto_imports = oobe_auto_imports
   namespace_rewrites = oobe_namespace_rewrites
