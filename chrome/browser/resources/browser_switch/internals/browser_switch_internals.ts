@@ -65,19 +65,6 @@ function clearTable(
 }
 
 /**
- * @return String describing the rule type.
- */
-function getRuleType(rule: string): string {
-  if (rule == '*') {
-    return 'wildcard';
-  }
-  if (rule.includes('/')) {
-    return 'prefix';
-  }
-  return 'hostname';
-}
-
-/**
  * Creates and returns a <tr> element for the given rule.
  */
 function createRowForRule(
@@ -90,14 +77,38 @@ function createRowForRule(
   const cells = row.querySelectorAll('td');
   cells[0].innerText = rule;
   cells[0].className = 'url';
-  cells[1].innerText = rulesetName;
-  cells[2].innerText = getRuleType(rule);
   if (listType === 'sitelist') {
-    cells[3].innerText =
+    cells[1].innerText =
         rule.startsWith('!') ? getBrowserName() : getAltBrowserName();
+    cells[2].appendChild(createRulesetColumnWithTooltip(rulesetName, listType));
+  } else if (listType === 'greylist') {
+    cells[1].appendChild(createRulesetColumnWithTooltip(rulesetName, listType));
   }
 
   return row;
+}
+
+function createRulesetColumnWithTooltip(
+    rulesetName: string, listType: ListName): HTMLSpanElement {
+  const textSpan = document.createElement('span');
+  textSpan.className = 'tooltip';
+  textSpan.innerText = rulesetName;
+  const tooltipSpan = document.createElement('span');
+  tooltipSpan.className = 'right';
+  const rulesetToPolicy: Record<ListName, Record<string, string>> = {
+    'sitelist': {
+      'gpo': 'BrowserSwitcherUrlList',
+      'ieem': 'BrowserSwitcherUseIeSitelist',
+      'external': 'BrowserSwitcherExternalSitelistUrl',
+    },
+    'greylist': {
+      'gpo': 'BrowserSwitcherUrlGreylist',
+      'external': 'BrowserSwitcherExternalGreylistUrl',
+    }
+  };
+  tooltipSpan.innerText = rulesetToPolicy[listType][rulesetName];
+  textSpan.appendChild(tooltipSpan);
+  return textSpan;
 }
 
 /**
