@@ -62,6 +62,7 @@
 #include "chrome/browser/chrome_browser_main_extra_parts.h"
 #include "chrome/browser/component_updater/registration.h"
 #include "chrome/browser/defaults.h"
+#include "chrome/browser/first_party_sets/first_party_sets_util.h"
 #include "chrome/browser/first_run/first_run.h"
 #include "chrome/browser/language/url_language_histogram_factory.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
@@ -158,6 +159,7 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/network_service_instance.h"
 #include "content/public/browser/notification_observer.h"
 #include "content/public/browser/notification_registrar.h"
 #include "content/public/browser/notification_service.h"
@@ -180,6 +182,7 @@
 #include "ppapi/buildflags/buildflags.h"
 #include "printing/buildflags/buildflags.h"
 #include "rlz/buildflags/buildflags.h"
+#include "services/network/public/mojom/network_service.mojom.h"
 #include "services/tracing/public/cpp/stack_sampling/tracing_sampler_profiler.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/layout.h"
@@ -1647,6 +1650,18 @@ int ChromeBrowserMainParts::PreMainMessageLoopRunImpl() {
 #endif  // BUILDFLAG(ENABLE_NACL)
 
   PreBrowserStart();
+
+  if (base::FeatureList::IsEnabled(net::features::kFirstPartySets)) {
+    FirstPartySetsUtil::GetInstance()->SendAndUpdatePersistedSets(
+        user_data_dir_,
+        /*send_sets=*/
+        base::BindOnce([](base::OnceCallback<void(const std::string&)> callback,
+                          const std::string& sets) {
+          content::GetNetworkService()
+              ->SetPersistedFirstPartySetsAndGetCurrentSets(
+                  sets, std::move(callback));
+        }));
+  }
 
   if (!parsed_command_line().HasSwitch(switches::kDisableComponentUpdate)) {
     component_updater::RegisterComponentsForUpdate();
