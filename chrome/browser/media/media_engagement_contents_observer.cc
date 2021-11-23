@@ -86,6 +86,8 @@ MediaEngagementContentsObserver::PlaybackTimer::PlaybackTimer(
     base::Clock* clock)
     : clock_(clock) {}
 
+MediaEngagementContentsObserver::PlaybackTimer::~PlaybackTimer() = default;
+
 void MediaEngagementContentsObserver::PlaybackTimer::Start() {
   start_time_ = clock_->Now();
 }

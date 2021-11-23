@@ -68,6 +68,8 @@ class FeatureSwitch {
   FeatureSwitch(const FeatureSwitch&) = delete;
   FeatureSwitch& operator=(const FeatureSwitch&) = delete;
 
+  ~FeatureSwitch();
+
   // Consider using ScopedOverride instead.
   void SetOverrideValue(OverrideValue value);
   OverrideValue GetOverrideValue() const;

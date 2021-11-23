@@ -199,6 +199,8 @@ QueryFields::~QueryFields() {}
 VectorIterator::VectorIterator(std::vector<const BookmarkNode*>* nodes)
     : nodes_(nodes), current_(nodes->begin()) {}
 
+VectorIterator::~VectorIterator() = default;
+
 bool VectorIterator::has_next() {
   return (current_ != nodes_->end());
 }

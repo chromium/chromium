@@ -243,6 +243,10 @@ gpu::gles2::PassthroughProgramCache::ProgramCacheValue::program_cache_
 # Performance-related exclusions
 #######
 
+# Populated manually - to avoid out-of-line destructor
+base::LockFreeAddressHashSet::Node::next
+gles2::TextureManager::DoTexSubImageArguments::pixels
+
 # Populated manually - on-stack pointer + a large number of non-PA pointees
 base::AutoReset::scoped_variable_
 

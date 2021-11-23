@@ -86,6 +86,8 @@ FeatureSwitch::FeatureSwitch(const base::CommandLine* command_line,
       default_value_(default_value == DEFAULT_ENABLED),
       override_value_(OVERRIDE_NONE) {}
 
+FeatureSwitch::~FeatureSwitch() = default;
+
 bool FeatureSwitch::IsEnabled() const {
   if (override_value_ != OVERRIDE_NONE)
     return override_value_ == OVERRIDE_ENABLED;

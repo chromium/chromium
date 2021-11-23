@@ -45,6 +45,7 @@ class VectorIterator {
   explicit VectorIterator(std::vector<const BookmarkNode*>* nodes);
   VectorIterator(const VectorIterator& other) = delete;
   VectorIterator& operator=(const VectorIterator& other) = delete;
+  ~VectorIterator();
   bool has_next();
   const BookmarkNode* Next();
 

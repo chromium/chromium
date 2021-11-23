@@ -31,6 +31,8 @@ class SessionRestoreDelegate {
     RestoredTab(const RestoredTab&);
     RestoredTab& operator=(const RestoredTab&);
 
+    ~RestoredTab();
+
     bool operator<(const RestoredTab& right) const;
 
     content::WebContents* contents() const { return contents_; }

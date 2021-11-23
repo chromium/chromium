@@ -151,6 +151,8 @@ class BASE_EXPORT PersistentMemoryAllocator {
     Iterator(const Iterator&) = delete;
     Iterator& operator=(const Iterator&) = delete;
 
+    ~Iterator();
+
     // Resets the iterator back to the beginning.
     void Reset();
 

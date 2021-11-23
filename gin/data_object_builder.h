@@ -41,6 +41,8 @@ class GIN_EXPORT DataObjectBuilder {
   DataObjectBuilder(const DataObjectBuilder&) = delete;
   DataObjectBuilder& operator=(const DataObjectBuilder&) = delete;
 
+  ~DataObjectBuilder();
+
   template <typename T>
   DataObjectBuilder& Set(base::StringPiece key, T&& value) {
     DCHECK(!object_.IsEmpty());

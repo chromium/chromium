@@ -88,6 +88,8 @@ class BASE_EXPORT SequenceManager {
     // so we are making Settings move-only in preparation.
     Settings(Settings&& move_from) noexcept;
 
+    ~Settings();
+
     MessagePumpType message_loop_type = MessagePumpType::DEFAULT;
     bool randomised_sampling_enabled = false;
     const TickClock* clock = DefaultTickClock::GetInstance();

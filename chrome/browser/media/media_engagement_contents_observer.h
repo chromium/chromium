@@ -150,6 +150,8 @@ class MediaEngagementContentsObserver : public content::WebContentsObserver {
     PlaybackTimer(const PlaybackTimer&) = delete;
     PlaybackTimer& operator=(const PlaybackTimer&) = delete;
 
+    ~PlaybackTimer();
+
     void Start();
     void Stop();
     bool IsRunning() const;

@@ -19,6 +19,8 @@ SequenceManager::Settings::Settings() = default;
 
 SequenceManager::Settings::Settings(Settings&& move_from) noexcept = default;
 
+SequenceManager::Settings::~Settings() = default;
+
 SequenceManager::Settings::Builder::Builder() = default;
 
 SequenceManager::Settings::Builder::~Builder() = default;

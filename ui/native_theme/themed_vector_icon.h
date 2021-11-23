@@ -41,6 +41,8 @@ class NATIVE_THEME_EXPORT ThemedVectorIcon {
   ThemedVectorIcon(ThemedVectorIcon&&);
   ThemedVectorIcon& operator=(ThemedVectorIcon&&);
 
+  ~ThemedVectorIcon();
+
   void clear() { icon_ = nullptr; }
   bool empty() const { return !icon_; }
   gfx::ImageSkia GetImageSkia(const ColorProvider* color_provider) const;

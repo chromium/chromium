@@ -166,6 +166,8 @@ PersistentMemoryAllocator::Iterator::Iterator(
   Reset(starting_after);
 }
 
+PersistentMemoryAllocator::Iterator::~Iterator() = default;
+
 void PersistentMemoryAllocator::Iterator::Reset() {
   last_record_.store(kReferenceQueue, std::memory_order_relaxed);
   record_count_.store(0, std::memory_order_relaxed);

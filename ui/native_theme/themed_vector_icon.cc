@@ -45,6 +45,8 @@ ThemedVectorIcon::ThemedVectorIcon(ThemedVectorIcon&&) = default;
 
 ThemedVectorIcon& ThemedVectorIcon::operator=(ThemedVectorIcon&&) = default;
 
+ThemedVectorIcon::~ThemedVectorIcon() = default;
+
 gfx::ImageSkia ThemedVectorIcon::GetImageSkia(
     const ColorProvider* color_provider) const {
   DCHECK(!empty());
