@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 #include <utility>
-#include <vector>
 
 #include "ash/ambient/ambient_constants.h"
 #include "ash/ambient/ambient_photo_cache.h"
@@ -38,18 +37,6 @@ class AmbientAccessTokenController;
 // Class to handle photos in ambient mode.
 class ASH_EXPORT AmbientPhotoController : public AmbientBackendModelObserver {
  public:
-  // Start fetching next |ScreenUpdate| from the backdrop server. The specified
-  // download callback will be run upon completion and returns a null image
-  // if: 1. the response did not have the desired fields or urls or, 2. the
-  // download attempt from that url failed. The |icon_callback| also returns
-  // the weather temperature in Fahrenheit together with the image.
-  using TopicsDownloadCallback =
-      base::OnceCallback<void(const std::vector<AmbientModeTopic>& topics)>;
-  using WeatherIconDownloadCallback =
-      base::OnceCallback<void(absl::optional<float>, const gfx::ImageSkia&)>;
-
-  using PhotoDownloadCallback = base::OnceCallback<void(const gfx::ImageSkia&)>;
-
   AmbientPhotoController(AmbientClient& ambient_client,
                          AmbientAccessTokenController& access_token_controller);
 
