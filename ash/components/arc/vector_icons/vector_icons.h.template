@@ -5,8 +5,8 @@
 // vector_icons.h.template is used to generate vector_icons.h. Edit the former
 // rather than the latter.
 
-#ifndef COMPONENTS_ARC_VECTOR_ICONS_VECTOR_ICONS_H_
-#define COMPONENTS_ARC_VECTOR_ICONS_VECTOR_ICONS_H_
+#ifndef ASH_COMPONENTS_ARC_VECTOR_ICONS_VECTOR_ICONS_H_
+#define ASH_COMPONENTS_ARC_VECTOR_ICONS_VECTOR_ICONS_H_
 
 namespace gfx {
 struct VectorIcon;
@@ -23,4 +23,4 @@ TEMPLATE_PLACEHOLDER
 
 }
 
-#endif  // COMPONENTS_ARC_VECTOR_ICONS_VECTOR_ICONS_H_
+#endif  // ASH_COMPONENTS_ARC_VECTOR_ICONS_VECTOR_ICONS_H_

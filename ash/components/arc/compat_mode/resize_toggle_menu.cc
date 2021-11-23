@@ -6,12 +6,12 @@
 
 #include "ash/components/arc/compat_mode/overlay_dialog.h"
 #include "ash/components/arc/compat_mode/style/arc_color_provider.h"
+#include "ash/components/arc/vector_icons/vector_icons.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "base/bind.h"
 #include "base/check.h"
 #include "base/notreached.h"
-#include "components/arc/vector_icons/vector_icons.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
