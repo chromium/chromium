@@ -672,31 +672,31 @@ Additional details:
     Printing this content is blocked by administrator policy
   </message>
   <message name="IDS_POLICY_DLP_PRINTING_WARN_TITLE" desc="The title for notification informing the user that printing is not recommended.">
-    Confidential file
+    Print confidential file?
   </message>
   <message name="IDS_POLICY_DLP_PRINTING_WARN_MESSAGE" desc="The message for notification informing the user that printing is not recommended.">
-    This document is confidential and printing is not advised by your administrator.
+    Administrator policy doesn’t recommend printing this content
   </message>
   <message name="IDS_POLICY_DLP_PRINTING_WARN_CONTINUE_BUTTON" desc="Continue dialog button label for warning before printing.">
-    Continue
+    Print anyway
   </message>
   <message name="IDS_POLICY_DLP_PRINTING_WARN_CANCEL_BUTTON" desc="Cancel dialog button label for warning before printing.">
     Cancel
   </message>
   <message name="IDS_POLICY_DLP_SCREEN_SHARE_BLOCKED_TITLE" desc="The title for notification informing the user that screen share is blocked.">
-    Capture confidential content
+    Can’t share confidential content
   </message>
   <message name="IDS_POLICY_DLP_SCREEN_SHARE_BLOCKED_MESSAGE" desc="The message for notification informing the user that screen share is blocked.">
     Administrator policy disables screen sharing with <ph name="APPLICATION_TITLE">$1<ex>example.com</ex></ph> when confidential content is visible
   </message>
   <message name="IDS_POLICY_DLP_SCREEN_SHARE_PAUSED_TITLE" desc="The title for notification informing the user that screen share is paused.">
-    Screen capture paused
+    Screen share paused
   </message>
   <message name="IDS_POLICY_DLP_SCREEN_SHARE_PAUSED_MESSAGE" desc="The message for notification informing the user that screen share is paused.">
     Administrator policy disables screen sharing with <ph name="APPLICATION_TITLE">$1<ex>example.com</ex></ph> when confidential content is visible
   </message>
   <message name="IDS_POLICY_DLP_SCREEN_SHARE_RESUMED_TITLE" desc="The title for notification informing the user that screen share is resumed.">
-    Screen capture resumed
+    Screen share resumed
   </message>
   <message name="IDS_POLICY_DLP_SCREEN_SHARE_RESUMED_MESSAGE" desc="The message for notification informing the user that screen share is resumed.">
     Screen sharing with <ph name="APPLICATION_TITLE">$1<ex>example.com</ex></ph> was resumed
@@ -714,22 +714,22 @@ Additional details:
     Administrator policy disables screen recording when confidential content is visible
   </message>
   <message name="IDS_POLICY_DLP_SCREEN_SHARE_WARN_TITLE" desc="The title for notification informing the user that screen sharing is not recommended.">
-    Capture confidential content
+    Share confidential content?
   </message>
   <message name="IDS_POLICY_DLP_SCREEN_SHARE_WARN_MESSAGE" desc="The message for notification informing the user that screen sharing is not recommended.">
    Administrator policy doesn’t recommend sharing your screen with <ph name="APPLICATION_TITLE">$1<ex>example.com</ex></ph> when confidential content is visible:
   </message>
   <message name="IDS_POLICY_DLP_SCREEN_SHARE_WARN_CONTINUE_BUTTON" desc="Continue dialog button label for warning before screen sharing.">
-    Capture anyway
+    Share anyway
   </message>
   <message name="IDS_POLICY_DLP_SCREEN_SHARE_WARN_CANCEL_BUTTON" desc="Cancel dialog button label for warning before screen sharing.">
     Cancel
   </message>
   <message name="IDS_POLICY_DLP_SCREEN_CAPTURE_WARN_TITLE" desc="The title for notification informing the user that screen capture is not recommended.">
-    Capture confidential content on your screen
+    Capture confidential content?
   </message>
   <message name="IDS_POLICY_DLP_SCREEN_CAPTURE_WARN_MESSAGE" desc="The message for notification informing the user that screen capture is not recommended.">
-    Administrator doesn't recommend taking screenshots or recordings due to confidential content on screen:
+    Administrator policy doesn’t recommend taking screenshots or recordings when confidential content is visible:
   </message>
   <message name="IDS_POLICY_DLP_SCREEN_CAPTURE_WARN_CONTINUE_BUTTON" desc="Continue dialog button label for warning before screen capture.">
     Capture anyway
@@ -738,10 +738,10 @@ Additional details:
     Cancel
   </message>
   <message name="IDS_POLICY_DLP_VIDEO_CAPTURE_WARN_TITLE" desc="The title for notification informing the user that there was confidential information revealed during screen recording.">
-    Capture confidential content on your screen
+    Capture confidential content?
   </message>
   <message name="IDS_POLICY_DLP_VIDEO_CAPTURE_WARN_MESSAGE" desc="The message for notification informing the user that there was confidential information revealed during screen recording.">
-    Administrator doesn't recommend taking screenshots or recordings due to confidential content captured:
+    Administrator policy doesn’t recommend taking screenshots or recordings when confidential content is visible:
   </message>
   <message name="IDS_POLICY_DLP_VIDEO_CAPTURE_WARN_CONTINUE_BUTTON" desc="Continue dialog button label for warning before saving a screen recording.">
     Save anyway
