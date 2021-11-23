@@ -673,9 +673,8 @@ void ArcPolicyBridge::UpdateComplianceReportMetrics(
     const base::DictionaryValue* report) {
   JSONStringValueSerializer serializer(&arc_policy_compliance_report_);
   serializer.Serialize(*report);
-  bool is_arc_plus_plus_report_successful = false;
-  report->GetBoolean("isArcPlusPlusReportSuccessful",
-                     &is_arc_plus_plus_report_successful);
+  bool is_arc_plus_plus_report_successful =
+      report->FindBoolKey("isArcPlusPlusReportSuccessful").value_or(false);
   std::string reported_policies_hash;
   report->GetString("policyHash", &reported_policies_hash);
   if (!is_arc_plus_plus_report_successful || reported_policies_hash.empty())
