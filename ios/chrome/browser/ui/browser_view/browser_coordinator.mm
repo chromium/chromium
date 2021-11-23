@@ -7,20 +7,20 @@
 #include <memory>
 
 #import "base/metrics/histogram_functions.h"
-#import "base/scoped_observation.h"
-#import "components/profile_metrics/browser_profile_type.h"
+#include "base/scoped_observation.h"
+#include "components/profile_metrics/browser_profile_type.h"
 #import "ios/chrome/browser/app_launcher/app_launcher_abuse_detector.h"
 #import "ios/chrome/browser/app_launcher/app_launcher_tab_helper.h"
-#import "ios/chrome/browser/browser_state/chrome_browser_state.h"
-#import "ios/chrome/browser/chrome_url_constants.h"
-#import "ios/chrome/browser/download/download_directory_util.h"
+#import "ios/chrome/browser/autofill/autofill_tab_helper.h"
+#include "ios/chrome/browser/browser_state/chrome_browser_state.h"
+#include "ios/chrome/browser/chrome_url_constants.h"
+#include "ios/chrome/browser/download/download_directory_util.h"
 #import "ios/chrome/browser/download/external_app_util.h"
+#import "ios/chrome/browser/download/pass_kit_tab_helper.h"
 #import "ios/chrome/browser/find_in_page/find_tab_helper.h"
 #import "ios/chrome/browser/main/browser.h"
-#import "ios/chrome/browser/prerender/prerender_service.h"
-#import "ios/chrome/browser/prerender/prerender_service_factory.h"
-#import "ios/chrome/browser/signin/account_consistency_service_factory.h"
 #import "ios/chrome/browser/store_kit/store_kit_coordinator.h"
+#import "ios/chrome/browser/store_kit/store_kit_tab_helper.h"
 #import "ios/chrome/browser/tabs/tab_title_util.h"
 #import "ios/chrome/browser/ui/activity_services/activity_params.h"
 #import "ios/chrome/browser/ui/activity_services/requirements/activity_service_positioner.h"
@@ -31,11 +31,9 @@
 #import "ios/chrome/browser/ui/autofill/form_input_accessory/form_input_accessory_coordinator.h"
 #import "ios/chrome/browser/ui/badges/badge_popup_menu_coordinator.h"
 #import "ios/chrome/browser/ui/browser_container/browser_container_coordinator.h"
-#import "ios/chrome/browser/ui/browser_view/browser_view_controller+delegates.h"
 #import "ios/chrome/browser/ui/browser_view/browser_view_controller+private.h"
 #import "ios/chrome/browser/ui/browser_view/browser_view_controller.h"
 #import "ios/chrome/browser/ui/browser_view/browser_view_controller_dependency_factory.h"
-#import "ios/chrome/browser/ui/browser_view/tab_lifecycle_mediator.h"
 #import "ios/chrome/browser/ui/commands/activity_service_commands.h"
 #import "ios/chrome/browser/ui/commands/application_commands.h"
 #import "ios/chrome/browser/ui/commands/browser_coordinator_commands.h"
@@ -82,19 +80,21 @@
 #import "ios/chrome/browser/ui/text_zoom/text_zoom_coordinator.h"
 #import "ios/chrome/browser/ui/toolbar/accessory/toolbar_accessory_coordinator_delegate.h"
 #import "ios/chrome/browser/ui/toolbar/accessory/toolbar_accessory_presenter.h"
-#import "ios/chrome/browser/ui/ui_feature_flags.h"
+#include "ios/chrome/browser/ui/ui_feature_flags.h"
 #import "ios/chrome/browser/url_loading/url_loading_browser_agent.h"
 #import "ios/chrome/browser/url_loading/url_loading_params.h"
 #import "ios/chrome/browser/web/font_size/font_size_tab_helper.h"
+#import "ios/chrome/browser/web/print/print_tab_helper.h"
+#import "ios/chrome/browser/web/repost_form_tab_helper.h"
 #import "ios/chrome/browser/web/repost_form_tab_helper_delegate.h"
 #import "ios/chrome/browser/web/web_navigation_browser_agent.h"
 #import "ios/chrome/browser/web/web_state_delegate_browser_agent.h"
 #import "ios/chrome/browser/web_state_list/view_source_browser_agent.h"
-#import "ios/chrome/browser/web_state_list/web_state_list.h"
+#include "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/web_state_list/web_state_list_observer_bridge.h"
-#import "ios/chrome/grit/ios_strings.h"
+#include "ios/chrome/grit/ios_strings.h"
 #import "ios/public/provider/chrome/browser/text_zoom/text_zoom_api.h"
-#import "ui/base/l10n/l10n_util.h"
+#include "ui/base/l10n/l10n_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -131,9 +131,6 @@
 
 // Mediator for incognito reauth.
 @property(nonatomic, strong) IncognitoReauthMediator* incognitoAuthMediator;
-
-// Mediator for tab lifecylce.
-@property(nonatomic, strong) TabLifecycleMediator* tabLifecycleMediator;
 
 // =================================================
 // Child Coordinators, listed in alphabetical order.
@@ -282,7 +279,9 @@
   [self createViewController];
   [self startChildCoordinators];
   [self startMediators];
+  [self installDelegatesForAllWebStates];
   [self installDelegatesForBrowser];
+  [self addWebStateListObserver];
   [super start];
   self.started = YES;
 }
@@ -291,8 +290,9 @@
   if (!self.started)
     return;
   [super stop];
+  [self removeWebStateListObserver];
   [self uninstallDelegatesForBrowser];
-  [self.tabLifecycleMediator disconnect];
+  [self uninstallDelegatesForAllWebStates];
   self.viewController.commandDispatcher = nil;
   [self.dispatcher stopDispatchingToTarget:self];
   [self stopChildCoordinators];
@@ -481,18 +481,10 @@
   [self.infobarModalOverlayContainerCoordinator start];
   self.viewController.infobarModalOverlayContainerViewController =
       self.infobarModalOverlayContainerCoordinator.viewController;
-
-  self.openInCoordinator =
-      [[OpenInCoordinator alloc] initWithBaseViewController:self.viewController
-                                                    browser:self.browser];
-  [self.openInCoordinator start];
 }
 
 // Stops child coordinators.
 - (void)stopChildCoordinators {
-  [self.openInCoordinator stop];
-  self.openInCoordinator = nil;
-
   [self.ARQuickLookCoordinator stop];
   self.ARQuickLookCoordinator = nil;
 
@@ -558,30 +550,6 @@
 
 // Starts mediators owned by this coordinator.
 - (void)startMediators {
-  // Cache frequently repeated property values to curb generated code bloat.
-  ChromeBrowserState* browserState = self.browser->GetBrowserState();
-  BrowserViewController* browserViewController = self.viewController;
-
-  TabLifecycleDependencies dependencies;
-  dependencies.prerenderService =
-      PrerenderServiceFactory::GetForBrowserState(browserState);
-  dependencies.sideSwipeController = browserViewController.sideSwipeController;
-  dependencies.sadTabCoordinator = browserViewController.sadTabCoordinator;
-  dependencies.downloadManagerCoordinator =
-      browserViewController.downloadManagerCoordinator;
-  dependencies.commandDispatcher = self.dispatcher;
-  dependencies.baseViewController = browserViewController;
-  dependencies.accountConsistencyService =
-      ios::AccountConsistencyServiceFactory::GetForBrowserState(browserState);
-  dependencies.passKitDelegate = self.passKitCoordinator;
-  dependencies.printController = self.printController;
-  dependencies.repostFormDelegate = self;
-  dependencies.storeKitLauncher = self.storeKitCoordinator;
-  self.tabLifecycleMediator = [[TabLifecycleMediator alloc]
-      initWithWebStateList:self.browser->GetWebStateList()
-                  delegate:browserViewController
-              dependencies:dependencies];
-
   self.viewController.reauthHandler =
       HandlerForProtocol(self.dispatcher, IncognitoReauthCommands);
 
@@ -592,12 +560,12 @@
       [DefaultBrowserSceneAgent agentFromScene:sceneState].nonModalScheduler;
   self.viewController.nonModalPromoPresentationDelegate = self;
 
-  if (browserState->IsOffTheRecord()) {
+  if (self.browser->GetBrowserState()->IsOffTheRecord()) {
     IncognitoReauthSceneAgent* reauthAgent =
         [IncognitoReauthSceneAgent agentFromScene:sceneState];
 
     self.incognitoAuthMediator =
-        [[IncognitoReauthMediator alloc] initWithConsumer:browserViewController
+        [[IncognitoReauthMediator alloc] initWithConsumer:self.viewController
                                               reauthAgent:reauthAgent];
   }
 }
@@ -991,9 +959,63 @@
                                    completion:completion];
 }
 
+// TODO(crbug.com/906525) : Move WebStateListObserving out of
+// BrowserCoordinator.
+#pragma mark - WebStateListObserving
+
+- (void)webStateList:(WebStateList*)webStateList
+    didInsertWebState:(web::WebState*)webState
+              atIndex:(int)index
+           activating:(BOOL)activating {
+  [self installDelegatesForWebState:webState];
+}
+
+- (void)webStateList:(WebStateList*)webStateList
+    didReplaceWebState:(web::WebState*)oldWebState
+          withWebState:(web::WebState*)newWebState
+               atIndex:(int)index {
+  [self uninstallDelegatesForWebState:oldWebState];
+  [self installDelegatesForWebState:newWebState];
+}
+
+- (void)webStateList:(WebStateList*)webStateList
+    didDetachWebState:(web::WebState*)webState
+              atIndex:(int)index {
+  [self uninstallDelegatesForWebState:webState];
+}
+
 // TODO(crbug.com/906525) : Move out of BrowserCoordinator along with
 // WebStateListObserving.
 #pragma mark - Private WebState management methods
+
+// Adds observer for WebStateList.
+- (void)addWebStateListObserver {
+  _webStateListObserverBridge =
+      std::make_unique<WebStateListObserverBridge>(self);
+  _scopedWebStateListObservation = std::make_unique<
+      base::ScopedObservation<WebStateList, WebStateListObserver>>(
+      _webStateListObserverBridge.get());
+  _scopedWebStateListObservation->Observe(self.browser->GetWebStateList());
+}
+
+// Removes observer for WebStateList.
+- (void)removeWebStateListObserver {
+  _scopedWebStateListObservation.reset();
+  _webStateListObserverBridge.reset();
+}
+
+// Installs delegates for each WebState in WebStateList.
+- (void)installDelegatesForAllWebStates {
+  self.openInCoordinator =
+      [[OpenInCoordinator alloc] initWithBaseViewController:self.viewController
+                                                    browser:self.browser];
+  [self.openInCoordinator start];
+
+  for (int i = 0; i < self.browser->GetWebStateList()->count(); i++) {
+    web::WebState* webState = self.browser->GetWebStateList()->GetWebStateAt(i);
+    [self installDelegatesForWebState:webState];
+  }
+}
 
 // Installs delegates for self.browser.
 - (void)installDelegatesForBrowser {
@@ -1019,6 +1041,50 @@
       UrlLoadingBrowserAgent::FromBrowser(self.browser);
   if (loadingAgent) {
     loadingAgent->SetDelegate(nil);
+  }
+}
+
+// Uninstalls delegates for each WebState in WebStateList.
+- (void)uninstallDelegatesForAllWebStates {
+  // OpenInCoordinator monitors the webStateList and should be stopped.
+  [self.openInCoordinator stop];
+  self.openInCoordinator = nil;
+
+  for (int i = 0; i < self.browser->GetWebStateList()->count(); i++) {
+    web::WebState* webState = self.browser->GetWebStateList()->GetWebStateAt(i);
+    [self uninstallDelegatesForWebState:webState];
+  }
+}
+
+// Install delegates for |webState|.
+- (void)installDelegatesForWebState:(web::WebState*)webState {
+  if (AutofillTabHelper::FromWebState(webState)) {
+    AutofillTabHelper::FromWebState(webState)->SetBaseViewController(
+        self.viewController);
+  }
+
+  PassKitTabHelper::CreateForWebState(webState, self.passKitCoordinator);
+
+  if (PrintTabHelper::FromWebState(webState)) {
+    PrintTabHelper::FromWebState(webState)->set_printer(self.printController);
+  }
+
+  RepostFormTabHelper::CreateForWebState(webState, self);
+
+  if (StoreKitTabHelper::FromWebState(webState)) {
+    StoreKitTabHelper::FromWebState(webState)->SetLauncher(
+        self.storeKitCoordinator);
+  }
+}
+
+// Uninstalls delegates for |webState|.
+- (void)uninstallDelegatesForWebState:(web::WebState*)webState {
+  if (PrintTabHelper::FromWebState(webState)) {
+    PrintTabHelper::FromWebState(webState)->set_printer(nil);
+  }
+
+  if (StoreKitTabHelper::FromWebState(webState)) {
+    StoreKitTabHelper::FromWebState(webState)->SetLauncher(nil);
   }
 }
 

@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/browser_view/browser_view_controller.h"
-#import "ios/chrome/browser/ui/browser_view/browser_view_controller+delegates.h"
 #import "ios/chrome/browser/ui/browser_view/browser_view_controller+private.h"
 
 #import <MessageUI/MessageUI.h>
@@ -36,15 +35,19 @@
 #include "ios/chrome/browser/feature_engagement/tracker_util.h"
 #import "ios/chrome/browser/find_in_page/find_tab_helper.h"
 #include "ios/chrome/browser/infobars/infobar_manager_impl.h"
+#import "ios/chrome/browser/language/url_language_histogram_factory.h"
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/metrics/new_tab_page_uma.h"
 #import "ios/chrome/browser/metrics/tab_usage_recorder_browser_agent.h"
 #import "ios/chrome/browser/ntp/new_tab_page_tab_helper.h"
+#import "ios/chrome/browser/ntp/new_tab_page_tab_helper_delegate.h"
 #import "ios/chrome/browser/overscroll_actions/overscroll_actions_tab_helper.h"
 #import "ios/chrome/browser/passwords/password_controller.h"
+#include "ios/chrome/browser/passwords/password_tab_helper.h"
 #import "ios/chrome/browser/prerender/preload_controller_delegate.h"
 #import "ios/chrome/browser/prerender/prerender_service.h"
 #import "ios/chrome/browser/prerender/prerender_service_factory.h"
+#import "ios/chrome/browser/reading_list/offline_page_tab_helper.h"
 #include "ios/chrome/browser/reading_list/reading_list_model_factory.h"
 #include "ios/chrome/browser/sessions/ios_chrome_tab_restore_service_factory.h"
 #import "ios/chrome/browser/sessions/session_restoration_browser_agent.h"
@@ -53,6 +56,8 @@
 #include "ios/chrome/browser/signin/authentication_service.h"
 #include "ios/chrome/browser/signin/authentication_service_factory.h"
 #import "ios/chrome/browser/snapshots/snapshot_tab_helper.h"
+#import "ios/chrome/browser/ssl/captive_portal_detector_tab_helper.h"
+#import "ios/chrome/browser/ssl/captive_portal_detector_tab_helper_delegate.h"
 #import "ios/chrome/browser/tabs/tab_title_util.h"
 #import "ios/chrome/browser/translate/chrome_ios_translate_client.h"
 #import "ios/chrome/browser/ui/alert_coordinator/alert_coordinator.h"
@@ -60,12 +65,12 @@
 #import "ios/chrome/browser/ui/authentication/signin_presenter.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_interaction_controller.h"
 #import "ios/chrome/browser/ui/browser_container/browser_container_view_controller.h"
-#import "ios/chrome/browser/ui/browser_view/browser_view_controller+delegates.h"
 #import "ios/chrome/browser/ui/browser_view/browser_view_controller_dependency_factory.h"
 #import "ios/chrome/browser/ui/browser_view/browser_view_controller_helper.h"
 #import "ios/chrome/browser/ui/browser_view/hider/browser_view_hider_coordinator.h"
 #import "ios/chrome/browser/ui/browser_view/key_commands_provider.h"
 #import "ios/chrome/browser/ui/bubble/bubble_presenter.h"
+#import "ios/chrome/browser/ui/bubble/bubble_presenter_delegate.h"
 #import "ios/chrome/browser/ui/commands/command_dispatcher.h"
 #import "ios/chrome/browser/ui/commands/help_commands.h"
 #import "ios/chrome/browser/ui/commands/load_query_commands.h"
@@ -153,6 +158,8 @@
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/web_state_list/web_state_list_observer_bridge.h"
 #import "ios/chrome/browser/web_state_list/web_usage_enabler/web_usage_enabler_browser_agent.h"
+#import "ios/chrome/browser/webui/net_export_tab_helper.h"
+#import "ios/chrome/browser/webui/net_export_tab_helper_delegate.h"
 #import "ios/chrome/browser/webui/show_mail_composer_context.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/promo_style/promo_style_view_controller.h"
@@ -163,6 +170,7 @@
 #include "ios/public/provider/chrome/browser/voice_search/voice_search_api.h"
 #include "ios/public/provider/chrome/browser/voice_search/voice_search_controller.h"
 #import "ios/web/public/deprecated/crw_js_injection_receiver.h"
+#import "ios/web/public/deprecated/crw_web_controller_util.h"
 #include "ios/web/public/navigation/navigation_item.h"
 #import "ios/web/public/ui/crw_web_view_proxy.h"
 #import "ios/web/public/web_state_observer_bridge.h"
@@ -268,19 +276,26 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 
 #pragma mark - BVC
 
-// Note other delegates defined in the Delegates category header.
-@interface BrowserViewController () <ChromeLensControllerDelegate,
+@interface BrowserViewController () <BubblePresenterDelegate,
+                                     CaptivePortalDetectorTabHelperDelegate,
+                                     ChromeLensControllerDelegate,
                                      CRWWebStateObserver,
                                      FindBarPresentationDelegate,
                                      FullscreenUIElement,
                                      InfobarPositioner,
                                      KeyCommandsPlumbing,
                                      MainContentUI,
+                                     ManageAccountsDelegate,
                                      MFMailComposeViewControllerDelegate,
+                                     NetExportTabHelperDelegate,
+                                     NewTabPageTabHelperDelegate,
                                      OmniboxPopupPresenterDelegate,
+                                     OverscrollActionsControllerDelegate,
+                                     PasswordControllerDelegate,
                                      PreloadControllerDelegate,
                                      SideSwipeControllerDelegate,
                                      SigninPresenter,
+                                     SnapshotGeneratorDelegate,
                                      TabStripPresentation,
                                      UIGestureRecognizerDelegate,
                                      URLLoadingObserver,
@@ -399,7 +414,7 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 // Invisible button used to dismiss the keyboard.
 @property(nonatomic, strong) UIButton* typingShield;
 // The browser's side swipe controller.  Lazily instantiated on the first call.
-
+@property(nonatomic, strong, readonly) SideSwipeController* sideSwipeController;
 // The object that manages keyboard commands on behalf of the BVC.
 @property(nonatomic, strong, readonly) KeyCommandsProvider* keyCommandsProvider;
 // Whether the controller's view is currently available.
@@ -651,14 +666,6 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   DCHECK_EQ(_infobarModalOverlayContainerViewController.view.superview,
             self.view);
   [self updateOverlayContainerOrder];
-}
-
-- (SadTabCoordinator*)sadTabCoordinator {
-  return _sadTabCoordinator;
-}
-
-- (DownloadManagerCoordinator*)downloadManagerCoordinator {
-  return _downloadManagerCoordinator;
 }
 
 #pragma mark - Private Properties
@@ -1174,7 +1181,7 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   // WebStateDestroyed() signals are not handled.
   WebStateList* webStateList = self.browser->GetWebStateList();
   for (int index = 0; index < webStateList->count(); ++index)
-    [self clearNTPCoordinatorForWebState:webStateList->GetWebStateAt(index)];
+    [self uninstallDelegatesForWebState:webStateList->GetWebStateAt(index)];
 
   // Disconnect child coordinators.
   [self.popupMenuCoordinator stop];
@@ -1748,6 +1755,10 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   _URLLoadingObserverBridge = std::make_unique<UrlLoadingObserverBridge>(self);
   UrlLoadingNotifierBrowserAgent::FromBrowser(self.browser)
       ->AddObserver(_URLLoadingObserverBridge.get());
+
+  WebStateList* webStateList = self.browser->GetWebStateList();
+  for (int index = 0; index < webStateList->count(); ++index)
+    [self installDelegatesForWebState:webStateList->GetWebStateAt(index)];
 
   // Set the TTS playback controller's WebStateList.
   TextToSpeechPlaybackControllerFactory::GetInstance()
@@ -2557,8 +2568,88 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 
 #pragma mark - Private Methods: Tab creation and selection
 
+// Add all delegates to the provided |webState|.
+- (void)installDelegatesForWebState:(web::WebState*)webState {
+  // Unregistration happens when the WebState is removed from the WebStateList.
+
+  // There should be no pre-rendered Tabs for this BrowserState.
+  PrerenderService* prerenderService =
+      PrerenderServiceFactory::GetForBrowserState(self.browserState);
+  DCHECK(!prerenderService ||
+         !prerenderService->IsWebStatePrerendered(webState));
+
+  SnapshotTabHelper::FromWebState(webState)->SetDelegate(self);
+
+  if (PasswordTabHelper* passwordTabHelper =
+          PasswordTabHelper::FromWebState(webState)) {
+    passwordTabHelper->SetBaseViewController(self);
+    passwordTabHelper->SetPasswordControllerDelegate(self);
+    passwordTabHelper->SetDispatcher(self.browser->GetCommandDispatcher());
+  }
+
+  if (ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_TABLET) {
+    OverscrollActionsTabHelper::FromWebState(webState)->SetDelegate(self);
+  }
+
+  web_deprecated::SetSwipeRecognizerProvider(webState,
+                                             self.sideSwipeController);
+  SadTabTabHelper::FromWebState(webState)->SetDelegate(_sadTabCoordinator);
+  NetExportTabHelper::CreateForWebState(webState, self);
+  CaptivePortalDetectorTabHelper::CreateForWebState(webState, self);
+
+  OfflinePageTabHelper::CreateForWebState(
+      webState, ReadingListModelFactory::GetForBrowserState(self.browserState));
+
+  // DownloadManagerTabHelper cannot function without delegate.
+  DCHECK(_downloadManagerCoordinator);
+  DownloadManagerTabHelper::CreateForWebState(webState,
+                                              _downloadManagerCoordinator);
+
+  NewTabPageTabHelper::FromWebState(webState)->SetDelegate(self);
+
+  // The language detection helper accepts a callback from the translate
+  // client, so must be created after it.
+  // This will explode if the webState doesn't have a JS injection manager
+  // (this only comes up in unit tests), so check for that and bypass the
+  // init of the translation helpers if needed.
+  // TODO(crbug.com/785238): Remove the need for this check.
+  if (webState->GetJSInjectionReceiver()) {
+    language::IOSLanguageDetectionTabHelper::CreateForWebState(
+        webState,
+        UrlLanguageHistogramFactory::GetForBrowserState(self.browserState));
+    ChromeIOSTranslateClient::CreateForWebState(webState);
+  }
+
+  if (AccountConsistencyService* accountConsistencyService =
+          ios::AccountConsistencyServiceFactory::GetForBrowserState(
+              self.browserState)) {
+    accountConsistencyService->SetWebStateHandler(webState, self);
+  }
+}
+
 // Remove delegates from the provided |webState|.
-- (void)clearNTPCoordinatorForWebState:(web::WebState*)webState {
+- (void)uninstallDelegatesForWebState:(web::WebState*)webState {
+  // TODO(crbug.com/1069763): do not pass the browser to PasswordTabHelper.
+  if (PasswordTabHelper* passwordTabHelper =
+          PasswordTabHelper::FromWebState(webState)) {
+    passwordTabHelper->SetBaseViewController(nil);
+    passwordTabHelper->SetPasswordControllerDelegate(nil);
+    passwordTabHelper->SetDispatcher(nil);
+  }
+
+  if (ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_TABLET) {
+    OverscrollActionsTabHelper::FromWebState(webState)->SetDelegate(nil);
+  }
+
+  web_deprecated::SetSwipeRecognizerProvider(webState, nil);
+  if (AccountConsistencyService* accountConsistencyService =
+          ios::AccountConsistencyServiceFactory::GetForBrowserState(
+              self.browserState)) {
+    accountConsistencyService->RemoveWebStateHandler(webState);
+  }
+
+  SnapshotTabHelper::FromWebState(webState)->SetDelegate(nil);
+
   // TODO(crbug.com/1173610): Have BrowserCoordinator manage the NTP.
   if (IsSingleNtpEnabled()) {
     if (self.currentWebState == webState) {
@@ -2571,6 +2662,7 @@ NSString* const kBrowserViewControllerSnackbarCategory =
       _ntpCoordinatorsForWebStates.erase(iterator);
     }
   }
+  NewTabPageTabHelper::FromWebState(webState)->SetDelegate(nil);
 }
 
 // Called when a |webState| is selected in the WebStateList. Make any required
@@ -3930,7 +4022,7 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   webState->WasHidden();
   webState->SetKeepRenderProcessAlive(false);
 
-  [self clearNTPCoordinatorForWebState:webState];
+  [self uninstallDelegatesForWebState:webState];
 }
 
 - (void)webStateList:(WebStateList*)webStateList
@@ -3949,7 +4041,8 @@ NSString* const kBrowserViewControllerSnackbarCategory =
     didReplaceWebState:(web::WebState*)oldWebState
           withWebState:(web::WebState*)newWebState
                atIndex:(int)atIndex {
-  [self clearNTPCoordinatorForWebState:oldWebState];
+  [self uninstallDelegatesForWebState:oldWebState];
+  [self installDelegatesForWebState:newWebState];
 
   // Add |newTab|'s view to the hierarchy if it's the current Tab.
   if (self.active && self.currentWebState == newWebState)
@@ -3962,6 +4055,8 @@ NSString* const kBrowserViewControllerSnackbarCategory =
               atIndex:(int)index
            activating:(BOOL)activating {
   DCHECK(webState);
+  [self installDelegatesForWebState:webState];
+
   DCHECK_EQ(self.browser->GetWebStateList(), webStateList);
 
   // Don't initiate Tab animation while session restoration is in progress

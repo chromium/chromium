@@ -7,7 +7,6 @@ source_set("browser_view") {
   sources = [
     "browser_coordinator.h",
     "browser_coordinator.mm",
-    "browser_view_controller+delegates.h",
     "browser_view_controller+private.h",
     "browser_view_controller.h",
     "browser_view_controller.mm",
@@ -15,11 +14,8 @@ source_set("browser_view") {
     "browser_view_controller_dependency_factory.mm",
     "browser_view_controller_helper.h",
     "browser_view_controller_helper.mm",
-    "common_tab_helper_delegate.h",
     "key_commands_provider.h",
     "key_commands_provider.mm",
-    "tab_lifecycle_mediator.h",
-    "tab_lifecycle_mediator.mm",
   ]
   deps = [
     "//base",
