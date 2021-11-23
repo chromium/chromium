@@ -29,7 +29,7 @@
 
   await UI.viewManager.showView('timeline');
   const panel = UI.panels.timeline;
-  panel._disableCaptureJSProfileSetting.set(true);
+  panel.disableCaptureJSProfileSetting.set(true);
   await PerformanceTestRunner.invokeAsyncWithTimeline('performActions');
 
   var recordTypes = TimelineModel.TimelineModel.RecordType;

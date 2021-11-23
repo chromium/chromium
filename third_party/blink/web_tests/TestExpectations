@@ -6075,9 +6075,6 @@ crbug.com/1163175 external/wpt/css/css-pseudo/first-letter-punctuation-and-space
 crbug.com/1161301 [ Mac10.15 ] external/wpt/webxr/xrSession_requestReferenceSpace_features.https.html [ Pass Timeout ]
 crbug.com/1161301 [ Mac10.14 ] external/wpt/webxr/xrSession_requestReferenceSpace_features.https.html [ Failure Pass Timeout ]
 
-# Failing on Webkit Linux Leak only:
-crbug.com/1046784 http/tests/devtools/tracing/timeline-receive-response-event.js [ Failure Pass ]
-
 # Sheriff 2021-01-12
 crbug.com/1163793 http/tests/inspector-protocol/page/page-events-associated.js [ Failure Pass ]
 
