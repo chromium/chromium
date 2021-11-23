@@ -852,8 +852,7 @@ void UiControllerAndroid::OnCancelButtonClicked(
     return;
   }
 
-  CloseOrCancel(index, std::make_unique<TriggerContext>(),
-                Metrics::DropOutReason::SHEET_CLOSED);
+  CloseOrCancel(index, Metrics::DropOutReason::SHEET_CLOSED);
 }
 
 void UiControllerAndroid::OnCloseButtonClicked(
@@ -924,8 +923,7 @@ bool UiControllerAndroid::OnBackButtonClicked() {
     ui_delegate_->OnStop(back_button_settings->message(),
                          back_button_settings->undo_label());
   } else {
-    CloseOrCancel(-1, std::make_unique<TriggerContext>(),
-                  Metrics::DropOutReason::BACK_BUTTON_CLICKED);
+    CloseOrCancel(-1, Metrics::DropOutReason::BACK_BUTTON_CLICKED);
   }
   return true;
 }
@@ -934,10 +932,8 @@ void UiControllerAndroid::OnBottomSheetClosedWithSwipe() {
   // Nothing to do
 }
 
-void UiControllerAndroid::CloseOrCancel(
-    int action_index,
-    std::unique_ptr<TriggerContext> trigger_context,
-    Metrics::DropOutReason dropout_reason) {
+void UiControllerAndroid::CloseOrCancel(int action_index,
+                                        Metrics::DropOutReason dropout_reason) {
   // Close immediately.
   if (!ui_delegate_ ||
       ui_delegate_->GetState() == AutofillAssistantState::STOPPED) {
@@ -950,8 +946,7 @@ void UiControllerAndroid::CloseOrCancel(
   if (action_index >= 0 &&
       static_cast<size_t>(action_index) < user_actions.size() &&
       user_actions[action_index].chip().type == CLOSE_ACTION &&
-      ui_delegate_->PerformUserActionWithContext(action_index,
-                                                 std::move(trigger_context))) {
+      ui_delegate_->PerformUserAction(action_index)) {
     return;
   }
 
@@ -963,7 +958,7 @@ void UiControllerAndroid::CloseOrCancel(
                                     ui_delegate_->GetClientSettings()),
                base::BindOnce(&UiControllerAndroid::OnCancel,
                               weak_ptr_factory_.GetWeakPtr(), action_index,
-                              std::move(trigger_context), dropout_reason));
+                              dropout_reason));
 }
 
 absl::optional<std::pair<int, int>> UiControllerAndroid::GetWindowSize() const {
@@ -994,13 +989,10 @@ UiControllerAndroid::GetScreenOrientation() const {
   }
 }
 
-void UiControllerAndroid::OnCancel(
-    int action_index,
-    std::unique_ptr<TriggerContext> trigger_context,
-    Metrics::DropOutReason dropout_reason) {
+void UiControllerAndroid::OnCancel(int action_index,
+                                   Metrics::DropOutReason dropout_reason) {
   if (action_index == -1 || !ui_delegate_ ||
-      !ui_delegate_->PerformUserActionWithContext(action_index,
-                                                  std::move(trigger_context))) {
+      !ui_delegate_->PerformUserAction(action_index)) {
     Shutdown(dropout_reason);
   }
 }

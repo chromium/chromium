@@ -87,9 +87,7 @@ class UiControllerAndroid : public ControllerObserver {
   //
   // If action_index != -1, execute that action as close/cancel. Otherwise
   // execute the default close or cancel action.
-  void CloseOrCancel(int action_index,
-                     std::unique_ptr<TriggerContext> trigger_context,
-                     Metrics::DropOutReason dropout_reason);
+  void CloseOrCancel(int action_index, Metrics::DropOutReason dropout_reason);
   // Returns the size of the window.
   absl::optional<std::pair<int, int>> GetWindowSize() const;
   // Returns the screen's orientation.
@@ -277,9 +275,7 @@ class UiControllerAndroid : public ControllerObserver {
                     const std::string& undo_string,
                     base::OnceCallback<void()> action);
 
-  void OnCancel(int action_index,
-                std::unique_ptr<TriggerContext> context,
-                Metrics::DropOutReason dropout_reason);
+  void OnCancel(int action_index, Metrics::DropOutReason dropout_reason);
 
   // Updates the state of the UI to reflect the UIDelegate's state.
   void SetupForState();

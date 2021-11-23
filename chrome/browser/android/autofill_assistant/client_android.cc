@@ -55,10 +55,6 @@ using base::android::JavaRef;
 namespace autofill_assistant {
 namespace {
 
-// A direct action that corresponds to pressing the close or cancel button on
-// the UI.
-const char* const kCancelActionName = "cancel";
-
 // Strings for Synthetic Field Trials.
 const char kAutofillAssistantTtsTrialName[] = "AutofillAssistantEnableTtsParam";
 const char kEnabledGroupName[] = "Enabled";
@@ -269,10 +265,6 @@ ClientAndroid::GetDirectActionsAsJavaArrayOfStrings(JNIEnv* env) const {
     }
   }
 
-  // Cancel is always available when the UI is up.
-  if (ui_controller_android_)
-    names.insert(kCancelActionName);
-
   return base::android::ToJavaArrayOfStrings(
       env, std::vector<std::string>(names.begin(), names.end()));
 }
@@ -365,16 +357,7 @@ bool ClientAndroid::PerformDirectAction(
       /* is_direct_action = */ true,
       /* jinitial_url = */ nullptr);
 
-  // Cancel through the UI if it is up. This allows the user to undo. This is
-  // always available, even if no action was found and action_index == -1.
   int action_index = FindDirectAction(action_name);
-  if (action_name == kCancelActionName && ui_controller_android_) {
-    ui_controller_android_->CloseOrCancel(action_index,
-                                          std::move(trigger_context),
-                                          Metrics::DropOutReason::SHEET_CLOSED);
-    return true;
-  }
-
   if (action_index == -1)
     return false;
 
