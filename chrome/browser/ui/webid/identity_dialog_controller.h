@@ -27,7 +27,6 @@ using TokenExchangeApprovalCallback =
     content::IdentityRequestDialogController::TokenExchangeApprovalCallback;
 using AccountSelectionCallback =
     content::IdentityRequestDialogController::AccountSelectionCallback;
-using AccountList = content::IdentityRequestDialogController::AccountList;
 
 // The IdentityDialogController controls the views that are used across
 // browser-mediated federated sign-in flows.
@@ -53,7 +52,7 @@ class IdentityDialogController
       content::WebContents* rp_web_contents,
       content::WebContents* idp_web_contents,
       const GURL& idp_url,
-      AccountList accounts,
+      base::span<const content::IdentityRequestAccount> accounts,
       const content::IdentityProviderMetadata& idp_metadata,
       const content::ClientIdData& client_data,
       content::IdentityRequestAccount::SignInMode sign_in_mode,

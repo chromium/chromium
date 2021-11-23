@@ -98,7 +98,7 @@ void IdentityDialogController::ShowAccountsDialog(
     content::WebContents* rp_web_contents,
     content::WebContents* idp_web_contents,
     const GURL& idp_url,
-    AccountList accounts,
+    base::span<const content::IdentityRequestAccount> accounts,
     const content::IdentityProviderMetadata& idp_metadata,
     const content::ClientIdData& client_data,
     content::IdentityRequestAccount::SignInMode sign_in_mode,

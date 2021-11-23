@@ -41,7 +41,7 @@ using LogoutResponse = content::IdpNetworkRequestManager::LogoutResponse;
 using SigninResponse = content::IdpNetworkRequestManager::SigninResponse;
 using TokenResponse = content::IdpNetworkRequestManager::TokenResponse;
 using UserApproval = content::IdentityRequestDialogController::UserApproval;
-using AccountList = content::IdentityRequestDialogController::AccountList;
+using AccountList = content::IdpNetworkRequestManager::AccountList;
 using LoginState = content::IdentityRequestAccount::LoginState;
 using SignInMode = content::IdentityRequestAccount::SignInMode;
 using ::testing::_;
@@ -541,12 +541,14 @@ class FederatedAuthRequestImplTest : public RenderViewHostTestHarness {
           .WillOnce(Invoke(
               [&](content::WebContents* rp_web_contents,
                   content::WebContents* idp_web_contents,
-                  const GURL& idp_signin_url, AccountList accounts,
+                  const GURL& idp_signin_url,
+                  base::span<const content::IdentityRequestAccount> accounts,
                   const IdentityProviderMetadata& idp_metadata,
                   const ClientIdData& client_id_data, SignInMode sign_in_mode,
                   IdentityRequestDialogController::AccountSelectionCallback
                       on_selected) {
-                displayed_accounts_ = accounts;
+                displayed_accounts_ =
+                    AccountList(accounts.begin(), accounts.end());
                 std::move(on_selected).Run(accounts[0].sub);
               }));
     }
@@ -644,7 +646,9 @@ class FederatedAuthRequestImplTest : public RenderViewHostTestHarness {
     return logout_session_permissions_;
   }
 
-  const AccountList& displayed_accounts() const { return displayed_accounts_; }
+  base::span<const content::IdentityRequestAccount> displayed_accounts() const {
+    return displayed_accounts_;
+  }
   MockIdentityRequestDialogController* mock_dialog_controller() const {
     return mock_dialog_controller_;
   }
@@ -909,13 +913,14 @@ TEST_F(BasicFederatedAuthRequestImplTest, AutoSignInForReturningUser) {
       .WillOnce(Invoke(
           [&](content::WebContents* rp_web_contents,
               content::WebContents* idp_web_contents,
-              const GURL& idp_signin_url, AccountList accounts,
+              const GURL& idp_signin_url,
+              base::span<const content::IdentityRequestAccount> accounts,
               const IdentityProviderMetadata& idp_metadata,
               const ClientIdData& client_id_data, SignInMode sign_in_mode,
               IdentityRequestDialogController::AccountSelectionCallback
                   on_selected) {
             EXPECT_EQ(sign_in_mode, SignInMode::kAuto);
-            displayed_accounts = accounts;
+            displayed_accounts = AccountList(accounts.begin(), accounts.end());
             std::move(on_selected).Run(accounts[0].sub);
           }));
 
@@ -938,13 +943,14 @@ TEST_F(BasicFederatedAuthRequestImplTest, AutoSignInForFirstTimeUser) {
       .WillOnce(Invoke(
           [&](content::WebContents* rp_web_contents,
               content::WebContents* idp_web_contents,
-              const GURL& idp_signin_url, AccountList accounts,
+              const GURL& idp_signin_url,
+              base::span<const content::IdentityRequestAccount> accounts,
               const IdentityProviderMetadata& idp_metadata,
               const ClientIdData& client_id_data, SignInMode sign_in_mode,
               IdentityRequestDialogController::AccountSelectionCallback
                   on_selected) {
             EXPECT_EQ(sign_in_mode, SignInMode::kExplicit);
-            displayed_accounts = accounts;
+            displayed_accounts = AccountList(accounts.begin(), accounts.end());
             std::move(on_selected).Run(accounts[0].sub);
           }));
 
@@ -986,14 +992,15 @@ TEST_F(BasicFederatedAuthRequestImplTest, AutoSignInWithScreenReader) {
       .WillOnce(Invoke(
           [&](content::WebContents* rp_web_contents,
               content::WebContents* idp_web_contents,
-              const GURL& idp_signin_url, AccountList accounts,
+              const GURL& idp_signin_url,
+              base::span<const content::IdentityRequestAccount> accounts,
               const IdentityProviderMetadata& idp_metadata,
               const ClientIdData& client_id_data, SignInMode sign_in_mode,
               IdentityRequestDialogController::AccountSelectionCallback
                   on_selected) {
             // Auto sign in replaced by explicit sign in if screen reader is on.
             EXPECT_EQ(sign_in_mode, SignInMode::kExplicit);
-            displayed_accounts = accounts;
+            displayed_accounts = AccountList(accounts.begin(), accounts.end());
             std::move(on_selected).Run(accounts[0].sub);
           }));
 
