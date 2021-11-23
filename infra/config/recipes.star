@@ -150,6 +150,7 @@ build_recipe(
 
 build_recipe(
     name = "recipe:chromium_afl",
+    use_python3 = True,
 )
 
 build_recipe(
