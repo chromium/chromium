@@ -49,7 +49,9 @@ generate_jni("jni_headers") {
 android_resources("java_resources") {
   sources = [
     "java/res/drawable-night/ble.xml",
+    "java/res/drawable-night/cable_qr_code.xml",
     "java/res/drawable/ble.xml",
+    "java/res/drawable/cable_qr_code.xml",
     "java/res/drawable/usb_conn_disconnect.xml",
     "java/res/layout-sw600dp/cablev2_ble_enable.xml",
     "java/res/layout/cablev2_ble_enable.xml",

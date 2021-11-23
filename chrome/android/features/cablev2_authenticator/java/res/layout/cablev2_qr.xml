@@ -3,78 +3,122 @@
      Use of this source code is governed by a BSD-style license that can be
      found in the LICENSE file. -->
 
-<LinearLayout xmlns:a="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<ScrollView
+    xmlns:a="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     a:layout_width="match_parent"
     a:layout_height="match_parent"
-    a:orientation="vertical"
-    xmlns:tools="http://schemas.android.com/tools">
-
-  <TextView
-      a:layout_width="match_parent"
-      a:layout_height="wrap_content"
-      a:layout_marginTop="104dp"
-      a:layout_marginLeft="24dp"
-      a:layout_marginRight="24dp"
-      a:gravity="center_horizontal"
-      tools:ignore="HardcodedText"
-      a:text="Connect to device"
-      a:textSize="24sp" />
-
-  <TextView
-      a:layout_width="wrap_content"
-      a:layout_height="wrap_content"
-      a:layout_marginTop="52dp"
-      a:layout_marginLeft="24dp"
-      a:layout_marginRight="24dp"
-      a:layout_gravity="center_horizontal"
-      a:padding="0px"
-      tools:ignore="HardcodedText"
-      a:text="The device displaying this QR Code is requesting a connection in order to sign-in with, or register, this phone/tablet. (The QR Code should have been displayed by the device itself and not be a picture in a document or email displayed on the device, nor have been printed out. If unsure, ignore this QR Code.)"
-      a:textSize="14sp" />
+    a:fillViewport="true"
+    a:scrollbars="none">
 
   <LinearLayout
       a:layout_width="match_parent"
       a:layout_height="wrap_content"
-      a:orientation="horizontal"
-      a:paddingTop="52dp">
+      a:orientation="vertical">
+
+    <TextView
+        a:layout_width="match_parent"
+        a:layout_height="wrap_content"
+        a:layout_marginTop="104dp"
+        a:layout_marginLeft="24dp"
+        a:layout_marginRight="24dp"
+        a:gravity="center_horizontal"
+        tools:ignore="HardcodedText"
+        a:text="Connect your device with QR Code?"
+        a:textSize="24sp" />
+
+    <!-- This is a semantically-meaningless picture of a phone and BLE icon that
+    screen readers can ignore. Thus contentDescription is null.
+
+    The visual center of this image isn't the pixel-center, and thus a left margin
+    is used to tweak the horizontal centering. The tooling thinks that's an RTL
+    issue, but RTL mode doesn't reflect images so the padding still needs to
+    be on the left. tools:ignore is used to skip this warning. -->
+    <ImageView
+        a:layout_width="match_parent"
+        a:layout_height="212dp"
+        a:layout_marginTop="52dp"
+        a:layout_marginLeft="40dp"
+        a:layout_marginBottom="35dp"
+        a:contentDescription="@null"
+        a:gravity="center_horizontal"
+        a:src="@drawable/cable_qr_code"
+        tools:ignore="RtlHardcoded"/>
+
+    <TextView
+        a:layout_width="wrap_content"
+        a:layout_height="wrap_content"
+        style="@style/TextAppearance.TextMedium.Primary"
+        a:layout_marginTop="52dp"
+        a:layout_marginLeft="24dp"
+        a:layout_marginRight="24dp"
+        a:layout_gravity="center_horizontal"
+        a:padding="0px"
+        tools:ignore="HardcodedText"
+        a:text="The computer displaying this QR Code is asking to use this device for signing in."
+        a:textSize="14sp" />
 
     <LinearLayout
-        a:layout_width="0dp"
+        a:layout_width="match_parent"
         a:layout_height="wrap_content"
-        a:layout_weight="1"
-        a:orientation="vertical">
+        a:orientation="horizontal"
+        a:padding="24dp">
+
+      <CheckBox
+          a:id="@+id/qr_link"
+          a:checked="true"
+          a:layout_width="wrap_content"
+          a:layout_height="wrap_content" />
 
       <TextView
           a:layout_width="wrap_content"
           a:layout_height="wrap_content"
           style="@style/TextAppearance.TextMedium.Primary"
           tools:ignore="HardcodedText"
-          a:text="One time connection" />
-
-      <TextView
-          a:layout_width="wrap_content"
-          a:layout_height="wrap_content"
-          style="@style/TextAppearance.TextSmall.Secondary"
-          tools:ignore="HardcodedText"
-          a:text="Don't allow device to connect automatically in the future" />
+          a:text="Remember this device" />
     </LinearLayout>
 
-    <CheckBox
-        a:id="@+id/qr_no_link"
-        a:checked="true"
-        a:layout_width="wrap_content"
-        a:layout_height="wrap_content" />
+    <!-- This consumes all extra vertical space and so bottom-aligns everything
+         that follows. -->
+    <View
+      a:layout_width="0dp"
+      a:layout_height="0dp"
+      a:layout_weight="1"
+      a:visibility="invisible"/>
 
+    <LinearLayout
+        a:layout_width="match_parent"
+        a:layout_height="wrap_content"
+        a:orientation="horizontal"
+        a:paddingLeft="24dp"
+        a:paddingRight="24dp"
+        a:paddingBottom="16dp">
+
+      <org.chromium.ui.widget.ButtonCompat
+          a:id="@+id/qr_reject"
+          style="@style/TextButton"
+          a:layout_gravity="start"
+          a:layout_width="wrap_content"
+          a:layout_height="wrap_content"
+          tools:ignore="HardcodedText"
+          a:text="Don't allow" />
+
+      <!-- This consumes all extra horizontal space and so right-aligns everything
+           that follows. -->
+      <View
+        a:layout_width="0dp"
+        a:layout_height="0dp"
+        a:layout_weight="1"
+        a:visibility="invisible"/>
+
+      <org.chromium.ui.widget.ButtonCompat
+          a:id="@+id/qr_connect"
+          style="@style/FilledButton.Flat"
+          a:layout_gravity="end"
+          a:layout_width="wrap_content"
+          a:layout_height="wrap_content"
+          tools:ignore="HardcodedText"
+          a:text="Allow" />
+    </LinearLayout>
   </LinearLayout>
-
-  <Button
-      a:id="@+id/qr_connect"
-      a:layout_marginTop="52dp"
-      a:layout_gravity="center_horizontal"
-      a:layout_width="wrap_content"
-      a:layout_height="wrap_content"
-      tools:ignore="HardcodedText"
-      a:text="Connect" />
-
-</LinearLayout>
+</ScrollView>
