@@ -10,12 +10,15 @@
 #include <vector>
 
 #include "base/containers/contains.h"
+#include "base/files/file_util.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/ranges/algorithm.h"
 #include "base/sequence_checker.h"
 #include "base/strings/string_split.h"
 #include "base/task/post_task.h"
+#include "base/task/thread_pool.h"
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
 #include "net/base/schemeful_site.h"
@@ -67,6 +70,12 @@ net::SamePartyContext::Type ContextTypeFromBool(bool is_same_party) {
                        : net::SamePartyContext::Type::kCrossParty;
 }
 
+std::string ReadSetsFile(base::File sets_file) {
+  std::string raw_sets;
+  base::ScopedFILE file(FileToFILE(std::move(sets_file), "r"));
+  return base::ReadStreamToString(file.get(), &raw_sets) ? raw_sets : "";
+}
+
 }  // namespace
 
 FirstPartySets::FirstPartySets() = default;
@@ -88,28 +97,35 @@ void FirstPartySets::SetManuallySpecifiedSet(const std::string& flag_value) {
   ClearSiteDataOnChangedSetsIfReady();
 }
 
-base::flat_map<net::SchemefulSite, net::SchemefulSite>*
-FirstPartySets::ParseAndSet(base::StringPiece raw_sets) {
+void FirstPartySets::ParseAndSet(base::File sets_file) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!net::cookie_util::IsFirstPartySetsEnabled())
-    return &sets_;
-
-  sets_ = FirstPartySetParser::ParseSetsFromComponentUpdater(raw_sets);
-  OnComponentSetsReceived();
-  return &sets_;
+    return;
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
+      base::BindOnce(&ReadSetsFile, std::move(sets_file)),
+      base::BindOnce(&FirstPartySets::OnReadSetsFile,
+                     weak_factory_.GetWeakPtr()));
 }
 
-void FirstPartySets::ParseAndSetFromStream(std::istream& input) {
+void FirstPartySets::OnReadSetsFile(const std::string& raw_sets) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!net::cookie_util::IsFirstPartySetsEnabled())
     return;
 
-  sets_ = FirstPartySetParser::ParseSetsFromStream(input);
-  OnComponentSetsReceived();
-}
+  bool is_v1_format = raw_sets.find('[') < raw_sets.find('{');
+  if (is_v1_format) {
+    // The file is a single list of records; V1 format.
+    sets_ = FirstPartySetParser::ParseSetsFromComponentUpdater(raw_sets);
+  } else {
+    // The file is invalid, or is a newline-delimited sequence of
+    // records; V2 format.
+    std::istringstream stream(raw_sets);
+    sets_ = FirstPartySetParser::ParseSetsFromStream(stream);
+  }
+  base::UmaHistogramBoolean("Cookie.FirstPartySets.ComponentIsV1Format",
+                            is_v1_format);
 
-void FirstPartySets::OnComponentSetsReceived() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   ApplyManuallySpecifiedSet();
   component_sets_ready_ = true;
   ClearSiteDataOnChangedSetsIfReady();

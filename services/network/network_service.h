@@ -397,8 +397,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkService
   // that renderer process (the renderer will proxy requests from PPAPI - such
   // requests should have their initiator origin within the set stored here).
   std::map<int, std::set<url::Origin>> plugin_origins_;
-
-  base::WeakPtrFactory<NetworkService> weak_factory_{this};
 };
 
 }  // namespace network

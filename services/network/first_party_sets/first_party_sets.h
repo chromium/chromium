@@ -12,6 +12,7 @@
 #include "base/callback.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
+#include "base/files/file.h"
 #include "base/sequence_checker.h"
 #include "base/thread_annotations.h"
 #include "net/base/schemeful_site.h"
@@ -38,30 +39,17 @@ class FirstPartySets {
   // Has no effect if `kFirstPartySets` is disabled.
   void SetManuallySpecifiedSet(const std::string& flag_value);
 
-  // Overwrites the current members-to-owners map with the values in |raw_sets|,
-  // which should be the JSON-encoded string representation of a collection of
-  // set declarations according to the format specified in this document:
-  // https://github.com/privacycg/first-party-sets. Returns a pointer to the
-  // mapping, for testing.
+  // Asynchronously overwrites the current members-to-owners map with the sets
+  // in `sets_file`.  `sets_file` is expected to contain either a JSON-encoded
+  // array of records, or a sequence of newline-delimited JSON records. Each
+  // record is a set declaration in the format specified here:
+  // https://github.com/privacycg/first-party-sets.
   //
-  // In case of invalid input, clears the current members-to-owners map, but
-  // keeps any manually-specified set (i.e. a set provided on the command line).
-  //
-  // Has no effect if `kFirstPartySets` is disabled.
-  base::flat_map<net::SchemefulSite, net::SchemefulSite>* ParseAndSet(
-      base::StringPiece raw_sets);
-
-  // Overwrites the current members-to-owners map with the values in `input`,
-  // which should be a newline-delimited collection of JSON-encoded set
-  // declarations according to the format specified in this document:
-  // https://github.com/privacycg/first-party-sets. Exactly one JSON record must
-  // be on each line.
-  //
-  // In case of invalid input, clears the current members-to-owners map, but
-  // keeps any manually-specified set (i.e. a set provided on the command line).
+  // In case of invalid input, the members-to-owners map is cleared, but keeps
+  // any manually-specified set (i.e. a set provided on the command line).
   //
   // Has no effect if `kFirstPartySets` is disabled.
-  void ParseAndSetFromStream(std::istream& input);
+  void ParseAndSet(base::File sets_file);
 
   // Returns whether the `site` is same-party with the `party_context`, and
   // `top_frame_site` (if it is not nullptr). That is, is the `site`'s owner the
@@ -120,9 +108,9 @@ class FirstPartySets {
       base::OnceCallback<void(const std::string&)> callback);
 
  private:
-  // Performs bookkeeping after receiving a new set of sets from Component
-  // Updater.
-  void OnComponentSetsReceived();
+  // Parses the contents of `raw_sets` as a collection of First-Party Set
+  // declarations, and assigns to `sets_`.
+  void OnReadSetsFile(const std::string& raw_sets);
 
   // Returns `site`'s owner (optionally inferring a singleton set if necessary),
   // or `nullopt` if `site` has no owner. Must not return `nullopt` if
@@ -172,13 +160,20 @@ class FirstPartySets {
 
   SEQUENCE_CHECKER(sequence_checker_);
 
-  FRIEND_TEST_ALL_PREFIXES(FirstPartySetsTest, ComputeSetsDiff_SitesJoined);
-  FRIEND_TEST_ALL_PREFIXES(FirstPartySetsTest, ComputeSetsDiff_SitesLeft);
-  FRIEND_TEST_ALL_PREFIXES(FirstPartySetsTest, ComputeSetsDiff_OwnerChanged);
-  FRIEND_TEST_ALL_PREFIXES(FirstPartySetsTest, ComputeSetsDiff_OwnerLeft);
-  FRIEND_TEST_ALL_PREFIXES(FirstPartySetsTest,
+  base::WeakPtrFactory<FirstPartySets> weak_factory_{this};
+
+  FRIEND_TEST_ALL_PREFIXES(FirstPartySetsEnabledTest,
+                           ComputeSetsDiff_SitesJoined);
+  FRIEND_TEST_ALL_PREFIXES(FirstPartySetsEnabledTest,
+                           ComputeSetsDiff_SitesLeft);
+  FRIEND_TEST_ALL_PREFIXES(FirstPartySetsEnabledTest,
+                           ComputeSetsDiff_OwnerChanged);
+  FRIEND_TEST_ALL_PREFIXES(FirstPartySetsEnabledTest,
+                           ComputeSetsDiff_OwnerLeft);
+  FRIEND_TEST_ALL_PREFIXES(FirstPartySetsEnabledTest,
                            ComputeSetsDiff_OwnerMemberRotate);
-  FRIEND_TEST_ALL_PREFIXES(FirstPartySetsTest, ComputeSetsDiff_EmptySets);
+  FRIEND_TEST_ALL_PREFIXES(FirstPartySetsEnabledTest,
+                           ComputeSetsDiff_EmptySets);
 };
 
 }  // namespace network
