@@ -174,8 +174,9 @@ class FindBadBuildsIntegrationTest(unittest.TestCase):
         # Sort to get rid of header, then remove.
         lines = sorted(lines)
         self.assertTrue(lines[-1].startswith('Build '))
+        self.assertTrue(lines[0].startswith('------'))
         self.assertEqual(
-            set(lines[:-1]),
+            set(lines[1:-1]),
             set([
                 '11                   | False      | 29                    ',
                 '22                   | True       | 28                    ',

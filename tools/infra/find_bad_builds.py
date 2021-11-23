@@ -258,24 +258,28 @@ def main(raw_args, print_fn):
   logging.info('%d total builds to process' % len(build_jsons))
 
   p = _get_pool()
+  logging.debug('List of known bad revisions:')
   for rev in sorted(revisions_in_scope):
-    logging.debug('bad revision: %s', rev)
+    logging.debug('  * %s', rev)
   results = p.map(
       functools.partial(_assess_build,
                         max_running_time=args.max_running_time,
                         revisions_in_scope=revisions_in_scope,
                         builders=args.builder), build_jsons)
   if args.show_all_builds:
-    rows = [('Build ID', 'is_bad', 'running time (minutes)')]
+    rows = []
+    header = ('Build ID', 'is_bad', 'running time (minutes)')
     # Build IDS are 19 characters.
-    column_lens = [20, 10, len(rows[0][-1])]
+    column_lens = [20, 10, len(header[-1])]
     for build, is_bad_build in zip(build_jsons, results):
       bid = build['id']
       running_time = _get_build_running_time(build).total_seconds() / 60.0
       rows.append((bid, is_bad_build, int(running_time)))
-    for row in sorted(rows, key=lambda r: r[0]):
+    for row in [header] + sorted(rows, key=lambda r: r[0]):
       print_fn("%s | %s | %s" % tuple(
           (str(itm).ljust(column_lens[i]) for i, itm in enumerate(row))))
+      if row == header:
+        print_fn('-' * sum(column_lens))
   else:
     ids = [build['id'] for build in build_jsons]
     for bid, is_bad_build in zip(ids, results):
