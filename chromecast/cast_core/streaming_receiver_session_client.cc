@@ -339,7 +339,7 @@ bool StreamingReceiverSessionClient::OnMessage(
   absl::optional<PlatformInfoSerializer> deserializer =
       PlatformInfoSerializer::Deserialize(message);
   if (!deserializer) {
-    LOG(ERROR) << "AV Settings with invalid JSON received: " << message;
+    LOG(ERROR) << "AV Settings with invalid protobuf received: " << message;
     TriggerError();
     return false;
   }
