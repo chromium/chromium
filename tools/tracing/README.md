@@ -122,7 +122,7 @@ Note: Download and symbolize this profile using symbolization steps below.
 1.  Run profile_chrome_startup:
 
     ```
-    tools/tracing/profile_chrome_startup --symbolize \
+    tools/tracing/profile_chrome_startup \
       --local_build_dir=LOCAL_BUILD_DIR --browser=BROWSER \
       [--enable_profiler={memory,cpu}]
     ```
@@ -130,7 +130,7 @@ Note: Download and symbolize this profile using symbolization steps below.
     Example heap profiling:
 
     ```
-    tools/tracing/profile_chrome_startup --symbolize \
+    tools/tracing/profile_chrome_startup \
       --local_build_dir=out/Release --browser=build --enable_profiler=memory
     ```
 
@@ -152,14 +152,14 @@ Note: Download and symbolize this profile using symbolization steps below.
 1.  Run profile_chrome_startup:
 
     ```
-    tools/tracing/profile_chrome_startup --symbolize \
+    tools/tracing/profile_chrome_startup \
       --dump_syms=DUMP_SYMS --browser=BROWSER [--enable_profiler={memory,cpu}]
     ```
 
     Example heap profiling:
 
     ```
-      tools/tracing/profile_chrome_startup --symbolize \
+      tools/tracing/profile_chrome_startup \
         --dump_syms=out/Release/dump_syms \
         local_build_dir=out/Release --browser=stable --enable_profiler=memory
     ```
@@ -179,7 +179,7 @@ Note: Download and symbolize this profile using symbolization steps below.
 *   To enable/disable specific Chrome categories while recording a trace, use
     the `--chrome_categories flag`.
 
-*   To view a symbolized trace automiatically after symbolization, you can pass
+*   To view a symbolized trace automatically after symbolization, you can pass
     the `--view` flag to automatically open the symbolized trace in
     https://ui.perfetto.dev.
 
