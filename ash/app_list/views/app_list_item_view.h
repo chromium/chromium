@@ -35,6 +35,7 @@ class Label;
 
 namespace ash {
 
+class AppsGridContextMenu;
 class AppListConfig;
 class AppListItem;
 class AppListMenuModelAdapter;
@@ -211,12 +212,20 @@ class ASH_EXPORT AppListItemView : public views::Button,
 
   bool FireTouchDragTimerForTest();
 
+  // Whether the context menu on a non-folder app item view is showing.
+  bool IsShowingAppMenu() const;
+
   bool is_folder() const { return is_folder_; }
 
   bool IsNotificationIndicatorShownForTest() const;
   GridDelegate* grid_delegate_for_test() { return grid_delegate_; }
 
-  AppListMenuModelAdapter* context_menu() const { return context_menu_.get(); }
+  AppListMenuModelAdapter* item_menu_model_adapter() const {
+    return item_menu_model_adapter_.get();
+  }
+  AppsGridContextMenu* context_menu_for_folder() const {
+    return context_menu_for_folder_.get();
+  }
 
   // Sets the callback which will run after the context menu is shown.
   void SetContextMenuShownCallbackForTest(base::RepeatingClosure closure);
@@ -372,7 +381,11 @@ class ASH_EXPORT AppListItemView : public views::Button,
   IconImageView* icon_ = nullptr;  // Strongly typed child view.
   views::Label* title_ = nullptr;  // Strongly typed child view.
 
-  std::unique_ptr<AppListMenuModelAdapter> context_menu_;
+  // The context menu model adapter used for app item view.
+  std::unique_ptr<AppListMenuModelAdapter> item_menu_model_adapter_;
+
+  // The context menu controller used for folder item view.
+  std::unique_ptr<AppsGridContextMenu> context_menu_for_folder_;
 
   UIState ui_state_ = UI_STATE_NORMAL;
 
@@ -395,11 +408,11 @@ class ASH_EXPORT AppListItemView : public views::Button,
   // The radius of preview circle for non-folder item.
   int preview_circle_radius_ = 0;
 
-  // Whether |context_menu_| was cancelled as the result of a continuous drag
-  // gesture.
+  // Whether `item_menu_model_adapter_` was cancelled as the result of a
+  // continuous drag gesture.
   bool menu_close_initiated_from_drag_ = false;
 
-  // Whether |context_menu_| was shown via key event.
+  // Whether `item_menu_model_adapter_` was shown via key event.
   bool menu_show_initiated_from_key_ = false;
 
   std::u16string tooltip_text_;
