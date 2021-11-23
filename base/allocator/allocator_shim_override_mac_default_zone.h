@@ -223,21 +223,24 @@ InitializeDefaultMallocZoneWithPartitionAlloc() {
   kern_return_t result =
       malloc_get_all_zones(mach_task_self(), nullptr, &zones, &zone_count);
   MACH_CHECK(result == KERN_SUCCESS, result) << "malloc_get_all_zones";
-  malloc_zone_t* default_zone = reinterpret_cast<malloc_zone_t*>(zones[0]);
+  // Checking all the zones, in case someone registered their own zone on top of
+  // our own.
+  for (unsigned int i = 0; i < zone_count; i++) {
+    malloc_zone_t* zone = reinterpret_cast<malloc_zone_t*>(zones[i]);
 
-  // strcmp() and not a pointer comparison, as the zone was registered from
-  // another library, the pointers don't match.
-  if (default_zone->zone_name &&
-      (strcmp(default_zone->zone_name, kZoneName) == 0)) {
-    // The default zone is already provided by PartitionAlloc, so this function
-    // has been called from another library (or the main executable), nothing to
-    // do.
-    //
-    // This should be a crash, ideally, but callers do it, so only warn, for
-    // now.
-    RAW_LOG(ERROR, "Trying to load the allocator multiple times. This is *not* "
-                   "supported.");
-    return;
+    // strcmp() and not a pointer comparison, as the zone was registered from
+    // another library, the pointers don't match.
+    if (zone->zone_name && (strcmp(zone->zone_name, kZoneName) == 0)) {
+      // This zone is provided by PartitionAlloc, so this function has been
+      // called from another library (or the main executable), nothing to do.
+      //
+      // This should be a crash, ideally, but callers do it, so only warn, for
+      // now.
+      RAW_LOG(ERROR,
+              "Trying to load the allocator multiple times. This is *not* "
+              "supported.");
+      return;
+    }
   }
 
   // Instantiate the existing regular and purgeable zones in order to make the
