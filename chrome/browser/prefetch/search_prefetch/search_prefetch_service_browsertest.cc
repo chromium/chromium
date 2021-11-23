@@ -2269,8 +2269,16 @@ void RunFirstParam(base::RepeatingClosure closure,
   closure.Run();
 }
 
+// crbug.com/1272805
+#if defined(OS_MAC)
+#define MAYBE_ServiceWorkerServedPrefetchWithPreload \
+  DISABLED_ServiceWorkerServedPrefetchWithPreload
+#else
+#define MAYBE_ServiceWorkerServedPrefetchWithPreload \
+  ServiceWorkerServedPrefetchWithPreload
+#endif
 IN_PROC_BROWSER_TEST_P(SearchPrefetchServiceEnabledBrowserTest,
-                       ServiceWorkerServedPrefetchWithPreload) {
+                       MAYBE_ServiceWorkerServedPrefetchWithPreload) {
   const GURL worker_url = GetSearchServerQueryURLWithNoQuery(kServiceWorkerUrl);
   const std::string kEnableNavigationPreloadScript = R"(
       self.addEventListener('activate', event => {
