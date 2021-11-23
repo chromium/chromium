@@ -415,11 +415,6 @@ const base::Feature kAutofillUseConsistentPopupSettingsIcons{
 const base::Feature kAutofillUseNewSectioningMethod{
     "AutofillUseNewSectioningMethod", base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Controls whether or not the profile icon is shown in front of an address
-// suggestion.
-const base::Feature kAutofillUseAddressSuggestionIcon{
-    "AutofillUseAddressSuggestionIcon", base::FEATURE_DISABLED_BY_DEFAULT};
-
 // When enabled, to get the unowned control elements we call
 // Document::UnassociatedListedElements(). This way we can reduce the number of
 // DOM traversals.
