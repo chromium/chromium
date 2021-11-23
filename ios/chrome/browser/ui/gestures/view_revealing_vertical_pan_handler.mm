@@ -6,6 +6,7 @@
 
 #import "base/check_op.h"
 #include "base/cxx17_backports.h"
+#include "base/ios/block_types.h"
 #include "base/logging.h"
 #import "base/notreached.h"
 #import "ios/chrome/browser/ui/gestures/layout_switcher.h"
@@ -26,7 +27,7 @@ namespace {
 const CGFloat kVelocityWeight = 0.5f;
 const CGFloat kRevealThreshold = 1 / 3.0f;
 
-// Duration of the animation to reveal/hide the view.
+// Duration of the animation to reveal/hide the vi`ew.
 const CGFloat kAnimationDuration = 0.25f;
 
 // The 3 stages or steps of the transitions handled by the view revealing
@@ -249,14 +250,52 @@ enum class LayoutTransitionState {
     return;
   }
 
-  if (self.nextState == ViewRevealState::Revealed ||
-      self.nextState == ViewRevealState::Fullscreen) {
-    [self willTransitionToLayout:LayoutSwitcherState::Grid];
-  } else if ((self.currentState == ViewRevealState::Revealed ||
-              self.currentState == ViewRevealState::Fullscreen) &&
-             (self.nextState == ViewRevealState::Peeked ||
-              self.nextState == ViewRevealState::Hidden)) {
-    [self willTransitionToLayout:LayoutSwitcherState::Horizontal];
+  // Table of required layout (h = Horizontal, g = Grid) change and animation
+  // (n = NO, y = YES) based on from and to state:
+  // From:              To: Hidden  Peeked  Revealed/Fullscreen
+  // Hidden                 x       h/n     g/n
+  // Peeked                 x       x       g/y
+  // Revealed/Fullscreen    x       h/y     x
+  if (self.currentState == self.nextState) {
+    return;
+  }
+
+  LayoutSwitcherState nextLayoutState =
+      self.layoutSwitcherProvider.layoutSwitcher.currentLayoutSwitcherState;
+  BOOL animated = NO;
+
+  switch (self.currentState) {
+    case ViewRevealState::Hidden: {
+      nextLayoutState = (self.nextState == ViewRevealState::Revealed ||
+                         self.nextState == ViewRevealState::Fullscreen)
+                            ? LayoutSwitcherState::Grid
+                            : LayoutSwitcherState::Horizontal;
+      break;
+    }
+    case ViewRevealState::Peeked:
+      if (self.nextState == ViewRevealState::Revealed ||
+          self.nextState == ViewRevealState::Fullscreen) {
+        nextLayoutState = LayoutSwitcherState::Grid;
+        animated = YES;
+      }
+      break;
+    case ViewRevealState::Revealed:
+    case ViewRevealState::Fullscreen:
+      if (self.nextState == ViewRevealState::Peeked) {
+        nextLayoutState = LayoutSwitcherState::Horizontal;
+        animated = YES;
+      }
+      break;
+  }
+
+  if (self.layoutSwitcherProvider.layoutSwitcher.currentLayoutSwitcherState !=
+      nextLayoutState) {
+    [self willTransitionToLayout:nextLayoutState];
+    if (!animated) {
+      [self.layoutSwitcherProvider.layoutSwitcher
+          didUpdateTransitionLayoutProgress:1];
+      [self didTransitionToLayoutSuccessfully:YES];
+    }
   }
 }
 

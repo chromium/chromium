@@ -630,6 +630,12 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 
 #pragma mark - LayoutSwitcher
 
+- (LayoutSwitcherState)currentLayoutSwitcherState {
+  GridViewController* gridViewController =
+      [self gridViewControllerForPage:self.currentPage];
+  return gridViewController.currentLayoutSwitcherState;
+}
+
 - (void)willTransitionToLayout:(LayoutSwitcherState)nextState
                     completion:
                         (void (^)(BOOL completed, BOOL finished))completion {

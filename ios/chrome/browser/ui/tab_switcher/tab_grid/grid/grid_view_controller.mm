@@ -894,6 +894,12 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
 
 #pragma mark - LayoutSwitcher
 
+- (LayoutSwitcherState)currentLayoutSwitcherState {
+  return self.currentLayout == self.horizontalLayout
+             ? LayoutSwitcherState::Horizontal
+             : LayoutSwitcherState::Grid;
+}
+
 - (void)willTransitionToLayout:(LayoutSwitcherState)nextState
                     completion:
                         (void (^)(BOOL completed, BOOL finished))completion {
