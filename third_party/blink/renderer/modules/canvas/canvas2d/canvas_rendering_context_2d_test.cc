@@ -564,8 +564,8 @@ TEST_P(CanvasRenderingContext2DOverdrawTest, DrawImage_ExactCoverage) {
       BaseRenderingContext2D::OverdrawOp::kDrawImage,
   });
   NonThrowableExceptionState exception_state;
-  Context2D()->drawImage(GetScriptState(), &opaque_bitmap_, 0, 0, 10, 10, 0, 0,
-                         10, 10, exception_state);
+  Context2D()->drawImage(&opaque_bitmap_, 0, 0, 10, 10, 0, 0, 10, 10,
+                         exception_state);
   EXPECT_FALSE(exception_state.HadException());
   VerifyExpectations();
 }
@@ -576,8 +576,8 @@ TEST_P(CanvasRenderingContext2DOverdrawTest, DrawImage_Magnified) {
       BaseRenderingContext2D::OverdrawOp::kDrawImage,
   });
   NonThrowableExceptionState exception_state;
-  Context2D()->drawImage(GetScriptState(), &opaque_bitmap_, 0, 0, 1, 1, 0, 0,
-                         10, 10, exception_state);
+  Context2D()->drawImage(&opaque_bitmap_, 0, 0, 1, 1, 0, 0, 10, 10,
+                         exception_state);
   EXPECT_FALSE(exception_state.HadException());
   VerifyExpectations();
 }
@@ -586,8 +586,8 @@ TEST_P(CanvasRenderingContext2DOverdrawTest, DrawImage_GlobalAlpha) {
   ExpectNoOverdraw();
   NonThrowableExceptionState exception_state;
   Context2D()->setGlobalAlpha(0.5f);
-  Context2D()->drawImage(GetScriptState(), &opaque_bitmap_, 0, 0, 10, 10, 0, 0,
-                         10, 10, exception_state);
+  Context2D()->drawImage(&opaque_bitmap_, 0, 0, 10, 10, 0, 0, 10, 10,
+                         exception_state);
   EXPECT_FALSE(exception_state.HadException());
   VerifyExpectations();
 }
@@ -595,8 +595,8 @@ TEST_P(CanvasRenderingContext2DOverdrawTest, DrawImage_GlobalAlpha) {
 TEST_P(CanvasRenderingContext2DOverdrawTest, DrawImage_TransparentBitmap) {
   ExpectNoOverdraw();
   NonThrowableExceptionState exception_state;
-  Context2D()->drawImage(GetScriptState(), &alpha_bitmap_, 0, 0, 10, 10, 0, 0,
-                         10, 10, exception_state);
+  Context2D()->drawImage(&alpha_bitmap_, 0, 0, 10, 10, 0, 0, 10, 10,
+                         exception_state);
   EXPECT_FALSE(exception_state.HadException());
   VerifyExpectations();
 }
@@ -607,8 +607,8 @@ TEST_P(CanvasRenderingContext2DOverdrawTest, DrawImage_Filter) {
   V8UnionCanvasFilterOrString* filter =
       MakeGarbageCollected<V8UnionCanvasFilterOrString>("blur(4px)");
   Context2D()->setFilter(GetExecutionContext(), filter);
-  Context2D()->drawImage(GetScriptState(), &opaque_bitmap_, 0, 0, 10, 10, 0, 0,
-                         10, 10, exception_state);
+  Context2D()->drawImage(&opaque_bitmap_, 0, 0, 10, 10, 0, 0, 10, 10,
+                         exception_state);
   EXPECT_FALSE(exception_state.HadException());
   VerifyExpectations();
 }
@@ -616,8 +616,8 @@ TEST_P(CanvasRenderingContext2DOverdrawTest, DrawImage_Filter) {
 TEST_P(CanvasRenderingContext2DOverdrawTest, DrawImage_PartialCoverage1) {
   ExpectNoOverdraw();
   NonThrowableExceptionState exception_state;
-  Context2D()->drawImage(GetScriptState(), &opaque_bitmap_, 0, 0, 10, 10, 1, 0,
-                         10, 10, exception_state);
+  Context2D()->drawImage(&opaque_bitmap_, 0, 0, 10, 10, 1, 0, 10, 10,
+                         exception_state);
   EXPECT_FALSE(exception_state.HadException());
   VerifyExpectations();
 }
@@ -625,8 +625,8 @@ TEST_P(CanvasRenderingContext2DOverdrawTest, DrawImage_PartialCoverage1) {
 TEST_P(CanvasRenderingContext2DOverdrawTest, DrawImage_PartialCoverage2) {
   ExpectNoOverdraw();
   NonThrowableExceptionState exception_state;
-  Context2D()->drawImage(GetScriptState(), &opaque_bitmap_, 0, 0, 10, 10, 0, 0,
-                         9, 9, exception_state);
+  Context2D()->drawImage(&opaque_bitmap_, 0, 0, 10, 10, 0, 0, 9, 9,
+                         exception_state);
   EXPECT_FALSE(exception_state.HadException());
   VerifyExpectations();
 }
@@ -637,8 +637,8 @@ TEST_P(CanvasRenderingContext2DOverdrawTest, DrawImage_FullCoverage) {
       BaseRenderingContext2D::OverdrawOp::kDrawImage,
   });
   NonThrowableExceptionState exception_state;
-  Context2D()->drawImage(GetScriptState(), &opaque_bitmap_, 0, 0, 10, 10, 0, 0,
-                         11, 11, exception_state);
+  Context2D()->drawImage(&opaque_bitmap_, 0, 0, 10, 10, 0, 0, 11, 11,
+                         exception_state);
   EXPECT_FALSE(exception_state.HadException());
   VerifyExpectations();
 }
@@ -651,8 +651,8 @@ TEST_P(CanvasRenderingContext2DOverdrawTest, DrawImage_TransformFullCoverage) {
   });
   NonThrowableExceptionState exception_state;
   Context2D()->translate(-1, 0),
-      Context2D()->drawImage(GetScriptState(), &opaque_bitmap_, 0, 0, 10, 10, 1,
-                             0, 10, 10, exception_state);
+      Context2D()->drawImage(&opaque_bitmap_, 0, 0, 10, 10, 1, 0, 10, 10,
+                             exception_state);
   EXPECT_FALSE(exception_state.HadException());
   VerifyExpectations();
 }
@@ -662,8 +662,8 @@ TEST_P(CanvasRenderingContext2DOverdrawTest,
   ExpectNoOverdraw();
   NonThrowableExceptionState exception_state;
   Context2D()->translate(-1, 0),
-      Context2D()->drawImage(GetScriptState(), &opaque_bitmap_, 0, 0, 10, 10, 0,
-                             0, 10, 10, exception_state);
+      Context2D()->drawImage(&opaque_bitmap_, 0, 0, 10, 10, 0, 0, 10, 10,
+                             exception_state);
   EXPECT_FALSE(exception_state.HadException());
   VerifyExpectations();
 }
@@ -673,8 +673,8 @@ TEST_P(CanvasRenderingContext2DOverdrawTest,
   ExpectNoOverdraw();
   NonThrowableExceptionState exception_state;
   Context2D()->setFillStyle(OpaqueGradient());
-  Context2D()->drawImage(GetScriptState(), &alpha_bitmap_, 0, 0, 10, 10, 0, 0,
-                         10, 10, exception_state);
+  Context2D()->drawImage(&alpha_bitmap_, 0, 0, 10, 10, 0, 0, 10, 10,
+                         exception_state);
   EXPECT_FALSE(exception_state.HadException());
   VerifyExpectations();
 }
@@ -687,8 +687,8 @@ TEST_P(CanvasRenderingContext2DOverdrawTest,
   });
   NonThrowableExceptionState exception_state;
   Context2D()->setFillStyle(AlphaGradient());
-  Context2D()->drawImage(GetScriptState(), &opaque_bitmap_, 0, 0, 10, 10, 0, 0,
-                         10, 10, exception_state);
+  Context2D()->drawImage(&opaque_bitmap_, 0, 0, 10, 10, 0, 0, 10, 10,
+                         exception_state);
   EXPECT_FALSE(exception_state.HadException());
   VerifyExpectations();
 }
@@ -699,8 +699,8 @@ TEST_P(CanvasRenderingContext2DOverdrawTest, DrawImage_CopyPartialCoverage) {
   ExpectNoOverdraw();
   NonThrowableExceptionState exception_state;
   Context2D()->setGlobalCompositeOperation(String("copy"));
-  Context2D()->drawImage(GetScriptState(), &opaque_bitmap_, 0, 0, 10, 10, 1, 0,
-                         10, 10, exception_state);
+  Context2D()->drawImage(&opaque_bitmap_, 0, 0, 10, 10, 1, 0, 10, 10,
+                         exception_state);
   EXPECT_FALSE(exception_state.HadException());
   VerifyExpectations();
 }
@@ -713,8 +713,8 @@ TEST_P(CanvasRenderingContext2DOverdrawTest,
   NonThrowableExceptionState exception_state;
   Context2D()->setGlobalCompositeOperation(String("copy"));
   Context2D()->translate(1, 1);
-  Context2D()->drawImage(GetScriptState(), &opaque_bitmap_, 0, 0, 10, 10, 1, 0,
-                         10, 10, exception_state);
+  Context2D()->drawImage(&opaque_bitmap_, 0, 0, 10, 10, 1, 0, 10, 10,
+                         exception_state);
   EXPECT_FALSE(exception_state.HadException());
   VerifyExpectations();
 }
@@ -724,8 +724,8 @@ TEST_P(CanvasRenderingContext2DOverdrawTest, DrawImage_Clipped) {
   NonThrowableExceptionState exception_state;
   Context2D()->rect(0, 0, 5, 5);
   Context2D()->clip();
-  Context2D()->drawImage(GetScriptState(), &opaque_bitmap_, 0, 0, 10, 10, 0, 0,
-                         10, 10, exception_state);
+  Context2D()->drawImage(&opaque_bitmap_, 0, 0, 10, 10, 0, 0, 10, 10,
+                         exception_state);
   EXPECT_FALSE(exception_state.HadException());
   VerifyExpectations();
 }
@@ -775,7 +775,7 @@ TEST_P(CanvasRenderingContext2DTest, ImageResourceLifetime) {
   DummyExceptionStateForTesting exception_state;
   auto* image_source =
       MakeGarbageCollected<V8CanvasImageSource>(image_bitmap_derived);
-  context->drawImage(GetScriptState(), image_source, 0, 0, exception_state);
+  context->drawImage(image_source, 0, 0, exception_state);
 }
 
 TEST_P(CanvasRenderingContext2DTest, GPUMemoryUpdateForAcceleratedCanvas) {
@@ -956,7 +956,7 @@ static void TestDrawSingleHighBitDepthPNGOnCanvas(
   context->clearRect(0, 0, 2, 2);
   NonThrowableExceptionState exception_state;
   auto* image_union = MakeGarbageCollected<V8CanvasImageSource>(image_element);
-  context->drawImage(script_state, image_union, 0, 0, exception_state);
+  context->drawImage(image_union, 0, 0, exception_state);
 
   ImageData* image_data =
       context->getImageData(0, 0, 2, 2, color_setting, exception_state);
@@ -1321,8 +1321,8 @@ TEST_P(CanvasRenderingContext2DTest, AutoFlushPinnedImages) {
       FakeImageSource unique_image(IntSize(kImageSize, kImageSize),
                                    kOpaqueBitmap);
       NonThrowableExceptionState exception_state;
-      Context2D()->drawImage(GetScriptState(), &unique_image, 0, 0, 1, 1, 0, 0,
-                             1, 1, exception_state);
+      Context2D()->drawImage(&unique_image, 0, 0, 1, 1, 0, 0, 1, 1,
+                             exception_state);
       EXPECT_FALSE(exception_state.HadException());
       ++expected_op_count;
       ASSERT_EQ(CanvasElement().ResourceProvider()->TotalOpCount(),
@@ -1348,8 +1348,8 @@ TEST_P(CanvasRenderingContext2DTest, OverdrawResetsPinnedImageBytes) {
 
   FakeImageSource unique_image(IntSize(kImageSize, kImageSize), kOpaqueBitmap);
   NonThrowableExceptionState exception_state;
-  Context2D()->drawImage(GetScriptState(), &unique_image, 0, 0, 10, 10, 0, 0,
-                         10, 10, exception_state);
+  Context2D()->drawImage(&unique_image, 0, 0, 10, 10, 0, 0, 10, 10,
+                         exception_state);
   size_t initial_op_count = CanvasElement().ResourceProvider()->TotalOpCount();
   ASSERT_EQ(CanvasElement().ResourceProvider()->TotalPinnedImageBytes(),
             kBytesPerImage);
@@ -1380,8 +1380,7 @@ TEST_P(CanvasRenderingContext2DTest, AutoFlushSameImage) {
   for (size_t pinned_bytes = 0; pinned_bytes <= 2 * kMaxPinnedImageBytes;
        pinned_bytes += kBytesPerImage) {
     NonThrowableExceptionState exception_state;
-    Context2D()->drawImage(GetScriptState(), &image, 0, 0, 1, 1, 0, 0, 1, 1,
-                           exception_state);
+    Context2D()->drawImage(&image, 0, 0, 1, 1, 0, 0, 1, 1, exception_state);
     EXPECT_FALSE(exception_state.HadException());
     ++expected_op_count;
     ASSERT_EQ(CanvasElement().ResourceProvider()->TotalOpCount(),
@@ -1554,8 +1553,7 @@ TEST_P(CanvasRenderingContext2DTestAccelerated, DrawImage_Video_Flush) {
   Context2D()->fillRect(0, 0, 5, 5);
   EXPECT_TRUE(CanvasElement().ResourceProvider()->HasRecordedDrawOps());
 
-  Context2D()->drawImage(GetScriptState(), frame, 0, 0, 10, 10, 0, 0, 10, 10,
-                         exception_state);
+  Context2D()->drawImage(frame, 0, 0, 10, 10, 0, 0, 10, 10, exception_state);
   EXPECT_FALSE(exception_state.HadException());
   // The drawImage Operation is supposed to trigger a flush, which means that
   // There should not be any Recorded ops at this point.

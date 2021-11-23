@@ -1374,8 +1374,7 @@ static inline void ClipRectsToImageRect(const FloatRect& image_rect,
   dst_rect->Offset(offset);
 }
 
-void BaseRenderingContext2D::drawImage(ScriptState* script_state,
-                                       const V8CanvasImageSource* image_source,
+void BaseRenderingContext2D::drawImage(const V8CanvasImageSource* image_source,
                                        double x,
                                        double y,
                                        ExceptionState& exception_state) {
@@ -1390,13 +1389,12 @@ void BaseRenderingContext2D::drawImage(ScriptState* script_state,
       default_object_size, respect_orientation);
   FloatSize dest_rect_size = image_source_internal->DefaultDestinationSize(
       default_object_size, respect_orientation);
-  drawImage(script_state, image_source_internal, 0, 0, source_rect_size.width(),
+  drawImage(image_source_internal, 0, 0, source_rect_size.width(),
             source_rect_size.height(), x, y, dest_rect_size.width(),
             dest_rect_size.height(), exception_state);
 }
 
-void BaseRenderingContext2D::drawImage(ScriptState* script_state,
-                                       const V8CanvasImageSource* image_source,
+void BaseRenderingContext2D::drawImage(const V8CanvasImageSource* image_source,
                                        double x,
                                        double y,
                                        double width,
@@ -1410,12 +1408,11 @@ void BaseRenderingContext2D::drawImage(ScriptState* script_state,
   FloatSize source_rect_size = image_source_internal->ElementSize(
       default_object_size,
       RespectImageOrientationInternal(image_source_internal));
-  drawImage(script_state, image_source_internal, 0, 0, source_rect_size.width(),
+  drawImage(image_source_internal, 0, 0, source_rect_size.width(),
             source_rect_size.height(), x, y, width, height, exception_state);
 }
 
-void BaseRenderingContext2D::drawImage(ScriptState* script_state,
-                                       const V8CanvasImageSource* image_source,
+void BaseRenderingContext2D::drawImage(const V8CanvasImageSource* image_source,
                                        double sx,
                                        double sy,
                                        double sw,
@@ -1429,7 +1426,7 @@ void BaseRenderingContext2D::drawImage(ScriptState* script_state,
       ToCanvasImageSource(image_source, exception_state);
   if (!image_source_internal)
     return;
-  drawImage(script_state, image_source_internal, sx, sy, sw, sh, dx, dy, dw, dh,
+  drawImage(image_source_internal, sx, sy, sw, sh, dx, dy, dw, dh,
             exception_state);
 }
 
@@ -1618,8 +1615,7 @@ void BaseRenderingContext2D::SetOriginTaintedByContent() {
     state->ClearResolvedFilter();
 }
 
-void BaseRenderingContext2D::drawImage(ScriptState* script_state,
-                                       CanvasImageSource* image_source,
+void BaseRenderingContext2D::drawImage(CanvasImageSource* image_source,
                                        double sx,
                                        double sy,
                                        double sw,
@@ -1808,7 +1804,7 @@ CanvasGradient* BaseRenderingContext2D::createConicGradient(double startAngle,
 }
 
 CanvasPattern* BaseRenderingContext2D::createPattern(
-    ScriptState* script_state,
+
     const V8CanvasImageSource* image_source,
     const String& repetition_type,
     ExceptionState& exception_state) {
@@ -1818,12 +1814,11 @@ CanvasPattern* BaseRenderingContext2D::createPattern(
     return nullptr;
   }
 
-  return createPattern(script_state, image_source_internal, repetition_type,
-                       exception_state);
+  return createPattern(image_source_internal, repetition_type, exception_state);
 }
 
 CanvasPattern* BaseRenderingContext2D::createPattern(
-    ScriptState* script_state,
+
     CanvasImageSource* image_source,
     const String& repetition_type,
     ExceptionState& exception_state) {

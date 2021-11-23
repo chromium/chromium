@@ -142,20 +142,17 @@ class MODULES_EXPORT BaseRenderingContext2D : public CanvasPath {
   void fillRect(double x, double y, double width, double height);
   void strokeRect(double x, double y, double width, double height);
 
-  void drawImage(ScriptState* script_state,
-                 const V8CanvasImageSource* image_source,
+  void drawImage(const V8CanvasImageSource* image_source,
                  double x,
                  double y,
                  ExceptionState& exception_state);
-  void drawImage(ScriptState* script_state,
-                 const V8CanvasImageSource* image_source,
+  void drawImage(const V8CanvasImageSource* image_source,
                  double x,
                  double y,
                  double width,
                  double height,
                  ExceptionState& exception_state);
-  void drawImage(ScriptState* script_state,
-                 const V8CanvasImageSource* image_source,
+  void drawImage(const V8CanvasImageSource* image_source,
                  double sx,
                  double sy,
                  double sw,
@@ -165,8 +162,7 @@ class MODULES_EXPORT BaseRenderingContext2D : public CanvasPath {
                  double dw,
                  double dh,
                  ExceptionState& exception_state);
-  void drawImage(ScriptState*,
-                 CanvasImageSource*,
+  void drawImage(CanvasImageSource*,
                  double sx,
                  double sy,
                  double sw,
@@ -191,12 +187,10 @@ class MODULES_EXPORT BaseRenderingContext2D : public CanvasPath {
   CanvasGradient* createConicGradient(double startAngle,
                                       double centerX,
                                       double centerY);
-  CanvasPattern* createPattern(ScriptState* script_state,
-                               const V8CanvasImageSource* image_source,
+  CanvasPattern* createPattern(const V8CanvasImageSource* image_source,
                                const String& repetition_type,
                                ExceptionState& exception_state);
-  CanvasPattern* createPattern(ScriptState*,
-                               CanvasImageSource*,
+  CanvasPattern* createPattern(CanvasImageSource*,
                                const String& repetition_type,
                                ExceptionState&);
 

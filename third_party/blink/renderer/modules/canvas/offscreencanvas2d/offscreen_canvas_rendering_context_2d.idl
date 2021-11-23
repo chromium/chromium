@@ -47,7 +47,7 @@
     CanvasGradient createLinearGradient(double x0, double y0, double x1, double y1);
     [RaisesException] CanvasGradient createRadialGradient(double x0, double y0, double r0, double x1, double y1, double r1);
     [RuntimeEnabled=NewCanvas2DAPI] CanvasGradient createConicGradient(double startAngle, double centerX, double centerY);
-    [CallWith=ScriptState, RaisesException] CanvasPattern? createPattern(CanvasImageSource image, [TreatNullAs=EmptyString] DOMString repetitionType);
+    [RaisesException] CanvasPattern? createPattern(CanvasImageSource image, [TreatNullAs=EmptyString] DOMString repetitionType);
 
     // shadows
     attribute unrestricted double shadowOffsetX;
@@ -79,9 +79,9 @@
     [HighEntropy, MeasureAs=OffscreenCanvasMeasureText] TextMetrics measureText(DOMString text);
 
     // drawing images
-    [CallWith=ScriptState, RaisesException] void drawImage(CanvasImageSource image, unrestricted double x, unrestricted double y);
-    [CallWith=ScriptState, RaisesException] void drawImage(CanvasImageSource image, unrestricted double x, unrestricted double y, unrestricted double width, unrestricted double height);
-    [CallWith=ScriptState, RaisesException] void drawImage(CanvasImageSource image, unrestricted double sx, unrestricted double sy, unrestricted double sw, unrestricted double sh, unrestricted double dx, unrestricted double dy, unrestricted double dw, unrestricted double dh);
+    [RaisesException] void drawImage(CanvasImageSource image, unrestricted double x, unrestricted double y);
+    [RaisesException] void drawImage(CanvasImageSource image, unrestricted double x, unrestricted double y, unrestricted double width, unrestricted double height);
+    [RaisesException] void drawImage(CanvasImageSource image, unrestricted double sx, unrestricted double sy, unrestricted double sw, unrestricted double sh, unrestricted double dx, unrestricted double dy, unrestricted double dw, unrestricted double dh);
 
     // pixel manipulation
     [RaisesException] ImageData createImageData(ImageData imagedata);

@@ -666,7 +666,7 @@ TEST_F(CanvasRenderingContext2DAPITest,
   // We can use our own canvas as the image source!
   auto* image_source =
       MakeGarbageCollected<V8CanvasImageSource>(&CanvasElement());
-  Context2D()->drawImage(/*script_state=*/nullptr, image_source, /*x=*/1,
+  Context2D()->drawImage(image_source, /*x=*/1,
                          /*y=*/1, exception_state);
   EXPECT_EQ(INT64_C(-4851825694092845811),
             Context2D()->IdentifiableTextToken().ToUkmMetricValue());
