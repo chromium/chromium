@@ -3,18 +3,20 @@ config("private_join_and_compute_config") {
 }
 
 source_set("ec_commutative_cipher") {
+  public = [
+    "crypto/context.h",
+    "crypto/ec_commutative_cipher.h",
+    "crypto/ec_group.h",
+    "crypto/ec_point.h",
+  ]
   sources = [
     "chromium_patch.h",
     "crypto/big_num.cc",
     "crypto/big_num.h",
     "crypto/context.cc",
-    "crypto/context.h",
     "crypto/ec_commutative_cipher.cc",
-    "crypto/ec_commutative_cipher.h",
     "crypto/ec_group.cc",
-    "crypto/ec_group.h",
     "crypto/ec_point.cc",
-    "crypto/ec_point.h",
     "crypto/openssl.inc",
     "util/canonical_errors.cc",
     "util/canonical_errors.h",
