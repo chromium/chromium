@@ -1493,9 +1493,7 @@ void ExistingUserController::SetPublicSessionKeyboardLayoutAndLogin(
   for (size_t i = 0; i < keyboard_layouts->GetList().size(); ++i) {
     base::DictionaryValue* entry = nullptr;
     keyboard_layouts->GetDictionary(i, &entry);
-    bool selected = false;
-    entry->GetBoolean("selected", &selected);
-    if (selected) {
+    if (entry->FindBoolKey("selected").value_or(false)) {
       entry->GetString("value", &keyboard_layout);
       break;
     }
