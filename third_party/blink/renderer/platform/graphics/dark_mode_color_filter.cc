@@ -92,8 +92,8 @@ class LABColorFilter : public DarkModeColorFilter {
 
     if (r == b && r == g && r < kBrightnessThreshold &&
         r > kAdjustedBrightness) {
-      return SkColorSetRGB(kAdjustedBrightness, kAdjustedBrightness,
-                           kAdjustedBrightness);
+      return SkColorSetARGB(SkColorGetA(color), kAdjustedBrightness,
+                            kAdjustedBrightness, kAdjustedBrightness);
     }
 
     return color;
