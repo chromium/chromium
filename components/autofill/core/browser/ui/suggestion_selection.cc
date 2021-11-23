@@ -133,7 +133,7 @@ std::vector<Suggestion> GetPrefixMatchedSuggestions(
                                      ? Suggestion::PREFIX_MATCH
                                      : Suggestion::SUBSTRING_MATCH;
       if (base::FeatureList::IsEnabled(
-              features::kAutofillUseConsistentPopupSettingsIcons)) {
+              features::kAutofillUseAddressSuggestionIcon)) {
         suggestions.back().icon = "accountIcon";
       }
     }
