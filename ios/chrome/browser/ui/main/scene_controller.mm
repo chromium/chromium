@@ -1588,6 +1588,10 @@ bool IsSigninForcedByPolicy() {
   if (!self.signinCoordinator)
     return;
   __weak SceneController* weakSelf = self;
+
+  // Copy the URL so it can be safely captured in the block.
+  GURL copiedURL = url;
+
   [self startSigninCoordinatorWithCompletion:^(BOOL success) {
     // If the sign-in is not successful or the scene controller is shut down do
     // not load the continuation URL.
@@ -1595,7 +1599,7 @@ bool IsSigninForcedByPolicy() {
       return;
     }
     UrlLoadingBrowserAgent::FromBrowser(weakSelf.mainInterface.browser)
-        ->Load(UrlLoadParams::InCurrentTab(url));
+        ->Load(UrlLoadParams::InCurrentTab(copiedURL));
   }];
 }
 
