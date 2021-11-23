@@ -124,10 +124,8 @@ bool ChromeOmniboxClient::IsPasteAndGoEnabled() const {
 bool ChromeOmniboxClient::IsDefaultSearchProviderEnabled() const {
   const base::DictionaryValue* url_dict = profile_->GetPrefs()->GetDictionary(
       DefaultSearchManager::kDefaultSearchProviderDataPrefName);
-  bool disabled_by_policy = false;
-  url_dict->GetBoolean(DefaultSearchManager::kDisabledByPolicy,
-                       &disabled_by_policy);
-  return !disabled_by_policy;
+  return !url_dict->FindBoolPath(DefaultSearchManager::kDisabledByPolicy)
+              .value_or(false);
 }
 
 const SessionID& ChromeOmniboxClient::GetSessionID() const {
