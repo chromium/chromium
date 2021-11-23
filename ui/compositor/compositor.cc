@@ -166,14 +166,16 @@ Compositor::Compositor(const viz::FrameSinkId& frame_sink_id,
   settings.initial_debug_state.SetRecordRenderingStats(
       command_line->HasSwitch(cc::switches::kEnableGpuBenchmarking));
 
-  settings.use_zero_copy = IsUIZeroCopyEnabled();
+  settings.use_zero_copy = IsUIZeroCopyEnabled() && !features::IsUsingRawDraw();
 
   settings.use_layer_lists =
       command_line->HasSwitch(cc::switches::kUIEnableLayerLists);
 
   // UI compositor always uses partial raster if not using zero-copy. Zero copy
   // doesn't currently support partial raster.
-  settings.use_partial_raster = !settings.use_zero_copy;
+  // RawDraw doesn't support partial raster.
+  settings.use_partial_raster =
+      !(settings.use_zero_copy || features::IsUsingRawDraw());
 
   settings.use_rgba_4444 =
       command_line->HasSwitch(switches::kUIEnableRGBA4444Textures);
@@ -189,10 +191,16 @@ Compositor::Compositor(const viz::FrameSinkId& frame_sink_id,
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   // Rasterized tiles must be overlay candidates to be forwarded.
   // This is very similar to the line above for Apple.
-  if (features::IsDelegatedCompositingEnabled()) {
-    settings.resource_settings.use_gpu_memory_buffer_resources = true;
-  }
+  settings.resource_settings.use_gpu_memory_buffer_resources =
+      features::IsDelegatedCompositingEnabled();
 #endif
+
+  // Set use_gpu_memory_buffer_resources to false to disable delegated
+  // compositing, if RawDraw is enabled.
+  if (settings.resource_settings.use_gpu_memory_buffer_resources &&
+      features::IsUsingRawDraw()) {
+    settings.resource_settings.use_gpu_memory_buffer_resources = false;
+  }
 
   settings.memory_policy.bytes_limit_when_visible = 512 * 1024 * 1024;
 

@@ -331,6 +331,7 @@ target(link_target_type, "gles2_sources") {
     "//third_party/protobuf:protobuf_lite",
     "//third_party/re2",
     "//third_party/zlib",
+    "//ui/base:features",
     "//ui/gfx",
     "//ui/gfx/geometry",
     "//ui/gl",

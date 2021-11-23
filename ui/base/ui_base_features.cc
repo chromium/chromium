@@ -327,4 +327,11 @@ bool IsSwipeToMoveCursorEnabled() {
   return enabled;
 }
 
+// Enable raw draw for tiles.
+const base::Feature kRawDraw{"RawDraw", base::FEATURE_DISABLED_BY_DEFAULT};
+
+bool IsUsingRawDraw() {
+  return base::FeatureList::IsEnabled(kRawDraw);
+}
+
 }  // namespace features

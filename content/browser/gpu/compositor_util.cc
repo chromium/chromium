@@ -39,6 +39,7 @@
 #include "media/base/media_switches.h"
 #include "media/media_buildflags.h"
 #include "third_party/blink/public/common/switches.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/gl/gl_switches.h"
 
 namespace content {

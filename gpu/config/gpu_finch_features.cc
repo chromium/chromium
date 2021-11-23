@@ -210,8 +210,6 @@ const base::Feature kEnableDrDc{"EnableDrDc",
 // before gpu service is enabled by default.
 const base::Feature kWebGPUService{"WebGPUService",
                                    base::FEATURE_DISABLED_BY_DEFAULT};
-// Enable raw draw for tiles.
-const base::Feature kRawDraw{"RawDraw", base::FEATURE_DISABLED_BY_DEFAULT};
 
 #if defined(OS_ANDROID)
 
@@ -361,10 +359,6 @@ bool IsANGLEValidationEnabled() {
   }
 
   return base::FeatureList::IsEnabled(kDefaultEnableANGLEValidation);
-}
-
-bool IsUsingRawDraw() {
-  return base::FeatureList::IsEnabled(kRawDraw);
 }
 
 #if defined(OS_ANDROID)

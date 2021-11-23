@@ -34,11 +34,11 @@
 #include "gpu/command_buffer/client/shared_image_interface.h"
 #include "gpu/command_buffer/common/shared_image_trace_utils.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
-#include "gpu/config/gpu_finch_features.h"
 #include "skia/ext/legacy_display_globals.h"
 #include "third_party/skia/include/core/SkPictureRecorder.h"
 #include "third_party/skia/include/core/SkSurface.h"
 #include "third_party/skia/include/gpu/GrDirectContext.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/gfx/geometry/axis_transform2d.h"
 #include "url/gurl.h"
 

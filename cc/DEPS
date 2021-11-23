@@ -41,6 +41,7 @@ include_rules = [
   "+third_party/skia/src/core/SkRemoteGlyphCache.h",
   "+third_party/skia/src/effects/imagefilters/SkRuntimeImageFilter.h",
   "+third_party/perfetto/protos/perfetto/trace/track_event",
+  "+ui/base",
   "+ui/events/types",
   "+ui/latency",
   "+ui/gfx",

@@ -28,8 +28,8 @@
 #include "gpu/command_buffer/service/shared_image_manager.h"
 #include "gpu/command_buffer/service/shared_image_representation.h"
 #include "gpu/command_buffer/service/wrapped_sk_image.h"
-#include "gpu/config/gpu_finch_features.h"
 #include "gpu/config/gpu_preferences.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/gl/gl_implementation.h"
 #include "ui/gl/trace_util.h"
 

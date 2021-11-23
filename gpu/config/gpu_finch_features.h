@@ -67,13 +67,10 @@ GPU_EXPORT extern const base::Feature kEnableDrDc;
 
 GPU_EXPORT extern const base::Feature kWebGPUService;
 
-GPU_EXPORT extern const base::Feature kRawDraw;
-
 GPU_EXPORT bool IsUsingVulkan();
 GPU_EXPORT bool IsDrDcEnabled();
 GPU_EXPORT bool NeedThreadSafeAndroidMedia();
 GPU_EXPORT bool IsANGLEValidationEnabled();
-GPU_EXPORT bool IsUsingRawDraw();
 
 #if defined(OS_ANDROID)
 GPU_EXPORT bool IsAImageReaderEnabled();

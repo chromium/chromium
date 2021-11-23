@@ -189,6 +189,10 @@ COMPONENT_EXPORT(UI_BASE_FEATURES) extern const base::Feature kUIDebugTools;
 
 COMPONENT_EXPORT(UI_BASE_FEATURES) bool IsSwipeToMoveCursorEnabled();
 
+// Enables Raw Draw.
+COMPONENT_EXPORT(UI_BASE_FEATURES) extern const base::Feature kRawDraw;
+COMPONENT_EXPORT(UI_BASE_FEATURES) bool IsUsingRawDraw();
+
 }  // namespace features
 
 #endif  // UI_BASE_UI_BASE_FEATURES_H_
