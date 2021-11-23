@@ -202,7 +202,7 @@ desks_storage::DeskModel* DesksTemplatesClient::GetDeskModel() {
   return storage_manager_.get();
 }
 
-// Sets the preconfigured desk template.  Data contains the contents of the JSON
+// Sets the preconfigured desk template. Data contains the contents of the JSON
 // file with the template information
 void DesksTemplatesClient::SetPolicyPreconfiguredTemplate(
     const AccountId& account_id,

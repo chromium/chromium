@@ -5,6 +5,8 @@
 #ifndef ASH_WM_DESKS_TEMPLATES_DESKS_TEMPLATES_GRID_VIEW_H_
 #define ASH_WM_DESKS_TEMPLATES_DESKS_TEMPLATES_GRID_VIEW_H_
 
+#include <vector>
+
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
@@ -30,16 +32,16 @@ class DesksTemplatesGridView : public views::View {
   DesksTemplatesGridView& operator=(const DesksTemplatesGridView&) = delete;
   ~DesksTemplatesGridView() override;
 
-  const std::vector<DesksTemplatesItemView*>& grid_items() const {
-    return grid_items_;
-  }
-
   // Creates and returns the widget that contains the DesksTemplatesGridView in
   // overview mode. This does not show the widget.
   // TODO(sammiequon): We might want this view to be part of the DesksWidget
   // depending on the animations.
   static views::UniqueWidgetPtr CreateDesksTemplatesGridWidget(
       aura::Window* root);
+
+  const std::vector<DesksTemplatesItemView*>& grid_items() const {
+    return grid_items_;
+  }
 
   // Updates the UI by creating a grid layout and populating the grid with the
   // provided list of desk templates.
@@ -54,8 +56,8 @@ class DesksTemplatesGridView : public views::View {
   friend class DesksTemplatesEventHandler;
   friend class DesksTemplatesGridViewTestApi;
 
-  // Updates the visibility state of the hover buttons on all the grid_items_ as
-  // a result of mouse and gesture events.
+  // Updates the visibility state of the hover buttons on all the `grid_items_`
+  // as a result of mouse and gesture events.
   void OnLocatedEvent(ui::LocatedEvent* event, bool is_touch);
 
   // Owned by the views hierarchy.
