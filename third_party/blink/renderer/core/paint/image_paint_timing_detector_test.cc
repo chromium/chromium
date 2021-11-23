@@ -10,6 +10,7 @@
 #include "build/build_config.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
+#include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "third_party/blink/public/web/web_performance.h"
 #include "third_party/blink/renderer/core/frame/frame_test_helpers.h"
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
@@ -52,6 +53,7 @@ namespace blink {
   "O20b7tbR7zHLy/BX8G0IeBEM7ZN1NGIaFUaKLgAAAAAElFTkSuQmCC"
 
 using UkmPaintTiming = ukm::builders::Blink_PaintTiming;
+using ::testing::Optional;
 
 class ImagePaintTimingDetectorTest : public testing::Test,
                                      public PaintTestConfigurations {
@@ -469,12 +471,8 @@ TEST_P(ImagePaintTimingDetectorTest, LargestImagePaint_TraceEvent_NoCandidate) {
   base::DictionaryValue* arg_dict;
   EXPECT_TRUE(arg.GetAsDictionary(&arg_dict));
   EXPECT_EQ(arg_dict->FindIntKey("candidateIndex").value_or(-1), 1);
-  bool is_main_frame;
-  EXPECT_TRUE(arg_dict->GetBoolean("isMainFrame", &is_main_frame));
-  EXPECT_EQ(true, is_main_frame);
-  bool is_oopif;
-  EXPECT_TRUE(arg_dict->GetBoolean("isOOPIF", &is_oopif));
-  EXPECT_EQ(false, is_oopif);
+  EXPECT_THAT(arg_dict->FindBoolKey("isMainFrame"), Optional(true));
+  EXPECT_THAT(arg_dict->FindBoolKey("isOOPIF"), Optional(false));
 }
 
 TEST_P(ImagePaintTimingDetectorTest, UpdatePerformanceTiming) {
