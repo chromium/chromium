@@ -253,6 +253,16 @@ bool ProductivityLauncherSearchView::CanSelectSearchResults() {
   return last_search_result_count_ > 0;
 }
 
+int ProductivityLauncherSearchView::TabletModePreferredHeight() {
+  int max_height = 0;
+  for (SearchResultContainerView* view : result_container_views_) {
+    if (view->GetVisible()) {
+      max_height += view->GetPreferredSize().height();
+    }
+  }
+  return max_height;
+}
+
 BEGIN_METADATA(ProductivityLauncherSearchView, views::View)
 END_METADATA
 

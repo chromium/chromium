@@ -56,6 +56,9 @@ class ASH_EXPORT ProductivityLauncherSearchView
   // Returns true if there are search results that can be keyboard selected.
   bool CanSelectSearchResults();
 
+  // Sums the heights of all search_result_list_views_ owned by this view.
+  int TabletModePreferredHeight();
+
   std::vector<SearchResultContainerView*> result_container_views_for_test() {
     return result_container_views_;
   }

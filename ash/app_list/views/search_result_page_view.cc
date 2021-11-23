@@ -53,7 +53,7 @@ namespace ash {
 
 namespace {
 
-constexpr int kHeight = 440;
+constexpr int kMinHeight = 440;
 constexpr int kWidth = 640;
 
 // The horizontal padding of the separator.
@@ -292,7 +292,15 @@ const char* SearchResultPageView::GetClassName() const {
 
 gfx::Size SearchResultPageView::CalculatePreferredSize() const {
   // TODO(https://crbug.com/1216097) Update height based on available space.
-  return gfx::Size(kWidth, kHeight);
+  if (!features::IsProductivityLauncherEnabled())
+    return gfx::Size(kWidth, kMinHeight);
+  int adjusted_height = std::min(
+      std::max(kMinHeight,
+               productivity_launcher_search_view_->TabletModePreferredHeight() +
+                   kSearchBoxHeight + kSearchBoxBottomSpacing +
+                   kSeparatorThickness),
+      AppListPage::contents_view()->height());
+  return gfx::Size(kWidth, adjusted_height);
 }
 
 void SearchResultPageView::OnBoundsChanged(const gfx::Rect& previous_bounds) {
@@ -614,9 +622,9 @@ gfx::Rect SearchResultPageView::GetPageBoundsForState(
   gfx::Rect bounding_rect = contents_bounds;
   bounding_rect.Inset(0, 0, 0, kSearchResultPageMinimumBottomMargin);
 
-  gfx::Rect preferred_bounds =
-      gfx::Rect(search_box_bounds.origin(),
-                gfx::Size(search_box_bounds.width(), kHeight));
+  gfx::Rect preferred_bounds = gfx::Rect(
+      search_box_bounds.origin(),
+      gfx::Size(search_box_bounds.width(), CalculatePreferredSize().height()));
   preferred_bounds.Intersect(bounding_rect);
 
   return preferred_bounds;
