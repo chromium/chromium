@@ -4,20 +4,9 @@
 
 import("//tools/grit/preprocess_if_expr.gni")
 import("//tools/polymer/html_to_js.gni")
-import("//ui/webui/resources/tools/generate_grd.gni")
 
 preprocess_folder =
     "$root_gen_dir/chrome/browser/resources/read_later/preprocessed/side_panel"
-
-generate_grd("build_grdp") {
-  grd_prefix = "read_later_side_panel"
-  out_grd = "$target_gen_dir/resources.grdp"
-  deps = [ "../:build_ts" ]
-  manifest_files =
-      [ "$root_gen_dir/chrome/browser/resources/read_later/tsconfig.manifest" ]
-  input_files = [ "side_panel.html" ]
-  input_files_base_dir = rebase_path(".", "//")
-}
 
 preprocess_if_expr("preprocess") {
   in_folder = "./"

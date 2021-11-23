@@ -11,9 +11,6 @@ import("//tools/typescript/ts_library.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
 
 preprocess_folder = "preprocessed"
-preprocess_manifest = "preprocessed_manifest.json"
-preprocess_web_components_manifest = "preprocessed_gen_manifest.json"
-preprocess_mojo_manifest = "preprocessed_mojo_manifest.json"
 
 grit("resources") {
   defines = chrome_grit_defines
@@ -34,23 +31,14 @@ grit("resources") {
 
 generate_grd("build_grd") {
   input_files = [
-    "read_later.html",
-    "images/read_later_empty.svg",
     "images/read_later_empty_dark.svg",
+    "images/read_later_empty.svg",
+    "read_later.html",
+    "side_panel/side_panel.html",
   ]
   input_files_base_dir = rebase_path(".", "//")
-  grdp_files = [ "$target_gen_dir/side_panel/resources.grdp" ]
-  deps = [
-    ":preprocess",
-    ":preprocess_mojo",
-    ":preprocess_web_components",
-    "side_panel:build_grdp",
-  ]
-  manifest_files = [
-    "$target_gen_dir/$preprocess_manifest",
-    "$target_gen_dir/$preprocess_web_components_manifest",
-    "$target_gen_dir/$preprocess_mojo_manifest",
-  ]
+  deps = [ ":build_ts" ]
+  manifest_files = [ "$target_gen_dir/tsconfig.manifest" ]
   grd_prefix = "read_later"
   out_grd = "$target_gen_dir/${grd_prefix}_resources.grd"
 }
@@ -58,7 +46,6 @@ generate_grd("build_grd") {
 preprocess_if_expr("preprocess") {
   in_folder = "./"
   out_folder = "$target_gen_dir/$preprocess_folder"
-  out_manifest = "$target_gen_dir/$preprocess_manifest"
   in_files = [ "read_later_api_proxy.js" ]
 }
 
@@ -66,7 +53,6 @@ preprocess_if_expr("preprocess_mojo") {
   deps = [ "//chrome/browser/ui/webui/read_later:mojo_bindings_webui_js" ]
   in_folder = "$root_gen_dir/mojom-webui/chrome/browser/ui/webui/read_later/"
   out_folder = "$target_gen_dir/$preprocess_folder"
-  out_manifest = "$target_gen_dir/$preprocess_mojo_manifest"
   in_files = [ "read_later.mojom-webui.js" ]
 }
 
@@ -74,7 +60,6 @@ preprocess_if_expr("preprocess_web_components") {
   deps = [ ":web_components" ]
   in_folder = target_gen_dir
   out_folder = "$target_gen_dir/$preprocess_folder"
-  out_manifest = "$target_gen_dir/$preprocess_web_components_manifest"
   in_files = [
     "app.js",
     "icons.js",
@@ -144,9 +129,15 @@ html_to_js("web_components") {
 ts_library("build_ts") {
   tsconfig_base = "tsconfig_base.json"
   root_dir = "$target_gen_dir/$preprocess_folder"
-  out_dir = "$target_gen_dir/side_panel/tsc"
+  out_dir = "$target_gen_dir/tsc"
   in_files = [
+    "app.js",
+    "icons.js",
     "read_later_api_proxy.js",
+    "read_later_item.js",
+    "read_later.mojom-webui.js",
+
+    # SidePanel resources
     "side_panel/app.ts",
     "side_panel/bookmark_folder.ts",
     "side_panel/bookmarks_list.ts",
@@ -170,6 +161,8 @@ ts_library("build_ts") {
   ]
   extra_deps = [
     ":preprocess",
+    ":preprocess_mojo",
+    ":preprocess_web_components",
     "side_panel:preprocess",
     "side_panel:preprocess_generated",
     "side_panel:preprocess_mojo",
