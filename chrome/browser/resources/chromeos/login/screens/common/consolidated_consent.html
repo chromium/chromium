@@ -182,27 +182,25 @@ found in the LICENSE file. -->
         aria-label$="[[i18nDynamic(locale, 'consolidatedConsentHeader')]]">
       <iron-icon slot="icon" icon="oobe-32:googleg"></iron-icon>
       <h1 slot="title">
-        <div hidden="[[isChildAccount_]]">
-          [[i18nDynamic(locale, 'consolidatedConsentHeader')]]
-        </div>
-        <div hidden="[[!isChildAccount_]]">
-          [[i18nDynamic(locale, 'consolidatedConsentHeaderChild')]]
-        </div>
+        [[getTitle_(locale, isEnterpriseManagedAccount_, isChildAccount_)]]
       </h1>
       <div id="subtitle" slot="subtitle"
           inner-h-t-m-l="[[getSubtitle_(locale)]]">
       </div>
       <div id="loadedContent" slot="content">
-        <div id="termsDescriptionTitle">
+        <div id="termsDescriptionTitle"
+            hidden="[[isEnterpriseManagedAccount_]]">
           [[i18nDynamic(locale, 'consolidatedConsentTermsDescriptionTitle')]]
         </div>
         <div id="termsDescription"
             inner-h-t-m-l="[[getTermsDescription_(locale)]]"
-            hidden="[[!isArcEnabled_]]">
+            hidden="[[isTermsArcEnabledHidden_(isArcEnabled_,
+                        isEnterpriseManagedAccount_)]]">
         </div>
         <div id="termsDescriptionArcDisabled"
             inner-h-t-m-l="[[getTermsDescriptionArcDisabled_(locale)]]"
-            hidden="[[isArcEnabled_]]">
+            hidden="[[isTermsArcDisabledHidden_(isArcEnabled_,
+                        isEnterpriseManagedAccount_)]]">
         </div>
 
         <!-- Usage stats toggle row -->

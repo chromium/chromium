@@ -35,7 +35,7 @@ class ConsolidatedConsentScreenView {
 
     bool is_arc_enabled = true;
     bool is_demo = false;
-    bool is_arc_managed = false;
+    bool is_enterprise_managed_account = false;
     bool is_child_account = false;
     std::string country_code = "us";
 

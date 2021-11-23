@@ -102,8 +102,7 @@ class ConsolidatedConsentScreen
 
   bool is_child_account_ = false;
 
-  // To track if ARC preference is managed.
-  bool arc_managed_ = false;
+  bool is_enterprise_managed_account_ = false;
 
   // To track if optional ARC features are managed preferences.
   bool backup_restore_managed_ = false;

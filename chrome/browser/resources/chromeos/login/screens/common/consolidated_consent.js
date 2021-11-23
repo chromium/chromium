@@ -65,6 +65,11 @@ class ConsolidatedConsent extends ConsolidatedConsentScreenElementBase {
         value: false,
       },
 
+      isEnterpriseManagedAccount_: {
+        type: Boolean,
+        value: false,
+      },
+
       usageManaged_: {
         type: Boolean,
         value: false,
@@ -149,7 +154,7 @@ class ConsolidatedConsent extends ConsolidatedConsentScreenElementBase {
   /** Overridden from LoginScreenBehavior. */
   // clang-format off
   get EXTERNAL_API() {
-    return ['SetUsageMode',
+    return ['setUsageMode',
             'setBackupMode',
             'setLocationMode',
     ];
@@ -181,6 +186,7 @@ class ConsolidatedConsent extends ConsolidatedConsentScreenElementBase {
     this.isArcEnabled_ = data['isArcEnabled'];
     this.isDemo_ = data['isDemo'];
     this.isChildAccount_ = data['isChildAccount'];
+    this.isEnterpriseManagedAccount_ = data['isEnterpriseManagedAccount'];
 
     this.googleEulaLoading_ = true;
     this.crosEulaLoading_ = true;
@@ -465,6 +471,17 @@ class ConsolidatedConsent extends ConsolidatedConsentScreenElementBase {
     return description.innerHTML;
   }
 
+  getTitle_(locale, isEnterpriseManagedAccount, isChildAccount) {
+    if (isChildAccount)
+      return this.i18n('consolidatedConsentHeaderChild');
+
+    if (isEnterpriseManagedAccount)
+      return this.i18n('consolidatedConsentHeaderManaged');
+
+    return this.i18n('consolidatedConsentHeader');
+  }
+
+
   getUsageText_(locale, isChildAccount, isArcEnabled, isDemo) {
     if (this.isArcOptInsHidden_(isArcEnabled, isDemo)) {
       return this.i18n('consolidatedConsentUsageOptInArcDisabled');
@@ -507,12 +524,20 @@ class ConsolidatedConsent extends ConsolidatedConsentScreenElementBase {
     return !isArcEnabled || isDemo;
   }
 
+  isTermsArcEnabledHidden_(isArcEnabled, isEnterpriseManagedAccount) {
+    return !isArcEnabled || isEnterpriseManagedAccount;
+  }
+
+  isTermsArcDisabledHidden_(isArcEnabled, isEnterpriseManagedAccount) {
+    return isArcEnabled || isEnterpriseManagedAccount;
+  }
+
   /**
    * Sets current usage mode.
    * @param {boolean} enabled Defines the state of usage opt in.
    * @param {boolean} managed Defines whether this setting is set by policy.
    */
-  SetUsageMode(enabled, managed) {
+  setUsageMode(enabled, managed) {
     this.usageChecked = enabled;
     this.usageManaged_ = managed;
   }
