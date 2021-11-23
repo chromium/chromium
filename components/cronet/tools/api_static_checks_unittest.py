@@ -7,8 +7,8 @@
 
 
 import contextlib
-import hashlib
-from io import StringIO
+from cStringIO import StringIO
+import md5
 import os
 import shutil
 import sys
@@ -102,7 +102,7 @@ class ApiStaticCheckUnitTest(unittest.TestCase):
 
   def run_check_api_calls(self, api_java, impl_java):
     test = self
-    class MockOpts():
+    class MockOpts(object):
       def __init__(self):
         self.api_jar = test.make_jar(api_java, 'Api')
         self.impl_jar = [test.make_jar(impl_java, 'Impl')]
@@ -147,9 +147,9 @@ class ApiStaticCheckUnitTest(unittest.TestCase):
     api_stamp = api.split('\n')[-2]
     stamp_length = len('Stamp: 78418460c193047980ae9eabb79293f2\n')
     api = api[:-stamp_length]
-    api_hash = hashlib.md5()
-    api_hash.update(api.encode())
-    self.assertEqual(api_stamp, 'Stamp: %s' % api_hash.hexdigest())
+    api_hash = md5.new()
+    api_hash.update(api)
+    self.assertEquals(api_stamp, 'Stamp: %s' % api_hash.hexdigest())
 
     return [return_code == 0, output, api, api_version]
 

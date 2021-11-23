@@ -19,13 +19,13 @@ def quoted_args(args):
 
 
 def run(command, **kwargs):
-  print(command, kwargs)
+  print command, kwargs
   return subprocess.call(command, **kwargs)
 
 
 def run_shell(command, extra_options=''):
   command = command + ' ' + extra_options
-  print(command)
+  print command
   return os.system(command)
 
 
@@ -121,7 +121,7 @@ def get_mobile_gn_args(target_os, is_release):
 
 
 def get_ios_gn_args(is_release, bundle_id_prefix, target_cpu):
-  print(is_release, bundle_id_prefix, target_cpu)
+  print is_release, bundle_id_prefix, target_cpu
   return get_mobile_gn_args('ios', is_release) + \
       ('is_cronet_build=true  '
       'enable_remoting=false '
@@ -179,8 +179,8 @@ def main():
                       help='configure bundle id prefix')
 
   options, extra_options = parser.parse_known_args()
-  print(options)
-  print(extra_options)
+  print options
+  print extra_options
 
   if is_ios:
     test_target = 'cronet_test'
