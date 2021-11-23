@@ -980,6 +980,21 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="SBClientPhishing.TfLiteModelLoadTime.{Scorer}" units="ms"
+    expires_after="2022-04-10">
+  <owner>drubery@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <summary>
+    Records how long it takes the {Scorer} to load the TfLite model file from
+    the memory mapped file into a string. This blocks the main thread, so we
+    need to ensure it is small.
+  </summary>
+  <token key="Scorer">
+    <variant name="FlatbufferScorer" summary="Flatbuffer scorer"/>
+    <variant name="ProtobufScorer" summary="Protobuf scorer"/>
+  </token>
+</histogram>
+
 <histogram name="SBClientPhishing.TooManyFeatures" units="units"
     expires_after="2021-01-27">
   <obsolete>
