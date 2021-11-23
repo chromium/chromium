@@ -10,8 +10,8 @@
 
 #include "base/callback.h"
 #include "base/component_export.h"
-#include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
+#include "base/sequence_checker.h"
 #include "chromeos/login/auth/auth_status_consumer.h"
 #include "chromeos/login/auth/authenticator.h"
 #include "chromeos/login/auth/extended_authenticator.h"
@@ -21,10 +21,6 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 class AccountId;
-
-namespace base {
-class SequencedTaskRunner;
-}
 
 namespace network {
 class SharedURLLoaderFactory;
@@ -59,8 +55,7 @@ class COMPONENT_EXPORT(CHROMEOS_LOGIN_AUTH) LoginPerformer
     virtual void PolicyLoadFailed() = 0;
   };
 
-  LoginPerformer(scoped_refptr<base::SequencedTaskRunner> task_runner,
-                 Delegate* delegate);
+  explicit LoginPerformer(Delegate* delegate);
 
   LoginPerformer(const LoginPerformer&) = delete;
   LoginPerformer& operator=(const LoginPerformer&) = delete;
@@ -175,24 +170,26 @@ class COMPONENT_EXPORT(CHROMEOS_LOGIN_AUTH) LoginPerformer
 
   // Starts authentication.
   void StartAuthentication();
-  void NotifyAllowlistCheckFailure();
 
   // Makes sure that authenticator is created.
   void EnsureAuthenticator();
-  void EnsureExtendedAuthenticator();
 
   // Actual implementantion of PeformLogin that is run after trusted values
   // check.
   void DoPerformLogin(const UserContext& user_context,
                       AuthorizationMode auth_mode);
 
-  scoped_refptr<base::SequencedTaskRunner> task_runner_;
+  // Notifications to delegate
+  void NotifyAuthFailure(const AuthFailure& error);
+  void NotifyAuthSuccess(const UserContext& user_context);
+  void NotifyOffTheRecordAuthSuccess();
+  void NotifyPasswordChangeDetected(const UserContext& user_context);
+  void NotifyOldEncryptionDetected(const UserContext& user_context,
+                                   bool has_incomplete_migration);
+  void NotifyAllowlistCheckFailure();
 
   // Used for logging in.
   scoped_refptr<Authenticator> authenticator_;
-
-  // Used for logging in.
-  scoped_refptr<ExtendedAuthenticator> extended_authenticator_;
 
   // Represents last login failure that was encountered when communicating to
   // sign-in server. AuthFailure.LoginFailureNone() by default.
@@ -209,6 +206,7 @@ class COMPONENT_EXPORT(CHROMEOS_LOGIN_AUTH) LoginPerformer
   // Authorization mode type.
   AuthorizationMode auth_mode_ = AuthorizationMode::kInternal;
 
+  SEQUENCE_CHECKER(sequence_checker_);
   base::WeakPtrFactory<LoginPerformer> weak_factory_{this};
 };
 
