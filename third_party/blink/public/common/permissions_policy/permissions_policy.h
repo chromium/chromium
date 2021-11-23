@@ -180,6 +180,11 @@ class BLINK_COMMON_EXPORT PermissionsPolicy {
   static std::unique_ptr<PermissionsPolicy> CopyStateFrom(
       const PermissionsPolicy*);
 
+  // Creates a PermissionsPolicy for a fenced frame. All permissions are
+  // disabled in fenced frames.
+  static std::unique_ptr<PermissionsPolicy> CreateForFencedFrame(
+      const url::Origin& origin);
+
   bool IsFeatureEnabled(mojom::PermissionsPolicyFeature feature) const;
 
   // Returns whether or not the given feature is enabled by this policy for a
@@ -221,6 +226,10 @@ class BLINK_COMMON_EXPORT PermissionsPolicy {
   static std::unique_ptr<PermissionsPolicy> CreateFromParentPolicy(
       const PermissionsPolicy* parent_policy,
       const ParsedPermissionsPolicy& container_policy,
+      const url::Origin& origin,
+      const PermissionsPolicyFeatureList& features);
+
+  static std::unique_ptr<PermissionsPolicy> CreateForFencedFrame(
       const url::Origin& origin,
       const PermissionsPolicyFeatureList& features);
 

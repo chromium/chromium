@@ -124,13 +124,13 @@ void SecurityContextInit::ApplyPermissionsPolicy(
     const ResourceResponse& response,
     const absl::optional<WebOriginPolicy>& origin_policy,
     const FramePolicy& frame_policy) {
+  const url::Origin origin =
+      execution_context_->GetSecurityOrigin()->ToUrlOrigin();
   // If we are a HTMLViewSourceDocument we use container, header or
   // inherited policies. https://crbug.com/898688.
   if (frame.InViewSourceMode()) {
     execution_context_->GetSecurityContext().SetPermissionsPolicy(
-        PermissionsPolicy::CreateFromParentPolicy(
-            nullptr, {},
-            execution_context_->GetSecurityOrigin()->ToUrlOrigin()));
+        PermissionsPolicy::CreateFromParentPolicy(nullptr, {}, origin));
     return;
   }
 
@@ -214,13 +214,20 @@ void SecurityContextInit::ApplyPermissionsPolicy(
   }
 
   std::unique_ptr<PermissionsPolicy> permissions_policy;
-  auto* parent_permissions_policy =
-      frame.Tree().Parent()
-          ? frame.Tree().Parent()->GetSecurityContext()->GetPermissionsPolicy()
-          : nullptr;
-  permissions_policy = PermissionsPolicy::CreateFromParentPolicy(
-      parent_permissions_policy, container_policy,
-      execution_context_->GetSecurityOrigin()->ToUrlOrigin());
+  if (frame.IsInFencedFrameTree()) {
+    // In Fenced Frames, all permission policy gated features must be disabled
+    // for privacy reasons.
+    permissions_policy = PermissionsPolicy::CreateForFencedFrame(origin);
+  } else {
+    auto* parent_permissions_policy = frame.Tree().Parent()
+                                          ? frame.Tree()
+                                                .Parent()
+                                                ->GetSecurityContext()
+                                                ->GetPermissionsPolicy()
+                                          : nullptr;
+    permissions_policy = PermissionsPolicy::CreateFromParentPolicy(
+        parent_permissions_policy, container_policy, origin);
+  }
   permissions_policy->SetHeaderPolicy(permissions_policy_header_);
   execution_context_->GetSecurityContext().SetPermissionsPolicy(
       std::move(permissions_policy));

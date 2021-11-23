@@ -250,6 +250,23 @@ PermissionsPolicy::PermissionsPolicy(
 PermissionsPolicy::~PermissionsPolicy() = default;
 
 // static
+std::unique_ptr<PermissionsPolicy> PermissionsPolicy::CreateForFencedFrame(
+    const url::Origin& origin) {
+  return CreateForFencedFrame(origin, GetPermissionsPolicyFeatureList());
+}
+
+std::unique_ptr<PermissionsPolicy> PermissionsPolicy::CreateForFencedFrame(
+    const url::Origin& origin,
+    const PermissionsPolicyFeatureList& features) {
+  std::unique_ptr<PermissionsPolicy> new_policy =
+      base::WrapUnique(new PermissionsPolicy(origin, features));
+  for (const auto& feature : features) {
+    new_policy->inherited_policies_[feature.first] = false;
+  }
+  return new_policy;
+}
+
+// static
 std::unique_ptr<PermissionsPolicy> PermissionsPolicy::CreateFromParentPolicy(
     const PermissionsPolicy* parent_policy,
     const ParsedPermissionsPolicy& container_policy,

@@ -9265,6 +9265,13 @@ void RenderFrameHostImpl::CreateWebUsbService(
 }
 
 void RenderFrameHostImpl::ResetPermissionsPolicy() {
+  if (IsNestedWithinFencedFrame()) {
+    // In Fenced Frames, all permission policy gated features must be disabled
+    // for privacy reasons.
+    permissions_policy_ =
+        blink::PermissionsPolicy::CreateForFencedFrame(last_committed_origin_);
+    return;
+  }
   RenderFrameHostImpl* parent_frame_host = GetParent();
   const blink::PermissionsPolicy* parent_policy =
       parent_frame_host ? parent_frame_host->permissions_policy() : nullptr;

@@ -56,6 +56,10 @@ class PermissionsPolicyTest : public testing::Test {
     return PermissionsPolicy::CreateFromParentPolicy(parent, frame_policy,
                                                      origin, feature_list_);
   }
+  std::unique_ptr<PermissionsPolicy> CreateForFencedFrame(
+      const url::Origin& origin) {
+    return PermissionsPolicy::CreateForFencedFrame(origin, feature_list_);
+  }
 
   bool PolicyContainsInheritedValue(const PermissionsPolicy* policy,
                                     mojom::PermissionsPolicyFeature feature) {
@@ -1642,6 +1646,12 @@ TEST_F(PermissionsPolicyTest, ProposedTestNestedPolicyPropagates) {
   std::unique_ptr<PermissionsPolicy> policy3 =
       CreateFromParentWithFramePolicy(policy2.get(), frame_policy3, origin_b_);
   EXPECT_FALSE(policy3->IsFeatureEnabled(kDefaultSelfFeature));
+}
+
+TEST_F(PermissionsPolicyTest, CreateForFencedFrame) {
+  std::unique_ptr<PermissionsPolicy> policy = CreateForFencedFrame(origin_a_);
+  EXPECT_FALSE(policy->IsFeatureEnabled(kDefaultOnFeature));
+  EXPECT_FALSE(policy->IsFeatureEnabled(kDefaultSelfFeature));
 }
 
 }  // namespace blink
