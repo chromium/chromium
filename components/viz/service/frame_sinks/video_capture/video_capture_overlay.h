@@ -45,7 +45,7 @@ namespace viz {
 // future, unaffected by later image, size, or color space settings changes.
 //
 // The blit algorithm uses naive linear blending. Thus, the use of non-linear
-// color spaces will cause loses in color accuracy.
+// color spaces will cause losses in color accuracy.
 class VIZ_SERVICE_EXPORT VideoCaptureOverlay final
     : public mojom::FrameSinkVideoCaptureOverlay {
  public:
