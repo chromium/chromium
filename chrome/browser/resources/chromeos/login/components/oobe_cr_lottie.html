@@ -1,0 +1,53 @@
+<link rel="import" href="chrome://resources/html/polymer.html">
+
+<link rel="import" href="chrome://resources/cr_elements/cr_icon_button/cr_icon_button.html">
+<link rel="import" href="chrome://resources/cr_elements/cr_lottie/cr_lottie.html">
+
+<link rel="import" href="./oobe_icons.html">
+<link rel="import" href="./behaviors/oobe_i18n_behavior.html">
+
+<dom-module id="oobe-cr-lottie">
+  <template>
+    <style>
+      :host {
+        height: 100%;
+        width: 100%;
+      }
+      #container {
+        height: 100%;
+        position: relative;
+        width: 100%;
+      }
+      #animation {
+        height: 100%;
+        position: absolute;
+        width: 100%;
+      }
+      #playPauseIcon {
+        bottom: 0;
+        left: 0;
+        margin: auto;
+        opacity: 0; /* We use opacity to hide/show the element so it stays in
+                       the tab index */
+        position: absolute;
+        right: 0;
+        top: 0;
+      }
+      #playPauseIcon:focus,
+      :host(:hover) #playPauseIcon {
+        opacity: 1;
+      }
+      cr-icon-button {
+        --cr-icon-button-icon-size: 40px;
+        --cr-icon-button-size: 48px;
+      }
+    </style>
+    <div id="container">
+      <cr-lottie id="animation" animation-url="[[animationUrl]]">
+      </cr-lottie>
+      <cr-icon-button id="playPauseIcon" iron-icon="[[getIcon_(playing)]]"
+          aria-label$="[[getAria_(locale, playing)]]"></cr-icon-button>
+    </div>
+  </template>
+  <script src="oobe_cr_lottie.js"></script>
+</dom-module>

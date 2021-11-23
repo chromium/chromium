@@ -8,8 +8,8 @@
 <link rel="import" href="chrome://resources/html/load_time_data.html">
 <link rel="import" href="chrome://resources/polymer/v1_0/iron-icon/iron-icon.html">
 <link rel="import" href="chrome://resources/cr_elements/cr_fingerprint/cr_fingerprint_progress_arc.html">
-<link rel="import" href="chrome://resources/cr_elements/cr_lottie/cr_lottie.html">
 
+<link rel="import" href="../../components/oobe_cr_lottie.html">
 <link rel="import" href="../../components/oobe_icons.html">
 <link rel="import" href="../../components/behaviors/login_screen_behavior.html">
 <link rel="import" href="../../components/behaviors/multi_step_behavior.html">
@@ -55,9 +55,9 @@
       <div slot="content" class="flex layout vertical center center-justified">
         <div id="sensorLocationContainer" class="oobe-illustration">
           <template is="dom-if" if="[[shouldUseLottieAnimation_]]">
-            <cr-lottie id="scannerLocationLottie"
+            <oobe-cr-lottie id="scannerLocationLottie"
                 animation-url="fingerprint_scanner_animation.json">
-            </cr-lottie>
+            </oobe-cr-lottie>
           </template>
           <template is="dom-if" if="[[!shouldUseLottieAnimation_]]">
             <div id="sensorLocation"></div>

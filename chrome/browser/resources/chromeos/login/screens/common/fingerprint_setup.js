@@ -210,7 +210,7 @@ class FingerprintSetup extends FingerprintSetupBase {
     if (this.shouldUseLottieAnimation_) {
       const lottieElement = /** @type{CrLottieElement} */ (
           this.$.setupFingerprint.querySelector('#scannerLocationLottie'));
-      lottieElement.setPlay(playing);
+      lottieElement.playing = playing;
       this.$.arc.setPlay(playing);
     }
   }

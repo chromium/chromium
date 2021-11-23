@@ -28,9 +28,7 @@ group("closure_compile") {
 
 js_type_check("closure_compile_local") {
   uses_legacy_modules = true
-  deps = [
-    ":oobe_network",
-  ]
+  deps = [ ":oobe_network" ]
 }
 
 js_type_check("closure_compile_module") {
@@ -184,6 +182,7 @@ js_library("welcome.m") {
   deps = [
     ":welcome_dialog.m",
     "../..:display_manager.m",
+    "../../components:oobe_cr_lottie.m",
     "../../components:oobe_select.m",
     "../../components:oobe_types.m",
     "../../components/behaviors:login_screen_behavior.m",

@@ -88,6 +88,9 @@ void CoreOobeHandler::DeclareLocalizedValues(
 
   builder->AddF("missingAPIKeysNotice", IDS_LOGIN_API_KEYS_NOTICE,
                 base::ASCIIToUTF16(google_apis::kAPIKeysDevelopersHowToURL));
+
+  builder->Add("playAnimationAriaLabel", IDS_OOBE_PLAY_ANIMATION_MESSAGE);
+  builder->Add("pauseAnimationAriaLabel", IDS_OOBE_PAUSE_ANIMATION_MESSAGE);
 }
 
 void CoreOobeHandler::Initialize() {

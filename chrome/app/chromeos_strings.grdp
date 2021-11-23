@@ -555,6 +555,12 @@
   <message name="IDS_OOBE_ASSET_ID_LABEL" desc="Chrome OS OOBE: label for asset identifier.">
     Asset ID: <ph name="ASSET_ID">$1<ex>None specified</ex></ph>
   </message>
+  <message name="IDS_OOBE_PLAY_ANIMATION_MESSAGE" desc="Accessibility label for the button to play/continue animation">
+    Play animation
+  </message>
+  <message name="IDS_OOBE_PAUSE_ANIMATION_MESSAGE" desc="Accessibility label for the button to pause animation">
+    Pause animation
+  </message>
   <message name="IDS_HID_DETECTION_INVITATION_TEXT" desc="Text shown on top of HID detection screen inviting user to connect an input device.">
     Searching for Bluetooth and USB devices
   </message>

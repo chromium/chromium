@@ -52,6 +52,7 @@ group("closure_compile_module") {
     ":long_touch_detector.m",
     ":network_select_login.m",
     ":oobe_a11y_option.m",
+    ":oobe_cr_lottie.m",
     ":oobe_i18n_dropdown.m",
     ":oobe_icons.m",
     ":oobe_network_icons.m",
@@ -83,6 +84,7 @@ group("polymer3_elements") {
                   ":long_touch_detector_module",
                   ":network_select_login_module",
                   ":oobe_a11y_option_module",
+                  ":oobe_cr_lottie_module",
                   ":oobe_icons_module",
                   ":oobe_i18n_dropdown_module",
                   ":oobe_a11y_option_module",
@@ -227,6 +229,16 @@ js_library("oobe_i18n_dropdown.m") {
   extra_deps = [ ":oobe_i18n_dropdown_module" ]
 }
 
+js_library("oobe_cr_lottie.m") {
+  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/components/oobe_cr_lottie.m.js" ]
+  deps = [
+    "behaviors:oobe_i18n_behavior.m",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/cr_elements/cr_lottie:cr_lottie.m",
+  ]
+  extra_deps = [ ":oobe_cr_lottie_module" ]
+}
+
 js_library("oobe_network_icons.m") {
   sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/components/oobe_network_icons.m.js" ]
   deps = []
@@ -332,6 +344,14 @@ polymer_modulizer("oobe_icons") {
 polymer_modulizer("oobe_i18n_dropdown") {
   js_file = "oobe_i18n_dropdown.js"
   html_file = "oobe_i18n_dropdown.html"
+  html_type = "dom-module"
+  auto_imports = oobe_auto_imports
+  namespace_rewrites = oobe_namespace_rewrites
+}
+
+polymer_modulizer("oobe_cr_lottie") {
+  js_file = "oobe_cr_lottie.js"
+  html_file = "oobe_cr_lottie.html"
   html_type = "dom-module"
   auto_imports = oobe_auto_imports
   namespace_rewrites = oobe_namespace_rewrites

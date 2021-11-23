@@ -6,10 +6,10 @@
 
 <link rel="import" href="chrome://resources/polymer/v1_0/iron-icon/iron-icon.html">
 <link rel="import" href="chrome://resources/polymer/v1_0/iron-iconset-svg/iron-iconset-svg.html">
-<link rel="import" href="chrome://resources/cr_elements/cr_lottie/cr_lottie.html">
 <link rel="import" href="chrome://resources/cr_elements/cr_toggle/cr_toggle.html">
 
 <link rel="import" href="../../components/oobe_a11y_option.html">
+<link rel="import" href="../../components/oobe_cr_lottie.html">
 <link rel="import" href="../../components/oobe_icons.html">
 <link rel="import" href="../../components/behaviors/login_screen_behavior.html">
 <link rel="import" href="../../components/behaviors/oobe_dialog_host_behavior.html">
@@ -141,9 +141,9 @@
       <div id="contentArea" slot="content" class="layout flex vertical">
         <!-- Animation -->
         <div class="marketing-animation-content">
-          <cr-lottie id="animation"
+          <oobe-cr-lottie id="animation"
               animation-url="all_set.json" singleLoop="true">
-          </cr-lottie>
+          </oobe-cr-lottie>
         </div>
       </div>
       <oobe-icon-button slot="bottom-buttons"

@@ -94,7 +94,7 @@ class MarketingOptIn extends MarketingScreenElementBase {
 
   /** Shortcut method to control animation */
   setAnimationPlay_(played) {
-      this.$.animation.setPlay(played);
+    this.$.animation.playing = played;
   }
 
   onBeforeShow(data) {

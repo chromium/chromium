@@ -1540,6 +1540,12 @@ IN_PROC_BROWSER_TEST_F(OobeSpokenFeedbackTest, SpokenFeedbackInOobe) {
     ASSERT_TRUE(ui_test_utils::SendKeyPressToWindowSync(
         nullptr, ui::VKEY_TAB, false, false, false, false));
   });
+  sm_.ExpectSpeech("Pause animation");
+
+  sm_.Call([]() {
+    ASSERT_TRUE(ui_test_utils::SendKeyPressToWindowSync(
+        nullptr, ui::VKEY_TAB, false, false, false, false));
+  });
   sm_.ExpectSpeech("Shut down");
   sm_.ExpectSpeech("Button");
 

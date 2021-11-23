@@ -107,12 +107,12 @@ js_library("adb_sideloading.m") {
 js_library("app_downloading.m") {
   sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/common/app_downloading.m.js" ]
   deps = [
+    "../../components:oobe_cr_lottie.m",
     "../../components/behaviors:login_screen_behavior.m",
     "../../components/behaviors:oobe_dialog_host_behavior.m",
     "../../components/behaviors:oobe_i18n_behavior.m",
     "../../components/buttons:oobe_text_button.m",
     "../../components/dialogs:oobe_adaptive_dialog.m",
-    "//ui/webui/resources/cr_elements/cr_lottie:cr_lottie.m",
   ]
   extra_deps = [ ":app_downloading_module" ]
 }
@@ -219,6 +219,7 @@ js_library("fingerprint_setup.m") {
   sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/common/fingerprint_setup.m.js" ]
   deps = [
     "../../components:display_manager_types.m",
+    "../../components:oobe_cr_lottie.m",
     "../../components/behaviors:login_screen_behavior.m",
     "../../components/behaviors:multi_step_behavior.m",
     "../../components/behaviors:oobe_i18n_behavior.m",
@@ -226,7 +227,6 @@ js_library("fingerprint_setup.m") {
     "../../components/dialogs:oobe_adaptive_dialog.m",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/cr_elements/cr_fingerprint:cr_fingerprint_progress_arc.m",
-    "//ui/webui/resources/cr_elements/cr_lottie:cr_lottie.m",
     "//ui/webui/resources/js:load_time_data.m",
   ]
   extra_deps = [ ":fingerprint_setup_module" ]
@@ -308,12 +308,12 @@ js_library("marketing_opt_in.m") {
   sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/common/marketing_opt_in.m.js" ]
   deps = [
     "../../components:oobe_a11y_option.m",
+    "../../components:oobe_cr_lottie.m",
     "../../components/behaviors:login_screen_behavior.m",
     "../../components/behaviors:oobe_dialog_host_behavior.m",
     "../../components/behaviors:oobe_i18n_behavior.m",
     "../../components/dialogs:oobe_adaptive_dialog.m",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/cr_elements/cr_lottie:cr_lottie.m",
     "//ui/webui/resources/cr_elements/cr_toggle:cr_toggle.m",
   ]
   extra_deps = [ ":marketing_opt_in_module" ]

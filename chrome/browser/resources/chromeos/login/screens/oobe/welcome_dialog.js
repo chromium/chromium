@@ -167,7 +167,7 @@ OobeWelcomeDialogBase.$;
   setVideoPlay_(play) {
     if (this.isMeet_)
       return;
-    this.$.welcomeAnimation.setPlay(play);
+    this.$.welcomeAnimation.playing = play;
   }
 
   /**

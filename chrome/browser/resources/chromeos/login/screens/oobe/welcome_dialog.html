@@ -9,9 +9,9 @@
 <link rel="import" href="chrome://resources/html/i18n_behavior.html">
 <link rel="import" href="chrome://resources/html/load_time_data.html">
 <link rel="import" href="chrome://resources/cr_elements/shared_style_css.html">
-<link rel="import" href="chrome://resources/cr_elements/cr_lottie/cr_lottie.html">
 
 <link rel="import" href="../../components/oobe_icons.html">
+<link rel="import" href="../../components/oobe_cr_lottie.html">
 <link rel="import" href="../../components/long_touch_detector.html">
 <link rel="import" href="../../components/behaviors/oobe_dialog_host_behavior.html">
 <link rel="import" href="../../components/behaviors/oobe_i18n_behavior.html">
@@ -193,9 +193,9 @@
             text-key="welcomeScreenGetStarted">
         </oobe-text-button>
         <div id="welcomeAnimationSlot">
-          <cr-lottie id="welcomeAnimation" hidden="[[isMeet_]]"
+          <oobe-cr-lottie id="welcomeAnimation" hidden="[[isMeet_]]"
               animation-url="/welcome_screen_animation.json">
-          </cr-lottie>
+          </oobe-cr-lottie>
           <img src="/images/cfm/welcome.svg" class="oobe-illustration"
               id="remoraWelcomeImage" hidden="[[!isMeet_]]" aria-hidden="true">
         </div>
