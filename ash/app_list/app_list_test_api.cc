@@ -36,7 +36,10 @@ namespace ash {
 
 namespace {
 
-PagedAppsGridView* GetAppsGridView() {
+PagedAppsGridView* GetPagedAppsGridView() {
+  // This view only exists for tablet launcher and legacy peeking launcher.
+  DCHECK(Shell::Get()->IsInTabletMode() ||
+         !features::IsProductivityLauncherEnabled());
   AppListView* app_list_view =
       Shell::Get()->app_list_controller()->presenter()->GetView();
   return AppListView::TestApi(app_list_view).GetRootAppsGridView();
@@ -105,7 +108,7 @@ bool AppListTestApi::HasApp(const std::string& app_id) {
 
 std::vector<std::string> AppListTestApi::GetTopLevelViewIdList() {
   std::vector<std::string> id_list;
-  auto* view_model = GetAppsGridView()->view_model();
+  auto* view_model = GetTopLevelAppsGridView()->view_model();
   for (int i = 0; i < view_model->view_size(); ++i) {
     AppListItem* app_list_item = view_model->view_at(i)->item();
     if (app_list_item) {
@@ -178,25 +181,27 @@ int AppListTestApi::GetTopListItemCount() {
 }
 
 PaginationModel* AppListTestApi::GetPaginationModel() {
-  return GetAppsGridView()->pagination_model();
+  return GetPagedAppsGridView()->pagination_model();
 }
 
 void AppListTestApi::UpdatePagedViewStructure() {
-  GetAppsGridView()->UpdatePagedViewStructure();
+  GetPagedAppsGridView()->UpdatePagedViewStructure();
 }
 
 AppsGridView* AppListTestApi::GetTopLevelAppsGridView() {
   if (features::IsProductivityLauncherEnabled() &&
       !Shell::Get()->tablet_mode_controller()->InTabletMode()) {
-    return Shell::Get()
-        ->app_list_controller()
-        ->bubble_presenter_for_test()
-        ->bubble_view_for_test()
-        ->apps_page_for_test()
-        ->scrollable_apps_grid_view();
+    AppListBubbleView* bubble_view = Shell::Get()
+                                         ->app_list_controller()
+                                         ->bubble_presenter_for_test()
+                                         ->bubble_view_for_test();
+    DCHECK(bubble_view) << "Bubble launcher view not yet created. Tests must "
+                           "show the launcher and may need to call "
+                           "WaitForBubbleWindow() if animations are enabled.";
+    return bubble_view->apps_page_for_test()->scrollable_apps_grid_view();
   }
 
-  return GetAppsGridView();
+  return GetPagedAppsGridView();
 }
 
 }  // namespace ash
