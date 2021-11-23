@@ -50,6 +50,15 @@ AtomicString::AtomicString(const UChar* chars)
           chars,
           chars ? LengthOfNullTerminatedString(chars) : 0)) {}
 
+scoped_refptr<StringImpl> AtomicString::AddSlowCase(
+    scoped_refptr<StringImpl>&& string) {
+  DCHECK(!string->IsAtomic());
+  StringImpl* result = AtomicStringTable::Instance().Add(string.get());
+  if (result == string.get())
+    return std::move(string);
+  return scoped_refptr<StringImpl>(result);
+}
+
 scoped_refptr<StringImpl> AtomicString::AddSlowCase(StringImpl* string) {
   DCHECK(!string->IsAtomic());
   return AtomicStringTable::Instance().Add(string);
