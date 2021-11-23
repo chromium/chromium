@@ -2,7 +2,7 @@
 
 ***If you have followed the instructions below and things still having trouble,
 try `#cr-fuchsia` on [Chromium Slack](https://www.chromium.org/developers/slack)
-if something seems awry.***
+or [fuchsia-dev@chromium.org](mailto:fuchsia-dev@chromium.org).***
 
 There are instructions for other platforms linked from the
 [get the code](../get_the_code.md) page.
@@ -17,9 +17,55 @@ There are instructions for other platforms linked from the
 *   You must have Git and Python installed already.
 
 Most development is done on Ubuntu. Mac build is supported on a best-effort
-basis.
+basis. If you already have a Chromium checkout, continue to the
+[next section](#instructions-for-current-chromium-developers). Otherwise, skip
+to the [following section](#instructions-for-new-chromium-developers). If you
+are a Fuchsia developer, see also
+[Working with the Fuchsia tree](#working-with-the-fuchsia-tree).
 
-## Install `depot_tools`
+## Instructions for current Chromium developers
+
+This section applies to you if you already have a Chromium checkout. You will
+need to update it to install Fuchsia-specific dependencies.
+
+1. Edit your `.gclient` to add `fuchsia` to the `target_os` list. The file
+   should look similar to this:
+
+   ```
+   solutions = [
+     {
+       "url": "https://chromium.googlesource.com/chromium/src.git",
+       "managed": False,
+       "name": "src",
+       "custom_deps": {},
+       "custom_vars": {}
+     }
+   ]
+   target_os = ['fuchsia']
+   ```
+
+2. Run `gclient sync`
+3. Create a build directory:
+
+   ```shell
+   $ gn gen out/fuchsia --args="is_debug=false dcheck_always_on=true is_component_build=false target_os=\"fuchsia\""
+   ```
+
+   You can add many of the usual GN arguments like `use_goma = true`. In
+   particular, when working with devices, consider using `is_debug = false` and
+   `is_component_build = false` since debug and component builds can drastically
+   increase run time and used space.
+
+Build the target as you would for any other platform:
+```shell
+$ autoninja out/fuchsia <target_name>
+```
+
+To run the tests in an emulator, see the [Run](#run) section.
+
+## Instructions for new Chromium developers
+
+### Install `depot_tools`
 
 Clone the `depot_tools` repository:
 
@@ -35,7 +81,7 @@ your `~/.bashrc` or `~/.zshrc`). Assuming you cloned `depot_tools` to
 $ export PATH="$PATH:/path/to/depot_tools"
 ```
 
-## Get the code
+### Get the code
 
 Create a `chromium` directory for the checkout and change to it (you can call
 this whatever you like and put it wherever you like, as long as the full path
@@ -146,7 +192,7 @@ hooks as needed. `gclient sync` updates dependencies to the versions specified
 in `DEPS`, so any time that file is modified (pulling, changing branches, etc.)
 `gclient sync` should be run.
 
-## (Mac-only) Download additional required Clang binaries
+### (Mac-only) Download additional required Clang binaries
 
 Go to
 [this page](https://chrome-infra-packages.appspot.com/p/fuchsia/clang/mac-amd64/+/)
@@ -157,7 +203,7 @@ Chromium:
 $ unzip /path/to/clang.zip bin/llvm-ar -d ${CHROMIUM_SRC}/third_party/llvm-build/Release+Asserts
 ```
 
-## Setting up the build
+### Setting up the build
 
 Chromium uses [Ninja](https://ninja-build.org) as its main build tool along with
 a tool called [GN](https://gn.googlesource.com/gn/+/main/docs/quick_start.md) to
@@ -176,7 +222,7 @@ have any Debug build-bots, it may be more broken than Release.
 Architecture options are x64 (default) and arm64. This can be set with
 `target_cpu=\"arm64\"`.
 
-## Build
+### Build
 
 All targets included in the GN build should build successfully. You can also
 build a specific binary, for example, base\_unittests:
@@ -214,3 +260,21 @@ There are three types of tests available to run on Fuchsia:
 3.  [Blink tests](web_tests.md)
 
 Check the documentations to learn more about how to run these tests.
+
+### Working with the Fuchsia tree
+
+If you have a Fuchsia checkout and build, there are GN arguments in Chromium
+that make working with both Fuchsia and Chromium checkouts easier.
+
+* `default_fuchsia_build_dir_for_installation`. Point this to an output
+  directory in Fuchsia. For instance. `/path/to/src/fuchsia/out/qemu-x64`. This
+  will automatically add the `--fuchsia-out-dir` flag to most `run_*` and
+  `deploy_*` scripts.
+* `default_fuchsia_device_node_name`. Set this to a Fuchsia device node name.
+  This will automatically add the `--node-name` flag to most `run_*` and
+  `deploy_*` scripts.
+* Finally, use the `-d` flag to `run_*` scripts to execute them on an already
+  running device or emulator, rather than starting an ephemeral emulator
+  instance. This speeds up subsequent runs since the runner script does not need
+  to wait for the emulator instance to boot and only differential changes are
+  pushed to the device.
