@@ -10,7 +10,6 @@ import '/common/styles.js';
 
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-/** @polymer */
 export class WallpaperGridItemElement extends PolymerElement {
   static get is() {
     return 'wallpaper-grid-item';

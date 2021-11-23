@@ -48,7 +48,7 @@ polymer_js_files = [
   "trusted/wallpaper/wallpaper_collections_element.js",
   "trusted/wallpaper/wallpaper_error_element.js",
   "trusted/wallpaper/wallpaper_fullscreen_element.ts",
-  "trusted/wallpaper/wallpaper_grid_item_element.js",
+  "trusted/wallpaper/wallpaper_grid_item_element.ts",
   "trusted/wallpaper/wallpaper_images_element.js",
   "trusted/wallpaper/wallpaper_selected_element.js",
 
