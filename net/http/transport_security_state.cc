@@ -36,7 +36,6 @@
 #include "net/base/host_port_pair.h"
 #include "net/cert/ct_policy_status.h"
 #include "net/cert/symantec_certs.h"
-#include "net/cert/x509_cert_types.h"
 #include "net/cert/x509_certificate.h"
 #include "net/dns/dns_util.h"
 #include "net/extras/preload_data/decoder.h"

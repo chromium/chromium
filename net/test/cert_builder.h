@@ -5,6 +5,9 @@
 #ifndef NET_TEST_CERT_BUILDER_H_
 #define NET_TEST_CERT_BUILDER_H_
 
+#include <map>
+#include <string>
+
 #include "base/rand_util.h"
 #include "net/base/ip_address.h"
 #include "net/cert/internal/signature_algorithm.h"

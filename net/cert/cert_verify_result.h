@@ -7,12 +7,12 @@
 
 #include "base/memory/ref_counted.h"
 #include "base/supports_user_data.h"
+#include "net/base/hash_value.h"
 #include "net/base/net_export.h"
 #include "net/cert/cert_status_flags.h"
 #include "net/cert/ct_policy_status.h"
 #include "net/cert/ocsp_verify_result.h"
 #include "net/cert/signed_certificate_timestamp_and_status.h"
-#include "net/cert/x509_cert_types.h"
 
 namespace base {
 class Value;

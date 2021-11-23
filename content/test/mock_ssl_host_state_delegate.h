@@ -7,6 +7,9 @@
 
 #include "content/public/browser/ssl_host_state_delegate.h"
 
+#include <set>
+#include <string>
+
 namespace content {
 
 class MockSSLHostStateDelegate : public SSLHostStateDelegate {

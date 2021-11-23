@@ -12,7 +12,6 @@
 #include "base/mac/foundation_util.h"
 #include "base/mac/scoped_cftyperef.h"
 #include "crypto/rsa_private_key.h"
-#include "net/cert/x509_cert_types.h"
 #include "net/cert/x509_certificate.h"
 #include "net/cert/x509_util.h"
 #include "net/cert/x509_util_ios.h"

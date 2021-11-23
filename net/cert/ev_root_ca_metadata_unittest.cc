@@ -5,7 +5,7 @@
 #include "net/cert/ev_root_ca_metadata.h"
 
 #include "build/build_config.h"
-#include "net/cert/x509_cert_types.h"
+#include "net/base/hash_value.h"
 #include "net/der/input.h"
 #include "net/test/cert_test_util.h"
 #include "testing/gtest/include/gtest/gtest.h"

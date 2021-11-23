@@ -19,7 +19,6 @@
 #include "components/network_time/network_time_tracker.h"
 #include "components/prefs/testing_pref_service.h"
 #include "net/base/net_errors.h"
-#include "net/cert/x509_cert_types.h"
 #include "net/cert/x509_certificate.h"
 #include "net/test/cert_test_util.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"

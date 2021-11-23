@@ -10,7 +10,7 @@
 
 #include "base/memory/ref_counted.h"
 #include "base/strings/string_piece.h"
-#include "net/cert/x509_cert_types.h"
+#include "net/base/hash_value.h"
 #include "net/cert/x509_certificate.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

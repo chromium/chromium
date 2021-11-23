@@ -19,7 +19,6 @@
 #include "net/cert/cert_database.h"
 #include "net/cert/nss_cert_database.h"
 #include "net/cert/scoped_nss_types.h"
-#include "net/cert/x509_cert_types.h"
 #include "net/cert/x509_certificate.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"

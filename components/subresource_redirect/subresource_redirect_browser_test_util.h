@@ -6,6 +6,7 @@
 #define COMPONENTS_SUBRESOURCE_REDIRECT_SUBRESOURCE_REDIRECT_BROWSER_TEST_UTIL_H_
 
 #include <map>
+#include <set>
 #include <string>
 
 #include "base/test/metrics/histogram_tester.h"
