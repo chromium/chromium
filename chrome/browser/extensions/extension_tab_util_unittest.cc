@@ -204,4 +204,14 @@ TEST(ExtensionTabUtilTest, PrepareURLForNavigationOnDevtools) {
   }
 }
 
+TEST(ExtensionTabUtilTest, PrepareURLForNavigationOnChromeUntrusted) {
+  const std::string kChromeUntrustedURL("chrome-untrusted://terminal/");
+  auto extension = ExtensionBuilder("none").Build();
+  std::string error;
+  GURL url;
+  EXPECT_FALSE(ExtensionTabUtil::PrepareURLForNavigation(
+      kChromeUntrustedURL, extension.get(), &url, &error));
+  EXPECT_EQ(tabs_constants::kCannotNavigateToChromeUntrusted, error);
+}
+
 }  // namespace extensions

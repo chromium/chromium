@@ -837,6 +837,12 @@ bool ExtensionTabUtil::PrepareURLForNavigation(const std::string& url_string,
     return false;
   }
 
+  // Don't let the extension navigate directly to chrome-untrusted scheme pages.
+  if (url.SchemeIs(content::kChromeUIUntrustedScheme)) {
+    *error = tabs_constants::kCannotNavigateToChromeUntrusted;
+    return false;
+  }
+
   return_url->Swap(&url);
   return true;
 }
