@@ -662,27 +662,23 @@ constexpr char kOriginTrialToken[] =
 // The origin trial migration is not needed in Lacros as it will be removed
 // long before Lacros ships.
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-#define MAYBE_OriginTrialMigration DISABLED_CaptureLinksNewClient
+#define MAYBE_OriginTrialDisabled DISABLED_OriginTrialDisabled
 #else
-#define MAYBE_OriginTrialMigration OriginTrialMigration
+#define MAYBE_OriginTrialDisabled OriginTrialDisabled
 #endif
 // Tests that the DLC origin trial works and that we can migrate off it into
 // the intent handling persistence user preference model seamlessly.
 IN_PROC_BROWSER_TEST_F(WebAppDeclarativeLinkCapturingOriginTrialBrowserTest,
-                       MAYBE_OriginTrialMigration) {
+                       MAYBE_OriginTrialDisabled) {
   ManifestUpdateTask::BypassWindowCloseWaitingForTesting() = true;
 
-  bool serve_token = true;
   content::URLLoaderInterceptor interceptor(base::BindLambdaForTesting(
-      [&serve_token](
-          content::URLLoaderInterceptor::RequestParams* params) -> bool {
-
+      [](content::URLLoaderInterceptor::RequestParams* params) -> bool {
         if (params->url_request.url.spec() == kTestWebAppUrl) {
           content::URLLoaderInterceptor::WriteResponse(
               kTestWebAppHeaders,
-              base::ReplaceStringPlaceholders(
-                  kTestWebAppBody, {serve_token ? kOriginTrialToken : ""},
-                  nullptr),
+              base::ReplaceStringPlaceholders(kTestWebAppBody,
+                                              {kOriginTrialToken}, nullptr),
               params->client.get());
           return true;
         }
@@ -704,41 +700,10 @@ IN_PROC_BROWSER_TEST_F(WebAppDeclarativeLinkCapturingOriginTrialBrowserTest,
 
   InstallTestApp(GURL(kTestWebAppUrl), /*await_metric=*/false);
 
-#if !defined(OS_CHROMEOS)
-  // The origin trial is not available outside of Chrome OS.
+  // The origin trial is not available as of M98:
+  // https://groups.google.com/a/chromium.org/g/blink-dev/c/2c4bul4V3GQ/m/Anluh1txBQAJ
   EXPECT_EQ(provider().registrar().GetAppCaptureLinks(app_id_),
             blink::mojom::CaptureLinks::kUndefined);
-  return;
-#endif  // !defined(OS_CHROMEOS)
-
-  // Origin trial should grant the app access.
-  EXPECT_EQ(provider().registrar().GetAppCaptureLinks(app_id_),
-            blink::mojom::CaptureLinks::kNewClient);
-
-  // Open app with the token missing.
-  {
-    WebAppTestManifestUpdatedObserver update_awaiter(&provider().registrar());
-    update_awaiter.BeginListening();
-
-    serve_token = false;
-
-    Browser* app_browser =
-        GetNewBrowserFromNavigation(browser(), GURL(kTestWebAppUrl));
-    // Automatic link capturing should be triggered because DLC is enabled.
-    EXPECT_TRUE(AppBrowserController::IsForWebApp(app_browser, app_id_));
-
-    update_awaiter.Wait();
-  }
-
-  // The app should update to no longer have capture_links defined without the
-  // origin trial.
-  EXPECT_EQ(provider().registrar().GetAppCaptureLinks(app_id_),
-            blink::mojom::CaptureLinks::kUndefined);
-
-  // Automatic link capturing should continue to be enabled.
-  Browser* app_browser =
-      GetNewBrowserFromNavigation(browser(), GURL(kTestWebAppUrl));
-  EXPECT_TRUE(AppBrowserController::IsForWebApp(app_browser, app_id_));
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
