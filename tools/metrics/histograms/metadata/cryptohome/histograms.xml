@@ -214,7 +214,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cryptohome.Errors" enum="CryptohomeError"
-    expires_after="2022-03-20">
+    expires_after="2022-05-22">
   <owner>apronin@chromium.org</owner>
   <owner>cros-hwsec+uma@chromium.org</owner>
   <summary>Cryptohome errors.</summary>
@@ -669,7 +669,7 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="CryptohomeClient" units="ms" expires_after="2022-03-20">
+<histogram name="CryptohomeClient" units="ms" expires_after="2022-05-22">
   <owner>zuan@chromium.org</owner>
   <owner>cros-hwsec+uma@chromium.org</owner>
   <summary>
