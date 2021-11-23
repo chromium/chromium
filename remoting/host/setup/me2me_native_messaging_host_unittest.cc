@@ -36,11 +36,12 @@
 #include "remoting/protocol/protocol_mock_objects.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+namespace {
+
 using remoting::protocol::MockPairingRegistryDelegate;
 using remoting::protocol::PairingRegistry;
 using remoting::protocol::SynchronousPairingRegistry;
-
-namespace {
+using ::testing::Optional;
 
 void VerifyHelloResponse(std::unique_ptr<base::DictionaryValue> response) {
   ASSERT_TRUE(response);
@@ -103,13 +104,10 @@ void VerifyGetUsageStatsConsentResponse(
   std::string value;
   EXPECT_TRUE(response->GetString("type", &value));
   EXPECT_EQ("getUsageStatsConsentResponse", value);
-  bool supported, allowed, set_by_policy;
-  EXPECT_TRUE(response->GetBoolean("supported", &supported));
-  EXPECT_TRUE(response->GetBoolean("allowed", &allowed));
-  EXPECT_TRUE(response->GetBoolean("setByPolicy", &set_by_policy));
-  EXPECT_TRUE(supported);
-  EXPECT_TRUE(allowed);
-  EXPECT_TRUE(set_by_policy);
+
+  EXPECT_THAT(response->FindBoolKey("supported"), Optional(true));
+  EXPECT_THAT(response->FindBoolKey("allowed"), Optional(true));
+  EXPECT_THAT(response->FindBoolKey("setByPolicy"), Optional(true));
 }
 
 void VerifyStopDaemonResponse(std::unique_ptr<base::DictionaryValue> response) {

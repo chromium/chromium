@@ -371,8 +371,8 @@ void Me2MeNativeMessagingHost::ProcessStartDaemon(
     }
   }
 
-  bool consent;
-  if (!message->GetBoolean("consent", &consent)) {
+  absl::optional<bool> consent = message->FindBoolKey("consent");
+  if (!consent) {
     OnError("'consent' not found.");
     return;
   }
@@ -385,7 +385,7 @@ void Me2MeNativeMessagingHost::ProcessStartDaemon(
   }
 
   daemon_controller_->SetConfigAndStart(
-      std::move(config_dict), consent,
+      std::move(config_dict), *consent,
       base::BindOnce(&Me2MeNativeMessagingHost::SendAsyncResult, weak_ptr_,
                      std::move(response)));
 }
