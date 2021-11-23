@@ -41,6 +41,7 @@ class ScenarioOSADriver:
     """Waits for the script to complete.
     """
     assert self.script_process is not None, "Driver wasn't launched."
+    logging.info(f"Waiting for scenario {self.name}")
     self.script_process.wait()
 
   def TearDown(self):
@@ -66,7 +67,6 @@ class ScenarioOSADriver:
     env = jinja2.Environment(loader=loader)
     template = env.get_template(template_file)
     self.osa_script = tempfile.NamedTemporaryFile('w+t')
-    print(self.osa_script)
     self.osa_script.write(template.render(**extra_args))
     self.osa_script.flush()
 
@@ -182,7 +182,8 @@ class MeetScenario(ScenarioWithBrowserOSADriver):
     })
 
 
-def MakeScenarioDriver(scenario_name, browser_driver,
+def MakeScenarioDriver(scenario_name,
+                       browser_driver: browsers.BrowserDriver,
                        meet_meeting_id=None) -> ScenarioOSADriver:
   """Creates scenario driver by name.
 
@@ -194,6 +195,10 @@ def MakeScenarioDriver(scenario_name, browser_driver,
     meet_meeting_id: Optional meeting id used for meet scenario.
   """
 
+  if "idle" == scenario_name:
+    return IdleScenario(datetime.timedelta(minutes=60))
+  if not browser_driver:
+    return None
   if "meet" == scenario_name:
     return MeetScenario(browser_driver,
                         datetime.timedelta(minutes=60),
@@ -211,6 +216,4 @@ def MakeScenarioDriver(scenario_name, browser_driver,
         navigation_cycles=10)
   if "zero_window" == scenario_name:
     return ZeroWindowScenario(browser_driver, datetime.timedelta(minutes=60))
-  if "idle" == scenario_name:
-    return IdleScenario(datetime.timedelta(minutes=60))
   return None

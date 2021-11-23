@@ -28,6 +28,7 @@ class BrowserDriver(abc.ABC):
   def TearDown(self):
     """Terminates the browser and ensures it's cleaned up before returning.
     """
+    logging.info(f"Tearing down {self.process_name}")
     if self.browser_process:
       utils.TerminateProcess(self.browser_process)
 
@@ -62,13 +63,19 @@ class SafariDriver(BrowserDriver):
 
 
 class ChromiumDriver(BrowserDriver):
-  def __init__(self, browser_name: str, executable: str, extra_args=[]):
-    super().__init__(browser_name, executable)
-    self.executable = executable
+  def __init__(self,
+               browser_name: str,
+               process_name: str,
+               executable_path=None,
+               extra_args=[]):
+    super().__init__(browser_name, process_name)
+    if executable_path:
+      self.executable = executable_path
+    else:
+      self.executable = process_name
     self.extra_args = extra_args
 
   def Launch(self):
-    print(self.executable, self.extra_args)
     subprocess.call(["open", "-a", self.executable, "--args"] +
                     ["--enable-benchmarking", "--disable-stack-profiler"] +
                     self.extra_args)
@@ -91,8 +98,8 @@ def Canary(extra_args=[]):
   return ChromiumDriver("canary", "Google Chrome Canary", extra_args)
 
 
-def Chromium(extra_args=[]):
-  return ChromiumDriver("chromium", "Chromium", extra_args)
+def Chromium(executable_path=None, extra_args=[]):
+  return ChromiumDriver("chromium", "Chromium", executable_path, extra_args)
 
 
 def Edge(extra_args=[]):
@@ -105,7 +112,9 @@ PROCESS_NAMES = [
 ]
 
 
-def MakeBrowserDriver(browser_name: str, chrome_user_dir=None) -> BrowserDriver:
+def MakeBrowserDriver(browser_name: str,
+                      chrome_user_dir=None,
+                      chromium_path=None) -> BrowserDriver:
   """Creates browser driver by name.
 
   Args:
@@ -124,5 +133,6 @@ def MakeBrowserDriver(browser_name: str, chrome_user_dir=None) -> BrowserDriver:
     if browser_name == "chrome":
       return Chrome(chrome_extra_arg)
     elif browser_name == "chromium":
-      return Chromium(chrome_extra_arg)
+      return Chromium(executable_path=chromium_path,
+                      extra_args=chrome_extra_arg)
   return None

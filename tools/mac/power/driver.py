@@ -139,7 +139,6 @@ class Driver:
     try:
       with open('./dtrace_log.txt', "w") as dtrace_log:
         # Keep looking for child processes as long as the scenario is running.
-        print(scenario_driver.IsRunning())
         while scenario_driver.IsRunning():
 
           # Let some time pass to limit the overhead of this script.
