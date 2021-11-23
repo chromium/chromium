@@ -54,8 +54,7 @@ LensRegionSearchInstructionsView::LensRegionSearchInstructionsView(
           },
           base::Passed(std::move(close_callback))),
       views::kIcCloseIcon, kCloseButtonSize);
-  close_button_->SetAccessibleName(
-      l10n_util::GetStringUTF16(IDS_ACCNAME_CLOSE));
+  close_button_->SetTooltipText(l10n_util::GetStringUTF16(IDS_ACCNAME_CLOSE));
 }
 
 LensRegionSearchInstructionsView::~LensRegionSearchInstructionsView() = default;
