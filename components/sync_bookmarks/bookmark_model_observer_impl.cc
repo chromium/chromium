@@ -248,10 +248,9 @@ void BookmarkModelObserverImpl::BookmarkNodeFaviconChanged(
   // The favicon content didn't actually change, which means this event is
   // almost certainly the result of favicon loading having completed.
   if (entity->IsUnsynced()) {
-    // When kSyncDoNotCommitBookmarksWithoutFavicon is enabled, nudge for
-    // commit once favicon is loaded. This is needed in case when unsynced
-    // entity was skipped while building commit requests (since favicon wasn't
-    // loaded).
+    // Nudge for commit once favicon is loaded. This is needed in case when
+    // unsynced entity was skipped while building commit requests (since favicon
+    // wasn't loaded).
     nudge_for_commit_closure_.Run();
   }
 }

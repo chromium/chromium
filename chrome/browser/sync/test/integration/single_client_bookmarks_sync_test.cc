@@ -1460,9 +1460,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientBookmarksSyncTest,
       GetFakeServer()->GetSyncEntitiesByModelType(syncer::BOOKMARKS);
   ASSERT_EQ(1u, server_bookmarks.size());
 
-  // Once loaded, the favicon must be uploaded to the server. This expectation
-  // passes only if kSyncDoNotCommitBookmarksWithoutFavicon is enabled and
-  // prevents specifics from committing without loaded favicon.
+  // Once loaded, the favicon must be uploaded to the server.
   EXPECT_TRUE(server_bookmarks.front().specifics().bookmark().has_favicon());
 }
 
