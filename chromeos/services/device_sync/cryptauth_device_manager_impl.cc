@@ -299,21 +299,21 @@ std::unique_ptr<base::DictionaryValue> UnlockKeyToDictionary(
 void AddBeaconSeedsToExternalDevice(
     const base::ListValue& beacon_seeds,
     cryptauth::ExternalDeviceInfo* external_device) {
-  for (size_t i = 0; i < beacon_seeds.GetList().size(); i++) {
-    const base::DictionaryValue* seed_dictionary = nullptr;
-    if (!beacon_seeds.GetDictionary(i, &seed_dictionary)) {
+  for (const base::Value& seed_dictionary : beacon_seeds.GetList()) {
+    if (!seed_dictionary.is_dict()) {
       PA_LOG(WARNING) << "Unable to retrieve BeaconSeed dictionary; "
                       << "skipping.";
       continue;
     }
 
-    std::string seed_data_b64, start_time_millis_str, end_time_millis_str;
-    if (!seed_dictionary->GetString(kExternalDeviceKeyBeaconSeedData,
-                                    &seed_data_b64) ||
-        !seed_dictionary->GetString(kExternalDeviceKeyBeaconSeedStartMs,
-                                    &start_time_millis_str) ||
-        !seed_dictionary->GetString(kExternalDeviceKeyBeaconSeedEndMs,
-                                    &end_time_millis_str)) {
+    const std::string* seed_data_b64 =
+        seed_dictionary.FindStringKey(kExternalDeviceKeyBeaconSeedData);
+    const std::string* start_time_millis_str =
+        seed_dictionary.FindStringKey(kExternalDeviceKeyBeaconSeedStartMs);
+    const std::string* end_time_millis_str =
+        seed_dictionary.FindStringKey(kExternalDeviceKeyBeaconSeedEndMs);
+
+    if (!seed_data_b64 || !start_time_millis_str || !end_time_millis_str) {
       PA_LOG(WARNING) << "Unable to deserialize BeaconSeed due to missing "
                       << "data; skipping.";
       continue;
@@ -321,7 +321,7 @@ void AddBeaconSeedsToExternalDevice(
 
     // Seed data is returned as raw data, not in Base64 encoding.
     std::string seed_data;
-    if (!base::Base64UrlDecode(seed_data_b64,
+    if (!base::Base64UrlDecode(*seed_data_b64,
                                base::Base64UrlDecodePolicy::REQUIRE_PADDING,
                                &seed_data)) {
       PA_LOG(WARNING) << "Decoding seed data failed.";
@@ -329,8 +329,8 @@ void AddBeaconSeedsToExternalDevice(
     }
 
     int64_t start_time_millis, end_time_millis;
-    if (!base::StringToInt64(start_time_millis_str, &start_time_millis) ||
-        !base::StringToInt64(end_time_millis_str, &end_time_millis)) {
+    if (!base::StringToInt64(*start_time_millis_str, &start_time_millis) ||
+        !base::StringToInt64(*end_time_millis_str, &end_time_millis)) {
       PA_LOG(WARNING) << "Unable to convert stored timestamp to int64_t: "
                       << start_time_millis_str << " or " << end_time_millis_str;
       continue;
