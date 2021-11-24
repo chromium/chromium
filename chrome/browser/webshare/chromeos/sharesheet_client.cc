@@ -121,7 +121,7 @@ void SharesheetClient::Share(
   current_share_ = CurrentShare();
   current_share_->files = std::move(files);
   current_share_->directory =
-      file_manager::util::GetMyFilesFolderForProfile(profile).Append(
+      file_manager::util::GetShareCacheFilePath(profile).Append(
           kWebShareDirname);
   if (share_url.is_valid()) {
     if (text.empty())

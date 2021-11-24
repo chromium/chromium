@@ -127,12 +127,12 @@ TEST_F(SharesheetClientUnitTest, TestWithoutFilesInIncognito) {
 TEST_F(SharesheetClientUnitTest, DeleteAfterShare) {
   SetGuest();
   SharesheetClient sharesheet_client(web_contents());
-  const base::FilePath my_files =
-      file_manager::util::GetMyFilesFolderForProfile(profile());
+  const base::FilePath share_cache_dir =
+      file_manager::util::GetShareCacheFilePath(profile());
   const base::FilePath first_file =
-      my_files.AppendASCII(".WebShare/share1.txt");
+      share_cache_dir.AppendASCII(".WebShare/share1.txt");
   const base::FilePath second_file =
-      my_files.AppendASCII(".WebShare/share2.txt");
+      share_cache_dir.AppendASCII(".WebShare/share2.txt");
 
   const std::string title = "Subject";
   const std::string text = "Message";
