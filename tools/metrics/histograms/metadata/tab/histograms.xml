@@ -2902,7 +2902,7 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="Tabs.WindowCount{BatteryState}" units="tabs"
+<histogram name="Tabs.WindowCount{BatteryState}" units="windows"
     expires_after="never">
 <!-- expires-never: https://crbug.com/966137 -->
 
