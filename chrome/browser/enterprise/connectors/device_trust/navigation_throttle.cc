@@ -7,6 +7,7 @@
 #include "base/memory/ptr_util.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/connectors/connectors_prefs.h"
+#include "chrome/browser/enterprise/connectors/device_trust/common/metrics_utils.h"
 #include "chrome/browser/enterprise/connectors/device_trust/device_trust_connector_service.h"
 #include "chrome/browser/enterprise/connectors/device_trust/device_trust_service.h"
 #include "chrome/browser/enterprise/connectors/device_trust/device_trust_service_factory.h"
@@ -88,6 +89,7 @@ DeviceTrustNavigationThrottle::AddHeadersIfNeeded() {
 
   // If we are starting an attestation flow.
   if (navigation_handle()->GetResponseHeaders() == nullptr) {
+    LogAttestationFunnelStep(DTAttestationFunnelStep::kAttestationFlowStarted);
     navigation_handle()->SetRequestHeader(kDeviceTrustHeader,
                                           kDeviceTrustHeaderValue);
     return PROCEED;
@@ -105,12 +107,14 @@ DeviceTrustNavigationThrottle::AddHeadersIfNeeded() {
     std::string challenge;
     if (headers->GetNormalizedHeader(kVerifiedAccessChallengeHeader,
                                      &challenge)) {
+      LogAttestationFunnelStep(DTAttestationFunnelStep::kChallengeReceived);
+
       // Create callback for `ReplyChallengeResponseAndResume` which will
       // be called after the challenge response is created. With this
       // we can defer the navigation to unblock the main thread.
       AttestationCallback resume_navigation_callback = base::BindOnce(
           &DeviceTrustNavigationThrottle::ReplyChallengeResponseAndResume,
-          weak_ptr_factory_.GetWeakPtr());
+          weak_ptr_factory_.GetWeakPtr(), base::TimeTicks::Now());
 
       // Call `DeviceTrustService::BuildChallengeResponse` which is one step on
       // the chain that builds the challenge response. In this chain we post a
@@ -127,15 +131,21 @@ DeviceTrustNavigationThrottle::AddHeadersIfNeeded() {
 }
 
 void DeviceTrustNavigationThrottle::ReplyChallengeResponseAndResume(
+    base::TimeTicks start_time,
     const std::string& challenge_response) {
   if (!deferring_) {
     return;
   }
   deferring_ = false;
-  if (challenge_response == std::string()) {
+
+  LogAttestationResponseLatency(start_time,
+                                /*success=*/!challenge_response.empty());
+
+  if (challenge_response.empty()) {
     // Cancel the navigation if challenge signature is invalid.
     CancelDeferredNavigation(content::NavigationThrottle::CANCEL_AND_IGNORE);
   } else {
+    LogAttestationFunnelStep(DTAttestationFunnelStep::kChallengeResponseSent);
     navigation_handle()->SetRequestHeader(kVerifiedAccessResponseHeader,
                                           challenge_response);
     Resume();

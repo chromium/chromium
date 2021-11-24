@@ -8,12 +8,14 @@
 
 #include "base/bind.h"
 #include "base/run_loop.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "build/branding_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/connectors/connectors_prefs.h"
 #include "chrome/browser/enterprise/connectors/connectors_service.h"
+#include "chrome/browser/enterprise/connectors/device_trust/common/metrics_utils.h"
 #include "chrome/browser/enterprise/connectors/device_trust/device_trust_features.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/browser/commands/scoped_key_rotation_command_factory.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/core/persistence/scoped_key_persistence_delegate_factory.h"
@@ -92,6 +94,15 @@ constexpr char kDeviceTrustHeaderValue[] = "VerifiedAccess";
 constexpr char kVerifiedAccessChallengeHeader[] = "X-Verified-Access-Challenge";
 constexpr char kVerifiedAccessResponseHeader[] =
     "X-Verified-Access-Challenge-Response";
+
+constexpr char kFunnelHistogramName[] =
+    "Enterprise.DeviceTrust.Attestation.Funnel";
+constexpr char kResultHistogramName[] =
+    "Enterprise.DeviceTrust.Attestation.Result";
+constexpr char kLatencySuccessHistogramName[] =
+    "Enterprise.DeviceTrust.Attestation.ResponseLatency.Success";
+constexpr char kLatencyFailureHistogramName[] =
+    "Enterprise.DeviceTrust.Attestation.ResponseLatency.Failure";
 
 }  // namespace
 
@@ -184,6 +195,10 @@ class DeviceTrustBrowserTest
     return embedded_test_server()->GetURL(kOtherHost, "/simple.html");
   }
 
+  void ExpectFunnelStep(DTAttestationFunnelStep step) {
+    histogram_tester_.ExpectBucketCount(kFunnelHistogramName, step, 1);
+  }
+
   // This function needs to reflect how IdP are expected to behave.
   std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
       const std::string& header,
@@ -226,6 +241,7 @@ class DeviceTrustBrowserTest
 
   net::test_server::EmbeddedTestServerHandle test_server_handle_;
   base::test::ScopedFeatureList scoped_feature_list_;
+  base::HistogramTester histogram_tester_;
   std::unique_ptr<policy::FakeBrowserDMTokenStorage> browser_dm_token_storage_;
   absl::optional<const net::test_server::HttpRequest>
       initial_attestation_request_;
@@ -254,6 +270,11 @@ IN_PROC_BROWSER_TEST_P(DeviceTrustBrowserTest, AttestationFullFlow) {
     // been triggered (and that is the end of the test);
     EXPECT_FALSE(initial_attestation_request_);
     EXPECT_FALSE(challenge_response_request_);
+
+    histogram_tester_.ExpectTotalCount(kFunnelHistogramName, 0);
+    histogram_tester_.ExpectTotalCount(kResultHistogramName, 0);
+    histogram_tester_.ExpectTotalCount(kLatencySuccessHistogramName, 0);
+    histogram_tester_.ExpectTotalCount(kLatencyFailureHistogramName, 0);
     return;
   }
 
@@ -271,6 +292,10 @@ IN_PROC_BROWSER_TEST_P(DeviceTrustBrowserTest, AttestationFullFlow) {
 
   EXPECT_EQ(use_v2_header(), challenge_response_request_.has_value());
 
+  ExpectFunnelStep(DTAttestationFunnelStep::kAttestationFlowStarted);
+  ExpectFunnelStep(DTAttestationFunnelStep::kChallengeReceived);
+  ExpectFunnelStep(DTAttestationFunnelStep::kSignalsCollected);
+
   if (use_v2_header()) {
     EXPECT_EQ(challenge_response_request_->GetURL().path(),
               GetRedirectLocationUrl().path());
@@ -281,6 +306,20 @@ IN_PROC_BROWSER_TEST_P(DeviceTrustBrowserTest, AttestationFullFlow) {
             .find(kVerifiedAccessResponseHeader)
             ->second;
     EXPECT_TRUE(!challenge_response.empty());
+
+    ExpectFunnelStep(DTAttestationFunnelStep::kChallengeResponseSent);
+    histogram_tester_.ExpectUniqueSample(kResultHistogramName,
+                                         DTAttestationResult::kSuccess, 1);
+    histogram_tester_.ExpectTotalCount(kLatencySuccessHistogramName, 1);
+    histogram_tester_.ExpectTotalCount(kLatencyFailureHistogramName, 0);
+  } else {
+    histogram_tester_.ExpectBucketCount(
+        kFunnelHistogramName, DTAttestationFunnelStep::kChallengeResponseSent,
+        0);
+    histogram_tester_.ExpectUniqueSample(
+        kResultHistogramName, DTAttestationResult::kBadChallengeFormat, 1);
+    histogram_tester_.ExpectTotalCount(kLatencySuccessHistogramName, 0);
+    histogram_tester_.ExpectTotalCount(kLatencyFailureHistogramName, 1);
   }
 }
 
@@ -299,6 +338,11 @@ IN_PROC_BROWSER_TEST_P(DeviceTrustBrowserTest, AttestationHostNotAllowed) {
   // Requests with attestation flow headers should not have been recorded.
   EXPECT_FALSE(initial_attestation_request_);
   EXPECT_FALSE(challenge_response_request_);
+
+  histogram_tester_.ExpectTotalCount(kFunnelHistogramName, 0);
+  histogram_tester_.ExpectTotalCount(kResultHistogramName, 0);
+  histogram_tester_.ExpectTotalCount(kLatencySuccessHistogramName, 0);
+  histogram_tester_.ExpectTotalCount(kLatencyFailureHistogramName, 0);
 }
 
 // Tests that the attestation flow does not get triggered when the allow-list is
@@ -316,6 +360,11 @@ IN_PROC_BROWSER_TEST_P(DeviceTrustBrowserTest, AttestationPrefEmptyList) {
   // Requests with attestation flow headers should not have been recorded.
   EXPECT_FALSE(initial_attestation_request_);
   EXPECT_FALSE(challenge_response_request_);
+
+  histogram_tester_.ExpectTotalCount(kFunnelHistogramName, 0);
+  histogram_tester_.ExpectTotalCount(kResultHistogramName, 0);
+  histogram_tester_.ExpectTotalCount(kLatencySuccessHistogramName, 0);
+  histogram_tester_.ExpectTotalCount(kLatencyFailureHistogramName, 0);
 }
 
 // Tests that the attestation flow does not get triggered when the allow-list
@@ -331,6 +380,11 @@ IN_PROC_BROWSER_TEST_P(DeviceTrustBrowserTest, AttestationPrefNotSet) {
   // Requests with attestation flow headers should not have been recorded.
   EXPECT_FALSE(initial_attestation_request_);
   EXPECT_FALSE(challenge_response_request_);
+
+  histogram_tester_.ExpectTotalCount(kFunnelHistogramName, 0);
+  histogram_tester_.ExpectTotalCount(kResultHistogramName, 0);
+  histogram_tester_.ExpectTotalCount(kLatencySuccessHistogramName, 0);
+  histogram_tester_.ExpectTotalCount(kLatencyFailureHistogramName, 0);
 }
 
 INSTANTIATE_TEST_SUITE_P(All,

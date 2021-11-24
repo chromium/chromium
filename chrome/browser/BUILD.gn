@@ -5696,6 +5696,7 @@ static_library("browser") {
       "//chrome/browser/enterprise/connectors/device_trust:features",
       "//chrome/browser/enterprise/connectors/device_trust/attestation/common",
       "//chrome/browser/enterprise/connectors/device_trust/attestation/common:types",
+      "//chrome/browser/enterprise/connectors/device_trust/common",
       "//chrome/browser/enterprise/connectors/device_trust/signals",
       "//chrome/browser/enterprise/connectors/device_trust/signals/decorators/common",
       "//chrome/browser/enterprise/connectors/device_trust/signals/decorators/content",

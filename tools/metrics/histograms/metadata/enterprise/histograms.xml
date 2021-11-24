@@ -754,6 +754,46 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Enterprise.DeviceTrust.Attestation.Funnel"
+    enum="DTAttestationFunnelStep" expires_after="2022-08-01">
+  <owner>hmare@google.com</owner>
+  <owner>rogerta@chromium.org</owner>
+  <owner>seblalancette@chromium.org</owner>
+  <summary>
+    Various steps recorded when a device goes through the device trust connector
+    attestation flow with a partner website.
+  </summary>
+</histogram>
+
+<histogram name="Enterprise.DeviceTrust.Attestation.ResponseLatency.{Variant}"
+    units="ms" expires_after="2022-07-01">
+  <owner>hmare@google.com</owner>
+  <owner>rogerta@chromium.org</owner>
+  <owner>seblalancette@chromium.org</owner>
+  <summary>
+    Latency of a {Variant} attestation step in the overarching Device Trust
+    connector's attestation flow. This measures the amount of time required to
+    generate and return a response to the given challenge, which is effectively
+    the last step in the overall attestation flow.
+  </summary>
+  <token key="Variant">
+    <variant name="Failure" summary="failed"/>
+    <variant name="Success" summary="successful"/>
+  </token>
+</histogram>
+
+<histogram name="Enterprise.DeviceTrust.Attestation.Result"
+    enum="DTAttestationResult" expires_after="2022-08-01">
+  <owner>hmare@google.com</owner>
+  <owner>rogerta@chromium.org</owner>
+  <owner>seblalancette@chromium.org</owner>
+  <summary>
+    Result of the attestation step in the overarching Device Trust connector's
+    attestation flow. Logged whenever the attestation step finishes, success or
+    failure, and right before the throttled request resumes.
+  </summary>
+</histogram>
+
 <histogram name="Enterprise.DeviceTrust.RotateSigningKey.Tries" units="tries"
     expires_after="2022-07-01">
   <owner>hmare@google.com</owner>

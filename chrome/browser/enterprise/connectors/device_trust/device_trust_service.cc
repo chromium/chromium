@@ -9,6 +9,7 @@
 #include "chrome/browser/enterprise/connectors/device_trust/attestation/common/attestation_service.h"
 #include "chrome/browser/enterprise/connectors/device_trust/attestation/common/attestation_utils.h"
 #include "chrome/browser/enterprise/connectors/device_trust/attestation/common/signals_type.h"
+#include "chrome/browser/enterprise/connectors/device_trust/common/metrics_utils.h"
 #include "chrome/browser/enterprise/connectors/device_trust/device_trust_connector_service.h"
 #include "chrome/browser/enterprise/connectors/device_trust/device_trust_features.h"
 #include "chrome/browser/enterprise/connectors/device_trust/signals/signals_service.h"
@@ -57,6 +58,8 @@ void DeviceTrustService::OnSignalsCollected(
     const std::string& challenge,
     AttestationCallback callback,
     std::unique_ptr<SignalsType> signals) {
+  LogAttestationFunnelStep(DTAttestationFunnelStep::kSignalsCollected);
+
   attestation_service_->BuildChallengeResponseForVAChallenge(
       challenge, std::move(signals), std::move(callback));
 }

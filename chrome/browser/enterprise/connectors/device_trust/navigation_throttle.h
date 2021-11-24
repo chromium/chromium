@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ENTERPRISE_CONNECTORS_DEVICE_TRUST_NAVIGATION_THROTTLE_H_
 
 #include "base/callback_list.h"
+#include "base/time/time.h"
 #include "base/values.h"
 #include "content/public/browser/navigation_throttle.h"
 
@@ -60,7 +61,8 @@ class DeviceTrustNavigationThrottle : public content::NavigationThrottle {
   // Set `challege_response` into the header
   // `X-Verified-Access-Challenge-Response` of the redirection request to the
   // IdP and resume the navigation.
-  void ReplyChallengeResponseAndResume(const std::string& challenge_response);
+  void ReplyChallengeResponseAndResume(base::TimeTicks start_time,
+                                       const std::string& challenge_response);
 
   base::WeakPtrFactory<DeviceTrustNavigationThrottle> weak_ptr_factory_{this};
 };

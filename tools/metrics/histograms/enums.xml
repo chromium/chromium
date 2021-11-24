@@ -23813,6 +23813,25 @@ Called by update_document_policy_enum.py.-->
   <int value="1" label="SOFTWARE_REJECTED"/>
 </enum>
 
+<enum name="DTAttestationFunnelStep">
+  <int value="0" label="Attestation Flow Started"/>
+  <int value="1" label="Challenge Received"/>
+  <int value="2" label="Signals Collected"/>
+  <int value="3" label="Challenge Response Sent"/>
+</enum>
+
+<enum name="DTAttestationResult">
+  <int value="0" label="Missing Core Signals"/>
+  <int value="1" label="Missing Signing Key"/>
+  <int value="2" label="Bad Challenge Format"/>
+  <int value="3" label="Bad Challenge Source"/>
+  <int value="4" label="Failed to Serialize KeyInfo"/>
+  <int value="5" label="Failed to Generate a Response"/>
+  <int value="6" label="Failed to Sign the Response"/>
+  <int value="7" label="Failed to Serialize the Response"/>
+  <int value="8" label="Success"/>
+</enum>
+
 <enum name="DTLS_SRTPCryptoSuite">
   <summary>
     DTLS/SRTP crypto suites from the IANA registry as specified at

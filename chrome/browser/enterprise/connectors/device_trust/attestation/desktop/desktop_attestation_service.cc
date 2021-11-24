@@ -15,6 +15,7 @@
 #include "chrome/browser/enterprise/connectors/device_trust/attestation/common/attestation_utils.h"
 #include "chrome/browser/enterprise/connectors/device_trust/attestation/common/proto/device_trust_attestation_ca.pb.h"
 #include "chrome/browser/enterprise/connectors/device_trust/attestation/desktop/crypto_utility.h"
+#include "chrome/browser/enterprise/connectors/device_trust/common/metrics_utils.h"
 #include "components/enterprise/browser/device_trust/device_trust_key_manager.h"
 #include "crypto/random.h"
 #include "crypto/unexportable_key.h"
@@ -105,9 +106,16 @@ void DesktopAttestationService::BuildChallengeResponseForVAChallenge(
     AttestationCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(signals);
-  DCHECK(signals->has_device_id() && !signals->device_id().empty());
-  DCHECK(signals->has_obfuscated_customer_id() &&
-         !signals->obfuscated_customer_id().empty());
+
+  // Signals have to at least have the non-empty device ID and obfuscated
+  // customer ID.
+  if (!signals || !signals->has_device_id() || signals->device_id().empty() ||
+      !signals->has_obfuscated_customer_id() ||
+      signals->obfuscated_customer_id().empty()) {
+    LogAttestationResult(DTAttestationResult::kMissingCoreSignals);
+    std::move(callback).Run(std::string());
+    return;
+  }
 
   key_manager_->ExportPublicKeyAsync(
       base::BindOnce(&DesktopAttestationService::OnPublicKeyExported,
@@ -124,6 +132,7 @@ void DesktopAttestationService::OnPublicKeyExported(
   if (!exported_key) {
     // No key is available, so mark the device as untrusted (no challenge
     // response).
+    LogAttestationResult(DTAttestationResult::kMissingSigningKey);
     std::move(callback).Run(std::string());
     return;
   }
@@ -131,9 +140,11 @@ void DesktopAttestationService::OnPublicKeyExported(
   auto serialized_signed_data = JsonChallengeToProtobufChallenge(challenge);
 
   SignedData signed_data;
-  if (!signed_data.ParseFromString(serialized_signed_data)) {
+  if (serialized_signed_data.empty() ||
+      !signed_data.ParseFromString(serialized_signed_data)) {
     // Challenge is not properly formatted, so mark the device as untrusted (no
     // challenge response).
+    LogAttestationResult(DTAttestationResult::kBadChallengeFormat);
     std::move(callback).Run(std::string());
     return;
   }
@@ -158,6 +169,7 @@ void DesktopAttestationService::OnChallengeValidated(
   if (!is_va_challenge) {
     // Challenge does not come from VA, so mark the device as untrusted (no
     // challenge response).
+    LogAttestationResult(DTAttestationResult::kBadChallengeSource);
     std::move(callback).Run(std::string());
     return;
   }
@@ -173,6 +185,7 @@ void DesktopAttestationService::OnChallengeValidated(
 
   std::string serialized_key_info;
   if (!key_info.SerializeToString(&serialized_key_info)) {
+    LogAttestationResult(DTAttestationResult::kFailedToSerializeKeyInfo);
     std::move(callback).Run(std::string());
     return;
   }
@@ -194,6 +207,7 @@ void DesktopAttestationService::OnResponseCreated(
   if (!serialized_response) {
     // Failed to create a response, so mark the device as untrusted (no
     // challenge response).
+    LogAttestationResult(DTAttestationResult::kFailedToGenerateResponse);
     std::move(callback).Run(std::string());
     return;
   }
@@ -213,6 +227,7 @@ void DesktopAttestationService::OnResponseSigned(
   if (!encrypted_response) {
     // Failed to sign the response, so mark the device as untrusted (no
     // challenge response).
+    LogAttestationResult(DTAttestationResult::kFailedToSignResponse);
     std::move(callback).Run(std::string());
     return;
   }
@@ -225,14 +240,18 @@ void DesktopAttestationService::OnResponseSigned(
 
   std::string serialized_attestation_response;
   if (!signed_data.SerializeToString(&serialized_attestation_response)) {
+    LogAttestationResult(DTAttestationResult::kFailedToSerializeResponse);
     std::move(callback).Run(std::string());
     return;
   }
 
   std::string json_response;
-  if (serialized_attestation_response != std::string()) {
+  if (!serialized_attestation_response.empty()) {
+    LogAttestationResult(DTAttestationResult::kSuccess);
     json_response =
         ProtobufChallengeToJsonChallenge(serialized_attestation_response);
+  } else {
+    LogAttestationResult(DTAttestationResult::kEmptySerializedResponse);
   }
 
   std::move(callback).Run(json_response);

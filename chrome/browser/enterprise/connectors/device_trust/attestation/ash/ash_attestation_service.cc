@@ -16,8 +16,30 @@
 #include "chrome/browser/ash/attestation/tpm_challenge_key_result.h"
 #include "chrome/browser/ash/attestation/tpm_challenge_key_with_timeout.h"
 #include "chrome/browser/enterprise/connectors/device_trust/attestation/common/attestation_utils.h"
+#include "chrome/browser/enterprise/connectors/device_trust/common/metrics_utils.h"
 
 namespace enterprise_connectors {
+
+namespace {
+
+using ash::attestation::TpmChallengeKeyResultCode;
+
+DTAttestationResult ToAttestationResult(TpmChallengeKeyResultCode code) {
+  // Map the error codes as best as possible to the DTAttestationResult. The
+  // `kFailedToGenerateResponse` will be considered the bucket of all unmappable
+  // errors.
+  switch (code) {
+    case TpmChallengeKeyResultCode::kKeyRegistrationFailedError:
+    case TpmChallengeKeyResultCode::kUserKeyNotAvailableError:
+      return DTAttestationResult::kMissingSigningKey;
+    case TpmChallengeKeyResultCode::kChallengeBadBase64Error:
+      return DTAttestationResult::kBadChallengeFormat;
+    default:
+      return DTAttestationResult::kFailedToGenerateResponse;
+  }
+}
+
+}  // namespace
 
 AshAttestationService::AshAttestationService(Profile* profile)
     : profile_(profile) {}
@@ -43,8 +65,10 @@ void AshAttestationService::ReturnResult(
     const ash::attestation::TpmChallengeKeyResult& result) {
   std::string encoded_response;
   if (result.IsSuccess()) {
-    // TODO(crbug.com/1241405): Handle failure case better.
     base::Base64Encode(result.challenge_response, &encoded_response);
+    LogAttestationResult(DTAttestationResult::kSuccess);
+  } else {
+    LogAttestationResult(ToAttestationResult(result.result_code));
   }
   std::move(callback).Run(encoded_response);
 }
