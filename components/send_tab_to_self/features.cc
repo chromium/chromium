@@ -14,8 +14,6 @@ const base::Feature kSendTabToSelfWhenSignedIn{
     "SendTabToSelfWhenSignedIn", base::FEATURE_DISABLED_BY_DEFAULT};
 const base::Feature kSendTabToSelfManageDevicesLink{
     "SendTabToSelfManageDevicesLink", base::FEATURE_DISABLED_BY_DEFAULT};
-const base::Feature kSendTabToSelfUseFakeBackend{
-    "SendTabToSelfUseFakeBackend", base::FEATURE_DISABLED_BY_DEFAULT};
 const base::Feature kSendTabToSelfV2{"SendTabToSelfV2",
                                      base::FEATURE_DISABLED_BY_DEFAULT};
 
