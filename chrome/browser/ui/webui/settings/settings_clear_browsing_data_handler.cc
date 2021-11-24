@@ -214,8 +214,7 @@ ClearBrowsingDataHandler::ProcessInstalledApps(
   for (const auto& item : installed_apps) {
     const base::DictionaryValue* site = nullptr;
     CHECK(item.GetAsDictionary(&site));
-    bool is_checked = false;
-    CHECK(site->GetBoolean(kIsCheckedField, &is_checked));
+    bool is_checked = site->FindBoolPath(kIsCheckedField).value();
     std::string domain;
     CHECK(site->GetString(kRegisterableDomainField, &domain));
     absl::optional<int> domain_reason = site->FindIntKey(kReasonBitfieldField);
@@ -249,7 +248,6 @@ void ClearBrowsingDataHandler::HandleClearBrowsingData(
   std::string webui_callback_id = args_list[0].GetString();
 
   PrefService* prefs = profile_->GetPrefs();
-
   int site_data_mask = chrome_browsing_data_remover::DATA_TYPE_SITE_DATA;
   // Don't try to clear LSO data if it's not supported.
   if (!prefs->GetBoolean(prefs::kClearPluginLSODataEnabled))
