@@ -62,6 +62,8 @@
 #include "third_party/blink/renderer/core/xml_names.h"
 #include "third_party/blink/renderer/core/xmlns_names.h"
 #include "third_party/blink/renderer/platform/font_family_names.h"
+#include "third_party/blink/renderer/platform/fonts/font_global_context.h"
+#include "third_party/blink/renderer/platform/fonts/font_unique_name_lookup.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_initiator_type_names.h"
 #include "third_party/blink/renderer/platform/network/http_names.h"
 #include "third_party/blink/renderer/platform/weborigin/security_policy.h"
@@ -158,6 +160,10 @@ void CoreInitializer::Initialize() {
   BindingSecurity::Init();
 
   TimeZoneController::Init();
+
+  auto* name_lookup = FontGlobalContext::Get()->GetFontUniqueNameLookup();
+  if (name_lookup)
+    name_lookup->Init();
 }
 
 }  // namespace blink

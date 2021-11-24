@@ -49905,6 +49905,7 @@ from previous Chrome versions.
   <int value="-1179917414" label="DefaultChromeAppUninstallSync:disabled"/>
   <int value="-1178350793" label="RemoteCopyReceiver:disabled"/>
   <int value="-1177802205" label="enable-hosted-app-quit-notification"/>
+  <int value="-1177230990" label="PrefetchAndroidFonts:enabled"/>
   <int value="-1176748003"
       label="FramebustingNeedsSameOriginOrUserGesture:disabled"/>
   <int value="-1176493523" label="enable-md-extensions"/>
@@ -50540,6 +50541,7 @@ from previous Chrome versions.
   <int value="-705212373" label="IncognitoNtpRevamp:disabled"/>
   <int value="-704459022" label="ContinuousSearch:enabled"/>
   <int value="-704232562" label="UseMonitorColorSpace:enabled"/>
+  <int value="-703552662" label="PrefetchAndroidFonts:disabled"/>
   <int value="-702477233" label="ContentFullscreen:enabled"/>
   <int value="-700762821" label="RequestDesktopSiteForTablets:disabled"/>
   <int value="-700300613" label="use-fake-device-for-media-stream:disabled"/>
