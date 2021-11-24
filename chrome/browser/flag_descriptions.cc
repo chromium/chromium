@@ -4711,7 +4711,7 @@ const char kFilesArchivemount2Description[] =
 const char kFilesBannerFrameworkName[] =
     "Updated Banner framework in Files app";
 const char kFilesBannerFrameworkDescription[] =
-    "Enable the updated branner framework in Files app";
+    "Enable the updated banner framework in Files app";
 
 const char kFilesExtractArchiveName[] = "Extract archive in Files app";
 const char kFilesExtractArchiveDescription[] =
