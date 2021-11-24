@@ -163,6 +163,7 @@ template("nacl_test_data") {
     forward_variables_from(invoker,
                            [
                              "cflags",
+                             "assert_no_deps",
                              "defines",
                              "include_dirs",
                              "ldflags",

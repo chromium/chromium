@@ -19,8 +19,8 @@ group("extensions") {
     ":ppapi_tests_extensions_popup($newlib)",
     ":ppapi_tests_extensions_socket_permissions($newlib)",
   ]
-  if ((target_cpu == "x86" || target_cpu == "x64") && (is_linux || is_chromeos) &&
-      enable_nacl_nonsfi) {
+  if ((target_cpu == "x86" || target_cpu == "x64") &&
+      (is_linux || is_chromeos) && enable_nacl_nonsfi) {
     nonsfi = "//build/toolchain/nacl:newlib_pnacl_nonsfi"
     data_deps += [ ":ppapi_tests_extensions_packaged_app($nonsfi)" ]
   }
@@ -116,10 +116,11 @@ if (is_nacl && !is_nacl_nonsfi) {
 if (is_nacl) {
   nacl_test_data("ppapi_tests_extensions_packaged_app") {
     sources = [ "packaged_app/test_packaged_app.cc" ]
-    deps = [
-      "//ipc:message_support",
-      "//ppapi/cpp",
-    ]
+    deps = [ "//ppapi/cpp" ]
+
+    # This is built with a nacl toolchain, so it shouldn't pull in
+    # any of chrome's "actual" code.
+    assert_no_deps = [ "//base" ]
     destination_dir = "test_data/ppapi/tests/extensions/packaged_app"
     test_files = [
       "packaged_app/controller.js",
