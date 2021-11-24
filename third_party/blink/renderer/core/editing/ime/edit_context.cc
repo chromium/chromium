@@ -435,8 +435,12 @@ String EditContext::enterKeyHint() const {
 
 void EditContext::GetLayoutBounds(gfx::Rect* control_bounds,
                                   gfx::Rect* selection_bounds) {
-  *control_bounds = control_bounds_;
-  *selection_bounds = selection_bounds_;
+  // EditContext's coordinates are in CSS pixels, which need to be converted to
+  // physical pixels before return.
+  *control_bounds = gfx::ScaleToEnclosingRect(
+      control_bounds_, DomWindow()->GetFrame()->DevicePixelRatio());
+  *selection_bounds = gfx::ScaleToEnclosingRect(
+      selection_bounds_, DomWindow()->GetFrame()->DevicePixelRatio());
 }
 
 bool EditContext::SetComposition(
@@ -769,7 +773,16 @@ bool EditContext::GetCompositionCharacterBounds(WebVector<gfx::Rect>& bounds) {
   if (static_cast<int>(character_bounds_.size()) != composition_range.length())
     return false;
 
-  bounds = character_bounds_;
+  bounds.Clear();
+  std::for_each(
+      character_bounds_.begin(), character_bounds_.end(),
+      [&bounds, this](auto& bound_in_css_pixels) {
+        // EditContext's coordinates are in CSS pixels, which need to be
+        // converted to physical pixels before return.
+        bounds.push_back(gfx::ScaleToEnclosingRect(
+            bound_in_css_pixels, DomWindow()->GetFrame()->DevicePixelRatio()));
+      });
+
   return true;
 }
 

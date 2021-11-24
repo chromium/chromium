@@ -12859,6 +12859,7 @@ TEST_F(WebFrameSimTest, ScrollFocusedEditableIntoViewNoLayoutObject) {
 TEST_F(WebFrameSimTest, ScrollEditContextIntoView) {
   WebView().MainFrameViewWidget()->Resize(gfx::Size(500, 600));
   WebView().GetPage()->GetSettings().SetTextAutosizingEnabled(false);
+  WebView().SetDeviceScaleFactor(2.0f);
 
   SimRequest r("https://example.com/test.html", "text/html");
   LoadURL("https://example.com/test.html");
@@ -12871,9 +12872,7 @@ TEST_F(WebFrameSimTest, ScrollEditContextIntoView) {
         target.editContext = editContext;
         target.focus();
         let controlBounds = new DOMRect(500, 850, 1, 20);
-        let dummySelectionBounds = new DOMRect(0, 0, 0, 0);
         editContext.updateControlBounds(controlBounds);
-        editContext.updateSelectionBounds(dummySelectionBounds);
       </script>
   )HTML");
 
@@ -12884,10 +12883,11 @@ TEST_F(WebFrameSimTest, ScrollEditContextIntoView) {
       ->FrameWidgetImpl()
       ->ScrollFocusedEditableElementIntoView();
 
-  // scrollOffset.x = controlBound.x - left padding = 500 - 150 = 350
-  // scrollOffset.y = controlBound.y - (viewport.height - controlBound.height)/2
-  //                = 850 - (600 - 20) / 2 = 560
-  EXPECT_EQ(gfx::Point(350, 560),
+  // scrollOffset.x = controlBound.x * zoom - left padding = 500 * 2 - 150 = 850
+  // scrollOffset.y = controlBound.y * zoom - (viewport.height -
+  // controlBound.height * 2)/2
+  //                = 850 * 2 - (600 - 20 * 2) / 2 = 1420
+  EXPECT_EQ(gfx::Point(850, 1420),
             WebView().FakePageScaleAnimationTargetPositionForTesting());
 }
 

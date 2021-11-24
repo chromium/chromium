@@ -1907,29 +1907,20 @@ bool WebFrameWidgetImpl::ScrollFocusedEditableElementIntoView() {
 
   if (edit_context) {
     // Scroll the |EditContext| into view.
-    // EditContext's coordinates are in Device Independent Pixels.
-    gfx::Rect control_bounds_in_dip;
-    gfx::Rect selection_bounds_in_dip;
-    edit_context->GetLayoutBounds(&control_bounds_in_dip,
-                                  &selection_bounds_in_dip);
-
-    IntRect control_bounds_in_physical_pixel = IntRect(control_bounds_in_dip);
-    IntRect selection_bounds_in_physical_pixel =
-        IntRect(selection_bounds_in_dip);
-    control_bounds_in_physical_pixel.Scale(
-        View()->ZoomFactorForDeviceScaleFactor());
-    selection_bounds_in_physical_pixel.Scale(
-        View()->ZoomFactorForDeviceScaleFactor());
+    gfx::Rect control_bounds_in_physical_pixels;
+    gfx::Rect selection_bounds_in_physical_pixels;
+    edit_context->GetLayoutBounds(&control_bounds_in_physical_pixels,
+                                  &selection_bounds_in_physical_pixels);
 
     LocalFrameView* main_frame_view = LocalRootImpl()->GetFrame()->View();
 
     View()->ZoomAndScrollToFocusedEditableElementRect(
         main_frame_view->RootFrameToDocument(
             element->GetDocument().View()->ConvertToRootFrame(
-                control_bounds_in_physical_pixel)),
+                IntRect(control_bounds_in_physical_pixels))),
         main_frame_view->RootFrameToDocument(
             element->GetDocument().View()->ConvertToRootFrame(
-                selection_bounds_in_physical_pixel)),
+                IntRect(selection_bounds_in_physical_pixels))),
         View()->ShouldZoomToLegibleScale(*element));
 
     return true;
