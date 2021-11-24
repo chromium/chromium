@@ -1870,6 +1870,27 @@ suite('PasswordsSection', function() {
                 '#addPasswordButton'));
       });
 
+  test(
+      'addPasswordButtonShownOnlyWhenPasswordManagerNotDisabledByPolicy',
+      function() {
+        loadTimeData.overrideValues({addPasswordsInSettingsEnabled: true});
+        const passwordsSection =
+            elementFactory.createPasswordsSection(passwordManager, [], []);
+        const addButton =
+            passwordsSection.shadowRoot.querySelector('#addPasswordButton');
+
+        passwordsSection.set('prefs.credentials_enable_service', {
+          enforcement: chrome.settingsPrivate.Enforcement.ENFORCED,
+          value: false,
+        });
+        flush();
+        assertTrue(addButton.style.display === 'none');
+
+        passwordsSection.set('prefs.credentials_enable_service.value', true);
+        flush();
+        assertFalse(addButton.style.display === 'none');
+      });
+
   test('addPasswordButtonOpensAddPasswordDialog', function() {
     loadTimeData.overrideValues({addPasswordsInSettingsEnabled: true});
     const passwordsSection =

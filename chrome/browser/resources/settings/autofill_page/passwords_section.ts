@@ -259,9 +259,9 @@ class PasswordsSectionElement extends PasswordsSectionElementBase {
 
       showAddPasswordButton_: {
         type: Boolean,
-        value() {
-          return loadTimeData.getBoolean('addPasswordsInSettingsEnabled');
-        }
+        computed: 'computeShowAddPasswordButton_(' +
+            'prefs.credentials_enable_service.enforcement, ' +
+            'prefs.credentials_enable_service.value)',
       },
     };
   }
@@ -412,6 +412,14 @@ class PasswordsSectionElement extends PasswordsSectionElementBase {
     this.passwordManager_.removeAccountStorageOptInStateListener(
         assert(this.setIsOptedInForAccountStorageListener_!));
     this.setIsOptedInForAccountStorageListener_ = null;
+  }
+
+  private computeShowAddPasswordButton_(): boolean {
+    return loadTimeData.getBoolean('addPasswordsInSettingsEnabled') &&
+        // Don't show add button if password manager is disabled by policy.
+        !(this.prefs.credentials_enable_service.enforcement ===
+              chrome.settingsPrivate.Enforcement.ENFORCED &&
+          !this.prefs.credentials_enable_service.value);
   }
 
   private computeSignedIn_(): boolean {
