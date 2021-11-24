@@ -18,30 +18,22 @@
 #include "chrome/browser/extensions/extension_action_test_util.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/load_error_reporter.h"
-#include "chrome/browser/extensions/test_extension_system.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/toolbar/toolbar_action_view_controller.h"
 #include "chrome/browser/ui/views/extensions/extensions_menu_button.h"
 #include "chrome/browser/ui/views/extensions/extensions_menu_item_view.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_button.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_container.h"
+#include "chrome/browser/ui/views/extensions/extensions_toolbar_unittest.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
-#include "chrome/browser/ui/views/frame/test_with_browser_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "content/public/test/test_utils.h"
-#include "extensions/browser/disable_reason.h"
-#include "extensions/browser/extension_system.h"
 #include "extensions/browser/test_extension_registry_observer.h"
 #include "extensions/common/extension.h"
-#include "extensions/common/extension_builder.h"
 #include "extensions/test/test_extension_dir.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/base/dragdrop/drag_drop_types.h"
-#include "ui/events/base_event_utils.h"
 #include "ui/events/event.h"
-#include "ui/events/event_constants.h"
-#include "ui/events/types/event_type.h"
-#include "ui/gfx/geometry/point.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/layout/animating_layout_manager_test_util.h"
 #include "ui/views/view_utils.h"
@@ -74,7 +66,7 @@ class AdditionalBrowser {
 
 }  // namespace
 
-class ExtensionsMenuViewUnitTest : public TestWithBrowserView {
+class ExtensionsMenuViewUnitTest : public ExtensionsToolbarUnitTest {
  public:
   ExtensionsMenuViewUnitTest()
       : allow_extension_menu_instances_(
@@ -86,20 +78,11 @@ class ExtensionsMenuViewUnitTest : public TestWithBrowserView {
 
   ~ExtensionsMenuViewUnitTest() override = default;
 
-  // TestWithBrowserView:
+  // ExtensionsToolbarUnitTest:
   void SetUp() override;
 
-  // Adds a simple extension to the profile.
-  scoped_refptr<const extensions::Extension> AddSimpleExtension(
+  scoped_refptr<const extensions::Extension> InstallExtensionAndLayout(
       const std::string& name);
-
-  extensions::ExtensionService* extension_service() {
-    return extension_service_;
-  }
-
-  ExtensionsToolbarContainer* extensions_container() {
-    return browser_view()->toolbar()->extensions_container();
-  }
 
   ExtensionsMenuView* extensions_menu() {
     return ExtensionsMenuView::GetExtensionsMenuViewForTesting();
@@ -110,7 +93,6 @@ class ExtensionsMenuViewUnitTest : public TestWithBrowserView {
 
   void ClickPinButton(ExtensionsMenuItemView* menu_item) const;
   void ClickContextMenuButton(ExtensionsMenuItemView* menu_item) const;
-  void ClickButton(views::Button* button) const;
 
   std::vector<ToolbarActionView*> GetPinnedExtensionViews();
 
@@ -126,44 +108,21 @@ class ExtensionsMenuViewUnitTest : public TestWithBrowserView {
   // the ExtensionsMenuView sometimes needs a nudge to re-layout the views.
   void LayoutMenuIfNecessary();
 
-  // Waits for the extensions container to animate (on pin, unpin, pop-out,
-  // etc.)
-  void WaitForAnimation();
-
  private:
   base::AutoReset<bool> allow_extension_menu_instances_;
-
-  extensions::ExtensionService* extension_service_ = nullptr;
 };
 
 void ExtensionsMenuViewUnitTest::SetUp() {
-  TestWithBrowserView::SetUp();
-
-  // Set up some extension-y bits.
-  extensions::TestExtensionSystem* extension_system =
-      static_cast<extensions::TestExtensionSystem*>(
-          extensions::ExtensionSystem::Get(profile()));
-  extension_system->CreateExtensionService(
-      base::CommandLine::ForCurrentProcess(), base::FilePath(), false);
-
-  extension_service_ =
-      extensions::ExtensionSystem::Get(profile())->extension_service();
-
-  // Shorten delay on animations so tests run faster.
-  views::test::ReduceAnimationDuration(extensions_container());
+  ExtensionsToolbarUnitTest::SetUp();
 
   ExtensionsMenuView::ShowBubble(extensions_container()->GetExtensionsButton(),
                                  browser(), extensions_container(), true);
 }
 
 scoped_refptr<const extensions::Extension>
-ExtensionsMenuViewUnitTest::AddSimpleExtension(const std::string& name) {
-  scoped_refptr<const extensions::Extension> extension =
-      extensions::ExtensionBuilder(name).Build();
-  extension_service()->AddExtension(extension.get());
-  // Force the menu to re-layout, since a new item was added.
+ExtensionsMenuViewUnitTest::InstallExtensionAndLayout(const std::string& name) {
+  scoped_refptr<const extensions::Extension> extension = InstallExtension(name);
   LayoutMenuIfNecessary();
-
   return extension;
 }
 
@@ -185,17 +144,6 @@ void ExtensionsMenuViewUnitTest::ClickPinButton(
 void ExtensionsMenuViewUnitTest::ClickContextMenuButton(
     ExtensionsMenuItemView* menu_item) const {
   ClickButton(menu_item->context_menu_button_for_testing());
-}
-
-void ExtensionsMenuViewUnitTest::ClickButton(views::Button* button) const {
-  ui::MouseEvent press_event(ui::ET_MOUSE_PRESSED, gfx::Point(1, 1),
-                             gfx::Point(), ui::EventTimeForNow(),
-                             ui::EF_LEFT_MOUSE_BUTTON, 0);
-  button->OnMousePressed(press_event);
-  ui::MouseEvent release_event(ui::ET_MOUSE_RELEASED, gfx::Point(1, 1),
-                               gfx::Point(), ui::EventTimeForNow(),
-                               ui::EF_LEFT_MOUSE_BUTTON, 0);
-  button->OnMouseReleased(release_event);
 }
 
 std::vector<ToolbarActionView*>
@@ -261,22 +209,13 @@ void ExtensionsMenuViewUnitTest::LayoutMenuIfNecessary() {
   extensions_menu()->GetWidget()->LayoutRootViewIfNecessary();
 }
 
-void ExtensionsMenuViewUnitTest::WaitForAnimation() {
-#if defined(OS_MAC)
-  // TODO(crbug.com/1045212): we avoid using animations on Mac due to the lack
-  // of support in unit tests. Therefore this is a no-op.
-#else
-  views::test::WaitForAnimatingLayoutManager(extensions_container());
-#endif
-}
-
 TEST_F(ExtensionsMenuViewUnitTest, ExtensionsAreShownInTheMenu) {
   // To start, there should be no extensions in the menu.
   EXPECT_EQ(0u, extensions_menu()->extensions_menu_items_for_testing().size());
 
   // Add an extension, and verify that it's added to the menu.
   constexpr char kExtensionName[] = "Test 1";
-  AddSimpleExtension(kExtensionName);
+  InstallExtensionAndLayout(kExtensionName);
 
   {
     base::flat_set<ExtensionsMenuItemView*> menu_items =
@@ -291,13 +230,13 @@ TEST_F(ExtensionsMenuViewUnitTest, ExtensionsAreShownInTheMenu) {
 
 TEST_F(ExtensionsMenuViewUnitTest, ExtensionsAreSortedInTheMenu) {
   constexpr char kExtensionZName[] = "Z Extension";
-  AddSimpleExtension(kExtensionZName);
+  InstallExtension(kExtensionZName);
   constexpr char kExtensionAName[] = "A Extension";
-  AddSimpleExtension(kExtensionAName);
+  InstallExtension(kExtensionAName);
   constexpr char kExtensionBName[] = "b Extension";
-  AddSimpleExtension(kExtensionBName);
+  InstallExtension(kExtensionBName);
   constexpr char kExtensionCName[] = "C Extension";
-  AddSimpleExtension(kExtensionCName);
+  InstallExtensionAndLayout(kExtensionCName);
 
   std::vector<ExtensionsMenuItemView*> menu_items =
       ExtensionsMenuView::GetSortedItemsForSectionForTesting(
@@ -319,7 +258,7 @@ TEST_F(ExtensionsMenuViewUnitTest, ExtensionsAreSortedInTheMenu) {
 
 TEST_F(ExtensionsMenuViewUnitTest, PinnedExtensionAppearsInToolbar) {
   constexpr char kName[] = "Test Name";
-  AddSimpleExtension(kName);
+  InstallExtensionAndLayout(kName);
 
   ExtensionsMenuItemView* menu_item = GetOnlyMenuItem();
   ASSERT_TRUE(menu_item);
@@ -342,7 +281,7 @@ TEST_F(ExtensionsMenuViewUnitTest, PinnedExtensionAppearsInToolbar) {
 }
 
 TEST_F(ExtensionsMenuViewUnitTest, PinnedExtensionAppearsInAnotherWindow) {
-  AddSimpleExtension("Test Name");
+  InstallExtensionAndLayout("Test Name");
 
   AdditionalBrowser browser2(
       CreateBrowser(browser()->profile(), browser()->type(),
@@ -367,7 +306,7 @@ TEST_F(ExtensionsMenuViewUnitTest, PinnedExtensionAppearsInAnotherWindow) {
 
 TEST_F(ExtensionsMenuViewUnitTest, PinnedExtensionRemovedWhenDisabled) {
   constexpr char kName[] = "Test Name";
-  const extensions::ExtensionId id = AddSimpleExtension(kName)->id();
+  const extensions::ExtensionId id = InstallExtensionAndLayout(kName)->id();
 
   {
     ExtensionsMenuItemView* menu_item = GetOnlyMenuItem();
@@ -375,14 +314,13 @@ TEST_F(ExtensionsMenuViewUnitTest, PinnedExtensionRemovedWhenDisabled) {
     ClickPinButton(menu_item);
   }
 
-  extension_service()->DisableExtension(
-      id, extensions::disable_reason::DISABLE_USER_ACTION);
+  DisableExtension(id);
   WaitForAnimation();
 
   ASSERT_EQ(0u, extensions_menu()->extensions_menu_items_for_testing().size());
   EXPECT_THAT(GetPinnedExtensionNames(), testing::IsEmpty());
 
-  extension_service()->EnableExtension(id);
+  EnableExtension(id);
   WaitForAnimation();
 
   ASSERT_EQ(1u, extensions_menu()->extensions_menu_items_for_testing().size());
@@ -391,11 +329,11 @@ TEST_F(ExtensionsMenuViewUnitTest, PinnedExtensionRemovedWhenDisabled) {
 
 TEST_F(ExtensionsMenuViewUnitTest, ReorderPinnedExtensions) {
   constexpr char kName1[] = "Test 1";
-  AddSimpleExtension(kName1);
+  InstallExtension(kName1);
   constexpr char kName2[] = "Test 2";
-  AddSimpleExtension(kName2);
+  InstallExtension(kName2);
   constexpr char kName3[] = "Test 3";
-  AddSimpleExtension(kName3);
+  InstallExtensionAndLayout(kName3);
 
   EXPECT_EQ(3u, extensions_menu()->extensions_menu_items_for_testing().size());
 
@@ -430,11 +368,11 @@ TEST_F(ExtensionsMenuViewUnitTest, ReorderPinnedExtensions) {
 
 TEST_F(ExtensionsMenuViewUnitTest, RunDropCallback) {
   constexpr char kName1[] = "Test 1";
-  auto ext1 = AddSimpleExtension(kName1);
+  auto ext1 = InstallExtension(kName1);
   constexpr char kName2[] = "Test 2";
-  auto ext2 = AddSimpleExtension(kName2);
+  auto ext2 = InstallExtension(kName2);
   constexpr char kName3[] = "Test 3";
-  auto ext3 = AddSimpleExtension(kName3);
+  auto ext3 = InstallExtensionAndLayout(kName3);
 
   auto* toolbar_model = ToolbarActionsModel::Get(profile());
   ASSERT_TRUE(toolbar_model);
@@ -468,11 +406,11 @@ TEST_F(ExtensionsMenuViewUnitTest, RunDropCallback) {
 
 TEST_F(ExtensionsMenuViewUnitTest, ResetDropCallback) {
   constexpr char kName1[] = "Test 1";
-  auto ext1 = AddSimpleExtension(kName1);
+  auto ext1 = InstallExtension(kName1);
   constexpr char kName2[] = "Test 2";
-  auto ext2 = AddSimpleExtension(kName2);
+  auto ext2 = InstallExtension(kName2);
   constexpr char kName3[] = "Test 3";
-  auto ext3 = AddSimpleExtension(kName3);
+  auto ext3 = InstallExtensionAndLayout(kName3);
 
   auto* toolbar_model = ToolbarActionsModel::Get(profile());
   ASSERT_TRUE(toolbar_model);
@@ -511,9 +449,9 @@ TEST_F(ExtensionsMenuViewUnitTest, ResetDropCallback) {
 
 TEST_F(ExtensionsMenuViewUnitTest, InvalidateDropCallbackOnActionAdded) {
   constexpr char kName1[] = "Test 1";
-  auto ext1 = AddSimpleExtension(kName1);
+  auto ext1 = InstallExtension(kName1);
   constexpr char kName2[] = "Test 2";
-  auto ext2 = AddSimpleExtension(kName2);
+  auto ext2 = InstallExtensionAndLayout(kName2);
 
   auto* toolbar_model = ToolbarActionsModel::Get(profile());
   ASSERT_TRUE(toolbar_model);
@@ -539,7 +477,7 @@ TEST_F(ExtensionsMenuViewUnitTest, InvalidateDropCallbackOnActionAdded) {
   EXPECT_THAT(GetPinnedExtensionNames(), testing::ElementsAre(kName2, kName1));
 
   constexpr char kName3[] = "Test 3";
-  auto ext3 = AddSimpleExtension(kName3);
+  auto ext3 = InstallExtensionAndLayout(kName3);
   toolbar_model->SetActionVisibility(ext3->id(), true);
   WaitForAnimation();
 
@@ -558,9 +496,9 @@ TEST_F(ExtensionsMenuViewUnitTest, InvalidateDropCallbackOnActionAdded) {
 // happen anymore. https://crbug.com/1268239.
 TEST_F(ExtensionsMenuViewUnitTest, InvalidateDropCallbackOnPrefChange) {
   constexpr char kName1[] = "Test 1";
-  auto ext1 = AddSimpleExtension(kName1);
+  auto ext1 = InstallExtension(kName1);
   constexpr char kName2[] = "Test 2";
-  auto ext2 = AddSimpleExtension(kName2);
+  auto ext2 = InstallExtensionAndLayout(kName2);
 
   auto* toolbar_model = ToolbarActionsModel::Get(profile());
   ASSERT_TRUE(toolbar_model);
@@ -599,11 +537,11 @@ TEST_F(ExtensionsMenuViewUnitTest, InvalidateDropCallbackOnPrefChange) {
 
 TEST_F(ExtensionsMenuViewUnitTest, PinnedExtensionsReorderOnPrefChange) {
   constexpr char kName1[] = "Test 1";
-  const extensions::ExtensionId id1 = AddSimpleExtension(kName1)->id();
+  const extensions::ExtensionId id1 = InstallExtension(kName1)->id();
   constexpr char kName2[] = "Test 2";
-  const extensions::ExtensionId id2 = AddSimpleExtension(kName2)->id();
+  const extensions::ExtensionId id2 = InstallExtension(kName2)->id();
   constexpr char kName3[] = "Test 3";
-  const extensions::ExtensionId id3 = AddSimpleExtension(kName3)->id();
+  const extensions::ExtensionId id3 = InstallExtensionAndLayout(kName3)->id();
 
   for (const char* name : {kName1, kName2, kName3}) {
     ExtensionsMenuItemView* item = GetExtensionsMenuItemView(name);
@@ -625,7 +563,7 @@ TEST_F(ExtensionsMenuViewUnitTest, PinnedExtensionsReorderOnPrefChange) {
 
 TEST_F(ExtensionsMenuViewUnitTest, PinnedExtensionLayout) {
   for (int i = 0; i < 3; i++)
-    AddSimpleExtension(base::StringPrintf("Test %d", i));
+    InstallExtensionAndLayout(base::StringPrintf("Test %d", i));
   for (auto* menu_item :
        extensions_menu()->extensions_menu_items_for_testing()) {
     ClickPinButton(menu_item);
@@ -678,7 +616,7 @@ TEST_F(ExtensionsMenuViewUnitTest, ReloadExtension) {
 
   extensions::TestExtensionRegistryObserver registry_observer(
       extensions::ExtensionRegistry::Get(profile()));
-  extension_service()->ReloadExtension(extension->id());
+  ReloadExtension(extension->id());
   ASSERT_TRUE(registry_observer.WaitForExtensionLoaded());
   LayoutMenuIfNecessary();
 
@@ -731,7 +669,7 @@ TEST_F(ExtensionsMenuViewUnitTest, ReloadExtensionFailed) {
 
 TEST_F(ExtensionsMenuViewUnitTest, PinButtonUserAction) {
   base::UserActionTester user_action_tester;
-  AddSimpleExtension("Test Extension");
+  InstallExtensionAndLayout("Test Extension");
 
   ExtensionsMenuItemView* menu_item = GetOnlyMenuItem();
   ASSERT_TRUE(menu_item);
@@ -745,7 +683,7 @@ TEST_F(ExtensionsMenuViewUnitTest, PinButtonUserAction) {
 }
 
 TEST_F(ExtensionsMenuViewUnitTest, WindowTitle) {
-  AddSimpleExtension("Test Extension");
+  InstallExtensionAndLayout("Test Extension");
 
   ExtensionsMenuView* const menu_view = extensions_menu();
   EXPECT_FALSE(menu_view->GetWindowTitle().empty());
@@ -754,7 +692,7 @@ TEST_F(ExtensionsMenuViewUnitTest, WindowTitle) {
 
 TEST_F(ExtensionsMenuViewUnitTest, ContextMenuButtonUserAction) {
   base::UserActionTester user_action_tester;
-  AddSimpleExtension("Test Extension");
+  InstallExtensionAndLayout("Test Extension");
 
   ExtensionsMenuItemView* menu_item = GetOnlyMenuItem();
   ASSERT_TRUE(menu_item);

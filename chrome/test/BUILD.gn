@@ -7703,6 +7703,8 @@ test("unit_tests") {
       "../browser/ui/views/extensions/extensions_menu_view_unittest.cc",
       "../browser/ui/views/extensions/extensions_tabbed_menu_view_unittest.cc",
       "../browser/ui/views/extensions/extensions_toolbar_controls_unittest.cc",
+      "../browser/ui/views/extensions/extensions_toolbar_unittest.cc",
+      "../browser/ui/views/extensions/extensions_toolbar_unittest.h",
       "../browser/ui/views/extensions/media_galleries_dialog_views_unittest.cc",
       "../browser/ui/views/extensions/settings_overridden_dialog_view_unittest.cc",
       "../browser/ui/views/frame/browser_non_client_frame_view_unittest.cc",
