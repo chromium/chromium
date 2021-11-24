@@ -84,6 +84,7 @@ class BrowserAppInstanceTracker : public TabStripModelObserver,
       const TabStripModelChange& change,
       const TabStripSelectionChange& selection) override;
 
+  // BrowserTabStripTrackerDelegate overrides:
   bool ShouldTrackBrowser(Browser* browser) override;
 
   // wm::ActivationChangeObserver overrides:
@@ -162,7 +163,7 @@ class BrowserAppInstanceTracker : public TabStripModelObserver,
   bool IsBrowserTracked(Browser* browser) const;
   bool IsActivationClientTracked(wm::ActivationClient* client) const;
 
-  Profile* profile_;
+  Profile* const profile_;
 
   std::map<content::WebContents*, std::unique_ptr<WebContentsObserver>>
       webcontents_to_observer_map_;

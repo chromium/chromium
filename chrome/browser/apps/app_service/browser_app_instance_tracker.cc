@@ -112,7 +112,7 @@ class BrowserAppInstanceTracker::WebContentsObserver
   }
 
  private:
-  BrowserAppInstanceTracker* owner_;
+  BrowserAppInstanceTracker* const owner_;
 };
 
 BrowserAppInstanceTracker::BrowserAppInstanceTracker(
@@ -135,6 +135,7 @@ BrowserAppInstanceTracker::~BrowserAppInstanceTracker() {
     // TODO(crbug.com/1236273): Remove when confident it does not happen.
     base::debug::DumpWithoutCrashing();
   }
+  DCHECK(observers_.empty());
 }
 
 const BrowserAppInstance* BrowserAppInstanceTracker::GetAppInstance(
