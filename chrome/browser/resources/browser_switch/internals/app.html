@@ -1,0 +1,263 @@
+<style>
+  ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  table {
+    border-collapse: collapse;
+    font-family: monospace;
+  }
+
+  pre,
+  table {
+    font-size: 1.25em;
+  }
+
+  th {
+    background: black;
+    color: white;
+  }
+
+  th,
+  td {
+    border: 1px solid black;
+    padding: 6px 10px;
+    text-align: center;
+  }
+
+  .url {
+    text-align: start;
+  }
+
+  #url-checker-input {
+    display: block;
+    margin: 1em 0;
+    width: 400px;
+  }
+
+  #xml-not-fetched-yet,
+  #xml-last-fetch {
+    display: none;
+  }
+
+  .policy-prop {
+    background-color: rgba(175, 184, 193, 0.2);
+    color: rgb(36, 41, 47);
+  }
+
+  .tooltip {
+    border-bottom: 1px dotted #666;
+    display: inline-block;
+    position: relative;
+  }
+
+  .tooltip .right {
+    background-color: #EEE;
+    border-radius: 8px;
+    box-shadow: 0 1px 8px rgba(0, 0, 0, 0.5);
+    box-sizing: border-box;
+    color: #444;
+    font-size: 0.8rem;
+    font-weight: normal;
+    left: 100%;
+    margin-inline-start: 20px;
+    min-width: 200px;
+    padding: 10px 20px;
+    position: absolute;
+    top: 50%;
+    transform: translate(0, -50%);
+    visibility: hidden;
+  }
+
+  .tooltip:hover .right {
+    visibility: visible;
+  }
+
+  .container {
+    padding: 10px;
+  }
+
+</style>
+
+<cr-toolbar page-name="Legacy Browser Support (LBS) - Internals"
+        clear-label="clear"
+        role="banner"
+        show-search="[[showSearch_]]">
+</cr-toolbar>
+
+<div class="container">
+  <p>
+    Legacy Browser Support (LBS) allows specific URLs patterns to be opened in
+    an alternative browser that supports legacy features required to properly
+    run those sites.
+  </p>
+</div>
+<hr>
+</hr>
+
+<section class="container" hidden$="[[isBrowserSwitcherEnabled_]]">
+  <h2>Nothing to show</h2>
+
+  <p>
+    LBS is currently disabled. You can enable LBS by setting the
+    <a href="https://chromeenterprise.google/policies/#BrowserSwitcherEnabled">
+      <span class="policy-prop">{BrowserSwitcherEnabled}</span>
+    </a>
+    policy.
+  </p>
+</section>
+
+<section class="container" hidden$="[[!isBrowserSwitcherEnabled_]]">
+  <section id="url-checker-section">
+    <h2>URL Checker</h2>
+
+    <label>
+      Enter a URL to see what LBS would do with it.
+      <input type="text"
+        id="url-checker-input"
+        placeholder="http://example.com/"
+        on-input="checkUrl">
+    </label>
+
+    <ul>
+      <li id="output"></li>
+      <li id="reason"></li>
+    </ul>
+  </section>
+
+  <hr>
+  </hr>
+
+  <section id="xml-configuration-source">
+    <h2 class="tooltip">
+      XML configuration source
+      <span class="right">
+        XML files that are being used to set the policies.
+      </span>
+    </h2>
+
+    <table id="xml-sitelists"></table>
+
+    <div id="xml-description-wrapper">
+      <p id="xml-not-fetched-yet">
+        XML sitelists have not been fetched yet.
+      </p>
+
+      <p id="xml-last-fetch">
+        XML sitelists were last downloaded at
+        <span id="last-fetch-placeholder"></span>.
+      </p>
+
+      <p id="xml-next-fetch">
+        Next download is at
+        <span id="next-fetch-placeholder"></span>.
+      </p>
+
+      <p>
+        <button id="refresh-xml-button" on-click="refreshXml">
+          Download now
+        </button>
+      </p>
+    </div>
+  </section>
+
+  <hr>
+  </hr>
+
+  <section id="sitelist-section">
+    <h2 class="tooltip">
+      Force open in
+      <span class="right">
+        The list of websites that redirect to alternative browser.
+      </span>
+    </h2>
+    <h4>
+      This list is affected by
+      <a href="https://chromeenterprise.google/policies/#BrowserSwitcherUrlList"><span
+          class="policy-prop">{BrowserSwitcherUrlList}</span></a>,
+      <a
+        href="https://chromeenterprise.google/policies/#BrowserSwitcherExternalSitelistUrl"><span
+          class="policy-prop">{BrowserSwitcherExternalSitelistUrl}</span></a>,
+      and
+      <a
+        href="https://chromeenterprise.google/policies/#BrowserSwitcherUseIeSitelist"><span
+          class="policy-prop">{BrowserSwitcherUseIeSitelist}</span></a>
+    </h4>
+
+    <p>
+      URLs matching these rules will be forced to open in a specific browser.
+    </p>
+    <table id="sitelist"></table>
+  </section>
+
+  <hr>
+  </hr>
+
+  <section id="greylist-section">
+    <h2 class="tooltip">
+      Ignore
+      <span class="right">
+        The list of websites that can open in either browser.
+      </span>
+    </h2>
+    <h4>
+      This list is affected by
+      <a
+        href="https://chromeenterprise.google/policies/#BrowserSwitcherExternalGreylistUrl"><span
+          class="policy-prop">{BrowserSwitcherExternalGreylistUrl}</span></a>,
+      and
+      <a
+        href="https://chromeenterprise.google/policies/#BrowserSwitcherUrlGreylist"><span
+          class="policy-prop">{BrowserSwitcherUrlGreylist}</span></a>
+    </h4>
+
+    <p id="greylist-description"></p>
+    <table id="greylist"></table>
+  </section>
+
+  <template id="header-row-template-sitelist" preserve-content>
+    <tr>
+      <th>Rule</th>
+      <th>Opens in</th>
+      <th>Source</th>
+    </tr>
+  </template>
+
+  <template id="header-row-template-greylist" preserve-content>
+    <tr>
+      <th>Rule</th>
+      <th>Source</th>
+    </tr>
+  </template>
+
+  <template id="rule-row-template-sitelist" preserve-content>
+    <tr>
+      <td></td>
+      <td></td>
+      <td></td>
+    </tr>
+  </template>
+
+  <template id="rule-row-template-greylist" preserve-content>
+    <tr>
+      <td></td>
+      <td></td>
+    </tr>
+  </template>
+
+  <template id="xml-header-row-template" preserve-content>
+    <tr>
+      <th>Source policy</th>
+      <th>URL</th>
+    </tr>
+  </template>
+
+  <template id="xml-row-template" preserve-content>
+    <tr>
+      <td></td>
+      <td></td>
+    </tr>
+  </template>
+</section>
