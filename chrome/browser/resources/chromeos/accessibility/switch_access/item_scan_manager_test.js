@@ -460,8 +460,9 @@ TEST_F('SwitchAccessItemScanManagerTest', 'DismissVirtualKeyboard', function() {
   });
 });
 
+// TODO(crbug.com/1260231): Test is flaky.
 TEST_F(
-    'SwitchAccessItemScanManagerTest', 'ChildrenChangedDoesNotRefresh',
+    'SwitchAccessItemScanManagerTest', 'DISABLED_ChildrenChangedDoesNotRefresh',
     function() {
       const website = `
     <div id="slider" role="slider">
