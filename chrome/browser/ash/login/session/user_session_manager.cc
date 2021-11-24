@@ -1501,6 +1501,11 @@ void UserSessionManager::InitProfilePreferences(
 
 void UserSessionManager::UserProfileInitialized(Profile* profile,
                                                 const AccountId& account_id) {
+  // Check whether this `profile` was already initialized.
+  if (user_profile_initialized_called_.contains(profile))
+    return;
+  user_profile_initialized_called_.insert(profile);
+
   // OOBE doesn't set kOsSyncFeatureEnabled yet, call MigrateOsSyncPreferences
   // to make sure it is correctly set.
   // TODO(https://crbug.com/1229582): Revise when SyncConsentOptional changes
