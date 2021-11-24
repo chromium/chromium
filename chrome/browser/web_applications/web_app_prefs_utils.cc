@@ -110,12 +110,11 @@ void WebAppPrefsUtilsRegisterProfilePrefs(
 bool GetBoolWebAppPref(const PrefService* pref_service,
                        const AppId& app_id,
                        base::StringPiece path) {
-  const base::DictionaryValue* web_app_prefs =
-      GetWebAppDictionary(pref_service, app_id);
-  bool pref_value = false;
-  if (web_app_prefs)
-    web_app_prefs->GetBoolean(path, &pref_value);
-  return pref_value;
+  if (const base::DictionaryValue* web_app_prefs =
+          GetWebAppDictionary(pref_service, app_id)) {
+    return web_app_prefs->FindBoolPath(path).value_or(false);
+  }
+  return false;
 }
 
 void UpdateBoolWebAppPref(PrefService* pref_service,
