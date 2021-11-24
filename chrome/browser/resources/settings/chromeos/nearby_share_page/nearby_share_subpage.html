@@ -228,7 +228,9 @@
             aria-describedby="fastInitiationNotificationRowDescription"
             checked="[[isFastInitiationNotificationEnabled_(
                 settings.fastInitiationNotificationState)]]"
-            on-change="onFastInitiationNotificationToggledByUser_">
+            on-change="onFastInitiationNotificationToggledByUser_"
+            deep-link-focus-id$="
+                [[Setting.kDevicesNearbyAreSharingNotificationOnOff]]">
         </cr-toggle>
       </div>
     </template>

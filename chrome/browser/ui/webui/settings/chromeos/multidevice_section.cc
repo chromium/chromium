@@ -243,6 +243,12 @@ const std::vector<SearchConcept>& GetNearbyShareOnSearchConcepts() {
        mojom::SearchResultDefaultRank::kMedium,
        mojom::SearchResultType::kSetting,
        {.setting = mojom::Setting::kNearbyShareDataUsage}},
+      {IDS_OS_SETTINGS_TAG_NEARBY_SHARE_DEVICES_NEARBY_SHARING_NOTIFICATION,
+       mojom::kNearbyShareSubpagePath,
+       mojom::SearchResultIcon::kNearbyShare,
+       mojom::SearchResultDefaultRank::kMedium,
+       mojom::SearchResultType::kSetting,
+       {.setting = mojom::Setting::kDevicesNearbyAreSharingNotificationOnOff}},
   });
   return *tags;
 }
@@ -640,6 +646,7 @@ void MultiDeviceSection::RegisterHierarchy(
       mojom::Setting::kNearbyShareDeviceVisibility,
       mojom::Setting::kNearbyShareContacts,
       mojom::Setting::kNearbyShareDataUsage,
+      mojom::Setting::kDevicesNearbyAreSharingNotificationOnOff,
   };
   RegisterNestedSettingBulk(mojom::Subpage::kNearbyShare, kNearbyShareSettings,
                             generator);

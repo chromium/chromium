@@ -64242,6 +64242,8 @@ Called by update_net_trust_anchors.py.-->
   <int value="217" label="Nearby Share: Data Usage"/>
   <int value="218" label="Phone Hub Apps: On/Off"/>
   <int value="219" label="Phone Hub Camera Roll: On/Off"/>
+  <int value="220"
+      label="Nearby Share: Devices nearby are sharing notification"/>
   <int value="300" label="Add Account"/>
   <int value="301" label="Remove Account"/>
   <int value="302" label="Split Sync On/Off"/>

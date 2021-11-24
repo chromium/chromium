@@ -101,6 +101,8 @@ Polymer({
         chromeos.settings.mojom.Setting.kNearbyShareDeviceVisibility,
         chromeos.settings.mojom.Setting.kNearbyShareContacts,
         chromeos.settings.mojom.Setting.kNearbyShareDataUsage,
+        chromeos.settings.mojom.Setting
+            .kDevicesNearbyAreSharingNotificationOnOff,
       ]),
     },
 
