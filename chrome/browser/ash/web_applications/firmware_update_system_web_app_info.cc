@@ -17,7 +17,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/ui_base_features.h"
 
-// TODO(michaelcheco): Update to correct icon and app sizes.
+// TODO(michaelcheco): Update to correct icon.
 std::unique_ptr<WebApplicationInfo>
 CreateWebAppInfoForFirmwareUpdateSystemWebApp() {
   auto info = std::make_unique<WebApplicationInfo>();
@@ -51,5 +51,5 @@ bool FirmwareUpdateSystemAppDelegate::IsAppEnabled() const {
 }
 
 gfx::Size FirmwareUpdateSystemAppDelegate::GetMinimumWindowSize() const {
-  return {600, 600};
+  return {600, 512};
 }
