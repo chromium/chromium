@@ -94,13 +94,12 @@ std::unique_ptr<ArcDefaultAppList::AppInfoMap> ReadAppsFromFileThread(
     std::string package_name;
     std::string activity;
     std::string app_path;
-    bool oem = false;
 
     app_info_dictionary->GetString(kName, &name);
     app_info_dictionary->GetString(kPackageName, &package_name);
     app_info_dictionary->GetString(kActivity, &activity);
     app_info_dictionary->GetString(kAppPath, &app_path);
-    app_info_dictionary->GetBoolean(kOem, &oem);
+    bool oem = app_info_dictionary->FindBoolPath(kOem).value_or(false);
 
     if (name.empty() || package_name.empty() || activity.empty() ||
         app_path.empty()) {
@@ -128,8 +127,7 @@ bool IsAppHidden(const PrefService* prefs, const std::string& app_id) {
   const base::DictionaryValue* app_dict;
   if (!apps_dict || !apps_dict->GetDictionary(app_id, &app_dict))
     return false;
-  bool hidden = false;
-  return app_dict->GetBoolean(kHidden, &hidden) && hidden;
+  return app_dict->FindBoolPath(kHidden).value_or(false);
 }
 
 std::string GetBoardName(const base::FilePath& build_prop_path) {
