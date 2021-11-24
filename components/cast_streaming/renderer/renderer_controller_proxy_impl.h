@@ -2,16 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef MEDIA_CAST_RECEIVER_CAST_STREAMING_RENDERER_CONTROLLER_PROXY_IMPL_H_
-#define MEDIA_CAST_RECEIVER_CAST_STREAMING_RENDERER_CONTROLLER_PROXY_IMPL_H_
+#ifndef COMPONENTS_CAST_STREAMING_RENDERER_RENDERER_CONTROLLER_PROXY_IMPL_H_
+#define COMPONENTS_CAST_STREAMING_RENDERER_RENDERER_CONTROLLER_PROXY_IMPL_H_
 
 #include <map>
 
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread_checker.h"
-#include "media/cast/receiver/cast_streaming_renderer_controller_proxy.h"
-#include "media/cast/receiver/mojom/cast_streaming_renderer_controller.mojom.h"
+#include "components/cast_streaming/public/mojom/renderer_controller.mojom.h"
+#include "components/cast_streaming/renderer/public/renderer_controller_proxy.h"
 #include "media/mojo/mojom/renderer.mojom.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
@@ -22,20 +22,18 @@ namespace content {
 class RenderFrame;
 }  // namespace content
 
-namespace media {
-namespace cast {
+namespace cast_streaming {
 
 // This class provides an implementation of the singleton class
-// CastStreamingRendererControllerProxy.
-class CastStreamingRendererControllerProxyImpl
-    : public CastStreamingRendererControllerProxy {
+// RendererControllerProxy.
+class RendererControllerProxyImpl : public RendererControllerProxy {
  public:
-  CastStreamingRendererControllerProxyImpl();
-  ~CastStreamingRendererControllerProxyImpl() override;
+  RendererControllerProxyImpl();
+  ~RendererControllerProxyImpl() override;
 
-  // CastStreamingRendererControllerProxy overrides.
-  base::RepeatingCallback<void(
-      mojo::PendingAssociatedReceiver<mojom::CastStreamingRendererController>)>
+  // RendererControllerProxy overrides.
+  base::RepeatingCallback<
+      void(mojo::PendingAssociatedReceiver<mojom::RendererController>)>
   GetBinder(content::RenderFrame* frame) override;
   mojo::PendingReceiver<media::mojom::Renderer> GetReceiver(
       content::RenderFrame* frame) override;
@@ -44,21 +42,20 @@ class CastStreamingRendererControllerProxyImpl
   // This class serves the purpose of allowing both the browser and renderer
   // processes to connect media::mojom::Renderer receiver and remote endpoints
   // without concerns of creation order or race conditions becoming concerns.
-  class FrameProxy : public mojom::CastStreamingRendererController {
+  class FrameProxy : public mojom::RendererController {
    public:
     explicit FrameProxy(base::RepeatingCallback<void()> disconnection_handler);
     ~FrameProxy() override;
 
     // Binds the frame-specific receiver from the browser process.
-    void BindReceiver(
-        mojo::PendingAssociatedReceiver<mojom::CastStreamingRendererController>
-            pending_receiver);
+    void BindReceiver(mojo::PendingAssociatedReceiver<mojom::RendererController>
+                          pending_receiver);
 
-    // Analogous to CastStreamingRendererControllerProxy::GetReceiver().
+    // Analogous to RendererControllerProxy::GetReceiver().
     mojo::PendingReceiver<media::mojom::Renderer> GetReceiver();
 
    private:
-    // mojom::CastStreamingRendererController overrides.
+    // mojom::RendererController overrides.
     //
     // Fuses |browser_process_renderer_controls| received from the browser
     // process with  |renderer_process_remote_|, so that commands sent by the
@@ -78,7 +75,7 @@ class CastStreamingRendererControllerProxyImpl
         renderer_process_pending_receiver_;
 
     // Receiver passed from the browser process to the renderer process.
-    mojo::AssociatedReceiver<mojom::CastStreamingRendererController>
+    mojo::AssociatedReceiver<mojom::RendererController>
         browser_process_receiver_;
 
     base::RepeatingCallback<void()> on_mojo_disconnection_;
@@ -89,12 +86,11 @@ class CastStreamingRendererControllerProxyImpl
   using RenderFrameMap =
       std::map<content::RenderFrame*, std::unique_ptr<FrameProxy>>;
 
-  // Returned by CastStreamingRendererControllerProxyImpl::GetBinder() to allow
+  // Returned by RendererControllerProxyImpl::GetBinder() to allow
   // for receiving browser-process sent instances of this mojo receiver
-  void BindInterface(
-      content::RenderFrame* frame,
-      mojo::PendingAssociatedReceiver<mojom::CastStreamingRendererController>
-          pending_receiver);
+  void BindInterface(content::RenderFrame* frame,
+                     mojo::PendingAssociatedReceiver<mojom::RendererController>
+                         pending_receiver);
 
   // Helper to create a new entry in |per_frame_proxies_|.
   RenderFrameMap::iterator GetFrameProxy(content::RenderFrame* frame);
@@ -104,7 +100,6 @@ class CastStreamingRendererControllerProxyImpl
   RenderFrameMap per_frame_proxies_;
 };
 
-}  // namespace cast
-}  // namespace media
+}  // namespace cast_streaming
 
-#endif  // MEDIA_CAST_RECEIVER_CAST_STREAMING_RENDERER_CONTROLLER_PROXY_IMPL_H_
+#endif  // COMPONENTS_CAST_STREAMING_RENDERER_RENDERER_CONTROLLER_PROXY_IMPL_H_

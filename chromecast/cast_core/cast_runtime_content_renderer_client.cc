@@ -5,6 +5,8 @@
 #include "chromecast/cast_core/cast_runtime_content_renderer_client.h"
 
 #include "components/cast_streaming/public/cast_streaming_url.h"
+#include "components/cast_streaming/renderer/public/renderer_controller_proxy.h"
+#include "components/cast_streaming/renderer/public/renderer_controller_proxy_factory.h"
 #include "content/public/renderer/render_frame.h"
 #include "content/public/renderer/render_frame_media_playback_options.h"
 #include "media/base/demuxer.h"
@@ -12,7 +14,11 @@
 
 namespace chromecast {
 
-CastRuntimeContentRendererClient::CastRuntimeContentRendererClient() = default;
+CastRuntimeContentRendererClient::CastRuntimeContentRendererClient()
+    : cast_streaming_renderer_controller_proxy_(
+          cast_streaming::CreateRendererControllerProxy()) {
+  DCHECK(cast_streaming_renderer_controller_proxy_);
+}
 
 CastRuntimeContentRendererClient::~CastRuntimeContentRendererClient() = default;
 
@@ -22,7 +28,7 @@ void CastRuntimeContentRendererClient::RenderFrameCreated(
   cast_streaming_demuxer_provider_.RenderFrameCreated(render_frame);
 
   render_frame->GetAssociatedInterfaceRegistry()->AddInterface(
-      cast_streaming_renderer_controller_proxy_.GetBinder(render_frame));
+      cast_streaming_renderer_controller_proxy_->GetBinder(render_frame));
 }
 
 std::unique_ptr<::media::Demuxer>

@@ -9,7 +9,7 @@
 #include "chromecast/cast_core/runtime_application_base.h"
 #include "chromecast/cast_core/streaming_receiver_session_client.h"
 #include "components/cast_streaming/browser/public/network_context_getter.h"
-#include "media/cast/receiver/mojom/cast_streaming_renderer_controller.mojom.h"
+#include "components/cast_streaming/public/mojom/renderer_controller.mojom.h"
 #include "media/mojo/mojom/renderer.mojom.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -54,7 +54,7 @@ class StreamingRuntimeApplication final
 
   bool has_started_streaming_ = false;
 
-  mojo::AssociatedRemote<media::cast::mojom::CastStreamingRendererController>
+  mojo::AssociatedRemote<cast_streaming::mojom::RendererController>
       renderer_connection_;
   mojo::Remote<media::mojom::Renderer> renderer_controls_;
 

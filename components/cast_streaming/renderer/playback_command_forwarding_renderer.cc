@@ -2,15 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "media/cast/receiver/cast_streaming_renderer.h"
+#include "components/cast_streaming/renderer/playback_command_forwarding_renderer.h"
 
 #include "base/notreached.h"
 
-namespace media {
-namespace cast {
+namespace cast_streaming {
 
-CastStreamingRenderer::CastStreamingRenderer(
-    std::unique_ptr<Renderer> renderer,
+PlaybackCommandForwardingRenderer::PlaybackCommandForwardingRenderer(
+    std::unique_ptr<media::Renderer> renderer,
     scoped_refptr<base::SingleThreadTaskRunner> task_runner,
     mojo::PendingReceiver<media::mojom::Renderer> pending_renderer_controls)
     : real_renderer_(std::move(renderer)),
@@ -21,47 +20,52 @@ CastStreamingRenderer::CastStreamingRenderer(
   DCHECK(pending_renderer_controls_);
 }
 
-CastStreamingRenderer::~CastStreamingRenderer() = default;
+PlaybackCommandForwardingRenderer::~PlaybackCommandForwardingRenderer() =
+    default;
 
-void CastStreamingRenderer::Initialize(MediaResource* media_resource,
-                                       RendererClient* client,
-                                       PipelineStatusCallback init_cb) {
+void PlaybackCommandForwardingRenderer::Initialize(
+    media::MediaResource* media_resource,
+    media::RendererClient* client,
+    media::PipelineStatusCallback init_cb) {
   DCHECK(!init_cb_);
 
   init_cb_ = std::move(init_cb);
   real_renderer_->Initialize(
       media_resource, client,
-      base::BindOnce(
-          &CastStreamingRenderer::OnRealRendererInitializationComplete,
-          weak_factory_.GetWeakPtr()));
+      base::BindOnce(&PlaybackCommandForwardingRenderer::
+                         OnRealRendererInitializationComplete,
+                     weak_factory_.GetWeakPtr()));
 }
 
-void CastStreamingRenderer::SetCdm(CdmContext* cdm_context,
-                                   CdmAttachedCB cdm_attached_cb) {
+void PlaybackCommandForwardingRenderer::SetCdm(media::CdmContext* cdm_context,
+                                               CdmAttachedCB cdm_attached_cb) {
+  // CDM should not be set for current mirroring use cases.
   NOTREACHED();
 }
 
-void CastStreamingRenderer::SetLatencyHint(
-    absl::optional<base::TimeDelta> latency_hint) {}
+void PlaybackCommandForwardingRenderer::SetLatencyHint(
+    absl::optional<base::TimeDelta> latency_hint) {
+  // Not relevant for current mirroring use cases.
+}
 
-void CastStreamingRenderer::Flush(base::OnceClosure flush_cb) {}
+void PlaybackCommandForwardingRenderer::Flush(base::OnceClosure flush_cb) {}
 
-void CastStreamingRenderer::StartPlayingFrom(base::TimeDelta time) {
+void PlaybackCommandForwardingRenderer::StartPlayingFrom(base::TimeDelta time) {
   DCHECK(task_runner_->BelongsToCurrentThread());
 }
 
-void CastStreamingRenderer::SetPlaybackRate(double playback_rate) {
+void PlaybackCommandForwardingRenderer::SetPlaybackRate(double playback_rate) {
   DCHECK(task_runner_->BelongsToCurrentThread());
 }
 
-void CastStreamingRenderer::SetVolume(float volume) {}
+void PlaybackCommandForwardingRenderer::SetVolume(float volume) {}
 
-base::TimeDelta CastStreamingRenderer::GetMediaTime() {
+base::TimeDelta PlaybackCommandForwardingRenderer::GetMediaTime() {
   return real_renderer_->GetMediaTime();
 }
 
-void CastStreamingRenderer::OnRealRendererInitializationComplete(
-    PipelineStatus status) {
+void PlaybackCommandForwardingRenderer::OnRealRendererInitializationComplete(
+    media::PipelineStatus status) {
   DCHECK(init_cb_);
   DCHECK(!playback_controller_);
 
@@ -77,7 +81,7 @@ void CastStreamingRenderer::OnRealRendererInitializationComplete(
 // implementation. Calls must instead be bounced to the correct task runner in
 // each receiver method.
 // TODO(b/205307190): Bind the mojo pipe to the task runner directly.
-CastStreamingRenderer::PlaybackController::PlaybackController(
+PlaybackCommandForwardingRenderer::PlaybackController::PlaybackController(
     mojo::PendingReceiver<media::mojom::Renderer> pending_renderer_controls,
     scoped_refptr<base::SingleThreadTaskRunner> task_runner,
     media::Renderer* real_renderer)
@@ -89,62 +93,62 @@ CastStreamingRenderer::PlaybackController::PlaybackController(
   DCHECK(task_runner_);
 }
 
-CastStreamingRenderer::PlaybackController::~PlaybackController() = default;
+PlaybackCommandForwardingRenderer::PlaybackController::~PlaybackController() =
+    default;
 
-void CastStreamingRenderer::PlaybackController::Initialize(
+void PlaybackCommandForwardingRenderer::PlaybackController::Initialize(
     ::mojo::PendingAssociatedRemote<media::mojom::RendererClient> client,
     absl::optional<
         std::vector<::mojo::PendingRemote<::media::mojom::DemuxerStream>>>
         streams,
-    mojom::MediaUrlParamsPtr media_url_params,
+    media::mojom::MediaUrlParamsPtr media_url_params,
     InitializeCallback callback) {
   NOTIMPLEMENTED();
   std::move(callback).Run(false);
 }
 
-void CastStreamingRenderer::PlaybackController::Flush(FlushCallback callback) {
+void PlaybackCommandForwardingRenderer::PlaybackController::Flush(
+    FlushCallback callback) {
   NOTIMPLEMENTED();
   std::move(callback).Run();
 }
 
-void CastStreamingRenderer::PlaybackController::StartPlayingFrom(
+void PlaybackCommandForwardingRenderer::PlaybackController::StartPlayingFrom(
     ::base::TimeDelta time) {
   if (!task_runner_->BelongsToCurrentThread()) {
     task_runner_->PostTask(
-        FROM_HERE,
-        base::BindOnce(
-            &CastStreamingRenderer::PlaybackController::StartPlayingFrom,
-            weak_factory_.GetWeakPtr(), time));
+        FROM_HERE, base::BindOnce(&PlaybackCommandForwardingRenderer::
+                                      PlaybackController::StartPlayingFrom,
+                                  weak_factory_.GetWeakPtr(), time));
     return;
   }
 
   real_renderer_->StartPlayingFrom(time);
 }
 
-void CastStreamingRenderer::PlaybackController::SetPlaybackRate(
+void PlaybackCommandForwardingRenderer::PlaybackController::SetPlaybackRate(
     double playback_rate) {
   if (!task_runner_->BelongsToCurrentThread()) {
     task_runner_->PostTask(
-        FROM_HERE,
-        base::BindOnce(
-            &CastStreamingRenderer::PlaybackController::SetPlaybackRate,
-            weak_factory_.GetWeakPtr(), playback_rate));
+        FROM_HERE, base::BindOnce(&PlaybackCommandForwardingRenderer::
+                                      PlaybackController::SetPlaybackRate,
+                                  weak_factory_.GetWeakPtr(), playback_rate));
     return;
   }
 
   real_renderer_->SetPlaybackRate(playback_rate);
 }
 
-void CastStreamingRenderer::PlaybackController::SetVolume(float volume) {
+void PlaybackCommandForwardingRenderer::PlaybackController::SetVolume(
+    float volume) {
   NOTIMPLEMENTED();
 }
 
-void CastStreamingRenderer::PlaybackController::SetCdm(
+void PlaybackCommandForwardingRenderer::PlaybackController::SetCdm(
     const absl::optional<::base::UnguessableToken>& cdm_id,
     SetCdmCallback callback) {
   NOTIMPLEMENTED();
   std::move(callback).Run(false);
 }
 
-}  // namespace cast
-}  // namespace media
+}  // namespace cast_streaming

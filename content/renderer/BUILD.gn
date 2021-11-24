@@ -388,8 +388,8 @@ target(link_target_type, "renderer") {
   if (enable_cast_streaming_renderer) {
     deps += [
       "//components/cast_streaming/public",
-      "//media/cast/receiver:cast_streaming_renderer",
-      "//media/cast/receiver:cast_streaming_renderer_controller_proxy",
+      "//components/cast_streaming/renderer:playback_command_forwarding_renderer_factory",
+      "//components/cast_streaming/renderer:renderer_controller_proxy",
     ]
   }
 

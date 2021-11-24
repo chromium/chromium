@@ -106,8 +106,8 @@
 #if BUILDFLAG(ENABLE_CAST_STREAMING_RENDERER)
 // Enable libcast streaming receiver.
 #include "components/cast_streaming/public/cast_streaming_url.h"  // nogncheck
-#include "media/cast/receiver/cast_streaming_renderer_controller_proxy.h"  // nogncheck
-#include "media/cast/receiver/cast_streaming_renderer_factory.h"  // nogncheck
+#include "components/cast_streaming/renderer/public/playback_command_forwarding_renderer_factory.h"  // nogncheck
+#include "components/cast_streaming/renderer/public/renderer_controller_proxy.h"  // nogncheck
 #endif
 
 #if BUILDFLAG(ENABLE_CAST_AUDIO_RENDERER)
@@ -740,12 +740,12 @@ MediaFactory::CreateRendererFactorySelector(
 #endif  // BUILDFLAG(ENABLE_CAST_RENDERER)
 
     auto* renderer_controller_proxy =
-        media::cast::CastStreamingRendererControllerProxy::GetInstance();
+        cast_streaming::RendererControllerProxy::GetInstance();
     DCHECK(renderer_controller_proxy);
-    auto cast_streaming_renderer_factory =
-        std::make_unique<media::cast::CastStreamingRendererFactory>(
-            std::move(default_factory_cast_streaming),
-            renderer_controller_proxy->GetReceiver(render_frame_));
+    auto cast_streaming_renderer_factory = std::make_unique<
+        cast_streaming::PlaybackCommandForwardingRendererFactory>(
+        std::move(default_factory_cast_streaming),
+        renderer_controller_proxy->GetReceiver(render_frame_));
     factory_selector->AddBaseFactory(
         RendererType::kCastStreaming,
         std::move(cast_streaming_renderer_factory));

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "media/cast/receiver/cast_streaming_renderer_factory.h"
+#include "components/cast_streaming/renderer/public/playback_command_forwarding_renderer_factory.h"
 
 #include <memory>
 
@@ -27,26 +27,26 @@ using ::testing::Eq;
 using ::testing::Return;
 using ::testing::StrictMock;
 
-namespace media {
-namespace cast {
+namespace cast_streaming {
 namespace {
 
 class MockOverlayInfoCbHandler {
  public:
-  MOCK_METHOD2(Call, void(bool, ProvideOverlayInfoCB));
+  MOCK_METHOD2(Call, void(bool, media::ProvideOverlayInfoCB));
 };
 
 }  // namespace
 
-class CastStreamingRendererFactoryTest : public testing::Test {
+class PlaybackCommandForwardingRendererFactoryTest : public testing::Test {
  public:
-  CastStreamingRendererFactoryTest()
-      : mock_factory_(std::make_unique<StrictMock<MockRendererFactory>>()),
+  PlaybackCommandForwardingRendererFactoryTest()
+      : mock_factory_(
+            std::make_unique<StrictMock<media::MockRendererFactory>>()),
         mock_factory_ptr_(mock_factory_.get()),
         factory_(std::move(mock_factory_),
                  remote_.BindNewPipeAndPassReceiver()) {}
 
-  ~CastStreamingRendererFactoryTest() override = default;
+  ~PlaybackCommandForwardingRendererFactoryTest() override = default;
 
  protected:
   base::test::SingleThreadTaskEnvironment task_environment_{
@@ -54,21 +54,22 @@ class CastStreamingRendererFactoryTest : public testing::Test {
 
   mojo::Remote<media::mojom::Renderer> remote_;
 
-  std::unique_ptr<MockRendererFactory> mock_factory_;
-  MockRendererFactory* mock_factory_ptr_;
-  CastStreamingRendererFactory factory_;
+  std::unique_ptr<media::MockRendererFactory> mock_factory_;
+  media::MockRendererFactory* mock_factory_ptr_;
+  PlaybackCommandForwardingRendererFactory factory_;
 };
 
-TEST_F(CastStreamingRendererFactoryTest,
+TEST_F(PlaybackCommandForwardingRendererFactoryTest,
        FactoryCreationCallsOtherFactoryCreate) {
   scoped_refptr<base::SingleThreadTaskRunner> media_task_runner(
       new base::TestSimpleTaskRunner());
   scoped_refptr<base::SingleThreadTaskRunner> worker_task_runner(
       new base::TestSimpleTaskRunner());
-  auto audio_sink = base::MakeRefCounted<StrictMock<MockAudioRendererSink>>();
-  StrictMock<MockVideoRendererSink> video_sink;
+  auto audio_sink =
+      base::MakeRefCounted<StrictMock<media::MockAudioRendererSink>>();
+  StrictMock<media::MockVideoRendererSink> video_sink;
   StrictMock<MockOverlayInfoCbHandler> cb_handler;
-  RequestOverlayInfoCB mock_cb = base::BindRepeating(
+  media::RequestOverlayInfoCB mock_cb = base::BindRepeating(
       &MockOverlayInfoCbHandler::Call, base::Unretained(&cb_handler));
   gfx::ColorSpace color_space;
 
@@ -76,11 +77,10 @@ TEST_F(CastStreamingRendererFactoryTest,
               CreateRenderer(Eq(ByRef(media_task_runner)),
                              Eq(ByRef(worker_task_runner)), audio_sink.get(),
                              &video_sink, testing::_, Eq(ByRef(color_space))))
-      .WillOnce(Return(ByMove(std::make_unique<MockRenderer>())));
+      .WillOnce(Return(ByMove(std::make_unique<media::MockRenderer>())));
   factory_.CreateRenderer(media_task_runner, worker_task_runner,
                           audio_sink.get(), &video_sink, std::move(mock_cb),
                           color_space);
 }
 
-}  // namespace cast
-}  // namespace media
+}  // namespace cast_streaming

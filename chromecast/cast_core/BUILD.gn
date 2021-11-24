@@ -201,7 +201,7 @@ if (is_linux) {
       "//base",
       "//chromecast/browser:public",
       "//chromecast/common:feature_constants",
-      "//media/cast/receiver/mojom",
+      "//components/cast_streaming/public/mojom",
       "//media/mojo/mojom",
       "//third_party/cast_core/public/src/proto/common:application_config_proto",
       "//third_party/cast_core/public/src/proto/core:cast_core_service_proto",
@@ -237,9 +237,9 @@ cast_source_set("renderer") {
     "//chromecast/renderer:renderer_base",
     "//components/cast_streaming/public",
     "//components/cast_streaming/renderer",
+    "//components/cast_streaming/renderer:renderer_controller_proxy_factory",
     "//content/public/renderer",
     "//media",
-    "//media/cast/receiver:cast_streaming_renderer_controller_proxy_impl",
   ]
 }
 
