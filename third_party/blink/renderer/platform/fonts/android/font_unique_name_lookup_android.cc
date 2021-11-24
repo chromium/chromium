@@ -8,7 +8,6 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/timer/elapsed_timer.h"
-#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/font_unique_name_lookup/icu_fold_case_util.h"
 #include "third_party/blink/public/common/thread_safe_browser_interface_broker_proxy.h"
 #include "third_party/blink/public/platform/platform.h"
@@ -95,20 +94,6 @@ sk_sp<SkTypeface> FontUniqueNameLookupAndroid::MatchUniqueName(
   }
 }
 
-void FontUniqueNameLookupAndroid::Init() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!base::FeatureList::IsEnabled(features::kPrefetchAndroidFonts))
-    return;
-
-  EnsureServiceConnected();
-  if (android_font_lookup_service_) {
-    // WTF::Unretained is safe here because |this| owns
-    // |android_font_lookup_service_|.
-    android_font_lookup_service_->FetchAllFontFiles(WTF::Bind(
-        &FontUniqueNameLookupAndroid::FontsPrefetched, WTF::Unretained(this)));
-  }
-}
-
 void FontUniqueNameLookupAndroid::EnsureServiceConnected() {
   if (firmware_font_lookup_service_ &&
       (!RuntimeEnabledFeatures::AndroidDownloadableFontsMatchingEnabled() ||
@@ -162,7 +147,6 @@ bool FontUniqueNameLookupAndroid::RequestedNameInQueryableFonts(
 sk_sp<SkTypeface>
 FontUniqueNameLookupAndroid::MatchUniqueNameFromDownloadableFonts(
     const String& font_unique_name) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!android_font_lookup_service_.is_bound()) {
     LOG(ERROR) << "Service not connected.";
     return nullptr;
@@ -186,11 +170,8 @@ FontUniqueNameLookupAndroid::MatchUniqueNameFromDownloadableFonts(
 
   base::ElapsedTimer elapsed_timer;
 
-  auto it = prefetched_font_map_.find(case_folded_unique_font_name);
-  if (it != prefetched_font_map_.end()) {
-    font_file = it->value.Duplicate();
-  } else if (!android_font_lookup_service_->MatchLocalFontByUniqueName(
-                 case_folded_unique_font_name, &font_file)) {
+  if (!android_font_lookup_service_->MatchLocalFontByUniqueName(
+          case_folded_unique_font_name, &font_file)) {
     LOG(ERROR)
         << "Mojo method returned false for case-folded unique font name: "
         << case_folded_unique_font_name;
@@ -222,12 +203,6 @@ FontUniqueNameLookupAndroid::MatchUniqueNameFromDownloadableFonts(
 
   lookup_latency_histogram_success.CountMicroseconds(elapsed_timer.Elapsed());
   return return_typeface;
-}
-
-void FontUniqueNameLookupAndroid::FontsPrefetched(
-    HashMap<String, base::File> font_files) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  prefetched_font_map_ = std::move(font_files);
 }
 
 }  // namespace blink
