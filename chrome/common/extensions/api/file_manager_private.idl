@@ -49,7 +49,7 @@ namespace fileManagerPrivate {
 // Type of the mounted volume.
 enum VolumeType { drive, downloads, removable, archive, provided, mtp,
                   media_view, crostini, android_files, documents_provider,
-                  testing, smb };
+                  testing, smb, system_internal };
 
 // Device type. Available if this is removable volume.
 enum DeviceType { usb, sd, optical, mobile, unknown };
@@ -593,6 +593,9 @@ dictionary VolumeMetadata {
   // The path on the remote host where this volume is mounted, for crostini this
   // is the user's homedir (/home/<username>).
   DOMString? remoteMountPath;
+
+  // Flag that specifies whether the volume is hidden from the user.
+  boolean hidden;
 };
 
 // Payload data for mount event.

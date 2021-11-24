@@ -153,6 +153,8 @@ std::string VolumeTypeToString(VolumeType type) {
       return "crostini";
     case VOLUME_TYPE_SMB:
       return "smb";
+    case VOLUME_TYPE_SYSTEM_INTERNAL:
+      return "system_internal";
     case NUM_VOLUME_TYPE:
       break;
   }
@@ -222,8 +224,8 @@ Volume::Volume()
       is_read_only_removable_device_(false),
       has_media_(false),
       configurable_(false),
-      watchable_(false) {
-}
+      watchable_(false),
+      hidden_(false) {}
 
 Volume::~Volume() = default;
 
@@ -445,7 +447,8 @@ std::unique_ptr<Volume> Volume::CreateForTesting(
     bool read_only,
     const base::FilePath& device_path,
     const std::string& drive_label,
-    const std::string& file_system_type) {
+    const std::string& file_system_type,
+    bool hidden) {
   std::unique_ptr<Volume> volume(new Volume());
   volume->type_ = volume_type;
   volume->device_type_ = device_type;
@@ -460,6 +463,7 @@ std::unique_ptr<Volume> Volume::CreateForTesting(
   if (volume_type == VOLUME_TYPE_REMOVABLE_DISK_PARTITION) {
     volume->file_system_type_ = file_system_type;
   }
+  volume->hidden_ = hidden;
   return volume;
 }
 
@@ -768,12 +772,13 @@ void VolumeManager::AddVolumeForTesting(const base::FilePath& path,
                                         bool read_only,
                                         const base::FilePath& device_path,
                                         const std::string& drive_label,
-                                        const std::string& file_system_type) {
+                                        const std::string& file_system_type,
+                                        bool hidden) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  DoMountEvent(
-      chromeos::MOUNT_ERROR_NONE,
-      Volume::CreateForTesting(path, volume_type, device_type, read_only,
-                               device_path, drive_label, file_system_type));
+  DoMountEvent(chromeos::MOUNT_ERROR_NONE,
+               Volume::CreateForTesting(path, volume_type, device_type,
+                                        read_only, device_path, drive_label,
+                                        file_system_type, hidden));
 }
 
 void VolumeManager::AddVolumeForTesting(std::unique_ptr<Volume> volume) {

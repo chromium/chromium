@@ -158,13 +158,14 @@ export class VolumeManagerImpl extends EventTarget {
 
     try {
       console.warn('Getting volumes');
-      const volumeMetadataList = await new Promise(
+      let volumeMetadataList = await new Promise(
           resolve => chrome.fileManagerPrivate.getVolumeMetadataList(resolve));
       if (!volumeMetadataList) {
         console.error('Cannot get volumes');
         finishInitialization();
         return;
       }
+      volumeMetadataList = volumeMetadataList.filter(volume => !volume.hidden);
       console.debug(`There are ${volumeMetadataList.length} volumes`);
 
       let counter = 0;
@@ -236,6 +237,12 @@ export class VolumeManagerImpl extends EventTarget {
           case 'success':
           case VolumeManagerCommon.VolumeError.UNKNOWN_FILESYSTEM:
           case VolumeManagerCommon.VolumeError.UNSUPPORTED_FILESYSTEM: {
+            if (volumeMetadata.hidden) {
+              console.debug(`Mount discarded for hidden volume: '${volumeId}'`);
+              this.finishRequest_(requestKey, status);
+              return;
+            }
+
             console.debug(`Mounted '${sourcePath}' as '${volumeId}'`);
             const volumeInfo =
                 await volumeManagerUtil.createVolumeInfo(volumeMetadata);

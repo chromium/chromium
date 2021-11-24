@@ -36,6 +36,7 @@
 #include "base/json/json_value_converter.h"
 #include "base/json/json_writer.h"
 #include "base/path_service.h"
+#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
 #include "base/strings/strcat.h"
@@ -1480,6 +1481,30 @@ class MediaViewTestVolume : public DocumentsProviderTestVolume {
   }
 };
 
+// An internal volume which is hidden from file manager.
+class HiddenTestVolume : public FakeTestVolume {
+ public:
+  HiddenTestVolume()
+      : FakeTestVolume("internal_test",
+                       VolumeType::VOLUME_TYPE_SYSTEM_INTERNAL,
+                       chromeos::DeviceType::DEVICE_TYPE_UNKNOWN) {}
+  HiddenTestVolume(const HiddenTestVolume&) = delete;
+  HiddenTestVolume& operator=(const HiddenTestVolume&) = delete;
+
+  bool Mount(Profile* profile) override {
+    if (!MountSetup(profile))
+      return false;
+
+    // Expose the mount point with the given volume and device type.
+    VolumeManager::Get(profile)->AddVolumeForTesting(
+        root_path(), volume_type_, device_type_, read_only_,
+        /*device_path=*/base::FilePath(),
+        /*drive_label=*/"", /*file_system_type=*/"", /*hidden=*/true);
+    base::RunLoop().RunUntilIdle();
+    return true;
+  }
+};
+
 class MockSmbFsMounter : public smbfs::SmbFsMounter {
  public:
   MOCK_METHOD(void,
@@ -1908,6 +1933,8 @@ void FileManagerBrowserTestBase::SetUpOnMainThread() {
   }
 
   smbfs_volume_ = std::make_unique<SmbfsTestVolume>();
+
+  hidden_volume_ = std::make_unique<HiddenTestVolume>();
 
   display_service_ =
       std::make_unique<NotificationDisplayServiceTester>(profile());
@@ -2548,6 +2575,12 @@ void FileManagerBrowserTestBase::OnCommand(const std::string& name,
     return;
   }
 
+  if (name == "mountHidden") {
+    DCHECK(hidden_volume_);
+    ASSERT_TRUE(hidden_volume_->Mount(profile()));
+    return;
+  }
+
   if (name == "setDriveEnabled") {
     absl::optional<bool> enabled = value.FindBoolKey("enabled");
     ASSERT_TRUE(enabled.has_value());
@@ -2703,7 +2736,9 @@ void FileManagerBrowserTestBase::OnCommand(const std::string& name,
 
   if (name == "getVolumesCount") {
     file_manager::VolumeManager* volume_manager = VolumeManager::Get(profile());
-    *output = base::NumberToString(volume_manager->GetVolumeList().size());
+    *output = base::NumberToString(base::ranges::count_if(
+        volume_manager->GetVolumeList(),
+        [](const auto& volume) { return !volume->hidden(); }));
     return;
   }
 

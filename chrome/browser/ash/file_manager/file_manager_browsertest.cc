@@ -311,6 +311,8 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         // TestCase("fileDisplayWithoutDriveThenDisable")
         //     .DontMountVolumes()
         //     .FilesSwa(),
+        TestCase("fileDisplayWithHiddenVolume"),
+        TestCase("fileDisplayWithHiddenVolume").FilesSwa(),
         TestCase("fileDisplayMountWithFakeItemSelected"),
         TestCase("fileDisplayUnmountDriveWithSharedWithMeSelected"),
         TestCase("fileDisplayUnmountRemovableRoot"),

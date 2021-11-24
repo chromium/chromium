@@ -64,6 +64,8 @@ enum VolumeType {
   VOLUME_TYPE_ANDROID_FILES,
   VOLUME_TYPE_DOCUMENTS_PROVIDER,
   VOLUME_TYPE_SMB,
+  VOLUME_TYPE_SYSTEM_INTERNAL,  // Internal volume which is never exposed to
+                                // users.
   // The enum values must be kept in sync with FileManagerVolumeType in
   // tools/metrics/histograms/enums.xml. Since enums for histograms are
   // append-only (for keeping the number consistent across versions), new values
@@ -134,7 +136,8 @@ class Volume : public base::SupportsWeakPtr<Volume> {
       bool read_only,
       const base::FilePath& device_path,
       const std::string& drive_label,
-      const std::string& file_system_type = "");
+      const std::string& file_system_type = "",
+      bool hidden = false);
   static std::unique_ptr<Volume> CreateForTesting(
       const base::FilePath& device_path,
       const base::FilePath& mount_path);
@@ -180,6 +183,7 @@ class Volume : public base::SupportsWeakPtr<Volume> {
   const ash::file_system_provider::IconSet& icon_set() const {
     return icon_set_;
   }
+  bool hidden() const { return hidden_; }
 
  private:
   Volume();
@@ -264,6 +268,10 @@ class Volume : public base::SupportsWeakPtr<Volume> {
   // Device label of a physical removable device. Removable partitions
   // belonging to the same device share the same device label.
   std::string drive_label_;
+
+  // True if the volume is hidden and never shown to the user through File
+  // Manager.
+  bool hidden_;
 };
 
 // Manages Volumes for file manager. Example of Volumes:
@@ -374,7 +382,8 @@ class VolumeManager : public KeyedService,
                            bool read_only,
                            const base::FilePath& device_path = base::FilePath(),
                            const std::string& drive_label = "",
-                           const std::string& file_system_type = "");
+                           const std::string& file_system_type = "",
+                           bool hidden = false);
 
   // For testing purposes, adds the volume info to the volume manager.
   void AddVolumeForTesting(std::unique_ptr<Volume> volume);

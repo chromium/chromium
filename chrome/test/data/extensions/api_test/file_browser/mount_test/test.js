@@ -20,7 +20,8 @@ var expectedVolume1 = {
   profile: {profileId: '', displayName: '', isCurrentProfile: true},
   diskFileSystemType: 'exfat',
   iconSet: {},
-  driveLabel: 'drive_label1'
+  driveLabel: 'drive_label1',
+  hidden: false
 };
 
 var expectedVolume2 = {
@@ -42,7 +43,8 @@ var expectedVolume2 = {
   profile: {profileId: '', displayName: '', isCurrentProfile: true},
   diskFileSystemType: 'exfat',
   iconSet: {},
-  driveLabel: 'drive_label2'
+  driveLabel: 'drive_label2',
+  hidden: false
 };
 
 var expectedVolume3 = {
@@ -62,7 +64,8 @@ var expectedVolume3 = {
   profile: {profileId: '', displayName: '', isCurrentProfile: true},
   diskFileSystemType: 'exfat',
   iconSet: {},
-  driveLabel: 'drive_label3'
+  driveLabel: 'drive_label3',
+  hidden: false
 };
 
 var expectedDownloadsVolume = {
@@ -78,7 +81,8 @@ var expectedDownloadsVolume = {
   profile: {profileId: '', displayName: '', isCurrentProfile: true},
   diskFileSystemType: '',
   iconSet: {},
-  driveLabel: ''
+  driveLabel: '',
+  hidden: false
 };
 
 var expectedArchiveVolume = {
@@ -95,7 +99,8 @@ var expectedArchiveVolume = {
   profile: {profileId: '', displayName: '', isCurrentProfile: true},
   diskFileSystemType: '',
   iconSet: {},
-  driveLabel: ''
+  driveLabel: '',
+  hidden: false
 };
 
 var expectedProvidedVolume = {
@@ -117,7 +122,8 @@ var expectedProvidedVolume = {
     icon16x16Url: 'chrome://resources/testing-provider-id-16.jpg',
     icon32x32Url: 'chrome://resources/testing-provider-id-32.jpg'
   },
-  driveLabel: ''
+  driveLabel: '',
+  hidden: false
 };
 
 // List of expected mount points.

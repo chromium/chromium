@@ -49,6 +49,7 @@ class RemovableTestVolume;
 class DocumentsProviderTestVolume;
 class MediaViewTestVolume;
 class SmbfsTestVolume;
+class HiddenTestVolume;
 
 class FileManagerBrowserTestBase : public content::DevToolsAgentHostObserver,
                                    public extensions::ExtensionApiTest {
@@ -224,6 +225,7 @@ class FileManagerBrowserTestBase : public content::DevToolsAgentHostObserver,
   std::unique_ptr<MediaViewTestVolume> media_view_videos_;
   std::unique_ptr<MediaViewTestVolume> media_view_audio_;
   std::unique_ptr<SmbfsTestVolume> smbfs_volume_;
+  std::unique_ptr<HiddenTestVolume> hidden_volume_;
 
   drive::DriveIntegrationServiceFactory::FactoryCallback
       create_drive_integration_service_;

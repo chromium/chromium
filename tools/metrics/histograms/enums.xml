@@ -37007,6 +37007,8 @@ Called by update_permissions_policy_enum.py.-->
 </enum>
 
 <enum name="FileManagerVolumeType">
+<!-- Keep this in sync with the JS value: QuickViewUma.VolumeType. -->
+
   <int value="0" label="Google Drive"/>
   <int value="1" label="Download Folder"/>
   <int value="2" label="Removable Disk"/>
@@ -37018,6 +37020,7 @@ Called by update_permissions_policy_enum.py.-->
   <int value="8" label="Android Files"/>
   <int value="9" label="Android Documents Provider"/>
   <int value="10" label="SMB File Share"/>
+  <int value="11" label="System internal"/>
 </enum>
 
 <enum name="FileManagerZipHandlerType">

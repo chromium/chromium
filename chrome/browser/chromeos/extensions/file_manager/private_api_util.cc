@@ -497,6 +497,10 @@ void VolumeToVolumeMetadata(
     case VOLUME_TYPE_SMB:
       volume_metadata->volume_type = file_manager_private::VOLUME_TYPE_SMB;
       break;
+    case VOLUME_TYPE_SYSTEM_INTERNAL:
+      volume_metadata->volume_type =
+          file_manager_private::VOLUME_TYPE_SYSTEM_INTERNAL;
+      break;
     case NUM_VOLUME_TYPE:
       NOTREACHED();
       break;
@@ -535,6 +539,7 @@ void VolumeToVolumeMetadata(
 
   volume_metadata->is_read_only = volume.is_read_only();
   volume_metadata->has_media = volume.has_media();
+  volume_metadata->hidden = volume.hidden();
 
   switch (volume.mount_condition()) {
     case chromeos::disks::MOUNT_CONDITION_NONE:

@@ -21,6 +21,7 @@ chrome.fileManagerPrivate.VolumeType = {
   DOCUMENTS_PROVIDER: 'documents_provider',
   TESTING: 'testing',
   SMB: 'smb',
+  SYSTEM_INTERNAL: 'system_internal',
 };
 
 /** @enum {string} */
