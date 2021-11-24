@@ -48,16 +48,6 @@ void PaymentAppInfoFetcher::Start(
   fetcher->Start(context_url, std::move(frame_routing_ids));
 }
 
-PaymentAppInfoFetcher::WebContentsHelper::WebContentsHelper(
-    WebContents* web_contents)
-    : WebContentsObserver(web_contents) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-}
-
-PaymentAppInfoFetcher::WebContentsHelper::~WebContentsHelper() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-}
-
 PaymentAppInfoFetcher::SelfDeleteFetcher::SelfDeleteFetcher(
     PaymentAppInfoFetchCallback callback)
     : fetched_payment_app_info_(std::make_unique<PaymentAppInfo>()),
@@ -138,9 +128,7 @@ void PaymentAppInfoFetcher::SelfDeleteFetcher::Start(
       continue;
     }
 
-    web_contents_helper_ =
-        std::make_unique<WebContentsHelper>(top_level_web_content);
-
+    web_contents_ = top_level_web_content->GetWeakPtr();
     top_level_render_frame_host->GetPage().GetManifest(
         base::BindOnce(&PaymentAppInfoFetcher::SelfDeleteFetcher::
                            FetchPaymentAppManifestCallback,
@@ -242,8 +230,7 @@ void PaymentAppInfoFetcher::SelfDeleteFetcher::FetchPaymentAppManifestCallback(
     return;
   }
 
-  WebContents* web_contents = web_contents_helper_->web_contents();
-  if (!web_contents) {
+  if (!web_contents_) {
     LOG(WARNING) << "Unable to download the payment handler's icon because no "
                     "renderer was found, possibly because the page was closed "
                     "or navigated away during installation. User may not "
@@ -252,7 +239,7 @@ void PaymentAppInfoFetcher::SelfDeleteFetcher::FetchPaymentAppManifestCallback(
     RunCallbackAndDestroy();
     return;
   }
-  gfx::NativeView native_view = web_contents->GetNativeView();
+  gfx::NativeView native_view = web_contents_->GetNativeView();
 
   icon_url_ = blink::ManifestIconSelector::FindBestMatchingIcon(
       manifest->icons,
@@ -272,7 +259,7 @@ void PaymentAppInfoFetcher::SelfDeleteFetcher::FetchPaymentAppManifestCallback(
   }
 
   bool can_download = ManifestIconDownloader::Download(
-      web_contents, icon_url_,
+      web_contents_.get(), icon_url_,
       payments::IconSizeCalculator::IdealIconHeight(native_view),
       payments::IconSizeCalculator::MinimumIconHeight(),
       /* maximum_icon_size_in_px= */ std::numeric_limits<int>::max(),
@@ -313,10 +300,9 @@ void PaymentAppInfoFetcher::SelfDeleteFetcher::OnIconFetched(
 void PaymentAppInfoFetcher::SelfDeleteFetcher::WarnIfPossible(
     const std::string& message) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK(web_contents_helper_);
 
-  if (web_contents_helper_->web_contents()) {
-    web_contents_helper_->web_contents()->GetMainFrame()->AddMessageToConsole(
+  if (web_contents_) {
+    web_contents_->GetMainFrame()->AddMessageToConsole(
         blink::mojom::ConsoleMessageLevel::kWarning, message);
   } else {
     LOG(WARNING) << message;
