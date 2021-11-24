@@ -13,6 +13,17 @@ import {RmadErrorCode, RmaState, StateResult} from 'chrome://shimless-rma/shimle
 import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
 import {flushTasks, isVisible} from '../../test_util.js';
 
+/**
+ * onSelected*Change is not triggered automatically and the functions are
+ * protected. It is not possible to suppress visibility inline so this helper
+ * function wraps them.
+ * @suppress {visibility}
+ * @return {!RmadErrorCode}
+ */
+function suppressedErrorMessage(component) {
+  return component.errorMessage_;
+}
+
 export function shimlessRMAAppTest() {
   /** @type {?ShimlessRma} */
   let component = null;
@@ -217,5 +228,24 @@ export function shimlessRMAAppTest() {
     assertEquals(
         loadTimeData.getString('skipButtonLabel'),
         nextButton.textContent.trim());
+  });
+
+  test('ErrorSignalShowsErrorCode', async () => {
+    await initializeShimlessRMAApp(
+        [{
+          state: RmaState.kSelectComponents,
+          canCancel: true,
+          canGoBack: true,
+          error: RmadErrorCode.kOk
+        }],
+        fakeChromeVersion[0]);
+
+    service.triggerErrorObserver(RmadErrorCode.kReimagingUsbInvalidImage, 0);
+
+    await flushTasks();
+
+    assertEquals(
+        'Error: kReimagingUsbInvalidImage(23)',
+        suppressedErrorMessage(component));
   });
 }

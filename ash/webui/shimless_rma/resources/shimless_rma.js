@@ -30,7 +30,7 @@ import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/js/i18n_be
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getShimlessRmaService, rmadErrorString} from './mojo_interface_provider.js';
-import {RmadErrorCode, RmaState, ShimlessRmaServiceInterface, StateResult} from './shimless_rma_types.js';
+import {ErrorObserverInterface, ErrorObserverReceiver, RmadErrorCode, RmaState, ShimlessRmaServiceInterface, StateResult} from './shimless_rma_types.js';
 
 /**
  * Enum for button states.
@@ -270,6 +270,17 @@ export class ShimlessRma extends ShimlessRmaBase {
   /** @override */
   constructor() {
     super();
+    this.shimlessRmaService_ = getShimlessRmaService();
+
+    /** @protected {?ErrorObserverReceiver} */
+    this.errorObserverReceiver_ = new ErrorObserverReceiver(
+        /**
+         * @type {!ErrorObserverInterface}
+         */
+        (this));
+
+    this.shimlessRmaService_.observeError(
+        this.errorObserverReceiver_.$.bindNewPipeAndPassRemote());
 
     /**
      * transitionState_ is used by page elements to trigger state transition
@@ -327,7 +338,6 @@ export class ShimlessRma extends ShimlessRmaBase {
   /** @override */
   ready() {
     super.ready();
-    this.shimlessRmaService_ = getShimlessRmaService();
 
     const splashComponent = this.loadComponent_(this.currentPage_.componentIs);
     splashComponent.hidden = false;
@@ -346,6 +356,11 @@ export class ShimlessRma extends ShimlessRmaBase {
     this.handleError_(stateResult.error);
     this.showState_(
         stateResult.state, stateResult.canCancel, stateResult.canGoBack);
+  }
+
+  /** @param {!RmadErrorCode} error */
+  onError(error) {
+    this.handleError_(error);
   }
 
   /**

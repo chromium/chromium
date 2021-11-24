@@ -107,6 +107,20 @@ export const Component = ash.shimlessRma.mojom.Component;
 export const ErrorObserverRemote = ash.shimlessRma.mojom.ErrorObserverRemote;
 
 /**
+ * Type alias for ErrorObserverReceiver.
+ * @typedef {ash.shimlessRma.mojom.ErrorObserverReceiver}
+ */
+export const ErrorObserverReceiver =
+    ash.shimlessRma.mojom.ErrorObserverReceiver;
+
+/**
+ * Type alias for ErrorObserverInterface.
+ * @typedef {ash.shimlessRma.mojom.ErrorObserverInterface}
+ */
+export const ErrorObserverInterface =
+    ash.shimlessRma.mojom.ErrorObserverInterface;
+
+/**
  * Type alias for OsUpdateObserverRemote.
  * @typedef {ash.shimlessRma.mojom.OsUpdateObserverRemote}
  */
