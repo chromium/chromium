@@ -10,6 +10,7 @@
 #include "base/check.h"
 #include "base/notreached.h"
 #include "base/values.h"
+#include "printing/buildflags/buildflags.h"
 #include "printing/metafile.h"
 #include "printing/mojom/print.mojom.h"
 #include "printing/print_dialog_gtk_interface.h"
@@ -32,8 +33,14 @@ gfx::Size (*get_pdf_paper_size_)(PrintingContextLinux* context) = nullptr;
 
 // static
 std::unique_ptr<PrintingContext> PrintingContext::CreateImpl(
-    Delegate* delegate) {
-  return std::make_unique<PrintingContextLinux>(delegate);
+    Delegate* delegate,
+    bool skip_system_calls) {
+  auto context = std::make_unique<PrintingContextLinux>(delegate);
+#if BUILDFLAG(ENABLE_OOP_PRINTING)
+  if (skip_system_calls)
+    context->set_skip_system_calls();
+#endif
+  return context;
 }
 
 PrintingContextLinux::PrintingContextLinux(Delegate* delegate)
@@ -140,6 +147,9 @@ mojom::ResultCode PrintingContextLinux::NewDocument(
     const std::u16string& document_name) {
   DCHECK(!in_print_job_);
   in_print_job_ = true;
+
+  // If this implementation is expanded to include system calls then such calls
+  // should be gated upon `skip_system_calls()`.
 
   document_name_ = document_name;
 

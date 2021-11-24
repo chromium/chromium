@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/bind.h"
+#include "base/check.h"
 #include "base/memory/free_deleter.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -42,15 +43,22 @@ void AssignResult(mojom::ResultCode* out, mojom::ResultCode in) {
 
 // static
 std::unique_ptr<PrintingContext> PrintingContext::CreateImpl(
-    Delegate* delegate) {
+    Delegate* delegate,
+    bool skip_system_calls) {
+  std::unique_ptr<PrintingContext> context;
 #if BUILDFLAG(ENABLE_PRINTING)
-  return std::make_unique<PrintingContextSystemDialogWin>(delegate);
+  context = std::make_unique<PrintingContextSystemDialogWin>(delegate);
 #else
   // The code in printing/ is still built when the GN `enable_basic_printing`
   // variable is set to false. Just return PrintingContextWin as a dummy
   // context.
-  return std::make_unique<PrintingContextWin>(delegate);
+  context = std::make_unique<PrintingContextWin>(delegate);
 #endif
+#if BUILDFLAG(ENABLE_OOP_PRINTING)
+  if (skip_system_calls)
+    context->set_skip_system_calls();
+#endif
+  return context;
 }
 
 PrintingContextWin::PrintingContextWin(Delegate* delegate)
@@ -283,13 +291,16 @@ mojom::ResultCode PrintingContextWin::InitWithSettingsForTest(
 mojom::ResultCode PrintingContextWin::NewDocument(
     const std::u16string& document_name) {
   DCHECK(!in_print_job_);
-  if (!context_)
+  if (!context_ && !skip_system_calls())
     return OnError();
 
   // Set the flag used by the AbortPrintJob dialog procedure.
   abort_printing_ = false;
 
   in_print_job_ = true;
+
+  if (skip_system_calls())
+    return mojom::ResultCode::kSuccess;
 
   if (base::FeatureList::IsEnabled(printing::features::kUseXpsForPrinting)) {
     // This is all the new document context needed when using XPS.

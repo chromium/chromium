@@ -19,13 +19,25 @@
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW)
 #include "printing/printing_context.h"  // nogncheck
 #include "printing/units.h"  // nogncheck
+
+#if BUILDFLAG(ENABLE_OOP_PRINTING)
+#include "printing/printing_features.h"
 #endif
+#endif  // BUILDFLAG(ENABLE_PRINT_PREVIEW)
 
 namespace content {
 
 namespace {
 
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW)
+bool ShouldPrintingContextSkipSystemCalls() {
+#if BUILDFLAG(ENABLE_OOP_PRINTING)
+  return printing::features::kEnableOopPrintDriversJobPrint.Get();
+#else
+  return false;
+#endif
+}
+
 // Print units conversion functions.
 int32_t DeviceUnitsInPoints(int32_t device_units,
                             int32_t device_units_per_inch) {
@@ -82,7 +94,8 @@ PepperPrintSettingsManagerImpl::ComputeDefaultPrintSettings() {
 
   PrintingContextDelegate delegate;
   std::unique_ptr<printing::PrintingContext> context(
-      printing::PrintingContext::Create(&delegate));
+      printing::PrintingContext::Create(
+          &delegate, ShouldPrintingContextSkipSystemCalls()));
   if (!context.get() ||
       context->UseDefaultSettings() != printing::mojom::ResultCode::kSuccess) {
     return PepperPrintSettingsManager::Result(PP_PrintSettings_Dev(),

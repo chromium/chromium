@@ -12,6 +12,7 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "printing/buildflags/buildflags.h"
 #include "printing/mojom/print.mojom.h"
 #include "printing/native_drawing_context.h"
 #include "printing/print_settings.h"
@@ -141,7 +142,8 @@ class COMPONENT_EXPORT(PRINTING) PrintingContext {
 #endif
 
   // Creates an instance of this object.
-  static std::unique_ptr<PrintingContext> Create(Delegate* delegate);
+  static std::unique_ptr<PrintingContext> Create(Delegate* delegate,
+                                                 bool skip_system_calls);
 
   // Test method for generating printing contexts for testing.  This overrides
   // the platform-specific implementations of CreateImpl().
@@ -162,10 +164,26 @@ class COMPONENT_EXPORT(PRINTING) PrintingContext {
 
   // Creates an instance of this object. Implementers of this interface should
   // implement this method to create an object of their implementation.
-  static std::unique_ptr<PrintingContext> CreateImpl(Delegate* delegate);
+  static std::unique_ptr<PrintingContext> CreateImpl(Delegate* delegate,
+                                                     bool skip_system_calls);
 
   // Reinitializes the settings for object reuse.
   void ResetSettings();
+
+  // Determine if system calls should be skipped by this instance.
+  bool skip_system_calls() const {
+#if BUILDFLAG(ENABLE_OOP_PRINTING)
+    return skip_system_calls_;
+#else
+    return false;
+#endif
+  }
+
+#if BUILDFLAG(ENABLE_OOP_PRINTING)
+  // Make the one-way adjustment to have all system calls skipped by this
+  // `PrintingContext` instance.
+  void set_skip_system_calls() { skip_system_calls_ = true; }
+#endif
 
   // Does bookkeeping when an error occurs.
   virtual mojom::ResultCode OnError();
@@ -184,6 +202,13 @@ class COMPONENT_EXPORT(PRINTING) PrintingContext {
 
   // The job id for the current job. The value is 0 if no jobs are active.
   int job_id_;
+
+ private:
+#if BUILDFLAG(ENABLE_OOP_PRINTING)
+  // If this instance of PrintingContext should skip making any system calls
+  // to the operating system.
+  bool skip_system_calls_ = false;
+#endif
 };
 
 }  // namespace printing

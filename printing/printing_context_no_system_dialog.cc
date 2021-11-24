@@ -21,7 +21,8 @@ namespace printing {
 #if !defined(USE_CUPS)
 // static
 std::unique_ptr<PrintingContext> PrintingContext::CreateImpl(
-    Delegate* delegate) {
+    Delegate* delegate,
+    bool skip_system_calls) {
   return std::make_unique<PrintingContextNoSystemDialog>(delegate);
 }
 #endif  // !defined(USE_CUPS)

@@ -62,7 +62,9 @@ void GetPageRanges(JNIEnv* env,
 
 // static
 std::unique_ptr<PrintingContext> PrintingContext::CreateImpl(
-    Delegate* delegate) {
+    Delegate* delegate,
+    bool skip_system_calls) {
+  DCHECK(!skip_system_calls);
   return std::make_unique<PrintingContextAndroid>(delegate);
 }
 

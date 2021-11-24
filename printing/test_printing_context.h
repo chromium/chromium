@@ -31,7 +31,7 @@ class TestPrintingContextDelegate : public PrintingContext::Delegate {
 
 class TestPrintingContext : public PrintingContext {
  public:
-  explicit TestPrintingContext(Delegate* delegate);
+  TestPrintingContext(Delegate* delegate, bool skip_system_calls);
   TestPrintingContext(const TestPrintingContext&) = delete;
   TestPrintingContext& operator=(const TestPrintingContext&) = delete;
   ~TestPrintingContext() override;

@@ -52,9 +52,6 @@
 #include "chrome/browser/printing/print_backend_service_manager.h"
 #include "chrome/services/printing/public/mojom/print_backend_service.mojom.h"
 #include "components/device_event_log/device_event_log.h"
-#endif
-
-#if defined(OS_WIN) || BUILDFLAG(ENABLE_OOP_PRINTING)
 #include "printing/printing_features.h"
 #endif
 
@@ -111,6 +108,14 @@ std::string PrintingContextDelegate::GetAppLocale() {
   return g_browser_process->GetApplicationLocale();
 }
 
+bool ShouldPrintingContextSkipSystemCalls() {
+#if BUILDFLAG(ENABLE_OOP_PRINTING)
+  return features::kEnableOopPrintDriversJobPrint.Get();
+#else
+  return false;
+#endif
+}
+
 void NotificationCallback(PrintJob* print_job,
                           JobEventDetails::Type detail_type,
                           int job_id,
@@ -145,7 +150,8 @@ PrintJobWorker::PrintJobWorker(int render_process_id, int render_frame_id)
           std::make_unique<PrintingContextDelegate>(render_process_id,
                                                     render_frame_id)),
       printing_context_(
-          PrintingContext::Create(printing_context_delegate_.get())),
+          PrintingContext::Create(printing_context_delegate_.get(),
+                                  ShouldPrintingContextSkipSystemCalls())),
       thread_("Printing_Worker") {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
 }

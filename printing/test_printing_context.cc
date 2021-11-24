@@ -31,8 +31,14 @@ std::string TestPrintingContextDelegate::GetAppLocale() {
   return std::string();
 }
 
-TestPrintingContext::TestPrintingContext(Delegate* delegate)
-    : PrintingContext(delegate) {}
+TestPrintingContext::TestPrintingContext(Delegate* delegate,
+                                         bool skip_system_calls)
+    : PrintingContext(delegate) {
+#if BUILDFLAG(ENABLE_OOP_PRINTING)
+  if (skip_system_calls)
+    set_skip_system_calls();
+#endif
+}
 
 TestPrintingContext::~TestPrintingContext() = default;
 

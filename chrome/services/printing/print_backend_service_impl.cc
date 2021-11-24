@@ -342,7 +342,7 @@ void PrintBackendServiceImpl::UpdatePrintSettings(
   // not guarantee that we will return to this same process when
   // `StartPrinting()` might be called.
   std::unique_ptr<PrintingContext> context =
-      PrintingContext::Create(&context_delegate_);
+      PrintingContext::Create(&context_delegate_, /*skip_system_calls=*/false);
   mojom::ResultCode result =
       context->UpdatePrintSettings(base::Value(std::move(job_settings)));
 
@@ -414,7 +414,8 @@ mojom::ResultCode PrintBackendServiceImpl::StartPrintingReadyDocument(
 
   // Create a printing context that will work with this document for the
   // duration of the print job.
-  auto context = PrintingContext::Create(&context_delegate_);
+  auto context =
+      PrintingContext::Create(&context_delegate_, /*skip_system_calls=*/false);
 
   // With out-of-process printing the printer settings no longer get updated
   // from `PrintingContext::UpdatePrintSettings()`, so we need to apply that

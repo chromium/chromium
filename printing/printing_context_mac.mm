@@ -17,6 +17,7 @@
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
+#include "printing/buildflags/buildflags.h"
 #include "printing/mojom/print.mojom.h"
 #include "printing/print_settings_initializer_mac.h"
 #include "printing/printing_features.h"
@@ -71,8 +72,14 @@ PMPaper MatchPaper(CFArrayRef paper_list,
 
 // static
 std::unique_ptr<PrintingContext> PrintingContext::CreateImpl(
-    Delegate* delegate) {
-  return std::make_unique<PrintingContextMac>(delegate);
+    Delegate* delegate,
+    bool skip_system_calls) {
+  auto context = std::make_unique<PrintingContextMac>(delegate);
+#if BUILDFLAG(ENABLE_OOP_PRINTING)
+  if (skip_system_calls)
+    context->set_skip_system_calls();
+#endif
+  return context;
 }
 
 PrintingContextMac::PrintingContextMac(Delegate* delegate)
@@ -498,6 +505,9 @@ mojom::ResultCode PrintingContextMac::NewDocument(
   DCHECK(!in_print_job_);
 
   in_print_job_ = true;
+
+  if (skip_system_calls())
+    return mojom::ResultCode::kSuccess;
 
   PMPrintSession print_session =
       static_cast<PMPrintSession>([print_info_.get() PMPrintSession]);

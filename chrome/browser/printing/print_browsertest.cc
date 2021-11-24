@@ -1576,8 +1576,10 @@ class PrintBackendPrintBrowserTestBase : public PrintBrowserTest {
       : public PrintingContextFactoryForTest {
    public:
     std::unique_ptr<PrintingContext> CreatePrintingContext(
-        PrintingContext::Delegate* delegate) override {
-      auto context = std::make_unique<TestPrintingContext>(delegate);
+        PrintingContext::Delegate* delegate,
+        bool skip_system_calls) override {
+      auto context =
+          std::make_unique<TestPrintingContext>(delegate, skip_system_calls);
 
       auto settings = std::make_unique<PrintSettings>();
       settings->set_copies(kPrintSettingsCopies);
