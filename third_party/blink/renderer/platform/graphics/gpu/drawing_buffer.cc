@@ -441,7 +441,8 @@ DrawingBuffer::GetUnacceleratedStaticBitmapImage(bool flip_y) {
     return nullptr;
 
   SkBitmap bitmap;
-  bitmap.allocN32Pixels(size_.width(), size_.height());
+  if (!bitmap.tryAllocN32Pixels(size_.width(), size_.height()))
+    return nullptr;
   ReadFramebufferIntoBitmapPixels(static_cast<uint8_t*>(bitmap.getPixels()));
   auto sk_image = SkImage::MakeFromBitmap(bitmap);
 
@@ -674,7 +675,8 @@ scoped_refptr<StaticBitmapImage> DrawingBuffer::TransferToStaticBitmapImage() {
     // lost. We intentionally leave the transparent black image in legacy color
     // space.
     SkBitmap black_bitmap;
-    black_bitmap.allocN32Pixels(size_.width(), size_.height());
+    if (!black_bitmap.tryAllocN32Pixels(size_.width(), size_.height()))
+      return nullptr;
     black_bitmap.eraseARGB(0, 0, 0, 0);
     return UnacceleratedStaticBitmapImage::Create(
         SkImage::MakeFromBitmap(black_bitmap));
