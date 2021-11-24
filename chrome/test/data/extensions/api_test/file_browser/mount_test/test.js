@@ -126,6 +126,23 @@ var expectedProvidedVolume = {
   hidden: false
 };
 
+var expectedShareCacheVolume = {
+  volumeId: 'system_internal:ShareCache',
+  volumeLabel: '',
+  volumeType: 'system_internal',
+  isReadOnly: true,
+  isReadOnlyRemovableDevice: false,
+  hasMedia: false,
+  configurable: false,
+  watchable: false,
+  source: 'system',
+  profile: {profileId: '', displayName: '', isCurrentProfile: true},
+  diskFileSystemType: '',
+  iconSet: {},
+  driveLabel: '',
+  hidden: true
+};
+
 // List of expected mount points.
 // NOTE: this has to be synced with values in file_manager_private_apitest.cc
 //       and values sorted by volumeId.
@@ -135,7 +152,8 @@ var expectedVolumeList = [
   expectedProvidedVolume,
   expectedVolume1,
   expectedVolume2,
-  expectedVolume3
+  expectedVolume3,
+  expectedShareCacheVolume
 ];
 
 function validateObject(received, expected, name) {

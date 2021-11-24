@@ -15,6 +15,7 @@
 #include "base/bind.h"
 #include "base/containers/contains.h"
 #include "base/memory/weak_ptr.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_running_on_chromeos.h"
 #include "chrome/browser/ash/drive/file_system_util.h"
@@ -997,9 +998,7 @@ TEST_F(VolumeManagerTest, GetVolumeList) {
   volume_manager()->Initialize();  // Adds "Downloads"
   std::vector<base::WeakPtr<Volume>> volume_list =
       volume_manager()->GetVolumeList();
-  ASSERT_EQ(1u, volume_list.size());
-  EXPECT_EQ("downloads:MyFiles", volume_list[0]->volume_id());
-  EXPECT_EQ(VOLUME_TYPE_DOWNLOADS_DIRECTORY, volume_list[0]->type());
+  ASSERT_GT(volume_list.size(), 0u);
 }
 
 TEST_F(VolumeManagerTest, VolumeManagerInitializeMyFilesVolume) {
@@ -1008,10 +1007,12 @@ TEST_F(VolumeManagerTest, VolumeManagerInitializeMyFilesVolume) {
   volume_manager()->Initialize();  // Adds "Downloads"
   std::vector<base::WeakPtr<Volume>> volume_list =
       volume_manager()->GetVolumeList();
-  ASSERT_EQ(1u, volume_list.size());
-  auto volume = volume_list[0];
-  EXPECT_EQ("downloads:MyFiles", volume->volume_id());
-  EXPECT_EQ(VOLUME_TYPE_DOWNLOADS_DIRECTORY, volume->type());
+  ASSERT_GT(volume_list.size(), 0);
+  auto volume = base::ranges::find_if(volume_list, [](auto& v) {
+    return v->volume_id() == "downloads:MyFiles";
+  });
+  EXPECT_FALSE(volume == volume_list.end());
+  EXPECT_EQ(VOLUME_TYPE_DOWNLOADS_DIRECTORY, (*volume)->type());
 }
 
 TEST_F(VolumeManagerTest, FindVolumeById) {
@@ -1024,6 +1025,15 @@ TEST_F(VolumeManagerTest, FindVolumeById) {
   ASSERT_TRUE(good_volume.get());
   EXPECT_EQ("downloads:MyFiles", good_volume->volume_id());
   EXPECT_EQ(VOLUME_TYPE_DOWNLOADS_DIRECTORY, good_volume->type());
+}
+
+TEST_F(VolumeManagerTest, VolumeManagerInitializeShareCacheVolume) {
+  volume_manager()->Initialize();
+  base::WeakPtr<Volume> share_cache_volume =
+      volume_manager()->FindVolumeById("system_internal:ShareCache");
+  ASSERT_TRUE(share_cache_volume.get());
+  EXPECT_EQ("system_internal:ShareCache", share_cache_volume->volume_id());
+  EXPECT_EQ(VOLUME_TYPE_SYSTEM_INTERNAL, share_cache_volume->type());
 }
 
 TEST_F(VolumeManagerTest, FindVolumeFromPath) {

@@ -129,6 +129,8 @@ class Volume : public base::SupportsWeakPtr<Volume> {
       bool read_only);
   static std::unique_ptr<Volume> CreateForSmb(const base::FilePath& mount_point,
                                               const std::string display_name);
+  static std::unique_ptr<Volume> CreateForShareCache(
+      const base::FilePath& mount_path);
   static std::unique_ptr<Volume> CreateForTesting(
       const base::FilePath& path,
       VolumeType volume_type,

@@ -69,6 +69,7 @@ constexpr char kCrostiniMapSharedWithMe[] = "SharedWithMe";
 constexpr char kCrostiniMapShortcutsSharedWithMe[] = "ShortcutsSharedWithMe";
 constexpr char kFolderNameDownloads[] = "Downloads";
 constexpr char kFolderNameMyFiles[] = "MyFiles";
+constexpr char kFolderNameShareCache[] = "ShareCache";
 constexpr char kDisplayNameGoogleDrive[] = "Google Drive";
 constexpr char kDriveFsDirComputers[] = "Computers";
 constexpr char kDriveFsDirSharedWithMe[] = ".files-by-id";
@@ -217,6 +218,8 @@ const base::FilePath::CharType kSystemFontsPath[] =
 const base::FilePath::CharType kArchiveMountPath[] =
     FILE_PATH_LITERAL("/media/archive");
 
+const char kShareCacheMountPointName[] = "ShareCache";
+
 const url::Origin& GetFilesAppOrigin() {
   static const base::NoDestructor<url::Origin> origin(
       [] { return url::Origin::Create(GetFileManagerURL()); }());
@@ -259,6 +262,10 @@ base::FilePath GetMyFilesFolderForProfile(Profile* profile) {
 
   // Return <cryptohome>/MyFiles.
   return profile->GetPath().AppendASCII(kFolderNameMyFiles);
+}
+
+base::FilePath GetShareCacheFilePath(Profile* profile) {
+  return profile->GetPath().AppendASCII(kFolderNameShareCache);
 }
 
 base::FilePath GetAndroidFilesPath() {
@@ -677,6 +684,13 @@ bool ConvertPathToArcUrl(const base::FilePath& path,
     if (share && share->mount_path().AppendRelativePath(path, &relative_path)) {
       force_external = true;
     }
+  }
+
+  // ShareCache files are not available as mount-passthrough and must be shared
+  // through ChromeContentProvider.
+  if (GetShareCacheFilePath(primary_profile)
+          .AppendRelativePath(path, &relative_path)) {
+    force_external = true;
   }
 
   // Convert paths under /special or other paths forced to use external URL.

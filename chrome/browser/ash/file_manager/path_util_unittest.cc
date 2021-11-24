@@ -654,6 +654,12 @@ class FileManagerPathUtilConvertUrlTest : public testing::Test {
                 chromeos::MOUNT_TYPE_DEVICE,
                 chromeos::disks::MOUNT_CONDITION_NONE)));
 
+    // Add a Share Cache mount point for the primary profile.
+    ASSERT_TRUE(mount_points->RegisterFileSystem(
+        kShareCacheMountPointName, storage::kFileSystemTypeLocal,
+        storage::FileSystemMountOption(),
+        util::GetShareCacheFilePath(primary_profile)));
+
     // Run pending async tasks resulting from profile construction to ensure
     // these are complete before the test begins.
     base::RunLoop().RunUntilIdle();
@@ -664,6 +670,8 @@ class FileManagerPathUtilConvertUrlTest : public testing::Test {
         &fake_file_system_);
     user_manager_enabler_.reset();
     profile_manager_.reset();
+
+    storage::ExternalMountPoints::GetSystemInstance()->RevokeAllFileSystems();
 
     // Run all pending tasks before destroying testing profile.
     base::RunLoop().RunUntilIdle();
@@ -781,6 +789,20 @@ TEST_F(FileManagerPathUtilConvertUrlTest, ConvertPathToArcUrl_MyDriveArcvm) {
                  "MyDrive/a/b/c"),
             url);
   EXPECT_TRUE(requires_sharing);
+}
+
+TEST_F(FileManagerPathUtilConvertUrlTest, ConvertPathToArcUrl_ShareCache) {
+  GURL url;
+  bool requires_seneschal_sharing = false;
+  EXPECT_TRUE(ConvertPathToArcUrl(
+      util::GetShareCacheFilePath(ProfileManager::GetPrimaryUserProfile())
+          .AppendASCII("a/b/c"),
+      &url, &requires_seneschal_sharing));
+  EXPECT_EQ(GURL("content://org.chromium.arc.chromecontentprovider/"
+                 "externalfile%3AShareCache%2Fa%2Fb%2Fc"),
+            url);
+  // ShareCache files do not need to be shared to ARC through Seneschal.
+  EXPECT_FALSE(requires_seneschal_sharing);
 }
 
 TEST_F(FileManagerPathUtilConvertUrlTest,

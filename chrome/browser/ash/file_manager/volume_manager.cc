@@ -94,6 +94,14 @@ bool RegisterAndroidFilesMountPoint() {
       base::FilePath(util::kAndroidFilesPath));
 }
 
+bool RegisterShareCacheMountPoint(Profile* profile) {
+  storage::ExternalMountPoints* const mount_points =
+      storage::ExternalMountPoints::GetSystemInstance();
+  return mount_points->RegisterFileSystem(
+      util::kShareCacheMountPointName, storage::kFileSystemTypeLocal,
+      storage::FileSystemMountOption(), util::GetShareCacheFilePath(profile));
+}
+
 // Finds the path register as the "Downloads" folder to FileSystem API backend.
 // Returns false if it is not registered.
 bool FindDownloadsMountPointPath(Profile* profile, base::FilePath* path) {
@@ -439,6 +447,27 @@ std::unique_ptr<Volume> Volume::CreateForSmb(const base::FilePath& mount_point,
   return volume;
 }
 
+// ShareCache is not visible in the file manager and so this volume does not
+// represent a real, user-visible Volume. However, shared files can be read
+// through ImageLoader, which needs a Volume present to be able to read from the
+// directory.
+// static
+std::unique_ptr<Volume> Volume::CreateForShareCache(
+    const base::FilePath& mount_path) {
+  std::unique_ptr<Volume> volume(new Volume());
+  volume->type_ = VOLUME_TYPE_SYSTEM_INTERNAL;
+  volume->device_type_ = chromeos::DEVICE_TYPE_UNKNOWN;
+  // Keep source_path empty.
+  volume->source_ = SOURCE_SYSTEM;
+  volume->mount_path_ = mount_path;
+  volume->mount_condition_ = chromeos::disks::MOUNT_CONDITION_NONE;
+  volume->volume_id_ = GenerateVolumeId(*volume);
+  volume->watchable_ = false;
+  volume->is_read_only_ = true;
+  volume->hidden_ = true;
+  return volume;
+}
+
 // static
 std::unique_ptr<Volume> Volume::CreateForTesting(
     const base::FilePath& path,
@@ -587,6 +616,11 @@ void VolumeManager::Initialize() {
     OnArcPlayStoreEnabledChanged(
         arc::IsArcPlayStoreEnabledForProfile(profile_));
   }
+
+  RegisterShareCacheMountPoint(profile_);
+  DoMountEvent(
+      chromeos::MOUNT_ERROR_NONE,
+      Volume::CreateForShareCache(util::GetShareCacheFilePath(profile_)));
 }
 
 void VolumeManager::Shutdown() {
