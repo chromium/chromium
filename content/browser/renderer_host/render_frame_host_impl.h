@@ -1588,6 +1588,10 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // |this| or the parent frame or the opener frame.
   std::unique_ptr<WebBundleHandleTracker> MaybeCreateWebBundleHandleTracker();
 
+  void set_did_stop_loading_callback_for_testing(base::OnceClosure callback) {
+    did_stop_loading_callback_ = std::move(callback);
+  }
+
   class BackForwardCacheDisablingFeatureHandle {
    public:
     BackForwardCacheDisablingFeatureHandle();
@@ -4106,6 +4110,11 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // associated with a fenced frame root, or `this` is associated with an iframe
   // nested within a fenced frame.
   const FencedFrameStatus fenced_frame_status_;
+
+  // Testing callback run in DidStopLoading() regardless of loading state. This
+  // is useful for tests that need to detect when newly created frames finish
+  // loading about:blank.
+  base::OnceClosure did_stop_loading_callback_;
 
   // Used when testing to retrieve that last created Web Bluetooth service.
   WebBluetoothServiceImpl* last_web_bluetooth_service_for_testing_ = nullptr;

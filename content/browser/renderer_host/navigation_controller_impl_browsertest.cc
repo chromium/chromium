@@ -4122,14 +4122,28 @@ IN_PROC_BROWSER_TEST_P(InitialEmptyDocNavigationControllerBrowserTest,
     SCOPED_TRACE(testing::Message() << " Testing case 6.");
 
     // Create the "child6" subframe and set it to a javascript: URL.
-    CreateSubframe(contents(), "child6", GURL("javascript:'foo'"),
-                   false /* wait_for_navigation */);
+    RenderFrameHost* child6 =
+        CreateSubframe(contents(), "child6", GURL("javascript:'foo'"),
+                       false /* wait_for_navigation */);
     subframe_index++;
     EXPECT_EQ(expected_entry_count, controller.GetEntryCount());
 
     // The new subframe should be on the initial empty document.
     FrameTreeNode* new_subframe = root->child_at(subframe_index);
     EXPECT_TRUE(new_subframe->is_on_initial_empty_document());
+
+    // The subframe that was just created loads javascript which generates
+    // DidStopLoading(). RenderFrameHostImpl::DidStopLoading()
+    // early outs in this case as `is_loading_` is false. Wait for this before
+    // continuing. If we did not wait, then the navigation occurring after
+    // this would set `is_loading_` to true, so that the DidStopLoading() for
+    // about:blank would be processed, which this test does not expect
+    // (NavigateSubframeAndCheckNavigationType() thinks the navigation failed).
+    // TODO: ideally the renderer wouldn't send DidStopLoading() in this case.
+    base::RunLoop run_loop;
+    static_cast<RenderFrameHostImpl*>(child6)
+        ->set_did_stop_loading_callback_for_testing(run_loop.QuitClosure());
+    run_loop.Run();
 
     // Do a navigation on the "child6" subframe to |url_2|.
     // The navigation is still classified as "auto", so we didn't append a new

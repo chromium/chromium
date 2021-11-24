@@ -6488,10 +6488,12 @@ void RenderFrameHostImpl::OpenURL(blink::mojom::OpenURLParamsPtr params) {
 void RenderFrameHostImpl::DidStopLoading() {
   TRACE_EVENT1("navigation", "RenderFrameHostImpl::DidStopLoading",
                "render_frame_host", this);
+  if (did_stop_loading_callback_)
+    std::move(did_stop_loading_callback_).Run();
 
-  // This method should never be called when the frame is not loading.
-  // Unfortunately, it can happen if a history navigation happens during a
-  // BeforeUnload or Unload event.
+  // This may be called for newly created frames when the frame is not loading
+  // that navigate to about:blank, as well as history navigations during
+  // BeforeUnload or Unload events.
   // TODO(fdegans): Change this to a DCHECK after LoadEventProgress has been
   // refactored in Blink. See crbug.com/466089
   if (!is_loading_)
