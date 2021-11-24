@@ -2263,6 +2263,38 @@ TEST_P(LtrRtlShelfViewTest, TapInFullscreen) {
   EXPECT_EQ(SHELF_HIDDEN, shelf->GetVisibilityState());
 }
 
+// Verifies that partying items are hidden from the shelf.
+TEST_P(LtrRtlShelfViewTest, PartyingItemsHiddenFromShelf) {
+  AddAppShortcut();
+  AddAppShortcut();
+  AddApp();
+  ShelfItem item = model_->items()[1u];
+  item.status = STATUS_RUNNING;
+  model_->Set(1, item);
+  const gfx::Rect initial_bounds0 = test_api_->GetBoundsByIndex(0);
+  const gfx::Rect initial_bounds2 = test_api_->GetBoundsByIndex(2);
+
+  // Start shelf party.
+  model_->ToggleShelfParty();
+  {
+    const std::vector<int> not_partying = {1, 3};
+    EXPECT_EQ(not_partying, shelf_view_->visible_views_indices());
+  }
+  test_api_->RunMessageLoopUntilAnimationsDone();
+  EXPECT_TRUE(test_api_->GetBoundsByIndex(0).IsEmpty());
+  EXPECT_TRUE(test_api_->GetBoundsByIndex(2).IsEmpty());
+
+  // End shelf party.
+  model_->ToggleShelfParty();
+  {
+    const std::vector<int> not_partying = {0, 1, 2, 3};
+    EXPECT_EQ(not_partying, shelf_view_->visible_views_indices());
+  }
+  test_api_->RunMessageLoopUntilAnimationsDone();
+  EXPECT_EQ(initial_bounds0, test_api_->GetBoundsByIndex(0));
+  EXPECT_EQ(initial_bounds2, test_api_->GetBoundsByIndex(2));
+}
+
 // Test class that tests both context and application menus.
 class ShelfViewMenuTest : public ShelfViewTest,
                           public testing::WithParamInterface<bool> {

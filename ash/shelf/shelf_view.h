@@ -466,6 +466,7 @@ class ASH_EXPORT ShelfView : public views::AccessiblePaneView,
   void ShelfItemStatusChanged(const ShelfID& id) override;
   void ShelfItemRippedOff() override;
   void ShelfItemReturnedFromRipOff(int index) override;
+  void ShelfPartyToggled(bool in_shelf_party) override;
 
   // Overridden from ShellObserver:
   void OnShelfAlignmentChanged(aura::Window* root_window,
@@ -535,6 +536,12 @@ class ASH_EXPORT ShelfView : public views::AccessiblePaneView,
   // Returns the bounds of the given |child| view taken into account RTL layouts
   // and on-going bounds animations on |child|.
   gfx::Rect GetChildViewTargetMirroredBounds(const views::View* child) const;
+
+  // Calls |UpdateShelfItemViewsVisibility| and updates the shelf for changes in
+  // visibility of items. Used when items may have joined or left shelf party,
+  // because partying items are hidden from the shelf. After the party ends,
+  // this function causes the items that were partying to reappear on the shelf.
+  void HandleShelfParty();
 
   // The model; owned by Launcher.
   ShelfModel* model_;
