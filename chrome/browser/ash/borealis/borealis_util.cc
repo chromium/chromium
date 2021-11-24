@@ -5,11 +5,16 @@
 #include "chrome/browser/ash/borealis/borealis_util.h"
 
 #include "base/base64.h"
+#include "base/logging.h"
+#include "base/process/launch.h"
+#include "base/strings/string_split.h"
 #include "base/strings/stringprintf.h"
 #include "base/system/sys_info.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/ash/guest_os/guest_os_registry_service.h"
+#include "chrome/browser/ash/guest_os/guest_os_registry_service_factory.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "components/crx_file/id_util.h"
 #include "components/exo/shell_surface_util.h"
 #include "net/base/url_util.h"
@@ -40,6 +45,8 @@ static constexpr char kBoardKey[] = "entry.2066138756";
 static constexpr char kSpecsKey[] = "entry.1341753442";
 static constexpr char kPlatformVersionKey[] = "entry.1193918294";
 static constexpr char kAppIdKey[] = "entry.2112096055";
+static constexpr char kProtonVersionKey[] = "entry.810819520";
+static constexpr char kSlrVersionKey[] = "entry.300735843";
 
 // App IDs prefixed with this are identified with a numeric "Borealis ID".
 const base::StringPiece kBorealisWindowWithIdPrefix(
@@ -55,7 +62,77 @@ static constexpr char kNonGameIdHash1[] = "hnfpbccfbbbjkmcalgjofgokpgjjppon";
 static constexpr char kNonGameIdHash2[] = "kooplpnkalpdpoohnhmlmfebokjkgnlb";
 static constexpr char kNonGameIdHash3[] = "bmhgcnboebpgmobfgfjcfplecleopefa";
 
-GURL GetSysInfoForUrlAsync(GURL url) {
+struct ProtonVersionInfo {
+  std::string proton = "";
+  std::string slr = "";
+};
+
+ProtonVersionInfo GetProtonVersionInfo(absl::optional<int> game_id,
+                                       Profile* const profile) {
+  std::string owner_id = ash::ProfileHelper::GetUserIdHashFromProfile(profile);
+  std::vector<std::string> command = {"/usr/bin/vsh", "--owner_id=" + owner_id,
+                                      "--vm_name=borealis", "--",
+                                      "/usr/bin/get_proton_version.py"};
+  std::string output;
+  if (!base::GetAppOutput(command, &output)) {
+    // Re-run with stderr capture. It is not done initially since
+    // GetAppOutputAndError intermixes stdout and stderr and stderr commonly
+    // includes informational messages about Linux game sessions that would
+    // complicate the parsing of `output`.
+    base::GetAppOutputAndError(command, &output);
+    LOG(WARNING) << "Failed to run get_proton_version.py:";
+    LOG(WARNING) << output;
+    return {};
+  }
+
+  // Expected stdout of get_proton_version.py:
+  // Game: <game_id>, Proton:<proton_version>, SLR: <slr_version>, Timestamp: <timestamp>
+  // Game: <game_id>, Proton:<proton_version>, SLR: <slr_version>, Timestamp: <timestamp>
+  // ...
+
+  // Only grab the first line, which is for the last game played.
+  output = output.substr(0, output.find("\n"));
+
+  ProtonVersionInfo version_info;
+  std::string parsed_game_id;
+  base::StringPairs tokenized_info;
+  base::SplitStringIntoKeyValuePairs(output, ':', ',', &tokenized_info);
+  for (const auto& key_val_pair : tokenized_info) {
+    const std::string& key = key_val_pair.first;
+    const std::string& val = key_val_pair.second;
+
+    if (key.compare("GameID") == 0) {
+      parsed_game_id = val;
+    } else if (key.compare("Proton") == 0) {
+      version_info.proton = val;
+    } else if (key.compare("SLR") == 0) {
+      version_info.slr = val;
+    }
+  }
+
+  // If the app id is known and doesn't match, return the version "UNKNOWN"
+  if (game_id.has_value() &&
+      parsed_game_id.compare(base::StringPrintf("%d", game_id.value())) != 0) {
+    LOG(WARNING) << "Expected GameID " << game_id.value() << " got "
+                 << parsed_game_id;
+    constexpr char kVersionGameMismatch[] = "UNKNOWN (GameID mismatch)";
+    version_info.proton = kVersionGameMismatch;
+    version_info.slr = kVersionGameMismatch;
+  } else {
+    if (version_info.proton.empty()) {
+      LOG(WARNING) << "Found an unexpected empty Proton version.";
+    }
+    if (version_info.slr.empty()) {
+      LOG(WARNING) << "Found an unexpected empty SLR version.";
+    }
+  }
+
+  return version_info;
+}
+
+GURL GetSysInfoForUrlAsync(GURL url,
+                           absl::optional<int> game_id,
+                           Profile* const profile) {
   url = net::AppendQueryParameter(url, kBoardKey,
                                   base::SysInfo::HardwareModelName());
   url = net::AppendQueryParameter(
@@ -66,6 +143,15 @@ GURL GetSysInfoForUrlAsync(GURL url) {
                          base::SysInfo::CPUModelName().c_str()));
   url = net::AppendQueryParameter(url, kPlatformVersionKey,
                                   base::SysInfo::OperatingSystemVersion());
+
+  ProtonVersionInfo version_info = GetProtonVersionInfo(game_id, profile);
+  if (!version_info.proton.empty()) {
+    url =
+        net::AppendQueryParameter(url, kProtonVersionKey, version_info.proton);
+  }
+  if (!version_info.slr.empty()) {
+    url = net::AppendQueryParameter(url, kSlrVersionKey, version_info.slr);
+  }
 
   return url;
 }
@@ -93,10 +179,13 @@ absl::optional<int> GetBorealisAppId(const aura::Window* window) {
   return absl::nullopt;
 }
 
-void FeedbackFormUrl(const guest_os::GuestOsRegistryService* registry_service,
+void FeedbackFormUrl(Profile* const profile,
                      const std::string& app_id,
                      const std::string& window_title,
                      base::OnceCallback<void(GURL)> url_callback) {
+  const guest_os::GuestOsRegistryService* registry_service =
+      guest_os::GuestOsRegistryServiceFactory::GetForProfile(profile);
+
   // Exclude windows that aren't games.
   if (app_id.find(kNonGameWindowPrefix) != std::string::npos ||
       app_id == kBorealisMainAppId) {
@@ -116,18 +205,20 @@ void FeedbackFormUrl(const guest_os::GuestOsRegistryService* registry_service,
 
   // Attempt to get the Borealis app ID.
   // TODO(b/173977876): Implement this in a more reliable way.
+  absl::optional<int> borealis_app_id;
   absl::optional<guest_os::GuestOsRegistryService::Registration> registration =
       registry_service->GetRegistration(app_id);
   if (registration.has_value()) {
-    absl::optional<int> app_id = GetBorealisAppId(registration->Exec());
-    if (app_id.has_value()) {
-      url = net::AppendQueryParameter(url, kAppIdKey,
-                                      base::StringPrintf("%d", app_id.value()));
+    borealis_app_id = GetBorealisAppId(registration->Exec());
+    if (borealis_app_id.has_value()) {
+      url = net::AppendQueryParameter(
+          url, kAppIdKey, base::StringPrintf("%d", borealis_app_id.value()));
     }
   }
 
   base::ThreadPool::PostTaskAndReplyWithResult(
-      FROM_HERE, base::MayBlock(), base::BindOnce(&GetSysInfoForUrlAsync, url),
+      FROM_HERE, base::MayBlock(),
+      base::BindOnce(&GetSysInfoForUrlAsync, url, borealis_app_id, profile),
       std::move(url_callback));
 }
 

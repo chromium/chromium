@@ -8,7 +8,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "chrome/browser/ash/borealis/borealis_window_manager_test_helper.h"
-#include "chrome/browser/ash/guest_os/guest_os_registry_service.h"
 #include "chrome/test/base/testing_profile.h"
 #include "content/public/test/browser_task_environment.h"
 #include "net/base/url_util.h"
@@ -20,13 +19,12 @@ namespace {
 
 class BorealisUtilTest : public testing::Test {
  protected:
-  GURL GetFeedbackFormUrl(
-      const guest_os::GuestOsRegistryService* registry_service,
-      const std::string& app_id,
-      const std::string& window_title) {
+  GURL GetFeedbackFormUrl(TestingProfile* profile,
+                          const std::string& app_id,
+                          const std::string& window_title) {
     base::RunLoop run_loop;
     GURL returned_url;
-    FeedbackFormUrl(registry_service, app_id, window_title,
+    FeedbackFormUrl(profile, app_id, window_title,
                     base::BindLambdaForTesting([&](GURL url) {
                       returned_url = url;
                       run_loop.Quit();
@@ -60,9 +58,8 @@ TEST_F(BorealisUtilTest, GetBorealisAppIdFromWindowReturnsId) {
 
 TEST_F(BorealisUtilTest, FeedbackFormUrlExcludesNonGames) {
   TestingProfile profile;
-  guest_os::GuestOsRegistryService registry(&profile);
 
-  EXPECT_FALSE(GetFeedbackFormUrl(&registry,
+  EXPECT_FALSE(GetFeedbackFormUrl(&profile,
                                   "borealisanon:org.chromium.borealis.xid.100",
                                   "CoolApp")
                    .is_valid());
@@ -70,21 +67,18 @@ TEST_F(BorealisUtilTest, FeedbackFormUrlExcludesNonGames) {
 
 TEST_F(BorealisUtilTest, FeedbackFormUrlPrefillsWindowTitle) {
   TestingProfile profile;
-  guest_os::GuestOsRegistryService registry(&profile);
 
-  EXPECT_THAT(
-      GetFeedbackFormUrl(&registry, "borealisanon:org.chromium.borealis.app",
-                         "CoolApp")
-          .spec(),
-      testing::HasSubstr("=CoolApp"));
+  EXPECT_THAT(GetFeedbackFormUrl(
+                  &profile, "borealisanon:org.chromium.borealis.app", "CoolApp")
+                  .spec(),
+              testing::HasSubstr("=CoolApp"));
 }
 
 TEST_F(BorealisUtilTest, FeedbackFormUrlIsPrefilled) {
   TestingProfile profile;
-  guest_os::GuestOsRegistryService registry(&profile);
 
   GURL url = GetFeedbackFormUrl(
-      &registry, "borealisanon:org.chromium.borealis.app", "CoolApp");
+      &profile, "borealisanon:org.chromium.borealis.app", "CoolApp");
 
   // Count the number of query parameters beginning with "entry"; these are
   // form fields that we're prefilling.
