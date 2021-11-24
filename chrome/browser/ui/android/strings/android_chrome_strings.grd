@@ -1758,10 +1758,10 @@ Your Google account may have other forms of browsing history like searches and a
         Waiting for details of parents.
       </message>
       <message name="IDS_ACCOUNT_MANAGEMENT_ONE_PARENT_NAME" desc="String for name of single parent for child account.">
-        This account is managed by <ph name="PARENT_NAME">%1$s<ex>parent1@gmail.com</ex></ph>.
+        This browser is managed by <ph name="PARENT_NAME">%1$s<ex>parent1@gmail.com</ex></ph>.
       </message>
       <message name="IDS_ACCOUNT_MANAGEMENT_TWO_PARENT_NAMES" desc="String for names of two parents for child account.">
-        This account is managed by <ph name="PARENT_NAME_1">%1$s<ex>parent1@gmail.com</ex></ph> and <ph name="PARENT_NAME_2">%2$s<ex>parent2@gmail.com</ex></ph>.
+        This browser is managed by <ph name="PARENT_NAME_1">%1$s<ex>parent1@gmail.com</ex></ph> and <ph name="PARENT_NAME_2">%2$s<ex>parent2@gmail.com</ex></ph>.
       </message>
       <message name="IDS_ACCOUNT_MANAGEMENT_CHILD_CONTENT_TITLE" desc="Title of the Content setting, which controls which websites a child is allowed to visit.">
         Content
