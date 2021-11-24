@@ -35,14 +35,13 @@ NSImage* GetErrorNSImage() {
 
 scoped_refptr<base::RefCountedMemory> Get1xPNGBytesFromNSImage(
     NSImage* nsimage) {
-  // TODO(crbug.com/1253882): Remove this once the root cause has been found.
-  CHECK(nsimage);
+  DCHECK(nsimage);
   CGImageRef cg_image = [nsimage CGImageForProposedRect:NULL
                                                 context:nil
                                                   hints:nil];
-  // TODO(crbug.com/1253882): Remove this once the root cause has been found.
   if (!cg_image) {
-    base::debug::DumpWithoutCrashing();
+    // TODO(crbug.com/1271762): Look at DumpWithoutCrashing() reports to figure
+    // out what's going on here.
     return scoped_refptr<base::RefCountedMemory>();
   }
   base::scoped_nsobject<NSBitmapImageRep> ns_bitmap(
