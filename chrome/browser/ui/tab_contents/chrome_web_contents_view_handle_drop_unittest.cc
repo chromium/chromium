@@ -215,23 +215,6 @@ TEST_F(ChromeWebContentsViewDelegateHandleOnPerformDrop, Html) {
   RunTest(data, /*enable=*/true, /*scan_succeeds=*/true);
 }
 
-// Make sure DropData::file_contents is handled correctly.
-TEST_F(ChromeWebContentsViewDelegateHandleOnPerformDrop, FileContents) {
-  content::DropData data;
-  data.file_contents = large_text();
-
-  SetExpectedRequestsCount(0);
-  RunTest(data, /*enable=*/false, /*scan_succeeds=*/true);
-
-  SetExpectedRequestsCount(1);
-  RunTest(data, /*enable=*/true, /*scan_succeeds=*/false);
-  RunTest(data, /*enable=*/true, /*scan_succeeds=*/true);
-
-  data.file_contents = small_text();
-  SetExpectedRequestsCount(0);
-  RunTest(data, /*enable=*/true, /*scan_succeeds=*/true);
-}
-
 // Make sure DropData::filenames is handled correctly.
 TEST_F(ChromeWebContentsViewDelegateHandleOnPerformDrop, Files) {
   base::ScopedTempDir temp_dir;
