@@ -45,7 +45,7 @@ const base::Feature kConversionMeasurement{"ConversionMeasurement",
                                            base::FEATURE_ENABLED_BY_DEFAULT};
 
 const base::Feature kGMSCoreEmoji{"GMSCoreEmoji",
-                                  base::FEATURE_DISABLED_BY_DEFAULT};
+                                  base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Whether the HandwritingRecognition API can be enabled by origin trial.
 // Disabling this feature disables both the origin trial and the mojo interface.
