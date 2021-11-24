@@ -20,6 +20,7 @@
 #include "third_party/blink/renderer/core/dom/dom_token_list.h"
 #include "third_party/blink/renderer/core/dom/events/native_event_listener.h"
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
+#include "third_party/blink/renderer/core/dom/pseudo_element.h"
 #include "third_party/blink/renderer/core/editing/ephemeral_range.h"
 #include "third_party/blink/renderer/core/editing/finder/text_finder.h"
 #include "third_party/blink/renderer/core/editing/markers/document_marker_controller.h"
@@ -3434,6 +3435,87 @@ TEST_F(DisplayLockContextTest, BlockedReattachOfSlotted) {
   GetDocument().documentElement()->SetForceReattachLayoutTree();
   UpdateAllLifecyclePhasesForTest();
   EXPECT_FALSE(slotted->GetLayoutObject());
+}
+
+TEST_F(DisplayLockContextTest, BlockedReattachOfShadowTree) {
+  GetDocument().body()->setInnerHTMLWithDeclarativeShadowDOMForTesting(R"HTML(
+    <style>
+      .locked { content-visibility: hidden; }
+    </style>
+    <div id="host">
+      <template shadowroot="open">
+        <span id="span"></span>
+      </template>
+    </div>
+  )HTML");
+  UpdateAllLifecyclePhasesForTest();
+
+  auto* host = GetDocument().getElementById("host");
+  auto* span = host->GetShadowRoot()->getElementById("span");
+
+  ASSERT_TRUE(host->GetLayoutObject());
+  EXPECT_TRUE(span->GetLayoutObject());
+
+  host->classList().Add("locked");
+  GetDocument().documentElement()->SetForceReattachLayoutTree();
+  UpdateAllLifecyclePhasesForTest();
+
+  ASSERT_TRUE(host->GetLayoutObject());
+  EXPECT_FALSE(span->GetLayoutObject());
+}
+
+TEST_F(DisplayLockContextTest, BlockedReattachOfPseudoElements) {
+  GetDocument().documentElement()->setInnerHTML(R"HTML(
+    <style>
+      #locked::before { content: "X"; }
+      .locked { content-visibility: hidden; }
+    </style>
+    <div id="locked"></div>
+  )HTML");
+  UpdateAllLifecyclePhasesForTest();
+
+  auto* locked = GetDocument().getElementById("locked");
+
+  ASSERT_TRUE(locked->GetLayoutObject());
+  ASSERT_TRUE(locked->GetPseudoElement(kPseudoIdBefore));
+  EXPECT_TRUE(locked->GetPseudoElement(kPseudoIdBefore)->GetLayoutObject());
+
+  locked->classList().Add("locked");
+  GetDocument().documentElement()->SetForceReattachLayoutTree();
+  UpdateAllLifecyclePhasesForTest();
+
+  ASSERT_TRUE(locked->GetLayoutObject());
+  ASSERT_TRUE(locked->GetPseudoElement(kPseudoIdBefore));
+  EXPECT_FALSE(locked->GetPseudoElement(kPseudoIdBefore)->GetLayoutObject());
+}
+
+TEST_F(DisplayLockContextTest, BlockedReattachWhitespaceSibling) {
+  GetDocument().documentElement()->setInnerHTML(R"HTML(
+    <style>
+      #locked { display: inline-block; }
+      .locked { content-visibility: hidden; }
+    </style>
+    <span id="locked"><span>X</span></span> <span>X</span>
+  )HTML");
+  UpdateAllLifecyclePhasesForTest();
+
+  auto* locked = GetDocument().getElementById("locked");
+
+  EXPECT_TRUE(locked->GetLayoutObject());
+  EXPECT_TRUE(locked->firstChild()->GetLayoutObject());
+  EXPECT_TRUE(locked->firstChild()->firstChild()->GetLayoutObject());
+  EXPECT_TRUE(locked->nextSibling()->GetLayoutObject());
+  EXPECT_TRUE(locked->nextSibling()->nextSibling()->GetLayoutObject());
+
+  locked->classList().Add("locked");
+  GetDocument().documentElement()->SetForceReattachLayoutTree();
+  UpdateAllLifecyclePhasesForTest();
+
+  EXPECT_TRUE(locked->GetLayoutObject());
+  EXPECT_FALSE(locked->firstChild()->GetLayoutObject());
+  EXPECT_FALSE(locked->firstChild()->firstChild()->GetLayoutObject());
+  EXPECT_TRUE(locked->nextSibling()->GetLayoutObject());
+  EXPECT_TRUE(locked->nextSibling()->nextSibling()->GetLayoutObject());
 }
 
 }  // namespace blink

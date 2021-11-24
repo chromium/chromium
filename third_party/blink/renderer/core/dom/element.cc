@@ -2744,6 +2744,21 @@ void Element::AttachLayoutTree(AttachContext& context) {
   }
   children_context.use_previous_in_flow = true;
 
+  if (ChildStyleRecalcBlockedByDisplayLock()) {
+    // Since we block style recalc on descendants of this node due to display
+    // locking, none of its descendants should have the NeedsReattachLayoutTree
+    // bit set.
+    DCHECK(!ChildNeedsReattachLayoutTree());
+    // If an element is locked we shouldn't attach the layout tree for its
+    // descendants. We should notify that we blocked a reattach so that we will
+    // correctly attach the descendants when allowed.
+    GetDisplayLockContext()->NotifyReattachLayoutTreeWasBlocked();
+    Node::AttachLayoutTree(context);
+    if (layout_object && layout_object->AffectsWhitespaceSiblings())
+      context.previous_in_flow = layout_object;
+    return;
+  }
+
   AttachPseudoElement(kPseudoIdMarker, children_context);
   AttachPseudoElement(kPseudoIdBefore, children_context);
 
