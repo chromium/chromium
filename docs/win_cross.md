@@ -60,15 +60,21 @@ After installing [Microsoft's development tools](windows_build_instructions.md#v
 you can package your Windows SDK installation into a zip file by running the following on a Windows machine:
 
     cd path/to/depot_tools/win_toolchain
-    # customize the Windows SDK version numbers
-    python package_from_installed.py 2017 -w 10.0.17134.0
+    python package_from_installed.py <vs version> -w <win version>
+
+where `<vs version>` and `<win version>` correspond respectively to the
+versions of Visual Studio (e.g. 2019) and of the Windows SDK (e.g.
+10.0.19041.0) installed on the Windows machine.
 
 These commands create a zip file named `<hash value>.zip`. Then, to use the
 generated file in a Linux or Mac host, the following environment variables
 need to be set:
 
-    export DEPOT_TOOLS_WIN_TOOLCHAIN_BASE_URL=<path/to/sdk/zip/file>
+    export DEPOT_TOOLS_WIN_TOOLCHAIN_BASE_URL=<base url>
     export GYP_MSVS_HASH_<toolchain hash>=<hash value>
+
+`<base url>` is the path of the directory containing the zip file (note that
+specifying scheme `file://` is not required).
 
 `<toolchain hash>` is hardcoded in `src/build/vs_toolchain.py` and can be found by
 setting `DEPOT_TOOLS_WIN_TOOLCHAIN_BASE_URL` and running `gclient sync`:
