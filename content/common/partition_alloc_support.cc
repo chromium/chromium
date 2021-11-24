@@ -246,49 +246,55 @@ void PartitionAllocSupport::ReconfigureAfterFeatureListInit(
     }
   }
 
-  base::allocator::ConfigurePartitions(
-      base::allocator::EnableBrp(enable_brp),
-      base::allocator::ForceSplitPartitions(force_split_partitions));
-
   base::allocator::ReconfigurePartitionAllocLazyCommit(
       base::FeatureList::IsEnabled(base::features::kPartitionAllocLazyCommit));
 #endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 
-  // Don't enable PCScan if BRP is enabled.
-  if (enable_brp)
-    return;
-
-  bool scan_enabled = EnablePCScanForMallocPartitionsIfNeeded();
-  // No specified process type means this is the Browser process.
-  if (process_type.empty()) {
-    scan_enabled = scan_enabled ||
-                   EnablePCScanForMallocPartitionsInBrowserProcessIfNeeded();
-  }
-  if (process_type == switches::kRendererProcess) {
-    scan_enabled = scan_enabled ||
-                   EnablePCScanForMallocPartitionsInRendererProcessIfNeeded();
-  }
-  if (scan_enabled) {
-    if (base::FeatureList::IsEnabled(
-            base::features::kPartitionAllocPCScanStackScanning)) {
+  // If BRP is not enabled, check if any of PCScan flags is enabled.
+  bool scan_enabled = false;
+  if (!enable_brp) {
+    scan_enabled = EnablePCScanForMallocPartitionsIfNeeded();
+    // No specified process type means this is the Browser process.
+    if (process_type.empty()) {
+      scan_enabled = scan_enabled ||
+                     EnablePCScanForMallocPartitionsInBrowserProcessIfNeeded();
+    }
+    if (process_type == switches::kRendererProcess) {
+      scan_enabled = scan_enabled ||
+                     EnablePCScanForMallocPartitionsInRendererProcessIfNeeded();
+    }
+    if (scan_enabled) {
+      if (base::FeatureList::IsEnabled(
+              base::features::kPartitionAllocPCScanStackScanning)) {
 #if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
-      base::internal::PCScan::EnableStackScanning();
-      // Notify PCScan about the main thread.
-      base::internal::PCScan::NotifyThreadCreated(
-          base::internal::GetStackTop());
+        base::internal::PCScan::EnableStackScanning();
+        // Notify PCScan about the main thread.
+        base::internal::PCScan::NotifyThreadCreated(
+            base::internal::GetStackTop());
 #endif
+      }
+      if (base::FeatureList::IsEnabled(
+              base::features::kPartitionAllocPCScanImmediateFreeing)) {
+        base::internal::PCScan::EnableImmediateFreeing();
+      }
+      if (base::FeatureList::IsEnabled(
+              base::features::kPartitionAllocPCScanEagerClearing)) {
+        base::internal::PCScan::SetClearType(
+            base::internal::PCScan::ClearType::kEager);
+      }
+      SetProcessNameForPCScan(process_type);
     }
-    if (base::FeatureList::IsEnabled(
-            base::features::kPartitionAllocPCScanImmediateFreeing)) {
-      base::internal::PCScan::EnableImmediateFreeing();
-    }
-    if (base::FeatureList::IsEnabled(
-            base::features::kPartitionAllocPCScanEagerClearing)) {
-      base::internal::PCScan::SetClearType(
-          base::internal::PCScan::ClearType::kEager);
-    }
-    SetProcessNameForPCScan(process_type);
   }
+
+#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+  const bool enable_thread_cache_on_v8_partition =
+      scan_enabled && process_type == switches::kRendererProcess;
+  base::allocator::ConfigurePartitions(
+      base::allocator::EnableBrp(enable_brp),
+      base::allocator::ThreadCacheOnNonQuarantinablePartition(
+          enable_thread_cache_on_v8_partition),
+      base::allocator::ForceSplitPartitions(force_split_partitions));
+#endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 }
 
 void PartitionAllocSupport::ReconfigureAfterTaskRunnerInit(

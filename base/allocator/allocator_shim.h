@@ -173,11 +173,18 @@ BASE_EXPORT void EnablePartitionAllocMemoryReclaimer();
 BASE_EXPORT void ReconfigurePartitionAllocLazyCommit(bool enabled);
 
 using EnableBrp = base::StrongAlias<class EnableBrpTag, bool>;
+using ThreadCacheOnNonQuarantinablePartition =
+    base::StrongAlias<class ThreadCacheOnNonQuarantinablePartitionTag, bool>;
 using ForceSplitPartitions =
     base::StrongAlias<class ForceSplitPartitionsTag, bool>;
 
+// If |thread_cache_on_non_quarantinable_partition| is specified, the
+// thread-cache will be enabled on the non-quarantinable partition. The
+// thread-cache on the main (malloc) partition will be disabled.
 BASE_EXPORT void ConfigurePartitions(
     EnableBrp enable_brp,
+    ThreadCacheOnNonQuarantinablePartition
+        thread_cache_on_non_quarantinable_partition,
     ForceSplitPartitions force_split_partitions);
 
 #if defined(PA_ALLOW_PCSCAN)

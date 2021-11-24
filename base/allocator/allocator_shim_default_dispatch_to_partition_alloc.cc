@@ -476,7 +476,16 @@ alignas(base::ThreadSafePartitionRoot) uint8_t
         base::ThreadSafePartitionRoot)];
 
 void ConfigurePartitions(EnableBrp enable_brp,
+                         ThreadCacheOnNonQuarantinablePartition
+                             thread_cache_on_non_quarantinable_partition,
                          ForceSplitPartitions force_split_partitions) {
+  // |thread_cache_on_non_quarantinable_partition| can't be enabled with BRP.
+  PA_CHECK(!enable_brp || !thread_cache_on_non_quarantinable_partition);
+
+  static bool configured = false;
+  PA_CHECK(!configured);
+  configured = true;
+
   auto* current_root = g_root.Get();
   // Call Get() to ensure g_aligned_root gets initialized. In some cases it is
   // initialized with g_root, and we want to make sure it is the pre-swap
@@ -487,7 +496,11 @@ void ConfigurePartitions(EnableBrp enable_brp,
   // existing root.
   if (!enable_brp && !force_split_partitions) {
     PA_DCHECK(!current_root->with_thread_cache);
-    current_root->EnableThreadCacheIfSupported();
+    auto* root_with_thread_cache =
+        thread_cache_on_non_quarantinable_partition
+            ? internal::NonQuarantinableAllocator::Instance().root()
+            : current_root;
+    root_with_thread_cache->EnableThreadCacheIfSupported();
     return;
   }
 
@@ -518,7 +531,9 @@ void ConfigurePartitions(EnableBrp enable_brp,
           allow_aligned_alloc_in_main_root
               ? base::PartitionOptions::AlignedAlloc::kAllowed
               : base::PartitionOptions::AlignedAlloc::kDisallowed,
-          base::PartitionOptions::ThreadCache::kEnabled,
+          thread_cache_on_non_quarantinable_partition
+              ? base::PartitionOptions::ThreadCache::kDisabled
+              : base::PartitionOptions::ThreadCache::kEnabled,
           base::PartitionOptions::Quarantine::kAllowed,
           base::PartitionOptions::Cookie::kAllowed,
           enable_brp ? base::PartitionOptions::BackupRefPtr::kEnabled
@@ -556,6 +571,13 @@ void ConfigurePartitions(EnableBrp enable_brp,
   g_aligned_root.Replace(new_aligned_root);
   // No need for g_original_aligned_root, because in cases where g_aligned_root
   // is replaced, it must've been g_original_root.
+
+  // Enable thread-cache on the non-quarantinable partition, if specified.
+  if (thread_cache_on_non_quarantinable_partition) {
+    internal::NonQuarantinableAllocator::Instance()
+        .root()
+        ->EnableThreadCacheIfSupported();
+  }
 }
 
 #if defined(PA_ALLOW_PCSCAN)
