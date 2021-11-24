@@ -166,6 +166,9 @@ if (is_chromeos_ash || is_chromeos_lacros) {
       # For caller-callee instrumentation version which needs frame pointers to
       # get the caller address.
       use_call_graph
+} else if (is_fuchsia) {
+  # Fuchsia on arm64 could use shadow call stack for unwinding.
+  enable_frame_pointers = current_cpu != "arm64"
 } else {
   # Explicitly ask for frame pointers, otherwise:
   # * Stacks may be missing for sanitizer and profiling builds.
