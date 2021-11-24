@@ -743,10 +743,6 @@ const base::Feature kDirectShowGetPhotoState{"DirectShowGetPhotoState",
 const base::Feature kIncludeIRCamerasInDeviceEnumeration{
     "IncludeIRCamerasInDeviceEnumeration", base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Enables AV1 decode acceleration for Windows.
-const base::Feature MEDIA_EXPORT kMediaFoundationAV1Decoding{
-    "MediaFoundationAV1Decoding", base::FEATURE_ENABLED_BY_DEFAULT};
-
 // Enables AV1 encode acceleration for Windows.
 const base::Feature MEDIA_EXPORT kMediaFoundationAV1Encoding{
     "MediaFoundationAV1Encoding", base::FEATURE_DISABLED_BY_DEFAULT};

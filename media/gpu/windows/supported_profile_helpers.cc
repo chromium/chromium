@@ -203,8 +203,7 @@ namespace media {
 
 SupportedResolutionRangeMap GetSupportedD3D11VideoDecoderResolutions(
     ComD3D11Device device,
-    const gpu::GpuDriverBugWorkarounds& workarounds,
-    bool provide_av1_resolutions) {
+    const gpu::GpuDriverBugWorkarounds& workarounds) {
   TRACE_EVENT0("gpu,startup", "GetSupportedD3D11VideoDecoderResolutions");
   SupportedResolutionRangeMap supported_resolutions;
 
@@ -244,9 +243,6 @@ SupportedResolutionRangeMap GetSupportedD3D11VideoDecoderResolutions(
       gfx::Size(4096, 2160), gfx::Size(4096, 2304), gfx::Size(7680, 4320),
       gfx::Size(8192, 4320), gfx::Size(8192, 8192)};
 
-  const bool should_test_for_av1_support =
-      !workarounds.disable_accelerated_av1_decode && provide_av1_resolutions;
-
   // Enumerate supported video profiles and look for the known profile for each
   // codec. We first look through the the decoder profiles so we don't run N
   // resolution tests for a profile that's unsupported.
@@ -273,7 +269,7 @@ SupportedResolutionRangeMap GetSupportedD3D11VideoDecoderResolutions(
 
     // Note: Each bit depth of AV1 uses a different DXGI_FORMAT, here we only
     // test for the 8-bit one (NV12).
-    if (should_test_for_av1_support) {
+    if (!workarounds.disable_accelerated_av1_decode) {
       if (profile_id == DXVA_ModeAV1_VLD_Profile0) {
         supported_resolutions[AV1PROFILE_PROFILE_MAIN] = GetResolutionsForGUID(
             video_device.Get(), profile_id, kModernResolutions);
@@ -322,7 +318,8 @@ SupportedResolutionRangeMap GetSupportedD3D11VideoDecoderResolutions(
     }
 
     // RS3 has issues with VP9.2 decoding. See https://crbug.com/937108.
-    if (profile_id == D3D11_DECODER_PROFILE_VP9_VLD_10BIT_PROFILE2 &&
+    if (!workarounds.disable_accelerated_vp9_profile2_decode &&
+        profile_id == D3D11_DECODER_PROFILE_VP9_VLD_10BIT_PROFILE2 &&
         base::win::GetVersion() != base::win::Version::WIN10_RS3) {
       supported_resolutions[VP9PROFILE_PROFILE2] = GetResolutionsForGUID(
           video_device.Get(), profile_id, kModernResolutions, DXGI_FORMAT_P010);

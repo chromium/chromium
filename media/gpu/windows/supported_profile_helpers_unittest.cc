@@ -170,19 +170,16 @@ class SupportedResolutionResolverTest : public ::testing::Test {
   base::flat_map<GUID, gfx::Size, GUIDComparison> max_size_for_guids_;
 };
 
-TEST_F(SupportedResolutionResolverTest, CanDisableAV1) {
+TEST_F(SupportedResolutionResolverTest, WorkaroundsDisableAv1) {
   DONT_RUN_ON_WIN_7();
-
-  // Do all the things to normally enable AV1:
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(kMediaFoundationAV1Decoding);
 
   // Enable the av1 decoder.
   EnableDecoders({DXVA_ModeAV1_VLD_Profile0});
   SetMaxResolution(DXVA_ModeAV1_VLD_Profile0, kSquare8k);
 
+  gpu_workarounds_.disable_accelerated_av1_decode = true;
   const auto supported_resolutions = GetSupportedD3D11VideoDecoderResolutions(
-      mock_d3d11_device_, gpu_workarounds_, false);
+      mock_d3d11_device_, gpu_workarounds_);
   auto av1_supported_res = supported_resolutions.find(AV1PROFILE_PROFILE_MAIN);
 
   // There should be no supported av1 resolutions.
@@ -214,6 +211,25 @@ TEST_F(SupportedResolutionResolverTest, WorkaroundsDisableVpx) {
 
   AssertDefaultSupport(GetSupportedD3D11VideoDecoderResolutions(
       mock_d3d11_device_, gpu_workarounds_));
+}
+
+TEST_F(SupportedResolutionResolverTest, WorkaroundsDisableVp92) {
+  DONT_RUN_ON_WIN_7();
+
+  gpu_workarounds_.disable_accelerated_vp9_profile2_decode = true;
+  EnableDecoders({D3D11_DECODER_PROFILE_VP8_VLD,
+                  D3D11_DECODER_PROFILE_VP9_VLD_PROFILE0,
+                  D3D11_DECODER_PROFILE_VP9_VLD_10BIT_PROFILE2});
+  const auto supported_resolutions = GetSupportedD3D11VideoDecoderResolutions(
+      mock_d3d11_device_, gpu_workarounds_);
+
+  // There should be no supported vp9.2 resolutions.
+  ASSERT_EQ(supported_resolutions.find(VP9PROFILE_PROFILE2),
+            supported_resolutions.end());
+
+  // vp9.0 should still be available.
+  ASSERT_NE(supported_resolutions.find(VP9PROFILE_PROFILE0),
+            supported_resolutions.end());
 }
 
 TEST_F(SupportedResolutionResolverTest, H264Supports4k) {
@@ -297,27 +313,18 @@ TEST_F(SupportedResolutionResolverTest, MultipleCodecs) {
 
 TEST_F(SupportedResolutionResolverTest, AV1ProfileMainSupports8k) {
   DONT_RUN_ON_WIN_7();
-
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(kMediaFoundationAV1Decoding);
   TestDecoderSupport(DXVA_ModeAV1_VLD_Profile0, AV1PROFILE_PROFILE_MAIN,
                      kSquare8k, kSquare8k, kSquare8k);
 }
 
 TEST_F(SupportedResolutionResolverTest, AV1ProfileHighSupports8k) {
   DONT_RUN_ON_WIN_7();
-
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(kMediaFoundationAV1Decoding);
   TestDecoderSupport(DXVA_ModeAV1_VLD_Profile1, AV1PROFILE_PROFILE_HIGH,
                      kSquare8k, kSquare8k, kSquare8k);
 }
 
 TEST_F(SupportedResolutionResolverTest, AV1ProfileProSupports8k) {
   DONT_RUN_ON_WIN_7();
-
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(kMediaFoundationAV1Decoding);
   TestDecoderSupport(DXVA_ModeAV1_VLD_Profile2, AV1PROFILE_PROFILE_PRO,
                      kSquare8k, kSquare8k, kSquare8k);
 }
