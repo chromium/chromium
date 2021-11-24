@@ -29,7 +29,10 @@ void FakeCameraRollManager::SetIsCameraRollAccessible(bool accessiable) {
   is_camera_roll_accessible_ = accessiable;
 }
 
-void FakeCameraRollManager::EnableCameraRollFeatureInSystemSetting() {}
+void FakeCameraRollManager::EnableCameraRollFeatureInSystemSetting() {
+  is_refreshing_after_user_opt_in_ = true;
+  ComputeAndUpdateUiState();
+}
 
 void FakeCameraRollManager::ComputeAndUpdateUiState() {
   if (!is_camera_roll_accessible_) {
@@ -38,6 +41,8 @@ void FakeCameraRollManager::ComputeAndUpdateUiState() {
     ui_state_ = (has_dismissed_onboarding_dialog_)
                     ? CameraRollUiState::SHOULD_HIDE
                     : CameraRollUiState::CAN_OPT_IN;
+  } else if (is_refreshing_after_user_opt_in_) {
+    ui_state_ = CameraRollUiState::LOADING_VIEW;
   } else if (current_items().empty()) {
     ui_state_ = CameraRollUiState::SHOULD_HIDE;
   } else {

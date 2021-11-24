@@ -33,6 +33,7 @@ class FakeCameraRollManager : public CameraRollManager {
   bool has_dismissed_onboarding_dialog_ = false;
   bool is_avaiable_to_be_enabled_ = true;
   bool is_camera_roll_accessible_ = true;
+  bool is_refreshing_after_user_opt_in_ = false;
 };
 
 }  // namespace phonehub

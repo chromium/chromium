@@ -89,12 +89,14 @@ class CameraRollManagerImpl
       chromeos::secure_channel::mojom::FileTransferUpdatePtr update);
 
   bool IsCameraRollSettingEnabled();
+  void resetViewRefreshingFlagIfNeeded();
   void UpdateCameraRollAccessStateAndNotifyIfNeeded(
       const proto::CameraRollAccessState& access_state);
   void OnCameraRollOnboardingUiDismissed() override;
   void ComputeAndUpdateUiState() override;
 
   bool is_camera_roll_accessible_ = false;
+  bool is_refreshing_after_user_opt_in_ = false;
   PrefService* pref_service_;
   MessageReceiver* message_receiver_;
   MessageSender* message_sender_;

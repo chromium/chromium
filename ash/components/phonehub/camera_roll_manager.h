@@ -34,6 +34,8 @@ class CameraRollManager {
     // Feature is supported by the phone but the settings hasn't been enabled on
     // system settings and not have been dismissed by user
     CAN_OPT_IN,
+    // Feature is supported and enabled but no item has been loaded yet
+    LOADING_VIEW,
     // We have items that can be displayed
     ITEMS_VISIBLE,
   };

@@ -142,6 +142,7 @@ void CameraRollManagerImpl::OnPhoneStatusSnapshotReceived(
   if (!is_camera_roll_accessible_ || !IsCameraRollSettingEnabled()) {
     ClearCurrentItems();
     CancelPendingThumbnailRequests();
+    resetViewRefreshingFlagIfNeeded();
     return;
   }
 
@@ -155,6 +156,7 @@ void CameraRollManagerImpl::OnPhoneStatusUpdateReceived(
   if (!is_camera_roll_accessible_ || !IsCameraRollSettingEnabled()) {
     ClearCurrentItems();
     CancelPendingThumbnailRequests();
+    resetViewRefreshingFlagIfNeeded();
     return;
   }
 
@@ -188,6 +190,7 @@ void CameraRollManagerImpl::SendFetchCameraRollItemsRequest() {
 void CameraRollManagerImpl::OnItemThumbnailsDecoded(
     CameraRollThumbnailDecoder::BatchDecodeResult result,
     const std::vector<CameraRollItem>& items) {
+  resetViewRefreshingFlagIfNeeded();
   if (result == CameraRollThumbnailDecoder::BatchDecodeResult::kSuccess) {
     SetCurrentItems(items);
   }
@@ -202,6 +205,7 @@ void CameraRollManagerImpl::EnableCameraRollFeatureInSystemSetting() {
   multidevice_setup_client_->SetFeatureEnabledState(
       chromeos::multidevice_setup::mojom::Feature::kPhoneHubCameraRoll,
       /*enabled=*/true, /*auth_token=*/absl::nullopt, base::DoNothing());
+  is_refreshing_after_user_opt_in_ = true;
   // Re-compute and update ui immediately instead of waiting for the callback to
   // finish would hide the view on user's tap action, giving a indicator for the
   // user that the action is performed. When camera items are received, camera
@@ -215,6 +219,10 @@ bool CameraRollManagerImpl::IsCameraRollSettingEnabled() {
           chromeos::multidevice_setup::mojom::Feature::kPhoneHubCameraRoll);
   return camera_roll_feature_state ==
          chromeos::multidevice_setup::mojom::FeatureState::kEnabledByUser;
+}
+
+void CameraRollManagerImpl::resetViewRefreshingFlagIfNeeded() {
+  is_refreshing_after_user_opt_in_ = false;
 }
 
 void CameraRollManagerImpl::OnFeatureStatesChanged(
@@ -252,6 +260,8 @@ void CameraRollManagerImpl::ComputeAndUpdateUiState() {
         (pref_service_->GetBoolean(prefs::kHasDismissedCameraRollOnboardingUi))
             ? CameraRollUiState::SHOULD_HIDE
             : CameraRollUiState::CAN_OPT_IN;
+  } else if (is_refreshing_after_user_opt_in_) {
+    ui_state_ = CameraRollUiState::LOADING_VIEW;
   } else if (current_items().empty()) {
     ui_state_ = CameraRollUiState::SHOULD_HIDE;
   } else {

@@ -1289,6 +1289,8 @@ component("ash") {
     "system/palette/tools/metalayer_mode.h",
     "system/pcie_peripheral/pcie_peripheral_notification_controller.cc",
     "system/pcie_peripheral/pcie_peripheral_notification_controller.h",
+    "system/phonehub/animated_loading_card.cc",
+    "system/phonehub/animated_loading_card.h",
     "system/phonehub/bluetooth_disabled_view.cc",
     "system/phonehub/bluetooth_disabled_view.h",
     "system/phonehub/camera_roll_menu_model.cc",
