@@ -164,6 +164,14 @@ source_set("crashpad_tests_filters") {
   ]
 }
 
+source_set("device_unittests_filters") {
+  testonly = true
+
+  data = [
+    "//testing/buildbot/filters/android.emulator_12.device_unittests.filter",
+  ]
+}
+
 source_set("sync_integration_tests_filters") {
   testonly = true
 

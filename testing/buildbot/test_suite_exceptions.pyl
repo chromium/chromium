@@ -1451,6 +1451,15 @@
       'Android FYI Release (Pixel 2)',
     ],
   },
+  'device_unittests': {
+    'modifications': {
+      'android-12-x64-fyi-rel': {
+        'args': [
+          '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_12.device_unittests.filter',
+        ],
+      },
+    },
+  },
   'disk_usage_tast_test': {
     # TODO(crbug.com/1077659): Add the test back after it's fixed.
     'remove_from': [
