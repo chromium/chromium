@@ -33,6 +33,7 @@
 #include "ui/base/clipboard/test/test_clipboard.h"
 #include "ui/base/data_transfer_policy/data_transfer_policy_controller.h"
 #include "ui/gfx/codec/png_codec.h"
+#include "ui/gfx/image/image_unittest_util.h"
 #include "ui/gfx/skia_util.h"
 
 namespace ui {
@@ -135,9 +136,7 @@ class ClipboardHostImplTest : public RenderViewHostTestHarness {
 };
 
 TEST_F(ClipboardHostImplTest, SimpleImage_ReadPng) {
-  SkBitmap bitmap;
-  bitmap.allocN32Pixels(3, 2);
-  bitmap.eraseARGB(255, 0, 255, 0);
+  SkBitmap bitmap = gfx::test::CreateBitmap(3, 2);
   mojo_clipboard()->WriteImage(bitmap);
   ui::ClipboardSequenceNumberToken sequence_number =
       system_clipboard()->GetSequenceNumber(ui::ClipboardBuffer::kCopyPaste);
