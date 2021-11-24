@@ -9,6 +9,10 @@
 #include "base/strings/sys_string_conversions.h"
 #include "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/main/browser.h"
+#import "ios/chrome/browser/signin/authentication_service.h"
+#import "ios/chrome/browser/signin/authentication_service_factory.h"
+#import "ios/chrome/browser/sync/sync_setup_service.h"
+#import "ios/chrome/browser/sync/sync_setup_service_factory.h"
 #import "ios/chrome/browser/ui/alert_coordinator/alert_coordinator.h"
 #import "ios/chrome/browser/ui/commands/application_commands.h"
 #import "ios/chrome/browser/ui/commands/command_dispatcher.h"
@@ -74,8 +78,25 @@
 }
 
 - (void)start {
+  AuthenticationService* authenticationService =
+      AuthenticationServiceFactory::GetForBrowserState(
+          self.browser->GetBrowserState());
+  DCHECK(authenticationService);
+  NSString* syncingUserEmail = nil;
+  ChromeIdentity* chromeIdentity =
+      authenticationService->GetPrimaryIdentity(signin::ConsentLevel::kSync);
+  if (chromeIdentity) {
+    SyncSetupService* syncSetupService =
+        SyncSetupServiceFactory::GetForBrowserState(
+            self.browser->GetBrowserState());
+    if (syncSetupService->IsDataTypeActive(syncer::PASSWORDS)) {
+      syncingUserEmail = chromeIdentity.userEmail;
+    }
+  }
+
   self.viewController = [[PasswordDetailsTableViewController alloc]
-      initWithCredentialType:CredentialTypeNew];
+      initWithCredentialType:CredentialTypeNew
+            syncingUserEmail:syncingUserEmail];
 
   self.mediator = [[AddPasswordMediator alloc] initWithDelegate:self
                                            passwordCheckManager:_manager];

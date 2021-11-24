@@ -165,13 +165,13 @@ class PasswordDetailsTableViewControllerTest
     reauthentication_module_ = [[MockReauthenticationModule alloc] init];
     reauthentication_module_.expectedResult = ReauthenticationResult::kSuccess;
     snack_bar_ = [[FakeSnackbarImplementation alloc] init];
-    credential_type_ = CredentialTypeRegular;
   }
 
   ChromeTableViewController* InstantiateController() override {
     PasswordDetailsTableViewController* controller =
         [[PasswordDetailsTableViewController alloc]
-            initWithCredentialType:credential_type_];
+            initWithCredentialType:credential_type_
+                  syncingUserEmail:syncing_user_email_];
     controller.handler = handler_;
     controller.delegate = delegate_;
     controller.reauthModule = reauthentication_module_;
@@ -262,12 +262,17 @@ class PasswordDetailsTableViewControllerTest
     credential_type_ = credentialType;
   }
 
+  void SetUserSyncingEmail(NSString* syncing_user_email) {
+    syncing_user_email_ = syncing_user_email;
+  }
+
  private:
   id snack_bar_;
-  FakePasswordDetailsHandler* handler_;
-  FakePasswordDetailsDelegate* delegate_;
-  MockReauthenticationModule* reauthentication_module_;
-  CredentialType credential_type_;
+  FakePasswordDetailsHandler* handler_ = nil;
+  FakePasswordDetailsDelegate* delegate_ = nil;
+  MockReauthenticationModule* reauthentication_module_ = nil;
+  CredentialType credential_type_ = CredentialTypeRegular;
+  NSString* syncing_user_email_ = nil;
 };
 
 // Tests that password is displayed properly.
@@ -617,7 +622,13 @@ TEST_F(PasswordDetailsTableViewControllerTest, TestSectionsInAdd) {
   EXPECT_EQ(0, NumberOfItemsInSection(1));
   EXPECT_EQ(2, NumberOfItemsInSection(2));
   CheckSectionFooter(
-      l10n_util::GetNSString(IDS_IOS_SETTINGS_ADD_PASSWORD_DESCRIPTION), 3);
+      [NSString
+          stringWithFormat:
+              @"%@\n\n%@",
+              l10n_util::GetNSString(IDS_IOS_SETTINGS_ADD_PASSWORD_DESCRIPTION),
+              l10n_util::GetNSString(
+                  IDS_IOS_SETTINGS_ADD_PASSWORD_FOOTER_NON_SYNCING)],
+      3);
 }
 
 // Tests the layout of the view controller when adding a new credential with
@@ -643,4 +654,27 @@ TEST_F(PasswordDetailsTableViewControllerTest, TestSectionsInAddDuplicated) {
   EXPECT_EQ(0, NumberOfItemsInSection(1));
   EXPECT_EQ(2, NumberOfItemsInSection(2));
   EXPECT_EQ(2, NumberOfItemsInSection(3));
+}
+
+// Tests the footer text of the view controller when adding a new credential and
+// the user syncing email address is provided.
+TEST_F(PasswordDetailsTableViewControllerTest, TestFooterTextWithSyncingEmail) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      password_manager::features::kSupportForAddPasswordsInSettings);
+  SetCredentialType(CredentialTypeNew);
+  SetUserSyncingEmail(@"example@gmail.com");
+
+  PasswordDetailsTableViewController* passwords_controller =
+      static_cast<PasswordDetailsTableViewController*>(controller());
+  [passwords_controller loadModel];
+
+  CheckSectionFooter(
+      [NSString stringWithFormat:@"%@\n\n%@",
+                                 l10n_util::GetNSString(
+                                     IDS_IOS_SETTINGS_ADD_PASSWORD_DESCRIPTION),
+                                 l10n_util::GetNSStringF(
+                                     IDS_IOS_SETTINGS_ADD_PASSWORD_FOOTER,
+                                     u"example@gmail.com")],
+      3);
 }

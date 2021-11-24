@@ -1898,6 +1898,9 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_SETTINGS_PASSWORDS_DUPLICATE_SECTION_ALERT_DESCRIPTION_WITHOUT_USERNAME" desc="Text shown alerting the user that a similar credential exists with the same website combination when adding a new credential [iOS only]">
         You already saved a password for <ph name="WEBSITE">$1<ex>twitter.com</ex></ph>
       </message>
+      <message name="IDS_IOS_SETTINGS_ADD_PASSWORD_FOOTER_NON_SYNCING" desc="Disclaimer telling non-syncing users what will happen to their passwords">
+        Your password will be saved to your device.
+      </message>
       <message name="IDS_IOS_LEAK_CHECK_SWITCH" desc="Title for the switch toggling whether Chrome should check that entered credentials have been part of a leak.">
         Warn you if passwords are exposed in a data breach
       </message>

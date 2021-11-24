@@ -121,13 +121,17 @@ typedef NS_ENUM(NSInteger, ReauthenticationReason) {
 // If YES, the password details are shown without requiring any authentication.
 @property(nonatomic, assign) BOOL showPasswordWithoutAuth;
 
+// Stores the user email if the user is authenticated amd syncing passwords.
+@property(nonatomic, readonly) NSString* syncingUserEmail;
+
 @end
 
 @implementation PasswordDetailsTableViewController
 
 #pragma mark - ViewController Life Cycle.
 
-- (instancetype)initWithCredentialType:(CredentialType)credentialType {
+- (instancetype)initWithCredentialType:(CredentialType)credentialType
+                      syncingUserEmail:(NSString*)syncingUserEmail {
   self = [super initWithStyle:ChromeTableViewStyle()];
   if (self) {
     _credentialType = credentialType;
@@ -135,6 +139,7 @@ typedef NS_ENUM(NSInteger, ReauthenticationReason) {
     _shouldEnableSave = NO;
     _showPasswordWithoutAuth = NO;
     _isTLDMissingMessageShown = NO;
+    _syncingUserEmail = syncingUserEmail;
   }
   return self;
 }
@@ -453,7 +458,11 @@ typedef NS_ENUM(NSInteger, ReauthenticationReason) {
 - (TableViewLinkHeaderFooterItem*)footerItem {
   TableViewLinkHeaderFooterItem* item =
       [[TableViewLinkHeaderFooterItem alloc] initWithType:ItemTypeFooter];
-  item.text = l10n_util::GetNSString(IDS_IOS_SETTINGS_ADD_PASSWORD_DESCRIPTION);
+  item.text =
+      [NSString stringWithFormat:@"%@\n\n%@",
+                                 l10n_util::GetNSString(
+                                     IDS_IOS_SETTINGS_ADD_PASSWORD_DESCRIPTION),
+                                 [self footerText]];
   return item;
 }
 
@@ -465,6 +474,17 @@ typedef NS_ENUM(NSInteger, ReauthenticationReason) {
       base::SysNSStringToUTF16([self.websiteTextItem.textFieldValue
           stringByAppendingString:@".com"]));
   return item;
+}
+
+- (NSString*)footerText {
+  if (self.syncingUserEmail) {
+    return l10n_util::GetNSStringF(
+        IDS_IOS_SETTINGS_ADD_PASSWORD_FOOTER,
+        base::SysNSStringToUTF16(self.syncingUserEmail));
+  }
+
+  return l10n_util::GetNSString(
+      IDS_IOS_SETTINGS_ADD_PASSWORD_FOOTER_NON_SYNCING);
 }
 
 #pragma mark - UITableViewDelegate

@@ -484,6 +484,9 @@ locale.  The strings in this file are specific to iOS.
       <message name="IDS_IOS_GOOGLE_SERVICES_SETTINGS_ALLOW_SIGNIN_TEXT" desc="Feature title in the Google services Settings for the user to enable/disable Chrome express sign-in from the web [iOS only]">
         Allow Chromium Sign-in
       </message>
+      <message name="IDS_IOS_SETTINGS_ADD_PASSWORD_FOOTER" desc="Disclaimer telling users what will happen to their passwords">
+        Your password will be saved in your Account (<ph name="EMAIL">$1<ex>example@gmail.com</ex></ph>).
+      </message>
     </messages>
   </release>
 </grit>
