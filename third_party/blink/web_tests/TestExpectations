@@ -7352,3 +7352,4 @@ crbug.com/1272801 http/tests/permissions/chromium/test-request-sharedworker.html
 # Sheriff 2021-11-23
 crbug.com/1270963 wpt_internal/fenced_frame/create-credential.https.html [ Skip ]
 crbug.com/1046784 http/tests/devtools/tracing/timeline-receive-response-event.js [ Failure Pass ]
+crbug.com/1273282 [ Win7 ] external/wpt/html/canvas/offscreen/manual/the-offscreen-canvas/offscreencanvas.commit.html [ Failure Pass ]
