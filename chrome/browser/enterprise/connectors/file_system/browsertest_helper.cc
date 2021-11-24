@@ -181,9 +181,9 @@ bool BoxSignInObserver::GetUserNameFromSignInPage(std::string* result) {
 }
 
 void BoxSignInObserver::CloseSignInWidget() {
-  WaitForSignInDialogToClose(
-      base::BindOnce([](views::Widget* dialog) { dialog->Close(); },
-                     std::move(sign_in_widget_)));
+  WaitForSignInDialogToClose(base::BindOnce(
+      [](views::Widget* dialog) { dialog->Close(); }, sign_in_widget_));
+  sign_in_widget_ = nullptr;
 }
 
 void BoxSignInObserver::WaitForPageLoad() {
