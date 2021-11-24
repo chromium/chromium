@@ -4873,7 +4873,7 @@
     Smart Lock couldn’t verify your account. Type your password to enter.
   </message>
   <message name="IDS_EASY_UNLOCK_SCREENLOCK_TOOLTIP_LOGIN_DISABLED" desc="Tooltip for an icon on user's sign-in screen pod shown by EasyUnlock when the feature is only enabled for unlock, not sign-in.">
-    To use Smart Lock to sign in to your Google Account, go to Settings > Connected devices > Your phone > Smart Lock.
+    To use Smart Lock to sign in to your Google Account, go to Settings &gt; Connected devices &gt; Your phone &gt; Smart Lock.
   </message>
   <message name="IDS_SMART_LOCK_SCREENLOCK_TOOLTIP_HARDLOCK_REAUTH_USER" desc="Tooltip text shown on a user's lock screen pod to reauthenticate the user before setting up Smart Lock. A password has to be entered to unlock the device.">
     To set up Smart Lock for Chromebook, Google needs to make sure it’s you—type your password to get started.
