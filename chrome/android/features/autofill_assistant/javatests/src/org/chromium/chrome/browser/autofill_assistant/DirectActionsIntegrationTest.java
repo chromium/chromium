@@ -40,6 +40,7 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.Callback;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.chrome.autofill_assistant.R;
 import org.chromium.chrome.browser.autofill_assistant.proto.ActionProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.ChipProto;
@@ -245,6 +246,7 @@ public class DirectActionsIntegrationTest {
     @Features.
     EnableFeatures({ChromeFeatureList.DIRECT_ACTIONS, ChromeFeatureList.AUTOFILL_ASSISTANT,
             ChromeFeatureList.AUTOFILL_ASSISTANT_DIRECT_ACTIONS})
+    @DisabledTest(message = "https://crbug.com/1272997")
     public void
     testStatusMessageResetsBetweenRuns() {
         AutofillAssistantPreferencesUtil.setInitialPreferences(true);

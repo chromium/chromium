@@ -230,6 +230,7 @@ public class AutofillAssistantOverlayIntegrationTest {
      */
     @Test
     @MediumTest
+    @DisabledTest(message = "https://crbug.com/1272997")
     public void testShowCastOnIFrameElement() throws Exception {
         SelectorProto element = toIFrameCssSelector("#iframe", "#touch_area_1");
 

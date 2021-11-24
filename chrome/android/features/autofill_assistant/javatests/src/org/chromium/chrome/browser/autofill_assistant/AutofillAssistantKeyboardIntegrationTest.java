@@ -86,10 +86,8 @@ public class AutofillAssistantKeyboardIntegrationTest {
 
     @Test
     @MediumTest
-    @DisableIf.Build(message = "Fails on Marshmallow, https://crbug.com/1273143",
-            sdk_is_greater_than = VERSION_CODES.LOLLIPOP_MR1, sdk_is_less_than = VERSION_CODES.N)
-    public void
-    keyboardDoesNotShowOnElementClick() throws Exception {
+    @DisabledTest(message = "https://crbug.com/1272997, https://crbug.com/1273143")
+    public void keyboardDoesNotShowOnElementClick() throws Exception {
         ArrayList<ActionProto> list = new ArrayList<>();
 
         SelectorProto nameSelector = toCssSelector("#profile_name");
@@ -203,6 +201,7 @@ public class AutofillAssistantKeyboardIntegrationTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "https://crbug.com/1272997")
     public void keyboardDoesNotShowOnElementClickInIFrame() throws Exception {
         ArrayList<ActionProto> list = new ArrayList<>();
 
