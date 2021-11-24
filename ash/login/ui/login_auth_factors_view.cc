@@ -31,11 +31,10 @@ namespace {
 using AuthFactorState = AuthFactorModel::AuthFactorState;
 
 constexpr int kAuthFactorsViewWidthDp = 204;
-constexpr int kSpacingBetweenIconsAndLabelDp = 15;
-constexpr int kIconTopSpacingDp = 20;
+constexpr int kSpacingBetweenIconsAndLabelDp = 8;
+constexpr int kIconTopSpacingDp = 10;
 constexpr int kArrowButtonSizeDp = 32;
-constexpr int kSpacingBetweenIconsDp = 28;
-constexpr int kIconSizeDp = 32;
+constexpr int kSpacingBetweenIconsDp = 8;
 constexpr base::TimeDelta kErrorTimeout = base::Seconds(3);
 
 // The values of this enum should be nearly the same as the values of
@@ -236,11 +235,11 @@ LoginAuthFactorsView::LoginAuthFactorsView(
       l10n_util::GetStringUTF16(IDS_AUTH_FACTOR_LABEL_CLICK_TO_ENTER));
   arrow_button_->SetVisible(false);
 
+  // TODO(crbug.com/1233614): Rename kLockScreenFingerprintSuccessIcon once the
+  // feature flag is removed and FingerprintView no longer needs this.
   checkmark_icon_ = AddChildView(std::make_unique<AuthIconView>());
-  checkmark_icon_->SetImage(gfx::CreateVectorIcon(
-      kLockScreenFingerprintSuccessIcon, kIconSizeDp,
-      AshColorProvider::Get()->GetContentLayerColor(
-          AshColorProvider::ContentLayerType::kIconColorPositive)));
+  checkmark_icon_->SetIcon(kLockScreenFingerprintSuccessIcon,
+                           AuthIconView::Color::kPositive);
   checkmark_icon_->SetVisible(false);
 
   label_ = AddChildView(std::make_unique<AuthFactorsLabel>());

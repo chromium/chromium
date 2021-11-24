@@ -8,6 +8,9 @@
 #include "ash/ash_export.h"
 #include "ash/login/ui/animated_rounded_image_view.h"
 #include "base/callback.h"
+#include "base/time/time.h"
+#include "base/timer/timer.h"
+#include "ui/views/view.h"
 
 namespace gfx {
 struct VectorIcon;
@@ -18,13 +21,13 @@ namespace ash {
 // An icon with a built-in progress bar functionality and animation support used
 // to show auth factors (e.g. Fingerprint, Smart Lock) in the
 // LoginAuthFactorsView.
-// TODO(crbug.com/1252880): Add progress animation.
-class ASH_EXPORT AuthIconView : public AnimatedRoundedImageView {
+class ASH_EXPORT AuthIconView : public views::View {
  public:
   enum class Color {
     kPrimary,
     kDisabled,
     kError,
+    kPositive,
   };
 
   AuthIconView();
@@ -47,16 +50,32 @@ class ASH_EXPORT AuthIconView : public AnimatedRoundedImageView {
   // occurred.
   void RunErrorShakeAnimation();
 
+  // Starts a progress spinner animation if not already running.
+  void StartProgressAnimation();
+
+  // Stops the progress spinner animation if running.
+  void StopProgressAnimation();
+
   void set_on_tap_or_click_callback(base::RepeatingClosure on_tap_or_click) {
     on_tap_or_click_callback_ = on_tap_or_click;
   }
 
   // views::View:
+  void OnPaint(gfx::Canvas* canvas) override;
+  gfx::Size CalculatePreferredSize() const override;
   void OnGestureEvent(ui::GestureEvent* event) override;
   bool OnMousePressed(const ui::MouseEvent& event) override;
 
  private:
   base::RepeatingClosure on_tap_or_click_callback_;
+
+  AnimatedRoundedImageView* icon_;
+
+  // Time when the progress animation was enabled.
+  base::TimeTicks progress_animation_start_time_;
+
+  // Used to schedule paint calls for the progress animation.
+  base::RepeatingTimer progress_animation_timer_;
 };
 
 }  // namespace ash

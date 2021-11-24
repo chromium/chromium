@@ -163,6 +163,7 @@ void SmartLockAuthFactorModel::UpdateIcon(AuthIconView* icon) {
       icon->SetIcon(kLockScreenSmartCardFailureIcon,
                     AuthIconView::Color::kError);
     }
+    icon->StopProgressAnimation();
     return;
   }
 
@@ -171,18 +172,24 @@ void SmartLockAuthFactorModel::UpdateIcon(AuthIconView* icon) {
       icon->SetIcon(kLockScreenSmartLockBluetoothIcon,
                     AuthIconView::Color::kPrimary);
       icon->RunErrorShakeAnimation();
+      icon->StopProgressAnimation();
       return;
     case SmartLockState::kPhoneFoundLockedAndDistant:
       FALLTHROUGH;
     case SmartLockState::kPhoneFoundUnlockedAndDistant:
-      FALLTHROUGH;
+      icon->SetIcon(kLockScreenSmartLockBluetoothIcon,
+                    AuthIconView::Color::kPrimary);
+      icon->StopProgressAnimation();
+      return;
     case SmartLockState::kConnectingToPhone:
       icon->SetIcon(kLockScreenSmartLockBluetoothIcon,
                     AuthIconView::Color::kPrimary);
+      icon->StartProgressAnimation();
       return;
     case SmartLockState::kPhoneFoundLockedAndProximate:
       icon->SetIcon(kLockScreenSmartLockPhoneIcon,
                     AuthIconView::Color::kPrimary);
+      icon->StopProgressAnimation();
       return;
     case SmartLockState::kPrimaryUserAbsent:
       FALLTHROUGH;
@@ -195,6 +202,7 @@ void SmartLockAuthFactorModel::UpdateIcon(AuthIconView* icon) {
     case SmartLockState::kBluetoothDisabled:
       icon->SetIcon(kLockScreenSmartLockDisabledIcon,
                     AuthIconView::Color::kDisabled);
+      icon->StopProgressAnimation();
       return;
     case SmartLockState::kPhoneAuthenticated:
       // Click to enter -- icon handled by parent view.

@@ -11,8 +11,11 @@
 #include "ui/compositor/layer_animation_sequence.h"
 #include "ui/compositor/layer_animator.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/gfx/paint_throbber.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/vector_icon_types.h"
+#include "ui/views/border.h"
+#include "ui/views/layout/fill_layout.h"
 
 namespace ash {
 
@@ -24,6 +27,14 @@ struct ShakeAnimationStep {
 };
 
 constexpr int kAuthIconSizeDp = 32;
+constexpr int kIconBorderDp = 10;
+constexpr int kAuthIconViewDp = kAuthIconSizeDp + 2 * kIconBorderDp;
+constexpr int kProgressAnimationStrokeWidth = 3;
+
+// This determines how frequently we paint the progress spinner.
+// 1 frame / 30 msec = about 30 frames per second
+// 30 fps seems to be smooth enough to look good without excessive painting.
+constexpr base::TimeDelta kProgressFrameDuration = base::Milliseconds(30);
 
 // See spec:
 // https://carbon.googleplex.com/cr-os-motion-work/pages/sign-in/undefined/e05c4091-eea2-4c5a-a6f8-38fd37953e7b#a929eb9f-2840-4b37-be52-97d96ca2aafa
@@ -44,31 +55,40 @@ SkColor GetColor(AuthIconView::Color color) {
       // the right color.
       return AshColorProvider::Get()->GetContentLayerColor(
           AshColorProvider::ContentLayerType::kIconColorAlert);
+    case AuthIconView::Color::kPositive:
+      return AshColorProvider::Get()->GetContentLayerColor(
+          AshColorProvider::ContentLayerType::kIconColorPositive);
   }
 }
 
 }  // namespace
 
-AuthIconView::AuthIconView()
-    : AnimatedRoundedImageView(gfx::Size(kAuthIconSizeDp, kAuthIconSizeDp),
-                               /*corner_radius=*/0) {
+AuthIconView::AuthIconView() {
+  SetLayoutManager(std::make_unique<views::FillLayout>());
+
+  icon_ = AddChildView(std::make_unique<AnimatedRoundedImageView>(
+      gfx::Size(kAuthIconSizeDp, kAuthIconSizeDp),
+      /*corner_radius=*/0));
+  icon_->SetBorder(views::CreateEmptyBorder(gfx::Insets(kIconBorderDp)));
+
   // Set up layer to allow for animation.
-  SetPaintToLayer();
-  layer()->SetFillsBoundsOpaquely(false);
-  layer()->GetAnimator()->set_preemption_strategy(
+  icon_->SetPaintToLayer();
+  icon_->layer()->SetFillsBoundsOpaquely(false);
+  icon_->layer()->GetAnimator()->set_preemption_strategy(
       ui::LayerAnimator::PreemptionStrategy::IMMEDIATELY_ANIMATE_TO_NEW_TARGET);
 }
 
 AuthIconView::~AuthIconView() = default;
 
 void AuthIconView::SetIcon(const gfx::VectorIcon& icon, Color color) {
-  SetImage(gfx::CreateVectorIcon(icon, kAuthIconSizeDp, GetColor(color)));
+  icon_->SetImage(
+      gfx::CreateVectorIcon(icon, kAuthIconSizeDp, GetColor(color)));
 }
 
 void AuthIconView::SetAnimation(int animation_resource_id,
                                 base::TimeDelta duration,
                                 int num_frames) {
-  SetAnimationDecoder(
+  icon_->SetAnimationDecoder(
       std::make_unique<HorizontalImageSequenceAnimationDecoder>(
           *ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
               animation_resource_id),
@@ -78,7 +98,7 @@ void AuthIconView::SetAnimation(int animation_resource_id,
 
 void AuthIconView::RunErrorShakeAnimation() {
   // Stop any existing animation.
-  layer()->GetAnimator()->StopAnimating();
+  icon_->layer()->GetAnimator()->StopAnimating();
 
   auto transform_sequence = std::make_unique<ui::LayerAnimationSequence>();
   gfx::Transform transform;
@@ -91,10 +111,50 @@ void AuthIconView::RunErrorShakeAnimation() {
   }
 
   // Animator takes ownership of transform_sequence.
-  layer()->GetAnimator()->StartAnimation(transform_sequence.release());
+  icon_->layer()->GetAnimator()->StartAnimation(transform_sequence.release());
 }
 
-// views::View:
+void AuthIconView::StartProgressAnimation() {
+  // Progress animation already running.
+  if (progress_animation_timer_.IsRunning())
+    return;
+
+  progress_animation_start_time_ = base::TimeTicks::Now();
+  progress_animation_timer_.Start(
+      FROM_HERE, kProgressFrameDuration,
+      base::BindRepeating(&AuthIconView::SchedulePaint,
+                          base::Unretained(this)));
+  SchedulePaint();
+}
+
+void AuthIconView::StopProgressAnimation() {
+  // Progress already stopped.
+  if (!progress_animation_timer_.IsRunning())
+    return;
+
+  progress_animation_timer_.Stop();
+  SchedulePaint();
+}
+
+void AuthIconView::OnPaint(gfx::Canvas* canvas) {
+  // Draw the icon first.
+  views::View::OnPaint(canvas);
+
+  // Draw the progress spinner on top if it's currently running.
+  if (progress_animation_timer_.IsRunning()) {
+    SkColor color = AshColorProvider::Get()->GetContentLayerColor(
+        AshColorProvider::ContentLayerType::kProgressBarColorForeground);
+    base::TimeDelta elapsed_time =
+        base::TimeTicks::Now() - progress_animation_start_time_;
+    gfx::PaintThrobberSpinning(canvas, GetContentsBounds(), color, elapsed_time,
+                               kProgressAnimationStrokeWidth);
+  }
+}
+
+gfx::Size AuthIconView::CalculatePreferredSize() const {
+  return gfx::Size(kAuthIconViewDp, kAuthIconViewDp);
+}
+
 void AuthIconView::OnGestureEvent(ui::GestureEvent* event) {
   if (event->type() != ui::ET_GESTURE_TAP &&
       event->type() != ui::ET_GESTURE_TAP_DOWN)
@@ -105,7 +165,6 @@ void AuthIconView::OnGestureEvent(ui::GestureEvent* event) {
   }
 }
 
-// views::View:
 bool AuthIconView::OnMousePressed(const ui::MouseEvent& event) {
   if (on_tap_or_click_callback_) {
     on_tap_or_click_callback_.Run();
