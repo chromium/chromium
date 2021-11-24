@@ -2084,8 +2084,14 @@ Try tapping the mic to ask me anything.
         Power Button
       </message>
       <!-- Splash screen -->
-      <message name="IDS_SHIMLESS_RMA_SPLASH_MESSAGE" translateable="false" desc="Message to display while waiting for RMA to initialize at boot.">
-        Entering RMA
+      <message name="IDS_SHIMLESS_RMA_SPLASH_TITLE" translateable="false" desc="Message to display while waiting for RMA to initialize at boot.">
+        Chromebook repair
+      </message>
+      <message name="IDS_SHIMLESS_RMA_SPLASH_REMEMBERING" translateable="false" desc="Message that lets the user know that we are resuming repair.">
+        Remembering where you left off...
+      </message>
+      <message name="IDS_SHIMLESS_RMA_SPLASH_LOADING" translateable="false" desc="Message that lets the user know that we are loading the previous repair state.">
+        Loading state... may last ~10 seconds
       </message>
       <!-- Common buttons -->
       <message name="IDS_SHIMLESS_RMA_CANCEL_BUTTON" desc="Button used to cancel RMA finalization, when allowed.">
