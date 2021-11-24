@@ -83,9 +83,7 @@ class MojoVideoEncodeAcceleratorIntegrationTest : public ::testing::Test {
             gpu::GpuPreferences(), gpu::GpuDriverBugWorkarounds()),
         mojo_vea.InitWithNewPipeAndPassReceiver());
 
-    mojo_vea_.reset(new MojoVideoEncodeAccelerator(
-        std::move(mojo_vea),
-        media::VideoEncodeAccelerator::SupportedProfiles()));
+    mojo_vea_.reset(new MojoVideoEncodeAccelerator(std::move(mojo_vea)));
   }
 
   void TearDown() override {

@@ -402,10 +402,7 @@ GpuVideoAcceleratorFactoriesImpl::CreateVideoEncodeAccelerator() {
     return nullptr;
 
   return std::unique_ptr<media::VideoEncodeAccelerator>(
-      new media::MojoVideoEncodeAccelerator(
-          std::move(vea),
-          supported_vea_profiles_.value_or(
-              media::VideoEncodeAccelerator::SupportedProfiles())));
+      new media::MojoVideoEncodeAccelerator(std::move(vea)));
 }
 
 std::unique_ptr<gfx::GpuMemoryBuffer>

@@ -95,19 +95,19 @@ void VideoEncodeAcceleratorClient::NotifyEncoderInfoChange(
 }  // anonymous namespace
 
 MojoVideoEncodeAccelerator::MojoVideoEncodeAccelerator(
-    mojo::PendingRemote<mojom::VideoEncodeAccelerator> vea,
-    const SupportedProfiles& supported_profiles)
-    : vea_(std::move(vea)), supported_profiles_(supported_profiles) {
+    mojo::PendingRemote<mojom::VideoEncodeAccelerator> vea)
+    : vea_(std::move(vea)) {
   DVLOG(1) << __func__;
   DCHECK(vea_);
 }
 
 VideoEncodeAccelerator::SupportedProfiles
 MojoVideoEncodeAccelerator::GetSupportedProfiles() {
-  DVLOG(1) << __func__;
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  return supported_profiles_;
+  NOTREACHED() << "GetSupportedProfiles() should never be called."
+               << "Use VEA provider or GPU factories";
+  return {};
 }
 
 bool MojoVideoEncodeAccelerator::Initialize(const Config& config,

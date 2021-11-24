@@ -551,8 +551,7 @@ void Session::CreateVideoEncodeAccelerator(
         vea.InitWithNewPipeAndPassReceiver());
     // std::make_unique doesn't work to create a unique pointer of the subclass.
     mojo_vea = base::WrapUnique<media::VideoEncodeAccelerator>(
-        new media::MojoVideoEncodeAccelerator(std::move(vea),
-                                              supported_profiles_));
+        new media::MojoVideoEncodeAccelerator(std::move(vea)));
   }
   std::move(callback).Run(base::ThreadTaskRunnerHandle::Get(),
                           std::move(mojo_vea));

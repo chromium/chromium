@@ -161,10 +161,8 @@ class MojoVideoEncodeAcceleratorTest : public ::testing::Test {
         std::make_unique<MockMojoVideoEncodeAccelerator>(),
         mojo_vea.InitWithNewPipeAndPassReceiver());
 
-    mojo_vea_ =
-        base::WrapUnique<VideoEncodeAccelerator>(new MojoVideoEncodeAccelerator(
-            std::move(mojo_vea),
-            media::VideoEncodeAccelerator::SupportedProfiles()));
+    mojo_vea_ = base::WrapUnique<VideoEncodeAccelerator>(
+        new MojoVideoEncodeAccelerator(std::move(mojo_vea)));
   }
 
   void TearDown() override {
