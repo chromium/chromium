@@ -16,6 +16,7 @@
 #include "components/arc/intent_helper/intent_constants.h"
 #include "components/arc/intent_helper/open_url_delegate.h"
 #include "components/arc/mojom/intent_helper.mojom-forward.h"
+#include "components/arc/mojom/intent_helper.mojom-shared.h"
 #include "components/arc/mojom/intent_helper.mojom.h"
 #include "mojo/public/cpp/bindings/clone_traits.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -213,7 +214,8 @@ TEST_F(ArcIntentHelperTest, TestObserver) {
         void,
         OnArcSupportedLinksChanged,
         (const std::vector<arc::mojom::SupportedLinksPtr>& added_packages,
-         const std::vector<arc::mojom::SupportedLinksPtr>& removed_packages),
+         const std::vector<arc::mojom::SupportedLinksPtr>& removed_packages,
+         arc::mojom::SupportedLinkChangeSource source),
         (override));
   };
 
@@ -258,8 +260,10 @@ TEST_F(ArcIntentHelperTest, TestObserver) {
   {
     // Observer should be called when supported links change.
     EXPECT_CALL(observer, OnArcSupportedLinksChanged);
-    instance_->OnSupportedLinksChanged(/*added_packages=*/{},
-                                       /*removed_packages=*/{});
+    instance_->OnSupportedLinksChanged(
+        /*added_packages=*/{},
+        /*removed_packages=*/{},
+        arc::mojom::SupportedLinkChangeSource::kArcSystem);
     testing::Mock::VerifyAndClearExpectations(&observer);
   }
 
@@ -268,9 +272,11 @@ TEST_F(ArcIntentHelperTest, TestObserver) {
   instance_->OnDownloadAdded(/*relative_path=*/"Download/foo/bar.pdf",
                              /*owner_package_name=*/"owner_package_name");
   instance_->OnIntentFiltersUpdated(/*filters=*/{});
-  instance_->OnPreferredAppsChangedDeprecated(/*added=*/{}, /*removed=*/{});
-  instance_->OnSupportedLinksChanged(/*added_packages=*/{},
-                                     /*removed_packages=*/{});
+  instance_->OnPreferredAppsChangedDeprecated(/*added=*/{}, /*deleted=*/{});
+  instance_->OnSupportedLinksChanged(
+      /*added_packages=*/{},
+      /*removed_packages=*/{},
+      arc::mojom::SupportedLinkChangeSource::kArcSystem);
 }
 
 // Tests that ShouldChromeHandleUrl returns true by default.

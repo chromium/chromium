@@ -1389,9 +1389,9 @@ void ArcApps::OnPreferredAppsChanged() {
 // changes are synchronous within Ash.
 void ArcApps::OnArcSupportedLinksChanged(
     const std::vector<arc::mojom::SupportedLinksPtr>& added,
-    const std::vector<arc::mojom::SupportedLinksPtr>& removed) {
-  mojo::Remote<apps::mojom::AppService>& app_service =
-      apps::AppServiceProxyFactory::GetForProfile(profile_)->AppService();
+    const std::vector<arc::mojom::SupportedLinksPtr>& removed,
+    arc::mojom::SupportedLinkChangeSource source) {
+  mojo::Remote<apps::mojom::AppService>& app_service = proxy()->AppService();
   if (!app_service.is_bound()) {
     return;
   }
@@ -1405,6 +1405,20 @@ void ArcApps::OnArcSupportedLinksChanged(
     std::string app_id =
         prefs->GetAppIdByPackageName(supported_link->package_name);
     if (app_id.empty() || !supported_link->filters.has_value()) {
+      continue;
+    }
+
+    // When kDefaultLinkCapturingInBrowser is enabled, ignore any requests from
+    // ARC to set an app as handling supported links by default. We allow
+    // requests if they were initiated by user action, or if the app already
+    // has a non-default setting on the browser side.
+    bool should_ignore_update =
+        base::FeatureList::GetInstance()->IsEnabled(
+            features::kDefaultLinkCapturingInBrowser) &&
+        source == arc::mojom::SupportedLinkChangeSource::kArcSystem &&
+        !proxy()->PreferredApps().IsPreferredAppForSupportedLinks(app_id);
+
+    if (should_ignore_update) {
       continue;
     }
 

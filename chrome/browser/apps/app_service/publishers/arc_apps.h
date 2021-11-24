@@ -176,7 +176,8 @@ class ArcApps : public KeyedService,
   void OnPreferredAppsChanged() override;
   void OnArcSupportedLinksChanged(
       const std::vector<arc::mojom::SupportedLinksPtr>& added,
-      const std::vector<arc::mojom::SupportedLinksPtr>& removed) override;
+      const std::vector<arc::mojom::SupportedLinksPtr>& removed,
+      arc::mojom::SupportedLinkChangeSource source) override;
 
   // ash::ArcNotificationsHostInitializer::Observer overrides.
   void OnSetArcNotificationsInstance(

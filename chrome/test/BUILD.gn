@@ -6483,6 +6483,7 @@ test("unit_tests") {
       "../browser/apps/app_service/file_utils_unittest.cc",
       "../browser/apps/app_service/intent_util_unittest.cc",
       "../browser/apps/app_service/metrics/app_platform_metrics_service_unittest.cc",
+      "../browser/apps/app_service/publishers/arc_apps_unittest.cc",
       "../browser/apps/app_service/webapk/webapk_install_task_unittest.cc",
       "../browser/apps/app_service/webapk/webapk_manager_unittest.cc",
       "../browser/component_updater/cros_component_installer_chromeos_unittest.cc",
@@ -6676,6 +6677,7 @@ test("unit_tests") {
       "//chromeos/ui/wm",
       "//components/app_restore:unit_tests",
       "//components/arc:arc_test_support",
+      "//components/services/app_service/public/cpp:preferred_apps",
       "//components/soda:soda",
     ]
   }

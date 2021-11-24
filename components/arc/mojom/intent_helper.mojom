@@ -254,6 +254,18 @@ struct SupportedLinks {
   array<IntentFilter>? filters;
 };
 
+// The source of a change in the supported links setting.
+[Extensible]
+enum SupportedLinkChangeSource {
+  kUnknown,
+  // The ARC system made a change to the supported links setting without direct
+  // user input (e.g. a new app was installed).
+  kArcSystem,
+  // The update to the supported links setting was the result of a user
+  // action/choice.
+  kUserPreference,
+};
+
 // Interface to interact with a custom tab.
 // Close the interface pointer to close the custom tab.
 // Next method ID: 1
@@ -344,7 +356,8 @@ interface IntentHelperHost {
   // supported links.
   [MinVersion=47] OnSupportedLinksChanged@20(
       array<SupportedLinks> added_packages,
-      array<SupportedLinks> removed_packages);
+      array<SupportedLinks> removed_packages,
+      [MinVersion=48] SupportedLinkChangeSource source);
 
   // Called when a new entry has been added to the MediaStore.Downloads
   // collection of downloaded items with the specified metadata.

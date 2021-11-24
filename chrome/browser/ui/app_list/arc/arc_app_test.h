@@ -114,6 +114,10 @@ class ArcAppTest {
     persist_service_manager_ = persist_service_manager;
   }
 
+  void set_start_app_service_publisher(bool start_app_service_publisher) {
+    start_app_service_publisher_ = start_app_service_publisher;
+  }
+
  private:
   const user_manager::User* CreateUserAndLogin();
   bool FindPackage(const std::string& package_name);
@@ -132,6 +136,10 @@ class ArcAppTest {
   // Whether arc service manager should be destroyed when this object gets torn
   // down.
   bool persist_service_manager_ = false;
+
+  // Whether the ArcApps AppService publisher should be started during
+  // initialization.
+  bool start_app_service_publisher_ = true;
 
   std::unique_ptr<arc::ArcServiceManager> arc_service_manager_;
   std::unique_ptr<arc::ArcSessionManager> arc_session_manager_;

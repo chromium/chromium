@@ -104,7 +104,8 @@ class ArcIntentHelperBridge : public KeyedService,
       std::vector<IntentFilter> deleted) override;
   void OnSupportedLinksChanged(
       std::vector<arc::mojom::SupportedLinksPtr> added_packages,
-      std::vector<arc::mojom::SupportedLinksPtr> removed_packages) override;
+      std::vector<arc::mojom::SupportedLinksPtr> removed_packages,
+      arc::mojom::SupportedLinkChangeSource source) override;
   void OnDownloadAdded(const std::string& relative_path,
                        const std::string& owner_package_name) override;
   void OnOpenAppWithIntent(const GURL& start_url,

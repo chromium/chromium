@@ -42,7 +42,8 @@ class ArcIntentHelperObserver {
   // |removed_packages| contains packages for which the setting was disabled.
   virtual void OnArcSupportedLinksChanged(
       const std::vector<arc::mojom::SupportedLinksPtr>& added_packages,
-      const std::vector<arc::mojom::SupportedLinksPtr>& removed_packages) {}
+      const std::vector<arc::mojom::SupportedLinksPtr>& removed_packages,
+      arc::mojom::SupportedLinkChangeSource source) {}
 };
 
 }  // namespace arc
