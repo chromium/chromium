@@ -2934,14 +2934,28 @@ sk_sp<SkColorSpace> GpuImageDecodeCache::ColorSpaceForImageDecode(
 
 bool GpuImageDecodeCache::NeedsColorSpaceAdjustedForUpload(
     const DrawImage& image) const {
-  return image.sdr_white_level() != gfx::ColorSpace::kDefaultSDRWhiteLevel &&
-         image.paint_image().GetContentColorUsage() ==
-             gfx::ContentColorUsage::kHDR;
+  bool is_hlg = false;
+  if (image.paint_image().GetContentColorUsage(&is_hlg) !=
+      gfx::ContentColorUsage::kHDR) {
+    return false;
+  }
+
+  // Attempt basic "tonemapping" of HLG content when rendering to SDR.
+  if (is_hlg && !image.target_color_space().IsHDR())
+    return true;
+
+  return image.sdr_white_level() != gfx::ColorSpace::kDefaultSDRWhiteLevel;
 }
 
 sk_sp<SkColorSpace> GpuImageDecodeCache::ColorSpaceForImageUpload(
     const DrawImage& image) const {
   DCHECK(NeedsColorSpaceAdjustedForUpload(image));
+  if (!image.target_color_space().IsHDR()) {
+    // HLG is designed such that treating it as 2.2 gamma content works well.
+    constexpr skcms_TransferFunction kGamma22 = {2.2, 1, 0, 0, 0, 0, 0};
+    return SkColorSpace::MakeRGB(kGamma22, SkNamedGamut::kRec2020);
+  }
+
   return gfx::ColorSpace(*image.paint_image().color_space())
       .GetWithSDRWhiteLevel(image.sdr_white_level())
       .ToSkColorSpace();

@@ -316,7 +316,10 @@ int PaintImage::height() const {
              : GetSkImageInfo().height();
 }
 
-gfx::ContentColorUsage PaintImage::GetContentColorUsage() const {
+gfx::ContentColorUsage PaintImage::GetContentColorUsage(bool* is_hlg) const {
+  if (is_hlg)
+    *is_hlg = false;
+
   // Right now, JS paint worklets can only be in sRGB
   if (paint_worklet_input_)
     return gfx::ContentColorUsage::kSRGB;
@@ -328,10 +331,15 @@ gfx::ContentColorUsage PaintImage::GetContentColorUsage() const {
     return gfx::ContentColorUsage::kSRGB;
 
   skcms_TransferFunction fn;
-  if (!color_space->isNumericalTransferFn(&fn) &&
-      (skcms_TransferFunction_isPQish(&fn) ||
-       skcms_TransferFunction_isHLGish(&fn))) {
-    return gfx::ContentColorUsage::kHDR;
+  if (!color_space->isNumericalTransferFn(&fn)) {
+    if (skcms_TransferFunction_isPQish(&fn))
+      return gfx::ContentColorUsage::kHDR;
+
+    if (skcms_TransferFunction_isHLGish(&fn)) {
+      if (is_hlg)
+        *is_hlg = true;
+      return gfx::ContentColorUsage::kHDR;
+    }
   }
 
   // If it's not HDR and not SRGB, report it as WCG.
