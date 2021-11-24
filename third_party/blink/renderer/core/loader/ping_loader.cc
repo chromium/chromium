@@ -82,7 +82,9 @@ class BeaconString final : public Beacon {
     scoped_refptr<EncodedFormData> entity_body =
         EncodedFormData::Create(data_.Utf8());
     request.SetHttpBody(entity_body);
-    request.SetHTTPContentType(GetContentType());
+    if (!data_.IsNull()) {
+      request.SetHTTPContentType(GetContentType());
+    }
   }
 
   const AtomicString GetContentType() const override {
