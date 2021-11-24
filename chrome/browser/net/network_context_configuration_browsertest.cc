@@ -2102,8 +2102,9 @@ IN_PROC_BROWSER_TEST_P(NetworkContextConfigurationReportingAndNelBrowserTest,
             upload_response.http_request()->method);
 }
 
+// TODO(crbug.com/1273309): Flaky.
 IN_PROC_BROWSER_TEST_P(NetworkContextConfigurationReportingAndNelBrowserTest,
-                       PersistReportingAndNel) {
+                       DISABLED_PersistReportingAndNel) {
   if (IsRestartStateWithInProcessNetworkService() ||
       !AreReportingAndNelEnabled()) {
     return;
