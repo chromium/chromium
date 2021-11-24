@@ -2222,32 +2222,55 @@ if (!is_android && !is_fuchsia) {
 
     if (is_win) {
       sources += [
+        "../browser/chrome_browser_main_win_browsertest.cc",
         "../browser/chrome_main_browsertest.cc",
         "../browser/importer/edge_importer_browsertest_win.cc",
         "../browser/importer/ie_importer_browsertest_win.cc",
+        "../browser/policy/test/audio_process_high_priority_enabled_browsertest.cc",
         "../browser/policy/test/locale_policy_browsertest.cc",
+        "../browser/policy/test/network_service_sandbox_enabled_browsertest.cc",
+        "../browser/printing/pdf_to_emf_converter_browsertest.cc",
         "../browser/process_singleton_browsertest.cc",
         "../browser/profiles/profile_shortcut_manager_browsertest_win.cc",
         "../browser/safe_browsing/chrome_cleaner/reporter_runner_browsertest_win.cc",
+        "../browser/spellchecker/spell_check_host_chrome_impl_win_browsertest.cc",
+        "../browser/ui/startup/credential_provider_signin_dialog_win_browsertest.cc",
         "../browser/ui/startup/startup_browser_creator_corrupt_profiles_browsertest_win.cc",
         "../browser/ui/startup/startup_browser_creator_triggered_reset_browsertest_win.cc",
         "../browser/ui/startup/startup_browser_creator_welcome_back_browsertest.cc",
         "../browser/ui/views/chrome_cleaner_dialog_browsertest_win.cc",
         "../browser/ui/views/chrome_cleaner_reboot_dialog_browsertest_win.cc",
+        "../browser/ui/views/settings_reset_prompt_dialog_browsertest.cc",
         "../browser/ui/views/try_chrome_dialog_win/try_chrome_dialog_browsertest.cc",
+        "../browser/ui/views/uninstall_view_browsertest.cc",
       ]
+
+      configs += [ "//build/config/win:delayloads" ]
       data_deps += [ "//chrome/browser/web_applications/chrome_pwa_launcher" ]
       data += [ "$root_out_dir/chrome_200_percent.pak" ]
       deps += [
+        "//chrome:other_version",
         "//chrome/app:chrome_dll_resources",
+        "//chrome/app:command_ids",
         "//chrome/browser/safe_browsing/chrome_cleaner",
         "//chrome/browser/safe_browsing/chrome_cleaner:public",
         "//chrome/browser/ui/startup:buildflags",
         "//chrome/credential_provider/common:common_constants",
+        "//chrome/test:credential_provider_test_utils",
         "//components/chrome_cleaner/public/constants",
         "//components/onc",
         "//sandbox/win:sandbox",
+        "//third_party/wtl",
+        "//ui/resources",
       ]
+
+      if (target_cpu == "x64") {
+        sources += [ "../common/profiler/thread_profiler_browsertest.cc" ]
+      }
+
+      if (is_chrome_branded) {
+        deps += [ "//chrome/browser/win/conflicts:browser_tests" ]
+      }
     }
 
     if (is_win || is_mac || (is_linux && !is_chromeos_lacros)) {
@@ -3828,34 +3851,6 @@ if (!is_android && !is_fuchsia) {
         ]
       }
     }
-    if (is_win) {
-      sources += [
-        "../browser/chrome_browser_main_win_browsertest.cc",
-        "../browser/printing/pdf_to_emf_converter_browsertest.cc",
-        "../browser/spellchecker/spell_check_host_chrome_impl_win_browsertest.cc",
-        "../browser/ui/startup/credential_provider_signin_dialog_win_browsertest.cc",
-        "../browser/ui/views/settings_reset_prompt_dialog_browsertest.cc",
-        "../browser/ui/views/uninstall_view_browsertest.cc",
-      ]
-
-      if (target_cpu == "x64") {
-        sources += [ "../common/profiler/thread_profiler_browsertest.cc" ]
-      }
-
-      configs += [ "//build/config/win:delayloads" ]
-
-      deps += [
-        "//chrome:other_version",
-        "//chrome/app:command_ids",
-        "//chrome/test:credential_provider_test_utils",
-        "//third_party/wtl",
-        "//ui/resources",
-      ]
-
-      if (is_chrome_branded) {
-        deps += [ "//chrome/browser/win/conflicts:browser_tests" ]
-      }
-    }
     if (is_mac || is_win || is_fuchsia) {
       sources += [
         "../browser/extensions/api/networking_private/networking_private_apitest.cc",
@@ -3892,12 +3887,6 @@ if (!is_android && !is_fuchsia) {
           "../browser/policy/test/audio_sandbox_enabled_browsertest.cc",
         ]
       }
-    }
-    if (is_win) {
-      sources += [
-        "../browser/policy/test/audio_process_high_priority_enabled_browsertest.cc",
-        "../browser/policy/test/network_service_sandbox_enabled_browsertest.cc",
-      ]
     }
     if (((is_linux || is_chromeos_lacros) && !is_chromeos_lacros) || is_mac) {
       sources +=
@@ -4963,37 +4952,6 @@ test("unit_tests") {
     ]
   }
 
-  if (is_win) {
-    sources += [
-      "../browser/chrome_process_singleton_win_unittest.cc",
-      "../browser/component_updater/sw_reporter_installer_win_unittest.cc",
-      "../browser/enterprise/util/critical_policy_section_metrics_win_unittest.cc",
-      "../browser/install_verification/win/module_info_unittest.cc",
-      "../browser/install_verification/win/module_list_unittest.cc",
-      "../browser/install_verification/win/module_verification_test.cc",
-      "../browser/install_verification/win/module_verification_test.h",
-      "../browser/media/cdm_document_service_impl_test.cc",
-      "../browser/metrics/antivirus_metrics_provider_win_unittest.cc",
-      "../browser/performance_manager/mechanisms/working_set_trimmer_win_unittest.cc",
-      "../browser/performance_monitor/metric_evaluator_helper_win_unittest.cc",
-      "../browser/policy/browser_dm_token_storage_win_unittest.cc",
-      "../browser/process_singleton_win_unittest.cc",
-      "../browser/profiles/profile_shortcut_manager_unittest_win.cc",
-      "../browser/shell_integration_win_unittest.cc",
-      "../browser/ui/webui/version/version_handler_win_unittest.cc",
-      "../browser/upgrade_detector/get_installed_version_win_unittest.cc",
-      "../browser/upgrade_detector/registry_monitor_unittest.cc",
-      "../browser/win/chrome_elf_init_unittest.cc",
-      "../browser/win/jumplist_file_util_unittest.cc",
-      "../browser/win/jumplist_update_util_unittest.cc",
-      "../browser/win/taskbar_icon_finder_unittest.cc",
-      "../browser/win/uninstallation_via_os_settings_unittest.cc",
-      "../common/chrome_constants_win_unittest.cc",
-      "../common/conflicts/module_watcher_win_unittest.cc",
-      "../common/conflicts/remote_module_watcher_win_unittest.cc",
-    ]
-  }
-
   if (is_mac) {
     sources += [
       "../../testing/gtest_mac_unittest.mm",
@@ -5081,16 +5039,6 @@ test("unit_tests") {
       "../browser/notifications/notification_system_observer_unittest.cc",
       "../browser/notifications/notification_ui_manager_unittest.cc",
       "../browser/notifications/popups_only_ui_controller_unittest.cc",
-    ]
-  }
-
-  if (is_win) {
-    assert(toolkit_views)
-    sources += [
-      "../browser/chrome_browser_main_win_unittest.cc",
-      "../browser/notifications/win/fake_notification_image_retainer.cc",
-      "../browser/notifications/win/fake_notification_image_retainer.h",
-      "../browser/ui/views/try_chrome_dialog_win/button_layout_unittest.cc",
     ]
   }
 
@@ -5245,10 +5193,6 @@ test("unit_tests") {
   }
   if (is_linux || is_chromeos || is_win) {
     data_deps += [ "//chrome:packed_resources" ]
-  }
-  if (is_win) {
-    data_deps += [ "//chrome" ]
-    data += [ "$root_out_dir/chrome.exe" ]
   }
   if (is_mac) {
     data += [ "//chrome/test/data/performance_monitor/" ]
@@ -5559,6 +5503,116 @@ test("unit_tests") {
 
   public_deps = []
 
+  if (is_win) {
+    assert(toolkit_views)
+    sources += [
+      "../browser/chrome_browser_main_win_unittest.cc",
+      "../browser/chrome_process_singleton_win_unittest.cc",
+      "../browser/component_updater/sw_reporter_installer_win_unittest.cc",
+      "../browser/enterprise/util/critical_policy_section_metrics_win_unittest.cc",
+      "../browser/install_verification/win/module_info_unittest.cc",
+      "../browser/install_verification/win/module_list_unittest.cc",
+      "../browser/install_verification/win/module_verification_test.cc",
+      "../browser/install_verification/win/module_verification_test.h",
+      "../browser/media/cdm_document_service_impl_test.cc",
+      "../browser/metrics/antivirus_metrics_provider_win_unittest.cc",
+      "../browser/notifications/win/fake_notification_image_retainer.cc",
+      "../browser/notifications/win/fake_notification_image_retainer.h",
+      "../browser/notifications/win/notification_template_builder_unittest.cc",
+      "../browser/performance_manager/mechanisms/working_set_trimmer_win_unittest.cc",
+      "../browser/performance_monitor/metric_evaluator_helper_win_unittest.cc",
+      "../browser/policy/browser_dm_token_storage_win_unittest.cc",
+      "../browser/process_singleton_win_unittest.cc",
+      "../browser/profiles/profile_shortcut_manager_unittest_win.cc",
+      "../browser/shell_integration_win_unittest.cc",
+      "../browser/ui/startup/credential_provider_signin_info_fetcher_win_unittest.cc",
+      "../browser/ui/views/frame/windows_10_caption_button_unittest.cc",
+      "../browser/ui/views/try_chrome_dialog_win/button_layout_unittest.cc",
+      "../browser/ui/views/uninstall_view_unittest.cc",
+      "../browser/ui/webui/version/version_handler_win_unittest.cc",
+      "../browser/upgrade_detector/get_installed_version_win_unittest.cc",
+      "../browser/upgrade_detector/registry_monitor_unittest.cc",
+      "../browser/webshare/win/fake_buffer_unittest.cc",
+      "../browser/webshare/win/fake_data_transfer_manager_interop_unittest.cc",
+      "../browser/webshare/win/fake_data_transfer_manager_unittest.cc",
+      "../browser/webshare/win/fake_data_writer_factory_unittest.cc",
+      "../browser/webshare/win/fake_random_access_stream_unittest.cc",
+      "../browser/webshare/win/fake_storage_file_statics_unittest.cc",
+      "../browser/webshare/win/fake_uri_runtime_class_factory_unittest.cc",
+      "../browser/webshare/win/share_operation_unittest.cc",
+      "../browser/webshare/win/show_share_ui_for_window_operation_unittest.cc",
+      "../browser/win/chrome_elf_init_unittest.cc",
+      "../browser/win/jumplist_file_util_unittest.cc",
+      "../browser/win/jumplist_update_util_unittest.cc",
+      "../browser/win/taskbar_icon_finder_unittest.cc",
+      "../browser/win/uninstallation_via_os_settings_unittest.cc",
+      "../common/chrome_constants_win_unittest.cc",
+      "../common/conflicts/module_watcher_win_unittest.cc",
+      "../common/conflicts/remote_module_watcher_win_unittest.cc",
+    ]
+
+    data += [ "$root_out_dir/chrome.exe" ]
+
+    data_deps += [
+      "//chrome",
+      "//chrome/browser/safe_browsing/incident_reporting/verifier_test:verifier_test_dll_1",
+      "//chrome/browser/safe_browsing/incident_reporting/verifier_test:verifier_test_dll_2",
+    ]
+
+    deps += [
+      "//chrome:other_version",
+      "//chrome:packed_resources_integrity",
+      "//chrome//services/util_win:unit_tests",
+      "//chrome/app:chrome_dll_resources",
+      "//chrome/browser:chrome_process_finder",
+      "//chrome/browser/safe_browsing/chrome_cleaner",
+      "//chrome/browser/safe_browsing/chrome_cleaner:public",
+      "//chrome/browser/win/conflicts:unit_tests",
+      "//chrome/chrome_elf:constants",
+      "//chrome/common/notifications",
+      "//chrome/install_static:install_static_util",
+      "//chrome/installer/util:strings",
+      "//chrome/services/util_win:lib",
+      "//chrome/test:credential_provider_test_utils",
+      "//components/chrome_cleaner/public/constants",
+      "//components/chrome_cleaner/public/proto",
+      "//components/chrome_cleaner/public/proto:test_only_proto",
+      "//third_party/iaccessible2",
+      "//third_party/isimpledom",
+      "//third_party/wtl",
+      "//ui/events/devices:test_support",
+      "//ui/resources",
+    ]
+
+    ldflags = [
+      "/DELAYLOAD:api-ms-win-core-winrt-error-l1-1-0.dll",
+      "/DELAYLOAD:api-ms-win-core-winrt-l1-1-0.dll",
+      "/DELAYLOAD:api-ms-win-core-winrt-string-l1-1-0.dll",
+    ]
+
+    libs = [
+      "comsupp.lib",
+      "oleacc.lib",
+      "rpcrt4.lib",
+      "runtimeobject.lib",
+      "urlmon.lib",
+      "winmm.lib",
+    ]
+
+    if (is_chrome_branded) {
+      sources += [
+        "../browser/component_updater/recovery_improved_component_unittest.cc",
+        "../browser/google/google_update_policy_fetcher_win_util_unittest.cc",
+        "../browser/google/google_update_win_unittest.cc",
+      ]
+
+      data_deps +=
+          [ "//components/update_client:recovery_component_tests_bundle_data" ]
+
+      deps += [ "//google_update" ]
+    }
+  }
+
   if (enable_chromium_updater) {
     deps += [
       "//chrome/browser/updater:browser_updater_client",
@@ -5583,25 +5637,6 @@ test("unit_tests") {
       "//chrome/utility/safe_browsing/mac",
       "//chrome/utility/safe_browsing/mac:dmg_common",
       "//components/power_metrics",
-      "//ui/events/devices:test_support",
-    ]
-  }
-
-  if (is_win) {
-    assert(toolkit_views)
-    sources += [ "../browser/ui/startup/credential_provider_signin_info_fetcher_win_unittest.cc" ]
-    deps += [
-      "//chrome:packed_resources_integrity",
-      "//chrome/browser:chrome_process_finder",
-      "//chrome/browser/safe_browsing/chrome_cleaner",
-      "//chrome/browser/safe_browsing/chrome_cleaner:public",
-      "//chrome/browser/win/conflicts:unit_tests",
-      "//chrome/chrome_elf:constants",
-      "//chrome/common/notifications",
-      "//chrome/services/util_win:lib",
-      "//chrome/test:credential_provider_test_utils",
-      "//components/chrome_cleaner/public/constants",
-      "//components/chrome_cleaner/public/proto",
       "//ui/events/devices:test_support",
     ]
   }
@@ -6156,21 +6191,6 @@ test("unit_tests") {
         "../browser/ui/webui/help/version_updater_chromeos_unittest.cc",
       ]
     }
-    if (is_win) {
-      sources += [
-        "../browser/profile_resetter/triggered_profile_resetter_win_unittest.cc",
-        "../browser/safe_browsing/chrome_cleaner/chrome_cleaner_controller_impl_win_unittest.cc",
-        "../browser/safe_browsing/chrome_cleaner/chrome_cleaner_fetcher_win_unittest.cc",
-        "../browser/safe_browsing/chrome_cleaner/chrome_cleaner_runner_win_unittest.cc",
-        "../browser/safe_browsing/chrome_cleaner/chrome_prompt_channel_win_unittest.cc",
-        "../browser/safe_browsing/chrome_cleaner/mock_chrome_cleaner_process_win.cc",
-        "../browser/safe_browsing/chrome_cleaner/mock_chrome_cleaner_process_win.h",
-        "../browser/safe_browsing/chrome_cleaner/reporter_runner_win_unittest.cc",
-        "../browser/safe_browsing/chrome_cleaner/srt_field_trial_win_unittest.cc",
-        "../browser/task_manager/sampling/shared_sampler_win_unittest.cc",
-        "../utility/importer/edge_database_reader_unittest_win.cc",
-      ]
-    }
     if (is_mac) {
       sources += [
         "../browser/ui/content_settings/content_setting_media_image_model_unittest.mm",
@@ -6233,9 +6253,6 @@ test("unit_tests") {
       "//ui/native_theme:test_support",
       "//ui/webui/resources/js/browser_command:mojo_bindings",
     ]
-    if (is_win) {
-      deps += [ "//components/chrome_cleaner/public/proto:test_only_proto" ]
-    }
     if (is_chromeos_ash) {
       deps += [
         "//ash/assistant/model",
@@ -7595,60 +7612,6 @@ test("unit_tests") {
     sources += [ "../browser/rlz/chrome_rlz_tracker_delegate_unittest.cc" ]
     deps += [ "//rlz:test_support" ]
   }
-  if (is_win) {
-    sources += [
-      "../browser/notifications/win/notification_template_builder_unittest.cc",
-      "../browser/ui/views/uninstall_view_unittest.cc",
-      "../browser/webshare/win/fake_buffer_unittest.cc",
-      "../browser/webshare/win/fake_data_transfer_manager_interop_unittest.cc",
-      "../browser/webshare/win/fake_data_transfer_manager_unittest.cc",
-      "../browser/webshare/win/fake_data_writer_factory_unittest.cc",
-      "../browser/webshare/win/fake_random_access_stream_unittest.cc",
-      "../browser/webshare/win/fake_storage_file_statics_unittest.cc",
-      "../browser/webshare/win/fake_uri_runtime_class_factory_unittest.cc",
-      "../browser/webshare/win/share_operation_unittest.cc",
-      "../browser/webshare/win/show_share_ui_for_window_operation_unittest.cc",
-    ]
-    deps += [
-      "//chrome:other_version",
-      "//chrome//services/util_win:unit_tests",
-      "//chrome/app:chrome_dll_resources",
-      "//chrome/install_static:install_static_util",
-      "//chrome/installer/util:strings",
-      "//third_party/iaccessible2",
-      "//third_party/isimpledom",
-      "//third_party/wtl",
-      "//ui/resources",
-    ]
-    data_deps += [
-      "//chrome/browser/safe_browsing/incident_reporting/verifier_test:verifier_test_dll_1",
-      "//chrome/browser/safe_browsing/incident_reporting/verifier_test:verifier_test_dll_2",
-    ]
-
-    libs = [
-      "comsupp.lib",
-      "oleacc.lib",
-      "rpcrt4.lib",
-      "runtimeobject.lib",
-      "urlmon.lib",
-      "winmm.lib",
-    ]
-
-    ldflags = [
-      "/DELAYLOAD:api-ms-win-core-winrt-error-l1-1-0.dll",
-      "/DELAYLOAD:api-ms-win-core-winrt-l1-1-0.dll",
-      "/DELAYLOAD:api-ms-win-core-winrt-string-l1-1-0.dll",
-    ]
-
-    if (is_chrome_branded) {
-      sources += [
-        "../browser/google/google_update_policy_fetcher_win_util_unittest.cc",
-        "../browser/google/google_update_win_unittest.cc",
-      ]
-
-      deps += [ "//google_update" ]
-    }
-  }
   if (!is_android && !is_chromeos_ash) {
     sources += [
       "../browser/device_identity/device_oauth2_token_store_desktop_unittest.cc",
@@ -7912,19 +7875,6 @@ test("unit_tests") {
       "../browser/ui/webui/tab_strip/tab_strip_ui_layout_unittest.cc",
       "../browser/ui/webui/tab_strip/thumbnail_tracker_unittest.cc",
     ]
-  }
-
-  if (is_win && is_chrome_branded) {
-    sources += [
-      "../browser/component_updater/recovery_improved_component_unittest.cc",
-    ]
-    data_deps +=
-        [ "//components/update_client:recovery_component_tests_bundle_data" ]
-  }
-
-  if (is_win) {
-    sources +=
-        [ "../browser/ui/views/frame/windows_10_caption_button_unittest.cc" ]
   }
 
   # This target gets pulled in in Chromecast builds, even though it doesn't get
