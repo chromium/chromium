@@ -144,8 +144,10 @@ ServiceWorkerContainerHost::~ServiceWorkerContainerHost() {
       rfh->RemoveServiceWorkerContainerHost(client_uuid());
   }
 
-  if (IsContainerForClient() && controller_)
+  if (controller_) {
+    DCHECK(IsContainerForClient());
     controller_->Uncontrol(client_uuid());
+  }
 
   // Remove |this| as an observer of ServiceWorkerRegistrations.
   // TODO(falken): Use base::ScopedObservation instead of this explicit call.
