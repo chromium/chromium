@@ -1799,6 +1799,15 @@ This file contains the strings for ash.
       <message name="IDS_ASH_DESKS_TEMPLATES_REACH_MAXIMUM_DESK_TOAST" desc="The text of the toast displayed when user tries to launch a template while maximum desk number is reached.">
         Only <ph name="MAX_DESK_LIMIT">$1<ex>8</ex></ph> desks allowed. Remove a desk to open a new one.
       </message>
+      <message name="IDS_ASH_DESKS_TEMPLATES_UNAVAILABLE_APP_TOAST_ONE" desc="The text of the toast displayed when user tries to launch a template with one unavailable apps.">
+        <ph name="UNAVAILABLE_APPS">$1<ex>unavailable app</ex></ph>isn't on this device.
+      </message>
+      <message name="IDS_ASH_DESKS_TEMPLATES_UNAVAILABLE_APP_TOAST_TWO" desc="The text of the toast displayed when user tries to launch a template with two unavailable apps.">
+        <ph name="UNAVAILABLE_APPS_ONE">$1<ex>unavailable app one</ex></ph>, and <ph name="UNAVAILABLE_APPS_TWO">$2<ex>unavailable app two</ex></ph> aren't on this device.
+      </message>
+      <message name="IDS_ASH_DESKS_TEMPLATES_UNAVAILABLE_APP_TOAST_MORE" desc="The text of the toast displayed when user tries to launch a template with more than two unavailable apps.">
+        <ph name="UNAVAILABLE_APPS_ONE">$1<ex>unavailable app one</ex></ph>, <ph name="UNAVAILABLE_APPS_TWO">$2<ex>unavailable app two</ex></ph>, and <ph name="UNAVAILABLE_APPS_COUNT">$3<ex>unavailable app count</ex></ph> more aren't on this device.
+      </message>
 
       <!-- Virtual Desks -->
       <message name="IDS_ASH_DESKS_NEW_DESK_BUTTON" desc="The label of the new virtual desk (a.k.a. workspaces) button.">

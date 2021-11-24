@@ -7,8 +7,12 @@
 #include "ash/constants/app_types.h"
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/desk_template.h"
+#include "ash/public/cpp/toast_data.h"
+#include "ash/public/cpp/toast_manager.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "base/bind.h"
 #include "base/check.h"
+#include "base/strings/string_number_conversions.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
@@ -35,11 +39,20 @@
 #include "extensions/common/constants.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/image/image_skia.h"
 #include "url/gurl.h"
 
 namespace {
+
+// Name for app not available toast.
+constexpr char kAppNotAvailableTemplateToastName[] =
+    "AppNotAvailableTemplateToast";
+
+// The amount of time for which the launch template toasts will remain
+// displayed.
+constexpr int kLaunchTemplateToastDurationMs = 6 * 1000;
 
 // Returns the TabStripModel that associates with `window` if the given `window`
 // contains a browser frame, otherwise returns nullptr.
@@ -57,6 +70,83 @@ std::vector<GURL> GetURLsIfApplicable(TabStripModel* tab_strip_model) {
   for (int i = 0; i < tab_strip_model->count(); ++i)
     urls.push_back(tab_strip_model->GetWebContentsAt(i)->GetLastCommittedURL());
   return urls;
+}
+
+// Return true if `app_id` is available to launch from template.
+bool IsAppAvailable(const std::string& app_id,
+                    apps::AppServiceProxy* app_service_proxy = nullptr) {
+  bool installed = false;
+  Profile* app_profile = ProfileManager::GetActiveUserProfile();
+  DCHECK(app_profile);
+  if (!app_service_proxy) {
+    app_service_proxy =
+        apps::AppServiceProxyFactory::GetForProfile(app_profile);
+    if (!app_service_proxy)
+      return false;
+  }
+  app_service_proxy->AppRegistryCache().ForOneApp(
+      app_id, [&](const apps::AppUpdate& app) {
+        installed = app.Readiness() == apps::mojom::Readiness::kReady;
+      });
+  if (installed)
+    return true;
+  const extensions::Extension* app =
+      extensions::ExtensionRegistry::Get(app_profile)
+          ->GetInstalledExtension(app_id);
+  return app != nullptr;
+}
+
+// Check app availability from `launch_list`, return a vector of unavailable app
+// names.
+std::vector<std::string> GetUnavailableAppNames(
+    const app_restore::RestoreData::AppIdToLaunchList& launch_list) {
+  std::vector<std::string> app_names;
+  auto* app_service_proxy = apps::AppServiceProxyFactory::GetForProfile(
+      ProfileManager::GetActiveUserProfile());
+  if (!app_service_proxy)
+    return app_names;
+
+  for (const auto& iter : launch_list) {
+    std::string name;
+    app_service_proxy->AppRegistryCache().ForOneApp(
+        iter.first,
+        [&name](const apps::AppUpdate& update) { name = update.ShortName(); });
+    if (!IsAppAvailable(name, app_service_proxy))
+      app_names.push_back(name);
+  }
+  return app_names;
+}
+
+// Show unavailable app toast based on size of `unavailable_apps`.
+void ShowUnavailableAppToast(const std::vector<std::string>& unavailable_apps) {
+  std::u16string toast_string;
+  switch (unavailable_apps.size()) {
+    case 1:
+      toast_string = l10n_util::GetStringFUTF16(
+          IDS_ASH_DESKS_TEMPLATES_UNAVAILABLE_APP_TOAST_ONE,
+          base::ASCIIToUTF16(unavailable_apps.front()));
+      break;
+    case 2:
+      toast_string = l10n_util::GetStringFUTF16(
+          IDS_ASH_DESKS_TEMPLATES_UNAVAILABLE_APP_TOAST_TWO,
+          base::ASCIIToUTF16(unavailable_apps.front()),
+          base::ASCIIToUTF16(unavailable_apps[1]));
+      break;
+    default:
+      DCHECK_GT(unavailable_apps.size(), 2);
+      toast_string = l10n_util::GetStringFUTF16(
+          IDS_ASH_DESKS_TEMPLATES_UNAVAILABLE_APP_TOAST_MORE,
+          base::ASCIIToUTF16(unavailable_apps.front()),
+          base::ASCIIToUTF16(unavailable_apps[1]),
+          base::FormatNumber((unavailable_apps.size() - 2)));
+      break;
+  }
+
+  ash::ToastData toast_data = {/*id=*/kAppNotAvailableTemplateToastName,
+                               /*text=*/
+                               toast_string, kLaunchTemplateToastDurationMs,
+                               /*dismiss_text=*/absl::nullopt};
+  ash::ToastManager::Get()->Show(toast_data);
 }
 
 }  // namespace
@@ -193,6 +283,13 @@ void ChromeDesksTemplatesDelegate::GetIconForAppId(
 
 void ChromeDesksTemplatesDelegate::LaunchAppsFromTemplate(
     std::unique_ptr<ash::DeskTemplate> desk_template) {
+  const auto& launch_list =
+      desk_template->desk_restore_data()->app_id_to_launch_list();
+  std::vector<std::string> unavailable_apps =
+      GetUnavailableAppNames(launch_list);
+  // Show app unavailable toast.
+  if (!unavailable_apps.empty())
+    ShowUnavailableAppToast(unavailable_apps);
   DesksTemplatesClient::Get()->LaunchAppsFromTemplate(std::move(desk_template));
 }
 
