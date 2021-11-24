@@ -13,6 +13,12 @@ namespace views {
 class View;
 }  // namespace views
 
+// Class used to manage the state of side-panel content. Clients should manage
+// side-panel visibility using this class rather than explicitly showing/hiding
+// the side-panel View.
+// This class is also responsible for consolidating multiple SidePanelEntry
+// classes across multiple SidePanelRegistry instances, potentially merging them
+// into a single unified side panel.
 class SidePanelCoordinator final {
  public:
   explicit SidePanelCoordinator(BrowserView* browser_view);

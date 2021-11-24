@@ -10,6 +10,8 @@
 
 class SidePanelEntry;
 
+// This class is used for storing SidePanelEntries specific to a context. This
+// context can be one per tab or one per window. See also SidePanelCoordinator.
 class SidePanelRegistry final {
  public:
   SidePanelRegistry();

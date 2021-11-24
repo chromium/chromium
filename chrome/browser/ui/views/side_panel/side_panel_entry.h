@@ -11,6 +11,8 @@
 #include "base/callback.h"
 #include "ui/views/view.h"
 
+// This class represents an entry inside the side panel. These are owned by a
+// SidePanelRegistry (either a per-tab or a per-window registry).
 class SidePanelEntry final {
  public:
   // TODO(pbos): Add an icon ImageModel here.
@@ -21,6 +23,8 @@ class SidePanelEntry final {
   SidePanelEntry& operator=(const SidePanelEntry&) = delete;
   ~SidePanelEntry();
 
+  // Creates the content to be shown inside the side panel when this entry is
+  // shown.
   std::unique_ptr<views::View> CreateContent();
 
  private:
