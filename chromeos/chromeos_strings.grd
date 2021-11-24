@@ -2454,6 +2454,46 @@ Try tapping the mic to ask me anything.
       <message name="IDS_SHIMLESS_RMA_REIMAGING_FIRMWARE_RECOVERY_REIMAGE_NOT_REQUIRED" translateable="false" desc="The label that offers to use the recovery utility if reimaging is not required.">
         Yes, use the Chromebook Recovery Utility
       </message>
+      <!-- Onboarding update page -->
+      <message name="IDS_SHIMLESS_RMA_ONBOARDING_UPDATE_CONNECT" translateable="false" desc="The message that you can connect to the internet on the prevous page.">
+        To check if OS is up to date, connect to the internet in previous screen
+      </message>
+      <message name="IDS_SHIMLESS_RMA_ONBOARDING_UPDATE_PROGRESS" translateable="false" desc="The update progress label.">
+        OS update progress received <ph name="OPERATION_NAME">$1</ph> <ph name="PROGRESS">$2</ph>%
+      </message>
+      <message name="IDS_SHIMLESS_RMA_ONBOARDING_UPDATE_IDLE" translateable="false" desc="The idle operation name.">
+        Not updating
+      </message>
+      <message name="IDS_SHIMLESS_RMA_ONBOARDING_UPDATE_CHECKING" translateable="false" desc="The checking for updates operation name.">
+        checking for update
+      </message>
+      <message name="IDS_SHIMLESS_RMA_ONBOARDING_UPDATE_AVAILABLE" translateable="false" desc="The update available operation name.">
+        update found
+      </message>
+      <message name="IDS_SHIMLESS_RMA_ONBOARDING_UPDATE_DOWNLOADING" translateable="false" desc="The update download operation name.">
+        downloading update
+      </message>
+      <message name="IDS_SHIMLESS_RMA_ONBOARDING_UPDATE_VERIFYING" translateable="false" desc="The update verification operation name.">
+        verifying update
+      </message>
+      <message name="IDS_SHIMLESS_RMA_ONBOARDING_UPDATE_FINALIZING" translateable="false" desc="The update finalization operation name.">
+        installing update
+      </message>
+      <message name="IDS_SHIMLESS_RMA_ONBOARDING_UPDATE_REBOOT" translateable="false" desc="The reboot operation name.">
+        need reboot
+      </message>
+      <message name="IDS_SHIMLESS_RMA_ONBOARDING_UPDATE_ERROR" translateable="false" desc="The update error operation name.">
+        error updating
+      </message>
+      <message name="IDS_SHIMLESS_RMA_ONBOARDING_UPDATE_ROLLBACK" translateable="false" desc="The update rollback operation name.">
+        attempting rollback
+      </message>
+      <message name="IDS_SHIMLESS_RMA_ONBOARDING_UPDATE_DISABLED" translateable="false" desc="The update disabled operation name.">
+        update disabled
+      </message>
+      <message name="IDS_SHIMLESS_RMA_ONBOARDING_UPDATE_PERMISSION" translateable="false" desc="The update permission required operation name.">
+        need permission to update
+      </message>
 
       <!-- Firmware Update -->
       <message name="IDS_FIRMWARE_TITLE_TEXT" desc="The title of the Firmware update app.">

@@ -267,6 +267,26 @@ void AddShimlessRmaStrings(content::WebUIDataSource* html_source) {
        IDS_SHIMLESS_RMA_REIMAGING_FIRMWARE_RECOVERY_REIMAGE_REQUIRED},
       {"firmwareReimagingRecoveryReimageNotRequired",
        IDS_SHIMLESS_RMA_REIMAGING_FIRMWARE_RECOVERY_REIMAGE_NOT_REQUIRED},
+      // Onboarding update page
+      {"onboardingUpdateConnectToInternet",
+       IDS_SHIMLESS_RMA_ONBOARDING_UPDATE_CONNECT},
+      {"onboardingUpdateProgress", IDS_SHIMLESS_RMA_ONBOARDING_UPDATE_PROGRESS},
+      {"onboardingUpdateIdle", IDS_SHIMLESS_RMA_ONBOARDING_UPDATE_IDLE},
+      {"onboardingUpdateChecking", IDS_SHIMLESS_RMA_ONBOARDING_UPDATE_CHECKING},
+      {"onboardingUpdateAvailable",
+       IDS_SHIMLESS_RMA_ONBOARDING_UPDATE_AVAILABLE},
+      {"onboardingUpdateDownloading",
+       IDS_SHIMLESS_RMA_ONBOARDING_UPDATE_DOWNLOADING},
+      {"onboardingUpdateVerifying",
+       IDS_SHIMLESS_RMA_ONBOARDING_UPDATE_VERIFYING},
+      {"onboardingUpdateFinalizing",
+       IDS_SHIMLESS_RMA_ONBOARDING_UPDATE_FINALIZING},
+      {"onboardingUpdateReboot", IDS_SHIMLESS_RMA_ONBOARDING_UPDATE_REBOOT},
+      {"onboardingUpdateError", IDS_SHIMLESS_RMA_ONBOARDING_UPDATE_ERROR},
+      {"onboardingUpdateRollback", IDS_SHIMLESS_RMA_ONBOARDING_UPDATE_ROLLBACK},
+      {"onboardingUpdateDisabled", IDS_SHIMLESS_RMA_ONBOARDING_UPDATE_DISABLED},
+      {"onboardingUpdatePermission",
+       IDS_SHIMLESS_RMA_ONBOARDING_UPDATE_PERMISSION},
   };
 
   html_source->AddLocalizedStrings(kLocalizedStrings);

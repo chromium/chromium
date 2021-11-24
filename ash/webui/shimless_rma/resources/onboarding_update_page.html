@@ -31,7 +31,7 @@
       [[updateProgressMessage_]]
     </div>
     <p id="networkUnavailable" hidden$="[[networkAvailable]]">
-      To check if OS is up to date, connect to the internet in previous screen
+      [[i18n('onboardingUpdateConnectToInternet')]]
     </p>
     <cr-button id="performUpdateButton" disabled="[[updateInProgress_]]"
         hidden$="[[!updateAvailable_]]" on-click="onUpdateButtonClicked_">

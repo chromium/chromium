@@ -22,19 +22,18 @@ import {HardwareVerificationStatusObserverInterface, HardwareVerificationStatusO
  * to date before starting the rma process.
  */
 
-// TODO(gavindodd): i18n string
-const operationName = {
-  [OsUpdateOperation.kIdle]: 'Not updating',
-  [OsUpdateOperation.kCheckingForUpdate]: 'checking for update',
-  [OsUpdateOperation.kUpdateAvailable]: 'update found',
-  [OsUpdateOperation.kDownloading]: 'downloading update',
-  [OsUpdateOperation.kVerifying]: 'verifying update',
-  [OsUpdateOperation.kFinalizing]: 'installing update',
-  [OsUpdateOperation.kUpdatedNeedReboot]: 'need reboot',
-  [OsUpdateOperation.kReportingErrorEvent]: 'error updating',
-  [OsUpdateOperation.kAttemptingRollback]: 'attempting rollback',
-  [OsUpdateOperation.kDisabled]: 'update disabled',
-  [OsUpdateOperation.kNeedPermissionToUpdate]: 'need permission to update'
+const operationNameKeys = {
+  [OsUpdateOperation.kIdle]: 'onboardingUpdateIdle',
+  [OsUpdateOperation.kCheckingForUpdate]: 'onboardingUpdateChecking',
+  [OsUpdateOperation.kUpdateAvailable]: 'onboardingUpdateAvailable',
+  [OsUpdateOperation.kDownloading]: 'onboardingUpdateDownloading',
+  [OsUpdateOperation.kVerifying]: 'onboardingUpdateVerifying',
+  [OsUpdateOperation.kFinalizing]: 'onboardingUpdateFinalizing',
+  [OsUpdateOperation.kUpdatedNeedReboot]: 'onboardingUpdateReboot',
+  [OsUpdateOperation.kReportingErrorEvent]: 'onboardingUpdateError',
+  [OsUpdateOperation.kAttemptingRollback]: 'onboardingUpdateRollback',
+  [OsUpdateOperation.kDisabled]: 'onboardingUpdateDisabled',
+  [OsUpdateOperation.kNeedPermissionToUpdate]: 'onboardingUpdatePermission'
 };
 
 /**
@@ -249,9 +248,9 @@ export class OnboardingUpdatePageElement extends
           {bubbles: true, composed: true, detail: false},
           ));
     }
-    // TODO(gavindodd): i18n string
-    this.updateProgressMessage_ = 'OS update progress received ' +
-        operationName[operation] + ' ' + Math.round(progress * 100) + '%';
+    this.updateProgressMessage_ = this.i18n(
+        'onboardingUpdateProgress', this.i18n(operationNameKeys[operation]),
+        Math.round(progress * 100));
   }
 
   /**
