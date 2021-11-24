@@ -61,21 +61,6 @@ namespace {
 // stored errors is not expected to be high.
 const web::CertVerificationErrorsCacheType::size_type kMaxCertErrorsCount = 100;
 
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-enum class OutOfSyncURLAction {
-  kNoAction = 0,
-  kGoBack = 1,
-  kGoForward = 2,
-  kMaxValue = kGoForward,
-};
-
-void ReportOutOfSyncURLInDidStartProvisionalNavigation(
-    OutOfSyncURLAction action) {
-  UMA_HISTOGRAM_ENUMERATION(
-      "WebController.BackForwardListOutOfSyncInProvisionalNavigation", action);
-}
-
 }  // namespace
 
 @interface CRWWKNavigationHandler () {
@@ -484,48 +469,21 @@ void ReportOutOfSyncURLInDidStartProvisionalNavigation(
     }
 
     if (![CRWErrorPageHelper isErrorPageFileURL:webViewURL] &&
-        !IsWKInternalUrl(webViewURL)) {
+        !IsWKInternalUrl(webViewURL) && context->GetUrl() != webViewURL) {
       web::NavigationItem* item =
           web::GetItemWithUniqueID(self.navigationManagerImpl, context);
-      if (item) {
-        web::WKBackForwardListItemHolder* itemHolder =
-            web::WKBackForwardListItemHolder::FromNavigationItem(item);
-        if (itemHolder->navigation_type() == WKNavigationTypeBackForward &&
-            ![webView.backForwardList.currentItem.URL isEqual:webView.URL]) {
-          // Sometimes on back/forward navigation, the backforward list is out
-          // of sync with the webView. Go back or forward to fix it. See
-          // crbug.com/968539.
-          if ([webView.backForwardList.backItem.URL isEqual:webView.URL]) {
-            ReportOutOfSyncURLInDidStartProvisionalNavigation(
-                OutOfSyncURLAction::kGoBack);
-            [webView goBack];
-            return;
-          }
-          if ([webView.backForwardList.forwardItem.URL isEqual:webView.URL]) {
-            ReportOutOfSyncURLInDidStartProvisionalNavigation(
-                OutOfSyncURLAction::kGoForward);
-            [webView goForward];
-            return;
-          }
-          ReportOutOfSyncURLInDidStartProvisionalNavigation(
-              OutOfSyncURLAction::kNoAction);
-        }
-      }
 
-      if (context->GetUrl() != webViewURL) {
-        // Update last seen URL because it may be changed by WKWebView (f.e.
-        // by performing characters escaping).
-        if (item) {
-          // Item may not exist if navigation was stopped (see
-          // crbug.com/969915).
-          item->SetURL(webViewURL);
-          if ([CRWErrorPageHelper isErrorPageFileURL:webViewURL]) {
-            item->SetVirtualURL([CRWErrorPageHelper
-                failedNavigationURLFromErrorPageFileURL:webViewURL]);
-          }
+      // Update last seen URL because it may be changed by WKWebView (f.e. by
+      // performing characters escaping).
+      if (item) {
+        // Item may not exist if navigation was stopped (see crbug.com/969915).
+        item->SetURL(webViewURL);
+        if ([CRWErrorPageHelper isErrorPageFileURL:webViewURL]) {
+          item->SetVirtualURL([CRWErrorPageHelper
+              failedNavigationURLFromErrorPageFileURL:webViewURL]);
         }
-        context->SetUrl(webViewURL);
       }
+      context->SetUrl(webViewURL);
     }
 
     self.webStateImpl->OnNavigationStarted(context);
