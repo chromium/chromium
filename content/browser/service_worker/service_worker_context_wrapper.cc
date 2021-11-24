@@ -259,6 +259,7 @@ void ServiceWorkerContextWrapper::InitInternal(
 void ServiceWorkerContextWrapper::Shutdown() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
+  ClearRunningServiceWorkers();
   storage_partition_ = nullptr;
   process_manager_->Shutdown();
   storage_control_.reset();
@@ -417,14 +418,7 @@ void ServiceWorkerContextWrapper::OnStopped(int64_t version_id) {
 }
 
 void ServiceWorkerContextWrapper::OnDeleteAndStartOver() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-
-  for (const auto& kv : running_service_workers_) {
-    int64_t version_id = kv.first;
-    for (auto& observer : observer_list_)
-      observer.OnVersionStoppedRunning(version_id);
-  }
-  running_service_workers_.clear();
+  ClearRunningServiceWorkers();
 }
 
 void ServiceWorkerContextWrapper::OnVersionStateChanged(
@@ -1571,6 +1565,17 @@ void ServiceWorkerContextWrapper::DidGetRegisteredStorageKeys(
   registrations_initialized_ = true;
   if (on_registrations_initialized_)
     std::move(on_registrations_initialized_).Run();
+}
+
+void ServiceWorkerContextWrapper::ClearRunningServiceWorkers() {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+
+  for (const auto& kv : running_service_workers_) {
+    int64_t version_id = kv.first;
+    for (auto& observer : observer_list_)
+      observer.OnVersionStoppedRunning(version_id);
+  }
+  running_service_workers_.clear();
 }
 
 }  // namespace content

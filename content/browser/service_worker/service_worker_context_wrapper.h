@@ -511,6 +511,8 @@ class CONTENT_EXPORT ServiceWorkerContextWrapper
       const std::string& key_prefix,
       StatusCallback callback);
 
+  void ClearRunningServiceWorkers();
+
   scoped_refptr<network::SharedURLLoaderFactory>
   GetLoaderFactoryForBrowserInitiatedRequest(
       const GURL& scope,
