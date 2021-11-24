@@ -2355,8 +2355,7 @@ Try tapping the mic to ask me anything.
         version of Chrome OS may resolve this issue.
       </message>
       <message name="IDS_SHIMLESS_RMA_UPDATE_OS_VERY_OUT_OF_DATE" translateable="false" desc="Description when the installed OS is too many versions behind the update.">
-        If Chrome OS is out of date, Shimless RMA process may have been updated
-        since this version was installed.
+        Chrome OS needs an additional update to get fully up to date
       </message>
       <message name="IDS_SHIMLESS_RMA_UPDATE_OS_OUT_OF_DATE" translateable="false" desc="Description when the installed OS is not the most recent available.">
         Chrome OS needs an additional update to get fully up to date.
@@ -2376,8 +2375,8 @@ Try tapping the mic to ask me anything.
       <message name="IDS_SHIMLESS_RMA_CURRENT_VERSION_UP_TO_DATE" translateable="false" desc="Label that shows the when the currently installed version of Chrome OS is up to date.">
         Current version <ph name="VERSION_NUMBER">$1<ex>90.0.1234.56</ex></ph> is up to date
       </message>
-      <message name="IDS_SHIMLESS_RMA_UPDATE_VERSION_AND_RESTART" desc="Label for the button that updates the device to the latest version of Chrome OS then restarts the device.">
-        Update version &#38; restart
+      <message name="IDS_SHIMLESS_RMA_UPDATE_VERSION_AND_RESTART" translateable="false" desc="Label for the button that updates the device to the latest version of Chrome OS then restarts the device.">
+        Update to <ph name="VERSION_NUMBER">$1</ph> &#38; restart
       </message>
       <!-- Manually disable wp page -->
       <message name="IDS_SHIMLESS_RMA_MANUALLY_DISABLE_WP_INSTRUCTIONS" translateable="false" desc="The text instructions for how to manually disable write-protect on the device.">

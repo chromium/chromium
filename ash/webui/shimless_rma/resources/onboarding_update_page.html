@@ -35,14 +35,13 @@
     </p>
     <cr-button id="performUpdateButton" disabled="[[updateInProgress_]]"
         hidden$="[[!updateAvailable_]]" on-click="onUpdateButtonClicked_">
-        [[i18n('updateVersionRestartLabel')]]
+        [[updateVersionText_]]
       <iron-icon id="restartIcon" icon="shimless-icon:update"
           class="small-icon">
       </iron-icon>
     </cr-button>
   </div>
   <div slot="body">
-    <!-- TODO(gavindodd): Replace with real image -->
-    <iron-icon icon="shimless:shimless-placeholder" class="large-icon"></iron-icon>
+    <iron-icon icon="shimless:update" class="large-icon"></iron-icon>
   </div>
 </base-page>

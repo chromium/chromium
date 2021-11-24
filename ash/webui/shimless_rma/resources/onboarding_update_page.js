@@ -63,6 +63,11 @@ export class OnboardingUpdatePageElement extends
         value: '',
       },
 
+      updateVersionText_: {
+        type: String,
+        value: '',
+      },
+
       /** @protected */
       updateNoticeMessage_: {
         type: String,
@@ -158,8 +163,10 @@ export class OnboardingUpdatePageElement extends
   checkForUdpates_() {
     this.shimlessRmaService_.checkForOsUpdates().then((res) => {
       if (res && res.updateAvailable) {
-        this.updateAvailable_ = true;
         this.updateVersion_ = res.version;
+        this.updateVersionText_ =
+            this.i18n('updateVersionRestartLabel', this.updateVersion_);
+        this.updateAvailable_ = true;
       }
 
       this.currentVersionText_ = this.i18n(
