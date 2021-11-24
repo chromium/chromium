@@ -1,0 +1,27 @@
+# Copyright 2021 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//ui/webui/resources/tools/generate_grd.gni")
+import("//ui/webui/webui_features.gni")
+
+assert(enable_webui_tab_strip)
+
+generate_grd("build_grdp") {
+  grd_prefix = "webui_welcome"
+  out_grd = "$target_gen_dir/resources.grdp"
+
+  input_files = [
+    "alert_indicators_test.js",
+    "alert_indicator_test.js",
+    "drag_manager_test.js",
+    "tab_group_test.js",
+    "tab_list_test.js",
+    "tab_swiper_test.js",
+    "tab_test.js",
+    "test_tabs_api_proxy.js",
+  ]
+  input_files_base_dir = rebase_path(".", "//")
+
+  resource_path_prefix = "tab_strip"
+}

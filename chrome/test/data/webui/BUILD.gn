@@ -632,6 +632,11 @@ generate_grd("build_grd") {
     grdp_files += [ "$target_gen_dir/print_preview/resources.grdp" ]
   }
 
+  if (enable_webui_tab_strip) {
+    deps += [ "tab_strip:build_grdp" ]
+    grdp_files += [ "$target_gen_dir/tab_strip/resources.grdp" ]
+  }
+
   if (!is_chromeos_ash && !is_android) {
     deps += [
       "signin:build_grdp",
