@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
 <title>Test for the 'secure-payment-confirmation' payment method authentication - data URL icon</title>
-<link rel="help" href="https://w3c.github.io/secure-payment-confirmation#sctn-authentication">
+<link rel="help" href="https://w3c.github.io/secure-payment-confirmation#sctn-steps-to-check-if-a-payment-can-be-made">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="/resources/testdriver.js"></script>
@@ -52,5 +52,5 @@ promise_test(async t => {
 
   const clientDataJSON = JSON.parse(arrayBufferToString(cred.response.clientDataJSON));
   assert_equals(clientDataJSON.payment.instrument.icon, ICON_DATA_URL);
-}, 'Successful SPC authentication');
+}, 'SPC authentication with data URL instrument icon');
 </script>

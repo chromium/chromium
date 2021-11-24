@@ -76,21 +76,9 @@ class EditorTestUtils {
   sendSelectAllShortcutKey() {
     return this.sendKey(
       "a",
-      (() => {
-        // Gecko for Linux defines only Alt-A as a shortcut key for select all,
-        // although in most environment, Ctrl-A works as so too, but it depends
-        // on the OS settings.
-        if (
-          this.window.navigator.userAgent.includes("Linux") &&
-          this.window.navigator.userAgent.includes("Gecko") &&
-          !this.window.navigator.userAgent.includes("KHTML")
-        ) {
-          return this.kAlt;
-        }
-        return this.window.navigator.platform.includes("Mac")
-          ? this.kMeta
-          : this.kControl;
-      })()
+      this.window.navigator.platform.includes("Mac")
+        ? this.kMeta
+        : this.kControl
     );
   }
 

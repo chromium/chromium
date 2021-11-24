@@ -2851,6 +2851,20 @@
    },
    "web-locks": {
     "crashtests": {
+     "after-worker-termination.https.html": [
+      "e113cbdf6a49f000cd558265c1bc6ea0f72fd16a",
+      [
+       null,
+       {}
+      ]
+     ],
+     "iframe-append.https.html": [
+      "be5d1b365c5ce29ad52a15fe97f80cc693e516f5",
+      [
+       null,
+       {}
+      ]
+     ],
      "settle-after-steal.https.html": [
       "6b337e72e90ec8a08ca216535a1147e2e2f5c8bd",
       [
@@ -89774,6 +89788,32 @@
        [
         [
          "/css/css-content/element-replacement-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "element-replacement-image-no-src.tentative.html": [
+      "0c400ed5740bdd54170b6c0a2654f340d4237a9c",
+      [
+       null,
+       [
+        [
+         "/css/css-content/element-replacement-image-no-src-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "element-replacement-image-src.tentative.html": [
+      "33547e2c24cbc9e16120b82883b553a7a8fb0b45",
+      [
+       null,
+       [
+        [
+         "/css/css-content/element-replacement-image-no-src-ref.html",
          "=="
         ]
        ],
@@ -212136,6 +212176,45 @@
        {}
       ]
      ],
+     "view-invalid-viewBox.html": [
+      "75b89f12a701eda3fcc1581877a08cfa87d157cd",
+      [
+       null,
+       [
+        [
+         "/svg/struct/reftests/reference/green-100x100.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "view-transform-viewBox.html": [
+      "7b0bede3d129699b591a8e9c632ba1c890d03e9e",
+      [
+       null,
+       [
+        [
+         "/svg/struct/reftests/reference/green-100x100.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "viewBox-baseVal-change-invalid.html": [
+      "364b35b4e02594c42ef36539926ad509b0d24f45",
+      [
+       null,
+       [
+        [
+         "/svg/struct/reftests/reference/green-100x100.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "viewBox-change-repaint-001.html": [
       "2a90349754b366b0610626750d2790108ee1346d",
       [
@@ -219977,7 +220056,7 @@
      []
     ],
     "OWNERS": [
-     "e401db692c6dbb25349aa94c91b859e379867fca",
+     "1fd89e0e2ebb6aebe646c96e7f3b6462d3aa2f16",
      []
     ],
     "battery-allowed-by-feature-policy-attribute-redirect-on-load.https.sub-expected.txt": [
@@ -220028,10 +220107,6 @@
     ],
     "OWNERS": [
      "c82b6c02247630966ddd2c05b0db1c9321350d20",
-     []
-    ],
-    "beacon-basic.https.window-expected.txt": [
-     "05875121a70c56c891cb0a135166b30a71db2934",
      []
     ],
     "beacon-common.sub.js": [
@@ -234759,6 +234834,10 @@
      ],
      "element-replacement-alt-ref.html": [
       "ef8a6f3953c239733026c92541789ca5b942178b",
+      []
+     ],
+     "element-replacement-image-no-src-ref.html": [
+      "b9ba2e92d711bdc26544c967445ddb95a71adb7d",
       []
      ],
      "element-replacement-on-replaced-element-ref.html": [
@@ -266862,12 +266941,6 @@
       []
      ]
     },
-    "form-associated": {
-     "ElementInternals-validation-expected.txt": [
-      "507b7ed6b64fc651c9611556849361ce1c9429d8",
-      []
-     ]
-    },
     "htmlconstructor": {
      "newtarget-expected.txt": [
       "b460d6247f7b297e509aa09315872f3ca86b32af",
@@ -268468,7 +268541,7 @@
     ],
     "include": {
      "editor-test-utils.js": [
-      "9ce5ff12226783a4147c2b344962c5a6def26727",
+      "430de2decf75986ea2147036896246ae82eaaeed",
       []
      ],
      "implementation.js": [
@@ -269850,19 +269923,19 @@
     ],
     "streams": {
      "decode-utf8.any-expected.txt": [
-      "aefdffd869cc47395de1f3326579c25990dcb7f5",
+      "3cc5ae5f73c44dd481fa9942876538fc807aa79a",
       []
      ],
      "decode-utf8.any.serviceworker-expected.txt": [
-      "aefdffd869cc47395de1f3326579c25990dcb7f5",
+      "3cc5ae5f73c44dd481fa9942876538fc807aa79a",
       []
      ],
      "decode-utf8.any.sharedworker-expected.txt": [
-      "aefdffd869cc47395de1f3326579c25990dcb7f5",
+      "3cc5ae5f73c44dd481fa9942876538fc807aa79a",
       []
      ],
      "decode-utf8.any.worker-expected.txt": [
-      "aefdffd869cc47395de1f3326579c25990dcb7f5",
+      "3cc5ae5f73c44dd481fa9942876538fc807aa79a",
       []
      ],
      "resources": {
@@ -269892,28 +269965,20 @@
      "03a5b6426d65a1a020e58b7c21d30f8f1ce1c395",
      []
     ],
-    "textdecoder-eof.any-expected.txt": [
-     "dcf5a01d3526802606d5831e23d5f8da612cbfdf",
-     []
-    ],
-    "textdecoder-eof.any.worker-expected.txt": [
-     "dcf5a01d3526802606d5831e23d5f8da612cbfdf",
-     []
-    ],
     "textdecoder-streaming.any-expected.txt": [
-     "cf065370af6b02fa26542c4f7c2b59908d4a1a3a",
+     "cfc46d4fc9fb1b1ba263ec710ebe18c99cd09e12",
      []
     ],
     "textdecoder-streaming.any.serviceworker-expected.txt": [
-     "cf065370af6b02fa26542c4f7c2b59908d4a1a3a",
+     "cfc46d4fc9fb1b1ba263ec710ebe18c99cd09e12",
      []
     ],
     "textdecoder-streaming.any.sharedworker-expected.txt": [
-     "cf065370af6b02fa26542c4f7c2b59908d4a1a3a",
+     "cfc46d4fc9fb1b1ba263ec710ebe18c99cd09e12",
      []
     ],
     "textdecoder-streaming.any.worker-expected.txt": [
-     "cf065370af6b02fa26542c4f7c2b59908d4a1a3a",
+     "cfc46d4fc9fb1b1ba263ec710ebe18c99cd09e12",
      []
     ]
    },
@@ -274057,7 +274122,7 @@
      []
     ],
     "OWNERS": [
-     "e401db692c6dbb25349aa94c91b859e379867fca",
+     "827d3b758d36ddb0acef43595180a846fbd07e5c",
      []
     ],
     "README.md": [
@@ -279214,11 +279279,11 @@
       []
      ],
      "idlharness.https_exclude=(Document_Window_HTML._)-expected.txt": [
-      "28ef8e21a9106ce9e4013d6f7f27cedb3e22558a",
+      "7cee8f337b41bf37f811267cd7fd633b7366e5e6",
       []
      ],
      "idlharness.https_include=(Document_Window)-expected.txt": [
-      "74c9fb45c058e77f30bec55c71e37f50fca07588",
+      "af268e206b35bc08464bccb0b254b6821ef9b15f",
       []
      ],
      "idlharness.https_include=HTML._-expected.txt": [
@@ -279226,7 +279291,7 @@
       []
      ],
      "idlharness.worker-expected.txt": [
-      "304734de6f90c662af44afa55f615a66072035fb",
+      "457f52cc4af2e227c0513b95632027609ec0a71d",
       []
      ],
      "new-harness.js": [
@@ -289409,12 +289474,8 @@
        }
       },
       "events": {
-       "event-handler-all-global-events-expected.txt": [
-        "9421184577b9696dea9e04160b7329da2a72c494",
-        []
-       ],
        "event-handler-attributes-body-window-expected.txt": [
-        "b272ecb9498731e7a3ff166339fc4151067a383a",
+        "d8aaab49d8572484af141e2238d801ade4b9f4ae",
         []
        ],
        "event-handler-attributes-frameset-window-expected.txt": [
@@ -289645,7 +289706,7 @@
      },
      "update-rendering": {
       "child-document-raf-order-expected.txt": [
-       "29fda633b47882ad97a57f0fc04fa51a48773572",
+       "f9ba495c5a66c946d32656087abe29b6b7e83097",
        []
       ]
      },
@@ -292102,7 +292163,7 @@
     ]
    },
    "lint.ignore": [
-    "8bb28d6190f38939808ecee9b3e7ca0538aec769",
+    "24a19b9193cd50441cc2a7e6346db25423977fc2",
     []
    ],
    "loading": {
@@ -292856,10 +292917,6 @@
       ],
       "integration-point-3-ref.html": [
        "8362ed28e359dbffb39d2bbdc61c5703961e4e0f",
-       []
-      ],
-      "math-global-event-handlers.tentative-expected.txt": [
-       "eb3646124f22386b850ed304b32f9f7a25ff5264",
        []
       ],
       "required-extensions-2-ref.html": [
@@ -294625,7 +294682,7 @@
      []
     ],
     "OWNERS": [
-     "ff41043f52967655a18f72f3465d83ad8433ec31",
+     "0a092c94bbebc3a2d1358c4add3b4ff41b9ef4cd",
      []
     ],
     "README.md": [
@@ -298811,13 +298868,21 @@
       "6e5919de39a312330fd1abf64237c4b6ad10c56b",
       []
      ],
+     "build.sh": [
+      "a631268224f84233962ca3748d631c55e8afb383",
+      []
+     ],
      "lib": {
       "README.md": [
-       "af0af3a902f2f3a01aba4cfd494f1443440888c7",
+       "1bd583269d2929a16b1c7ad0c58fab6e99b72a10",
+       []
+      ],
+      "VERSION.md": [
+       "10bdc008209a91851a68613f95eb932444ad903d",
        []
       ],
       "webidl2.js": [
-       "322f0e11a6ae56eb65a1e57482ff520b0657dcd6",
+       "2861354e47da9bf300ba50ded531e52472e71b7b",
        []
       ],
       "webidl2.js.headers": [
@@ -299200,12 +299265,16 @@
      "51ace4ed85da9ac55547fffc751f7fa28b23b265",
      []
     ],
+    "authentication-cannot-bypass-spc.https-expected.txt": [
+     "678ec614bfdf61f6f7ca7bd2e0b5df646bad68e4",
+     []
+    ],
     "authentication-cross-origin.sub.https-expected.txt": [
      "eb082bd3bcaf059fd7c341dcef621008815f424e",
      []
     ],
     "authentication-icon-data-url.https-expected.txt": [
-     "51ace4ed85da9ac55547fffc751f7fa28b23b265",
+     "25f1ffed6b6140ee267f46e71dbcc29ec0d4d1f9",
      []
     ],
     "authentication-in-iframe.sub.https-expected.txt": [
@@ -303200,6 +303269,10 @@
       ],
       "viewBox-scaling-text-001-ref.html": [
        "effaba5fc4aeceb2249b8a843873ef53860e4ba7",
+       []
+      ],
+      "views.svg": [
+       "93f801a4f8da06b61f497ea8152de59646e57b72",
        []
       ]
      }
@@ -387580,7 +387653,7 @@
      ]
     ],
     "textdecoder-eof.any.js": [
-     "85d60ebd3b6a7d8f7bdbd8ce5dce426a6ef889ae",
+     "e41e326aace2440f9f46969bbce6d82c1e582507",
      [
       "encoding/textdecoder-eof.any.html",
       {}
@@ -388608,7 +388681,7 @@
      ]
     ],
     "textdecoder-streaming.any.js": [
-     "5717c2dbe00a2a557222cdf9d942de20ed9b6332",
+     "e473a7056e24d3dbc4383bb904f14e99e559d2f2",
      [
       "encoding/textdecoder-streaming.any.html",
       {
@@ -481819,8 +481892,17 @@
       }
      ]
     ],
+    "authentication-cannot-bypass-spc.https.html": [
+     "3ba61081a227c54843a321815f4d233ee925d099",
+     [
+      null,
+      {
+       "testdriver": true
+      }
+     ]
+    ],
     "authentication-cross-origin.sub.https.html": [
-     "ed1db0d017a4d9421968e468e46b8093bffccb89",
+     "6237fe0e5bf99033c47e100001f5e17641bca8c4",
      [
       null,
       {
@@ -481829,7 +481911,7 @@
      ]
     ],
     "authentication-icon-data-url.https.html": [
-     "7a2bc357b8663766ef224c061a7671a46ade6a22",
+     "bdc1bd938de828ccb5d3bc11bb33c58b353ced8a",
      [
       null,
       {
@@ -481874,7 +481956,7 @@
      ]
     ],
     "enrollment-in-iframe.sub.https.html": [
-     "bc1e18434100890229d6f427d58ef3417bf5487a",
+     "0efc9eb80b3dd4ac63a0906a98aa22bc2e0f16d1",
      [
       null,
       {
@@ -481883,7 +481965,7 @@
      ]
     ],
     "enrollment.https.html": [
-     "ab553d4a7905926ffa4853ccf0a94dcae238f786",
+     "d9e86918afb30880046e234d90946c6da4ff39f2",
      [
       null,
       {
