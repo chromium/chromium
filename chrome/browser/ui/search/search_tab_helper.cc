@@ -246,8 +246,10 @@ void SearchTabHelper::TitleWasSet(content::NavigationEntry* entry) {
 
 void SearchTabHelper::DidFinishLoad(content::RenderFrameHost* render_frame_host,
                                     const GURL& /* validated_url */) {
-  if (!render_frame_host->GetParent() && search::IsInstantNTP(web_contents()))
+  if (render_frame_host->IsInPrimaryMainFrame() &&
+      search::IsInstantNTP(web_contents())) {
     RecordNewTabLoadTime(web_contents());
+  }
 }
 
 void SearchTabHelper::NavigationEntryCommitted(
