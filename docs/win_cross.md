@@ -56,8 +56,8 @@ section.
 
 ### If you're not at Google
 
-You can package your Windows SDK installation into a zip file by running the
-following on a Windows machine:
+After installing [Microsoft's development tools](windows_build_instructions.md#visual-studio),
+you can package your Windows SDK installation into a zip file by running the following on a Windows machine:
 
     cd path/to/depot_tools/win_toolchain
     # customize the Windows SDK version numbers

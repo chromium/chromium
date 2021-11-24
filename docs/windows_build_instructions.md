@@ -23,8 +23,9 @@ Are you a Google employee? See
 
 ### Visual Studio
 
-Chromium requires Visual Studio 2017 (>=15.7.2) to build, but VS2019 (>=16.0.0)
-is preferred. Visual Studio can also be used to debug Chromium, and VS2019 is
+Chromium requires [Visual Studio 2017](https://docs.microsoft.com/en-us/visualstudio/releasenotes/vs2017-relnotes) (>=15.7.2)
+to build, but [Visual Studio 2019](https://docs.microsoft.com/en-us/visualstudio/releases/2019/release-notes) (>=16.0.0)
+is preferred. Visual Studio can also be used to debug Chromium, and version 2019 is
 preferred for this as it handles Chromium's large debug information much better.
 The clang-cl compiler is used but Visual Studio's header files, libraries, and
 some tools are required. Visual Studio Community Edition should work if its
@@ -50,7 +51,8 @@ $ PATH_TO_INSTALLER.EXE ^
 --includeRecommended
 ```
 
-You must have the version 10.0.19041 or higher Windows 10 SDK installed. This
+-You must have the version 10.0.19041 or higher [Windows 10 SDK](https://developer.microsoft.com/en-us/windows/downloads/sdk-archive/)
+installed. This
 can be installed separately or by checking the appropriate box in the Visual
 Studio Installer.
 
