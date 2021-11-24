@@ -62,17 +62,25 @@ def _MaybeDecompress(payload, brotli_path=None):
   if payload.startswith(constants.BROTLI_CONST):
     shell = brotli_path is None
     brotli_path = brotli_path or 'brotli'
-    # Size is 6 bytes. We don't need it, so skip it.
+    # Header is 2 bytes, size is 6 bytes.
+    payload = payload[8:]
     try:
       result = subprocess.run([brotli_path, '--decompress', '--stdout'],
                               shell=shell,
-                              input=payload[8:],
+                              input=payload,
                               stdout=subprocess.PIPE,
                               check=True)
+      # I don't know why with "sudo apt-get install brotli", files come out 4
+      # bytes larger and the command doesn't fail.
+      if len(result.stdout) == len(payload) + 4:
+        sys.stderr.write('Brotli decompression failed. You likely need to use '
+                         'the version of brotli built by Chrome '
+                         '(out/Release/clang_x64/brotli).\n')
+        sys.exit(1)
+      return result.stdout
     except subprocess.CalledProcessError as e:
       sys.stderr.write(str(e) + '\n')
       sys.exit(1)
-    return result.stdout
   return payload
 
 
