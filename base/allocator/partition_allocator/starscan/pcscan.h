@@ -15,6 +15,10 @@
 #include "base/base_export.h"
 #include "base/compiler_specific.h"
 
+// Double free detection comes with expensive cmpxchg (with the loop around it).
+// We currently disable it to improve the runtime.
+#define PA_STARSCAN_EAGER_DOUBLE_FREE_DETECTION_ENABLED 0
+
 namespace base {
 
 class StatsReporter;
@@ -248,8 +252,13 @@ ALWAYS_INLINE void PCScan::MoveToQuarantine(void* ptr,
   // the clearing to avoid racing with *Scan Sweeper.
   const bool succeeded = state_bitmap->Quarantine(
       reinterpret_cast<uintptr_t>(ptr), instance.epoch());
+#if PA_STARSCAN_EAGER_DOUBLE_FREE_DETECTION_ENABLED
   if (UNLIKELY(!succeeded))
     DoubleFreeAttempt();
+#else
+  // The compiler is able to optimize cmpxchg to a lock-prefixed and.
+  (void)succeeded;
+#endif
 
   const bool is_limit_reached = instance.scheduler_.AccountFreed(slot_size);
   if (UNLIKELY(is_limit_reached)) {
