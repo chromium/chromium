@@ -1082,14 +1082,7 @@ class ErrorPageOfflineAppLaunchTest
       : web_app::SystemWebAppBrowserTestBase(true) {}
 };
 
-// TODO(https://crbug.com/1267299): Re-enable.
-#if defined(ADDRESS_SANITIZER) | defined(OS_CHROMEOS)
-#define MAYBE_DiagnosticsConnectivity DISABLED_DiagnosticsConnectivity
-#else
-#define MAYBE_DiagnosticsConnectivity DiagnosticsConnectivity
-#endif
-IN_PROC_BROWSER_TEST_F(ErrorPageOfflineAppLaunchTest,
-                       MAYBE_DiagnosticsConnectivity) {
+IN_PROC_BROWSER_TEST_F(ErrorPageOfflineAppLaunchTest, DiagnosticsConnectivity) {
   WaitForTestSystemAppInstall();
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(),

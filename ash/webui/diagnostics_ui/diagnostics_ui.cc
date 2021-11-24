@@ -60,8 +60,9 @@ diagnostics::metrics::NavigationView GetInitialView(const GURL url) {
 
   // Note: Valid query strings map to strings in the GetUrlForPage located in
   // chrome/browser/ui/webui/chromeos/diagnostics_dialog.cc.
-  const base::StringPiece query =
-      base::TrimString(url.query(), " \t", base::TRIM_ALL);
+  const std::string& original_query = url.query();  // must outlive |query|.
+  const base::StringPiece& query =
+      base::TrimString(original_query, " \t", base::TRIM_ALL);
 
   if (base::EqualsCaseInsensitiveASCII(query, "system")) {
     return diagnostics::metrics::NavigationView::kSystem;
