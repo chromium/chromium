@@ -5440,9 +5440,6 @@ crbug.com/1033852 [ Win7 ] virtual/plz-dedicated-worker/external/wpt/fetch/api/i
 crbug.com/1034374 http/tests/devtools/tracing/timeline-worker-events.js [ Failure Pass ]
 crbug.com/1034513 [ Win7 ] virtual/stable/fast/dom/Window/window-resize-contents.html [ Failure Pass ]
 
-# Assertion errors need to be fixed
-crbug.com/1034492 http/tests/devtools/unit/filtered-list-widget-providers.js [ Failure Pass ]
-
 # Sheriff 2019-12-23
 crbug.com/1036626 http/tests/devtools/tracing/tracing-record-input-events.js [ Failure Pass ]
 
