@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import json
 import logging
 import os
 import subprocess
@@ -80,8 +81,10 @@ class Driver:
       scenario_config: A dictionary describing the scenario.
     """
 
+    self.WriteScenarioSummary(scenario_driver)
+
     output_file = \
-        f'./{self._output_dir}/{scenario_driver.name}_powermetrics.plist'
+        f'{self._output_dir}/{scenario_driver.name}_powermetrics.plist'
 
     try:
       scenario_driver.Launch()
@@ -127,6 +130,11 @@ class Driver:
     if scenario_driver.browser.process_name != "Chromium":
       raise ValueError("Only Chromium can be profiled! Skipping.")
 
+    self.WriteScenarioSummary(scenario_driver)
+
+    dtraces_output_dir = os.path.join(
+        self._output_dir, f"{scenario_driver.name}_dtraces_{profile_mode}")
+    os.makedirs(dtraces_output_dir, exist_ok=True)
     scenario_driver.Launch()
     browser_process = scenario_driver.browser.browser_process
 
@@ -137,7 +145,10 @@ class Driver:
     pid_to_subprocess: typing.Dict[str, subprocess.Popen] = {}
 
     try:
-      with open('./dtrace_log.txt', "w") as dtrace_log:
+      with open(
+          os.path.join(self._output_dir,
+                       f'{scenario_driver.name}_dtrace_{profile_mode}_log.txt'),
+          "w") as dtrace_log:
         # Keep looking for child processes as long as the scenario is running.
         while scenario_driver.IsRunning():
 
@@ -152,14 +163,14 @@ class Driver:
             if profile_mode == "wakeups":
               probe_def = \
                 f"mach_kernel::wakeup/pid == {pid}/ " \
-                "{{ @[ustack(32)] = count(); }}"
+                "{{ @[ustack(64)] = count(); }}"
             else:
               probe_def = \
-                f"profile-1001/pid == {pid}/ {{ @[ustack(32)] = count(); }}"
-
+                f"profile-1001/pid == {pid}/ {{ @[ustack(64)] = count(); }}"
+            output_filename = os.path.join(dtraces_output_dir, f"{pid}.txt")
             dtrace_args = [
-                'sudo', 'dtrace', '-p', f"{pid}", "-o",
-                f"{self._output_dir}/{pid}.txt", '-n', probe_def
+                'sudo', 'dtrace', '-p', f"{pid}", "-o", output_filename, '-n',
+                probe_def
             ]
 
             if pid not in pid_to_subprocess:
@@ -180,3 +191,13 @@ class Driver:
       for pid, dtrace_process in pid_to_subprocess.items():
         logging.info(f"Waiting for dtrace hooked on {pid} to exit")
         dtrace_process.wait(30)
+
+  def WriteScenarioSummary(
+      self, scenario_driver: scenarios.ScenarioWithBrowserOSADriver):
+    """Outputs a json file describing `scenario_driver` arguments into the
+        output directory
+    """
+    with open(
+        os.path.join(self._output_dir, f'{scenario_driver.name}_summary.json'),
+        'w') as summary_file:
+      json.dump(scenario_driver.Summary(), summary_file, indent=2)

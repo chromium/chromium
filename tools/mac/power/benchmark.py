@@ -8,6 +8,7 @@ import argparse
 import logging
 import typing
 import os
+import datetime
 
 from driver import Driver
 import scenarios
@@ -31,10 +32,7 @@ def IterScenarios(
 
 def main():
   parser = argparse.ArgumentParser(description='Runs browser power benchmarks')
-  parser.add_argument("--output_dir",
-                      help="Output dir",
-                      action='store_true',
-                      default="output")
+  parser.add_argument("--output_dir", help="Output dir", action='store_true')
   parser.add_argument('--no-checks',
                       dest='no_checks',
                       action='store_true',
@@ -81,8 +79,13 @@ def main():
     log_level = logging.WARNING
   logging.basicConfig(format='%(levelname)s: %(message)s', level=log_level)
 
-  logging.info(f'Outputing results in {os.path.abspath(args.output_dir)}')
-  driver = Driver(args.output_dir)
+  output_dir = args.output_dir
+  if not output_dir:
+    output_dir = os.path.join("output",
+                              datetime.datetime.now().strftime("%Y%m%d-%H%M%S"))
+
+  logging.info(f'Outputing results in {os.path.abspath(output_dir)}')
+  driver = Driver(output_dir)
   driver.CheckEnv(not args.no_checks)
 
   # Measure or Profile all defined scenarios.

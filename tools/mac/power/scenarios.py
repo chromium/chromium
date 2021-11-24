@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import abc
 import subprocess
 import jinja2
 import tempfile
@@ -22,7 +23,7 @@ def GetTemplateFileForBrowser(browser_driver: browsers.BrowserDriver,
     return template_file
 
 
-class ScenarioOSADriver:
+class ScenarioOSADriver(abc.ABC):
   """Base Class encapsulating OSA script driving a scenario, with setup and tear
      down.
   """
@@ -53,12 +54,18 @@ class ScenarioOSADriver:
       utils.TerminateProcess(self.script_process)
     self.osa_script.close()
 
+  @abc.abstractmethod
+  def Summary(self):
+    """Returns a dictionary describing the scenarios parameters.
+    """
+    pass
+
   def IsRunning(self) -> bool:
     """Returns true if the script is currently running.
     """
     return self.script_process.poll() is None
 
-  def _CompileTemplate(self, template_file: str, extra_args: typing.List[str]):
+  def _CompileTemplate(self, template_file: str, extra_args: typing.Dict):
     """Compiles script `template_file`, feeding `extra_args` into a temporary
        file.
     """
@@ -69,6 +76,12 @@ class ScenarioOSADriver:
     self.osa_script = tempfile.NamedTemporaryFile('w+t')
     self.osa_script.write(template.render(**extra_args))
     self.osa_script.flush()
+    self._args = extra_args
+
+  def Summary(self):
+    """Returns a dictionary describing the scenarios parameters.
+    """
+    return {'name': self.name, **self._args}
 
 
 class ScenarioWithBrowserOSADriver(ScenarioOSADriver):
@@ -87,7 +100,7 @@ class ScenarioWithBrowserOSADriver(ScenarioOSADriver):
     super().TearDown()
     self.browser.TearDown()
 
-  def _CompileTemplate(self, template_file, extra_args):
+  def _CompileTemplate(self, template_file, extra_args: typing.Dict):
     return super()._CompileTemplate(template_file, {
         "browser": self.browser.process_name,
         **extra_args
@@ -103,6 +116,7 @@ class IdleScenario(ScenarioOSADriver):
     self._CompileTemplate("idle", {
         "delay": duration.total_seconds(),
     })
+
 
 
 class IdleOnSiteScenario(ScenarioWithBrowserOSADriver):
