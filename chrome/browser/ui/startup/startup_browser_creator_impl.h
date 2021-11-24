@@ -212,6 +212,11 @@ class StartupBrowserCreatorImpl {
   // it from `command_line_`.
   static bool IsAutomationEnabled();
 
+  // Returns whether `switches::kKioskMode` is set on the command line of
+  // the current process. This is a static method to avoid accidentally reading
+  // it from `command_line_`.
+  static bool IsKioskModeEnabled();
+
   const base::FilePath cur_dir_;
   const base::CommandLine& command_line_;
   Profile* profile_ = nullptr;

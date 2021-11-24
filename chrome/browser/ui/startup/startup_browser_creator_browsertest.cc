@@ -3446,8 +3446,14 @@ class StartupBrowserCreatorInfobarsKioskTest : public InProcessBrowserTest {
   LaunchKioskBrowserAndGetCreatedInfoBarManager(
       const std::string& extra_switch) {
     Profile* profile = browser()->profile();
+
+    // CommandLine::ForCurrentProcess is used to determine whether kiosk mode is
+    // enabled instead of the command-line passed to StartupBrowserCreator. In
+    // browser tests, this references the browser test's instead of the new
+    // process.
+    base::CommandLine::ForCurrentProcess()->AppendSwitch(switches::kKioskMode);
+
     base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
-    command_line.AppendSwitch(switches::kKioskMode);
     command_line.AppendSwitch(extra_switch);
     StartupBrowserCreatorImpl launch(base::FilePath(), command_line,
                                      chrome::startup::IsFirstRun::kNo);
@@ -3503,11 +3509,8 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorInfobarsKioskTest,
           switches::kDisableWebSecurity);
   ASSERT_TRUE(infobar_manager);
 
-  for (size_t i = 0; i < infobar_manager->infobar_count(); i++) {
-    infobars::InfoBar* infobar = infobar_manager->infobar_at(i);
-    EXPECT_NE(infobars::InfoBarDelegate::BAD_FLAGS_INFOBAR_DELEGATE,
-              infobar->delegate()->GetIdentifier());
-  }
+  EXPECT_FALSE(HasInfoBar(
+      infobar_manager, infobars::InfoBarDelegate::BAD_FLAGS_INFOBAR_DELEGATE));
 }
 
 // Checks the correct behavior of the profile picker on startup.

@@ -185,9 +185,8 @@ StartupBrowserCreatorImpl::StartupBrowserCreatorImpl(
 // static
 void StartupBrowserCreatorImpl::MaybeToggleFullscreen(Browser* browser) {
   // In kiosk mode, we want to always be fullscreen.
-  if (base::CommandLine::ForCurrentProcess()->HasSwitch(switches::kKioskMode) ||
-      base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kStartFullscreen)) {
+  if (IsKioskModeEnabled() || base::CommandLine::ForCurrentProcess()->HasSwitch(
+                                  switches::kStartFullscreen)) {
     chrome::ToggleFullscreenMode(browser);
   }
 }
@@ -654,7 +653,7 @@ void StartupBrowserCreatorImpl::AddInfoBarsIfNecessary(
 
   // Do not show any other info bars in Kiosk mode, because it's unlikely that
   // the viewer can act upon or dismiss them.
-  if (command_line_.HasSwitch(switches::kKioskMode))
+  if (IsKioskModeEnabled())
     return;
 
   if (HasPendingUncleanExit(browser->profile()))
@@ -775,4 +774,10 @@ bool StartupBrowserCreatorImpl::ShouldLaunch(
 bool StartupBrowserCreatorImpl::IsAutomationEnabled() {
   return base::CommandLine::ForCurrentProcess()->HasSwitch(
       switches::kEnableAutomation);
+}
+
+// static
+bool StartupBrowserCreatorImpl::IsKioskModeEnabled() {
+  return base::CommandLine::ForCurrentProcess()->HasSwitch(
+      switches::kKioskMode);
 }
