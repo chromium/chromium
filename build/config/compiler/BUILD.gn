@@ -1601,7 +1601,7 @@ config("chromium_code") {
 
     # TODO(thakis): Enable this more often, https://crbug.com/346399
     # use_libfuzzer: https://crbug.com/1063180
-    if (!is_nacl && !use_libfuzzer) {
+    if ((!is_nacl || is_nacl_saigo) && !use_libfuzzer) {
       cflags += [ "-Wunreachable-code-aggressive" ]
     }
 
@@ -1691,7 +1691,7 @@ config("no_chromium_code") {
 config("noshadowing") {
   # This flag has to be disabled for nacl because the nacl compiler is too
   # strict about shadowing.
-  if (is_clang && !is_nacl) {
+  if (is_clang && (!is_nacl || is_nacl_saigo)) {
     cflags = [ "-Wshadow" ]
   }
 }
