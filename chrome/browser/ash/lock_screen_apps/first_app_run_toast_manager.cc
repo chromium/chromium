@@ -81,9 +81,7 @@ void FirstAppRunToastManager::RunForAppWindow(
   const base::DictionaryValue* toast_shown =
       profile_->GetPrefs()->GetDictionary(
           prefs::kNoteTakingAppsLockScreenToastShown);
-  bool already_shown_for_app = false;
-  if (toast_shown->GetBoolean(app->id(), &already_shown_for_app) &&
-      already_shown_for_app) {
+  if (toast_shown->FindBoolPath(app->id()).value_or(false)) {
     return;
   }
 
