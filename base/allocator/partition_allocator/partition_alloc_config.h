@@ -65,6 +65,8 @@ static_assert(sizeof(void*) != 8, "");
 // - On Linux, futex(2)
 // - On Windows, a fast userspace "try" operation which is available
 //   with SRWLock
+// - On Fuchsia, "sync_mutex" from the Zircon "mutex" library.
+//   TODO(crbug.com/1271359): Tune for performance.
 // - Otherwise, a fast userspace pthread_mutex_trylock().
 //
 // On macOS, pthread_mutex_trylock() is fast by default starting with macOS
