@@ -15,6 +15,7 @@
 #include "base/task/common/checked_lock.h"
 #include "base/task/task_features.h"
 #include "base/task/thread_pool/pooled_task_runner_delegate.h"
+#include "base/template_util.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/time/time.h"
 #include "base/time/time_override.h"
@@ -29,8 +30,8 @@ namespace {
 constexpr size_t kMaxWorkersPerJob = 32;
 static_assert(
     kMaxWorkersPerJob <=
-        std::numeric_limits<std::result_of<
-            decltype (&JobDelegate::GetTaskId)(JobDelegate)>::type>::max(),
+        std::numeric_limits<base::invoke_result<
+            decltype (&JobDelegate::GetTaskId), JobDelegate>::type>::max(),
     "AcquireTaskId return type isn't big enough to fit kMaxWorkersPerJob");
 
 }  // namespace
