@@ -132,12 +132,12 @@ void CheckReportCertificateChain(
     const base::ListValue& chain) {
   std::vector<std::string> pem_encoded_chain;
   expected_cert->GetPEMEncodedChain(&pem_encoded_chain);
-  ASSERT_EQ(pem_encoded_chain.size(), chain.GetList().size());
+  base::Value::ConstListView chain_list = chain.GetList();
+  ASSERT_EQ(pem_encoded_chain.size(), chain_list.size());
 
   for (size_t i = 0; i < pem_encoded_chain.size(); i++) {
-    std::string cert_pem;
-    ASSERT_TRUE(chain.GetString(i, &cert_pem));
-    EXPECT_EQ(pem_encoded_chain[i], cert_pem);
+    ASSERT_TRUE(chain_list[i].is_string());
+    EXPECT_EQ(pem_encoded_chain[i], chain_list[i].GetString());
   }
 }
 

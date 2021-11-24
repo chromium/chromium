@@ -121,27 +121,30 @@ bool ReadCRL(base::StringPiece* data,
 }
 
 // CopyHashListFromHeader parses a list of base64-encoded, SHA-256 hashes from
-// the given |key| in |header_dict| and sets |*out| to the decoded values. It's
-// not an error if |key| is not found in |header_dict|.
+// the given |key| (without path expansion) in |header_dict| and sets |*out|
+// to the decoded values. It's not an error if |key| is not found in
+// |header_dict|.
 bool CopyHashListFromHeader(base::DictionaryValue* header_dict,
                             const char* key,
                             std::vector<std::string>* out) {
-  base::ListValue* list = nullptr;
-  if (!header_dict->GetList(key, &list)) {
+  const base::Value* list = header_dict->FindListKey(key);
+  if (!list) {
     // Hash lists are optional so it's not an error if not present.
     return true;
   }
+  base::Value::ConstListView list_view = list->GetList();
 
   out->clear();
-  out->reserve(list->GetList().size());
+  out->reserve(list_view.size());
 
   std::string sha256_base64;
 
-  for (size_t i = 0; i < list->GetList().size(); ++i) {
+  for (const base::Value& i : list_view) {
     sha256_base64.clear();
 
-    if (!list->GetString(i, &sha256_base64))
+    if (!i.is_string())
       return false;
+    sha256_base64 = i.GetString();
 
     out->push_back(std::string());
     if (!base::Base64Decode(sha256_base64, &out->back())) {

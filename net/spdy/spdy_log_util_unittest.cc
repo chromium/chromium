@@ -113,14 +113,14 @@ TEST(SpdyLogUtilTest, ElideHttp2HeaderBlockForNetLogWithNonUTF8Characters) {
   base::ListValue list =
       ElideHttp2HeaderBlockForNetLog(headers, NetLogCaptureMode::kDefault);
 
-  ASSERT_EQ(3u, list.GetList().size());
-  std::string field;
-  EXPECT_TRUE(list.GetString(0, &field));
-  EXPECT_EQ("%ESCAPED:\xE2\x80\x8B foo: bar%81", field);
-  EXPECT_TRUE(list.GetString(1, &field));
-  EXPECT_EQ("%ESCAPED:\xE2\x80\x8B O%E2: bar", field);
-  EXPECT_TRUE(list.GetString(2, &field));
-  EXPECT_EQ("%ESCAPED:\xE2\x80\x8B %DE%AD: %BE%EF", field);
+  base::Value::ConstListView list_view = list.GetList();
+  ASSERT_EQ(3u, list_view.size());
+  ASSERT_TRUE(list_view[0].is_string());
+  EXPECT_EQ("%ESCAPED:\xE2\x80\x8B foo: bar%81", list_view[0].GetString());
+  ASSERT_TRUE(list_view[1].is_string());
+  EXPECT_EQ("%ESCAPED:\xE2\x80\x8B O%E2: bar", list_view[1].GetString());
+  ASSERT_TRUE(list_view[2].is_string());
+  EXPECT_EQ("%ESCAPED:\xE2\x80\x8B %DE%AD: %BE%EF", list_view[2].GetString());
 }
 
 }  // namespace net
