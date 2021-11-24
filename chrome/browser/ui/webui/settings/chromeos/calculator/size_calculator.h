@@ -103,7 +103,7 @@ class TotalDiskSpaceCalculator : public SizeCalculator {
 
   void GetRootDeviceSize();
 
-  void OnGetRootDeviceSize(absl::optional<uint64_t> reply);
+  void OnGetRootDeviceSize(absl::optional<int64_t> reply);
 
   void GetTotalDiskSpace();
 

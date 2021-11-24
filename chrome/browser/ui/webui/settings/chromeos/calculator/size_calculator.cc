@@ -103,9 +103,9 @@ void TotalDiskSpaceCalculator::GetRootDeviceSize() {
 }
 
 void TotalDiskSpaceCalculator::OnGetRootDeviceSize(
-    absl::optional<uint64_t> reply) {
+    absl::optional<int64_t> reply) {
   if (reply.has_value()) {
-    NotifySizeCalculated(static_cast<int64_t>(reply.value()));
+    NotifySizeCalculated(reply.value());
     return;
   }
 
