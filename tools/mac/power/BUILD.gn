@@ -9,6 +9,7 @@
 
 import("//build/config/mac/mac_sdk.gni")
 import("//testing/test.gni")
+import("//third_party/protobuf/proto_library.gni")
 
 # This file should only be included for macOS.
 assert(is_mac)
@@ -89,4 +90,8 @@ test("power_sampler_unittests") {
     "//testing/gmock",
     "//testing/gtest",
   ]
+}
+
+proto_library("proto") {
+  sources = [ "protos/third_party/pprof/src/profile.proto" ]
 }
