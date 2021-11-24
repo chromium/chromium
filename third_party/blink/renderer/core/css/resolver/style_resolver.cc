@@ -1630,7 +1630,6 @@ FilterOperations StyleResolver::ComputeFilterOperations(
   scoped_refptr<ComputedStyle> parent = CreateComputedStyle();
   parent->SetFont(font);
 
-  // TODO(crbug.com/1145970): Use actual StyleRecalcContext.
   StyleResolverState state(GetDocument(), *element, StyleRecalcContext(),
                            StyleRequest(parent.get()));
 
