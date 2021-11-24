@@ -50,6 +50,7 @@ bool ProcessSnapshotMac::Initialize(task_t task) {
     return false;
   }
 
+  client_id_.InitializeToZero();
   system_.Initialize(&process_reader_, &snapshot_time_);
 
   InitializeThreads();

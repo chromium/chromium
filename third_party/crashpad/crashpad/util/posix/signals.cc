@@ -22,10 +22,6 @@
 #include "base/cxx17_backports.h"
 #include "base/logging.h"
 
-#if defined(OS_LINUX) || defined(OS_ANDROID) || defined(OS_CHROMEOS)
-#include <sys/syscall.h>
-#endif
-
 namespace crashpad {
 
 namespace {
@@ -284,21 +280,6 @@ void Signals::RestoreHandlerAndReraiseSignalOnReturn(
     _exit(kFailureExitCode);
   }
 
-  // If we can raise a signal with siginfo on this platform, do so. This ensures
-  // that we preserve the siginfo information for asynchronous signals (i.e.
-  // signals that do not re-raise autonomously), such as signals delivered via
-  // kill() and asynchronous hardware faults such as SEGV_MTEAERR, which would
-  // otherwise be lost when re-raising the signal via raise().
-#if defined(OS_LINUX) || defined(OS_ANDROID) || defined(OS_CHROMEOS)
-  int retval = syscall(SYS_rt_tgsigqueueinfo,
-                       getpid(),
-                       syscall(SYS_gettid),
-                       siginfo->si_signo,
-                       siginfo);
-  if (retval != 0) {
-    _exit(kFailureExitCode);
-  }
-#else
   // Explicitly re-raise the signal if it will not re-raise itself. Because
   // signal handlers normally execute with their signal blocked, this raise()
   // cannot immediately deliver the signal. Delivery is deferred until the
@@ -308,7 +289,6 @@ void Signals::RestoreHandlerAndReraiseSignalOnReturn(
   if (!WillSignalReraiseAutonomously(siginfo) && raise(sig) != 0) {
     _exit(kFailureExitCode);
   }
-#endif  // defined(OS_LINUX) || defined(OS_ANDROID) || defined(OS_CHROMEOS)
 }
 
 // static

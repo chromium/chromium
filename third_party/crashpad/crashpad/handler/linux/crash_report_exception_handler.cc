@@ -184,13 +184,9 @@ bool CrashReportExceptionHandler::HandleExceptionWithConnection(
 
   UUID client_id;
   Settings* const settings = database_->GetSettings();
-  if (settings) {
-    // If GetSettings() or GetClientID() fails, something else will log a
-    // message and client_id will be left at its default value, all zeroes,
-    // which is appropriate.
-    settings->GetClientID(&client_id);
+  if (settings && settings->GetClientID(&client_id)) {
+    process_snapshot->SetClientID(client_id);
   }
-  process_snapshot->SetClientID(client_id);
 
   return write_minidump_to_database_
              ? WriteMinidumpToDatabase(process_snapshot.get(),

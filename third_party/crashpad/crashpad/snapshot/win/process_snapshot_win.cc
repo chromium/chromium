@@ -81,7 +81,7 @@ bool ProcessSnapshotWin::Initialize(
     }
   }
 
-
+  client_id_.InitializeToZero();
   system_.Initialize(&process_reader_);
 
   if (process_reader_.Is64Bit()) {

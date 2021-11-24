@@ -39,6 +39,7 @@ bool ProcessSnapshotLinux::Initialize(PtraceConnection* connection) {
     return false;
   }
 
+  client_id_.InitializeToZero();
   system_.Initialize(&process_reader_, &snapshot_time_);
 
   GetCrashpadOptionsInternal((&options_));
