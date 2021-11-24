@@ -3305,9 +3305,6 @@ void RenderFrameHostImpl::RendererDidActivateForPrerendering() {
 
 void RenderFrameHostImpl::SetCrossOriginOpenerPolicyReporter(
     std::unique_ptr<CrossOriginOpenerPolicyReporter> coop_reporter) {
-  // Set reporting source to current document's reporting source.
-  if (coop_reporter)
-    coop_reporter->set_reporting_source(GetReportingSource());
   coop_access_report_manager_.set_coop_reporter(std::move(coop_reporter));
 }
 
@@ -10507,9 +10504,12 @@ void RenderFrameHostImpl::TakeNewDocumentPropertiesFromNavigation(
   // It should be kept in sync with the check in
   // NavigationRequest::DidCommitNavigation.
   is_error_page_ = navigation_request->DidEncounterError();
-
-  SetCrossOriginOpenerPolicyReporter(
-      navigation_request->coop_status().TakeCoopReporter());
+  // Overwrite reporter's reporting source with rfh's reporting source.
+  std::unique_ptr<CrossOriginOpenerPolicyReporter> coop_reporter =
+      navigation_request->coop_status().TakeCoopReporter();
+  if (coop_reporter)
+    coop_reporter->set_reporting_source(GetReportingSource());
+  SetCrossOriginOpenerPolicyReporter(std::move(coop_reporter));
   virtual_browsing_context_group_ =
       navigation_request->coop_status().virtual_browsing_context_group();
   soap_by_default_virtual_browsing_context_group_ =
