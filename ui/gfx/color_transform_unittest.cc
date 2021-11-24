@@ -46,7 +46,6 @@ ColorSpace::TransferID simple_transfers[] = {
     ColorSpace::TransferID::IEC61966_2_1,
     ColorSpace::TransferID::BT2020_10,
     ColorSpace::TransferID::BT2020_12,
-    ColorSpace::TransferID::SMPTEST2084,
     ColorSpace::TransferID::IEC61966_2_1_HDR,
 };
 
@@ -942,6 +941,30 @@ TEST(ColorSpaceTest, HLGHDRToSDR) {
   ColorSpace dest_hdr_cs(ColorSpace::PrimaryID::BT709,
                          ColorSpace::TransferID::LINEAR_HDR);
   auto hdr_transform = ColorTransform::NewColorTransform(hlg_cs, dest_hdr_cs);
+
+  ColorTransform::TriStim hdr_val = {1, 1, 1};
+  hdr_transform->Transform(&hdr_val, 1);
+  EXPECT_NE(sdr_val, hdr_val);
+}
+
+TEST(ColorSpaceTest, PQHDRToSDR) {
+  ColorSpace pq_cs(ColorSpace::PrimaryID::BT709,
+                   ColorSpace::TransferID::SMPTEST2084);
+  ColorSpace dest_sdr_cs(ColorSpace::PrimaryID::BT709,
+                         ColorSpace::TransferID::LINEAR);
+
+  auto sdr_transform = ColorTransform::NewColorTransform(pq_cs, dest_sdr_cs);
+
+  // PQ conversion will produce values above 1 w/o intervention.
+  ColorTransform::TriStim sdr_val = {1, 1, 1};
+  sdr_transform->Transform(&sdr_val, 1);
+  EXPECT_FLOAT_EQ(sdr_val.x(), 1);
+  EXPECT_FLOAT_EQ(sdr_val.y(), 1);
+  EXPECT_FLOAT_EQ(sdr_val.z(), 1);
+
+  ColorSpace dest_hdr_cs(ColorSpace::PrimaryID::BT709,
+                         ColorSpace::TransferID::LINEAR_HDR);
+  auto hdr_transform = ColorTransform::NewColorTransform(pq_cs, dest_hdr_cs);
 
   ColorTransform::TriStim hdr_val = {1, 1, 1};
   hdr_transform->Transform(&hdr_val, 1);

@@ -2468,11 +2468,13 @@ half4 main(half4 color) {
 
     std::string shader = hdr + transform->GetSkShaderSource() + ftr;
 
-    effect = SkRuntimeEffect::MakeForColorFilter(
-                 SkString(shader.c_str(), shader.size()),
-                 /*options=*/{})
-                 .effect;
-    DCHECK(effect);
+    auto result = SkRuntimeEffect::MakeForColorFilter(
+        SkString(shader.c_str(), shader.size()),
+        /*options=*/{});
+    DCHECK(result.effect) << std::endl
+                          << result.errorText.c_str() << "\n\nShader Source:\n"
+                          << shader;
+    effect = result.effect;
   }
 
   YUVInput input;

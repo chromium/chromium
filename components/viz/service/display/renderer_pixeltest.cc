@@ -5130,6 +5130,12 @@ class ColorTransformPixelTest
       return;
     }
 
+    if (src_color_space_.GetTransferID() == TransferID::SMPTEST2084 &&
+        !dst_color_space_.IsHDR()) {
+      LOG(ERROR) << "Skipping tonemapped output";
+      return;
+    }
+
     gfx::Rect rect(this->device_viewport_size_);
     std::vector<uint8_t> input_colors(4 * rect.width() * rect.height(), 0);
     std::vector<SkColor> expected_output_colors(rect.width() * rect.height());
