@@ -82,8 +82,8 @@ class EVENTS_EXPORT EventTarget {
   // Adds a handler to receive events before the target. The handler must be
   // explicitly removed from the target before the handler is destroyed. The
   // EventTarget does not take ownership of the handler.
-  void AddPreTargetHandler(EventHandler* handler,
-                           Priority priority = Priority::kDefault);
+  void AddPreTargetHandler(EventHandler* handler);
+  void AddPreTargetHandler(EventHandler* handler, Priority priority);
   void RemovePreTargetHandler(EventHandler* handler);
 
   // Adds a handler to receive events after the target. The handler must be

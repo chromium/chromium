@@ -84,7 +84,7 @@ void ScreenshotFlow::CreateAndAddUIOverlay() {
   ui::Layer* content_layer = native_window->layer();
   const gfx::Rect bounds = native_window->bounds();
   // Capture mouse down and drag events on our window.
-  native_window->AddPreTargetHandler(this);
+  event_capture_.Observe(native_window);
 #endif
   content_layer->Add(screen_capture_layer_.get());
   content_layer->StackAtTop(screen_capture_layer_.get());
@@ -113,7 +113,7 @@ void ScreenshotFlow::RemoveUIOverlay() {
   event_capture_mac_.reset();
 #else
   const gfx::NativeWindow& native_window = web_contents_->GetNativeView();
-  native_window->RemovePreTargetHandler(this);
+  event_capture_.Reset();
   ui::Layer* content_layer = native_window->layer();
 #endif
 

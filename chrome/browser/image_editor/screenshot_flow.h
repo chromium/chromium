@@ -16,11 +16,14 @@
 #include "ui/compositor/layer_delegate.h"
 #include "ui/events/event.h"
 #include "ui/events/event_handler.h"
+#include "ui/events/event_target.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/image/image.h"
 
 #if defined(OS_MAC)
 #include "chrome/browser/image_editor/event_capture_mac.h"
+#else
+#include "base/scoped_observation.h"
 #endif
 
 namespace content {
@@ -175,6 +178,12 @@ class ScreenshotFlow : public content::WebContentsObserver,
   // Mac-specific
 #if defined(OS_MAC)
   std::unique_ptr<EventCaptureMac> event_capture_mac_;
+#else
+  base::ScopedObservation<ui::EventTarget,
+                          ui::EventHandler,
+                          &ui::EventTarget::AddPreTargetHandler,
+                          &ui::EventTarget::RemovePreTargetHandler>
+      event_capture_{this};
 #endif
 
   // Selection rectangle coordinates.
