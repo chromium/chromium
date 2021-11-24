@@ -1483,7 +1483,7 @@ chromium-metrics-reviews@google.com.
     Removed 2021-09-02 due to being unused in the codebase.
   </obsolete>
   <owner>timvolodine@chromium.org</owner>
-  <owner>src/services/device/battery/OWNERS</owner>
+  <owner>src/services/device/OWNERS</owner>
   <summary>
     Whether the Battery Status API was successfully started up on Android.
   </summary>
