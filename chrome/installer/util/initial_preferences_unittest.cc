@@ -20,9 +20,12 @@
 #include "chrome/installer/util/initial_preferences_constants.h"
 #include "chrome/installer/util/util_constants.h"
 #include "rlz/buildflags/buildflags.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
+
+using ::testing::Optional;
 
 // A helper class to set the "GoogleUpdateIsMachine" environment variable.
 class ScopedGoogleUpdateIsMachine {
@@ -331,19 +334,15 @@ TEST_F(InitialPreferencesTest, EnforceLegacyPreferences) {
   EXPECT_TRUE(do_not_create_quick_launch_shortcut);
   EXPECT_FALSE(do_not_create_taskbar_shortcut);
 
-  bool actual_value = false;
-  EXPECT_TRUE(prefs.initial_dictionary().GetBoolean(prefs::kImportBookmarks,
-                                                    &actual_value));
-  EXPECT_TRUE(actual_value);
-  EXPECT_TRUE(prefs.initial_dictionary().GetBoolean(prefs::kImportHistory,
-                                                    &actual_value));
-  EXPECT_TRUE(actual_value);
-  EXPECT_TRUE(prefs.initial_dictionary().GetBoolean(prefs::kImportHomepage,
-                                                    &actual_value));
-  EXPECT_TRUE(actual_value);
-  EXPECT_TRUE(prefs.initial_dictionary().GetBoolean(prefs::kImportSearchEngine,
-                                                    &actual_value));
-  EXPECT_TRUE(actual_value);
+  EXPECT_THAT(prefs.initial_dictionary().FindBoolPath(prefs::kImportBookmarks),
+              Optional(true));
+  EXPECT_THAT(prefs.initial_dictionary().FindBoolPath(prefs::kImportHistory),
+              Optional(true));
+  EXPECT_THAT(prefs.initial_dictionary().FindBoolPath(prefs::kImportHomepage),
+              Optional(true));
+  EXPECT_THAT(
+      prefs.initial_dictionary().FindBoolPath(prefs::kImportSearchEngine),
+      Optional(true));
 
 #if BUILDFLAG(ENABLE_RLZ)
   int rlz_ping_delay = 0;

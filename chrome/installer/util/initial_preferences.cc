@@ -24,6 +24,7 @@
 #include "chrome/installer/util/util_constants.h"
 #include "components/variations/pref_names.h"
 #include "rlz/buildflags/buildflags.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
 
@@ -268,10 +269,13 @@ void InitialPreferences::EnforceLegacyPreferences() {
 }
 
 bool InitialPreferences::GetBool(const std::string& name, bool* value) const {
-  bool ret = false;
-  if (distribution_)
-    ret = distribution_->GetBoolean(name, value);
-  return ret;
+  if (!distribution_)
+    return false;
+  if (absl::optional<bool> v = distribution_->FindBoolPath(name)) {
+    *value = *v;
+    return true;
+  }
+  return false;
 }
 
 bool InitialPreferences::GetInt(const std::string& name, int* value) const {

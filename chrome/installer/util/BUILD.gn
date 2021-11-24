@@ -48,6 +48,7 @@ static_library("with_no_strings") {
     "//chrome/common:constants",
     "//components/variations",
     "//content/public/common:result_codes",
+    "//third_party/abseil-cpp:absl",
   ]
 
   # The constants target checks the Chrome distribution from this target. Both
@@ -116,9 +117,7 @@ static_library("with_no_strings") {
       "wtsapi32.lib",
     ]
 
-    configs += [
-      "//build/config:precompiled_headers",
-    ]
+    configs += [ "//build/config:precompiled_headers" ]
 
     sources += [
       "additional_parameters.cc",
