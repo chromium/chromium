@@ -14,12 +14,10 @@
 namespace lacros_url_handling {
 
 bool MaybeInterceptNavigation(const GURL& url) {
-  const GURL& target_url = url.DeprecatedGetOriginAsURL();
   const GURL& ash_url = crosapi::gurl_os_handler_utils::SanitizeAshURL(url);
   // Every URL which is supported by Ash but not by Lacros will automatically
-  // forwarded to Ash. Note: We are using the original url to check for
-  // Ash compatibility
-  if (IsUrlHandledByLacros(target_url) || !IsUrlAcceptedByAsh(ash_url))
+  // forwarded to Ash.
+  if (IsUrlHandledByLacros(ash_url) || !IsUrlAcceptedByAsh(ash_url))
     return false;
 
   return NavigateInAsh(ash_url);

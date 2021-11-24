@@ -13,14 +13,28 @@ namespace crosapi {
 namespace gurl_os_handler_utils {
 
 TEST(GurlOsHandlerUtilsTest, SanitizeAshURL) {
-  // Using a known GURL scheme, we should get scheme + host.
+  // Using a known GURL scheme, we should get scheme + host + sub-host.
   EXPECT_EQ(SanitizeAshURL(GURL("http://version")), GURL("http://version"));
   EXPECT_EQ(SanitizeAshURL(GURL("http://version/#foo")),
             GURL("http://version"));
   EXPECT_EQ(SanitizeAshURL(GURL("http://version/1/#foo")),
-            GURL("http://version"));
+            GURL("http://version/1/"));
   EXPECT_EQ(SanitizeAshURL(GURL("http://version/1/?foo")),
-            GURL("http://version"));
+            GURL("http://version/1/"));
+  EXPECT_EQ(SanitizeAshURL(GURL("http://version/foo/?bar")),
+            GURL("http://version/foo/"));
+  EXPECT_EQ(SanitizeAshURL(GURL("http://version/foo")),
+            GURL("http://version/foo"));
+
+  // Using an unknown GURL scheme, we should get the same.
+  EXPECT_EQ(SanitizeAshURL(GURL("os://version")), GURL("os://version"));
+  EXPECT_EQ(SanitizeAshURL(GURL("os://version/#foo")), GURL("os://version"));
+  EXPECT_EQ(SanitizeAshURL(GURL("os://version/1/#foo")),
+            GURL("os://version/1"));
+  EXPECT_EQ(SanitizeAshURL(GURL("os://version/1/?foo")),
+            GURL("os://version/1"));
+  EXPECT_EQ(SanitizeAshURL(GURL("os://version/foo/?bar")),
+            GURL("os://version/foo"));
 
   // Using a standard path, we should get scheme + host.
   EXPECT_EQ(SanitizeAshURL(GURL("os://version")), GURL("os://version"));
@@ -29,8 +43,8 @@ TEST(GurlOsHandlerUtilsTest, SanitizeAshURL) {
   EXPECT_EQ(SanitizeAshURL(GURL("os://")), GURL(""));
 
   // Any path more than that will be ignored.
-  EXPECT_EQ(SanitizeAshURL(GURL("os://version/1")), GURL("os://version"));
-  EXPECT_EQ(SanitizeAshURL(GURL("os://version/1/foo")), GURL("os://version"));
+  EXPECT_EQ(SanitizeAshURL(GURL("os://version/1")), GURL("os://version/1"));
+  EXPECT_EQ(SanitizeAshURL(GURL("os://version/1/foo")), GURL("os://version/1"));
   EXPECT_EQ(SanitizeAshURL(GURL("os://version#")), GURL("os://version"));
   EXPECT_EQ(SanitizeAshURL(GURL("os://version?")), GURL("os://version"));
   EXPECT_EQ(SanitizeAshURL(GURL("os://version&")), GURL("os://version"));
@@ -40,26 +54,34 @@ TEST(GurlOsHandlerUtilsTest, SanitizeAshURL) {
 
   // Passing in any parameters, etc. we should get nothing as that is invalid.
   EXPECT_EQ(SanitizeAshURL(GURL("os://version/query?foo=1&bar=1")),
-            GURL("os://version"));
+            GURL("os://version/query"));
   EXPECT_EQ(SanitizeAshURL(GURL("os://version/+/query")), GURL("os://version"));
   EXPECT_EQ(SanitizeAshURL(GURL("os://version/#foo")), GURL("os://version"));
-  EXPECT_EQ(SanitizeAshURL(GURL("os://version/1/#foo")), GURL("os://version"));
-  EXPECT_EQ(SanitizeAshURL(GURL("os://version/1/?foo")), GURL("os://version"));
+  EXPECT_EQ(SanitizeAshURL(GURL("os://version/1/#foo")),
+            GURL("os://version/1"));
+  EXPECT_EQ(SanitizeAshURL(GURL("os://version/1/?foo")),
+            GURL("os://version/1"));
 
   // Invalid syntax of kind will be detected by GURL as well.
-  EXPECT_EQ(SanitizeAshURL(GURL("os://version/foo#")), GURL("os://version"));
-  EXPECT_EQ(SanitizeAshURL(GURL("os://version/ver\\")), GURL("os://version"));
-  EXPECT_EQ(SanitizeAshURL(GURL("os://version/foo bar")), GURL("os://version"));
+  EXPECT_EQ(SanitizeAshURL(GURL("os://version/foo#")),
+            GURL("os://version/foo"));
+  EXPECT_EQ(SanitizeAshURL(GURL("os://version/ver\\")),
+            GURL("os://version/ver"));
+  EXPECT_EQ(SanitizeAshURL(GURL("os://version/foo bar")),
+            GURL("os://version/foo"));
 
   // Case insensitive
-  EXPECT_EQ(SanitizeAshURL(GURL("Os://Foo/Bar")), GURL("os://foo"));
+  EXPECT_EQ(SanitizeAshURL(GURL("Os://Foo/Bar")), GURL("os://foo/bar"));
+
+  // Check that a port get removed.
+  EXPECT_EQ(SanitizeAshURL(GURL("https://a.test:35649/title1.html")),
+            GURL("https://a.test/title1.html"));
 }
 
 TEST(GurlOsHandlerUtilsTest, IsURLInList) {
   std::vector<GURL> list_of_urls = {
       GURL("os://version"),  GURL("Os://version2"), GURL("http://version"),
-      GURL("http://Foobar"), GURL("os://flags"),
-  };
+      GURL("http://Foobar"), GURL("os://flags"),    GURL("os://foo/bar")};
   // As we expect the input to be sanitized, we cannot add any parameters.
   EXPECT_TRUE(IsUrlInList(GURL("os://version"), list_of_urls));
   EXPECT_TRUE(IsUrlInList(GURL("os://flags"), list_of_urls));
@@ -75,6 +97,9 @@ TEST(GurlOsHandlerUtilsTest, IsURLInList) {
   // Whereas - if there is a valid scheme, the rest of the host will be handled
   // case insensitive and be found.
   EXPECT_TRUE(IsUrlInList(GURL("http://fOOBar"), list_of_urls));
+  // Sub hosts should also be handled.
+  EXPECT_TRUE(IsUrlInList(GURL("os://foo/bar"), list_of_urls));
+  EXPECT_FALSE(IsUrlInList(GURL("os://foo/ba"), list_of_urls));
 }
 
 TEST(GurlOsHandlerUtilsTest, IsAshOsUrl) {
@@ -101,11 +126,12 @@ TEST(GurlOsHandlerUtilsTest, IsAshOsAsciiScheme) {
 
 TEST(GurlOsHandlerUtilsTest, AshOsUrlHost) {
   EXPECT_EQ(AshOsUrlHost(GURL("os://flags")), "flags");
-  EXPECT_EQ(AshOsUrlHost(GURL("os://flags/test")), "flags");
+  EXPECT_EQ(AshOsUrlHost(GURL("os://flags/test")), "flags/test");
   EXPECT_EQ(AshOsUrlHost(GURL("os://flags?foo::bar")), "flags");
   EXPECT_EQ(AshOsUrlHost(GURL("os://flags#foo")), "flags");
-  EXPECT_EQ(AshOsUrlHost(GURL("os://flags/foo")), "flags");
-  EXPECT_EQ(AshOsUrlHost(GURL("os://FlagS/foo")), "flags");
+  EXPECT_EQ(AshOsUrlHost(GURL("os://flags/foo")), "flags/foo");
+  EXPECT_EQ(AshOsUrlHost(GURL("os://FlagS/foo")), "flags/foo");
+  EXPECT_EQ(AshOsUrlHost(GURL("os://FlagS/foo/1")), "flags/foo");
   EXPECT_EQ(AshOsUrlHost(GURL("os://")), "");
   EXPECT_EQ(AshOsUrlHost(GURL("")), "");
   EXPECT_EQ(AshOsUrlHost(GURL("foo")), "");
@@ -125,8 +151,10 @@ TEST(GurlOsHandlerUtilsTest, GetSystemUrlFromChromeUrl) {
 }
 
 TEST(GurlOsHandlerUtilsTest, GetChromeUrlFromSystemUrl) {
+  EXPECT_EQ(GetChromeUrlFromSystemUrl(GURL("os://flags/abc/def")),
+            GURL("chrome://flags/abc"));
   EXPECT_EQ(GetChromeUrlFromSystemUrl(GURL("os://flags/abc")),
-            GURL("chrome://flags"));
+            GURL("chrome://flags/abc"));
   EXPECT_EQ(GetChromeUrlFromSystemUrl(GURL("os://flags?foo")),
             GURL("chrome://flags"));
   EXPECT_EQ(GetChromeUrlFromSystemUrl(GURL("os://foo")), GURL("chrome://foo"));

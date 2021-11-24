@@ -13,24 +13,26 @@
 
 // Adds utility functions for Lacros's system URL handling.
 //
-// Lacros is sending some special system os URLs to Ash for execution. These
-// utility functions do add the functionality to handle the os:// scheme without
-// adding it to the list of known schemes by the GURL / url library.
-//
-// Note also that the unknown scheme is treated case insensitive whereas the
-// host and rest of the URL is unprocessed and therefore case senseitive.
-// The sanitization will take care of lower casing the host of the os:// urls
-// as will these functions making sure that this is properly handled.
-// The host() / remaining spec() of the URL will also not be terminated by a
-// "/" sign.
+// Lacros is sending some special system os:// URLs to Ash.
+// The system OS URLs will be (only) detected in the omnibox and directly sent
+// to Ash where they get converted into chrome:// URLs for navigation.
+// Note:
+//   - These utility functions do add the functionality to handle the os://
+//     scheme without registering "os" as scheme as this should not be treated
+//     as a general scheme. With that, we cannot rely on the GURL / url library
+//     as it will not parse the URL and all functions will not work.
+//   - As an unknown scheme, it will be treated case insensitive whereas the
+//     host and rest of the URL is unprocessed and therefore case sensitive.
+//   - The sanitization will take care of lower casing the host of the os://
+//     URLs and cutting off anything which is not scheme, host or sub-host,
+//     cutting off the terminating "/" sign if it exists.
 
 namespace crosapi {
 
 namespace gurl_os_handler_utils {
 
-// Sanitize the URL according to security requests (only scheme and hos,
-// nothing more should be passed). Note that as os:// is not safe to be added
-// to the general GURL handler, we cannot use the standard library for this.
+// Sanitize the URL according to security requests (only scheme, host and
+// sub-host).
 COMPONENT_EXPORT(CROSAPI) GURL SanitizeAshURL(const GURL& url);
 
 // Determines if a given URL matches any of the given URLs in the list.

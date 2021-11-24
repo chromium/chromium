@@ -8,6 +8,7 @@
 
 #include "base/logging.h"
 #include "base/strings/string_util.h"
+#include "url/url_util.h"
 
 namespace {
 
@@ -20,7 +21,53 @@ const char kChromeUrlPrefix[] = "chrome://";
 const size_t kHostStart = sizeof(kOsUrlPrefix) - 1;
 
 // Used for sanitation - any of the characters will cut the rest of the URL.
-const char kTerminatingCharacters[] = "/\\? #.%$&*<>";
+const char kTerminatingCharacters[] = "/\\? #.%$&*<>+";
+
+std::string GetValidHostAndSubhostFromOsUrl(GURL url) {
+  // Only keep the scheme, host and sub-host. Everything else gets cut off.
+  const std::string& url_spec = url.spec();
+
+  // Find the first character after the host start
+  std::size_t valid_spec_end =
+      url_spec.find_first_of(kTerminatingCharacters, kHostStart);
+
+  if (valid_spec_end == std::string::npos)
+    return base::ToLowerASCII(url_spec.substr(kHostStart));
+
+  if (url_spec[valid_spec_end] == '/') {
+    // A sub URL is allowed (e.g. chrome://settings/network) - so we skip the
+    // "/" with +1 and parse till we find the next terminating character.
+    const std::size_t sub_host_end =
+        url_spec.find_first_of(kTerminatingCharacters, valid_spec_end + 1);
+
+    if (sub_host_end == std::string::npos)
+      return base::ToLowerASCII(url_spec.substr(kHostStart));
+
+    if (sub_host_end > valid_spec_end + 1)
+      valid_spec_end = sub_host_end;
+  }
+
+  // Copy beginning from after "os://" all characters in host and sub-host.
+  return base::ToLowerASCII(
+      url_spec.substr(kHostStart, valid_spec_end - kHostStart));
+}
+
+GURL GetValidHostAndSubhostFromGURL(GURL gurl) {
+  if (!gurl.is_valid() || !gurl.has_host())
+    return GURL();
+
+  if (!gurl.has_ref() && !gurl.has_username() && !gurl.has_password() &&
+      !gurl.has_query() && !gurl.has_port())
+    return GURL(gurl);
+
+  url::Replacements<char> replacements;
+  replacements.ClearRef();
+  replacements.ClearUsername();
+  replacements.ClearPassword();
+  replacements.ClearQuery();
+  replacements.ClearPort();
+  return gurl.ReplaceComponents(replacements);
+}
 
 }  // namespace
 
@@ -29,27 +76,10 @@ namespace crosapi {
 namespace gurl_os_handler_utils {
 
 GURL SanitizeAshURL(const GURL& url) {
-  if (!IsAshOsUrl(url)) {
-    // We do not use url.GetWithEmptyPath() here as there are various cases
-    // which do not result in proper results (e.g. chrome://flags => "" or
-    // chrome://flags/123 => chrome://flags/).
-    return url.DeprecatedGetOriginAsURL();
-  }
+  if (!IsAshOsUrl(url))
+    return GetValidHostAndSubhostFromGURL(url);
 
-  // Only keep the scheme and the host. Everything else gets cut off.
-  base::StringPiece url_spec = url.spec();
-
-  // Find the first character after the host start
-  std::size_t host_end =
-      url_spec.find_first_of(kTerminatingCharacters, kHostStart);
-
-  // Note: We want to treat the internal URLs caseinsensitive. GURL usually
-  // handles this - but as we use an unknown scheme, only the scheme is treated
-  // caseinsensitive.
-  if (host_end == std::string::npos)
-    return GURL(base::ToLowerASCII(url_spec));
-
-  return GURL(base::ToLowerASCII(url_spec.substr(0, host_end)));
+  return GURL(kOsUrlPrefix + GetValidHostAndSubhostFromOsUrl(url));
 }
 
 bool IsUrlInList(const GURL& test_url, std::vector<GURL> list) {
@@ -89,23 +119,13 @@ std::string AshOsUrlHost(const GURL& url) {
     return "";
 
   // If we are using a default scheme, GURL does all for us.
-  if (!IsAshOsUrl(url))
-    return url.host();
+  if (!IsAshOsUrl(url)) {
+    if (!url.has_host())
+      return "";
+    return url.host() + (url.path().length() > 1 ? url.path() : "");
+  }
 
-  // Get the URL string after the start of the host portion.
-  std::string url_part = url.spec().substr(kHostStart);
-
-  // Find the first "invalid character" we want to cut off.
-  std::size_t cut_off = url_part.find_first_of(kTerminatingCharacters);
-
-  // Note: We want to treat the internal URLs caseinsensitive. GURL usually
-  // handles this - but as we use an unknown scheme, only the scheme is treated
-  // caseinsensitive.
-  // Return the string to the terminating character - or all.
-  if (cut_off == std::string::npos)
-    return base::ToLowerASCII(url_part);
-
-  return base::ToLowerASCII(url_part.substr(0, cut_off));
+  return GetValidHostAndSubhostFromOsUrl(url);
 }
 
 // Convert a passed GURL from os:// to chrome://.
