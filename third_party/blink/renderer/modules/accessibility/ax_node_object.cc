@@ -1093,13 +1093,22 @@ ax::mojom::blink::Role AXNodeObject::NativeRoleIgnoringAria() const {
   if (GetNode()->HasTagName(html_names::kDtTag))
     return ax::mojom::blink::Role::kDescriptionListTerm;
 
+  // MathMLElement instances are not created when MathMLCore is disabled, so one
+  // cannot rely on Node::HasTagName(const MathMLQualifiedName&) to test the
+  // <math> tag. See crbug.com/1272556.
+  if (!RuntimeEnabledFeatures::MathMLCoreEnabled()) {
+    if (auto* element = DynamicTo<Element>(GetNode())) {
+      if (element->namespaceURI() == mathml_names::kNamespaceURI &&
+          element->nodeName() == mathml_names::kMathTag.LocalName()) {
+        return ax::mojom::blink::Role::kMath;
+      }
+    }
+  }
+
   // Mapping of MathML elements. See https://w3c.github.io/mathml-aam/
   if (auto* element = DynamicTo<MathMLElement>(GetNode())) {
-    if (element->HasTagName(mathml_names::kMathTag)) {
-      return RuntimeEnabledFeatures::MathMLCoreEnabled()
-                 ? ax::mojom::blink::Role::kMathMLMath
-                 : ax::mojom::blink::Role::kMath;
-    }
+    if (element->HasTagName(mathml_names::kMathTag))
+      return ax::mojom::blink::Role::kMathMLMath;
     if (element->HasTagName(mathml_names::kMfracTag))
       return ax::mojom::blink::Role::kMathMLFraction;
     if (element->HasTagName(mathml_names::kMiTag))
