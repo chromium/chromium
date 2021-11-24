@@ -441,6 +441,18 @@ class MODULES_EXPORT ManifestParser {
   HashMap<String, mojom::blink::ManifestTranslationItemPtr> ParseTranslations(
       const JSONObject* object);
 
+  // Parses individual preferences from the 'user_preferences' field.
+  // Returns nullptr if not present or parsing failed.
+  mojom::blink::ManifestUserPreferenceOverridesPtr ParsePreferenceOverrides(
+      const JSONObject* object,
+      const String& preference);
+
+  // Parse the 'user_preferences' field of the manifest as defined in:
+  // https://github.com/w3c/manifest/issues/975#issuecomment-960222756
+  // Returns nullptr if parsing fails.
+  mojom::blink::ManifestUserPreferencesPtr ParseUserPreferences(
+      const JSONObject* object);
+
   void AddErrorInfo(const String& error_msg,
                     bool critical = false,
                     int error_line = 0,

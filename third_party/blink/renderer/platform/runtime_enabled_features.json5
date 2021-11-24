@@ -2407,6 +2407,10 @@
       status: "experimental",
     },
     {
+      name: "WebAppDarkMode",
+      status: "experimental",
+    },
+    {
       name: "WebAppHandleLinks",
       status: "experimental",
     },

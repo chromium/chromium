@@ -798,6 +798,11 @@ const base::Feature kLogUnexpectedIPCPostedToBackForwardCachedDocuments{
     "LogUnexpectedIPCPostedToBackForwardCachedDocuments",
     base::FEATURE_ENABLED_BY_DEFAULT};
 
+// Enables web apps to provide theme color and background color overrides for
+// dark mode.
+const base::Feature kWebAppEnableDarkMode{"WebAppEnableDarkMode",
+                                          base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enables the "handle_links" manifest field for web apps.
 // Explainer:
 // https://github.com/WICG/pwa-url-handler/blob/main/handle_links/explainer.md

@@ -172,6 +172,10 @@ bool ManifestParser::Parse() {
     manifest_->translations = ParseTranslations(root_object.get());
   }
 
+  if (RuntimeEnabledFeatures::WebAppDarkModeEnabled(feature_context_)) {
+    manifest_->user_preferences = ParseUserPreferences(root_object.get());
+  }
+
   ManifestUmaUtil::ParseSucceeded(manifest_);
 
   return has_comments;
@@ -1544,6 +1548,60 @@ ManifestParser::ParseTranslations(const JSONObject* object) {
 
     result.Set(locale, std::move(translation_item));
   }
+  return result;
+}
+
+mojom::blink::ManifestUserPreferenceOverridesPtr
+ManifestParser::ParsePreferenceOverrides(const JSONObject* object,
+                                         const String& preference) {
+  auto user_preference_overrides =
+      mojom::blink::ManifestUserPreferenceOverrides::New();
+
+  if (!object->Get(preference))
+    return nullptr;
+
+  JSONObject* overrides = object->GetJSONObject(preference);
+  if (!overrides) {
+    AddErrorInfo("preference '" + preference + "' ignored, object expected.");
+    return nullptr;
+  }
+
+  absl::optional<RGBA32> theme_color = ParseThemeColor(overrides);
+  user_preference_overrides->has_theme_color = theme_color.has_value();
+  if (user_preference_overrides->has_theme_color)
+    user_preference_overrides->theme_color = *theme_color;
+
+  absl::optional<RGBA32> background_color = ParseBackgroundColor(overrides);
+  user_preference_overrides->has_background_color =
+      background_color.has_value();
+  if (user_preference_overrides->has_background_color)
+    user_preference_overrides->background_color = *background_color;
+
+  // All of the fields that can be overridden by user_preferences are
+  // optional. If no overrides are supplied, skip the preference.
+  if (!user_preference_overrides->has_theme_color &&
+      !user_preference_overrides->has_background_color) {
+    return nullptr;
+  }
+  return user_preference_overrides;
+}
+
+mojom::blink::ManifestUserPreferencesPtr ManifestParser::ParseUserPreferences(
+    const JSONObject* object) {
+  auto result = mojom::blink::ManifestUserPreferences::New();
+
+  if (!object->Get("user_preferences"))
+    return nullptr;
+
+  JSONObject* user_preferences_map = object->GetJSONObject("user_preferences");
+  if (!user_preferences_map) {
+    AddErrorInfo("property 'user_preferences' ignored, object expected.");
+    return nullptr;
+  }
+
+  result->color_scheme_dark =
+      ParsePreferenceOverrides(user_preferences_map, "color_scheme_dark");
+
   return result;
 }
 

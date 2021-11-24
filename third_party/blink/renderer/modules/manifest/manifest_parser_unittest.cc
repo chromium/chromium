@@ -5117,4 +5117,101 @@ TEST_F(ManifestParserTest, TranslationsStringsParseRules) {
   }
 }
 
+TEST_F(ManifestParserTest, UserPreferencesParseRules) {
+  {
+    ScopedWebAppDarkModeForTest feature(false);
+
+    // Feature not enabled, should not be parsed.
+    auto& manifest = ParseManifest(
+        R"({ "user_preferences":
+        {"color_scheme_dark": {"theme_color": "#FF0000"}} })");
+    EXPECT_TRUE(manifest->user_preferences.is_null());
+    EXPECT_EQ(0u, GetErrorCount());
+  }
+  {
+    ScopedWebAppDarkModeForTest feature(true);
+
+    // Manifest does not contain a 'user_preferences' field.
+    {
+      auto& manifest = ParseManifest(R"({ })");
+      EXPECT_TRUE(manifest->user_preferences.is_null());
+      EXPECT_EQ(0u, GetErrorCount());
+    }
+
+    // user_preferences object is empty.
+    {
+      auto& manifest = ParseManifest(R"({ "user_preferences": {} })");
+      EXPECT_FALSE(manifest->user_preferences.is_null());
+      EXPECT_TRUE(manifest->user_preferences->color_scheme_dark.is_null());
+      EXPECT_EQ(0u, GetErrorCount());
+    }
+
+    // Empty preference is ignored.
+    {
+      auto& manifest =
+          ParseManifest(R"({ "user_preferences": {"color_scheme_dark": {}} })");
+      EXPECT_FALSE(manifest->user_preferences.is_null());
+      EXPECT_TRUE(manifest->user_preferences->color_scheme_dark.is_null());
+      EXPECT_EQ(0u, GetErrorCount());
+    }
+
+    // Valid theme_color and background_color should be parsed
+    {
+      auto& manifest = ParseManifest(
+          R"({ "user_preferences": {"color_scheme_dark":
+          {"theme_color": "#FF0000", "background_color": "#FFF"}} })");
+      EXPECT_FALSE(manifest->user_preferences.is_null());
+      EXPECT_FALSE(manifest->user_preferences->color_scheme_dark.is_null());
+      EXPECT_EQ(manifest->user_preferences->color_scheme_dark->theme_color,
+                0xFFFF0000u);
+      EXPECT_EQ(manifest->user_preferences->color_scheme_dark->background_color,
+                0xFFFFFFFFu);
+      EXPECT_EQ(0u, GetErrorCount());
+    }
+
+    // Don't parse if the property isn't an object.
+    {
+      auto& manifest = ParseManifest(R"({ "user_preferences": [] })");
+      EXPECT_TRUE(manifest->user_preferences.is_null());
+      EXPECT_EQ(1u, GetErrorCount());
+      EXPECT_EQ("property 'user_preferences' ignored, object expected.",
+                errors()[0]);
+    }
+
+    // Ignore preference if it isn't an object.
+    {
+      auto& manifest =
+          ParseManifest(R"({ "user_preferences": {"color_scheme_dark": []} })");
+      EXPECT_FALSE(manifest->user_preferences.is_null());
+      EXPECT_TRUE(manifest->user_preferences->color_scheme_dark.is_null());
+      EXPECT_EQ(1u, GetErrorCount());
+      EXPECT_EQ("preference 'color_scheme_dark' ignored, object expected.",
+                errors()[0]);
+    }
+
+    // Preferences overriding a single value should be parsed.
+    {
+      auto& manifest = ParseManifest(
+          R"({ "user_preferences":
+          {"color_scheme_dark": {"theme_color": "#FF0000"}} })");
+      EXPECT_FALSE(manifest->user_preferences.is_null());
+      EXPECT_FALSE(manifest->user_preferences->color_scheme_dark.is_null());
+      EXPECT_EQ(manifest->user_preferences->color_scheme_dark->theme_color,
+                0xFFFF0000u);
+      EXPECT_FALSE(
+          manifest->user_preferences->color_scheme_dark->has_background_color);
+      EXPECT_EQ(0u, GetErrorCount());
+    }
+
+    // Unknown preference string should be ignored.
+    {
+      auto& manifest = ParseManifest(
+          R"({ "user_preferences": {"something": {"theme_color": "#FF0000"}} })");
+      EXPECT_FALSE(manifest->user_preferences.is_null());
+      EXPECT_TRUE(manifest->user_preferences->color_scheme_dark.is_null());
+      EXPECT_EQ(0u, GetErrorCount());
+    }
+  }
+}
+
 }  // namespace blink

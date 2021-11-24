@@ -385,6 +385,21 @@ void UpdateWebAppInfoFromManifest(const blink::mojom::Manifest& manifest,
         SkColorSetA(SkColor(manifest.background_color), SK_AlphaOPAQUE);
   }
 
+  if (manifest.user_preferences &&
+      manifest.user_preferences->color_scheme_dark) {
+    if (manifest.user_preferences->color_scheme_dark->has_theme_color) {
+      web_app_info->dark_mode_theme_color = SkColorSetA(
+          SkColor(manifest.user_preferences->color_scheme_dark->theme_color),
+          SK_AlphaOPAQUE);
+    }
+    if (manifest.user_preferences->color_scheme_dark->has_background_color) {
+      web_app_info->dark_mode_background_color = SkColorSetA(
+          SkColor(
+              manifest.user_preferences->color_scheme_dark->background_color),
+          SK_AlphaOPAQUE);
+    }
+  }
+
   if (manifest.display != DisplayMode::kUndefined)
     web_app_info->display_mode = manifest.display;
 
