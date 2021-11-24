@@ -141,7 +141,8 @@ config("runtime_library") {
   # for catalyst build. This can be removed when a catalyst slice is added
   # to upstream Clang.
   if (target_environment == "catalyst") {
-    assert(xcode_version_int == 1300)
+    assert(xcode_version_int == 1300 || xcode_version_int == 1310 ||
+           xcode_version_int == 1320)
     ldflags += [
       "-lSystem",
       rebase_path("$ios_toolchains_path/usr/lib/clang/13.0.0/" +

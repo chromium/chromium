@@ -1,3 +1,6 @@
 include_rules = [
   "+components/breadcrumbs/core",
+
+  # For fuzzer
+  "+third_party/crashpad/crashpad",
 ]

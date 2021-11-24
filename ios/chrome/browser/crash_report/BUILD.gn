@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//testing/libfuzzer/fuzzer_test.gni")
+
 source_set("crash_report") {
   sources = [
     "crash_helper.h",
@@ -124,4 +126,31 @@ source_set("unit_tests") {
     "//third_party/breakpad:client",
     "//third_party/ocmock",
   ]
+}
+
+group("crashpad_fuzzer_tests") {
+  testonly = true
+  deps = [
+    ":crashpad_intermediate_dump_fuzzer",
+    ":crashpad_process_snapshot_intermediate_dump_fuzzer",
+  ]
+}
+
+fuzzer_test("crashpad_intermediate_dump_fuzzer") {
+  additional_configs = [ "//testing/libfuzzer:build_for_ios_clusterfuzz_job" ]
+  sources = [ "crashpad_intermediate_dump_fuzzer.cc" ]
+  deps = [
+    "//base",
+    "//third_party/crashpad/crashpad/util",
+  ]
+}
+
+fuzzer_test("crashpad_process_snapshot_intermediate_dump_fuzzer") {
+  additional_configs = [ "//testing/libfuzzer:build_for_ios_clusterfuzz_job" ]
+  sources = [ "crashpad_process_snapshot_intermediate_dump_fuzzer.cc" ]
+  deps = [
+    "//base",
+    "//third_party/crashpad/crashpad/snapshot",
+  ]
+  seed_corpuses = [ "seed_corpuses" ]
 }

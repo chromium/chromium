@@ -14,10 +14,16 @@ import("//third_party/protobuf/proto_library.gni")
 group("all_tests") {
   testonly = true
   deps = [
+    ":all_fuzzer_tests",
     ":ios_chrome_unittests",
     "//ios/chrome/test/xcuitest:ios_chrome_device_check_xcuitests_module",
     "//ios/chrome/test/xcuitest:ios_chrome_xcuitests",
   ]
+}
+
+group("all_fuzzer_tests") {
+  testonly = true
+  deps = [ "//ios/chrome/browser/crash_report:crashpad_fuzzer_tests" ]
 }
 
 source_set("test_support") {
