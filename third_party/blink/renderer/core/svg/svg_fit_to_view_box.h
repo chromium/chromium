@@ -46,6 +46,7 @@ class SVGFitToViewBox : public GarbageCollectedMixin {
       const gfx::SizeF& viewport_size);
 
   static bool IsKnownAttribute(const QualifiedName&);
+  bool HasValidViewBox() const;
 
   // JS API
   SVGAnimatedRect* viewBox() const { return view_box_.Get(); }

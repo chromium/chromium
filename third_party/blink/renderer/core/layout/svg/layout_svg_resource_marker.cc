@@ -139,8 +139,7 @@ bool LayoutSVGResourceMarker::ShouldPaint() const {
   // An empty viewBox disables rendering.
   auto* marker = To<SVGMarkerElement>(GetElement());
   DCHECK(marker);
-  return !marker->viewBox()->IsSpecified() ||
-         !marker->viewBox()->CurrentValue()->IsValid() ||
+  return !marker->HasValidViewBox() ||
          !marker->viewBox()->CurrentValue()->Rect().IsEmpty();
 }
 

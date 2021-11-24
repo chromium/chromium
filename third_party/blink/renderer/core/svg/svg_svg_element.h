@@ -134,7 +134,6 @@ class SVGSVGElement final : public SVGGraphicsElement,
 
   bool SelfHasRelativeLengths() const override;
 
-  bool HasValidViewBox() const;
   bool ShouldSynthesizeViewBox() const;
   void UpdateUserTransform();
 

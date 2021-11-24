@@ -219,7 +219,7 @@ static void SetPatternAttributes(const SVGPatternElement& element,
   if (!attributes.HasHeight() && element.height()->IsSpecified())
     attributes.SetHeight(element.height()->CurrentValue());
 
-  if (!attributes.HasViewBox() && element.viewBox()->CurrentValue()->IsValid())
+  if (!attributes.HasViewBox() && element.HasValidViewBox())
     attributes.SetViewBox(element.viewBox()->CurrentValue()->Rect());
 
   if (!attributes.HasPreserveAspectRatio() &&
