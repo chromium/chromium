@@ -1433,6 +1433,26 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
+                       RunAdAuctionInvalidTrustedScoringSignalsUrl) {
+  GURL url = https_server_->GetURL("a.test", "/echo");
+  url::Origin origin = url::Origin::Create(url);
+  ASSERT_TRUE(NavigateToURL(shell(), url));
+
+  EXPECT_EQ(
+      base::StringPrintf(
+          "TypeError: Failed to execute 'runAdAuction' on 'Navigator': "
+          "trustedScoringSignalsUrl 'https://invalid^&' for AuctionAdConfig "
+          "with seller '%s' cannot be resolved to a valid URL.",
+          origin.Serialize().c_str()),
+      RunAuctionAndWait(JsReplace(R"({
+      seller: $1,
+      decisionLogicUrl: $2,
+      trustedScoringSignalsUrl: 'https://invalid^&'
+  })",
+                                  origin, url)));
+}
+
+IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
                        RunAdAuctionDecisionLogicUrlDifferentFromSeller) {
   GURL test_url = https_server_->GetURL("a.test", "/echo");
   ASSERT_TRUE(NavigateToURL(shell(), test_url));
@@ -2029,26 +2049,55 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, CrossOrigin) {
   ASSERT_TRUE(
       NavigateToURL(shell(), https_server_->GetURL(kPublisher, "/echo")));
 
-  GURL seller_logic_url =
-      https_server_->GetURL(kSeller, "/interest_group/decision_logic.js");
-  url::Origin seller_logic_origin = url::Origin::Create(seller_logic_url);
+  GURL seller_logic_url = https_server_->GetURL(
+      kSeller, "/interest_group/decision_logic_need_signals.js");
+  // Register a seller script that only bids if the `trustedScoringSignals` are
+  // successfully fetched.
+  network_responder_->RegisterNetworkResponse(seller_logic_url.path(), R"(
+function scoreAd(
+    adMetadata, bid, auctionConfig, trustedScoringSignals, browserSignals) {
+  // Reject bits if trustedScoringSignals is not received.
+  if (trustedScoringSignals.renderUrl["https://example.com/render"] === "foo")
+    return bid;
+  return 0;
+}
+
+function reportResult(
+  auctionConfig, browserSignals) {
+  sendReportTo(auctionConfig.seller + '/echoall?report_seller');
+  return {
+    'success': true,
+    'signalsForWinner': {'signalForWinner': 1},
+    'reportUrl': auctionConfig.seller + '/report_seller',
+  };
+}
+)",
+                                              "application/javascript");
+
+  // Run an auction with the scoring script. It should succeed.
   ASSERT_EQ("https://example.com/render",
             RunAuctionAndWait(JsReplace(
                 R"(
 {
   seller: $1,
   decisionLogicUrl: $2,
-  interestGroupBuyers: [$3],
-  auctionSignals: {x: 1},
-  sellerSignals: {yet: 'more', info: 1},
-  perBuyerSignals: {$3: {even: 'more', x: 4.5}}
+  trustedScoringSignalsUrl: $3,
+  interestGroupBuyers: [$4],
 }
                 )",
-                seller_logic_origin, seller_logic_url, bidder_origin)));
+                url::Origin::Create(seller_logic_url), seller_logic_url,
+                https_server_->GetURL(
+                    kSeller, "/interest_group/trusted_scoring_signals.json"),
+                bidder_origin)));
 
   // Reporting urls should be fetched after an auction succeeded.
   WaitForURL(https_server_->GetURL("/echoall?report_seller"));
   WaitForURL(https_server_->GetURL("/echoall?report_bidder"));
+  // Double-check that the trusted scoring signals URL was requested as well.
+  WaitForURL(
+      https_server_->GetURL("/interest_group/trusted_scoring_signals.json"
+                            "?hostname=a.test"
+                            "&renderUrls=https%3A%2F%2Fexample.com%2Frender"));
 }
 
 // Make sure correct topFrameHostname is passed in. Check auctions from top
@@ -3050,7 +3099,9 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
                      "a.test", "/interest_group/decision_logic_throws.js"))));
 }
 
-IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, ValidateScoreAd) {
+// Use bidder and seller worklet files that validate their arguments all have
+// the expected values.
+IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, ValidateWorkletParameters) {
   GURL test_url = https_server_->GetURL("a.test", "/echo");
   ASSERT_TRUE(NavigateToURL(shell(), test_url));
   url::Origin test_origin = url::Origin::Create(test_url);
@@ -3073,24 +3124,28 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, ValidateScoreAd) {
       {{{GURL("https://example.com/render-component"),
          /*metadata=*/absl::nullopt}}})));
 
-  EXPECT_EQ("https://example.com/render",
-            EvalJs(shell(),
-                   JsReplace(
-                       R"(
+  EXPECT_EQ(
+      "https://example.com/render",
+      EvalJs(
+          shell(),
+          JsReplace(
+              R"(
 (async function() {
   return await navigator.runAdAuction({
     seller: $1,
     decisionLogicUrl: $2,
+    trustedScoringSignalsUrl: $3,
     interestGroupBuyers: [$1],
     auctionSignals: {so: 'I', hear: ['you', 'like', 'json']},
     sellerSignals: {signals: 'from', the: ['seller']},
     perBuyerSignals: {$1: {signalsForBuyer: 1}}
   });
 })())",
-                       test_origin,
-                       https_server_->GetURL(
-                           "a.test",
-                           "/interest_group/decision_argument_validator.js"))));
+              test_origin,
+              https_server_->GetURL(
+                  "a.test", "/interest_group/decision_argument_validator.js"),
+              https_server_->GetURL(
+                  "a.test", "/interest_group/trusted_scoring_signals.json"))));
 }
 
 // JSON fields of joinAdInterestGroup() and runAdAuction() should support
@@ -3679,6 +3734,25 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTestRunAdAuctionBypassBlink,
   // `test_origin_b` isn't in `interest_group_buyers`.
   config->per_buyer_signals.value()[test_origin_b] =
       "{\"even\": \"more\", \"x\": 4.5}";
+
+  EXPECT_THAT(RunAuctionBypassBlink(std::move(config)), Eq(absl::nullopt));
+}
+
+IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTestRunAdAuctionBypassBlink,
+                       TrustedScoringSignalsUrlWrongOrigin) {
+  GURL test_url_b = https_server_->GetURL("b.test", "/echo");
+  ASSERT_TRUE(test_url_b.SchemeIs(url::kHttpsScheme));
+  url::Origin test_origin_b = url::Origin::Create(test_url_b);
+  ASSERT_TRUE(NavigateToURL(shell(), test_url_b));
+
+  auto config = blink::mojom::AuctionAdConfig::New();
+  config->seller = test_origin_b;
+  config->decision_logic_url =
+      https_server_->GetURL("b.test", "/interest_group/decision_logic.js");
+  config->trusted_scoring_signals_url = https_server_->GetURL(
+      "not-b.test", "/interest_group/trusted_scoring_signals.json");
+  config->interest_group_buyers = blink::mojom::InterestGroupBuyers::New();
+  config->interest_group_buyers->set_buyers({test_origin_a_});
 
   EXPECT_THAT(RunAuctionBypassBlink(std::move(config)), Eq(absl::nullopt));
 }

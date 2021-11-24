@@ -146,6 +146,8 @@ bool CopyBiddingLogicUrlFromIdlToMojo(const ExecutionContext& context,
         "cannot be resolved to a valid URL."));
     return false;
   }
+  // TODO(https://crbug.com/1271540): Validate against interest group owner
+  // origin.
   output.bidding_url = bidding_url;
   return true;
 }
@@ -163,6 +165,8 @@ bool CopyDailyUpdateUrlFromIdlToMojo(const ExecutionContext& context,
         "cannot be resolved to a valid URL."));
     return false;
   }
+  // TODO(https://crbug.com/1271540): Validate against interest group owner
+  // origin.
   output.update_url = daily_update_url;
   return true;
 }
@@ -182,6 +186,8 @@ bool CopyTrustedBiddingSignalsUrlFromIdlToMojo(
         "cannot be resolved to a valid URL."));
     return false;
   }
+  // TODO(https://crbug.com/1271540): Validate against interest group owner
+  // origin.
   output.trusted_bidding_signals_url = trusted_bidding_signals_url;
   return true;
 }
@@ -301,7 +307,28 @@ bool CopyDecisionLogicUrlFromIdlToMojo(const ExecutionContext& context,
         "cannot be resolved to a valid URL."));
     return false;
   }
+  // TODO(https://crbug.com/1271540): Validate against seller origin.
   output.decision_logic_url = decision_logic_url;
+  return true;
+}
+
+bool CopyTrustedScoringSignalsFromIdlToMojo(
+    const ExecutionContext& context,
+    ExceptionState& exception_state,
+    const AuctionAdConfig& input,
+    mojom::blink::AuctionAdConfig& output) {
+  if (!input.hasTrustedScoringSignalsUrl())
+    return true;
+  KURL trusted_scoring_signals_url =
+      context.CompleteURL(input.trustedScoringSignalsUrl());
+  if (!trusted_scoring_signals_url.IsValid()) {
+    exception_state.ThrowTypeError(ErrorInvalidAuctionConfig(
+        input, "trustedScoringSignalsUrl", input.trustedScoringSignalsUrl(),
+        "cannot be resolved to a valid URL."));
+    return false;
+  }
+  // TODO(https://crbug.com/1271540): Validate against seller origin.
+  output.trusted_scoring_signals_url = trusted_scoring_signals_url;
   return true;
 }
 
@@ -557,23 +584,21 @@ ScriptPromise NavigatorAuction::runAdAuction(ScriptState* script_state,
                                              ExceptionState& exception_state) {
   const ExecutionContext* context = ExecutionContext::From(script_state);
   auto mojo_config = mojom::blink::AuctionAdConfig::New();
-  if (!CopySellerFromIdlToMojo(exception_state, *config, *mojo_config))
+  if (!CopySellerFromIdlToMojo(exception_state, *config, *mojo_config) ||
+      !CopyDecisionLogicUrlFromIdlToMojo(*context, exception_state, *config,
+                                         *mojo_config) ||
+      !CopyTrustedScoringSignalsFromIdlToMojo(*context, exception_state,
+                                              *config, *mojo_config) ||
+      !CopyInterestGroupBuyersFromIdlToMojo(exception_state, *config,
+                                            *mojo_config) ||
+      !CopyAuctionSignalsFromIdlToMojo(*script_state, exception_state, *config,
+                                       *mojo_config) ||
+      !CopySellerSignalsFromIdlToMojo(*script_state, exception_state, *config,
+                                      *mojo_config) ||
+      !CopyPerBuyerSignalsFromIdlToMojo(*script_state, exception_state, *config,
+                                        *mojo_config)) {
     return ScriptPromise();
-  if (!CopyDecisionLogicUrlFromIdlToMojo(*context, exception_state, *config,
-                                         *mojo_config))
-    return ScriptPromise();
-  if (!CopyInterestGroupBuyersFromIdlToMojo(exception_state, *config,
-                                            *mojo_config))
-    return ScriptPromise();
-  if (!CopyAuctionSignalsFromIdlToMojo(*script_state, exception_state, *config,
-                                       *mojo_config))
-    return ScriptPromise();
-  if (!CopySellerSignalsFromIdlToMojo(*script_state, exception_state, *config,
-                                      *mojo_config))
-    return ScriptPromise();
-  if (!CopyPerBuyerSignalsFromIdlToMojo(*script_state, exception_state, *config,
-                                        *mojo_config))
-    return ScriptPromise();
+  }
 
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   ScriptPromise promise = resolver->Promise();

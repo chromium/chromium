@@ -34,6 +34,17 @@ using testing::StartsWith;
 namespace auction_worklet {
 namespace {
 
+// Common trusted scoring signals response.
+const char kTrustedScoringSignalsResponse[] = R"(
+  {
+    "renderUrls": {"https://render.url.test/": 4},
+    "adComponentRenderUrls": {
+      "https://component1.test/": 1,
+      "https://component2.test/": 2
+    }
+  }
+)";
+
 // Creates seller a script with scoreAd() returning the specified expression.
 // Allows using scoreAd() arguments, arbitrary values, incorrect types, etc.
 std::string CreateScoreAdScript(const std::string& raw_return_value) {
@@ -293,6 +304,7 @@ class SellerWorkletTest : public testing::Test {
  protected:
   base::test::TaskEnvironment task_environment_;
 
+  // The seller worklet URL.
   const GURL url_ = GURL("https://url.test/");
 
   // Arguments passed to score_bid() and report_result(). Arguments common to
@@ -519,6 +531,134 @@ TEST_F(SellerWorkletTest, ScoreAdAuctionConfigParam) {
   auction_config_->decision_logic_url = GURL(url);
   RunScoreAdWithReturnValueExpectingResult(
       "auctionConfig.decisionLogicUrl.length", url.length());
+}
+
+// Tests that trusted scoring signals are correctly passed to scoreAd().
+TEST_F(SellerWorkletTest, ScoreAdTrustedScoringSignals) {
+  // With no trusted scoring signals URL, `trustedScoringSignals` should be
+  // null.
+  auction_config_->trusted_scoring_signals_url = absl::nullopt;
+  RunScoreAdWithReturnValueExpectingResult(
+      "trustedScoringSignals === null ? 1 : 0", 1);
+
+  auction_config_->trusted_scoring_signals_url =
+      GURL("https://url.test/trusted_scoring_signals");
+  // Trusted scoring signals URL without any component ads.
+  const GURL kNoComponentSignalsUrl = GURL(
+      "https://url.test/trusted_scoring_signals?hostname=window.test"
+      "&renderUrls=https%3A%2F%2Frender.url.test%2F");
+
+  // Successful download case.
+  AddJsonResponse(&url_loader_factory_, kNoComponentSignalsUrl,
+                  kTrustedScoringSignalsResponse);
+  RunScoreAdWithReturnValueExpectingResult(
+      "trustedScoringSignals.renderUrl['https://render.url.test/']",
+      4 /* Magic value in trustedScoringSignals */);
+  RunScoreAdWithReturnValueExpectingResult(
+      "trustedScoringSignals.adComponentRenderUrls === undefined ? 1 : 0", 1);
+
+  // A network error when fetching the scoring signals results in null
+  // `trustedScoringSignals`. This case is just before the component ad test
+  // case so that its error response for `kNoComponentSignalsUrl` makes a
+  // failure if that URL is incorrectly requested in the component ad test case.
+  url_loader_factory_.AddResponse(kNoComponentSignalsUrl.spec(),
+                                  /*content=*/std::string(),
+                                  net::HTTP_NOT_FOUND);
+  RunScoreAdWithReturnValueExpectingResult(
+      "trustedScoringSignals === null ? 1 : 0", 1,
+      /*expected_errors=*/
+      {base::StringPrintf("Failed to load %s HTTP status = 404 Not Found.",
+                          kNoComponentSignalsUrl.spec().c_str())});
+
+  browser_signal_ad_components_ = {GURL("https://component1.test/"),
+                                   GURL("https://component2.test/")};
+  AddJsonResponse(
+      &url_loader_factory_,
+      GURL("https://url.test/trusted_scoring_signals?hostname=window.test"
+           "&renderUrls=https%3A%2F%2Frender.url.test%2F"
+           "&adComponentRenderUrls=https%3A%2F%2Fcomponent1.test%2F,"
+           "https%3A%2F%2Fcomponent2.test%2F"),
+      kTrustedScoringSignalsResponse);
+  RunScoreAdWithReturnValueExpectingResult(
+      "trustedScoringSignals.renderUrl['https://render.url.test/']",
+      4 /* Magic value in trustedScoringSignals */);
+  RunScoreAdWithReturnValueExpectingResult(
+      "trustedScoringSignals.adComponentRenderUrls['https://component1.test/']",
+      1 /* Magic value in trustedScoringSignals */);
+  RunScoreAdWithReturnValueExpectingResult(
+      "trustedScoringSignals.adComponentRenderUrls['https://component2.test/']",
+      2 /* Magic value in trustedScoringSignals */);
+}
+
+// Test the case of a bunch of ScoreAd() calls in parallel.
+TEST_F(SellerWorkletTest, ScoreAdParallel) {
+  // Seller script that uses the last character of `renderUrl` as the score.
+  AddJavascriptResponse(
+      &url_loader_factory_, url_,
+      CreateScoreAdScript("parseInt(browserSignals.renderUrl.slice(-1))"));
+  auto seller_worklet = CreateWorklet();
+
+  const size_t kNumWorklets = 10;
+  size_t num_completed_worklets = 0;
+  base::RunLoop run_loop;
+  for (size_t i = 0; i < kNumWorklets; ++i) {
+    browser_signal_render_url_ = GURL(base::StringPrintf("https://foo/%zu", i));
+    RunScoreAdOnWorkletAsync(seller_worklet.get(), /*expected_score=*/i,
+                             /*expected_errors=*/std::vector<std::string>(),
+                             base::BindLambdaForTesting([&]() {
+                               ++num_completed_worklets;
+                               if (num_completed_worklets == kNumWorklets)
+                                 run_loop.Quit();
+                             }));
+  }
+  run_loop.Run();
+}
+
+// Test the case of a bunch of ScoreAd() calls in parallel, in the case trusted
+// scoring signals is non-null.
+TEST_F(SellerWorkletTest, ScoreAdParallelTrustedScoringSignals) {
+  // Seller script that gets the core from the `trustedScoringSignals` value of
+  // the passed in `renderUrl`.
+  AddJavascriptResponse(
+      &url_loader_factory_, url_,
+      CreateScoreAdScript(
+          "trustedScoringSignals.renderUrl[browserSignals.renderUrl]"));
+  auction_config_->trusted_scoring_signals_url =
+      GURL("https://url.test/trusted_scoring_signals");
+  auto seller_worklet = CreateWorklet();
+
+  // Start scoring a bunch of worklets. Don't provide JSON responses to make
+  // sure they all reside in the worklet's task list at once.
+  const size_t kNumWorklets = 10;
+  size_t num_completed_worklets = 0;
+  base::RunLoop run_loop;
+  for (size_t i = 0; i < kNumWorklets; ++i) {
+    browser_signal_render_url_ = GURL(base::StringPrintf("https://foo/%zu", i));
+    RunScoreAdOnWorkletAsync(seller_worklet.get(), /*expected_score=*/2 * i,
+                             /*expected_errors=*/std::vector<std::string>(),
+                             base::BindLambdaForTesting([&]() {
+                               ++num_completed_worklets;
+                               if (num_completed_worklets == kNumWorklets)
+                                 run_loop.Quit();
+                             }));
+  }
+
+  // Spin run loop so all requests reach the scoring worklet.
+  run_loop.RunUntilIdle();
+  EXPECT_EQ(0u, num_completed_worklets);
+
+  // Provide all JSON responses.
+  for (size_t i = 0; i < kNumWorklets; ++i) {
+    GURL trusted_scoring_signals = GURL(base::StringPrintf(
+        "%s?hostname=%s&renderUrls=https%%3A%%2F%%2Ffoo%%2F%zu",
+        auction_config_->trusted_scoring_signals_url->spec().c_str(),
+        browser_signal_top_window_origin_.host().c_str(), i));
+    std::string response_body = base::StringPrintf(
+        R"({"renderUrls": {"https://foo/%zu": %zu}})", i, 2 * i);
+    AddJsonResponse(&url_loader_factory_, trusted_scoring_signals,
+                    response_body);
+  }
+  run_loop.Run();
 }
 
 // Tests parsing of return values.

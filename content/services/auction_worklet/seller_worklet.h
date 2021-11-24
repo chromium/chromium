@@ -7,8 +7,10 @@
 
 #include <stdint.h>
 
+#include <list>
 #include <memory>
 #include <string>
+#include <vector>
 
 #include "base/callback.h"
 #include "base/sequence_checker.h"
@@ -16,9 +18,11 @@
 #include "content/services/auction_worklet/public/mojom/auction_worklet_service.mojom-forward.h"
 #include "content/services/auction_worklet/public/mojom/auction_worklet_service.mojom.h"
 #include "content/services/auction_worklet/public/mojom/seller_worklet.mojom.h"
+#include "content/services/auction_worklet/trusted_scoring_signals.h"
 #include "content/services/auction_worklet/worklet_loader.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
-#include "services/network/public/mojom/url_loader_factory.mojom-forward.h"
+#include "mojo/public/cpp/bindings/remote.h"
+#include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/interest_group/interest_group_types.mojom-forward.h"
 #include "url/gurl.h"
@@ -74,10 +78,46 @@ class SellerWorklet : public mojom::SellerWorklet {
       mojo::PendingReceiver<blink::mojom::DevToolsAgent> agent) override;
 
  private:
+  // Contains all data needed for a ScoreAd() call. Destroyed only when its
+  // `callback` is invoked.
+  struct ScoreAdTask {
+    ScoreAdTask();
+    ~ScoreAdTask();
+
+    // These fields all correspond to the arguments of ScoreAd(). They're
+    // std::move()ed when calling out to V8State to run Javascript, so are not
+    // safe to access after that happens.
+    std::string ad_metadata_json;
+    double bid;
+    blink::mojom::AuctionAdConfigPtr auction_config;
+    url::Origin browser_signal_top_window_origin;
+    url::Origin browser_signal_interest_group_owner;
+    GURL browser_signal_render_url;
+    std::vector<GURL> browser_signal_ad_components;
+    uint32_t browser_signal_bidding_duration_msecs;
+
+    ScoreAdCallback callback;
+
+    std::unique_ptr<TrustedScoringSignals> trusted_scoring_signals;
+
+    // Error message from downloading trusted scoring signals, if any. Prepended
+    // to errors passed to the ScoreAdCallback.
+    absl::optional<std::string> trusted_scoring_signals_error_msg;
+  };
+
+  using ScoreAdTaskList = std::list<ScoreAdTask>;
+
   // Portion of SellerWorklet that deals with V8 execution, and therefore lives
   // on the v8 thread --- everything except the constructor must be run there.
   class V8State {
    public:
+    // Matches auction_worklet::mojom::SellerWorklet::ScoreAdCallback,
+    // except the errors vectors are passed by value. Must be invoked on the
+    // user thread. Different signitures also protects against passing the
+    // wrong callback to V8State.
+    using ScoreAdCallbackInternal =
+        base::OnceCallback<void(double score, std::vector<std::string> errors)>;
+
     V8State(scoped_refptr<AuctionV8Helper> v8_helper,
             scoped_refptr<AuctionV8Helper::DebugId> debug_id,
             GURL script_source_url,
@@ -85,15 +125,17 @@ class SellerWorklet : public mojom::SellerWorklet {
 
     void SetWorkletScript(WorkletLoader::Result worklet_script);
 
-    void ScoreAd(const std::string& ad_metadata_json,
-                 double bid,
-                 blink::mojom::AuctionAdConfigPtr auction_config,
-                 const url::Origin& browser_signal_top_window_origin,
-                 const url::Origin& browser_signal_interest_group_owner,
-                 const GURL& browser_signal_render_url,
-                 const std::vector<GURL>& browser_signal_ad_components,
-                 uint32_t browser_signal_bidding_duration_msecs,
-                 ScoreAdCallback callback);
+    void ScoreAd(
+        const std::string& ad_metadata_json,
+        double bid,
+        blink::mojom::AuctionAdConfigPtr auction_config,
+        std::unique_ptr<TrustedScoringSignals::Result> trusted_scoring_signals,
+        const url::Origin& browser_signal_top_window_origin,
+        const url::Origin& browser_signal_interest_group_owner,
+        const GURL& browser_signal_render_url,
+        const std::vector<GURL>& browser_signal_ad_components,
+        uint32_t browser_signal_bidding_duration_msecs,
+        ScoreAdCallbackInternal callback);
 
     void ReportResult(blink::mojom::AuctionAdConfigPtr auction_config,
                       const url::Origin& browser_signal_top_window_origin,
@@ -112,7 +154,7 @@ class SellerWorklet : public mojom::SellerWorklet {
 
     void FinishInit();
 
-    void PostScoreAdCallbackToUserThread(ScoreAdCallback callback,
+    void PostScoreAdCallbackToUserThread(ScoreAdCallbackInternal callback,
                                          double score,
                                          std::vector<std::string> errors);
 
@@ -146,9 +188,18 @@ class SellerWorklet : public mojom::SellerWorklet {
   void OnDownloadComplete(WorkletLoader::Result worklet_script,
                           absl::optional<std::string> error_msg);
 
-  void DeliverScoreAdCallbackOnUserThread(ScoreAdCallback callback,
+  // Called when trusted scoring signals have finished downloading, or when
+  // there are no scoring signals to download. Starts running scoreAd() on the
+  // V8 thread.
+  void OnTrustedScoringSignalsDownloaded(
+      ScoreAdTaskList::iterator task,
+      std::unique_ptr<TrustedScoringSignals::Result> result,
+      absl::optional<std::string> error_msg);
+
+  void DeliverScoreAdCallbackOnUserThread(ScoreAdTaskList::iterator task,
                                           double score,
                                           std::vector<std::string> errors);
+
   void DeliverReportResultCallbackOnUserThread(
       ReportResultCallback callback,
       absl::optional<std::string> signals_for_winner,
@@ -159,12 +210,17 @@ class SellerWorklet : public mojom::SellerWorklet {
   scoped_refptr<AuctionV8Helper> v8_helper_;
   scoped_refptr<AuctionV8Helper::DebugId> debug_id_;
 
-  // Kept around until Start().
-  mojo::PendingRemote<network::mojom::URLLoaderFactory>
-      pending_url_loader_factory_;
+  mojo::Remote<network::mojom::URLLoaderFactory> url_loader_factory_;
 
   const GURL script_source_url_;
+
   bool paused_;
+
+  // Pending calls to the corresponding Javascript method. Only accessed on
+  // main thread, but iterators to its elements are bound to callbacks passed
+  // to the v8 thread, so it needs to be an std::lists rather than an
+  // std::vector.
+  ScoreAdTaskList score_ad_tasks_;
 
   std::unique_ptr<WorkletLoader> worklet_loader_;
 

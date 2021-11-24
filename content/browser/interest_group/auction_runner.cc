@@ -250,7 +250,8 @@ void AuctionRunner::OnSellerWorkletProcessReceived() {
                           base::Unretained(delegate_)),
       browser_signals_->top_frame_origin, frame_origin_,
       /*is_for_seller_=*/true, delegate_->GetClientSecurityState(), seller_url,
-      /*trusted_signals_base_url=*/absl::nullopt);
+      /*trusted_signals_base_url=*/
+      auction_config_->trusted_scoring_signals_url);
   mojo::PendingReceiver<auction_worklet::mojom::SellerWorklet>
       worklet_receiver = seller_worklet_.BindNewPipeAndPassReceiver();
   seller_worklet_debug_ = base::WrapUnique(new DebuggableAuctionWorklet(

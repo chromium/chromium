@@ -10,6 +10,7 @@ typedef (USVString or sequence<USVString>) InterestGroupBuyers;
 dictionary AuctionAdConfig {
   required USVString seller;
   required USVString decisionLogicUrl;
+  USVString trustedScoringSignalsUrl;
   InterestGroupBuyers interestGroupBuyers;
   any auctionSignals;
   any sellerSignals;

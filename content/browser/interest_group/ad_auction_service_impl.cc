@@ -41,6 +41,7 @@
 #include "third_party/blink/public/common/interest_group/interest_group.h"
 #include "url/gurl.h"
 #include "url/origin.h"
+#include "url/scheme_host_port.h"
 #include "url/url_constants.h"
 
 namespace content {
@@ -110,11 +111,20 @@ void FetchReport(network::mojom::URLLoaderFactory* url_loader_factory,
 }
 
 bool IsAuctionValid(const blink::mojom::AuctionAdConfig& config) {
-  // The seller origin has to be HTTPS and match the `decision_logic_url`
-  // origin.
-  if (config.seller.scheme() != url::kHttpsScheme ||
-      !config.decision_logic_url.SchemeIs(url::kHttpsScheme) ||
-      config.seller != url::Origin::Create(config.decision_logic_url)) {
+  // The seller origin has to be HTTPS.
+  if (config.seller.scheme() != url::kHttpsScheme)
+    return false;
+
+  // Opaque Origins have empty schemes.
+  DCHECK(!config.seller.opaque());
+
+  // `decision_logic_url` and, if present, `trusted_scoring_signals_url` must
+  // share the seller's origin.
+  if (url::SchemeHostPort(config.decision_logic_url) !=
+          config.seller.GetTupleOrPrecursorTupleIfOpaque() ||
+      (config.trusted_scoring_signals_url &&
+       url::SchemeHostPort(*config.trusted_scoring_signals_url) !=
+           config.seller.GetTupleOrPrecursorTupleIfOpaque())) {
     return false;
   }
 

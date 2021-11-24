@@ -865,6 +865,7 @@ class AuctionRunnerTest : public testing::Test,
         blink::mojom::AuctionAdConfig::New();
     auction_config->seller = url::Origin::Create(seller_decision_logic_url);
     auction_config->decision_logic_url = seller_decision_logic_url;
+    auction_config->trusted_scoring_signals_url = trusted_scoring_signals_url_;
     // This is ignored by AuctionRunner, in favor of its `filtered_buyers`
     // parameter.
     auction_config->interest_group_buyers =
@@ -1142,6 +1143,7 @@ class AuctionRunnerTest : public testing::Test,
   const url::Origin frame_origin_ =
       url::Origin::Create(GURL("https://frame.origin.test"));
   const GURL kSellerUrl{"https://adstuff.publisher1.com/auction.js"};
+  absl::optional<GURL> trusted_scoring_signals_url_;
 
   const GURL kBidder1Url{"https://adplatform.com/offers.js"};
   const url::Origin kBidder1 = url::Origin::Create(kBidder1Url);
@@ -2090,6 +2092,79 @@ TEST_F(AuctionRunnerTest, NoReportResult) {
                               kSellerUrl.spec().c_str())));
   CheckHistograms(AuctionRunner::AuctionResult::kSuccess,
                   2 /* expected_interest_groups */, 2 /* expected_owners */);
+}
+
+TEST_F(AuctionRunnerTest, TrustedScoringSignals) {
+  trusted_scoring_signals_url_ =
+      GURL("https://adstuff.publisher1.com/seller_signals");
+
+  auction_worklet::AddJavascriptResponse(
+      &url_loader_factory_, kBidder1Url,
+      MakeBidScript("1", "https://ad1.com/", /*num_ad_components=*/2, kBidder1,
+                    kBidder1Name,
+                    /*has_signals=*/true, "k1", "a"));
+  auction_worklet::AddJavascriptResponse(
+      &url_loader_factory_, kBidder2Url,
+      MakeBidScript("2", "https://ad2.com/", /*num_ad_components=*/2, kBidder2,
+                    kBidder2Name,
+                    /*has_signals=*/true, "l2", "b") +
+          kReportWinExpectNullAuctionSignals);
+  auction_worklet::AddJsonResponse(&url_loader_factory_,
+                                   GURL(kBidder1TrustedSignalsUrl.spec() +
+                                        "?hostname=publisher1.com&keys=k1,k2"),
+                                   R"({"k1":"a", "k2": "b", "extra": "c"})");
+  auction_worklet::AddJsonResponse(&url_loader_factory_,
+                                   GURL(kBidder2TrustedSignalsUrl.spec() +
+                                        "?hostname=publisher1.com&keys=l1,l2"),
+                                   R"({"l1":"a", "l2": "b", "extra": "c"})");
+
+  // scoreAd() that only accepts bids where the scoring signals of the
+  // `renderUrl` is "accept".
+  auction_worklet::AddJavascriptResponse(&url_loader_factory_,
+                                         kSellerUrl, std::string(R"(
+function scoreAd(adMetadata, bid, auctionConfig, trustedScoringSignals,
+                 browserSignals) {
+  let signal = trustedScoringSignals.renderUrl[browserSignals.renderUrl];
+  // 2 * bid is expected by the BidderWorklet ReportWin() script.
+  if (signal == "accept")
+    return 2 * bid;
+  if (signal == "reject")
+    return 0;
+  throw "incorrect trustedScoringSignals";
+}
+                                         )") + kReportResultScript);
+
+  // Only accept first bidder's bid.
+  auction_worklet::AddJsonResponse(
+      &url_loader_factory_,
+      GURL(trusted_scoring_signals_url_->spec() +
+           "?hostname=publisher1.com"
+           "&renderUrls=https%3A%2F%2Fad1.com%2F"
+           "&adComponentRenderUrls=https%3A%2F%2Fad1.com-component1.com%2F"),
+      R"({"renderUrls":{"https://ad1.com/":"accept"}})");
+  auction_worklet::AddJsonResponse(
+      &url_loader_factory_,
+      GURL(trusted_scoring_signals_url_->spec() +
+           "?hostname=publisher1.com"
+           "&renderUrls=https%3A%2F%2Fad2.com%2F"
+           "&adComponentRenderUrls=https%3A%2F%2Fad2.com-component1.com%2F"),
+      R"({"renderUrls":{"https://ad2.com/":"reject"}})");
+
+  RunStandardAuction();
+  EXPECT_EQ(GURL("https://ad1.com/"), result_.ad_url);
+  EXPECT_EQ(std::vector<GURL>{GURL("https://ad1.com-component1.com")},
+            result_.ad_component_urls);
+  EXPECT_EQ(GURL("https://reporting.example.com/"), result_.seller_report_url);
+  EXPECT_EQ(GURL("https://buyer-reporting.example.com/"),
+            result_.bidder_report_url);
+  EXPECT_EQ(6, result_.bidder1_bid_count);
+  EXPECT_EQ(4u, result_.bidder1_prev_wins.size());
+  EXPECT_EQ(R"({"render_url":"https://ad1.com/","metadata":{"ads": true}})",
+            result_.bidder1_prev_wins[3]->ad_json);
+  EXPECT_EQ(6, result_.bidder2_bid_count);
+  ASSERT_EQ(3u, result_.bidder2_prev_wins.size());
+  CheckHistograms(AuctionRunner::AuctionResult::kSuccess,
+                  /*expected_interest_groups=*/2, /*expected_owners=*/2);
 }
 
 // Test the case where the ProcessManager delays the auction.

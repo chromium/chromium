@@ -54,8 +54,16 @@ function validateAuctionConfig(auctionConfig) {
   }
 }
 
-function validateTrustedScoringSignals(trustedScoringSignals) {
-  // TODO(crbug.com/1186444): Test `trustedScoringSignals` once implemented.
+function validateTrustedScoringSignals(signals) {
+  if (signals.renderUrl["https://example.com/render"] !== "foo") {
+    throw 'Wrong trustedScoringSignals.renderUrl ' +
+        signals.renderUrl["https://example.com/render"];
+  }
+  if (signals.adComponentRenderUrls["https://example.com/render-component"] !==
+      1) {
+    throw 'Wrong trustedScoringSignals.adComponentRenderUrls ' +
+        signals.adComponentRenderUrls["https://example.com/render-component"];
+  }
 }
 
 function validateBrowserSignals(browserSignals) {
