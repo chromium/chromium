@@ -189,6 +189,50 @@ TEST_F(FrameSelectionTest, SelectWordAroundCaret2) {
   EXPECT_EQ_SELECTED_TEXT("baz");
 }
 
+TEST_F(FrameSelectionTest, SelectAroundCaret_Sentence) {
+  Text* text = AppendTextNode(
+      "This is the first sentence. This is the second sentence. This is the "
+      "last sentence.");
+  UpdateAllLifecyclePhasesForTest();
+
+  // This is the first sentence. Th|is is the second sentence. This is the last
+  // sentence.
+  Selection().SetSelectionAndEndTyping(
+      SelectionInDOMTree::Builder().Collapse(Position(text, 30)).Build());
+  EXPECT_TRUE(Selection().SelectAroundCaret(TextGranularity::kSentence));
+  EXPECT_EQ_SELECTED_TEXT("This is the second sentence. ");
+
+  // This is the first sentence|. This is the second sentence. This is the last
+  // sentence.
+  Selection().SetSelectionAndEndTyping(
+      SelectionInDOMTree::Builder().Collapse(Position(text, 26)).Build());
+  EXPECT_TRUE(Selection().SelectAroundCaret(TextGranularity::kSentence));
+  EXPECT_EQ_SELECTED_TEXT("This is the first sentence. ");
+
+  // This is the first sentence.| This is the second sentence. This is the last
+  // sentence.
+  Selection().SetSelectionAndEndTyping(
+      SelectionInDOMTree::Builder().Collapse(Position(text, 27)).Build());
+  EXPECT_TRUE(Selection().SelectAroundCaret(TextGranularity::kSentence));
+  EXPECT_EQ_SELECTED_TEXT(
+      "This is the first sentence. This is the second sentence. ");
+
+  // This is the first sentence. |This is the second sentence. This is the last
+  // sentence.
+  Selection().SetSelectionAndEndTyping(
+      SelectionInDOMTree::Builder().Collapse(Position(text, 28)).Build());
+  EXPECT_TRUE(Selection().SelectAroundCaret(TextGranularity::kSentence));
+  EXPECT_EQ_SELECTED_TEXT(
+      "This is the first sentence. This is the second sentence. ");
+
+  // This is the first sentence. T|his is the second sentence. This is the last
+  // sentence.
+  Selection().SetSelectionAndEndTyping(
+      SelectionInDOMTree::Builder().Collapse(Position(text, 29)).Build());
+  EXPECT_TRUE(Selection().SelectAroundCaret(TextGranularity::kSentence));
+  EXPECT_EQ_SELECTED_TEXT("This is the second sentence. ");
+}
+
 TEST_F(FrameSelectionTest, ModifyExtendWithFlatTree) {
   SetBodyContent("<span id=host></span>one");
   SetShadowContent("two<slot></slot>", "host");

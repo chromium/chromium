@@ -1140,6 +1140,14 @@ void FrameSelection::ScheduleVisualUpdateForPaintInvalidationIfNeeded() const {
 }
 
 bool FrameSelection::SelectWordAroundCaret() {
+  return SelectAroundCaret(TextGranularity::kWord);
+}
+
+bool FrameSelection::SelectAroundCaret(TextGranularity text_granularity) {
+  // Only supports word and sentence granularities for now.
+  DCHECK(text_granularity == TextGranularity::kWord ||
+         text_granularity == TextGranularity::kSentence);
+
   const VisibleSelection& selection = ComputeVisibleSelectionInDOMTree();
   // TODO(editing-dev): The use of VisibleSelection needs to be audited. See
   // http://crbug.com/657237 for more details.
@@ -1149,8 +1157,17 @@ bool FrameSelection::SelectWordAroundCaret() {
   static const WordSide kWordSideList[2] = {kNextWordIfOnBoundary,
                                             kPreviousWordIfOnBoundary};
   for (WordSide word_side : kWordSideList) {
-    Position start = StartOfWordPosition(position, word_side);
-    Position end = EndOfWordPosition(position, word_side);
+    Position start;
+    Position end;
+    // Use word granularity by default unless sentence granularity is explicitly
+    // requested.
+    if (text_granularity == TextGranularity::kSentence) {
+      start = StartOfSentencePosition(position);
+      end = EndOfSentence(position).GetPosition();
+    } else {
+      start = StartOfWordPosition(position, word_side);
+      end = EndOfWordPosition(position, word_side);
+    }
 
     // TODO(editing-dev): |StartOfWord()| and |EndOfWord()| should not make null
     // for non-null parameter.
@@ -1171,7 +1188,9 @@ bool FrameSelection::SelectWordAroundCaret() {
           SetSelectionOptions::Builder()
               .SetShouldCloseTyping(true)
               .SetShouldClearTypingStyle(true)
-              .SetGranularity(TextGranularity::kWord)
+              .SetGranularity(text_granularity == TextGranularity::kSentence
+                                  ? TextGranularity::kSentence
+                                  : TextGranularity::kWord)
               .Build());
       return true;
     }
