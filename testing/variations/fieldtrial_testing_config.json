@@ -2455,11 +2455,25 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled_20211109",
+                    "name": "Enabled_V2_20211130",
+                    "params": {
+                        "trust_signals_message_delay_ms": "5000",
+                        "trust_signals_site_engagement_threshold": "15"
+                    },
+                    "enable_features": [
+                        "CommerceMerchantViewer",
+                        "PageInfoStoreInfo"
+                    ],
+                    "disable_features": [
+                        "IPH_PageInfoStoreInfo"
+                    ]
+                },
+                {
+                    "name": "Enabled_V1_20211130",
                     "params": {
                         "delete_all_merchants_on_clear_history": "true",
                         "trust_signals_message_delay_ms": "20000",
-                        "trust_signals_site_engagement_threshold": "50"
+                        "trust_signals_site_engagement_threshold": "15"
                     },
                     "enable_features": [
                         "CommerceMerchantViewer"
@@ -5840,44 +5854,6 @@
                     },
                     "enable_features": [
                         "IPH_PageInfo"
-                    ],
-                    "disable_features": []
-                }
-            ]
-        }
-    ],
-    "PageInfoStoreInfo": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "PageInfoStoreInfo"
-                    ]
-                }
-            ]
-        }
-    ],
-    "PageInfoStoreInfoIPH": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "params": {
-                        "availability": ">=0",
-                        "event_1": "name:page_info_store_info_row_clicked;comparator:==0;window:90;storage:90",
-                        "event_trigger": "name:page_info_store_info_iph_triggered;comparator:==0;window:90;storage:90",
-                        "event_used": "name:page_info_opened;comparator:any;window:90;storage:90",
-                        "session_rate": "<1"
-                    },
-                    "enable_features": [
-                        "IPH_PageInfoStoreInfo"
                     ],
                     "disable_features": []
                 }
