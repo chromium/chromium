@@ -11,6 +11,7 @@
 #include "base/allocator/partition_allocator/page_allocator.h"
 #include "base/atomicops.h"
 #include "base/bits.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/memory/discardable_memory.h"
@@ -160,12 +161,20 @@ bool DiscardableSharedMemory::CreateAndMap(size_t size) {
   shared_memory_region_ =
       UnsafeSharedMemoryRegion::Create(checked_size.ValueOrDie());
 
-  if (!shared_memory_region_.IsValid())
+  // Failure in |CreateAndMap| will likely cause another process to crash, but
+  // not this one. We dump here and below to make it easier to investigate
+  // these crashes.
+  // TODO(crbug.com/1270558): Remove these calls when this bug is resolved.
+  if (!shared_memory_region_.IsValid()) {
+    base::debug::DumpWithoutCrashing();
     return false;
+  }
 
   shared_memory_mapping_ = shared_memory_region_.Map();
-  if (!shared_memory_mapping_.IsValid())
+  if (!shared_memory_mapping_.IsValid()) {
+    base::debug::DumpWithoutCrashing();
     return false;
+  }
 
   mapped_size_ = shared_memory_mapping_.mapped_size() -
                  AlignToPageSize(sizeof(SharedState));
