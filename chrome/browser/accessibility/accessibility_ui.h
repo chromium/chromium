@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/weak_ptr.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_ui_controller.h"
 #include "content/public/browser/web_ui_data_source.h"
@@ -81,6 +82,8 @@ class AccessibilityUIMessageHandler : public content::WebUIMessageHandler {
   void RequestAccessibilityEvents(const base::ListValue* args);
   void Callback(const std::string&);
   void StopRecording(content::WebContents* web_contents);
+
+  base::WeakPtrFactory<AccessibilityUIMessageHandler> weak_ptr_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_ACCESSIBILITY_ACCESSIBILITY_UI_H_

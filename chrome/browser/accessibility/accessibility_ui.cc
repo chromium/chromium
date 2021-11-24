@@ -736,7 +736,7 @@ void AccessibilityUIMessageHandler::RequestAccessibilityEvents(
     }
     web_contents->RecordAccessibilityEvents(
         true, base::BindRepeating(&AccessibilityUIMessageHandler::Callback,
-                                  base::Unretained(this)));
+                                  weak_ptr_factory_.GetWeakPtr()));
     observer_ =
         std::make_unique<AccessibilityUIObserver>(web_contents, &event_logs_);
   } else {
