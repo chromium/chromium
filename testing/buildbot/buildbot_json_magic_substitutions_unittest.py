@@ -27,26 +27,27 @@ class ChromeOSTelemetryRemoteTest(unittest.TestCase):
 
   def testVirtualMachineSubstitutions(self):
     test_config = CreateConfigWithPool('chromium.tests.cros.vm')
-    self.assertEqual(magic_substitutions.ChromeOSTelemetryRemote(test_config),
-                     [
-                       '--remote=127.0.0.1',
-                       '--remote-ssh-port=9222',
-                     ])
+    self.assertEqual(
+        magic_substitutions.ChromeOSTelemetryRemote(test_config, None), [
+            '--remote=127.0.0.1',
+            '--remote-ssh-port=9222',
+        ])
 
   def testPhysicalHardwareSubstitutions(self):
     test_config = CreateConfigWithPool('chromium.tests', device_type='eve')
-    self.assertEqual(magic_substitutions.ChromeOSTelemetryRemote(test_config),
-                     ['--remote=variable_chromeos_device_hostname'])
+    self.assertEqual(
+        magic_substitutions.ChromeOSTelemetryRemote(test_config, None),
+        ['--remote=variable_chromeos_device_hostname'])
 
   def testNoPool(self):
     test_config = CreateConfigWithPool(None)
-    with self.assertRaisesRegexp(RuntimeError, 'No pool *'):
-      magic_substitutions.ChromeOSTelemetryRemote(test_config)
+    with self.assertRaisesRegex(RuntimeError, 'No pool *'):
+      magic_substitutions.ChromeOSTelemetryRemote(test_config, None)
 
   def testUnknownPool(self):
     test_config = CreateConfigWithPool('totally-legit-pool')
-    with self.assertRaisesRegexp(RuntimeError, 'Unknown CrOS pool *'):
-      magic_substitutions.ChromeOSTelemetryRemote(test_config)
+    with self.assertRaisesRegex(RuntimeError, 'Unknown CrOS pool *'):
+      magic_substitutions.ChromeOSTelemetryRemote(test_config, None)
 
 
 def CreateConfigWithGpus(gpus):
@@ -71,20 +72,20 @@ class GPUExpectedDeviceId(unittest.TestCase):
   def testSingleGpuSingleDimension(self):
     test_config = CreateConfigWithGpus(['vendor:device1-driver'])
     self.assertDeviceIdCorrectness(
-        magic_substitutions.GPUExpectedDeviceId(test_config), ['device1'])
+        magic_substitutions.GPUExpectedDeviceId(test_config, None), ['device1'])
 
   def testSingleGpuDoubleDimension(self):
     test_config = CreateConfigWithGpus(
         ['vendor:device1-driver', 'vendor:device2-driver'])
     self.assertDeviceIdCorrectness(
-        magic_substitutions.GPUExpectedDeviceId(test_config),
+        magic_substitutions.GPUExpectedDeviceId(test_config, None),
         ['device1', 'device2'])
 
   def testDoubleGpuSingleDimension(self):
     test_config = CreateConfigWithGpus(
         ['vendor:device1-driver|vendor:device2-driver'])
     self.assertDeviceIdCorrectness(
-        magic_substitutions.GPUExpectedDeviceId(test_config),
+        magic_substitutions.GPUExpectedDeviceId(test_config, None),
         ['device1', 'device2'])
 
   def testDoubleGpuDoubleDimension(self):
@@ -93,7 +94,7 @@ class GPUExpectedDeviceId(unittest.TestCase):
         'vendor:device1-driver|vendor:device3-driver'
     ])
     self.assertDeviceIdCorrectness(
-        magic_substitutions.GPUExpectedDeviceId(test_config),
+        magic_substitutions.GPUExpectedDeviceId(test_config, None),
         ['device1', 'device2', 'device3'])
 
   def testNoGpu(self):
@@ -101,11 +102,22 @@ class GPUExpectedDeviceId(unittest.TestCase):
         magic_substitutions.GPUExpectedDeviceId(
             {'swarming': {
                 'dimension_sets': [{}]
-            }}), ['0'])
+            }}, None), ['0'])
 
   def testNoDimensions(self):
     with self.assertRaises(AssertionError):
-      magic_substitutions.GPUExpectedDeviceId({})
+      magic_substitutions.GPUExpectedDeviceId({}, None)
+
+
+class GPUIsASANFlag(unittest.TestCase):
+  def testIsAsan(self):
+    self.assertEqual(
+        magic_substitutions.GPUIsASANFlag(None, 'Some ASAN Tester'),
+        ['--is-asan'])
+
+  def testIsNotAsan(self):
+    self.assertEqual(
+        magic_substitutions.GPUIsASANFlag(None, 'Just A Normal Tester'), [])
 
 
 if __name__ == '__main__':
