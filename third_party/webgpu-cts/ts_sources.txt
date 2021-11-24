@@ -256,12 +256,11 @@ src/webgpu/shader/execution/builtin/ceil.spec.ts
 src/webgpu/shader/execution/builtin/cos.spec.ts
 src/webgpu/shader/execution/builtin/float_built_functions.spec.ts
 src/webgpu/shader/execution/builtin/integer_built_in_functions.spec.ts
-src/webgpu/shader/execution/builtin/isinf.spec.ts
-src/webgpu/shader/execution/builtin/isnan.spec.ts
 src/webgpu/shader/execution/builtin/logical_built_in_functions.spec.ts
 src/webgpu/shader/execution/builtin/min.spec.ts
 src/webgpu/shader/execution/builtin/select.spec.ts
 src/webgpu/shader/execution/builtin/value_testing_built_in_functions.spec.ts
+src/webgpu/shader/execution/sampling/gradients_in_varying_loop.spec.ts
 src/webgpu/shader/execution/shader_io/compute_builtins.spec.ts
 src/webgpu/shader/execution/shader_io/shared_structs.spec.ts
 src/webgpu/shader/validation/shader_validation_test.ts
@@ -269,6 +268,7 @@ src/webgpu/shader/validation/variable_and_const.spec.ts
 src/webgpu/shader/validation/shader_io/util.ts
 src/webgpu/shader/validation/shader_io/builtins.spec.ts
 src/webgpu/shader/validation/shader_io/generic.spec.ts
+src/webgpu/shader/validation/shader_io/interpolate.spec.ts
 src/webgpu/shader/validation/shader_io/invariant.spec.ts
 src/webgpu/shader/validation/shader_io/locations.spec.ts
 src/webgpu/shader/validation/wgsl/basic.spec.ts

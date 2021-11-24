@@ -528,3 +528,6 @@ crbug.com/1269118 [ Win ] wpt_internal/webgpu/cts.https.html?q=webgpu:web_platfo
 crbug.com/1269118 [ Win ] wpt_internal/webgpu/cts.https.html?q=webgpu:web_platform,copyToTexture,canvas:copy_contents_from_gl_context_canvas:canvasType="onscreen";contextName="webgl";dstColorFormat="rgba32float";* [ Failure ]
 crbug.com/1269118 [ Win ] wpt_internal/webgpu/cts.https.html?q=webgpu:web_platform,copyToTexture,canvas:copy_contents_from_gl_context_canvas:canvasType="onscreen";contextName="webgl2";dstColorFormat="rg32float";* [ Failure ]
 crbug.com/1269118 [ Win ] wpt_internal/webgpu/cts.https.html?q=webgpu:web_platform,copyToTexture,canvas:copy_contents_from_gl_context_canvas:canvasType="onscreen";contextName="webgl2";dstColorFormat="rgba32float";* [ Failure ]
+
+# KI due to support in Tint being rolled back
+crbug.com/tint/1322 [ Win ] wpt_internal/webgpu/cts.https.html?q=webgpu:shader,execution,sampling,gradients_in_varying_loop:derivative_in_varying_loop:* [ Failure ]
