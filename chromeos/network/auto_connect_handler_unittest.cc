@@ -982,8 +982,10 @@ TEST_F(AutoConnectHandlerTest,
   SetupPolicy(kCellularPolicy, global_config,
               false /* load as device policy */);
 
-  // The cellular1 and cellular3 service configuration should be removed.
-  EXPECT_FALSE(helper().profile_test()->HasService(cellular1_service_path));
+  // Cellular1's service configuration should be not removed because it's a
+  // pSIM network. Cellular3's service configuration should be removed because
+  // it's an eSIM network.
+  EXPECT_TRUE(helper().profile_test()->HasService(cellular1_service_path));
   EXPECT_FALSE(helper().profile_test()->HasService(cellular3_service_path));
   histogram_tester.ExpectTotalCount(kESimDisconnectByPolicyHistogram, 1);
   histogram_tester.ExpectBucketCount(kESimDisconnectByPolicyHistogram, true, 1);

@@ -443,10 +443,21 @@ void AutoConnectHandler::DisconnectAndRemoveConfigOrDisableAutoConnect(
       // Disconnect blocked network.
       if (network->IsConnectingOrConnected())
         DisconnectNetwork(network);
-      // Remove configuration if it's in profile and either is Cellular network
-      // or AllowOnlyPolicyWiFiToConnectIfAvailable is enable for WiFi network.
-      if (network->IsInProfile() && (is_cellular_type || !available_only))
+      if (!network->IsInProfile())
+        continue;
+
+      // Remove configuration if it's in profile and it's either an eSIM
+      // Cellular network or WiFi network with
+      // AllowOnlyPolicyWiFiToConnectIfAvailable
+      const bool isESim = is_cellular_type && !network->eid().empty();
+      const bool isPSim = is_cellular_type && network->eid().empty();
+      if (isESim || (!is_cellular_type && !available_only)) {
         RemoveNetworkConfigurationForNetwork(network->path());
+      } else if (isPSim) {
+        // Only disable auto-connect for pSIM cellular networks.
+        DisableAutoconnectForNetwork(network->path(),
+                                     ::onc::network_config::kCellular);
+      }
     } else if (only_managed_autoconnect) {
       // Disconnect & disable auto-connect.
       if (network->IsConnectingOrConnected())
