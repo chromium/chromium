@@ -11,6 +11,7 @@
 #include "base/task/post_task.h"
 #include "base/test/bind.h"
 #include "base/threading/thread_restrictions.h"
+#include "build/build_config.h"
 #include "content/public/browser/download_manager.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/slow_download_http_response.h"
@@ -230,7 +231,13 @@ IN_PROC_BROWSER_TEST_F(DownloadBrowserTest, Basic) {
             download_location().DirName());
 }
 
-IN_PROC_BROWSER_TEST_F(DownloadBrowserTest, OverrideDownloadDirectory) {
+// Test consistently failing on android: crbug.com/1273105
+#if defined(OS_ANDROID)
+#define MAYBE_OverrideDownloadDirectory DISABLED_OverrideDownloadDirectory
+#else
+#define MAYBE_OverrideDownloadDirectory OverrideDownloadDirectory
+#endif
+IN_PROC_BROWSER_TEST_F(DownloadBrowserTest, MAYBE_OverrideDownloadDirectory) {
   base::ScopedAllowBlockingForTesting allow_blocking;
   base::ScopedTempDir download_dir;
   ASSERT_TRUE(download_dir.CreateUniqueTempDir());
