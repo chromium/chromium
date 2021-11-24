@@ -958,8 +958,9 @@ IN_PROC_BROWSER_TEST_F(PreinstalledWebAppManagerBrowserTest,
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+// Disabled due to test flakiness. https://crbug.com/1267164.
 IN_PROC_BROWSER_TEST_F(PreinstalledWebAppManagerBrowserTest,
-                       UninstallFromTwoItemAppListFolder) {
+                       DISABLED_UninstallFromTwoItemAppListFolder) {
   GURL preinstalled_app_start_url("https://example.org/");
   GURL user_app_start_url("https://test.org/");
 
