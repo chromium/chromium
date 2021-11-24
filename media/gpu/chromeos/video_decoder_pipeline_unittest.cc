@@ -26,7 +26,10 @@
 #include "third_party/libdrm/src/include/drm/drm_fourcc.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chromeos/components/cdm_factory_daemon/chromeos_cdm_context.h"
+// gn check does not account for BUILDFLAG(), so including this header will
+// make gn check fail for builds other than ash-chrome. See gn help nogncheck
+// for more information.
+#include "chromeos/components/cdm_factory_daemon/chromeos_cdm_context.h"  // nogncheck
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 using base::test::RunClosure;

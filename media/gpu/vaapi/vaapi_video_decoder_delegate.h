@@ -23,7 +23,9 @@
 #include "third_party/libva_protected_content/va_protected_content.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chromeos/components/cdm_factory_daemon/chromeos_cdm_context.h"
+namespace chromeos {
+class ChromeOsCdmContext;
+}  // namespace chromeos
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace media {
