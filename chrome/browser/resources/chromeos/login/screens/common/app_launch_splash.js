@@ -5,32 +5,63 @@
 /**
  * @fileoverview App install/launch splash screen implementation.
  */
-'use strict';
 
-(function() {
-Polymer({
-  is: 'app-launch-splash-element',
+/* #js_imports_placeholder */
 
-  behaviors: [OobeI18nBehavior, LoginScreenBehavior],
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {LoginScreenBehaviorInterface}
+ */
+const AppLaunchSplashBase = Polymer.mixinBehaviors(
+  [OobeI18nBehavior, LoginScreenBehavior], Polymer.Element);
 
-  EXTERNAL_API: [
-    'toggleNetworkConfig',
-    'updateApp',
-    'updateMessage',
-  ],
+/**
+ * @typedef {{
+ *   configNetworkContainer:  HTMLElement,
+ *   configNetwork:  HTMLElement,
+ *   shortcutInfo:  HTMLElement,
+ *   header:  HTMLElement,
+ * }}
+ */
+AppLaunchSplashBase.$;
 
-  properties: {
-    appName: {type: String, value: ''},
-    appUrl: {type: String, value: ''},
-    launchText: {type: String, value: ''},
-  },
+/**
+ * @polymer
+ */
+class AppLaunchSplash extends AppLaunchSplashBase {
+
+  static get is() {
+    return 'app-launch-splash-element';
+  }
+
+  /* #html_template_placeholder */
+
+  static get properties() {
+    return {
+      appName: {type: String, value: ''},
+      appUrl: {type: String, value: ''},
+      launchText: {type: String, value: ''},
+    };
+  }
+
+  constructor() {
+    super();
+  }
+
+  get EXTERNAL_API() {
+    return ['toggleNetworkConfig',
+            'updateApp',
+            'updateMessage'];
+  }
 
   ready() {
+    super.ready();
     this.initializeLoginScreen('AppLaunchSplashScreen', {
       resetAllowed: false,
     });
 
-    var networkContainer = this.$.configNetworkContainer;
+    let networkContainer = this.$.configNetworkContainer;
     networkContainer.addEventListener(
         'transitionend', this.onConfigNetworkTransitionend_.bind(this));
 
@@ -39,22 +70,22 @@ Polymer({
     // defined in css file. The current value in css is 1000ms. To avoid
     // the emulated transitionend firing before real one, a 1050ms
     // delay is used.
-    ensureTransitionEndEvent(networkContainer, 1050);
-  },
+    ensureTransitionEndEvent(/** @type {!HTMLElement} */(networkContainer), 1050);
+  }
 
   /** Initial UI State for screen */
   getOobeUIInitialState() {
     return OOBE_UI_STATE.KIOSK;
-  },
+  }
 
   onConfigNetwork_(e) {
     chrome.send('configureNetwork');
-  },
+  }
 
   onConfigNetworkTransitionend_(e) {
     if (this.$.configNetworkContainer.classList.contains('faded'))
       this.$.configNetwork.hidden = true;
-  },
+  }
 
   /**
    * Event handler that is invoked just before the frame is shown.
@@ -68,14 +99,14 @@ Polymer({
     this.$.shortcutInfo.hidden = !data['shortcutEnabled'];
 
     Oobe.getInstance().solidBackground = true;
-  },
+  }
 
   /**
    * Event handler that is invoked just before the frame is hidden.
    */
   onBeforeHide() {
     Oobe.getInstance().solidBackground = false;
-  },
+  }
 
   /**
    * Toggles visibility of the network configuration option.
@@ -93,17 +124,18 @@ Polymer({
     } else {
       this.$.configNetworkContainer.classList.add('faded');
     }
-  },
+  }
 
   /**
    * Updates the app name and icon.
    * @param {Object} app Details of app being launched.
+   * @suppress {missingProperties}
    */
   updateApp(app) {
     this.appName = app.name;
     this.appUrl = app.url;
     this.$.header.style.backgroundImage = 'url(' + app.iconURL + ')';
-  },
+  }
 
   /**
    * Updates the message for the current launch state.
@@ -111,6 +143,7 @@ Polymer({
    */
   updateMessage(message) {
     this.launchText = message;
-  },
-});
-}());
+  }
+}
+
+customElements.define(AppLaunchSplash.is, AppLaunchSplash);

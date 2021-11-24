@@ -55,7 +55,7 @@ oobe_auto_imports = [
   "ui/webui/resources/html/assert.html|assert,assertNotReached",
   "ui/webui/resources/html/parse_html_subset.html|SanitizeInnerHtmlOpts",
   "ui/webui/resources/html/polymer.html|afterNextRender,Polymer,PolymerElement,html,flush,mixinBehaviors,dom",
-  "ui/webui/resources/html/util.html|announceAccessibleMessage",
+  "ui/webui/resources/html/util.html|announceAccessibleMessage,ensureTransitionEndEvent",
 ]
 
 oobe_namespace_rewrites = [

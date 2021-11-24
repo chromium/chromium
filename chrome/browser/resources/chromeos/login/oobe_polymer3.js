@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import 'chrome://oobe/screens/common/app_downloading.m.js';
+import 'chrome://oobe/screens/common/app_launch_splash.m.js';
 import 'chrome://oobe/screens/common/adb_sideloading.m.js';
 import 'chrome://oobe/screens/common/arc_terms_of_service.m.js';
 import 'chrome://oobe/screens/common/autolaunch.m.js';

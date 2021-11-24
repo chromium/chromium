@@ -23,7 +23,6 @@ function loadCommonComponents() {
 // <include src="../multidevice_setup_first_run.js">
 // <include src="../screen_multidevice_setup.js">
 // <include src="../security_token_pin.js">
-// <include src="../screen_app_launch_splash.js">
 
 // <include src="components_[OOBE].js">
 // <include src="components_[OS_INSTALL].js">
