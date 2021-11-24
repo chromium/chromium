@@ -265,7 +265,6 @@ public class AwContentsClientFullScreenTest {
     @Test
     @MediumTest
     @Feature({"AndroidWebView"})
-    @DisabledTest(message = "crbug.com/1273004") // Flaky
     public void testPowerSaveBlockerIsEnabledDuringEmbeddedPlayback() throws Throwable {
         Assert.assertFalse(DOMUtils.isFullscreen(getWebContentsOnUiThread()));
         loadTestPage(VIDEO_INSIDE_DIV_TEST_URL);
@@ -285,7 +284,6 @@ public class AwContentsClientFullScreenTest {
     @MediumTest
     @Feature({"AndroidWebView"})
     @Test
-    @DisabledTest(message = "crbug.com/1273004") // Flaky
     public void testPowerSaveBlockerIsTransferredToFullscreen() throws Throwable {
         Assert.assertFalse(DOMUtils.isFullscreen(getWebContentsOnUiThread()));
         loadTestPage(VIDEO_INSIDE_DIV_TEST_URL);
@@ -314,7 +312,6 @@ public class AwContentsClientFullScreenTest {
     @Test
     @MediumTest
     @Feature({"AndroidWebView"})
-    @DisabledTest(message = "crbug.com/1273004") // Flaky
     public void testPowerSaveBlockerIsTransferredToEmbedded() throws Throwable {
         // Enter fullscreen.
         doOnShowCustomViewTest(VIDEO_INSIDE_DIV_TEST_URL);
