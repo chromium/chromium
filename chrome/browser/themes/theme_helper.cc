@@ -355,7 +355,7 @@ SkColor ThemeHelper::GetDefaultColor(
           GetColor(TP::COLOR_DOWNLOAD_SHELF_BUTTON_BACKGROUND, incognito,
                    theme_supplier, nullptr);
       return color_utils::PickGoogleColor(
-          SK_ColorBLUE, download_shelf_color,
+          gfx::kGoogleBlue500, download_shelf_color,
           color_utils::kMinimumReadableContrastRatio);
     }
     case TP::COLOR_OMNIBOX_BACKGROUND: {
