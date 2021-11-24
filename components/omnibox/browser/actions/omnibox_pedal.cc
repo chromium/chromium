@@ -273,8 +273,8 @@ void OmniboxPedal::AddSynonymGroup(SynonymGroup&& group) {
   synonym_groups_.push_back(std::move(group));
 }
 
-std::vector<OmniboxPedal::SynonymGroupSpec> OmniboxPedal::SpecifySynonymGroups()
-    const {
+std::vector<OmniboxPedal::SynonymGroupSpec> OmniboxPedal::SpecifySynonymGroups(
+    bool locale_is_english) const {
   return {};
 }
 

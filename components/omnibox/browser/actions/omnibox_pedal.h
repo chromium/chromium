@@ -204,7 +204,10 @@ class OmniboxPedal : public OmniboxAction {
   void AddSynonymGroup(SynonymGroup&& group);
 
   // Specify synonym groups to load from localization strings.
-  virtual std::vector<SynonymGroupSpec> SpecifySynonymGroups() const;
+  // `locale_is_english` provides a hint about which locale is being loaded,
+  // used by batch3 pedals to pilot simplified whole-phrase translations.
+  virtual std::vector<SynonymGroupSpec> SpecifySynonymGroups(
+      bool locale_is_english) const;
 
   OmniboxPedalId id() const { return id_; }
 

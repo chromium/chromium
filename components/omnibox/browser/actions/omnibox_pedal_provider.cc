@@ -369,7 +369,7 @@ void OmniboxPedalProvider::LoadPedalConcepts() {
     pedal->AddVerbatimSequence(std::move(verbatim_sequence));
 
     std::vector<OmniboxPedal::SynonymGroupSpec> specs =
-        pedal->SpecifySynonymGroups();
+        pedal->SpecifySynonymGroups(locale_is_english);
     // `specs` will be empty for any pedals not yet processed by l10n because
     // the appropriate string names won't be defined. In such cases, we fall
     // back to loading from JSON to robustly handle partial presence of data.
@@ -380,7 +380,7 @@ void OmniboxPedalProvider::LoadPedalConcepts() {
         pedal->AddSynonymGroup(LoadSynonymGroupValue(group_value));
       }
     } else {
-      for (const auto& spec : pedal->SpecifySynonymGroups()) {
+      for (const auto& spec : specs) {
         // Note, group strings are not preprocessed; they are the raw outputs
         // from translators in the localization pipeline, so we need to remove
         // ignore group sequences and validate remaining data.
