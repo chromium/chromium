@@ -9,17 +9,13 @@ etc., it doesn’t manage ownership or lifetime of an allocated object - you are
 still responsible for freeing the object when no longer used, just as you would
 with a raw C++ pointer.
 
-`raw_ptr<T>` is beneficial for security, because it prevents some Use-after-Free
+`raw_ptr<T>` is beneficial for security, because it prevents a significant
+percentage of Use-after-Free
 (UaF) bugs from being exploitable (by poisoning the freed memory and
 quarantining it as long as a dangling `raw_ptr<T>` exists).
 `raw_ptr<T>` has limited impact on stability - dereferencing
 a dangling pointer remains Undefined Behavior (although poisoning may
 lead to earlier, easier to debug crashes).
-
-Compared to a raw C++ pointer, `raw_ptr<T>` incurs additional performance
-overhead for initialization, destruction, and assignment (including
-`ptr++` and `ptr += ...`).
-There is no overhead when dereferencing a pointer.
 
 `raw_ptr<T>` is a part of
 [the MiraclePtr project](https://docs.google.com/document/d/1pnnOAIz_DMWDI4oIOFoMAqLnf_MZ2GsrJNb_dbQ3ZBg/edit?usp=sharing)
@@ -104,6 +100,65 @@ Cases where other code needs to be modified are described in
 [the "Recoverable compile-time problems" section](#Recoverable-compile_time-problems)
 below.
 
+## Performance
+
+### Performance impact of using |raw_ptr&lt;T&gt;| instead of |T*|
+
+Compared to a raw C++ pointer, `raw_ptr<T>` incurs additional runtime
+overhead for initialization, destruction, and assignment (including
+`ptr++` and `ptr += ...`).
+There is no overhead when dereferencing or extracting a pointer (including
+`*ptr`, `ptr->foobar`, `ptr.get()`, or implicit conversions to a raw C++
+pointer).
+Finally, `raw_ptr<T>` has exactly the same memory footprint as `T*`
+(i.e. `sizeof(raw_ptr<T>) == sizeof(T*)`).
+
+One source of the performance overhead is
+a check whether a pointer `T*` points to a protected memory pool.
+This happens in `raw_ptr<T>`'s
+constructor, destructor, and assignment operators.
+If the pointed memory is unprotected,
+then `raw_ptr<T>` behaves just like a `T*`
+and the runtime overhead is limited to the extra check.
+(The security protection incurs additional overhead
+described in
+[the "Performance impact of enabling Use-after-Free protection" section](#Performance-impact-of-enabling-Use_after_Free-protection)
+below.)
+
+Some additional overhead comes from setting `raw_ptr<T>` to `nullptr`
+when default-constructed, destructed, or moved.
+
+During
+[the "Big Rewrite"](https://groups.google.com/a/chromium.org/g/chromium-dev/c/vAEeVifyf78/m/SkBUc6PhBAAJ)
+most Chromium `T*` fields will be rewritten to `raw_ptr<T>`
+(excluding fields in Renderer-only code).
+The cumulative performance impact of such rewrite
+has been measured by earlier A/B binary experiments.
+There was no measurable impact, except that 32-bit platforms
+have seen a slight increase in jankiness metrics
+(for more detailed results see
+[the document here](https://docs.google.com/document/d/1MfDT-JQh_UIpSQw3KQttjbQ_drA7zw1gQDwU3cbB6_c/edit?usp=sharing)).
+
+### Performance impact of enabling Use-after-Free protection
+
+When the Use-after-Free protection is enabled, then `raw_ptr<T>` has some
+additional performance overhead.  This protection is currently disabled
+by default.  We will enable the protection incrementally, starting with
+more non-Renderer processes first.
+
+The protection can increase memory usage:
+- For each memory allocation Chromium's allocator (PartitionAlloc)
+  allocates extra 16 bytes (4 bytes to store the BackupRefPtr's
+  ref-count associated with the allocation, the rest to maintain
+  alignment requirements).
+- Freed memory is quarantined and not available for reuse as long
+  as dangling `raw_ptr<T>` pointers exist.
+- Enabling protection requires additional partitions in PartitionAlloc,
+  which increases memory fragmentation.
+
+The protection can increase runtime costs - `raw_ptr<T>`'s constructor,
+destructor, and assignment operators (including `ptr++` and `ptr += ...`) need
+to maintain BackupRefPtr's ref-count.
 
 ## When it is okay to continue using raw C++ pointers
 
@@ -148,9 +203,8 @@ Therefore in the following cases raw C++ pointers may be used instead of
 ### Other perf optimizations
 
 As a performance optimization, raw C++ pointers may be used instead of
-`raw_ptr<T>` if it would have a significant performance impact (note: the
-overhead is incurred on pointer construction, assignment and destruction, but
-not on dereference).
+`raw_ptr<T>` if it would have a significant
+[performance impact](#Performance).
 
 ### Pointers in locations other than fields
 
