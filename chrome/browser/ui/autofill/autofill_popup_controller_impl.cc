@@ -91,6 +91,11 @@ void AutofillPopupControllerImpl::Show(
     const std::vector<Suggestion>& suggestions,
     bool autoselect_first_suggestion,
     PopupType popup_type) {
+  if (IsMouseLocked()) {
+    Hide(PopupHidingReason::kMouseLocked);
+    return;
+  }
+
   SetValues(suggestions);
 
   bool just_created = false;
@@ -291,6 +296,11 @@ void AutofillPopupControllerImpl::SelectionCleared() {
 }
 
 void AutofillPopupControllerImpl::AcceptSuggestion(int index) {
+  if (IsMouseLocked()) {
+    Hide(PopupHidingReason::kMouseLocked);
+    return;
+  }
+
   const Suggestion& suggestion = suggestions_[index];
 #if defined(OS_ANDROID)
   auto mf_controller = ManualFillingController::GetOrCreate(web_contents_);
@@ -369,6 +379,11 @@ bool AutofillPopupControllerImpl::GetRemovalConfirmationText(
 }
 
 bool AutofillPopupControllerImpl::RemoveSuggestion(int list_index) {
+  if (IsMouseLocked()) {
+    Hide(PopupHidingReason::kMouseLocked);
+    return false;
+  }
+
   // This function might be called in a callback, so ensure the list index is
   // still in bounds. If not, terminate the removing and consider it failed.
   // TODO(crbug.com/1209792): Replace these checks with a stronger identifier.
@@ -404,6 +419,11 @@ PopupType AutofillPopupControllerImpl::GetPopupType() const {
 
 void AutofillPopupControllerImpl::SetSelectedLine(
     absl::optional<int> selected_line) {
+  if (IsMouseLocked()) {
+    Hide(PopupHidingReason::kMouseLocked);
+    return;
+  }
+
   if (selected_line_ == selected_line)
     return;
 
@@ -533,6 +553,13 @@ void AutofillPopupControllerImpl::HideViewAndDie() {
   }
 
   delete this;
+}
+
+bool AutofillPopupControllerImpl::IsMouseLocked() const {
+  content::RenderFrameHost* rfh;
+  content::RenderWidgetHostView* rwhv;
+  return web_contents_ && (rfh = web_contents_->GetFocusedFrame()) &&
+         (rwhv = rfh->GetView()) && rwhv->IsMouseLocked();
 }
 
 absl::variant<ContentAutofillDriver*,

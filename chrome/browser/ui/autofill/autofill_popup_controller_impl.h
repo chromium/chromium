@@ -170,7 +170,12 @@ class AutofillPopupControllerImpl : public AutofillPopupController {
   // Hides |view_| unless it is null and then deletes |this|.
   void HideViewAndDie();
 
-  // Casts `delegate_->GetDriver->` to ContentAutofillDriver or
+  // Returns true iff the focused frame has a pointer lock, which may be used to
+  // trick the user into accepting some suggestion (crbug.com/1239496). In such
+  // a case, we should hide the popup.
+  bool IsMouseLocked() const;
+
+  // Casts `delegate_->GetDriver()` to ContentAutofillDriver or
   // ContentPasswordManagerDriver, respectively.
   absl::variant<ContentAutofillDriver*,
                 password_manager::ContentPasswordManagerDriver*>

@@ -42,6 +42,7 @@ enum class PopupHidingReason {
                                   // sensitive information in the prompt.
   kElementOutsideOfContentArea,  // The anchor element for which the popup would
                                  // be shown is not visible in the content area.
+  kMouseLocked,                  // The frame holds a pointer lock.
 };
 
 }  // namespace autofill
