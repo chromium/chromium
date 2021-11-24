@@ -143,6 +143,18 @@ Polymer({
     },
 
     /**
+     * True if OS is running on reven board.
+     * @private
+     */
+    isRevenBranding_: {
+      type: Boolean,
+      value() {
+        return loadTimeData.getBoolean('isRevenBranding');
+      },
+      readOnly: true,
+    },
+
+    /**
      * Whether the user is in guest mode.
      * @private {boolean}
      */

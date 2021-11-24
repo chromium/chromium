@@ -646,6 +646,13 @@ void OwnerSettingsServiceAsh::UpdateDeviceSettings(
     } else {
       NOTREACHED();
     }
+  } else if (path == kRevenEnableDeviceHWDataUsage) {
+    em::RevenDeviceHWDataUsageEnabledProto* hw_data_usage =
+        settings.mutable_hardware_data_usage_enabled();
+    if (value.is_bool())
+      hw_data_usage->set_hardware_data_usage_enabled(value.GetBool());
+    else
+      NOTREACHED();
   } else {
     // The remaining settings don't support Set(), since they are not
     // intended to be customizable by the user:

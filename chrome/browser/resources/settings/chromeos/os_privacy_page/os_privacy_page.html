@@ -51,6 +51,15 @@
         no-set-pref>
     </settings-toggle-button>
     <div class="hr"></div>
+    <template is="dom-if" if="[[isRevenBranding_]]">
+      <settings-toggle-button
+          id="enable-hw-data-usage"
+          pref="{{prefs.cros.reven.enable_hw_data_usage}}"
+          label="[[i18n('enableHWDataUsage')]]"
+          sub-label="[[i18n('enableHWDataUsageDesc')]]">
+        </settings-toggle-button>
+      <div class="hr"></div>
+    </template>
 </if>
     <settings-toggle-button
         id="suggested-content"

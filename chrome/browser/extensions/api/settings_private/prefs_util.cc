@@ -804,6 +804,8 @@ const PrefsUtil::TypedPrefMap& PrefsUtil::GetAllowlistedKeys() {
   // Privacy settings.
   (*s_allowlist)[::ash::prefs::kSnoopingProtectionEnabled] =
       settings_api::PrefType::PREF_TYPE_BOOLEAN;
+  (*s_allowlist)[ash::kRevenEnableDeviceHWDataUsage] =
+      settings_api::PrefType::PREF_TYPE_BOOLEAN;
 
 #else
   // System settings.

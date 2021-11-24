@@ -6,6 +6,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
+#include "ash/constants/ash_switches.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
@@ -22,6 +23,7 @@
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/url_constants.h"
+#include "chrome/grit/chromium_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/web_ui_data_source.h"
@@ -318,6 +320,22 @@ void PrivacySection::AddLoadTimeData(content::WebUIDataSource* html_source) {
 
   ::settings::AddPersonalizationOptionsStrings(html_source);
   ::settings::AddSecureDnsStrings(html_source);
+
+  html_source->AddBoolean("isRevenBranding",
+                          chromeos::switches::IsRevenBranding());
+  if (chromeos::switches::IsRevenBranding()) {
+    html_source->AddString(
+        "enableHWDataUsage",
+        l10n_util::GetStringFUTF8(
+            IDS_OS_SETTINGS_HW_DATA_USAGE_TOGGLE_TITLE,
+            l10n_util::GetStringUTF16(IDS_INSTALLED_PRODUCT_OS_NAME)));
+    html_source->AddString(
+        "enableHWDataUsageDesc",
+        l10n_util::GetStringFUTF8(
+            IDS_OS_SETTINGS_HW_DATA_USAGE_TOGGLE_DESC,
+            l10n_util::GetStringUTF16(IDS_INSTALLED_PRODUCT_OS_NAME)));
+    // TODO(dkuzmin): add learn more link here once available b/190964241
+  }
 }
 
 int PrivacySection::GetSectionNameMessageId() const {

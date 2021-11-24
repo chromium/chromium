@@ -156,6 +156,7 @@ const char* const kKnownSettings[] = {
     kReportOsUpdateStatus,
     kReportRunningKioskApp,
     kReportUploadFrequency,
+    kRevenEnableDeviceHWDataUsage,
     kSamlLoginAuthenticationType,
     kServiceAccountIdentity,
     kSignedDataRoamingEnabled,
@@ -1243,6 +1244,13 @@ void DecodeGenericPolicies(const em::ChromeDeviceSettingsProto& policy,
                                  base::Value(container.enabled()));
     }
   }
+
+  bool reven_enable_device_hw_data_usage =
+      policy.has_hardware_data_usage_enabled() &&
+      policy.hardware_data_usage_enabled().has_hardware_data_usage_enabled() &&
+      policy.hardware_data_usage_enabled().hardware_data_usage_enabled();
+  new_values_cache->SetBoolean(kRevenEnableDeviceHWDataUsage,
+                               reven_enable_device_hw_data_usage);
 }
 
 void DecodeLogUploadPolicies(const em::ChromeDeviceSettingsProto& policy,

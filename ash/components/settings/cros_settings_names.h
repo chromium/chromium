@@ -322,6 +322,9 @@ extern const char kDeviceScheduledReboot[];
 COMPONENT_EXPORT(ASH_SETTINGS)
 extern const char kDeviceRestrictedManagedGuestSessionEnabled[];
 
+COMPONENT_EXPORT(ASH_SETTINGS)
+extern const char kRevenEnableDeviceHWDataUsage[];
+
 }  // namespace ash
 
 namespace chromeos {

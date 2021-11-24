@@ -4194,6 +4194,12 @@ Press an assigned switch or key to remove assignment.
   <message name="IDS_OS_SETTINGS_SMART_PRIVACY_SNOOPING_DIM" desc="Do not translate (string not final). The radio button option in the smart privacy section requesting screen dim when a snooper is detected.">
     Temporary dim screen
   </message>
+  <message name="IDS_OS_SETTINGS_HW_DATA_USAGE_TOGGLE_TITLE" desc="The label of the checkbox to enable/disable device hardware data collection and usage in CloudReady 2.0.">
+    <ph name="DEVICE_OS">$1<ex>CloudReady 2.0</ex></ph> hardware support and stability
+  </message>
+  <message name="IDS_OS_SETTINGS_HW_DATA_USAGE_TOGGLE_DESC" desc="The description of the checkbox to enable/disable device hardware data collection and usage in CloudReady 2.0.">
+    Let Google use your hardware data to help improve <ph name="DEVICE_OS">$1<ex>CloudReady 2.0</ex></ph>. If you decline, this data is still sent to Google to determine proper updates, but is not stored or used otherwise.
+  </message>
 
 
   <!-- On Startup (OS settings) -->

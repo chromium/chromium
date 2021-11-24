@@ -1841,6 +1841,13 @@ message DeviceI18nShortcutsEnabledProto {
   optional bool enabled = 1 [default = true];
 }
 
+// reven board collects hardware data of the device to provide relevant updates.
+// Setting that controls whether device hardware data can be also used for other
+// purposes.
+message RevenDeviceHWDataUsageEnabledProto {
+  optional bool hardware_data_usage_enabled = 1 [default = false];
+}
+
 message ChromeDeviceSettingsProto {
   reserved 61, 90;
   optional DevicePolicyRefreshRateProto device_policy_refresh_rate = 1;
@@ -2009,4 +2016,5 @@ message ChromeDeviceSettingsProto {
   optional BooleanPolicyProto kiosk_crx_manifest_update_url_ignored = 127;
   optional DeviceI18nShortcutsEnabledProto device_i18n_shortcuts_enabled = 128;
   optional BooleanPolicyProto chromad_to_cloud_migration_enabled = 129;
+  optional RevenDeviceHWDataUsageEnabledProto hardware_data_usage_enabled = 130;
 }

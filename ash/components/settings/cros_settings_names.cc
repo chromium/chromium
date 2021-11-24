@@ -573,4 +573,9 @@ const char kDeviceScheduledReboot[] = "cros.device.device_scheduled_reboot";
 const char kDeviceRestrictedManagedGuestSessionEnabled[] =
     "cros.device.restricted_managed_guest_session_enabled";
 
+// On reven board we collect hardware data of the device to provide relevant
+// updates. A boolean pref specifies whether this data can be also used for
+// overall improvements. This setting is available only on reven boards.
+const char kRevenEnableDeviceHWDataUsage[] = "cros.reven.enable_hw_data_usage";
+
 }  // namespace ash
