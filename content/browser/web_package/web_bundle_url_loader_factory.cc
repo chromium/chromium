@@ -11,6 +11,7 @@
 #include "base/strings/string_util.h"
 #include "base/task/post_task.h"
 #include "components/web_package/web_bundle_utils.h"
+#include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/web_package/web_bundle_reader.h"
 #include "content/browser/web_package/web_bundle_source.h"
 #include "content/public/browser/content_browser_client.h"
@@ -36,11 +37,11 @@ namespace {
 void AddResponseParseErrorMessageToConsole(
     int frame_tree_node_id,
     const web_package::mojom::BundleResponseParseErrorPtr& error) {
-  WebContents* web_contents =
-      WebContents::FromFrameTreeNodeId(frame_tree_node_id);
-  if (!web_contents)
+  FrameTreeNode* frame_tree_node =
+      FrameTreeNode::GloballyFindByID(frame_tree_node_id);
+  if (!frame_tree_node)
     return;
-  web_contents->GetMainFrame()->AddMessageToConsole(
+  frame_tree_node->current_frame_host()->AddMessageToConsole(
       blink::mojom::ConsoleMessageLevel::kError,
       std::string("Failed to read response header of Web Bundle file: ") +
           error->message);
