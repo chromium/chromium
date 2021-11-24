@@ -406,7 +406,7 @@ static scoped_refptr<StaticBitmapImage> CropImageAndApplyColorSpaceConversion(
   DCHECK(!image->HasData());
 
   IntRect img_rect(gfx::Point(), IntSize(image->width(), image->height()));
-  const IntRect& src_rect{parsed_options.crop_rect};
+  const IntRect& src_rect = IntRect(parsed_options.crop_rect);
   const IntRect intersect_rect = IntersectRects(img_rect, src_rect);
 
   // If cropRect doesn't intersect the source image, return a transparent black
@@ -664,7 +664,7 @@ ImageBitmap::ImageBitmap(ImageData* data,
   if (DstBufferSizeHasOverflow(parsed_options))
     return;
 
-  const IntRect& src_rect{parsed_options.crop_rect};
+  const IntRect& src_rect = IntRect(parsed_options.crop_rect);
   const IntRect data_src_rect = IntRect(gfx::Point(), data->Size());
   const IntRect intersect_rect =
       crop_rect ? IntersectRects(src_rect, data_src_rect) : data_src_rect;
