@@ -25,6 +25,8 @@ class COMPONENT_EXPORT(SCHEDULING_METRICS) TotalDurationMetricReporter {
   TotalDurationMetricReporter(const char* positive_histogram_name,
                               const char* negative_histogram_name);
 
+  ~TotalDurationMetricReporter();
+
   void RecordAdditionalDuration(base::TimeDelta duration);
 
   void Reset();
