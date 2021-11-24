@@ -1369,20 +1369,25 @@ class StorageQueue::WriteContext : public TaskRunnerContext<Status> {
     }
     // Release wrapped record memory, so scoped reservation may act.
     wrapped_record.Clear();
-    CompressWrappedRecord(std::move(buffer));
+    CompressWrappedRecord(std::move(buffer), std::move(scoped_reservation));
   }
 
-  void CompressWrappedRecord(std::string serialized_record) {
+  void CompressWrappedRecord(std::string serialized_record,
+                             ScopedReservation scoped_reservation) {
     // Compress the string.
     storage_queue_->compression_module_->CompressRecord(
         std::move(serialized_record),
         base::BindOnce(&WriteContext::OnCompressedRecordReady,
-                       base::Unretained(this)));
+                       base::Unretained(this), std::move(scoped_reservation)));
   }
 
   void OnCompressedRecordReady(
+      ScopedReservation scoped_reservation,
       std::string compressed_record_result,
       absl::optional<CompressionInformation> compression_information) {
+    // Reduce amount of memory reserved to the resulting size after compression.
+    scoped_reservation.Reduce(compressed_record_result.size());
+
     // Encrypt the result. The callback is partially bounded to include
     // compression information.
     storage_queue_->encryption_module_->EncryptRecord(
