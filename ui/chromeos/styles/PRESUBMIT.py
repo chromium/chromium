@@ -12,6 +12,9 @@ def _CommonChecks(input_api, output_api):
     try:
         import sys
         old_sys_path = sys.path[:]
+        import styles.presubmit_support
+        results += styles.presubmit_support._CheckSemanticColors(
+            input_api, output_api)
         sys.path += [
             input_api.os_path.join(input_api.change.RepositoryRoot(), 'tools')
         ]

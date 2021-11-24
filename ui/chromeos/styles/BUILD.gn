@@ -5,6 +5,7 @@
 import("//tools/style_variable_generator/style_variable_generator.gni")
 
 style_variable_generator("cros_styles") {
+  # If you change the sources, also change the paths in presubmit_support.py
   sources = [
     "cros_colors.json5",
     "cros_palette.json5",
