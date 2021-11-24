@@ -23,6 +23,7 @@ import org.chromium.chrome.browser.content_creation.reactions.toolbar.ToolbarCoo
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.share.BaseScreenshotCoordinator;
 import org.chromium.chrome.browser.share.ChromeShareExtras;
+import org.chromium.chrome.browser.share.ChromeShareExtras.DetailedContentType;
 import org.chromium.chrome.browser.share.share_sheet.ChromeOptionShareCallback;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
@@ -33,6 +34,7 @@ import org.chromium.components.image_fetcher.ImageFetcher;
 import org.chromium.components.image_fetcher.ImageFetcherConfig;
 import org.chromium.components.image_fetcher.ImageFetcherFactory;
 import org.chromium.ui.widget.Toast;
+import org.chromium.url.GURL;
 
 import java.text.DateFormat;
 import java.util.ArrayList;
@@ -270,7 +272,12 @@ public class LightweightReactionsCoordinatorImpl extends BaseScreenshotCoordinat
 
                     long shareStartTime = System.currentTimeMillis();
                     ChromeShareExtras extras =
-                            new ChromeShareExtras.Builder().setSkipPageSharingActions(true).build();
+                            new ChromeShareExtras.Builder()
+                                    .setSkipPageSharingActions(true)
+                                    .setContentUrl(new GURL(mShareUrl))
+                                    .setDetailedContentType(
+                                            DetailedContentType.LIGHTWEIGHT_REACTION)
+                                    .build();
 
                     // Dismiss progress dialog and scene dialog before showing the share sheet.
                     progressDialog.dismiss();

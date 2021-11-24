@@ -674,6 +674,7 @@ chromium-metrics-reviews@google.com.
     <variant name="Gif"/>
     <variant name="HighlightedText"/>
     <variant name="Image"/>
+    <variant name="LightweightReaction"/>
     <variant name="NotSpecified"/>
     <variant name="Screenshot"/>
     <variant name="Webnotes"/>

@@ -113,7 +113,8 @@ public class ShareSheetLinkToggleCoordinator {
                         false)) {
             return true;
         } else if (detailedContentType == DetailedContentType.HIGHLIGHTED_TEXT
-                || detailedContentType == DetailedContentType.WEB_NOTES) {
+                || detailedContentType == DetailedContentType.WEB_NOTES
+                || detailedContentType == DetailedContentType.LIGHTWEIGHT_REACTION) {
             return true;
         }
         return false;

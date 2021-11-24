@@ -5045,6 +5045,10 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
         Share GIF only
       </message>
 
+      <message name="IDS_LINK_TOGGLE_SHARE_REACTION_ONLY" desc="Toast displayed when the toggle is clicked for a lightweight reaction share and a link is excluded.">
+        Share reaction only
+      </message>
+
       <message name="IDS_LINK_TOGGLE_SHARE_CONTENT_ONLY" desc="Fallback toast displayed when the toggle is clicked for a generic share and a link is excluded.">
         Share content only
       </message>

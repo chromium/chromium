@@ -21,7 +21,7 @@ import org.chromium.url.GURL;
 public class ChromeShareExtras {
     @IntDef({DetailedContentType.NOT_SPECIFIED, DetailedContentType.IMAGE, DetailedContentType.GIF,
             DetailedContentType.HIGHLIGHTED_TEXT, DetailedContentType.SCREENSHOT,
-            DetailedContentType.WEB_NOTES})
+            DetailedContentType.WEB_NOTES, DetailedContentType.LIGHTWEIGHT_REACTION})
     public @interface DetailedContentType {
         int NOT_SPECIFIED = 0;
         int IMAGE = 1;
@@ -29,6 +29,7 @@ public class ChromeShareExtras {
         int HIGHLIGHTED_TEXT = 3;
         int SCREENSHOT = 4;
         int WEB_NOTES = 5;
+        int LIGHTWEIGHT_REACTION = 6;
     }
 
     /**

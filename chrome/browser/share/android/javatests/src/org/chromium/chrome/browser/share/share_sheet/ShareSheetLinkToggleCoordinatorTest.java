@@ -280,5 +280,12 @@ public class ShareSheetLinkToggleCoordinatorTest {
                         .build());
         assertTrue("Should enable toggle by default.",
                 shareSheetLinkToggleCoordinator.shouldEnableToggleByDefault());
+
+        shareSheetLinkToggleCoordinator.setShareParamsAndExtras(shareParams,
+                new ChromeShareExtras.Builder()
+                        .setDetailedContentType(DetailedContentType.LIGHTWEIGHT_REACTION)
+                        .build());
+        assertTrue("Should enable toggle by default.",
+                shareSheetLinkToggleCoordinator.shouldEnableToggleByDefault());
     }
 }

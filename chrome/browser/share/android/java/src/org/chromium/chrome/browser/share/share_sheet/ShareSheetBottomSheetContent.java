@@ -423,6 +423,8 @@ class ShareSheetBottomSheetContent implements BottomSheetContent, OnItemClickLis
                 return R.string.link_toggle_share_screenshot_only;
             case DetailedContentType.WEB_NOTES:
                 return R.string.link_toggle_share_webnote_only;
+            case DetailedContentType.LIGHTWEIGHT_REACTION:
+                return R.string.link_toggle_share_reaction_only;
             case DetailedContentType.HIGHLIGHTED_TEXT:
             case DetailedContentType.NOT_SPECIFIED:
                 return R.string.link_toggle_share_content_only;

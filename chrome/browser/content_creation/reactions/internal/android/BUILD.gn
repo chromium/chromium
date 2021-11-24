@@ -47,6 +47,7 @@ android_library("java") {
     "//third_party/gif_player:gif_player_java",
     "//third_party/glide/gif_encoder:gif_encoder_java",
     "//ui/android:ui_no_recycler_view_java",
+    "//url:gurl_java",
   ]
 
   resources_package =
