@@ -86,6 +86,8 @@ public class StartupTabPreloaderTest {
             "Android.StartupTabPreloader.LoadDecisionToFirstContentfulPaint.LoadAndMismatch";
     private static final String PRELOAD_TRIGGER_TO_FIRST_CONTENTFUL_PAINT_NO_PRELOAD =
             "Android.StartupTabPreloader.LoadDecisionToFirstContentfulPaint.NoLoad";
+    private static final String LOAD_DECISION_REASON =
+            "Startup.Android.StartupTabPreloader.LoadDecisionReason";
 
     // Used for verifying expected histogram counts.
     private static final int NO_PRELOAD = 0;
@@ -179,6 +181,9 @@ public class StartupTabPreloaderTest {
                 1, RecordHistogram.getHistogramValueCountForTesting(TAB_LOADED_HISTOGRAM, 1));
         Assert.assertEquals(
                 1, RecordHistogram.getHistogramValueCountForTesting(TAB_TAKEN_HISTOGRAM, 1));
+        Assert.assertEquals(1,
+                RecordHistogram.getHistogramValueCountForTesting(LOAD_DECISION_REASON,
+                        StartupTabPreloader.LoadDecisionReason.ALL_SATISFIED));
     }
 
     @Test
@@ -197,6 +202,9 @@ public class StartupTabPreloaderTest {
                 1, RecordHistogram.getHistogramValueCountForTesting(TAB_LOADED_HISTOGRAM, 1));
         Assert.assertEquals(
                 1, RecordHistogram.getHistogramValueCountForTesting(TAB_TAKEN_HISTOGRAM, 1));
+        Assert.assertEquals(1,
+                RecordHistogram.getHistogramValueCountForTesting(LOAD_DECISION_REASON,
+                        StartupTabPreloader.LoadDecisionReason.ALL_SATISFIED));
 
         // First contentful paint should be recorded.
         CriteriaHelper.pollUiThread(()
@@ -228,6 +236,9 @@ public class StartupTabPreloaderTest {
         intent.addCategory(Intent.CATEGORY_LAUNCHER);
         mActivityRule.startMainActivityFromIntent(
                 intent, mServerRule.getServer().getURL(TEST_PAGE));
+        Assert.assertEquals(1,
+                RecordHistogram.getHistogramValueCountForTesting(LOAD_DECISION_REASON,
+                        StartupTabPreloader.LoadDecisionReason.ALL_SATISFIED));
 
         // The StartupTabPreloader should have loaded a url, but it should not have been taken.
         Assert.assertEquals(
@@ -271,6 +282,9 @@ public class StartupTabPreloaderTest {
                 0, RecordHistogram.getHistogramValueCountForTesting(TAB_LOADED_HISTOGRAM, 1));
         Assert.assertEquals(
                 0, RecordHistogram.getHistogramValueCountForTesting(TAB_TAKEN_HISTOGRAM, 1));
+        Assert.assertEquals(1,
+                RecordHistogram.getHistogramValueCountForTesting(LOAD_DECISION_REASON,
+                        StartupTabPreloader.LoadDecisionReason.DISABLED_BY_INTENT));
 
         // First contentful paint should be recorded.
         CriteriaHelper.pollUiThread(()
@@ -307,6 +321,9 @@ public class StartupTabPreloaderTest {
                 0, RecordHistogram.getHistogramValueCountForTesting(TAB_LOADED_HISTOGRAM, 1));
         Assert.assertEquals(
                 0, RecordHistogram.getHistogramValueCountForTesting(TAB_TAKEN_HISTOGRAM, 1));
+        Assert.assertEquals(1,
+                RecordHistogram.getHistogramValueCountForTesting(LOAD_DECISION_REASON,
+                        StartupTabPreloader.LoadDecisionReason.DISABLED_BY_FEATURE));
 
         // First contentful paint should be recorded.
         CriteriaHelper.pollUiThread(()
@@ -347,6 +364,9 @@ public class StartupTabPreloaderTest {
                 0, RecordHistogram.getHistogramValueCountForTesting(TAB_LOADED_HISTOGRAM, 1));
         Assert.assertEquals(
                 0, RecordHistogram.getHistogramValueCountForTesting(TAB_TAKEN_HISTOGRAM, 1));
+        Assert.assertEquals(1,
+                RecordHistogram.getHistogramValueCountForTesting(LOAD_DECISION_REASON,
+                        StartupTabPreloader.LoadDecisionReason.DISABLED_BY_FEATURE));
 
         // First contentful paint should be recorded.
         CriteriaHelper.pollUiThread(()
@@ -401,6 +421,9 @@ public class StartupTabPreloaderTest {
                 0, RecordHistogram.getHistogramValueCountForTesting(TAB_LOADED_HISTOGRAM, 1));
         Assert.assertEquals(
                 0, RecordHistogram.getHistogramValueCountForTesting(TAB_TAKEN_HISTOGRAM, 1));
+        Assert.assertEquals(1,
+                RecordHistogram.getHistogramValueCountForTesting(
+                        LOAD_DECISION_REASON, StartupTabPreloader.LoadDecisionReason.INCOGNITO));
     }
 
     @Test
@@ -417,6 +440,9 @@ public class StartupTabPreloaderTest {
                 1, RecordHistogram.getHistogramValueCountForTesting(TAB_LOADED_HISTOGRAM, 1));
         Assert.assertEquals(
                 1, RecordHistogram.getHistogramValueCountForTesting(TAB_TAKEN_HISTOGRAM, 1));
+        Assert.assertEquals(1,
+                RecordHistogram.getHistogramValueCountForTesting(LOAD_DECISION_REASON,
+                        StartupTabPreloader.LoadDecisionReason.ALL_SATISFIED));
     }
 
     @Test
@@ -432,6 +458,9 @@ public class StartupTabPreloaderTest {
                 0, RecordHistogram.getHistogramValueCountForTesting(TAB_LOADED_HISTOGRAM, 1));
         Assert.assertEquals(
                 0, RecordHistogram.getHistogramValueCountForTesting(TAB_TAKEN_HISTOGRAM, 1));
+        Assert.assertEquals(1,
+                RecordHistogram.getHistogramValueCountForTesting(
+                        LOAD_DECISION_REASON, StartupTabPreloader.LoadDecisionReason.NO_URL));
     }
 
     @Test
@@ -448,6 +477,9 @@ public class StartupTabPreloaderTest {
                 1, RecordHistogram.getHistogramValueCountForTesting(TAB_LOADED_HISTOGRAM, 1));
         Assert.assertEquals(
                 1, RecordHistogram.getHistogramValueCountForTesting(TAB_TAKEN_HISTOGRAM, 1));
+        Assert.assertEquals(1,
+                RecordHistogram.getHistogramValueCountForTesting(LOAD_DECISION_REASON,
+                        StartupTabPreloader.LoadDecisionReason.ALL_SATISFIED));
         Assert.assertEquals(1,
                 RecordHistogram.getHistogramTotalCountForTesting(
                         ACTIVITY_START_TO_PRELOAD_TRIGGER));
@@ -473,6 +505,9 @@ public class StartupTabPreloaderTest {
                 1, RecordHistogram.getHistogramValueCountForTesting(TAB_LOADED_HISTOGRAM, 1));
         Assert.assertEquals(
                 1, RecordHistogram.getHistogramValueCountForTesting(TAB_TAKEN_HISTOGRAM, 1));
+        Assert.assertEquals(1,
+                RecordHistogram.getHistogramValueCountForTesting(LOAD_DECISION_REASON,
+                        StartupTabPreloader.LoadDecisionReason.ALL_SATISFIED));
         Assert.assertEquals(1,
                 RecordHistogram.getHistogramTotalCountForTesting(
                         ACTIVITY_START_TO_PRELOAD_TRIGGER));

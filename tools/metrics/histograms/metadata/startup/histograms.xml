@@ -232,6 +232,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Startup.Android.StartupTabPreloader.LoadDecisionReason"
+    enum="StartupTabPreloaderLoadDecisionCause" expires_after="2022-09-01">
+  <owner>blundell@chromium.org</owner>
+  <owner>yfriedman@chromium.org</owner>
+  <summary>
+    Android: Gives the reason for StartupTabPreloader's decision of whether to
+    load a tab at startup. As reasons for not doing a startup tab preload are
+    not necessarily orthogonal, gives highest-priority reason (see computation
+    of metric in the codebase). Recorded when a profile is created, assuming a
+    StartupTabPreloader has been constructed for intents with a url and either
+    regular Chrome or a Custom Tab will be loaded.
+  </summary>
+</histogram>
+
 <histogram name="Startup.Android.StartupTabPreloader.TabLoaded" units="Boolean"
     expires_after="2022-09-01">
   <owner>skyostil@chromium.org</owner>

@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.os.SystemClock;
 import android.text.TextUtils;
 
+import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.IntentUtils;
@@ -38,6 +39,9 @@ import org.chromium.network.mojom.ReferrerPolicy;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.url.GURL;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+
 /**
  * This class attempts to preload the tab if the url is known from the intent when the profile
  * is created. This is done to improve startup latency.
@@ -47,6 +51,26 @@ public class StartupTabPreloader implements ProfileManager.Observer, DestroyObse
     public static final String EXTRA_DISABLE_STARTUP_TAB_PRELOADER =
             "org.chromium.chrome.browser.init.DISABLE_STARTUP_TAB_PRELOADER";
     private static boolean sFailNextTabMatchForTesting;
+
+    // These values are persisted in histograms. Please do not renumber. Append only.
+    @VisibleForTesting
+    @IntDef({LoadDecisionReason.DISABLED_BY_INTENT, LoadDecisionReason.INCOGNITO,
+            LoadDecisionReason.INTENT_IGNORED, LoadDecisionReason.NO_URL,
+            LoadDecisionReason.NO_TAB_CREATOR, LoadDecisionReason.WRONG_TAB_CREATOR,
+            LoadDecisionReason.DISABLED_BY_FEATURE, LoadDecisionReason.ALL_SATISFIED})
+    @Retention(RetentionPolicy.SOURCE)
+    @interface LoadDecisionReason {
+        int DISABLED_BY_INTENT = 0;
+        int INCOGNITO = 1;
+        int INTENT_IGNORED = 2;
+        int NO_URL = 3;
+        int NO_TAB_CREATOR = 4;
+        int WRONG_TAB_CREATOR = 5;
+        int DISABLED_BY_FEATURE = 6;
+        int ALL_SATISFIED = 7;
+
+        int NUM_ENTRIES = 3;
+    }
 
     private final Supplier<Intent> mIntentSupplier;
     private final ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
@@ -63,6 +87,9 @@ public class StartupTabPreloader implements ProfileManager.Observer, DestroyObse
     private long mLoadDecisionMs;
     // Records whether a preload was triggered.
     boolean mTriggerPreload;
+    // Records the reason for the last preload decision.
+    @LoadDecisionReason
+    int mLoadDecisionReason;
     // Records whether a preloaded tab matched.
     boolean mTabMatches;
     // Records whether we have already recorded the histogram for the duration between the load
@@ -291,11 +318,24 @@ public class StartupTabPreloader implements ProfileManager.Observer, DestroyObse
             if (mTriggerPreload) loadTab();
             RecordHistogram.recordBooleanHistogram(
                     "Startup.Android.StartupTabPreloader.TabLoaded", mTriggerPreload);
+            RecordHistogram.recordEnumeratedHistogram(
+                    "Startup.Android.StartupTabPreloader.LoadDecisionReason",
+                    getLoadDecisionReason(), LoadDecisionReason.NUM_ENTRIES);
         }
     }
 
     @Override
     public void onProfileDestroyed(Profile profile) {}
+
+    /**
+     * @returns The reason for the decision returned by the most recent invocation of
+     * shouldLoadTab().
+     */
+    @VisibleForTesting
+    @LoadDecisionReason
+    int getLoadDecisionReason() {
+        return mLoadDecisionReason;
+    }
 
     /**
      * @returns True if based on the intent we should load the tab, returns false otherwise.
@@ -309,16 +349,28 @@ public class StartupTabPreloader implements ProfileManager.Observer, DestroyObse
 
         Intent intent = mIntentSupplier.get();
         if (IntentUtils.safeGetBooleanExtra(intent, EXTRA_DISABLE_STARTUP_TAB_PRELOADER, false)) {
+            mLoadDecisionReason = LoadDecisionReason.DISABLED_BY_INTENT;
             return false;
         }
-        if (mIntentHandler.shouldIgnoreIntent(intent, /*startedActivity=*/true)) return false;
-        if (getUrlFromIntent(intent) == null) return false;
 
-        // We don't support incognito tabs because only chrome can send new incognito tab
-        // intents and that's not a startup scenario.
+        // We don't support incognito tabs. NOTE: This check is before the check for whether the
+        // intent should be ignored to allow capturing the metric for this case separately, as
+        // IntentHandler also disallows incognito tab intents not sent by Chrome (i.e.,
+        // IntentHandler#shouldIgnoreIntent() returns true in this case).
         boolean incognito = IntentUtils.safeGetBooleanExtra(
                 intent, IntentHandler.EXTRA_OPEN_NEW_INCOGNITO_TAB, false);
-        if (incognito) return false;
+        if (incognito) {
+            mLoadDecisionReason = LoadDecisionReason.INCOGNITO;
+            return false;
+        }
+        if (mIntentHandler.shouldIgnoreIntent(intent, /*startedActivity=*/true)) {
+            mLoadDecisionReason = LoadDecisionReason.INTENT_IGNORED;
+            return false;
+        }
+        if (getUrlFromIntent(intent) == null) {
+            mLoadDecisionReason = LoadDecisionReason.NO_URL;
+            return false;
+        }
 
         // The TabCreatorManager throws an IllegalStateException if it is not ready to provide a
         // TabCreator.
@@ -326,14 +378,19 @@ public class StartupTabPreloader implements ProfileManager.Observer, DestroyObse
         try {
             tabCreator = mTabCreatorManager.getTabCreator(incognito);
         } catch (IllegalStateException e) {
+            mLoadDecisionReason = LoadDecisionReason.NO_TAB_CREATOR;
             return false;
         }
 
         // We want to get the TabDelegateFactory but only ChromeTabCreator has one.
-        if (!(tabCreator instanceof ChromeTabCreator)) return false;
+        if (!(tabCreator instanceof ChromeTabCreator)) {
+            mLoadDecisionReason = LoadDecisionReason.WRONG_TAB_CREATOR;
+            return false;
+        }
 
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.ELIDE_TAB_PRELOAD_AT_STARTUP)) {
             mPreloadPreventedOnlyByFeature = true;
+            mLoadDecisionReason = LoadDecisionReason.DISABLED_BY_FEATURE;
             GURL url = UrlFormatter.fixupUrl(getUrlFromIntent(intent));
 
             // NOTE: We avoid calling IntentHandler.createLoadUrlParamsForIntent() here as that
@@ -348,6 +405,7 @@ public class StartupTabPreloader implements ProfileManager.Observer, DestroyObse
             return false;
         }
 
+        mLoadDecisionReason = LoadDecisionReason.ALL_SATISFIED;
         return true;
     }
 

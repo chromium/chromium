@@ -81570,6 +81570,17 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
              startup"/>
 </enum>
 
+<enum name="StartupTabPreloaderLoadDecisionCause">
+  <int value="0" label="DisabledByIntent"/>
+  <int value="1" label="Incognito"/>
+  <int value="2" label="IntentIgnored"/>
+  <int value="3" label="NoUrl"/>
+  <int value="4" label="NoTabCreator"/>
+  <int value="5" label="WrongTabCreator"/>
+  <int value="6" label="DisabledByFeature"/>
+  <int value="7" label="AllSatisfied"/>
+</enum>
+
 <enum name="StartupTemperature">
   <int value="0" label="Cold startup (mostly hard faults)"/>
   <int value="1" label="Warm startup (nearly no hard faults)"/>
