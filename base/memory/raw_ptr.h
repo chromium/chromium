@@ -319,22 +319,23 @@ struct IsSupportedType<T,
 
 }  // namespace raw_ptr_traits
 
-// DO NOT USE! EXPERIMENTAL ONLY! This is helpful for local testing!
+// `raw_ptr<T>` is a non-owning smart pointer that has improved memory-safety
+// over raw pointers.  It behaves just like a raw pointer with an exception that
+// it is zero-initialized and cleared on destruction and move. Unlike
+// `std::unique_ptr<T>`, `base::scoped_refptr<T>`, etc., it doesn’t manage
+// ownership or lifetime of an allocated object - you are still responsible for
+// freeing the object when no longer used, just as you would with a raw C++
+// pointer.
 //
-// raw_ptr<T> (formerly known as CheckedPtr<T>) is meant to be a raw pointer
-// wrapper, that makes Use-After-Free (UaF) unexploitable, to prevent security
-// issues. This is very much in the experimental phase. More context in:
-// https://docs.google.com/document/d/1pnnOAIz_DMWDI4oIOFoMAqLnf_MZ2GsrJNb_dbQ3ZBg
+// Compared to a raw C++ pointer, `raw_ptr<T>` incurs additional performance
+// overhead for initialization, destruction, and assignment (including `ptr++`
+// and `ptr += ...`).  There is no overhead when dereferencing a pointer.
 //
-// By default, raw_ptr is a no-op wrapper (RawPtrNoOpImpl) to aid local testing.
-// USE_BACKUP_REF_PTR switches to BackupRefPtrImpl and enables necessary support
-// in PartitionAlloc, to enabled the UaF protection.
-//
-// Goals for this API:
-// 1. Minimize amount of caller-side changes as much as physically possible.
-// 2. Keep this class as small as possible, while still satisfying goal #1 (i.e.
-//    we aren't striving to maximize compatibility with raw pointers, merely
-//    adding support for cases encountered so far).
+// `raw_ptr<T>` is beneficial for security, because it can prevent a significant
+// percentage of Use-after-Free (UaF) bugs from being exploitable.  `raw_ptr<T>`
+// has limited impact on stability - dereferencing a dangling pointer remains
+// Undefined Behavior.  Note that the security protection is not yet enabled by
+// default.
 template <typename T,
 #if BUILDFLAG(USE_BACKUP_REF_PTR)
           typename Impl = internal::BackupRefPtrImpl>

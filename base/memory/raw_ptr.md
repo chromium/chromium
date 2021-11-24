@@ -9,13 +9,14 @@ etc., it doesn’t manage ownership or lifetime of an allocated object - you are
 still responsible for freeing the object when no longer used, just as you would
 with a raw C++ pointer.
 
-`raw_ptr<T>` is beneficial for security, because it prevents a significant
+`raw_ptr<T>` is beneficial for security, because it can prevent a significant
 percentage of Use-after-Free
 (UaF) bugs from being exploitable (by poisoning the freed memory and
 quarantining it as long as a dangling `raw_ptr<T>` exists).
 `raw_ptr<T>` has limited impact on stability - dereferencing
 a dangling pointer remains Undefined Behavior (although poisoning may
 lead to earlier, easier to debug crashes).
+Note that the security protection is not yet enabled by default.
 
 `raw_ptr<T>` is a part of
 [the MiraclePtr project](https://docs.google.com/document/d/1pnnOAIz_DMWDI4oIOFoMAqLnf_MZ2GsrJNb_dbQ3ZBg/edit?usp=sharing)
