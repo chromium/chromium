@@ -380,7 +380,7 @@ const base::Feature kAutofillSkipComparingInferredLabels{
 // a non-credit card specific name field.
 const base::Feature kAutofillStrictContextualCardNameConditions{
     "AutofillStrictContextualCardNameConditions",
-    base::FEATURE_DISABLED_BY_DEFAULT};
+    base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Controls whether Autofill should search prefixes of all words/tokens when
 // filtering profiles, or only on prefixes of the whole string.
