@@ -77,6 +77,21 @@ bool PatternAccountRestriction::IsAccountRestricted(
   return true;
 }
 
+bool ArePatternsValid(const base::Value* value) {
+  // TODO(crbug.com/1271066): Check if we can use regex instead.
+  if (!value->is_list())
+    return false;
+
+  for (const base::Value& item : value->GetList()) {
+    if (!item.is_string())
+      return false;
+    auto maybe_pattern = PatternFromString(item.GetString());
+    if (!maybe_pattern)
+      return false;
+  }
+  return true;
+}
+
 absl::optional<PatternAccountRestriction> PatternAccountRestrictionFromValue(
     const base::ListValue* value) {
   DCHECK(value->is_list());
@@ -84,10 +99,10 @@ absl::optional<PatternAccountRestriction> PatternAccountRestrictionFromValue(
   patterns.reserve(value->GetList().size());
   for (const base::Value& item : value->GetList()) {
     if (!item.is_string())
-      return absl::nullopt;
+      continue;
     auto maybe_pattern = PatternFromString(item.GetString());
     if (!maybe_pattern)
-      return absl::nullopt;
+      continue;
     patterns.push_back(*std::move(maybe_pattern));
   }
   return PatternAccountRestriction(std::move(patterns));

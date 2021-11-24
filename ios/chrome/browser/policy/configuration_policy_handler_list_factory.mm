@@ -33,6 +33,7 @@
 #include "components/variations/service/variations_service.h"
 #include "ios/chrome/browser/policy/browser_signin_policy_handler.h"
 #include "ios/chrome/browser/policy/policy_features.h"
+#import "ios/chrome/browser/policy/restrict_accounts_policy_handler.h"
 #include "ios/chrome/browser/pref_names.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -102,9 +103,6 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { policy::key::kUrlKeyedAnonymizedDataCollectionEnabled,
     unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled,
     base::Value::Type::BOOLEAN },
-  { policy::key::kRestrictAccountsToPatterns,
-    prefs::kRestrictAccountsToPatterns,
-    base::Value::Type::LIST },
 };
 // clang-format on
 
@@ -140,6 +138,8 @@ std::unique_ptr<policy::ConfigurationPolicyHandlerList> BuildPolicyHandlerList(
       std::make_unique<autofill::AutofillCreditCardPolicyHandler>());
   handlers->AddHandler(
       std::make_unique<policy::BrowserSigninPolicyHandler>(chrome_schema));
+  handlers->AddHandler(
+      std::make_unique<policy::RestrictAccountsPolicyHandler>(chrome_schema));
   handlers->AddHandler(std::make_unique<policy::DefaultSearchPolicyHandler>());
   handlers->AddHandler(
       std::make_unique<safe_browsing::SafeBrowsingPolicyHandler>());

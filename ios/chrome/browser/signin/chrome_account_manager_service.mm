@@ -155,7 +155,6 @@ PatternAccountRestriction PatternAccountRestrictionFromPreference(
     PrefService* pref_service) {
   auto maybe_restriction = PatternAccountRestrictionFromValue(
       pref_service->GetList(prefs::kRestrictAccountsToPatterns));
-  CHECK(maybe_restriction.has_value());
   return *std::move(maybe_restriction);
 }
 

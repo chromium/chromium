@@ -28,9 +28,9 @@ TEST_F(PatternAccountRestrictionTest, FilterEmailsWithRestrictions) {
   value.Append("*google.com");
   auto restriction = PatternAccountRestrictionFromValue(&value);
 
-  CHECK_EQ(restriction->IsAccountRestricted(email1), false);
-  CHECK_EQ(restriction->IsAccountRestricted(email2), false);
-  CHECK_EQ(restriction->IsAccountRestricted(email3), true);
+  EXPECT_EQ(restriction->IsAccountRestricted(email1), false);
+  EXPECT_EQ(restriction->IsAccountRestricted(email2), false);
+  EXPECT_EQ(restriction->IsAccountRestricted(email3), true);
 }
 
 // Tests that the PatternAccountRestriction does not filter emails when
@@ -39,9 +39,22 @@ TEST_F(PatternAccountRestrictionTest, FilterEmailsWithoutRestriction) {
   base::ListValue value;
   auto restriction = PatternAccountRestrictionFromValue(&value);
 
-  CHECK_EQ(restriction->IsAccountRestricted(email1), false);
-  CHECK_EQ(restriction->IsAccountRestricted(email2), false);
-  CHECK_EQ(restriction->IsAccountRestricted(email3), false);
+  EXPECT_EQ(restriction->IsAccountRestricted(email1), false);
+  EXPECT_EQ(restriction->IsAccountRestricted(email2), false);
+  EXPECT_EQ(restriction->IsAccountRestricted(email3), false);
+}
+
+// Tests that the PatternAccountRestriction does not filter emails when the
+// restriction is not correctly formatted.
+TEST_F(PatternAccountRestrictionTest, FilterEmailsWithBadPattern) {
+  base::ListValue value;
+  value.Append("*gmail.com\\");
+  value.Append("*google.com");
+  auto restriction = PatternAccountRestrictionFromValue(&value);
+
+  EXPECT_EQ(restriction->IsAccountRestricted(email1), true);
+  EXPECT_EQ(restriction->IsAccountRestricted(email2), false);
+  EXPECT_EQ(restriction->IsAccountRestricted(email3), true);
 }
 
 // Tests that the pattern created by PatternFromString(chunk) correctlty matches
@@ -50,29 +63,56 @@ TEST_F(PatternAccountRestrictionTest, FilterEmailsWithoutRestriction) {
 // characters, put a '\' in front of them.
 TEST_F(PatternAccountRestrictionTest, PatternMatchChunck) {
   auto pattern = PatternFromString("*gmail.com");
-  CHECK_EQ(pattern->Match(email1), true);
-  CHECK_EQ(pattern->Match(email2), false);
-  CHECK_EQ(pattern->Match(email3), false);
+  EXPECT_EQ(pattern->Match(email1), true);
+  EXPECT_EQ(pattern->Match(email2), false);
+  EXPECT_EQ(pattern->Match(email3), false);
 
   pattern = PatternFromString("gmail.com");
-  CHECK_EQ(pattern->Match(email1), false);
-  CHECK_EQ(pattern->Match(email2), false);
-  CHECK_EQ(pattern->Match(email3), false);
+  EXPECT_EQ(pattern->Match(email1), false);
+  EXPECT_EQ(pattern->Match(email2), false);
+  EXPECT_EQ(pattern->Match(email3), false);
 
   pattern = PatternFromString("foo*");
-  CHECK_EQ(pattern->Match(email1), true);
-  CHECK_EQ(pattern->Match(email2), true);
-  CHECK_EQ(pattern->Match(email3), true);
+  EXPECT_EQ(pattern->Match(email1), true);
+  EXPECT_EQ(pattern->Match(email2), true);
+  EXPECT_EQ(pattern->Match(email3), true);
 
   // "foo\\*@gmail.com" is actually "foo\*@gmail.com". The escape character '\'
   // is doubled here because it's also an escape character for std::string.
   pattern = PatternFromString("foo\\*@gmail.com");
-  CHECK_EQ(pattern->Match(email1), false);
-  CHECK_EQ(pattern->Match("foo*@gmail.com"), true);
+  EXPECT_EQ(pattern->Match(email1), false);
+  EXPECT_EQ(pattern->Match("foo*@gmail.com"), true);
 
   // "foo\\\\*" is "actually foo\\*".
   pattern = PatternFromString("foo\\\\*");
-  CHECK_EQ(pattern->Match(email1), false);
+  EXPECT_EQ(pattern->Match(email1), false);
   // "foo\\@gmail.com" is actually "foo\@gmail.com".
-  CHECK_EQ(pattern->Match("foo\\@gmail.com"), true);
+  EXPECT_EQ(pattern->Match("foo\\@gmail.com"), true);
+}
+
+// Tests that valid patterns are correctly identified.
+TEST_F(PatternAccountRestrictionTest, ValidPattern) {
+  base::ListValue value;
+  value.Append("*gmail.com");
+  value.Append("myemail@gmail.com");
+  value.Append("myemail\\*@gmail.com");
+  value.Append("\\\\google.com");
+
+  EXPECT_TRUE(ArePatternsValid(&value));
+}
+
+// Tests that invalid patterns are correctly identified.
+TEST_F(PatternAccountRestrictionTest, InvalidPattern) {
+  base::ListValue value;
+  value.Append("*gmail.com\\");
+  value.Append("*google.com");
+
+  EXPECT_FALSE(ArePatternsValid(&value));
+}
+
+// Tests that empty patterns are correctly identified.
+TEST_F(PatternAccountRestrictionTest, EmptyPattern) {
+  base::ListValue value;
+
+  EXPECT_TRUE(ArePatternsValid(&value));
 }
