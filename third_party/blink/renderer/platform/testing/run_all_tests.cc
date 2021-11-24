@@ -31,6 +31,7 @@
 #include <memory>
 #include "base/bind.h"
 #include "base/test/launcher/unit_test_launcher.h"
+#include "base/test/task_environment.h"
 #include "base/test/test_io_thread.h"
 #include "base/test/test_suite.h"
 #include "build/build_config.h"
@@ -44,7 +45,10 @@ namespace {
 
 int runTestSuite(base::TestSuite* testSuite) {
   int result = testSuite->Run();
-  blink::ThreadState::Current()->CollectAllGarbageForTesting();
+  {
+    base::test::TaskEnvironment task_environment_;
+    blink::ThreadState::Current()->CollectAllGarbageForTesting();
+  }
   return result;
 }
 
