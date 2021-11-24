@@ -71,11 +71,11 @@ float ApproximateBoostCoefficient(float decay_coefficient, float boost_factor) {
 
 }  // namespace
 
-MrfuCache::MrfuCache(const base::FilePath& path, const Params& params) {
-  proto_.Init(
-      path, params.write_delay,
-      base::BindOnce(&MrfuCache::OnProtoRead, weak_factory_.GetWeakPtr()),
-      base::DoNothing());
+MrfuCache::MrfuCache(const base::FilePath& path, const Params& params)
+    : proto_(path, params.write_delay) {
+  proto_.RegisterOnRead(
+      base::BindOnce(&MrfuCache::OnProtoRead, weak_factory_.GetWeakPtr()));
+  proto_.Init();
   // See header comment for explanation.
   decay_coeff_ = exp(log(0.5f) / params.half_life);
   boost_coeff_ = ApproximateBoostCoefficient(decay_coeff_, params.boost_factor);

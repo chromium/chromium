@@ -818,8 +818,9 @@ chromium-metrics-reviews@google.com.
   <summary>
     Various error states on reading a backing file from disk, in the score
     normalizer used by the Chrome OS launcher. Emitted once when a persistent
-    proto initially reads from disk. Some number of Missing values is expected,
-    because it is logged for each new user added to a device.
+    proto initially reads from disk. Some number of Missing values are expected,
+    eg. because it is logged for each new user added to a device. Some number of
+    No-op values are expected if embedded messages are used.
   </summary>
 </histogram>
 

@@ -22,6 +22,18 @@ namespace {
 // Populate |proto| with some test data.
 void PopulateTestProto(TestProto* proto) {
   proto->set_value(12345);
+
+  // A sub-proto
+  TestProto* child = proto->mutable_msg_one();
+  child->set_value(54321);
+
+  // A sub-proto of the sub-proto.
+  TestProto* grandchild = child->mutable_msg_one();
+  grandchild->set_value(54321);
+
+  // A sibling to the sub-proto.
+  AnotherTestProto* sibling = proto->mutable_msg_two();
+  sibling->set_value(15243);
 }
 
 // Make a proto with test data.
@@ -33,9 +45,30 @@ TestProto MakeTestProto() {
 
 // Returns whether |actual| and |expected| are equal.
 bool ProtoEquals(const TestProto* actual, const TestProto* expected) {
-  if (!actual->has_value())
-    return !expected->has_value();
-  return actual->value() == expected->value();
+  bool ok = true;
+
+  if (!actual->has_value() || !expected->has_value()) {
+    ok &= actual->has_value() == expected->has_value();
+  } else {
+    ok &= actual->value() == expected->value();
+  }
+
+  if (!actual->has_msg_one() || !expected->has_msg_one()) {
+    ok &= actual->has_msg_one() == expected->has_msg_one();
+  } else {
+    ok &= ProtoEquals(&actual->msg_one(), &expected->msg_one());
+  }
+
+  if (!actual->has_msg_two()) {
+    ok &= !expected->has_msg_two();
+  } else if (!actual->msg_two().has_value() ||
+             !expected->msg_two().has_value()) {
+    ok &= expected->msg_two().has_value() == actual->msg_two().has_value();
+  } else {
+    ok &= actual->msg_two().value() == expected->msg_two().value();
+  }
+
+  return ok;
 }
 
 base::TimeDelta WriteDelay() {
@@ -68,28 +101,31 @@ class PersistentProtoTest : public testing::Test {
     ASSERT_TRUE(base::WriteFile(GetPath(), proto.SerializeAsString()));
   }
 
-  void OnRead(const ReadStatus status) {
+  void RegisterOnRead(const ReadStatus status) {
     read_status_ = status;
     ++read_count_;
   }
 
   base::OnceCallback<void(ReadStatus)> ReadCallback() {
-    return base::BindOnce(&PersistentProtoTest::OnRead, base::Unretained(this));
+    return base::BindOnce(&PersistentProtoTest::RegisterOnRead,
+                          base::Unretained(this));
   }
 
-  void OnWrite(const WriteStatus status) {
+  void RegisterOnWrite(const WriteStatus status) {
     ASSERT_EQ(status, WriteStatus::kOk);
     ++write_count_;
   }
 
   base::RepeatingCallback<void(WriteStatus)> WriteCallback() {
-    return base::BindRepeating(&PersistentProtoTest::OnWrite,
+    return base::BindRepeating(&PersistentProtoTest::RegisterOnWrite,
                                base::Unretained(this));
   }
 
   void Wait() { task_environment_.RunUntilIdle(); }
 
   // Records the information passed to the callbacks for later expectation.
+  // |read_status_| is left intentionally unassigned so all states can be
+  // distinguished.
   ReadStatus read_status_;
   int read_count_ = 0;
   int write_count_ = 0;
@@ -103,8 +139,8 @@ class PersistentProtoTest : public testing::Test {
 // Test that the underlying proto is nullptr until a read is complete, and isn't
 // after that.
 TEST_F(PersistentProtoTest, Initialization) {
-  PersistentProto<TestProto> pproto;
-  pproto.Init(GetPath(), WriteDelay(), ReadCallback(), WriteCallback());
+  PersistentProto<TestProto> pproto(GetPath(), WriteDelay());
+  pproto.Init();
   EXPECT_EQ(pproto.get(), nullptr);
   EXPECT_FALSE(pproto.initialized());
   Wait();
@@ -114,8 +150,8 @@ TEST_F(PersistentProtoTest, Initialization) {
 
 // Test bool conversion and has_value.
 TEST_F(PersistentProtoTest, BoolTests) {
-  PersistentProto<TestProto> pproto;
-  pproto.Init(GetPath(), WriteDelay(), ReadCallback(), WriteCallback());
+  PersistentProto<TestProto> pproto(GetPath(), WriteDelay());
+  pproto.Init();
   EXPECT_EQ(pproto.get(), nullptr);
   EXPECT_FALSE(pproto);
   EXPECT_FALSE(pproto.has_value());
@@ -127,8 +163,8 @@ TEST_F(PersistentProtoTest, BoolTests) {
 
 // Test -> and *.
 TEST_F(PersistentProtoTest, Getters) {
-  PersistentProto<TestProto> pproto;
-  pproto.Init(GetPath(), WriteDelay(), ReadCallback(), WriteCallback());
+  PersistentProto<TestProto> pproto(GetPath(), WriteDelay());
+  pproto.Init();
   Wait();
   // We're really just checking these don't crash.
   EXPECT_EQ(pproto->value(), 0);
@@ -143,8 +179,10 @@ TEST_F(PersistentProtoTest, Read) {
   const auto test_proto = MakeTestProto();
   WriteToDisk(test_proto);
 
-  PersistentProto<TestProto> pproto;
-  pproto.Init(GetPath(), WriteDelay(), ReadCallback(), WriteCallback());
+  PersistentProto<TestProto> pproto(GetPath(), WriteDelay());
+  pproto.RegisterOnRead(ReadCallback());
+  pproto.RegisterOnWrite(WriteCallback());
+  pproto.Init();
   EXPECT_EQ(pproto.get(), nullptr);
 
   Wait();
@@ -159,8 +197,10 @@ TEST_F(PersistentProtoTest, Read) {
 TEST_F(PersistentProtoTest, ReadInvalidProto) {
   ASSERT_TRUE(base::WriteFile(GetPath(), "this isn't a valid proto"));
 
-  PersistentProto<TestProto> pproto;
-  pproto.Init(GetPath(), WriteDelay(), ReadCallback(), WriteCallback());
+  PersistentProto<TestProto> pproto(GetPath(), WriteDelay());
+  pproto.RegisterOnRead(ReadCallback());
+  pproto.RegisterOnWrite(WriteCallback());
+  pproto.Init();
   Wait();
   EXPECT_EQ(read_status_, ReadStatus::kParseError);
   EXPECT_EQ(read_count_, 1);
@@ -169,8 +209,10 @@ TEST_F(PersistentProtoTest, ReadInvalidProto) {
 
 // Test that the pproto correctly saves the in-memory proto to disk.
 TEST_F(PersistentProtoTest, Write) {
-  PersistentProto<TestProto> pproto;
-  pproto.Init(GetPath(), WriteDelay(), ReadCallback(), WriteCallback());
+  PersistentProto<TestProto> pproto(GetPath(), WriteDelay());
+  pproto.RegisterOnRead(ReadCallback());
+  pproto.RegisterOnWrite(WriteCallback());
+  pproto.Init();
   // Underlying proto should be nullptr until read is complete.
   EXPECT_EQ(pproto.get(), nullptr);
 
@@ -190,8 +232,10 @@ TEST_F(PersistentProtoTest, Write) {
 
 // Test that several saves all happen correctly.
 TEST_F(PersistentProtoTest, MultipleWrites) {
-  PersistentProto<TestProto> pproto;
-  pproto.Init(GetPath(), WriteDelay(), ReadCallback(), WriteCallback());
+  PersistentProto<TestProto> pproto(GetPath(), WriteDelay());
+  pproto.RegisterOnRead(ReadCallback());
+  pproto.RegisterOnWrite(WriteCallback());
+  pproto.Init();
   EXPECT_EQ(pproto.get(), nullptr);
 
   Wait();
@@ -211,8 +255,10 @@ TEST_F(PersistentProtoTest, MultipleWrites) {
 // Test that many calls to QueueWrite get batched, leading to only one real
 // write.
 TEST_F(PersistentProtoTest, QueueWrites) {
-  PersistentProto<TestProto> pproto;
-  pproto.Init(GetPath(), WriteDelay(), ReadCallback(), WriteCallback());
+  PersistentProto<TestProto> pproto(GetPath(), WriteDelay());
+  pproto.RegisterOnRead(ReadCallback());
+  pproto.RegisterOnWrite(WriteCallback());
+  pproto.Init();
   Wait();
   EXPECT_EQ(write_count_, 1);
 
@@ -235,8 +281,8 @@ TEST_F(PersistentProtoTest, QueueWrites) {
 TEST_F(PersistentProtoTest, Purge) {
   WriteToDisk(MakeTestProto());
 
-  PersistentProto<TestProto> pproto;
-  pproto.Init(GetPath(), WriteDelay(), ReadCallback(), WriteCallback());
+  PersistentProto<TestProto> pproto(GetPath(), WriteDelay());
+  pproto.Init();
   Wait();
 
   // Values read from disk.
@@ -253,6 +299,72 @@ TEST_F(PersistentProtoTest, Purge) {
   // writes have been completed.
   Wait();
   EXPECT_FALSE(ReadFromDisk().has_value());
+}
+
+// Tests that an embedded message can be created and used.
+TEST_F(PersistentProtoTest, EmbeddedMessage) {
+  WriteToDisk(MakeTestProto());
+
+  PersistentProto<TestProto> pproto(GetPath(), WriteDelay());
+  pproto.Init();
+  Wait();
+
+  // Check that the embedded message has the correct data.
+  PersistentProto<TestProto> msg_one = pproto.Wrap(pproto->mutable_msg_one());
+  EXPECT_EQ(msg_one->value(), 54321);
+
+  // Check that modifying the embedded message also modifies the parent.
+  msg_one->set_value(1123);
+  EXPECT_EQ(pproto->msg_one().value(), 1123);
+
+  // Check that calling write on the message object actually results in a write.
+  msg_one->set_value(3211);
+  msg_one.StartWrite();
+  Wait();
+  EXPECT_EQ(ReadFromDisk().msg_one().value(), 3211);
+
+  // Check that calling write on a sibling message object results in a write.
+  PersistentProto<AnotherTestProto> msg_two =
+      pproto.Wrap(pproto->mutable_msg_two());
+  msg_one->set_value(1231);
+  msg_two.StartWrite();
+  Wait();
+  EXPECT_EQ(ReadFromDisk().msg_one().value(), 1231);
+}
+
+// Tests that callbacks on embedded messages are handled correctly.
+TEST_F(PersistentProtoTest, EmbeddedMessageCallbacks) {
+  PersistentProto<TestProto> pproto(GetPath(), WriteDelay());
+  pproto.Init();
+  Wait();
+
+  auto msg_one = pproto.Wrap(pproto->mutable_msg_one());
+  msg_one.RegisterOnRead(ReadCallback());
+  msg_one.RegisterOnWrite(WriteCallback());
+
+  // Running Init on the embedded message should immediately run read callbacks.
+  msg_one.Init();
+  EXPECT_EQ(read_status_, ReadStatus::kNoop);
+  EXPECT_EQ(read_count_, 1);
+
+  // Write callbacks registered on the embedded message should be triggered from
+  // a write on the...
+
+  // ... parent pproto.
+  pproto.StartWrite();
+  Wait();
+  EXPECT_EQ(write_count_, 1);
+
+  // ... embedded message.
+  msg_one.StartWrite();
+  Wait();
+  EXPECT_EQ(write_count_, 2);
+
+  // ... embedded message within embedded message.
+  auto grandchild = msg_one.Wrap(msg_one->mutable_msg_one());
+  grandchild.StartWrite();
+  Wait();
+  EXPECT_EQ(write_count_, 3);
 }
 
 }  // namespace app_list

@@ -11,8 +11,8 @@ namespace app_list {
 
 RemovedResultsRanker::RemovedResultsRanker(const base::FilePath& path,
                                            const base::TimeDelta write_delay)
-    : write_delay_(write_delay) {
-  proto_.Init(path, write_delay_, base::DoNothing(), base::DoNothing());
+    : write_delay_(write_delay), proto_(path, write_delay) {
+  proto_.Init();
 }
 
 RemovedResultsRanker::~RemovedResultsRanker() = default;
