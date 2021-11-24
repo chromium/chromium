@@ -486,7 +486,7 @@ TEST_F(PresentationServiceImplTest, ReceiverDelegateOnSubFrame) {
 
   PresentationServiceImpl service_impl(main_rfh(), contents(), nullptr,
                                        &mock_receiver_delegate_);
-  service_impl.is_main_frame_ = false;
+  service_impl.is_outermost_document_ = false;
 
   ReceiverConnectionAvailableCallback callback;
   EXPECT_CALL(mock_receiver_delegate_,

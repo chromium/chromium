@@ -65,6 +65,8 @@ const KEYS = {
   "popup_openee"                                : "00000000-0000-0000-0000-00000000001F",
 
   "permission.geolocation"                      : "00000000-0000-0000-0000-000000000020",
+
+  "presentation.receiver"                       : "00000000-0000-0000-0000-000000000021",
   // Add keys above this list, incrementing the key UUID in hexadecimal
 }
 

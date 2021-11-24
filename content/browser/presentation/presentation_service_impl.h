@@ -295,8 +295,8 @@ class CONTENT_EXPORT PresentationServiceImpl
   int render_process_id_;
   int render_frame_id_;
 
-  // If current frame is top level frame.
-  bool is_main_frame_;
+  // If current frame is the outermost frame (not an iframe nor a fenced frame).
+  bool is_outermost_document_;
 
   // NOTE: Weak pointers must be invalidated before all other member variables.
   base::WeakPtrFactory<PresentationServiceImpl> weak_factory_{this};
