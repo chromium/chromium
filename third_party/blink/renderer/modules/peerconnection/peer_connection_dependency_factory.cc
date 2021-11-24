@@ -91,20 +91,20 @@ namespace {
 using PassKey = base::PassKey<PeerConnectionDependencyFactory>;
 
 enum WebRTCIPHandlingPolicy {
-  DEFAULT,
-  DEFAULT_PUBLIC_AND_PRIVATE_INTERFACES,
-  DEFAULT_PUBLIC_INTERFACE_ONLY,
-  DISABLE_NON_PROXIED_UDP,
+  kDefault,
+  kDefaultPublicAndPrivateInterfaces,
+  kDefaultPublicInterfaceOnly,
+  kDisableNonProxiedUdp,
 };
 
 WebRTCIPHandlingPolicy GetWebRTCIPHandlingPolicy(const String& preference) {
   if (preference == kWebRTCIPHandlingDefaultPublicAndPrivateInterfaces)
-    return DEFAULT_PUBLIC_AND_PRIVATE_INTERFACES;
+    return kDefaultPublicAndPrivateInterfaces;
   if (preference == kWebRTCIPHandlingDefaultPublicInterfaceOnly)
-    return DEFAULT_PUBLIC_INTERFACE_ONLY;
+    return kDefaultPublicInterfaceOnly;
   if (preference == kWebRTCIPHandlingDisableNonProxiedUdp)
-    return DISABLE_NON_PROXIED_UDP;
-  return DEFAULT;
+    return kDisableNonProxiedUdp;
+  return kDefault;
 }
 
 bool IsValidPortRange(uint16_t min_port, uint16_t max_port) {
@@ -783,18 +783,18 @@ PeerConnectionDependencyFactory::CreatePortAllocator(
       switch (policy) {
         // TODO(guoweis): specify the flag of disabling local candidate
         // collection when webrtc is updated.
-        case DEFAULT_PUBLIC_INTERFACE_ONLY:
-        case DEFAULT_PUBLIC_AND_PRIVATE_INTERFACES:
+        case kDefaultPublicInterfaceOnly:
+        case kDefaultPublicAndPrivateInterfaces:
           port_config.enable_multiple_routes = false;
           port_config.enable_nonproxied_udp = true;
           port_config.enable_default_local_candidate =
-              (policy == DEFAULT_PUBLIC_AND_PRIVATE_INTERFACES);
+              (policy == kDefaultPublicAndPrivateInterfaces);
           break;
-        case DISABLE_NON_PROXIED_UDP:
+        case kDisableNonProxiedUdp:
           port_config.enable_multiple_routes = false;
           port_config.enable_nonproxied_udp = false;
           break;
-        case DEFAULT:
+        case kDefault:
           port_config.enable_multiple_routes = true;
           port_config.enable_nonproxied_udp = true;
           break;

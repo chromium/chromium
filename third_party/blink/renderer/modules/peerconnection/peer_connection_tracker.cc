@@ -946,7 +946,7 @@ void PeerConnectionTracker::TrackSetSessionDescription(
   String value = "type: " + type + ", sdp: " + sdp;
   SendPeerConnectionUpdate(
       id,
-      source == SOURCE_LOCAL ? "setLocalDescription" : "setRemoteDescription",
+      source == kSourceLocal ? "setLocalDescription" : "setRemoteDescription",
       value);
 }
 
@@ -991,10 +991,10 @@ void PeerConnectionTracker::TrackAddIceCandidate(
       ", " + "candidate: " + String(candidate->Candidate());
 
   // OnIceCandidate always succeeds as it's a callback from the browser.
-  DCHECK(source != SOURCE_LOCAL || succeeded);
+  DCHECK(source != kSourceLocal || succeeded);
 
   const char* event =
-      (source == SOURCE_LOCAL)
+      (source == kSourceLocal)
           ? "icecandidate"
           : (succeeded ? "addIceCandidate" : "addIceCandidateFailed");
 
@@ -1102,7 +1102,7 @@ void PeerConnectionTracker::TrackCreateDataChannel(
   String value = "label: " + String::FromUTF8(data_channel->label()) +
                  ", reliable: " + SerializeBoolean(data_channel->reliable());
   SendPeerConnectionUpdate(
-      id, source == SOURCE_LOCAL ? "createDataChannel" : "datachannel", value);
+      id, source == kSourceLocal ? "createDataChannel" : "datachannel", value);
 }
 
 void PeerConnectionTracker::TrackClose(RTCPeerConnectionHandler* pc_handler) {
@@ -1179,19 +1179,19 @@ void PeerConnectionTracker::TrackSessionDescriptionCallback(
     return;
   String update_type;
   switch (action) {
-    case ACTION_SET_LOCAL_DESCRIPTION:
+    case kActionSetLocalDescription:
       update_type = "setLocalDescription";
       break;
-    case ACTION_SET_LOCAL_DESCRIPTION_IMPLICIT:
+    case kActionSetLocalDescriptionImplicit:
       update_type = "setLocalDescription";
       break;
-    case ACTION_SET_REMOTE_DESCRIPTION:
+    case kActionSetRemoteDescription:
       update_type = "setRemoteDescription";
       break;
-    case ACTION_CREATE_OFFER:
+    case kActionCreateOffer:
       update_type = "createOffer";
       break;
-    case ACTION_CREATE_ANSWER:
+    case kActionCreateAnswer:
       update_type = "createAnswer";
       break;
     default:

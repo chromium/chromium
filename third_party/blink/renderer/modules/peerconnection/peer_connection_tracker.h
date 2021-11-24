@@ -77,14 +77,14 @@ class MODULES_EXPORT PeerConnectionTracker
       LocalFrame* frame,
       mojo::PendingReceiver<mojom::blink::PeerConnectionManager> receiver);
 
-  enum Source { SOURCE_LOCAL, SOURCE_REMOTE };
+  enum Source { kSourceLocal, kSourceRemote };
 
   enum Action {
-    ACTION_SET_LOCAL_DESCRIPTION,
-    ACTION_SET_LOCAL_DESCRIPTION_IMPLICIT,
-    ACTION_SET_REMOTE_DESCRIPTION,
-    ACTION_CREATE_OFFER,
-    ACTION_CREATE_ANSWER
+    kActionSetLocalDescription,
+    kActionSetLocalDescriptionImplicit,
+    kActionSetRemoteDescription,
+    kActionCreateOffer,
+    kActionCreateAnswer
   };
 
   // In Plan B: "Transceiver" refers to RTCRtpSender or RTCRtpReceiver.
