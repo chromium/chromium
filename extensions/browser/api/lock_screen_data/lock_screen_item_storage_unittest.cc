@@ -107,13 +107,12 @@ class TestEventRouter : public extensions::EventRouter {
       return;
     }
     ASSERT_TRUE(event->event_args);
-    const base::Value* arg_value = nullptr;
-    ASSERT_TRUE(event->event_args->Get(0, &arg_value));
-    ASSERT_TRUE(arg_value);
+    ASSERT_TRUE(!event->event_args->GetList().empty());
+    const base::Value& arg_value = event->event_args->GetList()[0];
 
     std::unique_ptr<extensions::api::lock_screen_data::DataItemsAvailableEvent>
         event_args = extensions::api::lock_screen_data::
-            DataItemsAvailableEvent::FromValue(*arg_value);
+            DataItemsAvailableEvent::FromValue(arg_value);
     ASSERT_TRUE(event_args);
     was_locked_values_.push_back(event_args->was_locked);
   }

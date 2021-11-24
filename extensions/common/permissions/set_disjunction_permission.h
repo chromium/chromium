@@ -119,17 +119,13 @@ class SetDisjunctionPermission : public APIPermission {
     }
 
     for (size_t i = 0; i < list->GetList().size(); ++i) {
-      const base::Value* item_value = NULL;
-      bool got_item = list->Get(i, &item_value);
-      DCHECK(got_item);
-      DCHECK(item_value);
-
+      const base::Value& item_value = list->GetList()[i];
       PermissionDataType data;
-      if (data.FromValue(item_value)) {
+      if (data.FromValue(&item_value)) {
         data_set_.insert(data);
       } else {
         std::string unknown_permission;
-        base::JSONWriter::Write(*item_value, &unknown_permission);
+        base::JSONWriter::Write(item_value, &unknown_permission);
         if (unhandled_permissions) {
           unhandled_permissions->push_back(unknown_permission);
         } else {

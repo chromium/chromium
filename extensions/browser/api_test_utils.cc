@@ -109,12 +109,12 @@ std::unique_ptr<base::Value> RunFunctionWithDelegateAndReturnSingleResult(
   RunFunction(function.get(), std::move(args), std::move(dispatcher), flags);
   EXPECT_TRUE(function->GetError().empty()) << "Unexpected error: "
                                             << function->GetError();
-  const base::Value* single_result = NULL;
-  if (function->GetResultList() != NULL &&
-      function->GetResultList()->Get(0, &single_result)) {
-    return single_result->CreateDeepCopy();
+  if (function->GetResultList() &&
+      !function->GetResultList()->GetList().empty()) {
+    const base::Value& single_result = function->GetResultList()->GetList()[0];
+    return single_result.CreateDeepCopy();
   }
-  return NULL;
+  return nullptr;
 }
 
 std::unique_ptr<base::Value> RunFunctionAndReturnSingleResult(
