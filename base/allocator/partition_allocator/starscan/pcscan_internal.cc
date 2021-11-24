@@ -751,31 +751,25 @@ class PCScanScanLoop final : public ScanLoop<PCScanScanLoop> {
 
  public:
   explicit PCScanScanLoop(const PCScanTask& task)
-      : ScanLoop(PCScanInternal::Instance().simd_support()),
-#if defined(PA_HAS_64_BITS_POINTERS)
-        giga_cage_base_(PartitionAddressSpace::RegularPoolBase()),
-#endif
-        task_(task) {
-  }
+      : ScanLoop(PCScanInternal::Instance().simd_support()), task_(task) {}
 
   size_t quarantine_size() const { return quarantine_size_; }
 
  private:
-  ALWAYS_INLINE uintptr_t CageBase() const { return giga_cage_base_; }
-  ALWAYS_INLINE static constexpr uintptr_t CageMask() {
 #if defined(PA_HAS_64_BITS_POINTERS)
-    return PartitionAddressSpace::RegularPoolBaseMask();
-#else
-    return 0;
-#endif
+  ALWAYS_INLINE uintptr_t CageBase() const {
+    return PartitionAddressSpace::RegularPoolBase();
   }
+  ALWAYS_INLINE static constexpr uintptr_t CageMask() {
+    return PartitionAddressSpace::RegularPoolBaseMask();
+  }
+#endif  // defined(PA_HAS_64_BITS_POINTERS)
 
   PA_SCAN_INLINE void CheckPointer(uintptr_t maybe_ptr) {
     quarantine_size_ +=
         task_.TryMarkObjectInNormalBuckets(memory::UnmaskPtr(maybe_ptr));
   }
 
-  const uintptr_t giga_cage_base_ = 0;
   const PCScanTask& task_;
   size_t quarantine_size_ = 0;
 };
