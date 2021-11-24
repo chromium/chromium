@@ -8,14 +8,14 @@
 
       /** Font sizes */
       --firmware-default-font-size: 14px;
-      --firmware-header-font-size: 16px;
-
-      /** Text colors */
-      --firmware-header-text-color: var(--google-grey-900);
+      --firmware-header-font-size: 22px;
 
       /** Font weights */
       --firmware-regular-font-weight: 400;
       --firmware-medium-font-weight: 500;
+
+      /** Line heights */
+      --firmware-header-line-height: 28px;
     }
 
     .firmware-default-font {
@@ -25,10 +25,11 @@
     }
 
     .firmware-header-font {
-      color: var(--firmware-header-text-color);
-      font-family: var(--firmware-roboto-font-family);
+      color: var(--cros-text-color-primary);
+      font-family: var(--firmware-google-sans-font-family);
       font-size: var(--firmware-header-font-size);
       font-weight: var(--firmware-medium-font-weight);
+      line-height: var(--firmware-header-line-height);
     }
 
   </style>
