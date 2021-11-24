@@ -201,23 +201,14 @@ void CardUnmaskOtpInputDialogViews::CreateOtpInputView() {
       otp_input_textfield_invalid_label_->GetPreferredSize());
 
   // Adds footer.
-  const std::u16string link_text = controller_->GetNewCodeLinkText();
-  const FooterText footer_text = controller_->GetFooterText(link_text);
   footer_label_ =
       otp_input_view_->AddChildView(std::make_unique<views::StyledLabel>());
-  footer_label_->SetText(footer_text.text);
-  footer_label_->AddStyleRange(
-      gfx::Range(footer_text.link_offset_in_text,
-                 footer_text.link_offset_in_text + link_text.length()),
-      views::StyledLabel::RangeStyleInfo::CreateForLink(base::BindRepeating(
-          &CardUnmaskOtpInputDialogViews::OnNewCodeLinkClicked,
-          weak_ptr_factory_.GetWeakPtr())));
-  footer_label_->SetDefaultTextStyle(views::style::STYLE_SECONDARY);
+  SetDialogFooter(/*enabled=*/true);
 }
 
 void CardUnmaskOtpInputDialogViews::OnNewCodeLinkClicked() {
   controller_->OnNewCodeLinkClicked();
-  footer_label_->SetEnabled(false);
+  SetDialogFooter(/*enabled=*/false);
   base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&CardUnmaskOtpInputDialogViews::EnableNewCodeLink,
@@ -226,7 +217,7 @@ void CardUnmaskOtpInputDialogViews::OnNewCodeLinkClicked() {
 }
 
 void CardUnmaskOtpInputDialogViews::EnableNewCodeLink() {
-  footer_label_->SetEnabled(true);
+  SetDialogFooter(/*enabled=*/true);
 
   if (closure_to_run_after_new_code_link_is_enabled_for_testing_) {
     closure_to_run_after_new_code_link_is_enabled_for_testing_.Run();
@@ -270,6 +261,29 @@ void CardUnmaskOtpInputDialogViews::CloseWidget(bool user_closed_dialog,
     controller_ = nullptr;
   }
   GetWidget()->Close();
+}
+
+void CardUnmaskOtpInputDialogViews::SetDialogFooter(bool enabled) {
+  const std::u16string link_text = controller_->GetNewCodeLinkText();
+  const FooterText footer_text = controller_->GetFooterText(link_text);
+  footer_label_->SetEnabled(enabled);
+  footer_label_->SetText(footer_text.text);
+  footer_label_->ClearStyleRanges();
+  views::StyledLabel::RangeStyleInfo style_info;
+  if (enabled) {
+    style_info =
+        views::StyledLabel::RangeStyleInfo::CreateForLink(base::BindRepeating(
+            &CardUnmaskOtpInputDialogViews::OnNewCodeLinkClicked,
+            weak_ptr_factory_.GetWeakPtr()));
+  } else {
+    style_info.disable_line_wrapping = true;
+    style_info.text_style = views::style::STYLE_DISABLED;
+  }
+  footer_label_->AddStyleRange(
+      gfx::Range(footer_text.link_offset_in_text,
+                 footer_text.link_offset_in_text + link_text.length()),
+      style_info);
+  footer_label_->SetDefaultTextStyle(views::style::STYLE_SECONDARY);
 }
 
 }  // namespace autofill

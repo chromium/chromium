@@ -95,6 +95,9 @@ class CardUnmaskOtpInputDialogViews : public CardUnmaskOtpInputDialogView,
 
   void CloseWidget(bool user_closed_dialog, bool server_request_succeeded);
 
+  // Sets the text and style of the dialog footer.
+  void SetDialogFooter(bool enabled);
+
   CardUnmaskOtpInputDialogController* controller_ = nullptr;
 
   // Elements related to the otp part of the view.
