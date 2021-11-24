@@ -1053,7 +1053,8 @@ void WaylandWindow::ProcessPendingBoundsDip(uint32_t serial) {
   } else {
     // Otherwise, push the pending |configure| to |pending_configures_|, wait
     // for a frame update, which will invoke UpdateVisualSize().
-    DCHECK_LT(pending_configures_.size(), 100u);
+    LOG_IF(WARNING, pending_configures_.size() > 100u)
+        << "The queue of configures is longer than 100!";
     pending_configures_.push_back({pending_bounds_dip_, serial});
     // The Wayland compositor can generate xdg-shell.configure events more
     // frequently than frame updates from gpu process. Throttle
