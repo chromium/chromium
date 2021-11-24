@@ -252,7 +252,8 @@ class CORE_EXPORT FrameSelection final
 
   // Returns whether a selection was successfully executed. Currently supports
   // word and sentence granularities.
-  bool SelectAroundCaret(TextGranularity text_granularity);
+  bool SelectAroundCaret(TextGranularity text_granularity,
+                         HandleVisibility handle_visibility);
 
 #if DCHECK_IS_ON()
   void ShowTreeForThis() const;

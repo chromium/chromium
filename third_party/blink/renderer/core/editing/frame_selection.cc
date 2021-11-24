@@ -1140,10 +1140,12 @@ void FrameSelection::ScheduleVisualUpdateForPaintInvalidationIfNeeded() const {
 }
 
 bool FrameSelection::SelectWordAroundCaret() {
-  return SelectAroundCaret(TextGranularity::kWord);
+  return SelectAroundCaret(TextGranularity::kWord,
+                           HandleVisibility::kNotVisible);
 }
 
-bool FrameSelection::SelectAroundCaret(TextGranularity text_granularity) {
+bool FrameSelection::SelectAroundCaret(TextGranularity text_granularity,
+                                       HandleVisibility handle_visibility) {
   // Only supports word and sentence granularities for now.
   DCHECK(text_granularity == TextGranularity::kWord ||
          text_granularity == TextGranularity::kSentence);
@@ -1191,6 +1193,8 @@ bool FrameSelection::SelectAroundCaret(TextGranularity text_granularity) {
               .SetGranularity(text_granularity == TextGranularity::kSentence
                                   ? TextGranularity::kSentence
                                   : TextGranularity::kWord)
+              .SetShouldShowHandle(handle_visibility ==
+                                   HandleVisibility::kVisible)
               .Build());
       return true;
     }

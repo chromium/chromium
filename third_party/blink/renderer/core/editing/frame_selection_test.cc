@@ -199,21 +199,24 @@ TEST_F(FrameSelectionTest, SelectAroundCaret_Sentence) {
   // sentence.
   Selection().SetSelectionAndEndTyping(
       SelectionInDOMTree::Builder().Collapse(Position(text, 30)).Build());
-  EXPECT_TRUE(Selection().SelectAroundCaret(TextGranularity::kSentence));
+  EXPECT_TRUE(Selection().SelectAroundCaret(TextGranularity::kSentence,
+                                            HandleVisibility::kNotVisible));
   EXPECT_EQ_SELECTED_TEXT("This is the second sentence. ");
 
   // This is the first sentence|. This is the second sentence. This is the last
   // sentence.
   Selection().SetSelectionAndEndTyping(
       SelectionInDOMTree::Builder().Collapse(Position(text, 26)).Build());
-  EXPECT_TRUE(Selection().SelectAroundCaret(TextGranularity::kSentence));
+  EXPECT_TRUE(Selection().SelectAroundCaret(TextGranularity::kSentence,
+                                            HandleVisibility::kNotVisible));
   EXPECT_EQ_SELECTED_TEXT("This is the first sentence. ");
 
   // This is the first sentence.| This is the second sentence. This is the last
   // sentence.
   Selection().SetSelectionAndEndTyping(
       SelectionInDOMTree::Builder().Collapse(Position(text, 27)).Build());
-  EXPECT_TRUE(Selection().SelectAroundCaret(TextGranularity::kSentence));
+  EXPECT_TRUE(Selection().SelectAroundCaret(TextGranularity::kSentence,
+                                            HandleVisibility::kNotVisible));
   EXPECT_EQ_SELECTED_TEXT(
       "This is the first sentence. This is the second sentence. ");
 
@@ -221,7 +224,8 @@ TEST_F(FrameSelectionTest, SelectAroundCaret_Sentence) {
   // sentence.
   Selection().SetSelectionAndEndTyping(
       SelectionInDOMTree::Builder().Collapse(Position(text, 28)).Build());
-  EXPECT_TRUE(Selection().SelectAroundCaret(TextGranularity::kSentence));
+  EXPECT_TRUE(Selection().SelectAroundCaret(TextGranularity::kSentence,
+                                            HandleVisibility::kNotVisible));
   EXPECT_EQ_SELECTED_TEXT(
       "This is the first sentence. This is the second sentence. ");
 
@@ -229,8 +233,49 @@ TEST_F(FrameSelectionTest, SelectAroundCaret_Sentence) {
   // sentence.
   Selection().SetSelectionAndEndTyping(
       SelectionInDOMTree::Builder().Collapse(Position(text, 29)).Build());
-  EXPECT_TRUE(Selection().SelectAroundCaret(TextGranularity::kSentence));
+  EXPECT_TRUE(Selection().SelectAroundCaret(TextGranularity::kSentence,
+                                            HandleVisibility::kNotVisible));
   EXPECT_EQ_SELECTED_TEXT("This is the second sentence. ");
+}
+
+TEST_F(FrameSelectionTest, SelectAroundCaret_ShouldShowHandle) {
+  Text* text = AppendTextNode("This is a sentence.");
+  int selection_index = 12;  // This is a se|ntence.
+  UpdateAllLifecyclePhasesForTest();
+
+  // Default behavior should not show handles.
+  Selection().SetSelectionAndEndTyping(
+      SelectionInDOMTree::Builder()
+          .Collapse(Position(text, selection_index))
+          .Build());
+  EXPECT_TRUE(Selection().SelectAroundCaret(TextGranularity::kSentence,
+                                            HandleVisibility::kNotVisible));
+  EXPECT_FALSE(Selection().IsHandleVisible());
+
+  Selection().SetSelectionAndEndTyping(
+      SelectionInDOMTree::Builder()
+          .Collapse(Position(text, selection_index))
+          .Build());
+  EXPECT_TRUE(Selection().SelectAroundCaret(TextGranularity::kWord,
+                                            HandleVisibility::kNotVisible));
+  EXPECT_FALSE(Selection().IsHandleVisible());
+
+  // Make sure handles are shown when specified.
+  Selection().SetSelectionAndEndTyping(
+      SelectionInDOMTree::Builder()
+          .Collapse(Position(text, selection_index))
+          .Build());
+  EXPECT_TRUE(Selection().SelectAroundCaret(TextGranularity::kSentence,
+                                            HandleVisibility::kVisible));
+  EXPECT_TRUE(Selection().IsHandleVisible());
+
+  Selection().SetSelectionAndEndTyping(
+      SelectionInDOMTree::Builder()
+          .Collapse(Position(text, selection_index))
+          .Build());
+  EXPECT_TRUE(Selection().SelectAroundCaret(TextGranularity::kWord,
+                                            HandleVisibility::kVisible));
+  EXPECT_TRUE(Selection().IsHandleVisible());
 }
 
 TEST_F(FrameSelectionTest, ModifyExtendWithFlatTree) {
