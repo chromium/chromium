@@ -12,8 +12,8 @@ import android.provider.Browser;
 import android.text.TextUtils;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.base.Function;
 import org.chromium.base.IntentUtils;
-import org.chromium.base.PackageManagerUtils;
 import org.chromium.ui.base.PageTransition;
 
 import java.util.HashSet;
@@ -305,13 +305,14 @@ public class RedirectHandler {
     /**
      * @return whether |intent| has a new resolver against |mIntentHistory| or not.
      */
-    public boolean hasNewResolver(List<ResolveInfo> resolvingInfos) {
+    public boolean hasNewResolver(List<ResolveInfo> resolvingInfos,
+            Function<Intent, List<ResolveInfo>> queryIntentActivitiesFunction) {
         if (mInitialIntent == null) {
             return !resolvingInfos.isEmpty();
         }
 
         if (mCachedResolvers.isEmpty()) {
-            for (ResolveInfo r : PackageManagerUtils.queryIntentActivities(mInitialIntent, 0)) {
+            for (ResolveInfo r : queryIntentActivitiesFunction.apply(mInitialIntent)) {
                 mCachedResolvers.add(
                         new ComponentName(r.activityInfo.packageName, r.activityInfo.name));
             }
