@@ -519,12 +519,12 @@ ExtensionTtsEngineSendTtsAudioFunction::Run() {
   EXTENSION_FUNCTION_VALIDATE(audio->GetInteger(
       tts_extension_api_constants::kCharIndexKey, &char_index));
 
-  bool is_last_buffer = false;
-  EXTENSION_FUNCTION_VALIDATE(audio->GetBoolean(
-      tts_extension_api_constants::kIsLastBufferKey, &is_last_buffer));
+  absl::optional<bool> is_last_buffer =
+      audio->FindBoolPath(tts_extension_api_constants::kIsLastBufferKey);
+  EXTENSION_FUNCTION_VALIDATE(is_last_buffer);
 
   TtsExtensionEngine::GetInstance()->SendAudioBuffer(
-      utterance_id, audio_buffer, char_index, is_last_buffer);
+      utterance_id, audio_buffer, char_index, *is_last_buffer);
   return RespondNow(NoArguments());
 #else
   // Given tts engine json api definition, we should never get here.
