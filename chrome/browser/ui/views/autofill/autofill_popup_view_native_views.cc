@@ -106,7 +106,10 @@ constexpr autofill::PopupItemId kItemTypesUsingLeadingIcons[] = {
 
 int GetContentsVerticalPadding() {
   return ChromeLayoutProvider::Get()->GetDistanceMetric(
-      DISTANCE_CONTENT_LIST_VERTICAL_MULTI);
+      base::FeatureList::IsEnabled(
+          autofill::features::kAutofillCenterAlignedSuggestions)
+          ? DISTANCE_CONTENT_LIST_VERTICAL_SINGLE
+          : DISTANCE_CONTENT_LIST_VERTICAL_MULTI);
 }
 
 int GetHorizontalMargin() {
@@ -742,16 +745,31 @@ void AutofillPopupItemView::RefreshStyle() {
                                    : popup_view()->GetBackgroundColor();
   SkColor fg_color = GetSelected() ? popup_view()->GetSelectedForegroundColor()
                                    : popup_view()->GetForegroundColor();
+
+  // Set style for each label in this view depending on current state since the
+  // style isn't automatically adjusted after creation of the label.
   for (views::Label* label : inner_labels_) {
     label->SetAutoColorReadabilityEnabled(false);
     label->SetBackgroundColor(bk_color);
-    // Set style depending on current state since the style isn't automatically
-    // adjusted after creation of the label.
-    label->SetEnabledColor(
-        label->GetEnabled()
-            ? fg_color
-            : views::style::GetColor(*this, label->GetTextContext(),
-                                     views::style::STYLE_DISABLED));
+
+    if (!label->GetEnabled()) {
+      label->SetEnabledColor(views::style::GetColor(
+          *this, label->GetTextContext(), views::style::STYLE_DISABLED));
+      continue;
+    }
+
+    if (!base::FeatureList::IsEnabled(
+            features::kAutofillCenterAlignedSuggestions)) {
+      label->SetEnabledColor(fg_color);
+      continue;
+    }
+
+    // If the current suggestion is selected, retrieve a color that corresponds
+    // to the SELECTED style. Otherwise, use the color that corresponds to the
+    // actual style of the label.
+    label->SetEnabledColor(views::style::GetColor(
+        *this, label->GetTextContext(),
+        GetSelected() ? views::style::STYLE_SELECTED : label->GetTextStyle()));
   }
   SchedulePaint();
 }
@@ -772,7 +790,10 @@ std::unique_ptr<views::Label> AutofillPopupItemView::CreateMainTextView() {
           .is_value_secondary) {
     std::unique_ptr<views::Label> label = CreateLabelWithStyleAndContext(
         text, views::style::CONTEXT_DIALOG_BODY_TEXT,
-        views::style::STYLE_SECONDARY);
+        base::FeatureList::IsEnabled(
+            features::kAutofillCenterAlignedSuggestions)
+            ? views::style::STYLE_PRIMARY
+            : views::style::STYLE_SECONDARY);
     KeepLabel(label.get());
     return label;
   }
@@ -861,7 +882,10 @@ int AutofillPopupSuggestionView::GetPrimaryTextStyle() {
 }
 
 gfx::Font::Weight AutofillPopupSuggestionView::GetPrimaryTextWeight() const {
-  return views::TypographyProvider::MediumWeightForUI();
+  return base::FeatureList::IsEnabled(
+             features::kAutofillCenterAlignedSuggestions)
+             ? gfx::Font::Weight::NORMAL
+             : views::TypographyProvider::MediumWeightForUI();
 }
 
 AutofillPopupSuggestionView::AutofillPopupSuggestionView(
