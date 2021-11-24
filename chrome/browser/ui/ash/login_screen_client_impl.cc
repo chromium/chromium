@@ -342,9 +342,8 @@ void LoginScreenClientImpl::SetPublicSessionKeyboardLayout(
     dictionary->GetString("title", &title);
     input_method_item.title = title;
 
-    bool selected;
-    dictionary->GetBoolean("selected", &selected);
-    input_method_item.selected = selected;
+    input_method_item.selected =
+        dictionary->FindBoolKey("selected").value_or(false);
     result.push_back(std::move(input_method_item));
   }
   ash::LoginScreen::Get()->GetModel()->SetPublicSessionKeyboardLayouts(
