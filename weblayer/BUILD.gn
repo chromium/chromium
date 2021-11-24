@@ -587,8 +587,6 @@ source_set("weblayer_lib_base") {
       "browser/android/exception_filter.h",
       "browser/android/metrics/uma_utils.cc",
       "browser/android/metrics/uma_utils.h",
-      "browser/android/metrics/weblayer_metrics_navigation_throttle.cc",
-      "browser/android/metrics/weblayer_metrics_navigation_throttle.h",
       "browser/android/metrics/weblayer_metrics_service_client.cc",
       "browser/android/metrics/weblayer_metrics_service_client.h",
       "browser/android/permission_request_utils.cc",
