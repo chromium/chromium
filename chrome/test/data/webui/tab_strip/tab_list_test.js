@@ -9,9 +9,8 @@ import {TabGroupElement} from 'chrome://tab-strip.top-chrome/tab_group.js';
 import {setScrollAnimationEnabledForTesting, TabListElement} from 'chrome://tab-strip.top-chrome/tab_list.js';
 import {PageRemote, Tab} from 'chrome://tab-strip.top-chrome/tab_strip.mojom-webui.js';
 import {TabsApiProxyImpl} from 'chrome://tab-strip.top-chrome/tabs_api_proxy.js';
-
-import {flushTasks} from '../../test_util.js';
-import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from '../chai_assert.js';
+import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {flushTasks} from 'chrome://webui-test/test_util.js';
 
 import {TestTabsApiProxy} from './test_tabs_api_proxy.js';
 

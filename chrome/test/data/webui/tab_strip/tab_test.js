@@ -2,13 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'chrome://tab-strip.top-chrome/tab.js';
+
 import {getFavicon} from 'chrome://resources/js/icon.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {TabElement} from 'chrome://tab-strip.top-chrome/tab.js';
 import {Tab, TabNetworkState} from 'chrome://tab-strip.top-chrome/tab_strip.mojom-webui.js';
 import {CloseTabAction, TabsApiProxyImpl} from 'chrome://tab-strip.top-chrome/tabs_api_proxy.js';
 
-import {assertEquals, assertFalse, assertTrue} from '../chai_assert.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 import {TestTabsApiProxy} from './test_tabs_api_proxy.js';
 

@@ -9,7 +9,7 @@ import {TabGroupElement} from 'chrome://tab-strip.top-chrome/tab_group.js';
 import {Tab} from 'chrome://tab-strip.top-chrome/tab_strip.mojom-webui.js';
 import {TabsApiProxyImpl} from 'chrome://tab-strip.top-chrome/tabs_api_proxy.js';
 
-import {assertEquals, assertFalse, assertTrue} from '../chai_assert.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 import {TestTabsApiProxy} from './test_tabs_api_proxy.js';
 

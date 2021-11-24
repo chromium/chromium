@@ -4,8 +4,8 @@
 
 import {SWIPE_FINISH_THRESHOLD_PX, SWIPE_START_THRESHOLD_PX, TabSwiper, TRANSLATE_ANIMATION_THRESHOLD_PX} from 'chrome://tab-strip.top-chrome/tab_swiper.js';
 
-import {assertEquals, assertFalse, assertTrue} from '../chai_assert.js';
-import {eventToPromise} from '../test_util.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
 import {TestTabsApiProxy} from './test_tabs_api_proxy.js';
 
