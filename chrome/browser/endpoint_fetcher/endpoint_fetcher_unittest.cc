@@ -30,6 +30,7 @@ const char kEndpoint[] = "https://my-endpoint.com";
 const char kExpectedResponse[] = "{}";
 const char kExpectedAuthError[] = "There was an authentication error";
 const char kExpectedResponseError[] = "There was a response error";
+const char kExpectedPrimaryAccountError[] = "No primary accounts found";
 const char kExpectedSanitizationError[] = "There was a sanitization error";
 const char kHttpMethod[] = "POST";
 const char kMalformedResponse[] = "asdf";
@@ -64,7 +65,6 @@ class EndpointFetcherTest : public testing::Test {
         identity_test_env_.identity_manager());
     in_process_data_decoder_ =
         std::make_unique<data_decoder::test::InProcessDataDecoder>();
-    SignIn();
   }
 
   void SignIn() {
@@ -115,6 +115,7 @@ class EndpointFetcherTest : public testing::Test {
 };
 
 TEST_F(EndpointFetcherTest, FetchResponse) {
+  SignIn();
   SetMockResponse(GURL(kEndpoint), kExpectedResponse, net::HTTP_OK, net::OK);
   EXPECT_CALL(
       endpoint_fetcher_callback(),
@@ -124,6 +125,7 @@ TEST_F(EndpointFetcherTest, FetchResponse) {
 }
 
 TEST_F(EndpointFetcherTest, FetchMalformedResponse) {
+  SignIn();
   SetMockResponse(GURL(kEndpoint), kMalformedResponse, net::HTTP_OK, net::OK);
   EXPECT_CALL(
       endpoint_fetcher_callback(),
@@ -134,6 +136,7 @@ TEST_F(EndpointFetcherTest, FetchMalformedResponse) {
 }
 
 TEST_F(EndpointFetcherTest, FetchEndpointResponseError) {
+  SignIn();
   SetMockResponse(GURL(kEndpoint), kExpectedResponse, net::HTTP_BAD_REQUEST,
                   net::ERR_FAILED);
   EXPECT_CALL(
@@ -144,6 +147,7 @@ TEST_F(EndpointFetcherTest, FetchEndpointResponseError) {
 }
 
 TEST_F(EndpointFetcherTest, FetchOAuthError) {
+  SignIn();
   identity_test_env().SetAutomaticIssueOfAccessTokens(false);
   EXPECT_CALL(
       endpoint_fetcher_callback(),
@@ -151,5 +155,13 @@ TEST_F(EndpointFetcherTest, FetchOAuthError) {
   endpoint_fetcher()->Fetch(endpoint_fetcher_callback().Get());
   identity_test_env().WaitForAccessTokenRequestIfNecessaryAndRespondWithError(
       GoogleServiceAuthError(GoogleServiceAuthError::SERVICE_UNAVAILABLE));
+  base::RunLoop().RunUntilIdle();
+}
+
+TEST_F(EndpointFetcherTest, FetchOAuthNoPrimaryAccount) {
+  EXPECT_CALL(endpoint_fetcher_callback(),
+              Run(Pointee(Field(&EndpointResponse::response,
+                                kExpectedPrimaryAccountError))));
+  endpoint_fetcher()->Fetch(endpoint_fetcher_callback().Get());
   base::RunLoop().RunUntilIdle();
 }
