@@ -514,13 +514,17 @@ HRESULT InitializeBundle(UpdaterScope scope,
   return S_OK;
 }
 
-HRESULT DoLoopUntilDone(Microsoft::WRL::ComPtr<IAppBundleWeb> bundle) {
+HRESULT DoLoopUntilDone(Microsoft::WRL::ComPtr<IAppBundleWeb> bundle,
+                        int expected_final_state,
+                        HRESULT expected_error_code) {
   bool done = false;
   static const base::TimeDelta kExpirationTimeout = base::Minutes(1);
   base::ElapsedTimer timer;
 
   EXPECT_TRUE(timer.Elapsed() < kExpirationTimeout);
 
+  LONG state_value = 0;
+  LONG error_code = 0;
   while (!done && (timer.Elapsed() < kExpirationTimeout)) {
     EXPECT_TRUE(bundle);
 
@@ -537,7 +541,6 @@ HRESULT DoLoopUntilDone(Microsoft::WRL::ComPtr<IAppBundleWeb> bundle) {
     std::wstring stateDescription;
     std::wstring extraData;
 
-    LONG state_value = 0;
     EXPECT_HRESULT_SUCCEEDED(state->get_stateValue(&state_value));
 
     switch (state_value) {
@@ -633,7 +636,6 @@ HRESULT DoLoopUntilDone(Microsoft::WRL::ComPtr<IAppBundleWeb> bundle) {
       case STATE_ERROR: {
         stateDescription = L"Error!";
 
-        LONG error_code = 0;
         EXPECT_HRESULT_SUCCEEDED(state->get_errorCode(&error_code));
 
         base::win::ScopedBstr completion_message;
@@ -665,22 +667,30 @@ HRESULT DoLoopUntilDone(Microsoft::WRL::ComPtr<IAppBundleWeb> bundle) {
   }
 
   EXPECT_TRUE(done);
+  EXPECT_EQ(expected_final_state, state_value);
+  EXPECT_EQ(expected_error_code, error_code);
 
   return S_OK;
 }
 
-HRESULT DoUpdate(UpdaterScope scope, const base::win::ScopedBstr& appid) {
+HRESULT DoUpdate(UpdaterScope scope,
+                 const base::win::ScopedBstr& appid,
+                 int expected_final_state,
+                 HRESULT expected_error_code) {
   Microsoft::WRL::ComPtr<IAppBundleWeb> bundle;
   EXPECT_HRESULT_SUCCEEDED(InitializeBundle(scope, bundle));
   EXPECT_HRESULT_SUCCEEDED(bundle->createInstalledApp(appid.Get()));
   EXPECT_HRESULT_SUCCEEDED(bundle->checkForUpdate());
-  return DoLoopUntilDone(bundle);
+  return DoLoopUntilDone(bundle, expected_final_state, expected_error_code);
 }
 
 void ExpectLegacyUpdate3WebSucceeds(UpdaterScope scope,
-                                    const std::string& app_id) {
+                                    const std::string& app_id,
+                                    int expected_final_state,
+                                    int expected_error_code) {
   EXPECT_HRESULT_SUCCEEDED(
-      DoUpdate(scope, base::win::ScopedBstr(base::UTF8ToWide(app_id).c_str())));
+      DoUpdate(scope, base::win::ScopedBstr(base::UTF8ToWide(app_id).c_str()),
+               expected_final_state, expected_error_code));
 }
 
 void SetFcLaunchCmd(const std::wstring& id) {

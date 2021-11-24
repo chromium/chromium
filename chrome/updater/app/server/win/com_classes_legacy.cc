@@ -25,17 +25,6 @@
 
 namespace {
 
-// Constants from Google Update.
-// TODO(crbug/1094024): once group policy manager code is available, the
-// server must respond with the following errors:
-// const HRESULT GOOPDATE_E_APP_UPDATE_DISABLED_BY_POLICY = 0x80040813;
-// const HRESULT GOOPDATE_E_APP_UPDATE_DISABLED_BY_POLICY_MANUAL = 0x8004081f;
-
-// This is a GoogleUpdate error code, which must be retained by this
-// implementation in order to be backward compatible with the existing
-// update client code in Chrome.
-const HRESULT GOOPDATEINSTALL_E_INSTALLER_FAILED = 0x80040902;
-
 HRESULT OpenCallerProcessHandle(DWORD proc_id,
                                 base::win::ScopedHandle& proc_handle) {
   proc_handle.Set(::OpenProcess(PROCESS_DUP_HANDLE, false, proc_id));

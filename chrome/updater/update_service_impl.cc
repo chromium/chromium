@@ -15,6 +15,7 @@
 #include "base/containers/queue.h"
 #include "base/logging.h"
 #include "base/run_loop.h"
+#include "base/task/bind_post_task.h"
 #include "base/task/post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/threading/sequenced_task_runner_handle.h"
@@ -295,11 +296,19 @@ void UpdateServiceImpl::UpdateAll(StateChangeCallback state_update,
 void UpdateServiceImpl::Update(
     const std::string& app_id,
     Priority priority,
-    PolicySameVersionUpdate /*policy_same_version_update*/,
+    PolicySameVersionUpdate policy_same_version_update,
     StateChangeCallback state_update,
     Callback callback) {
   VLOG(1) << __func__;
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  int policy = kPolicyEnabled;
+  if (IsUpdateDisabledByPolicy(app_id, priority, policy_same_version_update,
+                               policy)) {
+    HandleUpdateDisabledByPolicy(app_id, policy, policy_same_version_update,
+                                 state_update, std::move(callback));
+    return;
+  }
 
   std::vector<std::string> ids = {app_id};
   ShouldBlockUpdateForMeteredNetwork(
@@ -307,6 +316,58 @@ void UpdateServiceImpl::Update(
       base::BindOnce(&UpdateServiceImpl::OnShouldBlockUpdateForMeteredNetwork,
                      this, state_update, std::move(callback), ids, priority,
                      UpdateService::PolicySameVersionUpdate::kNotAllowed));
+}
+
+bool UpdateServiceImpl::IsUpdateDisabledByPolicy(
+    const std::string& app_id,
+    Priority priority,
+    PolicySameVersionUpdate policy_same_version_update,
+    int& policy) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  policy = kPolicyEnabled;
+
+  // The Install case is inferred by the presence of
+  // `PolicySameVersionUpdate::kAllowed`.
+  if (policy_same_version_update == PolicySameVersionUpdate::kAllowed) {
+    return config_->GetPolicyService()->GetEffectivePolicyForAppInstalls(
+               app_id, nullptr, &policy) &&
+           (policy == kPolicyDisabled || (config_->IsPerUserInstall() &&
+                                          policy == kPolicyEnabledMachineOnly));
+  } else {
+    return config_->GetPolicyService()->GetEffectivePolicyForAppUpdates(
+               app_id, nullptr, &policy) &&
+           (policy == kPolicyDisabled ||
+            ((policy == kPolicyManualUpdatesOnly) &&
+             (priority != Priority::kForeground)) ||
+            ((policy == kPolicyAutomaticUpdatesOnly) &&
+             (priority == Priority::kForeground)));
+  }
+}
+
+void UpdateServiceImpl::HandleUpdateDisabledByPolicy(
+    const std::string& app_id,
+    int policy,
+    PolicySameVersionUpdate policy_same_version_update,
+    StateChangeCallback state_update,
+    Callback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  UpdateState update_state;
+  update_state.app_id = app_id;
+  update_state.state = UpdateService::UpdateState::State::kUpdateError;
+  update_state.error_category = UpdateService::ErrorCategory::kUpdateCheck;
+  update_state.error_code =
+      policy_same_version_update == PolicySameVersionUpdate::kAllowed
+          ? GOOPDATE_E_APP_INSTALL_DISABLED_BY_POLICY
+          : policy != kPolicyAutomaticUpdatesOnly
+                ? GOOPDATE_E_APP_UPDATE_DISABLED_BY_POLICY
+                : GOOPDATE_E_APP_UPDATE_DISABLED_BY_POLICY_MANUAL;
+  update_state.extra_code1 = 0;
+
+  base::BindPostTask(main_task_runner_, state_update).Run(update_state);
+  base::BindPostTask(main_task_runner_, std::move(callback))
+      .Run(UpdateService::Result::kUpdateCheckFailed);
 }
 
 void UpdateServiceImpl::OnShouldBlockUpdateForMeteredNetwork(
