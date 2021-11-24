@@ -7,6 +7,7 @@
 #include <stddef.h>
 
 #include <memory>
+#include <utility>
 
 #include "base/check.h"
 #include "base/strings/string_number_conversions.h"
@@ -250,10 +251,10 @@ std::unique_ptr<FileBrowserHandler> LoadFileBrowserHandler(
 
 // Loads FileBrowserHandlers from |extension_actions| into a list in |result|.
 bool LoadFileBrowserHandlers(const std::string& extension_id,
-                             const base::ListValue* extension_actions,
+                             const base::Value::ConstListView extension_actions,
                              FileBrowserHandler::List* result,
                              std::u16string* error) {
-  for (const auto& entry : extension_actions->GetList()) {
+  for (const auto& entry : extension_actions) {
     const base::DictionaryValue* dict;
     if (!entry.GetAsDictionary(&dict)) {
       *error = base::ASCIIToUTF16(errors::kInvalidFileBrowserHandler);
@@ -285,16 +286,14 @@ bool FileBrowserHandlerParser::Parse(extensions::Extension* extension,
     return true;
   }
 
-  const base::ListValue* file_browser_handlers_list_value = nullptr;
-  if (!file_browser_handlers_value->GetAsList(
-          &file_browser_handlers_list_value)) {
+  if (!file_browser_handlers_value->is_list()) {
     *error = base::ASCIIToUTF16(errors::kInvalidFileBrowserHandler);
     return false;
   }
 
   std::unique_ptr<FileBrowserHandlerInfo> info(new FileBrowserHandlerInfo);
   if (!LoadFileBrowserHandlers(extension->id(),
-                               file_browser_handlers_list_value,
+                               file_browser_handlers_value->GetList(),
                                &info->file_browser_handlers, error)) {
     return false;  // Failed to parse file browser actions definition.
   }
