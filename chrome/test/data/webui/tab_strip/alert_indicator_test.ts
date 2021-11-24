@@ -9,17 +9,14 @@ import {AlertIndicatorElement} from 'chrome://tab-strip.top-chrome/alert_indicat
 import {assertEquals, assertFalse, assertNotEquals} from 'chrome://webui-test/chai_assert.js';
 
 suite('AlertIndicator', () => {
-  /** @type {!AlertIndicatorElement} */
-  let alertIndicatorElement;
+  let alertIndicatorElement: AlertIndicatorElement;
 
-  /** @type {CSSStyleDeclaration} */
-  let alertIndicatorStyle;
+  let alertIndicatorStyle: CSSStyleDeclaration;
 
   setup(() => {
     document.body.innerHTML = '';
 
-    alertIndicatorElement = /** @type {!AlertIndicatorElement} */ (
-        document.createElement('tabstrip-alert-indicator'));
+    alertIndicatorElement = document.createElement('tabstrip-alert-indicator');
     document.body.appendChild(alertIndicatorElement);
 
     alertIndicatorStyle = window.getComputedStyle(alertIndicatorElement);

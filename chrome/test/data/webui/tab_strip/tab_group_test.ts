@@ -16,20 +16,16 @@ import {TestTabsApiProxy} from './test_tabs_api_proxy.js';
 suite('TabGroup', () => {
   const groupId = 'my-group-id';
 
-  /** @type {!TabGroupElement} */
-  let tabGroupElement;
-
-  /** @type {!TestTabsApiProxy} */
-  let testTabsApiProxy;
+  let tabGroupElement: TabGroupElement;
+  let testTabsApiProxy: TestTabsApiProxy;
 
   setup(() => {
     testTabsApiProxy = new TestTabsApiProxy();
     TabsApiProxyImpl.setInstance(testTabsApiProxy);
 
     document.body.innerHTML = '';
-    tabGroupElement = /** @type {!TabGroupElement} */ (
-        document.createElement('tabstrip-tab-group'));
-    tabGroupElement.dataset.groupId = groupId;
+    tabGroupElement = document.createElement('tabstrip-tab-group');
+    tabGroupElement.dataset['groupId'] = groupId;
     tabGroupElement.appendChild(document.createElement('tabstrip-tab'));
     document.body.appendChild(tabGroupElement);
   });
@@ -43,7 +39,8 @@ suite('TabGroup', () => {
     tabGroupElement.updateVisuals(visuals);
     assertEquals(
         visuals.title,
-        tabGroupElement.shadowRoot.querySelector('#title').innerText);
+        tabGroupElement.shadowRoot!.querySelector<HTMLElement>(
+                                       '#title')!.innerText);
     assertEquals(
         visuals.color,
         tabGroupElement.style.getPropertyValue(
@@ -55,9 +52,10 @@ suite('TabGroup', () => {
   });
 
   test('DraggableChipStaysInPlace', () => {
-    const originalChipRect = tabGroupElement.$('#chip').getBoundingClientRect();
+    const chip = tabGroupElement.$('#chip') as HTMLElement;
+    const originalChipRect = chip.getBoundingClientRect();
     tabGroupElement.setDragging(true);
-    const newChipRect = tabGroupElement.$('#chip').getBoundingClientRect();
+    const newChipRect = chip.getBoundingClientRect();
     assertEquals(originalChipRect.left, newChipRect.left);
     assertEquals(originalChipRect.top, newChipRect.top);
     assertEquals(originalChipRect.right, newChipRect.right);
@@ -66,9 +64,10 @@ suite('TabGroup', () => {
 
   test('DraggableChipStaysInPlaceInRTL', () => {
     document.documentElement.dir = 'rtl';
-    const originalChipRect = tabGroupElement.$('#chip').getBoundingClientRect();
+    const chip = tabGroupElement.$('#chip') as HTMLElement;
+    const originalChipRect = chip.getBoundingClientRect();
     tabGroupElement.setDragging(true);
-    const newChipRect = tabGroupElement.$('#chip').getBoundingClientRect();
+    const newChipRect = chip.getBoundingClientRect();
     assertEquals(originalChipRect.left, newChipRect.left);
     assertEquals(originalChipRect.top, newChipRect.top);
     assertEquals(originalChipRect.right, newChipRect.right);
@@ -76,7 +75,7 @@ suite('TabGroup', () => {
   });
 
   test('ChipOpensEditDialog', async () => {
-    const chip = tabGroupElement.$('#chip');
+    const chip = tabGroupElement.$('#chip') as HTMLElement;
     const chipRect = chip.getBoundingClientRect();
     chip.click();
     const [calledGroupId, locationX, locationY, width, height] =

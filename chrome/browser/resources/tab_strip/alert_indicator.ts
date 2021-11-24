@@ -198,4 +198,10 @@ export class AlertIndicatorElement extends CustomElement {
   }
 }
 
+declare global {
+  interface HTMLElementTagNameMap {
+    'tabstrip-alert-indicator': AlertIndicatorElement;
+  }
+}
+
 customElements.define('tabstrip-alert-indicator', AlertIndicatorElement);

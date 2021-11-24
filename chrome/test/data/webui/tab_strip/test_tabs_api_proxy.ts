@@ -4,11 +4,20 @@
 
 import {PageCallbackRouter, PageRemote} from 'chrome://tab-strip.top-chrome/tab_strip.mojom-webui.js';
 import {Tab, TabGroupVisualData} from 'chrome://tab-strip.top-chrome/tab_strip.mojom-webui.js';
+import {CloseTabAction, TabsApiProxy} from 'chrome://tab-strip.top-chrome/tabs_api_proxy';
 
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
-/** @implements {TabsApiProxy} */
-export class TestTabsApiProxy extends TestBrowserProxy {
+export class TestTabsApiProxy extends TestBrowserProxy implements TabsApiProxy {
+  callbackRouter: PageCallbackRouter;
+  callbackRouterRemote: PageRemote;
+  private groupVisualData_: {[key: string]: TabGroupVisualData} = {};
+  private tabs_: Tab[] = [];
+  private thumbnailRequestCounts_: Map<number, number>;
+  private colors_: {[key: string]: string} = {};
+  private layout_: {[key: string]: string} = {};
+  private visible_: boolean = false;
+
   constructor() {
     super([
       'activateTab',
@@ -33,86 +42,66 @@ export class TestTabsApiProxy extends TestBrowserProxy {
       'reportTabCreationDuration',
     ]);
 
-    /** @type {!PageCallbackRouter} */
     this.callbackRouter = new PageCallbackRouter();
 
-    /** @type {!PageRemote} */
     this.callbackRouterRemote =
         this.callbackRouter.$.bindNewPipeAndPassRemote();
 
-    /** @type {!Object<!TabGroupVisualData>} */
-    this.groupVisualData_;
-
-    /** @type {!Array<!Tab>} */
-    this.tabs_;
-
-    /** @type {!Map<number, number>} */
     this.thumbnailRequestCounts_ = new Map();
-
-    /** @private {!Object<string, string>} */
-    this.colors_ = {};
-
-    /** @private {!Object<string, string>} */
-    this.layout_ = {};
-
-    /** @private {boolean} */
-    this.visible_ = false;
   }
 
-  /** @override */
   getCallbackRouter() {
     return this.callbackRouter;
   }
 
-  /** return {!PageRemote} */
-  getCallbackRouterRemote() {
+  getCallbackRouterRemote(): PageRemote {
     return this.callbackRouterRemote;
   }
 
-  /** @override */
-  activateTab(tabId) {
+  activateTab(tabId: number) {
     this.methodCalled('activateTab', tabId);
-    return Promise.resolve(
-        /** @type {!ExtensionsApiTab} */ ({active: true, id: tabId}));
+    return Promise.resolve({
+      active: true,
+      autoDiscardable: false,
+      discareded: false,
+      groupId: 0,
+      highlighted: false,
+      id: tabId,
+      incognito: false,
+      index: 0,
+      pinned: false,
+      selected: false,
+      windowId: 0,
+    });
   }
 
-  /** @override */
-  closeTab(tabId, closeTabAction) {
+  closeTab(tabId: number, closeTabAction: CloseTabAction) {
     this.methodCalled('closeTab', [tabId, closeTabAction]);
   }
 
-  /** @override */
   getGroupVisualData() {
     this.methodCalled('getGroupVisualData');
     return Promise.resolve({data: this.groupVisualData_});
   }
 
-  /** @override */
   getTabs() {
     this.methodCalled('getTabs');
     return Promise.resolve({tabs: this.tabs_.slice()});
   }
 
-  /**
-   * @param {number} tabId
-   * @return {number}
-   */
-  getThumbnailRequestCount(tabId) {
+  getThumbnailRequestCount(tabId: number): number {
     return this.thumbnailRequestCounts_.get(tabId) || 0;
   }
 
-  /** @override */
-  groupTab(tabId, groupId) {
+  groupTab(tabId: number, groupId: string) {
     this.methodCalled('groupTab', [tabId, groupId]);
   }
 
-  /** @override */
-  moveGroup(groupId, newIndex) {
+  moveGroup(groupId: string, newIndex: number) {
     this.methodCalled('moveGroup', [groupId, newIndex]);
   }
 
-  /** @override */
-  moveTab(tabId, newIndex) {
+  moveTab(tabId: number, newIndex: number) {
     this.methodCalled('moveTab', [tabId, newIndex]);
   }
 
@@ -120,18 +109,15 @@ export class TestTabsApiProxy extends TestBrowserProxy {
     this.thumbnailRequestCounts_.clear();
   }
 
-  /** @param {!Object<!TabGroupVisualData>} data */
-  setGroupVisualData(data) {
+  setGroupVisualData(data: {[key: string]: TabGroupVisualData}) {
     this.groupVisualData_ = data;
   }
 
-  /** @param {!Array<!Tab>} tabs */
-  setTabs(tabs) {
+  setTabs(tabs: Tab[]) {
     this.tabs_ = tabs;
   }
 
-  /** @override */
-  setThumbnailTracked(tabId, thumbnailTracked) {
+  setThumbnailTracked(tabId: number, thumbnailTracked: boolean) {
     if (thumbnailTracked) {
       this.thumbnailRequestCounts_.set(
           tabId, this.getThumbnailRequestCount(tabId) + 1);
@@ -139,8 +125,7 @@ export class TestTabsApiProxy extends TestBrowserProxy {
     this.methodCalled('setThumbnailTracked', [tabId, thumbnailTracked]);
   }
 
-  /** @override */
-  ungroupTab(tabId) {
+  ungroupTab(tabId: number) {
     this.methodCalled('ungroupTab', [tabId]);
   }
 
@@ -162,18 +147,15 @@ export class TestTabsApiProxy extends TestBrowserProxy {
     return this.visible_;
   }
 
-  /** @param {!Object<string, string>} colors */
-  setColors(colors) {
+  setColors(colors: {[key: string]: string}) {
     this.colors_ = colors;
   }
 
-  /** @param {!Object<string, string>} layout */
-  setLayout(layout) {
+  setLayout(layout: {[key: string]: string}) {
     this.layout_ = layout;
   }
 
-  /** @param {boolean} visible */
-  setVisible(visible) {
+  setVisible(visible: boolean) {
     this.visible_ = visible;
   }
 
@@ -187,35 +169,31 @@ export class TestTabsApiProxy extends TestBrowserProxy {
     this.methodCalled('closeContainer');
   }
 
-  /** @override */
-  showBackgroundContextMenu(locationX, locationY) {
+  showBackgroundContextMenu(locationX: number, locationY: number) {
     this.methodCalled('showBackgroundContextMenu', [locationX, locationY]);
   }
 
-  /** @override */
-  showEditDialogForGroup(groupId, locationX, locationY, width, height) {
+  showEditDialogForGroup(
+      groupId: string, locationX: number, locationY: number, width: number,
+      height: number) {
     this.methodCalled(
         'showEditDialogForGroup',
         [groupId, locationX, locationY, width, height]);
   }
 
-  /** @override */
-  showTabContextMenu(tabId, locationX, locationY) {
+  showTabContextMenu(tabId: number, locationX: number, locationY: number) {
     this.methodCalled('showTabContextMenu', [tabId, locationX, locationY]);
   }
 
-  /** @override */
-  reportTabActivationDuration(durationMs) {
+  reportTabActivationDuration(durationMs: number) {
     this.methodCalled('reportTabActivationDuration', [durationMs]);
   }
 
-  /** @override */
-  reportTabDataReceivedDuration(tabCount, durationMs) {
+  reportTabDataReceivedDuration(tabCount: number, durationMs: number) {
     this.methodCalled('reportTabDataReceivedDuration', [tabCount, durationMs]);
   }
 
-  /** @override */
-  reportTabCreationDuration(tabCount, durationMs) {
+  reportTabCreationDuration(tabCount: number, durationMs: number) {
     this.methodCalled('reportTabCreationDuration', [tabCount, durationMs]);
   }
 }

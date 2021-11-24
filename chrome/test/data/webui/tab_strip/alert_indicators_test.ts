@@ -4,28 +4,24 @@
 
 import 'chrome://tab-strip.top-chrome/alert_indicators.js';
 
-import {AlertIndicatorElement} from 'chrome://tab-strip.top-chrome/alert_indicator.js';
 import {AlertIndicatorsElement} from 'chrome://tab-strip.top-chrome/alert_indicators.js';
 import {TabAlertState} from 'chrome://tab-strip.top-chrome/tabs.mojom-webui.js';
 
 import {assertEquals} from 'chrome://webui-test/chai_assert.js';
 
 suite('AlertIndicators', () => {
-  /** @type {!AlertIndicatorsElement} */
-  let alertIndicatorsElement;
+  let alertIndicatorsElement: AlertIndicatorsElement;
 
-  /** @return {!NodeList<!AlertIndicatorElement>} */
-  const getAlertIndicators = () => {
-    return /** @type {!NodeList<!AlertIndicatorElement>} */ (
-        alertIndicatorsElement.shadowRoot.querySelectorAll(
-            'tabstrip-alert-indicator'));
-  };
+  function getAlertIndicators() {
+    return alertIndicatorsElement.shadowRoot!.querySelectorAll(
+        'tabstrip-alert-indicator');
+  }
 
   setup(() => {
     document.body.innerHTML = '';
 
-    alertIndicatorsElement = /** @type {!AlertIndicatorsElement} */
-        (document.createElement('tabstrip-alert-indicators'));
+    alertIndicatorsElement =
+        document.createElement('tabstrip-alert-indicators');
     document.body.appendChild(alertIndicatorsElement);
   });
 
@@ -42,10 +38,11 @@ suite('AlertIndicators', () => {
       're-uses a shared alert indicator when necessary and prioritizes ' +
           'the earlier alert state in the list',
       async () => {
-        async function assertSharedIndicator(prioritizedState, ignoredState) {
+        async function assertSharedIndicator(
+            prioritizedState: TabAlertState, ignoredState: TabAlertState) {
           await alertIndicatorsElement.updateAlertStates([ignoredState]);
           let alertIndicators = getAlertIndicators();
-          const sharedIndicator = alertIndicators[0];
+          const sharedIndicator = alertIndicators[0]!;
           assertEquals(alertIndicators.length, 1);
           assertEquals(sharedIndicator.alertState, ignoredState);
 
@@ -53,7 +50,7 @@ suite('AlertIndicators', () => {
               [prioritizedState, ignoredState]);
           alertIndicators = getAlertIndicators();
           assertEquals(alertIndicators.length, 1);
-          assertEquals(alertIndicators[0], sharedIndicator);
+          assertEquals(alertIndicators[0]!, sharedIndicator);
           assertEquals(sharedIndicator.alertState, prioritizedState);
         }
 
@@ -72,7 +69,7 @@ suite('AlertIndicators', () => {
     await alertIndicatorsElement.updateAlertStates([TabAlertState.kPipPlaying]);
     const alertIndicators = getAlertIndicators();
     assertEquals(alertIndicators.length, 1);
-    assertEquals(alertIndicators[0].alertState, TabAlertState.kPipPlaying);
+    assertEquals(alertIndicators[0]!.alertState, TabAlertState.kPipPlaying);
   });
 
   test(
@@ -115,8 +112,8 @@ suite('AlertIndicators', () => {
 
         const alertIndicators = getAlertIndicators();
         assertEquals(alertIndicators.length, 2);
-        assertEquals(alertIndicators[0].alertState, TabAlertState.kPipPlaying);
+        assertEquals(alertIndicators[0]!.alertState, TabAlertState.kPipPlaying);
         assertEquals(
-            alertIndicators[1].alertState, TabAlertState.kAudioPlaying);
+            alertIndicators[1]!.alertState, TabAlertState.kAudioPlaying);
       });
 });

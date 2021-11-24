@@ -30,14 +30,14 @@ ts_library("build_ts") {
                     target_gen_dir),
   ]
   in_files = [
-    "alert_indicators_test.js",
-    "alert_indicator_test.js",
+    "alert_indicators_test.ts",
+    "alert_indicator_test.ts",
     "drag_manager_test.js",
-    "tab_group_test.js",
+    "tab_group_test.ts",
     "tab_list_test.js",
-    "tab_swiper_test.js",
-    "tab_test.js",
-    "test_tabs_api_proxy.js",
+    "tab_swiper_test.ts",
+    "tab_test.ts",
+    "test_tabs_api_proxy.ts",
   ]
   definitions = [ "//tools/typescript/definitions/tabs.d.ts" ]
   deps = [ "//chrome/browser/resources/tab_strip:build_ts" ]
