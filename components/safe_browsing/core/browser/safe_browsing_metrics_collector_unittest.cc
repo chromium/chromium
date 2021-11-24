@@ -15,6 +15,7 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -424,6 +425,126 @@ TEST_F(SafeBrowsingMetricsCollectorTest,
                                /* expected count */ 1);
   histograms.ExpectTotalCount("SafeBrowsing.EsbDisabled.LastEnabledInterval",
                               /* expected_count */ 3);
+}
+
+TEST_F(SafeBrowsingMetricsCollectorTest,
+       LogEnhancedProtectionDisabledMetrics_TimesDisabledLast28Days_Suffixes) {
+  base::HistogramTester histograms;
+
+  auto validate_total_counts =
+      [](base::HistogramTester* histogram_tester, int never_enabled_count,
+         int short_enabled_count, int medium_enabled_count,
+         int long_enabled_count) {
+        histogram_tester->ExpectTotalCount(
+            "SafeBrowsing.EsbDisabled.TimesDisabledLast28Days.NeverEnabled",
+            never_enabled_count);
+        histogram_tester->ExpectTotalCount(
+            "SafeBrowsing.EsbDisabled.TimesDisabledLast28Days.ShortEnabled",
+            short_enabled_count);
+        histogram_tester->ExpectTotalCount(
+            "SafeBrowsing.EsbDisabled.TimesDisabledLast28Days.MediumEnabled",
+            medium_enabled_count);
+        histogram_tester->ExpectTotalCount(
+            "SafeBrowsing.EsbDisabled.TimesDisabledLast28Days.LongEnabled",
+            long_enabled_count);
+      };
+
+  pref_service_.SetManagedPref(prefs::kSafeBrowsingEnabled,
+                               std::make_unique<base::Value>(true));
+  pref_service_.RemoveManagedPref(prefs::kSafeBrowsingEnabled);
+  validate_total_counts(&histograms, 0, 0, 0, 0);
+  SetSafeBrowsingState(&pref_service_, SafeBrowsingState::STANDARD_PROTECTION);
+  validate_total_counts(&histograms, 1, 0, 0, 0);
+
+  SetSafeBrowsingState(&pref_service_, SafeBrowsingState::ENHANCED_PROTECTION);
+  validate_total_counts(&histograms, 1, 0, 0, 0);
+  SetSafeBrowsingState(&pref_service_, SafeBrowsingState::STANDARD_PROTECTION);
+  validate_total_counts(&histograms, 1, 1, 0, 0);
+
+  SetSafeBrowsingState(&pref_service_, SafeBrowsingState::ENHANCED_PROTECTION);
+  task_environment_.FastForwardBy(base::Minutes(59));
+  validate_total_counts(&histograms, 1, 1, 0, 0);
+  SetSafeBrowsingState(&pref_service_, SafeBrowsingState::STANDARD_PROTECTION);
+  validate_total_counts(&histograms, 1, 2, 0, 0);
+
+  SetSafeBrowsingState(&pref_service_, SafeBrowsingState::ENHANCED_PROTECTION);
+  task_environment_.FastForwardBy(base::Hours(1));
+  validate_total_counts(&histograms, 1, 2, 0, 0);
+  SetSafeBrowsingState(&pref_service_, SafeBrowsingState::STANDARD_PROTECTION);
+  validate_total_counts(&histograms, 1, 2, 1, 0);
+
+  SetSafeBrowsingState(&pref_service_, SafeBrowsingState::ENHANCED_PROTECTION);
+  task_environment_.FastForwardBy(base::Hours(23));
+  validate_total_counts(&histograms, 1, 2, 1, 0);
+  SetSafeBrowsingState(&pref_service_, SafeBrowsingState::STANDARD_PROTECTION);
+  validate_total_counts(&histograms, 1, 2, 2, 0);
+
+  SetSafeBrowsingState(&pref_service_, SafeBrowsingState::ENHANCED_PROTECTION);
+  task_environment_.FastForwardBy(base::Days(1));
+  validate_total_counts(&histograms, 1, 2, 2, 0);
+  SetSafeBrowsingState(&pref_service_, SafeBrowsingState::STANDARD_PROTECTION);
+  validate_total_counts(&histograms, 1, 2, 2, 1);
+
+  EXPECT_THAT(
+      histograms.GetAllSamples(
+          "SafeBrowsing.EsbDisabled.TimesDisabledLast28Days.NeverEnabled"),
+      testing::ElementsAre(base::Bucket(1, 1)));
+  EXPECT_THAT(
+      histograms.GetAllSamples(
+          "SafeBrowsing.EsbDisabled.TimesDisabledLast28Days.ShortEnabled"),
+      testing::ElementsAre(base::Bucket(2, 1), base::Bucket(3, 1)));
+  EXPECT_THAT(
+      histograms.GetAllSamples(
+          "SafeBrowsing.EsbDisabled.TimesDisabledLast28Days.MediumEnabled"),
+      testing::ElementsAre(base::Bucket(4, 1), base::Bucket(5, 1)));
+  EXPECT_THAT(
+      histograms.GetAllSamples(
+          "SafeBrowsing.EsbDisabled.TimesDisabledLast28Days.LongEnabled"),
+      testing::ElementsAre(base::Bucket(6, 1)));
+}
+
+TEST_F(SafeBrowsingMetricsCollectorTest,
+       LogEnhancedProtectionDisabledMetrics_TimesDisabledLast28Days_Resets) {
+  base::HistogramTester histograms;
+
+  for (int i = 0; i < 3; i++) {
+    SetSafeBrowsingState(&pref_service_,
+                         SafeBrowsingState::ENHANCED_PROTECTION);
+    SetSafeBrowsingState(&pref_service_,
+                         SafeBrowsingState::STANDARD_PROTECTION);
+  }
+  task_environment_.FastForwardBy(base::Days(27));
+  SetSafeBrowsingState(&pref_service_, SafeBrowsingState::ENHANCED_PROTECTION);
+  SetSafeBrowsingState(&pref_service_, SafeBrowsingState::STANDARD_PROTECTION);
+  EXPECT_THAT(
+      histograms.GetAllSamples(
+          "SafeBrowsing.EsbDisabled.TimesDisabledLast28Days.ShortEnabled"),
+      testing::ElementsAre(base::Bucket(1, 1), base::Bucket(2, 1),
+                           base::Bucket(3, 1), base::Bucket(4, 1)));
+
+  // When we increase one more day, the first 3 disables get out of the range
+  // of the past 28 days, so now we log that there have only been 2 disables
+  // (the one yesterday and the one we're doing now)
+  task_environment_.FastForwardBy(base::Days(1));
+  SetSafeBrowsingState(&pref_service_, SafeBrowsingState::ENHANCED_PROTECTION);
+  SetSafeBrowsingState(&pref_service_, SafeBrowsingState::STANDARD_PROTECTION);
+  EXPECT_THAT(
+      histograms.GetAllSamples(
+          "SafeBrowsing.EsbDisabled.TimesDisabledLast28Days.ShortEnabled"),
+      testing::ElementsAre(base::Bucket(1, 1), base::Bucket(2, 2),
+                           base::Bucket(3, 1), base::Bucket(4, 1)));
+
+  // Increasing by 28 days removes all past disables from the range, so now we
+  // log that there has only been 1 disable in the past 28 days (the one we're
+  // doing that is causing this log)
+  task_environment_.FastForwardBy(base::Days(28));
+  SetSafeBrowsingState(&pref_service_, SafeBrowsingState::ENHANCED_PROTECTION);
+  SetSafeBrowsingState(&pref_service_, SafeBrowsingState::STANDARD_PROTECTION);
+  EXPECT_THAT(
+      histograms.GetAllSamples(
+          "SafeBrowsing.EsbDisabled.TimesDisabledLast28Days.ShortEnabled"),
+      testing::ElementsAre(base::Bucket(1, 2), base::Bucket(2, 2),
+                           base::Bucket(3, 1), base::Bucket(4, 1)));
 }
 
 TEST_F(SafeBrowsingMetricsCollectorTest,

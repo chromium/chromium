@@ -47,6 +47,18 @@ chromium-metrics-reviews@google.com.
   <variant name="SSLInterstitial" summary="SSL interstitial"/>
 </variants>
 
+<variants name="MetricsCollectorTimesDisabledEnabledDuration">
+  <variant name="LongEnabled"
+      summary="ESB enabled duration was greater than 24 hours"/>
+  <variant name="MediumEnabled"
+      summary="ESB enabled duration was between 1 hour and 24 hours"/>
+  <variant name="NeverEnabled"
+      summary="There is no enabled duration because ESB wasn't manually
+               enabled"/>
+  <variant name="ShortEnabled"
+      summary="ESB enabled duration was less than 1 hour"/>
+</variants>
+
 <variants name="MetricsCollectorUserState">
   <variant name="EnhancedProtection" summary="enhanced protection"/>
   <variant name="Managed" summary="Safe Browsing managed mode"/>
@@ -909,6 +921,22 @@ chromium-metrics-reviews@google.com.
     will be dropped.
   </summary>
   <token key="EventType" variants="MetricsCollectorSecuritySensitiveEventType"/>
+</histogram>
+
+<histogram
+    name="SafeBrowsing.EsbDisabled.TimesDisabledLast28Days.{EnabledDuration}"
+    units="times" expires_after="2022-05-22">
+  <owner>thefrog@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <summary>
+    Records the number of times Enhanced Safe Browsing was disabled the last 28
+    days. Logged each time a user disables ESB. The length of the interval that
+    ESB was enabled is summarized by {EnabledDuration}. The maximum number of
+    times ESB is disabled is tracked is 30, so anything above that is not
+    logged.
+  </summary>
+  <token key="EnabledDuration"
+      variants="MetricsCollectorTimesDisabledEnabledDuration"/>
 </histogram>
 
 <histogram name="SafeBrowsing.ExtensionTelemetry.Signals.SignalType"

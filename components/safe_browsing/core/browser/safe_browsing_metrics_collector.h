@@ -144,10 +144,14 @@ class SafeBrowsingMetricsCollector : public KeyedService {
   // For pref listeners.
   void OnEnhancedProtectionPrefChanged();
   void LogEnhancedProtectionDisabledMetrics();
+  void LogThrottledEnhancedProtectionDisabledMetrics();
 
   // Helper functions for Safe Browsing events in pref.
   void AddSafeBrowsingEventAndUserStateToPref(UserState user_state,
                                               EventType event_type);
+  // Keep the possible returned values of GetTimesDisabledSuffix in sync with
+  // MetricsCollectorTimesDisabledEnabledDuration in histograms.xml.
+  std::string GetTimesDisabledSuffix();
 
   // Gets the latest event timestamp for events filtered by |event_type_filter|.
   // Returns nullopt if none of the events happened in the past.
