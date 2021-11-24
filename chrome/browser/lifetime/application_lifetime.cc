@@ -320,14 +320,7 @@ void AttemptRelaunch() {
 }
 
 #if !defined(OS_ANDROID)
-namespace {
-
-bool g_relaunch_ignore_unload_handlers_called = false;
-
-}  // namespace
-
 void RelaunchIgnoreUnloadHandlers() {
-  g_relaunch_ignore_unload_handlers_called = true;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   chromeos::PowerManagerClient::Get()->RequestRestart(
       power_manager::REQUEST_RESTART_OTHER, "Chrome relaunch");
@@ -335,11 +328,6 @@ void RelaunchIgnoreUnloadHandlers() {
 #endif
   AttemptRestartInternal(IgnoreUnloadHandlers(true));
 }
-
-bool DidCallRelaunchIgnoreUnloadHandlers() {
-  return g_relaunch_ignore_unload_handlers_called;
-}
-
 #endif
 
 void AttemptExit() {
