@@ -135,8 +135,6 @@ class ChromeAppListItem {
   AppListControllerDelegate* GetController();
 
   void SetName(const std::string& name);
-  void SetNameAndShortName(const std::string& name,
-                           const std::string& short_name);
   void SetPosition(const syncer::StringOrdinal& position);
 
   void set_model_updater(AppListModelUpdater* model_updater) {

@@ -72,9 +72,6 @@ class AppListModelUpdater {
   virtual void SetItemIconVersion(const std::string& id, int icon_version) {}
   virtual void SetItemIcon(const std::string& id, const gfx::ImageSkia& icon) {}
   virtual void SetItemName(const std::string& id, const std::string& name) {}
-  virtual void SetItemNameAndShortName(const std::string& id,
-                                       const std::string& name,
-                                       const std::string& short_name) {}
   virtual void SetAppStatus(const std::string& id, ash::AppStatus app_status) {}
   virtual void SetItemPosition(const std::string& id,
                                const syncer::StringOrdinal& new_position) {}

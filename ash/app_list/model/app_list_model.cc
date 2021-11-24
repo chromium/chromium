@@ -94,14 +94,8 @@ void AppListModel::SetItemMetadata(const std::string& id,
   if (!data->position.Equals(item->position()))
     SetItemPosition(item, data->position);
 
-  if (data->short_name.empty()) {
-    if (data->name != item->name()) {
-      SetItemName(item, data->name);
-    }
-  } else {
-    if (data->name != item->name() || data->short_name != item->short_name()) {
-      SetItemNameAndShortName(item, data->name, data->short_name);
-    }
+  if (data->name != item->name()) {
+    SetItemName(item, data->name);
   }
 
   // Folder icon is generated on ash side and chrome side passes a null
@@ -245,16 +239,6 @@ void AppListModel::SetItemPosition(AppListItem* item,
 void AppListModel::SetItemName(AppListItem* item, const std::string& name) {
   item->SetName(name);
   DVLOG(2) << "AppListModel::SetItemName: " << item->ToDebugString();
-  for (auto& observer : observers_)
-    observer.OnAppListItemUpdated(item);
-}
-
-void AppListModel::SetItemNameAndShortName(AppListItem* item,
-                                           const std::string& name,
-                                           const std::string& short_name) {
-  item->SetNameAndShortName(name, short_name);
-  DVLOG(2) << "AppListModel::SetItemNameAndShortName: "
-           << item->ToDebugString();
   for (auto& observer : observers_)
     observer.OnAppListItemUpdated(item);
 }

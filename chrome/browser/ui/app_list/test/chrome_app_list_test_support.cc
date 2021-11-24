@@ -64,7 +64,6 @@ void PopulateDummyAppListItems(int n) {
     auto metadata = std::make_unique<ash::AppListItemMetadata>();
     metadata->id = app_id;
     metadata->name = app_name;
-    metadata->short_name = app_name;
     metadata->icon = CreateImageSkia(i);
     item->SetMetadata(std::move(metadata));
     model_updater->AddItem(std::move(item));

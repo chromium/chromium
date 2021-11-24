@@ -196,12 +196,6 @@ void ChromeAppListItem::SetName(const std::string& name) {
   metadata_->name = name;
 }
 
-void ChromeAppListItem::SetNameAndShortName(const std::string& name,
-                                            const std::string& short_name) {
-  metadata_->name = name;
-  metadata_->short_name = short_name;
-}
-
 void ChromeAppListItem::SetPosition(const syncer::StringOrdinal& position) {
   metadata_->position = position;
 }

@@ -286,19 +286,6 @@ void ChromeAppListModelUpdater::SetItemName(const std::string& id,
   model_.SetItemMetadata(id, std::move(data));
 }
 
-void ChromeAppListModelUpdater::SetItemNameAndShortName(
-    const std::string& id,
-    const std::string& name,
-    const std::string& short_name) {
-  ash::AppListItem* item = model_.FindItem(id);
-  if (!item)
-    return;
-  std::unique_ptr<ash::AppListItemMetadata> data = item->CloneMetadata();
-  data->name = name;
-  data->short_name = short_name;
-  model_.SetItemMetadata(id, std::move(data));
-}
-
 void ChromeAppListModelUpdater::SetAppStatus(const std::string& id,
                                              ash::AppStatus app_status) {
   ash::AppListItem* item = model_.FindItem(id);

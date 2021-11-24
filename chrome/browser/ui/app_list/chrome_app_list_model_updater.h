@@ -60,9 +60,6 @@ class ChromeAppListModelUpdater : public AppListModelUpdater,
   void SetItemIconVersion(const std::string& id, int icon_version) override;
   void SetItemIcon(const std::string& id, const gfx::ImageSkia& icon) override;
   void SetItemName(const std::string& id, const std::string& name) override;
-  void SetItemNameAndShortName(const std::string& id,
-                               const std::string& name,
-                               const std::string& short_name) override;
   void SetAppStatus(const std::string& id, ash::AppStatus app_status) override;
   void SetItemPosition(const std::string& id,
                        const syncer::StringOrdinal& new_position) override;

@@ -941,28 +941,10 @@ TEST_F(AppsGridViewNonBubbleTest, ControlArrowOnSuggestedChip) {
             apps_grid_view_->GetFocusManager()->GetFocusedView());
 }
 
-TEST_P(AppsGridViewClamshellTest, ItemLabelShortNameOverride) {
-  // If the app's full name and short name differ, the title label's tooltip
-  // should always be the full name of the app.
-  std::string expected_text("xyz");
-  std::string expected_tooltip("tooltip");
-  AppListItem* item = model_->CreateAndAddItem("Item with short name");
-  model_->SetItemNameAndShortName(item, expected_tooltip, expected_text);
-
-  AppListItemView* item_view = GetItemViewInTopLevelGrid(0);
-  ASSERT_TRUE(item_view);
-  const views::Label* title_label = item_view->title();
-  EXPECT_EQ(base::ASCIIToUTF16(expected_tooltip),
-            item_view->GetTooltipText(title_label->bounds().CenterPoint()));
-  EXPECT_EQ(base::ASCIIToUTF16(expected_text), title_label->GetText());
-}
-
-TEST_P(AppsGridViewClamshellTest, ItemLabelNoShortName) {
-  // If the app's full name and short name are the same, use the default tooltip
-  // behavior of the label (only show a tooltip if the title is truncated).
+TEST_P(AppsGridViewClamshellTest, ItemTooltip) {
   std::string title("a");
   AppListItem* item = model_->CreateAndAddItem(title);
-  model_->SetItemNameAndShortName(item, title, "");
+  model_->SetItemName(item, title);
 
   AppListItemView* item_view = GetItemViewInTopLevelGrid(0);
   ASSERT_TRUE(item_view);

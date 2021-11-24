@@ -63,8 +63,6 @@ struct ASH_PUBLIC_EXPORT AppListItemMetadata {
 
   std::string id;          // Id of the app list item.
   std::string name;        // Corresponding app/folder's name of the item.
-  std::string short_name;  // Corresponding app's short name of the item. Empty
-                           // if the app doesn't have one or it's a folder.
 
   AppStatus app_status = AppStatus::kReady;  // App status.
 
