@@ -21,6 +21,7 @@ WTF::HashTableAddResult::container_
 WTF::HashTableAddResult::stored_value
 cast_channel::CastTransportTest::logger_
 content::IndexedDBDispatcherHost::indexed_db_context_
+ServiceProcessState::state_
 
 # Populated manually - conflicting types in an initializer list
 WebUITabStripContainerView::tab_counter_
