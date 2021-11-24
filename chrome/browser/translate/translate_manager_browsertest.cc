@@ -1239,8 +1239,9 @@ IN_PROC_BROWSER_TEST_F(TranslateManagerBrowserTest,
 }
 
 // Test if there was an error during script load.
+// Disabled due to https://crbug.com/1273043.
 IN_PROC_BROWSER_TEST_F(TranslateManagerBrowserTest,
-                       PageTranslationScriptLoadError) {
+                       DISABLED_PageTranslationScriptLoadError) {
   SetTranslateScript(kTestScriptLoadError);
 
   ChromeTranslateClient* chrome_translate_client = GetChromeTranslateClient();
