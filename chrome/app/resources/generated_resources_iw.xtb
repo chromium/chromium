@@ -91,6 +91,7 @@
 <translation id="1087965115100412394">‏לא לאפשר לאתרים להתחבר למכשירי MIDI</translation>
 <translation id="1088654056000736875">‏Chrome מסיר כעת תוכנה מזיקה מהמחשב שלך…</translation>
 <translation id="1088659085457112967">כניסה למצב קורא</translation>
+<translation id="1089606299949659462">הבדיקה הושלמה!</translation>
 <translation id="1090126737595388931">אין יישומים פועלים ברקע</translation>
 <translation id="1090541560108055381">לפני ההתאמה צריך לוודא שמשתמשים באותו קוד בשני המכשירים</translation>
 <translation id="1091767800771861448">‏יש להקיש על ESCAPE כדי לדלג (גרסאות לא רשמיות בלבד).</translation>
@@ -1444,6 +1445,7 @@
 <translation id="2453860139492968684">סיום</translation>
 <translation id="2454247629720664989">מילת מפתח</translation>
 <translation id="2454264884354864965">המצלמה כבויה</translation>
+<translation id="2454524890947537054">לאשר את הבקשה לגבי האתר?</translation>
 <translation id="245650153866130664">כדי לרענן כרטיס באופן אוטומטי, יש לסמן את האפשרות "שמירת סיסמה". הסיסמה תישמר במכשיר שלך בלבד.</translation>
 <translation id="2457246892030921239"><ph name="APP_NAME" /> רוצה להעתיק קבצים מ-<ph name="VOLUME_NAME" />.</translation>
 <translation id="2457842160081795172">בערוץ <ph name="CHANNEL_NAME" /> כרגע</translation>
@@ -1847,6 +1849,7 @@
 <translation id="2861301611394761800">עדכון המערכת הושלם. יש להפעיל מחדש את המערכת.</translation>
 <translation id="2861941300086904918">‏מנהל האבטחה של Native Client</translation>
 <translation id="2862815659905780618">‏הסרה של סביבת הפיתוח של Linux</translation>
+<translation id="2864272167277395865">כאן צריך לבחור מכשיר:</translation>
 <translation id="2864601841139725659">הגדרת תמונת הפרופיל</translation>
 <translation id="2865919525181940183">צילום מסך של התוכנות שמוצגות כרגע במסך</translation>
 <translation id="286674810810214575">מקורות החשמל בבדיקה…</translation>
@@ -3257,6 +3260,7 @@
 <translation id="4364830672918311045">הצגת הודעות</translation>
 <translation id="4366138410738374926">ההדפסה החלה</translation>
 <translation id="4369121877634339065">גוררים תמונה כלשהי כדי לחפש</translation>
+<translation id="4369215744064167350">הבקשה לגבי האתר אושרה</translation>
 <translation id="4370975561335139969">כתובת האימייל והסיסמה שהזנת אינן תואמות</translation>
 <translation id="4373966964907728675">מעביר את שולחן העבודה</translation>
 <translation id="4374831787438678295">‏מנהל ההתקנה של Linux</translation>
@@ -3949,6 +3953,7 @@
 <translation id="5117139026559873716">יש לנתק את הטלפון מה-<ph name="DEVICE_TYPE" />. הם לא יחוברו יותר באופן אוטומטי.</translation>
 <translation id="5117930984404104619">מעקב אחר ההתנהגות של תוספים אחרים, כולל כתובות אתרים שמבקרים בהם</translation>
 <translation id="5119173345047096771">Mozilla Firefox</translation>
+<translation id="5120886753782992638">אפשר ללחוץ כאן כדי לעבור אל <ph name="APPROVED_URL" /></translation>
 <translation id="5121052518313988218">‏מערכת ההפעלה בקונטיינר של Linux לא נתמכת יותר. לא יתקבלו יותר עדכוני אבטחה ותיקוני באגים, ויכול להיות שתכונות שפועלות כרגע יפסיקו לפעול באופן בלתי צפוי. צריך לשדרג לגרסה האחרונה כדי להמשיך להשתמש ב-Linux.</translation>
 <translation id="5121130586824819730">הדיסק הקשיח מלא. יש לשמור במיקום אחר או לפנות מקום בדיסק הקשיח.</translation>
 <translation id="5123433949759960244">כדורסל</translation>
@@ -4057,6 +4062,7 @@
 <translation id="523505283826916779">הגדרות נגישות</translation>
 <translation id="5235750401727657667">החלפת הדף שמוצג בפתיחה של כרטיסייה חדשה</translation>
 <translation id="5236374273162681467">‏כדי להשתמש בהן בקלות בכל המכשירים, אפשר להעביר אותן לחשבון Google</translation>
+<translation id="523862956770478816">הרשאות לאתרים</translation>
 <translation id="5242724311594467048">האם להפעיל את "<ph name="EXTENSION_NAME" />"?</translation>
 <translation id="5243522832766285132">צריך לנסות שוב בעוד כמה רגעים</translation>
 <translation id="5244474230056479698">הסנכרון ל-<ph name="EMAIL" /> מתבצע</translation>
@@ -5347,6 +5353,7 @@
 <translation id="6635674640674343739">לא ניתן ליצור חיבור לרשת. צריך לבדוק את החיבור לרשת ולנסות שוב.</translation>
 <translation id="6635944431854494329">‏הבעלים יכולים לשלוט בתכונה הזו דרך 'הגדרות' &gt; 'מתקדם' &gt; 'שליחה אוטומטית של נתוני אבחון ושימוש אל Google'.</translation>
 <translation id="6635956300022133031">בחירה והתאמה אישית של קולות בהמרת טקסט לדיבור</translation>
+<translation id="6636623428211296678">אפשר לעיין למטה בהגדרות נוספות או לסיים עכשיו.</translation>
 <translation id="6639554308659482635">‏זיכרון SQLite </translation>
 <translation id="6640268266988685324">כרטיסייה פתוחה</translation>
 <translation id="6642720633335369752">כדי להציג את כל החלונות הפתוחים של האפליקציות, מחליקים כלפי מעלה מתחתית המסך ולוחצים לחיצה ארוכה.</translation>
@@ -6625,6 +6632,7 @@
 <translation id="7946586320617670168">המקור חייב להיות מאובטח</translation>
 <translation id="794676567536738329">אישור הרשאות</translation>
 <translation id="7947962633355574091">העתקת כתובת &amp;סרטון</translation>
+<translation id="7948407723851303488">כל הדפים של <ph name="DOMAIN_NAME" /></translation>
 <translation id="7951265006188088697">‏כדי להוסיף או לנהל אמצעי תשלום של Google Pay, יש לעבור אל <ph name="BEGIN_LINK" />חשבון Google<ph name="END_LINK" />.</translation>
 <translation id="7952708427581814389">אתרים יכולים לבקש הרשאה לראות טקסט ותמונות בלוח העריכה</translation>
 <translation id="795282463722894016">השחזור הושלם</translation>
@@ -7694,6 +7702,7 @@
 <translation id="9053893665344928494">לזכור את הבחירה הזו</translation>
 <translation id="9055636786322918818">‏אכיפה של הצפנת RC4. שימוש באפשרות הזו מגדילה את הסיכון, כי הצפנות RC4 אינן מאובטחות.</translation>
 <translation id="9056810968620647706">לא נמצאו התאמות.</translation>
+<translation id="9057007989365783744"><ph name="SUPERVISED_USER_NAME" /> רוצה לקבל גישה לתוכן הבא:</translation>
 <translation id="9057354806206861646">לוח זמנים של עדכונים</translation>
 <translation id="9062468308252555888">14x</translation>
 <translation id="9063208415146866933">שגיאה משורה <ph name="ERROR_LINE_START" /> עד <ph name="ERROR_LINE_END" /></translation>

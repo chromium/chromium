@@ -2390,6 +2390,7 @@ e Ctrl + Alt + Riduzione luminosità per diminuire lo zoom.</translation>
 <translation id="3449393517661170867">Nuova finestra a schede</translation>
 <translation id="3449839693241009168">Premi <ph name="SEARCH_KEY" /> per inviare comandi a <ph name="EXTENSION_NAME" /></translation>
 <translation id="3450157232394774192">Percentuale di occupazione dello stato di inattività</translation>
+<translation id="3450180775417907283"><ph name="MANAGER" /> richiede l'immediata connessione a una rete Wi-Fi per scaricare un aggiornamento.</translation>
 <translation id="3451753556629288767">App web autorizzate ad aprire determinati tipi di file</translation>
 <translation id="3452999110156026232">Accesso genitori</translation>
 <translation id="3453612417627951340">Occorre l'autorizzazione</translation>
@@ -4256,6 +4257,7 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="5472627187093107397">Salva le password per questo sito</translation>
 <translation id="5473075389972733037">IBM</translation>
 <translation id="5473156705047072749">{NUM_CHARACTERS,plural, =1{Il PIN deve contenere almeno un carattere}one{Il PIN deve contenere almeno # caratteri}other{Il PIN deve contenere almeno # caratteri}}</translation>
+<translation id="5474859849784484111"><ph name="MANAGER" /> richiede l'immediata connessione a una rete Wi-Fi per scaricare un aggiornamento. In alternativa, puoi eseguire il download tramite una connessione a consumo (potrebbero essere applicati costi).</translation>
 <translation id="5481273127572794904">Non possono scaricare automaticamente più file</translation>
 <translation id="5481941284378890518">Aggiungi stampanti nelle vicinanze</translation>
 <translation id="5483785310822538350">Revoca accesso a file e dispositivi</translation>
@@ -4678,6 +4680,7 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="592880897588170157">Scarica i file PDF anziché aprirli automaticamente in Chrome</translation>
 <translation id="592919310198008711">Quando faccio clic sull'estensione</translation>
 <translation id="5932124097031739492">Upgrade di Linux eseguito.</translation>
+<translation id="5932209916647644605"><ph name="MANAGER" /> richiede l'immediato aggiornamento di <ph name="DEVICE_TYPE" />.</translation>
 <translation id="5932224571077948991">Il sito mostra annunci invasivi o fuorvianti</translation>
 <translation id="59324397759951282">Dispositivo USB da <ph name="MANUFACTURER_NAME" /></translation>
 <translation id="5932441198730183141">Non disponi di licenze sufficienti per registrare questo dispositivo hardware Google Meet. Contatta il team di vendita per acquistarne altre. Se ritieni di aver visualizzato messaggio per errore, contatta l'assistenza.</translation>

@@ -56,6 +56,7 @@
 <translation id="2402980924095424747"><ph name="MEGABYTES" /> MB</translation>
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> dhe <ph name="NUM_MORE" /> tjetër e lejuar}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> dhe <ph name="NUM_MORE" /> të tjera të lejuara}}</translation>
 <translation id="2434158240863470628">Shkarkimi përfundoi <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
+<translation id="2442870161001914531">Kërko gjithmonë sajtin për desktop</translation>
 <translation id="2482878487686419369">Njoftimet</translation>
 <translation id="2485422356828889247">Çinstalo</translation>
 <translation id="2490684707762498678">Menaxhuar nga <ph name="APP_NAME" /></translation>
@@ -148,8 +149,10 @@
 <translation id="5048398596102334565">Lejoju faqeve të të hapin sensorët e lëvizjes (rekomandohet)</translation>
 <translation id="5050380848339752099">Ky sajt është gati për të ndarë informacione me një aplikacion jashtë modalitetit "të fshehtë".</translation>
 <translation id="5063480226653192405">Përdorimi</translation>
+<translation id="509133520954049755">Kërko pamjen për desktop</translation>
 <translation id="5100237604440890931">I palosur - kliko për ta zgjeruar</translation>
 <translation id="5123685120097942451">Skeda "e fshehtë"</translation>
+<translation id="5134599672855298214">Kërko pamjen për celular (rekomandohet)</translation>
 <translation id="5186036860380548585">Opsionet ofrohen pranë kreut të ekranit</translation>
 <translation id="5197729504361054390">Kontaktet që zgjedh do të ndahen me <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />.</translation>
 <translation id="5216942107514965959">Vizituar për herë të fundit sot</translation>
@@ -298,6 +301,7 @@
 <translation id="8447861592752582886">Revoko lejen e pajisjes</translation>
 <translation id="8451050538944905715">{NUM_SELECTED,plural, =1{1 kuki në përdorim}other{# kuki në përdorim}}</translation>
 <translation id="8487700953926739672">Mundësohet jashtë linje</translation>
+<translation id="848952951823693243">Kërko gjithmonë sajtin për celular</translation>
 <translation id="851751545965956758">Blloko lidhjen e sajteve me pajisjet</translation>
 <translation id="8525306231823319788">Ekrani i plotë</translation>
 <translation id="857943718398505171">Lejuar (rekomandohet)</translation>

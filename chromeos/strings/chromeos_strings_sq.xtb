@@ -75,6 +75,7 @@
 <translation id="2016697457005847575">Provo hapat e zgjidhjes së problemeve</translation>
 <translation id="202500043506723828">EID</translation>
 <translation id="2080070583977670716">Cilësime të tjera</translation>
+<translation id="2104796393919810494">Riparimi përfundoi</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, versioni <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2126937207024182736"><ph name="AVAILABLE_MEMORY" /> GB nga <ph name="TOTAL_MEMORY" /> GB të disponueshme</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
@@ -237,6 +238,7 @@
 <translation id="4813345808229079766">Lidhja</translation>
 <translation id="4832079907277790330">Zgjidh dosjen në aplikacionin "Skedarët"...</translation>
 <translation id="4835901797422965222">Nuk ka asnjë rrjet aktiv</translation>
+<translation id="4839698083503556542">Krijo filmin tënd</translation>
 <translation id="484790837831576105">(Android) Zgjidhja e DNS-së</translation>
 <translation id="4848429997038228357">NË EKZEKUTIM</translation>
 <translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> {0} përpjekje e mbetur}other{<ph name="ERROR_MESSAGE" /> {0} përpjekje të mbetura}}</translation>
@@ -258,6 +260,7 @@
 <translation id="5049856988445523908">Karta SIM e kyçur (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">Emri i grupit</translation>
 <translation id="5051044138948155788">Kjo është faqja e vetme. Kjo do të të çojë tek ekrani i fillimit të skanimit.</translation>
+<translation id="5061169534910302641">Përditëso versionin dhe rinise</translation>
 <translation id="5088172560898466307">Emri i strehuesit të serverit</translation>
 <translation id="5089810972385038852">Shteti</translation>
 <translation id="5142961317498132443">Vërtetimi</translation>

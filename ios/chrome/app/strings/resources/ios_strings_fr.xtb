@@ -107,6 +107,7 @@ Votre moteur de recherche est <ph name="DSE_NAME" />. Lisez les instructions pou
 <translation id="1894205589103145703">Une erreur s'est produite lors de la connexion.</translation>
 <translation id="1911619930368729126">Importer dans Google Drive</translation>
 <translation id="1923342640370224680">Heure précédente</translation>
+<translation id="1930989359703290198">Votre organisation ne vous autorise à vous connecter qu'avec certains comptes. Ceux qui ne sont pas autorisés sont masqués. <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
 <translation id="1941314575388338491">Appuyez deux fois pour copier.</translation>
 <translation id="1952172573699511566">Les sites Web s'afficheront dans votre langue préférée lorsque ce sera possible.</translation>
 <translation id="1965935827552890526">Terminez ce que vous étiez en train de faire dans l'autre fenêtre Chrome ouverte.</translation>
@@ -387,6 +388,8 @@ Vos données sont chiffrées avec votre phrase secrète de synchronisation. Sais
 <translation id="4802417911091824046">Le chiffrement par phrase secrète ne s'applique pas aux modes de paiement et adresses Google Pay.
 
 Pour modifier ce paramètre, <ph name="BEGIN_LINK" />réinitialisez la synchronisation<ph name="END_LINK" /></translation>
+<translation id="4803185665210547709">Géré par votre organisation.
+<ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
 <translation id="4805759445554688327">Numéro de carte non valide</translation>
 <translation id="4808744395915275922">Mises à jour</translation>
 <translation id="4818522717893377262">Ajouter une langue…</translation>

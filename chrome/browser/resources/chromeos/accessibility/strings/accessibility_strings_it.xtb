@@ -69,6 +69,7 @@
 <translation id="1354356357730355833">copia</translation>
 <translation id="135978014023467274">È stato effettuato l'aggiornamento a ChromeVox 63!</translation>
 <translation id="1360699455582016846">Fai clic sull'elemento sotto la chiave di routing <ph name="ROUTING_KEY_NUMBER" /></translation>
+<translation id="1376703628032300005">passa al carattere successivo</translation>
 <translation id="1377925789329510816">Questa è l'ultima intestazione. Premi tasto per la ricerca + H per passare alla prima intestazione oppure tasto per la ricerca + MAIUSC + H per passare alla seconda intestazione in questa pagina.</translation>
 <translation id="138218114945450791">Azzurro</translation>
 <translation id="1383876407941801731">Cerca</translation>
@@ -213,6 +214,7 @@
 <translation id="2450814015951372393">Casella di controllo</translation>
 <translation id="2461822463642141190">Attuale</translation>
 <translation id="2462626033734746142">Gruppo pulsanti di opzione</translation>
+<translation id="2467741090055146971">deseleziona</translation>
 <translation id="2471138580042810658">Intestazione 6</translation>
 <translation id="248982282205370495">{COUNT,plural, =1{asterisco}one{# asterisks}other{# asterischi}}</translation>
 <translation id="2490721194269245365">Marrone rosato</translation>
@@ -565,6 +567,7 @@
 <translation id="4854380505292502090">Nessun widget multimediale precedente</translation>
 <translation id="4855927945655956315">Tasti essenziali: Ctrl</translation>
 <translation id="4862744964787595316">Non grassetto</translation>
+<translation id="4865995900839719272">passa alla riga precedente</translation>
 <translation id="4866956062845190338">rdmnuitm</translation>
 <translation id="4867316986324544967">Attiva la registrazione TTS</translation>
 <translation id="4886524826165775965"><ph name="INDEX" />/<ph name="TOTAL" /></translation>
@@ -623,6 +626,7 @@
 <translation id="5304943142864553931"><ph name="TITLE" />, scheda</translation>
 <translation id="5308380583665731573">Connetti</translation>
 <translation id="5310788376443009632">rimossa:</translation>
+<translation id="5316825363044614340">passa alla riga successiva</translation>
 <translation id="5320727453979144100">Modalità persistente attiva</translation>
 <translation id="5321085947096604457">{COUNT,plural, =1{virgola}one{# commas}other{# virgole}}</translation>
 <translation id="532485153932049746">Formattazione del testo
@@ -902,6 +906,7 @@
 <translation id="7292195267473691167"><ph name="LOCALE" /> (<ph name="VARIANT" />)</translation>
 <translation id="7308519659008003150">Nessun campo modulo precedente</translation>
 <translation id="731121099745151312">tritm</translation>
+<translation id="7313717760367325059">guida</translation>
 <translation id="7317017974771324508">parzialmente selezionato</translation>
 <translation id="7322442671176251901">Esplora al tocco</translation>
 <translation id="7344012264516629579">I comandi di spostamento aggiuntivi includono ad esempio il passaggio tramite link, pulsante e casella di controllo. Puoi trovare un elenco completo dei comandi di spostamento nei menu di ChromeVox, che puoi aprire premendo il tasto per la ricerca + Punto.</translation>
@@ -1129,6 +1134,7 @@
 <translation id="9014206344398081366">Tutorial di ChromeVox</translation>
 <translation id="9040132695316389094">Intestazione 1</translation>
 <translation id="9061884144798498064">Seleziona una tabella braille a otto punti:</translation>
+<translation id="9063946545000394379">passa al carattere precedente</translation>
 <translation id="9065283790526219006">+popup</translation>
 <translation id="9065912140022662363">Nessun pulsante di opzione successivo</translation>
 <translation id="9067522039955793016">Interruzione di pagina</translation>

@@ -2390,6 +2390,7 @@ et Ctrl+Alt+Diminuer la luminosité pour faire un zoom arrière.</translation>
 <translation id="3449393517661170867">Nouvelle fenêtre à onglets</translation>
 <translation id="3449839693241009168">Appuyez sur <ph name="SEARCH_KEY" /> pour envoyer des commandes à <ph name="EXTENSION_NAME" />.</translation>
 <translation id="3450157232394774192">Taux d'occupation en veille</translation>
+<translation id="3450180775417907283"><ph name="MANAGER" /> vous demande de vous connecter au Wi-Fi maintenant et de télécharger une mise à jour.</translation>
 <translation id="3451753556629288767">Autorisés à ouvrir certains types de fichiers</translation>
 <translation id="3452999110156026232">Accès parental</translation>
 <translation id="3453612417627951340">Autorisation requise</translation>
@@ -4256,6 +4257,7 @@ Vous pouvez associer plusieurs contacteurs à cette action.</translation>
 <translation id="5472627187093107397">Enregistrer les mots de passe pour ce site</translation>
 <translation id="5473075389972733037">IBM</translation>
 <translation id="5473156705047072749">{NUM_CHARACTERS,plural, =1{Ce code doit comporter au moins 1 caractère}one{Ce code doit comporter au moins # caractère}other{Ce code doit comporter au moins # caractères}}</translation>
+<translation id="5474859849784484111"><ph name="MANAGER" /> vous demande de vous connecter au Wi-Fi maintenant et de télécharger une mise à jour. Vous pouvez aussi la télécharger via une connexion facturée à l'usage (susceptible d'entraîner des frais).</translation>
 <translation id="5481273127572794904">Non autorisé à télécharger automatiquement plusieurs fichiers</translation>
 <translation id="5481941284378890518">Ajouter des imprimantes à proximité</translation>
 <translation id="5483785310822538350">Retirer les droits d'accès aux fichiers et aux appareils</translation>
@@ -4679,6 +4681,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="592880897588170157">Télécharger les fichiers PDF au lieu de les ouvrir automatiquement dans Chrome</translation>
 <translation id="592919310198008711">Quand je clique sur l'extension</translation>
 <translation id="5932124097031739492">Linux a bien été mis à niveau.</translation>
+<translation id="5932209916647644605"><ph name="MANAGER" /> vous demande de mettre à jour votre <ph name="DEVICE_TYPE" /> immédiatement.</translation>
 <translation id="5932224571077948991">Le site affiche des annonces intrusives ou trompeuses</translation>
 <translation id="59324397759951282">Appareil USB <ph name="MANUFACTURER_NAME" /></translation>
 <translation id="5932441198730183141">Vous n'avez pas assez de licences disponibles pour enregistrer cet appareil comme matériel Google Meet. Veuillez contacter le service commercial pour en acheter d'autres. Si vous pensez que ce message s'affiche par erreur, veuillez contacter l'assistance.</translation>

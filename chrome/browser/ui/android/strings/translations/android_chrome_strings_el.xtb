@@ -604,6 +604,7 @@
 <translation id="4696983787092045100">Αποστολή μηνύματος κειμένου στις συσκευές σας</translation>
 <translation id="4699172675775169585">Εικόνες και αρχεία στην κρυφή μνήμη</translation>
 <translation id="4714588616299687897">Εξοικονομήστε έως και 60% των δεδομένων σας</translation>
+<translation id="471759387343966120">Εάν συνεχίσετε, συμφωνείτε με τους <ph name="BEGIN_TOS_LINK" />Όρους Παροχής Υπηρεσιών<ph name="END_TOS_LINK" /> και την <ph name="BEGIN_PRIVACY_LINK" />Πολιτική\u00A0απορρήτου<ph name="END_PRIVACY_LINK" />.\nΓια να συμβάλλει στη βελτίωση της εφαρμογής, το Chrome στέλνει δεδομένα χρήσης και σφαλμάτων στην Google. <ph name="BEGIN_UMA_LINK" />Διαχείριση<ph name="END_UMA_LINK" /></translation>
 <translation id="4719927025381752090">Πρόταση για μετάφραση</translation>
 <translation id="4720023427747327413">Άνοιγμα σε <ph name="PRODUCT_NAME" /></translation>
 <translation id="4720982865791209136">Συμβάλλετε στη βελτίωση του Chrome. <ph name="BEGIN_LINK" />Λάβετε μέρος στην έρευνα<ph name="END_LINK" /></translation>
@@ -1205,6 +1206,7 @@
 <translation id="808747664143081553">Συνδέθηκε στη συσκευή</translation>
 <translation id="8088176524274673045">Για κοινοποίηση στα άτομα που βρίσκονται κοντά σας, επιτρέψτε τους να σαρώσουν αυτόν τον κωδικό QR.</translation>
 <translation id="8103578431304235997">Καρτέλα ανώνυμης περιήγησης</translation>
+<translation id="8105613260829665809">Εάν συνεχίσετε, συμφωνείτε με τους <ph name="BEGIN_TOS_LINK" />Όρους Παροχής Υπηρεσιών<ph name="END_TOS_LINK" />.\nΓια να συμβάλλει στη βελτίωση της εφαρμογής, το Chrome στέλνει δεδομένα χρήσης και σφαλμάτων στην Google. <ph name="BEGIN_UMA_LINK" />Διαχείριση<ph name="END_UMA_LINK" /></translation>
 <translation id="8105893657415066307"><ph name="DESCRIPTION" /> <ph name="SEPARATOR" /> <ph name="FILE_SIZE" /></translation>
 <translation id="8109613176066109935">Για να εμφανίζονται οι σελιδοδείκτες σας σε όλες τις συσκευές σας, ενεργοποιήστε τον συγχρονισμό</translation>
 <translation id="8110024788458304985">Συμβάλετε στη βελτίωση των λειτουργιών και της απόδοσης του Chrome OS</translation>

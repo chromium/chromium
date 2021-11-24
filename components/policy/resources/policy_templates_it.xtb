@@ -273,6 +273,13 @@
 <translation id="1352799151662469739">Il periodo di tempo, in millisecondi, senza input dell'utente trascorso il quale lo schermo viene bloccato quando viene usata l'alimentazione CA.</translation>
 <translation id="1353416417709895349">Disattiva controlli dell'intercettazione DNS e barre di informazioni "http://intranetsite/" alternative</translation>
 <translation id="1354424209129232709">Massimo:</translation>
+<translation id="1355050231181289439"> Questo criterio consente di stabilire se la mappatura migliorata delle scorciatoie da tastiera internazionali è attivata.
+      Questa funzionalità garantisce che le scorciatoie da tastiera funzionino in modo coerente con i layout delle tastiere internazionali e le scorciatoie precedenti deprecate.
+
+      Se questo criterio viene disattivato, le scorciatoie da tastiera internazionali migliorate vengono disabilitate.
+      Se viene attivato, le scorciatoie da tastiera internazionali migliorate vengono abilitate.
+      Se non viene configurato, questo criterio viene attivato per i dispositivi gestiti e per i dispositivi di proprietà del consumatore.
+      Tieni presente che questo criterio è temporaneo per consentire agli utenti gestiti di poter ancora utilizzare le scorciatoie precedenti deprecate. Verrà ritirato quando le scorciatoie da tastiera personalizzate saranno disponibili.</translation>
 <translation id="1359553908012294236">Se questa norma viene impostata su true o non viene configurata, in <ph name="PRODUCT_NAME" /> verranno attivati gli accessi come ospite, che sono profili <ph name="PRODUCT_NAME" /> in cui tutte le finestre sono in modalità di navigazione in incognito.
 
       Se questa norma viene impostata su false, in <ph name="PRODUCT_NAME" /> non sarà possibile avviare profili ospite.</translation>
@@ -773,6 +780,7 @@ Lasciare il criterio non impostato significa che nessuna estensione è esente da
       Se il criterio viene impostato su Disattivato o se non viene configurato, la funzionalità Fast Transition non viene utilizzata.</translation>
 <translation id="1972134432340252414">Vengono bloccati i punti di estensioni precedenti nel processo del browser</translation>
 <translation id="1977581177449752640">Se il criterio viene configurato, l'host di accesso remoto usa un certificato client con il nome comune dell'autorità di certificazione indicato per eseguire l'autenticazione per <ph name="REMOTE_ACCESS_HOST_TOKEN_VALIDATION_URL_POLICY_NAME" />. Per usare qualsiasi certificato client disponibile, imposta il criterio su <ph name="WILDCARD_VALUE" />. Questa funzionalità viene disattivata se il criterio viene lasciato vuoto o se non viene configurato.</translation>
+<translation id="1984423899110408165">Mostra i percorsi nella pagina Cronologia di Chrome</translation>
 <translation id="1986003348976870087">Non richiedere all'utente di selezionare un certificato client nella schermata di accesso.</translation>
 <translation id="1988345404999458987">Consente di specificare le configurazioni dei server di stampa disponibili.
 
@@ -1505,6 +1513,14 @@ Se questo criterio non viene impostato, la Schermata sulla privacy verrà inizia
 <translation id="2725855586003209701">Se il criterio viene impostato su Attivato o se non viene configurato, i dispositivi registrati segnalano l'elenco di utenti dei dispositivi che hanno eseguito l'accesso di recente.
 
       Se il criterio viene impostato su Disattivato, i dispositivi registrati non segnalano l'elenco di utenti.</translation>
+<translation id="2725944143509568512">Questo criterio consente di controllare la visibilità dei percorsi nella pagina Cronologia di Chrome.
+
+      Se il criterio viene impostato su Attivato, i percorsi saranno visibili in chrome://history/journeys.
+
+      Se viene impostato su Disattivato, i percorsi non saranno visibili in chrome://history/journeys.
+
+      Se non viene configurato, i percorsi saranno visibili in chrome://history/journeys per impostazione predefinita e gli utenti potranno modificare la visibilità di tali percorsi.
+      </translation>
 <translation id="2730419309754848345">Stampa PDF come immagine predefinita</translation>
 <translation id="2731627323327011390">Disattiva l'utilizzo dei certificati <ph name="PRODUCT_OS_NAME" /> per le app ARC</translation>
 <translation id="2742843273354638707">Consente di nascondere l'app Chrome Web Store e il link nel piè di pagina nella pagina Nuova scheda e in Avvio applicazioni di <ph name="PRODUCT_OS_NAME" />.
@@ -2155,6 +2171,7 @@ Questa norma viene rispettata soltanto se viene attivata la norma "DefaultSearch
 
       Se il criterio viene impostato su Disattivato o se non viene configurato, viene disattivato il controller DTC e non sarà possibile raccogliere, elaborare o segnalare dati telemetrici e diagnostici del dispositivo.</translation>
 <translation id="3450649825886735618">Non usare servizi web di Google per correggere gli errori ortografici</translation>
+<translation id="3451422488938880786"> Consente l'attivazione o la disattivazione delle nuove mappature delle scorciatoie da tastiera internazionali</translation>
 <translation id="3451901387456196887">L'utente avrà la possibilità di selezionare dispositivi di trasmissione nel menu di <ph name="PRODUCT_NAME" /> usando un codice di accesso o scansionando un codice QR.</translation>
 <translation id="3456292544936505775">Questa norma consente di regolare gli intervalli di tempo durante i quali al dispositivo <ph name="PRODUCT_OS_NAME" /> non è consentito verificare automaticamente la disponibilità di aggiornamenti.
       Quando questa norma è impostata su un elenco non vuoto di intervalli di tempo:
@@ -2192,6 +2209,7 @@ Questa norma viene rispettata soltanto se viene attivata la norma "DefaultSearch
        Il valore <ph name="ALL_EXTENSIONS" /> nella lista bloccata significa che tutte le estensioni vengono bloccate e che gli utenti possono installare solo le estensioni presenti nella lista consentita.
 
        Per impostazione predefinita, tutte le estensioni sono consentite. Se invece non hai consentito estensioni tramite criterio, utilizza l'elenco delle estensioni consentite per modificare il criterio.</translation>
+<translation id="3501606938635483637">Le scorciatoie da tastiera internazionali sono mappate al glifo dei tasti e non alla posizione del tasto sulla tastiera.</translation>
 <translation id="3502555714327823858">Consenti tutte le modalità fronte/retro</translation>
 <translation id="350443680860256679">Configura ARC</translation>
 <translation id="350797926066071931">Abilita traduzione</translation>
@@ -3146,6 +3164,7 @@ Se questo criterio viene configurato, <ph name="PRODUCT_OS_NAME" /> consente agl
 <translation id="4802905909524200151">Configura il comportamento di aggiornamento del firmware <ph name="TPM_FIRMWARE_UPDATE_TPM" /></translation>
 <translation id="4804828344300125154">Riavvia sempre all'uscita dell'utente.</translation>
 <translation id="4807950475297505572">Gli utenti utilizzati meno di recente vengono rimossi fino alla disponibilità di spazio libero sufficiente</translation>
+<translation id="4811210934875253713">I percorsi saranno visibili in chrome://history/journeys.</translation>
 <translation id="4812270373673968774">Se il criterio è impostato su Always, la barra delle app <ph name="PRODUCT_OS_NAME" /> viene nascosta automaticamente. Se il criterio è impostato su Never, la barra delle app non viene mai nascosta automaticamente.
 
       Se il criterio è configurato, gli utenti non possono apportare modifiche. Se non è configurato, gli utenti possono decidere se la barra delle app viene nascosta automaticamente.</translation>
@@ -4417,6 +4436,42 @@ Se il criterio viene configurato, gli utenti non possono apportare modifiche. Gl
 
           L'avviso viene mostrato solo se l'azione stabilita in caso di inattività è la disconnessione o lo spegnimento.</translation>
 <translation id="6331943515692769234">Forza l'utilizzo dell'algoritmo User-Agent GREASE precedente.</translation>
+<translation id="6332192586629642626">I percorsi non saranno visibili in chrome://history/journeys.</translation>
+<translation id="6332489309596092806">La configurazione di questo criterio consente di specificare un elenco di app web installate automaticamente, senza interazione dell'utente, e che non possono essere disinstallate o disattivate dagli utenti.
+
+      Ogni voce del criterio è un oggetto con un componente obbligatorio:
+      <ph name="URL_LABEL" /> (l'URL dell'app web da installare)
+
+      e 5 componenti facoltativi:
+      - <ph name="DEFAULT_LAUNCH_CONTAINER_LABEL" /> (indica la modalità di apertura dell'app web, che per impostazione predefinita è una nuova scheda).
+
+      - <ph name="CREATE_DESKTOP_SHORTCUT_LABEL" /> (Vero se vuoi creare collegamenti sul desktop <ph name="LINUX_OS_NAME" /> e <ph name="MS_WIN_NAME" />).
+
+      - <ph name="FALLBACK_APP_NAME_LABEL" />
+      (a partire dalla versione 90 di <ph name="PRODUCT_NAME" />,
+      consente di eseguire l'override del nome dell'app se non si tratta di
+      un'app web progressiva [PWA] o il nome dell'app installata temporaneamente
+      se si tratta di una PWA, ma è necessaria l'autenticazione per poter
+      completare l'installazione. Se vengono
+      impostati entrambi i valori <ph name="CUSTOM_NAME_LABEL" /> e
+      <ph name="FALLBACK_APP_NAME_LABEL" />, il secondo verrà
+      ignorato).
+
+      - <ph name="OVERRIDE_APP_NAME_LABEL" />
+      (a partire dalla versione 96 di <ph name="PRODUCT_NAME" />,
+      consente di eseguire definitivamente l'override del nome dell'app per tutte le app
+      web e le PWA. Al momento funziona supportata solo su
+      <ph name="PRODUCT_OS_NAME" />).
+
+      - <ph name="CUSTOM_ICON_LABEL" />
+      (a partire dalla versione 96 di <ph name="PRODUCT_NAME" />,
+      consente di eseguire l'override dell'icona dell'app delle app installate. Le
+      icone devono essere quadrate, avere dimensioni massime pari a 1 MB ed essere in uno dei seguenti
+      formati: jpeg, png, gif, webp, ico. Il valore hash deve essere l'hash
+      SHA256 del file dell'icona. Al momento funzione supportata solo su
+      <ph name="PRODUCT_OS_NAME" />).
+
+      Consulta <ph name="PINNED_LAUNCHER_APPS_POLICY_NAME" /> per il blocco delle app nella barra di <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="6332546092866098577">Blocca l'accesso di lettura tramite l'API file system su questi siti</translation>
 <translation id="6334330017384340264">Questo criterio consente di specificare le applicazioni e gli URL da autorizzare per i limiti di utilizzo per app.
         La lista consentita configurata viene applicata alle app installate su <ph name="PRODUCT_OS_NAME" /> per l'utente in questione con limiti di utilizzo per app.
@@ -5851,6 +5906,7 @@ Per informazioni dettagliate sui pattern <ph name="URL_LABEL" /> validi, visita 
 
       Se questo criterio viene impostato su Attivato, l'utente può usare il browser <ph name="LACROS_NAME" />.</translation>
 <translation id="802147957407376460">Ruota lo schermo di 0°</translation>
+<translation id="8025620823136567878">Le scorciatoie da tastiera internazionali sono mappate alla posizione dei tasti sulla tastiera e non al glifo del tasto.</translation>
 <translation id="802776363472387903">L'hash SHA-256 dell'immagine <ph name="PLUGIN_VM_NAME" />.</translation>
 <translation id="8028814157747157754">Attiva il provider di ricerca predefinito e consenti agli utenti di modificare l'elenco dei provider di ricerca</translation>
 <translation id="8029201909194194377">Durata massima della sessione consentita per le connessioni di accesso remoto</translation>
@@ -6632,6 +6688,7 @@ Se la norma non viene impostata o viene impostata su false, la posizione non vie
 <translation id="8931555638815157255">Se il criterio viene impostato su Attivato o se non viene configurato, i dispositivi registrati segnalano periodicamente la versione dei relativi sistemi operativi e firmware.
 
       Se il criterio viene impostato su Disattivato, i dispositivi registrati non segnalano le informazioni sulla versione.</translation>
+<translation id="8934618237639919190">I percorsi saranno visibili in chrome://history/journeys per impostazione predefinita e gli utenti possono modificare la visibilità di tali percorsi.</translation>
 <translation id="8937282917198525844"> A partire dalla versione M81, abbiamo rinnovato aspetto e design degli elementi di controllo modulo standard (ad esempio, &lt;select&gt;, &lt;button&gt;, &lt;input type=date&gt;), con una superiore accessibilità e una migliore uniformità della piattaforma. Questo criterio ripristina i precedenti controlli modulo "legacy" fino alla versione M84.
 
       Se questo criterio viene impostato su True, gli elementi di controllo modulo "legacy" verranno utilizzati per tutti i siti.

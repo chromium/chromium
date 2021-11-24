@@ -326,6 +326,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="334252345105450327">Faire une capture d'écran</translation>
 <translation id="3351879221545518001">Vous êtes actuellement en train de caster l'écran.</translation>
 <translation id="3364721542077212959">Outils de stylet</translation>
+<translation id="3365977133351922112">Votre téléphone est trop loin. Rapprochez-le.</translation>
 <translation id="3368922792935385530">Connecté</translation>
 <translation id="3371140690572404006">Appareil USB de type C (port situé sur la droite de l'appareil, à l'avant)</translation>
 <translation id="3375634426936648815">Connecté</translation>
@@ -602,6 +603,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="5170568018924773124">Afficher le dossier</translation>
 <translation id="5176318573511391780">Enregistrer une partie de l'écran</translation>
 <translation id="5199367439331364630">Pour vous connecter à votre Chromebook, saisissez le mot de passe</translation>
+<translation id="5206028654245650022"><ph name="APP_NAME" />, <ph name="NOTIFICATION_TITLE" /> : <ph name="MESSAGE" />, <ph name="PHONE_NAME" /></translation>
 <translation id="5206057955438543357">{NUM_NOTIFICATIONS,plural, =1{1 autre notification}one{# autre notification}other{# autres notifications}}</translation>
 <translation id="5207949376430453814">Mettre le curseur de texte en surbrillance</translation>
 <translation id="5208059991603368177">Activé</translation>
@@ -884,6 +886,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="7398254312354928459">La connexion réseau a été établie</translation>
 <translation id="7405710164030118432">Pour déverrouiller l'appareil, saisissez le code d'accès parental Family Link</translation>
 <translation id="7406608787870898861">Finaliser la configuration de votre réseau mobile</translation>
+<translation id="740790383907119240">Raccourcis d'application</translation>
 <translation id="741244894080940828">conversion</translation>
 <translation id="7413851974711031813">Appuyez sur la touche Échap pour fermer</translation>
 <translation id="742594950370306541">La caméra est en cours d'utilisation.</translation>
@@ -986,6 +989,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="8061464966246066292">Contraste élevé</translation>
 <translation id="8098591350844501178">Arrêter de diffuser l'écran sur "<ph name="RECEIVER_NAME" />"</translation>
 <translation id="8113423164597455979">Activées, toutes applis</translation>
+<translation id="8120151603115102514">Votre téléphone n'a pas d'écran de verrouillage. Pour déverrouiller votre Chromebook, saisissez le mot de passe.</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
 <translation id="8131740175452115882">Confirmer</translation>
 <translation id="8132487352815776550">Fermer les sous-titres</translation>
@@ -1034,6 +1038,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" /> a <ph name="FEATURE_STATE" /> <ph name="FEATURE_NAME" />.</translation>
 <translation id="8477270416194247200">Appuyez sur Alt+Rechercher ou Maj pour annuler.</translation>
 <translation id="8492573885090281069"><ph name="DISPLAY_NAME" /> n'est pas compatible avec la résolution <ph name="SPECIFIED_RESOLUTION" />. La résolution <ph name="FALLBACK_RESOLUTION" /> sera utilisée à la place. Cliquez sur "Confirmer" pour conserver les modifications. Les paramètres précédents seront restaurés dans <ph name="TIMEOUT_SECONDS" />.</translation>
+<translation id="85123341071060231">Le Bluetooth est désactivé sur votre Chromebook. Pour déverrouiller votre Chromebook, saisissez le mot de passe.</translation>
 <translation id="8513108775083588393">Rotation auto</translation>
 <translation id="851458219935658693">Afficher les fenêtres du bureau actuel, case d'option cochée</translation>
 <translation id="8517041960877371778">Il est possible que votre appareil <ph name="DEVICE_TYPE" /> ne se recharge pas lorsqu'il est allumé.</translation>

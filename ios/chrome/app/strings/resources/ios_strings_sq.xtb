@@ -107,6 +107,7 @@ Motori yt i kërkimit është <ph name="DSE_NAME" />. Shiko udhëzimet e motorit
 <translation id="1894205589103145703">Ndodhi një gabim gjatë identifikimit.</translation>
 <translation id="1911619930368729126">Ngarko në "Diskun e Google"</translation>
 <translation id="1923342640370224680">Ora e fundit</translation>
+<translation id="1930989359703290198">Organizata jote të lejon të identifikohesh vetëm me llogari të caktuara. Llogaritë që nuk lejohen janë të fshehura. <ph name="BEGIN_LINK" />Mëso më shumë<ph name="END_LINK" /></translation>
 <translation id="1941314575388338491">Trokit dy herë për të kopjuar.</translation>
 <translation id="1952172573699511566">Sajtet e uebit do ta shfaqin tekstin në gjuhën tënde të preferuar, kur është e mundur.</translation>
 <translation id="1965935827552890526">Përfundo atë që po bën në dritaren tjetër të hapur të Chrome.</translation>
@@ -225,6 +226,7 @@ Shiko udhëzimet e motorit të kërkimit për fshirjen e historikut të kërkimi
 <translation id="3080525922482950719">Mund t'i ruash faqet për t'i lexuar më vonë ose jashtë linje</translation>
 <translation id="3081338492074632642">Sigurohu që fjalëkalimi që po ruan përputhet me fjalëkalimin tënd për <ph name="WEBSITE" />.</translation>
 <translation id="3112556859945124369">Shëno...</translation>
+<translation id="3122484138405575719"><ph name="BEGIN_LINK" />Shiko se çfarë mund të sinkronizosh<ph name="END_LINK" /></translation>
 <translation id="3131206671572504478">Bllokoji të gjitha</translation>
 <translation id="313283613037595347">Krijo një skedë të re "të fshehtë".</translation>
 <translation id="3153862085237805241">Ruaj kartën</translation>
@@ -386,6 +388,8 @@ Të dhënat e tua janë të koduara me frazën tënde të kalimit për sinkroniz
 <translation id="4802417911091824046">Enkriptimi me frazën e kalimit nuk përfshin mënyrat e pagesës dhe adresat nga Google Pay.
 
 Për të ndryshuar këtë cilësim, <ph name="BEGIN_LINK" />rivendos sinkronizimin<ph name="END_LINK" /></translation>
+<translation id="4803185665210547709">Menaxhohet nga organizata jote.
+<ph name="BEGIN_LINK" />Mëso më shumë<ph name="END_LINK" /></translation>
 <translation id="4805759445554688327">Numër karte i pavlefshëm</translation>
 <translation id="4808744395915275922">Përditësimet</translation>
 <translation id="4818522717893377262">Shto gjuhë...</translation>

@@ -273,6 +273,13 @@
 <translation id="1352799151662469739">Délai d'inactivité de l'utilisateur, en millisecondes, au terme duquel l'écran est verrouillé (lorsque l'appareil fonctionne sur secteur).</translation>
 <translation id="1353416417709895349">Désactiver les contrôles d'interception des requêtes DNS et les barres d'infos "Essayez avec http://siteintranet/".</translation>
 <translation id="1354424209129232709">Plage maximale :</translation>
+<translation id="1355050231181289439"> Cette règle permet d'activer ou non le mappage amélioré des raccourcis clavier internationaux.
+      Le but est d'assurer une cohérence entre les raccourcis clavier et les dispositions de clavier internationales, et d'éliminer les anciens raccourcis.
+
+      Si cette règle est désactivée, les raccourcis clavier internationaux améliorés le sont aussi.
+      Inversement, si elle est activée, ils le sont aussi.
+      Si elle n'est pas configurée, elle est désactivée pour les appareils gérés et activée pour les appareils non gérés.
+      Notez qu'il s'agit d'une règle temporaire afin que les utilisateurs gérés puissent quand même utiliser les anciens raccourcis obsolètes. Elle prendra fin une fois que des raccourcis clavier personnalisés seront disponibles.</translation>
 <translation id="1359553908012294236">Si cette règle est définie sur "True" ou n'est pas définie, <ph name="PRODUCT_NAME" /> autorisera les connexions en tant qu'invité. Les connexions en tant qu'invité correspondent à des profils <ph name="PRODUCT_NAME" /> où toutes les fenêtres s'ouvrent en mode navigation privée.
 
       Si cette règle est définie sur "False", <ph name="PRODUCT_NAME" /> n'autorisera pas la création de profils d'invités.</translation>
@@ -780,6 +787,7 @@ Si vous la désactivez, le défilement des pages Web vers des fragments de texte
       Si cette règle est désactivée ou qu'elle n'est pas configurée, la transition rapide n'est pas utilisée.</translation>
 <translation id="1972134432340252414">Bloquer les anciens points d'extension du processus du navigateur</translation>
 <translation id="1977581177449752640">Si cette règle est configurée, l'hôte d'accès à distance utilise un certificat client avec le nom commun de l'émetteur pour s'identifier auprès de "<ph name="REMOTE_ACCESS_HOST_TOKEN_VALIDATION_URL_POLICY_NAME" />". Pour permettre à cet hôte d'utiliser n'importe quel certificat client disponible, définissez cette règle sur "<ph name="WILDCARD_VALUE" />". Si cette règle est définie sur une chaîne vide ou qu'elle n'est pas configurée, elle est désactivée.</translation>
+<translation id="1984423899110408165">Afficher les groupes d'activités sur la page "Historique" de Chrome</translation>
 <translation id="1986003348976870087">Ne pas inviter l'utilisateur à sélectionner un certificat client sur l'écran de connexion.</translation>
 <translation id="1988345404999458987">Fournit les configurations des serveurs d'impression disponibles.
 
@@ -1507,6 +1515,12 @@ Si elle n'est pas définie, l'écran de confidentialité est désactivé initial
 <translation id="2725855586003209701">Si cette règle est activée ou qu'elle n'est pas configurée, les appareils enregistrés communiquent la liste des utilisateurs qui se sont récemment connectés.
 
       Si cette règle est désactivée, les appareils enregistrés ne communiquent pas cette liste.</translation>
+<translation id="2725944143509568512">Cette règle permet d'afficher ou non les groupes d'activités sur la page "Historique" de Chrome.
+
+      Si la règle est activée, les groupes seront affichés sur la page chrome://history/journeys, mais ils ne le seront pas si elle est désactivée.
+
+      Si la règle n'est pas configurée, les groupes seront affichés par défaut sur la page chrome://history/journeys. Les utilisateurs peuvent modifier ce paramètre.
+      </translation>
 <translation id="2730419309754848345">Imprimer le document PDF en tant qu'image par défaut</translation>
 <translation id="2731627323327011390">Désactiver l'utilisation de certificats <ph name="PRODUCT_OS_NAME" /> pour les applications ARC</translation>
 <translation id="2742843273354638707">Masque l'application Chrome Web Store et le lien de bas de page sur la page Nouvel onglet et dans le lanceur d'applications de <ph name="PRODUCT_OS_NAME" />.
@@ -2157,6 +2171,7 @@ Si elle n'est pas définie, l'écran de confidentialité est désactivé initial
 
       Si vous la désactivez, ou si vous ne la configurez pas, le dispositif est désactivé. Dans ce cas, les données de diagnostic et de télémétrie provenant de l'appareil ne peuvent pas être collectées, traitées ni signalées.</translation>
 <translation id="3450649825886735618">Ne pas utiliser de services Web Google pour corriger les fautes d'orthographe</translation>
+<translation id="3451422488938880786"> Permet d'autoriser ou non le remappage des raccourcis clavier internationaux</translation>
 <translation id="3451901387456196887">Permettre à l'utilisateur de sélectionner un appareil Cast dans le menu <ph name="PRODUCT_NAME" /> en utilisant un code d'accès ou en scannant un code QR.</translation>
 <translation id="3456292544936505775">Cette règle permet de définir les périodes durant lesquelles l'appareil <ph name="PRODUCT_OS_NAME" /> n'est pas autorisé à rechercher automatiquement des mises à jour.
       Si des périodes sont définies lors de la configuration de cette règle :
@@ -2194,6 +2209,7 @@ Si elle n'est pas définie, l'écran de confidentialité est désactivé initial
        Si vous saisissez la valeur "<ph name="ALL_EXTENSIONS" />" dans la liste de blocage, toutes les extensions sont bloquées, et les utilisateurs ne peuvent alors installer que les extensions figurant dans la liste d'autorisation.
 
        Par défaut, toutes les extensions sont autorisées. Toutefois, si vous avez interdit les extensions via une règle, utilisez la liste des extensions autorisées pour modifier cette règle.</translation>
+<translation id="3501606938635483637">Les raccourcis clavier internationaux sont associés au glyphe et non à l'emplacement des touches du clavier.</translation>
 <translation id="3502555714327823858">Autoriser tous les modes recto verso</translation>
 <translation id="350443680860256679">Configurer ARC</translation>
 <translation id="350797926066071931">Activer Google Traduction</translation>
@@ -3147,6 +3163,7 @@ Lorsque cette règle est définie, <ph name="PRODUCT_OS_NAME" /> n'autorise les 
 <translation id="4802905909524200151">Configurer le comportement de la fonctionnalité de mise à jour du micrologiciel <ph name="TPM_FIRMWARE_UPDATE_TPM" /></translation>
 <translation id="4804828344300125154">Redémarrer à chaque déconnexion de l'utilisateur.</translation>
 <translation id="4807950475297505572">Les comptes utilisateurs utilisés le moins récemment sont supprimés jusqu'à ce que l'espace libre soit suffisant.</translation>
+<translation id="4811210934875253713">Les groupes d'activités de l'historique seront affichés sur la page chrome://history/journeys.</translation>
 <translation id="4812270373673968774">Si cette règle est définie sur "Always", l'étagère <ph name="PRODUCT_OS_NAME" /> est masquée automatiquement. Si cette règle est définie sur "Never", l'étagère n'est jamais masquée automatiquement.
 
       Si vous configurez cette règle, les utilisateurs ne peuvent pas la modifier. Si cette règle n'est pas configurée, les utilisateurs choisissent si l'étagère doit être masquée automatiquement ou non.</translation>
@@ -4422,6 +4439,44 @@ Lorsque cette règle n'est pas configurée, le paramètre par défaut utilisé c
 
           Le message d'avertissement ne s'affiche que si le dépassement du délai d'inactivité entraîne une déconnexion ou l'arrêt de l'appareil.</translation>
 <translation id="6331943515692769234">Forcez l'utilisation de l'algorithme GREASE user-agent précédent.</translation>
+<translation id="6332192586629642626">Les groupes d'activités de l'historique ne seront pas affichés sur la page chrome://history/journeys.</translation>
+<translation id="6332489309596092806">Cette règle permet de lister les applications Web qui s'installent de manière autonome (sans intervention de l'utilisateur) et de définir quels utilisateurs ne peuvent pas les désinstaller ni les désactiver.
+
+      Chaque élément de cette liste est un objet constitué d'un membre obligatoire :
+      <ph name="URL_LABEL" /> (URL de l'application Web à installer)
+
+      et de cinq membres facultatifs :
+      - <ph name="DEFAULT_LAUNCH_CONTAINER_LABEL" />
+      (indiquant où s'ouvre l'application Web ; par défaut, dans un nouvel onglet)
+
+      - <ph name="CREATE_DESKTOP_SHORTCUT_LABEL" />
+      ("True" si vous voulez créer des raccourcis sur un bureau <ph name="LINUX_OS_NAME" /> ou
+      <ph name="MS_WIN_NAME" />).
+
+      - <ph name="FALLBACK_APP_NAME_LABEL" />
+      (Disponible depuis la version 90 de <ph name="PRODUCT_NAME" /> ;
+      permet de remplacer le nom de l'appli,
+      sauf pour les progressive web apps (PWA) –
+      dans le cas d'une PWA avec authentification requise pour l'installation,
+      le nom de l'appli temporaire peut être remplacé. Si les règles
+      <ph name="CUSTOM_NAME_LABEL" /> et
+      <ph name="FALLBACK_APP_NAME_LABEL" /> sont fournies,
+      cette dernière sera ignorée.)
+
+      - <ph name="OVERRIDE_APP_NAME_LABEL" />
+      (Disponible depuis la version 96 de <ph name="PRODUCT_NAME" /> ;
+      permet de remplacer définitivement le nom d'une appli pour toutes les applications Web et les PWA. Uniquement disponible sur
+      <ph name="PRODUCT_OS_NAME" /> actuellement.)
+
+      - <ph name="CUSTOM_ICON_LABEL" />
+      (Disponible depuis la version 96 de <ph name="PRODUCT_NAME" /> ;
+      permet de remplacer l'icône des applis installées. Les
+      icônes doivent être carrées, faire 1 Mo au maximum, dans l'un des formats
+      suivants : jpeg, png, gif, webp, ico. La valeur de hachage doit être un hachage SHA256
+      du fichier d'icône. Uniquement disponible sur
+      <ph name="PRODUCT_OS_NAME" /> actuellement.)
+
+      Consultez la règle <ph name="PINNED_LAUNCHER_APPS_POLICY_NAME" /> pour épingler des applis à l'étagère <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="6332546092866098577">Bloquer l'accès en lecture via l'API File System pour ces sites</translation>
 <translation id="6334330017384340264">Cette règle détermine les applications et URL qui doivent être autorisées pour les restrictions d'utilisation spécifiques pour chaque application.
         La liste d'autorisation configurée est destinée aux applications installées sur <ph name="PRODUCT_OS_NAME" /> pour l'utilisateur concerné avec des limites de temps spécifiques à chaque application.
@@ -5863,6 +5918,7 @@ Si ce paramètre est désactivé et que les connexions UDP sortantes sont filtr�
 
       Si elle est activée, l'utilisateur peut se servir du navigateur <ph name="LACROS_NAME" />.</translation>
 <translation id="802147957407376460">Faire pivoter l'écran de 0 degré</translation>
+<translation id="8025620823136567878">Les raccourcis clavier internationaux sont associés à l'emplacement et non au glyphe des touches du clavier.</translation>
 <translation id="802776363472387903">Hachage SHA-256 de l'image <ph name="PLUGIN_VM_NAME" />.</translation>
 <translation id="8028814157747157754">Activer le moteur de recherche par défaut et autoriser les utilisateurs à modifier la liste des moteurs de recherche</translation>
 <translation id="8029201909194194377">Durée maximale des sessions autorisée pour les connexions d'accès à distance</translation>
@@ -6645,6 +6701,7 @@ Il est conseillé de configurer les règles sur Windows via GPO, même si la ges
 <translation id="8931555638815157255">Si cette règle est activée ou qu'elle n'est pas configurée, les appareils enregistrés communiquent régulièrement la version de leur système d'exploitation et celle du micrologiciel.
 
       Si cette règle est désactivée, les appareils enregistrés ne communiquent pas d'informations sur les versions.</translation>
+<translation id="8934618237639919190">Par défaut, les groupes d'activités seront affichés sur la page chrome://history/journeys. Les utilisateurs peuvent modifier ce paramètre.</translation>
 <translation id="8937282917198525844"> À partir de la version M81, les éléments de contrôle de formulaire (par exemple, &lt;select&gt;, &lt;button&gt;, &lt;input type=date&gt;) ont été actualisés pour améliorer leur accessibilité et l'uniformité de la plate-forme. Cette règle restaure les anciens éléments de contrôle de formulaire (jusqu'à la version M84).
 
       Si cette règle est définie sur "True", les anciens éléments de contrôle de formulaire seront utilisés pour tous les sites.

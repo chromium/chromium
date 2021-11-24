@@ -604,6 +604,7 @@ Vaš Google račun može sadržavati druge oblike povijesti pregledavanja, na pr
 <translation id="4696983787092045100">Pošaljite SMS na svoje uređaje</translation>
 <translation id="4699172675775169585">Predmemorirane slike i datoteke</translation>
 <translation id="4714588616299687897">Uštedite do 60% podataka</translation>
+<translation id="471759387343966120">Nastavkom upotrebe prihvaćate <ph name="BEGIN_TOS_LINK" />uvjete pružanja usluge<ph name="END_TOS_LINK" /> i <ph name="BEGIN_PRIVACY_LINK" />pravila o\u00A0privatnosti<ph name="END_PRIVACY_LINK" />.\nRadi poboljšanja aplikacije Chrome šalje Googleu podatke o upotrebi i rušenju. <ph name="BEGIN_UMA_LINK" />Upravljajte<ph name="END_UMA_LINK" /></translation>
 <translation id="4719927025381752090">Ponudi prijevod</translation>
 <translation id="4720023427747327413">Otvori u aplikaciji <ph name="PRODUCT_NAME" /></translation>
 <translation id="4720982865791209136">Pomognite poboljšati Chrome. <ph name="BEGIN_LINK" />Ispunite anketu<ph name="END_LINK" /></translation>
@@ -1205,6 +1206,7 @@ Na primjer, neke web-lokacije na taj zahtjev mogu odgovoriti tako da vam prikaž
 <translation id="808747664143081553">Uspostavljena je veza s uređajem</translation>
 <translation id="8088176524274673045">Da biste dijelili s osobama u blizini, dopustite im da skeniraju ovaj QR kod</translation>
 <translation id="8103578431304235997">Anonimna kartica</translation>
+<translation id="8105613260829665809">Nastavkom upotrebe prihvaćate <ph name="BEGIN_TOS_LINK" />uvjete pružanja usluge<ph name="END_TOS_LINK" />.\nRadi poboljšanja aplikacije Chrome šalje Googleu podatke o upotrebi i rušenju. <ph name="BEGIN_UMA_LINK" />Upravljajte<ph name="END_UMA_LINK" /></translation>
 <translation id="8105893657415066307"><ph name="DESCRIPTION" /> <ph name="SEPARATOR" /> <ph name="FILE_SIZE" /></translation>
 <translation id="8109613176066109935">Da bi se vaše oznake prikazale na svim vašim uređajima, uključite sinkronizaciju</translation>
 <translation id="8110024788458304985">Pomozite poboljšati Chromeove značajke i izvedbu</translation>

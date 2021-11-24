@@ -712,6 +712,17 @@ Si inhabilitas esta política, se inhabilitará el desplazamiento de una página
 <translation id="1862267110714201519">Inhabilitar la función de ventana fantasma</translation>
 <translation id="1865417998205858223">Permisos clave</translation>
 <translation id="186719019195685253">Acción a emprender si se alcanza el retraso de inactividad mientras el dispositivo está conectado a la red eléctrica</translation>
+<translation id="1881649377321404593">
+      Esta política se eliminó en M80. No es necesaria porque ahora
+      WebDriver es compatible con todas las políticas.
+
+      La política permite que los usuarios de la función WebDriver anulen las políticas que puedan interferir en su funcionamiento.
+
+      Actualmente, esta política inhabilita las políticas SitePerProcess e IsolateOrigins.
+
+      Si la política está habilitada, WebDriver puede anular las políticas incompatibles.
+
+      Si la política está inhabilitada o no está configurada, WebDriver no puede anular las políticas incompatibles.</translation>
 <translation id="1885782360784839335">Permitir que se muestre contenido promocional que ocupe toda la pestaña</translation>
 <translation id="1888871729456797026">El token de registro de la política relativa a la nube en ordenadores</translation>
 <translation id="1894790493260633497">Habilitar el modo de impresión de gráficos de fondo de forma predeterminada</translation>
@@ -2796,6 +2807,17 @@ Si se le asigna el valor False, <ph name="PRODUCT_NAME" /> no utilizará notific
       A partir la versión 92 de <ph name="PRODUCT_NAME" />, esta política también está admitida en el modo sin interfaz gráfica.
 
       En <ph name="MS_WIN_NAME" />, esta función solo está disponible en instancias que estén vinculadas a un dominio de <ph name="MS_AD_NAME" /> que se ejecuten en Windows 10 Pro o que se hayan registrado en <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />. En <ph name="MAC_OS_NAME" />, esta función solo está disponible en instancias que se gestionen mediante MDM o que estén vinculadas a un dominio a través de MCX.</translation>
+<translation id="4268014245533736105">Chrome bloqueará el acceso a protocolos externos dentro de iframes en
+      entornos aislados. Consulta https://chromestatus.com/features/5680742077038592.
+
+      Si se le asigna el valor True, Chrome podrá bloquear esos accesos.
+
+      Si se le asigna el valor False, Chrome no podrá bloquear esos accesos.
+
+      El valor predeterminado es True (función de seguridad habilitada).
+
+      Esta opción la pueden utilizar los administradores que necesitan más tiempo para actualizar su sitio web interno afectado por esta nueva restricción. Esta política de Enterprise es temporal. Está previsto que se retire a partir de la versión 104 de <ph name="PRODUCT_NAME" />.
+      </translation>
 <translation id="4268586991084547853">Más compatibles con las listas de sitios del modo empresarial de Microsoft IE/Edge.</translation>
 <translation id="4269859918103560644">Permitir que el usuario decida</translation>
 <translation id="4274691295133617461">Si se asigna el valor "3" a esta política, los sitios web podrán solicitar acceso de lectura a los archivos y directorios del sistema de archivos del sistema operativo del host a través de la API File System. Si se le asigna el valor "2", se denegará el acceso.
@@ -4165,6 +4187,12 @@ Si se le asigna el valor False, <ph name="PRODUCT_NAME" /> no utilizará notific
 <translation id="5997543603646547632">Utilizar reloj de formato de 24 horas de forma predeterminada</translation>
 <translation id="5997846976342452720">Especificar si se debe inhabilitar el buscador de complementos (obsoleta)</translation>
 <translation id="5998198091336830580">Esta política forma parte del siguiente grupo atómico (solo se aplicarán las políticas de la fuente que tenga mayor prioridad del grupo):</translation>
+<translation id="6004575267180297869">
+      Especifica si los módulos de WebAssembly se pueden enviar a otra ventana o trabajador de varios orígenes. La opción de compartir módulos de WebAssembly de varios orígenes dejará de estar disponible como parte de las medidas que se van a tomar para desactivar document.domain. Consulta https://github.com/mikewest/deprecating-document-domain. Esta política permite volver a habilitar la opción de compartir módulos de WebAssembly de varios orígenes para prolongar el periodo de transición del proceso de desactivación.
+
+      Si se le asigna el valor True, los sitios podrán enviar módulos de WebAssembly también de varios orígenes sin restricciones.
+
+      Si se le asigna el valor False o no se le asigna ningún valor, los sitios solo podrán enviar módulos de WebAssembly a ventanas y trabajadores del mismo origen.</translation>
 <translation id="6009062900206392980">Si se le asigna el valor "none", la lupa se desactiva en la pantalla de inicio de sesión.
 
        Si se configura esta política, los usuarios pueden activar y desactivar temporalmente la lupa. Cuando la pantalla de inicio de sesión se vuelve a cargar o permanece inactiva durante un minuto, vuelve a su estado original.
@@ -4344,6 +4372,7 @@ Si se le asigna el valor False, <ph name="PRODUCT_NAME" /> no utilizará notific
       El objetivo de esta política es ofrecer a las empresas la posibilidad de inhabilitar el entorno aislado de audio si usan configuraciones de software de seguridad que interfieren con el entorno aislado.</translation>
 <translation id="624818583115864448">puerto 554 (puede desbloquearse hasta el 15/10/2021)</translation>
 <translation id="6252773211180267325">No impedir que un usuario ejecute <ph name="BOREALIS_NAME" /></translation>
+<translation id="6258658183356534534">Controla la función User-Agent Client Hints GREASE Update.</translation>
 <translation id="6261643884958898336">Proporcionar información de identificación de equipos</translation>
 <translation id="6265892395051519509">Permitir el acceso a los sensores en estos sitios web</translation>
 <translation id="6273015149273504999">
@@ -4426,6 +4455,7 @@ Si se le asigna el valor False, <ph name="PRODUCT_NAME" /> no utilizará notific
           El valor de esta política debe especificarse en milisegundos. Los valores deben ser inferiores o iguales al retraso de inactividad.
 
           El mensaje de advertencia solo se muestra si el modo de inactividad cierra la sesión o apaga el equipo.</translation>
+<translation id="6331943515692769234">Fuerza el uso del anterior algoritmo User-Agent GREASE.</translation>
 <translation id="6332192586629642626">Los grupos del historial no serán visibles en chrome://history/journeys.</translation>
 <translation id="6332489309596092806">Si se establece esta política, especifica una lista de aplicaciones web que se instalarán de forma silenciosa y sin intervención del usuario, y qué usuarios no podrán desinstalarlas ni desactivarlas.
 
@@ -4803,6 +4833,12 @@ Si se le asigna el valor False, <ph name="PRODUCT_NAME" /> no utilizará notific
 
       Nota: Esta política también afecta a las extensiones y aplicaciones que se deban instalar de manera forzada mediante <ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" />.</translation>
 <translation id="6731757988219967594">Filtrar contenido para adultos de sitios web de nivel superior (y no de los iframes insertados)</translation>
+<translation id="6733851879899284032">
+      Especifica si SharedArrayBuffers se puede usar en un contexto no aislado de otros orígenes. <ph name="PRODUCT_NAME" /> requerirá el aislamiento de otros orígenes cuando se use SharedArrayBuffers en <ph name="PRODUCT_NAME" /> 91 o posterior (25-05-2021) por motivos de compatibilidad con la Web. Información adicional disponible en: https://developer.chrome.com/blog/enabling-shared-array-buffer/.
+
+      Si se habilita, los sitios podrán usar SharedArrayBuffer sin restricciones.
+
+      Si se inhabilita o no se le asigna ningún valor, los sitios solo podrán usar SharedArrayBuffers si están aislados de otros orígenes.</translation>
 <translation id="6735701345096330595">Forzar que se habilite el corrector ortográfico de idiomas</translation>
 <translation id="6740611636377710500">Permite al usuario ejecutar PluginVm.
 
@@ -4994,6 +5030,9 @@ Si se le asigna el valor False, <ph name="PRODUCT_NAME" /> no utilizará notific
 <translation id="6929746927224321095">Inhabilitar Autocompletar</translation>
 <translation id="6931242315485576290">Inhabilitar sincronización de datos con Google</translation>
 <translation id="6940243892299228102">No permitir que los usuarios usen plantillas de escritorio</translation>
+<translation id="694071740172924905">Si se habilita, la función User-Agent Client Hints GREASE Update ajusta el algoritmo User-Agent GREASE con la últimas especificaciones.
+      Es posible que las especificaciones actualizadas impidan el funcionamiento de algunos sitios web que restrinjan los caracteres que podrían contener las solicitudes. Consulta las especificaciones para obtener más información: https://wicg.github.io/ua-client-hints/#grease.
+      Si esta política se habilita o no se le asigna ningún valor, se habilitará la función User-Agent Client Hints GREASE Update. Si la política se inhabilita, se usará el anterior algoritmo User-Agent GREASE.</translation>
 <translation id="6943577887654905793">Nombre de preferencia en Mac/Linux:</translation>
 <translation id="6946652757373377924">
       Esta política se retiró en la versión M77.
@@ -5355,6 +5394,7 @@ Estas políticas te permiten configurar el comportamiento de <ph name="PRODUCT_O
 
       Si no se asigna ningún valor a esta política, la opción predeterminada no estará disponible para los usuarios gestionados por empresas, aunque sí lo estará para aquellos no gestionados por empresas.</translation>
 <translation id="7295019613773647480">Habilitar usuarios supervisados</translation>
+<translation id="7297476773981993405">Permite que se ejecute el algoritmo User-Agent GREASE actualizado.</translation>
 <translation id="7302043767260300182">Retraso de bloqueo de pantalla cuando el dispositivo está conectado a la red</translation>
 <translation id="7303902834678570827">Los usuarios de sesiones de invitado gestionadas pueden almacenar ajustes de pantalla que se apliquen a todo el dispositivo</translation>
 <translation id="731208205557053914">Enviar información sobre VPD</translation>
@@ -5462,6 +5502,12 @@ Estas políticas te permiten configurar el comportamiento de <ph name="PRODUCT_O
 <translation id="7491720878670299691">Intervalo en el que se consultan los datos de red y se comprueba si hay eventos. El valor mínimo permitido es 1 minuto.
 
       Si no se establece esta política, se aplicará el intervalo predeterminado de 1 minuto.</translation>
+<translation id="7498595166686106721">
+      La política de permisos mostrar-capturar ofrece acceso a getDisplayMedia() según esta especificación: https://www.w3.org/TR/screen-capture/#feature-policy-integration Sin embargo, si se inhabilita esta política, no se implementará obligatoriamente este requisito y se permitirá acceder a getDisplayMedia() desde contextos que, si la política estuviera habilitada, estarían prohibidos Esta política de Enterprise es temporal. Está previsto que se retire a partir de la versión 100 de <ph name="PRODUCT_NAME" />. Está pensada para desbloquear a los usuarios de Enterprise cuyas aplicaciones no cumplan las especificaciones, pero necesiten tiempo para solucionarlo.
+
+      Si se habilita esta política o no se establece, los sitios solo podrán hacer llamadas a getDisplayMedia() desde contextos incluidos en la lista de permitidos de la política de permisos mostrar-capturar.
+
+      Si se inhabilita esta política, los sitios podrán hacer llamadas a getDisplayMedia() incluso desde contextos no incluidos en la lista de permitidos de la política de permisos mostrar-capturar. Ten en cuenta que es posible que se apliquen otras restricciones.</translation>
 <translation id="7506745375479451616">Esta política controla el comando que se utilizará para abrir las URL al cambiar de <ph name="IE_PRODUCT_NAME" /> a <ph name="PRODUCT_NAME" />. A esta política se le puede asignar la ruta de un archivo ejecutable o el valor <ph name="PRODUCT_NAME_PLACEHOLDER" /> para detectar automáticamente la ubicación de <ph name="PRODUCT_NAME" />.
 
       Si no se asigna ningún valor a esta política, <ph name="IE_PRODUCT_NAME" /> detectará automáticamente la ruta ejecutable de <ph name="PRODUCT_NAME" /> al iniciar <ph name="PRODUCT_NAME" /> desde Internet Explorer.
@@ -6080,6 +6126,20 @@ Te recomendamos que utilices GPO para configurar la política en Windows, aunque
 <translation id="8266778278542911985">Si se asigna el valor 3 a esta política, los sitios web podrán solicitar acceso a los puertos serie. Si se le asigna el valor 2, se denegará el acceso a los puertos serie.
 
       Si no se le asigna ningún valor, los sitios web podrán solicitar acceso, pero los usuarios podrán cambiar esta opción.</translation>
+<translation id="8267887696930711948">Obsoleta en M69. Utiliza
+      en su lugar OverrideSecurityRestrictionsOnInsecureOrigin.
+
+      La política define una lista de orígenes (URLs) o de patrones de nombres de host (como *.example.com) a los que no se aplican las restricciones de seguridad de los orígenes inseguros.
+
+      El objetivo es dejar que las organizaciones permitan orígenes para aplicaciones antiguas que no pueden implementar TLS, o configurar un servidor provisional para desarrollo web interno y que los desarrolladores puedan probar las funciones que necesiten contextos seguros sin tener que implementar TLS en el servidor provisional. Esta política también evita que el origen aparezca con la etiqueta No es seguro en el omnibox.
+
+      Definir la lista de URLs de esta política tiene el mismo resultado que asignar la marca de línea de comandos "--unsafely-treat-insecure-origin-as-secure" a una lista de las mismas URLs separadas por comas. Si se establece la política, se anula la marca de línea de comandos.
+
+      Esta política está obsoleta en M69. La sustituye
+OverrideSecurityRestrictionsOnInsecureOrigin. Si ambas políticas están presentes, OverrideSecurityRestrictionsOnInsecureOrigin anulará esta política.
+
+      Para obtener más información sobre contextos seguros, consulta la página https://www.w3.org/TR/secure-contexts/
+      </translation>
 <translation id="8270320981823560179">Drive</translation>
 <translation id="827054846390793641">Habilitar la UI relacionada con la conexión en el escritorio del host cuando una conexión esté activa</translation>
 <translation id="8274603902181597201">Borrar los eCryptfs del directorio principal del usuario y empezar con un nuevo directorio principal cifrado con ext4.</translation>

@@ -604,6 +604,7 @@ Google nalog možda ima druge oblike istorije pregledanja, poput pretraga i akti
 <translation id="4696983787092045100">Pošaljite SMS uređajima</translation>
 <translation id="4699172675775169585">Keširane slike i datoteke</translation>
 <translation id="4714588616299687897">Uštedite do 60% podataka</translation>
+<translation id="471759387343966120">Ako nastavite, prihvatate <ph name="BEGIN_TOS_LINK" />uslove korišćenja usluge<ph name="END_TOS_LINK" /> i <ph name="BEGIN_PRIVACY_LINK" />politiku\u00A0privatnosti<ph name="END_PRIVACY_LINK" />.\nRadi poboljšanja aplikacije Chrome Google-u šalje podatke o korišćenju i otkazivanjima. <ph name="BEGIN_UMA_LINK" />Upravljajte<ph name="END_UMA_LINK" /></translation>
 <translation id="4719927025381752090">Ponudi prevod</translation>
 <translation id="4720023427747327413">Otvori u <ph name="PRODUCT_NAME" />-u</translation>
 <translation id="4720982865791209136">Pomozite nam da poboljšamo Chrome. <ph name="BEGIN_LINK" />Popunite anketu<ph name="END_LINK" /></translation>
@@ -1205,6 +1206,7 @@ Na primer, neki veb-sajtovi mogu da odgovore na ovaj zahtev prikazivanjem oglasa
 <translation id="808747664143081553">Povezani ste sa uređajem</translation>
 <translation id="8088176524274673045">Da biste delili sa ljudima u blizini, dajte im da skeniraju ovaj QR kôd</translation>
 <translation id="8103578431304235997">Kartice bez arhiviranja</translation>
+<translation id="8105613260829665809">Ako nastavite, prihvatate <ph name="BEGIN_TOS_LINK" />uslove korišćenja usluge<ph name="END_TOS_LINK" />.\nRadi poboljšanja aplikacije Chrome Google-u šalje podatke o korišćenju i otkazivanjima. <ph name="BEGIN_UMA_LINK" />Upravljajte<ph name="END_UMA_LINK" /></translation>
 <translation id="8105893657415066307"><ph name="DESCRIPTION" /> <ph name="SEPARATOR" /> <ph name="FILE_SIZE" /></translation>
 <translation id="8109613176066109935">Da bi vam obeleživači bili dostupni na svim uređajima, uključite sinhronizaciju</translation>
 <translation id="8110024788458304985">Pomozite nam da poboljšamo funkcije i učinak Chrome OS-a</translation>

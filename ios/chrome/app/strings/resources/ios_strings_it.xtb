@@ -107,6 +107,7 @@ Il tuo motore di ricerca è <ph name="DSE_NAME" />. Consulta le relative istruzi
 <translation id="1894205589103145703">Si è verificato un problema durante l'accesso.</translation>
 <translation id="1911619930368729126">Carica su Google Drive</translation>
 <translation id="1923342640370224680">Ultima ora</translation>
+<translation id="1930989359703290198">La tua organizzazione ti consente di accedere solo con determinati account. Gli account non consentiti vengono nascosti. <ph name="BEGIN_LINK" />Scopri di più<ph name="END_LINK" /></translation>
 <translation id="1941314575388338491">Tocca due volte per copiare.</translation>
 <translation id="1952172573699511566">Se possibile, il testo dei siti web verrà mostrato nella tua lingua preferita.</translation>
 <translation id="1965935827552890526">Finisci ciò che stavi facendo in un'altra finestra di Chrome aperta.</translation>
@@ -387,6 +388,8 @@ I tuoi dati vengono criptati con la tua passphrase di sincronizzazione. Inserisc
 <translation id="4802417911091824046">La crittografia della passphrase non include metodi di pagamento e indirizzi di Google Pay.
 
 Per cambiare questa impostazione, <ph name="BEGIN_LINK" />reimposta la sincronizzazione<ph name="END_LINK" />.</translation>
+<translation id="4803185665210547709">Gestito dalla tua organizzazione.
+<ph name="BEGIN_LINK" />Scopri di più<ph name="END_LINK" /></translation>
 <translation id="4805759445554688327">Numero di carta non valido</translation>
 <translation id="4808744395915275922">Aggiornamenti</translation>
 <translation id="4818522717893377262">Aggiungi lingua…</translation>

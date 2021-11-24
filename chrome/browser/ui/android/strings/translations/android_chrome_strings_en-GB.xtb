@@ -604,6 +604,7 @@ Your Google Account may have other forms of browsing history such as searches an
 <translation id="4696983787092045100">Send text to Your Devices</translation>
 <translation id="4699172675775169585">Cached images and files</translation>
 <translation id="4714588616299687897">Save up to 60% of your data</translation>
+<translation id="471759387343966120">By continuing, you agree to the <ph name="BEGIN_TOS_LINK" />Terms of Service<ph name="END_TOS_LINK" /> and <ph name="BEGIN_PRIVACY_LINK" />Privacy\u00A0Policy<ph name="END_PRIVACY_LINK" />.\nTo help improve the app, Chrome sends usage and crash data to Google. <ph name="BEGIN_UMA_LINK" />Manage<ph name="END_UMA_LINK" /></translation>
 <translation id="4719927025381752090">Offer to translate</translation>
 <translation id="4720023427747327413">Open in <ph name="PRODUCT_NAME" /></translation>
 <translation id="4720982865791209136">Help improve Chrome. <ph name="BEGIN_LINK" />Take survey<ph name="END_LINK" /></translation>
@@ -1205,6 +1206,7 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="808747664143081553">Connected to device</translation>
 <translation id="8088176524274673045">To share with people nearby, let them scan this QR code</translation>
 <translation id="8103578431304235997">Incognito Tab</translation>
+<translation id="8105613260829665809">By continuing, you agree to the <ph name="BEGIN_TOS_LINK" />Terms of Service<ph name="END_TOS_LINK" />.\nTo help improve the app, Chrome sends usage and crash data to Google. <ph name="BEGIN_UMA_LINK" />Manage<ph name="END_UMA_LINK" /></translation>
 <translation id="8105893657415066307"><ph name="DESCRIPTION" /> <ph name="SEPARATOR" /> <ph name="FILE_SIZE" /></translation>
 <translation id="8109613176066109935">To get your bookmarks on all your devices, turn on sync</translation>
 <translation id="8110024788458304985">Help improve Chrome\u2019s features and performance</translation>

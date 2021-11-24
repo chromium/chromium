@@ -604,6 +604,7 @@ Contul Google poate să ofere alte forme ale istoricului de navigare, cum ar fi 
 <translation id="4696983787092045100">Trimite text pe dispozitivele tale</translation>
 <translation id="4699172675775169585">Imaginile și fișierele memorate în cache</translation>
 <translation id="4714588616299687897">Economisește până la 60% din date</translation>
+<translation id="471759387343966120">Dacă alegi să continui, ești de acord cu <ph name="BEGIN_TOS_LINK" />Termenii și condițiile<ph name="END_TOS_LINK" /> și cu <ph name="BEGIN_PRIVACY_LINK" />Politica de\u00A0confidențialitate<ph name="END_PRIVACY_LINK" />.\nPentru a contribui la îmbunătățirea aplicației, Chrome trimite date de utilizare și despre erori la Google. <ph name="BEGIN_UMA_LINK" />Gestionează<ph name="END_UMA_LINK" /></translation>
 <translation id="4719927025381752090">Oferă traducerea</translation>
 <translation id="4720023427747327413">Deschide în <ph name="PRODUCT_NAME" /></translation>
 <translation id="4720982865791209136">Contribuie la îmbunătățirea browserului Chrome. <ph name="BEGIN_LINK" />Participă la sondaj.<ph name="END_LINK" /></translation>
@@ -1205,6 +1206,7 @@ De exemplu, unele site-uri pot răspunde la această solicitare afișând anunț
 <translation id="808747664143081553">S-a conectat la dispozitiv</translation>
 <translation id="8088176524274673045">Ca să le permiți accesul persoanelor din apropiere, solicită-le să scaneze acest cod QR</translation>
 <translation id="8103578431304235997">Filă incognito</translation>
+<translation id="8105613260829665809">Dacă alegi să continui, ești de acord cu <ph name="BEGIN_TOS_LINK" />Termenii și condițiile<ph name="END_TOS_LINK" />.\nPentru a contribui la îmbunătățirea aplicației, Chrome trimite date de utilizare și despre erori la Google. <ph name="BEGIN_UMA_LINK" />Gestionează<ph name="END_UMA_LINK" /></translation>
 <translation id="8105893657415066307"><ph name="DESCRIPTION" /> <ph name="SEPARATOR" /> <ph name="FILE_SIZE" /></translation>
 <translation id="8109613176066109935">Pentru a accesa marcajele pe toate dispozitivele, activează sincronizarea</translation>
 <translation id="8110024788458304985">Contribuie la îmbunătățirea funcțiilor și a performanței Chrome</translation>
