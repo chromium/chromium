@@ -894,7 +894,7 @@ bool D3D11VideoDecoder::OutputResult(const CodecPicture* picture,
 
   frame->metadata().power_efficient = true;
   frame->set_color_space(output_color_space);
-  if (is_hdr_supported_)
+  if (output_color_space.IsHDR())
     frame->set_hdr_metadata(config_.hdr_metadata());
   output_cb_.Run(frame);
   return true;
