@@ -48,6 +48,7 @@ class ValidationMessageChromeClient : public EmptyChromeClient {
     // this overlay doesn't have an associated WebFrameWidget, which schedules
     // animation.
     main_chrome_client_->ScheduleAnimation(anchor_view_, delay);
+    anchor_view_->SetVisualViewportOrOverlayNeedsRepaint();
   }
 
   float WindowToViewportScalar(LocalFrame* local_frame,
@@ -104,9 +105,6 @@ void ValidationMessageOverlayDelegate::PaintFrameOverlay(
   DrawingRecorder recorder(context, overlay, DisplayItem::kFrameOverlay,
                            gfx::Rect(ToGfxSize(view_size)));
 
-  const_cast<ValidationMessageOverlayDelegate*>(this)->UpdateFrameViewState(
-      overlay, view_size);
-
   if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
     context.DrawRecord(FrameView().GetPaintRecord());
   } else {
@@ -127,8 +125,8 @@ void ValidationMessageOverlayDelegate::ServiceScriptedAnimations(
 }
 
 void ValidationMessageOverlayDelegate::UpdateFrameViewState(
-    const FrameOverlay& overlay,
-    const IntSize& view_size) {
+    const FrameOverlay& overlay) {
+  IntSize view_size = overlay.Size();
   if (FrameView().Size() != view_size) {
     FrameView().Resize(view_size);
     page_->GetVisualViewport().SetSize(view_size);

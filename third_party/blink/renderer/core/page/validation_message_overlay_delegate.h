@@ -46,11 +46,12 @@ class CORE_EXPORT ValidationMessageOverlayDelegate
   void StartToHide();
   bool IsHiding() const;
 
+  void UpdateFrameViewState(const FrameOverlay&);
+
   Page* GetPageForTesting() const { return page_; }
 
  private:
   LocalFrameView& FrameView() const;
-  void UpdateFrameViewState(const FrameOverlay&, const IntSize& view_size);
   void WriteDocument(SharedBuffer*);
   Element& GetElementById(const AtomicString&) const;
   void AdjustBubblePosition(const IntRect& view_rect);
