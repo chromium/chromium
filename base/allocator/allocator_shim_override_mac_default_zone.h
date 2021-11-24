@@ -175,6 +175,19 @@ void MallocZoneFreeDefiniteSize(malloc_zone_t* zone, void* ptr, size_t size) {
 malloc_introspection_t g_mac_malloc_introspection{};
 malloc_zone_t g_mac_malloc_zone{};
 
+malloc_zone_t* GetDefaultZone() {
+  // The default zone is *not* returned by malloc_default_zone(), which returns
+  // the *initial* zone.
+  unsigned int zone_count = 0;
+  vm_address_t* zones = nullptr;
+  // Returned memory is a direct pointer into libsystem_malloc's storage. It is
+  // read-only, and does not need to be freed.
+  kern_return_t result =
+      malloc_get_all_zones(mach_task_self(), nullptr, &zones, &zone_count);
+  MACH_CHECK(result == KERN_SUCCESS, result) << "malloc_get_all_zones";
+  return reinterpret_cast<malloc_zone_t*>(zones[0]);
+}
+
 // Replaces the default malloc zone with our own malloc zone backed by
 // PartitionAlloc.  Since we'd like to make as much code as possible to use our
 // own memory allocator (and reduce bugs caused by mixed use of the system
@@ -300,41 +313,23 @@ InitializeDefaultMallocZoneWithPartitionAlloc() {
   g_mac_malloc_zone.claimed_address = nullptr;
 
   // Make our own zone the default zone.
-  zones = nullptr;
-  zone_count = 0;
-  result = malloc_get_all_zones(mach_task_self(), nullptr, &zones, &zone_count);
-  MACH_CHECK(result == KERN_SUCCESS, result) << "malloc_get_all_zones";
-  malloc_zone_t* system_default_zone =
-      reinterpret_cast<malloc_zone_t*>(zones[0]);
-  // Between malloc_zone_unregister(system_default_zone) and
-  // malloc_zone_register(system_default_zone), i.e. while absence of
-  // system_default_zone, it's possible that another thread calls free(ptr) and
-  // "no zone found" error is hit.  In order to avoid this case, temporarily
-  // register a copy of system_default_zone.
-  malloc_zone_t system_default_zone_copy = *system_default_zone;
-  // While sizeof(malloc_zone_t) is determined at compile time,
-  // system_default_zone (of runtime) may support more APIs with a larger
-  // malloc_zone_t.  So, limit the number of supported APIs down to the
-  // compile-time known ones.
-  if (system_default_zone_copy.version > g_mac_malloc_zone.version)
-    system_default_zone_copy.version = g_mac_malloc_zone.version;
-  malloc_zone_register(&system_default_zone_copy);
+  malloc_zone_t* system_default_zone = GetDefaultZone();
+
   // Put our own zone at the last position, so that it promotes to the default
   // zone.  The implementation logic of malloc_zone_unregister is:
   //   zone_table.swap(unregistered_zone, last_zone);
   //   zone_table.shrink_size_by_1();
   malloc_zone_register(&g_mac_malloc_zone);
   malloc_zone_unregister(system_default_zone);
+  // TODO(crbug.com/1272149): Between
+  // malloc_zone_unregister(system_default_zone) (above) and
+  // malloc_zone_register(system_default_zone) (below), i.e. while absence of
+  // system_default_zone, it's possible that another thread calls free(ptr) and
+  // "no zone found" error is hit, crashing the process.
   malloc_zone_register(system_default_zone);
-  malloc_zone_unregister(&system_default_zone_copy);
 
   // Confirm that our own zone is now the default zone.
-  zones = nullptr;
-  zone_count = 0;
-  result = malloc_get_all_zones(mach_task_self(), nullptr, &zones, &zone_count);
-  MACH_CHECK(result == KERN_SUCCESS, result) << "malloc_get_all_zones";
-  system_default_zone = reinterpret_cast<malloc_zone_t*>(zones[0]);
-  CHECK_EQ(system_default_zone, &g_mac_malloc_zone);
+  CHECK_EQ(GetDefaultZone(), &g_mac_malloc_zone);
 }
 
 }  // namespace
