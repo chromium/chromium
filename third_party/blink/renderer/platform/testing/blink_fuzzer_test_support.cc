@@ -35,9 +35,8 @@ BlinkFuzzerTestSupport::~BlinkFuzzerTestSupport() {
 #if defined(ADDRESS_SANITIZER)
   // LSAN needs unreachable objects to be released to avoid reporting them
   // incorrectly as a memory leak.
-  blink::ThreadState* currentThreadState = blink::ThreadState::Current();
-  currentThreadState->CollectAllGarbageForTesting();
-#endif
+  blink::ThreadState::Current()->CollectAllGarbageForTesting();
+#endif  // defined(ADDRESS_SANITIZER)
 }
 
 }  // namespace blink

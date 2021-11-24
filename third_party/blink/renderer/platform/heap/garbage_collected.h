@@ -8,9 +8,11 @@
 #include "third_party/blink/renderer/platform/heap/thread_state_storage.h"
 #include "v8/include/cppgc/allocation.h"
 #include "v8/include/cppgc/garbage-collected.h"
+#include "v8/include/cppgc/liveness-broker.h"
 #include "v8/include/cppgc/type-traits.h"
 
 namespace cppgc {
+class LivenessBroker;
 class Visitor;
 }  // namespace cppgc
 
@@ -20,6 +22,8 @@ template <typename T>
 using GarbageCollected = cppgc::GarbageCollected<T>;
 
 using GarbageCollectedMixin = cppgc::GarbageCollectedMixin;
+
+using LivenessBroker = cppgc::LivenessBroker;
 
 using Visitor = cppgc::Visitor;
 

@@ -8,7 +8,7 @@
 #include "third_party/blink/renderer/platform/heap/custom_spaces.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
-#include "third_party/blink/renderer/platform/heap/thread_state.h"
+#include "third_party/blink/renderer/platform/heap/thread_state_storage.h"
 #include "third_party/blink/renderer/platform/heap/trace_traits.h"
 #include "third_party/blink/renderer/platform/wtf/conditional_destructor.h"
 #include "third_party/blink/renderer/platform/wtf/container_annotations.h"

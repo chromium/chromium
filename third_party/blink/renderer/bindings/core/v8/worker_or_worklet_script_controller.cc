@@ -44,7 +44,6 @@
 #include "third_party/blink/renderer/platform/bindings/v8_dom_wrapper.h"
 #include "third_party/blink/renderer/platform/bindings/wrapper_type_info.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
-#include "third_party/blink/renderer/platform/heap/thread_state.h"
 #include "third_party/blink/renderer/platform/scheduler/public/event_loop.h"
 #include "v8/include/v8.h"
 

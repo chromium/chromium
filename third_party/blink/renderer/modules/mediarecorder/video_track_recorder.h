@@ -23,7 +23,6 @@
 #include "third_party/blink/renderer/modules/mediarecorder/buildflags.h"
 #include "third_party/blink/renderer/modules/mediarecorder/track_recorder.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
-#include "third_party/blink/renderer/platform/heap/thread_state.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_copier.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
