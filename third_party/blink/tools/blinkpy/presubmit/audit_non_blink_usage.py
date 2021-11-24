@@ -331,7 +331,7 @@ _CONFIG = [
             'gfx::RectToSkRect',
             'gfx::ScalePoint',
             'gfx::ScaleToCeiledSize',
-            'gfx::ScaleToEnclosingRectSafe',
+            'gfx::ScaleToEnclosingRect',
             'gfx::ScaleToFlooredSize',
             'gfx::ScaleSize',
             'gfx::ScalePoint',

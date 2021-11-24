@@ -510,7 +510,7 @@ bool OutOfProcessInstance::HandleInputEvent(const pp::InputEvent& event) {
 }
 
 void OutOfProcessInstance::DidChangeView(const pp::View& view) {
-  const gfx::Rect new_plugin_rect = gfx::ScaleToEnclosingRectSafe(
+  const gfx::Rect new_plugin_rect = gfx::ScaleToEnclosingRect(
       RectFromPPRect(view.GetRect()), view.GetDeviceScale());
   UpdateGeometryOnPluginRectChanged(new_plugin_rect, view.GetDeviceScale());
 }

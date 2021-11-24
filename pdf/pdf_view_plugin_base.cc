@@ -890,7 +890,7 @@ void PdfViewPluginBase::UpdateGeometryOnPluginRectChanged(
   // We should try to avoid the downscaling during this calculation process and
   // maybe migrate off `plugin_dip_size_`.
   plugin_dip_size_ =
-      gfx::ScaleToEnclosingRectSafe(new_plugin_rect, 1.0f / new_device_scale)
+      gfx::ScaleToEnclosingRect(new_plugin_rect, 1.0f / new_device_scale)
           .size();
 
   paint_manager_.SetSize(plugin_rect_.size(), device_scale_);

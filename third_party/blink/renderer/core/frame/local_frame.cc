@@ -2751,7 +2751,7 @@ void LocalFrame::UpdateWindowControlsOverlay(
   const float zoom_factor = local_frame_root.PageZoomFactor();
   const float scale_factor = zoom_factor / window_to_viewport_factor;
   gfx::Rect window_controls_overlay_rect =
-      gfx::ScaleToEnclosingRectSafe(bounding_rect_in_dips, 1.0f / scale_factor);
+      gfx::ScaleToEnclosingRect(bounding_rect_in_dips, 1.0f / scale_factor);
 
   bool fire_event =
       (window_controls_overlay_rect != window_controls_overlay_rect_);

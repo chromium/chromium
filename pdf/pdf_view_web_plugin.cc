@@ -673,7 +673,7 @@ void PdfViewWebPlugin::NotifySelectedFindResultChanged(int current_find_index) {
 }
 
 void PdfViewWebPlugin::CaretChanged(const gfx::Rect& caret_rect) {
-  caret_rect_ = gfx::ScaleToEnclosingRectSafe(
+  caret_rect_ = gfx::ScaleToEnclosingRect(
       caret_rect + available_area().OffsetFromOrigin(), device_to_css_scale_);
 }
 
@@ -972,7 +972,7 @@ void PdfViewWebPlugin::OnViewportChanged(
   // `plugin_rect_in_css_pixel` needs to be converted to device pixels before
   // getting passed into PdfViewPluginBase::UpdateGeometryOnPluginRectChanged().
   UpdateGeometryOnPluginRectChanged(
-      gfx::ScaleToEnclosingRectSafe(
+      gfx::ScaleToEnclosingRect(
           plugin_rect_in_css_pixel,
           client_->IsUseZoomForDSFEnabled() ? 1.0f : new_device_scale),
       new_device_scale);

@@ -382,95 +382,97 @@ TEST(RectTest, SharesEdgeWith) {
   EXPECT_FALSE(r.SharesEdgeWith(just_right_no_edge));
 }
 
-TEST(RectTest, ScaleToEnclosedRect) {
-  static const struct Test {
-    Rect input_rect;
-    float input_scale;
-    Rect expected_rect;
-  } tests[] = {
-    {
-      Rect(),
-      5.f,
-      Rect(),
-    }, {
-      Rect(1, 1, 1, 1),
-      5.f,
-      Rect(5, 5, 5, 5),
-    }, {
-      Rect(-1, -1, 0, 0),
-      5.f,
-      Rect(-5, -5, 0, 0),
-    }, {
-      Rect(1, -1, 0, 1),
-      5.f,
-      Rect(5, -5, 0, 5),
-    }, {
-      Rect(-1, 1, 1, 0),
-      5.f,
-      Rect(-5, 5, 5, 0),
-    }, {
-      Rect(1, 2, 3, 4),
-      1.5f,
-      Rect(2, 3, 4, 6),
-    }, {
-      Rect(-1, -2, 0, 0),
-      1.5f,
-      Rect(-1, -3, 0, 0),
-    }
-  };
+static void TestScaleRectOverflowClamp(Rect (*function)(const Rect&,
+                                                        float,
+                                                        float)) {
+  // The whole rect is scaled out of kMinInt.
+  Rect xy_underflow1(-100000, -123456, 10, 20);
+  EXPECT_EQ(Rect(kMinInt, kMinInt, 0, 0),
+            function(xy_underflow1, 100000, 100000));
 
-  for (size_t i = 0; i < base::size(tests); ++i) {
-    Rect result = ScaleToEnclosedRect(tests[i].input_rect,
-                                      tests[i].input_scale);
-    EXPECT_EQ(tests[i].expected_rect, result);
-  }
+  // This rect's right/bottom is 0. The origin overflows, and is clamped to
+  // -kMaxInt (instead of kMinInt) to keep width/height not overflowing.
+  Rect xy_underflow2(-100000, -123456, 100000, 123456);
+  EXPECT_EQ(Rect(-kMaxInt, -kMaxInt, kMaxInt, kMaxInt),
+            function(xy_underflow2, 100000, 100000));
+
+  // A location overflow means that width/right and bottom/top also
+  // overflow so need to be clamped.
+  Rect xy_overflow(100000, 123456, 10, 20);
+  EXPECT_EQ(Rect(kMaxInt, kMaxInt, 0, 0),
+            function(xy_overflow, 100000, 100000));
+
+  // In practice all rects are clamped to 0 width / 0 height so
+  // negative sizes don't matter, but try this for the sake of testing.
+  Rect size_underflow(-1, -2, 100000, 100000);
+  EXPECT_EQ(Rect(100000, 200000, 0, 0),
+            function(size_underflow, -100000, -100000));
+
+  Rect size_overflow(-1, -2, 123456, 234567);
+  EXPECT_EQ(Rect(-100000, -200000, kMaxInt, kMaxInt),
+            function(size_overflow, 100000, 100000));
+  // Verify width/right gets clamped properly too if x/y positive.
+  Rect size_overflow2(1, 2, 123456, 234567);
+  EXPECT_EQ(Rect(100000, 200000, kMaxInt - 100000, kMaxInt - 200000),
+            function(size_overflow2, 100000, 100000));
+
+  constexpr float kMaxIntAsFloat = static_cast<float>(kMaxInt);
+  Rect max_origin_rect(kMaxInt, kMaxInt, kMaxInt, kMaxInt);
+  // width/height of max_origin_rect has already been clamped to 0.
+  EXPECT_EQ(Rect(kMaxInt, kMaxInt, 0, 0), max_origin_rect);
+  EXPECT_EQ(Rect(kMaxInt, kMaxInt, 0, 0),
+            function(max_origin_rect, kMaxIntAsFloat, kMaxIntAsFloat));
+
+  Rect max_size_rect1(0, 0, kMaxInt, kMaxInt);
+  // Max sized rect can't be scaled up any further in any dimension.
+  EXPECT_EQ(max_size_rect1, function(max_size_rect1, 2, 3.5));
+  EXPECT_EQ(max_size_rect1,
+            function(max_size_rect1, kMaxIntAsFloat, kMaxIntAsFloat));
+  // Max sized ret scaled by negative scale is an empty rect.
+  EXPECT_EQ(Rect(), function(max_size_rect1, kMinInt, kMinInt));
+
+  Rect max_size_rect2(-kMaxInt, -kMaxInt, kMaxInt, kMaxInt);
+  EXPECT_EQ(max_size_rect2, function(max_size_rect2, 2, 3.5));
+  EXPECT_EQ(max_size_rect2,
+            function(max_size_rect2, kMaxIntAsFloat, kMaxIntAsFloat));
+  EXPECT_EQ(Rect(kMaxInt, kMaxInt, 0, 0),
+            function(max_size_rect2, kMinInt, kMinInt));
+}
+
+TEST(RectTest, ScaleToEnclosedRect) {
+  EXPECT_EQ(Rect(), ScaleToEnclosedRect(Rect(), 5.f));
+  EXPECT_EQ(Rect(5, 5, 5, 5), ScaleToEnclosedRect(Rect(1, 1, 1, 1), 5.f));
+  EXPECT_EQ(Rect(-5, -5, 0, 0), ScaleToEnclosedRect(Rect(-1, -1, 0, 0), 5.f));
+  EXPECT_EQ(Rect(5, -5, 0, 5), ScaleToEnclosedRect(Rect(1, -1, 0, 1), 5.f));
+  EXPECT_EQ(Rect(-5, 5, 5, 0), ScaleToEnclosedRect(Rect(-1, 1, 1, 0), 5.f));
+  EXPECT_EQ(Rect(2, 3, 4, 6), ScaleToEnclosedRect(Rect(1, 2, 3, 4), 1.5f));
+  EXPECT_EQ(Rect(-1, -3, 0, 0), ScaleToEnclosedRect(Rect(-1, -2, 0, 0), 1.5f));
+  EXPECT_EQ(Rect(1, 2, 2, 1), ScaleToEnclosedRect(Rect(2, 4, 9, 8), 0.3f));
+  TestScaleRectOverflowClamp(ScaleToEnclosedRect);
 }
 
 TEST(RectTest, ScaleToEnclosingRect) {
-  static const struct Test {
-    Rect input_rect;
-    float input_scale;
-    Rect expected_rect;
-  } tests[] = {
-    {
-      Rect(),
-      5.f,
-      Rect(),
-    }, {
-      Rect(1, 1, 1, 1),
-      5.f,
-      Rect(5, 5, 5, 5),
-    }, {
-      Rect(-1, -1, 0, 0),
-      5.f,
-      Rect(-5, -5, 0, 0),
-    }, {
-      Rect(1, -1, 0, 1),
-      5.f,
-      Rect(5, -5, 0, 5),
-    }, {
-      Rect(-1, 1, 1, 0),
-      5.f,
-      Rect(-5, 5, 5, 0),
-    }, {
-      Rect(1, 2, 3, 4),
-      1.5f,
-      Rect(1, 3, 5, 6),
-    }, {
-      Rect(-1, -2, 0, 0),
-      1.5f,
-      Rect(-2, -3, 0, 0),
-    }
-  };
+  EXPECT_EQ(Rect(), ScaleToEnclosingRect(Rect(), 5.f));
+  EXPECT_EQ(Rect(5, 5, 5, 5), ScaleToEnclosingRect(Rect(1, 1, 1, 1), 5.f));
+  EXPECT_EQ(Rect(-5, -5, 0, 0), ScaleToEnclosingRect(Rect(-1, -1, 0, 0), 5.f));
+  EXPECT_EQ(Rect(5, -5, 0, 5), ScaleToEnclosingRect(Rect(1, -1, 0, 1), 5.f));
+  EXPECT_EQ(Rect(-5, 5, 5, 0), ScaleToEnclosingRect(Rect(-1, 1, 1, 0), 5.f));
+  EXPECT_EQ(Rect(1, 3, 5, 6), ScaleToEnclosingRect(Rect(1, 2, 3, 4), 1.5f));
+  EXPECT_EQ(Rect(-2, -3, 0, 0), ScaleToEnclosingRect(Rect(-1, -2, 0, 0), 1.5f));
+  EXPECT_EQ(Rect(0, 1, 4, 3), ScaleToEnclosingRect(Rect(2, 4, 9, 8), 0.3f));
+  TestScaleRectOverflowClamp(ScaleToEnclosingRect);
+}
 
-  for (size_t i = 0; i < base::size(tests); ++i) {
-    Rect result =
-        ScaleToEnclosingRect(tests[i].input_rect, tests[i].input_scale);
-    EXPECT_EQ(tests[i].expected_rect, result);
-    Rect result_safe =
-        ScaleToEnclosingRectSafe(tests[i].input_rect, tests[i].input_scale);
-    EXPECT_EQ(tests[i].expected_rect, result_safe);
-  }
+TEST(RectTest, ScaleToRoundedRect) {
+  EXPECT_EQ(Rect(), ScaleToRoundedRect(Rect(), 5.f));
+  EXPECT_EQ(Rect(5, 5, 5, 5), ScaleToRoundedRect(Rect(1, 1, 1, 1), 5.f));
+  EXPECT_EQ(Rect(-5, -5, 0, 0), ScaleToRoundedRect(Rect(-1, -1, 0, 0), 5.f));
+  EXPECT_EQ(Rect(5, -5, 0, 5), ScaleToRoundedRect(Rect(1, -1, 0, 1), 5.f));
+  EXPECT_EQ(Rect(-5, 5, 5, 0), ScaleToRoundedRect(Rect(-1, 1, 1, 0), 5.f));
+  EXPECT_EQ(Rect(2, 3, 4, 6), ScaleToRoundedRect(Rect(1, 2, 3, 4), 1.5f));
+  EXPECT_EQ(Rect(-2, -3, 0, 0), ScaleToRoundedRect(Rect(-1, -2, 0, 0), 1.5f));
+  EXPECT_EQ(Rect(1, 1, 2, 3), ScaleToRoundedRect(Rect(2, 4, 9, 8), 0.3f));
+  TestScaleRectOverflowClamp(ScaleToRoundedRect);
 }
 
 #if defined(OS_WIN)
@@ -738,44 +740,6 @@ TEST(RectTest, IntegerOverflow) {
     // More succinctly, but harder to read in the results.
     EXPECT_TRUE(UnionRects(left_minint, right_maxint).Contains(expected_rect));
   }
-}
-
-TEST(RectTest, ScaleToEnclosingRectSafe) {
-  Rect xy_underflow(-100000, -123456, 10, 20);
-  EXPECT_EQ(ScaleToEnclosingRectSafe(xy_underflow, 100000),
-            Rect(kMinInt, kMinInt, 1000000, 2000000));
-
-  // A location overflow means that width/right and bottom/top also
-  // overflow so need to be clamped.
-  Rect xy_overflow(100000, 123456, 10, 20);
-  EXPECT_EQ(ScaleToEnclosingRectSafe(xy_overflow, 100000),
-            Rect(kMaxInt, kMaxInt, 0, 0));
-
-  // In practice all rects are clamped to 0 width / 0 height so
-  // negative sizes don't matter, but try this for the sake of testing.
-  Rect size_underflow(-1, -2, 100000, 100000);
-  EXPECT_EQ(ScaleToEnclosingRectSafe(size_underflow, -100000),
-            Rect(100000, 200000, 0, 0));
-
-  Rect size_overflow(-1, -2, 123456, 234567);
-  EXPECT_EQ(ScaleToEnclosingRectSafe(size_overflow, 100000),
-            Rect(-100000, -200000, kMaxInt, kMaxInt));
-  // Verify width/right gets clamped properly too if x/y positive.
-  Rect size_overflow2(1, 2, 123456, 234567);
-  EXPECT_EQ(ScaleToEnclosingRectSafe(size_overflow2, 100000),
-            Rect(100000, 200000, kMaxInt - 100000, kMaxInt - 200000));
-
-  Rect max_rect(kMaxInt, kMaxInt, kMaxInt, kMaxInt);
-  EXPECT_EQ(ScaleToEnclosingRectSafe(max_rect, static_cast<float>(kMaxInt)),
-            Rect(kMaxInt, kMaxInt, 0, 0));
-
-  Rect min_rect(kMinInt, kMinInt, kMaxInt, kMaxInt);
-  // Min rect can't be scaled up any further in any dimension.
-  EXPECT_EQ(ScaleToEnclosingRectSafe(min_rect, 2, 3.5), min_rect);
-  EXPECT_EQ(ScaleToEnclosingRectSafe(min_rect, static_cast<float>(kMaxInt)),
-            min_rect);
-  // Min rect scaled by min is an empty rect at (max, max)
-  EXPECT_EQ(ScaleToEnclosingRectSafe(min_rect, kMinInt), max_rect);
 }
 
 TEST(RectTest, Inset) {

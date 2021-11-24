@@ -4863,7 +4863,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTestWindowControlsOverlay,
   double zoom_factor = blink::PageZoomLevelToZoomFactor(
       content::HostZoomMap::GetZoomLevel(web_contents));
   gfx::Rect scaled_rect =
-      gfx::ScaleToEnclosingRectSafe(bounding_client_rect, 1.0f / zoom_factor);
+      gfx::ScaleToEnclosingRect(bounding_client_rect, 1.0f / zoom_factor);
 
   EXPECT_EQ(true, EvalJs(web_contents, "visible"));
   EXPECT_EQ(scaled_rect.x(), EvalJs(web_contents, "rect.x"));

@@ -323,57 +323,24 @@ GEOMETRY_EXPORT Rect SubtractRects(const Rect& a, const Rect& b);
 // contained within the rect, because they will appear on one of these edges.
 GEOMETRY_EXPORT Rect BoundingRect(const Point& p1, const Point& p2);
 
-// Scales the rect and returns the enclosing rect.  Use this only the inputs are
-// known to not overflow.  Use ScaleToEnclosingRectSafe if the inputs are
-// unknown and need to use saturated math.
+// Scales the rect and returns the enclosing rect. The components are clamped
+// if they would overflow.
 inline Rect ScaleToEnclosingRect(const Rect& rect,
                                  float x_scale,
                                  float y_scale) {
   if (x_scale == 1.f && y_scale == 1.f)
     return rect;
-  // These next functions cast instead of using e.g. base::ClampFloor() because
-  // we haven't checked to ensure that the clamping behavior of the helper
-  // functions doesn't degrade performance, and callers shouldn't be passing
-  // values that cause overflow anyway.
-  DCHECK(base::IsValueInRangeForNumericType<int>(
-      std::floor(rect.x() * x_scale)));
-  DCHECK(base::IsValueInRangeForNumericType<int>(
-      std::floor(rect.y() * y_scale)));
-  DCHECK(base::IsValueInRangeForNumericType<int>(
-      std::ceil(rect.right() * x_scale)));
-  DCHECK(base::IsValueInRangeForNumericType<int>(
-      std::ceil(rect.bottom() * y_scale)));
-  int x = static_cast<int>(std::floor(rect.x() * x_scale));
-  int y = static_cast<int>(std::floor(rect.y() * y_scale));
-  int r = rect.width() == 0 ?
-      x : static_cast<int>(std::ceil(rect.right() * x_scale));
-  int b = rect.height() == 0 ?
-      y : static_cast<int>(std::ceil(rect.bottom() * y_scale));
-  return Rect(x, y, r - x, b - y);
+  int x = base::ClampFloor(rect.x() * x_scale);
+  int y = base::ClampFloor(rect.y() * y_scale);
+  int r = rect.width() == 0 ? x : base::ClampCeil(rect.right() * x_scale);
+  int b = rect.height() == 0 ? y : base::ClampCeil(rect.bottom() * y_scale);
+  Rect result;
+  result.SetByBounds(x, y, r, b);
+  return result;
 }
 
 inline Rect ScaleToEnclosingRect(const Rect& rect, float scale) {
   return ScaleToEnclosingRect(rect, scale, scale);
-}
-
-// ScaleToEnclosingRect but clamping instead of asserting if the resulting rect
-// would overflow.
-// TODO(pkasting): Attempt to switch ScaleTo...Rect() to this construction and
-// check performance.
-inline Rect ScaleToEnclosingRectSafe(const Rect& rect,
-                                     float x_scale,
-                                     float y_scale) {
-  if (x_scale == 1.f && y_scale == 1.f)
-    return rect;
-  int x = base::ClampFloor(rect.x() * x_scale);
-  int y = base::ClampFloor(rect.y() * y_scale);
-  int w = base::ClampCeil(rect.width() * x_scale);
-  int h = base::ClampCeil(rect.height() * y_scale);
-  return Rect(x, y, w, h);
-}
-
-inline Rect ScaleToEnclosingRectSafe(const Rect& rect, float scale) {
-  return ScaleToEnclosingRectSafe(rect, scale, scale);
 }
 
 inline Rect ScaleToEnclosedRect(const Rect& rect,
@@ -381,21 +348,13 @@ inline Rect ScaleToEnclosedRect(const Rect& rect,
                                 float y_scale) {
   if (x_scale == 1.f && y_scale == 1.f)
     return rect;
-  DCHECK(base::IsValueInRangeForNumericType<int>(
-      std::ceil(rect.x() * x_scale)));
-  DCHECK(base::IsValueInRangeForNumericType<int>(
-      std::ceil(rect.y() * y_scale)));
-  DCHECK(base::IsValueInRangeForNumericType<int>(
-      std::floor(rect.right() * x_scale)));
-  DCHECK(base::IsValueInRangeForNumericType<int>(
-      std::floor(rect.bottom() * y_scale)));
-  int x = static_cast<int>(std::ceil(rect.x() * x_scale));
-  int y = static_cast<int>(std::ceil(rect.y() * y_scale));
-  int r = rect.width() == 0 ?
-      x : static_cast<int>(std::floor(rect.right() * x_scale));
-  int b = rect.height() == 0 ?
-      y : static_cast<int>(std::floor(rect.bottom() * y_scale));
-  return Rect(x, y, r - x, b - y);
+  int x = base::ClampCeil(rect.x() * x_scale);
+  int y = base::ClampCeil(rect.y() * y_scale);
+  int r = rect.width() == 0 ? x : base::ClampFloor(rect.right() * x_scale);
+  int b = rect.height() == 0 ? y : base::ClampFloor(rect.bottom() * y_scale);
+  Rect result;
+  result.SetByBounds(x, y, r, b);
+  return result;
 }
 
 inline Rect ScaleToEnclosedRect(const Rect& rect, float scale) {
@@ -404,33 +363,20 @@ inline Rect ScaleToEnclosedRect(const Rect& rect, float scale) {
 
 // Scales |rect| by scaling its four corner points. If the corner points lie on
 // non-integral coordinate after scaling, their values are rounded to the
-// nearest integer.
+// nearest integer. The components are clamped if they would overflow.
 // This is helpful during layout when relative positions of multiple gfx::Rect
 // in a given coordinate space needs to be same after scaling as it was before
 // scaling. ie. this gives a lossless relative positioning of rects.
 inline Rect ScaleToRoundedRect(const Rect& rect, float x_scale, float y_scale) {
   if (x_scale == 1.f && y_scale == 1.f)
     return rect;
-
-  DCHECK(
-      base::IsValueInRangeForNumericType<int>(std::round(rect.x() * x_scale)));
-  DCHECK(
-      base::IsValueInRangeForNumericType<int>(std::round(rect.y() * y_scale)));
-  DCHECK(base::IsValueInRangeForNumericType<int>(
-      std::round(rect.right() * x_scale)));
-  DCHECK(base::IsValueInRangeForNumericType<int>(
-      std::round(rect.bottom() * y_scale)));
-
-  int x = static_cast<int>(std::round(rect.x() * x_scale));
-  int y = static_cast<int>(std::round(rect.y() * y_scale));
-  int r = rect.width() == 0
-              ? x
-              : static_cast<int>(std::round(rect.right() * x_scale));
-  int b = rect.height() == 0
-              ? y
-              : static_cast<int>(std::round(rect.bottom() * y_scale));
-
-  return Rect(x, y, r - x, b - y);
+  int x = base::ClampRound(rect.x() * x_scale);
+  int y = base::ClampRound(rect.y() * y_scale);
+  int r = rect.width() == 0 ? x : base::ClampRound(rect.right() * x_scale);
+  int b = rect.height() == 0 ? y : base::ClampRound(rect.bottom() * y_scale);
+  Rect result;
+  result.SetByBounds(x, y, r, b);
+  return result;
 }
 
 inline Rect ScaleToRoundedRect(const Rect& rect, float scale) {
