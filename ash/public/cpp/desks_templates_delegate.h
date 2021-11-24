@@ -32,6 +32,10 @@ namespace gfx {
 class ImageSkia;
 }
 
+namespace ui {
+class ColorProvider;
+}
+
 namespace ash {
 
 class DeskTemplate;
@@ -54,17 +58,23 @@ class ASH_PUBLIC_EXPORT DesksTemplatesDelegate {
   // backend depending on the feature flag DeskTemplateSync.
   virtual desks_storage::DeskModel* GetDeskModel() = 0;
 
-  // Returns the chrome icon if `page_url` is the new tab page, otherwise
-  // returns `absl::nullopt`.
-  virtual absl::optional<gfx::ImageSkia> MaybeRetrieveChromeIconForNTPUrl(
-      const std::string& page_url) const = 0;
+  // Returns whether `window` is an incognito browser.
+  virtual bool IsIncognitoWindow(aura::Window* window) const = 0;
+
+  // Returns the corresponding icon for `icon_identifier` if it's a special
+  // identifier. I.e. NTP or incognito window. If `icon_identifier` is not a
+  // special identifier, return `asbl::nullopt`. `color_provider` should be the
+  // ui::ColorProvider corresponding to an incognito window or nullptr.
+  virtual absl::optional<gfx::ImageSkia> MaybeRetrieveIconForSpecialIdentifier(
+      const std::string& icon_identifier,
+      const ui::ColorProvider* color_provider) const = 0;
 
   // Fetches the favicon for `page_url` and returns it via the provided
   // `callback`. `callback` may be called synchronously.
   virtual void GetFaviconForUrl(const std::string& page_url,
                                 int desired_icon_size,
                                 favicon_base::FaviconRawBitmapCallback callback,
-                                base::CancelableTaskTracker* teacker) const = 0;
+                                base::CancelableTaskTracker* tracker) const = 0;
 
   // Fetches the icon for the app with `app_id` and returns it via the provided
   // `callback`. `callback` may be called synchronously.

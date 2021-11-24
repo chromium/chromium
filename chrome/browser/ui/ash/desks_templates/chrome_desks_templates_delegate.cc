@@ -13,6 +13,7 @@
 #include "base/bind.h"
 #include "base/check.h"
 #include "base/strings/string_number_conversions.h"
+#include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
@@ -40,8 +41,13 @@
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/models/image_model.h"
 #include "ui/base/resource/resource_bundle.h"
+#include "ui/color/color_id.h"
+#include "ui/color/color_provider.h"
 #include "ui/gfx/image/image_skia.h"
+#include "ui/gfx/paint_vector_icon.h"
+#include "ui/native_theme/themed_vector_icon.h"
 #include "url/gurl.h"
 
 namespace {
@@ -230,15 +236,31 @@ desks_storage::DeskModel* ChromeDesksTemplatesDelegate::GetDeskModel() {
   return DesksTemplatesClient::Get()->GetDeskModel();
 }
 
-absl::optional<gfx::ImageSkia>
-ChromeDesksTemplatesDelegate::MaybeRetrieveChromeIconForNTPUrl(
-    const std::string& page_url) const {
-  if (page_url != chrome::kChromeUINewTabURL)
-    return absl::nullopt;
+bool ChromeDesksTemplatesDelegate::IsIncognitoWindow(
+    aura::Window* window) const {
+  BrowserView* browser_view =
+      BrowserView::GetBrowserViewForNativeWindow(window);
+  return browser_view && browser_view->GetIncognito();
+}
 
-  ui::ResourceBundle& rb = ui::ResourceBundle::GetSharedInstance();
-  return absl::make_optional<gfx::ImageSkia>(
-      rb.GetImageNamed(IDR_PRODUCT_LOGO_32).AsImageSkia());
+absl::optional<gfx::ImageSkia>
+ChromeDesksTemplatesDelegate::MaybeRetrieveIconForSpecialIdentifier(
+    const std::string& identifier,
+    const ui::ColorProvider* color_provider) const {
+  if (identifier == chrome::kChromeUINewTabURL) {
+    ui::ResourceBundle& rb = ui::ResourceBundle::GetSharedInstance();
+    return absl::make_optional<gfx::ImageSkia>(
+        rb.GetImageNamed(IDR_PRODUCT_LOGO_32).AsImageSkia());
+  } else if (identifier == ash::DeskTemplate::kIncognitoWindowIdentifier) {
+    DCHECK(color_provider);
+    return ui::ThemedVectorIcon(
+               ui::ImageModel::FromVectorIcon(kIncognitoProfileIcon,
+                                              ui::kColorAvatarIconIncognito)
+                   .GetVectorIcon())
+        .GetImageSkia(color_provider);
+  }
+
+  return absl::nullopt;
 }
 
 void ChromeDesksTemplatesDelegate::GetFaviconForUrl(
@@ -300,10 +322,5 @@ bool ChromeDesksTemplatesDelegate::IsWindowSupportedForDeskTemplate(
     return false;
 
   // Exclude incognito browser window.
-  BrowserView* browser_view =
-      BrowserView::GetBrowserViewForNativeWindow(window);
-  if (browser_view && browser_view->GetIncognito())
-    return false;
-
-  return true;
+  return !IsIncognitoWindow(window);
 }

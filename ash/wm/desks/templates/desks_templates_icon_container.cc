@@ -5,15 +5,19 @@
 #include "ash/wm/desks/templates/desks_templates_icon_container.h"
 
 #include "ash/public/cpp/desk_template.h"
+#include "ash/public/cpp/desks_templates_delegate.h"
 #include "ash/public/cpp/shelf_types.h"
 #include "ash/public/cpp/window_properties.h"
+#include "ash/shell.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/wm/desks/templates/desks_templates_icon_view.h"
 #include "base/containers/contains.h"
 #include "components/app_restore/app_launch_info.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/color/color_provider.h"
 #include "ui/views/background.h"
+#include "ui/views/widget/widget.h"
 
 namespace ash {
 
@@ -109,10 +113,22 @@ void DesksTemplatesIconContainer::PopulateIconContainerFromWindows(
   // Iterate through `windows`, counting the occurrences of each unique icon and
   // storing their lowest activation index.
   std::map<std::string, IconInfo> identifier_info;
+  auto* delegate = Shell::Get()->desks_templates_delegate();
   for (size_t i = 0; i < windows.size(); ++i) {
     auto* window = windows[i];
-    ShelfID shelf_id = ShelfID::Deserialize(window->GetProperty(kShelfIDKey));
-    const std::string app_id = shelf_id.app_id;
+
+    // If `window` is an incognito window, we want to display the incognito icon
+    // instead of its favicons so denote it using
+    // `DeskTemplate::kIncognitoWindowIdentifier`.
+    const bool is_incognito_window = delegate->IsIncognitoWindow(window);
+    const std::string app_id =
+        is_incognito_window
+            ? DeskTemplate::kIncognitoWindowIdentifier
+            : ShelfID::Deserialize(window->GetProperty(kShelfIDKey)).app_id;
+    if (is_incognito_window && !incognito_window_color_provider_) {
+      incognito_window_color_provider_ =
+          views::Widget::GetWidgetForNativeWindow(window)->GetColorProvider();
+    }
 
     // A single app can have multiple windows so count their occurrences and
     // use their index in `windows` as their activation index.

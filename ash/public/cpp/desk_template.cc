@@ -47,6 +47,8 @@ bool DeskTemplate::IsAppTypeSupported(aura::Window* window) {
   return true;
 }
 
+constexpr char DeskTemplate::kIncognitoWindowIdentifier[];
+
 DeskTemplate::DeskTemplate()
     : uuid_(base::GUID::GenerateRandomV4()),
       source_(DeskTemplateSource::kUnknownSource),

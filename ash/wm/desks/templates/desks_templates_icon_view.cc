@@ -8,6 +8,7 @@
 #include "ash/public/cpp/rounded_image_view.h"
 #include "ash/shell.h"
 #include "ash/style/ash_color_provider.h"
+#include "ash/wm/desks/templates/desks_templates_icon_container.h"
 #include "base/bind.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -76,24 +77,29 @@ void DesksTemplatesIconView::SetIconIdentifierAndCount(
                        .SetCornerRadius(DesksTemplatesIconView::kIconSize / 2)
                        .Build());
 
-  GURL potential_url{icon_identifier_};
+  // First check if the `icon_identifier_` is a special value, i.e. NTP url or
+  // incognito window. If it is, use the corresponding icon for the special
+  // value.
   auto* delegate = Shell::Get()->desks_templates_delegate();
+  absl::optional<gfx::ImageSkia> chrome_icon =
+      delegate->MaybeRetrieveIconForSpecialIdentifier(
+          icon_identifier_, static_cast<DesksTemplatesIconContainer*>(parent())
+                                ->incognito_window_color_provider());
+  if (chrome_icon.has_value()) {
+    icon_view_->SetImage(gfx::ImageSkiaOperations::CreateResizedImage(
+        chrome_icon.value(), skia::ImageOperations::RESIZE_BEST,
+        gfx::Size(kIconSize, kIconSize)));
+    return;
+  }
+
+  // It's not a special value so `icon_identifier_` is either a favicon or an
+  // app id. If `icon_identifier_` is not a valid url then it's an app id.
+  GURL potential_url{icon_identifier_};
   if (!potential_url.is_valid()) {
     delegate->GetIconForAppId(
         icon_identifier_, kIconSize,
         base::BindOnce(&DesksTemplatesIconView::OnAppIconLoaded,
                        weak_ptr_factory_.GetWeakPtr()));
-    return;
-  }
-
-  // First check if the valid url is the NTP. If it is, use the chrome icon
-  // instead of a favicon.
-  absl::optional<gfx::ImageSkia> chrome_icon =
-      delegate->MaybeRetrieveChromeIconForNTPUrl(icon_identifier_);
-  if (chrome_icon.has_value()) {
-    icon_view_->SetImage(gfx::ImageSkiaOperations::CreateResizedImage(
-        chrome_icon.value(), skia::ImageOperations::RESIZE_BEST,
-        gfx::Size(kIconSize, kIconSize)));
     return;
   }
 

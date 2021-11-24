@@ -8,6 +8,7 @@
 #include "components/app_restore/app_launch_info.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
+#include "ui/color/color_provider.h"
 #include "ui/gfx/image/image_skia.h"
 
 namespace ash {
@@ -26,9 +27,14 @@ desks_storage::DeskModel* TestDesksTemplatesDelegate::GetDeskModel() {
   return desk_model_;
 }
 
+bool TestDesksTemplatesDelegate::IsIncognitoWindow(aura::Window* window) const {
+  return false;
+}
+
 absl::optional<gfx::ImageSkia>
-TestDesksTemplatesDelegate::MaybeRetrieveChromeIconForNTPUrl(
-    const std::string& page_url) const {
+TestDesksTemplatesDelegate::MaybeRetrieveIconForSpecialIdentifier(
+    const std::string& identifier,
+    const ui::ColorProvider* color_provider) const {
   return absl::nullopt;
 }
 

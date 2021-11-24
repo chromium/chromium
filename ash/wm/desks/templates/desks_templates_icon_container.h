@@ -12,6 +12,10 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/layout/box_layout_view.h"
 
+namespace ui {
+class ColorProvider;
+}
+
 namespace ash {
 
 class DeskTemplate;
@@ -31,6 +35,10 @@ class DesksTemplatesIconContainer : public views::BoxLayoutView {
 
   // The maximum number of icons that can be displayed.
   static constexpr int kMaxIcons = 4;
+
+  const ui::ColorProvider* incognito_window_color_provider() const {
+    return incognito_window_color_provider_;
+  }
 
   // Given a desk template, determine which icons to show in this and create
   // the according DesksTemplatesIconView's.
@@ -58,6 +66,10 @@ class DesksTemplatesIconContainer : public views::BoxLayoutView {
   // used for storing the overflow count of icons. Not every View in this
   // vector is visible.
   std::vector<DesksTemplatesIconView*> icon_views_;
+
+  // If `this` is created with an incognito window, store the ui::ColorProvider
+  // of one of the incognito windows to retrieve its icon's color.
+  const ui::ColorProvider* incognito_window_color_provider_ = nullptr;
 };
 
 BEGIN_VIEW_BUILDER(/* no export */,
