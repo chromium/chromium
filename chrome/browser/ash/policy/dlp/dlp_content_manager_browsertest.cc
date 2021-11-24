@@ -2,12 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <functional>
 #include "base/bind.h"
 #include "chrome/browser/ash/policy/dlp/dlp_content_manager.h"
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/test_future.h"
 #include "chrome/browser/ash/policy/dlp/dlp_content_manager_test_helper.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_histogram_helper.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_policy_event.pb.h"
@@ -635,8 +637,7 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerBrowserTest, ScreenShareReporting) {
   // Setup screen sharing (media stream)
   auto picker_factory = std::make_unique<FakeDesktopMediaPickerFactory>();
   DesktopCaptureAccessHandler access_handler{std::move(picker_factory)};
-  blink::mojom::MediaStreamRequestResult result;
-  blink::MediaStreamDevices devices;
+
   const std::string id =
       content::DesktopStreamsRegistry::GetInstance()->RegisterStream(
           web_contents->GetMainFrame()->GetProcess()->GetID(),
@@ -655,25 +656,25 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerBrowserTest, ScreenShareReporting) {
       blink::mojom::MediaStreamType::GUM_DESKTOP_VIDEO_CAPTURE,
       /*disable_local_echo=*/false,
       /*request_pan_tilt_zoom_permission=*/false);
-  base::RunLoop wait_loop;
-  content::MediaResponseCallback callback = base::BindOnce(
-      [](base::RunLoop* wait_loop,
-         blink::mojom::MediaStreamRequestResult* request_result,
-         blink::MediaStreamDevices* devices_result,
-         const blink::MediaStreamDevices& devices,
-         blink::mojom::MediaStreamRequestResult result,
-         std::unique_ptr<content::MediaStreamUI> ui) {
-        *request_result = result;
-        *devices_result = devices;
-        wait_loop->Quit();
-      },
-      &wait_loop, &result, &devices);
+
+  base::test::TestFuture<
+      std::reference_wrapper<const blink::MediaStreamDevices>,
+      blink::mojom::MediaStreamRequestResult,
+      std::unique_ptr<content::MediaStreamUI>>
+      test_future;
 
   helper_.ChangeConfidentiality(web_contents, kScreenShareReported);
 
-  access_handler.HandleRequest(web_contents, request, std::move(callback),
-                               /*extension=*/nullptr);
-  wait_loop.Run();
+  access_handler.HandleRequest(
+      web_contents, request,
+      test_future.GetCallback<const blink::MediaStreamDevices&,
+                              blink::mojom::MediaStreamRequestResult,
+                              std::unique_ptr<content::MediaStreamUI>>(),
+      /*extension=*/nullptr);
+
+  ASSERT_TRUE(test_future.Wait()) << "Callback timed out.";
+
+  EXPECT_EQ(test_future.Get<1>(), blink::mojom::MediaStreamRequestResult::OK);
 
   CheckEvents(DlpRulesManager::Restriction::kScreenShare,
               DlpRulesManager::Level::kReport, 1u);
