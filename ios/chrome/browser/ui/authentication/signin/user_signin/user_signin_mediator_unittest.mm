@@ -606,3 +606,28 @@ TEST_F(UserSigninMediatorTest,
   EXPECT_FALSE(authentication_service()->HasPrimaryIdentity(
       signin::ConsentLevel::kSignin));
 }
+
+// Tests the following scenario:
+//   * Open the user sign-in dialog to turn on sync, with identity_
+//   * Forget identity_
+//   * Cancel the user sign-in dialog
+TEST_F(UserSigninMediatorTest, ForgetSignedInIdentityWhileTurnOnSyncIsOpened) {
+  identity_service()->ForgetIdentity(identity_, nil);
+
+  // Cancels the sign-in dialog.
+  __block bool completion_called = false;
+  OCMStub([mediator_delegate_mock_ signinStateOnStart])
+      .andReturn(IdentitySigninStateSignedInWithSyncDisabled);
+  OCMStub([mediator_delegate_mock_ signinIdentityOnStart])
+      .andReturn(static_cast<id>(nil));
+  [mediator_ cancelAndDismissAuthenticationFlowAnimated:YES
+                                             completion:^() {
+                                               completion_called = true;
+                                             }];
+  base::RunLoop().RunUntilIdle();
+
+  // Expects to be signed out.
+  EXPECT_TRUE(completion_called);
+  EXPECT_FALSE(authentication_service()->HasPrimaryIdentity(
+      signin::ConsentLevel::kSignin));
+}

@@ -151,8 +151,6 @@
     case IdentitySigninStateSignedInWithSyncDisabled: {
       DCHECK(!self.authenticationService->GetPrimaryIdentity(
           signin::ConsentLevel::kSync));
-      DCHECK(self.authenticationService->GetPrimaryIdentity(
-          signin::ConsentLevel::kSignin));
       if ([self.authenticationService->GetPrimaryIdentity(
               signin::ConsentLevel::kSignin)
               isEqual:self.delegate.signinIdentityOnStart]) {
