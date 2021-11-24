@@ -291,6 +291,11 @@ CGFloat const kButtonHorizontalMargin = 4;
   }
 }
 
+- (void)willMoveToParentViewController:(UIViewController*)parent {
+  [super willMoveToParentViewController:parent];
+  [self.navigationController setToolbarHidden:YES animated:YES];
+}
+
 - (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
   [super traitCollectionDidChange:previousTraitCollection];
   if (self.traitCollection.verticalSizeClass !=
