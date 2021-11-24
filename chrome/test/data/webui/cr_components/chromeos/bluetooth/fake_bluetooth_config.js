@@ -34,6 +34,7 @@ export function createDefaultBluetoothDevice(
   return {
     deviceProperties: {
       id: id,
+      address: id,
       publicName: stringToMojoString16(publicName),
       deviceType: opt_deviceType,
       audioCapability: opt_audioCapability,
@@ -136,8 +137,8 @@ export class FakeBluetoothConfig {
    */
   startDiscovery(delegate) {
     this.lastDiscoveryDelegate_ = delegate;
-    this.notifyDelegatesPropertiesUpdated_();
     this.notifyDiscoveryStarted_();
+    this.notifyDelegatesPropertiesUpdated_();
   }
 
   /**

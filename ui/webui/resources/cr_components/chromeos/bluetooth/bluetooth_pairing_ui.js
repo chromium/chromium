@@ -90,6 +90,19 @@ export class SettingsBluetoothPairingUiElement extends PolymerElement {
   static get properties() {
     return {
       /**
+       * The address, when set, of the specific device that will be attempted to
+       * be paired with by the pairing dialog. If null, no specific device will
+       * be paired with and the user will be allowed to select a device to pair
+       * with. This is set when the dialog is opened if the purpose of the
+       * dialog is to pair with a specific device.
+       * @type {?string}
+       */
+      pairingDeviceAddress: {
+        type: String,
+        value: null,
+      },
+
+      /**
        * Id of the currently selected Bluetooth pairing subpage.
        * @private {!BluetoothPairingSubpageId}
        */
@@ -167,11 +180,15 @@ export class SettingsBluetoothPairingUiElement extends PolymerElement {
     this.devicePairingHandler_;
 
     /**
+     * The device to be paired with after the current pairDevice_() request has
+     * finished.
      * @private {?chromeos.bluetoothConfig.mojom.BluetoothDeviceProperties}
      */
     this.queuedDevicePendingPairing_;
 
     /**
+     * The Mojo receiver of the current ongoing pairing. If null indicates no
+     * pairing is occurring.
      * @private {?chromeos.bluetoothConfig.mojom.DevicePairingDelegateReceiver}
      */
     this.pairingDelegateReceiver_ = null;
@@ -190,11 +207,33 @@ export class SettingsBluetoothPairingUiElement extends PolymerElement {
     super.ready();
     getBluetoothConfig().startDiscovery(
         this.bluetoothDiscoveryDelegateReceiver_.$.bindNewPipeAndPassRemote());
+
+    // If there's a specific device to pair with, immediately go to the spinner
+    // page.
+    if (this.pairingDeviceAddress) {
+      // TODO(1010321):  Confirm the UI displayed when waiting for pairing.
+      this.selectedPageId_ = BluetoothPairingSubpageId.SPINNER_PAGE;
+    }
   }
 
   /** @override */
   onDiscoveredDevicesListChanged(discoveredDevices) {
     this.discoveredDevices_ = discoveredDevices;
+
+    // Check if this dialog needs to pair to a specific device.
+    if (!this.pairingDeviceAddress) {
+      return;
+    }
+
+    // Check if a pairing is already occurring.
+    if (this.pairingDelegateReceiver_) {
+      return;
+    }
+
+    // If |this.pairingDeviceAddress| exists and no ongoing pairing is
+    // occurring, search for the device with address |this.pairingDeviceAddress|
+    // and attempt to pair with it.
+    this.attemptPairDeviceByAddress_();
   }
 
   /** @override */
@@ -228,6 +267,30 @@ export class SettingsBluetoothPairingUiElement extends PolymerElement {
   }
 
   /**
+   * Searches for the device with address |this.pairingDeviceAddress| in
+   * |this.discoveredDevices| and attempts to pair with it.
+   * @private
+   */
+  attemptPairDeviceByAddress_() {
+    assert(this.pairingDeviceAddress);
+    assert(!this.pairingDelegateReceiver_);
+
+    if (!this.devicePairingHandler_) {
+      console.error('Attempted pairing with no device pairing handler.');
+      return;
+    }
+
+    const device = this.discoveredDevices_.find(
+        d => d.address === this.pairingDeviceAddress);
+    if (!device) {
+      console.error('Attempted pairing with a device that was not found.');
+      return;
+    }
+
+    this.pairDevice_(device);
+  }
+
+  /**
    * @param {!chromeos.bluetoothConfig.mojom.BluetoothDeviceProperties} device
    * @private
    */
@@ -256,7 +319,6 @@ export class SettingsBluetoothPairingUiElement extends PolymerElement {
   handlePairDeviceResult_(result) {
     if (this.pairingDelegateReceiver_) {
       this.pairingDelegateReceiver_.$.close();
-      this.pairingDelegateReceiver_ = null;
     }
     this.pairingAuthType_ = null;
 
@@ -264,6 +326,18 @@ export class SettingsBluetoothPairingUiElement extends PolymerElement {
       this.keyEnteredReceiver_.close();
       this.keyEnteredReceiver_ = null;
     }
+
+    if (this.pairingDeviceAddress) {
+      // Device-specific pairing has failed. Display the error code page and
+      // don't reset |this.pairingDelegateReceiver_| so then no more pairing
+      // attempts can be made.
+      if (result !== chromeos.bluetoothConfig.mojom.PairingResult.kSuccess) {
+        // TODO(1010321):  Add UI if pairing fails.
+        return;
+      }
+    }
+
+    this.pairingDelegateReceiver_ = null;
 
     if (result === chromeos.bluetoothConfig.mojom.PairingResult.kSuccess) {
       this.dispatchEvent(new CustomEvent('finished', {
@@ -427,8 +501,12 @@ export class SettingsBluetoothPairingUiElement extends PolymerElement {
     // pairDevice promise is returned in handlePairDeviceResult_().
     // pairDevice promise is returned when close() is called above. If we are
     // on |DEVICE_SELECTION_PAGE|, canceling closes the pairing dialog.
+    //
+    // If |pairingDeviceAddress| is defined, this dialog is specific to pairing
+    // with one device and should close if cancel is clicked on any page.
     if (this.selectedPageId_ ===
-        BluetoothPairingSubpageId.DEVICE_SELECTION_PAGE) {
+            BluetoothPairingSubpageId.DEVICE_SELECTION_PAGE ||
+        this.pairingDeviceAddress) {
       this.dispatchEvent(new CustomEvent('finished', {
         bubbles: true,
         composed: true,

@@ -138,6 +138,7 @@ export class FakeDevicePairingHandler {
    * @param {boolean} success
    */
   completePairDevice(success) {
+    assert(this.pairDeviceCallback_, 'pairDevice() was never called.');
     this.pairDeviceCallback_({
       result: success ? chromeos.bluetoothConfig.mojom.PairingResult.kSuccess :
                         chromeos.bluetoothConfig.mojom.PairingResult.kAuthFailed

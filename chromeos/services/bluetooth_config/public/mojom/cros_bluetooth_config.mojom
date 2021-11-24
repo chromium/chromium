@@ -88,6 +88,9 @@ struct BluetoothDeviceProperties {
   // Unique identifier for this device, which is stable across device reboots.
   string id;
 
+  // The Bluetooth address of this device.
+  string address;
+
   // Publicly-visible name provided by the device. If no name is provided by
   // the device, the device address is used as a name.
   mojo_base.mojom.String16 public_name;

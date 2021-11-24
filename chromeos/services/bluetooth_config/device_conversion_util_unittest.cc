@@ -59,6 +59,7 @@ TEST_F(DeviceConversionUtilTest, TestConversion) {
       GenerateBluetoothDeviceMojoProperties(device);
   ASSERT_TRUE(properties);
   EXPECT_EQ("address-Identifier", properties->id);
+  EXPECT_EQ("address", properties->address);
   EXPECT_EQ(u"name", properties->public_name);
   EXPECT_EQ(mojom::DeviceType::kUnknown, properties->device_type);
   EXPECT_EQ(mojom::AudioOutputCapability::kNotCapableOfAudioOutput,

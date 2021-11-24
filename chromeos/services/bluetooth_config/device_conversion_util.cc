@@ -141,6 +141,7 @@ mojom::BluetoothDevicePropertiesPtr GenerateBluetoothDeviceMojoProperties(
     const device::BluetoothDevice* device) {
   auto properties = mojom::BluetoothDeviceProperties::New();
   properties->id = device->GetIdentifier();
+  properties->address = device->GetAddress();
   properties->public_name = device->GetNameForDisplay();
   properties->device_type = ComputeDeviceType(device);
   properties->audio_capability = ComputeAudioOutputCapability(device);

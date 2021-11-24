@@ -44,15 +44,39 @@ Polymer({
         return loadTimeData.getBoolean('enableBluetoothRevamp');
       }
     },
+
+    /**
+     * The address, when set, of the specific device that will be attempted to
+     * be paired with by the pairing dialog. If null, no specific device will be
+     * paired with and the user will be allowed to select a device to pair with.
+     * This is set by the dialog arguments when |isBluetoothRevampEnabled_| is
+     * true.
+     * @private {?string}
+     */
+    deviceAddress_: {
+      type: String,
+      value: null,
+    },
   },
 
   /** @override */
   attached() {
+    let dialogArgs = chrome.getVariableValue('dialogArguments');
+
     if (this.isBluetoothRevampEnabled_) {
+      if (!dialogArgs) {
+        return;
+      }
+
+      let parsedDialogArgs = JSON.parse(dialogArgs);
+      if (!parsedDialogArgs) {
+        return;
+      }
+
+      this.deviceAddress_ = parsedDialogArgs.address;
       return;
     }
 
-    let dialogArgs = chrome.getVariableValue('dialogArguments');
     if (!dialogArgs) {
       // This situation currently only occurs if the user navigates to the debug
       // chrome://bluetooth-pairing.
