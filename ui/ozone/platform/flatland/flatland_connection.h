@@ -50,6 +50,7 @@ class FlatlandConnection final {
   uint64_t next_transform_id_ = 0;
   uint64_t next_content_id_ = 0;
   uint32_t present_credits_ = 1;
+  bool present_after_receiving_credits_ = false;
 
   std::vector<zx::event> previous_present_release_fences_;
   base::queue<OnFramePresentedCallback> presented_callbacks_;

@@ -71,7 +71,8 @@ source_set("flatland") {
   public_deps = [
     "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.ui.composition",
     "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.ui.gfx",
-    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.ui.input",
+    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.ui.input3",
+    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.ui.pointer",
     "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.ui.views",
     "//ui/gfx/geometry",
     "//ui/platform_window",
@@ -98,7 +99,7 @@ source_set("flatland_unittests") {
     "//base",
     "//base/test:test_support",
     "//testing/gtest",
-    "//third_party/fuchsia-sdk/sdk/pkg/async-testing",
+    "//ui/events:test_support",
     "//ui/ozone:platform",
     "//ui/ozone:test_support",
   ]

@@ -47,8 +47,10 @@ void FlatlandConnection::Present(
     OnFramePresentedCallback callback) {
   // TODO(crbug.com/1230150): Consider making a more advanced present loop where
   // Presents are accumulated until OnNextFrameBegin().
-  if (present_credits_ == 0)
+  if (present_credits_ == 0) {
+    present_after_receiving_credits_ = true;
     return;
+  }
   --present_credits_;
 
   // In Flatland, release fences apply to the content of the previous present.
@@ -69,6 +71,10 @@ void FlatlandConnection::OnError(
 void FlatlandConnection::OnNextFrameBegin(
     fuchsia::ui::composition::OnNextFrameBeginValues values) {
   present_credits_ += values.additional_present_credits();
+  if (present_credits_ && present_after_receiving_credits_) {
+    Present();
+    present_after_receiving_credits_ = false;
+  }
 }
 
 void FlatlandConnection::OnFramePresented(

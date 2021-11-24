@@ -58,6 +58,11 @@ void FakeFlatland::SetViewRefFocusedRequestHandler(
   view_ref_focused_handler_ = std::move(handler);
 }
 
+void FakeFlatland::SetTouchSourceRequestHandler(
+    TouchSourceRequestHandler handler) {
+  touch_source_request_handler_ = std::move(handler);
+}
+
 void FakeFlatland::NotImplemented_(const std::string& name) {
   LOG(ERROR) << "FakeFlatland does not implement " << name;
 }
@@ -76,6 +81,10 @@ void FakeFlatland::CreateView2(
   if (view_ref_focused_handler_ && view_protocols.has_view_ref_focused()) {
     view_ref_focused_handler_(
         std::move(*view_protocols.mutable_view_ref_focused()));
+  }
+  if (touch_source_request_handler_ && view_protocols.has_touch_source()) {
+    touch_source_request_handler_(
+        std::move(*view_protocols.mutable_touch_source()));
   }
 }
 

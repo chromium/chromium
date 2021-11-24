@@ -6,7 +6,6 @@
 #define UI_OZONE_PLATFORM_FLATLAND_FLATLAND_WINDOW_H_
 
 #include <fuchsia/ui/composition/cpp/fidl.h>
-#include <fuchsia/ui/input/cpp/fidl.h>
 #include <fuchsia/ui/input3/cpp/fidl.h>
 #include <fuchsia/ui/views/cpp/fidl.h>
 #include <lib/ui/scenic/cpp/view_ref_pair.h>
@@ -17,8 +16,8 @@
 
 #include "base/component_export.h"
 #include "ui/base/ime/fuchsia/keyboard_client.h"
-#include "ui/events/fuchsia/input_event_dispatcher.h"
 #include "ui/events/fuchsia/input_event_sink.h"
+#include "ui/events/fuchsia/pointer_events_handler.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/size_f.h"
@@ -36,8 +35,8 @@ class COMPONENT_EXPORT(OZONE) FlatlandWindow : public PlatformWindow,
                                                public InputEventSink {
  public:
   // Both |window_manager| and |delegate| must outlive the FlatlandWindow.
-  //  GraphLinkToken is passed to Flatland to attach it to the scene graph.
-  // |view_ref_pair| will be associated with this window's View, and used to
+  // ViewCreationToken is passed to Flatland to attach it to the scene graph.
+  // ViewrefPair will be associated with this window's View, and used to
   // identify it when calling out to other services (e.g. the SemanticsManager).
   FlatlandWindow(FlatlandWindowManager* window_manager,
                  PlatformWindowDelegate* delegate,
@@ -87,6 +86,8 @@ class COMPONENT_EXPORT(OZONE) FlatlandWindow : public PlatformWindow,
   void SizeConstraintsChanged() override;
 
  private:
+  friend class FlatlandWindowTest;
+
   // Hanging gets from |parent_viewport_watcher_|.
   void OnGetLayout(fuchsia::ui::composition::LayoutInfo info);
   void OnGetStatus(fuchsia::ui::composition::ParentViewportStatus status);
@@ -98,23 +99,18 @@ class COMPONENT_EXPORT(OZONE) FlatlandWindow : public PlatformWindow,
   // changes.
   void OnViewAttachedChanged(bool is_view_attached);
 
-  // Called to handle input events.
-  void OnInputEvent(const fuchsia::ui::input::InputEvent& event);
-
   // InputEventSink implementation.
   void DispatchEvent(ui::Event* event) override;
 
   void UpdateSize();
 
   FlatlandWindowManager* const manager_;
-  PlatformWindowDelegate* const delegate_;
+  PlatformWindowDelegate* const window_delegate_;
   gfx::AcceleratedWidget const window_id_;
-
-  // Dispatches Flatland input events as Chrome ui::Events.
-  InputEventDispatcher event_dispatcher_;
 
   fuchsia::ui::input3::KeyboardPtr keyboard_service_;
   std::unique_ptr<KeyboardClient> keyboard_client_;
+  std::unique_ptr<PointerEventsHandler> pointer_handler_;
 
   // Handle to a kernel object which identifies this window's View
   // across the system. ViewRef consumers can access the handle by

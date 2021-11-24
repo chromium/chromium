@@ -8,6 +8,7 @@
 #include <fuchsia/scenic/scheduling/cpp/fidl.h>
 #include <fuchsia/ui/composition/cpp/fidl.h>
 #include <fuchsia/ui/composition/cpp/fidl_test_base.h>
+#include <fuchsia/ui/pointer/cpp/fidl.h>
 #include <lib/async/dispatcher.h>
 #include <lib/fidl/cpp/binding.h>
 #include <lib/fidl/cpp/interface_handle.h>
@@ -60,6 +61,8 @@ class FakeFlatland
       base::RepeatingCallback<void(fuchsia::ui::composition::PresentArgs)>;
   using ViewRefFocusedRequestHandler =
       fidl::InterfaceRequestHandler<fuchsia::ui::views::ViewRefFocused>;
+  using TouchSourceRequestHandler =
+      fidl::InterfaceRequestHandler<fuchsia::ui::pointer::TouchSource>;
 
   FakeFlatland();
   ~FakeFlatland() override;
@@ -103,6 +106,7 @@ class FakeFlatland
       fuchsia::scenic::scheduling::FramePresentedInfo frame_presented_info);
 
   void SetViewRefFocusedRequestHandler(ViewRefFocusedRequestHandler handler);
+  void SetTouchSourceRequestHandler(TouchSourceRequestHandler handler);
 
  private:
   // |fuchsia::ui::composition::testing::Flatland_TestBase|
@@ -128,6 +132,7 @@ class FakeFlatland
 
   PresentHandler present_handler_;
   ViewRefFocusedRequestHandler view_ref_focused_handler_;
+  TouchSourceRequestHandler touch_source_request_handler_;
 };
 
 }  // namespace ui
