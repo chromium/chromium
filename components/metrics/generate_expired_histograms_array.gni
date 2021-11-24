@@ -58,6 +58,7 @@ template("generate_expired_histograms_array") {
       "//tools/metrics/histograms/metadata/cookie/histograms.xml",
       "//tools/metrics/histograms/metadata/cras/histograms.xml",
       "//tools/metrics/histograms/metadata/cros/histograms.xml",
+      "//tools/metrics/histograms/metadata/cros_ml/histograms.xml",
       "//tools/metrics/histograms/metadata/cross_device/histograms.xml",
       "//tools/metrics/histograms/metadata/crostini/histograms.xml",
       "//tools/metrics/histograms/metadata/cryptohome/histograms.xml",
