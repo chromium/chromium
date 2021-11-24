@@ -734,7 +734,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Enterprise.DeviceSettings.MissingPolicyMitigated"
     units="BooleanSuccess" expires_after="2022-10-04">
-  <owner>poromov@chromium.org</owner>
+  <owner>rbock@google.com</owner>
   <owner>managed-devices@google.com</owner>
   <summary>
     Recorded every time policy file is missing or corrupted on Chrome OS. Should
@@ -745,7 +745,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Enterprise.DeviceSettings.UpdatedStatus"
     enum="DeviceSettingsStatus" expires_after="2022-10-04">
-  <owner>poromov@chromium.org</owner>
+  <owner>rbock@google.com</owner>
   <owner>managed-devices@google.com</owner>
   <summary>
     Recorded every time as DeviceSettingsProvider updates its current state.
@@ -983,8 +983,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.DMServerRequestSuccess{EnterpriseDMServerRequest}"
-    enum="EnterpriseDMServerRequestSuccess" expires_after="2021-12-12">
-  <owner>poromov@chromium.org</owner>
+    enum="EnterpriseDMServerRequestSuccess" expires_after="2022-11-30">
+  <owner>rbock@google.com</owner>
   <owner>managed-devices@google.com</owner>
   <summary>
     Number of retries the client did to execute a DeviceManagementServer
@@ -996,105 +996,105 @@ chromium-metrics-reviews@google.com.
     <variant name=""/>
     <variant name=".ActiveDirectoryEnrollPlayUser"
         summary="Active Directory Enroll Play User.">
-      <owner>poromov@chromium.org</owner>
+      <owner>rbock@google.com</owner>
       <owner>zmin@chromium.org</owner>
     </variant>
     <variant name=".ActiveDirectoryPlayActivity"
         summary="Active Directory Play Activity.">
-      <owner>poromov@chromium.org</owner>
+      <owner>rbock@google.com</owner>
       <owner>zmin@chromium.org</owner>
     </variant>
     <variant name=".AndroidManagementCheck" summary="Android Management Check.">
-      <owner>poromov@chromium.org</owner>
+      <owner>rbock@google.com</owner>
       <owner>zmin@chromium.org</owner>
     </variant>
     <variant name=".ApiAuthCodeFetch" summary="Api Auth Code Fetch.">
-      <owner>poromov@chromium.org</owner>
+      <owner>rbock@google.com</owner>
       <owner>zmin@chromium.org</owner>
     </variant>
     <variant name=".AttributeUpdate" summary="Attribute Update.">
-      <owner>poromov@chromium.org</owner>
+      <owner>rbock@google.com</owner>
       <owner>zmin@chromium.org</owner>
     </variant>
     <variant name=".AttributeUpdatePermission"
         summary="Attribute Update Permission.">
-      <owner>poromov@chromium.org</owner>
+      <owner>rbock@google.com</owner>
       <owner>zmin@chromium.org</owner>
     </variant>
     <variant name=".AutoEnrollment" summary="Auto Enrollment.">
-      <owner>poromov@chromium.org</owner>
+      <owner>rbock@google.com</owner>
       <owner>zmin@chromium.org</owner>
     </variant>
     <variant name=".CertBasedRegistration" summary="Cert Based Registration.">
-      <owner>poromov@chromium.org</owner>
+      <owner>rbock@google.com</owner>
       <owner>zmin@chromium.org</owner>
     </variant>
     <variant name=".ChromeDesktopReport" summary="Chrome Desktop Report.">
-      <owner>poromov@chromium.org</owner>
+      <owner>rbock@google.com</owner>
       <owner>zmin@chromium.org</owner>
     </variant>
     <variant name=".DeviceStateRetrieval" summary="Device State Retrieval.">
-      <owner>poromov@chromium.org</owner>
+      <owner>rbock@google.com</owner>
       <owner>zmin@chromium.org</owner>
     </variant>
     <variant name=".GcmIdUpdate" summary="Gcm Id Update.">
-      <owner>poromov@chromium.org</owner>
+      <owner>rbock@google.com</owner>
       <owner>zmin@chromium.org</owner>
     </variant>
     <variant name=".InitialEnrollmentStateRetrieval"
         summary="Initial Enrollment State Retrieval.">
-      <owner>poromov@chromium.org</owner>
+      <owner>rbock@google.com</owner>
       <owner>zmin@chromium.org</owner>
     </variant>
     <variant name=".Invalid" summary="Invalid.">
-      <owner>poromov@chromium.org</owner>
+      <owner>rbock@google.com</owner>
       <owner>zmin@chromium.org</owner>
     </variant>
     <variant name=".PolicyFetch" summary="Policy Fetch.">
-      <owner>poromov@chromium.org</owner>
+      <owner>rbock@google.com</owner>
       <owner>zmin@chromium.org</owner>
     </variant>
     <variant name=".Registration" summary="Registration.">
-      <owner>poromov@chromium.org</owner>
+      <owner>rbock@google.com</owner>
       <owner>zmin@chromium.org</owner>
     </variant>
     <variant name=".RemoteCommands" summary="Remote Commands.">
-      <owner>poromov@chromium.org</owner>
+      <owner>rbock@google.com</owner>
       <owner>zmin@chromium.org</owner>
     </variant>
     <variant name=".RequestLicenseTypes" summary="Request License Types.">
-      <owner>poromov@chromium.org</owner>
+      <owner>rbock@google.com</owner>
       <owner>zmin@chromium.org</owner>
     </variant>
     <variant name=".TokenEnrollment" summary="Token Enrollment.">
-      <owner>poromov@chromium.org</owner>
+      <owner>rbock@google.com</owner>
       <owner>zmin@chromium.org</owner>
     </variant>
     <variant name=".Unregistration" summary="Unregistration.">
-      <owner>poromov@chromium.org</owner>
+      <owner>rbock@google.com</owner>
       <owner>zmin@chromium.org</owner>
     </variant>
     <variant name=".UploadAppInstallReport"
         summary="Upload App Install Report.">
-      <owner>poromov@chromium.org</owner>
+      <owner>rbock@google.com</owner>
       <owner>zmin@chromium.org</owner>
     </variant>
     <variant name=".UploadCertificate" summary="Upload Certificate.">
-      <owner>poromov@chromium.org</owner>
+      <owner>rbock@google.com</owner>
       <owner>zmin@chromium.org</owner>
     </variant>
     <variant name=".UploadPolicyValidationReport"
         summary="Upload Policy Validation Report.">
-      <owner>poromov@chromium.org</owner>
+      <owner>rbock@google.com</owner>
       <owner>zmin@chromium.org</owner>
     </variant>
     <variant name=".UploadrealtimeReport"
         summary="Upload of real-time reports.">
-      <owner>poromov@chromium.org</owner>
+      <owner>rbock@google.com</owner>
       <owner>zmin@chromium.org</owner>
     </variant>
     <variant name=".UploadStatus" summary="Upload Status.">
-      <owner>poromov@chromium.org</owner>
+      <owner>rbock@google.com</owner>
       <owner>zmin@chromium.org</owner>
     </variant>
   </token>
