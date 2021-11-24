@@ -217,6 +217,9 @@ class TestStoragePartition : public StoragePartition {
       mojo::PendingRemote<network::mojom::NetworkContext>
           network_context_remote) override;
 
+  base::WeakPtr<StoragePartition> GetWeakPtr();
+  void InvalidateWeakPtrs();
+
  private:
   base::FilePath file_path_;
   mojo::Remote<network::mojom::NetworkContext> network_context_remote_;
@@ -243,6 +246,9 @@ class TestStoragePartition : public StoragePartition {
   HostZoomLevelContext* host_zoom_level_context_ = nullptr;
   ZoomLevelDelegate* zoom_level_delegate_ = nullptr;
   int data_removal_observer_count_ = 0;
+
+  // This member must be the last member.
+  base::WeakPtrFactory<TestStoragePartition> weak_factory_{this};
 };
 
 }  // namespace content

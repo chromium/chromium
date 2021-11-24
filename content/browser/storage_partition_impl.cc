@@ -2594,6 +2594,10 @@ void StoragePartitionImpl::SetNetworkContextForTesting(
   network_context_.Bind(std::move(network_context_remote));
 }
 
+base::WeakPtr<StoragePartition> StoragePartitionImpl::GetWeakPtr() {
+  return weak_factory_.GetWeakPtr();
+}
+
 BrowserContext* StoragePartitionImpl::browser_context() const {
   return browser_context_;
 }

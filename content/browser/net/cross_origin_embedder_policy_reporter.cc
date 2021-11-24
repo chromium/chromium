@@ -28,14 +28,14 @@ GURL StripUsernameAndPassword(const GURL& url) {
 
 CrossOriginEmbedderPolicyReporter::CrossOriginEmbedderPolicyReporter(
     Creator creator,
-    StoragePartition* storage_partition,
+    base::WeakPtr<StoragePartition> storage_partition,
     const GURL& context_url,
     const absl::optional<std::string>& endpoint,
     const absl::optional<std::string>& report_only_endpoint,
     const base::UnguessableToken& reporting_source,
     const net::NetworkIsolationKey& network_isolation_key)
     : creator_(creator),
-      storage_partition_(storage_partition),
+      storage_partition_(std::move(storage_partition)),
       context_url_(context_url),
       endpoint_(endpoint),
       report_only_endpoint_(report_only_endpoint),
@@ -125,10 +125,12 @@ void CrossOriginEmbedderPolicyReporter::QueueAndNotify(
     }
     body_to_pass.SetString("disposition", disposition);
 
-    storage_partition_->GetNetworkContext()->QueueReport(
-        kType, *endpoint, context_url_, reporting_source_,
-        network_isolation_key_,
-        /*user_agent=*/absl::nullopt, std::move(body_to_pass));
+    if (auto* storage_partition = storage_partition_.get()) {
+      storage_partition->GetNetworkContext()->QueueReport(
+          kType, *endpoint, context_url_, reporting_source_,
+          network_isolation_key_,
+          /*user_agent=*/absl::nullopt, std::move(body_to_pass));
+    }
   }
 }
 
