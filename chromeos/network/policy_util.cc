@@ -112,6 +112,21 @@ bool IsPolicyMatching(const base::Value& policy,
     return (policy_ssid == actual_ssid);
   }
 
+  if (actual_network_type == ::onc::network_type::kCellular) {
+    const base::Value* policy_cellular =
+        policy.FindDictKey(::onc::network_config::kCellular);
+    const base::Value* actual_cellular =
+        actual_network.FindDictKey(::onc::network_config::kCellular);
+    if (!policy_cellular || !actual_cellular)
+      return false;
+
+    std::string policy_iccid =
+        GetString(*policy_cellular, ::onc::cellular::kICCID);
+    std::string actual_iccid =
+        GetString(*actual_cellular, ::onc::cellular::kICCID);
+    return (policy_iccid == actual_iccid && !policy_iccid.empty());
+  }
+
   return false;
 }
 

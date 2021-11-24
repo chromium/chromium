@@ -71,6 +71,11 @@ constexpr char kTestGuidManagedWifi[] = "policy_wifi1";
 // for a managed Cellular service.
 constexpr char kTestGuidManagedCellular[] = "policy_cellular";
 
+// The GUID used by
+// chromeos/test/data/network/policy/policy_cellular_with_iccid.onc files for a
+// managed Cellular service.
+constexpr char kTestGuidManagedCellular2[] = "policy_cellular2";
+
 // The GUID used by chromeos/test/data/network/policy/*.{json,onc} files for an
 // unmanaged Wifi service.
 constexpr char kTestGuidUnmanagedWifi2[] = "wifi2";
@@ -393,6 +398,23 @@ TEST_F(ManagedNetworkConfigurationHandlerTest, SetPolicyManagedCellular) {
       GetShillServiceClient()->GetServiceProperties(service_path);
   ASSERT_TRUE(properties);
   EXPECT_THAT(*properties, DictionaryHasValues(*expected_shill_properties));
+
+  // Verify that applying a new cellular policy with same ICCID should update
+  // the old shill configuration.
+  SetPolicy(::onc::ONC_SOURCE_DEVICE_POLICY, std::string(),
+            "policy/policy_cellular_with_iccid.onc");
+  base::RunLoop().RunUntilIdle();
+
+  ASSERT_EQ(std::string(), GetShillServiceClient()->FindServiceMatchingGUID(
+                               kTestGuidManagedCellular));
+  service_path = GetShillServiceClient()->FindServiceMatchingGUID(
+      kTestGuidManagedCellular2);
+  const base::Value* properties2 =
+      GetShillServiceClient()->GetServiceProperties(service_path);
+  ASSERT_TRUE(properties2);
+  absl::optional<bool> auto_connect =
+      properties2->FindBoolKey(shill::kAutoConnectProperty);
+  ASSERT_TRUE(*auto_connect);
 }
 
 TEST_F(ManagedNetworkConfigurationHandlerTest, SetPolicyManageUnconfigured) {
