@@ -90,18 +90,26 @@ class BrowserDevToolsAgentHost::BrowserAutoAttacher final
   }
 
   void UpdateAutoAttach(base::OnceClosure callback) override {
-    if (have_observers_ == auto_attach()) {
-      std::move(callback).Run();
-      return;
-    }
     if (auto_attach()) {
       base::AutoReset<bool> auto_reset(&processing_existent_targets_, true);
-      ServiceWorkerDevToolsManager::GetInstance()->AddObserver(this);
-      DevToolsAgentHost::AddObserver(this);
+      if (!have_observers_) {
+        ServiceWorkerDevToolsManager::GetInstance()->AddObserver(this);
+        // DevToolsAgentHost's observer immediately notifies about all existing
+        // ones.
+        DevToolsAgentHost::AddObserver(this);
+      } else {
+        // Manually collect existing hosts to update the list.
+        DevToolsAgentHost::List hosts;
+        RenderFrameDevToolsAgentHost::AddAllAgentHosts(&hosts);
+        for (auto& host : hosts)
+          DevToolsAgentHostCreated(host.get());
+      }
       ReattachServiceWorkers();
     } else {
-      DevToolsAgentHost::RemoveObserver(this);
-      ServiceWorkerDevToolsManager::GetInstance()->RemoveObserver(this);
+      if (have_observers_) {
+        DevToolsAgentHost::RemoveObserver(this);
+        ServiceWorkerDevToolsManager::GetInstance()->RemoveObserver(this);
+      }
     }
     have_observers_ = auto_attach();
     std::move(callback).Run();
