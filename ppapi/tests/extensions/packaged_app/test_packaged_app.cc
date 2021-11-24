@@ -22,11 +22,7 @@
 #if defined(__clang__)
 // ipc_message_attachment_set.h depends on C++11 which nacl-g++ does not
 // fully support.
-// This include s used only to access the constnant
-// IPC::MessageAttachmentSet::kMaxDescriptorsPerMessage which is defined
-// directly in the .h file. This means we don't need to depend
-// on the //ipc::message_support target in the build file.
-#include "ipc/ipc_message_attachment_set.h"  // nogncheck
+#include "ipc/ipc_message_attachment_set.h"
 #endif
 
 namespace {
