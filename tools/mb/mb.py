@@ -1738,7 +1738,7 @@ class MetaBuildWrapper(object):
     executable_suffix = isolate_map[target].get(
         'executable_suffix', '.exe' if is_win else '')
 
-    if isolate_map[target].get('python3'):
+    if isolate_map[target].get('python3', True):
       extra_files = ['../../.vpython3']
       vpython_exe = 'vpython3'
     else:
