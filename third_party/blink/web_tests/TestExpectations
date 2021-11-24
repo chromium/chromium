@@ -5441,7 +5441,6 @@ crbug.com/1034374 http/tests/devtools/tracing/timeline-worker-events.js [ Failur
 crbug.com/1034513 [ Win7 ] virtual/stable/fast/dom/Window/window-resize-contents.html [ Failure Pass ]
 
 # Assertion errors need to be fixed
-crbug.com/1034492 http/tests/devtools/unit/filtered-item-selection-dialog-filtering.js [ Failure Pass ]
 crbug.com/1034492 http/tests/devtools/unit/filtered-list-widget-providers.js [ Failure Pass ]
 
 # Sheriff 2019-12-23
