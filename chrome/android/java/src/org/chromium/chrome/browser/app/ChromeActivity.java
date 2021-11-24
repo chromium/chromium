@@ -986,6 +986,28 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
     public void onStartWithNative() {
         assert mNativeInitialized : "onStartWithNative was called before native was initialized.";
 
+        // Record cases where first navigation commit and/or StartupPaintPreview's first
+        // paint happened pre-foregrounding (note that
+        // UmaUtils.hasComeToForeground() becomes true via the below call to
+        // ChromeActivitySessionTracker#onStartWithNative()). Per the semantics of these metrics we
+        // record them only when startup metrics are actually being tracked.
+        boolean firstCommitOccurredPreForeground =
+                getActivityTabStartupMetricsTracker().registeredFirstCommitPreForeground();
+        // NOTE: ActivityTabStartupMetricsTracker#isTrackingStartupMetrics() returns false after the
+        // first tracked navigation commit has occurred.
+        boolean trackingStartupMetrics =
+                getActivityTabStartupMetricsTracker().isTrackingStartupMetrics()
+                || firstCommitOccurredPreForeground;
+
+        if (trackingStartupMetrics) {
+            RecordHistogram.recordBooleanHistogram(
+                    "Android.Startup.Cold.FirstNavigationCommitOccurredPreForeground",
+                    firstCommitOccurredPreForeground);
+            RecordHistogram.recordBooleanHistogram(
+                    "Android.Startup.Cold.FirstPaintOccurredPreForeground",
+                    getActivityTabStartupMetricsTracker().registeredFirstPaintPreForeground());
+        }
+
         super.onStartWithNative();
         UpdateMenuItemHelper.getInstance().onStart();
         ChromeActivitySessionTracker.getInstance().onStartWithNative();

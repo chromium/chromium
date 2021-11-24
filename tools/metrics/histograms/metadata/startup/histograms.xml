@@ -66,6 +66,29 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="Startup.Android.Cold.FirstNavigationCommitOccurredPreForeground"
+    units="Boolean" expires_after="2022-09-01">
+  <owner>blundell@chromium.org</owner>
+  <owner>yfriedman@chromium.org</owner>
+  <summary>
+    Records whether the first navigation commit after a cold start occurred
+    before UmaUtils.hasComeToForeground() became true. Recorded only for
+    startups in which startup metrics were being tracked.
+  </summary>
+</histogram>
+
+<histogram name="Startup.Android.Cold.FirstPaintOccurredPreForeground"
+    units="Boolean" expires_after="2022-09-01">
+  <owner>blundell@chromium.org</owner>
+  <owner>yfriedman@chromium.org</owner>
+  <summary>
+    Records whether the first paint of StartupPaintPreview after a cold start
+    occurred before UmaUtils.hasComeToForeground() became true. Recorded only
+    for startups in which startup metrics were being tracked.
+  </summary>
+</histogram>
+
 <histogram base="true" name="Startup.Android.Cold.TimeToFirstContentfulPaint"
     units="ms" expires_after="2022-05-22">
   <owner>pasko@chromium.org</owner>

@@ -119,10 +119,35 @@ public class ActivityTabStartupMetricsTracker {
     private boolean mFirstVisibleContentRecorded;
     private boolean mVisibleContentRecorded;
 
+    // Records whether the tracked first navigation commit was recorded pre-the app being in the
+    // foreground. Used for investigating crbug.com/1273097.
+    private boolean mRegisteredFirstCommitPreForeground;
+    // Records whether StartupPaintPreview's first paint was recorded pre-the app being in the
+    // foreground. Used for investigating crbug.com/1273097.
+    private boolean mRegisteredFirstPaintPreForeground;
+
     public ActivityTabStartupMetricsTracker(
             ObservableSupplier<TabModelSelector> tabModelSelectorSupplier) {
         mActivityStartTimeMs = SystemClock.uptimeMillis();
         tabModelSelectorSupplier.addObserver((selector) -> registerObservers(selector));
+    }
+
+    // Returns true if the tracked first navigation commit occurred while the browser had not yet
+    // come to foreground and had not been backgrounded (as defined by UmaUtils).
+    public boolean registeredFirstCommitPreForeground() {
+        return mRegisteredFirstCommitPreForeground;
+    }
+
+    // Returns true if the first paint occurred while the browser had not yet
+    // come to foreground and had not been backgrounded (as defined by UmaUtils).
+    public boolean registeredFirstPaintPreForeground() {
+        return mRegisteredFirstPaintPreForeground;
+    }
+
+    // Note: In addition to returning false when startup metrics are not being tracked at all, this
+    // method will also return false after first navigation commit has occurred.
+    public boolean isTrackingStartupMetrics() {
+        return mShouldTrackStartupMetrics;
     }
 
     // Returns the time since the activity was started (relative to which metrics such as time to
@@ -172,6 +197,16 @@ public class ActivityTabStartupMetricsTracker {
             public void onFirstPaint(long durationMs) {
                 recordFirstVisibleContent(durationMs);
                 recordVisibleContent(durationMs);
+            }
+
+            @Override
+            public void onUnrecordedFirstPaint() {
+                // The first paint not being recorded means that either (1) the browser is not
+                // marked as being in the foreground or (2) it has been backgrounded. Update
+                // |mRegisteredFirstPaintPreForeground| if appropriate.
+                if (!UmaUtils.hasComeToForeground() && !UmaUtils.hasComeToBackground()) {
+                    mRegisteredFirstPaintPreForeground = true;
+                }
             }
         });
     }
@@ -246,7 +281,11 @@ public class ActivityTabStartupMetricsTracker {
             for (Observer observer : sObservers) {
                 observer.onFirstNavigationCommit();
             }
+        } else if (isTrackedPage && !UmaUtils.hasComeToForeground()
+                && !UmaUtils.hasComeToBackground()) {
+            mRegisteredFirstCommitPreForeground = true;
         }
+
         mShouldTrackStartupMetrics = false;
     }
 
