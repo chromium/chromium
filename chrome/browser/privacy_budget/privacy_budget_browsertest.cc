@@ -214,11 +214,6 @@ IN_PROC_BROWSER_TEST_F(PrivacyBudgetBrowserTestWithTestRecorder,
 IN_PROC_BROWSER_TEST_F(PrivacyBudgetBrowserTestWithTestRecorder,
                        SamplingScreenAPIs) {
   ASSERT_TRUE(embedded_test_server()->Start());
-  // Ensure that the previous page won't be stored in the back/forward cache, so
-  // that the histogram will be recorded when the previous page is unloaded.
-  // TODO(https://crbug.com/1229122): Investigate if this needs further fix.
-  web_contents()->GetController().GetBackForwardCache().DisableForTesting(
-      content::BackForwardCache::TEST_ASSUMES_NO_CACHING);
 
   content::DOMMessageQueue messages;
   base::RunLoop run_loop;
@@ -276,11 +271,6 @@ IN_PROC_BROWSER_TEST_F(PrivacyBudgetBrowserTestWithTestRecorder,
                        CallsCanvasToBlob) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
-  // Ensure that the previous page won't be stored in the back/forward cache, so
-  // that the histogram will be recorded when the previous page is unloaded.
-  web_contents()->GetController().GetBackForwardCache().DisableForTesting(
-      content::BackForwardCache::TEST_ASSUMES_NO_CACHING);
-
   content::DOMMessageQueue messages;
   base::RunLoop run_loop;
 
@@ -335,10 +325,6 @@ IN_PROC_BROWSER_TEST_F(PrivacyBudgetBrowserTestWithTestRecorder,
 IN_PROC_BROWSER_TEST_F(PrivacyBudgetBrowserTestWithTestRecorder,
                        MAYBE_CanvasToBlobDifferentDocument) {
   ASSERT_TRUE(embedded_test_server()->Start());
-  // Ensure that the previous page won't be stored in the back/forward cache, so
-  // that the histogram will be recorded when the previous page is unloaded.
-  web_contents()->GetController().GetBackForwardCache().DisableForTesting(
-      content::BackForwardCache::TEST_ASSUMES_NO_CACHING);
 
   content::DOMMessageQueue messages;
   base::RunLoop run_loop;
