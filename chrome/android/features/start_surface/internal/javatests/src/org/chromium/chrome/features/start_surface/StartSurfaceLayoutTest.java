@@ -424,6 +424,7 @@ public class StartSurfaceLayoutTest {
     @EnableFeatures(ChromeFeatureList.TAB_TO_GTS_ANIMATION + "<Study")
     @CommandLineFlags.Add({BASE_PARAMS + "/cleanup-delay/10000"})
     @MinAndroidSdkLevel(Build.VERSION_CODES.M) // TODO(crbug.com/997065#c8): remove SDK restriction.
+    @DisabledTest(message = "https://crbug.com/1272561")
     public void testTabToGridFromLiveTabSoftAnimation() throws InterruptedException {
         assertTrue(TabUiFeatureUtilities.isTabToGtsAnimationEnabled());
         prepareTabs(2, 0, NTP_URL);
