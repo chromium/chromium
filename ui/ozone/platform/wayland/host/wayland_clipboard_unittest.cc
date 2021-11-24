@@ -348,7 +348,8 @@ TEST_P(CopyPasteOnlyClipboardTest, PrimarySelectionRequestsNoop) {
 
 // Makes sure overlapping read requests for the same clipboard buffer are
 // properly handled.
-TEST_P(CopyPasteOnlyClipboardTest, OverlappingReadRequests) {
+// TODO(crbug.com/443355): Re-enable once Clipboard API becomes async.
+TEST_P(CopyPasteOnlyClipboardTest, DISABLED_OverlappingReadRequests) {
   // Create an selection data offer containing plain and html mime types.
   auto* data_device = server_.data_device_manager()->data_device();
   auto* data_offer = data_device->OnDataOffer();
