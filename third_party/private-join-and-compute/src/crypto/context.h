@@ -21,6 +21,7 @@
 #include <memory>
 #include <string>
 
+#include "third_party/private-join-and-compute/base/private_join_and_compute_export.h"
 #include "third_party/private-join-and-compute/src/chromium_patch.h"
 #include "third_party/private-join-and-compute/src/crypto/big_num.h"
 #include "third_party/private-join-and-compute/src/crypto/openssl.inc"
@@ -40,7 +41,7 @@ std::string OpenSSLErrorString();
 //
 // This class is not thread-safe, so each thread needs to have a unique Context
 // initialized.
-class Context {
+class PRIVATE_COMPUTE_EXPORT Context {
  public:
   // Deletes a BN_CTX.
   class BnCtxDeleter {

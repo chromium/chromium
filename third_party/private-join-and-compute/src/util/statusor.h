@@ -73,6 +73,7 @@
 #include <new>
 #include <utility>
 
+#include "third_party/private-join-and-compute/base/private_join_and_compute_export.h"
 #include "third_party/private-join-and-compute/src/util/status.h"  // IWYU pragma: export  // for Status
 
 namespace private_join_and_compute {
@@ -151,7 +152,7 @@ namespace private_join_and_compute {
 
 namespace internal {
 
-class StatusOrHelper {
+class PRIVATE_COMPUTE_EXPORT StatusOrHelper {
  public:
   // Move type-agnostic error handling to the .cc.
   static Status HandleInvalidStatusCtorArg();
