@@ -2,7 +2,12 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/util/process_version.gni")
 import("//third_party/protobuf/proto_library.gni")
+
+if (is_chromeos_device) {
+  import("//build/config/chromeos/rules.gni")
+}
 
 # Nearby Config
 config("nearby_include_config") {
@@ -588,13 +593,21 @@ proto_library("web_rtc_signaling_frames_proto") {
   proto_out_dir = "third_party/nearby"
 }
 
-###############################################################################
-# Dummy build target
-###############################################################################
-# Dummy build target to support running Skylab tests from Chrome builder.
-# Chrome builder expects a build target for test artifacts.
-# The name of the build target is required in builder configuration
-# files to link builders to their corresponding tests and hardware variants.
+# The following definitions only apply when building for a CrOS board
+if (is_chromeos_device) {
+  # Test target is for running Skylab tests from Chrome builder.
+  tast_test("nearby_share_tast_tests") {
+    tast_attr_expr = "\"group:nearby-share-remote\""
+    deps = [ ":nearby_lacros_version_metadata" ]
+  }
 
-source_set("nearby_dummy_tast_tests") {
+  # This target is required by Skylab recipe to upload chrome binary
+  # and artifacts to GCS.
+  process_version("nearby_lacros_version_metadata") {
+    sources = [ "//chrome/VERSION" ]
+
+    template_file = "metadata.json.in"
+    output = "$root_out_dir/metadata.json"
+    process_only = true
+  }
 }
