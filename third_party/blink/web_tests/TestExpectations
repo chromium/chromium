@@ -6324,7 +6324,7 @@ crbug.com/1197087 external/wpt/css/css-transitions/AnimationEffect-getComputedTi
 crbug.com/1197087 virtual/threaded/external/wpt/css/css-animations/AnimationEffect-getComputedTiming.tentative.html [ Failure Pass ]
 
 # Sheriff 2021-04-09
-crbug.com/1197528 [ Mac ] pointer-lock/pointerlockchange-pointerlockerror-events.html [ Failure Pass ]
+crbug.com/1197528 pointer-lock/pointerlockchange-pointerlockerror-events.html [ Failure Pass ]
 
 crbug.com/1195295 fast/events/touch/multi-touch-timestamp.html [ Failure Pass ]
 
@@ -6386,7 +6386,6 @@ crbug.com/1191990 [ Linux ] http/tests/serviceworker/clients-openwindow.html [ F
 crbug.com/1198832 [ Linux ] external/wpt/css/css-sizing/aspect-ratio/replaced-element-003.html [ Failure Pass ]
 crbug.com/1202051 virtual/scroll-unification/scrollbars/layout-viewport-scrollbars-hidden.html [ Failure Pass ]
 crbug.com/1202051 virtual/scroll-unification-prefer_compositing_to_lcd_text/scrollbars/layout-viewport-scrollbars-hidden.html [ Failure Pass ]
-crbug.com/1197528 [ Linux ] pointer-lock/pointerlockchange-pointerlockerror-events.html [ Failure Pass ]
 
 # Image pixels are sometimes different on Fuchsia.
 crbug.com/1201123 [ Fuchsia ] tables/mozilla/bugs/bug1188.html [ Failure Pass ]
