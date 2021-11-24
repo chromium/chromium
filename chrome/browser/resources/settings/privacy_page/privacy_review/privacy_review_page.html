@@ -52,46 +52,49 @@
   <template is="dom-if"
       if="[[showFragment_(
              privacyReviewStepEnum_.WELCOME, privacyReviewStep_)]]">
-    <privacy-review-welcome-fragment id="welcomeFragment" prefs="{{prefs}}"
-        on-start-button-click="onNextButtonClick_">
+    <privacy-review-welcome-fragment id="[[privacyReviewStepEnum_.WELCOME]]"
+        prefs="{{prefs}}" on-start-button-click="onNextButtonClick_">
     </privacy-review-welcome-fragment>
   </template>
   <template is="dom-if"
       if="[[showFragment_(privacyReviewStepEnum_.MSBB, privacyReviewStep_)]]">
-    <privacy-review-msbb-fragment id="msbbFragment" prefs="{{prefs}}">
+    <privacy-review-msbb-fragment id="[[privacyReviewStepEnum_.MSBB]]"
+        prefs="{{prefs}}">
     </privacy-review-msbb-fragment>
   </template>
   <template is="dom-if"
       if="[[showFragment_(
              privacyReviewStepEnum_.CLEAR_ON_EXIT, privacyReviewStep_)]]">
-    <privacy-review-clear-on-exit-fragment id="clearOnExitFragment"
-        prefs="{{prefs}}">
+    <privacy-review-clear-on-exit-fragment
+        id="[[privacyReviewStepEnum_.CLEAR_ON_EXIT]]" prefs="{{prefs}}">
     </privacy-review-clear-on-exit-fragment>
   </template>
   <template is="dom-if"
       if="[[showFragment_(
              privacyReviewStepEnum_.HISTORY_SYNC, privacyReviewStep_)]]">
-    <privacy-review-history-sync-fragment id="historySyncFragment"
-        prefs="{{prefs}}">
+    <privacy-review-history-sync-fragment
+        id="[[privacyReviewStepEnum_.HISTORY_SYNC]]" prefs="{{prefs}}">
     </privacy-review-history-sync-fragment>
   </template>
   <template is="dom-if"
       if="[[showFragment_(
              privacyReviewStepEnum_.SAFE_BROWSING, privacyReviewStep_)]]">
-    <privacy-review-safe-browsing-fragment id="safeBrowsingFragment"
-        prefs="{{prefs}}">
+    <privacy-review-safe-browsing-fragment
+        id="[[privacyReviewStepEnum_.SAFE_BROWSING]]" prefs="{{prefs}}">
     </privacy-review-safe-browsing-fragment>
   </template>
   <template is="dom-if"
       if="[[showFragment_(
              privacyReviewStepEnum_.COOKIES, privacyReviewStep_)]]">
-    <privacy-review-cookies-fragment id="cookiesFragment" prefs="{{prefs}}">
+    <privacy-review-cookies-fragment
+        id="[[privacyReviewStepEnum_.COOKIES]]" prefs="{{prefs}}">
     </privacy-review-cookies-fragment>
   </template>
   <template is="dom-if"
       if="[[showFragment_(
              privacyReviewStepEnum_.COMPLETION, privacyReviewStep_)]]">
-    <privacy-review-completion-fragment id="completionFragment"
+    <privacy-review-completion-fragment
+        id="[[privacyReviewStepEnum_.COMPLETION]]"
         on-leave-button-click="onNextButtonClick_">
     </privacy-review-completion-fragment>
   </template>

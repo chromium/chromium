@@ -213,24 +213,25 @@ suite('PrivacyReviewPage', function() {
     }
     assertEquals(
         !!isWelcomeFragmentVisibleExpected,
-        isChildVisible(page, '#welcomeFragment'));
+        isChildVisible(page, '#' + PrivacyReviewStep.WELCOME));
     assertEquals(
         !!isCompletionFragmentVisibleExpected,
-        isChildVisible(page, '#completionFragment'));
+        isChildVisible(page, '#' + PrivacyReviewStep.COMPLETION));
     assertEquals(
-        !!isMsbbFragmentVisibleExpected, isChildVisible(page, '#msbbFragment'));
+        !!isMsbbFragmentVisibleExpected,
+        isChildVisible(page, '#' + PrivacyReviewStep.MSBB));
     assertEquals(
         !!isClearOnExitFragmentVisibleExpected,
-        isChildVisible(page, '#clearOnExitFragment'));
+        isChildVisible(page, '#' + PrivacyReviewStep.CLEAR_ON_EXIT));
     assertEquals(
         !!isHistorySyncFragmentVisibleExpected,
-        isChildVisible(page, '#historySyncFragment'));
+        isChildVisible(page, '#' + PrivacyReviewStep.HISTORY_SYNC));
     assertEquals(
         !!isSafeBrowsingFragmentVisibleExpected,
-        isChildVisible(page, '#safeBrowsingFragment'));
+        isChildVisible(page, '#' + PrivacyReviewStep.SAFE_BROWSING));
     assertEquals(
         !!isCookiesFragmentVisibleExpected,
-        isChildVisible(page, '#cookiesFragment'));
+        isChildVisible(page, '#' + PrivacyReviewStep.COOKIES));
   }
 
   /**
@@ -350,7 +351,8 @@ suite('PrivacyReviewPage', function() {
     flush();
     assertWelcomeCardVisible();
 
-    const welcomeFragment = page.shadowRoot.querySelector('#welcomeFragment');
+    const welcomeFragment =
+        page.shadowRoot.querySelector('#' + PrivacyReviewStep.WELCOME);
     const dontShowAgainCheckbox =
         welcomeFragment.shadowRoot.querySelector('#dontShowAgainCheckbox');
     assertFalse(dontShowAgainCheckbox.checked);
@@ -376,7 +378,8 @@ suite('PrivacyReviewPage', function() {
     flush();
     assertWelcomeCardVisible();
 
-    const welcomeFragment = page.shadowRoot.querySelector('#welcomeFragment');
+    const welcomeFragment =
+        page.shadowRoot.querySelector('#' + PrivacyReviewStep.WELCOME);
     welcomeFragment.shadowRoot.querySelector('#startButton').click();
     flush();
     assertMsbbCardVisible();
@@ -484,7 +487,7 @@ suite('PrivacyReviewPage', function() {
     setCookieSetting(CookiePrimarySetting.BLOCK_THIRD_PARTY);
     assertSafeBrowsingCardVisible();
     const radioButtonGroup =
-        page.shadowRoot.querySelector('#safeBrowsingFragment')
+        page.shadowRoot.querySelector('#' + PrivacyReviewStep.SAFE_BROWSING)
             .shadowRoot.querySelector('#safeBrowsingRadioGroup');
     assertEquals(
         Number(radioButtonGroup.selected), SafeBrowsingSetting.ENHANCED);
@@ -557,7 +560,7 @@ suite('PrivacyReviewPage', function() {
     setCookieSetting(CookiePrimarySetting.BLOCK_THIRD_PARTY);
     assertCookiesCardVisible();
     const radioButtonGroup =
-        page.shadowRoot.querySelector('#cookiesFragment')
+        page.shadowRoot.querySelector('#' + PrivacyReviewStep.COOKIES)
             .shadowRoot.querySelector('#cookiesRadioGroup');
     assertEquals(
         Number(radioButtonGroup.selected),
@@ -581,8 +584,8 @@ suite('PrivacyReviewPage', function() {
     assertCompletionCardVisible();
 
     return whenPopState(function() {
-             const completionFragment =
-                 page.shadowRoot.querySelector('#completionFragment');
+             const completionFragment = page.shadowRoot.querySelector(
+                 '#' + PrivacyReviewStep.COMPLETION);
              completionFragment.shadowRoot.querySelector('#leaveButton')
                  .click();
            })
@@ -597,7 +600,7 @@ suite('PrivacyReviewPage', function() {
     assertCompletionCardVisible();
 
     const completionFragment =
-        page.shadowRoot.querySelector('#completionFragment');
+        page.shadowRoot.querySelector('#' + PrivacyReviewStep.COMPLETION);
     assertTrue(isChildVisible(completionFragment, '#privacySandboxRow'));
     assertTrue(isChildVisible(completionFragment, '#waaRow'));
 
