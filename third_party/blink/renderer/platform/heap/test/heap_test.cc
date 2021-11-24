@@ -61,6 +61,8 @@ namespace {
 
 class HeapTest : public TestSupportingGC {};
 
+class HeapDeathTest : public TestSupportingGC {};
+
 class IntWrapper : public GarbageCollected<IntWrapper> {
  public:
   virtual ~IntWrapper() {
@@ -193,7 +195,7 @@ class PreFinalizerVectorBackingExpandForbidden final
 };
 }  // namespace
 
-TEST(HeapDeathTest, PreFinalizerVectorBackingExpandForbidden) {
+TEST_F(HeapDeathTest, PreFinalizerVectorBackingExpandForbidden) {
   MakeGarbageCollected<PreFinalizerVectorBackingExpandForbidden>();
   TestSupportingGC::PreciselyCollectGarbage();
 }
@@ -224,7 +226,7 @@ class PreFinalizerHashTableBackingExpandForbidden final
 };
 }  // namespace
 
-TEST(HeapDeathTest, PreFinalizerHashTableBackingExpandForbidden) {
+TEST_F(HeapDeathTest, PreFinalizerHashTableBackingExpandForbidden) {
   MakeGarbageCollected<PreFinalizerHashTableBackingExpandForbidden>();
   TestSupportingGC::PreciselyCollectGarbage();
 }
@@ -297,7 +299,7 @@ class HeapTestResurrectingPreFinalizer
 };
 }  // namespace
 
-TEST(HeapDeathTest, DiesOnResurrectedHeapVectorMember) {
+TEST_F(HeapDeathTest, DiesOnResurrectedHeapVectorMember) {
   Persistent<HeapTestResurrectingPreFinalizer::GlobalStorage> storage(
       MakeGarbageCollected<HeapTestResurrectingPreFinalizer::GlobalStorage>());
   MakeGarbageCollected<HeapTestResurrectingPreFinalizer>(
@@ -306,7 +308,7 @@ TEST(HeapDeathTest, DiesOnResurrectedHeapVectorMember) {
   TestSupportingGC::PreciselyCollectGarbage();
 }
 
-TEST(HeapDeathTest, DiesOnResurrectedHeapHashSetMember) {
+TEST_F(HeapDeathTest, DiesOnResurrectedHeapHashSetMember) {
   Persistent<HeapTestResurrectingPreFinalizer::GlobalStorage> storage(
       MakeGarbageCollected<HeapTestResurrectingPreFinalizer::GlobalStorage>());
   MakeGarbageCollected<HeapTestResurrectingPreFinalizer>(
@@ -315,7 +317,7 @@ TEST(HeapDeathTest, DiesOnResurrectedHeapHashSetMember) {
   TestSupportingGC::PreciselyCollectGarbage();
 }
 
-TEST(HeapDeathTest, DiesOnResurrectedHeapHashSetWeakMember) {
+TEST_F(HeapDeathTest, DiesOnResurrectedHeapHashSetWeakMember) {
   Persistent<HeapTestResurrectingPreFinalizer::GlobalStorage> storage(
       MakeGarbageCollected<HeapTestResurrectingPreFinalizer::GlobalStorage>());
   MakeGarbageCollected<HeapTestResurrectingPreFinalizer>(
