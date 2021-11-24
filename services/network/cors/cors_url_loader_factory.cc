@@ -343,7 +343,7 @@ bool CorsURLLoaderFactory::IsValidCorsExemptHeaders(
         allowed_exempt_headers.end()) {
       continue;
     }
-    LOG(WARNING) << "|cors_exempt_headers| contains unexpected key: "
+    LOG(WARNING) << "`cors_exempt_headers` contains unexpected key: "
                  << header.value;
     return false;
   }
@@ -357,8 +357,8 @@ bool CorsURLLoaderFactory::IsValidRequest(const ResourceRequest& request,
   if (!request.request_initiator &&
       request.mode != network::mojom::RequestMode::kNavigate &&
       request.mode != mojom::RequestMode::kNoCors) {
-    LOG(WARNING) << "|mode| is " << request.mode
-                 << ", but |request_initiator| is not set.";
+    LOG(WARNING) << "`mode` is " << request.mode
+                 << ", but `request_initiator` is not set.";
     mojo::ReportBadMessage("CorsURLLoaderFactory: cors without initiator");
     return false;
   }
@@ -492,7 +492,7 @@ bool CorsURLLoaderFactory::IsValidRequest(const ResourceRequest& request,
       break;
 
     case InitiatorLockCompatibility::kNoLock:
-      // |request_initiator_origin_lock| should always be set in a
+      // `request_initiator_origin_lock` should always be set in a
       // URLLoaderFactory vended to a renderer process.  See also
       // https://crbug.com/1114906.
       NOTREACHED();
@@ -538,7 +538,7 @@ bool CorsURLLoaderFactory::IsValidRequest(const ResourceRequest& request,
     return false;
   }
 
-  // We only support |kInclude| credentials mode with navigations. See also:
+  // We only support `kInclude` credentials mode with navigations. See also:
   // a note at https://fetch.spec.whatwg.org/#concept-request-credentials-mode.
   if (request.credentials_mode != mojom::CredentialsMode::kInclude &&
       request.mode == network::mojom::RequestMode::kNavigate) {
@@ -566,7 +566,7 @@ bool CorsURLLoaderFactory::IsValidRequest(const ResourceRequest& request,
   }
 
   if (!net::HttpUtil::IsToken(request.method)) {
-    // Callers are expected to ensure that |method| follows RFC 7230.
+    // Callers are expected to ensure that `method` follows RFC 7230.
     mojo::ReportBadMessage(
         "CorsURLLoaderFactory: invalid characters in method");
     return false;

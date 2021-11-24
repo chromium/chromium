@@ -78,8 +78,8 @@ base::TimeDelta ParseAccessControlMaxAge(
   return base::Seconds(seconds);
 }
 
-// Parses |string| as a Access-Control-Allow-* header value, storing the result
-// in |set|. This function returns false when |string| does not satisfy the
+// Parses `string` as a Access-Control-Allow-* header value, storing the result
+// in `set`. This function returns false when `string` does not satisfy the
 // syntax here: https://fetch.spec.whatwg.org/#http-new-header-syntax.
 bool ParseAccessControlAllowList(const absl::optional<std::string>& string,
                                  base::flat_set<std::string>* set,

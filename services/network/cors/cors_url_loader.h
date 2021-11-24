@@ -34,7 +34,7 @@ class OriginAccessList;
 // Wrapper class that adds cross-origin resource sharing capabilities
 // (https://fetch.spec.whatwg.org/#http-cors-protocol), delegating requests as
 // well as potential preflight requests to the supplied
-// |network_loader_factory|. It is owned by the CorsURLLoaderFactory that
+// `network_loader_factory`. It is owned by the CorsURLLoaderFactory that
 // created it.
 class COMPONENT_EXPORT(NETWORK_SERVICE) CorsURLLoader
     : public mojom::URLLoader,
@@ -134,7 +134,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CorsURLLoader
   void SetCorsFlagIfNeeded();
 
   // Returns true if request's origin has special access to the destination URL
-  // (via |origin_access_list_|).
+  // (via `origin_access_list_`).
   bool HasSpecialAccessToDestination() const;
 
   bool PassesTimingAllowOriginCheck(
@@ -156,14 +156,14 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CorsURLLoader
   // This raw URLLoaderFactory pointer is shared with the CorsURLLoaderFactory
   // that created and owns this object.
   mojom::URLLoaderFactory* network_loader_factory_;
-  // This has the same lifetime as |network_loader_factory_|, and should be used
+  // This has the same lifetime as `network_loader_factory_`, and should be used
   // when non-null to create optimized URLLoaders which can call URLLoaderClient
   // methods synchronously.
   URLLoaderFactory* sync_network_loader_factory_;
 
   // For the actual request.
   mojo::Remote<mojom::URLLoader> network_loader_;
-  // |sync_client_receiver_factory_| should be invalidated if this is ever
+  // `sync_client_receiver_factory_` should be invalidated if this is ever
   // reset.
   mojo::Receiver<mojom::URLLoaderClient> network_client_receiver_{this};
   ResourceRequest request_;
@@ -202,7 +202,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CorsURLLoader
   // We need to save this for redirect.
   net::MutableNetworkTrafficAnnotationTag traffic_annotation_;
 
-  // Outlives |this|.
+  // Outlives `this`.
   const OriginAccessList* const origin_access_list_;
   PreflightController* preflight_controller_;
   const base::flat_set<std::string>* allowed_exempt_headers_;
@@ -250,7 +250,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CorsURLLoader
 
   // Used to provide weak pointers of this class for synchronously calling
   // URLLoaderClient methods. This should be reset any time
-  // |network_client_receiver_| is reset.
+  // `network_client_receiver_` is reset.
   base::WeakPtrFactory<CorsURLLoader> sync_client_receiver_factory_{this};
 
   // Used to run asynchronous class instance bound callbacks safely.

@@ -145,10 +145,10 @@ TEST_F(CorsURLLoaderFactoryTest, DestructionOrder) {
   request.url = url;
   request.request_initiator = url::Origin::Create(url);
 
-  // As of r609458 setting |keepalive| to true was triggerring a dereference of
-  // |factory_params_| in the destructor of network::URLLoader.  This
+  // As of r609458 setting `keepalive` to true was triggerring a dereference of
+  // `factory_params_` in the destructor of network::URLLoader.  This
   // dereference assumes that the network::URLLoaderFactory (which keeps
-  // |factory_params_| alive) lives longer than the network::URLLoaders created
+  // `factory_params_` alive) lives longer than the network::URLLoaders created
   // via the factory (which necessitates being careful with the destruction
   // order of fields of network::cors::CorsURLLoaderFactory which owns both
   // network::URLLoaderFactory and the network::URLLoaders it creates).
@@ -175,7 +175,7 @@ TEST_F(CorsURLLoaderFactoryTest, CleanupWithSharedCacheObjectInUse) {
   test_cors_loader_clients().back()->RunUntilResponseReceived();
 
   // Read only requests will fail synchonously on destruction of the request
-  // they're waiting on if they're in the |done_headers_queue| when the other
+  // they're waiting on if they're in the `done_headers_queue` when the other
   // request fails. Make a large number of such requests, spin the message loop
   // so they end up blocked on the hung request, and then destroy all loads. A
   // large number of loaders is needed because they're stored in a set, indexed

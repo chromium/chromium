@@ -164,9 +164,9 @@ mojom::FetchResponseType CalculateResponseTainting(
 
   // OriginAccessList is in practice used to disable CORS for Chrome Extensions.
   // The extension origin can be found in either:
-  // 1) |isolated_world_origin| (if this is a request from a content
+  // 1) `isolated_world_origin` (if this is a request from a content
   //    script;  in this case there is no point looking at (2) below.
-  // 2) |origin| (if this is a request from an extension
+  // 2) `origin` (if this is a request from an extension
   //    background page or from other extension frames).
   //
   // Note that similar code is present in OriginAccessList::CheckAccessState.
@@ -199,16 +199,16 @@ absl::optional<CorsErrorStatus> CheckRedirectLocation(
     const absl::optional<url::Origin>& origin,
     bool cors_flag,
     bool tainted) {
-  // If |actualResponse|’s location URL’s scheme is not an HTTP(S) scheme,
+  // If `actualResponse`’s location URL’s scheme is not an HTTP(S) scheme,
   // then return a network error.
   // This should be addressed in //net.
 
   // Note: The redirect count check is done elsewhere.
 
   const bool url_has_credentials = url.has_username() || url.has_password();
-  // If |request|’s mode is "cors", |actualResponse|’s location URL includes
-  // credentials, and either |request|’s tainted origin flag is set or
-  // |request|’s origin is not same origin with |actualResponse|’s location
+  // If `request`’s mode is "cors", `actualResponse`’s location URL includes
+  // credentials, and either `request`’s tainted origin flag is set or
+  // `request`’s origin is not same origin with `actualResponse`’s location
   // URL’s origin, then return a network error.
   DCHECK(!IsCorsEnabledRequestMode(request_mode) || origin);
   if (IsCorsEnabledRequestMode(request_mode) && url_has_credentials &&
@@ -216,7 +216,7 @@ absl::optional<CorsErrorStatus> CheckRedirectLocation(
     return CorsErrorStatus(mojom::CorsError::kRedirectContainsCredentials);
   }
 
-  // If CORS flag is set and |actualResponse|’s location URL includes
+  // If CORS flag is set and `actualResponse`’s location URL includes
   // credentials, then return a network error.
   if (cors_flag && url_has_credentials)
     return CorsErrorStatus(mojom::CorsError::kRedirectContainsCredentials);
@@ -316,7 +316,7 @@ CorsURLLoader::CorsURLLoader(
 
 CorsURLLoader::~CorsURLLoader() {
   // Reset pipes first to ignore possible subsequent callback invocations
-  // caused by |network_loader_|
+  // caused by `network_loader_`
   network_client_receiver_.reset();
 }
 
@@ -373,7 +373,7 @@ void CorsURLLoader::FollowRedirect(
     return;
   }
 
-  // Does not allow modifying headers that are stored in |cors_exempt_headers|.
+  // Does not allow modifying headers that are stored in `cors_exempt_headers`.
   for (const auto& header : modified_headers.GetHeaderVector()) {
     if (request_.cors_exempt_headers.HasHeader(header.key)) {
       LOG(WARNING) << "A client is trying to modify header value for '"
@@ -428,12 +428,12 @@ void CorsURLLoader::FollowRedirect(
   const bool original_fetch_cors_flag = fetch_cors_flag_;
   SetCorsFlagIfNeeded();
 
-  // We cannot use FollowRedirect for a request with preflight (i.e., when both
-  // |fetch_cors_flag_| and |NeedsPreflight(request_)| are true).
+  // We cannot use FollowRedirect for a request with preflight (i.e., when
+  // `fetch_cors_flag_` is true and `NeedsPreflight(request_)` is not nullopt).
   //
-  // When |original_fetch_cors_flag| is false, |fetch_cors_flag_| is true and
-  // |NeedsPreflight(request)| is false, the net/ implementation won't attach an
-  // "origin" header on redirect, as the original request didn't have one.
+  // When `original_fetch_cors_flag` is false, `fetch_cors_flag_` is true and
+  // `NeedsPreflight(request)` is nullopt, the net/ implementation won't attach
+  // an "origin" header on redirect, as the original request didn't have one.
   //
   // When the request method is changed (due to 302 status code, for example),
   // the net/ implementation removes the origin header.
@@ -526,7 +526,7 @@ void CorsURLLoader::OnReceiveRedirect(const net::RedirectInfo& redirect_info,
   DCHECK(forwarding_client_);
   DCHECK(!deferred_redirect_url_);
 
-  // If |CORS flag| is set and a CORS check for |request| and |response| returns
+  // If `CORS flag` is set and a CORS check for `request` and `response` returns
   // failure, then return a network error.
   if (fetch_cors_flag_ && IsCorsEnabledRequestMode(request_.mode)) {
     const auto error_status = CheckAccessAndReportMetrics(
@@ -557,8 +557,8 @@ void CorsURLLoader::OnReceiveRedirect(const net::RedirectInfo& redirect_info,
   // implement some logic in
   // https://fetch.spec.whatwg.org/#http-redirect-fetch here.
 
-  // If |request|’s redirect count is twenty, return a network error.
-  // Increase |request|’s redirect count by one.
+  // If `request`’s redirect count is twenty, return a network error.
+  // Increase `request`’s redirect count by one.
   if (redirect_count_++ == 20) {
     HandleComplete(URLLoaderCompletionStatus(net::ERR_TOO_MANY_REDIRECTS));
     return;
@@ -572,17 +572,17 @@ void CorsURLLoader::OnReceiveRedirect(const net::RedirectInfo& redirect_info,
     return;
   }
 
-  // If |actualResponse|’s status is not 303, |request|’s body is non-null, and
-  // |request|’s body’s source is null, then return a network error.
+  // If `actualResponse`’s status is not 303, `request`’s body is non-null, and
+  // `request`’s body’s source is null, then return a network error.
   if (redirect_info.status_code != net::HTTP_SEE_OTHER &&
       network::URLLoader::HasFetchStreamingUploadBody(&request_)) {
     HandleComplete(URLLoaderCompletionStatus(net::ERR_INVALID_ARGUMENT));
     return;
   }
 
-  // If |actualResponse|’s location URL’s origin is not same origin with
-  // |request|’s current url’s origin and |request|’s origin is not same origin
-  // with |request|’s current url’s origin, then set |request|’s tainted origin
+  // If `actualResponse`’s location URL’s origin is not same origin with
+  // `request`’s current url’s origin and `request`’s origin is not same origin
+  // with `request`’s current url’s origin, then set `request`’s tainted origin
   // flag.
   if (request_.request_initiator &&
       (!url::Origin::Create(redirect_info.new_url)
@@ -593,8 +593,8 @@ void CorsURLLoader::OnReceiveRedirect(const net::RedirectInfo& redirect_info,
   }
 
   // TODO(crbug.com/1073353): Implement the following:
-  // If either |actualResponse|’s status is 301 or 302 and |request|’s method is
-  // `POST`, or |actualResponse|’s status is 303, set |request|’s method to
+  // If either `actualResponse`’s status is 301 or 302 and `request`’s method is
+  // `POST`, or `actualResponse`’s status is 303, set `request`’s method to
   // `GET` and request’s body to null, and remove request-body-header name from
   // request's headers. Some of them are implemented in //net, but when we
   // create another request on exceptional redirect cases, such newly created
@@ -603,8 +603,8 @@ void CorsURLLoader::OnReceiveRedirect(const net::RedirectInfo& redirect_info,
   // (https://fetch.spec.whatwg.org/#http-redirect-fetch), step 11.
 
   // TODO(crbug.com/1073353): Implement the following:
-  // Invoke |set request’s referrer policy on redirect| on |request| and
-  // |actualResponse|. See 4.4. HTTP-redirect fetch
+  // Invoke `set request’s referrer policy on redirect` on `request` and
+  // `actualResponse`. See 4.4. HTTP-redirect fetch
   // (https://fetch.spec.whatwg.org/#http-redirect-fetch), step 14.
 
   redirect_info_ = redirect_info;
@@ -656,7 +656,7 @@ void CorsURLLoader::OnComplete(const URLLoaderCompletionStatus& status) {
   DCHECK(network_loader_);
   DCHECK(forwarding_client_);
 
-  // |network_loader_| will call OnComplete at anytime when a problem happens
+  // `network_loader_` will call OnComplete at anytime when a problem happens
   // inside the URLLoader, e.g. on URLLoader::OnMojoDisconnect call. We need
   // to expect it also happens even during redirect handling.
   DCHECK(!deferred_redirect_url_ || status.error_code != net::OK);
@@ -672,10 +672,10 @@ void CorsURLLoader::StartRequest() {
     return;
   }
 
-  // If the |CORS flag| is set, |httpRequest|’s method is neither `GET` nor
-  // `HEAD`, or |httpRequest|’s mode is "websocket", then append
-  // `Origin`/the result of serializing a request origin with |httpRequest|, to
-  // |httpRequest|’s header list.
+  // If the `CORS flag` is set, `httpRequest`’s method is neither `GET` nor
+  // `HEAD`, or `httpRequest`’s mode is "websocket", then append
+  // `Origin`/the result of serializing a request origin with `httpRequest`, to
+  // `httpRequest`’s header list.
   //
   // We exclude navigation requests to keep the existing behavior.
   // TODO(yhirano): Reconsider this.

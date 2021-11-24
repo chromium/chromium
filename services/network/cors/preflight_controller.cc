@@ -158,10 +158,10 @@ std::unique_ptr<ResourceRequest> CreatePreflightRequest(
   preflight_request->headers.SetHeader("Sec-Fetch-Mode", "cors");
 
   if (devtools_request_id) {
-    // Set |enable_load_timing| flag to make URLLoader fill the LoadTimingInfo
+    // Set `enable_load_timing` flag to make URLLoader fill the LoadTimingInfo
     // in URLResponseHead, which will be sent to DevTools.
     preflight_request->enable_load_timing = true;
-    // Set |devtools_request_id| to make URLLoader send the raw request and the
+    // Set `devtools_request_id` to make URLLoader send the raw request and the
     // raw response to DevTools.
     preflight_request->devtools_request_id = devtools_request_id->ToString();
   }
@@ -187,7 +187,7 @@ std::unique_ptr<ResourceRequest> CreatePreflightRequest(
 
 // Performs a CORS access check on the CORS-preflight response parameters.
 // According to the note at https://fetch.spec.whatwg.org/#cors-preflight-fetch
-// step 6, even for a preflight check, |credentials_mode| should be checked on
+// step 6, even for a preflight check, `credentials_mode` should be checked on
 // the actual request rather than preflight one.
 absl::optional<CorsErrorStatus> CheckPreflightAccess(
     const GURL& response_url,
@@ -422,7 +422,7 @@ class PreflightController::PreflightLoader final {
              false);
 
     RemoveFromController();
-    // |this| is deleted here.
+    // `this` is deleted here.
   }
 
   void HandleResponseHeader(const GURL& final_url,
@@ -448,7 +448,7 @@ class PreflightController::PreflightLoader final {
       net_log_.AddEvent(net::NetLogEventType::CORS_PREFLIGHT_RESULT,
                         [&result] { return result->NetLogParams(); });
 
-      // Preflight succeeded. Check |original_request_| with |result|.
+      // Preflight succeeded. Check `original_request_` with `result`.
       DCHECK(!detected_error_status);
       detected_error_status =
           CheckPreflightResult(result.get(), original_request_,
@@ -494,10 +494,10 @@ class PreflightController::PreflightLoader final {
     }
 
     RemoveFromController();
-    // |this| is deleted here.
+    // `this` is deleted here.
   }
 
-  // Removes |this| instance from |controller_|. Once the method returns, |this|
+  // Removes `this` instance from `controller_`. Once the method returns, `this`
   // is already removed.
   void RemoveFromController() { controller_->RemoveLoader(this); }
 

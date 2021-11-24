@@ -46,7 +46,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) PreflightController final {
   using EnforcePrivateNetworkAccessHeader =
       base::StrongAlias<class EnforcePrivateNetworkAccessHeaderTag, bool>;
 
-  // Creates a CORS-preflight ResourceRequest for a specified |request| for a
+  // Creates a CORS-preflight ResourceRequest for a specified `request` for a
   // URL that is originally requested.
   static std::unique_ptr<ResourceRequest> CreatePreflightRequestForTesting(
       const ResourceRequest& request,

@@ -646,7 +646,7 @@ TEST_F(CorsURLLoaderTest, SameOriginWithoutInitiator) {
 TEST_F(CorsURLLoaderTest, NoCorsWithoutInitiator) {
   // This test needs to simulate a factory used from the browser process,
   // because only the browser process may start requests with no
-  // |request_initiator|.  A renderer process would have run into NOTREACHED and
+  // `request_initiator`.  A renderer process would have run into NOTREACHED and
   // mojo::ReportBadMessage via InitiatorLockCompatibility::kNoInitiator case in
   // CorsURLLoaderFactory::IsValidRequest.
   ResetFactory(absl::nullopt /* initiator */, mojom::kBrowserProcessId);
@@ -1694,7 +1694,7 @@ TEST_F(CorsURLLoaderTest, OriginAccessList_IsolatedWorldOrigin_Redirect) {
   const url::Origin isolated_world_origin =
       url::Origin::Create(GURL("http://isolated-world.example.com"));
   const GURL url("http://other.example.com/foo.png");
-  // |new_url| is same-origin as |url| to avoid tainting the response
+  // `new_url` is same-origin as `url` to avoid tainting the response
   // in CorsURLLoader::OnReceiveRedirect.
   const GURL new_url("http://other.example.com/bar.png");
 
@@ -2264,7 +2264,7 @@ TEST_F(CorsURLLoaderTest, SetProxyAuthorizationHeaderOnRedirectFails) {
 TEST_F(CorsURLLoaderTest, SameOriginCredentialsModeWithoutInitiator) {
   // This test needs to simulate a factory used from the browser process,
   // because only the browser process may start requests with no
-  // |request_initiator|.  A renderer process would have run into NOTREACHED and
+  // `request_initiator`.  A renderer process would have run into NOTREACHED and
   // mojo::ReportBadMessage via InitiatorLockCompatibility::kNoInitiator case in
   // CorsURLLoaderFactory::IsValidRequest.
   ResetFactory(absl::nullopt /* initiator */, mojom::kBrowserProcessId);
@@ -2337,7 +2337,7 @@ TEST_F(CorsURLLoaderTest, OmitCredentialsModeOnNavigation) {
           "CorsURLLoaderFactory: unsupported credentials mode on navigation"));
 }
 
-// Make sure than when a request is failed due to having |trusted_params| set
+// Make sure than when a request is failed due to having `trusted_params` set
 // and being sent to an untrusted URLLoaderFactory, no CORS request is made.
 TEST_F(CorsURLLoaderTest, TrustedParamsWithUntrustedFactoryFailsBeforeCORS) {
   url::Origin initiator = url::Origin::Create(GURL("https://example.com"));
@@ -2410,7 +2410,7 @@ TEST_F(CorsURLLoaderTest, RestrictedPrefetchSucceedsWithNIK) {
   request.load_flags |= net::LOAD_RESTRICTED_PREFETCH;
   request.trusted_params = ResourceRequest::TrustedParams();
 
-  // Fill up the |trusted_params| NetworkIsolationKey member.
+  // Fill up the `trusted_params` NetworkIsolationKey member.
   url::Origin request_origin = url::Origin::Create(request.url);
   request.trusted_params->isolation_info = net::IsolationInfo::Create(
       net::IsolationInfo::RequestType::kOther, request_origin, request_origin,
@@ -2435,7 +2435,7 @@ TEST_F(CorsURLLoaderTest, RestrictedPrefetchSucceedsWithNIK) {
 // Test that when a request has LOAD_RESTRICTED_PREFETCH but no
 // NetworkIsolationKey, CorsURLLoaderFactory rejects the request. This is
 // because the LOAD_RESTRICTED_PREFETCH flag must only appear on requests that
-// make use of their TrustedParams' |isolation_info|.
+// make use of their TrustedParams' `isolation_info`.
 TEST_F(CorsURLLoaderTest, RestrictedPrefetchFailsWithoutNIK) {
   url::Origin initiator = url::Origin::Create(GURL("https://example.com"));
 

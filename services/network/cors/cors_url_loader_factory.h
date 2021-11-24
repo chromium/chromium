@@ -44,12 +44,12 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CorsURLLoaderFactory final
     allow_external_preflights_for_testing_ = allow;
   }
 
-  // Check if members in |headers| are permitted by |allowed_exempt_headers|.
+  // Check if members in `headers` are permitted by `allowed_exempt_headers`.
   static bool IsValidCorsExemptHeaders(
       const base::flat_set<std::string>& allowed_exempt_headers,
       const net::HttpRequestHeaders& headers);
 
-  // |origin_access_list| should always outlive this factory instance.
+  // `origin_access_list` should always outlive this factory instance.
   // Used by network::NetworkContext.
   CorsURLLoaderFactory(
       NetworkContext* context,
@@ -106,11 +106,11 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CorsURLLoaderFactory final
   mojo::ReceiverSet<mojom::URLLoaderFactory> receivers_;
 
   // Used when constructed by NetworkContext.
-  // The NetworkContext owns |this|.
+  // The NetworkContext owns `this`.
   NetworkContext* const context_ = nullptr;
   scoped_refptr<ResourceSchedulerClient> resource_scheduler_client_;
 
-  // If false, ResourceRequests cannot have their |trusted_params| fields set.
+  // If false, ResourceRequests cannot have their `trusted_params` fields set.
   bool is_trusted_;
 
   // Retained from URLLoaderFactoryParams:
@@ -126,7 +126,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CorsURLLoaderFactory final
   const absl::optional<mojom::PrivateNetworkRequestPolicy>
       private_network_request_policy_;
 
-  // Relative order of |network_loader_factory_| and |loaders_| matters -
+  // Relative order of `network_loader_factory_` and `loaders_` matters -
   // URLLoaderFactory needs to live longer than URLLoaders created using the
   // factory.  See also https://crbug.com/906305.
   std::unique_ptr<network::URLLoaderFactory> network_loader_factory_;
@@ -137,7 +137,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CorsURLLoaderFactory final
   std::set<std::unique_ptr<mojom::URLLoader>, base::UniquePtrComparator>
       loaders_;
 
-  // Accessed by instances in |loaders_| too. Since the factory outlives them,
+  // Accessed by instances in `loaders_` too. Since the factory outlives them,
   // it's safe.
   const OriginAccessList* const origin_access_list_;
 
