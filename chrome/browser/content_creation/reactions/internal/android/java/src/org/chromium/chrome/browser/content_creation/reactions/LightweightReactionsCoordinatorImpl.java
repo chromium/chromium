@@ -32,6 +32,7 @@ import org.chromium.components.content_creation.reactions.ReactionService;
 import org.chromium.components.image_fetcher.ImageFetcher;
 import org.chromium.components.image_fetcher.ImageFetcherConfig;
 import org.chromium.components.image_fetcher.ImageFetcherFactory;
+import org.chromium.ui.widget.Toast;
 
 import java.text.DateFormat;
 import java.util.ArrayList;
@@ -57,12 +58,14 @@ public class LightweightReactionsCoordinatorImpl extends BaseScreenshotCoordinat
     private Bitmap[] mThumbnails;
     private ToolbarCoordinator mToolbarCoordinator;
 
-    private boolean mDialogViewCreated;
+    private boolean mScreenshotReady;
     private boolean mAssetsFetched;
 
     private long mDialogOpenedTime;
     private long mAssetFetchStartTime;
     private long mGenerationStartTime;
+
+    private Toast mToast;
 
     /**
      * Constructs a new LightweightReactionsCoordinatorImpl which initializes and displays the
@@ -79,7 +82,7 @@ public class LightweightReactionsCoordinatorImpl extends BaseScreenshotCoordinat
             ChromeOptionShareCallback chromeOptionShareCallback,
             BottomSheetController sheetController, ReactionService reactionService) {
         super(activity, tab, shareUrl, chromeOptionShareCallback, sheetController);
-        mDialogViewCreated = false;
+        mScreenshotReady = false;
         mAssetsFetched = false;
         mFragmentManager = ((FragmentActivity) activity).getSupportFragmentManager();
         mReactionService = reactionService;
@@ -93,23 +96,12 @@ public class LightweightReactionsCoordinatorImpl extends BaseScreenshotCoordinat
         mSceneCoordinator = new SceneCoordinator(activity, mMediator);
 
         mReactionService.getReactions((reactions) -> {
+            assert reactions != null;
             assert reactions.size() > 0;
             mAvailableReactions = reactions;
             mAssetFetchStartTime = System.currentTimeMillis();
             mMediator.fetchAssetsAndGetThumbnails(reactions, this::onAssetsFetched);
         });
-    }
-
-    /**
-     * Creates the toolbar coordinator after the root dialog view is ready, then attempts to finish
-     * the initialization of the feature.
-     * @param view The root {@link View} of the dialog.
-     */
-    private void onViewCreated(View view) {
-        mDialogViewCreated = true;
-        mToolbarCoordinator = new ToolbarCoordinator(view, this, mSceneCoordinator);
-        mSceneCoordinator.addReactionInDefaultLocation(mAvailableReactions.get(0));
-        maybeFinishInitialization();
     }
 
     /**
@@ -119,32 +111,36 @@ public class LightweightReactionsCoordinatorImpl extends BaseScreenshotCoordinat
      *                   {@code mAvailableReactions}.
      */
     private void onAssetsFetched(Bitmap[] thumbnails) {
-        assert thumbnails != null;
-        assert thumbnails.length == mAvailableReactions.size();
-
-        // TODO(crbug.com/1268474): Detect asset fetch errors, and don't record a success in that
-        // case
+        boolean success = thumbnails != null && thumbnails.length == mAvailableReactions.size();
         LightweightReactionsMetrics.recordAssetsFetched(
-                /*success=*/true, System.currentTimeMillis() - mAssetFetchStartTime);
-
-        mAssetsFetched = true;
-        mThumbnails = thumbnails;
-        maybeFinishInitialization();
+                success, System.currentTimeMillis() - mAssetFetchStartTime);
+        if (success) {
+            mAssetsFetched = true;
+            mThumbnails = thumbnails;
+            maybeFinishInitialization();
+        } else {
+            showErrorToast(mActivity.getString(R.string.lightweight_reactions_error_asset_fetch));
+        }
     }
 
     /**
-     * Performs the remaining initialization for the feature, namely creating the toolbar carousel
-     * for the reactions, hooking up the remaining event handlers, and dismissing the loading view.
+     * Initializes the scene and the toolbar, and shows the Lightweight Reactions dialog.
      *
-     * <p><b>Note:</b> The dialog view must be ready and the assets must have been fetched. If
-     * either is missing, this is a no-op.
+     * <p><b>Note:</b> The screenshot must be ready and the assets must have been fetched. If either
+     * is missing or had errors, this is a no-op.
      */
     private void maybeFinishInitialization() {
-        if (!mDialogViewCreated || !mAssetsFetched) {
+        if (!mScreenshotReady || !mAssetsFetched) {
             // Wait until both operations have completed.
             return;
         }
-        mToolbarCoordinator.initReactions(mAvailableReactions, mThumbnails);
+
+        mDialog.init(mScreenshot, mSceneCoordinator, (View view) -> {
+            mToolbarCoordinator = new ToolbarCoordinator(view, this, mSceneCoordinator);
+            mToolbarCoordinator.initReactions(mAvailableReactions, mThumbnails);
+            mSceneCoordinator.addReactionInDefaultLocation(mAvailableReactions.get(0));
+        });
+        showDialog();
     }
 
     /**
@@ -183,20 +179,31 @@ public class LightweightReactionsCoordinatorImpl extends BaseScreenshotCoordinat
         return System.currentTimeMillis() - mDialogOpenedTime;
     }
 
+    private void showErrorToast(String toastMessage) {
+        if (mToast != null) {
+            mToast.cancel();
+        }
+        mToast = Toast.makeText(mActivity, toastMessage, Toast.LENGTH_SHORT);
+        mToast.show();
+    }
+
     // LightweightReactionsCoordinator implementation.
     @Override
     public void showDialog() {
         mDialogOpenedTime = System.currentTimeMillis();
         LightweightReactionsMetrics.recordDialogOpened();
-
         mDialog.show(mFragmentManager, /*tag=*/null);
     }
 
     // BaseScreenshotCoordinator implementation.
     @Override
     protected void handleScreenshot() {
-        mDialog.init(mScreenshot, mSceneCoordinator, this::onViewCreated);
-        showDialog();
+        if (mScreenshot == null) {
+            showErrorToast(mActivity.getString(R.string.lightweight_reactions_error_screenshot));
+            return;
+        }
+        mScreenshotReady = true;
+        maybeFinishInitialization();
     }
 
     // ToolbarControlsDelegate implementation.

@@ -25,14 +25,18 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
-<histogram name="LightweightReactions.AssetsFetchDuration" units="ms"
+<histogram name="LightweightReactions.AssetsFetchDuration.{Outcome}" units="ms"
     expires_after="2022-07-31">
   <owner>gujen@google.com</owner>
   <owner>chrome-creation@google.com</owner>
   <summary>
     Records the amount of time taken to download all assets during dialog
-    initialization.
+    initialization, for the case where {Outcome}.
   </summary>
+  <token key="Outcome">
+    <variant name="Failure" summary="the download failed."/>
+    <variant name="Success" summary="the download succeeded."/>
+  </token>
 </histogram>
 
 <histogram name="LightweightReactions.AssetsFetchSuccess" enum="BooleanSuccess"

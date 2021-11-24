@@ -63,7 +63,8 @@ public final class LightweightReactionsMetrics {
     public static void recordAssetsFetched(boolean success, long fetchDuration) {
         RecordHistogram.recordBooleanHistogram("LightweightReactions.AssetsFetchSuccess", success);
         RecordHistogram.recordMediumTimesHistogram(
-                "LightweightReactions.AssetsFetchDuration", fetchDuration);
+                "LightweightReactions.AssetsFetchDuration." + (success ? "Success" : "Failure"),
+                fetchDuration);
     }
 
     /**
