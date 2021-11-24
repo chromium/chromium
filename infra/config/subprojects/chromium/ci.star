@@ -1567,7 +1567,6 @@ ci.chromium_builder(
                         "MEIPreload/preloaded_data.pb",
                         "nacl_helper",
                         "nacl_helper_bootstrap",
-                        "nacl_helper_nonsfi",
                         "nacl_irt_x86_64.nexe",
                         "product_logo_48.png",
                         "resources.pak",

@@ -15,10 +15,10 @@ declare_args() {
       !is_chromecast && current_cpu != "mipsel" && current_cpu != "mips64el" &&
       target_cpu != "arm64" && !(is_win && host_os != "win") &&
       !(is_mac && (host_os != "mac" || target_cpu != "x64"))
-
-  # Non-SFI is not yet supported on mipsel
-  enable_nacl_nonsfi = current_cpu != "mipsel" && current_cpu != "mips64el"
 }
+
+# TODO(crbug.com/1273132): Remove all code referenced by this.
+enable_nacl_nonsfi = false
 
 assert(!(is_win && host_os != "win") || !enable_nacl,
        "NaCl doesn't work in win cross builds, crbug.com/774186")

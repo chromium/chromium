@@ -2138,11 +2138,6 @@
       }
     },
   },
-  'nacl_helper_nonsfi_unittests': {
-    'remove_from': [
-      'Linux TSan Tests',  # Sets enable_nacl=false.
-    ],
-  },
   'nacl_loader_unittests': {
     'remove_from': [
       'ToTMacASan',  # The mac asan tot bot sets enable_nacl=false

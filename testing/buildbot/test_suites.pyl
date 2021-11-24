@@ -1033,7 +1033,6 @@
     'chromium_gtests_for_linux_and_chromeos_only': {
       'dbus_unittests': {},
       'mojo_core_unittests': {},
-      'nacl_helper_nonsfi_unittests': {},
     },
 
     'chromium_gtests_for_linux_and_mac_only': {
