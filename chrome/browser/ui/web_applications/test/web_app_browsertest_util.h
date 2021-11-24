@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_WEB_APPLICATIONS_TEST_WEB_APP_BROWSERTEST_UTIL_H_
 #define CHROME_BROWSER_UI_WEB_APPLICATIONS_TEST_WEB_APP_BROWSERTEST_UTIL_H_
 
+#include "chrome/browser/ui/browser_list_observer.h"
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_application_info.h"
 #include "url/gurl.h"
@@ -74,8 +75,6 @@ Browser* FindWebAppBrowser(Profile* profile, const AppId& app_id);
 
 void CloseAndWait(Browser* browser);
 
-void WaitForBrowserToBeClosed(Browser* browser);
-
 bool IsBrowserOpen(const Browser* test_browser);
 
 void UninstallWebApp(Profile* profile, const AppId& app_id);
@@ -84,6 +83,31 @@ using UninstallWebAppCallback = base::OnceCallback<void(bool uninstalled)>;
 void UninstallWebAppWithCallback(Profile* profile,
                                  const AppId& app_id,
                                  UninstallWebAppCallback callback);
+
+// Helper class that lets you await one Browser added and one Browser removed
+// event. Optionally filters to a specific Browser with |filter|. Useful for
+// closing the web app window that appears after installation from page.
+class BrowserWaiter : public BrowserListObserver {
+ public:
+  explicit BrowserWaiter(Browser* filter = nullptr);
+  ~BrowserWaiter() override;
+
+  Browser* AwaitAdded();
+  Browser* AwaitRemoved();
+
+  // BrowserListObserver:
+  void OnBrowserAdded(Browser* browser) override;
+  void OnBrowserRemoved(Browser* browser) override;
+
+ private:
+  Browser* const filter_ = nullptr;
+
+  base::RunLoop added_run_loop_;
+  Browser* added_browser_ = nullptr;
+
+  base::RunLoop removed_run_loop_;
+  Browser* removed_browser_ = nullptr;
+};
 
 }  // namespace web_app
 

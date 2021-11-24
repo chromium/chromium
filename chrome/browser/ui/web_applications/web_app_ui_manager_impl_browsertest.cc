@@ -132,7 +132,7 @@ IN_PROC_BROWSER_TEST_F(WebAppUiManagerImplBrowserTest,
         run_loop.Quit();
       }));
   run_loop.Run();
-  web_app::WaitForBrowserToBeClosed(app_browser);
+  web_app::BrowserWaiter(app_browser).AwaitRemoved();
 
   EXPECT_EQ(0u, BrowserList::GetInstance()->size());
 }

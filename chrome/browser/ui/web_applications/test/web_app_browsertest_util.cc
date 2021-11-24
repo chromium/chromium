@@ -22,7 +22,6 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
-#include "chrome/browser/ui/browser_list_observer.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -69,34 +68,6 @@ using ui_test_utils::BrowserChangeObserver;
 namespace web_app {
 
 namespace {
-
-// Waits for |browser| to be removed from BrowserList and then calls |callback|.
-class BrowserRemovedWaiter final : public BrowserListObserver {
- public:
-  explicit BrowserRemovedWaiter(Browser* browser) : browser_(browser) {}
-  ~BrowserRemovedWaiter() override = default;
-
-  void Wait() {
-    BrowserList::AddObserver(this);
-    run_loop_.Run();
-  }
-
-  // BrowserListObserver
-  void OnBrowserRemoved(Browser* browser) override {
-    if (browser != browser_)
-      return;
-
-    BrowserList::RemoveObserver(this);
-    // Post a task to ensure the Remove event has been dispatched to all
-    // observers.
-    base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE,
-                                                  run_loop_.QuitClosure());
-  }
-
- private:
-  Browser* browser_;
-  base::RunLoop run_loop_;
-};
 
 void AutoAcceptDialogCallback(
     content::WebContents* initiator_web_contents,
@@ -343,14 +314,9 @@ Browser* FindWebAppBrowser(Profile* profile, const AppId& app_id) {
 }
 
 void CloseAndWait(Browser* browser) {
-  BrowserRemovedWaiter waiter(browser);
+  BrowserWaiter waiter(browser);
   browser->window()->Close();
-  waiter.Wait();
-}
-
-void WaitForBrowserToBeClosed(Browser* browser) {
-  BrowserRemovedWaiter waiter(browser);
-  waiter.Wait();
+  waiter.AwaitRemoved();
 }
 
 bool IsBrowserOpen(const Browser* test_browser) {
@@ -377,6 +343,37 @@ void UninstallWebAppWithCallback(Profile* profile,
   DCHECK(provider->install_finalizer().CanUserUninstallWebApp(app_id));
   provider->install_finalizer().UninstallWebApp(
       app_id, webapps::WebappUninstallSource::kAppMenu, std::move(callback));
+}
+
+BrowserWaiter::BrowserWaiter(Browser* filter) : filter_(filter) {
+  BrowserList::AddObserver(this);
+}
+
+BrowserWaiter::~BrowserWaiter() {
+  BrowserList::RemoveObserver(this);
+}
+
+Browser* BrowserWaiter::AwaitAdded() {
+  added_run_loop_.Run();
+  return added_browser_;
+}
+
+Browser* BrowserWaiter::AwaitRemoved() {
+  removed_run_loop_.Run();
+  return removed_browser_;
+}
+
+void BrowserWaiter::OnBrowserAdded(Browser* browser) {
+  if (filter_ && browser != filter_)
+    return;
+  added_browser_ = browser;
+  added_run_loop_.Quit();
+}
+void BrowserWaiter::OnBrowserRemoved(Browser* browser) {
+  if (filter_ && browser != filter_)
+    return;
+  removed_browser_ = browser;
+  removed_run_loop_.Quit();
 }
 
 }  // namespace web_app
