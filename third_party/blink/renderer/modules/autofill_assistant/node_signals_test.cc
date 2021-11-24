@@ -76,4 +76,99 @@ TEST_F(NodeSignalsTest, PiercesClosedShadowDom) {
   EXPECT_EQ(results.size(), 1u);
 }
 
+TEST_F(NodeSignalsTest, AssignsTagNames) {
+  SetBodyContent(R"(<input><select></select><textarea></textarea>)");
+
+  WebVector<AutofillAssistantNodeSignals> results =
+      GetAutofillAssistantNodeSignals(WebDocument(&GetDocument()));
+  ASSERT_EQ(results.size(), 3u);
+
+  EXPECT_EQ(results[0].node_features.html_tag, "INPUT");
+  EXPECT_EQ(results[1].node_features.html_tag, "SELECT");
+  EXPECT_EQ(results[2].node_features.html_tag, "TEXTAREA");
+}
+
+TEST_F(NodeSignalsTest, IgnoresNonVisibleElements) {
+  SetBodyContent(R"(<input style="display: none;">)");
+  EXPECT_EQ(GetAutofillAssistantNodeSignals(WebDocument(&GetDocument())).size(),
+            0u);
+
+  SetBodyContent(R"(<input style="visibility: hidden;">)");
+  EXPECT_EQ(GetAutofillAssistantNodeSignals(WebDocument(&GetDocument())).size(),
+            0u);
+
+  SetBodyContent(R"(
+    <input style="height: 0; line-height: 0; padding: 0; border: none;">)");
+  EXPECT_EQ(GetAutofillAssistantNodeSignals(WebDocument(&GetDocument())).size(),
+            0u);
+
+  // An element outside of the visible viewport should still be returned.
+  SetBodyContent(
+      R"(<input style="position: absolute; left: -1000px; top: -1000px;">)");
+  EXPECT_EQ(GetAutofillAssistantNodeSignals(WebDocument(&GetDocument())).size(),
+            1u);
+}
+
+TEST_F(NodeSignalsTest, CollectsAriaAttributes) {
+  SetBodyContent(R"(
+    <input aria-label="label" aria-description="description"
+      aria-placeholder="placeholder">
+    <input>)");
+
+  WebVector<AutofillAssistantNodeSignals> results =
+      GetAutofillAssistantNodeSignals(WebDocument(&GetDocument()));
+  ASSERT_EQ(results.size(), 2u);
+
+  EXPECT_EQ(results[0].node_features.aria, "label description placeholder");
+  EXPECT_EQ(results[1].node_features.aria, "");
+}
+
+TEST_F(NodeSignalsTest, CollectsInvisibleAttributes) {
+  SetBodyContent(R"(
+    <input name="name" title="title" label="label" pattern="pattern">
+    <input>)");
+
+  WebVector<AutofillAssistantNodeSignals> results =
+      GetAutofillAssistantNodeSignals(WebDocument(&GetDocument()));
+  ASSERT_EQ(results.size(), 2u);
+
+  EXPECT_EQ(results[0].node_features.invisible_attributes,
+            "name title label pattern");
+  EXPECT_EQ(results[1].node_features.invisible_attributes, "");
+}
+
+TEST_F(NodeSignalsTest, AssignsType) {
+  SetBodyContent(R"(<input type="text">)");
+
+  WebVector<AutofillAssistantNodeSignals> results =
+      GetAutofillAssistantNodeSignals(WebDocument(&GetDocument()));
+  ASSERT_EQ(results.size(), 1u);
+
+  EXPECT_EQ(results[0].node_features.type, "text");
+}
+
+TEST_F(NodeSignalsTest, CollectInnerText) {
+  SetBodyContent(R"(
+    <input placeholder="placeholder">
+    <input readonly value="value">
+    <input value="value">
+    <select><option>A</option><option>B</option></select>)");
+
+  WebVector<AutofillAssistantNodeSignals> results =
+      GetAutofillAssistantNodeSignals(WebDocument(&GetDocument()));
+  ASSERT_EQ(results.size(), 4u);
+
+  ASSERT_EQ(results[0].node_features.text.size(), 1u);
+  EXPECT_EQ(results[0].node_features.text[0], "placeholder");
+
+  ASSERT_EQ(results[1].node_features.text.size(), 1u);
+  EXPECT_EQ(results[1].node_features.text[0], "value");
+
+  ASSERT_EQ(results[2].node_features.text.size(), 0u);
+
+  ASSERT_EQ(results[3].node_features.text.size(), 2u);
+  EXPECT_EQ(results[3].node_features.text[0], "A");
+  EXPECT_EQ(results[3].node_features.text[1], "B");
+}
+
 }  // namespace blink
