@@ -63,10 +63,12 @@ ProfilePickerDiceSignInProvider::~ProfilePickerDiceSignInProvider() {
   // called yet).
   if (callback_) {
     contents()->SetDelegate(nullptr);
-    // TODO(crbug.com/1227699): Schedule the profile for deletion here, it's not
-    // needed any more. This triggers a crash if the browser is shutting down
-    // completely. Figure a way how to delete the profile only if that does not
-    // compete with a shutdown.
+
+    // Schedule the profile for deletion, it's not needed any more.
+    if (IsInitialized()) {
+      g_browser_process->profile_manager()->ScheduleEphemeralProfileForDeletion(
+          profile_->GetPath());
+    }
 
     ProfileMetrics::LogProfileAddSignInFlowOutcome(
         ProfileMetrics::ProfileAddSignInFlowOutcome::kAbortedBeforeSignIn);

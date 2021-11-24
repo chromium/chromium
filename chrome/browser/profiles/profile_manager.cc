@@ -416,7 +416,7 @@ void OnProfileLoaded(ProfileManager::ProfileLoadedCallback& client_callback,
 }
 
 #if !defined(OS_ANDROID)
-// Helper function for ScheduleForcedEphemeralProfileForDeletion.
+// Helper function for `ScheduleEphemeralProfileForDeletion()`.
 bool IsRegisteredAsEphemeral(ProfileAttributesStorage* storage,
                              const base::FilePath& profile_dir) {
   ProfileAttributesEntry* entry =
@@ -1074,6 +1074,25 @@ void ProfileManager::ScheduleProfileForDeletion(
   } else {
     EnsureActiveProfileExistsBeforeDeletion(std::move(callback), profile_dir);
   }
+}
+
+void ProfileManager::ScheduleEphemeralProfileForDeletion(
+    const base::FilePath& profile_dir) {
+  DCHECK_EQ(0u, chrome::GetBrowserCount(GetProfileByPath(profile_dir)));
+  DCHECK(IsRegisteredAsEphemeral(&GetProfileAttributesStorage(), profile_dir));
+
+  absl::optional<base::FilePath> new_active_profile_dir =
+      FindLastActiveProfile(base::BindRepeating(
+          [](const base::FilePath& profile_dir, ProfileAttributesEntry* entry) {
+            return entry->GetPath() != profile_dir;
+          },
+          profile_dir));
+  if (!new_active_profile_dir.has_value())
+    new_active_profile_dir = GenerateNextProfileDirectoryPath();
+  DCHECK(!new_active_profile_dir->empty());
+  RemoveFromLastActiveProfilesPrefList(profile_dir);
+
+  FinishDeletingProfile(profile_dir, new_active_profile_dir.value());
 }
 #endif  // !defined(OS_ANDROID)
 
@@ -2278,7 +2297,7 @@ void ProfileManager::OnBrowserClosed(Browser* browser) {
       return;
     }
     // Delete if the profile is an ephemeral profile.
-    ScheduleForcedEphemeralProfileForDeletion(path);
+    ScheduleEphemeralProfileForDeletion(path);
   } else if (!profile->IsOffTheRecord()) {
     auto* browsing_data_lifetime_manager =
         ChromeBrowsingDataLifetimeManagerFactory::GetForProfile(
@@ -2377,25 +2396,6 @@ void ProfileManager::OnNewActiveProfileLoaded(
 
   FinishDeletingProfile(profile_to_delete_path, new_active_profile_path);
   std::move(*callback).Run(loaded_profile);
-}
-
-void ProfileManager::ScheduleForcedEphemeralProfileForDeletion(
-    const base::FilePath& profile_dir) {
-  DCHECK_EQ(0u, chrome::GetBrowserCount(GetProfileByPath(profile_dir)));
-  DCHECK(IsRegisteredAsEphemeral(&GetProfileAttributesStorage(), profile_dir));
-
-  absl::optional<base::FilePath> new_active_profile_dir =
-      FindLastActiveProfile(base::BindRepeating(
-          [](const base::FilePath& profile_dir, ProfileAttributesEntry* entry) {
-            return entry->GetPath() != profile_dir;
-          },
-          profile_dir));
-  if (!new_active_profile_dir.has_value())
-    new_active_profile_dir = GenerateNextProfileDirectoryPath();
-  DCHECK(!new_active_profile_dir->empty());
-  RemoveFromLastActiveProfilesPrefList(profile_dir);
-
-  FinishDeletingProfile(profile_dir, new_active_profile_dir.value());
 }
 
 void ProfileManager::OnClosingAllBrowsersChanged(bool closing) {
