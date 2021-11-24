@@ -66,16 +66,6 @@ const char kAutofillUseRendererIDsDescription[] =
     "When enabled, Autofill logic uses unique numeric renderer IDs instead "
     "of string form and field identifiers in form filling logic.";
 
-extern const char kLogBreadcrumbsName[] = "Log Breadcrumb Events";
-extern const char kLogBreadcrumbsDescription[] =
-    "When enabled, breadcrumb events will be logged.";
-
-const char kSyntheticCrashReportsForUteName[] =
-    "Generate synthetic crash reports for UTE";
-const char kSyntheticCrashReportsForUteDescription[] =
-    "When enabled the app will create synthetic crash report when chrome "
-    "starts up after Unexplained Termination Event (UTE).";
-
 const char kBreakpadNoDelayInitialUploadName[] =
     "Remove delay on initial crash upload";
 const char kBreakpadNoDelayInitialUploadDescription[] =
@@ -109,12 +99,6 @@ const char kDcheckIsFatalDescription[] =
     "By default Chrome will evaluate in this build, but only log failures, "
     "rather than crashing. If enabled, DCHECKs will crash the calling process.";
 #endif  // defined(DCHECK_IS_CONFIGURABLE)
-
-const char kUseDefaultUserAgentInWebClientName[] =
-    "[Refactoring] Let the client choose default mode";
-const char kUseDefaultUserAgentInWebClientDescription[] =
-    "When enabled, the web client will choose the default mode. It is a "
-    "refactoring, no visible impact.";
 
 const char kDefaultBrowserFullscreenPromoExperimentName[] =
     "Default Browser Fullscreen modal experiment";
@@ -218,6 +202,10 @@ const char kEnableManualPasswordGenerationDescription[] =
     "Enable UI that allows to generate a strong password for any password "
     "field";
 
+const char kEnableNewDownloadAPIName[] = "Enable new download API";
+const char kEnableNewDownloadAPIDescription[] =
+    "Enable new download API (restricted to iOS 15.0+).";
+
 const char kEnableOptimizationGuideName[] = "Enable optimization guide";
 const char kEnableOptimizationGuideDescription[] =
     "Enables the optimization guide to provide intelligence for page loads.";
@@ -244,11 +232,6 @@ const char kEnableWebChannelsName[] = "Enable Web Channels";
 const char kEnableWebChannelsDescription[] =
     "Enable folowing content from web and display Following feed on NTP based "
     "on websites that users followed.";
-
-const char kIOSEnablePasswordManagerBrandingUpdateName[] =
-    "Enable new Google Password Manager branding";
-const char kIOSEnablePasswordManagerBrandingUpdateDescription[] =
-    "Updates icons, strings, and views for Google Password Manager.";
 
 const char kExpandedTabStripName[] = "Enable expanded tabstrip";
 const char kExpandedTabStripDescription[] =
@@ -306,6 +289,11 @@ const char kInProductHelpDemoModeDescription[] =
     "an individual promotion causes that promotion but no other promotions to "
     "occur.";
 
+const char kIOSEnablePasswordManagerBrandingUpdateName[] =
+    "Enable new Google Password Manager branding";
+const char kIOSEnablePasswordManagerBrandingUpdateDescription[] =
+    "Updates icons, strings, and views for Google Password Manager.";
+
 const char kIOSPersistCrashRestoreName[] = "Persist Crash Restore Infobar";
 const char kIOSPersistCrashRestoreDescription[] =
     "When enabled, the Crash Restore Infobar will persist through navigations "
@@ -334,10 +322,18 @@ const char kSharedHighlightingUseBlocklistIOSDescription[] =
     "restrictions make it unlikely that a URL can be generated and actually "
     "work when shared.";
 
+const char kLazilyCreateWebStateOnRestorationName[] = "Unrealized WebStates";
+const char kLazilyCreateWebStateOnRestorationDescription[] =
+    "Create WebState in unrealized state upon session restoration.";
+
 const char kLockBottomToolbarName[] = "Lock bottom toolbar";
 const char kLockBottomToolbarDescription[] =
     "When enabled, the bottom toolbar will not get collapsed when scrolling "
     "into fullscreen mode.";
+
+const char kLogBreadcrumbsName[] = "Log Breadcrumb Events";
+const char kLogBreadcrumbsDescription[] =
+    "When enabled, breadcrumb events will be logged.";
 
 const char kMetrickitCrashReportName[] = "Metrickit crash reports";
 const char kMetrickitCrashReportDescription[] =
@@ -410,9 +406,15 @@ const char kReadingListTimeToReadDescription[] =
     "When enabled, a Time to Read estimate is added to each Reading List "
     "entry.";
 
-extern const char kRemoveExcessNTPsExperimentName[] =
-    "Remove extra New Tab Pages";
-extern const char kRemoveExcessNTPsExperimentDescription[] =
+const char kRecordSnapshotSizeName[] =
+    "Record the size of image and PDF snapshots in UMA histograms";
+const char kRecordSnapshotSizeDescription[] =
+    "When enabled, the app will record UMA histograms for image and PDF "
+    "snapshots. PDF snaphot will be taken just for the purpose of the "
+    "histogram recording.";
+
+const char kRemoveExcessNTPsExperimentName[] = "Remove extra New Tab Pages";
+const char kRemoveExcessNTPsExperimentDescription[] =
     "When enabled, extra tabs with the New Tab Page open and no navigation "
     "history will be removed.";
 
@@ -462,6 +464,10 @@ const char kSharedHighlightingIOSDescription[] =
     "Adds a Link to Text option in the Edit Menu which generates URLs with a "
     "text fragment.";
 
+const char kSingleNtpName[] = "Enable Single NTP";
+const char kSingleNtpDescription[] =
+    "When enabled, uses one NTP for all tabs in a Browser";
+
 const char kShowAutofillTypePredictionsName[] = "Show Autofill predictions";
 const char kShowAutofillTypePredictionsDescription[] =
     "Annotates web forms with Autofill field type predictions as placeholder "
@@ -476,6 +482,12 @@ const char kSynthesizedRestoreSessionName[] =
 const char kSynthesizedRestoreSessionDescription[] =
     "Enable instant session restoration by synthesizing WKWebView session "
     "restoration data (iOS15 only).";
+
+const char kSyntheticCrashReportsForUteName[] =
+    "Generate synthetic crash reports for UTE";
+const char kSyntheticCrashReportsForUteDescription[] =
+    "When enabled the app will create synthetic crash report when chrome "
+    "starts up after Unexplained Termination Event (UTE).";
 
 const char kSyncTrustedVaultPassphraseiOSRPCName[] =
     "Enable RPC for sync trusted vault passphrase.";
@@ -506,8 +518,8 @@ const char kTabsBulkActionsDescription[] =
     "Enables the selection mode in the Tab grid where users can perform "
     "actions on multiple tabs at once for iOS 13 and above.";
 
-extern const char kTabsSearchName[] = "Enable Tabs Search";
-extern const char kTabsSearchDescription[] =
+const char kTabsSearchName[] = "Enable Tabs Search";
+const char kTabsSearchDescription[] =
     "Enables the search mode in the Tab grid where users can search open tabs "
     "or recent tabs.";
 
@@ -527,6 +539,12 @@ const char kURLBlocklistIOSDescription[] =
     "When enabled, URLs can be blocked/allowed by the URLBlocklist/URLAllowlist"
     "enterprise policies.";
 
+const char kUseDefaultUserAgentInWebClientName[] =
+    "[Refactoring] Let the client choose default mode";
+const char kUseDefaultUserAgentInWebClientDescription[] =
+    "When enabled, the web client will choose the default mode. It is a "
+    "refactoring, no visible impact.";
+
 const char kUseLensToSearchForImageName[] =
     "Use Google Lens to Search for images";
 const char kUseLensToSearchForImageDescription[] =
@@ -542,14 +560,6 @@ const char kWaitThresholdMillisecondsForCapabilitiesApiDescription[] =
 const char kWalletServiceUseSandboxName[] = "Use Google Payments sandbox";
 const char kWalletServiceUseSandboxDescription[] =
     "Uses the sandbox service for Google Payments API calls.";
-
-const char kEnableNewDownloadAPIName[] = "Enable new download API";
-const char kEnableNewDownloadAPIDescription[] =
-    "Enable new download API (restricted to iOS 15.0+).";
-
-const char kLazilyCreateWebStateOnRestorationName[] = "Unrealized WebStates";
-const char kLazilyCreateWebStateOnRestorationDescription[] =
-    "Create WebState in unrealized state upon session restoration.";
 
 const char kWebPageDefaultZoomFromDynamicTypeName[] =
     "Use dynamic type size for default text zoom level";
@@ -573,17 +583,6 @@ const char kWebViewNativeContextMenuPhase2Name[] =
 const char kWebViewNativeContextMenuPhase2Description[] =
     "When enabled, the context menu displayed when long pressing on a link or "
     "an image has a non-live preview.";
-
-const char kRecordSnapshotSizeName[] =
-    "Record the size of image and PDF snapshots in UMA histograms";
-const char kRecordSnapshotSizeDescription[] =
-    "When enabled, the app will record UMA histograms for image and PDF "
-    "snapshots. PDF snaphot will be taken just for the purpose of the "
-    "histogram recording.";
-
-const char kSingleNtpName[] = "Enable Single NTP";
-const char kSingleNtpDescription[] =
-    "When enabled, uses one NTP for all tabs in a Browser";
 
 // Please insert your name/description above in alphabetical order.
 

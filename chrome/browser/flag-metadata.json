@@ -2406,7 +2406,7 @@
   },
   {
     "name": "enable-password-manager-branding-update",
-    "owners": [ "alionadangla", "bwwilliams"],
+    "owners": [ "alionadangla", "bwwilliams", "bling-flags@google.com"],
     "expiry_milestone": 105
   },
   {

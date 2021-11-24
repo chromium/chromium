@@ -57,16 +57,6 @@ extern const char kAutofillUseMobileLabelDisambiguationDescription[];
 extern const char kAutofillUseRendererIDsName[];
 extern const char kAutofillUseRendererIDsDescription[];
 
-// Title and description for the flag that controls whether event breadcrumbs
-// are captured.
-extern const char kLogBreadcrumbsName[];
-extern const char kLogBreadcrumbsDescription[];
-
-// Title and description for the flag that controls synthetic crash reports
-// generation for Unexplained Termination Events.
-extern const char kSyntheticCrashReportsForUteName[];
-extern const char kSyntheticCrashReportsForUteDescription[];
-
 // Title and description for the flag to control if initial uploading of crash
 // reports is delayed.
 extern const char kBreakpadNoDelayInitialUploadName[];
@@ -98,10 +88,11 @@ extern const char kDcheckIsFatalName[];
 extern const char kDcheckIsFatalDescription[];
 #endif  // defined(DCHECK_IS_CONFIGURABLE)
 
-// Title and description for the flag to have the web client choosing the
-// default user agent.
-extern const char kUseDefaultUserAgentInWebClientName[];
-extern const char kUseDefaultUserAgentInWebClientDescription[];
+// Title and description for the flag to show a modified fullscreen modal promo
+// with a button that would send the users in the Settings.app to update the
+// default browser.
+extern const char kDefaultBrowserFullscreenPromoExperimentName[];
+extern const char kDefaultBrowserFullscreenPromoExperimentDescription[];
 
 // Title and description for the flag to use default WebKit context menu in web
 // content.
@@ -194,6 +185,10 @@ extern const char kEnableLongMessageDurationDescription[];
 extern const char kEnableManualPasswordGenerationName[];
 extern const char kEnableManualPasswordGenerationDescription[];
 
+// Title and description for the flag to enable the new download API.
+extern const char kEnableNewDownloadAPIName[];
+extern const char kEnableNewDownloadAPIDescription[];
+
 // Title and description for the flag to enable optimization guide.
 extern const char kEnableOptimizationGuideName[];
 extern const char kEnableOptimizationGuideDescription[];
@@ -217,11 +212,6 @@ extern const char kEnableShortenedPasswordAutoFillInstructionDescription[];
 // Chrome iOS.
 extern const char kEnableWebChannelsName[];
 extern const char kEnableWebChannelsDescription[];
-
-// Title and description for the flag to enable updated password manager
-// branding.
-extern const char kIOSEnablePasswordManagerBrandingUpdateName[];
-extern const char kIOSEnablePasswordManagerBrandingUpdateDescription[];
 
 // Title and description for the flag to enable an expanded tab strip.
 extern const char kExpandedTabStripName[];
@@ -270,6 +260,11 @@ extern const char
 extern const char kInProductHelpDemoModeName[];
 extern const char kInProductHelpDemoModeDescription[];
 
+// Title and description for the flag to enable updated password manager
+// branding.
+extern const char kIOSEnablePasswordManagerBrandingUpdateName[];
+extern const char kIOSEnablePasswordManagerBrandingUpdateDescription[];
+
 // Title and description for the flag to persist the Crash Restore Infobar
 // across navigations.
 extern const char kIOSPersistCrashRestoreName[];
@@ -290,9 +285,18 @@ extern const char kIOSSharedHighlightingAmpDescription[];
 extern const char kIOSSharedHighlightingV2Name[];
 extern const char kIOSSharedHighlightingV2Description[];
 
+// Title and description for the flag to enable unrealized WebStates.
+extern const char kLazilyCreateWebStateOnRestorationName[];
+extern const char kLazilyCreateWebStateOnRestorationDescription[];
+
 // Title and description for the flag to lock the bottom toolbar into place.
 extern const char kLockBottomToolbarName[];
 extern const char kLockBottomToolbarDescription[];
+
+// Title and description for the flag that controls whether event breadcrumbs
+// are captured.
+extern const char kLogBreadcrumbsName[];
+extern const char kLogBreadcrumbsDescription[];
 
 // Title and description for the flag that controls sending metrickit crash
 // reports.
@@ -366,6 +370,14 @@ extern const char kReadingListTimeToReadDescription[];
 extern const char kRestoreSessionFromCacheName[];
 extern const char kRestoreSessionFromCacheDescription[];
 
+extern const char kRecordSnapshotSizeName[];
+extern const char kRecordSnapshotSizeDescription[];
+
+// Title and description for the flag to remove excess NTP tabs that don't have
+// navigation history.
+extern const char kRemoveExcessNTPsExperimentName[];
+extern const char kRemoveExcessNTPsExperimentDescription[];
+
 // Title and description for the flag that makes Safe Browsing available.
 extern const char kSafeBrowsingAvailableName[];
 extern const char kSafeBrowsingAvailableDescription[];
@@ -425,6 +437,11 @@ extern const char kStartSurfaceDescription[];
 extern const char kSyncSandboxName[];
 extern const char kSyncSandboxDescription[];
 
+// Title and description for the flag that controls synthetic crash reports
+// generation for Unexplained Termination Events.
+extern const char kSyntheticCrashReportsForUteName[];
+extern const char kSyntheticCrashReportsForUteDescription[];
+
 // Title and description for the flag to synthesize native restore web states.
 extern const char kSynthesizedRestoreSessionName[];
 extern const char kSynthesizedRestoreSessionDescription[];
@@ -467,6 +484,11 @@ extern const char kUpdateHistoryEntryPointsInIncognitoDescription[];
 extern const char kURLBlocklistIOSName[];
 extern const char kURLBlocklistIOSDescription[];
 
+// Title and description for the flag to have the web client choosing the
+// default user agent.
+extern const char kUseDefaultUserAgentInWebClientName[];
+extern const char kUseDefaultUserAgentInWebClientDescription[];
+
 // Title and description for the flag to enable using Lens to search for an
 // image from the long press context menu.
 extern const char kUseLensToSearchForImageName[];
@@ -481,14 +503,6 @@ extern const char kWaitThresholdMillisecondsForCapabilitiesApiDescription[];
 // should use the sandbox servers.
 extern const char kWalletServiceUseSandboxName[];
 extern const char kWalletServiceUseSandboxDescription[];
-
-// Title and description for the flag to enable the new download API.
-extern const char kEnableNewDownloadAPIName[];
-extern const char kEnableNewDownloadAPIDescription[];
-
-// Title and description for the flag to enable unrealized WebStates.
-extern const char kLazilyCreateWebStateOnRestorationName[];
-extern const char kLazilyCreateWebStateOnRestorationDescription[];
 
 // Title and description for the flag to tie the default text zoom level to
 // the dynamic type setting.
@@ -509,20 +523,6 @@ extern const char kWebViewNativeContextMenuDescription[];
 // the WebView.
 extern const char kWebViewNativeContextMenuPhase2Name[];
 extern const char kWebViewNativeContextMenuPhase2Description[];
-
-extern const char kRecordSnapshotSizeName[];
-extern const char kRecordSnapshotSizeDescription[];
-
-// Title and description for the flag to show a modified fullscreen modal promo
-// with a button that would send the users in the Settings.app to update the
-// default browser.
-extern const char kDefaultBrowserFullscreenPromoExperimentName[];
-extern const char kDefaultBrowserFullscreenPromoExperimentDescription[];
-
-// Title and description for the flag to remove excess NTP tabs that don't have
-// navigation history.
-extern const char kRemoveExcessNTPsExperimentName[];
-extern const char kRemoveExcessNTPsExperimentDescription[];
 
 // Please add names and descriptions above in alphabetical order.
 
