@@ -1482,7 +1482,10 @@ void BookmarkBarView::OnMenuButtonPressed(const bookmarks::BookmarkNode* node,
       // TODO: Handle click if group has already been opened (crbug.com/1238539)
       // left click on a saved tab group opens all links in new group
       std::vector<const bookmarks::BookmarkNode*> selection = {node};
-      DCHECK(chrome::HasBookmarkURLs(selection));
+      // This happens when trying to open an empty bookmarks folder.
+      // See https://crbug.com/1271130
+      if (!chrome::HasBookmarkURLs(selection))
+        return;
       chrome::OpenAllIfAllowed(browser_, GetPageNavigatorGetter(), selection,
                                WindowOpenDisposition::NEW_BACKGROUND_TAB, true);
     } else {
