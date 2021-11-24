@@ -468,13 +468,6 @@ const char kLocalSearchServiceSyncMetricsCrosSettingsCount[] =
 const char kLocalSearchServiceSyncMetricsHelpAppCount[] =
     "local_search_service_sync.metrics.help_app_count";
 
-// Deprecated 11/2020
-const char kRegisteredSupervisedUserAllowlists[] =
-    "supervised_users.whitelists";
-
-// Deprecated 11/2020
-const char kSupervisedUserAllowlists[] = "profile.managed.whitelists";
-
 // Deprecated 12/2020
 const char kFirstRunTrialGroup[] = "help_app_first_run.trial_group";
 
@@ -487,25 +480,6 @@ const char kTimesHIDDialogShown[] = "HIDDialog.shown_how_many_times";
 // Deprecated 10/2021
 const char kSplitSettingsSyncTrialGroup[] = "split_settings_sync.trial_group";
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-#if BUILDFLAG(ENABLE_SERVICE_DISCOVERY)
-// Deprecated 11/2020
-const char kLocalDiscoveryEnabled[] = "local_discovery.enabled";
-const char kLocalDiscoveryNotificationsEnabled[] =
-    "local_discovery.notifications_enabled";
-#endif
-
-// Deprecated 11/2020
-#if defined(OS_LINUX) && !BUILDFLAG(IS_CHROMECAST)
-const char kMigrationToLoginDBStep[] = "profile.migration_to_logindb_step";
-#endif
-
-// Deprecated 11/2020
-const char kSettingsLaunchedPasswordChecks[] =
-    "profile.settings_launched_password_checks";
-
-// Deprecated 11/2020
-const char kDRMSalt[] = "settings.privacy.drm_salt";
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 // Deprecated 12/2020
@@ -701,7 +675,6 @@ void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(kTabStripStackedLayout, false);
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  registry->RegisterDictionaryPref(kRegisteredSupervisedUserAllowlists);
   registry->RegisterStringPref(kFirstRunTrialGroup, std::string());
 
   registry->RegisterInt64Pref(kLocalSearchServiceSyncMetricsDailySample, 0);
@@ -715,13 +688,6 @@ void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
   // Deprecated 10/2021.
   registry->RegisterListPref(prefs::kUsedPolicyCertificates);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-#if !defined(OS_ANDROID)
-  registry->RegisterListPref(enterprise_connectors::kOnFileAttachedPref);
-  registry->RegisterListPref(enterprise_connectors::kOnFileDownloadedPref);
-  registry->RegisterListPref(enterprise_connectors::kOnBulkDataEntryPref);
-  registry->RegisterListPref(enterprise_connectors::kOnSecurityEventPref);
-#endif  // !defined(OS_ANDROID)
 
   registry->RegisterIntegerPref(kRapporCohortSeed, -1);
   registry->RegisterInt64Pref(kRapporLastDailySample, 0);
@@ -751,7 +717,6 @@ void RegisterProfilePrefsForMigration(
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   registry->RegisterIntegerPref(kAccountManagerNumTimesMigrationRanSuccessfully,
                                 0);
-  registry->RegisterDictionaryPref(kSupervisedUserAllowlists);
   ash::HelpAppNotificationController::RegisterObsoletePrefsForMigration(
       registry);
   registry->RegisterBooleanPref(kHasCameraAppMigratedToSWA, false);
@@ -760,18 +725,6 @@ void RegisterProfilePrefsForMigration(
   chrome_browser_net::secure_dns::RegisterProbesSettingBackupPref(registry);
 
   registry->RegisterBooleanPref(prefs::kWebAppsUserDisplayModeCleanedUp, false);
-
-#if defined(OS_LINUX) && !BUILDFLAG(IS_CHROMECAST)
-  registry->RegisterIntegerPref(kMigrationToLoginDBStep, 0);
-#endif
-
-#if BUILDFLAG(ENABLE_SERVICE_DISCOVERY)
-  registry->RegisterBooleanPref(kLocalDiscoveryEnabled, true);
-  registry->RegisterBooleanPref(kLocalDiscoveryNotificationsEnabled, false);
-#endif
-
-  registry->RegisterIntegerPref(kSettingsLaunchedPasswordChecks, 0);
-  registry->RegisterStringPref(kDRMSalt, "");
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   registry->RegisterIntegerPref(kAssistantPrivacyInfoShownInLauncher, 0);
@@ -1489,9 +1442,6 @@ void MigrateObsoleteLocalStatePrefs(PrefService* local_state) {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 
-  // Added 11/2020.
-  local_state->ClearPref(kRegisteredSupervisedUserAllowlists);
-
   // Added 12/2020.
   local_state->ClearPref(kFirstRunTrialGroup);
   local_state->ClearPref(kLocalSearchServiceSyncMetricsDailySample);
@@ -1505,14 +1455,6 @@ void MigrateObsoleteLocalStatePrefs(PrefService* local_state) {
   local_state->ClearPref(kTimesHIDDialogShown);
   local_state->ClearPref(kSplitSettingsSyncTrialGroup);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-#if !defined(OS_ANDROID)
-  // Added 11/2020
-  local_state->ClearPref(enterprise_connectors::kOnFileAttachedPref);
-  local_state->ClearPref(enterprise_connectors::kOnFileDownloadedPref);
-  local_state->ClearPref(enterprise_connectors::kOnBulkDataEntryPref);
-  local_state->ClearPref(enterprise_connectors::kOnSecurityEventPref);
-#endif  // !defined(OS_ANDROID)
 
   // Added 2/2021.
   local_state->ClearPref(kRapporCohortSeed);
@@ -1569,27 +1511,7 @@ void MigrateObsoleteProfilePrefs(Profile* profile) {
   chrome_browser_net::secure_dns::MigrateProbesSettingToOrFromBackup(
       profile_prefs);
 
-  // Added 11/2020
-#if defined(OS_LINUX) && !BUILDFLAG(IS_CHROMECAST)
-  profile_prefs->ClearPref(kMigrationToLoginDBStep);
-#endif
-
-  // Added 11/2020.
-#if BUILDFLAG(ENABLE_SERVICE_DISCOVERY)
-  profile_prefs->ClearPref(kLocalDiscoveryEnabled);
-  profile_prefs->ClearPref(kLocalDiscoveryNotificationsEnabled);
-#endif
-
-  // Added 11/2020
-  profile_prefs->ClearPref(kSettingsLaunchedPasswordChecks);
-
-  // Added 11/2020
-  profile_prefs->ClearPref(kDRMSalt);
-
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  // Added 11/2020.
-  profile_prefs->ClearPref(kSupervisedUserAllowlists);
-
   // Added 12/2020
   profile_prefs->ClearPref(kAssistantPrivacyInfoShownInLauncher);
   profile_prefs->ClearPref(kAssistantPrivacyInfoDismissedInLauncher);
