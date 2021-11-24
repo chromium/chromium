@@ -7,3 +7,5 @@
 
 virtual/composite-after-paint/* [ Skip ]
 virtual/stable/* [ Skip ]
+
+external/wpt/secure-payment-confirmation/authentication-icon-data-url.https.html [ Failure ]
