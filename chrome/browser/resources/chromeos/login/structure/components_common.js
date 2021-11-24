@@ -12,8 +12,6 @@ function loadCommonComponents() {
 // <include src="../notification_card.js">
 // <include src="../gaia_dialog.js">
 
-// <include src="../checking_downloading_update.js">
-
 // <include src="../screen_gaia_signin.js">
 // <include src="../saml_confirm_password.js">
 // <include src="../offline_ad_login.js">
