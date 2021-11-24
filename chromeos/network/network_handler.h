@@ -35,6 +35,7 @@ class NetworkConnectionHandler;
 class NetworkDeviceHandler;
 class NetworkDeviceHandlerImpl;
 class NetworkMetadataStore;
+class NetworkMetricsHelper;
 class NetworkProfileHandler;
 class NetworkStateHandler;
 class NetworkSmsHandler;
@@ -133,6 +134,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkHandler {
       cellular_esim_uninstall_handler_;
   std::unique_ptr<CellularPolicyHandler> cellular_policy_handler_;
   std::unique_ptr<CellularMetricsLogger> cellular_metrics_logger_;
+  std::unique_ptr<NetworkMetricsHelper> network_metrics_helper_;
   std::unique_ptr<NetworkCertMigrator> network_cert_migrator_;
   std::unique_ptr<ClientCertResolver> client_cert_resolver_;
   std::unique_ptr<AutoConnectHandler> auto_connect_handler_;
