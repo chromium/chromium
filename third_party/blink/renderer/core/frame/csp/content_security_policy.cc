@@ -28,6 +28,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/containers/contains.h"
 #include "base/debug/dump_without_crashing.h"
 #include "services/network/public/cpp/web_sandbox_flags.h"
 #include "services/network/public/mojom/web_sandbox_flags.mojom-blink.h"
@@ -814,13 +815,19 @@ void ContentSecurityPolicy::UpgradeInsecureRequests() {
       mojom::blink::InsecureRequestPolicy::kUpgradeInsecureRequests;
 }
 
+// https://www.w3.org/TR/CSP3/#strip-url-for-use-in-reports
 static String StripURLForUseInReport(const SecurityOrigin* security_origin,
                                      const KURL& url,
                                      RedirectStatus redirect_status,
                                      CSPDirectiveName effective_type) {
   if (!url.IsValid())
     return String();
-  if (!url.IsHierarchical() || url.ProtocolIs("file"))
+
+  // https://www.w3.org/TR/CSP3/#strip-url-for-use-in-reports
+  // > 1. If url's scheme is not "`https`", "'http'", "`wss`" or "`ws`" then
+  // >    return url's scheme.
+  static const char* const allow_list[] = {"http", "https", "ws", "wss"};
+  if (!base::Contains(allow_list, url.Protocol()))
     return url.Protocol();
 
   // Until we're more careful about the way we deal with navigations in frames
@@ -832,14 +839,21 @@ static String StripURLForUseInReport(const SecurityOrigin* security_origin,
        effective_type != CSPDirectiveName::FrameSrc &&
        effective_type != CSPDirectiveName::ObjectSrc);
 
-  if (can_safely_expose_url) {
-    // 'KURL::strippedForUseAsReferrer()' dumps 'String()' for non-webby URLs.
-    // It's better for developers if we return the origin of those URLs rather
-    // than nothing.
-    if (url.ProtocolIsInHTTPFamily())
-      return url.StrippedForUseAsReferrer();
-  }
-  return SecurityOrigin::Create(url)->ToString();
+  if (!can_safely_expose_url)
+    return SecurityOrigin::Create(url)->ToString();
+
+  // https://www.w3.org/TR/CSP3/#strip-url-for-use-in-reports
+  // > 2. Set url’s fragment to the empty string.
+  // > 3. Set url’s username to the empty string.
+  // > 4. Set url’s password to the empty string.
+  KURL stripped_url = url;
+  stripped_url.RemoveFragmentIdentifier();
+  stripped_url.SetUser(String());
+  stripped_url.SetPass(String());
+
+  // https://www.w3.org/TR/CSP3/#strip-url-for-use-in-reports
+  // > 5. Return the result of executing the URL serializer on url.
+  return stripped_url.GetString();
 }
 
 namespace {
