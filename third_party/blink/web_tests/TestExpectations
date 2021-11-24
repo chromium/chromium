@@ -5451,9 +5451,6 @@ crbug.com/1038139 [ Win ] virtual/gpu-rasterization/images/2-comp.html [ Failure
 crbug.com/1038656 [ Mac ] http/tests/devtools/coverage/coverage-view-unused.js [ Failure Pass ]
 crbug.com/1038656 [ Win ] http/tests/devtools/coverage/coverage-view-unused.js [ Failure Pass ]
 
-# Temporarily disabled to land Linkifier changes in DevTools
-crbug.com/963183 http/tests/devtools/jump-to-previous-editing-location.js [ Failure Pass ]
-
 # Broken in https://chromium-review.googlesource.com/c/chromium/src/+/1636716
 crbug.com/963183 http/tests/devtools/sources/debugger-breakpoints/disable-breakpoints.js [ Failure Pass Skip Timeout ]
 
