@@ -167,42 +167,6 @@ class StackCollapser:
     else:
       return stack
 
-  def add_category_from_any_frame(self, stack):
-    """Adds synthetic frame according to some generic categories to help
-    analyze the results.
-
-    Args:
-      stack: An array of strings that represent each frame of a stack trace.
-
-    Returns: The input array with zero or one element added.
-    """
-
-    # Categories ordered by importance. Each element of the list is an
-    # array of synonyms.
-    special_markers = [['viz'], ['net::', 'network::'], ['blink::'], ['mojo::'],
-                       ['gpu::'], ['v8::'], ['sql::'], ['CoreText'], ['AppKit'],
-                       ['Security'], ['CoreFoundation']]
-
-    # Look for the presence of any of the special markers in the stack and
-    # compound them to create the synthetic frame.
-    compound_marker = []
-    for synonyms in special_markers:
-      for variation in synonyms:
-        for frame in stack:
-          if variation in frame and variation not in compound_marker:
-            compound_marker.append(synonyms[0])
-
-    # Add some namespace separators for markers that didn't have them.
-    for i, marker in enumerate(compound_marker):
-      if marker.find("::") == -1:
-        compound_marker[i] = marker + "::"
-
-    if compound_marker:
-      compound_marker.sort()
-      stack = ["".join(compound_marker)] + stack
-
-    return stack
-
   def remove_tokens(self, stack):
     """Removes some substrings from frames in the stack.
 
@@ -267,7 +231,6 @@ class StackCollapser:
     for row in self.samples:
       # Filter out the frames we don't care about and all those under it.
       row["frames"] = self.shorten_stack(row["frames"])
-      row["frames"] = self.add_category_from_any_frame(row["frames"])
       row["frames"] = self.remove_tokens(row["frames"])
 
 
