@@ -588,11 +588,13 @@ function addGetUserMedia(data) {
 }
 
 /**
- * Update a getUserMedia request.
+ * Update a getUserMedia request with a result or error.
  *
  * @param {!Object} data The object containing rid {number}, pid {number},
- *     request_id {number}, stream_id {string},
- *     audio_track_info {string} and video_track_info {string}
+ *     request_id {number}. For getUserMedia results there is also the
+ *     stream_id {string}, audio_track_info {string} and
+ *     video_track_info {string}. For errors the error {string} and
+ *     error_message {string} fields are set.
  */
 function updateGetUserMedia(data) {
   userMediaRequests.push(data);
@@ -605,6 +607,19 @@ function updateGetUserMedia(data) {
     ['gum', data.rid, data.pid, data.request_id].join('-'));
   if (!requestDiv) {
     console.error('Could not update getUserMedia request', data);
+    return;
+  }
+
+  if (data.error) {
+    const el = appendChildWithText(requestDiv, 'span', 'Error');
+    el.style.fontWeight = 'bold';
+    appendChildWithText(el, 'div', 'Time: ' +
+      (new Date(data.timestamp).toTimeString()))
+      .style.fontWeight = 'normal';
+    appendChildWithText(el, 'div', 'Error: ' + data.error)
+      .style.fontWeight = 'normal';
+    appendChildWithText(el, 'div', 'Error message: ' + data.error_message)
+      .style.fontWeight = 'normal';
     return;
   }
 

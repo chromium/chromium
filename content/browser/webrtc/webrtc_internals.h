@@ -90,6 +90,11 @@ class CONTENT_EXPORT WebRTCInternals : public PeerConnectionTrackerHostObserver,
                              const std::string& stream_id,
                              const std::string& audio_track_info,
                              const std::string& video_track_info) override;
+  void OnGetUserMediaFailure(GlobalRenderFrameHostId frame_id,
+                             base::ProcessId pid,
+                             int request_id,
+                             const std::string& error,
+                             const std::string& error_message) override;
 
   // Methods for adding or removing WebRTCInternalsUIObserver.
   void AddObserver(WebRTCInternalsUIObserver* observer);

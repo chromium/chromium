@@ -583,6 +583,10 @@ void UserMediaRequest::FailConstraint(const String& constraint_name,
     return;
   RecordIdentifiabilityMetric(surface_, GetExecutionContext(),
                               IdentifiabilityBenignStringToken(message));
+  if (auto* window = GetWindow()) {
+    PeerConnectionTracker::From(*window).TrackGetUserMediaFailure(
+        this, "OverConstrainedError", message);
+  }
   // After this call, the execution context may be invalid.
   callbacks_->OnError(
       nullptr, MakeGarbageCollected<V8MediaStreamError>(
@@ -628,6 +632,12 @@ void UserMediaRequest::Fail(Error name, const String& message) {
   }
   RecordIdentifiabilityMetric(surface_, GetExecutionContext(),
                               IdentifiabilityBenignStringToken(message));
+
+  if (auto* window = GetWindow()) {
+    PeerConnectionTracker::From(*window).TrackGetUserMediaFailure(
+        this, DOMException::GetErrorName(exception_code), message);
+  }
+
   // After this call, the execution context may be invalid.
   callbacks_->OnError(nullptr, MakeGarbageCollected<V8MediaStreamError>(
                                    MakeGarbageCollected<DOMException>(

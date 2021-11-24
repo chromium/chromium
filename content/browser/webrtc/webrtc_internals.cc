@@ -320,6 +320,7 @@ void WebRTCInternals::OnGetUserMedia(GlobalRenderFrameHostId frame_id,
       host->AddObserver(this);
   }
 }
+
 void WebRTCInternals::OnGetUserMediaSuccess(
     GlobalRenderFrameHostId frame_id,
     base::ProcessId pid,
@@ -345,6 +346,39 @@ void WebRTCInternals::OnGetUserMediaSuccess(
     dict.SetStringKey("audio_track_info", audio_track_info);
   if (!video_track_info.empty())
     dict.SetStringKey("video_track_info", video_track_info);
+
+  if (!observers_.empty())
+    SendUpdate("update-get-user-media", dict.Clone());
+
+  get_user_media_requests_.Append(std::move(dict));
+
+  if (render_process_id_set_.insert(frame_id.child_id).second) {
+    RenderProcessHost* host = RenderProcessHost::FromID(frame_id.child_id);
+    if (host)
+      host->AddObserver(this);
+  }
+}
+
+void WebRTCInternals::OnGetUserMediaFailure(GlobalRenderFrameHostId frame_id,
+                                            base::ProcessId pid,
+                                            int request_id,
+                                            const std::string& error,
+                                            const std::string& error_message) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+
+  if (get_user_media_requests_.GetList().size() >= kMaxGetUserMediaEntries) {
+    LOG(WARNING) << "Maximum number of tracked getUserMedia() requests reached "
+                    "in webrtc-internals.";
+    return;
+  }
+
+  base::Value dict(base::Value::Type::DICTIONARY);
+  dict.SetIntKey("rid", frame_id.child_id);
+  dict.SetIntKey("pid", static_cast<int>(pid));
+  dict.SetIntKey("request_id", request_id);
+  dict.SetDoubleKey("timestamp", base::Time::Now().ToJsTime());
+  dict.SetStringKey("error", error);
+  dict.SetStringKey("error_message", error_message);
 
   if (!observers_.empty())
     SendUpdate("update-get-user-media", dict.Clone());
@@ -397,8 +431,8 @@ void WebRTCInternals::UpdateObserver(WebRTCInternalsUIObserver* observer) {
     observer->OnUpdate("update-all-peer-connections", &peer_connection_data_);
 
   for (const auto& request : get_user_media_requests_.GetList()) {
-    // If there is a stream_id key this is an update.
-    if (request.FindStringKey("stream_id")) {
+    // If there is a stream_id key or an error key this is an update.
+    if (request.FindStringKey("stream_id") || request.FindStringKey("error")) {
       observer->OnUpdate("update-get-user-media", &request);
     } else {
       observer->OnUpdate("add-get-user-media", &request);

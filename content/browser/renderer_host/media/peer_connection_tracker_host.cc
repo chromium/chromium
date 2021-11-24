@@ -178,6 +178,18 @@ void PeerConnectionTrackerHost::GetUserMediaSuccess(
   }
 }
 
+void PeerConnectionTrackerHost::GetUserMediaFailure(
+    int request_id,
+    const std::string& error,
+    const std::string& error_message) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+
+  for (auto& observer : GetObserverList()) {
+    observer.OnGetUserMediaFailure(frame_id_, peer_pid_, request_id, error,
+                                   error_message);
+  }
+}
+
 void PeerConnectionTrackerHost::WebRtcEventLogWrite(
     int lid,
     const std::vector<uint8_t>& output) {

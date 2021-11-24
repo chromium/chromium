@@ -69,6 +69,7 @@ class MockPeerConnectionTrackerHost
       void(const String&, int, bool, bool, const String&, const String&));
   MOCK_METHOD4(GetUserMediaSuccess,
                void(int, const String&, const String&, const String&));
+  MOCK_METHOD3(GetUserMediaFailure, void(int, const String&, const String&));
   MOCK_METHOD2(WebRtcEventLogWrite, void(int, const Vector<uint8_t>&));
   MOCK_METHOD2(AddStandardStats, void(int, base::Value));
   MOCK_METHOD2(AddLegacyStats, void(int, base::Value));

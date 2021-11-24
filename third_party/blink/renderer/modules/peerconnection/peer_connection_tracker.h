@@ -247,6 +247,10 @@ class MODULES_EXPORT PeerConnectionTracker
   // Sends an update when getUserMedia resolveѕ with a stream.
   virtual void TrackGetUserMediaSuccess(UserMediaRequest* user_media_request,
                                         MediaStream* stream);
+  // Sends an update when getUserMedia fails with an error.
+  virtual void TrackGetUserMediaFailure(UserMediaRequest* user_media_request,
+                                        const String& error,
+                                        const String& error_message);
 
   // Sends a new fragment on an RtcEventLog.
   virtual void TrackRtcEventLogWrite(RTCPeerConnectionHandler* pc_handler,

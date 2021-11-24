@@ -1276,6 +1276,16 @@ void PeerConnectionTracker::TrackGetUserMediaSuccess(
       video_track_info);
 }
 
+void PeerConnectionTracker::TrackGetUserMediaFailure(
+    UserMediaRequest* user_media_request,
+    const String& error,
+    const String& error_message) {
+  DCHECK_CALLED_ON_VALID_THREAD(main_thread_);
+
+  peer_connection_tracker_host_->GetUserMediaFailure(
+      user_media_request->request_id(), error, error_message);
+}
+
 void PeerConnectionTracker::TrackRtcEventLogWrite(
     RTCPeerConnectionHandler* pc_handler,
     const WTF::Vector<uint8_t>& output) {

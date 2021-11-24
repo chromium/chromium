@@ -128,6 +128,19 @@ class CONTENT_EXPORT PeerConnectionTrackerHostObserver
       const std::string& audio_track_info,
       const std::string& video_track_info) {}
 
+  // This method is called when getUserMedia rejects with an error.
+  // - |render_frame_host_id| identifies the RenderFrameHost.
+  // - |pid| is the OS process ID.
+  // - |request_id| is the internal getUserMedia request id.
+  // - |error| is the (DOM) error.
+  // - |error_message| is the error message.
+  virtual void OnGetUserMediaFailure(
+      GlobalRenderFrameHostId render_frame_host_id,
+      base::ProcessId pid,
+      int request_id,
+      const std::string& error,
+      const std::string& error_message) {}
+
  protected:
   PeerConnectionTrackerHostObserver();
 };
