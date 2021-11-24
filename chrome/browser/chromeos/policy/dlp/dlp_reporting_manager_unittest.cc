@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/memory/ptr_util.h"
+#include "base/task/thread_pool.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_histogram_helper.h"
@@ -16,6 +17,7 @@
 #include "components/account_id/account_id.h"
 #include "components/reporting/util/status.h"
 #include "components/user_manager/scoped_user_manager.h"
+#include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -25,7 +27,6 @@
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chromeos/lacros/lacros_service.h"
-#include "content/public/test/browser_task_environment.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 using ::testing::_;
@@ -43,14 +44,15 @@ class DlpReportingManagerTest : public testing::Test {
 
   void SetUp() override {
     testing::Test::SetUp();
-    SetReportQueueForReportingManager(&manager_, events_);
+    SetReportQueueForReportingManager(
+        &manager_, events_, base::ThreadPool::CreateSequencedTaskRunner({}));
   }
 
  protected:
+  content::BrowserTaskEnvironment task_environment_;
   DlpReportingManager manager_;
   std::vector<DlpPolicyEvent> events_;
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-  content::BrowserTaskEnvironment task_environment_;
   chromeos::LacrosService lacros_service_;
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 };

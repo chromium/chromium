@@ -11,7 +11,6 @@
 #include <memory>
 #include <set>
 
-#include "base/strings/string_piece_forward.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/url_matcher/url_matcher.h"
 
@@ -57,8 +56,7 @@ class DlpRulesManagerImpl : public DlpRulesManager {
  protected:
   friend class DlpRulesManagerFactory;
 
-  DlpRulesManagerImpl(PrefService* local_state,
-                      base::StringPiece dm_token_value);
+  explicit DlpRulesManagerImpl(PrefService* local_state);
 
  private:
   void OnPolicyUpdate();

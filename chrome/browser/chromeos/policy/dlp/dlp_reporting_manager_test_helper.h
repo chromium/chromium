@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_CHROMEOS_POLICY_DLP_DLP_REPORTING_MANAGER_TEST_HELPER_H_
 #define CHROME_BROWSER_CHROMEOS_POLICY_DLP_DLP_REPORTING_MANAGER_TEST_HELPER_H_
 
+#include "base/task/sequenced_task_runner.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 class DlpPolicyEvent;
@@ -19,8 +20,10 @@ class DlpReportingManager;
 // Sets MockReportQueue for DlpReportingManager. Whenever AddRecord function of
 // MockReportQueue is called (a DLP restriction is triggered) a new
 // DlpPolicyEvent is pushed to |events|.
-void SetReportQueueForReportingManager(policy::DlpReportingManager* manager,
-                                       std::vector<DlpPolicyEvent>& events);
+void SetReportQueueForReportingManager(
+    policy::DlpReportingManager* manager,
+    std::vector<DlpPolicyEvent>& events,
+    scoped_refptr<base::SequencedTaskRunner> task_runner);
 
 }  // namespace policy
 

@@ -5,11 +5,9 @@
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager_factory.h"
 
 #include "base/no_destructor.h"
-#include "base/strings/string_piece.h"
 #include "base/task/bind_post_task.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/chromeos/policy/dlp/dlp_reporting_manager.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager_impl.h"
 #include "chrome/browser/policy/dm_token_utils.h"
@@ -108,12 +106,6 @@ KeyedService* DlpRulesManagerFactory::BuildServiceInstanceFor(
   if (!local_state)
     return nullptr;
 
-  auto dm_token = GetDMToken(profile);
-  if (!dm_token.is_valid()) {
-    LOG(ERROR) << "DlpReporting has invalid DMToken. Reporting disabled.";
-    return nullptr;
-  }
-
-  return new DlpRulesManagerImpl(local_state, dm_token.value());
+  return new DlpRulesManagerImpl(local_state);
 }
 }  // namespace policy
