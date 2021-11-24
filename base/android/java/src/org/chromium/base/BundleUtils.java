@@ -4,6 +4,7 @@
 
 package org.chromium.base;
 
+import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
 import android.content.ContextWrapper;
@@ -43,6 +44,7 @@ import java.util.Arrays;
  * library APKs.
  */
 public final class BundleUtils {
+    private static final String TAG = "BundleUtils";
     private static Boolean sIsBundle;
     private static final Object sSplitLock = new Object();
 
@@ -262,5 +264,15 @@ public final class BundleUtils {
             context = ((ContextWrapper) context).getBaseContext();
         }
         return false;
+    }
+
+    public static void checkContextClassLoader(Context baseContext, Activity activity) {
+        ClassLoader activityClassLoader = activity.getClass().getClassLoader();
+        ClassLoader contextClassLoader = baseContext.getClassLoader();
+        if (activityClassLoader != contextClassLoader) {
+            Log.w(TAG, "Mismatched ClassLoaders between Activity and context (fixing): %s",
+                    activity.getClass());
+            replaceClassLoader(baseContext, activityClassLoader);
+        }
     }
 }

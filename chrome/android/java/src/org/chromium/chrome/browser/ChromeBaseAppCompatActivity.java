@@ -20,12 +20,12 @@ import androidx.annotation.Nullable;
 import androidx.annotation.StyleRes;
 import androidx.appcompat.app.AppCompatActivity;
 
+import org.chromium.base.BundleUtils;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.base.SplitChromeApplication;
-import org.chromium.chrome.browser.base.SplitCompatAppComponentFactory;
 import org.chromium.chrome.browser.base.SplitCompatUtils;
 import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -67,7 +67,7 @@ public class ChromeBaseAppCompatActivity extends AppCompatActivity
         // If ClassLoader was corrected by SplitCompatAppComponentFactory, also need to correct
         // the reference in the associated Context.
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-            SplitCompatAppComponentFactory.checkContextClassLoader(newBase, this);
+            BundleUtils.checkContextClassLoader(newBase, this);
         }
 
         mNightModeStateProvider = createNightModeStateProvider();

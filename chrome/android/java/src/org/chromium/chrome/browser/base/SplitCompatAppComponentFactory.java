@@ -15,7 +15,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 
-import org.chromium.base.BundleUtils;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 
@@ -73,15 +72,5 @@ public class SplitCompatAppComponentFactory extends AppComponentFactory {
         }
 
         return cl;
-    }
-
-    public static void checkContextClassLoader(Context baseContext, Activity activity) {
-        ClassLoader activityClassLoader = activity.getClass().getClassLoader();
-        ClassLoader contextClassLoader = baseContext.getClassLoader();
-        if (activityClassLoader != contextClassLoader) {
-            Log.w(TAG, "Mismatched ClassLoaders between Activity and context (fixing): %s",
-                    activity.getClass());
-            BundleUtils.replaceClassLoader(baseContext, activityClassLoader);
-        }
     }
 }
