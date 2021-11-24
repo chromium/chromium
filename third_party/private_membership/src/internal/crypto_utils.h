@@ -21,6 +21,7 @@
 #include "third_party/private_membership/src/private_membership.pb.h"
 #include "absl/strings/string_view.h"
 #include "third_party/shell-encryption/src/statusor.h"
+#include "third_party/private_membership/base/private_membership_export.h"
 
 namespace private_membership {
 
@@ -28,31 +29,38 @@ namespace private_membership {
 //
 // The returned bytes will be max_byte_length + 4 bytes long, where the first
 // four bytes represents the length of the original bytes.
-::rlwe::StatusOr<std::string> Pad(absl::string_view bytes, int max_byte_length);
+PRIVATE_MEMBERSHIP_EXPORT ::rlwe::StatusOr<std::string> Pad(
+    absl::string_view bytes,
+    int max_byte_length);
 
 // Unpad bytes padded with the `Pad` function.
-::rlwe::StatusOr<std::string> Unpad(absl::string_view bytes);
+PRIVATE_MEMBERSHIP_EXPORT ::rlwe::StatusOr<std::string> Unpad(
+    absl::string_view bytes);
 
-std::string HashEncryptedId(absl::string_view encrypted_id,
-                            private_join_and_compute::Context* ctx);
+PRIVATE_MEMBERSHIP_EXPORT std::string HashEncryptedId(
+    absl::string_view encrypted_id,
+    private_join_and_compute::Context* ctx);
 
-::rlwe::StatusOr<std::string> GetValueEncryptionKey(
-    absl::string_view encrypted_id, private_join_and_compute::Context* ctx);
+PRIVATE_MEMBERSHIP_EXPORT ::rlwe::StatusOr<std::string> GetValueEncryptionKey(
+    absl::string_view encrypted_id,
+    private_join_and_compute::Context* ctx);
 
 // Encrypts the value, first padding it to. The result will be
 // max_value_byte_length+4 bytes long, the first 4 bytes being an encryption of
 // the length of the original value.
 //
 // Returns an error if the value is longer than max_value_byte_length.
-::rlwe::StatusOr<std::string> EncryptValue(absl::string_view encrypted_id,
-                                           absl::string_view value,
-                                           uint32_t max_value_byte_length,
-                                           private_join_and_compute::Context* ctx);
+PRIVATE_MEMBERSHIP_EXPORT ::rlwe::StatusOr<std::string> EncryptValue(
+    absl::string_view encrypted_id,
+    absl::string_view value,
+    uint32_t max_value_byte_length,
+    private_join_and_compute::Context* ctx);
 
 // Decrypt the encrypted_value using a key derived from the encrypted_id.
-::rlwe::StatusOr<std::string> DecryptValue(absl::string_view encrypted_id,
-                                           absl::string_view encrypted_value,
-                                           private_join_and_compute::Context* ctx);
+PRIVATE_MEMBERSHIP_EXPORT ::rlwe::StatusOr<std::string> DecryptValue(
+    absl::string_view encrypted_id,
+    absl::string_view encrypted_value,
+    private_join_and_compute::Context* ctx);
 
 }  // namespace private_membership
 

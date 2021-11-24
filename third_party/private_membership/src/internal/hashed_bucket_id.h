@@ -20,12 +20,13 @@
 #include "absl/hash/hash.h"
 #include "absl/strings/string_view.h"
 #include "third_party/shell-encryption/src/statusor.h"
+#include "third_party/private_membership/base/private_membership_export.h"
 
 namespace private_membership {
 namespace rlwe {
 
 // Concrete data type representing the hashed bucket id.
-class HashedBucketId {
+class PRIVATE_MEMBERSHIP_EXPORT HashedBucketId {
  public:
   // Creates the object from raw data.
   //
