@@ -353,16 +353,16 @@ TEST_F(ExtensionsMenuViewUnitTest, PinnedExtensionAppearsInAnotherWindow) {
   ClickPinButton(menu_item);
 
   // Window that was already open gets the pinned extension.
-  browser2.extensions_container()->IsActionVisibleOnToolbar(
-      menu_item->view_controller());
+  EXPECT_TRUE(browser2.extensions_container()->IsActionVisibleOnToolbar(
+      menu_item->view_controller()));
 
   AdditionalBrowser browser3(
       CreateBrowser(browser()->profile(), browser()->type(),
                     /* hosted_app */ false, /* browser_window */ nullptr));
 
   // Brand-new window also gets the pinned extension.
-  browser3.extensions_container()->IsActionVisibleOnToolbar(
-      menu_item->view_controller());
+  EXPECT_TRUE(browser3.extensions_container()->IsActionVisibleOnToolbar(
+      menu_item->view_controller()));
 }
 
 TEST_F(ExtensionsMenuViewUnitTest, PinnedExtensionRemovedWhenDisabled) {
