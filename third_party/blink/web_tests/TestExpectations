@@ -7349,6 +7349,13 @@ crbug.com/1272203 external/wpt/websockets/stream/tentative/backpressure-send.any
 # Times out flakily on all platforms. Previously marked slow, crbug.com/874695.
 crbug.com/1272801 http/tests/permissions/chromium/test-request-sharedworker.html [ Pass Timeout ]
 
+# Flaky with setTimeout without clamp
+crbug.com/1272954 external/wpt/app-history/currentchange-event/currentchange-app-history-navigate-same-doc.html [ Failure Pass ]
+crbug.com/1272954 external/wpt/app-history/currentchange-event/currentchange-app-history-back-forward-same-doc.html [ Failure Pass ]
+crbug.com/1272954 external/wpt/app-history/currentchange-event/currentchange-history-back-same-doc.html [ Failure Pass ]
+crbug.com/1272954 external/wpt/app-history/navigate-event/navigate-history-back-after-fragment.html [ Failure Pass ]
+crbug.com/1272955 http/tests/devtools/extensions/extensions-timeline-api.js [ Failure Pass ]
+
 # Sheriff 2021-11-23
 crbug.com/1270963 wpt_internal/fenced_frame/create-credential.https.html [ Skip ]
 crbug.com/1046784 http/tests/devtools/tracing/timeline-receive-response-event.js [ Failure Pass ]
