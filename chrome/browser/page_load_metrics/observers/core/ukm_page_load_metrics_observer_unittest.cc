@@ -1690,15 +1690,15 @@ TEST_F(UkmPageLoadMetricsObserverTest, CpuTimeMetrics) {
 
 TEST_F(UkmPageLoadMetricsObserverTest, LayoutInstability) {
   NavigateAndCommit(GURL(kTestUrl1));
-  base::TimeTicks time_origin = base::TimeTicks::Now();
+  base::TimeTicks current_time = base::TimeTicks::Now();
   page_load_metrics::mojom::FrameRenderDataUpdate render_data(1.0, 1.0, 0, 0, 0,
                                                               0, 0, 0, {});
   render_data.new_layout_shifts.emplace_back(
       page_load_metrics::mojom::LayoutShift::New(
-          time_origin - base::Milliseconds(4000), 0.5));
+          current_time - base::Milliseconds(4000), 0.5));
   render_data.new_layout_shifts.emplace_back(
       page_load_metrics::mojom::LayoutShift::New(
-          time_origin - base::Milliseconds(3500), 0.5));
+          current_time - base::Milliseconds(3500), 0.5));
 
   tester()->SimulateRenderDataUpdate(render_data);
 
@@ -1709,7 +1709,7 @@ TEST_F(UkmPageLoadMetricsObserverTest, LayoutInstability) {
                                                                 0, 0, 0, 0, {});
   render_data_2.new_layout_shifts.emplace_back(
       page_load_metrics::mojom::LayoutShift::New(
-          time_origin - base::Milliseconds(2500), 1.5));
+          current_time - base::Milliseconds(2500), 1.5));
   tester()->SimulateRenderDataUpdate(render_data_2);
 
   // Simulate closing the tab.
@@ -1746,6 +1746,142 @@ TEST_F(UkmPageLoadMetricsObserverTest, LayoutInstability) {
                   "PageLoad.LayoutInstability.MaxCumulativeShiftScore."
                   "SessionWindow.Gap1000ms.Max5000ms"),
               testing::ElementsAre(base::Bucket(25, 1)));
+}
+
+TEST_F(UkmPageLoadMetricsObserverTest,
+       ExperimentalLayoutInstabilityRecordOnHidden) {
+  NavigateAndCommit(GURL(kTestUrl1));
+  base::TimeTicks current_time = base::TimeTicks::Now();
+  page_load_metrics::mojom::FrameRenderDataUpdate render_data(1.0, 1.0, 0, 0, 0,
+                                                              0, 0, 0, {});
+  render_data.new_layout_shifts.emplace_back(
+      page_load_metrics::mojom::LayoutShift::New(
+          current_time - base::Milliseconds(4000), 0.5));
+  render_data.new_layout_shifts.emplace_back(
+      page_load_metrics::mojom::LayoutShift::New(
+          current_time - base::Milliseconds(3500), 0.5));
+
+  tester()->SimulateRenderDataUpdate(render_data);
+
+  // Simulate hiding the tab (the experimental CLS metrics should include
+  // shifts before the first hide).
+  web_contents()->WasHidden();
+
+  const auto& ukm_recorder = tester()->test_ukm_recorder();
+  std::map<ukm::SourceId, ukm::mojom::UkmEntryPtr> merged_entries =
+      ukm_recorder.GetMergedEntriesByName(PageLoad::kEntryName);
+  EXPECT_EQ(1ul, merged_entries.size());
+
+  for (const auto& kv : merged_entries) {
+    const ukm::mojom::UkmEntry* ukm_entry = kv.second.get();
+    ukm_recorder.ExpectEntrySourceHasUrl(ukm_entry, GURL(kTestUrl1));
+    ukm_recorder.ExpectEntryMetric(
+        ukm_entry,
+        PageLoad::
+            kExperimental_LayoutInstability_CumulativeShiftScoreAtFirstOnHiddenName,
+        100);
+    ukm_recorder.ExpectEntryMetric(
+        ukm_entry,
+        PageLoad::
+            kExperimental_LayoutInstability_MaxCumulativeShiftScoreAtFirstOnHidden_SessionWindow_Gap1000ms_Max5000msName,
+        100);
+  }
+
+  page_load_metrics::mojom::FrameRenderDataUpdate render_data_2(1.5, 0.0, 0, 0,
+                                                                0, 0, 0, 0, {});
+  render_data_2.new_layout_shifts.emplace_back(
+      page_load_metrics::mojom::LayoutShift::New(
+          current_time - base::Milliseconds(2500), 1.5));
+  tester()->SimulateRenderDataUpdate(render_data_2);
+
+  // Simulate closing the tab (the CLS metrics should include all the shifts
+  // before the tab closes).
+  DeleteContents();
+
+  const auto& ukm_recorder_2 = tester()->test_ukm_recorder();
+  merged_entries = ukm_recorder_2.GetMergedEntriesByName(PageLoad::kEntryName);
+  EXPECT_EQ(1ul, merged_entries.size());
+
+  for (const auto& kv : merged_entries) {
+    const ukm::mojom::UkmEntry* ukm_entry = kv.second.get();
+    ukm_recorder_2.ExpectEntrySourceHasUrl(ukm_entry, GURL(kTestUrl1));
+    ukm_recorder.ExpectEntryMetric(
+        ukm_entry,
+        PageLoad::
+            kExperimental_LayoutInstability_CumulativeShiftScoreAtFirstOnHiddenName,
+        100);
+    ukm_recorder.ExpectEntryMetric(
+        ukm_entry,
+        PageLoad::
+            kExperimental_LayoutInstability_MaxCumulativeShiftScoreAtFirstOnHidden_SessionWindow_Gap1000ms_Max5000msName,
+        100);
+    ukm_recorder_2.ExpectEntryMetric(
+        ukm_entry, PageLoad::kLayoutInstability_CumulativeShiftScoreName, 250);
+    ukm_recorder_2.ExpectEntryMetric(
+        ukm_entry,
+        PageLoad::
+            kLayoutInstability_CumulativeShiftScore_MainFrame_BeforeInputOrScrollName,
+        100);
+    ukm_recorder_2.ExpectEntryMetric(
+        ukm_entry,
+        PageLoad::
+            kLayoutInstability_MaxCumulativeShiftScore_SessionWindow_Gap1000ms_Max5000msName,
+        250);
+    ukm_recorder_2.ExpectEntryMetric(kv.second.get(),
+                                     PageLoad::kNavigation_PageEndReason3Name,
+                                     page_load_metrics::END_CLOSE);
+  }
+  EXPECT_THAT(tester()->histogram_tester().GetAllSamples(
+                  "PageLoad.LayoutInstability.CumulativeShiftScore"),
+              testing::ElementsAre(base::Bucket(25, 1)));
+  EXPECT_THAT(tester()->histogram_tester().GetAllSamples(
+                  "PageLoad.LayoutInstability.MaxCumulativeShiftScore."
+                  "SessionWindow.Gap1000ms.Max5000ms"),
+              testing::ElementsAre(base::Bucket(25, 1)));
+}
+
+TEST_F(UkmPageLoadMetricsObserverTest,
+       ExperimentalLayoutInstabilityRecordOnPageOpenBackground) {
+  // Open the page at the background.
+  web_contents()->WasHidden();
+  NavigateAndCommit(GURL(kTestUrl1));
+  base::TimeTicks current_time = base::TimeTicks::Now();
+
+  // Bring the tab to the foreground and simulate a layout shift.
+  web_contents()->WasShown();
+  page_load_metrics::mojom::FrameRenderDataUpdate render_data(1.0, 1.0, 0, 0, 0,
+                                                              0, 0, 0, {});
+  render_data.new_layout_shifts.emplace_back(
+      page_load_metrics::mojom::LayoutShift::New(
+          current_time - base::Milliseconds(4000), 0.5));
+  render_data.new_layout_shifts.emplace_back(
+      page_load_metrics::mojom::LayoutShift::New(
+          current_time - base::Milliseconds(3500), 0.5));
+
+  tester()->SimulateRenderDataUpdate(render_data);
+
+  // Simulate hiding the tab (the report should include shifts before hide).
+  web_contents()->WasHidden();
+
+  const auto& ukm_recorder = tester()->test_ukm_recorder();
+  std::map<ukm::SourceId, ukm::mojom::UkmEntryPtr> merged_entries =
+      ukm_recorder.GetMergedEntriesByName(PageLoad::kEntryName);
+  EXPECT_EQ(1ul, merged_entries.size());
+
+  for (const auto& kv : merged_entries) {
+    const ukm::mojom::UkmEntry* ukm_entry = kv.second.get();
+    ukm_recorder.ExpectEntrySourceHasUrl(ukm_entry, GURL(kTestUrl1));
+    ukm_recorder.ExpectEntryMetric(
+        ukm_entry,
+        PageLoad::
+            kExperimental_LayoutInstability_CumulativeShiftScoreAtFirstOnHiddenName,
+        100);
+    ukm_recorder.ExpectEntryMetric(
+        ukm_entry,
+        PageLoad::
+            kExperimental_LayoutInstability_MaxCumulativeShiftScoreAtFirstOnHidden_SessionWindow_Gap1000ms_Max5000msName,
+        100);
+  }
 }
 
 TEST_F(UkmPageLoadMetricsObserverTest, SiteInstanceRenderProcessAssignment) {

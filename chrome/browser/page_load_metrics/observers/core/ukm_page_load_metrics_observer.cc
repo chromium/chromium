@@ -332,6 +332,16 @@ UkmPageLoadMetricsObserver::ObservePolicy UkmPageLoadMetricsObserver::OnHidden(
     RecordInputTimingMetrics();
     was_hidden_ = true;
   }
+
+  // Record the CLS metrics when the tab is first hidden after it is first
+  // shown in foreground, in case that OnComplete is not called.
+  // last_time_shown_ is set when the page starts in the foreground or the page
+  // becomes foregrounded.
+  if (!was_hidden_after_first_show_in_foreground &&
+      !last_time_shown_.is_null()) {
+    ReportLayoutInstabilityAfterFirstForeground();
+    was_hidden_after_first_show_in_foreground = true;
+  }
   return CONTINUE_OBSERVING;
 }
 
@@ -1028,6 +1038,29 @@ void UkmPageLoadMetricsObserver::ReportLayoutStability() {
       "PageLoad.LayoutInstability.CumulativeShiftScore.MainFrame",
       page_load_metrics::LayoutShiftUmaValue(
           GetDelegate().GetMainFrameRenderData().layout_shift_score));
+}
+
+void UkmPageLoadMetricsObserver::ReportLayoutInstabilityAfterFirstForeground() {
+  DCHECK(!last_time_shown_.is_null());
+
+  ukm::builders::PageLoad builder(GetDelegate().GetPageUkmSourceId());
+  builder.SetExperimental_LayoutInstability_CumulativeShiftScoreAtFirstOnHidden(
+      page_load_metrics::LayoutShiftUkmValue(
+          GetDelegate().GetPageRenderData().layout_shift_score));
+  // Record CLS normalization UKM.
+  const page_load_metrics::NormalizedCLSData& normalized_cls_data =
+      GetDelegate().GetNormalizedCLSData(
+          page_load_metrics::PageLoadMetricsObserverDelegate::BfcacheStrategy::
+              ACCUMULATE);
+  if (base::FeatureList::IsEnabled(kLayoutShiftNormalizationRecordUKM) &&
+      !normalized_cls_data.data_tainted) {
+    builder
+        .SetExperimental_LayoutInstability_MaxCumulativeShiftScoreAtFirstOnHidden_SessionWindow_Gap1000ms_Max5000ms(
+            page_load_metrics::LayoutShiftUkmValue(
+                normalized_cls_data
+                    .session_windows_gap1000ms_max5000ms_max_cls));
+  }
+  builder.Record(ukm::UkmRecorder::Get());
 }
 
 void UkmPageLoadMetricsObserver::RecordAbortMetrics(

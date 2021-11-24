@@ -189,6 +189,11 @@ class UkmPageLoadMetricsObserver
       const net::CookieAccessResultList& cookies,
       const net::CookieAccessResultList& excluded_cookies);
 
+  // Record some experimental cumulative shift metrics that have occurred on
+  // the page until the first time the page moves from the foreground to the
+  // background.
+  void ReportLayoutInstabilityAfterFirstForeground();
+
   // Guaranteed to be non-null during the lifetime of |this|.
   network::NetworkQualityTracker* network_quality_tracker_;
 
@@ -288,6 +293,10 @@ class UkmPageLoadMetricsObserver
   absl::optional<net::HttpResponseInfo::ConnectionInfo> connection_info_;
 
   base::ReadOnlySharedMemoryMapping ukm_smoothness_data_;
+
+  // Only true if the page became hidden after the first time it was shown in
+  // the foreground, no matter how it started.
+  bool was_hidden_after_first_show_in_foreground = false;
 
   base::WeakPtrFactory<UkmPageLoadMetricsObserver> weak_factory_{this};
 };

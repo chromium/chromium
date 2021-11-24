@@ -12113,6 +12113,53 @@ be describing additional metrics about the same event.
       crbug.com/897837 crbug.com/897840
     </summary>
   </metric>
+  <metric
+      name="Experimental.LayoutInstability.CumulativeShiftScoreAtFirstOnHidden">
+    <summary>
+      Measures the cumulative layout shift (bit.ly/lsm-explainer) that has
+      occurred on the page (including all subframes) until the first time the
+      page moves from the foreground to the background. This metric's integral
+      value is 100x the fractional cumulative layout shift score described in
+      the explainer. Stable since M79; previous versions are expermental and
+      subject to fluctuation between releases. Log of major changes:
+      http://bit.ly/chrome-speed-metrics-changelog. This metric is trying to
+      record the layout shift values which are not able to be recorded in
+      LayoutInstability.CumulativeShiftScore for some reasons.
+    </summary>
+    <aggregation>
+      <history>
+        <index fields="profile.country"/>
+        <index fields="profile.country,profile.system_ram"/>
+        <index fields="profile.is_dominant_version"/>
+        <index fields="profile.is_latest_version"/>
+        <index fields="profile.system_ram"/>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric
+      name="Experimental.LayoutInstability.MaxCumulativeShiftScoreAtFirstOnHidden.SessionWindow.Gap1000ms.Max5000ms">
+    <summary>
+      Measures the maximum cumulative layout shift (bit.ly/cls-explainer) that
+      has occurred in a session window until the first time the page moves from
+      the foreground to the background. The gap between two consecutive shifts
+      in a window is not bigger than 1000ms and the maximum window size is
+      5000ms. This metric's integral value is 100x the fractional cumulative
+      layout shift score described in the explainer. This metric is trying to
+      record the layout shift values which are not able to be recorded in
+      LayoutInstability.MaxCumulativeShiftScore.SessionWindow.Gap1000ms.Max5000ms
+      for some reasons.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
   <metric name="Experimental.Navigation.UserInitiated">
     <summary>
       True if this navigation was initiated by user input. For renderer
