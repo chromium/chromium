@@ -658,6 +658,8 @@ interface ShimlessRmaService {
   //
   // Get the RMA Log
   GetLog() => (string log);
+  // Launch the system diagnostics app.
+  LaunchDiagnostics();
   // Complete RMA and reboot.
   // Returns an error indicating success or a failure.
   EndRmaAndReboot()

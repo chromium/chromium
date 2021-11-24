@@ -67,6 +67,7 @@ class FakeShimlessRmaDelegate : public ShimlessRmaDelegate {
   FakeShimlessRmaDelegate& operator=(const FakeShimlessRmaDelegate&) = delete;
 
   void RestartChrome() override {}
+  void ShowDiagnosticsDialog() override {}
 };
 
 }  // namespace

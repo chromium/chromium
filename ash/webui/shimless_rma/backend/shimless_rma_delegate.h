@@ -16,6 +16,9 @@ class ShimlessRmaDelegate {
 
   // Restarts the Chrome session.
   virtual void RestartChrome() = 0;
+
+  // Starts the post-boot diagnostics app.
+  virtual void ShowDiagnosticsDialog() = 0;
 };
 
 }  // namespace shimless_rma

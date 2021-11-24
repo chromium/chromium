@@ -6,6 +6,7 @@
 
 #include "base/command_line.h"
 #include "chrome/browser/ash/login/chrome_restart_request.h"
+#include "chrome/browser/ui/webui/chromeos/diagnostics_dialog.h"
 
 namespace ash {
 namespace shimless_rma {
@@ -17,6 +18,10 @@ void ChromeShimlessRmaDelegate::RestartChrome() {
   // TODO(gavinwill): Add the option to pass the --no-rma flag when implemented.
   ash::RestartChrome(*base::CommandLine::ForCurrentProcess(),
                      ash::RestartChromeReason::kUserless);
+}
+
+void ChromeShimlessRmaDelegate::ShowDiagnosticsDialog() {
+  chromeos::DiagnosticsDialog::ShowDialog();
 }
 
 }  // namespace shimless_rma

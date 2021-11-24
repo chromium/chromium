@@ -22,6 +22,7 @@ class ChromeShimlessRmaDelegate : public ShimlessRmaDelegate {
 
   // ShimlessRmaDelegate:
   void RestartChrome() override;
+  void ShowDiagnosticsDialog() override;
 };
 
 }  // namespace shimless_rma

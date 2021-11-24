@@ -671,6 +671,10 @@ export class FakeShimlessRmaService {
     this.methods_.setResult('getLog', {log: log});
   }
 
+  launchDiagnostics() {
+    console.log('(Fake) Launching diagnostics...');
+  }
+
   /**
    * @return {!Promise<!StateResult>}
    */

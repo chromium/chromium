@@ -741,6 +741,15 @@ void ShimlessRmaService::OnGetLog(GetLogCallback callback,
   std::move(callback).Run(*log);
 }
 
+void ShimlessRmaService::LaunchDiagnostics() {
+  if (state_proto_.state_case() != rmad::RmadState::kRepairComplete) {
+    LOG(ERROR) << "LaunchDiagnostics called from incorrect state "
+               << state_proto_.state_case();
+    return;
+  }
+  shimless_rma_delegate_->ShowDiagnosticsDialog();
+}
+
 void ShimlessRmaService::EndRmaAndReboot(EndRmaAndRebootCallback callback) {
   if (state_proto_.state_case() != rmad::RmadState::kRepairComplete) {
     LOG(ERROR) << "EndRmaAndReboot called from incorrect state "
