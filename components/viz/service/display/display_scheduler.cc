@@ -44,12 +44,10 @@ DisplayScheduler::DisplayScheduler(BeginFrameSource* begin_frame_source,
                                    base::SingleThreadTaskRunner* task_runner,
                                    int max_pending_swaps,
                                    absl::optional<int> max_pending_swaps_120hz,
-                                   bool wait_for_all_surfaces_before_draw,
-                                   gfx::RenderingPipeline* gpu_pipeline)
+                                   bool wait_for_all_surfaces_before_draw)
     : begin_frame_observer_(std::make_unique<BeginFrameObserver>(this)),
       begin_frame_source_(begin_frame_source),
       task_runner_(task_runner),
-      gpu_pipeline_(gpu_pipeline),
       inside_surface_damaged_(false),
       visible_(false),
       output_surface_lost_(false),
@@ -148,11 +146,6 @@ void DisplayScheduler::OutputSurfaceLost() {
   ScheduleBeginFrameDeadline();
 }
 
-void DisplayScheduler::SetGpuLatency(base::TimeDelta gpu_latency) {
-  if (gpu_pipeline_)
-    gpu_pipeline_->SetGpuLatency(gpu_latency);
-}
-
 bool DisplayScheduler::DrawAndSwap() {
   TRACE_EVENT0("viz", "DisplayScheduler::DrawAndSwap");
   DCHECK_LT(pending_swaps_,
@@ -216,8 +209,6 @@ bool DisplayScheduler::OnBeginFrame(const BeginFrameArgs& args) {
   current_begin_frame_args_.deadline -= delta;
 
   inside_begin_frame_deadline_interval_ = true;
-  if (gpu_pipeline_)
-    gpu_pipeline_->SetTargetDuration(save_args.interval);
 
   UpdateHasPendingSurfaces();
   ScheduleBeginFrameDeadline();
@@ -257,8 +248,6 @@ void DisplayScheduler::StartObservingBeginFrames() {
       client_->OnObservingBeginFrameSourceChanged(
           observing_begin_frame_source_);
     }
-    if (gpu_pipeline_)
-      gpu_pipeline_active_.emplace(gpu_pipeline_);
   }
 }
 
@@ -270,7 +259,6 @@ void DisplayScheduler::StopObservingBeginFrames() {
       client_->OnObservingBeginFrameSourceChanged(
           observing_begin_frame_source_);
     }
-    gpu_pipeline_active_.reset();
 
     // A missed BeginFrame may be queued, so drop that too if we're going to
     // stop listening.
@@ -435,8 +423,6 @@ void DisplayScheduler::OnBeginFrameDeadline() {
 
   bool did_draw = AttemptDrawAndSwap();
   DidFinishFrame(did_draw);
-  if (gpu_pipeline_)
-    gpu_pipeline_->NotifyFrameFinished();
 }
 
 void DisplayScheduler::DidFinishFrame(bool did_draw) {

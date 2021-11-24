@@ -46,7 +46,6 @@ class VIZ_SERVICE_EXPORT DisplaySchedulerBase
   virtual void DidSwapBuffers() = 0;
   virtual void DidReceiveSwapBuffersAck() = 0;
   virtual void OutputSurfaceLost() = 0;
-  virtual void SetGpuLatency(base::TimeDelta gpu_latency) = 0;
 
  protected:
   DisplaySchedulerClient* client_ = nullptr;

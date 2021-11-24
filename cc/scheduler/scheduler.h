@@ -22,7 +22,6 @@
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
 #include "components/viz/common/frame_sinks/begin_frame_source.h"
 #include "components/viz/common/frame_sinks/delay_based_time_source.h"
-#include "ui/gfx/rendering_pipeline.h"
 
 namespace perfetto {
 namespace protos {
@@ -102,8 +101,6 @@ class CC_EXPORT Scheduler : public viz::BeginFrameObserverBase {
       int layer_tree_host_id,
       base::SingleThreadTaskRunner* task_runner,
       std::unique_ptr<CompositorTimingHistory> compositor_timing_history,
-      gfx::RenderingPipeline* main_thread_pipeline,
-      gfx::RenderingPipeline* compositor_thread_pipeline,
       CompositorFrameReportingController* compositor_frame_reporting_controller,
       power_scheduler::PowerModeArbiter* power_mode_arbiter);
   Scheduler(const Scheduler&) = delete;
@@ -341,14 +338,6 @@ class CC_EXPORT Scheduler : public viz::BeginFrameObserverBase {
   // Keeps track of the begin frame interval from the last BeginFrameArgs to
   // arrive so that |client_| can be informed about changes.
   base::TimeDelta last_frame_interval_;
-
-  gfx::RenderingPipeline* const main_thread_pipeline_;
-  absl::optional<gfx::RenderingPipeline::ScopedPipelineActive>
-      main_thread_pipeline_active_;
-
-  gfx::RenderingPipeline* const compositor_thread_pipeline_;
-  absl::optional<gfx::RenderingPipeline::ScopedPipelineActive>
-      compositor_thread_pipeline_active_;
 
   std::unique_ptr<power_scheduler::PowerModeVoter> power_mode_voter_;
   power_scheduler::PowerMode last_power_mode_vote_ =

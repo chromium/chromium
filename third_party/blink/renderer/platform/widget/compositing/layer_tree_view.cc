@@ -90,9 +90,7 @@ void LayerTreeView::Initialize(
     const cc::LayerTreeSettings& settings,
     scoped_refptr<base::SingleThreadTaskRunner> main_thread,
     scoped_refptr<base::SingleThreadTaskRunner> compositor_thread,
-    cc::TaskGraphRunner* task_graph_runner,
-    gfx::RenderingPipeline* main_thread_pipeline,
-    gfx::RenderingPipeline* compositor_thread_pipeline) {
+    cc::TaskGraphRunner* task_graph_runner) {
   DCHECK(delegate_);
   const bool is_threaded = !!compositor_thread;
 
@@ -105,8 +103,6 @@ void LayerTreeView::Initialize(
   params.mutator_host = animation_host_.get();
   params.dark_mode_filter = dark_mode_filter_.get();
   params.ukm_recorder_factory = std::make_unique<UkmRecorderFactoryImpl>();
-  params.main_thread_pipeline = main_thread_pipeline;
-  params.compositor_thread_pipeline = compositor_thread_pipeline;
   if (base::ThreadPoolInstance::Get()) {
     // The image worker thread needs to allow waiting since it makes discardable
     // shared memory allocations which need to make synchronous calls to the

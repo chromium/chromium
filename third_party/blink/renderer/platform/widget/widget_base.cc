@@ -206,8 +206,7 @@ void WidgetBase::InitializeCompositing(
       compositing_thread_scheduler
           ? compositing_thread_scheduler->DefaultTaskRunner()
           : nullptr,
-      platform->GetTaskGraphRunner(), platform->GetMainThreadPipeline(),
-      platform->GetCompositorThreadPipeline());
+      platform->GetTaskGraphRunner());
 
   FrameWidget* frame_widget = client_->FrameWidget();
 

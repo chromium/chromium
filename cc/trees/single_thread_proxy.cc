@@ -92,8 +92,6 @@ void SingleThreadProxy::Start() {
         this, scheduler_settings, layer_tree_host_->GetId(),
         task_runner_provider_->MainThreadTaskRunner(),
         std::move(compositor_timing_history),
-        layer_tree_host_->TakeMainPipeline(),
-        layer_tree_host_->TakeCompositorPipeline(),
         host_impl_->compositor_frame_reporting_controller(),
         power_scheduler::PowerModeArbiter::GetInstance());
   }

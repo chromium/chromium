@@ -69,8 +69,7 @@ FrameSinkManagerImpl::FrameSinkManagerImpl(const InitParams& params)
       run_all_compositor_stages_before_draw_(
           params.run_all_compositor_stages_before_draw),
       log_capture_pipeline_in_webrtc_(params.log_capture_pipeline_in_webrtc),
-      debug_settings_(params.debug_renderer_settings),
-      gpu_pipeline_(params.gpu_pipeline) {
+      debug_settings_(params.debug_renderer_settings) {
   surface_manager_.AddObserver(&hit_test_manager_);
   surface_manager_.AddObserver(this);
 }
@@ -180,7 +179,7 @@ void FrameSinkManagerImpl::CreateRootCompositorFrameSink(
   // Creating RootCompositorFrameSinkImpl can fail and return null.
   auto root_compositor_frame_sink = RootCompositorFrameSinkImpl::Create(
       std::move(params), this, output_surface_provider_, restart_id_,
-      run_all_compositor_stages_before_draw_, &debug_settings_, gpu_pipeline_);
+      run_all_compositor_stages_before_draw_, &debug_settings_);
 
   if (root_compositor_frame_sink)
     root_sink_map_[frame_sink_id] = std::move(root_compositor_frame_sink);

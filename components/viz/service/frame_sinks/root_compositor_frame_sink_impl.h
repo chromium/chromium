@@ -27,10 +27,6 @@
 #include "services/viz/public/mojom/compositing/compositor_frame_sink.mojom.h"
 #include "ui/gfx/ca_layer_params.h"
 
-namespace gfx {
-class RenderingPipeline;
-}
-
 namespace viz {
 
 class Display;
@@ -54,8 +50,7 @@ class VIZ_SERVICE_EXPORT RootCompositorFrameSinkImpl
       OutputSurfaceProvider* output_surface_provider,
       uint32_t restart_id,
       bool run_all_compositor_stages_before_draw,
-      const DebugRendererSettings* debug_settings,
-      gfx::RenderingPipeline* gpu_pipeline);
+      const DebugRendererSettings* debug_settings);
 
   RootCompositorFrameSinkImpl(const RootCompositorFrameSinkImpl&) = delete;
   RootCompositorFrameSinkImpl& operator=(const RootCompositorFrameSinkImpl&) =

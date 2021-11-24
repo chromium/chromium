@@ -147,8 +147,6 @@ LayerTreeHost::LayerTreeHost(InitParams params, CompositorMode mode)
       settings_(*params.settings),
       id_(s_layer_tree_host_sequence_number.GetNext() + 1),
       task_graph_runner_(params.task_graph_runner),
-      main_thread_pipeline_(params.main_thread_pipeline),
-      compositor_thread_pipeline_(params.compositor_thread_pipeline),
       mutator_host_(params.mutator_host),
       dark_mode_filter_(params.dark_mode_filter) {
   DCHECK(task_graph_runner_);
@@ -2084,18 +2082,6 @@ void LayerTreeHost::SetDelegatedInkMetadata(
     std::unique_ptr<gfx::DelegatedInkMetadata> metadata) {
   pending_commit_state()->delegated_ink_metadata = std::move(metadata);
   SetNeedsCommit();
-}
-
-gfx::RenderingPipeline* LayerTreeHost::TakeMainPipeline() {
-  auto* pipeline = main_thread_pipeline_;
-  main_thread_pipeline_ = nullptr;
-  return pipeline;
-}
-
-gfx::RenderingPipeline* LayerTreeHost::TakeCompositorPipeline() {
-  auto* pipeline = compositor_thread_pipeline_;
-  compositor_thread_pipeline_ = nullptr;
-  return pipeline;
 }
 
 std::vector<base::OnceClosure>

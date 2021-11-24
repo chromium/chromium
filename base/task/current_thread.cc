@@ -77,18 +77,6 @@ void CurrentThread::RemoveTaskObserver(TaskObserver* task_observer) {
   current_->RemoveTaskObserver(task_observer);
 }
 
-void CurrentThread::AddTaskTimeObserver(
-    sequence_manager::TaskTimeObserver* task_observer) {
-  DCHECK(current_->IsBoundToCurrentThread());
-  current_->AddTaskTimeObserver(task_observer);
-}
-
-void CurrentThread::RemoveTaskTimeObserver(
-    sequence_manager::TaskTimeObserver* task_observer) {
-  DCHECK(current_->IsBoundToCurrentThread());
-  current_->RemoveTaskTimeObserver(task_observer);
-}
-
 void CurrentThread::SetAddQueueTimeToTasks(bool enable) {
   DCHECK(current_->IsBoundToCurrentThread());
   current_->SetAddQueueTimeToTasks(enable);

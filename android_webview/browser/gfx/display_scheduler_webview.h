@@ -32,7 +32,6 @@ class DisplaySchedulerWebView : public viz::DisplaySchedulerBase {
   void DidSwapBuffers() override;
   void DidReceiveSwapBuffersAck() override {}
   void OutputSurfaceLost() override;
-  void SetGpuLatency(base::TimeDelta gpu_latency) override {}
 
   // DisplayDamageTrackerObserver implementation.
   void OnDisplayDamaged(viz::SurfaceId surface_id) override;

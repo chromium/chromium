@@ -112,10 +112,6 @@ component("gfx") {
     "overlay_transform_utils.cc",
     "overlay_transform_utils.h",
     "platform_font.h",
-    "rendering_pipeline.cc",
-    "rendering_pipeline.h",
-    "rendering_stage_scheduler.cc",
-    "rendering_stage_scheduler.h",
     "scrollbar_size.cc",
     "scrollbar_size.h",
     "selection_model.cc",
@@ -919,7 +915,6 @@ test("gfx_unittests") {
 if (is_android) {
   generate_jni("gfx_jni_headers") {
     sources = [
-      "../android/java/src/org/chromium/ui/gfx/AdpfRenderingStageScheduler.java",
       "../android/java/src/org/chromium/ui/gfx/Animation.java",
       "../android/java/src/org/chromium/ui/gfx/BitmapHelper.java",
       "../android/java/src/org/chromium/ui/gfx/ViewConfigurationHelper.java",

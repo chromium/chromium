@@ -312,7 +312,6 @@ void Display::PresentationGroupTiming::OnPresent(
              << " ms";
     return;
   }
-  scheduler->SetGpuLatency(gpu_latency);
 }
 
 Display::Display(

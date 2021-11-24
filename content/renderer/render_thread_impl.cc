@@ -158,7 +158,6 @@
 #include "ui/base/ui_base_switches.h"
 #include "ui/base/ui_base_switches_util.h"
 #include "ui/display/display_switches.h"
-#include "ui/gfx/rendering_pipeline.h"
 #include "v8/include/v8-extension.h"
 
 #if defined(OS_ANDROID)
@@ -692,24 +691,6 @@ void RenderThreadImpl::Init() {
   DCHECK(parsed_num_raster_threads) << string_value;
   DCHECK_GT(num_raster_threads, 0);
 
-  if (base::FeatureList::IsEnabled(features::kAdpf)) {
-    main_thread_pipeline_ = gfx::RenderingPipeline::CreateRendererMain();
-    main_thread_pipeline_->AddSequenceManagerThread(
-        base::PlatformThread::CurrentId(), base::ThreadTaskRunnerHandle::Get());
-
-    compositor_thread_pipeline_ =
-        gfx::RenderingPipeline::CreateRendererCompositor();
-
-    compositor_task_runner_->PostTask(
-        FROM_HERE, base::BindOnce(
-                       [](gfx::RenderingPipeline* compositor_thread_pipeline) {
-                         compositor_thread_pipeline->AddSequenceManagerThread(
-                             base::PlatformThread::CurrentId(),
-                             base::ThreadTaskRunnerHandle::Get());
-                       },
-                       compositor_thread_pipeline_.get()));
-  }
-
 #if defined(OS_LINUX) || defined(OS_CHROMEOS)
   categorized_worker_pool_->SetBackgroundingCallback(
       main_thread_scheduler_->DefaultTaskRunner(),
@@ -723,7 +704,7 @@ void RenderThreadImpl::Init() {
           },
           weak_factory_.GetWeakPtr()));
 #endif
-  categorized_worker_pool_->Start(num_raster_threads, nullptr);
+  categorized_worker_pool_->Start(num_raster_threads);
 
   discardable_memory_allocator_ = CreateDiscardableMemoryAllocator();
 
@@ -1338,14 +1319,6 @@ void RenderThreadImpl::SetScrollAnimatorEnabled(
     bool enable_scroll_animator,
     base::PassKey<AgentSchedulingGroup>) {
   is_scroll_animator_enabled_ = enable_scroll_animator;
-}
-
-gfx::RenderingPipeline* RenderThreadImpl::GetMainThreadPipeline() {
-  return main_thread_pipeline_.get();
-}
-
-gfx::RenderingPipeline* RenderThreadImpl::GetCompositorThreadPipeline() {
-  return compositor_thread_pipeline_.get();
 }
 
 bool RenderThreadImpl::IsMainThread() {

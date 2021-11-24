@@ -30,10 +30,6 @@ class RenderFrameMetadataObserver;
 class TaskGraphRunner;
 }  // namespace cc
 
-namespace gfx {
-class RenderingPipeline;
-}  // namespace gfx
-
 namespace blink {
 
 namespace scheduler {
@@ -60,9 +56,7 @@ class PLATFORM_EXPORT LayerTreeView
   void Initialize(const cc::LayerTreeSettings& settings,
                   scoped_refptr<base::SingleThreadTaskRunner> main_thread,
                   scoped_refptr<base::SingleThreadTaskRunner> compositor_thread,
-                  cc::TaskGraphRunner* task_graph_runner,
-                  gfx::RenderingPipeline* main_thread_pipeline,
-                  gfx::RenderingPipeline* compositor_thread_pipeline);
+                  cc::TaskGraphRunner* task_graph_runner);
 
   // Drops any references back to the delegate in preparation for being
   // destroyed.

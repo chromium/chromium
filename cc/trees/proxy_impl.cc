@@ -93,8 +93,7 @@ ProxyImpl::ProxyImpl(base::WeakPtr<ProxyMain> proxy_main_weak_ptr,
   scheduler_ = std::make_unique<Scheduler>(
       this, scheduler_settings, layer_tree_host_id_,
       task_runner_provider_->ImplThreadTaskRunner(),
-      std::move(compositor_timing_history), layer_tree_host->TakeMainPipeline(),
-      layer_tree_host->TakeCompositorPipeline(),
+      std::move(compositor_timing_history),
       host_impl_->compositor_frame_reporting_controller(),
       power_scheduler::PowerModeArbiter::GetInstance());
 

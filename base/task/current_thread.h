@@ -119,10 +119,6 @@ class BASE_EXPORT CurrentThread {
   void AddTaskObserver(TaskObserver* task_observer);
   void RemoveTaskObserver(TaskObserver* task_observer);
 
-  void AddTaskTimeObserver(sequence_manager::TaskTimeObserver* task_observer);
-  void RemoveTaskTimeObserver(
-      sequence_manager::TaskTimeObserver* task_observer);
-
   // When this functionality is enabled, the queue time will be recorded for
   // posted tasks.
   void SetAddQueueTimeToTasks(bool enable);

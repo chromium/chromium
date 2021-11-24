@@ -118,14 +118,13 @@ void VizCompositorThreadRunnerImpl::CreateFrameSinkManager(
       FROM_HERE, base::BindOnce(&VizCompositorThreadRunnerImpl::
                                     CreateFrameSinkManagerOnCompositorThread,
                                 base::Unretained(this), std::move(params),
-                                nullptr, nullptr, nullptr));
+                                nullptr, nullptr));
 }
 
 void VizCompositorThreadRunnerImpl::CreateFrameSinkManager(
     mojom::FrameSinkManagerParamsPtr params,
     gpu::CommandBufferTaskExecutor* task_executor,
-    GpuServiceImpl* gpu_service,
-    gfx::RenderingPipeline* gpu_pipeline) {
+    GpuServiceImpl* gpu_service) {
   // All of the unretained objects are owned on the GPU thread and destroyed
   // after VizCompositorThread has been shutdown.
   task_runner_->PostTask(
@@ -133,15 +132,13 @@ void VizCompositorThreadRunnerImpl::CreateFrameSinkManager(
                                     CreateFrameSinkManagerOnCompositorThread,
                                 base::Unretained(this), std::move(params),
                                 base::Unretained(task_executor),
-                                base::Unretained(gpu_service),
-                                base::Unretained(gpu_pipeline)));
+                                base::Unretained(gpu_service)));
 }
 
 void VizCompositorThreadRunnerImpl::CreateFrameSinkManagerOnCompositorThread(
     mojom::FrameSinkManagerParamsPtr params,
     gpu::CommandBufferTaskExecutor* task_executor,
-    GpuServiceImpl* gpu_service,
-    gfx::RenderingPipeline* gpu_pipeline) {
+    GpuServiceImpl* gpu_service) {
   DCHECK(task_runner_->BelongsToCurrentThread());
   DCHECK(!frame_sink_manager_);
   if (features::IsUsingSkiaRenderer())
@@ -190,7 +187,6 @@ void VizCompositorThreadRunnerImpl::CreateFrameSinkManagerOnCompositorThread(
   init_params.log_capture_pipeline_in_webrtc =
       features::ShouldWebRtcLogCapturePipeline();
   init_params.debug_renderer_settings = params->debug_renderer_settings;
-  init_params.gpu_pipeline = gpu_pipeline;
 
   frame_sink_manager_ = std::make_unique<FrameSinkManagerImpl>(init_params);
   frame_sink_manager_->BindAndSetClient(

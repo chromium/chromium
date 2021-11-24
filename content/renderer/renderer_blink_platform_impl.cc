@@ -521,17 +521,6 @@ cc::TaskGraphRunner* RendererBlinkPlatformImpl::GetTaskGraphRunner() {
   return thread ? thread->GetTaskGraphRunner() : nullptr;
 }
 
-gfx::RenderingPipeline* RendererBlinkPlatformImpl::GetMainThreadPipeline() {
-  RenderThreadImpl* thread = RenderThreadImpl::current();
-  return thread ? thread->GetMainThreadPipeline() : nullptr;
-}
-
-gfx::RenderingPipeline*
-RendererBlinkPlatformImpl::GetCompositorThreadPipeline() {
-  RenderThreadImpl* thread = RenderThreadImpl::current();
-  return thread ? thread->GetCompositorThreadPipeline() : nullptr;
-}
-
 bool RendererBlinkPlatformImpl::IsThreadedAnimationEnabled() {
   RenderThreadImpl* thread = RenderThreadImpl::current();
   return thread ? thread->IsThreadedAnimationEnabled() : true;

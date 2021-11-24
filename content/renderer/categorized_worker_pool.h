@@ -20,16 +20,7 @@
 
 namespace base {
 class SingleThreadTaskRunner;
-
-namespace sequence_manager {
-class TaskTimeObserver;
-}
-
 }  // namespace base
-
-namespace gfx {
-class RenderingPipeline;
-}
 
 namespace content {
 
@@ -61,15 +52,13 @@ class CONTENT_EXPORT CategorizedWorkerPool : public base::TaskRunner,
   // Runs a task from one of the provided categories. Categories listed first
   // have higher priority.
   void Run(const std::vector<cc::TaskCategory>& categories,
-           gfx::RenderingPipeline* pipeline,
            base::ConditionVariable* has_ready_to_run_tasks_cv);
 
   void FlushForTesting();
 
   // Spawn |num_threads| normal threads and 1 background thread and start
   // running work on the worker threads.
-  void Start(int num_normal_threads,
-             gfx::RenderingPipeline* foreground_pipeline);
+  void Start(int num_normal_threads);
 
   // Finish running all the posted tasks (and nested task posted by those tasks)
   // of all the associated task runners.
@@ -124,16 +113,12 @@ class CONTENT_EXPORT CategorizedWorkerPool : public base::TaskRunner,
 
   // Runs a task from one of the provided categories. Categories listed first
   // have higher priority. Returns false if there were no tasks to run.
-  bool RunTaskWithLockAcquired(
-      const std::vector<cc::TaskCategory>& categories,
-      base::sequence_manager::TaskTimeObserver* observer)
+  bool RunTaskWithLockAcquired(const std::vector<cc::TaskCategory>& categories)
       EXCLUSIVE_LOCKS_REQUIRED(lock_);
 
   // Run next task for the given category. Caller must acquire |lock_| prior to
   // calling this function and make sure at least one task is ready to run.
-  void RunTaskInCategoryWithLockAcquired(
-      cc::TaskCategory category,
-      base::sequence_manager::TaskTimeObserver* observer)
+  void RunTaskInCategoryWithLockAcquired(cc::TaskCategory category)
       EXCLUSIVE_LOCKS_REQUIRED(lock_);
 
   // Helper function which signals worker threads if tasks are ready to run.

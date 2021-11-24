@@ -12,10 +12,6 @@ namespace base {
 class SingleThreadTaskRunner;
 }
 
-namespace gfx {
-class RenderingPipeline;
-}
-
 namespace gpu {
 class CommandBufferTaskExecutor;
 }  // namespace gpu
@@ -45,8 +41,7 @@ class VizCompositorThreadRunner {
   virtual void CreateFrameSinkManager(
       mojom::FrameSinkManagerParamsPtr params,
       gpu::CommandBufferTaskExecutor* task_executor,
-      GpuServiceImpl* gpu_service,
-      gfx::RenderingPipeline* gpu_pipeline) = 0;
+      GpuServiceImpl* gpu_service) = 0;
 };
 
 }  // namespace viz

@@ -116,8 +116,7 @@ void VizCompositorThreadRunnerWebView::CreateFrameSinkManager(
 void VizCompositorThreadRunnerWebView::CreateFrameSinkManager(
     viz::mojom::FrameSinkManagerParamsPtr params,
     gpu::CommandBufferTaskExecutor* task_executor,
-    viz::GpuServiceImpl* gpu_service,
-    gfx::RenderingPipeline* gpu_pipeline) {
+    viz::GpuServiceImpl* gpu_service) {
   viz_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(
