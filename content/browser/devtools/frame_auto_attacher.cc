@@ -211,11 +211,11 @@ void FrameAutoAttacher::UpdateAutoAttach(base::OnceClosure callback) {
         !observing_service_workers_) {
       observing_service_workers_ = true;
       ServiceWorkerDevToolsManager::GetInstance()->AddObserver(this);
+      ReattachServiceWorkers();
     }
     if (render_frame_host_ && !observing_auction_worklets_) {
       observing_auction_worklets_ = true;
       DebuggableAuctionWorkletTracker::GetInstance()->AddObserver(this);
-      ReattachServiceWorkers();
     }
   } else {
     if (observing_service_workers_) {
