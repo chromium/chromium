@@ -5199,6 +5199,12 @@ const char kWebuiDarkModeDescription[] =
     "Allows dark mode usage in WebUI. Note that this does not necessary enable "
     "dark mode, which is enabled via the #enable-force-dark flag.";
 
+const char kWifiConnectMacAddressRandomizationName[] =
+    "MAC address randomization";
+const char kWifiConnectMacAddressRandomizationDescription[] =
+    "Randomize MAC address when connecting to unmanaged (non-enterprise) "
+    "WiFi networks.";
+
 const char kWifiSyncAllowDeletesName[] =
     "Sync removal of Wi-Fi network configurations";
 const char kWifiSyncAllowDeletesDescription[] =

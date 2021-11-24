@@ -1257,6 +1257,10 @@ const base::Feature kWebApkGenerator{"WebApkGenerator",
 const base::Feature kWebUITabStripTabDragIntegration{
     "WebUITabStripTabDragIntegration", base::FEATURE_ENABLED_BY_DEFAULT};
 
+// Controls whether to enable MAC Address Randomization on WiFi connection.
+const base::Feature kWifiConnectMacAddressRandomization{
+    "WifiConnectMacAddressRandomization", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Controls whether to enable the syncing of deletes of Wi-Fi configurations.
 // This only controls sending delete events to the Chrome Sync server.
 const base::Feature kWifiSyncAllowDeletes{"WifiSyncAllowDeletes",

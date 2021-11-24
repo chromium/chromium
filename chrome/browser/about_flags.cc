@@ -3169,6 +3169,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kShowFeedbackReportQuestionnaireName,
      flag_descriptions::kShowFeedbackReportQuestionnaireDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kShowFeedbackReportQuestionnaire)},
+    {"wifi-connect-mac-address-randomization",
+     flag_descriptions::kWifiConnectMacAddressRandomizationName,
+     flag_descriptions::kWifiConnectMacAddressRandomizationDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(
+         chromeos::features::kWifiConnectMacAddressRandomization)},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if defined(OS_CHROMEOS)

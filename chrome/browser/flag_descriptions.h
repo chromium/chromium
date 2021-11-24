@@ -3006,6 +3006,9 @@ extern const char kWebAppsCrosapiDescription[];
 extern const char kWebuiDarkModeName[];
 extern const char kWebuiDarkModeDescription[];
 
+extern const char kWifiConnectMacAddressRandomizationName[];
+extern const char kWifiConnectMacAddressRandomizationDescription[];
+
 extern const char kWifiSyncAllowDeletesName[];
 extern const char kWifiSyncAllowDeletesDescription[];
 

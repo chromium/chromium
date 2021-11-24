@@ -9,6 +9,7 @@
 #include <memory>
 #include <set>
 
+#include "ash/constants/ash_features.h"
 #include "base/i18n/encoding_detection.h"
 #include "base/i18n/icu_string_conversions.h"
 #include "base/notreached.h"
@@ -214,6 +215,45 @@ std::unique_ptr<NetworkUIData> GetUIDataFromProperties(
   if (!ui_data)
     LOG(ERROR) << "UIData is not a valid JSON dictionary.";
   return ui_data;
+}
+
+void SetRandomMACPolicy(::onc::ONCSource onc_source,
+                        base::DictionaryValue* shill_dictionary) {
+  std::string* service_type =
+      shill_dictionary->FindStringKey(shill::kTypeProperty);
+  DCHECK(service_type);
+  if (*service_type != shill::kTypeWifi) {
+    // For non-wifi types we don't set MAC policy at all.
+    return;
+  }
+
+  // If the feature flag is not enabled, we set each MAC Address Policy
+  // to Hardware (non-randomized).
+  if (!base::FeatureList::IsEnabled(
+          chromeos::features::kWifiConnectMacAddressRandomization)) {
+    shill_dictionary->SetKey(shill::kWifiRandomMACPolicy,
+                             base::Value(shill::kWifiRandomMacPolicyHardware));
+    return;
+  }
+
+  // For enterprise policies we also set MAC Address Policy
+  // to Hardware (non-randomized).
+  if (onc_source == ::onc::ONCSource::ONC_SOURCE_DEVICE_POLICY ||
+      onc_source == ::onc::ONCSource::ONC_SOURCE_USER_POLICY ||
+      // User Import is not policy per se, but we use it to have some means
+      // to force Hardware address by user in experimental mode.
+      onc_source == ::onc::ONCSource::ONC_SOURCE_USER_IMPORT) {
+    shill_dictionary->SetKey(shill::kWifiRandomMACPolicy,
+                             base::Value(shill::kWifiRandomMacPolicyHardware));
+    return;
+  }
+
+  // In all other cases, set the MAC Address Policy
+  // to Persistant-Random (Randomized per SSID, but persistent
+  // once randomized).
+  shill_dictionary->SetKey(
+      shill::kWifiRandomMACPolicy,
+      base::Value(shill::kWifiRandomMacPolicyPersistentRandom));
 }
 
 void SetUIDataAndSource(const NetworkUIData& ui_data,

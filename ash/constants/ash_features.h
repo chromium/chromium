@@ -473,6 +473,8 @@ COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kWebApkGenerator;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kWebUITabStripTabDragIntegration;
 COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const base::Feature kWifiConnectMacAddressRandomization;
+COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kWifiSyncAllowDeletes;
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kWifiSyncAndroid;
 COMPONENT_EXPORT(ASH_CONSTANTS)

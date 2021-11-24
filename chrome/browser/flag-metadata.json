@@ -5710,6 +5710,11 @@
     "expiry_milestone": -1
   },
   {
+    "name": "wifi-connect-mac-address-randomization",
+    "owners": [ "jsiuda", "chromeos-wifi-team" ],
+    "expiry_milestone": 108
+  },
+  {
     "name": "wifi-sync-allow-deletes",
     "owners": [ "jonmann", "chromeos-cross-device-eng@google.com" ],
     "expiry_milestone": 97

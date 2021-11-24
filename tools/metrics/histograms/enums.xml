@@ -50387,6 +50387,7 @@ from previous Chrome versions.
   <int value="-806480547" label="SyncDeviceInfoInTransportMode:enabled"/>
   <int value="-805927945" label="CrOSEnforceSystemAecNsAgc:disabled"/>
   <int value="-805480822" label="RemoteCopyImageNotification:disabled"/>
+  <int value="-804520763" label="WifiConnectMacAddressRandomization:enabled"/>
   <int value="-803233334" label="AutofillRefreshStyleAndroid:disabled"/>
   <int value="-803206774" label="TabbedAppOverflowMenuActionBar:disabled"/>
   <int value="-802348444" label="disable-site-engagement-service"/>
@@ -52351,6 +52352,7 @@ from previous Chrome versions.
   <int value="689577480" label="vr-shell-experimental-rendering"/>
   <int value="690185633" label="NonValidatingReloadOnNormalReload:disabled"/>
   <int value="691020108" label="NTPCondensedTileLayout:disabled"/>
+  <int value="691982483" label="WifiConnectMacAddressRandomization:disabled"/>
   <int value="693012666" label="QuickUnlockPin:disabled"/>
   <int value="693545401"
       label="AutofillEnableInfoBarAccountIndicationFooter:enabled"/>

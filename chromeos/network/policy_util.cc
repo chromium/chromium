@@ -374,6 +374,8 @@ base::Value CreateShillConfiguration(const NetworkProfile& profile,
   }
 
   shill_property_util::SetUIDataAndSource(*ui_data, shill_dictionary.get());
+  shill_property_util::SetRandomMACPolicy(ui_data->onc_source(),
+                                          shill_dictionary.get());
 
   VLOG(2) << "Created Shill properties: " << *shill_dictionary;
 
