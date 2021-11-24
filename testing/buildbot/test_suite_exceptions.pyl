@@ -464,14 +464,6 @@
           'shards': 20,
         },
       },
-      'linux-exp-code-coverage': {
-        'args': [
-          '--additional-env-var=LLVM_PROFILE_FILE=${ISOLATED_OUTDIR}/profraw/default-%2m.profraw',
-        ],
-        'swarming': {
-          'shards': 20,
-        },
-      },
       'linux-layout-tests-edit-ng': {
         'args': [
           '--flag-specific=enable-editing-ng',
