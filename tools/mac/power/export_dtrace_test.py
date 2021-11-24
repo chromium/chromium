@@ -3,7 +3,7 @@
 # found in the LICENSE file.
 
 import unittest
-from collapse_profile import StackCollapser
+from export_dtrace import StackCollapser
 
 
 class DTraceReadTest(unittest.TestCase):

@@ -19,7 +19,7 @@ Activate the venv.
 source ./env/bin/activate
 ```
 Once the venv is activated, `python` refers to python3.
-Upgrade pip and install all python dependencies. 
+Upgrade pip and install all python dependencies.
 ```
 python -m pip install -U pip
 python -m pip install -r requirements.txt
@@ -69,20 +69,20 @@ A tool that allow you to run different browsers under specific usage scenarios a
 * Profile the code that runs and/or is causing wake-ups. (chromium only)
 
 ```
-./benchmark.py ./results --measure 
+./benchmark.py ./results --measure
 ./benchmark.py ./profile --profile_mode cpu_time
 ```
 
 ## collapse_profile.py
 
-A tool that converts the DTrace results created by benchmark.py into a format suitable for 
+A tool that converts the DTrace results created by benchmark.py into a format suitable for
 FlameGraph generation and analysis. It also applies some Chromium specific filtering and enhancements.
 
 ```
-./collapse_profile.py ./profile --profile_mode cpu_time
+./export_dtrace.py --stack_dir ./output/samples/ --output_filename ./samples/samples.collapsed
 ```
 
-This command will produce a file at `./samples/samples.collapsed.cpu_time`.
+This command will produce a file at `./samples/samples.collapsed`.
 
 This file can be used with tools such as:
 
