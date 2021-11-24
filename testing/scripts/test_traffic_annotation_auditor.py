@@ -10,14 +10,23 @@ help it run fast and spam free on trybots are disabled."""
 
 import json
 import os
+import re
 import sys
 import tempfile
 
 
 import common
 
-SHEET_CONFIG = {
+WINDOWS_SHEET_CONFIG = {
   "spreadsheet_id": "1TmBr9jnf1-hrjntiVBzT9EtkINGrtoBYFMWad2MBeaY",
+  "annotations_sheet_name": "Annotations",
+  "changes_sheet_name": "Changes Stats",
+  "silent_change_columns": [],
+  "last_update_column_name": "Last Update",
+}
+
+CHROMEOS_SHEET_CONFIG = {
+  "spreadsheet_id": "1928goWKy6LVdF9Nl5nV1OD260YC10dHsdrnHEGdGsg8",
   "annotations_sheet_name": "Annotations",
   "changes_sheet_name": "Changes Stats",
   "silent_change_columns": [],
@@ -29,28 +38,61 @@ def is_windows():
   return os.name == 'nt'
 
 
+def is_chromeos(build_path):
+  current_platform = get_current_platform_from_gn_args(build_path)
+  return current_platform == "chromeos"
+
+
+def get_sheet_config(build_path):
+  if is_windows():
+    return WINDOWS_SHEET_CONFIG
+  if is_chromeos(build_path):
+    return CHROMEOS_SHEET_CONFIG
+  return None
+
+
+def get_current_platform_from_gn_args(build_path):
+  if sys.platform.startswith("linux") and build_path is not None:
+    try:
+      with open(os.path.join(build_path, "args.gn")) as f:
+        gn_args = f.read()
+      if not gn_args:
+        logger.info("Could not retrieve args.gn")
+
+      pattern = re.compile(r"^\s*target_os\s*=\s*\"chromeos\"\s*$",
+                           re.MULTILINE)
+      if pattern.search(gn_args):
+        return "chromeos"
+
+    except(valueError, OSError) as e:
+      logger.info(e)
+
+  return None
+
+
 def main_run(args):
   annotations_file = tempfile.NamedTemporaryFile()
   annotations_filename = annotations_file.name
   annotations_file.close()
-
+  build_path = os.path.join(args.paths['checkout'], 'out', args.build_config_fs)
   command_line = [
       sys.executable,
       os.path.join(common.SRC_DIR, 'tools', 'traffic_annotation', 'scripts',
                    'traffic_annotation_auditor_tests.py'),
       '--build-path',
-      os.path.join(args.paths['checkout'], 'out', args.build_config_fs),
+      build_path,
       '--annotations-file',
       annotations_filename,
   ]
   rc = common.run_command(command_line)
 
   # Update the Google Sheets on success, but only on the Windows trybot.
-  if rc == 0 and is_windows():
+  sheet_config = get_sheet_config(build_path)
+  if rc == 0 and sheet_config is not None:
     print("Tests succeeded. Updating annotations sheet...")
 
     config_file = tempfile.NamedTemporaryFile(delete=False)
-    json.dump(SHEET_CONFIG, config_file, indent=4)
+    json.dump(sheet_config, config_file, indent=4)
     config_filename = config_file.name
     config_file.close()
 
