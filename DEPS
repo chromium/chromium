@@ -1491,7 +1491,7 @@ deps = {
       'packages': [
           {
               'package': 'fuchsia/third_party/aemu/linux-amd64',
-              'version': 'V5Pz7_TfKoS_JMMlyA_dmnc33kG1ksWSC71zCysnq7UC'
+              'version': '2F3A1zXMOmKN69yZ9Xq8T2A873-6U1ODM13cpoRMyTIC'
           },
       ],
       'condition': 'host_os == "linux" and checkout_fuchsia',
