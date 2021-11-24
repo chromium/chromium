@@ -3,10 +3,32 @@
 // found in the LICENSE file.
 
 import {PageCallbackRouter, PageRemote} from 'chrome://tab-strip.top-chrome/tab_strip.mojom-webui.js';
-import {Tab, TabGroupVisualData} from 'chrome://tab-strip.top-chrome/tab_strip.mojom-webui.js';
+import {Tab, TabGroupVisualData, TabNetworkState} from 'chrome://tab-strip.top-chrome/tab_strip.mojom-webui.js';
 import {CloseTabAction, TabsApiProxy} from 'chrome://tab-strip.top-chrome/tabs_api_proxy';
 
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
+
+export function createTab(override?: Partial<Tab>): Tab {
+  return Object.assign(
+      {
+        active: false,
+        alertStates: [],
+        blocked: false,
+        crashed: false,
+        faviconUrl: undefined,
+        groupId: undefined,
+        id: -1,
+        index: -1,
+        isDefaultFavicon: false,
+        networkState: TabNetworkState.kNone,
+        pinned: false,
+        shouldHideThrobber: false,
+        showIcon: false,
+        title: '',
+        url: {url: 'about:blank'},
+      },
+      override || {});
+}
 
 export class TestTabsApiProxy extends TestBrowserProxy implements TabsApiProxy {
   callbackRouter: PageCallbackRouter;
@@ -129,19 +151,16 @@ export class TestTabsApiProxy extends TestBrowserProxy implements TabsApiProxy {
     this.methodCalled('ungroupTab', [tabId]);
   }
 
-  /** @override */
   getColors() {
     this.methodCalled('getColors');
     return Promise.resolve({colors: this.colors_});
   }
 
-  /** @override */
   getLayout() {
     this.methodCalled('getLayout');
     return Promise.resolve({layout: this.layout_});
   }
 
-  /** @override */
   isVisible() {
     this.methodCalled('isVisible');
     return this.visible_;
@@ -159,12 +178,10 @@ export class TestTabsApiProxy extends TestBrowserProxy implements TabsApiProxy {
     this.visible_ = visible;
   }
 
-  /** @override */
   observeThemeChanges() {
     this.methodCalled('observeThemeChanges');
   }
 
-  /** @override */
   closeContainer() {
     this.methodCalled('closeContainer');
   }

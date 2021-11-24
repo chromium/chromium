@@ -3,37 +3,32 @@
 // found in the LICENSE file.
 import {isChromeOS} from 'chrome://resources/js/cr.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-import {DragManager, PLACEHOLDER_GROUP_ID, PLACEHOLDER_TAB_ID} from 'chrome://tab-strip.top-chrome/drag_manager.js';
+import {DragManager, DragManagerDelegate, PLACEHOLDER_GROUP_ID, PLACEHOLDER_TAB_ID} from 'chrome://tab-strip.top-chrome/drag_manager.js';
 import {TabElement} from 'chrome://tab-strip.top-chrome/tab.js';
 import {TabGroupElement} from 'chrome://tab-strip.top-chrome/tab_group.js';
-import {Tab} from 'chrome://tab-strip.top-chrome/tab_strip.mojom-webui.js';
 import {TabsApiProxyImpl} from 'chrome://tab-strip.top-chrome/tabs_api_proxy.js';
-
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
-import {TestTabsApiProxy} from './test_tabs_api_proxy.js';
+import {createTab, TestTabsApiProxy} from './test_tabs_api_proxy.js';
 
-/** @implements {DragManagerDelegate} */
-class MockDelegate extends HTMLElement {
-  /** @override */
-  getIndexOfTab(tabElement) {
+class MockDelegate extends HTMLElement implements DragManagerDelegate {
+  getIndexOfTab(tabElement: TabElement) {
     return Array.from(this.querySelectorAll('tabstrip-tab'))
         .indexOf(tabElement);
   }
 
-  /** @override */
-  placeTabElement(element, index, pinned, groupId) {
+  placeTabElement(
+      element: TabElement, index: number, _pinned: boolean, groupId?: string) {
     element.remove();
 
     const parent =
         groupId ? this.querySelector(`[data-group-id=${groupId}]`) : this;
-    parent.insertBefore(element, this.children[index]);
+    parent!.insertBefore(element, this.children[index]!);
   }
 
-  /** @override */
-  placeTabGroupElement(element, index) {
+  placeTabGroupElement(element: TabGroupElement, index: number) {
     element.remove();
-    this.insertBefore(element, this.children[index]);
+    this.insertBefore(element, this.children[index]!);
   }
 
   shouldPreventDrag() {
@@ -43,45 +38,38 @@ class MockDelegate extends HTMLElement {
 customElements.define('mock-delegate', MockDelegate);
 
 class MockDataTransfer extends DataTransfer {
+  private dropEffect_: 'link'|'none'|'copy'|'move' = 'none';
+  private effectAllowed_: 'none'|'copy'|'copyLink'|'copyMove'|'link'|'linkMove'|
+      'move'|'all'|'uninitialized' = 'none';
+  dragImageData: {image?: Element, offsetX?: number, offsetY?: number};
+
   constructor() {
     super();
 
-    /** @private {!Object} */
     this.dragImageData = {
       image: undefined,
       offsetX: undefined,
       offsetY: undefined,
     };
-
-    /** @private {string} */
-    this.dropEffect_ = 'none';
-
-    /** @private {string} */
-    this.effectAllowed_ = 'none';
   }
 
-  /** @override */
   get dropEffect() {
     return this.dropEffect_;
   }
 
-  /** @override */
   set dropEffect(effect) {
     this.dropEffect_ = effect;
   }
 
-  /** @override */
   get effectAllowed() {
     return this.effectAllowed_;
   }
 
-  /** @override */
   set effectAllowed(effect) {
     this.effectAllowed_ = effect;
   }
 
-  /** @override */
-  setDragImage(image, offsetX, offsetY) {
+  setDragImage(image: Element, offsetX: number, offsetY: number) {
     this.dragImageData.image = image;
     this.dragImageData.offsetX = offsetX;
     this.dragImageData.offsetY = offsetY;
@@ -89,27 +77,22 @@ class MockDataTransfer extends DataTransfer {
 }
 
 suite('DragManager', () => {
-  let delegate;
-  let dragManager;
-  let testTabsApiProxy;
+  let delegate: MockDelegate;
+  let dragManager: DragManager;
+  let testTabsApiProxy: TestTabsApiProxy;
 
   const tabs = [
-    {
+    createTab({
       active: true,
-      alertStates: [],
       id: 0,
       index: 0,
-      pinned: false,
       title: 'Tab 1',
-    },
-    {
-      active: false,
-      alertStates: [],
+    }),
+    createTab({
       id: 1,
       index: 1,
-      pinned: false,
       title: 'Tab 2',
-    },
+    }),
   ];
 
   const strings = {
@@ -117,19 +100,12 @@ suite('DragManager', () => {
     tabIdDataType: 'application/tab-id',
   };
 
-  /**
-   * @param {!TabElement} tabElement
-   * @param {string} groupId
-   * @return {!TabGroupElement}
-   */
-  function groupTab(tabElement, groupId) {
-    const groupElement = /** @type {!TabGroupElement} */ (
-        document.createElement('tabstrip-tab-group'));
+  function groupTab(tabElement: TabElement, groupId: string): TabGroupElement {
+    const groupElement = document.createElement('tabstrip-tab-group');
     groupElement.setAttribute('data-group-id', groupId);
     delegate.replaceChild(groupElement, tabElement);
 
-    tabElement.tab =
-        /** @type {!Tab} */ (Object.assign({}, tabElement.tab, {groupId}));
+    tabElement.tab = Object.assign({}, tabElement.tab, {groupId});
     groupElement.appendChild(tabElement);
     return groupElement;
   }
@@ -148,22 +124,23 @@ suite('DragManager', () => {
     dragManager = new DragManager(delegate);
     dragManager.startObserving();
 
-    document.body.style.margin = 0;
+    document.body.style.margin = '0';
     document.body.appendChild(delegate);
   });
 
   test('DragStartSetsDragImage', () => {
-    const draggedElement = delegate.children[0];
+    const draggedElement = delegate.children[0] as TabElement | TabGroupElement;
     const dragImage = draggedElement.getDragImage();
     const dragImageCenter = draggedElement.getDragImageCenter();
 
     // Mock the dimensions and position of the element and the drag image.
     const draggedElementRect = {top: 20, left: 30, width: 200, height: 150};
-    draggedElement.getBoundingClientRect = () => draggedElementRect;
+    draggedElement.getBoundingClientRect = () => draggedElementRect as DOMRect;
     const dragImageRect = {top: 20, left: 30, width: 200, height: 150};
-    dragImage.getBoundingClientRect = () => dragImageRect;
+    dragImage.getBoundingClientRect = () => dragImageRect as DOMRect;
     const dragImageCenterRect = {top: 25, left: 25, width: 100, height: 120};
-    dragImageCenter.getBoundingClientRect = () => dragImageCenterRect;
+    dragImageCenter.getBoundingClientRect = () =>
+        dragImageCenterRect as DOMRect;
 
     const eventClientX = 100;
     const eventClientY = 50;
@@ -176,7 +153,7 @@ suite('DragManager', () => {
       dataTransfer: mockDataTransfer,
     });
     draggedElement.dispatchEvent(dragStartEvent);
-    assertEquals(dragStartEvent.dataTransfer.effectAllowed, 'move');
+    assertEquals(dragStartEvent.dataTransfer!.effectAllowed, 'move');
     assertEquals(
         mockDataTransfer.dragImageData.image, draggedElement.getDragImage());
 
@@ -219,8 +196,8 @@ suite('DragManager', () => {
   test('DragOverMovesTabs', async () => {
     const draggedIndex = 0;
     const dragOverIndex = 1;
-    const draggedTab = delegate.children[draggedIndex];
-    const dragOverTab = delegate.children[dragOverIndex];
+    const draggedTab = delegate.children[draggedIndex]!;
+    const dragOverTab = delegate.children[dragOverIndex]!;
     const mockDataTransfer = new MockDataTransfer();
 
     // Dispatch a dragstart event to start the drag process.
@@ -240,7 +217,7 @@ suite('DragManager', () => {
       dataTransfer: mockDataTransfer,
     });
     dragOverTab.dispatchEvent(dragOverEvent);
-    assertEquals(dragOverEvent.dataTransfer.dropEffect, 'move');
+    assertEquals(dragOverEvent.dataTransfer!.dropEffect, 'move');
 
     // Dragover tab and dragged tab have now switched places in the DOM.
     assertEquals(draggedTab, delegate.children[dragOverIndex]);
@@ -248,18 +225,18 @@ suite('DragManager', () => {
 
     draggedTab.dispatchEvent(new DragEvent('drop', {bubbles: true}));
     const [tabId, newIndex] = await testTabsApiProxy.whenCalled('moveTab');
-    assertEquals(tabId, tabs[draggedIndex].id);
+    assertEquals(tabId, tabs[draggedIndex]!.id);
     assertEquals(newIndex, dragOverIndex);
   });
 
   test('DragTabOverTabGroup', async () => {
-    const tabElements = delegate.children;
+    const tabElements = delegate.children as HTMLCollectionOf<TabElement>;
 
     // Group the first tab.
-    const dragOverTabGroup = groupTab(tabElements[0], 'group0');
+    const dragOverTabGroup = groupTab(tabElements[0]!, 'group0');
 
     // Start dragging the second tab.
-    const draggedTab = tabElements[1];
+    const draggedTab = tabElements[1]!;
     const mockDataTransfer = new MockDataTransfer();
     const dragStartEvent = new DragEvent('dragstart', {
       bubbles: true,
@@ -289,7 +266,7 @@ suite('DragManager', () => {
 
   test('DragTabOutOfTabGroup', async () => {
     // Group the first tab.
-    const draggedTab = delegate.children[0];
+    const draggedTab = (delegate.children as HTMLCollectionOf<TabElement>)[0]!;
     groupTab(draggedTab, 'group0');
 
     // Start dragging the first tab.
@@ -320,11 +297,11 @@ suite('DragManager', () => {
   });
 
   test('DragGroupOverTab', async () => {
-    const tabElements = delegate.children;
+    const tabElements = delegate.children as HTMLCollectionOf<TabElement>;
 
     // Start dragging the group.
     const draggedGroupIndex = 0;
-    const draggedGroup = groupTab(tabElements[draggedGroupIndex], 'group0');
+    const draggedGroup = groupTab(tabElements[draggedGroupIndex]!, 'group0');
     const mockDataTransfer = new MockDataTransfer();
     const dragStartEvent = new DragEvent('dragstart', {
       bubbles: true,
@@ -333,12 +310,12 @@ suite('DragManager', () => {
       clientY: 150,
       dataTransfer: mockDataTransfer,
     });
-    draggedGroup.shadowRoot.getElementById('dragHandle')
-        .dispatchEvent(dragStartEvent);
+    draggedGroup.shadowRoot!.getElementById('dragHandle')!.dispatchEvent(
+        dragStartEvent);
 
     // Drag the group over the second tab.
     const dragOverIndex = 1;
-    const dragOverTab = tabElements[dragOverIndex];
+    const dragOverTab = tabElements[dragOverIndex]!;
     const dragOverEvent = new DragEvent('dragover', {
       bubbles: true,
       composed: true,
@@ -357,13 +334,13 @@ suite('DragManager', () => {
   });
 
   test('DragGroupOverGroup', async () => {
-    const tabElements = delegate.children;
+    const tabElements = delegate.children as HTMLCollectionOf<TabElement>;
 
     // Group the first tab and second tab separately.
     const draggedIndex = 0;
-    const draggedGroup = groupTab(tabElements[draggedIndex], 'group0');
+    const draggedGroup = groupTab(tabElements[draggedIndex]!, 'group0');
     const dragOverIndex = 1;
-    const dragOverGroup = groupTab(tabElements[dragOverIndex], 'group1');
+    const dragOverGroup = groupTab(tabElements[dragOverIndex]!, 'group1');
 
     // Start dragging the first group.
     const mockDataTransfer = new MockDataTransfer();
@@ -374,8 +351,8 @@ suite('DragManager', () => {
       clientY: 150,
       dataTransfer: mockDataTransfer,
     });
-    draggedGroup.shadowRoot.getElementById('dragHandle')
-        .dispatchEvent(dragStartEvent);
+    draggedGroup.shadowRoot!.getElementById('dragHandle')!.dispatchEvent(
+        dragStartEvent);
 
     // Drag the group over the second tab.
     const dragOverEvent = new DragEvent('dragover', {
@@ -407,11 +384,11 @@ suite('DragManager', () => {
     delegate.dispatchEvent(dragEnterEvent);
 
     // Test that a placeholder tab was created.
-    const placeholderTabElement = delegate.lastElementChild;
+    const placeholderTabElement = delegate.lastElementChild as TabElement;
     assertEquals(PLACEHOLDER_TAB_ID, placeholderTabElement.tab.id);
 
     const dragOverIndex = 0;
-    const dragOverTab = delegate.children[dragOverIndex];
+    const dragOverTab = delegate.children[dragOverIndex]!;
     const dragOverEvent = new DragEvent('dragover', {
       bubbles: true,
       composed: true,
@@ -442,9 +419,9 @@ suite('DragManager', () => {
       dataTransfer: mockDataTransfer,
     });
     delegate.dispatchEvent(dragEnterEvent);
-    const placeholderTabElement = delegate.lastElementChild;
+    const placeholderTabElement = delegate.lastElementChild!;
 
-    const draggedGroup = groupTab(delegate.children[0], 'group0');
+    const draggedGroup = groupTab(delegate.children[0] as TabElement, 'group0');
     const dragOverEvent = new DragEvent('dragover', {
       bubbles: true,
       composed: true,
@@ -476,11 +453,12 @@ suite('DragManager', () => {
     delegate.dispatchEvent(dragEnterEvent);
 
     // Test that a placeholder group was created.
-    const placeholderGroupElement = delegate.lastElementChild;
-    assertEquals(PLACEHOLDER_GROUP_ID, placeholderGroupElement.dataset.groupId);
+    const placeholderGroupElement = delegate.lastElementChild as TabElement;
+    assertEquals(
+        PLACEHOLDER_GROUP_ID, placeholderGroupElement.dataset['groupId']);
 
-    function dragOverTabAt(dragOverIndex) {
-      const dragOverTab = delegate.children[dragOverIndex];
+    function dragOverTabAt(dragOverIndex: number) {
+      const dragOverTab = delegate.children[dragOverIndex]!;
       const dragOverEvent = new DragEvent('dragover', {
         bubbles: true,
         composed: true,
@@ -502,7 +480,7 @@ suite('DragManager', () => {
       dataTransfer: mockDataTransfer,
     });
     placeholderGroupElement.dispatchEvent(dropEvent);
-    assertEquals(externalGroupId, placeholderGroupElement.dataset.groupId);
+    assertEquals(externalGroupId, placeholderGroupElement.dataset['groupId']);
     const [groupId, index] = await testTabsApiProxy.whenCalled('moveGroup');
     assertEquals(externalGroupId, groupId);
     assertEquals(0, index);
@@ -518,11 +496,11 @@ suite('DragManager', () => {
       dataTransfer: mockDataTransfer,
     });
     delegate.dispatchEvent(dragEnterEvent);
-    const placeholderGroupElement = delegate.lastElementChild;
+    const placeholderGroupElement = delegate.lastElementChild!;
 
     const dragOverGroupIndex = 0;
     const dragOverGroup =
-        groupTab(delegate.children[dragOverGroupIndex], 'group0');
+        groupTab(delegate.children[dragOverGroupIndex] as TabElement, 'group0');
     const dragOverEvent = new DragEvent('dragover', {
       bubbles: true,
       composed: true,
@@ -545,7 +523,7 @@ suite('DragManager', () => {
 
   test('CancelDragResetsPosition', () => {
     const draggedIndex = 0;
-    const draggedTab = delegate.children[draggedIndex];
+    const draggedTab = delegate.children[draggedIndex]!;
     const mockDataTransfer = new MockDataTransfer();
 
     // Dispatch a dragstart event to start the drag process.
@@ -564,7 +542,7 @@ suite('DragManager', () => {
       composed: true,
       dataTransfer: mockDataTransfer,
     });
-    delegate.children[1].dispatchEvent(dragOverEvent);
+    delegate.children[1]!.dispatchEvent(dragOverEvent);
 
     draggedTab.dispatchEvent(new DragEvent('dragend', {bubbles: true}));
     assertEquals(draggedTab, delegate.children[draggedIndex]);
@@ -596,8 +574,8 @@ suite('DragManager', () => {
   test('DragOverInvalidDragOverTarget', () => {
     const draggedIndex = 0;
     const dragOverIndex = 1;
-    const draggedTab = delegate.children[draggedIndex];
-    const dragOverTab = delegate.children[dragOverIndex];
+    const draggedTab = delegate.children[draggedIndex]!;
+    const dragOverTab = delegate.children[dragOverIndex] as TabElement;
     const mockDataTransfer = new MockDataTransfer();
 
     // Dispatch a dragstart event to start the drag process.
@@ -628,7 +606,7 @@ suite('DragManager', () => {
     let isDraggedOut = false;
 
     // Mock a tab's setDraggedOut method to ensure it is called.
-    const draggedTab = delegate.children[0];
+    const draggedTab = delegate.children[0] as TabElement;
     draggedTab.setDraggedOut = (isDraggedOutParam) => {
       isDraggedOut = isDraggedOutParam;
     };
@@ -650,8 +628,8 @@ suite('DragManager', () => {
   });
 
   test('DragendAfterMovingDoesNotShowContextMenu', async () => {
-    const draggedTab = delegate.children[0];
-    const dragOverTab = delegate.children[1];
+    const draggedTab = delegate.children[0]!;
+    const dragOverTab = delegate.children[1]!;
     const dragDetails = {
       bubbles: true,
       composed: true,
@@ -686,7 +664,7 @@ suite('DragManager', () => {
   });
 
   test('DragEndWithDropEffectMoveDoesNotRemoveDraggedOutAttribute', () => {
-    const draggedTab = delegate.children[0];
+    const draggedTab = delegate.children[0] as TabElement;
     const dataTransfer = new MockDataTransfer();
     draggedTab.dispatchEvent(new DragEvent('dragstart', {
       bubbles: true,
@@ -704,7 +682,7 @@ suite('DragManager', () => {
   });
 
   test('DragEndWithDropEffectNoneRemovesDraggedOutAttribute', () => {
-    const draggedTab = delegate.children[0];
+    const draggedTab = delegate.children[0] as TabElement;
     const dataTransfer = new MockDataTransfer();
     draggedTab.dispatchEvent(new DragEvent('dragstart', {
       bubbles: true,
@@ -725,7 +703,7 @@ suite('DragManager', () => {
     // Mock the delegate to return true for shouldPreventDrag.
     delegate.shouldPreventDrag = () => true;
 
-    const draggedTab = delegate.children[0];
+    const draggedTab = delegate.children[0]!;
     let isDefaultPrevented = false;
     delegate.addEventListener('dragstart', e => {
       isDefaultPrevented = e.defaultPrevented;

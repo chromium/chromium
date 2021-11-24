@@ -854,4 +854,10 @@ export class TabListElement extends CustomElement implements
   }
 }
 
+declare global {
+  interface HTMLElementTagNameMap {
+    'tabstrip-tab-list': TabListElement;
+  }
+}
+
 customElements.define('tabstrip-tab-list', TabListElement);

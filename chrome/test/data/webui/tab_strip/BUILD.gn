@@ -32,9 +32,9 @@ ts_library("build_ts") {
   in_files = [
     "alert_indicators_test.ts",
     "alert_indicator_test.ts",
-    "drag_manager_test.js",
+    "drag_manager_test.ts",
     "tab_group_test.ts",
-    "tab_list_test.js",
+    "tab_list_test.ts",
     "tab_swiper_test.ts",
     "tab_test.ts",
     "test_tabs_api_proxy.ts",

@@ -9,10 +9,9 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {TabElement} from 'chrome://tab-strip.top-chrome/tab.js';
 import {Tab, TabNetworkState} from 'chrome://tab-strip.top-chrome/tab_strip.mojom-webui.js';
 import {CloseTabAction, TabsApiProxyImpl} from 'chrome://tab-strip.top-chrome/tabs_api_proxy.js';
-
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
-import {TestTabsApiProxy} from './test_tabs_api_proxy.js';
+import {createTab, TestTabsApiProxy} from './test_tabs_api_proxy.js';
 
 suite('Tab', function() {
   let testTabsApiProxy: TestTabsApiProxy;
@@ -22,24 +21,11 @@ suite('Tab', function() {
     return tabElement.shadowRoot!.querySelector<HTMLElement>('#tab')!;
   }
 
-  const tab: Tab = {
-    active: false,
-    alertStates: [],
-    blocked: false,
-    crashed: false,
-    id: 1001,
+  const tab: Tab = createTab({
     index: 0,
-    isDefaultFavicon: false,
-    networkState: TabNetworkState.kNone,
-    pinned: false,
-    shouldHideThrobber: false,
     showIcon: true,
-    title: 'My title',
-    url: {url: 'http://foo'},
-
-    faviconUrl: undefined,
-    groupId: undefined,
-  };
+    title: 'My Title',
+  });
 
   /**
    * Convenience function for creating a typed Tab object.
