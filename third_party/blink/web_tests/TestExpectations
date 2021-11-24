@@ -7003,7 +7003,6 @@ crbug.com/1249176 [ Mac11-arm64 ] inspector-protocol/timeline/timeline-layout.js
 crbug.com/1249176 [ Mac11-arm64 ] virtual/gpu-rasterization/images/2-comp.html [ Failure Pass ]
 crbug.com/1249176 [ Mac11-arm64 ] http/tests/devtools/tracing/timeline-time/timeline-usertiming.js [ Failure Pass ]
 crbug.com/1249176 [ Mac11-arm64 ] external/wpt/resource-timing/nested-context-navigations-embed.html [ Failure Pass ]
-crbug.com/1249176 [ Mac11-arm64 ] fast/block/float/float-on-clean-line-subsequently-dirtied.html [ Failure Pass ]
 crbug.com/1249176 [ Mac11-arm64 ] http/tests/devtools/tracing/timeline-js/timeline-microtasks.js [ Failure Pass ]
 crbug.com/1249176 [ Mac11-arm64 ] http/tests/intersection-observer/cross-origin-iframe-with-nesting.html [ Pass Timeout ]
 crbug.com/1249176 [ Mac11-arm64 ] media/controls/overflow-menu-always-visible.html [ Failure Pass ]
@@ -7352,3 +7351,6 @@ crbug.com/1272955 http/tests/devtools/extensions/extensions-timeline-api.js [ Fa
 crbug.com/1270963 wpt_internal/fenced_frame/create-credential.https.html [ Skip ]
 crbug.com/1046784 http/tests/devtools/tracing/timeline-receive-response-event.js [ Failure Pass ]
 crbug.com/1273282 [ Win7 ] external/wpt/html/canvas/offscreen/manual/the-offscreen-canvas/offscreencanvas.commit.html [ Failure Pass ]
+
+# Sheriff 2021-11-24
+crbug.com/1273541 fast/block/float/float-on-clean-line-subsequently-dirtied.html [ Pass Failure ]
