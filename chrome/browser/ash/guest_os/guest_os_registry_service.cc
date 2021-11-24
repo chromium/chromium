@@ -198,8 +198,7 @@ bool EqualsExcludingTimestamps(const base::Value& left,
 }
 
 void InstallIconFromFileThread(const base::FilePath& icon_path,
-                               const std::string& content,
-                               base::OnceCallback<void(bool)> callback) {
+                               const std::string& content) {
   DCHECK(!content.empty());
 
   base::CreateDirectory(icon_path.DirName());
@@ -211,9 +210,6 @@ void InstallIconFromFileThread(const base::FilePath& icon_path,
     if (!base::DeleteFile(icon_path)) {
       VLOG(2) << "Couldn't delete broken icon file" << icon_path.MaybeAsASCII();
     }
-  }
-  if (callback) {
-    std::move(callback).Run(wrote);
   }
 }
 
@@ -568,23 +564,39 @@ class SvgIconTranscoder : public content::RenderProcessHostObserver {
   SvgIconTranscoder& operator=(const SvgIconTranscoder&) = delete;
   ~SvgIconTranscoder() override = default;
 
+  static std::string ReadSvgOnFileThread(base::FilePath svg_path) {
+    std::string svg_data;
+    if (base::PathExists(svg_path)) {
+      base::ReadFileToString(svg_path, &svg_data);
+    }
+    LOG_IF(ERROR, svg_data.empty()) << "No svg data at path " << svg_path;
+    return svg_data;
+  }
+
   // Reads the svg data at svg_path and invokes the string Transcode method.
   // |callback| is invoked with and empty string on failure. Blocking call.
   void Transcode(base::FilePath svg_path,
                  base::FilePath png_path,
                  gfx::Size preferred_size,
                  IconContentCallback callback) {
-    std::string svg_data;
-    if (base::PathExists(svg_path) &&
-        base::ReadFileToString(svg_path, &svg_data)) {
-      if (!svg_data.empty()) {
-        Transcode(std::move(svg_data), std::move(png_path), preferred_size,
-                  std::move(callback));
-        return;
-      }
-    }
-    LOG(ERROR) << "No svg data at path " << svg_path;
-    std::move(callback).Run(std::string());
+    base::ThreadPool::PostTaskAndReplyWithResult(
+        FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
+        base::BindOnce(&SvgIconTranscoder::ReadSvgOnFileThread,
+                       std::move(svg_path)),
+        base::BindOnce(
+            [](base::WeakPtr<SvgIconTranscoder> weak_this,
+               base::FilePath png_path, gfx::Size preferred_size,
+               IconContentCallback callback, std::string svg_data) {
+              if (weak_this && !svg_data.empty()) {
+                weak_this->Transcode(std::move(svg_data), std::move(png_path),
+                                     preferred_size, std::move(callback));
+                return;
+              }
+
+              std::move(callback).Run(std::string());
+            },
+            GetWeakPtr(), std::move(png_path), preferred_size,
+            std::move(callback)));
   }
 
   // Validates and trims the svg_data before base64 encoding and dispatching to
@@ -691,8 +703,7 @@ class SvgIconTranscoder : public content::RenderProcessHostObserver {
         base::ThreadPool::PostTask(
             FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
             base::BindOnce(&InstallIconFromFileThread, std::move(png_path),
-                           std::string(compressed.begin(), compressed.end()),
-                           base::DoNothing()));
+                           std::string(compressed.begin(), compressed.end())));
       }
     }
     std::move(callback).Run(std::string(compressed.begin(), compressed.end()));
@@ -1383,15 +1394,15 @@ void GuestOsRegistryService::OnContainerAppIcon(
       const base::FilePath svg_path = GetIconPath(app_id, ui::kScaleFactorNone);
       base::ThreadPool::PostTask(
           FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
-          base::BindOnce(&InstallIconFromFileThread, svg_path, icons[0].content,
-                         base::DoNothing()));
+          base::BindOnce(&InstallIconFromFileThread, svg_path,
+                         icons[0].content));
       return;
     }
 
     base::ThreadPool::PostTask(
         FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
-        base::BindOnce(&InstallIconFromFileThread, icon_path, icons[0].content,
-                       base::DoNothing()));
+        base::BindOnce(&InstallIconFromFileThread, icon_path,
+                       icons[0].content));
     icon_content = std::move(icons[0].content);
   }
   InvokeActiveIconCallbacks(app_id, scale_factor, std::move(icon_content));
