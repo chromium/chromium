@@ -18,6 +18,8 @@
 
 namespace blink {
 
+class AdRequestConfig;
+class Ads;
 class AuctionAdInterestGroup;
 class AuctionAdConfig;
 class ScriptPromiseResolver;
@@ -78,13 +80,22 @@ class MODULES_EXPORT NavigatorAuction final
                                             uint16_t num_ad_components,
                                             ExceptionState& exception_state);
 
-  // TODO(https://crbug.com/1249186): Add full impl of methods.
-  ScriptPromise createAdRequest(ScriptState*, ExceptionState&);
+  ScriptPromise createAdRequest(ScriptState*,
+                                const AdRequestConfig*,
+                                ExceptionState&);
   static ScriptPromise createAdRequest(ScriptState*,
                                        Navigator&,
+                                       const AdRequestConfig*,
                                        ExceptionState&);
-  ScriptPromise finalizeAd(ScriptState*, ExceptionState&);
-  static ScriptPromise finalizeAd(ScriptState*, Navigator&, ExceptionState&);
+  ScriptPromise finalizeAd(ScriptState*,
+                           const Ads*,
+                           const AuctionAdConfig*,
+                           ExceptionState&);
+  static ScriptPromise finalizeAd(ScriptState*,
+                                  Navigator&,
+                                  const Ads*,
+                                  const AuctionAdConfig*,
+                                  ExceptionState&);
 
   void Trace(Visitor* visitor) const override {
     visitor->Trace(ad_auction_service_);
@@ -92,6 +103,12 @@ class MODULES_EXPORT NavigatorAuction final
   }
 
  private:
+  // Completion callback for createAdRequest() mojo call.
+  void AdsRequested(ScriptPromiseResolver* resolver,
+                    const WTF::String& ads_guid);
+  // Completion callback for finalizeAd() mojo call.
+  void FinalizeAdComplete(ScriptPromiseResolver* resolver,
+                          const absl::optional<KURL>& creative_url);
   // Completion callback for Mojo call made by runAdAuction().
   void AuctionComplete(ScriptPromiseResolver*, const absl::optional<KURL>&);
 

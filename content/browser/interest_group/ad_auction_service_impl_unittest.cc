@@ -32,6 +32,7 @@
 #include "third_party/blink/public/common/interest_group/interest_group.h"
 #include "third_party/blink/public/mojom/interest_group/ad_auction_service.mojom.h"
 #include "third_party/blink/public/mojom/interest_group/interest_group_types.mojom.h"
+#include "third_party/blink/public/mojom/parakeet/ad_request.mojom.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -315,6 +316,27 @@ class AdAuctionServiceImplTest : public RenderViewHostTestHarness {
     interest_group.name = kInterestGroupName;
     interest_group.owner = kOriginA;
     return interest_group;
+  }
+
+  void CreateAdRequest(blink::mojom::AdRequestConfigPtr config,
+                       AdAuctionServiceImpl::CreateAdRequestCallback callback) {
+    mojo::Remote<blink::mojom::AdAuctionService> interest_service;
+    AdAuctionServiceImpl::CreateMojoService(
+        main_rfh(), interest_service.BindNewPipeAndPassReceiver());
+
+    interest_service->CreateAdRequest(std::move(config), std::move(callback));
+    interest_service.FlushForTesting();
+  }
+
+  void FinalizeAd(std::string guid,
+                  blink::mojom::AuctionAdConfigPtr config,
+                  AdAuctionServiceImpl::FinalizeAdCallback callback) {
+    mojo::Remote<blink::mojom::AdAuctionService> interest_service;
+    AdAuctionServiceImpl::CreateMojoService(
+        main_rfh(), interest_service.BindNewPipeAndPassReceiver());
+
+    interest_service->FinalizeAd(guid, std::move(config), std::move(callback));
+    interest_service.FlushForTesting();
   }
 
  protected:
@@ -2019,9 +2041,8 @@ TEST_F(AdAuctionServiceImplRestrictedPermissionsPolicyTest,
        APICallsFromCrossSiteIFrame) {
   update_responder_->RegisterUpdateResponse(
       kDailyUpdateUrlPath,
-      base::StringPrintf(
-          R"({"biddingLogicUrl": "%s%s"})",
-          kOriginStringC, kNewBiddingUrlPath));
+      base::StringPrintf(R"({"biddingLogicUrl": "%s%s"})", kOriginStringC,
+                         kNewBiddingUrlPath));
 
   NavigateAndCommit(kUrlC);
   blink::InterestGroup interest_group = CreateInterestGroup();
@@ -2055,12 +2076,135 @@ TEST_F(AdAuctionServiceImplRestrictedPermissionsPolicyTest,
   const auto& group = groups[0].bidding_group->group;
   EXPECT_EQ(group.name, kInterestGroupName);
   ASSERT_TRUE(group.bidding_url.has_value());
-  EXPECT_EQ(
-      group.bidding_url->spec(),
-      base::StringPrintf("%s%s", kOriginStringC, kBiddingUrlPath));
+  EXPECT_EQ(group.bidding_url->spec(),
+            base::StringPrintf("%s%s", kOriginStringC, kBiddingUrlPath));
 
   LeaveInterestGroupAndFlushForFrame(kOriginC, kInterestGroupName, subframe);
   EXPECT_EQ(1, GetJoinCount(kOriginC, kInterestGroupName));
+}
+
+// CreateAdRequest should reject if we have an empty config.
+TEST_F(AdAuctionServiceImplTest, CreateAdRequestRejectsEmptyConfigRequest) {
+  auto mojo_config = blink::mojom::AdRequestConfig::New();
+  bool callback_fired = false;
+  CreateAdRequest(std::move(mojo_config),
+                  base::BindLambdaForTesting(
+                      [&](const absl::optional<std::string>& ads_guid) {
+                        ASSERT_FALSE(ads_guid.has_value());
+                        callback_fired = true;
+                      }));
+  ASSERT_TRUE(callback_fired);
+}
+
+// CreateAdRequest should reject if we have an otherwise okay request but our
+// request URL is not using HTTPS.
+TEST_F(AdAuctionServiceImplTest, CreateAdRequestRejectsHttpUrls) {
+  auto mojo_config = blink::mojom::AdRequestConfig::New();
+  mojo_config->ad_request_url = GURL("http://site.test/");
+  auto mojo_ad_properties = blink::mojom::AdProperties::New();
+  mojo_ad_properties->width = "48";
+  mojo_ad_properties->height = "64";
+  mojo_ad_properties->slot = "123";
+  mojo_ad_properties->lang = "en";
+  mojo_ad_properties->ad_type = "test";
+  mojo_ad_properties->bid_floor = 1.0;
+  mojo_config->ad_properties.push_back(std::move(mojo_ad_properties));
+
+  bool callback_fired = false;
+  CreateAdRequest(std::move(mojo_config),
+                  base::BindLambdaForTesting(
+                      [&](const absl::optional<std::string>& ads_guid) {
+                        ASSERT_FALSE(ads_guid.has_value());
+                        callback_fired = true;
+                      }));
+  ASSERT_TRUE(callback_fired);
+}
+
+// CreateAdRequest should reject if we have an otherwise okay request but no ad
+// properties.
+TEST_F(AdAuctionServiceImplTest, CreateAdRequestRejectsMissingAds) {
+  auto mojo_config = blink::mojom::AdRequestConfig::New();
+  mojo_config->ad_request_url = GURL("https://site.test/");
+
+  bool callback_fired = false;
+  CreateAdRequest(std::move(mojo_config),
+                  base::BindLambdaForTesting(
+                      [&](const absl::optional<std::string>& ads_guid) {
+                        ASSERT_FALSE(ads_guid.has_value());
+                        callback_fired = true;
+                      }));
+  ASSERT_TRUE(callback_fired);
+}
+
+// CreateAdRequest should reject if we have an otherwise okay request but
+// include an HTTP fallback URL.
+TEST_F(AdAuctionServiceImplTest, CreateAdRequestRejectsHttpFallback) {
+  auto mojo_config = blink::mojom::AdRequestConfig::New();
+  mojo_config->ad_request_url = GURL("https://site.test/");
+  auto mojo_ad_properties = blink::mojom::AdProperties::New();
+  mojo_ad_properties->width = "48";
+  mojo_ad_properties->height = "64";
+  mojo_ad_properties->slot = "123";
+  mojo_ad_properties->lang = "en";
+  mojo_ad_properties->ad_type = "test";
+  mojo_ad_properties->bid_floor = 1.0;
+  mojo_config->ad_properties.push_back(std::move(mojo_ad_properties));
+
+  mojo_config->fallback_source = GURL("http://fallback_site.test/");
+
+  bool callback_fired = false;
+  CreateAdRequest(std::move(mojo_config),
+                  base::BindLambdaForTesting(
+                      [&](const absl::optional<std::string>& ads_guid) {
+                        ASSERT_FALSE(ads_guid.has_value());
+                        callback_fired = true;
+                      }));
+  ASSERT_TRUE(callback_fired);
+}
+
+// An empty config will cause FinalizeAd to fail and run the supplied callback.
+TEST_F(AdAuctionServiceImplTest, FinalizeAdRejectsEmptyConfig) {
+  auto mojo_config = blink::mojom::AuctionAdConfig::New();
+
+  bool callback_fired = false;
+  FinalizeAd(
+      /*guid=*/std::string("1234"), std::move(mojo_config),
+      base::BindLambdaForTesting([&](const absl::optional<GURL>& creative_url) {
+        ASSERT_FALSE(creative_url.has_value());
+        callback_fired = true;
+      }));
+  ASSERT_TRUE(callback_fired);
+}
+
+TEST_F(AdAuctionServiceImplTest, FinalizeAdRejectsHTTPDecisionUrl) {
+  auto mojo_config = blink::mojom::AuctionAdConfig::New();
+  mojo_config->seller = url::Origin::Create(GURL("https://site.test"));
+  mojo_config->decision_logic_url = GURL("http://site.test/");
+
+  bool callback_fired = false;
+  FinalizeAd(
+      /*guid=*/"1234", std::move(mojo_config),
+      base::BindLambdaForTesting([&](const absl::optional<GURL>& creative_url) {
+        ASSERT_FALSE(creative_url.has_value());
+        callback_fired = true;
+      }));
+  ASSERT_TRUE(callback_fired);
+}
+
+// An empty GUID should trigger any FinalizeAd request to fail.
+TEST_F(AdAuctionServiceImplTest, FinalizeAdRejectsMissingGuid) {
+  auto mojo_config = blink::mojom::AuctionAdConfig::New();
+  mojo_config->seller = url::Origin::Create(GURL("https://site.test"));
+  mojo_config->decision_logic_url = GURL("https://site.test/");
+
+  bool callback_fired = false;
+  FinalizeAd(
+      /*guid=*/std::string(), std::move(mojo_config),
+      base::BindLambdaForTesting([&](const absl::optional<GURL>& creative_url) {
+        ASSERT_FALSE(creative_url.has_value());
+        callback_fired = true;
+      }));
+  ASSERT_TRUE(callback_fired);
 }
 
 }  // namespace content

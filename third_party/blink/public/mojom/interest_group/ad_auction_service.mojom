@@ -4,6 +4,7 @@
 
 module blink.mojom;
 
+import "third_party/blink/public/mojom/parakeet/ad_request.mojom";
 import "third_party/blink/public/mojom/interest_group/interest_group_types.mojom";
 import "url/mojom/origin.mojom";
 import "url/mojom/url.mojom";
@@ -11,6 +12,24 @@ import "url/mojom/url.mojom";
 // Per-frame API to initiate on-device ad auction and add interest groups.
 // https://github.com/WICG/turtledove/blob/main/FLEDGE.md
 interface AdAuctionService {
+  // Triggers a request to an enabled PARAKEET service. This request will
+  // provide any joined interestgroups combined with the provided
+  // AdRequestConfig. If a successful request is made the set of returned
+  // ads will be stored and the unique guid to access these ads will be
+  // returned. If no PARAKEET service is available or no ads are returned
+  // null will be returned.
+  CreateAdRequest(AdRequestConfig config) => (string? ads_guid);
+
+  // Triggers the ad finalization process for the supplied |ads_guid| set of
+  // ads. This may involve running seller/buyer specific worklets in a
+  // sandboxed Javascript process. The result of this process is an URL for
+  // the winning ad that can be loaded in a frame by the caller. If no ad
+  // wins, null is returned. This may be called multiple times for a given
+  // |ads_guid| to satisfy multiple placements on a given page without
+  // re-requesting a new set of ads.
+  FinalizeAd(string ads_guid, AuctionAdConfig config)
+     => (url.mojom.Url? ad_display_url);
+
   // Triggers the ad auction to run in a sandboxed JavaScript process. The
   // auction scripts run in this process come from the `bidding_logic_url`'s of
   // the interest groups owned by `interest_group_buyers` and the auction

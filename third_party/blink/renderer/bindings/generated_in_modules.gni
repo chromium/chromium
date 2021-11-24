@@ -101,10 +101,20 @@ generated_callback_interface_sources_in_modules = [
 ]
 
 generated_dictionary_sources_in_modules = [
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_ad_properties.cc",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_ad_properties.h",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_ad_request_config.cc",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_ad_request_config.h",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_ad_signals.cc",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_ad_signals.h",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_ad_targeting.cc",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_ad_targeting.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_address_errors.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_address_errors.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_address_init.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_address_init.h",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_ads.cc",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_ads.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_analyser_options.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_analyser_options.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_android_pay_method_data.cc",
@@ -2500,6 +2510,8 @@ generated_typedef_sources_in_modules = [
 ]
 
 generated_union_sources_in_modules = [
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_union_adproperties_adpropertiessequence.cc",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_union_adproperties_adpropertiessequence.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_union_arraybuffer_arraybufferview_blob_usvstring_writeparams.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_union_arraybuffer_arraybufferview_blob_usvstring_writeparams.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_union_arraybuffer_arraybufferview_jsonwebkey.cc",

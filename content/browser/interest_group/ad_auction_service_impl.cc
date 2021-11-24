@@ -110,6 +110,26 @@ void FetchReport(network::mojom::URLLoaderFactory* url_loader_factory,
                      std::move(simple_url_loader)));
 }
 
+bool IsAdRequestValid(const blink::mojom::AdRequestConfig& config) {
+  // The ad_request_url origin has to be HTTPS.
+  if (config.ad_request_url.scheme() != url::kHttpsScheme) {
+    return false;
+  }
+
+  // At least one adProperties is required to request potential ads.
+  if (config.ad_properties.size() <= 0) {
+    return false;
+  }
+
+  // If a fallback source is specified it must be HTTPS.
+  if (config.fallback_source &&
+      (config.fallback_source->scheme() != url::kHttpsScheme)) {
+    return false;
+  }
+
+  return true;
+}
+
 bool IsAuctionValid(const blink::mojom::AuctionAdConfig& config) {
   // The seller origin has to be HTTPS.
   if (config.seller.scheme() != url::kHttpsScheme)
@@ -321,6 +341,37 @@ void AdAuctionServiceImpl::RunAdAuction(blink::mojom::AuctionAdConfigPtr config,
       base::BindOnce(&AdAuctionServiceImpl::OnAuctionComplete,
                      base::Unretained(this), std::move(callback)));
   auctions_.insert(std::move(auction));
+}
+
+void AdAuctionServiceImpl::CreateAdRequest(
+    blink::mojom::AdRequestConfigPtr config,
+    CreateAdRequestCallback callback) {
+  if (!IsAdRequestValid(*config)) {
+    std::move(callback).Run(absl::nullopt);
+    return;
+  }
+
+  // TODO(https://crbug.com/1249186): Actually request Ads and return a guid.
+  // For now just act like it failed.
+  std::move(callback).Run(absl::nullopt);
+}
+
+void AdAuctionServiceImpl::FinalizeAd(const std::string& ads_guid,
+                                      ::blink::mojom::AuctionAdConfigPtr config,
+                                      FinalizeAdCallback callback) {
+  if (!config->decision_logic_url.SchemeIs(url::kHttpsScheme)) {
+    std::move(callback).Run(absl::nullopt);
+    return;
+  }
+
+  if (ads_guid.empty()) {
+    std::move(callback).Run(absl::nullopt);
+    return;
+  }
+
+  // TODO(https://crbug.com/1249186): Actually finalize Ad and return an URL.
+  // For now just act like it failed.
+  std::move(callback).Run(absl::nullopt);
 }
 
 network::mojom::URLLoaderFactory*

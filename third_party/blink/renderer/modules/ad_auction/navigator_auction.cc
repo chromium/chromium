@@ -11,18 +11,26 @@
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/interest_group/ad_auction_constants.h"
 #include "third_party/blink/public/mojom/interest_group/interest_group_types.mojom-blink.h"
+#include "third_party/blink/public/mojom/parakeet/ad_request.mojom-blink.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_usvstring_usvstringsequence.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_ad_properties.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_ad_request_config.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_ad_targeting.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_ads.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_auction_ad.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_auction_ad_config.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_auction_ad_interest_group.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_union_adproperties_adpropertiessequence.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/navigator.h"
 #include "third_party/blink/renderer/core/loader/document_loader.h"
+#include "third_party/blink/renderer/modules/ad_auction/ads.h"
 #include "third_party/blink/renderer/modules/ad_auction/validate_blink_interest_group.h"
+#include "third_party/blink/renderer/modules/geolocation/geolocation_coordinates.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin_hash.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -69,6 +77,16 @@ String ErrorInvalidAuctionConfigJson(const AuctionAdConfig& config,
       "%s for AuctionAdConfig with seller '%s' must be a JSON-serializable "
       "object.",
       field_name.Utf8().c_str(), config.seller().Utf8().c_str());
+}
+
+String ErrorInvalidAdRequestConfig(const AdRequestConfig& config,
+                                   const String& field_name,
+                                   const String& field_value,
+                                   const String& error) {
+  return String::Format("%s '%s' for AdRequestConfig with URL '%s' %s",
+                        field_name.Utf8().c_str(), field_value.Utf8().c_str(),
+                        config.adRequestUrl().Utf8().c_str(),
+                        error.Utf8().c_str());
 }
 
 // JSON and Origin conversion helpers.
@@ -280,6 +298,170 @@ bool CopyAdComponentsFromIdlToMojo(const ExecutionContext& context,
   return true;
 }
 
+// createAdRequest copy functions.
+bool CopyAdRequestUrlFromIdlToMojo(const ExecutionContext& context,
+                                   ExceptionState& exception_state,
+                                   const AdRequestConfig& input,
+                                   mojom::blink::AdRequestConfig& output) {
+  KURL ad_request_url = context.CompleteURL(input.adRequestUrl());
+  if (!ad_request_url.IsValid() ||
+      (ad_request_url.Protocol() != url::kHttpsScheme)) {
+    exception_state.ThrowTypeError(
+        String::Format("adRequestUrl '%s' for AdRequestConfig must "
+                       "be a valid https origin.",
+                       input.adRequestUrl().Utf8().c_str()));
+    return false;
+  }
+  output.ad_request_url = ad_request_url;
+  return true;
+}
+
+bool CopyAdPropertiesFromIdlToMojo(const ExecutionContext& context,
+                                   ExceptionState& exception_state,
+                                   const AdRequestConfig& input,
+                                   mojom::blink::AdRequestConfig& output) {
+  if (!input.hasAdProperties()) {
+    exception_state.ThrowTypeError(
+        ErrorInvalidAdRequestConfig(input, "adProperties", input.adRequestUrl(),
+                                    "must be provided to createAdRequest."));
+    return false;
+  }
+
+  // output.ad_properties = mojom::blink::AdProperties::New();
+  switch (input.adProperties()->GetContentType()) {
+    case V8UnionAdPropertiesOrAdPropertiesSequence::ContentType::
+        kAdProperties: {
+      const auto* ad_properties = input.adProperties()->GetAsAdProperties();
+      auto mojo_ad_properties = mojom::blink::AdProperties::New();
+      mojo_ad_properties->width =
+          ad_properties->hasWidth() ? ad_properties->width() : "";
+      mojo_ad_properties->height =
+          ad_properties->hasHeight() ? ad_properties->height() : "";
+      mojo_ad_properties->slot =
+          ad_properties->hasSlot() ? ad_properties->slot() : "";
+      mojo_ad_properties->lang =
+          ad_properties->hasLang() ? ad_properties->lang() : "";
+      mojo_ad_properties->ad_type =
+          ad_properties->hasAdtype() ? ad_properties->adtype() : "";
+      mojo_ad_properties->bid_floor =
+          ad_properties->hasBidFloor() ? ad_properties->bidFloor() : 0.0;
+
+      output.ad_properties.push_back(std::move(mojo_ad_properties));
+      break;
+    }
+    case V8UnionAdPropertiesOrAdPropertiesSequence::ContentType::
+        kAdPropertiesSequence: {
+      if (input.adProperties()->GetAsAdPropertiesSequence().size() <= 0) {
+        exception_state.ThrowTypeError(ErrorInvalidAdRequestConfig(
+            input, "adProperties", input.adRequestUrl(),
+            "must be non-empty to createAdRequest."));
+        return false;
+      }
+
+      for (const auto& ad_properties :
+           input.adProperties()->GetAsAdPropertiesSequence()) {
+        auto mojo_ad_properties = mojom::blink::AdProperties::New();
+        mojo_ad_properties->width =
+            ad_properties->hasWidth() ? ad_properties->width() : "";
+        mojo_ad_properties->height =
+            ad_properties->hasHeight() ? ad_properties->height() : "";
+        mojo_ad_properties->slot =
+            ad_properties->hasSlot() ? ad_properties->slot() : "";
+        mojo_ad_properties->lang =
+            ad_properties->hasLang() ? ad_properties->lang() : "";
+        mojo_ad_properties->ad_type =
+            ad_properties->hasAdtype() ? ad_properties->adtype() : "";
+        mojo_ad_properties->bid_floor =
+            ad_properties->hasBidFloor() ? ad_properties->bidFloor() : 0.0;
+
+        output.ad_properties.push_back(std::move(mojo_ad_properties));
+      }
+      break;
+    }
+  }
+  return true;
+}
+
+bool CopyTargetingFromIdlToMojo(const ExecutionContext& context,
+                                ExceptionState& exception_state,
+                                const AdRequestConfig& input,
+                                mojom::blink::AdRequestConfig& output) {
+  if (!input.hasTargeting()) {
+    // Targeting information is not required.
+    return true;
+  }
+
+  output.targeting = mojom::blink::AdTargeting::New();
+
+  if (input.targeting()->hasInterests()) {
+    output.targeting->interests.emplace();
+    for (const auto& interest : input.targeting()->interests()) {
+      output.targeting->interests->push_back(interest);
+    }
+  }
+
+  if (input.targeting()->hasGeolocation()) {
+    output.targeting->geolocation = mojom::blink::AdGeolocation::New();
+    output.targeting->geolocation->latitude =
+        input.targeting()->geolocation()->latitude();
+    output.targeting->geolocation->longitude =
+        input.targeting()->geolocation()->longitude();
+  }
+
+  return true;
+}
+
+bool CopyAdSignalsFromIdlToMojo(const ExecutionContext& context,
+                                ExceptionState& exception_state,
+                                const AdRequestConfig& input,
+                                mojom::blink::AdRequestConfig& output) {
+  if (!input.hasAnonymizedProxiedSignals()) {
+    // AdSignals information is not required.
+    return true;
+  }
+
+  output.anonymized_proxied_signals.emplace();
+
+  for (const auto& signal : input.anonymizedProxiedSignals()) {
+    if (signal == "coarse-geolocation") {
+      output.anonymized_proxied_signals->push_back(
+          blink::mojom::AdSignals::kCourseGeolocation);
+    } else if (signal == "coarse-ua") {
+      output.anonymized_proxied_signals->push_back(
+          blink::mojom::AdSignals::kCourseUserAgent);
+    } else if (signal == "targeting") {
+      output.anonymized_proxied_signals->push_back(
+          blink::mojom::AdSignals::kTargeting);
+    } else if (signal == "user-ad-interests") {
+      output.anonymized_proxied_signals->push_back(
+          blink::mojom::AdSignals::kUserAdInterests);
+    }
+  }
+  return true;
+}
+
+bool CopyFallbackSourceFromIdlToMojo(const ExecutionContext& context,
+                                     ExceptionState& exception_state,
+                                     const AdRequestConfig& input,
+                                     mojom::blink::AdRequestConfig& output) {
+  if (!input.hasFallbackSource()) {
+    // FallbackSource information is not required.
+    return true;
+  }
+
+  KURL fallback_source = context.CompleteURL(input.fallbackSource());
+  if (!fallback_source.IsValid() ||
+      (fallback_source.Protocol() != url::kHttpsScheme)) {
+    exception_state.ThrowTypeError(
+        String::Format("fallbackSource '%s' for AdRequestConfig must "
+                       "be a valid https origin.",
+                       input.fallbackSource().Utf8().c_str()));
+    return false;
+  }
+  output.fallback_source = fallback_source;
+  return true;
+}
+
 // runAdAuction() copy functions.
 
 bool CopySellerFromIdlToMojo(ExceptionState& exception_state,
@@ -432,6 +614,17 @@ bool CopyPerBuyerSignalsFromIdlToMojo(const ScriptState& script_state,
     output.per_buyer_signals->insert(buyer, std::move(buyer_signals_str));
   }
 
+  return true;
+}
+
+// finalizeAd() validation methods
+bool ValidateAdsObject(ExceptionState& exception_state, const Ads* ads) {
+  if (!ads || !ads->IsValid()) {
+    exception_state.ThrowTypeError(
+        "Ads used for finalizeAds() must be a valid Ads object from "
+        "navigator.createAdRequest.");
+    return false;
+  }
   return true;
 }
 
@@ -656,41 +849,127 @@ Vector<String> NavigatorAuction::adAuctionComponents(
   return out;
 }
 
-ScriptPromise NavigatorAuction::createAdRequest(ScriptState* script_state,
-                                                ExceptionState&) {
-  // TODO(https://crbug.com/1249186): Add full impl of methods; for now just
-  // return a resolved promise.
-  return ScriptPromise::RejectWithDOMException(
-      script_state, MakeGarbageCollected<DOMException>(
-                        DOMExceptionCode::kNotSupportedError,
-                        "createAdRequest API not yet implemented"));
+ScriptPromise NavigatorAuction::createAdRequest(
+    ScriptState* script_state,
+    const AdRequestConfig* config,
+    ExceptionState& exception_state) {
+  const ExecutionContext* context = ExecutionContext::From(script_state);
+  auto mojo_config = mojom::blink::AdRequestConfig::New();
+
+  if (!CopyAdRequestUrlFromIdlToMojo(*context, exception_state, *config,
+                                     *mojo_config))
+    return ScriptPromise();
+
+  if (!CopyAdPropertiesFromIdlToMojo(*context, exception_state, *config,
+                                     *mojo_config))
+    return ScriptPromise();
+
+  if (config->hasPublisherCode()) {
+    mojo_config->publisher_code = config->publisherCode();
+  }
+
+  if (!CopyTargetingFromIdlToMojo(*context, exception_state, *config,
+                                  *mojo_config))
+    return ScriptPromise();
+
+  if (!CopyAdSignalsFromIdlToMojo(*context, exception_state, *config,
+                                  *mojo_config))
+    return ScriptPromise();
+
+  if (!CopyFallbackSourceFromIdlToMojo(*context, exception_state, *config,
+                                       *mojo_config))
+    return ScriptPromise();
+
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+  ScriptPromise promise = resolver->Promise();
+  ad_auction_service_->CreateAdRequest(
+      std::move(mojo_config),
+      WTF::Bind(&NavigatorAuction::AdsRequested, WrapPersistent(this),
+                WrapPersistent(resolver)));
+  return promise;
 }
 
 /* static */
 ScriptPromise NavigatorAuction::createAdRequest(
     ScriptState* script_state,
     Navigator& navigator,
+    const AdRequestConfig* config,
     ExceptionState& exception_state) {
   return From(ExecutionContext::From(script_state), navigator)
-      .createAdRequest(script_state, exception_state);
+      .createAdRequest(script_state, config, exception_state);
+}
+
+void NavigatorAuction::AdsRequested(ScriptPromiseResolver* resolver,
+                                    const WTF::String&) {
+  if (!resolver->GetExecutionContext() ||
+      resolver->GetExecutionContext()->IsContextDestroyed())
+    return;
+
+  // TODO(https://crbug.com/1249186): Add full impl of methods.
+  resolver->Reject(MakeGarbageCollected<DOMException>(
+      DOMExceptionCode::kNotSupportedError,
+      "createAdRequest API not yet implemented"));
 }
 
 ScriptPromise NavigatorAuction::finalizeAd(ScriptState* script_state,
-                                           ExceptionState&) {
-  // TODO(https://crbug.com/1249186): Add full impl of methods; for now just
-  // return a resolved promise.
-  return ScriptPromise::RejectWithDOMException(
-      script_state,
-      MakeGarbageCollected<DOMException>(DOMExceptionCode::kNotSupportedError,
-                                         "finalizeAd API not yet implemented"));
+                                           const Ads* ads,
+                                           const AuctionAdConfig* config,
+                                           ExceptionState& exception_state) {
+  const ExecutionContext* context = ExecutionContext::From(script_state);
+  auto mojo_config = mojom::blink::AuctionAdConfig::New();
+
+  // For finalizing an Ad PARAKEET only really cares about the decisionLogicUrl,
+  // auctionSignals, sellerSignals, and perBuyerSignals. We can ignore
+  // copying/validating other fields on AuctionAdConfig.
+  if (!CopyDecisionLogicUrlFromIdlToMojo(*context, exception_state, *config,
+                                         *mojo_config))
+    return ScriptPromise();
+  if (!CopyAuctionSignalsFromIdlToMojo(*script_state, exception_state, *config,
+                                       *mojo_config))
+    return ScriptPromise();
+  if (!CopySellerSignalsFromIdlToMojo(*script_state, exception_state, *config,
+                                      *mojo_config))
+    return ScriptPromise();
+  if (!CopyPerBuyerSignalsFromIdlToMojo(*script_state, exception_state, *config,
+                                        *mojo_config))
+    return ScriptPromise();
+
+  if (!ValidateAdsObject(exception_state, ads))
+    return ScriptPromise();
+
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+  ScriptPromise promise = resolver->Promise();
+  ad_auction_service_->FinalizeAd(
+      ads->GetGuid(), std::move(mojo_config),
+      WTF::Bind(&NavigatorAuction::FinalizeAdComplete, WrapPersistent(this),
+                WrapPersistent(resolver)));
+  return promise;
 }
 
 /* static */
 ScriptPromise NavigatorAuction::finalizeAd(ScriptState* script_state,
                                            Navigator& navigator,
+                                           const Ads* ads,
+                                           const AuctionAdConfig* config,
                                            ExceptionState& exception_state) {
   return From(ExecutionContext::From(script_state), navigator)
-      .finalizeAd(script_state, exception_state);
+      .finalizeAd(script_state, ads, config, exception_state);
+}
+
+void NavigatorAuction::FinalizeAdComplete(
+    ScriptPromiseResolver* resolver,
+    const absl::optional<KURL>& creative_url) {
+  if (!resolver->GetExecutionContext() ||
+      resolver->GetExecutionContext()->IsContextDestroyed())
+    return;
+  if (creative_url) {
+    resolver->Resolve(creative_url);
+  } else {
+    // TODO(https://crbug.com/1249186): Add full impl of methods.
+    resolver->Reject(MakeGarbageCollected<DOMException>(
+        DOMExceptionCode::kNotSupportedError,
+        "finalizeAd API not yet implemented"));
+  }
 }
 
 void NavigatorAuction::AuctionComplete(ScriptPromiseResolver* resolver,

@@ -11,9 +11,11 @@ PASS Navigator includes NavigatorContentUtils: member names are unique
 PASS Navigator includes NavigatorCookies: member names are unique
 PASS Navigator includes NavigatorPlugins: member names are unique
 PASS Navigator includes NavigatorConcurrentHardware: member names are unique
-PASS Navigator interface: operation createAdRequest()
-PASS Navigator interface: operation finalizeAd()
-PASS Navigator interface: navigator must inherit property "createAdRequest()" with the proper type
-PASS Navigator interface: navigator must inherit property "finalizeAd()" with the proper type
+PASS Navigator interface: operation createAdRequest(AdRequestConfig)
+PASS Navigator interface: operation finalizeAd(Ads, AuctionAdConfig)
+PASS Navigator interface: navigator must inherit property "createAdRequest(AdRequestConfig)" with the proper type
+PASS Navigator interface: calling createAdRequest(AdRequestConfig) on navigator with too few arguments must throw TypeError
+PASS Navigator interface: navigator must inherit property "finalizeAd(Ads, AuctionAdConfig)" with the proper type
+PASS Navigator interface: calling finalizeAd(Ads, AuctionAdConfig) on navigator with too few arguments must throw TypeError
 Harness: the test ran to completion.
 

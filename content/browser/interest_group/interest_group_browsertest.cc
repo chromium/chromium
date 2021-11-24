@@ -479,7 +479,16 @@ class InterestGroupBrowserTest : public ContentBrowserTest {
                   R"(
 (async function() {
   try {
-    return await navigator.createAdRequest();
+    return await navigator.createAdRequest({
+      adRequestUrl: "https://example.site",
+      adProperties: [
+        { width: "24", height: "48", slot: "first",
+          lang: "en-us", adType: "test-ad2", bidFloor: 42.0 }],
+      publisherCode: "pubCode123",
+      targeting: { interests: ["interest1", "interest2"] },
+      anonymizedProxiedSignals: [],
+      fallbackSource: "https://fallback.site"
+    });
   } catch (e) {
     return e.toString();
   }
@@ -495,7 +504,24 @@ class InterestGroupBrowserTest : public ContentBrowserTest {
                   R"(
 (async function() {
   try {
-    return await navigator.finalizeAd();
+    return await navigator.createAdRequest({
+      adRequestUrl: "https://example.site",
+      adProperties: [
+        { width: "24", height: "48", slot: "first",
+          lang: "en-us", adType: "test-ad2", bidFloor: 42.0 }],
+      publisherCode: "pubCode123",
+      targeting: { interests: ["interest1", "interest2"] },
+      anonymizedProxiedSignals: [],
+      fallbackSource: "https://fallback.site"
+    }).then(ads => {
+      return navigator.finalizeAd(ads, {
+        seller: "https://example.site",
+        decisionLogicUrl: "https://example.site/script.js",
+        perBuyerSignals: {"example.site": { randomParam: "value1" }},
+        auctionSignals: "pubCode123",
+        sellerSignals: { someKey: "sellerValue" }
+      });
+    });
   } catch (e) {
     return e.toString();
   }
@@ -3771,7 +3797,9 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, CreateAdRequestWorks) {
 IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, FinalizeAdWorks) {
   GURL test_url = https_server_->GetURL("a.test", "/echo");
   ASSERT_TRUE(NavigateToURL(shell(), test_url));
-  EXPECT_EQ("NotSupportedError: finalizeAd API not yet implemented",
+  // The finalize API relies on createAdRequest, until it is fully implemented
+  // we expect a createAdRequest failure initially.
+  EXPECT_EQ("NotSupportedError: createAdRequest API not yet implemented",
             FinalizeAdAndWait());
 }
 

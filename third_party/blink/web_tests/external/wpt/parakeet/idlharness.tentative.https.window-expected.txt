@@ -11,9 +11,11 @@ PASS Navigator includes NavigatorContentUtils: member names are unique
 PASS Navigator includes NavigatorCookies: member names are unique
 PASS Navigator includes NavigatorPlugins: member names are unique
 PASS Navigator includes NavigatorConcurrentHardware: member names are unique
-FAIL Navigator interface: operation createAdRequest() assert_own_property: interface prototype object missing non-static operation expected property "createAdRequest" missing
-FAIL Navigator interface: operation finalizeAd() assert_own_property: interface prototype object missing non-static operation expected property "finalizeAd" missing
-FAIL Navigator interface: navigator must inherit property "createAdRequest()" with the proper type assert_inherits: property "createAdRequest" not found in prototype chain
-FAIL Navigator interface: navigator must inherit property "finalizeAd()" with the proper type assert_inherits: property "finalizeAd" not found in prototype chain
+FAIL Navigator interface: operation createAdRequest(AdRequestConfig) assert_own_property: interface prototype object missing non-static operation expected property "createAdRequest" missing
+FAIL Navigator interface: operation finalizeAd(Ads, AuctionAdConfig) assert_own_property: interface prototype object missing non-static operation expected property "finalizeAd" missing
+FAIL Navigator interface: navigator must inherit property "createAdRequest(AdRequestConfig)" with the proper type assert_inherits: property "createAdRequest" not found in prototype chain
+FAIL Navigator interface: calling createAdRequest(AdRequestConfig) on navigator with too few arguments must throw TypeError assert_inherits: property "createAdRequest" not found in prototype chain
+FAIL Navigator interface: navigator must inherit property "finalizeAd(Ads, AuctionAdConfig)" with the proper type assert_inherits: property "finalizeAd" not found in prototype chain
+FAIL Navigator interface: calling finalizeAd(Ads, AuctionAdConfig) on navigator with too few arguments must throw TypeError assert_inherits: property "finalizeAd" not found in prototype chain
 Harness: the test ran to completion.
 
