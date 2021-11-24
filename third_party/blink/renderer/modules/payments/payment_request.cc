@@ -1238,7 +1238,7 @@ PaymentRequest::PaymentRequest(
   if (!AllowedToUsePaymentRequest(execution_context)) {
     exception_state.ThrowSecurityError(
         "Must be in a top-level browsing context or an iframe needs to specify "
-        "'allowpaymentrequest' explicitly");
+        "allow=\"payment\" explicitly");
     return;
   }
 
