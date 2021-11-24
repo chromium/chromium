@@ -144,27 +144,6 @@ void SetupIDLObservableArrayBackingListTemplate(
       V8AtomicString(isolate, wrapper_type_info->interface_name));
 
   instance_template->SetInternalFieldCount(kV8DefaultWrapperInternalFieldCount);
-
-  // https://tc39.es/ecma262/#sec-proxy-object-internal-methods-and-internal-slots-getownproperty-p
-  // "length" property must be
-  //   {configurable: false, enumerable: false, writable: true},
-  // so the target object must have a property of {configurable: false}.
-  instance_template->Set(
-      V8AtomicString(isolate, "length"), v8::Undefined(isolate),
-      static_cast<v8::PropertyAttribute>(v8::DontEnum | v8::DontDelete));
-
-  // The target object of an observable array exotic object (= JS Proxy) must
-  // be a JS Array object.  Hence, make the object look like a JS Array.
-  // https://webidl.spec.whatwg.org/#creating-an-observable-array-exotic-object
-  v8::Local<v8::FunctionTemplate> intrinsic_array_prototype_interface_template =
-      v8::FunctionTemplate::New(isolate, /*callback=*/nullptr,
-                                /*data=*/v8::Local<v8::Value>(),
-                                v8::Local<v8::Signature>(), /*length=*/0,
-                                v8::ConstructorBehavior::kThrow);
-  intrinsic_array_prototype_interface_template->SetIntrinsicDataProperty(
-      V8AtomicString(isolate, "prototype"), v8::kArrayPrototype);
-  interface_template->SetPrototypeProviderTemplate(
-      intrinsic_array_prototype_interface_template);
 }
 
 absl::optional<size_t> FindIndexInEnumStringTable(

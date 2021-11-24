@@ -53,7 +53,8 @@
 //   +-- bindings::ObservableArrayExoticObjectImpl -- the implementation class
 //
 //   v8_exotic_object (= JS Proxy)
-//       --(proxy target)--> v8_backing_list_object
+//       --(proxy target)--> v8_array (= JS Array)
+//       --(private property)--> v8_backing_list_object
 //       --(internal field)--> blink_backing_list_object
 //       --(data member)--> blink_exotic_object
 //       --(ToV8Traits)--> v8_exotic_object

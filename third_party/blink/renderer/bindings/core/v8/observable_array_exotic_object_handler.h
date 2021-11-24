@@ -7,6 +7,7 @@
 
 #include "third_party/blink/renderer/bindings/core/v8/idl_types.h"
 #include "third_party/blink/renderer/bindings/core/v8/native_value_traits_impl.h"
+#include "third_party/blink/renderer/bindings/core/v8/observable_array.h"
 #include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
@@ -29,7 +30,8 @@ namespace bindings {
 //
 //   let observable_array_exotic_object = new Proxy(target, handler);
 // where
-//   target = observable_array_backing_list_object
+//   target = v8::Array that has a private property to the V8 wrapper of Blink
+//       implementation of observable array backing list object.
 //   handler = v8::Object that has a set of trap functions implemented in
 //       ObservableArrayExoticObjectHandler.
 //
@@ -52,10 +54,10 @@ class ObservableArrayExoticObjectHandler {
       const v8::FunctionCallbackInfo<v8::Value>& info) {
     v8::Isolate* isolate = info.GetIsolate();
     v8::Local<v8::Context> current_context = isolate->GetCurrentContext();
-    v8::Local<v8::Object> v8_target = info[0].As<v8::Object>();
+    v8::Local<v8::Array> v8_target = info[0].As<v8::Array>();
     v8::Local<v8::Value> v8_property = info[1];
     v8::Local<v8::Value> v8_desc_obj = info[2];
-    BackingListWrappable& backing_list = ToWrappableUnsafe(v8_target);
+    BackingListWrappable& backing_list = ToWrappableUnsafe(isolate, v8_target);
     ExceptionState exception_state(
         isolate, ExceptionContext::Context::kNamedPropertyDefine,
         backing_list.ObservableArrayNameInIDL());
@@ -137,9 +139,9 @@ class ObservableArrayExoticObjectHandler {
       const v8::FunctionCallbackInfo<v8::Value>& info) {
     v8::Isolate* isolate = info.GetIsolate();
     v8::Local<v8::Context> current_context = isolate->GetCurrentContext();
-    v8::Local<v8::Object> v8_target = info[0].As<v8::Object>();
+    v8::Local<v8::Array> v8_target = info[0].As<v8::Array>();
     v8::Local<v8::Value> v8_property = info[1];
-    BackingListWrappable& backing_list = ToWrappableUnsafe(v8_target);
+    BackingListWrappable& backing_list = ToWrappableUnsafe(isolate, v8_target);
 
     if (v8_property->IsString()) {
       v8::Local<v8::Uint32> v8_index;
@@ -179,9 +181,9 @@ class ObservableArrayExoticObjectHandler {
   static void TrapGet(const v8::FunctionCallbackInfo<v8::Value>& info) {
     v8::Isolate* isolate = info.GetIsolate();
     v8::Local<v8::Context> current_context = isolate->GetCurrentContext();
-    v8::Local<v8::Object> v8_target = info[0].As<v8::Object>();
+    v8::Local<v8::Array> v8_target = info[0].As<v8::Array>();
     v8::Local<v8::Value> v8_property = info[1];
-    BackingListWrappable& backing_list = ToWrappableUnsafe(v8_target);
+    BackingListWrappable& backing_list = ToWrappableUnsafe(isolate, v8_target);
 
     if (v8_property->IsString()) {
       v8::Local<v8::Uint32> v8_index;
@@ -219,9 +221,9 @@ class ObservableArrayExoticObjectHandler {
       const v8::FunctionCallbackInfo<v8::Value>& info) {
     v8::Isolate* isolate = info.GetIsolate();
     v8::Local<v8::Context> current_context = isolate->GetCurrentContext();
-    v8::Local<v8::Object> v8_target = info[0].As<v8::Object>();
+    v8::Local<v8::Array> v8_target = info[0].As<v8::Array>();
     v8::Local<v8::Value> v8_property = info[1];
-    BackingListWrappable& backing_list = ToWrappableUnsafe(v8_target);
+    BackingListWrappable& backing_list = ToWrappableUnsafe(isolate, v8_target);
 
     if (v8_property->IsString()) {
       v8::Local<v8::Uint32> v8_index;
@@ -269,9 +271,9 @@ class ObservableArrayExoticObjectHandler {
   static void TrapHas(const v8::FunctionCallbackInfo<v8::Value>& info) {
     v8::Isolate* isolate = info.GetIsolate();
     v8::Local<v8::Context> current_context = isolate->GetCurrentContext();
-    v8::Local<v8::Object> v8_target = info[0].As<v8::Object>();
+    v8::Local<v8::Array> v8_target = info[0].As<v8::Array>();
     v8::Local<v8::Value> v8_property = info[1];
-    BackingListWrappable& backing_list = ToWrappableUnsafe(v8_target);
+    BackingListWrappable& backing_list = ToWrappableUnsafe(isolate, v8_target);
 
     if (v8_property->IsString()) {
       v8::Local<v8::Uint32> v8_index;
@@ -298,8 +300,8 @@ class ObservableArrayExoticObjectHandler {
   static void TrapOwnKeys(const v8::FunctionCallbackInfo<v8::Value>& info) {
     v8::Isolate* isolate = info.GetIsolate();
     v8::Local<v8::Context> current_context = isolate->GetCurrentContext();
-    v8::Local<v8::Object> v8_target = info[0].As<v8::Object>();
-    BackingListWrappable& backing_list = ToWrappableUnsafe(v8_target);
+    v8::Local<v8::Array> v8_target = info[0].As<v8::Array>();
+    BackingListWrappable& backing_list = ToWrappableUnsafe(isolate, v8_target);
 
     // 2. Let length be handler.[[BackingList]]'s size.
     // 3. Let keys be an empty list.
@@ -355,10 +357,10 @@ class ObservableArrayExoticObjectHandler {
   static void TrapSet(const v8::FunctionCallbackInfo<v8::Value>& info) {
     v8::Isolate* isolate = info.GetIsolate();
     v8::Local<v8::Context> current_context = isolate->GetCurrentContext();
-    v8::Local<v8::Object> v8_target = info[0].As<v8::Object>();
+    v8::Local<v8::Array> v8_target = info[0].As<v8::Array>();
     v8::Local<v8::Value> v8_property = info[1];
     v8::Local<v8::Value> v8_value = info[2];
-    BackingListWrappable& backing_list = ToWrappableUnsafe(v8_target);
+    BackingListWrappable& backing_list = ToWrappableUnsafe(isolate, v8_target);
 
     if (v8_property->IsString()) {
       v8::Local<v8::Uint32> v8_index;
@@ -429,8 +431,12 @@ class ObservableArrayExoticObjectHandler {
   }
 
  private:
-  static BackingListWrappable& ToWrappableUnsafe(v8::Local<v8::Object> target) {
-    return *ToScriptWrappable(target)->ToImpl<BackingListWrappable>();
+  static BackingListWrappable& ToWrappableUnsafe(v8::Isolate* isolate,
+                                                 v8::Local<v8::Array> target) {
+    bindings::ObservableArrayBase* base =
+        bindings::ObservableArrayExoticObjectImpl::
+            ProxyTargetToObservableArrayBase(isolate, target);
+    return *static_cast<BackingListWrappable*>(base);
   }
 
   // https://webidl.spec.whatwg.org/#observable-array-exotic-object-set-the-length
