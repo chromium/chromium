@@ -967,10 +967,17 @@ void ColorTransformInternal::AppendColorSpaceToColorSpaceTransform(
     steps_.push_back(std::make_unique<ColorTransformSkTransferFn>(
         src_to_linear_fn, src.HasExtendedSkTransferFn()));
   } else if (src.GetTransferID() == ColorSpace::TransferID::ARIB_STD_B67) {
-    float sdr_white_level = 0.f;
-    src.GetSDRWhiteLevel(&sdr_white_level);
-    steps_.push_back(
-        std::make_unique<ColorTransformHLGToLinear>(sdr_white_level));
+    if (dst.IsHDR()) {
+      float sdr_white_level = 0.f;
+      src.GetSDRWhiteLevel(&sdr_white_level);
+      steps_.push_back(
+          std::make_unique<ColorTransformHLGToLinear>(sdr_white_level));
+    } else {
+      // HLG is designed such that treating it as 2.2 gamma content works well.
+      constexpr skcms_TransferFunction kGamma22 = {2.2, 1, 0, 0, 0, 0, 0};
+      steps_.push_back(
+          std::make_unique<ColorTransformSkTransferFn>(kGamma22, false));
+    }
   } else if (src.GetTransferID() == ColorSpace::TransferID::SMPTEST2084) {
     float sdr_white_level = 0.f;
     src.GetSDRWhiteLevel(&sdr_white_level);
