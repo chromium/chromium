@@ -28,7 +28,7 @@ export function fakeUpdateControllerTest() {
     return controller.completedFirmwareUpdates_;
   }
 
-  test('StartUpdate', () => {
+  test('StartUpdate', async () => {
     const deviceId = '1';
     controller.setUpdateIntervalInMs(0);
     // Keep track of which observation we should get.
@@ -45,6 +45,7 @@ export function fakeUpdateControllerTest() {
     };
 
     controller.startUpdate(deviceId, updateProgressObserverRemote);
+    await flushTasks();
     return controller
         .getStartUpdatePromiseForTesting()
         // Use flushTasks to process the 3 fake installation progress
