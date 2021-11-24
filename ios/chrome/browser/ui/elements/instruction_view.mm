@@ -161,7 +161,7 @@ constexpr CGFloat kIconLabelWidth = 30;
     [instructionLabel.topAnchor constraintEqualToAnchor:line.topAnchor
                                                constant:kVerticalMargin],
     [instructionLabel.trailingAnchor constraintEqualToAnchor:line.trailingAnchor
-                                                    constant:kTrailingMargin]
+                                                    constant:-kTrailingMargin]
   ]];
 
   return line;
