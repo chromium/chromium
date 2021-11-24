@@ -5826,9 +5826,6 @@ crbug.com/924472 external/wpt/css/css-transforms/transform-box/svgbox-border-box
 crbug.com/924472 external/wpt/css/css-transforms/transform-box/svgbox-content-box.html [ Failure ]
 crbug.com/924472 external/wpt/css/css-transforms/transform-box/svgbox-stroke-box.html [ Failure ]
 
-# Temporarily disable test to allow devtools-frontend changes
-crbug.com/1095733 http/tests/devtools/tabbed-pane-closeable-persistence.js [ Skip ]
-
 # Sheriff 2020-06-17
 crbug.com/1095969 [ Mac ] fast/canvas/OffscreenCanvas-MessageChannel-transfer.html [ Failure Pass ]
 crbug.com/1095969 [ Linux ] fast/canvas/OffscreenCanvas-MessageChannel-transfer.html [ Failure Pass ]
