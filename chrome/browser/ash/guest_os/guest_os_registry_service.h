@@ -41,6 +41,9 @@ class ApplicationList;
 
 namespace guest_os {
 
+class SvgIconTranscoder;
+using IconContentCallback = base::OnceCallback<void(std::string)>;
+
 // The GuestOsRegistryService  stores information about Desktop Entries (apps)
 // in Crostini. We store this in prefs so that it is readily available even when
 // the VM isn't running. The registrations here correspond to .desktop files,
@@ -195,7 +198,7 @@ class GuestOsRegistryService : public KeyedService {
   // Fetches icons from container.
   void RequestIcon(const std::string& app_id,
                    ui::ResourceScaleFactor scale_factor,
-                   base::OnceCallback<void(std::string)> callback);
+                   IconContentCallback callback);
 
   // Remove all apps from the named VM and container. If |container_name| is an
   // empty string, this function removes all apps associated with the VM,
@@ -261,6 +264,25 @@ class GuestOsRegistryService : public KeyedService {
                            apps::LoadIconCallback callback,
                            apps::IconValuePtr icon);
 
+  // Call the callbacks |active_icon_requests_| for |app_id|.
+  void InvokeActiveIconCallbacks(std::string app_id,
+                                 ui::ResourceScaleFactor scale_factor,
+                                 std::string icon_content);
+
+  // If a valid .svg file is found at |svg_path|, transcode it to png and save
+  // it to |png_path| and invoke |callback|, otherwise invoke |fallback|.
+  void TranscodeIconFromSvg(
+      base::FilePath svg_path,
+      base::FilePath png_path,
+      apps::IconType icon_type,
+      int32_t size_hint_in_dip,
+      apps::IconEffects icon_effects,
+      base::OnceCallback<void(apps::LoadIconCallback)> fallback,
+      apps::LoadIconCallback callback);
+
+  // Callback for when a saved container icon is svg and was transcoded.
+  void OnSvgIconTranscoded(std::string app_id, std::string icon_content);
+
   // Owned by the Profile.
   Profile* const profile_;
   PrefService* const prefs_;
@@ -281,10 +303,11 @@ class GuestOsRegistryService : public KeyedService {
   // which means there's a good chance the container is online and the request
   // will then succeed.
   std::map<std::pair<std::string, ui::ResourceScaleFactor>,
-           std::vector<base::OnceCallback<void(std::string)>>>
+           std::vector<IconContentCallback>>
       active_icon_requests_;
   std::map<std::string, uint32_t> retry_icon_requests_;
 
+  std::unique_ptr<SvgIconTranscoder> svg_icon_transcoder_;
   base::WeakPtrFactory<GuestOsRegistryService> weak_ptr_factory_{this};
 };
 

@@ -3106,7 +3106,8 @@ void CrostiniManager::OnGetContainerAppIcons(
   for (auto& icon : *response->mutable_icons()) {
     icons.emplace_back(
         Icon{.desktop_file_id = std::move(*icon.mutable_desktop_file_id()),
-             .content = std::move(*icon.mutable_icon())});
+             .content = std::move(*icon.mutable_icon()),
+             .format = icon.format()});
   }
   std::move(callback).Run(/*success=*/true, icons);
 }

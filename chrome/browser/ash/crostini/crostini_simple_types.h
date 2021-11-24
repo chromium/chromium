@@ -9,6 +9,7 @@
 
 #include "base/callback.h"
 #include "base/files/file_path.h"
+#include "chromeos/dbus/cicerone/cicerone_service.pb.h"
 #include "chromeos/dbus/concierge/concierge_service.pb.h"
 
 // This file contains simple C++ types. Simple isn't a precise term, but as a
@@ -184,8 +185,11 @@ struct ContainerInfo {
 struct Icon {
   std::string desktop_file_id;
 
-  // Icon file content in PNG format.
+  // Icon file content in specified format.
   std::string content;
+
+  // Icon format (e.g. PNG, SVG)
+  vm_tools::cicerone::DesktopIcon::Format format;
 };
 
 struct LinuxPackageInfo {
