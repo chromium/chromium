@@ -2,6 +2,7 @@
 
 * [Accessibility Overview](accessibility/overview.md)
 * [How Chrome Accessibility Works](accessibility/browser/how_a11y_works.md)
+* [How Chrome OS Accessibility Works](accessibility/os/how_a11y_works.md)
 * [Chrome Accessibility Tests](accessibility/browser/tests.md)
 
 ## Chrome Browser Cross-Platform
