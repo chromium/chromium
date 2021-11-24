@@ -1051,8 +1051,15 @@ ax::mojom::blink::Role AXNodeObject::NativeRoleIgnoringAria() const {
   if (GetNode()->HasTagName(html_names::kDtTag))
     return ax::mojom::blink::Role::kDescriptionListTerm;
 
-  if (GetNode()->HasTagName(mathml_names::kMathTag))
-    return ax::mojom::blink::Role::kMath;
+  // MathMLElement instances are not created when MathMLCore is disabled, so one
+  // cannot rely on Node::HasTagName(const MathMLQualifiedName&) to test the
+  // <math> tag. See crbug.com/1272556.
+  if (auto* element = DynamicTo<Element>(GetNode())) {
+    if (element->namespaceURI() == mathml_names::kNamespaceURI &&
+        element->nodeName() == mathml_names::kMathTag.LocalName()) {
+      return ax::mojom::blink::Role::kMath;
+    }
+  }
 
   if (GetNode()->HasTagName(html_names::kRpTag) ||
       GetNode()->HasTagName(html_names::kRtTag)) {

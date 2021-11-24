@@ -5,6 +5,7 @@
 #include "base/files/file_util.h"
 #include "content/browser/accessibility/dump_accessibility_browsertest_base.h"
 #include "content/browser/web_contents/web_contents_impl.h"
+#include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/shell/browser/shell.h"
@@ -88,6 +89,16 @@ class DumpAccessibilityNodeTest : public DumpAccessibilityTestBase {
   }
 };
 
+class DumpAccessibilityNodeWithoutMathMLTest
+    : public DumpAccessibilityNodeTest {
+ public:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    DumpAccessibilityNodeTest::SetUpCommandLine(command_line);
+    command_line->AppendSwitchASCII(switches::kDisableBlinkFeatures,
+                                    "MathMLCore");
+  }
+};
+
 class DumpAccessibilityAccNameTest : public DumpAccessibilityNodeTest {
  public:
   std::vector<ui::AXPropertyFilter> DefaultFilters() const override {
@@ -138,6 +149,12 @@ INSTANTIATE_TEST_SUITE_P(
 
 INSTANTIATE_TEST_SUITE_P(
     All,
+    DumpAccessibilityNodeWithoutMathMLTest,
+    ::testing::ValuesIn(DumpAccessibilityTestHelper::TreeTestPasses()),
+    TestPassToString());
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
     DumpAccessibilityAccNameTest,
     ::testing::ValuesIn(DumpAccessibilityTestHelper::TreeTestPasses()),
     TestPassToString());
@@ -151,6 +168,10 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityNodeTest, AccessibilityAriaScrollbar) {
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityNodeTest,
                        AccessibilityTableThColHeader) {
   RunHtmlTest(FILE_PATH_LITERAL("table-th-colheader.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityNodeWithoutMathMLTest, MathMLMath) {
+  RunHtmlTest(FILE_PATH_LITERAL("math-disabled.html"));
 }
 
 // AccName tests.
