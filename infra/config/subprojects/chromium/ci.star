@@ -4202,7 +4202,7 @@ ci.fyi_builder(
     # TODO(thakis): Remove once https://crbug.com/927738 is resolved.
     execution_timeout = 5 * time.hour,
     goma_backend = None,
-    reclient_jobs = rbe_jobs.HIGH_JOBS_FOR_CI,
+    reclient_jobs = 400,
     reclient_instance = rbe_instance.DEFAULT,
 )
 # End - Reclient migration, phase 2, block 1 shadow builders
