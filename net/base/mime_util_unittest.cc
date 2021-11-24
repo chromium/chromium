@@ -4,14 +4,60 @@
 
 #include "net/base/mime_util.h"
 
+#include <vector>
+
 #include "base/containers/contains.h"
 #include "base/strings/string_split.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace net {
+
+using testing::Contains;
+
+TEST(MimeUtilTest, GetWellKnownMimeTypeFromExtension) {
+  // String: png\0css
+  base::FilePath::StringType containsNullByte;
+  containsNullByte.append(FILE_PATH_LITERAL("png"));
+  containsNullByte.append(1, FILE_PATH_LITERAL('\0'));
+  containsNullByte.append(FILE_PATH_LITERAL("css"));
+
+  const struct {
+    const base::FilePath::StringType extension;
+    const char* const mime_type;
+  } tests[] = {
+      {FILE_PATH_LITERAL("png"), "image/png"},
+      {FILE_PATH_LITERAL("PNG"), "image/png"},
+      {FILE_PATH_LITERAL("css"), "text/css"},
+      {FILE_PATH_LITERAL("pjp"), "image/jpeg"},
+      {FILE_PATH_LITERAL("pjpeg"), "image/jpeg"},
+      {FILE_PATH_LITERAL("json"), "application/json"},
+      {FILE_PATH_LITERAL("js"), "text/javascript"},
+      {FILE_PATH_LITERAL("webm"), "video/webm"},
+      {FILE_PATH_LITERAL("weba"), "audio/webm"},
+      {FILE_PATH_LITERAL("avif"), "image/avif"},
+      {FILE_PATH_LITERAL("jxl"), "image/jxl"},
+      {FILE_PATH_LITERAL("epub"), "application/epub+zip"},
+      {FILE_PATH_LITERAL("apk"), "application/vnd.android.package-archive"},
+      {FILE_PATH_LITERAL("cer"), "application/x-x509-ca-cert"},
+      {FILE_PATH_LITERAL("crt"), "application/x-x509-ca-cert"},
+      {FILE_PATH_LITERAL("zip"), "application/zip"},
+      {FILE_PATH_LITERAL("ics"), "text/calendar"},
+      {FILE_PATH_LITERAL("m3u8"), "application/x-mpegurl"},
+      {FILE_PATH_LITERAL("not an extension / for sure"), nullptr},
+      {containsNullByte, nullptr}};
+
+  for (const auto& test : tests) {
+    std::string mime_type;
+    if (GetWellKnownMimeTypeFromExtension(test.extension, &mime_type))
+      EXPECT_EQ(test.mime_type, mime_type);
+    else
+      EXPECT_EQ(test.mime_type, nullptr);
+  }
+}
 
 TEST(MimeUtilTest, ExtensionTest) {
   // String: png\0css
@@ -22,44 +68,45 @@ TEST(MimeUtilTest, ExtensionTest) {
 
   const struct {
     const base::FilePath::StringType extension;
-    const char* const mime_type;
-    bool valid;
+    const std::vector<std::string> mime_types;
   } tests[] = {
-    {FILE_PATH_LITERAL("png"), "image/png", true},
-    {FILE_PATH_LITERAL("PNG"), "image/png", true},
-    {FILE_PATH_LITERAL("css"), "text/css", true},
-    {FILE_PATH_LITERAL("pjp"), "image/jpeg", true},
-    {FILE_PATH_LITERAL("pjpeg"), "image/jpeg", true},
-    {FILE_PATH_LITERAL("json"), "application/json", true},
-    {FILE_PATH_LITERAL("js"), "text/javascript", true},
-    {FILE_PATH_LITERAL("webm"), "video/webm", true},
-    {FILE_PATH_LITERAL("weba"), "audio/webm", true},
-    {FILE_PATH_LITERAL("avif"), "image/avif", true},
-    {FILE_PATH_LITERAL("jxl"), "image/jxl", true},
+    {FILE_PATH_LITERAL("png"), {"image/png"}},
+    {FILE_PATH_LITERAL("PNG"), {"image/png"}},
+    {FILE_PATH_LITERAL("css"), {"text/css"}},
+    {FILE_PATH_LITERAL("pjp"), {"image/jpeg"}},
+    {FILE_PATH_LITERAL("pjpeg"), {"image/jpeg"}},
+    {FILE_PATH_LITERAL("json"), {"application/json"}},
+    {FILE_PATH_LITERAL("js"), {"text/javascript"}},
+    {FILE_PATH_LITERAL("webm"), {"video/webm"}},
+    {FILE_PATH_LITERAL("weba"), {"audio/webm"}},
+    {FILE_PATH_LITERAL("avif"), {"image/avif"}},
+    {FILE_PATH_LITERAL("jxl"), {"image/jxl"}},
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     // These are test cases for testing platform mime types on Chrome OS.
-    {FILE_PATH_LITERAL("epub"), "application/epub+zip", true},
-    {FILE_PATH_LITERAL("apk"), "application/vnd.android.package-archive", true},
-    {FILE_PATH_LITERAL("cer"), "application/x-x509-ca-cert", true},
-    {FILE_PATH_LITERAL("crt"), "application/x-x509-ca-cert", true},
-    {FILE_PATH_LITERAL("zip"), "application/zip", true},
-    {FILE_PATH_LITERAL("ics"), "text/calendar", true},
+    {FILE_PATH_LITERAL("epub"), {"application/epub+zip"}},
+    {FILE_PATH_LITERAL("apk"), {"application/vnd.android.package-archive"}},
+    {FILE_PATH_LITERAL("cer"), {"application/x-x509-ca-cert"}},
+    {FILE_PATH_LITERAL("crt"), {"application/x-x509-ca-cert"}},
+    {FILE_PATH_LITERAL("zip"), {"application/zip"}},
+    {FILE_PATH_LITERAL("ics"), {"text/calendar"}},
 #endif
-#if defined(OS_ANDROID)
-    {FILE_PATH_LITERAL("m3u8"), "application/x-mpegurl", true},
-#endif
-    {FILE_PATH_LITERAL("not an extension / for sure"), "", false},
-    {containsNullByte, "", false}
+    {FILE_PATH_LITERAL("m3u8"),
+     {
+         "application/x-mpegurl",  // Chrome's secondary mapping.
+         "audio/x-mpegurl",  // https://crbug.com/1273061, system override for
+                             // android-arm[64]-test and Linux. Possibly more.
+         "audio/mpegurl",    // System override for mac.
+     }},
+    {FILE_PATH_LITERAL("not an extension / for sure"), {}},
+    {containsNullByte, {}}
   };
 
-  std::string mime_type;
-  bool rv;
-
   for (const auto& test : tests) {
-    rv = GetMimeTypeFromExtension(test.extension, &mime_type);
-    EXPECT_EQ(test.valid, rv);
-    if (rv)
-      EXPECT_EQ(test.mime_type, mime_type);
+    std::string mime_type;
+    if (GetMimeTypeFromExtension(test.extension, &mime_type))
+      EXPECT_THAT(test.mime_types, Contains(mime_type));
+    else
+      EXPECT_TRUE(test.mime_types.empty());
   }
 }
 
