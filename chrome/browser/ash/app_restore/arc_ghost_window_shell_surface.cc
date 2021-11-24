@@ -9,6 +9,7 @@
 #include "chrome/browser/ash/app_restore/arc_ghost_window_view.h"
 #include "chrome/browser/ash/app_restore/arc_window_utils.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_utils.h"
+#include "components/app_restore/app_restore_data.h"
 #include "components/app_restore/full_restore_utils.h"
 #include "components/app_restore/window_properties.h"
 #include "components/exo/buffer.h"
@@ -27,23 +28,22 @@ std::unique_ptr<exo::ClientControlledShellSurface> InitArcGhostWindow(
     ArcWindowHandler* window_handler,
     const std::string& app_id,
     int window_id,
-    absl::optional<int64_t> display_id,
     gfx::Rect bounds,
-    absl::optional<chromeos::WindowStateType> window_state,
-    absl::optional<gfx::Size> maximum_size,
-    absl::optional<gfx::Size> minimum_size,
-    absl::optional<std::u16string> title,
-    absl::optional<uint32_t> color,
+    app_restore::AppRestoreData* restore_data,
     base::RepeatingClosure close_callback) {
-  int64_t display_id_value = display_id.value_or(display::kInvalidDisplayId);
+  int64_t display_id_value =
+      restore_data->display_id.value_or(display::kInvalidDisplayId);
   absl::optional<double> scale_factor = GetDisplayScaleFactor(display_id_value);
-  DCHECK(scale_factor.has_value());
+  if (!scale_factor.has_value())
+    return nullptr;
 
   // TODO(sstan): Fallback to system default color or other topic color, if
   // the task hasn't valid theme color.
-  uint32_t theme_color = color.has_value() && IsValidThemeColor(color.value())
-                             ? color.value()
-                             : SK_ColorWHITE;
+  uint32_t theme_color =
+      restore_data->status_bar_color.has_value() &&
+              IsValidThemeColor(restore_data->status_bar_color.value())
+          ? restore_data->status_bar_color.value()
+          : SK_ColorWHITE;
 
   // TODO(sstan): Handle the desk container from full_restore data.
   int container = ash::desks_util::GetActiveDeskContainerId();
@@ -62,14 +62,14 @@ std::unique_ptr<exo::ClientControlledShellSurface> InitArcGhostWindow(
   shell_surface->SetAppId(app_id.c_str());
   shell_surface->SetBounds(display_id_value, bounds);
 
-  if (maximum_size.has_value())
-    shell_surface->SetMaximumSize(maximum_size.value());
+  if (restore_data->maximum_size.has_value())
+    shell_surface->SetMaximumSize(restore_data->maximum_size.value());
 
-  if (minimum_size.has_value())
-    shell_surface->SetMinimumSize(minimum_size.value());
+  if (restore_data->minimum_size.has_value())
+    shell_surface->SetMinimumSize(restore_data->minimum_size.value());
 
-  if (title.has_value())
-    shell_surface->SetTitle(title.value());
+  if (restore_data->title.has_value())
+    shell_surface->SetTitle(restore_data->title.value());
 
   // Set frame buttons.
   constexpr uint32_t kAllButtonMask =
@@ -89,8 +89,9 @@ std::unique_ptr<exo::ClientControlledShellSurface> InitArcGhostWindow(
 
   // Change the minimized at the last operation, since we need create the window
   // entity first and hide it on ash shelf.
-  if (window_state.has_value() &&
-      *window_state == chromeos::WindowStateType::kMinimized) {
+  if (restore_data->window_state_type.has_value() &&
+      restore_data->window_state_type.value() ==
+          chromeos::WindowStateType::kMinimized) {
     shell_surface->SetMinimized();
     shell_surface->controller_surface()->Commit();
   }
