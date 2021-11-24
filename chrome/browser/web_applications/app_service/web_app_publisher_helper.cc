@@ -629,9 +629,10 @@ content::WebContents* WebAppPublisherHelper::Launch(
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   if (app_id == crostini::kCrostiniTerminalSystemAppId) {
     DCHECK(base::FeatureList::IsEnabled(chromeos::features::kTerminalSSH));
-    crostini::LaunchTerminal(profile_, window_info
-                                           ? window_info->display_id
-                                           : display::kInvalidDisplayId);
+    int64_t display_id =
+        window_info ? window_info->display_id : display::kInvalidDisplayId;
+    crostini::LaunchTerminalWithIntent(profile_, display_id, nullptr,
+                                       base::DoNothing());
     return nullptr;
   }
 #endif
@@ -736,15 +737,21 @@ void WebAppPublisherHelper::LaunchAppWithIntent(
   CHECK(intent);
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  // TODO(crbug.com/1028898): Implement LaunchTerminalWithIntent() and call it.
-  // It must include support for sharing any open-with directory before terminal
-  // starts.
   if (app_id == crostini::kCrostiniTerminalSystemAppId) {
     DCHECK(base::FeatureList::IsEnabled(chromeos::features::kTerminalSSH));
-    crostini::LaunchTerminal(profile_, window_info
-                                           ? window_info->display_id
-                                           : display::kInvalidDisplayId);
-    std::move(callback).Run(true);
+    int64_t display_id =
+        window_info ? window_info->display_id : display::kInvalidDisplayId;
+    crostini::LaunchTerminalWithIntent(
+        profile_, display_id, std::move(intent),
+        base::BindOnce(
+            [](apps::mojom::Publisher::LaunchAppWithIntentCallback callback,
+               bool success, const std::string& failure_reason) {
+              if (!success) {
+                LOG(WARNING) << "Launch terminal failed: " << failure_reason;
+              }
+              std::move(callback).Run(success);
+            },
+            std::move(callback)));
     return;
   }
 #endif

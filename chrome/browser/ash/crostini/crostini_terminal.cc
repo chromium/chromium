@@ -18,8 +18,11 @@
 #include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/apps/app_service/menu_util.h"
 #include "chrome/browser/ash/crostini/crostini_features.h"
+#include "chrome/browser/ash/crostini/crostini_installer.h"
 #include "chrome/browser/ash/crostini/crostini_pref_names.h"
 #include "chrome/browser/ash/crostini/crostini_util.h"
+#include "chrome/browser/ash/file_manager/path_util.h"
+#include "chrome/browser/ash/guest_os/guest_os_share_path.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -36,6 +39,8 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "net/base/escape.h"
+#include "storage/browser/file_system/external_mount_points.h"
+#include "storage/browser/file_system/file_system_url.h"
 #include "ui/base/base_window.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/gfx/geometry/point.h"
@@ -171,6 +176,68 @@ void LaunchTerminalWithUrl(Profile* profile,
   content::GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE,
       base::BindOnce(LaunchTerminalImpl, profile, url, std::move(*params)));
+}
+
+void LaunchTerminalWithIntent(Profile* profile,
+                              int64_t display_id,
+                              apps::mojom::IntentPtr intent,
+                              CrostiniSuccessCallback callback) {
+  // Check if crostini is installed.
+  if (!CrostiniFeatures::Get()->IsEnabled(profile)) {
+    crostini::CrostiniInstaller::GetForProfile(profile)->ShowDialog(
+        CrostiniUISurface::kAppList);
+    return std::move(callback).Run(false, "Crostini not installed");
+  }
+
+  // Look for vm_name and container_name in intent->extras.
+  ContainerId container_id = ContainerId::GetDefault();
+  if (intent && intent->extras.has_value()) {
+    for (const auto& extra : intent->extras.value()) {
+      if (extra.first == "vm_name") {
+        container_id.vm_name = extra.second;
+      } else if (extra.first == "container_name") {
+        container_id.container_name = extra.second;
+      }
+    }
+  }
+
+  // Check if we need to show recovery.
+  auto* crostini_manager = crostini::CrostiniManager::GetForProfile(profile);
+  if (crostini_manager->IsUncleanStartup()) {
+    ShowCrostiniRecoveryView(profile, crostini::CrostiniUISurface::kAppList,
+                             kCrostiniTerminalSystemAppId, display_id, {},
+                             base::DoNothing());
+    return std::move(callback).Run(false, "Recovery required");
+  }
+
+  // Use first file (if any) as cwd.
+  std::string cwd;
+  CrostiniManager::RestartOptions options;
+  auto* share_path = guest_os::GuestOsSharePath::GetForProfile(profile);
+  if (intent && intent->files && intent->files->size()) {
+    GURL gurl = intent->files.value()[0]->url;
+    storage::ExternalMountPoints* mount_points =
+        storage::ExternalMountPoints::GetSystemInstance();
+    storage::FileSystemURL url = mount_points->CrackURL(
+        gurl, blink::StorageKey(url::Origin::Create(gurl)));
+    base::FilePath path;
+    if (file_manager::util::ConvertFileSystemURLToPathInsideCrostini(
+            profile, url, &path)) {
+      cwd = path.value();
+      if (url.mount_filesystem_id() !=
+              file_manager::util::GetCrostiniMountPointName(profile) &&
+          !share_path->IsPathShared(container_id.vm_name, url.path())) {
+        options.share_paths.push_back(url.path());
+      }
+    } else {
+      LOG(WARNING) << "Failed to parse: " << gurl;
+    }
+  }
+
+  CrostiniManager::GetForProfile(profile)->RestartCrostiniWithOptions(
+      container_id, std::move(options), base::DoNothing());
+  LaunchTerminal(profile, display_id, container_id, cwd);
+  std::move(callback).Run(true, "");
 }
 
 void LaunchTerminalSettings(Profile* profile, int64_t display_id) {
@@ -350,10 +417,8 @@ bool ExecuteTerminalMenuShortcutCommand(Profile* profile,
   }
   apps::mojom::IntentPtr intent = apps::mojom::Intent::New();
   intent->extras = ExtrasFromShortcutId(std::move(*shortcut));
-  // TODO(crbug.com/1028898): Implement LaunchTerminalWithIntent() and call it.
-  crostini::LaunchCrostiniAppWithIntent(profile,
-                                        crostini::kCrostiniTerminalSystemAppId,
-                                        display_id, std::move(intent));
+  LaunchTerminalWithIntent(profile, display_id, std::move(intent),
+                           base::DoNothing());
   return true;
 }
 

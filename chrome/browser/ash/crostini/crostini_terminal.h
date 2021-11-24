@@ -108,6 +108,11 @@ void LaunchTerminalWithUrl(Profile* profile,
                            int64_t display_id,
                            const GURL& url);
 
+void LaunchTerminalWithIntent(Profile* profile,
+                              int64_t display_id,
+                              apps::mojom::IntentPtr intent,
+                              CrostiniSuccessCallback callback);
+
 // Launches the terminal settings popup window.
 void LaunchTerminalSettings(Profile* profile,
                             int64_t display_id = display::kInvalidDisplayId);
