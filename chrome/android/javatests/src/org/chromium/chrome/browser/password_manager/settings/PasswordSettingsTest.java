@@ -384,6 +384,7 @@ public class PasswordSettingsTest {
     private void overrideSyncService(
             final boolean usingPassphrase, final boolean syncingPasswords) {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
+            when(mMockSyncService.hasSyncConsent()).thenReturn(syncingPasswords);
             when(mMockSyncService.isUsingExplicitPassphrase()).thenReturn(usingPassphrase);
             when(mMockSyncService.getActiveDataTypes())
                     .thenReturn(CollectionUtil.newHashSet(

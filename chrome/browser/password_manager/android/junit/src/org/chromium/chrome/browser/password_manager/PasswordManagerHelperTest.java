@@ -22,13 +22,9 @@ import org.chromium.base.CollectionUtil;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
-import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.sync.SyncService;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.components.signin.base.CoreAccountInfo;
-import org.chromium.components.signin.identitymanager.ConsentLevel;
-import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.sync.ModelType;
 
 import java.util.Collections;
@@ -44,15 +40,6 @@ public class PasswordManagerHelperTest {
     private CredentialManagerLauncher mCredentialManagerLauncherMock;
 
     @Mock
-    private Profile mProfileMock;
-
-    @Mock
-    private IdentityServicesProvider mIdentityServicesProviderMock;
-
-    @Mock
-    private IdentityManager mIdentityManagerMock;
-
-    @Mock
     private SyncService mSyncServiceMock;
 
     @Mock
@@ -64,52 +51,79 @@ public class PasswordManagerHelperTest {
     }
 
     @Test
+    public void testSyncCheckFeatureNotEnabled() {
+        when(mSyncServiceMock.isSyncFeatureEnabled()).thenReturn(false);
+        Assert.assertFalse(PasswordManagerHelper.hasChosenToSyncPasswords(mSyncServiceMock));
+        Assert.assertFalse(PasswordManagerHelper.hasChosenToSyncPasswordsWithNoCustomPassphrase(
+                mSyncServiceMock));
+    }
+
+    @Test
     public void testSyncCheckNoSyncConsent() {
-        when(mIdentityManagerMock.hasPrimaryAccount(ConsentLevel.SYNC)).thenReturn(false);
+        when(mSyncServiceMock.hasSyncConsent()).thenReturn(false);
         Assert.assertFalse(
-                PasswordManagerHelper.isSyncingPasswords(mIdentityManagerMock, mSyncServiceMock));
+                PasswordManagerHelper.isSyncingPasswordsWithNoCustomPassphrase(mSyncServiceMock));
     }
 
     @Test
     public void testSyncPasswordsDisabled() {
-        when(mIdentityManagerMock.hasPrimaryAccount(ConsentLevel.SYNC)).thenReturn(true);
-        when(mSyncServiceMock.getActiveDataTypes()).thenReturn(Collections.EMPTY_SET);
-        Assert.assertFalse(
-                PasswordManagerHelper.isSyncingPasswords(mIdentityManagerMock, mSyncServiceMock));
+        when(mSyncServiceMock.isSyncFeatureEnabled()).thenReturn(true);
+        when(mSyncServiceMock.getChosenDataTypes()).thenReturn(Collections.EMPTY_SET);
+        Assert.assertFalse(PasswordManagerHelper.hasChosenToSyncPasswords(mSyncServiceMock));
+        Assert.assertFalse(PasswordManagerHelper.hasChosenToSyncPasswordsWithNoCustomPassphrase(
+                mSyncServiceMock));
     }
 
     @Test
     public void testSyncPasswordsEnabled() {
-        when(mIdentityManagerMock.hasPrimaryAccount(ConsentLevel.SYNC)).thenReturn(true);
-        when(mSyncServiceMock.getActiveDataTypes())
+        when(mSyncServiceMock.isSyncFeatureEnabled()).thenReturn(true);
+        when(mSyncServiceMock.getChosenDataTypes())
                 .thenReturn(CollectionUtil.newHashSet(ModelType.PASSWORDS));
-        Assert.assertTrue(
-                PasswordManagerHelper.isSyncingPasswords(mIdentityManagerMock, mSyncServiceMock));
+        Assert.assertTrue(PasswordManagerHelper.hasChosenToSyncPasswords(mSyncServiceMock));
     }
 
     @Test
     public void testSyncEnabledWithCustomPassphrase() {
-        when(mIdentityManagerMock.hasPrimaryAccount(ConsentLevel.SYNC)).thenReturn(true);
+        when(mSyncServiceMock.isSyncFeatureEnabled()).thenReturn(true);
+        when(mSyncServiceMock.getChosenDataTypes())
+                .thenReturn(CollectionUtil.newHashSet(ModelType.PASSWORDS));
+        when(mSyncServiceMock.isUsingExplicitPassphrase()).thenReturn(true);
+        Assert.assertTrue(PasswordManagerHelper.hasChosenToSyncPasswords(mSyncServiceMock));
+        Assert.assertFalse(PasswordManagerHelper.hasChosenToSyncPasswordsWithNoCustomPassphrase(
+                mSyncServiceMock));
+    }
+
+    @Test
+    public void testActivelySyncingPasswordsWithNoCustomPassphrase() {
+        when(mSyncServiceMock.hasSyncConsent()).thenReturn(true);
+        when(mSyncServiceMock.getActiveDataTypes())
+                .thenReturn(CollectionUtil.newHashSet(ModelType.PASSWORDS));
+        when(mSyncServiceMock.isUsingExplicitPassphrase()).thenReturn(false);
+        Assert.assertTrue(
+                PasswordManagerHelper.isSyncingPasswordsWithNoCustomPassphrase(mSyncServiceMock));
+    }
+
+    @Test
+    public void testActivelySyncingPasswordsWithCustomPassphrase() {
+        when(mSyncServiceMock.hasSyncConsent()).thenReturn(true);
         when(mSyncServiceMock.getActiveDataTypes())
                 .thenReturn(CollectionUtil.newHashSet(ModelType.PASSWORDS));
         when(mSyncServiceMock.isUsingExplicitPassphrase()).thenReturn(true);
-        Assert.assertTrue(
-                PasswordManagerHelper.isSyncingPasswords(mIdentityManagerMock, mSyncServiceMock));
-        Assert.assertFalse(PasswordManagerHelper.isSyncingPasswordsWithoutCustomPassphrase(
-                mIdentityManagerMock, mSyncServiceMock));
+        Assert.assertFalse(
+                PasswordManagerHelper.isSyncingPasswordsWithNoCustomPassphrase(mSyncServiceMock));
     }
 
     @Test
     public void testLaunchesCredentialManagerSync() {
-        when(mIdentityManagerMock.hasPrimaryAccount(ConsentLevel.SYNC)).thenReturn(true);
-        when(mSyncServiceMock.getActiveDataTypes())
+        when(mSyncServiceMock.isSyncFeatureEnabled()).thenReturn(true);
+        when(mSyncServiceMock.getChosenDataTypes())
                 .thenReturn(CollectionUtil.newHashSet(ModelType.PASSWORDS));
         when(mSyncServiceMock.getAccountInfo())
                 .thenReturn(CoreAccountInfo.createFromEmailAndGaiaId(TEST_EMAIL_ADDRESS, "0"));
 
         PasswordManagerHelper.showPasswordSettings(ContextUtils.getApplicationContext(),
                 ManagePasswordsReferrer.CHROME_SETTINGS, mSettingsLauncherMock,
-                mCredentialManagerLauncherMock, mIdentityManagerMock, mSyncServiceMock);
+                mCredentialManagerLauncherMock, mSyncServiceMock);
 
         verify(mCredentialManagerLauncherMock)
                 .getCredentialManagerLaunchIntentForAccount(
@@ -119,11 +133,10 @@ public class PasswordManagerHelperTest {
 
     @Test
     public void testLaunchesCredentialManagerForLocal() {
-        when(mIdentityManagerMock.hasPrimaryAccount(ConsentLevel.SYNC)).thenReturn(false);
-
+        when(mSyncServiceMock.isSyncFeatureEnabled()).thenReturn(false);
         PasswordManagerHelper.showPasswordSettings(ContextUtils.getApplicationContext(),
                 ManagePasswordsReferrer.CHROME_SETTINGS, mSettingsLauncherMock,
-                mCredentialManagerLauncherMock, mIdentityManagerMock, mSyncServiceMock);
+                mCredentialManagerLauncherMock, mSyncServiceMock);
 
         verify(mCredentialManagerLauncherMock)
                 .getCredentialManagerLaunchIntentForLocal(

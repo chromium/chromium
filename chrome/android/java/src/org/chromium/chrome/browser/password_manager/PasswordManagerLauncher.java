@@ -8,11 +8,8 @@ import android.app.Activity;
 
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
-import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.sync.SyncService;
-import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.WindowAndroid;
 
@@ -31,18 +28,14 @@ public class PasswordManagerLauncher {
      */
     public static void showPasswordSettings(
             Activity activity, @ManagePasswordsReferrer int referrer) {
-        IdentityManager identityManager = IdentityServicesProvider.get().getIdentityManager(
-                Profile.getLastUsedRegularProfile());
         SyncService syncService = SyncService.get();
-        if (PasswordManagerHelper.isSyncingPasswordsWithoutCustomPassphrase(
-                    identityManager, syncService)
+        if (PasswordManagerHelper.hasChosenToSyncPasswordsWithNoCustomPassphrase(syncService)
                 && ChromeFeatureList.isEnabled(ChromeFeatureList.PASSWORD_SCRIPTS_FETCHING)) {
             PasswordScriptsFetcherBridge.prewarmCache();
         }
         CredentialManagerLauncher credentialManagerLauncher = null;
         PasswordManagerHelper.showPasswordSettings(activity, referrer, new SettingsLauncherImpl(),
-                CredentialManagerLauncherFactory.getInstance().createLauncher(), identityManager,
-                syncService);
+                CredentialManagerLauncherFactory.getInstance().createLauncher(), syncService);
     }
 
     @CalledByNative

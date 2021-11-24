@@ -43,6 +43,7 @@ class SyncServiceAndroidBridge : public syncer::SyncServiceObserver {
   jboolean CanSyncFeatureStart(JNIEnv* env);
   jboolean IsSyncAllowedByPlatform(JNIEnv* env);
   void SetSyncAllowedByPlatform(JNIEnv* env, jboolean allowed);
+  jboolean IsSyncFeatureEnabled(JNIEnv* env);
   jboolean IsSyncFeatureActive(JNIEnv* env);
   jboolean IsSyncDisabledByEnterprisePolicy(JNIEnv* env);
   jboolean IsEngineInitialized(JNIEnv* env);

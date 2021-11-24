@@ -13,8 +13,6 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.sync.SyncService;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.components.signin.base.CoreAccountInfo;
-import org.chromium.components.signin.identitymanager.ConsentLevel;
-import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.sync.ModelType;
 
 /** A helper class for showing PasswordSettings. */
@@ -37,43 +35,64 @@ public class PasswordManagerHelper {
      */
     public static void showPasswordSettings(Context context, @ManagePasswordsReferrer int referrer,
             SettingsLauncher settingsLauncher, CredentialManagerLauncher credentialManagerLauncher,
-            IdentityManager identityManager, SyncService syncService) {
+            SyncService syncService) {
         RecordHistogram.recordEnumeratedHistogram("PasswordManager.ManagePasswordsReferrer",
                 referrer, ManagePasswordsReferrer.MAX_VALUE + 1);
-        if (credentialManagerLauncher != null) {
-            if (isSyncingPasswords(identityManager, syncService)) {
-                credentialManagerLauncher.getCredentialManagerLaunchIntentForAccount(referrer,
-                        CoreAccountInfo.getEmailFrom(syncService.getAccountInfo()),
-                        PasswordManagerHelper::launchCredentialManager,
-                        PasswordManagerHelper::recordFailureMetrics);
-            } else {
-                credentialManagerLauncher.getCredentialManagerLaunchIntentForLocal(referrer,
-                        PasswordManagerHelper::launchCredentialManager,
-                        PasswordManagerHelper::recordFailureMetrics);
-            }
+        if (credentialManagerLauncher == null) {
+            Bundle fragmentArgs = new Bundle();
+            fragmentArgs.putInt(MANAGE_PASSWORDS_REFERRER, referrer);
+            context.startActivity(settingsLauncher.createSettingsActivityIntent(
+                    context, PASSWORD_SETTINGS_CLASS, fragmentArgs));
             return;
         }
 
-        Bundle fragmentArgs = new Bundle();
-        fragmentArgs.putInt(MANAGE_PASSWORDS_REFERRER, referrer);
-        context.startActivity(settingsLauncher.createSettingsActivityIntent(
-                context, PASSWORD_SETTINGS_CLASS, fragmentArgs));
-    }
-
-    public static boolean isSyncingPasswords(
-            IdentityManager identityManager, SyncService syncService) {
-        if (!identityManager.hasPrimaryAccount(ConsentLevel.SYNC)) return false;
-        if (syncService == null
-                || !syncService.getActiveDataTypes().contains(ModelType.PASSWORDS)) {
-            return false;
+        if (hasChosenToSyncPasswords(syncService)) {
+            credentialManagerLauncher.getCredentialManagerLaunchIntentForAccount(referrer,
+                    CoreAccountInfo.getEmailFrom(syncService.getAccountInfo()),
+                    PasswordManagerHelper::launchCredentialManager,
+                    PasswordManagerHelper::recordFailureMetrics);
+        } else {
+            credentialManagerLauncher.getCredentialManagerLaunchIntentForLocal(referrer,
+                    PasswordManagerHelper::launchCredentialManager,
+                    PasswordManagerHelper::recordFailureMetrics);
         }
-        return true;
     }
 
-    public static boolean isSyncingPasswordsWithoutCustomPassphrase(
-            IdentityManager identityManager, SyncService syncService) {
-        if (!PasswordManagerHelper.isSyncingPasswords(identityManager, syncService)) return false;
-        if (syncService == null || syncService.isUsingExplicitPassphrase()) return false;
+    /**
+     *  Checks whether the sync feature is enabled and the user has chosen to sync passwords.
+     *  Note that this doesn't mean that passwords are actively syncing.
+     *
+     * @param syncService the service to query about the sync status.
+     * @return true if syncing passwords is enabled
+     */
+    public static boolean hasChosenToSyncPasswords(SyncService syncService) {
+        return syncService != null && syncService.isSyncFeatureEnabled()
+                && syncService.getChosenDataTypes().contains(ModelType.PASSWORDS);
+    }
+
+    /**
+     *  Checks whether the sync feature is enabled, the user has chosen to sync passwords and
+     *  they haven't set up a custom passphrase.
+     *  Note that this doesn't mean that passwords are actively syncing.
+     *
+     * @param syncService the service to query about the sync status.
+     * @return true if syncing passwords is enabled
+     */
+    public static boolean hasChosenToSyncPasswordsWithNoCustomPassphrase(SyncService syncService) {
+        return PasswordManagerHelper.hasChosenToSyncPasswords(syncService)
+                && !syncService.isUsingExplicitPassphrase();
+    }
+
+    /**
+     * Checks whether the user is actively syncing passwords without a custom passphrase.
+     *
+     * @param syncService the service to query about the sync status.
+     * @return true if actively syncing passwords and no custom passphrase was set.
+     */
+    public static boolean isSyncingPasswordsWithNoCustomPassphrase(SyncService syncService) {
+        if (syncService == null || !syncService.hasSyncConsent()) return false;
+        if (!syncService.getActiveDataTypes().contains(ModelType.PASSWORDS)) return false;
+        if (syncService.isUsingExplicitPassphrase()) return false;
         return true;
     }
 

@@ -123,6 +123,11 @@ void SyncServiceAndroidBridge::SetSyncAllowedByPlatform(JNIEnv* env,
   native_sync_service_->SetSyncAllowedByPlatform(allowed);
 }
 
+jboolean SyncServiceAndroidBridge::IsSyncFeatureEnabled(JNIEnv* env) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  return native_sync_service_->IsSyncFeatureEnabled();
+}
+
 jboolean SyncServiceAndroidBridge::IsSyncFeatureActive(JNIEnv* env) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   return native_sync_service_->IsSyncFeatureActive();

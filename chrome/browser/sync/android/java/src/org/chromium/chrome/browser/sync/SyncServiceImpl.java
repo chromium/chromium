@@ -82,6 +82,11 @@ public class SyncServiceImpl extends SyncService {
     }
 
     @Override
+    public boolean isSyncFeatureEnabled() {
+        return SyncServiceImplJni.get().isSyncFeatureEnabled(mSyncServiceAndroidBridge);
+    }
+
+    @Override
     public boolean isSyncFeatureActive() {
         return SyncServiceImplJni.get().isSyncFeatureActive(mSyncServiceAndroidBridge);
     }
@@ -401,6 +406,7 @@ public class SyncServiceImpl extends SyncService {
         boolean canSyncFeatureStart(long nativeSyncServiceAndroidBridge);
         boolean isSyncAllowedByPlatform(long nativeSyncServiceAndroidBridge);
         void setSyncAllowedByPlatform(long nativeSyncServiceAndroidBridge, boolean allowed);
+        boolean isSyncFeatureEnabled(long nativeSyncServiceAndroidBridge);
         boolean isSyncFeatureActive(long nativeSyncServiceAndroidBridge);
         boolean isSyncDisabledByEnterprisePolicy(long nativeSyncServiceAndroidBridge);
         boolean isEngineInitialized(long nativeSyncServiceAndroidBridge);
