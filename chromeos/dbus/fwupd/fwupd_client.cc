@@ -179,16 +179,14 @@ class FwupdClientImpl : public FwupdClient {
       const auto* description = dict->FindKey("Description");
       const auto* priority = dict->FindKey("Urgency");
 
-      // The keys "Version", "Description" and "Urgency" must exist in the
-      // dictionary.
       const bool success = version && description && priority;
-      if (!success) {
+      // TODO(michaelcheco): Confirm that this is the expected behavior.
+      if (success) {
+        updates.emplace_back(version->GetString(), description->GetString(),
+                             priority->GetInt());
+      } else {
         LOG(ERROR) << "Update version, description or priority is not found.";
-        return;
       }
-
-      updates.emplace_back(version->GetString(), description->GetString(),
-                           priority->GetInt());
     }
 
     for (auto& observer : observers_) {
