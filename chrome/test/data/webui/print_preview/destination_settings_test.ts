@@ -2,85 +2,83 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {CloudPrintInterfaceEventType, CloudPrintInterfaceImpl, Destination, DestinationConnectionStatus, DestinationErrorType, DestinationOrigin, DestinationState, DestinationStore, DestinationStoreEventType, DestinationType, Error, GooglePromotedDestinationId, makeRecentDestination, NativeLayerImpl, NUM_PERSISTED_DESTINATIONS, PrintPreviewDestinationSettingsElement, State} from 'chrome://print/print_preview.js';
+import {CloudPrintInterfaceImpl, Destination, DestinationConnectionStatus, DestinationErrorType, DestinationOrigin, DestinationState, DestinationStoreEventType, DestinationType, Error, GooglePromotedDestinationId, LocalDestinationInfo, makeRecentDestination, NativeLayerImpl, NUM_PERSISTED_DESTINATIONS, PrintPreviewDestinationSettingsElement, RecentDestination, State} from 'chrome://print/print_preview.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
-import {isChromeOS, isLacros, webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise, fakeDataBind, waitBeforeNextRender} from 'chrome://webui-test/test_util.js';
 
 import {CloudPrintInterfaceStub} from './cloud_print_interface_stub.js';
 // <if expr="chromeos or lacros">
-import {setNativeLayerCrosInstance} from './native_layer_cros_stub.js';
+import {NativeLayerCrosStub, setNativeLayerCrosInstance} from './native_layer_cros_stub.js';
 // </if>
 import {NativeLayerStub} from './native_layer_stub.js';
 import {getDestinations, getGoogleDriveDestination, getSaveAsPdfDestination, setupTestListenerElement} from './print_preview_test_utils.js';
 
-window.destination_settings_test = {};
-const destination_settings_test = window.destination_settings_test;
-destination_settings_test.suiteName = 'DestinationSettingsTest';
-/** @enum {string} */
-destination_settings_test.TestNames = {
-  ChangeDropdownState: 'change dropdown state',
-  NoRecentDestinations: 'no recent destinations',
-  RecentDestinations: 'recent destinations',
-  RecentDestinationsMissing: 'recent destinations missing',
-  SaveAsPdfRecent: 'save as pdf recent',
-  GoogleDriveRecent: 'google drive recent',
-  GoogleDriveAutoselect: 'google drive autoselect',
-  SelectSaveAsPdf: 'select save as pdf',
-  SelectGoogleDrive: 'select google drive',
-  SelectRecentDestination: 'select recent destination',
-  OpenDialog: 'open dialog',
-  TwoAccountsRecentDestinations: 'two accounts recent destinations',
-  UpdateRecentDestinations: 'update recent destinations',
-  DisabledSaveAsPdf: 'disabled save as pdf',
-  NoDestinations: 'no destinations',
+const destination_settings_test = {
+  suiteName: 'DestinationSettingsTest',
+  TestNames: {
+    ChangeDropdownState: 'change dropdown state',
+    NoRecentDestinations: 'no recent destinations',
+    RecentDestinations: 'recent destinations',
+    RecentDestinationsMissing: 'recent destinations missing',
+    SaveAsPdfRecent: 'save as pdf recent',
+    GoogleDriveRecent: 'google drive recent',
+    GoogleDriveAutoselect: 'google drive autoselect',
+    SelectSaveAsPdf: 'select save as pdf',
+    SelectGoogleDrive: 'select google drive',
+    SelectRecentDestination: 'select recent destination',
+    OpenDialog: 'open dialog',
+    TwoAccountsRecentDestinations: 'two accounts recent destinations',
+    UpdateRecentDestinations: 'update recent destinations',
+    DisabledSaveAsPdf: 'disabled save as pdf',
+    NoDestinations: 'no destinations',
+    // <if expr="chromeos or lacros">
+    EulaIsRetrieved: 'eula is retrieved',
+    DriveIsNotMounted: 'drive is not mounted',
+    // </if>
+  },
 };
 
+Object.assign(window, {destination_settings_test: destination_settings_test});
+
 suite(destination_settings_test.suiteName, function() {
-  /** @type {!PrintPreviewDestinationSettingsElement} */
-  let destinationSettings;
+  let destinationSettings: PrintPreviewDestinationSettingsElement;
 
-  /** @type {?NativeLayerStub} */
-  let nativeLayer = null;
+  let nativeLayer: NativeLayerStub;
 
-  /** @type {?CloudPrintInterfaceStub} */
-  let cloudPrintInterface = null;
+  let cloudPrintInterface: CloudPrintInterfaceStub;
 
-  /** @type {!Array<!RecentDestination>} */
-  let recentDestinations = [];
+  // <if expr="chromeos or lacros">
+  let nativeLayerCros: NativeLayerCrosStub;
+  // </if>
 
-  /** @type {!Array<!LocalDestinationInfo>} */
-  let localDestinations = [];
+  let recentDestinations: RecentDestination[] = [];
 
-  /** @type {!Array<!Destination>} */
-  let destinations = [];
+  let localDestinations: LocalDestinationInfo[] = [];
 
-  /** @type {!Array<!Destination>} */
-  const extraDestinations = [];
+  let destinations: Destination[] = [];
 
-  /** @type {boolean} */
-  let pdfPrinterDisabled = false;
+  const extraDestinations: Destination[] = [];
 
-  /** @type {boolean} */
-  let isDriveMounted = true;
+  let pdfPrinterDisabled: boolean = false;
 
-  /** @type {string} */
-  const defaultUser = 'foo@chromium.org';
+  let isDriveMounted: boolean = true;
 
-  /** @type {string} */
-  const driveDestinationKey = isChromeOS || isLacros ?
-      'Save to Drive CrOS/local/' :
-      '__google__docs/cookies/foo@chromium.org';
+  const defaultUser: string = 'foo@chromium.org';
 
-  /** @override */
+  const driveDestinationKey: string =
+      // <if expr="chromeos or lacros">
+      'Save to Drive CrOS/local/';
+  // </if>
+  // <if expr="not chromeos and not lacros">
+  '__google__docs/cookies/foo@chromium.org';
+  // </if>
+
   suiteSetup(function() {
     setupTestListenerElement();
   });
 
-  /** @override */
   setup(function() {
     document.body.innerHTML = '';
 
@@ -88,7 +86,7 @@ suite(destination_settings_test.suiteName, function() {
     nativeLayer = new NativeLayerStub();
     NativeLayerImpl.setInstance(nativeLayer);
     // <if expr="chromeos or lacros">
-    setNativeLayerCrosInstance();
+    nativeLayerCros = setNativeLayerCrosInstance();
     // </if>
     localDestinations = [];
     destinations = getDestinations(localDestinations);
@@ -110,8 +108,7 @@ suite(destination_settings_test.suiteName, function() {
     document.body.appendChild(model);
 
     destinationSettings =
-        /** @type {!PrintPreviewDestinationSettingsElement} */ (
-            document.createElement('print-preview-destination-settings'));
+        document.createElement('print-preview-destination-settings');
     destinationSettings.settings = model.settings;
     destinationSettings.state = State.NOT_READY;
     destinationSettings.disabled = true;
@@ -124,8 +121,7 @@ suite(destination_settings_test.suiteName, function() {
   test(
       assert(destination_settings_test.TestNames.ChangeDropdownState),
       function() {
-        const dropdown =
-            destinationSettings.shadowRoot.querySelector('#destinationSelect');
+        const dropdown = destinationSettings.$.destinationSelect;
         // Initial state: No destination store means that there is no
         // destination yet.
         assertFalse(dropdown.loaded);
@@ -192,10 +188,25 @@ suite(destination_settings_test.suiteName, function() {
             });
       });
 
-  /** @return {!DestinationOrigin} */
-  function getLocalOrigin() {
-    return isChromeOS || isLacros ? DestinationOrigin.CROS :
-                                    DestinationOrigin.LOCAL;
+  function getLocalOrigin(): DestinationOrigin {
+    // <if expr="chromeos or lacros">
+    return DestinationOrigin.CROS;
+    // </if>
+    // <if expr="not chromeos and not lacros">
+    return DestinationOrigin.LOCAL;
+    // </if>
+  }
+
+  function assertGoogleDrive() {
+    // <if expr="chromeos or lacros">
+    assertEquals(
+        GooglePromotedDestinationId.SAVE_TO_DRIVE_CROS,
+        destinationSettings.destination.id);
+    // </if>
+    // <if expr="not chromeos and not lacros">
+    assertEquals(
+        GooglePromotedDestinationId.DOCS, destinationSettings.destination.id);
+    // </if>
   }
 
   /**
@@ -213,27 +224,26 @@ suite(destination_settings_test.suiteName, function() {
   }
 
   /**
-   * @param {string} id The id of the local destination.
-   * @return {string} The key corresponding to the local destination, with the
+   * @param id The id of the local destination.
+   * @return The key corresponding to the local destination, with the
    *     origin set correctly based on the platform.
    */
-  function makeLocalDestinationKey(id) {
+  function makeLocalDestinationKey(id: string): string {
     return id + '/' + getLocalOrigin() + '/';
   }
 
   /**
-   * @param {!Array<string>} expectedDestinations An array of the expected
+   * @param expectedDestinations An array of the expected
    *     destinations in the dropdown.
    */
-  function assertDropdownItems(expectedDestinations) {
+  function assertDropdownItems(expectedDestinations: string[]) {
     const options =
-        destinationSettings.shadowRoot.querySelector('#destinationSelect')
-            .getVisibleItemsForTest();
+        destinationSettings.$.destinationSelect.getVisibleItemsForTest();
     assertEquals(expectedDestinations.length + 1, options.length);
     expectedDestinations.forEach((expectedValue, index) => {
-      assertEquals(expectedValue, options[index].value);
+      assertEquals(expectedValue, options[index]!.value);
     });
-    assertEquals('seeMore', options[expectedDestinations.length].value);
+    assertEquals('seeMore', options[expectedDestinations.length]!.value);
   }
 
   // Tests that the dropdown contains the appropriate destinations when there
@@ -248,13 +258,13 @@ suite(destination_settings_test.suiteName, function() {
           assertEquals(
               GooglePromotedDestinationId.SAVE_AS_PDF,
               destinationSettings.destination.id);
-          assertFalse(
-              destinationSettings.shadowRoot.querySelector('#destinationSelect')
-                  .disabled);
-          const dropdownItems = ['Save as PDF/local/'];
-          if (isChromeOS || isLacros) {
-            dropdownItems.push(driveDestinationKey);
-          }
+          assertFalse(destinationSettings.$.destinationSelect.disabled);
+          const dropdownItems = [
+            'Save as PDF/local/',
+            // <if expr="chromeos or lacros">
+            driveDestinationKey,
+            // </if>
+          ];
           assertDropdownItems(dropdownItems);
         });
       });
@@ -280,18 +290,14 @@ suite(destination_settings_test.suiteName, function() {
               // This will result in the destination store setting the most
               // recent destination.
               assertEquals('ID1', destinationSettings.destination.id);
-              assertFalse(destinationSettings.shadowRoot
-                              .querySelector('#destinationSelect')
-                              .disabled);
+              assertFalse(destinationSettings.$.destinationSelect.disabled);
               const dropdownItems = [
-                makeLocalDestinationKey('ID1'),
-                makeLocalDestinationKey('ID2'),
-                makeLocalDestinationKey('ID3'),
-                'Save as PDF/local/',
+                makeLocalDestinationKey('ID1'), makeLocalDestinationKey('ID2'),
+                makeLocalDestinationKey('ID3'), 'Save as PDF/local/',
+                // <if expr="chromeos or lacros">
+                driveDestinationKey,
+                // </if>
               ];
-              if (isChromeOS || isLacros) {
-                dropdownItems.push(driveDestinationKey);
-              }
               assertDropdownItems(dropdownItems);
             });
       });
@@ -303,7 +309,7 @@ suite(destination_settings_test.suiteName, function() {
       function() {
         recentDestinations = destinations.slice(0, 5).map(
             destination => makeRecentDestination(destination));
-        const missing = localDestinations.splice(1, 1)[0];
+        localDestinations.splice(1, 1);
         nativeLayer.setLocalDestinations(localDestinations);
         const whenCapabilitiesDone =
             nativeLayer.whenCalled('getPrinterCapabilities');
@@ -319,17 +325,14 @@ suite(destination_settings_test.suiteName, function() {
               // This will result in the destination store setting the most
               // recent destination.
               assertEquals('ID1', destinationSettings.destination.id);
-              assertFalse(destinationSettings.shadowRoot
-                              .querySelector('#destinationSelect')
-                              .disabled);
+              assertFalse(destinationSettings.$.destinationSelect.disabled);
               const dropdownItems = [
-                makeLocalDestinationKey('ID1'),
-                makeLocalDestinationKey('ID3'),
+                makeLocalDestinationKey('ID1'), makeLocalDestinationKey('ID3'),
                 'Save as PDF/local/',
+                // <if expr="chromeos or lacros">
+                driveDestinationKey,
+                // </if>
               ];
-              if (isChromeOS || isLacros) {
-                dropdownItems.push(driveDestinationKey);
-              }
               assertDropdownItems(dropdownItems);
             });
       });
@@ -353,18 +356,14 @@ suite(destination_settings_test.suiteName, function() {
           // This will result in the destination store setting the most recent
           // destination.
           assertEquals('ID1', destinationSettings.destination.id);
-          assertFalse(
-              destinationSettings.shadowRoot.querySelector('#destinationSelect')
-                  .disabled);
+          assertFalse(destinationSettings.$.destinationSelect.disabled);
           const dropdownItems = [
-            makeLocalDestinationKey('ID1'),
-            makeLocalDestinationKey('ID3'),
-            makeLocalDestinationKey('ID4'),
-            'Save as PDF/local/',
+            makeLocalDestinationKey('ID1'), makeLocalDestinationKey('ID3'),
+            makeLocalDestinationKey('ID4'), 'Save as PDF/local/',
+            // <if expr="chromeos or lacros">
+            driveDestinationKey,
+            // </if>
           ];
-          if (isChromeOS || isLacros) {
-            dropdownItems.push(driveDestinationKey);
-          }
           assertDropdownItems(dropdownItems);
         });
   });
@@ -392,27 +391,25 @@ suite(destination_settings_test.suiteName, function() {
               // This will result in the destination store setting the most
               // recent destination.
               assertEquals('ID1', destinationSettings.destination.id);
-              assertFalse(destinationSettings.shadowRoot
-                              .querySelector('#destinationSelect')
-                              .disabled);
+              assertFalse(destinationSettings.$.destinationSelect.disabled);
 
-              let dropdownItems;
-              if (isChromeOS || isLacros) {
-                dropdownItems = [
-                  makeLocalDestinationKey('ID1'),
-                  makeLocalDestinationKey('ID3'),
-                  makeLocalDestinationKey('ID4'),
-                  'Save as PDF/local/',
-                  driveDestinationKey,
-                ];
-              } else {
-                dropdownItems = [
-                  makeLocalDestinationKey('ID1'),
-                  driveDestinationKey,
-                  makeLocalDestinationKey('ID3'),
-                  'Save as PDF/local/',
-                ];
-              }
+              // <if expr="chromeos or lacros">
+              const dropdownItems = [
+                makeLocalDestinationKey('ID1'),
+                makeLocalDestinationKey('ID3'),
+                makeLocalDestinationKey('ID4'),
+                'Save as PDF/local/',
+                driveDestinationKey,
+              ];
+              // </if>
+              // <if expr="not chromeos and not lacros">
+              const dropdownItems = [
+                makeLocalDestinationKey('ID1'),
+                driveDestinationKey,
+                makeLocalDestinationKey('ID3'),
+                'Save as PDF/local/',
+              ];
+              // </if>
               assertDropdownItems(dropdownItems);
             });
       });
@@ -441,31 +438,26 @@ suite(destination_settings_test.suiteName, function() {
             .then(() => {
               // This will result in the destination store setting the most
               // recent destination.
-              assertEquals(
-                  isChromeOS || isLacros ? 'Save to Drive CrOS' :
-                                           '__google__docs',
-                  destinationSettings.destination.id);
-              assertFalse(destinationSettings.shadowRoot
-                              .querySelector('#destinationSelect')
-                              .disabled);
+              assertGoogleDrive();
+              assertFalse(destinationSettings.$.destinationSelect.disabled);
 
-              let dropdownItems;
-              if (isChromeOS || isLacros) {
-                dropdownItems = [
-                  makeLocalDestinationKey('ID2'),
-                  makeLocalDestinationKey('ID3'),
-                  makeLocalDestinationKey('ID4'),
-                  'Save as PDF/local/',
-                  driveDestinationKey,
-                ];
-              } else {
-                dropdownItems = [
-                  driveDestinationKey,
-                  makeLocalDestinationKey('ID2'),
-                  makeLocalDestinationKey('ID3'),
-                  'Save as PDF/local/',
-                ];
-              }
+              // <if expr="chromeos or lacros">
+              const dropdownItems = [
+                makeLocalDestinationKey('ID2'),
+                makeLocalDestinationKey('ID3'),
+                makeLocalDestinationKey('ID4'),
+                'Save as PDF/local/',
+                driveDestinationKey,
+              ];
+              // </if>
+              // <if expr="not chromeos and not lacros">
+              const dropdownItems = [
+                driveDestinationKey,
+                makeLocalDestinationKey('ID2'),
+                makeLocalDestinationKey('ID3'),
+                'Save as PDF/local/',
+              ];
+              // </if>
               assertDropdownItems(dropdownItems);
             });
       });
@@ -482,8 +474,7 @@ suite(destination_settings_test.suiteName, function() {
         nativeLayer.whenCalled('getPrinterCapabilities');
     initialize();
 
-    const dropdown =
-        destinationSettings.shadowRoot.querySelector('#destinationSelect');
+    const dropdown = destinationSettings.$.destinationSelect;
 
     return whenCapabilitiesDone
         .then(() => {
@@ -495,14 +486,12 @@ suite(destination_settings_test.suiteName, function() {
           assertEquals('ID1', destinationSettings.destination.id);
           assertFalse(dropdown.disabled);
           const dropdownItems = [
-            makeLocalDestinationKey('ID1'),
-            makeLocalDestinationKey('ID3'),
-            makeLocalDestinationKey('ID4'),
-            'Save as PDF/local/',
+            makeLocalDestinationKey('ID1'), makeLocalDestinationKey('ID3'),
+            makeLocalDestinationKey('ID4'), 'Save as PDF/local/',
+            // <if expr="chromeos or lacros">
+            driveDestinationKey,
+            // </if>
           ];
-          if (isChromeOS || isLacros) {
-            dropdownItems.push(driveDestinationKey);
-          }
           assertDropdownItems(dropdownItems);
           // Most recent destination is selected by default.
           assertEquals('ID1', destinationSettings.destination.id);
@@ -540,8 +529,7 @@ suite(destination_settings_test.suiteName, function() {
         const whenCapabilitiesDone =
             nativeLayer.whenCalled('getPrinterCapabilities');
         initialize();
-        const dropdown =
-            destinationSettings.shadowRoot.querySelector('#destinationSelect');
+        const dropdown = destinationSettings.$.destinationSelect;
 
         return whenCapabilitiesDone
             .then(() => {
@@ -551,23 +539,23 @@ suite(destination_settings_test.suiteName, function() {
               // This will result in the destination store setting the most
               // recent destination.
               assertEquals('ID1', destinationSettings.destination.id);
-              let dropdownItems;
-              if (isChromeOS || isLacros) {
-                dropdownItems = [
-                  makeLocalDestinationKey('ID1'),
-                  makeLocalDestinationKey('ID3'),
-                  makeLocalDestinationKey('ID4'),
-                  'Save as PDF/local/',
-                  driveDestinationKey,
-                ];
-              } else {
-                dropdownItems = [
-                  makeLocalDestinationKey('ID1'),
-                  driveDestinationKey,
-                  makeLocalDestinationKey('ID3'),
-                  'Save as PDF/local/',
-                ];
-              }
+              // <if expr="chromeos or lacros">
+              const dropdownItems = [
+                makeLocalDestinationKey('ID1'),
+                makeLocalDestinationKey('ID3'),
+                makeLocalDestinationKey('ID4'),
+                'Save as PDF/local/',
+                driveDestinationKey,
+              ];
+              // </if>
+              // <if expr="not chromeos and not lacros">
+              const dropdownItems = [
+                makeLocalDestinationKey('ID1'),
+                driveDestinationKey,
+                makeLocalDestinationKey('ID3'),
+                'Save as PDF/local/',
+              ];
+              // </if>
               assertDropdownItems(dropdownItems);
               assertFalse(dropdown.disabled);
 
@@ -583,11 +571,7 @@ suite(destination_settings_test.suiteName, function() {
               return whenDestinationSelect;
             })
             .then(() => {
-              assertEquals(
-                  isChromeOS || isLacros ?
-                      GooglePromotedDestinationId.SAVE_TO_DRIVE_CROS :
-                      GooglePromotedDestinationId.DOCS,
-                  destinationSettings.destination.id);
+              assertGoogleDrive();
             });
       });
 
@@ -602,8 +586,7 @@ suite(destination_settings_test.suiteName, function() {
         const whenCapabilitiesDone =
             nativeLayer.whenCalled('getPrinterCapabilities');
         initialize();
-        const dropdown =
-            destinationSettings.shadowRoot.querySelector('#destinationSelect');
+        const dropdown = destinationSettings.$.destinationSelect;
 
         return whenCapabilitiesDone
             .then(() => {
@@ -615,14 +598,12 @@ suite(destination_settings_test.suiteName, function() {
               assertEquals('ID1', destinationSettings.destination.id);
               assertFalse(dropdown.disabled);
               const dropdownItems = [
-                makeLocalDestinationKey('ID1'),
-                makeLocalDestinationKey('ID2'),
-                makeLocalDestinationKey('ID3'),
-                'Save as PDF/local/',
+                makeLocalDestinationKey('ID1'), makeLocalDestinationKey('ID2'),
+                makeLocalDestinationKey('ID3'), 'Save as PDF/local/',
+                // <if expr="chromeos or lacros">
+                driveDestinationKey,
+                // </if>
               ];
-              if (isChromeOS || isLacros) {
-                dropdownItems.push(driveDestinationKey);
-              }
               assertDropdownItems(dropdownItems);
 
               // Simulate selection of Save as PDF printer.
@@ -648,8 +629,7 @@ suite(destination_settings_test.suiteName, function() {
     const whenCapabilitiesDone =
         nativeLayer.whenCalled('getPrinterCapabilities');
     initialize();
-    const dropdown =
-        destinationSettings.shadowRoot.querySelector('#destinationSelect');
+    const dropdown = destinationSettings.$.destinationSelect;
 
     return whenCapabilitiesDone
         .then(() => {
@@ -661,14 +641,12 @@ suite(destination_settings_test.suiteName, function() {
           assertEquals('ID1', destinationSettings.destination.id);
           assertFalse(dropdown.disabled);
           const dropdownItems = [
-            makeLocalDestinationKey('ID1'),
-            makeLocalDestinationKey('ID2'),
-            makeLocalDestinationKey('ID3'),
-            'Save as PDF/local/',
+            makeLocalDestinationKey('ID1'), makeLocalDestinationKey('ID2'),
+            makeLocalDestinationKey('ID3'), 'Save as PDF/local/',
+            // <if expr="chromeos or lacros">
+            driveDestinationKey,
+            // </if>
           ];
-          if (isChromeOS || isLacros) {
-            dropdownItems.push(driveDestinationKey);
-          }
           assertDropdownItems(dropdownItems);
 
           dropdown.dispatchEvent(new CustomEvent(
@@ -677,16 +655,7 @@ suite(destination_settings_test.suiteName, function() {
           return waitBeforeNextRender(destinationSettings);
         })
         .then(() => {
-          if (isChromeOS || isLacros) {
-            assertTrue(
-                destinationSettings.shadowRoot
-                    .querySelector('print-preview-destination-dialog-cros')
-                    .isOpen());
-          } else {
-            assertTrue(destinationSettings.shadowRoot
-                           .querySelector('print-preview-destination-dialog')
-                           .isOpen());
-          }
+          assertTrue(destinationSettings.$.destinationDialog.get().isOpen());
         });
   });
 
@@ -694,8 +663,6 @@ suite(destination_settings_test.suiteName, function() {
       assert(destination_settings_test.TestNames.TwoAccountsRecentDestinations),
       function() {
         const account2 = 'bar@chromium.org';
-        const driveUser1 = getGoogleDriveDestination(defaultUser);
-        const driveUser2 = getGoogleDriveDestination(account2);
         const cloudPrinterUser1 = new Destination(
             'FooCloud', DestinationType.GOOGLE, DestinationOrigin.COOKIES,
             'FooCloudName', DestinationConnectionStatus.ONLINE,
@@ -704,24 +671,23 @@ suite(destination_settings_test.suiteName, function() {
             'BarCloud', DestinationType.GOOGLE, DestinationOrigin.COOKIES,
             'BarCloudName', DestinationConnectionStatus.ONLINE,
             {account: account2});
-        if (!isChromeOS && !isLacros) {
-          cloudPrintInterface.setPrinter(
-              getGoogleDriveDestination(defaultUser));
-          cloudPrintInterface.setPrinter(driveUser2);
-        }
+        // <if expr="not chromeos and not lacros">
+        cloudPrintInterface.setPrinter(getGoogleDriveDestination(defaultUser));
+        const driveUser2 = getGoogleDriveDestination(account2);
+        cloudPrintInterface.setPrinter(driveUser2);
+        // </if>
         cloudPrintInterface.setPrinter(cloudPrinterUser1);
         cloudPrintInterface.setPrinter(cloudPrinterUser2);
 
-        recentDestinations = [
-          cloudPrinterUser1, cloudPrinterUser2, destinations[0]
-        ].map(destination => makeRecentDestination(destination));
+        recentDestinations =
+            [cloudPrinterUser1, cloudPrinterUser2, destinations[0]!
+            ].map(destination => makeRecentDestination(destination));
         const whenPrinter = cloudPrintInterface.whenCalled('printer');
 
         initialize();
         flush();
 
-        const dropdown =
-            destinationSettings.shadowRoot.querySelector('#destinationSelect');
+        const dropdown = destinationSettings.$.destinationSelect;
 
         return whenPrinter
             .then(() => {
@@ -735,12 +701,11 @@ suite(destination_settings_test.suiteName, function() {
               assertFalse(dropdown.disabled);
               const dropdownItems = [
                 'FooCloud/cookies/foo@chromium.org',
-                makeLocalDestinationKey('ID1'),
-                'Save as PDF/local/',
+                makeLocalDestinationKey('ID1'), 'Save as PDF/local/',
+                // <if expr="chromeos or lacros">
+                driveDestinationKey,
+                // </if>
               ];
-              if (isChromeOS || isLacros) {
-                dropdownItems.push(driveDestinationKey);
-              }
 
               assertDropdownItems(dropdownItems);
               dropdown.dispatchEvent(new CustomEvent(
@@ -749,11 +714,7 @@ suite(destination_settings_test.suiteName, function() {
               return waitBeforeNextRender(destinationSettings);
             })
             .then(() => {
-              const dialog = isChromeOS || isLacros ?
-                  destinationSettings.shadowRoot.querySelector(
-                      'print-preview-destination-dialog-cros') :
-                  destinationSettings.shadowRoot.querySelector(
-                      'print-preview-destination-dialog');
+              const dialog = destinationSettings.$.destinationDialog.get();
               assertTrue(dialog.isOpen());
               const whenAdded = eventToPromise(
                   DestinationStoreEventType.DESTINATIONS_INSERTED,
@@ -768,21 +729,20 @@ suite(destination_settings_test.suiteName, function() {
             .then(() => {
               const dropdownItems = [
                 'BarCloud/cookies/bar@chromium.org',
-                makeLocalDestinationKey('ID1'),
-                'Save as PDF/local/',
+                makeLocalDestinationKey('ID1'), 'Save as PDF/local/',
+                // <if expr="chromeos or lacros">
+                driveDestinationKey,
+                // </if>
               ];
-              if (isChromeOS || isLacros) {
-                dropdownItems.push(driveDestinationKey);
-              }
               assertDropdownItems(dropdownItems);
             });
       });
 
   /**
-   * @param {!Array<string>} expectedDestinationIds An array of the expected
+   * @param expectedDestinationIds An array of the expected
    *     recent destination ids.
    */
-  function assertRecentDestinations(expectedDestinationIds) {
+  function assertRecentDestinations(expectedDestinationIds: string[]) {
     const recentDestinations =
         destinationSettings.getSettingValue('recentDestinations');
     assertEquals(expectedDestinationIds.length, recentDestinations.length);
@@ -791,12 +751,12 @@ suite(destination_settings_test.suiteName, function() {
     });
   }
 
-  function selectDestination(destination) {
+  function selectDestination(destination: Destination) {
     const storeDestination =
         destinationSettings.getDestinationStoreForTest().destinations().find(
             d => d.key === destination.key);
     destinationSettings.getDestinationStoreForTest().selectDestination(
-        assert(storeDestination));
+        assert(storeDestination!));
     flush();
   }
 
@@ -827,7 +787,7 @@ suite(destination_settings_test.suiteName, function() {
             })
             .then(() => {
               // Simulate setting a destination from the dialog.
-              selectDestination(destinations[0]);
+              selectDestination(destinations[0]!);
               return nativeLayer.whenCalled('getPrinterCapabilities');
             })
             .then(() => {
@@ -838,8 +798,8 @@ suite(destination_settings_test.suiteName, function() {
               // Reselect a recent destination. Still 2 destinations, but in a
               // different order.
               nativeLayer.resetResolver('getPrinterCapabilities');
-              destinationSettings.shadowRoot.querySelector('#destinationSelect')
-                  .dispatchEvent(new CustomEvent('selected-option-change', {
+              destinationSettings.$.destinationSelect.dispatchEvent(
+                  new CustomEvent('selected-option-change', {
                     bubbles: true,
                     composed: true,
                     detail: 'Save as PDF/local/',
@@ -852,7 +812,7 @@ suite(destination_settings_test.suiteName, function() {
                   0, nativeLayer.getCallCount('getPrinterCapabilities'));
 
               // Select a third destination.
-              selectDestination(destinations[1]);
+              selectDestination(destinations[1]!);
               return nativeLayer.whenCalled('getPrinterCapabilities');
             })
             .then(() => {
@@ -896,9 +856,13 @@ suite(destination_settings_test.suiteName, function() {
             .then(() => {
               // Because the 'Save as PDF' fallback is unavailable, the first
               // destination is selected.
-              const expectedDestination = isChromeOS || isLacros ?
-                  'Save to Drive CrOS/local/' :
-                  makeLocalDestinationKey('ID1');
+              const expectedDestination =
+                  // <if expr="chromeos or lacros">
+                  'Save to Drive CrOS/local/';
+              // </if>
+              // <if expr="not chromeos and not lacros">
+              makeLocalDestinationKey('ID1');
+              // </if>
               assertDropdownItems([expectedDestination]);
             });
       });
@@ -926,4 +890,92 @@ suite(destination_settings_test.suiteName, function() {
         ])
         .then(() => assertDropdownItems(['noDestinations']));
   });
+
+  // <if expr="chromeos or lacros">
+  /**
+   * Tests that destinations with a EULA will fetch the EULA URL when
+   * selected.
+   */
+  test(assert(destination_settings_test.TestNames.EulaIsRetrieved), function() {
+    // Recent destinations start out empty.
+    assertRecentDestinations([]);
+
+    const expectedUrl = 'chrome://os-credits/eula';
+
+    assertEquals(0, nativeLayerCros.getCallCount('getEulaUrl'));
+
+    initialize();
+
+    return nativeLayerCros.whenCalled('getEulaUrl')
+        .then(() => {
+          assertEquals(1, nativeLayerCros.getCallCount('getEulaUrl'));
+          nativeLayerCros.resetResolver('getEulaUrl');
+
+          // Add printers to the store.
+          destinationSettings.getDestinationStoreForTest()
+              .startLoadAllDestinations();
+          return nativeLayer.whenCalled('getPrinters');
+        })
+        .then(() => {
+          nativeLayerCros.setEulaUrl('chrome://os-credits/eula');
+          // Simulate selecting a destination that has a EULA URL from the
+          // dialog.
+          selectDestination(destinations[0]!);
+          return nativeLayerCros.whenCalled('getEulaUrl');
+        })
+        .then(() => {
+          assertEquals(1, nativeLayerCros.getCallCount('getEulaUrl'));
+          nativeLayerCros.resetResolver('getEulaUrl');
+          assertEquals(expectedUrl, destinationSettings.destination.eulaUrl);
+
+          nativeLayerCros.setEulaUrl('');
+          // Select a destination without a EULA URL.
+          selectDestination(destinations[1]!);
+          return nativeLayerCros.whenCalled('getEulaUrl');
+        })
+        .then(() => {
+          assertEquals(1, nativeLayerCros.getCallCount('getEulaUrl'));
+          nativeLayerCros.resetResolver('getEulaUrl');
+          assertEquals('', destinationSettings.destination.eulaUrl);
+
+          // Reselect a destination with a EULA URL. This destination
+          // already had its EULA URL set, so expect that it still retains
+          // it. Since capabilities for this destination are already set,
+          // we don't try to fetch the license again.
+          nativeLayer.resetResolver('getPrinterCapabilities');
+          destinationSettings.$.destinationSelect.dispatchEvent(
+              new CustomEvent('selected-option-change', {
+                bubbles: true,
+                composed: true,
+                detail: 'ID1/chrome_os/',
+              }));
+        })
+        .then(() => {
+          assertEquals(0, nativeLayer.getCallCount('getPrinterCapabilities'));
+          assertEquals(0, nativeLayerCros.getCallCount('getEulaUrl'));
+          assertRecentDestinations(['ID1', 'ID2', 'Save as PDF']);
+          assertEquals(expectedUrl, destinationSettings.destination.eulaUrl);
+        });
+  });
+
+  // Tests that disabling Google Drive on Chrome OS hides the Save to Drive
+  // destination.
+  test(
+      assert(destination_settings_test.TestNames.DriveIsNotMounted),
+      function() {
+        isDriveMounted = false;
+        initialize();
+
+        return nativeLayer.whenCalled('getPrinterCapabilities')
+            .then(() => {
+              return waitBeforeNextRender(destinationSettings);
+            })
+            .then(() => {
+              const options = destinationSettings.$.destinationSelect
+                                  .getVisibleItemsForTest();
+              assertEquals(2, options.length);
+              assertEquals('Save as PDF/local/', options[0]!.value);
+            });
+      });
+  // </if>
 });

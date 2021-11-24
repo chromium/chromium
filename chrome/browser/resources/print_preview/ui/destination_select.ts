@@ -194,8 +194,9 @@ export class PrintPreviewDestinationSelectElement extends
   /**
    * Return the options currently visible to the user for testing purposes.
    */
-  getVisibleItemsForTest(): NodeListOf<Element> {
-    return this.shadowRoot!.querySelectorAll('option:not([hidden])');
+  getVisibleItemsForTest(): NodeListOf<HTMLOptionElement> {
+    return this.shadowRoot!.querySelectorAll<HTMLOptionElement>(
+        'option:not([hidden])');
   }
 }
 

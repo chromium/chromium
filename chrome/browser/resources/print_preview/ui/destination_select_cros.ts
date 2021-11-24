@@ -95,6 +95,8 @@ export class PrintPreviewDestinationSelectCrosElement extends
   }
 
   destination: Destination;
+  disabled: boolean;
+  loaded: boolean;
   pdfPrinterDisabled: boolean;
   recentDestinationList: Destination[];
   private pdfDestinationKey_: string;
@@ -275,9 +277,9 @@ export class PrintPreviewDestinationSelectCrosElement extends
   /**
    * Return the options currently visible to the user for testing purposes.
    */
-  getVisibleItemsForTest(): NodeListOf<Element> {
+  getVisibleItemsForTest(): NodeListOf<HTMLButtonElement> {
     return this.shadowRoot!.querySelector('#dropdown')!.shadowRoot!
-        .querySelectorAll('.list-item:not([hidden])');
+        .querySelectorAll<HTMLButtonElement>('.list-item:not([hidden])');
   }
 }
 

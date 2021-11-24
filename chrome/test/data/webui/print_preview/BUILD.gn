@@ -12,8 +12,8 @@ import("//ui/webui/resources/tools/generate_grd.gni")
 preprocessed_tests = [
   "button_strip_test.ts",
   "color_settings_test.ts",
-  "destination_settings_test.js",
-  "destination_store_test.js",
+  "destination_settings_test.ts",
+  "destination_store_test.ts",
   "invalid_settings_browsertest.js",
   "key_event_test.js",
   "native_layer_stub.ts",
@@ -76,7 +76,6 @@ if (is_chromeos) {
     "destination_item_test_cros.ts",
     "destination_search_test_chromeos.ts",
     "destination_select_test_cros.ts",
-    "destination_settings_test_cros.js",
     "native_layer_cros_stub.ts",
     "pin_settings_test.js",
     "print_server_store_test.js",

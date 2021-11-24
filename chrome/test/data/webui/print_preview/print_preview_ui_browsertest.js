@@ -1497,29 +1497,13 @@ TEST_F(
     });
 
 GEN('#if defined(OS_CHROMEOS)');
-var PrintPreviewDestinationSettingsTestCros = class extends PrintPreviewTest {
-  /** @override */
-  get browsePreload() {
-    return 'chrome://print/test_loader.html?module=print_preview/destination_settings_test_cros.js&host=webui-test';
-  }
+TEST_F('PrintPreviewDestinationSettingsTest', 'EulaIsRetrieved', function() {
+  this.runMochaTest(destination_settings_test.TestNames.EulaIsRetrieved);
+});
 
-  /** @override */
-  get suiteName() {
-    return destination_settings_test_cros.suiteName;
-  }
-};
-
-TEST_F(
-    'PrintPreviewDestinationSettingsTestCros', 'EulaIsRetrieved', function() {
-      this.runMochaTest(
-          destination_settings_test_cros.TestNames.EulaIsRetrieved);
-    });
-
-TEST_F(
-    'PrintPreviewDestinationSettingsTestCros', 'DriveIsNotMounted', function() {
-      this.runMochaTest(
-          destination_settings_test_cros.TestNames.DriveIsNotMounted);
-    });
+TEST_F('PrintPreviewDestinationSettingsTest', 'DriveIsNotMounted', function() {
+  this.runMochaTest(destination_settings_test.TestNames.DriveIsNotMounted);
+});
 GEN('#endif');
 
 var PrintPreviewScalingSettingsTest = class extends PrintPreviewTest {
