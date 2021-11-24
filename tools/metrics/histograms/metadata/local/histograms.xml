@@ -55,7 +55,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="LocalSearchService.BindIndexHasError" enum="Boolean"
-    expires_after="2021-12-30">
+    expires_after="2022-11-30">
   <owner>tby@chromium.org</owner>
   <owner>thanhdng@chromium.org</owner>
   <owner>wrong@chromium.org</owner>
@@ -66,7 +66,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="LocalSearchService.MetricsDailyEventInterval"
-    enum="DailyEventIntervalType" expires_after="2021-12-30">
+    enum="DailyEventIntervalType" expires_after="2022-11-30">
   <owner>tby@chromium.org</owner>
   <owner>thanhdng@chromium.org</owner>
   <owner>wrong@chromium.org</owner>
@@ -76,7 +76,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="LocalSearchService.{IndexId}AddOrUpdateLatency" units="ms"
-    expires_after="2021-12-30">
+    expires_after="2022-11-30">
   <owner>tby@chromium.org</owner>
   <owner>thanhdng@chromium.org</owner>
   <owner>wrong@chromium.org</owner>
@@ -90,7 +90,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="LocalSearchService.{IndexId}Backend"
-    enum="LocalSearchServiceBackend" expires_after="2021-12-30">
+    enum="LocalSearchServiceBackend" expires_after="2022-11-30">
   <owner>tby@chromium.org</owner>
   <owner>thanhdng@chromium.org</owner>
   <owner>wrong@chromium.org</owner>
@@ -104,7 +104,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="LocalSearchService.{IndexId}ClearIndexLatency" units="ms"
-    expires_after="2021-12-30">
+    expires_after="2022-11-30">
   <owner>tby@chromium.org</owner>
   <owner>thanhdng@chromium.org</owner>
   <owner>wrong@chromium.org</owner>
@@ -118,7 +118,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="LocalSearchService.{IndexId}DailySearch" units="count"
-    expires_after="2021-12-30">
+    expires_after="2022-11-30">
   <owner>tby@chromium.org</owner>
   <owner>thanhdng@chromium.org</owner>
   <owner>wrong@chromium.org</owner>
@@ -137,7 +137,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="LocalSearchService.{IndexId}DeleteLatency" units="ms"
-    expires_after="2021-12-30">
+    expires_after="2022-11-30">
   <owner>tby@chromium.org</owner>
   <owner>thanhdng@chromium.org</owner>
   <owner>wrong@chromium.org</owner>
@@ -151,7 +151,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="LocalSearchService.{IndexId}NumberDocuments" units="count"
-    expires_after="2021-12-30">
+    expires_after="2022-11-30">
   <owner>tby@chromium.org</owner>
   <owner>thanhdng@chromium.org</owner>
   <owner>wrong@chromium.org</owner>
@@ -166,7 +166,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="LocalSearchService.{IndexId}NumberResults" units="count"
-    expires_after="2021-12-30">
+    expires_after="2022-11-30">
   <owner>tby@chromium.org</owner>
   <owner>thanhdng@chromium.org</owner>
   <owner>wrong@chromium.org</owner>
@@ -179,7 +179,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="LocalSearchService.{IndexId}NumberSearchPerformedDone"
-    enum="Boolean" expires_after="2021-12-30">
+    enum="Boolean" expires_after="2022-11-30">
   <owner>tby@chromium.org</owner>
   <owner>thanhdng@chromium.org</owner>
   <owner>wrong@chromium.org</owner>
@@ -193,7 +193,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="LocalSearchService.{IndexId}ResponseStatus"
-    enum="LocalSearchServiceResponseStatus" expires_after="2021-12-30">
+    enum="LocalSearchServiceResponseStatus" expires_after="2022-11-30">
   <owner>tby@chromium.org</owner>
   <owner>thanhdng@chromium.org</owner>
   <owner>wrong@chromium.org</owner>
@@ -206,7 +206,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="LocalSearchService.{IndexId}SearchLatency" units="ms"
-    expires_after="2021-12-30">
+    expires_after="2022-11-30">
   <owner>tby@chromium.org</owner>
   <owner>thanhdng@chromium.org</owner>
   <owner>wrong@chromium.org</owner>
@@ -220,7 +220,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="LocalSearchService.{IndexId}UpdateDocumentsLatency" units="ms"
-    expires_after="2021-12-30">
+    expires_after="2022-11-30">
   <owner>tby@chromium.org</owner>
   <owner>thanhdng@chromium.org</owner>
   <owner>wrong@chromium.org</owner>
