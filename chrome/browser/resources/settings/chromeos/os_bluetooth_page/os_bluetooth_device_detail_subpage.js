@@ -16,7 +16,8 @@ import 'chrome://resources/cr_components/chromeos/bluetooth/bluetooth_device_bat
 import {assertNotReached} from '//resources/js/assert.m.js';
 import {I18nBehavior, I18nBehaviorInterface} from '//resources/js/i18n_behavior.m.js';
 import {html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {getBatteryPercentage, getDeviceName} from 'chrome://resources/cr_components/chromeos/bluetooth/bluetooth_utils.js';
+import {BatteryType} from 'chrome://resources/cr_components/chromeos/bluetooth/bluetooth_types.js';
+import {getBatteryPercentage, getDeviceName, hasAnyDetailedBatteryInfo} from 'chrome://resources/cr_components/chromeos/bluetooth/bluetooth_utils.js';
 import {getBluetoothConfig} from 'chrome://resources/cr_components/chromeos/bluetooth/cros_bluetooth_config.js';
 
 import {loadTimeData} from '../../i18n_setup.js';
@@ -264,13 +265,54 @@ class SettingsBluetoothDeviceDetailSubpageElement extends
    * @return {string}
    * @private
    */
+  getMultipleBatteryInfoA11yLabel_() {
+    let label = '';
+
+    const leftBudBatteryPercentage = getBatteryPercentage(
+        this.device_.deviceProperties, BatteryType.LEFT_BUD);
+    if (leftBudBatteryPercentage !== undefined) {
+      label = label +
+          this.i18n(
+              'bluetoothDeviceDetailLeftBudBatteryPercentageA11yLabel',
+              leftBudBatteryPercentage);
+    }
+
+    const caseBatteryPercentage =
+        getBatteryPercentage(this.device_.deviceProperties, BatteryType.CASE);
+    if (caseBatteryPercentage !== undefined) {
+      label = label +
+          this.i18n(
+              'bluetoothDeviceDetailCaseBatteryPercentageA11yLabel',
+              caseBatteryPercentage);
+    }
+
+    const rightBudBatteryPercentage = getBatteryPercentage(
+        this.device_.deviceProperties, BatteryType.RIGHT_BUD);
+    if (rightBudBatteryPercentage !== undefined) {
+      label = label +
+          this.i18n(
+              'bluetoothDeviceDetailRightBudBatteryPercentageA11yLabel',
+              rightBudBatteryPercentage);
+    }
+
+    return label;
+  }
+
+  /**
+   * @return {string}
+   * @private
+   */
   getBatteryInfoA11yLabel_() {
     if (!this.device_) {
       return '';
     }
 
-    const batteryPercentage =
-        getBatteryPercentage(this.device_.deviceProperties);
+    if (hasAnyDetailedBatteryInfo(this.device_.deviceProperties)) {
+      return this.getMultipleBatteryInfoA11yLabel_();
+    }
+
+    const batteryPercentage = getBatteryPercentage(
+        this.device_.deviceProperties, BatteryType.DEFAULT);
     if (batteryPercentage === undefined) {
       return '';
     }
@@ -340,7 +382,14 @@ class SettingsBluetoothDeviceDetailSubpageElement extends
         this.pageState_ === PageState.CONNECTION_FAILED) {
       return false;
     }
-    return getBatteryPercentage(this.device_.deviceProperties) !== undefined;
+
+    if (getBatteryPercentage(
+            this.device_.deviceProperties, BatteryType.DEFAULT) !== undefined) {
+      return true;
+    }
+
+
+    return hasAnyDetailedBatteryInfo(this.device_.deviceProperties);
   }
 
   /**

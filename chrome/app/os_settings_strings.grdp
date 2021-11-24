@@ -2055,6 +2055,15 @@ Press an assigned switch or key to remove assignment.
   <message name="IDS_SETTINGS_BLUETOOTH_DEVICE_DETAIL_BATTERY_PERCENTAGE_A11Y_LABEL" desc="Bluetooth device details page: A11y label informing the current battery percentage.">
     Battery level <ph name="PERCENTAGE">$1<ex>90</ex></ph>%
   </message>
+  <message name="IDS_SETTINGS_BLUETOOTH_DEVICE_DETAIL_LEFT_BUD_BATTERY_PERCENTAGE_A11Y_LABEL" desc="Bluetooth device details page: A11y label informing the current battery percentage of the left true wireless bud.">
+    Left battery level <ph name="PERCENTAGE">$1<ex>90</ex></ph>%.
+  </message>
+  <message name="IDS_SETTINGS_BLUETOOTH_DEVICE_DETAIL_CASE_BATTERY_PERCENTAGE_A11Y_LABEL" desc="Bluetooth device details page: A11y label informing the current battery percentage of the true wireless case.">
+    Case battery level <ph name="PERCENTAGE">$1<ex>90</ex></ph>%.
+  </message>
+  <message name="IDS_SETTINGS_BLUETOOTH_DEVICE_DETAIL_RIGHT_BUD_BATTERY_PERCENTAGE_A11Y_LABEL" desc="Bluetooth device details page: A11y label informing the current battery percentage of the right true wireless bud.">
+    Right battery level <ph name="PERCENTAGE">$1<ex>90</ex></ph>%.
+  </message>
   <message name="IDS_SETTINGS_BLUETOOTH_DEVICE_DETAIL_CONNECTED_A11Y_LABEL" desc="Bluetooth device details page: A11y label informing the current device is connected.">
     Connected to <ph name="DEVICE">$1<ex>Beats</ex></ph>
   </message>
@@ -2134,55 +2143,64 @@ Press an assigned switch or key to remove assignment.
     On
   </message>
   <message name="IDS_SETTINGS_BLUETOOTH_PAIRED_DEVICE_ITEM_A11Y_LABEL_TYPE_UNKNOWN" desc="Accessibility label for paired Bluetooth device list item with a device type of unknown.">
-    Device <ph name="DEVICE_INDEX">$1<ex>1</ex></ph> of <ph name="DEVICE_COUNT">$2<ex>15</ex></ph>, <ph name="DEVICE_NAME">$3<ex>Beats</ex></ph>, Unknown device type
+    Device <ph name="DEVICE_INDEX">$1<ex>1</ex></ph> of <ph name="DEVICE_COUNT">$2<ex>15</ex></ph>, <ph name="DEVICE_NAME">$3<ex>Beats</ex></ph>, Unknown device type.
+  </message>
+  <message name="IDS_SETTINGS_BLUETOOTH_PAIRED_DEVICE_ITEM_A11Y_LABEL_LEFT_BUD_BATTERY" desc="Accessibility label for paired Bluetooth device left bud battery description">
+    Left bud battery level <ph name="BATTERY_PERCENTAGE">$1<ex>50</ex></ph>%.
+  </message>
+  <message name="IDS_SETTINGS_BLUETOOTH_PAIRED_DEVICE_ITEM_A11Y_LABEL_RIGHT_BUD_BATTERY" desc="Accessibility label for paired Bluetooth device right bud battery description">
+    Right bud battery level <ph name="BATTERY_PERCENTAGE">$1<ex>50</ex></ph>%.
+  </message>
+  <message name="IDS_SETTINGS_BLUETOOTH_PAIRED_DEVICE_ITEM_A11Y_LABEL_CASE_BATTERY" desc="Accessibility label for paired Bluetooth device case battery description">
+    Case battery level <ph name="BATTERY_PERCENTAGE">$1<ex>50</ex></ph>%.
   </message>
   <message name="IDS_SETTINGS_BLUETOOTH_PAIRED_DEVICE_ITEM_A11Y_LABEL_TYPE_UNKNOWN_WITH_BATTERY_INFO" desc="Accessibility label for paired Bluetooth device list item with a device type of unknown and available battery info.">
     Device <ph name="DEVICE_INDEX">$1<ex>1</ex></ph> of <ph name="DEVICE_COUNT">$2<ex>15</ex></ph>, <ph name="DEVICE_NAME">$3<ex>Beats</ex></ph>, Unknown device type, Battery level <ph name="BATTERY_PERCENTAGE">$4<ex>50</ex></ph>%
   </message>
   <message name="IDS_SETTINGS_BLUETOOTH_PAIRED_DEVICE_ITEM_A11Y_LABEL_TYPE_COMPUTER" desc="Accessibility label for paired Bluetooth device list item with a device type of computer.">
-    Device <ph name="DEVICE_INDEX">$1<ex>1</ex></ph> of <ph name="DEVICE_COUNT">$2<ex>15</ex></ph>, <ph name="DEVICE_NAME">$3<ex>Beats</ex></ph>, Computer
+    Device <ph name="DEVICE_INDEX">$1<ex>1</ex></ph> of <ph name="DEVICE_COUNT">$2<ex>15</ex></ph>, <ph name="DEVICE_NAME">$3<ex>Beats</ex></ph>, Computer.
   </message>
   <message name="IDS_SETTINGS_BLUETOOTH_PAIRED_DEVICE_ITEM_A11Y_LABEL_TYPE_COMPUTER_WITH_BATTERY_INFO" desc="Accessibility label for paired Bluetooth device list item with a device type of computer and available battery info.">
     Device <ph name="DEVICE_INDEX">$1<ex>1</ex></ph> of <ph name="DEVICE_COUNT">$2<ex>15</ex></ph>, <ph name="DEVICE_NAME">$3<ex>Beats</ex></ph>, Computer, Battery level <ph name="BATTERY_PERCENTAGE">$4<ex>50</ex></ph>%
   </message>
   <message name="IDS_SETTINGS_BLUETOOTH_PAIRED_DEVICE_ITEM_A11Y_LABEL_TYPE_PHONE" desc="Accessibility label for paired Bluetooth device list item with a device type of phone.">
-    Device <ph name="DEVICE_INDEX">$1<ex>1</ex></ph> of <ph name="DEVICE_COUNT">$2<ex>15</ex></ph>, <ph name="DEVICE_NAME">$3<ex>Beats</ex></ph>, Phone
+    Device <ph name="DEVICE_INDEX">$1<ex>1</ex></ph> of <ph name="DEVICE_COUNT">$2<ex>15</ex></ph>, <ph name="DEVICE_NAME">$3<ex>Beats</ex></ph>, Phone.
   </message>
   <message name="IDS_SETTINGS_BLUETOOTH_PAIRED_DEVICE_ITEM_A11Y_LABEL_TYPE_PHONE_WITH_BATTERY_INFO" desc="Accessibility label for paired Bluetooth device list item with a device type of phone and available battery info.">
     Device <ph name="DEVICE_INDEX">$1<ex>1</ex></ph> of <ph name="DEVICE_COUNT">$2<ex>15</ex></ph>, <ph name="DEVICE_NAME">$3<ex>Beats</ex></ph>, Phone, Battery level <ph name="BATTERY_PERCENTAGE">$4<ex>50</ex></ph>%
   </message>
   <message name="IDS_SETTINGS_BLUETOOTH_PAIRED_DEVICE_ITEM_A11Y_LABEL_TYPE_HEADSET" desc="Accessibility label for paired Bluetooth device list item with a device type of audio device.">
-    Device <ph name="DEVICE_INDEX">$1<ex>1</ex></ph> of <ph name="DEVICE_COUNT">$2<ex>15</ex></ph>, <ph name="DEVICE_NAME">$3<ex>Beats</ex></ph>, Audio device
+    Device <ph name="DEVICE_INDEX">$1<ex>1</ex></ph> of <ph name="DEVICE_COUNT">$2<ex>15</ex></ph>, <ph name="DEVICE_NAME">$3<ex>Beats</ex></ph>, Audio device.
   </message>
   <message name="IDS_SETTINGS_BLUETOOTH_PAIRED_DEVICE_ITEM_A11Y_LABEL_TYPE_HEADSET_WITH_BATTERY_INFO" desc="Accessibility label for paired Bluetooth device list item with a device type of audio device and available battery info.">
     Device <ph name="DEVICE_INDEX">$1<ex>1</ex></ph> of <ph name="DEVICE_COUNT">$2<ex>15</ex></ph>, <ph name="DEVICE_NAME">$3<ex>Beats</ex></ph>, Audio device, Battery level <ph name="BATTERY_PERCENTAGE">$4<ex>50</ex></ph>%
   </message>
   <message name="IDS_SETTINGS_BLUETOOTH_PAIRED_DEVICE_ITEM_A11Y_LABEL_TYPE_VIDEO_CAMERA" desc="Accessibility label for paired Bluetooth device list item with a device type of video camera.">
-    Device <ph name="DEVICE_INDEX">$1<ex>1</ex></ph> of <ph name="DEVICE_COUNT">$2<ex>15</ex></ph>, <ph name="DEVICE_NAME">$3<ex>Beats</ex></ph>, Video camera
+    Device <ph name="DEVICE_INDEX">$1<ex>1</ex></ph> of <ph name="DEVICE_COUNT">$2<ex>15</ex></ph>, <ph name="DEVICE_NAME">$3<ex>Beats</ex></ph>, Video camera.
   </message>
   <message name="IDS_SETTINGS_BLUETOOTH_PAIRED_DEVICE_ITEM_A11Y_LABEL_TYPE_VIDEO_CAMERA_WITH_BATTERY_INFO" desc="Accessibility label for paired Bluetooth device list item with a device type of video camera and available battery info.">
     Device <ph name="DEVICE_INDEX">$1<ex>1</ex></ph> of <ph name="DEVICE_COUNT">$2<ex>15</ex></ph>, <ph name="DEVICE_NAME">$3<ex>Beats</ex></ph>, Video camera, Battery level <ph name="BATTERY_PERCENTAGE">$4<ex>50</ex></ph>%
   </message>
   <message name="IDS_SETTINGS_BLUETOOTH_PAIRED_DEVICE_ITEM_A11Y_LABEL_TYPE_GAME_CONTROLLER" desc="Accessibility label for paired Bluetooth device list item with a device type of game controller.">
-    Device <ph name="DEVICE_INDEX">$1<ex>1</ex></ph> of <ph name="DEVICE_COUNT">$2<ex>15</ex></ph>, <ph name="DEVICE_NAME">$3<ex>Beats</ex></ph>, Game controller
+    Device <ph name="DEVICE_INDEX">$1<ex>1</ex></ph> of <ph name="DEVICE_COUNT">$2<ex>15</ex></ph>, <ph name="DEVICE_NAME">$3<ex>Beats</ex></ph>, Game controller.
   </message>
   <message name="IDS_SETTINGS_BLUETOOTH_PAIRED_DEVICE_ITEM_A11Y_LABEL_TYPE_GAME_CONTROLLER_WITH_BATTERY_INFO" desc="Accessibility label for paired Bluetooth device list item with a device type of game controller and available battery info.">
     Device <ph name="DEVICE_INDEX">$1<ex>1</ex></ph> of <ph name="DEVICE_COUNT">$2<ex>15</ex></ph>, <ph name="DEVICE_NAME">$3<ex>Beats</ex></ph>, Game controller, Battery level <ph name="BATTERY_PERCENTAGE">$4<ex>50</ex></ph>%
   </message>
   <message name="IDS_SETTINGS_BLUETOOTH_PAIRED_DEVICE_ITEM_A11Y_LABEL_TYPE_KEYBOARD" desc="Accessibility label for paired Bluetooth device list item with a device type of keyboard.">
-    Device <ph name="DEVICE_INDEX">$1<ex>1</ex></ph> of <ph name="DEVICE_COUNT">$2<ex>15</ex></ph>, <ph name="DEVICE_NAME">$3<ex>Beats</ex></ph>, Keyboard
+    Device <ph name="DEVICE_INDEX">$1<ex>1</ex></ph> of <ph name="DEVICE_COUNT">$2<ex>15</ex></ph>, <ph name="DEVICE_NAME">$3<ex>Beats</ex></ph>, Keyboard.
   </message>
   <message name="IDS_SETTINGS_BLUETOOTH_PAIRED_DEVICE_ITEM_A11Y_LABEL_TYPE_KEYBOARD_WITH_BATTERY_INFO" desc="Accessibility label for paired Bluetooth device list item with a device type of keyboard and available battery info.">
     Device <ph name="DEVICE_INDEX">$1<ex>1</ex></ph> of <ph name="DEVICE_COUNT">$2<ex>15</ex></ph>, <ph name="DEVICE_NAME">$3<ex>Beats</ex></ph>, Keyboard, Battery level <ph name="BATTERY_PERCENTAGE">$4<ex>50</ex></ph>%
   </message>
   <message name="IDS_SETTINGS_BLUETOOTH_PAIRED_DEVICE_ITEM_A11Y_LABEL_TYPE_MOUSE" desc="Accessibility label for paired Bluetooth device list item with a device type of mouse.">
-    Device <ph name="DEVICE_INDEX">$1<ex>1</ex></ph> of <ph name="DEVICE_COUNT">$2<ex>15</ex></ph>, <ph name="DEVICE_NAME">$3<ex>Beats</ex></ph>, Mouse
+    Device <ph name="DEVICE_INDEX">$1<ex>1</ex></ph> of <ph name="DEVICE_COUNT">$2<ex>15</ex></ph>, <ph name="DEVICE_NAME">$3<ex>Beats</ex></ph>, Mouse.
   </message>
   <message name="IDS_SETTINGS_BLUETOOTH_PAIRED_DEVICE_ITEM_A11Y_LABEL_TYPE_MOUSE_WITH_BATTERY_INFO" desc="Accessibility label for paired Bluetooth device list item with a device type of mouse and available battery info.">
     Device <ph name="DEVICE_INDEX">$1<ex>1</ex></ph> of <ph name="DEVICE_COUNT">$2<ex>15</ex></ph>, <ph name="DEVICE_NAME">$3<ex>Beats</ex></ph>, Mouse, Battery level <ph name="BATTERY_PERCENTAGE">$4<ex>50</ex></ph>%
   </message>
   <message name="IDS_SETTINGS_BLUETOOTH_PAIRED_DEVICE_ITEM_A11Y_LABEL_TYPE_TABLET" desc="Accessibility label for paired Bluetooth device list item with a device type of tablet.">
-    Device <ph name="DEVICE_INDEX">$1<ex>1</ex></ph> of <ph name="DEVICE_COUNT">$2<ex>15</ex></ph>, <ph name="DEVICE_NAME">$3<ex>Beats</ex></ph>, Tablet
+    Device <ph name="DEVICE_INDEX">$1<ex>1</ex></ph> of <ph name="DEVICE_COUNT">$2<ex>15</ex></ph>, <ph name="DEVICE_NAME">$3<ex>Beats</ex></ph>, Tablet.
   </message>
   <message name="IDS_SETTINGS_BLUETOOTH_PAIRED_DEVICE_ITEM_A11Y_LABEL_TYPE_TABLET_WITH_BATTERY_INFO" desc="Accessibility label for paired Bluetooth device list item with a device type of tablet and available battery info.">
     Device <ph name="DEVICE_INDEX">$1<ex>1</ex></ph> of <ph name="DEVICE_COUNT">$2<ex>15</ex></ph>, <ph name="DEVICE_NAME">$3<ex>Beats</ex></ph>, Tablet, Battery level <ph name="BATTERY_PERCENTAGE">$4<ex>50</ex></ph>%

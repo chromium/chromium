@@ -6,6 +6,8 @@ import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js';
 import 'chrome://resources/mojo/mojo/public/mojom/base/big_buffer.mojom-lite.js';
 import 'chrome://resources/mojo/mojo/public/mojom/base/string16.mojom-lite.js';
 
+import {BatteryType} from './bluetooth_types.js';
+
 /**
  * Converts a JS string to mojoBase.mojom.String16 object.
  * @param {string} str
@@ -46,28 +48,62 @@ export function getDeviceName(device) {
 }
 
 /**
- * Returns the battery percentage of device, or undefined if device does
- * not exist, has no battery information, or the battery percentage is out of
- * bounds. Clients that call this method should explicitly check if the return
- * value is undefined to differentiate it from a return value of 0.
+ * Returns the battery percentage of the battery type of the device, or
+ * undefined if device does not exist, has no battery information describing
+ * the battery type, or the battery percentage is out of bounds. Clients that
+ * call this method should explicitly check if the return value is undefined to
+ * differentiate it from a return value of 0.
  * @param {!chromeos.bluetoothConfig.mojom.BluetoothDeviceProperties}
  *     device
+ * @param {!BatteryType} batteryType
  * @return {number|undefined}
  */
-export function getBatteryPercentage(device) {
+export function getBatteryPercentage(device, batteryType) {
   if (!device) {
     return undefined;
   }
 
   const batteryInfo = device.batteryInfo;
-  if (!batteryInfo || !batteryInfo.defaultProperties) {
+  if (!batteryInfo) {
     return undefined;
   }
 
-  const batteryPercentage = batteryInfo.defaultProperties.batteryPercentage;
+  let batteryProperties;
+  switch (batteryType) {
+    case BatteryType.DEFAULT:
+      batteryProperties = batteryInfo.defaultProperties;
+      break;
+    case BatteryType.LEFT_BUD:
+      batteryProperties = batteryInfo.leftBudInfo;
+      break;
+    case BatteryType.CASE:
+      batteryProperties = batteryInfo.caseInfo;
+      break;
+    case BatteryType.RIGHT_BUD:
+      batteryProperties = batteryInfo.rightBudInfo;
+      break;
+  }
+
+  if (!batteryProperties) {
+    return undefined;
+  }
+
+  const batteryPercentage = batteryProperties.batteryPercentage;
   if (batteryPercentage < 0 || batteryPercentage > 100) {
     return undefined;
   }
 
   return batteryPercentage;
+}
+
+/**
+ * Returns true if the the device contains any multiple battery information.
+ * @param {!chromeos.bluetoothConfig.mojom.BluetoothDeviceProperties}
+ *     device
+ * @return {boolean}
+ */
+export function hasAnyDetailedBatteryInfo(device) {
+  return getBatteryPercentage(device, BatteryType.LEFT_BUD) !== undefined ||
+      getBatteryPercentage(device, BatteryType.CASE) !== undefined ||
+      getBatteryPercentage(device, BatteryType.RIGHT_BUD) !== undefined;
 }

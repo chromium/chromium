@@ -14,7 +14,8 @@ import {I18nBehavior, I18nBehaviorInterface} from '//resources/js/i18n_behavior.
 import {html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 
-import {getBatteryPercentage} from './bluetooth_utils.js';
+import {BatteryType} from './bluetooth_types.js';
+import {getBatteryPercentage, hasAnyDetailedBatteryInfo} from './bluetooth_utils.js';
 
 /**
  * The threshold percentage where any battery percentage lower is considered
@@ -62,23 +63,63 @@ export class BluetoothDeviceBatteryInfoElement extends
         type: Object,
       },
 
-      /** @private {boolean} */
-      isLowBattery_: {
+      /**
+       * Enum used as an ID for specific UI elements.
+       * A BatteryType is passed between html and JS for
+       * certain UI elements to determine their state.
+       *
+       * @type {!BatteryType}
+       */
+      BatteryType: {
+        type: Object,
+        value: BatteryType,
+      },
+
+      /** @protected {boolean} */
+      isDefaultLowBattery_: {
         reflectToAttribute: true,
         type: Boolean,
-        computed: 'computeIsLowBattery_(device)',
-      }
+        computed: 'computeIsLowBattery_(device, BatteryType.DEFAULT)',
+      },
+
+      /** @protected {boolean} */
+      isLeftBudLowBattery_: {
+        reflectToAttribute: true,
+        type: Boolean,
+        computed: 'computeIsLowBattery_(device, BatteryType.LEFT_BUD)',
+      },
+
+      /** @protected {boolean} */
+      isRightBudLowBattery_: {
+        reflectToAttribute: true,
+        type: Boolean,
+        computed: 'computeIsLowBattery_(device, BatteryType.RIGHT_BUD)',
+      },
+
+      /** @protected {boolean} */
+      isCaseLowBattery_: {
+        reflectToAttribute: true,
+        type: Boolean,
+        computed: 'computeIsLowBattery_(device, BatteryType.CASE)',
+      },
+
+      /** @protected {boolean} */
+      showMultipleBatteries_: {
+        type: Boolean,
+        computed: 'computeShowMultipleBatteries_(device)',
+      },
     };
   }
 
   /**
    * @param {!chromeos.bluetoothConfig.mojom.BluetoothDeviceProperties}
    *     device
+   * @param {!BatteryType} batteryType
    * @return {boolean}
    * @private
    */
-  computeIsLowBattery_(device) {
-    const batteryPercentage = getBatteryPercentage(device);
+  computeIsLowBattery_(device, batteryType) {
+    const batteryPercentage = getBatteryPercentage(device, batteryType);
     if (batteryPercentage === undefined) {
       return false;
     }
@@ -88,27 +129,67 @@ export class BluetoothDeviceBatteryInfoElement extends
   /**
    * @param {!chromeos.bluetoothConfig.mojom.BluetoothDeviceProperties}
    *     device
-   * @return {string}
+   * @return {boolean}
    * @private
    */
-  getBatteryPercentageString_(device) {
-    const batteryPercentage = getBatteryPercentage(device);
-    if (batteryPercentage === undefined) {
-      return '';
-    }
-
-    return this.i18n(
-        'bluetoothPairedDeviceItemBatteryPercentage', batteryPercentage);
+  computeShowMultipleBatteries_(device) {
+    return hasAnyDetailedBatteryInfo(device);
   }
 
   /**
    * @param {!chromeos.bluetoothConfig.mojom.BluetoothDeviceProperties}
    *     device
+   * @param {!BatteryType} batteryType
+   * @return {boolean}
+   * @private
+   */
+  shouldShowBattery_(device, batteryType) {
+    return getBatteryPercentage(device, batteryType) !== undefined;
+  }
+
+  /**
+   * @param {!chromeos.bluetoothConfig.mojom.BluetoothDeviceProperties}
+   *     device
+   * @param {!BatteryType} batteryType
    * @return {string}
    * @private
    */
-  getBatteryIcon_(device) {
-    const batteryPercentage = getBatteryPercentage(device);
+  getBatteryPercentageString_(device, batteryType) {
+    const batteryPercentage = getBatteryPercentage(device, batteryType);
+    if (batteryPercentage === undefined) {
+      return '';
+    }
+
+    switch (batteryType) {
+      case BatteryType.DEFAULT:
+        return this.i18n(
+            'bluetoothPairedDeviceItemBatteryPercentage', batteryPercentage);
+      case BatteryType.LEFT_BUD:
+        return this.i18n(
+            'bluetoothPairedDeviceItemLeftBudTrueWirelessBatteryPercentage',
+            batteryPercentage);
+      case BatteryType.CASE:
+        return this.i18n(
+            'bluetoothPairedDeviceItemCaseTrueWirelessBatteryPercentage',
+            batteryPercentage);
+      case BatteryType.RIGHT_BUD:
+        return this.i18n(
+            'bluetoothPairedDeviceItemRightBudTrueWirelessBatteryPercentage',
+            batteryPercentage);
+    }
+
+    return '';
+  }
+
+  /**
+   * @param {!chromeos.bluetoothConfig.mojom.BluetoothDeviceProperties}
+   *     device
+   * @param {!BatteryType} batteryType
+   * @return {string}
+   * @private
+   */
+  getBatteryIcon_(device, batteryType) {
+    const batteryPercentage = getBatteryPercentage(device, batteryType);
     if (batteryPercentage === undefined) {
       return '';
     }
@@ -126,7 +207,22 @@ export class BluetoothDeviceBatteryInfoElement extends
 
   /** @return {boolean} */
   getIsLowBatteryForTest() {
-    return this.isLowBattery_;
+    return this.isDefaultLowBattery_;
+  }
+
+  /** @return {boolean} */
+  getIsLeftBudLowBatteryForTest() {
+    return this.isLeftBudLowBattery_;
+  }
+
+  /** @return {boolean} */
+  getIsRightBudLowBatteryForTest() {
+    return this.isRightBudLowBattery_;
+  }
+
+  /** @return {boolean} */
+  getIsCaseLowBatteryForTest() {
+    return this.isCaseLowBattery_;
   }
 }
 

@@ -1,25 +1,104 @@
 <style include="cr-shared-style">
-  :host([is-low-battery_]) #batteryContainer {
-    --iron-icon-fill-color: var(--cros-icon-color-alert);
-    color: var(--cros-text-color-alert);
-  }
+  --low-battery-style: {
+      --iron-icon-fill-color: var(--cros-icon-color-secondary);
+      color: var(--cros-icon-color-secondary);
+  };
 
-  :host(:not([is-low-battery_])) #batteryContainer {
+  --not-low-battery-style: {
     --iron-icon-fill-color: var(--cros-icon-color-secondary);
-    color: var(--cros-text-color-secondary);
+    color: var(--cros-icon-color-secondary);
+  };
+
+  :host([is-default-low-battery_]) #defaultBatteryContainer {
+    @apply --low-battery-style;
   }
 
-  #batteryIcon {
+  :host(:not([is-default-low-battery_])) #defaultBatteryContainer {
+    @apply --not-low-battery-style;
+  }
+
+  :host([is-left-bud-low-battery_]) #leftBudBatteryContainer {
+    @apply --low-battery-style;
+  }
+
+  :host(:not([is-left-bud-low-battery_])) #leftBudBatteryContainer {
+    @apply --not-low-battery-style;
+  }
+
+  :host([is-case-low-battery_]) #caseBatteryContainer {
+    @apply --low-battery-style;
+  }
+
+  :host(:not([is-case-low-battery_])) #caseBatteryContainer {
+    @apply --not-low-battery-style;
+  }
+
+  :host([is-right-bud-low-battery_]) #rightBudBatteryContainer {
+    @apply --low-battery-style;
+  }
+
+  :host(:not([is-right-bud-low-battery_])) #rightBudBatteryContainer {
+    @apply --not-low-battery-style;
+  }
+
+  .battery-icon {
     --iron-icon-height: 16px;
     --iron-icon-width: 16px;
     margin-inline-end: -2px;
     padding-bottom: 2px;
   }
+
+  .multiple-battery {
+    padding-end: 6px;
+  }
 </style>
-<div id="batteryContainer">
-  <iron-icon id="batteryIcon" icon="[[getBatteryIcon_(device)]]">
-  </iron-icon>
-  <span id="batteryPercentage">
-    [[getBatteryPercentageString_(device)]]
-  </span>
-</div>
+<template is="dom-if" if="[[!showMultipleBatteries_]]" restamp>
+  <div id="defaultBatteryContainer">
+    <iron-icon id="defaultBatteryIcon" class="battery-icon"
+        icon="[[getBatteryIcon_(device, BatteryType.DEFAULT)]]">
+    </iron-icon>
+    <span id="defaultBatteryPercentage">
+      [[getBatteryPercentageString_(device, BatteryType.DEFAULT)]]
+    </span>
+  </div>
+</template>
+
+<template is="dom-if" if="[[showMultipleBatteries_]]" restamp>
+  <div>
+    <template is="dom-if"
+        if="[[shouldShowBattery_(device, BatteryType.LEFT_BUD)]]" restamp>
+      <span id="leftBudBatteryContainer" class=".multiple-battery">
+        <iron-icon id="leftBudBatteryIcon" class="battery-icon"
+            icon="[[getBatteryIcon_(device, BatteryType.LEFT_BUD)]]">
+        </iron-icon>
+        <span id="leftBudBatteryPercentage">
+          [[getBatteryPercentageString_(device, BatteryType.LEFT_BUD)]]
+        </span>
+      </span>
+    </template>
+
+    <template is="dom-if"
+        if="[[shouldShowBattery_(device, BatteryType.CASE)]]" restamp>
+      <span id="caseBatteryContainer" class=".multiple-battery">
+        <iron-icon id="caseBatteryIcon" class="battery-icon"
+            icon="[[getBatteryIcon_(device, BatteryType.CASE)]]">
+        </iron-icon>
+        <span id="caseBatteryPercentage">
+          [[getBatteryPercentageString_(device, BatteryType.CASE)]]
+        </span>
+      </span>
+    </template>
+
+    <template is="dom-if"
+        if="[[shouldShowBattery_(device, BatteryType.RIGHT_BUD)]]" restamp>
+      <span id="rightBudBatteryContainer" class=".multiple-battery">
+        <iron-icon id="rightBudBatteryIcon" class="battery-icon"
+            icon="[[getBatteryIcon_(device, BatteryType.RIGHT_BUD)]]">
+        </iron-icon>
+        <span id="rightBudBatteryPercentage">
+          [[getBatteryPercentageString_(device, BatteryType.RIGHT_BUD)]]
+        </span>
+      </span>
+    </template>
+  </div>
+</template>
