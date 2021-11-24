@@ -142,6 +142,7 @@
 #if defined(OS_WIN) || defined(OS_MAC) || \
     (defined(OS_LINUX) && !BUILDFLAG(IS_CHROMEOS_LACROS))
 #include "chrome/browser/ui/webui/settings/url_handlers_handler.h"
+#include "chrome/browser/web_applications/web_app_provider.h"
 #endif
 
 namespace settings {
@@ -242,8 +243,10 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
 
 #if defined(OS_WIN) || defined(OS_MAC) || \
     (defined(OS_LINUX) && !BUILDFLAG(IS_CHROMEOS_LACROS))
-  AddSettingsPageUIHandler(std::make_unique<UrlHandlersHandler>(
-      g_browser_process->local_state(), profile));
+  if (web_app::WebAppProvider::GetForWebApps(profile) != nullptr) {
+    AddSettingsPageUIHandler(std::make_unique<UrlHandlersHandler>(
+        g_browser_process->local_state(), profile));
+  }
 #endif
 
 #if defined(OS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
