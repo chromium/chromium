@@ -212,9 +212,9 @@ cr.define('cr.ui.login.debug', function() {
           id: 'success',
           trigger: (screen) => {
             screen.updateCountdownString(
-                'Remove the USB and restart your device to start using \
-                 CloudReady 2.0. Otherwise your device will shut down in \
-                 60 seconds.');
+                'Your device will shut down in 60 seconds. Remove the USB \
+                 before turning your device back on. Then you can start using \
+                 CloudReady 2.0.');
             screen.showStep('success');
           },
         },

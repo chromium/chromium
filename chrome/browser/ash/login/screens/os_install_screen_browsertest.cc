@@ -18,6 +18,7 @@
 #include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "content/public/test/browser_test.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/l10n/time_format.h"
 #include "ui/strings/grit/ui_strings.h"
 
 namespace ash {
@@ -39,8 +40,6 @@ const test::UIPath kOsInstallConfirmCloseButton = {"os-install",
                                                    "closeConfirmDialogButton"};
 const test::UIPath kOsInstallErrorShutdownButton = {
     "os-install", "osInstallErrorShutdownButton"};
-const test::UIPath kOsInstallSuccessRestartButton = {
-    "os-install", "osInstallSuccessRestartButton"};
 
 const test::UIPath kOsInstallDialogIntro = {"os-install",
                                             "osInstallDialogIntro"};
@@ -57,11 +56,12 @@ const test::UIPath kOsInstallDialogSuccess = {"os-install",
 const test::UIPath kOsInstallDialogSuccessSubtitile = {
     "os-install", "osInstallDialogSuccessSubtitile"};
 
-std::string GetExpectedCountdownMessage(int time_left) {
+std::string GetExpectedCountdownMessage(base::TimeDelta time_left) {
   return l10n_util::GetStringFUTF8(
       IDS_OS_INSTALL_SCREEN_SUCCESS_SUBTITLE,
-      l10n_util::GetStringUTF16(IDS_INSTALLED_PRODUCT_OS_NAME),
-      l10n_util::GetPluralStringFUTF16(IDS_TIME_LONG_SECS, time_left));
+      ui::TimeFormat::Simple(ui::TimeFormat::FORMAT_DURATION,
+                             ui::TimeFormat::LENGTH_LONG, time_left),
+      l10n_util::GetStringUTF16(IDS_INSTALLED_PRODUCT_OS_NAME));
 }
 
 }  // namespace
@@ -219,24 +219,6 @@ IN_PROC_BROWSER_TEST_F(OsInstallScreenTest, OsInstallGenericError) {
   EXPECT_EQ(power_manager_client->num_request_shutdown_calls(), 1);
 }
 
-// Check that a successful install shows the success step and clicking
-// the restart button restarts the computer.
-IN_PROC_BROWSER_TEST_F(OsInstallScreenTest, OsInstallSuccessRestartClicked) {
-  auto* ti = OsInstallClient::Get()->GetTestInterface();
-
-  AdvanceToOsInstallScreen();
-  AdvanceThroughIntroStep();
-  ConfirmInstallation();
-
-  ti->UpdateStatus(OsInstallClient::Status::Succeeded);
-  test::OobeJS().ExpectVisiblePath(kOsInstallDialogSuccess);
-
-  auto* power_manager_client = chromeos::FakePowerManagerClient::Get();
-  EXPECT_EQ(power_manager_client->num_request_restart_calls(), 0);
-  test::OobeJS().TapOnPath(kOsInstallSuccessRestartButton);
-  EXPECT_EQ(power_manager_client->num_request_restart_calls(), 1);
-}
-
 // Check that a successful install shows the success step and countdown timer,
 // which will shut down the computer automatically after 60 seconds.
 IN_PROC_BROWSER_TEST_F(OsInstallScreenTest, OsInstallSuccessAutoShutdown) {
@@ -255,8 +237,9 @@ IN_PROC_BROWSER_TEST_F(OsInstallScreenTest, OsInstallSuccessAutoShutdown) {
   EXPECT_EQ(power_manager_client->num_request_shutdown_calls(), 0);
   mocked_task_runner->FastForwardBy(base::Seconds(20));
   EXPECT_EQ(power_manager_client->num_request_shutdown_calls(), 0);
-  test::OobeJS().ExpectElementText(GetExpectedCountdownMessage(40),
-                                   kOsInstallDialogSuccessSubtitile);
+  test::OobeJS().ExpectElementText(
+      GetExpectedCountdownMessage(base::Seconds(40)),
+      kOsInstallDialogSuccessSubtitile);
   mocked_task_runner->FastForwardBy(base::Seconds(41));
   EXPECT_EQ(power_manager_client->num_request_shutdown_calls(), 1);
 }

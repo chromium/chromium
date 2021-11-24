@@ -48,7 +48,6 @@ class OsInstallScreen : public BaseScreen, public OsInstallClient::Observer {
   void RunAutoShutdownCountdown();
   void UpdateCountdownString();
   void Shutdown();
-  void Restart();
 
   OsInstallScreenView* view_ = nullptr;
 

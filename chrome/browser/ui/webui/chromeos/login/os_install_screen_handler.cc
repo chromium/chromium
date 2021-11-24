@@ -13,6 +13,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/login/localized_values_builder.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/l10n/time_format.h"
 #include "ui/strings/grit/ui_strings.h"
 
 namespace chromeos {
@@ -87,8 +88,6 @@ void OsInstallScreenHandler::DeclareLocalizedValues(
 
   builder->Add("osInstallDialogSuccessTitle",
                IDS_OS_INSTALL_SCREEN_SUCCESS_TITLE);
-  builder->Add("osInstallDialogSuccessRestartButton",
-               IDS_OS_INSTALL_SCREEN_RESTART_BUTTON);
 
   builder->Add("osInstallDialogSendFeedback",
                IDS_OS_INSTALL_SCREEN_SEND_FEEDBACK);
@@ -137,12 +136,14 @@ void OsInstallScreenHandler::SetServiceLogs(const std::string& service_log) {
   CallJS("login.OsInstallScreen.setServiceLogs", service_log);
 }
 
-void OsInstallScreenHandler::UpdateCountdownStringWithTime(int64_t time_left) {
+void OsInstallScreenHandler::UpdateCountdownStringWithTime(
+    base::TimeDelta time_left) {
   CallJS("login.OsInstallScreen.updateCountdownString",
          l10n_util::GetStringFUTF8(
              IDS_OS_INSTALL_SCREEN_SUCCESS_SUBTITLE,
-             l10n_util::GetStringUTF16(IDS_INSTALLED_PRODUCT_OS_NAME),
-             l10n_util::GetPluralStringFUTF16(IDS_TIME_LONG_SECS, time_left)));
+             ui::TimeFormat::Simple(ui::TimeFormat::FORMAT_DURATION,
+                                    ui::TimeFormat::LENGTH_LONG, time_left),
+             l10n_util::GetStringUTF16(IDS_INSTALLED_PRODUCT_OS_NAME)));
 }
 
 }  // namespace chromeos

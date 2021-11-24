@@ -1158,13 +1158,10 @@
     Installation complete
   </message>
   <message name="IDS_OS_INSTALL_SCREEN_SUCCESS_SUBTITLE" desc="Subtitle of the success page of the OS install screen">
-    Remove the USB and restart your device to start using <ph name="DEVICE_OS">$1<ex>CloudReady 2.0</ex></ph>. Otherwise your device will shut down in <ph name="TIME_LEFT">$2<ex>60 seconds</ex></ph>.
+    Your device will shut down in <ph name="TIME_LEFT">$1<ex>60 seconds</ex></ph>. Remove the USB before turning your device back on. Then you can start using <ph name="DEVICE_OS">$2<ex>CloudReady 2.0</ex></ph>.
   </message>
   <message name="IDS_OS_INSTALL_SCREEN_SERVICE_LOGS_TITLE" desc="Title of service logs dialog of the OS install screen">
     Service logs
-  </message>
-  <message name="IDS_OS_INSTALL_SCREEN_RESTART_BUTTON" translateable="false" desc="Text of the restart button on the OS install screen">
-    Restart
   </message>
   <message name="IDS_OS_INSTALL_SCREEN_SEND_FEEDBACK" desc="Text of the send feedback button on the OS install screen">
     Send feedback
