@@ -12,19 +12,19 @@
 #include "base/strings/string_util.h"
 #include "chrome/common/chrome_switches.h"
 #include "content/public/renderer/render_frame.h"
-#include "extensions/buildflags/buildflags.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "pdf/pdf_features.h"
+#include "pdf/buildflags.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/web/web_document.h"
 #include "third_party/blink/public/web/web_element.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "url/origin.h"
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_PDF)
 #include "chrome/common/pdf_util.h"
 #include "extensions/renderer/guest_view/mime_handler_view/post_message_support.h"
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+#include "pdf/pdf_features.h"
+#endif  // BUILDFLAG(ENABLE_PDF)
 
 ChromePrintRenderFrameHelperDelegate::ChromePrintRenderFrameHelperDelegate() =
     default;
@@ -36,7 +36,7 @@ ChromePrintRenderFrameHelperDelegate::~ChromePrintRenderFrameHelperDelegate() =
 // or its child frame.
 blink::WebElement ChromePrintRenderFrameHelperDelegate::GetPdfElement(
     blink::WebLocalFrame* frame) {
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_PDF)
   if (IsPdfInternalPluginAllowedOrigin(frame->GetSecurityOrigin())) {
     DCHECK(!base::FeatureList::IsEnabled(chrome_pdf::features::kPdfUnseasoned));
     // <object> with id="plugin" is created in
@@ -60,7 +60,7 @@ blink::WebElement ChromePrintRenderFrameHelperDelegate::GetPdfElement(
     DCHECK(!plugin_element.IsNull());
     return plugin_element;
   }
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+#endif  // BUILDFLAG(ENABLE_PDF)
   return blink::WebElement();
 }
 
@@ -71,7 +71,7 @@ bool ChromePrintRenderFrameHelperDelegate::IsPrintPreviewEnabled() {
 
 bool ChromePrintRenderFrameHelperDelegate::OverridePrint(
     blink::WebLocalFrame* frame) {
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_PDF)
   auto* post_message_support =
       extensions::PostMessageSupport::FromWebLocalFrame(frame);
   if (post_message_support) {
@@ -84,7 +84,7 @@ bool ChromePrintRenderFrameHelperDelegate::OverridePrint(
     post_message_support->PostMessageFromValue(message);
     return true;
   }
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+#endif  // BUILDFLAG(ENABLE_PDF)
   return false;
 }
 
