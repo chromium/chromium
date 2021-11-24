@@ -80,15 +80,13 @@ class AppServiceInstanceRegistryHelper {
                           aura::Window* window,
                           bool active);
 
-  // Returns the instance state for |instance_key| based on |visible|.
-  apps::InstanceState CalculateVisibilityState(
-      const apps::Instance::InstanceKey& instance_key,
-      bool visible) const;
+  // Returns the instance state for `window` based on `visible`.
+  apps::InstanceState CalculateVisibilityState(const aura::Window* window,
+                                               bool visible) const;
 
-  // Returns the instance state for |instance_key| based on |active|.
-  apps::InstanceState CalculateActivatedState(
-      const apps::Instance::InstanceKey& instance_key,
-      bool active) const;
+  // Returns the instance state for `window` based on `active`.
+  apps::InstanceState CalculateActivatedState(const aura::Window* window,
+                                              bool active) const;
 
   // Return true if the app is opend in a browser.
   bool IsOpenedInBrowser(const std::string& app_id, aura::Window* window) const;
@@ -112,11 +110,10 @@ class AppServiceInstanceRegistryHelper {
   std::set<apps::Instance::InstanceKey> GetInstanceKeys(
       const std::string& app_id);
 
-  // Returns the state in InstanceRegistry for the given |app_id|. If there is
-  // no |instance_key| in InstanceRegistry, returns
+  // Returns the state in InstanceRegistry for the given `window`. If there is
+  // no instance for `window` in InstanceRegistry, returns
   // apps::InstanceState::kUnknown.
-  apps::InstanceState GetState(
-      const apps::Instance::InstanceKey& instance_key) const;
+  apps::InstanceState GetState(const aura::Window* window) const;
 
   // Adds the tab's |instance_key| to |browser_window_to_tab_instance_|.
   void AddTabInstance(const std::string& app_id,

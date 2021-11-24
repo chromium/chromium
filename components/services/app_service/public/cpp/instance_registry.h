@@ -127,10 +127,6 @@ class InstanceRegistry {
   std::set<const Instance::InstanceKey> GetInstanceKeys(
       const std::string& app_id);
 
-  // Return the state for the |instance_key|.
-  // TODO(crbug.com/1251501): Will be removed soon.
-  InstanceState GetState(const Instance::InstanceKey& instance_key) const;
-
   // Return states for the `app_id` and `window`. For apps opened in Lacros
   // tabs, there might be multiple tabs in one Lacros window for one app, so
   // there could be multiple states for tab instances. For other standalone app
@@ -138,6 +134,15 @@ class InstanceRegistry {
   // only.
   std::set<InstanceState> GetStates(const std::string& app_id,
                                     const aura::Window* window) const;
+
+  // Returns one state for the `window`.
+  //
+  // Note: This interface is used for the standalone window, or the ash Chrome
+  // browser tab window, which has one instance only. For Lacros windows which
+  // might have multiple instances for tabs, this interface should not be
+  // called, since `window` might have multiple instances, and the InstanceState
+  // returned in these cases will be arbitrary.
+  InstanceState GetState(const aura::Window* window) const;
 
   // Return the shelf id for the |instance_key|.
   ash::ShelfID GetShelfId(const Instance::InstanceKey& instance_key) const;

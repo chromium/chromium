@@ -591,14 +591,24 @@ TEST_F(InstanceRegistryTest, SuperRecursive) {
   // After all of that, check that for each window, the last delta won.
   EXPECT_EQ(apps::InstanceState::kStarted,
             *instance_registry().GetStates("a", &window1).begin());
+  EXPECT_EQ(apps::InstanceState::kStarted,
+            instance_registry().GetState(&window1));
   EXPECT_EQ(apps::InstanceState::kUnknown,
             *instance_registry().GetStates("a", &window2).begin());
+  EXPECT_EQ(apps::InstanceState::kUnknown,
+            instance_registry().GetState(&window2));
   EXPECT_EQ(apps::InstanceState::kRunning,
             *instance_registry().GetStates("b", &window3).begin());
+  EXPECT_EQ(apps::InstanceState::kRunning,
+            instance_registry().GetState(&window3));
   EXPECT_EQ(apps::InstanceState::kVisible,
             *instance_registry().GetStates("c", &window4).begin());
   EXPECT_EQ(apps::InstanceState::kVisible,
+            instance_registry().GetState(&window4));
+  EXPECT_EQ(apps::InstanceState::kVisible,
             *instance_registry().GetStates("b", &window5).begin());
+  EXPECT_EQ(apps::InstanceState::kVisible,
+            instance_registry().GetState(&window5));
 }
 
 TEST_F(InstanceRegistryTest, GetInstanceKeys) {

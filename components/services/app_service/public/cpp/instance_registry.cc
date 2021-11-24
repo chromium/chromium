@@ -149,13 +149,6 @@ std::set<const Instance::InstanceKey> InstanceRegistry::GetInstanceKeys(
   return it->second;
 }
 
-InstanceState InstanceRegistry::GetState(
-    const Instance::InstanceKey& instance_key) const {
-  auto s_iter = instance_key_states_.find(instance_key);
-  return (s_iter != instance_key_states_.end()) ? s_iter->second->State()
-                                                : InstanceState::kUnknown;
-}
-
 std::set<InstanceState> InstanceRegistry::GetStates(
     const std::string& app_id,
     const aura::Window* window) const {
@@ -167,6 +160,14 @@ std::set<InstanceState> InstanceRegistry::GetStates(
         }
       });
   return states;
+}
+
+InstanceState InstanceRegistry::GetState(const aura::Window* window) const {
+  InstanceState state = InstanceState::kUnknown;
+  ForInstancesWithWindow(window, [&state](const apps::InstanceUpdate& update) {
+    state = update.State();
+  });
+  return state;
 }
 
 ash::ShelfID InstanceRegistry::GetShelfId(

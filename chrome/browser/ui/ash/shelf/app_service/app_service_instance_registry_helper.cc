@@ -74,7 +74,7 @@ void AppServiceInstanceRegistryHelper::OnActiveTabChanged(
     // If app_id is empty, we should not set it as inactive because this is
     // Chrome's tab.
     if (!app_id.empty()) {
-      apps::InstanceState state = GetState(instance_key);
+      apps::InstanceState state = GetState(instance_key.Window());
       // If the app has been inactive, we don't need to update the instance.
       if ((state & apps::InstanceState::kActive) !=
           apps::InstanceState::kUnknown) {
@@ -268,7 +268,7 @@ void AppServiceInstanceRegistryHelper::OnWindowVisibilityChanged(
       UpdateTabInstance(shelf_id.app_id, instance_key_it);
 
       apps::InstanceState state =
-          CalculateVisibilityState(instance_key_it, visible);
+          CalculateVisibilityState(instance_key_it.Window(), visible);
       OnInstances(instance_key_it, shelf_id.app_id, shelf_id.launch_id, state);
       return;
     }
@@ -276,7 +276,7 @@ void AppServiceInstanceRegistryHelper::OnWindowVisibilityChanged(
   }
 
   auto instance_key = apps::Instance::InstanceKey::ForWindowBasedApp(window);
-  apps::InstanceState state = CalculateVisibilityState(instance_key, visible);
+  apps::InstanceState state = CalculateVisibilityState(window, visible);
   OnInstances(instance_key, extension_misc::kChromeAppId, std::string(), state);
 
   if (!base::Contains(browser_window_to_tab_instances_, window))
@@ -288,7 +288,7 @@ void AppServiceInstanceRegistryHelper::OnWindowVisibilityChanged(
     const std::string app_id = GetAppId(it);
     if (app_id.empty())
       continue;
-    apps::InstanceState state = CalculateVisibilityState(it, visible);
+    apps::InstanceState state = CalculateVisibilityState(it.Window(), visible);
     OnInstances(it, app_id, std::string(), state);
   }
 }
@@ -314,7 +314,7 @@ void AppServiceInstanceRegistryHelper::SetWindowActivated(
       UpdateTabInstance(shelf_id.app_id, instance_key_it);
 
       apps::InstanceState state =
-          CalculateActivatedState(instance_key_it, active);
+          CalculateActivatedState(instance_key_it.Window(), active);
       OnInstances(instance_key_it, shelf_id.app_id, shelf_id.launch_id, state);
       return;
     }
@@ -322,7 +322,7 @@ void AppServiceInstanceRegistryHelper::SetWindowActivated(
   }
 
   auto instance_key = apps::Instance::InstanceKey::ForWindowBasedApp(window);
-  apps::InstanceState state = CalculateActivatedState(instance_key, active);
+  apps::InstanceState state = CalculateActivatedState(window, active);
   OnInstances(instance_key, extension_misc::kChromeAppId, std::string(), state);
 
   if (!base::Contains(browser_window_to_tab_instances_, window))
@@ -366,15 +366,15 @@ void AppServiceInstanceRegistryHelper::SetWindowActivated(
     const std::string app_id = GetAppId(it);
     if (app_id.empty())
       continue;
-    apps::InstanceState state = CalculateActivatedState(it, active);
+    apps::InstanceState state = CalculateActivatedState(it.Window(), active);
     OnInstances(it, app_id, std::string(), state);
   }
 }
 
 apps::InstanceState AppServiceInstanceRegistryHelper::CalculateVisibilityState(
-    const apps::Instance::InstanceKey& instance_key,
+    const aura::Window* window,
     bool visible) const {
-  apps::InstanceState state = GetState(instance_key);
+  apps::InstanceState state = GetState(window);
   state = static_cast<apps::InstanceState>(
       state | apps::InstanceState::kStarted | apps::InstanceState::kRunning);
   state = (visible) ? static_cast<apps::InstanceState>(
@@ -385,7 +385,7 @@ apps::InstanceState AppServiceInstanceRegistryHelper::CalculateVisibilityState(
 }
 
 apps::InstanceState AppServiceInstanceRegistryHelper::CalculateActivatedState(
-    const apps::Instance::InstanceKey& instance_key,
+    const aura::Window* window,
     bool active) const {
   // If the app is active, it should be started, running, and visible.
   if (active) {
@@ -394,7 +394,7 @@ apps::InstanceState AppServiceInstanceRegistryHelper::CalculateActivatedState(
         apps::InstanceState::kActive | apps::InstanceState::kVisible);
   }
 
-  apps::InstanceState state = GetState(instance_key);
+  apps::InstanceState state = GetState(window);
   state = static_cast<apps::InstanceState>(
       state | apps::InstanceState::kStarted | apps::InstanceState::kRunning);
   state =
@@ -499,10 +499,10 @@ AppServiceInstanceRegistryHelper::GetInstanceKeys(const std::string& app_id) {
 }
 
 apps::InstanceState AppServiceInstanceRegistryHelper::GetState(
-    const apps::Instance::InstanceKey& instance_key) const {
+    const aura::Window* window) const {
   for (auto* profile : controller_->GetProfileList()) {
     auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile);
-    auto state = proxy->InstanceRegistry().GetState(instance_key);
+    auto state = proxy->InstanceRegistry().GetState(window);
     if (state != apps::InstanceState::kUnknown)
       return state;
   }

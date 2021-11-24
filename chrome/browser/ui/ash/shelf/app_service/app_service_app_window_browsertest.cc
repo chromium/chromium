@@ -191,18 +191,13 @@ class AppServiceAppWindowBrowserTest
     return shelf_model()->items()[shelf_model()->item_count() - 1];
   }
 
-  apps::InstanceState GetAppInstanceState(
-      const std::string& app_id,
-      const apps::Instance::InstanceKey& instance_key) {
-    auto instance_state = apps::InstanceState::kUnknown;
-    app_service_proxy_->InstanceRegistry().ForInstancesWithWindow(
-        instance_key.Window(),
-        [&app_id, &instance_state](const apps::InstanceUpdate& inner) {
-          if (inner.AppId() == app_id) {
-            instance_state = inner.State();
-          }
-        });
-    return instance_state;
+  apps::InstanceState GetAppInstanceState(const std::string& app_id,
+                                          const aura::Window* window) {
+    auto states =
+        app_service_proxy_->InstanceRegistry().GetStates(app_id, window);
+    if (states.size() == 1)
+      return *states.begin();
+    return apps::InstanceState::kUnknown;
   }
 
   ChromeShelfController* controller_ = nullptr;
@@ -221,27 +216,21 @@ IN_PROC_BROWSER_TEST_F(AppServiceAppWindowBrowserTest, ExtensionAppsWindow) {
   EXPECT_EQ(1u, instance_keys.size());
   auto* window = instance_keys.begin()->Window();
 
-  EXPECT_EQ(
-      apps::InstanceState::kStarted | apps::InstanceState::kRunning |
-          apps::InstanceState::kActive | apps::InstanceState::kVisible,
-      GetAppInstanceState(
-          app->id(), apps::Instance::InstanceKey::ForWindowBasedApp(window)));
+  EXPECT_EQ(apps::InstanceState::kStarted | apps::InstanceState::kRunning |
+                apps::InstanceState::kActive | apps::InstanceState::kVisible,
+            GetAppInstanceState(app->id(), window));
 
   const ash::ShelfItem& item = GetLastShelfItem();
   // Since it is already active, clicking it should minimize.
   SelectItem(item.id);
-  EXPECT_EQ(
-      apps::InstanceState::kStarted | apps::InstanceState::kRunning,
-      GetAppInstanceState(
-          app->id(), apps::Instance::InstanceKey::ForWindowBasedApp(window)));
+  EXPECT_EQ(apps::InstanceState::kStarted | apps::InstanceState::kRunning,
+            GetAppInstanceState(app->id(), window));
 
   // Click the item again to activate the app.
   SelectItem(item.id);
-  EXPECT_EQ(
-      apps::InstanceState::kStarted | apps::InstanceState::kRunning |
-          apps::InstanceState::kActive | apps::InstanceState::kVisible,
-      GetAppInstanceState(
-          app->id(), apps::Instance::InstanceKey::ForWindowBasedApp(window)));
+  EXPECT_EQ(apps::InstanceState::kStarted | apps::InstanceState::kRunning |
+                apps::InstanceState::kActive | apps::InstanceState::kVisible,
+            GetAppInstanceState(app->id(), window));
 
   CloseAppWindow(app_window);
   instance_keys =
@@ -273,18 +262,14 @@ IN_PROC_BROWSER_TEST_F(AppServiceAppWindowBrowserTest, MultipleWindows) {
   }
 
   // The window1 is inactive.
-  EXPECT_EQ(
-      apps::InstanceState::kStarted | apps::InstanceState::kRunning |
-          apps::InstanceState::kVisible,
-      GetAppInstanceState(
-          app->id(), apps::Instance::InstanceKey::ForWindowBasedApp(window1)));
+  EXPECT_EQ(apps::InstanceState::kStarted | apps::InstanceState::kRunning |
+                apps::InstanceState::kVisible,
+            GetAppInstanceState(app->id(), window1));
 
   // The window2 is active.
-  EXPECT_EQ(
-      apps::InstanceState::kStarted | apps::InstanceState::kRunning |
-          apps::InstanceState::kActive | apps::InstanceState::kVisible,
-      GetAppInstanceState(
-          app->id(), apps::Instance::InstanceKey::ForWindowBasedApp(window2)));
+  EXPECT_EQ(apps::InstanceState::kStarted | apps::InstanceState::kRunning |
+                apps::InstanceState::kActive | apps::InstanceState::kVisible,
+            GetAppInstanceState(app->id(), window2));
 
   // Close the second window; confirm the shelf item stays; check the app menu.
   CloseAppWindow(app_window2);
@@ -293,11 +278,9 @@ IN_PROC_BROWSER_TEST_F(AppServiceAppWindowBrowserTest, MultipleWindows) {
   EXPECT_EQ(1u, instance_keys.size());
 
   // The window1 is active again.
-  EXPECT_EQ(
-      apps::InstanceState::kStarted | apps::InstanceState::kRunning |
-          apps::InstanceState::kActive | apps::InstanceState::kVisible,
-      GetAppInstanceState(
-          app->id(), apps::Instance::InstanceKey::ForWindowBasedApp(window1)));
+  EXPECT_EQ(apps::InstanceState::kStarted | apps::InstanceState::kRunning |
+                apps::InstanceState::kActive | apps::InstanceState::kVisible,
+            GetAppInstanceState(app->id(), window1));
 
   // Close the first window; the shelf item should be removed.
   CloseAppWindow(app_window1);
@@ -323,7 +306,7 @@ IN_PROC_BROWSER_TEST_F(AppServiceAppWindowBrowserTest,
   // The window1 is active.
   EXPECT_EQ(apps::InstanceState::kStarted | apps::InstanceState::kRunning |
                 apps::InstanceState::kVisible | apps::InstanceState::kActive,
-            GetAppInstanceState(app_id1, instance_key1));
+            GetAppInstanceState(app_id1, instance_key1.Window()));
 
   // Add an Extension app.
   const extensions::Extension* extension2 =
@@ -341,12 +324,12 @@ IN_PROC_BROWSER_TEST_F(AppServiceAppWindowBrowserTest,
   // The window1 is inactive.
   EXPECT_EQ(apps::InstanceState::kStarted | apps::InstanceState::kRunning |
                 apps::InstanceState::kVisible,
-            GetAppInstanceState(app_id1, instance_key1));
+            GetAppInstanceState(app_id1, instance_key1.Window()));
 
   // The window2 is active.
   EXPECT_EQ(apps::InstanceState::kStarted | apps::InstanceState::kRunning |
                 apps::InstanceState::kVisible | apps::InstanceState::kActive,
-            GetAppInstanceState(app_id2, instance_key2));
+            GetAppInstanceState(app_id2, instance_key2.Window()));
 
   // Close the Extension app's window..
   CloseAppWindow(app_window);
@@ -357,7 +340,7 @@ IN_PROC_BROWSER_TEST_F(AppServiceAppWindowBrowserTest,
   // The window1 is active.
   EXPECT_EQ(apps::InstanceState::kStarted | apps::InstanceState::kRunning |
                 apps::InstanceState::kVisible | apps::InstanceState::kActive,
-            GetAppInstanceState(app_id1, instance_key1));
+            GetAppInstanceState(app_id1, instance_key1.Window()));
 
   // Close the HostedApp.
   TabStripModel* tab_strip = browser()->tab_strip_model();
@@ -401,9 +384,7 @@ IN_PROC_BROWSER_TEST_F(AppServiceAppWindowLacrosBrowserTest, LacrosWindow) {
   EXPECT_EQ(1u, instance_keys.size());
   EXPECT_EQ(apps::InstanceState::kStarted | apps::InstanceState::kRunning |
                 apps::InstanceState::kActive | apps::InstanceState::kVisible,
-            GetAppInstanceState(kLacrosAppId,
-                                apps::Instance::InstanceKey::ForWindowBasedApp(
-                                    instance_keys.begin()->Window())));
+            GetAppInstanceState(kLacrosAppId, instance_keys.begin()->Window()));
 
   instance_keys = app_service_proxy_->InstanceRegistry().GetInstanceKeys(
       extension_misc::kLacrosAppId);
@@ -419,17 +400,13 @@ IN_PROC_BROWSER_TEST_F(AppServiceAppWindowLacrosBrowserTest, LacrosWindow) {
   // Since it is already active, clicking it should minimize.
   SelectItem(item.id);
   EXPECT_EQ(apps::InstanceState::kStarted | apps::InstanceState::kRunning,
-            GetAppInstanceState(kLacrosAppId,
-                                apps::Instance::InstanceKey::ForWindowBasedApp(
-                                    instance_keys.begin()->Window())));
+            GetAppInstanceState(kLacrosAppId, instance_keys.begin()->Window()));
 
   // Click the item again to activate the window.
   SelectItem(item.id);
   EXPECT_EQ(apps::InstanceState::kStarted | apps::InstanceState::kRunning |
                 apps::InstanceState::kActive | apps::InstanceState::kVisible,
-            GetAppInstanceState(kLacrosAppId,
-                                apps::Instance::InstanceKey::ForWindowBasedApp(
-                                    instance_key.Window())));
+            GetAppInstanceState(kLacrosAppId, instance_key.Window()));
 
   widget->CloseNow();
   instance_keys =
@@ -592,19 +569,19 @@ IN_PROC_BROWSER_TEST_F(AppServiceAppWindowWebAppBrowserTest, WebAppsWindow) {
   apps::Instance::InstanceKey instance_key = *instance_keys.begin();
   EXPECT_EQ(apps::InstanceState::kStarted | apps::InstanceState::kRunning |
                 apps::InstanceState::kActive | apps::InstanceState::kVisible,
-            GetAppInstanceState(app_id, instance_key));
+            GetAppInstanceState(app_id, instance_key.Window()));
 
   const ash::ShelfItem& item = GetLastShelfItem();
   // Since it is already active, clicking it should minimize.
   SelectItem(item.id);
   EXPECT_EQ(apps::InstanceState::kStarted | apps::InstanceState::kRunning,
-            GetAppInstanceState(app_id, instance_key));
+            GetAppInstanceState(app_id, instance_key.Window()));
 
   // Click the item again to activate the app.
   SelectItem(item.id);
   EXPECT_EQ(apps::InstanceState::kStarted | apps::InstanceState::kRunning |
                 apps::InstanceState::kActive | apps::InstanceState::kVisible,
-            GetAppInstanceState(app_id, instance_key));
+            GetAppInstanceState(app_id, instance_key.Window()));
 
   controller_->Close(item.id);
   // Make sure that the window is closed.
@@ -625,13 +602,13 @@ IN_PROC_BROWSER_TEST_F(AppServiceAppWindowWebAppBrowserTest,
   apps::Instance::InstanceKey instance_key1 = *instance_keys.begin();
   EXPECT_EQ(apps::InstanceState::kStarted | apps::InstanceState::kRunning |
                 apps::InstanceState::kActive | apps::InstanceState::kVisible,
-            GetAppInstanceState(app_id, instance_key1));
+            GetAppInstanceState(app_id, instance_key1.Window()));
 
   const ash::ShelfItem item = GetLastShelfItem();
   // Since it is already active, clicking it should minimize.
   SelectItem(item.id);
   EXPECT_EQ(apps::InstanceState::kStarted | apps::InstanceState::kRunning,
-            GetAppInstanceState(app_id, instance_key1));
+            GetAppInstanceState(app_id, instance_key1.Window()));
 
   // Create another window.
   CreateWebAppWindow(app_id);
@@ -644,14 +621,14 @@ IN_PROC_BROWSER_TEST_F(AppServiceAppWindowWebAppBrowserTest,
 
   ASSERT_EQ(apps::InstanceState::kStarted | apps::InstanceState::kRunning |
                 apps::InstanceState::kActive | apps::InstanceState::kVisible,
-            GetAppInstanceState(app_id, instance_key2));
+            GetAppInstanceState(app_id, instance_key2.Window()));
 
   // Bring the browser window to foreground.
   browser()->window()->Show();
 
   EXPECT_EQ(apps::InstanceState::kStarted | apps::InstanceState::kRunning |
                 apps::InstanceState::kVisible,
-            GetAppInstanceState(app_id, instance_key2));
+            GetAppInstanceState(app_id, instance_key2.Window()));
 
   // Launching the first app from the app list should activate it.
   SelectItem(item.id, ui::ET_MOUSE_PRESSED, display::kInvalidDisplayId,
@@ -659,7 +636,7 @@ IN_PROC_BROWSER_TEST_F(AppServiceAppWindowWebAppBrowserTest,
 
   EXPECT_EQ(apps::InstanceState::kStarted | apps::InstanceState::kRunning |
                 apps::InstanceState::kActive | apps::InstanceState::kVisible,
-            GetAppInstanceState(app_id, instance_key1));
+            GetAppInstanceState(app_id, instance_key1.Window()));
 
   // Selecting an active app from the app list should not minimize it.
   SelectItem(item.id, ui::ET_MOUSE_PRESSED, display::kInvalidDisplayId,
@@ -667,7 +644,7 @@ IN_PROC_BROWSER_TEST_F(AppServiceAppWindowWebAppBrowserTest,
 
   EXPECT_EQ(apps::InstanceState::kStarted | apps::InstanceState::kRunning |
                 apps::InstanceState::kActive | apps::InstanceState::kVisible,
-            GetAppInstanceState(app_id, instance_key1));
+            GetAppInstanceState(app_id, instance_key1.Window()));
 }
 
 class AppServiceAppWindowArcAppBrowserTest
@@ -783,14 +760,12 @@ IN_PROC_BROWSER_TEST_F(AppServiceAppWindowArcAppBrowserTest, ArcAppsWindow) {
   EXPECT_EQ(1u, instance_keys.size());
   aura::Window* window1 = instance_keys.begin()->Window();
   apps::InstanceState latest_state =
-      app_service_proxy_->InstanceRegistry().GetState(
-          apps::Instance::InstanceKey::ForWindowBasedApp(window1));
+      app_service_proxy_->InstanceRegistry().GetState(window1);
   EXPECT_EQ(apps::InstanceState::kStarted | apps::InstanceState::kRunning,
             latest_state);
 
   app_host()->OnTaskSetActive(1);
-  latest_state = app_service_proxy_->InstanceRegistry().GetState(
-      apps::Instance::InstanceKey::ForWindowBasedApp(window1));
+  latest_state = app_service_proxy_->InstanceRegistry().GetState(window1);
   EXPECT_EQ(apps::InstanceState::kStarted | apps::InstanceState::kRunning |
                 apps::InstanceState::kActive | apps::InstanceState::kVisible,
             latest_state);
@@ -809,28 +784,24 @@ IN_PROC_BROWSER_TEST_F(AppServiceAppWindowArcAppBrowserTest, ArcAppsWindow) {
       app_service_proxy_->InstanceRegistry().GetInstanceKeys(app_id2);
   EXPECT_EQ(1u, instance_keys.size());
   aura::Window* window2 = instance_keys.begin()->Window();
-  latest_state = app_service_proxy_->InstanceRegistry().GetState(
-      apps::Instance::InstanceKey::ForWindowBasedApp(window2));
+  latest_state = app_service_proxy_->InstanceRegistry().GetState(window2);
   EXPECT_EQ(apps::InstanceState::kStarted | apps::InstanceState::kRunning |
                 apps::InstanceState::kActive | apps::InstanceState::kVisible,
             latest_state);
 
   // App1 is inactive.
-  latest_state = app_service_proxy_->InstanceRegistry().GetState(
-      apps::Instance::InstanceKey::ForWindowBasedApp(window1));
+  latest_state = app_service_proxy_->InstanceRegistry().GetState(window1);
   EXPECT_EQ(apps::InstanceState::kStarted | apps::InstanceState::kRunning |
                 apps::InstanceState::kVisible,
             latest_state);
 
   // Select the app1
   SelectItem(ash::ShelfID(app_id1));
-  latest_state = app_service_proxy_->InstanceRegistry().GetState(
-      apps::Instance::InstanceKey::ForWindowBasedApp(window1));
+  latest_state = app_service_proxy_->InstanceRegistry().GetState(window1);
   EXPECT_EQ(apps::InstanceState::kStarted | apps::InstanceState::kRunning |
                 apps::InstanceState::kActive | apps::InstanceState::kVisible,
             latest_state);
-  latest_state = app_service_proxy_->InstanceRegistry().GetState(
-      apps::Instance::InstanceKey::ForWindowBasedApp(window2));
+  latest_state = app_service_proxy_->InstanceRegistry().GetState(window2);
   EXPECT_EQ(apps::InstanceState::kStarted | apps::InstanceState::kRunning |
                 apps::InstanceState::kVisible,
             latest_state);
@@ -842,8 +813,7 @@ IN_PROC_BROWSER_TEST_F(AppServiceAppWindowArcAppBrowserTest, ArcAppsWindow) {
       app_service_proxy_->InstanceRegistry().GetInstanceKeys(app_id1).empty());
 
   // App2 is activated.
-  latest_state = app_service_proxy_->InstanceRegistry().GetState(
-      apps::Instance::InstanceKey::ForWindowBasedApp(window2));
+  latest_state = app_service_proxy_->InstanceRegistry().GetState(window2);
   EXPECT_EQ(apps::InstanceState::kStarted | apps::InstanceState::kRunning |
                 apps::InstanceState::kActive | apps::InstanceState::kVisible,
             latest_state);
@@ -902,20 +872,17 @@ IN_PROC_BROWSER_TEST_F(AppServiceAppWindowArcAppBrowserTest, LogicalWindowId) {
           ->Window();
 
   apps::InstanceState latest_state =
-      app_service_proxy_->InstanceRegistry().GetState(
-          apps::Instance::InstanceKey::ForWindowBasedApp(window1));
+      app_service_proxy_->InstanceRegistry().GetState(window1);
   EXPECT_EQ(apps::InstanceState::kStarted | apps::InstanceState::kRunning,
             latest_state);
-  latest_state = app_service_proxy_->InstanceRegistry().GetState(
-      apps::Instance::InstanceKey::ForWindowBasedApp(window2));
+  latest_state = app_service_proxy_->InstanceRegistry().GetState(window2);
   EXPECT_EQ(apps::InstanceState::kStarted | apps::InstanceState::kRunning,
             latest_state);
 
   // If the user focuses window 2, it should become active, but still hidden in
   // the shelf.
   app_host()->OnTaskSetActive(2);
-  latest_state = app_service_proxy_->InstanceRegistry().GetState(
-      apps::Instance::InstanceKey::ForWindowBasedApp(window2));
+  latest_state = app_service_proxy_->InstanceRegistry().GetState(window2);
   EXPECT_EQ(apps::InstanceState::kStarted | apps::InstanceState::kRunning |
                 apps::InstanceState::kActive | apps::InstanceState::kVisible,
             latest_state);
@@ -999,19 +966,19 @@ IN_PROC_BROWSER_TEST_P(AppServiceAppWindowSystemWebAppBrowserTest,
   apps::Instance::InstanceKey instance_key = *instance_keys.begin();
   EXPECT_EQ(apps::InstanceState::kStarted | apps::InstanceState::kRunning |
                 apps::InstanceState::kActive | apps::InstanceState::kVisible,
-            GetAppInstanceState(app_id, instance_key));
+            GetAppInstanceState(app_id, instance_key.Window()));
 
   const ash::ShelfItem& item = GetLastShelfItem();
   // Since it is already active, clicking it should minimize.
   SelectItem(item.id);
   EXPECT_EQ(apps::InstanceState::kStarted | apps::InstanceState::kRunning,
-            GetAppInstanceState(app_id, instance_key));
+            GetAppInstanceState(app_id, instance_key.Window()));
 
   // Click the item again to activate the app.
   SelectItem(item.id);
   EXPECT_EQ(apps::InstanceState::kStarted | apps::InstanceState::kRunning |
                 apps::InstanceState::kActive | apps::InstanceState::kVisible,
-            GetAppInstanceState(app_id, instance_key));
+            GetAppInstanceState(app_id, instance_key.Window()));
 
   controller_->Close(item.id);
   // Make sure that the window is closed.

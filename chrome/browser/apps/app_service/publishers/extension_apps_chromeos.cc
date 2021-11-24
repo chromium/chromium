@@ -328,10 +328,8 @@ void ExtensionAppsChromeOs::OnAppWindowShown(extensions::AppWindow* app_window,
     return;
   }
 
-  InstanceState state = instance_registry_->GetState(
-      apps::Instance::InstanceKey::ForWindowBasedApp(
-          app_window->GetNativeWindow()));
-
+  InstanceState state =
+      instance_registry_->GetState(app_window->GetNativeWindow());
   // If the window is shown, it should be started, running and not hidden.
   state = static_cast<apps::InstanceState>(
       state | apps::InstanceState::kStarted | apps::InstanceState::kRunning);
@@ -805,9 +803,7 @@ void ExtensionAppsChromeOs::RegisterInstance(extensions::AppWindow* app_window,
 
   // If the current state has been marked as |new_state|, we don't need to
   // update.
-  if (instance_registry_->GetState(
-          apps::Instance::InstanceKey::ForWindowBasedApp(window)) ==
-      new_state) {
+  if (instance_registry_->GetState(window) == new_state) {
     return;
   }
 

@@ -620,7 +620,14 @@ void AppPlatformMetrics::UpdateBrowserWindowStatus(
 
   auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile_);
   DCHECK(proxy);
-  auto state = proxy->InstanceRegistry().GetState(browser_key);
+  // TODO: Handle Lacros browser window.
+  auto state = InstanceState::kUnknown;
+  auto states = proxy->InstanceRegistry().GetStates(
+      extension_misc::kChromeAppId, browser_window);
+  if (!states.empty()) {
+    DCHECK_EQ(1U, states.size());
+    state = *states.begin();
+  }
   if (state & InstanceState::kActive) {
     // The browser window is activated, start calculating the browser window
     // running time.

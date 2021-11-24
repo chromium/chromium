@@ -219,7 +219,7 @@ void AppServiceAppWindowShelfController::OnWindowInitialized(
     auto instance_key = apps::Instance::InstanceKey::ForWindowBasedApp(window);
     apps::InstanceState state =
         app_service_instance_helper_->CalculateVisibilityState(
-            instance_key, /*visible=*/false);
+            window, /*visible=*/false);
     app_service_instance_helper_->OnInstances(
         instance_key, GetAppId(shelf_id.app_id), shelf_id.launch_id, state);
 
@@ -284,8 +284,7 @@ void AppServiceAppWindowShelfController::OnWindowVisibilityChanged(
   // set it as |kVisible|, otherwise, clear the visible bit.
   auto instance_key = apps::Instance::InstanceKey::ForWindowBasedApp(window);
   apps::InstanceState state =
-      app_service_instance_helper_->CalculateVisibilityState(instance_key,
-                                                             visible);
+      app_service_instance_helper_->CalculateVisibilityState(window, visible);
   app_service_instance_helper_->OnInstances(
       instance_key, GetAppId(shelf_id.app_id), shelf_id.launch_id, state);
 
@@ -558,8 +557,7 @@ void AppServiceAppWindowShelfController::SetWindowActivated(
 
   auto instance_key = apps::Instance::InstanceKey::ForWindowBasedApp(window);
   apps::InstanceState state =
-      app_service_instance_helper_->CalculateActivatedState(instance_key,
-                                                            active);
+      app_service_instance_helper_->CalculateActivatedState(window, active);
   app_service_instance_helper_->OnInstances(
       instance_key, GetAppId(shelf_id.app_id), std::string(), state);
 }
