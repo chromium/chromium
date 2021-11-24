@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_PRINTING_PRINT_JOB_WORKER_H_
 
 #include <memory>
-#include <string>
 
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
@@ -14,14 +13,9 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "content/public/browser/browser_thread.h"
-#include "printing/buildflags/buildflags.h"
 #include "printing/mojom/print.mojom.h"
 #include "printing/page_number.h"
 #include "printing/printing_context.h"
-
-#if BUILDFLAG(ENABLE_OOP_PRINTING)
-#include "chrome/services/printing/public/mojom/print_backend_service.mojom-forward.h"
-#endif
 
 namespace content {
 class WebContents;
@@ -114,6 +108,13 @@ class PrintJobWorker {
   content::WebContents* GetWebContents();
 
  protected:
+  // Reports settings back to |callback|.
+  void GetSettingsDone(SettingsCallback callback, mojom::ResultCode result);
+
+  // Called on the UI thread to update the print settings.
+  virtual void UpdatePrintSettings(base::Value new_settings,
+                                   SettingsCallback callback);
+
   // Retrieves the context for testing only.
   PrintingContext* printing_context() { return printing_context_.get(); }
 
@@ -123,13 +124,6 @@ class PrintJobWorker {
   // notification from the right thread. All NOTIFY_PRINT_JOB_EVENT
   // notifications are sent this way.
   class NotificationTask;
-
-#if BUILDFLAG(ENABLE_OOP_PRINTING)
-  // Local callback wrapper for Print Backend Service mojom call.
-  void OnDidUpdatePrintSettings(const std::string& device_name,
-                                SettingsCallback callback,
-                                mojom::PrintSettingsResultPtr print_settings);
-#endif
 
   // Posts a task to call OnNewPage(). Used to wait for pages/document to be
   // available.
@@ -162,18 +156,12 @@ class PrintJobWorker {
                          bool is_scripted,
                          SettingsCallback callback);
 
-  // Called on the UI thread to update the print settings.
-  void UpdatePrintSettings(base::Value new_settings, SettingsCallback callback);
-
 #if defined(OS_CHROMEOS)
   // Called on the UI thread to update the print settings.
   void UpdatePrintSettingsFromPOD(
       std::unique_ptr<printing::PrintSettings> new_settings,
       SettingsCallback callback);
 #endif
-
-  // Reports settings back to |callback|.
-  void GetSettingsDone(SettingsCallback callback, mojom::ResultCode result);
 
   // Use the default settings. When using GTK+ or Mac, this can still end up
   // displaying a dialog. So this needs to happen from the UI thread on these

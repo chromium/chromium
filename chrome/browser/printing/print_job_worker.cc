@@ -168,33 +168,6 @@ PrintJobWorker::~PrintJobWorker() {
   Stop();
 }
 
-#if BUILDFLAG(ENABLE_OOP_PRINTING)
-
-void PrintJobWorker::OnDidUpdatePrintSettings(
-    const std::string& device_name,
-    SettingsCallback callback,
-    mojom::PrintSettingsResultPtr print_settings) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  mojom::ResultCode result;
-  if (print_settings->is_result_code()) {
-    result = print_settings->get_result_code();
-    DCHECK_NE(result, mojom::ResultCode::kSuccess);
-    PRINTER_LOG(ERROR) << "Failure to update print settings for " << device_name
-                       << " - error " << result;
-
-    // TODO(crbug.com/809738)  Fill in support for handling of access-denied
-    // result code.
-  } else {
-    VLOG(1) << "Update print settings from service complete for "
-            << device_name;
-    result = mojom::ResultCode::kSuccess;
-    printing_context_->ApplyPrintSettings(print_settings->get_settings());
-  }
-  GetSettingsDone(std::move(callback), result);
-}
-
-#endif  // BUILDFLAG(ENABLE_OOP_PRINTING)
-
 void PrintJobWorker::SetPrintJob(PrintJob* print_job) {
   DCHECK_EQ(page_number_, PageNumber::npos());
   print_job_ = print_job;
@@ -254,29 +227,6 @@ void PrintJobWorker::SetSettingsFromPOD(
 void PrintJobWorker::UpdatePrintSettings(base::Value new_settings,
                                          SettingsCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-
-#if BUILDFLAG(ENABLE_OOP_PRINTING)
-  if (features::kEnableOopPrintDriversJobPrint.Get()) {
-    // Don't use as a const reference, since that reference into `new_settings`
-    // isn't safe after TakeDict() destroys the internal dictionary for it.
-    std::string device_name = *new_settings.FindStringKey(kSettingDeviceName);
-
-    VLOG(1) << "Updating print settings via service for " << device_name;
-    PrintBackendServiceManager& service_mgr =
-        PrintBackendServiceManager::GetInstance();
-
-    // Safe to use base::Unretained(this) since the callback owns `this`, and
-    // `service_mgr` is a global instance which never exits and simply wraps
-    // `callback` so that it is still called should the service terminate
-    // unexpectedly.
-    service_mgr.UpdatePrintSettings(
-        device_name, std::move(new_settings).TakeDict(),
-        base::BindOnce(&PrintJobWorker::OnDidUpdatePrintSettings,
-                       base::Unretained(this), device_name,
-                       std::move(callback)));
-    return;
-  }
-#endif  // BUILDFLAG(ENABLE_OOP_PRINTING)
 
   std::unique_ptr<crash_keys::ScopedPrinterInfo> crash_key;
   mojom::PrinterType type = static_cast<mojom::PrinterType>(
