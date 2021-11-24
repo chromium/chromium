@@ -6,6 +6,7 @@ executable("test_rust_exe") {
   crate_root = "main.rs"
   deps = [
     "//build/rust/tests/test_mixed_source_set:test_mixed_source_set_rs",
+    "//build/rust/tests/test_proc_macro_crate",
     "//build/rust/tests/test_rlib_crate",
     "//build/rust/tests/test_rust_source_set",
     "//build/rust/tests/test_rust_source_set_non_standard_arrangement",

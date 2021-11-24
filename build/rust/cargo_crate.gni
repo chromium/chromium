@@ -89,11 +89,18 @@ template("cargo_crate") {
     if (defined(invoker.crate_type)) {
       crate_type = invoker.crate_type
     }
+    if (!defined(rustflags)) {
+      rustflags = []
+    }
     if (crate_type == "bin") {
       target_type = "executable"
       assert(!defined(invoker.epoch))
     } else if (crate_type == "proc-macro") {
       target_type = "rust_proc_macro"
+      rustflags += [
+        "--extern",
+        "proc_macro",
+      ]
     } else {
       assert(crate_type == "rlib")
       target_type = "rust_library"
@@ -121,9 +128,6 @@ template("cargo_crate") {
       }
       if (!defined(sources)) {
         sources = []
-      }
-      if (!defined(rustflags)) {
-        rustflags = []
       }
       if (defined(invoker.dev_deps)) {
         test_deps = invoker.dev_deps
