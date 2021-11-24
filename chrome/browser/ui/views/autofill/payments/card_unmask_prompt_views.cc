@@ -42,32 +42,12 @@
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/controls/throbber.h"
 #include "ui/views/layout/box_layout.h"
+#include "ui/views/layout/box_layout_view.h"
 #include "ui/views/layout/fill_layout.h"
-#include "ui/views/layout/grid_layout.h"
 #include "ui/views/style/typography.h"
 #include "ui/views/widget/widget.h"
 
 namespace autofill {
-
-namespace {
-
-static views::GridLayout* ResetOverlayLayout(views::View* overlay) {
-  views::GridLayout* overlay_layout =
-      overlay->SetLayoutManager(std::make_unique<views::GridLayout>());
-  views::ColumnSet* columns = overlay_layout->AddColumnSet(0);
-  // The throbber's checkmark is 18dp.
-  columns->AddColumn(views::GridLayout::TRAILING, views::GridLayout::CENTER,
-                     0.5, views::GridLayout::ColumnSize::kFixed, 18, 0);
-  columns->AddPaddingColumn(views::GridLayout::kFixedSize,
-                            ChromeLayoutProvider::Get()->GetDistanceMetric(
-                                views::DISTANCE_RELATED_LABEL_HORIZONTAL));
-  columns->AddColumn(views::GridLayout::LEADING, views::GridLayout::CENTER, 0.5,
-                     views::GridLayout::ColumnSize::kUsePreferred, 0, 0);
-  overlay_layout->StartRow(1.0, 0);
-  return overlay_layout;
-}
-
-}  // namespace
 
 CardUnmaskPromptViews::CardUnmaskPromptViews(
     CardUnmaskPromptController* controller,
@@ -138,10 +118,7 @@ void CardUnmaskPromptViews::GotVerificationResult(
       SetRetriableErrorMessage(error_message);
     } else {
       SetRetriableErrorMessage(std::u16string());
-
-      // Rows cannot be replaced in GridLayout, so we reset it.
       overlay_->RemoveAllChildViews();
-      views::GridLayout* layout = ResetOverlayLayout(overlay_);
 
       // The label of the overlay will now show the error in red.
       auto error_label = std::make_unique<views::Label>(error_message);
@@ -156,9 +133,8 @@ void CardUnmaskPromptViews::GotVerificationResult(
           std::make_unique<views::ImageView>(ui::ImageModel::FromVectorIcon(
               kBrowserToolsErrorIcon, ui::kColorAlertHighSeverity));
 
-      layout->StartRow(1.0, 0);
-      layout->AddView(std::move(error_icon));
-      layout->AddView(std::move(error_label));
+      overlay_->AddChildView(std::move(error_icon));
+      overlay_->AddChildView(std::move(error_label));
 
       // If it is a virtual card retrieval failure, we will need to update the
       // window title.
@@ -405,18 +381,23 @@ void CardUnmaskPromptViews::InitIfNecessary() {
 
   // On top of the main contents, we add the progress/error overlay and hide it.
   // A child view will be added to it when about to be shown.
-  auto overlay = std::make_unique<views::View>();
-  views::GridLayout* overlay_layout = ResetOverlayLayout(overlay.get());
-  overlay->SetVisible(false);
+  overlay_ = AddChildView(
+      views::Builder<views::BoxLayoutView>()
+          .SetBetweenChildSpacing(
+              ChromeLayoutProvider::Get()->GetDistanceMetric(
+                  views::DISTANCE_RELATED_LABEL_HORIZONTAL))
+          .SetMainAxisAlignment(views::BoxLayout::MainAxisAlignment::kCenter)
+          .SetCrossAxisAlignment(views::BoxLayout::CrossAxisAlignment::kCenter)
+          .SetVisible(false)
+          .Build());
 
+  // TODO(crbug.com/1269126): Add view builder support to throbber and move
+  // adding children to construction of overlay above.
   progress_throbber_ =
-      overlay_layout->AddView(std::make_unique<views::Throbber>());
-
-  auto overlay_label = std::make_unique<views::Label>(l10n_util::GetStringUTF16(
-      IDS_AUTOFILL_CARD_UNMASK_VERIFICATION_IN_PROGRESS));
-  overlay_label_ = overlay_layout->AddView(std::move(overlay_label));
-
-  overlay_ = AddChildView(std::move(overlay));
+      overlay_->AddChildView(std::make_unique<views::Throbber>());
+  overlay_label_ = overlay_->AddChildView(
+      std::make_unique<views::Label>(l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_CARD_UNMASK_VERIFICATION_IN_PROGRESS)));
 }
 
 bool CardUnmaskPromptViews::ExpirationDateIsValid() const {

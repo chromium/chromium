@@ -19,6 +19,7 @@ class WebContents;
 }  // namespace content
 
 namespace views {
+class BoxLayoutView;
 class Combobox;
 class Label;
 class Textfield;
@@ -103,7 +104,7 @@ class CardUnmaskPromptViews : public CardUnmaskPromptView,
   views::View* controls_container_ = nullptr;
 
   // Elements related to progress or error when the request is being made.
-  views::View* overlay_ = nullptr;
+  views::BoxLayoutView* overlay_ = nullptr;
   views::Label* overlay_label_ = nullptr;
   views::Throbber* progress_throbber_ = nullptr;
 
