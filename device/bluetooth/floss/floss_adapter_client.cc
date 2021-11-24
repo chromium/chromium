@@ -53,6 +53,12 @@ void FlossAdapterClient::CreateBond(ResponseCallback<Void> callback,
                            transport);
 }
 
+void FlossAdapterClient::CancelBondProcess(ResponseCallback<Void> callback,
+                                           FlossDeviceId device) {
+  CallAdapterMethod1<Void>(std::move(callback), adapter::kCancelBondProcess,
+                           device);
+}
+
 void FlossAdapterClient::GetConnectionState(ResponseCallback<uint32_t> callback,
                                             const FlossDeviceId& device) {
   CallAdapterMethod1<uint32_t>(std::move(callback),
@@ -71,6 +77,14 @@ void FlossAdapterClient::SetPairingConfirmation(ResponseCallback<Void> callback,
                                                 bool accept) {
   CallAdapterMethod2<Void>(std::move(callback),
                            adapter::kSetPairingConfirmation, device, accept);
+}
+
+void FlossAdapterClient::SetPin(ResponseCallback<Void> callback,
+                                const FlossDeviceId& device,
+                                bool accept,
+                                const std::vector<uint8_t>& pin) {
+  CallAdapterMethod3<Void>(std::move(callback), adapter::kSetPin, device,
+                           accept, pin);
 }
 
 void FlossAdapterClient::SetPasskey(ResponseCallback<Void> callback,

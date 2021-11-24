@@ -20,6 +20,10 @@ class DEVICE_BLUETOOTH_EXPORT FakeFlossAdapterClient
   // The address of a device without Keyboard nor Display IO capability,
   // triggering Just Works pairing when used in tests.
   static const char kJustWorksAddress[];
+  static const char kKeyboardAddress[];
+  static const char kPhoneAddress[];
+  static const char kOldDeviceAddress[];
+  static const uint32_t kPasskey;
 
   // Fake overrides.
   void Init(dbus::Bus* bus,
@@ -30,6 +34,15 @@ class DEVICE_BLUETOOTH_EXPORT FakeFlossAdapterClient
   void CreateBond(ResponseCallback<Void> callback,
                   FlossDeviceId device,
                   BluetoothTransport transport) override;
+  void ConnectAllEnabledProfiles(ResponseCallback<Void> callback,
+                                 const FlossDeviceId& device) override;
+  void SetPairingConfirmation(ResponseCallback<Void> callback,
+                              const FlossDeviceId& device,
+                              bool accept) override;
+  void SetPin(ResponseCallback<Void> callback,
+              const FlossDeviceId& device,
+              bool accept,
+              const std::vector<uint8_t>& pin) override;
 
   // Helper for posting a delayed task.
   void PostDelayedTask(base::OnceClosure callback);

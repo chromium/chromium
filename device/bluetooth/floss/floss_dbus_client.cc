@@ -44,11 +44,13 @@ const char kGetAddress[] = "GetAddress";
 const char kStartDiscovery[] = "StartDiscovery";
 const char kCancelDiscovery[] = "CancelDiscovery";
 const char kCreateBond[] = "CreateBond";
+const char kCancelBondProcess[] = "CancelBondProcess";
 const char kGetConnectionState[] = "GetConnectionState";
 const char kConnectAllEnabledProfiles[] = "ConnectAllEnabledProfiles";
 const char kRegisterCallback[] = "RegisterCallback";
 const char kRegisterConnectionCallback[] = "RegisterConnectionCallback";
 const char kSetPairingConfirmation[] = "SetPairingConfirmation";
+const char kSetPin[] = "SetPin";
 const char kSetPasskey[] = "SetPasskey";
 
 // TODO(abps) - Rename this to AdapterCallback in platform and here

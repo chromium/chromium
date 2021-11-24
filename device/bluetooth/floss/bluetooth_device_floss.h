@@ -13,6 +13,7 @@
 #include "device/bluetooth/bluetooth_common.h"
 #include "device/bluetooth/bluetooth_device.h"
 #include "device/bluetooth/bluetooth_export.h"
+#include "device/bluetooth/floss/bluetooth_pairing_floss.h"
 #include "device/bluetooth/floss/floss_adapter_client.h"
 
 namespace floss {
@@ -93,9 +94,14 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothDeviceFloss
                   AbortWriteErrorCallback error_callback) override;
 #endif
 
+  FlossDeviceId AsFlossDeviceId() const;
   void SetName(const std::string& name);
   void SetBondState(FlossAdapterClient::BondState bond_state);
   void SetIsConnected(bool is_connected);
+  void ConnectAllEnabledProfiles();
+  void ResetPairing();
+
+  BluetoothPairingFloss* pairing() const { return pairing_.get(); }
 
  protected:
   // BluetoothDevice override
@@ -140,6 +146,9 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothDeviceFloss
   // but squashing all connected states >= 1 as a single "connected" since it's
   // not used in the Chrome layer.
   bool is_connected_ = false;
+
+  // Represents currently ongoing pairing with this remote device.
+  std::unique_ptr<BluetoothPairingFloss> pairing_;
 
   base::WeakPtrFactory<BluetoothDeviceFloss> weak_ptr_factory_{this};
 };

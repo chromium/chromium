@@ -17,6 +17,7 @@
 #include "device/bluetooth/floss/bluetooth_device_floss.h"
 #include "device/bluetooth/floss/floss_dbus_manager.h"
 #include "device/bluetooth/floss/floss_features.h"
+#include "device/bluetooth/public/cpp/bluetooth_address.h"
 
 namespace floss {
 
@@ -392,13 +393,15 @@ void BluetoothAdapterFloss::AdapterFoundDevice(
   auto device_floss =
       base::WrapUnique(new BluetoothDeviceFloss(this, device_found));
 
-  if (!base::Contains(devices_, device_floss->GetAddress())) {
+  std::string canonical_address =
+      device::CanonicalizeBluetoothAddress(device_floss->GetAddress());
+  if (!base::Contains(devices_, canonical_address)) {
     // TODO(b/204708206): Populate initial device properties first, e.g.
     // connection state.
 
     // Take copy of pointer before moving ownership.
     BluetoothDeviceFloss* device_ptr = device_floss.get();
-    devices_.emplace(device_floss->GetAddress(), std::move(device_floss));
+    devices_.emplace(canonical_address, std::move(device_floss));
 
     for (auto& observer : observers_)
       observer.DeviceAdded(this, device_ptr);
@@ -414,14 +417,65 @@ void BluetoothAdapterFloss::AdapterSspRequest(
     uint32_t cod,
     FlossAdapterClient::BluetoothSspVariant variant,
     uint32_t passkey) {
-  NOTIMPLEMENTED();
+  BluetoothDeviceFloss* device =
+      static_cast<BluetoothDeviceFloss*>(GetDevice(remote_device.address));
+
+  if (!device) {
+    LOG(WARNING) << "SSP request for an unknown device";
+    return;
+  }
+
+  BluetoothPairingFloss* pairing = device->pairing();
+
+  if (!pairing) {
+    LOG(WARNING) << "SSP request for an unknown pairing";
+    return;
+  }
+
+  device::BluetoothDevice::PairingDelegate* pairing_delegate =
+      pairing->pairing_delegate();
+
+  if (!pairing_delegate) {
+    LOG(WARNING) << "SSP request for an unknown delegate";
+    return;
+  }
+
+  switch (variant) {
+    case FlossAdapterClient::BluetoothSspVariant::kPasskeyConfirmation:
+      pairing->SetPairingExpectation(
+          BluetoothPairingFloss::PairingExpectation::kConfirmation);
+      pairing_delegate->ConfirmPasskey(device, passkey);
+      break;
+    case FlossAdapterClient::BluetoothSspVariant::kPasskeyEntry:
+      // TODO(b/202334519): Test with LEGO Mindstorms EV3.
+      pairing->SetPairingExpectation(
+          BluetoothPairingFloss::PairingExpectation::kPinCode);
+      pairing_delegate->RequestPinCode(device);
+      break;
+    case FlossAdapterClient::BluetoothSspVariant::kConsent:
+      // We don't need to ask pairing delegate for consent, because having a
+      // pairing delegate means that a user is the initiator of this pairing.
+      FlossDBusManager::Get()->GetAdapterClient()->SetPairingConfirmation(
+          base::DoNothing(), remote_device, /*accept=*/true);
+      device->ResetPairing();
+      break;
+    case FlossAdapterClient::BluetoothSspVariant::kPasskeyNotification:
+      pairing_delegate->DisplayPasskey(device, passkey);
+      break;
+    default:
+      LOG(ERROR) << "Unimplemented pairing method "
+                 << static_cast<int>(variant);
+  }
 }
 
 void BluetoothAdapterFloss::DeviceBondStateChanged(
     const FlossDeviceId& remote_device,
     uint32_t status,
     FlossAdapterClient::BondState bond_state) {
-  if (!base::Contains(devices_, remote_device.address)) {
+  std::string canonical_address =
+      device::CanonicalizeBluetoothAddress(remote_device.address);
+
+  if (!base::Contains(devices_, canonical_address)) {
     LOG(WARNING) << "Received BondStateChanged for a non-existent device";
     return;
   }
@@ -435,9 +489,12 @@ void BluetoothAdapterFloss::DeviceBondStateChanged(
                        << static_cast<uint32_t>(bond_state);
 
   BluetoothDeviceFloss* device =
-      static_cast<BluetoothDeviceFloss*>(devices_[remote_device.address].get());
+      static_cast<BluetoothDeviceFloss*>(devices_[canonical_address].get());
   device->SetBondState(bond_state);
-  NotifyDevicePairedChanged(device, device->IsPaired());
+  NotifyDeviceChanged(device);
+
+  if (bond_state == FlossAdapterClient::BondState::kBonded)
+    device->ConnectAllEnabledProfiles();
 }
 
 void BluetoothAdapterFloss::AdapterDeviceConnected(

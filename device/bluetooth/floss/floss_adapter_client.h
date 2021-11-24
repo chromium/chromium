@@ -129,6 +129,10 @@ class DEVICE_BLUETOOTH_EXPORT FlossAdapterClient : public FlossDBusClient {
                           FlossDeviceId device,
                           BluetoothTransport transport);
 
+  // Cancel a bond process.
+  virtual void CancelBondProcess(ResponseCallback<Void> callback,
+                                 FlossDeviceId device);
+
   // Get connection state of a device.
   // TODO(b/202334519): Change return type to enum instead of u32
   virtual void GetConnectionState(ResponseCallback<uint32_t> callback,
@@ -143,6 +147,12 @@ class DEVICE_BLUETOOTH_EXPORT FlossAdapterClient : public FlossDBusClient {
   virtual void SetPairingConfirmation(ResponseCallback<Void> callback,
                                       const FlossDeviceId& device,
                                       bool accept);
+
+  // Indicates whether the user approves the pairing with the given pin.
+  virtual void SetPin(ResponseCallback<Void> callback,
+                      const FlossDeviceId& device,
+                      bool accept,
+                      const std::vector<uint8_t>& pin);
 
   // Indicates whether the user approves the pairing with the given passkey.
   virtual void SetPasskey(ResponseCallback<Void> callback,
