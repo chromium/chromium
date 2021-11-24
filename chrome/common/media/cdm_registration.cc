@@ -282,11 +282,14 @@ void AddHardwareSecureWidevine(std::vector<content::CdmInfo>* cdms) {
   capability.session_types.insert(media::CdmSessionType::kTemporary);
   capability.session_types.insert(media::CdmSessionType::kPersistentLicense);
 
-  // TODO(xhwang): Specify kChromeOsCdmFileSystemId here and update
-  // MediaInterfaceProxy to use it.
-
-  cdms->push_back(content::CdmInfo(
-      kWidevineKeySystem, Robustness::kHardwareSecure, std::move(capability)));
+  // TODO(crbug.com/1231162): This corresponds to `kChromeOsCdmFileSystemId` in
+  // content/browser/media/media_interface_proxy.cc. Consolidate these once an
+  // enum of CDM types is created.
+  const base::Token kChromeOsCdmType{0xa6ecd3fc63b3ded2ull,
+                                     0x9306d3270227ce5full};
+  cdms->push_back(content::CdmInfo(kWidevineKeySystem,
+                                   Robustness::kHardwareSecure,
+                                   std::move(capability), kChromeOsCdmType));
 #endif  // BUILDFLAG(USE_CHROMEOS_PROTECTED_MEDIA)
 }
 

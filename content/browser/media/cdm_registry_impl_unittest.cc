@@ -102,7 +102,7 @@ class CdmRegistryImplTest : public testing::Test {
   void RegisterForLazyInitialization() {
     // Register a CdmInfo without CdmCapability to allow lazy initialization.
     Register(CdmInfo(kTestKeySystem, CdmInfo::Robustness::kSoftwareSecure,
-                     absl::nullopt));
+                     absl::nullopt, kTestCdmType));
     auto cdm_info = cdm_registry_.GetCdmInfo(
         kTestKeySystem, CdmInfo::Robustness::kSoftwareSecure);
     ASSERT_TRUE(cdm_info);

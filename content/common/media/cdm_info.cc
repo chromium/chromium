@@ -31,10 +31,12 @@ CdmInfo::CdmInfo(const std::string& key_system,
 
 CdmInfo::CdmInfo(const std::string& key_system,
                  Robustness robustness,
-                 absl::optional<media::CdmCapability> capability)
+                 absl::optional<media::CdmCapability> capability,
+                 const base::Token& type)
     : key_system(key_system),
       robustness(robustness),
-      capability(std::move(capability)) {
+      capability(std::move(capability)),
+      type(type) {
   DCHECK(!capability || !capability->encryption_schemes.empty());
 }
 

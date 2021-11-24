@@ -36,10 +36,10 @@ struct CONTENT_EXPORT CdmInfo {
           const base::Version& version,
           const base::FilePath& path,
           const std::string& file_system_id);
-  // TODO(xhwang): Always require the `type`.
   CdmInfo(const std::string& key_system,
           Robustness robustness,
-          absl::optional<media::CdmCapability> capability);
+          absl::optional<media::CdmCapability> capability,
+          const base::Token& type);
   CdmInfo(const CdmInfo& other);
   ~CdmInfo();
 
