@@ -34,13 +34,6 @@ source_set("platform_apps") {
     "shortcut_manager_factory.h",
   ]
 
-  if (is_mac) {
-    sources += [
-      "extension_app_shim_manager_delegate_mac.cc",
-      "extension_app_shim_manager_delegate_mac.h",
-    ]
-  }
-
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
   public_deps = [
