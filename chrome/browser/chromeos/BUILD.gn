@@ -1809,6 +1809,8 @@ source_set("chromeos") {
     "../ash/login/error_screens_histogram_helper.h",
     "../ash/login/existing_user_controller.cc",
     "../ash/login/existing_user_controller.h",
+    "../ash/login/gaia_reauth_token_fetcher.cc",
+    "../ash/login/gaia_reauth_token_fetcher.h",
     "../ash/login/hats_unlock_survey_trigger.cc",
     "../ash/login/hats_unlock_survey_trigger.h",
     "../ash/login/help_app_launcher.cc",

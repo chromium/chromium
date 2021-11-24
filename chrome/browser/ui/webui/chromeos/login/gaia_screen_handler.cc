@@ -546,11 +546,9 @@ void GaiaScreenHandler::LoadGaiaWithPartitionAndVersionAndConsent(
     }
   }
 
-  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kGaiaReauthRequestToken)) {
-    params.SetStringKey(
-        "rart", base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
-                    switches::kGaiaReauthRequestToken));
+  if (ash::features::IsCryptohomeRecoveryFlowEnabled() &&
+      !gaia_reauth_request_token_.empty()) {
+    params.SetStringKey("rart", gaia_reauth_request_token_);
   }
 
   was_security_token_pin_canceled_ = false;
@@ -1361,6 +1359,19 @@ void GaiaScreenHandler::LoadAuthExtension(bool force) {
 
   populated_account_id_.clear();
 
+  // TODO(b/197615068): Add heuristics to call this only when needed.
+  if (ash::features::IsCryptohomeRecoveryFlowEnabled()) {
+    auto callback = base::BindOnce(&GaiaScreenHandler::OnGaiaReauthTokenFetched,
+                                   weak_factory_.GetWeakPtr(), context);
+    gaia_reauth_token_fetcher_ =
+        std::make_unique<ash::GaiaReauthTokenFetcher>(std::move(callback));
+    gaia_reauth_token_fetcher_->Fetch();
+    return;
+  }
+
+  gaia_reauth_token_fetcher_.reset();
+  gaia_reauth_request_token_.clear();
+
   LoadGaia(context);
 }
 
@@ -1372,6 +1383,14 @@ void GaiaScreenHandler::UpdateState(NetworkError::ErrorReason reason) {
 bool GaiaScreenHandler::IsRestrictiveProxy() const {
   return !disable_restrictive_proxy_check_for_test_ &&
          !IsOnline(captive_portal_status_);
+}
+
+void GaiaScreenHandler::OnGaiaReauthTokenFetched(
+    const login::GaiaContext& context,
+    const std::string& token) {
+  gaia_reauth_request_token_ = token;
+  gaia_reauth_token_fetcher_.reset();
+  LoadGaia(context);
 }
 
 }  // namespace chromeos

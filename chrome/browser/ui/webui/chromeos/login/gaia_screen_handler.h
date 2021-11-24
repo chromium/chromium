@@ -12,6 +12,7 @@
 #include "base/command_line.h"
 #include "base/memory/ref_counted.h"
 #include "chrome/browser/ash/certificate_provider/security_token_pin_dialog_host.h"
+#include "chrome/browser/ash/login/gaia_reauth_token_fetcher.h"
 #include "chrome/browser/ash/login/login_client_cert_usage_observer.h"
 // TODO(https://crbug.com/1164001): move to forward declaration.
 #include "chrome/browser/ash/login/saml/public_saml_url_fetcher.h"
@@ -319,6 +320,10 @@ class GaiaScreenHandler : public BaseScreenHandler,
   // `saml_challenge_key_handler_`.
   void CreateSamlChallengeKeyHandler();
 
+  // Callback method to load Gaia screen after reauth request token is fetched.
+  void OnGaiaReauthTokenFetched(const login::GaiaContext& context,
+                                const std::string& token);
+
   // Current state of Gaia frame.
   FrameState frame_state_ = FRAME_STATE_UNKNOWN;
 
@@ -396,6 +401,11 @@ class GaiaScreenHandler : public BaseScreenHandler,
       extension_provided_client_cert_usage_observer_;
 
   std::unique_ptr<PublicSamlUrlFetcher> public_saml_url_fetcher_;
+
+  // Used to fetch and store the Gaia reauth request token for Cryptohome
+  // recovery flow.
+  std::unique_ptr<ash::GaiaReauthTokenFetcher> gaia_reauth_token_fetcher_;
+  std::string gaia_reauth_request_token_;
 
   // State of the security token PIN dialogs:
 
