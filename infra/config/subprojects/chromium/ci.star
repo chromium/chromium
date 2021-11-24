@@ -969,6 +969,7 @@ ci.android_builder(
         short_name = "P",
     ),
     cq_mirrors_console_view = "mirrors",
+    execution_timeout = 4 * time.hour,
     main_console_view = main_console_if_on_branch(),
     tree_closing = True,
     os = os.LINUX_BIONIC_REMOVE,
