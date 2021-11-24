@@ -36,7 +36,7 @@
 #include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/sequenced_task_runner_handle.h"
-#include "base/trace_event/trace_event.h"
+#include "base/trace_event/base_tracing.h"
 #include "base/version.h"
 #include "base/win/pe_image.h"
 #include "base/win/registry.h"
@@ -389,40 +389,46 @@ bool TryGetModuleTimeDateStamp(void* module_load_address,
 //       task scheduler, under the loader lock, directly on the thread where the
 //       DLL is currently loading.
 void OnModuleEvent(const ModuleWatcher::ModuleEvent& event) {
-  TRACE_EVENT1("browser", "OnModuleEvent", "module_path",
-               event.module_path.BaseName().AsUTF8Unsafe());
+  {
+    TRACE_EVENT1("browser", "OnModuleEvent", "module_path",
+                 event.module_path.BaseName().AsUTF8Unsafe());
 
-  switch (event.event_type) {
-    case ModuleWatcher::ModuleEventType::kModuleAlreadyLoaded: {
-      // kModuleAlreadyLoaded comes from the enumeration of loaded modules
-      // using CreateToolhelp32Snapshot().
-      uint32_t time_date_stamp = 0;
-      if (TryGetModuleTimeDateStamp(event.module_load_address,
-                                    event.module_path, event.module_size,
-                                    &time_date_stamp)) {
+    switch (event.event_type) {
+      case ModuleWatcher::ModuleEventType::kModuleAlreadyLoaded: {
+        // kModuleAlreadyLoaded comes from the enumeration of loaded modules
+        // using CreateToolhelp32Snapshot().
+        uint32_t time_date_stamp = 0;
+        if (TryGetModuleTimeDateStamp(event.module_load_address,
+                                      event.module_path, event.module_size,
+                                      &time_date_stamp)) {
+          ModuleDatabase::HandleModuleLoadEvent(
+              content::PROCESS_TYPE_BROWSER, event.module_path,
+              event.module_size, time_date_stamp);
+        } else {
+          // Failed to get the TimeDateStamp directly from memory. The next step
+          // to try is to read the file on disk. This must be done in a blocking
+          // task.
+          base::ThreadPool::PostTask(
+              FROM_HERE,
+              {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
+               base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
+              base::BindOnce(&HandleModuleLoadEventWithoutTimeDateStamp,
+                             event.module_path, event.module_size));
+        }
+        break;
+      }
+      case ModuleWatcher::ModuleEventType::kModuleLoaded: {
         ModuleDatabase::HandleModuleLoadEvent(
             content::PROCESS_TYPE_BROWSER, event.module_path, event.module_size,
-            time_date_stamp);
-      } else {
-        // Failed to get the TimeDateStamp directly from memory. The next step
-        // to try is to read the file on disk. This must be done in a blocking
-        // task.
-        base::ThreadPool::PostTask(
-            FROM_HERE,
-            {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
-             base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
-            base::BindOnce(&HandleModuleLoadEventWithoutTimeDateStamp,
-                           event.module_path, event.module_size));
+            GetModuleTimeDateStamp(event.module_load_address));
+        break;
       }
-      break;
-    }
-    case ModuleWatcher::ModuleEventType::kModuleLoaded: {
-      ModuleDatabase::HandleModuleLoadEvent(
-          content::PROCESS_TYPE_BROWSER, event.module_path, event.module_size,
-          GetModuleTimeDateStamp(event.module_load_address));
-      break;
     }
   }
+  // Since OnModuleEvent can be invoked from any thread, the above trace event's
+  // END might be the last event on this thread, emit an empty event to force
+  // the END to be flushed. TODO(crbug.com/1021571): Remove this once fixed.
+  PERFETTO_INTERNAL_ADD_EMPTY_EVENT();
 }
 
 // Helper function for initializing the module database subsystem and populating
