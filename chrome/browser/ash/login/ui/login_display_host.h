@@ -248,6 +248,10 @@ class LoginDisplayHost {
   // Returns pointer to the WizardContext for tests.
   virtual WizardContext* GetWizardContextForTesting() = 0;
 
+  // Returns true if WebUI was created, which allows observers to wait for
+  // Browser initialization finish.
+  virtual bool IsWebUIStarted() const = 0;
+
  protected:
   LoginDisplayHost();
   virtual ~LoginDisplayHost();

@@ -175,6 +175,10 @@ WizardContext* FakeLoginDisplayHost::GetWizardContextForTesting() {
   return nullptr;
 }
 
+bool FakeLoginDisplayHost::IsWebUIStarted() const {
+  return wizard_controller_.get();
+}
+
 bool FakeLoginDisplayHost::GetKeyboardRemappedPrefValue(
     const std::string& pref_name,
     int* value) const {

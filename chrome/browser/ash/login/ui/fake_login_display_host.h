@@ -82,6 +82,7 @@ class FakeLoginDisplayHost : public LoginDisplayHost {
       base::RepeatingClosure on_created) final;
   bool IsWizardControllerCreated() const final;
   WizardContext* GetWizardContextForTesting() final;
+  bool IsWebUIStarted() const final;
 
  private:
   class FakeBaseScreen;

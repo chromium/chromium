@@ -480,6 +480,10 @@ bool LoginDisplayHostMojo::GetKeyboardRemappedPrefValue(
          known_user.GetIntegerPref(focused_pod_account_id_, pref_name, value);
 }
 
+bool LoginDisplayHostMojo::IsWebUIStarted() const {
+  return dialog_;
+}
+
 void LoginDisplayHostMojo::HandleAuthenticateUserWithPasswordOrPin(
     const AccountId& account_id,
     const std::string& password,

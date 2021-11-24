@@ -105,6 +105,7 @@ class LoginDisplayHostMojo : public LoginDisplayHostCommon,
   bool IsWizardControllerCreated() const final;
   bool GetKeyboardRemappedPrefValue(const std::string& pref_name,
                                     int* value) const final;
+  bool IsWebUIStarted() const final;
 
   // LoginScreenClientImpl::Delegate:
   void HandleAuthenticateUserWithPasswordOrPin(

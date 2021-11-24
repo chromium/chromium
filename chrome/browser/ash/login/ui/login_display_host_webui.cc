@@ -1122,6 +1122,10 @@ bool LoginDisplayHostWebUI::GetKeyboardRemappedPrefValue(
   return false;
 }
 
+bool LoginDisplayHostWebUI::IsWebUIStarted() const {
+  return true;
+}
+
 void LoginDisplayHostWebUI::PlayStartupSoundIfPossible() {
   if (!need_to_play_startup_sound_ || oobe_startup_sound_played_)
     return;

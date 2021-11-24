@@ -108,6 +108,7 @@ class MockLoginDisplayHost : public LoginDisplayHost {
               (final));
   MOCK_METHOD(WizardContext*, GetWizardContextForTesting, (), (final));
   MOCK_METHOD(WizardContext*, GetWizardContext, (), (override));
+  MOCK_METHOD(bool, IsWebUIStarted, (), (const final));
 };
 
 }  // namespace ash
