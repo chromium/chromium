@@ -15,6 +15,7 @@ include_rules = [
     "+base/metrics/statistics_recorder.h",
     "+base/strings/string_number_conversions.h",
     "+base/task/single_thread_task_executor.h",
+    "+base/task/thread_pool/thread_pool_instance.h",
     "+base/test/test_io_thread.h",
     "+cc",
     "+mojo/core/embedder",

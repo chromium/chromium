@@ -30,6 +30,7 @@
 
 #include "third_party/blink/renderer/platform/loader/fetch/memory_cache.h"
 
+#include "base/test/task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -122,6 +123,9 @@ class MemoryCacheTest : public testing::Test {
   Persistent<MockContextLifecycleNotifier> lifecycle_notifier_;
   ScopedTestingPlatformSupport<TestingPlatformSupportWithMockScheduler>
       platform_;
+
+ private:
+  base::test::TaskEnvironment task_environment_;
 };
 
 // Verifies that setters and getters for cache capacities work correcty.

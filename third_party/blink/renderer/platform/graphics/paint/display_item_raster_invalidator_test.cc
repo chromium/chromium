@@ -5,7 +5,6 @@
 #include "third_party/blink/renderer/platform/graphics/paint/display_item_raster_invalidator.h"
 
 #include "base/callback_helpers.h"
-#include "base/test/task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_artifact.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_controller_test.h"
@@ -32,9 +31,6 @@ class DisplayItemRasterInvalidatorTest : public PaintControllerTestBase,
   // In this file, DisplayItemRasterInvalidator is tested through
   // RasterInvalidator.
   RasterInvalidator invalidator_;
-
- private:
-  base::test::TaskEnvironment task_environment_;
 };
 
 class RasterInvalidationCycleScope : public PaintController::CycleScope {
