@@ -7,43 +7,41 @@
 #include "android_webview/common/aw_features.h"
 #include "base/cxx17_backports.h"
 #include "base/feature_list.h"
-#include "base/metrics/histogram_macros.h"
-#include "base/rand_util.h"
+#include "base/metrics/histogram.h"
+#include "base/metrics/histogram_base.h"
 #include "base/time/time.h"
-#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 
 using content::BrowserThread;
 
 namespace android_webview {
 
+namespace {
+
 // Have bypassed the usual macros here because they do not support a
 // means to increment counters by more than 1 per call.
-base::HistogramBase*
-VisibilityMetricsLogger::CreateHistogramForDurationTracking(const char* name,
-                                                            int max_value) {
+base::HistogramBase* CreateHistogramForDurationTracking(const char* name,
+                                                        int max_value) {
   return base::Histogram::FactoryGet(
       name, 1, max_value + 1, max_value + 2,
       base::HistogramBase::kUmaTargetedHistogramFlag);
 }
 
-base::HistogramBase* VisibilityMetricsLogger::GetGlobalVisibilityHistogram() {
+base::HistogramBase* GetGlobalVisibilityHistogram() {
   static base::HistogramBase* histogram(CreateHistogramForDurationTracking(
       "Android.WebView.Visibility.Global",
       static_cast<int>(VisibilityMetricsLogger::Visibility::kMaxValue)));
   return histogram;
 }
 
-base::HistogramBase*
-VisibilityMetricsLogger::GetPerWebViewVisibilityHistogram() {
+base::HistogramBase* GetPerWebViewVisibilityHistogram() {
   static base::HistogramBase* histogram(CreateHistogramForDurationTracking(
       "Android.WebView.Visibility.PerWebView",
       static_cast<int>(VisibilityMetricsLogger::Visibility::kMaxValue)));
   return histogram;
 }
 
-base::HistogramBase*
-VisibilityMetricsLogger::GetGlobalOpenWebVisibilityHistogram() {
+base::HistogramBase* GetGlobalOpenWebVisibilityHistogram() {
   static base::HistogramBase* histogram(CreateHistogramForDurationTracking(
       "Android.WebView.WebViewOpenWebVisible.Global",
       static_cast<int>(
@@ -51,8 +49,7 @@ VisibilityMetricsLogger::GetGlobalOpenWebVisibilityHistogram() {
   return histogram;
 }
 
-base::HistogramBase*
-VisibilityMetricsLogger::GetPerWebViewOpenWebVisibilityHistogram() {
+base::HistogramBase* GetPerWebViewOpenWebVisibilityHistogram() {
   static base::HistogramBase* histogram(CreateHistogramForDurationTracking(
       "Android.WebView.WebViewOpenWebVisible.PerWebView",
       static_cast<int>(
@@ -60,14 +57,15 @@ VisibilityMetricsLogger::GetPerWebViewOpenWebVisibilityHistogram() {
   return histogram;
 }
 
-base::HistogramBase*
-VisibilityMetricsLogger::GetOpenWebVisibileScreenPortionHistogram() {
+base::HistogramBase* GetOpenWebVisibileScreenPortionHistogram() {
   static base::HistogramBase* histogram(CreateHistogramForDurationTracking(
       "Android.WebView.WebViewOpenWebVisible.ScreenPortion2",
       static_cast<int>(
           VisibilityMetricsLogger::WebViewOpenWebScreenPortion::kMaxValue)));
   return histogram;
 }
+
+}  // anonymous namespace
 
 VisibilityMetricsLogger::VisibilityMetricsLogger() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
@@ -80,7 +78,7 @@ void VisibilityMetricsLogger::AddClient(Client* client) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(client_visibility_.find(client) == client_visibility_.end());
 
-  UpdateDurations(base::TimeTicks::Now());
+  UpdateDurations();
 
   client_visibility_[client] = VisibilityInfo();
   ProcessClientUpdate(client, client->GetVisibilityInfo());
@@ -90,7 +88,7 @@ void VisibilityMetricsLogger::RemoveClient(Client* client) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(client_visibility_.find(client) != client_visibility_.end());
 
-  UpdateDurations(base::TimeTicks::Now());
+  UpdateDurations();
 
   ProcessClientUpdate(client, VisibilityInfo());
   client_visibility_.erase(client);
@@ -100,7 +98,7 @@ void VisibilityMetricsLogger::ClientVisibilityChanged(Client* client) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(client_visibility_.find(client) != client_visibility_.end());
 
-  UpdateDurations(base::TimeTicks::Now());
+  UpdateDurations();
 
   ProcessClientUpdate(client, client->GetVisibilityInfo());
 }
@@ -109,7 +107,7 @@ void VisibilityMetricsLogger::UpdateOpenWebScreenArea(int pixels,
                                                       int percentage) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  UpdateDurations(base::TimeTicks::Now());
+  UpdateDurations();
 
   DCHECK(percentage >= 0);
   DCHECK(percentage <= 100);
@@ -124,7 +122,8 @@ void VisibilityMetricsLogger::UpdateOpenWebScreenArea(int pixels,
   }
 }
 
-void VisibilityMetricsLogger::UpdateDurations(base::TimeTicks update_time) {
+void VisibilityMetricsLogger::UpdateDurations() {
+  base::TimeTicks update_time = base::TimeTicks::Now();
   base::TimeDelta delta = update_time - last_update_time_;
   if (visible_client_count_ > 0) {
     visible_duration_tracker_.any_webview_tracked_duration_ += delta;
@@ -208,7 +207,7 @@ void VisibilityMetricsLogger::SetOnVisibilityChangedCallback(
 
 void VisibilityMetricsLogger::RecordMetrics() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  UpdateDurations(base::TimeTicks::Now());
+  UpdateDurations();
   RecordVisibilityMetrics();
   RecordOpenWebDisplayMetrics();
   RecordScreenPortionMetrics();
@@ -261,7 +260,7 @@ void VisibilityMetricsLogger::RecordVisibilityMetrics() {
 void VisibilityMetricsLogger::RecordOpenWebDisplayMetrics() {
   int32_t any_webcontent_visible_seconds;
   int32_t no_webcontent_visible_seconds;
-  int32_t total_webcontent_isible_seconds;
+  int32_t total_webcontent_visible_seconds;
   int32_t total_not_webcontent_or_not_visible_seconds;
 
   any_webcontent_visible_seconds =
@@ -273,10 +272,10 @@ void VisibilityMetricsLogger::RecordOpenWebDisplayMetrics() {
   webcontent_visible_tracker_.no_webview_tracked_duration_ -=
       base::Seconds(no_webcontent_visible_seconds);
 
-  total_webcontent_isible_seconds =
+  total_webcontent_visible_seconds =
       webcontent_visible_tracker_.per_webview_duration_.InSeconds();
   webcontent_visible_tracker_.per_webview_duration_ -=
-      base::Seconds(total_webcontent_isible_seconds);
+      base::Seconds(total_webcontent_visible_seconds);
   total_not_webcontent_or_not_visible_seconds =
       webcontent_visible_tracker_.per_webview_untracked_duration_.InSeconds();
   webcontent_visible_tracker_.per_webview_untracked_duration_ -=
@@ -293,10 +292,10 @@ void VisibilityMetricsLogger::RecordOpenWebDisplayMetrics() {
         no_webcontent_visible_seconds);
   }
 
-  if (total_webcontent_isible_seconds) {
+  if (total_webcontent_visible_seconds) {
     GetPerWebViewOpenWebVisibilityHistogram()->AddCount(
         static_cast<int>(WebViewOpenWebVisibility::kDisplayOpenWebContent),
-        total_webcontent_isible_seconds);
+        total_webcontent_visible_seconds);
   }
   if (total_not_webcontent_or_not_visible_seconds) {
     GetPerWebViewOpenWebVisibilityHistogram()->AddCount(

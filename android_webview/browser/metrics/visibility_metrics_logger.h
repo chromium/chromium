@@ -8,14 +8,7 @@
 #include <map>
 
 #include "base/callback.h"
-#include "base/synchronization/lock.h"
 #include "base/time/time.h"
-
-namespace base {
-
-class HistogramBase;
-
-}  // namespace base
 
 namespace android_webview {
 
@@ -92,16 +85,7 @@ class VisibilityMetricsLogger {
   void SetOnVisibilityChangedCallback(OnVisibilityChangedCallback);
 
  private:
-  static base::HistogramBase* GetGlobalVisibilityHistogram();
-  static base::HistogramBase* GetPerWebViewVisibilityHistogram();
-  static base::HistogramBase* GetGlobalOpenWebVisibilityHistogram();
-  static base::HistogramBase* GetPerWebViewOpenWebVisibilityHistogram();
-  static base::HistogramBase* GetOpenWebVisibileScreenPortionHistogram();
-  static base::HistogramBase* CreateHistogramForDurationTracking(
-      const char* name,
-      int max_value);
-
-  void UpdateDurations(base::TimeTicks update_time);
+  void UpdateDurations();
   void ProcessClientUpdate(Client* client, const VisibilityInfo& info);
   void RecordVisibilityMetrics();
   void RecordOpenWebDisplayMetrics();
