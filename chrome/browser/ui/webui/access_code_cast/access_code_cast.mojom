@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-module enterprise_casting.mojom;
+module access_code_cast.mojom;
 
 import "components/media_router/common/mojom/route_request_result_code.mojom";
 

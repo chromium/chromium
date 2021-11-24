@@ -127,12 +127,12 @@
 #include "chrome/browser/speech/speech_recognition_client_browser_interface.h"
 #include "chrome/browser/speech/speech_recognition_client_browser_interface_factory.h"
 #include "chrome/browser/speech/speech_recognition_service.h"
+#include "chrome/browser/ui/webui/access_code_cast/access_code_cast.mojom.h"
+#include "chrome/browser/ui/webui/access_code_cast/access_code_cast_ui.h"
 #include "chrome/browser/ui/webui/app_service_internals/app_service_internals.mojom.h"
 #include "chrome/browser/ui/webui/app_service_internals/app_service_internals_ui.h"
 #include "chrome/browser/ui/webui/downloads/downloads.mojom.h"
 #include "chrome/browser/ui/webui/downloads/downloads_ui.h"
-#include "chrome/browser/ui/webui/enterprise_casting/enterprise_casting.mojom.h"
-#include "chrome/browser/ui/webui/enterprise_casting/enterprise_casting_ui.h"
 #include "chrome/browser/ui/webui/realbox/realbox.mojom.h"
 #if !defined(OFFICIAL_BUILD)
 #include "chrome/browser/ui/webui/new_tab_page/foo/foo.mojom.h"  // nogncheck crbug.com/1125897
@@ -796,7 +796,7 @@ void PopulateChromeWebUIFrameBinders(
       AppServiceInternalsUI>(map);
 
   RegisterWebUIControllerInterfaceBinder<
-      enterprise_casting::mojom::PageHandlerFactory, EnterpriseCastingUI>(map);
+      access_code_cast::mojom::PageHandlerFactory, AccessCodeCastUI>(map);
 #endif  // defined(OS_ANDROID)
 
 #if BUILDFLAG(ENABLE_WEBUI_TAB_STRIP)

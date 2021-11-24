@@ -4,14 +4,14 @@
 
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {PageCallbackRouter} from './access_code_cast.mojom-webui.js';
 import {BrowserProxy} from './browser_proxy.js';
-import {PageCallbackRouter} from './enterprise_casting.mojom-webui.js';
 
 declare const chrome: any;
 
-class EnterpriseCastingElement extends PolymerElement {
+class AccessCodeCastElement extends PolymerElement {
   static get is() {
-    return 'enterprise-casting';
+    return 'access-code-cast-app';
   }
 
   static get template() {
@@ -41,4 +41,4 @@ class EnterpriseCastingElement extends PolymerElement {
   }
 }
 
-customElements.define(EnterpriseCastingElement.is, EnterpriseCastingElement);
+customElements.define(AccessCodeCastElement.is, AccessCodeCastElement);

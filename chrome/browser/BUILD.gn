@@ -4452,7 +4452,7 @@ static_library("browser") {
       "//chrome/browser/share/core:share_targets",
       "//chrome/browser/share/proto:proto",
       "//chrome/browser/ui/color:color_headers",
-      "//chrome/browser/ui/webui/enterprise_casting:mojo_bindings",
+      "//chrome/browser/ui/webui/access_code_cast:mojo_bindings",
       "//chrome/browser/ui/webui/tab_strip:mojo_bindings",
       "//chrome/browser/web_applications",
       "//chrome/browser/web_applications/app_service",

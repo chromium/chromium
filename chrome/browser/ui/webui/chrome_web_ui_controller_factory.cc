@@ -122,13 +122,13 @@
 #else  // defined(OS_ANDROID)
 #include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/webui/access_code_cast/access_code_cast_ui.h"
 #include "chrome/browser/ui/webui/app_service_internals/app_service_internals_ui.h"
 #include "chrome/browser/ui/webui/bookmarks/bookmarks_ui.h"
 #include "chrome/browser/ui/webui/commander/commander_ui.h"
 #include "chrome/browser/ui/webui/devtools_ui.h"
 #include "chrome/browser/ui/webui/download_shelf/download_shelf_ui.h"
 #include "chrome/browser/ui/webui/downloads/downloads_ui.h"
-#include "chrome/browser/ui/webui/enterprise_casting/enterprise_casting_ui.h"
 #include "chrome/browser/ui/webui/feedback/feedback_ui.h"
 #include "chrome/browser/ui/webui/history/history_ui.h"
 #include "chrome/browser/ui/webui/identity_internals_ui.h"
@@ -765,9 +765,9 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
   // Inline login UI is available on all platforms except Android.
   if (url.host_piece() == chrome::kChromeUIChromeSigninHost)
     return &NewWebUI<InlineLoginUI>;
-  if (base::FeatureList::IsEnabled(features::kEnterpriseCastingUI)) {
-    if (url.host_piece() == chrome::kChromeUIEnterpriseCastingHost)
-      return &NewWebUI<EnterpriseCastingUI>;
+  if (base::FeatureList::IsEnabled(features::kAccessCodeCastUI)) {
+    if (url.host_piece() == chrome::kChromeUIAccessCodeCastHost)
+      return &NewWebUI<AccessCodeCastUI>;
   }
 #endif  // !defined(OS_ANDROID)
 #if defined(OS_WIN)

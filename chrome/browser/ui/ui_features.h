@@ -38,7 +38,7 @@ extern const base::Feature kChromeWhatsNewInMainMenuNewBadge;
 extern const base::Feature kCommander;
 
 #if !defined(ANDROID)
-extern const base::Feature kEnterpriseCastingUI;
+extern const base::Feature kAccessCodeCastUI;
 #endif
 
 extern const base::Feature kEvDetailsInPageInfo;

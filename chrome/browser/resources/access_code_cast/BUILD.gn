@@ -7,12 +7,12 @@ import("//tools/polymer/html_to_js.gni")
 import("//tools/typescript/ts_library.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
 
-assert(!is_android, "enterprise_casting is not for android.")
+assert(!is_android, "access_code_cast is not for android.")
 
 resources_grd_file = "$target_gen_dir/resources.grd"
 
 html_to_js("web_components") {
-  js_files = [ "enterprise_casting.ts" ]
+  js_files = [ "access_code_cast.ts" ]
 }
 
 copy("copy_browser_proxy") {
@@ -21,11 +21,10 @@ copy("copy_browser_proxy") {
 }
 
 copy("copy_mojo") {
-  deps =
-      [ "//chrome/browser/ui/webui/enterprise_casting:mojo_bindings_webui_js" ]
+  deps = [ "//chrome/browser/ui/webui/access_code_cast:mojo_bindings_webui_js" ]
   mojom_folder =
-      "$root_gen_dir/mojom-webui/chrome/browser/ui/webui/enterprise_casting/"
-  sources = [ "$mojom_folder/enterprise_casting.mojom-webui.js" ]
+      "$root_gen_dir/mojom-webui/chrome/browser/ui/webui/access_code_cast/"
+  sources = [ "$mojom_folder/access_code_cast.mojom-webui.js" ]
   outputs = [ "$target_gen_dir/{{source_file_part}}" ]
 }
 
@@ -41,8 +40,8 @@ ts_library("build_ts") {
   tsconfig_base = "tsconfig_base.json"
   in_files = [
     "browser_proxy.ts",
-    "enterprise_casting.mojom-webui.js",
-    "enterprise_casting.ts",
+    "access_code_cast.mojom-webui.js",
+    "access_code_cast.ts",
   ]
 }
 
@@ -52,7 +51,7 @@ generate_grd("build_grd") {
   manifest_files = [ "$target_gen_dir/tsconfig.manifest" ]
   deps = [ ":build_ts" ]
 
-  grd_prefix = "enterprise_casting"
+  grd_prefix = "access_code_cast"
   out_grd = resources_grd_file
 }
 
@@ -63,10 +62,10 @@ grit("resources") {
   deps = [ ":build_grd" ]
 
   outputs = [
-    "grit/enterprise_casting_resources.h",
-    "grit/enterprise_casting_resources_map.cc",
-    "grit/enterprise_casting_resources_map.h",
-    "enterprise_casting_resources.pak",
+    "grit/access_code_cast_resources.h",
+    "grit/access_code_cast_resources_map.cc",
+    "grit/access_code_cast_resources_map.h",
+    "access_code_cast_resources.pak",
   ]
   output_dir = "$root_gen_dir/chrome"
 }

@@ -158,16 +158,16 @@
     "includes": [1520],
     "structures": [1540],
   },
+  "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/access_code_cast/resources.grd": {
+    "META": {"sizes": {"includes": [50]}},
+    "includes": [1560],
+  },
   "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/connectors_internals/resources.grd": {
     "META": {"sizes": {"includes": [15]}},
-    "includes": [1560],
+    "includes": [1580],
   },
   "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/downloads/downloads_resources.grd": {
     "META": {"sizes": {"includes": [50],}},
-    "includes": [1580],
-  },
-  "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/enterprise_casting/resources.grd": {
-    "META": {"sizes": {"includes": [50]}},
     "includes": [1590],
   },
   "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/extensions/extensions_resources.grd": {

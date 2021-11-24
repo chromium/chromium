@@ -74,8 +74,8 @@ const char kChromeUIDriveInternalsHost[] = "drive-internals";
 const char kChromeUIDriveInternalsUrl[] = "chrome://drive-internals";
 const char kChromeUIEDUCoexistenceLoginURLV2[] =
     "chrome://chrome-signin/edu-coexistence";
-const char kChromeUIEnterpriseCastingHost[] = "enterprise-casting";
-const char kChromeUIEnterpriseCastingURL[] = "chrome://enterprise-casting/";
+const char kChromeUIAccessCodeCastHost[] = "access-code-cast";
+const char kChromeUIAccessCodeCastURL[] = "chrome://access-code-cast/";
 const char kChromeUIExtensionIconHost[] = "extension-icon";
 const char kChromeUIExtensionIconURL[] = "chrome://extension-icon/";
 const char kChromeUIExtensionsHost[] = "extensions";

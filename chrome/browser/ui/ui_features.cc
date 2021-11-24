@@ -49,9 +49,9 @@ const base::Feature kChromeWhatsNewInMainMenuNewBadge{
 #endif
 
 #if !defined(ANDROID)
-// Enables "Enterprise Casting" UI.
-const base::Feature kEnterpriseCastingUI{"EnterpriseCastingUI",
-                                         base::FEATURE_DISABLED_BY_DEFAULT};
+// Enables "Access Code Cast" UI.
+const base::Feature kAccessCodeCastUI{"AccessCodeCastUI",
+                                      base::FEATURE_DISABLED_BY_DEFAULT};
 #endif
 
 // Enables showing the EV certificate details in the Page Info bubble.
@@ -241,7 +241,7 @@ const base::Feature kWebUITabStrip{"WebUITabStrip",
 // The default value of this flag is aligned with platform behavior to handle
 // context menu with touch.
 // TODO(crbug.com/1257626): Enable this flag for all platforms after launch.
-const base::Feature kWebUITabStripContextMenuAfterTap{
+const base::Feature kWebUITabStripContextMenuAfterTap {
   "WebUITabStripContextMenuAfterTap",
 #if BUILDFLAG(IS_CHROMEOS_ASH)
       base::FEATURE_DISABLED_BY_DEFAULT

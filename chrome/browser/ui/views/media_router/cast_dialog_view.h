@@ -235,7 +235,7 @@ class CastDialogView : public views::BubbleDialogDelegateView,
   int scroll_position_ = 0;
 
   // The access code cast button allows the user to add a cast device through
-  // the chrome://enterprise-casting dialog.
+  // the chrome://access-code-cast dialog.
   CastDialogAccessCodeCastButton* access_code_cast_button_ = nullptr;
 
   // The sources menu allows the user to choose a source to cast.

@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_WEBUI_ENTERPRISE_CASTING_ENTERPRISE_CASTING_UI_H_
-#define CHROME_BROWSER_UI_WEBUI_ENTERPRISE_CASTING_ENTERPRISE_CASTING_UI_H_
+#ifndef CHROME_BROWSER_UI_WEBUI_ACCESS_CODE_CAST_ACCESS_CODE_CAST_UI_H_
+#define CHROME_BROWSER_UI_WEBUI_ACCESS_CODE_CAST_ACCESS_CODE_CAST_UI_H_
 
 #include "chrome/browser/ui/media_router/media_cast_mode.h"
-#include "chrome/browser/ui/webui/enterprise_casting/enterprise_casting.mojom.h"
-#include "chrome/browser/ui/webui/enterprise_casting/enterprise_casting_handler.h"
+#include "chrome/browser/ui/webui/access_code_cast/access_code_cast.mojom.h"
+#include "chrome/browser/ui/webui/access_code_cast/access_code_cast_handler.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -15,12 +15,12 @@
 #include "ui/web_dialogs/web_dialog_ui.h"
 #include "url/gurl.h"
 
-class EnterpriseCastingDialog : public ui::WebDialogDelegate {
+class AccessCodeCastDialog : public ui::WebDialogDelegate {
  public:
-  explicit EnterpriseCastingDialog(media_router::MediaCastMode cast_mode);
-  ~EnterpriseCastingDialog() override;
-  EnterpriseCastingDialog(const EnterpriseCastingDialog&) = delete;
-  EnterpriseCastingDialog& operator=(const EnterpriseCastingDialog&) = delete;
+  explicit AccessCodeCastDialog(media_router::MediaCastMode cast_mode);
+  ~AccessCodeCastDialog() override;
+  AccessCodeCastDialog(const AccessCodeCastDialog&) = delete;
+  AccessCodeCastDialog& operator=(const AccessCodeCastDialog&) = delete;
   static void Show(media_router::MediaCastMode mode =
                        media_router::MediaCastMode::DESKTOP_MIRROR);
 
@@ -48,33 +48,32 @@ class EnterpriseCastingDialog : public ui::WebDialogDelegate {
   media_router::MediaCastMode cast_mode_;
 };
 
-// The WebUI controller for chrome://enterprise-casting.
-class EnterpriseCastingUI
-    : public ui::MojoWebDialogUI,
-      public enterprise_casting::mojom::PageHandlerFactory {
+// The WebUI controller for chrome://access-code-cast.
+class AccessCodeCastUI : public ui::MojoWebDialogUI,
+                         public access_code_cast::mojom::PageHandlerFactory {
  public:
-  explicit EnterpriseCastingUI(content::WebUI* web_ui);
-  ~EnterpriseCastingUI() override;
+  explicit AccessCodeCastUI(content::WebUI* web_ui);
+  ~AccessCodeCastUI() override;
 
-  EnterpriseCastingUI(const EnterpriseCastingUI&) = delete;
-  EnterpriseCastingUI& operator=(const EnterpriseCastingUI&) = delete;
+  AccessCodeCastUI(const AccessCodeCastUI&) = delete;
+  AccessCodeCastUI& operator=(const AccessCodeCastUI&) = delete;
 
   void BindInterface(
-      mojo::PendingReceiver<enterprise_casting::mojom::PageHandlerFactory>
+      mojo::PendingReceiver<access_code_cast::mojom::PageHandlerFactory>
           receiver);
 
  private:
-  // enterprise_casting::mojom::PageHandlerFactory:
+  // access_code_cast::mojom::PageHandlerFactory:
   void CreatePageHandler(
-      mojo::PendingRemote<enterprise_casting::mojom::Page> page,
-      mojo::PendingReceiver<enterprise_casting::mojom::PageHandler>
-          page_handler) override;
+      mojo::PendingRemote<access_code_cast::mojom::Page> page,
+      mojo::PendingReceiver<access_code_cast::mojom::PageHandler> page_handler)
+      override;
 
-  std::unique_ptr<EnterpriseCastingHandler> page_handler_;
-  mojo::Receiver<enterprise_casting::mojom::PageHandlerFactory>
-      factory_receiver_{this};
+  std::unique_ptr<AccessCodeCastHandler> page_handler_;
+  mojo::Receiver<access_code_cast::mojom::PageHandlerFactory> factory_receiver_{
+      this};
 
   WEB_UI_CONTROLLER_TYPE_DECL();
 };
 
-#endif  // CHROME_BROWSER_UI_WEBUI_ENTERPRISE_CASTING_ENTERPRISE_CASTING_UI_H_
+#endif  // CHROME_BROWSER_UI_WEBUI_ACCESS_CODE_CAST_ACCESS_CODE_CAST_UI_H_

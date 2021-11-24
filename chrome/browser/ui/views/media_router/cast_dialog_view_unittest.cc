@@ -380,7 +380,7 @@ TEST_F(CastDialogViewTest, SwitchToNoDeviceView) {
 
 TEST_F(CastDialogViewTest, ShowAccessCodeCastButtonDisabled) {
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(features::kEnterpriseCastingUI);
+  scoped_feature_list.InitAndEnableFeature(features::kAccessCodeCastUI);
   profile_.GetPrefs()->SetBoolean(prefs::kAccessCodeCastEnabled, false);
 
   CastDialogModel model = CreateModelWithSinks({CreateAvailableSink()});
@@ -390,7 +390,7 @@ TEST_F(CastDialogViewTest, ShowAccessCodeCastButtonDisabled) {
 
 TEST_F(CastDialogViewTest, ShowAccessCodeCastButtonEnabled) {
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(features::kEnterpriseCastingUI);
+  scoped_feature_list.InitAndEnableFeature(features::kAccessCodeCastUI);
   profile_.GetPrefs()->SetBoolean(prefs::kAccessCodeCastEnabled, true);
 
   CastDialogModel model = CreateModelWithSinks({CreateAvailableSink()});

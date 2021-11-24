@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/enterprise_casting/enterprise_casting_ui.h"
+#include "chrome/browser/ui/webui/access_code_cast/access_code_cast_ui.h"
 
 #include "base/containers/span.h"
 #include "base/json/json_writer.h"
@@ -12,51 +12,51 @@
 #include "chrome/browser/ui/media_router/media_cast_mode.h"
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/webui_url_constants.h"
-#include "chrome/grit/enterprise_casting_resources.h"
-#include "chrome/grit/enterprise_casting_resources_map.h"
+#include "chrome/grit/access_code_cast_resources.h"
+#include "chrome/grit/access_code_cast_resources_map.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "content/public/common/bindings_policy.h"
 
 ///////////////////////////////////////////////////////////////////////////////
-//  EnterpriseCasting dialog:
+//  AccessCodeCast dialog:
 ///////////////////////////////////////////////////////////////////////////////
 
-EnterpriseCastingDialog::EnterpriseCastingDialog(
+AccessCodeCastDialog::AccessCodeCastDialog(
     media_router::MediaCastMode cast_mode)
     : cast_mode_(cast_mode) {
-  DVLOG(0) << "EnterpriseCastingDialog constructor";
+  DVLOG(0) << "AccessCodeCastDialog constructor";
   set_can_resize(false);
 }
 
-void EnterpriseCastingDialog::Show(media_router::MediaCastMode mode) {
+void AccessCodeCastDialog::Show(media_router::MediaCastMode mode) {
   chrome::ShowWebDialog(nullptr, ProfileManager::GetActiveUserProfile(),
-                        new EnterpriseCastingDialog(mode));
+                        new AccessCodeCastDialog(mode));
 }
 
-ui::ModalType EnterpriseCastingDialog::GetDialogModalType() const {
+ui::ModalType AccessCodeCastDialog::GetDialogModalType() const {
   return ui::MODAL_TYPE_NONE;
 }
 
-std::u16string EnterpriseCastingDialog::GetDialogTitle() const {
+std::u16string AccessCodeCastDialog::GetDialogTitle() const {
   return std::u16string();
 }
 
-GURL EnterpriseCastingDialog::GetDialogContentURL() const {
-  return GURL(chrome::kChromeUIEnterpriseCastingURL);
+GURL AccessCodeCastDialog::GetDialogContentURL() const {
+  return GURL(chrome::kChromeUIAccessCodeCastURL);
 }
 
-void EnterpriseCastingDialog::GetWebUIMessageHandlers(
+void AccessCodeCastDialog::GetWebUIMessageHandlers(
     std::vector<content::WebUIMessageHandler*>* handlers) const {}
 
-void EnterpriseCastingDialog::GetDialogSize(gfx::Size* size) const {
+void AccessCodeCastDialog::GetDialogSize(gfx::Size* size) const {
   // TODO(b/202529859): Replace these with final values
   const int kDefaultWidth = 600;
   const int kDefaultHeight = 400;
   size->SetSize(kDefaultWidth, kDefaultHeight);
 }
 
-std::string EnterpriseCastingDialog::GetDialogArgs() const {
+std::string AccessCodeCastDialog::GetDialogArgs() const {
   base::DictionaryValue args;
   args.SetKey("castMode", base::Value(cast_mode_));
   std::string json;
@@ -64,23 +64,23 @@ std::string EnterpriseCastingDialog::GetDialogArgs() const {
   return json;
 }
 
-void EnterpriseCastingDialog::OnDialogShown(content::WebUI* webui) {
+void AccessCodeCastDialog::OnDialogShown(content::WebUI* webui) {
   webui_ = webui;
 }
 
-void EnterpriseCastingDialog::OnDialogClosed(const std::string& json_retval) {}
+void AccessCodeCastDialog::OnDialogClosed(const std::string& json_retval) {}
 
-void EnterpriseCastingDialog::OnCloseContents(content::WebContents* source,
-                                              bool* out_close_dialog) {
+void AccessCodeCastDialog::OnCloseContents(content::WebContents* source,
+                                           bool* out_close_dialog) {
   *out_close_dialog = true;
 }
 
-bool EnterpriseCastingDialog::ShouldShowDialogTitle() const {
+bool AccessCodeCastDialog::ShouldShowDialogTitle() const {
   return false;
 }
 
 // Ensure the WebUI dialog has camera access
-void EnterpriseCastingDialog::RequestMediaAccessPermission(
+void AccessCodeCastDialog::RequestMediaAccessPermission(
     content::WebContents* web_contents,
     const content::MediaStreamRequest& request,
     content::MediaResponseCallback callback) {
@@ -88,49 +88,49 @@ void EnterpriseCastingDialog::RequestMediaAccessPermission(
       web_contents, request, std::move(callback), nullptr /* extension */);
 }
 
-bool EnterpriseCastingDialog::CheckMediaAccessPermission(
+bool AccessCodeCastDialog::CheckMediaAccessPermission(
     content::RenderFrameHost* render_frame_host,
     const GURL& security_origin,
     blink::mojom::MediaStreamType type) {
   return true;
 }
 
-EnterpriseCastingDialog::~EnterpriseCastingDialog() = default;
+AccessCodeCastDialog::~AccessCodeCastDialog() = default;
 
 ///////////////////////////////////////////////////////////////////////////////
-//  EnterpriseCasting UI controller:
+//  AccessCodeCast UI controller:
 ///////////////////////////////////////////////////////////////////////////////
 
-EnterpriseCastingUI::EnterpriseCastingUI(content::WebUI* web_ui)
+AccessCodeCastUI::AccessCodeCastUI(content::WebUI* web_ui)
     : MojoWebDialogUI(web_ui) {
   auto source = base::WrapUnique(
-      content::WebUIDataSource::Create(chrome::kChromeUIEnterpriseCastingHost));
-  webui::SetupWebUIDataSource(source.get(),
-                              base::make_span(kEnterpriseCastingResources,
-                                              kEnterpriseCastingResourcesSize),
-                              IDR_ENTERPRISE_CASTING_INDEX_HTML);
+      content::WebUIDataSource::Create(chrome::kChromeUIAccessCodeCastHost));
+  webui::SetupWebUIDataSource(
+      source.get(),
+      base::make_span(kAccessCodeCastResources, kAccessCodeCastResourcesSize),
+      IDR_ACCESS_CODE_CAST_INDEX_HTML);
 
   content::BrowserContext* browser_context =
       web_ui->GetWebContents()->GetBrowserContext();
   content::WebUIDataSource::Add(browser_context, source.release());
 }
 
-EnterpriseCastingUI::~EnterpriseCastingUI() = default;
+AccessCodeCastUI::~AccessCodeCastUI() = default;
 
-void EnterpriseCastingUI::BindInterface(
-    mojo::PendingReceiver<enterprise_casting::mojom::PageHandlerFactory>
+void AccessCodeCastUI::BindInterface(
+    mojo::PendingReceiver<access_code_cast::mojom::PageHandlerFactory>
         receiver) {
   factory_receiver_.reset();
   factory_receiver_.Bind(std::move(receiver));
 }
 
-void EnterpriseCastingUI::CreatePageHandler(
-    mojo::PendingRemote<enterprise_casting::mojom::Page> page,
-    mojo::PendingReceiver<enterprise_casting::mojom::PageHandler> receiver) {
+void AccessCodeCastUI::CreatePageHandler(
+    mojo::PendingRemote<access_code_cast::mojom::Page> page,
+    mojo::PendingReceiver<access_code_cast::mojom::PageHandler> receiver) {
   DCHECK(page);
 
-  page_handler_ = std::make_unique<EnterpriseCastingHandler>(
-      std::move(receiver), std::move(page));
+  page_handler_ = std::make_unique<AccessCodeCastHandler>(std::move(receiver),
+                                                          std::move(page));
 }
 
-WEB_UI_CONTROLLER_TYPE_IMPL(EnterpriseCastingUI)
+WEB_UI_CONTROLLER_TYPE_IMPL(AccessCodeCastUI)

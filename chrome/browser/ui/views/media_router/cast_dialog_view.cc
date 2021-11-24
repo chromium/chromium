@@ -27,7 +27,7 @@
 #include "chrome/browser/ui/views/media_router/cast_dialog_sink_button.h"
 #include "chrome/browser/ui/views/media_router/cast_toolbar_button.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
-#include "chrome/browser/ui/webui/enterprise_casting/enterprise_casting_ui.h"
+#include "chrome/browser/ui/webui/access_code_cast/access_code_cast_ui.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/media_router/browser/media_router_metrics.h"
 #include "components/media_router/common/media_sink.h"
@@ -288,11 +288,11 @@ void CastDialogView::ShowAccessCodeCastDialog() {
       break;
   }
 
-  EnterpriseCastingDialog::Show(preferred_cast_mode);
+  AccessCodeCastDialog::Show(preferred_cast_mode);
 }
 
 void CastDialogView::MaybeShowAccessCodeCastButton() {
-  if (!base::FeatureList::IsEnabled(features::kEnterpriseCastingUI))
+  if (!base::FeatureList::IsEnabled(features::kAccessCodeCastUI))
     return;
   if (!GetAccessCodeCastEnabledPref(profile_->GetPrefs()))
     return;
