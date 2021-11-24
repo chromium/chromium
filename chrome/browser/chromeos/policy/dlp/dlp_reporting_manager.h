@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "chrome/browser/chromeos/policy/dlp/dlp_policy_event.pb.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
 #include "components/reporting/client/report_queue.h"
 #include "components/reporting/util/status.h"
@@ -29,6 +30,17 @@ DlpPolicyEvent CreateDlpPolicyEvent(const std::string& src_pattern,
                                     DlpRulesManager::Component dst_component,
                                     DlpRulesManager::Restriction restriction,
                                     DlpRulesManager::Level level);
+// TODO(jkopanski): Using template parameter pack enforces including
+//  "dlp_policy_event.pb.h" in the header file. Check after implementing
+//  reporting for clipboard if this template patter is needed or move all
+//  functions to a separate header.
+template <typename... Args>
+DlpPolicyEvent CreateDlpPolicyWarningProceededEvent(Args... args) {
+  // TODO(jkopanski): Add level as the last argument.
+  auto event = CreateDlpPolicyEvent(args...);
+  event.set_mode(DlpPolicyEvent_Mode_WARN_PROCEED);
+  return event;
+}
 
 // DlpReportingManger controls the coordination and setup towards the reporting
 // pipeline so that other areas of the DLP functionality don't need to know
@@ -58,8 +70,10 @@ class DlpReportingManager {
                    DlpRulesManager::Component dst_component,
                    DlpRulesManager::Restriction restriction,
                    DlpRulesManager::Level level);
-  void ReportWarningProceededEvent(const std::string& src_pattern,
-                                   DlpRulesManager::Restriction restriction);
+  template <typename... Args>
+  void ReportWarningProceededEvent(Args... args) {
+    ReportEvent(CreateDlpPolicyWarningProceededEvent(args...));
+  }
 
   ReportQueueSetterCallback GetReportQueueSetter();
 

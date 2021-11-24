@@ -550,6 +550,12 @@ TEST_F(DlpContentManagerCheckRestrictionTest, PrintingWarnedContinued) {
   // The warning should be shown only once.
   EXPECT_CALL(*mock_dlp_warn_notifier, ShowDlpWarningDialog(_, _)).Times(1);
 
+  SetReportQueueForReportingManager();
+  SetupDlpRulesManager();
+  EXPECT_CALL(*mock_rules_manager_, GetSourceUrlPattern(_, _, _))
+      .Times(3)
+      .WillRepeatedly(::testing::Return(kSrcPattern));
+
   // No restrictions are enforced: allow.
   std::unique_ptr<content::WebContents> web_contents = CreateWebContents();
   EXPECT_EQ(GetManager()->GetConfidentialRestrictions(web_contents.get()),
@@ -566,6 +572,7 @@ TEST_F(DlpContentManagerCheckRestrictionTest, PrintingWarnedContinued) {
                   .GetUserAllowedContentsForRestriction(
                       DlpRulesManager::Restriction::kPrinting)
                   .IsEmpty());
+  EXPECT_TRUE(events_.empty());
 
   // Warn restriction is enforced: allow and remember that the user proceeded.
   helper_.ChangeConfidentiality(web_contents.get(), kPrintingWarned);
@@ -579,6 +586,15 @@ TEST_F(DlpContentManagerCheckRestrictionTest, PrintingWarnedContinued) {
                   .GetUserAllowedContentsForRestriction(
                       DlpRulesManager::Restriction::kPrinting)
                   .Contains(web_contents.get()));
+  EXPECT_EQ(events_.size(), 2u);
+  EXPECT_THAT(events_[0],
+              IsDlpPolicyEvent(CreateDlpPolicyEvent(
+                  kSrcPattern, DlpRulesManager::Restriction::kPrinting,
+                  DlpRulesManager::Level::kWarn)));
+  EXPECT_THAT(events_[1],
+              IsDlpPolicyEvent(CreateDlpPolicyWarningProceededEvent(
+                  kSrcPattern, DlpRulesManager::Restriction::kPrinting,
+                  DlpRulesManager::Level::kWarn)));
 
   // Check again: allow based on cached user's response - no dialog is shown.
   GetManager()->CheckPrintingRestriction(
@@ -589,6 +605,11 @@ TEST_F(DlpContentManagerCheckRestrictionTest, PrintingWarnedContinued) {
                   .GetUserAllowedContentsForRestriction(
                       DlpRulesManager::Restriction::kPrinting)
                   .Contains(web_contents.get()));
+  EXPECT_EQ(events_.size(), 3u);
+  EXPECT_THAT(events_[2],
+              IsDlpPolicyEvent(CreateDlpPolicyWarningProceededEvent(
+                  kSrcPattern, DlpRulesManager::Restriction::kPrinting,
+                  DlpRulesManager::Level::kWarn)));
 
   // Web contents are destroyed: allow, no dialog is shown.
   helper_.DestroyWebContents(web_contents.get());
@@ -598,6 +619,7 @@ TEST_F(DlpContentManagerCheckRestrictionTest, PrintingWarnedContinued) {
       web_contents.get(),
       base::BindOnce(on_dlp_restriction_checked_callback, &is_action_allowed_));
   VerifyAndResetActionAllowed(true /*expected*/);
+  EXPECT_EQ(events_.size(), 3u);
 }
 
 TEST_F(DlpContentManagerCheckRestrictionTest, PrintingWarnedCancelled) {
@@ -606,6 +628,12 @@ TEST_F(DlpContentManagerCheckRestrictionTest, PrintingWarnedCancelled) {
       CreateAndSetDlpWarnNotifier(false /*should_proceed*/);
   // If the user cancels, the warning can be shown again for the same contents.
   EXPECT_CALL(*mock_dlp_warn_notifier, ShowDlpWarningDialog(_, _)).Times(2);
+
+  SetReportQueueForReportingManager();
+  SetupDlpRulesManager();
+  EXPECT_CALL(*mock_rules_manager_, GetSourceUrlPattern(_, _, _))
+      .Times(2)
+      .WillRepeatedly(::testing::Return(kSrcPattern));
 
   // No restrictions are enforced: allow.
   std::unique_ptr<content::WebContents> web_contents = CreateWebContents();
@@ -623,6 +651,7 @@ TEST_F(DlpContentManagerCheckRestrictionTest, PrintingWarnedCancelled) {
                   .GetUserAllowedContentsForRestriction(
                       DlpRulesManager::Restriction::kPrinting)
                   .IsEmpty());
+  EXPECT_TRUE(events_.empty());
 
   // Warn restriction is enforced: reject since the user canceled.
   helper_.ChangeConfidentiality(web_contents.get(), kPrintingWarned);
@@ -636,6 +665,11 @@ TEST_F(DlpContentManagerCheckRestrictionTest, PrintingWarnedCancelled) {
                   .GetUserAllowedContentsForRestriction(
                       DlpRulesManager::Restriction::kPrinting)
                   .IsEmpty());
+  EXPECT_EQ(events_.size(), 1u);
+  EXPECT_THAT(events_[0],
+              IsDlpPolicyEvent(CreateDlpPolicyEvent(
+                  kSrcPattern, DlpRulesManager::Restriction::kPrinting,
+                  DlpRulesManager::Level::kWarn)));
 
   // Check again: since the user previously cancelled, dialog is shown again.
   GetManager()->CheckPrintingRestriction(
@@ -646,6 +680,11 @@ TEST_F(DlpContentManagerCheckRestrictionTest, PrintingWarnedCancelled) {
                   .GetUserAllowedContentsForRestriction(
                       DlpRulesManager::Restriction::kPrinting)
                   .IsEmpty());
+  EXPECT_EQ(events_.size(), 2u);
+  EXPECT_THAT(events_[1],
+              IsDlpPolicyEvent(CreateDlpPolicyEvent(
+                  kSrcPattern, DlpRulesManager::Restriction::kPrinting,
+                  DlpRulesManager::Level::kWarn)));
 
   // Web contents are destroyed: allow, no dialog is shown.
   helper_.DestroyWebContents(web_contents.get());
@@ -655,6 +694,7 @@ TEST_F(DlpContentManagerCheckRestrictionTest, PrintingWarnedCancelled) {
       web_contents.get(),
       base::BindOnce(on_dlp_restriction_checked_callback, &is_action_allowed_));
   VerifyAndResetActionAllowed(true /*expected*/);
+  EXPECT_EQ(events_.size(), 2u);
 }
 
 TEST_F(DlpContentManagerCheckRestrictionTest, CaptureModeInitRestricted) {

@@ -234,14 +234,6 @@ void DlpReportingManager::ReportEvent(
   ReportEvent(std::move(event));
 }
 
-void DlpReportingManager::ReportWarningProceededEvent(
-    const std::string& src_pattern,
-    DlpRulesManager::Restriction restriction) {
-  auto event = CreateDlpPolicyEvent(src_pattern, restriction);
-  event.set_mode(DlpPolicyEvent_Mode_WARN_PROCEED);
-  ReportEvent(std::move(event));
-}
-
 void DlpReportingManager::OnEventEnqueued(reporting::Status status) {
   if (!status.ok()) {
     VLOG(1) << "Could not enqueue event to DLP reporting queue because of "

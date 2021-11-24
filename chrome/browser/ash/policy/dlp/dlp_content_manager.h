@@ -327,10 +327,9 @@ class DlpContentManager : public DlpContentObserver,
   void MaybeReportEvent(const RestrictionLevelAndUrl& restriction_info,
                         DlpRulesManager::Restriction restriction);
 
-  // Reports warning events if required by the |restriction_info| and
-  // `reporting_manager` is configured.
-  void MaybeReportWarnEvent(const RestrictionLevelAndUrl& restriction_info,
-                            DlpRulesManager::Restriction restriction);
+  // Reports warning events if `reporting_manager` is configured.
+  void ReportWarningEvent(const RestrictionLevelAndUrl& restriction_info,
+                          DlpRulesManager::Restriction restriction);
 
   // Map from currently known confidential WebContents to the restrictions.
   base::flat_map<content::WebContents*, DlpContentRestrictionSet>
