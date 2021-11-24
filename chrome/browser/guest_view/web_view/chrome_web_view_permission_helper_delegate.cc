@@ -192,14 +192,11 @@ void ChromeWebViewPermissionHelperDelegate::OnGeolocationPermissionResponse(
 
   Profile* profile = Profile::FromBrowserContext(
       web_view_guest()->browser_context());
-  PermissionManagerFactory::GetForProfile(profile)->RequestPermission(
-      ContentSettingsType::GEOLOCATION,
-      web_view_guest()->embedder_web_contents()->GetMainFrame(),
-      web_view_guest()
-          ->embedder_web_contents()
-          ->GetLastCommittedURL()
-          .DeprecatedGetOriginAsURL(),
-      user_gesture, std::move(callback));
+  PermissionManagerFactory::GetForProfile(profile)
+      ->RequestPermissionFromCurrentDocument(
+          ContentSettingsType::GEOLOCATION,
+          web_view_guest()->embedder_web_contents()->GetMainFrame(),
+          user_gesture, std::move(callback));
 }
 
 void ChromeWebViewPermissionHelperDelegate::RequestFileSystemPermission(
