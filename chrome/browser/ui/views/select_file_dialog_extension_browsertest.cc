@@ -148,14 +148,26 @@ struct TestMode {
         tablet_mode(tablet_mode) {}
 
   static testing::internal::ParamGenerator<TestMode> Values() {
-    return ::testing::Values(TestMode(EXTENSION_FILES_APP_MODE, false, false),
-                             TestMode(EXTENSION_FILES_APP_MODE, false, true),
-                             TestMode(EXTENSION_FILES_APP_MODE, true, false),
-                             TestMode(EXTENSION_FILES_APP_MODE, true, true),
-                             TestMode(SYSTEM_FILES_APP_MODE, false, false),
-                             TestMode(SYSTEM_FILES_APP_MODE, false, true),
-                             TestMode(SYSTEM_FILES_APP_MODE, true, false),
-                             TestMode(SYSTEM_FILES_APP_MODE, true, true));
+    std::vector<TestMode> test_modes = {
+        TestMode(SYSTEM_FILES_APP_MODE, false, false),
+        TestMode(SYSTEM_FILES_APP_MODE, false, true),
+        TestMode(SYSTEM_FILES_APP_MODE, true, false),
+        TestMode(SYSTEM_FILES_APP_MODE, true, true),
+    };
+    // If Files SWA is enabled by default, do not include the legacy tests. The
+    // legacy app is explicitly disabled in this case and thus the tests have
+    // no chance of passing.
+    if (!ash::features::IsFileManagerSwaEnabled()) {
+      std::vector<TestMode> legacy_test_modes = {
+          TestMode(EXTENSION_FILES_APP_MODE, false, false),
+          TestMode(EXTENSION_FILES_APP_MODE, false, true),
+          TestMode(EXTENSION_FILES_APP_MODE, true, false),
+          TestMode(EXTENSION_FILES_APP_MODE, true, true),
+      };
+      test_modes.insert(test_modes.end(), legacy_test_modes.begin(),
+                        legacy_test_modes.end());
+    }
+    return ::testing::ValuesIn(test_modes);
   }
 
   AppMode app_mode;
