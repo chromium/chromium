@@ -631,8 +631,7 @@ content::WebContents* WebAppPublisherHelper::Launch(
     DCHECK(base::FeatureList::IsEnabled(chromeos::features::kTerminalSSH));
     int64_t display_id =
         window_info ? window_info->display_id : display::kInvalidDisplayId;
-    crostini::LaunchTerminalWithIntent(profile_, display_id, nullptr,
-                                       base::DoNothing());
+    crostini::LaunchTerminalForSSH(profile_, display_id);
     return nullptr;
   }
 #endif

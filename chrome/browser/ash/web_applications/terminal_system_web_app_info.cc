@@ -53,20 +53,6 @@ std::unique_ptr<WebApplicationInfo> CreateWebAppInfoForTerminalSystemWebApp() {
   info->additional_search_terms = {
       "linux", "terminal", "crostini", "ssh",
       l10n_util::GetStringUTF8(IDS_CROSTINI_TERMINAL_APP_SEARCH_TERMS)};
-  {
-    WebApplicationShortcutsMenuItemInfo shortcut_terminal;
-    shortcut_terminal.name =
-        l10n_util::GetStringUTF16(IDS_CROSTINI_TERMINAL_CONNECT_TO_LINUX);
-    shortcut_terminal.url = terminal_url;
-    info->shortcuts_menu_item_infos.push_back(std::move(shortcut_terminal));
-  }
-  {
-    WebApplicationShortcutsMenuItemInfo shortcut_ssh;
-    shortcut_ssh.name =
-        l10n_util::GetStringUTF16(IDS_CROSTINI_TERMINAL_CONNECT_TO_SSH);
-    shortcut_ssh.url = GURL("chrome-untrusted://terminal/html/nassh.html");
-    info->shortcuts_menu_item_infos.push_back(std::move(shortcut_ssh));
-  }
   return info;
 }
 

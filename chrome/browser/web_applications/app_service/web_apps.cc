@@ -405,6 +405,12 @@ void WebApps::GetMenuModel(const std::string& app_id,
                          &menu_items);
   }
 
+  if (app_id == crostini::kCrostiniTerminalSystemAppId) {
+    DCHECK(base::FeatureList::IsEnabled(chromeos::features::kTerminalSSH));
+    crostini::AddTerminalMenuShortcuts(profile_, &menu_items,
+                                       ash::LAUNCH_APP_SHORTCUT_FIRST);
+  }
+
   GetAppShortcutMenuModel(app_id, std::move(menu_items), std::move(callback));
 }
 
@@ -486,13 +492,6 @@ void WebApps::OnShortcutsMenuIconsRead(
                                  &menu_items);
 
     ++menu_item_index;
-  }
-
-  if (app_id == crostini::kCrostiniTerminalSystemAppId) {
-    DCHECK(base::FeatureList::IsEnabled(chromeos::features::kTerminalSSH));
-    crostini::AddTerminalMenuShortcuts(
-        profile_, &menu_items,
-        ash::LAUNCH_APP_SHORTCUT_FIRST + menu_item_index);
   }
 
   std::move(callback).Run(std::move(menu_items));

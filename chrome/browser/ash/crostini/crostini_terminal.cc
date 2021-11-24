@@ -4,9 +4,11 @@
 
 #include "chrome/browser/ash/crostini/crostini_terminal.h"
 
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/app_menu_constants.h"
 #include "base/bind.h"
 #include "base/containers/fixed_flat_map.h"
+#include "base/feature_list.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/metrics/histogram_functions.h"
@@ -42,6 +44,7 @@
 #include "storage/browser/file_system/external_mount_points.h"
 #include "storage/browser/file_system/file_system_url.h"
 #include "ui/base/base_window.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/gfx/geometry/point.h"
 
@@ -59,7 +62,16 @@ constexpr char kSettingPassCtrlW[] = "/hterm/profiles/default/pass-ctrl-w";
 constexpr bool kDefaultPassCtrlW = false;
 
 constexpr char kShortcutKey[] = "shortcut";
+constexpr char kShortcutValueSSH[] = "ssh";
 constexpr char kShortcutValueTerminal[] = "terminal";
+
+std::string ShortcutIdForSSH() {
+  base::Value dict(base::Value::Type::DICTIONARY);
+  dict.SetKey(kShortcutKey, base::Value(kShortcutValueSSH));
+  std::string shortcut_id;
+  base::JSONWriter::Write(dict, &shortcut_id);
+  return shortcut_id;
+}
 
 std::string ShortcutIdFromContainerId(const crostini::ContainerId& id) {
   base::Value dict = id.ToDictValue();
@@ -147,6 +159,11 @@ void LaunchTerminal(Profile* profile,
   GURL vsh_in_crosh_url =
       GenerateVshInCroshUrl(profile, container_id, cwd, terminal_args);
   LaunchTerminalWithUrl(profile, display_id, vsh_in_crosh_url);
+}
+
+void LaunchTerminalForSSH(Profile* profile, int64_t display_id) {
+  LaunchTerminalWithUrl(profile, display_id,
+                        GURL("chrome-untrusted://terminal/html/nassh.html"));
 }
 
 void LaunchTerminalWithUrl(Profile* profile,
@@ -383,24 +400,46 @@ void AddTerminalMenuItems(Profile* profile,
 void AddTerminalMenuShortcuts(Profile* profile,
                               apps::mojom::MenuItemsPtr* menu_items,
                               int next_command_id) {
-  if (!crostini::CrostiniFeatures::Get()->IsMultiContainerAllowed(profile)) {
+  if (base::FeatureList::IsEnabled(chromeos::features::kTerminalSSH)) {
+    apps::AddSeparator(ui::DOUBLE_SEPARATOR, menu_items);
+    std::string shortcut_id = ShortcutIdForSSH();
+    apps::AddShortcutCommandItem(
+        next_command_id++, shortcut_id,
+        l10n_util::GetStringUTF8(IDS_CROSTINI_TERMINAL_CONNECT_TO_SSH),
+        gfx::ImageSkia(), menu_items);
+  }
+
+  if (!CrostiniFeatures::Get()->IsEnabled(profile)) {
     return;
   }
 
-  const base::Value* container_list =
-      profile->GetPrefs()->GetList(crostini::prefs::kCrostiniContainers);
-  if (container_list && container_list->GetList().size() > 1) {
-    apps::AddSeparator(ui::DOUBLE_SEPARATOR, menu_items);
-
-    for (const auto& dict : container_list->GetList()) {
-      crostini::ContainerId id(dict);
-      if (!id.vm_name.empty() && !id.container_name.empty()) {
-        std::string shortcut_id = ShortcutIdFromContainerId(id);
-        std::string label = base::StrCat({id.vm_name, ":", id.container_name});
-        apps::AddShortcutCommandItem(next_command_id++, shortcut_id, label,
-                                     gfx::ImageSkia(), menu_items);
+  if (crostini::CrostiniFeatures::Get()->IsMultiContainerAllowed(profile)) {
+    const base::Value* container_list =
+        profile->GetPrefs()->GetList(crostini::prefs::kCrostiniContainers);
+    if (container_list && container_list->GetList().size() > 1) {
+      // Shortcuts for each container.
+      for (const auto& dict : container_list->GetList()) {
+        crostini::ContainerId id(dict);
+        if (!id.vm_name.empty() && !id.container_name.empty()) {
+          std::string shortcut_id = ShortcutIdFromContainerId(id);
+          std::string label =
+              base::StrCat({id.vm_name, ":", id.container_name});
+          apps::AddShortcutCommandItem(next_command_id++, shortcut_id, label,
+                                       gfx::ImageSkia(), menu_items);
+        }
       }
+      return;
     }
+  }
+
+  // Single shortcut: 'Connect to Linux'.
+  if (base::FeatureList::IsEnabled(chromeos::features::kTerminalSSH)) {
+    std::string shortcut_id =
+        ShortcutIdFromContainerId(ContainerId::GetDefault());
+    apps::AddShortcutCommandItem(
+        next_command_id++, shortcut_id,
+        l10n_util::GetStringUTF8(IDS_CROSTINI_TERMINAL_CONNECT_TO_LINUX),
+        gfx::ImageSkia(), menu_items);
   }
 }
 
@@ -412,6 +451,11 @@ bool ExecuteTerminalMenuShortcutCommand(Profile* profile,
     return false;
   }
   const std::string* shortcut_value = shortcut->FindStringKey(kShortcutKey);
+  if (shortcut_value && *shortcut_value == kShortcutValueSSH) {
+    LaunchTerminalForSSH(profile, display_id);
+    return true;
+  }
+
   if (!shortcut_value || *shortcut_value != kShortcutValueTerminal) {
     return false;
   }

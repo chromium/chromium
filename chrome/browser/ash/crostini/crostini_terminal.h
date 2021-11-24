@@ -104,6 +104,8 @@ void LaunchTerminal(Profile* profile,
                     const std::string& cwd = "",
                     const std::vector<std::string>& terminal_args = {});
 
+void LaunchTerminalForSSH(Profile* profile, int64_t display_id);
+
 void LaunchTerminalWithUrl(Profile* profile,
                            int64_t display_id,
                            const GURL& url);
