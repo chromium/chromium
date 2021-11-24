@@ -459,7 +459,20 @@ enum PolicyType {
   SCRIPT = 1;
 }
 
+message CUPRequestData {
+  // A serialized ScriptActionRequestProto.
+  optional bytes request = 1;
+  // The ID of the public key that the client will use to verify the response
+  // signature.
+  optional bytes public_key_id = 2;
+  optional bytes nonce = 3;
+}
+
 message ScriptActionRequestProto {
+  // CUP-signed version of this proto. When set, the rest of the fields in
+  // ScriptActionRequestProto should be ignored.
+  optional CUPRequestData cup_data = 11;
+
   optional ClientContextProto client_context = 7;
 
   // Global payload from the previous response, possibly for another script.
@@ -475,6 +488,8 @@ message ScriptActionRequestProto {
     InitialScriptActionsRequestProto initial_request = 4;
     NextScriptActionsRequestProto next_request = 5;
   }
+
+  reserved 6, 9, 10;
 }
 
 // Message specifying how to retrieve the scripts. If bundle_path is set, it
@@ -523,8 +538,22 @@ message NextScriptActionsRequestProto {
   optional SlowWarningStatus slow_connection_warning = 34;
 }
 
+message CUPResponseData {
+  // A serialized ActionsResponseProto.
+  optional bytes response = 1;
+  // The signature signing both the response, as well as the request hash, key
+  // ID, and nonce of the corresponding ScriptActionRequestProto. See
+  // https://source.chromium.org/chromium/chromium/src/+/main:docs/updater/cup.md
+  // for the signing scheme.
+  optional bytes ecdsa_signature = 2;
+}
+
 // Response of a script's actions.
 message ActionsResponseProto {
+  // CUP-signed version of this proto. When set, the rest of the fields in
+  // ActionsResponseProto should be ignored.
+  optional CUPResponseData cup_data = 11;
+
   // Opaque data to send to the next ScriptActionRequestProto.
   optional bytes global_payload = 4;
 
