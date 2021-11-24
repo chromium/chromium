@@ -165,7 +165,7 @@ void CdmDocumentServiceImpl::ChallengePlatform(
 
 #if defined(OS_CHROMEOS)
   bool success = platform_verification::PerformBrowserChecks(
-      content::WebContents::FromRenderFrameHost(render_frame_host()));
+      render_frame_host()->GetMainFrame());
   if (!success) {
     std::move(callback).Run(false, std::string(), std::string(), std::string());
     return;

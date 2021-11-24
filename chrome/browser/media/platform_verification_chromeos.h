@@ -13,14 +13,14 @@
 // lacros-browser.
 
 namespace content {
-class WebContents;
+class RenderFrameHost;
 }  // namespace content
 
 namespace platform_verification {
 
-// Checks whether a given |web_contents| support platform verification. Also
-// logs an UMA histogram.
-bool PerformBrowserChecks(content::WebContents* web_contents);
+// Checks whether a given |render_frame_host| support platform verification.
+// Also logs an UMA histogram.
+bool PerformBrowserChecks(content::RenderFrameHost* render_frame_host);
 
 }  // namespace platform_verification
 

@@ -29,13 +29,15 @@ class PlatformVerificationChromeOSTest
 
 // Tests the basic success case.
 TEST_F(PlatformVerificationChromeOSTest, Success) {
-  EXPECT_TRUE(platform_verification::PerformBrowserChecks(web_contents()));
+  EXPECT_TRUE(platform_verification::PerformBrowserChecks(
+      web_contents()->GetMainFrame()));
 }
 
 TEST_F(PlatformVerificationChromeOSTest, BadURL) {
   GURL url("badurl");
   NavigateAndCommit(url);
-  EXPECT_FALSE(platform_verification::PerformBrowserChecks(web_contents()));
+  EXPECT_FALSE(platform_verification::PerformBrowserChecks(
+      web_contents()->GetMainFrame()));
 }
 
 TEST_F(PlatformVerificationChromeOSTest, IncognitoProfile) {
@@ -47,7 +49,8 @@ TEST_F(PlatformVerificationChromeOSTest, IncognitoProfile) {
   content::WebContentsTester* tester =
       content::WebContentsTester::For(web_contents.get());
   tester->NavigateAndCommit(GetTestURL());
-  EXPECT_FALSE(platform_verification::PerformBrowserChecks(web_contents.get()));
+  EXPECT_FALSE(platform_verification::PerformBrowserChecks(
+      web_contents.get()->GetMainFrame()));
 }
 
 TEST_F(PlatformVerificationChromeOSTest, ContentSettings) {
@@ -58,7 +61,8 @@ TEST_F(PlatformVerificationChromeOSTest, ContentSettings) {
       /*primary_url=*/GetTestURL(), /*secondary_url=*/GetTestURL(),
       ContentSettingsType::PROTECTED_MEDIA_IDENTIFIER, CONTENT_SETTING_BLOCK);
 
-  EXPECT_FALSE(platform_verification::PerformBrowserChecks(web_contents()));
+  EXPECT_FALSE(platform_verification::PerformBrowserChecks(
+      web_contents()->GetMainFrame()));
 }
 
 }  // namespace
