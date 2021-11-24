@@ -378,7 +378,7 @@ void SiteInstanceImpl::SetProcessInternal(RenderProcessHost* process) {
   process_->AddObserver(this);
   CHECK(!agent_scheduling_group_);
   agent_scheduling_group_ =
-      AgentSchedulingGroupHost::GetOrCreate(*this, *process_);
+      AgentSchedulingGroupHost::GetOrCreate(*group(), *process_);
 
   LockProcessIfNeeded();
 

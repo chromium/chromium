@@ -5072,7 +5072,9 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   RenderProcessHost* process_a =
       root->render_manager()->current_frame_host()->GetProcess();
   AgentSchedulingGroupHost* agent_scheduling_group_a =
-      AgentSchedulingGroupHost::GetOrCreate(*site_instance_a, *process_a);
+      AgentSchedulingGroupHost::GetOrCreate(
+          *static_cast<SiteInstanceImpl*>(site_instance_a)->group(),
+          *process_a);
   int new_routing_id = process_a->GetNextRoutingID();
   int view_routing_id =
       root->frame_tree()->GetRenderViewHost(site_instance_a)->GetRoutingID();
@@ -5145,9 +5147,11 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   RenderProcessHost* process =
       node->render_manager()->speculative_frame_host()->GetProcess();
   AgentSchedulingGroupHost* agent_scheduling_group =
-      AgentSchedulingGroupHost::GetOrCreate(
-          *node->render_manager()->speculative_frame_host()->GetSiteInstance(),
-          *process);
+      AgentSchedulingGroupHost::GetOrCreate(*node->render_manager()
+                                                 ->speculative_frame_host()
+                                                 ->GetSiteInstance()
+                                                 ->group(),
+                                            *process);
   RenderProcessHostWatcher watcher(
       process, RenderProcessHostWatcher::WATCH_FOR_PROCESS_EXIT);
   int frame_routing_id =
@@ -5221,7 +5225,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest, ParentDetachRemoteChild) {
   RenderProcessHost* process = node->current_frame_host()->GetProcess();
   AgentSchedulingGroupHost* agent_scheduling_group =
       AgentSchedulingGroupHost::GetOrCreate(
-          *node->current_frame_host()->GetSiteInstance(), *process);
+          *node->current_frame_host()->GetSiteInstance()->group(), *process);
   RenderProcessHostWatcher watcher(
       process, RenderProcessHostWatcher::WATCH_FOR_PROCESS_EXIT);
   int frame_routing_id = node->current_frame_host()->GetRoutingID();
