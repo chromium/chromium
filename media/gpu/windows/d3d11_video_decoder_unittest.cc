@@ -346,17 +346,6 @@ TEST_F(D3D11VideoDecoderTest, DoesNotSupportEncryptedConfig) {
   InitializeDecoder(encrypted_config, false);
 }
 
-TEST_F(D3D11VideoDecoderTest, IgnoreWorkaroundsIgnoresWorkaround) {
-  // k...IgnoreWorkarounds should enable the decoder even if it's turned off
-  // for gpu workarounds.
-  EnableFeature(kD3D11VideoDecoderIgnoreWorkarounds);
-  gpu_workarounds_.disable_d3d11_video_decoder = true;
-  CreateDecoder();
-  InitializeDecoder(
-      TestVideoConfig::NormalCodecProfile(VideoCodec::kH264, H264PROFILE_MAIN),
-      true);
-}
-
 TEST_F(D3D11VideoDecoderTest, WorkaroundTurnsOffDecoder) {
   //  We shouldn't be able to decode if the decoder is off via gpu workaround.
   gpu_workarounds_.disable_d3d11_video_decoder = true;

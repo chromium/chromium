@@ -981,11 +981,6 @@
     "expiry_milestone": 105
   },
   {
-    "name": "d3d11-video-decoder",
-    "owners": [ "liberato", "tmathmeyer", "//media/OWNERS" ],
-    "expiry_milestone": 89
-  },
-  {
     "name": "dark-light-mode",
     "owners": [ "minch", "tclaiborne" ],
     "expiry_milestone": 100

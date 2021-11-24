@@ -1518,9 +1518,8 @@ bool DXVAVideoDecodeAccelerator::InitDecoder(VideoCodecProfile profile) {
     }
   }
 
-  if (enable_accelerated_av1_decode_ &&
-      base::FeatureList::IsEnabled(kMediaFoundationAV1Decoding) &&
-      (profile >= AV1PROFILE_MIN && profile <= AV1PROFILE_MAX)) {
+  if (enable_accelerated_av1_decode_ && profile >= AV1PROFILE_MIN &&
+      profile <= AV1PROFILE_MAX) {
     codec_ = VideoCodec::kAV1;
     clsid = CLSID_CAV1DecoderMFT;
 

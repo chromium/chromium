@@ -5568,12 +5568,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(features::kIntentPickerPWAPersistence)},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-#if defined(OS_WIN)
-    {"d3d11-video-decoder", flag_descriptions::kD3D11VideoDecoderName,
-     flag_descriptions::kD3D11VideoDecoderDescription, kOsWin,
-     FEATURE_VALUE_TYPE(media::kD3D11VideoDecoder)},
-#endif
-
 #if defined(OS_CHROMEOS) && BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
     // TODO(b/180051795): remove kOsLinux when lacros-chrome switches to
     // kOsCrOS.

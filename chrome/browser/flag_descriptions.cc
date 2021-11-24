@@ -3829,10 +3829,6 @@ const char kCalculateNativeWinOcclusionDescription[] =
     "Calculate window occlusion on Windows will be used in the future "
     "to throttle and potentially unload foreground tabs in occluded windows";
 
-const char kD3D11VideoDecoderName[] = "D3D11 Video Decoder";
-const char kD3D11VideoDecoderDescription[] =
-    "Enables D3D11VideoDecoder for hardware accelerated video decoding.";
-
 const char kEnableIncognitoShortcutOnDesktopName[] =
     "Enable Incognito Desktop Shortcut";
 const char kEnableIncognitoShortcutOnDesktopDescription[] =

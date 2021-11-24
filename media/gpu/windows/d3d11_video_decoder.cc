@@ -211,11 +211,8 @@ D3D11Status::Or<ComD3D11VideoDecoder> D3D11VideoDecoder::CreateD3D11Decoder() {
                  ? 10
                  : 8);
 
-  // OS prevent read any content from encrypted video frame. No need to support
-  // shared handle and keyed_mutex system for the encrypted frame.
   const bool use_shared_handle =
-      base::FeatureList::IsEnabled(kD3D11VideoDecoderUseSharedHandle) &&
-      !config_.is_encrypted();
+      base::FeatureList::IsEnabled(kD3D11VideoDecoderUseSharedHandle);
 
   // TODO: supported check?
   decoder_configurator_ = D3D11DecoderConfigurator::Create(
@@ -439,14 +436,6 @@ void D3D11VideoDecoder::Initialize(const VideoDecoderConfig& config,
   // At this point, playback is supported so add a line in the media log to help
   // us figure that out.
   MEDIA_LOG(INFO, media_log_) << "Video is supported by D3D11VideoDecoder";
-
-  if (base::FeatureList::IsEnabled(kD3D11PrintCodecOnCrash)) {
-    static base::debug::CrashKeyString* codec_name =
-        base::debug::AllocateCrashKeyString("d3d11_playback_video_codec",
-                                            base::debug::CrashKeySize::Size32);
-    base::debug::SetCrashKeyString(codec_name,
-                                   config.GetHumanReadableCodecName());
-  }
 
   auto impl_init_cb = base::BindOnce(&D3D11VideoDecoder::OnGpuInitComplete,
                                      weak_factory_.GetWeakPtr());
@@ -955,11 +944,8 @@ bool D3D11VideoDecoder::GetD3D11FeatureLevel(
   if (*feature_level < D3D_FEATURE_LEVEL_11_0)
     return false;
 
-  // TODO(tmathmeyer) should we log this to UMA?
-  if (gpu_workarounds.limit_d3d11_video_decoder_to_11_0 &&
-      !base::FeatureList::IsEnabled(kD3D11VideoDecoderIgnoreWorkarounds)) {
+  if (gpu_workarounds.limit_d3d11_video_decoder_to_11_0)
     *feature_level = D3D_FEATURE_LEVEL_11_0;
-  }
 
   return true;
 }
@@ -972,12 +958,10 @@ D3D11VideoDecoder::GetSupportedVideoDecoderConfigs(
     GetD3D11DeviceCB get_d3d11_device_cb) {
   const std::string uma_name("Media.D3D11.WasVideoSupported");
 
-  if (!base::FeatureList::IsEnabled(kD3D11VideoDecoderIgnoreWorkarounds)) {
-    // Allow all of d3d11 to be turned off by workaround.
-    if (gpu_workarounds.disable_d3d11_video_decoder) {
-      UMA_HISTOGRAM_ENUMERATION(uma_name, NotSupportedReason::kOffByWorkaround);
-      return {};
-    }
+  // Allow all of d3d11 to be turned off by workaround.
+  if (gpu_workarounds.disable_d3d11_video_decoder) {
+    UMA_HISTOGRAM_ENUMERATION(uma_name, NotSupportedReason::kOffByWorkaround);
+    return {};
   }
 
   // Remember that this might query the angle device, so this won't work if
@@ -1005,17 +989,11 @@ D3D11VideoDecoder::GetSupportedVideoDecoderConfigs(
 
   const auto supported_resolutions = GetSupportedD3D11VideoDecoderResolutions(
       d3d11_device, gpu_workarounds,
-      base::FeatureList::IsEnabled(kD3D11VideoDecoderAV1) &&
-          !gpu_workarounds.disable_accelerated_av1_decode_d3d11);
+      !gpu_workarounds.disable_accelerated_av1_decode_d3d11);
 
   std::vector<SupportedVideoDecoderConfig> configs;
   for (const auto& kv : supported_resolutions) {
     const auto profile = kv.first;
-    if (profile == VP9PROFILE_PROFILE2 &&
-        !base::FeatureList::IsEnabled(kD3D11VideoDecoderVP9Profile2)) {
-      continue;
-    }
-
     // TODO(liberato): Add VP8 support to D3D11VideoDecoder.
     if (profile == VP8PROFILE_ANY)
       continue;

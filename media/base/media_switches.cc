@@ -378,28 +378,6 @@ const base::Feature kMultiPlaneVideoCaptureSharedImages {
 const base::Feature kRevokeMediaSourceObjectURLOnAttach{
     "RevokeMediaSourceObjectURLOnAttach", base::FEATURE_ENABLED_BY_DEFAULT};
 
-// Enable saving playback information in a crash trace, to see if some codecs
-// are crashier than others.
-const base::Feature kD3D11PrintCodecOnCrash{"D3D11PrintCodecOnCrash",
-                                            base::FEATURE_DISABLED_BY_DEFAULT};
-
-// Enable The D3D11 Video decoder.
-const base::Feature kD3D11VideoDecoder{"D3D11VideoDecoder",
-                                       base::FEATURE_ENABLED_BY_DEFAULT};
-
-// Tell D3D11VideoDecoder to ignore workarounds for zero copy.  Requires that
-// kD3D11VideoDecoder is enabled.
-const base::Feature kD3D11VideoDecoderIgnoreWorkarounds{
-    "D3D11VideoDecoderIgnoreWorkarounds", base::FEATURE_DISABLED_BY_DEFAULT};
-
-// Enable D3D11VideoDecoder to decode VP9 profile 2 (10 bit) video.
-const base::Feature kD3D11VideoDecoderVP9Profile2{
-    "D3D11VideoDecoderEnableVP9Profile2", base::FEATURE_ENABLED_BY_DEFAULT};
-
-// Enable D3D11VideoDecoder to decode AV1 video.
-const base::Feature kD3D11VideoDecoderAV1{"D3D11VideoDecoderEnableAV1",
-                                          base::FEATURE_ENABLED_BY_DEFAULT};
-
 const base::Feature kD3D11VideoDecoderUseSharedHandle{
     "D3D11VideoDecoderUseSharedHandle", base::FEATURE_DISABLED_BY_DEFAULT};
 
