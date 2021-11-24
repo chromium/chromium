@@ -360,6 +360,12 @@ void FakeRmadClient::TriggerFinalizationProgressObservation(
     observer.FinalizationProgress(finalizationStatus);
 }
 
+void FakeRmadClient::TriggerRoFirmwareUpdateProgressObservation(
+    rmad::UpdateRoFirmwareStatus status) {
+  for (auto& observer : observers_)
+    observer.RoFirmwareUpdateProgress(status);
+}
+
 const rmad::GetStateReply& FakeRmadClient::GetStateReply() const {
   return state_replies_[state_index_];
 }

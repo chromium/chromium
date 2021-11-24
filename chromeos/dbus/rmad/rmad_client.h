@@ -53,6 +53,10 @@ class COMPONENT_EXPORT(RMAD) RmadClient {
 
     // Called when finalization progress is updated.
     virtual void FinalizationProgress(const rmad::FinalizeStatus& status) {}
+
+    // Called when overall calibration progress is updated.
+    virtual void RoFirmwareUpdateProgress(rmad::UpdateRoFirmwareStatus status) {
+    }
   };
 
   // Creates and initializes a global instance. |bus| must not be null.

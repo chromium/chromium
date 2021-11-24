@@ -195,6 +195,14 @@ class RmadClientTest : public testing::Test {
     EmitSignal(&signal);
   }
 
+  // Passes a ro firmware update status signal to |client_|.
+  void EmitRoFirmwareUpdateProgressSignal(rmad::UpdateRoFirmwareStatus status) {
+    dbus::Signal signal(rmad::kRmadInterfaceName,
+                        rmad::kUpdateRoFirmwareStatusSignal);
+    dbus::MessageWriter(&signal).AppendInt32(static_cast<int32_t>(status));
+    EmitSignal(&signal);
+  }
+
  protected:
   // Maps from rmad signal name to the corresponding callback provided by
   // |client_|.
@@ -273,6 +281,13 @@ class TestObserver : public RmadClient::Observer {
     return last_finalization_progress_;
   }
 
+  int num_ro_firmware_update_progress() const {
+    return num_ro_firmware_update_progress_;
+  }
+  rmad::UpdateRoFirmwareStatus last_ro_firmware_update_status() const {
+    return last_ro_firmware_update_status_;
+  }
+
   // Called when an error occurs outside of state transitions.
   // e.g. while calibrating devices.
   void Error(rmad::RmadErrorCode error) override {
@@ -324,6 +339,12 @@ class TestObserver : public RmadClient::Observer {
     last_finalization_progress_ = status;
   }
 
+  // Called when overall calibration progress is updated.
+  void RoFirmwareUpdateProgress(rmad::UpdateRoFirmwareStatus status) override {
+    num_ro_firmware_update_progress_++;
+    last_ro_firmware_update_status_ = status;
+  }
+
  private:
   RmadClient* client_;  // Not owned.
   int num_error_ = 0;
@@ -343,7 +364,10 @@ class TestObserver : public RmadClient::Observer {
   rmad::HardwareVerificationResult last_hardware_verification_result_;
   int num_finalization_progress_ = 0;
   rmad::FinalizeStatus last_finalization_progress_;
-};  // namespace chromeos
+  int num_ro_firmware_update_progress_ = 0;
+  rmad::UpdateRoFirmwareStatus last_ro_firmware_update_status_ =
+      rmad::UpdateRoFirmwareStatus::RMAD_UPDATE_RO_FIRMWARE_UNKNOWN;
+};
 
 TEST_F(RmadClientTest, CheckInRma_NotInRma) {
   std::unique_ptr<dbus::Response> response = dbus::Response::CreateEmpty();
@@ -813,6 +837,25 @@ TEST_F(RmadClientTest, FinalizationProgress) {
   EXPECT_EQ(rmad::FinalizeStatus::RMAD_FINALIZE_STATUS_COMPLETE,
             observer_1.last_finalization_progress().status());
   EXPECT_EQ(1.0, observer_1.last_finalization_progress().progress());
+}
+
+TEST_F(RmadClientTest, RoFirmwareUpdateProgress) {
+  TestObserver observer_1(client_);
+
+  EmitRoFirmwareUpdateProgressSignal(
+      rmad::UpdateRoFirmwareStatus::RMAD_UPDATE_RO_FIRMWARE_DOWNLOADING);
+  EXPECT_EQ(observer_1.num_ro_firmware_update_progress(), 1);
+  EXPECT_EQ(observer_1.last_ro_firmware_update_status(),
+            rmad::UpdateRoFirmwareStatus::RMAD_UPDATE_RO_FIRMWARE_DOWNLOADING);
+}
+
+TEST_F(RmadClientTest, RoFirmwareUpdateProgressBadParameterFails) {
+  TestObserver observer_1(client_);
+
+  EmitEmptySignal(rmad::kUpdateRoFirmwareStatusSignal);
+  EXPECT_EQ(observer_1.num_ro_firmware_update_progress(), 0);
+  EXPECT_EQ(observer_1.last_ro_firmware_update_status(),
+            rmad::UpdateRoFirmwareStatus::RMAD_UPDATE_RO_FIRMWARE_UNKNOWN);
 }
 
 }  // namespace chromeos

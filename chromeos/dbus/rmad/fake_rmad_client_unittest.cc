@@ -96,6 +96,12 @@ class TestObserver : public RmadClient::Observer {
       const {
     return last_hardware_verification_result_;
   }
+  int num_ro_firmware_update_progress() const {
+    return num_ro_firmware_update_progress_;
+  }
+  rmad::UpdateRoFirmwareStatus last_ro_firmware_update_progress() const {
+    return last_ro_firmware_update_progress_;
+  }
 
   // Called when an error occurs outside of state transitions.
   // e.g. while calibrating devices.
@@ -144,6 +150,12 @@ class TestObserver : public RmadClient::Observer {
     last_hardware_verification_result_ = last_hardware_verification_result;
   }
 
+  // Called when overall calibration progress is updated.
+  void RoFirmwareUpdateProgress(rmad::UpdateRoFirmwareStatus status) override {
+    num_ro_firmware_update_progress_++;
+    last_ro_firmware_update_progress_ = status;
+  }
+
  private:
   RmadClient* client_;  // Not owned.
   int num_error_ = 0;
@@ -161,7 +173,9 @@ class TestObserver : public RmadClient::Observer {
   bool last_power_cable_state_ = true;
   int num_hardware_verification_result_ = 0;
   rmad::HardwareVerificationResult last_hardware_verification_result_;
-};  // namespace chromeos
+  int num_ro_firmware_update_progress_ = 0;
+  rmad::UpdateRoFirmwareStatus last_ro_firmware_update_progress_;
+};
 
 rmad::RmadState CreateWelcomeState() {
   rmad::RmadState state;
@@ -607,6 +621,24 @@ TEST_F(FakeRmadClientTest, HardwareVerificationResultObservation) {
   EXPECT_EQ(true,
             observer_1.last_hardware_verification_result().is_compliant());
   EXPECT_EQ("ok", observer_1.last_hardware_verification_result().error_str());
+}
+
+// Tests that synchronous observers are notified about ro firmware update
+// progress.
+TEST_F(FakeRmadClientTest, RoFirmwareUpdateProgressObservation) {
+  TestObserver observer_1(client_);
+
+  fake_client_()->TriggerRoFirmwareUpdateProgressObservation(
+      rmad::UpdateRoFirmwareStatus::RMAD_UPDATE_RO_FIRMWARE_UPDATING);
+  EXPECT_EQ(observer_1.num_ro_firmware_update_progress(), 1);
+  EXPECT_EQ(observer_1.last_ro_firmware_update_progress(),
+            rmad::UpdateRoFirmwareStatus::RMAD_UPDATE_RO_FIRMWARE_UPDATING);
+
+  fake_client_()->TriggerRoFirmwareUpdateProgressObservation(
+      rmad::UpdateRoFirmwareStatus::RMAD_UPDATE_RO_FIRMWARE_REBOOTING);
+  EXPECT_EQ(observer_1.num_ro_firmware_update_progress(), 2);
+  EXPECT_EQ(observer_1.last_ro_firmware_update_progress(),
+            rmad::UpdateRoFirmwareStatus::RMAD_UPDATE_RO_FIRMWARE_REBOOTING);
 }
 
 }  // namespace

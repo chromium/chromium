@@ -64,6 +64,8 @@ class COMPONENT_EXPORT(RMAD) FakeRmadClient : public RmadClient {
   void TriggerFinalizationProgressObservation(
       rmad::FinalizeStatus::Status status,
       double progress);
+  void TriggerRoFirmwareUpdateProgressObservation(
+      rmad::UpdateRoFirmwareStatus status);
 
  private:
   const rmad::GetStateReply& GetStateReply() const;

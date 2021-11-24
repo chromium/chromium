@@ -63,6 +63,7 @@ class RmadClientImpl : public RmadClient {
   void ProvisioningProgressReceived(dbus::Signal* signal);
   void HardwareVerificationResultReceived(dbus::Signal* signal);
   void FinalizationProgressReceived(dbus::Signal* signal);
+  void RoFirmwareUpdateProgressReceived(dbus::Signal* signal);
 
   void SignalConnected(const std::string& interface_name,
                        const std::string& signal_name,
@@ -97,6 +98,8 @@ void RmadClientImpl::Init(dbus::Bus* bus) {
        &RmadClientImpl::HardwareVerificationResultReceived},
       {rmad::kFinalizeProgressSignal,
        &RmadClientImpl::FinalizationProgressReceived},
+      {rmad::kUpdateRoFirmwareStatusSignal,
+       &RmadClientImpl::RoFirmwareUpdateProgressReceived},
   };
   auto on_connected_callback = base::BindRepeating(
       &RmadClientImpl::SignalConnected, weak_ptr_factory_.GetWeakPtr());
@@ -306,6 +309,22 @@ void RmadClientImpl::FinalizationProgressReceived(dbus::Signal* signal) {
   signal_proto.set_progress(progress);
   for (auto& observer : observers_) {
     observer.FinalizationProgress(signal_proto);
+  }
+}
+
+void RmadClientImpl::RoFirmwareUpdateProgressReceived(dbus::Signal* signal) {
+  DCHECK_EQ(signal->GetMember(), rmad::kUpdateRoFirmwareStatusSignal);
+  dbus::MessageReader reader(signal);
+  // Read message
+  int32_t status;
+  if (!reader.PopInt32(&status)) {
+    LOG(ERROR) << "Unable to decode signal for " << signal->GetMember();
+    return;
+  }
+  DCHECK(!reader.HasMoreData());
+  for (auto& observer : observers_) {
+    observer.RoFirmwareUpdateProgress(
+        static_cast<rmad::UpdateRoFirmwareStatus>(status));
   }
 }
 
