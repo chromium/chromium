@@ -153,23 +153,16 @@ class BorderView : public views::View {
 }  // namespace
 
 SidePanel::SidePanel(BrowserView* browser_view)
-    : border_view_(
-          base::FeatureList::IsEnabled(features::kSidePanelBorder)
-              ? AddChildView(std::make_unique<BorderView>(browser_view))
-              : nullptr) {
+    : border_view_(AddChildView(std::make_unique<BorderView>(browser_view))) {
   SetVisible(false);
   SetLayoutManager(std::make_unique<views::FillLayout>());
 
   // TODO(pbos): Reconsider if SetPanelWidth() should add borders, if so move
   // accounting for the border into SetPanelWidth(), otherwise remove this TODO.
   constexpr int kDefaultWidth = 320;
-  int default_width = kDefaultWidth;
-  if (border_view_)
-    default_width += kBorderInsets.width();
-  SetPanelWidth(default_width);
+  SetPanelWidth(kDefaultWidth + kBorderInsets.width());
 
-  if (base::FeatureList::IsEnabled(features::kSidePanelBorder))
-    SetBorder(views::CreateEmptyBorder(gfx::Insets(kBorderInsets)));
+  SetBorder(views::CreateEmptyBorder(gfx::Insets(kBorderInsets)));
 
   AddObserver(this);
 }
@@ -191,8 +184,7 @@ void SidePanel::OnChildViewAdded(View* observed_view, View* child) {
   UpdateVisibility();
   // Reorder `border_view_` to be last so that it gets painted on top, even if
   // an added child also paints to a layer.
-  if (border_view_)
-    ReorderChildView(border_view_, -1);
+  ReorderChildView(border_view_, -1);
 }
 
 void SidePanel::OnChildViewRemoved(View* observed_view, View* child) {
@@ -218,7 +210,7 @@ void SidePanel::UpdateVisibility() {
   // https://crbug.com/1269090.
   // TODO(pbos): Should layer visibility/painting be automatically tied to
   // parent visibility? I.e. the difference between GetVisible() and IsDrawn().
-  if (border_view_ && any_child_visible != border_view_->GetVisible()) {
+  if (any_child_visible != border_view_->GetVisible()) {
     border_view_->SetVisible(any_child_visible);
     if (any_child_visible) {
       border_view_->SetPaintToLayer();

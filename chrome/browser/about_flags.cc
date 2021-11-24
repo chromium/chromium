@@ -4845,11 +4845,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kSidePanelDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(features::kSidePanel)},
 
-    {flag_descriptions::kSidePanelBorderFlagId,
-     flag_descriptions::kSidePanelBorderName,
-     flag_descriptions::kSidePanelBorderDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(features::kSidePanelBorder)},
-
     {flag_descriptions::kSidePanelDragAndDropFlagId,
      flag_descriptions::kSidePanelDragAndDropName,
      flag_descriptions::kSidePanelDragAndDropDescription, kOsDesktop,
