@@ -193,7 +193,7 @@ ContainerId::ContainerId(std::string vm_name,
                          std::string container_name) noexcept
     : vm_name(std::move(vm_name)), container_name(std::move(container_name)) {}
 
-ContainerId::ContainerId(const base::Value& dict) {
+ContainerId::ContainerId(const base::Value& dict) noexcept {
   const std::string* vm = dict.FindStringKey(prefs::kVmKey);
   const std::string* container = dict.FindStringKey(prefs::kContainerKey);
   vm_name = vm ? *vm : "";

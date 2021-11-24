@@ -136,7 +136,8 @@ IdentificationSettingsManager::SubstitutableParameter::SubstitutableParameter(
     const IdentificationSettingsManager::SubstitutableParameter& other) =
     default;
 IdentificationSettingsManager::SubstitutableParameter::SubstitutableParameter(
-    IdentificationSettingsManager::SubstitutableParameter&& other) = default;
+    IdentificationSettingsManager::SubstitutableParameter&& other) noexcept =
+    default;
 
 struct IdentificationSettingsManager::RequestInfo {
   RequestInfo(net::HttpRequestHeaders param_headers,
