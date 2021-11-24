@@ -18,8 +18,8 @@
 #include "base/strings/string_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/time/time.h"
-#include "chrome/browser/performance_monitor/resource_coalition_internal_types_mac.h"
 #include "chrome/common/chrome_paths.h"
+#include "components/power_metrics/resource_coalition_internal_types_mac.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace performance_monitor {

@@ -2,17 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// This file defines some data types used to retrieve the coalition data from
-// the OS. It's only meant to be included in resource_coalition_mac.h and its
-// test files.
+// This file defines data types used to retrieve coalition metrics from the OS.
 
-#ifndef CHROME_BROWSER_PERFORMANCE_MONITOR_RESOURCE_COALITION_INTERNAL_TYPES_MAC_H_
-#define CHROME_BROWSER_PERFORMANCE_MONITOR_RESOURCE_COALITION_INTERNAL_TYPES_MAC_H_
+#ifndef COMPONENTS_POWER_METRICS_RESOURCE_COALITION_INTERNAL_TYPES_MAC_H_
+#define COMPONENTS_POWER_METRICS_RESOURCE_COALITION_INTERNAL_TYPES_MAC_H_
 
-#include "chrome/browser/performance_monitor/resource_coalition_mac.h"
+#include <stdint.h>
 
 // Comes from osfmk/mach/coalition.h
-
 #define COALITION_TYPE_RESOURCE (0)
 #define COALITION_TYPE_JETSAM (1)
 #define COALITION_TYPE_MAX (1)
@@ -36,45 +33,7 @@
 static_assert(COALITION_NUM_THREAD_QOS_TYPES == THREAD_QOS_LAST,
               "Unexpected number of QoS levels.");
 
-static_assert(
-    THREAD_QOS_DEFAULT ==
-        static_cast<int>(
-            performance_monitor::ResourceCoalition::QoSLevels::kDefault),
-    "QoSLevels indexes should match the OS defined ones.");
-static_assert(
-    THREAD_QOS_MAINTENANCE ==
-        static_cast<int>(
-            performance_monitor::ResourceCoalition::QoSLevels::kMaintenance),
-    "QoSLevels indexes should match the OS defined ones.");
-static_assert(
-    THREAD_QOS_BACKGROUND ==
-        static_cast<int>(
-            performance_monitor::ResourceCoalition::QoSLevels::kBackground),
-    "QoSLevels indexes should match the OS defined ones.");
-static_assert(
-    THREAD_QOS_UTILITY ==
-        static_cast<int>(
-            performance_monitor::ResourceCoalition::QoSLevels::kUtility),
-    "QoSLevels indexes should match the OS defined ones.");
-static_assert(
-    THREAD_QOS_LEGACY ==
-        static_cast<int>(
-            performance_monitor::ResourceCoalition::QoSLevels::kLegacy),
-    "QoSLevels indexes should match the OS defined ones.");
-static_assert(
-    THREAD_QOS_USER_INITIATED ==
-        static_cast<int>(
-            performance_monitor::ResourceCoalition::QoSLevels::kUserInitiated),
-    "QoSLevels indexes should match the OS defined ones.");
-static_assert(THREAD_QOS_USER_INTERACTIVE ==
-                  static_cast<int>(performance_monitor::ResourceCoalition::
-                                       QoSLevels::kUserInteractive),
-              "QoSLevels indexes should match the OS defined ones.");
-
 // Comes from bsd/sys/coalition.h
-//
-// TODO(crbug.com/1229686): Report some data derived from the tasks_started and
-// tasks_exited counters.
 struct coalition_resource_usage {
   uint64_t tasks_started;
   uint64_t tasks_exited;
@@ -117,4 +76,4 @@ struct proc_pidcoalitioninfo {
 // Comes from bsd/sys/proc_info.h
 #define PROC_PIDCOALITIONINFO 20
 
-#endif  // CHROME_BROWSER_PERFORMANCE_MONITOR_RESOURCE_COALITION_INTERNAL_TYPES_MAC_H_
+#endif  // COMPONENTS_POWER_METRICS_RESOURCE_COALITION_INTERNAL_TYPES_MAC_H_

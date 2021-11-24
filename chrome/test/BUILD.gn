@@ -5582,6 +5582,7 @@ test("unit_tests") {
       "//chrome/services/mac_notifications/public/mojom",
       "//chrome/utility/safe_browsing/mac",
       "//chrome/utility/safe_browsing/mac:dmg_common",
+      "//components/power_metrics",
       "//ui/events/devices:test_support",
     ]
   }
