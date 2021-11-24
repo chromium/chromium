@@ -420,6 +420,9 @@ class CONTENT_EXPORT WebContentsObserver {
   // This corresponds to one NavigationController entry being created
   // (in the case of new navigations) or renavigated to (for back/forward
   // navigations).
+  //
+  // Note that this function is only dispatched for NavigationEntries of primary
+  // pages (e.g. not for prerendered pages or fenced frames).
   virtual void NavigationEntryCommitted(
       const LoadCommittedDetails& load_details) {}
 

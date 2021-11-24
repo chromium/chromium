@@ -5697,14 +5697,19 @@ void WebContentsImpl::DidNavigateAnyFramePostCommit(
                         "WebContentsImpl::DidNavigateAnyFramePostCommit",
                         "render_frame_host", render_frame_host);
 
+  // This function can be called by prerendered frames or other inactive frames,
+  // we want to guard the dialog cancellations below.
+  const bool is_active = render_frame_host->IsActive();
+
   // If we navigate off the page, close all JavaScript dialogs.
-  if (!details.is_same_document)
+  if (is_active && !details.is_same_document)
     CancelActiveAndPendingDialogs();
 
   // If this is a user-initiated navigation, start allowing JavaScript dialogs
   // again.
   if (render_frame_host->last_navigation_started_with_transient_activation() &&
       dialog_manager_) {
+    DCHECK(is_active);
     dialog_manager_->CancelDialogs(this, /*reset_state=*/true);
   }
 }

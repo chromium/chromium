@@ -51,7 +51,8 @@ struct CONTENT_EXPORT LoadCommittedDetails {
   bool is_same_document = false;
 
   // True when the main frame was navigated. False means the navigation was a
-  // sub-frame.
+  // sub-frame. Note that the main frame here means any main frame (including
+  // fenced frames, main frames in BFCache or prerendering).
   bool is_main_frame = true;
 
   // True when the navigation triggered a prerender activation.
