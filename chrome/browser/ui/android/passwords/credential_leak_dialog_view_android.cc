@@ -40,6 +40,7 @@ void CredentialLeakDialogViewAndroid::Show(ui::WindowAndroid* window_android) {
       base::android::ConvertUTF16ToJavaString(env, controller_->GetTitle()),
       base::android::ConvertUTF16ToJavaString(env,
                                               controller_->GetDescription()),
+      controller_->ShouldShowChangePasswordIllustration(),
       base::android::ConvertUTF16ToJavaString(
           env, controller_->GetAcceptButtonLabel()),
       controller_->ShouldShowCancelButton()

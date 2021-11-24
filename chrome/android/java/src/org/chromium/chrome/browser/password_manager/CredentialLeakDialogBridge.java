@@ -44,12 +44,15 @@ public class CredentialLeakDialogBridge {
 
     @CalledByNative
     public void showDialog(String credentialLeakTitle, String credentialLeakDetails,
-            String positiveButton, String negativeButton) {
+            boolean useChangePasswordIllustration, String positiveButton, String negativeButton) {
         Activity activity = mWindowAndroid.getActivity().get();
         if (activity == null) return;
 
-        PasswordManagerDialogContents contents = createDialogContents(
-                credentialLeakTitle, credentialLeakDetails, positiveButton, negativeButton);
+        PasswordManagerDialogContents contents = createDialogContents(credentialLeakTitle,
+                credentialLeakDetails,
+                useChangePasswordIllustration ? R.drawable.password_checkup_change_automatically
+                                              : R.drawable.password_checkup_warning,
+                positiveButton, negativeButton);
         contents.setPrimaryButtonFilled(negativeButton != null);
         contents.setHelpButtonCallback(this::showHelpArticle);
 
@@ -58,9 +61,10 @@ public class CredentialLeakDialogBridge {
     }
 
     private PasswordManagerDialogContents createDialogContents(String credentialLeakTitle,
-            String credentialLeakDetails, String positiveButton, String negativeButton) {
+            String credentialLeakDetails, int illustrationId, String positiveButton,
+            String negativeButton) {
         return new PasswordManagerDialogContents(credentialLeakTitle, credentialLeakDetails,
-                R.drawable.password_checkup_warning, positiveButton, negativeButton, this::onClick);
+                illustrationId, positiveButton, negativeButton, this::onClick);
     }
 
     @CalledByNative

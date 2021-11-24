@@ -64,6 +64,10 @@ class CredentialLeakControllerAndroid {
   // Checks whether the cancel button should be shown.
   bool ShouldShowCancelButton() const;
 
+  // Whether a "change password" illustration should be shown instead of the
+  // regular "warning" illustration.
+  bool ShouldShowChangePasswordIllustration() const;
+
  private:
   // Used to customize the UI.
   const password_manager::CredentialLeakType leak_type_;

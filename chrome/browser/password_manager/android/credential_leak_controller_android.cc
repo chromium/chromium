@@ -119,3 +119,8 @@ std::u16string CredentialLeakControllerAndroid::GetTitle() const {
 bool CredentialLeakControllerAndroid::ShouldShowCancelButton() const {
   return password_manager::ShouldShowCancelButton(leak_type_);
 }
+
+bool CredentialLeakControllerAndroid::ShouldShowChangePasswordIllustration()
+    const {
+  return password_manager::ShouldShowChangePasswordButton(leak_type_);
+}
