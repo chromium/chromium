@@ -85,7 +85,6 @@ void WebPlatformMediaStreamSource::ChangeSource(
 
 WebMediaStreamSource WebPlatformMediaStreamSource::Owner() {
   DCHECK(task_runner_->BelongsToCurrentThread());
-  DCHECK(owner_);
   return WebMediaStreamSource(owner_.Get());
 }
 
