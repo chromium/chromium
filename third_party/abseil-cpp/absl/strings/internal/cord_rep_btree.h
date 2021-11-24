@@ -163,6 +163,9 @@ class CordRepBtree : public CordRep {
   // typically after a ref_count.Decrement() on the last reference count.
   static void Destroy(CordRepBtree* tree);
 
+  // Destruction
+  static void Delete(CordRepBtree* tree) { delete tree; }
+
   // Use CordRep::Unref() as we overload for absl::Span<CordRep* const>.
   using CordRep::Unref;
 
@@ -440,12 +443,6 @@ class CordRepBtree : public CordRep {
   // Requires `offset` < length.
   Position IndexBeyond(size_t offset) const;
 
-  // Destruction
-  static void DestroyLeaf(CordRepBtree* tree, size_t begin, size_t end);
-  static void DestroyNonLeaf(CordRepBtree* tree, size_t begin, size_t end);
-  static void DestroyTree(CordRepBtree* tree, size_t begin, size_t end);
-  static void Delete(CordRepBtree* tree) { delete tree; }
-
   // Creates a new leaf node containing as much data as possible from `data`.
   // The data is added either forwards or reversed depending on `edge_type`.
   // Callers must check the length of the returned node to determine if all data
@@ -687,19 +684,6 @@ inline CordRepBtree* CordRepBtree::New(CordRepBtree* front,
   tree->edges_[0] = front;
   tree->edges_[1] = back;
   return tree;
-}
-
-inline void CordRepBtree::DestroyTree(CordRepBtree* tree, size_t begin,
-                                      size_t end) {
-  if (tree->height() == 0) {
-    DestroyLeaf(tree, begin, end);
-  } else {
-    DestroyNonLeaf(tree, begin, end);
-  }
-}
-
-inline void CordRepBtree::Destroy(CordRepBtree* tree) {
-  DestroyTree(tree, tree->begin(), tree->end());
 }
 
 inline void CordRepBtree::Unref(absl::Span<CordRep* const> edges) {

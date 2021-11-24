@@ -185,13 +185,16 @@ enum CordRepKind {
   EXTERNAL = 5,
 
   // We have different tags for different sized flat arrays,
-  // starting with FLAT, and limited to MAX_FLAT_TAG. The 226 value is based on
-  // the current 'size to tag' encoding of 8 / 32 bytes. If a new tag is needed
-  // in the future, then 'FLAT' and 'MAX_FLAT_TAG' should be adjusted as well
-  // as the Tag <---> Size logic so that FLAT stil represents the minimum flat
-  // allocation size. (32 bytes as of now).
+  // starting with FLAT, and limited to MAX_FLAT_TAG. The below values map to an
+  // allocated range of 32 bytes to 256 KB. The current granularity is:
+  // - 8 byte granularity for flat sizes in [32 - 512]
+  // - 64 byte granularity for flat sizes in (512 - 8KiB]
+  // - 4KiB byte granularity for flat sizes in (8KiB, 256 KiB]
+  // If a new tag is needed in the future, then 'FLAT' and 'MAX_FLAT_TAG' should
+  // be adjusted as well as the Tag <---> Size mapping logic so that FLAT still
+  // represents the minimum flat allocation size. (32 bytes as of now).
   FLAT = 6,
-  MAX_FLAT_TAG = 226
+  MAX_FLAT_TAG = 248
 };
 
 // There are various locations where we want to check if some rep is a 'plain'

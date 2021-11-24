@@ -348,7 +348,7 @@ absl_cc_library(
   DEPS
     absl::container_memory
     absl::hash_function_defaults
-    absl::node_hash_policy
+    absl::node_slot_policy
     absl::raw_hash_map
     absl::algorithm_container
     absl::memory
@@ -382,7 +382,7 @@ absl_cc_library(
     ${ABSL_DEFAULT_COPTS}
   DEPS
     absl::hash_function_defaults
-    absl::node_hash_policy
+    absl::node_slot_policy
     absl::raw_hash_set
     absl::algorithm_container
     absl::memory
@@ -599,9 +599,9 @@ absl_cc_library(
 
 absl_cc_library(
   NAME
-    node_hash_policy
+    node_slot_policy
   HDRS
-    "internal/node_hash_policy.h"
+    "internal/node_slot_policy.h"
   COPTS
     ${ABSL_DEFAULT_COPTS}
   DEPS
@@ -611,14 +611,14 @@ absl_cc_library(
 
 absl_cc_test(
   NAME
-    node_hash_policy_test
+    node_slot_policy_test
   SRCS
-    "internal/node_hash_policy_test.cc"
+    "internal/node_slot_policy_test.cc"
   COPTS
     ${ABSL_TEST_COPTS}
   DEPS
     absl::hash_policy_traits
-    absl::node_hash_policy
+    absl::node_slot_policy
     GTest::gmock_main
 )
 

@@ -39,7 +39,7 @@
 
 #include "absl/algorithm/container.h"
 #include "absl/container/internal/hash_function_defaults.h"  // IWYU pragma: export
-#include "absl/container/internal/node_hash_policy.h"
+#include "absl/container/internal/node_slot_policy.h"
 #include "absl/container/internal/raw_hash_set.h"  // IWYU pragma: export
 #include "absl/memory/memory.h"
 
@@ -442,7 +442,7 @@ namespace container_internal {
 
 template <class T>
 struct NodeHashSetPolicy
-    : absl::container_internal::node_hash_policy<T&, NodeHashSetPolicy<T>> {
+    : absl::container_internal::node_slot_policy<T&, NodeHashSetPolicy<T>> {
   using key_type = T;
   using init_type = T;
   using constant_iterators = std::true_type;

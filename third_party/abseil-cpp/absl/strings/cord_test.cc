@@ -43,6 +43,10 @@
 #include "absl/strings/str_format.h"
 #include "absl/strings/string_view.h"
 
+// convenience local constants
+static constexpr auto FLAT = absl::cord_internal::FLAT;
+static constexpr auto MAX_FLAT_TAG = absl::cord_internal::MAX_FLAT_TAG;
+
 typedef std::mt19937_64 RandomEngine;
 
 static std::string RandomLowercaseString(RandomEngine* rng);
@@ -259,6 +263,74 @@ class CordTest : public testing::TestWithParam<int> {
 
 INSTANTIATE_TEST_SUITE_P(WithParam, CordTest, testing::Values(0, 1, 2, 3),
                          CordTest::ToString);
+
+
+TEST(CordRepFlat, AllFlatCapacities) {
+  using absl::cord_internal::CordRep;
+  using absl::cord_internal::CordRepFlat;
+  using absl::cord_internal::kFlatOverhead;
+
+  // Explicitly and redundantly assert built-in min/max limits
+  static_assert(absl::cord_internal::kFlatOverhead < 32, "");
+  static_assert(absl::cord_internal::kMinFlatSize == 32, "");
+  static_assert(absl::cord_internal::kMaxLargeFlatSize == 256 << 10, "");
+  EXPECT_EQ(absl::cord_internal::TagToAllocatedSize(FLAT), 32);
+  EXPECT_EQ(absl::cord_internal::TagToAllocatedSize(MAX_FLAT_TAG), 256 << 10);
+
+  // Verify all tags to map perfectly back and forth, and
+  // that sizes are monotonically increasing.
+  size_t last_size = 0;
+  for (int tag = FLAT; tag <= MAX_FLAT_TAG; ++tag) {
+    size_t size = absl::cord_internal::TagToAllocatedSize(tag);
+    ASSERT_GT(size, last_size);
+    ASSERT_EQ(absl::cord_internal::TagToAllocatedSize(tag), size);
+    last_size = size;
+  }
+
+  // All flat size from 32 - 512 are 8 byte granularity
+  for (size_t size = 32; size <= 512; size += 8) {
+    ASSERT_EQ(absl::cord_internal::RoundUpForTag(size), size);
+    uint8_t tag = absl::cord_internal::AllocatedSizeToTag(size);
+    ASSERT_EQ(absl::cord_internal::TagToAllocatedSize(tag), size);
+  }
+
+  // All flat sizes from 512 - 8192 are 64 byte granularity
+  for (size_t size = 512; size <= 8192; size += 64) {
+    ASSERT_EQ(absl::cord_internal::RoundUpForTag(size), size);
+    uint8_t tag = absl::cord_internal::AllocatedSizeToTag(size);
+    ASSERT_EQ(absl::cord_internal::TagToAllocatedSize(tag), size);
+  }
+
+  // All flat sizes from 8KB to 256KB are 4KB granularity
+  for (size_t size = 8192; size <= 256 * 1024; size += 4 * 1024) {
+    ASSERT_EQ(absl::cord_internal::RoundUpForTag(size), size);
+    uint8_t tag = absl::cord_internal::AllocatedSizeToTag(size);
+    ASSERT_EQ(absl::cord_internal::TagToAllocatedSize(tag), size);
+  }
+}
+
+TEST(CordRepFlat, MaxFlatSize) {
+  using absl::cord_internal::CordRep;
+  using absl::cord_internal::CordRepFlat;
+  using absl::cord_internal::kMaxFlatLength;
+  CordRepFlat* flat = CordRepFlat::New(kMaxFlatLength);
+  EXPECT_EQ(flat->Capacity(), kMaxFlatLength);
+  CordRep::Unref(flat);
+
+  flat = CordRepFlat::New(kMaxFlatLength * 4);
+  EXPECT_EQ(flat->Capacity(), kMaxFlatLength);
+  CordRep::Unref(flat);
+}
+
+TEST(CordRepFlat, MaxLargeFlatSize) {
+  using absl::cord_internal::CordRep;
+  using absl::cord_internal::CordRepFlat;
+  using absl::cord_internal::kFlatOverhead;
+  const size_t size = 256 * 1024 - kFlatOverhead;
+  CordRepFlat* flat = CordRepFlat::New(CordRepFlat::Large(), size);
+  EXPECT_GE(flat->Capacity(), size);
+  CordRep::Unref(flat);
+}
 
 TEST_P(CordTest, AllFlatSizes) {
   using absl::strings_internal::CordTestAccess;

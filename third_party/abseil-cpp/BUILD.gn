@@ -180,6 +180,7 @@ if (build_with_chromium) {
         "absl/base:config_test",
         "absl/cleanup:cleanup_test",
         "absl/container:inlined_vector_test",
+        "absl/container:node_slot_policy_test",
         "absl/container:sample_element_size_test",
         "absl/hash:low_level_hash_test",
         "absl/memory:memory_test",

@@ -397,6 +397,7 @@ EXPORTS
     ??$Nanoseconds@H$0A@@absl@@YA?AVDuration@0@H@Z
     ??$Nanoseconds@J$0A@@absl@@YA?AVDuration@0@J@Z
     ??$Nanoseconds@_J$0A@@absl@@YA?AVDuration@0@_J@Z
+    ??$NewImpl@$0BAAA@@CordRepFlat@cord_internal@absl@@SAPEAU012@_K@Z
     ??$NewLeaf@$00@CordRepBtree@cord_internal@absl@@CAPEAV012@Vstring_view@2@_K@Z
     ??$NewLeaf@$0A@@CordRepBtree@cord_internal@absl@@CAPEAV012@Vstring_view@2@_K@Z
     ??$Offset@$00$0A@@?$LayoutImpl@V?$tuple@_KPEAUCordRep@cord_internal@absl@@I@__1@std@@U?$integer_sequence@_K$0A@$00$01@absl@@U45@@internal_layout@container_internal@absl@@QEBA_KXZ
@@ -1774,7 +1775,7 @@ EXPORTS
     ?DecrementSynchSem@Mutex@absl@@CA_NPEAV12@PEAUPerThreadSynch@base_internal@2@VKernelTimeout@synchronization_internal@2@@Z
     ?DefaultArena@LowLevelAlloc@base_internal@absl@@SAPEAUArena@123@XZ
     ?DefaultStackUnwinder@absl@@YAHPEAPEAXPEAHHHPEBX1@Z
-    ?Delete@CordRepBtree@cord_internal@absl@@CAXPEAV123@@Z
+    ?Delete@CordRepBtree@cord_internal@absl@@SAXPEAV123@@Z
     ?Delete@CordRepExternal@cord_internal@absl@@SAXPEAUCordRep@23@@Z
     ?Delete@CordRepFlat@cord_internal@absl@@SAXPEAUCordRep@23@@Z
     ?Delete@CordRepRing@cord_internal@absl@@CAXPEAV123@@Z
@@ -1797,9 +1798,6 @@ EXPORTS
     ?DestroyElements@?$DestroyAdapter@V?$allocator@PEBUCordRep@cord_internal@absl@@@__1@std@@$00@inlined_vector_internal@absl@@SAXAEAV?$allocator@PEBUCordRep@cord_internal@absl@@@__1@std@@PEAPEBUCordRep@cord_internal@3@_K@Z
     ?DestroyElements@?$DestroyAdapter@V?$allocator@UPayload@status_internal@absl@@@__1@std@@$0A@@inlined_vector_internal@absl@@SAXAEAV?$allocator@UPayload@status_internal@absl@@@__1@std@@PEAUPayload@status_internal@3@_K@Z
     ?DestroyElements@?$DestroyAdapter@V?$allocator@USubRange@absl@@@__1@std@@$00@inlined_vector_internal@absl@@SAXAEAV?$allocator@USubRange@absl@@@__1@std@@PEAUSubRange@3@_K@Z
-    ?DestroyLeaf@CordRepBtree@cord_internal@absl@@CAXPEAV123@_K1@Z
-    ?DestroyNonLeaf@CordRepBtree@cord_internal@absl@@CAXPEAV123@_K1@Z
-    ?DestroyTree@CordRepBtree@cord_internal@absl@@CAXPEAV123@_K1@Z
     ?DiagnosticsGetDeleteQueue@CordzHandle@cord_internal@absl@@SA?AV?$vector@PEBVCordzHandle@cord_internal@absl@@V?$allocator@PEBVCordzHandle@cord_internal@absl@@@__1@std@@@__1@std@@XZ
     ?DiagnosticsGetSafeToInspectDeletedHandles@CordzHandle@cord_internal@absl@@QEAA?AV?$vector@PEBVCordzHandle@cord_internal@absl@@V?$allocator@PEBVCordzHandle@cord_internal@absl@@@__1@std@@@__1@std@@XZ
     ?DiagnosticsHandleIsSafeToInspect@CordzHandle@cord_internal@absl@@QEBA_NPEBV123@@Z

@@ -87,7 +87,7 @@ absl_source_set("node_hash_map") {
   deps = [
     ":container_memory",
     ":hash_function_defaults",
-    ":node_hash_policy",
+    ":node_slot_policy",
     ":raw_hash_map",
     "//third_party/abseil-cpp/absl/algorithm:container",
     "//third_party/abseil-cpp/absl/memory",
@@ -99,7 +99,7 @@ absl_source_set("node_hash_set") {
   deps = [
     ":container_memory",
     ":hash_function_defaults",
-    ":node_hash_policy",
+    ":node_slot_policy",
     ":raw_hash_set",
     "//third_party/abseil-cpp/absl/algorithm:container",
     "//third_party/abseil-cpp/absl/memory",
@@ -181,9 +181,20 @@ absl_source_set("hashtablez_sampler") {
   ]
 }
 
-absl_source_set("node_hash_policy") {
-  public = [ "internal/node_hash_policy.h" ]
+absl_source_set("node_slot_policy") {
+  public = [ "internal/node_slot_policy.h" ]
   deps = [ "//third_party/abseil-cpp/absl/base:config" ]
+}
+
+absl_source_set("node_slot_policy_test") {
+  testonly = true
+  sources = [ "internal/node_slot_policy_test.cc" ]
+  deps = [
+    ":hash_policy_traits",
+    ":node_slot_policy",
+    "//third_party/googletest:gmock",
+    "//third_party/googletest:gtest",
+  ]
 }
 
 absl_source_set("raw_hash_map") {

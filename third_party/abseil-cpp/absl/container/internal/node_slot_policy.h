@@ -30,8 +30,8 @@
 // It may also optionally define `value()` and `apply()`. For documentation on
 // these, see hash_policy_traits.h.
 
-#ifndef ABSL_CONTAINER_INTERNAL_NODE_HASH_POLICY_H_
-#define ABSL_CONTAINER_INTERNAL_NODE_HASH_POLICY_H_
+#ifndef ABSL_CONTAINER_INTERNAL_NODE_SLOT_POLICY_H_
+#define ABSL_CONTAINER_INTERNAL_NODE_SLOT_POLICY_H_
 
 #include <cassert>
 #include <cstddef>
@@ -46,7 +46,7 @@ ABSL_NAMESPACE_BEGIN
 namespace container_internal {
 
 template <class Reference, class Policy>
-struct node_hash_policy {
+struct node_slot_policy {
   static_assert(std::is_lvalue_reference<Reference>::value, "");
 
   using slot_type = typename std::remove_cv<
@@ -89,4 +89,4 @@ struct node_hash_policy {
 ABSL_NAMESPACE_END
 }  // namespace absl
 
-#endif  // ABSL_CONTAINER_INTERNAL_NODE_HASH_POLICY_H_
+#endif  // ABSL_CONTAINER_INTERNAL_NODE_SLOT_POLICY_H_

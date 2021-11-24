@@ -43,7 +43,7 @@
 #include "absl/algorithm/container.h"
 #include "absl/container/internal/container_memory.h"
 #include "absl/container/internal/hash_function_defaults.h"  // IWYU pragma: export
-#include "absl/container/internal/node_hash_policy.h"
+#include "absl/container/internal/node_slot_policy.h"
 #include "absl/container/internal/raw_hash_map.h"  // IWYU pragma: export
 #include "absl/memory/memory.h"
 
@@ -535,7 +535,7 @@ namespace container_internal {
 
 template <class Key, class Value>
 class NodeHashMapPolicy
-    : public absl::container_internal::node_hash_policy<
+    : public absl::container_internal::node_slot_policy<
           std::pair<const Key, Value>&, NodeHashMapPolicy<Key, Value>> {
   using value_type = std::pair<const Key, Value>;
 

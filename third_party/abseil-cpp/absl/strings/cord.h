@@ -855,6 +855,11 @@ class Cord {
     // Returns true if the Cord is being profiled by cordz.
     bool is_profiled() const { return data_.is_tree() && data_.is_profiled(); }
 
+    // Returns the available inlined capacity, or 0 if is_tree() == true.
+    size_t inline_capacity() const {
+      return data_.is_tree() ? 0 : kMaxInline - data_.inline_size();
+    }
+
     // Returns the profiled CordzInfo, or nullptr if not sampled.
     absl::cord_internal::CordzInfo* cordz_info() const {
       return data_.cordz_info();

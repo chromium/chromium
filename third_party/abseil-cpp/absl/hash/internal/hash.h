@@ -502,10 +502,9 @@ AbslHashValue(H hash_state, const std::vector<T, Allocator>& vector) {
                     vector.size());
 }
 
+// AbslHashValue special cases for hashing std::vector<bool>
 #if defined(ABSL_IS_BIG_ENDIAN) && \
     (defined(__GLIBCXX__) || defined(__GLIBCPP__))
-// AbslHashValue for hashing std::vector<bool>
-//
 // std::hash in libstdc++ does not work correctly with vector<bool> on Big
 // Endian platforms therefore we need to implement a custom AbslHashValue for
 // it. More details on the bug:
@@ -520,6 +519,22 @@ AbslHashValue(H hash_state, const std::vector<T, Allocator>& vector) {
     hash_state = combiner.add_buffer(std::move(hash_state), &c, sizeof(c));
   }
   return H::combine(combiner.finalize(std::move(hash_state)), vector.size());
+}
+#else
+// When not working around the libstdc++ bug above, we still have to contend
+// with the fact that std::hash<vector<bool>> is often poor quality, hashing
+// directly on the internal words and on no other state.  On these platforms,
+// vector<bool>{1, 1} and vector<bool>{1, 1, 0} hash to the same value.
+//
+// Mixing in the size (as we do in our other vector<> implementations) on top
+// of the library-provided hash implementation avoids this QOI issue.
+template <typename H, typename T, typename Allocator>
+typename std::enable_if<is_hashable<T>::value && std::is_same<T, bool>::value,
+                        H>::type
+AbslHashValue(H hash_state, const std::vector<T, Allocator>& vector) {
+  return H::combine(std::move(hash_state),
+                    std::hash<std::vector<T, Allocator>>{}(vector),
+                    vector.size());
 }
 #endif
 

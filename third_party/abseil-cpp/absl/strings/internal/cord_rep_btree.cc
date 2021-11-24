@@ -190,24 +190,29 @@ inline void FastUnref(R* r, Fn&& fn) {
   }
 }
 
-// Deletes a leaf node data edge. Requires `rep` to be an EXTERNAL or FLAT
-// node, or a SUBSTRING of an EXTERNAL or FLAT node.
-void DeleteLeafEdge(CordRep* rep) {
-  for (;;) {
+
+void DeleteSubstring(CordRepSubstring* substring) {
+  CordRep* rep = substring->child;
+  if (!rep->refcount.Decrement()) {
     if (rep->tag >= FLAT) {
       CordRepFlat::Delete(rep->flat());
-      return;
-    }
-    if (rep->tag == EXTERNAL) {
+    } else {
+      assert(rep->tag == EXTERNAL);
       CordRepExternal::Delete(rep->external());
-      return;
     }
-    assert(rep->tag == SUBSTRING);
-    CordRepSubstring* substring = rep->substring();
-    rep = substring->child;
-    assert(rep->tag == EXTERNAL || rep->tag >= FLAT);
-    delete substring;
-    if (rep->refcount.Decrement()) return;
+  }
+  delete substring;
+}
+
+// Deletes a leaf node data edge. Requires `IsDataEdge(rep)`.
+void DeleteLeafEdge(CordRep* rep) {
+  assert(CordRepBtree::IsDataEdge(rep));
+  if (rep->tag >= FLAT) {
+    CordRepFlat::Delete(rep->flat());
+  } else if (rep->tag == EXTERNAL) {
+    CordRepExternal::Delete(rep->external());
+  } else {
+    DeleteSubstring(rep->substring());
   }
 }
 
@@ -372,19 +377,37 @@ void CordRepBtree::Dump(const CordRep* rep, std::ostream& stream) {
   Dump(rep, absl::string_view(), false, stream);
 }
 
-void CordRepBtree::DestroyLeaf(CordRepBtree* tree, size_t begin, size_t end) {
-  for (CordRep* edge : tree->Edges(begin, end)) {
-    FastUnref(edge, DeleteLeafEdge);
+template <size_t size>
+static void DestroyTree(CordRepBtree* tree) {
+  for (CordRep* node : tree->Edges()) {
+    if (node->refcount.Decrement()) continue;
+    for (CordRep* edge : node->btree()->Edges()) {
+      if (edge->refcount.Decrement()) continue;
+      if (size == 1) {
+        DeleteLeafEdge(edge);
+      } else {
+        CordRepBtree::Destroy(edge->btree());
+      }
+    }
+    CordRepBtree::Delete(node->btree());
   }
-  Delete(tree);
+  CordRepBtree::Delete(tree);
 }
 
-void CordRepBtree::DestroyNonLeaf(CordRepBtree* tree, size_t begin,
-                                  size_t end) {
-  for (CordRep* edge : tree->Edges(begin, end)) {
-    FastUnref(edge->btree(), Destroy);
+void CordRepBtree::Destroy(CordRepBtree* tree) {
+  switch (tree->height()) {
+    case 0:
+      for (CordRep* edge : tree->Edges()) {
+        if (!edge->refcount.Decrement()) {
+          DeleteLeafEdge(edge);
+        }
+      }
+      return CordRepBtree::Delete(tree);
+    case 1:
+      return DestroyTree<1>(tree);
+    default:
+      return DestroyTree<2>(tree);
   }
-  Delete(tree);
 }
 
 bool CordRepBtree::IsValid(const CordRepBtree* tree, bool shallow) {

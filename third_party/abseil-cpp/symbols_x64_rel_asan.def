@@ -71,6 +71,7 @@ EXPORTS
     ??$GenericCompare@_NVstring_view@absl@@@absl@@YA_NAEBVCord@0@AEBVstring_view@0@_K@Z
     ??$Merge@$00@CordRepBtree@cord_internal@absl@@CAPEAV012@PEAV012@0@Z
     ??$Merge@$0A@@CordRepBtree@cord_internal@absl@@CAPEAV012@PEAV012@0@Z
+    ??$NewImpl@$0BAAA@@CordRepFlat@cord_internal@absl@@SAPEAU012@_K@Z
     ??$NewLeaf@$00@CordRepBtree@cord_internal@absl@@CAPEAV012@Vstring_view@2@_K@Z
     ??$NewLeaf@$0A@@CordRepBtree@cord_internal@absl@@CAPEAV012@Vstring_view@2@_K@Z
     ??$ParseFloat@$09@strings_internal@absl@@YA?AUParsedFloat@01@PEBD0W4chars_format@1@@Z
@@ -341,13 +342,12 @@ EXPORTS
     ?Description@TimeZoneInfo@cctz@time_internal@absl@@UEBA?AV?$basic_string@DU?$char_traits@D@__1@std@@V?$allocator@D@23@@__1@std@@XZ
     ?Description@TimeZoneLibC@cctz@time_internal@absl@@UEBA?AV?$basic_string@DU?$char_traits@D@__1@std@@V?$allocator@D@23@@__1@std@@XZ
     ?Destroy@CordRep@cord_internal@absl@@SAXPEAU123@@Z
+    ?Destroy@CordRepBtree@cord_internal@absl@@SAXPEAV123@@Z
     ?Destroy@CordRepCrc@cord_internal@absl@@SAXPEAU123@@Z
     ?Destroy@CordRepRing@cord_internal@absl@@CAXPEAV123@@Z
     ?Destroy@PerThreadSem@synchronization_internal@absl@@CAXPEAUThreadIdentity@base_internal@3@@Z
     ?DestroyContents@?$Storage@UPayload@status_internal@absl@@$00V?$allocator@UPayload@status_internal@absl@@@__1@std@@@inlined_vector_internal@absl@@AEAAXXZ
     ?DestroyCordSlow@Cord@absl@@AEAAXXZ
-    ?DestroyLeaf@CordRepBtree@cord_internal@absl@@CAXPEAV123@_K1@Z
-    ?DestroyNonLeaf@CordRepBtree@cord_internal@absl@@CAXPEAV123@_K1@Z
     ?DiagnosticsGetDeleteQueue@CordzHandle@cord_internal@absl@@SA?AV?$vector@PEBVCordzHandle@cord_internal@absl@@V?$allocator@PEBVCordzHandle@cord_internal@absl@@@__1@std@@@__1@std@@XZ
     ?DiagnosticsGetSafeToInspectDeletedHandles@CordzHandle@cord_internal@absl@@QEAA?AV?$vector@PEBVCordzHandle@cord_internal@absl@@V?$allocator@PEBVCordzHandle@cord_internal@absl@@@__1@std@@@__1@std@@XZ
     ?DiagnosticsHandleIsSafeToInspect@CordzHandle@cord_internal@absl@@QEBA_NPEBV123@@Z
@@ -579,7 +579,6 @@ EXPORTS
     ?Mutable@CordRepRing@cord_internal@absl@@CAPEAV123@PEAV123@_K@Z
     ?MutexDelay@synchronization_internal@absl@@YAHHH@Z
     ?New@CordRepCrc@cord_internal@absl@@SAPEAU123@PEAUCordRep@23@I@Z
-    ?New@CordRepFlat@cord_internal@absl@@SAPEAU123@_K@Z
     ?New@CordRepRing@cord_internal@absl@@CAPEAV123@_K0@Z
     ?NewArena@LowLevelAlloc@base_internal@absl@@SAPEAUArena@123@H@Z
     ?Next@CordzInfo@cord_internal@absl@@QEBAPEAV123@AEBVCordzSnapshot@23@@Z
