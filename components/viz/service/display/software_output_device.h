@@ -78,6 +78,10 @@ class VIZ_SERVICE_EXPORT SoftwareOutputDevice {
 
   virtual int MaxFramesPending() const;
 
+  // Returns true if we are allowed to adopt a size different from the
+  // platform's proposed surface size.
+  virtual bool SupportsOverridePlatformSize() const;
+
  protected:
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
   SoftwareOutputDeviceClient* client_ = nullptr;

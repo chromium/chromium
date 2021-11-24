@@ -276,6 +276,10 @@ WaylandCanvasSurface::CreateVSyncProvider() {
       weak_factory_.GetWeakPtr());
 }
 
+bool WaylandCanvasSurface::SupportsOverridePlatformSize() const {
+  return true;
+}
+
 void WaylandCanvasSurface::ProcessUnsubmittedBuffers() {
   DCHECK(!unsubmitted_buffers_.empty() && unsubmitted_buffers_.front()->used());
 

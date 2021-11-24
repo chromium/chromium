@@ -14,6 +14,10 @@ bool SurfaceOzoneCanvas::SupportsAsyncBufferSwap() const {
   return false;
 }
 
+bool SurfaceOzoneCanvas::SupportsOverridePlatformSize() const {
+  return false;
+}
+
 void SurfaceOzoneCanvas::OnSwapBuffers(SwapBuffersCallback swap_ack_callback) {
   NOTREACHED() << "If the SurfaceOzoneCanvas wants to handle the buffer swap "
                   "callback, it must override this method.";

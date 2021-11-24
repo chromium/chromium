@@ -62,6 +62,10 @@ class COMPONENT_EXPORT(OZONE_BASE) SurfaceOzoneCanvas {
   // call once the swap is completed.
   virtual bool SupportsAsyncBufferSwap() const;
 
+  // Returns true if we are allowed to adopt a size different from the
+  // platform's proposed surface size.
+  virtual bool SupportsOverridePlatformSize() const;
+
   // Corresponds to SoftwareOutputDevice::SwapBuffersCallback.
   using SwapBuffersCallback = base::OnceCallback<void(const gfx::Size&)>;
   // The implementations may want to handle the buffer swap callback by

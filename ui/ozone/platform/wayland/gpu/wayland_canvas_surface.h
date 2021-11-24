@@ -59,6 +59,7 @@ class WaylandCanvasSurface : public SurfaceOzoneCanvas,
   void ResizeCanvas(const gfx::Size& viewport_size, float scale) override;
   void PresentCanvas(const gfx::Rect& damage) override;
   std::unique_ptr<gfx::VSyncProvider> CreateVSyncProvider() override;
+  bool SupportsOverridePlatformSize() const override;
 
  private:
   // Internal helper class, which creates a shared memory region, asks the
