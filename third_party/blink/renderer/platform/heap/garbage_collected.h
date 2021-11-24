@@ -5,10 +5,14 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_HEAP_GARBAGE_COLLECTED_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_HEAP_GARBAGE_COLLECTED_H_
 
-#include "third_party/blink/renderer/platform/heap/thread_state.h"
+#include "third_party/blink/renderer/platform/heap/thread_state_storage.h"
 #include "v8/include/cppgc/allocation.h"
 #include "v8/include/cppgc/garbage-collected.h"
 #include "v8/include/cppgc/type-traits.h"
+
+namespace cppgc {
+class Visitor;
+}  // namespace cppgc
 
 namespace blink {
 
@@ -17,12 +21,14 @@ using GarbageCollected = cppgc::GarbageCollected<T>;
 
 using GarbageCollectedMixin = cppgc::GarbageCollectedMixin;
 
+using Visitor = cppgc::Visitor;
+
 // Default MakeGarbageCollected: Constructs an instance of T, which is a garbage
 // collected type.
 template <typename T, typename... Args>
 T* MakeGarbageCollected(Args&&... args) {
   return cppgc::MakeGarbageCollected<T>(
-      ThreadStateFor<ThreadingTrait<T>::kAffinity>::GetState()
+      ThreadStateStorageFor<ThreadingTrait<T>::kAffinity>::GetState()
           ->allocation_handle(),
       std::forward<Args>(args)...);
 }
@@ -34,7 +40,7 @@ using AdditionalBytes = cppgc::AdditionalBytes;
 template <typename T, typename... Args>
 T* MakeGarbageCollected(AdditionalBytes additional_bytes, Args&&... args) {
   return cppgc::MakeGarbageCollected<T>(
-      ThreadStateFor<ThreadingTrait<T>::kAffinity>::GetState()
+      ThreadStateStorageFor<ThreadingTrait<T>::kAffinity>::GetState()
           ->allocation_handle(),
       std::forward<AdditionalBytes>(additional_bytes),
       std::forward<Args>(args)...);

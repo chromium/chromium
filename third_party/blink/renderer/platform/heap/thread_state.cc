@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/bindings/wrapper_type_info.h"
 #include "third_party/blink/renderer/platform/heap/custom_spaces.h"
+#include "third_party/blink/renderer/platform/heap/thread_state_storage.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "v8/include/cppgc/heap-consistency.h"
@@ -86,39 +87,41 @@ class BlinkRootsHandler final : public v8::EmbedderRootsHandler {
 
 }  // namespace
 
-thread_local ThreadState* g_thread_specific_ CONSTINIT
-    __attribute__((tls_model(BLINK_HEAP_THREAD_LOCAL_MODEL))) = nullptr;
-
-// static
-alignas(ThreadState) uint8_t
-    ThreadState::main_thread_state_storage_[sizeof(ThreadState)];
-
-BLINK_HEAP_DEFINE_THREAD_LOCAL_GETTER(ThreadState::Current,
-                                      ThreadState*,
-                                      g_thread_specific_)
-
 // static
 ThreadState* ThreadState::AttachMainThread() {
-  return new (main_thread_state_storage_) ThreadState(gin::V8Platform::Get());
+  auto* thread_state = new ThreadState(gin::V8Platform::Get());
+  ThreadStateStorage::CreateMain(*thread_state,
+                                 thread_state->cpp_heap().GetAllocationHandle(),
+                                 thread_state->cpp_heap().GetHeapHandle());
+  return thread_state;
 }
 
 // static
 ThreadState* ThreadState::AttachMainThreadForTesting(v8::Platform* platform) {
-  ThreadState* thread_state =
-      new (main_thread_state_storage_) ThreadState(platform);
+  auto* thread_state = new ThreadState(platform);
+  ThreadStateStorage::CreateMain(*thread_state,
+                                 thread_state->cpp_heap().GetAllocationHandle(),
+                                 thread_state->cpp_heap().GetHeapHandle());
   thread_state->EnableDetachedGarbageCollectionsForTesting();
   return thread_state;
 }
 
 // static
 ThreadState* ThreadState::AttachCurrentThread() {
-  return new ThreadState(gin::V8Platform::Get());
+  auto* thread_state = new ThreadState(gin::V8Platform::Get());
+  ThreadStateStorage::Create(*thread_state,
+                             thread_state->cpp_heap().GetAllocationHandle(),
+                             thread_state->cpp_heap().GetHeapHandle());
+  return thread_state;
 }
 
 // static
 ThreadState* ThreadState::AttachCurrentThreadForTesting(
     v8::Platform* platform) {
   ThreadState* thread_state = new ThreadState(platform);
+  ThreadStateStorage::Create(*thread_state,
+                             thread_state->cpp_heap().GetAllocationHandle(),
+                             thread_state->cpp_heap().GetHeapHandle());
   thread_state->EnableDetachedGarbageCollectionsForTesting();
   return thread_state;
 }
@@ -153,16 +156,13 @@ ThreadState::ThreadState(v8::Platform* platform)
            v8::WrapperDescriptor(kV8DOMWrapperTypeIndex,
                                  kV8DOMWrapperObjectIndex,
                                  gin::GinEmbedder::kEmbedderBlink)})),
-      allocation_handle_(cpp_heap_->GetAllocationHandle()),
       heap_handle_(cpp_heap_->GetHeapHandle()),
-      thread_id_(CurrentThread()) {
-  g_thread_specific_ = this;
-}
+      thread_id_(CurrentThread()) {}
 
 ThreadState::~ThreadState() {
-  DCHECK(!IsMainThread());
   DCHECK(IsCreationThread());
   cpp_heap_->Terminate();
+  delete ThreadStateStorage::Current();
 }
 
 void ThreadState::SafePoint(StackState stack_state) {
