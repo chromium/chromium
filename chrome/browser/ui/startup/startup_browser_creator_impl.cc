@@ -648,8 +648,7 @@ void StartupBrowserCreatorImpl::AddInfoBarsIfNecessary(
 
   // Show the Automation info bar unless it has been disabled by policy.
   bool show_bad_flags_security_warnings = ShouldShowBadFlagsSecurityWarnings();
-  if (command_line_.HasSwitch(switches::kEnableAutomation) &&
-      show_bad_flags_security_warnings) {
+  if (IsAutomationEnabled() && show_bad_flags_security_warnings) {
     AutomationInfoBarDelegate::Create();
   }
 
@@ -670,8 +669,7 @@ void StartupBrowserCreatorImpl::AddInfoBarsIfNecessary(
   // automated tests, so that they don't interfere with tests that assume no
   // info bars.
   if (process_startup == chrome::startup::IsProcessStartup::kYes &&
-      !command_line_.HasSwitch(switches::kTestType) &&
-      !command_line_.HasSwitch(switches::kEnableAutomation)) {
+      !command_line_.HasSwitch(switches::kTestType) && !IsAutomationEnabled()) {
     content::WebContents* web_contents =
         browser->tab_strip_model()->GetActiveWebContents();
     DCHECK(web_contents);
@@ -771,4 +769,10 @@ bool StartupBrowserCreatorImpl::ShouldLaunch(
 #endif
 
   return true;
+}
+
+// static
+bool StartupBrowserCreatorImpl::IsAutomationEnabled() {
+  return base::CommandLine::ForCurrentProcess()->HasSwitch(
+      switches::kEnableAutomation);
 }
