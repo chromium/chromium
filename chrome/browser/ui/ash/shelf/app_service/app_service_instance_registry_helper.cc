@@ -442,9 +442,8 @@ bool AppServiceInstanceRegistryHelper::IsOpenedInBrowser(
     content::BrowserContext* browser_context = nullptr;
     auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile);
     bool found = false;
-    proxy->InstanceRegistry().ForOneInstance(
-        apps::Instance::InstanceKey::ForWindowBasedApp(window),
-        [&browser_context, &found](const apps::InstanceUpdate& update) {
+    proxy->InstanceRegistry().ForInstancesWithWindow(
+        window, [&browser_context, &found](const apps::InstanceUpdate& update) {
           browser_context = update.BrowserContext();
           found = true;
         });

@@ -86,7 +86,7 @@ bool InstanceUpdate::Equals(const Instance* state, const Instance* delta) {
   // updated.
 }
 
-InstanceUpdate::InstanceUpdate(Instance* state, Instance* delta)
+InstanceUpdate::InstanceUpdate(const Instance* state, const Instance* delta)
     : state_(state), delta_(delta) {
   DCHECK(state_ || delta_);
   if (state_ && delta_) {

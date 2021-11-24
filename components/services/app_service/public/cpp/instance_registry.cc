@@ -156,6 +156,19 @@ InstanceState InstanceRegistry::GetState(
                                                 : InstanceState::kUnknown;
 }
 
+std::set<InstanceState> InstanceRegistry::GetStates(
+    const std::string& app_id,
+    const aura::Window* window) const {
+  std::set<InstanceState> states;
+  ForInstancesWithWindow(
+      window, [&states, &app_id](const apps::InstanceUpdate& update) {
+        if (update.AppId() == app_id) {
+          states.insert(update.State());
+        }
+      });
+  return states;
+}
+
 ash::ShelfID InstanceRegistry::GetShelfId(
     const Instance::InstanceKey& instance_key) const {
   auto s_iter = instance_key_states_.find(instance_key);
@@ -186,12 +199,13 @@ void InstanceRegistry::DoOnInstance(InstancePtr delta) {
     return;
   }
 
-  std::unique_ptr<Instance> old_state;
   Instance* new_delta = delta.get();
   if (state) {
-    old_state = state->Clone();
+    old_state_ = state->Clone();
     InstanceUpdate::Merge(state, new_delta);
   } else {
+    old_state_.reset();
+
     // TODO(crbug.com/1251501): Will be removed soon.
     instance_key_states_.insert(
         std::make_pair(delta->GetInstanceKey(), new_delta));
@@ -202,7 +216,7 @@ void InstanceRegistry::DoOnInstance(InstancePtr delta) {
   }
 
   for (auto& obs : observers_) {
-    obs.OnInstanceUpdate(InstanceUpdate(old_state.get(), new_delta));
+    obs.OnInstanceUpdate(InstanceUpdate(old_state_.get(), new_delta));
   }
 
   if (static_cast<InstanceState>(new_delta->State() &
@@ -211,6 +225,8 @@ void InstanceRegistry::DoOnInstance(InstancePtr delta) {
     instance_key_states_.erase(new_delta->GetInstanceKey());
     states_.erase(new_delta->InstanceId());
   }
+
+  old_state_.reset();
   in_progress_ = false;
 }
 

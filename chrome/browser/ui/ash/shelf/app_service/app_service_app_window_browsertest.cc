@@ -195,8 +195,8 @@ class AppServiceAppWindowBrowserTest
       const std::string& app_id,
       const apps::Instance::InstanceKey& instance_key) {
     auto instance_state = apps::InstanceState::kUnknown;
-    app_service_proxy_->InstanceRegistry().ForOneInstance(
-        instance_key,
+    app_service_proxy_->InstanceRegistry().ForInstancesWithWindow(
+        instance_key.Window(),
         [&app_id, &instance_state](const apps::InstanceUpdate& inner) {
           if (inner.AppId() == app_id) {
             instance_state = inner.State();

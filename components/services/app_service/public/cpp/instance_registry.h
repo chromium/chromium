@@ -128,7 +128,16 @@ class InstanceRegistry {
       const std::string& app_id);
 
   // Return the state for the |instance_key|.
+  // TODO(crbug.com/1251501): Will be removed soon.
   InstanceState GetState(const Instance::InstanceKey& instance_key) const;
+
+  // Return states for the `app_id` and `window`. For apps opened in Lacros
+  // tabs, there might be multiple tabs in one Lacros window for one app, so
+  // there could be multiple states for tab instances. For other standalone app
+  // window, or tab window of the ash Chrome browser, there should be one state
+  // only.
+  std::set<InstanceState> GetStates(const std::string& app_id,
+                                    const aura::Window* window) const;
 
   // Return the shelf id for the |instance_key|.
   ash::ShelfID GetShelfId(const Instance::InstanceKey& instance_key) const;
@@ -157,18 +166,18 @@ class InstanceRegistry {
   // f must be synchronous, and if it asynchronously calls ForEachInstance
   // again, it's not guaranteed to see a consistent state.
   template <typename FunctionType>
-  void ForEachInstance(FunctionType f) {
+  void ForEachInstance(FunctionType f) const {
     DCHECK_CALLED_ON_VALID_SEQUENCE(my_sequence_checker_);
 
-    for (const auto& s_iter : instance_key_states_) {
-      apps::Instance* state = s_iter.second;
+    for (const auto& s_iter : states_) {
+      const apps::Instance* state = s_iter.second.get();
       f(apps::InstanceUpdate(state, nullptr));
     }
   }
 
   // Calls f, a void-returning function whose arguments are (const
   // apps::InstanceUpdate&), on the instance in the instance_registry with the
-  // given instance_key. It will return true (and call f) if there is such an
+  // given instance id. It will return true (and call f) if there is such an
   // instance, otherwise it will return false (and not call f). The
   // InstanceUpdate argument to f has the same semantics as for ForEachInstance,
   // above.
@@ -176,18 +185,67 @@ class InstanceRegistry {
   // f must be synchronous, and if it asynchronously calls ForOneInstance again,
   // it's not guaranteed to see a consistent state.
   template <typename FunctionType>
-  bool ForOneInstance(const Instance::InstanceKey& instance_key,
-                      FunctionType f) {
+  bool ForOneInstance(const base::UnguessableToken& instance_id,
+                      FunctionType f) const {
     DCHECK_CALLED_ON_VALID_SEQUENCE(my_sequence_checker_);
 
-    auto s_iter = instance_key_states_.find(instance_key);
+    auto s_iter = states_.find(instance_id);
     apps::Instance* state =
-        (s_iter != instance_key_states_.end()) ? s_iter->second : nullptr;
+        (s_iter != states_.end()) ? s_iter->second.get() : nullptr;
     if (state) {
       f(apps::InstanceUpdate(state, nullptr));
       return true;
     }
     return false;
+  }
+
+  // Calls f, a void-returning function whose arguments are (const
+  // apps::InstanceUpdate&), on instances in the instance_registry with the
+  // given window. It will return true (and call f) if there is such an
+  // instance, otherwise it will return false (and not call f). The
+  // InstanceUpdate argument to f has the same semantics as for ForEachInstance,
+  // above.
+  //
+  // f must be synchronous, and if it asynchronously calls ForOneInstance again,
+  // it's not guaranteed to see a consistent state.
+  template <typename FunctionType>
+  bool ForInstancesWithWindow(const aura::Window* window,
+                              FunctionType f) const {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(my_sequence_checker_);
+
+    InstanceIds instance_ids;
+    auto it = window_to_instance_ids_.find(window);
+    if (it != window_to_instance_ids_.end()) {
+      instance_ids = it->second;
+    }
+
+    // There could be some instances in `deltas_pending_`.
+    for (const auto& delta : deltas_pending_) {
+      if (delta->Window() == window) {
+        instance_ids.insert(delta->InstanceId());
+      }
+    }
+
+    // `old_state_` might be an instance to be deleted. But in OnInstanceUpdate,
+    // the caller might still need that instance to know which instance will be
+    // deleted.
+    if (old_state_ && old_state_.get()) {
+      instance_ids.insert(old_state_->InstanceId());
+    }
+
+    if (instance_ids.empty()) {
+      return false;
+    }
+
+    for (const auto& instance_id : instance_ids) {
+      auto s_iter = states_.find(instance_id);
+      apps::Instance* state =
+          (s_iter != states_.end()) ? s_iter->second.get() : nullptr;
+      if (state) {
+        f(apps::InstanceUpdate(state, nullptr));
+      }
+    }
+    return true;
   }
 
  private:
@@ -238,6 +296,8 @@ class InstanceRegistry {
   // `window_to_instance_ids_`. `states_` can't be used to check window, because
   // some instances might be in `deltas_pending_`.
   std::map<base::UnguessableToken, aura::Window*> instance_id_to_window_;
+
+  std::unique_ptr<Instance> old_state_;
 
   SEQUENCE_CHECKER(my_sequence_checker_);
 };
