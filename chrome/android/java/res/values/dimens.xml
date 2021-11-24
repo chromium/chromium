@@ -199,7 +199,6 @@
     <dimen name="feed_header_height">44dp</dimen>
     <dimen name="feed_v2_header_menu_width">18dp</dimen>
     <dimen name="ntp_header_dropdown_size">15dp</dimen>
-    <dimen name="ntp_header_tab_text_height">24dp</dimen>
 
     <!-- Incognito NTP -->
     <dimen name="incognito_ntp_total_space_between_views">14sp</dimen>

@@ -203,6 +203,8 @@ public class SectionHeaderView extends LinearLayout {
             tab.setCustomView(R.layout.new_tab_page_section_tab);
             tab.setTag(new TabState());
             mTabLayout.addTab(tab);
+            tab.view.setClipToPadding(false);
+            tab.view.setClipChildren(false);
         }
     }
 
@@ -597,7 +599,8 @@ public class SectionHeaderView extends LinearLayout {
 
             if (state.unreadIndicator == null) {
                 if (tab.getCustomView() != null) {
-                    state.unreadIndicator = new UnreadIndicator(tab.getCustomView());
+                    state.unreadIndicator =
+                            new UnreadIndicator(tab.view.findViewById(android.R.id.text1));
                 }
             }
         } else {
