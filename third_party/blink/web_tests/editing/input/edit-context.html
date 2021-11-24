@@ -75,9 +75,10 @@ test(function() {
   assert_equals(disconnected_div.editContext, null);
 
   disconnected_div.editContext = editContext;
-  assert_equals(disconnected_div.editContext, null);
-  assert_equals(editContext.attachedElements().length, 0);
-}, 'EditContext can only be associated with an element that is in an active document.');
+  assert_equals(disconnected_div.editContext, editContext);
+  assert_equals(editContext.attachedElements().length, 1);
+  assert_equals(editContext.attachedElements()[0], disconnected_div);
+}, 'EditContext can be associated with an element that is not in the tree.');
 
 test(function() {
   const editContext = new EditContext();
@@ -93,9 +94,10 @@ test(function() {
   assert_equals(editContext.attachedElements()[0], div);
 
   document.body.removeChild(div);
-  assert_equals(div.editContext, null);
-  assert_equals(editContext.attachedElements().length, 0);
-}, 'If an element is removed from tree, it will disconnect its associated EditContext.');
+  assert_equals(div.editContext, editContext);
+  assert_equals(editContext.attachedElements().length, 1);
+  assert_equals(editContext.attachedElements()[0], div);
+}, 'If an element is removed from the tree, the associated EditContext remains connected to the element.');
 
 test(function() {
   const editContext = new EditContext();
@@ -112,9 +114,10 @@ test(function() {
   assert_equals(editContext.attachedElements()[0], div_child);
 
   document.body.removeChild(div_parent);
-  assert_equals(div_child.editContext, null);
-  assert_equals(editContext.attachedElements().length, 0);
-}, 'If an element\'s ancestor is removed from tree, the element will disconnect its associated EditContext.');
+  assert_equals(div_child.editContext, editContext);
+  assert_equals(editContext.attachedElements().length, 1);
+  assert_equals(editContext.attachedElements()[0], div_child);
+}, 'If an element\'s ancestor is removed from tree, the associated EditContext remains connected to the element.');
 
 test(function() {
   const editContext = new EditContext();

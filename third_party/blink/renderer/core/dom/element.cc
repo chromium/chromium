@@ -2674,11 +2674,6 @@ void Element::RemovedFrom(ContainerNode& insertion_point) {
   if (HasRareData()) {
     ElementRareData* data = GetElementRareData();
 
-    if (data->GetEditContext()) {
-      data->GetEditContext()->DetachElement(this);
-      data->SetEditContext(nullptr);
-    }
-
     data->ClearRestyleFlags();
 
     if (ElementAnimations* element_animations = data->GetElementAnimations())
@@ -3568,9 +3563,6 @@ EditContext* Element::editContext() const {
 }
 
 void Element::setEditContext(EditContext* edit_context) {
-  if (!InActiveDocument())
-    return;
-
   // If an element is in focus when being attached to a new EditContext,
   // its old EditContext, if it has any, will get blurred,
   // and the new EditContext will automatically get focused.
