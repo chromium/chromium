@@ -101,8 +101,6 @@ class CastRunner final : public fuchsia::sys::Runner,
   // Connection handlers for redirected services.
   void OnAudioServiceRequest(
       fidl::InterfaceRequest<fuchsia::media::Audio> request);
-  void OnAudioDeviceEnumeratorServiceRequest(
-      fidl::InterfaceRequest<fuchsia::media::AudioDeviceEnumerator> request);
   void OnCameraServiceRequest(
       fidl::InterfaceRequest<fuchsia::camera3::DeviceWatcher> request);
   void OnMetricsRecorderServiceRequest(

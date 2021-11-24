@@ -42,6 +42,7 @@ static constexpr const char* kServices[] = {
     "fuchsia.input.virtualkeyboard.ControllerCreator",
     "fuchsia.intl.PropertyProvider",
     "fuchsia.logger.LogSink",
+    "fuchsia.media.AudioDeviceEnumerator",
     "fuchsia.media.ProfileProvider",
     "fuchsia.media.SessionAudioConsumerFactory",
     "fuchsia.media.drm.PlayReady",
@@ -62,7 +63,6 @@ static constexpr const char* kServices[] = {
     // * fuchsia.camera3.DeviceWatcher
     // * fuchsia.legacymetrics.MetricsRecorder
     // * fuchsia.media.Audio
-    // * fuchsia.media.AudioDeviceEnumerator
 };
 
 // Names used to partition the Runner's persistent storage for different uses.
@@ -315,13 +315,6 @@ CastRunner::CastRunner(cr_fuchsia::WebInstanceHost* web_instance_host,
           ->AddPublicService<fuchsia::media::Audio>(
               fit::bind_member(this, &CastRunner::OnAudioServiceRequest));
   ZX_CHECK(status == ZX_OK, status) << "AddPublicService(Audio) to main failed";
-  status =
-      main_services_->outgoing_directory()
-          ->AddPublicService<fuchsia::media::AudioDeviceEnumerator>(
-              fit::bind_member(
-                  this, &CastRunner::OnAudioDeviceEnumeratorServiceRequest));
-  ZX_CHECK(status == ZX_OK, status)
-      << "AddPublicService(AudioDeviceEnumerator) to main failed";
   status = main_services_->outgoing_directory()
                ->AddPublicService<fuchsia::camera3::DeviceWatcher>(
                    fit::bind_member(this, &CastRunner::OnCameraServiceRequest));
@@ -338,10 +331,6 @@ CastRunner::CastRunner(cr_fuchsia::WebInstanceHost* web_instance_host,
   // metrics.
   status = isolated_services_->AddService(fuchsia::media::Audio::Name_);
   ZX_CHECK(status == ZX_OK, status) << "AddService(Audio) to isolated failed";
-  status = isolated_services_->AddService(
-      fuchsia::media::AudioDeviceEnumerator::Name_);
-  ZX_CHECK(status == ZX_OK, status)
-      << "AddService(AudioDeviceEnumerator) to isolated failed";
 }
 
 CastRunner::~CastRunner() = default;
@@ -689,19 +678,6 @@ void CastRunner::OnAudioServiceRequest(
   // Otherwise use the Runner's fuchsia.media.Audio service. fuchsia.media.Audio
   // may be used by frames without MICROPHONE permission to create AudioRenderer
   // instance.
-  base::ComponentContextForProcess()->svc()->Connect(std::move(request));
-}
-
-void CastRunner::OnAudioDeviceEnumeratorServiceRequest(
-    fidl::InterfaceRequest<fuchsia::media::AudioDeviceEnumerator> request) {
-  // If we have a component that allows AudioCapturer access then redirect the
-  // fuchsia.media.AudioDeviceEnumerator requests to the corresponding agent.
-  if (!audio_capturer_components_.empty()) {
-    CastComponent* capturer_component = *audio_capturer_components_.begin();
-    capturer_component->ConnectAudioDeviceEnumerator(std::move(request));
-    return;
-  }
-
   base::ComponentContextForProcess()->svc()->Connect(std::move(request));
 }
 

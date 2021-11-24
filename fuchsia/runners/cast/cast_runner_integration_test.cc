@@ -888,7 +888,11 @@ TEST_F(CastRunnerIntegrationTest, ApplicationConfigAgentUrlRewriteOptional) {
   shutdown_run_loop.Run();
 }
 
-TEST_F(CastRunnerIntegrationTest, MicrophoneRedirect) {
+// The test currently fails because it depends on AudioDeviceEnumerator,
+// which isn't provided in emulator.
+// TODO(crbug.com/1273262): Update the test to pass a fake
+// AudioDeviceEnumerator implementation to WebEngine and then re-enable it.
+TEST_F(CastRunnerIntegrationTest, DISABLED_MicrophoneRedirect) {
   TestCastComponent component(cast_runner_.get());
   GURL app_url = test_server_.GetURL("/microphone.html");
   auto app_config =
@@ -898,17 +902,6 @@ TEST_F(CastRunnerIntegrationTest, MicrophoneRedirect) {
   mic_permission.set_type(fuchsia::web::PermissionType::MICROPHONE);
   app_config.mutable_permissions()->push_back(std::move(mic_permission));
   component.app_config_manager()->AddAppConfig(std::move(app_config));
-
-  // Register a fake AudioDeviceEnumerator.
-  std::unique_ptr<media::FakeAudioDeviceEnumerator>
-      fake_audio_device_enumerator;
-  component.OnComponentStateCreated(base::BindLambdaForTesting([&] {
-    fake_audio_device_enumerator =
-        std::make_unique<media::FakeAudioDeviceEnumerator>(
-            component.component_state()
-                ->outgoing_directory()
-                ->GetOrCreateDirectory("svc"));
-  }));
 
   component.CreateComponentContextAndStartComponent();
 
