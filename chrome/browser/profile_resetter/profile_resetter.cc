@@ -203,18 +203,20 @@ void ProfileResetter::ResetHomepage() {
   PrefService* prefs = profile_->GetPrefs();
   DCHECK(prefs);
   std::string homepage;
-  bool homepage_is_ntp, show_home_button;
 
   if (master_settings_->GetHomepage(&homepage))
     prefs->SetString(prefs::kHomePage, homepage);
 
-  if (master_settings_->GetHomepageIsNewTab(&homepage_is_ntp))
-    prefs->SetBoolean(prefs::kHomePageIsNewTabPage, homepage_is_ntp);
+  absl::optional<bool> homepage_is_ntp =
+      master_settings_->GetHomepageIsNewTab();
+  if (homepage_is_ntp.has_value())
+    prefs->SetBoolean(prefs::kHomePageIsNewTabPage, *homepage_is_ntp);
   else
     prefs->ClearPref(prefs::kHomePageIsNewTabPage);
 
-  if (master_settings_->GetShowHomeButton(&show_home_button))
-    prefs->SetBoolean(prefs::kShowHomeButton, show_home_button);
+  absl::optional<bool> show_home_button = master_settings_->GetShowHomeButton();
+  if (show_home_button.has_value())
+    prefs->SetBoolean(prefs::kShowHomeButton, *show_home_button);
   else
     prefs->ClearPref(prefs::kShowHomeButton);
   MarkAsDone(HOMEPAGE);
