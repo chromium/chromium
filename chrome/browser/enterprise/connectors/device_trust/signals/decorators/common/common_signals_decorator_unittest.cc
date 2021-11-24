@@ -6,6 +6,7 @@
 
 #include "base/callback.h"
 #include "base/run_loop.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -27,6 +28,15 @@
 
 namespace enterprise_connectors {
 
+namespace {
+
+constexpr char kLatencyHistogram[] =
+    "Enterprise.DeviceTrust.SignalsDecorator.Latency.Common";
+constexpr char kCachedLatencyHistogram[] =
+    "Enterprise.DeviceTrust.SignalsDecorator.Latency.Common.WithCache";
+
+}  // namespace
+
 class CommonSignalsDecoratorTest : public testing::Test {
  protected:
   void SetUp() override {
@@ -47,6 +57,7 @@ class CommonSignalsDecoratorTest : public testing::Test {
   }
 
   base::test::TaskEnvironment task_environment_;
+  base::HistogramTester histogram_tester_;
   TestingPrefServiceSimple fake_local_state_;
   sync_preferences::TestingPrefServiceSyncable fake_profile_prefs_;
   absl::optional<CommonSignalsDecorator> decorator_;
@@ -87,6 +98,9 @@ TEST_F(CommonSignalsDecoratorTest, Decorate_StaticValuesPresent) {
   EXPECT_FALSE(signals.has_chrome_cleanup_enabled());
 #endif  // defined(OS_WIN)
 
+  histogram_tester_.ExpectTotalCount(kLatencyHistogram, 1);
+  histogram_tester_.ExpectTotalCount(kCachedLatencyHistogram, 0);
+
   // Run a second time to exercise the caching code.
   base::RunLoop second_run_loop;
   SignalsType second_signals;
@@ -96,6 +110,9 @@ TEST_F(CommonSignalsDecoratorTest, Decorate_StaticValuesPresent) {
   EXPECT_EQ(signals.device_model(), second_signals.device_model());
   EXPECT_EQ(signals.device_manufacturer(),
             second_signals.device_manufacturer());
+
+  histogram_tester_.ExpectTotalCount(kLatencyHistogram, 1);
+  histogram_tester_.ExpectTotalCount(kCachedLatencyHistogram, 1);
 }
 
 }  // namespace enterprise_connectors

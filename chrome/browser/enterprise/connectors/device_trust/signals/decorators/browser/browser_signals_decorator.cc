@@ -8,6 +8,7 @@
 
 #include "base/check.h"
 #include "base/task/thread_pool.h"
+#include "chrome/browser/enterprise/connectors/device_trust/signals/decorators/common/metrics_utils.h"
 #include "chrome/browser/enterprise/signals/device_info_fetcher.h"
 #include "chrome/browser/enterprise/signals/signals_common.h"
 #include "components/enterprise/browser/controller/browser_dm_token_storage.h"
@@ -19,6 +20,9 @@ namespace enterprise_connectors {
 namespace {
 using policy::BrowserDMTokenStorage;
 using policy::CloudPolicyStore;
+
+constexpr char kLatencyHistogramVariant[] = "Browser";
+constexpr char kLatencyHistogramWithCacheVariant[] = "Browser.WithCache";
 }  // namespace
 
 BrowserSignalsDecorator::BrowserSignalsDecorator(
@@ -34,6 +38,8 @@ BrowserSignalsDecorator::~BrowserSignalsDecorator() = default;
 
 void BrowserSignalsDecorator::Decorate(DeviceTrustSignals& signals,
                                        base::OnceClosure done_closure) {
+  auto start_time = base::TimeTicks::Now();
+
   signals.set_device_id(dm_token_storage_->RetrieveClientId());
 
   if (cloud_policy_store_->has_policy()) {
@@ -46,6 +52,7 @@ void BrowserSignalsDecorator::Decorate(DeviceTrustSignals& signals,
 
   if (cache_initialized_) {
     UpdateFromCache(signals);
+    LogSignalsCollectionLatency(kLatencyHistogramWithCacheVariant, start_time);
     std::move(done_closure).Run();
     return;
   }
@@ -56,11 +63,12 @@ void BrowserSignalsDecorator::Decorate(DeviceTrustSignals& signals,
                      enterprise_signals::DeviceInfoFetcher::CreateInstance()),
       base::BindOnce(&BrowserSignalsDecorator::OnDeviceInfoFetched,
                      weak_ptr_factory_.GetWeakPtr(), std::ref(signals),
-                     std::move(done_closure)));
+                     start_time, std::move(done_closure)));
 }
 
 void BrowserSignalsDecorator::OnDeviceInfoFetched(
     DeviceTrustSignals& signals,
+    base::TimeTicks start_time,
     base::OnceClosure done_closure,
     const enterprise_signals::DeviceInfo& device_info) {
   cached_serial_number_ = device_info.serial_number;
@@ -69,6 +77,8 @@ void BrowserSignalsDecorator::OnDeviceInfoFetched(
 
   cache_initialized_ = true;
   UpdateFromCache(signals);
+
+  LogSignalsCollectionLatency(kLatencyHistogramVariant, start_time);
 
   std::move(done_closure).Run();
 }

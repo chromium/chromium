@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/memory/weak_ptr.h"
+#include "base/time/time.h"
 #include "chrome/browser/enterprise/connectors/device_trust/signals/decorators/common/signals_decorator.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -36,6 +37,7 @@ class BrowserSignalsDecorator : public SignalsDecorator {
 
  private:
   void OnDeviceInfoFetched(DeviceTrustSignals& signals,
+                           base::TimeTicks start_time,
                            base::OnceClosure done_closure,
                            const enterprise_signals::DeviceInfo& device_info);
 

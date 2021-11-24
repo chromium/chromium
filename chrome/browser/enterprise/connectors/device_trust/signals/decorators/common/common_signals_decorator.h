@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/system/sys_info.h"
+#include "base/time/time.h"
 #include "chrome/browser/enterprise/connectors/device_trust/signals/decorators/common/signals_decorator.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -26,6 +27,7 @@ class CommonSignalsDecorator : public SignalsDecorator {
 
  private:
   void OnHardwareInfoRetrieved(SignalsType& signals,
+                               base::TimeTicks start_time,
                                base::OnceClosure done_closure,
                                base::SysInfo::HardwareInfo hardware_info);
 

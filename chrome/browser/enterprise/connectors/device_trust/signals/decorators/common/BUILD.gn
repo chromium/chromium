@@ -7,10 +7,14 @@ import("//build/config/chromeos/ui_mode.gni")
 source_set("common") {
   public = [
     "common_signals_decorator.h",
+    "metrics_utils.h",
     "signals_decorator.h",
   ]
 
-  sources = [ "common_signals_decorator.cc" ]
+  sources = [
+    "common_signals_decorator.cc",
+    "metrics_utils.cc",
+  ]
 
   public_deps = [
     "//base",

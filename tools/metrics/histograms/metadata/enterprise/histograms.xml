@@ -824,6 +824,27 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Enterprise.DeviceTrust.SignalsDecorator.Latency.{Variant}"
+    units="ms" expires_after="2022-07-01">
+  <owner>hmare@google.com</owner>
+  <owner>rogerta@chromium.org</owner>
+  <owner>seblalancette@chromium.org</owner>
+  <summary>
+    Latency recorded when the {Variant} decorator(s) finish collecting their
+    signals. Captures the amount of time required to collect the signals under
+    this scope.
+  </summary>
+  <token key="Variant">
+    <variant name="Ash" summary="Ash"/>
+    <variant name="Browser" summary="Browser (without cache)"/>
+    <variant name="Browser.WithCache" summary="Browser (with cache)"/>
+    <variant name="Common" summary="Common (without cache)"/>
+    <variant name="Common.WithCache" summary="Common (with cache)"/>
+    <variant name="Content" summary="Content"/>
+    <variant name="Full" summary="full set of"/>
+  </token>
+</histogram>
+
 <histogram name="Enterprise.Dlp.CaptureModeInitBlocked" enum="BooleanBlocked"
     expires_after="2022-05-01">
   <owner>poromov@chromium.org</owner>

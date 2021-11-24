@@ -6,6 +6,7 @@
 
 #include "base/callback.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "chrome/browser/enterprise/connectors/device_trust/attestation/common/signals_type.h"
 #include "components/policy/content/policy_blocklist_service.h"
@@ -14,6 +15,13 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace enterprise_connectors {
+
+namespace {
+
+constexpr char kLatencyHistogram[] =
+    "Enterprise.DeviceTrust.SignalsDecorator.Latency.Content";
+
+}  // namespace
 
 class ContentSignalsDecoratorTest : public testing::Test {
  protected:
@@ -28,6 +36,7 @@ class ContentSignalsDecoratorTest : public testing::Test {
   }
 
   base::test::TaskEnvironment task_environment_;
+  base::HistogramTester histogram_tester_;
   sync_preferences::TestingPrefServiceSyncable fake_profile_prefs_;
   absl::optional<PolicyBlocklistService> blocklist_service_;
   absl::optional<ContentSignalsDecorator> decorator_;
@@ -45,6 +54,8 @@ TEST_F(ContentSignalsDecoratorTest, Decorate) {
   EXPECT_TRUE(signals.has_site_isolation_enabled());
 
   EXPECT_TRUE(callback_invoked);
+
+  histogram_tester_.ExpectTotalCount(kLatencyHistogram, 1);
 }
 
 }  // namespace enterprise_connectors
