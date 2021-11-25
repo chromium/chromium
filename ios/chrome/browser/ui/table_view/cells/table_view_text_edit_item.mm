@@ -56,7 +56,14 @@ const CGFloat kEditIconLength = 18;
   NSString* textLabelFormat = self.required ? @"%@*" : @"%@";
   cell.textLabel.text =
       [NSString stringWithFormat:textLabelFormat, self.textFieldName];
-  cell.textField.placeholder = self.textFieldPlaceholder;
+  if (self.textFieldPlaceholder) {
+    cell.textField.attributedPlaceholder = [[NSAttributedString alloc]
+        initWithString:self.textFieldPlaceholder
+            attributes:@{
+              NSForegroundColorAttributeName :
+                  [UIColor colorNamed:kTextSecondaryColor]
+            }];
+  }
   cell.textField.text = self.textFieldValue;
   cell.textField.secureTextEntry = self.textFieldSecureTextEntry;
   if (self.textFieldName.length) {
@@ -80,11 +87,11 @@ const CGFloat kEditIconLength = 18;
   if (self.hideIcon) {
     cell.textField.textColor = self.textFieldEnabled
                                    ? [UIColor colorNamed:kBlueColor]
-                                   : [UIColor colorNamed:kTextSecondaryColor];
+                                   : [UIColor colorNamed:kTextPrimaryColor];
     [cell setIcon:TableViewTextEditItemIconTypeNone];
   } else {
     if (self.hasValidText) {
-      cell.textField.textColor = [UIColor colorNamed:kTextSecondaryColor];
+      cell.textField.textColor = [UIColor colorNamed:kTextPrimaryColor];
     } else {
       cell.textField.textColor = [UIColor colorNamed:kRedColor];
     }
@@ -360,6 +367,7 @@ const CGFloat kEditIconLength = 18;
   [super prepareForReuse];
   self.textLabel.text = nil;
   self.textField.text = nil;
+  self.textField.attributedPlaceholder = nil;
   self.textField.returnKeyType = UIReturnKeyNext;
   self.textField.keyboardType = UIKeyboardTypeDefault;
   self.textField.autocapitalizationType = UITextAutocapitalizationTypeWords;
