@@ -96,7 +96,7 @@ if (enable_nocompile_tests) {
         "-nostdinc++",
         "-isystem" + rebase_path("$libcxx_prefix/include", root_build_dir),
         "-isystem" + rebase_path("$libcxxabi_prefix/include", root_build_dir),
-        "-std=c++14",
+        "-std=c++17",
         "-Wall",
         "-Werror",
         "-Wfatal-errors",

@@ -67,14 +67,16 @@ void WaylandClientRegistry::Add(void* context,
                                 wl_registry*,
                                 uint32_t name,
                                 const char* interface,
-                                uint32_t version) {
+                                uint32_t version) noexcept {
   WaylandClientRegistry* registry =
       static_cast<WaylandClientRegistry*>(context);
   registry->globals_.emplace(interface,
                              WaylandClientRegistry::Entry{name, version});
 }
 
-void WaylandClientRegistry::Remove(void*, wl_registry*, uint32_t name) {
+void WaylandClientRegistry::Remove(void*,
+                                   wl_registry*,
+                                   uint32_t name) noexcept {
   LOG(ERROR) << "Unexpected global remove of id " << name;
   DCHECK(false);
 }
