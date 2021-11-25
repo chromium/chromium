@@ -8,8 +8,13 @@ import subprocess
 import sys
 
 
+vpython='vpython3'
+
+if sys.platform == 'win32':
+    vpython += '.bat'
+
 subprocess.run([
-    'vpython3',
+    vpython,
     os.path.join(os.path.dirname(__file__), 'regenerate_internal_cts_html.py')
 ] + sys.argv[1:],
                check=True)
