@@ -93,32 +93,36 @@ void ScrollableAreaPainter::DrawPlatformResizerImage(
     const IntRect& resizer_corner_rect) {
   gfx::Point points[4];
   bool on_left = false;
+  float paint_scale = GetScrollableArea().ScaleFromDIP();
+  int edge_offset = std::ceil(paint_scale);
   if (GetScrollableArea()
           .GetLayoutBox()
           ->ShouldPlaceBlockDirectionScrollbarOnLogicalLeft()) {
     on_left = true;
-    points[0].set_x(resizer_corner_rect.x() + 1);
+    points[0].set_x(resizer_corner_rect.x() + edge_offset);
     points[1].set_x(resizer_corner_rect.x() + resizer_corner_rect.width() -
                     resizer_corner_rect.width() / 2);
     points[2].set_x(points[0].x());
     points[3].set_x(resizer_corner_rect.x() + resizer_corner_rect.width() -
                     resizer_corner_rect.width() * 3 / 4);
   } else {
-    points[0].set_x(resizer_corner_rect.x() + resizer_corner_rect.width() - 1);
+    points[0].set_x(resizer_corner_rect.x() + resizer_corner_rect.width() -
+                    edge_offset);
     points[1].set_x(resizer_corner_rect.x() + resizer_corner_rect.width() / 2);
     points[2].set_x(points[0].x());
     points[3].set_x(resizer_corner_rect.x() +
                     resizer_corner_rect.width() * 3 / 4);
   }
   points[0].set_y(resizer_corner_rect.y() + resizer_corner_rect.height() / 2);
-  points[1].set_y(resizer_corner_rect.y() + resizer_corner_rect.height() - 1);
+  points[1].set_y(resizer_corner_rect.y() + resizer_corner_rect.height() -
+                  edge_offset);
   points[2].set_y(resizer_corner_rect.y() +
                   resizer_corner_rect.height() * 3 / 4);
   points[3].set_y(points[1].y());
 
   PaintFlags paint_flags;
   paint_flags.setStyle(PaintFlags::kStroke_Style);
-  paint_flags.setStrokeWidth(1);
+  paint_flags.setStrokeWidth(std::ceil(paint_scale));
 
   SkPathBuilder line_path;
 
@@ -136,10 +140,12 @@ void ScrollableAreaPainter::DrawPlatformResizerImage(
 
   // Draw a light line one pixel below the light line,
   // to ensure contrast against a dark background
-  line_path.moveTo(points[0].x(), points[0].y() + 1);
-  line_path.lineTo(points[1].x() + (on_left ? -1 : 1), points[1].y());
-  line_path.moveTo(points[2].x(), points[2].y() + 1);
-  line_path.lineTo(points[3].x() + (on_left ? -1 : 1), points[3].y());
+  int v_offset = std::ceil(paint_scale);
+  int h_offset = on_left ? -v_offset : v_offset;
+  line_path.moveTo(points[0].x(), points[0].y() + v_offset);
+  line_path.lineTo(points[1].x() + h_offset, points[1].y());
+  line_path.moveTo(points[2].x(), points[2].y() + v_offset);
+  line_path.lineTo(points[3].x() + h_offset, points[3].y());
   paint_flags.setColor(SkColorSetARGB(153, 255, 255, 255));
   context.DrawPath(line_path.detach(), paint_flags, auto_dark_mode);
 }
