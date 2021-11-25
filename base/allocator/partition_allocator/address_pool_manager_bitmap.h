@@ -104,19 +104,17 @@ class BASE_EXPORT AddressPoolManagerBitmap {
   }
 
 #if BUILDFLAG(USE_BACKUP_REF_PTR)
-  static void IncrementOutsideOfBRPPoolPtrRefCount(const void* address) {
-    uintptr_t address_as_uintptr = reinterpret_cast<uintptr_t>(address);
-
+  static void IncrementOutsideOfBRPPoolPtrRefCount(uintptr_t address) {
 #if BUILDFLAG(NEVER_REMOVE_FROM_BRP_POOL_BLOCKLIST)
-    brp_forbidden_super_page_map_[address_as_uintptr >> kSuperPageShift].store(
+    brp_forbidden_super_page_map_[address >> kSuperPageShift].store(
         true, std::memory_order_relaxed);
 #else
-    super_page_refcount_map_[address_as_uintptr >> kSuperPageShift].fetch_add(
+    super_page_refcount_map_[address >> kSuperPageShift].fetch_add(
         1, std::memory_order_relaxed);
 #endif  // BUILDFLAG(NEVER_REMOVE_FROM_BRP_POOL_BLOCKLIST)
   }
 
-  static void DecrementOutsideOfBRPPoolPtrRefCount(const void* address) {
+  static void DecrementOutsideOfBRPPoolPtrRefCount(uintptr_t address) {
 #if BUILDFLAG(NEVER_REMOVE_FROM_BRP_POOL_BLOCKLIST)
     // No-op. In this mode, we only use one bit per super-page and, therefore,
     // can't tell if there's more than one associated raw_ptr<T> at a given
@@ -124,9 +122,7 @@ class BASE_EXPORT AddressPoolManagerBitmap {
     // space. On the other hand, a single relaxed store (in the above function)
     // is much less expensive than two CAS operations.
 #else
-    uintptr_t address_as_uintptr = reinterpret_cast<uintptr_t>(address);
-
-    super_page_refcount_map_[address_as_uintptr >> kSuperPageShift].fetch_sub(
+    super_page_refcount_map_[address >> kSuperPageShift].fetch_sub(
         1, std::memory_order_relaxed);
 #endif  // BUILDFLAG(NEVER_REMOVE_FROM_BRP_POOL_BLOCKLIST)
   }
