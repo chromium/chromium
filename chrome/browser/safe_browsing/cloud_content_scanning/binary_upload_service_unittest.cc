@@ -104,6 +104,17 @@ class FakeMultipartUploadRequestFactory : public MultipartUploadRequestFactory {
         should_succeed_, response_, std::move(callback));
   }
 
+  std::unique_ptr<MultipartUploadRequest> CreatePageRequest(
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+      const GURL& base_url,
+      const std::string& metadata,
+      base::ReadOnlySharedMemoryRegion page_region,
+      const net::NetworkTrafficAnnotationTag& traffic_annotation,
+      MultipartUploadRequest::Callback callback) override {
+    return std::make_unique<FakeMultipartUploadRequest>(
+        should_succeed_, response_, std::move(callback));
+  }
+
  private:
   bool should_succeed_;
   enterprise_connectors::ContentAnalysisResponse response_;

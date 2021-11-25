@@ -9,6 +9,7 @@
 #include "base/callback_helpers.h"
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
@@ -32,12 +33,22 @@ class MultipartUploadRequestTest : public testing::Test {
 
   base::FilePath CreateFile(const std::string& file_name,
                             const std::string& content) {
-    EXPECT_TRUE(temp_dir_.CreateUniqueTempDir());
+    if (!temp_dir_.IsValid())
+      EXPECT_TRUE(temp_dir_.CreateUniqueTempDir());
+
     base::FilePath path = temp_dir_.GetPath().AppendASCII(file_name);
-    base::File file(path, base::File::FLAG_CREATE | base::File::FLAG_READ |
-                              base::File::FLAG_WRITE);
+    base::File file(path, base::File::FLAG_CREATE_ALWAYS |
+                              base::File::FLAG_READ | base::File::FLAG_WRITE);
     file.WriteAtCurrentPos(content.data(), content.size());
     return path;
+  }
+
+  base::ReadOnlySharedMemoryRegion CreatePage(const std::string& content) {
+    base::MappedReadOnlyRegion region =
+        base::ReadOnlySharedMemoryRegion::Create(content.size());
+    EXPECT_TRUE(region.IsValid());
+    std::memcpy(region.mapping.memory(), content.data(), content.size());
+    return std::move(region.region);
   }
 
  protected:
@@ -58,10 +69,10 @@ class MockMultipartUploadRequest : public MultipartUploadRequest {
   MOCK_METHOD0(SendRequest, void());
 };
 
-class MockMultipartUploadFileRequest : public MultipartUploadRequest {
+class MockMultipartUploadDataPipeRequest : public MultipartUploadRequest {
  public:
-  MockMultipartUploadFileRequest(const base::FilePath& path,
-                                 MultipartUploadRequest::Callback callback)
+  MockMultipartUploadDataPipeRequest(const base::FilePath& path,
+                                     MultipartUploadRequest::Callback callback)
       : MultipartUploadRequest(nullptr,
                                GURL(),
                                "metadata",
@@ -69,9 +80,19 @@ class MockMultipartUploadFileRequest : public MultipartUploadRequest {
                                TRAFFIC_ANNOTATION_FOR_TESTS,
                                std::move(callback)) {}
 
-  std::string GetBodyFromFileRequest() {
+  MockMultipartUploadDataPipeRequest(
+      base::ReadOnlySharedMemoryRegion page_region,
+      MultipartUploadRequest::Callback callback)
+      : MultipartUploadRequest(nullptr,
+                               GURL(),
+                               "metadata",
+                               std::move(page_region),
+                               TRAFFIC_ANNOTATION_FOR_TESTS,
+                               std::move(callback)) {}
+
+  std::string GetBodyFromFileOrPageRequest() {
     MultipartDataPipeGetter* data_pipe_getter =
-        this->file_data_pipe_getter_for_testing();
+        this->data_pipe_getter_for_testing();
     EXPECT_TRUE(data_pipe_getter);
 
     mojo::ScopedDataPipeProducerHandle data_pipe_producer;
@@ -108,7 +129,7 @@ class MockMultipartUploadFileRequest : public MultipartUploadRequest {
     return body;
   }
 
-  MOCK_METHOD1(CompleteSendFileRequest,
+  MOCK_METHOD1(CompleteSendRequest,
                void(std::unique_ptr<network::ResourceRequest> request));
 };
 
@@ -282,9 +303,30 @@ TEST_F(MultipartUploadRequestTest, EmitsRetriesNeededHistogram) {
   }
 }
 
-TEST_F(MultipartUploadRequestTest, FileRetries) {
-  base::FilePath path = CreateFile("test.txt", "file content");
+class MultipartUploadDataPipeRequestTest
+    : public MultipartUploadRequestTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  bool is_file_request() { return GetParam(); }
 
+  std::unique_ptr<MockMultipartUploadDataPipeRequest> CreateRequest(
+      const std::string& content,
+      base::OnceCallback<void(bool success,
+                              int http_status,
+                              const std::string& response_data)> callback) {
+    if (is_file_request()) {
+      return std::make_unique<MockMultipartUploadDataPipeRequest>(
+          CreateFile("text.txt", content), std::move(callback));
+    } else {
+      return std::make_unique<MockMultipartUploadDataPipeRequest>(
+          CreatePage(content), std::move(callback));
+    }
+  }
+};
+
+INSTANTIATE_TEST_CASE_P(, MultipartUploadDataPipeRequestTest, testing::Bool());
+
+TEST_P(MultipartUploadDataPipeRequestTest, Retries) {
   std::string expected_body =
       "--boundary\r\n"
       "Content-Type: application/octet-stream\r\n"
@@ -297,76 +339,81 @@ TEST_F(MultipartUploadRequestTest, FileRetries) {
       "--boundary--\r\n";
   {
     base::RunLoop run_loop;
-    MockMultipartUploadFileRequest mock_request(
-        path, base::BindLambdaForTesting(
-                  [&run_loop](bool success, int http_status,
-                              const std::string& response_data) {
-                    EXPECT_TRUE(success);
-                    EXPECT_EQ(net::HTTP_OK, http_status);
-                    EXPECT_EQ("response", response_data);
-                    run_loop.Quit();
-                  }));
-    mock_request.set_boundary("boundary");
+    std::unique_ptr<MockMultipartUploadDataPipeRequest> mock_request =
+        CreateRequest("file content",
+                      base::BindLambdaForTesting(
+                          [&run_loop](bool success, int http_status,
+                                      const std::string& response_data) {
+                            EXPECT_TRUE(success);
+                            EXPECT_EQ(net::HTTP_OK, http_status);
+                            EXPECT_EQ("response", response_data);
+                            run_loop.Quit();
+                          }));
+    mock_request->set_boundary("boundary");
 
-    EXPECT_CALL(mock_request, CompleteSendFileRequest(_))
+    EXPECT_CALL(*mock_request, CompleteSendRequest(_))
         .WillOnce([&mock_request, &expected_body](
                       std::unique_ptr<network::ResourceRequest> request) {
-          EXPECT_EQ(expected_body, mock_request.GetBodyFromFileRequest());
-          mock_request.RetryOrFinish(net::OK, net::HTTP_OK,
-                                     std::make_unique<std::string>("response"));
+          EXPECT_EQ(expected_body,
+                    mock_request->GetBodyFromFileOrPageRequest());
+          mock_request->RetryOrFinish(
+              net::OK, net::HTTP_OK, std::make_unique<std::string>("response"));
         });
-    mock_request.Start();
+    mock_request->Start();
     task_environment_.FastForwardUntilNoTasksRemain();
     run_loop.Run();
   }
   {
     int retry_count = 0;
     base::RunLoop run_loop;
-    MockMultipartUploadFileRequest mock_request(
-        path, base::BindLambdaForTesting(
-                  [&run_loop, &retry_count](bool success, int http_status,
-                                            const std::string& response_data) {
-                    EXPECT_TRUE(success);
-                    EXPECT_EQ(net::HTTP_OK, http_status);
-                    EXPECT_EQ("response", response_data);
-                    EXPECT_EQ(3, retry_count);
-                    run_loop.Quit();
-                  }));
-    mock_request.set_boundary("boundary");
+    std::unique_ptr<MockMultipartUploadDataPipeRequest> mock_request =
+        CreateRequest(
+            "file content",
+            base::BindLambdaForTesting(
+                [&run_loop, &retry_count](bool success, int http_status,
+                                          const std::string& response_data) {
+                  EXPECT_TRUE(success);
+                  EXPECT_EQ(net::HTTP_OK, http_status);
+                  EXPECT_EQ("response", response_data);
+                  EXPECT_EQ(3, retry_count);
+                  run_loop.Quit();
+                }));
+    mock_request->set_boundary("boundary");
 
-    EXPECT_CALL(mock_request, CompleteSendFileRequest(_))
+    EXPECT_CALL(*mock_request, CompleteSendRequest(_))
         .Times(3)
         .WillRepeatedly([&mock_request, &expected_body, &retry_count](
                             std::unique_ptr<network::ResourceRequest> request) {
-          // Every call to CompleteSendFileRequest should be able to get the
+          // Every call to CompleteSendRequest should be able to get the
           // same body from the request's data pipe getter.
-          EXPECT_EQ(expected_body, mock_request.GetBodyFromFileRequest());
+          EXPECT_EQ(expected_body,
+                    mock_request->GetBodyFromFileOrPageRequest());
 
           ++retry_count;
-          mock_request.RetryOrFinish(
+          mock_request->RetryOrFinish(
               net::OK,
               retry_count < 3 ? net::HTTP_SERVICE_UNAVAILABLE : net::HTTP_OK,
               std::make_unique<std::string>("response"));
         });
-    mock_request.Start();
+    mock_request->Start();
     task_environment_.FastForwardUntilNoTasksRemain();
     run_loop.Run();
   }
 }
 
-TEST_F(MultipartUploadRequestTest, FileAndStringRequestsEquivalent) {
+TEST_P(MultipartUploadDataPipeRequestTest, EquivalentToStringRequest) {
   // The request body should be identical when obtained through a string request
-  // and a file request with equivalent content.
-  base::FilePath path = CreateFile("test.txt", "data");
-  MockMultipartUploadFileRequest file_request(path, base::DoNothing());
-  file_request.set_boundary("boundary");
+  // and a data pipe request with equivalent content.
+  std::unique_ptr<MockMultipartUploadDataPipeRequest> data_pipe_request =
+      CreateRequest("data", base::DoNothing());
+  data_pipe_request->set_boundary("boundary");
 
-  // Start the file request so the internal data pipe getter is initialized.
-  ASSERT_FALSE(file_request.file_data_pipe_getter_for_testing());
-  EXPECT_CALL(file_request, CompleteSendFileRequest(_)).Times(1);
-  file_request.Start();
+  // Start the data pipe request to initialize the internal data pipe getter.
+  ASSERT_FALSE(data_pipe_request->data_pipe_getter_for_testing());
+  EXPECT_CALL(*data_pipe_request, CompleteSendRequest(_)).Times(1);
+  data_pipe_request->Start();
   task_environment_.FastForwardUntilNoTasksRemain();
-  ASSERT_TRUE(file_request.file_data_pipe_getter_for_testing());
+  ASSERT_TRUE(data_pipe_request->data_pipe_getter_for_testing());
 
   MockMultipartUploadRequest string_request;
   string_request.set_boundary("boundary");
@@ -384,7 +431,7 @@ TEST_F(MultipartUploadRequestTest, FileAndStringRequestsEquivalent) {
 
   EXPECT_EQ(expected_body,
             string_request.GenerateRequestBody("metadata", "data"));
-  EXPECT_EQ(expected_body, file_request.GetBodyFromFileRequest());
+  EXPECT_EQ(expected_body, data_pipe_request->GetBodyFromFileOrPageRequest());
 }
 
 }  // namespace safe_browsing
