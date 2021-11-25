@@ -28,7 +28,9 @@ const base::Feature kDelayParkingImages{"DelayParkingImages",
 
 namespace {
 
-void RecordReadStatistics(size_t size, base::TimeDelta duration) {
+void RecordReadStatistics(size_t size,
+                          base::TimeDelta duration,
+                          base::TimeDelta time_since_freeze) {
   int throughput_mb_s =
       static_cast<int>(size / duration.InSecondsF() / (1024 * 1024));
   int size_kb = static_cast<int>(size / 1024);  // in KiB
@@ -43,6 +45,8 @@ void RecordReadStatistics(size_t size, base::TimeDelta duration) {
                                             base::Seconds(1), 100);
   base::UmaHistogramCounts1000("Memory.ParkableImage.Read.Throughput",
                                throughput_mb_s);
+  base::UmaHistogramLongTimes("Memory.ParkableImage.Read.TimeSinceFreeze",
+                              time_since_freeze);
 }
 
 void RecordWriteStatistics(size_t size, base::TimeDelta duration) {
@@ -368,10 +372,11 @@ void ParkableImageImpl::Unpark() {
       size());
 
   base::TimeDelta elapsed = timer.Elapsed();
+  base::TimeDelta time_since_freeze = base::TimeTicks::Now() - frozen_time_;
 
-  RecordReadStatistics(on_disk_metadata_->size(), elapsed);
+  RecordReadStatistics(on_disk_metadata_->size(), elapsed, time_since_freeze);
+
   ParkableImageManager::Instance().RecordDiskReadTime(elapsed);
-
   ParkableImageManager::Instance().OnReadFromDisk(this);
 
   DCHECK(rw_buffer_);

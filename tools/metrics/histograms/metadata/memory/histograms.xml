@@ -2019,6 +2019,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Memory.ParkableImage.Read.TimeSinceFreeze" units="ms"
+    expires_after="2022-04-17">
+  <owner>thiabaud@google.com</owner>
+  <owner>lizeb@chromium.org</owner>
+  <summary>
+    Recorded each time a ParkableImage is read from disk. Records the time since
+    the ParkableImage was frozen.
+  </summary>
+</histogram>
+
 <histogram name="Memory.ParkableImage.TotalReadTime.5min" units="ms"
     expires_after="2022-04-17">
   <owner>thiabaud@google.com</owner>

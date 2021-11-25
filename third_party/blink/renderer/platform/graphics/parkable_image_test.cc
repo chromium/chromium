@@ -166,6 +166,8 @@ class ParkableImageBaseTest : public ::testing::Test {
                                        expected_count);
     histogram_tester_.ExpectTotalCount("Memory.ParkableImage.Read.Throughput",
                                        expected_count);
+    histogram_tester_.ExpectTotalCount(
+        "Memory.ParkableImage.Read.TimeSinceFreeze", expected_count);
   }
 
   base::HistogramTester histogram_tester_;
