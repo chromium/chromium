@@ -24,9 +24,9 @@ class CorsOriginPattern;
 
 namespace cors {
 
-// A class to hold a protocol and domain pair and to provide methods to
-// determine if a given origin or domain matches to the pair. The class can have
-// a setting to control if the matching methods accept a partial match.
+// A class to hold a protocol and domain and port triple and to provide methods
+// to determine if a given origin or domain matches. The class can have a
+// setting to control if the matching methods accept a partial match.
 class COMPONENT_EXPORT(NETWORK_CPP) OriginAccessEntry final {
  public:
   enum MatchResult {

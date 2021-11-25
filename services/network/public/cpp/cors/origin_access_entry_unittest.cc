@@ -146,6 +146,32 @@ TEST(OriginAccessEntryTest, AllowRegistrableDomainsTest) {
       {"http", "", "http://beispiel.de/", OriginAccessEntry::kMatchesOrigin},
       {"https", "", "http://beispiel.de/",
        OriginAccessEntry::kDoesNotMatchOrigin},
+
+      // Table of examples from the HTML spec. (Except those based on
+      // IP-address, which we don't support.)
+      // https://html.spec.whatwg.org/multipage/origin.html#dom-document-domain
+      {"http", "0.0.0.0", "http://0.0.0.0", OriginAccessEntry::kMatchesOrigin},
+      {"http", "example.com", "http://example.com",
+       OriginAccessEntry::kMatchesOrigin},
+      {"http", "example.com", "http://example.com.",
+       OriginAccessEntry::kDoesNotMatchOrigin},
+      {"http", "example.com.", "http://example.com",
+       OriginAccessEntry::kDoesNotMatchOrigin},
+      {"http", "example.com", "http://www.example.com",
+       OriginAccessEntry::kMatchesOrigin},
+      {"http", "com", "http://example.com",
+       OriginAccessEntry::kMatchesOriginButIsPublicSuffix},
+      {"http", "example", "http://example", OriginAccessEntry::kMatchesOrigin},
+      {"http", "compute.amazonaws.com", "http://example.compute.amazonaws.com",
+       OriginAccessEntry::kMatchesOriginButIsPublicSuffix},
+      {"http", "example.compute.amazonaws.com",
+       "http://www.example.compute.amazonaws.com",
+       OriginAccessEntry::kMatchesOriginButIsPublicSuffix},
+      {"http", "amazonaws.com", "http://www.example.compute.amazonaws.com",
+       OriginAccessEntry::kMatchesOriginButIsPublicSuffix},
+      {"http", "amazonaws.com", "http://test.amazonaws.com",
+       OriginAccessEntry::kMatchesOrigin},
+
   };
 
   for (const auto& test : inputs) {
