@@ -34,6 +34,7 @@
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/test/test_utils.h"
 #include "extensions/browser/extension_registry.h"
+#include "extensions/browser/extension_util.h"
 #include "extensions/browser/test_extension_registry_observer.h"
 #include "extensions/browser/uninstall_reason.h"
 #include "extensions/common/extension.h"
@@ -192,9 +193,16 @@ class ThemeServiceTest : public extensions::ExtensionServiceTestBase {
         extensions::UnpackedInstaller::Create(service_));
     extensions::TestExtensionRegistryObserver observer(registry_);
     installer->Load(temp_dir);
-    scoper.set_extension_id(observer.WaitForExtensionLoaded()->id());
+    std::string extenson_id = observer.WaitForExtensionLoaded()->id();
+    scoper.set_extension_id(extenson_id);
 
     waiter.WaitForThemeChanged();
+
+    // Make sure RegisterClient calls for storage are finished to avoid flaky
+    // crashes in QuotaManagerImpl::RegisterClient on test shutdown.
+    // TODO(crbug.com/1182630) : Remove this when 1182630 is fixed.
+    extensions::util::GetStoragePartitionForExtensionId(extenson_id, profile());
+    task_environment()->RunUntilIdle();
 
     return scoper;
   }
