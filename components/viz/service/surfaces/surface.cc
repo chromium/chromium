@@ -162,9 +162,13 @@ void Surface::OnChildActivatedForActiveFrame(const SurfaceId& activated_id) {
     // If we already have a reference to a surface in the primary's allocation
     // group, we should already be unregistered from the allocation group of the
     // fallback so we shouldn't receive SurfaceIds from that group.
-    DCHECK(!surface_range.HasDifferentEmbedTokens() || !last_id.is_valid() ||
-           !last_id.HasSameEmbedTokenAs(surface_range.end()) ||
-           activated_id.HasSameEmbedTokenAs(last_id));
+    // TODO(crbug.com/1264657): This DCHECK is failing frequently on Chrome OS
+    // for valid use cases where there are multiple references in
+    // |referenced_surfaces| that contain |activated_id|. Temporary disable to
+    // avoid flake while investigating solutions.
+    // DCHECK(!surface_range.HasDifferentEmbedTokens() || !last_id.is_valid() ||
+    //       !last_id.HasSameEmbedTokenAs(surface_range.end()) ||
+    //       activated_id.HasSameEmbedTokenAs(last_id));
 
     // Remove the old reference.
     if (last_id.is_valid()) {
