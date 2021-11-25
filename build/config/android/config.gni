@@ -269,8 +269,7 @@ if (is_android || is_chromeos) {
     }
 
     # Whether java assertions and Preconditions checks are enabled.
-    enable_java_asserts =
-        is_java_debug || dcheck_always_on || android_channel == "default"
+    enable_java_asserts = dcheck_always_on || !is_official_build
 
     # Reduce build time by using d8 incremental build.
     enable_incremental_d8 = true
