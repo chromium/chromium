@@ -69,6 +69,7 @@ enum RevealExtentOption { kRevealExtent, kDoNotRevealExtent };
 enum class CaretVisibility;
 
 enum class HandleVisibility { kNotVisible, kVisible };
+enum class ContextMenuVisibility { kNotVisible, kVisible };
 enum class SelectSoftLineBreak { kNotSelected, kSelected };
 
 // This is return type of ComputeLayoutSelectionStatus(cursor).
@@ -251,9 +252,11 @@ class CORE_EXPORT FrameSelection final
   bool SelectWordAroundCaret();
 
   // Returns whether a selection was successfully executed. Currently supports
-  // word and sentence granularities.
+  // word and sentence granularities. Also sets the visibility of the handle and
+  // context menu based on parameters passed.
   bool SelectAroundCaret(TextGranularity text_granularity,
-                         HandleVisibility handle_visibility);
+                         HandleVisibility handle_visibility,
+                         ContextMenuVisibility context_menu_visibility);
 
 #if DCHECK_IS_ON()
   void ShowTreeForThis() const;

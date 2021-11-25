@@ -1141,11 +1141,14 @@ void FrameSelection::ScheduleVisualUpdateForPaintInvalidationIfNeeded() const {
 
 bool FrameSelection::SelectWordAroundCaret() {
   return SelectAroundCaret(TextGranularity::kWord,
-                           HandleVisibility::kNotVisible);
+                           HandleVisibility::kNotVisible,
+                           ContextMenuVisibility::kNotVisible);
 }
 
-bool FrameSelection::SelectAroundCaret(TextGranularity text_granularity,
-                                       HandleVisibility handle_visibility) {
+bool FrameSelection::SelectAroundCaret(
+    TextGranularity text_granularity,
+    HandleVisibility handle_visibility,
+    ContextMenuVisibility context_menu_visibility) {
   // Only supports word and sentence granularities for now.
   DCHECK(text_granularity == TextGranularity::kWord ||
          text_granularity == TextGranularity::kSentence);
@@ -1196,6 +1199,13 @@ bool FrameSelection::SelectAroundCaret(TextGranularity text_granularity,
               .SetShouldShowHandle(handle_visibility ==
                                    HandleVisibility::kVisible)
               .Build());
+
+      if (context_menu_visibility == ContextMenuVisibility::kVisible) {
+        ContextMenuAllowedScope scope;
+        frame_->GetEventHandler().ShowNonLocatedContextMenu(
+            /*override_target_element=*/nullptr, kMenuSourceTouch);
+      }
+
       return true;
     }
   }
