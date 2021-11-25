@@ -56,6 +56,7 @@ constexpr CGFloat kContentMaxWidth = 500;
 @property(nonatomic, strong) NSLayoutConstraint* regularWidthConstraints;
 @property(nonatomic, strong)
     NSLayoutConstraint* buttonStackViewBottomVerticalConstraint;
+@property(nonatomic, strong) NSLayoutConstraint* imageViewAspectRatioConstraint;
 @end
 
 @implementation ConfirmationAlertViewController
@@ -87,7 +88,8 @@ constexpr CGFloat kContentMaxWidth = 500;
   UILabel* subtitle = [self createSubtitleLabel];
 
   NSArray* stackSubviews = @[ self.imageView, title, subtitle ];
-  UIView* stackView = [self createStackViewWithArrangedSubviews:stackSubviews];
+  UIStackView* stackView =
+      [self createStackViewWithArrangedSubviews:stackSubviews];
 
   UIScrollView* scrollView = [self createScrollView];
   [scrollView addSubview:stackView];
@@ -221,11 +223,10 @@ constexpr CGFloat kContentMaxWidth = 500;
     CGFloat imageAspectRatio =
         self.imageView.image.size.width / self.imageView.image.size.height;
 
-    [NSLayoutConstraint activateConstraints:@[
-      [self.imageView.widthAnchor
-          constraintEqualToAnchor:self.imageView.heightAnchor
-                       multiplier:imageAspectRatio],
-    ]];
+    self.imageViewAspectRatioConstraint = [self.imageView.widthAnchor
+        constraintEqualToAnchor:self.imageView.heightAnchor
+                     multiplier:imageAspectRatio];
+    self.imageViewAspectRatioConstraint.active = YES;
   }
 }
 
@@ -285,7 +286,12 @@ constexpr CGFloat kContentMaxWidth = 500;
   BOOL isVerticalCompact =
       self.traitCollection.verticalSizeClass == UIUserInterfaceSizeClassCompact;
 
+  // Hiding the image causes the UIStackView to change the image's height to 0.
+  // Because its width and height are related, if the aspect ratio constraint
+  // is active, the image's width also goes to 0, which causes the stack view
+  // width to become 0 too.
   [self.imageView setHidden:isVerticalCompact];
+  self.imageViewAspectRatioConstraint.active = !isVerticalCompact;
 
   // Allow toolbar to update its height based on new layout.
   [self.topToolbar invalidateIntrinsicContentSize];
