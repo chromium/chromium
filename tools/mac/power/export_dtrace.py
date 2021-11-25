@@ -6,129 +6,227 @@
 
 from collections import defaultdict
 import argparse
-import csv
+import itertools
 import logging
 import os
+import re
 import sys
+import typing
 """This module contains the utilities necessary to read Dtrace result files and
-convert them in the collapse stack format used by FlameGraph tools.
+convert them other format for flamegraph generation, such as pprof profiles.
 """
 
+from protos.third_party.pprof import profile_pb2
 
-class StackCollapser:
-  """Massages and collapses chromium Dtrace profiles.
 
-  Collapsing means taking samples in the DTrace format from multiple files and
-  converting them to the "collapsed stack" format that is used in tools like
-  flamegraphs. The format is called "collapsed" because it puts the whole stack
-  on a single line.
+def pairwise(iterable):
+  "s -> (s0,s1), (s1,s2), (s2, s3), ..."
+  a, b = itertools.tee(iterable)
+  next(b, None)
+  return zip(a, b)
 
-  The massaging part consists in cutting out and adding stack frames to make
-  the profile easier to use for the purpose of analyzing Chromium performance.
+
+class ProfileBuilder:
+  """Helper to generate a pprof profile."""
+
+  def __init__(self):
+    self._profile = profile_pb2.Profile()
+    self._locations = {}
+    self._profile.string_table.append("")
+    self._strings = {"": 0}
+
+  def GetStringId(self, string: str) -> int:
+    """Returns the id for `string` into the string_table, creating new entry if
+       not already present.
+    """
+    if string in self._strings:
+      return self._strings[string]
+    index = len(self._profile.string_table)
+    self._strings[string] = index
+    self._profile.string_table.append(string)
+    return index
+
+  def GetSymbolLocation(self, name: str, system_name: str) -> int:
+    """Returns the id for a symbol location defined as `(name, system_name)`,
+       creating new entry if not already present.
+    """
+    if (name, system_name) in self._locations:
+      return self._locations[(name, system_name)]
+
+    function_id = len(self._profile.location) + 1
+    self._locations[(name, system_name)] = function_id
+
+    function = self._profile.function.add()
+    function.id = function_id
+    function.name = self.GetStringId(name)
+    function.system_name = self.GetStringId(system_name)
+    # These fields are given default values since they aren't stored in dtrace.
+    function.filename = self.GetStringId("")
+    function.start_line = 0
+
+    location = self._profile.location.add()
+    location.id = function_id
+    line = location.line.add()
+    line.function_id = function_id
+    return function_id
+
+  def AddSampleType(self, type: str, unit: str):
+    """
+    Adds a sample type that describe stackframes in this profile. See
+    protos/third_party/pprof/src/profile.proto for more details.
+    """
+    assert (len(self._profile.sample) == 0)
+    sample_type = self._profile.sample_type.add()
+    sample_type.type = self.GetStringId(type)
+    sample_type.unit = self.GetStringId(unit)
+
+  def AddSample(self, locations: typing.List[int], values: typing.List[int]):
+    """
+    Adds a sample in the profile, constructed from a list of locations
+    representing the stack, and a list of values for that stack (as many values
+    as sample types described by this profile).
+    """
+    assert (len(self._profile.sample_type) == len(values))
+    sample = self._profile.sample.add()
+    for value in values:
+      sample.value.append(value)
+    for location in locations:
+      sample.location_id.append(location)
+
+  def SerializeToString(self) -> str:
+    return self._profile.SerializeToString()
+
+
+class DTraceParser:
+  """Parses and merges chromium Dtrace profiles.
 
   Typical usage example:
 
-  collapser = StackCollapser('./samples/samples.collapsed')
-  collapser.read_dtrace_logs('./profile/')
-  collapser.post_process_samples()
-  collapse.write_results()
+  parser = DTraceParser()
+  parser.ParseDir('./samples/')
+  parser.ExportToPprof(builder)
   """
 
-  def __init__(self, output_filename):
+  def __init__(self, sample_type: str = 'cpu_time'):
     """
     Args:
       output_filename: The path of the file in which results are written.
     """
-    self.output_filename = output_filename
-    self.samples = []
-    self.post_processing_applied = False
+    self._stack_weights = defaultdict(int)
+    self._stack_frames = {}
+    self._sample_type = sample_type
+    self._post_processing_applied = False
 
-  def set_samples_for_testing(self, samples):
+  def ParseFile(self, stack_file: typing.TextIO):
+    """Parses dtrace `stack_file` and adds the data to this profile.
     """
-    Args:
-      samples: Values extracted from profiles. Type is:
-      {"frames": list of str, "weight": int}
-    """
-    self.samples = samples
+    assert (self._post_processing_applied == False)
+    stack_frames = []
+    for line, next_line in pairwise(stack_file):
+      line_content = line.strip()
+      if not line_content:
+        continue
+      if next_line.strip():
+        if re.search('\+0x', line_content):
+          module, line_content = line_content.split('`', 1)
+          [function, offset] = line_content.split('+0x')
+        else:
+          function = "unsymbolized function"
+          module = "unsymbolized module"
+        stack_frames.append((module, function))
+      else:
+        if len(stack_frames) == 0:
+          continue
+        weight = int(line_content)
+        stack_string = ";".join(
+            [f'{module}`{function}' for (module, function) in stack_frames])
+        self._stack_weights[stack_string] += weight
+        self._stack_frames[stack_string] = stack_frames
+        stack_frames = []
+    if not self._stack_frames:
+      logging.error("No results found, check directory contents")
+      sys.exit(-1)
 
-  def read_dtrace_logs(self, stack_dir):
-    """
+  def ParseDir(self, stack_dir: str):
+    """Parses all dtrace files in `stack_dir` and adds the data to this profile.
+
     Args:
       stack_dir: The directory where Dtrace profile results can be found.
-
-    Returns:
-      A list of string arrays that contain stack frames and a count.
 
     Raises:
       SystemExit: When no results are found in stack_dir.
     """
-    # The DTrace format is defined as such:
-    # First there are lines, each containing
-    # the name of a function with an optional offset.
-    # Finally there is a line with the weight associated
-    # with the full stack. The block is broken up by an
-    # empty line and a new stack starts.
-    #
-    # base::foo+0x21
-    # content::bar
-    # biz::baz
-    #  17
-    #
-    # ...
-
-    weights = defaultdict(int)
     for root, dirs, files in os.walk(stack_dir):
-      for stack_file in files:
-        with open(os.path.join(stack_dir, stack_file),
+      for stack_filename in files:
+        with open(os.path.join(stack_dir, stack_filename),
                   newline='',
                   encoding="ISO-8859-1") as stack_file:
-          lines = stack_file.readlines()
+          self.ParseFile(stack_file)
 
-          # Read each such blocks in all DTrace results
-          # and store in the return format.
-          block = []
-          for line in lines:
-            if not line.strip():
-              # If an empty line is encountered.
-              if block:
-                # If that empty line was terminating a block.
-
-                # Keep the count.
-                weight = block.pop()
-
-                # Reorder the frames since they were reversed while reading.
-                block.reverse()
-
-                # Build the full stack line.
-                stack_trace_string = ";".join(block)
-
-                # Increment the sum of weights for this specific full stack.
-                weights[stack_trace_string] += int(weight)
-
-                # Start a new block.
-                block = []
-            else:
-              # Read the line to build on the current block.
-              stack_frame = line.strip()
-
-              # Remove offset
-              plus_index = stack_frame.find('+')
-              if plus_index != -1:
-                stack_frame = stack_frame[:plus_index]
-
-              block.append(stack_frame)
-
-    for stack, weight in weights.items():
-      sample = {}
-      sample["frames"] = stack.split(';')
-      sample["weight"] = weight
-      self.samples.append(sample)
-
-    if not self.samples:
+    if not self._stack_frames:
       logging.error("No results found, check directory contents")
       sys.exit(-1)
 
-  def shorten_stack(self, stack):
+  def ConvertToPprof(self, profile_builder: ProfileBuilder):
+    """Converts this profile to pprof by writing to `profile_builder`.
+    """
+    profile_builder.AddSampleType(self._sample_type, "counts")
+    for key in self._stack_frames:
+      frames = self._stack_frames[key]
+      weight = self._stack_weights[key]
+      sample_locations = []
+      for (module, function) in frames:
+        sample_locations.append(
+            profile_builder.GetSymbolLocation(function, module))
+      profile_builder.AddSample(sample_locations, [weight])
+
+  def ConvertToCollapse(self, output_filename: str):
+    """Converts this profile to the "collapsed stack" format. In contrast to the
+    Dtrace format full stacks are writtent on a single line. At first the
+    different are separated by semi-colons and a space separates the weight
+    associated with the function.
+    Example:
+
+    base::foo;content::bar;biz::baz 17
+    base::biz;content::boo;biz::bim 23
+    ...
+
+    """
+    os.makedirs(f"{os.path.dirname(os.path.abspath(output_filename))}",
+                exist_ok=True)
+
+    with open(output_filename, 'w') as f:
+      for key in self._stack_frames:
+        frames = self._stack_frames[key]
+        frames_string = ';'.join(
+            [function for (module, function) in reversed(frames)])
+        weight = self._stack_weights[key]
+        # Reform the line in stacked format and write it out.
+        f.write(f"{frames_string} {weight}\n")
+
+  def GetSamplesListForTesting(self):
+    samples = []
+    for key in self._stack_frames:
+      frames = self._stack_frames[key]
+      weight = self._stack_weights[key]
+      samples.append({"frames": frames, "weight": weight})
+    return samples
+
+  def AddSamplesForTesting(self, samples):
+    for sample in samples:
+      stack_frames = sample['frames']
+      stack_string = ";".join(
+          [f'{module}`{function}' for (module, function) in stack_frames])
+      self._stack_frames[stack_string] = stack_frames
+      self._stack_weights[stack_string] += sample['weight']
+
+  def MaybeFlagOverflowedStack(self, stack: typing.List[typing.Tuple[str, str]],
+                               max_len: int):
+    if len(stack) >= max_len:
+      return stack + [('_', '_OVERFLOWED_')]
+    return stack
+
+  def ShortenStack(self, stack: typing.List[typing.Tuple[str, str]]):
     """Drop some frames that don't offer any valuable information. The part
     above/before the frame is trimmed. This means that the base of the stack
     can be dropped but no frame can "skipped".
@@ -147,74 +245,27 @@ class StackCollapser:
     message_pump_roots = [
         "base::MessagePumpNSRunLoop::DoRun", "base::MessagePumpDefault::Run",
         "base::MessagePumpKqueue::Run", "base::MessagePumpCFRunLoopBase::Run",
-        "base::MessagePumpNSApplication::DoRun", "base::mac::CallWithEHFrame"
+        "base::MessagePumpNSApplication::DoRun", "base::mac::CallWithEHFrame",
+        "base::internal::WorkerThread::RunPooledWorker",
+        "base::internal::WorkerThread::RunBackgroundPooledWorker"
     ]
 
     first_ignored_index = -1
-    for i, frame in enumerate(stack):
+    for i, (module, function) in enumerate(stack):
       if any(
-          frame.startswith(message_pump_root)
+          function.startswith(message_pump_root)
           for message_pump_root in message_pump_roots):
         # If any of the markers is present in the function it means everything
         # under the frame should be dropped from the stack.
-        first_ignored_index = max(
-            i - 1,
-            0)  # Cutoff point is included but can't be smaller than zero.
+        first_ignored_index = i
         break
 
     if first_ignored_index != -1:
-      return stack[first_ignored_index + 1:]
+      return stack[:first_ignored_index]
     else:
       return stack
 
-  def remove_tokens(self, stack):
-    """Removes some substrings from frames in the stack.
-
-    Args:
-      stack: An array of strings that represent each frame of a stack trace.
-
-    Returns: The input array with zero or more frames modified.
-    """
-
-    # Drop parts of the function names that just add noise.
-    tokens_to_remove = [
-        "Chromium Framework`", "libsystem_kernel.dylib`", "Security`"
-    ]
-
-    for i, frame in enumerate(stack):
-      for token in tokens_to_remove:
-        # If removing the token would result in an empty string don't
-        # remove it.
-        if stack[i] != token:
-          stack[i] = stack[i].replace(token, "")
-
-    return stack
-
-  def write_down_samples(self):
-    """Writes down self.samples to a file. In contrast to the Dtrace format full
-    stacks are writtent on a single line. At first the different are separated
-    by semi-colons and a space separates the weight associated with the
-    function.
-
-    Example:
-
-    base::foo;content::bar;biz::baz 17
-    base::biz;content::boo;biz::bim 23
-    ...
-
-    """
-
-    if not os.path.exists(os.path.dirname(self.output_filename)):
-      os.makedirs(os.path.dirname(self.output_filename))
-
-    with open(self.output_filename, 'w') as f:
-      for row in self.samples:
-        line = ';'.join(row["frames"])
-        weight = row["weight"]
-        # Reform the line in stacked format and write it out.
-        f.write(f"{line} {weight}\n")
-
-  def post_process_samples(self):
+  def ShortenStackSamples(self):
     """Applies filtering and enhancing to self.samples().  This function can
     only be called once.
 
@@ -222,23 +273,16 @@ class StackCollapser:
       SystemExit: If this function is called twice on the same object.
     """
 
-    if self.post_processing_applied:
+    if self._post_processing_applied:
       logging.error("Post processing cannot be applied twice")
       sys.exit(-1)
-    self.post_processing_applied = True
+    self._post_processing_applied = True
 
-    processed_samples = []
-    for row in self.samples:
+    for key in self._stack_frames:
       # Filter out the frames we don't care about and all those under it.
-      row["frames"] = self.shorten_stack(row["frames"])
-      row["frames"] = self.remove_tokens(row["frames"])
-
-
-def main(stack_dir, output_filename):
-  collapser = StackCollapser(output_filename)
-  collapser.read_dtrace_logs(stack_dir)
-  collapser.post_process_samples()
-  collapser.write_down_samples()
+      self._stack_frames[key] = self.MaybeFlagOverflowedStack(
+          self._stack_frames[key], 64)
+      self._stack_frames[key] = self.ShortenStack(self._stack_frames[key])
 
 
 if __name__ == "__main__":
@@ -250,5 +294,30 @@ if __name__ == "__main__":
   parser.add_argument("--output_filename",
                       help="The file to write the collapsed stacks into.",
                       required=True)
+  parser.add_argument('--format',
+                      dest='format',
+                      action='store',
+                      choices=["pprof", "collapsed"],
+                      default="pprof",
+                      help="Output format to generate.")
+  parser.add_argument('--shorten',
+                      action='store_true',
+                      help="Shorten stacks by removing.")
   args = parser.parse_args()
-  main(args.stack_dir, args.output_filename)
+
+  profile_mode = 'cpu_time'
+  if 'wakeups' in args.stack_dir:
+    profile_mode = 'wakeups'
+  parser = DTraceParser(profile_mode)
+  parser.ParseDir(args.stack_dir)
+  if args.shorten:
+    parser.ShortenStackSamples()
+
+  if args.format == "pprof":
+    profile_builder = ProfileBuilder()
+    parser.ConvertToPprof(profile_builder)
+
+    with open(args.output_filename, "wb") as output_file:
+      output_file.write(profile_builder.SerializeToString())
+  else:
+    parser.ConvertToCollapse(args.output_filename)
