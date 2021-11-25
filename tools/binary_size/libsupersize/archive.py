@@ -1630,87 +1630,106 @@ def _ElfInfoFromApk(apk_path, apk_so_path, tool_prefix):
     return build_id, section_ranges, elf_overhead_size
 
 
-def _AddContainerArguments(parser):
+def _AddContainerArguments(parser, is_top_args=False):
   """Add arguments applicable to a single container."""
 
-  # Special: Use _IdentifyInputFile() to detect main file argument.
-  parser.add_argument('-f', metavar='FILE',
-                      help='Auto-identify input file type.')
-
-  # Main file argument: Exactly one should be specified (perhaps via -f), with
-  # the exception that --map-file can be specified in addition.
+  # Main file argument: Exactly one should be specified (perhaps via -f).
   # _IdentifyInputFile() should be kept updated.
-  parser.add_argument('--apk-file',
-                      help='.apk file to measure. Other flags can generally be '
-                      'derived when this is used.')
-  parser.add_argument('--minimal-apks-file',
-                      help='.minimal.apks file to measure. Other flags can '
-                      'generally be derived when this is used.')
-  parser.add_argument('--elf-file', help='Path to input ELF file.')
-  parser.add_argument('--map-file',
-                      help='Path to input .map(.gz) file. Defaults to '
-                           '{{elf_file}}.map(.gz)?. If given without '
-                           '--elf-file, no size metadata will be recorded.')
+  group = parser.add_argument_group(title='Main Input')
+  group = group.add_mutually_exclusive_group(required=True)
+  group.add_argument('-f',
+                     metavar='FILE',
+                     help='Auto-identify input file type.')
+  group.add_argument('--apk-file',
+                     help='.apk file to measure. Other flags can generally be '
+                     'derived when this is used.')
+  group.add_argument('--minimal-apks-file',
+                     help='.minimal.apks file to measure. Other flags can '
+                     'generally be derived when this is used.')
+  group.add_argument('--elf-file', help='Path to input ELF file.')
+  group.add_argument('--map-file',
+                     help='Path to input .map(.gz) file. Defaults to '
+                     '{{elf_file}}.map(.gz)?. If given without '
+                     '--elf-file, no size metadata will be recorded.')
+  group.add_argument('--pak-file',
+                     action='append',
+                     dest='pak_files',
+                     help='Paths to pak files.')
+  if is_top_args:
+    group.add_argument('--ssargs-file',
+                       help='Path to SuperSize multi-container arguments file.')
 
-  # Auxiliary file arguments.
-  parser.add_argument('--mapping-file',
-                      help='Proguard .mapping file for deobfuscation.')
-  parser.add_argument('--resources-pathmap-file',
-                      help='.pathmap.txt file that contains a maping from '
-                      'original resource paths to shortened resource paths.')
-  parser.add_argument('--pak-file', action='append',
-                      help='Paths to pak files.')
-  parser.add_argument('--pak-info-file',
-                      help='This file should contain all ids found in the pak '
-                           'files that have been passed in.')
-  parser.add_argument('--aux-elf-file',
-                      help='Path to auxiliary ELF if the main file is APK, '
-                      'useful for capturing metadata.')
+  group = parser.add_argument_group(title='What to Analyze')
+  group.add_argument('--java-only',
+                     action='store_true',
+                     help='Run on only Java symbols')
+  group.add_argument('--native-only',
+                     action='store_true',
+                     help='Run on only native symbols')
+  group.add_argument('--no-java',
+                     action='store_true',
+                     help='Do not run on Java symbols')
+  group.add_argument('--no-native',
+                     action='store_true',
+                     help='Do not run on native symbols')
 
-  # Non-file argument.
-  parser.add_argument('--no-string-literals', dest='track_string_literals',
-                      default=True, action='store_false',
-                      help='Disable breaking down "** merge strings" into more '
-                           'granular symbols.')
-  parser.add_argument('--no-map-file',
-                      dest='ignore_linker_map',
-                      action='store_true',
-                      help='Use debug information to capture symbol sizes '
-                      'instead of linker map file.')
-  parser.add_argument(
-      '--java-only', action='store_true', help='Run on only Java symbols')
-  parser.add_argument(
-      '--native-only', action='store_true', help='Run on only native symbols')
-  parser.add_argument(
-      '--no-java', action='store_true', help='Do not run on Java symbols')
-  parser.add_argument(
-      '--no-native', action='store_true', help='Do not run on native symbols')
-  parser.add_argument(
-      '--include-padding',
-      action='store_true',
-      help='Include a padding field for each symbol, instead of rederiving '
-      'from consecutive symbols on file load.')
-  parser.add_argument(
-      '--check-data-quality',
-      action='store_true',
-      help='Perform sanity checks to ensure there is no missing data.')
+  group = parser.add_argument_group(title='Analysis Options for Native Code')
+  if is_top_args:
+    group.add_argument(
+        '--tool-prefix',
+        help='Path prefix for binaries such as nm, readelf, objdump')
+  group.add_argument('--no-string-literals',
+                     dest='track_string_literals',
+                     default=True,
+                     action='store_false',
+                     help='Disable breaking down "** merge strings" into more '
+                     'granular symbols.')
+  group.add_argument('--no-map-file',
+                     dest='ignore_linker_map',
+                     action='store_true',
+                     help='Use debug information to capture symbol sizes '
+                     'instead of linker map file.')
+  # Used by tests to override path to APK-discovered files.
+  group.add_argument('--aux-elf-file', help=argparse.SUPPRESS)
+  group.add_argument(
+      '--aux-map-file',
+      help='Path to linker map to use when --elf-file is provided')
+
+  group = parser.add_argument_group(title='APK options')
+  group.add_argument('--mapping-file',
+                     help='Proguard .mapping file for deobfuscation.')
+  group.add_argument('--resources-pathmap-file',
+                     help='.pathmap.txt file that contains a maping from '
+                     'original resource paths to shortened resource paths.')
+
+  group = parser.add_argument_group(title='Analysis Options for Pak Files')
+  group.add_argument('--pak-info-file',
+                     help='This file should contain all ids found in the pak '
+                     'files that have been passed in.')
+
+  group = parser.add_argument_group(title='Analysis Options (shared)')
+  group.add_argument('--source-directory',
+                     help='Custom path to the root source directory.')
+  group.add_argument('--output-directory',
+                     help='Path to the root build directory.')
+  if is_top_args:
+    group.add_argument('--no-output-directory',
+                       action='store_true',
+                       help='Do not auto-detect --output-directory.')
+    group.add_argument('--include-padding',
+                       action='store_true',
+                       help='Include a padding field for each symbol, '
+                       'instead of rederiving from consecutive symbols '
+                       'on file load.')
+    group.add_argument('--check-data-quality',
+                       action='store_true',
+                       help='Perform sanity checks to ensure there is no '
+                       'missing data.')
 
 
 def AddArguments(parser):
   parser.add_argument('size_file', help='Path to output .size file.')
-  parser.add_argument('--source-directory',
-                      help='Custom path to the root source directory.')
-  parser.add_argument('--output-directory',
-                      help='Path to the root build directory.')
-  parser.add_argument('--tool-prefix',
-                      help='Path prefix for c++filt, nm, readelf.')
-  parser.add_argument(
-      '--no-output-directory',
-      action='store_true',
-      help='Skips all data collection that requires build intermediates.')
-  parser.add_argument('--ssargs-file',
-                      help='Path to SuperSize multi-container arguments file.')
-  _AddContainerArguments(parser)
+  _AddContainerArguments(parser, is_top_args=True)
 
 
 def _IdentifyInputFile(args, on_config_error):
@@ -1734,6 +1753,8 @@ def _IdentifyInputFile(args, on_config_error):
       args.elf_file = args.f
     elif args.f.endswith('.map') or args.f.endswith('.map.gz'):
       args.map_file = args.f
+    elif args.f.endswith('.pak'):
+      args.pak_files.append(args.f)
     elif args.f.endswith('.ssargs'):
       # Fails if trying to nest them, which should never happen.
       args.ssargs_file = args.f
@@ -1743,20 +1764,13 @@ def _IdentifyInputFile(args, on_config_error):
 
   ret = [
       args.apk_file, args.elf_file, args.minimal_apks_file,
-      args.__dict__.get('ssargs_file')
-  ]
+      args.__dict__.get('ssargs_file'), args.map_file
+  ] + (args.pak_files or [])
   ret = [v for v in ret if v]
-  # --map-file can be a main file, or used with another main file.
-  if not ret and args.map_file:
-    ret.append(args.map_file)
-  elif not ret:
+  if not ret:
     on_config_error(
         'Must pass at least one of --apk-file, --minimal-apks-file, '
-        '--elf-file, --map-file, --ssargs-file')
-  elif len(ret) > 1:
-    on_config_error(
-        'Found colliding --apk-file, --minimal-apk-file, --elf-file, '
-        '--ssargs-file')
+        '--elf-file, --map-file, --pak-file, --ssargs-file')
   return ret[0]
 
 
@@ -1927,11 +1941,12 @@ def _ProcessContainerArgs(top_args,
                           on_config_error,
                           apk_path=None,
                           split_name=None):
-  # Copy output_directory, tool_prefix, etc. into sub_args.
   # Since |sub_args| gets modified, the caller should provide a fresh copy if
   # this function is called from a loop.
-  for k, v in top_args.__dict__.items():
-    sub_args.__dict__.setdefault(k, v)
+  sub_args.source_directory = (sub_args.source_directory
+                               or top_args.source_directory)
+  sub_args.output_directory = (sub_args.output_directory
+                               or top_args.output_directory)
 
   analyze_native = not (sub_args.java_only or sub_args.no_native
                         or top_args.java_only or top_args.no_native)
@@ -1971,16 +1986,18 @@ def _ProcessContainerArgs(top_args,
 
   if analyze_native:
     tool_prefix_finder = path_util.ToolPrefixFinder(
-        value=sub_args.tool_prefix,
+        value=top_args.tool_prefix,
         output_directory=top_args.output_directory,
         linker_name='lld')
     native_specs = _CreateNativeSpecs(
         tentative_output_dir=top_args.output_directory,
         apk_path=apk_path,
         elf_path=sub_args.elf_file or sub_args.aux_elf_file,
-        map_path=sub_args.map_file,
-        track_string_literals=top_args.track_string_literals,
-        ignore_linker_map=sub_args.ignore_linker_map,
+        map_path=sub_args.map_file or sub_args.aux_map_file,
+        track_string_literals=(top_args.track_string_literals
+                               and sub_args.track_string_literals),
+        ignore_linker_map=(top_args.ignore_linker_map
+                           or sub_args.ignore_linker_map),
         tool_prefix=tool_prefix_finder.Finalized(),
         on_config_error=on_config_error)
   else:
@@ -2110,7 +2127,7 @@ def Run(top_args, on_config_error):
           source_directory=sub_args.source_directory,
           output_directory=sub_args.output_directory,
           resources_pathmap_path=resources_pathmap_path,
-          pak_files=sub_args.pak_file,
+          pak_files=sub_args.pak_files,
           pak_info_file=sub_args.pak_info_file)
 
       container_list.append(container)

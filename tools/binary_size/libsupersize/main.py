@@ -7,7 +7,6 @@
 
 import argparse
 import atexit
-import collections
 import distutils.spawn
 import logging
 import platform
@@ -89,9 +88,9 @@ class _SaveDiffAction:
 
 
 def main():
-  parser = argparse.ArgumentParser(description=__doc__)
+  parser = argparse.ArgumentParser(prog='supersize', description=__doc__)
   sub_parsers = parser.add_subparsers()
-  actions = collections.OrderedDict()
+  actions = {}
   actions['archive'] = (archive, 'Create a .size file')
   actions['html_report'] = (
       html_report, 'Create a stand-alone report from a .size file.')

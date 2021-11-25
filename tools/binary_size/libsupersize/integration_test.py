@@ -298,6 +298,7 @@ class IntegrationTest(unittest.TestCase):
                  *,
                  use_output_directory=True,
                  use_elf=False,
+                 use_map=False,
                  use_apk=False,
                  use_ssargs=False,
                  use_minimal_apks=False,
@@ -313,11 +314,6 @@ class IntegrationTest(unittest.TestCase):
         '--tool-prefix',
         _TEST_TOOL_PREFIX,
     ]
-    if ignore_linker_map:
-      args += ['--no-map-file']
-    elif not use_ssargs:
-      # --map-file ignored for use_ssargs.
-      args += ['--map-file', _TEST_MAP_PATH]
 
     if use_output_directory:
       # Let autodetection find output_directory when --elf-file is used.
@@ -327,25 +323,35 @@ class IntegrationTest(unittest.TestCase):
       args += ['--no-output-directory']
     if use_ssargs:
       args += ['-f', _TEST_SSARGS_PATH]
-    elif use_apk:
+    if use_apk:
       args += ['-f', _TEST_APK_PATH]
-    elif use_minimal_apks:
+    if use_minimal_apks:
       args += ['-f', _TEST_MINIMAL_APKS_PATH]
-    elif use_elf:
+    if use_elf:
       args += ['-f', _TEST_ELF_PATH]
+    if use_map:
+      args += ['-f', _TEST_MAP_PATH]
     if use_pak:
       args += ['--pak-file', _TEST_APK_LOCALE_PAK_PATH,
                '--pak-file', _TEST_APK_PAK_PATH,
                '--pak-info-file', _TEST_PAK_INFO_PATH]
+
+    if ignore_linker_map:
+      args += ['--no-map-file']
+    elif not use_ssargs and not use_map:
+      args += ['--aux-map-file', _TEST_MAP_PATH]
+
     if use_aux_elf:
       args += ['--aux-elf-file', _TEST_ELF_PATH]
     if include_padding:
       args += ['--include-padding']
+
     _RunApp('archive', args, debug_measures=debug_measures)
 
   def _DoArchiveTest(self,
                      *,
                      use_output_directory=True,
+                     use_map=False,
                      use_elf=False,
                      use_apk=False,
                      use_minimal_apks=False,
@@ -357,6 +363,7 @@ class IntegrationTest(unittest.TestCase):
     with tempfile.NamedTemporaryFile(suffix='.size') as temp_file:
       self._DoArchive(temp_file.name,
                       use_output_directory=use_output_directory,
+                      use_map=use_map,
                       use_elf=use_elf,
                       use_apk=use_apk,
                       use_minimal_apks=use_minimal_apks,
@@ -396,11 +403,11 @@ class IntegrationTest(unittest.TestCase):
 
   @_CompareWithGolden()
   def test_Archive(self):
-    return self._DoArchiveTest(use_output_directory=False, use_elf=False)
+    return self._DoArchiveTest(use_output_directory=False, use_map=True)
 
   @_CompareWithGolden()
   def test_Archive_OutputDirectory(self):
-    return self._DoArchiveTest()
+    return self._DoArchiveTest(use_map=True)
 
   @_CompareWithGolden()
   def test_Archive_Elf(self):
@@ -500,7 +507,7 @@ class IntegrationTest(unittest.TestCase):
     prev_contents = None
     for _ in range(3):
       with tempfile.NamedTemporaryFile(suffix='.size') as temp_file:
-        self._DoArchive(temp_file.name)
+        self._DoArchive(temp_file.name, use_map=True)
         contents = temp_file.read()
         self.assertTrue(prev_contents is None or contents == prev_contents)
         prev_contents = contents
