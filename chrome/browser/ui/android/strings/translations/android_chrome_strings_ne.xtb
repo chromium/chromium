@@ -603,6 +603,7 @@
 <translation id="4696983787092045100">आफ्ना यन्त्रहरूमा टेक्स्ट म्यासेज पठाउनुहोस्</translation>
 <translation id="4699172675775169585">क्यास गरिएका फोटो र फाइलहरू</translation>
 <translation id="4714588616299687897">आफ्नो डेटाको ६०% सम्म जोगाउनुहोस्</translation>
+<translation id="471759387343966120">तपाईंले जारी राख्नुभयो भने तपाईं <ph name="BEGIN_TOS_LINK" />सेवाका सर्तहरू<ph name="END_TOS_LINK" /> र <ph name="BEGIN_PRIVACY_LINK" />गोपनीयता\u00A0नीति<ph name="END_PRIVACY_LINK" />मा सहमत हुनुहुन्छ भन्ने अर्थ लाग्छ।\nChrome ले Google लाई यो एपको गुणस्तर सुधार्न सघाउने प्रयोजनका लागि यो एपको प्रयोगसम्बन्धी डेटा र क्र्यास रिपोर्ट पठाउँछ। <ph name="BEGIN_UMA_LINK" />व्यवस्थापन गर्नुहोस्<ph name="END_UMA_LINK" /></translation>
 <translation id="4719927025381752090">अनुवादको गर्न प्रस्ताव गर्नुहोस्</translation>
 <translation id="4720023427747327413"><ph name="PRODUCT_NAME" />मा खोल्नुहोस्</translation>
 <translation id="4720982865791209136">Chrome लाई सुधार्न मद्दत गर्नुहोस्। <ph name="BEGIN_LINK" />सर्वेक्षणमा भाग लिनुहोस्।<ph name="END_LINK" /></translation>
@@ -1204,6 +1205,7 @@
 <translation id="808747664143081553">यन्त्रसँग कनेक्ट गरियो</translation>
 <translation id="8088176524274673045">वरपर रहेका मान्छेहरूसँग सेयर गर्न उनीहरूलाई यो QR कोड स्क्यान गर्न लगाउनुहोस्</translation>
 <translation id="8103578431304235997">इन्कोग्निटो ट्याब</translation>
+<translation id="8105613260829665809">तपाईंले जारी राख्नुभयो भने तपाईं <ph name="BEGIN_TOS_LINK" />सेवाका सर्तहरू<ph name="END_TOS_LINK" />मा सहमत हुनुहुन्छ भन्ने अर्थ लाग्छ।\nChrome ले Google लाई यो एपको गुणस्तर सुधार्न सघाउने प्रयोजनका लागि यो एपको प्रयोगसम्बन्धी डेटा र क्र्यास रिपोर्ट पठाउँछ। <ph name="BEGIN_UMA_LINK" />व्यवस्थापन गर्नुहोस्<ph name="END_UMA_LINK" /></translation>
 <translation id="8105893657415066307"><ph name="DESCRIPTION" /> <ph name="SEPARATOR" /> <ph name="FILE_SIZE" /></translation>
 <translation id="8109613176066109935">आफ्ना सबै डिभाइसमा पुस्तक चिन्हहरू प्राप्त गर्न सिंक गर्ने सुविधा सक्रिय गर्नुहोस्</translation>
 <translation id="8110024788458304985">Chrome का सुविधाको गुणस्तर र यसको पर्फर्मेन्स सुधार्न मद्दत गर्नुहोस्</translation>

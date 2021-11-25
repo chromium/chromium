@@ -604,6 +604,7 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="4696983787092045100">Төхөөрөмжүүддээ текст илгээх</translation>
 <translation id="4699172675775169585">Кэшлсэн дүрс ба файл</translation>
 <translation id="4714588616299687897">60% хүртэлх өгөгдлөө хадгална уу</translation>
+<translation id="471759387343966120">Үргэлжлүүлснээр та <ph name="BEGIN_TOS_LINK" />Үйлчилгээний нөхцөл<ph name="END_TOS_LINK" /> болон <ph name="BEGIN_PRIVACY_LINK" />Нууцлалын\u00A0бодлогыг<ph name="END_PRIVACY_LINK" /> зөвшөөрч байна.\nТухайн аппыг сайжруулахад туслахын тулд Chrome ашиглалт болон гэмтлийн өгөгдлийг Google-д илгээнэ. <ph name="BEGIN_UMA_LINK" />Удирдах<ph name="END_UMA_LINK" /></translation>
 <translation id="4719927025381752090">Орчуулахыг санал болгох</translation>
 <translation id="4720023427747327413"><ph name="PRODUCT_NAME" />-д нээлттэй</translation>
 <translation id="4720982865791209136">Chrome-г сайжруулахад тусална уу. <ph name="BEGIN_LINK" />Судалгаанд оролцоно уу<ph name="END_LINK" /></translation>
@@ -1204,6 +1205,7 @@ Privacy Sandbox-н туршилт нь идэвхтэй хөгжүүлэлтэд
 <translation id="808747664143081553">Төхөөрөмжид холбогдсон</translation>
 <translation id="8088176524274673045">Ойролцоо байгаа хүмүүстэй хуваалцахын тулд тэдэнд энэ QR кодыг скан хийхийг зөвшөөрнө үү</translation>
 <translation id="8103578431304235997">Нууцлалын таб</translation>
+<translation id="8105613260829665809">Үргэлжлүүлснээр та <ph name="BEGIN_TOS_LINK" />Үйлчилгээний нөхцөлийг<ph name="END_TOS_LINK" /> зөвшөөрч байна.\nТухайн аппыг сайжруулахад туслахын тулд Chrome ашиглалт болон гэмтлийн өгөгдлийг Google-д илгээнэ. <ph name="BEGIN_UMA_LINK" />Удирдах<ph name="END_UMA_LINK" /></translation>
 <translation id="8105893657415066307"><ph name="DESCRIPTION" /> <ph name="SEPARATOR" /> <ph name="FILE_SIZE" /></translation>
 <translation id="8109613176066109935">Хавчуургаа бүх төхөөрөмждөө авахын тулд синкийг асаана уу</translation>
 <translation id="8110024788458304985">Chrome-н онцлогууд болон гүйцэтгэлийг сайжруулахад туслах</translation>

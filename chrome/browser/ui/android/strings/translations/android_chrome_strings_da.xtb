@@ -604,6 +604,7 @@ Din Google-konto kan have andre former for browserhistorik, f.eks. søgninger og
 <translation id="4696983787092045100">Send sms til dine enheder</translation>
 <translation id="4699172675775169585">Billeder og filer, der er gemt i cache</translation>
 <translation id="4714588616299687897">Spar op til 60 % af dine data</translation>
+<translation id="471759387343966120">Ved at fortsætte accepterer du <ph name="BEGIN_TOS_LINK" />servicevilkårene<ph name="END_TOS_LINK" /> og <ph name="BEGIN_PRIVACY_LINK" />privatlivspolitikken<ph name="END_PRIVACY_LINK" />.\nChrome sender data om brug og nedbrud til Google for at hjælpe med at forbedre appen. <ph name="BEGIN_UMA_LINK" />Administrer<ph name="END_UMA_LINK" /></translation>
 <translation id="4719927025381752090">Tilbyd at oversætte</translation>
 <translation id="4720023427747327413">Åbn i <ph name="PRODUCT_NAME" /></translation>
 <translation id="4720982865791209136">Vær med til at forbedre Chrome. <ph name="BEGIN_LINK" />Deltag i undersøgelsen<ph name="END_LINK" /></translation>
@@ -1205,6 +1206,7 @@ Nogle websites kan f.eks. reagere på denne anmodning ved at vise dig annoncer, 
 <translation id="808747664143081553">Der er oprettet forbindelse til enheden</translation>
 <translation id="8088176524274673045">Du kan dele med brugere i nærheden ved at få dem til at scanne denne QR-kode</translation>
 <translation id="8103578431304235997">Inkognitofane</translation>
+<translation id="8105613260829665809">Ved at fortsætte accepterer du <ph name="BEGIN_TOS_LINK" />servicevilkårene<ph name="END_TOS_LINK" />.\nChrome sender data om brug og nedbrud til Google for at hjælpe med at forbedre appen. <ph name="BEGIN_UMA_LINK" />Administrer<ph name="END_UMA_LINK" /></translation>
 <translation id="8105893657415066307"><ph name="DESCRIPTION" /> <ph name="SEPARATOR" /> <ph name="FILE_SIZE" /></translation>
 <translation id="8109613176066109935">Aktivér synkronisering for at få vist dine bogmærker på alle dine enheder</translation>
 <translation id="8110024788458304985">Vær med til at forbedre funktioner og ydeevne i Chrome</translation>
@@ -1286,6 +1288,7 @@ Nogle websites kan f.eks. reagere på denne anmodning ved at vise dig annoncer, 
 <translation id="8551513938758868521">Lås inkognitofaner, når du lukker Chrome</translation>
 <translation id="8555836665334561807">Via Wi-Fi</translation>
 <translation id="8559990750235505898">Tilbyd at oversætte sider på andre sprog</translation>
+<translation id="8560560256644480257">Opretter giffen <ph name="PERCENT" /> %%</translation>
 <translation id="8560602726703398413">Se din læseliste under Bogmærker</translation>
 <translation id="8562452229998620586">Dine gemte adgangskoder vises her.</translation>
 <translation id="856481929701340285">Vis computerversion</translation>

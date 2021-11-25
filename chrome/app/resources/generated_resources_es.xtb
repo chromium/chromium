@@ -4073,6 +4073,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="5265562206369321422">Sin conexión durante más de una semana</translation>
 <translation id="5265797726250773323">No se ha podido instalar</translation>
 <translation id="5266113311903163739">Error de importación de la entidad emisora de certificados</translation>
+<translation id="526622169288322445">Más acciones de <ph name="ADDRESS_SUMMARY" /></translation>
 <translation id="5269977353971873915">Error de impresión</translation>
 <translation id="5275352920323889391">Perro</translation>
 <translation id="527605982717517565">Permitir siempre JavaScript en <ph name="HOST" /></translation>
@@ -5451,6 +5452,7 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="6775163072363532304">Aquí aparecerán los dispositivos disponibles.</translation>
 <translation id="6777817260680419853">Redirección bloqueada</translation>
 <translation id="6778737459546443941">Uno de tus padres aún no lo ha aprobado</translation>
+<translation id="6779092717724412415">Para resaltar texto de esta forma, selecciona el texto y haz clic con el botón derecho.</translation>
 <translation id="6779447100905857289">tus carritos</translation>
 <translation id="677965093459947883">Muy pequeño</translation>
 <translation id="6781005693196527806">&amp;Administrar buscadores...</translation>
@@ -6266,6 +6268,7 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="7625823789272218216">Nueva pestaña a la izquierda</translation>
 <translation id="7628201176665550262">Frecuencia de actualización</translation>
 <translation id="7629827748548208700">Pestaña: <ph name="TAB_NAME" /></translation>
+<translation id="7630426712700473382">Este dispositivo lo gestiona <ph name="MANAGER" /> y requiere que inicies sesión siempre.</translation>
 <translation id="7631014249255418691">La copia de seguridad de las aplicaciones y archivos de Linux se ha completado correctamente</translation>
 <translation id="7631205654593498032">Al conectar tus dispositivos, aceptas que tu <ph name="DEVICE_TYPE" /> puede hacer lo siguiente:</translation>
 <translation id="7631887513477658702">&amp;Abrir siempre archivos de este tipo</translation>

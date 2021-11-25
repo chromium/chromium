@@ -107,6 +107,7 @@
 <translation id="1894205589103145703">ログイン中にエラーが発生しました。</translation>
 <translation id="1911619930368729126">ドライブにアップロード</translation>
 <translation id="1923342640370224680">1 時間以内</translation>
+<translation id="1930989359703290198">組織が特定のアカウントでのログインしか許可していません。許可されていないアカウントは非表示になっています。<ph name="BEGIN_LINK" />詳細<ph name="END_LINK" /></translation>
 <translation id="1941314575388338491">ダブルタップしてコピー。</translation>
 <translation id="1952172573699511566">可能な場合、設定した言語でウェブサイトのテキストを表示します。</translation>
 <translation id="1965935827552890526">開いている別の Chrome ウィンドウでの作業を終了してください。</translation>
@@ -387,6 +388,8 @@
 <translation id="4802417911091824046">パスフレーズ暗号化の対象に Google Pay のお支払い方法と住所は含まれません。
 
 この設定を変更する場合は<ph name="BEGIN_LINK" />同期をリセット<ph name="END_LINK" />してください</translation>
+<translation id="4803185665210547709">組織によって管理されています。
+<ph name="BEGIN_LINK" />詳細<ph name="END_LINK" /></translation>
 <translation id="4805759445554688327">無効なカード番号</translation>
 <translation id="4808744395915275922">更新</translation>
 <translation id="4818522717893377262">言語を追加...</translation>

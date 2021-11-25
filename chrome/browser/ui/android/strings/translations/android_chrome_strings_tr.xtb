@@ -604,6 +604,7 @@ Diğer Google hizmetlerinden yapılan aramalar ve etkinlikler gibi Google hesab�
 <translation id="4696983787092045100">Cihazlarınıza mesaj gönderin</translation>
 <translation id="4699172675775169585">Önbelleğe alınan resimler ve dosyalar</translation>
 <translation id="4714588616299687897">%60'a kadar veri tasarrufu sağlayın</translation>
+<translation id="471759387343966120">Devam ederek <ph name="BEGIN_TOS_LINK" />Hizmet Şartları<ph name="END_TOS_LINK" /> ve <ph name="BEGIN_PRIVACY_LINK" />Gizlilik Politikası<ph name="END_PRIVACY_LINK" />'nı kabul etmiş olursunuz.\nChrome, uygulamanın iyileştirilmesine yardımcı olmak için kullanım ve kilitlenme verilerini Google'a gönderir. <ph name="BEGIN_UMA_LINK" />Yönet<ph name="END_UMA_LINK" /></translation>
 <translation id="4719927025381752090">Çevirmeyi öner</translation>
 <translation id="4720023427747327413"><ph name="PRODUCT_NAME" /> uygulamasında aç</translation>
 <translation id="4720982865791209136">Chrome'u daha iyi hale getirmeye yardımcı olun. <ph name="BEGIN_LINK" />Ankete katıl<ph name="END_LINK" />.</translation>
@@ -1205,6 +1206,7 @@ Privacy Sandbox denemeleri, hâlâ aktif geliştirme aşamasında olup belirli b
 <translation id="808747664143081553">Cihaza bağlandı</translation>
 <translation id="8088176524274673045">Yakınlardaki kişilerle paylaşmak için bu QR Kodunu taramalarını sağlayın</translation>
 <translation id="8103578431304235997">Gizli Sekme</translation>
+<translation id="8105613260829665809">Devam ederek <ph name="BEGIN_TOS_LINK" />Hizmet Şartları<ph name="END_TOS_LINK" />'nı kabul etmiş olursunuz.\nChrome, uygulamanın iyileştirilmesine yardımcı olmak için kullanım ve kilitlenme verilerini Google'a gönderir. <ph name="BEGIN_UMA_LINK" />Yönet<ph name="END_UMA_LINK" /></translation>
 <translation id="8105893657415066307"><ph name="DESCRIPTION" /> <ph name="SEPARATOR" /> <ph name="FILE_SIZE" /></translation>
 <translation id="8109613176066109935">Yer işaretlerinize tüm cihazlarınızda ulaşmak için senkronizasyonu açın</translation>
 <translation id="8110024788458304985">Chrome\U2019un özelliklerini ve performansını iyileştirmeye yardımcı olun</translation>

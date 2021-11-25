@@ -604,6 +604,7 @@
 <translation id="4696983787092045100">ഉപകരണങ്ങളിലേക്ക് അയയ്ക്കൂ</translation>
 <translation id="4699172675775169585">കാഷെ ചെയ്‌ത ചിത്രങ്ങളും ഫയലുകളും</translation>
 <translation id="4714588616299687897">നിങ്ങളുടെ ഡാറ്റ 60% വരെ ലാഭിക്കൂ</translation>
+<translation id="471759387343966120">തുടരുന്നതിലൂടെ, നിങ്ങൾ <ph name="BEGIN_TOS_LINK" />സേവന നിബന്ധനകളും<ph name="END_TOS_LINK" /> <ph name="BEGIN_PRIVACY_LINK" />സ്വകാര്യതാ നയവും<ph name="END_PRIVACY_LINK" /> അംഗീകരിക്കുന്നു.\nആപ്പ് മെച്ചപ്പെടുത്താൻ സഹായിക്കുന്നതിന്, Google-ന് ഉപയോഗ ഡാറ്റയും ക്രാഷ് ഡാറ്റയും Chrome അയയ്ക്കുന്നു. <ph name="BEGIN_UMA_LINK" />മാനേജ് ചെയ്യുക<ph name="END_UMA_LINK" /></translation>
 <translation id="4719927025381752090">വിവർത്തനം ചെയ്യാനുള്ള ഓഫർ</translation>
 <translation id="4720023427747327413"><ph name="PRODUCT_NAME" />-ൽ തുറക്കുക</translation>
 <translation id="4720982865791209136">Chrome മെച്ചപ്പെടുത്താൻ സഹായിക്കുക. <ph name="BEGIN_LINK" />സർവേയിൽ പങ്കെടുക്കുക.<ph name="END_LINK" /></translation>
@@ -1205,6 +1206,7 @@
 <translation id="808747664143081553">ഉപകരണത്തിലേക്ക് കണക്റ്റ് ചെയ്‌തു</translation>
 <translation id="8088176524274673045">സമീപമുള്ള ആളുകളുമായി പങ്കിടുന്നതിന്, അവരെ ഈ QR കോഡ് സ്‌കാൻ ചെയ്യാൻ അനുവദിക്കുക</translation>
 <translation id="8103578431304235997">അദൃശ്യ ടാബ്</translation>
+<translation id="8105613260829665809">തുടരുന്നതിലൂടെ, നിങ്ങൾ <ph name="BEGIN_TOS_LINK" />സേവന നിബന്ധനകൾ<ph name="END_TOS_LINK" /> അംഗീകരിക്കുന്നു.\nആപ്പ് മെച്ചപ്പെടുത്താൻ സഹായിക്കുന്നതിന്, Google-ന് ഉപയോഗ ഡാറ്റയും ക്രാഷ് ഡാറ്റയും Chrome അയയ്ക്കുന്നു. <ph name="BEGIN_UMA_LINK" />മാനേജ് ചെയ്യുക<ph name="END_UMA_LINK" /></translation>
 <translation id="8105893657415066307"><ph name="DESCRIPTION" /> <ph name="SEPARATOR" /> <ph name="FILE_SIZE" /></translation>
 <translation id="8109613176066109935">നിങ്ങളുടെ എല്ലാ ഉപകരണങ്ങളിലും ബുക്ക്‌മാർക്കുകൾ ലഭിക്കാൻ, സമന്വയിപ്പിക്കൽ ഓണാക്കുക</translation>
 <translation id="8110024788458304985">Chrome-ന്റെ ഫീച്ചറുകളും പ്രകടനവും മെച്ചപ്പെടുത്താൻ സഹായിക്കുക</translation>
@@ -1286,6 +1288,7 @@
 <translation id="8551513938758868521">Chrome-ൽ നിന്ന് പുറത്ത് കടക്കുമ്പോൾ അദൃശ്യ ടാബുകൾ ലോക്ക് ചെയ്യുക</translation>
 <translation id="8555836665334561807">വൈഫൈ ഉപയോഗിച്ച്</translation>
 <translation id="8559990750235505898">പേജുകൾ മറ്റ് ഭാഷകളിലേക്ക് വിവർത്തനം ചെയ്യാനുള്ള ഓഫർ</translation>
+<translation id="8560560256644480257">GIF സൃഷ്ടിക്കുന്നു <ph name="PERCENT" />%%</translation>
 <translation id="8560602726703398413">ബുക്ക്‌മാർക്കുകളിൽ നിങ്ങളുടെ വായനാ ലിസ്‌റ്റ് കണ്ടെത്തൂ</translation>
 <translation id="8562452229998620586">സംരക്ഷിച്ച പാസ്‌വേഡുകൾ ഇവിടെ ദൃശ്യമാകും.</translation>
 <translation id="856481929701340285">ഡെസ്‌ക്‌ടോപ്പ് സൈറ്റ് അഭ്യർത്ഥിക്കുക</translation>

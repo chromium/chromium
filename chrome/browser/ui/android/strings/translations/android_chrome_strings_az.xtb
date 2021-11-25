@@ -604,6 +604,7 @@ Axtarmaq üçün istənilən sözə toxunub saxlayın. Axtarışınızı dəqiql
 <translation id="4696983787092045100">Mətni Cihazlarınıza göndərin</translation>
 <translation id="4699172675775169585">Keşlənmiş şəkillər və fayllar</translation>
 <translation id="4714588616299687897">60% data istifadəsinə qənaət edin</translation>
+<translation id="471759387343966120">Davam etməklə, <ph name="BEGIN_TOS_LINK" />Xidmət Şərtləri<ph name="END_TOS_LINK" /> və <ph name="BEGIN_PRIVACY_LINK" />Məxfilik\u00A0Siyasəti<ph name="END_PRIVACY_LINK" /> ilə razılaşırsınız.\nTətbiqi təkmilləşdirməyə kömək etmək üçün Chrome istifadə və qəza datasını Google'a göndərir. <ph name="BEGIN_UMA_LINK" />İdarə edin<ph name="END_UMA_LINK" /></translation>
 <translation id="4719927025381752090">Tərcümə təklif edin</translation>
 <translation id="4720023427747327413">Aç <ph name="PRODUCT_NAME" /></translation>
 <translation id="4720982865791209136">Chrome'u təkmilləşdirin. <ph name="BEGIN_LINK" />Sorğuya qatılın<ph name="END_LINK" /></translation>
@@ -1203,6 +1204,7 @@ Məxfilik Sendboksu sınaqları hələ də aktiv hazırlanma mərhələsindədir
 <translation id="808747664143081553">Cihaza qoşulub</translation>
 <translation id="8088176524274673045">Yaxınlıqdakı insanlarla paylaşmaq üçün onlara bu QR kodu skanlamaq icazəsi verin</translation>
 <translation id="8103578431304235997">Gizli Panel</translation>
+<translation id="8105613260829665809">Davam etməklə, <ph name="BEGIN_TOS_LINK" /> Xidmət Şərtləri<ph name="END_TOS_LINK" /> ilə razılaşırsınız.\nTətbiqi təkmilləşdirməyə kömək etmək üçün Chrome istifadə və qəza datasını Google'a göndərir. <ph name="BEGIN_UMA_LINK" />İdarə edin<ph name="END_UMA_LINK" /></translation>
 <translation id="8105893657415066307"><ph name="DESCRIPTION" /> <ph name="SEPARATOR" /> <ph name="FILE_SIZE" /></translation>
 <translation id="8109613176066109935">Bütün cihazlarınızda əlfəcinləri əldə etmək üçün sinxronizasiyanı aktiv edin</translation>
 <translation id="8110024788458304985">Chrome funksiyalarını və performansını təkmilləşdirməyə yardım edin</translation>

@@ -604,6 +604,7 @@
 <translation id="4696983787092045100">Отправить сообщения на свои устройства</translation>
 <translation id="4699172675775169585">Изображения и другие файлы, сохраненные в кеше</translation>
 <translation id="4714588616299687897">Экономьте до 60% трафика</translation>
+<translation id="471759387343966120">Продолжая, вы принимаете <ph name="BEGIN_TOS_LINK" />Условия использования<ph name="END_TOS_LINK" /> и <ph name="BEGIN_PRIVACY_LINK" />Политику конфиденциальности<ph name="END_PRIVACY_LINK" />.\nChrome отправляет в Google статистику использования и отчеты о сбоях, которые помогут улучшить приложение. <ph name="BEGIN_UMA_LINK" />Настроить<ph name="END_UMA_LINK" /></translation>
 <translation id="4719927025381752090">Предлагать перевести</translation>
 <translation id="4720023427747327413">Открыть в <ph name="PRODUCT_NAME" /></translation>
 <translation id="4720982865791209136">Помогите улучшить Chrome. <ph name="BEGIN_LINK" />Пройти опрос<ph name="END_LINK" /></translation>
@@ -880,7 +881,7 @@
 <translation id="6312687380483398334">Веб-приложения (тихий режим)</translation>
 <translation id="6316139424528454185">Устаревшая версия Android</translation>
 <translation id="6324034347079777476">Синхронизация системы Android отключена</translation>
-<translation id="6324916366299863871">Изменение ярлыка</translation>
+<translation id="6324916366299863871">Изменить ярлык</translation>
 <translation id="6324977638108296054">Невозможно создать ссылку на выделенный текст.</translation>
 <translation id="6324997754869598316">(Ошибка <ph name="ERROR_CODE" />.)</translation>
 <translation id="6333140779060797560">Отправить с помощью <ph name="APPLICATION" /></translation>
@@ -1205,6 +1206,7 @@
 <translation id="808747664143081553">Подключено к устройству</translation>
 <translation id="8088176524274673045">Чтобы предоставить доступ пользователю рядом с вами, попросите его отсканировать этот QR-код.</translation>
 <translation id="8103578431304235997">Вкладка инкогнито</translation>
+<translation id="8105613260829665809">Продолжая, вы принимаете <ph name="BEGIN_TOS_LINK" />Условия использования<ph name="END_TOS_LINK" />.\nChrome отправляет в Google статистику использования и отчеты о сбоях, которые помогут улучшить приложение. <ph name="BEGIN_UMA_LINK" />Настроить<ph name="END_UMA_LINK" /></translation>
 <translation id="8105893657415066307"><ph name="DESCRIPTION" /> <ph name="SEPARATOR" /> <ph name="FILE_SIZE" /></translation>
 <translation id="8109613176066109935">Чтобы получить доступ к закладкам на всех устройствах, включите синхронизацию.</translation>
 <translation id="8110024788458304985">Помогать повышать производительность и улучшать функции Chrome</translation>
@@ -1286,6 +1288,7 @@
 <translation id="8551513938758868521">Блокировать доступ к вкладкам инкогнито при закрытии Chrome</translation>
 <translation id="8555836665334561807">При подключении к Wi-Fi</translation>
 <translation id="8559990750235505898">Предлагать перевести страницы на других языках</translation>
+<translation id="8560560256644480257">Создание GIF: <ph name="PERCENT" /> %%</translation>
 <translation id="8560602726703398413">Список для чтения находится в закладках</translation>
 <translation id="8562452229998620586">Здесь будут показаны сохраненные пароли.</translation>
 <translation id="856481929701340285">Полная версия</translation>

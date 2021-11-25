@@ -4070,6 +4070,7 @@
 <translation id="5265562206369321422">Бір аптадан астам желіден тыс</translation>
 <translation id="5265797726250773323">Орнату кезінде қате кетті</translation>
 <translation id="5266113311903163739">Сертификат беру орталығының импорттау қатесі</translation>
+<translation id="526622169288322445">"<ph name="ADDRESS_SUMMARY" />" бойынша қосымша әрекеттер</translation>
 <translation id="5269977353971873915">Басып шығару сәтсіз аяқталды</translation>
 <translation id="5275352920323889391">Ит</translation>
 <translation id="527605982717517565"><ph name="HOST" /> үшін JavaScript қосуға әрдайым рұқсат беру</translation>
@@ -5448,6 +5449,7 @@
 <translation id="6775163072363532304">Қолжетімді құрылғылар осы жерде пайда болады.</translation>
 <translation id="6777817260680419853">Бағыттауға тыйым салынған</translation>
 <translation id="6778737459546443941">Ата-анаңыз әлі мақұлдаған жоқ</translation>
+<translation id="6779092717724412415">Осылай бөлектеу үшін мәтінді таңдап, тінтуірдің оң жақ түймесін басыңыз.</translation>
 <translation id="6779447100905857289">себеттеріңіз</translation>
 <translation id="677965093459947883">Тым кішкентай</translation>
 <translation id="6781005693196527806">&amp;Іздеу жүйелерін басқару...</translation>
@@ -6263,6 +6265,7 @@
 <translation id="7625823789272218216">Сол жақтан жаңа қойынды ашу</translation>
 <translation id="7628201176665550262">Жаңарту жылдамдығы</translation>
 <translation id="7629827748548208700">Қойынды: <ph name="TAB_NAME" /></translation>
+<translation id="7630426712700473382">Бұл құрылғыны <ph name="MANAGER" /> басқарады және сізден әрдайым аккаунтқа кіру талап етіледі.</translation>
 <translation id="7631014249255418691">Linux қолданбалары мен файлдарының сақтық көшірмесі жасалды.</translation>
 <translation id="7631205654593498032">Құрылғыларды жалғасаңыз, <ph name="DEVICE_TYPE" /> құрылғысына мынадай рұқсаттар беріледі:</translation>
 <translation id="7631887513477658702">&amp;Осы түрге жататын файлдарды әрқашан ашу</translation>

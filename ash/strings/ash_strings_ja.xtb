@@ -326,6 +326,7 @@
 <translation id="334252345105450327">スクリーンショットを撮って</translation>
 <translation id="3351879221545518001">現在、画面をキャストしています。</translation>
 <translation id="3364721542077212959">タッチペン ツール</translation>
+<translation id="3365977133351922112">スマートフォンが遠すぎます。近づけてください。</translation>
 <translation id="3368922792935385530">接続済み</translation>
 <translation id="3371140690572404006">USB-C デバイス（右手前のポート）</translation>
 <translation id="3375634426936648815">接続完了</translation>
@@ -602,6 +603,7 @@
 <translation id="5170568018924773124">フォルダを開く</translation>
 <translation id="5176318573511391780">画面の一部を録画</translation>
 <translation id="5199367439331364630">Chromebook にログインするには、パスワードを入力します</translation>
+<translation id="5206028654245650022"><ph name="APP_NAME" />、<ph name="NOTIFICATION_TITLE" />: <ph name="MESSAGE" />、<ph name="PHONE_NAME" /></translation>
 <translation id="5206057955438543357">{NUM_NOTIFICATIONS,plural, =1{他 1 件の通知}other{他 # 件の通知}}</translation>
 <translation id="5207949376430453814">テキスト カーソルをハイライト表示する</translation>
 <translation id="5208059991603368177">オン</translation>
@@ -885,6 +887,7 @@
 <translation id="7398254312354928459">ネットワーク接続が切り替えられました</translation>
 <translation id="7405710164030118432">このデバイスのロックを解除するには、ファミリー リンクの保護者のアクセスコードを入力してください</translation>
 <translation id="7406608787870898861">モバイル ネットワークの設定を完了してください</translation>
+<translation id="740790383907119240">アプリのショートカット</translation>
 <translation id="741244894080940828">単位変換</translation>
 <translation id="7413851974711031813">Esc キーを押して閉じます</translation>
 <translation id="742594950370306541">カメラが使用中です。</translation>
@@ -987,6 +990,7 @@
 <translation id="8061464966246066292">ハイコントラスト</translation>
 <translation id="8098591350844501178"><ph name="RECEIVER_NAME" /> への画面のキャストを停止する</translation>
 <translation id="8113423164597455979">オン: 全アプリ</translation>
+<translation id="8120151603115102514">スマートフォンにロック画面が設定されていません。Chromebook のロックを解除するには、パスワードを入力してください。</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> ℃</translation>
 <translation id="8131740175452115882">確認</translation>
 <translation id="8132487352815776550">字幕を停止</translation>
@@ -1035,6 +1039,7 @@
 <translation id="8473301994082929012"><ph name="FEATURE_NAME" />は <ph name="ORGANIZATION_NAME" /> により<ph name="FEATURE_STATE" />に設定されています。</translation>
 <translation id="8477270416194247200">キャンセルするには Alt+ 検索キーまたは Shift キーを押します。</translation>
 <translation id="8492573885090281069"><ph name="DISPLAY_NAME" /> は <ph name="SPECIFIED_RESOLUTION" /> に対応していません。解像度を <ph name="FALLBACK_RESOLUTION" /> に変更しました。変更を保存するには確定してください。<ph name="TIMEOUT_SECONDS" /> 秒後に以前の設定に戻ります。</translation>
+<translation id="85123341071060231">Chromebook の Bluetooth がオフになっています。Chromebook のロックを解除するには、パスワードを入力してください。</translation>
 <translation id="8513108775083588393">自動回転</translation>
 <translation id="851458219935658693">現在のデスクのウィンドウを表示する、ラジオボタンが選択されています</translation>
 <translation id="8517041960877371778"><ph name="DEVICE_TYPE" /> は電源がオンのままでは充電できない可能性があります。</translation>

@@ -820,7 +820,7 @@
 <translation id="1825565032302550710">પોર્ટ 1024 અને 65535ની વચ્ચે હોવું આવશ્યક છે</translation>
 <translation id="1826192255355608658">તમારા Chrome બ્રાઉઝર બુકમાર્ક, પાસવર્ડ, ઇતિહાસ અને બીજું ઘણું બધું સિંક કરો</translation>
 <translation id="1826516787628120939">તપાસી રહ્યાં છે</translation>
-<translation id="1827738518074806965">આર્ટ ગૅલેરી</translation>
+<translation id="1827738518074806965">આર્ટ ગૅલરી</translation>
 <translation id="1828378091493947763">આ ઉપકરણ પર આ પ્લગ-ઇન સમર્થિત નથી</translation>
 <translation id="1828879788654007962">{COUNT,plural, =0{તમામ URLને &amp;ખોલો}=1{બુકમાર્ક &amp;ખોલો}one{તમામ ({COUNT}) URLને &amp;ખોલો}other{તમામ ({COUNT}) URLને &amp;ખોલો}}</translation>
 <translation id="1828901632669367785">સિસ્ટમ સંવાદનો ઉપયોગ કરીને પ્રિન્ટ કરો...</translation>
@@ -1880,7 +1880,7 @@
 <translation id="2907619724991574506">સ્ટાર્ટઅપ URL</translation>
 <translation id="2907798539022650680">'<ph name="NAME" />' થી કનેક્ટ કરવામાં નિષ્ફળ થયું: <ph name="DETAILS" />
     સર્વર સંદેશ: <ph name="SERVER_MSG" /></translation>
-<translation id="2908162660801918428">ડિરેક્ટરી દ્વારા મીડિયા ગૅલેરી ઉમેરો</translation>
+<translation id="2908162660801918428">ડિરેક્ટરી દ્વારા મીડિયા ગૅલરી ઉમેરો</translation>
 <translation id="2908358077082926882">સોંપણી કાઢી નાખવા માટે, ફરી “<ph name="CURRENTKEY" />” દબાવો અને <ph name="RESPONSE" /></translation>
 <translation id="2909506265808101667">Googleની સેવાઓ સાથે કનેક્ટ કરી શકાયું નથી. તમારું નેટવર્ક કનેક્શન ચેક કરો અને ફરી પ્રયાસ કરો. ભૂલનો કોડ: <ph name="ERROR_CODE" />.</translation>
 <translation id="2910318910161511225">નેટવર્કથી કનેક્ટ કરો અને ફરીથી પ્રયાસ કરો</translation>
@@ -4614,7 +4614,7 @@
 <translation id="5857171483910641802">તમે વારંવાર મુલાકાત લો છો તે વેબસાઇટના આધારે શૉર્ટકટ સૂચવવામાં આવે છે</translation>
 <translation id="5857675236236529683">તમે તૈયાર હો, ત્યારે તમારી વાંચન સૂચિ અહીં જુઓ</translation>
 <translation id="5858490737742085133">ટર્મિનલ</translation>
-<translation id="5859603669299126575">આર્ટ ગૅલેરી આલ્બમ</translation>
+<translation id="5859603669299126575">આર્ટ ગૅલરી આલ્બમ</translation>
 <translation id="585979798156957858">બાહ્ય મેટા</translation>
 <translation id="5860033963881614850">બંધ</translation>
 <translation id="5860254591544742609">શીર્ષક બાર બતાવો</translation>

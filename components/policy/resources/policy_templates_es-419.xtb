@@ -784,7 +784,7 @@ Si la inhabilitas, se inhabilitará el desplazamiento de la página web a fragme
       Si la inhabilitas o no la estableces, no se podrá usar la Transición rápida.</translation>
 <translation id="1972134432340252414">Bloquear los puntos de extensiones heredados del proceso del navegador</translation>
 <translation id="1977581177449752640">Si estableces la política, el host de acceso remoto utilizará un certificado de cliente con el CN del emisor determinado para autenticar <ph name="REMOTE_ACCESS_HOST_TOKEN_VALIDATION_URL_POLICY_NAME" />. Para permitir que el host use cualquier certificado de cliente disponible, establece la política como <ph name="WILDCARD_VALUE" />. Si dejas la política vacía o no la estableces, se inhabilitará esta función.</translation>
-<translation id="1984423899110408165">Mostrar clústeres del historial en la página del historial de Chrome</translation>
+<translation id="1984423899110408165">Mostrar exploraciones en la página del historial de Chrome</translation>
 <translation id="1986003348976870087">No solicitar al usuario que seleccione un certificado de cliente en la pantalla de acceso</translation>
 <translation id="1988345404999458987">Ofrece opciones de configuración de servidores de impresión disponibles.
 
@@ -1514,14 +1514,13 @@ Si no la estableces, inicialmente se inhabilitará la pantalla de privacidad, pe
 <translation id="2725855586003209701">Si habilitas la política o no la estableces, los dispositivos inscritos informarán la lista de usuarios que accedieron recientemente.
 
       Si inhabilitas la política, los dispositivos inscritos no informarán la lista de usuarios.</translation>
-<translation id="2725944143509568512">Esta política controla la visibilidad de los clústeres del historial en la página del historial de Chrome.
+<translation id="2725944143509568512">Esta política controla la visibilidad de las exploraciones en la página del historial de Chrome.
 
-      Si habilitas la política, los clústeres del historial podrán verse en chrome://history/journeys.
+      Si habilitas la política, las exploraciones podrán verse en chrome://history/journeys.
 
-      Si la inhabilitas, los clústeres de historial no podrán verse en chrome://history/journeys.
+      Si la inhabilitas, las exploraciones no podrán verse en chrome://history/journeys.
 
-      Si no estableces la política, los clústeres del historial podrán verse en chrome://history/journeys de forma predeterminada y los usuarios podrán cambiar la visibilidad de estos clústeres.
-      </translation>
+      Si no estableces la política, las exploraciones podrán verse en chrome://history/journeys de forma predeterminada y los usuarios podrán cambiar la visibilidad de estas exploraciones.</translation>
 <translation id="2730419309754848345">Imprimir PDF como imagen de forma predeterminada</translation>
 <translation id="2731627323327011390">Inhabilitar el uso de certificados de <ph name="PRODUCT_OS_NAME" /> para apps de ARC</translation>
 <translation id="2742843273354638707">Permite ocultar la aplicación Chrome Web Store y el vínculo de la parte inferior de la página Nueva pestaña y del Selector de aplicaciones de <ph name="PRODUCT_OS_NAME" />.
@@ -3167,7 +3166,7 @@ Si estableces esta política, <ph name="PRODUCT_OS_NAME" /> solo permitirá que 
 <translation id="4802905909524200151">Configurar el comportamiento de actualización del firmware <ph name="TPM_FIRMWARE_UPDATE_TPM" /></translation>
 <translation id="4804828344300125154">Reinicia siempre cuando el usuario sale de su cuenta.</translation>
 <translation id="4807950475297505572">Elimina los usuarios que más tiempo hace que no se utilizan hasta que se libere espacio suficiente.</translation>
-<translation id="4811210934875253713">Los clústeres del historial podrán verse en chrome://history/journeys</translation>
+<translation id="4811210934875253713">Las exploraciones podrán verse en chrome://history/journeys</translation>
 <translation id="4812270373673968774">Si estableces la política como "siempre", se ocultará la biblioteca de <ph name="PRODUCT_OS_NAME" /> de forma automática. Si la estableces como "nunca", no se ocultará nunca la biblioteca de forma automática.
 
       Si estableces la política, los usuarios no podrán cambiarla. Si no la estableces, los usuarios podrán decidir si se oculta la biblioteca de forma automática.</translation>
@@ -4445,7 +4444,7 @@ Si ninguna de las entradas tiene un valor de <ph name="CHROMEOS_VERSION_PROPERTY
 
           Solo se muestra el mensaje de advertencia si la acción de inactividad es salir de la cuenta o apagar el dispositivo.</translation>
 <translation id="6331943515692769234">Forzar el uso del algoritmo GREASE de usuario-agente anterior</translation>
-<translation id="6332192586629642626">Los clústeres del historial no podrán verse en chrome://history/journeys</translation>
+<translation id="6332192586629642626">Las exploraciones no podrán verse en chrome://history/journeys</translation>
 <translation id="6332489309596092806">Si estableces la política, se especificará una lista de aplicaciones web que se instalan de manera discreta, sin la interacción del usuario, y que este no podrá desinstalar ni desactivar.
 
       Cada elemento de la lista de la política es un objeto con un miembro obligatorio:
@@ -6725,7 +6724,7 @@ Si no la estableces, inicialmente se inhabilitará la pantalla de privacidad, pe
 <translation id="8931555638815157255">Si habilitas la política o no la estableces, los dispositivos inscritos informarán de forma periódica su versión de SO y firmware.
 
       Si inhabilitas la política, los dispositivos inscritos no informarán la versión.</translation>
-<translation id="8934618237639919190">De forma predeterminada, los clústeres del historial estarán disponibles en chrome://history/journeys, y los usuarios pueden cambiar la visibilidad de estos clústeres</translation>
+<translation id="8934618237639919190">De forma predeterminada, las exploraciones estarán disponibles en chrome://history/journeys, y los usuarios pueden cambiar la visibilidad de estas exploraciones</translation>
 <translation id="8937282917198525844"> A partir de la versión M81, se actualizaron la apariencia y el estilo de los elementos estándar de los controles de formulario (p. ej., &lt;select&gt;, &lt;button&gt;, &lt;input type=date&gt;), con mejoras en la accesibilidad y la uniformidad de la plataforma. Esta política restablece los elementos antiguos de los controles de formulario "heredados" hasta la versión M84.
 
       Si se establece esta política como verdadera, se utilizarán los elementos de los controles de formulario "heredados" para todos los sitios.

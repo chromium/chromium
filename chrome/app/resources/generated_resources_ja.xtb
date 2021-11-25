@@ -2387,6 +2387,7 @@
 <translation id="3449393517661170867">新規タブ付きウィンドウ</translation>
 <translation id="3449839693241009168"><ph name="SEARCH_KEY" /> を押すと <ph name="EXTENSION_NAME" /> にコマンドが送信されます</translation>
 <translation id="3450157232394774192">アイドル状態の占有率（%）</translation>
+<translation id="3450180775417907283"><ph name="MANAGER" /> が、Wi-Fi に接続して、今すぐアップデートをダウンロードするよう求めています。</translation>
 <translation id="3451753556629288767">ファイル形式が関連付けられたプログラムを開くことを許可する</translation>
 <translation id="3452999110156026232">保護者によるアクセス</translation>
 <translation id="3453612417627951340">認証が必要です</translation>
@@ -4249,6 +4250,7 @@
 <translation id="5472627187093107397">このサイトのパスワードを保存する</translation>
 <translation id="5473075389972733037">IBM</translation>
 <translation id="5473156705047072749">{NUM_CHARACTERS,plural, =1{PIN は 1 文字以上で入力してください}other{PIN は # 文字以上で入力してください}}</translation>
+<translation id="5474859849784484111"><ph name="MANAGER" /> が、アップデートを今すぐダウンロードするよう求めています。Wi-Fi に接続するか、現在の従量制接続でのダウンロードを許可してください（通信料が発生することがあります）。</translation>
 <translation id="5481273127572794904">複数のファイルの自動ダウンロードを許可しないサイト</translation>
 <translation id="5481941284378890518">近くのプリンタを追加</translation>
 <translation id="5483785310822538350">ファイルとデバイスのアクセスを取り消す</translation>
@@ -4671,6 +4673,7 @@
 <translation id="592880897588170157">PDF ファイルを Chrome で自動的に開く代わりにダウンロードする</translation>
 <translation id="592919310198008711">拡張機能をクリックしたとき</translation>
 <translation id="5932124097031739492">Linux のアップグレードが完了しました。</translation>
+<translation id="5932209916647644605"><ph name="MANAGER" /> が今すぐ <ph name="DEVICE_TYPE" /> を更新するよう求めています。</translation>
 <translation id="5932224571077948991">このサイトでは煩わしい広告や誤解を招く広告が表示されます</translation>
 <translation id="59324397759951282"><ph name="MANUFACTURER_NAME" /> の USB デバイス</translation>
 <translation id="5932441198730183141">この Google Meet ハードウェア デバイスを登録するには、ライセンスが足りません。さらに購入するには、販売担当者にお問い合わせください。このメッセージが間違って表示されていると思われる場合は、サポートにお問い合わせください。</translation>

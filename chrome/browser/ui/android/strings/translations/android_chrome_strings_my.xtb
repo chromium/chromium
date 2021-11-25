@@ -604,6 +604,7 @@
 <translation id="4696983787092045100">'သင့်ကိရိယာများ' သို့ စာတိုပို့ရန်</translation>
 <translation id="4699172675775169585">ကက်ရှ်လုပ်ထားသည့် ပုံများနှင့် ဖိုင်များ</translation>
 <translation id="4714588616299687897">သင့်ဒေတာ ၆၀% အထိ ချွေတာလိုက်ပါ</translation>
+<translation id="471759387343966120">ရှေ့ဆက်ခြင်းအားဖြင့် သင်သည် <ph name="BEGIN_TOS_LINK" />ဝန်ဆောင်မှုစည်းမျဉ်း<ph name="END_TOS_LINK" /> နှင့် <ph name="BEGIN_PRIVACY_LINK" />ပုဂ္ဂိုလ်ရေးဆိုင်ရာ\u00A0မူဝါဒ<ph name="END_PRIVACY_LINK" /> တို့ကို သဘောတူရာ ရောက်ပါသည်။\nအက်ပ်ပိုကောင်းလာစေရန် Chrome သည်အသုံးပြုမှုနှင့် ရပ်တန့်မှုဒေတာများကို Google သို့ပို့ပါသည်။ <ph name="BEGIN_UMA_LINK" />စီမံရန်<ph name="END_UMA_LINK" /></translation>
 <translation id="4719927025381752090">ဘာသာပြန်ရန် ပေးအပ်ချက်</translation>
 <translation id="4720023427747327413"><ph name="PRODUCT_NAME" /> တွင်ဖွင့်မည်</translation>
 <translation id="4720982865791209136">Chrome ပိုမိုကောင်းမွန်လာစေရန် ကူညီပါ။ <ph name="BEGIN_LINK" />စစ်တမ်းဖြေဆိုပါ<ph name="END_LINK" /></translation>
@@ -1204,6 +1205,7 @@
 <translation id="808747664143081553">စက်ပစ္စည်းနှင့် ချိတ်ဆက်ပြီးပြီ</translation>
 <translation id="8088176524274673045">အနီးရှိလူများနှင့် မျှဝေရန် ၎င်းတို့အား ဤ QR ကုဒ်ကို စကင်ဖတ်ခိုင်းပါ</translation>
 <translation id="8103578431304235997">ကိုယ်ဖျောက်တဘ်</translation>
+<translation id="8105613260829665809">ရှေ့ဆက်ခြင်းဖြင့် သင်သည် <ph name="BEGIN_TOS_LINK" />ဝန်ဆောင်မှုစည်းမျဉ်းများ<ph name="END_TOS_LINK" /> ကို သဘောတူရာ ရောက်သည်။\nအက်ပ်ပိုကောင်းမွန်စေရန် Chrome သည်အသုံးပြုမှုနှင့် ရပ်တန့်မှုဒေတာများကို Google သို့ပို့ပါသည်။ <ph name="BEGIN_UMA_LINK" />စီမံရန်<ph name="END_UMA_LINK" /></translation>
 <translation id="8105893657415066307"><ph name="DESCRIPTION" /> <ph name="SEPARATOR" /> <ph name="FILE_SIZE" /></translation>
 <translation id="8109613176066109935">သင်၏ဝဘ်လိပ်စာများကို စက်အားလုံးတွင် ရယူနိုင်ရန် စင့်ခ်လုပ်ခြင်းကို ဖွင့်ပါ</translation>
 <translation id="8110024788458304985">Chrome\u2019s ၏ ဝန်ဆောင်မှုနှင့် စွမ်းဆောင်ရည် ပိုကောင်းလာစေရန် ကူညီခြင်း</translation>

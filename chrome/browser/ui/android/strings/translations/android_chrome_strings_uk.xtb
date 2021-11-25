@@ -604,6 +604,7 @@
 <translation id="4696983787092045100">Надіслати SMS на пристрої</translation>
 <translation id="4699172675775169585">Кешовані зображення та файли</translation>
 <translation id="4714588616299687897">Заощаджуйте до 60% трафіку</translation>
+<translation id="471759387343966120">Продовжуючи, ви приймаєте <ph name="BEGIN_TOS_LINK" />Умови використання<ph name="END_TOS_LINK" /> та <ph name="BEGIN_PRIVACY_LINK" />Політику конфіденційності<ph name="END_PRIVACY_LINK" />.\nЩоб покращити додаток, Chrome надсилає дані про використання та збої в Google. <ph name="BEGIN_UMA_LINK" />Керувати<ph name="END_UMA_LINK" /></translation>
 <translation id="4719927025381752090">Пропонувати переклад</translation>
 <translation id="4720023427747327413">Відкрити в <ph name="PRODUCT_NAME" /></translation>
 <translation id="4720982865791209136">Допоможіть покращити Chrome. <ph name="BEGIN_LINK" />Візьміть участь в опитуванні<ph name="END_LINK" /></translation>
@@ -1205,6 +1206,7 @@
 <translation id="808747664143081553">Підключено до пристрою</translation>
 <translation id="8088176524274673045">Щоб ділитися даними з людьми поблизу, дозвольте їм зісканувати цей QR-код</translation>
 <translation id="8103578431304235997">Анонімна вкладка</translation>
+<translation id="8105613260829665809">Продовжуючи, ви приймаєте <ph name="BEGIN_TOS_LINK" />Умови використання<ph name="END_TOS_LINK" />.\nЩоб покращити додаток, Chrome надсилає дані про використання та збої в Google. <ph name="BEGIN_UMA_LINK" />Керувати<ph name="END_UMA_LINK" /></translation>
 <translation id="8105893657415066307"><ph name="DESCRIPTION" /> <ph name="SEPARATOR" /> <ph name="FILE_SIZE" /></translation>
 <translation id="8109613176066109935">Щоб мати доступ до закладок на всіх своїх пристроях, увімкніть синхронізацію</translation>
 <translation id="8110024788458304985">Допомагати покращувати ефективність і функції Chrome</translation>
@@ -1286,6 +1288,7 @@
 <translation id="8551513938758868521">Блокувати анонімні вкладки після закриття Chrome</translation>
 <translation id="8555836665334561807">Через Wi-Fi</translation>
 <translation id="8559990750235505898">Пропозиція перекладати сторінки іншими мовами</translation>
+<translation id="8560560256644480257">Створення файлу GIF <ph name="PERCENT" />%%</translation>
 <translation id="8560602726703398413">Ваш список читання буде в закладках</translation>
 <translation id="8562452229998620586">Тут відображатимуться збережені паролі.</translation>
 <translation id="856481929701340285">Версія для комп’ютера</translation>
