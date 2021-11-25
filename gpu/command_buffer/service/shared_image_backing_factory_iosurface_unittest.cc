@@ -382,7 +382,7 @@ TEST_F(SharedImageBackingFactoryIOSurfaceTest, Dawn_SkiaGL) {
       });
   ASSERT_NE(adapter_it, adapters.end());
 
-  dawn_native::DeviceDescriptor device_descriptor;
+  dawn_native::DawnDeviceDescriptor device_descriptor;
   // We need to request internal usage to be able to do operations with
   // internal methods that would need specific usages.
   device_descriptor.requiredFeatures.push_back("dawn-internal-usages");
@@ -531,7 +531,7 @@ TEST_F(SharedImageBackingFactoryIOSurfaceTest, GL_Dawn_Skia_UnclearTexture) {
       });
   ASSERT_NE(adapter_it, adapters.end());
 
-  dawn_native::DeviceDescriptor device_descriptor;
+  dawn_native::DawnDeviceDescriptor device_descriptor;
   // We need to request internal usage to be able to do operations with
   // internal methods that would need specific usages.
   device_descriptor.requiredFeatures.push_back("dawn-internal-usages");
@@ -619,7 +619,7 @@ TEST_F(SharedImageBackingFactoryIOSurfaceTest, UnclearDawn_SkiaFails) {
       });
   ASSERT_NE(adapter_it, adapters.end());
 
-  dawn_native::DeviceDescriptor device_descriptor;
+  dawn_native::DawnDeviceDescriptor device_descriptor;
   // We need to request internal usage to be able to do operations with
   // internal methods that would need specific usages.
   device_descriptor.requiredFeatures.push_back("dawn-internal-usages");

@@ -605,7 +605,7 @@ TEST_F(SharedImageBackingFactoryD3DTest, Dawn_SkiaGL) {
       });
   ASSERT_NE(adapter_it, adapters.end());
 
-  dawn_native::DeviceDescriptor device_descriptor;
+  dawn_native::DawnDeviceDescriptor device_descriptor;
   // We need to request internal usage to be able to do operations with
   // internal methods that would need specific usages.
   device_descriptor.requiredFeatures.push_back("dawn-internal-usages");
@@ -748,7 +748,7 @@ TEST_F(SharedImageBackingFactoryD3DTest, GL_Dawn_Skia_UnclearTexture) {
       });
   ASSERT_NE(adapter_it, adapters.end());
 
-  dawn_native::DeviceDescriptor device_descriptor;
+  dawn_native::DawnDeviceDescriptor device_descriptor;
   // We need to request internal usage to be able to do operations with
   // internal methods that would need specific usages.
   device_descriptor.requiredFeatures.push_back("dawn-internal-usages");
@@ -838,7 +838,7 @@ TEST_F(SharedImageBackingFactoryD3DTest, UnclearDawn_SkiaFails) {
       });
   ASSERT_NE(adapter_it, adapters.end());
 
-  dawn_native::DeviceDescriptor device_descriptor;
+  dawn_native::DawnDeviceDescriptor device_descriptor;
   // We need to request internal usage to be able to do operations with
   // internal methods that would need specific usages.
   device_descriptor.requiredFeatures.push_back("dawn-internal-usages");
@@ -1108,7 +1108,7 @@ TEST_F(SharedImageBackingFactoryD3DTest, Dawn_ReuseExternalImage) {
       });
   ASSERT_NE(adapter_it, adapters.end());
 
-  dawn_native::DeviceDescriptor device_descriptor;
+  dawn_native::DawnDeviceDescriptor device_descriptor;
   // We need to request internal usage to be able to do operations with
   // internal methods that would need specific usages.
   device_descriptor.requiredFeatures.push_back("dawn-internal-usages");
@@ -1236,7 +1236,7 @@ TEST_F(SharedImageBackingFactoryD3DTest, Dawn_HasLastRef) {
       });
   ASSERT_NE(adapter_it, adapters.end());
 
-  dawn_native::DeviceDescriptor device_descriptor;
+  dawn_native::DawnDeviceDescriptor device_descriptor;
   // We need to request internal usage to be able to do operations with
   // internal methods that would need specific usages.
   device_descriptor.requiredFeatures.push_back("dawn-internal-usages");

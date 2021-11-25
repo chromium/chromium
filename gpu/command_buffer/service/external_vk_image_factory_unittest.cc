@@ -103,7 +103,7 @@ class ExternalVkImageFactoryTest : public testing::Test {
     DawnProcTable procs = dawn_native::GetProcs();
     dawnProcSetProcs(&procs);
 
-    dawn_native::DeviceDescriptor device_descriptor;
+    dawn_native::DawnDeviceDescriptor device_descriptor;
     // We need to request internal usage to be able to do operations with
     // internal methods that would need specific usages.
     device_descriptor.requiredFeatures.push_back("dawn-internal-usages");

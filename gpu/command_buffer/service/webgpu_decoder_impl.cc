@@ -593,7 +593,7 @@ void WebGPUDecoderImpl::DoRequestDevice(
   DCHECK_LT(static_cast<size_t>(requested_adapter_index),
             dawn_adapters_.size());
 
-  dawn_native::DeviceDescriptor device_descriptor;
+  dawn_native::DawnDeviceDescriptor device_descriptor;
   if (request_device_properties.textureCompressionBC) {
     device_descriptor.requiredFeatures.push_back("texture-compression-bc");
   }

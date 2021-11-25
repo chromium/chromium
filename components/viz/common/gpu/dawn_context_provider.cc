@@ -58,7 +58,7 @@ wgpu::Device DawnContextProvider::CreateDevice(dawn_native::BackendType type) {
   // info for about:gpu should be updated as well.
 
   // Disable validation in non-DCHECK builds.
-  dawn_native::DeviceDescriptor descriptor;
+  dawn_native::DawnDeviceDescriptor descriptor;
 #if !DCHECK_IS_ON()
   descriptor.forceEnabledToggles = {"skip_validation"};
 #endif
