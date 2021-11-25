@@ -142,6 +142,13 @@ DesktopAutomationHandler = class extends BaseAutomationHandler {
    * @param {!AutomationNode} node The hit result.
    */
   onHitTestResult(node) {
+    // It's possible the |node| hit has lost focus (via its root).
+    const host = node.root.parent;
+    if (node.parent && host && host.role === RoleType.WEB_VIEW &&
+        !host.state.focused) {
+      return;
+    }
+
     // It is possible that the user moved since we requested a hit test.  Bail
     // if the current range is valid and on the same page as the hit result
     // (but not the root).
