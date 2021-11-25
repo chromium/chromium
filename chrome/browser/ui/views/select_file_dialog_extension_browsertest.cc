@@ -147,27 +147,18 @@ struct TestMode {
         file_type_filter(file_type_filter),
         tablet_mode(tablet_mode) {}
 
-  static testing::internal::ParamGenerator<TestMode> Values() {
-    std::vector<TestMode> test_modes = {
-        TestMode(SYSTEM_FILES_APP_MODE, false, false),
-        TestMode(SYSTEM_FILES_APP_MODE, false, true),
-        TestMode(SYSTEM_FILES_APP_MODE, true, false),
-        TestMode(SYSTEM_FILES_APP_MODE, true, true),
-    };
-    // If Files SWA is enabled by default, do not include the legacy tests. The
-    // legacy app is explicitly disabled in this case and thus the tests have
-    // no chance of passing.
-    if (!ash::features::IsFileManagerSwaEnabled()) {
-      std::vector<TestMode> legacy_test_modes = {
-          TestMode(EXTENSION_FILES_APP_MODE, false, false),
-          TestMode(EXTENSION_FILES_APP_MODE, false, true),
-          TestMode(EXTENSION_FILES_APP_MODE, true, false),
-          TestMode(EXTENSION_FILES_APP_MODE, true, true),
-      };
-      test_modes.insert(test_modes.end(), legacy_test_modes.begin(),
-                        legacy_test_modes.end());
-    }
-    return ::testing::ValuesIn(test_modes);
+  static testing::internal::ParamGenerator<TestMode> SystemWebAppValues() {
+    return ::testing::Values(TestMode(SYSTEM_FILES_APP_MODE, false, false),
+                             TestMode(SYSTEM_FILES_APP_MODE, false, true),
+                             TestMode(SYSTEM_FILES_APP_MODE, true, false),
+                             TestMode(SYSTEM_FILES_APP_MODE, true, true));
+  }
+
+  static testing::internal::ParamGenerator<TestMode> LegacyValues() {
+    return ::testing::Values(TestMode(EXTENSION_FILES_APP_MODE, false, false),
+                             TestMode(EXTENSION_FILES_APP_MODE, false, true),
+                             TestMode(EXTENSION_FILES_APP_MODE, true, false),
+                             TestMode(EXTENSION_FILES_APP_MODE, true, true));
   }
 
   AppMode app_mode;
@@ -181,9 +172,6 @@ class BaseSelectFileDialogExtensionBrowserTest
       public testing::WithParamInterface<TestMode> {
  public:
   BaseSelectFileDialogExtensionBrowserTest() {
-    if (GetParam().app_mode == SYSTEM_FILES_APP_MODE) {
-      feature_list_.InitAndEnableFeature(ash::features::kFilesSWA);
-    }
     use_file_type_filter_ = GetParam().file_type_filter;
   }
 
@@ -210,6 +198,15 @@ class BaseSelectFileDialogExtensionBrowserTest
     extensions::ExtensionBrowserTest::SetUp();
   }
 
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    if (GetParam().app_mode == SYSTEM_FILES_APP_MODE) {
+      feature_list_.InitWithFeatures({chromeos::features::kFilesSWA}, {});
+    } else {
+      feature_list_.InitWithFeatures({}, {chromeos::features::kFilesSWA});
+    }
+    extensions::ExtensionBrowserTest::SetUpCommandLine(command_line);
+  }
+
   void SetUpOnMainThread() override {
     extensions::ExtensionBrowserTest::SetUpOnMainThread();
     CHECK(profile());
@@ -225,7 +222,7 @@ class BaseSelectFileDialogExtensionBrowserTest
     // extensions now and not before: crbug.com/831074, crbug.com/804413.
     file_manager::test::AddDefaultComponentExtensionsOnMainThread(profile());
 
-    if (GetParam().app_mode != SYSTEM_FILES_APP_MODE) {
+    if (GetParam().app_mode == EXTENSION_FILES_APP_MODE) {
       // Ensure the Files app background page has shut down. These tests should
       // ensure launching without the background page functions correctly.
       extensions::ProcessManager::SetEventPageIdleTimeForTesting(1);
@@ -623,9 +620,12 @@ IN_PROC_BROWSER_TEST_P(SelectFileDialogExtensionBrowserTest, MultipleOpenFile) {
   browser()->OpenFile();
 }
 
-INSTANTIATE_TEST_SUITE_P(SelectFileDialogExtensionBrowserTest,
+INSTANTIATE_TEST_SUITE_P(Legacy,
                          SelectFileDialogExtensionBrowserTest,
-                         TestMode::Values());
+                         TestMode::LegacyValues());
+INSTANTIATE_TEST_SUITE_P(SystemWebApp,
+                         SelectFileDialogExtensionBrowserTest,
+                         TestMode::SystemWebAppValues());
 
 // Tests that ash window has correct colors for GM2.
 // TODO(adanilo) factor out the unnecessary override of Setup().
@@ -663,6 +663,9 @@ IN_PROC_BROWSER_TEST_P(SelectFileDialogExtensionFlagTest, DialogColoredTitle) {
   CloseDialog(DIALOG_BTN_CANCEL, owning_window);
 }
 
-INSTANTIATE_TEST_SUITE_P(SelectFileDialogExtensionFlagTest,
+INSTANTIATE_TEST_SUITE_P(Legacy,
                          SelectFileDialogExtensionFlagTest,
-                         TestMode::Values());
+                         TestMode::LegacyValues());
+INSTANTIATE_TEST_SUITE_P(SystemWebApp,
+                         SelectFileDialogExtensionFlagTest,
+                         TestMode::SystemWebAppValues());
