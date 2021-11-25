@@ -177,9 +177,7 @@ const CSSValue* AnimationDirection::CSSValueFromComputedStyleInternal(
 }
 
 const CSSValue* AnimationDirection::InitialValue() const {
-  DEFINE_STATIC_LOCAL(const Persistent<CSSValue>, value,
-                      (CSSIdentifierValue::Create(CSSValueID::kNormal)));
-  return value;
+  return CSSIdentifierValue::Create(CSSValueID::kNormal);
 }
 
 const CSSValue* AnimationDuration::ParseSingleValue(
@@ -235,9 +233,7 @@ const CSSValue* AnimationFillMode::CSSValueFromComputedStyleInternal(
 }
 
 const CSSValue* AnimationFillMode::InitialValue() const {
-  DEFINE_STATIC_LOCAL(const Persistent<CSSValue>, value,
-                      (CSSIdentifierValue::Create(CSSValueID::kNone)));
-  return value;
+  return CSSIdentifierValue::Create(CSSValueID::kNone);
 }
 
 const CSSValue* AnimationIterationCount::ParseSingleValue(
@@ -302,9 +298,7 @@ const CSSValue* AnimationName::CSSValueFromComputedStyleInternal(
 }
 
 const CSSValue* AnimationName::InitialValue() const {
-  DEFINE_STATIC_LOCAL(const Persistent<CSSValue>, value,
-                      (CSSIdentifierValue::Create(CSSValueID::kNone)));
-  return value;
+  return CSSIdentifierValue::Create(CSSValueID::kNone);
 }
 
 void AnimationName::ApplyValue(StyleResolverState& state,
@@ -341,9 +335,7 @@ const CSSValue* AnimationPlayState::CSSValueFromComputedStyleInternal(
 }
 
 const CSSValue* AnimationPlayState::InitialValue() const {
-  DEFINE_STATIC_LOCAL(const Persistent<CSSValue>, value,
-                      (CSSIdentifierValue::Create(CSSValueID::kRunning)));
-  return value;
+  return CSSIdentifierValue::Create(CSSValueID::kRunning);
 }
 
 const CSSValue* AnimationTimeline::ParseSingleValue(
@@ -390,9 +382,7 @@ const CSSValue* AnimationTimingFunction::CSSValueFromComputedStyleInternal(
 }
 
 const CSSValue* AnimationTimingFunction::InitialValue() const {
-  DEFINE_STATIC_LOCAL(const Persistent<CSSValue>, value,
-                      (CSSIdentifierValue::Create(CSSValueID::kEase)));
-  return value;
+  return CSSIdentifierValue::Create(CSSValueID::kEase);
 }
 
 const CSSValue* AspectRatio::ParseSingleValue(
@@ -925,9 +915,7 @@ const CSSValue* BorderImageRepeat::CSSValueFromComputedStyleInternal(
 }
 
 const CSSValue* BorderImageRepeat::InitialValue() const {
-  DEFINE_STATIC_LOCAL(const Persistent<CSSValue>, value,
-                      (CSSIdentifierValue::Create(CSSValueID::kStretch)));
-  return value;
+  return CSSIdentifierValue::Create(CSSValueID::kStretch);
 }
 
 const CSSValue* BorderImageSlice::ParseSingleValue(
@@ -976,9 +964,7 @@ const CSSValue* BorderImageSource::CSSValueFromComputedStyleInternal(
 }
 
 const CSSValue* BorderImageSource::InitialValue() const {
-  DEFINE_STATIC_LOCAL(const Persistent<CSSValue>, value,
-                      (CSSIdentifierValue::Create(CSSValueID::kNone)));
-  return value;
+  return CSSIdentifierValue::Create(CSSValueID::kNone);
 }
 
 void BorderImageSource::ApplyValue(StyleResolverState& state,
@@ -7320,9 +7306,7 @@ const CSSValue* TransitionProperty::CSSValueFromComputedStyleInternal(
 }
 
 const CSSValue* TransitionProperty::InitialValue() const {
-  DEFINE_STATIC_LOCAL(const Persistent<CSSValue>, value,
-                      (CSSIdentifierValue::Create(CSSValueID::kAll)));
-  return value;
+  return CSSIdentifierValue::Create(CSSValueID::kAll);
 }
 
 const CSSValue* TransitionTimingFunction::ParseSingleValue(
@@ -7342,9 +7326,7 @@ const CSSValue* TransitionTimingFunction::CSSValueFromComputedStyleInternal(
 }
 
 const CSSValue* TransitionTimingFunction::InitialValue() const {
-  DEFINE_STATIC_LOCAL(const Persistent<CSSValue>, value,
-                      (CSSIdentifierValue::Create(CSSValueID::kEase)));
-  return value;
+  return CSSIdentifierValue::Create(CSSValueID::kEase);
 }
 
 const CSSValue* Translate::ParseSingleValue(
