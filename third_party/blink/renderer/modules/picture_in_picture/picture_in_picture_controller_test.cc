@@ -15,6 +15,11 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/mojom/picture_in_picture/picture_in_picture.mojom-blink.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_dom_exception.h"
+#include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/frame/frame_test_helpers.h"
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
@@ -242,6 +247,10 @@ class PictureInPictureControllerTest : public testing::Test {
         GetDocument().GetFrame()->GetWidgetForLocalRoot());
   }
 
+  void ResetMediaPlayerAndMediaSource() {
+    DynamicTo<HTMLMediaElement>(Video())->ResetMediaPlayerAndMediaSource();
+  }
+
  private:
   Persistent<HTMLVideoElement> video_;
   std::unique_ptr<frame_test_helpers::TestWebFrameClient> client_;
@@ -422,6 +431,30 @@ TEST_F(PictureInPictureControllerTest, PerformMediaPlayerAction) {
   // given location.
   frame->GetFrame()->MediaPlayerActionAtViewportPoint(
       bounds, blink::mojom::MediaPlayerActionType::kPictureInPicture, true);
+}
+
+TEST_F(PictureInPictureControllerTest, EnterPictureInPictureAfterResettingWMP) {
+  V8TestingScope scope;
+
+  EXPECT_NE(nullptr, Video()->GetWebMediaPlayer());
+
+  // Reset web media player.
+  ResetMediaPlayerAndMediaSource();
+  EXPECT_EQ(nullptr, Video()->GetWebMediaPlayer());
+
+  auto* resolver =
+      MakeGarbageCollected<ScriptPromiseResolver>(scope.GetScriptState());
+  auto promise = resolver->Promise();
+  PictureInPictureControllerImpl::From(GetDocument())
+      .EnterPictureInPicture(Video(), nullptr /* options */, resolver);
+
+  // Verify rejected with DOMExceptionCode::kInvalidStateError.
+  EXPECT_EQ(v8::Promise::kRejected, promise.V8Promise()->State());
+  DOMException* dom_exception = V8DOMException::ToImplWithTypeCheck(
+      promise.GetIsolate(), promise.V8Promise()->Result());
+  ASSERT_NE(dom_exception, nullptr);
+  EXPECT_EQ(static_cast<int>(DOMExceptionCode::kInvalidStateError),
+            dom_exception->code());
 }
 
 }  // namespace blink

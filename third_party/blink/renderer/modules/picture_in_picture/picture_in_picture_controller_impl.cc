@@ -136,6 +136,7 @@ void PictureInPictureControllerImpl::EnterPictureInPicture(
     ScriptPromiseResolver* resolver) {
   auto* video_element = DynamicTo<HTMLVideoElement>(*element);
   if (!video_element) {
+    DCHECK(RuntimeEnabledFeatures::PictureInPictureV2Enabled());
     // TODO(https://crbug.com/953957): Support element level pip.
     if (resolver)
       resolver->Resolve();
@@ -143,7 +144,15 @@ void PictureInPictureControllerImpl::EnterPictureInPicture(
     return;
   }
 
-  DCHECK(video_element->GetWebMediaPlayer());
+  if (!video_element->GetWebMediaPlayer()) {
+    if (resolver) {
+      resolver->Reject(MakeGarbageCollected<DOMException>(
+          DOMExceptionCode::kInvalidStateError, ""));
+    }
+
+    return;
+  }
+
   DCHECK(!options);
 
   if (picture_in_picture_element_ == video_element) {
