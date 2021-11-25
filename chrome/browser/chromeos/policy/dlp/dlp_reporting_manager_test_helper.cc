@@ -25,7 +25,9 @@ class DlpPolicyEventMatcher : public MatcherInterface<const DlpPolicyEvent&> {
   explicit DlpPolicyEventMatcher(const DlpPolicyEvent& event)
       : source_url_(event.source().url()),
         destination_url_(event.destination().url()),
-        destination_component_(event.destination().component()) {}
+        destination_component_(event.destination().component()),
+        restriction_(event.restriction()),
+        mode_(event.mode()) {}
 
   bool MatchAndExplain(const DlpPolicyEvent& event,
                        MatchResultListener* listener) const override {
@@ -43,9 +45,17 @@ class DlpPolicyEventMatcher : public MatcherInterface<const DlpPolicyEvent&> {
       *listener << " |destination_component| is "
                 << event.destination().component();
     }
+    bool restriction_equals = event.restriction() == restriction_;
+    if (!restriction_equals) {
+      *listener << " |restriction| is " << event.restriction();
+    }
+    bool mode_equals = event.mode() == mode_;
+    if (!mode_equals) {
+      *listener << " |mode| is " << event.mode();
+    }
 
     return source_url_equals && destination_url_equals &&
-           destination_component_equals;
+           destination_component_equals && restriction_equals && mode_equals;
   }
 
   void DescribeTo(::std::ostream* os) const override {}
@@ -54,6 +64,8 @@ class DlpPolicyEventMatcher : public MatcherInterface<const DlpPolicyEvent&> {
   const std::string source_url_;
   const std::string destination_url_;
   const int destination_component_;
+  const int restriction_;
+  const int mode_;
 };
 
 Matcher<const DlpPolicyEvent&> IsDlpPolicyEvent(const DlpPolicyEvent& event) {
