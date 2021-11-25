@@ -18,6 +18,7 @@
 #include "third_party/blink/renderer/platform/wtf/cross_thread_copier.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
+#include "third_party/blink/renderer/platform/wtf/wtf.h"
 
 // Note that this code follows the Chrome media convention of defining a "frame"
 // as "one multi-channel sample" as opposed to another common definition meaning

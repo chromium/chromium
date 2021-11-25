@@ -38,6 +38,7 @@
 #include "third_party/blink/renderer/platform/text/bidi_test_harness.h"
 #include "third_party/blink/renderer/platform/text/text_run_iterator.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/hash_set.h"
 
 namespace blink {
 
