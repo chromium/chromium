@@ -13,6 +13,7 @@
 #include "base/synchronization/waitable_event.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "base/timer/wall_clock_timer.h"
 #include "chrome/browser/ash/system/automatic_reboot_manager_observer.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "chromeos/dbus/update_engine/update_engine_client.h"
@@ -78,7 +79,8 @@ class AutomaticRebootManager : public PowerManagerClient::Observer,
                                public session_manager::SessionManagerObserver,
                                public content::NotificationObserver {
  public:
-  explicit AutomaticRebootManager(const base::TickClock* clock);
+  AutomaticRebootManager(const base::Clock* clock,
+                         const base::TickClock* tick_clock);
 
   AutomaticRebootManager(const AutomaticRebootManager&) = delete;
   AutomaticRebootManager& operator=(const AutomaticRebootManager&) = delete;
@@ -144,8 +146,9 @@ class AutomaticRebootManager : public PowerManagerClient::Observer,
       base::WaitableEvent::ResetPolicy::MANUAL,
       base::WaitableEvent::InitialState::NOT_SIGNALED};
 
-  // A clock that can be mocked in tests to fast-forward time.
-  const base::TickClock* const clock_;
+  // Clocks that can be mocked in tests to fast-forward time.
+  const base::Clock* const clock_;
+  const base::TickClock* const tick_clock_;
 
   PrefChangeRegistrar local_state_registrar_;
 
@@ -155,11 +158,11 @@ class AutomaticRebootManager : public PowerManagerClient::Observer,
   // time.
   std::unique_ptr<base::OneShotTimer> login_screen_idle_timer_;
 
-  // The time at which the device was booted, in |clock_| ticks.
+  // The time at which the device was booted, in |tick_clock_| ticks.
   absl::optional<base::TimeTicks> boot_time_;
 
   // The time at which an update was applied and a reboot became necessary to
-  // complete the update process, in |clock_| ticks.
+  // complete the update process, in |tick_clock_| ticks.
   absl::optional<base::TimeTicks> update_reboot_needed_time_;
 
   // The reason for the reboot request. Updated whenever a reboot is scheduled.
@@ -170,8 +173,8 @@ class AutomaticRebootManager : public PowerManagerClient::Observer,
   bool reboot_requested_ = false;
 
   // Timers that start and end the grace period.
-  std::unique_ptr<base::OneShotTimer> grace_start_timer_;
-  std::unique_ptr<base::OneShotTimer> grace_end_timer_;
+  std::unique_ptr<base::WallClockTimer> grace_start_timer_;
+  std::unique_ptr<base::WallClockTimer> grace_end_timer_;
 
   base::ObserverList<AutomaticRebootManagerObserver, true>::Unchecked
       observers_;

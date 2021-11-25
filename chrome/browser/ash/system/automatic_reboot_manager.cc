@@ -30,7 +30,10 @@
 #include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/scoped_blocking_call.h"
+#include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/tick_clock.h"
+#include "base/time/time.h"
+#include "base/timer/wall_clock_timer.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chrome_notification_types.h"
 #include "chrome/common/pref_names.h"
@@ -53,6 +56,7 @@ const int kMinRebootUptimeMs = 60 * 60 * 1000;     // 1 hour.
 const int kLoginManagerIdleTimeoutMs = 60 * 1000;  // 60 seconds.
 const int kGracePeriodMs = 24 * 60 * 60 * 1000;    // 24 hours.
 const int kOneKilobyte = 1 << 10;                  // 1 kB in bytes.
+const int kResumeRebootDelayMs = 100;
 
 base::TimeDelta ReadTimeDeltaFromFile(const base::FilePath& path) {
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
@@ -144,8 +148,10 @@ SystemEventTimes GetSystemEventTimes() {
 
 }  // namespace internal
 
-AutomaticRebootManager::AutomaticRebootManager(const base::TickClock* clock)
-    : clock_(clock) {
+AutomaticRebootManager::AutomaticRebootManager(
+    const base::Clock* clock,
+    const base::TickClock* tick_clock)
+    : clock_(clock), tick_clock_(tick_clock) {
   local_state_registrar_.Init(g_browser_process->local_state());
   local_state_registrar_.Add(
       prefs::kUptimeLimit,
@@ -209,7 +215,15 @@ bool AutomaticRebootManager::WaitForInitForTesting(
 
 void AutomaticRebootManager::SuspendDone(base::TimeDelta sleep_duration) {
   VLOG(1) << "Attempting a reboot because device is unsuspended";
-  MaybeReboot(true);
+  // Ignore session to allow rebooting kiosk apps on resume. In case the session
+  // is a user session, there is an additional check in the Reboot method below.
+  // We post a delayed task to ensure that we run any due grace timers and
+  // update |reboot_requested_| flag before we try to reboot.
+  base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(&AutomaticRebootManager::MaybeReboot,
+                     base::Unretained(this), true),
+      base::Milliseconds(kResumeRebootDelayMs));
 }
 
 void AutomaticRebootManager::UpdateStatusChanged(
@@ -234,7 +248,7 @@ void AutomaticRebootManager::UpdateStatusChanged(
                               base::TaskShutdownBehavior::BLOCK_SHUTDOWN},
                              base::BindOnce(&SaveUpdateRebootNeededUptime));
 
-  update_reboot_needed_time_ = clock_->NowTicks();
+  update_reboot_needed_time_ = tick_clock_->NowTicks();
 
   Reschedule();
 }
@@ -247,7 +261,6 @@ void AutomaticRebootManager::OnUserActivity(const ui::Event* event) {
   // task with a delay of exactly |kLoginManagerIdleTimeoutMs|, ensuring that
   // the timer fires predictably in tests.
   login_screen_idle_timer_ = std::make_unique<base::OneShotTimer>();
-  VLOG(1) << "Scheduling an attempt to reboot after user activity";
   login_screen_idle_timer_->Start(
       FROM_HERE, base::Milliseconds(kLoginManagerIdleTimeoutMs),
       base::BindOnce(&AutomaticRebootManager::MaybeReboot,
@@ -290,13 +303,15 @@ void AutomaticRebootManager::Init(
     const internal::SystemEventTimes& system_event_times) {
   initialized_.Signal();
 
-  const base::TimeDelta offset = clock_->NowTicks() - base::TimeTicks::Now();
+  const base::TimeDelta offset =
+      tick_clock_->NowTicks() - base::TimeTicks::Now();
   if (system_event_times.boot_time) {
-    // Convert the time at which the device was booted to |clock_| ticks.
+    // Convert the time at which the device was booted to |tick_clock_| ticks.
     boot_time_ = *system_event_times.boot_time + offset;
   }
   if (system_event_times.update_reboot_needed_time) {
-    // Convert the time at which a reboot became necessary to |clock_| ticks.
+    // Convert the time at which a reboot became necessary to |tick_clock_|
+    // ticks.
     update_reboot_needed_time_ =
         *system_event_times.update_reboot_needed_time + offset;
   } else {
@@ -356,7 +371,8 @@ void AutomaticRebootManager::Reschedule() {
   // Safeguard against reboot loops: Ensure that the uptime after which a reboot
   // is actually requested and the grace period begins is never less than
   // |kMinRebootUptimeMs|.
-  const base::TimeTicks now = clock_->NowTicks();
+  const base::TimeTicks now = tick_clock_->NowTicks();
+  const base::Time wall_clock_now = clock_->Now();
   const base::TimeTicks grace_start_time =
       std::max(reboot_request_time,
                *boot_time_ + base::Milliseconds(kMinRebootUptimeMs));
@@ -364,10 +380,13 @@ void AutomaticRebootManager::Reschedule() {
   // Set up a timer for the start of the grace period. If the grace period
   // started in the past, the timer is still used with its delay set to zero.
   if (!grace_start_timer_)
-    grace_start_timer_ = std::make_unique<base::OneShotTimer>();
-  VLOG(1) << "Scheduling reboot attempt in " << (grace_start_time - now);
+    grace_start_timer_ =
+        std::make_unique<base::WallClockTimer>(clock_, tick_clock_);
+  VLOG(1) << "Scheduling reboot attempt at "
+          << wall_clock_now + (grace_start_time - now);
   grace_start_timer_->Start(
-      FROM_HERE, std::max(grace_start_time - now, base::TimeDelta()),
+      FROM_HERE,
+      wall_clock_now + std::max(grace_start_time - now, base::TimeDelta()),
       base::BindOnce(&AutomaticRebootManager::RequestReboot,
                      base::Unretained(this)));
 
@@ -376,10 +395,13 @@ void AutomaticRebootManager::Reschedule() {
   // Set up a timer for the end of the grace period. If the grace period ended
   // in the past, the timer is still used with its delay set to zero.
   if (!grace_end_timer_)
-    grace_end_timer_ = std::make_unique<base::OneShotTimer>();
-  VLOG(1) << "Scheduling unconditional reboot in " << (grace_end_time - now);
+    grace_end_timer_ =
+        std::make_unique<base::WallClockTimer>(clock_, tick_clock_);
+  VLOG(1) << "Scheduling unconditional reboot at "
+          << wall_clock_now + (grace_end_time - now);
   grace_end_timer_->Start(
-      FROM_HERE, std::max(grace_end_time - now, base::TimeDelta()),
+      FROM_HERE,
+      wall_clock_now + std::max(grace_end_time - now, base::TimeDelta()),
       base::BindOnce(&AutomaticRebootManager::Reboot, base::Unretained(this)));
 }
 

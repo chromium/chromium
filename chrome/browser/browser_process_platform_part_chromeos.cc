@@ -15,6 +15,7 @@
 #include "base/bind.h"
 #include "base/check_op.h"
 #include "base/memory/singleton.h"
+#include "base/time/default_clock.h"
 #include "base/time/default_tick_clock.h"
 #include "base/time/tick_clock.h"
 #include "chrome/browser/ash/crosapi/browser_manager.h"
@@ -196,6 +197,7 @@ void BrowserProcessPlatformPart::InitializeAutomaticRebootManager() {
 
   automatic_reboot_manager_ =
       std::make_unique<ash::system::AutomaticRebootManager>(
+          base::DefaultClock::GetInstance(),
           base::DefaultTickClock::GetInstance());
 }
 
