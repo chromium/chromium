@@ -2211,30 +2211,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram
-    name="PasswordManager.PasswordStoreAndroidBackend.AddLoginAsync.Latency"
-    units="ms" expires_after="2022-06-30">
-  <owner>fhorschig@chromium.org</owner>
-  <owner>vasilii@chromium.org</owner>
-  <summary>
-    Real-time duration of the asynchronous call to add a login to the
-    PasswordStore Android backend. Recorded when the asynchronous job has
-    returned.
-  </summary>
-</histogram>
-
-<histogram
-    name="PasswordManager.PasswordStoreAndroidBackend.AddLoginAsync.Success"
-    enum="BooleanSuccess" expires_after="2022-06-30">
-  <owner>fhorschig@chromium.org</owner>
-  <owner>vasilii@chromium.org</owner>
-  <summary>
-    Records whether AddLoginAsync() succeeded in adding a login in the
-    PasswordStore Android backend. Recorded when the asynchronous job has
-    returned. False is emitted if an error occurs; otherwise true is emitted.
-  </summary>
-</histogram>
-
 <histogram name="PasswordManager.PasswordStoreAndroidBackend.APIError"
     enum="PasswordStoreAndroidBackendAPIError" expires_after="2022-06-30">
   <owner>fhorschig@chromium.org</owner>
@@ -2271,75 +2247,42 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="PasswordManager.PasswordStoreAndroidBackend.GetAllLoginsAsync.Latency"
+    name="PasswordManager.PasswordStoreAndroidBackend.{Function}.Latency"
     units="ms" expires_after="2022-06-30">
   <owner>fhorschig@chromium.org</owner>
   <owner>vasilii@chromium.org</owner>
   <summary>
-    Real-time duration of the asynchronous call to retrieve all logins from the
-    PasswordStore Android backend. Recorded when the asynchronous job has
-    returned.
+    Real-time duration of the asynchronous call to {Function} the PasswordStore
+    Android backend. Recorded when the asynchronous job has returned.
   </summary>
+  <token key="Function">
+    <variant name="AddLoginAsync" summary="add a login to"/>
+    <variant name="GetAllLoginsAsync" summary="retrieve all logins from"/>
+    <variant name="RemoveLoginAsync" summary="remove a login from"/>
+    <variant name="UpdateLoginAsync" summary="update a login in"/>
+  </token>
 </histogram>
 
 <histogram
-    name="PasswordManager.PasswordStoreAndroidBackend.GetAllLoginsAsync.Success"
+    name="PasswordManager.PasswordStoreAndroidBackend.{Function}.Success"
     enum="BooleanSuccess" expires_after="2022-06-30">
   <owner>fhorschig@chromium.org</owner>
   <owner>vasilii@chromium.org</owner>
   <summary>
-    Records whether GetAllLoginsAsync() succeeded in retrieving all logins from
-    the PasswordStore Android backend. Recorded when the asynchronous job has
-    returned. False is emitted if an error occurs; otherwise true is emitted.
+    Records whether {Function} the PasswordStore Android backend. Recorded when
+    the asynchronous job has returned. False is emitted if an error occurs;
+    otherwise true is emitted.
   </summary>
-</histogram>
-
-<histogram
-    name="PasswordManager.PasswordStoreAndroidBackend.RemoveLoginAsync.Latency"
-    units="ms" expires_after="2022-06-30">
-  <owner>fhorschig@chromium.org</owner>
-  <owner>vasilii@chromium.org</owner>
-  <summary>
-    Real-time duration of the asynchronous call to remove a login from the
-    PasswordStore Android backend. Recorded when the asynchronous job has
-    returned.
-  </summary>
-</histogram>
-
-<histogram
-    name="PasswordManager.PasswordStoreAndroidBackend.RemoveLoginAsync.Success"
-    enum="BooleanSuccess" expires_after="2022-06-30">
-  <owner>fhorschig@chromium.org</owner>
-  <owner>vasilii@chromium.org</owner>
-  <summary>
-    Records whether RemoveLoginAsync() succeeded in removing a login from the
-    PasswordStore Android backend. Recorded when the asynchronous job has
-    returned. False is emitted if an error occurs; otherwise true is emitted.
-  </summary>
-</histogram>
-
-<histogram
-    name="PasswordManager.PasswordStoreAndroidBackend.UpdateLoginAsync.Latency"
-    units="ms" expires_after="2022-06-30">
-  <owner>fhorschig@chromium.org</owner>
-  <owner>vasilii@chromium.org</owner>
-  <summary>
-    Real-time duration of the asynchronous call to update a login in the
-    PasswordStore Android backend. Recorded when the asynchronous job has
-    returned.
-  </summary>
-</histogram>
-
-<histogram
-    name="PasswordManager.PasswordStoreAndroidBackend.UpdateLoginAsync.Success"
-    enum="BooleanSuccess" expires_after="2022-06-30">
-  <owner>fhorschig@chromium.org</owner>
-  <owner>vasilii@chromium.org</owner>
-  <summary>
-    Records whether UpdateLoginAsync() succeeded in updating a login in the
-    PasswordStore Android backend. Recorded when the asynchronous job has
-    returned. False is emitted if an error occurs; otherwise true is emitted.
-  </summary>
+  <token key="Function">
+    <variant name="AddLoginAsync"
+        summary="AddLoginAsync() succeeded to add a login to"/>
+    <variant name="GetAllLoginsAsync"
+        summary="GetAllLoginsAsync() succeeded in retrieving all logins from"/>
+    <variant name="RemoveLoginAsync"
+        summary="RemoveLoginAsync() succeeded in removing a login from"/>
+    <variant name="UpdateLoginAsync"
+        summary="UpdateLoginAsync() succeeded in updating a login in"/>
+  </token>
 </histogram>
 
 <histogram name="PasswordManager.PasswordStoreDeletionsHaveSynced"
