@@ -943,7 +943,8 @@ void WebRtcAudioRenderer::PrepareSink() {
     base::AutoLock lock(lock_);
     if ((!audio_fifo_ && different_source_sink_frames) ||
         (audio_fifo_ &&
-         audio_fifo_->SizeInFrames() != source_frames_per_buffer)) {
+         (audio_fifo_->SizeInFrames() != source_frames_per_buffer ||
+          channels != sink_params_.channels()))) {
       audio_fifo_ = std::make_unique<media::AudioPullFifo>(
           channels, source_frames_per_buffer,
           ConvertToBaseRepeatingCallback(
