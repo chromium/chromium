@@ -1051,19 +1051,8 @@ IN_PROC_BROWSER_TEST_F(SaveCardBubbleViewsSyncTransportFullFormBrowserTest,
 
 // Tests the implicit sync state. Ensures that the (i) info icon does not appear
 // for local save offers.
-// TODO(crbug.com/1245213)
-// This test is not applicable for explicit address save dialogs.
-// The test relies on the following sequence of events: First a credit card is
-// imported first, but the upload fails. Subsequently, an address profile is
-// imported which is than used to complement the information needed to offer a
-// local save prompt. With explicit address save prompts, the storage of a new
-// address is omitted if a credit card can be stored to avoid showing two
-// dialogs at the same time.
-// To make test work one need to inject an existing address into the
-// PersonalDataManager. Alternatively, the import logic should try to get an
-// address candidate from the form even though no address was imported yet.
 IN_PROC_BROWSER_TEST_F(SaveCardBubbleViewsSyncTransportFullFormBrowserTest,
-                       DISABLED_Local_TransportMode_InfoTextIconDoesNotExist) {
+                       Local_TransportMode_InfoTextIconDoesNotExist) {
   SetUpForSyncTransportModeTest();
   FillForm();
 
@@ -1413,20 +1402,9 @@ IN_PROC_BROWSER_TEST_F(
 
 // Tests the upload save logic. Ensures that Chrome offers a local save when the
 // data is complete, even if Payments rejects the data.
-// TODO(crbug.com/1245213)
-// This test is not applicable for explicit address save dialogs.
-// The test relies on the following sequence of events: First a credit card is
-// imported first, but the upload fails. Subsequently, an address profile is
-// imported which is than used to complement the information needed to offer a
-// local save prompt. With explicit address save prompts, the storage of a new
-// address is omitted if a credit card can be stored to avoid showing two
-// dialogs at the same time.
-// To make test work one need to inject an existing address into the
-// PersonalDataManager. Alternatively, the import logic should try to get an
-// address candidate from the form even though no address was imported yet.
 IN_PROC_BROWSER_TEST_F(
     SaveCardBubbleViewsFullFormBrowserTestWithAutofillUpstream,
-    DISABLED_Logic_ShouldOfferLocalSaveIfPaymentsDeclines) {
+    Logic_ShouldOfferLocalSaveIfPaymentsDeclines) {
   // Start sync.
   ASSERT_TRUE(SetupSync());
 
@@ -1450,20 +1428,9 @@ IN_PROC_BROWSER_TEST_F(
 
 // Tests the upload save logic. Ensures that Chrome offers a local save when the
 // data is complete, even if the Payments upload fails unexpectedly.
-// TODO(crbug.com/1245213)
-// This test is not applicable for explicit address save dialogs.
-// The test relies on the following sequence of events: First a credit card is
-// imported first, but the upload fails. Subsequently, an address profile is
-// imported which is than used to complement the information needed to offer a
-// local save prompt. With explicit address save prompts, the storage of a new
-// address is omitted if a credit card can be stored to avoid showing two
-// dialogs at the same time.
-// To make test work one need to inject an existing address into the
-// PersonalDataManager. Alternatively, the import logic should try to get an
-// address candidate from the form even though no address was imported yet.
 IN_PROC_BROWSER_TEST_F(
     SaveCardBubbleViewsFullFormBrowserTestWithAutofillUpstream,
-    DISABLED_Logic_ShouldOfferLocalSaveIfPaymentsFails) {
+    Logic_ShouldOfferLocalSaveIfPaymentsFails) {
   // Start sync.
   ASSERT_TRUE(SetupSync());
 
