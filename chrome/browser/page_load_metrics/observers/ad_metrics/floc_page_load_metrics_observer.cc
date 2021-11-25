@@ -9,6 +9,7 @@
 #include "chrome/browser/federated_learning/floc_id_provider.h"
 #include "chrome/browser/federated_learning/floc_id_provider_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
 
 FlocPageLoadMetricsObserver::FlocPageLoadMetricsObserver() = default;

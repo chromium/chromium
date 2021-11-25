@@ -8,6 +8,7 @@
 #include <jni.h>
 
 #include "components/page_load_metrics/browser/page_load_metrics_observer.h"
+#include "net/nqe/effective_connection_type.h"
 
 namespace network {
 class NetworkQualityTracker;

@@ -11,10 +11,10 @@
 #include "components/page_load_metrics/browser/page_load_metrics_observer_delegate.h"
 #include "components/page_load_metrics/common/page_load_timing.h"
 #include "content/public/browser/global_routing_id.h"
-#include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "net/base/host_port_pair.h"
 #include "net/base/ip_endpoint.h"
+#include "net/base/net_errors.h"
 #include "net/cookies/canonical_cookie.h"
 #include "services/metrics/public/cpp/ukm_source.h"
 #include "services/network/public/mojom/fetch_api.mojom.h"
@@ -23,8 +23,13 @@
 #include "url/gurl.h"
 
 namespace content {
+class NavigationHandle;
 class RenderFrameHost;
 }  // namespace content
+
+namespace net {
+struct LoadTimingInfo;
+}
 
 namespace page_load_metrics {
 

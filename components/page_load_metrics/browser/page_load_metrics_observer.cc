@@ -6,6 +6,8 @@
 
 #include <utility>
 
+#include "net/base/load_timing_info.h"
+
 namespace {
 
 int BucketWithOffsetAndUnit(int num, int offset, int unit) {
