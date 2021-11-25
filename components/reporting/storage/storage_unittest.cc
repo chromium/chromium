@@ -1084,7 +1084,10 @@ TEST_P(StorageTest, WriteIntoNewStorageAndUploadWithKeyUpdate) {
             .Required(5, kMoreData[2])
             .Complete();
       }))
-      .RetiresOnSaturation();
+      // Can be called later again, reject it.
+      .WillRepeatedly(Invoke([](UploaderInterface::UploadReason reason) {
+        return Status(error::CANCELLED, "Repeated key delivery rejected");
+      }));
 
   // Trigger upload with key update after a long wait.
   EXPECT_OK(storage_->Flush(MANUAL_BATCH));
