@@ -51,7 +51,7 @@ const char kExcessNTPTabsRemoved[] = "IOS.NTP.ExcessRemovedTabCount";
     // off, then the previous session object is staled.
     SetStartSurfaceSessionObjectForSceneState(sceneState);
   }
-  if (level <= SceneActivationLevelBackground &&
+  if (level == SceneActivationLevelBackground &&
       self.previousActivationLevel > SceneActivationLevelBackground) {
     if (base::FeatureList::IsEnabled(kRemoveExcessNTPs)) {
       // Remove duplicate NTP pages upon background event.
