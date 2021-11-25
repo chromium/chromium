@@ -23,11 +23,6 @@
     justify-content: space-between;
   }
 
-  .info-row-graphic {
-    height: 40px;
-    width: 40px;
-  }
-
   .info-row-description {
     flex: 1;
   }
@@ -53,11 +48,10 @@
 </div>
 <div id="privacySandboxRow" class="info-row">
   <picture>
-    <source class="info-row-graphic"
+    <source
         srcset="./images/privacy_review/privacy_sandbox_graphic_dark.svg"
         media="(prefers-color-scheme: dark)">
-    <img class="info-row-graphic" alt=""
-        src="./images/privacy_review/privacy_sandbox_graphic.svg">
+    <img alt="" src="./images/privacy_review/privacy_sandbox_graphic.svg">
   </picture>
   <cr-link-row class="info-row-description" external
       label="$i18n{privacyReviewCompletionCardPrivacySandboxLabel}"
@@ -70,11 +64,10 @@
 </div>
 <div id="waaRow" class="info-row" hidden="[[!shouldShowWaa_]]">
   <picture>
-    <source class="info-row-graphic"
+    <source
         srcset="./images/privacy_review/waa_graphic_dark.svg"
         media="(prefers-color-scheme: dark)">
-    <img class="info-row-graphic" alt=""
-        src="./images/privacy_review/waa_graphic.svg">
+    <img alt="" src="./images/privacy_review/waa_graphic.svg">
   </picture>
   <cr-link-row class="info-row-description" external
       label="$i18n{privacyReviewCompletionCardWaaLabel}"
