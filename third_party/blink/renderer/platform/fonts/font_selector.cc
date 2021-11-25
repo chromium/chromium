@@ -28,7 +28,6 @@ AtomicString FontSelector::FamilyNameFromSettings(
   auto& generic_family_name = generic_family.FamilyName();
   if (font_description.GenericFamily() != FontDescription::kStandardFamily &&
       !generic_family.FamilyIsGeneric() &&
-      generic_family_name != font_family_names::kWebkitPictograph &&
       generic_family_name != font_family_names::kWebkitStandard)
     return g_empty_atom;
 
@@ -83,14 +82,6 @@ AtomicString FontSelector::FamilyNameFromSettings(
     return settings.Fantasy(script);
   if (generic_family_name == font_family_names::kMonospace)
     return settings.Fixed(script);
-  if (generic_family_name == font_family_names::kWebkitPictograph) {
-    // TODO(crbug.com/1065468): Remove this counter when it's no longer
-    // necessary.
-    UseCounter::Count(
-        use_counter,
-        WebFeature::kFontSelectorCSSFontFamilyWebKitPrefixPictograph);
-    return settings.Pictograph(script);
-  }
   if (generic_family_name == font_family_names::kWebkitStandard)
     return settings.Standard(script);
   // TODO(crbug.com/1228189): Add preference with per-OS default values instead

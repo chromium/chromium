@@ -216,7 +216,6 @@ WebPreferences::WebPreferences()
   sans_serif_font_family_map[web_pref::kCommonScript] = u"Arial";
   cursive_font_family_map[web_pref::kCommonScript] = u"Script";
   fantasy_font_family_map[web_pref::kCommonScript] = u"Impact";
-  pictograph_font_family_map[web_pref::kCommonScript] = u"Times New Roman";
 }
 
 WebPreferences::WebPreferences(const WebPreferences& other) = default;

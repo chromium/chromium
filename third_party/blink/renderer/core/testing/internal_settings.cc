@@ -230,19 +230,6 @@ void InternalSettings::setFantasyFontFamily(const AtomicString& family,
     GetSettings()->NotifyGenericFontFamilyChange();
 }
 
-void InternalSettings::setPictographFontFamily(
-    const AtomicString& family,
-    const String& script,
-    ExceptionState& exception_state) {
-  InternalSettingsGuardForSettings();
-  UScriptCode code = ScriptNameToCode(script);
-  if (code == USCRIPT_INVALID_CODE)
-    return;
-  if (GetSettings()->GetGenericFontFamilySettings().UpdatePictograph(family,
-                                                                     code))
-    GetSettings()->NotifyGenericFontFamilyChange();
-}
-
 void InternalSettings::setTextAutosizingEnabled(
     bool enabled,
     ExceptionState& exception_state) {

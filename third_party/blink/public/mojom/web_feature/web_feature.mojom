@@ -3295,7 +3295,7 @@ enum WebFeature {
   kTableCollapsedBorderDifferentToVisual = 3983,
   kHighlightAPIRegisterHighlight = 3984,
   kReadOrWriteWebDatabaseThirdPartyContext = 3985,
-  kFontSelectorCSSFontFamilyWebKitPrefixPictograph = 3986,
+  kOBSOLETE_FontSelectorCSSFontFamilyWebKitPrefixPictograph = 3986,
   kFontSelectorCSSFontFamilyWebKitPrefixStandard = 3987,
   kFontSelectorCSSFontFamilyWebKitPrefixBody = 3988,
   kFontBuilderCSSFontFamilyWebKitPrefixBody = 3989,

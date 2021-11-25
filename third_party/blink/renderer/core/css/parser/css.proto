@@ -1939,7 +1939,6 @@ message PropertyAndValue {
     STRICT = 310;
     LIGHTCYAN = 311;
     TOP = 312;
-    _WEBKIT_PICTOGRAPH = 313;
     WHITE = 314;
     TEXT_AFTER_EDGE = 315;
     LIGHTGRAY = 316;

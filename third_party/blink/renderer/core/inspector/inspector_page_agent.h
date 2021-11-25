@@ -293,7 +293,6 @@ class CORE_EXPORT InspectorPageAgent final
   InspectorAgentState::String sans_serif_font_family_;
   InspectorAgentState::String cursive_font_family_;
   InspectorAgentState::String fantasy_font_family_;
-  InspectorAgentState::String pictograph_font_family_;
   InspectorAgentState::Integer standard_font_size_;
   InspectorAgentState::Integer fixed_font_size_;
 };

@@ -105,7 +105,6 @@ struct WebPreferences {
   map<string, mojo_base.mojom.String16> sans_serif_font_family_map;
   map<string, mojo_base.mojom.String16> cursive_font_family_map;
   map<string, mojo_base.mojom.String16> fantasy_font_family_map;
-  map<string, mojo_base.mojom.String16> pictograph_font_family_map;
   int32 default_font_size;
   int32 default_fixed_font_size;
   int32 minimum_font_size;

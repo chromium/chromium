@@ -488,7 +488,6 @@ InspectorPageAgent::InspectorPageAgent(
       sans_serif_font_family_(&agent_state_, /*default_value=*/WTF::String()),
       cursive_font_family_(&agent_state_, /*default_value=*/WTF::String()),
       fantasy_font_family_(&agent_state_, /*default_value=*/WTF::String()),
-      pictograph_font_family_(&agent_state_, /*default_value=*/WTF::String()),
       standard_font_size_(&agent_state_, /*default_value=*/0),
       fixed_font_size_(&agent_state_, /*default_value=*/0) {}
 
@@ -526,11 +525,6 @@ void InspectorPageAgent::Restore() {
     }
     if (!fantasy_font_family_.Get().IsNull()) {
       family_settings.UpdateFantasy(AtomicString(fantasy_font_family_.Get()));
-      notifyGenericFontFamilyChange = true;
-    }
-    if (!pictograph_font_family_.Get().IsNull()) {
-      family_settings.UpdatePictograph(
-          AtomicString(pictograph_font_family_.Get()));
       notifyGenericFontFamilyChange = true;
     }
     if (notifyGenericFontFamilyChange)
@@ -1654,11 +1648,6 @@ Response InspectorPageAgent::setFontFamilies(
     if (font_families->hasFantasy()) {
       fantasy_font_family_.Set(font_families->getFantasy(String()));
       family_settings.UpdateFantasy(AtomicString(fantasy_font_family_.Get()));
-    }
-    if (font_families->hasPictograph()) {
-      pictograph_font_family_.Set(font_families->getPictograph(String()));
-      family_settings.UpdatePictograph(
-          AtomicString(pictograph_font_family_.Get()));
     }
     settings->NotifyGenericFontFamilyChange();
   }

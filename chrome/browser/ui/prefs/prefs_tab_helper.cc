@@ -87,7 +87,6 @@ void RegisterFontFamilyPrefs(user_prefs::PrefRegistrySyncable* registry,
 ALL_FONT_SCRIPTS(WEBKIT_WEBPREFS_FONTS_CURSIVE)
 ALL_FONT_SCRIPTS(WEBKIT_WEBPREFS_FONTS_FANTASY)
 ALL_FONT_SCRIPTS(WEBKIT_WEBPREFS_FONTS_FIXED)
-ALL_FONT_SCRIPTS(WEBKIT_WEBPREFS_FONTS_PICTOGRAPH)
 ALL_FONT_SCRIPTS(WEBKIT_WEBPREFS_FONTS_SANSERIF)
 ALL_FONT_SCRIPTS(WEBKIT_WEBPREFS_FONTS_SERIF)
 ALL_FONT_SCRIPTS(WEBKIT_WEBPREFS_FONTS_STANDARD)
@@ -135,7 +134,6 @@ const FontDefault kFontDefaults[] = {
     {prefs::kWebKitSansSerifFontFamily, IDS_SANS_SERIF_FONT_FAMILY},
     {prefs::kWebKitCursiveFontFamily, IDS_CURSIVE_FONT_FAMILY},
     {prefs::kWebKitFantasyFontFamily, IDS_FANTASY_FONT_FAMILY},
-    {prefs::kWebKitPictographFontFamily, IDS_PICTOGRAPH_FONT_FAMILY},
 #if BUILDFLAG(IS_CHROMEOS_ASH) || defined(OS_MAC) || defined(OS_WIN)
     {prefs::kWebKitStandardFontFamilyJapanese,
      IDS_STANDARD_FONT_FAMILY_JAPANESE},
@@ -264,8 +262,6 @@ void OverrideFontFamily(blink::web_pref::WebPreferences* prefs,
     map = &prefs->cursive_font_family_map;
   else if (generic_family == "fantasy")
     map = &prefs->fantasy_font_family_map;
-  else if (generic_family == "pictograph")
-    map = &prefs->pictograph_font_family_map;
   else
     NOTREACHED() << "Unknown generic font family: " << generic_family;
   (*map)[script] = base::UTF8ToUTF16(pref_value);

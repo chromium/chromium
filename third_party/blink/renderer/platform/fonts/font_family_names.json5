@@ -5,7 +5,6 @@
   },
 
   data: [
-    "-webkit-pictograph",
     "-webkit-standard",
     "system-ui",
 

@@ -1223,8 +1223,6 @@ void InspectorOverlayAgent::LoadOverlayPageResource() {
       settings.GetGenericFontFamilySettings().Cursive());
   overlay_settings.GetGenericFontFamilySettings().UpdateFantasy(
       settings.GetGenericFontFamilySettings().Fantasy());
-  overlay_settings.GetGenericFontFamilySettings().UpdatePictograph(
-      settings.GetGenericFontFamilySettings().Pictograph());
   overlay_settings.SetMinimumFontSize(settings.GetMinimumFontSize());
   overlay_settings.SetMinimumLogicalFontSize(
       settings.GetMinimumLogicalFontSize());

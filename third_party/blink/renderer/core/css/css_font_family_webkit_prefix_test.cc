@@ -67,20 +67,6 @@ class CSSFontFamilyWebKitPrefixTest : public SimTest {
 };
 
 TEST_F(CSSFontFamilyWebKitPrefixTest,
-       CSSFontFamilyWebKitPrefixTest_WebKitPictograph) {
-  ASSERT_FALSE(GetDocument().IsUseCounted(
-      WebFeature::kFontSelectorCSSFontFamilyWebKitPrefixPictograph));
-  LoadPageWithFontFamilyValue("-webkit-pictograph, serif");
-#if defined(OS_ANDROID)
-  ASSERT_FALSE(GetDocument().IsUseCounted(
-      WebFeature::kFontSelectorCSSFontFamilyWebKitPrefixPictograph));
-#else
-  ASSERT_TRUE(GetDocument().IsUseCounted(
-      WebFeature::kFontSelectorCSSFontFamilyWebKitPrefixPictograph));
-#endif
-}
-
-TEST_F(CSSFontFamilyWebKitPrefixTest,
        CSSFontFamilyWebKitPrefixTest_WebKitStandard) {
   ASSERT_FALSE(GetDocument().IsUseCounted(
       WebFeature::kFontSelectorCSSFontFamilyWebKitPrefixStandard));

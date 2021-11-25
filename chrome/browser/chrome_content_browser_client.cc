@@ -3287,9 +3287,6 @@ void ChromeContentBrowserClient::OverrideWebkitPrefs(
   FontFamilyCache::FillFontFamilyMap(profile,
                                      prefs::kWebKitFantasyFontFamilyMap,
                                      &web_prefs->fantasy_font_family_map);
-  FontFamilyCache::FillFontFamilyMap(profile,
-                                     prefs::kWebKitPictographFontFamilyMap,
-                                     &web_prefs->pictograph_font_family_map);
 
   web_prefs->default_font_size =
       prefs->GetInteger(prefs::kWebKitDefaultFontSize);

@@ -273,7 +273,6 @@ const char kWebKitSerifFontFamilyMap[] = WEBKIT_WEBPREFS_FONTS_SERIF;
 const char kWebKitSansSerifFontFamilyMap[] = WEBKIT_WEBPREFS_FONTS_SANSERIF;
 const char kWebKitCursiveFontFamilyMap[] = WEBKIT_WEBPREFS_FONTS_CURSIVE;
 const char kWebKitFantasyFontFamilyMap[] = WEBKIT_WEBPREFS_FONTS_FANTASY;
-const char kWebKitPictographFontFamilyMap[] = WEBKIT_WEBPREFS_FONTS_PICTOGRAPH;
 const char kWebKitStandardFontFamilyArabic[] =
     "webkit.webprefs.fonts.standard.Arab";
 #if defined(OS_WIN)
@@ -366,8 +365,6 @@ const char kWebKitSansSerifFontFamily[] =
     "webkit.webprefs.fonts.sansserif.Zyyy";
 const char kWebKitCursiveFontFamily[] = "webkit.webprefs.fonts.cursive.Zyyy";
 const char kWebKitFantasyFontFamily[] = "webkit.webprefs.fonts.fantasy.Zyyy";
-const char kWebKitPictographFontFamily[] =
-    "webkit.webprefs.fonts.pictograph.Zyyy";
 const char kWebKitDefaultFontSize[] = "webkit.webprefs.default_font_size";
 const char kWebKitDefaultFixedFontSize[] =
     "webkit.webprefs.default_fixed_font_size";
