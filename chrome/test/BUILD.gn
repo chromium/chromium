@@ -7265,13 +7265,18 @@ test("unit_tests") {
       "../browser/profiles/profile_list_desktop_unittest.cc",
       "../browser/profiles/profile_statistics_unittest.cc",
       "../browser/ui/signin/profile_colors_util_unittest.cc",
-      "../browser/ui/startup/startup_browser_policy_unittest.cc",
+    ]
+  }
+
+  # TODO(crbug.com/1272111): reenable these on Windows
+  if (!is_android && !is_win) {
+    sources += [
+      "../browser/ui/startup/startup_browser_creator_impl_unittest.cc",
       "../browser/ui/startup/startup_tab_provider_unittest.cc",
     ]
   }
-  if (!is_android) {
-    sources +=
-        [ "../browser/ui/startup/startup_browser_creator_impl_unittest.cc" ]
+  if (!is_android && !is_chromeos_ash) {
+    sources += [ "../browser/ui/startup/startup_browser_policy_unittest.cc" ]
   }
 
   if (use_gio) {
