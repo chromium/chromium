@@ -28132,6 +28132,9 @@
         "test_id_prefix": "ninja://chrome/test/android:chrome_java_test_pagecontroller_junit_tests/"
       },
       {
+        "args": [
+          "--shards=8"
+        ],
         "isolate_profile_data": true,
         "name": "chrome_junit_tests",
         "resultdb": {

@@ -843,6 +843,16 @@
       },
     },
   },
+  'chrome_junit_tests': {
+   'modifications': {
+     'android-marshmallow-arm64-rel': {
+       'args': [
+         # Too many shards can lead to race conditions (crbug/1272066)
+         '--shards=8',
+       ],
+     },
+   },
+  },
   'chrome_public_smoke_test': {
     'remove_from': [
       'android-code-coverage-native', # Does not generate profraw data.
