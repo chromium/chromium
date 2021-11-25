@@ -22,6 +22,11 @@
 #include "ui/base/dragdrop/drop_target_event.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chromeos/ui/base/window_properties.h"
+#include "components/exo/extended_drag_source.h"
+#endif
+
 namespace exo {
 namespace {
 
@@ -121,7 +126,25 @@ aura::client::DragUpdateInfo DataDevice::OnDragUpdated(
   aura::client::DragUpdateInfo drag_info(
       ui::DragDropTypes::DRAG_NONE, ui::DataTransferEndpoint(endpoint_type));
 
-  delegate_->OnMotion(event.time_stamp(), event.location_f());
+  bool prevent_motion_drag_events = false;
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // chromeos::kCanAttachToAnotherWindowKey controls if a drag operation should
+  // trigger swallow/unswallow tab.
+  if (focused_surface_) {
+    // The ExtendedDragSource instance can be null for tests.
+    auto* extended_drag_source = ExtendedDragSource::Get();
+    bool is_extended_drag_source_active = extended_drag_source->IsActive();
+
+    prevent_motion_drag_events =
+        is_extended_drag_source_active &&
+        !focused_surface_->get()->window()->GetToplevelWindow()->GetProperty(
+            chromeos::kCanAttachToAnotherWindowKey);
+  }
+#endif
+
+  if (!prevent_motion_drag_events)
+    delegate_->OnMotion(event.time_stamp(), event.location_f());
 
   // TODO(hirono): dnd_action() here may not be updated. Chrome needs to provide
   // a way to update DND action asynchronously.
