@@ -1196,17 +1196,14 @@ bool WebAppShortcutCreator::UpdatePlist(const base::FilePath& app_path) const {
     } ];
   }
 
-  if (IsMultiProfile()) {
-    plist[base::mac::CFToNSCast(kCFBundleNameKey)] =
-        base::SysUTF16ToNSString(info_->title);
-  } else {
-    // The appropriate bundle name is |info_->title|. Avoiding changing the
-    // behavior of non-multi-profile apps when fixing
-    // https://crbug.com/1021804.
-    base::FilePath app_name = app_path.BaseName().RemoveFinalExtension();
-    plist[base::mac::CFToNSCast(kCFBundleNameKey)] =
-        base::mac::FilePathToNSString(app_name);
-  }
+  // TODO(crbug.com/1273526): If we decide to rename app bundles on app title
+  // changes, instead of relying on localization, then this will need to change
+  // to use GetShortcutBaseName, most likely only for non-legacy-apps
+  // (in other words, revert to what the code looked like before on these
+  // lines). See also crbug.com/1021804.
+  base::FilePath app_name = app_path.BaseName().RemoveFinalExtension();
+  plist[base::mac::CFToNSCast(kCFBundleNameKey)] =
+      base::mac::FilePathToNSString(app_name);
 
   return [plist writeToFile:plist_path atomically:YES];
 }
@@ -1223,8 +1220,15 @@ bool WebAppShortcutCreator::UpdateDisplayName(
   if (!base::CreateDirectory(localized_dir))
     return false;
 
+  // Colon is not a valid token in the display name, and although it will be
+  // shown correctly, the user has to remove it if they want to rename the
+  // app bundle. Therefore we just remove it. Note also that the OS will
+  // collapse multiple consecutive forward-slashes in the display name into one.
+  std::u16string title_normalized = info_->title;
+  base::RemoveChars(title_normalized, u":", &title_normalized);
+
   NSString* bundle_name = base::SysUTF16ToNSString(info_->title);
-  NSString* display_name = base::SysUTF16ToNSString(info_->title);
+  NSString* display_name = base::SysUTF16ToNSString(title_normalized);
   if (!IsMultiProfile() &&
       HasExistingExtensionShimForDifferentProfile(
           GetChromeAppsFolder(), info_->extension_id, info_->profile_path)) {

@@ -143,6 +143,10 @@ class WebAppShortcutCreator {
   FRIEND_TEST_ALL_PREFIXES(WebAppShortcutCreatorTest, UpdateShortcuts);
   FRIEND_TEST_ALL_PREFIXES(WebAppShortcutCreatorTest,
                            UpdateBookmarkAppShortcut);
+  FRIEND_TEST_ALL_PREFIXES(WebAppShortcutCreatorTest,
+                           UpdateShortcutsWithTitleChange);
+  FRIEND_TEST_ALL_PREFIXES(WebAppShortcutCreatorTest,
+                           NormalizeColonsInDisplayName);
 
   // Return true if the bundle for this app should be profile-agnostic.
   bool IsMultiProfile() const;
