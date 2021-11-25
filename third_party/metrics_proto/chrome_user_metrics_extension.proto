@@ -104,6 +104,8 @@ message ChromeUserMetricsExtension {
     optional int64 time_sec = 2;
 
     // |time_zone_offset_from_gmt_sec| is in seconds.
+    // Only logged in |time_log_closed| entries, not |time_log_created| entries.
+    // (Populating this field when creating a log slows down startup too much.)
     optional int32 time_zone_offset_from_gmt_sec = 3;
   }
 

@@ -116,7 +116,11 @@ message SystemProfileProto {
   optional ClonedInstallInfo cloned_install_info = 39;
 
   // The non-identifying low entropy source value. This value seeds the
-  // pseudorandom generator which picks experimental groups.
+  // pseudorandom generator which picks experimental groups. Clients only report
+  // the value that they used for picking experimental groups on startup which
+  // means this value won't be changed within the session even even if the low
+  // entropy source is reset (e.g. via the UMA checkbox) because group
+  // assignments won't be changed until restart.
   optional int32 low_entropy_source = 31;
 
   // The old low entropy value. This value is thought to be biased in the wild,

@@ -19,7 +19,7 @@ import "perf_stat.proto";
 // Protocol buffer for collected sample-based profiling data.
 // Contains the parameters and data from a single profile collection event.
 
-// Next tag: 18
+// Next tag: 19
 message SampledProfile {
   // Indicates the event that triggered this collection.
   enum TriggerEvent {
@@ -69,6 +69,10 @@ message SampledProfile {
   // collected for a specific PID/TID to the corresponding process type and
   // thread type.
   map<uint32, Process> process_types = 13;
+
+  // A list of pids that belong to Lacros binaries, which are a subset of the
+  // keys of the process_types above.
+  repeated uint32 lacros_pids = 18 [packed = true];
 
   // Map of Chrome TIDs running on the system when the profile was collected.
   // Each Chrome TID is mapped to its thread type.

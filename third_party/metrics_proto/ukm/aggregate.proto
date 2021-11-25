@@ -38,8 +38,8 @@ message Aggregate {
 
   // The total number of times this source/event was dropped due to there
   // being no configuration of UKM via Finch. Until a full configuration is
-  // delivered by VariationService to the client, UKM is disabled but some
-  // basic information is still collected and counted here.
+  // delivered by Finch to the client, UKM is disabled but some basic
+  // information is still collected and counted here.
   optional uint64 dropped_due_to_unconfigured = 9;
 
   // For each Event, we have a list of possible metrics included. Metric names
