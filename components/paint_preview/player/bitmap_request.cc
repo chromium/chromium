@@ -10,11 +10,14 @@ BitmapRequest::BitmapRequest(
     const absl::optional<base::UnguessableToken>& frame_guid,
     const gfx::Rect& clip_rect,
     float scale_factor,
-    BitmapRequestCallback callback)
+    BitmapRequestCallback callback,
+    bool run_callback_on_default_task_runner)
     : frame_guid(frame_guid),
       clip_rect(clip_rect),
       scale_factor(scale_factor),
-      callback(std::move(callback)) {}
+      callback(std::move(callback)),
+      run_callback_on_default_task_runner(run_callback_on_default_task_runner) {
+}
 
 BitmapRequest::~BitmapRequest() = default;
 

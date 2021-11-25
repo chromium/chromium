@@ -71,8 +71,8 @@ class FakePaintPreviewCompositorClient : public PaintPreviewCompositorClient {
       const base::UnguessableToken& frame_guid,
       const gfx::Rect& clip_rect,
       float scale_factor,
-      mojom::PaintPreviewCompositor::BitmapForSeparatedFrameCallback callback)
-      override {
+      mojom::PaintPreviewCompositor::BitmapForSeparatedFrameCallback callback,
+      bool run_task_on_default_task_runner = true) override {
     SkBitmap bitmap;
     bitmap.allocPixels(
         SkImageInfo::MakeN32Premul(clip_rect.width(), clip_rect.height()));
@@ -98,8 +98,8 @@ class FakePaintPreviewCompositorClient : public PaintPreviewCompositorClient {
   void BitmapForMainFrame(
       const gfx::Rect& clip_rect,
       float scale_factor,
-      mojom::PaintPreviewCompositor::BitmapForMainFrameCallback callback)
-      override {
+      mojom::PaintPreviewCompositor::BitmapForMainFrameCallback callback,
+      bool run_task_on_default_task_runner = true) override {
     SkBitmap bitmap;
     bitmap.allocPixels(
         SkImageInfo::MakeN32Premul(clip_rect.width(), clip_rect.height()));

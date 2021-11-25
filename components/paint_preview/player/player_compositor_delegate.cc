@@ -222,7 +222,8 @@ int32_t PlayerCompositorDelegate::RequestBitmap(
     const gfx::Rect& clip_rect,
     float scale_factor,
     base::OnceCallback<void(mojom::PaintPreviewCompositor::BitmapStatus,
-                            const SkBitmap&)> callback) {
+                            const SkBitmap&)> callback,
+    bool run_callback_on_default_task_runner) {
   TRACE_EVENT0("paint_preview", "PlayerCompositorDelegate::RequestBitmap");
   DCHECK(IsInitialized());
   DCHECK((main_frame_mode_ && !frame_guid.has_value()) ||
@@ -239,9 +240,10 @@ int32_t PlayerCompositorDelegate::RequestBitmap(
   pending_bitmap_requests_.emplace(
       request_id,
       BitmapRequest(frame_guid, clip_rect, scale_factor,
-                    base::BindOnce(
-                        &PlayerCompositorDelegate::BitmapRequestCallbackAdapter,
-                        weak_factory_.GetWeakPtr(), std::move(callback))));
+                    std::move(callback).Then(base::BindOnce(
+                        &PlayerCompositorDelegate::AfterBitmapRequestCallback,
+                        weak_factory_.GetWeakPtr())),
+                    run_callback_on_default_task_runner));
   ProcessBitmapRequestsFromQueue();
   return request_id;
 }
@@ -565,15 +567,7 @@ void PlayerCompositorDelegate::ProcessBitmapRequestsFromQueue() {
   }
 }
 
-void PlayerCompositorDelegate::BitmapRequestCallbackAdapter(
-    base::OnceCallback<void(mojom::PaintPreviewCompositor::BitmapStatus,
-                            const SkBitmap&)> callback,
-    mojom::PaintPreviewCompositor::BitmapStatus status,
-    const SkBitmap& bitmap) {
-  TRACE_EVENT0("paint_preview",
-               "PlayerCompositorDelegate::BitmapRequestCallbackAdapter");
-  std::move(callback).Run(status, bitmap);
-
+void PlayerCompositorDelegate::AfterBitmapRequestCallback() {
   active_requests_--;
   ProcessBitmapRequestsFromQueue();
 }

@@ -85,7 +85,8 @@ class PlayerCompositorDelegate {
       const gfx::Rect& clip_rect,
       float scale_factor,
       base::OnceCallback<void(mojom::PaintPreviewCompositor::BitmapStatus,
-                              const SkBitmap&)> callback);
+                              const SkBitmap&)> callback,
+      bool run_callback_on_default_task_runner = true);
 
   // Cancels the bitmap request associated with `request_id` if possible.
   // Returns true on success.
@@ -171,11 +172,7 @@ class PlayerCompositorDelegate {
       mojom::PaintPreviewBeginCompositeRequestPtr begin_composite_request);
 
   void ProcessBitmapRequestsFromQueue();
-  void BitmapRequestCallbackAdapter(
-      base::OnceCallback<void(mojom::PaintPreviewCompositor::BitmapStatus,
-                              const SkBitmap&)> callback,
-      mojom::PaintPreviewCompositor::BitmapStatus status,
-      const SkBitmap& bitmap);
+  void AfterBitmapRequestCallback();
 
   PaintPreviewBaseService* paint_preview_service_{nullptr};
   DirectoryKey key_;
