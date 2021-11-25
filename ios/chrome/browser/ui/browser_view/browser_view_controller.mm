@@ -3423,6 +3423,13 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   return self.headerHeight;
 }
 
+- (CGFloat)initialContentOffsetForOverscrollActionsController:
+    (OverscrollActionsController*)controller {
+  return (fullscreen::features::ShouldUseSmoothScrolling())
+             ? -[self headerInsetForOverscrollActionsController:controller]
+             : 0;
+}
+
 - (FullscreenController*)fullscreenControllerForOverscrollActionsController:
     (OverscrollActionsController*)controller {
   return self.fullscreenController;

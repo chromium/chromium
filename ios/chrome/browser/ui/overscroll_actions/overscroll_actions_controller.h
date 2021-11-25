@@ -59,6 +59,10 @@ extern NSString* const kOverscrollActionsDidEnd;
 // Called to retrieve the current height of the header.
 - (CGFloat)headerHeightForOverscrollActionsController:
     (OverscrollActionsController*)controller;
+// Called to retrieve the initial content offset for the scrollview because
+// some scrollviews don't start at offset 0.
+- (CGFloat)initialContentOffsetForOverscrollActionsController:
+    (OverscrollActionsController*)controller;
 // The fullscreen controller, if any, the delegate makes available for
 // overscroll. The deleagate may return nullptr if fullscreen isn't supported.
 // This method will be called each time the overscroll state might need to

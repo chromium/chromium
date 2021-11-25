@@ -717,6 +717,11 @@
   return height + topInset;
 }
 
+- (CGFloat)initialContentOffsetForOverscrollActionsController:
+    (OverscrollActionsController*)controller {
+  return -[self headerInsetForOverscrollActionsController:controller];
+}
+
 - (FullscreenController*)fullscreenControllerForOverscrollActionsController:
     (OverscrollActionsController*)controller {
   // Fullscreen isn't supported here.
