@@ -294,6 +294,12 @@ GEOMETRY_EXPORT RectF BoundingRect(const PointF& p1, const PointF& p2);
 // Return a maximum rectangle in which any point is covered by either a or b.
 GEOMETRY_EXPORT RectF MaximumCoveredRect(const RectF& a, const RectF& b);
 
+// Returns the rect in |dest_rect| corresponding to |r] in |src_rect| when
+// |src_rect| is mapped to |dest_rect|.
+GEOMETRY_EXPORT RectF MapRect(const RectF& r,
+                              const RectF& src_rect,
+                              const RectF& dest_rect);
+
 // This is declared here for use in gtest-based unit tests but is defined in
 // the //ui/gfx:test_support target. Depend on that to use this in your unit
 // test. This should not be used in production code - call ToString() instead.

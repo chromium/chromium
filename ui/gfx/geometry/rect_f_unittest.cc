@@ -479,4 +479,22 @@ TEST(RectFTest, ClosestPoint) {
   EXPECT_EQ(PointF(350, 250), r.ClosestPoint(PointF(450, 450)));
 }
 
+TEST(RectFTest, MapRect) {
+  EXPECT_RECTF_EQ(RectF(), MapRect(RectF(), RectF(), RectF()));
+  EXPECT_RECTF_EQ(RectF(),
+                  MapRect(RectF(1, 2, 3, 4), RectF(), RectF(5, 6, 7, 8)));
+  EXPECT_RECTF_EQ(
+      RectF(1, 2, 3, 4),
+      MapRect(RectF(1, 2, 3, 4), RectF(5, 6, 7, 8), RectF(5, 6, 7, 8)));
+  EXPECT_RECTF_EQ(
+      RectF(5, 6, 7, 8),
+      MapRect(RectF(1, 2, 3, 4), RectF(1, 2, 3, 4), RectF(5, 6, 7, 8)));
+  EXPECT_RECTF_EQ(
+      RectF(200, 300, 300, 400),
+      MapRect(RectF(1, 2, 3, 4), RectF(0, 1, 6, 8), RectF(100, 200, 600, 800)));
+  EXPECT_RECTF_EQ(RectF(1, 2, 3, 4),
+                  MapRect(RectF(200, 300, 300, 400), RectF(100, 200, 600, 800),
+                          RectF(0, 1, 6, 8)));
+}
+
 }  // namespace gfx

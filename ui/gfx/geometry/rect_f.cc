@@ -328,6 +328,17 @@ RectF MaximumCoveredRect(const RectF& a, const RectF& b) {
   return maximum;
 }
 
+RectF MapRect(const RectF& r, const RectF& src_rect, const RectF& dest_rect) {
+  if (src_rect.IsEmpty())
+    return RectF();
+
+  float width_scale = dest_rect.width() / src_rect.width();
+  float height_scale = dest_rect.height() / src_rect.height();
+  return RectF(dest_rect.x() + (r.x() - src_rect.x()) * width_scale,
+               dest_rect.y() + (r.y() - src_rect.y()) * height_scale,
+               r.width() * width_scale, r.height() * height_scale);
+}
+
 std::string RectF::ToString() const {
   return base::StringPrintf("%s %s", origin().ToString().c_str(),
                             size().ToString().c_str());
