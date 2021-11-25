@@ -56,7 +56,7 @@ constexpr char kUser2Email[] = "user2@dockedmagnifier";
 // Returns the magnifier area height given the display height.
 int GetMagnifierHeight(int display_height) {
   return (display_height /
-          DockedMagnifierController::kScreenHeightDivisor) +
+          DockedMagnifierController::kDefaultScreenHeightDivisor) +
          DockedMagnifierController::kSeparatorHeight;
 }
 
@@ -686,7 +686,7 @@ TEST_F(DockedMagnifierTest, AddRemoveDisplays) {
   ASSERT_NE(nullptr, viewport_widget);
   EXPECT_EQ(root_windows[0], viewport_widget->GetNativeView()->GetRootWindow());
   const int viewport_1_height =
-      800 / DockedMagnifierController::kScreenHeightDivisor;
+      800 / DockedMagnifierController::kDefaultScreenHeightDivisor;
   EXPECT_EQ(gfx::Rect(0, 0, 600, viewport_1_height),
             viewport_widget->GetWindowBoundsInScreen());
 
@@ -711,7 +711,7 @@ TEST_F(DockedMagnifierTest, AddRemoveDisplays) {
   viewport_widget = controller()->GetViewportWidgetForTesting();
   EXPECT_EQ(root_windows[1], viewport_widget->GetNativeView()->GetRootWindow());
   const int viewport_2_height =
-      600 / DockedMagnifierController::kScreenHeightDivisor;
+      600 / DockedMagnifierController::kDefaultScreenHeightDivisor;
   EXPECT_EQ(gfx::Rect(600, 0, 400, viewport_2_height),
             viewport_widget->GetWindowBoundsInScreen());
 
@@ -749,8 +749,9 @@ TEST_F(DockedMagnifierTest, TransformSimple) {
       controller()->GetViewportWidgetForTesting();
   ASSERT_NE(nullptr, viewport_widget);
   EXPECT_EQ(root_windows[0], viewport_widget->GetNativeView()->GetRootWindow());
-  const int viewport_height = root_windows[0]->bounds().height() /
-                              DockedMagnifierController::kScreenHeightDivisor;
+  const int viewport_height =
+      root_windows[0]->bounds().height() /
+      DockedMagnifierController::kDefaultScreenHeightDivisor;
   EXPECT_EQ(gfx::Rect(0, 0, 800, viewport_height),
             viewport_widget->GetWindowBoundsInScreen());
 

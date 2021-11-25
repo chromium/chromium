@@ -54,9 +54,9 @@ class ASH_EXPORT DockedMagnifierController
   // the rest of the screen.
   static constexpr int kSeparatorHeight = 10;
 
-  // The value by which the screen height is divided to calculate the height of
-  // the magnifier viewport.
-  static constexpr int kScreenHeightDivisor = 3;
+  // The default value by which the screen height is divided to calculate the
+  // height of the magnifier viewport.
+  static constexpr float kDefaultScreenHeightDivisor = 3.0f;
 
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
@@ -121,6 +121,10 @@ class ASH_EXPORT DockedMagnifierController
   float GetMinimumPointOfInterestHeightForTesting() const;
 
  private:
+  // If user is starting or continuing to drag the separator, move the
+  // separator and resize the viewport.
+  void MaybePerformViewportResizing(ui::MouseEvent* event);
+
   // Switches the current source root window to |new_root_window| if it's
   // different than |current_source_root_window_|, destroys (if any) old
   // viewport layers and widgets, and recreates them if |new_root_window| is not
@@ -159,6 +163,19 @@ class ASH_EXPORT DockedMagnifierController
   // Invoked when |move_magnifier_timer_| fires to move the magnifier window to
   // follow the caret.
   void OnMoveMagnifierTimer();
+
+  // Whether or not user has started resizing the Docked Magnifier.
+  bool has_started_resize_ = false;
+
+  // Vertical offset from user's mouse cursor to the top of separator. Stored to
+  // later compute how far offset the new separator position should be based on
+  // location user initially clicked separator.
+  int resize_offset_ = 0;
+
+  // The value by which the screen height is divided to calculate the height of
+  // the magnifier viewport.
+  float screen_height_divisor_ =
+      DockedMagnifierController::kDefaultScreenHeightDivisor;
 
   // The current root window of the source display from which we are reflecting
   // and magnifying into the viewport. It is set to |nullptr| when the magnifier
