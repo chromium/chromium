@@ -737,7 +737,7 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
   [self.selectedSharableEditingItemIDs removeAllObjects];
   [self.collectionView reloadData];
   [self.collectionView selectItemAtIndexPath:CreateIndexPath(self.selectedIndex)
-                                    animated:YES
+                                    animated:NO
                               scrollPosition:UICollectionViewScrollPositionTop];
   if (self.items.count > 0) {
     [self removeEmptyStateAnimated:YES];
@@ -771,14 +771,14 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
     [self.collectionView
         deselectItemAtIndexPath:CreateIndexPath([self
                                     indexOfItemWithID:previouslySelectedItemID])
-                       animated:YES];
+                       animated:NO];
     UICollectionViewScrollPosition scrollPosition =
         (self.currentLayout == self.horizontalLayout)
             ? UICollectionViewScrollPositionCenteredHorizontally
             : UICollectionViewScrollPositionNone;
     [self.collectionView
         selectItemAtIndexPath:CreateIndexPath(self.selectedIndex)
-                     animated:YES
+                     animated:NO
                scrollPosition:scrollPosition];
     [self.delegate gridViewController:self didChangeItemCount:self.items.count];
     [self updateFractionVisibleOfLastItem];
@@ -814,7 +814,7 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
     if (self.items.count > 0) {
       [self.collectionView
           selectItemAtIndexPath:CreateIndexPath(self.selectedIndex)
-                       animated:YES
+                       animated:NO
                  scrollPosition:UICollectionViewScrollPositionNone];
     }
     [self.delegate gridViewController:self didChangeItemCount:self.items.count];
@@ -835,11 +835,11 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
 
   [self.collectionView
       deselectItemAtIndexPath:CreateIndexPath(self.selectedIndex)
-                     animated:YES];
+                     animated:NO];
   self.selectedItemID = selectedItemID;
   [self.collectionView
       selectItemAtIndexPath:CreateIndexPath(self.selectedIndex)
-                   animated:YES
+                   animated:NO
              scrollPosition:UICollectionViewScrollPositionNone];
   [self updateVisibleCellsOpacity];
 }
@@ -876,7 +876,7 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
   auto completion = ^(BOOL finished) {
     [self.collectionView
         selectItemAtIndexPath:CreateIndexPath(self.selectedIndex)
-                     animated:YES
+                     animated:NO
                scrollPosition:UICollectionViewScrollPositionNone];
   };
   [self performModelUpdates:modelUpdates
