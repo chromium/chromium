@@ -16,7 +16,6 @@ function loadCommonComponents() {
 // <include src="../saml_confirm_password.js">
 // <include src="../offline_ad_login.js">
 // <include src="../recommend_apps.js">
-// <include src="../pin_setup.js">
 // <include src="../oobe_screen_assistant_optin_flow.js">
 // <include src="../multidevice_setup_first_run.js">
 // <include src="../screen_multidevice_setup.js">

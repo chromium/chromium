@@ -53,6 +53,7 @@ oobe_auto_imports = [
   "ui/webui/resources/cr_components/chromeos/network/mojo_interface_provider.html|MojoInterfaceProviderImpl",
   "ui/webui/resources/cr_components/chromeos/network/network_list_types.html|NetworkList",
   "ui/webui/resources/cr_components/chromeos/network/onc_mojo.html|OncMojo",
+  "ui/webui/resources/cr_components/chromeos/quick_unlock/lock_screen_constants.html|recordLockScreenProgress",
   "ui/webui/resources/html/assert.html|assert,assertNotReached",
   "ui/webui/resources/html/parse_html_subset.html|SanitizeInnerHtmlOpts,sanitizeInnerHtml",
   "ui/webui/resources/html/polymer.html|afterNextRender,Polymer,PolymerElement,html,flush,mixinBehaviors,dom",
@@ -64,5 +65,6 @@ oobe_namespace_rewrites = [
   "Polymer.mixinBehaviors|mixinBehaviors",
   "Polymer.Element|PolymerElement",
   "network_config.MojoInterfaceProviderImpl|MojoInterfaceProviderImpl",
+  "settings.recordLockScreenProgress|recordLockScreenProgress",
   "cr.ui.LoginUITools.addSubmitListener|addSubmitListener",
 ]
