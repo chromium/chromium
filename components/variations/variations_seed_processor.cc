@@ -12,6 +12,7 @@
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/metrics/field_trial.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/variations/client_filterable_state.h"
@@ -188,11 +189,9 @@ bool ShouldForceExperiment(const Study_Experiment& experiment,
 
 }  // namespace
 
-VariationsSeedProcessor::VariationsSeedProcessor() {
-}
+VariationsSeedProcessor::VariationsSeedProcessor() = default;
 
-VariationsSeedProcessor::~VariationsSeedProcessor() {
-}
+VariationsSeedProcessor::~VariationsSeedProcessor() = default;
 
 void VariationsSeedProcessor::CreateTrialsFromSeed(
     const VariationsSeed& seed,
@@ -200,6 +199,8 @@ void VariationsSeedProcessor::CreateTrialsFromSeed(
     const UIStringOverrideCallback& override_callback,
     const base::FieldTrial::EntropyProvider* low_entropy_provider,
     base::FeatureList* feature_list) {
+  base::UmaHistogramCounts1000("Variations.AppliedSeed.StudyCount",
+                               seed.study().size());
   std::vector<ProcessedStudy> filtered_studies;
   VariationsLayers layers(seed, low_entropy_provider);
   FilterAndValidateStudies(seed, client_state, layers, &filtered_studies);

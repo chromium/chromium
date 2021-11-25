@@ -22,6 +22,18 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
+<histogram name="Variations.AppliedSeed.StudyCount" units="studies"
+    expires_after="2022-11-20">
+  <owner>caitlinfischer@google.com</owner>
+  <owner>src/base/metrics/OWNERS</owner>
+  <summary>
+    The number of studies contained in the seed that is being used. Note that
+    the client may not participate in all studies due to study filtering. The
+    seed could be a regular seed or a safe seed. Recorded before setting up
+    field trials with the seed.
+  </summary>
+</histogram>
+
 <histogram name="Variations.AppSeedFreshness" units="minutes"
     expires_after="2022-04-17">
   <owner>rmcelrath@chromium.org</owner>
@@ -504,13 +516,15 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Variations.SeedProcessingTime" units="ms"
-    expires_after="2022-05-01">
+    expires_after="2022-11-20">
   <owner>isherman@chromium.org</owner>
   <owner>asvitkine@chromium.org</owner>
   <owner>src/base/metrics/OWNERS</owner>
   <summary>
-    Records how long it takes to load and process variations seed. This metric
-    is recorded only when loading and processing of the seed is successful.
+    Records how long it takes to load and apply a variations seed. Recorded only
+    when the seed is successfully loaded and applied. To help diagnose a
+    processing time increase, see whether Variations.AppliedSeed.StudyCount
+    increased at the same time.
   </summary>
 </histogram>
 
