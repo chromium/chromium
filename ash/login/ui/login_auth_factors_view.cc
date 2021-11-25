@@ -22,7 +22,9 @@
 #include "ui/views/border.h"
 #include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/controls/label.h"
+#include "ui/views/layout/animating_layout_manager.h"
 #include "ui/views/layout/box_layout.h"
+#include "ui/views/layout/flex_layout.h"
 
 namespace ash {
 
@@ -34,7 +36,6 @@ constexpr int kAuthFactorsViewWidthDp = 204;
 constexpr int kSpacingBetweenIconsAndLabelDp = 8;
 constexpr int kIconTopSpacingDp = 10;
 constexpr int kArrowButtonSizeDp = 32;
-constexpr int kSpacingBetweenIconsDp = 8;
 constexpr base::TimeDelta kErrorTimeout = base::Seconds(3);
 
 // The values of this enum should be nearly the same as the values of
@@ -216,14 +217,12 @@ LoginAuthFactorsView::LoginAuthFactorsView(
       views::BoxLayout::CrossAxisAlignment::kCenter);
 
   auth_factor_icon_row_ = AddChildView(std::make_unique<views::View>());
-  auto* icon_row_layout = auth_factor_icon_row_->SetLayoutManager(
-      std::make_unique<views::BoxLayout>(
-          views::BoxLayout::Orientation::kHorizontal, gfx::Insets(),
-          kSpacingBetweenIconsDp));
-  icon_row_layout->set_main_axis_alignment(
-      views::BoxLayout::MainAxisAlignment::kCenter);
-  icon_row_layout->set_cross_axis_alignment(
-      views::BoxLayout::CrossAxisAlignment::kCenter);
+  auto* animating_layout = auth_factor_icon_row_->SetLayoutManager(
+      std::make_unique<views::AnimatingLayoutManager>());
+  animating_layout->SetBoundsAnimationMode(
+      views::AnimatingLayoutManager::BoundsAnimationMode::kAnimateMainAxis);
+  animating_layout->SetTargetLayoutManager(
+      std::make_unique<views::FlexLayout>());
 
   arrow_button_ = AddChildView(std::make_unique<ArrowButtonView>(
       base::BindRepeating(&LoginAuthFactorsView::ArrowButtonPressed,
