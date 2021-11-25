@@ -57,6 +57,7 @@
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/startup/startup_browser_creator.h"
+#include "chrome/browser/ui/startup/startup_tab.h"
 #include "chrome/browser/ui/startup/startup_types.h"
 #include "chrome/browser/ui/tabs/tab_group.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
@@ -122,7 +123,7 @@ class SessionRestoreImpl : public BrowserListObserver {
                      bool restore_apps,
                      bool restore_browser,
                      bool log_event,
-                     const std::vector<GURL>& urls_to_open)
+                     const StartupTabs& startup_tabs)
       : profile_(profile),
         browser_(browser),
         synchronous_(synchronous),
@@ -131,7 +132,7 @@ class SessionRestoreImpl : public BrowserListObserver {
         log_event_(log_event),
         restore_apps_(restore_apps),
         restore_browser_(restore_browser),
-        urls_to_open_(urls_to_open),
+        startup_tabs_(startup_tabs),
         active_window_id_(SessionID::InvalidValue()),
         restore_started_(base::TimeTicks::Now()) {
     DCHECK(restore_browser_ || restore_apps_);
@@ -335,12 +336,12 @@ class SessionRestoreImpl : public BrowserListObserver {
     Browser* browser = nullptr;
     if (!created_tabbed_browser && always_create_tabbed_browser_) {
       browser = Browser::Create(Browser::CreateParams(profile_, false));
-      if (urls_to_open_.empty()) {
+      if (startup_tabs_.empty()) {
         // No tab browsers were created and no URLs were supplied on the command
         // line. Open the new tab page.
-        urls_to_open_.push_back(GURL(chrome::kChromeUINewTabURL));
+        startup_tabs_.emplace_back(GURL(chrome::kChromeUINewTabURL));
       }
-      AppendURLsToBrowser(browser, urls_to_open_);
+      AppendURLsToBrowser(browser, startup_tabs_);
       browser->window()->Show();
     }
 
@@ -658,8 +659,8 @@ class SessionRestoreImpl : public BrowserListObserver {
     if (browser_to_activate && browser_to_activate->is_type_normal())
       last_normal_browser = browser_to_activate;
 
-    if (last_normal_browser && !urls_to_open_.empty())
-      AppendURLsToBrowser(last_normal_browser, urls_to_open_);
+    if (last_normal_browser && !startup_tabs_.empty())
+      AppendURLsToBrowser(last_normal_browser, startup_tabs_);
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     ash::BootTimesRecorder::Get()->AddLoginTimeMarker(
         "SessionRestore-CreatingTabs-End", false);
@@ -667,7 +668,7 @@ class SessionRestoreImpl : public BrowserListObserver {
     if (browser_to_activate)
       browser_to_activate->window()->Activate();
 
-    // If last_normal_browser is NULL and urls_to_open_ is non-empty,
+    // If last_normal_browser is NULL and startup_tabs_ is non-empty,
     // FinishedTabCreation will create a new TabbedBrowser and add the urls to
     // it.
     Browser* finished_browser =
@@ -877,13 +878,13 @@ class SessionRestoreImpl : public BrowserListObserver {
     browser->set_is_session_restore(false);
   }
 
-  // Appends the urls in |urls| to |browser|.
-  void AppendURLsToBrowser(Browser* browser, const std::vector<GURL>& urls) {
-    for (size_t i = 0; i < urls.size(); ++i) {
+  // Appends the urls in |startup_tabs| to |browser|.
+  void AppendURLsToBrowser(Browser* browser, const StartupTabs& startup_tabs) {
+    for (size_t i = 0; i < startup_tabs.size(); ++i) {
       int add_types = TabStripModel::ADD_FORCE_INDEX;
       if (i == 0)
         add_types |= TabStripModel::ADD_ACTIVE;
-      NavigateParams params(browser, urls[i],
+      NavigateParams params(browser, startup_tabs[i].url,
                             ui::PAGE_TRANSITION_AUTO_TOPLEVEL);
       params.disposition = i == 0 ? WindowOpenDisposition::NEW_FOREGROUND_TAB
                                   : WindowOpenDisposition::NEW_BACKGROUND_TAB;
@@ -948,7 +949,7 @@ class SessionRestoreImpl : public BrowserListObserver {
   bool got_browser_windows_ = false;
 
   // Set of URLs to open in addition to those restored from the session.
-  std::vector<GURL> urls_to_open_;
+  StartupTabs startup_tabs_;
 
   // Responsible for loading the tabs.
   scoped_refptr<TabLoader> tab_loader_;
@@ -985,7 +986,7 @@ Browser* SessionRestore::RestoreSession(
     Profile* profile,
     Browser* browser,
     SessionRestore::BehaviorBitmask behavior,
-    const std::vector<GURL>& urls_to_open) {
+    const StartupTabs& startup_tabs) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   ash::BootTimesRecorder::Get()->AddLoginTimeMarker("SessionRestore-Start",
                                                     false);
@@ -1005,7 +1006,7 @@ Browser* SessionRestore::RestoreSession(
       (behavior & CLOBBER_CURRENT_TAB) != 0,
       (behavior & ALWAYS_CREATE_TABBED_BROWSER) != 0,
       (behavior & RESTORE_APPS) != 0, (behavior & RESTORE_BROWSER) != 0,
-      /* log_event */ true, urls_to_open);
+      /* log_event */ true, startup_tabs);
   return restorer->Restore();
 }
 
@@ -1039,8 +1040,7 @@ void SessionRestore::RestoreSessionAfterCrash(Browser* browser) {
   // Apps should always be restored on crash restore.
   behavior |= SessionRestore::RESTORE_APPS;
 #endif
-  SessionRestore::RestoreSession(profile, browser, behavior,
-                                 std::vector<GURL>());
+  SessionRestore::RestoreSession(profile, browser, behavior, StartupTabs());
 }
 
 // static
@@ -1060,11 +1060,11 @@ std::vector<Browser*> SessionRestore::RestoreForeignSessionWindows(
     Profile* profile,
     std::vector<const sessions::SessionWindow*>::const_iterator begin,
     std::vector<const sessions::SessionWindow*>::const_iterator end) {
-  std::vector<GURL> gurls;
+  StartupTabs startup_tabs;
   SessionRestoreImpl restorer(
       profile, static_cast<Browser*>(nullptr), true, false, true,
       /* restore_apps */ false, /* restore_browser */ true,
-      /* log_event */ false, gurls);
+      /* log_event */ false, startup_tabs);
   return restorer.RestoreForeignSession(begin, end);
 }
 
@@ -1075,11 +1075,11 @@ WebContents* SessionRestore::RestoreForeignSessionTab(
     WindowOpenDisposition disposition) {
   Browser* browser = chrome::FindBrowserWithWebContents(source_web_contents);
   Profile* profile = browser->profile();
-  std::vector<GURL> gurls;
+  StartupTabs startup_tabs;
   SessionRestoreImpl restorer(profile, browser, true, false, false,
                               /* restore_apps */ false,
                               /* restore_browser */ true,
-                              /* log_event */ false, gurls);
+                              /* log_event */ false, startup_tabs);
   return restorer.RestoreForeignTab(tab, disposition);
 }
 

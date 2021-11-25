@@ -56,6 +56,7 @@
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/startup/startup_tab.h"
 #include "chrome/browser/ui/startup/startup_types.h"
 #include "chrome/browser/ui/tabs/tab_group.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
@@ -1837,7 +1838,7 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreTest, RestorePinnedSelectedTab) {
                                  SessionRestore::CLOBBER_CURRENT_TAB |
                                      SessionRestore::SYNCHRONOUS |
                                      SessionRestore::RESTORE_BROWSER,
-                                 std::vector<GURL>());
+                                 StartupTabs());
 
   // The pinned tab is the selected tab.
   ASSERT_EQ(2, new_browser->tab_strip_model()->count());
@@ -1940,7 +1941,7 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreTest, ClobberRestoreTest) {
                                  SessionRestore::CLOBBER_CURRENT_TAB |
                                      SessionRestore::SYNCHRONOUS |
                                      SessionRestore::RESTORE_BROWSER,
-                                 std::vector<GURL>());
+                                 StartupTabs());
 
   // Wait until the existing tab finished closing.
   existing_tab_destroyed_watcher.Wait();

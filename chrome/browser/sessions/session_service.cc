@@ -41,6 +41,7 @@
 #include "chrome/browser/ui/session_crashed_bubble.h"
 #include "chrome/browser/ui/startup/launch_mode_recorder.h"
 #include "chrome/browser/ui/startup/startup_browser_creator.h"
+#include "chrome/browser/ui/startup/startup_tab.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "components/sessions/content/content_serialized_navigation_builder.h"
@@ -209,9 +210,9 @@ bool SessionService::ShouldRestore(Browser* browser) {
   return false;
 }
 
-bool SessionService::RestoreIfNecessary(const std::vector<GURL>& urls_to_open,
+bool SessionService::RestoreIfNecessary(const StartupTabs& startup_tabs,
                                         bool restore_apps) {
-  return RestoreIfNecessary(urls_to_open, nullptr, restore_apps);
+  return RestoreIfNecessary(startup_tabs, nullptr, restore_apps);
 }
 
 void SessionService::MoveCurrentSessionToLastSession() {
@@ -305,7 +306,7 @@ void SessionService::WindowOpened(Browser* browser) {
   if (!ShouldTrackBrowser(browser))
     return;
 
-  RestoreIfNecessary(std::vector<GURL>(), browser, /* restore_apps */ false);
+  RestoreIfNecessary(StartupTabs(), browser, /* restore_apps */ false);
   SetWindowType(browser->session_id(), browser->type());
   SetWindowAppName(browser->session_id(), browser->app_name());
 
@@ -472,7 +473,7 @@ bool SessionService::ShouldRestoreWindowOfType(
   return IsRelevantWindowType(window_type);
 }
 
-bool SessionService::RestoreIfNecessary(const std::vector<GURL>& urls_to_open,
+bool SessionService::RestoreIfNecessary(const StartupTabs& startup_tabs,
                                         Browser* browser,
                                         bool restore_apps) {
   if (ShouldRestore(browser)) {
@@ -494,7 +495,7 @@ bool SessionService::RestoreIfNecessary(const std::vector<GURL>& urls_to_open,
           SessionRestore::RESTORE_BROWSER |
               (browser ? 0 : SessionRestore::ALWAYS_CREATE_TABBED_BROWSER) |
               (restore_apps ? SessionRestore::RESTORE_APPS : 0),
-          urls_to_open);
+          startup_tabs);
       return true;
     }
 #if BUILDFLAG(IS_CHROMEOS_ASH)

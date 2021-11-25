@@ -52,7 +52,7 @@ class FakeStartupTabProvider : public StartupTabProvider {
   StartupTabs GetOnboardingTabs(Profile* profile) const override {
     StartupTabs tabs;
     if (options_ & kOnboardingTabs)
-      tabs.emplace_back(GURL("https://onboarding"), false);
+      tabs.emplace_back(GURL("https://onboarding"));
     return tabs;
   }
 
@@ -60,14 +60,14 @@ class FakeStartupTabProvider : public StartupTabProvider {
       StartupBrowserCreator* browser_creator) const override {
     StartupTabs tabs;
     if (options_ & kDistributionFirstRunTabs)
-      tabs.emplace_back(GURL("https://distribution"), false);
+      tabs.emplace_back(GURL("https://distribution"));
     return tabs;
   }
 
   StartupTabs GetResetTriggerTabs(Profile* profile) const override {
     StartupTabs tabs;
     if (options_ & kResetTriggerTabs)
-      tabs.emplace_back(GURL("https://reset-trigger"), false);
+      tabs.emplace_back(GURL("https://reset-trigger"));
     return tabs;
   }
 
@@ -75,7 +75,7 @@ class FakeStartupTabProvider : public StartupTabProvider {
                             Profile* profile) const override {
     StartupTabs tabs;
     if (options_ & kPinnedTabs)
-      tabs.emplace_back(GURL("https://pinned"), true);
+      tabs.emplace_back(GURL("https://pinned"), StartupTab::Type::kPinned);
     return tabs;
   }
 
@@ -83,7 +83,7 @@ class FakeStartupTabProvider : public StartupTabProvider {
                                  Profile* profile) const override {
     StartupTabs tabs;
     if (options_ & kPreferencesTabs)
-      tabs.emplace_back(GURL("https://prefs"), false);
+      tabs.emplace_back(GURL("https://prefs"));
     return tabs;
   }
 
@@ -91,7 +91,7 @@ class FakeStartupTabProvider : public StartupTabProvider {
                                 Profile* profile) const override {
     StartupTabs tabs;
     if (options_ & kNewTabPageTabs)
-      tabs.emplace_back(GURL("https://new-tab"), false);
+      tabs.emplace_back(GURL("https://new-tab"));
     return tabs;
   }
 
@@ -103,7 +103,7 @@ class FakeStartupTabProvider : public StartupTabProvider {
     StartupTabs tabs;
     if (process_startup == chrome::startup::IsProcessStartup::kYes &&
         (options_ & kWelcomeBackTab)) {
-      tabs.emplace_back(GURL("https://welcome-back"), false);
+      tabs.emplace_back(GURL("https://welcome-back"));
     }
     return tabs;
   }
@@ -113,7 +113,7 @@ class FakeStartupTabProvider : public StartupTabProvider {
       bool has_incompatible_applications) const override {
     StartupTabs tabs;
     if (has_incompatible_applications && (options_ & kPostCrashTabs))
-      tabs.emplace_back(GURL("https://incompatible-applications"), false);
+      tabs.emplace_back(GURL("https://incompatible-applications"));
     return tabs;
   }
 
@@ -122,7 +122,7 @@ class FakeStartupTabProvider : public StartupTabProvider {
                                  Profile* profile) const override {
     StartupTabs tabs;
     if (options_ & kCommandLineTabs)
-      tabs.emplace_back(GURL("https://cmd-line"), false);
+      tabs.emplace_back(GURL("https://cmd-line"));
     return tabs;
   }
 
@@ -137,7 +137,7 @@ class FakeStartupTabProvider : public StartupTabProvider {
   StartupTabs GetCrosapiTabs() const override {
     StartupTabs tabs;
     if (options_ & kCrosapiTabs)
-      tabs.emplace_back(GURL("https://crosapi"), false);
+      tabs.emplace_back(GURL("https://crosapi"));
     return tabs;
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -146,7 +146,7 @@ class FakeStartupTabProvider : public StartupTabProvider {
   StartupTabs GetNewFeaturesTabs(bool whats_new_enabled) const override {
     StartupTabs tabs;
     if (options_ & kNewFeaturesTabs)
-      tabs.emplace_back(GURL("https://whats-new/"), false);
+      tabs.emplace_back(GURL("https://whats-new/"));
     return tabs;
   }
 #endif  // !defined(OS_ANDROID)

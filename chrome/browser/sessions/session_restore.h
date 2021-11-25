@@ -26,6 +26,9 @@ namespace content {
 class WebContents;
 }
 
+struct StartupTab;
+using StartupTabs = std::vector<StartupTab>;
+
 // SessionRestore handles restoring either the last or saved session. Session
 // restore come in two variants, asynchronous or synchronous. The synchronous
 // variety is meant for startup and blocks until restore is complete.
@@ -65,11 +68,11 @@ class SessionRestore {
   // for details. If |browser| is non-null the tabs for the first window are
   // added to it. Returns the last active browser.
   //
-  // If |urls_to_open| is non-empty, a tab is added for each of the URLs.
+  // If |startup_tabs| is non-empty, a tab is added for each of the URLs.
   static Browser* RestoreSession(Profile* profile,
                                  Browser* browser,
                                  BehaviorBitmask behavior,
-                                 const std::vector<GURL>& urls_to_open);
+                                 const StartupTabs& startup_tabs);
 
   // Restores the last session when the last session crashed. It's a wrapper
   // of function RestoreSession.

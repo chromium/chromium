@@ -37,7 +37,7 @@ TEST(StartupTabProviderTest, GetStandardOnboardingTabsForState) {
 
     ASSERT_EQ(1U, output.size());
     EXPECT_EQ(StartupTabProviderImpl::GetWelcomePageUrl(false), output[0].url);
-    EXPECT_FALSE(output[0].is_pinned);
+    EXPECT_EQ(output[0].type, StartupTab::Type::kNormal);
   }
   {
     // After first run, display welcome page using variant view.
@@ -48,7 +48,7 @@ TEST(StartupTabProviderTest, GetStandardOnboardingTabsForState) {
 
     ASSERT_EQ(1U, output.size());
     EXPECT_EQ(StartupTabProviderImpl::GetWelcomePageUrl(true), output[0].url);
-    EXPECT_FALSE(output[0].is_pinned);
+    EXPECT_EQ(output[0].type, StartupTab::Type::kNormal);
   }
 }
 
@@ -115,11 +115,11 @@ TEST(StartupTabProviderTest, GetInitialPrefsTabsForState) {
 
   ASSERT_EQ(3U, output.size());
   EXPECT_EQ(GURL(chrome::kChromeUINewTabURL), output[0].url);
-  EXPECT_FALSE(output[0].is_pinned);
+  EXPECT_EQ(output[0].type, StartupTab::Type::kNormal);
   EXPECT_EQ(input[1], output[1].url);
-  EXPECT_FALSE(output[1].is_pinned);
+  EXPECT_EQ(output[1].type, StartupTab::Type::kNormal);
   EXPECT_EQ(StartupTabProviderImpl::GetWelcomePageUrl(false), output[2].url);
-  EXPECT_FALSE(output[2].is_pinned);
+  EXPECT_EQ(output[2].type, StartupTab::Type::kNormal);
 }
 
 TEST(StartupTabProviderTest, GetInitialPrefsTabsForState_FirstRunOnly) {
@@ -138,7 +138,7 @@ TEST(StartupTabProviderTest, GetResetTriggerTabsForState) {
   ASSERT_EQ(1U, output.size());
   EXPECT_EQ(StartupTabProviderImpl::GetTriggeredResetSettingsUrl(),
             output[0].url);
-  EXPECT_FALSE(output[0].is_pinned);
+  EXPECT_EQ(output[0].type, StartupTab::Type::kNormal);
 }
 
 TEST(StartupTabProviderTest, GetResetTriggerTabsForState_Negative) {
@@ -149,7 +149,8 @@ TEST(StartupTabProviderTest, GetResetTriggerTabsForState_Negative) {
 }
 
 TEST(StartupTabProviderTest, GetPinnedTabsForState) {
-  StartupTabs pinned = {StartupTab(GURL("https://www.google.com"), true)};
+  StartupTabs pinned = {
+      StartupTab(GURL("https://www.google.com"), StartupTab::Type::kPinned)};
   SessionStartupPref pref_default(SessionStartupPref::Type::DEFAULT);
   SessionStartupPref pref_urls(SessionStartupPref::Type::URLS);
 
@@ -167,7 +168,8 @@ TEST(StartupTabProviderTest, GetPinnedTabsForState) {
 }
 
 TEST(StartupTabProviderTest, GetPinnedTabsForState_Negative) {
-  StartupTabs pinned = {StartupTab(GURL("https://www.google.com"), true)};
+  StartupTabs pinned = {
+      StartupTab(GURL("https://www.google.com"), StartupTab::Type::kPinned)};
   SessionStartupPref pref_last(SessionStartupPref::Type::LAST);
   SessionStartupPref pref_default(SessionStartupPref::Type::DEFAULT);
 

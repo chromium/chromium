@@ -9,7 +9,15 @@
 namespace {
 
 std::string TabToString(const StartupTab& tab) {
-  return tab.url.spec() + ":" + (tab.is_pinned ? "pinned" : "");
+  std::string type_description;
+  switch (tab.type) {
+    case StartupTab::Type::kNormal:
+      break;
+    case StartupTab::Type::kPinned:
+      type_description = "pinned";
+      break;
+  }
+  return tab.url.spec() + ":" + type_description;
 }
 
 }  // namespace

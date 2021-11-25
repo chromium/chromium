@@ -50,6 +50,7 @@
 #include "chrome/browser/ui/startup/launch_mode_recorder.h"
 #include "chrome/browser/ui/startup/obsolete_system_infobar_delegate.h"
 #include "chrome/browser/ui/startup/startup_browser_creator.h"
+#include "chrome/browser/ui/startup/startup_tab.h"
 #include "chrome/browser/ui/startup/startup_tab_provider.h"
 #include "chrome/browser/ui/startup/startup_types.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -122,15 +123,7 @@ bool ShouldRestoreApps(bool is_post_restart, Profile* profile) {
 
 void UrlsToTabs(const std::vector<GURL>& urls, StartupTabs* tabs) {
   for (const GURL& url : urls)
-    tabs->push_back(StartupTab(url, false));
-}
-
-std::vector<GURL> TabsToUrls(const StartupTabs& tabs) {
-  std::vector<GURL> urls;
-  urls.reserve(tabs.size());
-  std::transform(tabs.begin(), tabs.end(), std::back_inserter(urls),
-                 [](const StartupTab& tab) { return tab.url; });
-  return urls;
+    tabs->emplace_back(url);
 }
 
 // Appends the contents of |from| to the end of |to|.
@@ -304,7 +297,7 @@ Browser* StartupBrowserCreatorImpl::OpenTabsInBrowser(
     int add_types = first_tab ? TabStripModel::ADD_ACTIVE :
                                 TabStripModel::ADD_NONE;
     add_types |= TabStripModel::ADD_FORCE_INDEX;
-    if (tabs[i].is_pinned)
+    if (tabs[i].type == StartupTab::Type::kPinned)
       add_types |= TabStripModel::ADD_PINNED;
 
     NavigateParams params(browser, tabs[i].url,
@@ -490,7 +483,7 @@ StartupBrowserCreatorImpl::DetermineStartupTabs(
         return {std::move(tabs), launch_result};
     }
 
-    return {StartupTabs({StartupTab(GURL(chrome::kChromeUINewTabURL), false)}),
+    return {StartupTabs({StartupTab(GURL(chrome::kChromeUINewTabURL))}),
             launch_result};
   }
 
@@ -589,7 +582,7 @@ bool StartupBrowserCreatorImpl::MaybeAsyncRestore(
   SessionService* service =
       SessionServiceFactory::GetForProfileForSessionRestore(profile_);
 
-  return service && service->RestoreIfNecessary(TabsToUrls(tabs), restore_apps);
+  return service && service->RestoreIfNecessary(tabs, restore_apps);
 }
 
 Browser* StartupBrowserCreatorImpl::RestoreOrCreateBrowser(
@@ -608,7 +601,7 @@ Browser* StartupBrowserCreatorImpl::RestoreOrCreateBrowser(
       restore_options |= SessionRestore::RESTORE_APPS;
 
     browser = SessionRestore::RestoreSession(profile_, nullptr, restore_options,
-                                             TabsToUrls(tabs));
+                                             tabs);
     if (browser)
       return browser;
   } else if (behavior == BrowserOpenBehavior::USE_EXISTING) {
@@ -625,7 +618,7 @@ Browser* StartupBrowserCreatorImpl::RestoreOrCreateBrowser(
   browser = OpenTabsInBrowser(
       browser, process_startup,
       (tabs.empty()
-           ? StartupTabs({StartupTab(GURL(chrome::kChromeUINewTabURL), false)})
+           ? StartupTabs({StartupTab(GURL(chrome::kChromeUINewTabURL))})
            : tabs));
 
   // Now that a restore is no longer possible, it is safe to clear DOM storage,

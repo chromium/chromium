@@ -145,7 +145,7 @@ StartupTabs StartupTabProviderImpl::GetWelcomeBackTabs(
       CanShowWelcome(SyncServiceFactory::IsSyncAllowed(profile),
                      profile->IsSupervised(),
                      signin_util::IsForceSigninEnabled())) {
-    tabs.emplace_back(GetWelcomePageUrl(false), false);
+    tabs.emplace_back(GetWelcomePageUrl(false));
   }
   return tabs;
 }
@@ -214,7 +214,7 @@ StartupTabs StartupTabProviderImpl::GetCommandLineTabs(
     DCHECK_NE(parsed_arg.tab_parsed, CommandLineTabsPresent::kUnknown);
 
     if (parsed_arg.tab_parsed == CommandLineTabsPresent::kYes) {
-      result.emplace_back(std::move(parsed_arg.tab_url), false);
+      result.emplace_back(std::move(parsed_arg.tab_url));
     }
   }
 
@@ -252,7 +252,7 @@ StartupTabs StartupTabProviderImpl::GetCrosapiTabs() const {
   StartupTabs result;
   for (const GURL& url : *init_params->startup_urls) {
     if (ValidateUrl(url))
-      result.emplace_back(url, /*is_pinned=*/false);
+      result.emplace_back(url);
   }
   return result;
 }
@@ -287,7 +287,7 @@ StartupTabs StartupTabProviderImpl::GetStandardOnboardingTabsForState(
                      params.is_force_signin_enabled) &&
       ShouldShowWelcomeForOnboarding(params.has_seen_welcome_page,
                                      params.is_signed_in)) {
-    tabs.emplace_back(GetWelcomePageUrl(!params.is_first_run), false);
+    tabs.emplace_back(GetWelcomePageUrl(!params.is_first_run));
   }
   return tabs;
 }
@@ -309,7 +309,7 @@ StartupTabs StartupTabProviderImpl::GetInitialPrefsTabsForState(
         url = GURL(chrome::kChromeUINewTabURL);
       else if (url.host_piece() == kWelcomePageUrlHost)
         url = GetWelcomePageUrl(false);
-      tabs.emplace_back(url, false);
+      tabs.emplace_back(url);
     }
   }
   return tabs;
@@ -320,7 +320,7 @@ StartupTabs StartupTabProviderImpl::GetResetTriggerTabsForState(
     bool profile_has_trigger) {
   StartupTabs tabs;
   if (profile_has_trigger)
-    tabs.emplace_back(GetTriggeredResetSettingsUrl(), false);
+    tabs.emplace_back(GetTriggeredResetSettingsUrl());
   return tabs;
 }
 
@@ -343,7 +343,7 @@ StartupTabs StartupTabProviderImpl::GetPreferencesTabsForState(
   if (pref.type == SessionStartupPref::Type::URLS && !pref.urls.empty() &&
       !profile_has_other_tabbed_browser) {
     for (const auto& url : pref.urls)
-      tabs.push_back(StartupTab(url, false));
+      tabs.emplace_back(url);
   }
   return tabs;
 }
@@ -353,7 +353,7 @@ StartupTabs StartupTabProviderImpl::GetNewTabPageTabsForState(
     const SessionStartupPref& pref) {
   StartupTabs tabs;
   if (pref.type != SessionStartupPref::Type::LAST)
-    tabs.emplace_back(GURL(chrome::kChromeUINewTabURL), false);
+    tabs.emplace_back(GURL(chrome::kChromeUINewTabURL));
   return tabs;
 }
 
@@ -372,7 +372,7 @@ StartupTabs StartupTabProviderImpl::GetNewFeaturesTabsForState(
     bool whats_new_enabled) {
   StartupTabs tabs;
   if (whats_new_enabled)
-    tabs.emplace_back(whats_new::GetWebUIStartupURL(), false);
+    tabs.emplace_back(whats_new::GetWebUIStartupURL());
   return tabs;
 }
 #endif
@@ -390,7 +390,7 @@ void StartupTabProviderImpl::AddIncompatibleApplicationsUrl(StartupTabs* tabs) {
 #if defined(OS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
   UMA_HISTOGRAM_BOOLEAN("IncompatibleApplicationsPage.AddedPostCrash", true);
   GURL url(chrome::kChromeUISettingsURL);
-  tabs->emplace_back(url.Resolve("incompatibleApplications"), false);
+  tabs->emplace_back(url.Resolve("incompatibleApplications"));
 #endif  // defined(OS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
 }
 

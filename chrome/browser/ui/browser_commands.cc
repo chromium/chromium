@@ -71,6 +71,7 @@
 #include "chrome/browser/ui/send_tab_to_self/send_tab_to_self_bubble_controller.h"
 #include "chrome/browser/ui/sharing_hub/screenshot/screenshot_captured_bubble_controller.h"
 #include "chrome/browser/ui/sharing_hub/sharing_hub_bubble_controller.h"
+#include "chrome/browser/ui/startup/startup_tab.h"
 #include "chrome/browser/ui/status_bubble.h"
 #include "chrome/browser/ui/tab_contents/core_tab_helper.h"
 #include "chrome/browser/ui/tab_dialogs.h"
@@ -485,7 +486,7 @@ void NewEmptyWindow(Profile* profile, bool should_trigger_session_restore) {
         SessionServiceFactory::GetForProfileForSessionRestore(
             profile->GetOriginalProfile());
     if (!session_service ||
-        !session_service->RestoreIfNecessary(std::vector<GURL>(),
+        !session_service->RestoreIfNecessary(StartupTabs(),
                                              /* restore_apps */ false)) {
       OpenEmptyWindow(profile->GetOriginalProfile());
     }

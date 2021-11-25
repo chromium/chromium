@@ -11,17 +11,22 @@
 
 // Represents tab data at startup.
 struct StartupTab {
-  StartupTab(const GURL& url, bool is_pinned);
+  enum class Type {
+    kNormal,
+    // The tab is pinned.
+    kPinned,
+  };
+
+  explicit StartupTab(const GURL& url, Type type = Type::kNormal);
   ~StartupTab();
 
   // The url to load.
   GURL url;
 
-  // True if the is tab pinned.
-  bool is_pinned;
+  Type type;
 };
 
-typedef std::vector<StartupTab> StartupTabs;
+using StartupTabs = std::vector<StartupTab>;
 
 // Indicates whether the command line arguments includes tabs to be opened on
 // startup.
