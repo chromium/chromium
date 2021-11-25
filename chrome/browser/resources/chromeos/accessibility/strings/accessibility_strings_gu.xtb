@@ -6,7 +6,7 @@
 <translation id="1012173283529841972">સૂચિ આઇટમ</translation>
 <translation id="1013742170491673792">srched</translation>
 <translation id="1014370462248694370">બે આંગળી જમણી બાજુ સ્વાઇપ કરો</translation>
-<translation id="1022586497894531524">શું તમે ChromeVoxના બોલાયેલ પ્રતિસાદનો પહેલી વાર ઉપયોગ કરી રહ્યા છો? આ ઝડપી ટ્યૂટૉરિઅલ ChromeVox શરૂ કરવા માટેની જરૂરી બાબતો સમજાવે છે.</translation>
+<translation id="1022586497894531524">શું તમે ChromeVoxના બોલાયેલા પ્રતિસાદનો પહેલી વાર ઉપયોગ કરી રહ્યા છો? આ ઝડપી ટ્યૂટૉરિઅલ ChromeVox શરૂ કરવા માટેની જરૂરી બાબતો સમજાવે છે.</translation>
 <translation id="1025074108959230262">સ્ટીકી મોડ અક્ષમ કર્યો</translation>
 <translation id="1031961866430398710">પછી</translation>
 <translation id="1038643060055067718">લાઇનો:</translation>
@@ -472,7 +472,7 @@
 <translation id="4148180433151187540">{COUNT,plural, =1{જમણો છગડિયો કૌંસ}one{# જમણા છગડિયા કૌંસ}other{# જમણા છગડિયા કૌંસ}}</translation>
 <translation id="4159784952369912983">જાંબલી</translation>
 <translation id="4161104397932142764">{COUNT,plural, =1{સેકન્ડ}one{સેકન્ડ}other{સેકન્ડ}}</translation>
-<translation id="4161663686871496107">ChromeVox બોલાયેલ પ્રતિસાદ તૈયાર છે</translation>
+<translation id="4161663686871496107">ChromeVox બોલાયેલો પ્રતિસાદ તૈયાર છે</translation>
 <translation id="4176463684765177261">અક્ષમ કરેલું</translation>
 <translation id="4187322598335821254">પંક્તિ દર પંક્તિ ઉપર અથવા નીચે કરવા માટે સ્વાઇપ કરો</translation>
 <translation id="4188530942454211480">પાછલું વાક્ય</translation>

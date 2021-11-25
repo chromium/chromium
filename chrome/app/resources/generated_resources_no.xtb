@@ -5848,7 +5848,7 @@ og Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="7211783048245131419">Ingen bryter er tilordnet ennå</translation>
 <translation id="7212097698621322584">Skriv inn den nåværende PIN-koden for å endre den. Hvis du ikke kan PIN-koden, må du tilbakestille sikkerhetsnøkkelen og deretter opprette en ny PIN-kode.</translation>
 <translation id="7213903639823314449">Søkemotoren som brukes i adressefeltet</translation>
-<translation id="7216595297012131718">Bestill språk basert på innstillingene dine</translation>
+<translation id="7216595297012131718">Velg ønsket språkrekkefølge</translation>
 <translation id="7219473482981809164">Vi fant flere profiler som er tilgjengelige for nedlasting. Velg de du vil laste ned, før du går videre.</translation>
 <translation id="7219762788664143869">{NUM_WEAK,plural, =0{Ingen svake passord}=1{1 svakt passord}other{{NUM_WEAK} svake passord}}</translation>
 <translation id="7220019174139618249">Kan ikke eksportere passord til «<ph name="FOLDER" />»</translation>
