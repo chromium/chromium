@@ -85,12 +85,12 @@ class ProfilePickerHandlerTest : public testing::Test {
             &mock_account_manager_facade_,
             profile_manager()->profile_attributes_storage()));
 #endif
-
+    handler_ = std::make_unique<ProfilePickerHandler>();
     web_ui_profile_ = GetWebUIProfile();
     web_ui_.set_web_contents(
         web_contents_factory_.CreateWebContents(web_ui_profile_));
-    handler_.set_web_ui(&web_ui_);
-    handler_.RegisterMessages();
+    handler_->set_web_ui(&web_ui_);
+    handler_->RegisterMessages();
   }
 
   virtual Profile* GetWebUIProfile() {
@@ -139,7 +139,7 @@ class ProfilePickerHandlerTest : public testing::Test {
 
   TestingProfileManager* profile_manager() { return &profile_manager_; }
   content::TestWebUI* web_ui() { return &web_ui_; }
-  ProfilePickerHandler* handler() { return &handler_; }
+  ProfilePickerHandler* handler() { return handler_.get(); }
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   account_manager::MockAccountManagerFacade* mock_account_manager_facade() {
@@ -169,7 +169,7 @@ class ProfilePickerHandlerTest : public testing::Test {
   content::TestWebContentsFactory web_contents_factory_;
   Profile* web_ui_profile_ = nullptr;
   content::TestWebUI web_ui_;
-  ProfilePickerHandler handler_;
+  std::unique_ptr<ProfilePickerHandler> handler_;
 };
 
 TEST_F(ProfilePickerHandlerTest, OrderedAlphabeticallyOnInit) {

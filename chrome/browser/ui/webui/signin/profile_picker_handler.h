@@ -22,6 +22,8 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "base/scoped_observation.h"
+#include "chrome/browser/lacros/account_manager/account_profile_mapper.h"
 #include "chrome/browser/lacros/account_manager/get_account_information_helper.h"
 
 class ProfilePickerLacrosSignInProvider;
@@ -34,6 +36,9 @@ struct Account;
 // The handler for Javascript messages related to the profile picker main view.
 class ProfilePickerHandler : public content::WebUIMessageHandler,
                              public content::WebContentsObserver,
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+                             public AccountProfileMapper::Observer,
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
                              public ProfileAttributesStorage::Observer {
  public:
   ProfilePickerHandler();
@@ -142,6 +147,9 @@ class ProfilePickerHandler : public content::WebUIMessageHandler,
   // TODO(crbug.com/1226050): Rename this concept in code to available accounts.
   void HandleGetUnassignedAccounts(const base::ListValue* args);
 
+  // Queries available profiles, and ends up sending them to the WebUI page.
+  void UpdateAvailableProfiles();
+
   // Loads extended info for accounts from Ash.
   void GetAvailableAccountsInfo(
       const std::vector<account_manager::Account>& accounts);
@@ -154,6 +162,12 @@ class ProfilePickerHandler : public content::WebUIMessageHandler,
   // omitted, ephemeral, and has a primary kSignin account.
   void OnLacrosSignedInProfileCreated(absl::optional<SkColor> profile_color,
                                       Profile* profile);
+
+  // AccountProfileMapper::Observer:
+  void OnAccountUpserted(const base::FilePath& profile_path,
+                         const account_manager::Account& account) override;
+  void OnAccountRemoved(const base::FilePath& profile_path,
+                        const account_manager::Account& account) override;
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
   // Returns the list of profiles in the same order as when the picker
@@ -171,6 +185,10 @@ class ProfilePickerHandler : public content::WebUIMessageHandler,
 
   // Retrieves extended info for available accounts from Ash.
   std::unique_ptr<GetAccountInformationHelper> lacros_account_info_helper_;
+
+  // Observes AccountProfileMapper to react to changes in available accounts.
+  base::ScopedObservation<AccountProfileMapper, AccountProfileMapper::Observer>
+      account_profile_mapper_observation_{this};
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
   // The order of the profiles when the picker was first shown. This is used

@@ -244,7 +244,12 @@ SkBitmap GetAvailableAccountBitmap(const gfx::Image& gaia_image,
 
 }  // namespace
 
-ProfilePickerHandler::ProfilePickerHandler() = default;
+ProfilePickerHandler::ProfilePickerHandler() {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  account_profile_mapper_observation_.Observe(
+      g_browser_process->profile_manager()->GetAccountProfileMapper());
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+}
 
 ProfilePickerHandler::~ProfilePickerHandler() {
   OnJavascriptDisallowed();
@@ -1059,6 +1064,10 @@ void ProfilePickerHandler::HandleOpenAshAccountSettingsPage(
 void ProfilePickerHandler::HandleGetUnassignedAccounts(
     const base::ListValue* args) {
   AllowJavascript();
+  UpdateAvailableProfiles();
+}
+
+void ProfilePickerHandler::UpdateAvailableProfiles() {
   AccountProfileMapper* mapper =
       g_browser_process->profile_manager()->GetAccountProfileMapper();
 
@@ -1111,7 +1120,6 @@ void ProfilePickerHandler::SendAvailableAccounts(
                               webui::GetBitmapDataUrl(account_bitmap));
     accounts_list.Append(std::move(account_dict));
   }
-  // TODO(https://crbug/1226050): Listen for account changes.
   FireWebUIListener("unassigned-accounts-changed", std::move(accounts_list));
 }
 
@@ -1129,6 +1137,18 @@ void ProfilePickerHandler::OnLacrosSignedInProfileCreated(
 
   FireWebUIListener("load-signin-finished", base::Value(/*success=*/true));
   ProfilePicker::SwitchToSignedInFlow(profile_color, profile);
+}
+
+void ProfilePickerHandler::OnAccountUpserted(
+    const base::FilePath& profile_path,
+    const account_manager::Account& account) {
+  UpdateAvailableProfiles();
+}
+
+void ProfilePickerHandler::OnAccountRemoved(
+    const base::FilePath& profile_path,
+    const account_manager::Account& account) {
+  UpdateAvailableProfiles();
 }
 
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
