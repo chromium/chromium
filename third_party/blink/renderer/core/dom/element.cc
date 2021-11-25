@@ -3091,8 +3091,10 @@ void Element::RecalcStyle(const StyleRecalcChange change,
     // If we are re-attaching us or any of our descendants, we need to attach
     // the descendants before we know if this element generates a ::first-letter
     // and which element the ::first-letter inherits style from.
-    if (!child_change.ReattachLayoutTree() && !ChildNeedsReattachLayoutTree())
-      UpdateFirstLetterPseudoElement(StyleUpdatePhase::kRecalc);
+    if (!child_change.ReattachLayoutTree() && !ChildNeedsReattachLayoutTree()) {
+      UpdateFirstLetterPseudoElement(StyleUpdatePhase::kRecalc,
+                                     child_recalc_context);
+    }
   }
 
   ClearChildNeedsStyleRecalc();
@@ -5435,6 +5437,16 @@ void Element::CancelFocusAppearanceUpdate() {
 }
 
 void Element::UpdateFirstLetterPseudoElement(StyleUpdatePhase phase) {
+  if (CanGeneratePseudoElement(kPseudoIdFirstLetter) ||
+      GetPseudoElement(kPseudoIdFirstLetter)) {
+    UpdateFirstLetterPseudoElement(
+        phase, StyleRecalcContext::FromInclusiveAncestors(*this));
+  }
+}
+
+void Element::UpdateFirstLetterPseudoElement(
+    StyleUpdatePhase phase,
+    const StyleRecalcContext& style_recalc_context) {
   // Update the ::first-letter pseudo elements presence and its style. This
   // method may be called from style recalc or layout tree rebuilding/
   // reattachment. In order to know if an element generates a ::first-letter
@@ -5457,9 +5469,6 @@ void Element::UpdateFirstLetterPseudoElement(StyleUpdatePhase phase) {
   //
   // The StyleUpdatePhase tells where we are in the process of updating style
   // and layout tree.
-
-  // TODO(crbug.com/1145970): Use actual StyleRecalcContext.
-  StyleRecalcContext style_recalc_context;
 
   PseudoElement* element = GetPseudoElement(kPseudoIdFirstLetter);
   if (!element) {

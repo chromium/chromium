@@ -144,6 +144,11 @@ class StyleRecalcContext {
   // resolving the style of the given Element.
   static StyleRecalcContext FromAncestors(Element&);
 
+  // If the passed in StyleRecalcContext is nullptr, build a StyleRecalcContext
+  // suitable for resolving the style for child elements of the passed in
+  // element. Otherwise return the passed in context as a value.
+  static StyleRecalcContext FromInclusiveAncestors(Element&);
+
   // Set to the nearest container (for container queries), if any.
   // This is used to evaluate container queries in ElementRuleCollector.
   Element* container = nullptr;

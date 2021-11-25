@@ -133,6 +133,13 @@ StyleRecalcChange::Flags StyleRecalcChange::FlagsForChildren(
   return result;
 }
 
+StyleRecalcContext StyleRecalcContext::FromInclusiveAncestors(
+    Element& element) {
+  if (element.GetContainerQueryEvaluator())
+    return StyleRecalcContext{&element};
+  return FromAncestors(element);
+}
+
 StyleRecalcContext StyleRecalcContext::FromAncestors(Element& element) {
   Element* ancestor = &element;
   // TODO(crbug.com/1145970): Avoid this work if we're not inside a container.
