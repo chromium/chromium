@@ -255,7 +255,7 @@ void WebStateDelegateBrowserAgent::ContextMenuConfiguration(
 void WebStateDelegateBrowserAgent::ContextMenuWillCommitWithAnimator(
     web::WebState* source,
     id<UIContextMenuInteractionCommitAnimating> animator) {
-  [context_menu_provider_ commitPreview];
+  // Do nothing is the user taps on the preview.
 }
 
 id<CRWResponderInputView> WebStateDelegateBrowserAgent::GetResponderInputView(

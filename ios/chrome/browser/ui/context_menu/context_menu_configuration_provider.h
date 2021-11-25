@@ -28,9 +28,6 @@ class Browser;
     contextMenuConfigurationForWebState:(web::WebState*)webState
                                  params:(web::ContextMenuParams)params;
 
-// Called when the user commits the preview (taps on it).
-- (void)commitPreview;
-
 // DEPRECATED.
 // Displays a context menu using an action sheet on |baseViewController|.
 // |params| is copied in order to be used in blocks.

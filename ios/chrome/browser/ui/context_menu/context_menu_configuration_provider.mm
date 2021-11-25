@@ -26,7 +26,6 @@
 #import "ios/chrome/browser/ui/context_menu/context_menu_utils.h"
 #import "ios/chrome/browser/ui/context_menu/image_preview_view_controller.h"
 #import "ios/chrome/browser/ui/context_menu/link_no_preview_view_controller.h"
-#import "ios/chrome/browser/ui/context_menu/link_preview/link_preview_coordinator.h"
 #import "ios/chrome/browser/ui/image_util/image_copier.h"
 #import "ios/chrome/browser/ui/image_util/image_saver.h"
 #import "ios/chrome/browser/ui/incognito_reauth/incognito_reauth_commands.h"
@@ -116,9 +115,6 @@ const CGFloat kFaviconWidthHeight = 24;
 
 @property(nonatomic, assign, readonly) web::WebState* currentWebState;
 
-// Coordinator used to display the preview of the link.
-@property(nonatomic, strong) LinkPreviewCoordinator* linkPreview;
-
 @end
 
 @implementation ContextMenuConfigurationProvider
@@ -138,7 +134,6 @@ const CGFloat kFaviconWidthHeight = 24;
 - (UIContextMenuConfiguration*)
     contextMenuConfigurationForWebState:(web::WebState*)webState
                                  params:(web::ContextMenuParams)params {
-  self.linkPreview = nil;
   // Prevent context menu from displaying for a tab which is no longer the
   // current one.
   if (webState != self.currentWebState) {
@@ -344,38 +339,7 @@ const CGFloat kFaviconWidthHeight = 24;
     menuTitle = GetContextMenuTitle(params);
   }
 
-  BOOL canShowPreview = isLink && web::UrlHasWebScheme(linkURL);
-  BOOL previewEnabled = self.browser->GetBrowserState()->GetPrefs()->GetBoolean(
-      prefs::kLinkPreviewEnabled);
-
-  UIMenu* menu;
-  if (base::FeatureList::IsEnabled(
-          web::features::kWebViewNativeContextMenuPhase2) &&
-      canShowPreview) {
-    UIAction* previewAction;
-    if (previewEnabled) {
-      previewAction = [actionFactory actionToHideLinkPreview];
-    } else {
-      previewAction = [actionFactory actionToShowLinkPreview];
-    }
-
-    UIMenu* actionMenu = [UIMenu menuWithTitle:@""
-                                         image:nil
-                                    identifier:nil
-                                       options:UIMenuOptionsDisplayInline
-                                      children:menuElements];
-
-    UIMenu* previewMenu = [UIMenu menuWithTitle:@""
-                                          image:nil
-                                     identifier:nil
-                                        options:UIMenuOptionsDisplayInline
-                                       children:@[ previewAction ]];
-
-    menu = [UIMenu menuWithTitle:menuTitle
-                        children:@[ actionMenu, previewMenu ]];
-  } else {
-    menu = [UIMenu menuWithTitle:menuTitle children:menuElements];
-  }
+  UIMenu* menu = [UIMenu menuWithTitle:menuTitle children:menuElements];
 
   UIContextMenuActionProvider actionProvider =
       ^(NSArray<UIMenuElement*>* suggestedActions) {
@@ -389,15 +353,6 @@ const CGFloat kFaviconWidthHeight = 24;
       return nil;
     }
     if (isLink) {
-      if (canShowPreview && previewEnabled) {
-        self.linkPreview =
-            [[LinkPreviewCoordinator alloc] initWithBrowser:self.browser
-                                                        URL:linkURL];
-        // TODO(crbug.com/1251137): Pass the referrer?
-        [self.linkPreview start];
-        return [self.linkPreview linkPreviewViewController];
-      }
-
       NSString* title = GetContextMenuTitle(params);
       NSString* subtitle = GetContextMenuSubtitle(params);
       LinkNoPreviewViewController* previewViewController =
@@ -434,10 +389,6 @@ const CGFloat kFaviconWidthHeight = 24;
       [UIContextMenuConfiguration configurationWithIdentifier:nil
                                               previewProvider:previewProvider
                                                actionProvider:actionProvider];
-}
-
-- (void)commitPreview {
-  [self.linkPreview handlePreviewAction];
 }
 
 - (void)showLegacyContextMenuForWebState:(web::WebState*)webState
