@@ -128,7 +128,11 @@ const CGFloat kThumbStripHeight =
 #pragma mark - ThumbStripNavigationConsumer
 
 - (void)navigationDidStart {
-  [self closeThumbStrip];
+  // Close the thumb strip if navigation occurred in peeked state. This
+  // indicates the user wants to keep using the current tab.
+  if (self.panHandler.currentState == ViewRevealState::Peeked) {
+    [self closeThumbStrip];
+  }
 }
 
 #pragma mark - ThumbStripCommands
