@@ -490,6 +490,7 @@ class PDFiumEngine : public PDFEngine,
 
   // Creates a FPDF_BITMAP from a rectangle in screen coordinates.
   ScopedFPDFBitmap CreateBitmap(const gfx::Rect& rect,
+                                bool has_alpha,
                                 SkBitmap& image_data) const;
 
   // Given a rectangle in screen coordinates, returns the coordinates in the

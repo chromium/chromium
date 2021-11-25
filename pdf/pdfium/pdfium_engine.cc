@@ -3166,7 +3166,8 @@ bool PDFiumEngine::ContinuePaint(int progressive_index, SkBitmap& image_data) {
     gfx::Rect dirty = progressive_paints_[progressive_index].rect();
     GetPDFiumRect(page_index, dirty, &start_x, &start_y, &size_x, &size_y);
 
-    ScopedFPDFBitmap new_bitmap = CreateBitmap(dirty, image_data);
+    bool has_alpha = !!FPDFPage_HasTransparency(page);
+    ScopedFPDFBitmap new_bitmap = CreateBitmap(dirty, has_alpha, image_data);
     FPDFBitmap_FillRect(new_bitmap.get(), start_x, start_y, size_x, size_y,
                         0xFFFFFFFF);
     rv = FPDF_RenderPageBitmap_Start(
@@ -3360,7 +3361,7 @@ void PDFiumEngine::PaintUnavailablePage(int page_index,
   int size_x;
   int size_y;
   GetPDFiumRect(page_index, dirty, &start_x, &start_y, &size_x, &size_y);
-  ScopedFPDFBitmap bitmap(CreateBitmap(dirty, image_data));
+  ScopedFPDFBitmap bitmap(CreateBitmap(dirty, /*has_alpha=*/false, image_data));
   FPDFBitmap_FillRect(bitmap.get(), start_x, start_y, size_x, size_y,
                       kPendingPageColor);
 
@@ -3379,14 +3380,16 @@ int PDFiumEngine::GetProgressiveIndex(int page_index) const {
 }
 
 ScopedFPDFBitmap PDFiumEngine::CreateBitmap(const gfx::Rect& rect,
+                                            bool has_alpha,
                                             SkBitmap& image_data) const {
   void* region;
   int stride;
   GetRegion(rect.origin(), image_data, region, stride);
   if (!region)
     return nullptr;
-  return ScopedFPDFBitmap(FPDFBitmap_CreateEx(rect.width(), rect.height(),
-                                              FPDFBitmap_BGRx, region, stride));
+  int format = has_alpha ? FPDFBitmap_BGRA : FPDFBitmap_BGRx;
+  return ScopedFPDFBitmap(
+      FPDFBitmap_CreateEx(rect.width(), rect.height(), format, region, stride));
 }
 
 void PDFiumEngine::GetPDFiumRect(int page_index,
