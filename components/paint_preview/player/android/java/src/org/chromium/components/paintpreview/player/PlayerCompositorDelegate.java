@@ -62,12 +62,14 @@ public interface PlayerCompositorDelegate {
          * be at {@code subFrameGuids[4*k]}, {@code subFrameGuids[4*k+1]} ,
          * {@code subFrameGuids[4*k+2]}, and {@code subFrameGuids[4*k+3]}, where {@code k} has the
          * same value as above.
+         * @param pageScaleFactor The initial scale factor of the page.
          * @param nativeAxTree Native pointer to the accessibility tree snapshot. The implementer
          * of this method will be the owner of this object and should delete it once it's used.
          */
         void onCompositorReady(UnguessableToken rootFrameGuid, UnguessableToken[] frameGuids,
                 int[] frameContentSize, int[] scrollOffsets, int[] subFramesCount,
-                UnguessableToken[] subFrameGuids, int[] subFrameClipRects, long nativeAxTree);
+                UnguessableToken[] subFrameGuids, int[] subFrameClipRects, float pageScaleFactor,
+                long nativeAxTree);
     }
 
     /**

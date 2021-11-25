@@ -171,7 +171,7 @@ public class LongScreenshotsCompositorTest {
 
         // Mimic the service calling onCompositorReady
         compositor.onCompositorReady(
-                null, null, new int[] {1, 2}, new int[] {3, 4}, null, null, null, 0);
+                null, null, new int[] {1, 2}, new int[] {3, 4}, null, null, null, 0f, 0);
         Assert.assertEquals(1, compositor.getContentSize().getWidth());
         Assert.assertEquals(2, compositor.getContentSize().getHeight());
         Assert.assertEquals(3, compositor.getScrollOffset().x);
@@ -210,7 +210,7 @@ public class LongScreenshotsCompositorTest {
                 mNativePaintPreviewServiceProvider, "test_directory_key", 0, compositorCallback);
 
         // Mimic the service calling onCompositorReady
-        compositor.onCompositorReady(null, null, null, null, null, null, null, 0);
+        compositor.onCompositorReady(null, null, null, null, null, null, null, 0f, 0);
         Assert.assertEquals(0, compositor.getContentSize().getWidth());
 
         // RequestBitmap in mCompositorDelegate should match

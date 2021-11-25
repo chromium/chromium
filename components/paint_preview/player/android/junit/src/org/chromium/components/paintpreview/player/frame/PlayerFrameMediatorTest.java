@@ -244,7 +244,7 @@ public class PlayerFrameMediatorTest {
         mGestureListener = new PlayerGestureListener(null, () -> mHasUserInteraction = true, null);
         Size contentSize = new Size(CONTENT_WIDTH, CONTENT_HEIGHT);
         mMediator = new PlayerFrameMediator(mModel, mCompositorDelegate, mGestureListener,
-                mFrameGuid, contentSize, 0, 0, null, true);
+                mFrameGuid, contentSize, 0, 0, 0f, null, true);
         mScaleController =
                 new PlayerFrameScaleController(mModel.get(PlayerFrameProperties.SCALE_MATRIX),
                         mMediator, null, mGestureListener::onScale);

@@ -74,6 +74,7 @@ class PlayerCompositorDelegate {
   virtual void OnCompositorReady(
       CompositorStatus compositor_status,
       mojom::PaintPreviewBeginCompositeResponsePtr composite_response,
+      float page_scale_factor,
       std::unique_ptr<ui::AXTreeUpdate> update) {}
 
   // Called when there is a request for a new bitmap. When the bitmap
@@ -194,6 +195,7 @@ class PlayerCompositorDelegate {
       hit_testers_;
   std::unique_ptr<PaintPreviewProto> proto_copy_;
   std::unique_ptr<CaptureResult> capture_result_;
+  float page_scale_factor_;
   std::unique_ptr<ui::AXTreeUpdate> ax_tree_update_;
 
   int active_requests_{0};

@@ -20,6 +20,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabObserver;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.components.paintpreview.browser.NativePaintPreviewServiceProvider;
+import org.chromium.content_public.browser.RenderCoordinates;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.content_public.browser.WebContents;
 
@@ -221,8 +222,11 @@ public class PaintPreviewTabService implements NativePaintPreviewServiceProvider
 
         boolean isAccessibilityEnabled = sIsAccessibilityEnabledForTesting
                 || ChromeAccessibilityUtil.get().isAccessibilityEnabled();
+        RenderCoordinates coords = RenderCoordinates.fromWebContents(tab.getWebContents());
         PaintPreviewTabServiceJni.get().captureTabAndroid(mNativePaintPreviewTabService,
-                tab.getId(), tab.getWebContents(), isAccessibilityEnabled, successCallback);
+                tab.getId(), tab.getWebContents(), isAccessibilityEnabled,
+                coords.getPageScaleFactor(), coords.getScrollXPixInt(), coords.getScrollYPixInt(),
+                successCallback);
     }
 
     private void tabClosed(Tab tab) {
@@ -247,8 +251,8 @@ public class PaintPreviewTabService implements NativePaintPreviewServiceProvider
     @NativeMethods
     interface Natives {
         void captureTabAndroid(long nativePaintPreviewTabService, int tabId,
-                WebContents webContents, boolean accessibilityEnabled,
-                Callback<Boolean> successCallback);
+                WebContents webContents, boolean accessibilityEnabled, float pageScaleFactor,
+                int scrollOffsetX, int scrollOffsetY, Callback<Boolean> successCallback);
         void tabClosedAndroid(long nativePaintPreviewTabService, int tabId);
         boolean hasCaptureForTabAndroid(long nativePaintPreviewTabService, int tabId);
         void auditArtifactsAndroid(long nativePaintPreviewTabService, int[] activeTabIds);

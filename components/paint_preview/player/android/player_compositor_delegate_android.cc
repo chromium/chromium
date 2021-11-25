@@ -128,6 +128,7 @@ PlayerCompositorDelegateAndroid::PlayerCompositorDelegateAndroid(
 void PlayerCompositorDelegateAndroid::OnCompositorReady(
     CompositorStatus compositor_status,
     mojom::PaintPreviewBeginCompositeResponsePtr composite_response,
+    float page_scale_factor,
     std::unique_ptr<ui::AXTreeUpdate> ax_tree) {
   TRACE_EVENT0("paint_preview",
                "PlayerCompositorDelegateAndroid::OnCompositorReady");
@@ -188,7 +189,7 @@ void PlayerCompositorDelegateAndroid::OnCompositorReady(
   Java_PlayerCompositorDelegateImpl_onCompositorReady(
       env, java_ref_, j_root_frame_guid, j_all_guids, j_scroll_extents,
       j_scroll_offsets, j_subframe_count, j_subframe_ids, j_subframe_rects,
-      reinterpret_cast<intptr_t>(ax_tree.release()));
+      page_scale_factor, reinterpret_cast<intptr_t>(ax_tree.release()));
 }
 
 ScopedJavaLocalRef<jintArray>

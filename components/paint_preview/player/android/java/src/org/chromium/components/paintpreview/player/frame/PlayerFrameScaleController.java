@@ -86,7 +86,7 @@ public class PlayerFrameScaleController {
         }
         // Don't scale outside of the acceptable range. The value is still accumulated such that the
         // continuous gesture feels smooth.
-        final float initialScaleFactor = mMediatorDelegate.getInitialScaleFactor();
+        final float initialScaleFactor = mMediatorDelegate.getMinScaleFactor();
         final float lastUncommittedScaleFactor = mUncommittedScaleFactor;
         mUncommittedScaleFactor *= scaleFactor;
         // Compute a corrected and bounded scale factor when close to the max/min scale.
