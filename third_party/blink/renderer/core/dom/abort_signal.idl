@@ -11,9 +11,10 @@
         CallWith=ScriptState,
         Measure,
         NewObject
-    ] static AbortSignal abort();
+    ] static AbortSignal abort(optional any reason);
 
     readonly attribute boolean aborted;
+    [CallWith=ScriptState] readonly attribute any reason;
 
     attribute EventHandler onabort;
 };

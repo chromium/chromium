@@ -591,7 +591,7 @@ Request* Request::CreateRequestWithRequestOrString(
 
   // "If |signal| is not null, then make |r|’s signal follow |signal|."
   if (signal)
-    r->signal_->Follow(signal);
+    r->signal_->Follow(script_state, signal);
 
   // "If |r|'s request's mode is "no-cors", run these substeps:
   if (r->GetRequest()->Mode() == network::mojom::RequestMode::kNoCors) {
@@ -973,7 +973,7 @@ Request* Request::clone(ScriptState* script_state,
   headers->SetGuard(headers_->GetGuard());
   auto* signal =
       MakeGarbageCollected<AbortSignal>(ExecutionContext::From(script_state));
-  signal->Follow(signal_);
+  signal->Follow(script_state, signal_);
   return MakeGarbageCollected<Request>(script_state, request, headers, signal);
 }
 

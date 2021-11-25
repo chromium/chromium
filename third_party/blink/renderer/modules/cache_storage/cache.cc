@@ -276,7 +276,7 @@ class Cache::BarrierCallbackForPutResponse final
     if (stopped_)
       return;
     if (abort_controller_)
-      abort_controller_->abort();
+      abort_controller_->abort(resolver_->GetScriptState());
     blob_list_.clear();
     stopped_ = true;
   }
@@ -1117,8 +1117,10 @@ ScriptPromise Cache::AddAllImpl(ScriptState* script_state,
   for (wtf_size_t i = 0; i < request_list.size(); ++i) {
     // Chain the AbortSignal objects together so the requests will abort if
     // the |barrier_callback| encounters an error.
-    if (barrier_callback->Signal())
-      request_list[i]->signal()->Follow(barrier_callback->Signal());
+    if (barrier_callback->Signal()) {
+      request_list[i]->signal()->Follow(script_state,
+                                        barrier_callback->Signal());
+    }
 
     V8RequestInfo* info = MakeGarbageCollected<V8RequestInfo>(request_list[i]);
 

@@ -14,6 +14,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     attribute @@toStringTag
 [Worker]     getter aborted
 [Worker]     getter onabort
+[Worker]     getter reason
 [Worker]     method constructor
 [Worker]     setter onabort
 [Worker] interface AudioData

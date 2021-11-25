@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_DOM_ABORT_SIGNAL_H_
 
 #include "base/callback_forward.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/events/event_target.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
@@ -27,7 +28,9 @@ class CORE_EXPORT AbortSignal : public EventTargetWithInlineData {
 
   // abort_signal.idl
   static AbortSignal* abort(ScriptState*);
-  bool aborted() const { return aborted_flag_; }
+  static AbortSignal* abort(ScriptState*, ScriptValue reason);
+  ScriptValue reason(ScriptState*);
+  bool aborted() const { return !abort_reason_.IsEmpty(); }
   DEFINE_ATTRIBUTE_EVENT_LISTENER(abort, kAbort)
 
   const AtomicString& InterfaceName() const override;
@@ -54,21 +57,28 @@ class CORE_EXPORT AbortSignal : public EventTargetWithInlineData {
   // https://dom.spec.whatwg.org/#abortsignal-add. Run all algorithms that were
   // added by AddAlgorithm(), in order of addition, then fire an "abort"
   // event. Does nothing if called more than once.
-  void SignalAbort();
+  void SignalAbort(ScriptState*);
+  void SignalAbort(ScriptState*, ScriptValue reason);
 
   // The "follow" algorithm from the standard:
   // https://dom.spec.whatwg.org/#abortsignal-follow
   // |this| is the followingSignal described in the standard.
-  void Follow(AbortSignal* parentSignal);
+  void Follow(ScriptState*, AbortSignal* parentSignal);
 
   virtual bool IsTaskSignal() const { return false; }
 
   void Trace(Visitor*) const override;
 
  private:
-  void AddSignalAbortAlgorithm(AbortSignal*);
+  void SignalAbortWithParent(ScriptState*, AbortSignal* parent_signal);
+  void AddSignalAbortAlgorithm(ScriptState*, AbortSignal* dependent_signal);
 
-  bool aborted_flag_ = false;
+  // https://dom.spec.whatwg.org/#abortsignal-abort-reason
+  // There is one difference from the spec. The value is empty instead of
+  // undefined when this signal is not aborted. This is because
+  // ScriptValue::IsUndefined requires callers to enter a V8 context whereas
+  // ScriptValue::IsEmpty does not.
+  ScriptValue abort_reason_;
   Vector<base::OnceClosure> abort_algorithms_;
   HeapVector<Member<AbortSignal>> dependent_signals_;
   Member<ExecutionContext> execution_context_;

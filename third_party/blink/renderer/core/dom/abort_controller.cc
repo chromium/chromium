@@ -4,7 +4,9 @@
 
 #include "third_party/blink/renderer/core/dom/abort_controller.h"
 
+#include "third_party/blink/renderer/bindings/core/v8/v8_throw_dom_exception.h"
 #include "third_party/blink/renderer/core/dom/abort_signal.h"
+#include "third_party/blink/renderer/platform/bindings/exception_code.h"
 #include "third_party/blink/renderer/platform/heap/visitor.h"
 
 namespace blink {
@@ -18,8 +20,17 @@ AbortController::AbortController(AbortSignal* signal) : signal_(signal) {}
 
 AbortController::~AbortController() = default;
 
-void AbortController::abort() {
-  signal_->SignalAbort();
+void AbortController::abort(ScriptState* script_state) {
+  ScriptValue reason(
+      script_state->GetIsolate(),
+      V8ThrowDOMException::CreateOrEmpty(script_state->GetIsolate(),
+                                         DOMExceptionCode::kAbortError,
+                                         "signal is aborted without reason"));
+  abort(script_state, reason);
+}
+
+void AbortController::abort(ScriptState* script_state, ScriptValue reason) {
+  signal_->SignalAbort(script_state, reason);
 }
 
 void AbortController::Trace(Visitor* visitor) const {

@@ -555,7 +555,7 @@ TEST_P(DocumentTransitionTest, AbortSignal) {
       transition->prepare(script_state, &prepare_options, exception_state));
   EXPECT_EQ(GetState(transition), State::kPreparing);
 
-  abort_signal->SignalAbort();
+  abort_signal->SignalAbort(script_state);
   prepare_tester.WaitUntilSettled();
   EXPECT_TRUE(prepare_tester.IsRejected());
   EXPECT_EQ(GetState(transition), State::kIdle);

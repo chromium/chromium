@@ -10,5 +10,5 @@
     [CallWith=ExecutionContext, Measure] constructor();
     [SameObject] readonly attribute AbortSignal signal;
 
-    void abort();
+    [CallWith=ScriptState] void abort(optional any reason);
 };

@@ -13,6 +13,7 @@ interface AbortSignal : EventTarget
     attribute @@toStringTag
     getter aborted
     getter onabort
+    getter reason
     method constructor
     setter onabort
 interface BackgroundFetchEvent : ExtendableEvent

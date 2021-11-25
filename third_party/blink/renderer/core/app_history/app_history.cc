@@ -772,7 +772,7 @@ void AppHistory::FinalizeWithAbortedNavigationError(
     ongoing_navigate_event_ = nullptr;
   }
   if (ongoing_navigation_signal_) {
-    ongoing_navigation_signal_->SignalAbort();
+    ongoing_navigation_signal_->SignalAbort(script_state);
     ongoing_navigation_signal_ = nullptr;
   }
 

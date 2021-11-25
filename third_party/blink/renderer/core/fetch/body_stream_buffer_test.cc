@@ -697,7 +697,7 @@ TEST_F(BodyStreamBufferTest, AbortSignalMakesAborted) {
       scope.GetScriptState(), src, signal, /*cached_metadata_handler=*/nullptr);
 
   EXPECT_FALSE(buffer->IsAborted());
-  signal->SignalAbort();
+  signal->SignalAbort(scope.GetScriptState());
   EXPECT_TRUE(buffer->IsAborted());
 }
 
@@ -729,7 +729,7 @@ TEST_F(BodyStreamBufferTest,
       scope.GetScriptState(), src, signal, /*cached_metadata_handler=*/nullptr);
 
   checkpoint.Call(1);
-  signal->SignalAbort();
+  signal->SignalAbort(scope.GetScriptState());
 
   checkpoint.Call(2);
   buffer->StartLoading(loader, client, ASSERT_NO_EXCEPTION);
@@ -766,7 +766,7 @@ TEST_F(BodyStreamBufferTest, AbortAfterStartLoadingCallsDataLoaderClientAbort) {
   buffer->StartLoading(loader, client, ASSERT_NO_EXCEPTION);
 
   checkpoint.Call(2);
-  signal->SignalAbort();
+  signal->SignalAbort(scope.GetScriptState());
 
   checkpoint.Call(3);
 }
@@ -802,7 +802,7 @@ TEST_F(BodyStreamBufferTest,
   test::RunPendingTasks();
 
   checkpoint.Call(2);
-  signal->SignalAbort();
+  signal->SignalAbort(scope.GetScriptState());
 
   checkpoint.Call(3);
 }

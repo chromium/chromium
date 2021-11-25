@@ -96,7 +96,7 @@ ScriptPromise DOMScheduler::postTask(
                                : kDefaultPriority;
     task_signal = CreateTaskSignalFor(priority);
     if (options->hasSignal())
-      task_signal->Follow(options->signal());
+      task_signal->Follow(script_state, options->signal());
   }
 
   DCHECK(task_signal);
