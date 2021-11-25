@@ -4222,7 +4222,7 @@ ci.fyi_windows_builder(
 
 ci.fyi_windows_builder(
     name = "Win x64 Builder (reclient compare)",
-    bootstrap = True,
+    builderless = True,
     builder_spec = builder_config.builder_spec(
         chromium_config = builder_config.chromium_config(
             config = "chromium",
