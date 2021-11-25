@@ -15,7 +15,9 @@ class CSSConditionRule : public CSSGroupingRule {
  public:
   ~CSSConditionRule() override;
 
+  // Prefer ConditionTextInternal for internal use. (Avoids UseCounter).
   virtual String conditionText() const;
+  virtual String ConditionTextInternal() const;
 
  protected:
   CSSConditionRule(StyleRuleCondition* condition_rule, CSSStyleSheet* parent);

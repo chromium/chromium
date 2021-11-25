@@ -1755,11 +1755,9 @@ std::unique_ptr<protocol::CSS::CSSMedia> InspectorCSSAgent::BuildMediaObject(
     has_media_query_items = true;
   }
 
-  // The |mediaText()| getter does not require an ExecutionContext as it is
-  // only used for setting/parsing new media queries and features.
   std::unique_ptr<protocol::CSS::CSSMedia> media_object =
       protocol::CSS::CSSMedia::create()
-          .setText(media->mediaText(/*execution_context=*/nullptr))
+          .setText(media->MediaTextInternal())
           .setSource(source)
           .build();
   if (has_media_query_items)
@@ -1865,7 +1863,7 @@ std::unique_ptr<protocol::CSS::CSSContainerQuery>
 InspectorCSSAgent::BuildContainerQueryObject(CSSContainerRule* rule) {
   std::unique_ptr<protocol::CSS::CSSContainerQuery> container_query_object =
       protocol::CSS::CSSContainerQuery::create()
-          .setText(rule->conditionText())
+          .setText(rule->ConditionTextInternal())
           .build();
 
   auto it =

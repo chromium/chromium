@@ -42,7 +42,7 @@ String CSSSupportsRule::cssText() const {
   StringBuilder result;
 
   result.Append("@supports ");
-  result.Append(conditionText());
+  result.Append(ConditionTextInternal());
   result.Append(" {\n");
   AppendCSSTextForItems(result);
   result.Append('}');

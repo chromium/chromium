@@ -18,10 +18,12 @@
 #include "third_party/blink/renderer/core/css/cascade_layer_map.h"
 #include "third_party/blink/renderer/core/css/counter_style.h"
 #include "third_party/blink/renderer/core/css/css_font_selector.h"
+#include "third_party/blink/renderer/core/css/css_media_rule.h"
 #include "third_party/blink/renderer/core/css/css_rule_list.h"
 #include "third_party/blink/renderer/core/css/css_style_rule.h"
 #include "third_party/blink/renderer/core/css/css_style_sheet.h"
 #include "third_party/blink/renderer/core/css/css_test_helpers.h"
+#include "third_party/blink/renderer/core/css/media_query_list.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_context.h"
 #include "third_party/blink/renderer/core/css/properties/css_property_ref.h"
 #include "third_party/blink/renderer/core/css/resolver/scoped_style_resolver.h"
@@ -33,6 +35,7 @@
 #include "third_party/blink/renderer/core/dom/slot_assignment_engine.h"
 #include "third_party/blink/renderer/core/dom/text.h"
 #include "third_party/blink/renderer/core/frame/frame_test_helpers.h"
+#include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/frame/viewport_data.h"
@@ -3151,6 +3154,220 @@ TEST_F(StyleEngineTest, MediaQueryAffectedByViewportSanityCheck) {
   GetDocument().body()->setInnerHTML("<audio controls>");
   UpdateAllLifecyclePhases();
   EXPECT_FALSE(GetStyleEngine().MediaQueryAffectedByViewportChange());
+}
+
+TEST_F(StyleEngineTest, CSSMatchMediaUnknownUseCounter) {
+  ScopedCSSMediaQueries4ForTest media_queries_4_flag(false);
+
+  UpdateAllLifecyclePhases();
+
+  {
+    MediaQueryList* mql =
+        GetDocument().domWindow()->matchMedia("(min-width: 0px)");
+    ASSERT_TRUE(mql);
+    mql->media();
+    EXPECT_FALSE(IsUseCounted(WebFeature::kCSSMatchMediaUnknown));
+    ClearUseCounter(WebFeature::kCSSMatchMediaUnknown);
+  }
+
+  {
+    MediaQueryList* mql =
+        GetDocument().domWindow()->matchMedia("(width: 100px) or (unknown)");
+    ASSERT_TRUE(mql);
+    mql->media();
+    // Should not be use-counted, because it's a real parse error without
+    // CSSMediaQueries4 enabled.
+    EXPECT_FALSE(IsUseCounted(WebFeature::kCSSMatchMediaUnknown));
+    ClearUseCounter(WebFeature::kCSSMatchMediaUnknown);
+  }
+
+  {
+    MediaQueryList* mql =
+        GetDocument().domWindow()->matchMedia("(unknown: 0px)");
+    ASSERT_TRUE(mql);
+    mql->media();
+    EXPECT_TRUE(IsUseCounted(WebFeature::kCSSMatchMediaUnknown));
+    ClearUseCounter(WebFeature::kCSSMatchMediaUnknown);
+  }
+
+  {
+    MediaQueryList* mql = GetDocument().domWindow()->matchMedia(
+        "not print and (width: 100px) and (unknown)");
+    ASSERT_TRUE(mql);
+    mql->media();
+    EXPECT_TRUE(IsUseCounted(WebFeature::kCSSMatchMediaUnknown));
+    ClearUseCounter(WebFeature::kCSSMatchMediaUnknown);
+  }
+}
+
+TEST_F(StyleEngineTest, CSSMediaListUnknownUseCounter) {
+  ScopedCSSMediaQueries4ForTest media_queries_4_flag(false);
+
+  UpdateAllLifecyclePhases();
+
+  {
+    GetDocument().body()->setInnerHTML(R"HTML(
+      <style media="(min-width: 0px)"></style>
+    )HTML");
+    auto* style =
+        DynamicTo<HTMLStyleElement>(GetDocument().QuerySelector("style"));
+    ASSERT_TRUE(style);
+    ASSERT_TRUE(style->sheet());
+    MediaList* media = style->sheet()->media();
+    ASSERT_TRUE(media);
+    media->mediaText(GetDocument().GetExecutionContext());
+    EXPECT_FALSE(IsUseCounted(WebFeature::kCSSMediaListUnknown));
+    ClearUseCounter(WebFeature::kCSSMediaListUnknown);
+  }
+
+  {
+    GetDocument().body()->setInnerHTML(R"HTML(
+      <style media="(width: 100px) or (unknown)"></style>
+    )HTML");
+    auto* style =
+        DynamicTo<HTMLStyleElement>(GetDocument().QuerySelector("style"));
+    ASSERT_TRUE(style);
+    ASSERT_TRUE(style->sheet());
+    MediaList* media = style->sheet()->media();
+    ASSERT_TRUE(media);
+    media->mediaText(GetDocument().GetExecutionContext());
+    // Should not be use-counted, because it's a real parse error without
+    // CSSMediaQueries4 enabled.
+    EXPECT_FALSE(IsUseCounted(WebFeature::kCSSMediaListUnknown));
+    ClearUseCounter(WebFeature::kCSSMediaListUnknown);
+  }
+
+  {
+    GetDocument().body()->setInnerHTML(R"HTML(
+      <style media="(unknown: 0px)"></style>
+    )HTML");
+    auto* style =
+        DynamicTo<HTMLStyleElement>(GetDocument().QuerySelector("style"));
+    ASSERT_TRUE(style);
+    ASSERT_TRUE(style->sheet());
+    MediaList* media = style->sheet()->media();
+    ASSERT_TRUE(media);
+    media->mediaText(GetDocument().GetExecutionContext());
+    EXPECT_TRUE(IsUseCounted(WebFeature::kCSSMediaListUnknown));
+    ClearUseCounter(WebFeature::kCSSMediaListUnknown);
+
+    media->MediaTextInternal();
+    EXPECT_FALSE(IsUseCounted(WebFeature::kCSSMediaListUnknown));
+    ClearUseCounter(WebFeature::kCSSMediaListUnknown);
+  }
+
+  {
+    GetDocument().body()->setInnerHTML(R"HTML(
+      <style media="not print and (width: 100px) and (unknown)"></style>
+    )HTML");
+    auto* style =
+        DynamicTo<HTMLStyleElement>(GetDocument().QuerySelector("style"));
+    ASSERT_TRUE(style);
+    ASSERT_TRUE(style->sheet());
+    MediaList* media = style->sheet()->media();
+    ASSERT_TRUE(media);
+    media->mediaText(GetDocument().GetExecutionContext());
+    EXPECT_TRUE(IsUseCounted(WebFeature::kCSSMediaListUnknown));
+    ClearUseCounter(WebFeature::kCSSMediaListUnknown);
+
+    media->MediaTextInternal();
+    EXPECT_FALSE(IsUseCounted(WebFeature::kCSSMediaListUnknown));
+    ClearUseCounter(WebFeature::kCSSMediaListUnknown);
+  }
+}
+
+TEST_F(StyleEngineTest, CSSOMMediaConditionUnknownUseCounter) {
+  ScopedCSSMediaQueries4ForTest media_queries_4_flag(false);
+
+  GetDocument().body()->setInnerHTML(R"HTML(
+    <style id=style>
+      @media (min-width: 100px) {}
+      @media (width: 100px) or (unknown) {}
+      @media (unknown: 0px) {}
+      @media not print and (width: 100px) and (unknown) {}
+    </style>
+  )HTML");
+  UpdateAllLifecyclePhases();
+
+  {
+    GetDocument().body()->setInnerHTML(R"HTML(
+      <style>
+        @media (min-width: 100px) {}
+      </style>
+    )HTML");
+    auto* style =
+        DynamicTo<HTMLStyleElement>(GetDocument().QuerySelector("style"));
+    ASSERT_TRUE(style);
+    ASSERT_TRUE(style->sheet());
+    ASSERT_EQ(1u, style->sheet()->length());
+    auto* rule = DynamicTo<CSSMediaRule>(style->sheet()->item(0));
+    ASSERT_TRUE(rule);
+    rule->conditionText();
+    EXPECT_FALSE(IsUseCounted(WebFeature::kCSSOMMediaConditionUnknown));
+    ClearUseCounter(WebFeature::kCSSOMMediaConditionUnknown);
+  }
+
+  {
+    GetDocument().body()->setInnerHTML(R"HTML(
+      <style>
+        @media (width: 100px) or (unknown) {}
+      </style>
+    )HTML");
+    auto* style =
+        DynamicTo<HTMLStyleElement>(GetDocument().QuerySelector("style"));
+    ASSERT_TRUE(style);
+    ASSERT_TRUE(style->sheet());
+    ASSERT_EQ(1u, style->sheet()->length());
+    auto* rule = DynamicTo<CSSMediaRule>(style->sheet()->item(0));
+    ASSERT_TRUE(rule);
+    rule->conditionText();
+    EXPECT_FALSE(IsUseCounted(WebFeature::kCSSOMMediaConditionUnknown));
+    ClearUseCounter(WebFeature::kCSSOMMediaConditionUnknown);
+  }
+
+  {
+    GetDocument().body()->setInnerHTML(R"HTML(
+      <style>
+        @media (unknown: 0px) {}
+      </style>
+    )HTML");
+    auto* style =
+        DynamicTo<HTMLStyleElement>(GetDocument().QuerySelector("style"));
+    ASSERT_TRUE(style);
+    ASSERT_TRUE(style->sheet());
+    ASSERT_EQ(1u, style->sheet()->length());
+    auto* rule = DynamicTo<CSSMediaRule>(style->sheet()->item(0));
+    ASSERT_TRUE(rule);
+    rule->conditionText();
+    EXPECT_TRUE(IsUseCounted(WebFeature::kCSSOMMediaConditionUnknown));
+    ClearUseCounter(WebFeature::kCSSOMMediaConditionUnknown);
+
+    rule->ConditionTextInternal();
+    EXPECT_FALSE(IsUseCounted(WebFeature::kCSSOMMediaConditionUnknown));
+    ClearUseCounter(WebFeature::kCSSOMMediaConditionUnknown);
+  }
+
+  {
+    GetDocument().body()->setInnerHTML(R"HTML(
+      <style>
+        @media not print and (width: 100px) and (unknown) {}
+      </style>
+    )HTML");
+    auto* style =
+        DynamicTo<HTMLStyleElement>(GetDocument().QuerySelector("style"));
+    ASSERT_TRUE(style);
+    ASSERT_TRUE(style->sheet());
+    ASSERT_EQ(1u, style->sheet()->length());
+    auto* rule = DynamicTo<CSSMediaRule>(style->sheet()->item(0));
+    ASSERT_TRUE(rule);
+    rule->conditionText();
+    EXPECT_TRUE(IsUseCounted(WebFeature::kCSSOMMediaConditionUnknown));
+    ClearUseCounter(WebFeature::kCSSOMMediaConditionUnknown);
+
+    rule->ConditionTextInternal();
+    EXPECT_FALSE(IsUseCounted(WebFeature::kCSSOMMediaConditionUnknown));
+    ClearUseCounter(WebFeature::kCSSOMMediaConditionUnknown);
+  }
 }
 
 TEST_F(StyleEngineTest, RemoveDeclaredPropertiesEmptyRegistry) {

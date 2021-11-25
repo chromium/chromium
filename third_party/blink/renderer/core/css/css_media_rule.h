@@ -31,7 +31,7 @@ namespace blink {
 
 class StyleRuleMedia;
 
-class CSSMediaRule final : public CSSConditionRule {
+class CORE_EXPORT CSSMediaRule final : public CSSConditionRule {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
@@ -40,7 +40,9 @@ class CSSMediaRule final : public CSSConditionRule {
 
   void Reattach(StyleRuleBase*) override;
   String cssText() const override;
+  // Prefer ConditionTextInternal for internal use. (Avoids UseCounter).
   String conditionText() const override;
+  String ConditionTextInternal() const override;
 
   MediaList* media() const;
 

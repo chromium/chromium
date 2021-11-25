@@ -60,6 +60,7 @@ class CORE_EXPORT MediaQuerySet : public RefCounted<MediaQuerySet> {
   PhysicalAxes QueriedAxes() const;
 
   String MediaText() const;
+  bool HasUnknown() const;
 
   scoped_refptr<MediaQuerySet> Copy() const {
     return base::AdoptRef(new MediaQuerySet(*this));
@@ -86,13 +87,15 @@ class MediaList final : public ScriptWrappable {
                     ExceptionState&);
   void appendMedium(const ExecutionContext*, const String& new_medium);
 
-  // Note that this getter doesn't require the ExecutionContext, but the
-  // attribute is marked as [CallWith=ExecutionContext] so that the setter can
-  // have access to the ExecutionContext.
-  String mediaText(const ExecutionContext*) const {
-    return media_queries_->MediaText();
-  }
+  // Note that this getter doesn't require the ExecutionContext (except for
+  // crbug.com/1268860 use-counting), but the attribute is marked as
+  // [CallWith=ExecutionContext] so that the setter can have access to the
+  // ExecutionContext.
+  //
+  // Prefer MediaTextInternal for internal use. (Avoids use-counter).
+  CORE_EXPORT String mediaText(ExecutionContext*) const;
   void setMediaText(const ExecutionContext*, const String&);
+  String MediaTextInternal() const { return media_queries_->MediaText(); }
 
   // Not part of CSSOM.
   CSSRule* ParentRule() const { return parent_rule_; }

@@ -60,6 +60,7 @@ class CORE_EXPORT MediaQuery {
   MediaQuery(const MediaQuery&);
   ~MediaQuery();
 
+  bool HasUnknown() const { return has_unknown_; }
   RestrictorType Restrictor() const;
   PhysicalAxes QueriedAxes() const;
   const MediaQueryExpNode* ExpNode() const;

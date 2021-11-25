@@ -23,7 +23,11 @@
 #include "third_party/blink/renderer/core/css/css_style_sheet.h"
 #include "third_party/blink/renderer/core/css/media_query_exp.h"
 #include "third_party/blink/renderer/core/css/parser/media_query_parser.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
+#include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
 namespace blink {
@@ -164,6 +168,14 @@ String MediaQuerySet::MediaText() const {
   return text.ReleaseString();
 }
 
+bool MediaQuerySet::HasUnknown() const {
+  for (const auto& media_query : QueryVector()) {
+    if (media_query->HasUnknown())
+      return true;
+  }
+  return false;
+}
+
 MediaList::MediaList(scoped_refptr<MediaQuerySet> media_queries,
                      CSSStyleSheet* parent_sheet)
     : media_queries_(media_queries),
@@ -175,6 +187,12 @@ MediaList::MediaList(scoped_refptr<MediaQuerySet> media_queries,
     : media_queries_(media_queries),
       parent_style_sheet_(nullptr),
       parent_rule_(parent_rule) {}
+
+String MediaList::mediaText(ExecutionContext* execution_context) const {
+  if (media_queries_->HasUnknown())
+    UseCounter::Count(execution_context, WebFeature::kCSSMediaListUnknown);
+  return MediaTextInternal();
+}
 
 void MediaList::setMediaText(const ExecutionContext* execution_context,
                              const String& value) {

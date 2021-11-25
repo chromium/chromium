@@ -24,6 +24,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSS_RULE_H_
 
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/frame/web_feature_forward.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -110,6 +111,8 @@ class CORE_EXPORT CSSRule : public ScriptWrappable {
   }
 
   const CSSParserContext* ParserContext(SecureContextMode) const;
+
+  void CountUse(WebFeature) const;
 
  private:
   bool VerifyParentIsCSSRule() const;

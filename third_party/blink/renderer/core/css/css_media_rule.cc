@@ -23,6 +23,7 @@
 #include "third_party/blink/renderer/core/css/css_media_rule.h"
 
 #include "third_party/blink/renderer/core/css/style_rule.h"
+#include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
 namespace blink {
@@ -50,6 +51,12 @@ String CSSMediaRule::cssText() const {
 }
 
 String CSSMediaRule::conditionText() const {
+  if (MediaQueries() && MediaQueries()->HasUnknown())
+    CountUse(WebFeature::kCSSOMMediaConditionUnknown);
+  return ConditionTextInternal();
+}
+
+String CSSMediaRule::ConditionTextInternal() const {
   if (!MediaQueries())
     return String();
   return MediaQueries()->MediaText();
