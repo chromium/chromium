@@ -89700,6 +89700,11 @@ others/histograms.xml -->
   <int value="4" label="STORAGE"/>
 </enum>
 
+<enum name="WebApkUninstallSourceChromeOS">
+  <int value="0" label="Uninstalled from Ash"/>
+  <int value="1" label="Uninstalled from ARC"/>
+</enum>
+
 <enum name="WebApkUpdateRequestQueued">
   <int value="0" label="Queued for the first time"/>
   <int value="1" label="Queued for the second time"/>

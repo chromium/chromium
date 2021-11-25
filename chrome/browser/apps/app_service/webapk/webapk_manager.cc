@@ -14,6 +14,7 @@
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/webapk/webapk_install_queue.h"
+#include "chrome/browser/apps/app_service/webapk/webapk_metrics.h"
 #include "chrome/browser/apps/app_service/webapk/webapk_prefs.h"
 #include "chrome/browser/ash/apps/apk_web_app_service.h"
 #include "chrome/browser/ash/arc/arc_util.h"
@@ -242,16 +243,31 @@ void WebApkManager::OnPackageRemoved(const std::string& package_name,
   //    - The app became ineligible for having a Web APK (e.g., the Share Target
   //      was removed)
   //    In both cases, we just need to remove the WebAPK from prefs.
-  // 2. The WebAPK was uninstalled on the Android side (through Android
-  //    settings). In this case, we need to remove the WebAPK and also remove
-  //    the Chrome-side app.
-  //
-  // So in summary, we always remove the WebAPK from prefs, and also remove the
-  // app if it is installed and still eligible to have a WebAPK.
+  // 2. The WebAPK was uninstalled through Android settings. In this case, the
+  //    Chrome OS-side app will still be installed and eligible for a WebAPK.
 
-  webapk_prefs::RemoveWebApkByPackageName(profile_, package_name);
   // TODO(crbug.com/1200199): Remove the web app as well, if it is still
   // installed and eligible, and WebAPKs are not disabled by policy.
+  absl::optional<std::string> app_id =
+      webapk_prefs::RemoveWebApkByPackageName(profile_, package_name);
+
+  if (!uninstalled || !app_id.has_value()) {
+    return;
+  }
+
+  bool is_installed_and_eligible = false;
+  proxy_->AppRegistryCache().ForOneApp(
+      app_id.value(), [&](const AppUpdate& update) {
+        is_installed_and_eligible = IsAppEligibleForWebApk(update);
+      });
+
+  // Record a metric so we can determine how often WebAPKs are uninstalled from
+  // Android settings.
+  WebApkUninstallSource uninstall_source = is_installed_and_eligible
+                                               ? WebApkUninstallSource::kArc
+                                               : WebApkUninstallSource::kAsh;
+  base::UmaHistogramEnumeration(kWebApkUninstallSourceHistogram,
+                                uninstall_source);
 }
 
 void WebApkManager::OnArcPlayStoreEnabledChanged(bool enabled) {

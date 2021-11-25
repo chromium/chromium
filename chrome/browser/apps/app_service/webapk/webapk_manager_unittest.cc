@@ -17,6 +17,7 @@
 #include "chrome/browser/apps/app_service/app_service_test.h"
 #include "chrome/browser/apps/app_service/webapk/webapk_install_queue.h"
 #include "chrome/browser/apps/app_service/webapk/webapk_install_task.h"
+#include "chrome/browser/apps/app_service/webapk/webapk_metrics.h"
 #include "chrome/browser/apps/app_service/webapk/webapk_prefs.h"
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_list_prefs.h"
@@ -220,12 +221,15 @@ TEST_F(WebApkManagerTest, RemovesAppUninstalledFromChrome) {
   apps::webapk_prefs::AddWebApk(profile(), app_id, kTestWebApkPackageName);
   StartWebApkManager();
   arc_test()->app_instance()->SendRefreshPackageList({});
+  base::HistogramTester histograms;
 
   app_service_proxy()->UninstallSilently(
       app_id, apps::mojom::UninstallSource::kUnknown);
   app_service_test()->FlushMojoCalls();
 
   ASSERT_FALSE(apps::webapk_prefs::GetWebApkPackageName(profile(), app_id));
+  histograms.ExpectBucketCount(apps::kWebApkUninstallSourceHistogram,
+                               apps::WebApkUninstallSource::kAsh, 1);
 }
 
 TEST_F(WebApkManagerTest, QueuesUpdatedApp) {

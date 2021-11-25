@@ -17,6 +17,8 @@ const char kWebApkArcUpdateResultHistogram[] =
     "ChromeOS.WebAPK.Update.ArcInstallResult";
 const char kWebApkMinterErrorCodeHistogram[] =
     "ChromeOS.WebAPK.MinterResponseOrErrorCode";
+const char kWebApkUninstallSourceHistogram[] =
+    "ChromeOS.WebApk.UninstallSource";
 
 void RecordWebApkInstallResult(bool is_update, WebApkInstallStatus result) {
   const char* histogram =
