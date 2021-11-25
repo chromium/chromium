@@ -150,13 +150,6 @@ void TextInput::InsertText(const std::u16string& text,
 }
 
 void TextInput::InsertChar(const ui::KeyEvent& event) {
-  char16_t ch = event.GetCharacter();
-  if (u_isprint(ch)) {
-    InsertText(
-        std::u16string(1, ch),
-        ui::TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText);
-    return;
-  }
   // TextInput is currently used only for Lacros, and this is the
   // short term workaround not to duplicate KeyEvent there.
   // This is what we do for ARC, which is being removed in the near

@@ -319,8 +319,7 @@ TEST_F(TextInputTest, InsertCharNormalKey) {
   char16_t ch = 'x';
   ui::KeyEvent ev(ch, ui::VKEY_X, ui::DomCode::NONE, 0);
 
-  EXPECT_CALL(*delegate(), Commit(std::u16string(1, ch))).Times(1);
-  EXPECT_CALL(*delegate(), SendKey(_)).Times(0);
+  EXPECT_CALL(*delegate(), SendKey(testing::Ref(ev))).Times(1);
   text_input()->InsertChar(ev);
 }
 
