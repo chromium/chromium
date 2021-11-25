@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_TEXT_DECORATION_INFO_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_TEXT_DECORATION_INFO_H_
 
+#include "base/types/strong_alias.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/layout/geometry/physical_offset.h"
@@ -31,6 +32,8 @@ enum class ResolvedUnderlinePosition {
   kOver
 };
 
+using MinimumThickness1 = base::StrongAlias<class MinimumThickness1Tag, bool>;
+
 // Container for computing and storing information for text decoration
 // invalidation and painting. See also
 // https://www.w3.org/TR/css-text-decor-3/#painting-order
@@ -46,6 +49,7 @@ class CORE_EXPORT TextDecorationInfo {
       const Font& scaled_font,
       const absl::optional<AppliedTextDecoration> selection_text_decoration,
       const ComputedStyle* decorating_box_style,
+      MinimumThickness1 minimum_thickness1 = MinimumThickness1(true),
       float scaling_factor = 1.0f);
 
   // Set the decoration to use when painting and returning values.
@@ -121,6 +125,7 @@ class CORE_EXPORT TextDecorationInfo {
   const float scaling_factor_;
   ResolvedUnderlinePosition underline_position_;
   gfx::PointF local_origin_;
+  const bool minimum_thickness_is_one_;
   bool antialias_;
   Vector<float> applied_decorations_thickness_;
   int decoration_index_;

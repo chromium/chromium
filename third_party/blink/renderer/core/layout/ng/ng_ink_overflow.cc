@@ -513,9 +513,15 @@ LayoutRect NGInkOverflow::ComputeTextDecorationOverflow(
   // Use a zero offset because all offsets
   // are applied to the ink overflow after it has been computed.
   PhysicalOffset offset;
-  TextDecorationInfo decoration_info(offset, ink_overflow.Width(),
-                                     style.GetFontBaseline(), style,
-                                     scaled_font, absl::nullopt, nullptr);
+  // Ideally we should pass MinimumThickness1(false) if this function is
+  // called for NGFragmentItem::kSvgText. However it requires to add arguments
+  // to some functions.
+  // We pass MinimumTHickness1(true) even for kSvgText.  it's acceptable
+  // because it just makes the resultant ink overflow slightly larger.
+  const MinimumThickness1 kMinimumThicknessIsOne(true);
+  TextDecorationInfo decoration_info(
+      offset, ink_overflow.Width(), style.GetFontBaseline(), style, scaled_font,
+      absl::nullopt, nullptr, kMinimumThicknessIsOne);
   NGTextDecorationOffset decoration_offset(decoration_info.Style(), style,
                                            nullptr);
   const Vector<AppliedTextDecoration>& decorations =

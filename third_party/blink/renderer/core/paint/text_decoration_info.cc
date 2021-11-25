@@ -54,8 +54,10 @@ static bool ShouldSetDecorationAntialias(const ComputedStyle& style) {
 static float ComputeDecorationThickness(
     const TextDecorationThickness text_decoration_thickness,
     float computed_font_size,
+    float minimum_thickness,
     const SimpleFontData* font_data) {
-  float auto_underline_thickness = std::max(1.f, computed_font_size / 10.f);
+  float auto_underline_thickness =
+      std::max(minimum_thickness, computed_font_size / 10.f);
 
   if (text_decoration_thickness.IsAuto())
     return auto_underline_thickness;
@@ -74,7 +76,7 @@ static float ComputeDecorationThickness(
     if (!font_underline_thickness)
       return auto_underline_thickness;
 
-    return std::max(1.f, font_underline_thickness.value());
+    return std::max(minimum_thickness, font_underline_thickness.value());
   }
 
   DCHECK(!text_decoration_thickness.IsFromFont());
@@ -84,7 +86,7 @@ static float ComputeDecorationThickness(
   float text_decoration_thickness_pixels =
       FloatValueForLength(thickness_length, font_size);
 
-  return std::max(1.f, text_decoration_thickness_pixels);
+  return std::max(minimum_thickness, text_decoration_thickness_pixels);
 }
 
 static enum StrokeStyle TextDecorationStyleToStrokeStyle(
@@ -121,6 +123,7 @@ TextDecorationInfo::TextDecorationInfo(
     const Font& scaled_font,
     const absl::optional<AppliedTextDecoration> selection_text_decoration,
     const ComputedStyle* decorating_box_style,
+    MinimumThickness1 minimum_thickness1,
     float scaling_factor)
     : style_(style),
       selection_text_decoration_(selection_text_decoration),
@@ -132,6 +135,7 @@ TextDecorationInfo::TextDecorationInfo(
       scaling_factor_(scaling_factor),
       underline_position_(ResolveUnderlinePosition(style_, baseline_type_)),
       local_origin_(gfx::PointF(local_origin)),
+      minimum_thickness_is_one_(minimum_thickness1),
       antialias_(ShouldSetDecorationAntialias(style)),
       decoration_index_(kUndefinedDecorationIndex) {
   DCHECK(font_data_);
@@ -226,13 +230,15 @@ enum StrokeStyle TextDecorationInfo::StrokeStyle() const {
 float TextDecorationInfo::ComputeUnderlineThickness(
     const TextDecorationThickness& applied_decoration_thickness,
     const ComputedStyle* decorating_box_style) {
+  const float minimum_thickness = minimum_thickness_is_one_ ? 1.0f : 0.0f;
   float thickness = 0;
   if ((underline_position_ ==
        ResolvedUnderlinePosition::kNearAlphabeticBaselineAuto) ||
       underline_position_ ==
           ResolvedUnderlinePosition::kNearAlphabeticBaselineFromFont) {
     thickness = ComputeDecorationThickness(applied_decoration_thickness,
-                                           computed_font_size_, font_data_);
+                                           computed_font_size_,
+                                           minimum_thickness, font_data_);
   } else {
     // Compute decorating box. Position and thickness are computed from the
     // decorating box.
@@ -241,11 +247,12 @@ float TextDecorationInfo::ComputeUnderlineThickness(
     if (decorating_box_style) {
       thickness = ComputeDecorationThickness(
           applied_decoration_thickness,
-          decorating_box_style->ComputedFontSize(),
+          decorating_box_style->ComputedFontSize(), minimum_thickness,
           decorating_box_style->GetFont().PrimaryFont());
     } else {
       thickness = ComputeDecorationThickness(applied_decoration_thickness,
-                                             computed_font_size_, font_data_);
+                                             computed_font_size_,
+                                             minimum_thickness, font_data_);
     }
   }
   return thickness;
