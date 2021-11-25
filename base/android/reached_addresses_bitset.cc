@@ -4,7 +4,6 @@
 
 #include "base/android/reached_addresses_bitset.h"
 
-#include "base/allocator/buildflags.h"
 #include "base/android/library_loader/anchor_functions.h"
 #include "base/android/library_loader/anchor_functions_buildflags.h"
 #include "base/check_op.h"
@@ -40,22 +39,11 @@ uint32_t g_text_bitfield[kTextBitfieldSize];
 // static
 ReachedAddressesBitset* ReachedAddressesBitset::GetTextBitset() {
 #if BUILDFLAG(SUPPORTS_CODE_ORDERING) && !defined(OFFICIAL_BUILD)
-  // When USE_BACKUP_REF_PTR is enabled ReachedAddressesBitset will have a
-  // non-trivial destructor. Check the USE_BACKUP_REF_PTR flag because
-  // NoDestructor does not allow a class with a trivial destructor.
-#if BUILDFLAG(USE_BACKUP_REF_PTR)
-  static base::NoDestructor<ReachedAddressesBitset> text_bitset(
-      kStartOfText, kEndOfText,
-      reinterpret_cast<std::atomic<uint32_t>*>(g_text_bitfield),
-      kTextBitfieldSize);
-  return text_bitset.get();
-#else
   static ReachedAddressesBitset text_bitset(
       kStartOfText, kEndOfText,
       reinterpret_cast<std::atomic<uint32_t>*>(g_text_bitfield),
       kTextBitfieldSize);
   return &text_bitset;
-#endif  // BUILDFLAG(USE_BACKUP_REF_PTR)
 #else
   return nullptr;
 #endif
