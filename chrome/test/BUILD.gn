@@ -1312,7 +1312,6 @@ if (!is_android && !is_fuchsia) {
       "//pdf:buildflags",
       "//pdf:features",
       "//ppapi/buildflags",
-      "//ppapi/shared_impl:test_support",
       "//printing/buildflags",
       "//rlz/buildflags",
       "//services/audio/public/cpp:test_support",
@@ -1365,17 +1364,11 @@ if (!is_android && !is_fuchsia) {
       "//chrome/test/data:web_ui_test_mojom_js_module",
       "//components/policy/proto",
       "//testing:test_scripts_shared",
-      "//third_party/private_membership:private_membership_proto",
-      "//third_party/shell-encryption:serialization_proto",
-
-      # TODO(thakis): Why do these need copying in browser_tests?
-      # content_browsertests uses the non-copied files instead.
-      "//ppapi:copy_test_files",
-      "//ppapi:copy_test_files2",
-      "//ppapi:ppapi_tests",
       "//testing/buildbot/filters:browser_tests_filters",
       "//testing/buildbot/filters:linux_trusty_rel_browser_tests_filters",
       "//third_party/mesa_headers",
+      "//third_party/private_membership:private_membership_proto",
+      "//third_party/shell-encryption:serialization_proto",
       "//third_party/widevine/cdm:widevine_test_license_server",
       "//tools/media_engagement_preload:generator",
       "//ui/webui/resources/cr_elements:modulize_runtime_data",
@@ -1411,10 +1404,6 @@ if (!is_android && !is_fuchsia) {
       "//chrome/test/data/cart/",
       "//media/test/data/",
       "//net/tools/testserver/",
-      "//ppapi/tests/test_case.html",
-      "//ppapi/tests/test_case.html.mock-http-headers",
-      "//ppapi/tests/test_page.css",
-      "//ppapi/tests/test_page.css.mock-http-headers",
       "//third_party/mocha/mocha.js",
       "//third_party/polymer/v1_0/components-chromium/iron-test-helpers/mock-interactions.js",
       "//third_party/pywebsocket3/src/mod_pywebsocket/",
@@ -2115,8 +2104,6 @@ if (!is_android && !is_fuchsia) {
       "data/webui/webui_resource_browsertest.cc",
       "gpu/webgl_infobar_browsertest.cc",
       "origin_policy/origin_policy_browsertest.cc",
-      "ppapi/ppapi_browsertest.cc",
-      "ppapi/ppapi_filechooser_browsertest.cc",
       "v8/wasm_trap_handler_browsertest.cc",
     ]
 
@@ -2154,6 +2141,30 @@ if (!is_android && !is_fuchsia) {
       deps += [
         "//components/pdf/browser",
         "//pdf:internal",
+      ]
+    }
+
+    if (enable_plugins) {
+      data += [
+        "//ppapi/tests/test_case.html",
+        "//ppapi/tests/test_case.html.mock-http-headers",
+        "//ppapi/tests/test_page.css",
+        "//ppapi/tests/test_page.css.mock-http-headers",
+      ]
+
+      data_deps += [
+        # TODO(thakis): Why do these need copying in browser_tests?
+        # content_browsertests uses the non-copied files instead.
+        "//ppapi:copy_test_files",
+        "//ppapi:copy_test_files2",
+        "//ppapi:ppapi_tests",
+      ]
+
+      deps += [ "//ppapi/shared_impl:test_support" ]
+
+      sources += [
+        "ppapi/ppapi_browsertest.cc",
+        "ppapi/ppapi_filechooser_browsertest.cc",
       ]
     }
 
@@ -8343,7 +8354,6 @@ if (!is_android && !is_fuchsia) {
       "../browser/webauth_interactive_uitest.cc",
       "//ui/base/clipboard/clipboard_unittest.cc",
       "base/interactive_ui_tests_main.cc",
-      "ppapi/ppapi_interactive_browsertest.cc",
     ]
 
     configs += [ "//build/config:precompiled_headers" ]
@@ -8747,6 +8757,10 @@ if (!is_android && !is_fuchsia) {
           "../browser/ui/webui/management/management_a11y_browsertest.h",
         ]
       }
+    }
+
+    if (enable_plugins) {
+      sources += [ "ppapi/ppapi_interactive_browsertest.cc" ]
     }
 
     if (enable_chrome_notifications) {
