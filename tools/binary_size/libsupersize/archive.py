@@ -1258,9 +1258,11 @@ def _AddUnattributedSectionSymbols(raw_symbols, section_ranges):
   # Create symbols for ELF sections not covered by existing symbols.
   logging.info('Searching for symbol gaps...')
   new_syms_by_section = collections.defaultdict(list)
+  seen_sections = set()
 
   for section_name, group in itertools.groupby(
       raw_symbols, lambda s: s.section_name):
+    seen_sections.add(section_name)
     # Get last Last symbol in group.
     for sym in group:
       pass
@@ -1283,9 +1285,12 @@ def _AddUnattributedSectionSymbols(raw_symbols, section_ranges):
   # Sections that should not bundle into ".other".
   unsummed_sections, summed_sections = models.ClassifySections(
       section_ranges.keys())
+  ret = []
   other_elf_symbols = []
   # Sort keys to ensure consistent order (> 1 sections may have address = 0).
   for section_name, (_, section_size) in list(section_ranges.items()):
+    if section_name in seen_sections:
+      continue
     # Handle sections that don't appear in |raw_symbols|.
     if (section_name not in unsummed_sections
         and section_name not in summed_sections):
@@ -1294,12 +1299,16 @@ def _AddUnattributedSectionSymbols(raw_symbols, section_ranges):
                         section_size,
                         full_name='** ELF Section: {}'.format(section_name)))
       _ExtendSectionRange(section_ranges, models.SECTION_OTHER, section_size)
+    else:
+      ret.append(
+          models.Symbol(section_name,
+                        section_size,
+                        full_name='** ELF Section: {}'.format(section_name)))
   other_elf_symbols.sort(key=lambda s: (s.address, s.full_name))
 
   # TODO(agrieve): It would probably simplify things to use a dict of
   #     section_name->raw_symbols while creating symbols.
   # Merge |new_syms_by_section| into |raw_symbols| while maintaining ordering.
-  ret = []
   for section_name, group in itertools.groupby(
       raw_symbols, lambda s: s.section_name):
     ret.extend(group)
