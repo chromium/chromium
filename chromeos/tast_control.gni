@@ -70,10 +70,6 @@ tast_disabled_tests_from_chrome_all = [
   "ui.DesktopControl",
   "ui.WindowControl",
 
-  # https://crbug.com/1269113: Flaky.
-  "graphics.KmsvncConnect",
-  "graphics.Smoke.chrome",
-
   # https://crbug.com/1269876: Flaky.
   "arc.TextToSpeech",
 
