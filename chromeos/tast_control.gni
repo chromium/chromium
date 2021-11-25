@@ -55,6 +55,7 @@ tast_disabled_tests_from_chrome_all = [
   "crostini.Launcher.system_wayland_bullseye_stable",
   "crostini.Launcher.system_wayland_buster_stable",
   "crostini.Launcher.system_x11_bullseye_stable",
+  "crostini.Launcher.system_x11_buster_stable",
 
   # crbug.com/1259127
   "ui.TabletOperations",
