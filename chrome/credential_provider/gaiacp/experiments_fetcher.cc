@@ -202,7 +202,7 @@ HRESULT ExperimentsFetcher::FetchAndStoreExperimentsInternal(
 
   uint32_t open_flags = base::File::FLAG_CREATE_ALWAYS |
                         base::File::FLAG_WRITE |
-                        base::File::FLAG_EXCLUSIVE_WRITE;
+                        base::File::FLAG_WIN_EXCLUSIVE_WRITE;
   std::unique_ptr<base::File> experiments_file = GetOpenedFileForUser(
       sid, open_flags, kGcpwExperimentsDirectory, kGcpwUserExperimentsFileName);
   if (!experiments_file) {

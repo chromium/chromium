@@ -241,7 +241,7 @@ HRESULT UserPoliciesManager::FetchAndStorePolicies(
 
   uint32_t open_flags = base::File::FLAG_CREATE_ALWAYS |
                         base::File::FLAG_WRITE |
-                        base::File::FLAG_EXCLUSIVE_WRITE;
+                        base::File::FLAG_WIN_EXCLUSIVE_WRITE;
   std::unique_ptr<base::File> policy_file = GetOpenedFileForUser(
       sid, open_flags, kGcpwPoliciesDirectory, kGcpwUserPolicyFileName);
   if (!policy_file) {
