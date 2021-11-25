@@ -25,13 +25,13 @@ ProtoValidation ValidateSource(const proto::Hyperlink& source) {
 
 ProtoValidation ValidateDescription(const proto::SiteDescription& description) {
   if (!description.has_description())
-    return ProtoValidation::kIncompleteDescription;
+    return ProtoValidation::kMissingDescriptionDescription;
   if (!description.has_name())
-    return ProtoValidation::kIncompleteDescription;
+    return ProtoValidation::kMissingDescriptionName;
   if (!description.has_lang())
-    return ProtoValidation::kIncompleteDescription;
+    return ProtoValidation::kMissingDescriptionLang;
   if (!description.has_source())
-    return ProtoValidation::kIncompleteDescription;
+    return ProtoValidation::kMissingDescriptionSource;
 
   return ValidateSource(description.source());
 }
@@ -56,11 +56,11 @@ ProtoValidation ValidateFirstSeen(const proto::SiteFirstSeen& first_seen) {
 
 ProtoValidation ValidateSiteInfo(const proto::SiteInfo& site_info) {
   if (!site_info.has_description() && !site_info.has_first_seen())
-    return ProtoValidation::kEmptySiteData;
+    return ProtoValidation::kEmptySiteInfo;
 
   ProtoValidation status = ProtoValidation::kValid;
   if (!site_info.has_description())
-    return ProtoValidation::kIncompleteDescription;
+    return ProtoValidation::kMissingDescription;
   status = ValidateDescription(site_info.description());
   if (status != ProtoValidation::kValid)
     return status;

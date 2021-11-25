@@ -117,7 +117,7 @@ TEST_F(AboutThisSiteServiceTest, InvalidResponse) {
       GURL("https://foo.com"), ukm::UkmRecorder::GetNewSourceID());
   EXPECT_FALSE(info.has_value());
   t.ExpectUniqueSample("Security.PageInfo.AboutThisSiteStatus",
-                       ProtoValidation::kIncompleteDescription, 1);
+                       ProtoValidation::kMissingDescriptionSource, 1);
 }
 
 // Tests that no response is handled.

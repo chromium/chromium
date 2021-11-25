@@ -1005,7 +1005,7 @@ IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewAboutThisSiteBrowserTest,
   ukm_recorder.ExpectEntrySourceHasUrl(entries[0], url);
   ukm_recorder.ExpectEntryMetric(
       entries[0], ukm::builders::AboutThisSiteStatus::kStatusName,
-      static_cast<int>(ProtoValidation::kIncompleteDescription));
+      static_cast<int>(ProtoValidation::kMissingDescriptionName));
 
   page_info->GetWidget()->CloseWithReason(
       views::Widget::ClosedReason::kEscKeyPressed);

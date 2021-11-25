@@ -18,15 +18,20 @@ enum class ProtoValidation {
   kValid = 0,
   kNoResult = 1,
   kMissingSiteInfo = 2,
-  kEmptySiteData = 3,
-  kIncompleteDescription = 4,
+  kEmptySiteInfo = 3,
+  // kIncompleteDescription = 4 deprecated.
   kIncompleteSource = 5,
   kInvalidSource = 6,
   kIncompleteTimeStamp = 7,
   kInvalidTimeStamp = 8,
   kUnknown = 9,
+  kMissingDescription = 10,
+  kMissingDescriptionDescription = 11,
+  kMissingDescriptionName = 12,
+  kMissingDescriptionLang = 13,
+  kMissingDescriptionSource = 14,
 
-  kMaxValue = kUnknown,
+  kMaxValue = kMissingDescriptionSource,
 };
 
 ProtoValidation ValidateMetadata(
