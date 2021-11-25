@@ -152,8 +152,7 @@ void AppServiceAppWindowShelfController::ActiveUserChanged(
   // Deactivates the running app windows in InstanceRegistry for the inactive
   // user, and activates the app windows for the active user.
   for (auto* window : window_list_) {
-    ash::ShelfID shelf_id = proxy_->InstanceRegistry().GetShelfId(
-        apps::Instance::InstanceKey::ForWindowBasedApp(window));
+    ash::ShelfID shelf_id = proxy_->InstanceRegistry().GetShelfId(window);
     if (!shelf_id.IsNull()) {
       RegisterWindow(window, shelf_id);
     } else {
@@ -332,8 +331,7 @@ void AppServiceAppWindowShelfController::OnWindowDestroying(
     // app window from the shelf. So if we can get the window from
     // InstanceRegistry, we should still destroy it from InstanceRegistry and
     // remove the app window from the shelf
-    app_id = app_service_instance_helper_->GetAppId(
-        apps::Instance::InstanceKey(window));
+    app_id = app_service_instance_helper_->GetAppId(window);
   }
 
   if (!app_id.empty() &&
@@ -726,8 +724,7 @@ ash::ShelfID AppServiceAppWindowShelfController::GetShelfId(
   // InstanceRegistry.
   for (auto* profile : profile_list_) {
     auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile);
-    shelf_id = proxy->InstanceRegistry().GetShelfId(
-        apps::Instance::InstanceKey::ForWindowBasedApp(window));
+    shelf_id = proxy->InstanceRegistry().GetShelfId(window);
     if (!shelf_id.IsNull())
       break;
   }

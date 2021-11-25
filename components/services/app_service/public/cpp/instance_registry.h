@@ -144,8 +144,14 @@ class InstanceRegistry {
   // returned in these cases will be arbitrary.
   InstanceState GetState(const aura::Window* window) const;
 
-  // Return the shelf id for the |instance_key|.
-  ash::ShelfID GetShelfId(const Instance::InstanceKey& instance_key) const;
+  // Return the shelf id for the `window`.
+  //
+  // Note: This interface is used for the standalone window, or the ash Chrome
+  // browser tab window, which has one instance only. For Lacros windows which
+  // might have multiple instances for tabs, this interface should not be
+  // called, since `window` might have multiple instances, and the ShelfID
+  // returned in these cases will be arbitrary.
+  ash::ShelfID GetShelfId(const aura::Window* window) const;
 
   // Return true if there is an instance for the |instance_key|.
   // TODO(crbug.com/1251501): Will be removed soon.

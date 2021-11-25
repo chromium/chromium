@@ -170,12 +170,13 @@ InstanceState InstanceRegistry::GetState(const aura::Window* window) const {
   return state;
 }
 
-ash::ShelfID InstanceRegistry::GetShelfId(
-    const Instance::InstanceKey& instance_key) const {
-  auto s_iter = instance_key_states_.find(instance_key);
-  return (s_iter != instance_key_states_.end())
-             ? ash::ShelfID(s_iter->second->AppId(), s_iter->second->LaunchId())
-             : ash::ShelfID();
+ash::ShelfID InstanceRegistry::GetShelfId(const aura::Window* window) const {
+  ash::ShelfID shelf_id;
+  ForInstancesWithWindow(
+      window, [&shelf_id](const apps::InstanceUpdate& update) {
+        shelf_id = ash::ShelfID(update.AppId(), update.LaunchId());
+      });
+  return shelf_id;
 }
 
 bool InstanceRegistry::Exists(const Instance::InstanceKey& instance_key) const {

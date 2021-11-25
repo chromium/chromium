@@ -91,9 +91,9 @@ class AppServiceInstanceRegistryHelper {
   // Return true if the app is opend in a browser.
   bool IsOpenedInBrowser(const std::string& app_id, aura::Window* window) const;
 
-  // Returns an app id for |instance_key| in InstanceRegistry. If there is no
-  // |instance_key| in InstanceRegistry, returns an empty string.
-  std::string GetAppId(const apps::Instance::InstanceKey& instance_key) const;
+  // Returns an app id for `window` in InstanceRegistry. If there is no `window`
+  // in InstanceRegistry, returns an empty string.
+  std::string GetAppId(const aura::Window* window) const;
 
  private:
   // Returns an app id to represent |contents| in InstanceRegistry. If there is
