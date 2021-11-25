@@ -295,6 +295,148 @@ IN_PROC_BROWSER_TEST_F(
       {}, FROM_HERE);
 }
 
+// Tests the case when the page starts fetching in a dedicated worker, goes to
+// BFcache, and then a redirection happens. The cached page should evicted in
+// this case.
+IN_PROC_BROWSER_TEST_F(BackForwardCacheWithDedicatedWorkerBrowserTest,
+                       FetchRedirectedWhileStoring) {
+  CreateHttpsServer();
+
+  net::test_server::ControllableHttpResponse fetch1_response(https_server(),
+                                                             "/fetch1");
+  net::test_server::ControllableHttpResponse fetch2_response(https_server(),
+                                                             "/fetch2");
+  ASSERT_TRUE(https_server()->Start());
+
+  GURL url_a(https_server()->GetURL("a.test", "/title1.html"));
+  GURL url_b(https_server()->GetURL("b.test", "/title1.html"));
+
+  // Navigate to A.
+  EXPECT_TRUE(NavigateToURL(shell(), url_a));
+  RenderFrameHostImpl* rfh_a = current_frame_host();
+  RenderFrameDeletedObserver delete_observer_rfh_a(rfh_a);
+
+  // Trigger a fetch in a dedicated worker.
+  std::string worker_script =
+      JsReplace(R"(
+    fetch($1);
+  )",
+                https_server()->GetURL("a.test", "/fetch1"));
+  EXPECT_TRUE(ExecJs(rfh_a, JsReplace(R"(
+    const blob = new Blob([$1]);
+    const blobURL = URL.createObjectURL(blob);
+    const worker = new Worker(blobURL);
+  )",
+                                      worker_script)));
+
+  fetch1_response.WaitForRequest();
+
+  // Navigate to B.
+  EXPECT_TRUE(NavigateToURL(shell(), url_b));
+
+  // Page A is initially stored in the back-forward cache.
+  EXPECT_TRUE(rfh_a->IsInBackForwardCache());
+
+  // Respond the fetch with a redirect.
+  fetch1_response.Send(
+      "HTTP/1.1 302 Moved Temporarily\r\n"
+      "Location: /fetch2\r\n\r\n");
+  fetch1_response.Done();
+
+  // Ensure that the request to /fetch2 was never sent (because the page is
+  // immediately evicted) by checking after 3 seconds.
+  base::RunLoop loop1;
+  base::OneShotTimer timer1;
+  timer1.Start(FROM_HERE, base::Seconds(3), loop1.QuitClosure());
+  loop1.Run();
+  EXPECT_EQ(nullptr, fetch2_response.http_request());
+
+  // Page A should be evicted from the back-forward cache.
+  delete_observer_rfh_a.WaitUntilDeleted();
+
+  // Go back to A.
+  web_contents()->GetController().GoBack();
+  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+  ExpectNotRestored(
+      {BackForwardCacheMetrics::NotRestoredReason::kNetworkRequestRedirected},
+      {}, {}, {}, {}, FROM_HERE);
+}
+
+// Tests the case when the page starts fetching in a nested dedicated worker,
+// goes to BFcache, and then a redirection happens. The cached page should
+// evicted in this case.
+IN_PROC_BROWSER_TEST_F(BackForwardCacheWithDedicatedWorkerBrowserTest,
+                       FetchRedirectedWhileStoring_Nested) {
+  CreateHttpsServer();
+
+  net::test_server::ControllableHttpResponse fetch1_response(https_server(),
+                                                             "/fetch1");
+  net::test_server::ControllableHttpResponse fetch2_response(https_server(),
+                                                             "/fetch2");
+
+  ASSERT_TRUE(https_server()->Start());
+
+  GURL url_a(https_server()->GetURL("a.test", "/title1.html"));
+  GURL url_b(https_server()->GetURL("b.test", "/title1.html"));
+
+  // Navigate to A.
+  EXPECT_TRUE(NavigateToURL(shell(), url_a));
+  RenderFrameHostImpl* rfh_a = current_frame_host();
+  RenderFrameDeletedObserver delete_observer_rfh_a(rfh_a);
+
+  // Trigger a fetch in a nested dedicated worker.
+  std::string child_worker_script =
+      JsReplace(R"(
+    fetch($1);
+  )",
+                https_server()->GetURL("a.test", "/fetch1"));
+  std::string parent_worker_script = JsReplace(R"(
+    const blob = new Blob([$1]);
+    const blobURL = URL.createObjectURL(blob);
+    const worker = new Worker(blobURL);
+  )",
+                                               child_worker_script);
+  EXPECT_TRUE(ExecJs(rfh_a, JsReplace(R"(
+    const blob = new Blob([$1]);
+    const blobURL = URL.createObjectURL(blob);
+    const worker = new Worker(blobURL);
+    worker.onmessage = () => { resolve(); }
+  )",
+                                      parent_worker_script)));
+
+  fetch1_response.WaitForRequest();
+
+  // Navigate to B.
+  EXPECT_TRUE(NavigateToURL(shell(), url_b));
+
+  // Page A is initially stored in the back-forward cache.
+  EXPECT_TRUE(rfh_a->IsInBackForwardCache());
+
+  // Respond the fetch with a redirect.
+  fetch1_response.Send(
+      "HTTP/1.1 302 Moved Temporarily\r\n"
+      "Location: /fetch2\r\n\r\n");
+  fetch1_response.Done();
+
+  // Ensure that the request to /fetch2 was never sent (because the page is
+  // immediately evicted) by checking after 3 seconds.
+  base::RunLoop loop2;
+  base::OneShotTimer timer2;
+  timer2.Start(FROM_HERE, base::Seconds(3), loop2.QuitClosure());
+  loop2.Run();
+  EXPECT_EQ(nullptr, fetch2_response.http_request());
+
+  // Page A should be evicted from the back-forward cache.
+  delete_observer_rfh_a.WaitUntilDeleted();
+
+  // Go back to A.
+  web_contents()->GetController().GoBack();
+  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+  ExpectNotRestored(
+      {BackForwardCacheMetrics::NotRestoredReason::kNetworkRequestRedirected},
+      {}, {}, {}, {}, FROM_HERE);
+}
+
 // TODO(https://crbug.com/154571): Shared workers are not available on Android.
 #if defined(OS_ANDROID)
 #define MAYBE_PageWithSharedWorkerNotCached \

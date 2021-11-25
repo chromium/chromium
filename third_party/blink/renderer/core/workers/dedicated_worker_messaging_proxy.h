@@ -72,7 +72,9 @@ class CORE_EXPORT DedicatedWorkerMessagingProxy
                           std::unique_ptr<SourceLocation>,
                           int exception_id);
 
-  void Freeze();
+  // Freezes the WorkerThread. `is_in_back_forward_cache` is true only when the
+  // page goes to back/forward cache.
+  void Freeze(bool is_in_back_forward_cache);
   void Resume();
 
   DedicatedWorkerObjectProxy& WorkerObjectProxy() {

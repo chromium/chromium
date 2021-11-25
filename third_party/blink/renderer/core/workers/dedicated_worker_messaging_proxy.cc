@@ -151,12 +151,12 @@ void DedicatedWorkerMessagingProxy::DidFailToFetchScript() {
   worker_object_->DispatchErrorEventForScriptFetchFailure();
 }
 
-void DedicatedWorkerMessagingProxy::Freeze() {
+void DedicatedWorkerMessagingProxy::Freeze(bool is_in_back_forward_cache) {
   DCHECK(IsParentContextThread());
   auto* worker_thread = GetWorkerThread();
   if (AskedToTerminate() || !worker_thread)
     return;
-  worker_thread->Freeze();
+  worker_thread->Freeze(is_in_back_forward_cache);
 }
 
 void DedicatedWorkerMessagingProxy::Resume() {

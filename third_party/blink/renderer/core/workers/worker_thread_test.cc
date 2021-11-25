@@ -554,7 +554,7 @@ TEST_F(WorkerThreadTest, MAYBE_TerminateFrozenScript) {
                           CrossThreadUnretained(&child_waitable)));
 
   // Freeze() enters a nested event loop where the kInternalTest should run.
-  worker_thread_->Freeze();
+  worker_thread_->Freeze(false /* is_in_back_forward_cache */);
   child_waitable.Wait();
 
   // Terminate() schedules a forcible termination task.
@@ -583,7 +583,7 @@ TEST_F(WorkerThreadTest, MAYBE_NestedPauseFreeze) {
 
   // Pause() enters a nested event loop where the kInternalTest should run.
   worker_thread_->Pause();
-  worker_thread_->Freeze();
+  worker_thread_->Freeze(false /* is_in_back_forward_cache */);
   child_waitable.Wait();
 
   // Resume Freeze.
@@ -628,7 +628,7 @@ TEST_F(WorkerThreadTest, MAYBE_NestedPauseFreezeNoInterrupts) {
 
   // Pause() enters a nested event loop where the kInternalTest should run.
   worker_thread_->Pause();
-  worker_thread_->Freeze();
+  worker_thread_->Freeze(false /* is_in_back_forward_cache */);
   child_waitable2.Wait();
 
   // Resume for Freeze.
