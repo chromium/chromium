@@ -832,7 +832,8 @@ ALWAYS_INLINE void* PartitionAllocGetSlotStartInBRPPool(void* ptr) {
 // This function is not a template, and can be used on either variant
 // (thread-safe or not) of the allocator. This relies on the two PartitionRoot<>
 // having the same layout, which is enforced by static_assert().
-ALWAYS_INLINE bool PartitionAllocIsValidPtrDelta(void* ptr, ptrdiff_t delta) {
+ALWAYS_INLINE bool PartitionAllocIsValidPtrDelta(void* ptr,
+                                                 ptrdiff_t delta_in_bytes) {
   // Required for pointers right past an allocation. See
   // |PartitionAllocGetSlotStartInBRPPool()|.
   void* adjusted_ptr =
@@ -844,7 +845,7 @@ ALWAYS_INLINE bool PartitionAllocIsValidPtrDelta(void* ptr, ptrdiff_t delta) {
       PartitionAllocGetDirectMapSlotStartInBRPPool(adjusted_ptr);
   if (UNLIKELY(directmap_old_slot_start)) {
     void* new_slot_start = PartitionAllocGetDirectMapSlotStartInBRPPool(
-        reinterpret_cast<char*>(ptr) + delta);
+        reinterpret_cast<char*>(ptr) + delta_in_bytes);
     return directmap_old_slot_start == new_slot_start;
   }
   auto* slot_span =
@@ -858,7 +859,7 @@ ALWAYS_INLINE bool PartitionAllocIsValidPtrDelta(void* ptr, ptrdiff_t delta) {
       reinterpret_cast<uintptr_t>(root->AdjustPointerForExtrasAdd(
           PartitionAllocGetSlotStartInBRPPool(ptr)));
   size_t user_data_size = slot_span->GetUsableSize(root);
-  uintptr_t new_ptr = reinterpret_cast<uintptr_t>(ptr) + delta;
+  uintptr_t new_ptr = reinterpret_cast<uintptr_t>(ptr) + delta_in_bytes;
 
   return user_data_start <= new_ptr &&
          // We use "greater then or equal" below because we want to include

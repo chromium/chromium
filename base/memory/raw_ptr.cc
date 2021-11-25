@@ -21,7 +21,13 @@ namespace base {
 
 namespace internal {
 
-void BackupRefPtrImpl::AcquireInternal(void* ptr) {
+void BackupRefPtrImpl::AcquireInternal(const volatile void* cv_ptr) {
+  // |const volatile| qualifiers are used only to compile with |T*| pointers
+  // passed by the caller that may have those qualifiers. From now on, the
+  // pointer value is used, but is never dereferenced.
+  //
+  // TODO(bartekn): Convert to |uintptr_t address|, incl. callees.
+  void* ptr = const_cast<void*>(cv_ptr);
 #if DCHECK_IS_ON() || BUILDFLAG(ENABLE_BACKUP_REF_PTR_SLOW_CHECKS)
   CHECK(IsManagedByPartitionAllocBRPPool(ptr));
 #endif
@@ -29,7 +35,13 @@ void BackupRefPtrImpl::AcquireInternal(void* ptr) {
   PartitionRefCountPointer(slot_start)->Acquire();
 }
 
-void BackupRefPtrImpl::ReleaseInternal(void* ptr) {
+void BackupRefPtrImpl::ReleaseInternal(const volatile void* cv_ptr) {
+  // |const volatile| qualifiers are used only to compile with |T*| pointers
+  // passed by the caller that may have those qualifiers. From now on, the
+  // pointer value is used, but is never dereferenced.
+  //
+  // TODO(bartekn): Convert to |uintptr_t address|, incl. callees.
+  void* ptr = const_cast<void*>(cv_ptr);
 #if DCHECK_IS_ON() || BUILDFLAG(ENABLE_BACKUP_REF_PTR_SLOW_CHECKS)
   CHECK(IsManagedByPartitionAllocBRPPool(ptr));
 #endif
@@ -38,7 +50,13 @@ void BackupRefPtrImpl::ReleaseInternal(void* ptr) {
     PartitionAllocFreeForRefCounting(slot_start);
 }
 
-bool BackupRefPtrImpl::IsPointeeAlive(void* ptr) {
+bool BackupRefPtrImpl::IsPointeeAlive(const volatile void* cv_ptr) {
+  // |const volatile| qualifiers are used only to compile with |T*| pointers
+  // passed by the caller that may have those qualifiers. From now on, the
+  // pointer value is used, but is never dereferenced.
+  //
+  // TODO(bartekn): Convert to |uintptr_t address|, incl. callees.
+  void* ptr = const_cast<void*>(cv_ptr);
 #if DCHECK_IS_ON() || BUILDFLAG(ENABLE_BACKUP_REF_PTR_SLOW_CHECKS)
   CHECK(IsManagedByPartitionAllocBRPPool(ptr));
 #endif
@@ -46,8 +64,15 @@ bool BackupRefPtrImpl::IsPointeeAlive(void* ptr) {
   return PartitionRefCountPointer(slot_start)->IsAlive();
 }
 
-bool BackupRefPtrImpl::IsValidDelta(void* ptr, ptrdiff_t delta) {
-  return PartitionAllocIsValidPtrDelta(ptr, delta);
+bool BackupRefPtrImpl::IsValidDelta(const volatile void* cv_ptr,
+                                    ptrdiff_t delta_in_bytes) {
+  // |const volatile| qualifiers are used only to compile with |T*| pointers
+  // passed by the caller that may have those qualifiers. From now on, the
+  // pointer value is used, but is never dereferenced.
+  //
+  // TODO(bartekn): Convert to |uintptr_t address|, incl. callees.
+  void* ptr = const_cast<void*>(cv_ptr);
+  return PartitionAllocIsValidPtrDelta(ptr, delta_in_bytes);
 }
 
 #if DCHECK_IS_ON() || BUILDFLAG(ENABLE_BACKUP_REF_PTR_SLOW_CHECKS)

@@ -79,22 +79,26 @@ static void ClearCounters() {
 struct RawPtrCountingNoOpImpl : base::internal::RawPtrNoOpImpl {
   using Super = base::internal::RawPtrNoOpImpl;
 
-  static ALWAYS_INLINE void* WrapRawPtr(void* ptr) {
+  template <typename T>
+  static ALWAYS_INLINE T* WrapRawPtr(T* ptr) {
     ++g_wrap_raw_ptr_cnt;
     return Super::WrapRawPtr(ptr);
   }
 
-  static ALWAYS_INLINE void* SafelyUnwrapPtrForDereference(void* wrapped_ptr) {
+  template <typename T>
+  static ALWAYS_INLINE T* SafelyUnwrapPtrForDereference(T* wrapped_ptr) {
     ++g_get_for_dereference_cnt;
     return Super::SafelyUnwrapPtrForDereference(wrapped_ptr);
   }
 
-  static ALWAYS_INLINE void* SafelyUnwrapPtrForExtraction(void* wrapped_ptr) {
+  template <typename T>
+  static ALWAYS_INLINE T* SafelyUnwrapPtrForExtraction(T* wrapped_ptr) {
     ++g_get_for_extraction_cnt;
     return Super::SafelyUnwrapPtrForExtraction(wrapped_ptr);
   }
 
-  static ALWAYS_INLINE void* UnsafelyUnwrapPtrForComparison(void* wrapped_ptr) {
+  template <typename T>
+  static ALWAYS_INLINE T* UnsafelyUnwrapPtrForComparison(T* wrapped_ptr) {
     ++g_get_for_comparison_cnt;
     return Super::UnsafelyUnwrapPtrForComparison(wrapped_ptr);
   }
