@@ -497,6 +497,68 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="History.Clusters.Backend.KeywordCache.AllKeywordPhraseCount"
+    units="count" expires_after="M101">
+  <owner>manukh@chromium.org</owner>
+  <owner>chrome-memories@google.com</owner>
+  <summary>
+    Logs the number of keyword phrases stored in the primary cache.
+
+    Each cluster can have multiple keyword phrases; each phrase consists of 1 or
+    more words.
+
+    Logged each time the primary cache is refreshed, i.e. on omnibox key stroke
+    limited to at most once every 2 hours, though clearing history items will
+    reset the cache timer.
+  </summary>
+</histogram>
+
+<histogram name="History.Clusters.Backend.KeywordCache.AllKeywordsCount"
+    units="count" expires_after="M101">
+  <owner>manukh@chromium.org</owner>
+  <owner>chrome-memories@google.com</owner>
+  <summary>
+    Logs the number of keywords stored in the primary cache.
+
+    Each cluster can have multiple keyword phrases; each phrase consists of 1 or
+    more words.
+
+    Logged each time the primary cache is refreshed, i.e. on omnibox key stroke
+    limited to at most once every 2 hours, though clearing history items will
+    reset the cache timer.
+  </summary>
+</histogram>
+
+<histogram name="History.Clusters.Backend.KeywordCache.ShortKeywordPhraseCount"
+    units="count" expires_after="M101">
+  <owner>manukh@chromium.org</owner>
+  <owner>chrome-memories@google.com</owner>
+  <summary>
+    Logs the number of keywords stored in the short cache.
+
+    Each cluster can have multiple keyword phrases; each phrase consists of 1 or
+    more words.
+
+    Logged each time the short cache is refreshed, i.e. on omnibox key stroke if
+    the primary cache is not stale and limited to at most once every 10 seconds.
+  </summary>
+</histogram>
+
+<histogram name="History.Clusters.Backend.KeywordCache.ShortKeywordsCount"
+    units="count" expires_after="M101">
+  <owner>manukh@chromium.org</owner>
+  <owner>chrome-memories@google.com</owner>
+  <summary>
+    Logs the number of keyword phrases stored in the short cache.
+
+    Each cluster can have multiple keyword phrases; each phrase consists of 1 or
+    more words.
+
+    Logged each time the short cache is refreshed, i.e. on omnibox key stroke if
+    the primary cache is not stale and limited to at most once every 10 seconds.
+  </summary>
+</histogram>
+
 <histogram name="History.Clusters.Backend.NumClustersReturned"
     units="number clusters returned" expires_after="2022-05-15">
   <owner>mcrouse@chromium.org</owner>

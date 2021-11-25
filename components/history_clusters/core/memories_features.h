@@ -38,6 +38,10 @@ extern const base::FeatureParam<int> kMaxVisitsToCluster;
 // `kPersistContextAnnotationsInHistoryDb` is true.
 extern const base::FeatureParam<int> kMaxDaysToCluster;
 
+// A soft cap on the number of keyword phrases to cache. If 0, there is no
+// limit.
+extern const base::FeatureParam<int> kMaxKeywordPhrases;
+
 // If enabled, updating clusters will persist the results to the history DB and
 // accessing clusters will retrieve them from the history DB. If disabled,
 // updating clusters is a no-op and accessing clusters will generate and return

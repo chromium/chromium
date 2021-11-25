@@ -893,6 +893,98 @@ TEST_F(HistoryClustersServiceTest, DoesQueryMatchAnyClusterSecondaryCache) {
   history::BlockUntilHistoryProcessesPendingRequests(history_service_.get());
 }
 
+TEST_F(HistoryClustersServiceTest, DoesQueryMatchAnyClusterMaxKeywordPhrases) {
+  base::HistogramTester histogram_tester;
+
+  // Set the max keyword phrases to 5.
+  scoped_feature_list_ = std::make_unique<base::test::ScopedFeatureList>();
+  scoped_feature_list_->InitAndEnableFeatureWithParameters(
+      kJourneys, {
+                     {kMaxKeywordPhrases.name, "5"},
+                 });
+
+  // Add visits.
+  const auto yesterday = base::Time::Now() - base::Days(1);
+  AddIncompleteVisit(1, 1, yesterday);
+  AddIncompleteVisit(2, 2, yesterday);
+  AddIncompleteVisit(3, 3, yesterday);
+  AddIncompleteVisit(4, 4, yesterday);
+  AddIncompleteVisit(5, 5, yesterday);
+  AddIncompleteVisit(6, 6, yesterday);
+  AddIncompleteVisit(7, 7, yesterday);
+
+  // Kick off cluster request.
+  EXPECT_FALSE(history_clusters_service_->DoesQueryMatchAnyCluster("peach"));
+  test_clustering_backend_->WaitForGetClustersCall();
+  ASSERT_EQ(test_clustering_backend_->LastClusteredVisits().size(), 7u);
+
+  // Create 4 clusters:
+  std::vector<history::AnnotatedVisit> visits =
+      test_clustering_backend_->LastClusteredVisits();
+  std::vector<history::Cluster> clusters;
+  // 1) A cluster with 4 phrases and 6 words. The next cluster's keywords should
+  // also be cached since we have less than 5 phrases.
+  clusters.push_back(
+      history::Cluster(0,
+                       {
+                           test_clustering_backend_->GetVisitById(1),
+                           test_clustering_backend_->GetVisitById(2),
+                       },
+                       {u"one", u"two", u"three", u"four five six"},
+                       /*should_show_on_prominent_ui_surfaces=*/true));
+  // 2) The 2nd cluster has only 1 visit. Since it's keywords won't be cached,
+  // they should not affect the max.
+  clusters.push_back(
+      history::Cluster(0,
+                       {
+                           test_clustering_backend_->GetVisitById(3),
+                       },
+                       {u"ignored not cached", u"elephant penguin kangaroo"},
+                       /*should_show_on_prominent_ui_surfaces=*/true));
+  // 3) With this 3rd cluster, we'll have 5 phrases and 7 words. Now that we've
+  // reached 5 phrases, the next cluster's keywords should not be cached.
+  clusters.push_back(
+      history::Cluster(0,
+                       {
+                           test_clustering_backend_->GetVisitById(4),
+                           test_clustering_backend_->GetVisitById(5),
+                       },
+                       {u"seven"},
+                       /*should_show_on_prominent_ui_surfaces=*/true));
+  // 4) The 4th cluster's keywords should not be cached since we've reached 5
+  // phrases.
+  clusters.push_back(
+      history::Cluster(0,
+                       {
+                           test_clustering_backend_->GetVisitById(6),
+                           test_clustering_backend_->GetVisitById(7),
+                       },
+                       {u"eight"},
+                       /*should_show_on_prominent_ui_surfaces=*/true));
+  test_clustering_backend_->FulfillCallback(clusters);
+  history_clusters_service_test_api_->FlushPostProcessingTaskRunner();
+
+  // The 1st cluster's phrases should always be cached.
+  EXPECT_TRUE(history_clusters_service_->DoesQueryMatchAnyCluster("one"));
+  EXPECT_TRUE(history_clusters_service_->DoesQueryMatchAnyCluster("six"));
+  // Phrases should be cached if we haven't reached 5 phrases even if we've
+  // reached 5 words.
+  EXPECT_TRUE(history_clusters_service_->DoesQueryMatchAnyCluster("seven"));
+  // Phrases after the first 5 won't be cached.
+  EXPECT_FALSE(history_clusters_service_->DoesQueryMatchAnyCluster("eight"));
+  // Phrases of cluster's with 1 visit won't be cached.
+  EXPECT_FALSE(history_clusters_service_->DoesQueryMatchAnyCluster("penguin"));
+
+  histogram_tester.ExpectUniqueSample(
+      "History.Clusters.Backend.KeywordCache.AllKeywordPhraseCount", 5, 1);
+  histogram_tester.ExpectUniqueSample(
+      "History.Clusters.Backend.KeywordCache.AllKeywordsCount", 7, 1);
+  histogram_tester.ExpectTotalCount(
+      "History.Clusters.Backend.KeywordCache.ShortKeywordPhraseCount", 0);
+  histogram_tester.ExpectTotalCount(
+      "History.Clusters.Backend.KeywordCache.ShortKeywordsCount", 0);
+}
+
 }  // namespace
 
 }  // namespace history_clusters

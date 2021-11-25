@@ -36,6 +36,11 @@ const base::FeatureParam<int> kMaxVisitsToCluster{
 const base::FeatureParam<int> kMaxDaysToCluster{&kJourneys,
                                                 "JourneysMaxDaysToCluster", 9};
 
+// 20k should be more than enough for most cases and should avoid consuming
+// large amounts of memory in extreme cases.
+const base::FeatureParam<int> kMaxKeywordPhrases{
+    &kJourneys, "JourneysMaxKeywordPhrases", 20000};
+
 const base::FeatureParam<bool> kPersistClustersInHistoryDb{
     &kJourneys, "JourneysPersistClustersInHistoryDb", false};
 
@@ -48,8 +53,8 @@ const base::FeatureParam<double> kMinScoreToAlwaysShowAboveTheFold{
 const base::FeatureParam<int> kNumVisitsToAlwaysShowAboveTheFold{
     &kJourneys, "JourneysNumVisitsToAlwaysShowAboveTheFold", 3};
 
-// Default to true, as this this new alternate action text was recommended by
-// our UX writers.
+// Default to true, as this new alternate action text was recommended by our UX
+// writers.
 const base::FeatureParam<bool> kAlternateOmniboxActionText{
     &kOmniboxAction, "JourneysAlternateOmniboxActionText", true};
 

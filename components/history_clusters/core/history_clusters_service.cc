@@ -585,6 +585,8 @@ void HistoryClustersService::PopulateClusterKeywordCache(
     std::unique_ptr<std::set<std::u16string>> keyword_accumulator,
     query_parser::QueryWordVector* cache,
     QueryClustersResult result) {
+  const size_t max_keyword_phrases = kMaxKeywordPhrases.Get();
+
   // Copy keywords from every cluster into a the accumulator set.
   for (auto& cluster : result.clusters) {
     if (cluster.visits.size() < 2) {
@@ -594,10 +596,26 @@ void HistoryClustersService::PopulateClusterKeywordCache(
     }
     keyword_accumulator->insert(cluster.keywords.begin(),
                                 cluster.keywords.end());
+
+    // Limit the cache size. It's possible for the `cache.size()` to exceed
+    // `max_keyword_phrases` since:
+    // 1) We cache all of a particular cluster's keywords if we haven't yet
+    //    reached the cap, even if doing so will exceed the cap.
+    // 2) We have 2 caches which are capped separately.
+    // 3) We cap the # of phrase, each of which may contain multiple words,
+    //    whereas `cache` contains individual words.
+    if (max_keyword_phrases != 0 &&
+        keyword_accumulator->size() >= max_keyword_phrases) {
+      break;
+    }
   }
 
-  // If there's still more to get, ask for another batch of keywords.
-  if (result.continuation_end_time) {
+  // Make a continuation request to get the next page of clusters and their
+  // keywords only if both 1) there is more clusters remaining, and 2) we
+  // haven't reached the soft cap `max_keyword_phrases` (or there is no cap).
+  if (result.continuation_end_time &&
+      (max_keyword_phrases == 0 ||
+       keyword_accumulator->size() < max_keyword_phrases)) {
     QueryClusters(
         /*query=*/"", begin_time, *result.continuation_end_time,
         kMaxCountForKeywordCacheBatch,
@@ -621,6 +639,23 @@ void HistoryClustersService::PopulateClusterKeywordCache(
     // Each `keyword` may itself have multiple terms that we need to extract.
     query_parser::QueryParser::ExtractQueryWords(base::i18n::ToLower(keyword),
                                                  cache);
+  }
+
+  // Record keyword phrase & keyword counts for the appropriate cache.
+  if (cache == &all_keywords_cache_) {
+    base::UmaHistogramCounts100000(
+        "History.Clusters.Backend.KeywordCache.AllKeywordPhraseCount",
+        static_cast<int>(keyword_accumulator->size()));
+    base::UmaHistogramCounts100000(
+        "History.Clusters.Backend.KeywordCache.AllKeywordsCount",
+        static_cast<int>(cache->size()));
+  } else {
+    base::UmaHistogramCounts100000(
+        "History.Clusters.Backend.KeywordCache.ShortKeywordPhraseCount",
+        static_cast<int>(keyword_accumulator->size()));
+    base::UmaHistogramCounts100000(
+        "History.Clusters.Backend.KeywordCache.ShortKeywordsCount",
+        static_cast<int>(cache->size()));
   }
 }
 
