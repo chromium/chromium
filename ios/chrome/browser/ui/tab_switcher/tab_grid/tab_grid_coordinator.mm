@@ -1058,6 +1058,7 @@
   if ([self isThumbStripEnabled] && isInPeekState &&
       level <= SceneActivationLevelBackground) {
     [panHandler setNextState:ViewRevealState::Hidden animated:NO];
+    [self dismissPopovers];
   }
 }
 
