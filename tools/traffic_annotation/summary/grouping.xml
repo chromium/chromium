@@ -43,6 +43,7 @@ hidden="true" so that these annotations don't show up in the document.
       <traffic_annotation unique_id="customization_wallpaper_downloader"/>
       <traffic_annotation unique_id="edu_account_login_profile_image_fetcher"/>
       <traffic_annotation unique_id="fast_pair_footprints_request"/>
+      <traffic_annotation unique_id="gaia_reauth_token_fetcher"/>
       <traffic_annotation unique_id="ime_url_downloader"/>
       <traffic_annotation unique_id="image_downloader"/>
       <traffic_annotation unique_id="kiosk_app_icon"/>

@@ -347,6 +347,11 @@ const base::Feature kCryptAuthV2DeviceSync{"CryptAuthV2DeviceSync",
 const base::Feature kCryptAuthV2Enrollment{"CryptAuthV2Enrollment",
                                            base::FEATURE_ENABLED_BY_DEFAULT};
 
+// Enables the Cryptohome recovery feature, which allows users to recover access
+// to their profile and Cryptohome after performing an online authentication.
+const base::Feature kCryptohomeRecoveryFlow{"CryptohomeRecoveryFlow",
+                                            base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enables dark/light mode feature.
 const base::Feature kDarkLightMode{"DarkLightMode",
                                    base::FEATURE_DISABLED_BY_DEFAULT};
@@ -1407,6 +1412,10 @@ bool IsClipboardHistoryScreenshotNudgeEnabled() {
 
 bool IsCompositingBasedThrottlingEnabled() {
   return base::FeatureList::IsEnabled(kCompositingBasedThrottling);
+}
+
+bool IsCryptohomeRecoveryFlowEnabled() {
+  return base::FeatureList::IsEnabled(kCryptohomeRecoveryFlow);
 }
 
 bool IsDarkLightModeEnabled() {

@@ -144,6 +144,8 @@ COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kCryptAuthV2DeviceSync;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kCryptAuthV2Enrollment;
+COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const base::Feature kCryptohomeRecoveryFlow;
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kDarkLightMode;
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kDemoModeSWA;
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kDeskTemplateSync;
@@ -511,6 +513,7 @@ COMPONENT_EXPORT(ASH_CONSTANTS)
 bool IsClipboardHistoryNudgeSessionResetEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsClipboardHistoryScreenshotNudgeEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsCompositingBasedThrottlingEnabled();
+COMPONENT_EXPORT(ASH_CONSTANTS) bool IsCryptohomeRecoveryFlowEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsDarkLightModeEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsDeepLinkingEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsDemoModeSWAEnabled();
