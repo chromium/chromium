@@ -45,6 +45,10 @@ class CONTENT_EXPORT FederatedAuthRequestImpl {
       blink::mojom::RequestMode mode,
       bool prefer_auto_sign_in,
       blink::mojom::FederatedAuthRequest::RequestIdTokenCallback);
+  void Revoke(const GURL& provider,
+              const std::string& client_id,
+              const std::string& account_id,
+              blink::mojom::FederatedAuthRequest::RevokeCallback);
   void Logout(std::vector<blink::mojom::LogoutRequestPtr> logout_requests,
               blink::mojom::FederatedAuthRequest::LogoutCallback);
 
@@ -60,6 +64,8 @@ class CONTENT_EXPORT FederatedAuthRequestImpl {
       FederatedIdentitySharingPermissionContextDelegate*);
 
  private:
+  bool HasPendingRequest() const;
+  GURL ResolveWellKnownUrl(const std::string& url);
   void OnWellKnownFetched(IdpNetworkRequestManager::FetchStatus status,
                           IdpNetworkRequestManager::Endpoints);
   void OnClientIdMetadataResponseReceived(
@@ -86,6 +92,10 @@ class CONTENT_EXPORT FederatedAuthRequestImpl {
   void CompleteRequest(blink::mojom::RequestIdTokenStatus,
                        const std::string& id_token);
   void CompleteLogoutRequest(blink::mojom::LogoutStatus);
+  void OnWellKnownFetchedForRevoke(IdpNetworkRequestManager::FetchStatus status,
+                                   IdpNetworkRequestManager::Endpoints);
+  void OnRevokeResponse(IdpNetworkRequestManager::RevokeResponse response);
+  void CompleteRevokeRequest(blink::mojom::RevokeStatus status);
 
   std::unique_ptr<IdpNetworkRequestManager> CreateNetworkManager(
       const GURL& provider);
@@ -156,6 +166,8 @@ class CONTENT_EXPORT FederatedAuthRequestImpl {
 
   base::queue<blink::mojom::LogoutRequestPtr> logout_requests_;
   blink::mojom::FederatedAuthRequest::LogoutCallback logout_callback_;
+
+  blink::mojom::FederatedAuthRequest::RevokeCallback revoke_callback_;
 
   base::WeakPtrFactory<FederatedAuthRequestImpl> weak_ptr_factory_{this};
 };

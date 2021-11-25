@@ -23,6 +23,7 @@
 using blink::mojom::LogoutStatus;
 using blink::mojom::RequestIdTokenStatus;
 using blink::mojom::RequestMode;
+using blink::mojom::RevokeStatus;
 using UserApproval = content::IdentityRequestDialogController::UserApproval;
 using LoginState = content::IdentityRequestAccount::LoginState;
 using SignInMode = content::IdentityRequestAccount::SignInMode;
@@ -63,7 +64,7 @@ void FederatedAuthRequestImpl::RequestIdToken(
     RequestMode mode,
     bool prefer_auto_sign_in,
     blink::mojom::FederatedAuthRequest::RequestIdTokenCallback callback) {
-  if (logout_callback_ || auth_request_callback_) {
+  if (HasPendingRequest()) {
     std::move(callback).Run(RequestIdTokenStatus::kErrorTooManyRequests, "");
     return;
   }
@@ -109,6 +110,39 @@ void FederatedAuthRequestImpl::RequestIdToken(
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
+void FederatedAuthRequestImpl::Revoke(
+    const GURL& provider,
+    const std::string& client_id,
+    const std::string& account_id,
+    blink::mojom::FederatedAuthRequest::RevokeCallback callback) {
+  if (HasPendingRequest()) {
+    std::move(callback).Run(RevokeStatus::kError);
+    return;
+  }
+
+  provider_ = provider;
+  client_id_ = client_id;
+  account_id_ = account_id;
+  revoke_callback_ = std::move(callback);
+
+  network_manager_ = CreateNetworkManager(provider);
+  if (!network_manager_) {
+    CompleteRevokeRequest(RevokeStatus::kError);
+    return;
+  }
+
+  if (!GetRequestPermissionContext() ||
+      !GetRequestPermissionContext()->HasRequestPermission(
+          origin_, url::Origin::Create(provider_))) {
+    CompleteRevokeRequest(RevokeStatus::kError);
+    return;
+  }
+
+  network_manager_->FetchIdpWellKnown(
+      base::BindOnce(&FederatedAuthRequestImpl::OnWellKnownFetchedForRevoke,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
 // TODO(kenrb): Depending on how this code evolves, it might make sense to
 // spin session management code into its own service. The prohibition on
 // making authentication requests and logout requests at the same time, while
@@ -118,7 +152,7 @@ void FederatedAuthRequestImpl::RequestIdToken(
 void FederatedAuthRequestImpl::Logout(
     std::vector<blink::mojom::LogoutRequestPtr> logout_requests,
     blink::mojom::FederatedAuthRequest::LogoutCallback callback) {
-  if (logout_callback_ || auth_request_callback_) {
+  if (HasPendingRequest()) {
     std::move(callback).Run(LogoutStatus::kErrorTooManyRequests);
     return;
   }
@@ -156,6 +190,20 @@ void FederatedAuthRequestImpl::Logout(
   DispatchOneLogout();
 }
 
+bool FederatedAuthRequestImpl::HasPendingRequest() const {
+  return auth_request_callback_ || logout_callback_ || revoke_callback_;
+}
+
+GURL FederatedAuthRequestImpl::ResolveWellKnownUrl(
+    const std::string& endpoint) {
+  if (endpoint.empty())
+    return GURL();
+  const url::Origin& idp_origin = url::Origin::Create(provider_);
+  GURL well_known_url =
+      idp_origin.GetURL().Resolve(IdpNetworkRequestManager::kWellKnownFilePath);
+  return well_known_url.Resolve(endpoint);
+}
+
 void FederatedAuthRequestImpl::OnWellKnownFetched(
     IdpNetworkRequestManager::FetchStatus status,
     IdpNetworkRequestManager::Endpoints endpoints) {
@@ -178,19 +226,11 @@ void FederatedAuthRequestImpl::OnWellKnownFetched(
     }
   }
 
-  auto ResolveUrl = [&](const std::string& endpoint) {
-    if (endpoint.empty())
-      return GURL();
-    const url::Origin& idp_origin = url::Origin::Create(provider_);
-    GURL well_known_url = idp_origin.GetURL().Resolve(
-        IdpNetworkRequestManager::kWellKnownFilePath);
-    return well_known_url.Resolve(endpoint);
-  };
-
-  endpoints_.idp = ResolveUrl(endpoints.idp);
-  endpoints_.token = ResolveUrl(endpoints.token);
-  endpoints_.accounts = ResolveUrl(endpoints.accounts);
-  endpoints_.client_id_metadata = ResolveUrl(endpoints.client_id_metadata);
+  endpoints_.idp = ResolveWellKnownUrl(endpoints.idp);
+  endpoints_.token = ResolveWellKnownUrl(endpoints.token);
+  endpoints_.accounts = ResolveWellKnownUrl(endpoints.accounts);
+  endpoints_.client_id_metadata =
+      ResolveWellKnownUrl(endpoints.client_id_metadata);
 
   switch (mode_) {
     case RequestMode::kMediated: {
@@ -235,6 +275,52 @@ void FederatedAuthRequestImpl::OnWellKnownFetched(
       break;
     }
   }
+}
+
+void FederatedAuthRequestImpl::OnWellKnownFetchedForRevoke(
+    IdpNetworkRequestManager::FetchStatus status,
+    IdpNetworkRequestManager::Endpoints endpoints) {
+  if (status != IdpNetworkRequestManager::FetchStatus::kSuccess) {
+    CompleteRevokeRequest(RevokeStatus::kError);
+    return;
+  }
+
+  GURL revoke_url = ResolveWellKnownUrl(endpoints.revoke);
+  // TODO(kenrb): This has to be same-origin with the provider.
+  // https://crbug.com/1141125
+  if (!IdpUrlIsValid(revoke_url)) {
+    CompleteRevokeRequest(RevokeStatus::kError);
+    return;
+  }
+  network_manager_->SendRevokeRequest(
+      revoke_url, client_id_, account_id_,
+      base::BindOnce(&FederatedAuthRequestImpl::OnRevokeResponse,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
+void FederatedAuthRequestImpl::OnRevokeResponse(
+    IdpNetworkRequestManager::RevokeResponse response) {
+  RevokeStatus status =
+      response == IdpNetworkRequestManager::RevokeResponse::kSuccess
+          ? RevokeStatus::kSuccess
+          : RevokeStatus::kError;
+  if (status == RevokeStatus::kSuccess) {
+    // Since the account is now deleted, revoke the permission.
+    if (GetRequestPermissionContext()) {
+      GetRequestPermissionContext()->RevokeRequestPermission(
+          origin_, url::Origin::Create(provider_));
+    }
+  }
+  CompleteRevokeRequest(status);
+}
+
+void FederatedAuthRequestImpl::CompleteRevokeRequest(RevokeStatus status) {
+  network_manager_.reset();
+  provider_ = GURL();
+  account_id_ = std::string();
+  client_id_ = std::string();
+  if (revoke_callback_)
+    std::move(revoke_callback_).Run(status);
 }
 
 void FederatedAuthRequestImpl::OnClientIdMetadataResponseReceived(

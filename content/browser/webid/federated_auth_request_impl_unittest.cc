@@ -35,11 +35,13 @@ using blink::mojom::LogoutRequestPtr;
 using blink::mojom::LogoutStatus;
 using blink::mojom::RequestIdTokenStatus;
 using blink::mojom::RequestMode;
+using blink::mojom::RevokeStatus;
 using AccountsResponse = content::IdpNetworkRequestManager::AccountsResponse;
 using FetchStatus = content::IdpNetworkRequestManager::FetchStatus;
 using LogoutResponse = content::IdpNetworkRequestManager::LogoutResponse;
 using SigninResponse = content::IdpNetworkRequestManager::SigninResponse;
 using TokenResponse = content::IdpNetworkRequestManager::TokenResponse;
+using RevokeResponse = content::IdpNetworkRequestManager::RevokeResponse;
 using UserApproval = content::IdentityRequestDialogController::UserApproval;
 using AccountList = content::IdpNetworkRequestManager::AccountList;
 using LoginState = content::IdentityRequestAccount::LoginState;
@@ -62,6 +64,7 @@ constexpr char kAccountsEndpoint[] = "https://idp.example/accounts";
 constexpr char kTokenEndpoint[] = "https://idp.example/token";
 constexpr char kClientIdMetadataEndpoint[] =
     "https://idp.example/client_id_metadata";
+constexpr char kRevokeEndpoint[] = "https://idp.example/revoke";
 constexpr char kPrivacyPolicyUrl[] = "https://rp.example/pp";
 constexpr char kTermsOfServiceUrl[] = "https://rp.example/tos";
 constexpr char kSigninUrl[] = "https://idp.example/signin";
@@ -400,6 +403,44 @@ class LogoutRequestCallbackHelper {
   LogoutStatus status_;
 };
 
+// Helper class for receiving the Revoke method callback.
+class RevokeRequestCallbackHelper {
+ public:
+  RevokeRequestCallbackHelper() = default;
+  ~RevokeRequestCallbackHelper() = default;
+
+  RevokeRequestCallbackHelper(const RevokeRequestCallbackHelper&) = delete;
+  RevokeRequestCallbackHelper& operator=(const RevokeRequestCallbackHelper&) =
+      delete;
+
+  RevokeStatus status() const { return status_; }
+
+  // This can only be called once per lifetime of this object.
+  base::OnceCallback<void(RevokeStatus)> callback() {
+    return base::BindOnce(&RevokeRequestCallbackHelper::ReceiverMethod,
+                          base::Unretained(this));
+  }
+
+  // Returns when callback() is called, which can be immediately if it has
+  // already been called.
+  void WaitForCallback() {
+    if (was_called_)
+      return;
+    wait_for_callback_loop_.Run();
+  }
+
+ private:
+  void ReceiverMethod(RevokeStatus status) {
+    status_ = status;
+    was_called_ = true;
+    wait_for_callback_loop_.Quit();
+  }
+
+  bool was_called_ = false;
+  base::RunLoop wait_for_callback_loop_;
+  RevokeStatus status_;
+};
+
 LogoutRequestPtr MakeLogoutRequest(const std::string& endpoint,
                                    const std::string& account_id) {
   auto request = LogoutRequest::New();
@@ -468,6 +509,14 @@ class FederatedAuthRequestImplTest : public RenderViewHostTestHarness {
                             logout_helper.callback());
     logout_helper.WaitForCallback();
     return logout_helper.status();
+  }
+
+  RevokeStatus PerformRevokeRequest(const char* account_id) {
+    RevokeRequestCallbackHelper revoke_helper;
+    request_remote_->Revoke(GURL(kIdpEndpoint), kClientId, account_id,
+                            revoke_helper.callback());
+    revoke_helper.WaitForCallback();
+    return revoke_helper.status();
   }
 
   void SetPermissionMockExpectations(const MockPermissionConfiguration& conf,
@@ -653,7 +702,7 @@ class FederatedAuthRequestImplTest : public RenderViewHostTestHarness {
     return mock_dialog_controller_;
   }
 
- private:
+ protected:
   mojo::Remote<blink::mojom::FederatedAuthRequest> request_remote_;
   // Note: `auth_request_service_` owns itself, and will generally be deleted
   // with the TestRenderFrameHost is torn down at `TearDown()` time.
@@ -1012,6 +1061,59 @@ TEST_F(BasicFederatedAuthRequestImplTest, AutoSignInWithScreenReader) {
   ASSERT_FALSE(displayed_accounts.empty());
   EXPECT_EQ(displayed_accounts[0].login_state, LoginState::kSignIn);
   EXPECT_EQ(auth_response.second.value(), kToken);
+}
+
+TEST_F(FederatedAuthRequestImplTest, Revoke) {
+  constexpr char kAccountId[] = "foo@bar.com";
+
+  auto& auth_request = CreateAuthRequest(GURL(kIdpEndpoint));
+  auth_request.SetRequestPermissionDelegateForTests(
+      mock_request_permission_delegate_.get());
+
+  // Pretend the request permission has been granted for this account.
+  EXPECT_CALL(
+      *mock_request_permission_delegate_,
+      HasRequestPermission(_, url::Origin::Create(GURL(kIdpTestOrigin))))
+      .WillOnce(Return(true));
+  EXPECT_CALL(
+      *mock_request_permission_delegate_,
+      RevokeRequestPermission(_, url::Origin::Create(GURL(kIdpTestOrigin))));
+
+  EXPECT_CALL(*mock_request_manager_, FetchIdpWellKnown(_))
+      .WillOnce(Invoke(
+          [&](IdpNetworkRequestManager::FetchWellKnownCallback callback) {
+            IdpNetworkRequestManager::Endpoints endpoints;
+            endpoints.revoke = kRevokeEndpoint;
+            std::move(callback).Run(FetchStatus::kSuccess, endpoints);
+          }));
+  EXPECT_CALL(*mock_request_manager_, SendRevokeRequest(_, _, _, _))
+      .WillOnce(Invoke([&](const GURL& revoke_url, const std::string& client_id,
+                           const std::string& account_id,
+                           IdpNetworkRequestManager::RevokeCallback callback) {
+        EXPECT_EQ(kRevokeEndpoint, revoke_url.spec());
+        EXPECT_EQ(kClientId, client_id);
+        EXPECT_EQ(kAccountId, account_id);
+        std::move(callback).Run(RevokeResponse::kSuccess);
+      }));
+  auto status = PerformRevokeRequest(kAccountId);
+  EXPECT_EQ(RevokeStatus::kSuccess, status);
+}
+
+TEST_F(FederatedAuthRequestImplTest, RevokeNoPermission) {
+  constexpr char kAccountId[] = "foo@bar.com";
+
+  auto& auth_request = CreateAuthRequest(GURL(kIdpEndpoint));
+  auth_request.SetRequestPermissionDelegateForTests(
+      mock_request_permission_delegate_.get());
+
+  // Pretend the request permission has been denied for this account.
+  EXPECT_CALL(
+      *mock_request_permission_delegate_,
+      HasRequestPermission(_, url::Origin::Create(GURL(kIdpTestOrigin))))
+      .WillOnce(Return(false));
+
+  auto status = PerformRevokeRequest(kAccountId);
+  EXPECT_EQ(RevokeStatus::kError, status);
 }
 
 }  // namespace content

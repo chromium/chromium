@@ -37,6 +37,7 @@ constexpr char kIdpEndpointKey[] = "idp_endpoint";
 constexpr char kTokenEndpointKey[] = "idtoken_endpoint";
 constexpr char kAccountsEndpointKey[] = "accounts_endpoint";
 constexpr char kClientIdMetadataEndpointKey[] = "client_id_metadata_endpoint";
+constexpr char kRevokeEndpoint[] = "revoke_endpoint";
 
 // Client metadata keys.
 constexpr char kPrivacyPolicyKey[] = "privacy_policy_url";
@@ -469,6 +470,7 @@ void IdpNetworkRequestManager::OnWellKnownParsed(
   endpoints.token = ExtractEndpoint(kTokenEndpointKey);
   endpoints.accounts = ExtractEndpoint(kAccountsEndpointKey);
   endpoints.client_id_metadata = ExtractEndpoint(kClientIdMetadataEndpointKey);
+  endpoints.revoke = ExtractEndpoint(kRevokeEndpoint);
 
   std::move(idp_well_known_callback_).Run(FetchStatus::kSuccess, endpoints);
 }
