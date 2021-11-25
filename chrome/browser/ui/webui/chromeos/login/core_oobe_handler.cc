@@ -385,13 +385,12 @@ void CoreOobeHandler::HandleRaiseTabKeyEvent(bool reverse) {
 void CoreOobeHandler::HandleGetPrimaryDisplayNameForTesting(
     const base::ListValue* args) {
   CHECK_EQ(1U, args->GetList().size());
-  const base::Value* callback_id;
-  CHECK(args->Get(0, &callback_id));
+  const base::Value& callback_id = args->GetList()[0];
 
   cros_display_config_->GetDisplayUnitInfoList(
       false /* single_unified */,
       base::BindOnce(&CoreOobeHandler::GetPrimaryDisplayNameCallback,
-                     weak_ptr_factory_.GetWeakPtr(), callback_id->Clone()));
+                     weak_ptr_factory_.GetWeakPtr(), callback_id.Clone()));
 }
 
 void CoreOobeHandler::GetPrimaryDisplayNameCallback(

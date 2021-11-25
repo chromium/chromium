@@ -53,8 +53,8 @@ bool WriteTimestampedFile(const base::FilePath& file_path,
   return bytes_written > 0;
 }
 
-bool GetBoolOrFalse(const base::Value* dict, const char* keyname) {
-  const base::Value* key = dict->FindKey(keyname);
+bool GetBoolOrFalse(const base::Value& dict, const char* keyname) {
+  const base::Value* key = dict.FindKey(keyname);
   return key && key->GetBool();
 }
 
@@ -87,8 +87,7 @@ void NetworkLogsMessageHandler::Respond(const std::string& callback_id,
 void NetworkLogsMessageHandler::OnStoreLogs(const base::ListValue* list) {
   CHECK_EQ(2u, list->GetList().size());
   std::string callback_id = list->GetList()[0].GetString();
-  const base::Value* options;
-  CHECK(list->Get(1, &options));
+  const base::Value& options = list->GetList()[1];
   AllowJavascript();
 
   if (GetBoolOrFalse(options, "systemLogs")) {
@@ -97,9 +96,9 @@ void NetworkLogsMessageHandler::OnStoreLogs(const base::ListValue* list) {
         out_dir_, scrub_data,
         base::BindOnce(&NetworkLogsMessageHandler::OnWriteSystemLogs,
                        weak_factory_.GetWeakPtr(), callback_id,
-                       options->Clone()));
+                       options.Clone()));
   } else {
-    MaybeWriteDebugLogs(callback_id, options->Clone());
+    MaybeWriteDebugLogs(callback_id, options.Clone());
   }
 }
 
@@ -117,13 +116,13 @@ void NetworkLogsMessageHandler::OnWriteSystemLogs(
 void NetworkLogsMessageHandler::MaybeWriteDebugLogs(
     const std::string& callback_id,
     base::Value&& options) {
-  if (GetBoolOrFalse(&options, "debugLogs")) {
+  if (GetBoolOrFalse(options, "debugLogs")) {
     if (!base::SysInfo::IsRunningOnChromeOS()) {
       Respond(callback_id, "Debug logs unavailable on Linux build.",
               /*is_error=*/true);
       return;
     }
-    bool include_chrome = GetBoolOrFalse(&options, "chromeLogs");
+    bool include_chrome = GetBoolOrFalse(options, "chromeLogs");
     chromeos::debug_log_writer::StoreLogs(
         out_dir_, include_chrome,
         base::BindOnce(&NetworkLogsMessageHandler::OnWriteDebugLogs,
@@ -148,7 +147,7 @@ void NetworkLogsMessageHandler::OnWriteDebugLogs(
 void NetworkLogsMessageHandler::MaybeWritePolicies(
     const std::string& callback_id,
     base::Value&& options) {
-  if (GetBoolOrFalse(&options, "policies")) {
+  if (GetBoolOrFalse(options, "policies")) {
     std::string json_policies = GetJsonPolicies(web_ui());
     base::ThreadPool::PostTaskAndReplyWithResult(
         FROM_HERE,

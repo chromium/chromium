@@ -157,8 +157,7 @@ void PowerMessageHandler::OnGetProcessUsageData(const base::ListValue* args) {
   AllowJavascript();
   CHECK_EQ(1U, args->GetList().size());
 
-  const base::Value* callback_id;
-  CHECK(args->Get(0, &callback_id));
+  const base::Value& callback_id = args->GetList()[0];
 
   const std::vector<ProcessDataCollector::ProcessUsageData>& process_list =
       ProcessDataCollector::Get()->GetProcessUsages();
@@ -177,7 +176,7 @@ void PowerMessageHandler::OnGetProcessUsageData(const base::ListValue* args) {
     js_process_usages.Append(std::move(element));
   }
 
-  ResolveJavascriptCallback(*callback_id, js_process_usages);
+  ResolveJavascriptCallback(callback_id, js_process_usages);
 }
 
 void PowerMessageHandler::GetJsSystemResumedData(base::ListValue *data) {

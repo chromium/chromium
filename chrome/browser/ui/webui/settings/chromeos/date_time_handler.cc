@@ -127,9 +127,8 @@ void DateTimeHandler::HandleGetTimeZones(const base::ListValue* args) {
   AllowJavascript();
 
   CHECK_EQ(1U, args->GetList().size());
-  const base::Value* callback_id;
-  CHECK(args->Get(0, &callback_id));
-  ResolveJavascriptCallback(*callback_id, *system::GetTimezoneList());
+  const base::Value& callback_id = args->GetList()[0];
+  ResolveJavascriptCallback(callback_id, *system::GetTimezoneList());
 }
 
 void DateTimeHandler::HandleShowSetDateTimeUI(const base::ListValue* args) {

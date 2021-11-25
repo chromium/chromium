@@ -378,12 +378,12 @@ void ProfilePickerHandler::HandleMainViewInitialize(
 void ProfilePickerHandler::HandleLaunchSelectedProfile(
     bool open_settings,
     const base::ListValue* args) {
-  const base::Value* profile_path_value = nullptr;
-  if (!args->Get(0, &profile_path_value))
+  if (args->GetList().empty())
     return;
+  const base::Value& profile_path_value = args->GetList()[0];
 
   absl::optional<base::FilePath> profile_path =
-      base::ValueToFilePath(*profile_path_value);
+      base::ValueToFilePath(profile_path_value);
   if (!profile_path)
     return;
 
@@ -582,12 +582,12 @@ void ProfilePickerHandler::HandleGetSwitchProfile(const base::ListValue* args) {
 
 void ProfilePickerHandler::HandleConfirmProfileSwitch(
     const base::ListValue* args) {
-  const base::Value* profile_path_value = nullptr;
-  if (!args->Get(0, &profile_path_value))
+  if (args->GetList().empty())
     return;
+  const base::Value& profile_path_value = args->GetList()[0];
 
   absl::optional<base::FilePath> profile_path =
-      base::ValueToFilePath(*profile_path_value);
+      base::ValueToFilePath(profile_path_value);
   if (!profile_path)
     return;
 

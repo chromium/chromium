@@ -194,13 +194,16 @@ class CredentialProviderWebUIMessageHandler
   base::Value ParseArgs(const base::ListValue* args, int* out_exit_code) {
     DCHECK(out_exit_code);
 
-    const base::Value* dict_result = nullptr;
-    if (!args || args->GetList().empty() || !args->Get(0, &dict_result) ||
-        !dict_result->is_dict()) {
+    if (!args || args->GetList().empty()) {
       *out_exit_code = credential_provider::kUiecMissingSigninData;
       return base::Value(base::Value::Type::DICTIONARY);
     }
-    const base::Value* exit_code = dict_result->FindKeyOfType(
+    const base::Value& dict_result = args->GetList()[0];
+    if (!dict_result.is_dict()) {
+      *out_exit_code = credential_provider::kUiecMissingSigninData;
+      return base::Value(base::Value::Type::DICTIONARY);
+    }
+    const base::Value* exit_code = dict_result.FindKeyOfType(
         credential_provider::kKeyExitCode, base::Value::Type::INTEGER);
 
     if (exit_code && exit_code->GetInt() != credential_provider::kUiecSuccess) {
@@ -208,15 +211,15 @@ class CredentialProviderWebUIMessageHandler
       return base::Value(base::Value::Type::DICTIONARY);
     }
 
-    const base::Value* email = dict_result->FindKeyOfType(
+    const base::Value* email = dict_result.FindKeyOfType(
         credential_provider::kKeyEmail, base::Value::Type::STRING);
-    const base::Value* password = dict_result->FindKeyOfType(
+    const base::Value* password = dict_result.FindKeyOfType(
         credential_provider::kKeyPassword, base::Value::Type::STRING);
-    const base::Value* id = dict_result->FindKeyOfType(
+    const base::Value* id = dict_result.FindKeyOfType(
         credential_provider::kKeyId, base::Value::Type::STRING);
-    const base::Value* access_token = dict_result->FindKeyOfType(
+    const base::Value* access_token = dict_result.FindKeyOfType(
         credential_provider::kKeyAccessToken, base::Value::Type::STRING);
-    const base::Value* refresh_token = dict_result->FindKeyOfType(
+    const base::Value* refresh_token = dict_result.FindKeyOfType(
         credential_provider::kKeyRefreshToken, base::Value::Type::STRING);
 
     if (!email || email->GetString().empty() || !password ||
@@ -228,7 +231,7 @@ class CredentialProviderWebUIMessageHandler
     }
 
     *out_exit_code = credential_provider::kUiecSuccess;
-    return dict_result->Clone();
+    return dict_result.Clone();
   }
 
   void OnSigninComplete(const base::ListValue* args) {

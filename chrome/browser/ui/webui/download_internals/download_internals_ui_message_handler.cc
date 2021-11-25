@@ -91,21 +91,17 @@ void DownloadInternalsUIMessageHandler::OnServiceRequestMade(
 void DownloadInternalsUIMessageHandler::HandleGetServiceStatus(
     const base::ListValue* args) {
   AllowJavascript();
-  const base::Value* callback_id;
-  CHECK(args->Get(0, &callback_id));
-
-  ResolveJavascriptCallback(*callback_id,
+  const base::Value& callback_id = args->GetList()[0];
+  ResolveJavascriptCallback(callback_id,
                             download_service_->GetLogger()->GetServiceStatus());
 }
 
 void DownloadInternalsUIMessageHandler::HandleGetServiceDownloads(
     const base::ListValue* args) {
   AllowJavascript();
-  const base::Value* callback_id;
-  CHECK(args->Get(0, &callback_id));
-
+  const base::Value& callback_id = args->GetList()[0];
   ResolveJavascriptCallback(
-      *callback_id, download_service_->GetLogger()->GetServiceDownloads());
+      callback_id, download_service_->GetLogger()->GetServiceDownloads());
 }
 
 void DownloadInternalsUIMessageHandler::HandleStartDownload(
