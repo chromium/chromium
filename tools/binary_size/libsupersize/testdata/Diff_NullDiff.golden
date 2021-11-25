@@ -1,4 +1,5 @@
 Common Metadata:
+    elf_algorithm=linker_map
     elf_arch=arm
     elf_build_id=WhatAnAmazingBuildId
     elf_file_name=elf

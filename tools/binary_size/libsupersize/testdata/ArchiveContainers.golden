@@ -8,6 +8,7 @@ Container1:
 apk_file_name=test.apk
 apk_signature_block_size=0
 apk_size=147858911
+elf_algorithm=linker_map
 elf_arch=arm
 elf_build_id=WhatAnAmazingBuildId
 elf_file_name=elf
@@ -16,6 +17,7 @@ elf_relocations_count=394087
 map_file_name=../../../test.map
 zipalign_padding=32
 Container2:
+elf_algorithm=linker_map
 elf_arch=arm
 elf_build_id=WhatAnAmazingBuildId
 elf_file_name=elf

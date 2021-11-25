@@ -122,10 +122,11 @@ class SectionSizeKnobs:
 
 @dataclasses.dataclass
 class NativeSpec:
+  # One (or more) of apk_so_path, map_path, elf_path must be non-None.
   tool_prefix: str  # Never None.
   apk_so_path: str = None
   map_path: str = None
-  elf_path: str = None
+  elf_path: str = None  # Unstripped .so path.
   linker_name: str = None
   track_string_literals: bool = True
 
@@ -719,6 +720,13 @@ def CreateMetadata(*, build_config, apk_spec, native_spec, source_directory,
     relative_tool_prefix = path_util.ToToolsSrcRootRelative(
         native_spec.tool_prefix)
     update_build_config(models.BUILD_CONFIG_TOOL_PREFIX, relative_tool_prefix)
+
+    if native_spec.map_path:
+      metadata[models.METADATA_ELF_ALGORITHM] = 'linker_map'
+    elif native_spec.elf_path:
+      metadata[models.METADATA_ELF_ALGORITHM] = 'dwarf'
+    else:
+      metadata[models.METADATA_ELF_ALGORITHM] = 'sections'
 
     if native_spec.linker_name:
       update_build_config(models.BUILD_CONFIG_LINKER_NAME,
@@ -1430,8 +1438,9 @@ def CreateContainerAndSymbols(*,
           output_directory=output_directory,
           thin_archives=thin_archives)
 
-    section_ranges, raw_symbols, object_paths_by_name = _ParseElfInfo(
-        native_spec, outdir_context=outdir_context)
+    if native_spec.elf_path or native_spec.map_path:
+      section_ranges, raw_symbols, object_paths_by_name = _ParseElfInfo(
+          native_spec, outdir_context=outdir_context)
 
   if apk_elf_result:
     logging.debug('Extracting section sizes from .so within .apk')
@@ -1876,8 +1885,13 @@ def _CreateNativeSpecs(*, tentative_output_dir, apk_path, elf_path, map_path,
         elf_path = os.path.join(
             tentative_output_dir, 'lib.unstripped',
             posixpath.basename(apk_so_path.replace('crazy.', '')))
-
-        logging.debug('Detected --elf-file=%s', elf_path)
+        # E.g. libcrashpad_handler_trampoline.so is missing from lib.unstripped.
+        if not os.path.exists(elf_path):
+          elf_path = None
+          logging.debug('Not breaking down %s: missing in lib.unstripped',
+                        apk_so_path)
+        else:
+          logging.debug('Detected --elf-file=%s', elf_path)
 
   if not tentative_output_dir:
     logging.warning('Cannot break down native symbols without output_dir')
@@ -1897,8 +1911,9 @@ def _CreateNativeSpecs(*, tentative_output_dir, apk_path, elf_path, map_path,
     if map_path:
       logging.debug('Detected --map-file=%s', map_path)
 
-  if not map_path and not elf_path:
+  if not (apk_so_path or map_path or elf_path):
     return []
+
   # TODO(crbug.com/1193507): Implement string literal tracking without map
   #     files. nm emits some string literal symbols, but most are missing.
   track_string_literals = bool(track_string_literals and map_path)

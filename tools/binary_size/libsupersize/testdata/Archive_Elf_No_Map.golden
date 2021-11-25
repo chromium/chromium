@@ -1,3 +1,4 @@
+elf_algorithm=dwarf
 elf_arch=arm
 elf_build_id=WhatAnAmazingBuildId
 elf_file_name=elf
