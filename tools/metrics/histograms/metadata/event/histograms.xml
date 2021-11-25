@@ -998,9 +998,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Event.Latency.ScrollBegin.Touch.AverageLagPresentation.NoPrediction"
-    units="pixels" expires_after="M97">
+    units="pixels" expires_after="2022-11-23">
   <owner>flackr@chromium.org</owner>
-  <owner>joalmei@microsoft.org</owner>
+  <owner>sahir.vellani@microsoft.org</owner>
   <owner>input-dev@chromium.org</owner>
   <summary>
     Measures an average distance that represents how the page sticks to the
@@ -1591,9 +1591,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Event.Latency.ScrollUpdate.Touch.AverageLagPresentation.NoPrediction"
-    units="pixels" expires_after="M97">
+    units="pixels" expires_after="2022-11-23">
   <owner>flackr@chromium.org</owner>
-  <owner>joalmei@microsoft.com</owner>
+  <owner>sahir.vellani@microsoft.com</owner>
   <owner>input-dev@chromium.org</owner>
   <summary>
     Measures an average distance that represents how the page sticks to the
@@ -1610,9 +1610,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Event.Latency.ScrollUpdate.Touch.AverageLagPresentation.RemainingLagPercentage"
-    units="%" expires_after="M97">
+    units="%" expires_after="2022-11-23">
   <owner>flackr@chromium.org</owner>
-  <owner>joalmei@microsoft.com</owner>
+  <owner>sahir.vellani@microsoft.com</owner>
   <owner>input-dev@chromium.org</owner>
   <summary>
     Percentage of touch lag that prediction wasn't able to remove.
@@ -1640,9 +1640,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Event.Latency.ScrollUpdate.Touch.AverageLagPresentation.{PredictionImpact}"
-    units="pixels" expires_after="M97">
+    units="pixels" expires_after="2022-11-23">
   <owner>flackr@chromium.org</owner>
-  <owner>joalmei@microsoft.com</owner>
+  <owner>sahir.vellani@microsoft.com</owner>
   <owner>input-dev@chromium.org</owner>
   <summary>
     Improvement of prediction in touch lag. It is defined as
