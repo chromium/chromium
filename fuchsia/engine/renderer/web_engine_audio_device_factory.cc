@@ -91,8 +91,8 @@ WebEngineAudioDeviceFactory::CreateAudioRendererSink(
       media_resource_provider.BindNewPipeAndPassReceiver());
 
   // AudioConsumer can be used only to output to the default device.
-  CHECK(!params.session_id);
-  CHECK(params.device_id.empty());
+  if (!params.device_id.empty())
+    return nullptr;
 
   // Connect AudioConsumer.
   fidl::InterfaceHandle<fuchsia::media::AudioConsumer> audio_consumer;
