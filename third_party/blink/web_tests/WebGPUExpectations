@@ -104,8 +104,6 @@ crbug.com/dawn/1003 [ Linux ] wpt_internal/webgpu/cts.https.html?q=webgpu:api,op
 crbug.com/dawn/1003 [ Mac ] wpt_internal/webgpu/cts.https.html?q=webgpu:api,operation,command_buffer,copyTextureToTexture:color_textures,non_compressed,non_array:format="rgb9e5ufloat";* [ Failure ]
 crbug.com/tint/1228 [ Linux ] wpt_internal/webgpu/cts.https.html?q=webgpu:shader,execution,builtin,abs:float_builtin_functions,abs_float:* [ Failure ]
 crbug.com/tint/1228 [ Win ] wpt_internal/webgpu/cts.https.html?q=webgpu:shader,execution,builtin,abs:float_builtin_functions,abs_float:* [ Failure ]
-crbug.com/tint/1293 [ Linux ] wpt_internal/webgpu/cts.https.html?q=webgpu:shader,execution,builtin,atan:float_builtin_functions,atan:* [ Failure ]
-crbug.com/tint/1293 [ Win ] wpt_internal/webgpu/cts.https.html?q=webgpu:shader,execution,builtin,atan:float_builtin_functions,atan:* [ Failure ]
 
 # Precision. Only on Mac Intel
 crbug.com/dawn/1047 [ Mac ] wpt_internal/webgpu/cts.https.html?q=webgpu:api,operation,command_buffer,copyTextureToTexture:color_textures,non_compressed,array:format="r8snorm";* [ Failure ]
