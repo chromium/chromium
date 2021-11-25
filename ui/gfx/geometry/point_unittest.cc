@@ -146,4 +146,11 @@ TEST(PointTest, IntegerOverflow) {
   EXPECT_EQ(test, min_point);
 }
 
+TEST(PointTest, Transpose) {
+  gfx::Point p(1, -2);
+  EXPECT_EQ(gfx::Point(-2, 1), TransposePoint(p));
+  p.Transpose();
+  EXPECT_EQ(gfx::Point(-2, 1), p);
+}
+
 }  // namespace gfx

@@ -77,6 +77,11 @@ class GEOMETRY_EXPORT Point {
 
   Vector2d OffsetFromOrigin() const { return Vector2d(x_, y_); }
 
+  void Transpose() {
+    using std::swap;
+    swap(x_, y_);
+  }
+
   // A point is less than another point if its y-value is closer
   // to the origin. If the y-values are the same, then point with
   // the x-value closer to the origin is considered less than the
@@ -122,6 +127,10 @@ inline Vector2d operator-(const Point& lhs, const Point& rhs) {
 
 inline Point PointAtOffsetFromOrigin(const Vector2d& offset_from_origin) {
   return Point(offset_from_origin.x(), offset_from_origin.y());
+}
+
+inline Point TransposePoint(const gfx::Point& p) {
+  return Point(p.y(), p.x());
 }
 
 // This is declared here for use in gtest-based unit tests but is defined in

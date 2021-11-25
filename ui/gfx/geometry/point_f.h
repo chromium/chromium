@@ -84,7 +84,10 @@ class GEOMETRY_EXPORT PointF {
     SetPoint(x() * x_scale, y() * y_scale);
   }
 
-  void Transpose() { std::swap(x_, y_); }
+  void Transpose() {
+    using std::swap;
+    swap(x_, y_);
+  }
 
   // Uses the Pythagorean theorem to determine the straight line distance
   // between the two points, and returns true if it is less than

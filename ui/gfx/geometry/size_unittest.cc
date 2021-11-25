@@ -114,4 +114,11 @@ TEST(SizeTest, OperatorCompare) {
   EXPECT_FALSE(lhs != rhs);
 }
 
+TEST(SizeTest, Transpose) {
+  gfx::Size s(1, 2);
+  EXPECT_EQ(gfx::Size(2, 1), TransposeSize(s));
+  s.Transpose();
+  EXPECT_EQ(gfx::Size(2, 1), s);
+}
+
 }  // namespace gfx

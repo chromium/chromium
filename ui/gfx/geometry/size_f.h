@@ -71,7 +71,10 @@ class GEOMETRY_EXPORT SizeF {
     SetSize(width() * x_scale, height() * y_scale);
   }
 
-  void Transpose() { std::swap(width_, height_); }
+  void Transpose() {
+    using std::swap;
+    swap(width_, height_);
+  }
 
   std::string ToString() const;
 

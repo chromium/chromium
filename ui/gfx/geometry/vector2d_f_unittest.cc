@@ -139,6 +139,13 @@ TEST(Vector2dFTest, SlopeAngleRadians) {
   EXPECT_NEAR(-kPi / 4, Vector2dF(1, -1).SlopeAngleRadians(), kTolerance);
 }
 
+TEST(Vector2dFTest, Transpose) {
+  gfx::Vector2dF v(-1.5f, 2.5f);
+  EXPECT_EQ(gfx::Vector2dF(2.5f, -1.5f), TransposeVector2d(v));
+  v.Transpose();
+  EXPECT_EQ(gfx::Vector2dF(2.5f, -1.5f), v);
+}
+
 TEST(Vector2dFTest, ToString) {
   EXPECT_EQ("[1 2]", Vector2dF(1, 2).ToString());
   EXPECT_EQ("[1.03125 2.5]", Vector2dF(1.03125, 2.5).ToString());

@@ -127,4 +127,11 @@ TEST(Vector2dTest, IntegerOverflow) {
   EXPECT_EQ(test, max_vector);
 }
 
+TEST(Vector2dTest, Transpose) {
+  gfx::Vector2d v(1, -2);
+  EXPECT_EQ(gfx::Vector2d(-2, 1), TransposeVector2d(v));
+  v.Transpose();
+  EXPECT_EQ(gfx::Vector2d(-2, 1), v);
+}
+
 }  // namespace gfx

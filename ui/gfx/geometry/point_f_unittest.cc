@@ -109,6 +109,13 @@ TEST(PointFTest, IsWithinDistance) {
                                    100.f));
 }
 
+TEST(PointFTest, Transpose) {
+  gfx::PointF p(-1.5f, 2.5f);
+  EXPECT_EQ(gfx::PointF(2.5f, -1.5f), TransposePoint(p));
+  p.Transpose();
+  EXPECT_EQ(gfx::PointF(2.5f, -1.5f), p);
+}
+
 TEST(PointFTest, ToString) {
   EXPECT_EQ("1,2", PointF(1, 2).ToString());
   EXPECT_EQ("1.03125,2.5", PointF(1.03125, 2.5).ToString());

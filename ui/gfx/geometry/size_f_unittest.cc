@@ -177,6 +177,13 @@ TEST(SizeFTest, ConsistentClamping) {
   EXPECT_EQ(SizeF(0.f, SizeF::kTrivial), resized);
 }
 
+TEST(SizeFTest, Transpose) {
+  gfx::SizeF s(1.5f, 2.5f);
+  EXPECT_EQ(gfx::SizeF(2.5f, 1.5f), TransposeSize(s));
+  s.Transpose();
+  EXPECT_EQ(gfx::SizeF(2.5f, 1.5f), s);
+}
+
 TEST(SizeFTest, ToString) {
   EXPECT_EQ("1x2", SizeF(1, 2).ToString());
   EXPECT_EQ("1.03125x2.5", SizeF(1.03125, 2.5).ToString());
