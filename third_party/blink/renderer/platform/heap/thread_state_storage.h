@@ -51,7 +51,7 @@ extern thread_local ThreadStateStorage* g_thread_specific_ CONSTINIT
 class PLATFORM_EXPORT ThreadStateStorage final {
  public:
   static ALWAYS_INLINE ThreadStateStorage* MainThreadStateStorage() {
-    return reinterpret_cast<ThreadStateStorage*>(main_thread_state_storage_);
+    return &main_thread_state_storage_;
   }
 
   BLINK_HEAP_DECLARE_THREAD_LOCAL_GETTER(Current,
@@ -59,38 +59,36 @@ class PLATFORM_EXPORT ThreadStateStorage final {
                                          g_thread_specific_)
 
   ALWAYS_INLINE cppgc::AllocationHandle& allocation_handle() const {
-    return allocation_handle_;
+    return *allocation_handle_;
   }
 
-  ALWAYS_INLINE cppgc::HeapHandle& heap_handle() const { return heap_handle_; }
+  ALWAYS_INLINE cppgc::HeapHandle& heap_handle() const { return *heap_handle_; }
 
-  ALWAYS_INLINE ThreadState& thread_state() const { return thread_state_; }
+  ALWAYS_INLINE ThreadState& thread_state() const { return *thread_state_; }
 
   ALWAYS_INLINE bool IsMainThread() const {
     return this == MainThreadStateStorage();
   }
 
  private:
-  static void CreateMain(ThreadState&,
-                         cppgc::AllocationHandle&,
-                         cppgc::HeapHandle&);
-  static void Create(ThreadState&,
-                     cppgc::AllocationHandle&,
-                     cppgc::HeapHandle&);
+  static void AttachMainThread(ThreadState&,
+                               cppgc::AllocationHandle&,
+                               cppgc::HeapHandle&);
+  static void AttachNonMainThread(ThreadState&,
+                                  cppgc::AllocationHandle&,
+                                  cppgc::HeapHandle&);
+  static void DetachNonMainThread(ThreadStateStorage&);
 
-  // Main-thread ThreadStateStorage avoids TLS completely by using a regular
-  // global. The object is manually managed and should not rely on global
-  // ctor/dtor.
-  static uint8_t main_thread_state_storage_[];
+  static ThreadStateStorage main_thread_state_storage_;
 
+  ThreadStateStorage() = default;
   ThreadStateStorage(ThreadState&,
                      cppgc::AllocationHandle&,
                      cppgc::HeapHandle&);
-  ~ThreadStateStorage();
 
-  cppgc::AllocationHandle& allocation_handle_;
-  cppgc::HeapHandle& heap_handle_;
-  ThreadState& thread_state_;
+  cppgc::AllocationHandle* allocation_handle_ = nullptr;
+  cppgc::HeapHandle* heap_handle_ = nullptr;
+  ThreadState* thread_state_ = nullptr;
 
   friend class ThreadState;
 };

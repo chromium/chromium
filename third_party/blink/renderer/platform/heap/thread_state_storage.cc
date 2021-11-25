@@ -6,47 +6,53 @@
 
 #include <new>
 
+#include "base/logging.h"
+
 namespace blink {
 
 thread_local ThreadStateStorage* g_thread_specific_ CONSTINIT
     __attribute__((tls_model(BLINK_HEAP_THREAD_LOCAL_MODEL))) = nullptr;
 
 // static
-alignas(ThreadStateStorage) uint8_t
-    ThreadStateStorage::main_thread_state_storage_[sizeof(ThreadStateStorage)];
+ThreadStateStorage ThreadStateStorage::main_thread_state_storage_;
 
 BLINK_HEAP_DEFINE_THREAD_LOCAL_GETTER(ThreadStateStorage::Current,
                                       ThreadStateStorage*,
                                       g_thread_specific_)
 
 // static
-void ThreadStateStorage::CreateMain(ThreadState& thread_state,
-                                    cppgc::AllocationHandle& allocation_handle,
-                                    cppgc::HeapHandle& heap_handle) {
-  new (main_thread_state_storage_)
+void ThreadStateStorage::AttachMainThread(
+    ThreadState& thread_state,
+    cppgc::AllocationHandle& allocation_handle,
+    cppgc::HeapHandle& heap_handle) {
+  g_thread_specific_ = new (&main_thread_state_storage_)
       ThreadStateStorage(thread_state, allocation_handle, heap_handle);
 }
 
 // static
-void ThreadStateStorage::Create(ThreadState& thread_state,
-                                cppgc::AllocationHandle& allocation_handle,
-                                cppgc::HeapHandle& heap_handle) {
-  new ThreadStateStorage(thread_state, allocation_handle, heap_handle);
+void ThreadStateStorage::AttachNonMainThread(
+    ThreadState& thread_state,
+    cppgc::AllocationHandle& allocation_handle,
+    cppgc::HeapHandle& heap_handle) {
+  g_thread_specific_ =
+      new ThreadStateStorage(thread_state, allocation_handle, heap_handle);
+}
+
+// static
+void ThreadStateStorage::DetachNonMainThread(
+    ThreadStateStorage& thread_state_storage) {
+  CHECK_NE(MainThreadStateStorage(), &thread_state_storage);
+  CHECK_EQ(g_thread_specific_, &thread_state_storage);
+  delete &thread_state_storage;
+  g_thread_specific_ = nullptr;
 }
 
 ThreadStateStorage::ThreadStateStorage(
     ThreadState& thread_state,
     cppgc::AllocationHandle& allocation_handle,
     cppgc::HeapHandle& heap_handle)
-    : allocation_handle_(allocation_handle),
-      heap_handle_(heap_handle),
-      thread_state_(thread_state) {
-  g_thread_specific_ = this;
-}
-
-ThreadStateStorage::~ThreadStateStorage() {
-  DCHECK(!IsMainThread());
-  g_thread_specific_ = nullptr;
-}
+    : allocation_handle_(&allocation_handle),
+      heap_handle_(&heap_handle),
+      thread_state_(&thread_state) {}
 
 }  // namespace blink

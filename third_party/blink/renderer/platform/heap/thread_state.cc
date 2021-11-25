@@ -90,18 +90,18 @@ class BlinkRootsHandler final : public v8::EmbedderRootsHandler {
 // static
 ThreadState* ThreadState::AttachMainThread() {
   auto* thread_state = new ThreadState(gin::V8Platform::Get());
-  ThreadStateStorage::CreateMain(*thread_state,
-                                 thread_state->cpp_heap().GetAllocationHandle(),
-                                 thread_state->cpp_heap().GetHeapHandle());
+  ThreadStateStorage::AttachMainThread(
+      *thread_state, thread_state->cpp_heap().GetAllocationHandle(),
+      thread_state->cpp_heap().GetHeapHandle());
   return thread_state;
 }
 
 // static
 ThreadState* ThreadState::AttachMainThreadForTesting(v8::Platform* platform) {
   auto* thread_state = new ThreadState(platform);
-  ThreadStateStorage::CreateMain(*thread_state,
-                                 thread_state->cpp_heap().GetAllocationHandle(),
-                                 thread_state->cpp_heap().GetHeapHandle());
+  ThreadStateStorage::AttachMainThread(
+      *thread_state, thread_state->cpp_heap().GetAllocationHandle(),
+      thread_state->cpp_heap().GetHeapHandle());
   thread_state->EnableDetachedGarbageCollectionsForTesting();
   return thread_state;
 }
@@ -109,9 +109,9 @@ ThreadState* ThreadState::AttachMainThreadForTesting(v8::Platform* platform) {
 // static
 ThreadState* ThreadState::AttachCurrentThread() {
   auto* thread_state = new ThreadState(gin::V8Platform::Get());
-  ThreadStateStorage::Create(*thread_state,
-                             thread_state->cpp_heap().GetAllocationHandle(),
-                             thread_state->cpp_heap().GetHeapHandle());
+  ThreadStateStorage::AttachNonMainThread(
+      *thread_state, thread_state->cpp_heap().GetAllocationHandle(),
+      thread_state->cpp_heap().GetHeapHandle());
   return thread_state;
 }
 
@@ -119,9 +119,9 @@ ThreadState* ThreadState::AttachCurrentThread() {
 ThreadState* ThreadState::AttachCurrentThreadForTesting(
     v8::Platform* platform) {
   ThreadState* thread_state = new ThreadState(platform);
-  ThreadStateStorage::Create(*thread_state,
-                             thread_state->cpp_heap().GetAllocationHandle(),
-                             thread_state->cpp_heap().GetHeapHandle());
+  ThreadStateStorage::AttachNonMainThread(
+      *thread_state, thread_state->cpp_heap().GetAllocationHandle(),
+      thread_state->cpp_heap().GetHeapHandle());
   thread_state->EnableDetachedGarbageCollectionsForTesting();
   return thread_state;
 }
@@ -162,7 +162,7 @@ ThreadState::ThreadState(v8::Platform* platform)
 ThreadState::~ThreadState() {
   DCHECK(IsCreationThread());
   cpp_heap_->Terminate();
-  delete ThreadStateStorage::Current();
+  ThreadStateStorage::DetachNonMainThread(*ThreadStateStorage::Current());
 }
 
 void ThreadState::SafePoint(StackState stack_state) {
