@@ -26,13 +26,6 @@ void BackForwardCacheLoaderHelperImpl::DidBufferLoadWhileInBackForwardCache(
   delegate_->DidBufferLoadWhileInBackForwardCache(num_bytes);
 }
 
-bool BackForwardCacheLoaderHelperImpl::
-    CanContinueBufferingWhileInBackForwardCache() const {
-  if (!delegate_)
-    return false;
-  return delegate_->CanContinueBufferingWhileInBackForwardCache();
-}
-
 void BackForwardCacheLoaderHelperImpl::Detach() {
   delegate_ = nullptr;
 }

@@ -188,6 +188,7 @@ class CORE_EXPORT LocalDOMWindow final : public DOMWindow,
       // If source_file is set to empty string,
       // current JS file would be used as source_file instead.
       const String& source_file = g_empty_string) const final;
+  void SetIsInBackForwardCache(bool) final;
 
   void AddConsoleMessageImpl(ConsoleMessage*, bool discard_duplicates) final;
 
@@ -447,6 +448,10 @@ class CORE_EXPORT LocalDOMWindow final : public DOMWindow,
 
   void DidReceiveUserActivation();
 
+  // Called when a network request buffered an additional `num_bytes` while this
+  // frame is in back-forward cache.
+  void DidBufferLoadWhileInBackForwardCache(size_t num_bytes);
+
   // Adds a DedicatedWorker. This is called when a DedicatedWorker is created in
   // this ExecutionContext.
   void AddDedicatedWorker(DedicatedWorker* dedicated_worker);
@@ -571,6 +576,11 @@ class CORE_EXPORT LocalDOMWindow final : public DOMWindow,
 
   // Fire "online" and "offline" events.
   Member<NetworkStateObserver> network_state_observer_;
+
+  // The total bytes buffered by all network requests in this frame while frozen
+  // due to back-forward cache. This number gets reset when the frame gets out
+  // of the back-forward cache.
+  size_t total_bytes_buffered_while_in_back_forward_cache_ = 0;
 
   // The set of DedicatedWorkers that are created in this ExecutionContext.
   HeapHashSet<Member<DedicatedWorker>> dedicated_workers_;

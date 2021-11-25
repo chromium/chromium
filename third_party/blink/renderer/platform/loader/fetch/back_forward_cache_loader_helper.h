@@ -27,10 +27,6 @@ class PLATFORM_EXPORT BackForwardCacheLoaderHelper
   // in back-forward cache. May be called multiple times.
   virtual void DidBufferLoadWhileInBackForwardCache(size_t num_bytes) = 0;
 
-  // Returns true if we can still continue buffering data from in-flight network
-  // requests while in back-forward cache.
-  virtual bool CanContinueBufferingWhileInBackForwardCache() const = 0;
-
   virtual void Detach() = 0;
 
   virtual void Trace(Visitor*) const {}

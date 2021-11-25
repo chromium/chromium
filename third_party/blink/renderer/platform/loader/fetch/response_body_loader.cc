@@ -13,6 +13,7 @@
 #include "services/network/public/cpp/features.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/navigation/renderer_eviction_reason.mojom-blink.h"
+#include "third_party/blink/renderer/platform/back_forward_cache_buffer_limit_tracker.h"
 #include "third_party/blink/renderer/platform/back_forward_cache_utils.h"
 #include "third_party/blink/renderer/platform/loader/fetch/back_forward_cache_loader_helper.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_context.h"
@@ -476,14 +477,12 @@ void ResponseBodyLoader::DidBufferLoadWhileInBackForwardCache(
 }
 
 bool ResponseBodyLoader::CanContinueBufferingWhileInBackForwardCache() {
-  if (!back_forward_cache_loader_helper_)
-    return false;
   if (!OnlyUsePerProcessBufferLimit() &&
-      !body_buffer_->IsUnderPerRequestBytesLimit())
+      !body_buffer_->IsUnderPerRequestBytesLimit()) {
     return false;
-
-  return back_forward_cache_loader_helper_
-      ->CanContinueBufferingWhileInBackForwardCache();
+  }
+  return BackForwardCacheBufferLimitTracker::Get()
+      .IsUnderPerProcessBufferLimit();
 }
 
 void ResponseBodyLoader::Start() {

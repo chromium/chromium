@@ -88,7 +88,6 @@ class CORE_EXPORT WorkerOrWorkletGlobalScope
   void EvictFromBackForwardCache(
       mojom::blink::RendererEvictionReason reason) override {}
   void DidBufferLoadWhileInBackForwardCache(size_t num_bytes) override {}
-  bool CanContinueBufferingWhileInBackForwardCache() override { return false; }
 
   // Returns true when the WorkerOrWorkletGlobalScope is closing (e.g. via
   // WorkerGlobalScope#close() method). If this returns true, the worker is

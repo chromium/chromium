@@ -240,7 +240,7 @@ class CORE_EXPORT ExecutionContext : public Supplementable<ExecutionContext>,
 
   virtual void RemoveURLFromMemoryCache(const KURL&);
 
-  void SetIsInBackForwardCache(bool);
+  virtual void SetIsInBackForwardCache(bool);
   bool is_in_back_forward_cache() const { return is_in_back_forward_cache_; }
 
   void SetLifecycleState(mojom::FrameLifecycleState);

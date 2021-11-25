@@ -219,7 +219,6 @@ class CORE_EXPORT LocalFrame final
   void EvictFromBackForwardCache(
       mojom::blink::RendererEvictionReason reason) override;
   void DidBufferLoadWhileInBackForwardCache(size_t num_bytes) override;
-  bool CanContinueBufferingWhileInBackForwardCache() override;
 
   void DidChangeThemeColor(bool update_theme_color_cache);
   void DidChangeBackgroundColor(SkColor background_color, bool color_adjust);
@@ -845,11 +844,6 @@ class CORE_EXPORT LocalFrame final
 
   float page_zoom_factor_;
   float text_zoom_factor_;
-
-  // The total bytes buffered by all network requests in this frame while frozen
-  // due to back-forward cache. This number gets reset when the frame gets out
-  // of the back-forward cache.
-  size_t total_bytes_buffered_while_in_back_forward_cache_ = 0;
 
   Member<CoreProbeSink> probe_sink_;
   scoped_refptr<InspectorTaskRunner> inspector_task_runner_;

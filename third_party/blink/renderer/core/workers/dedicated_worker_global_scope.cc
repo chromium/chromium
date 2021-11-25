@@ -54,6 +54,7 @@
 #include "third_party/blink/renderer/core/workers/worker_classic_script_loader.h"
 #include "third_party/blink/renderer/core/workers/worker_clients.h"
 #include "third_party/blink/renderer/core/workers/worker_module_tree_client.h"
+#include "third_party/blink/renderer/platform/back_forward_cache_buffer_limit_tracker.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_client_settings_object_snapshot.h"
@@ -197,6 +198,14 @@ DedicatedWorkerGlobalScope::DedicatedWorkerGlobalScope(
 }
 
 DedicatedWorkerGlobalScope::~DedicatedWorkerGlobalScope() = default;
+
+void DedicatedWorkerGlobalScope::Dispose() {
+  BackForwardCacheBufferLimitTracker::Get()
+      .DidRemoveFrameOrWorkerFromBackForwardCache(
+          total_bytes_buffered_while_in_back_forward_cache_);
+  total_bytes_buffered_while_in_back_forward_cache_ = 0;
+  WorkerGlobalScope::Dispose();
+}
 
 const AtomicString& DedicatedWorkerGlobalScope::InterfaceName() const {
   return event_target_names::kDedicatedWorkerGlobalScope;
@@ -505,25 +514,19 @@ void DedicatedWorkerGlobalScope::EvictFromBackForwardCache(
 
 void DedicatedWorkerGlobalScope::DidBufferLoadWhileInBackForwardCache(
     size_t num_bytes) {
-  if (!base::FeatureList::IsEnabled(
-          features::kBackForwardCacheDedicatedWorker)) {
-    return;
-  }
-
-  // TODO(crbug.com/1146955): Accumulate the loaded buffer size as LocalFrame
-  // does. This number is used to determine the page can continue being
-  // BFcached.
+  total_bytes_buffered_while_in_back_forward_cache_ += num_bytes;
+  BackForwardCacheBufferLimitTracker::Get().DidBufferBytes(num_bytes);
 }
 
-bool DedicatedWorkerGlobalScope::CanContinueBufferingWhileInBackForwardCache() {
-  if (!base::FeatureList::IsEnabled(
-          features::kBackForwardCacheDedicatedWorker)) {
-    return false;
+void DedicatedWorkerGlobalScope::SetIsInBackForwardCache(
+    bool is_in_back_forward_cache) {
+  WorkerGlobalScope::SetIsInBackForwardCache(is_in_back_forward_cache);
+  if (!is_in_back_forward_cache) {
+    BackForwardCacheBufferLimitTracker::Get()
+        .DidRemoveFrameOrWorkerFromBackForwardCache(
+            total_bytes_buffered_while_in_back_forward_cache_);
+    total_bytes_buffered_while_in_back_forward_cache_ = 0;
   }
-
-  // TODO(crbug.com/1146955): Determine whether the page can continue being
-  // BFcached based on the loaded buffer size.
-  return true;
 }
 
 void DedicatedWorkerGlobalScope::AddDedicatedWorker(

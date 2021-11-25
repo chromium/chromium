@@ -232,56 +232,6 @@ static LocalFramesByTokenMap& GetLocalFramesMap() {
 // Maximum number of burst download requests allowed.
 const int kBurstDownloadLimit = 10;
 
-// Maximum number of bytes that can be buffered in total (per-process) by all
-// network requests in one renderer process while in back-forward cache.
-constexpr size_t kDefaultMaxBufferedBodyBytesPerProcess = 1024 * 1000;
-
-// Singleton utility class for process-wide back-forward cache buffer limit
-// tracking.
-class BackForwardCacheBufferLimitTracker {
- public:
-  BackForwardCacheBufferLimitTracker()
-      : max_buffered_bytes_per_process_(
-            blink::GetLoadingTasksUnfreezableParamAsInt(
-                "max_buffered_bytes_per_process",
-                kDefaultMaxBufferedBodyBytesPerProcess)) {}
-
-  BackForwardCacheBufferLimitTracker(BackForwardCacheBufferLimitTracker&) =
-      delete;
-
-  void DidBufferBytes(size_t num_bytes) {
-    total_bytes_buffered_ += num_bytes;
-    TRACE_EVENT2(
-        "loading", "BackForwardCacheBufferLimitTracker::DidBufferBytes",
-        "total_bytes_buffered", static_cast<int>(total_bytes_buffered_),
-        "added_bytes", static_cast<int>(num_bytes));
-  }
-
-  void DidRemoveFrameFromBackForwardCache(size_t frame_total_bytes) {
-    total_bytes_buffered_ -= frame_total_bytes;
-    TRACE_EVENT2("loading",
-                 "BackForwardCacheBufferLimitTracker::"
-                 "DidRemoveFrameFromBackForwardCache",
-                 "total_bytes_buffered",
-                 static_cast<int>(total_bytes_buffered_), "substracted_bytes",
-                 static_cast<int>(frame_total_bytes));
-  }
-
-  bool IsUnderPerProcessBufferLimit() {
-    return total_bytes_buffered_ <= max_buffered_bytes_per_process_;
-  }
-
- private:
-  const size_t max_buffered_bytes_per_process_;
-  size_t total_bytes_buffered_ = 0;
-};
-
-BackForwardCacheBufferLimitTracker& GetBackForwardCacheBufferLimitTracker() {
-  static BackForwardCacheBufferLimitTracker
-      back_forward_cache_buffer_limit_tracker;
-  return back_forward_cache_buffer_limit_tracker;
-}
-
 inline float ParentPageZoomFactor(LocalFrame* frame) {
   auto* parent_local_frame = DynamicTo<LocalFrame>(frame->Tree().Parent());
   return parent_local_frame ? parent_local_frame->PageZoomFactor() : 1;
@@ -627,10 +577,6 @@ bool LocalFrame::DetachImpl(FrameDetachType type) {
 
   if (text_fragment_handler_)
     text_fragment_handler_->DidDetachDocumentOrFrame();
-
-  GetBackForwardCacheBufferLimitTracker().DidRemoveFrameFromBackForwardCache(
-      total_bytes_buffered_while_in_back_forward_cache_);
-  total_bytes_buffered_while_in_back_forward_cache_ = 0;
 
   DCHECK(!view_->IsAttached());
   Client()->WillBeDetached();
@@ -2582,9 +2528,6 @@ void LocalFrame::DidResume() {
   Loader().SetDefersLoading(LoaderFreezeMode::kNone);
 
   DomWindow()->SetIsInBackForwardCache(false);
-  GetBackForwardCacheBufferLimitTracker().DidRemoveFrameFromBackForwardCache(
-      total_bytes_buffered_while_in_back_forward_cache_);
-  total_bytes_buffered_while_in_back_forward_cache_ = 0;
 }
 
 void LocalFrame::MaybeLogAdClickNavigation() {
@@ -2687,12 +2630,7 @@ void LocalFrame::EvictFromBackForwardCache(
 }
 
 void LocalFrame::DidBufferLoadWhileInBackForwardCache(size_t num_bytes) {
-  total_bytes_buffered_while_in_back_forward_cache_ += num_bytes;
-  GetBackForwardCacheBufferLimitTracker().DidBufferBytes(num_bytes);
-}
-
-bool LocalFrame::CanContinueBufferingWhileInBackForwardCache() {
-  return GetBackForwardCacheBufferLimitTracker().IsUnderPerProcessBufferLimit();
+  DomWindow()->DidBufferLoadWhileInBackForwardCache(num_bytes);
 }
 
 void LocalFrame::SetScaleFactor(float scale_factor) {

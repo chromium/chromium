@@ -35,10 +35,6 @@ class TestBackForwardCacheLoaderHelper : public BackForwardCacheLoaderHelper {
   void DidBufferLoadWhileInBackForwardCache(size_t num_bytes) override {}
 
   void Detach() override {}
-
-  bool CanContinueBufferingWhileInBackForwardCache() const override {
-    return true;
-  }
 };
 
 class ResponseBodyLoaderTest : public testing::Test {

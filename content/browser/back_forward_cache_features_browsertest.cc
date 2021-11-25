@@ -437,6 +437,126 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheWithDedicatedWorkerBrowserTest,
       {}, {}, {}, {}, FROM_HERE);
 }
 
+// Tests the case when the page starts fetching in a dedicated worker, goes to
+// BFcache, and then the response amount reaches the threshold. The cached page
+// should evicted in this case.
+IN_PROC_BROWSER_TEST_F(
+    BackForwardCacheWithDedicatedWorkerBrowserTest,
+    FetchStillLoading_ResponseStartedWhileFrozen_ExceedsPerRequestBytesLimit) {
+  CreateHttpsServer();
+
+  net::test_server::ControllableHttpResponse image_response(https_server(),
+                                                            "/image.png");
+  ASSERT_TRUE(https_server()->Start());
+
+  // Navigate to a page.
+  EXPECT_TRUE(
+      NavigateToURL(shell(), https_server()->GetURL("a.test", "/title1.html")));
+  RenderFrameHostImpl* rfh_a = current_frame_host();
+
+  // Trigger a fetch in a dedicated worker.
+  std::string worker_script =
+      JsReplace(R"(
+    fetch($1);
+  )",
+                https_server()->GetURL("a.test", "/image.png"));
+  EXPECT_TRUE(ExecJs(rfh_a, JsReplace(R"(
+    const blob = new Blob([$1]);
+    const blobURL = URL.createObjectURL(blob);
+    const worker = new Worker(blobURL);
+  )",
+                                      worker_script)));
+
+  // Wait for the image request, but don't send anything yet.
+  image_response.WaitForRequest();
+
+  // Navigate away.
+  EXPECT_TRUE(
+      NavigateToURL(shell(), https_server()->GetURL("b.test", "/title2.html")));
+  // The worker was still loading when we navigated away, but it's still
+  // eligible for back-forward cache.
+  EXPECT_TRUE(rfh_a->IsInBackForwardCache());
+
+  RenderFrameDeletedObserver delete_observer_rfh_a(rfh_a);
+  // Start sending the image response while in the back-forward cache.
+  image_response.Send(net::HTTP_OK, "image/png");
+  std::string body(kMaxBufferedBytesPerRequest + 1, '*');
+  image_response.Send(body);
+  image_response.Done();
+  delete_observer_rfh_a.WaitUntilDeleted();
+
+  // Go back to the first page. We should not restore the page from the
+  // back-forward cache.
+  web_contents()->GetController().GoBack();
+  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+  ExpectNotRestored(
+      {BackForwardCacheMetrics::NotRestoredReason::kNetworkExceedsBufferLimit},
+      {}, {}, {}, {}, FROM_HERE);
+}
+
+// Tests the case when the page starts fetching in a nested dedicated worker,
+// goes to BFcache, and then the response amount reaches the threshold. The
+// cached page should evicted in this case.
+IN_PROC_BROWSER_TEST_F(
+    BackForwardCacheWithDedicatedWorkerBrowserTest,
+    FetchStillLoading_ResponseStartedWhileFrozen_ExceedsPerRequestBytesLimit_Nested) {
+  CreateHttpsServer();
+
+  net::test_server::ControllableHttpResponse image_response(https_server(),
+                                                            "/image.png");
+  ASSERT_TRUE(https_server()->Start());
+
+  // Navigate to a page.
+  EXPECT_TRUE(
+      NavigateToURL(shell(), https_server()->GetURL("a.test", "/title1.html")));
+  RenderFrameHostImpl* rfh_a = current_frame_host();
+
+  // Trigger a fetch in a nested dedicated worker.
+  std::string child_worker_script =
+      JsReplace(R"(
+    fetch($1);
+  )",
+                https_server()->GetURL("a.test", "/image.png"));
+  std::string parent_worker_script = JsReplace(R"(
+    const blob = new Blob([$1]);
+    const blobURL = URL.createObjectURL(blob);
+    const worker = new Worker(blobURL);
+  )",
+                                               child_worker_script);
+  EXPECT_TRUE(ExecJs(rfh_a, JsReplace(R"(
+    const blob = new Blob([$1]);
+    const blobURL = URL.createObjectURL(blob);
+    const worker = new Worker(blobURL);
+  )",
+                                      parent_worker_script)));
+
+  // Wait for the image request, but don't send anything yet.
+  image_response.WaitForRequest();
+
+  // Navigate away.
+  EXPECT_TRUE(
+      NavigateToURL(shell(), https_server()->GetURL("b.test", "/title2.html")));
+  // The worker was still loading when we navigated away, but it's still
+  // eligible for back-forward cache.
+  EXPECT_TRUE(rfh_a->IsInBackForwardCache());
+
+  RenderFrameDeletedObserver delete_observer_rfh_a(rfh_a);
+  // Start sending the image response while in the back-forward cache.
+  image_response.Send(net::HTTP_OK, "image/png");
+  std::string body(kMaxBufferedBytesPerRequest + 1, '*');
+  image_response.Send(body);
+  image_response.Done();
+  delete_observer_rfh_a.WaitUntilDeleted();
+
+  // Go back to the first page. We should not restore the page from the
+  // back-forward cache.
+  web_contents()->GetController().GoBack();
+  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+  ExpectNotRestored(
+      {BackForwardCacheMetrics::NotRestoredReason::kNetworkExceedsBufferLimit},
+      {}, {}, {}, {}, FROM_HERE);
+}
+
 // TODO(https://crbug.com/154571): Shared workers are not available on Android.
 #if defined(OS_ANDROID)
 #define MAYBE_PageWithSharedWorkerNotCached \
