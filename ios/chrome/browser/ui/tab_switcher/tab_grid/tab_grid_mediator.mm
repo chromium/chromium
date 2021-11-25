@@ -69,6 +69,7 @@ TabSwitcherItem* CreateItem(web::WebState* web_state) {
     item.hidesTitle = YES;
   }
   item.title = tab_util::GetTabTitle(web_state);
+  item.showsActivity = web_state->IsLoading();
   return item;
 }
 
@@ -295,7 +296,19 @@ web::WebState* GetWebStateWithId(WebStateList* web_state_list,
 
 #pragma mark - CRWWebStateObserver
 
+- (void)webStateDidStartLoading:(web::WebState*)webState {
+  [self updateConsumerItemForWebState:webState];
+}
+
+- (void)webStateDidStopLoading:(web::WebState*)webState {
+  [self updateConsumerItemForWebState:webState];
+}
+
 - (void)webStateDidChangeTitle:(web::WebState*)webState {
+  [self updateConsumerItemForWebState:webState];
+}
+
+- (void)updateConsumerItemForWebState:(web::WebState*)webState {
   // Assumption: the ID of the webState didn't change as a result of this load.
   TabIdTabHelper* tabHelper = TabIdTabHelper::FromWebState(webState);
   NSString* itemID = tabHelper->tab_id();

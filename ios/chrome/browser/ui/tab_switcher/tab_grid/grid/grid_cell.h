@@ -52,6 +52,11 @@ typedef NS_ENUM(NSUInteger, GridCellState) {
 
 // Fade in a new snapshot.
 - (void)fadeInSnapshot:(UIImage*)snapshot;
+
+// Starts the activity indicator animation.
+- (void)showActivityIndicator;
+// Stops the activity indicator animation.
+- (void)hideActivityIndicator;
 @end
 
 // A GridCell for use in animated transitions that only shows selection state

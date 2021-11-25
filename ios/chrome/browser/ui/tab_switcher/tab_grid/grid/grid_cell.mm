@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_cell.h"
 
+#import <MaterialComponents/MaterialActivityIndicator.h>
 #include <ostream>
 
 #include "base/check.h"
@@ -14,14 +15,20 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_constants.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
+#import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #include "ios/chrome/grit/ios_strings.h"
 #include "ui/base/l10n/l10n_util.h"
+#import "ui/gfx/ios/uikit_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
 
 namespace {
+
+// Size of activity indicator replacing fav icon when active.
+const CGFloat kIndicatorSize = 16.0;
+
 // Frame-based layout utilities for GridTransitionCell.
 // Scales the size of |view|'s frame by |factor| in both height and width. This
 // scaling is done by changing the frame size without changing its origin,
@@ -66,6 +73,7 @@ void PositionView(UIView* view, CGPoint point) {
 @property(nonatomic, weak) UILabel* titleLabel;
 @property(nonatomic, weak) UIImageView* closeIconView;
 @property(nonatomic, weak) UIImageView* selectIconView;
+@property(nonatomic, weak) MDCActivityIndicator* activityIndicator;
 // Since the close icon dimensions are smaller than the recommended tap target
 // size, use an overlaid tap target button.
 @property(nonatomic, weak) UIButton* closeTapTargetButton;
@@ -265,6 +273,18 @@ void PositionView(UIView* view, CGPoint point) {
   _icon = icon;
 }
 
+- (void)showActivityIndicator {
+  [self.activityIndicator startAnimating];
+  [self.activityIndicator setHidden:NO];
+  [self.iconView setHidden:YES];
+}
+
+- (void)hideActivityIndicator {
+  [self.activityIndicator stopAnimating];
+  [self.activityIndicator setHidden:YES];
+  [self.iconView setHidden:NO];
+}
+
 - (void)setSnapshot:(UIImage*)snapshot {
   self.snapshotView.image = snapshot;
   _snapshot = snapshot;
@@ -337,6 +357,13 @@ void PositionView(UIView* view, CGPoint point) {
   iconView.layer.cornerRadius = kGridCellIconCornerRadius;
   iconView.layer.masksToBounds = YES;
 
+  CGRect indicatorFrame = CGRectMake(0, 0, kIndicatorSize, kIndicatorSize);
+  MDCActivityIndicator* activityIndicator =
+      [[MDCActivityIndicator alloc] initWithFrame:indicatorFrame];
+  activityIndicator.translatesAutoresizingMaskIntoConstraints = NO;
+  activityIndicator.cycleColors = @[ [UIColor colorNamed:kBlueColor] ];
+  activityIndicator.radius = ui::AlignValueToUpperPixel(kIndicatorSize / 2);
+
   UILabel* titleLabel = [[UILabel alloc] init];
   titleLabel.translatesAutoresizingMaskIntoConstraints = NO;
   titleLabel.font = [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote];
@@ -362,10 +389,12 @@ void PositionView(UIView* view, CGPoint point) {
   }
 
   [topBar addSubview:iconView];
+  [topBar addSubview:activityIndicator];
   [topBar addSubview:titleLabel];
   [topBar addSubview:closeIconView];
 
   _iconView = iconView;
+  _activityIndicator = activityIndicator;
   _titleLabel = titleLabel;
   _closeIconView = closeIconView;
 
@@ -428,6 +457,10 @@ void PositionView(UIView* view, CGPoint point) {
     _topBarHeightConstraint,
     [titleLabel.centerYAnchor constraintEqualToAnchor:topBar.centerYAnchor],
   ];
+
+  // Center indicator over favicon.
+  AddSameCenterXConstraint(self, iconView, activityIndicator);
+  AddSameCenterYConstraint(self, iconView, activityIndicator);
 
   [NSLayoutConstraint activateConstraints:constraints];
   [titleLabel

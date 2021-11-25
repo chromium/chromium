@@ -1109,6 +1109,11 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
   } else {
     cell.opacity = 1.0f;
   }
+  if (item.showsActivity) {
+    [cell showActivityIndicator];
+  } else {
+    [cell hideActivityIndicator];
+  }
 }
 
 // Tells the delegate that the user tapped the item with identifier
