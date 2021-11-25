@@ -1441,7 +1441,7 @@ try_.chromium_linux_builder(
     name = "linux_chromium_cfi_rel_ng",
     cores = 32,
     # TODO(thakis): Remove once https://crbug.com/927738 is resolved.
-    execution_timeout = 5 * time.hour,
+    execution_timeout = 7 * time.hour,
 )
 
 try_.chromium_linux_builder(
