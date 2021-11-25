@@ -25,6 +25,7 @@ class PrefRegistrySyncable;
 }
 
 using content::ProtocolHandler;
+using DefaultClientCallback = base::OnceCallback<void(bool)>;
 
 // This is where handlers for protocols registered with
 // navigator.registerProtocolHandler() are registered. Each Profile owns an
@@ -47,16 +48,34 @@ class ProtocolHandlerRegistry : public KeyedService {
   // as the default handler for specific protocols.
   class Delegate {
    public:
+    Delegate();
     virtual ~Delegate();
     virtual void RegisterExternalHandler(const std::string& protocol);
     virtual void DeregisterExternalHandler(const std::string& protocol);
     virtual bool IsExternalHandlerRegistered(const std::string& protocol);
-    virtual void RegisterWithOSAsDefaultClient(
+    virtual void RegisterWithOSAsDefaultClient(const std::string& protocol,
+                                               DefaultClientCallback callback);
+    virtual void CheckDefaultClientWithOS(const std::string& protocol,
+                                          DefaultClientCallback callback);
+    virtual bool ShouldRemoveHandlersNotInOS();
+
+   private:
+    // Gets the callback for DefaultProtocolClientWorker.
+    shell_integration::DefaultWebClientWorkerCallback
+    GetDefaultWebClientCallback(const std::string& protocol,
+                                DefaultClientCallback callback);
+
+    // Called with the default state when the default protocol client worker is
+    // done.
+    void OnSetAsDefaultProtocolClientFinished(
         const std::string& protocol,
-        shell_integration::DefaultWebClientWorkerCallback callback);
-    virtual void CheckDefaultClientWithOS(
-        const std::string& protocol,
-        shell_integration::DefaultWebClientWorkerCallback callback);
+        DefaultClientCallback callback,
+        shell_integration::DefaultWebClientState state);
+
+    // Makes it possible to invalidate the callback for the
+    // DefaultProtocolClientWorker.
+    base::WeakPtrFactory<ProtocolHandlerRegistry::Delegate> weak_ptr_factory_{
+        this};
   };
 
   class Observer : public base::CheckedObserver {
@@ -291,12 +310,12 @@ class ProtocolHandlerRegistry : public KeyedService {
 
   // Called with the default state when the default protocol client worker is
   // done.
-  void OnSetAsDefaultProtocolClientFinished(
-      const std::string& protocol,
-      shell_integration::DefaultWebClientState state);
+  void OnSetAsDefaultProtocolClientFinished(const std::string& protocol,
+                                            bool is_default);
 
-  // Gets the callback for DefaultProtocolClientWorker.
-  shell_integration::DefaultWebClientWorkerCallback GetDefaultWebClientCallback(
+  // Gets the callback that the delegate uses to respond to this instance after
+  // a query on default client state.
+  DefaultClientCallback GetDefaultWebClientCallback(
       const std::string& protocol);
 
   // Map from protocols (strings) to protocol handlers.

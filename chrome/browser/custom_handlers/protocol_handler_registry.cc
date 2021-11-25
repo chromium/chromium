@@ -41,21 +41,6 @@ const ProtocolHandler& LookupHandler(
   return ProtocolHandler::EmptyProtocolHandler();
 }
 
-// If true default protocol handlers will be removed if the OS level
-// registration for a protocol is no longer Chrome.
-bool ShouldRemoveHandlersNotInOS() {
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
-  // We don't do this on Linux as the OS registration there is not reliable,
-  // and Chrome OS doesn't have any notion of OS registration.
-  // TODO(benwells): When Linux support is more reliable remove this
-  // difference (http://crbug.com/88255).
-  return false;
-#else
-  return shell_integration::GetDefaultWebClientSetPermission() !=
-         shell_integration::SET_DEFAULT_NOT_ALLOWED;
-#endif
-}
-
 GURL TranslateUrl(
     const ProtocolHandlerRegistry::ProtocolHandlerMap& handler_map,
     const GURL& url) {
@@ -74,7 +59,9 @@ GURL TranslateUrl(
 
 // Delegate --------------------------------------------------------------------
 
-ProtocolHandlerRegistry::Delegate::~Delegate() {}
+ProtocolHandlerRegistry::Delegate::Delegate() = default;
+
+ProtocolHandlerRegistry::Delegate::~Delegate() = default;
 
 void ProtocolHandlerRegistry::Delegate::RegisterExternalHandler(
     const std::string& protocol) {
@@ -98,22 +85,57 @@ bool ProtocolHandlerRegistry::Delegate::IsExternalHandlerRegistered(
 
 void ProtocolHandlerRegistry::Delegate::RegisterWithOSAsDefaultClient(
     const std::string& protocol,
-    shell_integration::DefaultWebClientWorkerCallback callback) {
+    DefaultClientCallback callback) {
   // The worker pointer is reference counted. While it is running, the
   // sequence it runs on will hold references it will be automatically freed
   // once all its tasks have finished.
   base::MakeRefCounted<shell_integration::DefaultProtocolClientWorker>(protocol)
-      ->StartSetAsDefault(std::move(callback));
+      ->StartSetAsDefault(
+          GetDefaultWebClientCallback(protocol, std::move(callback)));
 }
 
 void ProtocolHandlerRegistry::Delegate::CheckDefaultClientWithOS(
     const std::string& protocol,
-    shell_integration::DefaultWebClientWorkerCallback callback) {
+    DefaultClientCallback callback) {
   // The worker pointer is reference counted. While it is running, the
   // sequence it runs on will hold references it will be automatically freed
   // once all its tasks have finished.
   base::MakeRefCounted<shell_integration::DefaultProtocolClientWorker>(protocol)
-      ->StartCheckIsDefault(std::move(callback));
+      ->StartCheckIsDefault(
+          GetDefaultWebClientCallback(protocol, std::move(callback)));
+}
+
+// If true default protocol handlers will be removed if the OS level
+// registration for a protocol is no longer Chrome.
+bool ProtocolHandlerRegistry::Delegate::ShouldRemoveHandlersNotInOS() {
+#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+  // We don't do this on Linux as the OS registration there is not reliable,
+  // and Chrome OS doesn't have any notion of OS registration.
+  // TODO(benwells): When Linux support is more reliable remove this
+  // difference (http://crbug.com/88255).
+  return false;
+#else
+  return shell_integration::GetDefaultWebClientSetPermission() !=
+         shell_integration::SET_DEFAULT_NOT_ALLOWED;
+#endif
+}
+
+shell_integration::DefaultWebClientWorkerCallback
+ProtocolHandlerRegistry::Delegate::GetDefaultWebClientCallback(
+    const std::string& protocol,
+    DefaultClientCallback callback) {
+  return base::BindOnce(
+      &ProtocolHandlerRegistry::Delegate::OnSetAsDefaultProtocolClientFinished,
+      weak_ptr_factory_.GetWeakPtr(), protocol, std::move(callback));
+}
+
+void ProtocolHandlerRegistry::Delegate::OnSetAsDefaultProtocolClientFinished(
+    const std::string& protocol,
+    DefaultClientCallback callback,
+    shell_integration::DefaultWebClientState state) {
+  bool is_default = state != shell_integration::NOT_DEFAULT &&
+                    state != shell_integration::OTHER_MODE_IS_DEFAULT;
+  std::move(callback).Run(is_default);
 }
 
 // ProtocolHandlerRegistry -----------------------------------------------------
@@ -257,7 +279,7 @@ void ProtocolHandlerRegistry::InitProtocolSettings() {
 
   // For each default protocol handler, check that we are still registered
   // with the OS as the default application.
-  if (ShouldRemoveHandlersNotInOS()) {
+  if (delegate_->ShouldRemoveHandlersNotInOS()) {
     for (ProtocolHandlerMap::const_iterator p = default_handlers_.begin();
          p != default_handlers_.end(); ++p) {
       const std::string& protocol = p->second.protocol();
@@ -769,13 +791,10 @@ void ProtocolHandlerRegistry::EraseHandler(const ProtocolHandler& handler,
 
 void ProtocolHandlerRegistry::OnSetAsDefaultProtocolClientFinished(
     const std::string& protocol,
-    shell_integration::DefaultWebClientState state) {
+    bool is_default) {
   // Clear if the default protocol client isn't this installation.
-  if (ShouldRemoveHandlersNotInOS() &&
-      (state == shell_integration::NOT_DEFAULT ||
-       state == shell_integration::OTHER_MODE_IS_DEFAULT)) {
+  if (!is_default && delegate_->ShouldRemoveHandlersNotInOS())
     ClearDefault(protocol);
-  }
 }
 
 void ProtocolHandlerRegistry::AddPredefinedHandler(
@@ -786,8 +805,7 @@ void ProtocolHandlerRegistry::AddPredefinedHandler(
   predefined_protocol_handlers_.push_back(handler);
 }
 
-shell_integration::DefaultWebClientWorkerCallback
-ProtocolHandlerRegistry::GetDefaultWebClientCallback(
+DefaultClientCallback ProtocolHandlerRegistry::GetDefaultWebClientCallback(
     const std::string& protocol) {
   return base::BindOnce(
       &ProtocolHandlerRegistry::OnSetAsDefaultProtocolClientFinished,

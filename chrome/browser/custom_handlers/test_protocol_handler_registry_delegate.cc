@@ -35,18 +35,16 @@ bool TestProtocolHandlerRegistryDelegate::IsExternalHandlerRegistered(
 
 void TestProtocolHandlerRegistryDelegate::RegisterWithOSAsDefaultClient(
     const std::string& protocol,
-    shell_integration::DefaultWebClientWorkerCallback callback) {
+    DefaultClientCallback callback) {
   // Respond asynchronously to mimic the real behavior.
   base::ThreadTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE,
-      base::BindOnce(std::move(callback), shell_integration::IS_DEFAULT));
+      FROM_HERE, base::BindOnce(std::move(callback), true));
 }
 
 void TestProtocolHandlerRegistryDelegate::CheckDefaultClientWithOS(
     const std::string& protocol,
-    shell_integration::DefaultWebClientWorkerCallback callback) {
+    DefaultClientCallback callback) {
   // Respond asynchronously to mimic the real behavior.
   base::ThreadTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE,
-      base::BindOnce(std::move(callback), shell_integration::IS_DEFAULT));
+      FROM_HERE, base::BindOnce(std::move(callback), true));
 }

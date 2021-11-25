@@ -67,16 +67,12 @@ class FakeDelegate : public ProtocolHandlerRegistry::Delegate {
     registered_protocols_.erase(protocol);
   }
 
-  void RegisterWithOSAsDefaultClient(
-      const std::string& protocol,
-      shell_integration::DefaultWebClientWorkerCallback callback) override {
+  void RegisterWithOSAsDefaultClient(const std::string& protocol,
+                                     DefaultClientCallback callback) override {
     // Do as-if the registration has to run on another sequence and post back
     // the result with a task to the current thread.
     base::ThreadTaskRunnerHandle::Get()->PostTask(
-        FROM_HERE,
-        base::BindOnce(std::move(callback),
-                       force_os_failure_ ? shell_integration::NOT_DEFAULT
-                                         : shell_integration::IS_DEFAULT));
+        FROM_HERE, base::BindOnce(std::move(callback), !force_os_failure_));
 
     if (!force_os_failure_)
       os_registered_protocols_.insert(protocol);

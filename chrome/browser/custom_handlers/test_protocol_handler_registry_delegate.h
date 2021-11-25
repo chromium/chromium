@@ -27,12 +27,10 @@ class TestProtocolHandlerRegistryDelegate
   void RegisterExternalHandler(const std::string& protocol) override;
   void DeregisterExternalHandler(const std::string& protocol) override;
   bool IsExternalHandlerRegistered(const std::string& protocol) override;
-  void RegisterWithOSAsDefaultClient(
-      const std::string& protocol,
-      shell_integration::DefaultWebClientWorkerCallback callback) override;
-  void CheckDefaultClientWithOS(
-      const std::string& protocol,
-      shell_integration::DefaultWebClientWorkerCallback callback) override;
+  void RegisterWithOSAsDefaultClient(const std::string& protocol,
+                                     DefaultClientCallback callback) override;
+  void CheckDefaultClientWithOS(const std::string& protocol,
+                                DefaultClientCallback callback) override;
 
  private:
   // Holds registered protocols.
