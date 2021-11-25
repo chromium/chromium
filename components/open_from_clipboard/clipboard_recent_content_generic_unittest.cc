@@ -16,6 +16,7 @@
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/clipboard/test/test_clipboard.h"
+#include "ui/gfx/image/image_unittest_util.h"
 #include "ui/gfx/skia_util.h"
 #include "url/gurl.h"
 #include "url/url_util.h"
@@ -219,9 +220,7 @@ TEST_F(ClipboardRecentContentGenericTest, ClearClipboardContent) {
 TEST_F(ClipboardRecentContentGenericTest, HasRecentImageFromClipboard) {
   ClipboardRecentContentGeneric recent_content;
   base::Time now = base::Time::Now();
-  SkBitmap bitmap;
-  bitmap.allocN32Pixels(3, 2);
-  bitmap.eraseARGB(255, 0, 255, 0);
+  SkBitmap bitmap = gfx::test::CreateBitmap(3, 2);
 
   EXPECT_FALSE(recent_content.HasRecentImageFromClipboard());
   test_clipboard_->WriteBitmap(bitmap);
@@ -274,9 +273,7 @@ TEST_F(ClipboardRecentContentGenericTest, HasRecentContentFromClipboard_Text) {
 TEST_F(ClipboardRecentContentGenericTest, HasRecentContentFromClipboard_Image) {
   ClipboardRecentContentGeneric recent_content;
   base::Time now = base::Time::Now();
-  SkBitmap bitmap;
-  bitmap.allocN32Pixels(3, 2);
-  bitmap.eraseARGB(255, 0, 255, 0);
+  SkBitmap bitmap = gfx::test::CreateBitmap(3, 2);
   test_clipboard_->WriteBitmap(bitmap);
   test_clipboard_->SetLastModifiedTime(now - base::Seconds(10));
 
