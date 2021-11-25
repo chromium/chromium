@@ -6,6 +6,12 @@
 
 #include <algorithm>
 
+#include "base/check.h"
+#include "base/numerics/clamped_math.h"
+#include "base/strings/stringprintf.h"
+#include "build/build_config.h"
+#include "ui/gfx/geometry/insets.h"
+
 #if defined(OS_WIN)
 #include <windows.h>
 #elif defined(OS_IOS)
@@ -13,12 +19,6 @@
 #elif defined(OS_MAC)
 #include <ApplicationServices/ApplicationServices.h>
 #endif
-
-#include "base/check.h"
-#include "base/numerics/clamped_math.h"
-#include "base/strings/stringprintf.h"
-#include "build/build_config.h"
-#include "ui/gfx/geometry/insets.h"
 
 namespace {
 

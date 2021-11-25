@@ -10,8 +10,13 @@
 
 #include "base/compiler_specific.h"
 #include "base/gtest_prod_util.h"
+#include "build/build_config.h"
 #include "ui/gfx/geometry/geometry_export.h"
 #include "ui/gfx/geometry/size.h"
+
+#if defined(OS_APPLE)
+struct CGSize;
+#endif
 
 namespace gfx {
 
@@ -29,6 +34,11 @@ class GEOMETRY_EXPORT SizeF {
   constexpr explicit SizeF(const Size& size)
       : SizeF(static_cast<float>(size.width()),
               static_cast<float>(size.height())) {}
+
+#if defined(OS_APPLE)
+  explicit SizeF(const CGSize&);
+  CGSize ToCGSize() const;
+#endif
 
   constexpr float width() const { return width_; }
   constexpr float height() const { return height_; }

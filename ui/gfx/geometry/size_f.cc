@@ -5,8 +5,23 @@
 #include "ui/gfx/geometry/size_f.h"
 
 #include "base/strings/stringprintf.h"
+#include "build/build_config.h"
+
+#if defined(OS_IOS)
+#include <CoreGraphics/CoreGraphics.h>
+#elif defined(OS_MAC)
+#include <ApplicationServices/ApplicationServices.h>
+#endif
 
 namespace gfx {
+
+#if defined(OS_APPLE)
+SizeF::SizeF(const CGSize& size) : SizeF(size.width, size.height) {}
+
+CGSize SizeF::ToCGSize() const {
+  return CGSizeMake(width(), height());
+}
+#endif
 
 float SizeF::GetArea() const {
   return width() * height();

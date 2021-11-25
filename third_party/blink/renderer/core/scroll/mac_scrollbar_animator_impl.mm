@@ -13,7 +13,6 @@
 #include "third_party/blink/renderer/core/scroll/scroll_animator.h"
 #include "third_party/blink/renderer/core/scroll/scrollbar_theme_mac.h"
 #include "third_party/blink/renderer/platform/animation/timing_function.h"
-#include "third_party/blink/renderer/platform/geometry/cg_conversions.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/mac/block_exceptions.h"
@@ -206,7 +205,7 @@ ScrollbarPainter ScrollbarPainterForScrollbar(
   if (!_scrollableArea)
     return NSZeroPoint;
 
-  return blink::PointToCGPoint(_scrollableArea->LastKnownMousePosition());
+  return _scrollableArea->LastKnownMousePosition().ToCGPoint();
 }
 
 - (NSPoint)scrollerImpPair:(id)scrollerImpPair
@@ -229,9 +228,9 @@ ScrollbarPainter ScrollbarPainterForScrollbar(
 
   DCHECK_EQ(scrollerImp, ScrollbarPainterForScrollbar(*scrollbar));
 
-  return blink::PointToCGPoint(
-      scrollbar->ConvertFromContainingEmbeddedContentView(
-          gfx::Point(pointInContentArea)));
+  return scrollbar
+      ->ConvertFromContainingEmbeddedContentView(gfx::Point(pointInContentArea))
+      .ToCGPoint();
 }
 
 - (void)scrollerImpPair:(id)scrollerImpPair
@@ -467,9 +466,10 @@ enum FeatureToAnimate {
 
   DCHECK_EQ(scrollerImp, ScrollbarPainterForScrollbar(*_scrollbar));
 
-  return blink::PointToCGPoint(
-      _scrollbar->ConvertFromContainingEmbeddedContentView(
-          _scrollbar->GetScrollableArea()->LastKnownMousePosition()));
+  return _scrollbar
+      ->ConvertFromContainingEmbeddedContentView(
+          _scrollbar->GetScrollableArea()->LastKnownMousePosition())
+      .ToCGPoint();
 }
 
 - (void)setUpAlphaAnimation:

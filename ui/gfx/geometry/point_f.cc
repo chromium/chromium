@@ -8,8 +8,22 @@
 
 #include "base/check.h"
 #include "base/strings/stringprintf.h"
+#include "build/build_config.h"
+
+#if defined(OS_IOS)
+#include <CoreGraphics/CoreGraphics.h>
+#elif defined(OS_MAC)
+#include <ApplicationServices/ApplicationServices.h>
+#endif
 
 namespace gfx {
+
+#if defined(OS_APPLE)
+PointF::PointF(const CGPoint& p) : PointF(p.x, p.y) {}
+CGPoint PointF::ToCGPoint() const {
+  return CGPointMake(x(), y());
+}
+#endif
 
 void PointF::SetToMin(const PointF& other) {
   x_ = std::min(x_, other.x_);

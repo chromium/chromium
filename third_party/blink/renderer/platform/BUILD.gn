@@ -741,8 +741,6 @@ component("platform") {
     "geometry/cg/float_size_cg.cc",
     "geometry/cg/int_rect_cg.cc",
     "geometry/cg/int_size_cg.cc",
-    "geometry/cg_conversions.cc",
-    "geometry/cg_conversions.h",
     "geometry/double_point.cc",
     "geometry/double_point.h",
     "geometry/double_rect.cc",
@@ -1763,8 +1761,6 @@ component("platform") {
       "geometry/cg/float_size_cg.cc",
       "geometry/cg/int_rect_cg.cc",
       "geometry/cg/int_size_cg.cc",
-      "geometry/cg_conversions.cc",
-      "geometry/cg_conversions.h",
     ]
   }
 

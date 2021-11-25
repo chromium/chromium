@@ -32,10 +32,6 @@ class GEOMETRY_EXPORT Size {
   explicit Size(const CGSize& s);
 #endif
 
-#if defined(OS_APPLE)
-  Size& operator=(const CGSize& s);
-#endif
-
   void operator+=(const Size& size);
 
   void operator-=(const Size& size);

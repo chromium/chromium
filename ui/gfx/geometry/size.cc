@@ -4,6 +4,12 @@
 
 #include "ui/gfx/geometry/size.h"
 
+#include "base/numerics/clamped_math.h"
+#include "base/numerics/safe_math.h"
+#include "base/strings/stringprintf.h"
+#include "build/build_config.h"
+#include "ui/gfx/geometry/size_conversions.h"
+
 #if defined(OS_WIN)
 #include <windows.h>
 #elif defined(OS_IOS)
@@ -12,25 +18,10 @@
 #include <ApplicationServices/ApplicationServices.h>
 #endif
 
-#include "base/numerics/clamped_math.h"
-#include "base/numerics/safe_math.h"
-#include "base/strings/stringprintf.h"
-#include "build/build_config.h"
-#include "ui/gfx/geometry/size_conversions.h"
-
 namespace gfx {
 
 #if defined(OS_APPLE)
-Size::Size(const CGSize& s)
-    : width_(s.width < 0 ? 0 : s.width),
-      height_(s.height < 0 ? 0 : s.height) {
-}
-
-Size& Size::operator=(const CGSize& s) {
-  set_width(s.width);
-  set_height(s.height);
-  return *this;
-}
+Size::Size(const CGSize& s) : Size(s.width, s.height) {}
 #endif
 
 void Size::operator+=(const Size& size) {
