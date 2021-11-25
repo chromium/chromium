@@ -40,7 +40,7 @@
 #include "components/password_manager/core/browser/password_manager_client.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
-#include "components/version_info/channel.h"
+#include "components/version_info/android/channel_getter.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/tts_controller.h"
@@ -464,7 +464,7 @@ void ClientAndroid::DestroyUI() {
 }
 
 version_info::Channel ClientAndroid::GetChannel() const {
-  return chrome::GetChannel();
+  return version_info::android::GetChannel();
 }
 
 std::string ClientAndroid::GetEmailAddressForAccessTokenAccount() const {

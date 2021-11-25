@@ -14,10 +14,10 @@
 #include "chrome/browser/android/autofill_assistant/trigger_script_bridge_android.h"
 #include "chrome/browser/android/autofill_assistant/ui_controller_android_utils.h"
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
-#include "chrome/common/channel_info.h"
 #include "components/autofill_assistant/browser/public/runtime_manager_impl.h"
 #include "components/autofill_assistant/browser/script_parameters.h"
 #include "components/autofill_assistant/browser/website_login_manager_impl.h"
+#include "components/version_info/android/channel_getter.h"
 #include "components/version_info/channel.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "url/gurl.h"
@@ -80,7 +80,7 @@ WebsiteLoginManager* StarterAndroid::GetWebsiteLoginManager() const {
 }
 
 version_info::Channel StarterAndroid::GetChannel() const {
-  return chrome::GetChannel();
+  return version_info::android::GetChannel();
 }
 
 bool StarterAndroid::GetFeatureModuleInstalled() const {
