@@ -170,7 +170,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Borealis.GameMode.Result" enum="BorealisGameModeResult"
-    expires_after="2022-01-02">
+    expires_after="2022-04-08">
   <owner>lqu@google.com</owner>
   <owner>src/chrome/browser/ash/borealis/OWNERS</owner>
   <summary>
@@ -181,7 +181,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Borealis.Install.NumAttempts" enum="BooleanAttempted"
-    expires_after="2022-01-09">
+    expires_after="2022-04-08">
   <owner>danielng@google.com</owner>
   <owner>src/chrome/browser/ash/borealis/OWNERS</owner>
   <summary>
@@ -194,7 +194,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Borealis.Install.OverallTime" units="ms"
-    expires_after="2022-01-09">
+    expires_after="2022-04-08">
   <owner>danielng@google.com</owner>
   <owner>src/chrome/browser/ash/borealis/OWNERS</owner>
   <summary>
@@ -207,7 +207,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Borealis.Install.Result" enum="BorealisInstallResult"
-    expires_after="2022-01-09">
+    expires_after="2022-04-08">
   <owner>danielng@google.com</owner>
   <owner>src/chrome/browser/ash/borealis/OWNERS</owner>
   <summary>
@@ -218,7 +218,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Borealis.Shutdown.Attempt" enum="BooleanAttempted"
-    expires_after="2022-02-02">
+    expires_after="2022-04-08">
   <owner>lqu@google.com</owner>
   <owner>src/chrome/browser/ash/borealis/OWNERS</owner>
   <summary>
@@ -239,14 +239,14 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Borealis.Startup.NumAttempts" enum="BooleanAttempted"
-    expires_after="2022-04-24">
+    expires_after="2022-04-08">
   <owner>danielng@google.com</owner>
   <owner>src/chrome/browser/ash/borealis/OWNERS</owner>
   <summary>Recording every attempt to start Borealis (via the UI).</summary>
 </histogram>
 
 <histogram name="Borealis.Startup.OverallTime" units="ms"
-    expires_after="2022-05-01">
+    expires_after="2022-04-08">
   <owner>danielng@google.com</owner>
   <owner>src/chrome/browser/ash/borealis/OWNERS</owner>
   <summary>
@@ -256,7 +256,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Borealis.Startup.Result" enum="BorealisStartupResult"
-    expires_after="2022-04-17">
+    expires_after="2022-04-08">
   <owner>danielng@google.com</owner>
   <owner>src/chrome/browser/ash/borealis/OWNERS</owner>
   <summary>
