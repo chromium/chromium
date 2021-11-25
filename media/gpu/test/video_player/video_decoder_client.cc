@@ -200,6 +200,10 @@ void VideoDecoderClient::CreateDecoderTask(bool* success,
       decoder_ = std::make_unique<TestVDAVideoDecoder>(
           decoder_client_config_.implementation ==
               DecoderImplementation::kVDVDA,
+          // base::Unretained(this) is safe because |decoder_| is owned by
+          // |*this|. The lifetime of |decoder_| must be shorter than |*this|.
+          base::BindRepeating(&VideoDecoderClient::ResolutionChangeTask,
+                              base::Unretained(this)),
           gfx::ColorSpace(), frame_renderer_.get(), gpu_memory_buffer_factory_);
       break;
   }
@@ -422,7 +426,13 @@ void VideoDecoderClient::ResetDoneTask() {
   FireEvent(VideoPlayerEvent::kResetDone);
 }
 
-void VideoDecoderClient::FireEvent(VideoPlayerEvent event) {
+bool VideoDecoderClient::ResolutionChangeTask() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(decoder_client_sequence_checker_);
+
+  return FireEvent(VideoPlayerEvent::kNewBuffersRequested);
+}
+
+bool VideoDecoderClient::FireEvent(VideoPlayerEvent event) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(decoder_client_sequence_checker_);
 
   bool continue_decoding = event_cb_.Run(event);
@@ -430,6 +440,7 @@ void VideoDecoderClient::FireEvent(VideoPlayerEvent event) {
     // Changing the state to idle will abort any pending decodes.
     decoder_client_state_ = VideoDecoderClientState::kIdle;
   }
+  return continue_decoding;
 }
 
 }  // namespace test

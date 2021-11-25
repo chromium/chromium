@@ -380,6 +380,30 @@ TEST_F(VideoDecoderTest, ResetAfterFirstConfigInfo) {
   EXPECT_TRUE(tvp->WaitForFrameProcessors());
 }
 
+TEST_F(VideoDecoderTest, ResolutionChangeAbortedByReset) {
+  if (g_env->GetDecoderImplementation() != DecoderImplementation::kVDVDA)
+    GTEST_SKIP();
+
+  auto tvp = CreateVideoPlayer(g_env->Video());
+
+  tvp->PlayUntil(VideoPlayerEvent::kNewBuffersRequested);
+  EXPECT_TRUE(tvp->WaitForEvent(VideoPlayerEvent::kNewBuffersRequested));
+
+  // TODO(b/192523692): Add a new test case that continues passing input buffers
+  // between the resolution change has been aborted and resetting the decoder.
+
+  tvp->Reset();
+  EXPECT_TRUE(tvp->WaitForResetDone());
+
+  tvp->Play();
+  EXPECT_TRUE(tvp->WaitForFlushDone());
+
+  EXPECT_EQ(tvp->GetResetDoneCount(), 1u);
+  EXPECT_EQ(tvp->GetFlushDoneCount(), 1u);
+  EXPECT_EQ(tvp->GetFrameDecodedCount(), g_env->Video()->NumFrames());
+  EXPECT_TRUE(tvp->WaitForFrameProcessors());
+}
+
 // Play video from start to end. Multiple buffer decodes will be queued in the
 // decoder, without waiting for the result of the previous decode requests.
 TEST_F(VideoDecoderTest, FlushAtEndOfStream_MultipleOutstandingDecodes) {

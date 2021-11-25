@@ -150,9 +150,13 @@ class VideoDecoderClient {
   void FlushDoneTask(media::Status status);
   // Called by the decoder when resetting has completed.
   void ResetDoneTask();
+  // Called by the decoder when a resolution change was requested, returns
+  // whether we should continue or abort the resolution change.
+  bool ResolutionChangeTask();
 
-  // Fire the specified event.
-  void FireEvent(VideoPlayerEvent event);
+  // Fire the specified event, and return true if the decoder should continue
+  // the decoding.
+  bool FireEvent(VideoPlayerEvent event);
 
   VideoPlayer::EventCallback event_cb_;
   std::unique_ptr<FrameRenderer> frame_renderer_;

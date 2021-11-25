@@ -41,10 +41,12 @@ constexpr size_t kTimestampCacheSize = 128;
 
 TestVDAVideoDecoder::TestVDAVideoDecoder(
     bool use_vd_vda,
+    OnProvidePictureBuffersCB on_provide_picture_buffers_cb,
     const gfx::ColorSpace& target_color_space,
     FrameRenderer* const frame_renderer,
     gpu::GpuMemoryBufferFactory* gpu_memory_buffer_factory)
     : use_vd_vda_(use_vd_vda),
+      on_provide_picture_buffers_cb_(std::move(on_provide_picture_buffers_cb)),
       target_color_space_(target_color_space),
       frame_renderer_(frame_renderer),
 #if BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
@@ -219,6 +221,12 @@ void TestVDAVideoDecoder::ProvidePictureBuffersWithVisibleRect(
   DVLOGF(4) << "Requested " << requested_num_of_buffers
             << " picture buffers with size " << dimensions.width() << "x"
             << dimensions.height();
+
+  const bool should_continue = on_provide_picture_buffers_cb_.Run();
+  if (!should_continue) {
+    DVLOGF(3) << "Abort the resolution change process.";
+    return;
+  }
 
   // Create a set of DMABuf-backed video frames.
   std::vector<PictureBuffer> picture_buffers;
