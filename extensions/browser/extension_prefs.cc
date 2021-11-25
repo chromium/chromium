@@ -2279,19 +2279,17 @@ bool ExtensionPrefs::GetUserExtensionPrefIntoContainer(
   DCHECK(id_container_out->empty());
 
   const base::Value* user_pref_value = prefs_->GetUserPrefValue(pref);
-  const base::ListValue* user_pref_as_list;
-  if (!user_pref_value || !user_pref_value->GetAsList(&user_pref_as_list))
+  if (!user_pref_value || !user_pref_value->is_list())
     return false;
 
   std::insert_iterator<ExtensionIdContainer> insert_iterator(
       *id_container_out, id_container_out->end());
-  std::string extension_id;
-  for (const auto& entry : user_pref_as_list->GetList()) {
-    if (!entry.GetAsString(&extension_id)) {
+  for (const auto& entry : user_pref_value->GetList()) {
+    if (!entry.is_string()) {
       NOTREACHED();
       continue;
     }
-    insert_iterator = extension_id;
+    insert_iterator = entry.GetString();
   }
   return true;
 }

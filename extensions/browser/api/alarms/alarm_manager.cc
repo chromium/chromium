@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include <algorithm>
 #include <memory>
 #include <utility>
 
@@ -69,9 +70,9 @@ base::TimeDelta TimeDeltaFromDelay(double delay_in_minutes) {
 
 AlarmManager::AlarmList AlarmsFromValue(const std::string extension_id,
                                         bool is_unpacked,
-                                        const base::ListValue* list) {
+                                        const base::Value::ConstListView list) {
   AlarmManager::AlarmList alarms;
-  for (const base::Value& alarm_value : list->GetList()) {
+  for (const base::Value& alarm_value : list) {
     std::unique_ptr<Alarm> alarm(new Alarm());
     if (alarm_value.is_dict() &&
         alarms::Alarm::Populate(alarm_value, alarm->js_alarm.get())) {
@@ -330,11 +331,11 @@ void AlarmManager::WriteToStorage(const std::string& extension_id) {
 void AlarmManager::ReadFromStorage(const std::string& extension_id,
                                    bool is_unpacked,
                                    std::unique_ptr<base::Value> value) {
-  base::ListValue* list = NULL;
-  if (value.get() && value->GetAsList(&list)) {
-    AlarmList alarm_states = AlarmsFromValue(extension_id, is_unpacked, list);
-    for (size_t i = 0; i < alarm_states.size(); ++i)
-      AddAlarmImpl(extension_id, std::move(alarm_states[i]));
+  if (value.get() && value->is_list()) {
+    AlarmList alarm_states =
+        AlarmsFromValue(extension_id, is_unpacked, value->GetList());
+    for (auto& alarm : alarm_states)
+      AddAlarmImpl(extension_id, std::move(alarm));
   }
 
   ReadyQueue& extension_ready_queue = ready_actions_[extension_id];

@@ -949,10 +949,9 @@ bool ExtensionWebRequestEventRouter::RequestFilter::InitFromValue(
 
   for (base::DictionaryValue::Iterator it(value); !it.IsAtEnd(); it.Advance()) {
     if (it.key() == "urls") {
-      const base::ListValue* urls_value = NULL;
-      if (!it.value().GetAsList(&urls_value))
+      if (!it.value().is_list())
         return false;
-      for (size_t i = 0; i < urls_value->GetList().size(); ++i) {
+      for (const auto& item : it.value().GetList()) {
         std::string url;
         // TODO(https://crbug.com/1257045): Remove urn: scheme support.
         URLPattern pattern(URLPattern::SCHEME_HTTP | URLPattern::SCHEME_HTTPS |
@@ -961,7 +960,11 @@ bool ExtensionWebRequestEventRouter::RequestFilter::InitFromValue(
                            URLPattern::SCHEME_WS | URLPattern::SCHEME_WSS |
                            URLPattern::SCHEME_URN |
                            URLPattern::SCHEME_UUID_IN_PACKAGE);
-        if (!urls_value->GetString(i, &url) ||
+        if (item.is_string())
+          url = item.GetString();
+        // Parse will fail on an empty url, so we don't need to distinguish
+        // between `item` not being a string and `item` being an empty string.
+        if (url.empty() ||
             pattern.Parse(url) != URLPattern::ParseResult::kSuccess) {
           *error = ErrorUtils::FormatErrorMessage(
               keys::kInvalidRequestFilterUrl, url);
@@ -970,13 +973,14 @@ bool ExtensionWebRequestEventRouter::RequestFilter::InitFromValue(
         urls.AddPattern(pattern);
       }
     } else if (it.key() == "types") {
-      const base::ListValue* types_value = NULL;
-      if (!it.value().GetAsList(&types_value))
+      if (!it.value().is_list())
         return false;
-      for (size_t i = 0; i < types_value->GetList().size(); ++i) {
+      for (const auto& type : it.value().GetList()) {
         std::string type_str;
+        if (type.is_string())
+          type_str = type.GetString();
         types.push_back(WebRequestResourceType::OTHER);
-        if (!types_value->GetString(i, &type_str) ||
+        if (type_str.empty() ||
             !ParseWebRequestResourceType(type_str, &types.back())) {
           return false;
         }

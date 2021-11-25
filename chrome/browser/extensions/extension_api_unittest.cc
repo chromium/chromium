@@ -49,7 +49,7 @@ ExtensionApiUnittest::RunFunctionAndReturnDictionary(
   return std::unique_ptr<base::DictionaryValue>(dict);
 }
 
-std::unique_ptr<base::ListValue> ExtensionApiUnittest::RunFunctionAndReturnList(
+std::unique_ptr<base::Value> ExtensionApiUnittest::RunFunctionAndReturnList(
     ExtensionFunction* function,
     const std::string& args) {
   base::Value* value = RunFunctionAndReturnValue(function, args).release();
@@ -58,8 +58,8 @@ std::unique_ptr<base::ListValue> ExtensionApiUnittest::RunFunctionAndReturnList(
     delete value;
 
   // We expect to have successfully retrieved a list from the value.
-  EXPECT_TRUE(value);
-  return base::ListValue::From(std::unique_ptr<base::Value>(value));
+  EXPECT_TRUE(value && value->is_list());
+  return std::unique_ptr<base::Value>(value);
 }
 
 std::string ExtensionApiUnittest::RunFunctionAndReturnError(

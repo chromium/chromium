@@ -230,7 +230,7 @@ class EventRouterFilterTest : public ExtensionsTest,
   bool ContainsFilter(const std::string& extension_id,
                       const std::string& event_name,
                       const DictionaryValue& to_check) {
-    const ListValue* filter_list = GetFilterList(extension_id, event_name);
+    const Value* filter_list = GetFilterList(extension_id, event_name);
     if (!filter_list) {
       ADD_FAILURE();
       return false;
@@ -250,17 +250,15 @@ class EventRouterFilterTest : public ExtensionsTest,
   bool is_for_service_worker() const { return GetParam(); }
 
  private:
-  const ListValue* GetFilterList(const std::string& extension_id,
-                                 const std::string& event_name) {
+  const Value* GetFilterList(const std::string& extension_id,
+                             const std::string& event_name) {
     const base::DictionaryValue* filtered_events =
         GetFilteredEvents(extension_id);
     DictionaryValue::Iterator iter(*filtered_events);
     if (iter.key() != event_name)
       return nullptr;
 
-    const base::ListValue* filter_list = nullptr;
-    iter.value().GetAsList(&filter_list);
-    return filter_list;
+    return iter.value().is_list() ? &iter.value() : nullptr;
   }
 
   std::unique_ptr<content::RenderProcessHost> render_process_host_;
@@ -462,10 +460,8 @@ TEST_P(EventRouterFilterTest, Basic) {
 
   DictionaryValue::Iterator iter(*filtered_events);
   ASSERT_EQ(kEventName, iter.key());
-  const base::ListValue* filter_list = nullptr;
-  ASSERT_TRUE(iter.value().GetAsList(&filter_list));
-  ASSERT_TRUE(filter_list);
-  ASSERT_EQ(3u, filter_list->GetList().size());
+  ASSERT_TRUE(iter.value().is_list());
+  ASSERT_EQ(3u, iter.value().GetList().size());
 
   ASSERT_TRUE(ContainsFilter(kExtensionId, kEventName, *filters[0]));
   ASSERT_TRUE(ContainsFilter(kExtensionId, kEventName, *filters[1]));

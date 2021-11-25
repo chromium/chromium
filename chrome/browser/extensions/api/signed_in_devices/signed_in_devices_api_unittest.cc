@@ -108,16 +108,16 @@ class ExtensionSignedInDevicesTest : public ExtensionApiUnittest {
   }
 };
 
-std::string GetPublicId(const base::DictionaryValue* dictionary) {
-  std::string public_id;
-  if (!dictionary->GetString("id", &public_id)) {
+std::string GetPublicId(const base::Value* dictionary) {
+  const std::string* public_id = dictionary->FindStringKey("id");
+  if (!public_id) {
     ADD_FAILURE() << "Not able to find public id in the dictionary";
+    return std::string();
   }
-
-  return public_id;
+  return *public_id;
 }
 
-void VerifyDictionaryWithDeviceInfo(const base::DictionaryValue* actual_value,
+void VerifyDictionaryWithDeviceInfo(const base::Value* actual_value,
                                     DeviceInfo* device_info) {
   std::string public_id = GetPublicId(actual_value);
   device_info->set_public_id(public_id);
@@ -126,12 +126,18 @@ void VerifyDictionaryWithDeviceInfo(const base::DictionaryValue* actual_value,
   EXPECT_TRUE(expected_value->Equals(actual_value));
 }
 
-base::DictionaryValue* GetDictionaryFromList(int index,
-                                             base::ListValue* value) {
-  base::DictionaryValue* dictionary;
-  if (!value->GetDictionary(index, &dictionary)) {
-    ADD_FAILURE() << "Expected a list of dictionaries";
-    return NULL;
+const base::Value* GetDictionaryFromList(int index, base::Value* value) {
+  const base::Value* dictionary = nullptr;
+  int cur_index = 0;
+  for (const auto& item : value->GetList()) {
+    if (cur_index++ != index)
+      continue;
+    if (!item.is_dict()) {
+      ADD_FAILURE() << "Expected a list of dictionaries";
+      return nullptr;
+    }
+    dictionary = &item;
+    break;
   }
   return dictionary;
 }
@@ -149,7 +155,7 @@ TEST_F(ExtensionSignedInDevicesTest, GetAll) {
   device_tracker->Add(device_info1.get());
   device_tracker->Add(device_info2.get());
 
-  std::unique_ptr<base::ListValue> result(
+  std::unique_ptr<base::Value> result(
       RunFunctionAndReturnList(new SignedInDevicesGetFunction(), "[null]"));
 
   // Ensure dictionary matches device info.

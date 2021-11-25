@@ -64,9 +64,8 @@ IN_PROC_BROWSER_TEST_F(SocketApiTest, GetNetworkList) {
 
   // If we're invoking socket tests, all we can confirm is that we have at
   // least one address, but not what it is.
-  base::ListValue* value = NULL;
-  ASSERT_TRUE(result->GetAsList(&value));
-  ASSERT_GT(value->GetList().size(), 0U);
+  ASSERT_TRUE(result->is_list());
+  ASSERT_GT(result->GetList().size(), 0U);
 }
 
 }  //  namespace extensions

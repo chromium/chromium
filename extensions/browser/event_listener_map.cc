@@ -287,10 +287,9 @@ void EventListenerMap::LoadFilteredLazyListeners(
     const DictionaryValue& filtered) {
   for (DictionaryValue::Iterator it(filtered); !it.IsAtEnd(); it.Advance()) {
     // We skip entries if they are malformed.
-    const base::ListValue* filter_list = nullptr;
-    if (!it.value().GetAsList(&filter_list))
+    if (!it.value().is_list())
       continue;
-    for (const base::Value& filter_value : filter_list->GetList()) {
+    for (const base::Value& filter_value : it.value().GetList()) {
       if (!filter_value.is_dict())
         continue;
       const base::DictionaryValue* filter =

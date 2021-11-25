@@ -7,6 +7,8 @@
 #include <stddef.h>
 
 #include <memory>
+#include <string>
+#include <utility>
 
 #include "base/bind.h"
 #include "base/cxx17_backports.h"
@@ -76,16 +78,16 @@ class ExtensionAlarmsTest : public ApiUnitTest {
 
   // Takes a JSON result from a function and converts it to a vector of
   // JsAlarms.
-  std::vector<std::unique_ptr<JsAlarm>> ToAlarmList(base::ListValue* value) {
+  std::vector<std::unique_ptr<JsAlarm>> ToAlarmList(base::Value* value) {
     std::vector<std::unique_ptr<JsAlarm>> list;
-    for (size_t i = 0; i < value->GetList().size(); ++i) {
+    for (const auto& item : value->GetList()) {
       std::unique_ptr<JsAlarm> alarm(new JsAlarm());
-      base::DictionaryValue* alarm_value;
-      if (!value->GetDictionary(i, &alarm_value)) {
+
+      if (!item.is_dict()) {
         ADD_FAILURE() << "Expected a list of Alarm objects.";
         return list;
       }
-      EXPECT_TRUE(JsAlarm::Populate(*alarm_value, alarm.get()));
+      EXPECT_TRUE(JsAlarm::Populate(item, alarm.get()));
       list.push_back(std::move(alarm));
     }
     return list;
@@ -373,7 +375,7 @@ TEST_F(ExtensionAlarmsTest, Get) {
 TEST_F(ExtensionAlarmsTest, GetAll) {
   // Test getAll with 0 alarms.
   {
-    std::unique_ptr<base::ListValue> result(
+    std::unique_ptr<base::Value> result(
         RunFunctionAndReturnList(new AlarmsGetAllFunction(), "[]"));
     std::vector<std::unique_ptr<JsAlarm>> alarms = ToAlarmList(result.get());
     EXPECT_EQ(0u, alarms.size());
@@ -383,7 +385,7 @@ TEST_F(ExtensionAlarmsTest, GetAll) {
   CreateAlarms(2);
 
   {
-    std::unique_ptr<base::ListValue> result(
+    std::unique_ptr<base::Value> result(
         RunFunctionAndReturnList(new AlarmsGetAllFunction(), "[null]"));
     std::vector<std::unique_ptr<JsAlarm>> alarms = ToAlarmList(result.get());
     EXPECT_EQ(2u, alarms.size());
