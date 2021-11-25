@@ -89,6 +89,28 @@ TEST(SizeFTest, SetToMinMax) {
   EXPECT_EQ(SizeF(3.5f, 5.5f).ToString(), a.ToString());
 }
 
+TEST(SizeFTest, OperatorAddSub) {
+  SizeF lhs(100.5f, 20);
+  SizeF rhs(50, 10.25f);
+
+  lhs += rhs;
+  EXPECT_EQ(SizeF(150.5f, 30.25f), lhs);
+
+  lhs = SizeF(100, 20.25f);
+  EXPECT_EQ(SizeF(150, 30.5f), lhs + rhs);
+
+  lhs = SizeF(100.5f, 20);
+  lhs -= rhs;
+  EXPECT_EQ(SizeF(50.5f, 9.75f), lhs);
+
+  lhs = SizeF(100, 20.75f);
+  EXPECT_EQ(SizeF(50, 10.5f), lhs - rhs);
+
+  EXPECT_EQ(SizeF(0, 0), rhs - lhs);
+  rhs -= lhs;
+  EXPECT_EQ(SizeF(0, 0), rhs);
+}
+
 TEST(SizeFTest, IsEmpty) {
   const float clearly_trivial = SizeF::kTrivial / 2.f;
   const float massize_dimension = 4e13f;

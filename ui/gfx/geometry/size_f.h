@@ -46,6 +46,13 @@ class GEOMETRY_EXPORT SizeF {
   void set_width(float width) { width_ = clamp(width); }
   void set_height(float height) { height_ = clamp(height); }
 
+  void operator+=(const SizeF& size) {
+    SetSize(width_ + size.width_, height_ + size.height_);
+  }
+  void operator-=(const SizeF& size) {
+    SetSize(width_ - size.width_, height_ - size.height_);
+  }
+
   float GetArea() const;
 
   float AspectRatio() const { return width_ / height_; }
@@ -97,6 +104,14 @@ inline bool operator==(const SizeF& lhs, const SizeF& rhs) {
 
 inline bool operator!=(const SizeF& lhs, const SizeF& rhs) {
   return !(lhs == rhs);
+}
+
+inline SizeF operator+(const SizeF& lhs, const SizeF& rhs) {
+  return SizeF(lhs.width() + rhs.width(), lhs.height() + rhs.height());
+}
+
+inline SizeF operator-(const SizeF& lhs, const SizeF& rhs) {
+  return SizeF(lhs.width() - rhs.width(), lhs.height() - rhs.height());
 }
 
 GEOMETRY_EXPORT SizeF ScaleSize(const SizeF& p, float x_scale, float y_scale);
