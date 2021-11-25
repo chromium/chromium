@@ -273,6 +273,8 @@ static_library("protocol") {
       "webrtc_connection_to_client.cc",
       "webrtc_connection_to_client.h",
       "webrtc_frame_scheduler.h",
+      "webrtc_frame_scheduler_constant_rate.cc",
+      "webrtc_frame_scheduler_constant_rate.h",
       "webrtc_frame_scheduler_simple.cc",
       "webrtc_frame_scheduler_simple.h",
       "webrtc_video_encoder_factory.cc",

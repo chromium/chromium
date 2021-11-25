@@ -12,7 +12,7 @@
 #include "remoting/base/constants.h"
 #include "remoting/protocol/frame_stats.h"
 #include "remoting/protocol/host_video_stats_dispatcher.h"
-#include "remoting/protocol/webrtc_frame_scheduler_simple.h"
+#include "remoting/protocol/webrtc_frame_scheduler_constant_rate.h"
 #include "remoting/protocol/webrtc_transport.h"
 #include "remoting/protocol/webrtc_video_encoder_factory.h"
 #include "remoting/protocol/webrtc_video_frame_adapter.h"
@@ -90,7 +90,7 @@ void WebrtcVideoStream::Start(
 
   video_encoder_factory->SetVideoChannelStateObserver(
       weak_factory_.GetWeakPtr());
-  scheduler_ = std::make_unique<WebrtcFrameSchedulerSimple>(session_options_);
+  scheduler_ = std::make_unique<WebrtcFrameSchedulerConstantRate>();
   scheduler_->Start(base::BindRepeating(&WebrtcVideoStream::CaptureNextFrame,
                                         base::Unretained(this)));
 }
