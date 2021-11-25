@@ -428,6 +428,7 @@ def _struct_to_dict(obj):
 _ALLOW_LIST = (
     ("ci", "linux-bootstrap"),
     ("ci", "linux-bootstrap-tests"),
+    ("ci", "Win x64 Builder (reclient compare)"),
     ("try", "linux-bootstrap"),
 )
 

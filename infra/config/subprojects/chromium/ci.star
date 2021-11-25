@@ -4221,6 +4221,34 @@ ci.fyi_windows_builder(
 )
 
 ci.fyi_windows_builder(
+    name = "Win x64 Builder (reclient compare)",
+    bootstrap = True,
+    builder_spec = builder_config.builder_spec(
+        chromium_config = builder_config.chromium_config(
+            config = "chromium",
+            apply_configs = ["mb"],
+            build_config = builder_config.build_config.RELEASE,
+            target_bits = 64,
+        ),
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+            apply_configs = ["use_clang_coverage", "enable_reclient"],
+        ),
+    ),
+    console_view_entry = consoles.console_view_entry(
+        category = "win",
+        short_name = "re",
+    ),
+    cores = 32,
+    goma_backend = None,
+    reclient_instance = rbe_instance.DEFAULT,
+    reclient_rewrapper_env = {"RBE_compare": "true"},
+    reclient_ensure_verified = True,
+    description_html = "verify artifacts. should be removed after the migration. crbug.com/1260232",
+    os = os.WINDOWS_DEFAULT,
+)
+
+ci.fyi_windows_builder(
     name = "Win x64 Builder (reclient)(cross)",
     builderless = True,
     console_view_entry = consoles.console_view_entry(
