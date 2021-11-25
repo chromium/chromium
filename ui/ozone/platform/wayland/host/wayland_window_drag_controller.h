@@ -82,6 +82,9 @@ class WaylandWindowDragController : public WaylandDataDevice::DragDelegate,
  private:
   class ExtendedDragSource;
 
+  FRIEND_TEST_ALL_PREFIXES(WaylandWindowDragControllerTest,
+                           HandleDraggedWindowDestruction);
+
   // WaylandDataDevice::DragDelegate:
   bool IsDragSource() const override;
   void DrawIcon() override;
