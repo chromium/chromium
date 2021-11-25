@@ -27,6 +27,8 @@ class SidePanelEntry final {
   // shown.
   std::unique_ptr<views::View> CreateContent();
 
+  const std::u16string& name() const { return name_; }
+
  private:
   const std::u16string name_;
 

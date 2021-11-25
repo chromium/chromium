@@ -31,13 +31,11 @@ class SidePanelCoordinator final {
   void Toggle();
 
  private:
+  views::View* GetContentView();
+  std::unique_ptr<views::View> CreateHeader();
+
   BrowserView* const browser_view_;
   SidePanelRegistry window_registry_;
-
-  // Raw pointer to active content when showing.
-  // TODO(pbos): Consider whether this needs to be a ViewTracker and either
-  // switch or document expected lifetimes here.
-  views::View* active_content_ = nullptr;
 
   // TODO(pbos): Add awareness of tab registries here. This probably needs to
   // know the tab registry it's currently monitoring.
