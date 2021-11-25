@@ -8,6 +8,7 @@
 #include "base/callback.h"
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
+#include "base/files/file_path_watcher.h"
 #include "base/files/file_util.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
@@ -635,13 +636,7 @@ IN_PROC_BROWSER_TEST_P(ProfileManagerBrowserTest, MAYBE_AddMultipleProfiles) {
   // Verifies that the browser doesn't crash when it is restarted.
 }
 
-// crbug.com/1273057
-#if defined(OS_WIN)
-#define MAYBE_EphemeralProfile DISABLED_EphemeralProfile
-#else
-#define MAYBE_EphemeralProfile EphemeralProfile
-#endif
-IN_PROC_BROWSER_TEST_P(ProfileManagerBrowserTest, MAYBE_EphemeralProfile) {
+IN_PROC_BROWSER_TEST_P(ProfileManagerBrowserTest, EphemeralProfile) {
   // If multiprofile mode is not enabled, you can't switch between profiles.
   if (!profiles::IsMultipleProfilesEnabled())
     return;
@@ -701,11 +696,19 @@ IN_PROC_BROWSER_TEST_P(ProfileManagerBrowserTest, MAYBE_EphemeralProfile) {
   if (base::FeatureList::IsEnabled(features::kDestroyProfileOnBrowserClose)) {
     // Check that NukeProfileFromDisk() works correctly.
     base::ScopedAllowBlockingForTesting allow_blocking;
-    base::Time start = base::Time::Now();
-    while (base::PathExists(path_profile2) &&
-           base::Time::Now() - start < TestTimeouts::action_timeout()) {
-      base::RunLoop().RunUntilIdle();
-    }
+    base::FilePathWatcher watcher;
+    base::RunLoop run_loop;
+    ASSERT_TRUE(watcher.Watch(
+        path_profile2, base::FilePathWatcher::Type::kNonRecursive,
+        base::BindLambdaForTesting([&run_loop, &path_profile2](
+                                       const base::FilePath& path, bool error) {
+          if (path != path_profile2)
+            return;
+          EXPECT_FALSE(error);
+          if (!base::PathExists(path))
+            run_loop.Quit();
+        })));
+    run_loop.Run();
     EXPECT_FALSE(base::PathExists(path_profile2));
   }
 }
