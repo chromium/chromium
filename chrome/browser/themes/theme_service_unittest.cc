@@ -929,7 +929,8 @@ TEST_F(ThemeServiceTest, PolicyThemeColorSet) {
 }
 
 // TODO(crbug.com/1056953): Enable on Mac.
-#if defined(OS_MAC)
+// Flaky on linux-chromeos-rel crbug.com/1273727
+#if defined(OS_MAC) || BUILDFLAG(IS_CHROMEOS_ASH)
 #define MAYBE_GetColor DISABLED_GetColor
 #else
 #define MAYBE_GetColor GetColor
