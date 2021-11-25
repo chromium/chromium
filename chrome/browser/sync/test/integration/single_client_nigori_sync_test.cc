@@ -1239,6 +1239,55 @@ IN_PROC_BROWSER_TEST_F(SingleClientNigoriWithRecoverySyncTest,
   EXPECT_FALSE(GetSecurityDomainsServer()->IsRecoverabilityDegraded());
 }
 
+IN_PROC_BROWSER_TEST_F(
+    SingleClientNigoriWithRecoverySyncTest,
+    ShouldReportDegradedTrustedVaultRecoverabilityUponResolvedAuthError) {
+  const std::vector<uint8_t> kTestRecoveryMethodPublicKey =
+      syncer::SecureBoxKeyPair::GenerateRandom()->public_key().ExportToBytes();
+  const GURL recoverability_url = GetTrustedVaultRecoverabilityURL(
+      *embedded_test_server(), kTestRecoveryMethodPublicKey);
+
+  // Mimic the key being available upon startup and recoverability good (not
+  // degraded).
+  const std::vector<uint8_t> trusted_vault_key =
+      GetSecurityDomainsServer()->RotateTrustedVaultKey(
+          /*last_trusted_vault_key=*/syncer::GetConstantTrustedVaultKey());
+  SetNigoriInFakeServer(BuildTrustedVaultNigoriSpecifics(
+                            /*trusted_vault_keys=*/{trusted_vault_key}),
+                        GetFakeServer());
+  ASSERT_TRUE(SetupClients());
+  GetSyncService(0)->AddTrustedVaultDecryptionKeysFromWeb(
+      kGaiaId, GetSecurityDomainsServer()->GetAllTrustedVaultKeys(),
+      /*last_key_version=*/GetSecurityDomainsServer()->GetCurrentEpoch());
+  ASSERT_TRUE(SetupSync());
+  ASSERT_FALSE(GetSecurityDomainsServer()->IsRecoverabilityDegraded());
+  ASSERT_FALSE(ShouldShowTrustedVaultDegradedRecoverabilityError(
+      GetSyncService(0), GetProfile(0)->GetPrefs()));
+
+  // Mimic a server-side persistent auth error together with a degraded
+  // recoverability, such as an account recovery flow that resets the account
+  // password.
+  signin::UpdatePersistentErrorOfRefreshTokenForAccount(
+      IdentityManagerFactory::GetForProfile(GetProfile(0)),
+      GetSyncService(0)->GetAccountInfo().account_id,
+      GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
+          GoogleServiceAuthError::InvalidGaiaCredentialsReason::
+              CREDENTIALS_REJECTED_BY_SERVER));
+
+  GetSecurityDomainsServer()->RequirePublicKeyToAvoidRecoverabilityDegraded(
+      kTestRecoveryMethodPublicKey);
+
+  // Mimic resolving the auth error (e.g. user reauth).
+  signin::UpdatePersistentErrorOfRefreshTokenForAccount(
+      IdentityManagerFactory::GetForProfile(GetProfile(0)),
+      GetSyncService(0)->GetAccountInfo().account_id, GoogleServiceAuthError());
+
+  // The recoverability state should be immediately refreshed.
+  EXPECT_TRUE(TrustedVaultRecoverabilityDegradedStateChecker(GetSyncService(0),
+                                                             /*degraded=*/true)
+                  .Wait());
+}
+
 // Device registration attempt should be taken upon sign in into primary
 // profile. It should be successful when security domain server allows device
 // registration with constant key.
