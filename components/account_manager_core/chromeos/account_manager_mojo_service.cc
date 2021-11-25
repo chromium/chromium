@@ -72,6 +72,11 @@ void AccountManagerMojoService::SetAccountManagerUI(
   account_manager_ui_ = std::move(account_manager_ui);
 }
 
+void AccountManagerMojoService::OnAccountAdditionFinishedForTesting(
+    const account_manager::AccountAdditionResult& result) {
+  OnAccountAdditionFinished(result);
+}
+
 void AccountManagerMojoService::IsInitialized(IsInitializedCallback callback) {
   std::move(callback).Run(account_manager_->IsInitialized());
 }

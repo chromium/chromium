@@ -45,6 +45,9 @@ class COMPONENT_EXPORT(ACCOUNT_MANAGER_CORE) AccountManagerMojoService
   void SetAccountManagerUI(
       std::unique_ptr<account_manager::AccountManagerUI> account_manager_ui);
 
+  void OnAccountAdditionFinishedForTesting(
+      const account_manager::AccountAdditionResult& result);
+
   // crosapi::mojom::AccountManager:
   void IsInitialized(IsInitializedCallback callback) override;
   void AddObserver(AddObserverCallback callback) override;

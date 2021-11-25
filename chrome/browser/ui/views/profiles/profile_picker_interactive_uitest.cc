@@ -179,15 +179,16 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerInteractiveUiTest, FullscreenWithKeyboard) {
   EXPECT_TRUE(widget()->IsFullscreen());
 }
 
+#if !BUILDFLAG(IS_CHROMEOS_LACROS)
 // Checks that the signin web view is able to process keyboard events.
 // TODO(https://crbug.com/1227800): Flaky on linux and Windows.
 #if defined(OS_LINUX) || defined(OS_WIN)
-#define MAYBE_CloseSigninWithKeyboard DISABLED_CloseSigninWithKeyboard
+#define MAYBE_CloseDiceSigninWithKeyboard DISABLED_CloseDiceSigninWithKeyboard
 #else
-#define MAYBE_CloseSigninWithKeyboard CloseSigninWithKeyboard
+#define MAYBE_CloseDiceSigninWithKeyboard CloseDiceSigninWithKeyboard
 #endif
 IN_PROC_BROWSER_TEST_F(ProfilePickerInteractiveUiTest,
-                       MAYBE_CloseSigninWithKeyboard) {
+                       MAYBE_CloseDiceSigninWithKeyboard) {
   ShowAndFocusPicker(ProfilePicker::EntryPoint::kProfileMenuAddNewProfile,
                      GURL("chrome://profile-picker/new-profile"));
 
@@ -210,12 +211,14 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerInteractiveUiTest,
 // process a back keyboard event.
 // TODO(https://crbug.com/1173544): Flaky on linux, Win7, Mac
 #if defined(OS_LINUX) || defined(OS_WIN) || defined(OS_MAC)
-#define MAYBE_NavigateBackWithKeyboard DISABLED_NavigateBackWithKeyboard
+#define MAYBE_NavigateBackFromDiceSigninWithKeyboard \
+  DISABLED_NavigateBackFromDiceSigninWithKeyboard
 #else
-#define MAYBE_NavigateBackWithKeyboard NavigateBackWithKeyboard
+#define MAYBE_NavigateBackFromDiceSigninWithKeyboard \
+  NavigateBackFromDiceSigninWithKeyboard
 #endif
 IN_PROC_BROWSER_TEST_F(ProfilePickerInteractiveUiTest,
-                       MAYBE_NavigateBackWithKeyboard) {
+                       MAYBE_NavigateBackFromDiceSigninWithKeyboard) {
   // Simulate walking through the flow starting at the picker so that navigating
   // back to the picker makes sense. Check that the navigation list is populated
   // correctly.
@@ -245,6 +248,40 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerInteractiveUiTest,
   EXPECT_EQ(1, web_contents()->GetController().GetLastCommittedEntryIndex());
 
   // Navigate again back with the keyboard.
+  SendBackKeyboardCommand();
+  WaitForLoadStop(GURL("chrome://profile-picker"));
+  EXPECT_EQ(0, web_contents()->GetController().GetLastCommittedEntryIndex());
+
+  // Navigating back once again does nothing.
+  SendBackKeyboardCommand();
+  EXPECT_EQ(web_contents()->GetController().GetPendingEntry(), nullptr);
+}
+#endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
+
+#if defined(OS_LINUX) || defined(OS_WIN) || defined(OS_MAC)
+#define MAYBE_NavigateBackFromProfileTypeChoiceWithKeyboard \
+  DISABLED_NavigateBackFromProfileTypeChoiceWithKeyboard
+#else
+#define MAYBE_NavigateBackFromProfileTypeChoiceWithKeyboard \
+  NavigateBackFromProfileTypeChoiceWithKeyboard
+#endif
+IN_PROC_BROWSER_TEST_F(ProfilePickerInteractiveUiTest,
+                       MAYBE_NavigateBackFromProfileTypeChoiceWithKeyboard) {
+  // Simulate walking through the flow starting at the picker so that navigating
+  // back to the picker makes sense. Check that the navigation list is populated
+  // correctly.
+  ShowAndFocusPicker(ProfilePicker::EntryPoint::kProfileMenuManageProfiles,
+                     GURL("chrome://profile-picker"));
+  EXPECT_EQ(1, web_contents()->GetController().GetEntryCount());
+  EXPECT_EQ(0, web_contents()->GetController().GetLastCommittedEntryIndex());
+  web_contents()->GetController().LoadURL(
+      GURL("chrome://profile-picker/new-profile"), content::Referrer(),
+      ui::PAGE_TRANSITION_AUTO_TOPLEVEL, std::string());
+  WaitForLoadStop(GURL("chrome://profile-picker/new-profile"));
+  EXPECT_EQ(2, web_contents()->GetController().GetEntryCount());
+  EXPECT_EQ(1, web_contents()->GetController().GetLastCommittedEntryIndex());
+
+  // Navigate back with the keyboard.
   SendBackKeyboardCommand();
   WaitForLoadStop(GURL("chrome://profile-picker"));
   EXPECT_EQ(0, web_contents()->GetController().GetLastCommittedEntryIndex());

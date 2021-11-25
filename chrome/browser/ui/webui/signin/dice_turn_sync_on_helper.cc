@@ -623,20 +623,30 @@ void DiceTurnSyncOnHelper::FinishSyncSetupAndDelete(
       break;
     }
     case LoginUIService::ABORT_SYNC: {
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+      // TODO(crbug.com/1263553): Support truly disabling sync on lacros. Before
+      // this is done, all data types get disabled, instead. This is only
+      // exposed to tests as the "No" button is hidden until the full support is
+      // implemented.
+      syncer::SyncService* sync_service = GetSyncService();
+      if (sync_service) {
+        sync_service->GetUserSettings()->SetSelectedTypes(
+            /*sync_everything=*/false,
+            /*types=*/{});
+        sync_service->GetUserSettings()->SetFirstSetupComplete(
+            syncer::SyncFirstSetupCompleteSource::BASIC_FLOW);
+      }
+      break;
+#else
       auto* primary_account_mutator =
           identity_manager_->GetPrimaryAccountMutator();
       DCHECK(primary_account_mutator);
       primary_account_mutator->RevokeSyncConsent(
           signin_metrics::ABORT_SIGNIN,
           signin_metrics::SignoutDelete::kIgnoreMetric);
-#else
-      // TODO(crbug.com/1248047): We should support this flow by disabling all
-      // data types instead of revoking the sync consent.
-      NOTIMPLEMENTED() << "Not syncing is not yet supported on lacros.";
-#endif
       AbortAndDelete();
       return;
+#endif
     }
     // No explicit action when the ui gets closed. If the embedder wants the
     // helper to abort sync in this case, it must redirect this action to
