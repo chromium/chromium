@@ -3,5 +3,5 @@
 // found in the LICENSE file.
 
 interface ChromeOS {
-  readonly attribute CrosWindowManagement windowManager;
+  readonly attribute CrosWindowManagement windowManagement;
 };

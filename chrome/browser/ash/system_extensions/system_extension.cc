@@ -6,6 +6,16 @@
 
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
+#include "content/public/common/url_constants.h"
+#include "url/origin.h"
+
+// static
+bool SystemExtension::IsSystemExtensionOrigin(const url::Origin& origin) {
+  // TODO(crbug.com/1253318): Use a custom scheme instead of overloading
+  // chrome-untrusted://.
+  return origin.scheme() == content::kChromeUIUntrustedScheme &&
+         origin.host().rfind("system-extension-", 0) == 0;
+}
 
 SystemExtension::SystemExtension() = default;
 

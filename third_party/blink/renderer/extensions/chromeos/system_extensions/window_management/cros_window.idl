@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 interface CrosWindow {
-  readonly attribute unsigned long hash;
+  readonly attribute DOMString id;
 
   readonly attribute DOMString title;
   readonly attribute DOMString appId;

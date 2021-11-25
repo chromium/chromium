@@ -2467,6 +2467,7 @@ static_library("browser") {
       "//ash/webui/shortcut_customization_ui",
       "//chrome/app/theme:chrome_unscaled_resources_grit",
       "//chrome/browser/ash/system_extensions",
+      "//chrome/browser/ash/system_extensions/api/window_management",
       "//chrome/browser/nearby_sharing/common",
       "//chrome/browser/ui/webui/chromeos/add_supervision:mojo_bindings",
       "//chrome/browser/ui/webui/chromeos/audio:mojo_bindings",
@@ -2506,6 +2507,11 @@ static_library("browser") {
       "//components/session_manager/core",
       "//device/vr/public/mojom:isolated_xr_service",
     ]
+
+    # TODO(crbug.com/1253318): Refactor window_management into ash/ and expose
+    # the InstanceRegistry via an InstanceRegistryWrapper, then remove this.
+    allow_circular_includes_from +=
+        [ "//chrome/browser/ash/system_extensions/api/window_management" ]
     public_deps += [ "//ui/lottie" ]
     if (!is_official_build) {
       deps += [

@@ -15,8 +15,8 @@ class EXTENSIONS_CHROMEOS_EXPORT ChromeOS : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  ChromeOS();
-  CrosWindowManagement* windowManager();
+  explicit ChromeOS(ExecutionContext* execution_context);
+  CrosWindowManagement* windowManagement();
 
   void Trace(Visitor*) const override;
 

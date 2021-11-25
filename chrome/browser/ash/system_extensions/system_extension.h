@@ -20,6 +20,8 @@ enum class SystemExtensionType {
 };
 
 struct SystemExtension {
+  static bool IsSystemExtensionOrigin(const url::Origin& origin);
+
   SystemExtension();
   ~SystemExtension();
   SystemExtension(const SystemExtension&) = delete;

@@ -1,0 +1,36 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module blink.mojom;
+
+import "ui/gfx/geometry/mojom/geometry.mojom";
+import "mojo/public/mojom/base/unguessable_token.mojom";
+
+// Represents a Chrome OS window which can be manipulated by a Window Management
+// System Extension.
+struct CrosWindow {
+  // A unique identifier for this window.
+  mojo_base.mojom.UnguessableToken id;
+  // The App ID of the App that this window is an instance of.
+  string app_id;
+
+  // Position of the window in screen coordinates.
+  gfx.mojom.Rect bounds;
+
+  string title;
+  bool is_fullscreen;
+  bool is_minimized;
+  bool is_visible;
+};
+
+// Chrome OS Window Management API for System Extensions.
+// Called by System Extensions Renderers and implemented by Ash Chrome.
+interface CrosWindowManagement {
+  // Returns all windows visible to a window manager.
+  GetAllWindows() => (array<CrosWindow> result);
+
+  // Sets the bounds of a CrosWindow where |hash| is used as the window
+  // identifier.
+  SetWindowBounds(mojo_base.mojom.UnguessableToken id, int32 x, int32 y, int32 width, int32 height);
+};

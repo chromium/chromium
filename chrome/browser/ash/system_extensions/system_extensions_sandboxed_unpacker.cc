@@ -127,6 +127,8 @@ void SystemExtensionsSandboxedUnpacker::OnSystemExtensionManifestParsed(
   // If both the type and id are valid, there is no possible way for the
   // base_url to be invalid.
   CHECK(base_url.is_valid());
+  CHECK(SystemExtension::IsSystemExtensionOrigin(url::Origin::Create(base_url)))
+      << base_url.spec();
   system_extension.base_url = base_url;
 
   // Parse service_worker_url.

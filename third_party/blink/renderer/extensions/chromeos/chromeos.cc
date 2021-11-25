@@ -9,10 +9,11 @@
 
 namespace blink {
 
-ChromeOS::ChromeOS()
-    : window_management_(MakeGarbageCollected<CrosWindowManagement>()) {}
+ChromeOS::ChromeOS(ExecutionContext* execution_context)
+    : window_management_(
+          MakeGarbageCollected<CrosWindowManagement>(execution_context)) {}
 
-CrosWindowManagement* ChromeOS::windowManager() {
+CrosWindowManagement* ChromeOS::windowManagement() {
   return window_management_;
 }
 
