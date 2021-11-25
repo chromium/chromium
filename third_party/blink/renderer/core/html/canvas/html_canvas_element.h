@@ -48,7 +48,6 @@
 #include "third_party/blink/renderer/platform/geometry/int_size.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_2d_layer_bridge.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_resource_host.h"
-#include "third_party/blink/renderer/platform/graphics/canvas_resource_provider.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_types.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_types_3d.h"
 #include "third_party/blink/renderer/platform/graphics/offscreen_canvas_placeholder.h"
@@ -70,6 +69,7 @@ class CanvasContextCreationAttributesCore;
 class CanvasDrawListener;
 class CanvasRenderingContext;
 class CanvasRenderingContextFactory;
+class CanvasResourceProvider;
 class GraphicsContext;
 class HTMLCanvasElement;
 class ImageBitmapOptions;
