@@ -197,7 +197,8 @@ void AdjustTasksForMediaApp(const std::vector<extensions::EntryInfo>& entries,
 bool IsFallbackFileHandler(const FullTaskDescriptor& task) {
   if ((task.task_descriptor.task_type !=
            file_tasks::TASK_TYPE_FILE_BROWSER_HANDLER &&
-       task.task_descriptor.task_type != file_tasks::TASK_TYPE_FILE_HANDLER) ||
+       task.task_descriptor.task_type != file_tasks::TASK_TYPE_FILE_HANDLER &&
+       task.task_descriptor.task_type != file_tasks::TASK_TYPE_WEB_APP) ||
       task.is_generic_file_handler) {
     return false;
   }

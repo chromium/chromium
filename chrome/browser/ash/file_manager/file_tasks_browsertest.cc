@@ -157,6 +157,14 @@ class FileTasksBrowserTestBase
     EXPECT_EQ(0, remaining);
   }
 
+  // PDF handler expectations when |kMediaAppHandlesPdf| is off (the default).
+  std::vector<Expectation> GetDefaultPdfExpectations() {
+    const char* file_manager_app_id = ash::features::IsFileManagerSwaEnabled()
+                                          ? kFileManagerSwaAppId
+                                          : kFileManagerAppId;
+    return {{"pdf", file_manager_app_id}};
+  }
+
  private:
   base::test::ScopedFeatureList feature_list_{
       blink::features::kFileHandlingAPI};
@@ -242,9 +250,6 @@ constexpr Expectation kVideoExpectations[] = {
     {"ogx", kMediaAppId, "video/ogg"},
     {"webm", kMediaAppId},
 };
-
-// PDF handler expectations when |kMediaAppHandlesPdf| is off (the default).
-constexpr Expectation kDefaultPdfExpectations[] = {{"pdf", kFileManagerAppId}};
 
 // PDF handler expectations when |kMediaAppHandlesPdf| is on.
 constexpr Expectation kMediaAppPdfExpectations[] = {{"pdf", kMediaAppId}};
@@ -349,8 +354,10 @@ IN_PROC_BROWSER_TEST_P(FileTasksBrowserTest, DefaultHandlerChangeDetector) {
                       std::end(kVideoExpectations));
   expectations.insert(expectations.end(), std::begin(kAudioExpectations),
                       std::end(kAudioExpectations));
-  expectations.insert(expectations.end(), std::begin(kDefaultPdfExpectations),
-                      std::end(kDefaultPdfExpectations));
+
+  auto pdf_expectations = GetDefaultPdfExpectations();
+  expectations.insert(expectations.end(), std::begin(pdf_expectations),
+                      std::end(pdf_expectations));
 
   TestExpectationsAgainstDefaultTasks(expectations);
 }
