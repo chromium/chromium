@@ -671,6 +671,7 @@ def _ListSplits(minimal_apks_path):
       if m:
         ret.append(m.group(1))
   # Make "base" comes first since that's the main chunk of work.
+  # Also so that --abi-filter detection looks at it first.
   return sorted(ret, key=lambda x: (x != 'base', x))
 
 
@@ -1710,6 +1711,12 @@ def _AddContainerArguments(parser, is_top_args=False):
   group.add_argument('--resources-pathmap-file',
                      help='.pathmap.txt file that contains a maping from '
                      'original resource paths to shortened resource paths.')
+  group.add_argument('--abi-filter',
+                     dest='abi_filters',
+                     action='append',
+                     help='For apks with multiple ABIs, break down native '
+                     'libraries for this ABI. Defaults to 64-bit when both '
+                     '32 and 64 bit are present.')
 
   group = parser.add_argument_group(title='Analysis Options for Pak Files')
   group.add_argument('--pak-info-file',
@@ -1835,9 +1842,9 @@ def _UpdateLinkerNameAndToolPrefix(tentative_output_dir, native_spec):
   return native_spec
 
 
-def _CreateNativeSpecs(tentative_output_dir, apk_path, elf_path, map_path,
-                       track_string_literals, ignore_linker_map, tool_prefix,
-                       on_config_error):
+def _CreateNativeSpecs(*, tentative_output_dir, apk_path, elf_path, map_path,
+                       abi_filters, track_string_literals, ignore_linker_map,
+                       tool_prefix, on_config_error):
   if (map_path and not map_path.endswith('.map')
       and not map_path.endswith('.map.gz')):
     on_config_error('Expected --map-file to end with .map or .map.gz')
@@ -1848,6 +1855,10 @@ def _CreateNativeSpecs(tentative_output_dir, apk_path, elf_path, map_path,
       lib_infos = [
           f for f in z.infolist()
           if f.filename.endswith('.so') and f.file_size > 0
+      ]
+    if abi_filters:
+      lib_infos = [
+          l for l in lib_infos if any(f in l.filename for f in abi_filters)
       ]
     if lib_infos:
       # TODO(agrieve): Analyze more than just one library.
@@ -1944,19 +1955,17 @@ def _ReadMultipleArgsFromFile(ssargs_file, on_config_error):
                                      on_config_error)
 
 
+# Both |top_args| and |sub_args| may be modified.
 def _ProcessContainerArgs(top_args,
                           sub_args,
                           container_name,
                           on_config_error,
                           apk_path=None,
                           split_name=None):
-  # Since |sub_args| gets modified, the caller should provide a fresh copy if
-  # this function is called from a loop.
   sub_args.source_directory = (sub_args.source_directory
                                or top_args.source_directory)
   sub_args.output_directory = (sub_args.output_directory
                                or top_args.output_directory)
-
   analyze_native = not (sub_args.java_only or sub_args.no_native
                         or top_args.java_only or top_args.no_native)
 
@@ -1968,9 +1977,6 @@ def _ProcessContainerArgs(top_args,
     # * Diffs that change an on-demand status show as adds/removes.
     if _IsOnDemand(apk_path):
       container_name += '?'
-    if split_name != 'base':
-      # TODO(crbug.com/1143690): Fix native analysis for split APKs.
-      analyze_native = False
 
   apk_prefix = sub_args.minimal_apks_file or sub_args.apk_file
   if apk_prefix:
@@ -1998,17 +2004,33 @@ def _ProcessContainerArgs(top_args,
         value=top_args.tool_prefix,
         output_directory=top_args.output_directory,
         linker_name='lld')
+
+    # Allow top-level --abi-filter to override values set in .ssargs.
+    abi_filters = top_args.abi_filters or sub_args.abi_filters
+    aux_elf_file = sub_args.aux_elf_file
+    aux_map_file = sub_args.aux_map_file
+    if split_name not in (None, 'base'):
+      aux_elf_file = None
+      aux_map_file = None
+
     native_specs = _CreateNativeSpecs(
         tentative_output_dir=top_args.output_directory,
         apk_path=apk_path,
-        elf_path=sub_args.elf_file or sub_args.aux_elf_file,
-        map_path=sub_args.map_file or sub_args.aux_map_file,
+        elf_path=sub_args.elf_file or aux_elf_file,
+        map_path=sub_args.map_file or aux_map_file,
+        abi_filters=abi_filters,
         track_string_literals=(top_args.track_string_literals
                                and sub_args.track_string_literals),
         ignore_linker_map=(top_args.ignore_linker_map
                            or sub_args.ignore_linker_map),
         tool_prefix=tool_prefix_finder.Finalized(),
         on_config_error=on_config_error)
+
+    # For app bundles, use a consistent ABI for all splits.
+    if split_name == 'base' and native_specs and not abi_filters:
+      abi = posixpath.basename(posixpath.dirname(native_specs[0].apk_so_path))
+      logging.info('Detected --abi-filter %s', abi)
+      top_args.abi_filters = [abi]
   else:
     native_specs = []
 
