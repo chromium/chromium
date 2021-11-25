@@ -154,15 +154,9 @@ class IntegrationTestCommandsSystem : public IntegrationTestCommands {
     RunCommand("expect_interfaces_registered");
   }
 
-  void ExpectLegacyUpdate3WebSucceeds(const std::string& app_id,
-                                      int expected_final_state,
-                                      int expected_error_code) const override {
-    RunCommand("expect_legacy_update3web_succeeds",
-               {Param("app_id", app_id),
-                Param("expected_final_state",
-                      base::NumberToString(expected_final_state)),
-                Param("expected_error_code",
-                      base::NumberToString(expected_error_code))});
+  void ExpectLegacyUpdate3WebSucceeds(
+      const std::string& app_id) const override {
+    RunCommand("expect_legacy_update3web_succeeds", {Param("app_id", app_id)});
   }
 
   void ExpectLegacyProcessLauncherSucceeds() const override {

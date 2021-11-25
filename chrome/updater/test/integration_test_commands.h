@@ -63,9 +63,7 @@ class IntegrationTestCommands
 #if defined(OS_WIN)
   virtual void ExpectInterfacesRegistered() const = 0;
   virtual void ExpectLegacyUpdate3WebSucceeds(
-      const std::string& app_id,
-      int expected_final_state,
-      int expected_error_code) const = 0;
+      const std::string& app_id) const = 0;
   virtual void ExpectLegacyProcessLauncherSucceeds() const = 0;
   virtual void RunUninstallCmdLine() const = 0;
   virtual void SetUpTestService() const = 0;
