@@ -579,6 +579,18 @@ suite('PrivacyReviewPage', function() {
     assertCompletionCardVisible();
   });
 
+  test('completionCardBackNavigation', function() {
+    navigateToStep(PrivacyReviewStep.COMPLETION);
+    setCookieSetting(CookiePrimarySetting.BLOCK_THIRD_PARTY);
+    assertCompletionCardVisible();
+
+    const completionFragment =
+        page.shadowRoot.querySelector('#' + PrivacyReviewStep.COMPLETION);
+    completionFragment.shadowRoot.querySelector('#backButton').click();
+    flush();
+    assertCookiesCardVisible();
+  });
+
   test('completionCardBackToSettingsNavigation', function() {
     navigateToStep(PrivacyReviewStep.COMPLETION);
     assertCompletionCardVisible();

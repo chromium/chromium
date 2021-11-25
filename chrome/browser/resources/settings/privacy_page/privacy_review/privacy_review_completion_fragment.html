@@ -35,7 +35,7 @@
   .footer {
     align-items: center;
     display: flex;
-    justify-content: flex-end;
+    justify-content: space-between;
     padding: 16px 0;
   }
 </style>
@@ -83,6 +83,9 @@
       role-description="$i18n{subpageArrowRoleDescription}"></cr-link-row>
 </div>
 <div class="footer">
+  <cr-button id="backButton" role="button" on-click="onBackButtonClick_">
+    $i18n{privacyReviewBackButton}
+  </cr-button>
   <cr-button class="action-button" id="leaveButton"
       on-click="onLeaveButtonClick_">
     $i18n{privacyReviewCompletionCardLeaveButton}

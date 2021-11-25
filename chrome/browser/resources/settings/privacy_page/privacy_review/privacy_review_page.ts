@@ -163,6 +163,9 @@ export class SettingsPrivacyReviewPageElement extends PrivacyReviewBase {
           onForwardNavigation: () => {
             Router.getInstance().navigateToPreviousRoute();
           },
+          onBackNavigation: () => {
+            this.navigateToCard_(PrivacyReviewStep.COOKIES, true);
+          },
           isAvailable: () => true,
         },
       ],

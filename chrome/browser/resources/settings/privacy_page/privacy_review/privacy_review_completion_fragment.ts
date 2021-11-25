@@ -59,6 +59,12 @@ export class PrivacyReviewCompletionFragmentElement extends
     this.shouldShowWaa_ = isSignedIn;
   }
 
+  private onBackButtonClick_(e: Event) {
+    e.stopPropagation();
+    this.dispatchEvent(
+        new CustomEvent('back-button-click', {bubbles: true, composed: true}));
+  }
+
   private onLeaveButtonClick_(e: Event) {
     e.stopPropagation();
     this.dispatchEvent(
