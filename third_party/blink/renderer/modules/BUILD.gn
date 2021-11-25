@@ -468,6 +468,7 @@ source_set("unit_tests") {
     "media_capabilities/media_capabilities_test.cc",
     "media_controls/elements/media_control_animated_arrow_container_element_test.cc",
     "media_controls/elements/media_control_display_cutout_fullscreen_button_element_test.cc",
+    "media_controls/elements/media_control_elements_helper_test.cc",
     "media_controls/elements/media_control_input_element_test.cc",
     "media_controls/elements/media_control_loading_panel_element_test.cc",
     "media_controls/elements/media_control_panel_element_test.cc",
