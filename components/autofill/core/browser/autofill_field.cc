@@ -194,6 +194,9 @@ AutofillType AutofillField::ComputedType() const {
           (heuristic_type_ == ADDRESS_HOME_STREET_NAME ||
            heuristic_type_ == ADDRESS_HOME_HOUSE_NUMBER));
 
+    believe_server =
+        believe_server && !(heuristic_type_ == MERCHANT_PROMO_CODE);
+
     if (believe_server)
       return AutofillType(server_type());
   }

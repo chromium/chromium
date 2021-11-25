@@ -470,6 +470,8 @@ base::StringPiece FieldTypeToStringPiece(HtmlFieldType type) {
       return "HTML_TYPE_UPI_VPA";
     case HTML_TYPE_ONE_TIME_CODE:
       return "HTML_TYPE_ONE_TIME_CODE";
+    case HTML_TYPE_MERCHANT_PROMO_CODE:
+      return "HTML_TYPE_MERCHANT_PROMO_CODE";
     case HTML_TYPE_UNRECOGNIZED:
       return "HTML_TYPE_UNRECOGNIZED";
   }

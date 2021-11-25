@@ -317,6 +317,9 @@ enum HtmlFieldType {
   // Phone number verification one-time-codes.
   HTML_TYPE_ONE_TIME_CODE,
 
+  // Promo code for merchant sites.
+  HTML_TYPE_MERCHANT_PROMO_CODE,
+
   // Non-standard autocomplete types.
   HTML_TYPE_UNRECOGNIZED,
 };

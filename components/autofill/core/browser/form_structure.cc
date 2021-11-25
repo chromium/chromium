@@ -356,6 +356,18 @@ HtmlFieldType FieldTypeFromAutocompleteAttributeValue(
   if (autocomplete_attribute_value == "one-time-code")
     return HTML_TYPE_ONE_TIME_CODE;
 
+  if (autocomplete_attribute_value == "promo-code" ||
+      autocomplete_attribute_value == "promo_code" ||
+      autocomplete_attribute_value == "promotion-code" ||
+      autocomplete_attribute_value == "promotion_code" ||
+      autocomplete_attribute_value == "promotional-code" ||
+      autocomplete_attribute_value == "promotional_code" ||
+      autocomplete_attribute_value == "coupon-code" ||
+      autocomplete_attribute_value == "coupon_code" ||
+      autocomplete_attribute_value == "gift-code" ||
+      autocomplete_attribute_value == "gift_code")
+    return HTML_TYPE_MERCHANT_PROMO_CODE;
+
   return HTML_TYPE_UNRECOGNIZED;
 }
 
