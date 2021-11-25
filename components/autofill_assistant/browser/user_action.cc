@@ -8,15 +8,6 @@
 
 namespace autofill_assistant {
 
-namespace {
-
-void CallIgnoringContext(base::OnceCallback<void()> callback,
-                         std::unique_ptr<TriggerContext> context) {
-  std::move(callback).Run();
-}
-
-}  // namespace
-
 UserAction::UserAction(UserAction&& other) = default;
 UserAction::UserAction() = default;
 UserAction::~UserAction() = default;
@@ -32,9 +23,5 @@ UserAction::UserAction(const ChipProto& chip_proto,
                        bool enabled,
                        const std::string& identifier)
     : chip_(chip_proto), enabled_(enabled), identifier_(identifier) {}
-
-void UserAction::SetCallback(base::OnceCallback<void()> callback) {
-  callback_ = base::BindOnce(&CallIgnoringContext, std::move(callback));
-}
 
 }  // namespace autofill_assistant

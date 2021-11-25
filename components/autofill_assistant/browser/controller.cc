@@ -441,6 +441,10 @@ void Controller::SetUserActions(
   SetVisibilityAndUpdateUserActions();
 }
 
+const std::vector<ScriptHandle>& Controller::GetDirectActionScripts() const {
+  return direct_action_scripts_;
+}
+
 bool Controller::ShouldChipsBeVisible() {
   return !(is_keyboard_showing_ && is_focus_on_bottom_sheet_text_input_);
 }
@@ -582,12 +586,28 @@ void Controller::SetBrowseDomainsAllowlist(std::vector<std::string> domains) {
   browse_domains_allowlist_ = std::move(domains);
 }
 
-bool Controller::PerformUserActionWithContext(
-    int index,
-    std::unique_ptr<TriggerContext> context) {
+bool Controller::PerformDirectAction(int index,
+                                     std::unique_ptr<TriggerContext> context) {
+  if (index < 0 ||
+      static_cast<size_t>(index) >= direct_action_scripts_.size()) {
+    NOTREACHED() << "Invalid direct action index: " << index;
+    return false;
+  }
+
+  ScriptHandle handle = direct_action_scripts_.at(index);
+  direct_action_scripts_.clear();
+  ExecuteScript(handle.path, handle.start_message, handle.needs_ui,
+                std::move(context),
+                state_ == AutofillAssistantState::TRACKING
+                    ? AutofillAssistantState::TRACKING
+                    : AutofillAssistantState::PROMPT);
+  return true;
+}
+
+bool Controller::PerformUserAction(int index) {
   if (!user_actions_ || index < 0 ||
       static_cast<size_t>(index) >= user_actions_->size()) {
-    NOTREACHED() << "Invalid user action index: " << index;
+    NOTREACHED() << "Invalid user_action index: " << index;
     return false;
   }
 
@@ -598,7 +618,7 @@ bool Controller::PerformUserActionWithContext(
 
   UserAction user_action = std::move((*user_actions_)[index]);
   SetUserActions(nullptr);
-  user_action.Call(std::move(context));
+  user_action.RunCallback();
   event_handler_.DispatchEvent(
       {EventProto::kOnUserActionCalled, user_action.identifier()});
   return true;
@@ -1166,6 +1186,7 @@ void Controller::ExecuteScript(const std::string& script_path,
   // the script.
   script_tracker_->ClearRunnableScripts();
   SetUserActions(nullptr);
+  direct_action_scripts_.clear();
 
   script_tracker()->ExecuteScript(
       script_path, &user_data_, std::move(context),
@@ -1273,7 +1294,7 @@ void Controller::MaybeAutostartScript(
   }
 
   if (autostart_index == -1) {
-    UpdateDirectActions(runnable_scripts);
+    SetDirectActionScripts(runnable_scripts);
     return;
   }
 
@@ -1767,10 +1788,6 @@ void Controller::SetLoginOption(const std::string& identifier) {
 }
 
 void Controller::UpdateCollectUserDataActions() {
-  // TODO(crbug.com/806868): This method uses #SetUserActions(), which means
-  // that updating the PR action buttons will also clear the suggestions. We
-  // should update the action buttons only if there are use cases of PR +
-  // suggestions.
   if (!collect_user_data_options_) {
     SetUserActions(nullptr);
     return;
@@ -1939,20 +1956,15 @@ void Controller::OnNoRunnableScriptsForPage() {
   }
 }
 
-void Controller::UpdateDirectActions(
+void Controller::SetDirectActionScripts(
     const std::vector<ScriptHandle>& runnable_scripts) {
-  auto user_actions = std::make_unique<std::vector<UserAction>>();
+  direct_action_scripts_.clear();
   for (const auto& script : runnable_scripts) {
     if (script.direct_action.empty())
       continue;
 
-    UserAction user_action;
-    user_action.direct_action() = script.direct_action;
-    user_action.SetCallback(base::BindOnce(
-        &Controller::OnScriptSelected, weak_ptr_factory_.GetWeakPtr(), script));
-    user_actions->emplace_back(std::move(user_action));
+    direct_action_scripts_.push_back(script);
   }
-  SetUserActions(std::move(user_actions));
 }
 
 void Controller::OnRunnableScriptsChanged(
@@ -1977,7 +1989,7 @@ void Controller::OnRunnableScriptsChanged(
       MaybeAutostartScript(runnable_scripts);
       return;
     case AutofillAssistantState::TRACKING:
-      UpdateDirectActions(runnable_scripts);
+      SetDirectActionScripts(runnable_scripts);
       return;
     default:
       // In other states we ignore the script update.

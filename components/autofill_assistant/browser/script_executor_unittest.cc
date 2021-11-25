@@ -1882,7 +1882,7 @@ TEST_F(ScriptExecutorTest, InterceptUserActions) {
   // in this test.
   EXPECT_CALL(mock_service_, OnGetNextActions(_, _, _, _, _, _));
 
-  (*delegate_.GetUserActions())[0].Call(std::make_unique<TriggerContext>());
+  (*delegate_.GetUserActions())[0].RunCallback();
   EXPECT_EQ(AutofillAssistantState::RUNNING, delegate_.GetState());
 }
 
@@ -1912,7 +1912,7 @@ TEST_F(ScriptExecutorTest, PauseAndResume) {
                            AllOf(Field(&Chip::text, StrEq("Button")),
                                  Field(&Chip::type, HIGHLIGHTED_ACTION)))));
 
-  (*delegate_.GetUserActions())[0].Call(std::make_unique<TriggerContext>());
+  (*delegate_.GetUserActions())[0].RunCallback();
   EXPECT_EQ("Tell", delegate_.GetStatusMessage());
   EXPECT_THAT(delegate_.GetStateHistory(),
               ElementsAre(AutofillAssistantState::PROMPT,
@@ -1959,7 +1959,7 @@ TEST_F(ScriptExecutorTest, PauseAndResumeWithOngoingAction) {
   // not advance to the next action (i.e. |PromptAction|), so the status
   // status message is the one from |TellAction|.
   EXPECT_CALL(mock_web_controller_, FindElement(_, _, _)).Times(0);
-  (*delegate_.GetUserActions())[0].Call(std::make_unique<TriggerContext>());
+  (*delegate_.GetUserActions())[0].RunCallback();
   EXPECT_EQ("Tell", delegate_.GetStatusMessage());
   EXPECT_EQ(AutofillAssistantState::RUNNING, delegate_.GetState());
 

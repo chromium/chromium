@@ -28,7 +28,6 @@
 #include "components/autofill_assistant/browser/suppress_keyboard_raii.h"
 #include "components/autofill_assistant/browser/trigger_context.h"
 #include "components/autofill_assistant/browser/ui_delegate.h"
-#include "components/autofill_assistant/browser/user_action.h"
 #include "components/autofill_assistant/browser/user_data.h"
 #include "components/autofill_assistant/browser/user_model.h"
 #include "components/autofill_assistant/browser/web/web_controller.h"
@@ -112,6 +111,9 @@ class Controller : public ScriptExecutorDelegate,
   // Called when an accessibility service with "FEEDBACK_SPOKEN" feedback type
   // is enabled or disabled.
   void OnSpokenFeedbackAccessibilityServiceChanged(bool enabled);
+
+  const std::vector<ScriptHandle>& GetDirectActionScripts() const;
+  bool PerformDirectAction(int index, std::unique_ptr<TriggerContext> context);
 
   // Overrides ScriptExecutorDelegate:
   const ClientSettings& GetSettings() override;
@@ -221,9 +223,7 @@ class Controller : public ScriptExecutorDelegate,
   ShowProgressBarProto::StepProgressBarConfiguration
   GetStepProgressBarConfiguration() const override;
   const std::vector<UserAction>& GetUserActions() const override;
-  bool PerformUserActionWithContext(
-      int index,
-      std::unique_ptr<TriggerContext> context) override;
+  bool PerformUserAction(int index) override;
   std::string GetDebugContext() override;
   const CollectUserDataOptions* GetCollectUserDataOptions() const override;
   const UserData* GetUserData() const override;
@@ -365,10 +365,6 @@ class Controller : public ScriptExecutorDelegate,
   // execution with an error.
   void MaybeAutostartScript(const std::vector<ScriptHandle>& runnable_scripts);
 
-  // Creates a user action for each script with a direct action and sets the
-  // list as the current user action list.
-  void UpdateDirectActions(const std::vector<ScriptHandle>& runnable_scripts);
-
   void DisableAutostart();
 
   void InitFromParameters();
@@ -451,6 +447,9 @@ class Controller : public ScriptExecutorDelegate,
   // Resets the controller to the initial state.
   void ResetState();
 
+  void SetDirectActionScripts(
+      const std::vector<ScriptHandle>& direct_action_scripts);
+
   ClientSettings settings_;
   Client* const client_;
   const base::TickClock* const tick_clock_;
@@ -525,6 +524,9 @@ class Controller : public ScriptExecutorDelegate,
 
   // Current set of user actions. May be null, but never empty.
   std::unique_ptr<std::vector<UserAction>> user_actions_;
+
+  // Current set of direct actions.
+  std::vector<ScriptHandle> direct_action_scripts_;
 
   // Current viewport mode.
   ViewportMode viewport_mode_ = ViewportMode::NO_RESIZE;

@@ -274,11 +274,8 @@ ClientAndroid::GetDirectActionsAsJavaArrayOfStrings(JNIEnv* env) const {
         env, std::vector<std::string>(names.begin(), names.end()));
   }
 
-  for (const UserAction& user_action : controller_->GetUserActions()) {
-    if (!user_action.enabled())
-      continue;
-
-    for (const std::string& name : user_action.direct_action().names) {
+  for (const ScriptHandle& script : controller_->GetDirectActionScripts()) {
+    for (const std::string& name : script.direct_action.names) {
       names.insert(name);
     }
   }
@@ -317,13 +314,6 @@ base::android::ScopedJavaLocalRef<jobjectArray> ClientAndroid::GetDirectActions(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& jcaller) {
   DCHECK(controller_ != nullptr);
-  size_t actions_count = 0;
-  for (const UserAction& user_action : controller_->GetUserActions()) {
-    if (!user_action.enabled())
-      continue;
-    ++actions_count;
-  }
-
   // Prepare the java array to hold the direct actions.
   base::android::ScopedJavaLocalRef<jclass> directaction_array_class =
       base::android::GetClass(env,
@@ -331,18 +321,17 @@ base::android::ScopedJavaLocalRef<jobjectArray> ClientAndroid::GetDirectActions(
                               "AutofillAssistantDirectActionImpl",
                               "autofill_assistant");
 
+  const std::vector<ScriptHandle>& direct_action_scripts =
+      controller_->GetDirectActionScripts();
+
   jobjectArray joa = env->NewObjectArray(
-      actions_count, directaction_array_class.obj(), nullptr);
+      direct_action_scripts.size(), directaction_array_class.obj(), nullptr);
   jni_generator::CheckException(env);
 
-  actions_count = 0;
-  for (const UserAction& user_action : controller_->GetUserActions()) {
-    if (!user_action.enabled())
-      continue;
-
-    auto jdirect_action =
-        ToJavaAutofillAssistantDirectAction(env, user_action.direct_action());
-    env->SetObjectArrayElement(joa, actions_count++, jdirect_action.obj());
+  for (size_t i = 0; i < direct_action_scripts.size(); i++) {
+    auto jdirect_action = ToJavaAutofillAssistantDirectAction(
+        env, direct_action_scripts.at(i).direct_action);
+    env->SetObjectArrayElement(joa, i, jdirect_action.obj());
   }
   return base::android::ScopedJavaLocalRef<jobjectArray>(env, joa);
 }
@@ -384,8 +373,8 @@ bool ClientAndroid::PerformDirectAction(
     AttachUI(joverlay_coordinator);
   }
 
-  return controller_->PerformUserActionWithContext(action_index,
-                                                   std::move(trigger_context));
+  return controller_->PerformDirectAction(action_index,
+                                          std::move(trigger_context));
 }
 
 void ClientAndroid::ShowFatalError(
@@ -417,15 +406,11 @@ int ClientAndroid::FindDirectAction(const std::string& action_name) {
   if (!controller_)
     return -1;
 
-  const std::vector<UserAction>& user_actions = controller_->GetUserActions();
-  int user_action_count = user_actions.size();
-  for (int i = 0; i < user_action_count; i++) {
-    const UserAction& user_action = user_actions[i];
-    if (!user_action.enabled())
-      continue;
-
+  const std::vector<ScriptHandle>& direct_action_scripts =
+      controller_->GetDirectActionScripts();
+  for (size_t i = 0; i < direct_action_scripts.size(); i++) {
     const base::flat_set<std::string>& action_names =
-        user_action.direct_action().names;
+        direct_action_scripts.at(i).direct_action.names;
     if (action_names.count(action_name) != 0)
       return i;
   }

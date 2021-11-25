@@ -160,7 +160,7 @@ void PromptAction::UpdateUserActions() {
     UserAction user_action(choice_proto.chip(),
                            /* enabled = */ true,
                            /* identifier = */ std::string());
-    if (!user_action.has_triggers())
+    if (!user_action.has_chip())
       continue;
 
     // Hide actions whose preconditions don't match.
