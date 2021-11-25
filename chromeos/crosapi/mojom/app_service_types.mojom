@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
-// Next MinVersion: 13
+// Next MinVersion: 14
 
 module crosapi.mojom;
 
@@ -323,7 +323,9 @@ struct Intent {
   string? share_text@3;  // Text to share. e.g. Share link to other app.
   string? share_title@4; // Title for the share.
   // The files to view or share.
-  [MinVersion=5]array<IntentFile>? files@5;
+  [MinVersion=5] array<IntentFile>? files@5;
+  // The activity for the app to launch.
+  [MinVersion=13] string? activity_name@6;
 };
 
 // The result from launching an app.

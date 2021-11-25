@@ -154,8 +154,13 @@ std::tuple<GURL, bool /*is_file_handling*/> WebAppLaunchProcess::GetLaunchUrl(
   } else if (absl::optional<GURL> file_handler_url =
                  provider_.os_integration_manager().GetMatchingFileHandlerURL(
                      params_.app_id, params_.launch_files)) {
-    // Handle file_handlers launch.
-    launch_url = file_handler_url.value();
+    // Handle file_handlers launch. When launched from Files app, the user has
+    // already selected a file_handler so use that if available.
+    if (params_.intent && params_.intent->activity_name) {
+      launch_url = GURL(params_.intent->activity_name.value());
+    } else {
+      launch_url = file_handler_url.value();
+    }
     is_file_handling = true;
   } else if (absl::optional<GURL> protocol_handler_translated_url =
                  GetProtocolHandlingTranslatedUrl(

@@ -722,6 +722,9 @@ crosapi::mojom::IntentPtr ConvertAppServiceToCrosapiIntent(
     crosapi_intent->files = std::move(crosapi_files);
   }
 #endif
+  if (app_service_intent->activity_name.has_value()) {
+    crosapi_intent->activity_name = app_service_intent->activity_name.value();
+  }
   return crosapi_intent;
 }
 
@@ -759,6 +762,9 @@ apps::mojom::IntentPtr ConvertCrosapiToAppServiceIntent(
     }
   }
 #endif
+  if (crosapi_intent->activity_name.has_value()) {
+    app_service_intent->activity_name = crosapi_intent->activity_name.value();
+  }
   return app_service_intent;
 }
 

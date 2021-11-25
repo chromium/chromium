@@ -510,8 +510,8 @@ IN_PROC_BROWSER_TEST_P(FileTasksBrowserTest, ExecuteWebApp) {
     // Install a PWA in ash.
     web_app::AppId app_id =
         web_app::test::InstallWebApp(profile, std::move(web_app_info));
-    task_descriptor =
-        TaskDescriptor(app_id, TaskType::TASK_TYPE_WEB_APP, "activity name");
+    task_descriptor = TaskDescriptor(app_id, TaskType::TASK_TYPE_WEB_APP,
+                                     "https://www.example.com/handle_file");
     // Skip past the permission dialog.
     web_app::ScopedRegistryUpdate(
         &web_app::WebAppProvider::GetForTest(profile)->sync_bridge())
@@ -519,8 +519,8 @@ IN_PROC_BROWSER_TEST_P(FileTasksBrowserTest, ExecuteWebApp) {
         ->SetFileHandlerApprovalState(web_app::ApiApprovalState::kAllowed);
   } else {
     // Use an existing SWA in ash - Media app.
-    task_descriptor =
-        TaskDescriptor(kMediaAppId, TaskType::TASK_TYPE_WEB_APP, "");
+    task_descriptor = TaskDescriptor(kMediaAppId, TaskType::TASK_TYPE_WEB_APP,
+                                     "chrome://media-app/open");
     // TODO(petermarshall): Install the web app in Lacros once installing and
     // launching apps from ash -> lacros is possible.
   }
@@ -530,6 +530,14 @@ IN_PROC_BROWSER_TEST_P(FileTasksBrowserTest, ExecuteWebApp) {
       base::BindLambdaForTesting(
           [&run_loop](apps::AppLaunchParams&& params) -> content::WebContents* {
             EXPECT_EQ(params.intent->action, apps_util::kIntentActionView);
+            if (GetParam().crosapi_state ==
+                TestProfileParam::CrosapiParam::kDisabled) {
+              EXPECT_EQ(params.intent->activity_name,
+                        "https://www.example.com/handle_file");
+            } else {
+              EXPECT_EQ(params.intent->activity_name,
+                        "chrome://media-app/open");
+            }
             EXPECT_EQ(params.launch_files.size(), 2U);
             EXPECT_TRUE(base::EndsWith(params.launch_files.at(0).MaybeAsASCII(),
                                        "foo.jpg"));

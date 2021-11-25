@@ -48,6 +48,7 @@
 #include "extensions/common/features/feature.h"
 #include "extensions/common/features/feature_provider.h"
 #include "extensions/common/manifest_handlers/options_page_info.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/features.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/display/scoped_display_for_new_windows.h"
@@ -291,10 +292,17 @@ WebContents* OpenEnabledApplication(Profile* profile,
     // LaunchPlatformAppWithCommandLineAndLaunchId should be called to handle
     // the command line. If |launch_files| is set without |command_line|, that
     // means launching the app with files, so call
-    // LaunchPlatformAppWithFilePaths to forward |launch_files| to the app.
+    // LaunchPlatformAppWithFile{Handler,Paths} to forward |launch_files| to the
+    // app.
     if (params.command_line.GetArgs().empty() && !params.launch_files.empty()) {
-      apps::LaunchPlatformAppWithFilePaths(profile, extension,
-                                           params.launch_files);
+      if (params.intent && params.intent->activity_name) {
+        apps::LaunchPlatformAppWithFileHandler(
+            profile, extension, params.intent->activity_name.value(),
+            params.launch_files);
+      } else {
+        apps::LaunchPlatformAppWithFilePaths(profile, extension,
+                                             params.launch_files);
+      }
       return nullptr;
     }
 

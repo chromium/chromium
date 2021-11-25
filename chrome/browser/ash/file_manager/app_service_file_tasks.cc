@@ -275,6 +275,7 @@ void ExecuteAppServiceTask(
       task.task_type == TASK_TYPE_ARC_APP
           ? apps_util::CreateShareIntentFromFiles(file_urls, mime_types)
           : apps_util::CreateViewIntentFromFiles(std::move(intent_files));
+  intent->activity_name = task.action_id;
 
   apps::AppServiceProxyFactory::GetForProfile(profile)->LaunchAppWithIntent(
       task.app_id, ui::EF_NONE, std::move(intent), launch_source,
