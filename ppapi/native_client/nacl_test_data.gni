@@ -162,6 +162,7 @@ template("nacl_test_data") {
     sources = invoker.sources
     forward_variables_from(invoker,
                            [
+                             "assert_no_deps",
                              "cflags",
                              "defines",
                              "include_dirs",
