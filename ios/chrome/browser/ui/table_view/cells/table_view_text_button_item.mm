@@ -143,6 +143,9 @@ const NSTextAlignment kDefaultTextAlignment = NSTextAlignmentCenter;
     self.button.translatesAutoresizingMaskIntoConstraints = NO;
     [self.button.titleLabel
         setFont:[UIFont boldSystemFontOfSize:kButtonTitleFontSize]];
+    self.button.titleLabel.numberOfLines = 0;
+    self.button.titleLabel.lineBreakMode = NSLineBreakByWordWrapping;
+    self.button.titleLabel.textAlignment = NSTextAlignmentCenter;
     self.button.layer.cornerRadius = kButtonCornerRadius;
     self.button.clipsToBounds = YES;
     self.button.contentEdgeInsets = UIEdgeInsetsMake(
