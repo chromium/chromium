@@ -1120,8 +1120,7 @@ export class PDFViewerElement extends PDFViewerBaseElement {
     if (!fileName.toLowerCase().endsWith('.pdf')) {
       fileName = fileName + '.pdf';
     }
-    // Create blob before callback to avoid race condition.
-    const blob = new Blob([result.dataToSave], {type: 'application/pdf'});
+
     chrome.fileSystem.chooseEntry(
         {
           type: 'saveFile',
@@ -1138,7 +1137,8 @@ export class PDFViewerElement extends PDFViewerBaseElement {
             return;
           }
           entry.createWriter(writer => {
-            writer.write(blob);
+            writer.write(
+                new Blob([result.dataToSave], {type: 'application/pdf'}));
             // Unblock closing the window now that the user has saved
             // successfully.
             chrome.mimeHandlerPrivate.setShowBeforeUnloadDialog(false);
