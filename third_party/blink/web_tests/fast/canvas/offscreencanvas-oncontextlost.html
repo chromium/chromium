@@ -13,8 +13,8 @@ var contextLostTest;
 async_test(t => {
     if (window.internals) {
         var canvas = new OffscreenCanvas(500, 500);
-        canvas.addEventListener('contextlost', contextLost);
-        canvas.addEventListener('contextrestored', contextRestored);
+        canvas.oncontextlost = contextLost;
+        canvas.oncontextrestored = contextRestored;
         ctx = canvas.getContext('2d');
 
         ctx.fillRect(0, 0, 1, 1);
