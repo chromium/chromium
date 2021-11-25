@@ -580,11 +580,6 @@ const char kDecodeJpeg420ImagesToYUVDescription[] =
     "Decode and render 4:2:0 formatted jpeg images from YUV instead of RGB."
     "This feature requires GPU or OOP rasterization to also be enabled.";
 
-const char kDecodeLossyWebPImagesToYUVName[] = "YUV Decoding for WebP";
-const char kDecodeLossyWebPImagesToYUVDescription[] =
-    "Decode and render lossy WebP images from YUV instead of RGB. "
-    "You must also have GPU rasterization or OOP rasterization.";
-
 const char kDevicePostureName[] = "Device Posture API";
 const char kDevicePostureDescription[] =
     "Enables Device Posture API (foldable devices)";

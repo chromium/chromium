@@ -6011,11 +6011,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kDecodeJpeg420ImagesToYUVDescription, kOsAll,
      FEATURE_VALUE_TYPE(blink::features::kDecodeJpeg420ImagesToYUV)},
 
-    {"decode-webp-images-to-yuv",
-     flag_descriptions::kDecodeLossyWebPImagesToYUVName,
-     flag_descriptions::kDecodeLossyWebPImagesToYUVDescription, kOsAll,
-     FEATURE_VALUE_TYPE(blink::features::kDecodeLossyWebPImagesToYUV)},
-
     {"dns-httpssvc", flag_descriptions::kDnsHttpssvcName,
      flag_descriptions::kDnsHttpssvcDescription,
      kOsMac | kOsWin | kOsCrOS | kOsAndroid,

@@ -336,9 +336,6 @@ extern const char kDarkLightTestDescription[];
 extern const char kDecodeJpeg420ImagesToYUVName[];
 extern const char kDecodeJpeg420ImagesToYUVDescription[];
 
-extern const char kDecodeLossyWebPImagesToYUVName[];
-extern const char kDecodeLossyWebPImagesToYUVDescription[];
-
 extern const char kDetectTargetEmbeddingLookalikesName[];
 extern const char kDetectTargetEmbeddingLookalikesDescription[];
 

@@ -1018,11 +1018,6 @@
     "expiry_milestone": 88
   },
   {
-    "name": "decode-webp-images-to-yuv",
-    "owners": [ "andrescj", "chromeos-gfx@google.com" ],
-    "expiry_milestone": 88
-  },
-  {
     "name": "default-browser-fullscreen-promo-cta-experiment",
     "owners": [ "javierrobles", "bling-flags@google.com" ],
     "expiry_milestone": 93
