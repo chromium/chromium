@@ -178,7 +178,7 @@ void WindowTreeHostPlatform::MoveCursorToScreenLocationInPixels(
 }
 
 void WindowTreeHostPlatform::OnCursorVisibilityChangedNative(bool show) {
-  NOTIMPLEMENTED();
+  NOTIMPLEMENTED_LOG_ONCE();
 }
 
 void WindowTreeHostPlatform::LockMouse(Window* window) {
