@@ -319,7 +319,7 @@ AtomicString HTMLSlotElement::GetName() const {
 void HTMLSlotElement::AttachLayoutTree(AttachContext& context) {
   HTMLElement::AttachLayoutTree(context);
 
-  if (ChildStyleRecalcBlockedByDisplayLock())
+  if (ChildStyleRecalcBlockedByDisplayLock() || SkippedContainerStyleRecalc())
     return;
 
   if (SupportsAssignment()) {

@@ -2745,15 +2745,20 @@ void Element::AttachLayoutTree(AttachContext& context) {
   }
   children_context.use_previous_in_flow = true;
 
-  if (ChildStyleRecalcBlockedByDisplayLock()) {
+  bool skip_container_descendants = SkippedContainerStyleRecalc();
+  bool skip_lock_descendants = ChildStyleRecalcBlockedByDisplayLock();
+  if (skip_container_descendants || skip_lock_descendants) {
     // Since we block style recalc on descendants of this node due to display
-    // locking, none of its descendants should have the NeedsReattachLayoutTree
-    // bit set.
+    // locking or container queries, none of its descendants should have the
+    // NeedsReattachLayoutTree bit set.
     DCHECK(!ChildNeedsReattachLayoutTree());
-    // If an element is locked we shouldn't attach the layout tree for its
-    // descendants. We should notify that we blocked a reattach so that we will
-    // correctly attach the descendants when allowed.
-    GetDisplayLockContext()->NotifyReattachLayoutTreeWasBlocked();
+
+    if (skip_lock_descendants) {
+      // If an element is locked we shouldn't attach the layout tree for its
+      // descendants. We should notify that we blocked a reattach so that we
+      // will correctly attach the descendants when allowed.
+      GetDisplayLockContext()->NotifyReattachLayoutTreeWasBlocked();
+    }
     Node::AttachLayoutTree(context);
     if (layout_object && layout_object->AffectsWhitespaceSiblings())
       context.previous_in_flow = layout_object;
@@ -2777,7 +2782,6 @@ void Element::AttachLayoutTree(AttachContext& context) {
 
   UpdateFirstLetterPseudoElement(StyleUpdatePhase::kAttachLayoutTree);
   AttachPseudoElement(kPseudoIdFirstLetter, children_context);
-
   if (layout_object) {
     if (layout_object->AffectsWhitespaceSiblings())
       context.previous_in_flow = layout_object;
@@ -3405,7 +3409,8 @@ void Element::RebuildLayoutTree(WhitespaceAttacher& whitespace_attacher) {
     whitespace_attacher.DidReattachElement(this,
                                            reattach_context.previous_in_flow);
   } else if (NeedsRebuildChildLayoutTrees(whitespace_attacher) &&
-             !ChildStyleRecalcBlockedByDisplayLock()) {
+             !ChildStyleRecalcBlockedByDisplayLock() &&
+             !SkippedContainerStyleRecalc()) {
     // TODO(crbug.com/972752): Make the condition above a DCHECK instead when
     // style recalc and dirty bit propagation uses flat-tree traversal.
     // We create a local WhitespaceAttacher when rebuilding children of an
@@ -5008,6 +5013,14 @@ ContainerQueryEvaluator* Element::GetContainerQueryEvaluator() const {
 
 void Element::SetContainerQueryEvaluator(ContainerQueryEvaluator* evaluator) {
   EnsureElementRareData().SetContainerQueryEvaluator(evaluator);
+}
+
+bool Element::SkippedContainerStyleRecalc() const {
+  if (!RuntimeEnabledFeatures::CSSContainerSkipStyleRecalcEnabled())
+    return false;
+  if (const auto* cq_data = GetContainerQueryData())
+    return cq_data->SkippedStyleRecalc();
+  return false;
 }
 
 // Step 1 of http://domparsing.spec.whatwg.org/#insertadjacenthtml()

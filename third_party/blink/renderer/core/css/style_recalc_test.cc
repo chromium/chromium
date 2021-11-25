@@ -207,4 +207,45 @@ TEST_F(StyleRecalcTest, SkipStyleRecalcForContainerCleanSubtree) {
   EXPECT_FALSE(container->GetContainerQueryData()->SkippedStyleRecalc());
 }
 
+TEST_F(StyleRecalcTest, SkipAttachLayoutTreeForContainer) {
+  ScopedCSSContainerQueriesForTest scoped_cq(true);
+  ScopedCSSContainerSkipStyleRecalcForTest scoped_skip(true);
+
+  GetDocument().body()->setInnerHTML(R"HTML(
+    <style>
+      #container { container-type: inline-size; }
+      #container.narrow {
+        width: 100px;
+        display: inline-block;
+        color: pink; /* Make sure there's a recalc to skip. */
+      }
+      @container (max-width: 100px) {
+        #affected { color: green; }
+      }
+    </style>
+    <div id="container">
+      <span id="affected"></span>
+    </div>
+  )HTML",
+                                     ASSERT_NO_EXCEPTION);
+
+  UpdateAllLifecyclePhasesForTest();
+
+  Element* container = GetDocument().getElementById("container");
+  Element* affected = GetDocument().getElementById("affected");
+  ASSERT_TRUE(container);
+  ASSERT_TRUE(affected);
+  EXPECT_TRUE(container->GetLayoutObject());
+  EXPECT_TRUE(affected->GetLayoutObject());
+
+  container->classList().Add("narrow");
+  GetDocument().UpdateStyleAndLayoutTreeForThisDocument();
+
+  ASSERT_TRUE(container->GetContainerQueryData());
+  EXPECT_TRUE(container->GetContainerQueryData()->SkippedStyleRecalc());
+
+  EXPECT_TRUE(container->GetLayoutObject());
+  EXPECT_FALSE(affected->GetLayoutObject());
+}
+
 }  // namespace blink
