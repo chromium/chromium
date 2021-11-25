@@ -34,6 +34,12 @@
 // should add their UI elements to it.
 @property(nonatomic, strong) UIView* specificContentView;
 
+// The container view for the specific content at the top of the screen that
+// sits between the title and the subtitle. The view is lazily instantiated and
+// added to the view tree when read for the first time. Derived view
+// controllers can add their UI elements to it.
+@property(nonatomic, strong, readonly) UIView* topSpecificContentView;
+
 // The text for the primary action. Must be set before the view is loaded.
 @property(nonatomic, copy) NSString* primaryActionString;
 

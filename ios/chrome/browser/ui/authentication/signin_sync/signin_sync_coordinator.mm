@@ -72,6 +72,9 @@
 @property(nonatomic, assign) ChromeAccountManagerService* accountManagerService;
 // YES if this coordinator is currently used in First Run.
 @property(nonatomic, readonly) BOOL firstRun;
+// The consent string ids that were pushed that are related to the text for
+// sync.
+@property(nonatomic, assign, readonly) NSMutableArray* consentStringIDs;
 
 @end
 
@@ -109,9 +112,10 @@
     return;
   }
 
+  ChromeBrowserState* browserState = self.browser->GetBrowserState();
+
   AuthenticationService* authenticationService =
-      AuthenticationServiceFactory::GetForBrowserState(
-          self.browser->GetBrowserState());
+      AuthenticationServiceFactory::GetForBrowserState(browserState);
 
   if (authenticationService->GetPrimaryIdentity(
           signin::ConsentLevel::kSignin)) {
@@ -128,11 +132,10 @@
   self.viewController = [[SigninSyncViewController alloc] init];
   self.viewController.delegate = self;
   self.viewController.enterpriseSignInRestrictions =
-      GetEnterpriseSignInRestrictions(self.browser->GetBrowserState());
+      GetEnterpriseSignInRestrictions(browserState);
 
   self.accountManagerService =
-      ChromeAccountManagerServiceFactory::GetForBrowserState(
-          self.browser->GetBrowserState());
+      ChromeAccountManagerServiceFactory::GetForBrowserState(browserState);
 
   self.mediator = [[SigninSyncMediator alloc]
       initWithAccountManagerService:self.accountManagerService
@@ -191,8 +194,17 @@
       self.mediator.selectedIdentity;
 }
 
+- (void)showSyncSettings {
+  // TODO(crbug.com/1268669): Implement this.
+}
+
+- (void)addConsentStringID:(const int)stringID {
+  [self.consentStringIDs addObject:[NSNumber numberWithInt:stringID]];
+}
+
 - (void)didTapPrimaryActionButton {
   if (self.mediator.selectedIdentity) {
+    // TODO(crbug.com/1268671): This should start sync as well.
     [self startSignIn];
   } else {
     [self triggerAddAccount];
@@ -328,6 +340,7 @@
   }
 }
 
+// TODO(crbug.com/1268671): This should start sync as well.
 // Starts the sign in process.
 - (void)startSignIn {
   DCHECK(self.mediator.selectedIdentity);

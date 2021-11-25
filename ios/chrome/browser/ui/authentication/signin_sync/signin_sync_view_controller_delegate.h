@@ -13,6 +13,12 @@
 // Called when the user taps to see the account picker.
 - (void)showAccountPickerFromPoint:(CGPoint)point;
 
+// Called when the user taps to see sync settings.
+- (void)showSyncSettings;
+
+// Adds consent string ID.
+- (void)addConsentStringID:(const int)stringID;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_AUTHENTICATION_SIGNIN_SYNC_SIGNIN_SYNC_VIEW_CONTROLLER_DELEGATE_H_
