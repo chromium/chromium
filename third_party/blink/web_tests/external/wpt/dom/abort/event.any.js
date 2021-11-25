@@ -111,6 +111,19 @@ test(t => {
 }, "AbortController abort(undefined) creates an \"AbortError\" DOMException");
 
 test(t => {
+  const controller = new AbortController();
+  const signal = controller.signal;
+
+  assert_true("reason" in signal, "signal has reason property");
+  assert_equals(signal.reason, undefined, "signal.reason is initially undefined");
+
+  controller.abort(null);
+
+  assert_true(signal.aborted, "signal.aborted");
+  assert_equals(signal.reason, null, "signal.reason");
+}, "AbortController abort(null) should set signal.reason");
+
+test(t => {
   const signal = AbortSignal.abort();
 
   assert_true(signal.aborted, "signal.aborted");

@@ -53,7 +53,7 @@
 <figure tabindex="0">figure</figure>
 <form tabindex="0">form</form>
 <hr tabindex="0" />
-<img tabindex="0" src="#" />
+<img tabindex="0" src="/images/green.png" />
 <label tabindex="0">label</label>
 <li tabindex="0">li</li>
 <mark tabindex="0">mark</mark>
@@ -89,7 +89,7 @@
         test_driver.click(target).then(() => {
           if (i == (elements.length - 1))
             done();
-        });
+        }).catch(resolve);
       }).then(() => {
         assert_equals(getComputedStyle(target).outlineStyle, "none", `outline-style for ${target.tagName} should be none`);
       });

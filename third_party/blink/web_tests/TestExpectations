@@ -3000,6 +3000,10 @@ crbug.com/626703 fast/animation/scroll-animations/scrolltimeline-root-scroller-q
 crbug.com/626703 virtual/plz-dedicated-worker/external/wpt/service-workers/service-worker/navigation-timing-extended.https.html [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
+crbug.com/626703 external/wpt/css/css-pseudo/first-line-line-height-002.html [ Failure ]
+crbug.com/626703 [ Mac10.15 ] external/wpt/streams/piping/abort.any.html [ Timeout Failure ]
+crbug.com/626703 [ Mac10.15 ] external/wpt/streams/piping/abort.any.sharedworker.html [ Crash Failure ]
+crbug.com/626703 virtual/css-highlight-inheritance/external/wpt/css/css-pseudo/first-line-line-height-002.html [ Failure ]
 crbug.com/626703 [ Mac11-arm64 ] virtual/consume-code-cache-off-thread/external/wpt/html/semantics/scripting-1/the-script-element/json-module/parse-error.html [ Timeout ]
 crbug.com/626703 [ Mac11-arm64 ] virtual/css-calc-infinity-and-nan-disabled/external/wpt/css/css-values/ch-unit-011.html [ Failure ]
 crbug.com/626703 [ Win10.20h2 ] external/wpt/html/cross-origin-embedder-policy/cross-origin-isolated-permission.https.html [ Timeout ]
@@ -7347,4 +7351,4 @@ crbug.com/1046784 http/tests/devtools/tracing/timeline-receive-response-event.js
 crbug.com/1273282 [ Win7 ] external/wpt/html/canvas/offscreen/manual/the-offscreen-canvas/offscreencanvas.commit.html [ Failure Pass ]
 
 # Sheriff 2021-11-24
-crbug.com/1273541 fast/block/float/float-on-clean-line-subsequently-dirtied.html [ Pass Failure ]
+crbug.com/1273541 fast/block/float/float-on-clean-line-subsequently-dirtied.html [ Failure Pass ]
