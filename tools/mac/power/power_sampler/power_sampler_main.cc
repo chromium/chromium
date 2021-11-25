@@ -9,6 +9,7 @@
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
+#include "base/process/process_handle.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/single_thread_task_executor.h"
@@ -18,6 +19,7 @@
 #include "tools/mac/power/power_sampler/iopm_power_source_sampling_event_source.h"
 #include "tools/mac/power/power_sampler/json_exporter.h"
 #include "tools/mac/power/power_sampler/main_display_sampler.h"
+#include "tools/mac/power/power_sampler/resource_coalition_sampler.h"
 #include "tools/mac/power/power_sampler/sample_counter.h"
 #include "tools/mac/power/power_sampler/sampler.h"
 #include "tools/mac/power/power_sampler/sampling_controller.h"
@@ -42,18 +44,21 @@ constexpr char kSwitchSampleInterval[] = "sample-interval";
 constexpr char kSwitchSampleCount[] = "sample-count";
 constexpr char kSwitchJsonOutputFile[] = "json-output-file";
 constexpr char kSwitchSampleOnNotification[] = "sample-on-notification";
+constexpr char kSwitchResourceCoalitionPid[] = "resource-coalition-pid";
 constexpr char kUsageString[] = R"(Usage: power_sampler [options]
 
 A tool that samples power-related metrics and states. The tool outputs samples
 in CSV or JSON format.
 
 Options:
-  --sample-interval=<num>    Sample on a <num> second interval.
-  --sample-on-notification   Sample on power manager notifications.
+  --sample-interval=<num>         Sample on a <num> second interval.
+  --sample-on-notification        Sample on power manager notifications.
       Note that interval and event notifications are mutually exclusive.
-  --sample-count=<num>       Collect <num> samples before exiting.
-  --json-output-file=<path>  Produce JSON output to <path> before exit.
+  --sample-count=<num>            Collect <num> samples before exiting.
+  --json-output-file=<path>       Produce JSON output to <path> before exit.
       By default output is in CSV format on STDOUT.
+  --resource-coalition-pid=<pid>  The pid of a process that is part of a
+      resource coalition for which to sample resource usage.
 )";
 
 // Prints main usage text.
@@ -138,6 +143,8 @@ int main(int argc, char** argv) {
   base::SingleThreadTaskExecutor executor(base::MessagePumpType::NS_RUNLOOP);
   power_sampler::SamplingController controller;
 
+  const base::TimeTicks start_time = base::TimeTicks::Now();
+
   std::unique_ptr<power_sampler::Sampler> sampler =
       power_sampler::MainDisplaySampler::Create();
   if (sampler)
@@ -151,7 +158,24 @@ int main(int argc, char** argv) {
   if (sampler)
     controller.AddSampler(std::move(sampler));
 
-  base::TimeTicks start_time = base::TimeTicks::Now();
+  if (command_line.HasSwitch(kSwitchResourceCoalitionPid)) {
+    std::string resource_coalition_pid_switch =
+        command_line.GetSwitchValueASCII(kSwitchResourceCoalitionPid);
+    base::ProcessId pid;
+    if (!base::StringToInt(resource_coalition_pid_switch, &pid) || pid < 0) {
+      PrintUsage("resource-coalition-pid must be numeric and positive.");
+      return kStatusInvalidParam;
+    }
+    sampler = power_sampler::ResourceCoalitionSampler::Create(pid, start_time);
+    if (!sampler) {
+      PrintUsage(
+          "Could not create a resource coalition sampler. Is the pid passed to "
+          "--resource-coalition-pid valid?");
+      return kStatusRuntimeError;
+    }
+    controller.AddSampler(std::move(sampler));
+  }
+
   if (!json_output_file_path.empty()) {
     controller.AddMonitor(power_sampler::JsonExporter::Create(
         std::move(json_output_file_path), start_time));

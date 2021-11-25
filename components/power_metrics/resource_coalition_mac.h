@@ -29,6 +29,12 @@ absl::optional<uint64_t> GetProcessCoalitionId(base::ProcessId pid);
 std::unique_ptr<coalition_resource_usage> GetCoalitionResourceUsage(
     int64_t coalition_id);
 
+// Returns a `coalition_resource_usage` in which each member is the result of
+// substracting the corresponding fields in `left` and `right`.
+coalition_resource_usage GetCoalitionResourceUsageDifference(
+    const coalition_resource_usage& left,
+    const coalition_resource_usage& right);
+
 }  // namespace power_metrics
 
 #endif  // COMPONENTS_PPOWER_METRICS_RESOURCE_COALITION_MAC_H_

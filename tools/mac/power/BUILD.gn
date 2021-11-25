@@ -37,6 +37,8 @@ static_library("power_sampler_lib") {
     "power_sampler/main_display_sampler.h",
     "power_sampler/monitor.cc",
     "power_sampler/monitor.h",
+    "power_sampler/resource_coalition_sampler.cc",
+    "power_sampler/resource_coalition_sampler.h",
     "power_sampler/sample_counter.cc",
     "power_sampler/sample_counter.h",
     "power_sampler/sampler.cc",
@@ -50,7 +52,10 @@ static_library("power_sampler_lib") {
     "power_sampler/user_idle_level_sampler.cc",
     "power_sampler/user_idle_level_sampler.h",
   ]
-  deps = [ "//base" ]
+  deps = [
+    "//base",
+    "//components/power_metrics",
+  ]
   frameworks = [
     "CoreGraphics.framework",
     "Foundation.framework",
@@ -77,6 +82,7 @@ test("power_sampler_unittests") {
     "power_sampler/csv_exporter_unittest.cc",
     "power_sampler/json_exporter_unittest.cc",
     "power_sampler/main_display_sampler_unittest.cc",
+    "power_sampler/resource_coalition_sampler_unittest.cc",
     "power_sampler/sampling_controller_unittest.cc",
     "power_sampler/timer_sampling_event_source_unittest.cc",
     "power_sampler/user_idle_level_sampler_unittest.cc",
@@ -87,6 +93,7 @@ test("power_sampler_unittests") {
     "//base",
     "//base/test:run_all_unittests",
     "//base/test:test_support",
+    "//components/power_metrics",
     "//testing/gmock",
     "//testing/gtest",
   ]

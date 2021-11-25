@@ -20,7 +20,10 @@ if (is_mac) {
   source_set("unit_tests") {
     testonly = true
 
-    sources = [ "energy_impact_mac_unittest.mm" ]
+    sources = [
+      "energy_impact_mac_unittest.mm",
+      "resource_coalition_mac_unittest.mm",
+    ]
 
     data = [ "test/data/" ]
 

@@ -36,4 +36,101 @@ std::unique_ptr<coalition_resource_usage> GetCoalitionResourceUsage(
   return nullptr;
 }
 
+coalition_resource_usage GetCoalitionResourceUsageDifference(
+    const coalition_resource_usage& left,
+    const coalition_resource_usage& right) {
+  DCHECK_GE(left.tasks_started, right.tasks_started);
+  DCHECK_GE(left.tasks_exited, right.tasks_exited);
+  DCHECK_GE(left.time_nonempty, right.time_nonempty);
+  DCHECK_GE(left.cpu_time, right.cpu_time);
+  DCHECK_GE(left.interrupt_wakeups, right.interrupt_wakeups);
+  DCHECK_GE(left.platform_idle_wakeups, right.platform_idle_wakeups);
+  DCHECK_GE(left.bytesread, right.bytesread);
+  DCHECK_GE(left.byteswritten, right.byteswritten);
+  DCHECK_GE(left.gpu_time, right.gpu_time);
+  DCHECK_GE(left.cpu_time_billed_to_me, right.cpu_time_billed_to_me);
+  DCHECK_GE(left.cpu_time_billed_to_others, right.cpu_time_billed_to_others);
+  DCHECK_GE(left.energy, right.energy);
+  DCHECK_GE(left.logical_immediate_writes, right.logical_immediate_writes);
+  DCHECK_GE(left.logical_deferred_writes, right.logical_deferred_writes);
+  DCHECK_GE(left.logical_invalidated_writes, right.logical_invalidated_writes);
+  DCHECK_GE(left.logical_metadata_writes, right.logical_metadata_writes);
+  DCHECK_GE(left.logical_immediate_writes_to_external,
+            right.logical_immediate_writes_to_external);
+  DCHECK_GE(left.logical_deferred_writes_to_external,
+            right.logical_deferred_writes_to_external);
+  DCHECK_GE(left.logical_invalidated_writes_to_external,
+            right.logical_invalidated_writes_to_external);
+  DCHECK_GE(left.logical_metadata_writes_to_external,
+            right.logical_metadata_writes_to_external);
+  DCHECK_GE(left.energy_billed_to_me, right.energy_billed_to_me);
+  DCHECK_GE(left.energy_billed_to_others, right.energy_billed_to_others);
+  DCHECK_GE(left.cpu_ptime, right.cpu_ptime);
+  DCHECK_GE(left.cpu_instructions, right.cpu_instructions);
+  DCHECK_GE(left.cpu_cycles, right.cpu_cycles);
+  DCHECK_GE(left.fs_metadata_writes, right.fs_metadata_writes);
+  DCHECK_GE(left.pm_writes, right.pm_writes);
+
+  coalition_resource_usage ret;
+
+  ret.tasks_started = left.tasks_started - right.tasks_started;
+  ret.tasks_exited = left.tasks_exited - right.tasks_exited;
+  ret.time_nonempty = left.time_nonempty - right.time_nonempty;
+  ret.cpu_time = left.cpu_time - right.cpu_time;
+  ret.interrupt_wakeups = left.interrupt_wakeups - right.interrupt_wakeups;
+  ret.platform_idle_wakeups =
+      left.platform_idle_wakeups - right.platform_idle_wakeups;
+  ret.bytesread = left.bytesread - right.bytesread;
+  ret.byteswritten = left.byteswritten - right.byteswritten;
+  ret.gpu_time = left.gpu_time - right.gpu_time;
+  ret.cpu_time_billed_to_me =
+      left.cpu_time_billed_to_me - right.cpu_time_billed_to_me;
+  ret.cpu_time_billed_to_others =
+      left.cpu_time_billed_to_others - right.cpu_time_billed_to_others;
+  ret.energy = left.energy - right.energy;
+  ret.logical_immediate_writes =
+      left.logical_immediate_writes - right.logical_immediate_writes;
+  ret.logical_deferred_writes =
+      left.logical_deferred_writes - right.logical_deferred_writes;
+  ret.logical_invalidated_writes =
+      left.logical_invalidated_writes - right.logical_invalidated_writes;
+  ret.logical_metadata_writes =
+      left.logical_metadata_writes - right.logical_metadata_writes;
+  ret.logical_immediate_writes_to_external =
+      left.logical_immediate_writes_to_external -
+      right.logical_immediate_writes_to_external;
+  ret.logical_deferred_writes_to_external =
+      left.logical_deferred_writes_to_external -
+      right.logical_deferred_writes_to_external;
+  ret.logical_invalidated_writes_to_external =
+      left.logical_invalidated_writes_to_external -
+      right.logical_invalidated_writes_to_external;
+  ret.logical_metadata_writes_to_external =
+      left.logical_metadata_writes_to_external -
+      right.logical_metadata_writes_to_external;
+  ret.energy_billed_to_me =
+      left.energy_billed_to_me - right.energy_billed_to_me;
+  ret.energy_billed_to_others =
+      left.energy_billed_to_others - right.energy_billed_to_others;
+  ret.cpu_ptime = left.cpu_ptime - right.cpu_ptime;
+
+  DCHECK_EQ(left.cpu_time_eqos_len,
+            static_cast<uint64_t>(COALITION_NUM_THREAD_QOS_TYPES));
+  DCHECK_EQ(right.cpu_time_eqos_len,
+            static_cast<uint64_t>(COALITION_NUM_THREAD_QOS_TYPES));
+
+  ret.cpu_time_eqos_len = left.cpu_time_eqos_len;
+  for (int i = 0; i < COALITION_NUM_THREAD_QOS_TYPES; ++i) {
+    DCHECK_GE(left.cpu_time_eqos[i], right.cpu_time_eqos[i]);
+    ret.cpu_time_eqos[i] = left.cpu_time_eqos[i] - right.cpu_time_eqos[i];
+  }
+
+  ret.cpu_instructions = left.cpu_instructions - right.cpu_instructions;
+  ret.cpu_cycles = left.cpu_cycles - right.cpu_cycles;
+  ret.fs_metadata_writes = left.fs_metadata_writes - right.fs_metadata_writes;
+  ret.pm_writes = left.pm_writes - right.pm_writes;
+
+  return ret;
+}
+
 }  // power_metrics
