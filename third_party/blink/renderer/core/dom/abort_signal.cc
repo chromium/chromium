@@ -21,6 +21,47 @@
 
 namespace blink {
 
+namespace {
+
+class OnceCallbackAlgorithm final : public AbortSignal::Algorithm {
+ public:
+  explicit OnceCallbackAlgorithm(base::OnceClosure callback)
+      : callback_(std::move(callback)) {}
+  ~OnceCallbackAlgorithm() override = default;
+
+  void Run() override { std::move(callback_).Run(); }
+
+ private:
+  base::OnceClosure callback_;
+};
+
+class FollowAlgorithm final : public AbortSignal::Algorithm {
+ public:
+  FollowAlgorithm(ScriptState* script_state,
+                  AbortSignal* parent,
+                  AbortSignal* following)
+      : script_state_(script_state), parent_(parent), following_(following) {}
+  ~FollowAlgorithm() override = default;
+
+  void Run() override {
+    following_->SignalAbort(script_state_, parent_->reason(script_state_));
+  }
+
+  void Trace(Visitor* visitor) const override {
+    visitor->Trace(script_state_);
+    visitor->Trace(parent_);
+    visitor->Trace(following_);
+    Algorithm::Trace(visitor);
+  }
+
+ private:
+  Member<ScriptState> script_state_;
+  Member<AbortSignal> parent_;
+  Member<AbortSignal> following_;
+};
+
+}  // namespace
+
 AbortSignal::AbortSignal(ExecutionContext* execution_context)
     : execution_context_(execution_context) {}
 AbortSignal::~AbortSignal() = default;
@@ -60,35 +101,18 @@ ExecutionContext* AbortSignal::GetExecutionContext() const {
   return execution_context_.Get();
 }
 
+void AbortSignal::AddAlgorithm(Algorithm* algorithm) {
+  if (aborted())
+    return;
+
+  abort_algorithms_.push_back(algorithm);
+}
+
 void AbortSignal::AddAlgorithm(base::OnceClosure algorithm) {
   if (aborted())
     return;
-  abort_algorithms_.push_back(std::move(algorithm));
-}
-
-void AbortSignal::AddSignalAbortAlgorithm(ScriptState* script_state,
-                                          AbortSignal* dependent_signal) {
-  if (aborted())
-    return;
-
-  // The signal should be kept alive as long as parentSignal is allow chained
-  // requests like the following:
-  // controller -owns-> signal1 -owns-> signal2 -owns-> signal3 <-owns- request
-  //
-  // Due to lack to traced closures we pass a weak persistent but also add
-  // |dependent_signal| as a dependency that is traced. We do not use
-  // WrapPersistent here as this would create a root for Oilpan and unified heap
-  // that leaks the |execution_context_| as there is no explicit event removing
-  // the root anymore.
-  abort_algorithms_.emplace_back(WTF::Bind(
-      &AbortSignal::SignalAbortWithParent, WrapWeakPersistent(dependent_signal),
-      WrapPersistent(script_state), WrapWeakPersistent(this)));
-  dependent_signals_.push_back(dependent_signal);
-}
-
-void AbortSignal::SignalAbortWithParent(ScriptState* script_state,
-                                        AbortSignal* parent_signal) {
-  SignalAbort(script_state, parent_signal->reason(script_state));
+  abort_algorithms_.push_back(
+      MakeGarbageCollected<OnceCallbackAlgorithm>(std::move(algorithm)));
 }
 
 void AbortSignal::SignalAbort(ScriptState* script_state) {
@@ -105,27 +129,29 @@ void AbortSignal::SignalAbort(ScriptState* script_state, ScriptValue reason) {
   if (aborted())
     return;
   abort_reason_ = reason;
-  for (base::OnceClosure& closure : abort_algorithms_) {
-    std::move(closure).Run();
+  for (Algorithm* algorithm : abort_algorithms_) {
+    algorithm->Run();
   }
   abort_algorithms_.clear();
-  dependent_signals_.clear();
   DispatchEvent(*Event::Create(event_type_names::kAbort));
 }
 
-void AbortSignal::Follow(ScriptState* script_state, AbortSignal* parentSignal) {
+void AbortSignal::Follow(ScriptState* script_state, AbortSignal* parent) {
   if (aborted())
     return;
-  if (parentSignal->aborted())
-    SignalAbort(script_state, parentSignal->reason(script_state));
+  if (parent->aborted()) {
+    SignalAbort(script_state, parent->reason(script_state));
+    return;
+  }
 
-  parentSignal->AddSignalAbortAlgorithm(script_state, this);
+  parent->AddAlgorithm(
+      MakeGarbageCollected<FollowAlgorithm>(script_state, parent, this));
 }
 
 void AbortSignal::Trace(Visitor* visitor) const {
   visitor->Trace(abort_reason_);
   visitor->Trace(execution_context_);
-  visitor->Trace(dependent_signals_);
+  visitor->Trace(abort_algorithms_);
   EventTargetWithInlineData::Trace(visitor);
 }
 

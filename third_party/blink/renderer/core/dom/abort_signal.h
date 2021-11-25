@@ -23,6 +23,20 @@ class CORE_EXPORT AbortSignal : public EventTargetWithInlineData {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
+  // The base class for "abort algorithm" defined at
+  // https://dom.spec.whatwg.org/#abortsignal-abort-algorithms. This is
+  // semantically equivalent to base::OnceClosure but is GarbageCollected.
+  class Algorithm : public GarbageCollected<Algorithm> {
+   public:
+    virtual ~Algorithm() = default;
+
+    // Called when the associated signal is aborted. This is called at most
+    // once.
+    virtual void Run() = 0;
+
+    virtual void Trace(Visitor* visitor) const {}
+  };
+
   explicit AbortSignal(ExecutionContext*);
   ~AbortSignal() override;
 
@@ -40,9 +54,11 @@ class CORE_EXPORT AbortSignal : public EventTargetWithInlineData {
 
   // The "add an algorithm" algorithm from the standard:
   // https://dom.spec.whatwg.org/#abortsignal-add for dependent features to call
-  // to be notified when abort has been signalled. Callers should pass a
-  // OnceClosure holding a weak pointer, unless the object needs to receive a
-  // cancellation signal even after it otherwise would have been destroyed.
+  // to be notified when abort has been signalled.
+  void AddAlgorithm(Algorithm* algorithm);
+
+  // Same with above but with a base::OnceClosure. Use this only when you're
+  // sure the objects attached to the callback don't form a reference cycle.
   void AddAlgorithm(base::OnceClosure algorithm);
 
   //
@@ -63,24 +79,20 @@ class CORE_EXPORT AbortSignal : public EventTargetWithInlineData {
   // The "follow" algorithm from the standard:
   // https://dom.spec.whatwg.org/#abortsignal-follow
   // |this| is the followingSignal described in the standard.
-  void Follow(ScriptState*, AbortSignal* parentSignal);
+  void Follow(ScriptState*, AbortSignal* parent);
 
   virtual bool IsTaskSignal() const { return false; }
 
   void Trace(Visitor*) const override;
 
  private:
-  void SignalAbortWithParent(ScriptState*, AbortSignal* parent_signal);
-  void AddSignalAbortAlgorithm(ScriptState*, AbortSignal* dependent_signal);
-
   // https://dom.spec.whatwg.org/#abortsignal-abort-reason
   // There is one difference from the spec. The value is empty instead of
   // undefined when this signal is not aborted. This is because
   // ScriptValue::IsUndefined requires callers to enter a V8 context whereas
   // ScriptValue::IsEmpty does not.
   ScriptValue abort_reason_;
-  Vector<base::OnceClosure> abort_algorithms_;
-  HeapVector<Member<AbortSignal>> dependent_signals_;
+  HeapVector<Member<Algorithm>> abort_algorithms_;
   Member<ExecutionContext> execution_context_;
 };
 
