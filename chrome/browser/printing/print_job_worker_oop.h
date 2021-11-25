@@ -24,6 +24,10 @@ class PrintJobWorkerOop : public PrintJobWorker {
   ~PrintJobWorkerOop() override;
 
  protected:
+  // Local callback wrapper for Print Backend Service mojom call.  Virtual to
+  // support testing.
+  virtual void OnDidStartPrinting(mojom::ResultCode result);
+
   // `PrintJobWorker` overrides.
   void UpdatePrintSettings(base::Value new_settings,
                            SettingsCallback callback) override;

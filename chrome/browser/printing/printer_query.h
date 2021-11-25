@@ -21,6 +21,9 @@ namespace printing {
 
 class PrintJobWorker;
 
+using CreatePrintJobWorkerCallback = base::RepeatingCallback<std::unique_ptr<
+    PrintJobWorker>(int render_process_id, int render_frame_id)>;
+
 // Query the printer for settings.
 class PrinterQuery {
  public:
@@ -84,6 +87,10 @@ class PrinterQuery {
 
   // Posts the given task to be run.
   bool PostTask(const base::Location& from_here, base::OnceClosure task);
+
+  // Provide an override for generating worker threads in tests.
+  static void SetCreatePrintJobWorkerCallbackForTest(
+      CreatePrintJobWorkerCallback* callback);
 
  protected:
   // Virtual so that tests can override.

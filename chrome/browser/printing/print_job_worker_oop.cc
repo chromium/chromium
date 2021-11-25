@@ -19,6 +19,10 @@ PrintJobWorkerOop::PrintJobWorkerOop(int render_process_id, int render_frame_id)
 
 PrintJobWorkerOop::~PrintJobWorkerOop() = default;
 
+void PrintJobWorkerOop::OnDidStartPrinting(mojom::ResultCode result) {
+  // TODO(crbug.com/809738)  Temporary placeholder for testing preparation.
+}
+
 void PrintJobWorkerOop::UpdatePrintSettings(base::Value new_settings,
                                             SettingsCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);

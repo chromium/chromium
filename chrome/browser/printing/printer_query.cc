@@ -28,8 +28,15 @@ namespace printing {
 
 namespace {
 
+CreatePrintJobWorkerCallback* g_create_print_job_worker_for_testing = nullptr;
+
 std::unique_ptr<PrintJobWorker> CreateWorker(int render_process_id,
                                              int render_frame_id) {
+  if (g_create_print_job_worker_for_testing) {
+    return g_create_print_job_worker_for_testing->Run(render_process_id,
+                                                      render_frame_id);
+  }
+
 #if BUILDFLAG(ENABLE_OOP_PRINTING)
   if (features::kEnableOopPrintDriversJobPrint.Get()) {
     return std::make_unique<PrintJobWorkerOop>(render_process_id,
@@ -190,6 +197,12 @@ bool PrinterQuery::PostTask(const base::Location& from_here,
                             base::OnceClosure task) {
   return content::GetIOThreadTaskRunner({})->PostTask(from_here,
                                                       std::move(task));
+}
+
+// static
+void PrinterQuery::SetCreatePrintJobWorkerCallbackForTest(
+    CreatePrintJobWorkerCallback* callback) {
+  g_create_print_job_worker_for_testing = callback;
 }
 
 bool PrinterQuery::is_valid() const {

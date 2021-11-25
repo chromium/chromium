@@ -23,6 +23,7 @@
 #include "chrome/browser/printing/print_backend_service_manager.h"
 #include "chrome/browser/printing/print_backend_service_test_impl.h"
 #include "chrome/browser/printing/print_job_manager.h"
+#include "chrome/browser/printing/print_job_worker_oop.h"
 #include "chrome/browser/printing/print_view_manager.h"
 #include "chrome/browser/printing/print_view_manager_common.h"
 #include "chrome/browser/printing/printer_query.h"
@@ -72,6 +73,27 @@
 #include "third_party/blink/public/common/scheduler/web_scheduler_tracked_feature.h"
 
 namespace printing {
+
+using ErrorCheckCallback =
+    base::RepeatingCallback<void(mojom::ResultCode result)>;
+using OnDidStartPrintingCallback =
+    base::RepeatingCallback<void(mojom::ResultCode result)>;
+
+// Overriding callbacks for `TestPrintJobWorker` is broken into the following
+// steps:
+//   1.  Error case processing.  Call `error_check_callback` to reset any
+//       triggers that were primed to cause errors in the testing context.
+//   2.  Run the base class callback for normal handling.  If there was an
+//       access-denied error then this can lead to a retry.  The retry has a
+//       chance to succeed since error triggers were removed.
+//   3.  Exercise the associated test callback (e.g.,
+//       `did_start_printing_callback` when in `OnDidStartPrinting()`) to note
+//       the callback was observed and completed.  This ensures all base class
+//       processing was done before possibly quitting the test run loop.
+struct TestPrintCallbacks {
+  ErrorCheckCallback error_check_callback;
+  OnDidStartPrintingCallback did_start_printing_callback;
+};
 
 namespace {
 
@@ -1515,6 +1537,29 @@ IN_PROC_BROWSER_TEST_F(PrintPrerenderBrowserTest,
 // TODO(crbug.com/822505)  ChromeOS uses different testing setup that isn't
 // hooked up to make use of `TestPrintingContext` yet.
 #if !defined(OS_CHROMEOS)
+
+class TestPrintJobWorker : public PrintJobWorkerOop {
+ public:
+  TestPrintJobWorker(int render_process_id,
+                     int render_frame_id,
+                     TestPrintCallbacks* callbacks)
+      : PrintJobWorkerOop(render_process_id, render_frame_id),
+        callbacks_(callbacks) {}
+  TestPrintJobWorker(const TestPrintJobWorker&) = delete;
+  TestPrintJobWorker& operator=(const TestPrintJobWorker&) = delete;
+  ~TestPrintJobWorker() override = default;
+
+ private:
+  void OnDidStartPrinting(mojom::ResultCode result) override {
+    DVLOG(1) << "Observed: start printing of document";
+    callbacks_->error_check_callback.Run(result);
+    PrintJobWorkerOop::OnDidStartPrinting(result);
+    callbacks_->did_start_printing_callback.Run(result);
+  }
+
+  TestPrintCallbacks* callbacks_;
+};
+
 class PrintBackendPrintBrowserTestBase : public PrintBrowserTest {
  public:
   PrintBackendPrintBrowserTestBase() = default;
@@ -1527,6 +1572,21 @@ class PrintBackendPrintBrowserTestBase : public PrintBrowserTest {
       feature_list_.InitAndEnableFeatureWithParameters(
           features::kEnableOopPrintDrivers,
           {{features::kEnableOopPrintDriversJobPrint.name, "true"}});
+
+      // Safe to use `base::Unretained(this)` since this testing class
+      // necessarily must outlive all interactions from the tests which will
+      // run through `TestPrintJobWorker`, the user of these callbacks.
+      test_print_callbacks_.error_check_callback =
+          base::BindRepeating(&PrintBackendPrintBrowserTestBase::ErrorCheck,
+                              base::Unretained(this));
+      test_print_callbacks_.did_start_printing_callback = base::BindRepeating(
+          &PrintBackendPrintBrowserTestBase::OnDidStartPrinting,
+          base::Unretained(this));
+      test_create_print_job_worker_callback_ = base::BindRepeating(
+          &PrintBackendPrintBrowserTestBase::CreatePrintJobWorker,
+          base::Unretained(this));
+      PrinterQuery::SetCreatePrintJobWorkerCallbackForTest(
+          &test_create_print_job_worker_callback_);
     }
 
     test_backend_ = base::MakeRefCounted<TestPrintBackend>();
@@ -1549,6 +1609,7 @@ class PrintBackendPrintBrowserTestBase : public PrintBrowserTest {
     PrintingContext::SetPrintingContextFactoryForTest(/*factory=*/nullptr);
     PrintBackendServiceManager::ResetForTesting();
     PrintBackend::SetPrintBackendForTesting(/*print_backend=*/nullptr);
+    PrinterQuery::SetCreatePrintJobWorkerCallbackForTest(/*callback=*/nullptr);
   }
 
   void AddPrinter(const std::string& printer_name) {
@@ -1598,12 +1659,37 @@ class PrintBackendPrintBrowserTestBase : public PrintBrowserTest {
     std::string printer_name_;
   };
 
+  std::unique_ptr<PrintJobWorker> CreatePrintJobWorker(int render_process_id,
+                                                       int render_frame_id) {
+    return std::make_unique<TestPrintJobWorker>(
+        render_process_id, render_frame_id, &test_print_callbacks_);
+  }
+
+  void ErrorCheck(mojom::ResultCode result) {
+    // Interested to reset any trigger for causing access-denied errors, so
+    // that retry logic has a chance to be exercised and succeed.
+    if (result == mojom::ResultCode::kAccessDenied)
+      ResetForNoAccessDeniedErrors();
+  }
+
+  void OnDidStartPrinting(mojom::ResultCode result) {
+    start_printing_result_ = result;
+    CheckForQuit();
+  }
+
+  void ResetForNoAccessDeniedErrors() {
+    // TODO(crbug.com/809738)  Fill in testing reset for access denied errors.
+  }
+
   base::test::ScopedFeatureList feature_list_;
   scoped_refptr<TestPrintBackend> test_backend_;
   TestPrintingContextDelegate test_printing_context_delegate_;
   PrintBackendPrintingContextFactoryForTest test_printing_context_factory_;
+  TestPrintCallbacks test_print_callbacks_;
+  CreatePrintJobWorkerCallback test_create_print_job_worker_callback_;
   mojo::Remote<mojom::PrintBackendService> test_remote_;
   std::unique_ptr<PrintBackendServiceTestImpl> print_backend_service_;
+  mojom::ResultCode start_printing_result_ = mojom::ResultCode::kFailed;
 };
 
 class PrintBackendPrintBrowserTest : public PrintBackendPrintBrowserTestBase,
