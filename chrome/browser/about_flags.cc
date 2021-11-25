@@ -641,12 +641,6 @@ const FeatureEntry::FeatureVariation kCloseTabSuggestionsStaleVariations[] = {
      base::size(kCloseTabSuggestionsTimeSiteEngagement), nullptr},
 };
 
-const FeatureEntry::FeatureParam kWebNoteStylizeRandomizeParam[] = {
-    {"randomize_order", "true"}};
-const FeatureEntry::FeatureVariation kWebNoteStylizeVariations[] = {
-    {"With Randomized Order", kWebNoteStylizeRandomizeParam,
-     base::size(kWebNoteStylizeRandomizeParam), nullptr}};
-
 const FeatureEntry::FeatureParam kLongScreenshot_AutoscrollDragSlow[] = {
     {"autoscroll", "1"}};
 const FeatureEntry::FeatureParam kLongScreenshot_AutoscrollDragQuick[] = {
@@ -3470,11 +3464,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kPersistShareHubOnAppSwitchName,
      flag_descriptions::kPersistShareHubOnAppSwitchDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(share::kPersistShareHubOnAppSwitch)},
-    {"webnotes-stylize", flag_descriptions::kWebNotesStylizeName,
-     flag_descriptions::kWebNotesStylizeDescription, kOsAndroid,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(content_creation::kWebNotesStylizeEnabled,
-                                    kWebNoteStylizeVariations,
-                                    "WebNotesStylize")},
     {"sharing-hub-link-toggle", flag_descriptions::kSharingHubLinkToggleName,
      flag_descriptions::kSharingHubLinkToggleDescription, kOsAndroid,
      FEATURE_WITH_PARAMS_VALUE_TYPE(chrome::android::kSharingHubLinkToggle,

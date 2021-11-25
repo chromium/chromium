@@ -5636,11 +5636,6 @@
     "expiry_milestone": 97
   },
   {
-    "name": "webnotes-stylize",
-    "owners": [ "gayane", "seblalancette"],
-    "expiry_milestone": 99
-  },
-  {
     "name": "webpage-alternative-text-zoom",
     "owners": [ "rkgibson@google.com", "bling-flags@google.com" ],
     "expiry_milestone": 91
