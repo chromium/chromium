@@ -877,6 +877,15 @@ std::vector<int64_t> GetLocalDiskSpaces(
 
 }  // namespace
 
+FileManagerPrivateInternalGetDisallowedTransfersFunction::
+    FileManagerPrivateInternalGetDisallowedTransfersFunction() = default;
+
+ExtensionFunction::ResponseAction
+FileManagerPrivateInternalGetDisallowedTransfersFunction::Run() {
+  // TODO(crbug.com/1261761): Add implementation.
+  return RespondNow(Error("NOTIMPLEMENTED"));
+}
+
 FileManagerPrivateInternalStartCopyFunction::
     FileManagerPrivateInternalStartCopyFunction() = default;
 

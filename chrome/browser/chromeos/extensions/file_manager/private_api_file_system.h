@@ -264,6 +264,28 @@ class FileManagerPrivateRenameVolumeFunction : public LoggedExtensionFunction {
   ResponseAction Run() override;
 };
 
+// Implements the chrome.fileManagerPrivate.getDisallowedTransfers method.
+class FileManagerPrivateInternalGetDisallowedTransfersFunction
+    : public LoggedExtensionFunction {
+ public:
+  FileManagerPrivateInternalGetDisallowedTransfersFunction();
+
+  DECLARE_EXTENSION_FUNCTION(
+      "fileManagerPrivateInternal.getDisallowedTransfers",
+      FILEMANAGERPRIVATEINTERNAL_GETDISALLOWEDTRANSFERS)
+
+ protected:
+  ~FileManagerPrivateInternalGetDisallowedTransfersFunction() override =
+      default;
+
+  // ExtensionFunction overrides.
+  ResponseAction Run() override;
+
+ private:
+  storage::FileSystemURL source_url_;
+  storage::FileSystemURL destination_url_;
+};
+
 // Implements the chrome.fileManagerPrivate.startCopy method.
 class FileManagerPrivateInternalStartCopyFunction
     : public LoggedExtensionFunction {

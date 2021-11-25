@@ -1014,6 +1014,10 @@ callback AddMountCallback = void(DOMString sourcePath);
 callback GetVolumeMetadataListCallback =
     void(VolumeMetadata[] volumeMetadataList);
 
+// |disallowedEntries| A list of files not allowed to be transfered.
+callback GetDisallowedTransfersCallback =
+    void([instanceOf=Entry] object[] disallowedEntries);
+
 // |copyId| ID of the copy task. Can be used to identify the progress, and to
 // cancel the task.
 callback StartCopyCallback = void(long copyId);
@@ -1274,6 +1278,16 @@ interface Functions {
   // Get the list of mounted volumes.
   // |callback|
   static void getVolumeMetadataList(GetVolumeMetadataListCallback callback);
+
+  // Returns the list of files not allowed to be transfered.
+  // |entires| List of the source entries to be transfered.
+  // |destinationEntry| Entry for the destination (parent) directory.
+  // |callback| Result callback.
+  [nocompile]
+  static void GetDisallowedTransfers(
+      [instanceOf=Entry] object[] entires,
+      [instanceOf=DirectoryEntry] object destinationEntry,
+      GetDisallowedTransfersCallback callback);
 
   // Starts to copy an entry. If the source is a directory, the copy is done
   // recursively.

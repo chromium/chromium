@@ -216,6 +216,17 @@ apiBridge.registerCustomHook(function(bindingsAPI) {
     fileManagerPrivateInternal.getDownloadUrl(url, callback);
   });
 
+  apiFunctions.setHandleRequest(
+      'getDisallowedTransfers', function(entries, destinationEntry, callback) {
+        var sourceUrls = entries.map(getEntryURL);
+        var destinationUrl = getEntryURL(destinationEntry);
+        fileManagerPrivateInternal.getDisallowedTransfers(
+            sourceUrls, destinationUrl,
+            callback(entryDescriptions.map(function(description) {
+              return GetExternalFileEntry(description);
+            })));
+      });
+
   apiFunctions.setHandleRequest('startCopy', function(
         entry, parentEntry, newName, callback) {
     var url = getEntryURL(entry);

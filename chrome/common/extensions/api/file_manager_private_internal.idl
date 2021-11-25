@@ -33,6 +33,8 @@ namespace fileManagerPrivateInternal {
   callback GetFileTasksCallback = void(fileManagerPrivate.FileTask[] tasks);
   callback GetUrlCallback = void(DOMString url);
   callback GetUrlCallback = void(DOMString url);
+  callback GetDisallowedTransfersCallback =
+      void([instanceOf=Entry] object[] entries);
   callback StartCopyCallback = void(long copyId);
   callback ZipSelectionCallback = void(long zipId, double totalBytes);
   callback ValidatePathNameLengthCallback = void(boolean result);
@@ -89,6 +91,9 @@ namespace fileManagerPrivateInternal {
     static void getFileTasks(DOMString[] urls,
                              GetFileTasksCallback callback);
     static void getDownloadUrl(DOMString url, GetUrlCallback callback);
+    static void GetDisallowedTransfers([instanceOf=Entry] object[] entires,
+                            [instanceOf=DirectoryEntry] object destinationEntry,
+                            GetDisallowedTransfersCallback callback);
     static void startCopy(DOMString url,
                           DOMString parentUrl,
                           DOMString newName,
