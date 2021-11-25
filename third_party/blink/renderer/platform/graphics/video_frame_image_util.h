@@ -102,6 +102,10 @@ PLATFORM_EXPORT void DrawVideoFrameIntoCanvas(
     cc::PaintFlags& flags,
     bool ignore_video_transformation = false);
 
+// Extract a RasterContextProvider from the current SharedGpuContext.
+PLATFORM_EXPORT scoped_refptr<viz::RasterContextProvider>
+GetRasterContextProvider();
+
 // Creates a CanvasResourceProvider which is appropriate for drawing VideoFrame
 // objects into. Some callers to CreateImageFromVideoFrame() may choose to cache
 // their resource providers. If |raster_context_provider| is null a software
