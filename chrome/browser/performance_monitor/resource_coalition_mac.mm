@@ -14,6 +14,8 @@
 #include "base/process/process_handle.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/time/time.h"
+#include "components/power_metrics/energy_impact_mac.h"
+#include "components/power_metrics/mach_time_mac.h"
 #include "components/power_metrics/resource_coalition_mac.h"
 
 namespace performance_monitor {
@@ -112,18 +114,6 @@ absl::optional<uint64_t> GetCurrentCoalitionId(
   return cid;
 }
 
-NSDictionary* MaybeGetDictionaryFromPath(const base::FilePath& path) {
-  // The folder where the energy coefficient plist files are stored.
-  NSString* plist_path_string = base::SysUTF8ToNSString(path.value().c_str());
-  return [NSDictionary dictionaryWithContentsOfFile:plist_path_string];
-}
-
-double GetNamedCoefficientOrZero(NSDictionary* dict, NSString* key) {
-  NSObject* value = [dict objectForKey:key];
-  NSNumber* num = base::mac::ObjCCast<NSNumber>(value);
-  return [num floatValue];
-}
-
 }  // namespace
 
 ResourceCoalition::DataRate::DataRate() = default;
@@ -132,18 +122,16 @@ ResourceCoalition::DataRate& ResourceCoalition::DataRate::operator=(
     const DataRate& other) = default;
 ResourceCoalition::DataRate::~DataRate() = default;
 
-ResourceCoalition::ResourceCoalition() {
+ResourceCoalition::ResourceCoalition()
+    : mach_timebase_(power_metrics::GetSystemMachTimeBase()),
+      energy_impact_coefficients_(
+          power_metrics::ReadCoefficientsForCurrentMachineOrDefault()) {
   CoalitionAvailability availability_details;
   SetCoalitionId(GetCurrentCoalitionId(&availability_details));
   base::UmaHistogramEnumeration(kCoalitionAvailabilityHistogram,
                                 availability_details);
-
-  // Initialize the machine timebase.
-  kern_return_t kr = mach_timebase_info(&mach_timebase_);
-  DCHECK_EQ(kr, KERN_SUCCESS);
-  DCHECK(mach_timebase_.numer);
-  DCHECK(mach_timebase_.denom);
 }
+
 ResourceCoalition::~ResourceCoalition() = default;
 
 absl::optional<ResourceCoalition::DataRate> ResourceCoalition::GetDataRate() {
@@ -173,172 +161,15 @@ void ResourceCoalition::SetCoalitionIDToCurrentProcessIdForTesting() {
       power_metrics::GetProcessCoalitionId(base::GetCurrentProcId()));
 }
 
-// static
-absl::optional<ResourceCoalition::EnergyImpactCoefficients>
-ResourceCoalition::ReadEnergyImpactCoefficientsFromPath(
-    const base::FilePath& plist_file) {
-  @autoreleasepool {
-    NSDictionary* dict = MaybeGetDictionaryFromPath(plist_file);
-    if (!dict)
-      return absl::nullopt;
-
-    // We want the energy_constants sub-dictionary.
-    NSDictionary* energy_constants = [dict objectForKey:@"energy_constants"];
-    if (!energy_constants)
-      return absl::nullopt;
-
-    EnergyImpactCoefficients coefficients{};
-    coefficients.kcpu_time =
-        GetNamedCoefficientOrZero(energy_constants, @"kcpu_time");
-    coefficients.kcpu_wakeups =
-        GetNamedCoefficientOrZero(energy_constants, @"kcpu_wakeups");
-
-    coefficients.kqos_default =
-        GetNamedCoefficientOrZero(energy_constants, @"kqos_default");
-    coefficients.kqos_background =
-        GetNamedCoefficientOrZero(energy_constants, @"kqos_background");
-    coefficients.kqos_utility =
-        GetNamedCoefficientOrZero(energy_constants, @"kqos_utility");
-    coefficients.kqos_legacy =
-        GetNamedCoefficientOrZero(energy_constants, @"kqos_legacy");
-    coefficients.kqos_user_initiated =
-        GetNamedCoefficientOrZero(energy_constants, @"kqos_user_initiated");
-    coefficients.kqos_user_interactive =
-        GetNamedCoefficientOrZero(energy_constants, @"kqos_user_interactive");
-
-    coefficients.kdiskio_bytesread =
-        GetNamedCoefficientOrZero(energy_constants, @"kdiskio_bytesread");
-    coefficients.kdiskio_byteswritten =
-        GetNamedCoefficientOrZero(energy_constants, @"kdiskio_byteswritten");
-
-    coefficients.kgpu_time =
-        GetNamedCoefficientOrZero(energy_constants, @"kgpu_time");
-
-    coefficients.knetwork_recv_bytes =
-        GetNamedCoefficientOrZero(energy_constants, @"knetwork_recv_bytes");
-    coefficients.knetwork_recv_packets =
-        GetNamedCoefficientOrZero(energy_constants, @"knetwork_recv_packets");
-    coefficients.knetwork_sent_bytes =
-        GetNamedCoefficientOrZero(energy_constants, @"knetwork_sent_bytes");
-    coefficients.knetwork_sent_packets =
-        GetNamedCoefficientOrZero(energy_constants, @"knetwork_sent_packets");
-
-    return coefficients;
-  }
-}
-
-// static
-absl::optional<ResourceCoalition::EnergyImpactCoefficients>
-ResourceCoalition::ReadEnergyImpactOrDefaultForBoardId(
-    const base::FilePath& directory,
-    const std::string& board_id) {
-  auto coefficients = ReadEnergyImpactCoefficientsFromPath(
-      directory.Append(board_id).AddExtension(FILE_PATH_LITERAL("plist")));
-  if (coefficients.has_value())
-    return coefficients;
-
-  return ReadEnergyImpactCoefficientsFromPath(
-      directory.Append(FILE_PATH_LITERAL("default.plist")));
-}
-
-double ResourceCoalition::ComputeEnergyImpactForCoalitionUsage(
-    const EnergyImpactCoefficients& coefficients,
-    const coalition_resource_usage& data_sample) {
-  // TODO(https://crbug.com/1249536): The below coefficients are not used for
-  //    now. Their units are unknown, and in the case of the network-related
-  //    coefficients, it's not clear how to sample the data.
-  // coefficients.kdiskio_bytesread;
-  // coefficients.kdiskio_byteswritten;
-  // coefficients.knetwork_recv_bytes;
-  // coefficients.knetwork_recv_packets;
-  // coefficients.knetwork_sent_bytes;
-  // coefficients.knetwork_sent_packets;
-
-  // The cumulative CPU usage in |data_sample| is in units of ns, and
-  // |cpu_time_equivalent_ns| is computed in CPU ns up to the end of this
-  // function, where it's converted to units of EnergyImpact.
-  double cpu_time_equivalent_ns = 0.0;
-
-  // The kcpu_wakeups coefficient on disk is in seconds, but our intermediate
-  // result is in ns, so convert to ns on the fly.
-  cpu_time_equivalent_ns += coefficients.kcpu_wakeups *
-                            base::Time::kNanosecondsPerSecond *
-                            data_sample.platform_idle_wakeups;
-
-  // Presumably the kgpu_time coefficient has suitable units for the conversion
-  // of GPU time energy to CPU time energy. There is a fairly wide spread on
-  // this constant seen in /usr/share/pmenergy. On macOS 11.5.2 the spread is
-  // from 0 through 5.9.
-  cpu_time_equivalent_ns +=
-      coefficients.kgpu_time * MachTimeToNs(data_sample.gpu_time);
-
-  cpu_time_equivalent_ns +=
-      coefficients.kqos_background *
-      MachTimeToNs(data_sample.cpu_time_eqos[THREAD_QOS_BACKGROUND]);
-  cpu_time_equivalent_ns +=
-      coefficients.kqos_default *
-      MachTimeToNs(data_sample.cpu_time_eqos[THREAD_QOS_DEFAULT]);
-  cpu_time_equivalent_ns +=
-      coefficients.kqos_legacy *
-      MachTimeToNs(data_sample.cpu_time_eqos[THREAD_QOS_LEGACY]);
-  cpu_time_equivalent_ns +=
-      coefficients.kqos_user_initiated *
-      MachTimeToNs(data_sample.cpu_time_eqos[THREAD_QOS_USER_INITIATED]);
-  cpu_time_equivalent_ns +=
-      coefficients.kqos_user_interactive *
-      MachTimeToNs(data_sample.cpu_time_eqos[THREAD_QOS_USER_INTERACTIVE]);
-  cpu_time_equivalent_ns +=
-      coefficients.kqos_utility *
-      MachTimeToNs(data_sample.cpu_time_eqos[THREAD_QOS_UTILITY]);
-
-  // The conversion ratio for CPU time/EnergyImpact is ns/10ms
-  constexpr double kNsToEI = 1E-7;
-  return cpu_time_equivalent_ns * kNsToEI;
-}
-
-// static
-absl::optional<std::string> ResourceCoalition::MaybeGetBoardIdForThisMachine() {
-  base::mac::ScopedIOObject<io_service_t> platform_expert(
-      IOServiceGetMatchingService(kIOMasterPortDefault,
-                                  IOServiceMatching("IOPlatformExpertDevice")));
-  if (!platform_expert)
-    return absl::nullopt;
-
-  // This is what libpmenergy is observed to do in order to retrieve the correct
-  // coefficients file for the local computer.
-  base::ScopedCFTypeRef<CFDataRef> board_id_data(
-      base::mac::CFCast<CFDataRef>(IORegistryEntryCreateCFProperty(
-          platform_expert, CFSTR("board-id"), kCFAllocatorDefault, 0)));
-
-  if (!board_id_data)
-    return absl::nullopt;
-
-  return reinterpret_cast<const char*>(CFDataGetBytePtr(board_id_data));
-}
-
 void ResourceCoalition::SetEnergyImpactCoefficientsForTesting(
-    const absl::optional<EnergyImpactCoefficients>& coefficients) {
-  energy_impact_coefficients_initialized_ = true;
+    const absl::optional<power_metrics::EnergyImpactCoefficients>&
+        coefficients) {
   energy_impact_coefficients_ = coefficients;
 }
 
 void ResourceCoalition::SetMachTimebaseForTesting(
     const mach_timebase_info_data_t& mach_timebase) {
   mach_timebase_ = mach_timebase;
-}
-
-void ResourceCoalition::EnsureEnergyImpactCoefficientsIfAvailable() {
-  if (energy_impact_coefficients_initialized_)
-    return;
-  energy_impact_coefficients_initialized_ = true;
-
-  auto board_id = MaybeGetBoardIdForThisMachine();
-  if (!board_id.has_value())
-    return;
-
-  energy_impact_coefficients_ = ReadEnergyImpactOrDefaultForBoardId(
-      base::FilePath(FILE_PATH_LITERAL("/usr/share/pmenergy")),
-      board_id.value());
 }
 
 void ResourceCoalition::SetCoalitionId(absl::optional<uint64_t> coalition_id) {
@@ -350,22 +181,11 @@ void ResourceCoalition::SetCoalitionId(absl::optional<uint64_t> coalition_id) {
   }
 }
 
-uint64_t ResourceCoalition::MachTimeToNs(uint64_t mach_time) {
-  if (mach_timebase_.numer == mach_timebase_.denom)
-    return mach_time;
-
-  CHECK(
-      !__builtin_umulll_overflow(mach_time, mach_timebase_.numer, &mach_time));
-  return mach_time / mach_timebase_.denom;
-}
-
 absl::optional<ResourceCoalition::DataRate>
 ResourceCoalition::GetCoalitionDataDiff(
     const coalition_resource_usage& new_sample,
     const coalition_resource_usage& old_sample,
     base::TimeDelta interval_length) {
-  DCHECK(energy_impact_coefficients_initialized_);
-
   bool new_samples_exceeds_or_equals_old_ones =
       std::tie(new_sample.cpu_time, new_sample.interrupt_wakeups,
                new_sample.platform_idle_wakeups, new_sample.bytesread,
@@ -402,7 +222,8 @@ ResourceCoalition::GetCoalitionDataDiff(
     // Compute the delta in s, being careful to avoid truncation due to integral
     // division.
     double delta_sample_s =
-        self->MachTimeToNs(new_sample - old_sample) /
+        power_metrics::MachTimeToNs(new_sample - old_sample,
+                                    self->mach_timebase_) /
         static_cast<double>(base::Time::kNanosecondsPerSecond);
     return delta_sample_s / interval_length.InSecondsF();
   };
@@ -427,12 +248,11 @@ ResourceCoalition::GetCoalitionDataDiff(
   }
 
   if (energy_impact_coefficients_.has_value()) {
-    const EnergyImpactCoefficients& coefficients =
-        energy_impact_coefficients_.value();
-
     ret.energy_impact_per_second =
-        (ComputeEnergyImpactForCoalitionUsage(coefficients, new_sample) -
-         ComputeEnergyImpactForCoalitionUsage(coefficients, old_sample)) /
+        (power_metrics::ComputeEnergyImpactForResourceUsage(
+             new_sample, energy_impact_coefficients_.value(), mach_timebase_) -
+         power_metrics::ComputeEnergyImpactForResourceUsage(
+             old_sample, energy_impact_coefficients_.value(), mach_timebase_)) /
         interval_length.InSecondsF();
   } else {
     // TODO(siggi): Use something else here as sentinel?
@@ -445,8 +265,6 @@ ResourceCoalition::GetCoalitionDataDiff(
 absl::optional<ResourceCoalition::DataRate> ResourceCoalition::GetDataRateImpl(
     std::unique_ptr<coalition_resource_usage> new_data_sample,
     base::TimeTicks now) {
-  // Make sure the EI coefficients are loaded, if possible.
-  EnsureEnergyImpactCoefficientsIfAvailable();
   auto ret =
       GetCoalitionDataDiff(*new_data_sample.get(), *last_data_sample_.get(),
                            now - last_data_sample_timestamp_);

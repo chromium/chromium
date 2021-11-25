@@ -21,6 +21,7 @@
 #include "chrome/common/chrome_paths.h"
 #include "components/power_metrics/resource_coalition_internal_types_mac.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace performance_monitor {
 
@@ -30,6 +31,8 @@ constexpr mach_timebase_info_data_t kIntelTimebase = {1, 1};
 
 // A sample (not definitive) timebase for M1.
 constexpr mach_timebase_info_data_t kM1Timebase = {125, 3};
+
+using EnergyImpactCoefficients = power_metrics::EnergyImpactCoefficients;
 
 // Initializes to no EI constants and the Intel timebase.
 class TestResourceCoalition : public ResourceCoalition {
@@ -41,16 +44,9 @@ class TestResourceCoalition : public ResourceCoalition {
   // Expose as public for testing.
   using ResourceCoalition::SetCoalitionIDToCurrentProcessIdForTesting;
   using ResourceCoalition::GetDataRateFromFakeDataForTesting;
-  using ResourceCoalition::EnergyImpactCoefficients;
-  using ResourceCoalition::ReadEnergyImpactCoefficientsFromPath;
-  using ResourceCoalition::ComputeEnergyImpactForCoalitionUsage;
-  using ResourceCoalition::ReadEnergyImpactOrDefaultForBoardId;
-  using ResourceCoalition::MaybeGetBoardIdForThisMachine;
   using ResourceCoalition::SetEnergyImpactCoefficientsForTesting;
   using ResourceCoalition::SetMachTimebaseForTesting;
 };
-using EnergyImpactCoefficients =
-    TestResourceCoalition::EnergyImpactCoefficients;
 
 EnergyImpactCoefficients GetEnergyImpactTestCoefficients() {
   constexpr EnergyImpactCoefficients coefficients{
@@ -420,221 +416,6 @@ TEST(ResourceCoalitionTests, Overflows) {
       coalition, &coalition_resource_usage::fs_metadata_writes));
   EXPECT_FALSE(DataOverflowInvalidatesDiff(
       coalition, &coalition_resource_usage::pm_writes));
-}
-
-base::FilePath GetTestDataPath() {
-  base::FilePath test_path;
-  EXPECT_TRUE(base::PathService::Get(chrome::DIR_TEST_DATA, &test_path));
-  return test_path.Append(FILE_PATH_LITERAL("performance_monitor"));
-}
-
-TEST(ResourceCoalitionTests, ReadEnergyImpactCoefficientsFromPath) {
-  base::FilePath test_path = GetTestDataPath();
-
-  // Validate that attempting to read from a non-existent file fails.
-  auto coefficients =
-      TestResourceCoalition::ReadEnergyImpactCoefficientsFromPath(
-          test_path.Append(FILE_PATH_LITERAL("does-not-exist.plist")));
-  EXPECT_FALSE(coefficients.has_value());
-
-  // Validate that a well-formed file returns the expected coefficients.
-  coefficients = TestResourceCoalition::ReadEnergyImpactCoefficientsFromPath(
-      test_path.Append(FILE_PATH_LITERAL("test.plist")));
-  ASSERT_TRUE(coefficients.has_value());
-
-  const EnergyImpactCoefficients& value = coefficients.value();
-  EXPECT_FLOAT_EQ(value.kcpu_time, 1.23);
-  EXPECT_FLOAT_EQ(value.kdiskio_bytesread, 7.89);
-  EXPECT_FLOAT_EQ(value.kdiskio_byteswritten, 1.2345);
-  EXPECT_FLOAT_EQ(value.kgpu_time, 6.789);
-  EXPECT_FLOAT_EQ(value.knetwork_recv_bytes, 12.3);
-  EXPECT_FLOAT_EQ(value.knetwork_recv_packets, 45.6);
-  EXPECT_FLOAT_EQ(value.knetwork_sent_bytes, 67.8);
-  EXPECT_FLOAT_EQ(value.knetwork_sent_packets, 89);
-  EXPECT_FLOAT_EQ(value.kqos_background, 8.9);
-  EXPECT_FLOAT_EQ(value.kqos_default, 6.78);
-  EXPECT_FLOAT_EQ(value.kqos_legacy, 5.678);
-  EXPECT_FLOAT_EQ(value.kqos_user_initiated, 9.012);
-  EXPECT_FLOAT_EQ(value.kqos_user_interactive, 3.456);
-  EXPECT_FLOAT_EQ(value.kqos_utility, 1.234);
-  EXPECT_FLOAT_EQ(value.kcpu_wakeups, 3.45);
-}
-
-coalition_resource_usage MakeResourceUsageWithQOS(int qos_level,
-                                                  base::TimeDelta cpu_time) {
-  coalition_resource_usage result{};
-  result.cpu_time_eqos_len = COALITION_NUM_THREAD_QOS_TYPES;
-  result.cpu_time_eqos[qos_level] = cpu_time.InNanoseconds();
-  return result;
-}
-
-TEST(ResourceCoalitionTests, ComputeEnergyImpactForCoalitionUsage_Individual) {
-  TestResourceCoalition coalition;
-  EXPECT_EQ(0.0, coalition.ComputeEnergyImpactForCoalitionUsage(
-                     EnergyImpactCoefficients(), coalition_resource_usage()));
-
-  // Test the coefficients and sample factors individually.
-  EXPECT_DOUBLE_EQ(
-      2.66, coalition.ComputeEnergyImpactForCoalitionUsage(
-                EnergyImpactCoefficients{
-                    .kcpu_wakeups = base::Microseconds(200).InSecondsF()},
-                coalition_resource_usage{.platform_idle_wakeups = 133}));
-
-  // Test 100 ms of CPU, which should come out to 8% of a CPU second with a
-  // background QOS discount of rate of 0.8.
-  EXPECT_DOUBLE_EQ(8.0, coalition.ComputeEnergyImpactForCoalitionUsage(
-                            EnergyImpactCoefficients{.kqos_background = 0.8},
-                            MakeResourceUsageWithQOS(THREAD_QOS_BACKGROUND,
-                                                     base::Milliseconds(100))));
-  EXPECT_DOUBLE_EQ(5.0, coalition.ComputeEnergyImpactForCoalitionUsage(
-                            EnergyImpactCoefficients{.kqos_default = 1.0},
-                            MakeResourceUsageWithQOS(THREAD_QOS_DEFAULT,
-                                                     base::Milliseconds(50))));
-  EXPECT_DOUBLE_EQ(10.0, coalition.ComputeEnergyImpactForCoalitionUsage(
-                             EnergyImpactCoefficients{.kqos_utility = 1.0},
-                             MakeResourceUsageWithQOS(
-                                 THREAD_QOS_UTILITY, base::Milliseconds(100))));
-  EXPECT_DOUBLE_EQ(1.0, coalition.ComputeEnergyImpactForCoalitionUsage(
-                            EnergyImpactCoefficients{.kqos_legacy = 1.0},
-                            MakeResourceUsageWithQOS(THREAD_QOS_LEGACY,
-                                                     base::Milliseconds(10))));
-  EXPECT_DOUBLE_EQ(1.0,
-                   coalition.ComputeEnergyImpactForCoalitionUsage(
-                       EnergyImpactCoefficients{.kqos_user_initiated = 1.0},
-                       MakeResourceUsageWithQOS(THREAD_QOS_USER_INITIATED,
-                                                base::Milliseconds(10))));
-  EXPECT_DOUBLE_EQ(1.0,
-                   coalition.ComputeEnergyImpactForCoalitionUsage(
-                       EnergyImpactCoefficients{.kqos_user_interactive = 1.0},
-                       MakeResourceUsageWithQOS(THREAD_QOS_USER_INTERACTIVE,
-                                                base::Milliseconds(10))));
-
-  EXPECT_DOUBLE_EQ(1.0,
-                   coalition.ComputeEnergyImpactForCoalitionUsage(
-                       EnergyImpactCoefficients{.kgpu_time = 2.5},
-                       coalition_resource_usage{
-                           .gpu_time = base::Milliseconds(4).InNanoseconds()}));
-}
-
-TEST(ResourceCoalitionTests, ComputeEnergyImpactForCoalitionUsage_Combined) {
-  // test that the coefficients and samples add up as expected.
-  EnergyImpactCoefficients coefficients{
-      .kcpu_wakeups = base::Microseconds(200).InSecondsF(),
-      .kqos_default = 1.0,
-      .kqos_background = 0.8,
-      .kqos_utility = 1.0,
-      .kqos_legacy = 1.0,
-      .kqos_user_initiated = 1.0,
-      .kqos_user_interactive = 1.0,
-      .kgpu_time = 2.5,
-  };
-  coalition_resource_usage sample{
-      .platform_idle_wakeups = 133,
-      .gpu_time =
-          NsScaleToTimebase(kM1Timebase, base::Milliseconds(4).InNanoseconds()),
-      .cpu_time_eqos_len = COALITION_NUM_THREAD_QOS_TYPES,
-  };
-  sample.cpu_time_eqos[THREAD_QOS_BACKGROUND] =
-      NsScaleToTimebase(kM1Timebase, base::Milliseconds(100).InNanoseconds());
-  sample.cpu_time_eqos[THREAD_QOS_DEFAULT] =
-      NsScaleToTimebase(kM1Timebase, base::Milliseconds(50).InNanoseconds());
-  sample.cpu_time_eqos[THREAD_QOS_UTILITY] =
-      NsScaleToTimebase(kM1Timebase, base::Milliseconds(100).InNanoseconds());
-  sample.cpu_time_eqos[THREAD_QOS_LEGACY] =
-      NsScaleToTimebase(kM1Timebase, base::Milliseconds(10).InNanoseconds());
-  sample.cpu_time_eqos[THREAD_QOS_USER_INITIATED] =
-      NsScaleToTimebase(kM1Timebase, base::Milliseconds(10).InNanoseconds());
-  sample.cpu_time_eqos[THREAD_QOS_USER_INTERACTIVE] =
-      NsScaleToTimebase(kM1Timebase, base::Milliseconds(10).InNanoseconds());
-
-  TestResourceCoalition coalition;
-  coalition.SetMachTimebaseForTesting(kM1Timebase);
-  EXPECT_DOUBLE_EQ(29.66, coalition.ComputeEnergyImpactForCoalitionUsage(
-                              coefficients, sample));
-}
-
-TEST(ResourceCoalitionTests, ComputeEnergyImpactForCoalitionUsage_Unused) {
-  // Test that the unused coefficients and sample factors contribute nothing.
-  EnergyImpactCoefficients coefficients{
-      .kdiskio_bytesread = 1000,
-      .kdiskio_byteswritten = 1000,
-      .knetwork_recv_bytes = 1000,
-      .knetwork_recv_packets = 1000,
-      .knetwork_sent_bytes = 1000,
-      .knetwork_sent_packets = 1000,
-  };
-  coalition_resource_usage sample{
-      .tasks_started = 1000,
-      .tasks_exited = 1000,
-      .time_nonempty = 1000,
-      .cpu_time = 1000,
-      .interrupt_wakeups = 1000,
-      .bytesread = 1000,
-      .byteswritten = 1000,
-      .cpu_time_billed_to_me = 1000,
-      .cpu_time_billed_to_others = 1000,
-      .energy = 1000,
-      .logical_immediate_writes = 1000,
-      .logical_deferred_writes = 1000,
-      .logical_invalidated_writes = 1000,
-      .logical_metadata_writes = 1000,
-      .logical_immediate_writes_to_external = 1000,
-      .logical_deferred_writes_to_external = 1000,
-      .logical_invalidated_writes_to_external = 1000,
-      .logical_metadata_writes_to_external = 1000,
-      .energy_billed_to_me = 1000,
-      .energy_billed_to_others = 1000,
-      .cpu_ptime = 1000,
-      .cpu_instructions = 1000,
-      .cpu_cycles = 1000,
-      .fs_metadata_writes = 1000,
-      .pm_writes = 1000,
-  };
-
-  TestResourceCoalition coalition;
-  EXPECT_EQ(
-      0, coalition.ComputeEnergyImpactForCoalitionUsage(coefficients, sample));
-}
-
-TEST(ResourceCoalitionTests, ReadEnergyImpactOrDefaultForBoardId_Exists) {
-  // This board-id should exist.
-  auto coefficients =
-      TestResourceCoalition::ReadEnergyImpactOrDefaultForBoardId(
-          GetTestDataPath(), "Mac-7BA5B2DFE22DDD8C");
-  ASSERT_TRUE(coefficients.has_value());
-
-  // Validate that the default coefficients haven't been loaded.
-  EXPECT_FLOAT_EQ(3.4, coefficients.value().kgpu_time);
-  EXPECT_FLOAT_EQ(0.39, coefficients.value().kqos_background);
-}
-
-TEST(ResourceCoalitionTests, ReadEnergyImpactOrDefaultForBoardId_Default) {
-  // This board-id should not exist.
-  auto coefficients =
-      TestResourceCoalition::ReadEnergyImpactOrDefaultForBoardId(
-          GetTestDataPath(), "Mac-031B6874CF7F642A");
-  ASSERT_TRUE(coefficients.has_value());
-
-  // Validate that the default coefficients were loaded.
-  EXPECT_FLOAT_EQ(0, coefficients.value().kgpu_time);
-  EXPECT_FLOAT_EQ(0.8, coefficients.value().kqos_background);
-}
-
-TEST(ResourceCoalitionTests, ReadEnergyImpactOrDefaultForBoardId_NoFiles) {
-  // This directory shouldn't exist, so nothing should be loaded.
-  EXPECT_FALSE(
-      TestResourceCoalition::ReadEnergyImpactOrDefaultForBoardId(
-          GetTestDataPath().Append("nonexistent"), "Mac-7BA5B2DFE22DDD8C")
-          .has_value());
-}
-
-TEST(ResourceCoalitionTests, MaybeGetBoardIdForThisMachine) {
-  // This can't really be tested except that the contract holds one way
-  // or the other.
-  auto board_id = TestResourceCoalition::MaybeGetBoardIdForThisMachine();
-  if (board_id.has_value()) {
-    EXPECT_FALSE(board_id.value().empty());
-  }
 }
 
 }  // namespace
