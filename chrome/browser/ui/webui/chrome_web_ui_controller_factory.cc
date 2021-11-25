@@ -1418,12 +1418,12 @@ std::vector<GURL> ChromeWebUIControllerFactory::GetListOfAcceptableURLs() {
       GURL(chrome::kOsUIPowerUrl), GURL(chrome::kOsUIPrintManagementUrl),
       GURL(chrome::kOsUIRestartURL), GURL(chrome::kChromeUIScanningAppURL),
       GURL(chrome::kOsUIScanningAppURL), GURL(chrome::kOsUISetTimeURL),
-      GURL(chrome::kChromeUISettingsURL), GURL(chrome::kOsUISettingsURL),
-      GURL(chrome::kOsUISignInInternalsUrl), GURL(chrome::kOsUISlowURL),
-      GURL(chrome::kOsUISmbCredentialsURL), GURL(chrome::kOsUISmbShareURL),
-      GURL(chrome::kOsUISyncInternalsUrl), GURL(chrome::kOsUISysInternalsUrl),
-      GURL(chrome::kOsUIUserImageURL), GURL(chrome::kOsUIVersionURL),
-      GURL(chrome::kOsUIVmUrl),
+      GURL(chrome::kChromeUIOSSettingsURL), GURL(chrome::kChromeUISettingsURL),
+      GURL(chrome::kOsUISettingsURL), GURL(chrome::kOsUISignInInternalsUrl),
+      GURL(chrome::kOsUISlowURL), GURL(chrome::kOsUISmbCredentialsURL),
+      GURL(chrome::kOsUISmbShareURL), GURL(chrome::kOsUISyncInternalsUrl),
+      GURL(chrome::kOsUISysInternalsUrl), GURL(chrome::kOsUIUserImageURL),
+      GURL(chrome::kOsUIVersionURL), GURL(chrome::kOsUIVmUrl),
       // The CL to land this didn't land yet. Once landed they need to be moved
       // to Lacros. However  - as the refactor might precede this, there is no
       // TODO for it.
@@ -1438,7 +1438,6 @@ std::vector<GURL> ChromeWebUIControllerFactory::GetListOfAcceptableURLs() {
                            GURL(chrome::kChromeUIHistogramsURL),
                            GURL(chrome::kChromeUIInvalidationsUrl),
                            GURL(chrome::kChromeUIManagementURL),
-                           GURL(chrome::kChromeUIOSSettingsURL),
                            GURL(chrome::kChromeUIPolicyURL),
                            GURL(chrome::kChromeUIRestartURL),
                            GURL(chrome::kChromeUISettingsURL),
