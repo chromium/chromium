@@ -966,7 +966,7 @@
             ]
         }
     ],
-    "AutofillAcrossIframems": [
+    "AutofillAcrossIframes": [
         {
             "platforms": [
                 "android",
@@ -981,7 +981,7 @@
                 {
                     "name": "Enabled_20210922",
                     "enable_features": [
-                        "AutofillAcrossIframems"
+                        "AutofillAcrossIframes"
                     ]
                 }
             ]
