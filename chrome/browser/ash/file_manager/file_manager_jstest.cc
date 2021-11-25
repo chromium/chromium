@@ -254,6 +254,10 @@ IN_PROC_BROWSER_TEST_F(FileManagerJsTest, SpinnerController) {
   RunTestURL("foreground/js/spinner_controller_unittest.m_gen.html");
 }
 
+IN_PROC_BROWSER_TEST_F(FileManagerJsTest, StorageAdapter) {
+  RunTestURL("common/js/storage_adapter_unittest.m_gen.html");
+}
+
 IN_PROC_BROWSER_TEST_F(FileManagerJsTest, TaskController) {
   RunTestURL("foreground/js/task_controller_unittest.m_gen.html");
 }
