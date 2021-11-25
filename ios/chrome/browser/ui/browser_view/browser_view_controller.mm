@@ -846,17 +846,20 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   return [results copy];
 }
 
-// Returns the safeAreaInsets of the root view for self.view. In some cases,
-// the self.view.safeAreaInsets are cleared when the view is moved, like with
-// thumbstrip,  causing unwanted offsets (starting iOS 15). The root
-// safeAreaInsets remain intact.
+// Returns the safeAreaInsets of the root window for self.view. In some cases,
+// the self.view.safeAreaInsets are cleared when the view has moved (like with
+// thumbstrip, starting with iOS 15) or if it is unattached ( for example on the
+// incognito BVC when the normal BVC is the one active or vice versa). Attached
+// or unttached, going to the window through the SceneState for the self.browser
+// solves both issues.
 - (UIEdgeInsets)rootSafeAreaInsets {
-  return ViewHierarchyRootForView(self.view).safeAreaInsets;
+  UIView* view =
+      SceneStateBrowserAgent::FromBrowser(self.browser)->GetSceneState().window;
+  return view ? view.safeAreaInsets : self.view.safeAreaInsets;
 }
 
 - (CGFloat)headerOffset {
-  CGFloat headerOffset = 0;
-  headerOffset = self.rootSafeAreaInsets.top;
+  CGFloat headerOffset = self.rootSafeAreaInsets.top;
   return [self canShowTabStrip] ? headerOffset : 0.0;
 }
 
