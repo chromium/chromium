@@ -86,7 +86,7 @@ SigninReauthViewController::SigninReauthViewController(
       reauth_url, content::Referrer(), ui::PAGE_TRANSITION_AUTO_TOPLEVEL,
       std::string());
   signin::ReauthTabHelper::CreateForWebContents(
-      reauth_web_contents_.get(), reauth_url, false,
+      reauth_web_contents_.get(), reauth_url,
       base::BindOnce(&SigninReauthViewController::OnGaiaReauthPageComplete,
                      weak_ptr_factory_.GetWeakPtr()));
   reauth_web_contents_observer_ = std::make_unique<ReauthWebContentsObserver>(

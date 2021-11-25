@@ -27,21 +27,14 @@ class ReauthTabHelper : public content::WebContentsUserData<ReauthTabHelper>,
   // Initializes a helper with:
   // - |callback| to be called when the reauth flow is complete.
   // - |reauth_url| that should be the final destination of the reauth flow.
-  // - |restrict_to_reauth_origin| determines whether the reauth flow can
-  //   navigate outside of |reauth_url|'s origin.
   static void CreateForWebContents(content::WebContents* web_contents,
                                    const GURL& reauth_url,
-                                   bool restrict_to_reauth_origin,
                                    ReauthCallback callback);
 
   ReauthTabHelper(const ReauthTabHelper&) = delete;
   ReauthTabHelper& operator=(const ReauthTabHelper&) = delete;
 
   ~ReauthTabHelper() override;
-
-  // Determines whether the current navigation is allowed within the reauth
-  // flow.
-  bool ShouldAllowNavigation(content::NavigationHandle* navigation_handle);
 
   // If |callback_| is not null, calls |callback_| with |result|.
   void CompleteReauth(signin::ReauthResult result);
@@ -58,11 +51,9 @@ class ReauthTabHelper : public content::WebContentsUserData<ReauthTabHelper>,
   friend class content::WebContentsUserData<ReauthTabHelper>;
   explicit ReauthTabHelper(content::WebContents* web_contents,
                            const GURL& reauth_url,
-                           bool restrict_to_reauth_origin,
                            ReauthCallback callback);
 
   const GURL reauth_url_;
-  const bool restrict_to_reauth_origin_;
   ReauthCallback callback_;
   bool is_within_reauth_origin_ = true;
   bool has_last_committed_error_page_ = false;
