@@ -17,7 +17,6 @@ import archive
 import console
 import diff
 import file_format
-import html_report
 
 
 def _LogPeakRamUsage():
@@ -92,8 +91,6 @@ def main():
   sub_parsers = parser.add_subparsers()
   actions = {}
   actions['archive'] = (archive, 'Create a .size file')
-  actions['html_report'] = (
-      html_report, 'Create a stand-alone report from a .size file.')
   actions['console'] = (
       console,
       'Starts an interactive Python console for analyzing .size files.')

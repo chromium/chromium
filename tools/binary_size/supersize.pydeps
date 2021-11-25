@@ -54,7 +54,6 @@ libsupersize/dir_metadata.py
 libsupersize/dwarfdump.py
 libsupersize/file_format.py
 libsupersize/function_signature.py
-libsupersize/html_report.py
 libsupersize/linker_map_parser.py
 libsupersize/main.py
 libsupersize/match_util.py

@@ -23,7 +23,6 @@ const filesToCache = [
   'start-worker.js',
   'state.js',
   'tree-ui.js',
-  'tree-worker.js',
   'tree-worker-wasm.js',
 ];
 

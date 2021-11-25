@@ -94,25 +94,14 @@ window.supersize = {
   treeReady: null,
 };
 
-// .size files and .ndjson files require different web workers.
-// Switch between the two dynamically.
-function startWorkerForFileName(fileName) {
-  let innerWorker = null;
-  if (fileName &&
-      (fileName.endsWith('.size') || fileName.endsWith('.sizediff'))) {
-    console.log('Using WebAssembly web worker');
-    innerWorker = new Worker('tree-worker-wasm.js');
-  } else {
-    console.log('Using JavaScript web worker');
-    innerWorker = new Worker('tree-worker.js');
-  }
+function restartWorker() {
+  window.supersize.worker = null;
+  let innerWorker = new Worker('tree-worker-wasm.js');
   window.supersize.worker = new TreeWorker(innerWorker);
 }
 
 (function() {
-  const urlParams = new URLSearchParams(window.location.search);
-  const url = urlParams.get('load_url');
-  startWorkerForFileName(url);
+  restartWorker();
 
   if (requiresAuthentication()) {
     window.supersize.treeReady = window.googleAuthPromise.then((authResponse) =>
@@ -121,5 +110,4 @@ function startWorkerForFileName(fileName) {
   } else {
     window.supersize.treeReady = window.supersize.worker.loadTree('from-url://');
   }
-
 })()

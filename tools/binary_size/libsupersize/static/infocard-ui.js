@@ -361,8 +361,8 @@ const displayInfocard = (() => {
 
       // The WebAssembly worker supports added/removed/changed in diff view,
       // so displaying count isn't useful.
-      // In non-diff view, and any .ndjson view, we don't have added/removed/
-      // changed information, so we just display a count.
+      // In non-diff view, we don't have added/removed/changed information, so
+      // we just display a count.
       if (diffMode && statsEntries[0][1].added !== undefined) {
         addedColumn.removeAttribute('hidden');
         removedColumn.removeAttribute('hidden');

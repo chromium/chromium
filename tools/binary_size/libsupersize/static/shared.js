@@ -64,22 +64,6 @@
  * @prop {boolean} isMultiContainer Whether multiple containers exist.
  */
 
-/**
- * Abberivated keys used by FileEntrys in the JSON data file. These must match
- * _COMPACT_*_KEY variables in html_report.py.
- */
-const _KEYS = Object.freeze({
-  COMPONENT_INDEX: /** @type {'c'} */ ('c'),
-  SOURCE_PATH: /** @type {'p'} */ ('p'),
-  FILE_SYMBOLS: /** @type {'s'} */ ('s'),
-  SIZE: /** @type {'b'} */ ('b'),
-  COUNT: /** @type {'u'} */ ('u'),
-  FLAGS: /** @type {'f'} */ ('f'),
-  SYMBOL_NAME: /** @type {'n'} */ ('n'),
-  NUM_ALIASES: /** @type {'a'} */ ('a'),
-  TYPE: /** @type {'t'} */ ('t'),
-});
-
 /** Abberivated keys used by FileEntrys in the JSON data file. */
 const _FLAGS = Object.freeze({
   ANONYMOUS: 2 ** 0,
@@ -126,20 +110,13 @@ const _ARTIFACT_TYPES = {
 };
 const _ARTIFACT_TYPE_SET = new Set(Object.values(_ARTIFACT_TYPES));
 
-/** Type for a code/.text symbol */
-const _CODE_SYMBOL_TYPE = 't';
 /** Type for a dex method symbol */
 const _DEX_METHOD_SYMBOL_TYPE = 'm';
-/** Type for a non-method dex symbol */
-const _DEX_SYMBOL_TYPE = 'x';
 /** Type for an 'other' symbol */
 const _OTHER_SYMBOL_TYPE = 'o';
 
 /** Set of all known symbol types. Artifact types are not included. */
 const _SYMBOL_TYPE_SET = new Set('bdrtRxmopP');
-
-/** Name used by a directory created to hold symbols with no name. */
-const _NO_NAME = '(No path)';
 
 /** Key where type is stored in the query string state. */
 const _TYPE_STATE_KEY = 'type';

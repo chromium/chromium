@@ -442,7 +442,8 @@ void NodeStats::WriteIntoJson(bool method_count_mode, Json::Value* out) const {
     (*out)[sectionId]["removed"] = stats.removed;
     (*out)[sectionId]["changed"] = stats.changed;
     // Count is used to store value for "method count" mode.
-    // Why? Because that's how it was implemented in the .ndjson worker.
+    // Why? Because that's how it was implemented in the (now removed) .ndjson
+    // worker.
     int count = stats.count;
     bool is_diff = stats.added > 0 || stats.removed > 0 || stats.changed > 0;
     if (method_count_mode && is_diff) {

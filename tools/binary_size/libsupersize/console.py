@@ -22,7 +22,6 @@ import data_quality
 import describe
 import diff
 import file_format
-import html_report
 import match_util
 import models
 import path_util
