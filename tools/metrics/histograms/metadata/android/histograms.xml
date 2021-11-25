@@ -2895,7 +2895,8 @@ chromium-metrics-reviews@google.com.
   <owner>yfriedman@chromium.org</owner>
   <summary>
     The time in a cold start between the start of the activity and the
-    triggerpoint for a startup tab being preloaded.
+    triggerpoint for a startup tab being preloaded. Recorded only in startups
+    for which Android.Startup.Cold.TimeToFirstVisibleContent is being tracked.
   </summary>
 </histogram>
 
@@ -2910,7 +2911,9 @@ chromium-metrics-reviews@google.com.
     recorded, recorded in the case where a startup tab preload is determined
     {LoadAndMatchResult}. In the case where the ElideTabPreloadAtStartup feature
     is enabled, this metric will be segmented to reflect the state that would
-    have resulted if tab preloading was not disabled by the feature.
+    have resulted if tab preloading was not disabled by the feature. Recorded
+    only in startups for which Android.Startup.Cold.TimeToFirstVisibleContent is
+    being tracked.
   </summary>
   <token key="LoadAndMatchResult">
     <variant name="LoadAndMatch"

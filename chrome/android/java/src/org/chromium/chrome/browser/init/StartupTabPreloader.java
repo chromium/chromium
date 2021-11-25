@@ -231,12 +231,23 @@ public class StartupTabPreloader implements ProfileManager.Observer, DestroyObse
      * null otherwise.
      */
     public Tab takeTabIfMatchingOrDestroy(LoadUrlParams loadUrlParams, @TabLaunchType int type) {
-        if (!mRecordedLoadDecisionToMatchDecisionHistogram) {
-            // NOTE: This histogram is segmented only by state of the load decision as it covers
-            // the duration from the load decision *up to* the tab match decision.
+        if (!mRecordedLoadDecisionToMatchDecisionHistogram
+                && mStartupMetricsTracker.isTrackingStartupMetrics()) {
+            // NOTE: This histogram is segmented only by state of the load decision as it covers the
+            // duration from the load decision *up to* the tab match decision. Additionally, note
+            // that we record the metric only when tracking startup metrics to ensure that the
+            // latencies of this metric are comparable to those ones.
             recordDurationFromLoadDecisionIntoPreTabMatchHistogram(
                     "Android.StartupTabPreloader.LoadDecisionToMatchDecision");
             mRecordedLoadDecisionToMatchDecisionHistogram = true;
+
+            // Similarly, we record this metric only now to avoid recording cases where startup
+            // metrics are tracked at the time of the load decision but have been cancelled by the
+            // time of the tab match decision (e.g., due to a decision being made to show an
+            // overview).
+            RecordHistogram.recordMediumTimesHistogram(
+                    "Android.StartupTabPreloader.ActivityStartToLoadDecision",
+                    mLoadDecisionMs - mStartupMetricsTracker.getActivityStartTimeMs());
         }
 
         if (mTab == null) {
@@ -312,9 +323,7 @@ public class StartupTabPreloader implements ProfileManager.Observer, DestroyObse
             ProfileManager.removeObserver(this);
             mTriggerPreload = shouldLoadTab();
             mLoadDecisionMs = SystemClock.uptimeMillis();
-            RecordHistogram.recordMediumTimesHistogram(
-                    "Android.StartupTabPreloader.ActivityStartToLoadDecision",
-                    mLoadDecisionMs - mStartupMetricsTracker.getActivityStartTimeMs());
+
             if (mTriggerPreload) loadTab();
             RecordHistogram.recordBooleanHistogram(
                     "Startup.Android.StartupTabPreloader.TabLoaded", mTriggerPreload);
