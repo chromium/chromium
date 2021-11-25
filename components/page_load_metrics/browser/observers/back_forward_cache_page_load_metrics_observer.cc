@@ -175,6 +175,10 @@ void BackForwardCachePageLoadMetricsObserver::OnRestoreFromBackForwardCache(
   was_hidden_ = web_contents &&
                 web_contents->GetVisibility() == content::Visibility::HIDDEN;
   logged_page_end_metrics_ = false;
+  restored_main_frame_layout_shift_score_ =
+      GetDelegate().GetMainFrameRenderData().layout_shift_score;
+  restored_layout_shift_score_ =
+      GetDelegate().GetPageRenderData().layout_shift_score;
   // HistoryNavigation is a singular event, and we share the same instance as
   // long as we use the same source ID.
   ukm::builders::HistoryNavigation builder(
@@ -486,27 +490,18 @@ void BackForwardCachePageLoadMetricsObserver::
 void BackForwardCachePageLoadMetricsObserver::
     MaybeRecordLayoutShiftScoreAfterBackForwardCacheRestore(
         const page_load_metrics::mojom::PageLoadTiming& timing) {
-  if (!last_main_frame_layout_shift_score_.has_value()) {
-    DCHECK(!last_layout_shift_score_.has_value());
-    last_main_frame_layout_shift_score_ =
-        GetDelegate().GetMainFrameRenderData().layout_shift_score;
-    last_layout_shift_score_ =
-        GetDelegate().GetPageRenderData().layout_shift_score;
-
-    // When this function is called first time, the page has not been in back-
-    // forward cache. The scores not after the page is restored from back-
-    // forward cache are recorded in other observers like
-    // UkmPageLoadMetricsObserver.
+  if (!has_ever_entered_back_forward_cache_ ||
+      !restored_main_frame_layout_shift_score_.has_value()) {
     return;
   }
-
+  DCHECK(restored_layout_shift_score_.has_value());
   double layout_main_frame_shift_score =
       GetDelegate().GetMainFrameRenderData().layout_shift_score -
-      last_main_frame_layout_shift_score_.value();
+      restored_main_frame_layout_shift_score_.value();
   DCHECK_GE(layout_main_frame_shift_score, 0);
   double layout_shift_score =
       GetDelegate().GetPageRenderData().layout_shift_score -
-      last_layout_shift_score_.value();
+      restored_layout_shift_score_.value();
   DCHECK_GE(layout_shift_score, 0);
 
   UMA_HISTOGRAM_COUNTS_100(
@@ -547,11 +542,6 @@ void BackForwardCachePageLoadMetricsObserver::
   }
 
   builder.Record(ukm::UkmRecorder::Get());
-
-  last_main_frame_layout_shift_score_ =
-      GetDelegate().GetMainFrameRenderData().layout_shift_score;
-  last_layout_shift_score_ =
-      GetDelegate().GetPageRenderData().layout_shift_score;
 
   if (base::FeatureList::IsEnabled(
           internal::kBackForwardCacheEmitZeroSamplesForKeyMetrics)) {

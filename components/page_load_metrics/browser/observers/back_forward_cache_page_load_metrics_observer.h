@@ -176,10 +176,10 @@ class BackForwardCachePageLoadMetricsObserver
   // page end metrics logging from the back forward page load metrics observer.
   bool logged_page_end_metrics_ = false;
 
-  // The layout shift score. These are recorded when the page is navigated away.
-  // These serve as "deliminators" between back-forward cache navigations.
-  absl::optional<double> last_main_frame_layout_shift_score_;
-  absl::optional<double> last_layout_shift_score_;
+  // The layout shift score. These are updated whenever the page is restored
+  // from the back-forward cache.
+  absl::optional<double> restored_main_frame_layout_shift_score_;
+  absl::optional<double> restored_layout_shift_score_;
 
   // IDs for the navigations when the page is restored from the back-forward
   // cache.
