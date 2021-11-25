@@ -1164,6 +1164,8 @@ void InspectorOverlayAgent::PaintOverlayPage() {
   if (hinge_)
     hinge_->Draw(scale);
 
+  EvaluateInOverlay("drawingFinished", "");
+
   OverlayMainFrame()->View()->UpdateAllLifecyclePhases(
       DocumentUpdateReason::kInspector);
 }
