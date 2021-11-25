@@ -45,9 +45,9 @@ struct TargetInfo {
   TargetInfo(TargetInfo&& other);
   TargetInfo& operator=(TargetInfo&& other);
 
-  // Disallow copy and assign.
-  TargetInfo(const TargetInfo&) = delete;
-  TargetInfo& operator=(const TargetInfo&) = delete;
+  // Allow copy.
+  TargetInfo(const TargetInfo&);
+  TargetInfo& operator=(const TargetInfo&);
 
   // The type of target that this object represents.
   TargetType type;

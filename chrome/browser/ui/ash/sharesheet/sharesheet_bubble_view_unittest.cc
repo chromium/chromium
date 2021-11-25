@@ -260,5 +260,43 @@ TEST_F(SharesheetBubbleViewTest, ClickCopyToClipboard) {
   EXPECT_EQ(::sharesheet::kTestText, base::UTF16ToUTF8(clipboard_text));
 }
 
+TEST_F(SharesheetBubbleViewTest, ClickCopyToClipboardTwice) {
+  base::HistogramTester histograms;
+  // Text intent should only show copy action.
+  ShowAndVerifyBubble(::sharesheet::CreateValidTextIntent(),
+                      ::sharesheet::SharesheetMetrics::LaunchSource::kUnknown);
+
+  // |targets_view| should only contain the copy to clipboard target.
+  views::View* targets_view = sharesheet_bubble_view()->GetViewByID(
+      SharesheetViewID::TARGETS_DEFAULT_VIEW_ID);
+  ASSERT_EQ(targets_view->children().size(), 1u);
+
+  // Click on copy target.
+  Click(targets_view->children()[0]);
+
+  // Bubble should stay open after copy target was pressed.
+  ASSERT_TRUE(IsSharesheetVisible());
+
+  // Click on copy target again.
+  Click(targets_view->children()[0]);
+
+  // Bubble should still be open after copy target was pressed.
+  ASSERT_TRUE(IsSharesheetVisible());
+
+  CloseBubble();
+
+  // Copy to clipboard was clicked on twice.
+  histograms.ExpectBucketCount(
+      ::sharesheet::kSharesheetUserActionResultHistogram,
+      ::sharesheet::SharesheetMetrics::UserAction::kCopyAction, 2);
+
+  // Check text copied correctly.
+  std::u16string clipboard_text;
+  ui::Clipboard::GetForCurrentThread()->ReadText(
+      ui::ClipboardBuffer::kCopyPaste, /* data_dst = */ nullptr,
+      &clipboard_text);
+  EXPECT_EQ(::sharesheet::kTestText, base::UTF16ToUTF8(clipboard_text));
+}
+
 }  // namespace sharesheet
 }  // namespace ash
