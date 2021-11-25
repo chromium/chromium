@@ -869,8 +869,7 @@ Status WebViewImpl::AddCookie(const std::string& name,
       client_->SendCommandAndGetResult("Network.setCookie", params, &result);
   if (status.IsError())
     return Status(kUnableToSetCookie);
-  bool success;
-  if (!result->GetBoolean("success", &success) || !success)
+  if (!result->FindBoolKey("success").value_or(false))
     return Status(kUnableToSetCookie);
   return Status(kOk);
 }

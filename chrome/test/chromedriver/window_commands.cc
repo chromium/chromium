@@ -296,12 +296,9 @@ Status GetVisibleCookies(Session* for_session,
     // Truncate & convert the value to an integer as required by W3C spec.
     if (expiry >= (1ll << 53) || expiry <= -(1ll << 53))
       expiry = 0;
-    bool http_only = false;
-    cookie_dict.GetBoolean("httpOnly", &http_only);
-    bool session = false;
-    cookie_dict.GetBoolean("session", &session);
-    bool secure = false;
-    cookie_dict.GetBoolean("secure", &secure);
+    bool http_only = cookie_dict.FindBoolKey("httpOnly").value_or(false);
+    bool session = cookie_dict.FindBoolKey("session").value_or(false);
+    bool secure = cookie_dict.FindBoolKey("secure").value_or(false);
 
     cookies_tmp.push_back(Cookie(name, value, domain, path, samesite, expiry,
                                  http_only, secure, session));
@@ -2561,9 +2558,10 @@ Status ExecuteSetNetworkConditions(Session* session,
     }
 
     // |offline| is optional.
-    if (conditions->FindKey("offline")) {
-      if (!conditions->GetBoolean("offline", &network_conditions->offline))
+    if (const base::Value* offline = conditions->FindKey("offline")) {
+      if (!offline->is_bool())
         return Status(kInvalidArgument, "invalid 'offline'");
+      network_conditions->offline = offline->GetBool();
     } else {
       network_conditions->offline = false;
     }

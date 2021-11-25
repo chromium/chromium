@@ -160,8 +160,6 @@ Status ParseMobileEmulation(const base::Value& option,
 
     int width = 0;
     int height = 0;
-    bool touch = true;
-    bool mobile = true;
 
     if (metrics->FindKey("width") && !metrics->GetInteger("width", &width))
       return Status(kInvalidArgument, "'width' must be an integer");
@@ -175,14 +173,17 @@ Status ParseMobileEmulation(const base::Value& option,
         !maybe_device_scale_factor.has_value())
       return Status(kInvalidArgument, "'pixelRatio' must be a double");
 
-    if (metrics->FindKey("touch") && !metrics->GetBoolean("touch", &touch))
+    absl::optional<bool> touch = metrics->FindBoolKey("touch");
+    if (metrics->FindKey("touch") && !touch.has_value())
       return Status(kInvalidArgument, "'touch' must be a boolean");
 
-    if (metrics->FindKey("mobile") && !metrics->GetBoolean("mobile", &mobile))
+    absl::optional<bool> mobile = metrics->FindBoolKey("mobile");
+    if (metrics->FindKey("mobile") && !mobile.has_value())
       return Status(kInvalidArgument, "'mobile' must be a boolean");
 
-    DeviceMetrics* device_metrics = new DeviceMetrics(
-        width, height, maybe_device_scale_factor.value_or(0), touch, mobile);
+    DeviceMetrics* device_metrics =
+        new DeviceMetrics(width, height, maybe_device_scale_factor.value_or(0),
+                          touch.value_or(true), mobile.value_or(true));
     capabilities->device_metrics =
         std::unique_ptr<DeviceMetrics>(device_metrics);
   }
