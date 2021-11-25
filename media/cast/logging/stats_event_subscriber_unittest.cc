@@ -481,23 +481,20 @@ TEST_F(StatsEventSubscriberTest, Packets) {
   auto it = stats_map.find(StatsEventSubscriber::AVG_NETWORK_LATENCY_MS);
   ASSERT_TRUE(it != stats_map.end());
 
-  EXPECT_DOUBLE_EQ(
-      it->second,
-      total_network_latency.InMillisecondsF() / num_latency_recorded_packets);
+  EXPECT_DOUBLE_EQ(it->second, total_network_latency.InMillisecondsF() /
+                                   num_latency_recorded_packets);
 
   it = stats_map.find(StatsEventSubscriber::AVG_QUEUEING_LATENCY_MS);
   ASSERT_TRUE(it != stats_map.end());
 
-  EXPECT_DOUBLE_EQ(
-      it->second,
-      total_queueing_latency.InMillisecondsF() / num_packets);
+  EXPECT_DOUBLE_EQ(it->second,
+                   total_queueing_latency.InMillisecondsF() / num_packets);
 
   it = stats_map.find(StatsEventSubscriber::AVG_PACKET_LATENCY_MS);
   ASSERT_TRUE(it != stats_map.end());
 
-  EXPECT_DOUBLE_EQ(
-      it->second,
-      total_packet_latency.InMillisecondsF() / num_latency_recorded_packets);
+  EXPECT_DOUBLE_EQ(it->second, total_packet_latency.InMillisecondsF() /
+                                   num_latency_recorded_packets);
 
   it = stats_map.find(StatsEventSubscriber::TRANSMISSION_KBPS);
   ASSERT_TRUE(it != stats_map.end());
@@ -532,14 +529,14 @@ TEST_F(StatsEventSubscriberTest, Packets) {
 }
 
 bool CheckHistogramHasValue(base::ListValue* values,
-                            const std::string& bucket, int expected_count) {
+                            const std::string& bucket,
+                            int expected_count) {
   for (size_t i = 0; i < values->GetList().size(); ++i) {
-    const base::DictionaryValue* dict = NULL;
-    values->GetDictionary(i, &dict);
-    if (!dict->HasKey(bucket))
+    const base::Value& value = values->GetList()[i];
+    if (!value.is_dict() || !value.FindKey(bucket))
       continue;
-    int bucket_count = 0;
-    if (!dict->GetInteger(bucket, &bucket_count))
+    absl::optional<int> bucket_count = value.FindIntKey(bucket);
+    if (!bucket_count.has_value())
       return false;
     return bucket_count == expected_count;
   }

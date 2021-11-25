@@ -102,6 +102,11 @@ std::vector<std::vector<int>> ParseMatchSubtypes(
   return result;
 }
 
+std::string FindStringKeyOrEmpty(const base::Value& value, std::string key) {
+  auto* ptr = value.FindStringKey(key);
+  return ptr ? *ptr : "";
+}
+
 }  // namespace
 
 // Value chosen based on SuggestionGroupIds::INVALID in suggestion_config.proto.
@@ -615,12 +620,13 @@ bool SearchSuggestionParser::ParseSuggestResults(
 
     if (types && types->GetString(index, &type))
       match_type = GetAutocompleteMatchType(type);
-    const base::DictionaryValue* suggestion_detail = nullptr;
     std::string deletion_url;
-
-    if (suggestion_details &&
-        suggestion_details->GetDictionary(index, &suggestion_detail)) {
-      suggestion_detail->GetString("du", &deletion_url);
+    if (suggestion_details) {
+      const base::Value& suggestion_detail =
+          suggestion_details->GetList()[index];
+      if (suggestion_detail.is_dict()) {
+        deletion_url = FindStringKeyOrEmpty(suggestion_detail, "du");
+      }
     }
 
     if ((match_type == AutocompleteMatchType::NAVSUGGEST) ||
@@ -667,28 +673,34 @@ bool SearchSuggestionParser::ParseSuggestResults(
       absl::optional<int> suggestion_group_id;
 
       if (suggestion_details) {
-        suggestion_details->GetDictionary(index, &suggestion_detail);
-        if (suggestion_detail) {
-          suggestion_detail->GetString("t", &match_contents);
-          suggestion_detail->GetString("mp", &match_contents_prefix);
-          // Error correction for bad data from server.
-          if (match_contents.empty())
+        const base::Value& suggestion_detail =
+            suggestion_details->GetList()[index];
+        if (suggestion_detail.is_dict()) {
+          match_contents =
+              base::UTF8ToUTF16(FindStringKeyOrEmpty(suggestion_detail, "t"));
+          if (match_contents.empty()) {
             match_contents = suggestion;
-          suggestion_detail->GetString("a", &annotation);
-          suggestion_detail->GetString("dc", &image_dominant_color);
-          suggestion_detail->GetString("i", &image_url);
-          suggestion_detail->GetString("q", &additional_query_params);
+          }
+          match_contents_prefix =
+              base::UTF8ToUTF16(FindStringKeyOrEmpty(suggestion_detail, "mp"));
+          annotation =
+              base::UTF8ToUTF16(FindStringKeyOrEmpty(suggestion_detail, "a"));
+          image_dominant_color = FindStringKeyOrEmpty(suggestion_detail, "dc");
+          image_url = FindStringKeyOrEmpty(suggestion_detail, "i");
+          additional_query_params =
+              FindStringKeyOrEmpty(suggestion_detail, "q");
 
           // Suggestion group Id.
-          suggestion_group_id = suggestion_detail->FindIntPath("zl");
+          suggestion_group_id = suggestion_detail.FindIntKey("zl");
 
           // Extract the Answer, if provided.
-          const base::DictionaryValue* answer_json = nullptr;
-          std::u16string answer_type;
-          if (suggestion_detail->GetDictionary("ansa", &answer_json) &&
-              suggestion_detail->GetString("ansb", &answer_type)) {
-            if (SuggestionAnswer::ParseAnswer(*answer_json, answer_type,
-                                              &answer)) {
+          const base::Value* answer_json =
+              suggestion_detail.FindDictKey("ansa");
+          const std::string* answer_type =
+              suggestion_detail.FindStringKey("ansb");
+          if (answer_json && answer_type) {
+            if (SuggestionAnswer::ParseAnswer(
+                    *answer_json, base::UTF8ToUTF16(*answer_type), &answer)) {
               base::UmaHistogramSparse("Omnibox.AnswerParseType",
                                        answer.type());
               answer_parsed_successfully = true;
