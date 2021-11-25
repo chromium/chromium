@@ -55,6 +55,7 @@ class ShoppingPersistedDataTabHelper
 
    private:
     friend class ShoppingPersistedDataTabHelper;
+    friend class TabGridMediatorTest;
     // Offer ID for the price drop
     absl::optional<int64_t> offer_id;
     // URL corresponding to the price drop.
@@ -74,6 +75,7 @@ class ShoppingPersistedDataTabHelper
   SEQUENCE_CHECKER(sequence_checker_);
   friend class web::WebStateUserData<ShoppingPersistedDataTabHelper>;
   friend class ShoppingPersistedDataTabHelperTest;
+  friend class TabGridMediatorTest;
 
   explicit ShoppingPersistedDataTabHelper(web::WebState* web_state);
 
@@ -113,6 +115,11 @@ class ShoppingPersistedDataTabHelper
 
   // Resets |price_drop_| when it is determined to no longer be valid.
   void ResetPriceDrop();
+
+  // Sets the |price_drop_|. Only intended for testing purposes.
+  void SetPriceDropForTesting(std::unique_ptr<PriceDrop> price_drop) {
+    price_drop_ = std::move(price_drop);
+  }
 
   web::WebState* web_state_ = nullptr;
 

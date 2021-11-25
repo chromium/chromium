@@ -14,6 +14,7 @@
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
 #include "base/scoped_multi_source_observation.h"
+#include "base/strings/stringprintf.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #import "components/bookmarks/common/bookmark_pref_names.h"
 #include "components/favicon/ios/web_favicon_driver.h"
@@ -23,6 +24,7 @@
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #include "ios/chrome/browser/chrome_url_constants.h"
 #import "ios/chrome/browser/chrome_url_util.h"
+#import "ios/chrome/browser/commerce/shopping_persisted_data_tab_helper.h"
 #import "ios/chrome/browser/drag_and_drop/drag_item_util.h"
 #include "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/main/browser_util.h"
@@ -93,6 +95,21 @@ NSString* GetActiveTabId(WebStateList* web_state_list) {
     return nil;
   TabIdTabHelper* tab_helper = TabIdTabHelper::FromWebState(web_state);
   return tab_helper->tab_id();
+}
+
+void LogPriceDropMetrics(web::WebState* web_state) {
+  ShoppingPersistedDataTabHelper* shopping_helper =
+      ShoppingPersistedDataTabHelper::FromWebState(web_state);
+  if (!shopping_helper)
+    return;
+  const ShoppingPersistedDataTabHelper::PriceDrop* price_drop =
+      shopping_helper->GetPriceDrop();
+  BOOL has_price_drop =
+      price_drop && price_drop->current_price && price_drop->previous_price;
+  base::RecordAction(base::UserMetricsAction(
+      base::StringPrintf("Commerce.TabGridSwitched.%s",
+                         has_price_drop ? "HasPriceDrop" : "NoPriceDrop")
+          .c_str()));
 }
 
 // Returns the index of the tab with |identifier| in |web_state_list|. Returns
@@ -351,6 +368,8 @@ web::WebState* GetWebStateWithId(WebStateList* web_state_list,
   // Don't activate non-existent indexes.
   if (index == WebStateList::kInvalidIndex)
     return;
+
+  LogPriceDropMetrics(self.webStateList->GetWebStateAt(index));
 
   // Don't attempt a no-op activation. Normally this is not an issue, but it's
   // possible that this method (-selectItemWithID:) is being called as part of

@@ -9,24 +9,32 @@
 
 #include "base/mac/foundation_util.h"
 #include "base/strings/sys_string_conversions.h"
+#include "base/test/metrics/user_action_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "components/sessions/core/live_tab.h"
 #include "components/sessions/core/session_id.h"
 #include "components/sessions/core/tab_restore_service.h"
 #include "components/sessions/core/tab_restore_service_helper.h"
+#include "components/sync_preferences/testing_pref_service_syncable.h"
+#include "components/unified_consent/pref_names.h"
 #include "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #include "ios/chrome/browser/chrome_url_constants.h"
+#import "ios/chrome/browser/commerce/shopping_persisted_data_tab_helper.h"
 #import "ios/chrome/browser/main/test_browser.h"
 #import "ios/chrome/browser/ntp/new_tab_page_tab_helper.h"
 #import "ios/chrome/browser/ntp/new_tab_page_tab_helper_delegate.h"
 #include "ios/chrome/browser/sessions/ios_chrome_tab_restore_service_factory.h"
 #include "ios/chrome/browser/sessions/session_restoration_browser_agent.h"
 #import "ios/chrome/browser/sessions/test_session_service.h"
+#import "ios/chrome/browser/signin/authentication_service_factory.h"
+#import "ios/chrome/browser/signin/authentication_service_fake.h"
 #import "ios/chrome/browser/snapshots/snapshot_browser_agent.h"
 #import "ios/chrome/browser/snapshots/snapshot_tab_helper.h"
 #import "ios/chrome/browser/tabs/closing_web_state_observer_browser_agent.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_commands.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_consumer.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_switcher_item.h"
+#import "ios/chrome/browser/ui/ui_feature_flags.h"
 #import "ios/chrome/browser/web/page_placeholder_tab_helper.h"
 #import "ios/chrome/browser/web/session_state/web_session_state_tab_helper.h"
 #import "ios/chrome/browser/web/tab_id_tab_helper.h"
@@ -34,6 +42,7 @@
 #include "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/web_state_list/web_state_opener.h"
 #import "ios/chrome/browser/web_state_list/web_usage_enabler/web_usage_enabler_browser_agent.h"
+#import "ios/public/provider/chrome/browser/signin/fake_chrome_identity.h"
 #include "ios/web/common/features.h"
 #import "ios/web/public/test/fakes/fake_navigation_manager.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
@@ -56,6 +65,11 @@ class LiveTabContext;
 }
 
 namespace {
+
+const char kPriceTrackingWithOptimizationGuideParam[] =
+    "price_tracking_with_optimization_guide";
+const char kHasPriceDropUserAction[] = "Commerce.TabGridSwitched.HasPriceDrop";
+const char kHasNoPriceDropUserAction[] = "Commerce.TabGridSwitched.NoPriceDrop";
 
 // A Fake restore service that just store and returns tabs.
 class FakeTabRestoreService : public sessions::TabRestoreService {
@@ -255,8 +269,23 @@ class TabGridMediatorTest : public PlatformTest {
     TestChromeBrowserState::Builder builder;
     builder.AddTestingFactory(IOSChromeTabRestoreServiceFactory::GetInstance(),
                               base::BindRepeating(BuildFakeTabRestoreService));
+    builder.AddTestingFactory(
+        AuthenticationServiceFactory::GetInstance(),
+        base::BindRepeating(
+            &AuthenticationServiceFake::CreateAuthenticationService));
 
     browser_state_ = builder.Build();
+    // Price Drops are only available to signed in MSBB users.
+    browser_state_->GetPrefs()->SetBoolean(
+        unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled, true);
+    fake_identity_ = [FakeChromeIdentity identityWithEmail:@"foo1@gmail.com"
+                                                    gaiaID:@"foo1ID"
+                                                      name:@"Fake Foo 1"];
+    auth_service_ = static_cast<AuthenticationServiceFake*>(
+        AuthenticationServiceFactory::GetInstance()->GetForBrowserState(
+            browser_state_.get()));
+    auth_service_->SignIn(fake_identity_);
+
     tab_restore_service_ =
         IOSChromeTabRestoreServiceFactory::GetForBrowserState(
             browser_state_.get());
@@ -325,6 +354,24 @@ class TabGridMediatorTest : public PlatformTest {
         ->SetSessionID([[NSUUID UUID] UUIDString]);
   }
 
+  void SetFakePriceDrop(web::WebState* web_state) {
+    auto price_drop =
+        std::make_unique<ShoppingPersistedDataTabHelper::PriceDrop>();
+    price_drop->current_price = @"$5";
+    price_drop->previous_price = @"$10";
+    price_drop->url = web_state->GetLastCommittedURL();
+    price_drop->timestamp = base::Time::Now();
+    ShoppingPersistedDataTabHelper::FromWebState(web_state)
+        ->SetPriceDropForTesting(std::move(price_drop));
+  }
+
+  void SetPriceDropIndicatorsFlag() {
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        {{kCommercePriceTracking,
+          {{kPriceTrackingWithOptimizationGuideParam, "true"}}}},
+        {});
+  }
+
  protected:
   web::WebTaskEnvironment task_environment_;
   std::unique_ptr<ChromeBrowserState> browser_state_;
@@ -337,6 +384,10 @@ class TabGridMediatorTest : public PlatformTest {
   NSSet<NSString*>* original_identifiers_;
   NSString* original_selected_identifier_;
   std::unique_ptr<Browser> browser_;
+  base::UserActionTester user_action_tester_;
+  base::test::ScopedFeatureList scoped_feature_list_;
+  FakeChromeIdentity* fake_identity_ = nullptr;
+  AuthenticationServiceFake* auth_service_ = nullptr;
 };
 
 #pragma mark - Consumer tests
@@ -623,4 +674,35 @@ TEST_F(TabGridMediatorTest, MoveItemCommand) {
     EXPECT_NSEQ(identifier, consumer_.items[index]);
   }
   EXPECT_EQ(pre_move_selected_id, consumer_.selectedItemID);
+}
+
+TEST_F(TabGridMediatorTest, TestSelectItemWithNoPriceDrop) {
+  SetPriceDropIndicatorsFlag();
+  web::WebState* web_state_to_select = web_state_list_->GetWebStateAt(2);
+  // No need to set a null price drop - it will be null by default. Simply
+  // need to create the helper.
+  ShoppingPersistedDataTabHelper::CreateForWebState(web_state_to_select);
+  [mediator_ selectItemWithID:TabIdTabHelper::FromWebState(web_state_to_select)
+                                  ->tab_id()];
+  EXPECT_EQ(1, user_action_tester_.GetActionCount(kHasNoPriceDropUserAction));
+  EXPECT_EQ(0, user_action_tester_.GetActionCount(kHasPriceDropUserAction));
+}
+
+TEST_F(TabGridMediatorTest, TestSelectItemWithPriceDrop) {
+  SetPriceDropIndicatorsFlag();
+  web::WebState* web_state_to_select = web_state_list_->GetWebStateAt(2);
+  ShoppingPersistedDataTabHelper::CreateForWebState(web_state_to_select);
+  SetFakePriceDrop(web_state_to_select);
+  [mediator_ selectItemWithID:TabIdTabHelper::FromWebState(web_state_to_select)
+                                  ->tab_id()];
+  EXPECT_EQ(1, user_action_tester_.GetActionCount(kHasPriceDropUserAction));
+  EXPECT_EQ(0, user_action_tester_.GetActionCount(kHasNoPriceDropUserAction));
+}
+
+TEST_F(TabGridMediatorTest, TestSelectItemWithPriceDropExperimentOff) {
+  web::WebState* web_state_to_select = web_state_list_->GetWebStateAt(2);
+  [mediator_ selectItemWithID:TabIdTabHelper::FromWebState(web_state_to_select)
+                                  ->tab_id()];
+  EXPECT_EQ(0, user_action_tester_.GetActionCount(kHasNoPriceDropUserAction));
+  EXPECT_EQ(0, user_action_tester_.GetActionCount(kHasPriceDropUserAction));
 }
