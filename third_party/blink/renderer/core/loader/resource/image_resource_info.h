@@ -13,6 +13,7 @@
 #include "third_party/blink/renderer/platform/loader/fetch/resource_status.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
+#include "third_party/blink/renderer/platform/wtf/hash_set.h"
 
 namespace blink {
 

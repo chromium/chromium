@@ -6,6 +6,7 @@
 
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread.h"
+#include "third_party/blink/renderer/platform/wtf/wtf.h"
 
 namespace blink {
 

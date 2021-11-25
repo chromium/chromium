@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/html/media/media_source_attachment.h"
 
 #include "third_party/blink/renderer/core/html/media/media_source_registry.h"
+#include "third_party/blink/renderer/platform/wtf/wtf.h"
 
 namespace blink {
 

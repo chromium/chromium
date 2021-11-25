@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/platform/instrumentation/tracing/web_process_memory_dump.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/wtf.h"
 
 namespace blink {
 

@@ -51,6 +51,7 @@
 #include "third_party/blink/renderer/platform/web_test_support.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
+#include "third_party/blink/renderer/platform/wtf/wtf.h"
 
 // Forward declare Mac SPIs.
 // Request for public API: rdar://13803570
