@@ -2,21 +2,22 @@
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <div id="target"></div>
+<iframe id="i" srcdoc="<html><body>Hello</body></html>"></iframe>
 <script>
 
 assert_true(document.prerendering);
 
-window.onbeforeunload = function(e) {
+i.contentWindow.onbeforeunload = function(e) {
   // Call preventDefault() or set `returnValue` to trigger the prompt
   // on beforeunload event.
   e.preventDefault();
   e.returnValue = 'You have a return value.';
 }
 
-function changeWindowLocation() {
-  window.location.href = "about:blank";
+function reloadWindowLocation() {
+  i.contentWindow.location.reload(true);
   return new Promise(resolve => {
-    window.onunload = function(e) {
+    i.contentWindow.onunload = function(e) {
       // Unload event should be triggered since changing the page
       // location is not blocked by the prompt on beforeunload in the
       // prerenderer.
@@ -28,7 +29,7 @@ function changeWindowLocation() {
 async function asyncPromptOnBeforeUnload() {
   const bc = new BroadcastChannel('prerender-channel');
   try {
-    await changeWindowLocation();
+    await reloadWindowLocation();
     bc.postMessage('unloaded without the prompt by beforeunload.');
   } catch (err) {
     bc.postMessage(err);
