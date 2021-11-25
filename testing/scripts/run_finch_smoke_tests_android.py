@@ -23,9 +23,9 @@ BLINK_TOOLS = os.path.join(
 BUILD_ANDROID = os.path.join(SRC_DIR, 'build', 'android')
 CATAPULT_DIR = os.path.join(SRC_DIR, 'third_party', 'catapult')
 PYUTILS = os.path.join(CATAPULT_DIR, 'common', 'py_utils')
-TEST_SEED_PATH = os.path.join(SRC_DIR, 'testing', 'scripts',
-                              'variations_smoke_test_data',
-                              'webview_test_seed')
+DEFAULT_SEED_PATH = os.path.join(SRC_DIR, 'testing', 'scripts',
+                                 'variations_smoke_test_data',
+                                 'webview_test_seed')
 
 if PYUTILS not in sys.path:
   sys.path.append(PYUTILS)
@@ -192,7 +192,7 @@ class FinchTestCase(wpt_common.BaseWptScriptAdapter):
                         # this argument required.
                         default='webview',
                         help='Name of test case')
-    parser.add_argument('--finch-seed-path', default=TEST_SEED_PATH,
+    parser.add_argument('--finch-seed-path',
                         type=os.path.realpath,
                         help='Path to the finch seed')
     parser.add_argument('--browser-apk',
@@ -216,6 +216,11 @@ class FinchTestCase(wpt_common.BaseWptScriptAdapter):
                         action='store',
                         default='Release',
                         help='Build configuration')
+    parser.add_argument('--fake-variations-channel',
+                        action='store',
+                        default='stable',
+                        choices=['dev', 'canary', 'beta', 'stable'],
+                        help='Finch seed release channel')
 
     add_emulator_args(parser)
     script_common.AddDeviceArguments(parser)
@@ -370,6 +375,12 @@ class ChromeFinchTestCase(FinchTestCase):
 
 class WebViewFinchTestCase(FinchTestCase):
 
+  def parse_args(self, args=None):
+    super(WebViewFinchTestCase, self).parse_args(args)
+    if (not self.options.finch_seed_path or
+        not os.path.exists(self.options.finch_seed_path)):
+      self.options.finch_seed_path = DEFAULT_SEED_PATH
+
   @classmethod
   def product_name(cls):
     """Returns name of product being tested"""
@@ -384,7 +395,9 @@ class WebViewFinchTestCase(FinchTestCase):
     return 'org.chromium.webview_shell.WebPlatformTestsActivity'
 
   def browser_command_line_args(self):
-    return ['--webview-verbose-logging']
+    return ['--webview-verbose-logging',
+            ('--fake-variations-channel=%s' %
+             self.options.fake_variations_channel)]
 
   @contextlib.contextmanager
   def install_apks(self):
