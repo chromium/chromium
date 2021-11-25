@@ -479,8 +479,6 @@ String MediaQueryExp::Serialize() const {
   String name = media_feature_.LowerASCII();
 
   StringBuilder result;
-  result.Append('(');
-
   // <mf-boolean> e.g. (color)
   // <mf-plain>  e.g. (width: 100px)
   if (!bounds_.IsRange()) {
@@ -504,8 +502,6 @@ String MediaQueryExp::Serialize() const {
       result.Append(bounds_.right.value.CssText());
     }
   }
-
-  result.Append(')');
 
   return result.ReleaseString();
 }
