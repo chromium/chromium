@@ -8,6 +8,7 @@ import android.content.Context;
 import android.view.View;
 
 import androidx.annotation.MainThread;
+import androidx.annotation.StringRes;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.chrome.browser.firstrun.MobileFreProgress;
@@ -34,14 +35,10 @@ public class SigninFirstRunCoordinator {
         void recordFreProgressHistogram(@MobileFreProgress int state);
 
         /**
-         * Opens google terms of service page in a CCT.
+         * Show an informational web page. The page doesn't show navigation control.
+         * @param url Resource id for the URL of the web page.
          */
-        void openTermsOfService();
-
-        /**
-         * Opens google privacy policy page in a CCT.
-         */
-        void openPrivacyPolicy();
+        void showInfoPage(@StringRes int url);
 
         /**
          * Opens a dialog to get consent for recording UMA data.

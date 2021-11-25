@@ -19,11 +19,11 @@ import android.widget.FrameLayout;
 
 import androidx.annotation.MainThread;
 import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
 import androidx.fragment.app.Fragment;
 
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.customtabs.CustomTabActivity;
 import org.chromium.chrome.browser.enterprise.util.EnterpriseInfo;
 import org.chromium.chrome.browser.firstrun.FirstRunFragment;
 import org.chromium.chrome.browser.firstrun.FirstRunUtils;
@@ -33,7 +33,6 @@ import org.chromium.chrome.browser.ui.signin.SigninUtils;
 import org.chromium.chrome.browser.ui.signin.fre.FreUMADialogCoordinator;
 import org.chromium.chrome.browser.ui.signin.fre.SigninFirstRunCoordinator;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
-import org.chromium.ui.base.LocalizationUtils;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogManagerHolder;
 
@@ -165,18 +164,8 @@ public class SigninFirstRunFragment extends Fragment implements FirstRunFragment
 
     /** Implements {@link SigninFirstRunCoordinator.Delegate}. */
     @Override
-    public void openTermsOfService() {
-        CustomTabActivity.showInfoPage(requireContext(),
-                LocalizationUtils.substituteLocalePlaceholder(
-                        getString(R.string.google_terms_of_service_url)));
-    }
-
-    /** Implements {@link SigninFirstRunCoordinator.Delegate}. */
-    @Override
-    public void openPrivacyPolicy() {
-        CustomTabActivity.showInfoPage(requireContext(),
-                LocalizationUtils.substituteLocalePlaceholder(
-                        getString(R.string.google_privacy_policy_url)));
+    public void showInfoPage(@StringRes int url) {
+        getPageDelegate().showInfoPage(url);
     }
 
     /** Implements {@link SigninFirstRunCoordinator.Delegate}. */

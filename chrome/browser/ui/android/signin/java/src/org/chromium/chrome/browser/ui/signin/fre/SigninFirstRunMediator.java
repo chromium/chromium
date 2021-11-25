@@ -223,8 +223,9 @@ class SigninFirstRunMediator implements AccountsChangeObserver, ProfileDataCache
     }
 
     private SpannableString getFooterString(boolean hasChildAccount) {
-        final NoUnderlineClickableSpan clickableTermsOfServiceSpan = new NoUnderlineClickableSpan(
-                mContext.getResources(), view -> mDelegate.openTermsOfService());
+        final NoUnderlineClickableSpan clickableTermsOfServiceSpan =
+                new NoUnderlineClickableSpan(mContext.getResources(),
+                        view -> mDelegate.showInfoPage(R.string.google_terms_of_service_url));
         final SpanApplier.SpanInfo tosSpanInfo =
                 new SpanApplier.SpanInfo("<TOS_LINK>", "</TOS_LINK>", clickableTermsOfServiceSpan);
         final NoUnderlineClickableSpan clickableUMADialogSpan = new NoUnderlineClickableSpan(
@@ -233,8 +234,8 @@ class SigninFirstRunMediator implements AccountsChangeObserver, ProfileDataCache
                 new SpanApplier.SpanInfo("<UMA_LINK>", "</UMA_LINK>", clickableUMADialogSpan);
         if (hasChildAccount) {
             final NoUnderlineClickableSpan clickablePrivacyPolicySpan =
-                    new NoUnderlineClickableSpan(
-                            mContext.getResources(), view -> mDelegate.openPrivacyPolicy());
+                    new NoUnderlineClickableSpan(mContext.getResources(),
+                            view -> mDelegate.showInfoPage(R.string.google_privacy_policy_url));
             final SpanApplier.SpanInfo privacySpanInfo = new SpanApplier.SpanInfo(
                     "<PRIVACY_LINK>", "</PRIVACY_LINK>", clickablePrivacyPolicySpan);
             return SpanApplier.applySpans(
