@@ -228,13 +228,11 @@ void AppServiceAppWindowArcTracker::OnTaskCreated(
   // Update |state|. The app must be started, and running state. If visible,
   // set it as |kVisible|, otherwise, clear the visible bit.
   auto* proxy = apps::AppServiceProxyFactory::GetForProfile(observed_profile_);
-  auto instance_key = apps::Instance::InstanceKey::ForWindowBasedApp(window);
   apps::InstanceState state = proxy->InstanceRegistry().GetState(window);
   state = static_cast<apps::InstanceState>(
       state | apps::InstanceState::kStarted | apps::InstanceState::kRunning);
   app_service_controller_->app_service_instance_helper()->OnInstances(
-      instance_key,
-      task_id_to_arc_app_window_info_[task_id]->app_shelf_id().app_id(),
+      task_id_to_arc_app_window_info_[task_id]->app_shelf_id().app_id(), window,
       std::string(), state);
   arc_window_candidates_.erase(window);
 }
@@ -285,8 +283,7 @@ void AppServiceAppWindowArcTracker::OnTaskDestroyed(int32_t task_id) {
     // instance though the window has been closed, and the task has been
     // destroyed.
     app_service_controller_->app_service_instance_helper()->OnInstances(
-        apps::Instance::InstanceKey::ForWindowBasedApp(window),
-        it->second.get()->app_shelf_id().app_id(), std::string(),
+        it->second.get()->app_shelf_id().app_id(), window, std::string(),
         apps::InstanceState::kDestroyed);
     app_service_controller_->UnregisterWindow(window);
   }
@@ -334,13 +331,10 @@ void AppServiceAppWindowArcTracker::OnTaskSetActive(int32_t task_id) {
               : ArcAppWindow::FullScreenMode::kNonActive);
     }
     if (window) {
-      auto instance_key =
-          apps::Instance::InstanceKey::ForWindowBasedApp(window);
       apps::InstanceState state =
           helper->CalculateActivatedState(window, false /* active */);
-      helper->OnInstances(instance_key,
-                          previous_arc_app_window_info->app_shelf_id().app_id(),
-                          std::string(), state);
+      helper->OnInstances(previous_arc_app_window_info->app_shelf_id().app_id(),
+                          window, std::string(), state);
     }
   }
 
@@ -362,12 +356,10 @@ void AppServiceAppWindowArcTracker::OnTaskSetActive(int32_t task_id) {
   app_service_controller_->owner()->SetItemStatus(
       current_arc_app_window_info->shelf_id(), ash::STATUS_RUNNING);
 
-  auto instance_key = apps::Instance::InstanceKey::ForWindowBasedApp(window);
   apps::InstanceState state =
       helper->CalculateActivatedState(window, true /* active */);
-  helper->OnInstances(instance_key,
-                      current_arc_app_window_info->app_shelf_id().app_id(),
-                      std::string(), state);
+  helper->OnInstances(current_arc_app_window_info->app_shelf_id().app_id(),
+                      window, std::string(), state);
 }
 
 void AppServiceAppWindowArcTracker::AttachControllerToWindow(
@@ -671,8 +663,7 @@ void AppServiceAppWindowArcTracker::OnSessionDestroyed(int32_t session_id) {
   aura::Window* const window = it->second.get()->window();
   if (window) {
     app_service_controller_->app_service_instance_helper()->OnInstances(
-        apps::Instance::InstanceKey::ForWindowBasedApp(window),
-        it->second.get()->app_shelf_id().app_id(), std::string(),
+        it->second.get()->app_shelf_id().app_id(), window, std::string(),
         apps::InstanceState::kDestroyed);
     app_service_controller_->UnregisterWindow(window);
   }
