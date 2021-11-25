@@ -86,6 +86,8 @@ blink_core_sources_paint = [
   "first_meaningful_paint_detector.h",
   "fragment_data.cc",
   "fragment_data.h",
+  "fragment_data_iterator.cc",
+  "fragment_data_iterator.h",
   "frame_paint_timing.h",
   "frame_painter.cc",
   "frame_painter.h",

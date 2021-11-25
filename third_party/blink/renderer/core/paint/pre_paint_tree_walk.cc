@@ -24,6 +24,7 @@
 #include "third_party/blink/renderer/core/layout/ng/ng_fragmentation_utils.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_physical_box_fragment.h"
 #include "third_party/blink/renderer/core/page/chrome_client.h"
+#include "third_party/blink/renderer/core/page/link_highlight.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/paint/compositing/composited_layer_mapping.h"
 #include "third_party/blink/renderer/core/paint/compositing/paint_layer_compositor.h"
@@ -35,6 +36,15 @@
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
+
+namespace {
+
+bool IsLinkHighlighted(const LayoutObject& object) {
+  return object.GetFrame()->GetPage()->GetLinkHighlight().IsHighlighting(
+      object);
+}
+
+}  // anonymous namespace
 
 static void SetNeedsCompositingLayerPropertyUpdate(const LayoutObject& object) {
   if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled())
@@ -509,8 +519,11 @@ FragmentData* PrePaintTreeWalk::GetOrCreateFragmentData(
         fragment_data->ClearNextFragment();
       }
     } else {
-      // We don't need any additional fragments for culled inlines.
-      if (!object.IsBox() && !object.HasInlineFragments())
+      // We don't need any additional fragments for culled inlines - unless this
+      // is the highlighted link (in which case even culled inlines get paint
+      // effects).
+      if (!object.IsBox() && !object.HasInlineFragments() &&
+          !IsLinkHighlighted(object))
         return nullptr;
 
       DCHECK(allow_update);

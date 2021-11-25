@@ -101,6 +101,7 @@
 #include "third_party/blink/renderer/core/layout/ng/table/layout_ng_table_cell.h"
 #include "third_party/blink/renderer/core/page/autoscroll_controller.h"
 #include "third_party/blink/renderer/core/page/page.h"
+#include "third_party/blink/renderer/core/paint/fragment_data_iterator.h"
 #include "third_party/blink/renderer/core/paint/image_element_timing.h"
 #include "third_party/blink/renderer/core/paint/object_paint_invalidator.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
@@ -4949,6 +4950,48 @@ void LayoutObject::InvalidateClipPathCache() {
   for (FragmentData* fragment = fragment_; fragment;
        fragment = fragment->NextFragment())
     fragment->InvalidateClipPathCache();
+}
+
+Vector<PhysicalRect> LayoutObject::CollectOutlineRectsAndAdvance(
+    NGOutlineType outline_type,
+    FragmentDataIterator& iterator) const {
+  NOT_DESTROYED();
+  Vector<PhysicalRect> outline_rects;
+  PhysicalOffset paint_offset = iterator.GetFragmentData()->PaintOffset();
+
+  if (iterator.Cursor()) {
+    wtf_size_t fragment_index = iterator.Cursor()->ContainerFragmentIndex();
+    do {
+      const NGFragmentItem* item = iterator.Cursor()->Current().Item();
+      if (!item)
+        continue;
+      if (const NGPhysicalBoxFragment* box_fragment = item->BoxFragment()) {
+        box_fragment->AddSelfOutlineRects(
+            paint_offset + item->OffsetInContainerFragment(), outline_type,
+            &outline_rects);
+      } else {
+        PhysicalRect rect;
+        rect = item->RectInContainerFragment();
+        rect.Move(paint_offset);
+        outline_rects.push_back(rect);
+      }
+      // Keep going as long as we're within the same container fragment. If
+      // we're block-fragmented, there will be multiple container fragments,
+      // each with their own FragmentData object.
+    } while (iterator.Advance() &&
+             iterator.Cursor()->ContainerFragmentIndex() == fragment_index);
+  } else {
+    if (const NGPhysicalBoxFragment* box_fragment =
+            iterator.GetPhysicalBoxFragment()) {
+      box_fragment->AddSelfOutlineRects(paint_offset, outline_type,
+                                        &outline_rects);
+    } else {
+      outline_rects = OutlineRects(paint_offset, outline_type);
+    }
+    iterator.Advance();
+  }
+
+  return outline_rects;
 }
 
 Vector<PhysicalRect> LayoutObject::OutlineRects(

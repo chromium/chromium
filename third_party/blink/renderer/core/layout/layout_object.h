@@ -73,6 +73,7 @@ class Cursor;
 
 namespace blink {
 class AffineTransform;
+class FragmentDataIterator;
 class HitTestLocation;
 class HitTestRequest;
 class InlineBox;
@@ -2887,6 +2888,13 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
     // See |HasReflection()| for why |StyleRef().BoxReflect()| is not used.
     return StyleRef().HasGroupingProperty(HasReflection());
   }
+
+  // Return the outline rectangles of the current fragmentainer, as indicated by
+  // |iterator|. This method will also advance |iterator| to the next
+  // FragmentData (and therefore also next fragmentainer), if any.
+  Vector<PhysicalRect> CollectOutlineRectsAndAdvance(
+      NGOutlineType,
+      FragmentDataIterator& iterator) const;
 
   Vector<PhysicalRect> OutlineRects(const PhysicalOffset& additional_offset,
                                     NGOutlineType) const;

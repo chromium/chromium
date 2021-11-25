@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<script src="resources/link-highlight-helper.js"></script>
+<link rel="stylesheet" href="resources/link-highlight-style.css">
+<style>
+  a:link, a:visited { color: red; }
+</style>
+<div style="columns:5; width: 580px; column-gap:20px; column-fill:auto; height:100px; line-height:30px;">
+  <br><br><br>
+  <a class="opaqueHighlight" href="" id="highlightTarget">
+    &nbsp;xxx&nbsp;<br>
+    &nbsp;xxx&nbsp;<br>
+    &nbsp;xxx&nbsp;<br>
+    &nbsp;xxx&nbsp;<br>
+    &nbsp;xxx&nbsp;<br>
+    &nbsp;xxx&nbsp;<br>
+    &nbsp;xxx&nbsp;<br>
+    &nbsp;xxx&nbsp;<br>
+  </a>
+  <br><br><br>
+</div>
+<p>This test is successful if there are five green rectangles and no red above.</p>
+<script>
+  onload = testHighlightTarget;
+</script>

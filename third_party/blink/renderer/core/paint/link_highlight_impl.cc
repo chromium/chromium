@@ -48,6 +48,7 @@
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_fragment_item.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_cursor.h"
 #include "third_party/blink/renderer/core/paint/compositing/composited_layer_mapping.h"
+#include "third_party/blink/renderer/core/paint/fragment_data_iterator.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
 #include "third_party/blink/renderer/platform/animation/compositor_animation_curve.h"
@@ -282,11 +283,11 @@ void LinkHighlightImpl::Paint(GraphicsContext& context) {
                            !object->FirstFragment().NextFragment();
 
   wtf_size_t index = 0;
-  for (const auto* fragment = &object->FirstFragment(); fragment;
-       fragment = fragment->NextFragment(), ++index) {
-    ScopedDisplayItemFragment scoped_fragment(context, index);
-    auto rects = object->OutlineRects(
-        fragment->PaintOffset(), NGOutlineType::kIncludeBlockVisualOverflow);
+  for (FragmentDataIterator iterator(*object); !iterator.IsDone(); index++) {
+    const auto* fragment = iterator.GetFragmentData();
+    ScopedDisplayItemFragment scoped_fragment(context, fragment->FragmentID());
+    Vector<PhysicalRect> rects = object->CollectOutlineRectsAndAdvance(
+        NGOutlineType::kIncludeBlockVisualOverflow, iterator);
     if (rects.size() > 1)
       use_rounded_rects = false;
 

@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<link rel="stylesheet" href="resources/link-highlight-style.css">
+<style>
+  .fauxColumn {
+    float: left;
+    width: 100px;
+    height: 100px;
+    margin-left: 20px;
+  }
+  .fauxColumn:first-child {
+    margin-left: 0;
+  }
+</style>
+<div style="display:flow-root; width:580px; line-height:30px;">
+  <div class="fauxColumn"></div>
+  <div class="fauxColumn">
+    <span class="fauxHighlight">&nbsp;xxx&nbsp;</span><br>
+    <span class="fauxHighlight">&nbsp;xxx&nbsp;</span><br>
+    <span class="fauxHighlight">&nbsp;xxx&nbsp;</span><br>
+  </div>
+  <div class="fauxColumn">
+    <span class="fauxHighlight">&nbsp;xxx&nbsp;</span><br>
+    <span class="fauxHighlight">&nbsp;xxx&nbsp;</span><br>
+    <span class="fauxHighlight">&nbsp;xxx&nbsp;</span><br>
+  </div>
+  <div class="fauxColumn">
+    <span class="fauxHighlight">&nbsp;xxx&nbsp;</span><br>
+    <span class="fauxHighlight">&nbsp;xxx&nbsp;</span><br>
+  </div>
+</div>
+<p>This test is successful if there are five green rectangles and no red above.</p>

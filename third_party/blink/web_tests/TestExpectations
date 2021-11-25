@@ -568,6 +568,7 @@ external/wpt/webgpu/* [ Skip ]
 wpt_internal/webgpu/* [ Skip ]
 
 crbug.com/1018273 [ Mac ] compositing/gestures/gesture-tapHighlight-2-iframe-scrolled-inner.html [ Failure ]
+crbug.com/829028 compositing/gestures/gesture-tapHighlight-lines-and-float-in-multicol.html [ Failure ]
 
 # Requires support of the image-resolution CSS property
 crbug.com/1086473 external/wpt/css/css-images/image-resolution/* [ Skip ]
