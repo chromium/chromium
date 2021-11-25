@@ -12,10 +12,22 @@
 
 #include "extensions/common/csp_validator.h"
 #include "extensions/common/install_warning.h"
+#include "third_party/icu/fuzzers/fuzzer_utils.h"
 
 namespace extensions {
 
+namespace {
+
+// Performs common initialization that's shared between all runs.
+struct Environment {
+  IcuEnvironment icu_environment;
+};
+
+}  // namespace
+
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
+  static Environment env;
+
   const size_t kMaxSize = 10000;
   if (size > kMaxSize) {
     // Bail out if the input is too big (the exact limit is arbitrary), to avoid

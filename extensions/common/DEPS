@@ -16,3 +16,9 @@ include_rules = [
   "+third_party/zlib",
   "+ui/accessibility",
 ]
+
+specific_include_rules = {
+  ".*fuzzer\.cc$": [
+    "+third_party/icu",
+  ],
+}
