@@ -6,6 +6,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/holding_space/holding_space_constants.h"
+#include "ash/public/cpp/holding_space/holding_space_metrics.h"
 #include "ash/public/cpp/holding_space/holding_space_progress.h"
 #include "ash/public/cpp/image_util.h"
 #include "ash/strings/grit/ash_strings.h"
@@ -30,8 +31,10 @@
 #include "ui/gfx/paint_vector_icon.h"
 
 namespace ash {
-
 namespace {
+
+using ItemFailureToLaunchReason =
+    holding_space_metrics::ItemFailureToLaunchReason;
 
 // Helpers ---------------------------------------------------------------------
 
@@ -184,8 +187,9 @@ class HoldingSpaceDownloadsDelegate::InProgressDownload {
   // direct response to an explicit user action.
   virtual void Resume() = 0;
 
-  // Marks the underlying download to be opened when complete.
-  virtual void OpenWhenComplete() = 0;
+  // Marks the underlying download to open when complete. Returns `absl:nullopt`
+  // on success or the reason if the attempt was not successful.
+  virtual absl::optional<ItemFailureToLaunchReason> OpenWhenComplete() = 0;
 
   // Returns the accessible name to use for the underlying download.
   // NOTE: If the underlying download is complete, the return value will be
@@ -214,10 +218,9 @@ class HoldingSpaceDownloadsDelegate::InProgressDownload {
     return mojo_download_item_->guid.value();
   }
 
-  // Returns the target file path associated with the underlying download.
-  // NOTE: Returned path may be empty before a target file path has been picked.
-  const base::FilePath& GetTargetFilePath() const {
-    return mojo_download_item_->target_file_path;
+  // Returns whether the underlying download is marked to open when complete.
+  bool GetOpenWhenComplete() const {
+    return mojo_download_item_->open_when_complete;
   }
 
   // Returns the current progress of the underlying download.
@@ -228,6 +231,12 @@ class HoldingSpaceDownloadsDelegate::InProgressDownload {
     return HoldingSpaceProgress(GetReceivedBytes(), GetTotalBytes(),
                                 /*complete=*/false,
                                 /*hidden=*/IsDangerous() || IsMixedContent());
+  }
+
+  // Returns the target file path associated with the underlying download.
+  // NOTE: Returned path may be empty before a target file path has been picked.
+  const base::FilePath& GetTargetFilePath() const {
+    return mojo_download_item_->target_file_path;
   }
 
   // Returns the number of bytes received for the underlying download.
@@ -320,7 +329,7 @@ class HoldingSpaceDownloadsDelegate::InProgressDownload {
 
     // In-progress download items which are marked to be opened when complete
     // and are not paused have a special secondary text treatment.
-    if (mojo_download_item_->open_when_complete && !IsPaused()) {
+    if (GetOpenWhenComplete() && !IsPaused()) {
       return l10n_util::GetStringUTF16(
           IDS_ASH_HOLDING_SPACE_IN_PROGRESS_DOWNLOAD_OPEN_WHEN_COMPLETE);
     }
@@ -446,8 +455,11 @@ class HoldingSpaceDownloadsDelegate::InProgressAshDownload
   void Pause() override { download_item_->Pause(); }
   void Resume() override { download_item_->Resume(/*from_user=*/true); }
 
-  void OpenWhenComplete() override {
+  absl::optional<ItemFailureToLaunchReason> OpenWhenComplete() override {
+    if (GetOpenWhenComplete())
+      return ItemFailureToLaunchReason::kReattemptToOpenWhenComplete;
     download_item_->SetOpenWhenComplete(true);
+    return absl::nullopt;
   }
 
   // download::DownloadItem::Observer:
@@ -518,10 +530,15 @@ class HoldingSpaceDownloadsDelegate::InProgressLacrosDownload
       download_controller_ash->Resume(GetGuid(), /*user_resume=*/true);
   }
 
-  void OpenWhenComplete() override {
+  absl::optional<ItemFailureToLaunchReason> OpenWhenComplete() override {
+    if (GetOpenWhenComplete())
+      return ItemFailureToLaunchReason::kReattemptToOpenWhenComplete;
     auto* const download_controller_ash = GetDownloadControllerAsh();
-    if (download_controller_ash)
+    if (download_controller_ash) {
       download_controller_ash->SetOpenWhenComplete(GetGuid(), true);
+      return absl::nullopt;
+    }
+    return ItemFailureToLaunchReason::kCrosApiNotFound;
   }
 
   // crosapi::DownloadControllerAsh::DownloadControllerObserver:
@@ -585,16 +602,14 @@ void HoldingSpaceDownloadsDelegate::Resume(const HoldingSpaceItem* item) {
   }
 }
 
-bool HoldingSpaceDownloadsDelegate::OpenWhenComplete(
-    const HoldingSpaceItem* item) {
+absl::optional<holding_space_metrics::ItemFailureToLaunchReason>
+HoldingSpaceDownloadsDelegate::OpenWhenComplete(const HoldingSpaceItem* item) {
   DCHECK(HoldingSpaceItem::IsDownload(item->type()));
   for (const auto& in_progress_download : in_progress_downloads_) {
-    if (in_progress_download->GetHoldingSpaceItem() == item) {
-      in_progress_download->OpenWhenComplete();
-      return true;
-    }
+    if (in_progress_download->GetHoldingSpaceItem() == item)
+      return in_progress_download->OpenWhenComplete();
   }
-  return false;
+  return ItemFailureToLaunchReason::kDownloadNotFound;
 }
 
 void HoldingSpaceDownloadsDelegate::OnPersistenceRestored() {

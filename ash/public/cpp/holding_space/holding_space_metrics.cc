@@ -167,11 +167,14 @@ void RecordItemCounts(const std::vector<const HoldingSpaceItem*>& items) {
 }
 
 void RecordItemFailureToLaunch(HoldingSpaceItem::Type type,
-                               const base::FilePath& file_path) {
+                               const base::FilePath& file_path,
+                               ItemFailureToLaunchReason reason) {
   base::UmaHistogramEnumeration("HoldingSpace.Item.FailureToLaunch", type);
   base::UmaHistogramExactLinear("HoldingSpace.Item.FailureToLaunch.Extension",
                                 FilePathToExtension(file_path),
                                 kExtensionsSize);
+  base::UmaHistogramEnumeration("HoldingSpace.Item.FailureToLaunch.Reason",
+                                reason);
 }
 
 void RecordTimeFromFirstAvailabilityToFirstAdd(base::TimeDelta time_delta) {

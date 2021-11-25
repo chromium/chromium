@@ -164,6 +164,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="HoldingSpace.Item.FailureToLaunch.Reason"
+    enum="HoldingSpaceItemFailureToLaunchReason" expires_after="2022-04-24">
+  <owner>dmblack@google.com</owner>
+  <owner>gzadina@google.com</owner>
+  <summary>
+    Records the reason for failing to launch a holding space item at the moment
+    of failure.
+  </summary>
+</histogram>
+
 <histogram name="HoldingSpace.Pod.Action.All" enum="HoldingSpacePodAction"
     expires_after="2022-04-03">
   <owner>dmblack@google.com</owner>

@@ -42346,6 +42346,21 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="9" label="kResume"/>
 </enum>
 
+<enum name="HoldingSpaceItemFailureToLaunchReason">
+  <int value="0" label="kUnknown"/>
+  <int value="1" label="kCrosApiNotFound"/>
+  <int value="2" label="kDownloadNotFound"/>
+  <int value="3" label="kFileError"/>
+  <int value="4" label="kFileInfoError"/>
+  <int value="5" label="kInvalidType"/>
+  <int value="6" label="kNoHandlerForFileType"/>
+  <int value="7" label="kNoHandlerForItemType"/>
+  <int value="8" label="kPathEmpty"/>
+  <int value="9" label="kPathNotFound"/>
+  <int value="10" label="kReattemptToOpenWhenComplete"/>
+  <int value="11" label="kShutdown"/>
+</enum>
+
 <enum name="HoldingSpaceItemType">
   <int value="0" label="kPinnedFile"/>
   <int value="1" label="kScreenshot"/>

@@ -87,11 +87,31 @@ ASH_PUBLIC_EXPORT void RecordItemAction(
 ASH_PUBLIC_EXPORT void RecordItemCounts(
     const std::vector<const HoldingSpaceItem*>& items);
 
+// Enumeration of reasons that a holding space item might fail to launch. These
+// values are persisted to logs. Entries should not be renumbered and numeric
+// values should never be reused.
+enum class ItemFailureToLaunchReason {
+  kUnknown = 0,
+  kCrosApiNotFound = 1,
+  kDownloadNotFound = 2,
+  kFileError = 3,
+  kFileInfoError = 4,
+  kInvalidType = 5,
+  kNoHandlerForFileType = 6,
+  kNoHandlerForItemType = 7,
+  kPathEmpty = 8,
+  kPathNotFound = 9,
+  kReattemptToOpenWhenComplete = 10,
+  kShutdown = 11,
+  kMaxValue = kShutdown,
+};
+
 // Records a failure to launch a holding space item of the specified `type`
-// backed by the file at the specified `file_path`.
+// backed by the file at the specified `file_path` with the specified `reason`.
 ASH_PUBLIC_EXPORT void RecordItemFailureToLaunch(
     HoldingSpaceItem::Type type,
-    const base::FilePath& file_path);
+    const base::FilePath& file_path,
+    ItemFailureToLaunchReason reason);
 
 // Records time from the first availability of the holding space feature to the
 // first item being added to holding space.
