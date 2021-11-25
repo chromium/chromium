@@ -3325,12 +3325,12 @@
   {
     "name": "handwriting-legacy-recognition",
     "owners": [ "essential-inputs-team@google.com" ],
-    "expiry_milestone": 97
+    "expiry_milestone": 100
   },
   {
     "name": "handwriting-legacy-recognition-all-lang",
     "owners": [ "essential-inputs-team@google.com" ],
-    "expiry_milestone": 99
+    "expiry_milestone": 100
   },
   {
     "name": "happiness-tracking-surveys-for-desktop-demo",
