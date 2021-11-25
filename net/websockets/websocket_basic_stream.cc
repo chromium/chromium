@@ -169,7 +169,7 @@ int WebSocketBasicStream::WriteFrames(
   DCHECK_EQ(0, remaining_size) << "Buffer size calculation was wrong; "
                                << remaining_size << " bytes left over.";
   auto drainable_buffer = base::MakeRefCounted<DrainableIOBuffer>(
-      combined_buffer.get(), total_size);
+      std::move(combined_buffer), total_size);
   return WriteEverything(drainable_buffer);
 }
 
