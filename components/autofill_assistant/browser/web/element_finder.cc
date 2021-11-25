@@ -830,7 +830,12 @@ void ElementFinder::OnDescribeNodeForFrame(
   std::vector<int> backend_ids;
 
   if (node->GetNodeName() == "IFRAME") {
-    DCHECK(node->HasFrameId());  // Ensure all frames have an id.
+    // See: b/206647825
+    if (!node->HasFrameId()) {
+      NOTREACHED() << "Frame without ID";  // Ensure all frames have an id.
+      SendErrorResult(ClientStatus(FRAME_HOST_NOT_FOUND));
+      return;
+    }
 
     frame_stack_.push_back({object_id, current_frame_id_});
 
