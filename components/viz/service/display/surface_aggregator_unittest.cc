@@ -263,7 +263,7 @@ class SurfaceAggregatorTest : public testing::Test, public DisplayTimeSource {
          const gfx::Rect& damage_rect)
         : quads(quads), output_rect(size), damage_rect(damage_rect) {}
 
-    const std::vector<Quad>& quads;
+    std::vector<Quad> quads;
     CompositorRenderPassId id{1};
     gfx::Rect output_rect;
     gfx::Rect damage_rect;
@@ -1762,42 +1762,47 @@ TEST_F(SurfaceAggregatorValidSurfaceTest, CopyRequest) {
       nullptr, &manager_, kArbitraryFrameSinkId1, /*is_root=*/false);
   TestSurfaceIdAllocator embedded_surface_id(embedded_support->frame_sink_id());
 
-  std::vector<Quad> embedded_quads = {
-      Quad::SolidColorQuad(SK_ColorGREEN, gfx::Rect(5, 5))};
-  std::vector<Pass> embedded_passes = {Pass(embedded_quads, kSurfaceSize)};
+  CompositorFrame embedded_frame =
+      CompositorFrameBuilder()
+          .AddRenderPass(
+              RenderPassBuilder(CompositorRenderPassId{1}, kSurfaceSize)
+                  .AddSolidColorQuad(gfx::Rect(5, 5), SK_ColorGREEN)
+                  .Build())
+          .Build();
+  embedded_support->SubmitCompositorFrame(
+      embedded_surface_id.local_surface_id(), std::move(embedded_frame));
 
-  constexpr float device_scale_factor = 1.0f;
-  SubmitCompositorFrame(embedded_support.get(), embedded_passes,
-                        embedded_surface_id.local_surface_id(),
-                        device_scale_factor);
   auto copy_request = CopyOutputRequest::CreateStubForTesting();
   auto* copy_request_ptr = copy_request.get();
   embedded_support->RequestCopyOfOutput({embedded_surface_id.local_surface_id(),
                                          SubtreeCaptureId(),
                                          std::move(copy_request)});
 
-  std::vector<Quad> root_quads = {
-      Quad::SolidColorQuad(SK_ColorWHITE, gfx::Rect(5, 5)),
-      Quad::SurfaceQuad(SurfaceRange(absl::nullopt, embedded_surface_id),
-                        SK_ColorWHITE, gfx::Rect(5, 5),
-                        /*stretch_content_to_fill_bounds=*/false),
-      Quad::SolidColorQuad(SK_ColorBLACK, gfx::Rect(5, 5))};
-  std::vector<Pass> root_passes = {Pass(root_quads, kSurfaceSize)};
-
-  SubmitCompositorFrame(root_sink_.get(), root_passes,
-                        root_surface_id_.local_surface_id(),
-                        device_scale_factor);
+  CompositorFrame root_frame =
+      CompositorFrameBuilder()
+          .AddRenderPass(
+              RenderPassBuilder(CompositorRenderPassId{1}, kSurfaceSize)
+                  .AddSolidColorQuad(gfx::Rect(5, 5), SK_ColorWHITE)
+                  .AddSurfaceQuad(gfx::Rect(kSurfaceSize),
+                                  SurfaceRange(embedded_surface_id))
+                  .AddSolidColorQuad(gfx::Rect(5, 5), SK_ColorBLACK)
+                  .Build())
+          .Build();
+  root_sink_->SubmitCompositorFrame(root_surface_id_.local_surface_id(),
+                                    std::move(root_frame));
 
   auto aggregated_frame = AggregateFrame(root_surface_id_);
 
-  std::vector<Quad> expected_quads = {
+  std::vector<Quad> embedded_quads = {
+      Quad::SolidColorQuad(SK_ColorGREEN, gfx::Rect(5, 5))};
+  std::vector<Quad> root_quads = {
       Quad::SolidColorQuad(SK_ColorWHITE, gfx::Rect(5, 5)),
       Quad::RenderPassQuad(CompositorRenderPassId{uint64_t{
                                aggregated_frame.render_pass_list[0]->id}},
                            gfx::Transform(), true),
       Quad::SolidColorQuad(SK_ColorBLACK, gfx::Rect(5, 5))};
   std::vector<Pass> expected_passes = {Pass(embedded_quads, kSurfaceSize),
-                                       Pass(expected_quads, kSurfaceSize)};
+                                       Pass(root_quads, kSurfaceSize)};
   TestPassesMatchExpectations(expected_passes,
                               &aggregated_frame.render_pass_list);
   EXPECT_TRUE(aggregated_frame.has_copy_requests);
@@ -1809,6 +1814,47 @@ TEST_F(SurfaceAggregatorValidSurfaceTest, CopyRequest) {
   EXPECT_THAT(aggregator_.previous_contained_surfaces(),
               testing::UnorderedElementsAre(Key(root_surface_id_),
                                             Key(embedded_surface_id)));
+}
+
+TEST_F(SurfaceAggregatorValidSurfaceTest,
+       ShouldNotTakeCopyRequestIfTakeCopyRequestIsFalse) {
+  auto embedded_support = std::make_unique<CompositorFrameSinkSupport>(
+      nullptr, &manager_, kArbitraryFrameSinkId1, /*is_root=*/false);
+  TestSurfaceIdAllocator embedded_surface_id(embedded_support->frame_sink_id());
+
+  CompositorFrame embedded_frame =
+      CompositorFrameBuilder()
+          .AddRenderPass(
+              RenderPassBuilder(CompositorRenderPassId{1}, kSurfaceSize)
+                  .AddSolidColorQuad(gfx::Rect(5, 5), SK_ColorGREEN)
+                  .Build())
+          .Build();
+  embedded_support->SubmitCompositorFrame(
+      embedded_surface_id.local_surface_id(), std::move(embedded_frame));
+
+  auto copy_request = CopyOutputRequest::CreateStubForTesting();
+  embedded_support->RequestCopyOfOutput({embedded_surface_id.local_surface_id(),
+                                         SubtreeCaptureId(),
+                                         std::move(copy_request)});
+
+  CompositorFrame root_frame =
+      CompositorFrameBuilder()
+          .AddRenderPass(
+              RenderPassBuilder(CompositorRenderPassId{1}, kSurfaceSize)
+                  .AddSurfaceQuad(gfx::Rect(kSurfaceSize),
+                                  SurfaceRange(embedded_surface_id))
+                  .Build())
+          .Build();
+  root_sink_->SubmitCompositorFrame(root_surface_id_.local_surface_id(),
+                                    std::move(root_frame));
+
+  aggregator_.set_take_copy_requests(false);
+  auto aggregated_frame = AggregateFrame(root_surface_id_);
+
+  // There should be no copy requests on the aggregated_frame.
+  EXPECT_FALSE(aggregated_frame.has_copy_requests);
+  ASSERT_EQ(1u, aggregated_frame.render_pass_list.size());
+  ASSERT_EQ(0u, aggregated_frame.render_pass_list[0]->copy_requests.size());
 }
 
 // Root surface may contain copy requests.
@@ -1885,6 +1931,48 @@ TEST_F(SurfaceAggregatorValidSurfaceTest, RootCopyRequest) {
   ASSERT_EQ(2u, original_pass_list.size());
   DCHECK(original_pass_list[0]->copy_requests.empty());
   DCHECK(original_pass_list[1]->copy_requests.empty());
+}
+
+TEST_F(SurfaceAggregatorValidSurfaceTest,
+       ShouldNotTakeRootCopyRequestIfTakeCopyRequestIsFalse) {
+  auto embedded_support = std::make_unique<CompositorFrameSinkSupport>(
+      nullptr, &manager_, kArbitraryFrameSinkId2, /*is_root=*/false);
+  TestSurfaceIdAllocator embedded_surface_id(embedded_support->frame_sink_id());
+
+  CompositorFrame root_frame =
+      CompositorFrameBuilder()
+          .AddRenderPass(
+              RenderPassBuilder(CompositorRenderPassId{1}, kSurfaceSize)
+                  .AddSolidColorQuad(gfx::Rect(5, 5), SK_ColorWHITE)
+                  .Build())
+          .Build();
+  root_sink_->SubmitCompositorFrame(root_surface_id_.local_surface_id(),
+                                    std::move(root_frame));
+
+  auto copy_request = CopyOutputRequest::CreateStubForTesting();
+  auto* copy_request_ptr = copy_request.get();
+  root_sink_->RequestCopyOfOutput({root_surface_id_.local_surface_id(),
+                                   SubtreeCaptureId(),
+                                   std::move(copy_request)});
+
+  aggregator_.set_take_copy_requests(false);
+  auto aggregated_frame = AggregateFrame(root_surface_id_);
+
+  // Ensure no copy requests are added to the aggregated frame.
+  EXPECT_FALSE(aggregated_frame.has_copy_requests);
+  ASSERT_EQ(1u, aggregated_frame.render_pass_list.size());
+  ASSERT_EQ(0u, aggregated_frame.render_pass_list[0]->copy_requests.size());
+
+  // Ensure copy request remains on the root surface.
+  const CompositorFrame& original_frame =
+      manager_.surface_manager()
+          ->GetSurfaceForId(root_surface_id_)
+          ->GetActiveFrame();
+  const auto& original_pass_list = original_frame.render_pass_list;
+  ASSERT_EQ(1u, original_pass_list.size());
+  ASSERT_EQ(1u, original_pass_list[0]->copy_requests.size());
+  EXPECT_EQ(copy_request_ptr,
+            original_frame.render_pass_list[0]->copy_requests[0].get());
 }
 
 TEST_F(SurfaceAggregatorValidSurfaceTest, UnreferencedSurface) {

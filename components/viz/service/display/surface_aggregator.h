@@ -89,6 +89,7 @@ class VIZ_SERVICE_EXPORT SurfaceAggregator {
   }
   void SetFullDamageForSurface(const SurfaceId& surface_id);
   void set_output_is_secure(bool secure) { output_is_secure_ = secure; }
+  void set_take_copy_requests(bool value) { take_copy_requests_ = value; }
 
   // Only used with experimental de-jelly effect.
   bool last_frame_had_jelly() const { return last_frame_had_jelly_; }
@@ -351,6 +352,9 @@ class VIZ_SERVICE_EXPORT SurfaceAggregator {
   const bool clip_prewalk_damage_;
 
   bool output_is_secure_ = false;
+
+  // Whether |CopyOutputRequests| should be moved over to the aggregated frame.
+  bool take_copy_requests_ = true;
 
   // The color space for the root render pass. If this is different from its
   // blending color space (e.g. for HDR), then a final render pass to convert

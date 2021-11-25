@@ -597,6 +597,10 @@ void Display::InitializeRenderer(bool enable_shared_images) {
   aggregator_->SetDisplayColorSpaces(display_color_spaces_);
   aggregator_->SetMaxRenderTargetSize(
       output_surface_->capabilities().max_render_target_size);
+  // Do not move the |CopyOutputRequest| instances to the aggregated frame if
+  // the frame won't be drawn (as that would drop the copy request).
+  aggregator_->set_take_copy_requests(
+      !output_surface_->capabilities().skips_draw);
 }
 
 bool Display::IsRootFrameMissing() const {

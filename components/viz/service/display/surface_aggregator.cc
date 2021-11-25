@@ -701,7 +701,8 @@ void SurfaceAggregator::EmitSurfaceContent(
 
   // A map keyed by RenderPass id.
   Surface::CopyRequestsMap copy_requests;
-  surface->TakeCopyOutputRequests(&copy_requests);
+  if (take_copy_requests_)
+    surface->TakeCopyOutputRequests(&copy_requests);
 
   const CompositorRenderPassList& render_pass_list = frame.render_pass_list;
   if (!resolved_frame.is_valid()) {
@@ -1273,7 +1274,8 @@ void SurfaceAggregator::CopyPasses(const ResolvedFrameData& resolved_frame) {
   // off its render passes. This map contains a set of CopyOutputRequests
   // keyed by each RenderPass id.
   Surface::CopyRequestsMap copy_requests;
-  surface->TakeCopyOutputRequests(&copy_requests);
+  if (take_copy_requests_)
+    surface->TakeCopyOutputRequests(&copy_requests);
 
   const auto& source_pass_list = frame.render_pass_list;
   if (!resolved_frame.is_valid())
@@ -1927,7 +1929,7 @@ AggregatedFrame SurfaceAggregator::Aggregate(
   if (prewalk_result.frame_sinks_changed)
     manager_->AggregatedFrameSinksChanged();
 
-  frame.has_copy_requests = has_copy_requests_;
+  frame.has_copy_requests = has_copy_requests_ && take_copy_requests_;
   frame.video_capture_enabled = prewalk_result.video_capture_enabled;
   frame.may_contain_video = prewalk_result.may_contain_video;
   frame.content_color_usage = prewalk_result.content_color_usage;
