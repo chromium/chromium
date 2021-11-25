@@ -199,6 +199,19 @@ bool IsMinimumAddress(const AutofillProfile& profile,
     is_zip_or_state_requirement_violated = true;
   }
 
+  bool is_line1_or_house_number_violated = false;
+  if (country.requires_line1_or_house_number() &&
+      profile.GetRawInfo(ADDRESS_HOME_LINE1).empty() &&
+      profile.GetRawInfo(ADDRESS_HOME_HOUSE_NUMBER).empty()) {
+    if (import_log_buffer) {
+      *import_log_buffer
+          << LogMessage::kImportAddressProfileFromFormFailed
+          << "Missing required ADDRESS_HOME_LINE1 or ADDRESS_HOME_HOUSE_NUMBER."
+          << CTag{};
+    }
+    is_line1_or_house_number_violated = true;
+  }
+
   // Collect metrics regarding the requirements.
   AutofillMetrics::LogAddressFormImportRequirementMetric(
       is_line1_missing ? AddressImportRequirement::LINE1_REQUIREMENT_VIOLATED
@@ -226,7 +239,8 @@ bool IsMinimumAddress(const AutofillProfile& profile,
 
   // Return true if all requirements are fulfilled.
   return !(is_line1_missing || is_city_missing || is_state_missing ||
-           is_zip_missing || is_zip_or_state_requirement_violated);
+           is_zip_missing || is_zip_or_state_requirement_violated ||
+           is_line1_or_house_number_violated);
 }
 
 }  // namespace

@@ -24,6 +24,7 @@ enum RequiredFieldsForAddressImport {
   ADDRESS_REQUIRES_ZIP = 1 << 2,
   ADDRESS_REQUIRES_LINE1 = 1 << 3,
   ADDRESS_REQUIRES_ZIP_OR_STATE = 1 << 4,
+  ADDRESS_REQUIRES_LINE1_OR_HOUSE_NUMBER = 1 << 5,
 
   // Composite versions (for data).
   ADDRESS_REQUIRES_LINE1_CITY =
@@ -44,6 +45,9 @@ enum RequiredFieldsForAddressImport {
 
   ADDRESS_REQUIRES_LINE1_CITY_AND_ZIP_OR_STATE =
       ADDRESS_REQUIRES_LINE1_CITY | ADDRESS_REQUIRES_ZIP_OR_STATE,
+
+  ADDRESS_REQUIRES_ZIP_AND_LINE1_OR_HOUSE_NUMBER =
+      ADDRESS_REQUIRES_ZIP | ADDRESS_REQUIRES_LINE1_OR_HOUSE_NUMBER,
 
   // Policy for countries for which we do not have information about valid
   // address format.
