@@ -17,6 +17,7 @@
 namespace blink {
 
 class FederatedCredentialInit;
+class FederatedIdentityProvider;
 
 class MODULES_EXPORT FederatedCredential final : public Credential {
   DEFINE_WRAPPERTYPEINFO();
@@ -69,7 +70,10 @@ class MODULES_EXPORT FederatedCredential final : public Credential {
 
   static ScriptPromise logout(ScriptState*,
                               const HeapVector<Member<WebIdLogoutRequest>>&);
-  static ScriptPromise revoke(ScriptState*, const String);
+  static ScriptPromise revoke(ScriptState*,
+                              const String&,
+                              FederatedIdentityProvider*,
+                              ExceptionState&);
 
  private:
   const scoped_refptr<const SecurityOrigin> provider_;

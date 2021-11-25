@@ -4,16 +4,31 @@
 
 #include "third_party/blink/renderer/modules/credentialmanager/federated_credential.h"
 
+#include "third_party/blink/public/mojom/webid/federated_auth_request.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_federated_credential_init.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_federated_identity_provider.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
+#include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
 
 namespace blink {
 
 namespace {
+using mojom::blink::RevokeStatus;
+
 constexpr char kFederatedCredentialType[] = "federated";
+
+void OnRevoke(ScriptPromiseResolver* resolver, RevokeStatus status) {
+  if (status != RevokeStatus::kSuccess) {
+    resolver->Reject(MakeGarbageCollected<DOMException>(
+        DOMExceptionCode::kNetworkError, "Error revoking token."));
+    return;
+  }
+  resolver->Resolve();
 }
+
+}  // namespace
 
 FederatedCredential* FederatedCredential::Create(
     const FederatedCredentialInit* data,
@@ -82,12 +97,31 @@ ScriptPromise FederatedCredential::logout(
 }
 
 ScriptPromise FederatedCredential::revoke(ScriptState* script_state,
-                                          String account_id) {
-  // TODO(goto): actually implement this.
-  return ScriptPromise::RejectWithDOMException(
-      script_state,
-      MakeGarbageCollected<DOMException>(DOMExceptionCode::kNotSupportedError,
-                                         "Revocation API not yet implemented"));
+                                          const String& account_id,
+                                          FederatedIdentityProvider* provider,
+                                          ExceptionState& exception_state) {
+  ExecutionContext* context = ExecutionContext::From(script_state);
+
+  HeapMojoRemote<mojom::blink::FederatedAuthRequest> auth_request(context);
+  context->GetBrowserInterfaceBroker().GetInterface(
+      auth_request.BindNewPipeAndPassReceiver(
+          context->GetTaskRunner(TaskType::kUserInteraction)));
+
+  const String& url = provider->provider();
+  KURL provider_url(url);
+  if (!provider_url.IsValid()) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kSyntaxError,
+                                      "Invalid provider URL.");
+    return ScriptPromise();
+  }
+  const String& client_id = provider->getClientIdOr("");
+
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+  ScriptPromise promise = resolver->Promise();
+
+  auth_request->Revoke(provider_url, client_id, account_id,
+                       WTF::Bind(&OnRevoke, WrapPersistent(resolver)));
+  return promise;
 }
 
 }  // namespace blink

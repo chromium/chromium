@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>FederatedCredential.revoke() promise resolution</title>
+<link rel="author" title="Christian Biesinger" href="mailto:cbiesinger@chromium.org">
+<link rel="help" href="https://wicg.github.io/FedCM/#browser-api-revocation">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+
+<script type="module">
+  import {webid_test} from './resources/webid-helper.js';
+
+  const provider = {
+    provider: "https://idp.example/",
+    clientId: ""
+  };
+
+  webid_test(async (t, mock) => {
+    mock.revokeReturn("kSuccess");
+    await FederatedCredential.revoke("foo@bar.com", provider);
+  }, "Successfully revoking a token should resolve the promise.");
+
+  webid_test(async (t, mock) => {
+    mock.revokeReturn("kError");
+    const result = FederatedCredential.revoke("foo@bar.com", provider);
+    return promise_rejects_dom(t, "NetworkError", result);
+  }, "Error should reject the promise.");
+</script>

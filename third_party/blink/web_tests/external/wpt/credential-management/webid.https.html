@@ -19,13 +19,6 @@ promise_test(function(t) {
 }, "navigator.credentials.get() with a FederatedIdentityProvider.");
 
 promise_test(function(t) {
-  // Revocation API not supported yet.
-  return promise_rejects_dom(t, "NotSupportedError",
-    FederatedCredential.revoke("1234")
-  );
-}, "navigator.credentials.revoke() basic.");
-
-promise_test(function(t) {
   // Logout API not supported yet.
   return promise_rejects_dom(t, "NotSupportedError",
     FederatedCredential.logout([{

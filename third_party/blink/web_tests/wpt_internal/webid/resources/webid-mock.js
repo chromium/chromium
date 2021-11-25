@@ -46,6 +46,15 @@ export class MockFederatedAuthRequest {
     this.idToken_ = null;
   }
 
+  // Causes the subsequent `FederatedCredential.revoke` to reject with this
+  // status.
+  revokeReturn(status) {
+    let validated = RevokeStatus[status];
+    if (validated === undefined)
+      throw new Error("Invalid status: " + status);
+    this.revokeStatus_ = validated;
+  }
+
   // Implements
   //   RequestIdToken(url.mojom.Url provider, string id_request, RequestMode mode) => (RequestIdTokenStatus status, string? id_token);
   async requestIdToken(provider, idRequest, mode) {
