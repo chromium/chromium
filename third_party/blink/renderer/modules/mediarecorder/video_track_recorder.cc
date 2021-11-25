@@ -66,15 +66,15 @@ static const struct {
   media::VideoCodecProfile min_profile;
   media::VideoCodecProfile max_profile;
 } kPreferredCodecIdAndVEAProfiles[] = {
-    {CodecId::VP8, media::VP8PROFILE_MIN, media::VP8PROFILE_MAX},
-    {CodecId::VP9, media::VP9PROFILE_MIN, media::VP9PROFILE_MAX},
+    {CodecId::kVp8, media::VP8PROFILE_MIN, media::VP8PROFILE_MAX},
+    {CodecId::kVp9, media::VP9PROFILE_MIN, media::VP9PROFILE_MAX},
 #if BUILDFLAG(RTC_USE_H264)
-    {CodecId::H264, media::H264PROFILE_MIN, media::H264PROFILE_MAX}
+    {CodecId::kH264, media::H264PROFILE_MIN, media::H264PROFILE_MAX}
 #endif
 };
 
 static_assert(base::size(kPreferredCodecIdAndVEAProfiles) ==
-                  static_cast<int>(CodecId::LAST),
+                  static_cast<int>(CodecId::kLast),
               "|kPreferredCodecIdAndVEAProfiles| should consider all CodecIds");
 
 // The maximum number of frames that we keep the reference alive for encode.
@@ -179,7 +179,7 @@ VideoTrackRecorderImpl::CodecEnumerator::CodecEnumerator(
         } else {
           iter->value.push_back(supported_profile);
         }
-        if (preferred_codec_id_ == CodecId::LAST)
+        if (preferred_codec_id_ == CodecId::kLast)
           preferred_codec_id_ = codec_id_and_profile.codec_id;
       }
     }
@@ -206,8 +206,8 @@ VideoTrackRecorderImpl::CodecEnumerator::FindSupportedVideoCodecProfile(
 
 VideoTrackRecorderImpl::CodecId
 VideoTrackRecorderImpl::CodecEnumerator::GetPreferredCodecId() const {
-  if (preferred_codec_id_ == CodecId::LAST)
-    return CodecId::VP8;
+  if (preferred_codec_id_ == CodecId::kLast)
+    return CodecId::kVp8;
 
   return preferred_codec_id_;
 }
@@ -681,16 +681,16 @@ void VideoTrackRecorderImpl::InitializeEncoderOnEncoderSupportKnown(
     UMA_HISTOGRAM_BOOLEAN("Media.MediaRecorder.VEAUsed", false);
     switch (codec_profile.codec_id) {
 #if BUILDFLAG(RTC_USE_H264)
-      case CodecId::H264:
+      case CodecId::kH264:
         encoder_ = base::MakeRefCounted<H264Encoder>(
             on_encoded_video_cb, codec_profile, bits_per_second,
             main_task_runner_);
         break;
 #endif
-      case CodecId::VP8:
-      case CodecId::VP9:
+      case CodecId::kVp8:
+      case CodecId::kVp9:
         encoder_ = base::MakeRefCounted<VpxEncoder>(
-            codec_profile.codec_id == CodecId::VP9, on_encoded_video_cb,
+            codec_profile.codec_id == CodecId::kVp9, on_encoded_video_cb,
             bits_per_second, main_task_runner_);
         break;
       default:

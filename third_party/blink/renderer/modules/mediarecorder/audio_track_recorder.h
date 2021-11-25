@@ -34,13 +34,13 @@ class MODULES_EXPORT AudioTrackRecorder
     : public TrackRecorder<WebMediaStreamAudioSink> {
  public:
   enum class CodecId {
-    // Do not change the order of codecs. Add new ones right before LAST.
-    OPUS,
-    PCM,  // 32-bit little-endian float.
-    LAST
+    // Do not change the order of codecs. Add new ones right before kLast.
+    kOpus,
+    kPcm,  // 32-bit little-endian float.
+    kLast
   };
 
-  enum class BitrateMode { CONSTANT, VARIABLE };
+  enum class BitrateMode { kConstant, kVariable };
 
   using OnEncodedAudioCB =
       base::RepeatingCallback<void(const media::AudioParameters& params,

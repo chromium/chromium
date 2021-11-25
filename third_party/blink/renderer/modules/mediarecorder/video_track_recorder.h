@@ -73,14 +73,14 @@ class WebGraphicsContext3DProvider;
 // from media from a source.
 class VideoTrackRecorder : public TrackRecorder<MediaStreamVideoSink> {
  public:
-  // Do not change the order of codecs; add new ones right before LAST.
+  // Do not change the order of codecs; add new ones right before kLast.
   enum class CodecId {
-    VP8,
-    VP9,
+    kVp8,
+    kVp9,
 #if BUILDFLAG(RTC_USE_H264)
-    H264,
+    kH264,
 #endif
-    LAST
+    kLast
   };
 
   // Video codec and its encoding profile/level.
@@ -286,7 +286,7 @@ class VideoTrackRecorder : public TrackRecorder<MediaStreamVideoSink> {
     // VEA-supported profiles grouped by CodecId.
     HashMap<CodecId, media::VideoEncodeAccelerator::SupportedProfiles>
         supported_profiles_;
-    CodecId preferred_codec_id_ = CodecId::LAST;
+    CodecId preferred_codec_id_ = CodecId::kLast;
   };
 
   explicit VideoTrackRecorder(base::OnceClosure on_track_source_ended_cb);

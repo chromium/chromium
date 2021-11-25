@@ -51,31 +51,31 @@ const float kNumPixelsPerSecondSmoothnessThresholdHigh = 1280 * 720 * 30.0;
 VideoTrackRecorder::CodecId CodecIdFromMediaVideoCodec(media::VideoCodec id) {
   switch (id) {
     case media::VideoCodec::kVP8:
-      return VideoTrackRecorder::CodecId::VP8;
+      return VideoTrackRecorder::CodecId::kVp8;
     case media::VideoCodec::kVP9:
-      return VideoTrackRecorder::CodecId::VP9;
+      return VideoTrackRecorder::CodecId::kVp9;
 #if BUILDFLAG(RTC_USE_H264)
     case media::VideoCodec::kH264:
-      return VideoTrackRecorder::CodecId::H264;
+      return VideoTrackRecorder::CodecId::kH264;
 #endif
     default:
-      return VideoTrackRecorder::CodecId::LAST;
+      return VideoTrackRecorder::CodecId::kLast;
   }
   NOTREACHED() << "Unsupported video codec";
-  return VideoTrackRecorder::CodecId::LAST;
+  return VideoTrackRecorder::CodecId::kLast;
 }
 
 media::VideoCodec MediaVideoCodecFromCodecId(VideoTrackRecorder::CodecId id) {
   switch (id) {
-    case VideoTrackRecorder::CodecId::VP8:
+    case VideoTrackRecorder::CodecId::kVp8:
       return media::VideoCodec::kVP8;
-    case VideoTrackRecorder::CodecId::VP9:
+    case VideoTrackRecorder::CodecId::kVp9:
       return media::VideoCodec::kVP9;
 #if BUILDFLAG(RTC_USE_H264)
-    case VideoTrackRecorder::CodecId::H264:
+    case VideoTrackRecorder::CodecId::kH264:
       return media::VideoCodec::kH264;
 #endif
-    case VideoTrackRecorder::CodecId::LAST:
+    case VideoTrackRecorder::CodecId::kLast:
       return media::VideoCodec::kUnknown;
   }
   NOTREACHED() << "Unsupported video codec";
@@ -84,11 +84,11 @@ media::VideoCodec MediaVideoCodecFromCodecId(VideoTrackRecorder::CodecId id) {
 
 media::AudioCodec CodecIdToMediaAudioCodec(AudioTrackRecorder::CodecId id) {
   switch (id) {
-    case AudioTrackRecorder::CodecId::PCM:
+    case AudioTrackRecorder::CodecId::kPcm:
       return media::AudioCodec::kPCM;
-    case AudioTrackRecorder::CodecId::OPUS:
+    case AudioTrackRecorder::CodecId::kOpus:
       return media::AudioCodec::kOpus;
-    case AudioTrackRecorder::CodecId::LAST:
+    case AudioTrackRecorder::CodecId::kLast:
       return media::AudioCodec::kUnknown;
   }
   NOTREACHED() << "Unsupported audio codec";
@@ -101,18 +101,18 @@ media::AudioCodec CodecIdToMediaAudioCodec(AudioTrackRecorder::CodecId id) {
 VideoTrackRecorder::CodecProfile VideoStringToCodecProfile(
     const String& codecs) {
   String codecs_str = codecs.LowerASCII();
-  VideoTrackRecorder::CodecId codec_id = VideoTrackRecorder::CodecId::LAST;
+  VideoTrackRecorder::CodecId codec_id = VideoTrackRecorder::CodecId::kLast;
 
   if (codecs_str.Find("vp8") != kNotFound)
-    codec_id = VideoTrackRecorder::CodecId::VP8;
+    codec_id = VideoTrackRecorder::CodecId::kVp8;
   if (codecs_str.Find("vp9") != kNotFound)
-    codec_id = VideoTrackRecorder::CodecId::VP9;
+    codec_id = VideoTrackRecorder::CodecId::kVp9;
 #if BUILDFLAG(RTC_USE_H264)
   if (codecs_str.Find("h264") != kNotFound)
-    codec_id = VideoTrackRecorder::CodecId::H264;
+    codec_id = VideoTrackRecorder::CodecId::kH264;
   wtf_size_t avc1_start = codecs_str.Find("avc1");
   if (avc1_start != kNotFound) {
-    codec_id = VideoTrackRecorder::CodecId::H264;
+    codec_id = VideoTrackRecorder::CodecId::kH264;
 
     wtf_size_t avc1_end = codecs_str.Find(",");
     String avc1_str =
@@ -132,11 +132,11 @@ AudioTrackRecorder::CodecId AudioStringToCodecId(const String& codecs) {
   String codecs_str = codecs.LowerASCII();
 
   if (codecs_str.Find("opus") != kNotFound)
-    return AudioTrackRecorder::CodecId::OPUS;
+    return AudioTrackRecorder::CodecId::kOpus;
   if (codecs_str.Find("pcm") != kNotFound)
-    return AudioTrackRecorder::CodecId::PCM;
+    return AudioTrackRecorder::CodecId::kPcm;
 
-  return AudioTrackRecorder::CodecId::LAST;
+  return AudioTrackRecorder::CodecId::kLast;
 }
 
 }  // anonymous namespace
@@ -146,8 +146,8 @@ MediaRecorderHandler::MediaRecorderHandler(
     : passthrough_enabled_(false),
       video_bits_per_second_(0),
       audio_bits_per_second_(0),
-      video_codec_profile_(VideoTrackRecorder::CodecId::LAST),
-      audio_codec_id_(AudioTrackRecorder::CodecId::LAST),
+      video_codec_profile_(VideoTrackRecorder::CodecId::kLast),
+      audio_codec_id_(AudioTrackRecorder::CodecId::kLast),
       recording_(false),
       recorder_(nullptr),
       task_runner_(std::move(task_runner)) {}
@@ -223,7 +223,7 @@ bool MediaRecorderHandler::Initialize(
 
   // Once established that we support the codec(s), hunt then individually.
   video_codec_profile_ = VideoStringToCodecProfile(codecs);
-  if (video_codec_profile_.codec_id == VideoTrackRecorder::CodecId::LAST) {
+  if (video_codec_profile_.codec_id == VideoTrackRecorder::CodecId::kLast) {
     video_codec_profile_.codec_id =
         VideoTrackRecorderImpl::GetPreferredCodecId();
     DVLOG(1) << "Falling back to preferred video codec id "
@@ -233,10 +233,10 @@ bool MediaRecorderHandler::Initialize(
   // Do the same for the audio codec(s).
   const AudioTrackRecorder::CodecId audio_codec_id =
       AudioStringToCodecId(codecs);
-  audio_codec_id_ = (audio_codec_id != AudioTrackRecorder::CodecId::LAST)
+  audio_codec_id_ = (audio_codec_id != AudioTrackRecorder::CodecId::kLast)
                         ? audio_codec_id
                         : AudioTrackRecorder::GetPreferredCodecId();
-  DVLOG_IF(1, audio_codec_id == AudioTrackRecorder::CodecId::LAST)
+  DVLOG_IF(1, audio_codec_id == AudioTrackRecorder::CodecId::kLast)
       << "Falling back to preferred audio codec id "
       << static_cast<int>(audio_codec_id_);
 
@@ -465,30 +465,30 @@ String MediaRecorderHandler::ActualMimeType() {
     mime_type.Append("audio/webm;codecs=");
   } else {
     switch (video_codec_profile_.codec_id) {
-      case VideoTrackRecorder::CodecId::VP8:
-      case VideoTrackRecorder::CodecId::VP9:
+      case VideoTrackRecorder::CodecId::kVp8:
+      case VideoTrackRecorder::CodecId::kVp9:
         mime_type.Append("video/webm;codecs=");
         break;
 #if BUILDFLAG(RTC_USE_H264)
-      case VideoTrackRecorder::CodecId::H264:
+      case VideoTrackRecorder::CodecId::kH264:
         mime_type.Append("video/x-matroska;codecs=");
         break;
 #endif
-      case VideoTrackRecorder::CodecId::LAST:
+      case VideoTrackRecorder::CodecId::kLast:
         // Do nothing.
         break;
     }
   }
   if (has_video_tracks) {
     switch (video_codec_profile_.codec_id) {
-      case VideoTrackRecorder::CodecId::VP8:
+      case VideoTrackRecorder::CodecId::kVp8:
         mime_type.Append("vp8");
         break;
-      case VideoTrackRecorder::CodecId::VP9:
+      case VideoTrackRecorder::CodecId::kVp9:
         mime_type.Append("vp9");
         break;
 #if BUILDFLAG(RTC_USE_H264)
-      case VideoTrackRecorder::CodecId::H264:
+      case VideoTrackRecorder::CodecId::kH264:
         mime_type.Append("avc1");
         if (video_codec_profile_.profile && video_codec_profile_.level) {
           mime_type.Append(
@@ -498,27 +498,27 @@ String MediaRecorderHandler::ActualMimeType() {
         }
         break;
 #endif
-      case VideoTrackRecorder::CodecId::LAST:
-        DCHECK_NE(audio_codec_id_, AudioTrackRecorder::CodecId::LAST);
+      case VideoTrackRecorder::CodecId::kLast:
+        DCHECK_NE(audio_codec_id_, AudioTrackRecorder::CodecId::kLast);
     }
   }
   if (has_video_tracks && has_audio_tracks) {
-    if (video_codec_profile_.codec_id != VideoTrackRecorder::CodecId::LAST &&
-        audio_codec_id_ != AudioTrackRecorder::CodecId::LAST) {
+    if (video_codec_profile_.codec_id != VideoTrackRecorder::CodecId::kLast &&
+        audio_codec_id_ != AudioTrackRecorder::CodecId::kLast) {
       mime_type.Append(",");
     }
   }
   if (has_audio_tracks) {
     switch (audio_codec_id_) {
-      case AudioTrackRecorder::CodecId::OPUS:
+      case AudioTrackRecorder::CodecId::kOpus:
         mime_type.Append("opus");
         break;
-      case AudioTrackRecorder::CodecId::PCM:
+      case AudioTrackRecorder::CodecId::kPcm:
         mime_type.Append("pcm");
         break;
-      case AudioTrackRecorder::CodecId::LAST:
+      case AudioTrackRecorder::CodecId::kLast:
         DCHECK_NE(video_codec_profile_.codec_id,
-                  VideoTrackRecorder::CodecId::LAST);
+                  VideoTrackRecorder::CodecId::kLast);
     }
   }
   return mime_type.ToString();

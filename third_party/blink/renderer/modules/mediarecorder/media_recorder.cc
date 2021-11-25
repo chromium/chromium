@@ -52,9 +52,9 @@ String StateToString(MediaRecorder::State state) {
 
 String BitrateModeToString(AudioTrackRecorder::BitrateMode bitrateMode) {
   switch (bitrateMode) {
-    case AudioTrackRecorder::BitrateMode::CONSTANT:
+    case AudioTrackRecorder::BitrateMode::kConstant:
       return "constant";
-    case AudioTrackRecorder::BitrateMode::VARIABLE:
+    case AudioTrackRecorder::BitrateMode::kVariable:
       return "variable";
   }
 
@@ -67,10 +67,10 @@ AudioTrackRecorder::BitrateMode GetBitrateModeFromOptions(
   if (options->hasAudioBitrateMode()) {
     if (!WTF::CodeUnitCompareIgnoringASCIICase(options->audioBitrateMode(),
                                                "constant"))
-      return AudioTrackRecorder::BitrateMode::CONSTANT;
+      return AudioTrackRecorder::BitrateMode::kConstant;
   }
 
-  return AudioTrackRecorder::BitrateMode::VARIABLE;
+  return AudioTrackRecorder::BitrateMode::kVariable;
 }
 
 // Allocates the requested bit rates from |bitrateOptions| into the respective

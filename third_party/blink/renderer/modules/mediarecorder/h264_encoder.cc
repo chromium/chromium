@@ -96,7 +96,7 @@ H264Encoder::H264Encoder(
     : Encoder(on_encoded_video_cb, bits_per_second, std::move(task_runner)),
       codec_profile_(codec_profile) {
   DCHECK(encoding_thread_);
-  DCHECK_EQ(codec_profile_.codec_id, VideoTrackRecorder::CodecId::H264);
+  DCHECK_EQ(codec_profile_.codec_id, VideoTrackRecorder::CodecId::kH264);
 }
 
 H264Encoder::~H264Encoder() {
