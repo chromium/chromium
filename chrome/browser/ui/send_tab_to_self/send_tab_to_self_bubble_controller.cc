@@ -86,9 +86,8 @@ std::vector<TargetDeviceInfo> SendTabToSelfBubbleController::GetValidDevices()
 }
 
 AccountInfo SendTabToSelfBubbleController::GetSharingAccountInfo() const {
-  Browser* browser = chrome::FindBrowserWithWebContents(web_contents_);
   signin::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForProfile(browser->profile());
+      IdentityManagerFactory::GetForProfile(GetProfile());
   return identity_manager->FindExtendedAccountInfo(
       identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin));
 }
@@ -106,8 +105,7 @@ void SendTabToSelfBubbleController::OnDeviceSelected(
 
 void SendTabToSelfBubbleController::OnManageDevicesClicked(
     const ui::Event& event) {
-  Browser* browser = chrome::FindBrowserWithWebContents(web_contents_);
-  NavigateParams params(browser->profile(),
+  NavigateParams params(GetProfile(),
                         GURL(chrome::kGoogleAccountDeviceActivityURL),
                         ui::PageTransition::PAGE_TRANSITION_LINK);
   // NEW_FOREGROUND_TAB is passed as the default below to avoid exiting the

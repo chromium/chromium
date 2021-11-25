@@ -10,11 +10,12 @@
 #include "base/test/simple_test_clock.h"
 #include "chrome/browser/ui/send_tab_to_self/send_tab_to_self_bubble_controller.h"
 #include "chrome/browser/ui/views/send_tab_to_self/send_tab_to_self_bubble_device_button.h"
-#include "chrome/test/base/testing_profile.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "components/send_tab_to_self/target_device_info.h"
+#include "components/signin/public/identity_manager/account_info.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/gfx/image/image_unittest_util.h"
 
 namespace send_tab_to_self {
 
@@ -37,6 +38,13 @@ class SendTabToSelfBubbleControllerMock : public SendTabToSelfBubbleController {
          clock.Now() - base::Days(5)}};
   }
 
+  AccountInfo GetSharingAccountInfo() const override {
+    AccountInfo info;
+    info.email = "user@host.com";
+    info.account_image = gfx::Image(gfx::test::CreateImageSkia(96, 96));
+    return info;
+  }
+
   MOCK_METHOD2(OnDeviceSelected,
                void(const std::string& target_device_name,
                     const std::string& target_device_guid));
@@ -52,7 +60,6 @@ class SendTabToSelfBubbleViewImplTest : public ChromeViewsTestBase {
     // Create an anchor for the bubble.
     anchor_widget_ = CreateTestWidget(views::Widget::InitParams::TYPE_WINDOW);
 
-    profile_ = std::make_unique<TestingProfile>();
     controller_ = std::make_unique<SendTabToSelfBubbleControllerMock>();
     bubble_ = new SendTabToSelfBubbleViewImpl(anchor_widget_->GetContentsView(),
                                               nullptr, controller_.get());
@@ -65,7 +72,6 @@ class SendTabToSelfBubbleViewImplTest : public ChromeViewsTestBase {
     ChromeViewsTestBase::TearDown();
   }
 
-  std::unique_ptr<TestingProfile> profile_;
   std::unique_ptr<views::Widget> anchor_widget_;
   std::unique_ptr<SendTabToSelfBubbleControllerMock> controller_;
   SendTabToSelfBubbleViewImpl* bubble_;
