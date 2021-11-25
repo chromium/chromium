@@ -22,6 +22,7 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
 import org.chromium.ui.base.ActivityKeyboardVisibilityDelegate;
 import org.chromium.ui.base.ApplicationViewportInsetSupplier;
+import org.chromium.ui.util.AccessibilityUtil;
 
 /**
  * The main coordinator for the Autofill Assistant, responsible for instantiating all other
@@ -46,7 +47,8 @@ public class AssistantCoordinator {
             @NonNull ActivityKeyboardVisibilityDelegate keyboardDelegate, @NonNull View rootView,
             @NonNull Supplier<Tab> currentTabSupplier,
             @NonNull BrowserControlsManager browserControlsManager,
-            @NonNull ApplicationViewportInsetSupplier applicationBottomInsetProvider) {
+            @NonNull ApplicationViewportInsetSupplier applicationBottomInsetProvider,
+            AccessibilityUtil accessibilityUtil) {
         mActivity = activity;
         mCurrentTabSupplier = currentTabSupplier;
 
@@ -56,12 +58,13 @@ public class AssistantCoordinator {
         } else {
             mModel = new AssistantModel();
             mOverlayCoordinator = new AssistantOverlayCoordinator(activity, browserControlsManager,
-                    rootView, controller.getScrimCoordinator(), mModel.getOverlayModel());
+                    rootView, controller.getScrimCoordinator(), mModel.getOverlayModel(),
+                    accessibilityUtil);
         }
 
         mBottomBarCoordinator = new AssistantBottomBarCoordinator(activity, mModel,
                 mOverlayCoordinator, controller, applicationBottomInsetProvider,
-                tabObscuringHandler, browserControlsManager);
+                tabObscuringHandler, browserControlsManager, accessibilityUtil);
         mKeyboardCoordinator = new AssistantKeyboardCoordinator(activity, keyboardDelegate,
                 rootView, mModel, keyboardCoordinatorDelegate, controller);
     }

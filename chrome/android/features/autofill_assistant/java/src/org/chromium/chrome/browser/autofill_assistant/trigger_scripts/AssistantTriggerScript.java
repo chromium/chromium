@@ -35,6 +35,7 @@ import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
 import org.chromium.content_public.browser.GestureListenerManager;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.ApplicationViewportInsetSupplier;
+import org.chromium.ui.util.AccessibilityUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -60,6 +61,7 @@ public class AssistantTriggerScript {
     private final BottomSheetObserver mBottomSheetObserver;
     private final ObservableSupplierImpl<Integer> mInsetSupplier = new ObservableSupplierImpl<>();
     private final ApplicationViewportInsetSupplier mApplicationViewportInsetSupplier;
+    private final AccessibilityUtil mAccessibilityUtil;
 
     private AssistantHeaderCoordinator mHeaderCoordinator;
     private AssistantHeaderModel mHeaderModel;
@@ -79,7 +81,8 @@ public class AssistantTriggerScript {
 
     public AssistantTriggerScript(Context context, Delegate delegate, WebContents webContents,
             BottomSheetController controller,
-            ApplicationViewportInsetSupplier applicationViewportInsetSupplier) {
+            ApplicationViewportInsetSupplier applicationViewportInsetSupplier,
+            AccessibilityUtil accessibilityUtil) {
         assert delegate != null;
         mContext = context;
         mDelegate = delegate;
@@ -87,6 +90,7 @@ public class AssistantTriggerScript {
         mBottomSheetController = controller;
         mApplicationViewportInsetSupplier = applicationViewportInsetSupplier;
         mApplicationViewportInsetSupplier.addSupplier(mInsetSupplier);
+        mAccessibilityUtil = accessibilityUtil;
         mBottomSheetObserver = new EmptyBottomSheetObserver() {
             @Override
             public void onSheetClosed(@StateChangeReason int reason) {
@@ -165,6 +169,7 @@ public class AssistantTriggerScript {
         AssistantRootViewContainer rootViewContainer =
                 (AssistantRootViewContainer) LayoutUtils.createInflater(mContext).inflate(
                         R.layout.autofill_assistant_bottom_sheet_content, /* root= */ null);
+        rootViewContainer.setAccessibilityUtil(mAccessibilityUtil);
         rootViewContainer.disableTalkbackViewResizing();
         ScrollView scrollableContent = rootViewContainer.findViewById(R.id.scrollable_content);
         rootViewContainer.addView(mHeaderCoordinator.getView(), 0);
@@ -215,7 +220,8 @@ public class AssistantTriggerScript {
         if (mHeaderCoordinator != null) {
             mHeaderCoordinator.destroy();
         }
-        mHeaderCoordinator = new AssistantHeaderCoordinator(mContext, mHeaderModel);
+        mHeaderCoordinator =
+                new AssistantHeaderCoordinator(mContext, mHeaderModel, mAccessibilityUtil);
         mHeaderModel.set(
                 AssistantHeaderModel.FEEDBACK_BUTTON_CALLBACK, mDelegate::onFeedbackButtonClicked);
         if (AutofillAssistantDependencyInjector.hasServiceRequestSenderToInject()) {

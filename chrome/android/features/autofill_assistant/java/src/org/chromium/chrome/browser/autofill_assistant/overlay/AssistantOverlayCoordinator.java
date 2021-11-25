@@ -10,11 +10,11 @@ import android.view.View;
 
 import org.chromium.chrome.browser.autofill_assistant.overlay.AssistantOverlayModel.AssistantOverlayRect;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
-import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
 import org.chromium.components.browser_ui.widget.scrim.ScrimProperties;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.util.AccessibilityUtil;
 
 import java.util.List;
 
@@ -28,15 +28,17 @@ public class AssistantOverlayCoordinator {
     private final AssistantOverlayDrawable mDrawable;
     private final View mRootView;
     private final ScrimCoordinator mScrim;
+    private final AccessibilityUtil mAccessibilityUtil;
     private boolean mScrimEnabled;
     private boolean mScrimSuppressed;
 
     public AssistantOverlayCoordinator(Context context,
             BrowserControlsStateProvider browserControls, View rootView, ScrimCoordinator scrim,
-            AssistantOverlayModel model) {
+            AssistantOverlayModel model, AccessibilityUtil accessibilityUtil) {
         mModel = model;
         mRootView = rootView;
         mScrim = scrim;
+        mAccessibilityUtil = accessibilityUtil;
         mEventFilter = new AssistantOverlayEventFilter(context, browserControls, rootView);
         mDrawable = new AssistantOverlayDrawable(context, browserControls);
 
@@ -118,8 +120,7 @@ public class AssistantOverlayCoordinator {
             return;
         }
 
-        if (state == AssistantOverlayState.PARTIAL
-                && ChromeAccessibilityUtil.get().isAccessibilityEnabled()) {
+        if (state == AssistantOverlayState.PARTIAL && mAccessibilityUtil.isAccessibilityEnabled()) {
             // Touch exploration is fully disabled if there's an overlay in front. In this case, the
             // overlay must be fully gone and filtering elements for touch exploration must happen
             // at another level.

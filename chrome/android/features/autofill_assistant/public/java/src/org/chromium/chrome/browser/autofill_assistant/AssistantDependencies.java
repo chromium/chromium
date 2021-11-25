@@ -19,7 +19,7 @@ import org.chromium.ui.base.ApplicationViewportInsetSupplier;
  i.e., WebLayer vs. Chrome.
 
  */
-public interface AssistantDependencies {
+public interface AssistantDependencies extends AssistantStaticDependencies {
     WebContents getWebContents();
 
     Context getContext();

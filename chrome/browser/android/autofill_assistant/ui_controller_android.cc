@@ -1676,13 +1676,17 @@ void UiControllerAndroid::OnFormChanged(const FormProto* form,
                   base::android::ToJavaIntArray(env, allowed_values)));
         }
 
+        const auto dependencies =
+            Java_AutofillAssistantUiController_getDependencies(
+                AttachCurrentThread(), java_object_);
+
         Java_AssistantFormModel_addInput(
             env, jinput_list,
             Java_AssistantFormInput_createCounterInput(
                 env, i, ConvertUTF8ToJavaString(env, counter_input.label()),
                 ConvertUTF8ToJavaString(env, counter_input.expand_text()),
                 ConvertUTF8ToJavaString(env, counter_input.minimize_text()),
-                jcounters, counter_input.minimized_count(),
+                jcounters, dependencies, counter_input.minimized_count(),
                 counter_input.min_counters_sum(),
                 counter_input.max_counters_sum(),
                 form_delegate_.GetJavaObject()));

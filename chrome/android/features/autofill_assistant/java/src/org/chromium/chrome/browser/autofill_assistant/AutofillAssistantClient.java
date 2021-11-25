@@ -20,7 +20,6 @@ import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.chrome.browser.autofill_assistant.overlay.AssistantOverlayCoordinator;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
-import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.components.signin.AccessTokenData;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.identitymanager.IdentityManager;
@@ -355,8 +354,8 @@ public class AutofillAssistantClient {
 
     /** Returns whether a11y is enabled or not. */
     @CalledByNative
-    private boolean isAccessibilityEnabled() {
-        return ChromeAccessibilityUtil.get().isAccessibilityEnabled();
+    private static boolean isAccessibilityEnabled(AssistantStaticDependencies staticDependencies) {
+        return staticDependencies.getAccessibilityUtil().isAccessibilityEnabled();
     }
 
     /**

@@ -38,8 +38,9 @@ class TestingAutofillAssistantModuleEntryProvider extends AutofillAssistantModul
                 BrowserControlsStateProvider browserControls, View rootView,
                 ActivityTabProvider activityTabProvider,
                 AssistantDependenciesFactory dependenciesFactory) {
-            super(new OnboardingCoordinatorFactory(
-                          context, bottomSheetController, browserControls, rootView),
+            super(new OnboardingCoordinatorFactory(context, bottomSheetController, browserControls,
+                          rootView,
+                          dependenciesFactory.createStaticDependencies().getAccessibilityUtil()),
                     activityTabProvider, dependenciesFactory);
         }
 

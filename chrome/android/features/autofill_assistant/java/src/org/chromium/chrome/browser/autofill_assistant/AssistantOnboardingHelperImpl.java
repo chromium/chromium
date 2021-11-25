@@ -36,7 +36,7 @@ public class AssistantOnboardingHelperImpl implements AssistantOnboardingHelper 
     AssistantOnboardingHelperImpl(AssistantDependencies dependencies) {
         mOnboardingCoordinatorFactory = new OnboardingCoordinatorFactory(dependencies.getContext(),
                 dependencies.getBottomSheetController(), dependencies.getBrowserControls(),
-                dependencies.getRootView());
+                dependencies.getRootView(), dependencies.getAccessibilityUtil());
         mTriggerScriptBridge = new AssistantTriggerScriptBridge(dependencies);
     }
 

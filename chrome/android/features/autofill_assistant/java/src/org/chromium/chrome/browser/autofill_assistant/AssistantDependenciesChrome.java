@@ -24,7 +24,8 @@ import org.chromium.ui.base.ApplicationViewportInsetSupplier;
 /**
  * Implementation of {@link AssistantDependencies} for Chrome.
  */
-public class AssistantDependenciesChrome implements AssistantDependencies {
+public class AssistantDependenciesChrome
+        implements AssistantDependencies, AssistantStaticDependenciesChrome {
     private final WebContents mWebContents;
 
     // Dependencies tied to the activity.

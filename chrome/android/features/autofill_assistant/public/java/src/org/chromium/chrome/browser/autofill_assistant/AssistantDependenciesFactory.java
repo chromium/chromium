@@ -15,4 +15,9 @@ interface AssistantDependenciesFactory {
      * Create the WebContents specific dependencies.
      * */
     AssistantDependencies createDependencies(WebContents webContents);
+
+    /**
+     * Create the static dependencies that are independent of WebContents.
+     * */
+    AssistantStaticDependencies createStaticDependencies();
 }

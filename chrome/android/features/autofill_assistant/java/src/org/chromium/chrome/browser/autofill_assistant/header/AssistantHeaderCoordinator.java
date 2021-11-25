@@ -26,6 +26,7 @@ import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
+import org.chromium.ui.util.AccessibilityUtil;
 
 /**
  * Coordinator for the header of the Autofill Assistant.
@@ -38,7 +39,8 @@ public class AssistantHeaderCoordinator implements ProfileDataCache.Observer {
     private final ViewHolder mViewHolder;
     private final RecyclerView mChipsContainer;
 
-    public AssistantHeaderCoordinator(Context context, AssistantHeaderModel model) {
+    public AssistantHeaderCoordinator(
+            Context context, AssistantHeaderModel model, AccessibilityUtil accessibilityUtil) {
         // Create the poodle and insert it before the status message. We have to create a view
         // bigger than the desired poodle size (24dp) because the actual downstream implementation
         // needs extra space for the animation.
@@ -106,7 +108,7 @@ public class AssistantHeaderCoordinator implements ProfileDataCache.Observer {
         // Bind view and mediator through the model.
         mViewHolder =
                 new AssistantHeaderViewBinder.ViewHolder(context, mView, poodle, mChipsContainer);
-        AssistantHeaderViewBinder viewBinder = new AssistantHeaderViewBinder();
+        AssistantHeaderViewBinder viewBinder = new AssistantHeaderViewBinder(accessibilityUtil);
         PropertyModelChangeProcessor.create(model, mViewHolder, viewBinder);
     }
 

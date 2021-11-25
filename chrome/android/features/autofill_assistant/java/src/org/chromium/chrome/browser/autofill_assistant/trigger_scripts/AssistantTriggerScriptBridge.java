@@ -35,7 +35,8 @@ public class AssistantTriggerScriptBridge {
     @CalledByNative
     public AssistantTriggerScriptBridge(AssistantDependencies dependencies) {
         mDependencies = dependencies;
-        mTriggerScript = new AssistantTriggerScript(mDependencies.getContext(),
+
+        AssistantTriggerScript.Delegate delegate =
                 new AssistantTriggerScript.Delegate() {
                     @Override
                     public void onTriggerScriptAction(int action) {
@@ -61,9 +62,11 @@ public class AssistantTriggerScriptBridge {
                                 mDependencies.getWebContents().getVisibleUrl().getSpec(),
                                 AssistantCoordinator.FEEDBACK_CATEGORY_TAG);
                     }
-                },
-                mDependencies.getWebContents(), mDependencies.getBottomSheetController(),
-                mDependencies.getBottomInsetProvider());
+                };
+
+        mTriggerScript = new AssistantTriggerScript(dependencies.getContext(), delegate,
+                dependencies.getWebContents(), dependencies.getBottomSheetController(),
+                dependencies.getBottomInsetProvider(), dependencies.getAccessibilityUtil());
 
         mKeyboardVisibilityListener = this::safeNativeOnKeyboardVisibilityChanged;
     }

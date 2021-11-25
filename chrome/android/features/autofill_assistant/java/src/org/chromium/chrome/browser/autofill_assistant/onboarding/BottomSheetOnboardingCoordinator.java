@@ -31,6 +31,7 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.Shee
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
 import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
 import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
+import org.chromium.ui.util.AccessibilityUtil;
 
 import java.util.Map;
 
@@ -46,18 +47,21 @@ class BottomSheetOnboardingCoordinator extends BaseOnboardingCoordinator {
     private final BrowserControlsStateProvider mBrowserControls;
     private final View mRootView;
     private final ScrimCoordinator mScrimCoordinator;
+    private final AccessibilityUtil mAccessibilityUtil;
 
     @Nullable
     AssistantOverlayCoordinator mOverlayCoordinator;
 
     BottomSheetOnboardingCoordinator(String experimentIds, Map<String, String> parameters,
             Context context, BottomSheetController controller,
-            BrowserControlsStateProvider browserControls, View rootView, ScrimCoordinator scrim) {
+            BrowserControlsStateProvider browserControls, View rootView, ScrimCoordinator scrim,
+            AccessibilityUtil accessibilityUtil) {
         super(experimentIds, parameters, context);
-        this.mController = controller;
-        this.mBrowserControls = browserControls;
-        this.mRootView = rootView;
-        this.mScrimCoordinator = scrim;
+        mController = controller;
+        mBrowserControls = browserControls;
+        mRootView = rootView;
+        mScrimCoordinator = scrim;
+        mAccessibilityUtil = accessibilityUtil;
     }
 
     @Override
@@ -94,8 +98,8 @@ class BottomSheetOnboardingCoordinator extends BaseOnboardingCoordinator {
     void initViewImpl(Callback<Integer> callback) {
         // If there's a tab, cover it with an overlay.
         AssistantOverlayModel overlayModel = new AssistantOverlayModel();
-        mOverlayCoordinator = new AssistantOverlayCoordinator(
-                getContext(), mBrowserControls, mRootView, mScrimCoordinator, overlayModel);
+        mOverlayCoordinator = new AssistantOverlayCoordinator(getContext(), mBrowserControls,
+                mRootView, mScrimCoordinator, overlayModel, mAccessibilityUtil);
         overlayModel.set(AssistantOverlayModel.STATE, AssistantOverlayState.FULL);
 
         mBottomSheetObserver = new EmptyBottomSheetObserver() {

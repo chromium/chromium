@@ -15,9 +15,9 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import org.chromium.chrome.autofill_assistant.R;
+import org.chromium.chrome.browser.autofill_assistant.AssistantStaticDependencies;
 import org.chromium.chrome.browser.autofill_assistant.AssistantTextUtils;
 import org.chromium.chrome.browser.autofill_assistant.LayoutUtils;
-import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -75,8 +75,8 @@ class AssistantFormCounterInput extends AssistantFormInput {
     private final Delegate mDelegate;
 
     AssistantFormCounterInput(String label, String expandText, String minimizeText,
-            List<AssistantFormCounter> counters, int minimizedCount, long minCountersSum,
-            long maxCountersSum, Delegate delegate) {
+            List<AssistantFormCounter> counters, AssistantStaticDependencies staticDependencies,
+            int minimizedCount, long minCountersSum, long maxCountersSum, Delegate delegate) {
         mLabel = label;
         mExpandText = expandText;
         mMinimizeText = minimizeText;
@@ -85,7 +85,7 @@ class AssistantFormCounterInput extends AssistantFormInput {
         // Don't show the expandable section if there is no text to show when minimized/expanded, or
         // when TalkBack is enabled.
         mMinimizedCount = expandText.isEmpty() || minimizeText.isEmpty()
-                        || ChromeAccessibilityUtil.get().isAccessibilityEnabled()
+                        || staticDependencies.getAccessibilityUtil().isAccessibilityEnabled()
                 ? Integer.MAX_VALUE
                 : minimizedCount;
         mMinCountersSum = minCountersSum;

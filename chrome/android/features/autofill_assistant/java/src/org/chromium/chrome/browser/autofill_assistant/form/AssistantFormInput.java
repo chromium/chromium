@@ -12,6 +12,7 @@ import android.widget.TextView;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.chrome.autofill_assistant.R;
+import org.chromium.chrome.browser.autofill_assistant.AssistantStaticDependencies;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -64,10 +65,10 @@ public abstract class AssistantFormInput {
     @CalledByNative
     private static AssistantFormCounterInput createCounterInput(int inputIndex, String label,
             String expandText, String minimizeText, List<AssistantFormCounter> counters,
-            int minimizedCount, long minCountersSum, long maxCountersSum,
-            AssistantFormDelegate delegate) {
+            AssistantStaticDependencies staticDependencies, int minimizedCount, long minCountersSum,
+            long maxCountersSum, AssistantFormDelegate delegate) {
         return new AssistantFormCounterInput(label, expandText, minimizeText, counters,
-                minimizedCount, minCountersSum, maxCountersSum,
+                staticDependencies, minimizedCount, minCountersSum, maxCountersSum,
                 new AssistantFormCounterInput.Delegate() {
                     @Override
                     public void onCounterChanged(int counterIndex, int value) {

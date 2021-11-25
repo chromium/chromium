@@ -9,6 +9,7 @@ import android.view.View;
 
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.ui.util.AccessibilityUtil;
 
 import java.util.Map;
 
@@ -20,14 +21,17 @@ public class OnboardingCoordinatorFactory {
     private final BottomSheetController mBottomSheetController;
     private final BrowserControlsStateProvider mBrowserControls;
     private final View mRootView;
+    private final AccessibilityUtil mAccessibilityUtil;
 
     public OnboardingCoordinatorFactory(Context context,
             BottomSheetController bottomSheetController,
-            BrowserControlsStateProvider browserControls, View rootView) {
+            BrowserControlsStateProvider browserControls, View rootView,
+            AccessibilityUtil accessibilityUtil) {
         mContext = context;
         mBottomSheetController = bottomSheetController;
         mBrowserControls = browserControls;
         mRootView = rootView;
+        mAccessibilityUtil = accessibilityUtil;
     }
 
     /**
@@ -37,7 +41,7 @@ public class OnboardingCoordinatorFactory {
             String experimentIds, Map<String, String> parameters) {
         return new BottomSheetOnboardingCoordinator(experimentIds, parameters, mContext,
                 mBottomSheetController, mBrowserControls, mRootView,
-                mBottomSheetController.getScrimCoordinator());
+                mBottomSheetController.getScrimCoordinator(), mAccessibilityUtil);
     }
 
     /**

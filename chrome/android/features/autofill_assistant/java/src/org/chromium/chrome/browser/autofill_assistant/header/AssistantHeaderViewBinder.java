@@ -23,12 +23,12 @@ import org.chromium.chrome.browser.autofill_assistant.AssistantTextUtils;
 import org.chromium.chrome.browser.autofill_assistant.AutofillAssistantPreferenceFragment;
 import org.chromium.chrome.browser.autofill_assistant.carousel.AssistantChipAdapter;
 import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
-import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.components.browser_ui.widget.textbubble.TextBubble;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
+import org.chromium.ui.util.AccessibilityUtil;
 import org.chromium.ui.widget.ViewRectProvider;
 
 /**
@@ -41,6 +41,12 @@ class AssistantHeaderViewBinder
                 AssistantHeaderViewBinder.ViewHolder, PropertyKey> {
     /** The amount of space to put between the top of the sheet and the bottom of the bubble.*/
     private static final int TEXT_BUBBLE_PIXELS_ABOVE_SHEET = 4;
+
+    private final AccessibilityUtil mAccessibilityUtil;
+
+    public AssistantHeaderViewBinder(AccessibilityUtil accessibilityUtil) {
+        mAccessibilityUtil = accessibilityUtil;
+    }
 
     /**
      * A wrapper class that holds the different views of the header.
@@ -201,7 +207,7 @@ class AssistantHeaderViewBinder
                 /*context = */ view.mContext, /*rootView = */ poodle, /*contentString = */ message,
                 /*accessibilityString = */ message, /*showArrow = */ true,
                 /*anchorRectProvider = */ anchorRectProvider,
-                ChromeAccessibilityUtil.get().isAccessibilityEnabled());
+                mAccessibilityUtil.isAccessibilityEnabled());
         view.mTextBubble.setDismissOnTouchInteraction(true);
         view.mTextBubble.show();
     }

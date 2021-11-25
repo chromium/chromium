@@ -15,7 +15,7 @@ import androidx.annotation.Nullable;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
-import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
+import org.chromium.ui.util.AccessibilityUtil;
 
 /**
  * A special linear layout that limits its maximum size to always stay below the Chrome navigation
@@ -25,6 +25,7 @@ public class AssistantRootViewContainer
         extends LinearLayout implements BrowserControlsStateProvider.Observer {
     private final Activity mActivity;
     private BrowserControlsStateProvider mBrowserControlsStateProvider;
+    private AccessibilityUtil mAccessibilityUtil;
     private Rect mVisibleViewportRect = new Rect();
     private float mTalkbackSheetSizeFraction;
     private boolean mTalkbackResizingDisabled;
@@ -35,9 +36,15 @@ public class AssistantRootViewContainer
     }
 
     /** Initializes the object with the given {@link BrowserControlsStateProvider}. */
-    public void initialize(@NonNull BrowserControlsStateProvider browserControlsStateProvider) {
+    public void initialize(@NonNull BrowserControlsStateProvider browserControlsStateProvider,
+            AccessibilityUtil accessibilityUtil) {
         mBrowserControlsStateProvider = browserControlsStateProvider;
         mBrowserControlsStateProvider.addObserver(this);
+        mAccessibilityUtil = accessibilityUtil;
+    }
+
+    public void setAccessibilityUtil(AccessibilityUtil accessibilityUtil) {
+        mAccessibilityUtil = accessibilityUtil;
     }
 
     public void setTalkbackViewSizeFraction(float fraction) {
@@ -78,7 +85,7 @@ public class AssistantRootViewContainer
 
         int targetHeight;
         int mode;
-        if (ChromeAccessibilityUtil.get().isAccessibilityEnabled() && !mTalkbackResizingDisabled) {
+        if (mAccessibilityUtil.isAccessibilityEnabled() && !mTalkbackResizingDisabled) {
             // TODO(b/143944870): Make this more stable with landscape mode.
             targetHeight = (int) (availableHeight * mTalkbackSheetSizeFraction);
             mode = MeasureSpec.EXACTLY;

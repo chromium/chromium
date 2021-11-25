@@ -144,7 +144,8 @@ public class AutofillAssistantUiController {
                 overlayCoordinator, this::safeNativeOnKeyboardVisibilityChanged,
                 activity.getWindowAndroid().getKeyboardDelegate(), rootView.get(),
                 activity.getActivityTabProvider(), activity.getBrowserControlsManager(),
-                activity.getWindowAndroid().getApplicationBottomInsetProvider());
+                activity.getWindowAndroid().getApplicationBottomInsetProvider(),
+                dependencies.getAccessibilityUtil());
         mActivityTabObserver = new ActivityTabProvider.ActivityTabTabObserver(
                 activity.getActivityTabProvider(), /* shouldTrigger = */ true) {
             @Override
@@ -274,6 +275,11 @@ public class AutofillAssistantUiController {
     @CalledByNative
     private AssistantModel getModel() {
         return mCoordinator.getModel();
+    }
+
+    @CalledByNative
+    private AssistantDependencies getDependencies() {
+        return mDependencies;
     }
 
     @CalledByNative

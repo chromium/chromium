@@ -106,7 +106,10 @@ public class BottomSheetOnboardingCoordinatorTest {
                                     .getScrimCoordinator();
         mOnboardingCoordinatorFactory = new OnboardingCoordinatorFactory(mActivity,
                 mBottomSheetController, mActivity.getBrowserControlsManager(),
-                mActivity.getCompositorViewHolderForTesting());
+                mActivity.getCompositorViewHolderForTesting(),
+                new AssistantDependenciesFactoryChrome()
+                        .createStaticDependencies()
+                        .getAccessibilityUtil());
     }
 
     private BaseOnboardingCoordinator createCoordinator() {
