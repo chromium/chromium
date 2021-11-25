@@ -22,6 +22,18 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
+<histogram name="Variations.AppliedSeed.Size" units="bytes"
+    expires_after="2022-11-20">
+  <owner>caitlinfischer@google.com</owner>
+  <owner>src/base/metrics/OWNERS</owner>
+  <summary>
+    The size of the variations seed (serialized uncompressed proto) that is
+    loaded on startup and used. Note that not all loaded seeds are used; for
+    example, expired seeds are not used. The seed could be a regular seed or a
+    safe seed. Recorded after setting up field trials with the seed.
+  </summary>
+</histogram>
+
 <histogram name="Variations.AppliedSeed.StudyCount" units="studies"
     expires_after="2022-11-20">
   <owner>caitlinfischer@google.com</owner>
@@ -523,8 +535,8 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records how long it takes to load and apply a variations seed. Recorded only
     when the seed is successfully loaded and applied. To help diagnose a
-    processing time increase, see whether Variations.AppliedSeed.StudyCount
-    increased at the same time.
+    processing time increase, see whether Variations.AppliedSeed.DataSize and
+    Variations.AppliedSeed.StudyCount increased at the same time.
   </summary>
 </histogram>
 

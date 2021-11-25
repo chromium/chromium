@@ -5,6 +5,7 @@
 #include "components/variations/service/variations_field_trial_creator.h"
 
 #include <stddef.h>
+#include <cstring>
 #include <memory>
 #include <utility>
 
@@ -482,6 +483,8 @@ TEST_F(FieldTrialCreatorTest, SetUpFieldTrials_ValidSeed_NotExpired) {
                                         freshness_in_minutes, 1);
     histogram_tester.ExpectUniqueSample("Variations.SeedUsage",
                                         SeedUsage::kRegularSeedUsed, 1);
+    histogram_tester.ExpectUniqueSample("Variations.AppliedSeed.Size",
+                                        strlen(kTestSeedSerializedData), 1);
 
     ResetFeatureList();
   }

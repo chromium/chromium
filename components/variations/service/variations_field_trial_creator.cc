@@ -618,8 +618,9 @@ bool VariationsFieldTrialCreator::CreateTrialsFromSeed(
         std::move(client_filterable_state), seed_store_->GetLastFetchTime());
   }
 
-  UMA_HISTOGRAM_TIMES("Variations.SeedProcessingTime",
-                      base::TimeTicks::Now() - start_time);
+  base::UmaHistogramCounts1M("Variations.AppliedSeed.Size", seed_data.size());
+  base::UmaHistogramTimes("Variations.SeedProcessingTime",
+                          base::TimeTicks::Now() - start_time);
   return true;
 }
 
