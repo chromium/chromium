@@ -4,6 +4,7 @@
 
 #include "components/page_load_metrics/browser/observers/prerender_page_load_metrics_observer.h"
 
+#include "base/metrics/histogram_functions.h"
 #include "components/page_load_metrics/browser/metrics_web_contents_observer.h"
 #include "components/page_load_metrics/browser/observers/core/largest_contentful_paint_handler.h"
 #include "components/page_load_metrics/browser/page_load_metrics_util.h"
@@ -31,6 +32,9 @@ const char kHistogramPrerenderCumulativeShiftScoreMainFrame[] =
 
 }  // namespace internal
 
+PrerenderPageLoadMetricsObserver::PrerenderPageLoadMetricsObserver() = default;
+PrerenderPageLoadMetricsObserver::~PrerenderPageLoadMetricsObserver() = default;
+
 page_load_metrics::PageLoadMetricsObserver::ObservePolicy
 PrerenderPageLoadMetricsObserver::OnPrerenderStart(
     content::NavigationHandle* navigation_handle,
@@ -48,13 +52,21 @@ PrerenderPageLoadMetricsObserver::OnStart(
 
 void PrerenderPageLoadMetricsObserver::DidActivatePrerenderedPage(
     content::NavigationHandle* navigation_handle) {
+  // Copy the trigger type and histogram suffix for an embedder. These data will
+  // be lost after NavigationRequest is destroyed.
+  DCHECK(!trigger_type_.has_value());
+  trigger_type_ = navigation_handle->GetPrerenderTriggerType();
+  embedder_histogram_suffix_ =
+      navigation_handle->GetPrerenderEmbedderHistogramSuffix();
+
   // |navigation_handle| here is for the activation navigation, while
   // |GetDelegate().GetNavigationStart()| is the start time of initial prerender
   // navigation.
   base::TimeDelta navigation_to_activation =
       navigation_handle->NavigationStart() - GetDelegate().GetNavigationStart();
-  PAGE_LOAD_HISTOGRAM(internal::kHistogramPrerenderNavigationToActivation,
-                      navigation_to_activation);
+  base::UmaHistogramCustomTimes(
+      AppendSuffix(internal::kHistogramPrerenderNavigationToActivation),
+      navigation_to_activation, base::Milliseconds(10), base::Minutes(10), 100);
 
   ukm::builders::PrerenderPageLoad(GetDelegate().GetPageUkmSourceId())
       .SetWasPrerendered(true)
@@ -69,9 +81,11 @@ void PrerenderPageLoadMetricsObserver::OnFirstPaintInPage(
           timing.paint_timing->first_paint, GetDelegate())) {
     return;
   }
-  PAGE_LOAD_HISTOGRAM(internal::kHistogramPrerenderActivationToFirstPaint,
-                      timing.paint_timing->first_paint.value() -
-                          timing.activation_start.value());
+  base::UmaHistogramCustomTimes(
+      AppendSuffix(internal::kHistogramPrerenderActivationToFirstPaint),
+      timing.paint_timing->first_paint.value() -
+          timing.activation_start.value(),
+      base::Milliseconds(10), base::Minutes(10), 100);
 }
 
 void PrerenderPageLoadMetricsObserver::OnFirstContentfulPaintInPage(
@@ -83,9 +97,10 @@ void PrerenderPageLoadMetricsObserver::OnFirstContentfulPaintInPage(
   base::TimeDelta activation_to_fcp =
       timing.paint_timing->first_contentful_paint.value() -
       timing.activation_start.value();
-  PAGE_LOAD_HISTOGRAM(
-      internal::kHistogramPrerenderActivationToFirstContentfulPaint,
-      activation_to_fcp);
+  base::UmaHistogramCustomTimes(
+      AppendSuffix(
+          internal::kHistogramPrerenderActivationToFirstContentfulPaint),
+      activation_to_fcp, base::Milliseconds(10), base::Minutes(10), 100);
   ukm::builders::PrerenderPageLoad(GetDelegate().GetPageUkmSourceId())
       .SetTiming_ActivationToFirstContentfulPaint(
           activation_to_fcp.InMilliseconds())
@@ -98,8 +113,8 @@ void PrerenderPageLoadMetricsObserver::OnFirstInputInPage(
           timing.interactive_timing->first_input_timestamp, GetDelegate())) {
     return;
   }
-  UMA_HISTOGRAM_CUSTOM_TIMES(
-      internal::kHistogramPrerenderFirstInputDelay4,
+  base::UmaHistogramCustomTimes(
+      AppendSuffix(internal::kHistogramPrerenderFirstInputDelay4),
       timing.interactive_timing->first_input_delay.value(),
       base::Milliseconds(1), base::Seconds(60), 50);
 }
@@ -135,21 +150,36 @@ void PrerenderPageLoadMetricsObserver::RecordSessionEndHistograms(
     base::TimeDelta activation_to_lcp =
         largest_contentful_paint.Time().value() -
         main_frame_timing.activation_start.value();
-    PAGE_LOAD_HISTOGRAM(
-        internal::kHistogramPrerenderActivationToLargestContentfulPaint2,
-        activation_to_lcp);
+    base::UmaHistogramCustomTimes(
+        AppendSuffix(
+            internal::kHistogramPrerenderActivationToLargestContentfulPaint2),
+        activation_to_lcp, base::Milliseconds(10), base::Minutes(10), 100);
     ukm::builders::PrerenderPageLoad(GetDelegate().GetPageUkmSourceId())
         .SetTiming_ActivationToLargestContentfulPaint(
             activation_to_lcp.InMilliseconds())
         .Record(ukm::UkmRecorder::Get());
   }
 
-  UMA_HISTOGRAM_COUNTS_100(
-      internal::kHistogramPrerenderCumulativeShiftScore,
+  base::UmaHistogramCounts100(
+      AppendSuffix(internal::kHistogramPrerenderCumulativeShiftScore),
       page_load_metrics::LayoutShiftUmaValue(
           GetDelegate().GetPageRenderData().layout_shift_score));
-  UMA_HISTOGRAM_COUNTS_100(
-      internal::kHistogramPrerenderCumulativeShiftScoreMainFrame,
+  base::UmaHistogramCounts100(
+      AppendSuffix(internal::kHistogramPrerenderCumulativeShiftScoreMainFrame),
       page_load_metrics::LayoutShiftUmaValue(
           GetDelegate().GetMainFrameRenderData().layout_shift_score));
+}
+
+std::string PrerenderPageLoadMetricsObserver::AppendSuffix(
+    const std::string& histogram_name) const {
+  DCHECK(trigger_type_.has_value());
+  switch (trigger_type_.value()) {
+    case content::PrerenderTriggerType::kSpeculationRule:
+      DCHECK(embedder_histogram_suffix_.empty());
+      return histogram_name + ".SpeculationRule";
+    case content::PrerenderTriggerType::kEmbedder:
+      DCHECK(!embedder_histogram_suffix_.empty());
+      return histogram_name + ".Embedder" + embedder_histogram_suffix_;
+  }
+  NOTREACHED();
 }

@@ -9168,13 +9168,12 @@ VisibleTimeRequestTrigger* WebContentsImpl::GetVisibleTimeRequestTrigger() {
 }
 
 std::unique_ptr<PrerenderHandle> WebContentsImpl::StartPrerendering(
-    const GURL& prerendering_url) {
-  // TODO(https://crbug.com/1166085): Use proper PrerenderTriggerType after the
-  // specification of Prerender2 metrics is finalized.
+    const GURL& prerendering_url,
+    PrerenderTriggerType trigger_type,
+    const std::string& embedder_histogram_suffix) {
   PrerenderAttributes attributes(
-      prerendering_url, PrerenderTriggerType::kSpeculationRule,
-      /*embedder_histogram_suffix=*/"", content::Referrer(),
-      /*initiator_origin=*/absl::nullopt, prerendering_url,
+      prerendering_url, trigger_type, embedder_histogram_suffix,
+      content::Referrer(), /*initiator_origin=*/absl::nullopt, prerendering_url,
       content::ChildProcessHost::kInvalidUniqueID,
       /*initiator_frame_token=*/absl::nullopt, ukm::kInvalidSourceId);
   int frame_tree_node_id =

@@ -8,19 +8,13 @@
 #include <string>
 
 #include "content/common/content_export.h"
+#include "content/public/browser/prerender_trigger_type.h"
 #include "content/public/common/referrer.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "third_party/blink/public/mojom/navigation/navigation_params.mojom.h"
 #include "third_party/perfetto/include/perfetto/tracing/traced_value_forward.h"
 
 namespace content {
-
-enum class PrerenderTriggerType {
-  // https://wicg.github.io/nav-speculation/prerendering.html#speculation-rules
-  kSpeculationRule,
-  // Trigger used by content embedders like chrome/.
-  kEmbedder,
-};
 
 // Records the basic attributes of a prerender request.
 struct CONTENT_EXPORT PrerenderAttributes {

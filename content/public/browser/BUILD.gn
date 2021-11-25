@@ -283,6 +283,7 @@ source_set("browser_sources") {
     "platform_notification_context.h",
     "platform_notification_service.h",
     "prerender_handle.h",
+    "prerender_trigger_type.h",
     "presentation_receiver_flags.h",
     "presentation_request.cc",
     "presentation_request.h",

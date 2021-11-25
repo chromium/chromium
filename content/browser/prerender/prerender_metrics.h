@@ -8,7 +8,7 @@
 #include <string>
 
 #include "base/time/time.h"
-#include "content/browser/prerender/prerender_attributes.h"
+#include "content/public/browser/prerender_trigger_type.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 
 namespace content {

@@ -22,7 +22,6 @@
 #include "content/browser/fenced_frame/fenced_frame_url_mapping.h"
 #include "content/browser/loader/navigation_url_loader_delegate.h"
 #include "content/browser/navigation_subresource_loader_params.h"
-#include "content/browser/prerender/prerender_attributes.h"
 #include "content/browser/prerender/prerender_host.h"
 #include "content/browser/renderer_host/commit_deferring_condition_runner.h"
 #include "content/browser/renderer_host/cross_origin_opener_policy_status.h"
@@ -43,6 +42,7 @@
 #include "content/public/browser/navigation_throttle.h"
 #include "content/public/browser/navigation_type.h"
 #include "content/public/browser/peak_gpu_memory_tracker.h"
+#include "content/public/browser/prerender_trigger_type.h"
 #include "content/public/browser/render_process_host_observer.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
@@ -364,6 +364,8 @@ class CONTENT_EXPORT NavigationRequest
   bool IsPdf() override;
   void WriteIntoTrace(perfetto::TracedValue context) override;
   bool SetNavigationTimeout(base::TimeDelta timeout) override;
+  PrerenderTriggerType GetPrerenderTriggerType() override;
+  std::string GetPrerenderEmbedderHistogramSuffix() override;
 
   void RegisterCommitDeferringConditionForTesting(
       std::unique_ptr<CommitDeferringCondition> condition);
@@ -915,15 +917,8 @@ class CONTENT_EXPORT NavigationRequest
     DCHECK(!prerender_trigger_type_.has_value());
     prerender_trigger_type_ = type;
   }
-  PrerenderTriggerType prerender_trigger_type() const {
-    DCHECK(prerender_trigger_type_.has_value());
-    return prerender_trigger_type_.value();
-  }
   void set_prerender_embedder_histogram_suffix(const std::string& suffix) {
     prerender_embedder_histogram_suffix_ = suffix;
-  }
-  std::string prerender_embedder_histogram_suffix() const {
-    return prerender_embedder_histogram_suffix_;
   }
 
  private:

@@ -447,6 +447,21 @@ WebContents* PrerenderTestHelper::GetWebContents() {
   return get_web_contents_fn_.Run();
 }
 
+std::string PrerenderTestHelper::GenerateHistogramName(
+    const std::string& histogram_base_name,
+    content::PrerenderTriggerType trigger_type,
+    const std::string& embedder_suffix) {
+  switch (trigger_type) {
+    case content::PrerenderTriggerType::kSpeculationRule:
+      DCHECK(embedder_suffix.empty());
+      return std::string(histogram_base_name) + ".SpeculationRule";
+    case content::PrerenderTriggerType::kEmbedder:
+      DCHECK(!embedder_suffix.empty());
+      return std::string(histogram_base_name) + ".Embedder" + embedder_suffix;
+  }
+  NOTREACHED();
+}
+
 }  // namespace test
 
 }  // namespace content

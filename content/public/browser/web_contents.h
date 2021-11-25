@@ -30,6 +30,7 @@
 #include "content/public/browser/page.h"
 #include "content/public/browser/page_navigator.h"
 #include "content/public/browser/prerender_handle.h"
+#include "content/public/browser/prerender_trigger_type.h"
 #include "content/public/browser/save_page_type.h"
 #include "content/public/browser/visibility.h"
 #include "content/public/common/stop_find_action.h"
@@ -1334,7 +1335,9 @@ class WebContents : public PageNavigator,
   // disabled, failure happened or because this URL is already being
   // prerendered), this function returns a nullptr.
   virtual std::unique_ptr<PrerenderHandle> StartPrerendering(
-      const GURL& prerendering_url) = 0;
+      const GURL& prerendering_url,
+      PrerenderTriggerType trigger_type,
+      const std::string& embedder_histogram_suffix) = 0;
 
  private:
   // This interface should only be implemented inside content.

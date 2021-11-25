@@ -7171,4 +7171,13 @@ NavigationRequest::ScopedCrashKeys::ScopedCrashKeys(
 
 NavigationRequest::ScopedCrashKeys::~ScopedCrashKeys() = default;
 
+PrerenderTriggerType NavigationRequest::GetPrerenderTriggerType() {
+  DCHECK(prerender_trigger_type_.has_value());
+  return prerender_trigger_type_.value();
+}
+
+std::string NavigationRequest::GetPrerenderEmbedderHistogramSuffix() {
+  return prerender_embedder_histogram_suffix_;
+}
+
 }  // namespace content

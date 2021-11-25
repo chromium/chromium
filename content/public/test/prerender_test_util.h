@@ -8,6 +8,7 @@
 #include "base/callback.h"
 #include "base/compiler_specific.h"
 #include "base/test/scoped_feature_list.h"
+#include "content/public/browser/prerender_trigger_type.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/test/browser_test_utils.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -144,6 +145,12 @@ class PrerenderTestHelper {
 
   // Waits until the request count for `url` reaches `count`.
   void WaitForRequest(const GURL& gurl, int count);
+
+  // Generates the histogram name by appending the trigger type and the embedder
+  // suffix to the base name.
+  std::string GenerateHistogramName(const std::string& histogram_base_name,
+                                    content::PrerenderTriggerType trigger_type,
+                                    const std::string& embedder_suffix);
 
  private:
   void MonitorResourceRequest(const net::test_server::HttpRequest& request);

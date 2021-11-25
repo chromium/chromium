@@ -4052,9 +4052,9 @@ void RenderFrameHostImpl::DidCommitPageActivation(
   if (is_prerender_page_activation) {
     prerender_main_frame_replication_state =
         owned_request->prerender_main_frame_replication_state();
-    prerender_trigger_type = owned_request->prerender_trigger_type();
+    prerender_trigger_type = owned_request->GetPrerenderTriggerType();
     prerender_embedder_histogram_suffix =
-        owned_request->prerender_embedder_histogram_suffix();
+        owned_request->GetPrerenderEmbedderHistogramSuffix();
   }
 
 #if DCHECK_IS_ON()

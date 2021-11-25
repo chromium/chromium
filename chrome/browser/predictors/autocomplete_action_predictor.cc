@@ -212,7 +212,8 @@ void AutocompleteActionPredictor::StartPrerendering(
     // TODO(https://crbug.com/1166085): Add tests covering the code path of
     // StartPrerendering.
     std::unique_ptr<content::PrerenderHandle> new_prerender_handle =
-        web_contents.StartPrerendering(url);
+        web_contents.StartPrerendering(
+            url, content::PrerenderTriggerType::kEmbedder, "_DirectURLInput");
     // This check is to avoid unintentional cancellation, due to the fact that
     // StartPrerendering may return nullptr in cases such as requesting same
     // prerendering url.

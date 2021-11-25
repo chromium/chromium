@@ -4467,7 +4467,8 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
 
   // Start prerendering by embedder triggered prerendering.
   std::unique_ptr<PrerenderHandle> prerender_handle =
-      web_contents_impl()->StartPrerendering(kPrerenderingUrl);
+      web_contents_impl()->StartPrerendering(
+          kPrerenderingUrl, PrerenderTriggerType::kEmbedder, "_DirectURLInput");
   EXPECT_TRUE(prerender_handle);
   test::PrerenderTestHelper::WaitForPrerenderLoadCompletion(
       *shell()->web_contents(), kPrerenderingUrl);
@@ -4491,7 +4492,8 @@ IN_PROC_BROWSER_TEST_F(
 
   // Start prerendering by embedder triggered prerendering.
   std::unique_ptr<PrerenderHandle> prerender_handle =
-      web_contents_impl()->StartPrerendering(kPrerenderingUrl);
+      web_contents_impl()->StartPrerendering(
+          kPrerenderingUrl, PrerenderTriggerType::kEmbedder, "_DirectURLInput");
   EXPECT_TRUE(prerender_handle);
   test::PrerenderTestHelper::WaitForPrerenderLoadCompletion(
       *shell()->web_contents(), kPrerenderingUrl);

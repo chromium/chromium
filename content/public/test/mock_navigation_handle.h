@@ -188,6 +188,8 @@ class MockNavigationHandle : public NavigationHandle {
     auto dict = std::move(context).WriteDictionary();
   }
   MOCK_METHOD(bool, SetNavigationTimeout, (base::TimeDelta));
+  MOCK_METHOD(PrerenderTriggerType, GetPrerenderTriggerType, ());
+  MOCK_METHOD(std::string, GetPrerenderEmbedderHistogramSuffix, ());
 
   void set_url(const GURL& url) { url_ = url; }
   void set_previous_main_frame_url(const GURL& previous_main_frame_url) {

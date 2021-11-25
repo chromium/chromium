@@ -852,7 +852,9 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   void RecomputeWebPreferencesSlow() override;
   absl::optional<SkColor> GetBaseBackgroundColor() override;
   std::unique_ptr<PrerenderHandle> StartPrerendering(
-      const GURL& prerendering_url) override;
+      const GURL& prerendering_url,
+      PrerenderTriggerType trigger_type,
+      const std::string& embedder_histogram_suffix) override;
 
   // NavigatorDelegate ---------------------------------------------------------
 

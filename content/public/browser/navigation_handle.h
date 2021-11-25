@@ -14,6 +14,7 @@
 #include "content/public/browser/navigating_frame_type.h"
 #include "content/public/browser/navigation_handle_timing.h"
 #include "content/public/browser/navigation_throttle.h"
+#include "content/public/browser/prerender_trigger_type.h"
 #include "content/public/browser/reload_type.h"
 #include "content/public/browser/restore_type.h"
 #include "content/public/common/referrer.h"
@@ -511,6 +512,11 @@ class CONTENT_EXPORT NavigationHandle : public base::SupportsUserData {
   // `true` if the timeout is being started for the first time. Repeated calls
   // will be ignored (they won't reset the timeout) and will return `false`.
   virtual bool SetNavigationTimeout(base::TimeDelta timeout) = 0;
+
+  // Prerender2:
+  // Used for metrics.
+  virtual PrerenderTriggerType GetPrerenderTriggerType() = 0;
+  virtual std::string GetPrerenderEmbedderHistogramSuffix() = 0;
 
   // Testing methods ----------------------------------------------------------
   //
