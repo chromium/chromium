@@ -294,6 +294,18 @@ void LayoutBoxModelObject::StyleDidChange(StyleDifference diff,
   }
 
   if (Layer()) {
+    // The previous CompositingContainer chain was marked for repaint via
+    // |LayoutBoxModelObject::StyleWillChange| but changes to stacking can
+    // change the compositing container so we need to ensure the new
+    // CompositingContainer is also marked for repaint.
+    if (old_style &&
+        (IsStacked() != IsStacked(*old_style) ||
+         IsStackingContext() != IsStackingContext(*old_style)) &&
+        // ObjectPaintInvalidator requires this.
+        IsRooted()) {
+      ObjectPaintInvalidator(*this).SlowSetPaintingLayerNeedsRepaint();
+    }
+
     Layer()->StyleDidChange(diff, old_style);
     if (had_layer && Layer()->IsSelfPaintingLayer() != layer_was_self_painting)
       SetChildNeedsLayout();
