@@ -54,12 +54,15 @@ class HistoryClustersTabHelperTest : public ChromeRenderViewHostTestHarness {
       delete;
 
  protected:
-  HistoryClustersTabHelperTest() = default;
+  HistoryClustersTabHelperTest() {
+    // This needs to be initialized as early as possible to avoid data races
+    // with tasks on other threads checking if features are enabled.
+    feature_list_.InitAndEnableFeature(history_clusters::kJourneys);
+  }
 
   // ChromeRenderViewHostTestHarness:
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
-    feature_list_.InitAndEnableFeature(history_clusters::kJourneys);
 
     HistoryClustersTabHelper::CreateForWebContents(web_contents());
     helper_ = HistoryClustersTabHelper::FromWebContents(web_contents());
