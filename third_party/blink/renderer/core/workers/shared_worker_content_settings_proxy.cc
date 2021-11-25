@@ -9,7 +9,6 @@
 
 #include "base/metrics/histogram_macros.h"
 #include "third_party/blink/public/mojom/worker/worker_content_settings_proxy.mojom-blink.h"
-#include "third_party/blink/renderer/platform/wtf/thread_specific.h"
 
 namespace blink {
 

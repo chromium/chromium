@@ -30,7 +30,8 @@
 
 #include "third_party/blink/public/web/web_heap.h"
 
-#include "third_party/blink/renderer/platform/heap/thread_state.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/heap/handle.h"
 
 namespace blink {
 

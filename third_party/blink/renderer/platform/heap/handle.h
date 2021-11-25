@@ -36,6 +36,7 @@
 
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
+#include "third_party/blink/renderer/platform/heap/thread_state.h"
 #include "third_party/blink/renderer/platform/heap/visitor.h"
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_HEAP_HANDLE_H_

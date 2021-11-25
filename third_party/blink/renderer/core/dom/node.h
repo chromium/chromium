@@ -38,7 +38,6 @@
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
 #include "third_party/blink/renderer/platform/heap/custom_spaces.h"
 #include "third_party/blink/renderer/platform/text/text_direction.h"
-#include "third_party/blink/renderer/platform/wtf/wtf.h"
 
 // Exposes |DumpStatistics()| for dumping information about nodes. To use, call
 // |DumpStatistics()| from the Node constructor or GDB.
