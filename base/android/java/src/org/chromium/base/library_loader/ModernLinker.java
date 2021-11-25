@@ -12,6 +12,11 @@ import org.chromium.base.Log;
 import org.chromium.base.annotations.JniIgnoreNatives;
 import org.chromium.base.metrics.RecordHistogram;
 
+import java.io.BufferedReader;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+
 import javax.annotation.concurrent.GuardedBy;
 
 /**
@@ -29,11 +34,58 @@ class ModernLinker extends Linker {
     private static final String DETAILED_LOAD_TIME_HISTOGRAM_PREFIX =
             "ChromiumAndroidLinker.ModernLinkerDetailedLoadTime.";
 
+    private static final String DETAILED_LOAD_TIME_HISTOGRAM_PREFIX_BLKIO_CGROUP =
+            "ChromiumAndroidLinker.ModernLinkerDetailedLoadTimeByBlkioCgroup.";
+
+    private static final String SUFFIX_UNKNOWN = "Unknown";
+
+    private static final String SELF_CGROUP_FILE_NAME = "/proc/self/cgroup";
+
     ModernLinker() {}
 
     @Override
     protected boolean keepMemoryReservationUntilLoad() {
         return true;
+    }
+
+    private static String extractBlkioCgroupFromLine(String line) {
+        // The contents of /proc/self/cgroup for a background app looks like this:
+        // 5:schedtune:/background
+        // 4:memory:/
+        // 3:cpuset:/background
+        // 2:cpu:/system
+        // 1:blkio:/background
+        // 0::/uid_10179/pid_11869
+        //
+        // For a foreground app the relevant line looks like this:
+        // 1:blkio:/
+        int blkioStartsAt = line.indexOf(":blkio:");
+        if (blkioStartsAt == -1) return "";
+        return line.substring(blkioStartsAt + 7);
+    }
+
+    private String readBackgroundStateFromCgroups() {
+        String groupName = null;
+        try (BufferedReader reader = new BufferedReader(
+                     new InputStreamReader(new FileInputStream(SELF_CGROUP_FILE_NAME)));) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                groupName = extractBlkioCgroupFromLine(line);
+                if (!groupName.equals("")) break;
+            }
+            if (groupName == null || groupName.equals("")) return SUFFIX_UNKNOWN;
+        } catch (IOException e) {
+            Log.e(TAG, "IOException while reading %s", SELF_CGROUP_FILE_NAME);
+            return SUFFIX_UNKNOWN;
+        }
+        if (groupName.equals("/")) {
+            return "Foreground";
+        }
+        if (groupName.equals("/background")) {
+            return "Background";
+        }
+        Log.e(TAG, "blkio cgroup with unexpected name: '%s'", groupName);
+        return SUFFIX_UNKNOWN;
     }
 
     @Override
@@ -44,6 +96,10 @@ class ModernLinker extends Linker {
             Log.i(TAG, "loadLibraryImplLocked: %s, relroMode=%d", library, relroMode);
         }
         assert mState == State.INITIALIZED; // Only one successful call.
+
+        // Determine whether library loading starts in a foreground or a background cgroup for the
+        // 'blkio' controller.
+        String backgroundStateBeforeLoad = readBackgroundStateFromCgroups();
 
         // Load or declare fallback to System.loadLibrary.
         long beforeLoadMs = SystemClock.uptimeMillis();
@@ -64,9 +120,26 @@ class ModernLinker extends Linker {
             // Done loading the library, but using an externally provided RELRO may happen later.
             mState = State.DONE;
         }
+
+        // The app can change the bg/fg state while loading the native library, but mostly only
+        // once. To reduce the likelihood of a foreground sample to be affected by partially
+        // backgrounded state, move the mixed samples to a separate category. The data collected may
+        // help proving this hypothesis: "The ModernLinker is not a lot slower than the system
+        // linker when running in foreground".
+        String backgroundStateAfterLoad = readBackgroundStateFromCgroups();
+        if (!backgroundStateBeforeLoad.equals(backgroundStateAfterLoad)) {
+            if (backgroundStateBeforeLoad.equals(SUFFIX_UNKNOWN)
+                    || backgroundStateAfterLoad.equals(SUFFIX_UNKNOWN)) {
+                backgroundStateBeforeLoad = SUFFIX_UNKNOWN;
+            } else {
+                backgroundStateBeforeLoad = "Mixed";
+            }
+        }
+
         if (performedModernLoad) {
-            recordDetailedLoadTimeSince(
-                    beforeLoadMs, relroMode == RelroSharingMode.PRODUCE ? "Produce" : "Consume");
+            recordDetailedLoadTimeSince(beforeLoadMs,
+                    relroMode == RelroSharingMode.PRODUCE ? "Produce" : "Consume",
+                    backgroundStateBeforeLoad);
         }
 
         // Load the library a second time, in order to keep using lazy JNI registration. When
@@ -82,13 +155,18 @@ class ModernLinker extends Linker {
         } catch (UnsatisfiedLinkError e) {
             resetAndThrow("Failed at System.loadLibrary()");
         }
-        recordDetailedLoadTimeSince(
-                beforeSystemLoadMs, performedModernLoad ? "Second" : "NoSharing");
+        recordDetailedLoadTimeSince(beforeSystemLoadMs,
+                performedModernLoad ? "Second" : "NoSharing", backgroundStateBeforeLoad);
     }
 
-    private void recordDetailedLoadTimeSince(long sinceMs, String suffix) {
+    private void recordDetailedLoadTimeSince(
+            long sinceMs, String suffix, String backgroundStateSuffix) {
+        long durationMs = SystemClock.uptimeMillis() - sinceMs;
         RecordHistogram.recordTimesHistogram(
-                DETAILED_LOAD_TIME_HISTOGRAM_PREFIX + suffix, SystemClock.uptimeMillis() - sinceMs);
+                DETAILED_LOAD_TIME_HISTOGRAM_PREFIX + suffix, durationMs);
+        RecordHistogram.recordTimesHistogram(DETAILED_LOAD_TIME_HISTOGRAM_PREFIX_BLKIO_CGROUP
+                        + suffix + "." + backgroundStateSuffix,
+                durationMs);
     }
 
     // Loads the library via ModernLinker for later consumption of the RELRO region, throws on

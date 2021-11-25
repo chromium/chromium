@@ -2759,6 +2759,41 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram
+    name="ChromiumAndroidLinker.ModernLinkerDetailedLoadTimeByBlkioCgroup.{LoadKind}.{BackgroundState}"
+    units="ms" expires_after="2022-10-01">
+  <owner>pasko@chromium.org</owner>
+  <owner>agrieve@chromium.org</owner>
+  <summary>
+    Same as ModernLinkerDetailedLoadTime.*, but additionally split by process
+    background state as known to cgroups.
+
+    Reflects load time when the app {BackgroundState}. When {LoadKind}.
+  </summary>
+  <token key="LoadKind">
+    <variant name="Consume"
+        summary="consuming an external RELRO is expected later, with
+                 android_dlopen_ext"/>
+    <variant name="NoSharing"
+        summary="RELRO sharing cooperation is not requested (fallback, in
+                 testing)"/>
+    <variant name="Produce"
+        summary="producing RELRO is requested, with android_dlopen_ext"/>
+    <variant name="Second"
+        summary="the first load succeeded and the System.loadLibrary() time
+                 is measured"/>
+  </token>
+  <token key="BackgroundState">
+    <variant name="Background" summary="has been in background (=Background)"/>
+    <variant name="Foreground" summary="has been in foreground (=Foreground)"/>
+    <variant name="Mixed"
+        summary="observed background state changing (=Mixed)"/>
+    <variant name="Unknown"
+        summary="has been in unknown state because it failed to parse cgroups
+                 (=Unknown)"/>
+  </token>
+</histogram>
+
 <histogram name="ChromiumAndroidLinker.RelroAvailableImmediately"
     enum="BooleanRelroAvailableImmediately" expires_after="2022-10-01">
   <owner>lizeb@chromium.org</owner>
