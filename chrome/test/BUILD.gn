@@ -8099,7 +8099,6 @@ if (!is_android) {
     }
 
     if (is_mac) {
-      deps += [ "//chrome/browser/apps/app_shim:app_shim" ]
       sources += [ "base/interactive_test_utils_mac.mm" ]
     }
 
