@@ -16,6 +16,12 @@
 namespace extensions {
 
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
+  const size_t kMaxSize = 10000;
+  if (size > kMaxSize) {
+    // Bail out if the input is too big (the exact limit is arbitrary), to avoid
+    // going out of memory when the CSP validator produces many warnings.
+    return 0;
+  }
   FuzzedDataProvider fuzzed_data_provider(data, size);
 
   const std::string content_security_policy =
