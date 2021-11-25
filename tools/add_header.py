@@ -409,7 +409,7 @@ def main():
                                           args.header)
     if not new_source:
       continue
-    with open(filename, 'w') as f:
+    with open(filename, 'w', newline='\n') as f:
       f.write(new_source)
 
 

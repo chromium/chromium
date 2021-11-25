@@ -197,7 +197,7 @@ def UpdateIncludeGuard(old_path, new_path):
           'old guard is not per style guide? You will have to update the '
           'include guard manually. (%s)' % new_path)
 
-  with open(new_path, 'w') as f:
+  with open(new_path, 'w', newline='\n') as f:
     f.write(new_contents)
 
 def main():
