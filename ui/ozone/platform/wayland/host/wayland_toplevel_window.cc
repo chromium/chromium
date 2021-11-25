@@ -212,10 +212,17 @@ void WaylandToplevelWindow::Activate() {
   //
   // TODO(crbug.com/1175327): add support for xdg-activation.
   if (aura_surface_ && zaura_surface_get_version(aura_surface_.get()) >=
-                           ZAURA_SURFACE_ACTIVATE_SINCE_VERSION)
+                           ZAURA_SURFACE_ACTIVATE_SINCE_VERSION) {
     zaura_surface_activate(aura_surface_.get());
-  else if (gtk_surface1_)
+  } else if (gtk_surface1_) {
     gtk_surface1_->RequestFocus();
+  }
+  // This is required as the high level activation might not get a flush for
+  // a while. Example: Ash calls OpenURL in Lacros, which activates a window
+  // but nothing more happens (until the user moves the mouse over a Lacros
+  // window in which case events will start and the activation will come
+  // through).
+  connection()->ScheduleFlush();
 }
 
 void WaylandToplevelWindow::SizeConstraintsChanged() {
