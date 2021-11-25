@@ -17026,6 +17026,84 @@ to ensure that the crash string is shown properly on the user-facing crash UI.
   <int value="1" label="kFinished"/>
 </enum>
 
+<enum name="CrashpadIntermediateDumpKey">
+  <int value="0" label="kInvalid"/>
+  <int value="1" label="kVersion"/>
+  <int value="1000" label="kMachException"/>
+  <int value="1001" label="kCodes"/>
+  <int value="1002" label="kException"/>
+  <int value="1003" label="kFlavor"/>
+  <int value="1004" label="kState"/>
+  <int value="2000" label="kSignalException"/>
+  <int value="2001" label="kSignalNumber"/>
+  <int value="2002" label="kSignalCode"/>
+  <int value="2003" label="kSignalAddress"/>
+  <int value="2500" label="kNSException"/>
+  <int value="3000" label="kModules"/>
+  <int value="3001" label="kAddress"/>
+  <int value="3002" label="kFileType"/>
+  <int value="3003" label="kName"/>
+  <int value="3004" label="kSize"/>
+  <int value="3005" label="kDylibCurrentVersion"/>
+  <int value="3006" label="kSourceVersion"/>
+  <int value="3007" label="kTimestamp"/>
+  <int value="3008" label="kUUID"/>
+  <int value="3009" label="kAnnotationObjects"/>
+  <int value="3010" label="kAnnotationsSimpleMap"/>
+  <int value="3011" label="kAnnotationsVector"/>
+  <int value="3012" label="kAnnotationType"/>
+  <int value="3013" label="kAnnotationName"/>
+  <int value="3014" label="kAnnotationValue"/>
+  <int value="3015" label="kAnnotationsCrashInfo"/>
+  <int value="3016" label="kAnnotationsCrashInfoMessage1"/>
+  <int value="3017" label="kAnnotationsCrashInfoMessage2"/>
+  <int value="3018" label="kAnnotationsDyldErrorString"/>
+  <int value="4000" label="kProcessInfo"/>
+  <int value="4001" label="kParentPID"/>
+  <int value="4002" label="kPID"/>
+  <int value="4003" label="kStartTime"/>
+  <int value="4004" label="kSnapshotTime"/>
+  <int value="4005" label="kTaskBasicInfo"/>
+  <int value="4006" label="kTaskThreadTimes"/>
+  <int value="4007" label="kSystemTime"/>
+  <int value="4008" label="kUserTime"/>
+  <int value="5000" label="kSystemInfo"/>
+  <int value="5001" label="kCpuCount"/>
+  <int value="5002" label="kCpuVendor"/>
+  <int value="5003" label="kDaylightName"/>
+  <int value="5004" label="kDaylightOffsetSeconds"/>
+  <int value="5005" label="kHasDaylightSavingTime"/>
+  <int value="5006" label="kIsDaylightSavingTime"/>
+  <int value="5007" label="kMachineDescription"/>
+  <int value="5008" label="kOSVersionBugfix"/>
+  <int value="5009" label="kOSVersionBuild"/>
+  <int value="5010" label="kOSVersionMajor"/>
+  <int value="5011" label="kOSVersionMinor"/>
+  <int value="5012" label="kPageSize"/>
+  <int value="5013" label="kStandardName"/>
+  <int value="5014" label="kStandardOffsetSeconds"/>
+  <int value="5015" label="kVMStat"/>
+  <int value="5016" label="kActive"/>
+  <int value="5017" label="kFree"/>
+  <int value="5018" label="kInactive"/>
+  <int value="5019" label="kWired"/>
+  <int value="6000" label="kThreads"/>
+  <int value="6001" label="kDebugState"/>
+  <int value="6002" label="kFloatState"/>
+  <int value="6003" label="kThreadState"/>
+  <int value="6004" label="kPriority"/>
+  <int value="6005" label="kStackRegionAddress"/>
+  <int value="6006" label="kStackRegionData"/>
+  <int value="6007" label="kSuspendCount"/>
+  <int value="6008" label="kThreadID"/>
+  <int value="6009" label="kThreadDataAddress"/>
+  <int value="6010" label="kThreadUncaughtNSExceptionFrames"/>
+  <int value="6011" label="kThreadContextMemoryRegions"/>
+  <int value="6012" label="kThreadContextMemoryRegionAddress"/>
+  <int value="6013" label="kThreadContextMemoryRegionData"/>
+  <int value="65535" label="kMaxValue"/>
+</enum>
+
 <enum name="CrashpadLifetimeMilestone">
   <int value="0" label="kStarted"/>
   <int value="1" label="kExitedNormally"/>

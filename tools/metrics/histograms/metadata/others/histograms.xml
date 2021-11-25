@@ -4391,6 +4391,22 @@ chromium-metrics-reviews@google.com.
   <summary>Handler start/crash/exit events.</summary>
 </histogram>
 
+<histogram name="Crashpad.IntermediateDump.Reader.InvalidKeySize"
+    enum="CrashpadIntermediateDumpKey" expires_after="2022-05-20">
+  <owner>justincohen@chromium.org</owner>
+  <owner>crashpad-dev@chromium.org</owner>
+  <summary>
+    Records key id when id has an invalid sizein an intermediate dump.
+  </summary>
+</histogram>
+
+<histogram name="Crashpad.IntermediateDump.Reader.MissingKey"
+    enum="CrashpadIntermediateDumpKey" expires_after="2022-05-20">
+  <owner>justincohen@chromium.org</owner>
+  <owner>crashpad-dev@chromium.org</owner>
+  <summary>Records key id when id is missing in an intermediate dump.</summary>
+</histogram>
+
 <histogram name="CrashReport.BreakpadIOSUploadOutcome"
     enum="FoundationPopularErrorCode" expires_after="2022-09-12">
   <owner>justincohen@chromium.org</owner>
