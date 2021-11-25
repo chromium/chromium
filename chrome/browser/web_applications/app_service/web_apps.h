@@ -27,6 +27,8 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
+static_assert(!BUILDFLAG(IS_CHROMEOS_LACROS), "For non-Lacros only");
+
 class Profile;
 
 namespace webapps {

@@ -23,6 +23,8 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
+static_assert(BUILDFLAG(IS_CHROMEOS_LACROS), "For Lacros only");
+
 class Profile;
 
 namespace web_app {
