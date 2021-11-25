@@ -592,6 +592,10 @@ void SharesheetBubbleView::OnTabletControllerDestroyed() {
 }
 
 void SharesheetBubbleView::CreateBubble() {
+  // This disables the default deactivation behaviour in
+  // BubbleDialogDelegateView. Close on deactivation behaviour is managed by the
+  // SharesheetBubbleView with the |close_on_deactivate_| member.
+  set_close_on_deactivate(false);
   SetButtons(ui::DIALOG_BUTTON_NONE);
 
   SetLayoutManager(std::make_unique<views::BoxLayout>(
