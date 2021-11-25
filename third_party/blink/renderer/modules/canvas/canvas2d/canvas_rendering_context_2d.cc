@@ -729,34 +729,27 @@ void CanvasRenderingContext2D::setDirection(const String& direction_string) {
   GetState().SetDirection(direction);
 }
 
-void CanvasRenderingContext2D::setLetterSpacing(const double letter_spacing) {
+void CanvasRenderingContext2D::setLetterSpacing(const String& letter_spacing) {
   UseCounter::Count(canvas()->GetTopExecutionContext(),
                     WebFeature::kCanvasRenderingContext2DLetterSpacing);
-  if (UNLIKELY(!std::isfinite(letter_spacing)))
-    return;
   // TODO(crbug.com/1234113): Instrument new canvas APIs.
   identifiability_study_helper_.set_encountered_skipped_ops();
-
   if (!GetState().HasRealizedFont())
     setFont(font());
 
-  float letter_spacing_float = ClampTo<float>(letter_spacing);
-  GetState().SetLetterSpacing(letter_spacing_float, Host()->GetFontSelector());
+  GetState().SetLetterSpacing(letter_spacing);
 }
 
-void CanvasRenderingContext2D::setWordSpacing(const double word_spacing) {
+void CanvasRenderingContext2D::setWordSpacing(const String& word_spacing) {
   UseCounter::Count(canvas()->GetTopExecutionContext(),
                     WebFeature::kCanvasRenderingContext2DWordSpacing);
-  if (UNLIKELY(!std::isfinite(word_spacing)))
-    return;
   // TODO(crbug.com/1234113): Instrument new canvas APIs.
   identifiability_study_helper_.set_encountered_skipped_ops();
 
   if (!GetState().HasRealizedFont())
     setFont(font());
 
-  float word_spacing_float = ClampTo<float>(word_spacing);
-  GetState().SetWordSpacing(word_spacing_float, Host()->GetFontSelector());
+  GetState().SetWordSpacing(word_spacing);
 }
 
 void CanvasRenderingContext2D::setTextRendering(

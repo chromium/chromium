@@ -743,35 +743,35 @@
   testing:
   - 2d.text.drawing.style.spacing
   code: |
-    @assert ctx.letterSpacing === 0;
-    @assert ctx.wordSpacing === 0;
+    @assert ctx.letterSpacing === '0px';
+    @assert ctx.wordSpacing === '0px';
 
-    ctx.letterSpacing = 3;
-    @assert ctx.letterSpacing === 3;
-    @assert ctx.wordSpacing === 0;
+    ctx.letterSpacing = '3px';
+    @assert ctx.letterSpacing === '3px';
+    @assert ctx.wordSpacing === '0px';
 
-    ctx.wordSpacing = 5;
-    @assert ctx.letterSpacing === 3;
-    @assert ctx.wordSpacing === 5;
+    ctx.wordSpacing = '5px';
+    @assert ctx.letterSpacing === '3px';
+    @assert ctx.wordSpacing === '5px';
 
-    ctx.letterSpacing = -1;
-    ctx.wordSpacing = -1;
-    @assert ctx.letterSpacing === -1;
-    @assert ctx.wordSpacing === -1;
+    ctx.letterSpacing = '-1px';
+    ctx.wordSpacing = '-1px';
+    @assert ctx.letterSpacing === '-1px';
+    @assert ctx.wordSpacing === '-1px';
 
 - name: 2d.text.drawing.style.nonfinite.spacing
   desc: Testing letter spacing and word spacing with nonfinite inputs
   testing:
   - 2d.text.drawing.style.spacing
   code: |
-    @assert ctx.letterSpacing === 0;
-    @assert ctx.wordSpacing === 0;
+    @assert ctx.letterSpacing === '0px';
+    @assert ctx.wordSpacing === '0px';
 
     function test_word_spacing(value) {
       ctx.wordSpacing = value;
       ctx.letterSpacing = value;
-      @assert ctx.wordSpacing === 0;
-      @assert ctx.letterSpacing === 0;
+      @assert ctx.wordSpacing === '0px';
+      @assert ctx.letterSpacing === '0px';
     }
     @nonfinite test_word_spacing(<0 NaN Infinity -Infinity>);
 
@@ -780,29 +780,29 @@
   testing:
   - 2d.text.drawing.style.spacing
   code: |
-    @assert ctx.letterSpacing === 0;
-    @assert ctx.wordSpacing === 0;
+    @assert ctx.letterSpacing === '0px';
+    @assert ctx.wordSpacing === '0px';
     var width_normal = ctx.measureText('Hello World').width;
 
-    ctx.letterSpacing = 3;
-    @assert ctx.letterSpacing === 3;
-    @assert ctx.wordSpacing === 0;
+    ctx.letterSpacing = '3px';
+    @assert ctx.letterSpacing === '3px';
+    @assert ctx.wordSpacing === '0px';
     var width_with_spacing = ctx.measureText('Hello World').width;
     // Add letter spacing after each letter, so 11 * 3 = 33px longer.
     @assert width_with_spacing === width_normal + 33;
 
-    ctx.wordSpacing = 5;
-    ctx.letterSpacing = 0;
-    @assert ctx.letterSpacing === 0;
-    @assert ctx.wordSpacing === 5;
+    ctx.wordSpacing = '5px';
+    ctx.letterSpacing = '0px';
+    @assert ctx.letterSpacing === '0px';
+    @assert ctx.wordSpacing === '5px';
     // Add Word Spacing between "Hello" and "World", so it's 5px longer.
     width_with_spacing = ctx.measureText('Hello World').width;
     @assert width_with_spacing === width_normal + 5;
 
-    ctx.letterSpacing = -2;
-    ctx.wordSpacing = -1;
-    @assert ctx.letterSpacing === -2;
-    @assert ctx.wordSpacing === -1;
+    ctx.letterSpacing = '-2px';
+    ctx.wordSpacing = '-1px';
+    @assert ctx.letterSpacing === '-2px';
+    @assert ctx.wordSpacing === '-1px';
     // Add Word Spacing and letter spacing, so it's -11*2 = -22px from
     // letter spacing and -1px from word spacing.
     width_with_spacing = ctx.measureText('Hello World').width;

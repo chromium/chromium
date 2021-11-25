@@ -292,8 +292,8 @@ class MODULES_EXPORT BaseRenderingContext2D : public CanvasPath {
   String textBaseline() const;
   void setTextBaseline(const String&);
 
-  double letterSpacing() const;
-  double wordSpacing() const;
+  String letterSpacing() const;
+  String wordSpacing() const;
   String textRendering() const;
 
   String fontKerning() const;

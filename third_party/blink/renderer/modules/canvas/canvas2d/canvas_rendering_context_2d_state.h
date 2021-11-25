@@ -6,6 +6,8 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_CANVAS_CANVAS2D_CANVAS_RENDERING_CONTEXT_2D_STATE_H_
 
 #include "cc/paint/paint_flags.h"
+#include "third_party/blink/renderer/core/css/css_primitive_value.h"
+#include "third_party/blink/renderer/core/css/css_value.h"
 #include "third_party/blink/renderer/modules/canvas/canvas2d/clip_list.h"
 #include "third_party/blink/renderer/platform/fonts/font.h"
 #include "third_party/blink/renderer/platform/fonts/font_selector_client.h"
@@ -157,11 +159,11 @@ class CanvasRenderingContext2DState final
   void SetTextBaseline(TextBaseline baseline) { text_baseline_ = baseline; }
   TextBaseline GetTextBaseline() const { return text_baseline_; }
 
-  void SetLetterSpacing(float letter_space, FontSelector* selector);
-  float GetLetterSpacing() const { return letter_spacing_; }
+  void SetLetterSpacing(const String& letter_spacing);
+  String GetLetterSpacing() const { return unparsed_letter_spacing_; }
 
-  void SetWordSpacing(float word_space, FontSelector* selector);
-  float GetWordSpacing() const { return word_spacing_; }
+  void SetWordSpacing(const String& word_spacing);
+  String GetWordSpacing() const { return unparsed_word_spacing_; }
 
   void SetTextRendering(TextRenderingMode text_rendering,
                         FontSelector* selector);
@@ -301,7 +303,14 @@ class CanvasRenderingContext2DState final
   TextBaseline text_baseline_{kAlphabeticTextBaseline};
   Direction direction_{kDirectionInherit};
   float letter_spacing_{0};
+  CSSPrimitiveValue::UnitType letter_spacing_unit_{
+      CSSPrimitiveValue::UnitType::kPixels};
+  String unparsed_letter_spacing_;
+
   float word_spacing_{0};
+  CSSPrimitiveValue::UnitType word_spacing_unit_{
+      CSSPrimitiveValue::UnitType::kPixels};
+  String unparsed_word_spacing_;
   TextRenderingMode text_rendering_mode_{TextRenderingMode::kAutoTextRendering};
   FontDescription::Kerning font_kerning_{FontDescription::kAutoKerning};
   FontSelectionValue font_stretch_{NormalWidthValue()};

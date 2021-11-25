@@ -16,29 +16,29 @@ t.step(function() {
 var offscreenCanvas = new OffscreenCanvas(100, 50);
 var ctx = offscreenCanvas.getContext('2d');
 
-_assertSame(ctx.letterSpacing, 0, "ctx.letterSpacing", "0");
-_assertSame(ctx.wordSpacing, 0, "ctx.wordSpacing", "0");
+_assertSame(ctx.letterSpacing, '0px', "ctx.letterSpacing", "'0px'");
+_assertSame(ctx.wordSpacing, '0px', "ctx.wordSpacing", "'0px'");
 var width_normal = ctx.measureText('Hello World').width;
 
-ctx.letterSpacing = 3;
-_assertSame(ctx.letterSpacing, 3, "ctx.letterSpacing", "3");
-_assertSame(ctx.wordSpacing, 0, "ctx.wordSpacing", "0");
+ctx.letterSpacing = '3px';
+_assertSame(ctx.letterSpacing, '3px', "ctx.letterSpacing", "'3px'");
+_assertSame(ctx.wordSpacing, '0px', "ctx.wordSpacing", "'0px'");
 var width_with_spacing = ctx.measureText('Hello World').width;
 // Add letter spacing after each letter, so 11 * 3 = 33px longer.
 _assertSame(width_with_spacing, width_normal + 33, "width_with_spacing", "width_normal + 33");
 
-ctx.wordSpacing = 5;
-ctx.letterSpacing = 0;
-_assertSame(ctx.letterSpacing, 0, "ctx.letterSpacing", "0");
-_assertSame(ctx.wordSpacing, 5, "ctx.wordSpacing", "5");
+ctx.wordSpacing = '5px';
+ctx.letterSpacing = '0px';
+_assertSame(ctx.letterSpacing, '0px', "ctx.letterSpacing", "'0px'");
+_assertSame(ctx.wordSpacing, '5px', "ctx.wordSpacing", "'5px'");
 // Add Word Spacing between "Hello" and "World", so it's 5px longer.
 width_with_spacing = ctx.measureText('Hello World').width;
 _assertSame(width_with_spacing, width_normal + 5, "width_with_spacing", "width_normal + 5");
 
-ctx.letterSpacing = -2;
-ctx.wordSpacing = -1;
-_assertSame(ctx.letterSpacing, -2, "ctx.letterSpacing", "-2");
-_assertSame(ctx.wordSpacing, -1, "ctx.wordSpacing", "-1");
+ctx.letterSpacing = '-2px';
+ctx.wordSpacing = '-1px';
+_assertSame(ctx.letterSpacing, '-2px', "ctx.letterSpacing", "'-2px'");
+_assertSame(ctx.wordSpacing, '-1px', "ctx.wordSpacing", "'-1px'");
 // Add Word Spacing and letter spacing, so it's -11*2 = -22px from
 // letter spacing and -1px from word spacing.
 width_with_spacing = ctx.measureText('Hello World').width;

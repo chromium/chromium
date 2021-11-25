@@ -2257,11 +2257,11 @@ void BaseRenderingContext2D::setImageSmoothingQuality(const String& quality) {
   GetState().SetImageSmoothingQuality(quality);
 }
 
-double BaseRenderingContext2D::letterSpacing() const {
+String BaseRenderingContext2D::letterSpacing() const {
   return GetState().GetLetterSpacing();
 }
 
-double BaseRenderingContext2D::wordSpacing() const {
+String BaseRenderingContext2D::wordSpacing() const {
   return GetState().GetWordSpacing();
 }
 
