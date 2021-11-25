@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/platform/loader/fetch/resource_fetcher_properties.h"
 
+#include "third_party/blink/renderer/platform/heap/visitor.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_client_settings_object.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_client_settings_object_snapshot.h"
 

@@ -5,7 +5,9 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_HEAP_HEAP_TEST_OBJECTS_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_HEAP_HEAP_TEST_OBJECTS_H_
 
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/heap/member.h"
+#include "third_party/blink/renderer/platform/heap/visitor.h"
 
 namespace blink {
 

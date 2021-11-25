@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/loader/resource/multipart_image_resource_parser.h"
 
+#include "third_party/blink/renderer/platform/heap/visitor.h"
 #include "third_party/blink/renderer/platform/network/http_parsers.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
