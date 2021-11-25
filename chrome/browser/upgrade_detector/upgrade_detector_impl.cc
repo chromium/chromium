@@ -69,7 +69,7 @@ constexpr auto kNotifyCycleTimeForTesting = base::Milliseconds(500);
 constexpr auto kOutdatedBuildDetectorPeriod = base::Days(1);
 
 // The number of days after which we identify a build/install as outdated.
-constexpr auto kOutdatedBuildAge = base::Days(7) * 12;
+constexpr auto kOutdatedBuildAge = base::Days(7) * 8;
 
 constexpr bool ShouldDetectOutdatedBuilds() {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
