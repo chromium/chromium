@@ -15,12 +15,17 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.Callback;
+import org.chromium.base.ThreadUtils;
+import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.metrics.ActivityTabStartupMetricsTracker;
 import org.chromium.chrome.browser.tabmodel.ChromeTabCreator;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
+import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.document.TabDelegate;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.browser.Features;
@@ -172,6 +177,10 @@ public class StartupTabPreloaderUnitTest {
 
     private StartupTabPreloader createStartupTabPreloader(
             Intent intent, TabCreatorManager tabCreatorManager) {
+        // StartupTabPreloader calls into code that asserts that it is on the UI thread, which
+        // doesn't exist in this unittesting context.
+        ThreadUtils.setThreadAssertsDisabledForTesting(true);
+
         return new StartupTabPreloader(
                 new Supplier<Intent>() {
                     @Override
@@ -180,7 +189,21 @@ public class StartupTabPreloaderUnitTest {
                     }
                 },
                 new ActivityLifecycleDispatcherImpl(null), null, tabCreatorManager,
-                new IntentHandler(null, null));
+                new IntentHandler(null, null),
+                new ActivityTabStartupMetricsTracker(new ObservableSupplier<TabModelSelector>() {
+                    @Override
+                    public TabModelSelector addObserver(Callback<TabModelSelector> obs) {
+                        return null;
+                    }
+
+                    @Override
+                    public void removeObserver(Callback<TabModelSelector> obs) {}
+
+                    @Override
+                    public TabModelSelector get() {
+                        return null;
+                    }
+                }));
     }
 
     private static class ChromeTabCreatorManager implements TabCreatorManager {
