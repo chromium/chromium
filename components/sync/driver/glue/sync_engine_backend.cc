@@ -317,10 +317,11 @@ void SyncEngineBackend::DoInitialProcessControlTypes() {
              sync_manager_->birthday(), sync_manager_->bag_of_chips());
 }
 
-void SyncEngineBackend::DoSetDecryptionPassphrase(
-    const std::string& passphrase) {
+void SyncEngineBackend::DoSetExplicitPassphraseDecryptionKey(
+    std::unique_ptr<Nigori> key) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  sync_manager_->GetEncryptionHandler()->SetDecryptionPassphrase(passphrase);
+  sync_manager_->GetEncryptionHandler()->SetExplicitPassphraseDecryptionKey(
+      std::move(key));
 }
 
 void SyncEngineBackend::ShutdownOnUIThread() {

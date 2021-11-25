@@ -7,6 +7,7 @@
 #include "base/base64.h"
 #include "base/logging.h"
 #include "components/sync/base/model_type.h"
+#include "components/sync/engine/nigori/nigori.h"
 #include "components/sync/protocol/nigori_specifics.pb.h"
 
 namespace syncer {
@@ -61,8 +62,8 @@ void FakeSyncEncryptionHandler::SetEncryptionPassphrase(
   // Do nothing.
 }
 
-void FakeSyncEncryptionHandler::SetDecryptionPassphrase(
-    const std::string& passphrase) {
+void FakeSyncEncryptionHandler::SetExplicitPassphraseDecryptionKey(
+    std::unique_ptr<Nigori> key) {
   // Do nothing.
 }
 

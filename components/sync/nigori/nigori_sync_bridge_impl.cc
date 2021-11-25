@@ -492,21 +492,18 @@ void NigoriSyncBridgeImpl::SetEncryptionPassphrase(
       PendingLocalNigoriCommit::ForSetCustomPassphrase(passphrase));
 }
 
-void NigoriSyncBridgeImpl::SetDecryptionPassphrase(
-    const std::string& passphrase) {
+void NigoriSyncBridgeImpl::SetExplicitPassphraseDecryptionKey(
+    std::unique_ptr<Nigori> key) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // |passphrase| should be a valid one already (verified by SyncServiceCrypto,
+  // |key| should be a valid one already (verified by SyncServiceCrypto,
   // using pending keys exposed by OnPassphraseRequired()).
-  DCHECK(!passphrase.empty());
   if (!state_.pending_keys) {
     DCHECK_EQ(state_.passphrase_type, NigoriSpecifics::KEYSTORE_PASSPHRASE);
     return;
   }
 
   NigoriKeyBag tmp_key_bag = NigoriKeyBag::CreateEmpty();
-  const std::string new_key_name =
-      tmp_key_bag.AddKey(Nigori::CreateByDerivation(
-          GetKeyDerivationParamsForPendingKeys(), passphrase));
+  const std::string new_key_name = tmp_key_bag.AddKey(std::move(key));
 
   absl::optional<ModelError> error = TryDecryptPendingKeysWith(tmp_key_bag);
   if (error.has_value()) {
@@ -516,9 +513,9 @@ void NigoriSyncBridgeImpl::SetDecryptionPassphrase(
 
   if (state_.pending_keys.has_value()) {
     // |pending_keys| could be changed in between of OnPassphraseRequired()
-    // and SetDecryptionPassphrase() calls (remote update with different
-    // keystore Nigori or with transition from keystore to custom passphrase
-    // Nigori).
+    // and SetExplicitPassphraseDecryptionKey() calls (remote update with
+    // different keystore Nigori or with transition from keystore to custom
+    // passphrase Nigori).
     MaybeNotifyOfPendingKeys();
     return;
   }
@@ -769,8 +766,8 @@ absl::optional<ModelError> NigoriSyncBridgeImpl::UpdateLocalState(
   // Set incoming encrypted keys as pending, so they are processed in
   // TryDecryptPendingKeysWith(). If the keybag is not immediately decryptable,
   // it will be kept in |state_.pending_keys| until decryption is possible, e.g.
-  // upon SetDecryptionPassphrase() or equivalent depending on the passphrase
-  // type.
+  // upon SetExplicitPassphraseDecryptionKey() or equivalent depending on the
+  // passphrase type.
   state_.pending_keys = specifics.encryption_keybag();
   state_.cryptographer->ClearDefaultEncryptionKey();
 

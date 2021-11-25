@@ -66,7 +66,7 @@ class FakeSyncEngine : public SyncEngine,
 
   void SetEncryptionPassphrase(const std::string& passphrase) override;
 
-  void SetDecryptionPassphrase(const std::string& passphrase) override;
+  void SetExplicitPassphraseDecryptionKey(std::unique_ptr<Nigori> key) override;
 
   void AddTrustedVaultDecryptionKeys(
       const std::vector<std::vector<uint8_t>>& keys,

@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_SYNC_ENGINE_SYNC_ENCRYPTION_HANDLER_H_
 #define COMPONENTS_SYNC_ENGINE_SYNC_ENCRYPTION_HANDLER_H_
 
+#include <memory>
 #include <string>
 #include <vector>
 
@@ -22,6 +23,7 @@ namespace syncer {
 
 class Cryptographer;
 class KeystoreKeysHandler;
+class Nigori;
 enum class PassphraseType;
 
 // Sync's encryption handler. Handles tracking encrypted types, ensuring the
@@ -119,21 +121,22 @@ class SyncEncryptionHandler {
   virtual PassphraseType GetPassphraseType() = 0;
 
   // Attempts to re-encrypt encrypted data types using the passphrase provided.
-  // Notifies observers of the result of the operation via OnPassphraseAccepted
-  // or OnPassphraseRequired, updates the nigori node, and does re-encryption as
-  // appropriate. If an explicit password has been set previously, we drop
-  // subsequent requests to set a passphrase. |passphrase| shouldn't be empty.
+  // Notifies observers of the result of the operation via
+  // OnPassphraseAccepted() or OnPassphraseRequired(), updates the nigori node,
+  // and triggers re-encryption as appropriate. If an explicit password has been
+  // set previously, we drop subsequent requests to set a passphrase.
+  // |passphrase| shouldn't be empty.
   virtual void SetEncryptionPassphrase(const std::string& passphrase) = 0;
 
-  // Provides a passphrase for decrypting the user's existing sync data.
-  // Notifies observers of the result of the operation via OnPassphraseAccepted
-  // or OnPassphraseRequired, updates the nigori node, and does re-encryption as
-  // appropriate if there is a previously cached encryption passphrase. It is an
-  // error to call this when we don't have pending keys. |passphrase| shouldn't
-  // be empty.
-  virtual void SetDecryptionPassphrase(const std::string& passphrase) = 0;
+  // Provides a key for decrypting the user's existing sync data.
+  // Notifies observers of the result of the operation via
+  // OnPassphraseAccepted() or OnPassphraseRequired() and triggers re-encryption
+  // as appropriate. It is an error to call this when we don't have pending
+  // keys.
+  virtual void SetExplicitPassphraseDecryptionKey(
+      std::unique_ptr<Nigori> key) = 0;
 
-  // Analogous to SetDecryptionPassphrase but specifically for
+  // Analogous to SetExplicitPassphraseDecryptionKey() but specifically for
   // TRUSTED_VAULT_PASSPHRASE: it provides new decryption keys that could
   // allow decrypting pending Nigori keys. Notifies observers of the result of
   // the operation via OnTrustedVaultKeyAccepted if the provided keys

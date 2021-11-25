@@ -32,6 +32,7 @@ namespace {
 using testing::_;
 using testing::Eq;
 using testing::Ne;
+using testing::NotNull;
 
 sync_pb::EncryptedData MakeEncryptedData(
     const std::string& passphrase,
@@ -368,13 +369,14 @@ TEST_F(SyncServiceCryptoTest, ShouldExposePassphraseRequired) {
 
   // Entering the wrong passphrase should be rejected.
   EXPECT_CALL(delegate_, ReconfigureDataTypesDueToCrypto()).Times(0);
-  EXPECT_CALL(engine_, SetDecryptionPassphrase).Times(0);
+  EXPECT_CALL(engine_, SetExplicitPassphraseDecryptionKey).Times(0);
   EXPECT_FALSE(crypto_.SetDecryptionPassphrase("wrongpassphrase"));
   EXPECT_TRUE(crypto_.IsPassphraseRequired());
 
   // Entering the correct passphrase should be accepted.
-  EXPECT_CALL(engine_, SetDecryptionPassphrase(kTestPassphrase))
-      .WillOnce([&](const std::string&) { crypto_.OnPassphraseAccepted(); });
+  EXPECT_CALL(engine_, SetExplicitPassphraseDecryptionKey(NotNull()))
+      .WillOnce(
+          [&](std::unique_ptr<Nigori>) { crypto_.OnPassphraseAccepted(); });
   // The current implementation issues two reconfigurations: one immediately
   // after checking the passphrase in the UI thread and a second time later when
   // the engine confirms with OnPassphraseAccepted().

@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "components/sync/engine/data_type_activation_response.h"
+#include "components/sync/engine/nigori/nigori.h"
 #include "components/sync/engine/sync_engine.h"
 #include "components/sync/engine/sync_status.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -46,7 +47,10 @@ class MockSyncEngine : public SyncEngine {
   MOCK_METHOD(void, StartConfiguration, (), (override));
   MOCK_METHOD(void, StartSyncingWithServer, (), (override));
   MOCK_METHOD(void, SetEncryptionPassphrase, (const std::string&), (override));
-  MOCK_METHOD(void, SetDecryptionPassphrase, (const std::string&), (override));
+  MOCK_METHOD(void,
+              SetExplicitPassphraseDecryptionKey,
+              (std::unique_ptr<Nigori>),
+              (override));
   MOCK_METHOD(void,
               AddTrustedVaultDecryptionKeys,
               (const std::vector<std::vector<uint8_t>>&, base::OnceClosure),
