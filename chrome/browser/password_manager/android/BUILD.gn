@@ -149,6 +149,7 @@ android_library("settings_interface_java") {
   deps = [
     "//base:base_java",
     "//components/password_manager/core/browser:password_manager_java_enums",
+    "//third_party/androidx:androidx_annotation_annotation_java",
   ]
 
   sources = [
