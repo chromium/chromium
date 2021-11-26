@@ -123,9 +123,8 @@ class InstanceRegistry {
   // The caller presumably calls OnInstance(std::move(delta)).
   void OnInstance(InstancePtr delta);
 
-  // Return instance keys for the |app_id|.
-  std::set<const Instance::InstanceKey> GetInstanceKeys(
-      const std::string& app_id);
+  // Returns instances for the |app_id|.
+  std::set<const Instance*> GetInstances(const std::string& app_id);
 
   // Return states for the `app_id` and `window`. For apps opened in Lacros
   // tabs, there might be multiple tabs in one Lacros window for one app, so
@@ -144,7 +143,7 @@ class InstanceRegistry {
   // returned in these cases will be arbitrary.
   InstanceState GetState(const aura::Window* window) const;
 
-  // Return the shelf id for the `window`.
+  // Returns the shelf id for the `window`.
   //
   // Note: This interface is used for the standalone window, or the ash Chrome
   // browser tab window, which has one instance only. For Lacros windows which
@@ -264,6 +263,8 @@ class InstanceRegistry {
 
   void DoOnInstance(InstancePtr deltas);
 
+  void MaybeRemoveInstance(const Instance* delta);
+
   void MaybeRemoveInstanceId(const base::UnguessableToken& instance_id,
                              aura::Window* window);
 
@@ -307,6 +308,9 @@ class InstanceRegistry {
   // `window_to_instance_ids_`. `states_` can't be used to check window, because
   // some instances might be in `deltas_pending_`.
   std::map<base::UnguessableToken, aura::Window*> instance_id_to_window_;
+
+  // Maps from app id to instances.
+  std::map<const std::string, std::set<const Instance*>> app_id_to_instances_;
 
   std::unique_ptr<Instance> old_state_;
 

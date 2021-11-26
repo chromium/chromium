@@ -156,17 +156,17 @@ void AppServiceInstanceRegistryHelper::OnTabClosing(
 }
 
 void AppServiceInstanceRegistryHelper::OnBrowserRemoved() {
-  auto instance_keys = GetInstanceKeys(extension_misc::kChromeAppId);
-  for (const apps::Instance::InstanceKey& instance_key : instance_keys) {
-    if (!chrome::FindBrowserWithWindow(instance_key.Window())) {
+  auto instances = GetInstances(extension_misc::kChromeAppId);
+  for (const auto* instance : instances) {
+    if (!chrome::FindBrowserWithWindow(instance->Window())) {
       // The tabs in the browser should be closed, and tab windows have been
       // removed from |browser_window_to_tab_windows_|.
-      DCHECK(!base::Contains(browser_window_to_tab_windows_,
-                             instance_key.Window()));
+      DCHECK(
+          !base::Contains(browser_window_to_tab_windows_, instance->Window()));
 
       // The browser is removed if the window can't be found, so update the
       // Chrome window instance as destroyed.
-      OnInstances(extension_misc::kChromeAppId, instance_key.Window(),
+      OnInstances(extension_misc::kChromeAppId, instance->Window(),
                   std::string(), apps::InstanceState::kDestroyed);
     }
   }
@@ -251,10 +251,9 @@ void AppServiceInstanceRegistryHelper::OnWindowVisibilityChanged(
     // window to compare with the parameter |window|, because we save the tab
     // window in AppService InstanceRegistry for Web apps, and we should set the
     // state for the tab window to keep one instance for the Web app.
-    auto instance_keys = GetInstanceKeys(shelf_id.app_id);
-    for (const apps::Instance::InstanceKey& instance_key_it : instance_keys) {
-      auto tab_it =
-          tab_window_to_browser_window_.find(instance_key_it.Window());
+    auto instances = GetInstances(shelf_id.app_id);
+    for (const auto* instance : instances) {
+      auto tab_it = tab_window_to_browser_window_.find(instance->Window());
       if (tab_it == tab_window_to_browser_window_.end() ||
           tab_it->second != window) {
         continue;
@@ -263,11 +262,11 @@ void AppServiceInstanceRegistryHelper::OnWindowVisibilityChanged(
       // When the user drags a tab to a new browser, or to an other browser, the
       // top window could be changed, so update the relation for the tap window
       // and the browser window.
-      UpdateTabWindow(shelf_id.app_id, instance_key_it.Window());
+      UpdateTabWindow(shelf_id.app_id, instance->Window());
 
       apps::InstanceState state =
-          CalculateVisibilityState(instance_key_it.Window(), visible);
-      OnInstances(shelf_id.app_id, instance_key_it.Window(), shelf_id.launch_id,
+          CalculateVisibilityState(instance->Window(), visible);
+      OnInstances(shelf_id.app_id, instance->Window(), shelf_id.launch_id,
                   state);
       return;
     }
@@ -300,20 +299,20 @@ void AppServiceInstanceRegistryHelper::SetWindowActivated(
     // window to compare with |window|, because we save the tab
     // window in AppService InstanceRegistry for Web apps, and we should set the
     // state for the tab window to keep one instance for the Web app.
-    auto instance_keys = GetInstanceKeys(shelf_id.app_id);
-    for (const apps::Instance::InstanceKey& instance_key_it : instance_keys) {
-      if (instance_key_it.Window()->GetToplevelWindow() != window) {
+    auto instances = GetInstances(shelf_id.app_id);
+    for (const auto* instance : instances) {
+      if (instance->Window()->GetToplevelWindow() != window) {
         continue;
       }
 
       // When the user drags a tab to a new browser, or to an other browser, the
       // top window could be changed, so the relation for the tab window and the
       // browser window.
-      UpdateTabWindow(shelf_id.app_id, instance_key_it.Window());
+      UpdateTabWindow(shelf_id.app_id, instance->Window());
 
       apps::InstanceState state =
-          CalculateActivatedState(instance_key_it.Window(), active);
-      OnInstances(shelf_id.app_id, instance_key_it.Window(), shelf_id.launch_id,
+          CalculateActivatedState(instance->Window(), active);
+      OnInstances(shelf_id.app_id, instance->Window(), shelf_id.launch_id,
                   state);
       return;
     }
@@ -483,16 +482,15 @@ aura::Window* AppServiceInstanceRegistryHelper::GetWindow(
   return window;
 }
 
-std::set<apps::Instance::InstanceKey>
-AppServiceInstanceRegistryHelper::GetInstanceKeys(const std::string& app_id) {
-  std::set<apps::Instance::InstanceKey> instance_keys;
+std::set<const apps::Instance*> AppServiceInstanceRegistryHelper::GetInstances(
+    const std::string& app_id) {
+  std::set<const apps::Instance*> instances;
   for (auto* profile : controller_->GetProfileList()) {
     auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile);
-    auto keys = proxy->InstanceRegistry().GetInstanceKeys(app_id);
-    instance_keys = base::STLSetUnion<std::set<apps::Instance::InstanceKey>>(
-        instance_keys, keys);
+    instances = base::STLSetUnion<std::set<const apps::Instance*>>(
+        instances, proxy->InstanceRegistry().GetInstances(app_id));
   }
-  return instance_keys;
+  return instances;
 }
 
 apps::InstanceState AppServiceInstanceRegistryHelper::GetState(

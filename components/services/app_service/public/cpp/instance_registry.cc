@@ -141,11 +141,12 @@ void InstanceRegistry::OnInstance(InstancePtr delta) {
   }
 }
 
-std::set<const Instance::InstanceKey> InstanceRegistry::GetInstanceKeys(
+std::set<const Instance*> InstanceRegistry::GetInstances(
     const std::string& app_id) {
-  auto it = app_id_to_app_instance_key_.find(app_id);
-  if (it == app_id_to_app_instance_key_.end())
-    return std::set<const Instance::InstanceKey>();
+  auto it = app_id_to_instances_.find(app_id);
+  if (it == app_id_to_instances_.end()) {
+    return std::set<const Instance*>();
+  }
   return it->second;
 }
 
@@ -214,7 +215,8 @@ void InstanceRegistry::DoOnInstance(InstancePtr delta) {
 
     // `new_delta` is still valid, though `delta` is moved, because `new_delta`
     // is the pointer to the content of `delta`.
-    states_.insert(std::make_pair(delta->InstanceId(), std::move(delta)));
+    states_.insert(std::make_pair(new_delta->InstanceId(), std::move(delta)));
+    app_id_to_instances_[new_delta->AppId()].insert(new_delta);
   }
 
   for (auto& obs : observers_) {
@@ -224,12 +226,29 @@ void InstanceRegistry::DoOnInstance(InstancePtr delta) {
   if (static_cast<InstanceState>(new_delta->State() &
                                  InstanceState::kDestroyed) !=
       InstanceState::kUnknown) {
-    instance_key_states_.erase(new_delta->GetInstanceKey());
-    states_.erase(new_delta->InstanceId());
+    MaybeRemoveInstance(new_delta);
   }
 
   old_state_.reset();
   in_progress_ = false;
+}
+
+void InstanceRegistry::MaybeRemoveInstance(const Instance* delta) {
+  DCHECK(delta);
+
+  auto it = states_.find(delta->InstanceId());
+  if (it == states_.end()) {
+    return;
+  }
+
+  const auto& app_id = delta->AppId();
+  app_id_to_instances_[app_id].erase(it->second.get());
+  if (app_id_to_instances_[app_id].empty()) {
+    app_id_to_instances_.erase(app_id);
+  }
+
+  instance_key_states_.erase(delta->GetInstanceKey());
+  states_.erase(it);
 }
 
 void InstanceRegistry::MaybeRemoveInstanceId(

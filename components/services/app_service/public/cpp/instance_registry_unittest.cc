@@ -611,7 +611,7 @@ TEST_F(InstanceRegistryTest, SuperRecursive) {
             instance_registry().GetState(&window5));
 }
 
-TEST_F(InstanceRegistryTest, GetInstanceKeys) {
+TEST_F(InstanceRegistryTest, GetInstances) {
   aura::Window window1(nullptr);
   window1.Init(ui::LAYER_NOT_DRAWN);
   aura::Window window2(nullptr);
@@ -623,21 +623,36 @@ TEST_F(InstanceRegistryTest, GetInstanceKeys) {
   MakeInstanceWithWindow("b", &window2);
   MakeInstanceWithWindow("a", &window3);
 
-  EXPECT_TRUE(instance_registry().GetInstanceKeys("a") ==
-              (std::set<const apps::Instance::InstanceKey>{
-                  MakeInstanceKey(&window1), MakeInstanceKey(&window3)}));
-  EXPECT_TRUE(
-      instance_registry().GetInstanceKeys("b") ==
-      (std::set<const apps::Instance::InstanceKey>{MakeInstanceKey(&window2)}));
+  auto instances = instance_registry().GetInstances("a");
+  EXPECT_EQ(2U, instances.size());
+
+  std::set<aura::Window*> windows;
+  for (const auto* instance : instances) {
+    EXPECT_EQ("a", instance->AppId());
+    windows.insert(instance->Window());
+  }
+  EXPECT_TRUE(base::Contains(windows, &window1));
+  EXPECT_TRUE(base::Contains(windows, &window3));
+
+  instances = instance_registry().GetInstances("b");
+  EXPECT_EQ(1U, instances.size());
+
+  auto it = instances.begin();
+  EXPECT_EQ("b", (*it)->AppId());
+  EXPECT_EQ(&window2, (*it)->Window());
 
   MakeInstanceWithWindow("a", &window1, apps::InstanceState::kDestroyed);
   MakeInstanceWithWindow("b", &window2, apps::InstanceState::kDestroyed);
 
-  EXPECT_TRUE(
-      instance_registry().GetInstanceKeys("a") ==
-      (std::set<const apps::Instance::InstanceKey>{MakeInstanceKey(&window3)}));
-  EXPECT_TRUE(instance_registry().GetInstanceKeys("b") ==
-              (std::set<const apps::Instance::InstanceKey>()));
+  instances = instance_registry().GetInstances("a");
+  EXPECT_EQ(1U, instances.size());
+
+  it = instances.begin();
+  EXPECT_EQ("a", (*it)->AppId());
+  EXPECT_EQ(&window3, (*it)->Window());
+
+  instances = instance_registry().GetInstances("b");
+  EXPECT_TRUE(instances.empty());
 }
 
 TEST_F(InstanceRegistryTest, ContainsAppId) {
@@ -673,30 +688,35 @@ TEST_F(InstanceRegistryTest, WindowIsChanged) {
   auto delta = std::make_unique<apps::Instance>("a", instance_id1, &window1);
   instance_registry().OnInstance(std::move(delta));
   EXPECT_TRUE(instance_registry().Exists(&window1));
+  EXPECT_EQ(1U, instance_registry().GetInstances("a").size());
 
   // Modify window for the instance of `a`.
   delta = std::make_unique<apps::Instance>("a", instance_id1, &window2);
   instance_registry().OnInstance(std::move(delta));
   EXPECT_FALSE(instance_registry().Exists(&window1));
   EXPECT_TRUE(instance_registry().Exists(&window2));
+  EXPECT_EQ(1U, instance_registry().GetInstances("a").size());
 
   // Create an instance of `window2` for `b`.
   auto instance_id2 = base::UnguessableToken::Create();
   delta = std::make_unique<apps::Instance>("b", instance_id2, &window2);
   instance_registry().OnInstance(std::move(delta));
   EXPECT_TRUE(instance_registry().Exists(&window2));
+  EXPECT_EQ(1U, instance_registry().GetInstances("b").size());
 
   // Close window for the instance of `a`.
   delta = std::make_unique<apps::Instance>("a", instance_id1, &window2);
   delta->UpdateState(apps::InstanceState::kDestroyed, base::Time());
   instance_registry().OnInstance(std::move(delta));
   EXPECT_TRUE(instance_registry().Exists(&window2));
+  EXPECT_TRUE(instance_registry().GetInstances("a").empty());
 
   // Close window for the instance of `b`.
   delta = std::make_unique<apps::Instance>("b", instance_id2, &window2);
   delta->UpdateState(apps::InstanceState::kDestroyed, base::Time());
   instance_registry().OnInstance(std::move(delta));
   EXPECT_FALSE(instance_registry().Exists(&window2));
+  EXPECT_TRUE(instance_registry().GetInstances("b").empty());
 }
 
 TEST_F(InstanceRegistryTest, SuperRecursiveWithWindowChanged) {
@@ -808,13 +828,19 @@ TEST_F(InstanceRegistryTest, SuperRecursiveWithWindowChanged) {
   EXPECT_EQ(apps::InstanceState::kUnknown,
             *instance_registry().GetStates("a", &window2).begin());
 
+  EXPECT_EQ(2U, instance_registry().GetInstances("a").size());
+
   EXPECT_EQ(1U, instance_registry().GetStates("b", &window3).size());
   EXPECT_EQ(apps::InstanceState::kVisible,
             *instance_registry().GetStates("b", &window3).begin());
 
+  EXPECT_EQ(1U, instance_registry().GetInstances("b").size());
+
   EXPECT_EQ(1U, instance_registry().GetStates("c", &window3).size());
   EXPECT_EQ(apps::InstanceState::kVisible,
             *instance_registry().GetStates("c", &window3).begin());
+
+  EXPECT_EQ(1U, instance_registry().GetInstances("c").size());
 
   EXPECT_TRUE(instance_registry().GetStates("c", &window4).empty());
 
