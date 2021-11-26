@@ -109,6 +109,9 @@ public class StartupTabPreloader implements ProfileManager.Observer, DestroyObse
     // Whether the tab preload that was prevented only by the feature would have matched.
     private boolean mPreloadPreventedOnlyByFeatureWouldHaveMatched;
 
+    // The time at which the first navigation start occurred.
+    private long mFirstNavigationStartMs;
+
     public static void failNextTabMatchForTesting() {
         sFailNextTabMatchForTesting = true;
     }
@@ -153,8 +156,7 @@ public class StartupTabPreloader implements ProfileManager.Observer, DestroyObse
 
     @Override
     public void onFirstNavigationStart() {
-        recordDurationFromLoadDecisionIntoPreTabMatchHistogram(
-                "Android.StartupTabPreloader.LoadDecisionToFirstNavigationStart");
+        mFirstNavigationStartMs = SystemClock.uptimeMillis();
     }
 
     @Override
@@ -167,6 +169,14 @@ public class StartupTabPreloader implements ProfileManager.Observer, DestroyObse
     public void onFirstNavigationCommit() {
         recordDurationFromLoadDecisionIntoPostTabMatchHistogram(
                 "Android.StartupTabPreloader.LoadDecisionToFirstNavigationCommit");
+
+        // We record the metric for navigation start here as well, as we want that metric to be
+        // recorded only for navigations that result in the first navigation commit startup metric
+        // being recorded.
+        assert mFirstNavigationStartMs > 0;
+        recordDurationFromLoadDecisionToEventTimeIntoPreTabMatchHistogram(
+                "Android.StartupTabPreloader.LoadDecisionToFirstNavigationStart",
+                mFirstNavigationStartMs);
     }
 
     @Override
@@ -179,13 +189,21 @@ public class StartupTabPreloader implements ProfileManager.Observer, DestroyObse
     // by the state of the tab preload decision). To be used when the current time is before the
     // tab match decision has occurred.
     private void recordDurationFromLoadDecisionIntoPreTabMatchHistogram(String histogram) {
-        if (mLoadDecisionMs == 0) return;
+        recordDurationFromLoadDecisionToEventTimeIntoPreTabMatchHistogram(
+                histogram, SystemClock.uptimeMillis());
+    }
 
-        long currentTimeMs = SystemClock.uptimeMillis();
-        long triggerpointToCurrentTimeMs = currentTimeMs - mLoadDecisionMs;
+    // Records the duration from the load decision to |eventTimeMs| into |histogram| (suffixed
+    // by the state of the tab preload decision). To be used when the corresponding event occurred
+    // before the tab match decision has occurred.
+    private void recordDurationFromLoadDecisionToEventTimeIntoPreTabMatchHistogram(
+            String histogram, long eventTimeMs) {
+        if (mLoadDecisionMs == 0 || eventTimeMs == 0) return;
+
+        long triggerpointToEventTimeMs = eventTimeMs - mLoadDecisionMs;
 
         String suffix = preloadWasViable() ? ".Load" : ".NoLoad";
-        RecordHistogram.recordMediumTimesHistogram(histogram + suffix, triggerpointToCurrentTimeMs);
+        RecordHistogram.recordMediumTimesHistogram(histogram + suffix, triggerpointToEventTimeMs);
     }
 
     // Records the duration from the load decision to the current time into |histogram| (suffixed

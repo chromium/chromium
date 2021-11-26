@@ -2971,7 +2971,9 @@ chromium-metrics-reviews@google.com.
     tab preload is determined {LoadDecision} viable. In the case where the
     ElideTabPreloadAtStartup feature is enabled, this metric will be segmented
     to reflect the state that would have resulted if tab preloading was not
-    disabled by the feature.
+    disabled by the feature. Recorded only for startups in which
+    Android.Startup.Cold.TimeToFirstNavigationCommit is recorded for ability to
+    compare with that metric and its derived metrics.
   </summary>
   <token key="LoadDecision">
     <variant name="Load" summary="to be"/>
