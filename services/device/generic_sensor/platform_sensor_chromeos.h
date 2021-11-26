@@ -103,11 +103,6 @@ class PlatformSensorChromeOS
   // Channel indices of |required_channel_ids_| to enable.
   std::vector<int32_t> channel_indices_;
 
-  // Stores previously read values that are used to
-  // determine whether the recent values are changed
-  // and IPC can be notified that updates are available.
-  SensorReading old_values_;
-
   // Number of failed reads. Triggers an error if it reaches
   // kNumFailedReadsBeforeGivingUp.
   uint32_t num_failed_reads_ = 0;
