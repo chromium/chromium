@@ -462,7 +462,7 @@
       'Android FYI Release (Nexus 5)': 'gpu_tests_android_release_trybot_reclient',
       'Android FYI Release (Nexus 5X)': 'gpu_tests_android_release_trybot_arm64_reclient',
       'Android FYI Release (Nexus 9)': 'gpu_tests_android_release_trybot_arm64_reclient',
-      'Android FYI Release (NVIDIA Shield TV)': 'gpu_tests_android_release_trybot_arm64_reclient',
+      'Android FYI Release (NVIDIA Shield TV)': 'gpu_tests_android_release_trybot_arm64',
       'Android FYI Release (Pixel 2)': 'gpu_tests_android_release_trybot_reclient',
       'Android FYI Release (Pixel 4)': 'gpu_tests_android_release_trybot_reclient',
       'Android FYI SkiaRenderer GL (Nexus 5X)': 'gpu_tests_android_release_trybot_arm64_reclient',

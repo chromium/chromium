@@ -4885,9 +4885,6 @@ ci.gpu_fyi_linux_builder(
         category = "Android|N64|NVDA",
         short_name = "STV",
     ),
-    goma_backend = None,
-    reclient_jobs = rbe_jobs.DEFAULT,
-    reclient_instance = rbe_instance.DEFAULT,
 )
 
 ci.gpu_fyi_linux_builder(
