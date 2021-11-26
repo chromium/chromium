@@ -114,21 +114,6 @@ void InstanceRegistry::OnInstance(InstancePtr delta) {
     instance_id_to_window_.erase(delta->InstanceId());
   }
 
-  // If the instance state is not kDestroyed, adds to
-  // |app_id_to_app_instance_key_|, otherwise removes the instance key from
-  // |app_id_to_app_instance_key_|.
-  // TODO(crbug.com/1251501): Will be removed soon.
-  if (static_cast<InstanceState>(delta->State() & InstanceState::kDestroyed) ==
-      InstanceState::kUnknown) {
-    app_id_to_app_instance_key_[delta->AppId()].insert(delta->GetInstanceKey());
-  } else {
-    app_id_to_app_instance_key_[delta->AppId()].erase(
-        delta.get()->GetInstanceKey());
-    if (app_id_to_app_instance_key_[delta->AppId()].size() == 0) {
-      app_id_to_app_instance_key_.erase(delta->AppId());
-    }
-  }
-
   if (in_progress_) {
     deltas_pending_.push_back(std::move(delta));
     return;
@@ -175,7 +160,7 @@ bool InstanceRegistry::Exists(const aura::Window* window) const {
 }
 
 bool InstanceRegistry::ContainsAppId(const std::string& app_id) const {
-  return base::Contains(app_id_to_app_instance_key_, app_id);
+  return base::Contains(app_id_to_instances_, app_id);
 }
 
 void InstanceRegistry::DoOnInstance(InstancePtr delta) {
@@ -194,10 +179,6 @@ void InstanceRegistry::DoOnInstance(InstancePtr delta) {
     InstanceUpdate::Merge(state, new_delta);
   } else {
     old_state_.reset();
-
-    // TODO(crbug.com/1251501): Will be removed soon.
-    instance_key_states_.insert(
-        std::make_pair(delta->GetInstanceKey(), new_delta));
 
     // `new_delta` is still valid, though `delta` is moved, because `new_delta`
     // is the pointer to the content of `delta`.
@@ -233,7 +214,6 @@ void InstanceRegistry::MaybeRemoveInstance(const Instance* delta) {
     app_id_to_instances_.erase(app_id);
   }
 
-  instance_key_states_.erase(delta->GetInstanceKey());
   states_.erase(it);
 }
 

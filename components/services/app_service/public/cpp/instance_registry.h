@@ -271,21 +271,11 @@ class InstanceRegistry {
   // exactly once, and deltas_pending_ will stay empty.
   bool in_progress_ = false;
 
-  // Maps from instance key to the latest state: the "sum" of all previous
-  // deltas.
-  // TODO(crbug.com/1251501): Will be removed soon.
-  std::map<const Instance::InstanceKey, Instance*> instance_key_states_;
-
   // Maps from the instance id to the latest state: the "sum" of all previous
   // deltas.
   std::map<const base::UnguessableToken, InstancePtr> states_;
 
   std::list<InstancePtr> deltas_pending_;
-
-  // Maps from app id to app instance key.
-  // TODO(crbug.com/1251501): Will be removed soon.
-  std::map<const std::string, std::set<const Instance::InstanceKey>>
-      app_id_to_app_instance_key_;
 
   // Maps from window to a set of instance id.
   std::map<const aura::Window*, InstanceIds> window_to_instance_ids_;
