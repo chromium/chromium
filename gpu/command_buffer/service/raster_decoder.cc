@@ -2587,7 +2587,7 @@ bool RasterDecoderImpl::TryCopySubTextureINTERNALMemory(
     SharedImageRepresentationSkia::ScopedWriteAccess* dest_scoped_access,
     const std::vector<GrBackendSemaphore>& begin_semaphores,
     std::vector<GrBackendSemaphore>& end_semaphores) {
-  if (unpack_flip_y || x != 0 || y != 0)
+  if (unpack_flip_y)
     return false;
 
   auto source_shared_image =
@@ -2605,7 +2605,9 @@ bool RasterDecoderImpl::TryCopySubTextureINTERNALMemory(
     return false;
 
   SkPixmap pm = scoped_read_access->pixmap();
-  if (pm.width() != source_rect.width() || pm.height() != source_rect.height())
+  SkIRect skIRect = RectToSkIRect(source_rect);
+  SkPixmap subset;
+  if (!pm.extractSubset(&subset, skIRect))
     return false;
 
   if (!begin_semaphores.empty()) {
@@ -2615,7 +2617,7 @@ bool RasterDecoderImpl::TryCopySubTextureINTERNALMemory(
     DCHECK(result);
   }
 
-  dest_scoped_access->surface()->writePixels(pm, xoffset, yoffset);
+  dest_scoped_access->surface()->writePixels(subset, xoffset, yoffset);
 
   FlushAndSubmitIfNecessary(dest_scoped_access->surface(),
                             std::move(end_semaphores));
