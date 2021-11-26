@@ -88,7 +88,7 @@ apps::mojom::AppPtr GetBorealisLauncher(Profile* profile, bool allowed) {
       allowed ? apps::mojom::Readiness::kReady
               : apps::mojom::Readiness::kDisabledByPolicy,
       l10n_util::GetStringUTF8(IDS_BOREALIS_APP_NAME),
-      apps::mojom::InstallReason::kUser);
+      apps::mojom::InstallReason::kDefault);
 
   app->icon_key = apps::mojom::IconKey::New(
       apps::mojom::IconKey::kDoesNotChangeOverTime,
