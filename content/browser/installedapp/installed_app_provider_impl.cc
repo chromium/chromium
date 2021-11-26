@@ -10,7 +10,6 @@
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
-#include "mojo/public/cpp/bindings/self_owned_receiver.h"
 
 namespace content {
 
@@ -34,29 +33,29 @@ void DidGetInstalledApps(
 }  // namespace
 
 InstalledAppProviderImpl::InstalledAppProviderImpl(
-    RenderFrameHost* render_frame_host)
-    : content::WebContentsObserver(
-          WebContents::FromRenderFrameHost(render_frame_host)),
-      render_frame_host_(render_frame_host) {
-  DCHECK(render_frame_host_);
-}
+    RenderFrameHost& render_frame_host,
+    mojo::PendingReceiver<blink::mojom::InstalledAppProvider> pending_receiver)
+    : DocumentService(&render_frame_host, std::move(pending_receiver)) {}
+
+InstalledAppProviderImpl::~InstalledAppProviderImpl() = default;
 
 void InstalledAppProviderImpl::FilterInstalledApps(
     std::vector<blink::mojom::RelatedApplicationPtr> related_apps,
     const GURL& manifest_url,
     FilterInstalledAppsCallback callback) {
   bool is_implemented = false;
-  if (base::FeatureList::IsEnabled(features::kInstalledAppProvider) &&
-      render_frame_host_) {
+  if (base::FeatureList::IsEnabled(features::kInstalledAppProvider)) {
 #if defined(OS_WIN)
     is_implemented = true;
-    bool is_off_the_record =
-        render_frame_host_->GetProcess()->GetBrowserContext()->IsOffTheRecord();
+    bool is_off_the_record = render_frame_host()
+                                 ->GetProcess()
+                                 ->GetBrowserContext()
+                                 ->IsOffTheRecord();
     installed_app_provider_win::FilterInstalledAppsForWin(
         std::move(related_apps),
         base::BindOnce(&DidGetInstalledApps, is_off_the_record,
                        std::move(callback)),
-        render_frame_host_->GetLastCommittedURL());
+        render_frame_host()->GetLastCommittedURL());
 #endif
   }
 
@@ -66,19 +65,13 @@ void InstalledAppProviderImpl::FilterInstalledApps(
   }
 }
 
-void InstalledAppProviderImpl::RenderFrameDeleted(
-    RenderFrameHost* render_frame_host) {
-  if (render_frame_host_ == render_frame_host) {
-    render_frame_host_ = nullptr;
-  }
-}
-
 // static
 void InstalledAppProviderImpl::Create(
-    RenderFrameHost* host,
+    RenderFrameHost& host,
     mojo::PendingReceiver<blink::mojom::InstalledAppProvider> receiver) {
-  mojo::MakeSelfOwnedReceiver(std::make_unique<InstalledAppProviderImpl>(host),
-                              std::move(receiver));
+  // The object is bound to the lifetime of |host|'s current document and the
+  // mojo connection. See DocumentService for details.
+  new InstalledAppProviderImpl(host, std::move(receiver));
 }
 
 }  // namespace content

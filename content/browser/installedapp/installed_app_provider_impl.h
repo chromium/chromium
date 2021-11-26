@@ -7,7 +7,8 @@
 
 #include <vector>
 
-#include "content/public/browser/web_contents_observer.h"
+#include "content/public/browser/document_service.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "third_party/blink/public/mojom/installedapp/installed_app_provider.mojom.h"
 #include "third_party/blink/public/mojom/installedapp/related_application.mojom.h"
 
@@ -15,27 +16,25 @@ namespace content {
 
 class RenderFrameHost;
 
-class InstalledAppProviderImpl : public blink::mojom::InstalledAppProvider,
-                                 public content::WebContentsObserver {
+class InstalledAppProviderImpl
+    : public DocumentService<blink::mojom::InstalledAppProvider> {
  public:
-  explicit InstalledAppProviderImpl(RenderFrameHost* render_frame_host);
   static void Create(
-      RenderFrameHost* render_frame_host,
+      RenderFrameHost& render_frame_host,
       mojo::PendingReceiver<blink::mojom::InstalledAppProvider> receiver);
 
-  ~InstalledAppProviderImpl() override = default;
-
+ private:
   // InstalledAppProvider overrides:
   void FilterInstalledApps(
       std::vector<blink::mojom::RelatedApplicationPtr> related_apps,
       const GURL& manifest_url,
       FilterInstalledAppsCallback callback) override;
 
-  // WebContentsObserver
-  void RenderFrameDeleted(RenderFrameHost* render_frame_host) override;
-
- private:
-  RenderFrameHost* render_frame_host_;
+  explicit InstalledAppProviderImpl(
+      RenderFrameHost& render_frame_host,
+      mojo::PendingReceiver<blink::mojom::InstalledAppProvider>
+          pending_receiver);
+  ~InstalledAppProviderImpl() override;
 };
 
 }  // namespace content

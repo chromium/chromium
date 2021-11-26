@@ -9460,7 +9460,7 @@ void RenderFrameHostImpl::CreateNotificationService(
 
 void RenderFrameHostImpl::CreateInstalledAppProvider(
     mojo::PendingReceiver<blink::mojom::InstalledAppProvider> receiver) {
-  InstalledAppProviderImpl::Create(this, std::move(receiver));
+  InstalledAppProviderImpl::Create(*this, std::move(receiver));
 }
 
 void RenderFrameHostImpl::CreateCodeCacheHostWithIsolationKey(
