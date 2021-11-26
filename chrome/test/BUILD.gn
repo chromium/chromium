@@ -2439,6 +2439,7 @@ if (!is_android && !is_fuchsia) {
         "../browser/policy/cloud/user_policy_signin_service_browsertest.cc",
         "../browser/signin/dice_browsertest.cc",
         "../browser/signin/dice_web_signin_interceptor_browsertest.cc",
+        "../browser/signin/signin_ui_util_browsertest.cc",
         "../browser/unified_consent/unified_consent_browsertest.cc",
       ]
       if (is_win) {

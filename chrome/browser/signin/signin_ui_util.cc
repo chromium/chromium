@@ -317,6 +317,10 @@ void ShowExtensionSigninPrompt(
   chrome::ScopedTabbedBrowserDisplayer displayer(original_profile);
   Browser* browser = displayer.browser();
 
+  // Cannot sign in if browser cannot be displayed.
+  if (!browser)
+    return;
+
   if (enable_sync) {
     // Set a primary account.
     browser->signin_view_controller()->ShowDiceEnableSyncTab(
