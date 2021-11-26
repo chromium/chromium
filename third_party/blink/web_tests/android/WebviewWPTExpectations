@@ -5160,7 +5160,6 @@ crbug.com/1050754 external/wpt/webrtc/RTCRtpSender-replaceTrack.https.html [ Fai
 crbug.com/1050754 external/wpt/webrtc/RTCRtpSender-setParameters.html [ Failure Pass ]
 crbug.com/1050754 external/wpt/webrtc/RTCRtpTransceiver-setCodecPreferences.html [ Failure ]
 crbug.com/1050754 external/wpt/webrtc/RTCRtpTransceiver-stop.html [ Failure Pass ]
-crbug.com/1050754 external/wpt/webrtc/RTCRtpTransceiver.https.html [ Timeout ]
 crbug.com/1050754 external/wpt/webrtc/RTCSctpTransport-events.html [ Timeout ]
 crbug.com/1050754 external/wpt/webrtc/RTCSctpTransport-maxChannels.html [ Timeout ]
 crbug.com/1050754 external/wpt/webrtc/RTCTrackEvent-constructor.html [ Failure Pass ]
