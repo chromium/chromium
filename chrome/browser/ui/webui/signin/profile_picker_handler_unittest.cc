@@ -83,7 +83,8 @@ class ProfilePickerHandlerTest : public testing::Test {
     profile_manager()->SetAccountProfileMapper(
         std::make_unique<AccountProfileMapper>(
             &mock_account_manager_facade_,
-            profile_manager()->profile_attributes_storage()));
+            profile_manager()->profile_attributes_storage(),
+            profile_manager()->local_state()->Get()));
 #endif
     handler_ = std::make_unique<ProfilePickerHandler>();
     web_ui_profile_ = GetWebUIProfile();

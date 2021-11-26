@@ -1021,7 +1021,7 @@ AccountProfileMapper* ProfileManager::GetAccountProfileMapper() {
       base::FeatureList::IsEnabled(kMultiProfileAccountConsistency)) {
     account_profile_mapper_ = std::make_unique<AccountProfileMapper>(
         GetAccountManagerFacade(/*profile_path=*/std::string()),
-        &GetProfileAttributesStorage());
+        &GetProfileAttributesStorage(), g_browser_process->local_state());
   }
   return account_profile_mapper_.get();
 }

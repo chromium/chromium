@@ -11,12 +11,12 @@
 
 #include "base/callback_forward.h"
 #include "base/containers/flat_map.h"
-#include "base/containers/flat_set.h"
 #include "base/files/file_path.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "base/scoped_observation.h"
+#include "chrome/browser/lacros/account_manager/account_cache.h"
 #include "components/account_manager_core/account_manager_facade.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
@@ -29,6 +29,7 @@ class AccountKey;
 class AddAccountHelper;
 class ProfileAttributesStorage;
 class ProfileAttributesEntry;
+class PrefService;
 
 // `AccountProfileMapper` is the main class maintaining the mapping between
 // accounts and profiles. There is only one global `AccountProfileMapper` (it is
@@ -77,7 +78,8 @@ class AccountProfileMapper
   };
 
   AccountProfileMapper(account_manager::AccountManagerFacade* facade,
-                       ProfileAttributesStorage* storage);
+                       ProfileAttributesStorage* storage,
+                       PrefService* local_state);
   ~AccountProfileMapper() override;
 
   AccountProfileMapper(const AccountProfileMapper& other) = delete;
@@ -179,6 +181,7 @@ class AccountProfileMapper
   // the accounts are left unassigned.
   std::vector<const account_manager::Account*> AddNewGaiaAccounts(
       const std::vector<account_manager::Account>& system_accounts,
+      AccountCache::AccountIdSet lacros_account_ids,
       ProfileAttributesEntry* entry_for_new_accounts);
 
   // Update the `ProfileAttributesStorage` to match the system accounts.
@@ -221,17 +224,7 @@ class AccountProfileMapper
                           account_manager::AccountManagerFacade::Observer>
       account_manager_facade_observation_{this};
 
-  // Map of account_manager::Account keyed by GaiaID as provided by the last
-  // `account_manager_facade_.GetAccounts()` result. Contains only Gaia
-  // accounts.
-  // Must be modified only from `OnGetAccountsCompleted()`.
-  base::flat_map<std::string, account_manager::Account> account_cache_;
-  // The last state of the `account_cache_` that had been fully processed by
-  // `OnGetAccountsCompleted()`. This state can be several versions behind
-  // `account_cache` while an account addition is in progress.
-  // Must be modified only from `OnGetAccountsCompleted()`.
-  base::flat_map<std::string, account_manager::Account>
-      last_processed_account_cache_;
+  AccountCache account_cache_;
 
   base::WeakPtrFactory<AccountProfileMapper> weak_factory_{this};
 };

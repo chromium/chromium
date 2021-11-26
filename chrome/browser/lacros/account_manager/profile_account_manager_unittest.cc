@@ -25,7 +25,9 @@ class ProfileAccountManagerTest : public testing::Test {
         testing_profile_manager_(TestingBrowserProcess::GetGlobal()) {
     CHECK(testing_profile_manager_.SetUp());
     testing_profile_manager_.SetAccountProfileMapper(
-        std::make_unique<AccountProfileMapper>(&mock_facade_, storage()));
+        std::make_unique<AccountProfileMapper>(
+            &mock_facade_, storage(),
+            testing_profile_manager_.local_state()->Get()));
   }
 
   AccountProfileMapper* mapper() {

@@ -10,6 +10,7 @@
 #include "base/check.h"
 #include "base/containers/cxx20_erase.h"
 #include "base/containers/flat_map.h"
+#include "base/containers/flat_set.h"
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/logging.h"
@@ -42,8 +43,11 @@ void DeleteProfile(const base::FilePath& profile_path,
 
 AccountProfileMapper::AccountProfileMapper(
     account_manager::AccountManagerFacade* facade,
-    ProfileAttributesStorage* storage)
-    : account_manager_facade_(facade), profile_attributes_storage_(storage) {
+    ProfileAttributesStorage* storage,
+    PrefService* local_state)
+    : account_manager_facade_(facade),
+      profile_attributes_storage_(storage),
+      account_cache_(local_state) {
   DCHECK(profile_attributes_storage_);
   DCHECK(base::FeatureList::IsEnabled(kMultiProfileAccountConsistency));
 
@@ -82,13 +86,13 @@ void AccountProfileMapper::GetAccounts(const base::FilePath& profile_path,
   // profile.
   if (entry) {
     for (const std::string& gaia_id : entry->GetGaiaIds()) {
-      base::flat_map<std::string, account_manager::Account>::const_iterator it =
-          account_cache_.find(gaia_id);
-      if (it == account_cache_.cend()) {
+      const account_manager::Account* account =
+          account_cache_.FindAccountByGaiaId(gaia_id);
+      if (!account) {
         NOTREACHED() << "Account " << gaia_id << " missing.";
         continue;
       }
-      accounts.push_back(it->second);
+      accounts.push_back(*account);
     }
   }
   std::move(callback).Run(accounts);
@@ -141,26 +145,24 @@ void AccountProfileMapper::GetAccountsMap(MapAccountsCallback callback) {
   }
 
   std::map<base::FilePath, std::vector<account_manager::Account>> accounts_map;
-  base::flat_map<std::string, account_manager::Account> unassigned_accounts(
-      account_cache_);
+  AccountCache::AccountByGaiaIdMap unassigned_accounts =
+      account_cache_.GetAccountsCopy();
   for (ProfileAttributesEntry* entry :
        profile_attributes_storage_->GetAllProfilesAttributes()) {
     const base::FilePath path = entry->GetPath();
     for (const std::string& gaia_id : entry->GetGaiaIds()) {
-      base::flat_map<std::string, account_manager::Account>::const_iterator it =
-          account_cache_.find(gaia_id);
-      if (it == account_cache_.cend()) {
+      const account_manager::Account* account =
+          account_cache_.FindAccountByGaiaId(gaia_id);
+      if (!account) {
         NOTREACHED() << "Account " << gaia_id << " missing.";
         continue;
       }
-      accounts_map[path].push_back(it->second);
+      accounts_map[path].push_back(*account);
       unassigned_accounts.erase(gaia_id);
     }
   }
-  for (std::pair<std::string, account_manager::Account> pair :
-       unassigned_accounts) {
+  for (const auto& pair : unassigned_accounts)
     accounts_map[base::FilePath()].push_back(pair.second);
-  }
   std::move(callback).Run(accounts_map);
 }
 
@@ -206,7 +208,7 @@ void AccountProfileMapper::OnAccountUpserted(
     return;
   }
 
-  if (account_cache_.contains(account.key.id())) {
+  if (account_cache_.FindAccountByGaiaId(account.key.id())) {
     // The account is already known. This is an account update. Propagate the
     // update to all profiles that have this account.
     std::vector<ProfileAttributesEntry*> entries =
@@ -289,7 +291,7 @@ void AccountProfileMapper::RemoveAccountForTesting(
 bool AccountProfileMapper::IsAccountInCache(
     const account_manager::Account& account) {
   return account.key.account_type() == account_manager::AccountType::kGaia &&
-         account_cache_.contains(account.key.id());
+         account_cache_.FindAccountByGaiaId(account.key.id());
 }
 
 void AccountProfileMapper::AddAccountInternal(
@@ -316,13 +318,14 @@ void AccountProfileMapper::AddAccountInternal(
         std::move(callback).Run(absl::nullopt);
       return;
     }
-    const auto& it = account_cache_.find(account_key->id());
-    if (it == account_cache_.end()) {
+    const account_manager::Account* account =
+        account_cache_.FindAccountByGaiaId(account_key->id());
+    if (!account) {
       if (callback)
         std::move(callback).Run(absl::nullopt);
       return;
     } else {
-      source_or_account = it->second;
+      source_or_account = *account;
     }
   } else {
     source_or_account =
@@ -350,7 +353,9 @@ void AccountProfileMapper::OnAddAccountCompleted(
   // Note: the new account may or may not be in `account_cache_`. There is a
   // small possibility that an account was already removed from the OS. As a
   // result, this function does not use `account_cache_` at all.
-  if (result) {
+  // Exclude unassigned accounts because `OnGetAccountsCompleted()` will notify
+  // observers about them.
+  if (result && !result->profile_path.empty()) {
     for (auto& obs : observers_)
       obs.OnAccountUpserted(result->profile_path, result->account);
   }
@@ -380,7 +385,7 @@ AccountProfileMapper::RemoveStaleAccounts() {
     // For each account in the profile.
     auto it = entry_ids.begin();
     while (it != entry_ids.end()) {
-      if (account_cache_.contains(*it)) {
+      if (account_cache_.FindAccountByGaiaId(*it)) {
         ++it;
       } else {
         // An account in the profile is no longer in the system.
@@ -403,20 +408,24 @@ AccountProfileMapper::RemoveStaleAccounts() {
 std::vector<const account_manager::Account*>
 AccountProfileMapper::AddNewGaiaAccounts(
     const std::vector<account_manager::Account>& system_accounts,
+    AccountCache::AccountIdSet lacros_account_ids,
     ProfileAttributesEntry* entry_for_new_accounts) {
-  // Compute the set of Gaia IDs in the profiles.
-  base::flat_set<std::string> profile_gaia_ids;
+  // Add the set of Gaia IDs in the profiles to `lacros_account_ids`. This is
+  // important because accounts created by Chrome are initially added to
+  // ProfileAttributesStorage first, but not to account cache. Otherwise, we'd
+  // treat these new accounts as new unassigned accounts.
   std::vector<ProfileAttributesEntry*> entries =
       profile_attributes_storage_->GetAllProfilesAttributes();
   for (ProfileAttributesEntry* entry : entries) {
     base::flat_set<std::string> entry_ids = entry->GetGaiaIds();
-    profile_gaia_ids.insert(entry_ids.begin(), entry_ids.end());
+    lacros_account_ids.insert(entry_ids.begin(), entry_ids.end());
   }
-  // Diff that set against system accounts.
+
+  // Diff computed set against system accounts.
   std::vector<const account_manager::Account*> added_accounts;
   for (const account_manager::Account& account : system_accounts) {
     if (account.key.account_type() == account_manager::AccountType::kGaia &&
-        !profile_gaia_ids.contains(account.key.id())) {
+        !lacros_account_ids.contains(account.key.id())) {
       added_accounts.push_back(&account);
     }
   }
@@ -432,14 +441,7 @@ AccountProfileMapper::AddNewGaiaAccounts(
 
 void AccountProfileMapper::OnGetAccountsCompleted(
     const std::vector<account_manager::Account>& system_accounts) {
-  account_cache_.clear();
-  for (const account_manager::Account& account : system_accounts) {
-    const account_manager::AccountKey& key = account.key;
-    // Filter out non-Gaia accounts.
-    if (key.account_type() != account_manager::AccountType::kGaia)
-      continue;
-    account_cache_.emplace(key.id(), account);
-  }
+  account_cache_.UpdateAccounts(system_accounts);
 
   // `AccountManagerFacade` may call `OnAccountUpserted()` before the
   // `ShowAddAccountDialog()` callback, which may result in this function being
@@ -461,21 +463,25 @@ void AccountProfileMapper::OnGetAccountsCompleted(
     return;
   }
 
-  base::flat_map<std::string, account_manager::Account> old_cache;
-  last_processed_account_cache_.swap(old_cache);
-  last_processed_account_cache_ = account_cache_;
-
   // Accounts that were removed.
   std::vector<std::pair<base::FilePath, std::string>> removed_ids =
       RemoveStaleAccounts();
   // Accounts that were added.
   ProfileAttributesEntry* entry_for_new_accounts =
       MaybeGetProfileForNewAccounts();
-  std::vector<const account_manager::Account*> added_accounts =
-      AddNewGaiaAccounts(system_accounts, entry_for_new_accounts);
 
   if (initialized_) {
     DCHECK(initialization_callbacks_.empty());
+
+    AccountCache::AccountByGaiaIdMap old_cache =
+        account_cache_.UpdateSnapshot();
+    AccountCache::AccountIdSet old_account_ids = base::MakeFlatSet<std::string>(
+        old_cache, {},
+        [](const auto& mapped_pair) { return mapped_pair.first; });
+    std::vector<const account_manager::Account*> added_accounts =
+        AddNewGaiaAccounts(system_accounts, std::move(old_account_ids),
+                           entry_for_new_accounts);
+
     // Call observers once all entries are updated.
     base::FilePath path_for_new_accounts;
     if (entry_for_new_accounts)
@@ -487,8 +493,7 @@ void AccountProfileMapper::OnGetAccountsCompleted(
         obs.OnAccountUpserted(path_for_new_accounts, *account);
       }
       for (const auto& pair : removed_ids) {
-        base::flat_map<std::string, account_manager::Account>::const_iterator
-            it = old_cache.find(pair.second);
+        auto it = old_cache.find(pair.second);
         if (it == old_cache.cend()) {
           NOTREACHED() << "Account " << pair.second << " missing.";
           continue;
@@ -497,6 +502,10 @@ void AccountProfileMapper::OnGetAccountsCompleted(
       }
     }
   } else {
+    AccountCache::AccountIdSet old_account_ids =
+        account_cache_.CreateSnapshot();
+    AddNewGaiaAccounts(system_accounts, std::move(old_account_ids),
+                       entry_for_new_accounts);
     initialized_ = true;
     for (auto& callback : initialization_callbacks_)
       std::move(callback).Run();
@@ -536,7 +545,8 @@ bool AccountProfileMapper::ShouldDeleteProfile(
   // Delete profile if its primary account has been removed.
   const std::string& primary_gaia_id = entry->GetGAIAId();
   bool primary_account_deleted =
-      !primary_gaia_id.empty() && !account_cache_.contains(primary_gaia_id);
+      !primary_gaia_id.empty() &&
+      !account_cache_.FindAccountByGaiaId(primary_gaia_id);
 
   if (Profile::IsMainProfilePath(entry->GetPath())) {
     // Never delete the main profile.

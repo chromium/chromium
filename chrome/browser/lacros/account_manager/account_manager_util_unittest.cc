@@ -23,6 +23,7 @@
 #include "components/account_manager_core/account.h"
 #include "components/account_manager_core/account_manager_facade.h"
 #include "components/account_manager_core/mock_account_manager_facade.h"
+#include "components/prefs/testing_pref_service.h"
 #include "content/public/test/browser_task_environment.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -98,8 +99,9 @@ class AccountManagerUtilTest : public testing::Test {
             [&accounts_in_facade](
                 base::OnceCallback<void(const std::vector<Account>&)>
                     callback) { std::move(callback).Run(accounts_in_facade); });
-    auto mapper = std::make_unique<AccountProfileMapper>(mock_facade(),
-                                                         attributes_storage());
+    auto mapper = std::make_unique<AccountProfileMapper>(
+        mock_facade(), attributes_storage(),
+        testing_profile_manager_.local_state()->Get());
     SetAccountsInStorage(accounts);
     return mapper;
   }
