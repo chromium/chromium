@@ -24,34 +24,7 @@
 
 namespace blink {
 
-class CSSStyleSheetTest : public PageTestBase {
- protected:
-  void SetUp() override {
-    PageTestBase::SetUp();
-  }
-
-  class FunctionForTest : public ScriptFunction {
-   public:
-    static v8::Local<v8::Function> CreateFunction(ScriptState* script_state,
-                                                  ScriptValue* output) {
-      FunctionForTest* self =
-          MakeGarbageCollected<FunctionForTest>(script_state, output);
-      return self->BindToV8Function();
-    }
-
-    FunctionForTest(ScriptState* script_state, ScriptValue* output)
-        : ScriptFunction(script_state), output_(output) {}
-
-   private:
-    ScriptValue Call(ScriptValue value) override {
-      DCHECK(!value.IsEmpty());
-      *output_ = value;
-      return value;
-    }
-
-    ScriptValue* output_;
-  };
-};
+using CSSStyleSheetTest = PageTestBase;
 
 TEST_F(CSSStyleSheetTest,
        CSSStyleSheetConstructionWithNonEmptyCSSStyleSheetInit) {
