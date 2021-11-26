@@ -8,6 +8,7 @@
 #include <string>
 
 #include "components/keyed_service/core/keyed_service.h"
+#include "url/gurl.h"
 
 class GURL;
 
@@ -60,6 +61,20 @@ class DlpRulesManager : public KeyedService {
     kBlock = 3,   // Restriction level to block the user on every action.
     kAllow = 4,   // Restriction level to allow (no restriction).
     kMaxValue = kAllow
+  };
+
+  // Represents file metadata.
+  struct FileMetadata {
+    FileMetadata(uint64_t inode, const GURL& source)
+        : inode(inode), source(source) {}
+    FileMetadata(uint64_t inode, const std::string& source)
+        : inode(inode), source(source) {}
+    FileMetadata(const FileMetadata&) = default;
+    FileMetadata& operator=(const FileMetadata&) = default;
+    ~FileMetadata() = default;
+
+    uint64_t inode;  // File inode number.
+    GURL source;     // File source URL.
   };
 
   ~DlpRulesManager() override = default;
@@ -122,6 +137,12 @@ class DlpRulesManager : public KeyedService {
   // Returns the admin-configured limit for the minimal size of data in the
   // clipboard to be checked against DLP rules.
   virtual size_t GetClipboardCheckSizeLimitInBytes() const = 0;
+
+  // Returns a list of files inodes disallowed to be transferred to
+  // |destination|.
+  virtual std::vector<uint64_t> GetDisallowedTransfers(
+      const std::vector<FileMetadata>& transferred_files,
+      const GURL& destination) const = 0;
 };
 
 }  // namespace policy

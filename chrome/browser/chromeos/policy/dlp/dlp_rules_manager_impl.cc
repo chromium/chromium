@@ -30,8 +30,6 @@
 #include "components/prefs/pref_service.h"
 #include "components/reporting/client/report_queue_factory.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "url/gurl.h"
-#include "url/origin.h"
 
 namespace policy {
 
@@ -291,8 +289,10 @@ DlpRulesManager::Level DlpRulesManagerImpl::IsRestrictedDestination(
       out_destination_pattern) {
     UrlConditionId src_condition_id = level_urls_pair.second.value().first;
     UrlConditionId dst_condition_id = level_urls_pair.second.value().second;
-    *out_source_pattern = src_pattterns_mapping_.at(src_condition_id);
-    *out_destination_pattern = dst_pattterns_mapping_.at(dst_condition_id);
+    if (out_source_pattern)
+      *out_source_pattern = src_pattterns_mapping_.at(src_condition_id);
+    if (out_destination_pattern)
+      *out_destination_pattern = dst_pattterns_mapping_.at(dst_condition_id);
   }
   return level_urls_pair.first;
 }
@@ -399,6 +399,20 @@ std::string DlpRulesManagerImpl::GetSourceUrlPattern(const GURL& source_url,
 size_t DlpRulesManagerImpl::GetClipboardCheckSizeLimitInBytes() const {
   return pref_change_registrar_.prefs()->GetInteger(
       policy_prefs::kDlpClipboardCheckSizeLimit);
+}
+
+std::vector<uint64_t> DlpRulesManagerImpl::GetDisallowedTransfers(
+    const std::vector<FileMetadata>& transferred_files,
+    const GURL& destination) const {
+  // TODO(crbug.com/1273793): Change to handle VMs, external drive, ...etc.
+  std::vector<uint64_t> restricted_files;
+  for (const auto& file : transferred_files) {
+    Level level = IsRestrictedDestination(
+        file.source, destination, Restriction::kFiles, nullptr, nullptr);
+    if (level == Level::kBlock)
+      restricted_files.push_back(file.inode);
+  }
+  return restricted_files;
 }
 
 void DlpRulesManagerImpl::OnPolicyUpdate() {
