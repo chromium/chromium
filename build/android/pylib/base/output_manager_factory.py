@@ -13,6 +13,5 @@ def CreateOutputManager(args):
   if args.local_output or not local_utils.IsOnSwarming():
     return local_output_manager.LocalOutputManager(
         output_dir=constants.GetOutDirectory())
-  else:
-    return remote_output_manager.RemoteOutputManager(
-        bucket=args.gs_results_bucket)
+  return remote_output_manager.RemoteOutputManager(
+      bucket=args.gs_results_bucket)

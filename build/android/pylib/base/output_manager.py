@@ -141,7 +141,6 @@ class ArchivedFile(object):
     content addressed files. This is called after the file is written but
     before archiving has begun.
     """
-    pass
 
   def Archive(self):
     """Archives file."""

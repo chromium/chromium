@@ -34,3 +34,4 @@ def CreateTestRun(env, test_instance, error_func):
 
   error_func('Unable to create test run for %s tests in %s environment'
              % (str(test_instance), str(env)))
+  raise RuntimeError('error_func must call exit inside.')
