@@ -7042,6 +7042,13 @@ others/histograms.xml -->
   <int value="2" label="UnusableIncompleteProfile"/>
 </enum>
 
+<enum name="AutofillSourceForStateSelectionField">
+  <int value="0" label="Filled by Profile Value"/>
+  <int value="1"
+      label="Filled with alternative value determined by Alternative State
+             Name Map"/>
+</enum>
+
 <enum name="AutofillSubmissionSource">
   <int value="0" label="Same document navigation"/>
   <int value="1" label="XHR succeeded"/>

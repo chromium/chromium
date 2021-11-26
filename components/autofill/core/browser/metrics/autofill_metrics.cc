@@ -3087,6 +3087,15 @@ void AutofillMetrics::LogImageFetchResult(bool succeeded) {
 }
 
 // static
+void AutofillMetrics::LogAutofillingSourceForStateSelectionFieldAtSubmission(
+    AutofilledSourceMetricForStateSelectionField
+        autofilled_source_metric_for_state_selection_field) {
+  base::UmaHistogramEnumeration(
+      "Autofill.AutofilledFieldAtSubmission.ByStateSelectionField",
+      autofilled_source_metric_for_state_selection_field);
+}
+
+// static
 void AutofillMetrics::LogOtpAuthAttempt() {
   base::UmaHistogramBoolean("Autofill.OtpAuth.SmsOtp.Attempt", true);
 }

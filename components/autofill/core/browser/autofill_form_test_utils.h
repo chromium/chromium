@@ -48,6 +48,7 @@ struct FieldDataDescription {
   const base::StringPiece form_control_type = "text";
   bool should_autocomplete = true;
   absl::optional<bool> is_autofilled;
+  std::vector<SelectOption> select_options = {};
 };
 
 // Attributes provided to the test form.

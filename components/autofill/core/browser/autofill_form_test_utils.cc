@@ -100,6 +100,11 @@ FormData GetFormData(const TestFormAttributes& test_form_attributes) {
        test_form_attributes.fields) {
     FormFieldData field = CreateFieldByRole(field_description.role);
     field.form_control_type = field_description.form_control_type.data();
+    // Add selection options if the field control type is "select-one".
+    if (field.form_control_type == "select-one" &&
+        field_description.select_options.size() > 0) {
+      field.options = field_description.select_options;
+    }
     field.is_focusable = field_description.is_focusable;
     if (!field_description.autocomplete_attribute.empty()) {
       field.autocomplete_attribute =

@@ -12475,4 +12475,49 @@ TEST_F(AutofillMetricsTest, PageLanguageMetricsInvalidLanguage) {
       "Autofill.ParsedFieldTypesWasPageTranslated", true, 1);
 }
 
+// Validate that the source of the autofilled state field is logged on form
+// submission.
+TEST_F(AutofillMetricsTest, AutofilledStateFieldSource) {
+  RecreateProfile(false);
+  // Set up our form data.
+  FormData form = test::GetFormData(
+      {.description_for_logging = "AutofilledStateFieldSource",
+       .fields = {{.role = ServerFieldType::NAME_FULL},
+                  {.role = ServerFieldType::ADDRESS_HOME_LINE1},
+                  {.role = ServerFieldType::ADDRESS_HOME_CITY},
+                  {.role = ServerFieldType::PHONE_HOME_NUMBER},
+                  {.role = ServerFieldType::ADDRESS_HOME_STATE,
+                   .value = u"TN",
+                   .form_control_type = "select-one",
+                   .is_autofilled = true,
+                   .select_options = {{u"TN", u"TN"}, {u"CA", u"CA"}}},
+                  {.role = ServerFieldType::ADDRESS_HOME_ZIP},
+                  {.role = ServerFieldType::ADDRESS_HOME_COUNTRY}}});
+
+  std::vector<ServerFieldType> heuristic_types = {
+      NAME_FULL,           ADDRESS_HOME_LINE1,
+      ADDRESS_HOME_CITY,   PHONE_HOME_CITY_AND_NUMBER,
+      ADDRESS_HOME_STATE,  ADDRESS_HOME_ZIP,
+      ADDRESS_HOME_COUNTRY};
+  std::vector<ServerFieldType> server_types = {
+      NAME_FULL,           ADDRESS_HOME_LINE1,
+      ADDRESS_HOME_CITY,   PHONE_HOME_CITY_AND_NUMBER,
+      ADDRESS_HOME_STATE,  ADDRESS_HOME_ZIP,
+      ADDRESS_HOME_COUNTRY};
+
+  // Simulate having seen this form on page load.
+  browser_autofill_manager_->AddSeenForm(form, heuristic_types, server_types);
+
+  // Simulate form submission.
+  base::HistogramTester histogram_tester;
+  browser_autofill_manager_->OnFormSubmitted(form, /*known_success=*/false,
+                                             SubmissionSource::FORM_SUBMISSION);
+
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.AutofilledFieldAtSubmission.ByStateSelectionField",
+      AutofillMetrics::AutofilledSourceMetricForStateSelectionField::
+          AUTOFILL_BY_VALUE,
+      1);
+}
+
 }  // namespace autofill

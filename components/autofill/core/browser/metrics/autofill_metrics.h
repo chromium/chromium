@@ -1069,6 +1069,17 @@ class AutofillMetrics {
     kMaxValue = SECTION_UNION_IMPORT,
   };
 
+  // To record the source of the autofilled state field.
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  enum class AutofilledSourceMetricForStateSelectionField {
+    // Indicates that the filling was done by state value stored in the profile.
+    AUTOFILL_BY_VALUE = 0,
+    // Indicates that the filling was done by the |AlternativeStateNameMap|.
+    AUTOFILL_BY_ALTERNATIVE_STATE_NAME_MAP = 1,
+    kMaxValue = AUTOFILL_BY_ALTERNATIVE_STATE_NAME_MAP,
+  };
+
   // OTP authentication-related events.
   enum class OtpAuthEvent {
     // Unknown results. Should not happen.
@@ -1896,6 +1907,12 @@ class AutofillMetrics {
 
   // Logs the image fetching result for one image in AutofillImageFetcher.
   static void LogImageFetchResult(bool succeeded);
+
+  // Records the source of the state selection field if autofilled, when the
+  // form is submitted.
+  static void LogAutofillingSourceForStateSelectionFieldAtSubmission(
+      AutofilledSourceMetricForStateSelectionField
+          autofilled_source_metric_for_state_selection_field);
 
   /* Card unmasking OTP authentication-related metrics. */
   // Logs when an OTP authentication starts.

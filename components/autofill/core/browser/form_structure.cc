@@ -1326,6 +1326,7 @@ void FormStructure::LogQualityMetrics(
 
     const ServerFieldTypeSet& field_types = field->possible_types();
     DCHECK(!field_types.empty());
+
     if (field_types.count(EMPTY_TYPE) || field_types.count(UNKNOWN_TYPE)) {
       DCHECK_EQ(field_types.size(), 1u);
       continue;
@@ -1350,6 +1351,22 @@ void FormStructure::LogQualityMetrics(
       if (field->is_autofilled || field->previously_autofilled()) {
         AutofillMetrics::LogEditedAutofilledFieldAtSubmission(
             form_interactions_ukm_logger, *this, *field);
+
+        // If the field was a |ADDRESS_HOME_STATE| field which was autofilled,
+        // record the source of the autofilled value between
+        // |AlternativeStateNameMap| or the profile value.
+        if (field->is_autofilled &&
+            field->Type().GetStorableType() == ADDRESS_HOME_STATE) {
+          AutofillMetrics::
+              LogAutofillingSourceForStateSelectionFieldAtSubmission(
+                  field->state_is_a_matching_type()
+                      ? AutofillMetrics::
+                            AutofilledSourceMetricForStateSelectionField::
+                                AUTOFILL_BY_ALTERNATIVE_STATE_NAME_MAP
+                      : AutofillMetrics::
+                            AutofilledSourceMetricForStateSelectionField::
+                                AUTOFILL_BY_VALUE);
+        }
       }
     }
   }
