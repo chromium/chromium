@@ -68,9 +68,6 @@ InstantService::InstantService(Profile* profile)
     return;
 
   registrar_.Add(this,
-                 content::NOTIFICATION_RENDERER_PROCESS_CREATED,
-                 content::NotificationService::AllSources());
-  registrar_.Add(this,
                  content::NOTIFICATION_RENDERER_PROCESS_TERMINATED,
                  content::NotificationService::AllSources());
 
@@ -184,9 +181,6 @@ void InstantService::Observe(int type,
                              const content::NotificationSource& source,
                              const content::NotificationDetails& details) {
   switch (type) {
-    case content::NOTIFICATION_RENDERER_PROCESS_CREATED: {
-      break;
-    }
     case content::NOTIFICATION_RENDERER_PROCESS_TERMINATED: {
       content::RenderProcessHost* rph =
           content::Source<content::RenderProcessHost>(source).ptr();
