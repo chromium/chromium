@@ -351,6 +351,12 @@ const char kDisableLacrosKeepAliveForTesting[] = "disable-lacros-keep-alive";
 // Avoid doing expensive animations upon login.
 const char kDisableLoginAnimations[] = "disable-login-animations";
 
+// If Lacros is set to the primary web browser, on session login, it is
+// automatically launched. This disables the feature, i.e., if this flag is
+// set, even if lacros is the primary web browser, it won't automatically
+// launch on session login. This is for testing purpose, specifically for Tast.
+const char kDisableLoginLacrosOpening[] = "disable-login-lacros-opening";
+
 // Disables requests for an enterprise machine certificate during attestation.
 const char kDisableMachineCertRequest[] = "disable-machine-cert-request";
 

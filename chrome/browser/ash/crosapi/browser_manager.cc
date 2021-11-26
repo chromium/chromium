@@ -243,6 +243,11 @@ bool IsKeepAliveDisabledForTesting() {
       chromeos::switches::kDisableLacrosKeepAliveForTesting);
 }
 
+bool IsLoginLacrosOpeningDisabledForTesting() {
+  return base::CommandLine::ForCurrentProcess()->HasSwitch(
+      chromeos::switches::kDisableLoginLacrosOpening);
+}
+
 }  // namespace
 
 // To be sure the lacros is running with neutral priority.
@@ -1001,8 +1006,13 @@ void BrowserManager::OnLoadComplete(
     observer.OnLoadComplete(success);
   }
 
+  // Start Lacros browser automatically on login, if
+  // 1) Lacros was opened in the previous session.
+  // 2) Lacros is the primary web browser.
+  //    This can be suppressed on commandline flag for testing.
   if (state_ == State::STOPPED && !shutdown_requested_ &&
-      (browser_util::IsLacrosPrimaryBrowser() || GetLaunchOnLoginPref())) {
+      (GetLaunchOnLoginPref() || (browser_util::IsLacrosPrimaryBrowser() &&
+                                  !IsLoginLacrosOpeningDisabledForTesting()))) {
     Start(std::move(initial_browser_action));
   }
 }
