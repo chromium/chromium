@@ -33,6 +33,13 @@
 namespace base {
 
 bool IsWprintfFormatPortable(const wchar_t* format) {
+  // This snippet of code checks that we can build C++17 code.
+  // TODO(thakis): Enable this on all platforms, and then remove it again.
+#if defined(OS_WIN)
+  if constexpr (constexpr int i = 0; i > 0) {
+  }
+#endif
+
   for (const wchar_t* position = format; *position != '\0'; ++position) {
     if (*position == '%') {
       bool in_specification = true;

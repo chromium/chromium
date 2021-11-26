@@ -19,12 +19,12 @@
 // overridden. Otherwise they redirect to malloc(), which is configured to crash
 // with an OOM in failure cases, such as allocation requests that are too large.
 SHIM_ALWAYS_EXPORT void* operator new(size_t size,
-                                      const std::nothrow_t&) __THROW {
+                                      const std::nothrow_t&) noexcept {
   return ShimCppNewNoThrow(size);
 }
 
 SHIM_ALWAYS_EXPORT void* operator new[](size_t size,
-                                        const std::nothrow_t&) __THROW {
+                                        const std::nothrow_t&) noexcept {
   return ShimCppNewNoThrow(size);
 }
 

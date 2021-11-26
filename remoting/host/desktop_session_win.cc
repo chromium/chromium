@@ -558,13 +558,15 @@ RdpSession::EventHandler::~EventHandler() {
     desktop_session_->OnRdpClosed();
 }
 
-ULONG STDMETHODCALLTYPE RdpSession::EventHandler::AddRef() {
+ULONG COM_DECLSPEC_NOTHROW STDMETHODCALLTYPE
+RdpSession::EventHandler::AddRef() {
   DCHECK(thread_checker_.CalledOnValidThread());
 
   return ++ref_count_;
 }
 
-ULONG STDMETHODCALLTYPE RdpSession::EventHandler::Release() {
+ULONG COM_DECLSPEC_NOTHROW STDMETHODCALLTYPE
+RdpSession::EventHandler::Release() {
   DCHECK(thread_checker_.CalledOnValidThread());
 
   if (--ref_count_ == 0) {
@@ -575,7 +577,8 @@ ULONG STDMETHODCALLTYPE RdpSession::EventHandler::Release() {
   return ref_count_;
 }
 
-STDMETHODIMP RdpSession::EventHandler::QueryInterface(REFIID riid, void** ppv) {
+COM_DECLSPEC_NOTHROW STDMETHODIMP
+RdpSession::EventHandler::QueryInterface(REFIID riid, void** ppv) {
   DCHECK(thread_checker_.CalledOnValidThread());
 
   if (riid == IID_IUnknown ||
@@ -589,7 +592,7 @@ STDMETHODIMP RdpSession::EventHandler::QueryInterface(REFIID riid, void** ppv) {
   return E_NOINTERFACE;
 }
 
-STDMETHODIMP RdpSession::EventHandler::OnRdpConnected() {
+COM_DECLSPEC_NOTHROW STDMETHODIMP RdpSession::EventHandler::OnRdpConnected() {
   DCHECK(thread_checker_.CalledOnValidThread());
 
   if (desktop_session_)
@@ -598,7 +601,7 @@ STDMETHODIMP RdpSession::EventHandler::OnRdpConnected() {
   return S_OK;
 }
 
-STDMETHODIMP RdpSession::EventHandler::OnRdpClosed() {
+COM_DECLSPEC_NOTHROW STDMETHODIMP RdpSession::EventHandler::OnRdpClosed() {
   DCHECK(thread_checker_.CalledOnValidThread());
 
   if (!desktop_session_)
