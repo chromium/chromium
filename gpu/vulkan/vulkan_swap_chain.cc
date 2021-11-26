@@ -390,7 +390,14 @@ bool VulkanSwapChain::PresentBuffer(const gfx::Rect& rect) {
   };
 
   VkQueue queue = device_queue_->GetVulkanQueue();
-  auto result = vkQueuePresentKHR(queue, &present_info);
+  auto result = ({
+    static auto* kCrashKey = base::debug::AllocateCrashKeyString(
+        "inside_queue_present", base::debug::CrashKeySize::Size32);
+    base::debug::ScopedCrashKeyString scoped_crash_key(kCrashKey, "1");
+
+    vkQueuePresentKHR(queue, &present_info);
+  });
+
   if (UNLIKELY(result != VK_SUCCESS && result != VK_SUBOPTIMAL_KHR)) {
     LOG(DFATAL) << "vkQueuePresentKHR() failed: " << result;
     state_ = result;
@@ -422,6 +429,9 @@ bool VulkanSwapChain::AcquireNextImage() {
   auto result = ({
     base::ScopedBlockingCall scoped_blocking_call(
         FROM_HERE, base::BlockingType::MAY_BLOCK);
+    static auto* kCrashKey = base::debug::AllocateCrashKeyString(
+        "inside_acquire_next_image", base::debug::CrashKeySize::Size32);
+    base::debug::ScopedCrashKeyString scoped_crash_key(kCrashKey, "1");
     vkAcquireNextImageKHR(device, swap_chain_, acquire_next_image_timeout_ns_,
                           acquire_semaphore, /*fence=*/VK_NULL_HANDLE,
                           &next_image);
