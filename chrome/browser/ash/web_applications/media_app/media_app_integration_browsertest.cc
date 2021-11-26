@@ -8,6 +8,7 @@
 #include "ash/webui/media_app_ui/buildflags.h"
 #include "ash/webui/media_app_ui/test/media_app_ui_browsertest.h"
 #include "ash/webui/media_app_ui/url_constants.h"
+#include "base/containers/cxx20_erase_vector.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/path_service.h"
@@ -19,6 +20,7 @@
 #include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/ash/file_manager/app_id.h"
 #include "chrome/browser/ash/file_manager/app_service_file_tasks.h"
 #include "chrome/browser/ash/file_manager/file_manager_test_util.h"
 #include "chrome/browser/ash/web_applications/media_app/media_web_app_info.h"
@@ -697,6 +699,11 @@ void MediaAppIntegrationTest::MediaAppEligibleOpenTask(bool audio_enabled) {
   for (const auto& file_path : file_paths) {
     std::vector<file_manager::file_tasks::FullTaskDescriptor> result =
         file_manager::test::GetTasksForFile(profile(), file_path);
+
+    // Files SWA internal task "select" matches any file, we ignore it here.
+    base::EraseIf(result, [](auto task) {
+      return task.task_descriptor.app_id == file_manager::kFileManagerSwaAppId;
+    });
 
     ASSERT_LT(0u, result.size());
     EXPECT_EQ(1u, result.size());
