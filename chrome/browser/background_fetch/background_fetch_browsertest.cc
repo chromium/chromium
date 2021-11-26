@@ -663,9 +663,10 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ(offline_item.progress.max.value(), kDownloadedResourceSizeInBytes);
 }
 
+// The test is flaky on all platforms. https://crbug.com/1161385.
 IN_PROC_BROWSER_TEST_F(
     BackgroundFetchBrowserTest,
-    OfflineItemCollection_VerifyResourceDownloadedWhenDownloadTotalSmallerThanActualSize) {
+    DISABLED_OfflineItemCollection_VerifyResourceDownloadedWhenDownloadTotalSmallerThanActualSize) {
   // Starts a Background Fetch for a single to-be-downloaded file and waits for
   // the fetch to be registered with the offline items collection.
   std::vector<OfflineItem> items;
