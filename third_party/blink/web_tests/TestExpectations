@@ -5948,10 +5948,6 @@ crbug.com/1057060 virtual/compositor-threaded-percent-based-scrolling/fast/scrol
 crbug.com/1057060 virtual/threaded-prefer-compositing/fast/scrolling/scrollbars/mouse-autoscrolling-on-scrollbar.html [ Failure Pass Skip Timeout ]
 crbug.com/1057060 virtual/scroll-unification/fast/scrolling/scrollbars/mouse-autoscrolling-on-scrollbar.html [ Failure Pass Skip Timeout ]
 
-# Transform animation reftests
-crbug.com/1133901 virtual/threaded/external/wpt/css/css-transforms/animation/transform-interpolation-translate-em.html [ Failure ]
-crbug.com/1133901 virtual/composite-relative-keyframes/external/wpt/css/css-transforms/animation/transform-interpolation-translate-em.html [ Failure ]
-
 crbug.com/1136163 [ Linux ] external/wpt/pointerevents/pointerlock/pointerevent_movementxy_with_pointerlock.html [ Failure ]
 
 # Mixed content autoupgrades make these tests not applicable, since they check for mixed content images, the tests can be removed when cleaning up pre autoupgrades mixed content code.
