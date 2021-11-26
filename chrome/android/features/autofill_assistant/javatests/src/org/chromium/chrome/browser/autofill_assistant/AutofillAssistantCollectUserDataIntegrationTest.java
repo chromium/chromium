@@ -65,6 +65,7 @@ import org.junit.runner.RunWith;
 import org.chromium.base.LocaleUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisableIf;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.chrome.autofill_assistant.R;
 import org.chromium.chrome.browser.autofill.PersonalDataManager;
 import org.chromium.chrome.browser.autofill_assistant.carousel.ButtonView;
@@ -149,6 +150,7 @@ public class AutofillAssistantCollectUserDataIntegrationTest {
      */
     @Test
     @MediumTest
+    @DisabledTest(message = "https://crbug.com/1274144")
     public void testEnterPayment() throws Exception {
         String profileId = mHelper.addDummyProfile("John Doe", "johndoe@gmail.com");
         mHelper.addDummyCreditCard(profileId);
@@ -309,6 +311,7 @@ public class AutofillAssistantCollectUserDataIntegrationTest {
      */
     @Test
     @MediumTest
+    @DisabledTest(message = "https://crbug.com/1274144")
     public void testTermsAndConditionsWithShowCast() throws Exception {
         String profileId = mHelper.addDummyProfile("John Doe", "johndoe@gmail.com");
         mHelper.addDummyCreditCard(profileId);
@@ -535,6 +538,7 @@ public class AutofillAssistantCollectUserDataIntegrationTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "https://crbug.com/1274144")
     public void testIncompleteAddressOnCompleteCard() throws Exception {
         PersonalDataManager.AutofillProfile mockProfile = new PersonalDataManager.AutofillProfile(
                 /* guid= */ "",
@@ -990,6 +994,7 @@ public class AutofillAssistantCollectUserDataIntegrationTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "https://crbug.com/1274144")
     public void highestPriorityLoginChoiceIsDefaultSelected() throws Exception {
         List<LoginDetailsProto.LoginOptionProto> loginDetails = Arrays.asList(
                 LoginDetailsProto.LoginOptionProto.newBuilder()
