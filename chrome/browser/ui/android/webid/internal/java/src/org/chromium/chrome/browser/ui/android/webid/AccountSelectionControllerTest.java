@@ -5,13 +5,16 @@
 package org.chromium.chrome.browser.ui.android.webid;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
@@ -60,6 +63,7 @@ import org.chromium.components.image_fetcher.ImageFetcher;
 import org.chromium.components.url_formatter.SchemeDisplay;
 import org.chromium.components.url_formatter.UrlFormatter;
 import org.chromium.components.url_formatter.UrlFormatterJni;
+import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
@@ -84,13 +88,14 @@ public class AccountSelectionControllerTest {
     private static final GURL TEST_URL_PRIVACY_POLICY =
             JUnitTestGURLs.getGURL(JUnitTestGURLs.RED_2);
 
-    private static final Account ANA =
-            new Account("Ana", "ana@one.test", "Ana Doe", "Ana", TEST_PROFILE_PIC, true);
-    private static final Account BOB = new Account("Bob", "", "Bob", "", TEST_PROFILE_PIC, true);
-    private static final Account CARL =
-            new Account("Carl", "carl@three.test", "Carl Test", ":)", TEST_PROFILE_PIC, true);
-    private static final Account NEW_USER = new Account(
-            "602214076", "goto@email.example", "Sam E. Goto", "Sam", TEST_PROFILE_PIC, false);
+    private static final Account ANA = new Account(
+            "Ana", "ana@one.test", "Ana Doe", "Ana", TEST_PROFILE_PIC, /*isSignIn=*/true);
+    private static final Account BOB =
+            new Account("Bob", "", "Bob", "", TEST_PROFILE_PIC, /*isSignIn=*/true);
+    private static final Account CARL = new Account(
+            "Carl", "carl@three.test", "Carl Test", ":)", TEST_PROFILE_PIC, /*isSignIn=*/true);
+    private static final Account NEW_USER = new Account("602214076", "goto@email.example",
+            "Sam E. Goto", "Sam", TEST_PROFILE_PIC, /*isSignIn=*/false);
 
     private static final IdentityProviderMetadata IDP_METADATA =
             new IdentityProviderMetadata(Color.BLACK, Color.BLACK);
@@ -117,6 +122,7 @@ public class AccountSelectionControllerTest {
     @Captor
     private ArgumentCaptor<LargeIconBridge.LargeIconCallback> mCallbackArgumentCaptor;
 
+    private AccountSelectionBottomSheetContent mBottomSheetContent;
     private AccountSelectionMediator mMediator;
     private final ModelList mSheetItems = new ModelList();
 
@@ -133,9 +139,10 @@ public class AccountSelectionControllerTest {
                      any(GURL.class), eq(SchemeDisplay.OMIT_HTTP_AND_HTTPS)))
                 .then(inv -> formatForSecurityDisplay(((GURL) inv.getArgument(0))));
 
+        mBottomSheetContent = new AccountSelectionBottomSheetContent(null, null);
         mMediator = new AccountSelectionMediator(mMockDelegate, mSheetItems,
-                mMockBottomSheetController, null, mMockImageFetcher, DESIRED_AVATAR_SIZE,
-                mMockIconBridge, DESIRED_FAVICON_SIZE);
+                mMockBottomSheetController, mBottomSheetContent, mMockImageFetcher,
+                DESIRED_AVATAR_SIZE, mMockIconBridge, DESIRED_FAVICON_SIZE);
     }
 
     @Test
@@ -309,11 +316,11 @@ public class AccountSelectionControllerTest {
     }
 
     @Test
-    public void testShowAccountsSetsVisibile() {
+    public void testShowAccountsSetsVisible() {
         when(mMockBottomSheetController.requestShowContent(any(), anyBoolean())).thenReturn(true);
         mMediator.showAccounts(TEST_URL, TEST_URL_1, Arrays.asList(ANA, CARL, BOB), IDP_METADATA,
                 CLIENT_ID_METADATA, false);
-        verify(mMockBottomSheetController, times(1)).requestShowContent(eq(null), eq(true));
+        verify(mMockBottomSheetController, times(1)).requestShowContent(any(), eq(true));
 
         assertEquals("Incorrectly hidden", true, mMediator.isVisible());
     }
@@ -345,23 +352,65 @@ public class AccountSelectionControllerTest {
     }
 
     @Test
-    public void testCallsDelegateAndHidesOnDismiss() {
+    public void testCallsDelegateAndHidesOnSingleAccountDismiss() {
+        when(mMockBottomSheetController.requestShowContent(any(), anyBoolean())).thenReturn(true);
+        mMediator.showAccounts(
+                TEST_URL, TEST_URL_1, Arrays.asList(ANA), IDP_METADATA, CLIENT_ID_METADATA, false);
+        pressBack();
+        verify(mMockDelegate).onDismissed();
+        assertEquals(false, mMediator.isVisible());
+    }
+
+    @Test
+    public void testCallsDelegateAndHidesOnAccountPickerDismiss() {
         when(mMockBottomSheetController.requestShowContent(any(), anyBoolean())).thenReturn(true);
         mMediator.showAccounts(TEST_URL, TEST_URL_1, Arrays.asList(ANA, BOB), IDP_METADATA,
                 CLIENT_ID_METADATA, false);
-        mMediator.onDismissed(BottomSheetController.StateChangeReason.BACK_PRESS);
+        pressBack();
         verify(mMockDelegate).onDismissed();
         assertEquals("Incorrectly visible", false, mMediator.isVisible());
     }
 
     @Test
-    public void testCallsDelegateAndHidesOnSelect() {
+    public void testCallsDelegateAndHidesOnAccountPickerSelectSignIn() {
         when(mMockBottomSheetController.requestShowContent(any(), anyBoolean())).thenReturn(true);
         mMediator.showAccounts(TEST_URL, TEST_URL_1, Arrays.asList(ANA, BOB), IDP_METADATA,
                 CLIENT_ID_METADATA, false);
         mMediator.onAccountSelected(ANA);
         verify(mMockDelegate).onAccountSelected(ANA);
         assertEquals("Incorrectly visible", false, mMediator.isVisible());
+    }
+
+    @Test
+    public void testShowsTosOnMultiAccountSelectSignUp() {
+        when(mMockBottomSheetController.requestShowContent(any(), anyBoolean())).thenReturn(true);
+        mMediator.showAccounts(TEST_URL, TEST_URL_1, Arrays.asList(ANA, NEW_USER), IDP_METADATA,
+                CLIENT_ID_METADATA, false);
+        mMediator.onAccountSelected(NEW_USER);
+
+        assertEquals(true, mMediator.isVisible());
+        assertTrue(containsListItemOfType(mSheetItems, ItemType.DATA_SHARING_CONSENT));
+        assertEquals(1, countListItemsOfType(mSheetItems, ItemType.ACCOUNT));
+
+        verify(mMockDelegate, never()).onAccountSelected(NEW_USER);
+    }
+
+    @Test
+    public void testShowsAccountPickerOnTosDismiss() {
+        when(mMockBottomSheetController.requestShowContent(any(), anyBoolean())).thenReturn(true);
+        mMediator.showAccounts(TEST_URL, TEST_URL_1, Arrays.asList(ANA, NEW_USER), IDP_METADATA,
+                CLIENT_ID_METADATA, false);
+        mMediator.onAccountSelected(NEW_USER);
+
+        pressBack();
+        assertTrue(mMediator.isVisible());
+        assertFalse(containsListItemOfType(mSheetItems, ItemType.DATA_SHARING_CONSENT));
+        assertEquals(2, countListItemsOfType(mSheetItems, ItemType.ACCOUNT));
+
+        pressBack();
+        assertFalse(mMediator.isVisible());
+
+        verify(mMockDelegate, never()).onAccountSelected(NEW_USER);
     }
 
     @Test
@@ -404,7 +453,7 @@ public class AccountSelectionControllerTest {
         when(mMockBottomSheetController.requestShowContent(any(), anyBoolean())).thenReturn(true);
         mMediator.showAccounts(
                 TEST_URL, TEST_URL_1, Arrays.asList(ANA), IDP_METADATA, CLIENT_ID_METADATA, true);
-        mMediator.onDismissed(BottomSheetController.StateChangeReason.BACK_PRESS);
+        pressBack();
         verify(mMockDelegate).onDismissed();
         verifyNoMoreInteractions(mMockDelegate);
         assertEquals("Incorrectly visible", false, mMediator.isVisible());
@@ -434,6 +483,26 @@ public class AccountSelectionControllerTest {
                 dataSharingProperties.mFormattedRpUrl);
         assertEquals("Incorrect provider url", formatForSecurityDisplay(TEST_URL_2),
                 dataSharingProperties.mFormattedIdpUrl);
+    }
+
+    private void pressBack() {
+        if (mBottomSheetContent.handleBackPress()) return;
+
+        mMediator.onDismissed(BottomSheetController.StateChangeReason.BACK_PRESS);
+    }
+
+    private static boolean containsListItemOfType(ModelList list, int searchType) {
+        return countListItemsOfType(list, searchType) >= 1;
+    }
+
+    private static int countListItemsOfType(ModelList list, int searchType) {
+        int count = 0;
+        for (ListItem item : list) {
+            if (item.type == searchType) {
+                count += 1;
+            }
+        }
+        return count;
     }
 
     /**
