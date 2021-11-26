@@ -72,9 +72,12 @@ def bind_local_vars(code_node, cg_context):
 def make_wrapper_type_info(cg_context):
     assert isinstance(cg_context, CodeGenContext)
 
-    node = TextNode("""\
+    member_var_def = TextNode(
+        "static const WrapperTypeInfo wrapper_type_info_body_;")
+
+    wrapper_type_info_def = TextNode("""\
 // static
-const WrapperTypeInfo& ${class_name}::wrapper_type_info_ = WrapperTypeInfo{
+const WrapperTypeInfo ${class_name}::wrapper_type_info_body_{
     gin::kEmbedderBlink,
     ${class_name}::InstallObservableArrayBackingListTemplate,
     nullptr,
@@ -85,9 +88,15 @@ const WrapperTypeInfo& ${class_name}::wrapper_type_info_ = WrapperTypeInfo{
     WrapperTypeInfo::kNotInheritFromActiveScriptWrappable,
     WrapperTypeInfo::kIdlObservableArray,
 };
+
+// static
+const WrapperTypeInfo& ${class_name}::wrapper_type_info_ =
+    ${class_name}::wrapper_type_info_body_;
 """)
-    node.set_base_template_vars(cg_context.template_bindings())
-    return node
+    wrapper_type_info_def.set_base_template_vars(
+        cg_context.template_bindings())
+
+    return member_var_def, wrapper_type_info_def
 
 
 def make_handler_class(cg_context):
@@ -381,7 +390,8 @@ def generate_observable_array(observable_array_identifier):
     class_def.set_base_template_vars(cg_context.template_bindings())
 
     # Implementation parts
-    wrapper_type_info_def = make_wrapper_type_info(cg_context)
+    wrapper_type_info_var_def, wrapper_type_info_init = make_wrapper_type_info(
+        cg_context)
     handler_class_decls, handler_class_defs = make_handler_class(cg_context)
     ctor_decls, ctor_defs = make_constructors(cg_context)
     attr_set_decls, attr_set_defs = make_attribute_set_function(cg_context)
@@ -477,7 +487,9 @@ def generate_observable_array(observable_array_identifier):
                      cg_context.class_name)))
     class_def.public_section.append(EmptyNode())
 
-    source_blink_ns.body.append(wrapper_type_info_def)
+    class_def.private_section.append(wrapper_type_info_var_def)
+    class_def.private_section.append(EmptyNode())
+    source_blink_ns.body.append(wrapper_type_info_init)
     source_blink_ns.body.append(EmptyNode())
 
     class_def.private_section.append(handler_class_decls)
