@@ -7,10 +7,10 @@ package org.chromium.chrome.browser.autofill_assistant;
 import org.chromium.content_public.browser.WebContents;
 
 /**
- * Factory for creating dependencies that might differ depending on where Autofill Assistant is
- * running (e.g. WebLayer, Chrome).
+ * Factory for creating dependencies. Implementations might differ depending on where Autofill
+ * Assistant is running (e.g. WebLayer, Chrome).
  */
-interface AssistantDependenciesFactory {
+public interface AssistantDependenciesFactory {
     /**
      * Create the WebContents specific dependencies.
      * */

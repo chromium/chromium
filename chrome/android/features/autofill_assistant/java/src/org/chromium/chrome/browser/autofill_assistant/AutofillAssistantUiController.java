@@ -29,7 +29,6 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabUtils;
 import org.chromium.chrome.browser.ui.TabObscuringHandler;
-import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager.SnackbarController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvider;
@@ -63,7 +62,10 @@ public class AutofillAssistantUiController {
     private final AssistantDependencies mDependencies;
     private final ActivityTabProvider.ActivityTabTabObserver mActivityTabObserver;
     private WebContents mWebContents;
-    private SnackbarController mSnackbarController;
+
+    private final AssistantSnackbarFactory mSnackbarFactory;
+    @Nullable
+    private AssistantSnackbar mSnackbar;
 
     /**
      * Getter for the current profile while assistant is running. Since autofill assistant is only
@@ -139,6 +141,7 @@ public class AutofillAssistantUiController {
         mActivity = activity;
         mDependencies = dependencies;
         Supplier<View> rootView = activity.getCompositorViewHolderSupplier();
+        mSnackbarFactory = dependencies.getSnackbarFactory();
 
         mCoordinator = new AssistantCoordinator(activity, controller, tabObscuringHandler,
                 overlayCoordinator, this::safeNativeOnKeyboardVisibilityChanged,
@@ -227,8 +230,8 @@ public class AutofillAssistantUiController {
                             getModel().getBottomSheetState(), /* activityChanged = */ true);
                     // If we have an open snackbar, execute the callback immediately. This
                     // may shut down the Autofill Assistant.
-                    if (mSnackbarController != null) {
-                        mSnackbarController.onDismissNoAction(/* actionData= */ null);
+                    if (mSnackbar != null) {
+                        safeSnackbarResult(false);
                     }
 
                     @Nullable
@@ -344,14 +347,15 @@ public class AutofillAssistantUiController {
 
     @CalledByNative
     private void showSnackbar(int delayMs, String message, String undoString) {
-        mSnackbarController = AssistantSnackbar.show(mActivity, mActivity.getSnackbarManager(),
+        mSnackbar = mSnackbarFactory.createSnackbar(
                 delayMs, message, undoString, this::safeSnackbarResult);
+        mSnackbar.show();
     }
 
     private void dismissSnackbar() {
-        if (mSnackbarController != null) {
-            mActivity.getSnackbarManager().dismissSnackbars(mSnackbarController);
-            mSnackbarController = null;
+        if (mSnackbar != null) {
+            mSnackbar.dismiss();
+            mSnackbar = null;
         }
     }
 
@@ -485,11 +489,11 @@ public class AutofillAssistantUiController {
 
     // Native methods.
     private void safeSnackbarResult(boolean undo) {
-        if (mSnackbarController != null && mNativeUiController != 0) {
+        if (mSnackbar != null && mNativeUiController != 0) {
             AutofillAssistantUiControllerJni.get().snackbarResult(
                     mNativeUiController, AutofillAssistantUiController.this, undo);
-            mSnackbarController = null;
         }
+        mSnackbar = null;
     }
 
     private void safeNativeStop(@DropOutReason int reason) {

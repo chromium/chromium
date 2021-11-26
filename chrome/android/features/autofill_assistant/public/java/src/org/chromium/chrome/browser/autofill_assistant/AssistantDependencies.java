@@ -16,8 +16,7 @@ import org.chromium.ui.base.ApplicationViewportInsetSupplier;
 
 /**
  * Generic dependencies interface. The concrete implementation will depend on the browser framework,
- i.e., WebLayer vs. Chrome.
-
+ * i.e., WebLayer vs. Chrome.
  */
 public interface AssistantDependencies extends AssistantStaticDependencies {
     WebContents getWebContents();
@@ -35,4 +34,6 @@ public interface AssistantDependencies extends AssistantStaticDependencies {
     ActivityTabProvider getActivityTabProvider();
 
     View getRootView();
+
+    AssistantSnackbarFactory getSnackbarFactory();
 }

@@ -81,7 +81,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/autofill_assistant/AssistantOnboardingHelperImpl.java",
     "java/src/org/chromium/chrome/browser/autofill_assistant/AssistantPeekHeightCoordinator.java",
     "java/src/org/chromium/chrome/browser/autofill_assistant/AssistantRootViewContainer.java",
-    "java/src/org/chromium/chrome/browser/autofill_assistant/AssistantSnackbar.java",
+    "java/src/org/chromium/chrome/browser/autofill_assistant/AssistantSnackbarFactoryChrome.java",
     "java/src/org/chromium/chrome/browser/autofill_assistant/AssistantStaticDependenciesChrome.java",
     "java/src/org/chromium/chrome/browser/autofill_assistant/AssistantTagsForTesting.java",
     "java/src/org/chromium/chrome/browser/autofill_assistant/AssistantTextUtils.java",

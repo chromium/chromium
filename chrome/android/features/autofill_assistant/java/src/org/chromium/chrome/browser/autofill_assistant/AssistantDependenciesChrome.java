@@ -36,6 +36,7 @@ public class AssistantDependenciesChrome
     private ApplicationViewportInsetSupplier mBottomInsetProvider;
     private ActivityTabProvider mActivityTabProvider;
     private View mRootView;
+    private AssistantSnackbarFactory mSnackbarFactory;
 
     public AssistantDependenciesChrome(@NonNull WebContents webContents) {
         mWebContents = webContents;
@@ -58,6 +59,8 @@ public class AssistantDependenciesChrome
                 chromeActivity.getWindowAndroid().getApplicationBottomInsetProvider();
         mActivityTabProvider = chromeActivity.getActivityTabProvider();
         mRootView = rootView.get();
+        mSnackbarFactory =
+                new AssistantSnackbarFactoryChrome(mContext, chromeActivity.getSnackbarManager());
         return true;
     }
 
@@ -99,5 +102,10 @@ public class AssistantDependenciesChrome
     @Override
     public View getRootView() {
         return mRootView;
+    }
+
+    @Override
+    public AssistantSnackbarFactory getSnackbarFactory() {
+        return mSnackbarFactory;
     }
 }

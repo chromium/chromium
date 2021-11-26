@@ -8,7 +8,7 @@ import org.chromium.ui.util.AccessibilityUtil;
 
 /**
  * Generic static dependencies interface. The concrete implementation will depend on the browser
- framework, i.e., WebLayer vs. Chrome.
+ * framework, i.e., WebLayer vs. Chrome.
  */
 public interface AssistantStaticDependencies {
     AccessibilityUtil getAccessibilityUtil();
