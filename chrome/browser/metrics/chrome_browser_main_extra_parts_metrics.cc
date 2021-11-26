@@ -10,6 +10,7 @@
 
 #include "base/allocator/buildflags.h"
 #include "base/allocator/partition_alloc_features.h"
+#include "base/allocator/partition_allocator/partition_alloc_config.h"
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/cpu.h"
@@ -618,27 +619,26 @@ void ChromeBrowserMainExtraPartsMetrics::PreBrowserStart() {
   );
 
 #if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
-  // Records whether or not BackupRefPtr and/or PCScan is enabled. This is meant
-  // for a 3-way experiment with 2 binaries:
-  // - binary A: deployed to 66% users, with half of them having PCScan on and
-  //             half off (BackupRefPtr fully off)
-  // - binary B: deployed to 33% users, with BackupRefPtr on (PCSCan fully off)
-  //
-  // NOTE, deliberately don't use PA_ALLOW_PCSCAN which depends on bitness.
-  // In the 32-bit case, PCScan is always disabled, but we'll deliberately
-  // misrepresent it as enabled here (and later ignored when analyzing results),
-  // in order to keep each population at 33%.
+  // Records whether or not BackupRefPtr and/or PCScan is enabled. The
+  // experiments aren't independent, so having a synthetic Finch will help look
+  // only at cases where one isn't affected by the other.
+  bool brp_enabled =
+#if BUILDFLAG(USE_BACKUP_REF_PTR)
+      base::FeatureList::IsEnabled(base::features::kPartitionAllocBackupRefPtr);
+#else
+      false;
+#endif
+  bool pcscan_enabled =
+#if defined(PA_ALLOW_PCSCAN)
+      base::FeatureList::IsEnabled(
+          base::features::kPartitionAllocPCScanBrowserOnly);
+#else
+      false;
+#endif
   ChromeMetricsServiceAccessor::RegisterSyntheticFieldTrial(
       "BackupRefPtrAndPCScan",
-#if BUILDFLAG(USE_BACKUP_REF_PTR)
-      "BackupRefPtrEnabled"
-#else
-      base::FeatureList::IsEnabled(
-          base::features::kPartitionAllocPCScanBrowserOnly)
-          ? "PCScanEnabled"
-          : "Disabled"
-#endif  // BUILDFLAG(USE_BACKUP_REF_PTR)
-  );
+      brp_enabled ? (pcscan_enabled ? "BothEnabled" : "BackupRefPtrEnabledOnly")
+                  : (pcscan_enabled ? "PCScanEnabledOnly" : "BothDisabled"));
 
   // This synthetic Finch setting reflects the new USE_BACKUP_REF_PTR behavior,
   // which simply compiles in the BackupRefPtr support, but keeps it disabled at
