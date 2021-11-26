@@ -62,20 +62,8 @@ class OmniboxChipButton : public views::MdTextButton {
   // the theme.
   void UpdateIconAndColors();
 
-  // Returns the primary theme color.
-  SkColor GetMainColor();
+  SkColor GetTextAndIconColor();
 
-  // Returns the color that is used for the prominent button's text and icon, or
-  // the non-prominent button's background. The return color matches the toolbar
-  // color.
-  SkColor GetNeutralColor();
-
-  // Get the color for the text and icon.
-  SkColor GetForegroundColor();
-
-  // If button is prominent, the background will be filled in theme color,
-  // otherwise the background will have the neutral color with a theme-colored
-  // border stroke.
   SkColor GetBackgroundColor();
 
   // An animation used for expanding and collapsing the chip.
