@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 # Copyright (c) 2012 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
@@ -180,7 +180,8 @@ class JSONTestRunSymbolizer(object):
     return '\n'.join(symbolized_lines)
 
   def symbolize(self, test_run):
-    original_snippet = base64.b64decode(test_run['output_snippet_base64'])
+    original_snippet = base64.b64decode(
+        test_run['output_snippet_base64']).decode('utf-8', 'replace')
     symbolized_snippet = self.symbolize_snippet(original_snippet)
     if symbolized_snippet == original_snippet:
       # No sanitizer reports in snippet.
@@ -190,9 +191,9 @@ class JSONTestRunSymbolizer(object):
     test_run['original_output_snippet_base64'] = \
         test_run['output_snippet_base64']
 
-    test_run['output_snippet'] = symbolized_snippet.decode('utf-8', 'replace')
+    test_run['output_snippet'] = symbolized_snippet
     test_run['output_snippet_base64'] = \
-        base64.b64encode(symbolized_snippet)
+        base64.b64encode(symbolized_snippet.encode('utf-8', 'replace')).decode()
     test_run['snippet_processed_by'] = 'asan_symbolize.py'
 
 
@@ -202,7 +203,7 @@ def symbolize_snippets_in_json(filename, symbolization_loop):
 
   test_run_symbolizer = JSONTestRunSymbolizer(symbolization_loop)
   for iteration_data in json_data['per_iteration_data']:
-    for test_name, test_runs in iteration_data.iteritems():
+    for test_name, test_runs in iteration_data.items():
       for test_run in test_runs:
         test_run_symbolizer.symbolize(test_run)
 
