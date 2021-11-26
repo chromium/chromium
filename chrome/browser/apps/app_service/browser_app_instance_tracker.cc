@@ -7,7 +7,6 @@
 #include <utility>
 
 #include "base/containers/contains.h"
-#include "base/debug/dump_without_crashing.h"
 #include "base/process/process.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/apps/app_service/browser_app_instance_map.h"
@@ -127,14 +126,8 @@ BrowserAppInstanceTracker::BrowserAppInstanceTracker(
 
 BrowserAppInstanceTracker::~BrowserAppInstanceTracker() {
   BrowserList::GetInstance()->RemoveObserver(this);
-  if (activation_client_observations_.GetSourcesCount() > 0) {
-    // TODO(crbug.com/1236273): Remove when confident it does not happen.
-    base::debug::DumpWithoutCrashing();
-  }
-  if (!tracked_browsers_.empty()) {
-    // TODO(crbug.com/1236273): Remove when confident it does not happen.
-    base::debug::DumpWithoutCrashing();
-  }
+  DCHECK_EQ(activation_client_observations_.GetSourcesCount(), 0u);
+  DCHECK(tracked_browsers_.empty());
   DCHECK(observers_.empty());
 }
 
@@ -223,17 +216,11 @@ void BrowserAppInstanceTracker::OnWindowActivated(ActivationReason reason,
 }
 
 void BrowserAppInstanceTracker::OnBrowserAdded(Browser* browser) {
-  // TODO(crbug.com/1236273): Remove when confident it does not happen.
-  if (base::Contains(tracked_browsers_, browser)) {
-    base::debug::DumpWithoutCrashing();
-  }
+  DCHECK(!base::Contains(tracked_browsers_, browser));
 }
 
 void BrowserAppInstanceTracker::OnBrowserRemoved(Browser* browser) {
-  // TODO(crbug.com/1236273): Remove when confident it does not happen.
-  if (base::Contains(tracked_browsers_, browser)) {
-    base::debug::DumpWithoutCrashing();
-  }
+  DCHECK(!base::Contains(tracked_browsers_, browser));
 }
 
 void BrowserAppInstanceTracker::OnAppUpdate(const AppUpdate& update) {
