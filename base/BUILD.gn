@@ -2683,7 +2683,6 @@ test("base_perftests") {
     "task/thread_pool/thread_pool_perftest.cc",
     "threading/counter_perftest.cc",
     "threading/thread_local_storage_perftest.cc",
-    "vlog_perftest.cc",
 
     # "test/run_all_unittests.cc",
     "json/json_perftest.cc",
