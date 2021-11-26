@@ -54,6 +54,9 @@ NSString* const kLearnMoreTextViewAccessibilityIdentifier =
 @property(nonatomic, strong)
     EnterpriseInfoPopoverViewController* bubbleViewController;
 
+// Button to show advanced settings. May be disabled or enabled.
+@property(nonatomic, strong) UIButton* advanceSyncSettingsButton;
+
 @end
 
 @implementation SigninSyncViewController
@@ -100,13 +103,10 @@ NSString* const kLearnMoreTextViewAccessibilityIdentifier =
   }
 
   UILabel* syncInfoLabel = [self syncInfoLabel];
-  // TODO(crbug.com/1270491) don't show the advanced settings button when there
-  // is no account available/selected.
-  UIButton* advanceSyncSettingsButton = [self advanceSyncSettingsButton];
 
   // Add content specific to sync.
   [self.specificContentView addSubview:syncInfoLabel];
-  [self.specificContentView addSubview:advanceSyncSettingsButton];
+  [self.specificContentView addSubview:self.advanceSyncSettingsButton];
 
   // Add the Learn More text label if there are enterprise sign-in or sync
   // restrictions.
@@ -158,17 +158,17 @@ NSString* const kLearnMoreTextViewAccessibilityIdentifier =
                        constant:kTopSpecificContentVerticalMargin]
         .active = YES;
     if (self.enterpriseSignInRestrictions == kNoEnterpriseRestriction) {
-      [advanceSyncSettingsButton.bottomAnchor
-          constraintLessThanOrEqualToAnchor:advanceSyncSettingsButton.superview
-                                                .bottomAnchor]
+      [self.advanceSyncSettingsButton.bottomAnchor
+          constraintLessThanOrEqualToAnchor:self.advanceSyncSettingsButton
+                                                .superview.bottomAnchor]
           .active = YES;
     } else {
-      [advanceSyncSettingsButton.bottomAnchor
+      [self.advanceSyncSettingsButton.bottomAnchor
           constraintLessThanOrEqualToAnchor:self.learnMoreTextView.topAnchor]
           .active = YES;
     }
   } else {
-    [advanceSyncSettingsButton.bottomAnchor
+    [self.advanceSyncSettingsButton.bottomAnchor
         constraintLessThanOrEqualToAnchor:self.identityControl.topAnchor]
         .active = YES;
     if (self.enterpriseSignInRestrictions == kNoEnterpriseRestriction) {
@@ -191,12 +191,12 @@ NSString* const kLearnMoreTextViewAccessibilityIdentifier =
         constraintEqualToAnchor:self.specificContentView.centerXAnchor],
     [syncInfoLabel.widthAnchor
         constraintLessThanOrEqualToAnchor:self.specificContentView.widthAnchor],
-    [advanceSyncSettingsButton.topAnchor
+    [self.advanceSyncSettingsButton.topAnchor
         constraintEqualToAnchor:syncInfoLabel.bottomAnchor
                        constant:kMarginBetweenContents],
-    [advanceSyncSettingsButton.centerXAnchor
+    [self.advanceSyncSettingsButton.centerXAnchor
         constraintEqualToAnchor:self.specificContentView.centerXAnchor],
-    [advanceSyncSettingsButton.widthAnchor
+    [self.advanceSyncSettingsButton.widthAnchor
         constraintLessThanOrEqualToAnchor:self.specificContentView.widthAnchor],
   ]];
 
@@ -303,23 +303,30 @@ NSString* const kLearnMoreTextViewAccessibilityIdentifier =
 
 // Creates and returns the button to show advanced settings.
 - (UIButton*)advanceSyncSettingsButton {
-  UIButton* button = [[UIButton alloc] init];
-  button.translatesAutoresizingMaskIntoConstraints = NO;
-  button.titleLabel.numberOfLines = 0;
-  button.titleLabel.adjustsFontForContentSizeCategory = YES;
-  [button.titleLabel
-      setFont:[UIFont preferredFontForTextStyle:UIFontTextStyleSubheadline]];
-  int stringID = IDS_IOS_FIRST_RUN_SYNC_SCREEN_ADVANCE_SETTINGS;
-  [self.delegate signinSyncViewController:self addConsentStringID:stringID];
-  [button setTitle:l10n_util::GetNSString(stringID)
-          forState:UIControlStateNormal];
-  [button setTitleColor:[UIColor colorNamed:kBlueColor]
-               forState:UIControlStateNormal];
-
-  [button addTarget:self
-                action:@selector(showAdvanceSyncSettings)
-      forControlEvents:UIControlEventTouchUpInside];
-  return button;
+  if (!_advanceSyncSettingsButton) {
+    _advanceSyncSettingsButton = [[UIButton alloc] init];
+    _advanceSyncSettingsButton.translatesAutoresizingMaskIntoConstraints = NO;
+    _advanceSyncSettingsButton.titleLabel.numberOfLines = 0;
+    _advanceSyncSettingsButton.titleLabel.adjustsFontForContentSizeCategory =
+        YES;
+    [_advanceSyncSettingsButton.titleLabel
+        setFont:[UIFont preferredFontForTextStyle:UIFontTextStyleSubheadline]];
+    int stringID = IDS_IOS_FIRST_RUN_SYNC_SCREEN_ADVANCE_SETTINGS;
+    [self.delegate signinSyncViewController:self addConsentStringID:stringID];
+    [_advanceSyncSettingsButton setTitle:l10n_util::GetNSString(stringID)
+                                forState:UIControlStateNormal];
+    [_advanceSyncSettingsButton setTitleColor:[UIColor colorNamed:kBlueColor]
+                                     forState:UIControlStateNormal];
+    [_advanceSyncSettingsButton setTitle:l10n_util::GetNSString(stringID)
+                                forState:UIControlStateDisabled];
+    [_advanceSyncSettingsButton
+        setTitleColor:[UIColor colorNamed:kTextSecondaryColor]
+             forState:UIControlStateDisabled];
+    [_advanceSyncSettingsButton addTarget:self
+                                   action:@selector(showAdvanceSyncSettings)
+                         forControlEvents:UIControlEventTouchUpInside];
+  }
+  return _advanceSyncSettingsButton;
 }
 
 - (int)activateSyncButtonID {
@@ -369,11 +376,11 @@ NSString* const kLearnMoreTextViewAccessibilityIdentifier =
   if (identityAvailable) {
     self.primaryActionString =
         l10n_util::GetNSString(self.activateSyncButtonID);
+    self.advanceSyncSettingsButton.enabled = YES;
   } else {
-    // TODO(crbug.com/1271355): We need to determine that string. We may want
-    // to change it.
     self.primaryActionString =
-        l10n_util::GetNSString(IDS_IOS_FIRST_RUN_SIGNIN_SIGN_IN_ACTION);
+        l10n_util::GetNSString(IDS_IOS_ACCOUNT_UNIFIED_CONSENT_ADD_ACCOUNT);
+    self.advanceSyncSettingsButton.enabled = NO;
   }
 }
 
