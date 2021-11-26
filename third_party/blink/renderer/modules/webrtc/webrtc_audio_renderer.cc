@@ -84,11 +84,11 @@ const char* OutputDeviceStatusToString(media::OutputDeviceStatus status) {
 
 const char* StateToString(WebRtcAudioRenderer::State state) {
   switch (state) {
-    case WebRtcAudioRenderer::UNINITIALIZED:
+    case WebRtcAudioRenderer::kUninitialized:
       return "UNINITIALIZED";
-    case WebRtcAudioRenderer::PLAYING:
+    case WebRtcAudioRenderer::kPlaying:
       return "PLAYING";
-    case WebRtcAudioRenderer::PAUSED:
+    case WebRtcAudioRenderer::kPaused:
       return "PAUSED";
   }
 }
@@ -309,7 +309,7 @@ WebRtcAudioRenderer::WebRtcAudioRenderer(
     const String& device_id,
     base::RepeatingCallback<void()> on_render_error_callback)
     : task_runner_(Thread::Current()->GetTaskRunner()),
-      state_(UNINITIALIZED),
+      state_(kUninitialized),
       source_internal_frame_(std::make_unique<InternalFrame>(web_frame)),
       session_id_(session_id),
       signaling_thread_(signaling_thread),
@@ -338,7 +338,7 @@ WebRtcAudioRenderer::WebRtcAudioRenderer(
 
 WebRtcAudioRenderer::~WebRtcAudioRenderer() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  DCHECK_EQ(state_, UNINITIALIZED);
+  DCHECK_EQ(state_, kUninitialized);
 }
 
 bool WebRtcAudioRenderer::Initialize(WebRtcAudioRendererSource* source) {
@@ -347,7 +347,7 @@ bool WebRtcAudioRenderer::Initialize(WebRtcAudioRendererSource* source) {
   DCHECK(!sink_.get());
   {
     base::AutoLock auto_lock(lock_);
-    DCHECK_EQ(state_, UNINITIALIZED);
+    DCHECK_EQ(state_, kUninitialized);
     DCHECK(!source_);
   }
   SendLogMessage(
@@ -380,7 +380,7 @@ bool WebRtcAudioRenderer::Initialize(WebRtcAudioRendererSource* source) {
     source_ = source;
 
     // User must call Play() before any audio can be heard.
-    state_ = PAUSED;
+    state_ = kPaused;
   }
   source_->SetOutputDeviceForAec(output_device_id_);
   sink_->Start();
@@ -438,14 +438,14 @@ void WebRtcAudioRenderer::EnterPlayState() {
   SendLogMessage(
       String::Format("%s([state=%s])", __func__, StateToString(state_)));
   base::AutoLock auto_lock(lock_);
-  if (state_ == UNINITIALIZED)
+  if (state_ == kUninitialized)
     return;
 
-  DCHECK(play_ref_count_ == 0 || state_ == PLAYING);
+  DCHECK(play_ref_count_ == 0 || state_ == kPlaying);
   ++play_ref_count_;
 
-  if (state_ != PLAYING) {
-    state_ = PLAYING;
+  if (state_ != kPlaying) {
+    state_ = kPlaying;
 
     audio_stream_tracker_.emplace(task_runner_, this,
                                   sink_params_.sample_rate());
@@ -477,13 +477,13 @@ void WebRtcAudioRenderer::EnterPauseState() {
   SendLogMessage(
       String::Format("%s([state=%s])", __func__, StateToString(state_)));
   base::AutoLock auto_lock(lock_);
-  if (state_ == UNINITIALIZED)
+  if (state_ == kUninitialized)
     return;
 
-  DCHECK_EQ(state_, PLAYING);
+  DCHECK_EQ(state_, kPlaying);
   DCHECK_GT(play_ref_count_, 0);
   if (!--play_ref_count_)
-    state_ = PAUSED;
+    state_ = kPaused;
   SendLogMessage(
       String::Format("%s => (state=%s)", __func__, StateToString(state_)));
 }
@@ -494,7 +494,7 @@ void WebRtcAudioRenderer::Stop() {
     SendLogMessage(
         String::Format("%s([state=%s])", __func__, StateToString(state_)));
     base::AutoLock auto_lock(lock_);
-    if (state_ == UNINITIALIZED)
+    if (state_ == kUninitialized)
       return;
 
     if (--start_ref_count_)
@@ -503,7 +503,7 @@ void WebRtcAudioRenderer::Stop() {
     audio_stream_tracker_.reset();
     source_->RemoveAudioRenderer(this);
     source_ = nullptr;
-    state_ = UNINITIALIZED;
+    state_ = kUninitialized;
   }
 
   // Apart from here, |max_render_time_| is only accessed in SourceCallback(),
@@ -561,7 +561,7 @@ void WebRtcAudioRenderer::SwitchOutputDevice(
 
   {
     base::AutoLock auto_lock(lock_);
-    DCHECK_NE(state_, UNINITIALIZED);
+    DCHECK_NE(state_, kUninitialized);
   }
 
   auto* web_frame = source_internal_frame_->web_frame();
@@ -662,7 +662,7 @@ int WebRtcAudioRenderer::Render(base::TimeDelta delay,
   else
     SourceCallback(0, audio_bus);
 
-  if (state_ == PLAYING && audio_stream_tracker_) {
+  if (state_ == kPlaying && audio_stream_tracker_) {
     // Mark the stream as alive the first time this method is called.
     audio_stream_tracker_->OnRenderCallbackCalled();
     audio_stream_tracker_->MeasurePower(*audio_bus, audio_bus->frames());
@@ -677,7 +677,7 @@ int WebRtcAudioRenderer::Render(base::TimeDelta delay,
                                    sink_params_.channel_layout());
   }
 
-  return (state_ == PLAYING) ? audio_bus->frames() : 0;
+  return (state_ == kPlaying) ? audio_bus->frames() : 0;
 }
 
 void WebRtcAudioRenderer::OnRenderError() {
@@ -714,7 +714,7 @@ void WebRtcAudioRenderer::SourceCallback(int fifo_frame_delay,
 
   // Avoid filling up the audio bus if we are not playing; instead
   // return here and ensure that the returned value in Render() is 0.
-  if (state_ != PLAYING)
+  if (state_ != kPlaying)
     audio_bus->Zero();
 
   // Measure the elapsed time for this function and log it to UMA. Store the max

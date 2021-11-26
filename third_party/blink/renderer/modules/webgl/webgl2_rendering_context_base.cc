@@ -215,7 +215,7 @@ void WebGL2RenderingContextBase::InitializeNewContext() {
   // Create a default transform feedback object so there is a place to
   // hold any bound buffers.
   default_transform_feedback_ = MakeGarbageCollected<WebGLTransformFeedback>(
-      this, WebGLTransformFeedback::TFTypeDefault);
+      this, WebGLTransformFeedback::TFType::kDefault);
   transform_feedback_binding_ = default_transform_feedback_;
 
   GLint max_uniform_buffer_bindings = 0;
@@ -4512,7 +4512,7 @@ WebGLTransformFeedback* WebGL2RenderingContextBase::createTransformFeedback() {
   if (isContextLost())
     return nullptr;
   return MakeGarbageCollected<WebGLTransformFeedback>(
-      this, WebGLTransformFeedback::TFTypeUser);
+      this, WebGLTransformFeedback::TFType::kUser);
 }
 
 void WebGL2RenderingContextBase::deleteTransformFeedback(

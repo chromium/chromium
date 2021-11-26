@@ -56,9 +56,9 @@ class MODULES_EXPORT PresentationAvailabilityState final
 
  private:
   enum class ListeningState {
-    INACTIVE,
-    WAITING,
-    ACTIVE,
+    kInactive,
+    kWaiting,
+    kActive,
   };
 
   // Tracks listeners of presentation displays availability for

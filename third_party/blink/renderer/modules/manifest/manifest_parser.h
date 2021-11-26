@@ -7,6 +7,7 @@
 
 #include <stdint.h>
 
+#include "base/types/strong_alias.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom-blink.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
@@ -52,7 +53,7 @@ class MODULES_EXPORT ManifestParser {
 
  private:
   // Used to indicate whether to strip whitespace when parsing a string.
-  enum TrimType { Trim, NoTrim };
+  using Trim = base::StrongAlias<class TrimTag, bool>;
 
   // Indicate restrictions to be placed on the parsed URL with respect to the
   // document URL or manifest scope.
@@ -75,7 +76,7 @@ class MODULES_EXPORT ManifestParser {
   // Returns the parsed string if any, a null optional if the parsing failed.
   absl::optional<String> ParseString(const JSONObject* object,
                                      const String& key,
-                                     TrimType trim);
+                                     Trim trim);
 
   // Helper function to parse strings present in a member that itself is
   // a dictionary like 'shortcut' as defined in:
@@ -88,7 +89,7 @@ class MODULES_EXPORT ManifestParser {
                                               const String& member_name,
                                               const String& key,
                                               bool required,
-                                              TrimType trim);
+                                              Trim trim);
 
   // Helper function to parse colors present on a given |dictionary| in a given
   // field identified by its |key|. Returns a null optional if the value is not

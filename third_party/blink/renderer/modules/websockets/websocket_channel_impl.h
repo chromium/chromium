@@ -282,8 +282,8 @@ class MODULES_EXPORT WebSocketChannelImpl final
 
    public:
     enum class CountStatus {
-      OKAY_TO_CONNECT,
-      SHOULD_NOT_CONNECT,
+      kOkayToConnect,
+      kShouldNotConnect,
     };
 
     ConnectionCountTrackerHandle() = default;

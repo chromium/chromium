@@ -24,8 +24,8 @@ const char* kLockModeNameShared = "shared";
 class Lock::ThenFunction final : public ScriptFunction {
  public:
   enum ResolveType {
-    Fulfilled,
-    Rejected,
+    kFulfilled,
+    kRejected,
   };
 
   static v8::Local<v8::Function> CreateFunction(ScriptState* script_state,
@@ -47,9 +47,9 @@ class Lock::ThenFunction final : public ScriptFunction {
  private:
   ScriptValue Call(ScriptValue value) override {
     DCHECK(lock_);
-    DCHECK(resolve_type_ == Fulfilled || resolve_type_ == Rejected);
+    DCHECK(resolve_type_ == kFulfilled || resolve_type_ == kRejected);
     lock_->ReleaseIfHeld();
-    if (resolve_type_ == Fulfilled)
+    if (resolve_type_ == kFulfilled)
       lock_->resolver_->Resolve(value);
     else
       lock_->resolver_->Reject(value);
@@ -98,9 +98,10 @@ void Lock::HoldUntil(ScriptPromise promise, ScriptPromiseResolver* resolver) {
 
   ScriptState* script_state = resolver->GetScriptState();
   resolver_ = resolver;
-  promise.Then(
-      ThenFunction::CreateFunction(script_state, this, ThenFunction::Fulfilled),
-      ThenFunction::CreateFunction(script_state, this, ThenFunction::Rejected));
+  promise.Then(ThenFunction::CreateFunction(script_state, this,
+                                            ThenFunction::kFulfilled),
+               ThenFunction::CreateFunction(script_state, this,
+                                            ThenFunction::kRejected));
 }
 
 // static

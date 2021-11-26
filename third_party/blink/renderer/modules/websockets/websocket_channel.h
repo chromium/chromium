@@ -48,7 +48,7 @@ class KURL;
 class MODULES_EXPORT WebSocketChannel
     : public GarbageCollected<WebSocketChannel> {
  public:
-  enum class SendResult { SENT_SYNCHRONOUSLY, CALLBACK_WILL_BE_CALLED };
+  enum class SendResult { kSentSynchronously, kCallbackWillBeCalled };
 
   WebSocketChannel() = default;
 

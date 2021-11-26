@@ -96,9 +96,9 @@ class MODULES_EXPORT WebRtcAudioRenderer
   };
 
   enum State {
-    UNINITIALIZED,
-    PLAYING,
-    PAUSED,
+    kUninitialized,
+    kPlaying,
+    kPaused,
   };
 
   WebRtcAudioRenderer() = delete;

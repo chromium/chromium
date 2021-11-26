@@ -39,8 +39,8 @@ class MODULES_EXPORT AnimationAndPaintWorkletThread final
 
  private:
   enum class WorkletType {
-    ANIMATION_WORKLET,
-    PAINT_WORKLET,
+    kAnimation,
+    kPaint,
   };
 
   explicit AnimationAndPaintWorkletThread(WorkletType, WorkerReportingProxy&);

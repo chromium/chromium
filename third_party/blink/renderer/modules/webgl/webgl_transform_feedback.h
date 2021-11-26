@@ -18,9 +18,9 @@ class WebGLTransformFeedback : public WebGLContextObject {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  enum TFType {
-    TFTypeDefault,
-    TFTypeUser,
+  enum class TFType {
+    kDefault,
+    kUser,
   };
 
   explicit WebGLTransformFeedback(WebGL2RenderingContextBase*, TFType);
@@ -28,7 +28,7 @@ class WebGLTransformFeedback : public WebGLContextObject {
 
   GLuint Object() const { return object_; }
 
-  bool IsDefaultObject() const { return type_ == TFTypeDefault; }
+  bool IsDefaultObject() const { return type_ == TFType::kDefault; }
 
   GLenum GetTarget() const { return target_; }
   void SetTarget(GLenum);

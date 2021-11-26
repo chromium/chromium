@@ -318,7 +318,7 @@ bool WebSocketChannelImpl::Connect(const KURL& url, const String& protocol) {
   // the browser process. Fail asynchronously, to match the behaviour when we
   // are throttled by the network service.
   if (connection_count_tracker_handle_.IncrementAndCheckStatus() ==
-      ConnectionCountTrackerHandle::CountStatus::SHOULD_NOT_CONNECT) {
+      ConnectionCountTrackerHandle::CountStatus::kShouldNotConnect) {
     StringBuilder message;
     message.Append("WebSocket connection to '");
     message.Append(url.GetString());
@@ -385,7 +385,7 @@ WebSocketChannel::SendResult WebSocketChannelImpl::Send(
     did_attempt_to_send = true;
     if (MaybeSendSynchronously(
             network::mojom::blink::WebSocketMessageType::TEXT, &data)) {
-      return SendResult::SENT_SYNCHRONOUSLY;
+      return SendResult::kSentSynchronously;
     }
   }
 
@@ -402,7 +402,7 @@ WebSocketChannel::SendResult WebSocketChannelImpl::Send(
   // that the callback was fired re-entrantly, which would be bad.
   DCHECK(!messages_.empty());
 
-  return SendResult::CALLBACK_WILL_BE_CALLED;
+  return SendResult::kCallbackWillBeCalled;
 }
 
 void WebSocketChannelImpl::Send(
@@ -439,7 +439,7 @@ WebSocketChannel::SendResult WebSocketChannelImpl::Send(
     did_attempt_to_send = true;
     if (MaybeSendSynchronously(
             network::mojom::blink::WebSocketMessageType::BINARY, &message)) {
-      return SendResult::SENT_SYNCHRONOUSLY;
+      return SendResult::kSentSynchronously;
     }
   }
 
@@ -454,7 +454,7 @@ WebSocketChannel::SendResult WebSocketChannelImpl::Send(
   // that the callback was fired re-entrantly, which would be bad.
   DCHECK(!messages_.empty());
 
-  return SendResult::CALLBACK_WILL_BE_CALLED;
+  return SendResult::kCallbackWillBeCalled;
 }
 
 void WebSocketChannelImpl::Close(int code, const String& reason) {
@@ -771,8 +771,8 @@ WebSocketChannelImpl::ConnectionCountTrackerHandle::IncrementAndCheckStatus() {
   const size_t old_count =
       g_connection_count.fetch_add(1, std::memory_order_relaxed);
   return old_count >= kMaxWebSocketsPerRenderProcess
-             ? CountStatus::SHOULD_NOT_CONNECT
-             : CountStatus::OKAY_TO_CONNECT;
+             ? CountStatus::kShouldNotConnect
+             : CountStatus::kOkayToConnect;
 }
 
 void WebSocketChannelImpl::ConnectionCountTrackerHandle::Decrement() {

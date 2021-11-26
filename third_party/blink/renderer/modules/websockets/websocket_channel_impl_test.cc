@@ -676,7 +676,7 @@ TEST_F(WebSocketChannelImplTest, SendTextSync) {
 
   test::RunPendingTasks();
   CallTrackingClosure closure;
-  EXPECT_EQ(WebSocketChannel::SendResult::SENT_SYNCHRONOUSLY,
+  EXPECT_EQ(WebSocketChannel::SendResult::kSentSynchronously,
             Channel()->Send("hello", closure.Closure()));
   EXPECT_FALSE(closure.WasCalled());
 }
@@ -701,7 +701,7 @@ TEST_F(WebSocketChannelImplTest, SendTextAsyncDueToQueueing) {
 
   Channel()->Send(long_message, base::OnceClosure());
   CallTrackingClosure closure;
-  EXPECT_EQ(WebSocketChannel::SendResult::CALLBACK_WILL_BE_CALLED,
+  EXPECT_EQ(WebSocketChannel::SendResult::kCallbackWillBeCalled,
             Channel()->Send(long_message, closure.Closure()));
 
   ReadDataFromDataPipe(readable, kMessageSize);
@@ -727,7 +727,7 @@ TEST_F(WebSocketChannelImplTest, SendTextAsyncDueToMessageSize) {
   std::string long_message(kMessageSize, 'a');
 
   CallTrackingClosure closure;
-  EXPECT_EQ(WebSocketChannel::SendResult::CALLBACK_WILL_BE_CALLED,
+  EXPECT_EQ(WebSocketChannel::SendResult::kCallbackWillBeCalled,
             Channel()->Send(long_message, closure.Closure()));
 
   ReadDataFromDataPipe(readable, 4 * 1024);
@@ -750,7 +750,7 @@ TEST_F(WebSocketChannelImplTest, SendBinaryInArrayBufferSync) {
 
   CallTrackingClosure closure;
   const auto* b = DOMArrayBuffer::Create("hello", 5);
-  EXPECT_EQ(WebSocketChannel::SendResult::SENT_SYNCHRONOUSLY,
+  EXPECT_EQ(WebSocketChannel::SendResult::kSentSynchronously,
             Channel()->Send(*b, 0, 5, closure.Closure()));
 
   test::RunPendingTasks();
@@ -775,7 +775,7 @@ TEST_F(WebSocketChannelImplTest, SendBinaryInArrayBufferAsyncDueToQueueing) {
   CallTrackingClosure closure;
   const auto* b = DOMArrayBuffer::Create(long_message.data(), kMessageSize);
   Channel()->Send(*b, 0, kMessageSize, base::OnceClosure());
-  EXPECT_EQ(WebSocketChannel::SendResult::CALLBACK_WILL_BE_CALLED,
+  EXPECT_EQ(WebSocketChannel::SendResult::kCallbackWillBeCalled,
             Channel()->Send(*b, 0, kMessageSize, closure.Closure()));
 
   ReadDataFromDataPipe(readable, kMessageSize);
@@ -802,7 +802,7 @@ TEST_F(WebSocketChannelImplTest, SendBinaryInArrayBufferAsyncDueToMessageSize) {
 
   CallTrackingClosure closure;
   const auto* b = DOMArrayBuffer::Create(long_message.data(), kMessageSize);
-  EXPECT_EQ(WebSocketChannel::SendResult::CALLBACK_WILL_BE_CALLED,
+  EXPECT_EQ(WebSocketChannel::SendResult::kCallbackWillBeCalled,
             Channel()->Send(*b, 0, kMessageSize, closure.Closure()));
 
   ReadDataFromDataPipe(readable, 1024);

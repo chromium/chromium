@@ -144,14 +144,14 @@ void ManifestManager::DidChangeManifest() {
 void ManifestManager::FetchManifest() {
   if (!CanFetchManifest()) {
     ManifestUmaUtil::FetchFailed(ManifestUmaUtil::FETCH_FROM_OPAQUE_ORIGIN);
-    ResolveCallbacks(ResolveStateFailure);
+    ResolveCallbacks(ResolveState::kFailure);
     return;
   }
 
   manifest_url_ = ManifestURL();
   if (manifest_url_.IsEmpty()) {
     ManifestUmaUtil::FetchFailed(ManifestUmaUtil::FETCH_EMPTY_URL);
-    ResolveCallbacks(ResolveStateFailure);
+    ResolveCallbacks(ResolveState::kFailure);
     return;
   }
 
@@ -170,7 +170,7 @@ void ManifestManager::OnManifestFetchComplete(const KURL& document_url,
   if (response.IsNull() && data.IsEmpty()) {
     manifest_debug_info_ = nullptr;
     ManifestUmaUtil::FetchFailed(ManifestUmaUtil::FETCH_UNSPECIFIED_REASON);
-    ResolveCallbacks(ResolveStateFailure);
+    ResolveCallbacks(ResolveState::kFailure);
     return;
   }
 
@@ -209,14 +209,14 @@ void ManifestManager::OnManifestFetchComplete(const KURL& document_url,
   // Having errors while parsing the manifest doesn't mean the manifest parsing
   // failed. Some properties might have been ignored but some others kept.
   if (parser.failed()) {
-    ResolveCallbacks(ResolveStateFailure);
+    ResolveCallbacks(ResolveState::kFailure);
     return;
   }
 
   manifest_url_ = response.CurrentRequestUrl();
   manifest_ = parser.manifest().Clone();
   RecordMetrics(*manifest_);
-  ResolveCallbacks(ResolveStateSuccess);
+  ResolveCallbacks(ResolveState::kSuccess);
 }
 
 void ManifestManager::RecordMetrics(const mojom::blink::Manifest& manifest) {
@@ -256,10 +256,10 @@ void ManifestManager::ResolveCallbacks(ResolveState state) {
   // preserve that information in the URL for the callbacks.
   // |manifest_url| will be reset on navigation or if we receive a didchange
   // event.
-  if (state == ResolveStateFailure)
+  if (state == ResolveState::kFailure)
     manifest_ = mojom::blink::ManifestPtr();
 
-  manifest_dirty_ = state != ResolveStateSuccess;
+  manifest_dirty_ = state != ResolveState::kSuccess;
 
   Vector<InternalRequestManifestCallback> callbacks;
   callbacks.swap(pending_callbacks_);
@@ -301,7 +301,7 @@ void ManifestManager::ContextDestroyed() {
   // Consumers in the browser process will not receive this message but they
   // will be aware of the RenderFrame dying and should act on that. Consumers
   // in the renderer process should be correctly notified.
-  ResolveCallbacks(ResolveStateFailure);
+  ResolveCallbacks(ResolveState::kFailure);
 }
 
 void ManifestManager::Trace(Visitor* visitor) const {

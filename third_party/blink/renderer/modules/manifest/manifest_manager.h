@@ -64,7 +64,7 @@ class MODULES_EXPORT ManifestManager
   void Trace(Visitor*) const override;
 
  private:
-  enum ResolveState { ResolveStateSuccess, ResolveStateFailure };
+  enum class ResolveState { kSuccess, kFailure };
 
   using InternalRequestManifestCallback =
       base::OnceCallback<void(const KURL&,
