@@ -667,8 +667,11 @@ TEST(ExtensionL10nUtil, LocalizeManifestWithSearchProviderMsgs) {
 
   base::ListValue* startup_pages_raw = nullptr;
   ASSERT_TRUE(manifest.GetList(keys::kOverrideStartupPage, &startup_pages_raw));
-  ASSERT_TRUE(startup_pages_raw->GetString(0, &result));
-  EXPECT_EQ("http://www.foo.de", result);
+  base::Value::ConstListView startup_pages_raw_list =
+      startup_pages_raw->GetList();
+  ASSERT_GT(startup_pages_raw_list.size(), 0u);
+  ASSERT_TRUE(startup_pages_raw_list[0].is_string());
+  EXPECT_EQ("http://www.foo.de", startup_pages_raw_list[0].GetString());
 
   EXPECT_TRUE(error.empty());
 }

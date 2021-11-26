@@ -96,7 +96,12 @@ int EventMatcher::GetWindowTypeCount() const {
 bool EventMatcher::GetWindowType(int i, std::string* window_type_out) const {
   base::ListValue* window_types = nullptr;
   if (filter_->GetList(kWindowTypesKey, &window_types)) {
-    return window_types->GetString(i, window_type_out);
+    base::Value::ConstListView types_list = window_types->GetList();
+    if (i >= 0 && static_cast<size_t>(i) < types_list.size() &&
+        types_list[i].is_string()) {
+      *window_type_out = types_list[i].GetString();
+      return true;
+    }
   }
   return false;
 }

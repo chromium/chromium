@@ -311,11 +311,10 @@ void ExtensionAssetsManagerChromeOS::CheckSharedExtension(
       version_info->GetString(kSharedExtensionPath, &shared_path) &&
       version_info->GetList(kSharedExtensionUsers, &users)) {
     // This extension version already in shared location.
-    size_t users_size = users->GetList().size();
     bool user_found = false;
-    for (size_t i = 0; i < users_size; i++) {
-      std::string temp;
-      if (users->GetString(i, &temp) && temp == user_id) {
+    for (const base::Value& user : users->GetList()) {
+      const std::string* temp = user.GetIfString();
+      if (temp && *temp == user_id) {
         // Re-installation for the same user.
         user_found = true;
         break;
@@ -521,13 +520,13 @@ bool ExtensionAssetsManagerChromeOS::CleanUpExtension(
 
     size_t num_users = users->GetList().size();
     for (size_t i = 0; i < num_users; i++) {
-      std::string user_id;
-      if (!users->GetString(i, &user_id)) {
+      const std::string* user_id = users->GetList()[i].GetIfString();
+      if (!user_id) {
         NOTREACHED();
         return false;
       }
       const user_manager::User* user =
-          user_manager->FindUser(AccountId::FromUserEmail(user_id));
+          user_manager->FindUser(AccountId::FromUserEmail(*user_id));
       bool not_used = false;
       if (!user) {
         not_used = true;

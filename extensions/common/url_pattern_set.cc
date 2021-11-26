@@ -283,11 +283,11 @@ bool URLPatternSet::Populate(const base::ListValue& value,
                              bool allow_file_access,
                              std::string* error) {
   std::vector<std::string> patterns;
-  for (size_t i = 0; i < value.GetList().size(); ++i) {
-    std::string item;
-    if (!value.GetString(i, &item))
+  for (const base::Value& pattern : value.GetList()) {
+    const std::string* item = pattern.GetIfString();
+    if (!item)
       return false;
-    patterns.push_back(item);
+    patterns.push_back(*item);
   }
   return Populate(patterns, valid_schemes, allow_file_access, error);
 }

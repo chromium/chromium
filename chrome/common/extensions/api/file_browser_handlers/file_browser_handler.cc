@@ -166,18 +166,17 @@ std::unique_ptr<FileBrowserHandler> LoadFileBrowserHandler(
   result->set_title(title);
 
   // Initialize access permissions (optional).
-  const base::ListValue* access_list_value = nullptr;
-  if (file_browser_handler->HasKey(keys::kFileAccessList)) {
-    if (!file_browser_handler->GetList(keys::kFileAccessList,
-                                       &access_list_value) ||
-        access_list_value->GetList().empty()) {
+  const base::Value* access_list_value =
+      file_browser_handler->FindKey(keys::kFileAccessList);
+  if (access_list_value) {
+    if (!access_list_value->is_list() || access_list_value->GetList().empty()) {
       *error = base::ASCIIToUTF16(errors::kInvalidFileAccessList);
       return nullptr;
     }
-    for (size_t i = 0; i < access_list_value->GetList().size(); ++i) {
-      std::string access;
-      if (!access_list_value->GetString(i, &access) ||
-          result->AddFileAccessPermission(access)) {
+    base::Value::ConstListView access_list_view = access_list_value->GetList();
+    for (size_t i = 0; i < access_list_view.size(); ++i) {
+      const std::string* access = access_list_view[i].GetIfString();
+      if (!access || result->AddFileAccessPermission(*access)) {
         *error = extensions::ErrorUtils::FormatErrorMessageUTF16(
             errors::kInvalidFileAccessValue, base::NumberToString(i));
         return nullptr;
@@ -192,20 +191,21 @@ std::unique_ptr<FileBrowserHandler> LoadFileBrowserHandler(
   // Initialize file filters (mandatory, unless "create" access is specified,
   // in which case is ignored). The list can be empty.
   if (!result->HasCreateAccessPermission()) {
-    const base::ListValue* file_filters = nullptr;
-    if (!file_browser_handler->HasKey(keys::kFileFilters) ||
-        !file_browser_handler->GetList(keys::kFileFilters, &file_filters)) {
+    const base::Value* file_filters =
+        file_browser_handler->FindListKey(keys::kFileFilters);
+    if (!file_filters) {
       *error = base::ASCIIToUTF16(errors::kInvalidFileFiltersList);
       return nullptr;
     }
-    for (size_t i = 0; i < file_filters->GetList().size(); ++i) {
-      std::string filter;
-      if (!file_filters->GetString(i, &filter)) {
+    base::Value::ConstListView file_filters_list = file_filters->GetList();
+    for (size_t i = 0; i < file_filters_list.size(); ++i) {
+      const std::string* filter_in = file_filters_list[i].GetIfString();
+      if (!filter_in) {
         *error = extensions::ErrorUtils::FormatErrorMessageUTF16(
             errors::kInvalidFileFilterValue, base::NumberToString(i));
         return nullptr;
       }
-      filter = base::ToLowerASCII(filter);
+      std::string filter = base::ToLowerASCII(*filter_in);
       if (!base::StartsWith(filter, std::string(url::kFileSystemScheme) + ':',
                             base::CompareCase::SENSITIVE)) {
         *error = extensions::ErrorUtils::FormatErrorMessageUTF16(

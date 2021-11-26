@@ -62,27 +62,26 @@ bool ManifestPermissionSet::ParseFromJSON(
     ManifestPermissionSet* manifest_permissions,
     std::u16string* error,
     std::vector<std::string>* unhandled_permissions) {
-  for (size_t i = 0; i < permissions->GetList().size(); ++i) {
+  base::Value::ConstListView permissions_list = permissions->GetList();
+  for (size_t i = 0; i < permissions_list.size(); ++i) {
+    const base::Value& value = permissions_list[i];
     std::string permission_name;
-    const base::Value* permission_value = NULL;
-    if (!permissions->GetString(i, &permission_name)) {
-      const base::Value& value = permissions->GetList()[i];
-      const base::DictionaryValue* dict = nullptr;
-      if (value.is_dict())
-        dict = static_cast<const base::DictionaryValue*>(&value);
-      // permission should be a string or a single key dict.
-      if (!dict || dict->DictSize() != 1) {
-        if (error) {
-          *error = ErrorUtils::FormatErrorMessageUTF16(
-              errors::kInvalidPermission, base::NumberToString(i));
-          return false;
-        }
-        LOG(WARNING) << "Permission is not a string or single key dict.";
-        continue;
+    const base::Value* permission_value = nullptr;
+    // Permission `value` should be a string or a single key dict.
+    if (value.is_string()) {
+      permission_name = value.GetString();
+    } else if (value.is_dict() && value.DictSize() == 1u) {
+      auto dict_iter = value.DictItems().begin();
+      permission_name = dict_iter->first;
+      permission_value = &dict_iter->second;
+    } else {
+      if (error) {
+        *error = ErrorUtils::FormatErrorMessageUTF16(errors::kInvalidPermission,
+                                                     base::NumberToString(i));
+        return false;
       }
-      base::DictionaryValue::Iterator it(*dict);
-      permission_name = it.key();
-      permission_value = &it.value();
+      LOG(WARNING) << "Permission is not a string or single key dict.";
+      continue;
     }
 
     if (!CreateManifestPermission(permission_name, permission_value,

@@ -427,15 +427,15 @@ void InstallSigner::ParseFetchResponse(
   }
 
   ExtensionIdSet invalid_ids;
-  const base::ListValue* invalid_ids_list = NULL;
-  if (dictionary->GetList(kInvalidIdsKey, &invalid_ids_list)) {
-    for (size_t i = 0; i < invalid_ids_list->GetList().size(); i++) {
-      std::string id;
-      if (!invalid_ids_list->GetString(i, &id)) {
+  const base::Value* invalid_ids_list = dictionary->FindListKey(kInvalidIdsKey);
+  if (invalid_ids_list) {
+    for (const base::Value& invalid_id : invalid_ids_list->GetList()) {
+      const std::string* id = invalid_id.GetIfString();
+      if (!id) {
         ReportErrorViaCallback();
         return;
       }
-      invalid_ids.insert(id);
+      invalid_ids.insert(*id);
     }
   }
 

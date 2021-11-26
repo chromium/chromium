@@ -708,15 +708,16 @@ bool Extension::LoadExtent(const char* key,
   if (!manifest_->Get(key, &temp_pattern_value))
     return true;
 
-  const base::ListValue* pattern_list = nullptr;
-  if (!temp_pattern_value->GetAsList(&pattern_list)) {
+  if (!temp_pattern_value->is_list()) {
     *error = base::ASCIIToUTF16(list_error);
     return false;
   }
-
-  for (size_t i = 0; i < pattern_list->GetList().size(); ++i) {
+  base::Value::ConstListView pattern_list = temp_pattern_value->GetList();
+  for (size_t i = 0; i < pattern_list.size(); ++i) {
     std::string pattern_string;
-    if (!pattern_list->GetString(i, &pattern_string)) {
+    if (pattern_list[i].is_string()) {
+      pattern_string = pattern_list[i].GetString();
+    } else {
       *error = ErrorUtils::FormatErrorMessageUTF16(
           value_error, base::NumberToString(i), errors::kExpectString);
       return false;

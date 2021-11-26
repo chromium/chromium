@@ -28,9 +28,10 @@ v8::Local<v8::Object> ChromeSetting::Create(
     APIEventHandler* event_handler,
     APITypeReferenceMap* type_refs,
     const BindingAccessChecker* access_checker) {
-  std::string pref_name;
-  CHECK(property_values->GetString(0u, &pref_name));
-  const base::Value& value_spec = property_values->GetList()[1u];
+  base::Value::ConstListView property_values_list = property_values->GetList();
+  CHECK_GE(property_values_list.size(), 2u);
+  std::string pref_name = property_values_list[0u].GetString();
+  const base::Value& value_spec = property_values_list[1u];
   CHECK(value_spec.is_dict());
 
   gin::Handle<ChromeSetting> handle = gin::CreateHandle(

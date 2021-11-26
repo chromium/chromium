@@ -31,11 +31,10 @@ TEST(ValueBuilderTest, Basic) {
   ASSERT_TRUE(settings->GetList("permissions", &list_value));
 
   ASSERT_EQ(2U, list_value->GetList().size());
-  std::string permission;
-  ASSERT_TRUE(list_value->GetString(0, &permission));
-  ASSERT_EQ(permission, "tabs");
-  ASSERT_TRUE(list_value->GetString(1, &permission));
-  ASSERT_EQ(permission, "history");
+  ASSERT_TRUE(list_value->GetList()[0].is_string());
+  ASSERT_EQ(list_value->GetList()[0].GetString(), "tabs");
+  ASSERT_TRUE(list_value->GetList()[1].is_string());
+  ASSERT_EQ(list_value->GetList()[1].GetString(), "history");
 }
 
 TEST(ValueBuilderTest, AppendList) {

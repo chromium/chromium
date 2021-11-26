@@ -709,10 +709,10 @@ std::set<std::string> EventRouter::GetRegisteredEvents(
     return events;
   }
 
-  for (size_t i = 0; i < events_value->GetList().size(); ++i) {
-    std::string event;
-    if (events_value->GetString(i, &event))
-      events.insert(event);
+  for (const base::Value& event_val : events_value->GetList()) {
+    const std::string* event = event_val.GetIfString();
+    if (event)
+      events.insert(*event);
   }
   return events;
 }

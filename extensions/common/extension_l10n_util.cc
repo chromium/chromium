@@ -129,11 +129,12 @@ bool LocalizeManifestListValue(const std::string& key,
     return true;
 
   bool ret = true;
-  for (size_t i = 0; i < list->GetList().size(); ++i) {
-    std::string result;
-    if (list->GetString(i, &result)) {
+  base::Value::ListView list_view = list->GetList();
+  for (size_t i = 0; i < list_view.size(); ++i) {
+    if (list_view[i].is_string()) {
+      std::string result = list_view[i].GetString();
       if (messages.ReplaceMessages(&result, error))
-        list->Set(i, std::make_unique<base::Value>(result));
+        list_view[i] = base::Value(result);
       else
         ret = false;
     }

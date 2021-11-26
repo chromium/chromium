@@ -340,19 +340,19 @@ void ExternalProviderImpl::RetrieveExtensionsFromPrefs(
       l10n_util::GetParentLocales(g_browser_process->GetApplicationLocale(),
                                   &browser_locales);
 
-      size_t num_locales = supported_locales->GetList().size();
       bool locale_supported = false;
-      for (size_t j = 0; j < num_locales; j++) {
-        std::string current_locale;
-        if (supported_locales->GetString(j, &current_locale) &&
-            l10n_util::IsValidLocaleSyntax(current_locale)) {
-          current_locale = l10n_util::NormalizeLocale(current_locale);
-          if (base::Contains(browser_locales, current_locale)) {
+      for (const base::Value& locale : supported_locales->GetList()) {
+        const std::string* current_locale = locale.GetIfString();
+        if (current_locale && l10n_util::IsValidLocaleSyntax(*current_locale)) {
+          std::string normalized_locale =
+              l10n_util::NormalizeLocale(*current_locale);
+          if (base::Contains(browser_locales, normalized_locale)) {
             locale_supported = true;
             break;
           }
         } else {
-          LOG(WARNING) << "Unrecognized locale '" << current_locale
+          LOG(WARNING) << "Unrecognized locale '"
+                       << (current_locale ? *current_locale : "(Not a string)")
                        << "' found as supported locale for extension: "
                        << extension_id;
         }

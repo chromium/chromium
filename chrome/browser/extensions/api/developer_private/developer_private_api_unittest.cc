@@ -495,8 +495,13 @@ TEST_F(DeveloperPrivateApiUnitTest, DeveloperPrivateChoosePath) {
   function->SetRenderFrameHost(web_contents->GetMainFrame());
   EXPECT_TRUE(RunFunction(function, choose_args)) << function->GetError();
   std::string path;
-  EXPECT_TRUE(function->GetResultList() &&
-              function->GetResultList()->GetString(0, &path));
+  const base::Value* result_list = function->GetResultList();
+  ASSERT_TRUE(result_list);
+  ASSERT_TRUE(result_list->is_list());
+  base::Value::ConstListView result_list_view = result_list->GetList();
+  ASSERT_GT(result_list_view.size(), 0u);
+  ASSERT_TRUE(result_list_view[0].is_string());
+  path = result_list_view[0].GetString();
   EXPECT_EQ(path, expected_dir_path.AsUTF8Unsafe());
 
   // Try selecting a pem file.
@@ -509,8 +514,13 @@ TEST_F(DeveloperPrivateApiUnitTest, DeveloperPrivateChoosePath) {
   function = new api::DeveloperPrivateChoosePathFunction();
   function->SetRenderFrameHost(web_contents->GetMainFrame());
   EXPECT_TRUE(RunFunction(function, choose_args)) << function->GetError();
-  EXPECT_TRUE(function->GetResultList() &&
-              function->GetResultList()->GetString(0, &path));
+  result_list = function->GetResultList();
+  ASSERT_TRUE(result_list);
+  ASSERT_TRUE(result_list->is_list());
+  result_list_view = result_list->GetList();
+  ASSERT_GT(result_list_view.size(), 0u);
+  ASSERT_TRUE(result_list_view[0].is_string());
+  path = result_list_view[0].GetString();
   EXPECT_EQ(path, expected_file_path.AsUTF8Unsafe());
 
   // Try canceling the file dialog.

@@ -113,7 +113,7 @@ bool IndividualSettings::Parse(const base::DictionaryValue* dict,
   }
 
   // Parses the blocked permission settings.
-  const base::ListValue* list_value = nullptr;
+  const base::Value* list_value = nullptr;
   std::u16string error;
 
   // Parse the blocked and allowed permissions.
@@ -130,16 +130,16 @@ bool IndividualSettings::Parse(const base::DictionaryValue* dict,
   // for the same reason, we keep the code for now.
   APIPermissionSet parsed_blocked_permissions;
   APIPermissionSet explicitly_allowed_permissions;
-  if (dict->GetListWithoutPathExpansion(schema_constants::kAllowedPermissions,
-                                        &list_value)) {
+  list_value = dict->FindListKey(schema_constants::kAllowedPermissions);
+  if (list_value) {
     if (!APIPermissionSet::ParseFromJSON(
             list_value, APIPermissionSet::kDisallowInternalPermissions,
             &explicitly_allowed_permissions, &error, nullptr)) {
       LOG(WARNING) << error;
     }
   }
-  if (dict->GetListWithoutPathExpansion(schema_constants::kBlockedPermissions,
-                                        &list_value)) {
+  list_value = dict->FindListKey(schema_constants::kBlockedPermissions);
+  if (list_value) {
     if (!APIPermissionSet::ParseFromJSON(
             list_value, APIPermissionSet::kDisallowInternalPermissions,
             &parsed_blocked_permissions, &error, nullptr)) {
@@ -153,13 +153,11 @@ bool IndividualSettings::Parse(const base::DictionaryValue* dict,
   // Parses list of Match Patterns into a URLPatternSet.
   auto parse_url_pattern_set = [](const base::DictionaryValue* dict,
                                   const char key[], URLPatternSet* out_value) {
-    const base::ListValue* host_list_value = nullptr;
-
     // Get the list of URLPatterns.
-    if (dict->GetListWithoutPathExpansion(key,
-                                          &host_list_value)) {
-      if (host_list_value->GetList().size() >
-          schema_constants::kMaxItemsURLPatternSet) {
+    const base::Value* host_list_value = dict->FindListKey(key);
+    if (host_list_value) {
+      base::Value::ConstListView host_list_view = host_list_value->GetList();
+      if (host_list_view.size() > schema_constants::kMaxItemsURLPatternSet) {
         LOG(WARNING) << "Exceeded maximum number of URL match patterns ("
                      << schema_constants::kMaxItemsURLPatternSet
                      << ") for attribute '" << key << "'";
@@ -168,11 +166,12 @@ bool IndividualSettings::Parse(const base::DictionaryValue* dict,
       out_value->ClearPatterns();
       const int extension_scheme_mask =
           URLPattern::GetValidSchemeMaskForExtensions();
-      auto numItems = std::min(host_list_value->GetList().size(),
+      auto numItems = std::min(host_list_view.size(),
                                schema_constants::kMaxItemsURLPatternSet);
       for (size_t i = 0; i < numItems; ++i) {
         std::string unparsed_str;
-        host_list_value->GetString(i, &unparsed_str);
+        if (host_list_view[i].is_string())
+          unparsed_str = host_list_view[i].GetString();
         URLPattern pattern(extension_scheme_mask);
         if (unparsed_str != URLPattern::kAllUrlsPattern)
           unparsed_str.append("/*");
