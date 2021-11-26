@@ -7,7 +7,6 @@
 #include <memory>
 
 #include "base/stl_util.h"
-#include "base/task/thread_pool.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "build/chromeos_buildflags.h"
@@ -269,9 +268,7 @@ class DlpControllerTest : public DataTransferDlpControllerTest {
         CreateEndpoint(base::OptionalOrNullptr(endpoint_type), do_notify_);
     dst_ptr_ = base::OptionalOrNullptr(data_dst_);
 
-    SetReportQueueForReportingManager(
-        &reporting_manager_, events_,
-        base::ThreadPool::CreateSequencedTaskRunner({}));
+    SetReportQueueForReportingManager(&reporting_manager_, events_);
     EXPECT_CALL(rules_manager_, GetReportingManager)
         .WillRepeatedly(::testing::Return(&reporting_manager_));
   }
@@ -468,9 +465,7 @@ class DlpControllerVMsTest : public DataTransferDlpControllerTest {
     ASSERT_TRUE(endpoint_type_.has_value());
     data_dst_ = ui::DataTransferEndpoint(endpoint_type_.value(), do_notify_);
 
-    SetReportQueueForReportingManager(
-        &reporting_manager_, events_,
-        base::ThreadPool::CreateSequencedTaskRunner({}));
+    SetReportQueueForReportingManager(&reporting_manager_, events_);
     EXPECT_CALL(rules_manager_, GetReportingManager)
         .WillRepeatedly(::testing::Return(&reporting_manager_));
   }

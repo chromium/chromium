@@ -48,7 +48,7 @@ constexpr char kMailPattern[] = "mail.google.com";
 class MockDlpRulesManager : public DlpRulesManagerImpl {
  public:
   explicit MockDlpRulesManager(PrefService* local_state)
-      : DlpRulesManagerImpl(local_state) {}
+      : DlpRulesManagerImpl(local_state, /* dm_token_value= */ "") {}
 };
 
 }  // namespace
@@ -65,7 +65,6 @@ class DlpRulesManagerImplTest : public testing::Test {
                                     std::move(rules_list));
   }
 
-  content::BrowserTaskEnvironment task_environment_;
   ScopedTestingLocalState testing_local_state_;
   MockDlpRulesManager dlp_rules_manager_;
   base::HistogramTester histogram_tester_;
@@ -638,6 +637,7 @@ TEST_F(DlpRulesManagerImplTest, FilesRestriction_DlpClientNotified) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(
       features::kDataLeakPreventionFilesRestriction);
+  content::BrowserTaskEnvironment task_environment;
   chromeos::DlpClient::InitializeFake();
 
   EXPECT_EQ(0, chromeos::DlpClient::Get()
@@ -670,6 +670,7 @@ TEST_F(DlpRulesManagerImplTest, FilesRestriction_DlpClientNotified) {
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 TEST_F(DlpRulesManagerImplTest, FilesRestriction_FeatureNotEnabled) {
+  content::BrowserTaskEnvironment task_environment;
   chromeos::DlpClient::InitializeFake();
 
   EXPECT_EQ(0, chromeos::DlpClient::Get()

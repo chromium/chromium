@@ -14,6 +14,7 @@
 #include "base/containers/contains.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/feature_list.h"
+#include "base/strings/string_piece.h"
 #include "base/values.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chromeos/policy/dlp/data_transfer_dlp_controller.h"
@@ -27,6 +28,7 @@
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
+#include "components/reporting/client/report_queue_factory.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -338,7 +340,8 @@ DlpRulesManager::Level DlpRulesManagerImpl::IsRestrictedComponent(
   return level_url_pair.first;
 }
 
-DlpRulesManagerImpl::DlpRulesManagerImpl(PrefService* local_state) {
+DlpRulesManagerImpl::DlpRulesManagerImpl(PrefService* local_state,
+                                         base::StringPiece dm_token_value) {
   pref_change_registrar_.Init(local_state);
   pref_change_registrar_.Add(
       policy_prefs::kDlpRulesList,
@@ -349,6 +352,9 @@ DlpRulesManagerImpl::DlpRulesManagerImpl(PrefService* local_state) {
   if (!IsReportingEnabled())
     return;
   reporting_manager_ = std::make_unique<DlpReportingManager>();
+  reporting::ReportQueueFactory::Create(
+      dm_token_value, reporting::Destination::DLP_EVENTS,
+      reporting_manager_->GetReportQueueSetter());
 }
 
 bool DlpRulesManagerImpl::IsReportingEnabled() const {

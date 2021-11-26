@@ -7,8 +7,8 @@
 
 #include <memory>
 
-#include "base/task/sequenced_task_runner.h"
-#include "components/reporting/client/report_queue.h"
+#include "base/strings/string_piece_forward.h"
+#include "components/policy/core/common/cloud/dm_token.h"
 #include "components/reporting/client/report_queue_provider.h"
 
 namespace reporting {
@@ -40,7 +40,10 @@ class UserEventReporterHelper {
   virtual bool IsCurrentUserNew() const;
 
  private:
-  const std::unique_ptr<ReportQueue, base::OnTaskRunnerDeleter> report_queue_;
+  // Returns the device DM token.
+  static policy::DMToken GetDMToken();
+
+  std::unique_ptr<ReportQueue, base::OnTaskRunnerDeleter> report_queue_;
 };
 }  // namespace reporting
 

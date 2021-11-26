@@ -10,7 +10,6 @@
 #include "base/bind.h"
 #include "base/callback_forward.h"
 #include "base/memory/ptr_util.h"
-#include "base/task/thread_pool.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
@@ -124,11 +123,7 @@ class DlpContentManagerTest : public testing::Test {
   }
 
   void SetReportQueueForReportingManager() {
-    auto report_queue = std::unique_ptr<::reporting::MockReportQueue,
-                                        base::OnTaskRunnerDeleter>(
-        new ::reporting::MockReportQueue(),
-        base::OnTaskRunnerDeleter(
-            base::ThreadPool::CreateSequencedTaskRunner({})));
+    auto report_queue = std::make_unique<reporting::MockReportQueue>();
     EXPECT_CALL(*report_queue.get(), AddRecord)
         .WillRepeatedly(
             [this](base::StringPiece record, reporting::Priority priority,
@@ -139,7 +134,7 @@ class DlpContentManagerTest : public testing::Test {
               // concurrency issues with the events in the vector.
               events_.push_back(event);
             });
-    helper_.GetReportingManager()->SetReportQueueForTest(
+    helper_.GetReportingManager()->GetReportQueueSetter().Run(
         std::move(report_queue));
   }
 
@@ -155,9 +150,9 @@ class DlpContentManagerTest : public testing::Test {
 
   TestingProfile* profile() { return profile_; }
 
+  DlpContentManagerTestHelper helper_;
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-  DlpContentManagerTestHelper helper_;
   base::HistogramTester histogram_tester_;
   std::vector<DlpPolicyEvent> events_;
   MockDlpRulesManager* mock_rules_manager_ = nullptr;

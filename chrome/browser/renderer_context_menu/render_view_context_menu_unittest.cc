@@ -145,7 +145,7 @@ class TestNavigationDelegate : public content::WebContentsDelegate {
 class MockDlpRulesManager : public policy::DlpRulesManagerImpl {
  public:
   explicit MockDlpRulesManager(PrefService* local_state)
-      : DlpRulesManagerImpl(local_state) {}
+      : DlpRulesManagerImpl(local_state, /* dm_token_value= */ "") {}
 };
 #endif
 

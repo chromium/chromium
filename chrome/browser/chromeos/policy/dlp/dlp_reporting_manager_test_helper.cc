@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_policy_event.pb.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_reporting_manager.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
@@ -72,15 +71,10 @@ Matcher<const DlpPolicyEvent&> IsDlpPolicyEvent(const DlpPolicyEvent& event) {
   return Matcher<const DlpPolicyEvent&>(new DlpPolicyEventMatcher(event));
 }
 
-void SetReportQueueForReportingManager(
-    policy::DlpReportingManager* manager,
-    std::vector<DlpPolicyEvent>& events,
-    scoped_refptr<base::SequencedTaskRunner> task_runner) {
-  auto report_queue =
-      std::unique_ptr<::reporting::MockReportQueue, base::OnTaskRunnerDeleter>(
-          new ::reporting::MockReportQueue(),
-          base::OnTaskRunnerDeleter(std::move(task_runner)));
-  EXPECT_CALL(*report_queue, AddRecord)
+void SetReportQueueForReportingManager(policy::DlpReportingManager* manager,
+                                       std::vector<DlpPolicyEvent>& events) {
+  auto report_queue = std::make_unique<reporting::MockReportQueue>();
+  EXPECT_CALL(*report_queue.get(), AddRecord)
       .WillRepeatedly(
           [&events](base::StringPiece record, reporting::Priority priority,
                     reporting::ReportQueue::EnqueueCallback callback) {
@@ -91,7 +85,7 @@ void SetReportQueueForReportingManager(
             events.push_back(event);
             std::move(callback).Run(reporting::Status::StatusOK());
           });
-  manager->SetReportQueueForTest(std::move(report_queue));
+  manager->GetReportQueueSetter().Run(std::move(report_queue));
 }
 
 }  // namespace policy
