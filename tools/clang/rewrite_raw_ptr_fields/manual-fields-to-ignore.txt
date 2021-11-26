@@ -45,6 +45,10 @@ WTF::ICUConverterWrapper::converter
 blink::PersistentBase::raw_
 blink::SVGFilterBuilder::last_effect_
 
+# Populated manually - global-scope exclusions that are missing because the
+# global variable is in a build configuration specific code
+base::android::ReachedAddressesBitset::reached_
+
 # Populated manually - missing |.get()| in not-rewritten platform specific code
 viz::OverlayCandidate::rpdq
 viz::CALayerOverlay::rpdq
