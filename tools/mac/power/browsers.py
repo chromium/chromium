@@ -18,6 +18,7 @@ class BrowserDriver(abc.ABC):
   def __init__(self, browser_name: str, process_name: str):
     self.name = browser_name
     self.process_name = process_name
+    self.browser_process = None
 
   @abc.abstractmethod
   def Launch(self):
@@ -35,7 +36,6 @@ class BrowserDriver(abc.ABC):
   def _EnsureStarted(self):
     """Waits until a browser with the given `process_name` is running.
     """
-    self.browser_process = None
     while not self.browser_process:
       self.browser_process = utils.FindProcess(self.process_name)
       time.sleep(0.100)

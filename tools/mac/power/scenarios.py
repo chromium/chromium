@@ -30,6 +30,8 @@ class ScenarioOSADriver(abc.ABC):
 
   def __init__(self, scenario_name):
     self.name = scenario_name
+    self.script_process = None
+    self.osa_script = None
 
   def Launch(self):
     """Starts the driver script.

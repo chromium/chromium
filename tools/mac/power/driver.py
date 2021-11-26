@@ -86,6 +86,7 @@ class Driver:
     output_file = \
         f'{self._output_dir}/{scenario_driver.name}_powermetrics.plist'
 
+    powermetrics_process = None
     try:
       scenario_driver.Launch()
       with open(output_file, "w") as powermetrics_output:
