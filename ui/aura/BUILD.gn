@@ -320,6 +320,7 @@ test("aura_unittests") {
     "//mojo/core/embedder",
     "//skia",
     "//testing/gtest",
+    "//ui/aura/cursor:unittests",
     "//ui/aura_extra",
     "//ui/aura_extra:tests",
     "//ui/base:test_support",

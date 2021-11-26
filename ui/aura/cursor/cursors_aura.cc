@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ui/base/cursor/cursors_aura.h"
+#include "ui/aura/cursor/cursors_aura.h"
 
 #include <stddef.h>
 
@@ -18,7 +18,7 @@
 #include "ui/resources/grit/ui_resources.h"
 
 #if defined(OS_WIN)
-#include "ui/base/cursor/cursor_loader.h"
+#include "ui/aura/cursor/cursor_loader.h"
 #include "ui/base/win/win_cursor.h"
 #include "ui/gfx/icon_util.h"
 #endif

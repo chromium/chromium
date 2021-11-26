@@ -66,7 +66,11 @@ component("x") {
 
   defines = [ "IS_UI_BASE_X_IMPL" ]
 
-  public_deps = [ "//ui/base/cursor:cursor_base" ]
+  public_deps = [
+    "//ui/base/cursor:cursor_base",
+    "//ui/base/cursor:theme_manager",
+    "//ui/base/cursor/mojom:cursor_type_shared",
+  ]
   deps = [
     "//base",
     "//base:i18n",
@@ -77,8 +81,6 @@ component("x") {
     "//ui/base:features",
     "//ui/base/clipboard:clipboard_types",
     "//ui/base/clipboard:file_info",
-    "//ui/base/cursor:theme_manager",
-    "//ui/base/cursor/mojom:cursor_type",
     "//ui/display/util",
     "//ui/display/util:gpu_info_util",
     "//ui/events",
@@ -163,7 +165,8 @@ source_set("unittests") {
     "//base/test:test_support",
     "//skia",
     "//testing/gtest",
-    "//ui/base/cursor",
+    "//ui/base/cursor:cursor_base",
+    "//ui/base/cursor/mojom:cursor_type_shared",
     "//ui/gfx/geometry",
     "//ui/gfx/x",
   ]

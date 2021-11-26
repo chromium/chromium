@@ -34,76 +34,23 @@ component("theme_manager") {
     "cursor_theme_manager_observer.h",
   ]
   defines = [ "IS_UI_BASE_CURSOR_THEME_MANAGER_IMPL" ]
-  deps = [ "//base" ]
-}
-
-if (use_aura) {
-  component("cursor") {
-    output_name = "ui_base_cursor"
-    sources = [
-      "cursor_loader.cc",
-      "cursor_loader.h",
-      "cursor_lookup.cc",
-      "cursor_lookup.h",
-      "cursor_util.cc",
-      "cursor_util.h",
-      "cursors_aura.cc",
-      "cursors_aura.h",
-    ]
-    defines = [ "IS_UI_BASE_CURSOR_IMPL" ]
-    public_deps = [
-      ":cursor_base",
-      "//base",
-      "//ui/base/cursor/mojom:cursor_type",
-      "//ui/display",
-      "//ui/gfx:native_widget_types",
-    ]
-    deps = [
-      "//skia",
-      "//ui/base",
-      "//ui/gfx",
-      "//ui/gfx:gfx_skia",
-      "//ui/gfx/geometry",
-      "//ui/resources:ui_resources_grd",
-    ]
-  }
+  public_deps = [ "//base" ]
 }
 
 source_set("unittests") {
   testonly = true
   sources = []
-  deps = [
-    ":cursor_base",
-    "//testing/gtest",
-    "//ui/base/cursor/mojom:cursor_type",
-  ]
+  deps = []
 
   if (!is_ios) {
     sources += [ "cursor_unittest.cc" ]
     deps += [
+      ":cursor_base",
       "//skia",
+      "//testing/gtest",
+      "//ui/base/cursor/mojom:cursor_type_shared",
       "//ui/gfx:gfx_skia",
       "//ui/gfx/geometry",
     ]
-  }
-
-  if (use_aura) {
-    sources += [
-      "cursor_loader_unittest.cc",
-      "cursor_util_unittest.cc",
-    ]
-    deps += [
-      ":cursor",
-      "//skia",
-      "//ui/gfx/geometry",
-    ]
-
-    if (is_win) {
-      deps += [ "//ui/base" ]
-    }
-
-    if (use_ozone) {
-      deps += [ "//ui/ozone/common" ]
-    }
   }
 }

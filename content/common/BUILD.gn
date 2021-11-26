@@ -335,7 +335,7 @@ source_set("common") {
   }
 
   if (use_aura) {
-    deps += [ "//ui/base/cursor" ]
+    deps += [ "//ui/aura/cursor" ]
   } else {
     sources -= [ "cursors/webcursor_aura.cc" ]
   }

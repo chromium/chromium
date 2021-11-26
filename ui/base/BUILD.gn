@@ -1108,6 +1108,11 @@ test("ui_base_unittests") {
       "dragdrop/os_exchange_data_win_unittest.cc",
       "view_prop_unittest.cc",
       "win/hwnd_subclass_unittest.cc",
+      "win/win_cursor_factory_unittest.cc",
+    ]
+    deps += [
+      "//ui/base/cursor:cursor_base",
+      "//ui/base/cursor/mojom:cursor_type_shared",
     ]
   }
 

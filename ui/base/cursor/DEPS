@@ -1,6 +1,0 @@
-specific_include_rules = {
-  "cursor_loader_unittest\.cc": [
-    "+ui/ozone/common/bitmap_cursor.h",
-    "+ui/ozone/common/bitmap_cursor_factory.h",
-  ],
-}

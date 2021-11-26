@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef UI_BASE_CURSOR_CURSORS_AURA_H_
-#define UI_BASE_CURSOR_CURSORS_AURA_H_
+#ifndef UI_AURA_CURSOR_CURSORS_AURA_H_
+#define UI_AURA_CURSOR_CURSORS_AURA_H_
 
 #include "base/component_export.h"
 #include "ui/base/cursor/mojom/cursor_type.mojom-forward.h"
@@ -22,7 +22,7 @@ enum class CursorSize;
 // ui::mojom::CursorType::kHelp. The IDR will be placed in |resource_id| and
 // the hotspots for the different DPIs will be placed in |hot_1x| and
 // |hot_2x|.  Returns false if |id| is invalid.
-COMPONENT_EXPORT(UI_BASE_CURSOR)
+COMPONENT_EXPORT(UI_AURA_CURSOR)
 bool GetCursorDataFor(CursorSize cursor_size,
                       mojom::CursorType id,
                       float scale_factor,
@@ -35,4 +35,4 @@ gfx::Point GetDefaultHotspot(const Cursor& cursor);
 
 }  // namespace ui
 
-#endif  // UI_BASE_CURSOR_CURSORS_AURA_H_
+#endif  // UI_AURA_CURSOR_CURSORS_AURA_H_

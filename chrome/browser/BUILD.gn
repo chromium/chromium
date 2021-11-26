@@ -5454,7 +5454,6 @@ static_library("browser") {
       "//third_party/wtl",
       "//ui/aura_extra",
       "//ui/base:fullscreen_win",
-      "//ui/base/cursor",
     ]
     allow_circular_includes_from +=
         [ "//chrome/browser/safe_browsing/chrome_cleaner" ]

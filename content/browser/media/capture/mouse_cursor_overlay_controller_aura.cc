@@ -4,11 +4,10 @@
 
 #include "content/browser/media/capture/mouse_cursor_overlay_controller.h"
 
+#include "ui/aura/cursor/cursor_lookup.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/base/cursor/cursor.h"
-#include "ui/base/cursor/cursor_loader.h"
-#include "ui/base/cursor/cursor_lookup.h"
 #include "ui/base/cursor/mojom/cursor_type.mojom-shared.h"
 #include "ui/events/event.h"
 #include "ui/events/event_handler.h"

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ui/base/cursor/cursor_loader.h"
+#include "ui/aura/cursor/cursor_loader.h"
 
 #include <map>
 #include <vector>
@@ -10,11 +10,11 @@
 #include "base/check.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/time/time.h"
+#include "ui/aura/cursor/cursor_util.h"
+#include "ui/aura/cursor/cursors_aura.h"
 #include "ui/base/cursor/cursor.h"
 #include "ui/base/cursor/cursor_factory.h"
 #include "ui/base/cursor/cursor_size.h"
-#include "ui/base/cursor/cursor_util.h"
-#include "ui/base/cursor/cursors_aura.h"
 #include "ui/base/cursor/mojom/cursor_type.mojom.h"
 #include "ui/base/cursor/platform_cursor.h"
 #include "ui/gfx/geometry/point.h"

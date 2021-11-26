@@ -39,7 +39,7 @@ source_set("chromeos") {
   deps = [
     "//remoting/base:base",
     "//remoting/host:clipboard",
-    "//ui/base/cursor",
+    "//ui/aura/cursor",
     "//ui/base/cursor/mojom:cursor_type",
   ]
 }

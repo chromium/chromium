@@ -45,9 +45,6 @@ source_set("common") {
 
   visibility = [
     ":*",
-    # TODO(https://crbug.com/1270302): remove this dep once CursorLoader is
-    # moved to //ui/aura/cursor.
-    "//ui/base/cursor:unittests",
     "//ui/ozone/platform/*",
   ]
 

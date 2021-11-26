@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef UI_BASE_CURSOR_CURSOR_LOADER_H_
-#define UI_BASE_CURSOR_CURSOR_LOADER_H_
+#ifndef UI_AURA_CURSOR_CURSOR_LOADER_H_
+#define UI_AURA_CURSOR_CURSOR_LOADER_H_
 
 #include <map>
 #include <memory>
@@ -23,7 +23,7 @@ class Point;
 namespace ui {
 class PlatformCursor;
 
-class COMPONENT_EXPORT(UI_BASE_CURSOR) CursorLoader
+class COMPONENT_EXPORT(UI_AURA_CURSOR) CursorLoader
     : public CursorFactoryObserver {
  public:
   explicit CursorLoader(bool use_platform_cursors = true);
@@ -80,4 +80,4 @@ class COMPONENT_EXPORT(UI_BASE_CURSOR) CursorLoader
 
 }  // namespace ui
 
-#endif  // UI_BASE_CURSOR_CURSOR_LOADER_H_
+#endif  // UI_AURA_CURSOR_CURSOR_LOADER_H_

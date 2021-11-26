@@ -12,10 +12,10 @@
 #include "base/location.h"
 #include "remoting/host/chromeos/skia_bitmap_desktop_frame.h"
 #include "third_party/webrtc/modules/desktop_capture/mouse_cursor.h"
+#include "ui/aura/cursor/cursor_lookup.h"
 #include "ui/aura/env.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_tree_host.h"
-#include "ui/base/cursor/cursor_lookup.h"
 #include "ui/base/cursor/mojom/cursor_type.mojom-shared.h"
 
 namespace {

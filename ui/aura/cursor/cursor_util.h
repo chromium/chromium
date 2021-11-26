@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef UI_BASE_CURSOR_CURSOR_UTIL_H_
-#define UI_BASE_CURSOR_CURSOR_UTIL_H_
+#ifndef UI_AURA_CURSOR_CURSOR_UTIL_H_
+#define UI_AURA_CURSOR_CURSOR_UTIL_H_
 
 #include <vector>
 
@@ -21,7 +21,7 @@ namespace ui {
 // Scale and rotate the cursor's bitmap and hotpoint.
 // |bitmap_in_out| and |hotpoint_in_out| are used as
 // both input and output.
-COMPONENT_EXPORT(UI_BASE_CURSOR)
+COMPONENT_EXPORT(UI_AURA_CURSOR)
 void ScaleAndRotateCursorBitmapAndHotpoint(float scale,
                                            display::Display::Rotation rotation,
                                            SkBitmap* bitmap_in_out,
@@ -41,4 +41,4 @@ void GetAnimatedCursorBitmaps(int resource_id,
 
 }  // namespace ui
 
-#endif  // UI_BASE_CURSOR_CURSOR_UTIL_H_
+#endif  // UI_AURA_CURSOR_CURSOR_UTIL_H_

@@ -12,7 +12,7 @@
 #include "base/notreached.h"
 #include "base/win/scoped_gdi_object.h"
 #include "base/win/windows_types.h"
-#include "ui/base/cursor/mojom/cursor_type.mojom.h"
+#include "ui/base/cursor/mojom/cursor_type.mojom-shared.h"
 #include "ui/base/cursor/platform_cursor.h"
 #include "ui/base/resource/resource_bundle_win.h"
 #include "ui/gfx/icon_util.h"
