@@ -4302,6 +4302,22 @@
             ]
         }
     ],
+    "HoldbackRemoveMobileViewportDoubleTap": [
+        {
+            "platforms": [
+                "android",
+                "android_weblayer"
+            ],
+            "experiments": [
+                {
+                    "name": "Disabled",
+                    "disable_features": [
+                        "RemoveMobileViewportDoubleTap"
+                    ]
+                }
+            ]
+        }
+    ],
     "IOSCPEPasswordGeneration": [
         {
             "platforms": [
