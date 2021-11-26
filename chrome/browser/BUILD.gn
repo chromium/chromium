@@ -529,8 +529,6 @@ static_library("browser") {
     "file_system_access/file_system_access_tab_helper.h",
     "file_util_service.cc",
     "file_util_service.h",
-    "first_party_sets/first_party_sets_util.cc",
-    "first_party_sets/first_party_sets_util.h",
     "flag_descriptions.cc",
     "flag_descriptions.h",
     "font_pref_change_notifier.cc",
