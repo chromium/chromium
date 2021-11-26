@@ -442,6 +442,9 @@ void MetricsService::LogNeedForCleanShutdown() {
 
 void MetricsService::ClearSavedStabilityMetrics() {
   delegating_provider_.ClearSavedStabilityMetrics();
+  // Stability metrics are stored in Local State prefs, so schedule a Local
+  // State write to flush the updated prefs.
+  local_state_->CommitPendingWrite();
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
