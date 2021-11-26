@@ -28,6 +28,7 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/core/xml/xpath_ns_resolver.h"
+#include "third_party/blink/renderer/platform/heap/member.h"
 
 namespace blink {
 

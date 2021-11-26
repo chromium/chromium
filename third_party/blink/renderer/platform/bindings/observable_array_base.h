@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_BINDINGS_OBSERVABLE_ARRAY_BASE_H_
 
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
+#include "third_party/blink/renderer/platform/heap/member.h"
 #include "v8/include/v8-forward.h"
 
 // Overview of Blink implementation of Web IDL observable arrays
