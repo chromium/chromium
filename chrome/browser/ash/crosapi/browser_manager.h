@@ -34,6 +34,7 @@ class CrOSComponentManager;
 }  // namespace component_updater
 
 namespace apps {
+class AppServiceProxyChromeOs;
 class StandaloneBrowserExtensionApps;
 }  // namespace apps
 
@@ -245,6 +246,15 @@ class BrowserManager : public session_manager::SessionManagerObserver,
  private:
   FRIEND_TEST_ALL_PREFIXES(BrowserManagerTest, LacrosKeepAlive);
   friend class apps::StandaloneBrowserExtensionApps;
+  // App service require the lacros-chrome to keep alive for web apps to:
+  // 1. Have lacros-chrome running before user open the browser so we can
+  //    have web apps info showing on the app list, shelf, etc..
+  // 2. Able to interact with web apps (e.g. uninstall) at any time.
+  // 3. Have notifications.
+  // TODO(crbug.com/1174246): This is a short term solution to integrate
+  // web apps in Lacros. Need to decouple the App Platform systems from
+  // needing lacros-chrome running all the time.
+  friend class apps::AppServiceProxyChromeOs;
 
   // Returns true if the binary is ready to launch or already launched.
   bool IsReady() const;
