@@ -4,17 +4,21 @@
 
 #include "chrome/browser/ash/exo/chrome_data_exchange_delegate.h"
 
+#include <algorithm>
 #include <string>
+#include <vector>
 
 #include "ash/constants/app_types.h"
 #include "ash/public/cpp/app_types_util.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/pickle.h"
+#include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/crostini/crostini_manager.h"
 #include "chrome/browser/ash/crostini/crostini_test_helper.h"
 #include "chrome/browser/ash/crostini/crostini_util.h"
+#include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/ash/guest_os/guest_os_share_path.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_util.h"
@@ -454,19 +458,26 @@ TEST_F(ChromeDataExchangeDelegateTest, ParseFileSystemSources) {
       guest_os::GuestOsSharePath::GetForProfile(profile());
   guest_os_share_path->RegisterSharedPath(crostini::kCrostiniDefaultVmName,
                                           shared_path);
-  std::u16string urls =
-      u"filesystem:chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj/"
-      "external/Downloads-test%2540example.com-hash/shared/file1\n"
-      "filesystem:chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj/"
-      "external/Downloads-test%2540example.com-hash/shared/file2";
+  const GURL file_manager_url = file_manager::util::GetFileManagerURL();
+  std::vector<std::string> file_names = {
+      "external/Downloads-test%2540example.com-hash/shared/file1",
+      "external/Downloads-test%2540example.com-hash/shared/file2",
+  };
+  std::vector<std::string> file_urls;
+  std::transform(file_names.begin(), file_names.end(),
+                 std::back_inserter(file_urls),
+                 [&file_manager_url](const std::string& name) {
+                   return base::StrCat(
+                       {"filesystem:", file_manager_url.Resolve(name).spec()});
+                 });
+  std::u16string urls(base::ASCIIToUTF16(base::JoinString(file_urls, "\n")));
   base::Pickle pickle;
   ui::WriteCustomDataToPickle(
       std::unordered_map<std::u16string, std::u16string>(
           {{u"fs/tag", u"exo"}, {u"fs/sources", urls}}),
       &pickle);
 
-  ui::DataTransferEndpoint files_app(url::Origin::Create(
-      GURL("chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj")));
+  ui::DataTransferEndpoint files_app(url::Origin::Create(file_manager_url));
   std::vector<ui::FileInfo> file_info =
       data_exchange_delegate.ParseFileSystemSources(&files_app, pickle);
   EXPECT_EQ(2, file_info.size());
