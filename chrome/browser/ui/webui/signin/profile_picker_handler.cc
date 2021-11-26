@@ -244,12 +244,7 @@ SkBitmap GetAvailableAccountBitmap(const gfx::Image& gaia_image,
 
 }  // namespace
 
-ProfilePickerHandler::ProfilePickerHandler() {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  account_profile_mapper_observation_.Observe(
-      g_browser_process->profile_manager()->GetAccountProfileMapper());
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-}
+ProfilePickerHandler::ProfilePickerHandler() = default;
 
 ProfilePickerHandler::~ProfilePickerHandler() {
   OnJavascriptDisallowed();
@@ -355,14 +350,19 @@ void ProfilePickerHandler::RegisterMessages() {
 }
 
 void ProfilePickerHandler::OnJavascriptAllowed() {
-  g_browser_process->profile_manager()
-      ->GetProfileAttributesStorage()
-      .AddObserver(this);
+  ProfileManager* profile_manager = g_browser_process->profile_manager();
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  account_profile_mapper_observation_.Observe(
+      profile_manager->GetAccountProfileMapper());
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+  profile_attributes_storage_observation_.Observe(
+      &profile_manager->GetProfileAttributesStorage());
 }
 void ProfilePickerHandler::OnJavascriptDisallowed() {
-  g_browser_process->profile_manager()
-      ->GetProfileAttributesStorage()
-      .RemoveObserver(this);
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  account_profile_mapper_observation_.Reset();
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+  profile_attributes_storage_observation_.Reset();
   weak_factory_.InvalidateWeakPtrs();
 }
 

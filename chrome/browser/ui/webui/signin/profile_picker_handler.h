@@ -10,6 +10,7 @@
 #include "base/files/file_path.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "build/buildflag.h"
@@ -22,7 +23,6 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "base/scoped_observation.h"
 #include "chrome/browser/lacros/account_manager/account_profile_mapper.h"
 #include "chrome/browser/lacros/account_manager/get_account_information_helper.h"
 
@@ -173,6 +173,11 @@ class ProfilePickerHandler : public content::WebUIMessageHandler,
   // Returns the list of profiles in the same order as when the picker
   // was first shown.
   std::vector<ProfileAttributesEntry*> GetProfileAttributes();
+
+  // Observes changes to profile attributes, and notifies the WebUI.
+  base::ScopedObservation<ProfileAttributesStorage,
+                          ProfileAttributesStorage::Observer>
+      profile_attributes_storage_observation_{this};
 
   // Creation time of the handler, to measure performance on startup. Only set
   // when the picker is shown on startup.
