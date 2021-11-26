@@ -43,10 +43,6 @@ NSString* const kLearnMoreTextViewAccessibilityIdentifier =
 // Button controlling the display of the selected identity.
 @property(nonatomic, strong) IdentityButtonControl* identityControl;
 
-// The string to be displayed in the "Cotinue" button to personalize it. Usually
-// the given name, or the email address if no given name.
-@property(nonatomic, copy) NSString* personalizedButtonPrompt;
-
 // Scrim displayed above the view when the UI is disabled.
 @property(nonatomic, strong) ActivityOverlayView* overlay;
 
@@ -72,17 +68,18 @@ NSString* const kLearnMoreTextViewAccessibilityIdentifier =
   self.readMoreString =
       l10n_util::GetNSString(IDS_IOS_FIRST_RUN_SCREEN_READ_MORE);
 
-  int titleTextID = IDS_IOS_FIRST_RUN_SIGNIN_TITLE;
+  int titleTextID = self.useOtherStringsSet
+                        ? IDS_IOS_FIRST_RUN_SYNC_SCREEN_TITLE
+                        : IDS_IOS_ACCOUNT_UNIFIED_CONSENT_TITLE;
   [self.delegate signinSyncViewController:self addConsentStringID:titleTextID];
   self.titleText = l10n_util::GetNSString(titleTextID);
 
-  int subtitleTextID;
-  if (self.enterpriseSignInRestrictions == kNoEnterpriseRestriction) {
-    subtitleTextID = IDS_IOS_FIRST_RUN_SIGNIN_SUBTITLE;
-  } else {
-    subtitleTextID = IDS_IOS_FIRST_RUN_SIGNIN_SUBTITLE_MANAGED;
-  }
-  [self.delegate signinSyncViewController:self addConsentStringID:titleTextID];
+  int subtitleTextID = self.useOtherStringsSet
+                           ? IDS_IOS_FIRST_RUN_SYNC_SCREEN_SUBTITLE
+                           : IDS_IOS_ACCOUNT_UNIFIED_CONSENT_SYNC_TITLE;
+  [self.delegate signinSyncViewController:self
+                       addConsentStringID:subtitleTextID];
+
   self.subtitleText = l10n_util::GetNSString(subtitleTextID);
 
   if (!self.primaryActionString) {
@@ -129,8 +126,11 @@ NSString* const kLearnMoreTextViewAccessibilityIdentifier =
   }
 
   self.bannerImage = [UIImage imageNamed:@"sync_screen_banner"];
-  self.secondaryActionString =
-      l10n_util::GetNSString(IDS_IOS_FIRST_RUN_SIGNIN_DONT_SIGN_IN);
+  int secondaryActionStringID =
+      self.useOtherStringsSet
+          ? IDS_IOS_FIRST_RUN_SYNC_SCREEN_SECONDARY_ACTION
+          : IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_SECONDARY_ACTION;
+  self.secondaryActionString = l10n_util::GetNSString(secondaryActionStringID);
 
   // Set constraints specific to the identity control button that don't change.
   NSLayoutConstraint* widthConstraint = [self.identityControl.widthAnchor
@@ -323,7 +323,8 @@ NSString* const kLearnMoreTextViewAccessibilityIdentifier =
 }
 
 - (int)activateSyncButtonID {
-  return IDS_IOS_FIRST_RUN_SIGNIN_CONTINUE_AS;
+  return self.useOtherStringsSet ? IDS_IOS_FIRST_RUN_SYNC_SCREEN_PRIMARY_ACTION
+                                 : IDS_IOS_ACCOUNT_UNIFIED_CONSENT_OK_BUTTON;
 }
 
 #pragma mark - SignInSyncConsumer
@@ -334,7 +335,6 @@ NSString* const kLearnMoreTextViewAccessibilityIdentifier =
                              avatar:(UIImage*)avatar {
   DCHECK(email);
   DCHECK(avatar);
-  self.personalizedButtonPrompt = givenName ? givenName : email;
   [self updateUIForIdentityAvailable:YES];
   [self.identityControl setIdentityName:userName email:email];
   [self.identityControl setIdentityAvatar:avatar];
@@ -367,9 +367,8 @@ NSString* const kLearnMoreTextViewAccessibilityIdentifier =
 - (void)updateUIForIdentityAvailable:(BOOL)identityAvailable {
   self.identityControl.hidden = !identityAvailable;
   if (identityAvailable) {
-    self.primaryActionString = l10n_util::GetNSStringF(
-        self.activateSyncButtonID,
-        base::SysNSStringToUTF16(self.personalizedButtonPrompt));
+    self.primaryActionString =
+        l10n_util::GetNSString(self.activateSyncButtonID);
   } else {
     // TODO(crbug.com/1271355): We need to determine that string. We may want
     // to change it.

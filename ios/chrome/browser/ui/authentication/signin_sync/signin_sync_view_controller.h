@@ -24,6 +24,11 @@
 // YES if the identity control button has to be in the top of the screen.
 @property(nonatomic, assign) BOOL identityControlInTop;
 
+// TODO(crbug.com/1271609) This may change for an enum once we determined the
+// API for the feature parameters.
+// YES if the other set of strings should be used.
+@property(nonatomic, assign) BOOL useOtherStringsSet;
+
 // The ID of the main button activating sync.
 @property(nonatomic, readonly) int activateSyncButtonID;
 
