@@ -38,6 +38,10 @@ LazyInstance<ThreadLocalPointer<BlockingObserver>>::Leaky
 LazyInstance<ThreadLocalPointer<UncheckedScopedBlockingCall>>::Leaky
     tls_last_scoped_blocking_call = LAZY_INSTANCE_INITIALIZER;
 
+// Set to true by scoped_blocking_call_unittest to ensure unrelated threads
+// entering ScopedBlockingCalls don't affect test outcomes.
+bool g_only_monitor_observed_threads = false;
+
 bool IsBackgroundPriorityWorker() {
   return GetTaskPriorityForCurrentThread() == TaskPriority::BEST_EFFORT &&
          CanUseBackgroundPriorityForWorkerThread();
@@ -99,6 +103,7 @@ IOJankMonitoringWindow::IOJankMonitoringWindow(TimeTicks start_time)
 
 // static
 void IOJankMonitoringWindow::CancelMonitoringForTesting() {
+  g_only_monitor_observed_threads = false;
   AutoLock lock(current_jank_window_lock());
   current_jank_window_storage() = nullptr;
   reporting_callback_storage() = NullCallback();
@@ -310,7 +315,8 @@ UncheckedScopedBlockingCall::UncheckedScopedBlockingCall(
   // threads. Cancels() any pending monitored call when a WILL_BLOCK or
   // ScopedBlockingCallWithBaseSyncPrimitives nests into a
   // ScopedBlockingCall(MAY_BLOCK).
-  if (!IsBackgroundPriorityWorker()) {
+  if (!IsBackgroundPriorityWorker() &&
+      (!g_only_monitor_observed_threads || blocking_observer_)) {
     const bool is_monitored_type =
         blocking_call_type == BlockingCallType::kRegular && !is_will_block_;
     if (is_monitored_type && !previous_scoped_blocking_call_) {
@@ -352,7 +358,8 @@ UncheckedScopedBlockingCall::~UncheckedScopedBlockingCall() {
 }  // namespace internal
 
 void EnableIOJankMonitoringForProcess(
-    IOJankReportingCallback reporting_callback) {
+    IOJankReportingCallback reporting_callback,
+    OnlyObservedThreadsForTest only_observed_threads) {
   {
     AutoLock lock(internal::IOJankMonitoringWindow::current_jank_window_lock());
 
@@ -360,6 +367,15 @@ void EnableIOJankMonitoringForProcess(
                .is_null());
     internal::IOJankMonitoringWindow::reporting_callback_storage() =
         std::move(reporting_callback);
+  }
+
+  if (only_observed_threads) {
+    internal::g_only_monitor_observed_threads = true;
+  } else {
+    // Do not set it to `false` when it already is as that causes data races in
+    // browser tests (which EnableIOJankMonitoringForProcess after ThreadPool is
+    // already running).
+    DCHECK(!internal::g_only_monitor_observed_threads);
   }
 
   // Make sure monitoring starts now rather than randomly at the next

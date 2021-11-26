@@ -6,11 +6,13 @@
 #define BASE_THREADING_SCOPED_BLOCKING_CALL_INTERNAL_H_
 
 #include "base/base_export.h"
+#include "base/callback_forward.h"
 #include "base/debug/activity_tracker.h"
 #include "base/memory/ref_counted.h"
 #include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"
 #include "base/time/time.h"
+#include "base/types/strong_alias.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
@@ -18,7 +20,10 @@ namespace base {
 // Forward-declare types from scoped_blocking_call.h to break cyclic dependency.
 enum class BlockingType;
 using IOJankReportingCallback = RepeatingCallback<void(int, int)>;
-void BASE_EXPORT EnableIOJankMonitoringForProcess(IOJankReportingCallback);
+using OnlyObservedThreadsForTest =
+    StrongAlias<class OnlyObservedThreadsTag, bool>;
+void BASE_EXPORT EnableIOJankMonitoringForProcess(IOJankReportingCallback,
+                                                  OnlyObservedThreadsForTest);
 
 // Implementation details of types in scoped_blocking_call.h and classes for a
 // few key //base types to observe and react to blocking calls.
@@ -100,7 +105,9 @@ class BASE_EXPORT IOJankMonitoringWindow
 
  private:
   friend class base::RefCountedThreadSafe<IOJankMonitoringWindow>;
-  friend void base::EnableIOJankMonitoringForProcess(IOJankReportingCallback);
+  friend void base::EnableIOJankMonitoringForProcess(
+      IOJankReportingCallback,
+      OnlyObservedThreadsForTest);
 
   // No-op if reporting_callback_storage() is null (i.e. unless
   // EnableIOJankMonitoringForProcess() was called).
