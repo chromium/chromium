@@ -136,9 +136,6 @@ crbug.com/1041052 [ Linux ] external/wpt/html/canvas/element/fill-and-stroke-sty
 # Sheriff 2020-02-10
 crbug.com/1050559 [ Linux ] external/wpt/WebCryptoAPI/derive_bits_keys/hkdf.https.any.worker.html?1-1000 [ Skip ]
 
-# Sheriff 2020-06-16
-crbug.com/1095518 [ Linux ] crbug.com/840659 external/wpt/webrtc/simulcast/h264.https.html [ Crash ]
-
 # Sheriff 2020-10-05
 crbug.com/1134580 [ Linux ] virtual/eye-dropper/http/tests/eye-dropper/color-picker-show-eye-dropper.html [ Pass Timeout ]
 
