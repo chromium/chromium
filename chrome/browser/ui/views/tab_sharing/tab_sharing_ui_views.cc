@@ -10,6 +10,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/browser_features.h"
 #include "chrome/browser/favicon/favicon_utils.h"
 #include "chrome/browser/media/webrtc/capture_policy_utils.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
@@ -91,6 +92,10 @@ void InitContentsBorderWidget(WebContents* contents) {
 void SetContentsBorderVisible(WebContents* contents, bool visible) {
   // TODO(https://crbug.com/1030925) fix contents border on ChromeOS.
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
+  if (!base::FeatureList::IsEnabled(features::kTabCaptureBlueBorder)) {
+    return;
+  }
+
   if (!contents)
     return;
   Browser* browser = chrome::FindBrowserWithWebContents(contents);

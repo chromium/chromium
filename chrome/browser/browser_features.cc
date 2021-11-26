@@ -111,6 +111,10 @@ const base::Feature kUserDataSnapshot{"UserDataSnapshot",
 const base::Feature kSandboxExternalProtocolBlocked{
     "SandboxExternalProtocolBlocked", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Controls whether the blue-border tab-capture-indicator is used.
+const base::Feature kTabCaptureBlueBorder{"TabCaptureBlueBorder",
+                                          base::FEATURE_ENABLED_BY_DEFAULT};
+
 // Enables migration of the network context data from `unsandboxed_data_path` to
 // `data_path`. See the explanation in network_context.mojom.
 const base::Feature kTriggerNetworkDataMigration{
