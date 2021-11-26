@@ -25,7 +25,9 @@ using v8::String;
 namespace gin {
 
 TEST(RunnerTest, Run) {
-  base::test::SingleThreadTaskEnvironment task_environment;
+  // V8 is generally multi threaded and may use tasks for arbitrary reasons,
+  // such as GC and off-thread compilation.
+  base::test::TaskEnvironment task_environment;
   std::string source = "this.result = 'PASS';\n";
 
 #ifdef V8_USE_EXTERNAL_STARTUP_DATA
