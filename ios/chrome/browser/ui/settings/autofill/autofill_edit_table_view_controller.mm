@@ -9,6 +9,7 @@
 #import "ios/chrome/browser/ui/autofill/cells/autofill_edit_item.h"
 #import "ios/chrome/browser/ui/autofill/form_input_accessory/form_input_accessory_chromium_text_data.h"
 #import "ios/chrome/browser/ui/settings/autofill/autofill_edit_table_view_controller+protected.h"
+#import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/elements/form_input_accessory_view.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -62,6 +63,12 @@
               object:nil];
 }
 
+- (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
+  [super traitCollectionDidChange:previousTraitCollection];
+
+  self.formInputAccessoryView.hidden = IsCompactHeight(self);
+}
+
 #pragma mark - SettingsRootTableViewController
 
 - (BOOL)shouldShowEditButton {
@@ -84,7 +91,9 @@
 - (void)textFieldDidBeginEditing:(UITextField*)textField {
   TableViewTextEditCell* cell = [self autofillEditCellForTextField:textField];
   _currentEditingCell = cell;
-  self.formInputAccessoryView.hidden = NO;
+  if (!IsCompactHeight(self)) {
+    self.formInputAccessoryView.hidden = NO;
+  }
   [textField setInputAccessoryView:self.formInputAccessoryView];
   [self updateAccessoryViewButtonState];
 }
