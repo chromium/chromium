@@ -10,6 +10,7 @@
 #include <memory>
 
 #include "base/process/process_handle.h"
+#include "components/power_metrics/energy_impact_mac.h"
 #include "components/power_metrics/resource_coalition_mac.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "tools/mac/power/power_sampler/sampler.h"
@@ -65,6 +66,8 @@ class ResourceCoalitionSampler : public Sampler {
   const uint64_t coalition_id_;
   const GetCoalitionResourceUsageFn get_coalition_resource_usage_fn_;
   const mach_timebase_info_data_t timebase_;
+  absl::optional<power_metrics::EnergyImpactCoefficients>
+      energy_impact_coefficients_;
 
   base::TimeTicks previous_time_;
   std::unique_ptr<coalition_resource_usage> previous_stats_;

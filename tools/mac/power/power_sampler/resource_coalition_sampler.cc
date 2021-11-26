@@ -5,13 +5,15 @@
 #include "tools/mac/power/power_sampler/resource_coalition_sampler.h"
 
 #include "base/memory/ptr_util.h"
+#include "components/power_metrics/energy_impact_mac.h"
 #include "components/power_metrics/mach_time_mac.h"
 
 namespace power_sampler {
 
 namespace {
 
-double RatePerSecond(int64_t quantity, base::TimeDelta duration) {
+template <typename T>
+double RatePerSecond(T quantity, base::TimeDelta duration) {
   return static_cast<double>(quantity) / duration.InSecondsF();
 }
 
@@ -73,7 +75,8 @@ Sampler::DatumNameUnits ResourceCoalitionSampler::GetDatumNameUnits() {
                      {"cpu_instructions", "instructions/s"},
                      {"cpu_cycles", "cycles/s"},
                      {"fs_metadata_writes", "writes/s"},
-                     {"pm_writes", "writes/s"}};
+                     {"pm_writes", "writes/s"},
+                     {"energy_impact", "EnergyImpact/s"}};
   return ret;
 }
 
@@ -194,6 +197,14 @@ Sampler::Sample ResourceCoalitionSampler::GetSample(
                  RatePerSecond(diff.fs_metadata_writes, duration));
   sample.emplace("pm_writes", RatePerSecond(diff.pm_writes, duration));
 
+  if (energy_impact_coefficients_.has_value()) {
+    sample.emplace(
+        "energy_impact",
+        RatePerSecond(power_metrics::ComputeEnergyImpactForResourceUsage(
+                          diff, energy_impact_coefficients_.value(), timebase_),
+                      duration));
+  }
+
   return sample;
 }
 
@@ -221,6 +232,8 @@ ResourceCoalitionSampler::ResourceCoalitionSampler(
     : coalition_id_(coalition_id),
       get_coalition_resource_usage_fn_(get_coalition_resource_usage_fn),
       timebase_(timebase),
+      energy_impact_coefficients_(
+          power_metrics::ReadCoefficientsForCurrentMachineOrDefault()),
       previous_time_(now),
       previous_stats_(get_coalition_resource_usage_fn_(coalition_id_)) {}
 

@@ -6,8 +6,11 @@
 
 #include <stdint.h>
 #include <memory>
+#include <utility>
 
+#include "base/containers/contains.h"
 #include "base/process/process_handle.h"
+#include "components/power_metrics/energy_impact_mac.h"
 #include "components/power_metrics/mach_time_mac.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -23,6 +26,17 @@ constexpr base::ProcessId kTestPid = 42;
 constexpr base::ProcessId kTestCoalitionId = 123;
 constexpr mach_timebase_info_data_t kIntelTimebase = {1, 1};
 mach_timebase_info_data_t kM1Timebase = {125, 3};
+
+constexpr power_metrics::EnergyImpactCoefficients kTestEnergyImpactCoefficients{
+    .kcpu_wakeups = base::Microseconds(1000).InSecondsF(),
+    .kqos_default = 3000,
+    .kqos_background = 6000,
+    .kqos_utility = 9000,
+    .kqos_legacy = 12000,
+    .kqos_user_initiated = 15000,
+    .kqos_user_interactive = 18000,
+    .kgpu_time = 21000,
+};
 
 coalition_resource_usage GetTestCoalitionResourceUsage(uint32_t multiplier) {
   coalition_resource_usage ret{
@@ -115,10 +129,16 @@ class ResourceCoalitionSamplerTest : public testing::Test {
   std::unique_ptr<ResourceCoalitionSampler> CreateSampler(
       base::ProcessId pid,
       base::TimeTicks now,
-      mach_timebase_info_data_t timebase) {
-    return ResourceCoalitionSampler::Create(
-        pid, now, &GetStaticProcessCoalitionId,
-        &GetStaticCoalitionResourceUsage, timebase);
+      mach_timebase_info_data_t timebase,
+      absl::optional<power_metrics::EnergyImpactCoefficients>
+          energy_impact_coefficients = kTestEnergyImpactCoefficients) {
+    std::unique_ptr<ResourceCoalitionSampler> sampler =
+        ResourceCoalitionSampler::Create(pid, now, &GetStaticProcessCoalitionId,
+                                         &GetStaticCoalitionResourceUsage,
+                                         timebase);
+    if (sampler)
+      sampler->energy_impact_coefficients_ = energy_impact_coefficients;
+    return sampler;
   }
 
  private:
@@ -206,7 +226,8 @@ TEST_F(ResourceCoalitionSamplerTest, NameAndGetDatumNameUnits) {
           std::make_pair("cpu_instructions", "instructions/s"),
           std::make_pair("cpu_cycles", "cycles/s"),
           std::make_pair("fs_metadata_writes", "writes/s"),
-          std::make_pair("pm_writes", "writes/s")));
+          std::make_pair("pm_writes", "writes/s"),
+          std::make_pair("energy_impact", "EnergyImpact/s")));
 }
 
 TEST_F(ResourceCoalitionSamplerTest, GetSample_Available_IntelTimebase) {
@@ -256,7 +277,8 @@ TEST_F(ResourceCoalitionSamplerTest, GetSample_Available_IntelTimebase) {
                std::make_pair("cpu_instructions", 31),
                std::make_pair("cpu_cycles", 32),
                std::make_pair("fs_metadata_writes", 33),
-               std::make_pair("pm_writes", 34)});
+               std::make_pair("pm_writes", 34),
+               std::make_pair("energy_impact", 0.7971)});
 
   set_resource_usage(GetTestCoalitionResourceUsage(
       /* multiplier=*/4 * base::Time::kSecondsPerMinute));
@@ -295,7 +317,8 @@ TEST_F(ResourceCoalitionSamplerTest, GetSample_Available_IntelTimebase) {
                std::make_pair("cpu_instructions", 62),
                std::make_pair("cpu_cycles", 64),
                std::make_pair("fs_metadata_writes", 66),
-               std::make_pair("pm_writes", 68)});
+               std::make_pair("pm_writes", 68),
+               std::make_pair("energy_impact", 1.5942)});
 }
 
 TEST_F(ResourceCoalitionSamplerTest, GetSample_Available_M1Timebase) {
@@ -346,7 +369,8 @@ TEST_F(ResourceCoalitionSamplerTest, GetSample_Available_M1Timebase) {
        std::make_pair("cpu_instructions", 31),
        std::make_pair("cpu_cycles", 32),
        std::make_pair("fs_metadata_writes", 33),
-       std::make_pair("pm_writes", 34)});
+       std::make_pair("pm_writes", 34),
+       std::make_pair("energy_impact", 8.8125)});
 
   set_resource_usage(GetTestCoalitionResourceUsage(
       /* multiplier=*/4 * base::Time::kSecondsPerMinute));
@@ -386,7 +410,26 @@ TEST_F(ResourceCoalitionSamplerTest, GetSample_Available_M1Timebase) {
        std::make_pair("cpu_instructions", 62),
        std::make_pair("cpu_cycles", 64),
        std::make_pair("fs_metadata_writes", 66),
-       std::make_pair("pm_writes", 68)});
+       std::make_pair("pm_writes", 68),
+       std::make_pair("energy_impact", 17.625)});
+}
+
+TEST_F(ResourceCoalitionSamplerTest,
+       GetSample_NoEnergyImpactWithoutCoefficients) {
+  set_expected_process_id(kTestPid);
+  set_coalition_id(kTestCoalitionId);
+  set_resource_usage(GetTestCoalitionResourceUsage(
+      /* multiplier=*/1 * base::Time::kSecondsPerMinute));
+
+  std::unique_ptr<ResourceCoalitionSampler> sampler(
+      CreateSampler(kTestPid, base::TimeTicks(), kIntelTimebase,
+                    /* energy_impact_coefficients=*/absl::nullopt));
+
+  set_resource_usage(GetTestCoalitionResourceUsage(
+      /* multiplier=*/2 * base::Time::kSecondsPerMinute));
+  Sampler::Sample sample =
+      sampler->GetSample(base::TimeTicks() + base::Minutes(1));
+  EXPECT_FALSE(base::Contains(sample, "energy_impact"));
 }
 
 TEST_F(ResourceCoalitionSamplerTest, GetSample_NotAvailable) {
@@ -447,7 +490,8 @@ TEST_F(ResourceCoalitionSamplerTest, GetSample_NotAvailable) {
                std::make_pair("cpu_instructions", 31),
                std::make_pair("cpu_cycles", 32),
                std::make_pair("fs_metadata_writes", 33),
-               std::make_pair("pm_writes", 34)});
+               std::make_pair("pm_writes", 34),
+               std::make_pair("energy_impact", 0.7971)});
 }
 
 }  // namespace power_sampler
