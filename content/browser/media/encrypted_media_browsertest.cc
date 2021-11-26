@@ -317,7 +317,16 @@ IN_PROC_BROWSER_TEST_P(EncryptedMediaTest,
   TestSimplePlayback("bear-320x240-v-vp9_profile2_subsample_cenc-v.webm");
 }
 
-IN_PROC_BROWSER_TEST_P(EncryptedMediaTest, Playback_VideoOnly_MP4_VP9Profile2) {
+#if defined(OS_MAC)
+// https://crbug.com/1270792
+#define MAYBE_Playback_VideoOnly_MP4_VP9Profile2 \
+  DISABLED_Playback_VideoOnly_MP4_VP9Profile2
+#else
+#define MAYBE_Playback_VideoOnly_MP4_VP9Profile2 \
+  Playback_VideoOnly_MP4_VP9Profile2
+#endif
+IN_PROC_BROWSER_TEST_P(EncryptedMediaTest,
+                       MAYBE_Playback_VideoOnly_MP4_VP9Profile2) {
   // MP4 without MSE is not support yet, http://crbug.com/170793.
   if (CurrentSourceType() != SrcType::MSE)
     GTEST_SKIP() << "Can only play MP4 encrypted streams by MSE.";
