@@ -76,7 +76,8 @@ void FakeDiskMountManager::MountPath(
     const std::string& mount_label,
     const std::vector<std::string>& mount_options,
     chromeos::MountType type,
-    chromeos::MountAccessMode access_mode) {
+    chromeos::MountAccessMode access_mode,
+    MountPathCallback callback) {
   mount_requests_.emplace_back(source_path, source_format, mount_label,
                                mount_options, type, access_mode);
 
@@ -86,6 +87,7 @@ void FakeDiskMountManager::MountPath(
       type,
       chromeos::disks::MOUNT_CONDITION_NONE);
   mount_points_.insert(make_pair(source_path, mount_point));
+  std::move(callback).Run(chromeos::MOUNT_ERROR_NONE, mount_point);
   for (auto& observer : observers_) {
     observer.OnMountEvent(DiskMountManager::MOUNTING,
                           chromeos::MOUNT_ERROR_NONE, mount_point);

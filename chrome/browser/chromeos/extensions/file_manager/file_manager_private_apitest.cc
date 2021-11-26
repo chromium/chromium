@@ -315,19 +315,22 @@ class FileManagerPrivateApiTest : public extensions::ExtensionApiTest {
   }
 
  protected:
-  void SshfsMount(const std::string& source_path,
-                  const std::string& source_format,
-                  const std::string& mount_label,
-                  const std::vector<std::string>& mount_options,
-                  chromeos::MountType type,
-                  chromeos::MountAccessMode access_mode) {
+  void SshfsMount(
+      const std::string& source_path,
+      const std::string& source_format,
+      const std::string& mount_label,
+      const std::vector<std::string>& mount_options,
+      chromeos::MountType type,
+      chromeos::MountAccessMode access_mode,
+      chromeos::disks::DiskMountManager::MountPathCallback callback) {
+    auto mount_point_info = chromeos::disks::DiskMountManager::MountPointInfo(
+        source_path, "/media/fuse/" + mount_label,
+        chromeos::MountType::MOUNT_TYPE_NETWORK_STORAGE,
+        chromeos::disks::MountCondition::MOUNT_CONDITION_NONE);
     disk_mount_manager_mock_->NotifyMountEvent(
         chromeos::disks::DiskMountManager::MountEvent::MOUNTING,
-        chromeos::MountError::MOUNT_ERROR_NONE,
-        chromeos::disks::DiskMountManager::MountPointInfo(
-            source_path, "/media/fuse/" + mount_label,
-            chromeos::MountType::MOUNT_TYPE_NETWORK_STORAGE,
-            chromeos::disks::MountCondition::MOUNT_CONDITION_NONE));
+        chromeos::MountError::MOUNT_ERROR_NONE, mount_point_info);
+    std::move(callback).Run(chromeos::MOUNT_ERROR_NONE, mount_point_info);
   }
 
   void ExpectCrostiniMount() {
@@ -342,7 +345,7 @@ class FileManagerPrivateApiTest : public extensions::ExtensionApiTest {
                 MountPath("sshfs://testuser@hostname:", "",
                           "crostini_user_termina_penguin", mount_options,
                           chromeos::MOUNT_TYPE_NETWORK_STORAGE,
-                          chromeos::MOUNT_ACCESS_MODE_READ_WRITE))
+                          chromeos::MOUNT_ACCESS_MODE_READ_WRITE, _))
         .WillOnce(Invoke(this, &FileManagerPrivateApiTest::SshfsMount));
   }
 

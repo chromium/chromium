@@ -15,6 +15,7 @@
 #include "ash/components/disks/disk.h"
 #include "ash/components/disks/disk_mount_manager.h"
 #include "base/bind.h"
+#include "base/callback_helpers.h"
 #include "base/containers/contains.h"
 #include "base/memory/weak_ptr.h"
 #include "base/ranges/algorithm.h"
@@ -649,9 +650,9 @@ TEST_F(VolumeManagerTest, OnMountEvent_Remounting) {
                                    .SetFileSystemUUID("uuid1")
                                    .Build();
   disk_mount_manager_->AddDiskForTest(std::move(disk));
-  disk_mount_manager_->MountPath("device1", "", "", {},
-                                 chromeos::MOUNT_TYPE_DEVICE,
-                                 chromeos::MOUNT_ACCESS_MODE_READ_WRITE);
+  disk_mount_manager_->MountPath(
+      "device1", "", "", {}, chromeos::MOUNT_TYPE_DEVICE,
+      chromeos::MOUNT_ACCESS_MODE_READ_WRITE, base::DoNothing());
 
   const DiskMountManager::MountPointInfo kMountPoint(
       "device1", "mount1", chromeos::MOUNT_TYPE_DEVICE,
@@ -878,18 +879,18 @@ TEST_F(VolumeManagerTest, OnPartitionEvent_CompletedFailed) {
 
 TEST_F(VolumeManagerTest, OnExternalStorageDisabledChanged) {
   // Here create four mount points.
-  disk_mount_manager_->MountPath("mount1", "", "", {},
-                                 chromeos::MOUNT_TYPE_DEVICE,
-                                 chromeos::MOUNT_ACCESS_MODE_READ_WRITE);
-  disk_mount_manager_->MountPath("mount2", "", "", {},
-                                 chromeos::MOUNT_TYPE_DEVICE,
-                                 chromeos::MOUNT_ACCESS_MODE_READ_ONLY);
-  disk_mount_manager_->MountPath("mount3", "", "", {},
-                                 chromeos::MOUNT_TYPE_NETWORK_STORAGE,
-                                 chromeos::MOUNT_ACCESS_MODE_READ_ONLY);
-  disk_mount_manager_->MountPath("failed_unmount", "", "", {},
-                                 chromeos::MOUNT_TYPE_DEVICE,
-                                 chromeos::MOUNT_ACCESS_MODE_READ_WRITE);
+  disk_mount_manager_->MountPath(
+      "mount1", "", "", {}, chromeos::MOUNT_TYPE_DEVICE,
+      chromeos::MOUNT_ACCESS_MODE_READ_WRITE, base::DoNothing());
+  disk_mount_manager_->MountPath(
+      "mount2", "", "", {}, chromeos::MOUNT_TYPE_DEVICE,
+      chromeos::MOUNT_ACCESS_MODE_READ_ONLY, base::DoNothing());
+  disk_mount_manager_->MountPath(
+      "mount3", "", "", {}, chromeos::MOUNT_TYPE_NETWORK_STORAGE,
+      chromeos::MOUNT_ACCESS_MODE_READ_ONLY, base::DoNothing());
+  disk_mount_manager_->MountPath(
+      "failed_unmount", "", "", {}, chromeos::MOUNT_TYPE_DEVICE,
+      chromeos::MOUNT_ACCESS_MODE_READ_WRITE, base::DoNothing());
   disk_mount_manager_->FailUnmountRequest("failed_unmount",
                                           chromeos::MOUNT_ERROR_UNKNOWN);
 

@@ -883,10 +883,10 @@ void VolumeManager::OnAutoMountableDiskEvent(
         // Initiate disk mount operation. MountPath auto-detects the filesystem
         // format if the second argument is empty. The third argument (mount
         // label) is not used in a disk mount operation.
-        disk_mount_manager_->MountPath(disk.device_path(), std::string(),
-                                       mount_label, {},
-                                       chromeos::MOUNT_TYPE_DEVICE,
-                                       GetExternalStorageAccessMode(profile_));
+        disk_mount_manager_->MountPath(
+            disk.device_path(), std::string(), mount_label, {},
+            chromeos::MOUNT_TYPE_DEVICE, GetExternalStorageAccessMode(profile_),
+            base::DoNothing());
         mounting = true;
       }
 
@@ -984,7 +984,8 @@ void VolumeManager::OnFormatEvent(
       // operation.
       disk_mount_manager_->MountPath(device_path, std::string(), std::string(),
                                      {}, chromeos::MOUNT_TYPE_DEVICE,
-                                     GetExternalStorageAccessMode(profile_));
+                                     GetExternalStorageAccessMode(profile_),
+                                     base::DoNothing());
 
       for (auto& observer : observers_) {
         observer.OnFormatCompleted(device_path, device_label,
@@ -1019,10 +1020,10 @@ void VolumeManager::OnPartitionEvent(
       // empty. The third argument (mount label) is not used in a disk mount
       // operation.
       if (error_code != chromeos::PARTITION_ERROR_NONE) {
-        disk_mount_manager_->MountPath(device_path, std::string(),
-                                       std::string(), {},
-                                       chromeos::MOUNT_TYPE_DEVICE,
-                                       GetExternalStorageAccessMode(profile_));
+        disk_mount_manager_->MountPath(
+            device_path, std::string(), std::string(), {},
+            chromeos::MOUNT_TYPE_DEVICE, GetExternalStorageAccessMode(profile_),
+            base::DoNothing());
       }
 
       for (auto& observer : observers_) {
@@ -1068,7 +1069,8 @@ void VolumeManager::OnRenameEvent(
       // of the volume name).
       disk_mount_manager_->MountPath(device_path, std::string(), mount_label,
                                      {}, chromeos::MOUNT_TYPE_DEVICE,
-                                     GetExternalStorageAccessMode(profile_));
+                                     GetExternalStorageAccessMode(profile_),
+                                     base::DoNothing());
 
       bool successfully_renamed = error_code == chromeos::RENAME_ERROR_NONE;
       for (auto& observer : observers_)

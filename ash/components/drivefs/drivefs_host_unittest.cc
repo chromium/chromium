@@ -8,6 +8,7 @@
 #include <type_traits>
 #include <utility>
 
+#include "ash/components/disks/disk_mount_manager.h"
 #include "ash/components/disks/mock_disk_mount_manager.h"
 #include "ash/components/drivefs/drivefs_host_observer.h"
 #include "ash/components/drivefs/fake_drivefs.h"
@@ -22,6 +23,7 @@
 #include "base/strings/string_split.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
+#include "base/test/gmock_move_support.h"
 #include "base/test/simple_test_clock.h"
 #include "base/test/task_environment.h"
 #include "base/timer/mock_timer.h"
@@ -229,13 +231,6 @@ class DriveFsHostTest : public ::testing::Test, public mojom::DriveFsBootstrap {
     disk_manager_.reset();
   }
 
-  void DispatchMountEvent(
-      chromeos::disks::DiskMountManager::MountEvent event,
-      chromeos::MountError error_code,
-      const chromeos::disks::DiskMountManager::MountPointInfo& mount_info) {
-    disk_manager_->NotifyMountEvent(event, error_code, mount_info);
-  }
-
   std::string StartMount() {
     std::string source;
     EXPECT_CALL(
@@ -245,8 +240,9 @@ class DriveFsHostTest : public ::testing::Test, public mojom::DriveFsBootstrap {
             testing::AllOf(testing::Contains(
                                "datadir=/path/to/profile/GCache/v2/salt-g-ID"),
                            testing::Contains("myfiles=/MyFiles")),
-            _, chromeos::MOUNT_ACCESS_MODE_READ_WRITE))
-        .WillOnce(testing::SaveArg<0>(&source));
+            _, chromeos::MOUNT_ACCESS_MODE_READ_WRITE, _))
+        .WillOnce(testing::DoAll(testing::SaveArg<0>(&source),
+                                 MoveArg<6>(&mount_callback_)));
 
     host_delegate_->set_pending_bootstrap(
         bootstrap_receiver_.BindNewPipeAndPassRemote());
@@ -258,13 +254,12 @@ class DriveFsHostTest : public ::testing::Test, public mojom::DriveFsBootstrap {
     return source.substr(strlen("drivefs://"));
   }
 
-  void DispatchMountSuccessEvent(const std::string& token) {
-    DispatchMountEvent(chromeos::disks::DiskMountManager::MOUNTING,
-                       chromeos::MOUNT_ERROR_NONE,
-                       {base::StrCat({"drivefs://", token}),
-                        "/media/drivefsroot/salt-g-ID",
-                        chromeos::MOUNT_TYPE_NETWORK_STORAGE,
-                        {}});
+  void CallMountCallbackSuccess(const std::string& token) {
+    std::move(mount_callback_)
+        .Run(chromeos::MOUNT_ERROR_NONE, {base::StrCat({"drivefs://", token}),
+                                          "/media/drivefsroot/salt-g-ID",
+                                          chromeos::MOUNT_TYPE_NETWORK_STORAGE,
+                                          {}});
   }
 
   void SendOnMounted() { delegate_->OnMounted(); }
@@ -279,7 +274,7 @@ class DriveFsHostTest : public ::testing::Test, public mojom::DriveFsBootstrap {
 
   void EstablishConnection() {
     token_ = StartMount();
-    DispatchMountSuccessEvent(token_);
+    CallMountCallbackSuccess(token_);
 
     ASSERT_TRUE(mojo_bootstrap::PendingConnectionManager::Get().OpenIpcChannel(
         token_, {}));
@@ -331,6 +326,7 @@ class DriveFsHostTest : public ::testing::Test, public mojom::DriveFsBootstrap {
   base::test::TaskEnvironment task_environment_;
   AccountId account_id_;
   std::unique_ptr<chromeos::disks::MockDiskMountManager> disk_manager_;
+  chromeos::disks::DiskMountManager::MountPathCallback mount_callback_;
   std::unique_ptr<network::TestNetworkConnectionTracker>
       network_connection_tracker_;
   base::SimpleTestClock clock_;
@@ -413,12 +409,12 @@ TEST_F(DriveFsHostTest, OnMountFailedFromDbus) {
   base::OnceClosure quit_closure = run_loop.QuitClosure();
   EXPECT_CALL(*host_delegate_, OnMountFailed(MountFailure::kInvocation, _))
       .WillOnce(RunOnceClosure(std::move(quit_closure)));
-  DispatchMountEvent(chromeos::disks::DiskMountManager::MOUNTING,
-                     chromeos::MOUNT_ERROR_INVALID_MOUNT_OPTIONS,
-                     {base::StrCat({"drivefs://", token}),
-                      "/media/drivefsroot/salt-g-ID",
-                      chromeos::MOUNT_TYPE_NETWORK_STORAGE,
-                      {}});
+  std::move(mount_callback_)
+      .Run(chromeos::MOUNT_ERROR_INVALID_MOUNT_OPTIONS,
+           {base::StrCat({"drivefs://", token}),
+            "/media/drivefsroot/salt-g-ID",
+            chromeos::MOUNT_TYPE_NETWORK_STORAGE,
+            {}});
   run_loop.Run();
 
   ASSERT_FALSE(host_->IsMounted());
@@ -428,7 +424,7 @@ TEST_F(DriveFsHostTest, OnMountFailedFromDbus) {
 
 TEST_F(DriveFsHostTest, DestroyBeforeMojoConnection) {
   auto token = StartMount();
-  DispatchMountSuccessEvent(token);
+  CallMountCallbackSuccess(token);
 
   base::RunLoop run_loop;
   EXPECT_CALL(*disk_manager_, UnmountPath("/media/drivefsroot/salt-g-ID", _))
@@ -447,7 +443,7 @@ TEST_F(DriveFsHostTest, MountWhileAlreadyMounted) {
 }
 
 TEST_F(DriveFsHostTest, UnsupportedAccountTypes) {
-  EXPECT_CALL(*disk_manager_, MountPath(_, _, _, _, _, _)).Times(0);
+  EXPECT_CALL(*disk_manager_, MountPath(_, _, _, _, _, _, _)).Times(0);
   const AccountId unsupported_accounts[] = {
       AccountId::FromGaiaId("ID"),
       AccountId::FromUserEmail("test2@example.com"),

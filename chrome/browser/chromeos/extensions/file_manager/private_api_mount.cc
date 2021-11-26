@@ -86,7 +86,7 @@ ExtensionFunction::ResponseAction FileManagerPrivateAddMountFunction::Run() {
   disk_mount_manager->MountPath(
       path.AsUTF8Unsafe(), base::ToLowerASCII(path.Extension()),
       path.BaseName().AsUTF8Unsafe(), options, chromeos::MOUNT_TYPE_ARCHIVE,
-      chromeos::MOUNT_ACCESS_MODE_READ_WRITE);
+      chromeos::MOUNT_ACCESS_MODE_READ_WRITE, base::DoNothing());
 
   // Pass back the actual source path of the mount point.
   return RespondNow(OneArgument(base::Value(path.AsUTF8Unsafe())));

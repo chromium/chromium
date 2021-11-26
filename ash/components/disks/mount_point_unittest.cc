@@ -12,6 +12,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+using ::base::test::RunOnceCallback;
 using ::testing::_;
 using ::testing::WithArg;
 using ::testing::WithoutArgs;
@@ -22,7 +23,6 @@ namespace {
 
 constexpr char kSourcePath[] = "/source/path";
 constexpr char kMountPath[] = "/mount/path";
-constexpr char kOtherPath[] = "/other/path";
 
 class MountPointTest : public testing::Test {
  public:
@@ -36,32 +36,11 @@ class MountPointTest : public testing::Test {
 TEST_F(MountPointTest, Mount) {
   EXPECT_CALL(disk_mount_manager_,
               MountPath(kSourcePath, "", "", _, MOUNT_TYPE_DEVICE,
-                        MOUNT_ACCESS_MODE_READ_WRITE))
-      .WillOnce(WithoutArgs([this]() {
-        // Ignore other mount events.
-        disk_mount_manager_.NotifyMountEvent(
-            DiskMountManager::MOUNTING, MOUNT_ERROR_NONE,
-            DiskMountManager::MountPointInfo(kOtherPath, kOtherPath,
-                                             MOUNT_TYPE_DEVICE,
-                                             MOUNT_CONDITION_NONE));
-        disk_mount_manager_.NotifyMountEvent(
-            DiskMountManager::UNMOUNTING, MOUNT_ERROR_NONE,
-            DiskMountManager::MountPointInfo(kSourcePath, kOtherPath,
-                                             MOUNT_TYPE_DEVICE,
-                                             MOUNT_CONDITION_NONE));
-        disk_mount_manager_.NotifyMountEvent(
-            DiskMountManager::MOUNTING, MOUNT_ERROR_NONE,
-            DiskMountManager::MountPointInfo(kSourcePath, kOtherPath,
-                                             MOUNT_TYPE_ARCHIVE,
-                                             MOUNT_CONDITION_NONE));
-
-        // This is the real mount event.
-        disk_mount_manager_.NotifyMountEvent(
-            DiskMountManager::MOUNTING, MOUNT_ERROR_NONE,
-            DiskMountManager::MountPointInfo(kSourcePath, kMountPath,
-                                             MOUNT_TYPE_DEVICE,
-                                             MOUNT_CONDITION_NONE));
-      }));
+                        MOUNT_ACCESS_MODE_READ_WRITE, _))
+      .WillOnce(RunOnceCallback<6>(
+          MOUNT_ERROR_NONE, DiskMountManager::MountPointInfo(
+                                kSourcePath, kMountPath, MOUNT_TYPE_DEVICE,
+                                MOUNT_CONDITION_NONE)));
   EXPECT_CALL(disk_mount_manager_, UnmountPath(kMountPath, _)).Times(1);
 
   base::RunLoop run_loop;
@@ -80,14 +59,11 @@ TEST_F(MountPointTest, Mount) {
 TEST_F(MountPointTest, MountFailure) {
   EXPECT_CALL(disk_mount_manager_,
               MountPath(kSourcePath, "", "", _, MOUNT_TYPE_DEVICE,
-                        MOUNT_ACCESS_MODE_READ_WRITE))
-      .WillOnce(WithoutArgs([this]() {
-        disk_mount_manager_.NotifyMountEvent(
-            DiskMountManager::MOUNTING, MOUNT_ERROR_UNKNOWN,
-            DiskMountManager::MountPointInfo(
-                kSourcePath, kMountPath, MOUNT_TYPE_DEVICE,
-                MOUNT_CONDITION_UNSUPPORTED_FILESYSTEM));
-      }));
+                        MOUNT_ACCESS_MODE_READ_WRITE, _))
+      .WillOnce(RunOnceCallback<6>(
+          MOUNT_ERROR_UNKNOWN, DiskMountManager::MountPointInfo(
+                                   kSourcePath, kMountPath, MOUNT_TYPE_DEVICE,
+                                   MOUNT_CONDITION_UNSUPPORTED_FILESYSTEM)));
   EXPECT_CALL(disk_mount_manager_, UnmountPath(_, _)).Times(0);
 
   base::RunLoop run_loop;

@@ -104,6 +104,10 @@ class COMPONENT_EXPORT(ASH_DISKS) DiskMountManager {
   typedef base::OnceCallback<void(MountError error_code)>
       UnmountDeviceRecursivelyCallbackType;
 
+  typedef base::OnceCallback<void(MountError error_code,
+                                  const MountPointInfo& mount_info)>
+      MountPathCallback;
+
   // A callback type for UnmountPath method.
   typedef base::OnceCallback<void(MountError error_code)> UnmountPathCallback;
 
@@ -182,7 +186,8 @@ class COMPONENT_EXPORT(ASH_DISKS) DiskMountManager {
                          const std::string& mount_label,
                          const std::vector<std::string>& mount_options,
                          MountType type,
-                         MountAccessMode access_mode) = 0;
+                         MountAccessMode access_mode,
+                         MountPathCallback callback) = 0;
 
   // Unmounts a mounted disk.
   // When the method is complete, |callback| will be called and observers'

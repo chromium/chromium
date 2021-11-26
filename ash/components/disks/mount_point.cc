@@ -15,60 +15,23 @@ namespace chromeos {
 namespace disks {
 namespace {
 
-class MountWatcher : public DiskMountManager::Observer {
- public:
-  MountWatcher() = delete;
-  MountWatcher(const MountWatcher&) = delete;
-  MountWatcher& operator=(const MountWatcher&) = delete;
-
-  MountWatcher(DiskMountManager* disk_mount_manager,
-               const std::string& source_path,
-               MountType mount_type,
-               MountPoint::DoneCallback callback)
-      : disk_mount_manager_(disk_mount_manager),
-        source_path_(source_path),
-        mount_type_(mount_type),
-        callback_(std::move(callback)) {
-    DCHECK(callback_);
-    disk_mount_manager_->AddObserver(this);
+void OnMountDone(DiskMountManager* disk_mount_manager,
+                 MountPoint::DoneCallback callback,
+                 MountError error_code,
+                 const DiskMountManager::MountPointInfo& mount_info) {
+  std::unique_ptr<MountPoint> mount_point;
+  if (error_code == chromeos::MOUNT_ERROR_NONE) {
+    DCHECK(!mount_info.mount_path.empty());
+    mount_point = std::make_unique<MountPoint>(
+        base::FilePath(mount_info.mount_path), disk_mount_manager);
   }
 
-  ~MountWatcher() override { disk_mount_manager_->RemoveObserver(this); }
-
- private:
-  // DiskMountManager::Observer overrides.
-  void OnMountEvent(
-      DiskMountManager::MountEvent event,
-      MountError error_code,
-      const DiskMountManager::MountPointInfo& mount_info) override {
-    if (mount_info.mount_type != mount_type_ ||
-        mount_info.source_path != source_path_ ||
-        event != chromeos::disks::DiskMountManager::MOUNTING) {
-      return;
-    }
-
-    DCHECK(callback_);
-    std::unique_ptr<MountPoint> mount_point;
-    if (error_code == chromeos::MOUNT_ERROR_NONE) {
-      DCHECK(!mount_info.mount_path.empty());
-      mount_point = std::make_unique<MountPoint>(
-          base::FilePath(mount_info.mount_path), disk_mount_manager_);
-    }
-
-    // Post a task to guarantee the callback isn't called inline with the
-    // Mount() call.
-    base::SequencedTaskRunnerHandle::Get()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback_), error_code,
-                                  std::move(mount_point)));
-
-    delete this;
-  }
-
-  DiskMountManager* const disk_mount_manager_;
-  const std::string source_path_;
-  const MountType mount_type_;
-  MountPoint::DoneCallback callback_;
-};
+  // Post a task to guarantee the callback isn't called inline with the
+  // Mount() call.
+  base::SequencedTaskRunnerHandle::Get()->PostTask(
+      FROM_HERE,
+      base::BindOnce(std::move(callback), error_code, std::move(mount_point)));
+}
 
 }  // namespace
 
@@ -81,14 +44,13 @@ void MountPoint::Mount(DiskMountManager* disk_mount_manager,
                        MountType mount_type,
                        MountAccessMode access_mode,
                        DoneCallback callback) {
-  // MountWatcher needs to be created before mounting because MountPath() may
-  // signal a result inline.
-  // Note: MountWatcher owns itself.
-  new MountWatcher(disk_mount_manager, source_path, mount_type,
-                   std::move(callback));
-
-  disk_mount_manager->MountPath(source_path, source_format, mount_label,
-                                mount_options, mount_type, access_mode);
+  // |disk_mount_manager| owns the callback to OnMountDone, so we can bind it as
+  // unretained.
+  disk_mount_manager->MountPath(
+      source_path, source_format, mount_label, mount_options, mount_type,
+      access_mode,
+      base::BindOnce(&OnMountDone, base::Unretained(disk_mount_manager),
+                     std::move(callback)));
 }
 
 MountPoint::MountPoint(const base::FilePath& mount_path,

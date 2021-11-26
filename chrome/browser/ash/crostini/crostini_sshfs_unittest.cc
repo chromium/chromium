@@ -41,6 +41,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 using chromeos::disks::DiskMountManager;
+using testing::_;
 
 namespace {
 const char* kCrostiniMetricMountResultBackground =
@@ -122,7 +123,14 @@ class CrostiniSshfsHelperTest : public testing::Test {
   void TearDown() override {}
 
  protected:
-  void NotifyMountEvent() {
+  void NotifyMountEvent(
+      const std::string& source_path,
+      const std::string& source_format,
+      const std::string& mount_label,
+      const std::vector<std::string>& mount_options,
+      chromeos::MountType type,
+      chromeos::MountAccessMode access_mode,
+      chromeos::disks::DiskMountManager::MountPathCallback callback) {
     auto event = DiskMountManager::MountEvent::MOUNTING;
     auto code = chromeos::MountError::MOUNT_ERROR_NONE;
     auto info = DiskMountManager::MountPointInfo(
@@ -130,6 +138,18 @@ class CrostiniSshfsHelperTest : public testing::Test {
         chromeos::MOUNT_TYPE_NETWORK_STORAGE,
         chromeos::disks::MOUNT_CONDITION_NONE);
     disk_manager_->NotifyMountEvent(event, code, info);
+    std::move(callback).Run(code, info);
+  }
+
+  void ExpectMountCalls(int n) {
+    EXPECT_CALL(
+        *disk_manager_,
+        MountPath("sshfs://username@hostname:", "", kMountName,
+                  default_mount_options_, chromeos::MOUNT_TYPE_NETWORK_STORAGE,
+                  chromeos::MOUNT_ACCESS_MODE_READ_WRITE, _))
+        .Times(n)
+        .WillRepeatedly(
+            Invoke(this, &CrostiniSshfsHelperTest::NotifyMountEvent));
   }
 
   void SetContainerRunning(ContainerId container) {
@@ -155,11 +175,7 @@ class CrostiniSshfsHelperTest : public testing::Test {
 
 TEST_F(CrostiniSshfsHelperTest, MountDiskMountsDisk) {
   SetContainerRunning(ContainerId::GetDefault());
-  EXPECT_CALL(*disk_manager_, MountPath("sshfs://username@hostname:", "",
-                                        kMountName, default_mount_options_,
-                                        chromeos::MOUNT_TYPE_NETWORK_STORAGE,
-                                        chromeos::MOUNT_ACCESS_MODE_READ_WRITE))
-      .WillOnce(testing::Invoke([this]() { NotifyMountEvent(); }));
+  ExpectMountCalls(1);
   bool result = false;
 
   crostini_sshfs_->MountCrostiniFiles(
@@ -233,12 +249,7 @@ TEST_F(CrostiniSshfsHelperTest, RecordBackgroundMetricIfBackground) {
 TEST_F(CrostiniSshfsHelperTest, MultipleCallsAreQueuedAndOnlyMountOnce) {
   SetContainerRunning(ContainerId::GetDefault());
 
-  EXPECT_CALL(*disk_manager_, MountPath("sshfs://username@hostname:", "",
-                                        kMountName, default_mount_options_,
-                                        chromeos::MOUNT_TYPE_NETWORK_STORAGE,
-                                        chromeos::MOUNT_ACCESS_MODE_READ_WRITE))
-      .Times(1)
-      .WillOnce(testing::Invoke([this]() { NotifyMountEvent(); }));
+  ExpectMountCalls(1);
   int successes = 0;
   crostini_sshfs_->MountCrostiniFiles(
       ContainerId::GetDefault(),
@@ -267,12 +278,7 @@ TEST_F(CrostiniSshfsHelperTest, MultipleCallsAreQueuedAndOnlyMountOnce) {
 
 TEST_F(CrostiniSshfsHelperTest, CanRemountAfterUnmount) {
   SetContainerRunning(ContainerId::GetDefault());
-  EXPECT_CALL(*disk_manager_, MountPath("sshfs://username@hostname:", "",
-                                        kMountName, default_mount_options_,
-                                        chromeos::MOUNT_TYPE_NETWORK_STORAGE,
-                                        chromeos::MOUNT_ACCESS_MODE_READ_WRITE))
-      .Times(2)
-      .WillRepeatedly(testing::Invoke([this]() { NotifyMountEvent(); }));
+  ExpectMountCalls(2);
   EXPECT_CALL(*disk_manager_, UnmountPath)
       .WillOnce(testing::Invoke(
           [this](const std::string& mount_path,
@@ -310,13 +316,7 @@ TEST_F(CrostiniSshfsHelperTest, CanRemountAfterUnmount) {
 
 TEST_F(CrostiniSshfsHelperTest, ContainerShutdownClearsMountStatus) {
   SetContainerRunning(ContainerId::GetDefault());
-  EXPECT_CALL(*disk_manager_, MountPath("sshfs://username@hostname:", "",
-                                        kMountName, default_mount_options_,
-                                        chromeos::MOUNT_TYPE_NETWORK_STORAGE,
-                                        chromeos::MOUNT_ACCESS_MODE_READ_WRITE))
-      .Times(2)
-      .WillRepeatedly(testing::Invoke([this]() { NotifyMountEvent(); }));
-
+  ExpectMountCalls(2);
   crostini_sshfs_->MountCrostiniFiles(
       ContainerId::GetDefault(),
       base::BindLambdaForTesting([](bool res) { EXPECT_TRUE(res); }), false);

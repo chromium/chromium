@@ -52,7 +52,8 @@ class MockDiskMountManager : public DiskMountManager {
                const std::string&,
                const std::vector<std::string>&,
                MountType,
-               MountAccessMode),
+               MountAccessMode,
+               DiskMountManager::MountPathCallback),
               (override));
   MOCK_METHOD(void,
               UnmountPath,

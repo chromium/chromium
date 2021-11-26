@@ -16,14 +16,19 @@
 #include "base/cxx17_backports.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
+#include "base/test/bind.h"
+#include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
+#include "chromeos/dbus/cros_disks/cros_disks_client.h"
 #include "chromeos/dbus/cros_disks/fake_cros_disks_client.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "dbus/message.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using base::StringPrintf;
+using testing::Field;
 
 namespace chromeos {
 
@@ -1000,12 +1005,35 @@ TEST_F(DiskMountManagerTest, MountPath_RecordAccessMode) {
   const std::string kMountPath1 = "/media/foo";
   const std::string kMountPath2 = "/media/bar";
 
+  // MountPath should call the given callback when the mount completes.
+  base::MockCallback<DiskMountManager::MountPathCallback> mock_callback1;
+  EXPECT_CALL(
+      mock_callback1,
+      Run(chromeos::MOUNT_ERROR_NONE,
+          Field(&DiskMountManager::MountPointInfo::mount_path, kMountPath1)));
+
+  base::MockCallback<DiskMountManager::MountPathCallback> mock_callback2;
+  EXPECT_CALL(
+      mock_callback2,
+      Run(chromeos::MOUNT_ERROR_NONE,
+          Field(&DiskMountManager::MountPointInfo::mount_path, kMountPath2)))
+      .WillOnce([&](chromeos::MountError,
+                    const DiskMountManager::MountPointInfo& mount_point) {
+        // Verify the disk appears read-only when the callback is invoked. See
+        // below comment about the 2nd source.
+        EXPECT_TRUE(manager->disks()
+                        .find(mount_point.source_path)
+                        ->second->is_read_only());
+      });
+
   manager->MountPath(kSourcePath1, kSourceFormat, std::string(), {},
                      chromeos::MOUNT_TYPE_DEVICE,
-                     chromeos::MOUNT_ACCESS_MODE_READ_WRITE);
+                     chromeos::MOUNT_ACCESS_MODE_READ_WRITE,
+                     mock_callback1.Get());
   manager->MountPath(kSourcePath2, kSourceFormat, std::string(), {},
                      chromeos::MOUNT_TYPE_DEVICE,
-                     chromeos::MOUNT_ACCESS_MODE_READ_ONLY);
+                     chromeos::MOUNT_ACCESS_MODE_READ_ONLY,
+                     mock_callback2.Get());
   // Simulate cros_disks reporting mount completed.
   fake_cros_disks_client_->NotifyMountCompleted(
       chromeos::MOUNT_ERROR_NONE, kSourcePath1, chromeos::MOUNT_TYPE_DEVICE,
@@ -1044,10 +1072,17 @@ TEST_F(DiskMountManagerTest, MountPath_ReadOnlyDevice) {
   const std::string kSourceFormat = std::string();
   const std::string kMountLabel = std::string();  // N/A for MOUNT_TYPE_DEVICE
 
+  base::MockCallback<DiskMountManager::MountPathCallback> mock_callback;
+  EXPECT_CALL(mock_callback,
+              Run(chromeos::MOUNT_ERROR_NONE,
+                  Field(&DiskMountManager::MountPointInfo::mount_path,
+                        kReadOnlyDeviceMountPath)));
+
   // Attempt to mount a read-only device in read-write mode.
   manager->MountPath(kReadOnlyDeviceSourcePath, kSourceFormat, std::string(),
                      {}, chromeos::MOUNT_TYPE_DEVICE,
-                     chromeos::MOUNT_ACCESS_MODE_READ_WRITE);
+                     chromeos::MOUNT_ACCESS_MODE_READ_WRITE,
+                     mock_callback.Get());
   // Simulate cros_disks reporting mount completed.
   fake_cros_disks_client_->NotifyMountCompleted(
       chromeos::MOUNT_ERROR_NONE, kReadOnlyDeviceSourcePath,

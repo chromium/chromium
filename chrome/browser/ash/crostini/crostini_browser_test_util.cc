@@ -107,10 +107,12 @@ void CrostiniBrowserTestBase::DiskMountImpl(
     const std::string& mount_label,
     const std::vector<std::string>& mount_options,
     chromeos::MountType type,
-    chromeos::MountAccessMode access_mode) {
+    chromeos::MountAccessMode access_mode,
+    chromeos::disks::DiskMountManager::MountPathCallback callback) {
   chromeos::disks::DiskMountManager::MountPointInfo info(
       source_path, "/path/to/mount", type,
       chromeos::disks::MOUNT_CONDITION_NONE);
+  std::move(callback).Run(chromeos::MountError::MOUNT_ERROR_NONE, info);
   dmgr_->NotifyMountEvent(
       chromeos::disks::DiskMountManager::MountEvent::MOUNTING,
       chromeos::MountError::MOUNT_ERROR_NONE, info);

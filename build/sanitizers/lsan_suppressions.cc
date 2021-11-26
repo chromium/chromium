@@ -75,8 +75,6 @@ char kLSanDefaultSuppressions[] =
     "leak:chromeos::PipeReader::StartIO\n"
     // Supppress AnimationObserverToHideView leak. crbug.com/1261464
     "leak:ash::ShelfNavigationWidget::UpdateButtonVisibility\n"
-    // Supppress MountWatcher leak. crbug.com/1265187
-    "leak:chromeos::disks::MountPoint::Mount\n"
     // Suppress AnimationSequence leak. crbug.com/1265031
     "leak:ash::LockStateController::StartPostLockAnimation\n"
     // Suppress leak in SurfaceDrawContext. crbug.com/1265033

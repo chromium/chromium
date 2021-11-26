@@ -83,7 +83,8 @@ class FakeDiskMountManager : public chromeos::disks::DiskMountManager {
                  const std::string& mount_label,
                  const std::vector<std::string>& mount_options,
                  chromeos::MountType type,
-                 chromeos::MountAccessMode access_mode) override;
+                 chromeos::MountAccessMode access_mode,
+                 MountPathCallback) override;
   // In order to simulate asynchronous invocation of callbacks after unmount
   // is finished, |callback| will be invoked only when
   // |FinishAllUnmountRequest()| is called.

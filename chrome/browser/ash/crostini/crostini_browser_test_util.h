@@ -45,12 +45,14 @@ class CrostiniBrowserTestBase : public InProcessBrowserTest {
   CrostiniBrowserTestChromeBrowserMainExtraParts* extra_parts_ = nullptr;
 
  private:
-  void DiskMountImpl(const std::string& source_path,
-                     const std::string& source_format,
-                     const std::string& mount_label,
-                     const std::vector<std::string>& mount_options,
-                     chromeos::MountType type,
-                     chromeos::MountAccessMode access_mode);
+  void DiskMountImpl(
+      const std::string& source_path,
+      const std::string& source_format,
+      const std::string& mount_label,
+      const std::vector<std::string>& mount_options,
+      chromeos::MountType type,
+      chromeos::MountAccessMode access_mode,
+      chromeos::disks::DiskMountManager::MountPathCallback callback);
 
   // Owned by chromeos::disks::DiskMountManager;
   chromeos::disks::MockDiskMountManager* dmgr_;

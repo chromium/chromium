@@ -26,6 +26,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/observer_list.h"
 #include "base/strings/string_util.h"
+#include "chromeos/dbus/cros_disks/cros_disks_client.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 
 namespace chromeos {
@@ -98,7 +99,16 @@ class DiskMountManagerImpl : public DiskMountManager,
                  const std::string& mount_label,
                  const std::vector<std::string>& mount_options,
                  MountType type,
-                 MountAccessMode access_mode) override {
+                 MountAccessMode access_mode,
+                 MountPathCallback callback) override {
+    auto insert_result =
+        mount_callbacks_.insert({source_path, std::move(callback)});
+    if (!insert_result.second) {
+      std::move(callback).Run(
+          MOUNT_ERROR_PATH_ALREADY_MOUNTED,
+          MountPointInfo(source_path, "", type, MOUNT_CONDITION_NONE));
+      return;
+    }
     // Hidden and non-existent devices should not be mounted.
     if (type == MOUNT_TYPE_DEVICE) {
       DiskMap::const_iterator it = disks_.find(source_path);
@@ -108,6 +118,7 @@ class DiskMountManagerImpl : public DiskMountManager,
         return;
       }
     }
+
     cros_disks_client_->Mount(
         source_path, source_format, mount_label, mount_options, access_mode,
         REMOUNT_OPTION_MOUNT_NEW_DEVICE,
@@ -519,7 +530,13 @@ class DiskMountManagerImpl : public DiskMountManager,
     }
     // Observers may read the values of disks_. So notify them after tweaking
     // values of disks_.
+    auto it = mount_callbacks_.find(entry.source_path());
+    if (it != mount_callbacks_.end()) {
+      std::move(it->second).Run(entry.error_code(), mount_info);
+      mount_callbacks_.erase(it);
+    }
     NotifyMountStatusUpdate(MOUNTING, entry.error_code(), mount_info);
+
     if (disk) {
       disk->set_is_first_mount(false);
     }
@@ -1048,6 +1065,7 @@ class DiskMountManagerImpl : public DiskMountManager,
   // The list of disks found.
   DiskMountManager::DiskMap disks_;
 
+  std::map<std::string, MountPathCallback> mount_callbacks_;
   DiskMountManager::MountPointMap mount_points_;
 
   // A map entry with a key of the device path will be created upon calling
