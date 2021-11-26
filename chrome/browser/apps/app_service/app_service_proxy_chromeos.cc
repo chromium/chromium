@@ -108,16 +108,6 @@ void AppServiceProxyChromeOs::Initialize() {
 
   publisher_host_ = std::make_unique<PublisherHost>(this);
 
-  if (crosapi::browser_util::IsLacrosEnabled() &&
-      chromeos::ProfileHelper::IsPrimaryProfile(profile_) &&
-      web_app::IsWebAppsCrosapiEnabled()) {
-    auto* browser_manager = crosapi::BrowserManager::Get();
-    // In unit tests, it is possible that the browser manager is not created.
-    if (browser_manager) {
-      keep_alive_ = browser_manager->KeepAlive(
-          crosapi::BrowserManager::Feature::kAppService);
-    }
-  }
   if (!profile_->AsTestingProfile()) {
     app_platform_metrics_service_ =
         std::make_unique<AppPlatformMetricsService>(profile_);
