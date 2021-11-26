@@ -125,8 +125,10 @@ IN_PROC_BROWSER_TEST_P(TelemetryExtensionTelemetryApiBrowserTest,
 INSTANTIATE_TEST_SUITE_P(
     All,
     TelemetryExtensionTelemetryApiBrowserTest,
-    testing::ValuesIn(
-        BaseTelemetryExtensionBrowserTest::kAllExtensionInfoTestParams));
+    testing::Combine(
+        testing::Bool(),
+        testing::ValuesIn(
+            BaseTelemetryExtensionBrowserTest::kAllExtensionInfoTestParams)));
 
 class TelemetryExtensionTelemetryApiWithoutSerialNumberBrowserTest
     : public TelemetryExtensionTelemetryApiBrowserTest {
@@ -228,7 +230,9 @@ IN_PROC_BROWSER_TEST_P(
 INSTANTIATE_TEST_SUITE_P(
     All,
     TelemetryExtensionTelemetryApiWithoutSerialNumberBrowserTest,
-    testing::ValuesIn(
-        BaseTelemetryExtensionBrowserTest::kAllExtensionInfoTestParams));
+    testing::Combine(
+        testing::Bool(),
+        testing::ValuesIn(
+            BaseTelemetryExtensionBrowserTest::kAllExtensionInfoTestParams)));
 
 }  // namespace chromeos

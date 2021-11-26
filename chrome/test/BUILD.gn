@@ -7186,6 +7186,9 @@ test("unit_tests") {
         "../browser/ash/login/easy_unlock/smartlock_feature_usage_metrics_unittest.cc",
         "../browser/ash/login/easy_unlock/smartlock_state_handler_unittest.cc",
         "../browser/chromeos/extensions/extensions_permissions_tracker_unittest.cc",
+
+        # TODO(b/207754758): Move the following two files into the appropriate target
+        "../browser/chromeos/extensions/telemetry/api/api_guard_delegate_unittest.cc",
         "../browser/chromeos/extensions/telemetry/chromeos_permission_messages_unittest.cc",
         "../browser/extensions/api/file_system/consent_provider_unittest.cc",
         "../browser/extensions/api/image_writer_private/removable_storage_provider_chromeos_unittest.cc",
@@ -7203,6 +7206,7 @@ test("unit_tests") {
       ]
 
       deps += [
+        "//chrome/browser/chromeos/extensions/telemetry/api",
         "//chrome/browser/chromeos/extensions/telemetry/api:unit_tests",
         "//chrome/common/chromeos/extensions",
         "//chromeos/dbus/image_burner",
