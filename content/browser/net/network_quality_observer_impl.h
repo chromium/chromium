@@ -10,8 +10,7 @@
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
 #include "content/common/content_export.h"
-#include "content/public/browser/notification_observer.h"
-#include "content/public/browser/notification_registrar.h"
+#include "content/public/browser/render_process_host_creation_observer.h"
 #include "net/nqe/effective_connection_type.h"
 #include "net/nqe/network_quality.h"
 #include "services/network/public/cpp/network_quality_tracker.h"
@@ -23,7 +22,7 @@ namespace content {
 class CONTENT_EXPORT NetworkQualityObserverImpl
     : public network::NetworkQualityTracker::EffectiveConnectionTypeObserver,
       public network::NetworkQualityTracker::RTTAndThroughputEstimatesObserver,
-      public content::NotificationObserver {
+      public content::RenderProcessHostCreationObserver {
  public:
   explicit NetworkQualityObserverImpl(
       network::NetworkQualityTracker* network_quality_tracker);
@@ -35,10 +34,8 @@ class CONTENT_EXPORT NetworkQualityObserverImpl
   ~NetworkQualityObserverImpl() override;
 
  private:
-  // content::NotificationObserver:
-  void Observe(int type,
-               const NotificationSource& source,
-               const NotificationDetails& details) override;
+  // content::RenderProcessHostCreationObserver:
+  void OnRenderProcessHostCreated(content::RenderProcessHost* rph) override;
 
   // net::EffectiveConnectionTypeObserver implementation:
   void OnEffectiveConnectionTypeChanged(
@@ -57,8 +54,6 @@ class CONTENT_EXPORT NetworkQualityObserverImpl
   //  The network quality when the |ui_thread_observer_| was last notified.
   net::EffectiveConnectionType last_notified_type_;
   net::nqe::internal::NetworkQuality last_notified_network_quality_;
-
-  content::NotificationRegistrar registrar_;
 
   base::ThreadChecker thread_checker_;
 };
