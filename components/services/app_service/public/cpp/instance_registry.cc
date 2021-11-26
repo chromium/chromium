@@ -150,19 +150,6 @@ std::set<const Instance*> InstanceRegistry::GetInstances(
   return it->second;
 }
 
-std::set<InstanceState> InstanceRegistry::GetStates(
-    const std::string& app_id,
-    const aura::Window* window) const {
-  std::set<InstanceState> states;
-  ForInstancesWithWindow(
-      window, [&states, &app_id](const apps::InstanceUpdate& update) {
-        if (update.AppId() == app_id) {
-          states.insert(update.State());
-        }
-      });
-  return states;
-}
-
 InstanceState InstanceRegistry::GetState(const aura::Window* window) const {
   InstanceState state = InstanceState::kUnknown;
   ForInstancesWithWindow(window, [&state](const apps::InstanceUpdate& update) {

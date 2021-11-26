@@ -141,10 +141,10 @@ class AppPlatformMetrics : public apps::AppRegistryCache::Observer,
   };
 
   struct BrowserToTab {
-    BrowserToTab(const Instance::InstanceKey& browser_key,
-                 const Instance::InstanceKey& tab_key);
-    Instance::InstanceKey browser_key;
-    Instance::InstanceKey tab_key;
+    BrowserToTab(const aura::Window* browser_window,
+                 const base::UnguessableToken& tab_id);
+    const aura::Window* browser_window;
+    base::UnguessableToken tab_id;
   };
 
   using BrowserToTabs = std::list<BrowserToTab>;
@@ -160,31 +160,41 @@ class AppPlatformMetrics : public apps::AppRegistryCache::Observer,
   void OnInstanceRegistryWillBeDestroyed(
       apps::InstanceRegistry* cache) override;
 
-  // Updates the browser window status when the web app tab of `tab_key` is
+  // Returns the browser id and the browser instance state for the tab's
+  // `update`. If there is no browser instance for the tab's `update`, the
+  // returned token of the browser id will be empty, and the state will be
+  // unknown.
+  void GetBrowserIdAndState(const InstanceUpdate& update,
+                            base::UnguessableToken& browser_id,
+                            InstanceState& state) const;
+
+  // Updates the browser window status when the web app tab `update` is
   // inactivated.
-  void UpdateBrowserWindowStatus(const Instance::InstanceKey& tab_key);
+  void UpdateBrowserWindowStatus(const InstanceUpdate& update);
 
-  // Returns true if the browser with `browser_key` has activated tabs.
+  // Returns true if the browser with `browser_window` has activated tabs.
   // Otherwise, returns false.
-  bool HasActivatedTab(const Instance::InstanceKey& browser_key);
+  bool HasActivatedTab(const aura::Window* browser_window);
 
-  // Returns the browser window for `tab_key`.
-  aura::Window* GetBrowserWindow(const Instance::InstanceKey& tab_key) const;
+  // Returns the browser window for `tab_id`.
+  const aura::Window* GetBrowserWindow(
+      const base::UnguessableToken& tab_id) const;
 
-  // Adds an activated `browser_key` and `tab_key` to `active_browser_to_tabs_`.
-  void AddActivatedTab(const Instance::InstanceKey& browser_key,
-                       const Instance::InstanceKey& tab_key);
+  // Adds an activated `browser_window` and `tab_id` to
+  // `active_browser_to_tabs_`.
+  void AddActivatedTab(const aura::Window* browser_window,
+                       const base::UnguessableToken& tab_id);
 
-  // Removes `tab_key` from `active_browser_to_tabs_`.
-  void RemoveActivatedTab(const Instance::InstanceKey& tab_key);
+  // Removes `tab_id` from `active_browser_to_tabs_`.
+  void RemoveActivatedTab(const base::UnguessableToken& tab_id);
 
   void SetWindowActivated(apps::mojom::AppType app_type,
                           AppTypeName app_type_name,
                           AppTypeNameV2 app_type_name_v2,
                           const std::string& app_id,
-                          const apps::Instance::InstanceKey& instance_key);
+                          const base::UnguessableToken& instance_id);
   void SetWindowInActivated(const std::string& app_id,
-                            const apps::Instance::InstanceKey& instance_key,
+                            const base::UnguessableToken& instance_id,
                             apps::InstanceState state);
 
   void InitRunningDuration();
@@ -230,7 +240,7 @@ class AppPlatformMetrics : public apps::AppRegistryCache::Observer,
 
   // |running_start_time_| and |running_duration_| are used for accumulating app
   // running duration per each day interval.
-  std::map<apps::Instance::InstanceKey, RunningStartTime> running_start_time_;
+  std::map<const base::UnguessableToken, RunningStartTime> running_start_time_;
   std::map<AppTypeName, base::TimeDelta> running_duration_;
   std::map<AppTypeName, int> activated_count_;
 
@@ -238,13 +248,14 @@ class AppPlatformMetrics : public apps::AppRegistryCache::Observer,
   // |app_type_v2_running_time_per_five_minutes_|, and
   // |usage_time_per_five_minutes_| are used for accumulating app
   // running duration per 5 minutes interval.
-  std::map<apps::Instance::InstanceKey, RunningStartTime>
+  std::map<const base::UnguessableToken, RunningStartTime>
       start_time_per_five_minutes_;
   std::map<AppTypeName, base::TimeDelta>
       app_type_running_time_per_five_minutes_;
   std::map<AppTypeNameV2, base::TimeDelta>
       app_type_v2_running_time_per_five_minutes_;
-  std::map<apps::Instance::InstanceKey, UsageTime> usage_time_per_five_minutes_;
+  std::map<const base::UnguessableToken, UsageTime>
+      usage_time_per_five_minutes_;
 };
 
 }  // namespace apps

@@ -45,6 +45,18 @@ class InstanceRegistryTest : public testing::Test,
         });
   }
 
+  std::set<apps::InstanceState> GetStates(const std::string& app_id,
+                                          const aura::Window* window) {
+    std::set<apps::InstanceState> states;
+    instance_registry_.ForInstancesWithWindow(
+        window, [&](const apps::InstanceUpdate& update) {
+          if (update.AppId() == app_id) {
+            states.insert(update.State());
+          }
+        });
+    return states;
+  }
+
   // apps::InstanceRegistry::Observer overrides.
   void OnInstanceUpdate(const apps::InstanceUpdate& update) override {
     EXPECT_NE("", update.AppId());
@@ -590,23 +602,13 @@ TEST_F(InstanceRegistryTest, SuperRecursive) {
 
   // After all of that, check that for each window, the last delta won.
   EXPECT_EQ(apps::InstanceState::kStarted,
-            *instance_registry().GetStates("a", &window1).begin());
-  EXPECT_EQ(apps::InstanceState::kStarted,
             instance_registry().GetState(&window1));
-  EXPECT_EQ(apps::InstanceState::kUnknown,
-            *instance_registry().GetStates("a", &window2).begin());
   EXPECT_EQ(apps::InstanceState::kUnknown,
             instance_registry().GetState(&window2));
   EXPECT_EQ(apps::InstanceState::kRunning,
-            *instance_registry().GetStates("b", &window3).begin());
-  EXPECT_EQ(apps::InstanceState::kRunning,
             instance_registry().GetState(&window3));
   EXPECT_EQ(apps::InstanceState::kVisible,
-            *instance_registry().GetStates("c", &window4).begin());
-  EXPECT_EQ(apps::InstanceState::kVisible,
             instance_registry().GetState(&window4));
-  EXPECT_EQ(apps::InstanceState::kVisible,
-            *instance_registry().GetStates("b", &window5).begin());
   EXPECT_EQ(apps::InstanceState::kVisible,
             instance_registry().GetState(&window5));
 
@@ -826,31 +828,31 @@ TEST_F(InstanceRegistryTest, SuperRecursiveWithWindowChanged) {
   EXPECT_EQ(8, observer.NumInstancesSeenOnInstanceUpdate());
 
   // After all of that, check that for each window, the last delta won.
-  EXPECT_EQ(1U, instance_registry().GetStates("a", &window1).size());
-  EXPECT_EQ(apps::InstanceState::kStarted,
-            *instance_registry().GetStates("a", &window1).begin());
+  auto states = GetStates("a", &window1);
+  EXPECT_EQ(1U, states.size());
+  EXPECT_EQ(apps::InstanceState::kStarted, *states.begin());
 
-  EXPECT_EQ(1U, instance_registry().GetStates("a", &window2).size());
-  EXPECT_EQ(apps::InstanceState::kUnknown,
-            *instance_registry().GetStates("a", &window2).begin());
+  states = GetStates("a", &window2);
+  EXPECT_EQ(1U, states.size());
+  EXPECT_EQ(apps::InstanceState::kUnknown, *states.begin());
 
   EXPECT_EQ(2U, instance_registry().GetInstances("a").size());
 
-  EXPECT_EQ(1U, instance_registry().GetStates("b", &window3).size());
-  EXPECT_EQ(apps::InstanceState::kVisible,
-            *instance_registry().GetStates("b", &window3).begin());
+  states = GetStates("b", &window3);
+  EXPECT_EQ(1U, states.size());
+  EXPECT_EQ(apps::InstanceState::kVisible, *states.begin());
 
   EXPECT_EQ(1U, instance_registry().GetInstances("b").size());
 
-  EXPECT_EQ(1U, instance_registry().GetStates("c", &window3).size());
-  EXPECT_EQ(apps::InstanceState::kVisible,
-            *instance_registry().GetStates("c", &window3).begin());
+  states = GetStates("c", &window3);
+  EXPECT_EQ(1U, states.size());
+  EXPECT_EQ(apps::InstanceState::kVisible, *states.begin());
 
   EXPECT_EQ(1U, instance_registry().GetInstances("c").size());
 
-  EXPECT_TRUE(instance_registry().GetStates("c", &window4).empty());
+  EXPECT_TRUE(GetStates("c", &window4).empty());
 
-  EXPECT_TRUE(instance_registry().GetStates("a", &window5).empty());
+  EXPECT_TRUE(GetStates("a", &window5).empty());
 
   EXPECT_TRUE(instance_registry().Exists(&window1));
   EXPECT_TRUE(instance_registry().Exists(&window2));

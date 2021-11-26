@@ -193,8 +193,13 @@ class AppServiceAppWindowBrowserTest
 
   apps::InstanceState GetAppInstanceState(const std::string& app_id,
                                           const aura::Window* window) {
-    auto states =
-        app_service_proxy_->InstanceRegistry().GetStates(app_id, window);
+    std::set<apps::InstanceState> states;
+    app_service_proxy_->InstanceRegistry().ForInstancesWithWindow(
+        window, [&](const apps::InstanceUpdate& update) {
+          if (update.AppId() == app_id) {
+            states.insert(update.State());
+          }
+        });
     if (states.size() == 1)
       return *states.begin();
     return apps::InstanceState::kUnknown;
