@@ -242,13 +242,12 @@ public class ChromePageInfoControllerDelegate extends PageInfoControllerDelegate
                     mainController, historyRow, this, () -> { return tab; }));
         }
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.PAGE_INFO_ABOUT_THIS_SITE)) {
-            Tab tab = TabUtils.fromWebContents(mWebContents);
             final PageInfoRowView aboutThisSiteRow =
                     new PageInfoRowView(rowWrapper.getContext(), null);
             aboutThisSiteRow.setId(PageInfoAboutThisSiteController.ROW_ID);
             rowWrapper.addView(aboutThisSiteRow);
             controllers.add(new PageInfoAboutThisSiteController(
-                    mainController, aboutThisSiteRow, this, tab));
+                    mainController, aboutThisSiteRow, this, mWebContents));
         }
         if (PageInfoFeatures.PAGE_INFO_STORE_INFO.isEnabled() && !isIncognito()) {
             final PageInfoRowView storeInfoRow = new PageInfoRowView(rowWrapper.getContext(), null);
