@@ -205,8 +205,14 @@ IN_PROC_BROWSER_TEST_F(TwoClientSessionsSyncTest, MultipleWindowsMultipleTabs) {
   EXPECT_TRUE(WaitForForeignSessionsToSync(0, 1));
 }
 
+// Test is flaky: https://crbug.com/1273908.
+#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#define MAYBE_NoHistoryIfEncryptionEnabled DISABLED_NoHistoryIfEncryptionEnabled
+#else
+#define MAYBE_NoHistoryIfEncryptionEnabled NoHistoryIfEncryptionEnabled
+#endif
 IN_PROC_BROWSER_TEST_F(TwoClientSessionsSyncTest,
-                       NoHistoryIfEncryptionEnabled) {
+                       MAYBE_NoHistoryIfEncryptionEnabled) {
   ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
 
   ASSERT_TRUE(CheckInitialState(0));
