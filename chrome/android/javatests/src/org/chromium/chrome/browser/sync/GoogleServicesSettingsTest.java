@@ -9,6 +9,8 @@ import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.matcher.RootMatchers.isDialog;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
+import android.accounts.Account;
+
 import androidx.test.filters.LargeTest;
 
 import org.junit.After;
@@ -20,6 +22,7 @@ import org.junit.rules.RuleChain;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -47,6 +50,9 @@ import org.chromium.content_public.browser.test.util.TestThreadUtils;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class GoogleServicesSettingsTest {
+    private static final Account CHILD_ACCOUNT =
+            AccountManagerTestRule.createChildAccount("account@gmail.com");
+
     @Rule
     public final AccountManagerTestRule mAccountManagerTestRule = new AccountManagerTestRule();
 
@@ -78,6 +84,22 @@ public class GoogleServicesSettingsTest {
                 ()
                         -> UserPrefs.get(Profile.getLastUsedRegularProfile())
                                    .setBoolean(Pref.SIGNIN_ALLOWED, true));
+    }
+
+    @Test
+    @LargeTest
+    public void allowSigninOptionHiddenFromChildUser() {
+        mAccountManagerTestRule.addAccountAndWaitForSeeding(CHILD_ACCOUNT.name);
+        final Profile profile = TestThreadUtils.runOnUiThreadBlockingNoException(
+                Profile::getLastUsedRegularProfile);
+        CriteriaHelper.pollUiThread(profile::isChild);
+
+        final GoogleServicesSettings googleServicesSettings = startGoogleServicesSettings();
+        ChromeSwitchPreference allowChromeSignin =
+                (ChromeSwitchPreference) googleServicesSettings.findPreference(
+                        GoogleServicesSettings.PREF_ALLOW_SIGNIN);
+        Assert.assertFalse(
+                "Chrome Signin option should not be visible", allowChromeSignin.isVisible());
     }
 
     @Test

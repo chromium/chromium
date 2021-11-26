@@ -88,8 +88,15 @@ public class GoogleServicesSettings
         SettingsUtils.addPreferencesFromResource(this, R.xml.google_services_preferences);
 
         mAllowSignin = (ChromeSwitchPreference) findPreference(PREF_ALLOW_SIGNIN);
-        mAllowSignin.setOnPreferenceChangeListener(this);
-        mAllowSignin.setManagedPreferenceDelegate(mManagedPreferenceDelegate);
+
+        if (Profile.getLastUsedRegularProfile().isChild()) {
+            // Do not display option to allow / disallow sign-in for supervised accounts since
+            // these require the user to be signed-in and syncing.
+            mAllowSignin.setVisible(false);
+        } else {
+            mAllowSignin.setOnPreferenceChangeListener(this);
+            mAllowSignin.setManagedPreferenceDelegate(mManagedPreferenceDelegate);
+        }
 
         mSearchSuggestions = (ChromeSwitchPreference) findPreference(PREF_SEARCH_SUGGESTIONS);
         mSearchSuggestions.setOnPreferenceChangeListener(this);
@@ -164,6 +171,9 @@ public class GoogleServicesSettings
     public boolean onPreferenceChange(Preference preference, Object newValue) {
         String key = preference.getKey();
         if (PREF_ALLOW_SIGNIN.equals(key)) {
+            assert !Profile.getLastUsedRegularProfile().isChild()
+                : "A supervised account must not update allow sign-in.";
+
             IdentityManager identityManager = IdentityServicesProvider.get().getIdentityManager(
                     Profile.getLastUsedRegularProfile());
             boolean shouldSignUserOut =
