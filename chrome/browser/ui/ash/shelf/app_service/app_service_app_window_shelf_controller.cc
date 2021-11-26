@@ -287,8 +287,7 @@ void AppServiceAppWindowShelfController::OnWindowVisibilityChanged(
 
   // Only register the visible non-browser |window| for the active user.
   if (!visible || shelf_id.app_id == extension_misc::kChromeAppId ||
-      !proxy_->InstanceRegistry().Exists(
-          apps::Instance::InstanceKey::ForWindowBasedApp(window))) {
+      !proxy_->InstanceRegistry().Exists(window)) {
     return;
   }
 
@@ -449,8 +448,7 @@ void AppServiceAppWindowShelfController::OnInstanceUpdate(
     // MultiUserWindowManagerHelper manages those windows.
     auto app_window_it = aura_window_to_app_window_.find(window);
     if (app_window_it != aura_window_to_app_window_.end() &&
-        proxy_->InstanceRegistry().Exists(
-            apps::Instance::InstanceKey::ForWindowBasedApp(window))) {
+        proxy_->InstanceRegistry().Exists(window)) {
       RemoveAppWindowFromShelf(app_window_it->second.get());
       aura_window_to_app_window_.erase(app_window_it);
     }
@@ -757,8 +755,7 @@ void AppServiceAppWindowShelfController::UserHasAppOnActiveDesktop(
   DCHECK(browser_context);
   // If the window was created for the active user, register it to show an item
   // on the shelf.
-  if (proxy_->InstanceRegistry().Exists(
-          apps::Instance::InstanceKey::ForWindowBasedApp(window))) {
+  if (proxy_->InstanceRegistry().Exists(window)) {
     RegisterWindow(window, shelf_id);
     return;
   }

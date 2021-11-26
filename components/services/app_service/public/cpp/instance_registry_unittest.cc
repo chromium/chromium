@@ -609,6 +609,12 @@ TEST_F(InstanceRegistryTest, SuperRecursive) {
             *instance_registry().GetStates("b", &window5).begin());
   EXPECT_EQ(apps::InstanceState::kVisible,
             instance_registry().GetState(&window5));
+
+  EXPECT_TRUE(instance_registry().Exists(&window1));
+  EXPECT_TRUE(instance_registry().Exists(&window2));
+  EXPECT_TRUE(instance_registry().Exists(&window3));
+  EXPECT_TRUE(instance_registry().Exists(&window4));
+  EXPECT_TRUE(instance_registry().Exists(&window5));
 }
 
 TEST_F(InstanceRegistryTest, GetInstances) {
@@ -845,4 +851,10 @@ TEST_F(InstanceRegistryTest, SuperRecursiveWithWindowChanged) {
   EXPECT_TRUE(instance_registry().GetStates("c", &window4).empty());
 
   EXPECT_TRUE(instance_registry().GetStates("a", &window5).empty());
+
+  EXPECT_TRUE(instance_registry().Exists(&window1));
+  EXPECT_TRUE(instance_registry().Exists(&window2));
+  EXPECT_TRUE(instance_registry().Exists(&window3));
+  EXPECT_FALSE(instance_registry().Exists(&window4));
+  EXPECT_FALSE(instance_registry().Exists(&window5));
 }

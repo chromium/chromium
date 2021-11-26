@@ -180,12 +180,11 @@ ash::ShelfID InstanceRegistry::GetShelfId(const aura::Window* window) const {
   return shelf_id;
 }
 
-bool InstanceRegistry::Exists(const Instance::InstanceKey& instance_key) const {
-  return instance_key_states_.find(instance_key) != instance_key_states_.end();
-}
-
 bool InstanceRegistry::Exists(const aura::Window* window) const {
-  return base::Contains(window_to_instance_ids_, window);
+  bool found = false;
+  ForInstancesWithWindow(
+      window, [&](const apps::InstanceUpdate& update) { found = true; });
+  return found;
 }
 
 bool InstanceRegistry::ContainsAppId(const std::string& app_id) const {

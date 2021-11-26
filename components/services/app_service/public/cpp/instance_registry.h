@@ -152,10 +152,6 @@ class InstanceRegistry {
   // returned in these cases will be arbitrary.
   ash::ShelfID GetShelfId(const aura::Window* window) const;
 
-  // Return true if there is an instance for the |instance_key|.
-  // TODO(crbug.com/1251501): Will be removed soon.
-  bool Exists(const Instance::InstanceKey& instance_key) const;
-
   // Return true if there is an instance for the `window`.
   bool Exists(const aura::Window* window) const;
 

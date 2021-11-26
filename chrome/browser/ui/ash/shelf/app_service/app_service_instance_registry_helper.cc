@@ -187,8 +187,7 @@ void AppServiceInstanceRegistryHelper::OnInstances(const std::string& app_id,
   for (auto* profile : controller_->GetProfileList()) {
     auto* proxy_for_profile =
         apps::AppServiceProxyFactory::GetForProfile(profile);
-    if (proxy_for_profile->InstanceRegistry().Exists(
-            apps::Instance::InstanceKey(window))) {
+    if (proxy_for_profile->InstanceRegistry().Exists(window)) {
       proxy = proxy_for_profile;
       break;
     }

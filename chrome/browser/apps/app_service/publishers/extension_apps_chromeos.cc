@@ -303,10 +303,10 @@ void ExtensionAppsChromeOs::OnAppWindowAdded(
     return;
   }
 
-  DCHECK(!instance_registry_->Exists(
-      apps::Instance::InstanceKey::ForWindowBasedApp(
-          app_window->GetNativeWindow())));
-  app_window_to_aura_window_[app_window] = app_window->GetNativeWindow();
+  auto* window = app_window->GetNativeWindow();
+  DCHECK(!instance_registry_->Exists(window));
+
+  app_window_to_aura_window_[app_window] = window;
 
   // Attach window to multi-user manager now to let it manage visibility state
   // of the window correctly.
@@ -315,8 +315,7 @@ void ExtensionAppsChromeOs::OnAppWindowAdded(
         MultiUserWindowManagerHelper::GetWindowManager();
     if (multi_user_window_manager) {
       multi_user_window_manager->SetWindowOwner(
-          app_window->GetNativeWindow(),
-          multi_user_util::GetAccountIdFromProfile(profile()));
+          window, multi_user_util::GetAccountIdFromProfile(profile()));
     }
   }
   RegisterInstance(app_window, InstanceState::kStarted);
