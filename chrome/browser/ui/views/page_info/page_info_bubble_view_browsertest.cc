@@ -66,7 +66,8 @@
 #include "ui/views/controls/styled_label.h"
 #include "ui/views/test/widget_test.h"
 
-using ProtoValidation = page_info::about_this_site_validation::ProtoValidation;
+using AboutThisSiteStatus =
+    page_info::about_this_site_validation::AboutThisSiteStatus;
 
 namespace {
 
@@ -796,7 +797,7 @@ IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewAboutThisSiteBrowserTest,
   ukm_recorder.ExpectEntrySourceHasUrl(entries[0], url);
   ukm_recorder.ExpectEntryMetric(
       entries[0], ukm::builders::AboutThisSiteStatus::kStatusName,
-      static_cast<int>(ProtoValidation::kValid));
+      static_cast<int>(AboutThisSiteStatus::kValid));
 
   page_info->GetWidget()->CloseWithReason(
       views::Widget::ClosedReason::kEscKeyPressed);
@@ -836,7 +837,7 @@ IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewAboutThisSiteBrowserTest,
   ukm_recorder.ExpectEntrySourceHasUrl(entries[0], url);
   ukm_recorder.ExpectEntryMetric(
       entries[0], ukm::builders::AboutThisSiteStatus::kStatusName,
-      static_cast<int>(ProtoValidation::kMissingDescriptionName));
+      static_cast<int>(AboutThisSiteStatus::kMissingDescriptionName));
 
   page_info->GetWidget()->CloseWithReason(
       views::Widget::ClosedReason::kEscKeyPressed);
@@ -912,5 +913,5 @@ IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewAboutThisSiteDisabledBrowserTest,
   ukm_recorder.ExpectEntrySourceHasUrl(entries[0], url);
   ukm_recorder.ExpectEntryMetric(
       entries[0], ukm::builders::AboutThisSiteStatus::kStatusName,
-      static_cast<int>(ProtoValidation::kUnknown));
+      static_cast<int>(AboutThisSiteStatus::kUnknown));
 }

@@ -45,71 +45,73 @@ proto::AboutThisSiteMetadata GetSampleMetaData() {
 // Tests that correct proto messages are accepted.
 TEST(AboutThisSiteValidation, ValidateProtos) {
   auto metadata = GetSampleMetaData();
-  EXPECT_EQ(ValidateMetadata(metadata), ProtoValidation::kValid);
+  EXPECT_EQ(ValidateMetadata(metadata), AboutThisSiteStatus::kValid);
 
   // The proto should still be valid without a timestamp or without description.
   metadata.mutable_site_info()->clear_first_seen();
-  EXPECT_EQ(ValidateMetadata(metadata), ProtoValidation::kValid);
+  EXPECT_EQ(ValidateMetadata(metadata), AboutThisSiteStatus::kValid);
 }
 
 TEST(AboutThisSiteValidation, InvalidSiteInfoProto) {
   proto::AboutThisSiteMetadata metadata;
-  EXPECT_EQ(ValidateMetadata(metadata), ProtoValidation::kMissingSiteInfo);
+  EXPECT_EQ(ValidateMetadata(metadata), AboutThisSiteStatus::kMissingSiteInfo);
   metadata.mutable_site_info();
-  EXPECT_EQ(ValidateMetadata(metadata), ProtoValidation::kEmptySiteInfo);
+  EXPECT_EQ(ValidateMetadata(metadata), AboutThisSiteStatus::kEmptySiteInfo);
   metadata = GetSampleMetaData();
   metadata.mutable_site_info()->clear_description();
-  EXPECT_EQ(ValidateMetadata(metadata), ProtoValidation::kMissingDescription);
+  EXPECT_EQ(ValidateMetadata(metadata),
+            AboutThisSiteStatus::kMissingDescription);
 }
 
 TEST(AboutThisSiteValidation, InvalidDescription) {
   proto::SiteDescription description = GetSampleDescription();
   description.clear_description();
   EXPECT_EQ(ValidateDescription(description),
-            ProtoValidation::kMissingDescriptionDescription);
+            AboutThisSiteStatus::kMissingDescriptionDescription);
 
   description = GetSampleDescription();
   description.clear_name();
   EXPECT_EQ(ValidateDescription(description),
-            ProtoValidation::kMissingDescriptionName);
+            AboutThisSiteStatus::kMissingDescriptionName);
 
   description = GetSampleDescription();
   description.clear_lang();
   EXPECT_EQ(ValidateDescription(description),
-            ProtoValidation::kMissingDescriptionLang);
+            AboutThisSiteStatus::kMissingDescriptionLang);
 
   description = GetSampleDescription();
   description.clear_source();
   EXPECT_EQ(ValidateDescription(description),
-            ProtoValidation::kMissingDescriptionSource);
+            AboutThisSiteStatus::kMissingDescriptionSource);
 }
 
 TEST(AboutThisSiteValidation, InvalidSource) {
   proto::Hyperlink source = GetSampleSource();
   source.clear_label();
-  EXPECT_EQ(ValidateSource(source), ProtoValidation::kIncompleteSource);
+  EXPECT_EQ(ValidateSource(source), AboutThisSiteStatus::kIncompleteSource);
 
   source = GetSampleSource();
   source.clear_url();
-  EXPECT_EQ(ValidateSource(source), ProtoValidation::kIncompleteSource);
+  EXPECT_EQ(ValidateSource(source), AboutThisSiteStatus::kIncompleteSource);
 
   source = GetSampleSource();
   source.set_url("example.com");
-  EXPECT_EQ(ValidateSource(source), ProtoValidation::kInvalidSource);
+  EXPECT_EQ(ValidateSource(source), AboutThisSiteStatus::kInvalidSource);
 
   source.set_url("ftp://example.com");
-  EXPECT_EQ(ValidateSource(source), ProtoValidation::kInvalidSource);
+  EXPECT_EQ(ValidateSource(source), AboutThisSiteStatus::kInvalidSource);
 }
 
 TEST(AboutThisSiteValidation, InvalidFirstSeenDuration) {
   proto::SiteFirstSeen first_seen = GetSampleFirstSeen();
   first_seen.clear_count();
   EXPECT_EQ(ValidateFirstSeen(first_seen),
-            ProtoValidation::kIncompleteTimeStamp);
+            AboutThisSiteStatus::kIncompleteTimeStamp);
 
   first_seen = GetSampleFirstSeen();
   first_seen.set_unit(proto::UNIT_UNSPECIFIED);
-  EXPECT_EQ(ValidateFirstSeen(first_seen), ProtoValidation::kInvalidTimeStamp);
+  EXPECT_EQ(ValidateFirstSeen(first_seen),
+            AboutThisSiteStatus::kInvalidTimeStamp);
 }
 
 }  // namespace about_this_site_validation

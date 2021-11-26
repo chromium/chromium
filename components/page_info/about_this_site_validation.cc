@@ -10,59 +10,60 @@
 namespace page_info {
 namespace about_this_site_validation {
 
-ProtoValidation ValidateSource(const proto::Hyperlink& source) {
+AboutThisSiteStatus ValidateSource(const proto::Hyperlink& source) {
   if (!source.has_label())
-    return ProtoValidation::kIncompleteSource;
+    return AboutThisSiteStatus::kIncompleteSource;
   if (!source.has_url())
-    return ProtoValidation::kIncompleteSource;
+    return AboutThisSiteStatus::kIncompleteSource;
 
   GURL url(source.url());
   if (!url.is_valid() || !url.SchemeIsHTTPOrHTTPS()) {
-    return ProtoValidation::kInvalidSource;
+    return AboutThisSiteStatus::kInvalidSource;
   }
-  return ProtoValidation::kValid;
+  return AboutThisSiteStatus::kValid;
 }
 
-ProtoValidation ValidateDescription(const proto::SiteDescription& description) {
+AboutThisSiteStatus ValidateDescription(
+    const proto::SiteDescription& description) {
   if (!description.has_description())
-    return ProtoValidation::kMissingDescriptionDescription;
+    return AboutThisSiteStatus::kMissingDescriptionDescription;
   if (!description.has_name())
-    return ProtoValidation::kMissingDescriptionName;
+    return AboutThisSiteStatus::kMissingDescriptionName;
   if (!description.has_lang())
-    return ProtoValidation::kMissingDescriptionLang;
+    return AboutThisSiteStatus::kMissingDescriptionLang;
   if (!description.has_source())
-    return ProtoValidation::kMissingDescriptionSource;
+    return AboutThisSiteStatus::kMissingDescriptionSource;
 
   return ValidateSource(description.source());
 }
 
-ProtoValidation ValidateFirstSeen(const proto::SiteFirstSeen& first_seen) {
+AboutThisSiteStatus ValidateFirstSeen(const proto::SiteFirstSeen& first_seen) {
   if (!first_seen.has_count())
-    return ProtoValidation::kIncompleteTimeStamp;
+    return AboutThisSiteStatus::kIncompleteTimeStamp;
   if (!first_seen.has_unit())
-    return ProtoValidation::kIncompleteTimeStamp;
+    return AboutThisSiteStatus::kIncompleteTimeStamp;
   if (!first_seen.has_precision())
-    return ProtoValidation::kIncompleteTimeStamp;
+    return AboutThisSiteStatus::kIncompleteTimeStamp;
 
   if (first_seen.count() < 0)
-    return ProtoValidation::kInvalidTimeStamp;
+    return AboutThisSiteStatus::kInvalidTimeStamp;
   if (first_seen.unit() == proto::UNIT_UNSPECIFIED)
-    return ProtoValidation::kInvalidTimeStamp;
+    return AboutThisSiteStatus::kInvalidTimeStamp;
   if (first_seen.precision() == proto::PRECISION_UNSPECIFIED)
-    return ProtoValidation::kInvalidTimeStamp;
+    return AboutThisSiteStatus::kInvalidTimeStamp;
 
-  return ProtoValidation::kValid;
+  return AboutThisSiteStatus::kValid;
 }
 
-ProtoValidation ValidateSiteInfo(const proto::SiteInfo& site_info) {
+AboutThisSiteStatus ValidateSiteInfo(const proto::SiteInfo& site_info) {
   if (!site_info.has_description() && !site_info.has_first_seen())
-    return ProtoValidation::kEmptySiteInfo;
+    return AboutThisSiteStatus::kEmptySiteInfo;
 
-  ProtoValidation status = ProtoValidation::kValid;
+  AboutThisSiteStatus status = AboutThisSiteStatus::kValid;
   if (!site_info.has_description())
-    return ProtoValidation::kMissingDescription;
+    return AboutThisSiteStatus::kMissingDescription;
   status = ValidateDescription(site_info.description());
-  if (status != ProtoValidation::kValid)
+  if (status != AboutThisSiteStatus::kValid)
     return status;
 
   if (site_info.has_first_seen())
@@ -70,12 +71,12 @@ ProtoValidation ValidateSiteInfo(const proto::SiteInfo& site_info) {
   return status;
 }
 
-ProtoValidation ValidateMetadata(
+AboutThisSiteStatus ValidateMetadata(
     const absl::optional<proto::AboutThisSiteMetadata>& metadata) {
   if (!metadata)
-    return ProtoValidation::kNoResult;
+    return AboutThisSiteStatus::kNoResult;
   if (!metadata->has_site_info())
-    return ProtoValidation::kMissingSiteInfo;
+    return AboutThisSiteStatus::kMissingSiteInfo;
   return ValidateSiteInfo(metadata->site_info());
 }
 

@@ -28,7 +28,7 @@ be describing additional metrics about the same event.
     <summary>
       The status of the &quot;About this site&quot; info, including if the data
       is available and whether the proto is valid. See
-      |page_info::about_this_site_validation::ProtoValidation| for enum
+      |page_info::about_this_site_validation::AboutThisSiteStatus| for enum
       elements.
     </summary>
     <aggregation>

@@ -16,7 +16,7 @@
 #include "url/gurl.h"
 
 namespace page_info {
-using ProtoValidation = about_this_site_validation::ProtoValidation;
+using AboutThisSiteStatus = about_this_site_validation::AboutThisSiteStatus;
 using OptimizationGuideDecision = optimization_guide::OptimizationGuideDecision;
 
 AboutThisSiteService::AboutThisSiteService(std::unique_ptr<Client> client)
@@ -30,16 +30,17 @@ absl::optional<proto::SiteInfo> AboutThisSiteService::GetAboutThisSiteInfo(
   absl::optional<proto::AboutThisSiteMetadata> about_this_site_metadata =
       metadata.ParsedMetadata<proto::AboutThisSiteMetadata>();
 
-  ProtoValidation status = decision == OptimizationGuideDecision::kUnknown
-                               ? ProtoValidation::kUnknown
-                               : about_this_site_validation::ValidateMetadata(
-                                     about_this_site_metadata);
+  AboutThisSiteStatus status =
+      decision == OptimizationGuideDecision::kUnknown
+          ? AboutThisSiteStatus::kUnknown
+          : about_this_site_validation::ValidateMetadata(
+                about_this_site_metadata);
   base::UmaHistogramEnumeration("Security.PageInfo.AboutThisSiteStatus",
                                 status);
   ukm::builders::AboutThisSiteStatus(source_id)
       .SetStatus(static_cast<int>(status))
       .Record(ukm::UkmRecorder::Get());
-  if (status == ProtoValidation::kValid) {
+  if (status == AboutThisSiteStatus::kValid) {
     return about_this_site_metadata->site_info();
   }
 

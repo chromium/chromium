@@ -14,7 +14,7 @@ namespace about_this_site_validation {
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
 // Keep in sync with AboutThisSiteStatus in enums.xml
-enum class ProtoValidation {
+enum class AboutThisSiteStatus {
   kValid = 0,
   kNoResult = 1,
   kMissingSiteInfo = 2,
@@ -34,13 +34,14 @@ enum class ProtoValidation {
   kMaxValue = kMissingDescriptionSource,
 };
 
-ProtoValidation ValidateMetadata(
+AboutThisSiteStatus ValidateMetadata(
     const absl::optional<proto::AboutThisSiteMetadata>& metadata);
 
-ProtoValidation ValidateSource(const proto::Hyperlink& link);
-ProtoValidation ValidateDescription(const proto::SiteDescription& description);
-ProtoValidation ValidateFirstSeen(const proto::SiteFirstSeen& first_seen);
-ProtoValidation ValidateSiteInfo(const proto::SiteInfo& site_info);
+AboutThisSiteStatus ValidateSource(const proto::Hyperlink& link);
+AboutThisSiteStatus ValidateDescription(
+    const proto::SiteDescription& description);
+AboutThisSiteStatus ValidateFirstSeen(const proto::SiteFirstSeen& first_seen);
+AboutThisSiteStatus ValidateSiteInfo(const proto::SiteInfo& site_info);
 
 }  // namespace about_this_site_validation
 }  // namespace page_info

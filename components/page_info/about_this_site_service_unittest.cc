@@ -18,7 +18,7 @@ using testing::_;
 using testing::Invoke;
 using testing::Return;
 
-using about_this_site_validation::ProtoValidation;
+using about_this_site_validation::AboutThisSiteStatus;
 using optimization_guide::OptimizationGuideDecision;
 using optimization_guide::OptimizationMetadata;
 
@@ -104,7 +104,7 @@ TEST_F(AboutThisSiteServiceTest, ValidResponse) {
       GURL("https://foo.com"), ukm::UkmRecorder::GetNewSourceID());
   EXPECT_TRUE(info.has_value());
   t.ExpectUniqueSample("Security.PageInfo.AboutThisSiteStatus",
-                       ProtoValidation::kValid, 1);
+                       AboutThisSiteStatus::kValid, 1);
 }
 
 // Tests that incorrect proto messages are discarded.
@@ -117,7 +117,7 @@ TEST_F(AboutThisSiteServiceTest, InvalidResponse) {
       GURL("https://foo.com"), ukm::UkmRecorder::GetNewSourceID());
   EXPECT_FALSE(info.has_value());
   t.ExpectUniqueSample("Security.PageInfo.AboutThisSiteStatus",
-                       ProtoValidation::kMissingDescriptionSource, 1);
+                       AboutThisSiteStatus::kMissingDescriptionSource, 1);
 }
 
 // Tests that no response is handled.
@@ -130,7 +130,7 @@ TEST_F(AboutThisSiteServiceTest, NoResponse) {
       GURL("https://foo.com"), ukm::UkmRecorder::GetNewSourceID());
   EXPECT_FALSE(info.has_value());
   t.ExpectUniqueSample("Security.PageInfo.AboutThisSiteStatus",
-                       ProtoValidation::kNoResult, 1);
+                       AboutThisSiteStatus::kNoResult, 1);
 }
 
 // Tests that unknown response is handled.
@@ -143,7 +143,7 @@ TEST_F(AboutThisSiteServiceTest, Unknown) {
       GURL("https://foo.com"), ukm::UkmRecorder::GetNewSourceID());
   EXPECT_FALSE(info.has_value());
   t.ExpectUniqueSample("Security.PageInfo.AboutThisSiteStatus",
-                       ProtoValidation::kUnknown, 1);
+                       AboutThisSiteStatus::kUnknown, 1);
 }
 
 }  // namespace page_info
