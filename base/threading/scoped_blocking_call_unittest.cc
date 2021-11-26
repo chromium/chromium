@@ -181,23 +181,15 @@ class ScopedBlockingCallIOJankMonitoringTest : public testing::Test {
     // spite of EnableIOJankMonitoringForProcess()'s requirement as
     // TimeSource::MOCK_TIME avoids usage of the system clock and avoids the
     // issue.
-    // OnlyObservedThreadsForTest(true) to prevent flakes which are believed to
-    // be caused by ScopedBlockingCall interference in the same process but
-    // outside this test's managed threads: crbug.com/1071166.
-    EnableIOJankMonitoringForProcess(
-        BindLambdaForTesting([&](int janky_intervals_per_minute,
-                                 int total_janks_per_minute) {
-          reports_.emplace_back(
-              janky_intervals_per_minute, total_janks_per_minute);
-        }),
-        OnlyObservedThreadsForTest(true));
-
-    internal::SetBlockingObserverForCurrentThread(&main_thread_observer);
+    EnableIOJankMonitoringForProcess(BindLambdaForTesting(
+        [&](int janky_intervals_per_minute, int total_janks_per_minute) {
+          reports_.push_back(
+              {janky_intervals_per_minute, total_janks_per_minute});
+        }));
   }
 
   void TearDown() override {
     internal::IOJankMonitoringWindow::CancelMonitoringForTesting();
-    internal::ClearBlockingObserverForCurrentThread();
   }
 
  protected:
@@ -223,11 +215,6 @@ class ScopedBlockingCallIOJankMonitoringTest : public testing::Test {
   std::vector<std::pair<int, int>> reports_;
 
   test::TaskEnvironment task_environment_;
-
-  // The main thread needs to register a BlockingObserver per
-  // OnlyObservedThreadsForTest(true) but doesn't otherwise care about
-  // observing.
-  testing::NiceMock<MockBlockingObserver> main_thread_observer;
 };
 
 }  // namespace
@@ -550,7 +537,15 @@ TEST_F(ScopedBlockingCallIOJankMonitoringTest, MultiThreadedOverlapped) {
 // First one starting at 10 seconds (can't start later than that or we'll trip
 // the kTimeDiscrepancyTimeout per TaskEnvironment's inability to RunUntilIdle()
 // with pending blocked tasks).
-TEST_F(ScopedBlockingCallIOJankMonitoringTest, MultiThreadedOverlappedWindows) {
+#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+// https://crbug.com/1071166
+#define MAYBE_MultiThreadedOverlappedWindows \
+  DISABLED_MultiThreadedOverlappedWindows
+#else
+#define MAYBE_MultiThreadedOverlappedWindows MultiThreadedOverlappedWindows
+#endif
+TEST_F(ScopedBlockingCallIOJankMonitoringTest,
+       MAYBE_MultiThreadedOverlappedWindows) {
   constexpr int kNumJankyTasks = 3;
   static_assert(
       kNumJankyTasks <= test::TaskEnvironment::kNumForegroundThreadPoolThreads,
