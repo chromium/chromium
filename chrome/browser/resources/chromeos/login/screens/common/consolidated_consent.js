@@ -246,6 +246,14 @@ class ConsolidatedConsent extends ConsolidatedConsentScreenElementBase {
       run_at: 'document_start'
     }]);
 
+    webview.addContentScripts([{
+      name: 'postProcess',
+      matches: [this.getTermsOfServiceHostNameForMatchPattern_() + '/*'],
+      css: {files: ['playstore.css']},
+      js: {files: ['playstore.js']},
+      run_at: 'document_end'
+    }]);
+
     this.$.arcTosOverlayWebview.addContentScripts([{
       name: 'postProcess',
       matches: ['https://support.google.com/*'],
