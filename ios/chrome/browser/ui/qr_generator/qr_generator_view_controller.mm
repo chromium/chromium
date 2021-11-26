@@ -25,6 +25,7 @@ const CGFloat kQRCodeImageSize = 200.0;
 constexpr CGFloat kGeneratedImagePadding = 20;
 constexpr CGFloat kButtonMaxWidth = 327;
 constexpr CGFloat kContentMaxWidth = 500;
+constexpr CGFloat kBottomMargin = 24;
 
 }  // namespace
 
@@ -143,7 +144,8 @@ constexpr CGFloat kContentMaxWidth = 500;
     [stackView.centerXAnchor constraintEqualToAnchor:scrollView.centerXAnchor],
 
     [primaryActionButton.bottomAnchor
-        constraintEqualToAnchor:self.view.safeAreaLayoutGuide.bottomAnchor],
+        constraintEqualToAnchor:self.view.safeAreaLayoutGuide.bottomAnchor
+                       constant:-kBottomMargin],
     [primaryActionButton.leadingAnchor
         constraintGreaterThanOrEqualToAnchor:scrollView.leadingAnchor],
     [primaryActionButton.trailingAnchor
