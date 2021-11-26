@@ -16,7 +16,16 @@
 #endif
 
 namespace {
+
 const CGFloat kJavaScriptTimeout = 1;
+
+// Wrapper around CFRunLoop() to help crash server put all crashes happening
+// while the loop is executed in the same bucket. Marked as `noinline` to
+// prevent clang from optimising the function out in official builds.
+void __attribute__((noinline)) ContextMenuNestedCFRunLoop() {
+  CFRunLoopRun();
+}
+
 }  // namespace
 
 @interface CRWContextMenuController () <UIContextMenuInteractionDelegate>
@@ -143,7 +152,7 @@ const CGFloat kJavaScriptTimeout = 1;
   // time we reach this line.
   if (!javascriptEvaluationComplete) {
     isRunLoopNested = YES;
-    CFRunLoopRun();
+    ContextMenuNestedCFRunLoop();
     isRunLoopNested = NO;
   }
 
