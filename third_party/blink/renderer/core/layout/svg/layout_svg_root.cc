@@ -31,6 +31,7 @@
 #include "third_party/blink/renderer/core/layout/intrinsic_sizing_info.h"
 #include "third_party/blink/renderer/core/layout/layout_embedded_content.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
+#include "third_party/blink/renderer/core/layout/ng/svg/layout_ng_svg_text.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_resource_masker.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_text.h"
 #include "third_party/blink/renderer/core/layout/svg/svg_layout_support.h"
@@ -70,6 +71,7 @@ LayoutSVGRoot::~LayoutSVGRoot() = default;
 
 void LayoutSVGRoot::Trace(Visitor* visitor) const {
   visitor->Trace(content_);
+  visitor->Trace(text_set_);
   LayoutReplaced::Trace(visitor);
 }
 
@@ -376,6 +378,15 @@ void LayoutSVGRoot::StyleDidChange(StyleDifference diff,
 
   SVGResources::UpdateClipPathFilterMask(To<SVGSVGElement>(*GetNode()),
                                          old_style, StyleRef());
+
+  if (diff.TransformChanged()) {
+    for (auto& svg_text : text_set_) {
+      svg_text->SetNeedsLayout(layout_invalidation_reason::kStyleChange,
+                               kMarkContainerChain);
+      svg_text->SetNeedsTextMetricsUpdate();
+    }
+  }
+
   if (!Parent())
     return;
   if (diff.HasDifference())
@@ -586,6 +597,18 @@ void LayoutSVGRoot::NotifyDescendantCompositingReasonsChanged() {
     return;
   has_descendant_with_compositing_reason_dirty_ = true;
   SetNeedsLayout(layout_invalidation_reason::kSvgChanged);
+}
+
+void LayoutSVGRoot::AddSvgTextDescendant(LayoutNGSVGText& svg_text) {
+  NOT_DESTROYED();
+  DCHECK(!text_set_.Contains(&svg_text));
+  text_set_.insert(&svg_text);
+}
+
+void LayoutSVGRoot::RemoveSvgTextDescendant(LayoutNGSVGText& svg_text) {
+  NOT_DESTROYED();
+  DCHECK(text_set_.Contains(&svg_text));
+  text_set_.erase(&svg_text);
 }
 
 PaintLayerType LayoutSVGRoot::LayerTypeRequired() const {
