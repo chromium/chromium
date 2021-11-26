@@ -13,7 +13,7 @@ namespace policy {
 
 namespace dlp {
 
-aura::WindowTreeHost* GetActiveWindowTreeHost() {
+aura::Window* GetActiveAuraWindow() {
   BrowserList* browser_list = BrowserList::GetInstance();
   DCHECK(browser_list);
 
@@ -30,8 +30,17 @@ aura::WindowTreeHost* GetActiveWindowTreeHost() {
 
     // We only need the visible focused or topmost browser.
     if (window->GetNativeWindow()->IsVisible())
-      return window->GetNativeWindow()->GetHost();
+      return window->GetNativeWindow();
   }
+
+  return nullptr;
+}
+
+aura::WindowTreeHost* GetActiveWindowTreeHost() {
+  aura::Window* active_window = GetActiveAuraWindow();
+
+  if (active_window)
+    return active_window->GetHost();
 
   return nullptr;
 }

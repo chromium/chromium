@@ -106,6 +106,11 @@ views::Widget::InitParams GetWidgetInitParams() {
   params.layer_type = ui::LAYER_NOT_DRAWN;
   params.parent = nullptr;
   params.shadow_type = views::Widget::InitParams::ShadowType::kDrop;
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // WaylandPopups in Lacros need a context window to allow custom positioning.
+  // Here, we pass the active Lacros window as context for the bubble widget.
+  params.context = dlp::GetActiveAuraWindow();
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
   return params;
 }
 
