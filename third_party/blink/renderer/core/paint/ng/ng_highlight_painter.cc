@@ -370,8 +370,6 @@ void NGHighlightPainter::Paint(Phase phase) {
           text_style.stroke_width = style_.TextStrokeWidth();
           text_style.color_scheme = style_.UsedColorScheme();
         }
-        if (text_style.current_color == Color::kTransparent)
-          break;
         text_painter_.Paint(paint_start_offset, paint_end_offset,
                             paint_end_offset - paint_start_offset, text_style,
                             kInvalidDOMNodeId, auto_dark_mode);
@@ -434,9 +432,6 @@ void NGHighlightPainter::Paint(Phase phase) {
             HighlightPaintingUtils::HighlightPaintingStyle(
                 document, style_, node_, kPseudoIdHighlight, text_style,
                 paint_info_, highlight_marker.GetHighlightName());
-
-        if (final_text_style.current_color == Color::kTransparent)
-          break;
 
         text_painter_.Paint(paint_start_offset, paint_end_offset,
                             paint_end_offset - paint_start_offset,
